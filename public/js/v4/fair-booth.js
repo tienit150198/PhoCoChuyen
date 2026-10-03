@@ -23,11 +23,18 @@
  * booth_set {pose, all: true}, an older live service sets only one's own), a 🎲 that picks one (and the same for the
  * friends), the fair's own frames, backdrops, stickers and colours (./photo-frames.js FAIR_*), the words and the date
  * on the strip, a countdown with a ring and the shots dropping in. An id a client does not know is drawn as its
- * default (pose 'dung', frame 'dem_hoi', backdrop 'kem'): the 1.5.1 client in the same room keeps working. */
+ * default (pose 'dung', frame 'dem_hoi', backdrop 'kem'): the 1.5.1 client in the same room keeps working.
+ * Round 2 (owner 03/10 22:00: "thêm nhiều icon biểu cảm, động tác… cho trang trí kéo thả không giới hạn nhé"): more
+ * poses, an expression (Biểu cảm) over any pose (booth_set {face}, one's own; an older live service drops it and the
+ * friends see the pose's own face), and after the shoot a sticker editor on one's own copy of the strip
+ * (./booth-editor.js, ./booth-stickers.js): as many as one likes, dragged, turned, resized; the saved picture is
+ * the ×3 strip with them on it. Nothing of the editor goes to the server or to the friends. */
 import {live,liveBoot} from './live.js';
 import {lookOf,CANVAS} from './look.js';
 import {FRAMES,FAIR_FRAMES,FRAME,BACKDROPS,FAIR_BACKDROPS,PROPS,STICKERS,FAIR_STICKERS,FAIR_FILTERS,draw as drawPrint,paintShot,thumb} from './photo-frames.js';
-import {POSES,POSE,known as knownPose,paintPeople,poseThumb} from './booth-poses.js';
+import {POSES,POSE,known as knownPose,paintPeople,poseThumb,FACES,knownFace,faceThumb} from './booth-poses.js';
+import {DECO_CATS,DECO,DECO_FILL,decoThumb} from './booth-stickers.js';
+import {createEditor} from './booth-editor.js';
 import {t as tr} from './i18n.js';
 
 const SHOOTER={name:'Chị Mai chụp ảnh',emoji:'👩🏻‍🦰',
@@ -44,6 +51,7 @@ const BGS=[...FAIR_BACKDROPS,...BACKDROPS],BG_IDS=new Set(BGS.map(b=>b.id));
 const STICKS=[...STICKERS,...FAIR_STICKERS];
 // the words on the strip
 const TEXTS=[['hoi','🏮','Hội chợ','Hội chợ Phố Có Chuyện'],['vui','🎉','Vui hết nấc','Vui hết nấc!'],['ban','💞','Bạn thân','Bạn thân mãi đỉnh'],['none','🚫','Không chữ','']];
+const DECO_MAX=200;   // stickers on one strip: no limit a player meets, a sane one for a phone
 const SHOTS=4,GAP=3200,STICKER_MAX=8,TICKET='mnl.fair.pbticket',PRINT_SCALE=3,CONN_MS=10000;
 const CELL=[260,162];   // one photo of the strip (./photo-frames.js stripBox): the stage has its shape
 
@@ -51,7 +59,7 @@ export function setup(ctx){
   const {S,F,btn,say,xu,esc,send,render,sfx,pick,reduce}=ctx;
   const D=S.pb={step:'lobby',mode:null,room:null,me:null,frame:'hoi_dem',bg:'day_den',pose:'dung',prop:'none',say:'',
     ticket:readTicket(),paying:false,ready:false,waitUntil:0,shoot:null,shots:[],flash:0,count:0,filter:'none',stickers:[],
-    text:'hoi',date:true,tab:'solo',
+    text:'hoi',date:true,tab:'solo',face:'auto',dcat:'mat',ed:null,base:null,dirty:false,
     url:'',blob:null,building:false,cv:null,raf:0,thumbs:{},sent:{},pendingJoin:false,tick:0,
     conn0:0,connTimer:0,rejoin:'',back:null};   // since when the socket is awaited; a friends' room's code to come back to
   const P=()=>F().photo||null;
@@ -77,9 +85,9 @@ export function setup(ctx){
   const inRoom=()=>D.step!=='lobby'&&D.step!=='wait'&&D.mode!=='solo'&&!!D.room;
   const isHost=()=>D.mode==='solo'||D.room?.host===D.me;
   function people(){
-    if(D.mode!=='solo'&&D.room)return D.room.people||[];
+    if(D.mode!=='solo'&&D.room)return (D.room.people||[]).map(p=>p.pid===D.me&&p.face==null?Object.assign(p,{face:D.face}):p);   // an older service keeps no face
     const st=myState();
-    return [{pid:'me',name:st.name||tr('Bạn'),lk:lookOf(st),g:st.journey?.gender??null,pose:D.pose,prop:D.prop,ready:true}];
+    return [{pid:'me',name:st.name||tr('Bạn'),lk:lookOf(st),g:st.journey?.gender??null,pose:D.pose,prop:D.prop,face:D.face,ready:true}];
   }
   const frameId=()=>{const id=D.mode!=='solo'&&D.room?D.room.frame:D.frame;return FRAME[id]?id:'dem_hoi';};
   const bgId=()=>{const id=D.mode!=='solo'&&D.room?D.room.bg:D.bg;return BG_IDS.has(id)?id:'kem';};
@@ -103,10 +111,10 @@ export function setup(ctx){
       const fresh=!D.room||D.room.room!==f.room,back=D.back;
       D.room=f;D.me=f.me;D.pendingJoin=false;D.back=null;D.rejoin='';
       if(D.step==='lobby'||D.step==='wait'){D.step='room';D.mode=f.mode==='stranger'?'stranger':'friends';D.say=pick(SHOOTER.room);sfx('open');}
-      const me=(f.people||[]).find(p=>p.pid===f.me);if(me){if(me.pose!==D.pose&&POSE[me.pose]?.group)D.tab='group';D.pose=knownPose(me.pose)?me.pose:'dung';D.prop=PROP_IDS.has(me.prop)?me.prop:'none';D.ready=!!me.ready;}
+      const me=(f.people||[]).find(p=>p.pid===f.me);if(me){if(me.pose!==D.pose&&POSE[me.pose]?.group)D.tab='group';D.pose=knownPose(me.pose)?me.pose:'dung';D.prop=PROP_IDS.has(me.prop)?me.prop:'none';if(me.face!=null)D.face=knownFace(me.face)?me.face:'auto';D.ready=!!me.ready;}
       if(fresh||back)S.flash=null;
-      if(back&&me){const k={};if(back.pose!==D.pose)k.pose=back.pose;if(back.prop!==D.prop)k.prop=back.prop;   // my pose and prop as they were
-        if(Object.keys(k).length&&live.send({t:'booth_set',...k})){Object.assign(me,k);D.pose=k.pose||D.pose;D.prop=k.prop||D.prop;}}
+      if(back&&me){const k={};if(back.pose!==D.pose)k.pose=back.pose;if(back.prop!==D.prop)k.prop=back.prop;if(back.face&&back.face!==(me.face||'auto'))k.face=back.face;   // my pose, prop, face as they were
+        if(Object.keys(k).length&&live.send({t:'booth_set',...k})){Object.assign(me,k);D.pose=k.pose||D.pose;D.prop=k.prop||D.prop;D.face=k.face||D.face;}}
       redraw();
     });
     live.on('booth_wait',f=>{D.step='wait';D.waitUntil=Date.now()+(Number(f.secs)||60)*1000;D.say=pick(SHOOTER.wait);redraw();});
@@ -136,7 +144,7 @@ export function setup(ctx){
     live.on('welcome',()=>{
       D.conn0=0;
       if(D.rejoin&&D.room&&D.mode==='friends'){
-        const code=D.rejoin;D.rejoin='';D.back={pose:D.pose,prop:D.prop};
+        const code=D.rejoin;D.rejoin='';D.back={pose:D.pose,prop:D.prop,face:D.face};
         D.pendingJoin=live.send({t:'booth_join',code,...look()});
         if(!D.pendingJoin){D.back=null;roomGone();}
       }else if(D.step!=='lobby'&&D.mode&&D.mode!=='solo')roomGone();
@@ -175,7 +183,7 @@ export function setup(ctx){
    * room: booth_set {pose, all: true} (an older live service reads only `pose`: then it is one's own). */
   function set(k,v,all=false){
     if(k==='pose'&&!knownPose(v))return;if(k==='prop'&&v!=='none'&&!PROP_IDS.has(v))return;
-    if(k==='frame'&&!FRAME[v])return;if(k==='bg'&&!BG_IDS.has(v))return;
+    if(k==='frame'&&!FRAME[v])return;if(k==='bg'&&!BG_IDS.has(v))return;if(k==='face'&&!knownFace(v))return;
     D[k]=v;
     if(D.mode!=='solo'&&D.room){
       if((k==='frame'||k==='bg')&&!isHost())return;
@@ -192,6 +200,8 @@ export function setup(ctx){
     const pool=POSES.filter(p=>p.group===group&&p.id!==cur&&p.id!=='dung');
     const pick1=pool[Math.floor(Math.random()*pool.length)];
     if(pick1){if(pick1.group)D.tab='group';else if(!many())D.tab='solo';set('pose',pick1.id,many());}
+    const faces=FACES.filter(f=>f.id!=='auto'&&f.id!==(mine()?.face||D.face));
+    set('face',Math.random()<.5&&faces.length?faces[Math.floor(Math.random()*faces.length)].id:'auto');
   }
   async function ready(){
     if(D.ready||!inRoom())return;
@@ -219,12 +229,12 @@ export function setup(ctx){
   /* ---- the shoot: a 3-2-1 before each of the four shots, drawn from the room as it is at that moment ---- */
   function startShoot(n,gap){
     keepTicket(false);D.ready=false;
-    D.shots=[];D.url='';D.blob=null;D.filter='none';D.stickers=[];
+    D.shots=[];D.url='';D.blob=null;D.filter='none';D.stickers=[];D.base=null;D.dirty=false;edit().reset();
     D.shoot={t0:performance.now(),n:Math.max(1,Math.min(4,n)),gap:Math.max(1500,Math.min(6000,gap)),done:0,last:0};
     D.step='shoot';D.say=pick(SHOOTER.shoot);S.flash=null;render();loop();
   }
   function capture(){
-    const ppl=people().map(p=>({pid:p.pid,name:p.name,lk:p.lk,g:p.g,pose:knownPose(p.pose)?p.pose:'dung',prop:PROP_IDS.has(p.prop)?p.prop:'none'}));
+    const ppl=people().map(p=>({pid:p.pid,name:p.name,lk:p.lk,g:p.g,pose:knownPose(p.pose)?p.pose:'dung',prop:PROP_IDS.has(p.prop)?p.prop:'none',face:knownFace(p.face)?p.face:'auto'}));
     const shot={people:ppl,bg:bgId()};
     try{const cv=document.createElement('canvas');cv.width=CELL[0];cv.height=CELL[1];paintCell(cv.getContext('2d'),shot,CELL[0],CELL[1]);shot.mini=cv;}catch{/* the stage goes without it */}
     shot.at=performance.now();D.shots.push(shot);D.flash=shot.at;sfx('shutter');
@@ -304,17 +314,38 @@ export function setup(ctx){
       {scale,t:tr,brand:names,paintShot:(c,shot,w,h)=>paintCell(c,shot,w,h,Number.isFinite(sc)?sc:0)});
     return cv;
   }
+  /* The strip on screen is the ×2 print (the editor draws its stickers over it); the saved picture is the ×3 print with
+   * the stickers drawn on it at full size, made again a moment after the last change (and at once on save). */
   let building=0;
+  function edit(){return D.ed||(D.ed=createEditor({t:tr,max:DECO_MAX,onPick:()=>render(),onChange:()=>{D.dirty=true;render();exportSoon();}}));}
   function build(){
     if(!D.shots.length)return;
     const me=++building;D.building=true;
     setTimeout(()=>{
       if(me!==building)return;
       let cv;try{cv=printCanvas(2);}catch(e){console.warn('chụp ảnh: strip',e);D.building=false;render();return;}
-      cv.toBlob(b=>{if(me!==building)return;if(D.url)URL.revokeObjectURL(D.url);D.blob=b;D.url=b?URL.createObjectURL(b):'';D.building=false;render();},'image/png');
+      D.base=cv;D.building=false;edit().setBase(cv);D.dirty=true;render();exportSoon(0);
     },30);
   }
+  /** One picture made at a time; a change while it is made makes another after it. Resolves when the saved picture
+   * is the strip as it is now. */
+  let making=null;
+  function exportNow(){
+    clearTimeout(exportSoon.t);
+    if(making)return making.then(()=>D.dirty&&D.shots.length?exportNow():!!D.blob);
+    const shots=D.shots;D.dirty=false;
+    making=new Promise(done=>{
+      const end=ok=>{making=null;done(ok);};
+      let cv;try{cv=printCanvas(PRINT_SCALE);edit().compose(cv.getContext('2d'),cv.width,cv.height);}catch(e){console.warn('chụp ảnh: strip',e);D.dirty=true;end(false);return;}
+      cv.toBlob(b=>{cv.width=cv.height=0;
+        if(D.shots!==shots){end(false);return;}   // a new shoot began meanwhile
+        if(D.url)URL.revokeObjectURL(D.url);D.blob=b;D.url=b?URL.createObjectURL(b):'';if(!b)D.dirty=true;render();end(!!b);},'image/png');
+    });
+    return making;
+  }
+  function exportSoon(ms=700){clearTimeout(exportSoon.t);exportSoon.t=setTimeout(()=>{if(D.shots.length&&D.step==='print')exportNow();},ms);}
   async function save(){
+    if((D.dirty||making)&&D.shots.length)await exportNow();
     if(!D.blob)return;
     const [d,m]=vnDate(),name=`hoi-cho-${d}-${m}-${Date.now()%100000}.png`;
     let file=null;try{file=new File([D.blob],name,{type:'image/png'});}catch{/* old browser */}
@@ -384,19 +415,31 @@ export function setup(ctx){
     const list=POSES.filter(p=>p.group===(tab==='group'));
     const tiles=list.map(p=>`<button type="button" class="fh-pb-pose${pose===p.id?' on':''}" data-fh="pbpose" data-v="${p.id}" aria-pressed="${pose===p.id}" data-fh-key="pbpose-${p.id}" title="${esc(p.name)}"><img alt="" src="${poseThumb(lk,g,p.id,128)}" width="64" height="64"><span><i aria-hidden="true">${p.emoji}</i> ${esc(p.name)}</span></button>`).join('');
     return `<div class="fh-pb-sec fh-pb-posehead"><b>Dáng</b>${shooting?'<small>đổi giữa các kiểu</small>':''}${btn('🎲 Ngẫu nhiên','pbdice',{},'cream small fh-pb-dice',' data-fh-key="pbdice"')}</div>
-      ${tabs}${tab==='group'?'<p class="fh-pb-hint">Chọn là cả phòng cùng dáng</p>':''}<div class="fh-pb-poses" role="group" aria-label="Dáng">${tiles}</div>`;
+      ${tabs}${tab==='group'?'<p class="fh-pb-hint">Chọn là cả phòng cùng dáng</p>':''}<div class="fh-pb-poses" role="group" aria-label="Dáng">${tiles}</div>
+      ${faceView(lk,g)}`;
+  }
+  /** Biểu cảm: one's own face over any pose (a row of close-ups, swiped sideways). */
+  function faceView(lk,g){
+    const face=mine()?.face||D.face;
+    const tiles=FACES.map(f=>`<button type="button" class="fh-pb-pose${face===f.id?' on':''}" data-fh="pbface" data-v="${f.id}" aria-pressed="${face===f.id}" data-fh-key="pbface-${f.id}" title="${esc(f.name)}"><img alt="" src="${faceThumb(lk,g,f.id,128)}" width="64" height="64"><span><i aria-hidden="true">${f.emoji}</i> ${esc(f.name)}</span></button>`).join('');
+    return `<div class="fh-pb-sec"><b>Biểu cảm</b><small>hợp với mọi dáng</small></div><div class="fh-pb-faces" role="group" aria-label="Biểu cảm">${tiles}</div>`;
   }
   function printView(){
-    const img=D.url?`<img class="fh-pb-print" src="${D.url}" alt="${esc(tr('Dải ảnh hội chợ'))}">`:`<div class="fh-pb-print wait" role="status">${esc('Đang in ảnh…')}</div>`;
+    const ed=edit(),n=ed.items.length,sel=ed.sel>=0,full=n>=DECO_MAX;
+    const strip=`${D.base?'':`<div class="fh-pb-print wait" role="status">${esc('Đang in ảnh…')}</div>`}<div class="fh-pb-edbox" data-fh-live data-fh-key="pb-ed"${D.base?'':' hidden'}><canvas class="fh-pb-ed" tabindex="0" role="img" aria-label="${esc(tr('Dải ảnh hội chợ'))}"></canvas></div>`;
+    const bar=`<div class="fh-pb-edbar" role="group" aria-label="Sửa sticker">${btn('↩ Hoàn tác','pbedundo',{},'ghost small',ed.canUndo()?' data-fh-key="pbedundo"':' disabled data-fh-key="pbedundo"')}${btn('⬆️ Lên trên','pbedfront',{},'ghost small',sel?' data-fh-key="pbedfront"':' disabled data-fh-key="pbedfront"')}${btn('🗑 Xoá','pbeddel',{},'ghost small',sel?' data-fh-key="pbeddel"':' disabled data-fh-key="pbeddel"')}${btn('🧹 Xoá hết','pbedclear',{},'ghost small',n?' data-fh-key="pbedclear"':' disabled data-fh-key="pbedclear"')}</div>`;
+    const cats=`<div class="fh-pb-dcats" role="group" aria-label="Loại sticker">${DECO_CATS.map(c=>`<button type="button" class="fh-pb-dcat${D.dcat===c.id?' on':''}" data-fh="pbdcat" data-v="${c.id}" aria-pressed="${D.dcat===c.id}" data-fh-key="pbdcat-${c.id}"><span aria-hidden="true">${c.emoji}</span> ${esc(c.name)}</button>`).join('')}</div>`;
+    const tiles=`<div class="fh-pb-dtiles" role="group" aria-label="Sticker">${DECO.filter(d=>d.cat===D.dcat).map(d=>`<button type="button" class="fh-pb-dtile" data-fh="pbdeco" data-v="${d.id}" data-fh-key="pbdeco-${d.id}" title="${esc(d.name)}" aria-label="${esc(d.name)}"${full||!D.base?' disabled':''}><img alt="" src="${decoThumb(d.id,96,{t:tr})}" width="48" height="48"></button>`).join('')}</div>`;
+    const tray=`<div class="fh-pb-tray"><div class="fh-pb-sec"><b>Trang trí</b><small>${full?esc('Đã đủ số sticker tối đa'):esc('Chạm để dán · kéo để dời · ↻ xoay, đổi cỡ')}</small></div>${cats}${tiles}${bar}</div>`;
     const filters=`<div class="fh-pb-sec"><b>Màu ảnh</b></div><div class="fh-pb-chips" role="group" aria-label="Màu ảnh">${FAIR_FILTERS.map(f=>chip('pbfilter',f.id,D.filter===f.id,esc(f.name),f.name)).join('')}</div>`;
     const words=`<div class="fh-pb-sec"><b>Chữ</b></div><div class="fh-pb-chips" role="group" aria-label="Chữ">${TEXTS.map(([id,e,n])=>chip('pbtext',id,D.text===id,`<span aria-hidden="true">${e}</span> ${esc(n)}`,n)).join('')}${chip('pbdate','1',D.date,'<span aria-hidden="true">📅</span> Ngày','Ngày')}</div>`;
     const stickers=`<div class="fh-pb-sec"><b>Sticker</b><small>${D.stickers.length}/${STICKER_MAX}</small></div><div class="fh-pb-chips" role="group" aria-label="Sticker">${STICKS.map(s=>chip('pbsticker',s.id,D.stickers.includes(s.id),`<span aria-hidden="true">${s.emoji}</span> ${esc(s.name)}`,s.name,!D.stickers.includes(s.id)&&D.stickers.length>=STICKER_MAX)).join('')}</div>`;
     const again=D.mode==='solo'||D.room?btn('📸 Chụp lượt nữa','pbagain',{},'cream',' data-fh-key="pbagain"'):'';
-    return `<div class="fh-pb-printbox">${img}</div>
+    return `<div class="fh-pb-edit"><div class="fh-pb-printbox">${strip}</div>${tray}</div>
       <div class="fh-go">${btn('⬇️ Lưu ảnh','pbsave',{},'primary big',D.blob?' data-fh-key="pbsave"':' disabled data-fh-key="pbsave"')}${again}</div>
       ${filters}${words}${stickers}
       <div class="fh-go">${btn(D.mode==='solo'?'‹ Về buồng chụp':'Rời phòng','pbout',{},'ghost small',' data-fh-key="pbout"')}</div>
-      <p class="fh-rule">Bộ lọc và sticker chỉ đổi trên ảnh của bạn. Ảnh không lưu lên máy chủ: lưu về máy để giữ nha.</p>`;
+      <p class="fh-rule">Bộ lọc, sticker và trang trí chỉ đổi trên ảnh của bạn. Ảnh không lưu lên máy chủ: lưu về máy để giữ nha.</p>`;
   }
   function view(){
     if(!P())return '';
@@ -414,6 +457,7 @@ export function setup(ctx){
     if(cv&&!cv._pb){cv._pb=1;const size=()=>{const b=cv.getBoundingClientRect(),dpr=Math.min(2,globalThis.devicePixelRatio||1),w=Math.max(1,b.width);cv.width=Math.round(w*dpr);cv.height=Math.round(w*CELL[1]/CELL[0]*dpr);drawStage();};
       size();new ResizeObserver(size).observe(cv);}
     D.cv=cv||null;drawStage();
+    const ec=S.dlg?.querySelector('.fh-pb-ed');if(ec)edit().attach(ec);
     const box=S.dlg?.querySelector('.fh-pb-code');
     if(box&&!box._pb){box._pb=1;box.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();join();}});box.addEventListener('input',()=>{const v=box.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);if(v!==box.value)box.value=v;});}
     clearTimeout(D.connTimer);   // the "try again" line when the socket has not come in CONN_MS
@@ -429,7 +473,7 @@ export function setup(ctx){
       case'pbjoin':join();return true;
       case'pbretry':wake(true);render();return true;
       case'pbcancel':out();return true;
-      case'pbout':if(D.step==='print'&&D.mode==='solo'){D.step='room';D.shots=[];render();}else out();return true;
+      case'pbout':if(D.step==='print'&&D.mode==='solo'){D.step='room';D.shots=[];D.base=null;edit().reset();render();}else out();return true;
       case'pbcopy':copyCode();return true;
       case'pbframe':set('frame',data.v);return true;
       case'pbbg':set('bg',data.v);return true;
@@ -446,7 +490,14 @@ export function setup(ctx){
       case'pbdate':D.date=!D.date;build();render();return true;
       case'pbsticker':{const v=data.v;if(!STICKS.some(s=>s.id===v))return true;const i=D.stickers.indexOf(v);if(i>=0)D.stickers.splice(i,1);else if(D.stickers.length<STICKER_MAX)D.stickers.push(v);build();render();return true;}
       case'pbsave':save();return true;
-      case'pbagain':D.step='room';D.shots=[];D.say=pick(SHOOTER.room);if(D.url){URL.revokeObjectURL(D.url);D.url='';D.blob=null;}render();return true;
+      case'pbface':set('face',data.v);return true;
+      case'pbdcat':if(DECO_CATS.some(c=>c.id===data.v)){D.dcat=data.v;render();}return true;
+      case'pbdeco':if(D.base&&edit().add(data.v))sfx('mark');return true;
+      case'pbedundo':edit().undo();return true;
+      case'pbedfront':edit().front();return true;
+      case'pbeddel':edit().remove();return true;
+      case'pbedclear':edit().clear();return true;
+      case'pbagain':D.step='room';D.shots=[];D.say=pick(SHOOTER.room);D.base=null;edit().reset();if(D.url){URL.revokeObjectURL(D.url);D.url='';D.blob=null;}render();return true;
     }
     return false;
   }
@@ -455,8 +506,17 @@ export function setup(ctx){
 
   /* ---- test hooks (scripts/browser_fair_booth.py) ---- */
   globalThis.__fairBooth={state:()=>({shared:shared(),step:D.step,mode:D.mode,me:D.me,room:D.room&&{...D.room},ticket:D.ticket,ready:D.ready,shots:D.shots.length,url:!!D.url,frame:frameId(),bg:bgId(),filter:D.filter,stickers:[...D.stickers],
-      pose:mine()?.pose||D.pose,text:D.text,date:D.date,count:D.count}),
-    print:(scale=1)=>printCanvas(scale).toDataURL('image/png')};
+      pose:mine()?.pose||D.pose,face:mine()?.face||D.face,text:D.text,date:D.date,count:D.count,dirty:D.dirty,
+      deco:{n:edit().items.length,sel:edit().sel,undo:edit().canUndo(),items:edit().items.map(it=>({...it}))}}),
+    /** The editor's stickers on screen (CSS px of the viewport): centre, box side, turn, the ↻ and ✕ handles. */
+    decoOnScreen:()=>{const cv=S.dlg?.querySelector('.fh-pb-ed');if(!cv)return [];const b=cv.getBoundingClientRect(),W=b.width;
+      return edit().items.map(it=>{const h=it.s*W*DECO_FILL/2+4,c=Math.cos(it.r),s=Math.sin(it.r),m=14,
+        pt=(sx,sy)=>[b.left+Math.min(W-m,Math.max(m,it.x*W+(sx*h)*c-(sy*h)*s)),b.top+Math.min(b.height-m,Math.max(m,it.y*W+(sx*h)*s+(sy*h)*c))];
+        return {id:it.id,x:b.left+it.x*W,y:b.top+it.y*W,side:it.s*W,r:it.r,turn:pt(1,1),del:pt(-1,-1)};});},
+    print:(scale=1)=>printCanvas(scale).toDataURL('image/png'),
+    /** The picture the save button gives (the ×3 strip with the editor's stickers), as a data URL. */
+    saved:async()=>{while((D.dirty||making)&&D.shots.length)await exportNow();const b=D.blob;if(!b)return '';
+      return await new Promise(ok=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result));fr.onerror=()=>ok('');fr.readAsDataURL(b);});}};
 
   return {view,mount,click,leave,busy,live:live_};
 }

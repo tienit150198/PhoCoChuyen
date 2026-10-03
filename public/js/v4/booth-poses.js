@@ -7,16 +7,25 @@
  *
  *   POSES            [{id, emoji, name, group}]   group false: one person; true: made together (2+ in the booth)
  *   POSE             {id: row}                    DEFAULT 'dung' (an id this build does not know is drawn as it)
- *   paintPeople(c, people, w, h) → [{x, s}]      people [{lk, g, pose, prop}] side by side in a w × h photo (origin
- *                                                its corner), whole (no head or hat cut off), not overlapping; returns
- *                                                each one's centre x and the scale
- *                                                ({scale}: no bigger than this; {measure: true}: only the scale)
- *   poseThumb(lk, g, id, size) → dataURL         a tile of the picker: this look in the pose (a group pose: with a friend)
+ *   FACES            [{id, emoji, name}]          the expressions ("Biểu cảm"), first 'auto' (= the pose's own face)
+ *   FACE, knownFace  {id: row}, id → bool         a face this build does not know is drawn as 'auto'
+ *   paintPeople(c, people, w, h) → [{x, s}]      people [{lk, g, pose, prop, face}] side by side in a w × h photo
+ *                                                (origin its corner), whole (no head, hat, raised item cut off), not
+ *                                                overlapping; returns each one's centre x and the scale
+ *                                                ({scale}: no bigger than this; {measure: true}: only the scale;
+ *                                                {sign}: the words of the sign in hand: bang_chu, and gio_bien's)
+ *   poseThumb(lk, g, id, size, face) → dataURL   a tile of the picker: this look in the pose (a group pose: with a friend)
+ *   faceThumb(lk, g, face, size) → dataURL       a tile of the face picker: this look's head and shoulders in the face
+ *
+ * A face changes the eyes, brows, mouth and cheeks (and adds its tears, zzz, 💢…); the pose keeps its arms, body and
+ * hand items. Some poses hold their own item (a teddy, balloons, a sign, an ice cream, a cup): a booth hand prop then
+ * takes the other hand, or none when both hands are busy.
  *
  * A group pose is the same id on neighbours in the booth: each one takes their part (the left of a big heart, the one
  * with the phone in a squished selfie…); a group pose with nobody next to them in it is drawn as its own solo pose.
  * Ids are short lowercase words (live/booth.py clean_id); the 1.5.1 client draws an id it does not know as 'dung'. */
 import {CANVAS,FRONT,figureOf,defaultLook,paintLegs,paintHairBack,paintTop,paintHairFront,paintAcc} from './look.js';
+import {t as tr} from './i18n.js';
 
 const {R,E,L,P,heart}=CANVAS;
 const TAU=Math.PI*2;
@@ -31,20 +40,64 @@ const ROWS=[
   ['ngau','😎','Ngầu',0],['ngai','🙈','Ngại ngùng',0],['suy_nghi','🤔','Suy nghĩ',0],['cuoi','😆','Cười lớn',0],
   ['ngac','😮','Ngạc nhiên',0],['meo','🐱','Tay mèo',0],['gong','💪','Gồng cơ',0],['hon_gio','😘','Hôn gió',0],
   ['chong_nanh','🦸','Chống nạnh',0],
+  // 1.5.2: more solo poses (some hold their own item)
+  ['om_gau','🧸','Ôm gấu',0],['cam_bong','🎈','Chùm bóng bay',0],['selfie','📱','Tự sướng',0],['xoay_vay','💃','Xoay vòng',0],
+  ['chay','🏃','Chạy bộ',0],['ngoi_xom','🧎','Ngồi xổm',0],['bong_hoa','🌼','Mặt bông hoa',0],['gio_bien','🪧','Giơ biển',0],
+  ['an_kem','🍦','Ăn kem',0],['tra_sua','🧋','Trà sữa',0],['chao','🫡','Chào',0],['bay','✈️','Máy bay',0],
+  ['u_oa','🫣','Ú òa',0],['om_tim','💝','Ôm tim',0],['vo_tay','👏','Vỗ tay',0],
   ['tim_to','💞','Tim to',1],['khoac_vai','🤝','Khoác vai',1],['dap_tay','✋','Đập tay',1],['chi_nhau','👉','Chỉ nhau',1],
   ['tua_lung','😎','Tựa lưng',1],['tua_vai','🥹','Tựa vai',1],['cung_nhay','🦘','Cùng nhảy',1],['chum_dau','🤳','Chụm đầu',1],
   ['nam_tay','🙌','Nắm tay',1],
+  ['om_nhau','🤗','Ôm nhau',1],['tau_hoa','🚂','Tàu hỏa',1],['xoa_dau','🫳','Xoa đầu',1],['cung_ly','🥂','Cụng ly',1],
 ];
 export const POSES=ROWS.map(([id,emoji,name,g])=>({id,emoji,name,group:!!g}));
 export const POSE=Object.fromEntries(POSES.map(p=>[p.id,p]));
 export const DEFAULT='dung';
 export const known=id=>typeof id==='string'&&Object.hasOwn(POSE,id);
 
+/* ---------------------------------------------------------------- the faces ("Biểu cảm"), with any pose
+ * {eyes, mouth, brows, blush, blushC (the cheeks' colour), puff (puffed cheeks), fx (head effects)} */
+const FACE_ROWS=[
+  ['auto','✨','Theo dáng'],['cuoi_hip','😊','Cười híp mắt'],['cuoi_tit','😆','Cười tít'],['lap_lanh','🤩','Mắt lấp lánh'],
+  ['mat_tim','😍','Mắt tim'],['phong_ma','🐡','Phồng má'],['le_luoi','😜','Lè lưỡi'],['khoc_nhe','😭','Khóc nhè'],
+  ['ngu_gat','😴','Ngủ gật'],['gian_doi','😤','Giận dỗi'],['do_mat','😳','Đỏ mặt'],['hoang_hot','😱','Hoảng hốt'],
+  ['ngo_ngac','❓','Ngơ ngác'],['hon','😚','Chu môi'],['mat_meo','😺','Mặt mèo'],
+];
+export const FACES=FACE_ROWS.map(([id,emoji,name])=>({id,emoji,name}));
+export const FACE=Object.fromEntries(FACES.map(f=>[f.id,f]));
+export const knownFace=id=>typeof id==='string'&&Object.hasOwn(FACE,id);
+const FACE_SPEC={
+  cuoi_hip:{eyes:'happy',mouth:'bigsmile',blush:.7},
+  cuoi_tit:{eyes:'laugh',mouth:'laugh',blush:.5,fx:['joytears']},
+  lap_lanh:{eyes:'star',mouth:'grin',blush:.4,fx:['fsparkle']},
+  mat_tim:{eyes:'heart',mouth:'grin',blush:.8,fx:['fhearts']},
+  phong_ma:{eyes:'sulk',mouth:'pucker',blush:.9,puff:1},
+  le_luoi:{eyes:'wink',mouth:'tongue_out',blush:.4},
+  khoc_nhe:{eyes:'cry',mouth:'wail',brows:'worry',blush:.6,fx:['tears']},
+  ngu_gat:{eyes:'sleep',mouth:'smallo',fx:['bubble','zzz']},
+  gian_doi:{eyes:'angry',mouth:'frown',brows:'angry',blush:.8,blushC:'#f08484',fx:['anger']},
+  do_mat:{eyes:'big',mouth:'wavy',brows:'worry',blush:1.6,blushC:'#ff8593',fx:['blushlines']},
+  hoang_hot:{eyes:'round',mouth:'scream',brows:'worry',fx:['sweat']},
+  ngo_ngac:{eyes:'dot',mouth:'smallo',brows:'up',fx:['qmark']},
+  hon:{eyes:'closed',mouth:'pucker3',blush:1,fx:['fheart1']},
+  mat_meo:{eyes:'happy',mouth:'cat',blush:.6,fx:['whiskers']},
+};
+// the pose's own face effects that go when a face is chosen (the face brings its own)
+const POSE_FACE_FX={shine:1,blushlines:1,whiskers:1,ha:1,shock:1,twinkle:1};
+function withFace(sp,face){
+  const f=FACE_SPEC[face];if(!f)return sp;
+  return {...sp,eyes:f.eyes,mouth:f.mouth,brows:f.brows||null,blush:f.blush||0,blushC:f.blushC||null,puff:!!f.puff,shades:false,
+    fx:[...sp.fx.filter(x=>!POSE_FACE_FX[Array.isArray(x)?x[0]:x]),...(f.fx||[])]};
+}
+
 /* ---------------------------------------------------------------- pose specs
  * {arms: {l, r}, tilt, lean, lift, step, eyes, mouth, blush, brows, shades, fx}
  *   arm  null (resting at the side) | 'hide' (behind a friend) | {e: elbow, h: hand, hand: 'fist'|'open'|'v'|'thumb'|
  *        'point'|'fheart'|'paw'|'flat'|'phone', dir (the fingers' angle, default along the forearm), layer: 'mid'
- *        (over the body, behind the head) | 'front' | 'over' (over the friend next to them), muscle}
+ *        (over the body, behind the head) | 'front' | 'over' (over the friend next to them), muscle, keep (it holds the
+ *        pose's own item: a booth prop never takes this hand)}
+ *   items [{k: 'teddy'|'balloons'|'sign'|'cone'|'cup'|'pillow', x, y, layer, side, rot}]  held by the arm on `side`
+ *   legs 'run'|'squat' (drawn here, else look.js paintLegs), sit (squat: the body is that much lower), twirl (a flared hem)
  *   points in the character's own units: feet at 0, up negative, shoulders at (±20, -44), the face around (0, -77). */
 const A=(e,h,hand='fist',o={})=>({e,h,hand,...o});
 const BASE={arms:{l:null,r:null},tilt:0,lean:0,lift:0,step:0,eyes:'open',mouth:'smile',blush:0,brows:null,shades:false,fx:[]};
@@ -73,6 +126,24 @@ const SOLO={
   gong:()=>({both:1,arms:{l:A([-47,-48],[-45,-74],'fist',{muscle:1}),r:A([47,-48],[45,-74],'fist',{muscle:1})},mouth:'grin',brows:'cool',fx:['sparkle']}),
   hon_gio:()=>({arms:{r:A([29,-46],[14,-62],'flat',{dir:-1.2})},eyes:'closed',mouth:'kiss',tilt:.08,fx:['kiss']}),
   chong_nanh:()=>({arms:HIPS,mouth:'grin',tilt:.06,eyes:'wink'}),
+  om_gau:()=>({arms:{l:A([-32,-26],[-13,-19],'fist',{keep:1}),r:A([32,-28],[13,-23],'fist',{keep:1})},items:[{k:'teddy',x:0,y:-24}],
+    eyes:'happy',mouth:'cat',blush:.9,tilt:.09,fx:['hearts']}),
+  cam_bong:()=>({arms:{r:A([40,-50],[38,-74],'fist',{keep:1})},items:[{k:'balloons',x:38,y:-74,layer:'mid',side:1}],eyes:'big',mouth:'grin',tilt:-.06}),
+  selfie:()=>({arms:{l:A([-42,-70],[-47,-102],'phone',{layer:'mid',dir:-1.62}),r:A([36,-46],[33,-72],'v',{dir:-1.68})},tilt:-.1,eyes:'wink',mouth:'grin'}),
+  xoay_vay:()=>({twirl:1,step:3,arms:{l:A([-40,-58],[-56,-74],'open',{dir:-2.4}),r:A([40,-54],[57,-66],'open',{dir:-.78})},tilt:.1,eyes:'happy',mouth:'laugh',fx:['swirl']}),
+  chay:()=>({legs:'run',lean:-.05,arms:{l:A([-38,-34],[-27,-56]),r:A([38,-40],[46,-22])},tilt:-.05,eyes:'big',mouth:'grin',fx:['speed']}),
+  ngoi_xom:()=>({sit:14,legs:'squat',arms:{l:A([-38,-30],[-27,-37]),r:A([37,-46],[36,-74],'v',{dir:-1.6})},tilt:.1,eyes:'happy',mouth:'grin',blush:.5}),
+  bong_hoa:()=>({both:1,arms:{l:A([-34,-32],[-15,-51],'open',{dir:-2.25}),r:A([34,-32],[15,-51],'open',{dir:-.89})},tilt:.07,eyes:'happy',mouth:'grin',blush:.8,fx:['sparkle']}),
+  gio_bien:()=>({arms:{l:A([-44,-94],[-32,-124],'fist',{layer:'mid',keep:1}),r:A([44,-94],[32,-124],'fist',{layer:'mid',keep:1})},items:[{k:'sign',x:0,y:-138}],
+    eyes:'happy',mouth:'laugh'}),
+  an_kem:()=>({arms:{r:A([46,-30],[39,-45],'fist',{keep:1})},items:[{k:'cone',x:39,y:-54,side:1}],tilt:.1,eyes:'happy',mouth:'tongue',blush:.5}),
+  tra_sua:()=>({arms:{r:A([40,-30],[20,-25],'fist',{keep:1}),l:A([-37,-58],[-41,-86],'v',{dir:-1.45})},items:[{k:'cup',x:10,y:-30,rot:.1,side:1}],tilt:-.06,eyes:'wink',mouth:'cat'}),
+  chao:()=>({arms:{r:A([46,-72],[27,-94],'flat',{dir:Math.PI+.22}),l:HIPS.l},tilt:-.05,eyes:'wink',mouth:'grin'}),
+  bay:()=>({lean:.08,step:3,arms:{l:A([-42,-50],[-58,-55],'flat',{dir:Math.PI+.1}),r:A([42,-46],[58,-42],'flat',{dir:.06})},tilt:.06,eyes:'happy',mouth:'grin',fx:['speedL']}),
+  u_oa:()=>({both:1,arms:{l:A([-36,-48],[-12,-79],'open',{dir:-1.8}),r:A([36,-48],[12,-79],'open',{dir:-1.34})},tilt:.08,mouth:'grin',blush:.8}),
+  om_tim:()=>({arms:{l:A([-32,-27],[-13,-22],'fist',{keep:1}),r:A([32,-29],[13,-27],'fist',{keep:1})},items:[{k:'pillow',x:0,y:-19}],
+    eyes:'happy',mouth:'cat',blush:1,tilt:-.08,fx:['hearts']}),
+  vo_tay:()=>({both:1,arms:{l:A([-34,-30],[-5,-42],'flat',{dir:-1.36}),r:A([34,-30],[5,-42],'flat',{dir:-1.78})},eyes:'happy',mouth:'laugh',tilt:.05,fx:['claps']}),
 };
 /* Group poses. type 'pair': neighbours two by two (the left 'a', the right 'b'); 'chain': each one with whoever is next
  * to them. gap: the distance between the two (units), so arms meet; alone: the solo pose of someone left without. */
@@ -105,6 +176,23 @@ const GROUP={
   nam_tay:{type:'chain',gap:92,alone:'hoan_ho',f:r=>({arms:{
       r:A([36,-72],[46,-102],r.R?'fist':'open',{layer:'mid',dir:-1.3}),l:A([-36,-72],[-46,-102],r.L?'fist':'open',{layer:'mid',dir:-1.84})},
     eyes:'happy',mouth:'laugh',fx:r.R?[['join',46,-104]]:[]})},
+  // 1.5.2
+  om_nhau:{type:'chain',gap:74,alone:'om_gau',f:r=>({arms:{
+      r:r.R?'hide':A([36,-58],[40,-88],'v',{dir:-1.6}),
+      l:r.L?A([-41,-49],[-58,-42],'fist',{layer:'over'}):A([-36,-58],[-40,-88],'v',{dir:-1.54})},
+    tilt:inward(r)*.14,lean:inward(r)*.03,eyes:'happy',mouth:'grin',blush:.9,fx:r.R?[['miniheart',37,-122]]:[]})},
+  tau_hoa:{type:'chain',gap:80,alone:'chay',f:r=>({lean:-.03,step:r.i%2?4:-4,arms:{
+      l:r.L?A([-40,-50],[-57,-47],'flat',{layer:'over',dir:Math.PI}):A([-40,-66],[-36,-96],'fist'),
+      r:r.R?null:A([40,-56],[48,-82],'open',{dir:-1.3})},
+    eyes:r.L?'happy':'big',mouth:r.L?'grin':'o',fx:r.L?(r.R?[]:['speed']):[['puff',-34,-128]]})},
+  xoa_dau:{type:'pair',gap:74,alone:'ngoi_xom',f:r=>r.pair==='a'
+    ?{sit:14,legs:'squat',arms:{l:A([-37,-46],[-38,-74],'v',{dir:-1.6}),r:A([38,-30],[27,-37])},eyes:'happy',mouth:'cat',blush:1,tilt:.1}
+    :{lean:-.04,arms:{l:A([-44,-80],[-62,-100],'flat',{layer:'over',dir:Math.PI+.12}),r:A([38,-38],[44,-56],'thumb')},eyes:'wink',mouth:'grin',tilt:-.08}},
+  cung_ly:{type:'chain',gap:84,alone:'tra_sua',f:r=>{
+    const arms={},items=[];
+    if(r.R){arms.r=A([43,-66],[33,-90],'fist',{keep:1});items.push({k:'cup',x:34.5,y:-103,rot:.28,side:1});}
+    if(r.L){arms.l=A([-43,-66],[-33,-90],'fist',{keep:1});items.push({k:'cup',x:-34.5,y:-103,rot:-.28,side:-1});}
+    return {arms,items,eyes:'happy',mouth:'laugh',fx:r.R?[['clink',42,-126]]:[]};}},
 };
 function solo(id){const f=SOLO[id]||SOLO[DEFAULT];const s=f();return {...BASE,...s,arms:{...BASE.arms,...(s.arms||{})},fx:s.fx||[]};}
 function group(id,role){const g=GROUP[id],s=g.f(role);return {...BASE,...s,arms:{...BASE.arms,...(s.arms||{})},fx:s.fx||[]};}
@@ -163,6 +251,13 @@ function handProp(c,id,[hx,hy],side,skin,sign){
  * sign takes both hands. */
 function withProp(sp,prop){
   if(!HAND[prop])return {sp,hold:null};
+  // a hand holding the pose's own item keeps it: the prop takes the other hand, or none (the pose's item wins)
+  const kept=a=>!!(a&&a!=='hide'&&a.keep),kl=kept(sp.arms.l),kr=kept(sp.arms.r);
+  if(kl||kr){
+    if(prop==='bang_chu'||kl&&kr)return {sp,hold:null};
+    const side=kr?-1:1,arms=side>0?{l:sp.arms.l,r:null}:{l:null,r:sp.arms.r};
+    return {sp:{...sp,arms},hold:{at:[side*25,-36],side}};
+  }
   if(prop==='bang_chu')return {sp:{...sp,arms:{l:null,r:null}},hold:{at:[0,-36],side:1}};
   if(sp.arms.r==null)return {sp,hold:{at:[25,-36],side:1}};
   if(sp.arms.l==null)return {sp,hold:{at:[-25,-36],side:-1}};
@@ -178,13 +273,24 @@ function withProp(sp,prop){
 /* ---------------------------------------------------------------- the face */
 function shades(c){R(c,-21,-85,19,13,'#1d1d24',6);R(c,2,-85,19,13,'#1d1d24',6);L(c,-2,-80,2,-80,'#1d1d24',2);L(c,-17,-82,-12,-82,'#ffffff70',1.5);L(c,6,-82,11,-82,'#ffffff50',1.5);}
 function stroke(c,col,w,fn){c.strokeStyle=col;c.lineWidth=w;c.lineCap='round';c.lineJoin='round';c.beginPath();fn();c.stroke();}
-function eyes(c,kind){
+function eyes(c,kind,F){
   const open=(ex,dx=0,dy=0,k=1)=>{E(c,ex+dx,-78+dy,5*k,7*k,INK);E(c,ex+dx-1.3*k,-80.4+dy,1.8*k,2.3*k,'#fffdf3');E(c,ex+dx+1,-75+dy,1,1,'#d7b895');};
   const happy=ex=>stroke(c,INK,2.6,()=>c.arc(ex,-75,5.2,Math.PI*1.1,Math.PI*1.9));
   const closed=ex=>stroke(c,INK,2.4,()=>c.arc(ex,-80,5,Math.PI*.12,Math.PI*.88));
+  const skin=F?.skin?.face||'#f8dcc2';
   for(const ex of [-11,11]){
-    const right=ex>0;
+    const right=ex>0,inner=right?-1:1;
     switch(kind){
+      case'star':starShape(c,ex,-78,9,4.3,INK);starShape(c,ex,-78,7,3.3,'#ffcf3d');E(c,ex-1.6,-80.2,1.4,1.4,'#fffdf3');break;
+      case'heart':heart(c,ex,-75.2,.5,'#b8264c');heart(c,ex,-75.4,.42,'#ff4f7b');E(c,ex-3.2,-80,1.6,1.2,'#ffffffcc');break;
+      case'round':E(c,ex,-78,6.6,7.8,INK);E(c,ex,-78,5.2,6.4,'#ffffff');E(c,ex+inner*.6,-77.6,1.9,2.1,INK);break;
+      case'dot':E(c,ex,-77.5,2.7,3.2,INK);E(c,ex-.8,-78.6,.8,.8,'#fffdf3');break;
+      case'sleep':stroke(c,INK,2.4,()=>{c.moveTo(ex-5.5,-78);c.quadraticCurveTo(ex,-74,ex+5.5,-78);});
+        stroke(c,INK,1.4,()=>{c.moveTo(ex-4.5*inner-.5*inner,-77);c.lineTo(ex-7*inner,-75.5);});break;
+      case'cry':stroke(c,INK,2.6,()=>{c.moveTo(ex-6,-80);c.quadraticCurveTo(ex,-77.5,ex+6,-80);});break;
+      case'angry':open(ex,inner*.5,1);P(c,[[ex-8,-85.6],[ex+8,-85.6],[ex+8,inner>0?-77:-84],[ex-8,inner>0?-84:-77]],skin);
+        L(c,ex-6.5,inner>0?-83.4:-78.6,ex+6.5,inner>0?-78.6:-83.4,INK,2);break;
+      case'sulk':open(ex,-2,1);P(c,[[ex-8,-85.6],[ex+8,-85.6],[ex+8,-79.5],[ex-8,-79.5]],skin);L(c,ex-6,-79.5,ex+6,-79.5,INK,2);break;
       case'wink':right?happy(ex):open(ex);break;
       case'happy':happy(ex);break;
       case'closed':closed(ex);break;
@@ -200,6 +306,8 @@ function brows(c,kind,F){
   const col=F.hair;
   if(kind==='up'){for(const s of [-1,1])stroke(c,col,2.2,()=>c.arc(s*11,-88,6,Math.PI*1.2,Math.PI*1.8));return;}
   if(kind==='cool'){L(c,-17,-91,-6,-88,col,2.4);L(c,6,-88,17,-91,col,2.4);return;}
+  if(kind==='angry'){L(c,-17,-93,-5,-87,col,2.8);L(c,5,-87,17,-93,col,2.8);return;}
+  if(kind==='worry'){L(c,-17,-88,-6,-92,col,2.4);L(c,6,-92,17,-88,col,2.4);return;}
   if(F.g==='male'){L(c,-16,-89,-6,-90,col,2.4);L(c,6,-90,16,-89,col,2.4);}
 }
 function mouth(c,kind){
@@ -213,6 +321,15 @@ function mouth(c,kind){
     case'kiss':E(c,0,-64.5,2.4,2.6,'#d8707c');E(c,-.6,-65.2,.8,.9,'#f3b0b8');break;
     case'flat':L(c,-3.5,-64.6,3.5,-65.4,LIP,1.8);break;
     case'wavy':stroke(c,LIP,1.6,()=>{c.moveTo(-5,-64.5);c.quadraticCurveTo(-3.3,-66.5,-1.7,-64.5);c.quadraticCurveTo(0,-62.5,1.7,-64.5);c.quadraticCurveTo(3.3,-66.5,5,-64.5);});break;
+    case'bigsmile':c.beginPath();c.moveTo(-9,-67.5);c.quadraticCurveTo(0,-52,9,-67.5);c.closePath();c.fillStyle=MOUTH;c.fill();E(c,0,-59.4,4.2,2.6,TONGUE);break;
+    case'tongue_out':c.beginPath();c.moveTo(-6.5,-67);c.quadraticCurveTo(0,-59.5,6.5,-67);c.closePath();c.fillStyle=MOUTH;c.fill();
+      E(c,1.8,-60,3.8,5,TONGUE);L(c,1.8,-62.6,1.8,-58,'#d8677c',1.1);break;
+    case'wail':c.beginPath();c.moveTo(-7.5,-58.5);c.quadraticCurveTo(0,-73,7.5,-58.5);c.quadraticCurveTo(0,-61.5,-7.5,-58.5);c.fillStyle=MOUTH;c.fill();E(c,0,-60.2,3,1.4,TONGUE);break;
+    case'frown':stroke(c,LIP,2,()=>{c.moveTo(-5,-61.5);c.quadraticCurveTo(0,-67,5,-61.5);});break;
+    case'pucker':E(c,0,-63.2,3,2.4,'#d8707c');L(c,-1.6,-63.2,1.6,-63.2,'#b55764',1);break;
+    case'pucker3':stroke(c,'#c65a6a',1.9,()=>{c.moveTo(-1.5,-68);c.quadraticCurveTo(3.5,-67,1,-64.2);c.quadraticCurveTo(3.5,-61.5,-1.5,-60.5);});E(c,5.5,-64.2,1.2,1.2,'#ffb3c3');break;
+    case'scream':E(c,0,-61,5,7.2,MOUTH);E(c,0,-57,3.2,2.2,TONGUE);break;
+    case'smallo':E(c,0,-63,2.4,2.8,MOUTH);break;
     default:CANVAS.stroke(c,'M4 -66A4 4 0 0 1 -4 -66',LIP,1.6);
   }
 }
@@ -250,7 +367,39 @@ function drawArm(c,F,side,a){
 const armsOf=(sp,layer)=>[[-1,sp.arms.l],[1,sp.arms.r]].filter(([,a])=>a&&a!=='hide'&&(a.layer||'front')===layer);
 
 /* ---------------------------------------------------------------- effects around a person */
-const FX_LAYER={bigheart:'mid',whiskers:'head',blushlines:'head',shine:'head',clap:'over',join:'over',zap:'over'};
+const FX_LAYER={bigheart:'mid',whiskers:'head',blushlines:'head',shine:'head',clap:'over',join:'over',zap:'over',
+  tears:'head',joytears:'head',bubble:'head',fsparkle:'top',fhearts:'top',fheart1:'top',zzz:'top',anger:'top',sweat:'top',qmark:'top',
+  miniheart:'over',clink:'over',puff:'mid'};
+function drop(c,x,y,k,fill){c.beginPath();c.moveTo(x,y-8*k);c.bezierCurveTo(x+6*k,y-1*k,x+5*k,y+5*k,x,y+5*k);c.bezierCurveTo(x-5*k,y+5*k,x-6*k,y-1*k,x,y-8*k);
+  c.fillStyle=fill;c.fill();c.strokeStyle='#ffffff';c.lineWidth=1.4;c.stroke();E(c,x-1.6*k,y,1.1*k,1.8*k,'#ffffffcc');}
+function word(c,s,x,y,size,fill){c.font=`900 ${size}px "Trebuchet MS",sans-serif`;c.textAlign='center';c.textBaseline='middle';c.lineJoin='round';
+  c.strokeStyle='#ffffff';c.lineWidth=3;c.strokeText(s,x,y);c.fillStyle=fill;c.fillText(s,x,y);}
+/** The new effects (faces and the 1.5.2 poses). */
+function effect2(c,k,x,y){
+  switch(k){
+    case'tears':for(const s of [-1,1]){const tx=s*11;R(c,tx-3.2,-76,6.4,22,'#8fd3ffdd',3.2);L(c,tx-1,-73,tx-1,-58,'#ffffffaa',1.2);E(c,tx+s*2,-53,4.6,2.6,'#8fd3ffcc');}break;
+    case'joytears':for(const s of [-1,1])drop(c,s*20,-77,.62,'#8fd3ff');break;
+    case'bubble':E(c,9,-66,5.4,5.4,'#cfeaffcc');stroke(c,'#8fc4e8',1,()=>c.arc(9,-66,5.4,0,TAU));E(c,7.2,-67.8,1.5,1.2,'#ffffff');break;
+    case'fsparkle':for(const [sx,sy,s] of [[-38,-102,5.5],[39,-98,6.5],[31,-124,4]]){sparkle(c,sx,sy,s+1.4,'#ffffff');sparkle(c,sx,sy,s,'#ffcf3d');}break;
+    case'fhearts':for(const [hx,hy,s] of [[-36,-104,.26],[38,-108,.32],[27,-126,.2]]){heart(c,hx,hy,s+.06,'#ffffff');heart(c,hx,hy,s,'#ff4f7b');}break;
+    case'fheart1':heart(c,31,-60,.32,'#ffffff');heart(c,31,-60,.26,'#ff4f7b');break;
+    case'zzz':word(c,'z',31,-104,10,'#6f86c4');word(c,'Z',40,-115,13,'#6f86c4');word(c,'Z',50,-129,16,'#6f86c4');break;
+    case'anger':for(const [sx,sy] of [[-1,-1],[1,-1],[-1,1],[1,1]])for(const [col,w] of [['#ffffff',4.6],['#e8433a',2.4]])
+      stroke(c,col,w,()=>{c.moveTo(26+sx*2,-106+sy*7);c.quadraticCurveTo(26+sx*2,-106+sy*2,26+sx*7,-106+sy*2);});break;
+    case'sweat':drop(c,-30,-94,1.25,'#8fd3ff');break;
+    case'qmark':word(c,'?',37,-114,22,'#8a6a58');break;
+    case'swirl':stroke(c,'#8a6a58aa',1.8,()=>c.ellipse(0,-10,42,9,0,Math.PI*.12,Math.PI*.88));stroke(c,'#8a6a58aa',1.8,()=>c.ellipse(0,-14,46,11,0,Math.PI*1.08,Math.PI*1.32));
+      stroke(c,'#8a6a58aa',1.8,()=>c.ellipse(0,-14,46,11,0,Math.PI*1.68,Math.PI*1.92));sparkle(c,-40,-30,4.4,'#ffcf3d');sparkle(c,42,-26,3.6,'#ffcf3d');break;
+    case'speed':for(const [sy,x0,x1] of [[-6,28,46],[-15,31,51],[-36,54,64]])L(c,x0,sy,x1,sy,'#8a6a5877',2.4);break;
+    case'speedL':for(const [sy,x0,x1] of [[-6,-28,-46],[-15,-31,-51],[-26,-34,-50]])L(c,x0,sy,x1,sy,'#8a6a5877',2.4);break;
+    case'claps':for(const s of [-1,1]){L(c,s*12,-54,s*19,-61,'#ffb020',2.4);L(c,s*15,-46,s*24,-48,'#ffb020',2.4);}
+      sparkle(c,-30,-62,4,'#ffcf3d');sparkle(c,31,-66,3.4,'#ffcf3d');break;
+    case'miniheart':heart(c,x,y,.4,'#ffffff');heart(c,x,y,.32,'#ff5c8a');break;
+    case'puff':for(const [px,py,r] of [[x,y,8],[x-11,y+5,6],[x+8,y-9,6.5],[x-6,y-13,4.5]]){E(c,px,py,r+1.4,r+1.2,'#d9cfc6');}
+      for(const [px,py,r] of [[x,y,8],[x-11,y+5,6],[x+8,y-9,6.5],[x-6,y-13,4.5]])E(c,px,py,r,r-.2,'#ffffff');break;
+    case'clink':sparkle(c,x,y,8,'#ffffff');sparkle(c,x,y,6,'#ffcf3d');for(const a of [-2.2,-1.57,-.94])L(c,x+Math.cos(a)*10,y+Math.sin(a)*10,x+Math.cos(a)*15,y+Math.sin(a)*15,'#ffb020',2);break;
+  }
+}
 function effect(c,k,x,y){
   switch(k){
     case'sparkle':for(const [sx,sy,s] of [[-42,-112,6],[44,-104,5],[-48,-80,4],[40,-128,3.5]]){sparkle(c,sx,sy,s+1.4,'#ffffff');sparkle(c,sx,sy,s,'#ffcf3d');}break;
@@ -271,50 +420,148 @@ function effect(c,k,x,y){
     case'clap':for(let i=0;i<8;i++){const a=i*TAU/8;L(c,x+Math.cos(a)*11,y+Math.sin(a)*11,x+Math.cos(a)*17,y+Math.sin(a)*17,'#ffb020',2.4);}sparkle(c,x,y-2,6,'#fff6cf');break;
     case'join':sparkle(c,x,y-12,6,'#ffffff');sparkle(c,x,y-12,4.4,'#ffcf3d');break;
     case'zap':for(const a of [-.5,0,.5])L(c,x+Math.cos(a)*4,y+Math.sin(a)*4,x+Math.cos(a)*10,y+Math.sin(a)*10,'#ff7a59',2);break;
+    default:effect2(c,k,x,y);
   }
 }
 function effects(c,sp,layer){for(const f of sp.fx){const [k,x=0,y=0]=Array.isArray(f)?f:[f];if((FX_LAYER[k]||'front')===layer)effect(c,k,x,y);}}
 
+/* ---------------------------------------------------------------- the poses' own items, legs and hems */
+// [left, right, top] of each item around its point (top: how far up it reaches)
+const ITEM_BOX={teddy:[-18,18,24],balloons:[-24,34,70],sign:[-40,40,15],cone:[-10,10,25],cup:[-10,12,33],pillow:[-23,23,27]};
+function teddy(c,x,y){
+  const fur='#c98f62',lt='#f3d2a8',dk='#5a3a2a';
+  E(c,x,y+7,12.5,11.5,fur);E(c,x,y+9,7,6.5,lt);
+  for(const s of [-1,1]){E(c,x+s*9.5,y-18,5,5,fur);E(c,x+s*9.5,y-18,2.6,2.6,lt);E(c,x+s*8,y+17,4.6,3.4,fur);}
+  E(c,x,y-9,12.5,11,fur);E(c,x,y-5,5.2,3.9,lt);E(c,x,y-6.6,1.9,1.4,dk);
+  E(c,x-5,y-11,1.6,1.9,dk);E(c,x+5,y-11,1.6,1.9,dk);E(c,x-8.5,y-6,2,1.2,'#f29a9a99');E(c,x+8.5,y-6,2,1.2,'#f29a9a99');
+  P(c,[[x,y+2],[x-6.5,y-1.5],[x-6.5,y+5.5]],'#ff6f9f');P(c,[[x,y+2],[x+6.5,y-1.5],[x+6.5,y+5.5]],'#ff6f9f');E(c,x,y+2,2,2,'#e2507a');
+}
+function balloons(c,x,y){
+  for(const [bx,by,col] of [[-12,-46,'#ff7aa2'],[22,-38,'#6ec6f0'],[7,-56,'#ffd166']]){
+    stroke(c,'#9c7b6a',1.1,()=>{c.moveTo(x,y);c.quadraticCurveTo(x+bx*.2,y+by*.5,x+bx,y+by+13);});
+    E(c,x+bx,y+by,10.5,12.5,col);P(c,[[x+bx-2.6,y+by+14],[x+bx+2.6,y+by+14],[x+bx,y+by+11]],col);E(c,x+bx-3.6,y+by-4.5,2.6,4.4,'#ffffff88');
+  }
+}
+function signItem(c,x,y,text){
+  R(c,x-38,y-13,76,26,'#fffaf0',7,'#c79879',2.2);
+  heart(c,x-28,y+1.6,.28,'#ff6f9f');heart(c,x+28,y+1.6,.28,'#ff6f9f');
+  c.font='900 12px "Trebuchet MS",sans-serif';c.fillStyle='#d0567f';c.textAlign='center';c.textBaseline='middle';c.fillText(text,x,y+.5,44);
+}
+function cone(c,x,y){
+  P(c,[[x-7.5,y-7],[x+7.5,y-7],[x,y+10]],'#e3a75e');
+  stroke(c,'#c4843f',1,()=>{c.moveTo(x-5,y-6);c.lineTo(x+2,y+5);c.moveTo(x+5,y-6);c.lineTo(x-2,y+5);c.moveTo(x-1,y-6.5);c.lineTo(x+4,y);c.moveTo(x+1,y-6.5);c.lineTo(x-4,y);});
+  E(c,x,y-13,9,8,'#ffc0d2');E(c,x-5,y-7.5,2.6,3,'#ffc0d2');E(c,x+1.5,y-7,2.4,3.4,'#ffc0d2');E(c,x+5.6,y-8,2.2,2.6,'#ffc0d2');
+  E(c,x-3,y-16.5,2.6,1.7,'#ffffffaa');E(c,x+1.5,y-21.5,2.8,2.8,'#e2574c');E(c,x+.6,y-22.5,.9,.9,'#ffffffaa');
+  for(const [sx,sy,col] of [[-4,-12,'#6ec6f0'],[3,-15,'#ffd166'],[5,-11,'#9cc58a']])L(c,x+sx,y+sy,x+sx+1.6,y+sy-.8,col,1.4);
+}
+function cup(c,x,y,rot=0){
+  c.save();c.translate(x,y);c.rotate(rot);
+  L(c,2,-15,4.5,-26,'#ff7aa2',3.2);
+  P(c,[[-8.5,-14],[8.5,-14],[6.8,11],[-6.8,11]],'#e9e4f2');P(c,[[-7.5,-9],[7.5,-9],[6.2,10],[-6.2,10]],'#e5bf95');
+  for(const [px,py] of [[-3.6,7],[0,7.6],[3.6,7],[-1.8,4],[1.8,4]])E(c,px,py,1.7,1.7,'#4a3028');
+  E(c,0,-15,9.2,3.2,'#ffffff');E(c,0,-15.4,6.4,4.6,'#ffffffcc');L(c,-5.6,-7,-4.6,7,'#ffffff88',1.4);
+  c.restore();
+}
+function pillow(c,x,y){heart(c,x,y,1.46,'#ffffff');heart(c,x,y,1.32,'#ff7aa2');heart(c,x,y-3,.62,'#ffa6c2');E(c,x-10,y-17,3.4,2.4,'#ffffffaa');}
+function drawItem(c,it,sign){
+  switch(it.k){
+    case'teddy':teddy(c,it.x,it.y);break;
+    case'balloons':balloons(c,it.x,it.y);break;
+    case'sign':signItem(c,it.x,it.y,sign);break;
+    case'cone':cone(c,it.x,it.y);break;
+    case'cup':cup(c,it.x,it.y,it.rot||0);break;
+    case'pillow':pillow(c,it.x,it.y);break;
+  }
+}
+// an item held by one hand goes with that hand (a booth prop may have taken it)
+const itemsOf=(sp,layer)=>(sp.items||[]).filter(it=>(it.layer||'front')===layer&&(!it.side||(it.side>0?sp.arms.r:sp.arms.l)&&(it.side>0?sp.arms.r:sp.arms.l)!=='hide'));
+function limb(c,pts,col,w=15){c.strokeStyle=col;c.lineWidth=w;c.lineCap='round';c.lineJoin='round';c.beginPath();pts.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.stroke();}
+function shoe(c,F,x,y,rot=0){const s=F.shoes;c.save();c.translate(x,y);c.rotate(rot);if(s.tall)R(c,-8.5,-11,17,15,s.c,5);R(c,-9.5,s.flat?-3:-5,19,s.flat?7:10,s.c,5,s.line||null,1.2);c.restore();}
+/** Running: the right foot down, the left knee up (the foot off the ground). */
+function runLegs(c,F){
+  const b=F.bottom,sk=F.skin.hand,bare=b.short||b.skirt,col=bare?sk:b.c;
+  limb(c,[[11.5,-16],[12.5,-8]],col);shoe(c,F,12.5,-2);
+  limb(c,[[-11.5,-16],[-14,-12],[-17,-12]],col);shoe(c,F,-19,-9,-.32);
+  if(b.short){limb(c,[[11.5,-17],[11.8,-13]],b.c,17);limb(c,[[-11.5,-17],[-13,-14]],b.c,17);}
+  if(b.skirt==='flare')P(c,[[-21,-24],[21,-24],[28,-9],[-28,-9]],b.c);
+  if(b.skirt==='long'){P(c,[[-21,-24],[21,-24],[25,-7],[-25,-7]],b.c);for(const [x,y] of [[-14,-14],[0,-10],[13,-16],[-6,-19],[8,-9]])E(c,x,y,1.8,1.8,'#fff8ee');}
+  if(F.top.long)P(c,[[-17,-22],[17,-22],[13,-5],[-13,-5]],F.topC);
+}
+/** Squatting, drawn over the (lowered) body: the knees up and out, the feet under them. Behind: a skirt, áo dài flaps. */
+function squatBack(c,F){
+  const b=F.bottom;
+  if(b.skirt)P(c,[[-22,-16],[22,-16],[32,-1],[-32,-1]],b.c);
+  if(F.top.long)P(c,[[-17,-16],[17,-16],[14,-1],[-14,-1]],F.topC);
+}
+function squatLegs(c,F){
+  const b=F.bottom,sk=F.skin.hand,bare=b.short||b.skirt;
+  for(const s of [-1,1]){
+    shoe(c,F,s*18,-3,s*.12);
+    limb(c,[[s*19,-7],[s*25,-21]],bare?sk:b.c);
+    limb(c,[[s*8,-9],[s*25,-21]],b.skirt?sk:b.c,16);
+    if(b.short)limb(c,[[s*8,-9],[s*16,-15]],b.c,18);
+    E(c,s*25.5,-22,8.4,7.6,b.skirt||b.short?sk:b.c);
+  }
+}
+/** Twirling: the skirt (or áo dài) flares out, with a wavy hem. */
+function twirl(c,F){
+  const b=F.bottom,col=b.skirt?b.c:F.top.long?F.topC:null;if(!col)return;
+  c.beginPath();c.moveTo(-20,-27);c.lineTo(20,-27);c.quadraticCurveTo(33,-17,42,-7);
+  const xs=[42,25,8,-9,-25,-42];for(let i=0;i<5;i++)c.quadraticCurveTo((xs[i]+xs[i+1])/2,i%2?-11:-2,xs[i+1],-7);
+  c.quadraticCurveTo(-33,-17,-20,-27);c.closePath();c.fillStyle=col;c.fill();
+  for(const [x0,x1] of [[-8,-17],[8,17],[0,0]])L(c,x0,-24,x1,-9,shade(col,.86),1.4);
+}
+
 /* ---------------------------------------------------------------- one person */
 function headT(c,sp,fn){c.save();if(sp.tilt){c.translate(0,-50);c.rotate(sp.tilt);c.translate(0,50);}fn();c.restore();}
 function body(c,F,sp,prop,hold,sign){
-  const sk=F.skin,K=CANVAS;
+  const sk=F.skin,K=CANVAS,sit=sp.sit||0,ink=it=>{try{drawItem(c,it,prop==='bang_chu'?sign:tr('XINH QUÁ'));}catch(e){console.warn('chụp ảnh: đồ',e);}};
   E(c,0,0,sp.lift?19:26,sp.lift?6:8,'#81644823');
   c.save();if(sp.lean)c.rotate(sp.lean);if(sp.lift)c.translate(0,-sp.lift);
-  paintLegs(c,F,sp.step,K);
+  if(sp.legs==='run')runLegs(c,F);else if(sp.legs==='squat')squatBack(c,F);else paintLegs(c,F,sp.step,K);
+  if(sp.twirl)twirl(c,F);
+  if(sit)c.translate(0,sit);
   headT(c,sp,()=>paintHairBack(c,F,K));
   R(c,-23,-52,46,36,F.topC||F.classic,15);
   if(sp.arms.l==null)E(c,-25,-36,8,14,sk.hand);
   if(sp.arms.r==null)E(c,25,-36,8,14,sk.hand);
   paintTop(c,F,K);
   if(F.L.acc==='tui_cheo')paintAcc(c,F,K);
+  if(sp.legs==='squat'){c.save();c.translate(0,-sit);squatLegs(c,F);c.restore();}
+  for(const it of itemsOf(sp,'mid'))ink(it);
   for(const [s,a] of armsOf(sp,'mid'))drawArm(c,F,s,a);
   effects(c,sp,'mid');
   headT(c,sp,()=>{
     E(c,0,-84,33,35,F.hair);E(c,-29,-71,5,8,sk.ear);E(c,29,-71,5,8,sk.ear);E(c,0,-77,29,28,sk.face);
     K.path(c,F.short?FRONT.short:FRONT.soft,F.hair);
-    const male=F.g==='male',b=sp.blush;
-    E(c,-20,-67,7+b*2.4,4+b*1.2,b?'#f29a9a':male?'#efb3a466':'#efa7a0');E(c,20,-67,7+b*2.4,4+b*1.2,b?'#f29a9a':male?'#efb3a466':'#efa7a0');
-    eyes(c,sp.eyes);brows(c,sp.brows,F);mouth(c,sp.mouth);
+    const male=F.g==='male',b=sp.blush,bc=sp.blushC||(b?'#f29a9a':male?'#efb3a466':'#efa7a0');
+    if(sp.puff){for(const s of [-1,1]){E(c,s*23.5,-64,11.4,10.6,sk.neck);E(c,s*23.2,-64,10.4,9.6,sk.face);}E(c,0,-64,20,15.5,sk.face);}
+    E(c,-20,-67,7+b*2.4,4+b*1.2,bc);E(c,20,-67,7+b*2.4,4+b*1.2,bc);
+    eyes(c,sp.eyes,F);brows(c,sp.brows,F);mouth(c,sp.mouth);
     effects(c,sp,'head');
     paintHairFront(c,F,K);if(F.L.acc!=='tui_cheo')paintAcc(c,F,K);
     if(sp.shades&&F.L.acc!=='kinh_ram'&&!EYES[prop])shades(c);
     if(HAT[prop]||EYES[prop])headProp(c,prop);
+    effects(c,sp,'top');
   });
+  for(const it of itemsOf(sp,'front'))ink(it);
   for(const [s,a] of armsOf(sp,'front'))drawArm(c,F,s,a);
   if(hold)handProp(c,prop,hold.at,hold.side,sk.hand,sign);
   effects(c,sp,'front');
   c.restore();
 }
 function over(c,F,sp){
-  c.save();if(sp.lean)c.rotate(sp.lean);if(sp.lift)c.translate(0,-sp.lift);
+  c.save();if(sp.lean)c.rotate(sp.lean);if(sp.lift)c.translate(0,-sp.lift);if(sp.sit)c.translate(0,sp.sit);
   for(const [s,a] of armsOf(sp,'over'))drawArm(c,F,s,a);
   effects(c,sp,'over');
   c.restore();
 }
 
 /* ---------------------------------------------------------------- how much room a person takes */
-const FX_EXT={sparkle:[-50,50,-134],hearts:[-40,44,-136],kiss:[-34,60,-104],think:[-34,62,-138],wave:[-34,66,-116],shock:[-32,32,-142],ha:[-50,50,-124],twinkle:[-34,38,-104]};
+const FX_EXT={sparkle:[-50,50,-134],hearts:[-40,44,-136],kiss:[-34,60,-104],think:[-34,62,-138],wave:[-34,66,-116],shock:[-32,32,-142],ha:[-50,50,-124],twinkle:[-34,38,-104],
+  fsparkle:[-46,48,-130],fhearts:[-42,44,-132],zzz:[-34,60,-139],qmark:[-34,48,-128],anger:[-34,36,-115],sweat:[-42,36,-106],fheart1:[-34,38,-80],
+  swirl:[-48,48,-40],speed:[-36,66,-40],speedL:[-53,36,-30],claps:[-36,36,-72]};
+const FX_POS={miniheart:9,puff:20,clink:16};   // the new effects at a point: how far around it they reach
 function extent(sp,prop,hold){
   let l=-36,r=36,top=124;
   for(const [,a] of [[0,sp.arms.l],[0,sp.arms.r]]){
@@ -322,24 +569,27 @@ function extent(sp,prop,hold){
     for(const [x,y] of [a.e,a.h]){l=Math.min(l,x-9);r=Math.max(r,x+9);top=Math.max(top,-y+12);}
     if(a.hand==='v'||a.hand==='point'||a.hand==='open'||a.hand==='phone'||a.hand==='fheart'){const d=a.dir??-Math.PI/2;top=Math.max(top,-a.h[1]-Math.sin(d)*18+4);l=Math.min(l,a.h[0]+Math.cos(d)*20-4);r=Math.max(r,a.h[0]+Math.cos(d)*20+4);}
   }
-  for(const f of sp.fx){const k=Array.isArray(f)?f[0]:f,x=FX_EXT[k];if(x){l=Math.min(l,x[0]);r=Math.max(r,x[1]);top=Math.max(top,-x[2]);}}
+  for(const f of sp.fx){const k=Array.isArray(f)?f[0]:f,x=FX_EXT[k];if(x){l=Math.min(l,x[0]);r=Math.max(r,x[1]);top=Math.max(top,-x[2]);}
+    const pr=FX_POS[k];if(pr&&Array.isArray(f)){l=Math.min(l,f[1]-pr);r=Math.max(r,f[1]+pr);top=Math.max(top,-f[2]+pr);}}
+  for(const it of itemsOf(sp,'mid').concat(itemsOf(sp,'front'))){const b=ITEM_BOX[it.k];if(b){l=Math.min(l,it.x+b[0]-2);r=Math.max(r,it.x+b[1]+2);top=Math.max(top,-it.y+b[2]+2);}}
+  if(sp.legs==='run')l=Math.min(l,-38);
   if(PROP_TOP[prop]){top=Math.max(top,PROP_TOP[prop]);if(prop==='non_la'){l=Math.min(l,-48);r=Math.max(r,48);}}
   if(hold){const [hx]=hold.at;if(prop==='bong_bay'){top=Math.max(top,118);r=Math.max(r,hx+30);l=Math.min(l,hx-30);}else if(prop==='long_den'){r=Math.max(r,hx+32);l=Math.min(l,hx-32);}else{l=Math.min(l,-36);r=Math.max(r,36);}}
   const tilt=Math.abs(sp.tilt)*50+Math.abs(sp.lean)*top*.8;
-  return {l:l-tilt,r:r+tilt,top:top+sp.lift};
+  return {l:l-tilt,r:r+tilt,top:top+sp.lift-(sp.sit||0)};
 }
 
 /* ---------------------------------------------------------------- the people of one photo */
 const UNIT_H=150;   // the height the scale is made for (a character is ~124 units, with a hat ~150)
 /** People side by side in a w × h photo. Returns [{x, s}] (centre x of each, the scale). */
 export function paintPeople(c,people,w,h,{sign='VUI QUÁ!',scale=0,measure=false}={}){
-  const ppl=(people||[]).slice(0,6);
+  const ppl=(Array.isArray(people)?people:[]).slice(0,6).map(p=>p&&typeof p==='object'?p:{});
   if(!ppl.length)return measure?Infinity:[];
   const rs=roles(ppl.map(p=>known(p.pose)?p.pose:DEFAULT));
   const items=ppl.map((p,i)=>{
     const F=figureOf(p.lk&&typeof p.lk==='object'?p.lk:defaultLook(p.g),p.g);
     const prop=typeof p.prop==='string'?p.prop:'none';
-    const {sp,hold}=withProp(specOf(rs[i]),prop);
+    const held=withProp(specOf(rs[i]),prop),hold=held.hold,sp=withFace(held.sp,knownFace(p.face)?p.face:'auto');
     return {F,sp,prop,hold,ext:extent(sp,prop,hold),role:rs[i]};
   });
   // the distance from each one to the next: a group pose's own (so hands meet), else side by side with a little room
@@ -372,15 +622,33 @@ const FRIEND={female:{hair:'toc_ngan',shade:'mau_den',skin:'da_trung',top:'ao_th
   male:{hair:'toc_duoi_ngua',shade:'mau_mat_ong',skin:'da_sang',top:'ao_chi_may',bottom:'vay_xoe',shoes:'giay_do',acc:'pk_khong'}};
 const tiles=new Map();
 /** A square tile (size px, already ×2 for sharp screens) of this look in pose id; a group pose shows a friend too. */
-export function poseThumb(lk,g,id,size=128){
-  const key=JSON.stringify([lk,g,id,size]);
+export function poseThumb(lk,g,id,size=128,face='auto'){
+  const key=JSON.stringify([lk,g,id,size,face]);
   if(tiles.has(key))return tiles.get(key);
   let url='';
   try{
     const cv=document.createElement('canvas');cv.width=cv.height=size;
-    const c=cv.getContext('2d'),me={lk,g,pose:id,prop:'none'};
+    const c=cv.getContext('2d'),me={lk,g,pose:id,prop:'none',face};
     const ppl=POSE[id]?.group?[me,{lk:{...defaultLook(g==='male'?'female':'male'),...FRIEND[g==='male'?'male':'female'],uniform:true},g:g==='male'?'female':'male',pose:id,prop:'none'}]:[me];
     c.translate(0,size*.03);paintPeople(c,ppl,size,size);
+    url=cv.toDataURL('image/png');
+  }catch{url='';}
+  if(tiles.size>200)tiles.clear();
+  tiles.set(key,url);
+  return url;
+}
+/** A square tile (size px) of the face picker: this look's head and shoulders with face id (standing, the pose's arms
+ * left out). '' when it cannot be drawn. */
+export function faceThumb(lk,g,face,size=128){
+  const key=JSON.stringify(['face',lk,g,face,size]);
+  if(tiles.has(key))return tiles.get(key);
+  let url='';
+  try{
+    const cv=document.createElement('canvas');cv.width=cv.height=size;
+    const c=cv.getContext('2d'),s=size/114;
+    const F=figureOf(lk&&typeof lk==='object'?lk:defaultLook(g),g);
+    c.translate(size/2,144*s);c.scale(s,s);
+    body(c,F,withFace(solo(DEFAULT),knownFace(face)?face:'auto'),'none',null,'');
     url=cv.toDataURL('image/png');
   }catch{url='';}
   if(tiles.size>200)tiles.clear();

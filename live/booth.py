@@ -21,6 +21,9 @@ In a room
   `booth_set {pose, all: true}` (1.5.5: a pose made together, or the 🎲 with friends) gives everyone in the room that
   pose; anyone may, everyone can change theirs after. A service before it reads only `pose` (one's own pose); a client
   before it never sends `all` and draws a pose it does not know as 'dung'.
+  `booth_set {face}` (1.5.5: an expression over any pose, 'auto' = the pose's own) is one's own like the prop and
+  shows as `face` in their entry; a service before it ignores it (the friends see the pose's own face), a client
+  before it never sends it and ignores the key.
 * `booth_ready`: the player has paid their ticket (fair_photo on the game server; the client sends this after it).
   `booth_go` (the host, when everyone is ready): `booth_shoot {n, gap, id}` to all, each client counts down and
   shoots n photos gap ms apart; the readies are used up (the next shoot is paid again).
@@ -37,9 +40,9 @@ Nothing but a display name and the look the client draws (live/street.py clean_l
 
 Frames (client → server; replies in brackets)
   booth_make {look, g}         [booth_room {room, code, mode, host, me, frame, bg, cap, people: [{pid, name, lk, g, pose,
-                                prop, ready, away?}], shooting}]
+                                prop, face, ready, away?}], shooting}]
   booth_join {code, look, g}   [booth_room]          booth_find {look, g}   [booth_wait {secs}] or [booth_room]
-  booth_set {frame?, bg?, pose?, all?, prop?}  booth_ready {}  booth_go {}  booth_kick {pid}
+  booth_set {frame?, bg?, pose?, all?, prop?, face?}  booth_ready {}  booth_go {}  booth_kick {pid}
   booth_cancel {} [booth_left {why: 'cancel'}]      booth_out {} [booth_left {why: 'out'}]
 Server pushes: booth_room (after every change, to everyone in it), booth_shoot {n, gap, id}, booth_none {why},
 booth_left {why: other | kick | blocked | idle}.
@@ -82,17 +85,19 @@ def clean_code(v) -> str | None:
 
 
 class Member:
-    __slots__ = ('pid', 'player', 'conn', 'name', 'look', 'g', 'pose', 'prop', 'ready', 'n', 'away')
+    __slots__ = ('pid', 'player', 'conn', 'name', 'look', 'g', 'pose', 'prop', 'face', 'ready', 'n', 'away')
 
     def __init__(self, conn, look: dict, g, n: int):
         self.conn, self.player, self.pid = conn, conn.player, conn.player.pid
         self.name = conn.player.name or ''
         self.look, self.g = look, g
         self.pose, self.prop, self.ready, self.n = 'dung', 'none', False, n
+        self.face = 'auto'
         self.away = 0.0    # monotonic time the socket closed (0: here)
 
     def public(self) -> dict:
-        out = dict(pid=self.pid, name=self.name, lk=self.look, g=self.g, pose=self.pose, prop=self.prop, ready=self.ready)
+        out = dict(pid=self.pid, name=self.name, lk=self.look, g=self.g, pose=self.pose, prop=self.prop, face=self.face,
+                   ready=self.ready)
         if self.away:
             out['away'] = 1
         return out
@@ -330,6 +335,8 @@ class BoothFeature(Feature):
                 x.pose = pose
         if 'prop' in f:
             m.prop = clean_id(f.get('prop'), 'none')
+        if 'face' in f:
+            m.face = clean_id(f.get('face'), 'auto')
         d['last'] = time.monotonic()
         self._tell(room)
         return None

@@ -637,6 +637,40 @@ html:not([data-layout="phone"]) .fh-walking .fh-body>:not(.fh-walk):not(.fh-stri
 @media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-pb-pose:active{transform:scale(.96)}}
 @media (min-width:700px){.fh-pb-poses{grid-template-columns:repeat(auto-fill,minmax(88px,1fr))}.fh-pb-pose img{width:72px;height:72px}}
 html[data-theme="dem"] .fh-pb-pose img{background:radial-gradient(circle at 50% 40%,#4a3a5f,#2c2238)}
+/* Biểu cảm: a row of close-ups swiped sideways */
+.fh-pb-faces{display:grid;grid-auto-flow:column;grid-auto-columns:76px;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;padding:2px 2px 8px;scrollbar-width:thin}
+@media (min-width:700px){.fh-pb-faces{grid-auto-columns:88px}}
+/* the sticker editor: the strip (stickers dragged on it) and its tray, the tray kept in reach while the strip scrolls */
+.fh-pb-edit{display:grid;gap:8px;align-items:start}
+.fh-pb-edit .fh-pb-printbox{margin:4px 0 0}
+.fh-pb-edbox{width:min(66vw,250px);line-height:0}
+.fh-pb-edbox[hidden]{display:none}
+.fh-pb-ed{display:block;width:100%;aspect-ratio:300/900;height:auto;border-radius:4px;box-shadow:0 10px 24px rgba(30,10,40,.35);background:#fff;touch-action:pan-y;outline:none;cursor:grab;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.fh-pb-ed:focus-visible{box-shadow:0 0 0 3px #8a4bb8,0 10px 24px rgba(30,10,40,.35)}
+.fh-pb-edit .fh-pb-print.wait{width:min(66vw,250px)}
+.fh-pb-tray{position:sticky;bottom:0;z-index:3;display:grid;gap:5px;min-width:0;padding:6px 8px 8px;border-radius:16px 16px 12px 12px;border:1px solid var(--line);background:var(--surface);box-shadow:0 -6px 18px rgba(40,20,60,.14)}
+.fh-pb-tray .fh-pb-sec{margin:0}
+.fh-pb-tray .fh-pb-sec small{font-size:.74rem}
+.fh-pb-dcats{display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding-bottom:2px}
+.fh-pb-dcats::-webkit-scrollbar{display:none}
+.fh-pb-dcat{flex:none;min-height:34px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface-2);font:inherit;font-size:.8rem;font-weight:700;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.fh-pb-dcat.on{background:color-mix(in srgb,#8a4bb8 14%,var(--surface));border-color:#8a4bb8;color:var(--ink)}
+.fh-pb-dtiles{display:grid;grid-auto-flow:column;grid-template-rows:56px;grid-auto-columns:56px;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;padding:2px;scrollbar-width:thin}
+.fh-pb-dtile{display:grid;place-items:center;width:56px;height:56px;padding:0;border:1px solid var(--line);border-radius:12px;background:radial-gradient(circle at 50% 40%,#fff9f0,#f3e6d6);cursor:pointer}
+.fh-pb-dtile img{width:48px;height:48px;pointer-events:none}
+.fh-pb-dtile:hover{border-color:#8a4bb8}
+.fh-pb-dtile:disabled{opacity:.45;cursor:default}
+@media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-pb-dtile:active{transform:scale(.92)}}
+.fh-pb-edbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+.fh-pb-edbar .btn{min-width:0;min-height:38px;padding:3px 4px;font-size:.72rem;line-height:1.1;white-space:normal}
+html[data-theme="dem"] .fh-pb-dtile{background:radial-gradient(circle at 50% 40%,#4a3a5f,#2c2238)}
+@media (min-width:700px){
+  .fh-pb-edit{grid-template-columns:auto minmax(0,1fr)}
+  .fh-pb-edbox,.fh-pb-edit .fh-pb-print.wait{width:240px}
+  .fh-pb-tray{top:8px;bottom:auto;border-radius:16px;box-shadow:var(--shadow-sm)}
+  .fh-pb-dtiles{grid-auto-flow:row;grid-template-rows:none;grid-template-columns:repeat(auto-fill,56px);overflow:visible}
+  .fh-pb-edbar .btn{font-size:.8rem;min-height:40px}
+}
 html[data-theme="dem"] .fh-pb-booth{box-shadow:0 6px 18px rgba(0,0,0,.5),inset 0 0 0 3px #c9a23a}
 html[data-theme="dem"] .fh-pb-code-chip b{background:#3a2a4f;color:#ffe9a8;border-color:#c9a23a}
 @media (max-width:360px){.fh-pb-mode{padding:8px 10px}.fh-pb-mico{width:40px;height:40px}.fh-pb-code{letter-spacing:.2em}}

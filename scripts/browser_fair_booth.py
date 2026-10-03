@@ -14,6 +14,11 @@ the same database, two phones (390×844) with 300 xu each, then:
 1.5.5 (thirty poses, the fair's frames): a pose made together reaches the whole room, the 🎲 picks one; Thu and Bảo
 join by code: four in the room, a pose for all and poses changing between the shots, strips in Hội chợ đêm with the
 colours Dịu and Đen trắng and the words; the pose picker, the countdown and the strips at 390 and 1280 px.
+Round 2 (owner 03/10 22:00): an expression (Biểu cảm) over the pose, its own for each friend; the sticker editor on
+the finished strip: stickers added from the tray, dragged and pinched with a finger at 390 px (CDP touch events), the
+✕ and ↻ handles, undo, bring to front, clear all, the 200 cap, only on one's own copy in a friends' room; the mouse at
+1280 px (drag, the ↻ handle, the wheel, Delete); the saved ×3 picture has them; the widths 320/390/430 never scroll
+sideways.
 Each strip is also saved at full size (the page's own renderer, ×3) as strip-*.png. Fails on console errors, page
 errors or HTTP 5xx.
 
@@ -53,11 +58,15 @@ def seed(db: str, token: str, name: str) -> None:
     store.close_pool()
 
 
+SEEN: dict = {}
+
+
 async def run(shots: Path) -> list:
     from playwright.async_api import async_playwright
     from browser_live_pin import servers
     problems: list = []
     checks: list = []
+    SEEN.update(problems=problems, checks=checks)   # printed by main() if the run breaks off
 
     def check(cond, what):
         checks.append(('PASS' if cond else 'FAIL') + ' ' + what)
@@ -113,6 +122,47 @@ async def run(shots: Path) -> list:
                 await page.wait_for_timeout(500)
                 if await page.locator('.fh-sheet [data-fh="giftok"]').count():
                     await page.click('.fh-sheet [data-fh="giftok"]')
+
+            async def deco_add(p, cat, n):
+                """n stickers of one tray category, tapped one after the other."""
+                await click(p, 'pbdcat', cat)
+                ids = await p.page.evaluate("[...document.querySelectorAll('.fh-sheet [data-fh=pbdeco]')].map(b=>b.dataset.v)")
+                for i in range(n):
+                    await click(p, 'pbdeco', ids[i % len(ids)])
+                return ids
+
+            async def on_screen(p):
+                return await p.page.evaluate("globalThis.__fairBooth.decoOnScreen()")
+
+            async def save_final(p, name):
+                url = await p.page.evaluate("globalThis.__fairBooth.saved()")
+                check(url.startswith('data:image/png'), f'{name}: the saved picture')
+                if url:
+                    (shots / f'strip-{name}.png').write_bytes(base64.b64decode(url.split(',', 1)[1]))
+                    wh = await p.page.evaluate("u=>new Promise(r=>{const i=new Image();i.onload=()=>r([i.width,i.height]);i.onerror=()=>r([0,0]);i.src=u;})", url)
+                    check(wh == [900, 2700], f'{name}: saved at ×3 ({wh})')
+                return url
+
+            cdps = {}
+
+            async def touch(p, kind, pts):
+                if p.name not in cdps:
+                    cdps[p.name] = await p.ctx.new_cdp_session(p.page)
+                await cdps[p.name].send('Input.dispatchTouchEvent', {'type': kind, 'touchPoints': [{'x': x, 'y': y, 'id': i} for i, (x, y) in enumerate(pts)]})
+
+            async def touch_path(p, starts, ends, steps=8):
+                await touch(p, 'touchStart', starts[:1])
+                if len(starts) > 1:
+                    await touch(p, 'touchStart', starts)
+                for k in range(1, steps + 1):
+                    await touch(p, 'touchMove', [(x0 + (x1 - x0) * k / steps, y0 + (y1 - y0) * k / steps) for (x0, y0), (x1, y1) in zip(starts, ends)])
+                    await p.page.wait_for_timeout(16)
+                await touch(p, 'touchEnd', [])
+                await p.page.wait_for_timeout(150)
+
+            async def no_sideways(p, tag):
+                over = await p.page.evaluate("(()=>{const s=document.querySelector('.fh-sheet');return s?s.scrollWidth-s.clientWidth:0;})()")
+                check(over <= 1, f'{tag}: nothing wider than the sheet ({over}px)')
 
             async def click(p, op, v=None):
                 sel = f'.fh-sheet [data-fh="{op}"]' + (f'[data-v="{v}"]' if v is not None else '')
@@ -238,6 +288,14 @@ async def run(shots: Path) -> list:
             await click(a, 'pbpose', 'khoac_vai')
             await click(c, 'pbprop', 'tai_tho')
             await click(d, 'pbprop', 'non_la')
+            faces = await c.page.evaluate("[...document.querySelectorAll('.fh-sheet [data-fh=pbface]')].map(b=>b.dataset.v)")
+            check(len(faces) >= 10 and faces[0] == 'auto', f"Biểu cảm: {len(faces)} faces, the first the pose's own")
+            await click(c, 'pbface', faces[5])
+            await click(b, 'pbface', faces[2])
+            check(await poll(a.page, f"({ST}).room.people.find(p=>p.name==='Thu')?.face==='{faces[5]}'&&({ST}).room.people.find(p=>p.name==='Minh')?.face==='{faces[2]}'", 5),
+                  "an expression is each one's own and reaches the room")
+            await c.page.evaluate("document.querySelector('.fh-sheet .fh-pb-faces').scrollIntoView({block:'center'})")
+            await shot(c, '09i-faces-390')
             check(await poll(d.page, f"({ST}).room.people.every(p=>p.pose==='khoac_vai')&&({ST}).frame==='hoi_dem'", 5), 'four: one pose for all, the frame Hội chợ đêm')
             await a.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
             await shot(a, '09a-four-room-390')
@@ -254,6 +312,12 @@ async def run(shots: Path) -> list:
             check(await poll(c.page, f"({ST}).filter==='mo'&&({ST}).url", 6) and await poll(d.page, f"({ST}).filter==='den_trang'&&!({ST}).date&&({ST}).url", 6), "four: each one's colour and words")
             await save_strip(c, 'four-mo-vui')
             await save_strip(d, 'four-den-trang')
+            await deco_add(c, 'tim', 3)
+            check(await poll(c.page, f"({ST}).deco.n===3", 4) and (await d.page.evaluate(ST))['deco']['n'] == 0,
+                  "the editor is one's own copy: Thu's stickers are not on Bảo's strip")
+            await c.page.evaluate("document.querySelector('.fh-sheet .fh-pb-edit').scrollIntoView({block:'start'})")
+            await shot(c, '09j-four-editor-390')
+            await save_final(c, 'four-editor-thu')
             await d.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
             await shot(d, '09e-four-strip-390')
             # the same on a desktop
@@ -341,6 +405,116 @@ async def run(shots: Path) -> list:
             await shot(a, '13c-solo-strip-1280')
             await a.page.set_viewport_size(dict(width=390, height=844))
 
+            # ---------------- 3b. the sticker editor: a finger at 390 px ----------------
+            st = await a.page.evaluate(ST)
+            check(st['step'] == 'print' and st['deco']['n'] == 0 and await a.page.locator('.fh-sheet .fh-pb-ed').count() == 1, 'the editor: an empty strip to decorate')
+            cats = await a.page.evaluate("[...document.querySelectorAll('.fh-sheet [data-fh=pbdcat]')].map(b=>b.dataset.v)")
+            total = await a.page.evaluate("(async()=>(await import('/js/v4/booth-stickers.js')).DECO.length)()")
+            check(len(cats) >= 5 and total >= 40, f'the tray: {len(cats)} kinds, {total} stickers')
+            await a.page.evaluate("document.querySelector('.fh-sheet .fh-pb-edit').scrollIntoView({block:'start'})")
+            await deco_add(a, cats[0], 2)
+            await deco_add(a, cats[2], 2)
+            await deco_add(a, cats[4], 2)
+            check(await poll(a.page, f"({ST}).deco.n===6&&({ST}).deco.sel===5", 4), 'tap a tray sticker: on the strip, picked')
+            await shot(a, '15a-editor-390')
+            it = (await on_screen(a))[-1]
+            before = (await a.page.evaluate(ST))['deco']['items'][-1]
+            await touch_path(a, [(it['x'], it['y'])], [(it['x'] + 40, it['y'] + 90)])
+            after = (await a.page.evaluate(ST))['deco']['items'][-1]
+            check(after['x'] > before['x'] + .08 and after['y'] > before['y'] + .2,
+                  f"a finger drags the sticker ({before['x']:.2f},{before['y']:.2f} → {after['x']:.2f},{after['y']:.2f})")
+            it = (await on_screen(a))[-1]
+            await touch_path(a, [(it['x'] - 18, it['y']), (it['x'] + 18, it['y'])], [(it['x'] - 40, it['y'] - 14), (it['x'] + 40, it['y'] + 14)])
+            big = (await a.page.evaluate(ST))['deco']['items'][-1]
+            check(big['s'] > after['s'] * 1.6 and abs(big['r'] - after['r']) > .2,
+                  f"two fingers make it bigger and turn it ({after['s']:.2f} → {big['s']:.2f}, {after['r']:.2f} → {big['r']:.2f})")
+            it = (await on_screen(a))[-1]
+            await touch_path(a, [tuple(it['turn'])], [(it['turn'][0] - 20, it['turn'][1] - 20)])
+            small = (await a.page.evaluate(ST))['deco']['items'][-1]
+            check(small['s'] < big['s'] * .95, f"the ↻ handle makes it smaller ({big['s']:.2f} → {small['s']:.2f})")
+            await shot(a, '15b-editor-moved-390')
+            it = (await on_screen(a))[-1]
+            await touch_path(a, [tuple(it['del'])], [tuple(it['del'])], steps=1)
+            check(await poll(a.page, f"({ST}).deco.n===5", 3), 'the ✕ takes it off')
+            await click(a, 'pbedundo')
+            check(await poll(a.page, f"({ST}).deco.n===6", 3), '↩ brings it back')
+            on = await on_screen(a)   # the one under the dragged one: only that one is over its middle
+            await touch_path(a, [(on[4]['x'], on[4]['y'])], [(on[4]['x'], on[4]['y'])], steps=1)
+            check(await poll(a.page, f"({ST}).deco.sel===4", 3), 'a tap picks a sticker')
+            fid = on[4]['id']
+            await click(a, 'pbedfront')
+            check(await poll(a.page, f"({ST}).deco.sel===5&&({ST}).deco.items[5].id==='{fid}'", 3), '⬆️ to the front')
+            await click(a, 'pbeddel')
+            check(await poll(a.page, f"({ST}).deco.n===5&&({ST}).deco.sel===-1", 3), '🗑 deletes the picked one')
+            await click(a, 'pbedclear')
+            check(await poll(a.page, f"({ST}).deco.n===0", 3), '🧹 clears all')
+            await click(a, 'pbedundo')
+            check(await poll(a.page, f"({ST}).deco.n===5", 3), '↩ after clearing: all back')
+            # no limit a player meets: 200 on one strip, then the tray waits
+            t0 = await a.page.evaluate("performance.now()")
+            await a.page.evaluate("(()=>{for(let i=0;i<220;i++){const b=[...document.querySelectorAll('.fh-sheet [data-fh=pbdeco]')];b[i%b.length].click();}})()")
+            ms = await a.page.evaluate(f"performance.now()-{t0}")
+            check(await poll(a.page, f"({ST}).deco.n===200", 5), f'up to 200 stickers ({ms:.0f} ms for the taps)')
+            check(await a.page.locator('.fh-sheet [data-fh="pbdeco"]:not([disabled])').count() == 0, 'at 200 the tray waits')
+            await a.page.evaluate("document.querySelector('.fh-sheet .fh-pb-edit').scrollIntoView({block:'start'})")
+            await shot(a, '15c-editor-200-390')
+            await save_final(a, 'editor-200')
+            for _ in range(10):
+                await a.page.evaluate("document.querySelector('.fh-sheet [data-fh=pbedundo]').click()")
+            check(await poll(a.page, f"({ST}).deco.n===190", 3), 'undo walks back, one sticker at a time')
+            await click(a, 'pbedclear')
+            check(await poll(a.page, f"({ST}).deco.n===0", 3), '🧹 clears the 190')
+            await deco_add(a, cats[0], 5)
+            await deco_add(a, cats[1], 3)
+            await deco_add(a, cats[3], 2)
+            url = await save_final(a, 'editor-solo')
+            plain = await a.page.evaluate("globalThis.__fairBooth.print(3)")
+            check(bool(url) and url != plain, 'the saved picture has the stickers on it')
+            for w in (320, 430, 390):
+                await a.page.set_viewport_size(dict(width=w, height=844))
+                await a.page.wait_for_timeout(400)
+                await no_sideways(a, f'editor at {w}')
+                await a.page.evaluate("document.querySelector('.fh-sheet .fh-pb-edit').scrollIntoView({block:'start'})")
+                await shot(a, f'15d-editor-{w}')
+
+            # ---------------- 3c. the mouse at 1280 px ----------------
+            await a.page.set_viewport_size(dict(width=1280, height=900))
+            await a.page.wait_for_timeout(400)
+            await no_sideways(a, 'editor at 1280')
+            await a.page.evaluate("document.querySelector('.fh-sheet .fh-pb-edit').scrollIntoView({block:'start'})")
+            await a.page.wait_for_timeout(300)
+            it = (await on_screen(a))[-1]
+            if it['y'] > 820 or it['y'] < 60:
+                await a.page.evaluate(f"document.querySelector('.fh-sheet').scrollBy(0,{it['y'] - 450})")
+                await a.page.wait_for_timeout(200)
+                it = (await on_screen(a))[-1]
+            n0 = (await a.page.evaluate(ST))['deco']
+            m = a.page.mouse
+            await m.move(it['x'], it['y'])
+            await m.down()
+            await m.move(it['x'] - 30, it['y'] + 50, steps=6)
+            await m.up()
+            m1 = (await a.page.evaluate(ST))['deco']['items'][-1]
+            check(m1['y'] > n0['items'][-1]['y'] + .1, 'the mouse drags a sticker')
+            it = (await on_screen(a))[-1]
+            await m.move(*it['turn'])
+            await m.down()
+            await m.move(it['turn'][0] + 30, it['turn'][1] + 10, steps=6)
+            await m.up()
+            m2 = (await a.page.evaluate(ST))['deco']['items'][-1]
+            check(m2['s'] > m1['s'] * 1.1 and abs(m2['r'] - m1['r']) > .05, 'the ↻ handle with the mouse: bigger, turned')
+            it = (await on_screen(a))[-1]
+            await m.move(it['x'], it['y'])
+            await m.wheel(0, -300)
+            await a.page.wait_for_timeout(300)
+            m3 = (await a.page.evaluate(ST))['deco']['items'][-1]
+            check(m3['s'] > m2['s'] * 1.04, 'the wheel resizes the picked one')
+            await shot(a, '15e-editor-1280')
+            await a.page.keyboard.press('Delete')
+            check(await poll(a.page, f"({ST}).deco.n==={n0['n'] - 1}", 3), 'Delete takes the picked one off')
+            await save_final(a, 'editor-1280')
+            await a.page.set_viewport_size(dict(width=390, height=844))
+
             # ---------------- 4. widths and the dark theme ----------------
             await click(a, 'pbagain')
             for w in (320, 430):
@@ -375,7 +549,12 @@ def main() -> int:
     shots.mkdir(parents=True, exist_ok=True)
     os.environ['MNL_FAIR_START'] = vn_today()
     os.environ['LIVE_FAIR'] = '1'
-    problems = asyncio.run(run(shots))
+    try:
+        problems = asyncio.run(run(shots))
+    except Exception:
+        for line in SEEN.get('checks', []) + ['✗ ' + p for p in SEEN.get('problems', [])]:
+            print(line)
+        raise
     for p in problems:
         print('✗', p)
     print('ok:' if not problems else 'FAILED:', shots)
