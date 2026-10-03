@@ -1381,6 +1381,44 @@ ARCS = {
                 ('le', 'Sổ chợ con ghi rõ ràng, cả xóm khen.'),
                 ('me', 'Con sẽ ghi tiếp, từng trang, từng nhà.')]),
         ]),
+    # ------------------------------------------------------------ 👶 Tổ trông trẻ Mèo Con
+    'babysitter': dict(
+        title='Con gấu bông nâu', emoji='🧸',
+        keepsake=dict(emoji='🖍️', name='Bức tranh bút sáp của bé Bin', desc='Hai người nắm tay nhau dưới ông mặt trời, bên cạnh là một con gấu nâu sờn tai.'),
+        cast={'tam': _p('Cô Tâm', '👩‍🏫', 'Chủ tổ trông trẻ Mèo Con', 'babysitter_npc_01'),
+              'hanh': _p('Chị Hạnh', '👩‍⚕️', 'Mẹ bé Bin', 'babysitter_npc_02'),
+              'quan': _p('Anh Quân', '👨', 'Bố bé Na', 'babysitter_npc_03'),
+              'tu': _p('Bà Tư', '👵', 'Bà ngoại bé Mít', 'babysitter_npc_05')},
+        beats=[
+            _b('Xấp giấy dặn cũ', '📝', 'Cô Tâm mở ngăn tủ, đưa bạn một xấp giấy dặn quăn mép của các nhà.', [
+                ('tam', 'Hai mươi năm làm cô nuôi dạy trẻ, cô học được một điều: bố mẹ gửi con là gửi cả trái tim.'),
+                ('tam', 'Giấy dặn đọc như đọc thư người thân. Dị ứng, giờ ngủ, đồ ôm: dòng nào cũng là một nỗi lo.'),
+                ('me', 'Dạ, rửa tay, đọc giấy dặn, rồi mới nhận bé.')]),
+            _b('Bé Bin không chịu ngủ', '😴', 'Mười hai rưỡi, bé Bin trằn trọc, mắt mở thao láo nhìn trần nhà.', [
+                ('hanh', 'Em nhớ con gấu nâu nha. Không có nó là Bin thức tới chiều.'),
+                ('tam', 'Vỗ nhẹ lúc bé thở ra. Nhịp tay mình chậm thì nhịp thở của bé chậm theo.'),
+                ('me', 'Thở ra… vỗ nhẹ… thở ra… Bé ngủ rồi.')],
+                _c('Bé Bin tỉnh giấc giữa chừng, mếu máo tìm mẹ',
+                   _o('a', 'Ôm bé, hát lại bài ru ban nãy', [('hanh', 'Đúng bài đó! Chị hát bài đó từ hồi Bin mới sinh.')], rel='hanh'),
+                   _o('b', 'Nhắn hỏi cô Tâm cách dỗ', [('tam', 'Đừng bật đèn. Nói nhỏ tên bé, đặt tay lên lưng bé là được.')], rel='tam'))),
+            _b('Lần đầu của anh Quân', '📱', 'Điện thoại rung liên tục: anh Quân nhắn lần thứ năm trong buổi sáng.', [
+                ('quan', 'Em ơi bé Na ổn không? Nó ăn được không? Có khóc không em?'),
+                ('me', 'Bé ăn hết bát cháo rồi anh, đang vẽ con khủng long tặng bố.'),
+                ('quan', 'Gửi anh tấm ảnh được không? Anh chỉ cần nhìn nó cười thôi.')],
+                _c('Bé Na đang chơi say sưa',
+                   _o('a', 'Chụp một tấm gửi riêng cho anh Quân', [('quan', 'Trời ơi, cười tít mắt. Anh làm việc tiếp được rồi.')], rel='quan'),
+                   _o('b', 'Nhắn kể chi tiết, hẹn chiều anh về tự xem tranh', [('quan', 'Ừ, để chiều anh về xem tận mắt. Cảm ơn em.')], rel='quan'))),
+            _b('Hộp bánh của bà Tư', '🍰', 'Bà Tư đi khám mắt về, tay xách hộp bánh da lợn, ngồi xuống ghế thở phào.', [
+                ('tu', 'Có con trông, bà đi khám yên tâm. Hồi xưa bà nuôi năm đứa con, có ai trông giùm đâu.'),
+                ('tu', 'Bé Mít hỏi con cả trăm câu phải không? Nó giống mẹ nó hồi nhỏ.'),
+                ('me', 'Dạ, hỏi vì sao trời xanh, vì sao kiến biết đường về nhà… con trả lời không kịp.')]),
+            _b('Con gấu bông nâu', '🧸', 'Chiều thứ bảy, chị Hạnh dắt bé Bin tới tổ trông trẻ, tay bé cầm một tờ giấy cuộn tròn.', [
+                ('hanh', 'Bin vẽ tặng em đó. Nó nói đây là “cô bảo mẫu với con gấu”.'),
+                ('tam', 'Cô giữ bức tranh đầu tiên một bé vẽ tặng cô hai mươi năm rồi. Con giữ bức này nhé.'),
+                ('quan', 'Nhóm phụ huynh lớp Lá hỏi số của em đó, anh cho rồi nha.'),
+                ('tu', 'Bà giới thiệu con cho cả xóm rồi.'),
+                ('me', 'Con sẽ nhớ đồ ôm của từng bé, như nhớ tên các bé vậy.')]),
+        ]),
     # ------------------------------------------------------------ ✈️ Hãng bay Cánh Cò
     'pilot': dict(
         title='Đường bay ra đảo', emoji='🛩️',
