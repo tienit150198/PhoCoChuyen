@@ -52,8 +52,10 @@ const L={
   tut:lazy(()=>import('./tutorial/index.js')),  // first-run tour, guide, announcements
   live:lazy(()=>import('./v4/live.js')),  // 💬 Chat: the live socket, the chat button + badge (the dialog is v4/chat.js)
   tm:lazy(()=>import('./careers/tomorrow_kit.js'),{css:['/css/careers/tomorrow_kit.css']}),  // 🌅 Ngày mai in the pharmacy's day summary
+  promo:lazy(()=>import('./v4/promo.js'),{css:['/css/promo.css']}),  // 🎖️ Thăng tiến, 🧑‍💼 Ca quản lý (game/promotion.py)
 };
 const TUT_OPEN=new Set(['help','tutGuide','tutReplay']);  // tutorial actions whose buttons other modules render
+const PROMO_OPEN=new Set(['promo','pmBoard','pmStart','pmPick','pmMate']);  // 🎖️ v4/promo.js
 /** A sheet whose code is not in yet: its header (with the close button) and a skeleton. */
 const lazyView=(h,fn)=>h.use()?fn(h.m):header('')+`<div class="sheet-body">${skeleton()}</div>`;
 /** A sheet that reads the catalogue's `more` part (api.more(): job postings, the shop book, situations, story texts):
@@ -170,9 +172,12 @@ function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls
   // Calm screen: one toast at a time, the newest wins.
   while(box.children.length>1)box.firstElementChild.remove();}
 function download(data,name,type='application/json'){const blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
+let pmWant=null;   // 🧑‍💼 "Mở ca quản lý" waiting behind the accountant's entry check: the check's start_day keeps it
 async function cmd(action,payload={},options={}){
-  if(action==='start_day'&&!payload?.acct_check&&acctDue(options.career||career())){acctCheck(options.career||career());return null;}
-  try{const r=await api.command(action,payload,options.career||career());if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);return r;}
+  if(action==='start_day'&&!payload?.acct_check&&acctDue(options.career||career())){pmWant=payload?.manager?options.career||career():null;acctCheck(options.career||career());return null;}
+  const pm=action==='start_day'&&payload?.acct_check&&pmWant===(options.career||career());
+  if(pm)payload={...payload,manager:true};
+  try{const r=await api.command(action,payload,options.career||career());if(pm){pmWant=null;ui.pmPick=null;ui.task=null;setTimeout(()=>openSheet('manager'),0);}if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);return r;}
   catch(error){if(error.quiet)return null;
     if(error.data?.code==='acct_check'&&!payload?.acct_check){acctCheck(options.career||career());return null;}   // 💼 kế toán: the entry check first (v4/accounting-school.js)
     toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}  // quiet: a tap the save moved under twice (api.js), the screen already shows why
@@ -418,6 +423,14 @@ function statusView(){
   return header(`Ngày ${dayNo(c)}`,'',esc(c.life.shop_name||m.place))+`<div class="sheet-body st-body">${clockCard(c.day_clock)}${notes.length?`<div class="st-notes">${noteRows(notes)}</div>`:''}<div class="st-grid">${tiles}</div>`+
     (c.shift_summary&&!c.open?button('Xem ngày vừa qua','summary',{},'ghost small full'):'')+`</div>`;
 }
+/** 🎖️ One line on the morning card: the title and the good days towards the next step (a tap opens Thăng tiến),
+ * the review when one waits, and 🧑‍💼 from step 3. Nothing for a brand-new place. */
+function promoStrip(c){
+  const p=c.promo;if(!p||!(p.rank||p.due||p.next?.good||p.mgr))return '';
+  if(p.due)return `<button type="button" class="pm-strip due" data-action="promo"><span aria-hidden="true">🎖️</span><b>${p.due.who==='Phòng sếp'?'Sếp hẹn gặp bạn':'Hội buôn phố ghé thăm'}</b><small>${esc(p.due.title)}</small></button>`;
+  const n=p.next,w=n?Math.round(100*n.good/Math.max(1,n.need)):100;
+  return `<div class="pm-strip-row"><button type="button" class="pm-strip" data-action="promo"><span aria-hidden="true">🎖️</span><b>${esc(p.title)}</b>${n?`<small>${n.good}/${n.need}</small><span class="bar"><i style="width:${w}%"></i></span>`:''}</button>${p.mgr?'<button type="button" class="pm-strip mgr" data-action="promo" aria-label="Ca quản lý">🧑‍💼</button>':''}</div>`;
+}
 function taskCards(c){
   const t=c.tasks.find(x=>x.id===c.active_task&&!ended(x))||c.tasks.find(x=>!ended(x)),W=wordsFor(career()),desk=deskWork(),notes=hudNotes(c);
   const bell=notes.length?`<button type="button" class="hud-alerts" data-action="status" aria-label="Cần để ý · ${notes.length}">${icon('bell',17)}<b>${notes.length}</b></button>`:'';
@@ -436,7 +449,14 @@ function taskCards(c){
   else if(wrapUp(c))main=`<article class="note-card calm-card">${button('Khép ca hôm nay','end',{},'primary big grow gd-pulse')}${moreGate(c)?'':`<button type="button" class="icon-btn hud-sum" data-command="more_work" data-payload="{}" aria-label="${desk?'Nhận thêm một việc':esc(W.more_btn)}">${icon('plus',18)}</button>`}${bell}</article>`;
   else main=`<article class="note-card calm-card">${commandButton(desk?'Nhận thêm một việc':esc(W.more_btn),'more_work',{},'primary big grow')}<button type="button" class="icon-btn hud-sum" data-action="end" aria-label="Khép ca hôm nay">${icon('exit',18)}</button>${bell}</article>`;
   // A career with its own home card (the air crew's boarding pass) draws it; hiring keeps the shared "Xin việc".
-  const own=needsJob()?'':careerUI(career())?.hudCard?.(c,t,careerContext(env()),{bell,first,wrap:wrapUp(c),note:closingNote(c.day_clock,!!t,moreGate(c))});if(own)main=own;
+  // 🧑‍💼 A manager shift's day: the board is the one way on (closed: the day's close).
+  const mg=c.open&&!needsJob()?c.promo?.shift:null;
+  const own=needsJob()||mg?'':careerUI(career())?.hudCard?.(c,t,careerContext(env()),{bell,first,wrap:wrapUp(c),note:closingNote(c.day_clock,!!t,moreGate(c))});if(own)main=own;
+  if(mg)main=`<article class="note-card calm-card">${mg.closed?button(icon('exit',16)+' Khép ca · xem tổng kết','end',{},'primary big grow gd-pulse'):button('🧑‍💼 Bảng quản lý','pmBoard',{},'primary big grow')}${bell}</article>`;
+  // 🎖️ The morning card carries the ladder (title · good days) or the review waiting (game/promotion.py).
+  const ps=!c.open&&!needsJob()?promoStrip(c):'';
+  if(ps)main=main.replace(/^<article class="/,'<article class="pm-has-strip ').replace(/^(<article[^>]*>)/,'$1'+ps);
+
   // 🍱 Lunch (v4/needs.js): a strip at the top of the card, from 11:30 on the shop clock; one tap, never a modal.
   // 🍢 Ăn thêm: the same strip when hungry or sleepy outside lunch (paid; the Đời thường sheet always has it).
   const lunch=c.open&&!needsJob()?lunchStrip(api.state.needs,api.state.journey?.wallet|0)||(snackDue(api.state.needs)?snackStrip(api.state.needs):''):'';
@@ -546,6 +566,8 @@ function renderSheet(preserve=true){
     case'classroom':dialog.classList.add('wide','v4-sheet');html=lazyView(L.classroom,m=>m.classroomView(env()));break;
     case'accountingSchool':dialog.classList.add('wide','v4-sheet','as-sheet');html=lazyView(L.accountingSchool,m=>m.accountingSchoolView(env()));break;
     case'operations':dialog.classList.add('operations');html=moreView(()=>lazyView(L.ops,m=>m.operationsView(career(),room(),api.content.operations,ui,api.state)));break;
+    case'promo':dialog.classList.add('narrow','v4-sheet','pm-sheet');html=lazyView(L.promo,m=>m.promoView(env()));break;  // 🎖️
+    case'manager':dialog.classList.add('medium','v4-sheet','pm-sheet');html=lazyView(L.promo,m=>m.managerView(env()));break;  // 🧑‍💼
     default:html=header('Một khoảng thảnh thơi')+`<div class="sheet-body">${empty('Cửa sổ chưa mở','Quay lại cảnh để tiếp tục nhé.')}</div>`;
   }}
   html=shortWork(shutWork(html));
@@ -1069,6 +1091,7 @@ function summaryView(){
   if(s.incidents&&L.inc.use())notes.push(L.inc.m.incidentSummary(s.incidents));
   if(s.happen&&L.happen.use())notes.push(L.happen.m.happenSummary(s.happen));
   if(s.abandon)notes.push(abandonSummary(s.abandon));
+  if(s.promo&&L.promo.use())notes.push(L.promo.m.promoSummary(s.promo));  // 🎖️ a good day, the review booked, the manager shift
   if(s.life)notes.push(lifeSummary(s.life));
   if(s.experiences?.tip_day?.count&&L.tips.use())notes.push(L.tips.m.tipSummary(s.experiences.tip_day));
   const jr=s.journey;
@@ -1289,6 +1312,8 @@ async function handleAction(action,data,el){
       if(action.startsWith('desk:')&&await (await viaLazy(L.desk,el)).deskAction(action,data,el,env()))break;
       if(await boardAction(action,data,el,env()))break;
       if((L.rank.m||action==='rank')&&await (await viaLazy(L.rank,el)).leaderboardAction(action,data,el,env()))break;
+      if((L.promo.m||PROMO_OPEN.has(action))&&await (await viaLazy(L.promo,el)).promoAction(action,data,el,env()))break;  // 🎖️🧑‍💼
+
       if(action==='liveChat'){(await viaLazy(L.live,el)).openChat(data);break;}  // 💬 Chat (v4/chat.js)
       if(action==='liveWalk'){const w=await import('./v4/walk.js');L.live.m?.benchSpot(w.walk);await w.openWalk(env(),data);break;}  // 🚶 Đi dạo (v4/walk.js): its own dialog; 💕 its benches are the dating bench
       if(action==='liveDate'){(await viaLazy(L.live,el)).openDate(data);break;}  // 💕 Góc hẹn hò (v4/dating.js)

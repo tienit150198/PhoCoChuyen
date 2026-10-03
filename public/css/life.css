@@ -219,3 +219,16 @@ html[data-theme="dem"] .cg-enter{background:var(--surface-2);color:var(--ink)}
 .cg-enter small{display:block;font-size:.82rem;opacity:.85}
 .cg-enter-ico{font-size:2rem;line-height:1}
 .cg-quick>summary{cursor:pointer;margin:4px 0 8px;font-size:.88rem;color:var(--muted);font-weight:600}
+/* 🎖️ Thăng tiến strip on the morning card and the job sheet (app.js promoStrip, v4/views.js); the sheets: css/promo.css */
+.pm-strip-row{display:flex;gap:6px;margin:0 0 10px}
+.pm-strip{display:flex;align-items:center;gap:6px;flex:1 1 auto;min-width:0;min-height:44px;margin:0 0 10px;padding:6px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink);font:inherit;font-size:.88rem;text-align:left;cursor:pointer}
+.pm-strip-row .pm-strip{margin:0}
+.pm-strip>span[aria-hidden]{font-size:1.1rem}
+.pm-strip b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pm-strip small{margin-left:auto;color:var(--muted);font-weight:700;white-space:nowrap}
+.pm-strip .bar{flex:0 0 56px;height:8px}
+.pm-strip.due{width:100%;background:var(--warn-soft);border-color:var(--warn);color:var(--ink)}
+.pm-strip.mgr{flex:0 0 48px;justify-content:center;font-size:1.25rem}
+.note-card.pm-has-strip{flex-wrap:wrap}
+.note-card.pm-has-strip>.pm-strip,.note-card.pm-has-strip>.pm-strip-row{flex:1 1 100%;width:100%;min-width:0;margin:0 0 2px}
+html[data-layout="phone"] .task-hud .note-card.pm-has-strip:not(.calm-card)>:is(.pm-strip,.pm-strip-row){grid-column:1/-1;grid-row:1}

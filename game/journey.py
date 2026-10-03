@@ -997,6 +997,9 @@ def validate(s: dict) -> None:
     wl.gift_validate(j)   # 🎁 journey['wed_gift'] (optional)
     nd.validate(s)   # 🍚😴 journey['needs'] (optional)
     cg.validate(s)   # 🛕 journey['chua'] (optional)
+    from . import promotion
+    promotion.validate(s)   # 🎖️ journey['promo'] (optional)
+
     rx.validate(s)   # 🏊 journey['relax'] (optional)
     fr.validate(s)   # 🧊 journey['fridge'] (optional)
     ct.validate(s)

@@ -763,16 +763,24 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
     if boss:
         e.log(s, c, 'job', boss['text'])
     job = c['job']
-    if job['status'] != 'hired' or c['day_completed'] < 1:
+    from . import promotion
+    # A 🧑‍💼 manager shift that got work done is a worked day too (no customer of your own that day).
+    if job['status'] != 'hired' or (c['day_completed'] < 1 and not promotion.managed_today(s, c, career)):
         return dict(boss=boss) if boss else None
     post = _posting(career, job['employer'])
     from .accounting_school import salary_multiplier
     from .accounting_jobs import pay as boosted
     multiplier = salary_multiplier(s,career)   # 💼 ×3 kế toán with its certificate, ×5 on a holiday (game/accounting_jobs.py)
-    pay = boosted(round(job['salary'] * (.85 if job['probation'] else 1)), multiplier)
-    e.money(s, c, pay, 'Lương ngày ' + str(c['day']) + (' (thử việc 85%)' if job['probation'] else ''), f'salary-{c["day"]}', category='salary')
+    # 🎖️ A promotion's raise multiplies the contract salary (job['salary'] itself stays inside the posting's range).
+    lift = promotion.raise_pct(s, c, career)
+    pay = boosted(round(job['salary'] * (100 + lift) / 100 * (.85 if job['probation'] else 1)), multiplier)
+    e.money(s, c, pay, 'Lương ngày ' + str(c['day']) + (' (thử việc 85%)' if job['probation'] else '') + (f' · +{lift}% chức vụ' if lift else ''),
+            f'salary-{c["day"]}', category='salary')
     job['days_worked'] += 1
     note = dict(salary=pay, probation=job['probation'])
+    if lift:
+        note['raise'] = lift
+
     if multiplier > 1:
         note['multiplier'] = multiplier   # the wallet row says ×3 / ×5 (journey._end_of_day)
     if job['probation']:
@@ -841,7 +849,12 @@ def public(c: dict, career: str, s: dict | None = None) -> dict:
         job['base_salary'] = job['salary']
         job['salary_multiplier'] = salary_multiplier(s,career)
         from .accounting_jobs import pay as boosted
-        job['salary'] = boosted(job['salary'], job['salary_multiplier'])
+        from . import promotion
+        lift = promotion.raise_pct(s, c, career)   # 🎖️ the step's raise, as on_close pays it
+        if lift:
+            job['raise'] = lift
+        job['salary'] = boosted(round(job['salary'] * (100 + lift) / 100), job['salary_multiplier'])
+
     job['certs'] = list(job.get('certs') or [])
     ex = exam(career)
     app = job.get('application')
