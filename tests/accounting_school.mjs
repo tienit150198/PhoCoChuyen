@@ -79,6 +79,26 @@ assert.equal(read({kind:'order',items:[{id:'a'},{id:'b'}]},[],{order:['a']}),nul
 assert.deepEqual(read({kind:'order',items:[{id:'a'},{id:'b'}]},[],{order:['b','a']}),['b','a']);
 assert.equal(read({kind:'entry'},[['d:0','111'],['c:0','111'],['a:0','100']],{entries:[{}]}),null);
 assert.deepEqual(read({kind:'entry'},[['d:0','111'],['c:0','112'],['a:0','100']],{entries:[{}]}),[{debit:'111',credit:'112',amount:100}]);
+// Money boxes read what players write (03/10): minus on any keyboard, brackets, arithmetic, units, separators.
+assert.equal(read({kind:'number',unit:'đ'},[['ans','−500.000']]),-500000);
+assert.equal(read({kind:'number',unit:'đ'},[['ans','(500.000)']]),-500000);
+assert.equal(read({kind:'number',unit:'đ'},[['ans','6+4']]),10);
+assert.equal(read({kind:'number',unit:'đ'},[['ans','10 triệu']]),10000000);
+assert.equal(read({kind:'number',unit:'đ'},[['ans','1.000.000đ']]),1000000);
+assert.equal(read({kind:'number',unit:'ngày'},[['ans','90 ngày']]),90);
+assert.equal(read({kind:'number',unit:'đ'},[['ans','abc']]),null);
+assert.deepEqual(read({kind:'fields',fields:[{id:'investing'},{id:'cash_net'}]},[['f:investing','-(20tr + 5.000.000)'],['f:cash_net','1,5 tỷ']]),{investing:-25000000,cash_net:1500000000});
+assert.deepEqual(read({kind:'entry'},[['d:0','111'],['c:0','112'],['a:0','2 × 1,5tr']],{entries:[{}]}),[{debit:'111',credit:'112',amount:3000000}]);
+assert.equal(read({kind:'entry'},[['d:0','111'],['c:0','112'],['a:0','-100']],{entries:[{}]}),null);
+{
+  const q={id:'n1',kind:'number',unit:'đ',title:'T',prompt:'P'};
+  const u=ui();u.drafts['practice|x|n1']={values:{ans:'6+4'},order:[],entries:[]};
+  const h=questionView(q,{mode:'practice',context:'x',lesson:'x',ui:u});
+  assert.ok(h.includes('type="text"')&&h.includes('data-amount="đ"')&&!h.includes('type="number"')&&!h.includes('inputmode="numeric"'),'a text box with the full keyboard');
+  assert.ok(h.includes('data-amt-note>= 10</small>'),'a saved draft shows its value at once');
+  u.drafts['practice|x|n1'].values.ans=2500000;   // a value kept as a number still shows
+  assert.ok(questionView(q,{mode:'practice',context:'x',lesson:'x',ui:u}).includes('value="2500000"'));
+}
 // The view rides on as_* answers: opening asks once (with the glossary), a tab whose part is missing asks again,
 // a replayed answer (no view) asks again; every command carries the tab on screen.
 {
