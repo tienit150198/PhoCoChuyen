@@ -62,6 +62,7 @@ NOTES = {
     'pagoda': 'Bốn giờ sáng thỉnh chuông, 11:00 cúng ngọ; ngày rằm tối có lễ cầu an.',
     'photobooth': 'Tiệm mở từ trưa; 17:00 học sinh tan trường, tối cuối tuần chợ đêm đông nhất.',
     'giupviec': 'Lịch hẹn từ 7:00; khách đi làm để chìa khóa, chiều tối khách về đi kiểm nhà.',
+    'naucom': 'Ra chợ từ sáng, 8 giờ cá tôm tươi nhất; cơm phải lên mâm trước giờ cả nhà về ăn.',
     'homestay': 'Quầy lễ tân trực tới 22:00; khách tới muộn gọi chuông, sáng mai bàn giao.',
     'milk_tea': 'Ngày đông khách có thể bán quá giờ, muộn nhất 23:00.',
     'corp_accounting': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',

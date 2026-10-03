@@ -70,7 +70,7 @@ CERT_WEAR = 'cert:'   # a worn certificate: 'cert:<group id>' (game/certificates
 CH_UNLOCKS = {
     # New players get every storefront at once; the service places follow after the first day.
     1: ('milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist', 'mother_baby', 'restaurant'),
-    2: ('pet_care', 'salon', 'repair', 'farm', 'homestay', 'homemaker', 'nail', 'pagoda', 'photobooth', 'giupviec'),
+    2: ('pet_care', 'salon', 'repair', 'farm', 'homestay', 'homemaker', 'nail', 'pagoda', 'photobooth', 'giupviec', 'naucom'),
     3: ('clothing', 'pet_shop', 'tra_da', 'fruit', 'garbage', 'drain', 'ice_cream', 'pho', 'com'),
     4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting', 'pilot', 'flight_attendant'),
     5: ('corp_accounting', 'tax_payroll', 'hr_admin', 'secretary', 'it_helpdesk'),

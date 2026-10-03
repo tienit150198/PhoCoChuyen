@@ -56,6 +56,7 @@ HOURS = {
     'pagoda': (5 * 60, 19 * 60),        # the gate opens after morning chanting, closes after the evening one
     'photobooth': (11 * 60, 22 * 60),   # after lunch, the school run at 17:00, the night market
     'giupviec': (7 * 60, 19 * 60),      # bookings from 7:00, clients walk through after work
+    'naucom': (6 * 60 + 30, 19 * 60),   # the market at dawn, the family's dinner on the table before going home
 }
 EARLY = 30  # goods due after closing wait at the door this many minutes before the next opening
 # How much later than its window a late delivery comes (minutes), by supplier kind; a

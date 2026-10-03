@@ -286,7 +286,7 @@ class Saves(unittest.TestCase):
         s = hungry(s)
         s, _ = act(s, 'jr_fridge_eat', item='ca_phe')
         validate_state(s)
-        # The careers this release adds (phở, cơm, photobooth, giúp việc) are unknown there: a rollback takes their blocks out
+        # The careers this release adds (phở, cơm, photobooth, giúp việc, nấu cơm nhà) are unknown there: a rollback takes their blocks out
         # (tests/test_career_pho.py rollback_strip) and they come back fresh here.
         prog = ('import json,sys;from game.engine import validate_state,migrate_state,apply_action,public_state,GameError;'
                 'from game.content import CAREERS;s=json.load(sys.stdin);s["careers"]={k:v for k,v in s["careers"].items() if k in CAREERS};'

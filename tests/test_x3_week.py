@@ -82,8 +82,9 @@ class Week(unittest.TestCase):
         self.assertLessEqual(max(map(len, after)) - min(map(len, after)), 1)
 
     def test_this_release_s_careers_join_without_moving_anyone(self):
-        """pho, com, photobooth and giupviec (1.5.0) each take one day; each one added later moves none added before."""
-        added = ['pho', 'com', 'photobooth', 'giupviec']
+        """pho, com, photobooth (1.5.0), giupviec and naucom (1.5.1) each take one day; each one added later moves none
+        added before (nor the 35 of FIRST)."""
+        added = ['pho', 'com', 'photobooth', 'giupviec', 'naucom']
         self.assertEqual([c for c in CAREERS if c not in x3.FIRST], added)
         for w in range(52):
             t = at(2026, 9, 28) + w * 7 * 86400
