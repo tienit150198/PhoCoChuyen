@@ -10,7 +10,7 @@
  * The server keeps the clock and the score: every move is a command. Only the open card, the word being
  * fixed, the meeting being placed and the step list being built live in x.ui. */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,mateCards,trackFold,careSummary,foldToggle,
-  goto,gotoAction,guideOf} from './office_kit.js';
+  goto,gotoAction,guideOf,summaryCard} from './office_kit.js';
 import {pending,stepLine} from '../v4/guide.js';
 
 const DONE=['completed','cancelled','referred'];
@@ -325,7 +325,8 @@ export function officeWork(c){
       const dk=typeof data.desk==='string'?`<p class="ow-sum-desk">💬 ${x.esc(data.desk)}</p>`:'';
       const life=careSummary(data.care,x);
       if(!rows.length&&!trust&&!insp&&!life&&!dk)return '';
-      return `<article class="card space-top ow-sum"><h4 class="section-title">${x.esc(c.sum)}</h4>${insp}${trust}${dk}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}${life?`<h4 class="section-title">🧭 Đời sống văn phòng</h4><div class="kv">${life}</div>`:''}</article>`;
+      return summaryCard(x,data,{cls:'ow-sum',title:x.esc(c.sum),brief:data.filed?`${data.filed} hồ sơ đã nộp`:'',
+        body:`${insp}${trust}${dk}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}${life?`<h4 class="section-title">🧭 Đời sống văn phòng</h4><div class="kv">${life}</div>`:''}`});
     },
     tick(root){keepBarAboveFooter(root);},
     actions:{

@@ -440,3 +440,15 @@ html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-ca
 .ow-sum .ow-sum-audit.bad{color:var(--bad)}
 .career-job.ok.ow .ow-sheet tbody th,.career-job.ok.ow .ow-sheet thead th:first-child{position:sticky;left:0;z-index:1;background:var(--surface)}
 .career-job.ok.ow .ow-sheet thead th:first-child{background:var(--surface-2)}
+/* Day summary: "🌅 Ngày mai" first (office_kit.tomorrowPlan), the day's figures folded under it (summaryCard). */
+.ok-tm .section-title{margin:0 0 6px}
+.ok-tm-list{margin:0 0 8px;padding:0;list-style:none;display:grid;gap:4px;font-size:.933rem;line-height:1.45}
+.ok-tm-list li{padding:6px 10px;border-radius:10px;background:var(--surface-2);overflow-wrap:anywhere}
+.btn.ok-tm-go{min-height:44px}
+.ok-sum-more{margin-top:10px}
+.ok-sum-more>summary{display:flex;align-items:center;gap:4px 6px;min-height:44px;cursor:pointer;font-weight:700;list-style:none}
+.ok-sum-more>summary::-webkit-details-marker{display:none}
+.ok-sum-more>summary small{flex:1;min-width:0;font-weight:400;color:var(--muted)}
+.ok-sum-more>summary::after{content:"▸";flex:none;margin-left:auto;color:var(--muted);font-weight:400}
+.ok-sum-more[open]>summary::after{content:"▾"}
+.ok-sum-more>summary~*{margin-top:6px}

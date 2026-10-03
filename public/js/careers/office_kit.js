@@ -141,6 +141,37 @@ export function careSummary(care,x){
   return rows.join('');
 }
 
+/** "🌅 Ngày mai" at the top of an office desk's day summary, while the day is closed: the dossiers carried over (due
+ * 10:00), a late start after overtime, then what the server already shows for the next day in the room (its calendar
+ * items, its luck, rules that change, low energy) and `extra` lines (ready HTML), with one plain button (the footer's
+ * "Bắt đầu ngày N" stays the one primary): the dossiers kept for tomorrow, or Chuẩn bị. '' when there is nothing to
+ * say or the next day has started (the room shows that day). */
+export function tomorrowPlan(x,data,extra=[]){
+  const room=x.room;if(room.open)return '';
+  const o=data?.office||{},d=room.data||{},lines=[];
+  if(o.carried)lines.push(`📂 <b>${Number(o.carried)} hồ sơ dở</b> để sáng mai · hạn 10:00`);
+  if(o.overtime)lines.push('🌙 Hôm nay tăng ca: mai vào muộn 30 phút');
+  const due=(d.care?.calendar?.[0]?.items||[]).filter(i=>i.state==='due'||i.state==='late');
+  if(due.length)lines.push(`📅 Hạn mai: ${due.map(i=>`<span class="ok-tm-due">${x.esc(i.emoji)} ${x.esc(i.text)}</span>${i.state==='late'?' <span>(đã trễ)</span>':''}`).join(' · ')}`);
+  const mod=d.today?.mod;
+  if(mod&&mod.id!=='normal')lines.push(`${x.esc(mod.emoji)} Mai: <b>${x.esc(mod.name)}</b>${mod.text?` — ${x.esc(mod.text)}`:''}`);
+  const fresh=(d.today?.rules||[]).filter(r=>r.new).length;
+  if(fresh)lines.push(`📋 <b>${fresh} quy định</b> đổi từ mai`);
+  const en=d.care?.energy;
+  if(en?.low)lines.push(`😮‍💨 Sức bền ${Number(en.value)||0}/100: mai làm chậm hơn, không tăng ca được`);
+  lines.push(...extra.filter(Boolean));
+  if(!lines.length)return '';
+  const go=o.carried?x.button(`📂 Xem ${Number(o.carried)} hồ sơ dở`,'queue',{},'small ok-tm-go'):x.button('🗂️ Chuẩn bị ngày mai','prepare',{},'small ok-tm-go');
+  return `<section class="ok-tm" aria-label="Ngày mai"><h4 class="section-title">🌅 Ngày mai</h4><ul class="ok-tm-list">${lines.map(l=>`<li>${l}</li>`).join('')}</ul>${go}</section>`;
+}
+/** An office desk's day-summary card: "🌅 Ngày mai" first when there is one, the day's figures (`body`) folded under
+ * `title` (escaped HTML) with a short `brief`; without it, the card as before. */
+export function summaryCard(x,data,{cls,title,body,brief='',extra=[]}){
+  const plan=tomorrowPlan(x,data,extra);
+  if(!plan)return `<article class="card space-top ${cls}"><h4 class="section-title">${title}</h4>${body}</article>`;
+  return `<article class="card space-top ${cls}">${plan}<details class="ok-sum-more"><summary>${title}${brief?` <small>${x.esc(brief)}</small>`:''}</summary>${body}</details></article>`;
+}
+
 /* ---------------------------------------------------------------- inbox */
 const emoji=e=>`<span class="ok-emoji">${e}</span>`;
 /** One message. Every field is ready HTML (escape before). `act` makes the row a button. */

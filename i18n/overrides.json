@@ -1,5 +1,13 @@
 {
  "strings": {
+  "để sáng mai · hạn 10:00": "for tomorrow morning · due 10:00",
+  "🌙 Hôm nay tăng ca: mai vào muộn 30 phút": "🌙 Overtime today: you start 30 minutes late tomorrow",
+  "📅 Hạn mai:": "📅 Due tomorrow:",
+  "(đã trễ)": "(late)",
+  "Mai:": "Tomorrow:",
+  "đổi từ mai": "change from tomorrow",
+  "sẽ tới khiếu nại sáng mai": "will come to complain tomorrow morning",
+  "🗂️ Chuẩn bị ngày mai": "🗂️ Prepare for tomorrow",
   "Chơi mượt hơn: mỗi lần chạm tải ít dữ liệu hơn khoảng 5 lần, quán trà sữa vẽ nhẹ hơn, đỡ giật trên máy yếu.": "Smoother play: each tap downloads about 5 times less data and the milk tea shop draws lighter, with less stutter on slower phones.",
   "Phi tiêu đổi thành Phóng dao: cắm đủ dao qua màn, dừng nhận thưởng hay liều chơi tiếp, lâu lâu có màn x2!": "Darts is now Knife Throw: stick enough knives to clear a level, then cash out or risk the next one, with an occasional x2 level!",
   "Chỉ chỗ": "Show where",
@@ -3606,6 +3614,15 @@
   "Qua màn": "Level cleared"
  },
  "patterns": {
+  "$1 hồ sơ dở": "$1 unfinished dossier(s)",
+  "📂 Xem $1 hồ sơ dở": "📂 See $1 unfinished dossier(s)",
+  "$1 quy định": "$1 rule(s)",
+  "😮‍💨 Sức bền $1/100: mai làm chậm hơn, không tăng ca được": "😮‍💨 Stamina $1/100: slower work tomorrow, no overtime",
+  "$1 hồ sơ đã nộp": "$1 dossier(s) handed in",
+  "$1 bảng lương đã chuyển": "$1 payroll(s) paid out",
+  "$1 việc đã chốt": "$1 task(s) closed",
+  "$1 hồ sơ hoàn tất": "$1 dossier(s) completed",
+  "$1 chứng từ đã đóng dấu": "$1 voucher(s) stamped",
   "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây nhé.": "Pass the “$1” certificate in Accounting school before taking a job here.",
   "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây.": "Pass the “$1” certificate in Accounting school before taking a job here.",
   "🔒 Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây.": "🔒 Pass the “$1” certificate in Accounting school before taking a job here.",

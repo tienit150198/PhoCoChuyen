@@ -3,7 +3,7 @@
  *  tờ khai làm từng bước với giấy tờ gốc và máy tính bàn), 📋 Quy định (quy định kỳ lương + sổ tay luật),
  *  and a sticky bar with the next step and the main action. */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle,
-  coachOf,goto,gotoAction,guideOf,shut,shutWork,shutBar} from './office_kit.js';
+  coachOf,goto,gotoAction,guideOf,shut,shutWork,shutBar,summaryCard} from './office_kit.js';
 import {pending,stepLine} from '../v4/guide.js';
 
 const BOSS='Chị Hồng';
@@ -472,7 +472,9 @@ export default {
     for(const f of Array.isArray(data.filings)?data.filings:[])row(f.boss?'Chị Hồng nộp thay':'Tờ khai quá hạn',`${f.name}${f.fee?` · −${f.fee} xu chậm nộp`:''}`);
     const life=careSummary(data.care,x);
     if(!rows.length&&!trust&&!insp&&!life)return '';
-    return `<article class="card space-top tp-sum"><h4 class="section-title">🧮 Bàn lương hôm nay</h4>${insp}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}${life?`<h4 class="section-title">🧭 Đời sống văn phòng</h4><div class="kv">${life}</div>`:''}</article>`;
+    return summaryCard(x,data,{cls:'tp-sum',title:'🧮 Bàn lương hôm nay',brief:data.grids?`${data.grids} bảng lương đã chuyển`:'',
+      extra:[data.claims_new?`🙋 <b>${Number(data.claims_new)} người</b> sẽ tới khiếu nại sáng mai`:''],
+      body:`${insp}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}${life?`<h4 class="section-title">🧭 Đời sống văn phòng</h4><div class="kv">${life}</div>`:''}`});
   },
   tick(root){keepBarAboveFooter(root);},
   actions:{
