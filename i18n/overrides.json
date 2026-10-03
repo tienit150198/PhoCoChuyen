@@ -9927,7 +9927,10 @@
   "Gần đây": "Recent",
   "Dữ liệu không hợp lệ.": "Invalid data.",
   "⏸ Tạm đóng": "⏸ Closed",
-  "⏸ Đang tạm đóng": "⏸ Closed for now"
+  "⏸ Đang tạm đóng": "⏸ Closed for now",
+  "Bạn không có nhà chung với người ấy để về.": "You have no shared home with your partner to go back to.",
+  "Bạn đang ở nhà chung rồi.": "You already live in the shared home.",
+  "💞 Về ở chung": "💞 Move back in together"
  },
  "patterns": {
   "$1 Đi xe": "$1 Ride",
@@ -12050,7 +12053,13 @@
   "$1 nhận được khi vào game. 💛": "$1 gets it when they log in. 💛",
   "Mở ở chương $1: làm xong việc cần làm của chương này trong 📋 Danh sách.": "Opens in chapter $1: finish this chapter's to-dos in 📋 List.",
   "Mở ở chương $1. Đang ở chương $2.": "Opens in chapter $1. You are in chapter $2.",
-  "Bạn đã tạm đóng nơi này. Mở lại tốn $1 xu (quỹ tiệm trả trước, thiếu thì lấy từ ví) rồi vào làm ngay.": "You closed this place for now. Reopening costs $1 xu (from the shop's fund, then your wallet if short) and you go straight in."
+  "Bạn đã tạm đóng nơi này. Mở lại tốn $1 xu (quỹ tiệm trả trước, thiếu thì lấy từ ví) rồi vào làm ngay.": "You closed this place for now. Reopening costs $1 xu (from the shop's fund, then your wallet if short) and you go straight in.",
+  "Dọn về ở chung $1 của $2.": "Moved back into $2's $1.",
+  "Đã dọn về ở chung $1 của $2, xe chở đồ $3 xu. $4 giờ để trống. $5": "Moved back into $2's $1, the truck cost $3 xu. $4 is empty now. $5",
+  "Về ở chung $1?": "Move back into $1 together?",
+  "Thuê xe chở đồ $1. $2 sẽ để trống, vẫn là nhà của bạn. Đồ trang trí gói vào túi đồ.": "A moving truck costs $1. $2 stays empty and is still yours. Your decor goes into your bag.",
+  "Bạn đang ở $1. Muốn về ở chung thì dọn về đây, $2 vẫn là nhà của bạn.": "You live in $1. To live together again, move back here; $2 stays yours.",
+  "(thôi ở chung $1)": "(leaving the shared $1)"
  },
   "Góc hẹn hò: ngồi ghế đá chờ ghép đôi, hẹn 5 phút, cùng thả tim là thành “Đang tìm hiểu”.": "Dating corner: sit on a bench to be matched, a 5-minute date, both tap the heart to start “Getting to know”.",
   "Đám cưới trực tiếp: chọn ngày giờ thật, cả phố vào dự, khách nhận +15 xu mỗi 5 phút.": "Live weddings: pick a real date and time, the whole phố can attend, guests get +15 xu every 5 minutes.",
