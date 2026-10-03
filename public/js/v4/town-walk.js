@@ -18,7 +18,7 @@ import {figure,paintPlayer,CANVAS,lookOf} from './look.js';
 import {t as tr,language} from './i18n.js';
 import {lightAt} from './dayclock.js';
 import {escapeHTML as esc,icon} from '../icons.js';
-import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,rider,steer,halfOf} from './ride.js';
+import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,rider,steer,halfOf,loadSpouse} from './ride.js';
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
@@ -134,7 +134,7 @@ function refresh(){
   const t=tint();W.tintNow=t;
   W.stKey=JSON.stringify([W.pl.items.map(it=>{const s=st(it);return [s.lock,s.cur,s.x3,s.glow,s.paused,s.off,s.name];}),t?.m??-1,language()]);
   const cur=S().current||null;
-  setRide(false);
+  setRide(false);loadSpouse(W.env.api).then(()=>setRide(false));   // 💑 the spouse's vehicles too (cached a minute)
   if(!W.me||cur!==W.lastCur){W.lastCur=cur;place(spawn());W.free=false;snap();hide();parkAtDoor();}
   else if(W.at){const it=W.pl.items.find(x=>x.key===W.at);if(it&&!W.card.hidden)showCard(it,false);}
   W.drawn=0;kick();
@@ -155,7 +155,7 @@ function place(p){const q=nearest(W.pl,p);W.me={x:q[0],y:q[1],path:null,step:0,l
 /** The vehicle ridden now (the toggle, the save), the button brought up to date. `fresh`: a tap on the toggle (or a
  * change in the garage) while on the map: hop on where the player stands, or off (the vehicle goes home). */
 function setRide(fresh=true){
-  const v=choice(S(),W.env.api.content),key=v?`${v.id}|${v.hex}|${v.plate}`:'';
+  const v=choice(S(),W.env.api.content),key=v?`${v.key}|${v.hex}|${v.plate}`:'';
   if(W.btn){const own=canRide(S(),W.env.api.content);W.btn.hidden=!own;
     if(own){const t=tr(rideLabel(v));if(W.btn.textContent!==t)W.btn.textContent=t;W.btn.setAttribute('aria-pressed',String(!!v));W.btn.title=tr(v?v.name:'Đi bộ');}}
   if(key===W.rideKey)return;

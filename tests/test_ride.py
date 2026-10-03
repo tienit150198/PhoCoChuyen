@@ -39,7 +39,9 @@ class Lists(unittest.TestCase):
     def test_no_cost_and_no_save_change(self):
         src = (ROOT / 'public/js/v4/ride.js').read_text(encoding='utf-8')
         self.assertNotIn('api.act', src)
-        self.assertNotRegex(src, r"\bfetch\(|/api/")
+        self.assertNotRegex(src, r"\bfetch\(|api\.(post|act)\b")
+        # 💑 the only server call: reading the spouse's vehicles (a GET, game/couple.py spouse_cars)
+        self.assertEqual(re.findall(r"/api/[\w/]+", src), ['/api/garage/spouse', '/api/garage/spouse'])
         for f in ('town-walk.js', 'fair-walk.js', 'walk.js'):
             self.assertIn("from './ride.js'", (ROOT / 'public/js/v4' / f).read_text(encoding='utf-8'), f)
 

@@ -94,4 +94,40 @@ for(const kind of new Set(Object.values(R.KINDS))){
   assert.ok(R.halfOf(veh)>40&&R.topOf(veh)>80,kind);
 }
 assert.deepEqual(warned,[],'every vehicle draws without an error');
+// 💑 The spouse's vehicles (GET /api/garage/spouse): listed after mine as "Xe của <tên>", picked by key (owner:id),
+// sent with `o` (the owner's live id); a player with no vehicle of their own rides their spouse's.
+store.clear();
+const SPP='0123456789abcdef';
+R.setSpouse({pid:SPP,name:'Lan',cars:[{id:'xe_ga',color:'xanh',plate:'LAN 02'},{id:'o_to_suv',color:'bac',plate:''},{id:'du_thuyen',color:'navy',plate:''}],ride:'o_to_suv'});
+const mine=save([car('xe_ga','hong',{plate:'MÂY 01'})]);
+assert.deepEqual(R.options(mine,content).map(v=>v.key),['xe_ga',SPP+':o_to_suv',SPP+':xe_ga']);
+assert.deepEqual(R.options(mine,content,{two:true}).map(v=>v.key),['xe_ga',SPP+':xe_ga']);
+const theirs=R.options(mine,content,{two:true})[1];
+assert.deepEqual([theirs.o,theirs.owner,theirs.hex,theirs.plate],[SPP,'Lan','#4f8fd1','LAN 02']);
+assert.equal(R.label(theirs),'🛵 Xe của Lan');
+assert.deepEqual(R.wire(theirs),{v:'xe_ga',c:'xanh',o:SPP});
+assert.deepEqual(R.wire(R.options(mine,content)[0]),{v:'xe_ga',c:'hong'},'my own: no owner on the wire');
+assert.equal(R.next(mine,content,{two:true}).key,SPP+':xe_ga');
+assert.equal(store.get('mnl.ride.pick'),SPP+':xe_ga');
+assert.equal(R.choice(mine,content,{two:true}).owner,'Lan','the pick survives');
+assert.equal(R.next(mine,content,{two:true}),null);
+assert.equal(R.next(mine,content,{two:true}).key,'xe_ga');
+assert.equal(R.choice(save([]),content).owner,'Lan','no vehicle of my own: the spouse one');
+assert.equal(R.canRide(save(null),content),true);
+assert.equal(R.choice(save([car('xe_ga')],null,false),content),null,'story mode off: never');
+R.setSpouse(null);
+assert.equal(R.canRide(save([]),content),false,'not married: as before');
+// The spouse behind the driver: every two-wheeler draws it; a car (the town, no live seat) ignores it.
+warned.length=0;
+for(const kind of ['bicycle','ebike','cub','scooter','mini']){
+  const veh={id:kind,kind,hex:'#4f8fd1',plate:''};
+  for(const face of [-1,1])R.drawRide(c,{x:0,y:0,s:.5,px:2,F,fkey:'a',F2:F,fkey2:'b',v:veh,r:R.rider(face)});
+}
+assert.deepEqual(warned,[],'a pillion draws without an error');
+let fetched=0;
+const api={json:async u=>{fetched++;assert.equal(u,'/api/garage/spouse');return {spouse:{pid:SPP,name:'Minh',cars:[]}};}};
+assert.equal((await R.loadSpouse(api,true)).name,'Minh');
+await R.loadSpouse(api);assert.equal(fetched,1,'once a minute');
+assert.equal(await R.loadSpouse({json:async()=>{throw new Error('404');}},true),R.spouse(),'an older server: kept, never thrown');
+assert.equal(await R.loadSpouse({json:async()=>({spouse:{pid:'nope',name:'x',cars:[]}})},true),null,'an odd answer: none');
 console.log('ride.mjs ok');

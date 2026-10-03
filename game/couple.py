@@ -754,3 +754,45 @@ def alerts(db, sid: str, cid: int | None) -> int:
     if cid:
         n += db.execute('SELECT COUNT(*) FROM couple_moments WHERE couple=? AND sid<>? AND seen=0', (cid, sid)).fetchone()[0]
     return int(n)
+
+
+# ---------------------------------------------------------------- 🛵 the spouse's vehicles (public/js/v4/ride.js)
+SPOUSE_CARS_S = 60.0
+_SPOUSE_CARS: dict = {}   # sid -> (until, view): a save read at most once a minute per player
+
+
+def spouse_cars(store, token: str) -> dict:
+    """GET /api/garage/spouse: {spouse: None} or {spouse: {pid, name, cars: [{id, color, plate}]}}: the husband's /
+    wife's road vehicles a married player may ride too ("Xe của <tên>"; not one in the garage for repairs). `pid` is
+    the spouse's live id, to find them on a stroll or at the fair (sitting behind: live/coride.py). Read-only: riding
+    costs nothing and never changes either save."""
+    from . import garage
+    from . import social
+    sid, display = mr.whoami(store, token)
+    if not sid or display is None:
+        return dict(spouse=None)
+    t = mr.now()
+    got = _SPOUSE_CARS.get(sid)
+    if got and got[0] > t:
+        return got[1]
+    with store.connect() as db:
+        c = mr._bond(db, sid)
+        other = mr._other(c, sid) if c and c['status'] == 'married' else None
+        name = mr._display(db, other) if other else ''
+    out = dict(spouse=None)
+    if other:
+        cars = []
+        read = mr._read_state(store, other)
+        g = garage.get(read[0]) if read else None
+        rui = garage._rui()
+        for vid in garage.ORDER:
+            car = (g or {}).get('cars', {}).get(vid)
+            if not car or garage.VEHICLES[vid]['group'] not in ('bike', 'car') or rui.is_broken(read[0], 'xe', vid):
+                continue
+            paint = car['c'] if car['c'] in garage.PAINT_INDEX else garage.VEHICLES[vid]['paint']
+            cars.append(dict(id=vid, color=paint, plate=car['n']))
+        out = dict(spouse=dict(pid=social.pid_of(other), name=name or 'Người ấy', cars=cars, ride=(g or {}).get('ride')))
+    if len(_SPOUSE_CARS) > 5000:
+        _SPOUSE_CARS.clear()
+    _SPOUSE_CARS[sid] = (t + SPOUSE_CARS_S, out)
+    return out

@@ -23,6 +23,10 @@ Moving (memory only, never the database)
   `r` and `v` (their speed, units a second) only while riding, an `rd` diff {pid, r, v, p, at} tells the room, and
   their path is re-stamped from where they are. Optional everywhere: an older client sends none and ignores them
   (it draws a rider walking, a little behind); a café and a wedding are always on foot.
+  💑 Vợ chồng chung xe (live/coride.py): `r` may name the spouse's vehicle (`o`: its owner's pid); first come drives
+  (the other is answered `walk_taken {by, name}`, also as `taken` in walk_room); `back {to}` sits behind the spouse
+  riding here: the passenger's entry has `b` (the driver's pid) and every walk of the driver is theirs too (`mv`
+  with `b`); a `mv` without `b` is them on foot again.
 
 Talking
 * `say {text}` goes through the chat's store_message (filters, mutes, duplicates, kept like all chat) in the
@@ -42,7 +46,7 @@ Tables and happenings
 Frames (client → server; replies in brackets)
   walk_places {}                                   [walk_places {places: [{id, name, icon, n}]}]
   walk_in {place, look, g, title, titles, r?}      [walk_room {place, room, me, people, tables, geo, hap, at}]
-  walk_out {}  move {x, y}  say {text}  emote {e}  sit {table}  stand {}  topic {}  ride {r}
+  walk_out {}  move {x, y}  say {text}  emote {e}  sit {table}  stand {}  topic {}  ride {r}  back {to}
   card {pid}                                       [card {...}]
   invite {pid}                                     [invite_sent {id, pid}]; the other gets invited {id, pid, name}
   invite_reply {id, ok}                            [both: walk_room of the café | the inviter: invite_no {id}]
@@ -62,7 +66,7 @@ import re
 import secrets
 import time
 
-from . import effects
+from . import coride, effects
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
 from .street_data import (CERTS, COLOR_IDS, EMOTES, LOOK_DEFAULTS, LOOK_IDS, LOOK_SLOTS, PAINTABLE, PLACES, PUBLIC, TINT_MAX,
@@ -205,11 +209,15 @@ GEO = {k: Geo(k, v) for k, v in PLACES.items()}
 
 
 def clean_ride(r) -> dict | None:
-    """The vehicle a player rides ({v, c}) or None (on foot): never refused, anything odd counts as on foot."""
+    """The vehicle a player rides ({v, c, o?}) or None (on foot): never refused, anything odd counts as on foot.
+    `o`: its owner's pid when it is the spouse's (live/coride.py checks it), kept only when it looks like one."""
     if not isinstance(r, dict) or not isinstance(r.get('v'), str) or r['v'] not in RIDES:
         return None
-    c = r.get('c')
-    return dict(v=r['v'], c=c if isinstance(c, str) and _WORD.fullmatch(c) else '')
+    c, o = r.get('c'), r.get('o')
+    out = dict(v=r['v'], c=c if isinstance(c, str) and _WORD.fullmatch(c) else '')
+    if isinstance(o, str) and coride.PID.fullmatch(o):
+        out['o'] = o
+    return out
 
 
 def pos_at(path: list, t0: float, now: float, speed: float = SPEED) -> tuple:
@@ -260,7 +268,7 @@ def clean_look(look, g) -> tuple[dict, str | None]:
 
 
 class Walker:
-    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride')
+    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill')
 
     def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None):
         self.pid, self.player = player.pid, player
@@ -268,10 +276,11 @@ class Walker:
         self.title, self.look, self.g = title, look, g
         self.path, self.t0, self.seat = [list(at), list(at)], now, None
         self.ride = ride
+        self.back = self.pill = None   # 🛵 the driver I sit behind / who sits behind me (pids, live/coride.py)
 
     @property
     def speed(self) -> float:
-        return SPEED * RIDE_FAST if self.ride else SPEED
+        return SPEED * RIDE_FAST if self.ride or self.back else SPEED
 
     def at(self, now: float) -> tuple:
         return pos_at(self.path, self.t0, now, self.speed)
@@ -281,6 +290,8 @@ class Walker:
                  s=list(self.seat) if self.seat else None)
         if self.ride:
             d['r'], d['v'] = self.ride, self.speed
+        if self.back:
+            d['b'], d['v'] = self.back, self.speed
         return d
 
 
@@ -316,6 +327,8 @@ class StreetFeature(Feature):
         self.leave_hooks: list = []    # fn(player): live/wedding.py forgets an overflow guest on walk_out
         self.lb: dict = {}             # sid -> the best weekly leaderboard title held now (game/lb_titles.py)
         self.lb_at = 0.0
+        if self.cfg.street or self.cfg.fair:   # 💑 `back`, `fair_back`, `o` and `b` are understood (live/coride.py)
+            self.cfg.flags_extra['coride'] = True
 
     def enabled(self) -> bool:
         """Moves, bubbles, emotes and tables also run the wedding parties (LIVE_WEDDING); walk_in needs LIVE_STREET."""
@@ -446,6 +459,12 @@ class StreetFeature(Feature):
             return
         if w.seat:
             self._unseat(room, w, time.time())
+        if w.back:   # 🛵 a passenger left: the seat behind is free
+            dr = d['people'].get(w.back)
+            if dr is not None and dr.pill == pid:
+                dr.pill = None
+        if w.pill:   # the driver left: the passenger gets off where they are, on foot
+            self._hop_off(room, d['people'].get(w.pill), time.time())
         for k in [k for k, v in self.invites.items() if pid in (v['frm'], v['to'])]:
             self.invites.pop(k, None)
         self._queue(room, pid, dict(k='out', pid=pid))
@@ -551,13 +570,17 @@ class StreetFeature(Feature):
         await self.lb_fresh()
         title = self.title_of(p, f.get('title'), f.get('titles'))
         await self._ensure_loaded(p)
+        r, by = await coride.check(self.db, self.hub, p, clean_ride(f.get('r')))   # no await from here on
         self._leave_player(p, 'other', keep=conn)
         room = self._pick(place, p)
         now = time.time()
         sx, sy = GEO[place].spots['spawn']
         at = GEO[place].clamp(sx + random.uniform(-150, 150), sy + random.uniform(-45, 45))
-        self._enter(room, conn, Walker(p, look, g, title, at, now, clean_ride(f.get('r'))))
-        return self._snapshot(room, p, now)
+        self._enter(room, conn, Walker(p, look, g, title, at, now, r))
+        out = self._snapshot(room, p, now)
+        if by:
+            out['taken'] = coride.taken_frame('walk_taken', self.hub, by)
+        return out
 
     @on('walk_out', rate=(10, 60))
     async def walk_out(self, conn, f):
@@ -572,12 +595,15 @@ class StreetFeature(Feature):
         x, y = f.get('x'), f.get('y')
         if not (_num(x) and _num(y)):
             raise LiveError('bad', 'Vị trí không hợp lệ.')
+        if w.back:   # 🛵 sitting behind: the driver drives
+            return None
         now = time.time()
         if w.seat:
             self._unseat(room, w, now)
         g = GEO[room.data['place']]
         w.path, w.t0 = g.route(w.at(now), g.clamp(x, y)), now
         self._queue(room, w.pid, dict(k='mv', pid=w.pid, p=w.path, at=round(now, 3)))
+        self._carry(room, w)
         return None
 
     @on('ride', rate=(6, 10))
@@ -585,14 +611,78 @@ class StreetFeature(Feature):
         """🛵 On or off the vehicle mid-stroll (`r`: {v, c} or null). Where they are now stays; the rest of the
         path goes on at the new speed."""
         room, w = self._me(conn)
-        r = clean_ride(f.get('r'))
-        if r == w.ride or GEO[room.data['place']].private:
+        if w.back or GEO[room.data['place']].private:
+            return None
+        r, by = await coride.check(self.db, self.hub, conn.player, clean_ride(f.get('r')))   # no await from here on
+        room, w = self._me(conn)
+        if w.back:
+            return None
+        if by:
+            return coride.taken_frame('walk_taken', self.hub, by)
+        if r == w.ride:
             return None
         now = time.time()
         here, end = w.at(now), tuple(w.path[-1])
+        if r is None and w.pill:
+            self._hop_off(room, room.data['people'].get(w.pill), now)
         w.ride = r
         w.path, w.t0 = GEO[room.data['place']].route(here, end), now
         self._queue(room, w.pid, dict(k='rd', pid=w.pid, r=r, v=w.speed, p=w.path, at=round(now, 3)))
+        self._carry(room, w)
+        return None
+
+    # ---- 🛵 sitting behind the spouse (live/coride.py) ---------------------------------------------------------
+    def _carry(self, room, w: Walker) -> None:
+        """The driver's passenger goes the driver's way (an older client: walking it, a little behind)."""
+        q = room.data['people'].get(w.pill) if w.pill else None
+        if q is None or q.back != w.pid:
+            w.pill = None
+            return
+        q.path, q.t0 = [list(pt) for pt in w.path], w.t0
+        self._queue(room, q.pid, dict(k='mv', pid=q.pid, p=q.path, at=round(q.t0, 3), b=w.pid, v=q.speed))
+
+    def _hop_off(self, room, q, now: float) -> None:
+        """The passenger q gets off where the vehicle is now, on foot (a walk of nowhere: `b` gone)."""
+        if q is None or not q.back:
+            return
+        d = room.data['people'].get(q.back)
+        if d is not None and d.pill == q.pid:
+            d.pill = None
+        here = q.at(now)
+        q.back = None
+        q.path, q.t0 = [list(here), list(here)], now
+        self._queue(room, q.pid, dict(k='mv', pid=q.pid, p=q.path, at=round(now, 3)))
+
+    @on('back', rate=(6, 10))
+    async def back(self, conn, f):
+        """🛵 `back {to}`: sit behind my husband / wife riding here (to: null: get off)."""
+        room, w = self._me(conn)
+        to = f.get('to')
+        if to is None:
+            self._hop_off(room, w, time.time())
+            return None
+        if not isinstance(to, str) or not coride.PID.fullmatch(to):
+            raise LiveError('bad', 'Không có ai như vậy.')
+        sp = await coride.spouse(self.db, conn.player)
+        room, w = self._me(conn)
+        d = room.data['people'].get(to)
+        if sp != to or d is None or GEO[room.data['place']].private:
+            raise LiveError('no_back', 'Chỉ ngồi sau xe của vợ/chồng mình thôi.')
+        if w.back == to:
+            return None
+        if not d.ride or d.back or d.pill not in (None, w.pid):
+            raise LiveError('no_back', 'Xe này không còn chỗ ngồi sau.')
+        now = time.time()
+        if w.seat:
+            self._unseat(room, w, now)
+        if w.pill:
+            self._hop_off(room, room.data['people'].get(w.pill), now)
+        if w.ride:   # off my own vehicle first (it goes home)
+            here = w.at(now)
+            w.ride, w.path, w.t0 = None, [list(here), list(here)], now
+            self._queue(room, w.pid, dict(k='rd', pid=w.pid, r=None, v=w.speed, p=w.path, at=round(now, 3)))
+        w.back, d.pill = to, w.pid
+        self._carry(room, d)
         return None
 
     @on('say', rate=(5, 10))
@@ -643,6 +733,9 @@ class StreetFeature(Feature):
         now = time.time()
         if w.seat:
             self._unseat(room, w, now)
+        self._hop_off(room, w, now)
+        if w.pill:   # parking to sit: the passenger gets off too
+            self._hop_off(room, room.data['people'].get(w.pill), now)
         si = tb.seats.index(None)
         tb.seats[si] = w.pid
         w.seat = (i, si)

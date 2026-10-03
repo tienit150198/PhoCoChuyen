@@ -1,5 +1,13 @@
 {
  "strings": {
+  "Đang ngồi sau xe của": "Riding behind",
+  "đang lái xe này — ngồi sau nhé?": "is driving this one — hop on behind?",
+  "🛵 Ngồi sau": "🛵 Hop on behind",
+  "Ngồi sau": "Hop on behind",
+  "Xuống xe": "Get off",
+  "Chỉ ngồi sau xe của vợ/chồng mình thôi.": "You can only ride behind your own husband or wife.",
+  "Xe này không còn chỗ ngồi sau.": "There's no free seat behind on this one.",
+  "Không có ai như vậy.": "No such person.",
   "Màn hình chính giờ là bản đồ phố: đi dạo rồi bước vào nơi làm việc. Muốn danh sách cũ thì bấm 📋 Danh sách.": "The home screen is now a town map: stroll and walk into your workplace. Prefer the old list? Tap 📋 List.",
   "Có xe là chạy được quanh phố, hội chợ và đi dạo! Xe đỗ ngay cửa, bấm nút để đổi xe hoặc đi bộ.": "Own a vehicle? Ride it around town, the fair and strolls! It parks by the door; tap the button to switch or walk.",
   "Giao hàng có chế độ Tự lái: tự chạy xe máy qua phố, dừng trước nhà có người vẫy tay. Muốn nhanh thì bấm ⏩ Đi nhanh.": "Delivery now has Drive mode: ride your scooter through town and stop where someone waves. In a hurry? Tap ⏩ Quick ride.",
@@ -9928,6 +9936,11 @@
   "Dữ liệu không hợp lệ.": "Invalid data."
  },
  "patterns": {
+  "🛵 Đang ngồi sau xe của $1": "🛵 Riding behind $1",
+  "Đang ngồi sau xe của $1": "Riding behind $1",
+  "$1 đang lái xe này — ngồi sau nhé?": "$1 is driving this one — hop on behind?",
+  "$1 Xe của $2": "$1 $2's ride",
+  "Xe của $1": "$1's ride",
   "$1 Đi xe": "$1 Ride",
   "Vào $1": "Go in $1",
   "Đi học $1": "Go study $1",
