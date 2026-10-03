@@ -101,6 +101,17 @@ function plotCard(p,x){
     <b>${c?x.esc(c.name):'Luống trống'}</b><small>${c?x.esc(when(p)):`Nghỉ đất · màu ${p.soil}`}</small>${meters(p,x)}
     <span class="fa-icons">${c?`<em class="day">ngày ${p.day_no}</em>`:''}${'🌾'.repeat(p.weeds)}${'🐛'.repeat(p.seen||0)}${p.soil<soilLow(x)?'<em class="poor">bạc màu</em>':''}${c&&!p.organic?'<em class="chem">hóa chất</em>':''}${p.safe_in?`<em class="phi">⏳ ${p.safe_in}</em>`:''}</span></button>`;
 }
+/* Phân bón lá thúc: bought from the HTX right at the bed, sprayed in 10% doses. The server sends up to three
+ * amounts with their price and the harvest day they would give, or why the bed cannot take one now. */
+function thucBlock(p,x){
+  const t=p.thuc;if(!t||!Array.isArray(t.options))return '';
+  const btn=o=>x.confirmCmd(`<b>−${o.pct}%</b> <small>${o.cost} xu</small>${o.eta!=null?` <small>chín ${DAYS(o.eta)}</small>`:''}`,'fa_boost',{plot:p.id,pct:o.pct},
+    `Mua ${o.pct/t.step} liều phân bón lá thúc (${o.cost} xu) phun luống ${p.id}? Thời gian lớn rút thêm ${o.pct}%, đất màu −${o.pct/t.step*t.soil}.`,'small ghost fa-thuc-dose',!o.ok);
+  const why=t.why||t.options.find(o=>!o.ok)?.why;
+  return `<div class="fa-thuc"><p class="small"><b>🧴 Phân bón lá thúc</b> <small class="muted">đạm cá, hữu cơ · đã thúc ${t.pct}/${t.max}%</small></p>
+    <p class="small muted">Mỗi liều rút ${t.step}% thời gian lớn, tốn ${t.soil} đất màu. Tối đa ${t.max}% mỗi vụ.</p>
+    ${t.options.length?`<div class="fa-actions">${t.options.map(btn).join('')}</div>`:''}${why?`<p class="small fa-why">${x.esc(why)}</p>`:''}</div>`;
+}
 function plotPanel(p,x){
   if(!p)return '';
   const th=x.cc.thresholds,m=x.cc.moisture,inv=x.room.inventory||{stock:{}},st=inv.stock||{},level=x.room.level||1;
@@ -125,7 +136,7 @@ function plotPanel(p,x){
       <dt>Đất màu</dt><dd>${p.soil}/100 ${p.soil<soilLow(x)?'<b class="fa-bad">bạc màu: cây lớn chậm</b>':''}<small class="muted"> · mỗi đêm cây ăn ${c.feed||0}</small></dd>
       <dt>Độ ẩm</dt><dd>${p.moisture}% <small class="muted">(lý tưởng ${m.low}–${m.high}%)</small></dd>
       <dt>Cỏ dại</dt><dd>${p.weeds}/3</dd><dt>Sâu</dt><dd>${p.scouted_ago==null?'?':p.seen+'/3'} · ${x.esc(scouted)}${p.seen>=2?' · <b class="fa-bad">đêm nay lan sang luống bên</b>':''}</dd>
-      <dt>Phân đã bón</dt><dd>${[p.compost?'compost':'',p.npk?'NPK':''].filter(Boolean).join(' + ')||'chưa'}</dd><dt>Cách ly</dt><dd>${p.safe_in?`<b class="fa-bad">còn ${p.safe_in} nhịp</b>`:'an toàn'}</dd></dl>
+      <dt>Phân đã bón</dt><dd>${[p.compost?'compost':'',p.npk?'NPK':'',p.thuc?.pct?`thúc −${p.thuc.pct}%`:''].filter(Boolean).join(' + ')||'chưa'}</dd><dt>Cách ly</dt><dd>${p.safe_in?`<b class="fa-bad">còn ${p.safe_in} nhịp</b>`:'an toàn'}</dd></dl>
     <div class="fa-actions">
       ${x.cmd('💧 Tưới','fa_water',{plot:p.id},'small')}
       ${x.cmd('⛏️ Khơi rãnh','fa_drain',{plot:p.id},'small ghost',p.moisture<=m.high)}
@@ -138,7 +149,7 @@ function plotPanel(p,x){
       ${x.confirmCmd(`🧪 NPK (${st.npk||0})`,'fa_fertilize',{plot:p.id,kind:'npk'},`Bón NPK giúp cây lớn nhanh, nhưng lô này sẽ KHÔNG còn là hữu cơ và phải cách ly ${x.cc.phi.npk} nhịp trước khi thu. Nhật ký sẽ ghi lại.`,'small ghost',p.npk||!st.npk||p.growth>=th.over)}
       ${x.cmd(`🌿 Neem sinh học (${st.bio_spray||0})`,'fa_spray',{plot:p.id,kind:'bio'},'small',!st.bio_spray)}
       ${x.confirmCmd(`☠️ Thuốc hóa học (${st.chem_spray||0})`,'fa_spray',{plot:p.id,kind:'chem'},`${data(x).bees?`Ong của anh Lâm đang ở cạnh vườn: phun bây giờ ong sẽ chết và phải đền ${x.cc.bee_fine} xu. `:''}Thuốc hóa học diệt sạch sâu nhưng lô mất chuẩn hữu cơ và phải cách ly ${x.cc.phi.chem} nhịp. Đã thăm sâu chưa?`,'small danger',!st.chem_spray)}
-    </div>
+    </div>${thucBlock(p,x)}
     <div class="row wrap space-top">${x.confirmCmd('🧺 THU HOẠCH','fa_harvest',{plot:p.id},harvestQ,`primary ${p.safe_in?'danger':''}`,!canHarvest)}
       ${x.confirmCmd('🧹 Nhổ bỏ, ủ phân','fa_clear',{plot:p.id},'Nhổ bỏ toàn bộ cây trên luống này?','ghost small')}</div></div>`;
 }
