@@ -16,7 +16,7 @@ Two ways in
   {why: 'timeout'}`; `booth_cancel` leaves the queue.
 
 In a room
-* The host picks the frame (`booth_set {frame}`); everyone picks their own pose and prop (`booth_set {pose, prop}`);
+* The host picks the frame and the backdrop (`booth_set {frame, bg}`; public/js/v4/photo-frames.js FRAMES, BACKDROPS); everyone picks their own pose and prop (`booth_set {pose, prop}`);
   ids are short lowercase words (ID), the list is the client's (an id a client does not know is drawn as the default).
 * `booth_ready`: the player has paid their ticket (fair_photo on the game server; the client sends this after it).
   `booth_go` (the host, when everyone is ready): `booth_shoot {n, gap, id}` to all, each client counts down and
@@ -27,10 +27,10 @@ In a room
 Nothing but a display name and the look the client draws (live/street.py clean_look) is shared.
 
 Frames (client → server; replies in brackets)
-  booth_make {look, g}         [booth_room {room, code, mode, host, me, frame, cap, people: [{pid, name, lk, g, pose,
+  booth_make {look, g}         [booth_room {room, code, mode, host, me, frame, bg, cap, people: [{pid, name, lk, g, pose,
                                 prop, ready}], shooting}]
   booth_join {code, look, g}   [booth_room]          booth_find {look, g}   [booth_wait {secs}] or [booth_room]
-  booth_set {frame?, pose?, prop?}  booth_ready {}  booth_go {}  booth_kick {pid}
+  booth_set {frame?, bg?, pose?, prop?}  booth_ready {}  booth_go {}  booth_kick {pid}
   booth_cancel {} [booth_left {why: 'cancel'}]      booth_out {} [booth_left {why: 'out'}]
 Server pushes: booth_room (after every change, to everyone in it), booth_shoot {n, gap, id}, booth_none {why},
 booth_left {why: other | kick | blocked | idle}.
@@ -123,7 +123,7 @@ class BoothFeature(Feature):
                 raise LiveError('full', 'Buồng chụp đông quá, lát quay lại nhé.')
         rid = PREFIX + (code or f'~{self.seq}')
         room = self.hub.room(rid, cap=CAP if mode == 'friends' else PAIR, on_empty=self._empty)
-        room.data.update(code=code or '', mode=mode, host=None, people={}, frame='hoi_cho', last=time.monotonic(),
+        room.data.update(code=code or '', mode=mode, host=None, people={}, frame='dem_hoi', bg='kem', last=time.monotonic(),
                          shoot_until=0.0, n=0, banned=set(), shot=0)
         self.made += 1
         return room
@@ -147,7 +147,7 @@ class BoothFeature(Feature):
     def snapshot(self, room) -> dict:
         d = room.data
         return dict(t='booth_room', room=room.id[len(PREFIX):], code=d['code'], mode=d['mode'], host=d['host'],
-                    frame=d['frame'], cap=room.cap, shooting=d['shoot_until'] > time.monotonic(),
+                    frame=d['frame'], bg=d['bg'], cap=room.cap, shooting=d['shoot_until'] > time.monotonic(),
                     people=[m.public() for m in d['people'].values()])
 
     def _tell(self, room) -> None:
@@ -294,10 +294,13 @@ class BoothFeature(Feature):
     async def booth_set(self, conn, f):
         room, m = self._mine(conn)
         d = room.data
-        if 'frame' in f:
+        if 'frame' in f or 'bg' in f:
             if d['host'] != m.pid:
                 raise LiveError('host', 'Chủ phòng chọn khung nha.')
-            d['frame'] = clean_id(f.get('frame'), 'hoi_cho')
+            if 'frame' in f:
+                d['frame'] = clean_id(f.get('frame'), 'dem_hoi')
+            if 'bg' in f:
+                d['bg'] = clean_id(f.get('bg'), 'kem')
         if 'pose' in f:
             m.pose = clean_id(f.get('pose'), 'dung')
         if 'prop' in f:

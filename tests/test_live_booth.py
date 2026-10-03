@@ -22,7 +22,7 @@ class Units(unittest.TestCase):
         self.assertFalse(set('01ILO') & set(bt.CODE_CHARS))
 
     def test_ids_never_refused(self):
-        self.assertEqual(bt.clean_id('tet', 'hoi_cho'), 'tet')
+        self.assertEqual(bt.clean_id('tet', 'dem_hoi'), 'tet')
         self.assertEqual(bt.clean_id('mu_tiec2', 'none'), 'mu_tiec2')
         for odd in (None, '', 'TET', 'tết', 'x' * 17, '../a', 5, ['tet']):
             self.assertEqual(bt.clean_id(odd, 'dung'), 'dung')
@@ -69,7 +69,7 @@ class Friends(BoothCase):
         code = r['code']
         self.assertEqual(len(code), bt.CODE_LEN)
         self.assertTrue(set(code) <= set(bt.CODE_CHARS))
-        self.assertEqual((r['mode'], r['host'], r['me'], r['cap'], r['frame'], r['shooting']), ('friends', a.pid, a.pid, bt.CAP, 'hoi_cho', False))
+        self.assertEqual((r['mode'], r['host'], r['me'], r['cap'], r['frame'], r['bg'], r['shooting']), ('friends', a.pid, a.pid, bt.CAP, 'dem_hoi', 'kem', False))
         self.assertEqual([p['pid'] for p in r['people']], [a.pid])
         self.assertEqual(r['people'][0]['name'], 'Lan Anh')
         self.assertEqual(r['people'][0]['lk']['hair'], 'toc_bob')
@@ -106,6 +106,9 @@ class Friends(BoothCase):
         self.assertEqual((await b.expect('booth_room'))['frame'], 'tet')
         e = await b.call('booth_set', 'error', frame='bien')
         self.assertEqual(e['code'], 'host')
+        self.assertEqual((await b.call('booth_set', 'error', bg='hoa'))['code'], 'host')
+        await a.send(t='booth_set', bg='kim_tuyen')
+        self.assertEqual((await self.last(b))['bg'], 'kim_tuyen')
         await b.send(t='booth_set', pose='vay', prop='bong_bay')
         r = await self.last(a)
         me = {p['pid']: p for p in r['people']}[b.pid]
