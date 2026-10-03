@@ -504,6 +504,13 @@ html.reduce-motion .tt-meter b,html.reduce-motion .tt-card{transition:none}
 .tt-board-more.is-open>.tt-fold-sum small::after{content:" ▴"}
 .tt-board-more>.fold-body{display:flex;flex-direction:column;gap:6px;padding:0 0 6px}
 .tt-class-fold .tt-fold>.tt-fold-sum{flex-wrap:wrap}
+/* The seat fold keeps its name on one line (it was squeezed to a word per line by the faces at 390 px). */
+.tt-class-fold .tt-fold>.tt-fold-sum>span:not([aria-hidden]){flex:0 0 auto;white-space:nowrap}
+/* Phone: the periods scroll sideways under a soft right edge, so a cut cell reads as "more this way", not as
+   squeezed under the class meter; the last cell scrolls clear of the fade. */
+@container sheet (max-width:560px){
+  .tt-toprow .tt-periods-wrap{padding-right:22px;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 26px),transparent)}
+}
 .tt-faces{display:flex;flex-wrap:wrap;gap:2px;flex:1 1 120px;font-size:1.05rem}
 .tt-faces i{font-style:normal;display:grid;place-items:center;min-width:26px;height:26px;padding:0 2px;border-radius:50%}
 .tt-faces i.tone-warn{background:var(--warn-soft);box-shadow:0 0 0 1.5px var(--warn)}
