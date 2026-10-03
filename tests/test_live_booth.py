@@ -134,6 +134,9 @@ class Friends(BoothCase):
         b.frames.clear()
         await b.send(t='booth_set', pose='tim')   # poses change between the shots
         self.assertEqual({p['pid']: p for p in (await self.last(a))['people']}[b.pid]['pose'], 'tim')
+        self.app.hub.rooms[bt.PREFIX + code].data['shoot_until'] = time.monotonic() - 1   # the shoot's time is over
+        await self.feat().tick(time.time())
+        self.assertFalse((await self.last(b))['shooting'])   # told at once: the frame and the ready button come back
 
     async def test_leaving_the_host_leaving_and_the_last_one_out(self):
         a = await self.player('Lan Anh')

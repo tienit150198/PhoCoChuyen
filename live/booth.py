@@ -360,6 +360,9 @@ class BoothFeature(Feature):
                 self.hub.send(w.conn, dict(t='booth_none', why='timeout'))
         for room in self._rooms():
             d = room.data
+            if d['shoot_until'] and d['shoot_until'] <= mono:   # the shoot is over: everyone may change the frame, get ready
+                d['shoot_until'] = 0.0
+                self._tell(room)
             if mono - d['last'] >= IDLE_SECS and d['shoot_until'] <= mono:
                 for pid in list(d['people']):
                     self._remove(room, pid, 'idle')
