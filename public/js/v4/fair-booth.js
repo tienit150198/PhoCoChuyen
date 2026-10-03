@@ -11,10 +11,14 @@
  * A ticket paid but not used (the room broke up before the shot) is kept for the next shoot in this tab.
  * The shared ways only show when the live service says welcome.flags.booth (an older one: only Một mình); the stall only
  * when the game server sells tickets (api.state.fair.photo; an older one: no booth on the fairground).
+ * Always open (owner 03/10: "mở 24/24 chứ k được nghỉ"): the booth opened with the socket not open connects it at once
+ * (live.reconnect(true), once per wait), shows "Đang nối buồng chung…" and redraws on the socket's welcome / down;
+ * only after CONN_MS a line to try again. A lost socket in a friends' room comes back in by its code on the next
+ * welcome (live/booth.py keeps the room for the last one in, GRACE_SECS); Một mình never needs the socket.
  * fair.js owns the dialog and passes its helpers in (setup); its render() patches the page in place and calls mount()
  * after: the booth's stage lives on a canvas in a data-fh-live slot, drawn when the room changes and by
  * requestAnimationFrame only while a shoot runs. */
-import {live} from './live.js';
+import {live,liveBoot} from './live.js';
 import {lookOf,figureOf,paintPlayer,CANVAS} from './look.js';
 import {FRAMES,FRAME,BACKDROPS,PROPS,STICKERS,FILTERS,draw as drawPrint,paintShot,thumb} from './photo-frames.js';
 import {t as tr} from './i18n.js';
@@ -29,14 +33,15 @@ const POSES=[['dung','🧍','Đứng thẳng'],['vay','👋','Vẫy tay'],['v','
 const POSE_IDS=new Set(POSES.map(p=>p[0]));
 const PROP_IDS=new Set(PROPS.map(p=>p.id));
 const ARMS={vay:{r:[38,-98]},v:{r:[30,-84]},tim:{l:[-8,-56],r:[8,-56]},hoan_ho:{l:[-40,-104],r:[40,-104]},nhay:{l:[-40,-108],r:[40,-108]}};
-const SHOTS=4,GAP=3200,STICKER_MAX=8,TICKET='mnl.fair.pbticket';
+const SHOTS=4,GAP=3200,STICKER_MAX=8,TICKET='mnl.fair.pbticket',CONN_MS=10000;
 const CELL=[260,162];   // one photo of the strip (./photo-frames.js stripBox): the stage has its shape
 
 export function setup(ctx){
   const {S,F,btn,say,xu,esc,send,render,sfx,pick,reduce}=ctx;
   const D=S.pb={step:'lobby',mode:null,room:null,me:null,frame:'dem_hoi',bg:'kem',pose:'dung',prop:'none',say:'',
     ticket:readTicket(),paying:false,ready:false,waitUntil:0,shoot:null,shots:[],flash:0,count:0,filter:'none',stickers:[],
-    url:'',blob:null,building:false,cv:null,raf:0,thumbs:{},sent:{},pendingJoin:false,tick:0};
+    url:'',blob:null,building:false,cv:null,raf:0,thumbs:{},sent:{},pendingJoin:false,tick:0,
+    conn0:0,connTimer:0,rejoin:'',back:null};   // since when the socket is awaited; a friends' room's code to come back to
   const P=()=>F().photo||null;
 
   /* ---- the ticket: paid once, used by the next shoot (kept in this tab if the room breaks up first) ---- */
@@ -69,15 +74,26 @@ export function setup(ctx){
   const mine=()=>people().find(p=>p.pid===D.me||D.mode==='solo')||null;
   const look=()=>{const st=myState();return {look:lookOf(st),g:st.journey?.gender??null};};
 
+  /* ---- the socket: connected at once when the booth needs it, once per wait (never a loop: live.js backs off) ---- */
+  function wake(again=false){
+    if(shared()){D.conn0=0;return;}
+    if(D.conn0&&!again)return;
+    D.conn0=Date.now();
+    try{if(!liveBoot.done&&S.env)liveBoot(S.env);live.reconnect(true);}catch(e){console.warn('chụp ảnh: live',e);}
+  }
+  const slowConn=()=>!shared()&&D.conn0&&Date.now()-D.conn0>=CONN_MS;
+
   /* ---- the live room (live/booth.py) ---- */
   function wire(){
     if(wire.done)return;wire.done=true;
     live.on('booth_room',f=>{
-      const fresh=!D.room||D.room.room!==f.room;
-      D.room=f;D.me=f.me;D.pendingJoin=false;
+      const fresh=!D.room||D.room.room!==f.room,back=D.back;
+      D.room=f;D.me=f.me;D.pendingJoin=false;D.back=null;D.rejoin='';
       if(D.step==='lobby'||D.step==='wait'){D.step='room';D.mode=f.mode==='stranger'?'stranger':'friends';D.say=pick(SHOOTER.room);sfx('open');}
       const me=(f.people||[]).find(p=>p.pid===f.me);if(me){D.pose=POSE_IDS.has(me.pose)?me.pose:'dung';D.prop=PROP_IDS.has(me.prop)?me.prop:'none';D.ready=!!me.ready;}
-      if(fresh)S.flash=null;
+      if(fresh||back)S.flash=null;
+      if(back&&me){const k={};if(back.pose!==D.pose)k.pose=back.pose;if(back.prop!==D.prop)k.prop=back.prop;   // my pose and prop as they were
+        if(Object.keys(k).length&&live.send({t:'booth_set',...k})){Object.assign(me,k);D.pose=k.pose||D.pose;D.prop=k.prop||D.prop;}}
       redraw();
     });
     live.on('booth_wait',f=>{D.step='wait';D.waitUntil=Date.now()+(Number(f.secs)||60)*1000;D.say=pick(SHOOTER.wait);redraw();});
@@ -91,17 +107,41 @@ export function setup(ctx){
     live.on('error',f=>{
       if(typeof f.ref!=='string'||!f.ref.startsWith('booth_'))return;
       D.pendingJoin=false;
+      if(f.ref==='booth_join'&&D.back){D.back=null;roomGone();redraw();return;}   // the room did not wait (an older service, too long away)
       if(f.ref==='booth_find'||f.ref==='booth_make'||f.ref==='booth_join'){if(D.step==='wait'&&f.ref==='booth_find')D.step='lobby';if(!D.room)D.mode=null;}
       S.flash={text:f.msg||'Chưa làm được, thử lại nha.',kind:'bad'};redraw();
     });
-    const lost=()=>{if(D.step==='lobby'||D.mode==='solo'||!D.mode)return;toLobby();S.flash={text:'Mất kết nối, phòng chụp đã đóng. Vé chưa dùng vẫn giữ cho lượt sau.',kind:'warn'};redraw();};
-    live.on('down',lost);live.on('welcome',lost);
+    live.on('down',()=>{
+      if(!D.conn0&&S.tab==='pb'&&S.dlg?.open)D.conn0=Date.now();   // live.js tries again on its own: wait CONN_MS before "Thử lại"
+      D.pendingJoin=false;if(D.step==='lobby')D.mode=null;   // a make / join on its way went with the socket
+      if(D.step!=='lobby'&&D.mode&&D.mode!=='solo'){
+        if(D.mode==='friends'&&D.room?.code&&D.step!=='wait'){D.rejoin=D.room.code;S.flash={text:'Mất kết nối, đang nối lại phòng…',kind:'warn'};}   // back in by the code on the welcome
+        else roomGone();
+      }
+      redraw();
+    });
+    live.on('welcome',()=>{
+      D.conn0=0;
+      if(D.rejoin&&D.room&&D.mode==='friends'){
+        const code=D.rejoin;D.rejoin='';D.back={pose:D.pose,prop:D.prop};
+        D.pendingJoin=live.send({t:'booth_join',code,...look()});
+        if(!D.pendingJoin){D.back=null;roomGone();}
+      }else if(D.step!=='lobby'&&D.mode&&D.mode!=='solo')roomGone();
+      redraw();
+    });
+  }
+  /** The shared room is gone with the socket: the lobby (a strip already printed stays on screen). */
+  function roomGone(){
+    D.rejoin='';
+    if(D.step==='print'){D.room=null;return;}
+    toLobby();S.flash={text:'Mất kết nối, phòng chụp đã đóng. Vé chưa dùng vẫn giữ cho lượt sau.',kind:'warn'};
   }
   function redraw(){if(S.tab==='pb'&&S.dlg?.open)render();else drawStage();}
-  function toLobby(){stopLoop();D.step='lobby';D.mode=null;D.room=null;D.ready=false;D.shoot=null;D.pendingJoin=false;}
+  function toLobby(){stopLoop();D.step='lobby';D.mode=null;D.room=null;D.ready=false;D.shoot=null;D.pendingJoin=false;D.rejoin='';D.back=null;}
 
   /** Leave whatever shared thing is going on (the tab changes, the sheet closes). */
   function leave(){
+    D.conn0=0;clearTimeout(D.connTimer);
     if(D.step==='wait')live.send({t:'booth_cancel'});
     else if(D.mode&&D.mode!=='solo'&&D.room)live.send({t:'booth_out'});
     if(D.step!=='print'||D.mode!=='solo')toLobby();
@@ -110,10 +150,10 @@ export function setup(ctx){
 
   /* ---- actions ---- */
   function startSolo(){D.mode='solo';D.room=null;D.me='me';D.step='room';D.say=pick(SHOOTER.room);S.flash=null;render();}
-  function find(){if(!shared())return;D.mode='stranger';S.flash=null;if(live.send({t:'booth_find',...look()})){D.step='wait';D.waitUntil=Date.now()+60000;D.say=pick(SHOOTER.wait);}render();}
-  function make(){if(!shared())return;D.mode='friends';S.flash=null;D.pendingJoin=live.send({t:'booth_make',...look()});render();}
+  function find(){if(!shared()){wake(true);render();return;}D.mode='stranger';S.flash=null;if(live.send({t:'booth_find',...look()})){D.step='wait';D.waitUntil=Date.now()+60000;D.say=pick(SHOOTER.wait);}render();}
+  function make(){if(!shared()){wake(true);render();return;}D.mode='friends';S.flash=null;D.pendingJoin=live.send({t:'booth_make',...look()});render();}
   function join(){
-    if(!shared())return;
+    if(!shared()){wake(true);render();return;}
     const el=S.dlg?.querySelector('.fh-pb-code'),code=(el?.value||'').trim().toUpperCase();
     if(!/^[A-Z0-9]{4}$/.test(code)){S.flash={text:'Mã phòng có 4 ký tự, gồm chữ và số nha.',kind:'warn'};render();el?.focus();return;}
     D.mode='friends';S.flash=null;D.pendingJoin=live.send({t:'booth_join',code,...look()});render();
@@ -278,16 +318,17 @@ export function setup(ctx){
   const chip=(op,v,on,label,title,dis=false)=>`<button type="button" class="fh-pb-chip${on?' on':''}" data-fh="${op}" data-v="${esc(v)}" aria-pressed="${on}" data-fh-key="${op}-${esc(v)}" title="${esc(title)}"${dis?' disabled':''}>${label}</button>`;
   function stage(){return `<div class="fh-pb-booth"><div class="fh-pb-marquee" aria-hidden="true">📸 CHỤP ẢNH</div><div class="fh-pb-stage" data-fh-live data-fh-key="pb-stage"><canvas class="fh-pb-cv" role="img" aria-label="${esc(tr('Buồng chụp: các nhân vật trước phông'))}"></canvas></div></div>`;}
   function lobby(){
-    const p=P(),why=shared()?'':'Buồng chụp chung đang nghỉ, chụp một mình nha.',busy=D.pendingJoin||S.busy;
+    const p=P(),busy=D.pendingJoin||S.busy;
+    const conn=shared()?'':slowConn()?`<p class="fh-why" role="status">${esc('Chưa nối được buồng chung. Kiểm tra mạng rồi bấm Thử lại nha, chụp một mình vẫn được.')}</p><div class="fh-go">${btn('Thử lại','pbretry',{},'cream small',' data-fh-key="pbretry"')}</div>`
+      :`<div class="fh-card fh-pb-wait" role="status"><span class="fh-pb-spin" aria-hidden="true">⏳</span><div><b>Đang nối buồng chung…</b><small>Chụp một mình thì vô liền được nha.</small></div></div>`;
     const card=(op,ico,title,sub,dis)=>`<button type="button" class="fh-pb-mode" data-fh="${op}" data-fh-key="${op}"${dis?' disabled':''}><span class="fh-pb-mico" aria-hidden="true">${ico}</span><span class="grow"><b>${title}</b><small>${sub}</small></span></button>`;
-    return `${stage()}
+    return `${stage()}${conn}
       <div class="fh-pb-modes" role="group" aria-label="Cách chụp">
         ${card('pbsolo','🙋','Một mình','Chụp riêng nhân vật của bạn',false)}
         ${card('pbfind','🎲','Người lạ','Ghép với một người đang ở hội chợ',!shared()||busy)}
         ${card('pbmake','👫','Bạn bè · tạo phòng','Nhận mã phòng gửi cho bạn bè, tối đa 4 người',!shared()||busy)}
       </div>
       <div class="fh-pb-join"><label for="fh-pb-code">Có mã phòng của bạn bè?</label><div class="fh-pb-joinrow"><input id="fh-pb-code" class="fh-pb-code" data-fh-key="pb-code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="VD: A7K2"${shared()?'':' disabled'}>${btn(D.pendingJoin&&D.mode==='friends'?'Đang vào…':'Vào phòng','pbjoin',{},'primary',!shared()||busy?' disabled data-fh-key="pbjoin"':' data-fh-key="pbjoin"')}</div></div>
-      ${why?`<p class="fh-why">${esc(why)}</p>`:''}
       <p class="fh-rule">Mỗi lượt chụp 4 kiểu, in thành một dải ảnh có khung. Mỗi người tự trả ${xu(p?.price||5)}${D.ticket?' (bạn đang có sẵn một vé chưa dùng)':''}. Ảnh chỉ nằm trên máy của bạn, không lưu lên đâu cả.</p>`;
   }
   function waiting(){
@@ -298,7 +339,7 @@ export function setup(ctx){
   function roomView(){
     const ppl=people(),host=isHost(),r=D.room,shooting=D.step==='shoot'||!!r?.shooting,me=mine();
     const code=D.mode==='friends'&&r?.code?`<div class="fh-pb-code-chip"><span>Mã phòng</span><b>${esc(r.code)}</b>${btn('📋 Chép mã','pbcopy',{},'cream small',' data-fh-key="pbcopy"')}</div>`:'';
-    const list=D.mode==='solo'?'':`<ul class="fh-pb-people">${ppl.map(p=>`<li><span class="fh-pb-tick${p.ready?' on':''}" aria-hidden="true">${p.ready?'✓':'…'}</span><b>${esc(p.name||tr('Khách đi hội'))}</b>${p.pid===r.host?'<em>👑 chủ phòng</em>':''}${p.pid===D.me?'<em>bạn</em>':''}<small>${p.ready?'sẵn sàng':'đang chọn dáng'}</small>${host&&p.pid!==D.me&&D.mode==='friends'?btn('Mời ra','pbkick',{pid:p.pid},'ghost small',` data-fh-key="pbkick-${esc(p.pid)}"`):''}</li>`).join('')}${D.mode==='friends'&&ppl.length<(r.cap||4)?`<li class="empty"><span aria-hidden="true">＋</span><small>Còn ${(r.cap||4)-ppl.length} chỗ: gửi mã cho bạn bè</small></li>`:''}</ul>`;
+    const list=D.mode==='solo'?'':`<ul class="fh-pb-people">${ppl.map(p=>`<li><span class="fh-pb-tick${p.ready?' on':''}" aria-hidden="true">${p.ready?'✓':'…'}</span><b>${esc(p.name||tr('Khách đi hội'))}</b>${p.pid===r.host?'<em>👑 chủ phòng</em>':''}${p.pid===D.me?'<em>bạn</em>':''}<small>${p.away?'đang quay lại…':p.ready?'sẵn sàng':'đang chọn dáng'}</small>${host&&p.pid!==D.me&&D.mode==='friends'?btn('Mời ra','pbkick',{pid:p.pid},'ghost small',` data-fh-key="pbkick-${esc(p.pid)}"`):''}</li>`).join('')}${D.mode==='friends'&&ppl.length<(r.cap||4)?`<li class="empty"><span aria-hidden="true">＋</span><small>Còn ${(r.cap||4)-ppl.length} chỗ: gửi mã cho bạn bè</small></li>`:''}</ul>`;
     const fr=frameId(),frames=`<div class="fh-pb-sec"><b>Khung ảnh</b>${host?'':'<small>chủ phòng chọn</small>'}</div><div class="fh-pb-frames" role="group" aria-label="Khung ảnh">${FRAMES.map(f=>`<button type="button" class="fh-pb-frame${fr===f.id?' on':''}" data-fh="pbframe" data-v="${f.id}" aria-pressed="${fr===f.id}" data-fh-key="pbframe-${f.id}"${host&&!shooting?'':' disabled'}><img alt="" src="${frameThumb(f.id)}"><span><i aria-hidden="true">${f.emoji}</i> ${esc(f.name)}</span></button>`).join('')}</div>`;
     const bg=bgId(),bgs=`<div class="fh-pb-sec"><b>Phông nền</b></div><div class="fh-pb-chips" role="group" aria-label="Phông nền">${BACKDROPS.map(b=>chip('pbbg',b.id,bg===b.id,`<span aria-hidden="true">${b.emoji}</span> ${esc(b.name)}`,b.name,!host||shooting)).join('')}</div>`;
     const pose=me?.pose||D.pose,pr=me?.prop||D.prop;
@@ -309,7 +350,7 @@ export function setup(ctx){
     if(D.step==='shoot')act=`<div class="fh-go"><span>📸 Đang chụp… nhìn vô máy nha!</span></div>`;
     else if(D.mode==='solo')act=`<div class="fh-go"><span>4 kiểu · ${D.ticket?'đã có vé':price}</span>${btn(D.paying?'Đang trả vé…':'📸 Chụp!','pbshoot',{},'primary big',!canPay()||D.paying?' disabled data-fh-key="pbshoot"':' data-fh-key="pbshoot"')}</div>`;
     else{
-      const all=ppl.length>0&&ppl.every(p=>p.ready);
+      const all=ppl.some(p=>!p.away)&&ppl.every(p=>p.ready||p.away);   // someone whose socket dropped (live/booth.py away) never holds the shoot
       const readyBtn=D.ready?'':btn(D.paying?'Đang trả vé…':D.ticket?'✋ Sẵn sàng (đã có vé)':`✋ Sẵn sàng · ${price}`,'pbready',{},host?'cream big':'primary big',!canPay()||D.paying||r?.shooting?' disabled data-fh-key="pbready"':' data-fh-key="pbready"');
       const goBtn=host?btn('📸 Chụp!','pbgo',{},'primary big',!all||r?.shooting?' disabled data-fh-key="pbgo"':' data-fh-key="pbgo"'):'';
       const line=r?.shooting?'Đang chụp, chờ lượt sau nha.':all?(host?'Mọi người sẵn sàng rồi!':'Chờ chủ phòng bấm chụp…'):D.ready?'Chờ mọi người sẵn sàng…':'Chọn dáng rồi bấm sẵn sàng';
@@ -334,6 +375,7 @@ export function setup(ctx){
     if(!P())return '';
     wire();
     if(!D.say)D.say=pick(SHOOTER.idle);
+    if(D.step==='lobby')wake();
     if(D.mode&&D.mode!=='solo'&&D.step!=='lobby'&&D.step!=='wait'&&D.step!=='print'&&!D.room&&!D.pendingJoin)toLobby();
     const body=D.step==='wait'?waiting():D.step==='print'?printView():D.step==='lobby'?lobby():roomView();
     return `<section class="fh-stall fh-pb" aria-label="Chụp ảnh">${say(SHOOTER,D.say)}${body}</section>`;
@@ -347,6 +389,8 @@ export function setup(ctx){
     D.cv=cv||null;drawStage();
     const box=S.dlg?.querySelector('.fh-pb-code');
     if(box&&!box._pb){box._pb=1;box.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();join();}});box.addEventListener('input',()=>{const v=box.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);if(v!==box.value)box.value=v;});}
+    clearTimeout(D.connTimer);   // the "try again" line when the socket has not come in CONN_MS
+    if(D.step==='lobby'&&D.conn0&&!shared()&&!slowConn())D.connTimer=setTimeout(()=>{if(D.step==='lobby'&&S.tab==='pb'&&S.dlg?.open)render();},CONN_MS-(Date.now()-D.conn0)+50);
     clearInterval(D.tick);
     if(D.step==='wait')D.tick=setInterval(()=>{const el=S.dlg?.querySelector('[data-fh-count="pbwait"]');if(!el||D.step!=='wait'){clearInterval(D.tick);return;}el.textContent=String(Math.max(0,Math.ceil((D.waitUntil-Date.now())/1000)));},1000);
   }
@@ -356,6 +400,7 @@ export function setup(ctx){
       case'pbfind':find();return true;
       case'pbmake':make();return true;
       case'pbjoin':join();return true;
+      case'pbretry':wake(true);render();return true;
       case'pbcancel':out();return true;
       case'pbout':if(D.step==='print'&&D.mode==='solo'){D.step='room';D.shots=[];render();}else out();return true;
       case'pbcopy':copyCode();return true;
