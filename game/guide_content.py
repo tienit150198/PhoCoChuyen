@@ -4569,18 +4569,21 @@ GROUPS = [{'id': 'start',
                          '📝 Phần còn lại vay Ngân hàng Phố 1–3 năm, trả góp mỗi tháng (5 ngày sống). Lãi 9–11,4%/năm tùy '
                          'điểm tín dụng.',
                          '🔑 Có nhà thì hết tiền phòng, chỉ còn điện nước 2–16 xu/ngày, và tinh thần được cộng mỗi sáng.',
+                         '🧾 Nhà từ 6.000 xu có phí bảo trì mỗi tháng: 0,2–0,35% giá mua, dù ở, để trống hay cho thuê. '
+                         'Căn hộ nhỏ dưới 6.000 xu không tốn phí này.',
                          '🏰 Penthouse cần điểm tín dụng từ 670 mới vay được, biệt thự từ 700 hoặc 740.',
                          '⏰ Thiếu tiền trả góp: 3 ngày ân hạn không phạt. Quá hạn mới phạt 2% và giảm điểm tín dụng. Ngân '
                          'hàng không bao giờ lấy nhà.',
                          '💞 Vợ chồng có thể góp tiền trả trước từ quỹ chung. Có nhà rồi, người ấy về ở chung.',
                          '💰 Giá nhà tăng khoảng 3% mỗi năm. Bán nhà mất 3% phí, tiền bán trả hết nợ vay trước.',
-                         '🏘️ Có thể có tới 4 căn nhà: ở một căn, căn khác để trống (không tốn gì) hoặc cho thuê, tiền thuê về đúng ngày trả góp. Ngân hàng tính chung mọi khoản trả góp.'],
+                         '🏘️ Có thể có tới 4 căn nhà: ở một căn, căn khác để trống hoặc cho thuê, tiền thuê về đúng ngày trả góp. Ngân hàng tính chung mọi khoản trả góp.'],
               'go': {'action': 'house', 'label': 'Mở Nhà của bạn'}},
              {'id': 'invest',
               'emoji': '📈',
               'title': 'Đầu tư cá nhân',
               'points': ['🔓 Mở khi ví từng có 500 xu.',
-                         '🏦 Gửi tiết kiệm ngân hàng phường kỳ hạn 7 ngày, lãi nhỏ nhưng chắc.',
+                         '🏦 Gửi tiết kiệm ngân hàng phường kỳ hạn 7 ngày, lãi nhỏ nhưng chắc: 0,3%/ngày cho 20.000 xu đầu, '
+                         'phần trên 0,1%/ngày.',
                          '🪙 Mây Coin lên xuống mỗi ngày, mua bán mất phí 2%.',
                          '🚩 Dự án “lãi khủng, cam kết hoàn vốn” thường là lừa đảo. Góp vào là dễ mất trắng.']}]},
  {'id': 'jobs',

@@ -54,7 +54,7 @@ function savingCard(env,I){
   const rate=`${Math.floor(R.rate_milli/10)},${R.rate_milli%10}%`;
   const term=S.balance?`<div class="iv-kv"><span>Lãi kỳ này (chưa cộng)</span><b>${xu(S.pending)}</b></div><div class="iv-kv"><span>Còn tới ngày cộng lãi</span><b>${fmt(S.term_left)} ngày</b></div><div class="iv-kv"><span>Lãi mỗi ngày khoảng</span><b>${(S.daily_milli/1000).toLocaleString('vi-VN',{maximumFractionDigits:1})} xu</b></div>`:'';
   return `<section class="jr-card iv-card iv-bank" aria-labelledby="ivBankT">
-    <div class="iv-card-top"><span class="iv-emoji" aria-hidden="true">🏦</span><div class="grow"><span class="eyebrow">Ngân hàng phố</span><h3 id="ivBankT">Gửi tiết kiệm</h3><p class="muted small">Lãi ${rate}/ngày, cộng vào sổ mỗi ${R.term} ngày. Không bao giờ lỗ vốn.</p>${S.earned?`<span class="tag green iv-earned">Đã nhận lãi ${xu(S.earned)}</span>`:''}</div></div>
+    <div class="iv-card-top"><span class="iv-emoji" aria-hidden="true">🏦</span><div class="grow"><span class="eyebrow">Ngân hàng phố</span><h3 id="ivBankT">Gửi tiết kiệm</h3><p class="muted small">Lãi ${rate}/ngày${R.save_tier?` cho ${xu(R.save_tier)} đầu, phần trên lãi ${Math.floor(R.rate_hi_milli/10)},${R.rate_hi_milli%10}%/ngày`:''}, cộng vào sổ mỗi ${R.term} ngày. Không bao giờ lỗ vốn.</p>${S.flat&&R.save_tier&&S.balance>R.save_tier?`<p class="muted small">Kỳ này vẫn tính ${rate}/ngày cho cả sổ, từ kỳ sau tính theo bậc.</p>`:''}${S.earned?`<span class="tag green iv-earned">Đã nhận lãi ${xu(S.earned)}</span>`:''}</div></div>
     <div class="iv-big"><small>Sổ tiết kiệm</small><strong>${xu(S.balance)}</strong></div>
     ${term}
     ${chips(env,'save')}

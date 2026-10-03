@@ -112,10 +112,11 @@ class Scratch(FairBase):
         s = story(100)
         s['journey']['fair'] = fh.initial()
         s['journey']['fair']['date'] = fh.vn_date(self.clock.t + 2)
-        s['journey']['fair']['net'] = 3500                          # halfway down the taper: 40.5 %
-        s, r = self.buy(s, 2, [.41])
+        s['journey']['fair']['net'] = 3500                          # halfway down the taper
+        mid = (xs.P_HI + xs.P_LO) / 2
+        s, r = self.buy(s, 2, [mid + .001])
         self.assertEqual(r['fair']['mult'], 0)
-        s, r = self.buy(s, 2, [.40])
+        s, r = self.buy(s, 2, [mid - .001])
         self.assertGreater(r['fair']['mult'], 0)
         s['journey']['fair']['net'] = 9000                          # far ahead: P_LO
         s, r = self.buy(s, 2, [xs.P_LO + .005])

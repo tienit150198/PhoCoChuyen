@@ -134,8 +134,9 @@ function tabs(v){
   return `<div class="segmented bk-tabs gr-tabs" role="tablist" aria-label="Mục nhà xe">${list.map(([id,l])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'active':''}" data-gr="tab" data-tab="${id}">${esc(l)}</button>`).join('')}</div>`;
 }
 
-function perkChips(it){
-  return `<p class="hs-chips"><span>😊 +${it.spirit} tinh thần mỗi chuyến</span><span>${it.fuel?`⛽ ${xu(it.fuel)} mỗi chuyến`:'⛽ Không tốn xăng'}</span><span>🗓️ 1 chuyến/ngày</span></p>`;
+/* fee: xu a tháng (game/upkeep.py: phí giữ xe & bảo dưỡng; undefined from an older server: no chip). */
+function perkChips(it,fee=it.upkeep){
+  return `<p class="hs-chips"><span>😊 +${it.spirit} tinh thần mỗi chuyến</span><span>${it.fuel?`⛽ ${xu(it.fuel)} mỗi chuyến`:'⛽ Không tốn xăng'}</span><span>🗓️ 1 chuyến/ngày</span>${fee>0?`<span>🧾 Giữ xe & bảo dưỡng ${xu(fee)}/tháng</span>`:''}</p>`;
 }
 
 /* 🔑 Your vehicles: ride out (once a day, any vehicle), choose which one you ride, paint, plate, sell. */
@@ -150,13 +151,15 @@ function mineView(v){
     const it=item(c.id);if(!it)return '';
     const on=v.ride===c.id,g=group(it.group);
     return `<li class="hs-home gr-car${on?' mine':''}" style="--hs-tone:${esc(g.color||'')}"><div class="hs-home-top">${tileHTML(it,c.color,c.plate)}<div class="grow"><b>${esc(it.name)}</b><small>${on?'🛞 Đang đi':`Mua ngày ${fmt(c.day)}`} · ${esc(paint(c.color).name)}</small></div></div>
-      ${perkChips(it)}
+      ${perkChips(it,c.upkeep)}
       <div class="bk-actions">${btn(`${esc(it.trip)}${it.fuel?` · ${xu(it.fuel)}`:''}`,'trip',{id:c.id},'primary',c.trip_why||'')}${on?'':btn('Đi chiếc này','ride',{id:c.id},'ghost')}${btn('🎨 Sơn & biển tên','edit',{id:c.id},'ghost')}</div>
       ${c.trip_why&&!v.tripped?`<p class="bk-hint">${esc(c.trip_why)}</p>`:''}
       <p class="gr-sell"><small>Bán lại được ${xu(c.sell)}</small>${btn('Bán','sell',{id:c.id},'ghost small danger')}</p></li>`;
   }).join('');
   const off=v.ride?`<div class="bk-actions">${btn('Không khoe xe trên hồ sơ','ride',{},'ghost small')}</div>`:'';
-  return `${today}<section class="bk-card"><h3>Xe của bạn</h3><p class="bk-hint">Chiếc “đang đi” hiện trên hồ sơ, trước nhà và trong Phố nghề.</p><ul class="hs-market">${cards}</ul>${off}</section>`;
+  const U=v.upkeep,day=J().life_day||0;
+  const bill=U?.month?`<p class="bk-hint gr-bill">🧾 Phí giữ xe & bảo dưỡng khoảng ${xu(U.month)}/tháng, trừ cùng hóa đơn Ngày ${fmt(U.next)}${U.next===day?' (hôm nay)':` (còn ${fmt(U.next-day)} ngày)`}: tiền mặt trước, thiếu thì lấy từ tài khoản, không bao giờ làm ví âm.</p>`:'';
+  return `${today}<section class="bk-card"><h3>Xe của bạn</h3><p class="bk-hint">Chiếc “đang đi” hiện trên hồ sơ, trước nhà và trong Phố nghề.</p>${bill}<ul class="hs-market">${cards}</ul>${off}</section>`;
 }
 
 /* One tab of the shop: the listings of a group, cheapest first, "thiếu N xu" when the money is not there yet. */
@@ -187,7 +190,8 @@ function buyView(v){
     <div class="gr-preview">${tileHTML(it,S.pick.color,(S.pick.plate||'').trim(),'big')}</div>
     <p>${esc(it.desc)}</p>${perkChips(it)}
     ${swatches()}${plateField()}
-    <p class="bk-hint">Không có phí giữ xe hay bảo dưỡng tự trừ. Tiền xăng chỉ trả khi bạn đi chơi.</p>
+    <p class="bk-hint">${it.upkeep>0?`Phí giữ xe & bảo dưỡng khoảng ${xu(it.upkeep)}/tháng (5 ngày sống), trừ cùng hóa đơn cuối tháng, không bao giờ làm ví âm. Tiền xăng chỉ trả khi bạn đi chơi.`
+      :it.upkeep===0?'Xe đạp không tốn phí giữ xe. Tiền xăng chỉ trả khi bạn đi chơi.':'Tiền xăng chỉ trả khi bạn đi chơi.'}</p>
     ${w?`<p class="bk-alert warn">${esc(w)}</p>`:''}
     <div class="bk-actions">${btn(`Mua · ${xu(it.price)}`,'buy',{},'primary big',w||'')}${btn('Quay lại','back',{},'ghost')}</div></section>`;
 }

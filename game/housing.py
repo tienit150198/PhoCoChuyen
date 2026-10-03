@@ -39,8 +39,13 @@ rented rooms is one command (jr_home_rent while renting the other one: its depos
 
 🏘️ Several homes (VERSION 2, the owner's "cho phép sở hữu nhiều bất động sản"): up to OWNED_MAX homes at once.
 `own` is still the one you live in (the comfort bonus, điện nước, reno.py's repairs, deco.py's room, the spouse's
-shared home all read it, unchanged); `props` holds the others, each "Đang để trống" (no cost at all) or "Cho thuê"
-(`let`). Each home keeps its own price, loan, schedule and late fees; every installment is taken the same way.
+shared home all read it, unchanged); `props` holds the others, each "Đang để trống" or "Cho thuê" (`let`). Each home
+keeps its own price, loan, schedule and late fees; every installment is taken the same way.
+
+🧾 Phí bảo trì (owner 03/10, the xu sinks): every home you own from 6 000 xu list price, lived in, empty or let, costs a
+share of its price a tháng (game/upkeep.py HOME_BANDS: 0,2 % from 6 000, 0,3 % from 20 000, 0,35 % from 30 000 xu),
+billed with the month's other bills; the listing and each home you own show it (`care`, xu a tháng). Until 03/10 an
+empty home cost nothing at all; nothing is billed for the days before (upkeep.since).
 * Buying another: the same down payment, fee and mortgage rules per home; the bank's 40 % limit counts the
   installments of every home loan already running (offer: `others`), so loans cannot pile up. A second home is
   bought "để trống" unless the player chooses to move in (`move_in`); the joint fund only pays for a home the
@@ -75,6 +80,7 @@ from . import archive as ar
 from . import bank as bk
 from . import bank_content as BK
 from . import days as dy
+from . import upkeep as up   # 🧾 phí bảo trì a tháng
 
 VERSION = 2                       # 2: several homes (props); version 1 blocks are upgraded in place
 KIND = 'home'                     # journey wallet history kind (journey.HISTORY_KINDS)
@@ -1002,7 +1008,7 @@ def catalogue() -> dict:
         else:
             p = H['price']
             row.update(price=p, upkeep=H['upkeep'], down_min=down_min(p), fee=buy_fee(p), need=down_min(p) + buy_fee(p),
-                       cash_all=p + buy_fee(p), score=need_score(k), let_rent=rent_of(k))
+                       cash_all=p + buy_fee(p), score=need_score(k), let_rent=rent_of(k), care=up.home_month(k, p))
         homes.append(row)
     return dict(groups=[dict(id=g, emoji=e, name=n, color=c) for g, e, n, c in GROUPS], homes=homes)
 
@@ -1066,7 +1072,7 @@ def _home_view(s: dict, h: dict, x: dict, day: int, ready: int) -> dict:
     out = {k: v for k, v in x.items() if k != 'keep'}
     out.update(emoji=H['emoji'], group=H['group'], perk=H.get('perk'), list_price=H['price'], name=H['name'], where=H['where'],
                desc=H['desc'], upkeep=H['upkeep'], comfort=H['comfort'], value=value, loan=loan, live=x is h['own'],
-               let_rent=rent_of(x['kind']),
+               let_rent=rent_of(x['kind']), care=up.home_month(x['kind'], x['price']),
                sell=dict(value=value, fee=fee, payoff=off_sale['total'] if off_sale else 0, get=get_, ok=get_ >= 0,
                          why='' if get_ >= 0 else 'Tiền bán chưa đủ trả hết nợ vay'))
     L = x['let']
@@ -1106,12 +1112,16 @@ def public(s: dict) -> dict:
         shared = dict(h['shared'], emoji=H['emoji'], home=H['name'], where=H['where'], upkeep=H['upkeep'], comfort=H['comfort'])
     sp = _spouse(s)
     full = count >= OWNED_MAX
-    return dict(story=bool(j.get('story')), life_day=day, have=dict(have, ready=ready, bank=b is not None, debt=max(0, -j['wallet']),
+    bills = up.public(s) if j.get('story') and count else None
+    out = dict(story=bool(j.get('story')), life_day=day, have=dict(have, ready=ready, bank=b is not None, debt=max(0, -j['wallet']),
                 savings=bk._savings_total(b) if b else 0), place=_place_view(s, h), attic_rent=attic, market=market, offer=o,
                 own=own, rent=rent, shared=shared, married=bool(sp), spouse=(sp or {}).get('name'),
                 log=list(reversed(h['log'])) if h else [], stats=dict(h['stats']) if h else {k: 0 for k in STATS}, rules=rules(),
                 props=props, count=count, owned=[x['kind'] for x in homes(h)],
                 can_buy=dict(ok=not full, why=f'Đã có {OWNED_MAX} căn nhà: bán bớt một căn rồi hãy mua thêm' if full else ''))
+    if bills and (bills['home'] or bills['due']['home']):   # 🧾 this tháng's phí bảo trì (absent: none; an older server)
+        out['care'] = dict(month=bills['home'], next=bills['next'], due=bills['due']['home'])
+    return out
 
 
 # ---------------------------------------------------------------- validation

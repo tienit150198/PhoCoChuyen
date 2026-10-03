@@ -15,6 +15,7 @@ const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')
 const btn=(label,op,data={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-hs="${op}"${attrs(data)}${S.busy?' disabled':''}${extra}>${label}</button>`;
 const J=()=>S.env?.api?.state?.journey||{};
 const V=()=>J().home||{};
+const care=c=>c>0?`<span>🧾 Bảo trì ${xu(c)}/tháng</span>`:'';   // 🧾 game/upkeep.py (absent: an older server)
 const onDay=n=>{const d=n-(J().life_day||0);return d===0?`hôm nay (Ngày ${n})`:d===1?`Ngày ${n} (ngày mai)`:d<0?`Ngày ${n} (đã qua)`:`Ngày ${n} (còn ${d} ngày)`;};
 const months=(m)=>m%12===0?`${m/12} năm (${m} tháng)`:`${m} tháng`;
 const lname=s=>String(s||'').slice(0,1).toLowerCase()+String(s||'').slice(1);   // housing.lname: "Biệt thự Sông Hồng" → "biệt thự Sông Hồng"
@@ -311,17 +312,18 @@ function ownCard(v){
   const grow=o.value-o.price;
   return `<section class="bk-card"><h3>${o.emoji} ${esc(o.name)}</h3>
     <dl class="hs-facts"><div><dt>Ngày mua</dt><dd>Ngày ${o.day} · ${xu(o.price)}</dd></div><div><dt>Giá thị trường hôm nay</dt><dd>${xu(o.value)}${grow>0?` <small class="up">(+${fmt(grow)})</small>`:''}</dd></div>
-    <div><dt>Điện nước</dt><dd>${xu(o.upkeep)}/ngày</dd></div><div><dt>Bán ngay thì nhận</dt><dd>${xu(o.sell.get)}</dd></div></dl>
+    <div><dt>Điện nước</dt><dd>${xu(o.upkeep)}/ngày</dd></div>${o.care?`<div><dt>Phí bảo trì</dt><dd>${xu(o.care)}/tháng</dd></div>`:''}<div><dt>Bán ngay thì nhận</dt><dd>${xu(o.sell.get)}</dd></div></dl>
     <p class="bk-hint">Giá nhà tăng ~${pct(v.rules.grow_rate)} mỗi năm. Bán mất ${v.rules.sell_fee_pct}% phí.</p>
     <div class="bk-actions">${btn('Bán nhà','sell',{id:o.id},'ghost small danger')}</div></section>`;
 }
 
-/* 🏘️ Another home you own: empty (no cost at all) or let; move in, let it, take it back, sell it. */
+/* 🏘️ Another home you own: empty or let (a home from 6.000 xu pays its phí bảo trì either way); move in, let it, take it back, sell it. */
 function propCard(v,x){
   const grow=x.value-x.price,L=x.let,mv=x.move||{},sl=x.sell||{};
   const status=L?`<p class="hs-tag let">${L.emoji} Cho thuê · ${esc(L.name)}</p>`:'<p class="hs-tag idle">🔑 Đang để trống</p>';
-  const rent=L?`<p class="bk-hint">Tiền thuê ${xu(L.rent)}/tháng · kỳ tới ${onDay(L.next)}${L.next_amount!==L.rent?` (${xu(L.next_amount)} cho số ngày đã ở)`:''}${L.owed?` · đang khất ${xu(L.owed)}`:''}.</p>`
-    :`<p class="bk-hint">Để trống không tốn gì. Cho thuê được khoảng ${xu(x.let_rent)}/tháng.</p>`;
+  const fee=x.care?` Phí bảo trì ${xu(x.care)}/tháng.`:'';
+  const rent=L?`<p class="bk-hint">Tiền thuê ${xu(L.rent)}/tháng · kỳ tới ${onDay(L.next)}${L.next_amount!==L.rent?` (${xu(L.next_amount)} cho số ngày đã ở)`:''}${L.owed?` · đang khất ${xu(L.owed)}`:''}.${fee}</p>`
+    :`<p class="bk-hint">${x.care?`Để trống vẫn tốn phí bảo trì ${xu(x.care)}/tháng.`:'Để trống không tốn gì.'} Cho thuê được khoảng ${xu(x.let_rent)}/tháng.</p>`;
   const acts=L?btn('Lấy lại nhà','unlet',{id:x.id},'ghost')
     :btn(`🚚 Dọn về ở · ${xu(mv.fee)}`,'move',{id:x.id},'primary',mv.ok?'':' disabled')+btn('Cho thuê','let',{id:x.id},'ghost');
   const why=[!L&&!mv.ok?mv.why:'',sl.ok===false?sl.why:''].filter(Boolean).map(t=>`<p class="bk-hint">${esc(t)}</p>`).join('');
@@ -351,7 +353,7 @@ function marketCard(v,m){
     :scoreShort&&m.missing_all?`<span class="hs-miss soft">cần điểm tín dụng ${m.score}</span>`:`<span class="hs-ok">✓ ${m.missing_all?'Đủ trả trước':'Đủ mua đứt'}</span>`;
   return `<li class="hs-home${mine?' mine':''}"${toneStyle(m.group)}><div class="hs-home-top"><span class="hs-emoji" aria-hidden="true">${m.emoji}</span><div class="grow"><b>${esc(m.name)}</b><small>${esc(m.where)}</small></div><strong class="hs-price">${xu(m.price)}</strong></div>
     <p class="hs-terms"><span>Trả trước <b>${xu(m.need)}</b></span>${per?`<span>Góp <b>${xu(per)}</b>/tháng</span>`:''}</p>
-    <p class="hs-chips"><span>😊 +${m.comfort}/ngày</span><span>⚡ ${xu(m.upkeep)}/ngày</span>${m.perk?`<span>${esc(m.perk)}</span>`:''}${m.score>(v.rules?.home_score||0)?`<span>🏦 Điểm ${m.score}+</span>`:''}</p>
+    <p class="hs-chips"><span>😊 +${m.comfort}/ngày</span><span>⚡ ${xu(m.upkeep)}/ngày</span>${care(m.care)}${m.perk?`<span>${esc(m.perk)}</span>`:''}${m.score>(v.rules?.home_score||0)?`<span>🏦 Điểm ${m.score}+</span>`:''}</p>
     ${mine?'<p class="bk-alert good">Đây là nhà của bạn.</p>':full?'':`<div class="hs-go">${status}${btn('Xem & mua','look',{kind:m.id},m.missing?'ghost':'primary')}</div>`}</li>`;
 }
 function marketGroups(v){
@@ -377,7 +379,8 @@ function homeView(v){
   const log=(v.log||[]).slice(0,8).map(r=>`<li><span>Ngày ${r.day} · ${esc(r.text)}</span>${r.amt?`<b class="${r.amt>0?'up':'down'}">${r.amt>0?'+':'−'}${fmt(Math.abs(r.amt))}</b>`:''}</li>`).join('');
   const more=PROPS(v).map(x=>propCard(v,x)+loanCard(v,x)).join('');
   const cap=Array.isArray(v.props)&&MINE(v).length?` Có thể có tới ${v.rules.owned_max} căn${canBuy(v).ok?'':`: ${esc(canBuy(v).why)}`}.`:'';
-  return moneyStrip(v)+nextStep(v)+placeCard(v)+ownCard(v)+loanCard(v)+more+
+  const bill=v.care?.month?`<p class="bk-hint hs-care">🧾 Phí bảo trì các căn của bạn khoảng ${xu(v.care.month)}/tháng, trừ cùng hóa đơn ${onDay(v.care.next)}: tiền mặt trước, thiếu thì lấy từ tài khoản, không bao giờ làm ví âm.</p>`:'';
+  return moneyStrip(v)+nextStep(v)+placeCard(v)+ownCard(v)+loanCard(v)+more+bill+
     `<section class="bk-card hs-listing"><h3>Nhà đang rao</h3><p class="bk-hint">Trả trước ${v.rules.down_pct}% + phí, còn lại vay 3 năm.${cap}</p>${marketGroups(v)}</section>`+
     savingsCard(v)+(log?`<section class="bk-card"><h3>Sổ nhà cửa</h3><ul class="bk-score-log">${log}</ul></section>`:'');
 }
@@ -397,12 +400,13 @@ function buyView(v){
   const monthsSel=`<label class="bk-field"><span>Thời hạn vay</span><select name="months">${R.months.map(n=>`<option value="${n}"${b.months===n?' selected':''}>${months(n)} · ${n} kỳ</option>`).join('')}</select></label>`;
   const multi=Array.isArray(v.props)&&Boolean(v.own||PROPS(v).length),moveIn=!multi||b.move_in;
   const moveField=multi?`<label class="bk-toggle"><input type="checkbox" name="move_in"${b.move_in?' checked':''}><span>Dọn về ở căn này${v.own?` (${esc(lname(v.own.name))} để trống)`:''}</span></label>`
-    +(b.move_in?'':`<p class="bk-hint">Để trống không tốn gì. Cho thuê được khoảng ${xu(m.let_rent)}/tháng.</p>`):'';
+    +(b.move_in?'':`<p class="bk-hint">${m.care?`Để trống vẫn tốn phí bảo trì ${xu(m.care)}/tháng.`:'Để trống không tốn gì.'} Cho thuê được khoảng ${xu(m.let_rent)}/tháng.</p>`):'';
   const jointField=S.joint&&moveIn?`<label class="bk-field"><span>Lấy từ quỹ chung (còn ${xu(S.joint.balance)})</span><input id="hs-joint" name="joint" type="number" inputmode="numeric" min="0" max="${Math.min(S.joint.balance,m.price+m.fee)}" step="10" value="${b.joint||0}"></label>`:'';
   const bankNote=loan>0?(h.bank?`<p class="bk-hint">Lãi <b>${esc(o.rate_text)}</b> (điểm tín dụng ${o.score??''}${m.score>R.home_score?`, căn này cần từ ${m.score}`:''}). Mỗi kỳ tối đa ${xu(o.room)}${o.others?` (đã trừ ${xu(o.others)} trả góp các căn đang vay)`:''}.${o.ok?'':` <b>${esc(o.text)}</b>`}</p>`
     :`<p class="bk-alert warn">Cần tài khoản Ngân hàng Phố để vay. ${btn('Mở Ngân hàng','bank',{tab:'home'},'ghost small')}</p>`):'';
   return `<section class="bk-card hs-buy"${toneStyle(m.group)}><div class="hs-home-top"><span class="hs-emoji big" aria-hidden="true">${m.emoji}</span><div class="grow"><small>${esc(m.where)}</small><h3>${esc(m.name)}</h3></div><strong class="hs-price">${xu(m.price)}</strong></div>
-    <p>${esc(m.desc)}</p><p class="hs-chips"><span>😊 +${m.comfort}/ngày</span><span>⚡ ${xu(m.upkeep)}/ngày</span>${m.perk?`<span>${esc(m.perk)}</span>`:''}</p>
+    <p>${esc(m.desc)}</p><p class="hs-chips"><span>😊 +${m.comfort}/ngày</span><span>⚡ ${xu(m.upkeep)}/ngày</span>${care(m.care)}${m.perk?`<span>${esc(m.perk)}</span>`:''}</p>
+    ${m.care?`<p class="bk-hint">Căn này có phí bảo trì khoảng ${xu(m.care)}/tháng (${R.month_days} ngày sống), dù ở, để trống hay cho thuê.</p>`:''}
     <div class="bk-move" data-hs-buy>
       <label class="bk-field"><span>Trả trước (ít nhất ${xu(m.down_min)})</span><input id="hs-down" name="down" type="number" inputmode="numeric" min="${m.down_min}" max="${m.price}" step="10" value="${b.down}"></label>
       <label class="bk-toggle"><input type="checkbox" name="all"${b.down>=m.price?' checked':''}><span>Trả đủ một lần, không vay</span></label>

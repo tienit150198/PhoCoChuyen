@@ -7,6 +7,11 @@ wallet history, max_wallet, debt flags and titles keep working. Prices, scam
 offers and payouts are deterministic from `journey.seed` and the life day.
 Server authoritative: the client renders `public()` and sends `iv_*` commands.
 Design: docs/superpowers/specs/2026-09-29-invest-design.md
+
+💧 Lãi bậc thang (owner 03/10, the xu sinks, docs/ECONOMY_SINKS.md): the savings pay RATE_MILLI (0,3 %/ngày) on the
+first SAVE_TIER xu of the balance and RATE_HI_MILLI (0,1 %/ngày, about the bank's 7-day term) on the rest, so a large
+pile of xu no longer earns more than the street's work. A term that began before the save's bills block
+(upkeep.since) keeps the flat rate until it ends; the rule is shown with the rate (public rules save_tier, rate_hi_milli).
 """
 from __future__ import annotations
 
@@ -24,6 +29,8 @@ CENT = 100              # price scale
 FEE_PCT = 2
 MIN_TRADE = 10
 RATE_MILLI = 3          # 0.3 % a day: 3 thousandths of a xu per xu
+SAVE_TIER = 20000       # ... on the first SAVE_TIER xu of the balance (lãi bậc thang, 03/10)
+RATE_HI_MILLI = 1       # 0.1 % a day on the part above SAVE_TIER
 TERM = 7
 PREHISTORY = 20
 HISTORY = 30
@@ -71,6 +78,22 @@ def _core():
 def _jr():
     from . import journey
     return journey
+
+
+def accrual(balance: int, flat: bool = False) -> int:
+    """One day's interest on `balance`, in thousandths of a xu: RATE_MILLI on the first SAVE_TIER xu, RATE_HI_MILLI on
+    the rest (`flat`: RATE_MILLI on all of it, a term begun before the tier)."""
+    balance = max(0, int(balance))
+    if flat:
+        return balance * RATE_MILLI
+    return min(balance, SAVE_TIER) * RATE_MILLI + max(0, balance - SAVE_TIER) * RATE_HI_MILLI
+
+
+def flat_term(s: dict, sv: dict) -> bool:
+    """The current term began before the tier existed for this save (game/upkeep.py since): it keeps the flat rate."""
+    from .upkeep import since
+    start = since(s)
+    return start is None or sv['term_day'] < start
 
 
 def _fee(amount: int) -> int:
@@ -181,7 +204,7 @@ def _tick(s: dict, iv: dict, d: int, notes: list[str]) -> None:
     # Savings: daily accrual, credited at the end of each 7-day term.
     sv = iv['saving']
     if sv['balance'] > 0:
-        sv['pending'] += sv['balance'] * RATE_MILLI
+        sv['pending'] += accrual(sv['balance'], flat_term(s, sv))
         if d + 1 - sv['term_day'] >= TERM:
             gain = sv['pending'] // 1000
             sv['pending'] %= 1000
@@ -282,7 +305,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
         _wallet(s, -amount, 'Gửi tiết kiệm ở ngân hàng phố')
         sv['balance'] += amount
         _log(iv, day, 'save', f'Gửi {amount} xu vào sổ tiết kiệm.')
-        result['message'] = f'Đã gửi {amount} xu. Lãi {RATE_MILLI // 10},{RATE_MILLI % 10}%/ngày, cộng vào sổ mỗi {TERM} ngày.'
+        tier = '' if sv['balance'] <= SAVE_TIER or flat_term(s, sv) else \
+            f' cho {SAVE_TIER:,} xu đầu, phần trên lãi {RATE_HI_MILLI // 10},{RATE_HI_MILLI % 10}%/ngày'.replace(',', '.', 1)
+        result['message'] = f'Đã gửi {amount} xu. Lãi {RATE_MILLI // 10},{RATE_MILLI % 10}%/ngày{tier}, cộng vào sổ mỗi {TERM} ngày.'
     elif name == 'iv_withdraw':
         need(sv['balance'] > 0, 'Sổ tiết kiệm đang trống.')
         amount = _amount(p, 1, sv['balance'], 'Tiền rút')
@@ -379,6 +404,7 @@ def public(s: dict) -> dict:
     j = s['journey']
     iv = j.get('invest') or initial(int(j.get('seed', 0)), int(j.get('life_day', 1)))
     coin, sv, sc = iv['coin'], iv['saving'], iv['scam']
+    flat = flat_term(s, sv) if sv['balance'] else False
     value = _value(coin['units'], iv['price'])
     prices = list(iv['prices'])
     scam = None
@@ -391,10 +417,10 @@ def public(s: dict) -> dict:
         unlocked=unlocked(s), need=UNLOCK, max_wallet=int(j['stats'].get('max_wallet', 0)), wallet=j['wallet'],
         life_day=j['life_day'],
         rules=dict(unlock=UNLOCK, fee_pct=FEE_PCT, min_trade=MIN_TRADE, rate_milli=RATE_MILLI, term=TERM, scam_min=SCAM_MIN,
-                   coin=COIN, cent=CENT),
+                   coin=COIN, cent=CENT, save_tier=SAVE_TIER, rate_hi_milli=RATE_HI_MILLI),
         saving=dict(balance=sv['balance'], pending=sv['pending'] // 1000, earned=sv['earned'], forfeited=sv['forfeited'],
                     term_left=max(0, TERM - (j['life_day'] - sv['term_day'])) if sv['balance'] else TERM,
-                    daily=sv['balance'] * RATE_MILLI // 1000, daily_milli=sv['balance'] * RATE_MILLI),
+                    daily=accrual(sv['balance'], flat) // 1000, daily_milli=accrual(sv['balance'], flat), flat=flat),
         coin=dict(price=iv['price'], prices=prices, change=_pct(prices[-2], prices[-1]) if len(prices) > 1 else 0,
                   units=coin['units'], value=value, basis=coin['basis'], unrealised=value - coin['basis'] if coin['units'] else 0,
                   realised=coin['realised'], fees=coin['fees'], trades=coin['trades']),

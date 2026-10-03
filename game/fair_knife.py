@@ -11,8 +11,10 @@ the player chooses: "Dừng" (prize(): LADDER tenths of the stake, plus the 🔥
 harder level, everything riding on it). From level 2 on, X2_P of the levels (never two in a row) are 🔥 x2, told
 before the choice: that level's step of the ladder pays twice. Level LEVELS cleared: paid by itself (phá đảo).
 
-The ladder (× the stake, "Dừng" after level k): 1.1 1.2 1.6 2.1 2.8 3.9 5.4 8 12 19 (in xu: prizes(); every level
-and every x2 is worth at least 1 xu more, also at the 2 and 5 xu stakes). Harder each level: more knives,
+The ladder (× the stake, "Dừng" after level k): 1.1 1.2 1.6 2.1 2.8 3.6 4.6 6 7.8 10 (in xu: prizes(); every level
+and every x2 is worth at least 1 xu more, also at the 2 and 5 xu stakes). Until 03/10 its top was 3.9 5.4 8 12 19: a
+practised thumb got 11.6× back for clearing all ten levels; the xu sinks (docs/ECONOMY_SINKS.md) trimmed levels 6..10
+only, so the sensible play below (stop after 2..5) pays the same. Harder each level: more knives,
 a faster board that more and more often speeds up, slows down, stops short or turns back (DIFF). On a day the
 player's fair net is far up the board is up to HEAT_MAX levels harder (heat(), like the luck stalls' taper).
 
@@ -33,12 +35,11 @@ sigma 38 ms, "weak" 45, "good" 22 (a practised thumb).
     good                        100%  98%  97%  96%  94%  94%  93%  91%  87%  86%
   Return per xu staked (the 4 stakes' rounding and the x2 levels included), "Dừng" after level K:
     K =                          1    2    3    4    5    6    7    8    9    10
-    average                     .94  .89  .94  .98  .95  .96  .92  .91  .87  .81
-    average, on into x2 levels  .95  .93  .98 1.00 1.00  .99  .95  .95  .90  .81
-    weak                        .84  .70  .63  .57  .50  .43  .35  .27  .22  .17
-    good                       1.11 1.25 1.64 2.14 2.71 3.63 4.74 6.44 8.49 11.7
-  A sensible player (stops after 2..5 levels, plays on into a 🔥 x2 one): average .98, weak .62, good 2.01 (a skill
-  game: a good thumb wins). On a hot day (heat 1 / 2 / 3) the sensible average player gets .84 / .74 / .69 back and
+    average                     .94  .89  .95  .99  .97  .90  .81  .70  .57  .45
+    weak                        .83  .68  .63  .57  .51  .40  .31  .22  .15  .09
+    good                       1.11 1.25 1.64 2.14 2.71 3.30 3.97 4.78 5.47 6.04
+  A sensible player (stops after 2..5 levels, plays on into a 🔥 x2 one): average .98, weak .61, good 2.00 (a skill
+  game: a good thumb wins); one who goes deep (stops after 5..8): average .86, good 3.79 (was .99 and 4.53). On a hot day (heat 1 / 2 / 3) the sensible average player gets .84 / .74 / .69 back and
   the good one 1.89 / 1.79 / 1.76.
 """
 from __future__ import annotations
@@ -50,7 +51,7 @@ STAKES = (2, 5, 10, 20)
 LEVELS = 10
 # After clearing level k (1..LEVELS), "Dừng" pays LADDER[k - 1] tenths of the stake (rounded, half up), and at least
 # 1 xu more than after level k - 1 (prizes(): at 2 and 5 xu the rounding would make a step worth nothing).
-LADDER = (11, 12, 16, 21, 28, 39, 54, 80, 120, 190)
+LADDER = (11, 12, 16, 21, 28, 36, 46, 60, 78, 100)   # 03/10: levels 6..10 were 39 54 80 120 190
 X2_P = .25                     # the next level (2..LEVELS) is a 🔥 x2 one: its step pays double; never two in a row
 GAP = 10.0                     # degrees: two knives whose centres are closer than this on the rim touch (a loss)
 DRAW_W = 11.0                  # degrees: how wide a blade is drawn at the rim (wider than GAP: a near miss looks close)
@@ -95,7 +96,7 @@ _PRIZES: dict[int, tuple[int, ...]] = {}
 
 def prizes(stake: int) -> tuple[int, ...]:
     """The ladder in xu for a stake: LADDER tenths rounded half up, each level at least 1 xu over the one before
-    (2 xu: 2 3 4 5 6 8 11 16 24 38; 5 xu: 6 7 8 11 14 20 27 40 60 95; 10 and 20 xu: exactly the tenths)."""
+    (2 xu: 2 3 4 5 6 7 9 12 16 20; 5 xu: 6 7 8 11 14 18 23 30 39 50; 10 and 20 xu: exactly the tenths)."""
     if stake not in _PRIZES:
         out, p = [], 0
         for m in LADDER:
