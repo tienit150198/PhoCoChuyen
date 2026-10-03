@@ -13,7 +13,7 @@ import {Sound} from './audio.js';
 import {soundsBoot} from './v4/sounds.js';
 import {dayclockBoot,clockChip,clockAria,clockCard,clockSummary,closingNote,clockStep} from './v4/dayclock.js';  // giờ trong ngày
 import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCareerData,careerContext,startTicker,tickNow} from './v4/careers.js';
-import {applyGuide,guideAction,nextHint,stepCta,plainText} from './v4/guide.js';
+import {applyGuide,guideAction,nextHint,stepCta,plainText,firstTime} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
 import {quickOpen,firstDay} from './v4/onboard.js';  // a brand-new player's first minutes
@@ -51,6 +51,7 @@ const L={
   people:lazy(()=>import('./v4/closeness.js')),  // 👥 Người quen: điểm thân quen
   tut:lazy(()=>import('./tutorial/index.js')),  // first-run tour, guide, announcements
   live:lazy(()=>import('./v4/live.js')),  // 💬 Chat: the live socket, the chat button + badge (the dialog is v4/chat.js)
+  tm:lazy(()=>import('./careers/tomorrow_kit.js'),{css:['/css/tomorrow.css']}),  // 🌅 Ngày mai in the pharmacy's day summary
 };
 const TUT_OPEN=new Set(['help','tutGuide','tutReplay']);  // tutorial actions whose buttons other modules render
 /** A sheet whose code is not in yet: its header (with the close button) and a skeleton. */
@@ -633,9 +634,11 @@ function dwWho(t,sub){
 const dwBar=(text,btns='')=>`<div class="dw-bar"><div class="dw-bar-text" aria-live="polite">${text}</div>${btns?`<div class="dw-bar-btns">${btns}</div>`:''}</div>`;
 
 const LOT_STATE={unread:['Chưa đọc',''],available:['Hợp lệ','green'],held:['Tạm giữ','amber'],expired:['Hết hiệu lực','danger'],pull:['Có hộp cần rút','amber']};
-/** Pharmacy slip, step by step (guide.js): ask, read the labels, take valid boxes, self-check, hand over. */
+/** Pharmacy slip, step by step (guide.js): ask, read the labels, take valid boxes, self-check, hand over.
+ * The first slip's bottom button does each step; from the next one on, the steps that are the player's own
+ * (reading the labels, choosing a valid lot, the self-check) only point at where to tap (👆, guide.js). */
 function pharmacySteps(t){
-  const c=room(),n=t.known?t.needs:null;
+  const c=room(),n=t.known?t.needs:null,first=firstTime({room:c});
   if(!t.known)return [{ok:null,label:'Hỏi rõ phiếu',go:{cmd:'ask',payload:{task:t.id},label:'💬 Hỏi rõ phiếu'}}];
   if(n.referral)return [{ok:null,label:'Yêu cầu ngoài phiếu: chuyển cô Thu',go:{act:'referPH',label:'Chuyển cô Thu →'}}];
   const care=careData(),pull=id=>(care?.batches||[]).some(b=>b.lot===id&&b.flag);
@@ -643,12 +646,14 @@ function pharmacySteps(t){
   const valid=id=>{const l=api.content.lots.find(x=>x.id===id);return !!l&&l.product===n.product&&t.inspected.includes(id)&&l.status==='available'&&!c.held_lots.includes(id)&&!pull(id);};
   const unread=lots.filter(l=>!t.inspected.includes(l.id)),bad=tray.find(([id])=>!valid(id));
   const good=lots.find(l=>valid(l.id)&&(c.available?.[l.id]??0)>(t.basket?.[l.id]||0));
-  const rows=[{ok:!unread.length||null,label:`Đọc nhãn các lô ${n.product}`,note:`${lots.length-unread.length}/${lots.length}`,go:unread[0]?{cmd:'ph_inspect',payload:{task:t.id,lot:unread[0].id},label:`👁️ Đọc nhãn lô ${esc(unread[0].id)}`}:null}];
-  if(bad)rows.push({ok:false,label:`Bỏ hộp ${bad[0]} ra khỏi khay`,go:{cmd:'basket_remove',payload:{task:t.id,item:bad[0]},label:`➖ Bỏ một hộp ${esc(bad[0])}`}});
+  const rows=[{ok:!unread.length||null,label:`Đọc nhãn các lô ${n.product}`,note:`${lots.length-unread.length}/${lots.length}`,go:!unread[0]?null:first?{cmd:'ph_inspect',payload:{task:t.id,lot:unread[0].id},label:`👁️ Đọc nhãn lô ${esc(unread[0].id)}`}:{sel:'.dw-lotgroup.want .dw-lot.unread',label:'👁️ Đọc nhãn từng lô'}}];
+  if(bad)rows.push({ok:false,label:`Bỏ hộp ${bad[0]} ra khỏi khay`,go:first?{cmd:'basket_remove',payload:{task:t.id,item:bad[0]},label:`➖ Bỏ một hộp ${esc(bad[0])}`}:{sel:'.dw-traylist',label:'➖ Bỏ hộp không xuất được'}});
   rows.push({ok:!bad&&count===n.qty||null,label:`Lấy đủ ${n.qty} hộp ${n.product} từ lô hợp lệ`,note:`${count}/${n.qty}`,
-    go:count>n.qty&&tray[0]?{cmd:'basket_remove',payload:{task:t.id,item:tray[0][0]},label:`➖ Bỏ bớt một hộp`}:count<n.qty&&good?{cmd:'ph_pick',payload:{task:t.id,item:good.id},label:`➕ Lấy 1 hộp lô ${esc(good.id)}`}:count<n.qty&&!unread.length?{act:'referPH',label:'Không lô nào xuất được: chuyển cô Thu'}:null});
+    go:count>n.qty&&tray[0]?(first?{cmd:'basket_remove',payload:{task:t.id,item:tray[0][0]},label:`➖ Bỏ bớt một hộp`}:{sel:'.dw-traylist',label:'➖ Bỏ bớt một hộp'})
+      :count<n.qty&&good?(first?{cmd:'ph_pick',payload:{task:t.id,item:good.id},label:`➕ Lấy 1 hộp lô ${esc(good.id)}`}:{sel:'.dw-lotgroup.want .dw-lotlist',label:'➕ Lấy hộp từ lô hợp lệ'})
+      :count<n.qty&&!unread.length?(first?{act:'referPH',label:'Không lô nào xuất được: chuyển cô Thu'}:{sel:'.dw-refer',label:'Không lô nào xuất được: chuyển cô Thu'}):null});
   const d=draft(t).checks;
-  rows.push({ok:['code','quantity','lot'].every(k=>d.includes(k))||t.checked||null,label:'Tự kiểm khay: mã, số lượng, lô',go:{act:'phTickAll',label:'☑️ Đã so mã, số lượng, lô'}});
+  rows.push({ok:['code','quantity','lot'].every(k=>d.includes(k))||t.checked||null,label:'Tự kiểm khay: mã, số lượng, lô',go:first?{act:'phTickAll',label:'☑️ Đã so mã, số lượng, lô'}:{sel:'.dw-checks',label:'☑️ Tự so mã, số lượng, lô'}});
   rows.push({ok:t.checked||null,label:'Kiểm khay',go:{act:'verifyPH',label:'✓ Kiểm khay'}});
   return rows;
 }
@@ -1014,6 +1019,13 @@ function careerCloseSummary(){
   const data=room().shift_summary?.career??room().shift_summary?.experiences?.counter;if(!data||typeof data!=='object')return '';
   const mod=careerUI(career());
   if(mod?.summary){try{return mod.summary(data,careerContext(env()))||'';}catch(error){console.error(error);}}
+  // The pharmacy: "🌅 Ngày mai" first (regulars due, calls to make, boxes to pull, the shelf; one way to Kho & sổ
+  // quầy), the day's figures folded under it (careers/tomorrow_kit.js; the plain book below until it is in).
+  if(career()==='pharmacy'&&L.tm.use()){
+    try{const c=room(),alerts=(careData()?.alerts||[]).filter(a=>typeof a==='string').map(esc),shelf=L.tm.m.shelfLines(c,api.content.lots.filter(l=>l.status==='available'));
+      return L.tm.m.tomorrowCard(careerContext(env()),data,{plan:alerts,shelf,kho:'warehouse',go:alerts.length&&!shelf.length?{label:'📦 Mở Kho & sổ quầy',action:'warehouse'}:null,labels:CLOSE_LABELS});}
+    catch(error){console.error(error);}
+  }
   const show=v=>typeof v==='boolean'?(v?'Có':'Không'):Array.isArray(v)?v.map(x=>typeof x==='object'?(x.name||x.title||x.label||''):x).filter(Boolean).join(', '):typeof v==='number'?fmt(v):String(v);
   const rows=Object.entries(data).filter(([k,v])=>CLOSE_LABELS[k]&&!(v===0||v===false&&k!=='balanced'||Array.isArray(v)&&!v.length)).map(([k,v])=>`<div class="kv-row"><span>${esc(CLOSE_LABELS[k])}</span><b>${esc(show(v))}</b></div>`).join('');
   const lines=[...(Array.isArray(data.lines)?data.lines:[]),...(typeof data.note==='string'&&data.note?[data.note]:[])].filter(x=>typeof x==='string');
