@@ -163,9 +163,12 @@ function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls
   // Calm screen: one toast at a time, the newest wins.
   while(box.children.length>1)box.firstElementChild.remove();}
 function download(data,name,type='application/json'){const blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
+let pmWant=null;   // 🧑‍💼 "Mở ca quản lý" waiting behind the accountant's entry check: the check's start_day keeps it
 async function cmd(action,payload={},options={}){
-  if(action==='start_day'&&!payload?.acct_check&&acctDue(options.career||career())){acctCheck(options.career||career());return null;}
-  try{const r=await api.command(action,payload,options.career||career());if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);return r;}
+  if(action==='start_day'&&!payload?.acct_check&&acctDue(options.career||career())){pmWant=payload?.manager?options.career||career():null;acctCheck(options.career||career());return null;}
+  const pm=action==='start_day'&&payload?.acct_check&&pmWant===(options.career||career());
+  if(pm)payload={...payload,manager:true};
+  try{const r=await api.command(action,payload,options.career||career());if(pm){pmWant=null;ui.pmPick=null;ui.task=null;setTimeout(()=>openSheet('manager'),0);}if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);return r;}
   catch(error){if(error.quiet)return null;
     if(error.data?.code==='acct_check'&&!payload?.acct_check){acctCheck(options.career||career());return null;}   // 💼 kế toán: the entry check first (v4/accounting-school.js)
     toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}  // quiet: a tap the save moved under twice (api.js), the screen already shows why

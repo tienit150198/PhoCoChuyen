@@ -460,6 +460,24 @@ class Manager(unittest.TestCase):
                 r = j.act('end_day', carry_event=True)
                 self.assertIn('manager', r['summary']['promo'])
 
+    def test_certified_accountant_check_and_manager_ride_together(self):
+        """💼 The entry check comes first; the client resends start_day with the paper and {manager: true}."""
+        from tests import test_accounting_jobs as ta
+        cid = 'corp_accounting'
+        s = ta.hire(ta.with_certs(ta.story(1), ['basic']), cid)
+        rec = pm.new_record()
+        rec.update(emp=s['careers'][cid]['job']['employer'], hd=s['careers'][cid]['job']['hired_day'], rank=3)
+        s['journey']['promo'] = {cid: rec}
+        with mock.patch.dict(os.environ, {'MNL_HOLIDAY_OFF': '1'}):
+            s, _ = apply_action(s, cid, 'select_career')
+            with self.assertRaises(GameError) as e:
+                apply_action(s, cid, 'start_day', {'manager': True})
+            self.assertEqual(e.exception.code, 'acct_check')
+            s, _ = apply_action(s, cid, 'start_day', {'acct_check': ta.paper(s, cid), 'manager': True})
+        self.assertTrue(pm.managing(s, s['careers'][cid], cid))
+        self.assertEqual(public_state(s)['careers'][cid]['more_gate']['why'], 'manager')
+        validate_state(s)
+
 
 class Saves(unittest.TestCase):
     def test_tampering_is_refused(self):
