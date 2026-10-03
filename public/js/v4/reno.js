@@ -10,7 +10,9 @@
  * Pointer moves only move a transform (no re-render); a drop sends one jr_deco_put.
  * Opened from 🏠 Nhà của bạn (v4/house.js); the back button returns there. Styles: bank.css + house.css + reno.css.
  * 🎨 Màu (bảng màu): a selected piece opens the palette picker (v4/palette.js); its colour is state.colors.deco[uid]
- * (jr_wd_deco), kept by the piece in the bag and in the next home; drawn wherever the piece is (room, photo, a table). */
+ * (jr_wd_deco), kept by the piece in the bag and in the next home; drawn wherever the piece is (room, photo, a table).
+ * 💞 A home shared with the spouse: their pieces come from GET /api/deco/mate (game/deco_mate.py) and are drawn with
+ * these (room and photo), read-only: never selected or dragged, not in the bag, not in Ấm cúng, Cất hết or undo. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {Sound} from '../audio.js';
 import * as A from './deco-art.js';
@@ -18,7 +20,7 @@ import {setup as walkSetup} from './home-walk.js';
 
 const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',busy:false,flash:null,
   undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1,
-  try:null,nudge:null,tryTint:null};
+  try:null,nudge:null,tryTint:null,mate:null,mateKey:''};
 const U=A.U;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
@@ -98,7 +100,9 @@ export async function openReno(env,mode){
   if(!S.listening){
     S.listening=true;
     let seen='';
-    env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet,S.env.api.state?.colors?.deco]);if(key===seen)return;seen=key;if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();});
+    env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet,S.env.api.state?.colors?.deco]);if(key===seen)return;seen=key;
+      if(S.dlg?.open&&(V()?.place?.key||'')!==S.mateKey)loadMate();
+      if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();});
   }
   await ensureCss();
   const d=dialog();
@@ -106,7 +110,18 @@ export async function openReno(env,mode){
   const v=V();
   if(v){if(!v.rooms.some(r=>r.id===S.room))S.room=v.rooms[0]?.id||'';S.drawer=v.bag.length?'bag':'shop';}
   if(!d.open){d.showModal();d.scrollTop=0;S.toTop=true;}
+  loadMate();   // its first lines run now: a room that is not shared any more drops the spouse's pieces before drawing
   render();
+}
+/** 💞 The spouse's pieces when this is the home both live in (each time the room opens, and after a move). */
+async function loadMate(){
+  const v=V(),key=v?.place?.key||'';S.mateKey=key;
+  if(!v||!['own','shared'].includes(v.place.where)||S.env.api.state?.marriage?.spouse?.status!=='married'){S.mate=null;return;}
+  let m=null;
+  try{m=await S.env.api.json('/api/deco/mate');}catch{/* a home never blocks the room: just our own pieces */}
+  if(S.mateKey!==key)return;   // moved meanwhile: the newer request decides
+  const had=!!S.mate;S.mate=m&&m.at===key&&Array.isArray(m.items)&&m.items.length?m:null;
+  if((had||S.mate)&&S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();
 }
 
 async function send(action,payload={},opts={}){
@@ -135,6 +150,9 @@ const sameQ=(a,b)=>!!a&&!!b&&a.r===b.r&&a.x===b.x&&a.y===b.y&&(a.f||0)===(b.f||0
 /** Everything in room `rm` as {id, k, it, q}, without `skip`. */
 function inRoom(rm,skip=new Set()){return items().filter(p=>p.r===rm.id&&!skip.has(p.id)&&ITEM(p.k)).map(p=>({id:p.id,k:p.k,it:ITEM(p.k),q:qOf(p)}));}
 const ridersOf=uid=>items().filter(p=>p.on===uid).map(p=>p.id);
+/** 💞 The spouse's pieces in this home (ids 'p:…'), read-only: drawn, never part of the checks above. */
+const mates=()=>S.mate&&S.mate.at===V()?.place?.key?S.mate.items:[];
+function mateIn(rm){return mates().filter(p=>p.r===rm.id&&ITEM(p.k)).map(p=>({id:p.id,k:p.k,it:ITEM(p.k),q:qOf(p),mate:true,c:p.c||null}));}
 /** What `q` stands on: {it, q} (a placed piece) or {fix} (a fixture), or null. */
 function hostFor(rm,q,list){
   if(!q.on)return null;
@@ -272,15 +290,16 @@ function zoneMarkup(rm,it,G,list){
 function roomMarkup(rm,opts={}){
   const v=V(),G=A.geom(rm),Lt=A.lightAt(minuteNow()),edit=!!opts.edit,photo=!!opts.photo,uid=(photo?'p':'')+rm.id;
   const skin={...(rm.skin||{})};if(S.try&&S.try.room===rm.id)skin[S.try.part==='wall'?'w':'f']=S.try.skin==='auto'?undefined:S.try.skin;
-  const list=inRoom(rm),out=[A.roomBack(rm,G,partsMap(),Lt,uid,skin)];
+  const list=inRoom(rm),theirs=mateIn(rm),all=theirs.length?[...list,...theirs]:list,out=[A.roomBack(rm,G,partsMap(),Lt,uid,skin)];
   if(edit&&!photo&&S.held&&!S.drag)out.push(zoneMarkup(rm,heldItem(),G,list.filter(o=>o.id!==S.held.uid)));
   out.push('<g class="dc-zonelayer" pointer-events="none"></g>');
   const glows=[];
-  for(const o of depthOrder(rm,list)){
-    const it=o.it,a=A.anchor(it,o.q,G,hostFor(rm,o.q,list));
+  for(const o of depthOrder(rm,all)){
+    const it=o.it,a=A.anchor(it,o.q,G,hostFor(rm,o.q,all));
     const g=A.glowAt(it,a[0],a[1],o.q.f);if(g)glows.push(g);
-    const body=(o.q.on?A.contact(it,a[0],a[1]):'')+A.pieceAt(it,a[0],a[1],o.q.f,tintOf(o.id));
+    const body=(o.q.on?A.contact(it,a[0],a[1]):'')+A.pieceAt(it,a[0],a[1],o.q.f,o.mate?o.c:tintOf(o.id));
     if(photo){out.push(body);continue;}
+    if(o.mate){out.push(`<g class="dc-mate" pointer-events="none" aria-hidden="true">${body}</g>`);continue;}   // the spouse's: not ours to move
     const [bx,by,bw,bh]=bbox(it,a);
     const sel=S.sel===o.id,pop=S.pop===o.id,ghost=S.held?.src==='room'&&S.held.uid===o.id;
     out.push(`<g class="dc-it${sel?' sel':''}${pop?' pop':''}${ghost?' ghost':''}" data-uid="${esc(o.id)}" data-k="${esc(o.k)}"${o.q.on?` data-on="${esc(o.q.on)}"`:''}${frontY(rm,G,o,list)} tabindex="0" role="button" aria-label="${esc(it.name)}"><g class="dc-piece">${body}</g>`
@@ -882,7 +901,9 @@ const missList=list=>list.map(w=>{const m=String(w).match(/^(.*) ×(\d+)$/);retu
 function placeNote(v){
   const st=v.stats||{},pl=v.place;
   const note=pl.repairs?'':pl.where==='shared'?'💞 Nhà chung: bày trí thoải mái, chuyện sửa nhà để người đứng tên lo.':'🧾 Chỗ ở thuê: chỉ bày đồ trang trí, không sửa nhà được.';
-  return `<section class="bk-card dc-placenote">${note?`<p>${note}</p>`:''}<p class="bk-hint">Dọn đi đâu, đồ đạc cũng tự gói vào túi đồ. Mua một lần, mang theo cả hành trình.</p>
+  const theirs=mates();
+  const mate=theirs.length?`<p class="dc-mate-note">💞 Có cả đồ ${esc(S.mate.name)} bày (${theirs.length} món). Món của ai người nấy dời.</p>`:'';
+  return `<section class="bk-card dc-placenote">${note?`<p>${note}</p>`:''}${mate}<p class="bk-hint">Dọn đi đâu, đồ đạc cũng tự gói vào túi đồ. Mua một lần, mang theo cả hành trình.</p>
     <p class="dc-stats"><span>🎒 ${v.count}/${v.max} món</span><span>📌 Đã đặt ${st.placed||0} lần</span><span>☕ ${st.guests||0} lượt khách ghé</span></p></section>`;
 }
 function photoView(){

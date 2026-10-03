@@ -1,3 +1,10 @@
+# v1.4.30 — 💞 Nhà chung thấy đồ của nhau
+
+Phản ánh của người chơi (TrangChit, góp ý #109): "Mình trang trí nhà nhưng Minh Hưng không thấy đồ đạc trong nhà".
+
+- Đồ đạc thuộc bản lưu của từng người, nên ở nhà chung mỗi người chỉ thấy đồ mình bày. `GET /api/deco/mate` (`game/deco_mate.py`): khi hai vợ chồng (còn kết hôn) cùng ở một nhà (một người đứng tên `own`, người kia `shared` qua cặp này, cùng id và loại nhà), trả các món người kia đã đặt, đọc bản lưu của họ một lần, không ghi gì, không thêm khóa nào vào bản lưu (1.4.28 vẫn nhận mọi bản lưu). `reno.js` vẽ chúng cùng đồ của mình (cả ảnh chụp), chỉ để xem: không chọn, không kéo, không vào túi, không tính Ấm cúng.
+- Sổ tiệm (Suzy, homestay): cho nhân viên nghỉ khi họ còn sự cố đang mở giờ báo rõ các bước khép sự cố thay vì "Cần trao đổi sự cố đang mở…".
+
 # v1.4.29 — 📒 Học kế toán: bản lưu cũ không còn bị khóa
 
 Phản ánh của người chơi (num_cute, góp ý #108): "cứ hiện đáp án đã lưu chưa được chấm đúng… ấn vào học bằng cũng không cho vào".
