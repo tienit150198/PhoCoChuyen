@@ -8,6 +8,14 @@ import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
 
 const CELL=60,PAD=30;
+/* ---------- 🛵 Tự lái / ⏩ Đi nhanh: ride each leg yourself (careers/delivery_drive.js, loaded on the first leg) or tap ---------- */
+const MODE_KEY='mnl.dlDrive',HINT_KEY='mnl.dlDriveHint';
+let drv=null,drvLoad=null,drvOff=false,lastX=null,canvasOk=null;
+const readPref=k=>{try{return localStorage.getItem(k);}catch{return null;}};
+const savePref=(k,v)=>{try{localStorage.setItem(k,v);}catch{/* private mode: this visit only */}};
+const canDraw=()=>{if(canvasOk===null){try{canvasOk=!!document.createElement('canvas').getContext('2d');}catch{canvasOk=false;}}return canvasOk;};
+/** Tự lái is the default; "⏩ Đi nhanh" (remembered) or a phone that cannot draw it keeps the tap flow. */
+const driving=()=>!drvOff&&readPref(MODE_KEY)!=='fast'&&canDraw();
 /** "Cỏ May Office Tower" → "Office Tower"; "Bồ Câu School" → "School". */
 const enLabel=name=>{
   const w=name.split(' '),viet=s=>/[^\x00-\x7F]/.test(s);
@@ -265,15 +273,16 @@ function nextLeg(x){
 /** What the current step is about: planning the route, riding the planned leg, or work at this stop. */
 function phaseOf(g){
   const go=pending(g?.steps)?.go||{};
-  return go.cmd==='dl_plan'||go.act==='car:plan'?'plan':go.cmd==='dl_ride'?'ride':'stop';
+  return go.cmd==='dl_plan'||go.act==='car:plan'?'plan':go.cmd==='dl_ride'||go.act==='car:quick'?'ride':'stop';
 }
 /** The route: the whole planner (map, stops) is open only while planning is the step; riding shows the
  * two ways to go above it; any other step keeps it as one closed line. */
-function routeSec(x,phase,tag){
-  const d=x.room.data||{},planned=d.route||[],leg=nextLeg(x),ride=phase==='ride'&&leg;
+function routeSec(x,phase,tag,dn=null){
+  const d=x.room.data||{},planned=d.route||[],leg=nextLeg(x),drv=dn&&driving(),ride=phase==='ride'&&leg&&!drv;
   const sum=planned.length?`🗺️ Lộ trình · ${planned.length} điểm · tiếp theo ${x.esc(place(x,planned[0]))}`:'🗺️ Lộ trình · bản đồ & điểm dừng';
   const body=`${map(x)}${areaLine(x)}${planner(x,!ride)}`;
-  return `${ride?`<section class="dl-sec dl-ride">${rideChoice(x,leg)}</section>`:''}<section class="dl-sec dl-route-sec">${pane(x,`route-${tag}-${phase}-${planned.length}`,sum,body,phase==='plan','dl-route-fold')}</section>`;
+  const sw=dn&&!drv?modeSwitch(x):'';
+  return `${ride?`<section class="dl-sec dl-ride">${sw}${rideChoice(x,leg)}</section>`:sw?`<div class="dl-modebar">${sw}</div>`:''}<section class="dl-sec dl-route-sec">${pane(x,`route-${tag}-${phase}-${planned.length}`,sum,body,phase==='plan'&&!drv,'dl-route-fold')}</section>`;
 }
 function rideChoice(x,next){
   const name=x.esc(nodeOf(x,next.node).name),alt=next.short,soup=live(x).some(t=>t.known&&t.run.loaded&&t.needs.soup&&!t.run.spilled);
@@ -445,7 +454,77 @@ function travel(x,to){
   const d=x.room.data||{},row={ok:d.at===to?true:null,label:`Tới ${place(x,to)}`};
   if(d.at===to)return row;
   const hop=(d.route||[])[0]||to,fuel=Number(d.fuel)||0,low=fuel<dist(x,d.at,hop)*(Number(d.rate)||2)+1;
-  return {...row,go:low?fuelGo(x):rideGo(x,to)};
+  return {...row,...driveStep(x,low?fuelGo(x):rideGo(x,to))};
+}
+/** The stop a ride step goes to (planned leg, a plan to make, the player's draft), else null. */
+function goNode(x,go){
+  const d=x.room.data||{};
+  if(go?.cmd==='dl_ride')return (d.route||[])[0]||null;
+  if(go?.cmd==='dl_plan')return go.payload?.route?.[0]||null;
+  if(go?.act==='car:plan')return ui(x).draft[0]||null;
+  return null;
+}
+/** A ride step: `drive` names its stop. In Tự lái the rider rides there on the street view; its button is the
+ * shortcut "⏩ Đi nhanh" (the same commands as the tap flow) and nothing pulses (the stop's person waves). */
+function driveStep(x,go){
+  const node=goNode(x,go);
+  if(!node)return {go};
+  if(!driving())return {go,drive:node};
+  return {go:{act:'car:quick',data:{node},label:`⏩ Đi nhanh tới ${x.esc(place(x,node))}`},drive:node,pulse:''};
+}
+/** Ride to `node` the way the tap flow does: plan it first if it is not the next stop, then the main road. */
+async function rideTo(x,node){
+  const d=x.room.data||{};
+  if(!node||d.at===node)return {ok:false};
+  const route=d.route||[];
+  if(route[0]!==node){
+    const want=[node,...route.filter(n=>n!==node)].filter((n,i,a)=>!i||n!==a[i-1]).slice(0,10);
+    if(!await x.send('dl_plan',{route:want},{quiet:true}))return {ok:false};
+  }
+  return {ok:!!await x.send('dl_ride',{way:'main'})};
+}
+/** Stopped in front of a stop on the street view. The server still decides (fuel, the leg's minutes). */
+async function arrive(node){
+  const x=lastX;if(!x)return {ok:false};
+  const d=x.room.data||{},need=dist(x,d.at,node)*(Number(d.rate)||2);
+  if((Number(d.fuel)||0)<need)return {ok:false,say:'⛽ Không đủ xăng tới đây'};
+  return rideTo(x,node);
+}
+/** Stops where stopping does something: what waits there (its emoji rides in the waving person's bubble). */
+function usefulStops(x){
+  const d=x.room.data||{},out={};
+  for(const t of live(x)){if(!t.known||t.run.outcome)continue;const at=t.run.loaded?destOf(t):t.needs.pickup;out[at]??={kind:t.run.loaded?'drop':'pick',emoji:t.needs.emoji};}
+  if((Number(d.owed)||0)>0)out.hub??={kind:'hub',emoji:'💵'};
+  if((Number(d.fuel)||0)<100&&!d.bike?.nogas)out.gas??={kind:'gas',emoji:'⛽'};
+  if((d.bike?.parts||[]).some(p=>p.need))out.garage??={kind:'garage',emoji:'🔧'};
+  return out;
+}
+function driveOpts(x,node){
+  const d=x.room.data||{},first=!readPref(HINT_KEY);
+  if(first)savePref(HINT_KEY,'1');
+  return {nodes:nodes(x),at:d.at,target:node,useful:usefulStops(x),fuel:d.fuel,weather:d.weather,signs:d.road?.signs||[],
+    minute:x.room.day_clock?.minute??17*60+(Number(d.clock)||0),first,arrive,
+    slow:()=>{savePref(MODE_KEY,'fast');lastX?.toast?.('📱 Máy hơi chậm: đã chuyển sang ⏩ Đi nhanh. Bấm 🛵 Tự lái để thử lại.');lastX?.render();},
+    fail:()=>{drvOff=true;lastX?.render();}};
+}
+/** After every render: the street view into its slot (or its frames stopped when there is no leg to ride). */
+function driveTick(root,x){
+  lastX=x;
+  const slot=root.querySelector('[data-dl-drive]');
+  if(!slot){drv?.park();return;}
+  if(!drv){
+    drvLoad??=import('./delivery_drive.js').then(m=>{drv=m;const s=document.querySelector('#sheet[open] [data-dl-drive]');if(s&&lastX)drv.mount(s,driveOpts(lastX,s.dataset.dlDrive));})
+      .catch(error=>{console.warn('Tự lái chưa tải được',error);drvOff=true;drvLoad=null;lastX?.render();});
+    return;
+  }
+  drv.mount(slot,driveOpts(x,slot.dataset.dlDrive));
+}
+function modeSwitch(x){
+  const on=driving();
+  return `<div class="dl-mode" role="group" aria-label="Cách chạy xe"><button type="button" class="dl-mode-b${on?' on':''}" data-action="car:mode" data-mode="drive" aria-pressed="${on}">🛵 Tự lái</button><button type="button" class="dl-mode-b${on?'':' on'}" data-action="car:mode" data-mode="fast" aria-pressed="${!on}">⏩ Đi nhanh</button></div>`;
+}
+function driveSec(x,node){
+  return `<section class="dl-drive" aria-label="Tự lái tới ${x.esc(nodeOf(x,node).name)}"><div class="dl-drive-slot" data-dl-drive="${x.esc(node)}"></div>${modeSwitch(x)}</section>`;
 }
 /** Hand the COD cash in at the hub: count what the statement says, then give it to the accountant. */
 function settleSteps(x){
@@ -535,18 +614,20 @@ function guide(t,x){
 function bar(t,x,g){
   // Every screen has a step to do; this only shows if something unexpected leaves none.
   const final=g.final||{label:'📍 Xem điểm dừng',go:{sel:'.dl-sec.focus'},ready:!pending(g.steps)?.go};
-  return `<div class="dl-bar">${stepCta(x,g.steps,final)}</div>`;
+  const ride=pending(g.steps)?.drive&&driving();   // Tự lái: the button is only the shortcut, the street view leads
+  return `<div class="dl-bar">${stepCta(x,g.steps,final,ride?{style:'ghost big grow'}:undefined)}</div>`;
 }
 function hintFor(t,x,g){
   const f=g.final&&g.final.ready!==false?{label:g.final.label.replace(/^[^\p{L}\d]+/u,''),go:g.final.go}:null;
-  return nextHint(x,g.steps,{final:f});
+  const n=pending(g.steps),steps=n?.drive&&driving()?g.steps.map(s=>s===n?{...s,go:{act:'car:look',label:`🛵 Lái tới ${x.esc(place(x,n.drive))}`}}:s):g.steps;
+  return nextHint(x,steps,{final:f});
 }
 
 export default {
   id:'delivery',
   css:true,
   next(t,x){
-    try{const n=x&&pending(guide(t,x).steps);if(n)return x.esc(stepLine(n));}catch{/* fall back to the fixed lines */}
+    try{const n=x&&pending(guide(t,x).steps);if(n)return x.esc(n.drive&&driving()?`🛵 Lái tới ${place(x,n.drive)}`:stepLine(n));}catch{/* fall back to the fixed lines */}
     if(!t.known)return 'Nhận đơn trên app';
     const r=t.run,n=t.needs;
     if(r.outcome)return 'Đơn đã xong';
@@ -563,9 +644,9 @@ export default {
   job(t,x){
     const g=guide(t,x),hint=hintFor(t,x,g);
     if(x.room.data?.desk?.ev)return `<div class="career-job dl">${hint}${status(x)}${deskCard(x)}</div>`;
-    const phase=t.known?phaseOf(g):'stop',go=pending(g.steps)?.go||{},route=routeSec(x,phase,t.id);
+    const phase=t.known?phaseOf(g):'stop',n=pending(g.steps),go=n?.go||{},dn=t.known&&n?.drive||null,route=routeSec(x,phase,t.id,dn);
     const stop=stopPanel(x,go.cmd==='dl_settle'||/^car:snote/.test(go.act||''));
-    return `<div class="career-job dl">${hint}${status(x)}${t.known?'':board(x,t.id)}${deskCard(x)}<div class="workbench"><section class="wb-main">
+    return `<div class="career-job dl">${hint}${dn&&driving()?driveSec(x,dn):''}${status(x)}${t.known?'':board(x,t.id)}${deskCard(x)}<div class="workbench"><section class="wb-main">
       ${phase==='stop'?stop+route:route+stop}${careSection(x)}
     </section>${t.known?`<aside class="wb-side">${stepRows(x,g.steps,'Việc của đơn')}${board(x,t.id,true)}</aside>`:''}</div>${bar(t,x,g)}</div>`;
   },
@@ -577,6 +658,9 @@ export default {
     </section></div></div>`;
   },
   actions:{
+    async quick(data,el,x){await rideTo(x,data.node);},
+    async look(data,el,x){const c=document.querySelector('#sheet[open] .dd-cv');c?.scrollIntoView?.({block:'nearest',behavior:'smooth'});c?.focus?.({preventScroll:true});},
+    async mode(data,el,x){const on=data.mode==='drive';savePref(MODE_KEY,on?'drive':'fast');if(on){drvOff=false;drv?.again();}else drv?.park();x.render();},
     async stop(data,el,x){const u=ui(x);if(u.draft.length<10&&u.draft[u.draft.length-1]!==data.node)u.draft.push(data.node);x.render();},
     async undo(data,el,x){ui(x).draft.pop();x.render();},
     async clear(data,el,x){ui(x).draft=[];x.render();},
@@ -598,7 +682,7 @@ export default {
     async fix(data,el,x){const u=ui(x),f=u.fix||[];u.fix=f.includes(data.part)?f.filter(p=>p!==data.part):[...f,data.part];x.render();},
   },
   // The sticky next-step bar rides above the sheet's own sticky footer.
-  tick(root){keepBarAboveFooter(root);},
+  tick(root,x){keepBarAboveFooter(root);try{driveTick(root,x);}catch(error){console.error(error);}},
   // Day summary: "Ngày mai" first (tomorrow's road, fuel, a worn part, supplies), one way to the supplies, the day's
   // figures folded.
   summary(data,x){
