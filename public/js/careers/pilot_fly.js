@@ -84,7 +84,7 @@ function build(){
     <p class="pl-fly-tip" hidden></p>
     <button type="button" class="pl-fly-ga" hidden>${esc(tr('↗️ BAY LẠI'))}</button>
     <div class="pl-fly-yoke" aria-label="${esc(tr('Cần lái: kéo để lái'))}"><span class="pl-fly-knob" aria-hidden="true"></span><small>${esc(tr('Kéo để lái'))}</small></div>
-    <div class="pl-fly-thr" role="slider" aria-label="${esc(tr('Cần ga'))}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><span class="pl-fly-thr-knob" aria-hidden="true"></span><small>${esc(tr('Cần ga'))}</small></div>
+    <div class="pl-fly-thr" role="slider" aria-label="${esc(tr('Cần ga'))}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0"><span class="pl-fly-thr-fd" aria-hidden="true" hidden></span><span class="pl-fly-thr-knob" aria-hidden="true"></span><small>${esc(tr('Cần ga'))}</small></div>
     <p class="pl-fly-keys" hidden>${esc(tr('← → nghiêng · ↑ ↓ mũi (↓ kéo lên) · W/S ga · G bay lại'))}</p>
     <div class="pl-fly-ask career-job pl" hidden></div>`;
   (document.querySelector('#sheet[open]')||document.body).append(el);
@@ -100,7 +100,7 @@ function build(){
   F.ro=new ResizeObserver(()=>size());F.ro.observe(el);
   size();
   F.stats={n:0,sum:0,max:0,win:0,winN:0,slow:0,start:performance.now()};F.lite=false;
-  F.thrShown=-1;F.last=performance.now();F.raf=requestAnimationFrame(frame);
+  F.thrShown=-1;F.thrFd=-2;F.last=performance.now();F.raf=requestAnimationFrame(frame);
 }
 function size(){
   if(!F.el)return;
@@ -429,10 +429,18 @@ function enterApproach(){
 }
 const alpha=V=>3*D2R*clamp((VREF*KT/Math.max(V,30))**2,.4,2.4);
 const trim=(V,gam)=>clamp((K_D*V*V+G*Math.sin(gam))/A_T,0,1);
+/** Where the magenta mark on the throttle sits: full for the take-off; on the approach the setting that holds
+ * the approach speed on the slope (a little more when slow, less when fast). null: no mark. */
+function thrHint(){
+  if(!F.fd||S.ap)return null;
+  if(F.phase==='takeoff')return S.ground?1:null;
+  if(F.phase!=='approach'||S.ground||S.h<30*FT)return null;
+  return clamp(trim(VREF*KT,-GS)+clamp((VREF-S.V/KT)*.03,-.25,.25),0,1);
+}
 /** The approach as flown right now: the 1,000 ft gate's words (110–120 kt, 1 dot, 1,000 ft/min), a little kinder. */
 function judge(){
   const kt=S.V/KT,dist=Math.max(60,AIM-S.z),dev=(Math.atan2(S.h,dist)-GS)/DOT,loc=Math.atan2(S.x,dist+LEN-AIM)/(1.25*D2R),sink=-S.vs/FT*60;
-  const why=kt>122?'nhanh quá':kt<106?'chậm quá':dev>1.3?'cao quá':dev<-1.3?'thấp quá':sink>1100?'xuống gấp quá':Math.abs(loc)>1.5?'lệch tim đường băng':'';
+  const why=kt>126?'nhanh quá':kt<104?'chậm quá':dev>1.3?'cao quá':dev<-1.3?'thấp quá':sink>1100?'xuống gấp quá':Math.abs(loc)>1.5?'lệch tim đường băng':'';
   return {stable:!why,why,kt,dev,loc,sink};
 }
 function stepApproach(){
@@ -463,7 +471,8 @@ function stepApproach(){
   // The captain takes it: far too low short of the runway, or not lined up at all.
   const dist=AIM-S.z;
   if(!P.auto&&S.z>LEN-500){P.auto=true;say('🧑‍✈️ Hết đường băng rồi, bay lại!',{now:true,ms:2600});goAround('captain');return;}
-  if(!P.auto&&((hft<160&&dist>1200)||(hft<70&&(S.z<-150||Math.abs(S.x)>40))||hft>2000)){
+  const slope=Math.max(0,dist)*Math.tan(GS)/FT;
+  if(!P.auto&&((dist>400&&hft<slope*.5-20)||(hft<70&&(S.z<-150||Math.abs(S.x)>40))||hft>2000)){
     P.auto=true;say(hft>2000?'🧑‍✈️ Mình bay lại cho chắc.':'🧑‍✈️ Thấp quá! Chị cầm lái, bay lại.',{now:true,ms:2600});goAround('captain');
   }
 }
@@ -552,8 +561,8 @@ function physics(dt){
   if(S.vs<0&&S.h<12*FT&&ph==='approach')S.vs*=.6;     // the air cushion just above the runway
   S.h+=S.vs*dts;
   if(ph==='cell')S.V=lerp(S.V,110,clamp(dt,0,1));    // the autothrottle holds the cruise
-  else S.V=clamp(S.V+(S.T*A_T-K_D*S.V*S.V-G*Math.sin(gam))*dts,25,160);
-  S.psi+=G*Math.tan(S.ph)/Math.max(S.V,40)*dts;
+  else S.V=clamp(S.V+(S.T*A_T-K_D*S.V*S.V-G*Math.sin(gam))*Math.min(dts,dt*1.2),25,160);   // speed and heading answer calmly
+  S.psi+=G*Math.tan(S.ph)/Math.max(S.V,40)*Math.min(dts,dt*1.5);
   S.x+=(S.V*Math.cos(gam)*Math.sin(S.psi)+w.cw+(gu?n1*1.4*gu:0))*dts;
   S.z+=S.V*Math.cos(gam)*Math.cos(S.psi)*dts;
   if(S.h<=0){
@@ -577,10 +586,10 @@ function director(){
   if(ph==='approach'||ph==='rollout'){
     const dist=Math.max(30,AIM-S.z),hgs=Math.max(0,dist*Math.tan(GS)),dev=S.h-hgs;
     let gam=clamp(-3-dev*.05,-6,-.6)*D2R;
-    if(S.h<35*FT)gam=-lerp(.5,2.2,S.h/(35*FT))*D2R;    // the flare: less and less sink, never level
+    if(S.h<35*FT)gam=-lerp(1,2.4,S.h/(35*FT))*D2R;    // the flare: less and less sink, never level
     const vx=S.V*Math.sin(S.psi)+w.cw;
-    const want=clamp(-S.x*.0016-vx*.035,-.3,.3)+Math.asin(clamp(-w.cw/Math.max(S.V,40),-.3,.3));
-    return {th:gam+alpha(S.V),ph:clamp((want-S.psi)*3,-20*D2R,20*D2R)};
+    const want=clamp(-S.x*.0015-vx*.012,-.25,.25)+Math.asin(clamp(-w.cw/Math.max(S.V,40),-.3,.3));
+    return {th:gam+alpha(S.V),ph:clamp((want-S.psi)*1.6,-15*D2R,15*D2R)};
   }
   return {th:2*D2R,ph:0};
 }
@@ -616,8 +625,10 @@ function frame(now){
     else if(F.phase==='hold')stepHold(dt);
     if(!F.el)return;
     talkTick();
-    const tv=Math.round(S.Tt*100);
-    if(tv!==F.thrShown){F.thrShown=tv;const th=F.el.querySelector('.pl-fly-thr');th.style.setProperty('--thr',String(S.Tt));th.setAttribute('aria-valuenow',String(tv));}
+    const tv=Math.round(S.Tt*100),th=F.el.querySelector('.pl-fly-thr');
+    if(tv!==F.thrShown){F.thrShown=tv;th.style.setProperty('--thr',String(S.Tt));th.setAttribute('aria-valuenow',String(tv));}
+    const hint=thrHint(),hv=hint===null?-1:Math.round(hint*50);
+    if(hv!==F.thrFd){F.thrFd=hv;const m=th.querySelector('.pl-fly-thr-fd');m.hidden=hv<0;if(hv>=0)th.style.setProperty('--thrfd',String(hint));}
     if(F.tip&&F.time>F.tipUntil){F.tip='';F.el.querySelector('.pl-fly-tip').hidden=true;}
     draw();
   }catch(error){console.error(error);leave('error');}
@@ -636,8 +647,8 @@ function measure(raw,now){
 /** For the browser checks: where the aircraft is and what the director wants (read-only). */
 globalThis.__plFly={
   state:()=>{const d=F.el?director():{th:0,ph:0};const j=F.phase==='approach'?judge():null;
-    return {phase:F.phase,open:!!F.el,kt:S.V/KT,ft:S.h/FT,th:S.th/D2R,ph:S.ph/D2R,psi:S.psi/D2R,x:S.x,z:S.z,T:S.T,ground:S.ground,
-      fdTh:d.th/D2R,fdPh:d.ph/D2R,steer:d.steer||0,stable:j?.stable??null,why:j?.why||'',say:F.say,ask:!!F.ask,busy:F.busy};},
+    return {phase:F.phase,open:!!F.el,kt:S.V/KT,ft:S.h/FT,th:S.th/D2R,ph:S.ph/D2R,psi:S.psi/D2R,x:S.x,z:S.z,T:S.T,Tt:S.Tt,ground:S.ground,
+      fdTh:d.th/D2R,fdPh:d.ph/D2R,thrHint:thrHint(),steer:d.steer||0,stable:j?.stable??null,why:j?.why||'',say:F.say,ask:!!F.ask,busy:F.busy};},
   stats:()=>{const s=F.stats;return {frames:s.n,avg:s.n?s.sum/s.n:0,max:s.max,lite:F.lite,dpr:F.dpr};},
 };
 
@@ -785,7 +796,7 @@ function runway(c,sc,w){
 /** PAPI: four lights left of the runway at the aiming point; each white above its angle, red below. */
 function papi(c,glow){
   const p=point(-HALF-22,.6,AIM);if(!p)return;
-  const dist=Math.max(1,AIM-S.z),ang=Math.atan2(S.h+EYE,dist)/D2R,lim=[2.5,2.83,3.17,3.5];
+  const dist=Math.max(1,AIM-S.z),ang=Math.atan2(S.h,dist)/D2R,lim=[2.5,2.83,3.17,3.5];
   const gap=Math.max(5,Math.min(30,9*C.f/p[2])),r=Math.max(2.4,Math.min(7,2.2*C.f/p[2]));
   for(let i=0;i<4;i++){
     const x=p[0]-(3-i)*gap,white=ang>lim[i];

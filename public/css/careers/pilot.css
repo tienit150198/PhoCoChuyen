@@ -180,6 +180,7 @@
 .pl-fly-knob{width:62px;height:62px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#c9d3de 60%,#8794a3);box-shadow:0 4px 12px rgb(0 0 0 / 45%);pointer-events:none;transition:transform .08s}
 .pl-fly-thr{width:76px}
 .pl-fly-thr small{display:none}
+.pl-fly-thr-fd{position:absolute;left:4px;right:4px;height:4px;border-radius:2px;background:#ff4fd8;box-shadow:0 0 6px #ff4fd8;pointer-events:none;top:calc(18px + (1 - var(--thrfd,0)) * (100% - 36px) - 2px)}
 .pl-fly-thr::before{content:"";position:absolute;top:18px;bottom:18px;left:50%;width:8px;margin-left:-4px;border-radius:4px;background:linear-gradient(#f0b44c,#6fd38a 40%,#3d4a59)}
 .pl-fly-thr-knob{position:absolute;left:8px;right:8px;height:26px;border-radius:8px;background:linear-gradient(#e9eef4,#9aa7b5);box-shadow:0 3px 8px rgb(0 0 0 / 45%);pointer-events:none;
   top:calc(18px + (1 - var(--thr,0)) * (100% - 36px) - 13px)}
