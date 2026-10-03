@@ -370,7 +370,7 @@ def _p(c: dict, key: str) -> int:
 
 def line_text(ln: dict) -> str:
     dishes = ', '.join(DISHES[x]['short'] for x in ln['it'])
-    bits = [f'{RICE[ln["r"]]["short"]} {VA_WORD[ln["va"]]}', dishes]
+    bits = [RICE[ln['r']]['name'] + ('' if ln['va'] == 2 else f', {VA_WORD[ln["va"]]}'), dishes]
     if not ln['mo']:
         bits.append('không hành mỡ')
     bits.append({'ruoi': 'rưới nước mắm', 'rieng': 'nước mắm để riêng', 'tuong': 'nước tương'}.get(ln['mam'], 'không nước mắm'))
