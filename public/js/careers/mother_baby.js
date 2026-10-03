@@ -556,6 +556,6 @@ export default {
     // "🌅 Ngày mai" first (the shelf: what ran out or runs low, parcels at the door or on the way; one way to Kho),
     // the day's figures folded under it.
     const kv=`<div class="kv">${row('Đơn quà đã trao',data.sold)}${data.advised?row('Lần tư vấn an toàn',data.advised):''}${data.returns?row('Ca đổi trả',data.returns):''}${data.events?row('Chuyện bất ngờ',data.events):''}${data.fines?row('Tiền phạt',`${data.fines} xu`):''}</div>`;
-    return tomorrowCard(x,{},{shelf:shelfLines(x.room,x.content.products),kho:'warehouse',title:`🎁 Tiệm quà hôm nay · ${data.sold} đơn`,more:kv+care});
+    return tomorrowCard(x,{},{shelf:shelfLines(x.room,x.content.products),kho:'warehouse',title:'🎁 Tiệm quà hôm nay',more:kv+care});
   },
 };
