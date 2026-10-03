@@ -1,3 +1,9 @@
+# v1.4.26 — 🛒 Thu gom rác: túi dán phiếu không làm kẹt ngõ
+
+Phản ánh của người chơi (tieuthuki): "thu gom rác bấm không được nữa".
+
+- `garbage.js roundSteps()`: "Tới nhà sau" chờ mọi túi `loaded`; túi đã dán phiếu (sự cố chủ nhà chặn xe → "Dán phiếu", hoặc tự từ chối) không bao giờ lên xe, nên ở nhà chưa phải cuối ngõ không còn nút nào để bấm. Giờ túi `refused` tính là đã xử lý (cả ô đếm x/y trên dải nhà). Server không đổi.
+
 # v1.4.25 — ⚡ Gửi state theo phần (delta), vẽ nền quán trà sữa một lần
 
 Chủ game: "có gì tối ưu lại k chậm thì vẫn tiếp tục tối ưu"; góp ý #100 (chậm, lag).
