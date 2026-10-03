@@ -64,16 +64,25 @@ export function gateOf(n){
   const gx=Number(n.x)||0,gy=Number(n.y)||0,east=gx<GX;
   return {x:gx*B+(east?FRONT+6:-FRONT-6),y:gy*B,gx,gy,east};
 }
-/** The next point to ride to on the way to `T` (a gateOf): along this street to the target's street, then to the door. */
+/** The next point to ride to on the way to `T` (a gateOf): along this street to the target's street (turning in the
+ * middle of a junction), then to the door. The ▲ of the HUD points at it. */
 export function waypoint(px,py,T){
   const i=Math.round(px/B),j=Math.round(py/B),onH=Math.abs(py-j*B)<=HW+.5,onV=Math.abs(px-i*B)<=HW+.5;
-  if(onH&&j===T.gy)return {x:T.x,y:T.y-2,last:true};
-  if(onV)return {x:i*B,y:T.gy*B};
-  return {x:clamp(Math.round(T.x/B),0,GX)*B,y:j*B};
+  const ti=clamp(Math.round(T.x/B),0,GX);
+  let w;
+  if(onH&&j===T.gy)w={x:T.x,y:T.y-2,last:true};                 // on the target's street: to the door
+  else if(onV&&(i===ti||!onH))w={x:i*B,y:T.gy*B};                // on the right avenue (or between junctions on one)
+  else w={x:ti*B,y:j*B};                                         // along this street to the target's avenue
+  // In a junction, line up with the street about to be taken (its middle) before turning, so the arrow never cuts a corner.
+  if(onH&&onV){
+    const across=w.y===j*B||w.last?Math.abs(py-j*B)>1.5:Math.abs(px-i*B)>1.5;
+    if(across)return {x:i*B,y:j*B};
+  }
+  return w;
 }
 
 /* ---------------------------------------------------------------- the world (built once per set of stops) */
-function buildWorld(nodes){
+export function buildWorld(nodes){
   const R=rng(20261003),houses=[],cells=new Map(),lamps=[],trees=[],signs=[],lights=[],marks={};
   const cellAdd=(cx,cy,o)=>{const k=cx+','+cy;(cells.get(k)||cells.set(k,[]).get(k)).push(o);};
   // Landmarks: two house slots of the south row of the corner cell.
@@ -100,6 +109,7 @@ function buildWorld(nodes){
       const along=face==='S'||face==='N',n=along||full?4:2,len=along||full?(x1-x0):(y1-y0-15.2),start=along||full?0:7.6,w=len/n;
       for(let k=0;k<n;k++){
         if(face==='S'&&taken.has(`${cx},${cy},S,${k}`))continue;
+        if(!full&&k===n-1&&(face==='W'&&taken.has(`${cx},${cy},S,0`)||face==='E'&&taken.has(`${cx},${cy},S,3`)))continue;   // a landmark's yard
         const d=6+R()*1.5,h=[5.5,6.5,8.5,9.5,11.5][Math.floor(R()*5)],col=HOUSE[Math.floor(R()*HOUSE.length)];
         let b;
         if(face==='S')b={x0:x0+k*w,x1:x0+(k+1)*w,y0:y1-d,y1};
@@ -133,7 +143,7 @@ function landmarkBoxes(L){
       box(x0+1,x1-1,y1-9,y1-6,0,look.h,{sign:true});
       box(x0,x1,y1-5,y1+.6,4.3,.7,{col:'#d9442b',canopy:true});
       box(x0+3,x0+3.8,y1-2.4,y1-1.6,0,1.6,{col:'#c93d2a',pump:true});box(x1-3.8,x1-3,y1-2.4,y1-1.6,0,1.6,{col:'#c93d2a',pump:true});
-      box(x0+.4,x0+.8,y1-.2,y1+.2,0,4.3,{col:'#eeeeee'});box(x1-.8,x1-.4,y1-.2,y1+.2,0,4.3,{col:'#eeeeee'});
+      box(x0+.4,x0+.8,y1-.4,y1,0,4.3,{col:'#eeeeee'});box(x1-.8,x1-.4,y1-.4,y1,0,4.3,{col:'#eeeeee'});
       break;
     case 'villa':
       box(x0,x1,y1-.5,y1,0,2.2,{gate:true,col:'#efe7d4'});
