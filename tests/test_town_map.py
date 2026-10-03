@@ -71,8 +71,9 @@ class ClosedAndLocked(unittest.TestCase):
         s, _ = act(s, 'grocery', 'select_career')
         s, _ = act(s, 'grocery', 'start_day')
         self.assertTrue(s['careers']['grocery']['open'])
-        # The door's card: the reason, the fee, and one button that reopens and goes in (go:1, v4/journey.js jrReopen).
-        self.assertIn("act(`Mở lại · ${fmt(fee)} xu`,'jrReopen',{career:it.id,go:1}", WALK)
+        # The door's card: the reason, and one free button that reopens and goes in (go:1, v4/journey.js jrReopen; #oldcost).
+        self.assertIn("act('Mở lại','jrReopen',{career:it.id,go:1}", WALK)
+        self.assertIn('Mở lại miễn phí', WALK)
         self.assertIn('Bạn đã tạm đóng nơi này', WALK)
         self.assertIn("if(r&&data.go)await env.act('choose',{career:data.career})", (ROOT / 'public/js/v4/journey.js').read_text(encoding='utf-8'))
         self.assertIn("tr('⏸ Tạm đóng')", PLACE)                       # on the sign too, the shutter all the way down

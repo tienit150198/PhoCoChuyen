@@ -17,7 +17,7 @@ function css(){
 }
 css();
 
-const pocketText=x=>x.pocket==='wallet'?'trừ vào ví của bạn':'từ quỹ nơi làm';
+const pocketText=x=>x.pocket==='wallet'?'trừ vào ví của bạn':`trừ vào quỹ ${x.place} (quỹ thiếu thì trừ ví)`;
 
 function dialogHTML(x){
   const stakes=[
@@ -50,7 +50,7 @@ export function abandonGate(api,target){
 function bannerHTML(x){
   const trust=x.trust?`<p>💔 −${fmt(x.trust)} ${esc(x.trust_name)} <small>(còn ${fmt(x.trust_after)}/100)</small></p>`:'';
   const walked=x.walked||x.jobs?`<p>🚶 ${fmt(x.walked+x.jobs)} khách đã bỏ về.</p>`:'';
-  return `<div class="ab-card" role="alert"><span class="ab-emoji" aria-hidden="true">🏃</span><div class="grow"><div class="ab-top"><strong class="ab-big">−${fmt(x.fine)} xu</strong><span class="ab-what">${esc(x.label||'Bỏ dở việc')} · ${esc(x.place)}</span></div>
+  return `<div class="ab-card" role="alert"><span class="ab-emoji" aria-hidden="true">🏃</span><div class="grow"><div class="ab-top"><strong class="ab-big">−${fmt(x.fine)} xu</strong><span class="ab-what">${esc(x.label||'Phạt bỏ dở ca')} ở ${esc(x.place)}</span></div>
     ${trust}${walked}<p class="ab-line">${esc(x.text||'')}</p>${x.warn?`<p class="ab-warn">⚠️ ${x.pocket==='wallet'?'Lần sau còn bỏ ngang là bị cho nghỉ.':'Bỏ quầy nữa là mất khách quen.'}</p>`:''}<div class="ab-foot"><button type="button" class="btn small" data-ab-close>Đã hiểu</button></div></div></div>`;
 }
 function soft(x){return `<div class="ab-card soft" role="status"><span class="ab-emoji" aria-hidden="true">⏸️</span><div class="grow"><p>${esc(x.text)}</p><div class="ab-foot"><button type="button" class="btn small" data-ab-close>Đã hiểu</button></div></div></div>`;}

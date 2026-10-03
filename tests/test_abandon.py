@@ -102,7 +102,7 @@ class StartedTask(unittest.TestCase):
         self.assertEqual(c['incidents']['trust'], trust - x['trust'])
         row = [e for e in c['ops']['finance']['ledger'] if e['category'] == 'abandon_fine']
         self.assertEqual(len(row), 1)
-        self.assertTrue(row[0]['reason'].startswith('Bỏ dở việc'))
+        self.assertTrue(row[0]['reason'].startswith('Phạt bỏ dở ca ở '))
         t = next(t for t in c['tasks'] if t['id'] == self.t['id'])
         self.assertEqual(t['status'], 'cancelled')
         self.assertIn(t['id'], c['completed_ids'])

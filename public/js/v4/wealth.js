@@ -113,7 +113,7 @@ export function wealthHTML(state,o={}){
       const draw=!P.story?'':p.max>0?`<button type="button" class="btn small primary" data-action="wlDraw" data-career="${esc(p.cid)}" data-amount="${p.max}">Rút về ví · tối đa ${xu(p.max)}</button>`:`<small class="muted">Chưa rút được: quỹ giữ lại tiền dự phòng và hóa đơn.</small>`;
       return row(esc(m.emoji||'🏪'),esc(m.name||p.cid),p.fund<0?minus(-p.fund):xu(p.fund),{cls:(p.fund<0?'bad ':'')+(p.cid===o.current?'here':''),id:'fund',sub:p.cid===o.current?'đang ở đây':p.paused?'tạm đóng':p.employed?'làm thuê':'',extra:draw});
     }).join('');
-    parts.push(section('Quỹ nơi làm việc',rows,P.story?link('Góp vốn, tạm đóng','stView',{view:'wallet'}):''));
+    parts.push(section('Quỹ nơi làm việc',rows,P.story?link('Rút, góp vốn','stView',{view:'wallet'}):''));
   }
   if(P.joint!=null)parts.push(section('Quỹ chung',row('💞','Quỹ chung vợ chồng',xu(P.joint),{id:'joint'}),link('Hôn nhân','marriage')));
   if(P.homes.length)parts.push(section('Nhà',P.homes.map(x=>row(esc(x.emoji),esc(x.name),xu(x.value),{id:'home',sub:x.live?'giá thị trường hôm nay':x.let?'đang cho thuê':'đang để trống'})+

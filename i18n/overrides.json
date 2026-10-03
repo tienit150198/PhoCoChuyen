@@ -1,5 +1,19 @@
 {
  "strings": {
+  "Bạn đã tạm đóng nơi này. Mở lại miễn phí rồi vào làm ngay.": "You closed this place for now. Reopen it for free and start right away.",
+  "Chi phí sống": "Living costs",
+  "Khi tạm đóng, nơi này chưa làm việc được. Mở lại lúc nào cũng được, không tốn phí.": "While closed you cannot work here. Reopen any time, free of charge.",
+  "Mở lại không tốn phí. Quỹ, hàng và người làm vẫn để nguyên như lúc bạn đi.": "Reopening is free. The fund, stock and staff are just as you left them.",
+  "Phạt bỏ dở ca": "Fine for leaving a shift unfinished",
+  "Rút, góp vốn": "Withdraw, invest",
+  "Tạm đóng · mở lại miễn phí": "Closed for now · reopen for free",
+  "Vắng chủ không tốn phí": "Costs nothing while you are away",
+  "tạm đóng, mở lại miễn phí": "closed for now, reopen for free",
+  "vắng chủ không tốn phí": "costs nothing while you are away",
+  "· quỹ thiếu, trừ ví": "· fund short, taken from wallet",
+  "🏃 Chỉ khi bỏ đi lúc đang làm dở mới bị phạt một lần, hộp xác nhận ghi rõ số tiền trước khi đi.": "🏃 Only walking off in the middle of work costs a one-time fine, and the confirm box shows the exact amount before you go.",
+  "🏪 Tiệm của bạn thì cứ sang nơi khác: nơi bạn không làm thì không tốn phí gì.": "🏪 For your own shop just go somewhere else: a place you are not working at costs nothing.",
+  "💡 Nơi bạn không làm hôm đó không tốn đồng nào: quỹ, hàng và người làm cứ để nguyên chờ bạn quay lại.": "💡 A place you do not work at that day costs nothing: its fund, stock and staff wait for you to come back.",
   "Quán đã tới giờ đóng cửa thì đi sang chỗ khác không bị phạt; việc dở vẫn giữ, quay lại khép ca.": "Once a shop reaches closing time you can walk to another place with no fine; unfinished work waits for you.",
   "Mua thêm nhà không còn tự dọn đi; ở nhà chung với vợ/chồng thì có nút Về ở chung.": "Buying another home no longer moves you out; living with your partner? Tap Move back in.",
   "Hướng dẫn mới: chuyển khoản, bản đồ phố, đi xe, chụp ảnh hội chợ, tự lái và tự bay.": "New guides: transfers, the town map, riding, fair photos, driving and flying yourself.",
@@ -9968,6 +9982,10 @@
   "Việc ở $1 vẫn đang dở: $2. Quay lại làm nốt nhé.": "Work at $1 is still unfinished: $2. Come back and finish it."
  },
  "patterns": {
+  "$1 mở cửa lại (không tốn phí).": "$1 is open again (free).",
+  "$1 tạm đóng. Mở lại lúc nào cũng được, không tốn phí.": "$1 is closed for now. Reopen any time, free of charge.",
+  "Phạt bỏ dở ca ở $1": "Fine for leaving a shift unfinished at $1",
+  "trừ vào quỹ $1 (quỹ thiếu thì trừ ví)": "from the $1 fund (wallet if the fund is short)",
   "$1 Đi xe": "$1 Ride",
   "Vào $1": "Go in $1",
   "Đi học $1": "Go study $1",

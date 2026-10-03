@@ -169,7 +169,7 @@ function placeCard(env,cid){
   if(api.state.x3?.today?.includes(cid))tags.push(tag(`🔥 Lời x${api.state.x3.x} hôm nay`,'amber'));   // game/x3_week.py
   if(acctTag(aj))tags.push(tag(acctTag(aj),'amber'));
   let money='';
-  if(p&&J.story)money=p.employed?`<p class="jr-fund">Làm thuê · lương về ví${abandonTrust(api,cid)}</p>`:`<p class="jr-fund">Quỹ ${fmt(p.fund)} xu · ${p.paused?'không tốn phí duy trì':`duy trì ${fmt(p.upkeep)} xu/ngày`}</p>`;
+  if(p&&J.story)money=p.employed?`<p class="jr-fund">Làm thuê · lương về ví${abandonTrust(api,cid)}</p>`:`<p class="jr-fund">Quỹ ${fmt(p.fund)} xu · ${p.paused?'tạm đóng, mở lại miễn phí':'vắng chủ không tốn phí'}</p>`;
   if(aj&&!aj.ok)money=`<p class="jr-fund">🔒 ${esc(aj.why)}</p>`;
   const action=aj&&!aj.ok?btn(`Đi học ${icon('arrow',13)}`,'accountingSchool',{},'cream small'):p?.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):
     btn(`${c.started?'Tiếp tục':job.required&&job.status!=='hired'?'Xin việc':'Bắt đầu'} ${icon('arrow',13)}`,'choose',{career:cid},c.started?'primary small':'cream small');
@@ -323,8 +323,9 @@ function walletView(env){
     const draw=p.withdraw_max>0?`<form class="jr-move" data-jr-form="withdraw" data-career="${esc(cid)}"><label><span>Rút về ví</span><input type="number" name="amount" inputmode="numeric" min="1" max="${p.withdraw_max}" value="${Math.min(p.withdraw_max,50)}" id="jr-draw-${esc(cid)}" data-preserve></label><button type="submit" class="btn primary small">Rút</button>${btn('Tối đa','jrMax',{input:'jr-draw-'+cid,value:p.withdraw_max},'ghost small')}</form>`
       :`<p class="muted small">Quỹ cần giữ ${fmt(C.reserve)} xu và đủ tiền hóa đơn chưa trả${p.unpaid?` (${fmt(p.unpaid)} xu)`:''}, nên chưa rút được.</p>`;
     const invest=J.wallet>0?`<form class="jr-move" data-jr-form="invest" data-career="${esc(cid)}"><label><span>Góp vốn</span><input type="number" name="amount" inputmode="numeric" min="1" max="${J.wallet}" value="${Math.min(J.wallet,20)}" id="jr-invest-${esc(cid)}" data-preserve></label><button type="submit" class="btn cream small">Góp</button></form>`:'';
-    const pause=p.employed?'':p.paused?btn(`Mở lại · ${fmt(C.reopen_fee)} xu`,'jrReopen',{career:cid},'cream small'):btn('Tạm đóng','jrPause',{career:cid},'ghost small',c.open?' disabled title="Khép ca trước"':'');
-    return `<details class="jr-fundrow ${p.paused?'paused':''}"><summary><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span><span class="grow"><b>${esc(m.place||m.short)}</b><small>${p.employed?'Làm thuê · lương về ví':p.paused?'Tạm đóng · không tốn phí duy trì':`Duy trì ${fmt(p.upkeep)} xu/ngày khi vắng chủ`}</small></span><b class="jr-amt">${fmt(p.fund)} xu</b></summary>
+    // A place you are away from costs nothing (game/journey.py upkeep()): no "Tạm đóng" to save fees any more; an old pause reopens free.
+    const pause=!p.employed&&p.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):'';
+    return `<details class="jr-fundrow ${p.paused?'paused':''}"><summary><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span><span class="grow"><b>${esc(m.place||m.short)}</b><small>${p.employed?'Làm thuê · lương về ví':p.paused?'Tạm đóng · mở lại miễn phí':'Vắng chủ không tốn phí'}</small></span><b class="jr-amt">${fmt(p.fund)} xu</b></summary>
       <div class="jr-fund-actions">${draw}${invest}<div class="row wrap">${pause}</div></div></details>`;
   }).join('')||`<p class="muted">Chưa có nơi làm việc nào. Bắt đầu ở một tiệm trong hẻm nhé.</p>`;
   const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️',life:'🌿',study:'📚',backdoor:'🚪',bank:'🏦',home:'🔑',fair:'🏮'};
@@ -489,9 +490,9 @@ export async function journeyAction(action,data,el,env){
       if(r&&ui.view==='home')renderSheet();return true;}
     case'jrMax':{const input=document.getElementById(data.input);if(input)input.value=data.value;return true;}
     case'jrPause':{const place=placeOf(api,data.career);
-      if(await confirmAction(`Tạm đóng ${place}?`,`Khi tạm đóng, nơi này không tốn phí duy trì và chưa làm việc được. Mở lại tốn ${api.content.journey.reopen_fee} xu.`,'Tạm đóng'))await cmd('jr_pause',{career:data.career,confirm:true});return true;}
+      if(await confirmAction(`Tạm đóng ${place}?`,'Khi tạm đóng, nơi này chưa làm việc được. Mở lại lúc nào cũng được, không tốn phí.','Tạm đóng'))await cmd('jr_pause',{career:data.career,confirm:true});return true;}
     case'jrReopen':{const place=placeOf(api,data.career);
-      if(!await confirmAction(`Mở lại ${place}?`,`Phí mở lại ${api.content.journey.reopen_fee} xu, trả từ quỹ của nơi này (nếu quỹ thiếu thì trả từ ví).`,'Mở lại'))return true;
+      if(!await confirmAction(`Mở lại ${place}?`,'Mở lại không tốn phí. Quỹ, hàng và người làm vẫn để nguyên như lúc bạn đi.','Mở lại'))return true;
       const r=await cmd('jr_reopen',{career:data.career,confirm:true});
       if(r&&data.go)await env.act('choose',{career:data.career});   // 🗺️ from a door on the map: reopened, then straight in (feedback #140)
       return true;}
