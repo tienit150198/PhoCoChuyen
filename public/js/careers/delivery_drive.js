@@ -242,8 +242,8 @@ function place(at,target){
 }
 
 function size(){
-  if(!S.el)return;
-  const w=Math.max(200,S.el.clientWidth||S.slot?.clientWidth||360);
+  if(!S.el?.isConnected||!S.el.clientWidth)return;   // detached while the sheet re-renders: keep the last size
+  const w=Math.max(200,S.el.clientWidth);
   const h=Math.round(clamp(w*(w<560?1.04:.62),300,Math.min(480,Math.max(300,innerHeight*.6))));
   S.el.style.height=h+'px';
   const lv=S.perf.level||0,dpr=Math.min(devicePixelRatio||1,lv?1:1.5)*(lv>=2?.75:1);
@@ -460,7 +460,7 @@ function frame(now){
   if(!live()){park();return;}
   S.t+=dt;
   ride(dt);moveTraffic(dt);
-  if(S.visible){const t0=performance.now();draw(now);S.cost.push(performance.now()-t0);if(S.cost.length>600)S.cost.shift();measure(ms);}
+  if(S.visible&&S.w){const t0=performance.now();draw(now);S.cost.push(performance.now()-t0);if(S.cost.length>600)S.cost.shift();measure(ms);}
   if(S.sayT&&now>S.sayT){S.sayT=0;S.say.hidden=true;}
   S.raf=requestAnimationFrame(frame);
 }
@@ -471,11 +471,13 @@ function measure(ms){
   const P=S.perf;P.n++;P.sum+=ms;
   if(P.n<60)return;
   const avg=P.sum/P.n;P.n=0;P.sum=0;
-  if(avg>42)P.bad++;else P.bad=0;
-  if(P.bad<2)return;
-  P.bad=0;P.skip=30;P.level=(P.level||0)+1;
-  if(P.level<=2){size();return;}
-  P.level=2;S.fail=true;park();S.opts?.slow?.();
+  // Under ~24 frames a second for a few seconds: draw fewer pixels (twice); still that slow for ~8 s more: "Đi nhanh".
+  const lv=P.level||0;
+  if(avg>(lv>=2?50:42))P.bad++;else P.bad=0;
+  if(P.bad<(lv>=2?3:2))return;
+  P.bad=0;P.skip=30;
+  if(lv<2){P.level=lv+1;size();return;}
+  S.fail=true;park();S.opts?.slow?.();
 }
 
 function draw(now){
