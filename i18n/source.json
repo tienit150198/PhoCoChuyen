@@ -44613,7 +44613,7 @@
   "Hôm nay đã thưởng cho bạn ấy rồi.": "game/operations.py:478",
   "Thưởng": "game/operations.py:478",
   "Đã tặng thưởng và ghi nhận việc của": "game/operations.py:479",
-  "Bạn ấy còn sự cố đang mở. Vào Sổ tiệm › Nhân sự: kiểm 2 nguồn, chọn cách xử lý, sau 2 nhịp bấm “Kiểm & hoàn tất”, rồi mới cho nghỉ được.": "game/operations.py:481",
+  "Bạn ấy còn sự cố đang mở. Vào Sổ tiệm › Nhân viên: kiểm 2 nguồn, chọn cách xử lý, sau 2 nhịp bấm “Kiểm & hoàn tất”, rồi mới cho nghỉ được.": "game/operations.py:481",
   "Đã kết thúc hợp tác. Khoản lương đã làm vẫn nằm trong sổ cần trả.": "game/operations.py:483",
   "Xác nhận lời nhắc có ghi nhận trước nhé.": "game/operations.py:485",
   "Đã có ba lần nhắc; hãy xem lại phân công hoặc kết thúc hợp tác.": "game/operations.py:485",
