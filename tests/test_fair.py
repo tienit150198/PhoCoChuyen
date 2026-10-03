@@ -1321,16 +1321,16 @@ class FairPhoto(FairBase):
 
 
 class FairPhotoPreviousServer(FairBase):
-    """1.5.3 makes the booth prettier (poses, frames, colours) all in the browser and the live service: a save with
-    shoots on it is what 1.5.1/1.5.2 write, and those builds (MNL_PREV_TREE, or ../_rel152 and ../_rel151 next to the
-    checkout) keep and accept it both ways."""
+    """1.5.4 makes the booth prettier (poses, frames, colours) all in the browser and the live service: a save with
+    shoots on it is what 1.5.1-1.5.3 write, and those builds (MNL_PREV_TREE, or ../_rel153, ../_rel152 and ../_rel151
+    next to the checkout) keep and accept it both ways."""
 
     def prev_trees(self):
         root = Path(__file__).resolve().parents[2]
-        cands = [os.environ['MNL_PREV_TREE']] if os.environ.get('MNL_PREV_TREE') else             [str(root / f'_rel{v}' / 'mot-ngay-lam-nghe') for v in ('152', '151')]
+        cands = [os.environ['MNL_PREV_TREE']] if os.environ.get('MNL_PREV_TREE') else             [str(root / f'_rel{v}' / 'mot-ngay-lam-nghe') for v in ('153', '152', '151')]
         trees = [t for t in cands if (Path(t) / 'game' / 'engine.py').is_file()]
         if not trees:
-            self.skipTest('no 1.5.2/1.5.1 tree (MNL_PREV_TREE)')
+            self.skipTest('no 1.5.1-1.5.3 tree (MNL_PREV_TREE)')
         return trees
 
     def test_a_save_with_shoots_crosses_the_previous_builds(self):

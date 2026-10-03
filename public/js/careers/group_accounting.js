@@ -7,6 +7,7 @@
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,hhmm,planCard,mateCards,trackFold,careSummary,foldToggle,
   coachOf,goto,gotoAction,guideOf,procSteps,coachFill,shut,shutWork,shutBar,summaryCard} from './office_kit.js';
 import {pending,stepLine} from '../v4/guide.js';
+import {amountAttrs,amountNote,amountNoteHTML,amountOf} from '../v4/amount-parse.js';
 
 const P='ga_';
 const BOSS='Chị Mai Anh';
@@ -68,7 +69,7 @@ function acctOptions(x,st,selected){
 }
 function voucher(t,st,x){
   const k=dkey(t,st),d=drafts(x)[k]??={debit:[{account:'',amount:''}],credit:[{account:'',amount:''}]};
-  const row=(side,r,i)=>`<div class="ga-vrow" data-side="${side}"><select class="ga-acct" aria-label="Tài khoản ${side==='debit'?'Nợ':'Có'}">${acctOptions(x,st,r.account)}</select><input class="ga-amt" type="number" inputmode="numeric" min="1" step="1" placeholder="số tiền" value="${x.esc(r.amount)}" aria-label="Số tiền">${btn(x,'✕','car:delrow',{key:k,side,i},'ga-del ghost',d[side].length<=1)}</div>`;
+  const row=(side,r,i)=>`<div class="ga-vrow" data-side="${side}" data-amt-box><select class="ga-acct" aria-label="Tài khoản ${side==='debit'?'Nợ':'Có'}">${acctOptions(x,st,r.account)}</select><input class="ga-amt${unread(r.amount,'xu')}" ${amountAttrs('xu')} placeholder="số tiền" value="${x.esc(r.amount)}" aria-label="Số tiền">${btn(x,'✕','car:delrow',{key:k,side,i},'ga-del ghost',d[side].length<=1)}${amountNoteHTML(r.amount,'xu')}</div>`;
   const side=(id,label)=>`<div class="ga-vside ${id}"><h4>${label}</h4>${d[id].map((r,i)=>row(id,r,i)).join('')}${btn(x,`＋ Dòng ${label}`,'car:addrow',{key:k,side:id},'ghost small ga-add',d[id].length>=6)}</div>`;
   return `<div class="ga-voucher" data-entry="${x.esc(k)}">
     <div class="ga-vhead"><b>BÚT TOÁN HỢP NHẤT</b><small>${x.esc(t.title)}</small></div>
@@ -105,7 +106,7 @@ function widget(t,st,x){
     return `<div class="ga-checks" data-multi="${x.esc(k)}">${(st.options||[]).map(o=>`<label class="ga-check"><input type="checkbox" value="${x.esc(o.id)}" ${sel.includes(o.id)?'checked':''}><span>${x.esc(o.label)}</span></label>`).join('')}</div>`;
   }
   if(st.kind==='number'){const bad=missOf(x,t,st).has('');
-    return `<div class="ga-numrow">${bad?'<span class="ga-bad" aria-hidden="true">✗</span>':''}<input class="ga-input" type="number" inputmode="numeric" step="1" data-num="${x.esc(k)}" value="${x.esc(dr[k]??'')}" aria-label="${x.esc(st.title)}"${bad?' aria-invalid="true"':''}><span class="ga-unit">${x.esc(st.unit||'')}</span></div>${how(t,st,'',x)}`;}
+    return `<div class="ga-numrow" data-amt-box>${bad?'<span class="ga-bad" aria-hidden="true">✗</span>':''}<input class="ga-input${unread(dr[k],st.unit)}" ${amountAttrs(st.unit||'')} placeholder="${HINT}" data-num="${x.esc(k)}" value="${x.esc(dr[k]??'')}" aria-label="${x.esc(st.title)}"${bad?' aria-invalid="true"':''}><span class="ga-unit">${x.esc(st.unit||'')}</span>${amountNoteHTML(dr[k],st.unit||'')}</div>${how(t,st,'',x)}`;}
   if(st.kind==='order'){
     const ids=dr[k]??=(st.items||[]).map(i=>i.id);
     const item=id=>(st.items||[]).find(i=>i.id===id)?.label||id;
@@ -117,7 +118,7 @@ function widget(t,st,x){
   }
   if(st.kind==='fields'){
     const cur=dr[k]||{},bad=missOf(x,t,st);
-    return `<div class="ga-fields" data-fields="${x.esc(k)}">${(st.fields||[]).map(f=>`<label class="ga-mrow"><span${bad.has(f.id)?' class="ga-bad"':''}>${bad.has(f.id)?'✗ ':''}${x.esc(f.label)}</span>${f.options?`<select data-field="${x.esc(f.id)}"><option value="">— chọn —</option>${f.options.map(o=>`<option value="${x.esc(o.id)}" ${cur[f.id]===o.id?'selected':''}>${x.esc(o.label)}</option>`).join('')}</select>`:`<span class="ga-numrow"><input class="ga-input" type="number" inputmode="numeric" step="1" data-field="${x.esc(f.id)}" value="${x.esc(cur[f.id]??'')}"${bad.has(f.id)?' aria-invalid="true"':''}><span class="ga-unit">${x.esc(f.unit||'')}</span></span>`}</label>${how(t,st,f.id,x)}`).join('')}</div>`;
+    return `<div class="ga-fields" data-fields="${x.esc(k)}">${(st.fields||[]).map(f=>`<label class="ga-mrow"><span${bad.has(f.id)?' class="ga-bad"':''}>${bad.has(f.id)?'✗ ':''}${x.esc(f.label)}</span>${f.options?`<select data-field="${x.esc(f.id)}"><option value="">— chọn —</option>${f.options.map(o=>`<option value="${x.esc(o.id)}" ${cur[f.id]===o.id?'selected':''}>${x.esc(o.label)}</option>`).join('')}</select>`:`<span class="ga-numrow" data-amt-box><input class="ga-input${unread(cur[f.id],f.unit)}" ${amountAttrs(f.unit||'')} data-field="${x.esc(f.id)}" value="${x.esc(cur[f.id]??'')}"${bad.has(f.id)?' aria-invalid="true"':''}><span class="ga-unit">${x.esc(f.unit||'')}</span>${amountNoteHTML(cur[f.id],f.unit||'')}</span>`}</label>${how(t,st,f.id,x)}`).join('')}</div>`;
   }
   if(st.kind==='entry')return voucher(t,st,x);
   return '';
@@ -192,7 +193,9 @@ function sync(root,x){
   root.querySelectorAll('input[type=radio][name^="ga-note-"]:checked').forEach(r=>{(x.ui.note??={})[r.name.slice(8)]=r.value;});
 }
 const rootOf=el=>el.closest('.career-job')||document;
-const intOf=v=>{const s=String(v??'').trim();return /^-?\d+$/.test(s)?Number(s):null;};
+/** A money box that cannot be read yet is outlined (amount-parse.js); the note under it says why. */
+const unread=(v,unit)=>amountNote(v,unit||'').bad?' amt-unread':'';
+const HINT='ví dụ: 6+4, -200, 1.500.000';
 function stepOf(x,data){
   const t=(x.room.tasks||[]).find(v=>v.id===data.task);
   return [t,t&&(t.proc||[]).find(s=>s.id===data.step)];
@@ -426,7 +429,7 @@ export default {
     keepBarAboveFooter(root);
     sync(root,x);
     root.querySelectorAll('[data-entry]').forEach(b=>{
-      const e=readEntry(b),sum=side=>e[side].reduce((s,r)=>s+(intOf(r.amount)>0?intOf(r.amount):0),0);
+      const e=readEntry(b),sum=side=>e[side].reduce((s,r)=>{const a=amountOf(r.amount,'xu');return s+(a>0?a:0);},0);
       const d=sum('debit'),c=sum('credit');
       b.querySelector('[data-sum="debit"]').textContent=num(d);
       b.querySelector('[data-sum="credit"]').textContent=num(c);
@@ -452,8 +455,8 @@ export default {
     },
     async num(data,el,x){
       sync(rootOf(el),x);const [t,st]=stepOf(x,data);if(!st)return;
-      const v=intOf(drafts(x)[dkey(t,st)]);
-      if(v===null){x.toast('Nhập một số nguyên (không dấu chấm, không chữ).',true);return;}
+      const v=amountOf(drafts(x)[dkey(t,st)],st.unit||'');
+      if(v===null){x.toast('Chưa hiểu số đã ghi. Ghi số nguyên, vd 1.500.000, -200 hoặc 6+4.',true);return;}
       await send(x,t,st,v);
     },
     move(data,el,x){
@@ -473,7 +476,7 @@ export default {
       const raw=drafts(x)[dkey(t,st)]||{},ans={};
       for(const f of st.fields){
         if(f.options){if(!raw[f.id]){x.toast(`Chọn “${f.label}”.`,true);return;}ans[f.id]=raw[f.id];}
-        else{const v=intOf(raw[f.id]);if(v===null){x.toast(`Ô “${f.label}” cần một số nguyên.`,true);return;}ans[f.id]=v;}
+        else{const v=amountOf(raw[f.id],f.unit||'');if(v===null){x.toast(`Ô “${f.label}” cần một số nguyên.`,true);return;}ans[f.id]=v;}
       }
       await send(x,t,st,ans);
     },
@@ -483,7 +486,7 @@ export default {
       sync(rootOf(el),x);const [t,st]=stepOf(x,data);if(!st)return;
       const d=drafts(x)[dkey(t,st)],ans={debit:[],credit:[]};
       for(const side of ['debit','credit'])for(const r of d[side]){
-        const a=intOf(r.amount);
+        const a=amountOf(r.amount,'xu');
         if(!r.account&&!String(r.amount||'').trim())continue;
         if(!r.account||!(a>0)){x.toast('Mỗi dòng cần chọn tài khoản và nhập số tiền nguyên dương.',true);return;}
         ans[side].push({account:r.account,amount:a});
