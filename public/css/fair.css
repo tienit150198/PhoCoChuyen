@@ -651,6 +651,7 @@ html[data-theme="dem"] .fh-pb-pose img{background:radial-gradient(circle at 50% 
 .fh-pb-tray{position:sticky;bottom:0;z-index:3;display:grid;gap:5px;min-width:0;padding:6px 8px 8px;border-radius:16px 16px 12px 12px;border:1px solid var(--line);background:var(--surface);box-shadow:0 -6px 18px rgba(40,20,60,.14)}
 .fh-pb-tray .fh-pb-sec{margin:0}
 .fh-pb-tray .fh-pb-sec small{font-size:.74rem}
+.fh-pb-tray .fh-pb-sec b{white-space:nowrap}
 .fh-pb-dcats{display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding-bottom:2px}
 .fh-pb-dcats::-webkit-scrollbar{display:none}
 .fh-pb-dcat{flex:none;min-height:34px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface-2);font:inherit;font-size:.8rem;font-weight:700;color:var(--ink-2);cursor:pointer;white-space:nowrap}
@@ -663,13 +664,15 @@ html[data-theme="dem"] .fh-pb-pose img{background:radial-gradient(circle at 50% 
 @media (prefers-reduced-motion:no-preference){html:not(.reduce-motion) .fh-pb-dtile:active{transform:scale(.92)}}
 .fh-pb-edbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
 .fh-pb-edbar .btn{min-width:0;min-height:38px;padding:3px 4px;font-size:.72rem;line-height:1.1;white-space:normal}
+@media (max-width:359px){.fh-pb-edbar{gap:4px}.fh-pb-edbar .btn{padding:3px 2px;font-size:.66rem;letter-spacing:-.01em}}
 html[data-theme="dem"] .fh-pb-dtile{background:radial-gradient(circle at 50% 40%,#4a3a5f,#2c2238)}
 @media (min-width:700px){
   .fh-pb-edit{grid-template-columns:auto minmax(0,1fr)}
   .fh-pb-edbox,.fh-pb-edit .fh-pb-print.wait{width:240px}
   .fh-pb-tray{top:8px;bottom:auto;border-radius:16px;box-shadow:var(--shadow-sm)}
   .fh-pb-dtiles{grid-auto-flow:row;grid-template-rows:none;grid-template-columns:repeat(auto-fill,56px);overflow:visible}
-  .fh-pb-edbar .btn{font-size:.8rem;min-height:40px}
+  .fh-pb-edbar{grid-template-columns:repeat(auto-fit,minmax(112px,1fr))}
+  .fh-pb-edbar .btn{font-size:.8rem;min-height:40px;padding:4px 8px;white-space:nowrap}
 }
 html[data-theme="dem"] .fh-pb-booth{box-shadow:0 6px 18px rgba(0,0,0,.5),inset 0 0 0 3px #c9a23a}
 html[data-theme="dem"] .fh-pb-code-chip b{background:#3a2a4f;color:#ffe9a8;border-color:#c9a23a}

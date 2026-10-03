@@ -119,9 +119,13 @@ async def run(shots: Path) -> list:
                 await page.evaluate("document.querySelectorAll('dialog[open]:not(#sheet)').forEach(d=>d.close());document.querySelector('.jr-fair-row').click()")
                 await page.wait_for_selector('.fh-sheet[open]', timeout=10000)
                 await poll(page, "globalThis.__fairWalk?.state().on", 8)
-                await page.wait_for_timeout(500)
-                if await page.locator('.fh-sheet [data-fh="giftok"]').count():
-                    await page.click('.fh-sheet [data-fh="giftok"]')
+                # the fair's one-time 500 xu gift pops up when its claim comes back (late on a slow machine)
+                if await poll(page, "document.querySelector('.fh-sheet [data-fh=giftok]')", 4):
+                    await gift_away(p)
+
+            async def gift_away(p):
+                """Close the fair's gift card if it is up: it covers the sheet, so a click under it never lands."""
+                await p.page.evaluate("document.querySelector('.fh-sheet [data-fh=giftok]')?.click()")
 
             async def deco_add(p, cat, n):
                 """n stickers of one tray category, tapped one after the other."""
@@ -142,6 +146,15 @@ async def run(shots: Path) -> list:
                     wh = await p.page.evaluate("u=>new Promise(r=>{const i=new Image();i.onload=()=>r([i.width,i.height]);i.onerror=()=>r([0,0]);i.src=u;})", url)
                     check(wh == [900, 2700], f'{name}: saved at ×3 ({wh})')
                 return url
+
+            async def stuck(p, url):
+                """How many of the editor's stickers show in the saved picture: the pixel at each one's centre is not the
+                plain strip's (the ×3 print without the editor)."""
+                return await p.page.evaluate("""async u=>{const B=globalThis.__fairBooth,its=B.state().deco.items;
+                  const img=src=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=src;});
+                  const [a,b]=await Promise.all([img(u),img(B.print(3))]);if(!a||!b)return -1;
+                  const px=(i,x,y)=>{const c=document.createElement('canvas');c.width=c.height=1;const g=c.getContext('2d');g.drawImage(i,-x,-y);return [...g.getImageData(0,0,1,1).data].join();};
+                  return its.filter(it=>{const x=Math.round(it.x*a.width),y=Math.round(it.y*a.width);return x>=0&&y>=0&&x<a.width&&y<a.height&&px(a,x,y)!==px(b,x,y);}).length;}""", url)
 
             cdps = {}
 
@@ -166,8 +179,18 @@ async def run(shots: Path) -> list:
 
             async def click(p, op, v=None):
                 sel = f'.fh-sheet [data-fh="{op}"]' + (f'[data-v="{v}"]' if v is not None else '')
-                await p.page.locator(sel).first.scroll_into_view_if_needed()
-                await p.page.click(sel)
+                await gift_away(p)
+                try:
+                    await p.page.locator(sel).first.scroll_into_view_if_needed(timeout=10000)
+                    await p.page.click(sel, timeout=10000)
+                except Exception:
+                    if shots:
+                        await p.page.screenshot(path=str(Path(shots) / f'zz-click-{p.name}-{op}.png'))
+                    info = await p.page.evaluate("s=>{const e=document.querySelector(s);if(!e)return 'missing';const r=e.getBoundingClientRect();"
+                                                 "const t=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);"
+                                                 "return {r:[r.x,r.y,r.width,r.height],dis:e.disabled,top:t&&(t.className||t.tagName)}}", sel)
+                    print(f'click {p.name} {op} {v}: {info}', flush=True)
+                    raise
 
             async def shoot_round(host, others, frame_id, tag, between=()):
                 """Everyone pays and gets ready, the host shoots; every phone ends on its strip. between: (after shot n,
@@ -317,7 +340,8 @@ async def run(shots: Path) -> list:
                   "the editor is one's own copy: Thu's stickers are not on Bảo's strip")
             await c.page.evaluate("document.querySelector('.fh-sheet .fh-pb-edit').scrollIntoView({block:'start'})")
             await shot(c, '09j-four-editor-390')
-            await save_final(c, 'four-editor-thu')
+            url = await save_final(c, 'four-editor-thu')
+            check(await stuck(c, url) == 3, "Thu's saved picture has her 3 stickers")
             await d.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
             await shot(d, '09e-four-strip-390')
             # the same on a desktop
@@ -470,6 +494,8 @@ async def run(shots: Path) -> list:
             url = await save_final(a, 'editor-solo')
             plain = await a.page.evaluate("globalThis.__fairBooth.print(3)")
             check(bool(url) and url != plain, 'the saved picture has the stickers on it')
+            n_in = await stuck(a, url)
+            check(n_in >= 8, f'the saved picture has them where they sit on screen ({n_in} of 10 at their centres)')
             for w in (320, 430, 390):
                 await a.page.set_viewport_size(dict(width=w, height=844))
                 await a.page.wait_for_timeout(400)

@@ -172,6 +172,7 @@ export function createEditor({onPick=()=>{},onChange=()=>{},t=s=>s,max=200}={}){
   ed.reset=()=>{ed.items=[];ed.sel=-1;hist.length=0;gest=null;ptrs.clear();};
   ed.canUndo=()=>hist.length>0;
   ed.draw=draw;
-  ed.compose=(c,w)=>{if(!ed.items.length)return;c.save();paint(c,w,{sprites:0,box:false});c.restore();};
+  // w is in the canvas's own pixels: whatever transform the strip's painter left behind (drawPrint keeps its ×scale) is dropped
+  ed.compose=(c,w)=>{if(!ed.items.length)return;c.save();c.setTransform(1,0,0,1,0,0);paint(c,w,{sprites:0,box:false});c.restore();};
   return ed;
 }
