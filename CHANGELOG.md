@@ -1,3 +1,8 @@
+# v1.6.5 — 💼 nơi làm cũ không trừ tiền nữa
+
+- `journey.upkeep()` = 0: bỏ phí "duy trì khi vắng chủ" (4/7/11 xu mỗi ngày cho mọi nơi đã mở, chip "Nơi làm khác −X"); mở lại nơi tạm đóng miễn phí (REOPEN_FEE 0), bỏ nút Tạm đóng. Kho, nhân viên, hóa đơn nơi cũ đứng yên chờ quay lại. Không hoàn tiền quá khứ.
+- Phạt bỏ dở ca ghi rõ "Phạt bỏ dở ca ở <nơi>", nguồn trả (quỹ/ví/lương) trong hộp xác nhận. Save không thêm trường mới.
+
 # v1.6.4 — 📸 buồng chụp: 49 dáng, 14 biểu cảm, 50 sticker kéo thả
 
 - Buồng chụp hội chợ: tab Biểu cảm riêng (14 mặt), 49 dáng; sau khi chụp mở trình trang trí dải ảnh: chạm để dán, kéo để dời, ↻ xoay/đổi cỡ, hoàn tác, lên trên, xoá; sticker lưu vào ảnh tải về. Trang trí mặc định giữ nguyên.
