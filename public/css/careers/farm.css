@@ -82,6 +82,12 @@
 .career-job.fa .lg.water{background:var(--fa-info)}
 .career-job.fa .fa-panel{margin-top:6px}
 .career-job.fa .fa-actions{display:flex;flex-wrap:wrap;gap:6px}
+/* Phân bón lá thúc: the doses on sale at the bed, each with its price and the harvest day it gives. */
+.career-job.fa .fa-thuc{margin-top:10px;padding-top:8px;border-top:1px dashed var(--fa-line)}
+.career-job.fa .fa-thuc p{margin:0 0 6px}
+.career-job.fa .fa-thuc-dose{display:inline-flex;align-items:baseline;gap:6px;min-height:40px}
+.career-job.fa .fa-thuc-dose small{color:var(--fa-muted);font-size:12px}
+.career-job.fa .fa-thuc .fa-why{margin:6px 0 0;color:var(--fa-warn)}
 .career-job.fa .fa-diary summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:700}
 .career-job.fa .fa-diary ul{margin:0;padding-left:18px;font-size:14px}
 
@@ -274,9 +280,3 @@
 @media (max-width:720px) and (orientation:landscape){
   .career-job.fa .fa-plots{grid-template-columns:repeat(6,minmax(0,1fr))}
 }
-/* Phân bón lá thúc: the doses on sale at the bed, each with its price and the harvest day it gives. */
-.career-job.fa .fa-thuc{margin-top:10px;padding-top:8px;border-top:1px dashed var(--fa-line)}
-.career-job.fa .fa-thuc p{margin:0 0 6px}
-.career-job.fa .fa-thuc-dose{display:inline-flex;align-items:baseline;gap:6px;min-height:40px}
-.career-job.fa .fa-thuc-dose small{color:var(--fa-muted);font-size:12px}
-.career-job.fa .fa-thuc .fa-why{margin:6px 0 0;color:var(--fa-warn)}
