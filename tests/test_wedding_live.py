@@ -3,6 +3,9 @@ booking a real date and time, legacy couples' dates, the party cancelled by a di
 reward kinds (title, closeness, the private card), the weekly race view (ties) and the group photo upload."""
 import base64
 import json
+import os
+import subprocess
+import sys
 import unittest
 from unittest.mock import patch
 
@@ -213,7 +216,7 @@ class Party(WedBase):
 
 class Envelopes(WedBase):
     """🧧 A guest's red envelope for the couple at a party that is on (feedback #56): from the guest's wallet, half to
-    each spouse, at most ENVELOPE_MAX a guest a wedding, once per request id."""
+    each spouse, once per request id; one of ENVELOPES each time, as many as the wallet allows (no cap), never minting."""
     def guest_at(self, wid, tok, ok=1):
         self.store.transaction(lambda db: db.execute("INSERT INTO wedding_guests(wedding, sid, pid, ok, paid, steps, counted_at, day, week) "
                                                      "VALUES(?, ?, 'p', ?, 0, 0, ?, 'd', 'w')", (wid, self.sid(tok), ok, self.clock.t)))
@@ -231,7 +234,7 @@ class Envelopes(WedBase):
         self.clock.t = at - 60
         out = self.give(g, wid, 50, 'rid-first-0001', wish=2)
         self.assertTrue(out['changed'])
-        self.assertEqual((out['rid'], out['left']), ('rid-first-0001', wl.ENVELOPE_MAX - 50))
+        self.assertEqual(out['rid'], 'rid-first-0001')
         self.assertEqual(self.wallet(g), 950)
         rows = self.rows("SELECT sid, amount, data FROM live_effects WHERE id LIKE 'wedenv:%' ORDER BY id")
         self.assertEqual([(r['sid'], r['amount']) for r in rows], [(self.sid(a), 25), (self.sid(b), 25)])
@@ -252,7 +255,7 @@ class Envelopes(WedBase):
         a, b, wid, at = self.couple()
         g, h, poor = self.user('khach'), self.user('lac'), self.user('ngheo', wallet=30)
         self.clock.t = at + 60
-        for bad in (dict(amount=15), dict(amount=50, wish=99), dict(amount='50')):
+        for bad in (dict(amount=15), dict(amount=0), dict(amount=1000), dict(amount=True), dict(amount=50, wish=99), dict(amount='50')):
             with self.assertRaises(mr.MarriageError) as e:
                 self.act(g, 'envelope', wedding=wid, **{'wish': 0, **bad})
             self.assertEqual(e.exception.code, 'bad_envelope')
@@ -273,16 +276,176 @@ class Envelopes(WedBase):
         self.assertEqual(e.exception.code, 'not_enough')
         self.assertEqual((self.wallet(poor), len(self.rows("SELECT * FROM live_effects WHERE id LIKE 'wedenv:%'"))), (30, 0))
         self.guest_at(wid, g)
-        for i, n in enumerate((200, 200, 100)):
+        for i, n in enumerate((200, 200, 100, 10)):              # past the old 500 a wedding
             self.give(g, wid, n, f'rid-max-000{i}')
-        with self.assertRaises(mr.MarriageError) as e:
-            self.give(g, wid, 10, 'rid-max-0009')
-        self.assertEqual(e.exception.code, 'envelope_max')
-        self.assertEqual(self.wallet(g), 2000 - wl.ENVELOPE_MAX)
+        self.assertEqual(self.wallet(g), 2000 - 510)
         self.clock.t = at + wl.PARTY_SECS
         with self.assertRaises(mr.MarriageError) as e:
             self.give(poor, wid, 10, 'rid-late-0001')
         self.assertEqual(e.exception.code, 'not_open', 'the party is over')
+
+
+    def test_quick_and_concurrent_envelopes_each_recorded_once(self):
+        """Back to back, then from two threads at once while the guest's save also moves (the minute money paid on
+        another request): every envelope with its own request id is either written exactly once (debit, both halves)
+        or refused with an error the client shows; never "already sent" for one that was not."""
+        import threading
+        a, b, wid, at = self.couple()
+        g = self.user('khach', wallet=5000)
+        self.guest_at(wid, g)
+        self.clock.t = at + 60
+        sent, errors, quiet = [], [], []
+
+        def give(rid):
+            try:
+                out = self.give(g, wid, 50, rid)
+            except mr.MarriageError as x:
+                errors.append((rid, x.code))
+                return
+            (sent if out['changed'] else quiet).append(rid)
+        for i in range(8):                                          # back to back
+            give(f'rid-fast-{i:04d}')
+        self.assertEqual((len(sent), errors, quiet), (8, [], []))
+
+        def burst(tag):
+            for i in range(6):
+                give(f'rid-{tag}-{i:04d}')
+
+        def wallet_moves():                                         # the save changes under the envelopes
+            for i in range(6):
+                mr._mutate_retry(self.store, {self.sid(g): lambda s: s['journey'].__setitem__('wallet', s['journey']['wallet'] + 1)})
+        threads = [threading.Thread(target=burst, args=(t,)) for t in ('t1', 't2')] + [threading.Thread(target=wallet_moves)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(60)
+        self.assertEqual(quiet, [], 'no new envelope answered "already sent"')
+        self.assertTrue(all(code == 'busy' for _, code in errors), errors)   # a refusal the client toasts
+        debits = [r['id'] for r in self.rows("SELECT id FROM marriage_effects WHERE sid=? AND id LIKE 'wenv:%'", self.sid(g))]
+        self.assertEqual(sorted(debits), sorted(f'wenv:{wid}:{rid}' for rid in sent), 'each sent envelope written once')
+        halves = self.rows("SELECT id FROM live_effects WHERE id LIKE 'wedenv:%'")
+        self.assertEqual(len(halves), 2 * len(sent))
+        self.assertEqual(self.wallet(g), 5000 + 6 - 50 * len(sent), 'the wallet paid exactly the envelopes written')
+        again = self.give(g, wid, 50, sent[-1])                     # a real double tap is still "already sent"
+        self.assertFalse(again['changed'])
+        import sqlite3
+
+        def clash(*_a, **_k):
+            raise sqlite3.IntegrityError('another row')
+        with patch('game.wedding_live.grant', clash), self.assertRaises(mr.MarriageError) as e:
+            self.give(g, wid, 50, 'rid-clash-0001')                 # not a double tap: an error, nothing written
+        self.assertEqual(e.exception.code, 'busy')
+        self.assertFalse(self.rows("SELECT 1 FROM marriage_effects WHERE id=?", f'wenv:{wid}:rid-clash-0001'))
+        self.assertEqual(self.wallet(g), 5000 + 6 - 50 * len(sent))
+
+    def test_no_cap_a_pure_transfer(self):
+        """Many envelopes at one wedding until the wallet is empty: the couple gets exactly what left the guest's wallet,
+        and an envelope the wallet cannot cover is refused (never below 0)."""
+        a, b, wid, at = self.couple()
+        g = self.user('khach', wallet=3000)
+        self.guest_at(wid, g)
+        self.clock.t = at + 60
+        wa, wb = self.wallet(a), self.wallet(b)
+        for i in range(15):                                         # 15 × 200 = 3000: six times the old cap
+            self.give(g, wid, 200, f'rid-many-{i:04d}')
+        self.assertEqual(self.wallet(g), 0)
+        with self.assertRaises(mr.MarriageError) as e:
+            self.give(g, wid, 10, 'rid-zero-0001')
+        self.assertEqual(e.exception.code, 'not_enough', 'never below 0')
+        self.assertEqual(self.wallet(g), 0)
+        rows = self.rows("SELECT amount FROM live_effects WHERE id LIKE 'wedenv:%'")
+        self.assertEqual((len(rows), sum(r['amount'] for r in rows)), (30, 3000), 'no xu made, none lost')
+        debit = self.row("SELECT COALESCE(SUM(amount), 0) AS n FROM marriage_effects WHERE sid=? AND id LIKE 'wenv:%'", self.sid(g))['n']
+        self.assertEqual(debit, -3000)
+        while self.pay(a):                                          # paid in batches of live_effects.BATCH rows
+            pass
+        while self.pay(b):
+            pass
+        self.assertEqual((self.wallet(a) - wa, self.wallet(b) - wb), (1500, 1500))
+        self.assertFalse(self.pay(a), 'each row once')
+
+
+class WedGift(WedBase):
+    """🎁 Quà từ admin: 500 xu once per save ever, while a party is open, from GIFT_DAY life days (owner 03/10)."""
+    def aged(self, tok, day=wl.GIFT_DAY):
+        mr._mutate(self.store, {self.sid(tok): lambda s: s['journey'].__setitem__('life_day', day)})
+
+    def test_once_per_save_while_a_party_is_open(self):
+        a, b, wid, at = self.couple()
+        g = self.user('khach', wallet=100)
+        self.assertIs(self.state(g)['journey'].get('wed_gift'), None)
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(g, 'wed_gift')
+        self.assertEqual(e.exception.code, 'no_party', 'no party open yet')
+        self.clock.t = at - wl.OPEN_BEFORE + 1                      # the room is open
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(g, 'wed_gift', x=1)
+        self.assertEqual(e.exception.code, 'bad_gift')
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(g, 'wed_gift')
+        self.assertEqual(e.exception.code, 'wed_gift_early', 'a fresh save (a second account made for the gift) waits')
+        self.assertEqual(self.wallet(g), 100)
+        self.aged(g, wl.GIFT_DAY - 1)
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(g, 'wed_gift')
+        self.assertEqual(e.exception.code, 'wed_gift_early')
+        self.aged(g)
+        out = self.act(g, 'wed_gift')
+        self.assertEqual((out['changed'], out['gift']), (True, wl.GIFT_XU))
+        self.assertIn('Quà từ admin', out['message'])
+        j = self.state(g)['journey']
+        self.assertEqual((j['wallet'], j['wed_gift']['v'], j['history'][-1]['kind'], j['history'][-1]['label']),
+                         (600, wl.GIFT_VERSION, 'life', wl.GIFT_LABEL))
+        validate_state(migrate_state(self.state(g)))
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(g, 'wed_gift')
+        self.assertEqual(e.exception.code, 'wed_gift_done', 'once per save')
+        self.clock.t = at + wl.PARTY_SECS + 3600                    # another wedding later: still once ever
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(a, 'wed_gift')
+        self.assertEqual(e.exception.code, 'no_party', 'the party is over')
+        self.store.transaction(lambda db: db.execute("INSERT INTO wedding_parties(wedding, couple, a, b, at, status, created) "
+                                                     "VALUES(?, 99, 'x', 'y', ?, 'booked', ?)", (wid + 100, self.clock.t, self.clock.t)))
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(g, 'wed_gift')
+        self.assertEqual(e.exception.code, 'wed_gift_done')
+        self.assertEqual(self.wallet(g), 600)
+        self.aged(a, 40)
+        self.assertTrue(self.act(a, 'wed_gift')['changed'], 'everyone gets it once, a bride too')
+
+    def test_public_flag_and_validation(self):
+        from game.journey import public
+        a, b, wid, at = self.couple()
+        self.assertIs(public(migrate_state(self.state(a)))['wed_gift'], None, 'not yet: the client does not ask')
+        self.aged(a)
+        self.assertIs(public(migrate_state(self.state(a)))['wed_gift'], False)
+        self.clock.t = at
+        self.act(a, 'wed_gift')
+        s = migrate_state(self.state(a))
+        self.assertIs(public(s)['wed_gift'], True)
+        for bad in (None, {}, dict(v=2, got=1), dict(v=1, got=0), dict(v=1, got=1, x=1)):
+            s['journey']['wed_gift'] = bad
+            with self.assertRaises(Exception):
+                validate_state(s)
+
+    @unittest.skipUnless(os.environ.get('MNL_OLD_TREE'), 'MNL_OLD_TREE: an older release to load the save with')
+    def test_an_older_server_loads_the_save(self):
+        """Rolling release: a save with journey['wed_gift'] validates on the older build; its marriage API has no
+        wed_gift (not_found, which the client ignores)."""
+        a, b, wid, at = self.couple()
+        self.clock.t = at
+        self.aged(a)
+        self.act(a, 'wed_gift')
+        code = ('import json, sys\n'
+                'from game.engine import migrate_state, validate_state\n'
+                'from game import marriage as mr\n'
+                's = migrate_state(json.loads(sys.stdin.read()))\n'
+                'validate_state(s)\n'
+                "print(s['journey']['wed_gift']['v'], 'wed_gift' in mr.ACTIONS)\n")
+        old = os.environ['MNL_OLD_TREE']
+        r = subprocess.run([sys.executable, '-c', code], cwd=old, input=json.dumps(self.state(a)), capture_output=True,
+                           text=True, encoding='utf-8', env=dict(os.environ, PYTHONPATH=old))
+        self.assertEqual((r.returncode, r.stdout.strip()), (0, '1 False'), r.stderr[-2000:])
 
 
 class Anniversaries(WedBase):

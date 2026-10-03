@@ -45,7 +45,14 @@ HOST_XU = 15                    # each spouse, for every counted guest who came 
 HOST_COUNT_MAX = 360            # VISIBLE + the watchers (live/wedding.py WATCHERS_MAX)
 HOST_BONUS = ((20, 0, 'w_crowd'),)   # (guests, xu, title): the title "Đám cưới đông vui" at 20 guests
 ENVELOPES = (10, 20, 50, 100, 200)   # 🧧 a guest's red envelope for the couple (feedback #56), split half and half
-ENVELOPE_MAX = 500              # one guest gives at most this much at one wedding
+# No cap on giving (owner 03/10: "bỏ giới hạn phong bì", "cho gửi thoải mái"): one of ENVELOPES each time, as many
+# envelopes as the guest likes while the wallet holds them. A pure transfer: the couple gets exactly what the guest paid,
+# and nothing else is paid per envelope.
+ENVELOPE_MAX_OLD = 500          # the old per-wedding cap: only printed by older clients ("tối đa … xu mỗi đám"), not enforced
+GIFT_XU = 500                   # 🎁 owner 03/10 "với đám cưới thì ad tặng thêm mỗi người 500 xu": once per save, ever (wed_gift)
+GIFT_LABEL = '🎁 Quà từ admin: 500 xu đi đám cưới'
+GIFT_VERSION = 1                # journey['wed_gift'] {v, got: the life day}
+GIFT_DAY = 3                    # a save that has lived this many days at least (not a fresh second account)
 WISHES = ('Trăm năm hạnh phúc 💕', 'Bách niên giai lão 🎎', 'Sớm có tin vui nha 👶', 'Đầu bạc răng long 👴👵',
           'Thương nhau dài dài nha 💞', 'Hạnh phúc ngập tràn 🥰')
 ANNIVERSARIES = ((100, 200, 'w_100', '100'), (365, 500, 'w_1y', 'một năm'), (500, 800, 'w_500', '500'),
@@ -336,8 +343,8 @@ def on_load(store, token: str, state: dict | None) -> bool:
 # ---------------------------------------------------------------- 🧧 the guests' red envelopes
 def envelope(store, sid: str, display: str, d: dict) -> dict:
     """POST /api/marriage/envelope {wedding, amount, wish, rid}: a guest at an open party (recorded, with an account,
-    not the couple) gives a red envelope from the wallet; each spouse gets half as a live_effects row. At most
-    ENVELOPE_MAX a guest a wedding. The sender's debit is a marriage_effects row `wenv:<wedding>:<rid>` (the live
+    not the couple) gives a red envelope of one of ENVELOPES from the wallet, as many times as they like (no cap); each
+    spouse gets half as a live_effects row. The sender's debit is a marriage_effects row `wenv:<wedding>:<rid>` (the live
     service reads it back to tell the room; the couple's end card sums their `wedenv:` rows)."""
     from . import marriage as mr
     from . import db as dbm
@@ -355,36 +362,73 @@ def envelope(store, sid: str, display: str, d: dict) -> dict:
         mr.need(sid not in (p['a'], p['b']), 'Phong bì là của khách mừng hai bạn đó 😄', 'own_wedding', 409)
         g = db.execute('SELECT ok FROM wedding_guests WHERE wedding=? AND sid=?', (wid, sid)).fetchone()
         mr.need(g and int(g['ok']), 'Vào dự tiệc rồi mới gửi phong bì được nhé.', 'not_guest', 409)
-        given = int(db.execute('SELECT COALESCE(SUM(-amount), 0) FROM marriage_effects WHERE sid=? AND id LIKE ?',
-                               (sid, f'wenv:{wid}:%')).fetchone()[0] or 0)
-        mr.need(given + amount <= ENVELOPE_MAX, f'Mỗi đám cưới mừng tối đa {ENVELOPE_MAX} xu thôi. Bạn đã mừng {given} xu rồi 💛',
-                'envelope_max', 409)
-        return p, given
+        return p
     with store.connect() as db:
         if db.execute('SELECT 1 FROM marriage_effects WHERE id=?', (eid,)).fetchone():
             return dict(message='Phong bì này đã gửi rồi.', changed=False, quiet=True, rid=rid)
-        p, _ = check(db, now())
+        p = check(db, now())
         names = dict(a=mr._display(db, p['a']), b=mr._display(db, p['b']))
     # BANK.PAY: a gift from the wallet, cash (like the spouse transfer)
     out = mr._effect(eid, sid, 'wallet', -amount, f'🧧 Phong bì mừng cưới {names["a"]} & {names["b"]}', dict(wedding=wid, wish=wish))
-    left = {}
 
     def fn(s):
         mr.need(int(s['journey']['wallet']) >= amount, f'Ví của bạn chưa đủ {amount} xu.', 'not_enough')
         mr._apply_effect(s, out)
 
     def ops(db):
-        p, given = check(db, now())
+        p = check(db, now())
         mr._insert_effects(db, [out], 'applied')
         for side in ('a', 'b'):
             grant(db, p[side], 'coins', amount // 2, f'wedenv:{wid}:{side}:{rid}', dict(src='env'))
-        left['n'] = ENVELOPE_MAX - given - amount
     try:
         mr._mutate_retry(store, {sid: fn}, ops)
-    except dbm.IntegrityError:   # the same rid twice (a double tap)
+    except dbm.IntegrityError:   # the same rid twice (a double tap); anything else is an error the client shows
+        with store.connect() as db:
+            mr.need(db.execute('SELECT 1 FROM marriage_effects WHERE id=?', (eid,)).fetchone(), 'Chưa gửi được, thử lại nhé.', 'busy', 409)
         return dict(message='Phong bì này đã gửi rồi.', changed=False, quiet=True, rid=rid)
-    return dict(message=f'Đã gửi phong bì {amount} xu mừng {names["a"]} & {names["b"]} 🧧', changed=True, quiet=True,
-                rid=rid, left=left.get('n', 0))
+    return dict(message=f'Đã gửi phong bì {amount} xu mừng {names["a"]} & {names["b"]} 🧧', changed=True, quiet=True, rid=rid)
+
+
+# ---------------------------------------------------------------- 🎁 the admin's gift for the weddings
+def wed_gift(store, sid: str, display: str, d: dict) -> dict:
+    """POST /api/marriage/wed_gift {}: GIFT_XU into the wallet, once per save ever, while a party is open (the newer
+    client asks when the player walks into one and the save has not had it: journey.public wed_gift False; None while
+    the save is younger than GIFT_DAY life days, against fresh second accounts made for the gift). Kept in
+    journey['wed_gift'] {v, got} (optional, beside the other blocks: older servers accept a journey with more blocks);
+    the wallet row is kind 'life' (every build knows it). An older server answers not_found: the client stays quiet."""
+    from . import marriage as mr
+    mr.need(not d, 'Dữ liệu không hợp lệ.', 'bad_gift')
+    t = now()
+    with store.connect() as db:
+        on = db.execute("SELECT 1 FROM wedding_parties WHERE status='booked' AND at<=? AND at>? LIMIT 1",
+                        (t + OPEN_BEFORE, t - PARTY_SECS)).fetchone()
+    mr.need(on, 'Quà này dành cho lúc đi dự tiệc cưới nhé.', 'no_party', 409)
+
+    def fn(s):
+        from . import journey as jr
+        j = s['journey']
+        mr.need(j.get('story'), 'Quà vào ví chỉ có trong hành trình.', 'not_story')
+        mr.need('wed_gift' not in j, 'Bạn đã nhận quà đi đám cưới rồi nha.', 'wed_gift_done', 409)
+        mr.need(j['life_day'] >= GIFT_DAY, f'Sống ở phố đủ {GIFT_DAY} ngày rồi nhận quà nhé.', 'wed_gift_early', 409)
+        j['wed_gift'] = dict(v=GIFT_VERSION, got=j['life_day'])
+        jr._wallet(j, GIFT_XU, 'life', GIFT_LABEL)
+    mr._mutate_retry(store, {sid: fn})
+    return dict(message=f'{GIFT_LABEL} đã vào ví!', changed=True, quiet=True, gift=GIFT_XU)
+
+
+def gift_public(j: dict):
+    """journey.public wed_gift: True (had it), False (may ask for it at a party), None (not yet: a young save)."""
+    return True if 'wed_gift' in j else (False if j['life_day'] >= GIFT_DAY else None)
+
+
+def gift_validate(j: dict) -> None:
+    """journey['wed_gift'] (optional): {v, got: the life day} once the gift is paid."""
+    if 'wed_gift' not in j:
+        return
+    from .engine import need, integer
+    g = j['wed_gift']
+    need(isinstance(g, dict) and set(g) == {'v', 'got'} and g['v'] == GIFT_VERSION, 'Dữ liệu quà đám cưới không hợp lệ.', 'invalid_save')
+    integer(g['got'], 1, 10**6)
 
 
 def envelopes_of(db, couple_sid: str, wid: int, side: str) -> int:

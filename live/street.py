@@ -764,7 +764,7 @@ class StreetFeature(Feature):
         p = conn.player
         try:
             ok = await effects.grant(self.db, p.sid, 'coins', env['n'], key=f"env:{room.id}:{env['id']}",
-                                     data=dict(src='envelope', place=room.data['place']), cap=ENVELOPE_CAP)
+                                     data=dict(src='envelope', place=room.data['place']), cap=ENVELOPE_CAP, cap_like='env:%')
         except BaseException:
             env['taken'] = None
             raise

@@ -26,7 +26,9 @@
  * is uploaded to POST /api/wedding/photo for the couple's Kỷ niệm), later guests watch from outside the gate.
  * The party's show (the MC, neighbours, kids, lion dance, lights, music) is ./wedfeast.js, on the party clock.
  * At a wedding, what people said stays on the "Lời chúc" board (bubbles fade fast, the keyboard hides them), and a
- * guest can give the couple a red envelope (🧧: POST /api/marriage/envelope, then `wed_env` tells the room).
+ * guest can give the couple a red envelope (🧧: POST /api/marriage/envelope, then `wed_env` tells the room): one of the
+ * room's amounts, as many times as the wallet allows (`env_free`: no cap). Walking into a party, a save that has not had
+ * it asks for the admin's 🎁 500 xu once (POST /api/marriage/wed_gift; journey.wed_gift false).
  * 1.3.0: the couple's name tags are a gold and rose pill; a table opens its mâm cỗ (`wed_eat`: a dish, a beer, a soft
  * drink; the server pays the tinh thần and the room sees who ate or drank); whoever stands on the stage dances on the
  * beat (💃 spins); the couple throws the bouquet when the MC calls for it (`wed_toss`), the room sees it fly to whoever
@@ -52,7 +54,7 @@ const MINE=new Set(['walk_places','walk_in','walk_out','move','say','emote','sit
 const S={env:null,dlg:null,cv:null,ctx:null,stage:null,room:null,geo:null,speed:170,people:new Map(),tables:[],hap:null,envl:null,
   offs:[],off:0,places:[],k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,bg:null,bgKey:'',raf:0,lastDraw:0,card:null,invite:null,sent:null,
   toastTimer:0,moveAt:0,moveTimer:0,pending:null,lastPublic:null,bound:false,hideTimer:0,paused:false,floaters:[],emotes:false,
-  picker:false,down:null,topicKey:'',want:null,wedding:null,wed:null,photo:null,ended:null,burst:0,clock:'',wsound:true,log:[],logOpen:false,logKey:'',envp:null,
+  picker:false,down:null,topicKey:'',want:null,wedding:null,wed:null,photo:null,ended:null,burst:0,clock:'',wsound:true,log:[],logOpen:false,logKey:'',envp:null,gift:false,
   tray:null,toss:null,floatKey:'',eatAt:0,dj:false};
 try{S.wsound=localStorage.getItem(WSOUND_KEY)!=='0';}catch{/* storage blocked */}
 const spots=new Map(),hooks={enter:new Set(),leave:new Set()};
@@ -182,6 +184,7 @@ function bind(){
     S.people=new Map(f.people.map(p=>[p.pid,person(p)]));
     S.tables=f.tables;S.hap=f.hap;S.envl=f.env;S.bgKey='';
     S.wed=f.wed||null;S.wedding=f.wed?f.wed.id:null;S.photo=null;if(f.wed)S.ended=null;S.dj=false;feast.setPick(S.wed?.music,S.wed?.at);
+    if(S.wed&&S.wed.overflow!=='account')claimGift();
     if(!f.private){S.lastPublic=f.place;try{localStorage.setItem(PLACE_KEY,f.place);}catch{/* storage blocked */}}
     S.places=S.places.map(p=>p.id===f.place?{...p,n:f.people.length}:p);
     head();paintOverlays();size();loop();syncMusic();
@@ -273,7 +276,7 @@ function pick(){
 async function payNow(){
   const api=S.env?.api;if(!api)return;
   try{const d=await api.json('/api/live/effects',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:'{}'});
-    if(d?.paid&&d.state&&typeof d.revision==='number'){api.accept({state:d.state,revision:d.revision});S.env.renderMain?.();}
+    if(d?.paid&&d.state&&typeof d.revision==='number'){api.accept({state:d.state,revision:d.revision});S.env.renderMain?.();paintEnvGo();}
     if(d?.gifts?.length){api.gifts=d.gifts;import('./gift.js').then(m=>m.giftBoot(S.env)).catch(e=>console.warn('walk: gift',e));}}   // the private card (a party's total, the race)
   catch(e){console.warn('walk: pay',e);}
 }
@@ -312,7 +315,7 @@ function act(a,d){
     case'close':S.dlg.close();return;
     case'photo':live.send({t:'wed_photo'});return;
     case'env':S.envp=S.envp?null:{amount:(S.wed?.envs||[20])[1]??20,wish:0,busy:false};if(S.envp){S.tray=null;S.dj=false;}paintTray();paintDj();paintEnvp();return;
-    case'envAmt':if(S.envp){S.envp.amount=Number(d.n);paintEnvp();}return;
+    case'envAmt':if(S.envp){S.envp.amount=Number(d.n);paintEnvGo();}return;
     case'envWish':if(S.envp){S.envp.wish=Number(d.n);paintEnvp();}return;
     case'envSend':sendEnvelope();return;
     case'tray':S.tray=null;paintTray();paintFloat(true);return;
@@ -452,26 +455,66 @@ function paintLog(){
   el.hidden=false;
   const list=el.querySelector('.wk-wish-list');list.scrollTop=list.scrollHeight;
 }
+const fx=n=>Number(n).toLocaleString('vi-VN');
+const cash=()=>{const v=S.env?.api?.state?.journey?.wallet;return Number.isInteger(v)?v:null;};
+/** 🧧 The amount picked and why it cannot go yet (the server stays the judge: game/wedding_live.py envelope refuses
+ * what the wallet does not hold). */
+function envNow(){
+  const n=S.envp.amount,w=cash();
+  return {n,why:w!==null&&n>w?(w>0?`Ví còn ${fx(w)} xu, chưa đủ phong bì ${fx(n)} xu.`:'Ví của bạn đang hết tiền.'):''};
+}
 function paintEnvp(){
   const el=S.dlg?.querySelector('.wk-envp');if(!el)return;const e=S.envp,w=S.wed;
   const b=S.dlg.querySelector('.wk-env-btn');if(b)b.setAttribute('aria-expanded',String(Boolean(e)));
-  if(!e||!w||!canGive()){el.hidden=true;return;}
-  el.innerHTML=`<div class="wk-who"><span class="wk-env-ico" aria-hidden="true">🧧</span><p class="grow"><b>Mừng cô dâu chú rể</b><small>Chia đôi cho <span data-no-translate>${esc(w.a)}</span> và <span data-no-translate>${esc(w.b)}</span> · tối đa ${w.env_max} xu mỗi đám</small></p>
+  if(!e||!w||!canGive()){el.hidden=true;el.dataset.key='';return;}
+  const free=Boolean(w.env_free),key=`${w.id}|${free}|${e.wish}`;
+  if(el.dataset.key===key&&!el.hidden){paintEnvGo();return;}   // unchanged: only what moves (the wallet, the pick)
+  el.dataset.key=key;
+  el.innerHTML=`<div class="wk-who"><span class="wk-env-ico" aria-hidden="true">🧧</span><p class="grow"><b>Mừng cô dâu chú rể</b><small>Chia đôi cho <span data-no-translate>${esc(w.a)}</span> và <span data-no-translate>${esc(w.b)}</span> · ${free?'<span class="wk-env-cash"></span>':`tối đa ${w.env_max} xu mỗi đám`}</small></p>
       <button type="button" class="icon-btn" data-wk="env" aria-label="Đóng">${icon('x',18)}</button></div>
-    <div class="wk-acts wrap">${w.envs.map(n=>`<button type="button" class="wk-pill${n===e.amount?' primary':''}" data-wk="envAmt" data-n="${n}" aria-pressed="${n===e.amount}">${n} xu</button>`).join('')}</div>
+    <div class="wk-acts wrap">${w.envs.map(n=>`<button type="button" class="wk-pill" data-wk="envAmt" data-n="${n}">${n} xu</button>`).join('')}</div>
     <div class="wk-acts wrap">${w.wishes.map((t,i)=>`<button type="button" class="wk-pill${i===e.wish?' on':''}" data-wk="envWish" data-n="${i}" aria-pressed="${i===e.wish}">${esc(t)}</button>`).join('')}</div>
-    <div class="wk-acts"><button type="button" class="wk-pill primary wk-env-go" data-wk="envSend"${e.busy?' disabled':''}>🧧 Gửi phong bì ${e.amount} xu</button></div>`;
-  el.hidden=false;
+    <div class="wk-acts"><button type="button" class="wk-pill primary wk-env-go" data-wk="envSend"></button></div><p class="wk-env-why" hidden></p>`;
+  el.hidden=false;paintEnvGo();
+}
+/** The wallet, the amounts (one the wallet cannot cover is off, the reason below), the send button. */
+function paintEnvGo(){
+  const el=S.dlg?.querySelector('.wk-envp');if(!el||el.hidden||!S.envp)return;
+  const e=S.envp,v=envNow(),wl=cash(),c=el.querySelector('.wk-env-cash');
+  if(c)c.textContent=wl!==null?`Ví còn ${fx(wl)} xu`:'mừng bao nhiêu lần cũng được';   // the wallet moves during the party (the minute money)
+  let off=0;
+  for(const p of el.querySelectorAll('[data-wk="envAmt"]')){
+    const n=Number(p.dataset.n),on=n===e.amount,no=wl!==null&&n>wl;off+=no;
+    p.classList.toggle('primary',on);p.setAttribute('aria-pressed',String(on));p.disabled=no;
+  }
+  const go=el.querySelector('.wk-env-go'),why=el.querySelector('.wk-env-why');
+  go.textContent=`🧧 Gửi phong bì ${fx(v.n)} xu`;go.disabled=Boolean(e.busy||v.why);
+  const text=v.why||(off?`Ví còn ${fx(wl)} xu: phong bì lớn hơn tạm khóa.`:'');
+  why.textContent=text;why.hidden=!text;
+}
+/** 🎁 Quà từ admin (game/wedding_live.py wed_gift): 500 xu once per save, asked for at a party. Only when this server
+ * says the save may have it (journey.wed_gift === false; null: a save younger than 3 life days; an older server sends
+ * nothing, so nothing is asked);
+ * once a session; any refusal stays quiet. */
+async function claimGift(){
+  const api=S.env?.api;if(S.gift||!api||api.state?.journey?.wed_gift!==false||!live.me?.account)return;
+  S.gift=true;
+  try{const d=await api.json('/api/marriage/wed_gift',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:'{}'});
+    if(d?.state&&typeof d.revision==='number'){api.accept({state:d.state,revision:d.revision});S.env.renderMain?.();}
+    toast(d?.message||'🎁 Quà từ admin: 500 xu đi đám cưới đã vào ví!');paintEnvGo();}
+  catch(e){console.warn('walk: wed gift',e?.message||e);}
 }
 async function sendEnvelope(){
   const e=S.envp,w=S.wed,api=S.env?.api;if(!e||!w||!api||e.busy)return;
-  e.busy=true;e.rid=e.rid||`e${Date.now().toString(36)}${Math.random().toString(36).slice(2,10)}`;paintEnvp();
-  try{const d=await api.json('/api/marriage/envelope',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:JSON.stringify({wedding:w.id,amount:e.amount,wish:e.wish,rid:e.rid})});
+  const v=envNow();if(v.why){toast(v.why);return;}
+  e.busy=true;e.rid=e.rid||`e${Date.now().toString(36)}${Math.random().toString(36).slice(2,10)}`;paintEnvGo();
+  try{const d=await api.json('/api/marriage/envelope',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:JSON.stringify({wedding:w.id,amount:v.n,wish:e.wish,rid:e.rid})});
     if(d?.state&&typeof d.revision==='number'){api.accept({state:d.state,revision:d.revision});S.env.renderMain?.();}
     if(d?.rid)live.send({t:'wed_env',rid:d.rid});
-    S.envp=null;toast(d?.message||'Đã gửi phong bì 🧧');}
-  catch(x){e.busy=false;e.rid=null;toast(x?.message||'Chưa gửi được, thử lại nhé.');}
-  paintEnvp();
+    toast(d?.message||'Đã gửi phong bì 🧧');}   // "cho gửi thoải mái": the panel stays open for the next one
+  catch(x){toast(x?.message||'Chưa gửi được, thử lại nhé.');}
+  e.busy=false;e.rid=null;   // a new envelope, a new request id
+  paintEnvGo();
 }
 /** 🍽️ The mâm cỗ of the table tapped: the dishes to gắp, a beer to cụng ly, a soft drink. */
 function paintTray(){

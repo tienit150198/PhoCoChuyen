@@ -37,6 +37,7 @@ from . import upkeep as up   # 🧾 Hóa đơn tháng: phí giữ xe, bảo trì
 from . import system_gift as sg   # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
 from . import live_effects as lfx   # 🧧 rewards from the live service (game/live_effects.py)
 from . import fair as fh   # 🏮 Hội chợ dân gian (game/fair.py)
+from . import wedding_live as wl   # 🎁 the admin's gift for the weddings (journey['wed_gift'])
 from . import needs as nd   # 🍚 No bụng, 😴 Tỉnh táo (game/needs.py)
 from . import chua as cg    # 🛕 Đi chùa (game/chua.py)
 from . import relax as rx   # 🏊 Thư giãn ở nhà: hồ bơi, bồn tắm (game/relax.py)
@@ -908,7 +909,7 @@ def public(s: dict) -> dict:
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
         bank=bk.public(s), home=hs.public(s), reno=rn.public(s), deco=dc.public(s),
-        garage=gr.public(s), **ct.public(s))
+        garage=gr.public(s), wed_gift=wl.gift_public(j), **ct.public(s))   # wed_gift False: the client may claim it at a party
 
 
 def _skill_ids() -> list[str]:
@@ -993,6 +994,7 @@ def validate(s: dict) -> None:
     sg.validate(j)
     lfx.validate(j)
     fh.validate(j)   # 🏮 journey['fair'] (optional)
+    wl.gift_validate(j)   # 🎁 journey['wed_gift'] (optional)
     nd.validate(s)   # 🍚😴 journey['needs'] (optional)
     cg.validate(s)   # 🛕 journey['chua'] (optional)
     rx.validate(s)   # 🏊 journey['relax'] (optional)

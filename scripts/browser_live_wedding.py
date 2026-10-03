@@ -13,6 +13,8 @@ service needs websockets 17, Python 3.12) when playwright lives in another one. 
   * a guest cheers in a bubble (a phone number masked) and sends ❤️; a guest takes the group photo (3-2-1, flash),
     which lands in the couple's Kỷ niệm; the ceremony starts (hearts), the show runs (MC, neighbours, kids, the lion
     dance, lights); everyone present earns +20 xu a minute, the couple too;
+  * 🎁 a guest with an account gets the admin's 500 xu once on walking in; 🧧 they give the couple four envelopes,
+    650 xu (no cap; the panel stays open), all on the board; an amount the wallet cannot cover is off;
   * 1.3.0: the couple's name tags stand out (gold and rose); the speakers and the stage lights; a guest taps a table:
     the mâm cỗ opens, three dishes give +1 tinh thần each and the fourth nothing (fixed ids), a beer −1 and "Dzô! 🍻"
     for the room, a soft drink nothing; a guest walks onto the stage and dances (💃); the new lion bites the lì xì; the
@@ -115,8 +117,9 @@ async def hub(p, action, group='pho'):
     """Open an entry of a menu hub (Khu phố, Quan hệ, Của mình…; the "Thêm" sheet on a phone)."""
     await p.page.evaluate("document.querySelector('[data-action=v4Menu]')?.click()")
     await p.page.wait_for_selector(f'#rail .rail-group[data-group={group}]', timeout=15000)
-    await p.page.click(f'#rail .rail-group[data-group={group}]')
-    await p.page.click(f'#rail .rail-sub[data-group={group}] [data-action={action}]')
+    await p.page.evaluate(f"document.querySelector('#rail .rail-group[data-group={group}]').click()")   # the rail may be
+    await p.page.wait_for_timeout(300)                                                                  # off-screen on a phone
+    await p.page.evaluate(f"document.querySelector('#rail .rail-sub[data-group={group}] [data-action={action}]').click()")
 
 
 async def cards(p, first=6.0):
@@ -162,6 +165,7 @@ async def run(shots: Path) -> list:
 
     def check(cond, what):
         checks.append(('PASS' if cond else 'FAIL') + ' ' + what)
+        print(checks[-1], flush=True)   # as it goes: a later timeout still shows what passed
         if not cond:
             problems.append('check: ' + what)
 
@@ -200,7 +204,11 @@ async def run(shots: Path) -> list:
                 # a couple who has lived in the phố a while (test database only): past a new player's quiet first day
                 sql(db, "UPDATE sessions SET state=json_set(state, '$.journey.life_day', 3) WHERE sid=?", sid)
             store.close_pool()
+            week = ((await bride.api('/api/state'))['state'].get('x3') or {}).get('week') or ''
             for p in [bride, groom, *guests]:
+                # the week's x3 card (v4/x3week.js) opens once a week at a break point, e.g. as the party ends, and
+                # would hold back the couple's card: these players have seen this week's already
+                await p.page.evaluate('w => localStorage.setItem("mnl.x3.week", w)', week)
                 await p.page.reload()
                 await p.page.wait_for_selector('#app:not([hidden])', timeout=30000)
                 await p.chat_button()
@@ -315,6 +323,43 @@ async def run(shots: Path) -> list:
             halves = sql(db, "SELECT amount FROM live_effects WHERE id LIKE 'wedenv:%'")
             check(halves == [(25,), (25,)], f'the couple get half each ({halves})')
             await shot(bride, '08d-envelope-board', wait=600)
+            # 🎁 the admin's 500 xu, paid once when a guest walked in; no cap, "cho gửi thoải mái": the panel stays open
+            hist = (await g1.api('/api/state'))['state']['journey']
+            gifts = [h for h in hist['history'] if 'Quà từ admin' in h['label']]
+            check(hist['wed_gift'] is True and len(gifts) == 1 and gifts[0]['amount'] == 500, f'the admin gift once ({gifts})')
+            await g1.page.click('.walk-sheet [data-wk=envAmt][data-n="200"]')
+            for i in range(3):                       # 50 + 3 × 200 = 650: past the old 500 a wedding
+                await g1.page.wait_for_selector('.walk-sheet [data-wk=envSend]:not([disabled])', timeout=10000)
+                await g1.page.click('.walk-sheet [data-wk=envSend]')
+                for _ in range(250):                 # SQLite shared with the live service: a write may wait a while
+                    if len(sql(db, "SELECT 1 FROM marriage_effects WHERE id LIKE 'wenv:%'")) >= 2 + i:
+                        break
+                    await asyncio.sleep(0.1)
+                else:
+                    check(False, f"envelope {i + 2} sent ({await dom(g1, '.walk-sheet .wk-toast', 1)!r})")
+            for _ in range(100):                     # the cheer and the four envelopes
+                if await dom(bride, '.walk-sheet .wk-wish-head small') == '5':
+                    break
+                await asyncio.sleep(0.2)
+            paid = sql(db, "SELECT amount FROM marriage_effects WHERE id LIKE 'wenv:%' ORDER BY at")
+            check(paid[:4] == [(-50,), (-200,), (-200,), (-200,)], f"four envelopes, 650 xu at one wedding ({paid})")
+            board = await dom(bride, '.walk-sheet .wk-wish-head small')
+            check(board == '5', f'every envelope on the board ({board!r})')
+            await shot(g1, '08f-envelope-after-four')
+            offs = []
+            for _ in range(12):                                                               # 200 more until the wallet runs thin
+                await asyncio.sleep(0.6)
+                offs = await g1.page.evaluate("[...document.querySelectorAll('.walk-sheet [data-wk=envAmt]')].map(b => b.disabled)")
+                if offs[-1]:
+                    break
+                await g1.page.click('.walk-sheet [data-wk=envSend]')
+            cash = (await g1.api('/api/state'))['state']['journey']['wallet']
+            why = await dom(g1, '.walk-sheet .wk-env-why')
+            off = await g1.page.evaluate("document.querySelector('.walk-sheet [data-wk=envSend]').disabled")
+            check(offs == [n > cash for n in (10, 20, 50, 100, 200)] and off and 'chưa đủ phong bì 200 xu' in why,
+                  f'an amount the wallet cannot cover is off, with the reason ({cash}: {offs}, {off}, {why!r})')
+            await shot(g1, '08g-envelope-thin-wallet')
+            await g1.page.click('.walk-sheet [data-wk=env]')
             await bride.page.click('.walk-sheet .wk-wish-head')
             await shot(bride, '08e-wishes-open')
             await bride.page.click('.walk-sheet .wk-wish-head')
@@ -407,6 +452,8 @@ async def run(shots: Path) -> list:
             await bride.page.wait_for_selector('.walk-sheet .wk-end:not([hidden])', timeout=20000)
             await g2.page.wait_for_selector('.walk-sheet .wk-end:not([hidden])', timeout=20000)
             await shot(g2, '10-party-end')
+            # one popup at a time (v4/popup-gate.js): the couple's card waits until the bride leaves the party sheet
+            await bride.page.keyboard.press('Escape')
             await bride.page.wait_for_selector('#gfDialog[open] [data-gf=ok]', timeout=20000)
             card = await bride.page.inner_text('#gfTitle')
             check('Đám cưới' in card, f'the private card for the couple ({card!r})')

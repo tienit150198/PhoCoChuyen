@@ -1,5 +1,15 @@
 {
  "strings": {
+  "🎁 Lần đầu vào dự tiệc, admin tặng bạn 500 xu (mỗi người một lần).": "🎁 The first time you join a wedding party, the admin gives you 500 coins (once per player).",
+  "🎁 Quà từ admin: 500 xu đi đám cưới": "🎁 Gift from the admin: 500 coins for weddings",
+  "🎁 Quà từ admin: 500 xu đi đám cưới đã vào ví!": "🎁 Gift from the admin: 500 coins for weddings is in your wallet!",
+  "Bạn đã nhận quà đi đám cưới rồi nha.": "You have already received the wedding gift.",
+  "Quà này dành cho lúc đi dự tiệc cưới nhé.": "This gift is for when you attend a wedding party.",
+  "Mừng cô dâu chú rể": "Gift for the bride and groom",
+  "Chia đôi cho": "Split between",
+  "mừng bao nhiêu lần cũng được": "give as many times as you like",
+  "Ví của bạn đang hết tiền.": "Your wallet is empty.",
+  "👛 Tiền lấy từ ví, chia đôi cho cô dâu chú rể. Mừng mấy phong bì cũng được, miễn ví còn đủ. Cần có tài khoản.": "👛 The money comes from your wallet and is split between the bride and groom. Give as many envelopes as you like, as long as your wallet has enough. Requires an account.",
   "Học kế toán: sửa lỗi bản lưu báo “Đáp án đã lưu chưa được chấm đúng”, làm không học, làm việc hay thi tiếp được.": "Accounting school: fixed saves stuck on “saved answer not graded right”, which blocked lessons, work and exams.",
   "Bật ti vi xem dự báo thời tiết, mai trời nắng đẹp.": "You switch on the TV for the weather: sunny tomorrow.",
   "Chuyển kênh một vòng, toàn phim đã xem rồi.": "You flick through every channel. Only films you have seen.",
@@ -6214,6 +6224,12 @@
   "Mang về 32": "Takeaway 32"
  },
  "patterns": {
+  "Sống ở phố đủ $1 ngày rồi nhận quà nhé.": "Live in the neighbourhood for $1 days, then take the gift.",
+  "🧧 Gửi phong bì $1 xu": "🧧 Send a $1-coin envelope",
+  "Ví còn $1 xu, chưa đủ phong bì $2 xu.": "Wallet: $1 coins, not enough for a $2-coin envelope.",
+  "Ví còn $1 xu: phong bì lớn hơn tạm khóa.": "Wallet: $1 coins: bigger envelopes are locked for now.",
+  "Ví của bạn chưa đủ $1 xu.": "Your wallet doesn't have $1 coins.",
+  "Đã gửi phong bì $1 xu mừng $2 & $3 🧧": "Sent a $1-coin envelope to $2 & $3 🧧",
   "Tỉnh táo $1": "Alert $1",
   "Tủ lạnh đầy rồi ($1/$2 món). Ăn bớt rồi hãy mua thêm nhé.": "The fridge is full ($1/$2 items). Eat something before buying more.",
   "Ngăn tủ chung đầy rồi ($1/$2 món). Ăn bớt rồi hãy mua thêm nhé.": "Your shelf in the shared fridge is full ($1/$2 items). Eat something before buying more.",

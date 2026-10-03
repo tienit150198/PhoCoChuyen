@@ -254,7 +254,8 @@ class Envelope(WedCase):
         bride = await self.join(ta, wid)
         gt, gs = self.account('Bảo')
         guest = await self.join(gt, wid)
-        self.assertEqual((guest.room['wed']['envs'], guest.room['wed']['env_max']), (list(WL.ENVELOPES), WL.ENVELOPE_MAX))
+        self.assertEqual((guest.room['wed']['envs'], guest.room['wed']['env_free'], guest.room['wed']['env_max']),
+                         (list(WL.ENVELOPES), True, WL.ENVELOPE_MAX_OLD), 'no cap; env_max only for the text of older clients')
         self.given(gs, wid, 'rid-abc-0001', 100, 1, (sa, sb))
         await guest.send(t='wed_env', rid='rid-abc-0001')
         e = await bride.expect('wed_env')
