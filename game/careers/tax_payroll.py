@@ -1257,7 +1257,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         # `toast` (a short line for the toast) and `deep` (hints worked on the player's own numbers) are optional:
         # an older client keeps showing `message`, which stays as it was.
         short = f'✗ Chưa khớp {len(st["fields"]) - len(bad)}/{len(st["fields"])} ô.' if st['kind'] == 'fields' else '✗ Chưa khớp.'
-        return dict(message=' '.join(x for x in ('✗ Chưa khớp.', where, msg, lunch) if x), correct=False, bad=bad, where=where,
+        return dict(message=' '.join(x for x in ('✗ Chưa khớp.', '' if where in msg else where, msg, lunch) if x), correct=False, bad=bad, where=where,
                     toast=' '.join(x for x in (short, lunch) if x), deep=_deeper(t, st, p.get('answer'), bad))
     if name == 'tp_file':
         kit.confirm(p, 'Xác nhận nộp/bàn giao hồ sơ.')

@@ -645,7 +645,8 @@ def _check(s, c, d, p):
     if react['message']:
         parts.append(react['message'])
     if pay:
-        parts.append(f'💸 Ting ting: nhận {pay} xu tiền công' + (' (khách quen).' if t['regular'] else '.'))
+        # The pay first: a toast shows its first note only (chat 03/10 "không có tiền hả").
+        parts.insert(0, f'💸 Ting ting: nhận {pay} xu tiền công' + (' (khách quen).' if t['regular'] else '.'))
         kit.bank(pay)
     msg = _finish(s, c, d, t, pay, ' '.join(parts))
     grad = _graduate(d)
@@ -708,6 +709,8 @@ def on_close(s: dict, c: dict) -> dict:
     desk_note = kit.desk_close(s, c, ID, d['desk'], DESK)
     today = d['today']
     lines = [f'🧹 Dọn {today["jobs"]} nhà, {today["rooms"]} phòng, {today["wipes"]} lượt lau.']
+    if today['earned']:
+        lines.insert(0, kit.earned_line(s, today['earned']))
     if today['jobs']:
         lines.append(f'⭐ {today["perfect"]}/{today["jobs"]} nhà khách khen sạch, không chê chỗ nào.' +
                      (' Cô Mai: “Giỏi lắm!”' if today['perfect'] == today['jobs'] else ' Cô Mai: “Trên cao trước, khô trước ướt sau nhé.”'))

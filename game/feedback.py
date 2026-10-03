@@ -801,6 +801,52 @@ def scripted_decision(persona: str, fb: dict, stars: int, reply: str, offer: str
     return dict(decision='keep', stars=stars, text=pick(v['keep']))
 
 
+# Making amends (chat 03/10: "hoàn tiền 20 xu rồi xin lỗi mà nó vẫn giữ nguyên đánh giá"): a sincere apology with
+# something real in hand gives a reviewer who would have kept the stars one more, seeded chance to edit the review
+# up. Chance in percent by what was given (an apology; a polite reply without one gets half); never above
+# AMENDS_CAP stars, never past what the facts allow (_bounds), rolled once per review from its id: one offer per
+# review, so the roll cannot be bought twice.
+AMENDS_CHANCE = {'refund': 80, 'gift': 65, 'drink': 50}
+AMENDS_HARSH = 20                              # bad-day reviewers are harder to win back
+AMENDS_CAP = 4
+AMENDS_NEVER = ('wrong_shop', 'wrong_class', 'competitor', 'no_visit', 'flip_high', 'fan')  # never a real visit, or nothing to fix
+AMENDS_UP = {'customer': ['Được xin lỗi đàng hoàng lại còn được bù, mình sửa lại sao nhé.',
+                          'Thấy quán nhận lỗi thật lòng và bù cho mình, mình nâng sao. Lần sau cẩn thận hơn nha.',
+                          'Quán xử lý vậy là có tâm. Mình sửa lại đánh giá rồi đó.'],
+             'parent': ['Cảm ơn cô/thầy đã nhận thiếu sót và bù cho con. Tôi sửa lại đánh giá ạ.',
+                        'Thấy cô/thầy nhận lỗi thật lòng, tôi yên tâm hơn và sửa lại đánh giá.']}
+AMENDS_KEEP = {'customer': ['Cảm ơn lời xin lỗi và phần bù. Mình nhận, nhưng lần này vẫn giữ đánh giá để quán nhớ nha.',
+                            'Mình ghi nhận quán đã bù rồi. Lần sau làm tốt thì mình sửa sao sau nhé.'],
+               'parent': ['Tôi ghi nhận lời xin lỗi và phần bù, nhưng xin giữ nhận xét để lớp lưu ý ạ.',
+                          'Cảm ơn cô/thầy đã bù cho con. Tôi giữ nhận xét, mong buổi sau tốt hơn ạ.']}
+
+
+def amends(post: dict, decision: dict, tone: str, reply: str) -> dict:
+    """The reviewer's answer once something real was given (this round or before): a fair, seeded chance to
+    edit the stars up when they would have kept them; otherwise they say they saw it."""
+    fb, stars = post['feedback'], post.get('stars')
+    given = [x.get('offer', 'none') for x in fb['thread'] if x['role'] == 'owner' and x.get('offer', 'none') != 'none']
+    if not given or not stars or decision.get('decision') not in ('keep', 'argue') or _kind(fb) in AMENDS_NEVER:
+        return decision
+    sig = classify(reply)
+    if tone in ('harsh', 'sassy') or sig['rude'] or (sig['blame'] and not sig['apology']):
+        return decision
+    chance = AMENDS_CHANCE.get(given[-1], 0)
+    if not (tone == 'sorry' or sig['apology']):
+        chance //= 2
+    if fb['persona'] in HARSH:
+        chance -= AMENDS_HARSH
+    _, high = _bounds(fb, stars)
+    new = min(high, AMENDS_CAP, stars + (2 if given[-1] == 'refund' else 1))
+    group = 'parent' if PERSONAS[fb['persona']]['group'] == 'parent' else 'customer'
+    seed = _hash('amends', post['id'])
+    if new > stars and seed % 100 < chance:
+        return dict(decision, decision='revise_up', stars=new, text=AMENDS_UP[group][seed % len(AMENDS_UP[group])], amends=True)
+    if decision['decision'] == 'keep':
+        return dict(decision, text=AMENDS_KEEP[group][seed % len(AMENDS_KEEP[group])], amends=True)
+    return decision
+
+
 def attach(post: dict, review: dict) -> None:
     post['feedback'] = review['feedback']
     if review.get('npc'):
@@ -870,6 +916,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
             decision = _fv.tone_decision(s, c, post, tone, given[-1] if given else 'none')
         else:
             decision = scripted_decision(fb['persona'], fb, post['stars'], reply, offer)
+        if not _pv.on(career):
+            decision = amends(post, decision, tone, reply)
         if _pv.on(career):
             decision = _pv.react(s, post, decision, _hash('pagoda-react', post['id'], fb['rounds'], tone))
         fb['rounds'] += 1
@@ -975,8 +1023,12 @@ def resolve(s: dict, c: dict, post: dict, decision, stars, text, mode: str) -> d
     pending = fb['pending'] or {}
     current = post['stars']
     low, high = _bounds(fb, current)
+    if mode == 'ai' and pending.get('decision') and decision != pending['decision']:
+        mode = 'scripted'   # the words are the model's, the outcome is the game's: a model that disagrees is not used
     if mode != 'ai' or type(stars) is not int or not isinstance(text, str) or not text.strip():
         decision, stars, text, mode = pending.get('decision', 'keep'), pending.get('stars', current), pending.get('text', ''), 'scripted'
+    elif type(pending.get('stars')) is int:
+        stars = pending['stars']   # same decision: the same stars as without AI (seeded, server-side)
     stars = max(low, min(high, int(stars)))
     # Keep the decision label honest about what happened to the stars.
     if stars > current:
@@ -1002,6 +1054,9 @@ def resolve(s: dict, c: dict, post: dict, decision, stars, text, mode: str) -> d
     extra = _fv.after_resolve(s, c, post, pending, decision)  # friends, sass fallout, bystanders
     fb['thread'] = ar.last(fb['thread'], 8, 'review.thread', c)
     message = f'{post["author"]} {label}: “{text}”'
+    if stars != current and not pg:
+        # Chat 03/10: the change is the news, said first ("Khách đã sửa đánh giá: ★1 → ★3").
+        message = f'{post["author"]} đã sửa đánh giá: ★{current} → ★{stars}. “{text}”'
     if extra:
         message += ' ' + ' '.join(extra)
     return dict(message=message, decision=decision, stars=stars)

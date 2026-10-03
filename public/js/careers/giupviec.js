@@ -171,7 +171,7 @@ export default {
     const lines=[sum.low?.length?`📦 Sắp hết: ${sum.low.map(k=>x.esc(names[k]||k)).join(' · ')}`:''].filter(Boolean);
     const plan=`<section class="gv-plan" aria-label="Ngày mai"><h4 class="section-title">🌅 Ngày mai</h4>${tm?`<p class="gv-tomorrow"><span aria-hidden="true">${x.esc(tm.emoji)}</span> <b>Mai: ${x.esc(tm.label)}</b><small>${x.esc(tm.hint)}</small></p>`:''}${lines.length?`<ul class="gv-plan-list">${lines.map(l=>`<li>${l}</li>`).join('')}</ul>`:''}${x.button('🧺 Mở Kho','warehouse',{},'primary small gv-plan-go')}</section>`;
     const kv=`<div class="kv">${row('Nhà đã dọn',sum.jobs)}${row('Phòng',sum.rooms)}${row('Khách khen sạch',`${sum.perfect}/${sum.jobs}`)}${row('Tiền công',`${x.fmt?x.fmt(sum.earned):sum.earned} xu`)}</div>${(sum.lines||[]).length?`<ul class="small">${sum.lines.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>`:''}${sum.note?`<p class="small muted">${x.esc(sum.note)}</p>`:''}`;
-    return `<article class="card space-top gv-sum">${plan}<details class="gv-sum-more"><summary>🧹 Hôm nay · ${sum.jobs} nhà · ${sum.perfect} nhà khen sạch</summary>${kv}</details></article>`;
+    return `<article class="card space-top gv-sum">${plan}<details class="gv-sum-more"><summary>🧹 Hôm nay · ${sum.jobs} nhà · ${sum.perfect} nhà khen sạch${sum.earned?` · 💵 ${x.fmt?x.fmt(sum.earned):sum.earned} xu`:''}</summary>${kv}</details></article>`;
   },
   actions:{...kitActions},
   dock:[['inventory','box','Kho tổ giúp việc','Chai lau kính, tẩy rửa, nước lau sàn…']],

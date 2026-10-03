@@ -729,10 +729,13 @@ def _slip_all(c: dict, d: dict, t: dict, rows: list) -> None:
         cq.slip(t, code, sev, text, note, safe)
 
 
-def _finish(s: dict, c: dict, d: dict, t: dict, reward: int, narrative: str, tip: int = 0) -> str:
-    """Close a block: the parent's reaction to what went wrong, the review, then the next block of the day."""
+def _finish(s: dict, c: dict, d: dict, t: dict, reward: int, narrative: str, tip: int = 0, out: dict | None = None) -> str:
+    """Close a block: the parent's reaction to what went wrong, the review, then the next block of the day.
+    `out` (optional) receives what the parent actually paid, after the reaction."""
     who = _parent(t)
     react = cq.react(s, c, t, reward, who=who)
+    if out is not None:
+        out['paid'] = max(0, int(react['pay']))
     if tip:
         t['tip_given'] = tip
     t['stage'] = 'done'
@@ -829,7 +832,9 @@ def _take(s, c, d, p):
     ok = not rows
     msg = _finish(s, c, d, t, 0, f'Nhận {kid(f)} từ tay {_lower(PEOPLE[f["npc"]][0])}.')
     head = f'👋 {kid(f, True)} vẫy tay chào {"bố" if f["npc"] in (2, 5) else "bà" if f["npc"] == 4 else "mẹ"}.'
-    return dict(message=f'{head} {msg}', celebrate=ok)
+    # Chat 03/10 "Nghề trông trẻ không có tiền hả": the day is paid in one go at the handover; say so at the start.
+    pay = f'💵 Công hôm nay {f["rate"]} xu, {_lower(PEOPLE[f["npc"]][0])} trả khi đón bé lúc {hhmm(CLOSE)}.'
+    return dict(message=f'{head} {msg} {pay}', celebrate=ok)
 
 
 # ---------------------------------------------------------------- snack and meal
@@ -1319,9 +1324,13 @@ def _hand(s, c, d, p):
     td['handed'] = 1
     d['stats']['days'] += 1
     d['stats']['care'] = min(10 ** 7, d['stats']['care'] + care)
-    msg = _finish(s, c, d, t, pay['total'], f'Trông {kid(f)} trọn ngày, bàn giao cho {_lower(PEOPLE[f["npc"]][0])}.', tip)
+    got = {}
+    msg = _finish(s, c, d, t, pay['total'], f'Trông {kid(f)} trọn ngày, bàn giao cho {_lower(PEOPLE[f["npc"]][0])}.', tip, got)
     extra = [x for x in (f'{pay["loyal"]} xu khách quen' if pay['loyal'] else '', f'{pay["bonus"]} xu chăm kỹ' if pay['bonus'] else '') if x]
-    parts = [f'👋 {PEOPLE[f["npc"]][0]} nhận bé, đọc nhật ký. Tiền công {pay["total"]} xu' + (f' (có {", ".join(extra)})' if extra else '') + '.']
+    paid = got.get('paid', pay['total'])
+    # The pay first: a toast shows its first note only (chat 03/10: the pay sat behind "nhận bé, đọc nhật ký").
+    parts = [f'💵 Nhận {paid} xu tiền công' + (f' (có {", ".join(extra)})' if extra and paid == pay['total'] else '') + '.',
+             f'👋 {PEOPLE[f["npc"]][0]} nhận bé, đọc nhật ký.']
     if tip:
         parts.append(f'💌 Gửi thêm {tip} xu bồi dưỡng.')
     if up:
@@ -1415,6 +1424,9 @@ def on_close(s: dict, c: dict) -> dict:
         half = f['rate'] // 2
         kit.money(s, c, half, f'Nửa ngày công: {_lower(PEOPLE[f["npc"]][0])} tự đón {kid(f)}')
         lines.append(f'⏰ {PEOPLE[f["npc"]][0]} tự đón {kid(f)} khi bạn chưa kịp bàn giao: gửi nửa ngày công, {half} xu.')
+    earned = max(0, int(c.get('earnings') or 0))
+    if earned:
+        lines.insert(0, kit.earned_line(s, earned))
     care = max(0, 100 - 10 * td['pts'])
     if td['blocks']:
         lines.append(f'👶 Trông {kid(f)} ({f["age"]}): {td["blocks"]} việc trong ngày, chăm kỹ {care}%.')
@@ -1427,7 +1439,7 @@ def on_close(s: dict, c: dict) -> dict:
     trust = (d['fams'].get(family_of(c['day'] + 1)) or {}).get('trust', 0)
     return dict(tomorrow=dict(emoji=tm['emoji'], label=tm['label'], hint=tm['hint']), lines=lines,
                 note=f'Mai trông {kid(nf)} ({nf["age"]}) nhà {_lower(PEOPLE[nf["npc"]][0])}' + (' · khách quen' if trust else '') + '.',
-                kid=f['kid'], care=care, blocks=td['blocks'], handed=bool(td['handed']), half=half,
+                kid=f['kid'], care=care, blocks=td['blocks'], handed=bool(td['handed']), half=half, earned=earned,
                 next=dict(kid=nf['kid'], age=nf['age'], parent=PEOPLE[nf['npc']][0], trust=trust))
 
 

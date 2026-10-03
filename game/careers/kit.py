@@ -532,6 +532,15 @@ def desk_choose(s: dict, c: dict, career: str, desk: dict, scripts: list, option
     return dict(message=outcome, celebrate=good is True)
 
 
+def earned_line(s: dict, earned: int) -> str:
+    """The day's pay for a summary line of a hired-help career (chat 03/10 "Nghề trông trẻ không có tiền hả"):
+    what came in today and, in the journey, where it sits (the workplace fund, not the wallet)."""
+    line = f'💵 Hôm nay nhận {earned} xu tiền công.'
+    if ((s or {}).get('journey') or {}).get('story'):
+        line = f'💵 Hôm nay nhận {earned} xu tiền công, đã vào quỹ nghề. Muốn tiêu thì rút về ví ở Hành trình.'
+    return line
+
+
 def desk_close(s: dict, c: dict, career: str, desk: dict, scripts: list, hook=None) -> str | None:
     """At closing time an undecided surprise takes its default (usually passive) option."""
     ev = desk['ev']
