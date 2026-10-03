@@ -491,7 +491,10 @@ export async function journeyAction(action,data,el,env){
     case'jrPause':{const place=placeOf(api,data.career);
       if(await confirmAction(`Tạm đóng ${place}?`,`Khi tạm đóng, nơi này không tốn phí duy trì và chưa làm việc được. Mở lại tốn ${api.content.journey.reopen_fee} xu.`,'Tạm đóng'))await cmd('jr_pause',{career:data.career,confirm:true});return true;}
     case'jrReopen':{const place=placeOf(api,data.career);
-      if(await confirmAction(`Mở lại ${place}?`,`Phí mở lại ${api.content.journey.reopen_fee} xu, trả từ quỹ của nơi này (nếu quỹ thiếu thì trả từ ví).`,'Mở lại'))await cmd('jr_reopen',{career:data.career,confirm:true});return true;}
+      if(!await confirmAction(`Mở lại ${place}?`,`Phí mở lại ${api.content.journey.reopen_fee} xu, trả từ quỹ của nơi này (nếu quỹ thiếu thì trả từ ví).`,'Mở lại'))return true;
+      const r=await cmd('jr_reopen',{career:data.career,confirm:true});
+      if(r&&data.go)await env.act('choose',{career:data.career});   // 🗺️ from a door on the map: reopened, then straight in (feedback #140)
+      return true;}
     case'jrStory':openScene(storyScene(Number(data.n)));return true;
     case'jrSceneNext':{const n=Number(data.n);openScene(chapterScene(n,1),sceneQueue||[]);return true;}
     case'jrSceneClose':await closeScene();return true;

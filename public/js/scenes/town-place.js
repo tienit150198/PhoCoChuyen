@@ -226,8 +226,9 @@ function building(c,it,s,o){
   c.restore();
   if(s.lock&&it.kind==='cart')tarp(c,it);
   else if(s.lock){shutter(c,it.cx,it.G,Math.min(44,it.w*.36),62);}
-  else if(s.paused)shutter(c,it.cx,it.G,Math.min(44,it.w*.36),34);
+  else if(s.paused)shutter(c,it.cx,it.G,Math.min(44,it.w*.36),62);   // ⏸ closed by the player: the shutter all the way down
   signBoard(c,it,t,s);
+  if(s.paused&&!s.lock){const y=it.G-it.h+(it.kind==='cart'?-6:14)+34,text=tr('⏸ Tạm đóng');R(c,it.cx-38,y,76,20,'#fff3d6',10,'#c98a1b',1.5);T(c,text,it.cx,y+10.5,fit(c,text,68,11,800),'#7a4a00',800);}
 }
 /** The sign over the door: emoji + short name (a locked place: 🔒 and its emoji, no name yet). */
 function signBoard(c,it,t,s){
