@@ -179,6 +179,8 @@ def _bill(s: dict, u: dict, day: int, notes: list) -> None:
         line = '🧾 Hóa đơn tháng: ' + ', '.join(parts) + '.'
         if waived:
             line += f' Ví và tài khoản chưa đủ: {_fmt(waived)} xu còn thiếu được miễn, không tính nợ.'
+            from . import rui
+            rui.note_waived(s, day)   # 🛡️ what was not looked after breaks more easily for a while (game/rui.py)
         notes.append(line)
 
 

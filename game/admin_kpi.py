@@ -43,7 +43,7 @@ LAUNCH_DAY = '2026-09-28'  # first public build (git history); the day log (stat
 PLAY_EXACT_DAY = '2026-10-01'   # play time exact from 01/10 00:31 (before: estimated from receipts)
 FEATURE_LABELS = dict(work='Làm nghề (phục vụ khách)', bank='Ngân hàng & đầu tư', learn='Học & chứng chỉ', home='Nhà & nội thất',
                       wardrobe='Tủ đồ & màu sắc', needs='Nhu cầu nhân vật', board='Bảng tin cư dân', life='Đời sống',
-                      close='Thân thiết', story='Cốt truyện & sự kiện', fair='Hội chợ', jobs='Tìm việc / đổi nghề')
+                      close='Thân thiết', story='Cốt truyện & sự kiện', fair='Hội chợ', risk='Bảo hiểm & tiệm vàng', jobs='Tìm việc / đổi nghề')
 
 
 # ---------------------------------------------------------------- definitions (shown in the ⓘ and the exports)

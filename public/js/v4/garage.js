@@ -99,6 +99,7 @@ async function onClick(op,data){
     case'save':{const p=S.pick;if(!p)return;const r=await send('jr_garage_paint',{id:p.id,color:p.color,plate:(p.plate||'').trim()});if(r){S.view='list';S.pick=null;render();}return;}
     case'ride':send('jr_garage_ride',{id:data.id||null});return;
     case'trip':send('jr_garage_trip',{id:data.id});return;
+    case'fix':send('jr_rui_fix',{kind:'xe',ref:data.id});return;  // 🛡️ a vehicle left broken (game/rui.py)
     case'sell':{const c=(v.cars||[]).find(x=>x.id===data.id),it=item(data.id);if(!c||!it)return;
       if(await ask(`Bán ${lname(it.name)}?`,`Mua ${xu(c.paid)}, bán lại được ${xu(c.sell)} (${CAT().sell_pct}% giá đã trả). Tiền vào ví. Bán rồi là không lấy lại được.`,`Bán · nhận ${xu(c.sell)}`))send('jr_garage_sell',{id:c.id,confirm:true});return;}
     case'house':S.dlg.close();(await import('./house.js')).openHouse(S.env);return;
@@ -152,6 +153,7 @@ function mineView(v){
     const on=v.ride===c.id,g=group(it.group);
     return `<li class="hs-home gr-car${on?' mine':''}" style="--hs-tone:${esc(g.color||'')}"><div class="hs-home-top">${tileHTML(it,c.color,c.plate)}<div class="grow"><b>${esc(it.name)}</b><small>${on?'🛞 Đang đi':`Mua ngày ${fmt(c.day)}`} · ${esc(paint(c.color).name)}</small></div></div>
       ${perkChips(it,c.upkeep)}
+      ${Number.isInteger(c.broken)?`<div class="bk-actions">${btn(`🔧 Đang hỏng · Sửa ${xu(c.broken)}`,'fix',{id:c.id},'primary')}</div>`:''}
       <div class="bk-actions">${btn(`${esc(it.trip)}${it.fuel?` · ${xu(it.fuel)}`:''}`,'trip',{id:c.id},'primary',c.trip_why||'')}${on?'':btn('Đi chiếc này','ride',{id:c.id},'ghost')}${btn('🎨 Sơn & biển tên','edit',{id:c.id},'ghost')}</div>
       ${c.trip_why&&!v.tripped?`<p class="bk-hint">${esc(c.trip_why)}</p>`:''}
       <p class="gr-sell"><small>Bán lại được ${xu(c.sell)}</small>${btn('Bán','sell',{id:c.id},'ghost small danger')}</p></li>`;

@@ -52,6 +52,8 @@ from . import x3_week as x3w  # 🔥 Nghề x3 trong tuần
 from . import needs as nd  # 🍚 No bụng, 😴 Tỉnh táo
 from . import chua as cg  # 🛕 Đi chùa
 from . import promotion as pm  # 🎖️ Thăng tiến, 🧑‍💼 Ca quản lý
+from . import rui as rui_  # 🛡️ Rủi ro & bảo hiểm
+from . import vang as vang_  # 💰 Tiệm vàng
 
 ORIGINAL=("mother_baby","pharmacy","accounting","customer_care")
 UI_THEMES=("kem","tra_xanh","dem","bien","keo")
@@ -1181,6 +1183,8 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     v["abandon"]=ab.public(s)
     v["fair"]=fh.public(s)  # 🏮 Hội chợ dân gian (game/fair.py)
     v["x3"]=x3w.public()  # 🔥 Nghề x3 trong tuần (game/x3_week.py)
+    v["rui"]=rui_.public(s)  # 🛡️ Rủi ro & bảo hiểm (game/rui.py): the warning, the card, the policies
+    v["vang"]=vang_.public(s)  # 💰 Tiệm vàng (game/vang.py): today's price, the chart, the gold held
     v['accounting_school']=accounting_school_.summary(s)  # small: the school's own view rides on as_* results
     for cid,c in v["careers"].items():
         if c.get("summary"):continue

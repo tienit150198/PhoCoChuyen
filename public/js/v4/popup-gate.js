@@ -6,12 +6,12 @@
  *   summary, not the evening, not the work screen), the phone menu is shut and the tutorial tour is not up.
  * - free(): what a one-time notice (gift, Có gì mới) needs: the same, except that the work screen may show
  *   its "task done" card (no customer waiting on it).
- * - turn(name): no card ranked before this one is waiting (gift → Có gì mới → x3 → story); want(name) /
+ * - turn(name): no card ranked before this one is waiting (gift → Có gì mới → x3 → story → 🛡️ rủi ro); want(name) /
  *   want(name,false) say when a card is due or done.
  * - whenQuiet(fn): run fn at the next quiet moment: when the sheet closes, else checked every 1.5 s, for
  *   2 minutes at most (then the next scene or state change asks again, as before).
  * DOM only (no game rule); safe to import from any module. */
-const RANK={gift:0,whatsnew:1,x3:2,story:3};
+const RANK={gift:0,whatsnew:1,x3:2,story:3,rui:4};
 const waiting=new Set();
 export function want(name,on=true){if(on)waiting.add(name);else waiting.delete(name);}
 export const turn=name=>![...waiting].some(n=>n!==name&&(RANK[n]??9)<(RANK[name]??9));

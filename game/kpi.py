@@ -65,6 +65,7 @@ FEATURES = (
     ('close', ('qn_',)),
     ('story', ('st_', 'ev_')),
     ('fair', ('fair_',)),
+    ('risk', ('jr_rui_', 'jr_vang_')),
     ('jobs', ('job_', 'select_career')),
 )
 FEATURE_KEYS = tuple(k for k, _ in FEATURES) + ('work',)

@@ -282,12 +282,19 @@ def _late(s: dict) -> bool:
     return bool(own) and hs._late(own.get('loan'))
 
 
+def _broken(s: dict) -> bool:
+    """🛡️ The home you live in has a sự cố left for later (game/rui.py): no Ấm cúng bonus until it is fixed."""
+    from . import rui
+    own = _own(s)
+    return bool(own) and rui.is_broken(s, 'nha', own['id'])
+
+
 def perk_off(s: dict) -> str | None:
     """Why the morning bonus of a home you own is paused: 'late' (a mortgage payment), 'cond' (needs repairs)."""
     if _late(s):
         return 'late'
     r = _view_block(s)
-    return 'cond' if r is not None and cond_avg(r) < COZY_COND else None
+    return 'cond' if r is not None and (cond_avg(r) < COZY_COND or _broken(s)) else None
 
 
 # ---------------------------------------------------------------- the daily tick
@@ -309,7 +316,7 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     else:
         r['day'] = max(r['day'], target - CATCHUP)
     if r['day'] < target:   # most commands: the same day, nothing to do
-        late = _late(s)
+        late = _late(s) or _broken(s)
         pts = cozy_total(s)   # furniture and levels do not change overnight
     while r['day'] < target:
         r['day'] += 1

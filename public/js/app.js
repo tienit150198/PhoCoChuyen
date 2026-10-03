@@ -275,6 +275,8 @@ function navItems(c){
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
   if(api.state?.journey?.story)items.push(['house','home','Nhà của bạn',api.state.journey.home?.own?.loan?.overdue?'dot':0]);  // 🏠 Nhà của bạn (v4/house.js, own dialog)
   if(api.state?.journey?.story&&api.state.journey.garage)items.push(['garage','bike','Xe & phương tiện']);  // 🚗 (v4/garage.js, own dialog): only once the server has it
+  if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
+  if(api.state?.vang)items.push(['vang','award','Tiệm vàng']);  // 💰 Tiệm vàng Kim Phát (v4/rui.js)
   if(api.state?.fair?.show)items.push(['fair','flag','Hội chợ',api.state.fair.open&&!api.state.fair.played?'dot':0]);  // 🏮 Hội chợ dân gian (v4/fair.js, own dialog): only around the fair's days
   // A career with its own shell (the air crew: no Sổ tiệm, a flight log instead) reshapes the list; others keep it.
   const result=careerUI(career())?.nav?.(items,careerContext(env()))||items;
@@ -295,7 +297,7 @@ const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREE
 const RAIL_GROUPS=[
   ['pho','building','Khu phố',['fair','liveWalk','liveWed','nhom','phone','social','town','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
-  ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage']],
+  ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage','rui','vang']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
   ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal','accountingSchool']],
 ];
@@ -1322,6 +1324,7 @@ async function handleAction(action,data,el){
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
       if(action==='garage'){await (await import('./v4/garage.js')).garageAction(action,data,el,env());break;}  // 🚗 Xe & phương tiện: lazy
+      if(action==='rui'||action==='vang'){await (await import('./v4/rui.js')).ruiAction(action,data,el,env());break;}  // 🛡️ Bảo hiểm, 💰 Tiệm vàng: lazy
       if(action==='fair'){await (await import('./v4/fair.js')).fairAction(action,data,el,env());break;}  // 🏮 Hội chợ dân gian: lazy
       if(L.people.m&&await L.people.m.closenessAction(action,data,el,env()))break;
       if(await needsAction(action,data,el,env()))break;  // 🍚😴 nd…
@@ -1542,6 +1545,7 @@ try{
     lazyBoot=true;whenIdle(()=>bootNext(0),1500);
     import('./v4/whatsnew.js').then(m=>m.whatsNewBoot(env())).catch(e=>console.warn('whatsnew:',e));  // "Có gì mới": lazy, off the first load
     import('./v4/x3week.js').then(m=>m.x3Boot(env())).catch(e=>console.warn('x3week:',e));  // 🔥 Nghề x3 trong tuần (game/x3_week.py)
+    if(api.state?.rui)import('./v4/rui.js').then(m=>m.ruiBoot(env())).catch(e=>console.warn('rui:',e));  // 🛡️ a warning or a card at a calm moment (game/rui.py)
     if(api.gifts?.length)import('./v4/gift.js').then(m=>m.giftBoot(env())).catch(e=>console.warn('gift:',e));  // 🎁 Quà từ Phố Có Chuyện: only for a save with a gift
     if(firstDay(api.state))import('./v4/onboard-fx.js').then(m=>m.onboardBoot(env())).catch(e=>console.warn('onboard:',e));  // a new player's first day only
   };
