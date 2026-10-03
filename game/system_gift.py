@@ -46,14 +46,26 @@ _CONTROL = re.compile(r'[\x00-\x08\x0b-\x1f\x7f]')
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS system_gifts (
   id TEXT PRIMARY KEY, sid TEXT NOT NULL, coins INTEGER NOT NULL, title TEXT NOT NULL, text TEXT NOT NULL,
-  status TEXT NOT NULL, created REAL NOT NULL, applied_at REAL, seen_at REAL
+  status TEXT NOT NULL, created REAL NOT NULL, applied_at REAL, seen_at REAL, granted_by TEXT
 );
 CREATE INDEX IF NOT EXISTS system_gifts_sid ON system_gifts(sid, status);
 """
+# The admin page's "Quà đã tặng" (newest first, LIMIT): run after migrate(), see storage.py.
+INDEXES = "CREATE INDEX IF NOT EXISTS system_gifts_created ON system_gifts(created);"
+
+
+def migrate(db) -> None:
+    """Older SQLite files: system_gifts.granted_by (the admin who gave it from /admin, schema 16; NULL for the
+    grant tool and older rows) is added in place, nullable without a default: 1.5.4 never reads it."""
+    cols = {r[1] for r in db.execute('PRAGMA table_info(system_gifts)').fetchall()}
+    if 'granted_by' not in cols:
+        db.execute('ALTER TABLE system_gifts ADD COLUMN granted_by TEXT')
 
 
 class GiftError(ValueError):
-    pass
+    def __init__(self, message: str, code: str = 'bad_gift', status: int = 400):
+        super().__init__(message)
+        self.message, self.code, self.status = message, code, status
 
 
 def now() -> float:
@@ -156,10 +168,12 @@ def default_id(sid: str, coins: int, title: str, text: str) -> str:
     return 'g-' + h[:20]
 
 
-def grant(store, sid: str, coins: int, title: str, text: str, gid: str | None = None, dry_run: bool = False) -> dict:
+def grant(store, sid: str, coins: int, title: str, text: str, gid: str | None = None, dry_run: bool = False,
+          by: str | None = None) -> dict:
     """Queue one gift for a save. Idempotent by id: the same id with the same content is 'exists';
     with other content, GiftError (nothing written). Returns {status, gift}, status in
-    'created' | 'exists' | 'would_create' (dry run)."""
+    'created' | 'exists' | 'would_create' (dry run). `by`: the admin account that gave it (/admin), kept in
+    granted_by for the record (None: the grant tool)."""
     if not isinstance(sid, str) or not sid or len(sid) > 128:
         raise GiftError('sid không hợp lệ.')
     if type(coins) is not int or not 1 <= coins <= MAX_COINS:
@@ -186,10 +200,107 @@ def grant(store, sid: str, coins: int, title: str, text: str, gid: str | None = 
         return dict(status='would_create', gift=gift)
     try:
         store.transaction(lambda db: db.execute(
-            "INSERT INTO system_gifts(id,sid,coins,title,text,status,created) VALUES(?,?,?,?,?,'pending',?)",
-            (gid, sid, coins, title, text, now())))
+            "INSERT INTO system_gifts(id,sid,coins,title,text,status,created,granted_by) VALUES(?,?,?,?,?,'pending',?,?)",
+            (gid, sid, coins, title, text, now(), by)))
     except dbm.IntegrityError:   # the same id landed first (two runs at once)
         with store.connect() as db:
             return same(db.execute('SELECT * FROM system_gifts WHERE id=?', (gid,)).fetchone())
     with store.connect() as db:
         return dict(status='created', gift=dict(db.execute('SELECT * FROM system_gifts WHERE id=?', (gid,)).fetchone()))
+
+
+# ---------------------------------------------------------------- the admin page (/admin, "🎁 Tặng xu")
+# GET /api/admin/gifts?q= and POST /api/admin/gift (server.py, ADMIN_USERS only): the same gift as the grant tool,
+# addressed to an account by its username, with the admin's username in granted_by. Never touches a save.
+USERNAME = re.compile(r'[a-z0-9_.]{3,24}')   # game/accounts.py USERNAME (TikTok accounts: tt_<hex>)
+REQ_RX = re.compile(r'[A-Za-z0-9_-]{8,64}')  # the page's idempotency key (rid): one per confirmed gift
+DEFAULT_TITLE = 'Quà từ Phố Có Chuyện'
+LIST = 50                                     # accounts per search, gifts in "Quà đã tặng"
+PER_USER = 5                                  # gifts shown under each account
+
+
+def coins_text(n: int) -> str:
+    """100000 -> '100.000' (the Vietnamese thousands dot)."""
+    return f'{int(n):,}'.replace(',', '.')
+
+
+def default_text(coins: int) -> str:
+    return f'Ban quản lý phố tặng bạn {coins_text(coins)} xu. Chơi vui nha! 💛'
+
+
+def admin_id(by: str, user: str, rid: str) -> str:
+    """The server's gift id for one confirmed gift of the page: the same admin, account and key always give the
+    same id, so a double click or a retry finds the gift it already made (grant() answers 'exists')."""
+    h = hashlib.sha256('\x1f'.join(('admin', by, user, rid)).encode()).hexdigest()[:12]
+    return f'admin-{user}-{h}'
+
+
+def _gift(r, user=None) -> dict:
+    """A gift for the admin page (no sid)."""
+    g = dict(r)
+    return dict(id=g['id'], coins=int(g['coins']), title=g['title'], text=g['text'], status=g['status'],
+                created=g['created'], applied_at=g['applied_at'], seen_at=g['seen_at'], by=g.get('granted_by'),
+                user=g.get('username', user), display=g.get('display'))
+
+
+def admin_grant(store, by: str, d: dict) -> dict:
+    """POST /api/admin/gift {user, coins, rid, large?, title?, text?}: queue a gift for that account's save.
+    Coins 1..MAX_COINS (an integer); above LARGE only with large: true (the page's second confirmation, like
+    the tool's --large). Title and text default to the owner's words; both are cleaned and capped like the tool's.
+    Returns {status: created | exists, gift}."""
+    user = d.get('user')
+    user = user.strip().lower() if isinstance(user, str) else ''
+    if not USERNAME.fullmatch(user):
+        raise GiftError('Tên đăng nhập không hợp lệ.', 'bad_user')
+    coins = d.get('coins')
+    if type(coins) is not int or not 1 <= coins <= MAX_COINS:
+        raise GiftError(f'Số xu cần là số nguyên từ 1 đến {coins_text(MAX_COINS)}.', 'bad_coins')
+    if coins > LARGE and d.get('large') is not True:
+        raise GiftError(f'{coins_text(coins)} xu lớn hơn {coins_text(LARGE)} xu: cần xác nhận thêm một lần.', 'confirm_large')
+    rid = d.get('rid')
+    if not isinstance(rid, str) or not REQ_RX.fullmatch(rid):
+        raise GiftError('Thiếu mã yêu cầu. Tải lại trang rồi thử lại nhé.', 'bad_rid')
+    title, text = d.get('title'), d.get('text')
+    title = title if isinstance(title, str) and title.strip() else DEFAULT_TITLE
+    text = text if isinstance(text, str) and text.strip() else default_text(coins)
+    with store.connect() as db:
+        row = db.execute('SELECT sid FROM accounts WHERE username=?', (user,)).fetchone()
+    if not row:
+        raise GiftError(f'Không có tài khoản @{user}.', 'no_user', 404)
+    out = grant(store, row['sid'], coins, title, text, admin_id(by, user, rid), by=by)
+    return dict(status=out['status'], gift=_gift(out['gift'], user))
+
+
+def admin_view(store, q=None) -> dict:
+    """GET /api/admin/gifts?q=: accounts whose username starts with q (else the newest), at most LIST, each with
+    its latest gifts; and the last LIST gifts of the whole game. Index reads only: accounts by username (UNIQUE)
+    or uid (primary key), system_gifts by sid (system_gifts_sid) and by created (system_gifts_created)."""
+    q = q.strip().lower().lstrip('@')[:24] if isinstance(q, str) else ''
+    if q and not re.fullmatch(r'[a-z0-9_.]+', q):
+        users = []   # no username has these characters
+    else:
+        with store.connect() as db:
+            if q:   # '~' sorts after every username character, byte order on both backends (PostgreSQL: COLLATE "C")
+                rows = db.execute('SELECT username,display,sid,created_at FROM accounts WHERE username>=? AND username<? '
+                                  'ORDER BY username LIMIT ?', (q, q + '~', LIST)).fetchall()
+            else:
+                rows = db.execute('SELECT username,display,sid,created_at FROM accounts ORDER BY uid DESC LIMIT ?', (LIST,)).fetchall()
+            users = [dict(r) for r in rows]
+            sids = [u['sid'] for u in users]
+            gifts = db.execute('SELECT id,sid,coins,title,text,status,created,applied_at,seen_at,granted_by FROM system_gifts '
+                               f'WHERE sid IN ({",".join("?" * len(sids))}) ORDER BY created DESC LIMIT ?',
+                               (*sids, LIST * PER_USER)).fetchall() if sids else []
+        by_sid: dict = {}
+        for g in gifts:
+            by_sid.setdefault(g['sid'], []).append(g)
+        for u in users:
+            mine = by_sid.get(u.pop('sid'), [])
+            u['gifts'] = [_gift(g, u['username']) for g in mine[:PER_USER]]
+            u['gift_count'] = len(mine)
+            u['gift_coins'] = sum(int(g['coins']) for g in mine)
+    with store.connect() as db:
+        recent = db.execute('SELECT g.id,g.coins,g.title,g.text,g.status,g.created,g.applied_at,g.seen_at,g.granted_by,'
+                            'a.username,a.display FROM system_gifts g LEFT JOIN accounts a ON a.sid=g.sid '
+                            'ORDER BY g.created DESC LIMIT ?', (LIST,)).fetchall()
+    return dict(q=q, users=users, recent=[_gift(r) for r in recent], max=MAX_COINS, large=LARGE,
+                title=DEFAULT_TITLE, title_max=TITLE_MAX, text_max=TEXT_MAX)

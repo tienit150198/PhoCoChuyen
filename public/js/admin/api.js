@@ -5,6 +5,7 @@
  *  GET  /api/admin/stats/summary  first screen in one call, with the career names (game/admin_stats.py)
  *  GET  /api/admin/stats/section  save-derived cards / "Hệ thống", when they are shown
  *  GET/POST /api/admin/feedback   feedback inbox (game/player_feedback.py)
+ *  GET /api/admin/gifts, POST /api/admin/gift   🎁 Tặng xu (./gifts.js, game/system_gift.py)
  * The CSRF token lives only in memory; nothing is written to storage. */
 
 export class AdminAPI{

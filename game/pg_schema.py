@@ -34,7 +34,7 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 15  # 15: 💸 bank_xfers, bank_xfer_days (transfers between friends: game/bank_xfer.py), additive. 14: 💼 quay_jobs (hired players at a counter: game/quay_hire.py), additive. 13: optional TikTok identities and one-use OAuth flows (additive); chat_hides/chat_clears (see below).
+SCHEMA_VERSION = 16  # 16: 🎁 system_gifts.granted_by (nullable, the admin who gave it from /admin) and system_gifts_created, additive. 15: 💸 bank_xfers, bank_xfer_days (transfers between friends: game/bank_xfer.py), additive. 14: 💼 quay_jobs (hired players at a counter: game/quay_hire.py), additive. 13: optional TikTok identities and one-use OAuth flows (additive); chat_hides/chat_clears (see below).
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -303,8 +303,12 @@ CREATE TABLE IF NOT EXISTS couple_stats (
 -- 🎁 Quà từ Phố Có Chuyện (game/system_gift.py): a gift from the operator to one save, pending -> applied -> seen
 CREATE TABLE IF NOT EXISTS system_gifts (
   id {T} PRIMARY KEY, sid {T} NOT NULL, coins bigint NOT NULL, title {T} NOT NULL, text {T} NOT NULL,
-  status {T} NOT NULL, created double precision NOT NULL, applied_at double precision, seen_at double precision
+  status {T} NOT NULL, created double precision NOT NULL, applied_at double precision, seen_at double precision,
+  granted_by {T}
 );
+-- granted_by: the admin account that gave it from /admin ("🎁 Tặng xu"); NULL for scripts/grant_gift.py and older rows.
+-- Added in 16 (nullable, no default: no table rewrite); earlier releases name their columns and never read it.
+ALTER TABLE system_gifts ADD COLUMN IF NOT EXISTS granted_by {T};
 
 -- 💬 Chat (the live service, live/; admin side in game/live_chat.py). Messages are kept: a player's own
 -- delete empties the text (deleted=1); reports and the admin hide (hidden 1 = auto-hidden after 3 reports,
@@ -446,6 +450,7 @@ CREATE INDEX IF NOT EXISTS couple_requests_couple ON couple_requests (couple, st
 CREATE INDEX IF NOT EXISTS couple_debts_people ON couple_debts (lender, borrower);
 CREATE INDEX IF NOT EXISTS couple_moments_couple ON couple_moments (couple, id);
 CREATE INDEX IF NOT EXISTS system_gifts_sid ON system_gifts (sid, status);
+CREATE INDEX IF NOT EXISTS system_gifts_created ON system_gifts (created);
 CREATE INDEX IF NOT EXISTS chat_members_pid ON chat_members (pid, channel);
 CREATE INDEX IF NOT EXISTS chat_messages_channel ON chat_messages (channel, id);
 CREATE INDEX IF NOT EXISTS chat_messages_pid ON chat_messages (pid, id);
@@ -813,8 +818,8 @@ TABLES = [
          key=('couple',), unique=[], identity=None, sync=dict(mode='full')),
     dict(name='system_gifts', source='main', sqlite_table='system_gifts',
          columns=_cols('id text', 'sid text', 'coins bigint', 'title text', 'text text', 'status text',
-                       'created double precision', 'applied_at double precision', 'seen_at double precision'),
-         key=('id',), unique=[], identity=None, sync=dict(mode='full', note='status flips pending -> applied -> seen')),
+                       'created double precision', 'applied_at double precision', 'seen_at double precision', 'granted_by text'),
+         key=('id',), unique=[], identity=None, sync=dict(mode='full', note='status flips pending -> applied -> seen; granted_by added in 16')),
     dict(name='chat_channels', source='main', sqlite_table='chat_channels',
          columns=_cols('id text', 'kind text', 'title text', 'owner_pid text', 'created double precision'),
          key=('id',), unique=[], identity=None, sync=dict(mode='full')),

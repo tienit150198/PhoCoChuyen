@@ -440,6 +440,57 @@ small{font-size:.857em}
 .chat-more{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:4px}
 @media (max-width:720px){.chat-line .chat-btns{flex-direction:column;align-items:flex-end}}
 
+/* 🎁 Tặng xu (gifts.js): accounts, their gifts, "Quà đã tặng", the gift dialog */
+.gift-admin{display:grid;gap:12px}
+.gift-admin.is-busy .card{opacity:.65}
+.gift-search .btn{flex:none}
+.gift-users,.gift-list{display:grid}
+.gift-user{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.gift-user:last-child,.gift-list .gift-row:last-child{border-bottom:0}
+.gift-user .grow{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.gift-user>.btn{flex:none}
+.gift-name{color:var(--ink-2)}
+.gift-mini{display:grid;gap:2px;margin-top:6px;padding-left:10px;border-left:3px solid var(--line-strong)}
+.gift-mini .gift-row{padding:2px 0;border:0;font-size:13px}
+.gift-row{padding:8px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.gift-row .tag{vertical-align:1px}
+.gift-coins{color:var(--accent-text);font-variant-numeric:tabular-nums;white-space:nowrap}
+.gift-words{margin-top:2px;font-size:13px;color:var(--ink-2);white-space:pre-wrap}
+body.modal-open{overflow:hidden}
+#gift-modal{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:16px}
+#gift-modal[hidden]{display:none}
+.modal-back{position:absolute;inset:0;background:var(--overlay)}
+.modal{position:relative;display:grid;gap:12px;width:min(480px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:18px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);box-shadow:var(--shadow)}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.modal-head h2{font-size:17px;font-weight:800;overflow-wrap:anywhere}
+.modal-x{flex:none;display:grid;place-items:center;width:36px;height:36px;margin:-6px -6px 0 0;border-radius:var(--r-sm);color:var(--muted)}
+.modal-x:hover{background:var(--surface-2);color:var(--ink)}
+.gift-form{display:grid;gap:6px}
+.gift-form label{margin-top:6px;font-size:13px;font-weight:700;color:var(--ink-2)}
+.gift-form label small{font-weight:500;color:var(--muted)}
+.gift-form input,.gift-form textarea{width:100%;min-height:42px;padding:0 12px;border:1px solid var(--field-line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink);font-size:15px}
+.gift-form textarea{min-height:84px;padding:10px 12px;line-height:1.5;resize:vertical}
+.gift-form #gift-amount{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}
+.gift-chips{display:flex;flex-wrap:wrap;gap:6px}
+.gift-chips .chip{font-variant-numeric:tabular-nums}
+.gift-out{margin:0;min-height:22px;font-size:14px}
+.gift-out b{color:var(--accent-text)}
+.gift-foot{display:flex;align-items:center;gap:8px;min-height:20px}
+.gift-err{font-size:13px;font-weight:700;color:var(--bad)}
+.gift-btns{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:6px}
+.gift-confirm{display:grid;gap:12px}
+.gift-ask{margin:0;font-size:16px;line-height:1.5;overflow-wrap:anywhere}
+.gift-big{font-size:20px;color:var(--accent-text);white-space:nowrap}
+.gift-card{display:grid;gap:4px;padding:12px 14px;border:1px dashed var(--line-strong);border-radius:var(--r-sm);background:var(--surface-2);font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.gift-sure{display:flex;align-items:flex-start;gap:8px;margin-top:8px;font-weight:600;cursor:pointer}
+.gift-sure input{flex:none;width:18px;height:18px;margin-top:2px}
+@media (max-width:640px){
+  .gift-user{flex-wrap:wrap}
+  .gift-user>.btn{width:100%}
+  .modal{padding:14px}
+  .gift-btns .btn{flex:1 1 auto}
+}
+
 /* 📊 Tổng quan đầu tư (invest.js) */
 .inv-view{display:grid;gap:14px}
 .tabs{display:flex;gap:4px;overflow-x:auto;margin:0 0 2px;padding:0 0 2px;border-bottom:1px solid var(--line);scrollbar-width:thin}

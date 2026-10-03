@@ -33,6 +33,7 @@ const PATHS={
   trend:'M3 17l6-6 4 4 8-8M15 7h6v6',
   info:'M12 2a10 10 0 100 20 10 10 0 000-20ZM12 11v6M12 7.5h.01',
   print:'M6 9V3h12v6M6 18H4v-7h16v7h-2M7 14h10v7H7v-7Z',
+  gift:'M3 8h18v4H3V8ZM5 12v9h14v-9M12 8v13M12 8c-2-4-6-4-6-1.5S9 8 12 8Zm0 0c2-4 6-4 6-1.5S15 8 12 8Z',
 };
 export const icon=(name,size=18)=>`<svg class="ic" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${PATHS[name]||PATHS.sparkle}"/></svg>`;
 
