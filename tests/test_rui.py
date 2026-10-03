@@ -273,7 +273,7 @@ class Flow(unittest.TestCase):
         bal = s['journey']['bank']['balance']
         days(s)
         lost = 5300 - s['journey']['wallet']
-        self.assertEqual(lost, min(rui.MOC_MAX, 5000 * rui.MOC_PCT // 100, rui.room(s) * 0 + 10**9) if lost else 0)
+        self.assertEqual(lost, min(rui.MOC_MAX, (5300 - rui.FLOOR) * rui.MOC_PCT // 100))   # 600: well under the 8 % cap
         self.assertEqual(s['journey']['bank']['balance'], bal)
         self.assertEqual(rows(s, 'Bị móc túi')[-1]['kind'], 'life')
         self.assertEqual(public_state(s)['rui']['card']['loss'], lost)
@@ -359,7 +359,7 @@ class Flow(unittest.TestCase):
         w = s['journey']['wallet']
         act_ok(s, 'jr_rui_choose', id=R(s)['card']['id'], choice='tho')
         self.assertEqual(rn.get(s)['parts']['power']['c'], 100)
-        self.assertEqual(w - s['journey']['wallet'], min(7800 * 100 // 10000, rui.room(s) * 8 // 100 + 10**9))
+        self.assertEqual(w - s['journey']['wallet'], hs.HOMES['nha_pho']['price'] * rui.NHA_SUBS['ong'][2] // 10000)
         self.assertEqual(rows(s, 'Vỡ ống nước')[-1]['kind'], 'home')
 
     def test_a_waived_bill_doubles_the_odds(self):
@@ -525,7 +525,6 @@ class Save(unittest.TestCase):
         self.assertLess(len(json.dumps(v['rui'], ensure_ascii=False)), 1500)
         self.assertLess(len(json.dumps(v['vang'], ensure_ascii=False)), 400)
         self.assertNotIn('rui', v['journey'])
-        self.assertIsNone(public_state(story(0) | {})['rui'] if False else None)
 
 
 class OldServer(unittest.TestCase):
