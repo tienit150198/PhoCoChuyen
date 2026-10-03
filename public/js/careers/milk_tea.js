@@ -470,18 +470,16 @@ function orderTicket(t,x,steps){
     <div class="mt-ticket-order"><b>Ly ${g?g.i:1}:</b><ul class="mt-reqs" aria-label="Món khách gọi">${chips.join('')}</ul></div>
     ${meter}</section>`;
 }
-/** The bottom line: the steps the cup still needs, in making order ("Còn 3 bước: … → … → Dán nắp").
- * At most TODO_SHOWN of them (plus the one the button does and any wrong one), then "+N": two short
- * lines on a phone even for a big order; the pinned ticket above shows every part. */
-const TODO_SHOWN=3;
+/** The bottom line: how many steps the cup still needs ("Còn 3 bước"), and any part that is wrong.
+ * The button under it names the step it does and the pinned ticket above shows every part, so the
+ * steps are not listed again here (owner 03/10: "chữ ít thôi"). Before the order: nothing (the button says it). */
 function todoLine(t,x,steps){
-  if(!t.known)return 'Nghe khách gọi món trước';
+  if(!t.known)return '';
   if(!steps.length)return x.esc(status(x,t.cup||{}));
   const left=steps.filter(s=>s.ok!==true);
   if(!left.length)return t.app?'✓ Ly đã xong · giao cho tài xế':'✓ Ly đã xong · trao cho khách';
-  const now=nextOf(steps),shown=left.filter((s,k)=>k<TODO_SHOWN||s===now||s.ok===false),more=left.length-shown.length;
-  return `<b>Còn ${left.length} bước:</b> ${shown.map(s=>{const fix=s.row&&fixable(t,s.row),bad=s.ok===false;
-    return `<span class="${bad?(fix?'warn':'bad'):''}${s===now?' now':''}">${bad?(fix?'! ':'✗ '):''}${x.esc(s.label)}</span>`;}).join(' → ')}${more?` → +${more}`:''}`;
+  return `<b>Còn ${left.length} bước</b>${left.filter(s=>s.ok===false).map(s=>{const fix=s.row&&fixable(t,s.row);
+    return ` · <span class="${fix?'warn':'bad'}">${fix?'! ':'✗ '}${x.esc(s.label)}</span>`;}).join('')}`;
 }
 /** Python's round() (ties to even), so the app fee shown is the fee the server takes. */
 const pyRound=v=>{const f=Math.floor(v),d=v-f;return d>0.5||(d===0.5&&f%2)?f+1:f;};

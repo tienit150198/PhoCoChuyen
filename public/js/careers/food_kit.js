@@ -68,10 +68,20 @@ export function eventLog(x,day){
   return `<ul class="fk-evlog" aria-label="Chuyện trong ngày">${rows.map(e=>`<li class="${e.good?'good':e.good===false?'bad':''}"><span aria-hidden="true">${x.esc(e.emoji)}</span><span><b>${x.esc(e.title)}</b>${e.note?`<small>${x.esc(e.note)}</small>`:''}</span></li>`).join('')}</ul>`;
 }
 
-/** Sticky bottom bar on phones: what's next + the one primary action. */
+/** Letter words of some markup, lower case ("👂 Nghe <b>gọi món</b>" → nghe, gọi, món). */
+const wordsOf=html=>String(html).replace(/<[^>]*>/g,' ').toLowerCase().match(/[\p{L}\d]+/gu)||[];
+/** The line says what the button under it already says (most of its words are on the button). */
+export function sameAsButton(next,buttons){
+  const line=wordsOf(next),cta=String(buttons).match(/<button\b[^>]*class="[^"]*\bgd-cta\b[^>]*>([\s\S]*?)<\/button>/)||String(buttons).match(/<button\b[^>]*>([\s\S]*?)<\/button>/);
+  if(!line.length||!cta)return false;
+  const on=new Set(wordsOf(cta[1]));
+  return line.filter(w=>on.has(w)).length>=Math.ceil(line.length*0.75);
+}
+/** Sticky bottom bar on phones: what's next + the one primary action. A line that only repeats the
+ * button is kept for screen readers alone (owner 03/10: "chữ ít thôi", one thing said once). */
 export function actionBar(next,buttons){
   const cap=String(next).replace(/^\s*(\S)/,(m,c)=>m.replace(c,c.toUpperCase()));
-  return `<div class="fk-bar"><p class="fk-next" aria-live="polite">${cap}</p><div class="fk-bar-btns">${buttons}</div></div>`;
+  return `<div class="fk-bar"><p class="fk-next${sameAsButton(cap,buttons)?' sr-only':''}" aria-live="polite">${cap}</p><div class="fk-bar-btns">${buttons}</div></div>`;
 }
 
 /** Keeps the sticky bar above the sheet's own footer (called from tick). The footer's height comes from a

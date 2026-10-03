@@ -756,7 +756,7 @@ export default {
     // One bottom button (phone and wide): it does the next step, or the hand-off once nothing is left.
     // Right above it, what is on the bench now, so the result of each tap shows next to the button.
     const n=pending(S),heads=w.stems.slice(0,14).map(s=>glyph(x,s.i)).join('')+(w.stems.length>14?`<small>+${w.stems.length-14}</small>`:'');
-    const now=`<div class="fl-bar-now">${heads?`<span class="fl-bar-stems" aria-hidden="true">${heads}</span>`:''}${nextLine(x,n,g.final?.ready!==false?'đủ bước rồi, bấm nút dưới để trao cho khách':'')}<b class="fl-bar-n">${done}/${S.length}</b></div>`;
+    const now=`<div class="fl-bar-now">${heads?`<span class="fl-bar-stems" aria-hidden="true">${heads}</span>`:''}${nextLine(x,n,g.final?.ready!==false?'Đủ rồi · trao cho khách':'')}<b class="fl-bar-n">${done}/${S.length}</b></div>`;
     const bar=`<div class="fk-bar fl-bar">${now}${ui.flBusy?stepCta(x,[BUSY],g.final):stepCta(x,S,g.final)}</div>`;
     // Shop care (water, pre-orders) waits below the order: the order on the bench comes first.
     return `<div class="career-job fl food">${top(g)}${extras(x)}${ticket(t,x,g.K)}${pin(t,x,g.K,tabBar,n||finalStep(g.final))}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${careFold(x)}${bar}</div>`;

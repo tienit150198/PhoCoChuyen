@@ -591,7 +591,7 @@ function lastResult(t,x){
 function bar(g,x,t){
   const n=pending(g.steps),last=t?lastResult(t,x):'',head=last?`<p class="rp-bar-last" aria-live="polite">${x.esc(last)}</p>`:'';
   if(!g.final&&(!n||!n.go))return n?`<div class="rp-bar">${head}<p class="rp-bar-why">${x.esc(n.label)}</p></div>`:'';
-  const line=t&&t.known?nextLine(x,n,g.final?.ready!==false?'đủ bước rồi, bấm nút dưới':''):'';
+  const line=t&&t.known?nextLine(x,n,g.final?.ready!==false?'Đủ rồi · bấm nút dưới':''):'';
   return `<div class="rp-bar">${head}${line}${stepCta(x,g.steps,g.final||{label:'',go:null,ready:false})}</div>`;
 }
 let shownStage='';
