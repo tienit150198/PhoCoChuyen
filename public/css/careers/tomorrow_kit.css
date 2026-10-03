@@ -1,0 +1,18 @@
+/* "🌅 Ngày mai" at the top of a shop's day summary (public/js/careers/tomorrow_kit.js), added on first use.
+   Same look as milk tea's (.mt-plan): one line per thing to do, one button to Kho, the day's figures folded.
+   Theme tokens only, so every theme (Đêm too) follows. */
+.tk-plan .section-title{margin:0 0 6px}
+.tk-mood{display:grid;grid-template-columns:auto 1fr;column-gap:6px;margin:0 0 6px}
+.tk-mood small{grid-column:2;color:var(--muted);line-height:1.4}
+.tk-list{margin:0 0 8px;padding:0;list-style:none;display:grid;gap:4px;font-size:.9rem}
+.tk-list li{padding:6px 10px;border-radius:10px;background:var(--surface-2);overflow-wrap:anywhere;line-height:1.45}
+.btn.tk-go{min-height:44px}
+.tk-more{margin-top:10px}
+.tk-more>summary{display:flex;align-items:center;gap:6px;min-height:44px;list-style:none;font-weight:700;cursor:pointer}
+.tk-more>summary::-webkit-details-marker{display:none}
+.tk-more>summary::after{content:"▸";margin-left:auto;color:var(--muted);font-weight:400}
+.tk-more[open]>summary::after{content:"▾"}
+/* A career card folded inside keeps its look but not a second frame. */
+.tk-more>.card{margin:6px 0 0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+.tk-lines{margin:4px 0 0;padding-left:18px}
+.tk-lines li+li{margin-top:2px}

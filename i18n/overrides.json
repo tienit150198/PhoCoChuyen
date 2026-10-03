@@ -1,5 +1,8 @@
 {
  "strings": {
+  "📦 Mở Kho": "📦 Open the stockroom",
+  "Dùng hết trong ngày mai:": "Use up tomorrow:",
+  "✓ Kho đủ hàng cho ngày mai": "✓ Enough stock for tomorrow",
   "Chơi mượt hơn: mỗi lần chạm tải ít dữ liệu hơn khoảng 5 lần, quán trà sữa vẽ nhẹ hơn, đỡ giật trên máy yếu.": "Smoother play: each tap downloads about 5 times less data and the milk tea shop draws lighter, with less stutter on slower phones.",
   "Phi tiêu đổi thành Phóng dao: cắm đủ dao qua màn, dừng nhận thưởng hay liều chơi tiếp, lâu lâu có màn x2!": "Darts is now Knife Throw: stick enough knives to clear a level, then cash out or risk the next one, with an occasional x2 level!",
   "Chỉ chỗ": "Show where",
@@ -3606,6 +3609,10 @@
   "Qua màn": "Level cleared"
  },
  "patterns": {
+  "📦 $1 kiện đã tới, chờ đếm nhận": "📦 $1 crate(s) arrived, waiting to be counted",
+  "🚚 Đang về $1 kiện:": "🚚 On the way, $1 crate(s):",
+  "hạng $1": "grade $1",
+  "$1 khách": "$1 customers",
   "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây nhé.": "Pass the “$1” certificate in Accounting school before taking a job here.",
   "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây.": "Pass the “$1” certificate in Accounting school before taking a job here.",
   "🔒 Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây.": "🔒 Pass the “$1” certificate in Accounting school before taking a job here.",

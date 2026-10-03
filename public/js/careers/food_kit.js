@@ -2,6 +2,7 @@
  * florist): the "today" strip, the guest queue, the surprise card, a quick
  * result line, the sticky action bar and the end-of-day grade card.
  * Everything here only renders server state and sends commands. */
+import {planBox,dayFold} from './tomorrow_kit.js';
 
 const DONE=['completed','cancelled','referred'];
 export const openTasks=x=>(x.room.tasks||[]).filter(t=>!DONE.includes(t.status));
@@ -107,8 +108,8 @@ export function idlePanel(x,day,op,extra='',guests=null,cls=''){
     ${eventLog(x,day)}</div>`;
 }
 
-/** End-of-day card (module.summary). */
-export function gradeCard(data,x){
+/** End-of-day card (module.summary). `tomorrow:false`: tomorrow's line is in the plan above it (shopSummary). */
+export function gradeCard(data,x,{tomorrow=true}={}){
   if(!data||typeof data!=='object')return '';
   const g=data.grade,tm=data.tomorrow;
   const evs=(data.events||[]).map(e=>`<li class="${e.good?'good':e.good===false?'bad':''}">${e.good?'✓':e.good===false?'✗':'•'} ${x.esc(e.note||'')}</li>`).join('');
@@ -120,6 +121,15 @@ export function gradeCard(data,x){
     ${rows?`<div class="kv">${rows}</div>`:''}
     ${evs?`<ul class="fk-evsum">${evs}</ul>`:''}
     ${(data.lines||[]).map(l=>`<p class="small">🎁 ${x.esc(l)}</p>`).join('')}
-    ${tm?`<p class="fk-tomorrow"><span aria-hidden="true">${x.esc(tm.emoji)}</span> <b>Ngày mai: ${x.esc(tm.label)}</b><small>${x.esc(tm.hint)}</small></p>`:''}
+    ${tm&&tomorrow?`<p class="fk-tomorrow"><span aria-hidden="true">${x.esc(tm.emoji)}</span> <b>Ngày mai: ${x.esc(tm.label)}</b><small>${x.esc(tm.hint)}</small></p>`:''}
   </article>`;
+}
+
+/** The shop's part of the day summary: "🌅 Ngày mai" first (tomorrow's luck, the career's own `lines`, the stock
+ * room, one button to Kho), then the grade and the career's `extra` cards folded into one line. */
+export function shopSummary(data,x,{lines=[],extra='',emoji='🧾'}={}){
+  if(!data||typeof data!=='object')return '';
+  const g=data.grade,n=Number(data.served)||0;
+  const title=`${emoji} Hôm nay${g?` · hạng ${x.esc(g.letter)}`:''} · ${n} khách`;
+  return `<article class="card space-top fk-sum">${planBox(x,{mood:data.tomorrow,lines})}${dayFold(title,gradeCard(data,x,{tomorrow:false})+extra)}</article>`;
 }
