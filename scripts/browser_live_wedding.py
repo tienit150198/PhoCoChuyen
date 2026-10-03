@@ -204,7 +204,11 @@ async def run(shots: Path) -> list:
                 # a couple who has lived in the phố a while (test database only): past a new player's quiet first day
                 sql(db, "UPDATE sessions SET state=json_set(state, '$.journey.life_day', 3) WHERE sid=?", sid)
             store.close_pool()
+            week = ((await bride.api('/api/state'))['state'].get('x3') or {}).get('week') or ''
             for p in [bride, groom, *guests]:
+                # the week's x3 card (v4/x3week.js) opens once a week at a break point, e.g. as the party ends, and
+                # would hold back the couple's card: these players have seen this week's already
+                await p.page.evaluate('w => localStorage.setItem("mnl.x3.week", w)', week)
                 await p.page.reload()
                 await p.page.wait_for_selector('#app:not([hidden])', timeout=30000)
                 await p.chat_button()
