@@ -255,6 +255,11 @@ def assess(s: dict, cid: str) -> dict | None:
                 **({'closing': True} if closing else {}))
 
 
+def label(place: str) -> str:
+    """The money line of a one-time abandonment fine, wherever it is written."""
+    return f'Phạt bỏ dở ca ở {place}'
+
+
 def _what(x: dict) -> str:
     return f'Đang làm dở: {x["task"]}.' if x['started'] else f'{x["place"]} đang mở, {x["waiting"]} khách đang chờ.'
 
@@ -307,11 +312,13 @@ def _apply(s: dict, cid: str, x: dict) -> dict:
     else:
         wallet = min(fine, max(0, j['wallet']))
         fund = min(fine - wallet, c['money'])
+    # One clear name everywhere it shows (fund ledger, Sổ ví, the banner): "Phạt bỏ dở ca ở <nơi>".
+    # It used to say "trừ lương" in the wallet even for a shop you own.
     if fund:
-        e.money(s, c, -fund, 'Bỏ dở việc' + (' · hoàn tiền khách chờ' if x['pocket'] == 'fund' else ' · trừ lương'), ref, 'abandon_fine')
+        e.money(s, c, -fund, label(x['place']) + (' · hoàn tiền khách chờ' if x['pocket'] == 'fund' else ' · trừ lương'), ref, 'abandon_fine')
     if wallet:
         from . import journey as jr
-        jr._wallet(j, -wallet, 'incident', f'Bỏ dở việc · trừ lương · {x["place"]}'[:120], cid)
+        jr._wallet(j, -wallet, 'incident', (label(x['place']) + (' · quỹ thiếu, trừ ví' if x['pocket'] == 'fund' else ' · trừ lương'))[:120], cid)
     paid = fund + wallet
     # Trust.
     before = trust_value(s, cid)
@@ -360,7 +367,7 @@ def _apply(s: dict, cid: str, x: dict) -> dict:
     return dict(career=cid, place=x['place'], task=x['task'], fine=paid, fund=fund, wallet=wallet, pocket=x['pocket'],
                 trust=before - after, trust_after=after, trust_name=x['trust_name'], trust_kind=kind,
                 walked=len(waiting), jobs=gone, offence=n, warn=n >= 2, who=who, line=line,
-                label='Bỏ dở việc', text=f'{who}: “{line}”')
+                label='Phạt bỏ dở ca', text=f'{who}: “{line}”')
 
 
 def _cancel(s: dict, c: dict, t: dict) -> None:

@@ -7,8 +7,10 @@ A root `s['journey']` turns the collection of careers into one life story:
   chapter unlocks the next workplaces;
 * a personal wallet ("Ví của bạn") that pays daily living costs, separate from
   each workplace's own fund (the career `money`, which keeps its ledger);
-* upkeep for every started workplace that sits idle on a day, pausing and
-  reopening, withdrawals to the wallet and investments back into a fund;
+* withdrawals to the wallet and investments back into a fund. A workplace you
+  are not working at costs nothing (#oldcost, 04/10/2026: the old "duy trì khi
+  vắng chủ" kept charging places players had moved on from, shown in the wallet
+  as "Nơi làm khác −X"); pausing stays for old saves and reopening is free;
 * a maturity level and skills derived from the careers, and titles.
 
 Server authoritative: the client only renders `public()` and sends `jr_*`
@@ -52,13 +54,13 @@ from . import quay as qy   # 🏪 Quầy của bạn: your own counter, staff, t
 VERSION = 1
 START_WALLET = 60
 RESERVE = 80          # a fund keeps this much after a withdrawal
-REOPEN_FEE = 15
+REOPEN_FEE = 0         # reopening a paused place is free: a place you are away from costs nothing (was 15)
 ONBOARD_MARK = 'onb1'   # settings.notesSeen: named with the new-player onboarding (its contextual hints, v4/onboard.js)
 WELCOME_GIFT = 20     # a brand-new neighbour's gift, into the wallet when the first life day ends
 WELCOME_LABEL = 'Quà chào hàng xóm mới 🎁'
 BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
 LIVING = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}
-UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}
+UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}   # the old idle fee per tier: no longer charged (upkeep() is 0)
 MODES = (('calm', .25), ('normal', .55), ('festival', .20))
 HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank', 'home', 'fair')
 NEWS_KINDS = ('chapter', 'titles')
@@ -323,10 +325,10 @@ def _unpaid(c: dict) -> int:
 
 
 def upkeep(s: dict, cid: str) -> int:
-    """Daily cost of keeping a started workplace while you work elsewhere."""
-    if _employed(cid):
-        return 0
-    return UPKEEP.get(s['careers'][cid]['ops']['property']['tier'], UPKEEP['cozy'])
+    """Daily cost of keeping a started workplace while you work elsewhere: nothing.
+    Leaving a place (switching career, the town map, Hành trình) stops every charge of it;
+    its fund, stock and staff simply wait for you (a shift still open is closed when you come back)."""
+    return 0
 
 
 def withdraw_max(c: dict) -> int:
@@ -579,29 +581,15 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     cost = living_cost(j)
     _wallet(j, -cost['total'], 'living', cost['label'])
     j['stats']['living_paid'] += cost['total']
-    # Every other started workplace keeps its lights on while you are away.
+    # A workplace you are not working at today costs nothing: no fund or wallet line for it
+    # (it used to pay 4-11 xu "duy trì khi vắng chủ" every day, the "Nơi làm khác" chip).
     idle_total = 0
-    for cid, other in s['careers'].items():
-        if cid == career or not other.get('started') or cid in j['paused'] or cid not in j['unlocked']:
-            continue
-        fee = upkeep(s, cid)
-        if not fee:
-            continue
-        from_fund = min(fee, other['money'])
-        if from_fund:
-            e.money(s, other, -from_fund, f'Chi phí duy trì khi vắng chủ · ngày sống {day}', category='upkeep')
-        if fee > from_fund:
-            _wallet(j, -(fee - from_fund), 'upkeep', f'Bù chi phí duy trì · {_place(cid)}', cid)
-        idle_total += fee
-    j['stats']['upkeep_paid'] += idle_total
     if day == 1:   # the end of a new player's first day: Bà Tám's welcome, through the wallet like any income
         _wallet(j, WELCOME_GIFT, 'life', WELCOME_LABEL)
         notes.append(f'🎁 Bà Tám gửi quà chào hàng xóm mới: +{WELCOME_GIFT} xu vào ví.')
     j['clean_days'] = j['clean_days'] + 1 if j['wallet'] >= 0 else 0
     j['life_day'] += 1
     line = f'Ngày sống {day}: {cost["label"].lower()} {cost["total"]} xu'
-    if idle_total:
-        line += f', duy trì nơi vắng chủ {idle_total} xu'
     notes.insert(0, line + '.')
     if j['wallet'] < 0:
         notes.append(f'Ví đang nợ {-j["wallet"]} xu. Rút tiền lời từ một nơi làm việc để trả nhé.')
@@ -793,24 +781,13 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
             need(p.get('confirm') is True, 'Xác nhận tạm đóng nơi này.')
             j['paused'][cid] = j['life_day']
             j['stats']['paused'] += 1
-            result['message'] = f'{place} tạm đóng: không tốn phí duy trì. Mở lại tốn {REOPEN_FEE} xu.'
+            result['message'] = f'{place} tạm đóng. Mở lại lúc nào cũng được, không tốn phí.'
         else:
             need(cid in j['paused'], 'Nơi này đang mở rồi.')
             need(p.get('confirm') is True, 'Xác nhận mở lại nơi này.')
-            elsewhere = any(_playable(s, k) and k != cid and (not _employed(k) or s['careers'][k]['job']['status'] == 'hired')
-                            for k in j['unlocked'])
-            if c['money'] >= REOPEN_FEE:
-                e.money(s, c, -REOPEN_FEE, 'Phí mở lại sau khi tạm đóng', category='reopen_fee')
-                paid = f'quỹ trả {REOPEN_FEE} xu'
-            elif j['wallet'] >= REOPEN_FEE:
-                _wallet(j, -REOPEN_FEE, 'reopen', f'Phí mở lại {place}', cid)
-                paid = f'ví trả {REOPEN_FEE} xu'
-            else:
-                need(not elsewhere, f'Cần {REOPEN_FEE} xu để mở lại. Làm thêm ở nơi khác rồi quay lại nhé.')
-                paid = 'hàng xóm giúp, không tốn phí'
-            j['paused'].pop(cid)
+            j['paused'].pop(cid)   # free: a place you were away from never owed anything
             j['stats']['reopened'] += 1
-            result['message'] = f'{place} mở cửa lại ({paid}).'
+            result['message'] = f'{place} mở cửa lại (không tốn phí).'
     elif name.startswith('jr_cert_'):
         result.update(ct.action(s, name, p))
     elif name.startswith('jr_bk_'):
@@ -902,7 +879,7 @@ def public(s: dict) -> dict:
             continue
         # upkeep(), withdraw_max() without asking twice
         employed, unpaid = _employed(cid), _unpaid(c)
-        places[cid] = dict(fund=c['money'], upkeep=0 if employed else UPKEEP.get(c['ops']['property']['tier'], UPKEEP['cozy']),
+        places[cid] = dict(fund=c['money'], upkeep=0,   # a place you are away from costs nothing (upkeep())
                            paused=cid in j['paused'], employed=employed, unpaid=unpaid, withdraw_max=max(0, c['money'] - unpaid - RESERVE))
     secret = {tid: dict(name=TITLE_INDEX[tid]['name'], emoji=TITLE_INDEX[tid]['emoji'], desc=TITLE_INDEX[tid]['desc'])
               for tid in j['titles'] if TITLE_INDEX[tid]['secret']}

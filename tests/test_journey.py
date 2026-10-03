@@ -217,32 +217,29 @@ class Wallet(unittest.TestCase):
         self.assertEqual(r['summary']['journey']['living'], jr.LIVING[1])
         self.assertTrue(any('Ngày sống' in e for e in r['effects']))
 
-    def test_idle_upkeep_goes_to_the_idle_fund_only(self):
+    def test_idle_workplace_costs_nothing(self):
+        # #oldcost: a place you are not working at no longer pays "duy trì khi vắng chủ".
         p = Play()
-        s = p.s
-        idle, played = s['careers']['grocery'], s['careers']['milk_tea']
-        money = idle['money']
-        upkept = lambda c: len([x for x in c['ops']['finance']['ledger'] if x['category'] == 'upkeep'])
-        before = upkept(played)
-        p.day('milk_tea')
+        idle = p.s['careers']['grocery']
+        money, rows = idle['money'], len(idle['ops']['finance']['ledger'])
+        r = p.day('milk_tea')
         idle, played = p.s['careers']['grocery'], p.s['careers']['milk_tea']
-        fee = jr.upkeep(p.s, 'grocery')
-        self.assertEqual(idle['money'], money - fee)
-        last = idle['ops']['finance']['ledger'][-1]
-        self.assertEqual((last['category'], last['amount']), ('upkeep', -fee))
-        self.assertEqual(upkept(played), before)   # the workplace you work at pays its own bills instead
+        self.assertEqual(jr.upkeep(p.s, 'grocery'), 0)
+        self.assertEqual(idle['money'], money)
+        self.assertEqual(len(idle['ops']['finance']['ledger']), rows)
+        self.assertEqual(r['summary']['journey']['upkeep'], 0)
+        self.assertFalse(any('vắng chủ' in e for e in r['effects']))
         self.assertTrue(ledger_ok(idle) and ledger_ok(played))
 
-    def test_upkeep_shortfall_comes_from_the_wallet(self):
+    def test_idle_workplace_never_takes_from_the_wallet(self):
         p = Play()
-        set_money(p.s['careers']['grocery'], 1)
+        set_money(p.s['careers']['grocery'], 0)
         validate_state(p.s)
         wallet = p.s['journey']['wallet']
         p.day('milk_tea')
-        fee = jr.upkeep(p.s, 'grocery')
         self.assertEqual(p.s['careers']['grocery']['money'], 0)
-        self.assertEqual(p.s['journey']['wallet'], wallet - jr.LIVING[1] - (fee - 1))
-        self.assertTrue(any(h['kind'] == 'upkeep' and h['amount'] == -(fee - 1) for h in p.s['journey']['history']))
+        self.assertEqual(p.s['journey']['wallet'], wallet - jr.LIVING[1])
+        self.assertFalse(any(h['kind'] == 'upkeep' for h in p.s['journey']['history']))
 
     def test_pause_and_reopen(self):
         p = Play()
@@ -258,10 +255,11 @@ class Wallet(unittest.TestCase):
         p.s = s
         p.day('milk_tea')
         self.assertEqual(p.s['careers']['grocery']['money'], money)   # no upkeep while paused
+        rows = len(p.s['careers']['grocery']['ops']['finance']['ledger'])
         s, r = act(p.s, None, 'jr_reopen', career='grocery', confirm=True)
         self.assertNotIn('grocery', s['journey']['paused'])
-        self.assertEqual(s['careers']['grocery']['money'], money - jr.REOPEN_FEE)
-        self.assertEqual(s['careers']['grocery']['ops']['finance']['ledger'][-1]['category'], 'reopen_fee')
+        self.assertEqual(s['careers']['grocery']['money'], money)   # reopening is free (#oldcost)
+        self.assertEqual(len(s['careers']['grocery']['ops']['finance']['ledger']), rows)
         self.assertIn('x_reopen', s['journey']['titles'])
         act(s, 'grocery', 'start_day')
 
@@ -275,13 +273,14 @@ class Wallet(unittest.TestCase):
         with self.assertRaises(GameError):
             act(p.s, None, 'jr_withdraw', career='restaurant', amount=5)       # locked
 
-    def test_reopen_paid_by_wallet_or_free_when_stuck(self):
+    def test_reopen_is_free_even_when_broke(self):
         p = Play()
         s, _ = act(p.s, None, 'jr_pause', career='grocery', confirm=True)
         set_money(s['careers']['grocery'], 3)
         wallet = s['journey']['wallet']
         s2, _ = act(s, None, 'jr_reopen', career='grocery', confirm=True)
-        self.assertEqual(s2['journey']['wallet'], wallet - jr.REOPEN_FEE)
+        self.assertEqual(s2['journey']['wallet'], wallet)
+        self.assertEqual(s2['careers']['grocery']['money'], 3)
         # Broke everywhere and nowhere else to work: the neighbours help, no soft-lock.
         s, _ = act(s, None, 'jr_pause', career='milk_tea', confirm=True)
         for cid in CH1:  # every other storefront of chapter 1 is closed too
