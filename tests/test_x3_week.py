@@ -41,6 +41,46 @@ class Week(unittest.TestCase):
             orders.add(json.dumps(days))
         self.assertGreater(len(orders), 8)                   # a new deal each week
 
+    # 1.4.27 (6cfb54a) dealt this for the week of Monday 28/09/2026; on Saturday 03/10 players were told
+    # "milk tea, farm, delivery, garbage, ice cream". Adding careers must not change a running week.
+    WEEK_0928 = [['florist', 'homestay', 'homemaker', 'pilot', 'secretary'],
+                 ['mother_baby', 'tra_da', 'nail', 'pagoda', 'flight_attendant'],
+                 ['customer_care', 'grocery', 'repair', 'hr_admin', 'it_helpdesk'],
+                 ['tour_guide', 'pet_care', 'corp_accounting', 'tax_payroll', 'fruit'],
+                 ['accounting', 'restaurant', 'salon', 'clothing', 'drain'],
+                 ['milk_tea', 'farm', 'delivery', 'garbage', 'ice_cream'],
+                 ['pharmacy', 'teacher', 'cafe_bakery', 'group_accounting', 'pet_shop']]
+
+    def test_the_running_week_is_the_one_players_were_told(self):
+        t = at(2026, 10, 3)
+        week, days = x3.week(t)
+        self.assertEqual(week, '2026-09-28')
+        first = [[c for c in d if c in x3.FIRST] for d in days]
+        self.assertEqual(first, self.WEEK_0928)
+        self.assertEqual([c for c in x3.today(t) if c in x3.FIRST], ['milk_tea', 'farm', 'delivery', 'garbage', 'ice_cream'])
+
+    def test_the_first_careers_keep_the_old_deal_every_week(self):
+        """The 1.4.27 rule (shuffle list(CAREERS) by the Monday, deal ids[i::7]) on its 35 careers, two years round."""
+        import random
+        self.assertEqual(len(x3.FIRST), 35)
+        for w in range(-52, 52):
+            mon = datetime.date(2026, 9, 28) + datetime.timedelta(weeks=w)
+            ids = list(x3.FIRST)
+            random.Random(f'x3-week|{mon.isoformat()}').shuffle(ids)
+            old = [sorted(ids[i::7], key=x3.FIRST.index) for i in range(7)]
+            week, days = x3.week(at(mon.year, mon.month, mon.day))
+            self.assertEqual(week, mon.isoformat())
+            self.assertEqual([[c for c in d if c in x3.FIRST] for d in days], old)
+
+    def test_a_career_added_later_moves_none_before_it(self):
+        t = at(2026, 10, 14)
+        before = x3.week(t)[1]
+        with mock.patch.object(x3, 'CAREERS', tuple(CAREERS) + ('zz_new',)):
+            after = x3.week(t)[1]
+        self.assertEqual([[c for c in d if c != 'zz_new'] for d in after], before)
+        self.assertEqual(sum(d.count('zz_new') for d in after), 1)
+        self.assertLessEqual(max(map(len, after)) - min(map(len, after)), 1)
+
     def test_the_day_turns_at_midnight_vn_time(self):
         sun, mon = at(2026, 10, 11, 23), at(2026, 10, 12, 0)
         self.assertNotEqual(x3.week(sun)[0], x3.week(mon)[0])
