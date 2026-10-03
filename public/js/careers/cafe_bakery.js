@@ -7,7 +7,8 @@
  * The order is a requirement list (ui-kit reqList) checked live against the cup.
  * Care loop: Bé Men the sourdough starter, dough chilled overnight in the fridge,
  * yesterday's pastries each morning, and the regulars' notes card. */
-import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,gradeCard,patience,openTasks} from './food_kit.js';
+import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,shopSummary,patience,openTasks} from './food_kit.js';
+import {splitMai} from './tomorrow_kit.js';
 import {fold} from '../ui-kit.js';
 import {nextHint,stepCta,finalGo,todoAttrs,todoArrow} from '../v4/guide.js';
 import {restockFor,restockGo} from '../v4/restock.js';
@@ -714,10 +715,11 @@ export default {
     }
   },
   tapStop:op=>op==='cb_stop'||op==='cb_milk_stop'||op==='cb_unload',
+  // "Ngày mai" first: what the night left for the morning (dough to bake, Bé Men, yesterday's cakes), the tip, the stock room.
   summary(data,x){
-    const care=data&&data.care;
-    const night=care?`<article class="card space-top cb-care-sum"><h4>🌙 Qua đêm ở tiệm</h4><ul class="small">${(care.lines||[]).map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>${care.tip?`<p class="fk-tomorrow"><span aria-hidden="true">❄️</span> <b>${x.esc(care.tip)}</b></p>`:''}</article>`:'';
-    return gradeCard(data,x)+night;
+    const care=data&&data.care,[mai,rest]=splitMai(care?.lines);
+    const night=rest.length?`<article class="card space-top cb-care-sum"><h4>🌙 Qua đêm ở tiệm</h4><ul class="small">${rest.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul></article>`:'';
+    return shopSummary(data,x,{emoji:'🥐',lines:[...(care?.tip?[`❄️ ${x.esc(care.tip)}`]:[]),...mai.map(l=>x.esc(l))],extra:night});
   },
   dock:[['inventory','box','Kho','Nhập & đếm hàng']],
 };

@@ -368,3 +368,7 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
 .career-job.fl .fl-prep-in .section-title{font-size:.85rem}
 .career-job.fl .fl-bar-now>.asm-next{flex:1 1 0;width:0}
 .career-job.fl .asm-pin~.workbench .wb-side{top:calc(var(--asm-top,0px) + var(--asm-pin,0px) + 10px)}
+/* The order ticket's fold line is a 44 px tap target without making the pinned ticket any taller. */
+.career-job.fl button.asm-pin-head{padding:7px 0;margin:-7px 0}
+/* The work-area tabs in the order ticket (Chọn hoa · Cắm & gói · Thiệp) are 44 px tap targets. */
+.career-job.fl .asm-tab{min-height:44px}

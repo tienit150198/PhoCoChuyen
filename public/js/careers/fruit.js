@@ -8,6 +8,7 @@ import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast} from './street_kit.js';
+import {linesSummary} from './tomorrow_kit.js';
 
 const fruitOf=(x,k)=>(cc(x).fruits||[]).find(f=>f.id===k)||{id:k,name:k,emoji:'🍑',unit:'trái',g:300,kg:10,stages:['tuoi']};
 const stageName=(x,s)=>(cc(x).stages||{})[s]||s;
@@ -215,5 +216,7 @@ export default {
   input(el,x){return kitInput(el,x);},
   tick(root){keepBarAboveFooter(root);},
   actions:{...tillActions,...kitActions},
+  // "Ngày mai" first: the lines about tomorrow, the stock room, Kho; the rest of the day folded.
+  summary(data,x){return linesSummary(data,x);},
   dock:[['inventory','box','Kho trái cây','Nhập xoài, cam, bưởi…']],
 };

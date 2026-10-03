@@ -1,5 +1,8 @@
 {
  "strings": {
+  "📦 Mở Kho": "📦 Open the stockroom",
+  "Dùng hết trong ngày mai:": "Use up tomorrow:",
+  "✓ Kho đủ hàng cho ngày mai": "✓ Enough stock for tomorrow",
   "Học kế toán TT99: sửa các đề bị dính số tài khoản với số tiền (như phần 11 câu 2), đọc rõ ràng hơn.": "TT99 accounting course: fixed questions where account numbers ran into amounts (like part 11 question 2), now easy to read.",
   "Thu gom rác: dán phiếu không thu túi chưa phân loại xong vẫn đẩy xe tới nhà sau được, không còn bị kẹt giữa ngõ.": "Rubbish round: after leaving an unsorted bag with a sticker you can push the cart on to the next house, no more getting stuck mid-lane.",
   "Chơi mượt hơn: mỗi lần chạm tải ít dữ liệu hơn khoảng 5 lần, quán trà sữa vẽ nhẹ hơn, đỡ giật trên máy yếu.": "Smoother play: each tap downloads about 5 times less data and the milk tea shop draws lighter, with less stutter on slower phones.",
@@ -3608,6 +3611,10 @@
   "Qua màn": "Level cleared"
  },
  "patterns": {
+  "📦 $1 kiện đã tới, chờ đếm nhận": "📦 $1 crate(s) arrived, waiting to be counted",
+  "🚚 Đang về $1 kiện:": "🚚 On the way, $1 crate(s):",
+  "hạng $1": "grade $1",
+  "$1 khách": "$1 customers",
   "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây nhé.": "Pass the “$1” certificate in Accounting school before taking a job here.",
   "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây.": "Pass the “$1” certificate in Accounting school before taking a job here.",
   "🔒 Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây.": "🔒 Pass the “$1” certificate in Accounting school before taking a job here.",

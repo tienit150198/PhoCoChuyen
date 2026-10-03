@@ -9,7 +9,8 @@
  * strip → soak → base → card → arrange → wrap → ribbon → slot), each with the tap
  * that does it. The header hint and the one bottom button always do the next
  * one; on the first order the right flowers glow (and the button picks them). */
-import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,gradeCard,patience,openTasks} from './food_kit.js';
+import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,shopSummary,patience,openTasks} from './food_kit.js';
+import {splitMai} from './tomorrow_kit.js';
 import {reqList,fold} from '../ui-kit.js';
 import {nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
@@ -842,9 +843,11 @@ export default {
     if(banner){if(banner.value!==(x.ui.bannerText||''))x.ui.bannerText=banner.value;
       if(blive&&banner.value.trim()&&blive.textContent!==banner.value)blive.textContent=banner.value;}
   },
+  // "Ngày mai" first: bookings due tomorrow, the cooler's water, flowers to use up, what is coming; the day folded.
   summary(data,x){
-    const care=(data?.care||[]).map(l=>`<li>${x.esc(l)}</li>`).join('');
-    return gradeCard(data,x)+(care?`<article class="card space-top fl-night"><h4>🌙 Qua đêm ở tiệm</h4><ul>${care}</ul></article>`:'');
+    const [mai,rest]=splitMai(data?.care);
+    const night=rest.length?`<article class="card space-top fl-night"><h4>🌙 Qua đêm ở tiệm</h4><ul>${rest.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul></article>`:'';
+    return shopSummary(data,x,{emoji:'💐',lines:mai.map(l=>x.esc(l)),extra:night});
   },
   dock:[['inventory','box','Kho','Nhập & đếm hoa']],
 };

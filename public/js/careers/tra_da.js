@@ -7,6 +7,7 @@
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
+import {linesSummary} from './tomorrow_kit.js';
 const DONE=['completed','cancelled','referred'];
 const data=x=>x.room.data||{};
 const cc=x=>x.cc||{};
@@ -318,6 +319,8 @@ export default {
       await x.send('td_book',{task:d.task,amount:v});
     },
   },
+  // "Ngày mai" first: the lines about tomorrow, the stock room, Kho; the rest of the day folded.
+  summary(data,x){return linesSummary(data,x);},
   dock:[['inventory','box','Kho chè & đồ vặt','Chè, chanh, hướng dương, thuốc lẻ']],
 };
 const root=el=>el?.closest?.('.career-job');

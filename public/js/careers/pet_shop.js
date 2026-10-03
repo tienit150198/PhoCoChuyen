@@ -8,6 +8,7 @@ import {stepRows,nextHint,stepCta,finalGo,pending,stepLine} from '../v4/guide.js
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import * as SF from './stage_fold.js';
+import {linesSummary} from './tomorrow_kit.js';
 
 const data=x=>x.room.data||{};
 const cc=x=>x.cc||{};
@@ -513,5 +514,7 @@ export default {
       if(v===undefined||v===''){x.toast?.('Điền số tiền thu hộ trước nhé.');el?.closest?.('.career-job')?.querySelector('[data-ps-cod]')?.focus();return;}
       await x.send('ps_cod',{task:d.task,amount:Number(v)});},
   },
+  // "Ngày mai" first: the lines about tomorrow, the stock room, Kho; the rest of the day folded.
+  summary(data,x){return linesSummary(data,x);},
   dock:[['inventory','box','Kho','Nhập & đếm hàng']],
 };

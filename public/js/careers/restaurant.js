@@ -4,7 +4,7 @@
  * toppings grid. Only renders server state and sends commands; the server
  * checks every rule (and keeps order details hidden until they are known). */
 import {reqList,fold,refTable} from '../ui-kit.js';
-import {dayStrip,flash,eventCard,keepBarAboveFooter,idlePanel,gradeCard,patience,openTasks} from './food_kit.js';
+import {dayStrip,flash,eventCard,keepBarAboveFooter,idlePanel,shopSummary,patience,openTasks} from './food_kit.js';
 import {nextHint,stepCta,finalGo,pending as nextOpen,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
 import {restockFor} from '../v4/restock.js';
 import {reqPin,nextLine,pinTop,asmActions,finalStep} from './asm_kit.js';
@@ -607,13 +607,13 @@ function bookFold(x){
   const body=known.length?`<ul class="rs-book">${rows}</ul>`:'<p class="muted small">Chưa có ai.</p>';
   return foldBox(x,'book',`📒 Sổ khách quen · ${known.length}/${book.length} người quen`,body+(rest&&known.length?`<p class="muted small">Còn ${rest} vị khách chưa ghé.</p>`:''));
 }
-/** Day-close card: the hygiene line, pots overnight, prep, tomorrow. */
+/** Day-close card: the hygiene line, pots overnight (tomorrow's advice is in the "Ngày mai" plan above it). */
 function careSummary(c,x){
   if(!c)return '';
   const h=c.hygiene||{},r=h.row||{};
   const line=`${r.clean?'✓ kiểm bếp':'✗ chưa kiểm bếp'} · ${r.dishes?'✓ tô sạch':'✗ còn tô bẩn'} · ${r.pots?'✓ không nồi quá hạn':'✗ có nồi quá hạn'}`;
   return `<article class="card space-top rs-care-sum"><div class="rs-hyg-head"><span class="rs-stamp g-${x.esc(h.grade||'C')}">${x.esc(h.grade||'?')}</span><div><b>Sổ vệ sinh: +${r.points??0}/4 hôm nay · ${h.score??0}/100</b><small>${x.esc(line)}</small></div></div>
-    <p class="rs-sub">🍲 Nồi qua đêm</p>${potList(x,c.pots||[],true)}${outlookBox(x,c.outlook)}</article>`;
+    <p class="rs-sub">🍲 Nồi qua đêm</p>${potList(x,c.pots||[],true)}</article>`;
 }
 
 /** "📖 Thực đơn": what each broth and topping costs, how much is left, which
@@ -717,7 +717,11 @@ export default {
   },
   tapStop:op=>op==='rs_drain',
   page(view,x){return view==='prices'?menuPage(x):'';},
-  summary(data,x){return gradeCard(data,x)+careSummary(data?.care,x);},
+  // "Ngày mai" first: tomorrow's luck and the kitchen's advice (pots to reheat, boxes to buy), the stock room, Kho.
+  summary(data,x){
+    const o=data?.care?.outlook;
+    return shopSummary({...data,tomorrow:data?.tomorrow||o},x,{emoji:'🍜',lines:(o?.advice||[]).map(a=>x.esc(a)),extra:careSummary(data?.care,x)});
+  },
   actions:{
     ...asmActions,
     /** A one-tap step: dropped while the last one is still on its way, or when the bowl changed since it was drawn. */
