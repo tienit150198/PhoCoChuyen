@@ -1,3 +1,7 @@
+# v1.6.6 — 🧭 giao đơn quầy: nút theo hướng bản đồ
+
+- `quay-ride.js` `turnChoices()`: nút ở ngã tư hiện hướng trên bản đồ (⬆️ ⬇️ ⬅️ ➡️) tính từ hướng xe, vẫn gửi L/S/R như cũ (feedback #144: xe chạy ngang thì không có nút đi xuống).
+
 # v1.6.5 — 💼 nơi làm cũ không trừ tiền nữa
 
 - `journey.upkeep()` = 0: bỏ phí "duy trì khi vắng chủ" (4/7/11 xu mỗi ngày cho mọi nơi đã mở, chip "Nơi làm khác −X"); mở lại nơi tạm đóng miễn phí (REOPEN_FEE 0), bỏ nút Tạm đóng. Kho, nhân viên, hóa đơn nơi cũ đứng yên chờ quay lại. Không hoàn tiền quá khứ.
