@@ -509,6 +509,50 @@ class CoupleMoves(CoupleBase):
         self.assertEqual(self.shared(), 'tap_the')                         # selling another home changes nothing for the spouse
         validate_state(self.state(self.b))
 
+    def test_living_in_the_spouses_home_a_new_one_stays_empty_and_the_way_back(self):
+        """Feedback #137: "đang ở biệt thự, mua căn hộ xong ở luôn căn hộ, không về biệt thự được"."""
+        self.fund(self.a, 20000)
+        self.cmd(self.a, 'jr_home_buy', 'sh-buy-0001', kind='nha_pho', down=7800, confirm=True)
+        self.load()
+        self.assertEqual(self.shared(), 'nha_pho')
+        self.fund(self.b, 20000)
+        out = self.cmd(self.b, 'jr_home_buy', 'sh-buy-0002', kind='tap_the', down=1800, confirm=True)   # no move_in: stays empty
+        self.assertIn('để trống', out['result']['message'])
+        h = self.state(self.b)['journey']['home']
+        self.assertEqual((h['own'], [x['kind'] for x in h['props']], hs.where(h)[0]), (None, ['tap_the'], 'shared'))
+        hid = h['props'][0]['id']
+        self.cmd(self.b, 'jr_home_move', 'sh-move-0001', id=hid, confirm=True)   # moves into it on purpose
+        self.assertEqual(hs.where(self.state(self.b)['journey']['home']), ('own', 'tap_the'))
+        view = public_state(self.state(self.b))['journey']['home']
+        self.assertEqual((view['shared']['home'], view['own']['kind']), (hs.HOMES['nha_pho']['name'], 'tap_the'))
+        w = self.state(self.b)['journey']['wallet']
+        out = self.cmd(self.b, 'jr_home_move', 'sh-move-0002', to='shared', confirm=True)   # and back to the spouse's home
+        self.assertIn('ở chung', out['result']['message'])
+        sb = self.state(self.b)
+        h = sb['journey']['home']
+        self.assertEqual((hs.where(h), h['own'], [x['kind'] for x in h['props']]), (('shared', 'nha_pho'), None, ['tap_the']))
+        self.assertEqual(sb['journey']['wallet'], w - hs.MOVE_FEE)
+        self.assertEqual(jr.living_cost(sb['journey'])['where'], 'shared')
+        with self.assertRaises(GameError) as e:
+            act(sb, 'jr_home_move', to='shared', confirm=True)                    # already there
+        self.assertEqual(e.exception.code, 'here')
+        validate_state(sb)
+
+
+class MoveBackSolo(unittest.TestCase):
+    def test_without_a_spouse_there_is_no_shared_home_to_go_back_to(self):
+        s = story(wallet=20000)
+        s, _ = buy(s, 'tap_the')
+        with self.assertRaises(GameError) as e:
+            act(s, 'jr_home_move', to='shared', confirm=True)
+        self.assertEqual(e.exception.code, 'no_shared')
+        s, r = buy2(s, 'biet_thu' if 'biet_thu' in hs.HOMES else 'nha_pho')   # owning a home: the new one stays empty
+        self.assertEqual(H(s)['own']['kind'], 'tap_the')
+        s, r = act(s, 'jr_home_move', id=H(s)['props'][0]['id'], confirm=True)  # "Dọn về ở" either way, both kept
+        s, r = act(s, 'jr_home_move', id=H(s)['props'][0]['id'], confirm=True)
+        self.assertEqual((H(s)['own']['kind'], len(H(s)['props'])), ('tap_the', 1))
+        validate_state(s)
+
 
 if __name__ == '__main__':
     unittest.main()

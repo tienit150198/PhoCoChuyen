@@ -32,6 +32,16 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.6.2", date="2026-10-04", items=(
+        dict(emoji="🛒", text="Quán đã tới giờ đóng cửa thì đi sang chỗ khác không bị phạt; việc dở vẫn giữ, quay lại khép ca."),
+        dict(emoji="🏡", text="Mua thêm nhà không còn tự dọn đi; ở nhà chung với vợ/chồng thì có nút Về ở chung."),
+        dict(emoji="📖", text="Hướng dẫn mới: chuyển khoản, bản đồ phố, đi xe, chụp ảnh hội chợ, tự lái và tự bay."),
+    )),
+    dict(version="1.6.1", date="2026-10-04", items=(
+        dict(emoji="✈️", text="Phi công: tự cầm lái! Cất cánh, vòng tránh mây giông, giữ 2 trắng 2 đỏ rồi hạ cánh. Thích nhanh thì bấm ⏩ Bay nhanh."),
+        dict(emoji="📸", text="Buồng chụp gọn hơn: chọn dáng, khung, nền, đạo cụ là thấy liền trong buồng, không phải cuộn tìm ảnh."),
+        dict(emoji="💸", text="Chuyển khoản bạn bè dễ hơn: tài khoản chỉ cần chơi game đủ 1 ngày (đời thực)."),
+    )),
     dict(version="1.6.0", date="2026-10-04", items=(
         dict(emoji="🗺️", text="Màn hình chính giờ là bản đồ phố: đi dạo rồi bước vào nơi làm việc. Muốn danh sách cũ thì bấm 📋 Danh sách."),
         dict(emoji="🛵", text="Có xe là chạy được quanh phố, hội chợ và đi dạo! Xe đỗ ngay cửa, bấm nút để đổi xe hoặc đi bộ."),

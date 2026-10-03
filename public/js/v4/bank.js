@@ -82,6 +82,7 @@ export async function openBank(env,tab){
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet();
   await ensureCss();
   const d=dialog();if(tab)S.tab=tab;
+  if(tab==='xfer')xferOpen();   // 💸 opened straight on Chuyển khoản (📖 Hướng dẫn's button): its friends list loads
   if(!d.open){d.showModal();d.scrollTop=0;}
   render();loadJoint();
   if(B().unread)send('jr_bk_read',{},{quiet:true});

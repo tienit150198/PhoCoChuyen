@@ -117,7 +117,7 @@ const FROM_BANK=['account','wallet'];   // housing takes the account first, the 
 function startBuy(kind){
   const m=MK().find(x=>x.id===kind);if(!m)return;
   const ready=(V().have?.ready||0)+(S.joint?.balance||0);
-  S.view='buy';S.buy={kind,down:Math.min(m.price,Math.max(m.down_min,Math.floor(Math.max(0,ready-m.fee)/10)*10)),months:36,joint:0,move_in:!V().own};
+  S.view='buy';S.buy={kind,down:Math.min(m.price,Math.max(m.down_min,Math.floor(Math.max(0,ready-m.fee)/10)*10)),months:36,joint:0,move_in:!V().own&&!V().shared};   // living in a home already (yours or the spouse's): the new one stays empty unless ticked (feedback #137)
 }
 
 async function onClick(op,data){
@@ -156,6 +156,8 @@ async function onClick(op,data){
     case'move':{const x=HOME(v,data.id);if(!x||x.live!==false)return;const back=v.rent?.deposit||0;
       const body=`Thuê xe chở đồ ${xu(R.move_fee)}.`+(v.own?` ${v.own.name} sẽ để trống.`:'')+(back?` Trả phòng trọ, nhận lại cọc ${xu(back)}.`:'')+' Đồ trang trí gói vào túi đồ, bày lại ở nhà mới.'+(v.married?' Người ấy dọn về cùng bạn.':'');
       if(await ask(`Dọn về ${lname(x.name)}?`,body,`Dọn nhà · ${xu(R.move_fee)}`,R.move_fee>back?{cost:R.move_fee-back,pocket:FROM_BANK}:undefined))send('jr_home_move',{id:x.id,confirm:true});return;}
+    case'moveShared':{const sh=v.shared;if(!sh||!v.own)return;   // 💞 back to the spouse's home (housing.py jr_home_move to='shared')
+      if(await ask(`Về ở chung ${lname(sh.home)}?`,`Thuê xe chở đồ ${xu(R.move_fee)}. ${v.own.name} sẽ để trống, vẫn là nhà của bạn. Đồ trang trí gói vào túi đồ.`,`Dọn nhà · ${xu(R.move_fee)}`,{cost:R.move_fee,pocket:FROM_BANK}))send('jr_home_move',{to:'shared',confirm:true});return;}
     case'let':{const x=HOME(v,data.id);if(!x||x.live!==false||x.let)return;
       if(await ask(`Cho thuê ${lname(x.name)}?`,`Người thuê trả ${xu(x.let_rent)}/tháng (${R.month_days} ngày), vào đúng ngày trả góp của căn này. Họ tự trả điện nước. Muốn dọn về thì lấy lại nhà lúc nào cũng được.`,'Cho thuê'))send('jr_home_let',{id:x.id,on:true,confirm:true});return;}
     case'unlet':{const x=HOME(v,data.id);if(!x?.let)return;
@@ -317,6 +319,15 @@ function ownCard(v){
     <div class="bk-actions">${btn('Bán nhà','sell',{id:o.id},'ghost small danger')}</div></section>`;
 }
 
+/* 💞 Living in a home of your own while the spouse's home is still there (feedback #137): the way back to it. */
+function sharedCard(v){
+  const sh=v.shared;if(!sh||!v.own)return '';
+  const ready=(v.have?.ready||0)>=(v.rules?.move_fee||0);
+  return `<section class="bk-card hs-prop"><div class="hs-home-top"><span class="hs-emoji" aria-hidden="true">${sh.emoji||'💞'}</span><div class="grow"><small>Nhà chung với ${esc(sh.name)}</small><h3>${esc(sh.home)}</h3></div></div>
+    <p class="bk-hint">Bạn đang ở ${esc(lname(v.own.name))}. Muốn về ở chung thì dọn về đây, ${esc(lname(v.own.name))} vẫn là nhà của bạn.</p>
+    <div class="bk-actions">${btn(`💞 Về ở chung · ${xu(v.rules?.move_fee)}`,'moveShared',{},'primary',ready?'':' disabled')}</div></section>`;
+}
+
 /* 🏘️ Another home you own: empty or let (a home from 6.000 xu pays its phí bảo trì either way); move in, let it, take it back, sell it. */
 function propCard(v,x){
   const grow=x.value-x.price,L=x.let,mv=x.move||{},sl=x.sell||{};
@@ -380,7 +391,7 @@ function homeView(v){
   const more=PROPS(v).map(x=>propCard(v,x)+loanCard(v,x)).join('');
   const cap=Array.isArray(v.props)&&MINE(v).length?` Có thể có tới ${v.rules.owned_max} căn${canBuy(v).ok?'':`: ${esc(canBuy(v).why)}`}.`:'';
   const bill=v.care?.month?`<p class="bk-hint hs-care">🧾 Phí bảo trì các căn của bạn khoảng ${xu(v.care.month)}/tháng, trừ cùng hóa đơn ${onDay(v.care.next)}: tiền mặt trước, thiếu thì lấy từ tài khoản, không bao giờ làm ví âm.</p>`:'';
-  return moneyStrip(v)+nextStep(v)+placeCard(v)+ownCard(v)+loanCard(v)+more+bill+
+  return moneyStrip(v)+nextStep(v)+placeCard(v)+sharedCard(v)+ownCard(v)+loanCard(v)+more+bill+
     `<section class="bk-card hs-listing"><h3>Nhà đang rao</h3><p class="bk-hint">Trả trước ${v.rules.down_pct}% + phí, còn lại vay 3 năm.${cap}</p>${marketGroups(v)}</section>`+
     savingsCard(v)+(log?`<section class="bk-card"><h3>Sổ nhà cửa</h3><ul class="bk-score-log">${log}</ul></section>`:'');
 }
@@ -398,8 +409,8 @@ function buyView(v){
   if(!m){S.view='home';return homeView(v);}
   const loan=m.price-b.down;
   const monthsSel=`<label class="bk-field"><span>Thời hạn vay</span><select name="months">${R.months.map(n=>`<option value="${n}"${b.months===n?' selected':''}>${months(n)} · ${n} kỳ</option>`).join('')}</select></label>`;
-  const multi=Array.isArray(v.props)&&Boolean(v.own||PROPS(v).length),moveIn=!multi||b.move_in;
-  const moveField=multi?`<label class="bk-toggle"><input type="checkbox" name="move_in"${b.move_in?' checked':''}><span>Dọn về ở căn này${v.own?` (${esc(lname(v.own.name))} để trống)`:''}</span></label>`
+  const multi=Array.isArray(v.props)&&Boolean(v.own||PROPS(v).length||v.shared),moveIn=!multi||b.move_in;
+  const moveField=multi?`<label class="bk-toggle"><input type="checkbox" name="move_in"${b.move_in?' checked':''}><span>Dọn về ở căn này${v.own?` (${esc(lname(v.own.name))} để trống)`:v.shared?` (thôi ở chung ${esc(lname(v.shared.home))})`:''}</span></label>`
     +(b.move_in?'':`<p class="bk-hint">${m.care?`Để trống vẫn tốn phí bảo trì ${xu(m.care)}/tháng.`:'Để trống không tốn gì.'} Cho thuê được khoảng ${xu(m.let_rent)}/tháng.</p>`):'';
   const jointField=S.joint&&moveIn?`<label class="bk-field"><span>Lấy từ quỹ chung (còn ${xu(S.joint.balance)})</span><input id="hs-joint" name="joint" type="number" inputmode="numeric" min="0" max="${Math.min(S.joint.balance,m.price+m.fee)}" step="10" value="${b.joint||0}"></label>`:'';
   const bankNote=loan>0?(h.bank?`<p class="bk-hint">Lãi <b>${esc(o.rate_text)}</b> (điểm tín dụng ${o.score??''}${m.score>R.home_score?`, căn này cần từ ${m.score}`:''}). Mỗi kỳ tối đa ${xu(o.room)}${o.others?` (đã trừ ${xu(o.others)} trả góp các căn đang vay)`:''}.${o.ok?'':` <b>${esc(o.text)}</b>`}</p>`

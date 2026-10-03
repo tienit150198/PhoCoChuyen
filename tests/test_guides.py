@@ -133,6 +133,32 @@ class GameGuide(unittest.TestCase):
                                         f'topic {t["id"]}: no control handles data-action "{a}"')
 
 
+
+class Features160(unittest.TestCase):
+    """Players asked "ủa sao để chuyển khoản z", "đổi nghề sao", "hành trình ở đâu": one short topic per 1.6.0 feature."""
+
+    def test_each_feature_has_a_topic(self):
+        topics = {t['id']: t for g in G.GROUPS for t in g['topics']}
+        for tid, action in (('bank_xfer', 'bank'), ('town_map', 'home'), ('ride', 'garage'), ('fair_photo', 'fair'),
+                            ('own_counter', 'quay'), ('hands_on', None)):
+            with self.subTest(topic=tid):
+                self.assertIn(tid, topics)
+                self.assertLessEqual(len(topics[tid]['points']), 8)
+                if action:
+                    self.assertEqual(topics[tid]['go']['action'], action)
+        self.assertEqual(topics['bank_xfer']['go'].get('data'), {'tab': 'xfer'})
+        self.assertIn('town_map', G.FAQ)
+        self.assertIn('bank_xfer', G.FAQ)
+
+    def test_transfer_rules_come_from_the_bank(self):
+        from game import bank_xfer as BX
+        text = ' '.join(next(t for g in G.GROUPS for t in g['topics'] if t['id'] == 'bank_xfer')['points'])
+        self.assertIn(f'đủ {BX.ACCOUNT_DAYS} ngày (đời thực)', text)
+        self.assertIn(f'{BX.LIFE_DAYS} ngày sống', text)
+        self.assertIn(f'{BX.FRIEND_MINUTES} phút', text)
+        for n in (BX.SEND_DAY, BX.RECV_DAY):
+            self.assertIn(f'{n:,}'.replace(',', '.') + ' xu', text)
+
 class QuickAnswers(unittest.TestCase):
     """❓ Hỏi nhanh: a short answer per question players ask, naming real buttons; its button only opens a screen."""
 

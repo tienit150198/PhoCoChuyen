@@ -790,7 +790,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
         H = HOMES[kind]
         need(not any(x['kind'] == kind for x in homes(h)), f'{H["name"]} đã là nhà của bạn rồi.', 'owned')
         need(len(homes(h)) < OWNED_MAX, f'Bạn đang có {OWNED_MAX} căn nhà. Bán bớt một căn rồi hãy mua thêm nhé.', 'too_many')
-        move_in = p.get('move_in', own is None)      # a page loaded before several homes never sends it
+        # A page loaded before several homes never sends it. Living in a home already (yours, or the spouse's: feedback
+        # #137 "đang ở biệt thự, mua căn hộ xong ở luôn căn hộ") the new one stays empty unless the player says so.
+        move_in = p.get('move_in', own is None and not _shared_ok(s, h['shared'] if h else None))
         need(type(move_in) is bool, 'Chọn dọn về ở hay để trống nhé.')
         price, fee = H['price'], buy_fee(H['price'])
         down = _int(p, 'down', down_min(price), price, f'Trả trước từ {_fmt(down_min(price))} xu ({DOWN_PCT}% giá nhà) tới {_fmt(price)} xu.')
@@ -862,6 +864,22 @@ def apply(s: dict, name: str, p: dict) -> dict:
         if left:
             msg += f' {HOMES[left["kind"]]["name"]} giờ để trống.'
         return dict(message=f'{msg} {MOVE_LINES["own"] if not left else MOVE_LINES["move"]}', approved=True, home=kind, id=hid)
+    if name == 'jr_home_move' and p.get('to') == 'shared':
+        # 💞 back to the spouse's home (feedback #137): the home you live in becomes an empty one, as on any move.
+        sh = h['shared'] if h else None
+        need(_shared_ok(s, sh), 'Bạn không có nhà chung với người ấy để về.', 'no_shared')
+        need(own is not None, 'Bạn đang ở nhà chung rồi.', 'here')
+        need(p.get('confirm') is True, 'Xác nhận dọn nhà.')
+        have = _have(s)
+        short = MOVE_FEE - have['wallet'] - have['balance']
+        hn = lname(HOMES[sh['kind']]['name'])
+        need(short <= 0, f'Thuê xe dọn nhà {_fmt(MOVE_FEE)} xu: bạn còn thiếu {_fmt(short)} xu.', 'not_enough')
+        _take(s, MOVE_FEE, f'Thuê xe dọn về {hn}', day)
+        _move_out(s, h, day)
+        h['stats']['moves'] += 1
+        _log(h, day, f'Dọn về ở chung {hn} của {sh["name"]}.', -MOVE_FEE)
+        return dict(message=f'Đã dọn về ở chung {hn} của {sh["name"]}, xe chở đồ {_fmt(MOVE_FEE)} xu. '
+                            f'{HOMES[own["kind"]]["name"]} giờ để trống. {MOVE_LINES["move"]}')
     if name == 'jr_home_move':
         x = find(h, p.get('id')) if h and isinstance(p.get('id'), str) else None
         need(x is not None, 'Chọn căn nhà muốn dọn về nhé.')
