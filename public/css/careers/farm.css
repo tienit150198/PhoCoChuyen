@@ -295,7 +295,7 @@
 
 /* ---------- 🚶 Tự đi (careers/farm_walk.js): the stage on top, the switches over it, the place's buttons and the
    next step under it. A drawer (the bed's fertilisers, the cold room, the market) opens over the stage. */
-.career-job.fa.fa-walk{position:relative;--fv-h:clamp(240px,calc(100dvh - 395px),600px)}
+.career-job.fa.fa-walk{position:relative;--fv-h:clamp(240px,calc(100dvh - 375px),600px)}
 .career-job.fa .fv-host{position:relative;height:var(--fv-h);border-radius:var(--fa-r);overflow:hidden;background:#cfe6d6;box-shadow:var(--fa-shadow)}
 .career-job.fa .fv-stage{position:absolute;inset:0}
 .career-job.fa .fv-cv{display:block;width:100%;height:100%;touch-action:none;-webkit-user-select:none;user-select:none;cursor:grab;outline:none}

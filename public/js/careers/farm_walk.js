@@ -139,7 +139,8 @@ function input(cv){
     const r=cv.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;
     try{cv.setPointerCapture(e.pointerId);}catch{/* not capturable */}
     // Left part: the stick (it appears where the thumb lands). Right part: drag to look around.
-    if(px<r.width*0.45&&!W.joy)W.joy={id:e.pointerId,ox:px,oy:py,dx:0,dy:0,t:performance.now()};
+    // A mouse looks around wherever it drags (the keys walk); a finger on the left half is the stick.
+    if(e.pointerType!=='mouse'&&px<r.width*0.45&&!W.joy)W.joy={id:e.pointerId,ox:px,oy:py,dx:0,dy:0,t:performance.now()};
     else if(!W.look)W.look={id:e.pointerId,x:px,y:py,sx:px,sy:py,t:performance.now()};
     W.auto=null;wake();e.preventDefault();
   });
@@ -175,7 +176,7 @@ function input(cv){
   addEventListener('keyup',e=>{const k=KEYS[e.key.length===1?e.key.toLowerCase():e.key];if(k)W.keys.delete(k);});
   addEventListener('blur',()=>W.keys.clear());
 }
-const KEYS={w:'f',ArrowUp:'f',s:'b',ArrowDown:'b',a:'l',ArrowLeft:'l',d:'r',ArrowRight:'r',q:'sl',e:'act',Enter:'act'};
+const KEYS={w:'f',ArrowUp:'f',s:'b',ArrowDown:'b',a:'l',ArrowLeft:'l',d:'r',ArrowRight:'r',q:'sl',e:'act'};
 const joyR=()=>Math.max(38,Math.min(60,W.w*0.13));
 /** A short tap on the world: walk to the place under the finger. */
 function tap(px,py){
@@ -247,13 +248,14 @@ function face(to){const s=SPOT[to];if(!s)return;const me=W.me;me.yaw=Math.atan2(
 function route(s){
   const C=0.5,nx=Math.ceil((FIELD.x1-FIELD.x0)/C),nz=Math.ceil((FIELD.z1-FIELD.z0)/C),cell=(i,j)=>({x:FIELD.x0+(i+0.5)*C,z:FIELD.z0+(j+0.5)*C});
   const at=(x,z)=>[clamp(Math.floor((x-FIELD.x0)/C),0,nx-1),clamp(Math.floor((z-FIELD.z0)/C),0,nz-1)];
-  const [si,sj]=at(W.me.x,W.me.z),seen=new Float32Array(nx*nz).fill(Infinity),from=new Int32Array(nx*nz).fill(-1);
+  const [si,sj]=at(W.me.x,W.me.z),seen=new Float64Array(nx*nz).fill(Infinity),from=new Int32Array(nx*nz).fill(-1),done=new Uint8Array(nx*nz);
   const goal=(i,j)=>{const p=cell(i,j),d=gap(s,p.x,p.z);return d<=REACH-0.25&&d>=0.25;};
   if(gap(s,W.me.x,W.me.z)<=REACH-0.1)return [];
   const open=[[0,si,sj]];seen[sj*nx+si]=0;let end=-1;
   while(open.length){
     let bi=0;for(let i=1;i<open.length;i++)if(open[i][0]<open[bi][0])bi=i;
-    const [d,i,j]=open.splice(bi,1)[0];if(d>seen[j*nx+i])continue;
+    const [d,i,j]=open[bi];open[bi]=open[open.length-1];open.pop();
+    if(done[j*nx+i])continue;done[j*nx+i]=1;
     if(goal(i,j)){end=j*nx+i;break;}
     for(const [di,dj,w] of [[1,0,1],[-1,0,1],[0,1,1],[0,-1,1],[1,1,1.41],[1,-1,1.41],[-1,1,1.41],[-1,-1,1.41]]){
       const a=i+di,b=j+dj;if(a<0||b<0||a>=nx||b>=nz)continue;

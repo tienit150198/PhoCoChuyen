@@ -452,7 +452,7 @@ function placeActs(at,t,x,g){
 function placeLine(at,x){
   if(!at)return '';
   const p=/^P[1-6]$/.test(at)?data(x).plots.find(q=>q.id===at):null,c=p?.crop?produce(x,p.crop):null;
-  return `<p class="fv-at"><b>📍 ${x.esc(placeName(at))}</b>${c?` · ${c.emoji} ${x.esc(c.name)} <small>${x.esc(when(p))}</small>`:p?' · <small>đang trống</small>':''}</p>`;
+  return `<p class="fv-at"><b>📍 ${x.esc(placeName(at))}</b>${c?` · ${c.emoji} ${x.esc(c.name)} <small>${x.esc(when(p))}</small>`:p?' · <small>🌱 chọn hạt để gieo</small>':''}</p>`;
 }
 function orderChip(t,x){
   if(!t)return '';
