@@ -286,8 +286,11 @@ class Saves(unittest.TestCase):
         s = hungry(s)
         s, _ = act(s, 'jr_fridge_eat', item='ca_phe')
         validate_state(s)
+        # The careers this release adds (phở, cơm, photobooth) are unknown there: a rollback takes their blocks out
+        # (tests/test_career_pho.py rollback_strip) and they come back fresh here.
         prog = ('import json,sys;from game.engine import validate_state,migrate_state,apply_action,public_state,GameError;'
-                's=migrate_state(json.load(sys.stdin));validate_state(s);public_state(s);'
+                'from game.content import CAREERS;s=json.load(sys.stdin);s["careers"]={k:v for k,v in s["careers"].items() if k in CAREERS};'
+                's=migrate_state(s);validate_state(s);public_state(s);'
                 's,_=apply_action(s,None,"jr_deco_buy",{"item":"cay_canh","confirm":True});'
                 'code="";\n'
                 'try:\n apply_action(s,None,"jr_fridge_buy",{"item":"sua"})\n'
@@ -297,7 +300,8 @@ class Saves(unittest.TestCase):
         self.assertEqual(got['code'], 'unknown_action')           # a new page on an old server: refused cleanly
         back = got['s']
         self.assertEqual(back['journey']['fridge'], s['journey']['fridge'])   # the old build kept the key
-        validate_state(back)                                        # and this build loads what the old one wrote
+        back = migrate_state(back)                                  # and this build loads what the old one wrote
+        validate_state(back)
         back, _ = act(back, 'jr_fridge_eat', item='com_hop')
         self.assertEqual(back['journey']['fridge']['items'], {})
 

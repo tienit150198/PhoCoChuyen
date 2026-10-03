@@ -499,7 +499,7 @@ class Integrity(unittest.TestCase):
 
     def test_public_state_is_small(self):
         p = Play()
-        self.assertLess(len(json.dumps(public_state(p.s)['journey'], ensure_ascii=False)), 8500)   # 1.4.8: owning several homes (housing props) added ~180 bytes
+        self.assertLess(len(json.dumps(public_state(p.s)['journey'], ensure_ascii=False)), 8650)   # 1.4.8: owning several homes (housing props) added ~180 bytes; 1.5.0: the garage's three luxury models (+161) and the fridge line (+60)
 
 
 class Storage(unittest.TestCase):
