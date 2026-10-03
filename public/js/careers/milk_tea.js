@@ -20,15 +20,98 @@ const ings=x=>x.content.experiences?.ingredients||[];
 const ing=(x,id)=>ings(x).find(i=>i.id===id)||{id,name:id,emoji:'•',color:'#d8c7a8',group:'topping',level:1,cost:0};
 const low=s=>s?s[0].toLocaleLowerCase('vi')+s.slice(1):'';
 const open=t=>!DONE.includes(t.status);
-const station=(x,id)=>(B(x).stations||[]).find(s=>s.id===id)||{id,unlocked:true,stock:0,level:1};
+const station0=(x,id)=>(B(x).stations||[]).find(s=>s.id===id)||{id,unlocked:true,stock:0,level:1};
+// A pick shown ahead of the server (see "picks at once" below) counts off the shelf at once too.
+const station=(x,id)=>{const s=station0(x,id),n=unsent(x,id);return n?{...s,stock:Math.max(0,s.stock-n)}:s;};
 // Counter taps go through actions.go: quiet (feedback shows next to the cup), toasts only for results that matter.
 const pick=(x,id)=>`data-action="job" data-task="${x.esc(id)}"`;
-const cmdAttr=(x,op,payload)=>`data-action="car:go" data-op="${op}" data-payload="${pay(x,payload)}"`;
+const cmdAttr=(x,op,payload)=>`data-action="car:go" data-op="${op}" data-payload="${pay(x,payload)}"${QUICK.has(op)?' data-quick data-own-busy':''}`;
 const jb=(x,label,op,payload={},style='',disabled=false)=>`<button type="button" class="btn ${style}" ${cmdAttr(x,op,payload)}${disabled?' disabled':''}>${label}</button>`;
 const LOUD=new Set(['tea_menu','tea_serve','tea_seal','tea_event','tea_event_ok','tea_discard','tea_check','tea_prepare','tea_cups','tea_wipe','tea_order','tea_clean','tea_toss','tea_swap','tea_greet','more_work','life_mode','life_goal']);
 const sfx=new Sound();
 const hasGroup=(x,cup,g)=>(cup.items||[]).some(k=>ing(x,k).group===g);
 const seal=x=>B(x).seal||{loose:.8,good_lo:1.4,good_hi:2.6,burn:4.2,max:5};
+
+/* ---------------------------------------------------------------- picks at once
+ * Feedback #116 "pha trà chọn đồ nhanh ko bị lag": a pick (cup, tea, syrup, topping, ice, sugar) showed only after
+ * its command came back and the whole counter was drawn again (twice), and a second pick meanwhile was held or
+ * landed on a tile still drawn as off. Now a pick the server would take (the same checks as game/boba.py _station)
+ * shows at once: the tile lights up in the same frame, then the cup, the shelf counts and the next step follow from
+ * x.ui.mtLocal (picks sent, not answered yet) laid over the server's cup. The commands still go one by one through
+ * the queue and the server decides; once each is answered its pick leaves mtLocal and the screen is the server's
+ * again (a refusal undoes the pick, with its toast). The commands and saves are the same as before. */
+const QUICK=new Set(['tea_cup','tea_add','tea_ice','tea_sugar']);
+const localOf=(x,tid)=>(x.ui.mtLocal||[]).filter(p=>p.payload.task===tid);
+const serverTask=(x,tid)=>(x.room?.tasks||[]).find(t=>t.id===tid);
+/** Portions of `id` picked but not yet taken off by the server (not in its cup yet). */
+function unsent(x,id){
+  const L=x.ui.mtLocal;if(!L?.length)return 0;
+  return L.filter(p=>p.op==='tea_add'&&p.payload.item===id&&!(serverTask(x,p.payload.task)?.cup?.items||[]).includes(id)).length;
+}
+/** The cup with the picks on their way. Laying a pick the server has taken again changes nothing. */
+function laid(x,cup,list){
+  const c={...cup,items:[...(cup.items||[])]};
+  for(const {op,payload:p} of list){
+    if(op==='tea_cup'){if(!c.items.length&&!(c.placed&&c.size===p.size))Object.assign(c,{placed:true,size:p.size,checked:false});}
+    else if(op==='tea_add'){if(!c.items.includes(p.item)){c.items.push(p.item);c.checked=false;}}
+    else if(op==='tea_ice'){if(c.ice!==p.level)Object.assign(c,{ice:p.level,checked:false});}
+    else if(op==='tea_sugar'){if(c.sugar!==p.level)Object.assign(c,{sugar:p.level,checked:false});}
+  }
+  return c;
+}
+/** The order ticket read again for a cup (game/boba.py ticket(): the same rows, in the same order). */
+function reTicket(x,rows,cup){
+  const want=k=>rows.find(r=>r.k===k)?.want,fl=rows.some(r=>r.k==='flavor')?want('flavor'):null,wantTops=rows.filter(r=>r.k==='topping').map(r=>r.want);
+  const items=cup.items||[],placed=!!(cup.placed??items.length),g=k=>items.filter(i=>ing(x,i).group===k);
+  const base=g('base')[0]??null,flavor=g('flavor')[0]??null,tops=g('topping');
+  const out=[{k:'size',want:want('size'),ok:placed?cup.size===want('size'):null},{k:'base',want:want('base'),ok:base==null?null:base===want('base')}];
+  if(fl)out.push({k:'flavor',want:fl,ok:flavor==null?null:flavor===fl,got:flavor});
+  for(const w of wantTops)out.push({k:'topping',want:w,ok:tops.includes(w)?true:null});
+  for(const e of [...(flavor&&!fl?[flavor]:[]),...tops.filter(k=>!wantTops.includes(k))])out.push({k:'extra',want:null,got:e,ok:false});
+  out.push({k:'ice',want:want('ice'),ok:cup.ice==null?null:cup.ice===want('ice')},{k:'sugar',want:want('sugar'),ok:cup.sugar==null?null:cup.sugar===want('sugar')},
+    {k:'seal',want:null,ok:cup.sealed?true:null});
+  return out;
+}
+/** The task as it will be once the picks on their way land. */
+function withLocal(t,x){
+  const list=t&&t.cup?localOf(x,t.id):[];if(!list.length)return t;
+  const cup=laid(x,t.cup,list);
+  return {...t,cup,...t.ticket?.length?{ticket:reTicket(x,t.ticket,cup)}:{}};
+}
+/** Whether the server would take this pick on this (laid) task: game/boba.py _station's checks. If not, the pick
+ * is sent the usual way and the server's answer says why. */
+function canQuick(x,t,op,p){
+  const cup=t?.cup;if(!t||!t.known||!cup||cup.sealed)return false;
+  if(op==='tea_cup')return ['M','L'].includes(p.size)&&!(cup.items||[]).length&&!(cup.placed&&cup.size===p.size)&&cupsOf(x)[p.size]>0;
+  if(!cup.placed)return false;
+  if(op==='tea_ice')return ICE.some(([v])=>v===p.level);
+  if(op==='tea_sugar')return (B(x).sugars||[0,30,50,70,100]).includes(p.level);
+  if(op!=='tea_add')return false;
+  const i=ings(x).find(v=>v.id===p.item),s=i&&station(x,p.item),items=cup.items||[];
+  if(!i||!s.unlocked||!(s.stock>0)||items.includes(p.item))return false;
+  if(items.filter(k=>ing(x,k).group===i.group).length>=({base:1,flavor:1,topping:3}[i.group]||0))return false;
+  return i.group==='base'||hasGroup(x,cup,'base');
+}
+/** Cups on the stack, less the one a pick took (and plus the one it put back). */
+function cupsOf(x){
+  const c={M:0,L:0,...B(x).cups||{}};
+  for(const {op,payload:p} of x.ui.mtLocal||[]){
+    const cup=op==='tea_cup'?serverTask(x,p.task)?.cup:null;
+    if(!cup||cup.placed&&cup.size===p.size)continue;
+    c[p.size]=Math.max(0,(c[p.size]||0)-1);if(cup.placed)c[cup.size]=(c[cup.size]||0)+1;
+  }
+  return c;
+}
+/** For tests/milk_tea_quick.mjs (the same verdicts as the server: tests/test_milk_tea_quick.py). */
+export const quickParts={laid,reTicket,canQuick,withLocal};
+/** The tapped tile (or the tile a bottom button stands for) lights up now, before anything is drawn again. */
+function lightUp(op,p){
+  if(typeof document==='undefined')return;
+  const k=op==='tea_add'?p.item:op==='tea_cup'?'cup_'+p.size:op==='tea_ice'?'ice-'+p.level:'sugar-'+p.level;
+  const el=document.querySelector(`#sheet[open] .mt-stations [data-k="${CSS.escape(String(k))}"]`);if(!el)return;
+  if(op!=='tea_add')for(const o of el.parentElement?.querySelectorAll('.on')||[]){o.classList.remove('on');o.setAttribute('aria-pressed','false');}
+  el.classList.add('on');el.setAttribute('aria-pressed','true');
+}
 
 /* ---------------------------------------------------------------- art */
 function piece(k,top,i,color){
@@ -298,7 +381,7 @@ function stations(t,x,steps){
 }
 const verb=id=>['pearls','white_pearl'].includes(id)?'Nấu':['foam','cheese'].includes(id)?'Đánh':'Ủ';
 function cupStack(t,x){
-  const b=B(x),cup=t.cup,cups=b.cups||{M:0,L:0};
+  const b=B(x),cup=t.cup,cups=cupsOf(x);
   return `<section class="mt-shelf cups"><h4>🥤 Chồng ly</h4><div class="mt-grid two">${['M','L'].map(size=>{
     // Tea in the cup: neither size can be taken (game/boba.py tea_cup: "Ly đã có trà…"); the other one says why.
     const on=cup.placed&&cup.size===size,filled=!!(cup.items||[]).length,locked=filled&&!on&&!cup.sealed;
@@ -368,7 +451,7 @@ function nextStep(t,x,detail=true){
 
 /* ---------------------------------------------------------------- next step (v4/guide.js) */
 // A step's tap goes through actions.go like every counter tap (quiet, feedback next to the cup).
-const run=(op,payload,label)=>({act:'car:go',data:{op,payload:JSON.stringify(payload)},label});
+const run=(op,payload,label)=>({act:'car:go',data:{op,payload:JSON.stringify(payload),...QUICK.has(op)?{quick:'','own-busy':''}:{}},label});
 const kSel=k=>`.mt-stations [data-k="${k}"]`;
 const CRIT=new Set(['size','base','flavor','topping','extra']);
 /** The order as steps, read from the server's ticket (game/boba.py ticket(): the same fields the
@@ -681,6 +764,14 @@ function prepare(x,tab){
 }
 
 /* ---------------------------------------------------------------- module */
+/** The words next to the cup (x.ui.flash), written in place. False: no counter on screen to write them in. */
+function showFlash(x){
+  const box=typeof document!=='undefined'&&document.querySelector('#sheet[open] .career-job.mt .mt-preview'),said=box&&box.querySelector('.mt-said');
+  if(!said)return false;
+  box.classList.toggle('quiet',!x.ui.flash);
+  said.innerHTML=x.ui.flash?`<p class="mt-flash" role="status">${x.esc(x.ui.flash)}</p>`:'';
+  return true;
+}
 let focusKey='';
 const flying=new Set();  // counter taps on the wire (op|payload): a double tap is not sent twice
 /** Bring the next step's control into view once when the step changes, unless it is already
@@ -713,11 +804,15 @@ export default {
   css:true,
   autoNext:true,
   next(t,x){
+    t=x?withLocal(t,x):t;
     try{const n=x&&nextOf(teaGuide(t,x).steps);if(n)return x.esc(stepLine(n));}catch{/* fall back to the fixed lines */}
     return nextStep(t,x,(B(x).level||1)<=3);
   },
   clock(c){return c.data?.boba?.clock||'';},
+  // app.js: an answer that another pick's answer follows does not draw the counter again (see "picks at once").
+  settling(x){return (x.ui.mtLocal||[]).length>1;},
   job(t,x){
+    t=withLocal(t,x);
     const g=teaGuide(t,x),brew=t.known?brewSteps(t,x):[];
     // Stations in the order a cup is made (cup, tea, syrup, toppings, ice & sugar), then the sealer.
     // The cup picture sits beside them on wide screens; on phones the mini cup in the bottom bar shows it.
@@ -774,16 +869,29 @@ export default {
       // Drawn before the gate closed (engine.more_gate): say why instead of pressing into a sure refusal.
       if(data.op==='more_work'&&x.room?.more_gate){const g=x.room.more_gate;x.toast(g.why==='full'?'Đang có đủ khách: làm nốt ly đang chờ nhé.':g.why==='cap'?'Hôm nay đủ khách rồi: làm nốt rồi khép ca nhé.':'Sắp đóng cửa: không đón thêm khách. Làm nốt rồi khép ca nhé.','hint');x.render();return;}
       if(data.op==='tea_greet'&&x.room?.tasks?.find(t=>t.id===payload.task)?.greeted){x.render();return;}
+      // A pick the server would take shows now (see "picks at once"); its command follows through the queue.
+      const quick=QUICK.has(data.op)&&canQuick(x,withLocal(serverTask(x,payload.task),x),data.op,payload)?{op:data.op,payload}:null;
       flying.add(key);
       sfx.configure(x.state.settings||{});sfx.unlock();
+      if(quick){
+        (x.ui.mtLocal??=[]).push(quick);lightUp(data.op,payload);sfx.click();
+        // The rest of the counter (cup, counts, next step) is drawn once the frame with the lit tile is on screen
+        // (one drawing for the picks of that frame).
+        if(!x.ui.mtDraw){x.ui.mtDraw=true;requestAnimationFrame(()=>setTimeout(()=>{x.ui.mtDraw=false;if(x.ui.mtLocal?.length)x.render();},0));}
+      }
+      const settle=()=>{if(quick)x.ui.mtLocal=(x.ui.mtLocal||[]).filter(p=>p!==quick);};
       try{
         const r=await x.api.command(data.op,payload)||{};
+        settle();
         x.ui.flash=data.op==='ask'?'':r.message||'';
-        if(r.celebrate)sfx.success();else sfx.click();
+        if(r.celebrate)sfx.success();else if(!quick)sfx.click();
         if(r.message&&(LOUD.has(data.op)||r.celebrate||/khách mới|bỏ về|hủy|quá giờ/.test(r.message)))x.toast(r.message,r.correct===false?'error':r.celebrate?'good':false);
         for(const note of new Set(r.effects||[]))x.toast(note);
+        // A pick that landed was drawn already (its state, with the pick laid on top, is the same screen): only the
+        // words next to the cup change. Drawing the whole counter again cost a second full render per pick.
+        if(quick&&!r.duplicate&&showFlash(x))return;
         x.render();
-      }catch(error){sfx.error();x.toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);}
+      }catch(error){settle();sfx.error();x.toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);if(quick)x.render();}
       finally{flying.delete(key);}
     },
   },

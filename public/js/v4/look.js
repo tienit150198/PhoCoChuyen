@@ -162,7 +162,7 @@ export const SVG={
   path:(c,d,fill)=>c.push(`<path d="${d}" fill="${fill}"/>`),
   stroke:(c,d,col,w)=>c.push(`<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`),
 };
-const FRONT={short:'M-31 -80C-35 -118 24 -124 32 -84Q26 -95 12 -99Q-4 -92 -18 -97Q-26 -92 -31 -80Z',
+export const FRONT={short:'M-31 -80C-35 -118 24 -124 32 -84Q26 -95 12 -99Q-4 -92 -18 -97Q-26 -92 -31 -80Z',
   soft:'M-30 -88C-33 -119 19 -120 31 -90Q19 -93 7 -105Q5 -88 -12 -84Q-17 -91 -16 -101Q-21 -89 -30 -88Z'};
 /** Resolved colours and shapes of the player's look (from the state, or a look + gender). */
 export const figure=state=>figureOf(lookOf(state),state?.journey?.gender);

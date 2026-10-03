@@ -7,6 +7,7 @@ import {accountPane,accountAction,accountNudge} from './account.js';
 import {tutorialSettings} from '../tutorial/index.js';
 import {soundToggles} from './sounds.js';
 import {lbPrivacyRow} from './leaderboard.js';
+import {homePref,setHomePref,townOK} from './journey.js';
 
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const button=(label,action,data={},style='')=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}>${label}</button>`;
@@ -50,6 +51,7 @@ export function settingsView(env){
   if(tab==='look'){
     const pref=layoutPref(),mode=document.documentElement.dataset.layout;
     body=`<section class="settings-block"><h3>${icon('palette',18)} Phong cách</h3><div class="theme-grid">${THEMES.map(([id,name,desc,sw])=>`<button type="button" class="theme-card ${s.uiTheme===id?'active':''}" data-action="v4Setting" data-key="uiTheme" data-value="${id}" aria-pressed="${s.uiTheme===id}"><span class="swatches">${sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><b>${name}</b><small>${desc}</small></button>`).join('')}</div></section>
+    ${townOK()?`<section class="settings-block"><h3><span aria-hidden="true">🗺️</span> Màn hình chính</h3>${segment('home',[['town','🗺️ Bản đồ phố'],['list','📋 Danh sách']],homePref(),'home')}</section>`:''}
     <section class="settings-block"><h3>${icon('layout',18)} Bố cục màn hình</h3><p class="small muted">Đang dùng: <b>${{phone:'Điện thoại',tablet:'Máy tính bảng',desktop:'Máy tính'}[mode]||mode}</b></p>
       <div class="layout-grid">${LAYOUTS.map(([id,name,desc])=>`<button type="button" class="layout-card ${pref===id?'active':''}" data-action="v4Layout" data-value="${id}" aria-pressed="${pref===id}"><span class="layout-thumb ${id}"><i></i><i></i><i></i></span><b>${name}</b><small>${desc}</small></button>`).join('')}</div></section>`;
   }
@@ -85,6 +87,7 @@ export function settingsView(env){
 export async function settingsAction(action,data,el,env){
   const {api,ui,cmd,renderSheet,toast,confirmAction}=env;
   if(await accountAction(action,data,el,env))return true;
+  if(action==='v4Setting'&&data.kind==='home'){setHomePref(data.value);env.ui.homeMode=null;renderSheet();return true;}   // 🗺️ this device only, like the layout
   switch(action){
     case'v4SetTab':ui.setTab=data.tab;renderSheet(false);return true;
     case'v4PushOn':try{const r=await enablePush(api);toast(r.message);ui.pushState=null;}catch(e){toast(e.message,true);}renderSheet();return true;

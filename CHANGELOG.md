@@ -1,3 +1,8 @@
+# v1.5.4 — 📸 buồng chụp hội chợ luôn mở, tự nối lại; 🧋 trà sữa không khựng; 🧑‍🏫 lớp học không đứng
+
+- Buồng chụp hội chợ: sảnh vẽ lại theo trạng thái socket live, nối lại ngay khi mở buồng (`live.reconnect(true)`), bỏ chữ "đang nghỉ"; rớt mạng trong phòng bạn bè thì tự `booth_join` lại. `live/booth.py`: người cuối mất socket được giữ chỗ 120 giây (`GRACE_SECS`, `away`), mã phòng vẫn dùng được.
+- Lớp học: câu trả lời học sinh không chờ AI (`later`, chờ tối đa 2 giây). Trà sữa: chọn nguyên liệu hiện ngay (optimistic).
+
 # v1.5.3 — 🧮 ô số kế toán nhận số âm, phép tính, đơn vị; 💍 chờ 3 tiếng sau ly hôn
 
 - `public/js/v4/amount-parse.js`: ô số của Học TT99, kế toán doanh nghiệp/tập đoàn, thuế-lương là ô chữ (bàn phím đầy đủ), hiểu `-`/`−`/(…), dấu nghìn, đ/k/tr/tỷ, + − × / ( ), đơn vị cuối áp cho cả phép tính; xem trước "= …". Server không đổi.

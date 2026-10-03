@@ -1,0 +1,51 @@
+/* 🗺️ Bản đồ phố (v4/town-walk.js): the home sheet as a town to stroll. The sheet keeps one height and does not
+   scroll; the stage (canvas + the card at a door) fills what the slim top bar leaves. Theme tokens only outside the
+   canvas, so every theme works. */
+.sheet.home.tw-sheet{height:min(88dvh,880px);overflow:hidden}
+html[data-layout="phone"] .sheet.home.tw-sheet{height:calc(100dvh - max(10px,var(--safe-t)))}
+.sheet.tw-sheet #sheetContent{height:100%}
+.tw-home{display:flex;flex-direction:column;height:100%;min-height:0}
+.tw-top{position:relative;display:flex;align-items:center;gap:8px;padding:12px 14px 10px 18px;background:var(--surface);border-bottom:1px solid var(--line)}
+html[data-layout="phone"] .tw-top{padding:18px max(12px,var(--safe-r)) 8px max(14px,var(--safe-l))}
+.tw-title{flex:1 1 auto;min-width:0;display:flex;align-items:baseline;gap:8px}
+.tw-title h2{margin:0;font-size:1.2rem;white-space:nowrap}
+.tw-title small{color:var(--muted);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:430px){.tw-title small{display:none}}
+.tw-chip{flex:none;display:inline-flex;align-items:center;gap:4px;min-height:40px;padding:6px 12px;border-radius:var(--radius-pill);border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink);font:inherit;font-weight:800;font-size:.9rem;cursor:pointer}
+.tw-chip:hover{border-color:var(--accent)}
+.tw-chip:focus-visible,.tw-close:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.tw-x3{border-color:transparent;background:var(--warn-soft);color:var(--warn)}
+.tw-close{flex:none;width:42px;height:42px}
+.tw-hint{margin:0;padding:8px 16px;background:var(--accent-soft);color:var(--ink);font-weight:800;font-size:.95rem;text-align:center}
+.tw-slot{position:relative;flex:1 1 auto;min-height:240px}
+.tw-stage{position:absolute;inset:0;overflow:hidden;background:#efe0c6;touch-action:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.tw-canvas{display:block;width:100%;height:100%;cursor:pointer}
+.tw-canvas:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
+.tw-where{position:absolute;left:10px;top:10px;padding:5px 11px;border-radius:var(--radius-pill);background:#fffaf0e6;color:#4a3a30;font-weight:800;font-size:.85rem;box-shadow:0 2px 8px #0002;pointer-events:none}
+.tw-where:empty{display:none}
+/* The card at a door: one line of what it is, a tag or two, one big button. */
+.tw-card{position:absolute;left:10px;right:10px;bottom:calc(10px + var(--safe-b,0px));display:flex;align-items:center;gap:12px;max-width:520px;margin:0 auto;padding:12px 12px 12px 14px;
+  border-radius:18px;background:var(--surface);color:var(--ink);border:2px solid var(--tw-c,var(--line));box-shadow:0 8px 24px #0003;animation:tw-up .18s var(--ease,ease-out)}
+.tw-card[hidden]{display:none}
+@keyframes tw-up{from{transform:translateY(12px);opacity:0}}
+html.reduce-motion .tw-card,body.reduce-motion .tw-card{animation:none}
+@media (prefers-reduced-motion:reduce){.tw-card{animation:none}}
+.tw-card-ico{flex:none;display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:color-mix(in srgb,var(--tw-c,#c4a27a) 18%,var(--surface));font-size:1.7rem;line-height:1}
+.tw-card-ico.locked{filter:grayscale(1);opacity:.55}
+.tw-card-text{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tw-card-text b{font-size:1.02rem;line-height:1.25;overflow-wrap:anywhere}
+.tw-card-text small{color:var(--muted);font-size:.82rem}
+.tw-card-text .tw-why{color:var(--warn);font-weight:700}
+.tw-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.tw-tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:var(--radius-pill);background:var(--surface-2);color:var(--ink-2);font-size:.75rem;font-weight:800;white-space:nowrap}
+.tw-tag.amber{background:var(--warn-soft);color:var(--warn)}
+.tw-tag.green{background:var(--good-soft);color:var(--good)}
+.tw-tag.blue{background:var(--info-soft);color:var(--info)}
+.tw-tag.hot{background:#e8572d;color:#fff}
+.tw-go{flex:none;min-height:48px;padding:0 18px;font-size:1rem}
+.tw-card-x{position:absolute;top:-12px;right:-8px;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink-2);font:inherit;font-size:1.1rem;font-weight:800;line-height:1;cursor:pointer;box-shadow:var(--shadow-sm)}
+.tw-card-x:focus-visible{outline:3px solid var(--focus)}
+html[data-layout="phone"] .tw-card{gap:10px;padding:10px 10px 10px 12px}
+html[data-layout="phone"] .tw-go{padding:0 14px}
+/* The list (v4/journey.js) keeps a way back to the town. */
+.jr-top .jr-town{flex:none}

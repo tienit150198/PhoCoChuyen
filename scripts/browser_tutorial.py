@@ -136,6 +136,7 @@ class Run:
 
 async def fresh(browser, name, w, h, touch, shots, base):
     ctx = await browser.new_context(viewport=dict(width=w, height=h), has_touch=touch, is_mobile=touch and w < 700)
+    await ctx.add_init_script("try{localStorage.setItem('mnl.home','list')}catch(e){}")  # the list as home: this run picks the workplace on the intro (the town has scripts/browser_first_day.py)
     page = await ctx.new_page()
     r = Run(page, name, shots)
     await page.goto(base)
@@ -408,6 +409,7 @@ async def main_run(base, shots: Path | None):
             # 6) The first time at each workplace: one "Xem hướng dẫn / Bỏ qua" card, once per workplace (on every
             #    device: settings.notesSeen), never at a brand-new player's first workplace.
             ctx = await browser.new_context(viewport=dict(width=w, height=h), has_touch=touch, is_mobile=touch and w < 700)
+            await ctx.add_init_script("try{localStorage.setItem('mnl.home','list')}catch(e){}")  # the list as home: this run picks the workplace on the intro (the town has scripts/browser_first_day.py)
             page = await ctx.new_page()
             r = Run(page, f'{vname}-guidecard', shots)
             await page.goto(base + '/privacy')

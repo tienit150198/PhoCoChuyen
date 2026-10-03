@@ -132,8 +132,18 @@ levels, reserve, reopen_fee, start_wallet, unlock_chapter.
 ## Client
 
 * First run: arrive → "Bạn là ai?" (Nam/Nữ cards with a preview, name) →
-  pick the first job among chapter 1.
-* Journey home (the `home` sheet): character card, chapter card with
+  the town ("Vào phố thôi"): chapter-1 places glow, an arrow on milk tea; walk
+  to one and "Vào làm". With the list as home the intro picks the first job.
+* 🗺️ Bản đồ phố (default home, `v4/town-walk.js` + `scenes/town-place.js`,
+  lazy with `css/town.css`): the home sheet as a walkable town, one row per
+  district (Chùa/Ngoại ô/Sân bay, Khu văn phòng, Phố dịch vụ, Phố chợ, Phố
+  hàng rong, Hẻm nhà), every career one storefront, landmarks that open
+  existing features (Ngân hàng, Gara, Cổng hội chợ, Nhóm phố, Đi dạo, Nhà
+  mình, Quầy của bạn, Quảng trường = the old life map). Tap/arrows/WASD walk;
+  at a door a card with the same `choose` action as the list. "📋 Danh sách"
+  shows the list below; Cài đặt → Giao diện → Màn hình chính keeps either
+  (localStorage `mnl.home`, no save change). `scripts/check_town_walk.mjs`.
+* Journey list (the `home` sheet as "Danh sách"): character card, chapter card with
   objectives and one primary button to the suggested workplace, workplaces
   grid (fund, upkeep, paused, "💌 Có thư mời"), locked silhouettes.
 * Sheets inside the home: titles, wallet, profile (name/gender change).

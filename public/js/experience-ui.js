@@ -9,9 +9,13 @@ const note=(s,cls='')=>`<div class="life-note ${cls}">${s}</div>`;
 const em=(s,cls='')=>`<span class="em ${cls}" aria-hidden="true">${s}</span>`;
 /* Tiết học / Chuyến đi (v4/teach-tour.js, ~60 KB + teach.css) load only for a teacher or a tour guide:
  * app.js imports it with those careers' assets; until it is in, the workbench shows a skeleton. */
-let TT=null,ttLoad=null;
-export function teachTour(){
- ttLoad??=import('./v4/teach-tour.js').then(m=>{TT=m;document.dispatchEvent(new CustomEvent('mnl:lazy'));return m;},e=>{ttLoad=null;throw e;});
+/* `api` (app.js): the module talks to /api/ai/class itself (a pupil's raised hand, parents' messages). It used to
+ * learn the api only from the next state adopted after it loaded, so after a reload in the middle of a lesson the
+ * first tap on an answer did nothing at all ("bấm trả lời học sinh mà bị đứng"). */
+let TT=null,ttLoad=null,ttApi=null;
+export function teachTour(api){
+ if(api){ttApi=api;TT?.bindClassApi?.(api);}
+ ttLoad??=import('./v4/teach-tour.js').then(m=>{TT=m;if(ttApi)m.bindClassApi?.(ttApi);document.dispatchEvent(new CustomEvent('mnl:lazy'));return m;},e=>{ttLoad=null;throw e;});
  return ttLoad;
 }
 const tt=()=>{if(!TT)teachTour().catch(e=>console.warn('teach-tour:',e));return TT;};
@@ -21,9 +25,9 @@ export function nextStep(t){
  return maps[t?.career]?.[t.stage]||'Một công việc nhỏ đang chờ';
 }
 /* ------------------------------------------------------------ life sheets
- * Chuẩn bị · Bảng giá · Trò nhỏ · Hộ chiếu · Khu phố share one shell: a sticky
+ * Chuẩn bị · Bảng giá · Trò nhỏ · Hộ chiếu · Quảng trường (the old "Khu phố" map; the town itself is v4/town-walk.js) share one shell: a sticky
  * top (back, shop name, close) with the tab bar, then cards (styles: css/lifesheets.css). */
-const TABS=[['prepare','🧺','Chuẩn bị'],['prices','🏷️','Bảng giá'],['workshop','🧩','Trò nhỏ'],['passport','🌟','Hộ chiếu'],['town','🗺️','Khu phố','Thư viện, chợ, quảng trường…'],['phone','💬','Chuyện phố','Khách khen, chê, kể chuyện']];
+const TABS=[['prepare','🧺','Chuẩn bị'],['prices','🏷️','Bảng giá'],['workshop','🧩','Trò nhỏ'],['passport','🌟','Hộ chiếu'],['town','🎏','Quảng trường','Thư viện, chợ, vườn nghỉ…'],['phone','💬','Chuyện phố','Khách khen, chê, kể chuyện']];
 const KIND_EM={sort:'🧺',pairs:'🃏',sequence:'🔢',match:'🔗'};
 const tile=(s,cls='')=>`<span class="lx-tile ${cls}" aria-hidden="true">${s}</span>`;
 const h3=s=>`<h3 class="lx-h">${s}</h3>`;
