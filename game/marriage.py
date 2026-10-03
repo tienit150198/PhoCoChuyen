@@ -933,6 +933,8 @@ def alerts(store, sid: str) -> dict | None:
         n = int(r['incoming'] or 0) + (1 if r['notice'] else 0)
         from . import couple as cp
         friends = int(db.execute("SELECT COUNT(*) FROM friend_requests WHERE to_sid=? AND status='pending'", (sid,)).fetchone()[0])
+        from .bank_xfer import waiting   # 💸 a friend's transfer waits: the client asks to receive it (game/bank_xfer.py)
+        xfer = waiting(db, sid)
         n += cp.alerts(db, sid, r['couple'])
         target = None
         if r['couple']:
@@ -946,7 +948,7 @@ def alerts(store, sid: str) -> dict | None:
                     target = w['target_' + side]
                 if w['status'] == 'done' and not w['seen_' + side]:
                     n += 1
-    return dict(alerts=n, friends=friends, notice=r['notice'], notice_at=int(r['notice_at'] or 0), target=target)
+    return dict(alerts=n, friends=friends, notice=r['notice'], notice_at=int(r['notice_at'] or 0), target=target, xfer=xfer)
 
 
 # ---------------------------------------------------------------- loading a save: due weddings and the inbox
