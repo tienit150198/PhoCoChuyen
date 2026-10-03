@@ -44,6 +44,7 @@ INSPECTION = dict(
     delivery='slip_safety_inspect', mother_baby='slip_safety_inspect', florist='slip_safety_inspect',
     tour_guide='slip_safety_inspect', teacher='slip_safety_inspect',
     ice_cream='slip_food_inspect', pho='slip_food_inspect', com='slip_food_inspect', nail='slip_safety_inspect', photobooth='slip_safety_inspect',
+    giupviec='slip_safety_inspect',
 )
 OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 

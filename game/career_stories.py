@@ -1305,6 +1305,44 @@ ARCS = {
                 ('chin', 'Tấm thứ năm mươi treo ngay giữa phòng khách rồi.'),
                 ('me', 'Em sẽ đợi đủ ba giây, để ô nào cũng là nụ cười thật.')]),
         ]),
+    'giupviec': dict(
+        title='Ngón tay trên nóc tủ', emoji='🧹',
+        keepsake=dict(emoji='🧺', name='Chiếc khăn vàng đầu tiên của cô Mai', desc='Khăn vàng cô Mai dùng từ ngày đầu đi làm, giặt bạc màu mà vẫn mềm. Cô gấp vuông vức, đưa bạn.'),
+        cast={'mai': _p('Cô Mai', '🧺', 'Tổ trưởng tổ giúp việc Nhà Thơm', 'giupviec_npc_01'),
+              'tung': _p('Anh Tùng', '💻', 'Lập trình viên làm ở nhà', 'giupviec_npc_02'),
+              'xuan': _p('Bà Xuân', '👵', 'Hưu trí, sống một mình', 'giupviec_npc_04'),
+              'dieu': _p('Cô Diệu', '🧤', 'Cô giáo về hưu', 'giupviec_npc_07')},
+        beats=[
+            _b('Ba cái khăn', '🧺', 'Cô Mai đặt ba chồng khăn lên xe đẩy: xanh, vàng, đỏ.', [
+                ('mai', 'Hai mươi năm cô dọn nhà người ta. Người ta tin mới đưa chìa khóa, con nhớ thế.'),
+                ('mai', 'Khăn xanh cho kính, khăn vàng cho bàn bếp, khăn đỏ chỉ cho bồn cầu. Lẫn một lần là mất khách.'),
+                ('me', 'Dạ, ba màu ba việc, không bao giờ lẫn.')]),
+            _b('Bàn làm việc ba màn hình', '💻', 'Anh Tùng mở cửa, tai vẫn đeo tai nghe, tay chỉ vào cái bàn bừa bộn giấy.', [
+                ('tung', 'Nhìn lộn xộn vậy thôi, anh xếp theo ý anh. Em để nguyên giúp anh nhé.'),
+                ('me', 'Dạ, em lau quanh thôi, bàn của anh em không động vào.'),
+                ('tung', 'Lần trước có bạn dọn gọn giúp, anh mất cả buổi tìm tờ hợp đồng.')],
+                _c('Dưới gầm bàn có cái cốc cà phê đổ dở',
+                   _o('a', 'Nhắn hỏi anh Tùng trước khi đụng vào', [('tung', 'Ồ, em cứ dọn cái cốc đi. Cảm ơn em đã hỏi.')], rel='tung'),
+                   _o('b', 'Hỏi cô Mai nên làm thế nào', [('mai', 'Không chắc thì hỏi khách. Hỏi một câu không ai trách.')], rel='mai'))),
+            _b('Bình gốm của ông', '🏺', 'Bà Xuân đứng nhìn bạn lau tủ kính, tay vịn khung cửa.', [
+                ('xuan', 'Cái bình gốm ấy ông mua ở chợ Đồng Xuân năm bảy mươi. Ông đi rồi, bà còn mỗi nó.'),
+                ('me', 'Con nhấc ra đặt lên khăn mềm, lau xong con đặt lại đúng chỗ, xoay đúng mặt như cũ.'),
+                ('xuan', 'Có con, bà không còn sợ mất đồ.')],
+                _c('Bà Xuân lại để quên nhẫn trên lavabo',
+                   _o('a', 'Cất vào khay sứ trên kệ gương, nhắn bà ngay', [('xuan', 'Bà già lẩm cẩm, may có con.')], rel='xuan'),
+                   _o('b', 'Hỏi cô Mai nên cất ở đâu', [('mai', 'Một chỗ cố định, báo khách ngay. Đừng bao giờ bỏ túi giữ hộ.')], rel='mai'))),
+            _b('Găng tay trắng', '🧤', 'Cô Diệu đeo đôi găng trắng, vuốt một đường trên nóc tủ, giơ ngón tay lên nhìn.', [
+                ('dieu', 'Cô dọn nhà cả đời. Trên cao sạch thì cô mới tin dưới thấp sạch.'),
+                ('me', 'Dạ, con phủi trên cao trước, lau bàn kệ, rồi mới quét, lau sàn sau cùng.'),
+                ('dieu', 'Ngón tay trắng tinh. Con làm có thứ tự, cô ưng.')]),
+            _b('Chiếc khăn vàng', '🧺', 'Chiều muộn, cô Mai ngồi ở sảnh chung cư, gấp một chiếc khăn vàng đã bạc màu.', [
+                ('mai', 'Khăn này cô dùng từ ngày đầu đi làm. Giặt bao nhiêu lần, vẫn mềm.'),
+                ('mai', 'Lưng cô đau rồi, từ mai cô ở nhà xếp lịch. Khách quen cô giao con.'),
+                ('tung', 'Anh hẹn em sáng thứ bảy cố định nhé.'),
+                ('xuan', 'Tuần sau con lại đến nhé, bà chờ.'),
+                ('dieu', 'Cứ cho đứa này sang nhà tôi.'),
+                ('me', 'Con sẽ dọn nhà người ta như dọn nhà mình, cô ạ.')]),
+        ]),
     # ------------------------------------------------------------ ✈️ Hãng bay Cánh Cò
     'pilot': dict(
         title='Đường bay ra đảo', emoji='🛩️',

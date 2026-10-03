@@ -591,7 +591,7 @@ class OldSaves(Base):
 
 
 # Careers this release adds next to the photo shop (the old tree knows none of them): a rollback takes them all out.
-ADDED = ('pho', 'com', 'photobooth')
+ADDED = ('pho', 'com', 'photobooth', 'giupviec')
 OLD_TREE = os.environ.get('MNL_OLD_TREE')     # a 1aba75d checkout (git archive 1aba75d game | tar -x -C DIR)
 OLD_CHECK = r'''
 import json, sys
