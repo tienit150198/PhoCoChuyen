@@ -12,6 +12,14 @@ export function pathOf(route){
   for(const t of route){h=(h+TURN[t]+4)%4;x+=DIRS[h][0]*SEG;y+=DIRS[h][1]*SEG;pts.push([x,y]);}
   return pts;
 }
+/** The three ways out of the next crossing as the map shows them (#144: ⬅️ ⬆️ ➡️ were turns from the scooter's seat,
+ * so a scooter heading right had no ⬇️ for a road going down). Each still sends the server its turn L/S/R. */
+const WAYS=[['⬆️','Đi lên'],['➡️','Sang phải'],['⬇️','Đi xuống'],['⬅️','Sang trái']];
+export function turnChoices(picks){
+  let h=0;for(const t of picks)h=(h+TURN[t]+4)%4;
+  return ['L','S','R'].map(k=>{const d=(h+TURN[k]+4)%4;return {k,d,emoji:WAYS[d][0],label:WAYS[d][1]};})
+    .sort((a,b)=>[3,0,2,1].indexOf(a.d)-[3,0,2,1].indexOf(b.d));
+}
 const line=(pts,attrs)=>`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" ${attrs}/>`;
 /** The map as inline SVG: `route` the order's turns, `picks` the turns taken so far. */
 export function rideSVG(route,picks){

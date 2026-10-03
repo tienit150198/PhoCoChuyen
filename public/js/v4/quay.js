@@ -13,7 +13,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {paintCounter} from './quay-scene.js';
 import {figure} from './look.js';
-import {RIDE,rideSVG} from './quay-ride.js';
+import {RIDE,rideSVG,turnChoices} from './quay-ride.js';
 
 const S={md:{},lk:{},run:null,anchor:'',anchorAt:0,dlg:null,env:null,view:'list',tab:'mine',pick:null,busy:false,flash:null,listening:false,open:{},help:{},wage:{},hire:null,loading:false,to:{}};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -508,7 +508,7 @@ function packPanel(st,r){
   else if(pk.step==='way')body=`<p class="qy-line">Giao bằng gì?</p><div class="qy-picks">${btn('🛵 Tự chạy đi giao','way',{id:st.id,k:'self'},'primary')}${btn(`📦 Gọi shipper · ${xu(fee)}`,'way',{id:st.id,k:'ship'},'ghost')}</div>`;
   else{const left=3-pk.picks.length;
     body=`<p class="qy-line">${left?`Theo đường chấm xanh tới 📍. Ngã tư thứ ${pk.picks.length+1}:`:'Tới nơi rồi!'}</p>${rideSVG(o.route,pk.picks)}
-      ${left?`<div class="qy-turns">${btn('⬅️ Rẽ trái','turn',{id:st.id,k:'L'},'ghost')}${btn('⬆️ Đi thẳng','turn',{id:st.id,k:'S'},'ghost')}${btn('➡️ Rẽ phải','turn',{id:st.id,k:'R'},'ghost')}</div>`
+      ${left?`<div class="qy-turns">${turnChoices(pk.picks).map(c=>btn(`${c.emoji} ${c.label}`,'turn',{id:st.id,k:c.k},'ghost')).join('')}</div>`
         :`<div class="bk-actions">${btn('🤝 Giao tận tay','deliver',{id:st.id},'primary')}${btn('↺ Chạy lại','turnreset',{id:st.id},'ghost')}</div>`}`;}
   return `<section class="bk-card qy-pack"><div class="qy-say"><b>#${o.j+1} ${esc(o.name)} · ${esc(o.addr)}</b><p>${itemsLine(st,o.items)}</p>${o.note?`<p class="qy-note">📝 ${esc(o.note)}</p>`:''}</div>${body}</section>`;
 }
