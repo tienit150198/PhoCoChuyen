@@ -256,9 +256,9 @@ def _shift(s: dict, c: dict, career: str) -> dict | None:
 
 
 def managing(s: dict, c: dict, career: str) -> bool:
-    """A manager shift is running today (more_work is closed: the team takes the customers)."""
+    """Today is a manager shift (more_work stays closed, also once the board is closed: the team took the day)."""
     sh = _shift(s, c, career)
-    return bool(sh and c.get('open') and not sh['closed'])
+    return bool(sh and c.get('open'))
 
 
 def managed_today(s: dict, c: dict, career: str) -> bool:

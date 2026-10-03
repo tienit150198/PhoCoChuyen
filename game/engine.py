@@ -1208,6 +1208,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c["life"]=life.public_life(s["careers"][cid])
         c["day_clock"]=dc.view(raw,cid)  # giờ trong ngày: HUD clock, closing warnings, the scene's light
         gate=more_gate(raw,cid,1) if raw.get("open") else None
+        if raw.get("open") and pm.managing(s,raw,cid):gate=dict(why="manager",error="Hôm nay bạn làm quản lý: giao việc cho đội nhé.")  # 🧑‍💼 no "Đón thêm khách"
         c["more_gate"]={k:v for k,v in gate.items() if k!="error"} if gate else None  # "Đón thêm khách" or the next real step
         c["tasks"]=[task_view(t) for t in s["careers"][cid]["tasks"]]
         if cid in CARE_CAREERS:
