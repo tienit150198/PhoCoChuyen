@@ -43,7 +43,7 @@ const ROWS=[
   // 1.5.2: more solo poses (some hold their own item)
   ['om_gau','🧸','Ôm gấu',0],['cam_bong','🎈','Chùm bóng bay',0],['selfie','📱','Tự sướng',0],['xoay_vay','💃','Xoay vòng',0],
   ['chay','🏃','Chạy bộ',0],['ngoi_xom','🧎','Ngồi xổm',0],['bong_hoa','🌼','Mặt bông hoa',0],['gio_bien','🪧','Giơ biển',0],
-  ['an_kem','🍦','Ăn kem',0],['tra_sua','🧋','Trà sữa',0],['chao','🫡','Chào',0],['bay','✈️','Máy bay',0],
+  ['an_kem','🍦','Ăn kem',0],['tra_sua','🧋','Trà sữa',0],['chao','🫡','Chào kiểu lính',0],['bay','✈️','Máy bay',0],
   ['u_oa','🫣','Ú òa',0],['om_tim','💝','Ôm tim',0],['vo_tay','👏','Vỗ tay',0],
   ['tim_to','💞','Tim to',1],['khoac_vai','🤝','Khoác vai',1],['dap_tay','✋','Đập tay',1],['chi_nhau','👉','Chỉ nhau',1],
   ['tua_lung','😎','Tựa lưng',1],['tua_vai','🥹','Tựa vai',1],['cung_nhay','🦘','Cùng nhảy',1],['chum_dau','🤳','Chụm đầu',1],
