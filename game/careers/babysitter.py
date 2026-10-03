@@ -92,7 +92,7 @@ BAG_FOR = {'baby': ['nuoc', 'ao', 'bim', 'khan_uot', 'lovey'], 'small': ['nuoc',
 # before a child eats it (cut: only for under-4s; cool and bone: always) · hard: never for under-4s.
 FOODS = {
     'chuoi': dict(name='Chuối', emoji='🍌', group='snack', al=[], prep=None, hard=False),
-    'nho': dict(name='Nho', emoji='🍇', group='snack', al=[], prep='cut', hard=False),
+    'nho': dict(name='Quả nho', emoji='🍇', group='snack', al=[], prep='cut', hard=False),
     'tao': dict(name='Táo', emoji='🍎', group='snack', al=[], prep='cut', hard=False),
     'dua_hau': dict(name='Dưa hấu', emoji='🍉', group='snack', al=[], prep='cut', hard=False),
     'banh_gao': dict(name='Bánh gạo', emoji='🍘', group='snack', al=[], prep=None, hard=False),
@@ -113,7 +113,7 @@ FOODS = {
     'rau_cu': dict(name='Cà rốt, bông cải luộc', emoji='🥕', group='veg', al=[], prep='cut', hard=False),
     'dau_hu': dict(name='Đậu hũ non sốt cà', emoji='🍅', group='veg', al=[], prep=None, hard=False),
 }
-GROUPS = {'snack': 'Món ăn vặt', 'drink': 'Đồ uống', 'main': 'Món chính', 'veg': 'Rau, canh'}
+GROUPS = {'snack': 'Món ăn vặt', 'drink': 'Đồ uống', 'main': 'Món chính', 'veg': 'Rau củ, canh'}
 PREP = {'cut': ('✂️', 'Cắt nhỏ'), 'cool': ('🌬️', 'Để nguội bớt'), 'bone': ('🦴', 'Gỡ xương')}
 MEALS = {'snack': ['snack', 'drink'], 'meal': ['main', 'veg', 'drink']}
 
@@ -210,9 +210,9 @@ MOVES = {
 }
 SCRAPE_ORDER = ['wash', 'rinse', 'dry', 'plaster']
 MOMENT_TITLE = {'cry': 'khóc nhớ mẹ', 'scrape': 'ngã trầy đầu gối', 'tantrum': 'ăn vạ đòi kẹo'}
-MOMENT_OPEN = {'cry': '{Kid} ngủ dậy không thấy mẹ, mếu máo rồi khóc to.',
-               'scrape': '{Kid} chạy vấp thảm, ngã sấp, đầu gối trầy một vệt nhỏ, rơm rớm máu. Bé nhìn bạn, môi run run.',
-               'tantrum': '{Kid} thấy hũ kẹo trên tủ, đòi lấy. Bạn chưa cho, bé lăn ra sàn ăn vạ.'}
+MOMENT_OPEN = {'cry': '{kid} ngủ dậy không thấy mẹ, mếu máo rồi khóc to.',
+               'scrape': '{kid} chạy vấp thảm, ngã sấp, đầu gối trầy một vệt nhỏ, rơm rớm máu. Bé nhìn bạn, môi run run.',
+               'tantrum': '{kid} thấy hũ kẹo trên tủ, đòi lấy. Bạn chưa cho, bé lăn ra sàn ăn vạ.'}
 
 # ---------------------------------------------------------------- the handover log
 LOG_IDS = ('food', 'nap', 'play', 'safe', 'moment', 'oops', 'fine', 'tv')
@@ -581,7 +581,7 @@ def _words(kind: str, f: dict, needs: dict) -> tuple[str, str]:
         return (f'Giờ ngủ trưa của {k}', f'{hhmm(f["nap"])} rồi, {k} dụi mắt, ngáp liên tục.')
     if kind == 'moment':
         mk = needs['mk']
-        return (f'{K} {MOMENT_TITLE[mk]}', MOMENT_OPEN[mk].format(Kid=K))
+        return (f'{K} {MOMENT_TITLE[mk]}', MOMENT_OPEN[mk].format(kid=K))
     return (f'Bàn giao {k} cho {p}', f'Sáu giờ chiều, {p} bấm chuông: “Hôm nay bé sao em?”')
 
 
@@ -780,9 +780,7 @@ def _bag(s, c, d, p):
     t = _task(c, p, ('arrive',))
     t['st']['bag'] = True
     kit.start_work(t)
-    n = t['needs']
-    have = [x for x in n['bag'] if x != n['missing']]
-    return dict(message='🎒 Trong túi có: ' + ', '.join(_lower(_bag_name(t, x)) for x in have) + '.')
+    return dict(message='🎒 Mở túi đồ ra, so với giấy dặn xem còn thiếu gì.')
 
 
 def _bag_name(t: dict, x: str) -> str:
@@ -928,14 +926,14 @@ def _serve(s, c, d, p):
     if bad:
         td['oops'] = f['allergy']
     d['stats']['meals'] += 1
-    names = ', '.join(_lower(FOODS[k]['name']) for k in st['plate'])
     if bad:
         head = f'🍽️ Bạn kịp nhìn ra món có {ALLERGENS[f["allergy"]]}, cất đi trước khi bé ăn. Bé ăn phần còn lại.'
     elif not rows:
         head = f'🍽️ {kid(f, True)} ăn ngon lành, hết sạch đĩa.' + (' Món bé thích nhất!' if f['likes'] in st['plate'] else '')
     else:
         head = f'🍽️ {kid(f, True)} ăn được một ít.'
-    msg = _finish(s, c, d, t, 0, f'Cho {kid(f)} ăn: {names}.')
+    meal = 'bữa phụ' if t['kind'] == 'snack' else 'bữa trưa'
+    msg = _finish(s, c, d, t, 0, f'Cho {kid(f)} ăn {meal}.')
     return dict(message=f'{head} {msg}'.strip(), celebrate=not rows)
 
 
@@ -1230,7 +1228,7 @@ def log_lines(c: dict, d: dict | None = None) -> list:
     k = kid(f, True)
     rows = []
     if td['food']:
-        rows.append(('food', f'{k} ăn {", ".join(_lower(FOODS[x]["name"]) for x in td["food"][:5] if x in FOODS)}.', True, True))
+        rows.append(('food', f'{k} ăn ngoan, {len(td["food"])} món trong ngày.', True, True))
     if td['nap']:
         rows.append(('nap', f'{k} ngủ trưa lúc {hhmm(f["nap"])}, ôm {_lower(LOVEYS[f["lovey"]][1])}.', True, True))
     if td['play'] in ACTS:
