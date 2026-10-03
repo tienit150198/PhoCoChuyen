@@ -1,3 +1,9 @@
+# v1.4.27 — 📚 Đề kế toán TT99 hết dính số
+
+Người chơi (Viên Nhu trên Cả phố, góp ý #104): "phần 11 câu 2 bài ôn kế toán doanh nghiệp… số nó kì kì".
+
+- `accounting_vn_content.py`: mất dấu cách trước chữ số trên toàn khóa TT99: số tài khoản dính số tiền ("Nguồn cũ 4416.000.000đ" = 441 6.000.000đ, "Có 33125.000.000đ" = 331 25.000.000đ, 21 chỗ, tách theo từng bài) và chữ dính số ("36tháng", "VAT10%", "xem128", "100bộ"). Đáp án, id, số câu không đổi.
+
 # v1.4.26 — 🛒 Thu gom rác: túi dán phiếu không làm kẹt ngõ
 
 Phản ánh của người chơi (tieuthuki): "thu gom rác bấm không được nữa".
