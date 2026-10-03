@@ -9,6 +9,7 @@ counter: the same result). Effects, all small and capped per day by game/quay_se
     b   customers more (or fewer) for the rest of the day (sold only if the stock and the hands allow)
     r   reputation (the counter's 90..110)
     s   online stars: +1 a happy 5-star review, -1 a 2-star one (each unit one review)
+    k   goods bought in a hurry: the day's stock grows by k (paid by its m)
     t   the line the player reads
 
 `when`: the day must have it ('online' selling on, 'rain', 'staff' hired, 'power' a stall or a kiosk, 'tu' a fridge).
@@ -46,7 +47,7 @@ EVENTS = [
         ('keo_bat', 'Kéo bạt che cho rộng', [(1, E(b=2, t='Bạt rộng, khách đứng thoải mái, mua luôn.'))]),
     ], when=('rain',)),
     ev('het_hang', '🥡', 'Hết nguyên liệu giữa giờ đông', 'Món bán chạy nhất hết sạch, khách vẫn xếp hàng.', [
-        ('chay_cho', 'Chạy chợ mua gấp', [(1, E(m=-1, t='Kịp mua về, không mất khách nào.'))]),
+        ('chay_cho', 'Chạy chợ mua gấp', [(1, E(m=-1, k=3, t='Kịp mua về, không mất khách nào.'))]),
         ('goi_y', 'Gợi ý món khác', [(1, E(b=-1, t='Đa số khách đổi món vui vẻ.'))]),
         ('treo_bang', 'Treo bảng “tạm hết”', [(1, E(b=-2, t='Vài khách tiếc, hẹn mai quay lại.'))]),
     ]),

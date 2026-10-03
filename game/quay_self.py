@@ -88,6 +88,7 @@ STREETS = ('Lê Lợi', 'Hoa Sứ', 'Cây Me', 'Bến Nghé', 'Nguyễn Trãi', 
 NAMES = ('Chị Lan', 'Anh Tuấn', 'Bé Na', 'Cô Ba', 'Chú Sáu', 'Bạn Minh', 'Chị Hoa', 'Anh Khoa', 'Bà Tư', 'Em Vy', 'Anh Phúc',
          'Chị Thảo', 'Bạn Long', 'Cô Mai', 'Ông Bảy', 'Em Bin')
 TURNS = ('L', 'S', 'R')
+ORDER_SIZE = {'xe': (1, 1, 2), 'sap': (1, 1, 2, 2), 'kiot': (1, 1, 2, 2, 3)}   # dishes per online order: a cart's phone rings for small ones
 RUN_KEYS = frozenset({'d', 'i', 'k', 'n', 'sk', 'u', 'rv', 'co', 'm', 'b', 'r', 'ss', 'sn', 'ev', 'eo', 'on', 'x', 'sum'})
 
 
@@ -204,7 +205,7 @@ def order(s: dict, st: dict, run: dict, j: int) -> dict:
     """The j-th online order: {items, total, note, sticker, tool, cod, addr, route, at}."""
     board = menu(st)
     r = _rng(s, st, run['d'], 'o', j)
-    n = r.choice((1, 1, 2, 2, 3))
+    n = r.choice(ORDER_SIZE[st['place']])
     items = sorted(r.choice(board['on']) for _ in range(n))
     note, sticker, tool = r.choice(NOTES)
     if tool is None:
@@ -321,6 +322,10 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         run = dict(d=day, i=0, k=_walkins(fc['n']), n=fc['n'], sk=stock, u=0, rv=0, co=0, m=0, b=0, r=0, ss=0, sn=0,
                    ev=[], eo=[], on=[0] * n_on, x=False, sum=None)
         run['ev'] = _pick_events(s, st, day, online)
+        # enough for the people you will meet by hand (the queue and the phone): never "sold out" with a queue waiting
+        # (up to the day's demand and a little: a small cart's queue may still empty its shelf)
+        mine = sum(len(customer(s, st, run, i)['items']) for i in range(run['k'])) + sum(len(order(s, st, run, j)['items']) for j in range(n_on))
+        run['sk'] = max(stock, min(mine, round(fc['n'] * 1.2)))
         st['run'] = run
         st['left'] = 0
         return dict(message='🧑‍🍳 Mở hàng! Khách đầu tiên tới rồi.')
@@ -388,6 +393,7 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         run['m'] += money
         run['b'] = max(EVENT_CUST[0], min(EVENT_CUST[1], run['b'] + o.get('b', 0)))
         run['r'] = max(-3, min(3, run['r'] + o.get('r', 0)))
+        run['sk'] += o.get('k', 0)
         for _ in range(abs(o.get('s', 0))):
             _rate(st, 5 if o['s'] > 0 else 2)
         run['eo'].append([evd['id'], pick[0], money])

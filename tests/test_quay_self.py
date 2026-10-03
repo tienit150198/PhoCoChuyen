@@ -215,7 +215,7 @@ class Day(unittest.TestCase):
             for _k, label, outs in e['picks']:
                 self.assertLessEqual(len(label), 40)
                 for w, o in outs:
-                    self.assertTrue(w > 0 and set(o) <= {'m', 'b', 'r', 's', 't', 'need'} and o['t'], (e['id'], o))
+                    self.assertTrue(w > 0 and set(o) <= {'m', 'b', 'r', 's', 'k', 't', 'need'} and o['t'], (e['id'], o))
                     self.assertGreaterEqual(o.get('m', 0), -2)
         s = opened('sap', wallet=20000)
         sid = stall_id(s)
