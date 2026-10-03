@@ -82,16 +82,20 @@ class Week(unittest.TestCase):
         self.assertLessEqual(max(map(len, after)) - min(map(len, after)), 1)
 
     def test_this_release_s_careers_join_without_moving_anyone(self):
-        """pho, com and photobooth (1.5.0) each take one day; photobooth, added last, moves neither the 35 nor pho/com."""
-        self.assertEqual([c for c in CAREERS if c not in x3.FIRST], ['pho', 'com', 'photobooth'])
+        """pho, com, photobooth and naucom (1.5.0) each take one day; the one added last moves neither the 35 nor the
+        others of this release."""
+        new = ['pho', 'com', 'photobooth', 'naucom']
+        self.assertEqual([c for c in CAREERS if c not in x3.FIRST], new)
         for w in range(52):
             t = at(2026, 9, 28) + w * 7 * 86400
             days = x3.week(t)[1]
-            for cid in ('pho', 'com', 'photobooth'):
+            for cid in new:
                 self.assertEqual(sum(d.count(cid) for d in days), 1, cid)
-            with mock.patch.object(x3, 'CAREERS', tuple(c for c in CAREERS if c != 'photobooth')):
-                without = x3.week(t)[1]
-            self.assertEqual([[c for c in d if c != 'photobooth'] for d in days], without)
+            for last in new[2:]:
+                keep = new[:new.index(last)]
+                with mock.patch.object(x3, 'CAREERS', tuple(c for c in CAREERS if c not in new or c in keep)):
+                    without = x3.week(t)[1]
+                self.assertEqual([[c for c in d if c not in new or c in keep] for d in days], without, last)
 
     def test_the_day_turns_at_midnight_vn_time(self):
         sun, mon = at(2026, 10, 11, 23), at(2026, 10, 12, 0)
