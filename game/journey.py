@@ -33,6 +33,7 @@ from . import housing as hs   # 🏠 Nhà của bạn (game/housing.py)
 from . import reno as rn   # 🛠️ Sửa và trang trí nhà (game/reno.py)
 from . import deco as dc   # 🪴 Bày trí phòng (game/deco.py)
 from . import garage as gr   # 🚗 Xe & phương tiện (game/garage.py)
+from . import upkeep as up   # 🧾 Hóa đơn tháng: phí giữ xe, bảo trì nhà (game/upkeep.py)
 from . import system_gift as sg   # 🎁 Quà từ Phố Có Chuyện (game/system_gift.py)
 from . import live_effects as lfx   # 🧧 rewards from the live service (game/live_effects.py)
 from . import fair as fh   # 🏮 Hội chợ dân gian (game/fair.py)
@@ -655,6 +656,7 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     hs.on_life_day(s, result)   # 🏠 home installments and comfort (after the bank's morning)
     rn.on_life_day(s, result)   # 🛠️ wear and the Ấm cúng morning (after the home's)
     dc.on_life_day(s, result)   # 🪴 follow the player home, a rented room's Ấm cúng morning, a neighbour drops by
+    up.on_life_day(s, result)   # 🧾 the monthly bills of the vehicles and homes owned (after the home's morning)
     if action == 'start_day' and career in s['careers']:
         line = _emp().backdoor_remark(s, s['careers'][career], career)   # vào bằng cửa sau: one remark, day one
         if line:
@@ -999,3 +1001,4 @@ def validate(s: dict) -> None:
     rn.validate(s)
     dc.validate(s)
     gr.validate(s)   # 🚗 journey['garage'] (optional)
+    up.validate(s)   # 🧾 journey['upk'] (optional)

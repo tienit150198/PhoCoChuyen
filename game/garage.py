@@ -13,7 +13,12 @@ Owner (02/10): "thêm cả cái xe, máy bay, du thuyền cho mọi người mua
 * "Đang đi": the vehicle shown on the profile, by the house and on the player's card in Phố nghề (social.snapshot).
 * One perk, honest and capped: a ride out (đi dạo một vòng, ra khơi, bay ngắm phố), once per life day across every
   vehicle, adds a little tinh thần (TRIP spirit, journey.life.spirit). Fuel is a few xu, shown on the button and paid
-  from the wallet only when the player taps it. Nothing is ever charged by itself: no upkeep, no parking fee.
+  from the wallet only when the player taps it.
+* 🧾 Phí giữ xe & bảo dưỡng (owner 03/10, the xu sinks): every vehicle but a bicycle costs a small share of its price
+  a tháng (game/upkeep.py CAR_BP: xe máy 0,5 %, ô tô 0,75 %, du thuyền 1 %, máy bay 1,25 %), billed with the month's
+  other bills, shown on the listing, the buy page and each vehicle you own (`upkeep`, xu a tháng). Until 03/10 there
+  was none ("no upkeep, no parking fee"); nothing is billed for the days before (upkeep.since).
+* 03/10: three dearer models for the street's richest (Siêu xe Tia Chớp, Trực thăng riêng, Siêu du thuyền Ngọc Trai).
 * Selling back: SELL_PCT % of the price paid (rounded down to 10 xu), into the wallet, after a confirm.
 
 State `s['journey']['garage']` (absent until the first purchase; older builds never read it: journey.validate allows
@@ -35,6 +40,7 @@ import hashlib
 import re
 
 from . import bank as bk
+from . import upkeep as up   # 🧾 phí giữ xe & bảo dưỡng a tháng
 
 VERSION = 1
 KIND = 'life'                     # journey wallet history kind (an existing one: older builds validate the row)
@@ -87,12 +93,18 @@ VEHICLES = dict((
        4, 6, 'Chở cả nhà đi chơi', 'bac'),
     _v('mui_tran', 'car', '🏎️', 'Xe mui trần cổ', 12000, 'Sơn bóng loáng, vô lăng gỗ, mở mui ra là cả phố ngoái nhìn.',
        5, 8, 'Mở mui dạo phố', 'do'),
+    _v('sieu_xe', 'car', '🚘', 'Siêu xe Tia Chớp', 30000, 'Động cơ đặt giữa, cửa mở cánh chim. Đỗ trước chợ là cả hẻm kéo ra chụp hình.',
+       6, 20, 'Chạy một vòng cao tốc', 'vang'),
     _v('thuyen_buom', 'boat', '⛵', 'Thuyền buồm nhỏ', 15000, 'Hai cánh buồm trắng, cabin nhỏ đủ pha ấm trà. Đậu ở bến cuối đê.',
        5, 6, 'Giương buồm ra sông', 'trang'),
     _v('du_thuyen', 'boat', '🛥️', 'Du thuyền Hoàng Hôn', 45000, 'Boong gỗ rộng, phòng ngủ dưới khoang, sân thượng ngắm hoàng hôn trên vịnh.',
        6, 15, 'Ra khơi ngắm hoàng hôn', 'navy'),
+    _v('sieu_du_thuyen', 'boat', '🛳️', 'Siêu du thuyền Ngọc Trai', 150000, 'Ba tầng boong, bể bơi trên mũi, bếp riêng có đầu bếp. Neo ngoài vịnh là cả bến ngoái nhìn.',
+       7, 30, 'Mở tiệc trên boong', 'trang'),
     _v('may_bay_nho', 'plane', '🛩️', 'Máy bay cánh quạt', 30000, 'Hai chỗ ngồi, cánh cao, cất cánh từ đường băng cỏ ngoài sân bay tư nhân.',
        6, 15, 'Bay ngắm phố', 'vang'),
+    _v('truc_thang', 'plane', '🚁', 'Trực thăng riêng', 60000, 'Bốn ghế, đáp được trên sân thượng. Sáng uống cà phê ở phố, trưa đã ngắm biển.',
+       6, 20, 'Bay một vòng ngắm sông', 'navy'),
     _v('phan_luc', 'plane', '✈️', 'Phản lực riêng', 90000, 'Tám ghế da, bay êm như ngồi phòng khách. Cuối tuần ra đảo ăn hải sản rồi về.',
        7, 30, 'Bay ra đảo cuối tuần', 'trang'),
 ))
@@ -409,14 +421,19 @@ def public(s: dict) -> dict:
         if not car:
             continue
         cars.append(dict(id=vid, color=car['c'] if car['c'] in PAINT_INDEX else VEHICLES[vid]['paint'], plate=car['n'],
-                         day=car['d'], paid=car['p'], sell=sell_price(car['p']), trip_why=why_not_trip(s, vid)))
+                         day=car['d'], paid=car['p'], sell=sell_price(car['p']), trip_why=why_not_trip(s, vid),
+                         upkeep=up.car_month(vid, car['p'])))
     market = [dict(id=vid, why=why_not_buy(s, vid)) for vid in ORDER if vid not in g['cars']]
-    return dict(story=bool(j.get('story')), life_day=j['life_day'], have=_have(s), cars=cars, ride=g['ride'],
-                tripped=g['trip'] == j['life_day'], market=market, stats=dict(g['stats']))
+    out = dict(story=bool(j.get('story')), life_day=j['life_day'], have=_have(s), cars=cars, ride=g['ride'],
+               tripped=g['trip'] == j['life_day'], market=market, stats=dict(g['stats']))
+    bills = up.public(s) if j.get('story') and cars else None
+    if bills and (bills['car'] or bills['due']['car']):   # 🧾 this tháng's bill (absent: nothing to pay; an older server)
+        out['upkeep'] = dict(month=bills['car'], next=bills['next'], due=bills['due']['car'])
+    return out
 
 
 def catalogue() -> dict:
     """Static list for the client (bootstrap content, cached)."""
     return dict(groups=[dict(id=g[0], emoji=g[1], name=g[2], where=g[3], color=g[4]) for g in GROUPS],
-                vehicles=[dict(VEHICLES[vid]) for vid in ORDER],
+                vehicles=[dict(VEHICLES[vid], upkeep=up.car_month(vid, VEHICLES[vid]['price'])) for vid in ORDER],
                 paints=[dict(x) for x in PAINT_INDEX.values()], sell_pct=SELL_PCT, plate_max=PLATE_MAX)

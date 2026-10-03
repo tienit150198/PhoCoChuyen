@@ -52,12 +52,12 @@ class Ladder(unittest.TestCase):
         self.assertEqual(list(kn.LADDER), sorted(set(kn.LADDER)))
         steps = [b - a for a, b in zip(kn.LADDER, kn.LADDER[1:])]
         self.assertEqual(steps[2:], sorted(steps[2:]))                      # the steps grow (the board gets harder)
-        self.assertEqual([kn.prize(20, k) for k in range(0, 11)], [0, 22, 24, 32, 42, 56, 78, 108, 160, 240, 380])
+        self.assertEqual([kn.prize(20, k) for k in range(0, 11)], [0, 22, 24, 32, 42, 56, 72, 92, 120, 156, 200])
         self.assertEqual((kn.prize(2, 1), kn.prize(5, 1), kn.prize(10, 1)), (2, 6, 11))   # rounded half up
         self.assertEqual(kn.x2_bonus(10, 4), kn.prize(10, 4) - kn.prize(10, 3))
         self.assertEqual(kn.prize(10, 4, 7), kn.prize(10, 4) + 7)
-        self.assertEqual(kn.prizes(2), (2, 3, 4, 5, 6, 8, 11, 16, 24, 38))   # rounding never makes a step worth 0
-        self.assertEqual(kn.prizes(5), (6, 7, 8, 11, 14, 20, 27, 40, 60, 95))
+        self.assertEqual(kn.prizes(2), (2, 3, 4, 5, 6, 7, 9, 12, 16, 20))   # rounding never makes a step worth 0
+        self.assertEqual(kn.prizes(5), (6, 7, 8, 11, 14, 18, 23, 30, 39, 50))
         for st in kn.STAKES:
             self.assertTrue(all(kn.x2_bonus(st, k) >= 1 for k in range(2, kn.LEVELS + 1)), st)
 
@@ -74,8 +74,12 @@ class Ladder(unittest.TestCase):
     def test_the_return_per_xu_with_the_documented_clear_rates(self):
         import sim_fair_knife as sim                                        # the docstring's table (scripts/)
         avg = [.85, .82, .78, .77, .73, .71, .69, .66, .63, .60]
-        for k in (1, 3, 5, 8):
+        for k in (1, 3, 5):
             self.assertTrue(.83 <= sim.returns(avg, 8000, lambda c, x, r, k=k: c >= k) <= 1.0, k)
+        # 03/10 (the xu sinks): levels 6..10 pay less, going deep has a house edge (was .91 after level 8)
+        self.assertTrue(.6 <= sim.returns(avg, 8000, lambda c, x, r: c >= 8) <= .8)
+        good = [1.0, .98, .97, .96, .94, .94, .93, .91, .87, .86]
+        self.assertLess(sim.returns(good, 8000, lambda c, x, r: c >= 10), 7)   # phá đảo: about 6x (was 11.6x)
         sensible = sim.returns(avg, 8000, lambda c, x, r: c >= r.randint(2, 5) and not x)
         self.assertTrue(.88 <= sensible <= 1.0, sensible)
 

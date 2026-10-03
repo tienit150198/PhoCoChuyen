@@ -49,7 +49,7 @@ Thử vận may, small stakes:
   older server ignores it). The phi tiêu's 'dt' {n, w, b} in journey['fair'] stays as it was (read, never written);
   an older client's fair_dart is refused with a reload hint, and with no public `darts` it leaves the stall out.
 * 🎟️ Vé số cào (game/fair_scratch.py, owner 03/10): buy a vé of one scratch.TIERS price; the server decides it at the
-  purchase (luck_p(…, 'xs', …): wins ~42 %, ~1.03 xu back per xu, ~0.95 at the floor) and pays the prize at once; the
+  purchase (luck_p(…, 'xs', …): wins ~39.5 %, ~0.97 xu back per xu, ~0.96 at the floor) and pays the prize at once; the
   player scratches the silver off by hand to see it. Nothing new in the save (the Sổ ví row counts the tickets).
 * 🕯️ Chiếu trong (back corner): xóc đĩa chẵn lẻ (four coins, 1:1), bigger stakes XD_MIN..XD_MAX; the side picked
   is right with win_p, the coins any pattern of that parity alike (xd_toss). Each round

@@ -11,11 +11,12 @@ rule on the ticket, "3 ô giống nhau trúng số đó", always reads the same 
 open; nothing it sends decides anything.
 
 The table (a simulation of these functions, 100 000 tickets each):
-  P_HI 42 %: wins 42.0 %, 1.03 xu back per xu of tickets, 22 % of tickets come out ahead; at the floor (P_LO 39 %: today's
-  net far up, or a long run of tickets in a row): wins 39.0 %, 0.95 xu back; runs of 60 tickets then a break: 0.97.
-  About one winning ticket in two only gives the price back (hoàn vé); 10x or more is ~1 ticket in 48, 50x ~1 in 1 200.
-  The longest losing streak seen was 22 tickets, the longest winning one 11; 50 tickets of 5 xu: median -20 xu, 38 %
-  of such sessions end ahead.
+  P_HI 39.5 %: wins 39.5 %, 0.97 xu back per xu of tickets, 21 % of tickets come out ahead; at the floor (P_LO 39 %:
+  today's net far up, or a long run of tickets in a row): wins 39.0 %, 0.96 xu back; runs of 60 tickets then a break:
+  0.97. About one winning ticket in two only gives the price back (hoàn vé); 10x or more is ~1 ticket in 50, 50x ~1 in
+  1 300. 50 tickets of 5 xu: median -25 xu, 37 % of such sessions end ahead.
+  (Until 03/10 P_HI was 42 %, 1.03 back: the stall paid out more than it took. The xu sinks, docs/ECONOMY_SINKS.md, give
+  it a small house edge like a real vé số, still "không lỗ quá".)
 """
 from __future__ import annotations
 
@@ -28,7 +29,7 @@ PRIZES = ((1, 470), (2, 280), (3, 115), (5, 85), (10, 40), (20, 8), (50, 2))
 MULTS = tuple(m for m, _ in PRIZES)
 # the odds a ticket wins anything: the shared taper (game.fair.odds) with the stall's own ends; a long run of tickets
 # cools RUN_STEP a ticket (game.fair.RUN_RULES['xs']) down to P_LO too
-P_HI, P_LO = .42, .39
+P_HI, P_LO = .395, .39    # 0.97 / 0.96 xu back per xu (03/10; P_HI was .42: 1.03)
 RUN_STEP = .005
 
 
