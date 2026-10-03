@@ -162,7 +162,7 @@ function readInput(dt){
 function say(text,{key='',ms=3200,now=false}={}){
   if(key){if(F.ph.said?.has(key))return;(F.ph.said??=new Set()).add(key);}
   const line={text:tr(text),ms};
-  if(now||!F.say||F.time>F.sayUntil-400){F.queue=[];show(line);}else F.queue.push(line);
+  if(now||!F.say||F.time>F.sayUntil-.4){F.queue=[];show(line);}else F.queue.push(line);
 }
 function show(line){
   F.say=line.text;F.sayUntil=F.time+line.ms/1000;
@@ -456,7 +456,7 @@ function stepApproach(){
     if(!P.g1.stable)say('🧑‍✈️ Chưa ổn định mà vẫn xuống… chị ghi lại nhé.',{now:true,ms:2800});
     send('pl_gate',{flown:{stable:P.g1.stable}}).then(r=>{if(!r)lost();});
   }
-  if(hft<=500)say('🧑‍✈️ Năm trăm.',{key:'500',ms:1400});
+  if(hft<=500)say('🧑‍✈️ Năm trăm.',{key:'500',ms:1400,now:true});
   if(hft<=200&&!P.g2){
     const j=judge(),fly=t.fly||{};
     P.g2={stable:j.stable,why:j.why};
@@ -466,7 +466,7 @@ function stepApproach(){
     say(line,{now:true,ms:3000});
     if(!j.stable||!t.ap&&(fly.rwy===false||(fly.wind||0)>28))F.el.querySelector('.pl-fly-ga').classList.add('hot');
   }
-  for(const [h,s] of [[50,'🔊 Năm mươi.'],[30,'🔊 Ba mươi.'],[10,'🔊 Mười.']])if(hft<=h)say(s,{key:'ra'+h,ms:900,now:h===30});
+  for(const [h,s] of [[50,'🔊 Năm mươi.'],[30,'🔊 Ba mươi.'],[10,'🔊 Mười.']])if(hft<=h)say(s,{key:'ra'+h,ms:900,now:true});
   if(hft<=25&&S.Tt>.15){S.Tt=0;say('🧑‍✈️ Thu ga, ghìm mũi!',{key:'flare',now:true,ms:1600});}
   // The captain takes it: far too low short of the runway, or not lined up at all.
   const dist=AIM-S.z;
@@ -487,7 +487,8 @@ function touchdown(){
   F.el.querySelector('.pl-fly-ga').hidden=true;
   setPhase('rollout',{touch});
   F.ph.stable=stable;
-  const go=()=>send('pl_gate',{flown:{stable,touch}},false).then(r=>{if(!r){lost();return;}F.ph.reply=r;});
+  // The landing's own words in the speech line (a toast would cover the panel); the money lines come with the parking.
+  const go=()=>send('pl_gate',{flown:{stable,touch}}).then(r=>{if(!r){lost();return;}F.ph.reply=r;if(r.message)say(r.message,{ms:4200});});
   // The 1,000 ft gate first (a quick descent can beat it), then the landing.
   if(!P.g1sent)send('pl_gate',{flown:{stable:P.g1?P.g1.stable:true}}).then(r=>r?go():lost());else go();
 }
@@ -495,7 +496,7 @@ function stepRollout(dt){
   const P=F.ph;
   S.Tt=0;S.T=0;S.th=lerp(S.th,0,dt*2);S.ph=lerp(S.ph,0,dt*4);S.x=lerp(S.x,0,dt*.6);S.psi=lerp(S.psi,0,dt*2);
   if(S.V<35*KT&&P.reply&&!P.end){P.end=F.time;say('🅿️ Lăn vào bến…',{ms:2000});chip('🅿️ Lăn vào bến');}
-  if(P.end&&F.time-P.end>2){const fn=F.opts.done;close();fn?.();}
+  if(P.end&&F.time-P.end>2&&(!F.say||F.time>F.sayUntil-.3)){const fn=F.opts.done;close();fn?.();}
 }
 
 /* ---------------------------------------------------------------- the go-around */
@@ -562,7 +563,7 @@ function physics(dt){
   S.h+=S.vs*dts;
   if(ph==='cell')S.V=lerp(S.V,110,clamp(dt,0,1));    // the autothrottle holds the cruise
   else S.V=clamp(S.V+(S.T*A_T-K_D*S.V*S.V-G*Math.sin(gam))*Math.min(dts,dt*1.2),25,160);   // speed and heading answer calmly
-  S.psi+=G*Math.tan(S.ph)/Math.max(S.V,40)*Math.min(dts,dt*1.5);
+  S.psi+=G*Math.tan(S.ph)/Math.max(S.V,40)*(ph==='cell'?dts:Math.min(dts,dt*1.5));   // up high a bank turns the trip; low, calmly
   S.x+=(S.V*Math.cos(gam)*Math.sin(S.psi)+w.cw+(gu?n1*1.4*gu:0))*dts;
   S.z+=S.V*Math.cos(gam)*Math.cos(S.psi)*dts;
   if(S.h<=0){
@@ -673,7 +674,7 @@ function makeScene(kind,light,seed,bare=false){
       const w=lerp(250,900,r()),d=lerp(250,1100,r());
       sc.patches.push({pts:[[cx-w,cz-d],[cx+w,cz-d],[cx+w,cz+d],[cx-w,cz+d]],col:fieldCols[i%fieldCols.length]});
     }
-    if(kind==='delta'){const xs=-900-r()*800;sc.patches.push({pts:[[xs,-12000],[xs+160,-12000],[xs+420,15000],[xs+260,15000]],col:night?'#0b1420':'#7b8f86'});}
+    if(kind==='delta'){const xs=-1400-r()*900;sc.patches.push({pts:[[xs,-12000],[xs+110,-12000],[xs+370,15000],[xs+260,15000]],col:night?'#0b1420':'#4f86a6'});}   // a river
   }
   // The terminal and the tower beside the apron.
   sc.boxes.push({x:200,z:600,w:60,d:130,h:14,col:'#e7e3d8',roof:'#b9b3a6',win:true},{x:120,z:930,w:8,d:8,h:34,col:'#d9d5ca',roof:'#5d7d96',win:true});
@@ -773,7 +774,7 @@ function hills(c,hy,sc){
 }
 function runway(c,sc,w){
   const night=sc.night,fogHide=w.base&&S.h>w.base;
-  polygon(c,[[-HALF-6,-20],[HALF+6,-20],[HALF+6,LEN+20],[-HALF-6,LEN+20]],night?'#121519':'#8d9a7b');
+  polygon(c,[[-HALF-14,-60],[HALF+14,-60],[HALF+14,LEN+60],[-HALF-14,LEN+60]],night?'#121519':'#b3b8a2');   // the strip, pale: seen from far
   polygon(c,[[-HALF,0],[HALF,0],[HALF,LEN],[-HALF,LEN]],night?'#24272c':'#4a4d52');
   const paint=night?'rgba(220,224,230,.55)':'#f2f2ee';
   // threshold bars, the aiming point, touchdown zone, centre line
