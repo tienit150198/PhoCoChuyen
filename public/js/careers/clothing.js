@@ -6,6 +6,7 @@ import {keepBarAboveFooter} from './food_kit.js';
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,stepLine} from '../v4/guide.js';
 import {restockButton} from '../v4/restock.js';
+import {tomorrowCard} from './tomorrow_kit.js';
 import {cashPanel,changeStep,changePayload,tray,tillActions} from './till.js';
 import * as SF from './stage_fold.js';
 import {reqPin,pinTop,asmActions,finalStep} from './asm_kit.js';
@@ -536,4 +537,8 @@ export default {
   },
   tapStop:op=>op==='ao_sew_stop',
   dock:[['inventory','box','Kho','Nhập hàng'],['car:intro','question','Giới thiệu nghề','Công việc & sao']],
+  // Day summary: "🌅 Ngày mai" (tomorrow's mood, the racks to refill) first, the day folded.
+  summary(data,x){
+    return tomorrowCard(x,data,{lift:/^📅 Ngày mai/,title:'👗 Sổ tiệm hôm nay',labels:{sales:'Doanh thu quầy (xu)'}});
+  },
 };
