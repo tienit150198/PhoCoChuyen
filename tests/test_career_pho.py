@@ -5,7 +5,13 @@ the pot running low and the top-up, cash through the shared till, the apprentice
 determinism, save validation and old saves."""
 import copy
 import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
 import unittest
+from pathlib import Path
 
 from tests.helpers import Journey
 from game import journey as jr
@@ -702,6 +708,99 @@ class OldSaves(Base):
         for cid, raw in before.items():
             self.assertEqual(json.dumps(m['careers'][cid], sort_keys=True, ensure_ascii=False), raw, cid)
         self.assertIn('pho', m['journey']['unlocked'])
+
+
+# The release this branch starts from: saves must cross to it and back (rolling release, rollback).
+BASE_REF = '1aba75d'
+ROOT = Path(__file__).resolve().parents[1]
+OLD_SAVE = ('import json,sys;from game.engine import new_state,apply_action,validate_state;'
+            's=new_state();s,_=apply_action(s,"milk_tea","select_career",{});s,_=apply_action(s,"milk_tea","start_day",{});'
+            'validate_state(s);print(json.dumps(s))')
+OLD_LOAD = ('import json,sys;from game.engine import validate_state,migrate_state;'
+            's=migrate_state(json.load(sys.stdin));validate_state(s);print(json.dumps(s))')
+
+
+def rollback_strip(s):
+    """What a rollback to a tree without the shop needs: the career block gone, the id and the shop's NPCs and
+    story beats out of every list and key."""
+    s = copy.deepcopy(s)
+    s['careers'].pop('pho', None)
+    if s.get('current') == 'pho':
+        s['current'] = next(iter(s['careers']))
+
+    def ours(v):
+        return isinstance(v, str) and (v == 'pho' or v.startswith('pho_'))
+
+    def scrub(o):
+        if isinstance(o, dict):
+            for k in [k for k in o if ours(k)]:
+                del o[k]
+            for v in o.values():
+                scrub(v)
+        elif isinstance(o, list):
+            # 'pho', and records about the shop: story queue entries, the shop's NPCs in the closeness log
+            o[:] = [v for v in o if not ours(v) and not (isinstance(v, dict) and any(ours(x) for x in v.values()))]
+            for v in o:
+                scrub(v)
+    for k, v in s.items():
+        if k != 'careers':
+            scrub(v)
+    return s
+
+
+class OldTree(Base):
+    """Both ways across the base release, each tree in its own process."""
+    tree = None
+    play_day = Days.play_day
+
+    @classmethod
+    def setUpClass(cls):
+        old = os.environ.get('MNL_OLD_TREE')
+        if old:
+            cls.tree = old
+            return
+        if not shutil.which('git') or not (ROOT / '.git').exists():
+            raise unittest.SkipTest('needs a git checkout or MNL_OLD_TREE')
+        if subprocess.run(['git', 'cat-file', '-e', BASE_REF + '^{commit}'], cwd=ROOT, capture_output=True).returncode:
+            raise unittest.SkipTest(f'{BASE_REF} is not in this clone')
+        cls._tmp = tempfile.TemporaryDirectory(prefix='base-')
+        archive = subprocess.run(['git', 'archive', BASE_REF, 'game', 'reference', 'i18n'], cwd=ROOT, capture_output=True, check=True).stdout
+        subprocess.run(['tar', '-x', '-C', cls._tmp.name], input=archive, check=True)
+        cls.tree = cls._tmp.name
+
+    @classmethod
+    def tearDownClass(cls):
+        if getattr(cls, '_tmp', None):
+            cls._tmp.cleanup()
+
+    def in_base(self, prog, data=None):
+        env = dict(os.environ, PYTHONPATH=os.pathsep.join(p for p in (self.tree, os.environ.get('PYTHONPATH')) if p))
+        out = subprocess.run([sys.executable, '-c', prog], input=data, capture_output=True, text=True, encoding='utf-8',
+                             cwd=self.tree, env=env, timeout=300)
+        return out
+
+    def test_an_old_save_gains_the_shop_and_a_played_save_goes_back_after_the_strip(self):
+        out = self.in_base(OLD_SAVE)
+        self.assertEqual(out.returncode, 0, out.stderr[-2000:])
+        s = migrate_state(json.loads(out.stdout))
+        validate_state(s)
+        self.assertEqual(json.dumps(s['careers']['pho'], sort_keys=True), json.dumps(initial_career('pho'), sort_keys=True))
+        # Played here for two days, then rolled back.
+        self.j = Journey('pho')
+        self.j.act('pho_intro')
+        for _ in range(2):
+            self.play_day()
+        played = json.dumps(self.j.state, ensure_ascii=False)
+        back = self.in_base(OLD_LOAD, played)
+        self.assertNotEqual(back.returncode, 0, 'the base tree is expected to refuse an unknown career as is')
+        back = self.in_base(OLD_LOAD, json.dumps(rollback_strip(self.j.state), ensure_ascii=False))
+        self.assertEqual(back.returncode, 0, back.stderr[-2000:])
+        again = migrate_state(json.loads(back.stdout))   # and forward once more: the shop comes back fresh
+        validate_state(again)
+        self.assertEqual(json.dumps(again['careers']['pho'], sort_keys=True), json.dumps(initial_career('pho'), sort_keys=True))
+        for cid in again['careers']:
+            if cid != 'pho':
+                self.assertEqual(again['careers'][cid]['tasks'], self.j.state['careers'][cid]['tasks'], cid)
 
 
 if __name__ == '__main__':
