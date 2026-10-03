@@ -452,6 +452,8 @@ async def run(shots: Path) -> list:
             await bride.page.wait_for_selector('.walk-sheet .wk-end:not([hidden])', timeout=20000)
             await g2.page.wait_for_selector('.walk-sheet .wk-end:not([hidden])', timeout=20000)
             await shot(g2, '10-party-end')
+            # one popup at a time (v4/popup-gate.js): the couple's card waits until the bride leaves the party sheet
+            await bride.page.keyboard.press('Escape')
             await bride.page.wait_for_selector('#gfDialog[open] [data-gf=ok]', timeout=20000)
             card = await bride.page.inner_text('#gfTitle')
             check('Đám cưới' in card, f'the private card for the couple ({card!r})')
