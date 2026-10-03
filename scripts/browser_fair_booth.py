@@ -192,14 +192,17 @@ async def run(shots: Path) -> list:
                 try:
                     for attempt in range(3):   # the room redraws while the camera counts: a control can be swapped mid-click
                         try:
-                            await p.page.locator(sel).first.scroll_into_view_if_needed(timeout=10000)
+                            try:
+                                await p.page.locator(sel).first.scroll_into_view_if_needed(timeout=6000)
+                            except Exception:   # a page that keeps moving: a plain scroll does it
+                                await p.page.evaluate("s=>document.querySelector(s)?.scrollIntoView({block:'center'})", sel)
                             await bring_up(p, sel)
-                            await p.page.click(sel, timeout=10000)
+                            await p.page.click(sel, timeout=30000 if attempt else 15000)
                             break
                         except Exception as e:
-                            if attempt == 2 or 'not attached' not in str(e):
+                            if attempt == 2 or ('not attached' not in str(e) and 'Timeout' not in str(e)):
                                 raise
-                            await p.page.wait_for_timeout(150)
+                            await p.page.wait_for_timeout(200)
                 except Exception:
                     if shots:
                         await p.page.screenshot(path=str(shots / f'zz-click-{p.name}-{op}.png'))
@@ -235,7 +238,13 @@ async def run(shots: Path) -> list:
                 await host.page.screenshot(path=str(shots / f'{tag}-countdown-{host.name}.png'))
                 for n, p, op, v in between:
                     await poll(host.page, f"({ST}).shots>={n}", 8)
-                    await click(p, op, v)
+                    if (await p.page.evaluate(ST))['step'] != 'shoot':
+                        continue   # a slow machine: the camera already took the last shot on this phone
+                    try:
+                        await click(p, op, v)
+                    except Exception:
+                        if (await p.page.evaluate(ST))['step'] == 'shoot':
+                            raise
                 for p in ppl:
                     check(await poll(p.page, f"({ST}).step==='print'&&({ST}).url", 25), f'{tag}: {p.name} gets the strip')
                     st = await p.page.evaluate(ST)
@@ -444,6 +453,10 @@ async def run(shots: Path) -> list:
                 await a.page.screenshot(path=str(shots / f'L-{w}-frame.png'))
             await a.page.set_viewport_size(dict(width=390, height=844))
             await a.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
+            muts = await a.page.evaluate("""new Promise(r=>{let n=0;const o=new MutationObserver(l=>{n+=l.length;});
+              o.observe(document.querySelector('.fh-sheet'),{subtree:true,childList:true,attributes:true,characterData:true});
+              setTimeout(()=>{o.disconnect();r(n);},1500);})""")
+            check(muts <= 4, f'the room sits still while nobody taps (DOM changes in 1.5 s: {muts})')
             await click(a, 'pbframe', 'retro')
             await click(a, 'pbbg', 'den')
             await click(a, 'pbpose', 'vay')
