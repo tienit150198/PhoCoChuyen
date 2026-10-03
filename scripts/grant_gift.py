@@ -12,7 +12,7 @@ request id sysgift-<id>, once) and shows them a card with the title and text unt
 Idempotent by --id: running the same command again changes nothing ("đã có"). Reusing an id
 for a different save, amount or text is refused. Without --id the id is derived from the save,
 the coins and the words, so an exact repeat is a no-op too. --user <username> finds the sid of
-an account. Coins: 1..1000.
+an account. Coins: 1..100000; above 1000 also pass --large.
 
 With DATABASE_URL set (PostgreSQL, see docs/POSTGRES.md) --db is ignored. The table comes with
 the release (schema 4); on PostgreSQL the tool refuses to run before that release is live.
@@ -76,7 +76,10 @@ def main() -> int:
     ap.add_argument('--text', required=True, help=f'card text (<= {sg.TEXT_MAX} chars)')
     ap.add_argument('--id', help='stable gift id (letters, digits, . _ -; 3-64 chars)')
     ap.add_argument('--dry-run', action='store_true', help='check and print, write nothing')
+    ap.add_argument('--large', action='store_true', help=f'confirm a gift above {sg.LARGE} xu (guards against a typo)')
     a = ap.parse_args()
+    if a.coins > sg.LARGE and not a.large:
+        sys.exit(f'Không ghi gì: {a.coins} xu lớn hơn {sg.LARGE}. Đúng số này thì thêm --large.')
     if not dbm.database_url() and not Path(a.db).exists():
         sys.exit(f'Không thấy cơ sở dữ liệu: {a.db}')
     if not _table_ready(a.db):

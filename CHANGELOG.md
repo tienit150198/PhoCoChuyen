@@ -1,3 +1,12 @@
+# v1.5.3 — 🧮 ô số kế toán nhận số âm, phép tính, đơn vị; 💍 chờ 3 tiếng sau ly hôn
+
+- `public/js/v4/amount-parse.js`: ô số của Học TT99, kế toán doanh nghiệp/tập đoàn, thuế-lương là ô chữ (bàn phím đầy đủ), hiểu `-`/`−`/(…), dấu nghìn, đ/k/tr/tỷ, + − × / ( ), đơn vị cuối áp cho cả phép tính; xem trước "= …". Server không đổi.
+- Hôn nhân: sau ly hôn chờ `REMARRY_HOURS` = 3 tiếng (trước 3 ngày); 26 người đang chờ đã được đưa về mốc mới trên prod (sao lưu /root/remarry_backup_20261003.csv).
+
+# v1.5.2 — 🎁 Quà hệ thống tới 100.000 xu
+
+- `game/system_gift.py`: MAX_COINS 1000 → 100000 (chủ game tặng một người chơi 100k xu, 03/10); `scripts/grant_gift.py` đòi `--large` khi trên 1000 xu để vẫn chặn gõ nhầm.
+
 # v1.5.1 — 🎖️ Thăng tiến & ca quản lý, 🏪 quầy riêng, 🧹🍲👶 ba nghề nội trợ, 🛡️ rủi ro & tiệm vàng, ✨ UI gọn
 
 - Thăng tiến mọi nghề (`game/promotion.py`): 4 bậc, không giáng chức; làm thuê tăng lương 8–35%, chủ quán thêm tip khách quen; từ bậc 3 mở Ca quản lý (chia việc, kiểm việc, gỡ rối, chốt ca).

@@ -5,6 +5,7 @@
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle,
   coachOf,goto,gotoAction,guideOf,shut,shutWork,shutBar,summaryCard} from './office_kit.js';
 import {pending,stepLine} from '../v4/guide.js';
+import {amountAttrs,amountNoteHTML,amountOf,refreshAmountNote} from '../v4/amount-parse.js';
 
 const BOSS='Chị Hồng';
 const fmtN=n=>String(Math.trunc(Number(n)));   // whole numbers as the player types them: 12400, never 12.400 (owner, 01/10)
@@ -22,11 +23,9 @@ function shortMiss(st,r){
   return `✗ Chưa khớp${n?` ${n-b}/${n} ô`:''}.${lunch?' '+lunch:''}`;
 }
 
-/** Integer typed by a person: "12.400", "12 400", "-900" → 12400 / -900; anything else → null. */
-function parseIntVN(raw){
-  const s=String(raw??'').trim().replace(/−/g,'-').replace(/[\s.,_]/g,'').replace(/xu$/i,'');
-  return /^-?\d{1,10}$/.test(s)?Number(s):null;
-}
+/** Integer typed by a person: "12.400", "12 400", "-900", "12400 × 8%", "1,5tr" → a whole number of xu; else null
+ *  (shared with the accounting desks: v4/amount-parse.js). */
+const parseIntVN=raw=>amountOf(raw,'xu');
 
 /** Tiny calculator (no eval: CSP-safe). + − × ÷ ( ) and postfix %. "12.400" = twelve thousand four hundred. */
 function calc(src){
@@ -101,8 +100,8 @@ function field(t,st,x,{key,label,options,miss}){
   const id=key?fid(t,st.id,key):fid(t,st.id),bad=!!miss?.bad?.includes(key),ok=!!miss&&!bad&&st.kind==='fields';
   const how=HOW[`${t.form}:${st.id}`]?.[key],mark=bad?' aria-invalid="true"':'';
   const box=options?`<select class="${bad?'tp-bad':''}" id="${id}" data-preserve${mark}><option value="">Chọn…</option>${options.map(o=>`<option value="${x.esc(o.id)}">${x.esc(o.label)}</option>`).join('')}</select>`
-    :`<input class="input tp-num${bad?' tp-bad':''}" id="${id}" data-preserve type="text" inputmode="numeric" autocomplete="off" placeholder="0"${mark}>`;
-  return `<div class="tp-field${bad?' bad':ok?' ok':''}"><div class="tp-field-top"><label for="${id}">${x.esc(label)}</label>${bad?'<span class="tp-ftag bad">✗ chưa khớp</span>':ok?'<span class="tp-ftag ok">✓ khớp</span>':''}</div>
+    :`<input class="input tp-num${bad?' tp-bad':''}" id="${id}" data-preserve ${amountAttrs('xu',{plain:true})} placeholder="0"${mark}>${amountNoteHTML('','xu')}`;
+  return `<div class="tp-field${bad?' bad':ok?' ok':''}" data-amt-box><div class="tp-field-top"><label for="${id}">${x.esc(label)}</label>${bad?'<span class="tp-ftag bad">✗ chưa khớp</span>':ok?'<span class="tp-ftag ok">✓ khớp</span>':''}</div>
     ${how?`<details class="tp-how" id="${id}-how"><summary>📐 Cách tính</summary><p>${x.esc(how)}</p></details>`:''}${box}</div>`;
 }
 
@@ -476,7 +475,7 @@ export default {
       extra:[data.claims_new?`🙋 <b>${Number(data.claims_new)} người</b> sẽ tới khiếu nại sáng mai`:''],
       body:`${insp}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}${life?`<h4 class="section-title">🧭 Đời sống văn phòng</h4><div class="kv">${life}</div>`:''}`});
   },
-  tick(root){keepBarAboveFooter(root);},
+  tick(root){keepBarAboveFooter(root);root.querySelectorAll('input[data-amount]').forEach(refreshAmountNote);},   // a render empties the notes: the kept values fill them again
   actions:{
     tab:switchTab,
     fold:foldToggle,
@@ -530,7 +529,7 @@ export default {
       else if(st.kind==='match'){answer={};for(const l of st.left){const v=val(fid(t,st.id,l.id));if(!v){answer=null;break;}answer[l.id]=v;}}
       else if(st.kind==='fields'){answer={};for(const f of st.fields){const raw=val(fid(t,st.id,f.id));const v=f.options?raw:parseIntVN(raw);if(v===null||v===''){answer=null;bad={id:fid(t,st.id,f.id),label:f.label,empty:!String(raw).trim(),select:!!f.options};break;}answer[f.id]=v;}}
       if(answer===null&&bad){   // say which box, and take the player there (it is often off screen on a phone)
-        x.toast(bad.select?`Chọn “${bad.label}” trước nhé.`:bad.empty?`Còn trống ô “${bad.label}”. Không có thì ghi 0 nhé.`:`Ô “${bad.label}” chỉ ghi số, vd 14250.`,true);
+        x.toast(bad.select?`Chọn “${bad.label}” trước nhé.`:bad.empty?`Còn trống ô “${bad.label}”. Không có thì ghi 0 nhé.`:`Ô “${bad.label}” chưa đọc được số, vd 14250 hoặc 12400 × 8%.`,true);
         const box=document.getElementById(bad.id);if(box){box.classList.add('tp-bad');box.addEventListener('input',()=>box.classList.remove('tp-bad'),{once:true});box.scrollIntoView({block:'center'});box.focus({preventScroll:true});}
         return;}
       if(answer===null){x.toast(st.kind==='choice'?'Chạm chọn một đáp án trước nhé.':st.kind==='multi'?'Chạm chọn ít nhất một ô trước nhé.':st.kind==='order'?'Chạm đủ các việc theo thứ tự trước nhé.':st.kind==='match'?'Chọn đủ từng dòng trước nhé.':'Điền đủ các ô số trước khi kiểm tra nhé.',true);return;}
