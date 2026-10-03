@@ -149,6 +149,6 @@
 .career-job.pl .pl-sky-rows{display:grid;grid-template-columns:6.2em minmax(0,1fr);gap:8px 8px;align-items:center;margin:10px 0}
 .career-job.pl .pl-sky-rows>small{color:var(--pl-muted);font-size:12px;line-height:1.2}
 .career-job.pl .pl-sky-seg{display:flex;flex-wrap:wrap;gap:6px}
-.career-job.pl .pl-sky-opt{min-height:40px;padding:6px 12px;border-radius:999px;border:1px solid var(--pl-line);background:var(--pl-surface);color:var(--pl-ink);font-weight:700}
+.career-job.pl .pl-sky-opt{min-height:44px;padding:6px 12px;border-radius:999px;border:1px solid var(--pl-line);background:var(--pl-surface);color:var(--pl-ink);font-weight:700}
 .career-job.pl .pl-sky-opt.on{background:var(--pl-navy);border-color:var(--pl-navy);color:#fff}
 .career-job.pl .pl-sky-go{width:100%}
