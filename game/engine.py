@@ -678,6 +678,11 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         summary["happen"]=hap_summary
         left=ab.on_close(s,c,career,oldday)
         if left:summary["abandon"]=left
+        # The day's figures once everything has closed: the salary and the career's own closing are in, and
+        # owner transfers are not (journey._transfer keeps them out of earnings/costs). The fund's change since the
+        # morning is not used: a withdrawal larger than the morning fund clamps day_start_money at 0 and lost the
+        # profit above it, which shorted the 🔥 x3 bonus (journey._end_of_day pays on this net).
+        summary.update(income=c["earnings"],cost=c["costs"],net=c["earnings"]-c["costs"])
         c["shift_summary"]=summary;c["open"]=False;c["day"]+=1;c["day_completed"]=0;c["day_events"]=0
         c["day_start_money"]=c["money"];c["earnings"]=0;c["costs"]=0
         if c["event"] and c["event"]["stage"]=="resolved":c["event"]=None

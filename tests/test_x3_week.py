@@ -137,5 +137,37 @@ class Shift(unittest.TestCase):
         self.assertEqual(self.close(cid, 0, True)[2], [])
 
 
+class ClosedDay(unittest.TestCase):
+    """The bonus is paid on the whole day: owner draws don't shrink it and the day's salary is in it."""
+    def day(self, cid, earn, draw=False, salary=0):
+        from game import engine as E
+        s = story()
+        s, _ = E.apply_action(s, cid, 'select_career', {'confirm': True})
+        s, _ = E.apply_action(s, cid, 'start_day')
+        E.money(s, s['careers'][cid], earn, 'khách mua')
+        if draw:   # take more than the morning fund home: day_start_money clamps at 0
+            s, _ = E.apply_action(s, None, 'jr_withdraw', {'career': cid, 'amount': jr.withdraw_max(s['careers'][cid])})
+            self.assertEqual(s['careers'][cid]['day_start_money'], 0)
+        def pay(st, c, career):
+            if not salary:
+                return None
+            E.money(st, c, salary, 'Lương ngày', category='salary')
+            return dict(salary=salary, probation=False)
+        with mock.patch.object(x3, 'on', lambda c, t=None: c == cid), mock.patch.object(E.emp, 'on_close', pay):
+            s, r = E.apply_action(s, cid, 'end_day', {'carry_event': True})
+        validate_state(s)
+        return r['summary'], [h['amount'] for h in s['journey']['history'] if h['label'].startswith('🔥')]
+
+    def test_a_draw_bigger_than_the_morning_fund_keeps_the_bonus(self):
+        summary, rows = self.day('grocery', 300, draw=True)
+        self.assertEqual((summary['income'], summary['net']), (300, 300))
+        self.assertEqual(rows, [600])
+
+    def test_the_salary_counts(self):
+        summary, rows = self.day('grocery', 40, salary=100)
+        self.assertEqual(summary['net'], 140)
+        self.assertEqual(rows, [280])
+
+
 if __name__ == '__main__':
     unittest.main()

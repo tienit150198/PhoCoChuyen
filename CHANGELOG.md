@@ -1,3 +1,9 @@
+# v1.4.28 — 🔥 Thưởng x3 tính đủ cả ngày
+
+Chủ game: "nghe bảo lương x3 nhưng mà chưa tăng đúng kìa".
+
+- `engine.end_day`: tổng kết (thu, chi, lời) đọc sau khi đã trả lương (`emp.on_close`) và khép ca riêng của nghề; lời = thu − chi (rút/góp vốn đã bị loại khỏi thu/chi). Trước đây lời lấy trước khi trả lương và bằng quỹ − `day_start_money`; rút quá vốn đầu ngày làm mốc kẹt ở 0 và mất phần lời. Ví dụ: vốn 320, bán 300, rút 540 → thưởng 160 thay vì 600; nghề có lương gần như không được thưởng x3. Save không đổi.
+
 # v1.4.27 — 📚 Đề kế toán TT99 hết dính số
 
 Người chơi (Viên Nhu trên Cả phố, góp ý #104): "phần 11 câu 2 bài ôn kế toán doanh nghiệp… số nó kì kì".
