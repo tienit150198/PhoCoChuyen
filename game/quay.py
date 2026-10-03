@@ -121,6 +121,15 @@ def _jr():
     return journey
 
 
+def _qs():
+    from . import quay_self
+    return quay_self
+
+
+SELF_ACTIONS = frozenset({'jr_quay_menu', 'jr_quay_look', 'jr_quay_online', 'jr_quay_start', 'jr_quay_serve', 'jr_quay_ship', 'jr_quay_choose',
+                          'jr_quay_close'})   # 🧑‍🍳 game/quay_self.py
+
+
 def _fmt(n: int) -> str:
     return f'{int(n):,}'.replace(',', '.')
 
@@ -242,6 +251,7 @@ def forecast(s: dict, st: dict, day: int) -> dict:
         f *= 1.3
     f *= 1 + (8 if 'bang' in st['items'] else 0) / 100 + (4 if 'tu' in st['items'] else 0) / 100
     f *= st['rep'] / 100
+    f *= _qs().demand_pct(st) / 100   # 🍽️ the board's prices and dishes, tables, online (100 for a 1.5.1 counter)
     return dict(w=w[0], pace=pace[0], n=max(1, round(f)), x3=x3)
 
 
@@ -320,6 +330,12 @@ def _from_till_fund(st: dict, amount: int) -> int:
 def run_day(s: dict, st: dict, day: int) -> str | None:
     """One life day of a counter. Returns its line for the morning (None: nothing to say)."""
     P, T = PLACES[st['place']], TRADES[st['trade']]
+    run = st.get('run')
+    if isinstance(run, dict) and not run.get('x'):
+        if run.get('d') == day:   # 🧑‍🍳 the owner stood at the counter and the life day ended before "Đóng ca"
+            return _qs().close(s, st, day)
+        if run.get('d', 0) < day:
+            st['run'] = None      # a run whose day was played elsewhere (an older build ran it)
     st['left'] += 1
     label = f'{P["emoji"]} {st["name"]}'
     line = None
@@ -345,13 +361,14 @@ def _sell(s: dict, st: dict, day: int) -> str:
     demand = fc['n'] * rng.uniform(0.8, 1.2)
     stock = max(1, round(fc['n'] * ORDERS[st['order']] / 100))
     sold = int(min(demand, stock, _hands(st)))
-    unit = T['price'] * T['cogs'] / 100
+    qs = _qs()
+    unit = T['price'] * qs.goods_pct(st) / 100 * T['cogs'] / 100   # 🍽️ the board's dishes (the trade's price at its default)
     spoil = T['spoil'] * (0.5 if 'tu' in st['items'] else 1) / 100
     spoiled = (stock - sold) * spoil
-    revenue = sold * T['price']
+    revenue = round(sold * T['price'] * qs.board_pct(st) / 100)   # the board's prices (exactly sold x price at its default)
     goods = round((sold + spoiled) * unit)
     wages = sum(e['wage'] for e in st['staff'])
-    cost = goods + wages + P['power']
+    cost = goods + wages + P['power'] + (round(revenue * qs.PASSIVE_FEE / 100) if st.get('online') else 0)
     st['till'] = min(MONEY_MAX, st['till'] + revenue)
     _from_till_fund(st, cost)   # a shortfall past both is waived (the run checked the fixed costs were there)
     net = revenue - cost
@@ -359,7 +376,7 @@ def _sell(s: dict, st: dict, day: int) -> str:
         t = _target_mood(e)
         e['mo'] = min(t, e['mo'] + 10) if e['mo'] < t else max(t, e['mo'] - 10)
         e['d'] = min(10**6, e['d'] + 1)
-    st['rep'] = max(90, min(110, st['rep'] + (-2 if demand > stock + 0.5 else 1)))
+    st['rep'] = max(90, min(110, st['rep'] + (-2 if demand > stock + 0.5 else 1) + {'cheap': 1, 'dear': -1, 'fair': 0}[qs.react(st)]))
     st['hist'] = ar.last(st['hist'] + [dict(d=day, n=sold, rev=revenue, net=net, w=fc['w'], p=fc['pace'])], HIST_MAX, 'quay.hist', ar.JOURNEY)
     _theft(s, st, day)
     sign = '+' if net >= 0 else '−'
@@ -491,6 +508,8 @@ def action(s: dict, name: str, p: dict) -> dict:
     need(q is not None, 'Bạn chưa có quầy nào.', 'no_stall')
     st = stall(s, p.get('stall'))
     P, T = PLACES[st['place']], TRADES[st['trade']]
+    if name in SELF_ACTIONS:
+        return _qs().action(s, name, p, st)
     if name == 'jr_quay_till':
         need(set(p) <= {'stall', 'to'} and p.get('to', 'wallet') in ('wallet', 'fund'), 'Thao tác két không hợp lệ.')
         amount = st['till']
@@ -654,7 +673,7 @@ def catalogue() -> dict:
                 items=[dict(id=k, emoji=v['emoji'], name=v['name'], price=v['price'], line=v['line']) for k, v in ITEMS.items()],
                 orders=[dict(id=k, name=ORDER_NAMES[k]) for k in ORDERS], weather={w[0]: w[1] + ' ' + w[2] for w in WEATHER},
                 pace={p[0]: p[1] for p in PACE}, chapter=UNLOCK_CHAPTER, served=UNLOCK_SERVED, max=MAX_STALLS, left=LEFT_DAYS,
-                month=MONTH_DAYS, wage_pct=[WAGE_MIN_PCT, WAGE_MAX_PCT])
+                month=MONTH_DAYS, wage_pct=[WAGE_MIN_PCT, WAGE_MAX_PCT], **_qs().catalogue())
 
 
 def _stall_view(s: dict, st: dict) -> dict:
@@ -666,7 +685,7 @@ def _stall_view(s: dict, st: dict) -> dict:
                staff=[{k: x[k] for k in ('id', 'name', 'wage', 'ask', 'mo', 'g')} for x in st['staff']],
                case=dict(lost=st['case']['lost'], all=st['case']['all'], rep=st['case']['rep']) if st['case'] else None,
                hist=[[x['d'], x['n'], x['net']] for x in st['hist']], today=fc, sell=sell_back(st),
-               value=shift_value(st['place'], st['trade']))
+               value=shift_value(st['place'], st['trade']), **_qs().stall_view(s, st))
     if len(st['staff']) < P['slots']:
         out['cands'] = [{k: c[k] for k in ('id', 'name', 'bio', 'ask', 'g')} for c in candidates(s, st)]
     return out
@@ -731,6 +750,7 @@ def validate(s: dict) -> None:
         for x in st['log']:
             need(isinstance(x, dict) and LOG_KEYS <= set(x) and _int(x['d'], 0, 10**6) and _text(x['t'], 120)
                  and _int(x['a'], -MONEY_MAX, MONEY_MAX))
+        _qs().validate(st, need, _int, _text)   # 🧑‍🍳 the board, the look, online, the day at the counter (optional keys)
     sh = q['shift']
     need(sh is None or (isinstance(sh, dict) and SHIFT_KEYS <= set(sh) and isinstance(sh['id'], str) and JOB_RE.fullmatch(sh['id']) is not None
                         and sh['career'] in TRADES and _int(sh['day'], 0, 10**6) and _int(sh['base'], 0, 10**4) and _int(sh['wage'], 1, 10**4)
