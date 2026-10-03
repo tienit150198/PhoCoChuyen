@@ -466,7 +466,7 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
             need(e['bonus_day']!=c['day'],'Hôm nay đã thưởng cho bạn ấy rồi.');eng.money(s,c,-RULES['bonus_cost'],'Thưởng '+e['name'],e['id'],category='bonus')
             e['bonus_day']=c['day'];e['morale']=min(100,e['morale']+12);result['message']='Đã tặng thưởng và ghi nhận việc của '+e['name']+'.'
         elif name=='dismiss':
-            incident=o['incident'];need(not incident or incident['employee']!=e['id'] or incident['status']=='resolved' or incident['practice'],'Cần trao đổi sự cố đang mở trước khi kết thúc hợp tác.')
+            incident=o['incident'];need(not incident or incident['employee']!=e['id'] or incident['status']=='resolved' or incident['practice'],'Bạn ấy còn sự cố đang mở. Vào Sổ tiệm › Nhân sự: kiểm 2 nguồn, chọn cách xử lý, sau 2 nhịp bấm “Kiểm & hoàn tất”, rồi mới cho nghỉ được.')
             _payroll(c,c['day'],e['id']);e['status']='former';e['on_shift']=False
             result['message']='Đã kết thúc hợp tác. Khoản lương đã làm vẫn nằm trong sổ cần trả.'
         elif name=='warn':
