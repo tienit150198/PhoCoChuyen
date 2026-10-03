@@ -5,6 +5,7 @@
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
+import {tomorrowCard} from './tomorrow_kit.js';
 import {reqPin,nextLine,pinTop,asmActions,finalStep} from './asm_kit.js';
 const STEPS=['Nhận máy','Đo kiểm','Báo giá','Sửa','Bàn giao'];
 const MODE={live:'cấp điện',open:'mở máy',any:'đo ngoài'};
@@ -684,4 +685,9 @@ export default {
     },
   },
   dock:[['inventory','box','Linh kiện','Nhập & đếm hàng']],
+  // Day summary: "🌅 Ngày mai" (machines kept overnight, promises, the forecast, the parts shelf) first.
+  summary(data,x){
+    return tomorrowCard(x,data,{lift:/ở lại qua đêm|hẹn mai|^Dự báo ngày mai/,khoLabel:'🔩 Mở kho linh kiện',title:'🔧 Sổ tiệm hôm nay',
+      labels:{repaired:'Máy đã sửa xong',returned:'Máy trả lại khách',hazards:'Lỗi an toàn'}});
+  },
 };
