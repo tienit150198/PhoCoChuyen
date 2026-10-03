@@ -34,7 +34,7 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 14  # 14: 💼 quay_jobs (hired players at a counter: game/quay_hire.py), additive. 13: optional TikTok identities and one-use OAuth flows (additive); chat_hides/chat_clears (see below).
+SCHEMA_VERSION = 15  # 15: 💸 bank_xfers, bank_xfer_days (transfers between friends: game/bank_xfer.py), additive. 14: 💼 quay_jobs (hired players at a counter: game/quay_hire.py), additive. 13: optional TikTok identities and one-use OAuth flows (additive); chat_hides/chat_clears (see below).
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -363,6 +363,17 @@ CREATE TABLE IF NOT EXISTS quay_jobs (
   ended double precision, until double precision NOT NULL,
   tasks bigint NOT NULL DEFAULT 0, stars bigint NOT NULL DEFAULT 0, earned bigint NOT NULL DEFAULT 0
 );
+-- 💸 Transfers between friends (game/bank_xfer.py): one row per transfer (the audit log), guarded status changes;
+-- the day counters move with conditional upserts (the caps hold under concurrency).
+CREATE TABLE IF NOT EXISTS bank_xfers (
+  id {T} PRIMARY KEY, code {T} NOT NULL, sender {T} NOT NULL, receiver {T} NOT NULL, from_name {T} NOT NULL,
+  to_name {T} NOT NULL, amount bigint NOT NULL, note {T} NOT NULL DEFAULT '', src {T} NOT NULL, status {T} NOT NULL,
+  day {T} NOT NULL, at double precision NOT NULL, done_at double precision
+);
+CREATE TABLE IF NOT EXISTS bank_xfer_days (
+  sid {T} NOT NULL, day {T} NOT NULL, sent bigint NOT NULL DEFAULT 0, n bigint NOT NULL DEFAULT 0,
+  got bigint NOT NULL DEFAULT 0, PRIMARY KEY (sid, day)
+);
 -- 💕 Dates of the live service (live/dating.py; game/live_dating.py): one row per café date (pids a < b), and the
 -- bond "đang tìm hiểu" of two saves (sids a < b) that both tapped ❤️.
 CREATE TABLE IF NOT EXISTS live_dates (
@@ -447,6 +458,9 @@ CREATE INDEX IF NOT EXISTS live_effects_day ON live_effects (sid, kind, at);
 CREATE INDEX IF NOT EXISTS quay_jobs_owner ON quay_jobs (owner, status);
 CREATE INDEX IF NOT EXISTS quay_jobs_worker ON quay_jobs (worker, status);
 CREATE INDEX IF NOT EXISTS quay_jobs_open ON quay_jobs (status, until);
+CREATE INDEX IF NOT EXISTS bank_xfers_receiver ON bank_xfers (receiver, status);
+CREATE INDEX IF NOT EXISTS bank_xfers_sender ON bank_xfers (sender, at);
+CREATE INDEX IF NOT EXISTS bank_xfers_open ON bank_xfers (status, at);
 CREATE INDEX IF NOT EXISTS live_dates_at ON live_dates (at);
 CREATE INDEX IF NOT EXISTS date_bonds_b ON date_bonds (b);
 CREATE INDEX IF NOT EXISTS wedding_parties_at ON wedding_parties (status, at);
@@ -843,6 +857,13 @@ TABLES = [
                        'at double precision', 'taken_at double precision', 'ended double precision', 'until double precision',
                        'tasks bigint', 'stars bigint', 'earned bigint'),
          key=('id',), unique=[], identity=None, sync=dict(mode='full', note='status changes in place (open -> taken -> paid…)')),
+    dict(name='bank_xfers', source='main', sqlite_table='bank_xfers',
+         columns=_cols('id text', 'code text', 'sender text', 'receiver text', 'from_name text', 'to_name text', 'amount bigint',
+                       'note text', 'src text', 'status text', 'day text', 'at double precision', 'done_at double precision'),
+         key=('id',), unique=[], identity=None, sync=dict(mode='full', note='status flips sent -> done | back')),
+    dict(name='bank_xfer_days', source='main', sqlite_table='bank_xfer_days',
+         columns=_cols('sid text', 'day text', 'sent bigint', 'n bigint', 'got bigint'),
+         key=('sid', 'day'), unique=[], identity=None, sync=dict(mode='full', note='counters change in place')),
     dict(name='live_dates', source='main', sqlite_table='live_dates',
          columns=_cols('id text', 'a text', 'b text', 'a_sid text', 'b_sid text', 'at double precision', 'ended double precision',
                        'how text', 'same bigint', 'hits bigint'),

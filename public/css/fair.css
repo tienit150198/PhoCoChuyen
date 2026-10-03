@@ -674,3 +674,9 @@ html[data-theme="dem"] .fh-pb-dtile{background:radial-gradient(circle at 50% 40%
 html[data-theme="dem"] .fh-pb-booth{box-shadow:0 6px 18px rgba(0,0,0,.5),inset 0 0 0 3px #c9a23a}
 html[data-theme="dem"] .fh-pb-code-chip b{background:#3a2a4f;color:#ffe9a8;border-color:#c9a23a}
 @media (max-width:360px){.fh-pb-mode{padding:8px 10px}.fh-pb-mico{width:40px;height:40px}.fh-pb-code{letter-spacing:.2em}}
+/* 🛵 Đi xe / 🚶 Đi bộ (v4/ride.js): only for a player who owns a vehicle that fits here. */
+.rd-toggle{position:absolute;right:10px;top:10px;z-index:1;min-height:40px;padding:6px 13px;border-radius:var(--radius-pill);border:1.5px solid #c9b49a;background:#fffaf0f0;color:#4a3a30;font:inherit;font-weight:800;font-size:.88rem;box-shadow:0 2px 8px #0002;cursor:pointer}
+.rd-toggle[hidden]{display:none}
+.rd-toggle[aria-pressed="true"]{border-color:#e0a93b;background:#fff3d6f2}
+.rd-toggle:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+@media (max-width:480px){.rd-toggle{top:5px;right:6px;min-height:36px;padding:3px 10px;font-size:.8rem}}   /* clear of the stall signs on a phone */

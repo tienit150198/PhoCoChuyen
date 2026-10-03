@@ -40,7 +40,7 @@ PAYS = ('coins', 'spirit', 'title', 'quay')  # kinds this build applies to the s
 BESIDE = ('closeness',)             # kinds this build applies beside the save (player_closeness, game/wedding_live.py)
 LABELS = dict(envelope='🧧 Lì xì dạo phố', date='💕 Buổi hẹn trên phố', guest='💍 Đi ăn cưới', host='💍 Khách tới dự đám cưới',
               anniv='💞 Kỷ niệm ngày cưới', anniv_npc='🧧 Hàng xóm mừng kỷ niệm cưới', race='🥇 Khách mời của tuần', env='🧧 Phong bì mừng cưới',
-              bouquet='💐 Bắt được hoa cưới')
+              bouquet='💐 Bắt được hoa cưới', xfer_back='💸 Chuyển khoản bạn chưa nhận, trả lại')
 LABEL = '🎁 Quà từ khu phố'         # any other source
 AMOUNT_MAX = 2000                   # live/effects.py AMOUNT_MAX (the 1000-day anniversary is 1,500 xu)
 SPIRIT_DOWN = -10                   # live/effects.py SPIRIT_DOWN: a 'spirit' row may take this much away at most

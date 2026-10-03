@@ -23,6 +23,11 @@ html[data-layout="phone"] .tw-top{padding:18px max(12px,var(--safe-r)) 8px max(1
 .tw-canvas:focus-visible{outline:3px solid var(--focus);outline-offset:-3px}
 .tw-where{position:absolute;left:10px;top:10px;padding:5px 11px;border-radius:var(--radius-pill);background:#fffaf0e6;color:#4a3a30;font-weight:800;font-size:.85rem;box-shadow:0 2px 8px #0002;pointer-events:none}
 .tw-where:empty{display:none}
+/* 🛵 Đi xe / 🚶 Đi bộ (v4/ride.js): only for a player who owns a vehicle. */
+.rd-toggle{position:absolute;right:10px;top:10px;z-index:1;min-height:40px;padding:6px 13px;border-radius:var(--radius-pill);border:1.5px solid #c9b49a;background:#fffaf0f0;color:#4a3a30;font:inherit;font-weight:800;font-size:.88rem;box-shadow:0 2px 8px #0002;cursor:pointer}
+.rd-toggle[hidden]{display:none}
+.rd-toggle[aria-pressed="true"]{border-color:#e0a93b;background:#fff3d6f2}
+.rd-toggle:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
 /* The card at a door: one line of what it is, a tag or two, one big button. */
 .tw-card{position:absolute;left:10px;right:10px;bottom:calc(10px + var(--safe-b,0px));display:flex;align-items:center;gap:12px;max-width:520px;margin:0 auto;padding:12px 12px 12px 14px;
   border-radius:18px;background:var(--surface);color:var(--ink);border:2px solid var(--tw-c,var(--line));box-shadow:0 8px 24px #0003;animation:tw-up .18s var(--ease,ease-out)}

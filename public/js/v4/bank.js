@@ -7,6 +7,7 @@
  * Its own dialog (not the shared #sheet), opened by the rail entry "Ngân hàng" (action `bank`). */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {Sound} from '../audio.js';
+import {bindXfer,xferOpen,xferPage,xferClick,xferInput} from './bank-xfer.js';   // 💸 Chuyển khoản bạn bè (game/bank_xfer.py)
 
 const S={dlg:null,env:null,tab:'home',busy:false,flash:null,filter:'all',joint:null,jointAt:0,loan:{kind:'personal',amount:0,term:28,career:''},listening:false};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -66,8 +67,8 @@ function dialog(){
     const el=e.target.closest('[data-bk]');if(!el||!d.contains(el)||el.disabled)return;
     e.preventDefault();onClick(el.dataset.bk,el.dataset,el);
   });
-  d.addEventListener('input',e=>{if(e.target.closest('[data-bk-loan]'))onLoanField(e.target);});
-  d.addEventListener('change',e=>{if(e.target.closest('[data-bk-loan]'))onLoanField(e.target);});
+  d.addEventListener('input',e=>{if(e.target.closest('[data-bk-loan]'))onLoanField(e.target);else if(e.target.id?.startsWith('bx-'))xferInput(e.target);});
+  d.addEventListener('change',e=>{if(e.target.closest('[data-bk-loan]'))onLoanField(e.target);else if(e.target.id==='bx-src')xferInput(e.target);});
   d.addEventListener('submit',e=>e.preventDefault());
   d.addEventListener('close',()=>{S.flash=null;});
   S.dlg=d;return d;
@@ -121,6 +122,7 @@ async function marriagePost(op,body){
   finally{S.busy=false;render();loadJoint(true);}
 }
 
+bindXfer({env:()=>S.env,render,B,J,dlg:()=>S.dlg,ting:()=>swipeSound(S.env?.api)});
 const val=id=>{const el=S.dlg?.querySelector('#'+id);return el?el.value:'';};
 const amountOf=id=>{const n=Number(val(id));return Number.isInteger(n)&&n>0?n:0;};
 const ask=(title,msg,label,money)=>S.env.confirmAction(title,msg,label,money);  // money: {cost,pocket} → "còn thiếu" (v4/money.js)
@@ -175,6 +177,8 @@ async function onClick(op,data){
       if(await ask(`Rút ${xu(a)} bằng thẻ chung?`,`Tiền về ví của bạn. Hôm nay thẻ chung còn chi được ${xu(S.joint?.fund?.daily_left)}. Người ấy nhận thông báo về giao dịch này.`,`Rút · ${xu(a)}`))marriagePost('fund_withdraw',{amount:a,rid:rid()});return;}
     case'marriage':S.dlg.close();(await import('./marriage.js')).openMarriage(S.env,'home');return;
     case'retry':render();return;
+    case'xfer':S.tab='xfer';S.flash=null;xferOpen();render();S.dlg.querySelector('.bk-body')?.scrollTo?.(0,0);return;
+    default:if(op.startsWith('x-'))xferClick(op,data);
   }
 }
 
@@ -226,7 +230,7 @@ function page(){
   if(!b.open)return head('')+`<div class="sheet-body bk bk-body">${flash()}${welcome(b)}</div>`;
   const tabs=[['home','Tổng quan'],['tx','Giao dịch'],['save','Tiết kiệm'],['card','Thẻ'],['loan','Vay']];
   const bar=`<div class="segmented bk-tabs" role="tablist" aria-label="Mục ngân hàng">${tabs.map(([id,l])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'active':''}" data-bk="tab" data-tab="${id}">${l}${id==='card'&&b.card?.past_due||id==='loan'&&(b.loans||[]).some(x=>x.overdue)?'<i class="dot" aria-hidden="true"></i>':''}</button>`).join('')}</div>`;
-  const body={home,tx,save,card,loan}[S.tab]||home;
+  const body={home,tx,save,card,loan,xfer:xferPage}[S.tab]||home;
   return head(`Số tài khoản ${acctNo(b.no)} · Ngày sống ${b.life_day}`)+`<div class="sheet-body bk bk-body">${bar}${flash()}${alerts(b)}${body(b)}</div>`;
 }
 
@@ -275,7 +279,8 @@ function home(b){
   const hero=`<section class="bk-hero"><small>Tài khoản thanh toán</small><strong class="bk-balance">${xu(b.balance)}</strong>
     <div class="bk-move"><label class="bk-field"><span>Số xu</span><input id="bk-amt" type="number" inputmode="numeric" min="1" placeholder="Ví dụ 50"></label>
     <label class="bk-field"><span>Rút ở</span><select id="bk-atm">${Object.entries(b.atms).map(([k,v])=>`<option value="${k}">${esc(v)}${k==='other'?` (phí ${xu(b.rules.atm_fee)})`:''}</option>`).join('')}</select></label></div>
-    <div class="bk-actions">${btn(icon('download',17)+' Nộp tiền','deposit',{},'primary')}${btn(icon('upload',17)+' Rút tiền','withdraw',{},'ghost')}</div></section>`;
+    <div class="bk-actions">${btn(icon('download',17)+' Nộp tiền','deposit',{},'primary')}${btn(icon('upload',17)+' Rút tiền','withdraw',{},'ghost')}</div>
+    <div class="bk-actions">${btn('💸 Chuyển khoản cho bạn bè','xfer',{},'ghost bx-open')}</div></section>`;
   const tile=(tab,emoji,label,value,sub)=>`<button type="button" class="bk-tile" data-bk="tab" data-tab="${tab}"${S.busy?' disabled':''}><span class="bk-tile-emoji" aria-hidden="true">${emoji}</span><span class="bk-tile-label">${label}</span><strong>${value}</strong><small>${sub}</small></button>`;
   const tiles=`<div class="bk-tiles">${tile('save','🐷','Tiết kiệm',xu(sv.total),sv.terms.length?`${sv.terms.length} sổ có kỳ hạn`:'Chưa có sổ kỳ hạn')}
     ${tile('card','💳','Thẻ tín dụng',c?xu(c.bal):'Chưa có',c?`Dư nợ · hạn mức ${xu(c.limit)}`:'Mở thẻ ở mục Thẻ')}

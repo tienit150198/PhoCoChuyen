@@ -340,6 +340,8 @@ class Store:
             db.executescript(rt.SCHEMA)  # Giữ chân: milestones, action counts, beacons (game/retention.py)
             from . import quay_hire as qh
             db.executescript(qh.SCHEMA)  # 💼 Hired players' shifts at someone's counter (game/quay_hire.py)
+            from . import bank_xfer as bx
+            db.executescript(bx.SCHEMA)  # 💸 Transfers between friends and their day counters (game/bank_xfer.py)
         mr.bind(self)  # joint_account / joint_spend (game/couple.py) for game/bank.py
 
     def connect(self):

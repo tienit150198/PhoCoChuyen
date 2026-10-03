@@ -66,6 +66,7 @@ from game import deco_mate  # 💞 the spouse's furniture in the home both live 
 from game import system_gift
 from game import live_effects, live_dating
 from game import quay_hire
+from game import bank_xfer  # 💸 Chuyển khoản bạn bè (game/bank_xfer.py)
 from game import wedding_live
 from game import live_chat
 from game.content import public_content,content_parts,CAREERS
@@ -575,7 +576,7 @@ class Handler(BaseHTTPRequestHandler):
                 token,csrf,created=self.server.store.session(existing)
                 if created:kpi.count_session(self.server.store,self.headers.get("User-Agent",""),self.headers.get("Accept-Language",""))  # 📊 device mix, bots apart
                 state,revision,_=self.server.store.read(token)
-                gifts=[]
+                gifts=[];xfers=[]
                 if not created:
                     try:
                         if social.settle(self.server.store,token,state):state,revision,_=self.server.store.read(token)
@@ -589,6 +590,10 @@ class Handler(BaseHTTPRequestHandler):
                     try:  # 💼 a hired shift at someone's counter that ended: pay it, send the counter its share (game/quay_hire.py)
                         if quay_hire.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
                     except Exception as e:self.log_error("quay on_load: %s",type(e).__name__)  # never blocks loading the game
+                    try:  # 💸 what friends sent through the bank: credited once, listed for a toast (game/bank_xfer.py)
+                        moved,xfers=bank_xfer.on_load(self.server.store,token,state)
+                        if moved:state,revision,_=self.server.store.read(token)
+                    except Exception as e:self.log_error("xfer on_load: %s",type(e).__name__)  # never blocks loading the game
                     fair_board.ensure(self.server.store)  # 🏆 the fair's titles, once it is over (rows for live_effects below; never raises)
                     try:  # 🧧 rewards from the live service (Đi dạo, weddings): paid once into the save, before the gift cards (game/live_effects.py)
                         if live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
@@ -619,7 +624,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,dict(state=view,revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
                                    social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),auth=dict(tiktok=tiktok_auth.public_config()),
                                    admin=pfb.is_admin(self.server.store,token),content_version=version,content_url=f"/api/content?v={version}",
-                                   game_version=self.server.game_version(),gifts=gifts,lb_titles=[dict(emoji=h["emoji"],name=h["name"],label=h["label"],board=h["board"]) for h in ranks],**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]),known=FULL);return
+                                   game_version=self.server.game_version(),gifts=gifts,xfers=xfers,lb_titles=[dict(emoji=h["emoji"],name=h["name"],label=h["label"],board=h["board"]) for h in ranks],**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]),known=FULL);return
             if route=="/api/state":
                 _,state,revision,_=self.require_session();self.json(200,dict(state=public_state(state),revision=revision),known=FULL);return
             if route=="/api/save/export":
@@ -657,6 +662,12 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("quay-get:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 out=quay_hire.get(self.server.store,token,state)
                 if live_effects.on_load(self.server.store,token,state):out["changed"]=True   # the counter's money that arrived
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                self.json(200,out,known=FULL);return
+            if route=="/api/bank/xfer":  # 💸 Chuyển khoản: friends who can receive, today's room, recent transfers (game/bank_xfer.py)
+                token,state,_,_=self.require_session()
+                if not self.server.rate_limit("xfer-get:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                out=bank_xfer.get(self.server.store,token,state)
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route=="/api/deco/mate":  # 💞 the spouse's pieces in the shared home (game/deco_mate.py): read-only, {} otherwise
@@ -830,7 +841,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,live_chat.act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
-                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
@@ -860,6 +871,11 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("quay:"+token,30):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
                 out=quay_hire.act(self.server.store,token,route[len("/api/quay/"):],data)
                 if live_effects.on_load(self.server.store,token,state):out["changed"]=True
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                self.json(200,out,known=FULL);return
+            if route.startswith("/api/bank/xfer/"):  # 💸 send / receive (game/bank_xfer.py)
+                if not self.server.rate_limit("xfer:"+token,20):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
+                out=bank_xfer.act(self.server.store,token,route[len("/api/bank/xfer/"):],data)
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route.startswith("/api/social/"):

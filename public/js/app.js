@@ -1559,6 +1559,7 @@ try{
     import('./v4/x3week.js').then(m=>m.x3Boot(env())).catch(e=>console.warn('x3week:',e));  // 🔥 Nghề x3 trong tuần (game/x3_week.py)
     if(api.state?.rui)import('./v4/rui.js').then(m=>m.ruiBoot(env())).catch(e=>console.warn('rui:',e));  // 🛡️ a warning or a card at a calm moment (game/rui.py)
     if(api.gifts?.length)import('./v4/gift.js').then(m=>m.giftBoot(env())).catch(e=>console.warn('gift:',e));  // 🎁 Quà từ Phố Có Chuyện: only for a save with a gift
+    if(api.xfers?.length)import('./v4/bank-xfer.js').then(m=>m.showIncoming(env(),api.xfers)).catch(e=>console.warn('xfer:',e));  // 💸 what friends sent (credited on load)
     if(firstDay(api.state))import('./v4/onboard-fx.js').then(m=>m.onboardBoot(env())).catch(e=>console.warn('onboard:',e));  // a new player's first day only
   };
   if(oauthReturned){
