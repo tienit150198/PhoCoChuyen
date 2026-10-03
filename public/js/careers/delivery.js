@@ -5,6 +5,7 @@ import {t,language} from '../v4/i18n.js';
 import {reqList} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
+import {planBox,stockLines,figures} from './plan_kit.js';
 
 const CELL=60,PAD=30;
 /** "Cỏ May Office Tower" → "Office Tower"; "Bồ Câu School" → "School". */
@@ -598,5 +599,20 @@ export default {
   },
   // The sticky next-step bar rides above the sheet's own sticky footer.
   tick(root){keepBarAboveFooter(root);},
+  // Day summary: "Ngày mai" first (tomorrow's road, fuel, a worn part, supplies), one way to the supplies, the day's
+  // figures folded.
+  summary(data,x){
+    if(!data||data.delivered==null)return '';
+    const d=x.room.data||{},lines=Array.isArray(data.lines)?data.lines:[],fc=lines.find(l=>typeof l==='string'&&l.startsWith('📡'));
+    const fuel=Number(d.fuel??data.fuel),worn=(d.bike?.parts||[]).filter(p=>partState(p));
+    const plan=[fc?x.esc(fc):'',
+      Number.isFinite(fuel)&&fuel<35?`⛽ Xăng còn ${fuel}%: ghé cây xăng trước khi nhận đơn`:'',
+      worn.length?`<span>🔧 Ghé tiệm Chú Bảy:</span> ${worn.map(p=>`<span class="pk-it">${x.esc(p.name)} <b>${p.value}%</b></span>`).join(' · ')}`:'',
+      ...stockLines(x)];
+    const rows=[['Đơn đã giao',data.delivered],['Giao thất bại',data.failed],['Đơn đã từ chối nhận',data.refused],['Đơn đồ ăn bị hủy',data.food_cancelled],
+      ['Quãng đường (ô phố)',data.km],['Phí giao (xu)',data.fees],['Xăng còn (%)',data.fuel],['COD tự nộp cuối ca (xu)',data.settled_at_close]];
+    return planBox(x,{lines:plan,go:['📦 Mở kho vật tư','inventory'],
+      more:[`🛵 Hôm nay · ${data.delivered} đơn · ${data.fees||0} xu phí giao`,figures(x,rows,lines.filter(l=>l!==fc))]});
+  },
   dock:[['inventory','box','Vật tư','Xốp, keo, túi mưa']],
 };

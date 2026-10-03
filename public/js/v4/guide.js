@@ -356,7 +356,7 @@ function markOver(dialog,el){
 }
 
 /** data-action="v4Go": scroll to the named control. Returns true when handled. The bottom pointer button
- * also puts a ▼ over it, and when it was in view already, says so above the button ("Ở ngay trên: …"). */
+ * also puts a ▼ over it (a single control only), and when it was in view already, says so above the button ("Ở ngay trên: …"). */
 export function guideAction(action,data,el){
   if(action!=='v4Go')return false;
   const root=el.closest('dialog')||document;
@@ -365,7 +365,9 @@ export function guideAction(action,data,el){
   const there=point&&!!target&&!target.closest('details:not([open])')&&inView(target);
   if(!highlight(target,{scroll:!there})&&el.closest('.gd-next'))highlight(root.querySelector('.gd-cta'));
   if(point&&target){
-    markOver(root,target);
+    // The ▼ only over one control: over a set of options (the group glows) it would land on one of them and
+    // read as "pick this" (the step never suggests an answer).
+    if(target.matches('button,[role="button"],a[href],label,summary,select,input'))markOver(root,target);
     if(there){const what=el.dataset.tap||el.dataset.say||'';sayLine(root,`Ở ngay trên: ${el.dataset.tap?'chạm '+what:what.charAt(0).toLowerCase()+what.slice(1)}`,el.dataset.sel);}
   }
   return true;

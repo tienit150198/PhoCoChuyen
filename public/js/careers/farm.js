@@ -4,6 +4,7 @@
 import {reqList} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
+import {planBox,stockLines,figures} from './plan_kit.js';
 const ID='farm';
 const STAGE={empty:'Luống trống',sprout:'Mới nhú',young:'Đang lớn',almost:'Sắp tới lứa',ripe:'Đúng lứa · thu được',over:'Quá lứa · xơ',rotten:'Hỏng · dọn luống'};
 const ART={sprout:'🌱',young:'🌿'};
@@ -383,6 +384,23 @@ export default {
   },
   // The next-step bar rides above the sheet's own sticky footer.
   tick(root){keepBarAboveFooter(root);},
+  // Day summary: "Ngày mai" first (the weather, beds to pick, eggs, the night's pests and soil, supplies), one way
+  // to the supplies, the day's figures folded.
+  summary(sum,x){
+    if(!sum||typeof sum!=='object'||sum.eggs_tomorrow==null)return '';
+    const lines=(Array.isArray(sum.lines)?sum.lines:[]).filter(l=>typeof l==='string');
+    const night=lines.filter(l=>/^(🐛|🟫|🐔)/u.test(l)||l.includes(' Mai sang '));
+    const sky=typeof sum.note==='string'&&sum.note.startsWith('Mai trời')?sum.note.split('. ')[0].replace(/\.$/,''):'';
+    const ripe=Array.isArray(sum.ripe_tomorrow)?sum.ripe_tomorrow:[];
+    const plan=[sky?`🌤️ ${x.esc(sky)}`:'',
+      ripe.length?`<span>🧺 Luống chín:</span> <b>${x.esc(ripe.join(', '))}</b>`:'',
+      sum.eggs_tomorrow?`🥚 Sáng mai có ${sum.eggs_tomorrow} trứng trong ổ`:'',
+      sum.hungry_hens&&!night.some(l=>l.startsWith('🐔'))?'🐔 Hôm nay gà chưa được ăn: mai đẻ ít':'',
+      ...night.map(l=>x.esc(l)),...stockLines(x)];
+    const rows=[['Bán sỉ ở chợ đầu mối (xu)',sum.market_income],['Nông sản quá hạn',sum.expired_units],['Tinh thần đàn gà',sum.hen_mood!=null?`${sum.hen_mood}/100`:'']];
+    return planBox(x,{lines:plan,go:['📦 Mở kho vật tư','inventory'],
+      more:[sum.market_income?`🌱 Nông trại hôm nay · +${sum.market_income} xu chợ`:'🌱 Nông trại hôm nay',figures(x,rows,lines.filter(l=>!night.includes(l)))]});
+  },
   actions:{
     async tab(data,el,x){x.ui.tab=['field','coop','cold','market'].includes(data.tab)?data.tab:'field';x.render();},
     async plot(data,el,x){x.ui.plot=x.ui.plot===data.plot?null:data.plot;x.render();},
