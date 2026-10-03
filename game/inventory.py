@@ -50,6 +50,7 @@ HOURS = {
     'drain': (7 * 60 + 30, 19 * 60 + 30),
     'homemaker': (6 * 60 + 30, 18 * 60 + 30),   # the market at dawn, dinner cooked before going home
     'ice_cream': (11 * 60, 21 * 60),    # after lunch, the school run at 16:30, the evening walk
+    'com': (6 * 60, 19 * 60),           # cơm tấm for breakfast, rice plates at noon, boxes till evening
     'nail': (9 * 60, 21 * 60),          # office lunch breaks, evening and weekend bookings
     'pagoda': (5 * 60, 19 * 60),        # the gate opens after morning chanting, closes after the evening one
 }

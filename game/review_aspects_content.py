@@ -24,7 +24,7 @@ nothing about bodies, looks, age, region, religion, nothing sexual, no real bran
 from __future__ import annotations
 
 FAMILY = {
-    'milk_tea': 'food', 'cafe_bakery': 'food', 'restaurant': 'food', 'tra_da': 'food', 'ice_cream': 'food',
+    'milk_tea': 'food', 'cafe_bakery': 'food', 'restaurant': 'food', 'tra_da': 'food', 'ice_cream': 'food', 'com': 'food',
     'grocery': 'shop', 'clothing': 'shop', 'pet_shop': 'shop', 'florist': 'shop', 'mother_baby': 'shop', 'pharmacy': 'shop',
     'salon': 'service', 'repair': 'service', 'pet_care': 'service', 'homestay': 'service', 'tour_guide': 'service',
     'delivery': 'service', 'farm': 'service', 'nail': 'service',
