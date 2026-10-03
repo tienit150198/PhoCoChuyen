@@ -1,0 +1,113 @@
+/* Quán phở Cây Si — scoped styles (.career-job.ph), over the street kit (street_kit.css).
+   Its own look: a ceramic bowl with a blue rim, amber broth rising to the customer's line, the stove's
+   warm orange, the green of hành lá. Theme tokens first, so the dark theme (html[data-theme=dem]) follows. */
+.career-job.ph{--sk-accent:#c8642a;--sk-accent-2:#e9a36f;--ph-broth:#e0a640;--ph-broth-2:#c98422;--ph-fat:#f2c25a;
+  --ph-bowl:#fbf6ec;--ph-rim:#3e6fa8;--ph-hot:#d9572b;--ph-ok:var(--good,#2a7652);--ph-band:rgb(42 118 82 / 22%)}
+html[data-theme="dem"] .career-job.ph{--ph-bowl:#2c2834;--ph-rim:#7fa8dc;--ph-band:rgb(111 208 164 / 22%)}
+
+/* ---------- the pot strip */
+.career-job.ph .ph-pot{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;border-radius:var(--sk-rs);
+  background:var(--warn-soft,#fcefd4);border:1px solid var(--line-strong,#d9c2a5)}
+.career-job.ph .ph-pot.cool{background:var(--info-soft,#e2edf8)}
+.career-job.ph .ph-pot.cloudy .ph-temp small{color:var(--sk-bad);font-weight:700}
+.career-job.ph .ph-temp{display:inline-flex;align-items:baseline;gap:6px;min-width:0}
+.career-job.ph .ph-temp b{font-size:20px;font-variant-numeric:tabular-nums}
+.career-job.ph .ph-pot.hot .ph-temp b{color:var(--ph-hot)}
+.career-job.ph .ph-temp small{font-size:13px}
+.career-job.ph .ph-level{display:grid;gap:2px;flex:1 1 110px;min-width:90px}
+.career-job.ph .ph-level small{font-size:12px;color:var(--sk-muted)}
+.career-job.ph .ph-level .sk-meter.warn i{background:var(--sk-bad)}
+.career-job.ph .ph-fires,.career-job.ph .ph-pot-acts{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.ph .ph-fires .btn,.career-job.ph .ph-pot-acts .btn{min-height:44px}
+.career-job.ph .ph-pot-acts .btn.warn{border-color:var(--sk-warn);color:var(--sk-warn);font-weight:700}
+
+/* ---------- the hot clock */
+.career-job.ph .ph-hot{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--sk-rs);background:var(--sk-surface-2);border:1px solid var(--sk-line);margin-bottom:10px}
+.career-job.ph .ph-hot b{margin-left:auto;font-size:20px;font-variant-numeric:tabular-nums}
+.career-job.ph .ph-hot.soon{background:var(--warn-soft,#fcefd4);border-color:var(--sk-warn)}
+.career-job.ph .ph-hot.late{background:var(--bad-soft,#fbe3de);border-color:var(--sk-bad);color:var(--sk-bad)}
+
+/* ---------- the order */
+.career-job.ph .ph-chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
+.career-job.ph .ph-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;background:var(--sk-surface-2);border:1px solid var(--sk-line);font-size:14px}
+.career-job.ph .ph-chip.ok{border-color:var(--sk-good);color:var(--sk-good);font-weight:700}
+.career-job.ph .ph-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+
+/* ---------- the counter */
+.career-job.ph .ph-bowls{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:6px}
+.career-job.ph .ph-bowl{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:12px;border:1px dashed var(--sk-line)}
+.career-job.ph .ph-bowl.now{border-style:solid;border-color:var(--sk-accent);background:var(--accent-soft,#fbe2d7)}
+.career-job.ph .ph-bowl.done{border-color:var(--sk-good)}
+.career-job.ph .ph-v{font-size:26px}
+.career-job.ph .ph-bowl-body{display:grid;gap:2px;min-width:0}
+.career-job.ph .ph-bits{display:flex;flex-wrap:wrap;gap:4px}
+.career-job.ph .ph-bit{display:inline-flex;align-items:center;gap:2px;padding:1px 7px;border-radius:99px;background:var(--sk-surface-2);font-size:13px}
+.career-job.ph .ph-bit.low{color:var(--sk-warn);font-weight:700}
+.career-job.ph .ph-bit.bad{color:var(--sk-bad);font-weight:700}
+.career-job.ph .ph-bit.side{box-shadow:inset 0 0 0 1px var(--sk-accent-2)}
+
+/* ---------- making a bowl */
+.career-job.ph .ph-vgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.career-job.ph .ph-dipgrid{grid-template-columns:minmax(0,1fr)}
+.career-job.ph .ph-dipgrid .sk-tile{min-height:64px;flex-direction:row;gap:10px}
+.career-job.ph .ph-mgrid{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))}
+.career-job.ph .ph-mgrid .sk-tile{min-height:64px}
+.career-job.ph .ph-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.career-job.ph .ph-acts .btn{min-height:44px;flex:1 1 120px}
+.career-job.ph .ph-act.want{border-style:dashed;border-color:var(--sk-accent-2)}
+
+/* ---------- the ladle: broth rising in the bowl, stopped at the customer's line */
+.career-job.ph .ph-ladle.pouring{border:2px solid var(--sk-accent)}
+.career-job.ph .ph-srcs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.career-job.ph .ph-srcs .btn{min-height:44px;flex:1 1 92px}
+.career-job.ph .ph-ladle-row{display:flex;align-items:center;gap:14px}
+.career-job.ph .ph-ladle-side{display:grid;gap:6px;flex:1 1 auto;min-width:0}
+.career-job.ph .ph-ladle-side .btn{min-height:48px}
+.career-job.ph .ph-read{font-size:30px;font-variant-numeric:tabular-nums;line-height:1}
+.career-job.ph .ph-ladle.in-band .ph-read{color:var(--ph-ok)}
+.career-job.ph .ph-ladle.over .ph-read{color:var(--sk-warn)}
+.career-job.ph .ph-ladle.spill .ph-read{color:var(--sk-bad)}
+.career-job.ph .ph-stop{min-height:56px;font-size:18px}
+/* The bowl: 96 × 120 px. The rise layer is the bowl turned a quarter: its x axis runs bottom → top, so
+   the shared slide() (translateX) fills it upwards on the compositor. */
+.career-job.ph .ph-gauge{--w:96px;--h:120px;position:relative;box-sizing:content-box;flex:0 0 auto;width:var(--w);height:var(--h);overflow:hidden;
+  border-radius:10px 10px 48px 48px;background:var(--ph-bowl);border:3px solid var(--ph-rim);border-top-width:6px}
+.career-job.ph .ph-gauge.bag{border-radius:18px 18px 26px 26px;border-color:var(--sk-line);border-top-style:dashed}
+.career-job.ph .ph-rise{position:absolute;left:0;top:100%;width:var(--h);height:var(--w);transform-origin:0 0;transform:rotate(-90deg);overflow:hidden}
+.career-job.ph .ph-fill{position:absolute;inset:0;background:linear-gradient(90deg,var(--ph-broth-2),var(--ph-broth) 85%,var(--ph-fat));will-change:transform}
+.career-job.ph .ph-band{position:absolute;left:0;right:0;background:var(--ph-band);border-top:2px dashed var(--ph-ok);border-bottom:2px dashed var(--ph-ok);z-index:1;pointer-events:none}
+.career-job.ph .ph-spill{position:absolute;left:0;right:0;border-top:2px solid var(--sk-bad);z-index:1;pointer-events:none}
+.career-job.ph .ph-gauge-rim{position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 -10px 18px rgb(0 0 0 / 10%);z-index:2;pointer-events:none}
+
+/* the slim copy in the sticky bar while pouring */
+.career-job.ph .ph-mini{display:flex;align-items:center;gap:8px}
+.career-job.ph .ph-mini-track{position:relative;flex:1 1 auto;height:22px;border-radius:99px;overflow:hidden;background:var(--ph-bowl);border:2px solid var(--ph-rim)}
+.career-job.ph .ph-mini-band{position:absolute;top:0;bottom:0;background:var(--ph-band);border-left:2px dashed var(--ph-ok);border-right:2px dashed var(--ph-ok);z-index:1}
+.career-job.ph .ph-mini-spill{position:absolute;top:0;bottom:0;border-left:2px solid var(--sk-bad);z-index:1}
+.career-job.ph .ph-mini b{min-width:48px;text-align:right;font-size:20px;font-variant-numeric:tabular-nums}
+.career-job.ph .ph-mini small{color:var(--sk-muted);font-size:12px;white-space:nowrap}
+.career-job.ph .ph-mini.in-band b{color:var(--ph-ok)}
+.career-job.ph .ph-mini.over b{color:var(--sk-warn)}
+.career-job.ph .ph-mini.spill b{color:var(--sk-bad)}
+
+/* ---------- the morning */
+.career-job.ph .ph-setup .ph-pot{margin-top:0}
+.career-job.ph .ph-taste{margin:0 0 6px;font-size:16px}
+.career-job.ph .ph-taste.off b{color:var(--sk-warn)}
+.career-job.ph .ph-bad{color:var(--sk-bad);margin:0 0 6px}
+
+/* ---------- the shop between customers */
+.career-job.ph .ph-meats{list-style:none;margin:0 0 8px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
+.career-job.ph .ph-meats li{display:flex;align-items:center;gap:6px}
+.career-job.ph .ph-meats li>span{font-size:20px}
+.career-job.ph .ph-meats small{margin-left:auto;color:var(--sk-muted)}
+
+/* ---------- học nghề */
+.career-job.ph .ph-learn{display:grid;gap:4px;margin-bottom:10px;border-left:4px solid var(--sk-accent-2);background:var(--accent-soft,#fbe2d7)}
+.career-job.ph .ph-learn p{margin:0}
+
+@media (max-width:360px){
+  .career-job.ph .ph-gauge{--w:80px;--h:108px}
+  .career-job.ph .ph-read{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){.career-job.ph .ph-fill{will-change:auto}}
