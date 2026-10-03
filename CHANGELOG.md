@@ -1,3 +1,7 @@
+# v1.6.4 — 📸 buồng chụp: 49 dáng, 14 biểu cảm, 50 sticker kéo thả
+
+- Buồng chụp hội chợ: tab Biểu cảm riêng (14 mặt), 49 dáng; sau khi chụp mở trình trang trí dải ảnh: chạm để dán, kéo để dời, ↻ xoay/đổi cỡ, hoàn tác, lên trên, xoá; sticker lưu vào ảnh tải về. Trang trí mặc định giữ nguyên.
+
 # v1.6.3 — 💑 vợ chồng chung xe, 🛡️ admin chuyển khoản không giới hạn
 
 - Xe của vợ/chồng (`GET /api/garage/spouse`); live quyết ai lái trước; `back`/`fair_back` để ngồi sau; trường mới đều tùy chọn, cờ `coride` trong welcome (feedback #136).
