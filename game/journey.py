@@ -39,6 +39,7 @@ from . import fair as fh   # 🏮 Hội chợ dân gian (game/fair.py)
 from . import needs as nd   # 🍚 No bụng, 😴 Tỉnh táo (game/needs.py)
 from . import chua as cg    # 🛕 Đi chùa (game/chua.py)
 from . import relax as rx   # 🏊 Thư giãn ở nhà: hồ bơi, bồn tắm (game/relax.py)
+from . import fridge as fr   # 🧊 Tủ lạnh ở nhà: cất đồ ăn, đói thì ăn (game/fridge.py)
 from . import x3_week as x3   # 🔥 Nghề x3 trong tuần (game/x3_week.py)
 from . import accounting_jobs as aj   # 💼 Việc làm kế toán: exam gate, entry check, ×3/×5 (game/accounting_jobs.py)
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
@@ -822,6 +823,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(cg.action(s, name, p))
     elif name.startswith('jr_relax_'):
         result.update(rx.action(s, name, p))
+    elif name.startswith('jr_fridge_'):
+        result.update(fr.action(s, name, p))
     else:
         raise e.GameError('Thao tác hành trình không hợp lệ.', 'unknown_action')
     after(s, None, name, p, result)
@@ -991,6 +994,7 @@ def validate(s: dict) -> None:
     nd.validate(s)   # 🍚😴 journey['needs'] (optional)
     cg.validate(s)   # 🛕 journey['chua'] (optional)
     rx.validate(s)   # 🏊 journey['relax'] (optional)
+    fr.validate(s)   # 🧊 journey['fridge'] (optional)
     ct.validate(s)
     bk.validate(s)
     wd.validate(s)
