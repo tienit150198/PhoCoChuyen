@@ -1,5 +1,13 @@
 {
  "strings": {
+  "Hỏi nhanh & hướng dẫn": "Quick help & guide",
+  "Vào việc": "Go to work",
+  "Mục tiêu hôm nay": "Today's goals",
+  "Tổ bay hôm nay": "Today's crew",
+  "Các chuyến hôm nay": "Today's flights",
+  "🪪 Vào phòng tổ bay": "🪪 Go to the crew room",
+  "😮‍💨 Bạn đang mệt: còn mệt thì thưởng chuyến chỉ được một nửa. Xin nghỉ bù ở phòng tổ bay.": "😮‍💨 You are tired: while tired, the flight bonus is only half. Ask for rest days in the crew room.",
+  "⚖️ Đang bị cách chức: chưa có thưởng chuyến.": "⚖️ Demoted: no flight bonus for now.",
   "Chơi mượt hơn: mỗi lần chạm tải ít dữ liệu hơn khoảng 5 lần, quán trà sữa vẽ nhẹ hơn, đỡ giật trên máy yếu.": "Smoother play: each tap downloads about 5 times less data and the milk tea shop draws lighter, with less stutter on slower phones.",
   "Phi tiêu đổi thành Phóng dao: cắm đủ dao qua màn, dừng nhận thưởng hay liều chơi tiếp, lâu lâu có màn x2!": "Darts is now Knife Throw: stick enough knives to clear a level, then cash out or risk the next one, with an occasional x2 level!",
   "Chỉ chỗ": "Show where",
@@ -3606,6 +3614,8 @@
   "Qua màn": "Level cleared"
  },
  "patterns": {
+  "📝 Hồ sơ: $1.": "📝 Record: $1.",
+  "⚠️ Hồ sơ: $1.": "⚠️ Record: $1.",
   "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây nhé.": "Pass the “$1” certificate in Accounting school before taking a job here.",
   "Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây.": "Pass the “$1” certificate in Accounting school before taking a job here.",
   "🔒 Thi đạt chứng nhận “$1” ở Học kế toán rồi mới nhận việc ở đây.": "🔒 Pass the “$1” certificate in Accounting school before taking a job here.",
