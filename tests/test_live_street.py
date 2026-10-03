@@ -418,6 +418,27 @@ class Happenings(StreetCase):
         await self.street.tick(hap3['until'] + 1)
         self.assertNotIn('pid', await a.expect('happen_end', id=hap3['id']))
 
+    async def test_the_cap_counts_only_the_street_li_xi(self):
+        """A day of wedding money (the minute money, the guests' envelopes) does not use up the street's lì xì cap."""
+        a = await self.walker('Lan Anh')
+        room = self.room('walk:boho:1')
+        sid = self.app.hub.players[a.welcome['me']['pid']].sid
+        with self.store.connect() as db:
+            for i, (key, n) in enumerate((('wedenv:7:a:rid-0001', 100), ('wedenv:7:a:rid-0002', 100), ('wedm:7:x:3', 20))):
+                db.execute("INSERT INTO live_effects(id, sid, kind, amount, data, status, at) VALUES(?, ?, 'coins', ?, '{}', 'applied', ?)",
+                           (key, sid, n, time.time()))
+        self.street._happen(room, time.time(), kind='env')
+        hap = await a.expect('happen', k='env')
+        got = await a.call('grab', 'grabbed', id=hap['id'])
+        self.assertTrue(3 <= got['n'] <= 8)
+        with self.store.connect() as db:   # ... while the street's own lì xì still count
+            db.execute("INSERT INTO live_effects(id, sid, kind, amount, data, status, at) VALUES('env:old', ?, 'coins', ?, '{}', 'applied', ?)",
+                       (sid, ENVELOPE_CAP - got['n'], time.time()))
+        await asyncio.sleep(1.05)
+        self.street._happen(room, time.time(), kind='env')
+        hap2 = await a.expect('happen', k='env')
+        self.assertEqual((await a.call('grab', 'error', id=hap2['id']))['code'], 'cap')
+
 
 @unittest.skipUnless(HAVE_WS, 'needs websockets')
 class Blocks(StreetCase):
