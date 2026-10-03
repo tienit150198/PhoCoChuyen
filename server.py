@@ -62,6 +62,7 @@ from game import leaderboard
 from game import lb_titles
 from game import fair_board  # 🏆 Bảng vàng hội chợ: the fair's titles after the end
 from game import marriage
+from game import deco_mate  # 💞 the spouse's furniture in the home both live in (read-only)
 from game import system_gift
 from game import live_effects, live_dating
 from game import wedding_live
@@ -640,6 +641,10 @@ class Handler(BaseHTTPRequestHandler):
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("marriage-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,marriage.view(self.server.store,token,state,(parse_qs(split.query).get("catalog") or [""])[0]=="1"));return
+            if route=="/api/deco/mate":  # 💞 the spouse's pieces in the shared home (game/deco_mate.py): read-only, {} otherwise
+                token,state,_,_=self.require_session()
+                if not self.server.rate_limit("deco-mate:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,deco_mate.view(self.server.store,token,state));return
             if route.startswith("/api/social/"):
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("social-get:"+token,240):self.error(429,"Chậm lại một chút nhé.");return
