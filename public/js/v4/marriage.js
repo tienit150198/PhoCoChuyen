@@ -307,7 +307,8 @@ async function onClick(mr,data,el){
     case'tables':S.plan.tables=clampTables(S.plan.tables+Number(data.delta));render();askQuote();return;
     case'split':S.plan.mine=Number(data.pct);render();askQuote();return;
     case'an_hoi':S.plan.ceremonies.an_hoi=Number(data.n);render();askQuote();return;
-    case'plan_send':{const d=await post('plan',{plan:planBody(),mine:S.plan.mine,announce:S.plan.announce});if(d){S.tab='home';S.dlg.scrollTop=0;}return;}
+    case'plan_send':{if(soon(S.plan)){paintBreakdown();return;}   // the hour passed while the planner stayed open: show why, send nothing
+      const d=await post('plan',{plan:planBody(),mine:S.plan.mine,announce:S.plan.announce});if(d){S.tab='home';S.dlg.scrollTop=0;}return;}
     case'withdraw':post('withdraw');return;
     case'reject':post('reject',{id:Number(data.id)});return;
     case'confirm':{
