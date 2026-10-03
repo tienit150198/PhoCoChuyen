@@ -833,7 +833,7 @@ function rideScene(c,V,wx){
   const stop=ROAD_LEN,sx=roadX(stop);poly(c,V,circle(sx,0.03,stop,1.6,12),'#f2a93baa');
   const add=(x,y,z,fn)=>{const p=cam3(V,x,y,z);if(p[2]>-2&&p[2]<130)Q.push([p[2],fn]);};
   for(const t of D.palms)add(t.x,1,t.z,()=>tree(c,V,t));
-  for(const p of D.poles)add(p.x,3,p.z,()=>{line3(c,V,[p.x,0,p.z],[p.x,5,p.z],tone('#b9b3a8',1,haze(p.z-W.ride.z)),0.14);line3(c,V,[p.x,4.6,p.z],[p.x,4.6,p.z+24],'#55555588',0.015);});
+  for(const p of D.poles)add(p.x,3,p.z,()=>{line3(c,V,[p.x,0,p.z],[p.x,5,p.z],tone('#b9b3a8',1,haze(p.z-W.ride.z)),0.14);if(p.z-W.ride.z>5)line3(c,V,[p.x,4.6,p.z],[p.x,4.6,p.z+24],'#55555588',0.015);});
   for(const m of D.houses)add(m.o[0],m.o[1],m.o[2],()=>drawMesh(c,V,m));
   for(const s of [-1,1])add(roadX(94)+s*(ROAD_W+0.2),0.6,94,()=>line3(c,V,[roadX(92)+s*(ROAD_W+0.2),0.7,92],[roadX(96)+s*(ROAD_W+0.2),0.7,96],'#c9a27f',0.08));
   add(D.shop.o[0],D.shop.o[1],D.shop.o[2],()=>drawMesh(c,V,D.shop));
