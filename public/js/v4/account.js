@@ -29,7 +29,7 @@ export function accountBoot(env){
 export function accountNudge(env){
   const {api}=env;
   if(api.account||dismissed())return '';
-  return `<article class="acct-nudge"><span class="acct-nudge-ic" aria-hidden="true">${icon('cloud',22)}</span><div class="grow"><b>Tạo tài khoản để giữ tiến trình</b><p class="small muted">Đổi máy hay lỡ xóa dữ liệu trình duyệt vẫn chơi tiếp được.</p>
+  return `<article class="acct-nudge" title="Đổi máy hay lỡ xóa dữ liệu trình duyệt vẫn chơi tiếp được."><span class="acct-nudge-ic" aria-hidden="true">${icon('cloud',22)}</span><div class="grow"><b>Tạo tài khoản để giữ tiến trình</b>
     <div class="row wrap">${btn('Tạo tài khoản','v4AccountOpen',{mode:'register'},'cream small')}${btn('Để sau','v4AccountDismiss',{},'ghost small')}</div></div></article>`;
 }
 

@@ -608,7 +608,7 @@ function stockTab(x){
   const money=fund(x),J=x.state?.journey,wallet=J?.story&&Number.isFinite(Number(J.wallet))?Number(J.wallet):null;
   const poor=all.some(i=>{const s=station(x,i.id);return s.made&&s.unlocked&&s.on!==false&&prepPlan(x,i.id).poor;});
   const clock=now.is_open?`🕑 <b>${x.esc(now.time||b.clock||'')}</b>${overtime(b)?' · tăng ca, nhà cung cấp đã nghỉ':''}`:`🕑 Đóng cửa · mở lại ${x.esc(now.open||'08:00')}`;
-  const purse=`<div class="mt-fund${poor?' poor':''}" role="status"><p>🏪 Quỹ tiệm <b>${money.toLocaleString('vi-VN')} xu</b>${wallet!=null?` · 👛 Ví ${wallet.toLocaleString('vi-VN')} xu`:''} · ${clock}</p>${poor?`<p class="mt-fund-tip">Quỹ mỏng: bán ly từ hàng còn trong kho để có thêm xu, tắt bớt món ở 🏷️ Giá bán${wallet>0?', hoặc góp tiền từ ví vào quỹ':''}.</p>${wallet>0?topUp(x):''}`:''}</div>`;
+  const purse=`<div class="mt-fund${poor?' poor':''}" role="status"><p>${poor?`🏪 Quỹ tiệm <b>${money.toLocaleString('vi-VN')} xu</b> · `:''}${clock}</p>${poor?`<p class="mt-fund-tip">Quỹ mỏng: bán ly từ hàng còn trong kho để có thêm xu, tắt bớt món ở 🏷️ Giá bán${wallet>0?', hoặc góp tiền từ ví vào quỹ':''}.</p>${wallet>0?topUp(x):''}`:''}</div>`;
   const nOrd=(b.orders||[]).length,maxOrd=b.max_orders||12;
   const care=b.care||[],bad=care.filter(r=>r.tone!=='ok').length,danger=care.some(r=>r.tone==='danger');
   const careBox=care.length?`<details class="mt-care-fold"${x.ui.mtPrepCare??danger?' open':''}><summary data-action="car:fold" data-key="mtPrepCare"><span>🧋 Việc chăm quầy</span>${bad?`<em class="mt-care-count ${danger?'danger':''}">${bad}</em>`:'<em class="mt-care-count ok">ổn</em>'}</summary>${careRows(x,care,true)}</details>`:'';

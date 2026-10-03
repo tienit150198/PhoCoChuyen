@@ -7,13 +7,14 @@ import {planBox,dayFold} from './tomorrow_kit.js';
 const DONE=['completed','cancelled','referred'];
 export const openTasks=x=>(x.room.tasks||[]).filter(t=>!DONE.includes(t.status));
 
-/** Luck of the day + served count + streak, as one row of chips: "☀️ Hôm nay: Ngày thường ▸ · ✅ 3 · 🔥 2".
+/** Luck of the day + served count + streak, as one row of chips: "☀️ Ngày thường ▸ · ✅ 3 · 🔥 2" (the group is
+ * labelled "Hôm nay" for screen readers; owner 03/10: "chữ ít thôi").
  * The day's hint is one tap away (the chip is a fold; data-auto, so a re-render shuts it again). */
 export function dayStrip(x,day,compact=false){
   if(!day?.mod)return '';
   const m=day.mod,streak=x.room.life?.streak||0;
   const hint=!compact&&m.hint?`<small class="fk-day-hint">${x.esc(m.hint)}</small>`:'';
-  const chip=`<span aria-hidden="true">${x.esc(m.emoji)}</span><b>Hôm nay: ${x.esc(m.label)}</b>`;
+  const chip=`<span aria-hidden="true">${x.esc(m.emoji)}</span><b>${x.esc(m.label)}</b>`;
   return `<div class="fk-day chip" role="group" aria-label="Hôm nay">
     ${hint?`<details class="fk-mod" data-auto><summary>${chip}</summary>${hint}</details>`:`<p class="fk-mod">${chip}</p>`}
     <p class="fk-stats"><span title="Đã phục vụ">✅ ${Number(day.served)||0}</span>${streak?`<span class="fk-streak" title="Làm đúng liên tiếp">🔥 ${streak}</span>`:''}${day.walkins?`<span title="Khách vãng lai">🚶 ${day.walkins}</span>`:''}</p>

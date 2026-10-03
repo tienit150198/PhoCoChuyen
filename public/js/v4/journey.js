@@ -151,15 +151,17 @@ function placeCard(env,cid){
 
 function lockedTile(env,cid){
   const {api}=env,J=api.state.journey,m=meta(api,cid),n=(api.content.journey.unlock_chapter||{})[cid];
-  const hint=n===J.chapter+1?'Sắp mở':'Còn ở phía trước';
-  return `<article class="jr-locked" aria-label="Nơi làm việc chưa mở"><span class="jr-place-emoji silhouette" aria-hidden="true">${emojiOf(m)}</span><b>🔒 Chưa mở</b><small><span class="jr-locked-cat">${esc(CATS[catOf(m)]||'')}<br></span>${hint}</small></article>`;
+  // One word per tile: the section is already "Còn ở phía trước"; the next chapter's places say "Sắp mở".
+  return `<article class="jr-locked" aria-label="Nơi làm việc chưa mở"><span class="jr-place-emoji silhouette" aria-hidden="true">${emojiOf(m)}</span><b>🔒${n===J.chapter+1?' Sắp mở':''}</b><small><span class="jr-locked-cat">${esc(CATS[catOf(m)]||'')}</span></small></article>`;
 }
 
 /** 🔥 Today's x3 careers (game/x3_week.py); the week's list opens from here (v4/x3week.js). */
 function x3Banner(env){
   const x=env.api.state.x3;if(!x?.today?.length)return '';
-  const names=x.today.map(id=>{const m=meta(env.api,id);return `${emojiOf(m)} ${m.short||id}`;}).join(' · ');
-  return `<button type="button" class="jr-x3" data-action="x3Week"><span class="jr-x3-ico" aria-hidden="true">🔥</span><span class="grow"><b>Hôm nay lời x${x.x}</b><small>${esc(names)}</small><em>Xem nghề x${x.x} cả tuần ›</em></span></button>`;
+  // The places the player has, by name; the others as a count (owner 03/10: "chữ ít thôi"). The card opens the week.
+  const open=new Set(env.api.state.journey?.unlocked||[]),mine=x.today.filter(id=>open.has(id)),rest=x.today.length-mine.length;
+  const names=mine.map(id=>{const m=meta(env.api,id);return `${emojiOf(m)} ${m.short||id}`;}).join(' · ')+(rest?`${mine.length?' · ':''}+${rest} nghề khác`:'');
+  return `<button type="button" class="jr-x3" data-action="x3Week"><span class="jr-x3-ico" aria-hidden="true">🔥</span><span class="grow"><b>Hôm nay lời x${x.x}</b><small>${esc(names)}</small><em>Cả tuần ›</em></span></button>`;
 }
 
 function placesSection(env){

@@ -110,7 +110,7 @@ export function tipSummary(x){
   if(!x||!x.count)return '';
   const who=[x.tips?`${fmt(x.tips)} khách để lại tip`:'',x.gifts?`${fmt(x.gifts)} món quà cảm ơn`:''].filter(Boolean).join(' · ');
   const where=[x.till?`vào két ${fmt(x.till)} xu`:'',x.wallet?`về ví ${fmt(x.wallet)} xu`:'',x.team?`cả đội nhận ${fmt(x.team)} xu`:''].filter(Boolean).join(' · ');
-  const best=x.best?`<p class="tip-sum-best"><span aria-hidden="true">${esc(x.best.emoji)}</span> ${esc(x.best.head)}: “${esc(x.best.line)}”</p>`:'';
+  // The customer's words were on the tip card during the day: here only the sums (owner 03/10 "chữ ít thôi").
   return `<article class="notice tip-sum"><span class="tip-sum-ico" aria-hidden="true">💝</span><div class="grow">`
-    +`<b>Tip hôm nay${x.cash?`: +${fmt(x.cash)} xu`:''}</b><p>${esc(who)}${where?` · ${esc(where)}`:''}</p>${best}</div></article>`;
+    +`<b>Tip hôm nay${x.cash?`: +${fmt(x.cash)} xu`:''}</b><p>${esc(who)}${where?` · ${esc(where)}`:''}</p></div></article>`;
 }

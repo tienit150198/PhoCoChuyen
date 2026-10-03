@@ -40,6 +40,9 @@
 .bk-bullets{margin:0;padding-left:20px;display:grid;gap:6px;line-height:1.5;text-align:left}
 .bk-welcome{text-align:center}
 .bk-welcome .bk-bullets{margin:8px 0}
+.bk-perks{list-style:none;margin:10px 0 4px;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.bk-perks li{padding:5px 10px;border-radius:999px;background:color-mix(in srgb,var(--line) 45%,transparent);font-size:.9rem;font-weight:600}
+.bk-welcome .bk-tips{text-align:left}
 
 /* Balance hero */
 .bk-hero{padding:18px 16px;border-radius:var(--radius);background:linear-gradient(140deg,#0f5c4d,#1b7a63);color:#fdf8ec;box-shadow:var(--shadow-sm)}

@@ -171,6 +171,9 @@
 .asm-chip.bad{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
 button.asm-chip{cursor:pointer;min-height:36px}
 button.asm-chip:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+/* Sổ tiệm with nobody hired yet: one line over the hiring board (operations-ui.js staffView). */
+.ops-empty.slim{padding:10px 14px;margin:0;font-weight:600;text-align:left}
+.ops-empty.slim>span{display:inline;margin:0 4px 0 0;font-size:1.1rem}
 .asm-next{display:flex;gap:4px;margin:0;min-width:0;font-size:.833rem;line-height:1.35;color:var(--ink-2)}
 .asm-next>b{flex:none;color:var(--accent-text)}
 .asm-next>span{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

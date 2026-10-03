@@ -1,7 +1,7 @@
 /** A brand-new player's first day, made to feel good (loaded only for a save in its first life day):
  *
  * - a heart burst over the first customer's tip (the tip card itself is v4/tips.js, paid by game/tips.py);
- * - a progress line, "⭐ Còn 2 khách nữa là lên cấp", on the work screen and the task card;
+ * - a progress line, "⭐ Lên cấp sau 2 khách", on the work screen and the task card;
  * - the first level-up (the 3rd customer) with a little celebration naming what it opens
  *   (a topping, a recipe, a bake… whatever the workplace unlocks at that level);
  * - Bà Tám's welcome gift when the first day ends (game/journey.py WELCOME_GIFT).
@@ -74,7 +74,7 @@ function lineText(){
   const s=S(),cid=s?.current,c=s?.careers?.[cid];
   if(!firstDay(s)||!c?.open)return '';
   const lv=levelOf(s,cid);if(!lv||lv.level!==1||!lv.left)return '';
-  return lv.left===1?'⭐ 1 khách nữa là lên cấp!':`⭐ Còn ${lv.left} khách nữa là lên cấp`;
+  return lv.left===1?'⭐ 1 khách nữa là lên cấp!':`⭐ Lên cấp sau ${lv.left} khách`;
 }
 function paintLine(){
   const text=lineText();
@@ -108,7 +108,7 @@ function onState(){
   // The first day is over: Bà Tám's welcome gift (already in the wallet, see the day summary).
   if(was.day===1&&now.day===2){
     const gift=(s.journey?.history||[]).slice(-6).find(h=>h.day===1&&/Quà chào hàng xóm mới/.test(h.label||''));
-    if(gift)setTimeout(()=>cheer({emoji:'🎁',title:`Quà của Bà Tám: +${gift.amount} xu`,line:'Chào hàng xóm mới! Đã vào ví của bạn.',burst:'🌸'}),900);
+    if(gift)setTimeout(()=>cheer({emoji:'🎁',title:`Quà của Bà Tám: +${gift.amount} xu`,line:'',burst:'🌸'}),900);
   }
   requestAnimationFrame(paintLine);
 }

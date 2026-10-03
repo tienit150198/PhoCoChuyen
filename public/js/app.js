@@ -578,7 +578,7 @@ function renderSheet(preserve=true){
 
 function homeView(){return homeV4(env());}
 const placeOf=cid=>{const m=api.content?.catalogue.find(x=>x.id===cid)||{id:cid};return {name:m.place||m.short||cid,emoji:emojiOf(m)};};
-function wealthView(){return wealthHTML(api.state,{joint:jointBalance(),current:career(),place:placeOf,head:(t,sub)=>header(t,sub,'TIỀN CỦA BẠN')});}
+function wealthView(){return wealthHTML(api.state,{joint:jointBalance(),current:career(),place:placeOf,head:(t,sub)=>header(t,'',sub||'NGÂN HÀNG & NHÀ')});}
 function futureView(){if(api.state.journey)return futureV4(env());return header('Cả một khu phố phía trước','Những nghề sẽ mở sau','DANH MỤC 19 NGHỀ')+`<div class="sheet-body"><div class="future-grid">${api.content.catalogue.filter(c=>!api.state.careers[c.id]).map(c=>`<article class="future-card">${pill(icon('lock',11)+' Mở sau')}<h3>${esc(c.title||c.name)}</h3><p>${esc(c.core_loop||c.focus||c.summary||c.unique_mechanic||'Một trải nghiệm nghề mới, có cơ chế và câu chuyện riêng.')}</p></article>`).join('')}</div></div>`+footer('',button('Về các nghề đang mở','home',{},'primary'));}
 function queueView(){const own=careerUI(career())?.board?.(careerContext(env()));if(own)return own;const c=room(),tasks=c.tasks.filter(t=>!ended(t)),lead=(tasks.find(t=>t.id===c.active_task)||tasks[0])?.id;return header('Việc đang chờ','','SỔ VIỆC · '+esc(meta().place))+`<div class="sheet-body">${!c.open?notice('Ca đang nghỉ. '+button('Bắt đầu ngày','start',{},'small primary'),'amber','sun'):''}<div class="queue-grid">${tasks.map(t=>`<article class="queue-card ${t.id===c.active_task?'active':''}"><div class="row">${portrait(npc(t.npc),44)}<div class="grow"><h3>${esc(t.title)}</h3>${String(t.title||'').includes(npc(t.npc).display_name)?'':`<small class="muted">${esc(npc(t.npc).display_name)}</small>`}</div>${t.deferred?pill('Đã hẹn','amber'):''}</div><p>${esc(t.opening)}</p><div class="row spread">${pill(taskNext(t),'green')}${button('Làm tiếp '+icon('arrow',13),'job',{task:t.id},t.id===lead?'small primary':'small')}</div></article>`).join('')||empty('Hết việc rồi!','','coffee')}</div></div>`+(c.open?footer(`${c.day_completed} việc đã xong hôm nay`,(moreGate(c)?'':commandButton(icon('plus',14)+' Nhận thêm việc','more_work',{},tasks.length?'ghost':'primary'))+button('Khép ca','end',{},moreGate(c)&&!tasks.length?'primary':'ghost')):'');}
 function customerAside(t){const n=npc(t.npc),c=room();let needs='';if(t.needs){if(career()==='mother_baby'){const p=product(t.needs.product),paper=api.content.papers.find(p=>p.id===t.needs.paper);needs=`<strong>${t.needs.qty} × ${esc(p.name)}</strong><br>Ngân sách: ${fmt(t.needs.budget)} xu<br>${t.needs.gift?'Gói giấy '+esc(paper.name):'Không cần gói quà'}`;}}
@@ -1072,10 +1072,11 @@ function summaryView(){
   if(s.life)notes.push(lifeSummary(s.life));
   if(s.experiences?.tip_day?.count&&L.tips.use())notes.push(L.tips.m.tipSummary(s.experiences.tip_day));
   const jr=s.journey;
-  if(jr&&(jr.living||jr.upkeep||jr.salary))notes.push(notice(`<b>Ngày sống thứ ${jr.life_day}</b>${s.clock?`<p>Bạn xong việc lúc ${esc(s.clock.finish)}.</p>`:''}<p>Tiền phòng và cơm nước: −${fmt(jr.living)} xu.</p>${jr.upkeep?`<p>Duy trì các nơi làm khác: −${fmt(jr.upkeep)} xu.</p>`:''}${jr.salary?`<p>Lương về ví: +${fmt(jr.salary)} xu.</p>`:''}${jr.gift?`<p>🎁 Quà chào hàng xóm mới: +${fmt(jr.gift)} xu.</p>`:''}<p>Ví của bạn còn <b>${fmt(jr.wallet)} xu</b>.</p>${jr.wallet<0?'<p>Ví đang nợ: trả hết nợ thì câu chuyện mới đi tiếp.</p>':''}`,jr.wallet<0?'amber':'','home'));
+  // The wallet after the day, its moves as chips (owner 03/10 "chữ ít thôi": the title names the life day, the clock card the hour).
+  if(jr&&(jr.living||jr.upkeep||jr.salary))notes.push(notice(`<b>Ví còn ${fmt(jr.wallet)} xu</b><p class="ck-chips"><span class="ck-delta down">Phòng & cơm −${fmt(jr.living)}</span>${jr.upkeep?`<span class="ck-delta down">Nơi làm khác −${fmt(jr.upkeep)}</span>`:''}${jr.salary?`<span class="ck-delta up">Lương +${fmt(jr.salary)}</span>`:''}${jr.gift?`<span class="ck-delta up">🎁 Quà +${fmt(jr.gift)}</span>`:''}</p>${jr.wallet<0?'<p>Ví đang nợ: trả hết nợ thì câu chuyện mới đi tiếp.</p>':''}`,jr.wallet<0?'amber':'','bag'));
   if(job?.salary)notes.push(notice(`<b>Lương hôm nay +${fmt(job.salary)} xu</b>${job.result==='official'?'<p>Hết thử việc: bạn đã được ký hợp đồng chính thức! 🎉</p>':job.result==='extended'?'<p>Thử việc được gia hạn thêm 2 ngày. Cố lên nhé!</p>':job.probation?'<p>Đang thử việc: nhận 85% lương.</p>':''}`,'success','briefcase'));
-  if(rv.open||(rv.count&&rv.weakest&&rv.average<4.5))notes.push(notice(pagoda?`${rv.count&&rv.weakest&&rv.average<4.5?`Khách thập phương nhắc nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` Còn ${rv.open} cảm nhận chờ bạn hồi đáp.`:''}<br>${button('Xem cảm nhận','feedback',{filter:rv.open?'open':'all'},'small')}`:`${rv.count&&rv.weakest&&rv.average<4.5?`Khách góp ý nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` Còn ${rv.open} đánh giá chờ bạn trả lời.`:''}<br>${button('Xem đánh giá','feedback',{filter:rv.open?'open':'all'},'small')}`,'amber','star'));
-  if(ops?.unpaid)notes.push(notice(`<b>${esc(wordsFor(career()).books)}: còn ${fmt(ops.unpaid)} xu cần trả</b><p class="ck-chips"><span class="ck-delta flat">Lương ${fmt(ops.wages)}</span><span class="ck-delta flat">điện nước ${fmt(ops.utilities)}</span><span class="ck-delta flat">thuê ${fmt(ops.rent_accrued)} xu</span>${ops.period?'<span class="ck-delta warn">vừa kết kỳ thuế</span>':''}</p>${button('Mở sổ thu chi','finance',{},'small')}`,'','mail'));
+  if(rv.open||(rv.count&&rv.weakest&&rv.average<4.5))notes.push(notice(pagoda?`${rv.count&&rv.weakest&&rv.average<4.5?`Khách thập phương nhắc nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` ${rv.open} cảm nhận chờ hồi đáp.`:''}<br>${button('Xem cảm nhận','feedback',{filter:rv.open?'open':'all'},'small')}`:`${rv.count&&rv.weakest&&rv.average<4.5?`Khách góp ý nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` ${rv.open} đánh giá chờ trả lời.`:''}<br>${button('Xem đánh giá','feedback',{filter:rv.open?'open':'all'},'small')}`,'amber','star'));
+  if(ops?.unpaid)notes.push(notice(`<b>${esc(wordsFor(career()).books)}: còn ${fmt(ops.unpaid)} xu cần trả</b><p class="ck-chips">${ops.wages?`<span class="ck-delta flat">Lương ${fmt(ops.wages)}</span>`:''}${ops.utilities?`<span class="ck-delta flat">điện nước ${fmt(ops.utilities)}</span>`:''}${ops.rent_accrued?`<span class="ck-delta flat">thuê ${fmt(ops.rent_accrued)} xu</span>`:''}${ops.period?'<span class="ck-delta warn">vừa kết kỳ thuế</span>':''}</p>${button('Mở sổ thu chi','finance',{},'small')}`,'','mail'));
   // Hired staff (operations.py on_close): what each one did today, or why not (no shift, paused by an open incident).
   const team=ops?.staff||[],held=team.some(t=>t.paused);
   if(team.length)notes.push(notice(`<b>Đội hôm nay</b><p>${team.map(t=>`<b>${esc(t.name)}</b> ${[t.shift?`<span>${fmt(t.jobs)} việc</span>`:t.paused?'':'<span>không vào ca</span>',t.paused?'<span>tạm dừng vì còn sự cố đang mở</span>':''].filter(Boolean).join(', ')}`).join(' · ')}</p>${held?button('Xem nhân viên','staff',{},'small'):''}`,held?'amber':'','people'));
@@ -1138,20 +1139,22 @@ $('#sheet').addEventListener('close',()=>{document.body.append($('#toasts'));
   if(ui.view){ui.view=null;ui.ai={};world.paused=ui.paused;}
   // Rail/dock highlight follows the open sheet.
   if(api.state&&api.state.current)renderMain();});
-async function start(){if(needsJob()){openSheet('jobapp');return;}const r=await cmd('start_day');if(r){ui.task=null;closeSheet();world.say(meta().greeting);}}
+/** The career's how-to line in the scene's speech bubble, a few words of it (the bubble holds three short lines). */
+const greeting=()=>toastHead(String(i18nT(String(meta().greeting||'')))).head;
+async function start(){if(needsJob()){openSheet('jobapp');return;}const r=await cmd('start_day');if(r){ui.task=null;closeSheet();world.say(greeting());}}
 async function selectCareer(id){
   const pass=await abandonGate(api,id);if(!pass){closeSheet();setPaused(false);return;}  // bỏ dở việc: "Ở lại làm nốt" goes back to the counter
   ui.task=null;ui.docs.clear();ui.transactions.clear();ui.ai={};ui.phFilter='';ui.jobTab='shelf';
   await careerAssets(id);  // its workbench, stylesheet and scene first: the new place never renders half-styled
   const r=await cmd('select_career',pass, {career:id,quiet:true});if(!r)return;if(r.hired)toast(r.message,'good');
-  closeSheet();world.say(meta().greeting);setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
+  closeSheet();world.say(greeting());setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
   abandonAfter(r);
 }
 /** A brand-new player's first workplace (v4/onboard.js quickOpen): day 1 opens at once, straight into the first
  * customer. The "Chuẩn bị" sheet stays one tap away (rail/dock) and comes back from day 2. */
 async function openFirstDay(){
   const r=await cmd('start_day',{},{quiet:true});if(!r){openSheet('prepare');return;}
-  ui.task=null;world.say(meta().greeting);
+  ui.task=null;world.say(greeting());
   const t=room().tasks.find(x=>x.id===room().active_task&&!ended(x))||room().tasks.find(x=>!ended(x));
   if(t)openJob(t.id);else closeSheet();
 }

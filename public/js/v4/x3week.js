@@ -19,11 +19,14 @@ const meta=id=>E?.api?.content?.catalogue?.find(m=>m.id===id)||{id,short:id};
 
 function html(){
   const x=X(),J=E.api.state.journey||{},open=new Set(J.unlocked||[]);
-  const days=x.days.map((ids,i)=>`<li class="${i===x.day?'on':i<x.day?'past':''}"><b>${DOW[i]} <small>${dm(x.week,i)}</small>${i===x.day?' <em>hôm nay</em>':''}</b>
-    <span class="x3-jobs">${ids.map(id=>{const m=meta(id);return `<span class="x3-job${open.has(id)?'':' lk'}"><i aria-hidden="true">${emojiOf(m)}</i>${esc(m.short||id)}</span>`;}).join('')}</span></li>`).join('');
+  const row=(ids,i)=>`<li class="${i===x.day?'on':i<x.day?'past':''}"><b>${DOW[i]} <small>${dm(x.week,i)}</small>${i===x.day?' <em>hôm nay</em>':''}</b>
+    <span class="x3-jobs">${ids.map(id=>{const m=meta(id);return `<span class="x3-job${open.has(id)?'':' lk'}"><i aria-hidden="true">${emojiOf(m)}</i>${esc(m.short||id)}</span>`;}).join('')}</span></li>`;
+  // Today first, in sight; the whole week (and how the bonus is paid) one tap away (owner 03/10: "chữ ít thôi").
+  const today=x.days[x.day]?row(x.days[x.day],x.day):'',days=x.days.map(row).join('');
   return `<header class="wn-head"><span class="wn-spark" aria-hidden="true">🔥</span><div class="grow"><h2 id="x3Title">Tuần này nghề nào lời x${x.x}?</h2><p class="wn-meta">Từ ${dm(x.week,0)} đến ${dm(x.week,6)}</p></div>`+
     `<button type="button" class="icon-btn wn-x" data-x3="close" aria-label="Đóng">${icon('x',22)}</button></header>`+
-    `<div class="wn-body"><p class="x3-how">Đúng ngày của nghề nào, làm nghề đó rồi khép ca là được thưởng thêm gấp đôi tiền lời của ngày vào ví: cả ngày lời x${x.x}. Tuần nào nghề nào cũng có một ngày.</p><ol class="x3-week">${days}</ol></div>`+
+    `<div class="wn-body"><p class="x3-how">Làm nghề của hôm nay rồi khép ca: lời x${x.x}.</p><ol class="x3-week">${today}</ol>`+
+    `<details class="x3-more"><summary>Cả tuần</summary><p class="x3-how">Đúng ngày của nghề nào, làm nghề đó rồi khép ca là được thưởng thêm gấp đôi tiền lời của ngày vào ví: cả ngày lời x${x.x}. Tuần nào nghề nào cũng có một ngày.</p><ol class="x3-week">${days}</ol></details></div>`+
     `<footer class="wn-foot"><button type="button" class="btn primary big full" data-x3="close">Biết rồi</button></footer>`;
 }
 function build(){
