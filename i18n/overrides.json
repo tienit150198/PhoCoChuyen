@@ -1,5 +1,7 @@
 {
  "strings": {
+  "Thưởng việc của đội": "Team job bonus",
+  "💰 Mỗi việc người phụ làm xong: +3 xu cho tiệm, cộng lúc khép ca.": "💰 Each job a helper finishes: +3 coins for the shop, added when you close the day.",
   "Canh mức (máy may, tắm thú, ép nắp…): bấm dừng ở đâu kim dừng đúng ở đó, cả khi máy yếu hay mạng chậm.": "Stop meters (sewing, pet bath, cup sealing…): the needle stops right where you tap, even on a slow phone or network.",
   "Nhân viên: thẻ ghi rõ hôm nay làm mấy việc, vì sao đang nghỉ; ai tạm dừng vì sự cố không bị tính lương.": "Staff: cards show today's jobs and why someone is resting; staff paused by an incident are no longer paid.",
   "Tiền của bạn: thêm nút “Vào Ngân hàng” để mở ngân hàng nhanh hơn.": "Your money: a new “Go to the bank” button opens the bank faster.",
@@ -3627,6 +3629,13 @@
   "Qua màn": "Level cleared"
  },
  "patterns": {
+  "Thưởng việc của đội — $1": "Team job bonus — $1",
+  "$1: $2 việc": "$1: $2 jobs",
+  "+$1 xu thưởng": "+$1 bonus coins",
+  "Mỗi việc nhân viên làm xong: +$1 xu cho tiệm (+$2 khi vui vẻ hoặc rất cẩn thận), cộng lúc khép ca.": "Each job a staff member finishes: +$1 coins for the shop (+$2 when cheerful or very careful), added when you close the day.",
+  "xu / ca thực làm · mỗi việc xong +$1 xu cho tiệm": "coins / shift actually worked · +$1 coins for the shop per finished job",
+  "mỗi việc xong +$1 xu cho tiệm": "+$1 coins for the shop per finished job",
+  "Hôm nay $1 việc · +$2 xu ·": "Today $1 jobs · +$2 coins ·",
   "Có sự cố của $1. Bạn ấy tạm dừng việc tới khi xử lý xong: mở Sổ tiệm → Nhân viên.": "There's an issue with $1. They pause work until it is handled: open Shop Ledger → Staff.",
   "Hôm nay $1 việc ·": "Today $1 jobs ·",
   "Đang nghỉ lấy sức · còn $1 nhịp": "Resting · back in $1 beats",

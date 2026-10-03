@@ -16,6 +16,9 @@ RULES = {
     'training_cost': 18, 'bonus_cost': 8, 'max_staff': 4,
     'security_reward': 18, 'reward_cap_period': 54,
     'insurance_percent': 60, 'insurance_daily': 2,
+    # Each job a hired person completes earns the shop this much, paid once when the day closes; +1 a job
+    # while they are in good spirits (morale ≥ 80) or very careful (precision ≥ 90); at most `cap` jobs a day each.
+    'staff_job_bonus': 3, 'staff_job_bonus_good': 1, 'staff_job_bonus_cap': 12,
     'label': 'Quy tắc khu phố • tính bằng xu và theo ngày',
 }
 PROPERTIES = [
@@ -199,6 +202,24 @@ def _payroll(c:dict, day:int, staff_id:str|None=None) -> list[dict]:
     return created
 
 
+def job_rate(e:dict|None) -> int:
+    """Xu the shop earns for one job this person completes (RULES staff_job_bonus, +good when spirited or careful)."""
+    good=bool(e) and (e.get('morale',0)>=80 or e.get('precision',0)>=90)
+    return RULES['staff_job_bonus']+(RULES['staff_job_bonus_good'] if good else 0)
+
+
+def job_bonus(c:dict, day:int) -> list[dict]:
+    """What each person's completed jobs of `day` earn the shop: only jobs counted on attendance (tick counts a job
+    when an on-shift, not paused, not resting employee finishes one), at most staff_job_bonus_cap a day each."""
+    rows=[]
+    for sid,a in c['ops']['attendance'].get(str(day),{}).items():
+        jobs=min(a.get('jobs',0),RULES['staff_job_bonus_cap'])
+        if jobs<=0:continue
+        e=next((x for x in c['ops']['staff'] if x['id']==sid),None)
+        rows.append(dict(id=sid,name=a['name'],jobs=jobs,bonus=jobs*job_rate(e)))
+    return rows
+
+
 def on_start(s:dict,c:dict,career:str) -> None:
     for e in c['ops']['staff']:
         if e['status']!='hired':continue
@@ -215,8 +236,14 @@ def on_close(s:dict,c:dict,career:str) -> dict:
     eng.need(f['last_closed']!=day,'Ngày này đã được kết sổ.')
     invoices=_payroll(c,day)
     present=o['attendance'].get(str(day),{});workers=len(present)
+    # The team's completed jobs earn the shop money, settled with the wages: one cash-book row a day for everyone
+    # ('other_income', a category every release accepts). Its ref makes a retried close never pay it twice.
+    earned=job_bonus(c,day);staff_bonus=sum(x['bonus'] for x in earned);ref=f'staff-jobs-{day}'
+    if staff_bonus and not any(r.get('ref')==ref for r in f['ledger']):
+        eng.money(s,c,staff_bonus,('Thưởng việc của đội — '+' · '.join(f"{x['name']}: {x['jobs']} việc" for x in earned))[:300],ref,category='other_income')
+    by_id={x['id']:x['bonus'] for x in earned}
     # The day's summary names what each hired person did: jobs, no shift today, or paused by an open incident.
-    team=[dict(name=e['name'],jobs=present[e['id']].get('jobs',0) if e['id'] in present else 0,shift=e['id'] in present,paused=paused(o,e))
+    team=[dict(name=e['name'],jobs=present[e['id']].get('jobs',0) if e['id'] in present else 0,shift=e['id'] in present,paused=paused(o,e),bonus=by_id.get(e['id'],0))
           for e in o['staff'] if e['status']=='hired']
     utility=RULES['utility_base']+workers+(1 if 'camera' in o['security']['items'] else 0)
     bill(c,f'utility-{day}','utility',f'Điện nước · ngày {day}',utility,day+1,f'day-{day}')
@@ -237,7 +264,7 @@ def on_close(s:dict,c:dict,career:str) -> dict:
     f['last_closed']=day
     o['attendance']={k:v for k,v in o['attendance'].items() if int(k)>=day-14}
     return dict(wages=sum(b['amount'] for b in invoices),utilities=utility,rent_accrued=PROPERTY_INDEX[o['property']['tier']]['daily_rent'],
-                period=period,unpaid=sum(b['amount'] for b in f['bills'] if b['status']=='unpaid'),staff=team)
+                period=period,unpaid=sum(b['amount'] for b in f['bills'] if b['status']=='unpaid'),staff=team,staff_bonus=staff_bonus)
 
 
 def _employee(c:dict,sid:Any) -> dict:
@@ -374,6 +401,10 @@ def _assist(s:dict,c:dict,career:str,e:dict) -> str|None:
     return None
 
 
+STAFF_INCIDENT_GAP=4   # shop days from one real staff incident to the next possible one
+STAFF_RISK_DIVISOR=2   # per-job incident risk = the old formula / this
+
+
 WORK_ACTIONS = {'advance','more_work','ask','order_stock','receive_stock','event_step','event_read','shop_pick','shop_pack','shop_check','shop_deliver','ph_pick','ph_inspect','ph_check','ph_deliver','ph_refer','ac_inspect','ac_correct','ac_match','ac_duplicate','ac_complete','ac_request_source','cs_identity','cs_evidence','cs_propose','cs_execute','cs_confirm','cs_close','cs_handover','desk_flag','desk_check','desk_count','desk_reply','desk_decide'}
 
 
@@ -403,8 +434,12 @@ def tick(s:dict,c:dict,career:str,action:str) -> list[str]:
             row=o['attendance'][str(c['day'])][e['id']];row['jobs']=row.get('jobs',0)+1  # today's count (optional key)
             eng.log(s,c,'staff_work',e['name']+': '+note,ref=e['id'])
             if e['jobs']%4==1:notes.append(e['name']+': '+note)
-            risk=max(3,33-e['precision']//3+e['fatigue']//6)
-            if e['jobs']>=3 and o['day_staff_incident']!=c['day'] and not (o['incident'] and o['incident']['status']!='resolved') and not (c['event'] and c['event']['stage']!='resolved') and _random(c)<risk:
+            # A real incident is rare and calm (owner 03/10: one every 4-5 working days, not most days): per job
+            # 3-10% (was 7-20%), and none until STAFF_INCIDENT_GAP shop days after the last real one (the save's
+            # existing day_staff_incident; 0 = none yet). Practice incidents are separate and unchanged.
+            risk=max(1,(33-e['precision']//3+e['fatigue']//6)//STAFF_RISK_DIVISOR)
+            last=o['day_staff_incident']
+            if e['jobs']>=3 and (not last or c['day']-last>=STAFF_INCIDENT_GAP) and not (o['incident'] and o['incident']['status']!='resolved') and not (c['event'] and c['event']['stage']!='resolved') and _random(c)<risk:
                 # Rare authored misconduct is a separate event, not inferred from appearance.
                 choices=['accident','equipment','wrong_item']
                 kind='damage' if e['morale']<45 and _random(c,5)==0 else choices[_random(c,3)]
