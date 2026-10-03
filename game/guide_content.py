@@ -416,6 +416,8 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
               'steps': ['✋ Bấm [[Nhận đơn]] trên app để xem điểm lấy, địa chỉ giao và lưu ý.',
                         '🗺️ Ở 🗺️ Lộ trình (tự mở khi tới bước lên lộ trình), chạm các điểm dừng theo thứ tự, bấm '
                         '[[Chốt lộ trình]]. Mỗi chặng chọn [[Đường chính tới]] hoặc [[Hẻm tắt]].',
+                        '🛵 [[Tự lái]]: tự chạy xe tới nhà có người vẫy tay, dừng trước cửa là tới. Muốn bấm cho nhanh thì '
+                        'chọn [[Đi nhanh]].',
                         '⚖️ Ở điểm lấy: kiện hàng thì [[Cân & kiểm hàng]]; đồ ăn thì [[Chờ quán 5 phút]] rồi [[So túi '
                         'với bill]].',
                         '\U0001fae7 Chạm ô vật tư cần dùng. Lệch cân thì bật [[Báo lệch cân lên app]], rồi [[Nhận hàng '
@@ -472,7 +474,9 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                             '👮 Chốt kiểm tra giấy tờ, 🌩️ giông bất chợt, 🎣 shop lạ nhờ ứng tiền, 😤 khách dọa 1 sao.',
                             '🛵 Có hôm bị dắt mất xe, giật túi hàng, quẹt xước ô tô trong hẻm, hay bị phạt đỗ xe trên '
                             'vỉa hè.'],
-              'buttons': ['So túi với bill',
+              'buttons': ['Tự lái',
+                          'Đi nhanh',
+                          'So túi với bill',
                           'Nhận món lên thùng',
                           'Cân & kiểm hàng',
                           'Nhận hàng lên xe',
