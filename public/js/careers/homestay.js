@@ -7,6 +7,7 @@ import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tray,tillActions} from './till.js';
 import {restockGo} from '../v4/restock.js';
+import {tomorrowCard} from './tomorrow_kit.js';
 const JOB_ICON={checkin:'🔑',checkout:'🧾',breakfast:'🍳',booking:'📅',recommend:'🗺️',claim:'📞'};
 const STATUS={clean:['Sạch','green'],dirty:['Cần dọn','amber'],occupied:['Có khách','blue'],maintenance:['Bảo trì','danger']};
 const CELL={occ:'🛏️',book:'📌',maint:'🔧',free:''};
@@ -909,4 +910,13 @@ export default {
     },
   },
   dock:[['inventory','box','Kho','Khăn, ga, bữa sáng']],
+  // Day summary: "🌅 Ngày mai" (who checks in tomorrow evening, rooms still dirty, the forecast, the shelf) first.
+  summary(data,x){
+    const d=x.room.data||{},day=d.today??x.room.day,dirty=Array.isArray(data?.dirty)?data.dirty:[];
+    const come=(d.bookings||[]).filter(b=>b.start===day).map(b=>`${x.esc(b.name)} (${b.rooms.map(r=>x.esc(roomInfo(x,r).name)).join(', ')})`);
+    const plan=[come.length?`🛏️ Tối mai nhận phòng: <b>${come.slice(0,3).join(' · ')}</b>${come.length>3?` · +${come.length-3}`:''}`:'',
+      dirty.length?`🧹 Phòng cần dọn: <b>${x.esc(dirty.join(', '))}</b>`:''];
+    return tomorrowCard(x,data,{lift:/chờ đồng bộ|chưa ký sổ kiểm tra an toàn|^Dự báo ngày mai/,plan,title:'🏡 Sổ nhà hôm nay',
+      labels:{arrived:'Khách nhận phòng',walked:'Khách phải chuyển chỗ',moved:'Khách đổi phòng'}});
+  },
 };
