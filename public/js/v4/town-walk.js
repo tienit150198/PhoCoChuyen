@@ -258,7 +258,7 @@ function backdrop(){
   if(W.bg&&W.bgKey===key)return W.bg;
   const bg=W.bg||document.createElement('canvas');bg.width=Math.ceil(TW*bs);bg.height=Math.ceil(TH*bs);
   const c=bg.getContext('2d');c.setTransform(bs,0,0,bs,0,0);
-  try{back(c,W.pl,W.st,{tint:W.tintNow});}catch(e){console.warn('khu phố: backdrop',e);}
+  try{back(c,W.pl,W.st,{tint:W.tintNow});}catch(e){console.warn('town: backdrop',e);}
   W.bg=bg;W.bgKey=key;W.bs=bs;return bg;
 }
 /** The player as one small bitmap, made again only when the look or the zoom changes. */
@@ -282,7 +282,7 @@ function draw(){
   c.setTransform(k*d,0,0,k*d,-W.cam.x*k*d,-W.cam.y*k*d);
   const inView=it=>it.x1>W.cam.x-20&&it.x0<W.cam.x+vw+20&&it.G>W.cam.y-20&&it.G-it.h<W.cam.y+vh+20;
   const near=W.at?items.find(it=>it.key===W.at):null;
-  try{marks(c,W.pl,{t:W.time,reduced:still(),glow:W.marks.glow.filter(inView),arrow:W.marks.arrow&&inView(W.marks.arrow)?W.marks.arrow:null,near});}catch(e){console.warn('khu phố: marks',e);}
+  try{marks(c,W.pl,{t:W.time,reduced:still(),glow:W.marks.glow.filter(inView),arrow:W.marks.arrow&&inView(W.marks.arrow)?W.marks.arrow:null,near});}catch(e){console.warn('town: marks',e);}
   // The player: the cached sprite, a little hop while walking.
   const sp=sprite(),m=W.me,hop=m.path?.length&&!still()?Math.abs(Math.sin(m.step))*3:0;
   c.setTransform(1,0,0,1,0,0);
