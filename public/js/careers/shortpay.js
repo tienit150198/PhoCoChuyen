@@ -7,7 +7,7 @@ import {stylesheet} from '../lazy.js';
 stylesheet('/css/shortpay.css');
 
 /** The command of each till career (its SPEC prefix + 'short'). */
-export const SHORT_ACT={clothing:'ao_short',pet_shop:'ps_short',tra_da:'td_short',fruit:'tc_short',drain:'cg_short',ice_cream:'kem_short',nail:'nl_short'};
+export const SHORT_ACT={clothing:'ao_short',pet_shop:'ps_short',tra_da:'td_short',fruit:'tc_short',drain:'cg_short',ice_cream:'kem_short',com:'com_short',nail:'nl_short'};
 const actOf=id=>SHORT_ACT[String(id||'').split('-')[0]]||'';
 
 const OPEN=['open','kid','cheat'];
