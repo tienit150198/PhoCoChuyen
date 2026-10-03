@@ -70,9 +70,11 @@ assert.match(html,/12 tháng.*đáo hạn Ngày 100 · còn 60 ngày/);
 assert.match(html,/data-action="wlDraw" data-career="florist" data-amount="320">Rút về ví · tối đa 320 xu/);
 assert.doesNotMatch(html,/data-action="wlDraw" data-career="milk_tea"/,'nothing to withdraw: no button');
 for(const a of ['data-action="stView" data-view="wallet"','data-action="bank"','data-action="house"','data-action="marriage"'])assert.ok(html.includes(a),a);
+// Feedback #110: a real button into Ngân hàng Phố on the bank's first row, not only a small header link.
+assert.match(html,/data-wl="account"[^]*?<div class="wl-extra"><button type="button" class="btn small" data-action="bank">[^<]*<span aria-hidden="true">🏦<\/span> Vào Ngân hàng<\/button>/);
 html=wealthHTML(poorState);
 assert.doesNotMatch(html,/data-wl-debt="0"/);assert.match(html,/data-wl-debt="40"/);
-assert.match(html,/Chưa mở tài khoản/);assert.doesNotMatch(html,/data-wl="joint"|data-wl="home"/);
+assert.match(html,/Chưa mở tài khoản/);assert.match(html,/data-wl="bank-none"[^]*?data-action="bank"><span aria-hidden="true">🏦<\/span> Mở tài khoản<\/button>/);assert.doesNotMatch(html,/data-wl="joint"|data-wl="home"/);
 assert.doesNotMatch(wealthHTML({journey:{story:true,wallet:5,places:{},bank:{open:false}}}),/data-wl-debt/,'no debt: no "Nợ" line');
 
 // Several homes (housing.py VERSION 2): every one counts, the empty and the let ones too.
