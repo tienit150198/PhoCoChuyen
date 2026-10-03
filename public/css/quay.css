@@ -69,3 +69,4 @@
   .qy-fund{grid-template-columns:1fr 1fr}
   .qy-fund .bk-field{grid-column:1/-1}
 }
+.qy-spacer{height:0;pointer-events:none}

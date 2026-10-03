@@ -178,6 +178,35 @@ async def main():
                 async def flash(page):
                     return (await page.inner_text('.qy-sheet .bk-flash')).strip()
 
+                async def scroll_check(page, sels):
+                    """The scroll regression (owner 03/10: "bấm vào là tự scroll lên"): scrolled down the dialog, each
+                    tap on a control lower in it keeps the dialog's scrollTop and the control where it was on screen."""
+                    held = 0
+                    for sel in sels:
+                        await page.evaluate("document.querySelectorAll('dialog[open]:not(.qy-sheet):not(#confirmDialog)').forEach(d=>d.close())")
+                        loc = page.locator('.qy-sheet ' + sel).last
+                        await loc.scroll_into_view_if_needed()
+                        await page.evaluate("(()=>{const d=document.querySelector('.qy-sheet');d.scrollTop+=Math.min(120,d.scrollHeight-d.clientHeight-d.scrollTop);})()")
+                        await page.wait_for_timeout(150)
+                        box = await loc.bounding_box()
+                        top0 = await page.evaluate("document.querySelector('.qy-sheet').scrollTop")
+                        assert top0 > 40, (sel, top0, 'the dialog should be scrolled down for this check')
+                        await loc.click()
+                        await page.wait_for_timeout(500)
+                        if await page.locator('#confirmDialog[open]').count():
+                            await page.click('#confirmDialog [data-action="confirmYes"]')
+                            await page.wait_for_timeout(900)
+                        top1 = await page.evaluate("document.querySelector('.qy-sheet').scrollTop")
+                        after = page.locator('.qy-sheet ' + sel).last
+                        box1 = await after.bounding_box() if await after.count() else None
+                        # never back up the page; when a row above reflows (a "Lưu" button appears) the dialog follows it
+                        # by exactly that much, so the tapped control stays under the finger
+                        assert top1 >= top0 - 2, (sel, top0, top1, 'the dialog jumped up')
+                        assert box1 is None or abs(box1['y'] - box['y']) <= 4, (sel, box, box1, 'the control moved on screen')
+                        print('   ', sel, 'scrollTop', top0, '->', top1, 'control y', round(box['y']), '->', round(box1['y']) if box1 else '-')
+                        held += 1
+                    return held
+
                 owner, _ = pages['Lan']
                 worker, wtoken = pages['Minh']
                 try:
@@ -195,6 +224,12 @@ async def main():
                     await owner.wait_for_selector('.qy-sheet [data-qy="post"]', timeout=10000)
                     await qclick(owner, '.qy-sheet [data-qy="hire"]')
                     await owner.wait_for_timeout(700)
+                    held = await scroll_check(owner, ['[data-qy="step"][data-by="1"][data-key^="s:"]', '[data-qy="help"][data-key="hire"]',
+                                                      '[data-qy="step"][data-by="-1"][data-key^="s:"]', '[data-qy="to"][data-code=""]',
+                                                      '[data-qy="help"][data-key="hire"]', '[data-qy="more"][data-part="stock"]'])
+                    print(tag, 'scroll held on', held, 'taps')
+                    await qclick(owner, '.qy-sheet [data-qy="more"][data-part="staff"]')
+                    await owner.wait_for_selector('.qy-sheet [data-qy="post"]', timeout=10000)
                     await qclick(owner, '.qy-sheet [data-qy="step"][data-by="1"][data-key^="p:"]')
                     await qclick(owner, '.qy-sheet [data-qy="post"]')
                     await confirm(owner)

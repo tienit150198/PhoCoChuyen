@@ -7,7 +7,7 @@
  * GET /api/quay and POST /api/quay/<op> (the wage is escrowed by the server, paid once when the shift's day closes). */
 import {icon,escapeHTML as esc} from '../icons.js';
 
-const S={dlg:null,env:null,view:'list',tab:'mine',pick:null,busy:false,flash:null,listening:false,open:{},help:{},wage:{},hire:null,loading:false,to:{}};
+const S={anchor:'',anchorAt:0,dlg:null,env:null,view:'list',tab:'mine',pick:null,busy:false,flash:null,listening:false,open:{},help:{},wage:{},hire:null,loading:false,to:{}};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -39,10 +39,12 @@ function dialog(){
   d.addEventListener('click',e=>{
     if(e.target===d){d.close();return;}
     const el=e.target.closest('[data-qy]');if(!el||!d.contains(el)||el.disabled)return;
-    e.preventDefault();onClick(el.dataset.qy,el.dataset,el);
+    e.preventDefault();S.anchor=selOf(el);S.anchorAt=performance.now();onClick(el.dataset.qy,el.dataset,el);
   });
   d.addEventListener('input',e=>{const t=e.target;if(t.name==='qy-name'&&S.pick)S.pick.name=t.value;});
   d.addEventListener('submit',e=>e.preventDefault());
+  d.addEventListener('scroll',()=>{const sp=d.querySelector('.qy-spacer'),h=sp?.offsetHeight||0;if(!h)return;
+    const spare=d.scrollHeight-(d.scrollTop+d.clientHeight);if(spare>1)sp.style.height=`${Math.max(0,h-spare)}px`;},{passive:true});
   d.addEventListener('close',()=>{S.flash=null;S.view='list';S.pick=null;});
   S.dlg=d;return d;
 }
@@ -56,7 +58,7 @@ export async function openQuay(env){
   await ensureCss();
   const d=dialog();
   S.view='list';S.pick=null;S.hire=null;
-  if(!d.open){d.showModal();d.scrollTop=0;}
+  if(!d.open){d.showModal();toTop();}
   render();
   if(S.tab==='jobs')loadHire();
 }
@@ -96,8 +98,8 @@ async function onClick(op,data){
   switch(op){
     case'close':S.dlg.close();return;
     case'help':S.help[data.key]=!S.help[data.key];render();return;
-    case'back':S.view='list';S.pick=null;render();return;
-    case'new':{const can=V()?.can||[];S.view='open';S.pick={trade:can[0]||'',place:'xe',name:''};S.flash=null;render();S.dlg.querySelector('.qy-body')?.scrollTo?.(0,0);return;}
+    case'back':S.view='list';S.pick=null;render();toTop();return;
+    case'new':{const can=V()?.can||[];S.view='open';S.pick={trade:can[0]||'',place:'xe',name:''};S.flash=null;render();toTop();return;}
     case'trade':if(S.pick){S.pick.trade=data.id;render();}return;
     case'place':if(S.pick){S.pick.place=data.id;render();}return;
     case'open':{const p=S.pick,P=place(p?.place);if(!p?.trade||!P.id)return;
@@ -105,7 +107,7 @@ async function onClick(op,data){
       if(await ask(`Mở ${P.name.toLowerCase()}?`,`${xu(P.price)} + ${xu(P.fund)} vốn quầy.`,`Mở quầy · ${xu(total)}`,{cost:total,pocket:['wallet','account']})){
         const name=(p.name||'').trim();
         const r=await send('jr_quay_open',{trade:p.trade,place:p.place,...(name?{name}:{}),confirm:true});
-        if(r){S.view='list';S.pick=null;render();}
+        if(r){S.view='list';S.pick=null;render();toTop();}
       }return;}
     case'more':S.open[data.id]=S.open[data.id]===data.part?'':data.part;render();return;
     case'till':send('jr_quay_till',{stall:data.id,...(data.to?{to:data.to}:{})});return;
@@ -113,7 +115,7 @@ async function onClick(op,data){
       send('jr_quay_fund',{stall:data.id,amount:data.sign==='-'?-Math.abs(amount):Math.abs(amount)});return;}
     case'order':send('jr_quay_order',{stall:data.id,level:data.level});return;
     case'step':{const k=data.key;const base=S.wage[k]??Number(data.wage);S.wage[k]=Math.min(Number(data.max||1e6),Math.max(Number(data.min||1),base+Number(data.by)));render();return;}
-    case'tab':S.tab=data.tab;S.flash=null;render();if(S.tab==='jobs')loadHire();return;
+    case'tab':S.tab=data.tab;S.flash=null;render();toTop();if(S.tab==='jobs')loadHire();return;
     case'reload':S.hire=null;loadHire();return;
     case'to':S.to[data.id]=data.code||'';render();return;
     case'post':{const st=stallOf(data.id);if(!st)return;const w=S.wage[`p:${st.id}`]??Number(data.wage);
@@ -136,14 +138,72 @@ async function onClick(op,data){
   }
 }
 
-/* ---- rendering ---- */
+/* ---- rendering ----
+ * The dialog itself is the scroller (.sheet: overflow-y auto), not .qy-body. Every render patches the page in place
+ * (morph, like fair.js): only the nodes that changed are touched, so the tapped button and the focus stay and the
+ * dialog never loses its height for a moment. The control just tapped is then held at the same spot on screen (a
+ * flash line or a part opening above it may change heights); a part that shrinks leaves a spacer under the page
+ * until the player scrolls back up, so nothing jumps to the top (owner 03/10: "bấm vào là tự scroll lên"). */
+const keyOf=n=>n.nodeType!==1?'':(n.getAttribute('data-qk')||'')+'|'+(n.getAttribute('data-qy')||'')+'|'+(n.getAttribute('data-id')||'')+(n.nodeName==='SECTION'?'|'+n.className:'');
+const same=(a,b)=>a.nodeType===b.nodeType&&a.nodeName===b.nodeName&&keyOf(a)===keyOf(b);
+function morph(from,to){
+  if(from.nodeType!==1){if(from.nodeValue!==to.nodeValue)from.nodeValue=to.nodeValue;return;}
+  for(const {name} of [...from.attributes])if(!to.hasAttribute(name))from.removeAttribute(name);
+  for(const {name,value} of [...to.attributes])if(from.getAttribute(name)!==value)from.setAttribute(name,value);
+  if(from.hasAttribute('data-qy-live'))return;   // drawn by script (the counter's canvas): left alone
+  const a=[...from.childNodes].filter(n=>!n.classList?.contains('mn-line')),b=[...to.childNodes];   // the header's money chip (v4/money.js) stays
+  let i=0,j=0;
+  for(;j<b.length;j++){
+    const n=b[j],o=a[i];
+    if(!o){from.append(n);continue;}
+    if(same(o,n)){morph(o,n);i++;continue;}
+    if(a[i+1]&&same(a[i+1],n)){o.remove();morph(a[i+1],n);i+=2;continue;}   // a node went away
+    if(b[j+1]&&same(o,b[j+1])){from.insertBefore(n,o);continue;}   // a node came in
+    from.replaceChild(n,o);i++;
+  }
+  for(;i<a.length;i++)a[i].remove();
+}
+const tplEl=document.createElement('template');
+const DATA=['qy','id','part','key','by','level','cand','staff','item','tab','to','code','sign','k','j'];
+/** A selector that finds "the same control" again after a render (its data-qy and the data that says which one). */
+function selOf(el){
+  if(!el?.dataset?.qy)return '';
+  return DATA.filter((k,i)=>DATA.indexOf(k)===i&&el.dataset[k]!==undefined).map(k=>`[data-${k}="${CSS.escape(el.dataset[k])}"]`).join('');
+}
+const bySel=sel=>sel?S.dlg.querySelector(`.qy-root ${sel}`):null;
+function anchorEl(d){
+  if(S.anchor&&performance.now()-S.anchorAt<1200){const el=bySel(S.anchor);if(el)return el;}
+  if(d.scrollTop<1)return null;
+  const top=d.getBoundingClientRect().top+60;   // under the sticky header
+  for(const el of d.querySelectorAll('.qy-root [data-qy]'))if(el.getBoundingClientRect().top>=top)return el;
+  return null;
+}
+function spacer(){
+  let sp=S.dlg.querySelector('.qy-spacer');
+  if(!sp){sp=document.createElement('div');sp.className='qy-spacer';sp.setAttribute('aria-hidden','true');S.dlg.append(sp);}
+  return sp;
+}
+function keep(fn){
+  const d=S.dlg,an=anchorEl(d),sel=selOf(an),y0=an?an.getBoundingClientRect().top:0;
+  const top=d.scrollTop,a=document.activeElement,asel=a&&d.contains(a)?selOf(a):'';
+  fn();
+  const sp=spacer(),an2=bySel(sel);
+  let want=top;
+  if(an2){const y=an2.getBoundingClientRect().top;want=d.scrollTop+y-y0;}   // held at the same spot on screen (scrollTop read after
+  // the layout: a page that got shorter has already been clamped by the browser)
+  const room=d.scrollHeight-sp.offsetHeight-d.clientHeight;   // how far the page itself can scroll
+  sp.style.height=want>room+1?`${Math.ceil(want-room)}px`:'0px';
+  if(Math.abs(d.scrollTop-want)>1)d.scrollTop=want;
+  if(asel&&!a.isConnected)bySel(asel)?.focus({preventScroll:true});
+}
 function render(){
   if(!S.dlg)return;
-  const body=S.dlg.querySelector('.qy-body'),top=body?.scrollTop;
-  S.dlg.querySelector('.qy-root').innerHTML=page();
-  if(top)S.dlg.querySelector('.qy-body').scrollTop=top;
+  keep(()=>{const root=S.dlg.querySelector('.qy-root');tplEl.innerHTML=page();
+    const box=document.createElement('div');box.append(tplEl.content);box.className=root.className;morph(root,box);});
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
+/** A new page (another view, another tab): from the top, no spacer. */
+function toTop(){S.anchor='';if(!S.dlg)return;const sp=S.dlg.querySelector('.qy-spacer');if(sp)sp.style.height='0px';S.dlg.scrollTop=0;}
 const helpBtn=key=>`<button type="button" class="qy-help" data-qy="help" data-key="${key}" aria-label="Giải thích" aria-expanded="${!!S.help[key]}">?</button>`;
 const helpText=(key,text)=>S.help[key]?`<p class="bk-hint qy-hint">${text}</p>`:'';
 function head(){
