@@ -183,7 +183,10 @@ async def play(browser, base: str, cid: str, shots: Path | None, max_steps: int 
                 break
             sel = pick.get('sel') or '[data-fd-pick]'
             # A timed button (a shutter, a stop tap) names the moment to press it: wait for that, as a player would.
-            wait = await page.eval_on_selector(sel, "e=>(e.closest('[data-fd-wait]')||e).getAttribute('data-fd-wait')")
+            # (a bottom button that sends the same command waits like the control it stands for)
+            wait = await page.eval_on_selector(sel, "e=>{const w=e.closest('[data-fd-wait]');if(w)return w.dataset.fdWait;"
+                                                    "const c=e.closest('[data-command]')?.dataset.command;"
+                                                    "return c?document.querySelector(`[data-fd-wait][data-command=\"${c}\"]`)?.dataset.fdWait||null:null;}")
             if wait:
                 with contextlib.suppress(Exception):
                     await page.wait_for_selector(wait, timeout=15000)

@@ -89,7 +89,8 @@ function ticket(t,x,tab='set'){
 function setPanel(t,x){
   const st=t.set||{},n=need(t),locked=!!t.trim;
   const pkgs=Object.entries(cc(x).pkgs||{}).map(([k,v])=>{const left=stockOf(x,v.paper);
-    return tile(x,'pb_pkg',{task:t.id,pkg:k},`<span class="tile-emoji">${x.esc(v.emoji)}</span><b>${x.esc(v.name)}</b><small>${Number(cc(x).prices?.[k]||0)} xu · giấy còn ${left}</small>`,st.pkg===k?'selected':'',locked);}).join('');
+    return tile(x,'pb_pkg',{task:t.id,pkg:k},`<span class="tile-emoji">${x.esc(v.emoji)}</span><b>${x.esc(v.name)}</b><small>${Number(cc(x).prices?.[k]||0)} xu · giấy còn ${left}</small>`,st.pkg===k?'selected':'',locked)
+      .replace('<button ',`<button aria-label="${x.esc(v.name)} · ${Number(cc(x).prices?.[k]||0)} xu" `);}).join('');
   const frames=PF.FRAMES.filter(f=>(cc(x).frames||{})[f.id]).map(f=>tile(x,'pb_frame',{task:t.id,frame:f.id},
     `${canvas(`thumb-${f.id}`,cv=>PF.thumb(cv,f.id,{layout:'big',scale:.11,t:x.t}),'pb-thumb')}<b>${x.esc(NAME(x,'frames',f.id))}</b>`,`pb-frame ${st.frame===f.id?'selected':''}`,locked)).join('');
   const bds=Object.entries(cc(x).backdrops||{}).map(([k,v])=>tile(x,'pb_bd',{task:t.id,bd:k},`<span class="pb-swatch bd-${x.esc(k)}" aria-hidden="true"></span><b>${x.esc(v)}</b>`,`pb-bd ${st.bd===k?'selected':''}`)).join('');
@@ -232,7 +233,8 @@ function orderSteps(t,x){
   if(d.booth?.fog)rows.push({ok:false,tab:'shoot',label:'Ống kính mờ hơi nước',go:{cmd:'pb_lens',payload:{},label:'🧽 Lau ống kính'}});
   if(t.want==null){
     let g=null;
-    if(t.cam)g={sel:'.pb-snap',label:'📸 Bấm máy lúc cả nhóm đứng yên, mở mắt'};
+    // The first customer: the big bottom button is the shutter too (a stop tap like the one on the camera).
+    if(t.cam)g=first?{cmd:'pb_snap',payload:{task:t.id},label:'📸 BẤM MÁY'}:{sel:'.pb-snap',label:'📸 Bấm máy lúc cả nhóm đứng yên, mở mắt'};
     else if(shots.length>=max||(shots.length&&!setOk&&shots.some(s=>!right(s))&&good<k&&shots.length+k-good>max))g={cmd:'pb_redo',payload:{task:t.id},confirm:'Xóa hết ảnh lượt này rồi chụp lại từ đầu?',label:'🔄 Xóa, chụp lượt mới'};
     else if(setOk||!first)g=go('pb_shoot',{task:t.id},'⏱️ Bắt đầu đếm 3-2-1','.pb-shoot');
     rows.push({ok:good>=k?true:null,tab:'shoot',label:`Chụp ${k} tấm đẹp`,note:`${good}/${k}`,go:good>=k?null:g});
@@ -305,7 +307,7 @@ export default {
     let main='',side='',tabs='';
     if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc mở tiệm');}
     else if(!t.known)main='';
-    else if(t.stage==='pay')main=`${t.printed?`<figure class="pb-out">${printCanvas(x,t,t.printed,'big',t.printed.pkg==='double'?.62:t.printed.pkg==='big'?.5:.72)}</figure>`:''}${cashPanel(x,t.id,t.cash)}`;
+    else if(t.stage==='pay')main=`${cashPanel(x,t.id,t.cash)}${t.printed?`<figure class="pb-out">${printCanvas(x,t,t.printed,'big',t.printed.pkg==='double'?.62:t.printed.pkg==='big'?.5:.72)}</figure>`:''}`;
     else{
       const tab=g.tab||'set';tabs=tabsRow(t,x,tab,g.steps);
       main=tab==='set'?setPanel(t,x):tab==='shoot'?camPanel(t,x):tab==='pick'?pickPanel(t,x):printPanel(t,x);
@@ -313,7 +315,10 @@ export default {
     }
     const at=!t.known?'set':t.stage==='pay'?'pay':g.tab||'set';
     const head=t.kind==='setup'?dayBar(x):`${learnCard(x,at==='set')}${ticket(t,x,at)}${dayBar(x)}`;
-    return `<div class="career-job sk pb">${hint}${top}${head}${tabs}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
+    const bench=`${tabs}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>`;
+    // Reading the order comes first; past it the hands-on part leads (the camera must be in view while counting down).
+    const body=t.kind==='setup'||at==='set'?`${head}${bench}`:`${bench}${head}`;
+    return `<div class="career-job sk pb">${hint}${top}${body}${bottom(x,g)}</div>`;
   },
   idle(x){
     PAINT.clear();LIVE=null;
