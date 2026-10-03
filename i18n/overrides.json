@@ -9128,6 +9128,9 @@
   "Mang về 32": "Takeaway 32"
  },
  "patterns": {
+  "Bạn vừa khép lại một cuộc hôn nhân. Cho lòng nghỉ $1 tiếng rồi hẵng tính tiếp nhé.": "You just ended a marriage. Give your heart $1 hours before the next step.",
+  "Một trong hai bạn vừa khép lại một cuộc hôn nhân, chờ thêm $1 tiếng nhé.": "One of you just ended a marriage; wait $1 more hours.",
+  "Cả hai cần $1 tiếng trước khi tính chuyện mới.": "You both need $1 hours before something new.",
   "🔥 Thưởng ngày x3: +$1 xu.": "🔥 x3 day bonus: +$1 coins.",
   "Thưởng việc của đội — $1": "Team job bonus — $1",
   "$1: $2 việc": "$1: $2 jobs",
