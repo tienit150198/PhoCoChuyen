@@ -1,5 +1,9 @@
 {
  "strings": {
+  "Nhân viên giờ kiếm thêm cho tiệm: mỗi việc làm xong +3 xu (vui vẻ +4), cộng khi khép ca. Sự cố nhân viên cũng hiếm hơn hẳn.": "Staff now earn for the shop: +3 coins per finished job (+4 when cheerful), paid at close. Staff incidents are also much rarer.",
+  "Menu “Tiền & nhà” đổi tên thành “Ngân hàng & nhà” cho dễ tìm.": "The “Money & home” menu is now “Bank & home”, easier to find.",
+  "Thưởng việc của đội": "Team job bonus",
+  "💰 Mỗi việc người phụ làm xong: +3 xu cho tiệm, cộng lúc khép ca.": "💰 Each job a helper finishes: +3 coins for the shop, added when you close the day.",
   "🧧 Đang gửi…": "🧧 Sending…",
   "Mạng chập chờn, chưa chắc phong bì đã tới. Bấm gửi lại: nếu đã tới rồi sẽ không bị trừ thêm tiền.": "The connection is shaky, so the envelope may not have arrived. Tap send again: if it already arrived, you will not be charged twice.",
   "Canh mức (máy may, tắm thú, ép nắp…): bấm dừng ở đâu kim dừng đúng ở đó, cả khi máy yếu hay mạng chậm.": "Stop meters (sewing, pet bath, cup sealing…): the needle stops right where you tap, even on a slow phone or network.",
@@ -6244,6 +6248,13 @@
   "Mang về 32": "Takeaway 32"
  },
  "patterns": {
+  "Thưởng việc của đội — $1": "Team job bonus — $1",
+  "$1: $2 việc": "$1: $2 jobs",
+  "+$1 xu thưởng": "+$1 bonus coins",
+  "Mỗi việc nhân viên làm xong: +$1 xu cho tiệm (+$2 khi vui vẻ hoặc rất cẩn thận), cộng lúc khép ca.": "Each job a staff member finishes: +$1 coins for the shop (+$2 when cheerful or very careful), added when you close the day.",
+  "xu / ca thực làm · mỗi việc xong +$1 xu cho tiệm": "coins / shift actually worked · +$1 coins for the shop per finished job",
+  "mỗi việc xong +$1 xu cho tiệm": "+$1 coins for the shop per finished job",
+  "Hôm nay $1 việc · +$2 xu ·": "Today $1 jobs · +$2 coins ·",
   "Có sự cố của $1. Bạn ấy tạm dừng việc tới khi xử lý xong: mở Sổ tiệm → Nhân viên.": "There's an issue with $1. They pause work until it is handled: open Shop Ledger → Staff.",
   "Hôm nay $1 việc ·": "Today $1 jobs ·",
   "Đang nghỉ lấy sức · còn $1 nhịp": "Resting · back in $1 beats",

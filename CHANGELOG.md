@@ -1,3 +1,11 @@
+# v1.4.32 — 🧑‍🍳 Nhân viên kiếm thêm cho tiệm
+
+Chủ game: "cho nhân viên làm có thêm tiền thưởng khi thuê nhân viên", đổi tên nhóm menu.
+
+- `operations.on_close`: mỗi việc nhân viên làm xong trong ca (đếm ở `attendance[day][id].jobs`) +3 xu (+4 khi tinh thần ≥80 hoặc cẩn thận ≥90), tối đa 12 việc/người/ngày, một dòng "Thu khác" mỗi ngày (ref `staff-jobs-<day>`), tính vào thu nhập/lời ngày (cả x3). Người tạm dừng/nghỉ/không ca không có.
+- Sự cố nhân viên thật: cách sự cố trước ≥4 ngày tiệm và xác suất mỗi việc giảm một nửa (≈1 lần/4–5 ngày thay vì gần như mỗi ngày). Diễn tập giữ nguyên.
+- Menu: nhóm "Tiền & nhà" → "Ngân hàng & nhà" (#110).
+
 # v1.4.31 — ⏱️ Kim dừng đúng chỗ, nhân viên rõ ràng, nút Ngân hàng
 
 Từ góp ý và tin nhắn nhóm 03/10 (Rizz, kattie #100, Cô Cả, Suzy, Cá Voi Xanh #110) và thống kê lỗi client.

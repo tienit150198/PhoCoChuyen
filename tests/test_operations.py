@@ -189,8 +189,8 @@ class OperationsTests(unittest.TestCase):
         self.assertEqual((e['fatigue'],e['jobs']),(fatigue,jobs))
         self.assertFalse([n for n in notes if isinstance(n,str) and ('đang nghỉ một chút' in n or n.startswith(e['name']+':'))])
         summary=self.j.act('end_day',carry_event=True)['summary']['operations']
-        self.assertEqual(summary['staff'],[dict(name=e['name'],jobs=0,shift=False,paused=True)])
-        self.assertEqual(summary['wages'],0);self.assertFalse([b for b in self.o['finance']['bills'] if b['id']==f'wage-{day}-{sid}'])
+        self.assertEqual(summary['staff'],[dict(name=e['name'],jobs=0,shift=False,paused=True,bonus=0)])
+        self.assertEqual((summary['wages'],summary['staff_bonus']),(0,0));self.assertFalse([b for b in self.o['finance']['bills'] if b['id']==f'wage-{day}-{sid}'])
         # Closed through the steps, the same person works (and is paid) again.
         self.j.act('start_day')
         self.act('incident_read',evidence='worklog');self.act('incident_read',evidence='listen')
@@ -203,7 +203,7 @@ class OperationsTests(unittest.TestCase):
         jobs=self.staff(sid)['jobs'];self.assertGreater(jobs,0)
         self.assertEqual(self.o['attendance'][day][sid]['jobs'],jobs);self.assert_valid()
         summary=self.j.act('end_day',carry_event=True)['summary']['operations']
-        self.assertEqual(summary['staff'],[dict(name=self.staff(sid)['name'],jobs=jobs,shift=True,paused=False)])
+        self.assertEqual(summary['staff'],[dict(name=self.staff(sid)['name'],jobs=jobs,shift=True,paused=False,bonus=min(jobs,12)*ops.job_rate(self.staff(sid)))])
         # Saves written before 1.4.31 have no per-day count; a bad one is refused.
         row=self.o['attendance'][day][sid];row.pop('jobs');validate_state(self.j.state)
         row['jobs']=-1
@@ -403,6 +403,111 @@ class OperationsTests(unittest.TestCase):
         self.close();self.act('move_property',tier='sunny',confirm=True)
         item=next(iter(self.c['stock']));self.c['stock'][item]=13
         self.no_effect('move_property',tier='cozy',confirm=True);self.assertEqual(self.c['stock'][item],13)
+
+
+class StaffJobBonusTests(unittest.TestCase):
+    """Owner 03/10: hired staff pay their way. Each job they complete (attendance 'jobs') earns the shop
+    RULES staff_job_bonus xu, +1 when spirited or careful, capped per person a day, paid once at close."""
+    setUp=OperationsTests.setUp;c=OperationsTests.c;o=OperationsTests.o;act=OperationsTests.act;hire=OperationsTests.hire
+    staff=OperationsTests.staff;advance=OperationsTests.advance;close=OperationsTests.close;assert_valid=OperationsTests.assert_valid
+    def rows(self,day):return [r for r in self.o['finance']['ledger'] if r['ref']==f'staff-jobs-{day}']
+
+    def test_bonus_paid_once_at_close_in_income_and_net(self):
+        sid=self.hire();self.act('assign',employee=sid,role='patrol');day=self.c['day']
+        self.advance(30);e=self.staff(sid);jobs=self.o['attendance'][str(day)][sid]['jobs']
+        self.assertTrue(6<=jobs<=12,jobs);self.assertFalse(self.rows(day))  # nothing mid-shift
+        rate=ops.job_rate(e);self.assertEqual(rate,3+(e['morale']>=80 or e['precision']>=90))
+        money=self.c['money'];earn=self.c['earnings'];n=len(self.o['finance']['ledger'])
+        summary=self.j.act('end_day',carry_event=True)['summary']
+        bonus=jobs*rate;row,=self.rows(day);new=self.o['finance']['ledger'][n:]
+        self.assertEqual((row['amount'],row['category'],row['day']),(bonus,'other_income',day))
+        self.assertEqual(row['reason'],f"Thưởng việc của đội — {e['name']}: {jobs} việc")
+        self.assertIn(row,new);self.assertEqual(self.c['money'],money+sum(x['amount'] for x in new))
+        self.assertEqual(summary['operations']['staff_bonus'],bonus);self.assertEqual(summary['operations']['staff'][0]['bonus'],bonus)
+        self.assertGreater(bonus,e['wage']*2)  # a normal day clearly beats the wage
+        self.assertGreaterEqual(summary['income'],earn+bonus);self.assertEqual(summary['net'],summary['income']-summary['cost'])
+        self.assert_valid()
+        # Closing again is refused, and even a forced second close of the same day never pays twice.
+        with self.assertRaises(GameError):self.j.act('end_day',carry_event=True)
+        c=self.c;c['day']=day;c['open']=True;c['ops']['finance']['last_closed']=0;before=c['money']
+        ops.on_close(self.j.state,c,self.j.career)
+        self.assertEqual(len(self.rows(day)),1);self.assertEqual(c['money'],before)
+
+    def test_no_bonus_for_paused_resting_or_off_shift_staff(self):
+        self.close();self.act('move_property',tier='sunny',confirm=True);self.j.act('start_day')
+        a,b=self.hire(1),self.hire(2)
+        for sid in (a,b):self.act('assign',employee=sid,role='patrol')
+        ops.spawn_incident(self.j.state,self.c,self.j.career,'accident',False,self.staff(a))  # a: paused
+        self.act('shift',employee=b,on=False)  # b: off shift
+        day=self.c['day'];self.advance(20);summary=self.j.act('end_day',carry_event=True)['summary']['operations']
+        self.assertEqual(summary['staff_bonus'],0);self.assertFalse(self.rows(day))
+        self.assertEqual([x['bonus'] for x in summary['staff']],[0,0])
+        # Resting: no job while resting, so nothing earned for those moves.
+        self.j.act('start_day');self.act('rest',employee=b);day=self.c['day'];self.advance(3)
+        self.assertEqual(self.o['attendance'].get(str(day),{}).get(b,{}).get('jobs',0),0)
+        self.close();self.assertFalse(self.rows(day));self.assert_valid()
+
+    def test_practice_incident_and_staff_moves_never_pay_mid_shift(self):
+        sid=self.hire();self.act('assign',employee=sid,role='patrol');self.act('incident_demo',kind='accident')
+        before=self.c['money'];self.advance(12);self.assertEqual(self.c['money'],before)
+        self.assertTrue(self.o['incident']['practice']);self.assertGreater(self.o['attendance'][str(self.c['day'])][sid]['jobs'],0)
+
+    def test_cap_and_rate(self):
+        sid=self.hire();self.act('assign',employee=sid,role='patrol');self.advance(4);day=self.c['day']
+        row=self.o['attendance'][str(day)][sid];row['jobs']=40;e=self.staff(sid);e.update(morale=70,precision=80)
+        self.assertEqual(ops.job_rate(e),3)
+        summary=self.j.act('end_day',carry_event=True)['summary']['operations']
+        self.assertEqual(summary['staff_bonus'],12*3);self.assertEqual(self.rows(day)[0]['reason'],f"Thưởng việc của đội — {e['name']}: 12 việc")
+        e['precision']=92;self.assertEqual(ops.job_rate(e),4);e.update(precision=80,morale=80);self.assertEqual(ops.job_rate(e),4)
+        self.assert_valid()
+
+    def test_older_attendance_without_jobs_pays_nothing(self):
+        sid=self.hire();self.act('assign',employee=sid,role='patrol');self.advance(8);day=self.c['day']
+        self.o['attendance'][str(day)][sid].pop('jobs')  # a shift recorded by a pre-1.4.31 server
+        self.assertEqual(self.j.act('end_day',carry_event=True)['summary']['operations']['staff_bonus'],0);self.assert_valid()
+
+    def test_save_written_here_validates_on_release_1431(self):
+        """Rolling releases: an older server must accept every save this build writes (ledger category,
+        attendance rows, the incident gap reusing day_staff_incident)."""
+        import os,subprocess,sys
+        old=Path(os.environ.get('MNL_OLD_TREE','D:/projects/Mot_ngay_lam_nghe/_rel1431/mot-ngay-lam-nghe'))
+        if not (old/'game'/'engine.py').exists():self.skipTest('1.4.31 tree not available')
+        sid=self.hire();self.act('assign',employee=sid,role='patrol');self.advance(30);self.close()
+        self.assertTrue(self.rows(self.c['day']-1));self.j.act('start_day');self.advance(5)
+        with tempfile.TemporaryDirectory() as tmp:
+            path=Path(tmp)/'save.json';path.write_text(json.dumps(self.j.state,ensure_ascii=False),encoding='utf-8')
+            paths=[str(old)]+[p for p in os.environ.get('PYTHONPATH','').split(os.pathsep) if p and p!='.']
+            # The careers 1.5.0 adds (phở, cơm, photobooth) are unknown there: a rollback takes their blocks out first.
+            code=('import json,sys;from game.engine import validate_state,public_state;from game.content import CAREERS;'
+                  's=json.load(open(sys.argv[1],encoding="utf-8"));s["careers"]={k:v for k,v in s["careers"].items() if k in CAREERS};'
+                  'validate_state(s);public_state(s);print("ok")')
+            r=subprocess.run([sys.executable,'-c',code,str(path)],cwd=str(old),env=dict(os.environ,PYTHONPATH=os.pathsep.join(paths),PYTHONDONTWRITEBYTECODE='1'),capture_output=True,text=True,encoding='utf-8',timeout=120)
+        self.assertEqual((r.returncode,r.stdout.strip()),(0,'ok'),r.stderr[-2000:])
+
+
+class StaffIncidentRateTests(unittest.TestCase):
+    """Owner 03/10: staff incidents are rare and calm, about one every 4-5 working days per shop (was most days).
+    Drives operations.tick/on_close/on_start directly so many simulated days stay fast."""
+    def days_with_incident(self,seed,staff=1,days=60,moves=32):
+        j=Journey();j.state['settings']['securityEvents']=False;s=j.state;c=j.c;cid=j.career;c['ops']['rng']=seed
+        c['ops']['property']['tier']='garden';c['money']+=500;c['ops']['finance']['opening_balance']+=500
+        for n in range(1,staff+1):
+            j.act('ops_hire',candidate=f'{cid}-staff-{n}',confirm=True);j.act('ops_assign',employee=f'{cid}-staff-{n}',role='patrol')
+        s=j.state;hit=[]
+        for _ in range(days):
+            c=s['careers'][cid]
+            for _ in range(moves):
+                c['event']=None;c['turn']+=1;ops.tick(s,c,cid,'advance')
+                i=c['ops']['incident']
+                if i and not i['practice'] and i['status']!='resolved':hit.append(c['day']);i['status']='resolved'  # handled at once
+            ops.on_close(s,c,cid);c['day']+=1;ops.on_start(s,c,cid)
+        return hit
+    def test_incident_rate_band_and_gap(self):
+        for staff,lo,hi in ((1,4.5,7.5),(2,5.0,7.5),(4,5.0,7.5)):  # 6-7.5 a month: one every 4-5 days
+            hits=[self.days_with_incident(seed*7919+13,staff) for seed in range(4)]
+            per30=sum(map(len,hits))/len(hits)/2
+            self.assertTrue(lo<=per30<=hi,(staff,per30,hits))  # per 30 working days; was 20-28 before
+            for h in hits:self.assertTrue(all(b-a>=ops.STAFF_INCIDENT_GAP for a,b in zip(h,h[1:])),h)
 
 
 class OperationsSaveTests(unittest.TestCase):
