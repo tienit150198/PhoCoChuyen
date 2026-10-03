@@ -487,7 +487,7 @@ function walkView(t,x,g,idle=false){
   const next=pending(g.steps);
   x.ui.fvTarget=spotOf(next?.go,x)||(t&&!next&&g.final?.ready!==false&&g.final?.go?'bike':null);
   const ride=x.ui.fvRide;
-  const hint=t?hintFor({steps,final},x):pending(steps)?.go?nextHint(x,steps,{}):'';
+  const hint=ride?'':t?hintFor({steps,final},x):pending(steps)?.go?nextHint(x,steps,{}):'';
   let acts;
   if(ride)acts=`<p class="fv-at"><b>🛵 ${x.esc(ride.place||'')}</b></p><button type="button" class="btn primary big grow gd-cta fv-honk" data-action="car:fvhonk" data-fd-wait=".fv-arrived">📯 Bóp còi</button>`;
   else{

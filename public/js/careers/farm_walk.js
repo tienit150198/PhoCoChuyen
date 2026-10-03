@@ -290,12 +290,13 @@ function changes(){
 
 /* ------------------------------------------------------------------ camera + projection */
 function view(){
-  const w=W.w,h=W.h,f=w/2/Math.tan(Math.min(1.25,0.62+w/h*0.32)/2);
+  // A tall phone stage: about 70° across. A wide desktop one: wider, so the view is not just a slit of the middle.
+  const w=W.w,h=W.h,f=Math.min(w/2/Math.tan(Math.min(1.25,0.62+w/h*0.32)/2),Math.max(h*1.1,w*0.42));
   let x,y,z,yaw,pitch;
   if(W.ride){const r=W.ride;x=r.x;z=r.z;y=1.28;yaw=r.yaw;pitch=0.05;}
   else if(W.cam==='tp'){
     const me=W.me,back=behind(me);
-    x=me.x-Math.sin(me.yaw)*back;z=me.z-Math.cos(me.yaw)*back;y=1.15+back*0.45;yaw=me.yaw;pitch=0.32;
+    x=me.x-Math.sin(me.yaw)*back;z=me.z-Math.cos(me.yaw)*back;y=1.2+back*0.5;yaw=me.yaw;pitch=0.36;
   }else{const me=W.me,b=reduced()?0:Math.sin(me.bob)*0.035*me.moving;x=me.x;z=me.z;y=EYE+b;yaw=me.yaw;pitch=me.pitch;}
   return {x,y,z,yaw,pitch,f,cx:w/2,cy:h*0.46,s:Math.sin(yaw),c:Math.cos(yaw),sp:Math.sin(pitch),cp:Math.cos(pitch)};
 }
