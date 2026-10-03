@@ -47,6 +47,7 @@ from . import fridge as fr   # 🧊 Tủ lạnh ở nhà: cất đồ ăn, đói
 from . import x3_week as x3   # 🔥 Nghề x3 trong tuần (game/x3_week.py)
 from . import accounting_jobs as aj   # 💼 Việc làm kế toán: exam gate, entry check, ×3/×5 (game/accounting_jobs.py)
 from . import whats_new as wn   # "Có gì mới": read already for a brand-new save (_welcome_settings)
+from . import quay as qy   # 🏪 Quầy của bạn: your own counter, staff, the till (game/quay.py)
 
 VERSION = 1
 START_WALLET = 60
@@ -662,6 +663,8 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     dc.on_life_day(s, result)   # 🪴 follow the player home, a rented room's Ấm cúng morning, a neighbour drops by
     up.on_life_day(s, result)   # 🧾 the monthly bills of the vehicles and homes owned (after the home's morning)
     rui.on_life_day(s, result)   # 🛡️ warnings, cards and premiums (after the bills: a waived bill raises the odds)
+    qy.on_life_day(s, result)   # 🏪 each counter runs the day that just ended (after the month's bills)
+    qy.on_shift(s, career, action, result)   # 💼 a hired shift at another player's counter ends with its day (game/quay_hire.py)
     if action == 'start_day' and career in s['careers']:
         line = _emp().backdoor_remark(s, s['careers'][career], career)   # vào bằng cửa sau: one remark, day one
         if line:
@@ -835,6 +838,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(rui.action(s, name, p))
     elif name.startswith('jr_vang_'):
         result.update(vang.action(s, name, p))
+    elif name.startswith('jr_quay_'):
+        result.update(qy.action(s, name, p))
     else:
         raise e.GameError('Thao tác hành trình không hợp lệ.', 'unknown_action')
     after(s, None, name, p, result)
@@ -916,7 +921,8 @@ def public(s: dict) -> dict:
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
         bank=bk.public(s), home=hs.public(s), reno=rn.public(s), deco=dc.public(s),
-        garage=gr.public(s), wed_gift=wl.gift_public(j), **ct.public(s))   # wed_gift False: the client may claim it at a party
+        garage=gr.public(s), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
+        **({'quay': qy.public(s)} if qy.visible(s) else {}))   # 🏪 only once a save reaches it (state size)
 
 
 def _skill_ids() -> list[str]:
@@ -941,7 +947,7 @@ def content() -> dict:
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
-        garage=gr.catalogue(), rui=rui.catalogue())
+        garage=gr.catalogue(), rui=rui.catalogue(), quay=qy.catalogue())
 
 
 def validate(s: dict) -> None:
@@ -1020,3 +1026,4 @@ def validate(s: dict) -> None:
     up.validate(s)   # 🧾 journey['upk'] (optional)
     rui.validate(s)   # 🛡️ journey['rui'] (optional)
     vang.validate(s)   # 💰 journey['vang'] (optional)
+    qy.validate(s)   # 🏪 journey['quay'] (optional)

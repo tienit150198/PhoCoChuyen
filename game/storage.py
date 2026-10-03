@@ -338,6 +338,8 @@ class Store:
             db.executescript(ldt.SCHEMA)  # 💕 Dates of the live service: live_dates, date_bonds (game/live_dating.py, live/dating.py)
             db.executescript(wl.SCHEMA)  # 💍 Live weddings: dates, parties, guests, photos, the weekly race (game/wedding_live.py)
             db.executescript(rt.SCHEMA)  # Giữ chân: milestones, action counts, beacons (game/retention.py)
+            from . import quay_hire as qh
+            db.executescript(qh.SCHEMA)  # 💼 Hired players' shifts at someone's counter (game/quay_hire.py)
         mr.bind(self)  # joint_account / joint_spend (game/couple.py) for game/bank.py
 
     def connect(self):

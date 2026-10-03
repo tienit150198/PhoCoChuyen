@@ -177,7 +177,7 @@ async function cmd(action,payload={},options={}){
   if(action==='start_day'&&!payload?.acct_check&&acctDue(options.career||career())){pmWant=payload?.manager?options.career||career():null;acctCheck(options.career||career());return null;}
   const pm=action==='start_day'&&payload?.acct_check&&pmWant===(options.career||career());
   if(pm)payload={...payload,manager:true};
-  try{const r=await api.command(action,payload,options.career||career());if(pm){pmWant=null;ui.pmPick=null;ui.task=null;setTimeout(()=>openSheet('manager'),0);}if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);return r;}
+  try{const r=await api.command(action,payload,options.career||career());if(pm){pmWant=null;ui.pmPick=null;ui.task=null;setTimeout(()=>openSheet('manager'),0);}if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);if(r.quay)quayFlush();return r;}
   catch(error){if(error.quiet)return null;
     if(error.data?.code==='acct_check'&&!payload?.acct_check){acctCheck(options.career||career());return null;}   // 💼 kế toán: the entry check first (v4/accounting-school.js)
     toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}  // quiet: a tap the save moved under twice (api.js), the screen already shows why
@@ -277,12 +277,17 @@ function navItems(c){
   if(api.state?.journey?.story&&api.state.journey.garage)items.push(['garage','bike','Xe & phương tiện']);  // 🚗 (v4/garage.js, own dialog): only once the server has it
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.vang)items.push(['vang','award','Tiệm vàng']);  // 💰 Tiệm vàng Kim Phát (v4/rui.js)
+  if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
   if(api.state?.fair?.show)items.push(['fair','flag','Hội chợ',api.state.fair.open&&!api.state.fair.played?'dot':0]);  // 🏮 Hội chợ dân gian (v4/fair.js, own dialog): only around the fair's days
   // A career with its own shell (the air crew: no Sổ tiệm, a flight log instead) reshapes the list; others keep it.
   const result=careerUI(career())?.nav?.(items,careerContext(env()))||items;
   if(!result.some(x=>x[0]==='accountingSchool'))result.push(['accountingSchool','calculator','Học kế toán']);  // 📒 Học kế toán (v4/accounting-school.js): every career, after a career's own reshaping
   return result;
 }
+/** 🏪 A dot when a counter needs its owner: a thief, rent to pay, closed waiting, or a till to collect soon. */
+function quayBadge(){const q=api.state?.journey?.quay;return q?.shift||(q?.stalls||[]).some(st=>(st.case&&!st.case.rep)||st.due||st.closed||(st.left<=1&&st.till>0))?'dot':0;}
+/** 💼 A hired shift's day just closed (game/quay.py on_shift): settle it now (game/quay_hire.py flush; every load does too). */
+async function quayFlush(){try{const d=await api.post('/api/quay/flush',{});if(d?.state&&typeof d.revision==='number')api.accept({state:d.state,revision:d.revision});}catch{/* the next load settles it */}}
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
 /** One line under the look-alike Khu phố entries, so each says what it is (owner D5: names stay, lines added). */
 const RAIL_NOTE={town:'Thư viện, chợ, quảng trường…',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
@@ -297,7 +302,7 @@ const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREE
 const RAIL_GROUPS=[
   ['pho','building','Khu phố',['fair','liveWalk','liveWed','nhom','phone','social','town','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
-  ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage','rui','vang']],
+  ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage','rui','vang','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
   ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal','accountingSchool']],
 ];
@@ -1325,6 +1330,7 @@ async function handleAction(action,data,el){
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
       if(action==='garage'){await (await import('./v4/garage.js')).garageAction(action,data,el,env());break;}  // 🚗 Xe & phương tiện: lazy
       if(action==='rui'||action==='vang'){await (await import('./v4/rui.js')).ruiAction(action,data,el,env());break;}  // 🛡️ Bảo hiểm, 💰 Tiệm vàng: lazy
+      if(action==='quay'){await (await import('./v4/quay.js')).quayAction(action,data,el,env());break;}  // 🏪 Quầy của bạn: lazy
       if(action==='fair'){await (await import('./v4/fair.js')).fairAction(action,data,el,env());break;}  // 🏮 Hội chợ dân gian: lazy
       if(L.people.m&&await L.people.m.closenessAction(action,data,el,env()))break;
       if(await needsAction(action,data,el,env()))break;  // 🍚😴 nd…

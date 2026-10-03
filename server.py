@@ -65,6 +65,7 @@ from game import marriage
 from game import deco_mate  # 💞 the spouse's furniture in the home both live in (read-only)
 from game import system_gift
 from game import live_effects, live_dating
+from game import quay_hire
 from game import wedding_live
 from game import live_chat
 from game.content import public_content,content_parts,CAREERS
@@ -585,6 +586,9 @@ class Handler(BaseHTTPRequestHandler):
                     try:  # 💍 anniversaries of this save's wedding date: reward rows for live_effects below (game/wedding_live.py)
                         wedding_live.on_load(self.server.store,token,state)
                     except Exception as e:self.log_error("wedding on_load: %s",type(e).__name__)  # never blocks loading the game
+                    try:  # 💼 a hired shift at someone's counter that ended: pay it, send the counter its share (game/quay_hire.py)
+                        if quay_hire.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
+                    except Exception as e:self.log_error("quay on_load: %s",type(e).__name__)  # never blocks loading the game
                     fair_board.ensure(self.server.store)  # 🏆 the fair's titles, once it is over (rows for live_effects below; never raises)
                     try:  # 🧧 rewards from the live service (Đi dạo, weddings): paid once into the save, before the gift cards (game/live_effects.py)
                         if live_effects.on_load(self.server.store,token,state):state,revision,_=self.server.store.read(token)
@@ -648,6 +652,13 @@ class Handler(BaseHTTPRequestHandler):
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("marriage-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,marriage.view(self.server.store,token,state,(parse_qs(split.query).get("catalog") or [""])[0]=="1"));return
+            if route=="/api/quay":  # 💼 Làm thêm: offers to take, my offers, my friends to invite (game/quay_hire.py)
+                token,state,_,_=self.require_session()
+                if not self.server.rate_limit("quay-get:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                out=quay_hire.get(self.server.store,token,state)
+                if live_effects.on_load(self.server.store,token,state):out["changed"]=True   # the counter's money that arrived
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                self.json(200,out,known=FULL);return
             if route=="/api/deco/mate":  # 💞 the spouse's pieces in the shared home (game/deco_mate.py): read-only, {} otherwise
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("deco-mate:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
@@ -819,7 +830,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,live_chat.act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
-                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
@@ -844,6 +855,12 @@ class Handler(BaseHTTPRequestHandler):
                 out=marriage.act(self.server.store,token,route[len("/api/marriage/"):],data)
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 if not out.pop("quiet",False):out["view"]=marriage.view(self.server.store,token,state)
+                self.json(200,out,known=FULL);return
+            if route.startswith("/api/quay/"):  # 💼 post / cancel / accept / decline / quit / flush (game/quay_hire.py)
+                if not self.server.rate_limit("quay:"+token,30):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
+                out=quay_hire.act(self.server.store,token,route[len("/api/quay/"):],data)
+                if live_effects.on_load(self.server.store,token,state):out["changed"]=True
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 self.json(200,out,known=FULL);return
             if route.startswith("/api/social/"):
                 if not self.server.rate_limit("social:"+token,60):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.");return
