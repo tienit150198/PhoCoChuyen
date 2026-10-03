@@ -21,13 +21,17 @@ def now() -> float:
     return float(clock())
 
 
-# Stop taps on a running meter (the sealer lever, the rinse tap, the dryer, an espresso shot, the noodle basket…).
-# The workbench sends the moment the player pressed stop (payload `tap_at`, on our clock as the page reads it:
-# public/js/v4/careers.js), so a slow network, a command ahead of it on the wire or a busy phone no longer run
-# the bar past the tap. Kept honest: at most TAP_AHEAD after its arrival (the page's clock estimate may run a
-# little fast) and at most TAP_LAG before it (a weak 3G round trip, a queued command, a retry). An older page
-# sends none and is judged on arrival, as before.
-TAP_LAG = 3.0
+# Stop taps on a running meter (the sealer lever, the rinse tap, the dryer, an espresso shot, the noodle basket,
+# the sewing machine…). The workbench sends the moment the player pressed stop (payload `tap_at`, on our clock as
+# the page reads it: public/js/v4/careers.js, public/js/api.js clockSample), so a slow network, a command ahead of
+# it on the wire, a busy server or a busy phone no longer run the bar past the tap. Kept honest: at most
+# TAP_AHEAD after the command is handled (the page's clock estimate may run a little fast) and at most TAP_LAG
+# before it. TAP_LAG covers every way a stop can reach us late: a weak 3G round trip, a stop held behind another
+# command (the page holds it up to 20 s), retries through a restart (14 s), a server busy with other players'
+# commands. It was 3 s: a stop that reached a busy server later than that was graded later than it was pressed
+# ("canh tới mức xanh nhưng tới mức đỏ nó mới dừng"). The meters are fixed-speed clocks the player watches, so an
+# earlier moment shows nothing a later one hides. An older page sends none and is judged on arrival, as before.
+TAP_LAG = 30.0
 TAP_AHEAD = 0.25
 
 

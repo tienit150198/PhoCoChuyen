@@ -109,6 +109,10 @@ class HTTPv4Tests(unittest.TestCase):
         self.assertEqual(status, 304)
         data = self.bootstrap()
         self.assertIsInstance(data['server_time'], float)
+        # When the request came in (public/js/api.js clockSample leaves the server's own time out of its clock).
+        self.assertIsInstance(data['server_recv'], float)
+        self.assertLessEqual(data['server_recv'], data['server_time'])
+        self.assertLess(data['server_time'] - data['server_recv'], 30)
         self.assertIn('push', data)
         self.assertIn('social', data)
         self.assertIn('worker-src', h['Content-Security-Policy'])

@@ -91,9 +91,10 @@ class MilkTeaSealTests(TapStopTest):
 
     def test_a_moment_too_old_or_in_the_future_is_bounded(self):
         j, tid, t0 = self.ready()
-        # "Tapped at 2.0 s" arriving at 6 s: judged at 3.0 s (6 - TAP_LAG), not perfect, not burnt.
-        s, r = self.stop(j, 'tea_seal', t0 + 2.0, t0 + 6.0, task=tid)
+        # "Tapped at 2.0 s" handled TAP_LAG + 1 s later: judged at 3.0 s, not perfect, not burnt.
+        s, r = self.stop(j, 'tea_seal', t0 + 2.0, t0 + 3.0 + kit.TAP_LAG, task=tid)
         self.assertEqual(r['seal'], 'ok')
+        self.assertEqual(r['held'], 3.0)
         # "Tapped at 2.0 s" arriving at 1.0 s: at most TAP_AHEAD later, still short of the green zone.
         s, r = self.stop(j, 'tea_seal', t0 + 2.0, t0 + 1.0, task=tid)
         self.assertEqual(r['seal'], 'ok')
@@ -202,6 +203,54 @@ class OtherMetersTests(TapStopTest):
         now, tapped, late = self.twin(j, 'ao_sew_stop', t0 + A.SEW_SECONDS * hi - 0.1, 1.0, pick, task=tid)
         self.assertEqual(tapped, 'good')
         self.assertEqual(late, 'crooked')
+
+    def sewing(self, days=range(3, 40), pred=None):
+        from tests.test_career_clothing import job
+        j = job('alter', pred, days=days)
+        tid = j.task['id']
+        j.act('ao_measure', task=tid)
+        j.act('ao_alter_self', task=tid, cm=j.task['needs']['_cm'])
+        self.clock.t += 1
+        j.act('ao_sew_start', task=tid)
+        return j, tid, j.get(tid)['alt']['start']
+
+    def test_sewing_stop_reaching_a_busy_server_late(self):
+        """Player report (clothes shop): "canh tới mức xanh nhưng tới mức đỏ nó mới dừng". A stop pressed in the
+        green that a busy server handles 8 s later (held behind another command, a lock, a retry) is still
+        graded where it was pressed; it used to be graded at arrival - 3 s, past the line."""
+        from game.careers import clothing as A
+        j, tid, t0 = self.sewing()
+        lo, hi = A.sew_zone(j.get(tid))
+        at = t0 + A.SEW_SECONDS * (lo + hi) / 2
+        pick = lambda c: next(t for t in c['tasks'] if t['id'] == tid)['alt']['seam']
+        now, tapped, late = self.twin(j, 'ao_sew_stop', at, 8.0, pick, task=tid)
+        self.assertEqual((now, tapped, late), ('good', 'good', 'crooked'))
+        s, r = self.stop(j, 'ao_sew_stop', at, at + 8.0, task=tid)
+        self.assertEqual(r['held'], round(at - t0, 2))   # the seconds graded, for the page's checks
+
+    def test_sewing_short_of_the_line_is_turned_down_at_the_tap(self):
+        from game.careers import clothing as A
+        j, tid, t0 = self.sewing()
+        lo, hi = A.sew_zone(j.get(tid))
+        at = t0 + A.SEW_SECONDS * lo - 0.2
+        s, r = self.stop(j, 'ao_sew_stop', at, at + 0.6, task=tid)   # in the green on arrival, short of it at the tap
+        self.assertTrue(r.get('refused'))
+        self.assertEqual(next(t for t in s['careers']['clothing']['tasks'] if t['id'] == tid)['stage'], 'sew')
+
+    def test_sewing_graded_on_the_line_drawn(self):
+        """A job taken on day 2 (the wide first-days line) and sewn on day 3: graded on the line its page draws
+        (public sew.zone), not on day 3's narrower one."""
+        from game.careers import clothing as A
+        from game.engine import public_state
+        j, tid, t0 = self.sewing(days=[1, 2])
+        j.c['day'] = 3
+        shown = public_state(j.state)['careers']['clothing']['tasks']
+        zone = next(t for t in shown if t['id'] == tid)['sew']['zone']
+        self.assertEqual(tuple(zone), A.SEW_ZONE_EASY)
+        at = t0 + A.SEW_SECONDS * (A.SEW_ZONE_EASY[0] + A.SEW_ZONE[0]) / 2   # green as drawn, short of day 3's line
+        s, r = self.stop(j, 'ao_sew_stop', at, at, task=tid)
+        self.assertFalse(r.get('refused'))
+        self.assertEqual(next(t for t in s['careers']['clothing']['tasks'] if t['id'] == tid)['alt']['seam'], 'good')
 
     def test_homestay_egg(self):
         from game.careers import homestay as H

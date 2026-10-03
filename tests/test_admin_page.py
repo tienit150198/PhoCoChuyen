@@ -160,7 +160,7 @@ class AdminPageTests(unittest.TestCase):
         _, s1, wrong = self.page_login('op_admin', 'khong-dung-mat-khau')
         _, s2, nobody = self.page_login('khong_co_ai', 'khong-dung-mat-khau')
         self.assertEqual((s1, s2), (401, 401))
-        strip = lambda d: {k: v for k, v in d.items() if k != 'server_time'}
+        strip = lambda d: {k: v for k, v in d.items() if k not in ('server_time', 'server_recv')}
         self.assertEqual(strip(wrong), strip(nobody))
 
 
