@@ -1413,13 +1413,16 @@ window.addEventListener('pageshow',e=>{if(e.persisted)repaintSheet();});
 let fontsLate=0;document.fonts?.addEventListener?.('loadingdone',()=>{clearTimeout(fontsLate);fontsLate=setTimeout(repaintSheet,150);});
 /* Tap feedback. A control that starts a server request within 400 ms of its tap is marked at once
  * (.is-pending + aria-busy; CSS dims it and adds a spinner after 150 ms) until the requests settle; a
- * re-render drops the mark too. A second tap on a pending control is swallowed (no double submit). */
+ * re-render drops the mark too. A second tap on a pending control is swallowed (no double submit).
+ * The mark goes only once EVERY request is answered, so a control that keeps its own busy state (off while its
+ * request is out, e.g. the wedding's 🧧 send) opts out with data-own-busy: otherwise, re-enabled while another
+ * request was still out (the minute money), it looked ready but its next tap was swallowed without a word. */
 const tap={el:null,at:0,pending:new Set()};
 document.addEventListener('touchstart',()=>{},{passive:true});  // iOS Safari shows :active only with a touch listener
 document.addEventListener('click',e=>{
   const el=e.target.closest?.('button,[data-action],[data-command]');
   if(el?.classList.contains('is-pending')){e.preventDefault();e.stopImmediatePropagation();return;}
-  tap.el=el&&!el.disabled?el:null;tap.at=performance.now();
+  tap.el=el&&!el.disabled&&!el.hasAttribute('data-own-busy')?el:null;tap.at=performance.now();
 },true);
 document.addEventListener('submit',e=>{tap.el=e.submitter||e.target.querySelector?.('button:not([type=button])')||null;tap.at=performance.now();},true);
 api.addEventListener('net',e=>{

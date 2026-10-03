@@ -372,6 +372,10 @@ def envelope(store, sid: str, display: str, d: dict) -> dict:
     out = mr._effect(eid, sid, 'wallet', -amount, f'🧧 Phong bì mừng cưới {names["a"]} & {names["b"]}', dict(wedding=wid, wish=wish))
 
     def fn(s):
+        # A resend of this very envelope (its answer was lost; the client sends the same rid again) that started before
+        # the first one landed: nothing to pay twice and no "not enough" either, the row's insert below says "already sent".
+        if out['id'] in mr._box(s)['applied']:
+            return
         mr.need(int(s['journey']['wallet']) >= amount, f'Ví của bạn chưa đủ {amount} xu.', 'not_enough')
         mr._apply_effect(s, out)
 

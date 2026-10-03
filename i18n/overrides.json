@@ -1,5 +1,7 @@
 {
  "strings": {
+  "🧧 Đang gửi…": "🧧 Sending…",
+  "Mạng chập chờn, chưa chắc phong bì đã tới. Bấm gửi lại: nếu đã tới rồi sẽ không bị trừ thêm tiền.": "The connection is shaky, so the envelope may not have arrived. Tap send again: if it already arrived, you will not be charged twice.",
   "Canh mức (máy may, tắm thú, ép nắp…): bấm dừng ở đâu kim dừng đúng ở đó, cả khi máy yếu hay mạng chậm.": "Stop meters (sewing, pet bath, cup sealing…): the needle stops right where you tap, even on a slow phone or network.",
   "Nhân viên: thẻ ghi rõ hôm nay làm mấy việc, vì sao đang nghỉ; ai tạm dừng vì sự cố không bị tính lương.": "Staff: cards show today's jobs and why someone is resting; staff paused by an incident are no longer paid.",
   "Tiền của bạn: thêm nút “Vào Ngân hàng” để mở ngân hàng nhanh hơn.": "Your money: a new “Go to the bank” button opens the bank faster.",

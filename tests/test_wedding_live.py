@@ -338,6 +338,35 @@ class Envelopes(WedBase):
         self.assertFalse(self.rows("SELECT 1 FROM marriage_effects WHERE id=?", f'wenv:{wid}:rid-clash-0001'))
         self.assertEqual(self.wallet(g), 5000 + 6 - 50 * len(sent))
 
+    def test_a_resend_after_a_lost_answer_is_the_same_envelope(self):
+        """The client sends the same rid again when an answer is lost (a timeout, the network, a 502/503/504). If that
+        resend started before the first send landed, it still answers "already sent", even with the wallet now too
+        thin for a second one: never "not enough" for an envelope that went through, never a second debit."""
+        a, b, wid, at = self.couple()
+        g = self.user('khach', wallet=250)
+        self.guest_at(wid, g)
+        self.clock.t = at + 60
+        real, raced = mr._mutate, []
+
+        def first_lands_meanwhile(store, fns, db_ops=None):
+            if not raced:                                            # the resend passed its early check, then the
+                raced.append(None)                                   # first send commits before it writes
+                raced[0] = self.give(g, wid, 200, 'rid-lost-00001')
+            return real(store, fns, db_ops)
+        with patch.object(mr, '_mutate', first_lands_meanwhile):
+            again = self.give(g, wid, 200, 'rid-lost-00001')
+        self.assertTrue(raced[0]['changed'])
+        self.assertFalse(again['changed'])
+        self.assertEqual((again['rid'], again['message']), ('rid-lost-00001', 'Phong bì này đã gửi rồi.'))
+        self.assertEqual(self.wallet(g), 50, 'debited once')
+        self.assertEqual(len(self.rows("SELECT 1 FROM marriage_effects WHERE id LIKE 'wenv:%'")), 1)
+        self.assertEqual([r['amount'] for r in self.rows("SELECT amount FROM live_effects WHERE id LIKE 'wedenv:%'")], [100, 100])
+        hist = [h for h in self.state(g)['journey']['history'] if 'Phong bì mừng cưới' in h['label']]
+        self.assertEqual([h['amount'] for h in hist], [-200])
+        with self.assertRaises(mr.MarriageError) as e:                 # a NEW envelope the wallet cannot cover: refused
+            self.give(g, wid, 200, 'rid-new-000001')
+        self.assertEqual(e.exception.code, 'not_enough')
+
     def test_no_cap_a_pure_transfer(self):
         """Many envelopes at one wedding until the wallet is empty: the couple gets exactly what left the guest's wallet,
         and an envelope the wallet cannot cover is refused (never below 0)."""

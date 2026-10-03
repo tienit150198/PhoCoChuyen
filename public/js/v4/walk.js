@@ -38,6 +38,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
 import {stylesheet} from '../lazy.js';
 import {lookOf,figureOf,paintPlayer,CANVAS,portrait} from './look.js';
+import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
 import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scenes/stroll.js';
 import * as feast from './wedfeast.js';
 
@@ -55,7 +56,7 @@ const S={env:null,dlg:null,cv:null,ctx:null,stage:null,room:null,geo:null,speed:
   offs:[],off:0,places:[],k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,bg:null,bgKey:'',raf:0,lastDraw:0,card:null,invite:null,sent:null,
   toastTimer:0,moveAt:0,moveTimer:0,pending:null,lastPublic:null,bound:false,hideTimer:0,paused:false,floaters:[],emotes:false,
   picker:false,down:null,topicKey:'',want:null,wedding:null,wed:null,photo:null,ended:null,burst:0,clock:'',wsound:true,log:[],logOpen:false,logKey:'',envp:null,gift:false,
-  tray:null,toss:null,floatKey:'',eatAt:0,dj:false};
+  tray:null,toss:null,floatKey:'',eatAt:0,dj:false,envk:{rid:null,ridKey:''}};
 try{S.wsound=localStorage.getItem(WSOUND_KEY)!=='0';}catch{/* storage blocked */}
 const spots=new Map(),hooks={enter:new Set(),leave:new Set()};
 const night=()=>document.documentElement.dataset.theme==='dem';
@@ -474,7 +475,7 @@ function paintEnvp(){
       <button type="button" class="icon-btn" data-wk="env" aria-label="Đóng">${icon('x',18)}</button></div>
     <div class="wk-acts wrap">${w.envs.map(n=>`<button type="button" class="wk-pill" data-wk="envAmt" data-n="${n}">${n} xu</button>`).join('')}</div>
     <div class="wk-acts wrap">${w.wishes.map((t,i)=>`<button type="button" class="wk-pill${i===e.wish?' on':''}" data-wk="envWish" data-n="${i}" aria-pressed="${i===e.wish}">${esc(t)}</button>`).join('')}</div>
-    <div class="wk-acts"><button type="button" class="wk-pill primary wk-env-go" data-wk="envSend"></button></div><p class="wk-env-why" hidden></p>`;
+    <div class="wk-acts"><button type="button" class="wk-pill primary wk-env-go" data-wk="envSend" data-own-busy></button></div><p class="wk-env-why" hidden></p>`;
   el.hidden=false;paintEnvGo();
 }
 /** The wallet, the amounts (one the wallet cannot cover is off, the reason below), the send button. */
@@ -488,7 +489,10 @@ function paintEnvGo(){
     p.classList.toggle('primary',on);p.setAttribute('aria-pressed',String(on));p.disabled=no;
   }
   const go=el.querySelector('.wk-env-go'),why=el.querySelector('.wk-env-why');
-  go.textContent=`🧧 Gửi phong bì ${fx(v.n)} xu`;go.disabled=Boolean(e.busy||v.why);
+  // While a send is out the button says so and is off (its own busy state: data-own-busy keeps app.js's tap guard
+  // from holding it after this request is answered, which swallowed the next tap while other requests were out).
+  go.textContent=e.busy?'🧧 Đang gửi…':`🧧 Gửi phong bì ${fx(v.n)} xu`;go.disabled=Boolean(e.busy||v.why);
+  if(e.busy)go.setAttribute('aria-busy','true');else go.removeAttribute('aria-busy');
   const text=v.why||(off?`Ví còn ${fx(wl)} xu: phong bì lớn hơn tạm khóa.`:'');
   why.textContent=text;why.hidden=!text;
 }
@@ -507,13 +511,20 @@ async function claimGift(){
 async function sendEnvelope(){
   const e=S.envp,w=S.wed,api=S.env?.api;if(!e||!w||!api||e.busy)return;
   const v=envNow();if(v.why){toast(v.why);return;}
-  e.busy=true;e.rid=e.rid||`e${Date.now().toString(36)}${Math.random().toString(36).slice(2,10)}`;paintEnvGo();
-  try{const d=await api.json('/api/marriage/envelope',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:JSON.stringify({wedding:w.id,amount:v.n,wish:e.wish,rid:e.rid})});
+  // The rid of an unanswered send of this same envelope is kept (envelope-send.js): sending it again is the same one.
+  e.busy=true;const rid=envRid(S.envk,envKey(w.id,v.n,e.wish));paintEnvGo();
+  let error=null;
+  try{const d=await api.json('/api/marriage/envelope',{method:'POST',retry:true,   // no answer: sent again with the same rid
+      headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:JSON.stringify({wedding:w.id,amount:v.n,wish:e.wish,rid})});
     if(d?.state&&typeof d.revision==='number'){api.accept({state:d.state,revision:d.revision});S.env.renderMain?.();}
+    else api.refresh().then(()=>{S.env.renderMain?.();paintEnvGo();},()=>{});   // "already sent" (its first answer was lost): the wallet as it is
     if(d?.rid)live.send({t:'wed_env',rid:d.rid});
     toast(d?.message||'Đã gửi phong bì 🧧');}   // "cho gửi thoải mái": the panel stays open for the next one
-  catch(x){toast(x?.message||'Chưa gửi được, thử lại nhé.');}
-  e.busy=false;e.rid=null;   // a new envelope, a new request id
+  catch(x){error=x;}
+  if(envSettle(S.envk,error)==='unknown'){   // it may have gone through: say so, and show the wallet as the server has it
+    toast(UNKNOWN_TEXT);api.refresh().then(()=>{S.env.renderMain?.();paintEnvGo();},()=>{});}
+  else if(error)toast(error?.message||'Chưa gửi được, thử lại nhé.');
+  e.busy=false;
   paintEnvGo();
 }
 /** 🍽️ The mâm cỗ of the table tapped: the dishes to gắp, a beer to cụng ly, a soft drink. */
