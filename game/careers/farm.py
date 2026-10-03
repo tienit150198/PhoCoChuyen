@@ -46,6 +46,18 @@ Care loop (docs/superpowers/specs/2026-09-29-farm-care-design.md):
 * Night drying follows tomorrow's sky; a 3-day outlook and a planning tip are shown.
 * Hen mood (`coop.mood`, `fa_clean`): food, a clean coop and heat move it; eggs follow it.
 All deterministic, no new randomness; older saves are migrated in validate_data.
+
+Phân bón lá thúc (`fa_boost`): bought from the HTX on the spot (xu, never stocked) and sprayed on a
+growing bed in 10% doses. A dose of r% makes the bed's day budget and night growth 100/(100−r)
+times bigger, so the growing time at full care (growth needed ÷ growth per day and night, the unit
+of `_eta`) is cut by exactly r%, at most THUC_MAX per crop cycle, on top of whatever compost, NPK,
+the season and the soil already do to that bed. On the game clock the cut can never be bigger
+either: at the first dose the bed gets a floor, now + 30% of the time it still needed without thúc
+(full care, the game's own beats and nights), and it does not ripen before it, so a whole night
+saved on a bed that was a few points short is the most a dose can give. Only growing below
+ripeness is sped up (ripe produce ages at its own pace) and a bed fed on the day it was sown
+still cannot be picked that day. Organic (fish-based foliar feed), costs đất màu. Kept in
+c['ext'][THUC_KEY], outside the data schema that older servers check key by key.
 """
 from __future__ import annotations
 from ..jsoncopy import tree_copy
@@ -73,6 +85,14 @@ NIGHT_DRY = dict(sun=12, hot=18, wind=15, cloud=8, rain=-13)   # overnight moist
 MOOD_START, MOOD_MIN = 80, 20
 MOOD = dict(fed=8, hungry=-15, clean=6, dirty=-8, heat=-5, fox=-15)
 OUTLOOK_DAYS = 3
+# Phân bón lá thúc: % of the growing time cut per dose, the cap per crop cycle, the price of each
+# dose in turn (a stronger mix costs more), đất màu used per dose, and where the doses are kept.
+THUC_STEP, THUC_MAX = 10, 70
+THUC_COST = (1, 1, 1, 1, 2, 2, 2)
+THUC_SOIL = 1
+THUC_KEY = 'farm_thuc'    # c['ext'][THUC_KEY] = {plot id: {crop, day (sown), pct, floor (clock minute)}}
+SHIFT_BEATS = 36          # 05:30–17:30 at 20 minutes a beat: a day's work at most
+OPEN_MIN, BEAT_MIN = 5 * 60 + 30, 20   # the farm's opening (inventory.HOURS) and a beat on its clock (inventory.STEP)
 
 CROPS = [
     dict(id='muong', name='Rau muống', emoji='🥬', seed='seed_muong', unit='bó', rate=4, thirst=0, yield_=8, life=2, unlock=1, start=0, value=1, cap=34, feed=8, family='leafy'),
@@ -363,21 +383,51 @@ def _clamp(x: int, low: int = 0, high: int = 100) -> int:
     return max(low, min(high, x))
 
 
-def _cap(p: dict) -> int:
-    """How much the crop on this bed can still grow in one day's work (its daily budget)."""
+def _cap(p: dict, speed: int = 100) -> int:
+    """How much the crop on this bed can still grow in one day's work (its daily budget).
+    `speed` (percent) is the thúc fertiliser's pace; it only speeds up growing, not ageing."""
     crop = CROP_INDEX[p['crop']]
     cap = crop['cap'] + CAP_BONUS['compost'] * int(p['compost']) + CAP_BONUS['npk'] * int(p['npk'])
     if p['soil'] < SOIL_LOW:
         cap = cap * LOW_CAP // 100
-    return cap if p['growth'] < RIPE else cap // 2    # ripe produce ages slower than it grows
+    return cap * speed // 100 if p['growth'] < RIPE else cap // 2    # ripe produce ages slower than it grows
 
 
-def _night_growth(p: dict, day: int) -> int:
+def _night_growth(p: dict, day: int, speed: int = 100) -> int:
     g = NIGHT_GROWTH * season(day)['night'] // 100
-    return g // 2 if p['soil'] < SOIL_LOW else g
+    g = g // 2 if p['soil'] < SOIL_LOW else g
+    if speed > 100 and p['growth'] < RIPE:
+        # The thúc carries the crop up to ripeness overnight, never past it faster than usual.
+        return max(g, min(g * speed // 100, RIPE - p['growth']))
+    return g
 
 
-def _step(d: dict, turn: int, weather: dict, day: int) -> None:
+def _speed(pct: int) -> int:
+    """Growing pace (percent) with pct% of the growing time cut: 30% → 142, 70% → 333."""
+    return 10000 // (100 - pct) if pct else 100
+
+
+def _first_day(p: dict, day: int, speed: int) -> int:
+    """Growth a thúc-fed bed may reach on the day it was sown: it still cannot be picked that day."""
+    return YOUNG - 1 if speed > 100 and p['planted'] == day and p['growth'] < YOUNG else GROWTH_MAX
+
+
+def _clock(day: int, beat: int) -> int:
+    """Game-clock minute (counted from day 0) of a beat of the farm's shift."""
+    return day * 24 * 60 + OPEN_MIN + BEAT_MIN * max(0, min(beat, SHIFT_BEATS))
+
+
+def _beat(d: dict, day: int, turn: int) -> int:
+    m = d.get('market') or {}
+    return turn - m.get('start', 0) if m.get('day') == day else SHIFT_BEATS
+
+
+def _hold(p: dict, at: int, floor: int) -> int:
+    """Highest growth a fed bed may have at clock minute `at`: not ripe before its floor."""
+    return RIPE - 1 if p['growth'] < RIPE and at < floor else GROWTH_MAX
+
+
+def _step(d: dict, turn: int, weather: dict, day: int, fed: dict | None = None) -> None:
     onset = 97 - 12 * kit.tier(day)      # pests find the farm more often as days go by
     for i, p in enumerate(d['plots']):
         crop = CROP_INDEX.get(p['crop'])
@@ -395,7 +445,9 @@ def _step(d: dict, turn: int, weather: dict, day: int) -> None:
         if p['moisture'] < MOIST_DRY:
             p['stress'] = min(50, p['stress'] + 1)
             continue
-        room = _cap(p) - p['grown']
+        speed, floor = (fed or {}).get(p['id'], (100, 0))
+        top = min(_first_day(p, day, speed), _hold(p, _clock(day, _beat(d, day, turn)), floor))
+        room = min(_cap(p, speed) - p['grown'], top - p['growth'])
         if room <= 0:                     # today's budget is used: the rest happens overnight
             continue
         # The season speeds up (or slows) growing; once ripe, crops age at their own pace.
@@ -409,52 +461,153 @@ def _step(d: dict, turn: int, weather: dict, day: int) -> None:
         p['grown'] = min(GROWTH_MAX, p['grown'] + p['growth'] - before)
 
 
-def _day_gain(growth: int, grown: int, cap: int) -> int:
-    """Growth reached by the end of a day with full care (mirrors _step's budget)."""
+def _day_gain(growth: int, grown: int, cap: int, age: int | None = None) -> int:
+    """Growth reached by the end of a day with full care (mirrors _step's budget; `age` is the
+    budget once ripe, half the plain one)."""
+    age = cap // 2 if age is None else age
     g = growth
     if g < RIPE:
         if g + max(0, cap - grown) < RIPE:
             return g + max(0, cap - grown)
         grown += RIPE - g
         g = RIPE
-    return min(GROWTH_MAX, g + max(0, cap // 2 - grown))
+    return min(GROWTH_MAX, g + max(0, age - grown))
 
 
-def _eta(p: dict, day: int) -> tuple:
-    """Days until ripe and until over-ripe with full care (0 = today). None beyond a week."""
+def _eta(p: dict, day: int, speed: int = 100, floor: int = 0) -> tuple:
+    """Days until ripe and until over-ripe with full care (0 = today). None beyond a week.
+    `speed`, `floor`: the thúc pace on this bed (percent) and the clock minute it may ripen from."""
     if not p['crop']:
         return None, None
-    base = dict(p, growth=0)
-    full = _cap(base)                                   # the budget below ripeness
+    crop, base = CROP_INDEX[p['crop']], dict(p, growth=0)
+    plain = _cap(base)                                  # the budget below ripeness
     g, grown = p['growth'], p['grown']
     ripe = over = None
     for k in range(8):
-        g = _day_gain(g, grown, full)
+        full = plain
+        if speed > 100:     # a fed bed grows faster, yet no faster per beat than the plant can
+            beat = max(1, crop['rate'] + _fit(day + k, crop['id']) + int(p['compost']) + int(p['npk']))
+            full = max(plain, min(_cap(base, speed), beat * SHIFT_BEATS))
+        g = max(g, min(_day_gain(g, grown, full, plain // 2), _first_day(p, day + k, speed),
+                       _hold(dict(p, growth=g), _clock(day + k, SHIFT_BEATS), floor)))
         if ripe is None and g >= RIPE:
             ripe = k
         if over is None and g >= OVER:
             over = k
             break
-        g = min(GROWTH_MAX, g + _night_growth(p, day + k))
+        g = min(GROWTH_MAX, g + _night_growth(dict(p, growth=g), day + k, speed),
+                max(g, _hold(dict(p, growth=g), _clock(day + k + 1, 0), floor)))
         grown = 0
     return ripe, over
 
 
-def _advance(d: dict, turn: int, day: int, is_open: bool) -> None:
+def _advance(d: dict, turn: int, day: int, is_open: bool, fed: dict | None = None) -> None:
     """Catch the farm up to the current game turn (deterministic, bounded)."""
     if not is_open:
         return
     steps = min(80, max(0, turn - d['turn']))
     weather = _weather(day)
     for k in range(steps):
-        _step(d, turn - steps + k + 1, weather, day)
+        _step(d, turn - steps + k + 1, weather, day, fed)
     d['turn'] = max(d['turn'], turn)
 
 
 def _sync(c: dict) -> dict:
     d = kit.data(c)
-    _advance(d, c['turn'], c['day'], c['open'])
+    _advance(d, c['turn'], c['day'], c['open'], _fed(c, d))
     return d
+
+
+# ---------------------------------------------------------------- phân bón lá thúc
+def _thuc_rec(c: dict, p: dict) -> dict | None:
+    """The thúc record of this bed's crop. A dose belongs to the crop it was sprayed on: a record
+    left from an earlier crop on the bed counts for nothing."""
+    x = (c['ext'].get(THUC_KEY) or {}).get(p['id'])
+    if not p['crop'] or not isinstance(x, dict) or x.get('crop') != p['crop'] or x.get('day') != p['planted']:
+        return None
+    return x
+
+
+def _thuc(c: dict, p: dict) -> int:
+    """Percent of the growing time cut on this bed's crop (0: none)."""
+    x = _thuc_rec(c, p)
+    return x['pct'] if x else 0
+
+
+def _fed(c: dict, d: dict) -> dict:
+    """Fed beds: plot id → (growing pace in percent, clock minute it may ripen from)."""
+    out = {}
+    for p in d['plots']:
+        x = _thuc_rec(c, p)
+        if x:
+            out[p['id']] = (_speed(x['pct']), x['floor'])
+    return out
+
+
+def _ripe_at(c: dict, d: dict, p: dict) -> int:
+    """Clock minute this bed would be ripe without thúc, with full care from now on: the time the
+    cap is counted on. The game's own beats and nights, run on a copy of the bed."""
+    q = tree_copy(p)
+    x = dict(plots=[q], market=dict(d.get('market') or {}))
+    day, turn = c['day'], c['turn']
+    beat = _beat(d, day, turn)
+    for _ in range(8 * (SHIFT_BEATS + 1)):
+        if q['growth'] >= RIPE:
+            break
+        q.update(moisture=60, weeds=0, pests=0)
+        if beat < SHIFT_BEATS:
+            turn, beat = turn + 1, beat + 1
+            _step(x, turn, WEATHER[0], day)
+            continue
+        _night(dict(day=day, ext={}), x, WEATHER[0])
+        day, beat = day + 1, 0
+        x['market'].update(day=day, start=turn)
+    return _clock(day, beat)
+
+
+def _thuc_clear(c: dict, pid: str) -> None:
+    book = c['ext'].get(THUC_KEY)
+    if isinstance(book, dict):
+        book.pop(pid, None)
+        if not book:
+            c['ext'].pop(THUC_KEY)
+
+
+def _thuc_cost(have: int, want: int) -> int:
+    """Price of the doses that take a bed from have% to have+want% (each dose dearer than the last)."""
+    return sum(THUC_COST[have // THUC_STEP:(have + want) // THUC_STEP])
+
+
+def _thuc_why(c: dict, p: dict, have: int) -> str | None:
+    """Why this bed cannot take a dose now (None: it can, money aside)."""
+    if not p['crop']:
+        return 'Luống trống: gieo cây rồi mới bón thúc.'
+    if p['growth'] >= RIPE:
+        return 'Cây đã tới lứa, bón thúc giờ chỉ phí tiền.'
+    if have >= THUC_MAX:
+        return f'Vụ này đã thúc đủ {THUC_MAX}%, không rút thêm được nữa.'
+    if _weather(c['day'])['id'] == 'rain':
+        return 'Trời mưa: phun phân bón lá lúc này nước cuốn trôi hết. Đợi hôm khô ráo.'
+    if p['moisture'] < MOIST_DRY:
+        return 'Đất khô héo: tưới trước rồi mới bón thúc, kẻo cháy lá.'
+    return None
+
+
+def _thuc_view(c: dict, p: dict) -> dict | None:
+    """The thúc block of a growing bed: what was applied, up to three amounts to choose with their
+    price and the harvest day they would give (the server's own estimate), or why not."""
+    if not p['crop']:
+        return None
+    have = _thuc(c, p)
+    room, why = THUC_MAX - have, _thuc_why(c, p, have)
+    floor = (_thuc_rec(c, p) or {}).get('floor', 0)
+    options = []
+    for want in sorted({THUC_STEP, 3 * THUC_STEP, room}):
+        if 0 < want <= room:
+            cost = _thuc_cost(have, want)
+            short = None if c['money'] >= cost else f'Ví chưa đủ {cost} xu.'
+            options.append(dict(pct=want, cost=cost, eta=_eta(p, c['day'], _speed(have + want), floor)[0], ok=not (why or short), why=why or short))
+    return dict(pct=have, max=THUC_MAX, room=room, step=THUC_STEP, soil=THUC_SOIL, why=why, options=options)
 
 
 def _stage(p: dict) -> str:
@@ -672,6 +825,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.need(crop['unlock'] <= level, f'{crop["name"]} mở ở cấp {crop["unlock"]}.')
         kit.need(plot['crop'] is None, 'Luống đang có cây. Thu hoạch hoặc dọn luống trước.')
         kit.take(c, crop['seed'], 1)
+        _thuc_clear(c, plot['id'])
         prev, soil, lined = plot['prev'], plot['soil'], plot['compost']
         plot.update(_plot(plot['id'], crop['id'], crop['start'], plot['moisture'], 0, lined, soil))
         plot['prev'] = prev
@@ -749,6 +903,34 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         plot['phi'] = max(plot['phi'], c['turn'] + PHI['npk'])
         _diary(d, c, plot['id'], f'Bón phân NPK hóa học. Cách ly {PHI["npk"]} nhịp trước thu hoạch.')
         return dict(message=f'Bón NPK luống {plot["id"]}: cây lên nhanh. Từ giờ lô này KHÔNG còn là hữu cơ và phải cách ly {PHI["npk"]} nhịp trước khi thu.')
+    if name == 'fa_boost':
+        kit.confirm(p, 'Xác nhận mua và phun phân bón lá thúc.')
+        plot = _plot_of(d, p.get('plot'))
+        have = _thuc(c, plot)
+        why = _thuc_why(c, plot, have)
+        kit.need(why is None, why)
+        want = kit.integer(p.get('pct', THUC_STEP), THUC_STEP, THUC_MAX)
+        kit.need(want % THUC_STEP == 0, f'Phân thúc pha theo liều {THUC_STEP}%.')
+        kit.need(have + want <= THUC_MAX, f'Vụ này chỉ còn thúc thêm được {THUC_MAX - have}% (tối đa {THUC_MAX}% mỗi vụ).')
+        cost = _thuc_cost(have, want)
+        kit.need(c['money'] >= cost, f'Cần {cost} xu để mua phân bón thúc.')
+        crop = CROP_INDEX[plot['crop']]
+        kit.money(s, c, -cost, f'Mua phân bón lá thúc cho {crop["name"].lower()}', plot['id'], 'stock')
+        pct = have + want
+        if have:
+            floor = _thuc_rec(c, plot)['floor']
+        else:       # counted once per crop: the fed bed may not ripen before 30% of the time it still needed
+            now = _clock(c['day'], _beat(d, c['day'], c['turn']))
+            floor = now + (_ripe_at(c, d, plot) - now) * (100 - THUC_MAX) // 100
+        c['ext'][THUC_KEY] = {**(c['ext'].get(THUC_KEY) or {}), plot['id']: dict(crop=plot['crop'], day=plot['planted'], pct=pct, floor=floor)}
+        before = plot['soil']
+        plot['soil'] = _clamp(before - THUC_SOIL * want // THUC_STEP)
+        _diary(d, c, plot['id'], f'Phun phân bón lá đạm cá thúc cây (hữu cơ): thời gian lớn còn {100 - pct}%.')
+        kit.metric(c, 'fa_boosted')
+        ripe, _ = _eta(plot, c['day'], _speed(pct), floor)
+        when = '' if ripe is None else ' Chăm đủ thì hôm nay tới lứa.' if ripe == 0 else f' Chăm đủ thì khoảng {ripe} ngày nữa tới lứa.'
+        return dict(message=f'Phun phân bón lá thúc luống {plot["id"]} (−{cost} xu): thời gian lớn còn {100 - pct}%, đã thúc {pct}/{THUC_MAX}%. '
+                    f'Đất màu {before} → {plot["soil"]}.' + when)
     if name == 'fa_spray':
         plot = _plot_of(d, p.get('plot'))
         kind = kit.one_of(p.get('kind'), ('bio', 'chem'), 'Chọn chế phẩm sinh học hoặc thuốc hóa học.')
@@ -803,6 +985,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             kit.log(s, c, 'safety', f'Thu hoạch luống {plot["id"]} khi chưa hết thời gian cách ly — lô không được bán.')
             msg += f' ⛔ Chưa hết thời gian cách ly (còn {plot["phi"] - c["turn"]} nhịp): lô này KHÔNG được bán, phải hủy.'
         _empty(plot)
+        _thuc_clear(c, plot['id'])
         return dict(message=msg, celebrate=bool(a) and not unsafe)
     if name == 'fa_clear':
         kit.confirm(p, 'Xác nhận nhổ bỏ cây trên luống này.')
@@ -811,6 +994,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         crop = CROP_INDEX[plot['crop']]
         _diary(d, c, plot['id'], f'Nhổ bỏ {crop["name"].lower()} ({_stage(plot)}), ủ làm phân.')
         _empty(plot)
+        _thuc_clear(c, plot['id'])
         return dict(message=f'Đã dọn luống {plot["id"]}, thân lá đem ủ phân. Luống sẵn sàng gieo vụ mới.')
     if name == 'fa_discard':
         kit.confirm(p, 'Xác nhận bỏ lô này; ghi vào hao hụt.')
@@ -1068,7 +1252,8 @@ def public_task(t: dict) -> dict:
 
 def public_data(c: dict) -> dict:
     d = tree_copy(kit.data(c))
-    _advance(d, c['turn'], c['day'], c['open'])
+    fed = _fed(c, d)
+    _advance(d, c['turn'], c['day'], c['open'], fed)
     start = d['market']['start'] if d['market']['day'] == c['day'] else c['turn']
     care = _care(c, d, start)
     for p in d['plots']:
@@ -1076,8 +1261,10 @@ def public_data(c: dict) -> dict:
         p['safe_in'] = max(0, p['phi'] - c['turn'])
         p['scouted_ago'] = (c['turn'] - p['scouted']) if p['scouted'] else None
         p['scouted_today'] = bool(p['scouted']) and p['scouted'] >= start
-        p['eta'], p['over_in'] = _eta(p, c['day'])
-        p['cap'] = _cap(p) if p['crop'] else 0
+        speed, floor = fed.get(p['id'], (100, 0))
+        p['eta'], p['over_in'] = _eta(p, c['day'], speed, floor)
+        p['cap'] = _cap(p, speed) if p['crop'] else 0
+        p['thuc'] = _thuc_view(c, p)
         p['day_no'] = c['day'] - p['planted'] + 1 if p['crop'] else 0
         p['rotation'] = {k['id']: _rotation_hint(p, k) for k in CROPS} if not p['crop'] else {}
         p.pop('pests', None)   # pests are only known by walking the plot
@@ -1278,6 +1465,14 @@ def validate_data(c: dict) -> None:
     kit.need(isinstance(d['stats'], dict) and set(d['stats']) == {'harvested', 'unsafe', 'wasted_spray', 'delivered', 'eggs', 'sold', 'pledged'}, 'Thống kê nông trại sai.')
     for v in d['stats'].values():
         kit.integer(v, 0, 10**9)
+    book = c['ext'].get(THUC_KEY)      # phân bón lá thúc (optional: saves before it have none)
+    if book is not None:
+        kit.need(isinstance(book, dict) and set(book) <= set(PLOT_IDS), 'Sổ bón thúc sai.')
+        for x in book.values():
+            kit.need(isinstance(x, dict) and set(x) == {'crop', 'day', 'pct', 'floor'} and x['crop'] in CROP_INDEX, 'Sổ bón thúc sai.')
+            kit.integer(x['day'], 1, 10**7)
+            kit.integer(x['floor'], 0, 10**10)
+            kit.need(kit.integer(x['pct'], THUC_STEP, THUC_MAX) % THUC_STEP == 0, 'Sổ bón thúc sai.')
 
 
 def _validate_v2(c: dict, d: dict) -> None:
@@ -1371,7 +1566,7 @@ def _night(c: dict, d: dict, tomorrow: dict) -> dict:
     plots = {p['id']: p for p in d['plots']}
     caught = sorted({n for p in d['plots'] if p['crop'] and p['pests'] >= 2 for n in NEIGHBOURS[p['id']]
                      if plots[n]['crop'] and plots[n]['pests'] == 0 and plots[n]['guard'] != day})
-    low = []
+    low, fed = [], _fed(c, d)
     for i, p in enumerate(d['plots']):
         p['moisture'] = _clamp(p['moisture'] - NIGHT_DRY[tomorrow['id']])
         if (day + i) % 2 == 0:
@@ -1383,7 +1578,8 @@ def _night(c: dict, d: dict, tomorrow: dict) -> dict:
         if p['pests']:
             p['pests'] = min(3, p['pests'] + 1)
         if p['moisture'] >= MOIST_DRY:
-            p['growth'] = min(GROWTH_MAX, p['growth'] + _night_growth(p, day))
+            speed, floor = fed.get(p['id'], (100, 0))
+            p['growth'] = min(GROWTH_MAX, p['growth'] + _night_growth(p, day, speed), max(p['growth'], _hold(p, _clock(day + 1, 0), floor)))
         else:
             p['stress'] = min(50, p['stress'] + 3)
         leach = SOIL_LEACH if tomorrow['id'] == 'rain' and p['moisture'] > MOIST_HIGH else 0
@@ -1451,7 +1647,8 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
 def hint(c: dict, t: dict) -> str:
     return ('Thu hoạch luống chín (vùng xanh) → hàng vào kho mát → xếp đúng loại, đủ số vào thùng → nhãn trung thực '
             '(chỉ dán hữu cơ khi lô không dùng hóa chất) → giao. Giữa các đơn: tưới theo dự báo, nhổ cỏ, thăm sâu (sâu nặng lan sang luống bên qua đêm), '
-            'bón compost khi đất bạc màu, đổi nhóm cây khi gieo lại, cho gà ăn, dọn chuồng, nhặt trứng. '
+            'bón compost khi đất bạc màu, cần rau sớm thì phun phân bón lá thúc (rút tới 70% thời gian lớn, tốn xu và đất màu), '
+            'đổi nhóm cây khi gieo lại, cho gà ăn, dọn chuồng, nhặt trứng. '
             'Hàng dư sắp hết hạn: bán sỉ ở tab 📈 Chợ, chọn lúc được giá.')
 
 
@@ -1463,7 +1660,8 @@ def content() -> dict:
                 b_percent=B_PERCENT, organic_percent=ORGANIC_PERCENT, hens=HENS, hen_cost=HEN_COST,
                 seasons=[dict(id=x['id'], name=x['name'], emoji=x['emoji'], text=x['text'], good=list(x['good']), bad=list(x['bad'])) for x in SEASONS],
                 season_days=SEASON_DAYS, wholesale=WHOLESALE, depth=DEPTH, slip=SLIP, pledge_fine=PLEDGE_FINE, bee_fine=BEE_FINE,
-                soil=dict(low=SOIL_LOW, add=SOIL_ADD, rest=SOIL_REST, rotate=SOIL_ROTATE), mood=dict(ok=MOOD_OK, low=35), families={'leafy': 'Rau lá', 'fruit': 'Cây trái'})
+                soil=dict(low=SOIL_LOW, add=SOIL_ADD, rest=SOIL_REST, rotate=SOIL_ROTATE), mood=dict(ok=MOOD_OK, low=35), families={'leafy': 'Rau lá', 'fruit': 'Cây trái'},
+                thuc=dict(step=THUC_STEP, max=THUC_MAX, cost=list(THUC_COST), soil=THUC_SOIL))
 
 
 SITUATIONS = [
