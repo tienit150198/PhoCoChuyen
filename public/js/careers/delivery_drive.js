@@ -124,6 +124,11 @@ export function buildWorld(nodes){
       }
     }
   }
+  // The town's edge: a house across the end of every street, so no street runs out into nothing.
+  const cap=(x0,x1,y0,y1,face,cx,cy)=>cellAdd(cx,cy,{x0,x1,y0,y1,zb:0,h:[6.5,8.5,9.5][Math.floor(R()*3)],col:HOUSE[Math.floor(R()*HOUSE.length)],
+    face,k:'house',no:0,shop:false,awn:null,street:'',win:2});
+  for(let j=0;j<=GY;j++){const cy=clamp(j,0,GY-1);cap(-FRONT-8,-FRONT,j*B-FRONT,j*B+FRONT,'E',-1,cy);cap(GX*B+FRONT,GX*B+FRONT+8,j*B-FRONT,j*B+FRONT,'W',GX,cy);}
+  for(let i=0;i<=GX;i++){const cx=clamp(i,0,GX-1);cap(i*B-FRONT,i*B+FRONT,-FRONT-8,-FRONT,'S',cx,-1);cap(i*B-FRONT,i*B+FRONT,GY*B+FRONT,GY*B+FRONT+8,'N',cx,GY);}
   // A tree stands on the pavement between two junctions, never out in a crossing street.
   const tree=(x,y,r,along)=>{const d=along-Math.round(along/B)*B;if(Math.abs(d)>HW+2.5)trees.push({x,y,r});};
   // Street furniture: lamps and trees along the pavements, a name sign and (on some corners) lights at junctions.
@@ -643,7 +648,7 @@ function houseFront(c,b,z,pal){
     if(b.win===1)fquad(c,b,.3,.7,v0,v0+1.4,wc);else{fquad(c,b,.14,.44,v0,v0+1.4,wc);fquad(c,b,.56,.86,v0,v0+1.4,wc);}
   }
   // The number plate by the gate: blue, white number, readable near by.
-  const s=fquad(c,b,.68,.9,1.7,2.3,'#2c63b8');
+  const s=b.no?fquad(c,b,.68,.9,1.7,2.3,'#2c63b8'):null;
   if(s&&z<38){
     const cx=(s[0][0]+s[1][0]+s[2][0]+s[3][0])/4,cy=(s[0][1]+s[1][1]+s[2][1]+s[3][1])/4,fh=Math.abs(s[3][1]-s[0][1])*.8;
     if(fh>=6){c.fillStyle='#fff';c.font=`700 ${fh|0}px system-ui,sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillText(String(b.no),cx,cy+.5);}
