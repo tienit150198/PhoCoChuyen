@@ -1744,9 +1744,15 @@ def _envelope(store, sid: str, display: str, d: dict) -> dict:
     return wl.envelope(store, sid, display, d)
 
 
+def _wed_gift(store, sid: str, display: str, d: dict) -> dict:
+    """🎁 The admin's 500 xu for the weddings, once per save (game/wedding_live.py wed_gift)."""
+    from . import wedding_live as wl
+    return wl.wed_gift(store, sid, display, d)
+
+
 ACTIONS = dict(ring_buy=_ring_buy, ring_recolor=_ring_recolor, lookup=_lookup, propose=_propose, respond=_respond, cancel=_cancel, block=_block, unblock=_unblock,
                settings=_settings, plan=_plan, withdraw=_withdraw, reject=_reject, confirm=_confirm, divorce=_divorce, seen=_seen,
-               party=_party, party_invite=_party_invite, envelope=_envelope)
+               party=_party, party_invite=_party_invite, envelope=_envelope, wed_gift=_wed_gift)
 
 
 # ---------------------------------------------------------------- privacy

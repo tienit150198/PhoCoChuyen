@@ -3,6 +3,9 @@ booking a real date and time, legacy couples' dates, the party cancelled by a di
 reward kinds (title, closeness, the private card), the weekly race view (ties) and the group photo upload."""
 import base64
 import json
+import os
+import subprocess
+import sys
 import unittest
 from unittest.mock import patch
 
@@ -307,6 +310,73 @@ class Envelopes(WedBase):
             pass
         self.assertEqual((self.wallet(a) - wa, self.wallet(b) - wb), (1500, 1500))
         self.assertFalse(self.pay(a), 'each row once')
+
+
+class WedGift(WedBase):
+    """🎁 Quà từ admin: 500 xu once per save ever, while a party is open (owner 03/10)."""
+    def test_once_per_save_while_a_party_is_open(self):
+        a, b, wid, at = self.couple()
+        g = self.user('khach', wallet=100)
+        self.assertIs(self.state(g)['journey'].get('wed_gift'), None)
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(g, 'wed_gift')
+        self.assertEqual(e.exception.code, 'no_party', 'no party open yet')
+        self.clock.t = at - wl.OPEN_BEFORE + 1                      # the room is open
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(g, 'wed_gift', x=1)
+        self.assertEqual(e.exception.code, 'bad_gift')
+        out = self.act(g, 'wed_gift')
+        self.assertEqual((out['changed'], out['gift']), (True, wl.GIFT_XU))
+        self.assertIn('Quà từ admin', out['message'])
+        j = self.state(g)['journey']
+        self.assertEqual((j['wallet'], j['wed_gift']['v'], j['history'][-1]['kind'], j['history'][-1]['label']),
+                         (600, wl.GIFT_VERSION, 'life', wl.GIFT_LABEL))
+        validate_state(migrate_state(self.state(g)))
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(g, 'wed_gift')
+        self.assertEqual(e.exception.code, 'wed_gift_done', 'once per save')
+        self.clock.t = at + wl.PARTY_SECS + 3600                    # another wedding later: still once ever
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(a, 'wed_gift')
+        self.assertEqual(e.exception.code, 'no_party', 'the party is over')
+        self.store.transaction(lambda db: db.execute("INSERT INTO wedding_parties(wedding, couple, a, b, at, status, created) "
+                                                     "VALUES(?, 99, 'x', 'y', ?, 'booked', ?)", (wid + 100, self.clock.t, self.clock.t)))
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(g, 'wed_gift')
+        self.assertEqual(e.exception.code, 'wed_gift_done')
+        self.assertEqual(self.wallet(g), 600)
+        self.assertTrue(self.act(a, 'wed_gift')['changed'], 'everyone gets it once, a bride too')
+
+    def test_public_flag_and_validation(self):
+        from game.journey import public
+        a, b, wid, at = self.couple()
+        self.assertIs(public(migrate_state(self.state(a)))['wed_gift'], False)
+        self.clock.t = at
+        self.act(a, 'wed_gift')
+        s = migrate_state(self.state(a))
+        self.assertIs(public(s)['wed_gift'], True)
+        for bad in (None, {}, dict(v=2, got=1), dict(v=1, got=0), dict(v=1, got=1, x=1)):
+            s['journey']['wed_gift'] = bad
+            with self.assertRaises(Exception):
+                validate_state(s)
+
+    @unittest.skipUnless(os.environ.get('MNL_OLD_TREE'), 'MNL_OLD_TREE: an older release to load the save with')
+    def test_an_older_server_loads_the_save(self):
+        """Rolling release: a save with journey['wed_gift'] validates on the older build; its marriage API has no
+        wed_gift (not_found, which the client ignores)."""
+        a, b, wid, at = self.couple()
+        self.clock.t = at
+        self.act(a, 'wed_gift')
+        code = ('import json, sys\n'
+                'from game.engine import migrate_state, validate_state\n'
+                'from game import marriage as mr\n'
+                's = migrate_state(json.loads(sys.stdin.read()))\n'
+                'validate_state(s)\n'
+                "print(s['journey']['wed_gift']['v'], 'wed_gift' in mr.ACTIONS)\n")
+        old = os.environ['MNL_OLD_TREE']
+        r = subprocess.run([sys.executable, '-c', code], cwd=old, input=json.dumps(self.state(a)), capture_output=True,
+                           text=True, encoding='utf-8', env=dict(os.environ, PYTHONPATH=old))
+        self.assertEqual((r.returncode, r.stdout.strip()), (0, '1 False'), r.stderr[-2000:])
 
 
 class Anniversaries(WedBase):
