@@ -1,12 +1,12 @@
 /** 🔥 Nghề x3 trong tuần (game/x3_week.py → state.x3 {x, week, days, day, today}): every career has one day a week
  * when closing its shift pays the day's net X times. A centred card with the week's list opens by itself once a
- * week at a break point (v4/popup-gate.js: after a gift and "Có gì mới", never over the day summary, the work
+ * week at a break point (v4/break-gate.js: after a gift and "Có gì mới", never over the day summary, the work
  * screen or another card; over a calm sheet such as the journey home it may), and any time from the banner on the Nơi làm việc list
  * (data-action="x3Week"). What week was shown is kept in localStorage (a lost key only shows the card again).
  * It borrows the "Có gì mới" card's look (css/whatsnew.css). app.js loads this module lazily (x3Boot). */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {emojiOf} from './journey.js';
-import {quiet,turn,want} from './popup-gate.js';
+import {quiet,turn,want} from './break-gate.js';
 import {firstDay} from './onboard.js';
 
 const KEY='mnl.x3.week',DOW=['Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy','Chủ nhật'];

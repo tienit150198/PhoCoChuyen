@@ -1,3 +1,11 @@
+# v1.4.33 — 🌐 Cốc Cốc / trình chặn quảng cáo không còn kẹt màn hình tải
+
+Chủ game: "game vào bằng Cốc Cốc không được… tới bước tải cuối thấy dừng luôn".
+
+- `public/js/scenes/reads.js` chứa chuỗi `ads.js` ("re-ads.js"): luật chặn quảng cáo chung (bộ chặn có sẵn của Cốc Cốc, uBlock, AdGuard) chặn file này, cả đồ thị module của `app.js` hỏng, trang đứng ở màn hình tải (thống kê lỗi client: ~135 lần/ngày `app.js` + `reads.js`). Đổi tên `scenes/room-watch.js`; `v4/popup-gate.js` → `v4/break-gate.js` (chữ "popup").
+- `tests/test_asset_names.py`: không file nào trang tải có tên mà bộ chặn quảng cáo bắt (trừ `telemetry.js`, `analytics-preferences.js`: tải sau, lỗi được bắt).
+- Kiểm bằng trình duyệt với luật chặn `ads.js|popup`: 1.4.32 kẹt màn hình tải, 1.4.33 vào game.
+
 # v1.4.32 — 🧑‍🍳 Nhân viên kiếm thêm cho tiệm
 
 Chủ game: "cho nhân viên làm có thêm tiền thưởng khi thuê nhân viên", đổi tên nhóm menu.

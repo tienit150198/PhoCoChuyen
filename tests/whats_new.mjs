@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import NOTES from '../public/js/v4/whatsnew-data.js';
 import {compare,due,seenVersion,blocker,LATEST} from '../public/js/v4/whatsnew.js';
-import {want} from '../public/js/v4/popup-gate.js';
+import {want} from '../public/js/v4/break-gate.js';
 
 assert.equal(LATEST,NOTES[0].version);
 assert.ok(compare('0.9.1','0.9.0')>0);
@@ -34,7 +34,7 @@ function doc({hidden=false,tour=false,decision=false,menu=false,dialogs=[],sheet
 const env=(state,view=null,paused=false)=>({api:{state},ui:{view,paused}});
 const back=st('');
 assert.equal(blocker(env(back),doc()),'','a returning player');
-// One popup at a time (v4/popup-gate.js): never over the summary, a customer, the evening or another card.
+// One popup at a time (v4/break-gate.js): never over the summary, a customer, the evening or another card.
 assert.equal(blocker(env(back,'home'),doc({sheet:['home']})),'','over a calm sheet (the journey home)');
 assert.equal(blocker(env(back,'job'),doc({sheet:['cozy-job']})),'work','not over a customer at work');
 assert.equal(blocker(env(back,'job'),doc({sheet:['cozy-job','.done-body']})),'','over the task-done card it may');
