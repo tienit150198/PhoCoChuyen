@@ -33,6 +33,10 @@
  * drink; the server pays the tinh thần and the room sees who ate or drank); whoever stands on the stage dances on the
  * beat (💃 spins); the couple throws the bouquet when the MC calls for it (`wed_toss`), the room sees it fly to whoever
  * caught it. 🎧 The groom (the bride when he is away) picks the song for the room (`wed_music`, the header's 🎧).
+ * 🛵 A player who owns a two-wheeler (game/garage.py) rides it on the public places (./ride.js; a car stays outside, a
+ * café and a wedding are on foot): `walk_in` carries `r`, the "🛵 Đi xe / 🚶 Đi bộ" button sends `ride`; a rider's
+ * people entry has `r` and `v` (their own speed: the server's, live/street.py RIDE_FAST), an `rd` diff changes both.
+ * At a table they get off: the vehicle waits where they started walking to the seat.
  */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
@@ -41,10 +45,11 @@ import {lookOf,figureOf,paintPlayer,CANVAS,portrait} from './look.js';
 import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
 import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scenes/stroll.js';
 import * as feast from './wedfeast.js';
+import {choice,next as nextRide,canRide,label as rideLabel,wire,fromWire,drawRide,rider,steer,topOf} from './ride.js';
 
 const W=WORLD.w,H=WORLD.h,AV=.5,LOG_MAX=40,BUBBLE_MS=6000,EMO_MS=2600,MOVE_GAP=260,PLACE_KEY='mnl.walk.place',WSOUND_KEY='mnl.wed.sound';
 const EMOTES=[['wave','👋'],['heart','❤️'],['laugh','😂'],['wow','😮'],['pray','🙏'],['dance','💃']];   // 💃: weddings only
-const WED_ONLY=new Set(['dance']),TOSS_MS=1700;
+const WED_ONLY=new Set(['dance']),TOSS_MS=1700,TWO={two:true};
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
 /** On the stage (the dance floor: wedfeast.js STAGE), with a little margin. */
@@ -80,9 +85,9 @@ function route(a,b){
   if(dist[n-1]===Infinity)return [a,a];
   const out=[];for(let u=n-1;u>=0;u=prev[u])out.unshift(nodes[u]);return out;
 }
-/** Where a path walked since t0 is at t: [x, y, moving]. */
-function posAt(p,t0,t){
-  let left=Math.max(0,t-t0)*S.speed;
+/** Where a path walked since t0 is at t: [x, y, moving] (v: their speed, a rider's own). */
+function posAt(p,t0,t,v=S.speed){
+  let left=Math.max(0,t-t0)*(v||S.speed);
   for(let i=0;i<p.length-1;i++){const a=p[i],b=p[i+1],seg=Math.hypot(b[0]-a[0],b[1]-a[1]);if(left<=seg&&seg>0){const k=left/seg;return [a[0]+(b[0]-a[0])*k,a[1]+(b[1]-a[1])*k,true];}left-=seg;}
   const e=p[p.length-1];return [e[0],e[1],false];
 }
@@ -94,7 +99,7 @@ export const walk={
   spot(name){const s=S.geo?.spots?.[name];return s?{x:s[0],y:s[1]}:null;},
   on(k,fn){hooks[k]?.add(fn);return ()=>hooks[k]?.delete(fn);},
   state(){const t=nowS();return {open:Boolean(S.dlg?.open),place:S.room?.place||null,room:S.room?.room||null,me:S.room?.me||null,
-    people:[...S.people.values()].map(p=>{const [x,y]=posAt(p.p,p.at,t);return {pid:p.pid,name:p.name,x,y,seat:p.s,said:p.bub?.text||null,emote:p.emo?.e||null,tint:p.lk?.tint||null};}),
+    people:[...S.people.values()].map(p=>{const [x,y]=posAt(p.p,p.at,t,p.v);return {pid:p.pid,name:p.name,x,y,seat:p.s,said:p.bub?.text||null,emote:p.emo?.e||null,tint:p.lk?.tint||null,ride:p.r?.v||null};}),
     tables:S.tables.map(tb=>({seats:tb.seats,topic:tb.topic})),happening:S.hap?.k||null,envelope:S.envl?{id:S.envl.id,x:S.envl.x,y:S.envl.y}:null,
     view:{k:S.k,ox:S.ox,oy:S.oy}};},
   moveTo(x,y){go(x,y);},
@@ -109,7 +114,7 @@ function dialog(){
   d.className='sheet v4-sheet walk-sheet';d.setAttribute('aria-label','Đi dạo');
   d.innerHTML=`<div class="wk-root"><header class="wk-head"></header><div class="wk-places" hidden></div>
     <div class="wk-net" hidden>${icon('refresh',14)} Đang kết nối lại…</div>
-    <div class="wk-stage"><canvas class="wk-canvas" role="img" tabindex="0"></canvas>
+    <div class="wk-stage"><canvas class="wk-canvas" role="img" tabindex="0"></canvas><button type="button" class="rd-toggle" data-wk="ride" hidden></button>
       <div class="wk-topic" hidden></div><div class="wk-banner" hidden></div><div class="wk-card" hidden></div><div class="wk-invite" hidden></div><div class="wk-end" hidden></div>
       <div class="wk-wishes" hidden></div><div class="wk-envp" role="dialog" aria-label="Phong bì mừng cưới" hidden></div>
       <div class="wk-tray" role="dialog" aria-label="Mâm cỗ" hidden></div><div class="wk-dj" role="dialog" aria-label="Chọn nhạc" hidden></div><div class="wk-float" hidden></div>
@@ -130,7 +135,7 @@ function dialog(){
   d.querySelector('.wk-say').addEventListener('submit',e=>{e.preventDefault();say();});
   S.cv.addEventListener('pointerdown',e=>{S.down={x:e.clientX,y:e.clientY,t:performance.now()};});
   S.cv.addEventListener('pointerup',e=>{const d0=S.down;S.down=null;if(!d0||Math.hypot(e.clientX-d0.x,e.clientY-d0.y)>12||performance.now()-d0.t>700)return;tap(e.clientX,e.clientY);});
-  S.cv.addEventListener('keydown',e=>{const k={ArrowLeft:[-50,0],ArrowRight:[50,0],ArrowUp:[0,-50],ArrowDown:[0,50]}[e.key];const m=me();if(!k||!m)return;e.preventDefault();const [x,y]=posAt(m.p,m.at,nowS());go(x+k[0],y+k[1]);});
+  S.cv.addEventListener('keydown',e=>{const k={ArrowLeft:[-50,0],ArrowRight:[50,0],ArrowUp:[0,-50],ArrowDown:[0,50]}[e.key];const m=me();if(!k||!m)return;e.preventDefault();const [x,y]=posAt(m.p,m.at,nowS(),m.v);go(x+k[0],y+k[1]);});
   let sizing=0;new ResizeObserver(()=>{cancelAnimationFrame(sizing);sizing=requestAnimationFrame(size);}).observe(S.stage);   // next frame: never inside the observer's own layout pass
   S.dlg=d;return d;
 }
@@ -164,7 +169,8 @@ function enter(place){
   const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined};
   if(S.wedding!==null){S.want='wed';live.send({t:'wed_in',id:S.wedding,...me});return;}
   S.want=place;
-  live.send({t:'walk_in',place,...me});
+  const r=wire(choice(st,S.env?.api?.content,TWO));
+  live.send({t:'walk_in',place,...me,...(r?{r}:{})});
 }
 
 /* ---- live frames ---- */
@@ -202,6 +208,8 @@ function bind(){
       else if(e.k==='in'){if(!S.people.has(e.pid))S.people.set(e.pid,person(e));}
       else if(e.k==='out'){S.people.delete(e.pid);if(S.card?.pid===e.pid)S.card=null;if(S.invite?.pid===e.pid)S.invite=null;seats=true;}
       else if(e.k==='tb'){S.tables[e.i]=Object.assign(S.tables[e.i]||{},e);seats=true;}
+      else if(e.k==='rd'){const p=S.people.get(e.pid);if(!p)continue;const q=riding(e);p.r=q.r;p.v=q.v;p.ride=undefined;   // 🛵 on or off the vehicle
+        if(Array.isArray(e.p)&&e.p.length){p.p=e.p;p.at=e.at;p.pred=null;}if(p.pid===S.room.me)paintRide();}
     }
     for(const p of S.people.values())p.s=null;
     S.tables.forEach((t,i)=>t.seats?.forEach((pid,k)=>{const p=pid&&S.people.get(pid);if(p)p.s=[i,k];}));
@@ -268,7 +276,9 @@ function bind(){
   });
 }
 function sample(at){if(typeof at!=='number')return;S.offs.push(at-Date.now()/1000);if(S.offs.length>12)S.offs.shift();S.off=Math.max(...S.offs);}
-function person(p){return {pid:p.pid,name:p.name,ti:p.ti,lk:p.lk,g:p.g,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null};}
+function person(p){return {pid:p.pid,name:p.name,ti:p.ti,lk:p.lk,g:p.g,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p)};}
+/** 🛵 A people entry's vehicle (r, v: optional, from a newer live service), the rider's motion. */
+function riding(e){const r=e.r&&typeof e.r==='object'?e.r:null,v=Number(e.v);return {r,v:r&&v>0&&v<2000?v:undefined,rv:rider(),lx:null,ride:undefined};}
 function pick(){
   let saved=null;try{saved=localStorage.getItem(PLACE_KEY);}catch{/* storage blocked */}
   if(S.places.some(p=>p.id===saved))return saved;
@@ -314,6 +324,7 @@ async function capture(n){
 function act(a,d){
   switch(a){
     case'close':S.dlg.close();return;
+    case'ride':{const st=S.env?.api?.state,v=nextRide(st,S.env?.api?.content,TWO);paintRide();if(S.room&&!S.room.private)live.send({t:'ride',r:wire(v)});return;}   // 🛵 the server tells the room (`rd`)
     case'photo':live.send({t:'wed_photo'});return;
     case'env':S.envp=S.envp?null:{amount:(S.wed?.envs||[20])[1]??20,wish:0,busy:false};if(S.envp){S.tray=null;S.dj=false;}paintTray();paintDj();paintEnvp();return;
     case'envAmt':if(S.envp){S.envp.amount=Number(d.n);paintEnvGo();}return;
@@ -368,7 +379,7 @@ function say(){
 /** Walk to (x,y): drawn at once (the same route as the server), sent at most every MOVE_GAP ms. */
 function go(x,y){
   const m=me();if(!m||!S.geo)return;
-  const t=nowS(),[cx,cy]=posAt(m.p,m.at,t),target=clamp(x,y);
+  const t=nowS(),[cx,cy]=posAt(m.p,m.at,t,m.v),target=clamp(x,y);
   m.p=route([cx,cy],target);m.at=t;m.pred=target;
   S.pending=target;
   const wait=S.moveAt+MOVE_GAP-performance.now();
@@ -384,7 +395,7 @@ function tap(cx,cy){
   if(S.envl&&Math.hypot(x-S.envl.x,y-S.envl.y)<42){live.send({t:'grab',id:S.envl.id});return;}
   for(const s of spots.values()){const at=spotAt(s);if(at&&Math.hypot(x-at[0],y-at[1])<(s.r||40)){try{if(s.tap?.({x:at[0],y:at[1],place:S.room.place,room:S.room.room})!==false)return;}catch(e){console.warn('walk spot:',e);}}}
   let hit=null,hd=Infinity;
-  for(const p of S.people.values()){if(p.pid===S.room.me)continue;const [px,py]=posAt(p.p,p.at,t);if(Math.abs(x-px)<28&&y>py-72&&y<py+8){const d=Math.hypot(x-px,y-(py-30));if(d<hd){hd=d;hit=p;}}}
+  for(const p of S.people.values()){if(p.pid===S.room.me)continue;const [px,py]=posAt(p.p,p.at,t,p.v);if(Math.abs(x-px)<(p.r?44:28)&&y>py-(p.r?96:72)&&y<py+8){const d=Math.hypot(x-px,y-(py-30));if(d<hd){hd=d;hit=p;}}}
   if(hit){S.card={pid:hit.pid,name:hit.name,ti:hit.ti,lk:hit.lk,g:hit.g,said:hit.said,loading:true};live.send({t:'card',pid:hit.pid});paintOverlays();return;}
   const ti=(S.geo.tables||[]).findIndex(tb=>Math.hypot(x-tb.x,y-tb.y)<44);
   if(ti>=0&&S.wed&&!S.ended&&!S.wed.overflow){   // 💍 a wedding table: its mâm cỗ (and a seat when one is free)
@@ -566,8 +577,17 @@ function paintFloat(force){
 }
 function net(){if(!S.dlg)return;S.dlg.querySelector('.wk-net').hidden=live.state==='open';}
 function mySeat(){const m=me();return m?.s?S.tables[m.s[0]]:null;}
+/** 🛵 The toggle: only for an owner of a two-wheeler, on a public place (a café, a wedding: on foot). */
+function paintRide(){
+  const btn=S.dlg?.querySelector('.rd-toggle');if(!btn)return;
+  const st=S.env?.api?.state,ct=S.env?.api?.content,own=Boolean(S.room&&!S.room.private&&canRide(st,ct,TWO));
+  btn.hidden=!own;if(!own)return;
+  const v=choice(st,ct,TWO),t=rideLabel(v);
+  if(btn.textContent!==t)btn.textContent=t;btn.setAttribute('aria-pressed',String(!!v));btn.title=v?v.name:'Đi bộ';
+}
 function paintOverlays(){
   if(!S.dlg)return;
+  paintRide();
   const bn=S.dlg.querySelector('.wk-banner');bn.hidden=!(S.wed?.overflow&&!S.ended);
   if(!bn.hidden)bn.innerHTML=S.wed.overflow==='account'   // guests watch; accounts take part and count (owner, 1.0.1)
     ?`Bạn đang xem từ ngoài cổng. <button type="button" class="wk-pill primary" data-wk="account">Tạo tài khoản</button> để vào dự và nhận lộc mỗi phút.`
@@ -640,7 +660,7 @@ function loop(){if(!S.raf&&S.dlg?.open)S.raf=requestAnimationFrame(frame);}
 function frame(ts){
   S.raf=0;if(!S.dlg?.open)return;
   if(document.visibilityState!=='visible'){S.raf=requestAnimationFrame(frame);return;}
-  const t=nowS(),busy=!S.room||[...S.people.values()].some(p=>p.bub||p.emo||posAt(p.p,p.at,t)[2])||S.hap||S.envl||S.floaters.length||spots.size;
+  const t=nowS(),busy=!S.room||[...S.people.values()].some(p=>p.bub||p.emo||posAt(p.p,p.at,t,p.v)[2]||p.rv.turn<1)||S.hap||S.envl||S.floaters.length||spots.size;
   const show=S.wed&&!S.ended&&feast.lively(t-S.wed.at);   // the party's lights and dancers: ~25 fps is plenty
   if(busy||(show&&ts-S.lastDraw>38)||ts-S.lastDraw>120){S.lastDraw=ts;draw(ts,t);}
   S.raf=requestAnimationFrame(frame);
@@ -658,10 +678,18 @@ function draw(ts,t){
   const fx=S.wed&&!S.ended?{w:S.wed,s:ps,sec,dark,sprite:npcSprite,av:AV,bt:feast.beat(ps),still:calm,L:S.wed.end-S.wed.at}:null;
   if(fx)feast.ground(c,fx);
   const myPid=S.room.me,list=[],now=performance.now();
-  for(const p of S.people.values()){const [x,y,moving]=posAt(p.p,p.at,t);p.x=x;p.y=y;p.moving=moving;list.push(p);}
+  const ct=S.env?.api?.content,parked=[];
+  for(const p of S.people.values()){const [x,y,moving]=posAt(p.p,p.at,t,p.v);
+    if(p.ride===undefined)p.ride=p.r&&!S.room.private?fromWire(p.r,ct):null;
+    if(p.ride){const dt=Math.min(.1,Math.max(0,(ts-(p.lt||ts))/1000));if(p.lx!=null)steer(p.rv,x-p.lx,Math.abs(x-p.lx)/AV,dt,calm);p.lx=x;p.lt=ts;
+      if(p.s&&p.p?.length)parked.push({y:p.p[0][1],draw:()=>drawRide(c,{x:p.p[0][0],y:p.p[0][1],s:AV,px:dpr*S.k,v:p.ride,r:{face:p.rv.face,from:p.rv.face,turn:1,ang:0}})});}   // at a table: it waits where they got off
+    p.x=x;p.y=y;p.moving=moving;list.push(p);}
+  for(const q of parked)list.push({parked:q,y:q.y});
   list.sort((a,b)=>a.y-b.y);
   for(const p of list){
-    if(p.pid===myPid){c.fillStyle=dark?'rgba(255,170,130,.38)':'rgba(196,75,48,.25)';c.beginPath();c.ellipse(p.x,p.y+2,22,8,0,0,Math.PI*2);c.fill();}
+    if(p.parked){p.parked.draw();continue;}
+    if(p.pid===myPid){c.fillStyle=dark?'rgba(255,170,130,.38)':'rgba(196,75,48,.25)';c.beginPath();c.ellipse(p.x,p.y+2,p.ride&&!p.s?36:22,8,0,0,Math.PI*2);c.fill();}
+    if(p.ride&&!p.s){p.fig??=figureOf(p.lk,p.g);drawRide(c,{x:p.x,y:p.y,s:AV,px:dpr*S.k,F:p.fig,fkey:'w'+JSON.stringify([p.lk,p.g]),v:p.ride,r:p.rv});continue;}
     const sp=sprite(p);
     if(fx&&!p.moving&&!p.s&&onStage(p.x,p.y)){   // 💃 on the dance floor: bob and sway on the beat, a spin on 💃
       const ph=fx.bt.ph,side=fx.bt.n%2?1:-1,spin=p.emo?.e==='💃'&&!calm?(now-p.emo.t0)/1000:9;
@@ -683,7 +711,8 @@ function draw(ts,t){
   if(fx)feast.talk(c,{...fx,sx,sy,tag,bubble});
   const tagX=coupleTags(c,list,pids,sx,sy);   // the couple side by side: their two pills never cover each other
   for(const p of list){
-    const top=sy(p.y-132*AV)-4,wed=pids?.includes(p.pid)?(p.g==='female'?'f':p.g==='male'?'m':'x'):null;
+    if(p.parked)continue;
+    const top=sy(p.y-(p.ride&&!p.s?topOf(p.ride):132)*AV)-4,wed=pids?.includes(p.pid)?(p.g==='female'?'f':p.g==='male'?'m':'x'):null;
     tag(c,tagX.get(p.pid)??sx(p.x),top,p.name,p.ti,p.pid===myPid,dark,wed);
     let above=top-(wed?(p.ti?36:24):p.ti?30:20);
     if(p.bub){const age=now-p.bub.t0;if(age>BUBBLE_MS)p.bub=null;else above=bubble(c,sx(p.x),above,p.bub.text,age>BUBBLE_MS-500?(BUBBLE_MS-age)/500:1,dark)-4;}
