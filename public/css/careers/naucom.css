@@ -1,0 +1,79 @@
+/* Nấu cơm gia đình — scoped styles (.career-job.nc), over the street kit (street_kit.css).
+   Its own look: market-basket green, a warm kitchen, the gas flame on the stove gauge.
+   Tints are mixed from the theme surface so light and dark both read. */
+.career-job.nc{--sk-accent:#5e8c46;--sk-accent-2:#97bf6e;--nc-raw:#e9a0a8;--nc-ok:#5e9c4c;--nc-over:#d79b2e;--nc-burnt:#3b2a24;--nc-flame:#e2632f;
+  --nc-tint:color-mix(in srgb,var(--sk-accent) 10%,var(--sk-surface))}
+
+/* ---------- the request */
+.career-job.nc .nc-chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 0}
+.career-job.nc .nc-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;background:var(--nc-tint);border:1px solid var(--sk-line);font-size:13px;line-height:1.3}
+.career-job.nc .nc-rule{margin:6px 0 0;color:var(--sk-muted)}
+.career-job.nc .nc-bad{color:var(--sk-bad)!important;font-weight:700}
+.career-job.nc h4 small{font-weight:400;color:var(--sk-muted)}
+
+/* ---------- ① the menu */
+.career-job.nc .nc-est{margin:0 0 4px}
+.career-job.nc .nc-menu>.sk-meter{margin-bottom:8px}
+.career-job.nc .nc-group{margin-top:12px}
+.career-job.nc .nc-dishes{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
+.career-job.nc .nc-dishes .sk-tile{min-height:92px}
+.career-job.nc .nc-tags{display:flex;flex-wrap:wrap;gap:2px;justify-content:center}
+.career-job.nc .nc-tag{font-style:normal;font-size:11px;line-height:1.3;padding:0 5px;border-radius:99px;background:var(--sk-surface-2);color:var(--sk-muted)}
+.career-job.nc .nc-tag.bad{background:color-mix(in srgb,var(--sk-bad) 16%,var(--sk-surface));color:var(--sk-bad);font-weight:700}
+
+/* ---------- ② the market */
+.career-job.nc .nc-purse{margin:0 0 8px;padding:6px 10px;border-radius:var(--sk-rs);background:var(--nc-tint);border:1px solid var(--sk-line)}
+.career-job.nc .nc-ings{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:8px}
+.career-job.nc .nc-ing{display:grid;gap:4px;padding:6px 8px;border-radius:12px;border:1px dashed var(--sk-line)}
+.career-job.nc .nc-ing-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.career-job.nc .nc-ing-head>span[aria-hidden]{font-size:22px;line-height:1}
+.career-job.nc .nc-ing-head small{color:var(--sk-muted)}
+.career-job.nc .nc-look{margin-left:auto;font-size:12px;padding:1px 8px;border-radius:99px;background:var(--sk-surface-2);color:var(--sk-muted)}
+.career-job.nc .nc-look.ok{color:var(--sk-good);font-weight:700}
+.career-job.nc .nc-look.bad{color:var(--sk-bad);font-weight:700}
+.career-job.nc .nc-tools,.career-job.nc .nc-buy{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.career-job.nc .nc-tools .btn,.career-job.nc .nc-row .btn{min-height:44px}
+.career-job.nc .nc-buy-n{min-width:52px}
+.career-job.nc .nc-got{font-weight:600}
+.career-job.nc .nc-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0}
+
+/* ---------- ③ the kitchen */
+.career-job.nc .nc-stove{display:flex;align-items:center;gap:6px;margin:0 0 10px;padding:6px 10px;border-radius:var(--sk-rs);background:var(--sk-surface-2);border:1px solid var(--sk-line)}
+.career-job.nc .nc-burner{font-size:20px;filter:grayscale(1);opacity:.45}
+.career-job.nc .nc-burner.on{filter:none;opacity:1}
+.career-job.nc .nc-stove small{color:var(--sk-muted)}
+.career-job.nc .nc-dish.on-fire{border-color:var(--nc-flame);background:color-mix(in srgb,var(--nc-flame) 6%,var(--sk-surface))}
+.career-job.nc .nc-dish p{margin:0 0 4px}
+.career-job.nc .nc-gauge{display:grid;gap:4px;margin:6px 0}
+.career-job.nc .nc-track{position:relative;display:flex;height:22px;border-radius:99px;overflow:hidden;border:1px solid var(--sk-line)}
+.career-job.nc .nc-z{display:block;height:100%}
+.career-job.nc .nc-z.raw{background:var(--nc-raw)}
+.career-job.nc .nc-z.ok{background:var(--nc-ok)}
+.career-job.nc .nc-z.over{background:var(--nc-over)}
+.career-job.nc .nc-z.burnt{flex:1;background:var(--nc-burnt)}
+.career-job.nc .nc-needle{position:absolute;inset:0;pointer-events:none;will-change:transform}
+.career-job.nc .nc-needle::before{content:'';position:absolute;left:-2px;top:-2px;bottom:-2px;width:4px;border-radius:2px;background:var(--sk-ink);box-shadow:0 0 0 2px var(--sk-surface)}
+.career-job.nc .nc-gauge-label{font-variant-numeric:tabular-nums;font-weight:600}
+.career-job.nc .nc-gauge.ready .nc-gauge-label{color:var(--nc-ok)}
+.career-job.nc .nc-gauge.over .nc-gauge-label{color:var(--sk-bad)}
+.career-job.nc .nc-stop{min-height:48px}
+.career-job.nc .nc-table .sk-amt{margin:0}
+
+/* ---------- ④ the market book */
+.career-job.nc .nc-bills{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:6px}
+.career-job.nc .nc-bill{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:2px 8px;align-items:center}
+.career-job.nc .nc-bill>span[aria-hidden]{font-size:22px;grid-row:span 2}
+.career-job.nc .nc-bill small{color:var(--sk-muted);grid-column:2}
+.career-job.nc .nc-bill .btn,.career-job.nc .nc-bill .tag{grid-column:3;grid-row:1/span 2}
+
+/* ---------- the evening */
+.nc-sum .nc-plan{display:grid;gap:6px}
+.nc-sum .nc-tomorrow{margin:0}
+.nc-sum .nc-tomorrow small{display:block;color:var(--muted,#766c60)}
+.nc-sum .nc-sum-more{margin-top:8px}
+
+@media (max-width:420px){
+  .career-job.nc .nc-dishes{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .career-job.nc .nc-buy-n{min-width:44px;padding-inline:8px}
+}
+@media (prefers-reduced-motion:reduce){.career-job.nc .nc-needle{transition:none}}
