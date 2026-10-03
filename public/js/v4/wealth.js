@@ -95,16 +95,18 @@ export function wealthHTML(state,o={}){
     (P.debt?`<div class="bad"><small>Tổng nợ</small><b data-wl-debt="${P.debt}">${minus(P.debt)}</b></div>`:'')+`</section>`);
   if(P.wallet!=null)parts.push(section('Ví',row('👛','Tiền mặt',P.wallet<0?minus(-P.wallet):xu(P.wallet),{cls:P.wallet<0?'bad':'',id:'wallet',sub:P.wallet<0?'đang nợ tiền phòng':''}),link('Sổ ví','stView',{view:'wallet'})));
   if(P.bank){
-    const B=P.bank;let rows='';
-    if(!B.open)rows=row('🏦','Chưa mở tài khoản','',{id:'bank-none'});
+    // A plain button into Ngân hàng Phố on the first row (feedback #110: since the bank sits in the "Tiền & nhà"
+    // hub, a player looking from their money did not see the small "Chi tiết" link).
+    const B=P.bank,go=`<button type="button" class="btn small" data-action="bank"><span aria-hidden="true">🏦</span> ${B.open?'Vào Ngân hàng':'Mở tài khoản'}</button>`;let rows='';
+    if(!B.open)rows=row('🏦','Chưa mở tài khoản','',{id:'bank-none',extra:go});
     else{
-      rows+=row('🏦','Tài khoản',xu(B.balance),{id:'account'});
+      rows+=row('🏦','Tài khoản',xu(B.balance),{id:'account',extra:go});
       if(B.demand)rows+=row('🐷','Tiết kiệm không kỳ hạn',xu(B.demand),{id:'demand'});
       for(const t of B.terms)rows+=row('📅',esc(t.name),xu(t.amount),{id:'term',sub:`đáo hạn Ngày ${fmt(t.due)}${t.days_left?` · còn ${fmt(t.days_left)} ngày`:' · hôm nay'}`});
       for(const l of B.loans)rows+=row(esc(l.emoji),esc(l.name),minus(l.left),{cls:'bad',id:'loan',sub:l.overdue?`quá hạn ${xu(l.overdue)}`:'còn nợ'});
       if(B.card)rows+=row('💳','Thẻ tín dụng',minus(B.card),{cls:'bad',id:'card',sub:'dư nợ thẻ'});
     }
-    parts.push(section('Ngân hàng',rows,link(B.open?'Chi tiết':'Mở tài khoản','bank')));
+    parts.push(section('Ngân hàng',rows));
   }
   if(P.places.length){
     const rows=P.places.map(p=>{const m=place(p.cid);

@@ -176,6 +176,39 @@ class OperationsTests(unittest.TestCase):
         sid=self.hire();ops.spawn_incident(self.j.state,self.c,self.j.career,employee=self.staff(sid))
         self.no_effect('incident_dismiss');self.no_effect('dismiss',employee=sid,confirm=True)
 
+    def test_paused_employee_is_not_billed_or_tired_while_incident_open(self):
+        # Player report 03/10: an employee with an open incident stood idle for days, yet was logged present
+        # (wage billed for "ca thực làm"), grew tired and kept "đang nghỉ một chút rồi quay lại" notes.
+        sid=self.hire();self.act('assign',employee=sid,role='patrol')
+        ops.spawn_incident(self.j.state,self.c,self.j.career,'accident',False,self.staff(sid))
+        self.close();self.j.act('start_day');day=self.c['day'];e=self.staff(sid);fatigue,jobs=e['fatigue'],e['jobs']
+        notes=[]
+        for _ in range(40):notes+=self.j.act('advance').get('effects',[])
+        e=self.staff(sid)
+        self.assertNotIn(sid,self.o['attendance'].get(str(day),{}))
+        self.assertEqual((e['fatigue'],e['jobs']),(fatigue,jobs))
+        self.assertFalse([n for n in notes if isinstance(n,str) and ('đang nghỉ một chút' in n or n.startswith(e['name']+':'))])
+        summary=self.j.act('end_day',carry_event=True)['summary']['operations']
+        self.assertEqual(summary['staff'],[dict(name=e['name'],jobs=0,shift=False,paused=True)])
+        self.assertEqual(summary['wages'],0);self.assertFalse([b for b in self.o['finance']['bills'] if b['id']==f'wage-{day}-{sid}'])
+        # Closed through the steps, the same person works (and is paid) again.
+        self.j.act('start_day')
+        self.act('incident_read',evidence='worklog');self.act('incident_read',evidence='listen')
+        self.act('incident_choose',choice='coach',confirm=True);self.advance(2);self.act('incident_finish')
+        self.advance(8);self.assertGreater(self.staff(sid)['jobs'],jobs)
+        self.assertIn(sid,self.o['attendance'][str(self.c['day'])]);self.assert_valid()
+
+    def test_today_job_count_kept_on_attendance_and_in_day_summary(self):
+        sid=self.hire();self.act('assign',employee=sid,role='patrol');self.advance(12);day=str(self.c['day'])
+        jobs=self.staff(sid)['jobs'];self.assertGreater(jobs,0)
+        self.assertEqual(self.o['attendance'][day][sid]['jobs'],jobs);self.assert_valid()
+        summary=self.j.act('end_day',carry_event=True)['summary']['operations']
+        self.assertEqual(summary['staff'],[dict(name=self.staff(sid)['name'],jobs=jobs,shift=True,paused=False)])
+        # Saves written before 1.4.31 have no per-day count; a bad one is refused.
+        row=self.o['attendance'][day][sid];row.pop('jobs');validate_state(self.j.state)
+        row['jobs']=-1
+        with self.assertRaises(GameError):validate_state(self.j.state)
+
     def test_practice_incident_no_wallet_bill_skill_or_condition_effect(self):
         sid=self.hire();self.act('shift',employee=sid,on=False)
         before=(self.c['money'],copy.deepcopy(self.o['equipment']),self.staff(sid)['precision'])

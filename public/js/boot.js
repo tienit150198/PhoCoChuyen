@@ -39,6 +39,7 @@
   }};
   try{const warm=JSON.parse(store('mnl.warm')||'[]');warmUp([...(Array.isArray(warm)?warm.slice(0,6):[]),store('mnl.scene')]);}catch{/* no hint */}
   B.response?.then(r=>{
+    B.got=Date.now();   // when its headers came in: api.js clockSample
     const place=r.headers.get('X-Game-Place')||'';
     if(B.contentBase&&/^\w+$/.test(place)){const url=`${B.contentBase}&career=${place}`;B.place={url,sent:Date.now(),response:fetch(url,{credentials:'same-origin'})};B.place.response.catch(()=>{});}
     warmUp((r.headers.get('X-Game-Warm')||'').split(',').slice(0,12));

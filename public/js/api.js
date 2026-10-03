@@ -16,6 +16,24 @@ const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 /** A step this tab sent within this long counts as the same tap when it comes again from an older screen. */
 export const DOUBLE_TAP_MS=5000;
 
+/* The server's clock as this page reads it (live bars and stop taps, v4/careers.js: the bar drawn, the moment a
+ * stop sends as tap_at). Each JSON answer carries server_time (when it left) and server_recv (when the request
+ * came in): the NTP estimate offset = ((recv - sent) + (time - got)) / 2 leaves out the time the request spent on
+ * the server (a lock, other players' commands), `got` is taken when the answer's headers are in (a slow phone's
+ * JSON parse is not network time), and of the answers of the last CLOCK_AGE ms the one with the shortest network
+ * trip wins. Before, the last answer simply won, leaned by half of any server wait or slow leg: on a busy server the
+ * bars were drawn a few tenths of a second off the server's own clock and jumped with every answer. */
+export const CLOCK_AGE=120000,CLOCK_KEEP=16;
+/** Adds one reading to `samples` (kept in place) and returns the offset to use (seconds, server - page). */
+export function clockSample(samples,sent,got,time,recv){
+  const t1=sent/1000,t4=got/1000,trip=Math.max(0,t4-t1);
+  const stay=Number.isFinite(recv)?Math.min(trip,Math.max(0,time-recv)):0;   // on the server (an older one: unknown)
+  samples.push({offset:((time-stay-t1)+(time-t4))/2,trip:trip-stay,at:got});
+  while(samples.length>CLOCK_KEEP||(samples.length>1&&got-samples[0].at>CLOCK_AGE))samples.shift();
+  let best=samples[0];for(const x of samples)if(x.trip<=best.trip)best=x;   // a tie: the newer
+  return best.offset;
+}
+
 /** The "Đang cập nhật máy chủ…" note: shown once a retry has lasted `after` ms, gone with the last one.
  * Top layer (popover) so an open sheet does not hide it; inline styles, never takes a tap. */
 export class UpdatingNote{
@@ -94,7 +112,7 @@ const canon=x=>Array.isArray(x)?`[${x.map(canon).join(',')}]`:x&&typeof x==='obj
 
 /** Ordered mutations + idempotent retry. A lost response never doubles a sale. */
 export class GameAPI extends EventTarget {
-  constructor(){super();this.state=null;this.content=null;this.revision=0;this.accepted=0;this.done=[];this.csrf='';this.ai={configured:false};this.auth={tiktok:{enabled:false,mode:'sandbox'}};this.social=null;this.push={enabled:false};this.clockOffset=0;this.connected=false;this.queue=Promise.resolve();
+  constructor(){super();this.state=null;this.content=null;this.revision=0;this.accepted=0;this.done=[];this.csrf='';this.ai={configured:false};this.auth={tiktok:{enabled:false,mode:'sandbox'}};this.social=null;this.push={enabled:false};this.clockOffset=0;this.clock=[];this.connected=false;this.queue=Promise.resolve();
     // The release this page booted with (<meta name="mnl-version">, read by boot.js) vs X-Game-Version.
     this.updates=new UpdateNotice(globalThis.__mnlBoot?.version||'',{prewarm:globalThis.document?()=>prewarmRelease():null});
     this.delays=RETRY_DELAYS;this.retryWindow=RETRY_WINDOW;this.holding=new UpdatingNote(()=>this.lang);this.held=NONE;
@@ -114,11 +132,11 @@ export class GameAPI extends EventTarget {
     }catch(error){this.failed(url,error);throw error;}
     finally{if(write)this.writing--;this.net(-1);}
   }
-  /** A call that failed for good (after its retries): an 'apifail' event with the status and the path only
-   * (public/js/telemetry.js counts it; no query string, no body). */
+  /** A call that failed for good (after its retries): an 'apifail' event with the status, the path and the server's
+   * error code only (public/js/telemetry.js counts it; no query string, no body). */
   failed(url,error){
     let route=String(url||'');try{route=new URL(route,globalThis.location?.href||'http://x/').pathname;}catch{route=route.split('?')[0];}
-    this.dispatchEvent(new CustomEvent('apifail',{detail:{route,status:error?.status||0}}));
+    this.dispatchEvent(new CustomEvent('apifail',{detail:{route,status:error?.status||0,code:String(error?.data?.code||'')}}));
   }
   async retrying(send){
     const t0=Date.now();let held=false;
@@ -140,11 +158,12 @@ export class GameAPI extends EventTarget {
       // `early`: a request already on the wire (public/js/boot.js), still bound by the same timeout.
       const response=await (early?Promise.race([early.response,new Promise((_,reject)=>controller.signal.addEventListener('abort',()=>reject(new DOMException('Timeout','AbortError'))))])
         :fetch(url,{credentials:'same-origin',...options,signal:controller.signal}));
+      const got=early?early.got?.()??Date.now():Date.now();   // the headers are in (boot.js stamps its own)
       const version=response.headers.get('X-Game-Version');
       let data=null;
       try{data=await response.json();}catch{/* not JSON: the proxy's own 502/504 page, or a body cut off */}
-      // Server clock for real-time workbenches (boiling, ovens, dye timers).
-      if(typeof data?.server_time==='number'){const rtt=Date.now()-sent;if(rtt<1500)this.clockOffset=data.server_time-(sent+rtt/2)/1000;}
+      // Server clock for real-time workbenches (boiling, ovens, dye timers, stop taps): see clockSample.
+      if(typeof data?.server_time==='number')this.clockOffset=clockSample(this.clock,sent,got,data.server_time,data.server_recv);
       const outdated=response.status===426||OUTDATED_CODES.has(data?.code);
       this.updates.seen(version,outdated);
       if(!response.ok){const error=new Error(data?.error||(TRANSIENT.has(response.status)?BUSY_TEXT:`Lỗi ${response.status}`));error.status=response.status;error.data=data||{};throw error;}
@@ -157,7 +176,7 @@ export class GameAPI extends EventTarget {
     // them (a network hiccup asks again). lite=1: the catalogue is not inlined, it comes from /api/content,
     // which the browser keeps for a year (the URL changes with the content). Its other parts: more() and
     // careerContent() below.
-    const boot=globalThis.__mnlBoot||{},early=boot.response?{sent:boot.sent,response:boot.response}:null;
+    const boot=globalThis.__mnlBoot||{},early=boot.response?{sent:boot.sent,response:boot.response,got:()=>boot.got}:null;
     const earlyContent=boot.content&&boot.contentUrl?{sent:boot.sent,response:boot.content,url:boot.contentUrl}:null;
     this.early=boot.place||null;this.contentBase=boot.contentBase||'';
     boot.response=boot.content=boot.place=null;let data=null,content=null;

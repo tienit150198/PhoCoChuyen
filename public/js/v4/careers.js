@@ -98,20 +98,26 @@ export function careerInput(el,env,type){
  * Live bars (the sealer needle, the rinse and dryer bars, a shot, the steam wand, the oven, the sewing needle, the
  * egg pan, the noodle basket, the dye timer) move on the compositor: ctx.slide() hands the bar a linear transform
  * animation (Web Animations), so it glides at the screen's own rate with no script, layout or paint per frame, and
- * a busy phone cannot make it stutter or lag behind. module.meters(root,ctx) sets the bars and their words five
- * times a second (and right after each render).
+ * a busy phone cannot make it stutter or lag behind. module.meters(root,ctx) sets the bars and their cues (the
+ * needle turning green / red, "VÙNG XANH — NHẢ TAY!") on every frame while a bar glides, else five times a second
+ * (and right after each render): a cue a fifth of a second behind its bar read "still green" with the needle
+ * already in the red ("canh tới mức xanh nhưng tới mức đỏ nó mới dừng").
  *
  * A stop on a running meter counts where the bar stood when the finger came down, not when the command reached the
  * server (player feedback #100: "bấm dừng rồi nó vẫn cứ chạy lố"):
- * - pointerdown on a stop control (module.tapStop(op,payload) says yes, or [data-tap-stop="<op>"]) holds the
- *   workbench clock (ctx.now) at the moment of the touch (event.timeStamp: this handler may run late) and stops
- *   the bars there at once: no click, no round trip;
+ * - pointerdown on a stop control (module.tapStop(op,payload,at,ctx) says yes, or [data-tap-stop="<op>"]) holds
+ *   the workbench clock (ctx.now) at the moment of the touch (event.timeStamp: this handler may run late) and
+ *   stops the bars there at once: no click, no round trip. tapStop answering {early:'<why>'} (a stop the server
+ *   would turn down at that moment: the sewing needle short of its line) sends nothing and leaves the bars
+ *   running, the why shows at once: no bar standing still for a round trip and then jumping ahead, and the next
+ *   tap is not held behind a refusal on the wire;
  * - the command it sends carries that moment as payload.tap_at (api.js tapStamp; the server's clock as the page
- *   reads it). game/careers/kit.py tap_now keeps it within a few seconds of its arrival; an older server ignores it;
+ *   reads it, api.js clockSample). game/careers/kit.py tap_now grades that moment (within honest bounds); an
+ *   older server ignores it;
  * - the clock runs again once that command settles, or when the touch ends without one (a scroll, a step the
  *   workbench turned down, a tap that was not sent). */
 const tap={id:0,op:'',at:0,phase:''};   // phase: 'down' (finger on it) · 'click' · 'held' (a command on the wire first) · 'sent'
-let tapTimer=0;
+let tapTimer=0,early=null;   // early: {el, why} a stop tap turned down at its moment (its click is answered here)
 const liveNow=api=>Date.now()/1000+(api.clockOffset||0);
 const clockOf=api=>tap.phase?tap.at:liveNow(api);
 function tapEnd(id){if(id!==tap.id||!tap.phase)return;tap.phase='';clearTimeout(tapTimer);}
@@ -124,7 +130,8 @@ function tapStamp(action){
 }
 /** Move a bar to `pct` (0–100 of its track) and keep it going at `perSec` % a second on the compositor.
  * `fill`: a full-width fill slid in from the left (translateX(pct-100%)); else a full-width layer whose left edge
- * is the needle (translateX(pct%)). While a stop tap holds the clock, or with no Web Animations, it stands still. */
+ * is the needle (translateX(pct%)). While a stop tap holds the clock, or with no Web Animations, it stands still.
+ * While any bar glides, the meters run on every frame (frameDraw): their cues keep up with the bars. */
 const sliding=new Set();let drawn=0;   // bars with an animation, and the draw that last set each
 function slide(el,pct,perSec,fill){
   if(!el)return;
@@ -143,32 +150,39 @@ function slide(el,pct,perSec,fill){
   }
   const want=pct/perSec*1000;if(Math.abs((a.currentTime||0)-want)>40)a.currentTime=want;   // a new clock reading
 }
-function stopOp(el,mod){
-  if(el.dataset.tapStop)return el.dataset.tapStop;
-  const op=el.dataset.command||el.dataset.op;if(!op||!mod?.tapStop)return '';
-  try{return mod.tapStop(op,JSON.parse(el.dataset.payload||'{}'))?op:'';}catch{return '';}
+/** The stop behind a control: {op, early} (early: why it is turned down at `at`), or null. */
+function stopOp(el,mod,at,ctx){
+  if(el.dataset.tapStop)return {op:el.dataset.tapStop,early:''};
+  const op=el.dataset.command||el.dataset.op;if(!op||!mod?.tapStop)return null;
+  try{const r=mod.tapStop(op,JSON.parse(el.dataset.payload||'{}'),at,ctx());return r?{op,early:r?.early?String(r.early):''}:null;}catch{return null;}
 }
 function tapListen(getEnv){
   document.addEventListener('pointerdown',e=>{
     if(!e.isPrimary||e.button>0)return;
+    early=null;
     const el=e.target.closest?.('[data-tap-stop],[data-command],[data-op]');
     if(!el||el.disabled||el.classList.contains('is-pending')||!el.closest('#sheet[open]'))return;
-    const env=getEnv(),api=env?.api,op=api?.state&&stopOp(el,modules[api.state.current]);if(!op)return;
+    const env=getEnv(),api=env?.api;if(!api?.state)return;
     // When the finger came down: on a busy phone this handler runs late, while the bars kept gliding.
     const at=liveNow(api)-Math.min(1,Math.max(0,performance.now()-e.timeStamp)/1000);
-    Object.assign(tap,{id:tap.id+1,op,at,phase:'down'});clearTimeout(tapTimer);
+    const stop=stopOp(el,modules[api.state.current],at,()=>careerContext(env));if(!stop)return;
+    if(stop.early){early={el,why:stop.early};return;}   // too soon: the bars run on
+    Object.assign(tap,{id:tap.id+1,op:stop.op,at,phase:'down'});clearTimeout(tapTimer);
     const s=scope(env);if(s)draw(env,s,false);   // the bars stop on this frame
   },true);
   document.addEventListener('pointercancel',()=>{if(tap.phase==='down')tapEnd(tap.id);},true);
   document.addEventListener('pointerup',()=>{if(tap.phase==='down')tapLater(800);},true);   // no click follows: a scroll
   // The click sends it (app.js); while another command is on the wire app.js holds the tap and sends it after.
-  document.addEventListener('click',()=>{if(tap.phase!=='down')return;tap.phase=document.body.classList.contains('busy')?'held':'click';tapLater(tap.phase==='held'?20000:600);},true);
+  document.addEventListener('click',e=>{
+    // A stop tapped too soon: answered here, nothing is sent (the server would say the same).
+    if(early){const k=early;early=null;if(e.target.closest?.('[data-tap-stop],[data-command],[data-op]')===k.el){e.preventDefault();e.stopImmediatePropagation();getEnv()?.toast?.(k.why);return;}}
+    if(tap.phase!=='down')return;tap.phase=document.body.classList.contains('busy')?'held':'click';tapLater(tap.phase==='held'?20000:600);},true);
   const api=getEnv()?.api;if(!api)return;
   api.tapStamp=tapStamp;
   api.addEventListener('busy',e=>{if(!e.detail&&tap.phase==='held')tapLater(600);});
 }
 
-let timer=null;
+let timer=null,envOf=null,raf=0;
 function scope(env){
   if(document.hidden||!env?.api?.state)return null;   // nothing to draw in a background tab
   const mod=modules[env.api.state.current],root=document.querySelector('#sheet[open] .career-job');
@@ -183,13 +197,18 @@ function draw(env,s,ticking){
     for(const el of sliding)if(el._drawn!==drawn||!el.isConnected){el._slide?.cancel();el._slide=null;sliding.delete(el);}
     if(ticking&&s.mod.tick)s.mod.tick(s.root,ctx);
   }catch(error){console.error(error);}
+  if(sliding.size&&!raf&&envOf)raf=requestAnimationFrame(frameDraw);
 }
+/** While a bar glides: the meters again on the next frame (their cues and stop controls in step with the bars;
+ * the bars themselves are on the compositor). Stops with the last gliding bar (a stop tap, the timer ended). */
+function frameDraw(){raf=0;const env=envOf?.(),s=scope(env);if(s)draw(env,s,false);}
 /** Run the current workbench's meters and tick once, right after a render: its measured layout (e.g. the action
  * bar kept above the sheet footer) and its bars are back in the same frame instead of up to 200 ms later. */
 export function tickNow(env){const s=scope(env);if(s)draw(env,s,true);}
 /** Runs the workbench's meters and tick while the job sheet is visible (real-time bars). */
 export function startTicker(getEnv){
   if(timer)return;
+  envOf=getEnv;
   tapListen(getEnv);
   timer=setInterval(()=>{const env=getEnv(),s=scope(env);if(s)draw(env,s,true);},200);
 }

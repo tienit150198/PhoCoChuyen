@@ -847,11 +847,11 @@ export default {
       const s=Math.max(0,x.now()-start),w=el.dataset;
       const under=Number(w.under),ideal=Number(w.ideal),over=Number(w.over),scale=Number(w.scale);
       x.slide(el.querySelector('.sl-fill'),s/scale*100,100/scale,true);
-      el.querySelector('.sl-label').textContent=s.toFixed(1)+' giây · '+(s<under?'chưa đủ giờ':s<=ideal?'XẢ NGAY!':s<=over?'quá giờ rồi':'tóc đang cháy!');
+      {const l=el.querySelector('.sl-label'),text=s.toFixed(1)+' giây · '+(s<under?'chưa đủ giờ':s<=ideal?'XẢ NGAY!':s<=over?'quá giờ rồi':'tóc đang cháy!');if(l.textContent!==text)l.textContent=text;}   // the meters run every frame: write only a change
       el.classList.toggle('ready',s>=under&&s<=ideal);el.classList.toggle('late',s>ideal);
       // Bottom bar: count down, then swap to "rinse" in the green zone (attributes and text only, never new nodes).
       const on=s>=under,wait=root.querySelector('.sl-wait'),go=root.querySelector('.sl-rinse-go'),left=root.querySelector('.sl-wait .sl-left');
-      if(left)left.textContent=String(Math.max(1,Math.ceil(under-s)));
+      const n=String(Math.max(1,Math.ceil(under-s)));if(left&&left.textContent!==n)left.textContent=n;
       if(wait&&wait.hidden!==on)wait.hidden=on;
       if(go&&go.hidden===on){go.hidden=!on;if(on&&root.querySelector('.sl-bar[data-first]'))go.classList.add('gd-pulse');}
       root.querySelector('.sl-rinse-top')?.classList.toggle('primary',on);

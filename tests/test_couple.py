@@ -152,6 +152,16 @@ class FriendTests(Base):
         self.act(self.b, 'respond', id=self.view(self.b)['incoming'][0]['id'], answer='accept')
         self.assertEqual(self.view(self.a)['couple']['status'], 'engaged')
 
+    def test_friend_without_a_code_gets_one(self):
+        """A date in the live service befriends two accounts that never opened Hôn nhân: no PCC code, so
+        "Hủy kết bạn" / "Chặn" sent code=null and got a 400. The friend list now gives them a code."""
+        self.befriend(self.sid(self.a), self.sid(self.b))
+        self.store.transaction(lambda db: db.execute('DELETE FROM marriage_people WHERE sid=?', (self.sid(self.b),)))
+        card = self.view(self.a)['friends']['list'][0]
+        self.assertRegex(card['code'] or '', r'^PCC-')
+        self.act(self.a, 'friend_remove', code=card['code'])
+        self.assertEqual(self.view(self.a)['friends']['list'], [])
+
     def test_account_delete_forgets_friends(self):
         self.befriend(self.sid(self.a), self.sid(self.b))
         self.act(self.c, 'friend_request', username='an_test')

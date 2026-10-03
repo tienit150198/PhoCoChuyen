@@ -134,6 +134,15 @@ function acquisition(){
   return out;
 }
 
+/** API answers that are the game saying no, already shown to the player where it happened: not client errors.
+ * A rejected command toasts its reason (the 'rejected' event below); these routes show theirs in place. */
+const EXPECTED={'/api/social/profile':['name_taken'],'/api/social/shop':['not_found','blocked'],'/api/marriage/plan':['bad_plan']};
+export function expectedFail({route,status,code}={}){
+  if(route==='/api/beacon')return true;
+  if(route==='/api/command')return status===400||status===409;
+  if(route==='/api/ai/board')return (status===400||status===409)&&code!=='invalid_data';   // bd_post / bd_reply refused: toasted
+  return Boolean(code)&&(EXPECTED[route]||[]).includes(code);
+}
 export function telemetryBoot(e){
   if(env)return;env=e;
   try{observabilityBoot(e);}catch{/* Google must never affect game beacons */}
@@ -158,8 +167,7 @@ export function telemetryBoot(e){
   const api=e.api;
   api?.addEventListener?.('apifail',ev=>{
     const d=ev.detail||{};
-    if(d.route==='/api/command'&&(d.status===400||d.status===409))return;   // a rejected command: its toast below
-    if(d.route==='/api/beacon')return;
+    if(expectedFail(d))return;
     error('api',`${d.status||0} ${d.route||'?'}`);
   });
   api?.addEventListener?.('rejected',ev=>{const d=ev.detail||{};error('toast',d.code&&d.code!=='invalid_action'?`${d.code}: ${d.message}`:d.message);});

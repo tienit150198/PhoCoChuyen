@@ -878,7 +878,7 @@ export default {
       const start=Number(el.dataset.start);if(!start)return;
       const s=Math.max(0,x.now()-start),pan=el.dataset.hsTimer==='pan',scale=pan?PAN_SCALE:AIR_SCALE;
       x.slide(el.querySelector('.fill'),s/scale*100,100/scale,true);
-      el.querySelector('.hs-timer-label').textContent=s.toFixed(1)+' giây · '+(pan?(s<w.raw?'lòng trắng còn sống':s<=w.runny?'LÒNG ĐÀO — nhấc nếu khách thích':s<=w.well?'CHÍN KỸ':'cháy mất rồi!'):(s<air.damp?'phòng còn mùi ẩm':s<=air.cold?'thoáng mát, thơm gỗ thông':'phòng lạnh dần'));
+      {const l=el.querySelector('.hs-timer-label'),text=s.toFixed(1)+' giây · '+(pan?(s<w.raw?'lòng trắng còn sống':s<=w.runny?'LÒNG ĐÀO — nhấc nếu khách thích':s<=w.well?'CHÍN KỸ':'cháy mất rồi!'):(s<air.damp?'phòng còn mùi ẩm':s<=air.cold?'thoáng mát, thơm gỗ thông':'phòng lạnh dần'));if(l.textContent!==text)l.textContent=text;}   // the meters run every frame: write only a change
       el.classList.toggle('ready',pan?(s>=w.raw&&s<=w.well):(s>=air.damp&&s<=air.cold));
       el.classList.toggle('over',pan?s>w.well:s>air.cold);
     });

@@ -48,6 +48,16 @@ def findable(db, sid: str) -> bool:
     return True if r is None else bool(r['findable'])
 
 
+def ensure_codes(store, sid: str) -> None:
+    """Every friend gets a player code (PCC-…): the friend card's buttons (hủy kết bạn, chặn, cầu hôn)
+    name the friend by it. A date in the live service befriends two accounts without one."""
+    with store.connect() as db:
+        missing = [r['friend'] for r in db.execute('SELECT f.friend FROM friends f LEFT JOIN marriage_people p ON p.sid=f.friend '
+                                                   'WHERE f.sid=? AND p.sid IS NULL', (sid,)).fetchall()]
+    if missing:
+        store.transaction(lambda db: [mr.ensure_person_db(db, x) for x in missing], 250)
+
+
 def _status_of(db, sid: str) -> str:
     """Marriage status shown on a friend card."""
     r = db.execute('SELECT c.status FROM marriage_bonds b JOIN couples c ON c.id=b.couple WHERE b.sid=?', (sid,)).fetchone()

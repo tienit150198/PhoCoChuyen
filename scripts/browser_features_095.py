@@ -642,6 +642,15 @@ async def s_wealth(w: Walk) -> None:
             w.need(chip == short_num(st2['journey']['wallet']), f'wallet chip {chip!r} after the withdrawal, state {st2["journey"]["wallet"]}')
     else:
         w.problem('note: no workplace had money to withdraw in this save (Rút về ví not exercised)')
+    # 🏦 Ngân hàng Phố is one tap away from the money (feedback #110: a button on the bank's first row).
+    go = '#sheet .wl-row[data-wl="account"] .btn[data-action="bank"]'
+    if w.need(await p.locator(go).count(), 'no "Vào Ngân hàng" button in "Tiền của bạn"') and await tap(w, go, 'the "Vào Ngân hàng" button'):
+        try:
+            await p.wait_for_selector('dialog.bk-sheet[open]', timeout=6000)
+        except Exception:
+            w.problem('dead end: "Vào Ngân hàng" did not open Ngân hàng Phố')
+        await w.close_all()
+        await open_wealth(w, '#topbar .hud-wallet', 'the wallet chip')
     # Sổ ví is one tap further.
     if await tap(w, '#sheet .wl-link[data-action="stView"][data-view="wallet"]', 'the Sổ ví link'):
         w.need(await p.locator('#sheet[open] .jr-purse').count(), 'Sổ ví did not open')

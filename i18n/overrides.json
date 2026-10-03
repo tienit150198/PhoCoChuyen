@@ -1,5 +1,19 @@
 {
  "strings": {
+  "Canh mức (máy may, tắm thú, ép nắp…): bấm dừng ở đâu kim dừng đúng ở đó, cả khi máy yếu hay mạng chậm.": "Stop meters (sewing, pet bath, cup sealing…): the needle stops right where you tap, even on a slow phone or network.",
+  "Nhân viên: thẻ ghi rõ hôm nay làm mấy việc, vì sao đang nghỉ; ai tạm dừng vì sự cố không bị tính lương.": "Staff: cards show today's jobs and why someone is resting; staff paused by an incident are no longer paid.",
+  "Tiền của bạn: thêm nút “Vào Ngân hàng” để mở ngân hàng nhanh hơn.": "Your money: a new “Go to the bank” button opens the bank faster.",
+  "Bạn quen qua hẹn hò: sửa nút Hủy kết bạn, Chặn, Cầu hôn không bấm được.": "Friends met on a date: Unfriend, Block and Propose work again.",
+  "Vào Ngân hàng": "Go to the bank",
+  "Tạm dừng: còn sự cố đang mở": "Paused: an incident is still open",
+  "Hôm nay không có ca (lịch ngày lẻ)": "No shift today (odd-day schedule)",
+  "Hôm nay không có ca (lịch ngày chẵn)": "No shift today (even-day schedule)",
+  "Đội hôm nay": "Team today",
+  "tạm dừng vì còn sự cố đang mở": "paused, an incident is still open",
+  "không vào ca": "no shift",
+  "Xem nhân viên": "View staff",
+  "Kim chưa tới vạch, đạp thêm chút nữa rồi dừng.": "The needle hasn't reached the green line yet: sew on a little, then stop.",
+  "Bạn ấy còn sự cố đang mở. Vào Sổ tiệm › Nhân viên: kiểm 2 nguồn, chọn cách xử lý, sau 2 nhịp bấm “Kiểm & hoàn tất”, rồi mới cho nghỉ được.": "This staff member still has an open incident. In Shop ledger › Staff: check both sources, pick a fix, then after 2 beats tap “Check & finish the fix” before letting them go.",
   "Nhà chung: vợ chồng ở cùng nhà giờ thấy cả đồ người kia bày trí. Món của ai người nấy dời.": "Shared home: a couple living together now see each other's furniture. Each of you moves your own.",
   "Sổ tiệm: khi chưa cho nhân viên nghỉ được vì còn sự cố, game chỉ rõ từng bước để khép sự cố.": "Shop ledger: when a staff member can't be let go because of an open incident, the game now lists the steps to close it.",
   "Bạn ấy còn sự cố đang mở. Vào Sổ tiệm › Nhân sự: kiểm 2 nguồn, chọn cách xử lý, sau 2 nhịp bấm “Kiểm & hoàn tất”, rồi mới cho nghỉ được.": "This staff member still has an open incident. In Shop ledger › HR: check both sources, pick a fix, then after 2 beats tap “Check & finish the fix” before letting them go.",
@@ -6228,6 +6242,10 @@
   "Mang về 32": "Takeaway 32"
  },
  "patterns": {
+  "Có sự cố của $1. Bạn ấy tạm dừng việc tới khi xử lý xong: mở Sổ tiệm → Nhân viên.": "There's an issue with $1. They pause work until it is handled: open Shop Ledger → Staff.",
+  "Hôm nay $1 việc ·": "Today $1 jobs ·",
+  "Đang nghỉ lấy sức · còn $1 nhịp": "Resting · back in $1 beats",
+  "$1 việc": "$1 jobs",
   "Sống ở phố đủ $1 ngày rồi nhận quà nhé.": "Live in the neighbourhood for $1 days, then take the gift.",
   "🧧 Gửi phong bì $1 xu": "🧧 Send a $1-coin envelope",
   "Ví còn $1 xu, chưa đủ phong bì $2 xu.": "Wallet: $1 coins, not enough for a $2-coin envelope.",

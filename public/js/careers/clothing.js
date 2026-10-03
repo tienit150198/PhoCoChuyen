@@ -523,8 +523,8 @@ export default {
     keepBarAboveFooter(root);
     pinTop(root);
   },
-  // The sewing needle while the machine runs (v4/careers.js): it glides on the compositor. "Dừng máy" holds it
-  // where it was when the finger came down (tapStop).
+  // The sewing needle while the machine runs (v4/careers.js): it glides on the compositor, its colour and words
+  // follow it frame by frame. "Dừng máy" holds it where it was when the finger came down (tapStop).
   meters(root,x){
     for(const el of root.querySelectorAll('[data-ao-sew]')){
       const start=Number(el.dataset.start);if(!start)continue;
@@ -535,7 +535,14 @@ export default {
       if(l&&l.textContent!==text)l.textContent=text;
     }
   },
-  tapStop:op=>op==='ao_sew_stop',
+  // Short of the green line the machine does not stop (game/careers/clothing.py ao_sew_stop): that tap is
+  // answered at once and the needle runs on, instead of standing still for a round trip and then jumping ahead.
+  tapStop:(op,p,at,x)=>{
+    if(op!=='ao_sew_stop')return false;
+    const t=(x?.room?.tasks||[]).find(v=>v.id===p.task),start=t?.alt?.start;
+    if(!start||!t.sew||!(at>0))return true;
+    return (at-start)/(t.sew.seconds||4)<(t.sew.zone||[.7])[0]?{early:'Kim chưa tới vạch, đạp thêm chút nữa rồi dừng.'}:true;
+  },
   dock:[['inventory','box','Kho','Nhập hàng'],['car:intro','question','Giới thiệu nghề','Công việc & sao']],
   // Day summary: "🌅 Ngày mai" (tomorrow's mood, the racks to refill) first, the day folded.
   summary(data,x){

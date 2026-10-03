@@ -106,6 +106,11 @@ TAILOR_TURNS = 2            # beats before Bà Tư hands the piece back
 SEW_SECONDS = 4.0           # the needle runs from the start of the seam to the end in this long
 SEW_ZONE = (0.70, 0.92)     # stop the machine inside this part of the seam
 SEW_ZONE_EASY = (0.55, 0.97)
+
+
+def sew_zone(t: dict) -> tuple:
+    """The green line on this job's seam: the one the page draws (public `sew.zone`) is the one graded."""
+    return SEW_ZONE_EASY if kit.tier(t['day']) == 0 else SEW_ZONE
 SALE_UNITS = 3              # how many units a wrong sale tag sells before anyone notices
 SALE_PAY = 25
 DISPLAY_PAY = 25
@@ -1158,16 +1163,19 @@ def _alter(s, c, t, name, p):
         return dict(message='Rè rè rè… kim chạy dọc đường phấn. Dừng khi kim tới vạch xanh!', start=a['start'])
     if name == 'ao_sew_stop':
         kit.need(t['stage'] == 'sew' and a['start'] is not None, 'Máy chưa chạy.')
-        prog = max(0.0, kit.tap_now(p) - a['start']) / SEW_SECONDS
-        lo, hi = SEW_ZONE_EASY if kit.tier(c['day']) == 0 else SEW_ZONE
+        sewn = max(0.0, kit.tap_now(p) - a['start'])
+        prog = sewn / SEW_SECONDS
+        # Graded on the job's own line (a job taken on day 2 and sewn on day 3 kept the wide line it shows).
+        lo, hi = sew_zone(t)
         if prog < lo:
-            return dict(message='Kim chưa tới vạch, đạp thêm chút nữa rồi dừng.', refused=True)
+            return dict(message='Kim chưa tới vạch, đạp thêm chút nữa rồi dừng.', refused=True, held=round(sewn, 2))
         a['seam'] = 'good' if prog <= hi else 'crooked'
         a['start'] = None
         t['stage'] = 'ready'
+        # held: the seconds graded (where the needle stopped), for the page's checks (scripts/browser_tap_stop.py).
         if a['seam'] == 'good':
-            return dict(message='Dừng ngay vạch! Đường may thẳng băng, lại mũi gọn gàng.')
-        return dict(message='Hơi lố vạch, cuối đường may bị xiên một chút. Thôi, tính tiền cho khách.')
+            return dict(message='Dừng ngay vạch! Đường may thẳng băng, lại mũi gọn gàng.', held=round(sewn, 2))
+        return dict(message='Hơi lố vạch, cuối đường may bị xiên một chút. Thôi, tính tiền cho khách.', held=round(sewn, 2))
     return _counter(s, c, t, name, p)
 
 
@@ -1770,7 +1778,7 @@ def public_task(t: dict) -> dict:
         v['room_view'] = [dict(npc=kit.npc_id(ID, q['npc']), items=q['items'], what=q['_what'] if str(i) in r['res'] and r['res'][str(i)] in ('found', 'returned') else None)
                           for i, q in enumerate(t['needs']['queue'])]
     if t['kind'] == 'alter':
-        v['sew'] = dict(seconds=SEW_SECONDS, zone=list(SEW_ZONE_EASY if kit.tier(t['day']) == 0 else SEW_ZONE))
+        v['sew'] = dict(seconds=SEW_SECONDS, zone=list(sew_zone(t)))
         v['ready_turn'] = t['alt']['sent'] + TAILOR_TURNS if t['alt']['sent'] is not None else None
     return v
 
