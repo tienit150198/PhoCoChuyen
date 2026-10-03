@@ -1,5 +1,7 @@
 {
  "strings": {
+  "Sổ kế toán và Học TT99: ô số giờ ghi được số âm, phép tính và đơn vị, như -500.000, 6+4 triệu, 1,5tr.": "Accounting and the TT99 course: number boxes now take negatives, sums and units, like -500.000, 6+4 triệu, 1,5tr.",
+  "Ly hôn xong chỉ cần chờ 3 tiếng là cầu hôn lại được.": "After a divorce you can propose again in just 3 hours.",
   "Chưa hiểu số này": "Can't read this number",
   "Số quá lớn": "Number too large",
   "Chưa hiểu số đã ghi. Ghi số nguyên, vd 1.500.000, -200 hoặc 6+4.": "Can't read that number. Write a whole number, e.g. 1.500.000, -200 or 6+4.",
