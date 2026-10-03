@@ -1,0 +1,62 @@
+/* 🛡️ Rủi ro & bảo hiểm, 💰 Tiệm vàng (public/js/v4/rui.js). The shell is the "Có gì mới" card (whatsnew.css). */
+.rui-dialog .wn-body{padding:10px 18px 16px}
+.rui-line{margin:4px 0 12px;font-size:1.08rem;line-height:1.5;color:var(--ink)}
+.rui-chips{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 12px}
+.rui-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:var(--radius-pill);font-size:.9rem;font-weight:700;background:var(--surface-2);color:var(--ink-2)}
+.rui-chip.out,.rui-mine .out{color:var(--bad)}
+.rui-chip.out{background:var(--bad-soft)}
+.rui-chip.good,.rui-mine .good{color:var(--good)}
+.rui-chip.good{background:var(--good-soft)}
+
+.rui-opts{display:grid;gap:8px;margin:0 0 6px}
+.rui-opt{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:10px 14px;border:1.5px solid var(--line);border-radius:var(--radius);background:var(--surface);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.rui-opt.primary{border-color:var(--accent);background:var(--accent-soft)}
+.rui-opt:disabled{opacity:.55;cursor:not-allowed}
+@media (hover:hover){.rui-opt:not(:disabled):hover{border-color:var(--accent-strong)}}
+.rui-opt:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.rui-opt-emoji{flex:none;font-size:1.5rem;line-height:1}
+.rui-opt-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.rui-opt-text b{font-size:1.05rem}
+.rui-opt-text small{font-size:.9rem;color:var(--muted);overflow-wrap:anywhere}
+
+.rui-help{margin:10px 0 0;color:var(--ink-2)}
+.rui-help summary{display:inline-grid;place-items:center;width:var(--tap);height:var(--tap);border-radius:50%;border:1.5px solid var(--line-strong);font-weight:800;cursor:pointer;list-style:none;color:var(--muted)}
+.rui-help summary::-webkit-details-marker{display:none}
+.rui-help ul{margin:8px 0 0;padding-left:20px;line-height:1.55}
+.rui-flash{margin:4px 0 10px;padding:8px 12px;border-radius:var(--radius-sm);background:var(--good-soft);color:var(--ink)}
+.rui-flash.bad{background:var(--bad-soft)}
+
+.rui-h{margin:14px 0 6px;font-size:1rem}
+.rui-list{list-style:none;margin:0;padding:0}
+.rui-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.rui-row:last-child{border-bottom:0}
+.rui-row .grow{display:flex;flex-direction:column;min-width:0;gap:1px}
+.rui-row small{color:var(--muted);font-size:.88rem;overflow-wrap:anywhere}
+.rui-row .btn{flex:none;min-height:var(--tap)}
+.rui-ico{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--surface-2);font-size:1.3rem}
+.rui-row.on .rui-ico{background:var(--good-soft)}
+.rui-have{flex:none;color:var(--good);font-weight:700}
+.rui-wait{font-style:normal;font-size:.85rem;color:var(--warn)}
+.rui-now{display:flex;align-items:center;gap:10px;width:100%;margin:2px 0 6px;padding:10px 12px;border:1.5px solid var(--warn);border-radius:var(--radius);background:var(--warn-soft);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.rui-now>span:first-child{font-size:1.4rem}
+.rui-now .grow{display:flex;flex-direction:column;min-width:0}
+.rui-now small{color:var(--ink-2)}
+.rui-calm{margin:4px 0 8px;padding:8px 12px;border-radius:var(--radius-sm);background:var(--good-soft)}
+
+.rui-price{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 10px;margin:6px 0 2px}
+.rui-price b{font-size:2rem;line-height:1.1}
+.rui-price>span:not(.rui-chip){color:var(--muted)}
+.rui-news{margin:2px 0 6px;color:var(--ink-2)}
+.rui-spark{display:block;width:100%;height:64px;margin:6px 0;color:var(--good)}
+.rui-spark.down{color:var(--bad)}
+.rui-sub{margin:0 0 10px;color:var(--muted)}
+.rui-mine{display:flex;flex-wrap:wrap;gap:4px 14px;margin:0 0 12px;padding:10px 12px;border-radius:var(--radius);background:var(--surface-2)}
+.rui-mine b{flex:1 0 100%}
+.rui-qty{display:flex;align-items:center;justify-content:center;gap:16px;margin:4px 0 8px}
+.rui-qty b{min-width:7ch;text-align:center;font-size:1.2rem}
+.rui-qty .btn{min-width:var(--tap);min-height:var(--tap);font-size:1.3rem}
+.rui-quick{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.rui-quick .btn.on{border-color:var(--accent);background:var(--accent-soft)}
+.rui-trade{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rui-trade .btn{min-height:52px;white-space:normal}
+@media (max-width:380px){.rui-trade{grid-template-columns:1fr}}
