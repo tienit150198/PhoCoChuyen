@@ -188,6 +188,68 @@ class Friends(BoothCase):
         self.assertEqual((await c.expect('booth_left'))['why'], 'idle')
         self.assertNotIn(bt.PREFIX + code2, self.app.hub.rooms)
 
+    async def test_lost_socket_keeps_the_room_and_the_code(self):
+        """Owner 03/10 "k vào phòng người khác đc": the host alone in the room goes to another app to send the code and
+        the phone drops the socket: the room and the code wait for them (GRACE_SECS), a friend gets in meanwhile, the
+        host's next socket joins by the code and is back in their place (still the host)."""
+        tok_a = self.guest('Lan Anh')[0]
+        a = await self.connect(tok_a)
+        a.pid = a.welcome['me']['pid']
+        code = (await self.make(a))['code']
+        await a.close()
+        await asyncio.sleep(0.2)
+        room = self.app.hub.rooms.get(bt.PREFIX + code)
+        self.assertIsNotNone(room)
+        self.assertTrue(room.data['people'][a.pid].away)
+        b = await self.player('Minh Tú')
+        rb = await self.join(b, code)                       # the code still works
+        self.assertEqual((rb['host'], [p['pid'] for p in rb['people']]), (a.pid, [a.pid, b.pid]))
+        self.assertEqual({p['pid']: p.get('away') for p in rb['people']}, {a.pid: 1, b.pid: None})
+        a2 = await self.connect(tok_a)
+        await a2.send(t='booth_join', code=code, look=LOOK, g='female')
+        ra = await a2.expect('booth_room')
+        self.assertEqual((ra['me'], ra['host'], [p['pid'] for p in ra['people']]), (a.pid, a.pid, [a.pid, b.pid]))
+        self.assertFalse(any('away' in p for p in ra['people']))
+        r = await self.last(b)
+        self.assertFalse(any('away' in p for p in r['people']))   # b sees the host back
+        await a2.send(t='booth_set', frame='tet')               # still the host
+        self.assertEqual((await self.last(b))['frame'], 'tet')
+        await a2.close()                                       # someone else is in: out at once, b hosts
+        r = await b.expect('booth_room')
+        self.assertEqual((r['host'], [p['pid'] for p in r['people']]), (b.pid, [b.pid]))
+
+    async def test_away_too_long_and_frames_to_the_away(self):
+        a = await self.player('Lan Anh')
+        code = (await self.make(a))['code']
+        b = await self.player('Minh Tú')
+        await self.join(b, code)
+        await self.last(a)
+        await b.call('booth_out', 'booth_left')
+        await self.last(a)
+        await a.close()
+        await asyncio.sleep(0.2)
+        self.assertIn(bt.PREFIX + code, self.app.hub.rooms)
+        await self.feat().tick(time.time())                    # within the grace: still there
+        self.assertIn(bt.PREFIX + code, self.app.hub.rooms)
+        with mock.patch.object(bt, 'GRACE_SECS', 0):
+            await self.feat().tick(time.time())
+        self.assertNotIn(bt.PREFIX + code, self.app.hub.rooms)
+        self.assertEqual((await b.call('booth_join', 'error', code=code, look=LOOK))['code'], 'nocode')
+        self.assertNotIn('booth', self.app.hub.players[a.pid].ext)
+
+    async def test_away_never_blocks_the_shoot(self):
+        a = await self.player('Lan Anh')
+        code = (await self.make(a))['code']
+        b = await self.player('Minh Tú')
+        await self.join(b, code)
+        await self.last(a)
+        people = self.app.hub.rooms[bt.PREFIX + code].data['people']
+        people[b.pid].away = time.monotonic()                 # b's socket is gone, not yet out
+        await a.send(t='booth_ready')
+        await self.last(a)
+        await a.send(t='booth_go')
+        self.assertEqual((await a.expect('booth_shoot'))['n'], bt.SHOTS)
+
 
 @unittest.skipUnless(HAVE_WS, 'needs websockets')
 class Strangers(BoothCase):
@@ -219,6 +281,16 @@ class Strangers(BoothCase):
         await a.close()                                       # a closed socket leaves the queue
         await asyncio.sleep(0.2)
         self.assertFalse(self.feat().queue)
+
+    async def test_a_strangers_room_ends_with_its_last_socket(self):
+        a, b = await self.player('Lan Anh'), await self.player('Minh Tú')
+        await a.call('booth_find', 'booth_wait', look=LOOK)
+        await b.send(t='booth_find', look=LOOK)
+        rid = bt.PREFIX + (await b.expect('booth_room'))['room']
+        await b.call('booth_out', 'booth_left')
+        await a.close()                                       # no code to come back with: no grace
+        await asyncio.sleep(0.2)
+        self.assertNotIn(rid, self.app.hub.rooms)
 
     async def test_never_paired_with_someone_blocked(self):
         a, b, c = await self.player('Lan Anh'), await self.player('Minh Tú'), await self.player('Hà Vy')
