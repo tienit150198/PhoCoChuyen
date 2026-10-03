@@ -3617,6 +3617,7 @@
   "Qua màn": "Level cleared"
  },
  "patterns": {
+  "Sống ở phố đủ $1 ngày rồi nhận quà nhé.": "Live in the neighbourhood for $1 days, then take the gift.",
   "🧧 Gửi phong bì $1 xu": "🧧 Send a $1-coin envelope",
   "Ví còn $1 xu, chưa đủ phong bì $2 xu.": "Wallet: $1 coins, not enough for a $2-coin envelope.",
   "Ví còn $1 xu: phong bì lớn hơn tạm khóa.": "Wallet: $1 coins: bigger envelopes are locked for now.",

@@ -493,7 +493,8 @@ function paintEnvGo(){
   why.textContent=text;why.hidden=!text;
 }
 /** 🎁 Quà từ admin (game/wedding_live.py wed_gift): 500 xu once per save, asked for at a party. Only when this server
- * says the save has not had it (journey.wed_gift === false: an older server sends nothing, so nothing is asked);
+ * says the save may have it (journey.wed_gift === false; null: a save younger than 3 life days; an older server sends
+ * nothing, so nothing is asked);
  * once a session; any refusal stays quiet. */
 async function claimGift(){
   const api=S.env?.api;if(S.gift||!api||api.state?.journey?.wed_gift!==false||!live.me?.account)return;

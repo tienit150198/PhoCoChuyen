@@ -52,6 +52,7 @@ ENVELOPE_MAX_OLD = 500          # the old per-wedding cap: only printed by older
 GIFT_XU = 500                   # 🎁 owner 03/10 "với đám cưới thì ad tặng thêm mỗi người 500 xu": once per save, ever (wed_gift)
 GIFT_LABEL = '🎁 Quà từ admin: 500 xu đi đám cưới'
 GIFT_VERSION = 1                # journey['wed_gift'] {v, got: the life day}
+GIFT_DAY = 3                    # a save that has lived this many days at least (not a fresh second account)
 WISHES = ('Trăm năm hạnh phúc 💕', 'Bách niên giai lão 🎎', 'Sớm có tin vui nha 👶', 'Đầu bạc răng long 👴👵',
           'Thương nhau dài dài nha 💞', 'Hạnh phúc ngập tràn 🥰')
 ANNIVERSARIES = ((100, 200, 'w_100', '100'), (365, 500, 'w_1y', 'một năm'), (500, 800, 'w_500', '500'),
@@ -389,7 +390,8 @@ def envelope(store, sid: str, display: str, d: dict) -> dict:
 # ---------------------------------------------------------------- 🎁 the admin's gift for the weddings
 def wed_gift(store, sid: str, display: str, d: dict) -> dict:
     """POST /api/marriage/wed_gift {}: GIFT_XU into the wallet, once per save ever, while a party is open (the newer
-    client asks when the player walks into one and the save has not had it: journey.public wed_gift False). Kept in
+    client asks when the player walks into one and the save has not had it: journey.public wed_gift False; None while
+    the save is younger than GIFT_DAY life days, against fresh second accounts made for the gift). Kept in
     journey['wed_gift'] {v, got} (optional, beside the other blocks: older servers accept a journey with more blocks);
     the wallet row is kind 'life' (every build knows it). An older server answers not_found: the client stays quiet."""
     from . import marriage as mr
@@ -405,10 +407,16 @@ def wed_gift(store, sid: str, display: str, d: dict) -> dict:
         j = s['journey']
         mr.need(j.get('story'), 'Quà vào ví chỉ có trong hành trình.', 'not_story')
         mr.need('wed_gift' not in j, 'Bạn đã nhận quà đi đám cưới rồi nha.', 'wed_gift_done', 409)
+        mr.need(j['life_day'] >= GIFT_DAY, f'Sống ở phố đủ {GIFT_DAY} ngày rồi nhận quà nhé.', 'wed_gift_early', 409)
         j['wed_gift'] = dict(v=GIFT_VERSION, got=j['life_day'])
         jr._wallet(j, GIFT_XU, 'life', GIFT_LABEL)
     mr._mutate_retry(store, {sid: fn})
     return dict(message=f'{GIFT_LABEL} đã vào ví!', changed=True, quiet=True, gift=GIFT_XU)
+
+
+def gift_public(j: dict):
+    """journey.public wed_gift: True (had it), False (may ask for it at a party), None (not yet: a young save)."""
+    return True if 'wed_gift' in j else (False if j['life_day'] >= GIFT_DAY else None)
 
 
 def gift_validate(j: dict) -> None:

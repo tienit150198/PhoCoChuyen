@@ -313,7 +313,10 @@ class Envelopes(WedBase):
 
 
 class WedGift(WedBase):
-    """🎁 Quà từ admin: 500 xu once per save ever, while a party is open (owner 03/10)."""
+    """🎁 Quà từ admin: 500 xu once per save ever, while a party is open, from GIFT_DAY life days (owner 03/10)."""
+    def aged(self, tok, day=wl.GIFT_DAY):
+        mr._mutate(self.store, {self.sid(tok): lambda s: s['journey'].__setitem__('life_day', day)})
+
     def test_once_per_save_while_a_party_is_open(self):
         a, b, wid, at = self.couple()
         g = self.user('khach', wallet=100)
@@ -325,6 +328,15 @@ class WedGift(WedBase):
         with self.assertRaises(mr.MarriageError) as e:
             self.act(g, 'wed_gift', x=1)
         self.assertEqual(e.exception.code, 'bad_gift')
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(g, 'wed_gift')
+        self.assertEqual(e.exception.code, 'wed_gift_early', 'a fresh save (a second account made for the gift) waits')
+        self.assertEqual(self.wallet(g), 100)
+        self.aged(g, wl.GIFT_DAY - 1)
+        with self.assertRaises(mr.MarriageError) as e:
+            self.act(g, 'wed_gift')
+        self.assertEqual(e.exception.code, 'wed_gift_early')
+        self.aged(g)
         out = self.act(g, 'wed_gift')
         self.assertEqual((out['changed'], out['gift']), (True, wl.GIFT_XU))
         self.assertIn('Quà từ admin', out['message'])
@@ -345,11 +357,14 @@ class WedGift(WedBase):
             self.act(g, 'wed_gift')
         self.assertEqual(e.exception.code, 'wed_gift_done')
         self.assertEqual(self.wallet(g), 600)
+        self.aged(a, 40)
         self.assertTrue(self.act(a, 'wed_gift')['changed'], 'everyone gets it once, a bride too')
 
     def test_public_flag_and_validation(self):
         from game.journey import public
         a, b, wid, at = self.couple()
+        self.assertIs(public(migrate_state(self.state(a)))['wed_gift'], None, 'not yet: the client does not ask')
+        self.aged(a)
         self.assertIs(public(migrate_state(self.state(a)))['wed_gift'], False)
         self.clock.t = at
         self.act(a, 'wed_gift')
@@ -366,6 +381,7 @@ class WedGift(WedBase):
         wed_gift (not_found, which the client ignores)."""
         a, b, wid, at = self.couple()
         self.clock.t = at
+        self.aged(a)
         self.act(a, 'wed_gift')
         code = ('import json, sys\n'
                 'from game.engine import migrate_state, validate_state\n'

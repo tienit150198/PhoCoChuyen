@@ -904,7 +904,7 @@ def public(s: dict) -> dict:
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
         bank=bk.public(s), home=hs.public(s), reno=rn.public(s), deco=dc.public(s),
-        garage=gr.public(s), wed_gift='wed_gift' in j, **ct.public(s))   # wed_gift False: the client may claim it at a party
+        garage=gr.public(s), wed_gift=wl.gift_public(j), **ct.public(s))   # wed_gift False: the client may claim it at a party
 
 
 def _skill_ids() -> list[str]:
