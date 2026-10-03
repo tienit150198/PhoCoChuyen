@@ -336,3 +336,5 @@ body.reduce-motion .career-job.sl .sl-calm .bar i,html.reduce-motion .career-job
 .career-job.sl .sl-ticket.compact{min-width:0;max-width:100%}
 .career-job.sl .sl-ticket.compact>*{min-width:0;max-width:100%}
 .career-job.sl .sl-ticket.compact{grid-template-columns:minmax(0,1fr)}
+/* Tap targets ≥ 44 px: the folds (regulars' card, bookings). */
+.career-job.sl .fold>summary{min-height:44px;padding-top:11px;padding-bottom:11px}
