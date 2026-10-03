@@ -227,6 +227,24 @@ function caseDoc(t,x,c){
 
 const VIEW={sort:sortDoc,mark:markDoc,slots:slotsDoc,fields:fieldsDoc,seq:seqDoc,case:caseDoc};
 
+/** The bar's "what is missing" line. The server's (t.ready) only knows what it was sent: a step list or a form goes
+ * in one piece at the end, so for those the line follows the player's own list here, and the form while typing
+ * (liveReady, from tick). */
+function readyLine(t,x){
+  const k=W(t).type;
+  if(k==='mark')return '';
+  if(k==='seq')return orderOf(x,t).length?'':t.ready||'';
+  return t.ready||'';
+}
+function liveReady(root){
+  const form=root.querySelector('.ow-form'),line=root.querySelector(':scope>.ok-bar .ok-next');
+  if(!form||!line)return;
+  const empty=[...form.querySelectorAll('.ow-field')].find(l=>{const i=l.querySelector('input.input,select');return i&&!String(i.value).trim();});
+  const name=empty?.querySelector('span')?.firstChild?.textContent?.trim();
+  const text=empty?`Còn trống ô “${name||''}”.`:'Đã điền đủ các ô — đọc lại rồi nộp.';
+  if(line.textContent!==text)line.textContent=text;
+}
+
 /* ---------------------------------------------------------------- next step, bottom button */
 function guideFor(t,x,c){
   const ev=x.room.data?.desk?.ev;
@@ -301,7 +319,7 @@ export function officeWork(c){
         doc:`${ev}<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>Hồ sơ còn trong phong bì.</span></p>`},bar:bar(x,t,'',g.cta,true)});
       const view=VIEW[W(t).type];
       const doc=`${ev}${twistBanner(t,x)}${t.filed?resultView(t,x):view?view(t,x,c):''}${hintBox(t,x,c)}${papersView(t,x)}`;
-      const nx=t.filed?'Đã nộp hồ sơ.':t.ready&&W(t).type!=='mark'?t.ready:'';
+      const nx=t.filed?'Đã nộp hồ sơ.':readyLine(t,x);
       return desk(x,t,{cls:`ow ${c.cls}`,tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules:rules(x),doc},bar:bar(x,t,x.esc(nx),g.cta)});
     },
     idle(x){
@@ -328,7 +346,7 @@ export function officeWork(c){
       return summaryCard(x,data,{cls:'ow-sum',title:x.esc(c.sum),brief:data.filed?`${data.filed} hồ sơ đã nộp`:'',
         body:`${insp}${trust}${dk}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}${life?`<h4 class="section-title">🧭 Đời sống văn phòng</h4><div class="kv">${life}</div>`:''}`});
     },
-    tick(root){keepBarAboveFooter(root);},
+    tick(root){keepBarAboveFooter(root);liveReady(root);},
     actions:{
       tab:switchTab,
       fold:foldToggle,
