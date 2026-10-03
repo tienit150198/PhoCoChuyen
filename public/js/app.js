@@ -203,6 +203,7 @@ function morph(el,html){morphTpl.innerHTML=html;morphKids(el,morphTpl.content);m
 function morphKids(from,to){
   let a=from.firstChild,b=to.firstChild;
   while(b){
+    if(a?.nodeType===1&&a.hasAttribute('data-morph-keep')){a=a.nextSibling;continue;}   // a line another module put in the page (tutorial/tips.js inline hint)
     const nb=b.nextSibling;
     if(a&&a.nodeType===b.nodeType&&a.nodeName===b.nodeName&&(a.nodeType!==1||a.id===b.id)){morphNode(a,b);a=a.nextSibling;}
     else if(a){const na=a.nextSibling;from.replaceChild(b,a);a=na;}

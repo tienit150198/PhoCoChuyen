@@ -46,6 +46,14 @@
 .tut-layer.tips.slim .tut-row{align-items:center;gap:8px}
 .tut-layer.tips.slim .tut-emoji{width:28px;height:28px;border-radius:9px;font-size:1rem}
 .tut-layer.tips.slim .tut-text{font-size:.9rem;line-height:1.3;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+/* A hint in the page's own flow (tips.js 'inline', e.g. under "Nơi làm việc" on the journey home): one line right under
+   the heading it explains, so it covers nothing; no ring, no arrow. */
+.tut-layer.tips.inline{position:static;inset:auto;z-index:auto;grid-column:1/-1;margin:4px 0 10px;pointer-events:auto}
+.tut-layer.tips.inline .tut-spot,.tut-layer.tips.inline .tut-arrow{display:none}
+.tut-layer.tips.inline .tut-bubble{position:static;width:auto;max-width:none;padding:6px 6px 6px 10px;box-shadow:none;border-color:var(--accent);background:var(--accent-soft)}
+.tut-layer.tips.inline .tut-row{align-items:center;gap:8px}
+.tut-layer.tips.inline .tut-emoji{width:28px;height:28px;border-radius:9px;font-size:1rem;background:var(--surface)}
+.tut-layer.tips.inline .tut-text{font-size:.9rem;line-height:1.3}
 
 /* --------------------------------------------------------------- guide */
 .tut-guide .sheet-head{position:sticky;top:0;z-index:2}

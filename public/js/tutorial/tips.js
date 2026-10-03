@@ -51,7 +51,8 @@ const TIPS=[
 ];
 
 /* ------------------------------------------------------------------ bubble */
-/** A small bubble with an arrow, above or under the control; `onClose` for "×". */
+/** A small bubble with an arrow, above or under the control; `onClose` for "×". `cls` 'inline': a line in the page's own
+ * flow right under the control (no ring, no arrow), so it covers nothing; it moves with the page. */
 export function showBubble({id,emoji,text,el,onClose,cls=''}){
   hideBubble();
   const host=topDialog()||document.body;
@@ -60,7 +61,9 @@ export function showBubble({id,emoji,text,el,onClose,cls=''}){
     `<div class="tut-row"><span class="tut-emoji" aria-hidden="true">${esc(emoji)}</span><p class="tut-text">${esc(text)}</p>`+
     `<button type="button" class="tip-x" aria-label="Tắt gợi ý">×</button></div></div>`;
   bubble.querySelector('.tip-x').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();const f=onClose;hideBubble();f?.();});
-  host.append(bubble);bubble._el=el;placeBubble();
+  // Inline: kept in place when the page redraws itself (app.js morph skips data-morph-keep).
+  if(/\binline\b/.test(cls)){bubble.dataset.morphKeep='1';el.after(bubble);}else host.append(bubble);
+  bubble._el=el;placeBubble();
   return bubble;
 }
 export function hideBubble(){bubble?.remove();bubble=null;}
@@ -73,6 +76,7 @@ const overlap=(a,b)=>Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left
  * of the customer card and the buttons, and never the control itself. */
 export function placeBubble(){
   if(!bubble)return;
+  if(bubble.classList.contains('inline')){bubble.hidden=false;return;}   // in the flow: nothing to place
   const el=bubble._el,r=vis(el)?el.getBoundingClientRect():null;
   const b=bubble.querySelector('.tut-bubble'),arrow=bubble.querySelector('.tut-arrow'),spot=bubble.querySelector('.tut-spot');
   bubble.hidden=!r;if(!r)return;
@@ -156,9 +160,12 @@ function watch(){
  * announcements), "×" puts it away. Saves named with the onboarding only (v4/onboard.js markedNew), after
  * the first 3 customers, never while a tip is up. */
 const HINTS=[
-  {id:'h-job',emoji:'🔁',text:'Đổi nghề: khép ca ở nơi đang làm, rồi chọn nơi khác ở đây.',ttl:9000,
+  // On the journey home a floating bubble covered the character card: this one is a line under the heading (inline),
+  // and stays while the page is open (taking it away would move the workplaces under the player's finger).
+  {id:'h-job',emoji:'🔁',text:'Đổi nghề: khép ca ở nơi đang làm, rồi chọn nơi khác ở đây.',ttl:Infinity,cls:'inline',
     when:()=>view()==='home'&&!!S()?.journey?.intro&&Object.values(S()?.careers||{}).some(c=>c?.started),
-    find:()=>first('#sheet[open] .jr-places .jr-sec-head')},
+    find:()=>first('#sheet[open] .jr-places .jr-sec-head'),
+    done:()=>view()!=='home'},
   {id:'h-money',emoji:'👛',text:'Tiền của bạn: bấm 🏪 Quỹ hoặc 👛 Ví để xem hết.',ttl:8000,
     when:()=>calmStage()&&(room()?.metrics?.served|0)>0,
     find:()=>first('#topbar .hud-fund')||first('#topbar .hud-wallet'),
@@ -180,9 +187,12 @@ export function hintsBoot(env,{markedNew,quiet,notesSeen,markSeen}){
     if(run){if(H.now)H.now=null;return;}                  // the tips go first
     if(H.now){
       const h=HINTS.find(x=>x.id===H.now);
+      // An inline line the page dropped while redrawing itself goes back under its heading.
+      if(h.cls==='inline'&&bubble?.dataset.tip===h.id&&!bubble.isConnected&&!h.done?.()){const el=bubble._el?.isConnected?bubble._el:h.find();if(el){el.after(bubble);bubble._el=el;}}
       const gone=!bubbleUp()||bubble.dataset.tip!==h.id;
       if(gone||h.done?.()||performance.now()-H.since>h.ttl){if(!gone)hideBubble();H.now=null;return;}
       const top=topDialog(),el=bubble._el;
+      if(h.cls==='inline')return;   // it scrolls with the page: hiding it off screen would only move the page
       if(!vis(el)||top&&!top.contains(el))bubble.hidden=true;else placeBubble();
       return;
     }
@@ -191,7 +201,7 @@ export function hintsBoot(env,{markedNew,quiet,notesSeen,markSeen}){
     for(const h of HINTS){
       if(seen.has(h.id)||!h.when())continue;
       const el=h.find(),top=topDialog();if(!el||top&&!top.contains(el))continue;
-      showBubble({id:h.id,emoji:h.emoji,text:h.text,el,cls:'hint'});
+      showBubble({id:h.id,emoji:h.emoji,text:h.text,el,cls:`hint ${h.cls||''}`.trim()});
       H.now=h.id;H.since=performance.now();markSeen(env,h.id);   // shown = seen: it never comes back
       return;
     }
