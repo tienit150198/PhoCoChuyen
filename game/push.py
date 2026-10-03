@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS push_daily (sid TEXT PRIMARY KEY, day TEXT NOT NULL);
 """
 TITLES = dict(visit='Có khách ghé quán 👀', review='Đánh giá mới từ Phố nghề ⭐', reply='Có người trả lời bạn 💬', gift='Bạn nhận được quà 🎁',
               sale='Hàng đã bán ở chợ 🧺', comment='Bình luận mới 💬', daily='Quán đang chờ bạn mở cửa ☀️', community='Mục tiêu cả phố 🎉', chat='Tin nhắn mới 💬',
-              wedding='Sắp tới giờ cưới 💍')
+              wedding='Sắp tới giờ cưới 💍', quay='Làm thêm ở quầy 💼')
 DEFAULT_PREFS = dict(social=True, daily=False, hour=19, tz=420)
 
 

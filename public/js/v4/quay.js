@@ -2,10 +2,12 @@
  * Every rule and number lives in game/quay.py; this file renders api.state.journey.quay with the static numbers
  * (content.journey.quay) and sends `jr_quay_*` commands. Its own dialog (like Xe & phương tiện), opened with
  * data-action="quay" from the "Ngân hàng & nhà" hub. Owner style: one short line and one obvious button per card,
- * explanations behind "?". Styles: /css/bank.css + /css/quay.css. */
+ * explanations behind "?". Styles: /css/bank.css + /css/quay.css.
+ * 💼 Làm thêm (game/quay_hire.py): another player's counter hires you for a shift, or you hire a player for yours;
+ * GET /api/quay and POST /api/quay/<op> (the wage is escrowed by the server, paid once when the shift's day closes). */
 import {icon,escapeHTML as esc} from '../icons.js';
 
-const S={dlg:null,env:null,view:'list',pick:null,busy:false,flash:null,listening:false,open:{},help:{},wage:{}};
+const S={dlg:null,env:null,view:'list',tab:'mine',pick:null,busy:false,flash:null,listening:false,open:{},help:{},wage:{},hire:null,loading:false,to:{}};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -53,9 +55,10 @@ export async function openQuay(env){
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet();
   await ensureCss();
   const d=dialog();
-  S.view='list';S.pick=null;
+  S.view='list';S.pick=null;S.hire=null;
   if(!d.open){d.showModal();d.scrollTop=0;}
   render();
+  if(S.tab==='jobs')loadHire();
 }
 export async function quayAction(action,data,el,env){
   if(action!=='quay')return false;
@@ -72,6 +75,20 @@ async function send(action,payload={}){
   finally{S.busy=false;render();}
 }
 const ask=(title,msg,label,money)=>S.env.confirmAction(title,msg,label,money);
+/* 💼 hired players: the server's view (offers, my offers, friends) and its ops */
+const took=d=>{if(d?.state&&typeof d.revision==='number')S.env.api.accept({state:d.state,revision:d.revision});};
+async function loadHire(){
+  if(S.loading)return;S.loading=true;
+  try{const d=await S.env.api.json('/api/quay');took(d);S.hire=d;}
+  catch(e){S.hire={error:e.status===404?'Quầy đang dọn hàng. Mở lại sau ít phút nhé.':(e.message||'Chưa tải được. Thử lại nhé.')};}
+  finally{S.loading=false;render();}
+}
+async function hireSend(op,body={}){
+  S.busy=true;render();
+  try{const d=await S.env.api.post(`/api/quay/${op}`,body);took(d);if(d.message)S.flash={text:d.message,kind:'good'};S.busy=false;await loadHire();return d;}
+  catch(e){S.flash={text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
+  finally{S.busy=false;render();}
+}
 const stallOf=id=>(V()?.stalls||[]).find(x=>x.id===id);
 const num=(sel,fallback=0)=>{const v=Number(S.dlg?.querySelector(sel)?.value);return Number.isFinite(v)?Math.round(v):fallback;};
 
@@ -95,7 +112,18 @@ async function onClick(op,data){
     case'fund':{const amount=num(`#qy-fund-${data.id}`);if(!amount){S.flash={text:'Nhập số xu nhé.',kind:'bad'};render();return;}
       send('jr_quay_fund',{stall:data.id,amount:data.sign==='-'?-Math.abs(amount):Math.abs(amount)});return;}
     case'order':send('jr_quay_order',{stall:data.id,level:data.level});return;
-    case'step':{const k=data.key;const base=S.wage[k]??Number(data.wage);S.wage[k]=Math.max(1,base+Number(data.by));render();return;}
+    case'step':{const k=data.key;const base=S.wage[k]??Number(data.wage);S.wage[k]=Math.min(Number(data.max||1e6),Math.max(Number(data.min||1),base+Number(data.by)));render();return;}
+    case'tab':S.tab=data.tab;S.flash=null;render();if(S.tab==='jobs')loadHire();return;
+    case'reload':S.hire=null;loadHire();return;
+    case'to':S.to[data.id]=data.code||'';render();return;
+    case'post':{const st=stallOf(data.id);if(!st)return;const w=S.wage[`p:${st.id}`]??Number(data.wage);
+      if(await ask('Đăng ca làm thêm?',`Giữ ${xu(w)} từ két và vốn quầy. Không ai làm thì về lại.`,`Đăng ca · ${xu(w)}`))
+        hireSend('post',{stall:st.id,wage:w,...(S.to[st.id]?{to:S.to[st.id]}:{})});return;}
+    case'cancel':hireSend('cancel',{id:data.id});return;
+    case'accept':hireSend('accept',{id:data.id});return;
+    case'decline':hireSend('decline',{id:data.id});return;
+    case'quit':if(await ask('Bỏ ca này?','Không mất gì cả. Lương về lại cho chủ quầy.','Bỏ ca'))hireSend('quit');return;
+    case'go':S.dlg.close();await S.env.act('choose',{career:data.career});return;
     case'hire':{const k=`c:${data.id}:${data.cand}`;send('jr_quay_hire',{stall:data.id,cand:data.cand,wage:S.wage[k]??Number(data.wage)}).then(r=>{if(r)delete S.wage[k];});return;}
     case'wage':{const k=`s:${data.id}:${data.staff}`;send('jr_quay_wage',{stall:data.id,staff:data.staff,wage:S.wage[k]??Number(data.wage)}).then(r=>{if(r)delete S.wage[k];});return;}
     case'fire':if(await ask(`Cho ${data.name} nghỉ?`,'','Cho nghỉ'))send('jr_quay_fire',{stall:data.id,staff:data.staff,confirm:true});return;
@@ -131,9 +159,55 @@ function page(){
   const note=(t,p,extra='')=>head()+`<div class="sheet-body bk qy-body"><section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏪</div><h3>${t}</h3><p>${p}</p>${extra}</section></div>`;
   if(!cat)return note('Quầy đang dọn hàng','Mở lại sau ít phút nhé.');   // an older server: no counters yet
   if(!J().story)return note('Chỉ có trong hành trình','Vào hành trình để mở quầy riêng.');
-  if(!v)return note('Chưa mở được quầy',`Mở từ chương ${cat.chapter}.`,helpBtn('lock')+helpText('lock',`Làm ${cat.served} việc ở một nghề bán hàng (trà sữa, tạp hóa, hoa…) rồi quay lại.`));
+  const tabs=S.view==='open'?'':mainTabs();
+  if(S.tab==='jobs'&&S.view!=='open')return head()+`<div class="sheet-body bk qy-body">${tabs}${flash()}${jobsView()}</div>`;
+  if(!v)return head()+`<div class="sheet-body bk qy-body">${tabs}<section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏪</div><h3>Chưa mở được quầy</h3><p>Mở từ chương ${cat.chapter}.</p>${helpBtn('lock')}${helpText('lock',`Làm ${cat.served} việc ở một nghề bán hàng (trà sữa, tạp hóa, hoa…) rồi quay lại.`)}</section></div>`;
   const inner=S.view==='open'?openView(v):listView(v);
-  return head()+`<div class="sheet-body bk qy-body">${flash()}${inner}</div>`;
+  return head()+`<div class="sheet-body bk qy-body">${tabs}${flash()}${inner}</div>`;
+}
+
+function mainTabs(){
+  const dot=V()?.shift?' <i class="qy-dot" aria-label="Có ca"></i>':'';
+  return `<div class="segmented qy-main" role="tablist">${[['mine','🏪 Quầy của tôi'],['jobs',`💼 Làm thêm${dot}`]].map(([k,l])=>
+    `<button type="button" role="tab" aria-selected="${S.tab===k}" class="${S.tab===k?'active':''}" data-qy="tab" data-tab="${k}">${l}</button>`).join('')}</div>`;
+}
+
+/* 💼 Làm thêm: my shift, then the counters that need someone. */
+function jobsView(){
+  const h=S.hire,sh=V()?.shift;
+  if(!h)return '<section class="bk-card bk-center"><p class="bk-hint">Đang tải…</p></section>';
+  if(h.error)return `<section class="bk-card bk-center"><p>${esc(h.error)}</p><div class="bk-actions center">${btn('Thử lại','reload',{},'ghost')}</div></section>`;
+  const R=h.rules||{};
+  const mine=sh?`<section class="bk-card qy-shift"><div class="qy-top"><span class="qy-tile" aria-hidden="true">💼<i>${trade(sh.career).emoji}</i></span>
+      <div class="grow"><h3>${esc(sh.name)}</h3><p class="qy-line">${esc(sh.who)} · ${xu(sh.wage)}</p></div></div>
+    <p class="qy-line">Làm ${esc(trade(sh.career).name)}: xong ${R.tasks||2} việc rồi khép ca.</p>
+    <div class="bk-actions">${btn('Vào làm','go',{career:sh.career},'primary')}${btn('Bỏ ca','quit',{},'ghost')}</div></section>`:'';
+  const rows=(h.board||[]).map(b=>`<li class="qy-person"><div class="grow"><b>${b.emoji} ${esc(b.name)}</b>${b.invite?' <span class="qy-tag">Mời bạn</span>':''}<small>${esc(b.owner)} · ${xu(b.wage)}</small></div>
+      <div class="qy-person-act">${btn('Nhận ca','accept',{id:b.id},'small primary',sh?'Bạn đang có một ca':'')}${b.invite?btn('Từ chối','decline',{id:b.id},'small ghost'):''}</div></li>`).join('');
+  const board=`<section class="bk-card"><h3>Quầy cần người ${helpBtn('jobs')}</h3>
+    ${helpText('jobs',`Nhận một ca, làm một ngày đúng nghề đó. Xong ${R.tasks||2} việc rồi khép ca là lương vào ví. Bỏ ca lúc nào cũng được, không mất gì.`)}
+    ${h.lock?`<p class="bk-hint">${esc(h.lock)}</p>`:rows?`<ul class="qy-list">${rows}</ul>`:'<p class="bk-hint">Chưa có quầy nào cần người. Ghé lại sau nhé.</p>'}</section>`;
+  return mine+board;
+}
+const JOB_LINE={open:x=>x.to?`Chờ ${x.to} trả lời`:'Đang chờ người nhận',taken:x=>`${x.worker} đang làm ca`,paid:x=>`${x.worker} xong ca: +${xu(x.earned)} vào két`,
+  lapsed:()=>'Ca chưa đủ việc: lương về lại',quit:x=>`${x.worker||'Người làm'} bận: lương về lại`,declined:x=>`${x.to||'Bạn ấy'} bận: lương về lại`,
+  expired:()=>'Hết hạn: lương về lại',cancelled:()=>'Đã hủy',gone:()=>'Đã hủy'};
+function hirePart(st){
+  const h=S.hire;
+  if(!h){loadHire();return '<p class="bk-hint">Đang tải…</p>';}
+  if(h.error)return `<p class="bk-hint">${esc(h.error)}</p>`;
+  const R=h.rules||{},max=Math.max(R.wage_min||10,Math.min(R.wage_max||120,st.value||0)),min=R.wage_min||10;
+  const offers=(h.mine||[]).filter(x=>x.stall===st.id).map(x=>`<li class="qy-person"><div class="grow"><b>💼 ${xu(x.wage)}</b><small>${esc((JOB_LINE[x.status]||(()=>''))(x))}</small></div>
+      ${x.status==='open'?`<div class="qy-person-act">${btn('Hủy','cancel',{id:x.id},'small ghost')}</div>`:''}</li>`).join('');
+  const k=`p:${st.id}`,w=Math.min(max,S.wage[k]??Math.min(30,max));
+  const to=S.to[st.id]||'';
+  const chips=[['','Ai cũng được'],...(h.friends||[]).slice(0,8).map(f=>[f.code,f.name])].map(([code,name])=>
+    `<button type="button" class="qy-chip${to===code?' on':''}" data-qy="to" data-id="${st.id}" data-code="${esc(code)}">${esc(name)}</button>`).join('');
+  const form=h.lock?`<p class="bk-hint">${esc(h.lock)}</p>`:`<div class="qy-chips">${chips}</div>
+    <div class="qy-person"><div class="grow"><small>Lương một ca</small></div><div class="qy-person-act">${stepper(k,w,st.id,'',min,max)}${btn('Đăng ca','post',{id:st.id,wage:w},'small primary',st.closed?'Quầy đang đóng':'')}</div></div>`;
+  return `<h4>🙋 Thuê người chơi ${helpBtn('hire')}</h4>
+    ${helpText('hire',`Một người chơi làm một ngày nghề này cho quầy. Xong ${R.tasks||2} việc thì họ nhận lương, két nhận tiền bán. Lương giữ trước từ két, không ai làm thì về lại.`)}
+    ${offers?`<ul class="qy-list">${offers}</ul>`:''}${form}`;
 }
 
 /* The counters, or the first one to open. */
@@ -171,8 +245,8 @@ function stallCard(st){
   </section>`;
 }
 
-function stepper(key,value,id,extra){
-  return `<span class="qy-step">${btn('−','step',{id,key,by:-1,wage:value},'small ghost')}<b>${fmt(value)}</b>${btn('＋','step',{id,key,by:1,wage:value},'small ghost')}</span>${extra||''}`;
+function stepper(key,value,id,extra,min=1,max=1e6){
+  return `<span class="qy-step">${btn('−','step',{id,key,by:-1,wage:value,min,max},'small ghost')}<b>${fmt(value)}</b>${btn('＋','step',{id,key,by:1,wage:value,min,max},'small ghost')}</span>${extra||''}`;
 }
 function staffPart(st,P){
   const rows=st.staff.map(x=>{const k=`s:${st.id}:${x.id}`,w=S.wage[k]??x.wage;
@@ -183,7 +257,7 @@ function staffPart(st,P){
       <div class="qy-person-act">${stepper(k,w,st.id)}${btn('Thuê','hire',{id:st.id,cand:c.id,wage:w},'small primary')}</div></li>`;}).join('');
   return `<div class="qy-part">${rows?`<ul class="qy-list">${rows}</ul>`:''}
     ${cands?`<h4>Đang tìm việc ${helpBtn('cand')}</h4>${helpText('cand','Tự đặt lương. Trả cao thì vui, bán đắt hàng hơn. Dưới 60% mức xin là họ không nhận.')}<ul class="qy-list">${cands}</ul>`:''}
-    ${!rows&&!cands?'<p class="bk-hint">Chưa có ai.</p>':''}</div>`;
+    ${!rows&&!cands?'<p class="bk-hint">Chưa có ai.</p>':''}${hirePart(st)}</div>`;
 }
 function stockPart(st){
   const cat=CAT();

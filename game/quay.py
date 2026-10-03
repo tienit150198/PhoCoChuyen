@@ -105,7 +105,7 @@ STAFF_KEYS = frozenset({'id', 'name', 'wage', 'ask', 'mo', 'd', 'g'})
 CASE_KEYS = frozenset({'day', 'lost', 'all', 'rep', 'due'})
 HIST_KEYS = frozenset({'d', 'n', 'rev', 'net', 'w', 'p'})
 LOG_KEYS = frozenset({'d', 't', 'a'})
-SHIFT_KEYS = frozenset({'id', 'career', 'day', 'wage', 'value', 'owner', 'stall', 'until'})
+SHIFT_KEYS = frozenset({'id', 'career', 'day', 'base', 'wage', 'value', 'who', 'name', 'until'})
 OUT_KEYS = frozenset({'id', 'tasks', 'stars', 'late'})
 ID_RE = re.compile(r'q[0-9]{1,6}')
 JOB_RE = re.compile(r'qj-[0-9a-f]{8,24}')
@@ -614,6 +614,37 @@ def credit(s: dict, sid: str, what: str, amount: int, label: str) -> str:
     return f'{label}: +{_fmt(amount)} xu về vốn quầy.'
 
 
+def on_shift(s: dict, career: str | None, action: str, result: dict) -> None:
+    """journey.after, every action: the hired shift this save holds (game/quay_hire.py) ends with the day of its career
+    that it was taken for. Closing that day moves it to `out` (the tasks done since accepting it) for the server to
+    settle; a day closed elsewhere (an older build) moves it as late (pays nobody, the escrow goes back)."""
+    q = get(s)
+    if not q or not q.get('shift'):
+        return
+    sh = q['shift']
+    c = s['careers'].get(sh['career'])
+    summary = result.get('summary') if isinstance(result.get('summary'), dict) else {}
+    if action == 'end_day' and career == sh['career'] and summary.get('day') == sh['day']:
+        done = max(0, int(summary.get('completed') or 0) - sh['base'])
+        avg = (summary.get('reviews') or {}).get('average')
+        stars = max(0, min(50, int(round(float(avg) * 10)))) if isinstance(avg, (int, float)) else 0
+        late = False
+    elif not isinstance(c, dict) or int(c.get('day', 0)) > sh['day']:
+        done, stars, late = 0, 0, True
+    else:
+        return
+    if len(q['out']) >= OUT_MAX:
+        return
+    q['out'].append(dict(id=sh['id'], tasks=done, stars=stars, late=late))
+    q['shift'] = None
+    result['quay'] = 'shift'
+    if not late:
+        from .quay_hire import MIN_TASKS
+        line = (f'💼 Xong ca làm thêm ở {sh["name"]}: {done} việc. Lương {sh["wage"]} xu về ví ngay.' if done >= MIN_TASKS
+                else f'💼 Ca ở {sh["name"]} chưa đủ {MIN_TASKS} việc nên chưa tính lương.')
+        result.setdefault('effects', []).append(line)
+
+
 # ---------------------------------------------------------------- views
 def catalogue() -> dict:
     """Static numbers for the client (bootstrap content)."""
@@ -645,7 +676,7 @@ def public(s: dict) -> dict:
     q = get(s) or {}
     out = dict(stalls=[_stall_view(s, st) for st in q.get('stalls', ())], lock=why_locked(s), can=known_trades(s))
     if q.get('shift'):
-        out['shift'] = {k: q['shift'][k] for k in ('id', 'career', 'wage', 'owner', 'stall', 'until')}
+        out['shift'] = {k: q['shift'][k] for k in ('id', 'career', 'wage', 'who', 'name', 'until')}
     if q.get('out'):
         out['out'] = len(q['out'])
     return out
@@ -702,8 +733,8 @@ def validate(s: dict) -> None:
                  and _int(x['a'], -MONEY_MAX, MONEY_MAX))
     sh = q['shift']
     need(sh is None or (isinstance(sh, dict) and SHIFT_KEYS <= set(sh) and isinstance(sh['id'], str) and JOB_RE.fullmatch(sh['id']) is not None
-                        and sh['career'] in TRADES and _int(sh['day'], 1, 10**6) and _int(sh['wage'], 1, 10**4)
-                        and _int(sh['value'], 1, 10**4) and _text(sh['owner'], 40) and _text(sh['stall'], 40) and _int(sh['until'], 0, 10**11)))
+                        and sh['career'] in TRADES and _int(sh['day'], 0, 10**6) and _int(sh['base'], 0, 10**4) and _int(sh['wage'], 1, 10**4)
+                        and _int(sh['value'], 1, 10**4) and _text(sh['who'], 40) and _text(sh['name'], 40) and _int(sh['until'], 0, 10**11)))
     need(isinstance(q['out'], list) and len(q['out']) <= OUT_MAX)
     for o in q['out']:
         need(isinstance(o, dict) and OUT_KEYS <= set(o) and isinstance(o['id'], str) and JOB_RE.fullmatch(o['id']) is not None

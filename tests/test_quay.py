@@ -472,7 +472,7 @@ class PreviousServer(unittest.TestCase):
         s, _ = act(s, 'jr_quay_fund', stall=ST(s)['id'], amount=-20)
         s, _ = act(s, 'jr_quay_buy', stall=ST(s)['id'], item='bang', confirm=True)
         ST(s)['case'] = dict(day=s['journey']['life_day'] - 1, lost=40, all=False, rep=False, due=0)
-        Q(s)['shift'] = dict(id='qj-0123456789ab', career='milk_tea', day=3, wage=40, value=70, owner='Lan', stall='Trà Lan', until=2000000000)
+        Q(s)['shift'] = dict(id='qj-0123456789ab', career='milk_tea', day=3, base=0, wage=40, value=70, who='Lan', name='Trà Lan', until=2000000000)
         Q(s)['out'] = [dict(id='qj-0123456789ac', tasks=3, stars=45, late=False)]
         s['journey']['live_fx'] = ['0123456789abcdef']
         validate_state(s)

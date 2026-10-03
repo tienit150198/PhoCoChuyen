@@ -36,7 +36,7 @@ import time
 ACTION = 'live_fx'                  # internal command (game/engine.py), never accepted from a client
 RID = 'live-'                       # request id prefix: live-<hash>
 KIND = 'life'                       # journey wallet history kind (journey.HISTORY_KINDS): old saves stay valid
-PAYS = ('coins', 'spirit', 'title')  # kinds this build applies to the save
+PAYS = ('coins', 'spirit', 'title', 'quay')  # kinds this build applies to the save ('quay': game/quay_hire.py, a counter's money)
 BESIDE = ('closeness',)             # kinds this build applies beside the save (player_closeness, game/wedding_live.py)
 LABELS = dict(envelope='🧧 Lì xì dạo phố', date='💕 Buổi hẹn trên phố', guest='💍 Đi ăn cưới', host='💍 Khách tới dự đám cưới',
               anniv='💞 Kỷ niệm ngày cưới', anniv_npc='🧧 Hàng xóm mừng kỷ niệm cưới', race='🥇 Khách mời của tuần', env='🧧 Phong bì mừng cưới',
@@ -84,6 +84,12 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     if kind == 'coins':
         jr._wallet(j, amount, KIND, LABELS.get(p.get('src'), LABEL))
         message = f'+{amount} xu vào ví.'
+    elif kind == 'quay':   # 💼 a hired player's shift into the till, an escrowed wage back (game/quay_hire.py)
+        from . import quay as qy
+        stall, what, label = p.get('stall'), p.get('what'), p.get('label')
+        e.need(isinstance(stall, str) and qy.ID_RE.fullmatch(stall) and what in ('shift', 'back') and isinstance(label, str) and 0 < len(label) <= 120,
+               'Dữ liệu quầy không hợp lệ.')
+        message = qy.credit(s, stall, what, amount, label)
     elif kind == 'title':   # 💍 a wedding title (game/wedding_live.py TITLE_NAMES) or 🏆 a fair one (game/fair_board.py): unlocked once, kept like any title
         from .wedding_live import TITLE_NAMES
         from .fair import AWARD_NAMES
@@ -137,6 +143,8 @@ def on_load(store, token: str, state: dict | None) -> bool:
         payload = dict(id=r['id'], kind=r['kind'], amount=int(r['amount']), src=src)
         if r['kind'] == 'title':
             payload['title'] = data.get('title')
+        elif r['kind'] == 'quay':
+            payload.update(stall=data.get('stall'), what=data.get('what'), label=data.get('label'))
         try:
             store.command(token, RID + short(r['id']), None, None, ACTION, payload, internal=True)
         except GameError:   # refused (a bad row): stays pending, the operator looks

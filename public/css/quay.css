@@ -58,6 +58,13 @@
 .qy-place small{color:var(--muted)}
 .qy-place.on{border-color:var(--accent,var(--good));box-shadow:0 0 0 2px var(--accent-soft,var(--good-soft))}
 
+/* 💼 Làm thêm: the two tabs on top, a shift card, a small tag */
+.qy-main{display:flex;margin:0 0 12px}
+.qy-main>button{flex:1 1 0;min-height:44px}
+.qy-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--bad);vertical-align:middle}
+.qy-shift{display:grid;gap:10px;border-color:var(--good)}
+.qy-tag{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--accent-soft,var(--good-soft));color:var(--accent-text,var(--good));font-size:.8rem;font-weight:700}
+
 @media (max-width:420px){
   .qy-fund{grid-template-columns:1fr 1fr}
   .qy-fund .bk-field{grid-column:1/-1}

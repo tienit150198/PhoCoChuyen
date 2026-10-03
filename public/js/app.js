@@ -163,7 +163,7 @@ function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls
 function download(data,name,type='application/json'){const blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);}
 async function cmd(action,payload={},options={}){
   if(action==='start_day'&&!payload?.acct_check&&acctDue(options.career||career())){acctCheck(options.career||career());return null;}
-  try{const r=await api.command(action,payload,options.career||career());if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);return r;}
+  try{const r=await api.command(action,payload,options.career||career());if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);if(r.quay)quayFlush();return r;}
   catch(error){if(error.quiet)return null;
     if(error.data?.code==='acct_check'&&!payload?.acct_check){acctCheck(options.career||career());return null;}   // 💼 kế toán: the entry check first (v4/accounting-school.js)
     toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}  // quiet: a tap the save moved under twice (api.js), the screen already shows why
@@ -269,7 +269,9 @@ function navItems(c){
   return result;
 }
 /** 🏪 A dot when a counter needs its owner: a thief, rent to pay, closed waiting, or a till to collect soon. */
-function quayBadge(){const q=api.state?.journey?.quay;return (q?.stalls||[]).some(st=>(st.case&&!st.case.rep)||st.due||st.closed||(st.left<=1&&st.till>0))?'dot':0;}
+function quayBadge(){const q=api.state?.journey?.quay;return q?.shift||(q?.stalls||[]).some(st=>(st.case&&!st.case.rep)||st.due||st.closed||(st.left<=1&&st.till>0))?'dot':0;}
+/** 💼 A hired shift's day just closed (game/quay.py on_shift): settle it now (game/quay_hire.py flush; every load does too). */
+async function quayFlush(){try{const d=await api.post('/api/quay/flush',{});if(d?.state&&typeof d.revision==='number')api.accept({state:d.state,revision:d.revision});}catch{/* the next load settles it */}}
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
 /** One line under the look-alike Khu phố entries, so each says what it is (owner D5: names stay, lines added). */
 const RAIL_NOTE={town:'Thư viện, chợ, quảng trường…',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};

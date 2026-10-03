@@ -34,7 +34,7 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 13  # 13: optional TikTok identities and one-use OAuth flows (additive); chat_hides/chat_clears (see below).
+SCHEMA_VERSION = 14  # 14: 💼 quay_jobs (hired players at a counter: game/quay_hire.py), additive. 13: optional TikTok identities and one-use OAuth flows (additive); chat_hides/chat_clears (see below).
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -355,6 +355,14 @@ CREATE TABLE IF NOT EXISTS live_effects (
   id {T} PRIMARY KEY, sid {T} NOT NULL, kind {T} NOT NULL, amount bigint NOT NULL DEFAULT 0, data {T} NOT NULL DEFAULT '{{}}',
   status {T} NOT NULL DEFAULT 'pending', at double precision NOT NULL, applied_at double precision
 );
+-- 💼 Hired players' shifts at someone's counter (game/quay_hire.py): one row per offer, guarded status changes.
+CREATE TABLE IF NOT EXISTS quay_jobs (
+  id {T} PRIMARY KEY, owner {T} NOT NULL, owner_name {T} NOT NULL, stall {T} NOT NULL, stall_name {T} NOT NULL,
+  trade {T} NOT NULL, place {T} NOT NULL, wage bigint NOT NULL, value bigint NOT NULL, friend {T}, worker {T},
+  status {T} NOT NULL, day {T} NOT NULL, taken_day {T}, at double precision NOT NULL, taken_at double precision,
+  ended double precision, until double precision NOT NULL,
+  tasks bigint NOT NULL DEFAULT 0, stars bigint NOT NULL DEFAULT 0, earned bigint NOT NULL DEFAULT 0
+);
 -- 💕 Dates of the live service (live/dating.py; game/live_dating.py): one row per café date (pids a < b), and the
 -- bond "đang tìm hiểu" of two saves (sids a < b) that both tapped ❤️.
 CREATE TABLE IF NOT EXISTS live_dates (
@@ -436,6 +444,9 @@ CREATE INDEX IF NOT EXISTS chat_hides_msg ON chat_hides (msg);
 CREATE INDEX IF NOT EXISTS chat_clears_pid ON chat_clears (pid);
 CREATE INDEX IF NOT EXISTS live_effects_sid ON live_effects (sid, status);
 CREATE INDEX IF NOT EXISTS live_effects_day ON live_effects (sid, kind, at);
+CREATE INDEX IF NOT EXISTS quay_jobs_owner ON quay_jobs (owner, status);
+CREATE INDEX IF NOT EXISTS quay_jobs_worker ON quay_jobs (worker, status);
+CREATE INDEX IF NOT EXISTS quay_jobs_open ON quay_jobs (status, until);
 CREATE INDEX IF NOT EXISTS live_dates_at ON live_dates (at);
 CREATE INDEX IF NOT EXISTS date_bonds_b ON date_bonds (b);
 CREATE INDEX IF NOT EXISTS wedding_parties_at ON wedding_parties (status, at);
@@ -826,6 +837,12 @@ TABLES = [
          columns=_cols('id text', 'sid text', 'kind text', 'amount bigint', 'data text', 'status text',
                        'at double precision', 'applied_at double precision'),
          key=('id',), unique=[], identity=None, sync=dict(mode='full', note='status flips pending -> applied')),
+    dict(name='quay_jobs', source='main', sqlite_table='quay_jobs',
+         columns=_cols('id text', 'owner text', 'owner_name text', 'stall text', 'stall_name text', 'trade text', 'place text',
+                       'wage bigint', 'value bigint', 'friend text', 'worker text', 'status text', 'day text', 'taken_day text',
+                       'at double precision', 'taken_at double precision', 'ended double precision', 'until double precision',
+                       'tasks bigint', 'stars bigint', 'earned bigint'),
+         key=('id',), unique=[], identity=None, sync=dict(mode='full', note='status changes in place (open -> taken -> paid…)')),
     dict(name='live_dates', source='main', sqlite_table='live_dates',
          columns=_cols('id text', 'a text', 'b text', 'a_sid text', 'b_sid text', 'at double precision', 'ended double precision',
                        'how text', 'same bigint', 'hits bigint'),

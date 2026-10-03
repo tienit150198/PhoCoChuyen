@@ -661,6 +661,7 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     dc.on_life_day(s, result)   # 🪴 follow the player home, a rented room's Ấm cúng morning, a neighbour drops by
     up.on_life_day(s, result)   # 🧾 the monthly bills of the vehicles and homes owned (after the home's morning)
     qy.on_life_day(s, result)   # 🏪 each counter runs the day that just ended (after the month's bills)
+    qy.on_shift(s, career, action, result)   # 💼 a hired shift at another player's counter ends with its day (game/quay_hire.py)
     if action == 'start_day' and career in s['careers']:
         line = _emp().backdoor_remark(s, s['careers'][career], career)   # vào bằng cửa sau: one remark, day one
         if line:
