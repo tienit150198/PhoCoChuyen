@@ -117,8 +117,9 @@ async def hub(p, action, group='pho'):
     """Open an entry of a menu hub (Khu phố, Quan hệ, Của mình…; the "Thêm" sheet on a phone)."""
     await p.page.evaluate("document.querySelector('[data-action=v4Menu]')?.click()")
     await p.page.wait_for_selector(f'#rail .rail-group[data-group={group}]', timeout=15000)
-    await p.page.click(f'#rail .rail-group[data-group={group}]')
-    await p.page.click(f'#rail .rail-sub[data-group={group}] [data-action={action}]')
+    await p.page.evaluate(f"document.querySelector('#rail .rail-group[data-group={group}]').click()")   # the rail may be
+    await p.page.wait_for_timeout(300)                                                                  # off-screen on a phone
+    await p.page.evaluate(f"document.querySelector('#rail .rail-sub[data-group={group}] [data-action={action}]').click()")
 
 
 async def cards(p, first=6.0):
@@ -164,6 +165,7 @@ async def run(shots: Path) -> list:
 
     def check(cond, what):
         checks.append(('PASS' if cond else 'FAIL') + ' ' + what)
+        print(checks[-1], flush=True)   # as it goes: a later timeout still shows what passed
         if not cond:
             problems.append('check: ' + what)
 
