@@ -22,6 +22,7 @@ import time
 
 from . import PROTOCOL, jsonx
 from .auth import identify, token_from
+from .booth import BoothFeature
 from .chat import ChatFeature
 from .dating import DatingFeature
 from .fair import FairFeature
@@ -41,7 +42,7 @@ except ImportError:  # pragma: no cover
     websockets = None
 
 # Phase 2 adds live.street.StreetFeature, phase 3 live.dating.DatingFeature (one line each).
-FEATURES = [ChatFeature, StreetFeature, DatingFeature, WeddingFeature, FairFeature]
+FEATURES = [ChatFeature, StreetFeature, DatingFeature, WeddingFeature, FairFeature, BoothFeature]   # 📸 live/booth.py: with the fair
 HELLO_SECS = 10.0
 NOTIFY_CHANNEL = 'mnl_live'
 
