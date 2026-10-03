@@ -27,11 +27,17 @@ In a room
 * `booth_out` leaves; the host leaving passes the room to the one who came in first after them. One room or queue
   per player: a second tab coming in takes the first one out (`booth_left {why: 'other'}`).
 * Blocks: a block made in a room sends the one who came in later out (`booth_left {why: 'blocked'}`).
+* A lost connection (owner 03/10, "k vào phòng người khác đc": the host goes to another app to send the code, the
+  phone drops the socket, the room went with it and the code said 'nocode'): the last one still in a friends' room
+  whose socket closes stays in it, away (`away: 1` in their entry), for GRACE_SECS, so the code keeps working and
+  `booth_join {code}` from their next socket puts them back in their place (host included). Someone else's socket
+  closing in a room with people in it goes out as before (their client comes back in by the code). Older clients
+  never send the join back: they are out after GRACE_SECS.
 Nothing but a display name and the look the client draws (live/street.py clean_look) is shared.
 
 Frames (client → server; replies in brackets)
   booth_make {look, g}         [booth_room {room, code, mode, host, me, frame, bg, cap, people: [{pid, name, lk, g, pose,
-                                prop, ready}], shooting}]
+                                prop, ready, away?}], shooting}]
   booth_join {code, look, g}   [booth_room]          booth_find {look, g}   [booth_wait {secs}] or [booth_room]
   booth_set {frame?, bg?, pose?, all?, prop?}  booth_ready {}  booth_go {}  booth_kick {pid}
   booth_cancel {} [booth_left {why: 'cancel'}]      booth_out {} [booth_left {why: 'out'}]
@@ -53,6 +59,7 @@ PAIR = 2                   # a strangers' room
 ROOMS_MAX = 2000
 QUEUE_MAX = 500
 WAIT_SECS = 60             # a stranger waits this long at most
+GRACE_SECS = 120           # the last one in a friends' room whose socket closed keeps the room (and their place)
 IDLE_SECS = 15 * 60        # a room nobody touched for this long closes
 SHOTS, GAP_MS = 4, 3200    # a shoot: SHOTS photos, a 3-2-1 countdown each
 CODE_LEN = 4
@@ -75,16 +82,20 @@ def clean_code(v) -> str | None:
 
 
 class Member:
-    __slots__ = ('pid', 'player', 'conn', 'name', 'look', 'g', 'pose', 'prop', 'ready', 'n')
+    __slots__ = ('pid', 'player', 'conn', 'name', 'look', 'g', 'pose', 'prop', 'ready', 'n', 'away')
 
     def __init__(self, conn, look: dict, g, n: int):
         self.conn, self.player, self.pid = conn, conn.player, conn.player.pid
         self.name = conn.player.name or ''
         self.look, self.g = look, g
         self.pose, self.prop, self.ready, self.n = 'dung', 'none', False, n
+        self.away = 0.0    # monotonic time the socket closed (0: here)
 
     def public(self) -> dict:
-        return dict(pid=self.pid, name=self.name, lk=self.look, g=self.g, pose=self.pose, prop=self.prop, ready=self.ready)
+        out = dict(pid=self.pid, name=self.name, lk=self.look, g=self.g, pose=self.pose, prop=self.prop, ready=self.ready)
+        if self.away:
+            out['away'] = 1
+        return out
 
 
 class Waiter:
@@ -132,7 +143,8 @@ class BoothFeature(Feature):
         return room
 
     def _empty(self, room) -> None:
-        self.hub.drop_room(room.id)
+        if not room.data.get('people'):   # someone away still holds it (GRACE_SECS)
+            self.hub.drop_room(room.id)
 
     def _add(self, room, conn, look, g) -> Member:
         d = room.data
@@ -157,7 +169,8 @@ class BoothFeature(Feature):
         """The room as it is now, to everyone in it (each told who they are)."""
         snap = self.snapshot(room)
         for m in room.data['people'].values():
-            self.hub.send(m.conn, dict(snap, me=m.pid))
+            if not m.away:
+                self.hub.send(m.conn, dict(snap, me=m.pid))
 
     def _remove(self, room, pid: str, why: str | None = None) -> None:
         """Take player pid out of the room (`why`: tell their socket so), hand the room on, tell the rest."""
@@ -168,7 +181,7 @@ class BoothFeature(Feature):
         m.conn.ext.pop('booth', None)
         if m.player.ext.get('booth') == room.id:
             m.player.ext.pop('booth', None)
-        if why:
+        if why and not m.away:
             self.hub.send(m.conn, dict(t='booth_left', why=why))
         if d['host'] == pid:
             d['host'] = min(d['people'].values(), key=lambda x: x.n).pid if d['people'] else None
@@ -239,17 +252,24 @@ class BoothFeature(Feature):
                 self._blocked(p, [(q, m) for q, m in room.data['people'].items() if q != p.pid]):
             raise LiveError('nocode', NOCODE)
         m = room.data['people'].get(p.pid)
-        if m is not None:   # already in (this tab, or another one of mine: this one takes my place)
+        if m is not None:   # already in (this tab, another one of mine: this one takes my place; or back after a lost socket)
             if m.conn is not conn:
-                old, m.conn = m.conn, conn
+                old, back = m.conn, bool(m.away)
+                m.conn, m.away = conn, 0.0
                 w = self.queue.pop(p.pid, None)
                 if w is not None and w.conn is not conn:
                     self.hub.send(w.conn, dict(t='booth_left', why='other'))
                 room.add(conn)
                 conn.ext['booth'] = room.id
+                p.ext['booth'] = room.id
                 old.ext.pop('booth', None)
-                self.hub.send(old, dict(t='booth_left', why='other'))
+                if not back:
+                    self.hub.send(old, dict(t='booth_left', why='other'))
                 room.remove(old)
+                if back:   # everyone sees them here again
+                    room.data['last'] = time.monotonic()
+                    self._tell(room)
+                    return None
             return dict(self.snapshot(room), me=p.pid)
         if len(room.data['people']) >= room.cap:
             raise LiveError('full', f'Phòng đủ {room.cap} người rồi.')
@@ -331,7 +351,7 @@ class BoothFeature(Feature):
             raise LiveError('host', 'Chủ phòng bấm chụp nha.')
         if d['shoot_until'] > now:
             raise LiveError('busy', 'Đang chụp rồi nè.')
-        if not all(x.ready for x in d['people'].values()):
+        if not all(x.ready for x in d['people'].values() if not x.away):
             raise LiveError('not_ready', 'Chờ mọi người sẵn sàng đã nha.')
         d['shoot_until'] = now + SHOTS * GAP_MS / 1000 + 1.5
         d['last'] = now
@@ -339,7 +359,7 @@ class BoothFeature(Feature):
         self.shoots += 1
         for x in d['people'].values():
             x.ready = False
-        self.hub.send_many([x.conn for x in d['people'].values()], dict(t='booth_shoot', n=SHOTS, gap=GAP_MS, id=d['shot']))
+        self.hub.send_many([x.conn for x in d['people'].values() if not x.away], dict(t='booth_shoot', n=SHOTS, gap=GAP_MS, id=d['shot']))
         self._tell(room)
         return None
 
@@ -365,6 +385,10 @@ class BoothFeature(Feature):
                 self.hub.send(w.conn, dict(t='booth_none', why='timeout'))
         for room in self._rooms():
             d = room.data
+            for m in [m for m in d['people'].values() if m.away and mono - m.away >= GRACE_SECS]:
+                self._remove(room, m.pid)   # did not come back: out (the last one out drops the room)
+            if self.hub.rooms.get(room.id) is not room:
+                continue
             if d['shoot_until'] and d['shoot_until'] <= mono:   # the shoot is over: everyone may change the frame, get ready
                 d['shoot_until'] = 0.0
                 self._tell(room)
@@ -387,9 +411,16 @@ class BoothFeature(Feature):
         rid = conn.ext.pop('booth', None)
         room = self.hub.rooms.get(rid) if rid else None
         if room is not None:
-            m = room.data['people'].get(p.pid)
+            d = room.data
+            m = d['people'].get(p.pid)
             if m is not None and m.conn is conn:
-                self._remove(room, p.pid)
+                if d['mode'] == 'friends' and not any(x is not m and not x.away for x in d['people'].values()):
+                    m.away = time.monotonic()   # the last one in: the room and the code wait for them (GRACE_SECS)
+                    m.ready = False
+                    d['last'] = m.away
+                    self._tell(room)
+                else:
+                    self._remove(room, p.pid)
         elif rid and p.ext.get('booth') == rid:   # the room went with this socket (it was the last one in it)
             p.ext.pop('booth', None)
 

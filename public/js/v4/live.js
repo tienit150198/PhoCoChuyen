@@ -21,7 +21,7 @@ import {faceCode} from './face-code.js';
 
 const RETRY=[1,2,4,8,15],SLOW=[60,120,300,600],PING_MS=25000,DEAD_MS=60000;
 const listeners=new Map();
-let env=null,ws=null,attempt=0,timer=0,pinger=0,lastFrame=0,fab=null,shown=false,shownDate=false,renderTimer=0,lastTotal=-1,cssAsked=false,sentFc=null,faceTimer=0;
+let env=null,ws=null,attempt=0,timer=0,pinger=0,lastFrame=0,tried=0,probing=false,fab=null,shown=false,shownDate=false,renderTimer=0,lastTotal=-1,cssAsked=false,sentFc=null,faceTimer=0;
 /** The face code of this save ('' while the save is not loaded). */
 const myFc=()=>{try{return env?.api?.state?faceCode(env.api.state):'';}catch(e){console.warn('face:',e);return '';}};
 /** 🙂 After a change of face or clothes: tell a service that knows faces (once per change). */
@@ -45,8 +45,17 @@ export const live={
   friend(pid){return live.friends.find(f=>f.pid===pid)||null;},
   /** Bring a chat to the top of the list (a message just arrived or was sent). */
   touch(c){const i=live.chans.indexOf(c);if(i>0){live.chans.splice(i,1);live.chans.unshift(c);}},
-  /** Back in sight or back online: try again now (only once the service is known to exist and is not off). */
-  reconnect(){if(live.welcomed&&live.state==='down'){attempt=0;clearTimeout(timer);connect();}},
+  /** Back in sight or back online: try again now (only once the service is known to exist and is not off); an open
+   * socket that has been quiet a while (a phone back from another app) is checked with a ping, a dead one replaced.
+   * force (📸 the fair's booth opened, its "Thử lại"): now whatever the state, also before a first welcome, during
+   * a back-off, or over a connect that has hung for 4 s. The caller forces once per wait, never in a loop. */
+  reconnect(force=false){
+    if(!env?.api?.live?.url)return;
+    if(live.state==='open'){if(force||Date.now()-lastFrame>PING_MS+5000)probe();return;}
+    if(!force&&!(live.welcomed&&live.state==='down'))return;
+    if(live.state==='connecting'&&Date.now()-tried<4000)return;
+    attempt=0;clearTimeout(timer);abandon();connect();
+  },
 };
 const emit=(type,f)=>{for(const fn of listeners.get(type)||[]){try{fn(f);}catch(e){console.warn('live:',type,e);}}for(const fn of listeners.get('*')||[]){try{fn(f);}catch(e){console.warn('live:*',e);}}};
 
@@ -56,7 +65,7 @@ function url(){
 }
 
 function connect(){
-  clearTimeout(timer);
+  clearTimeout(timer);tried=Date.now();
   if(typeof WebSocket!=='function'||document.visibilityState==='hidden'&&!live.welcomed)return schedule();
   live.state='connecting';
   let sock;
@@ -79,6 +88,20 @@ function connect(){
   };
   sock.onerror=()=>{};
 }
+/** Let go of the current socket without waiting for its close (a dead one may take minutes): 'down' when it was open. */
+function abandon(){
+  const s=ws;if(!s)return;
+  ws=null;clearInterval(pinger);
+  const was=live.state==='open';live.state='down';
+  try{s.close();}catch{/* already closing */}
+  if(was){emit('down',{code:0});paint();}
+}
+/** Is the open socket alive? A ping; nothing back within 4 s: a new socket at once. */
+function probe(){
+  if(probing||!ws)return;
+  probing=true;const t0=lastFrame,s=ws;live.send({t:'ping'});
+  setTimeout(()=>{probing=false;if(ws===s&&live.state==='open'&&lastFrame===t0){abandon();attempt=0;connect();}},4000);
+}
 function schedule(secs){
   clearTimeout(timer);
   if(secs==null){const list=live.welcomed?RETRY:SLOW;secs=list[Math.min(attempt,list.length-1)]*(0.8+Math.random()*0.4);attempt++;}
@@ -89,7 +112,7 @@ function frame(f){
   switch(f.t){
     case'welcome':
       live.welcomed=true;live.flags=f.flags||{};
-      if(!live.flags.chat&&!live.flags.street&&!live.flags.dating&&!live.flags.wedding){live.state='off';break;}
+      if(!live.flags.chat&&!live.flags.street&&!live.flags.dating&&!live.flags.wedding&&!live.flags.fair){live.state='off';break;}
       live.state='open';attempt=0;
       live.me=f.me||null;live.friends=f.friends||[];live.chans=f.chans||[];live.limits=f.limits||{};live.bonds=f.bonds||[];
       if(live.flags.dating&&(f.date||f.bench))import('./dating.js').then(m=>m.datingBoot(env,f)).catch(e=>console.warn('dating:',e));   // back in a date after a reload
