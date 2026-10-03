@@ -49,7 +49,7 @@ const CELL=[260,162];   // one photo of the strip (./photo-frames.js stripBox): 
 
 export function setup(ctx){
   const {S,F,btn,say,xu,esc,send,render,sfx,pick,reduce}=ctx;
-  const D=S.pb={step:'lobby',mode:null,room:null,me:null,frame:'hoi_dem',bg:'day_den',pose:'dung',prop:'none',say:'',
+  const D=S.pb={pane:'pose',step:'lobby',mode:null,room:null,me:null,frame:'hoi_dem',bg:'day_den',pose:'dung',prop:'none',say:'',
     ticket:readTicket(),paying:false,ready:false,waitUntil:0,shoot:null,shots:[],flash:0,count:0,filter:'none',stickers:[],
     text:'hoi',date:true,tab:'solo',
     url:'',blob:null,building:false,cv:null,raf:0,thumbs:{},sent:{},pendingJoin:false,tick:0,
@@ -352,15 +352,16 @@ export function setup(ctx){
     return `${stage()}<div class="fh-card fh-pb-wait" role="status"><span class="fh-pb-spin" aria-hidden="true">🎲</span><div><b>Đang chờ người lạ ghé buồng…</b><small>Còn <span data-fh-count="pbwait">${left}</span> giây. Có người là vô chụp liền.</small></div></div>
       <div class="fh-go">${btn('Thôi, không chờ nữa','pbcancel',{},'ghost',' data-fh-key="pbcancel"')}</div>`;
   }
+  const PANES=[['pose','🕺','Dáng'],['frame','🖼️','Khung ảnh'],['bg','🌅','Phông nền'],['prop','🎀','Đạo cụ']];
   function roomView(){
     const ppl=people(),host=isHost(),r=D.room,shooting=D.step==='shoot'||!!r?.shooting,me=mine();
     const code=D.mode==='friends'&&r?.code?`<div class="fh-pb-code-chip"><span>Mã phòng</span><b>${esc(r.code)}</b>${btn('📋 Chép mã','pbcopy',{},'cream small',' data-fh-key="pbcopy"')}</div>`:'';
     const list=D.mode==='solo'?'':`<ul class="fh-pb-people">${ppl.map(p=>`<li><span class="fh-pb-tick${p.ready?' on':''}" aria-hidden="true">${p.ready?'✓':'…'}</span><b>${esc(p.name||tr('Khách đi hội'))}</b>${p.pid===r.host?'<em>👑 chủ phòng</em>':''}${p.pid===D.me?'<em>bạn</em>':''}<small>${p.away?'đang quay lại…':p.ready?'sẵn sàng':'đang chọn dáng'}</small>${host&&p.pid!==D.me&&D.mode==='friends'?btn('Mời ra','pbkick',{pid:p.pid},'ghost small',` data-fh-key="pbkick-${esc(p.pid)}"`):''}</li>`).join('')}${D.mode==='friends'&&ppl.length<(r.cap||4)?`<li class="empty"><span aria-hidden="true">＋</span><small>Còn ${(r.cap||4)-ppl.length} chỗ: gửi mã cho bạn bè</small></li>`:''}</ul>`;
-    const fr=frameId(),frames=`<div class="fh-pb-sec"><b>Khung ảnh</b>${host?'':'<small>chủ phòng chọn</small>'}</div><div class="fh-pb-frames" role="group" aria-label="Khung ảnh">${BOOTH_FRAMES.map(f=>`<button type="button" class="fh-pb-frame${fr===f.id?' on':''}" data-fh="pbframe" data-v="${f.id}" aria-pressed="${fr===f.id}" data-fh-key="pbframe-${f.id}"${host&&!shooting?'':' disabled'}><img alt="" src="${frameThumb(f.id)}"><span><i aria-hidden="true">${f.emoji}</i> ${esc(f.name)}</span></button>`).join('')}</div>`;
-    const bg=bgId(),bgs=`<div class="fh-pb-sec"><b>Phông nền</b></div><div class="fh-pb-chips" role="group" aria-label="Phông nền">${BGS.map(b=>chip('pbbg',b.id,bg===b.id,`<span aria-hidden="true">${b.emoji}</span> ${esc(b.name)}`,b.name,!host||shooting)).join('')}</div>`;
+    const fr=frameId(),frames=`${host?'':'<p class="fh-pb-hint">Khung ảnh: chủ phòng chọn</p>'}<div class="fh-pb-frames" role="group" aria-label="Khung ảnh">${BOOTH_FRAMES.map(f=>`<button type="button" class="fh-pb-frame${fr===f.id?' on':''}" data-fh="pbframe" data-v="${f.id}" aria-pressed="${fr===f.id}" data-fh-key="pbframe-${f.id}"${host&&!shooting?'':' disabled'}><img alt="" src="${frameThumb(f.id)}"><span><i aria-hidden="true">${f.emoji}</i> ${esc(f.name)}</span></button>`).join('')}</div>`;
+    const bg=bgId(),bgs=`${host?'':'<p class="fh-pb-hint">Phông nền: chủ phòng chọn</p>'}<div class="fh-pb-chips" role="group" aria-label="Phông nền">${BGS.map(b=>chip('pbbg',b.id,bg===b.id,`<span aria-hidden="true">${b.emoji}</span> ${esc(b.name)}`,b.name,!host||shooting)).join('')}</div>`;
     const pose=me?.pose||D.pose,pr=me?.prop||D.prop;
     const poses=poseView(pose,shooting);
-    const props=`<div class="fh-pb-sec"><b>Đạo cụ</b></div><div class="fh-pb-chips" role="group" aria-label="Đạo cụ">${chip('pbprop','none',pr==='none','<span aria-hidden="true">🚫</span> Không','Không')}${PROPS.map(p=>chip('pbprop',p.id,pr===p.id,`<span aria-hidden="true">${p.emoji}</span> ${esc(p.name)}`,p.name)).join('')}</div>`;
+    const props=`<div class="fh-pb-chips" role="group" aria-label="Đạo cụ">${chip('pbprop','none',pr==='none','<span aria-hidden="true">🚫</span> Không','Không')}${PROPS.map(p=>chip('pbprop',p.id,pr===p.id,`<span aria-hidden="true">${p.emoji}</span> ${esc(p.name)}`,p.name)).join('')}</div>`;
     let act='';
     const why=payWhy(),price=xu(P()?.price||5);
     if(D.step==='shoot')act=`<div class="fh-go"><span>📸 Đang chụp… nhìn vô máy nha!</span></div>`;
@@ -372,9 +373,15 @@ export function setup(ctx){
       const line=r?.shooting?'Đang chụp, chờ lượt sau nha.':all?(host?'Mọi người sẵn sàng rồi!':'Chờ chủ phòng bấm chụp…'):D.ready?'Chờ mọi người sẵn sàng…':'Chọn dáng rồi bấm sẵn sàng';
       act=`<div class="fh-go fh-pb-act"><span>${esc(line)}</span>${readyBtn}${goBtn}</div>`;
     }
-    return `${code}${stage()}${list}${act}${why&&!D.ticket&&D.step!=='shoot'?`<p class="fh-why">${esc(why)}: cần ${price} để chụp.</p>`:''}
-      ${poses}${frames}${bgs}${props}
-      <div class="fh-go">${btn(D.mode==='solo'?'‹ Đổi cách chụp':'Rời phòng','pbout',{},'ghost small',' data-fh-key="pbout"')}</div>`;
+    // one screen: the booth (what the camera will take) stays in view with the shoot button and the tabs, the open
+    // picker under it (phones: the top part is stuck while the picker scrolls; wide screens: booth left, picker right)
+    const pane=PANES.some(x=>x[0]===D.pane)?D.pane:'pose';
+    const tabsBar=`<div class="fh-pb-panes" role="group" aria-label="${esc(tr('Tuỳ chỉnh ảnh'))}">${PANES.map(([v,e,n])=>`<button type="button" class="fh-pb-pane${pane===v?' on':''}" data-fh="pbpane" data-v="${v}" aria-pressed="${pane===v}" data-fh-key="pbpane-${v}"><span aria-hidden="true">${e}</span><b>${esc(n)}</b></button>`).join('')}</div>`;
+    const body={pose:poses,frame:frames,bg:bgs,prop:props}[pane];
+    const whyP=why&&!D.ticket&&D.step!=='shoot'?`<p class="fh-why">${esc(why)}: cần ${price} để chụp.</p>`:'';
+    return `${code}<div class="fh-pb-room"><div class="fh-pb-top">${stage()}${act}${whyP}${tabsBar}</div>
+      <div class="fh-pb-side"><div class="fh-pb-panebody" data-pane="${pane}">${body}</div>${list}
+      <div class="fh-go">${btn(D.mode==='solo'?'‹ Đổi cách chụp':'Rời phòng','pbout',{},'ghost small',' data-fh-key="pbout"')}</div></div></div>`;
   }
   /** The pose picker: tiles of one's own character in each pose; with friends, the poses made together too. */
   function poseView(pose,shooting){
@@ -383,7 +390,7 @@ export function setup(ctx){
     const tabs=grp?`<div class="fh-pb-tabs" role="group" aria-label="Loại dáng">${[['solo','🙋','Một người'],['group','👯','Cả nhóm']].map(([v,e,n])=>`<button type="button" class="fh-pb-tab${tab===v?' on':''}" data-fh="pbtab" data-v="${v}" aria-pressed="${tab===v}" data-fh-key="pbtab-${v}"><span aria-hidden="true">${e}</span> ${n}</button>`).join('')}</div>`:'';
     const list=POSES.filter(p=>p.group===(tab==='group'));
     const tiles=list.map(p=>`<button type="button" class="fh-pb-pose${pose===p.id?' on':''}" data-fh="pbpose" data-v="${p.id}" aria-pressed="${pose===p.id}" data-fh-key="pbpose-${p.id}" title="${esc(p.name)}"><img alt="" src="${poseThumb(lk,g,p.id,128)}" width="64" height="64"><span><i aria-hidden="true">${p.emoji}</i> ${esc(p.name)}</span></button>`).join('');
-    return `<div class="fh-pb-sec fh-pb-posehead"><b>Dáng</b>${shooting?'<small>đổi giữa các kiểu</small>':''}${btn('🎲 Ngẫu nhiên','pbdice',{},'cream small fh-pb-dice',' data-fh-key="pbdice"')}</div>
+    return `<div class="fh-pb-sec fh-pb-posehead"><small>${shooting?'đổi giữa các kiểu':'chọn là thấy liền trong buồng'}</small>${btn('🎲 Ngẫu nhiên','pbdice',{},'cream small fh-pb-dice',' data-fh-key="pbdice"')}</div>
       ${tabs}${tab==='group'?'<p class="fh-pb-hint">Chọn là cả phòng cùng dáng</p>':''}<div class="fh-pb-poses" role="group" aria-label="Dáng">${tiles}</div>`;
   }
   function printView(){
@@ -405,7 +412,8 @@ export function setup(ctx){
     if(D.step==='lobby')wake();
     if(D.mode&&D.mode!=='solo'&&D.step!=='lobby'&&D.step!=='wait'&&D.step!=='print'&&!D.room&&!D.pendingJoin)toLobby();
     const body=D.step==='wait'?waiting():D.step==='print'?printView():D.step==='lobby'?lobby():roomView();
-    return `<section class="fh-stall fh-pb" aria-label="Chụp ảnh">${say(SHOOTER,D.say)}${body}</section>`;
+    const wide=D.step!=='wait'&&D.step!=='print'&&D.step!=='lobby';   // the room: booth and picker side by side on a wide screen
+    return `<section class="fh-stall fh-pb${wide?' fh-pb-wide':''}" aria-label="Chụp ảnh">${say(SHOOTER,D.say)}${body}</section>`;
   }
 
   /** After every render: the stage canvas gets its size and a fresh frame; the code box its Enter key. */
@@ -440,6 +448,7 @@ export function setup(ctx){
       case'pbshoot':shootSolo();return true;
       case'pbkick':kick(data.pid);return true;
       case'pbdice':dice();return true;
+      case'pbpane':if(PANES.some(x=>x[0]===data.v)){D.pane=data.v;render();}return true;
       case'pbtab':if(data.v==='solo'||data.v==='group'){D.tab=data.v;render();}return true;
       case'pbfilter':if(FAIR_FILTERS.some(f=>f.id===data.v)){D.filter=data.v;build();render();}return true;
       case'pbtext':if(TEXTS.some(x=>x[0]===data.v)){D.text=data.v;build();render();}return true;

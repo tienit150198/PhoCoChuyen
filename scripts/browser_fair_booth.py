@@ -110,14 +110,51 @@ async def run(shots: Path) -> list:
                 await page.evaluate("document.querySelectorAll('dialog[open]:not(#sheet)').forEach(d=>d.close());document.querySelector('.jr-fair-row').click()")
                 await page.wait_for_selector('.fh-sheet[open]', timeout=10000)
                 await poll(page, "globalThis.__fairWalk?.state().on", 8)
-                await page.wait_for_timeout(500)
-                if await page.locator('.fh-sheet [data-fh="giftok"]').count():
-                    await page.click('.fh-sheet [data-fh="giftok"]')
+                # the fair's one-time 500 xu gift pops up when its claim comes back (late on a slow machine)
+                if await poll(page, "document.querySelector('.fh-sheet [data-fh=giftok]')", 4):
+                    await gift_away(p)
+
+            async def gift_away(p):
+                """Close the fair's gift card if it is up: it covers the sheet, so a click under it never lands."""
+                await p.page.evaluate("document.querySelector('.fh-sheet [data-fh=giftok]')?.click()")
+
+            PANE = {'pbframe': 'frame', 'pbbg': 'bg', 'pbprop': 'prop', 'pbpose': 'pose', 'pbdice': 'pose', 'pbtab': 'pose'}
+
+            async def pane(p, v):
+                """Open one of the room's pickers (Dáng / Khung ảnh / Phông nền / Đạo cụ) when it is not open."""
+                await p.page.evaluate("v=>{const b=document.querySelector(`.fh-sheet [data-fh=pbpane][data-v=${v}]`);if(b&&b.getAttribute('aria-pressed')!=='true')b.click();}", v)
+                await poll(p.page, f"!document.querySelector('.fh-sheet [data-fh=pbpane]')||document.querySelector('.fh-sheet [data-fh=pbpane][data-v={v}]').getAttribute('aria-pressed')==='true'", 3)
 
             async def click(p, op, v=None):
                 sel = f'.fh-sheet [data-fh="{op}"]' + (f'[data-v="{v}"]' if v is not None else '')
-                await p.page.locator(sel).first.scroll_into_view_if_needed()
-                await p.page.click(sel)
+                await gift_away(p)
+                if op in PANE:
+                    await pane(p, PANE[op])
+                try:
+                    for attempt in range(3):   # the room redraws while the camera counts: a control can be swapped mid-click
+                        try:
+                            await p.page.locator(sel).first.scroll_into_view_if_needed(timeout=10000)
+                            await bring_up(p, sel)
+                            await p.page.click(sel, timeout=10000)
+                            break
+                        except Exception as e:
+                            if attempt == 2 or 'not attached' not in str(e):
+                                raise
+                            await p.page.wait_for_timeout(150)
+                except Exception:
+                    if shots:
+                        await p.page.screenshot(path=str(shots / f'zz-click-{p.name}-{op}.png'))
+                    info = await p.page.evaluate("s=>{const e=document.querySelector(s);if(!e)return 'missing';const r=e.getBoundingClientRect();"
+                                                 "const t=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);"
+                                                 "return {r:[r.x,r.y,r.width,r.height],dis:e.disabled,top:t&&(t.className||t.tagName)}}", sel)
+                    print(f'click {p.name} {op} {v}: {info}', flush=True)
+                    raise
+
+            async def bring_up(p, sel):
+                """A control the room's stuck booth sits over is scrolled to the bottom of the screen, as a thumb does."""
+                await p.page.evaluate("""s=>{const e=document.querySelector(s),top=document.querySelector('.fh-sheet .fh-pb-top');if(!e||!top)return;
+                  const r=e.getBoundingClientRect(),t=top.getBoundingClientRect();if(e.closest('.fh-pb-top'))return;
+                  if(r.top<t.bottom&&r.right>t.left&&r.left<t.right)e.scrollIntoView({block:'end'});}""", sel)
 
             async def shoot_round(host, others, frame_id, tag, between=()):
                 """Everyone pays and gets ready, the host shoots; every phone ends on its strip. between: (after shot n,
@@ -175,6 +212,7 @@ async def run(shots: Path) -> list:
             await click(a, 'pbframe', 'tet')
             await click(a, 'pbbg', 'hoa')
             check(await poll(b.page, f"({ST}).frame==='tet'&&({ST}).bg==='hoa'", 5), "the host's frame and backdrop reach B")
+            await pane(b, 'frame')
             check(await b.page.evaluate("document.querySelector('.fh-sheet [data-fh=\"pbframe\"]').disabled"), 'B cannot pick the frame')
             await click(a, 'pbpose', 'v')
             await click(a, 'pbprop', 'non_la')
@@ -241,8 +279,10 @@ async def run(shots: Path) -> list:
             check(await poll(d.page, f"({ST}).room.people.every(p=>p.pose==='khoac_vai')&&({ST}).frame==='hoi_dem'", 5), 'four: one pose for all, the frame Hội chợ đêm')
             await a.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
             await shot(a, '09a-four-room-390')
+            await pane(a, 'pose')
             await a.page.evaluate("document.querySelector('.fh-sheet .fh-pb-posehead').scrollIntoView({block:'start'})")
             await shot(a, '09b-pose-picker-group-390')
+            await pane(c, 'pose')
             await c.page.evaluate("document.querySelector('.fh-sheet .fh-pb-posehead').scrollIntoView({block:'start'})")
             await shot(c, '09c-pose-picker-solo-390')
             await shoot_round(a, [b, c, d], 'hoi_dem', '09d-four', between=((1, a, 'pbpose', 'tim_to'), (2, a, 'pbpose', 'cung_nhay'), (3, b, 'pbdice', None)))
@@ -264,6 +304,7 @@ async def run(shots: Path) -> list:
             await click(a, 'pbagain')
             await a.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
             await shot(a, '09g-four-room-1280')
+            await pane(a, 'pose')
             await a.page.evaluate("document.querySelector('.fh-sheet .fh-pb-posehead').scrollIntoView({block:'start'})")
             await shot(a, '09h-pose-picker-1280')
             await a.page.set_viewport_size(dict(width=390, height=844))
@@ -302,6 +343,29 @@ async def run(shots: Path) -> list:
 
             # ---------------- 3. Một mình ----------------
             await click(a, 'pbsolo')
+            # one screen: the booth stays in view while a pose far down the list is tapped, on every size
+            for w, h in ((320, 568), (390, 844), (430, 932), (1280, 900)):
+                await a.page.set_viewport_size(dict(width=w, height=h))
+                await pane(a, 'pose')
+                ids = await a.page.evaluate("[...document.querySelectorAll('.fh-sheet [data-fh=pbpose]')].map(b=>b.dataset.v)")
+                pid = ids[-1 - (w % 3)]
+                await a.page.locator(f'.fh-sheet [data-fh="pbpose"][data-v="{pid}"]').scroll_into_view_if_needed()
+                await bring_up(a, f'.fh-sheet [data-fh="pbpose"][data-v="{pid}"]')
+                await a.page.click(f'.fh-sheet [data-fh="pbpose"][data-v="{pid}"]')
+                ok = await poll(a.page, f"({ST}).pose==='{pid}'", 3)
+                await a.page.wait_for_timeout(300)
+                box = await a.page.evaluate("(()=>{const r=document.querySelector('.fh-sheet .fh-pb-cv').getBoundingClientRect(),t=document.querySelector('.fh-sheet [data-fh=pbpose].on').getBoundingClientRect(),s=document.querySelector('.fh-sheet .fh-pb-room').getBoundingClientRect();"
+                                            "return {top:Math.round(r.top),bot:Math.round(r.bottom),h:innerHeight,tile:[Math.round(t.top),Math.round(t.bottom)],over:document.querySelector('.fh-sheet').scrollWidth-document.querySelector('.fh-sheet').clientWidth}})()")
+                check(ok and box['top'] >= 0 and box['bot'] <= box['h'], f'{w}×{h}: a pose far down the list ({pid}), the booth shows it without scrolling ({box})')
+                check(box['tile'][0] >= box['bot'] - 2 or w >= 700, f'{w}×{h}: the tapped pose is not under the booth ({box})')
+                check(box['tile'][1] <= box['h'] + 1, f'{w}×{h}: the tapped pose is on screen ({box})')
+                check(box['over'] <= 1, f'{w}×{h}: nothing wider than the sheet ({box["over"]}px)')
+                await a.page.screenshot(path=str(shots / f'L-{w}-pose.png'))
+                await pane(a, 'frame')
+                await a.page.wait_for_timeout(250)
+                await a.page.screenshot(path=str(shots / f'L-{w}-frame.png'))
+            await a.page.set_viewport_size(dict(width=390, height=844))
+            await a.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
             await click(a, 'pbframe', 'retro')
             await click(a, 'pbbg', 'den')
             await click(a, 'pbpose', 'vay')
@@ -349,7 +413,9 @@ async def run(shots: Path) -> list:
                 await a.page.evaluate("document.querySelector('.fh-sheet').scrollTop=0")
                 await shot(a, f'14-solo-room-{w}')
                 over = await a.page.evaluate("document.querySelector('.fh-sheet .fh-body').scrollWidth-document.querySelector('.fh-sheet .fh-body').clientWidth")
-                check(over <= 1, f'{w}px: no sideways scroll ({over})')
+                wide = '' if over <= 1 else await a.page.evaluate("""(()=>{const b=document.querySelector('.fh-sheet .fh-body').getBoundingClientRect();
+                  return [...document.querySelectorAll('.fh-sheet .fh-body *')].filter(e=>e.getBoundingClientRect().right>b.right+.5).slice(0,6).map(e=>e.className+':'+Math.round(e.getBoundingClientRect().right-b.right)).join(', ');})()""")
+                check(over <= 1, f'{w}px: no sideways scroll ({over}) {wide}')
             await a.page.set_viewport_size(dict(width=390, height=844))
             await click(a, 'pbout')
             await a.page.evaluate("document.documentElement.dataset.theme='dem'")
