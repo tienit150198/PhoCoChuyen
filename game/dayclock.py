@@ -60,6 +60,7 @@ NOTES = {
     'nail': 'Trưa đông dân văn phòng tranh thủ giờ nghỉ; tối thứ sáu, cuối tuần kín lịch.',
     'pho': 'Quán mở từ 5:30 sáng; 6:30 người đi làm ghé đông nhất, gần trưa là vãn.',
     'pagoda': 'Bốn giờ sáng thỉnh chuông, 11:00 cúng ngọ; ngày rằm tối có lễ cầu an.',
+    'photobooth': 'Tiệm mở từ trưa; 17:00 học sinh tan trường, tối cuối tuần chợ đêm đông nhất.',
     'homestay': 'Quầy lễ tân trực tới 22:00; khách tới muộn gọi chuông, sáng mai bàn giao.',
     'milk_tea': 'Ngày đông khách có thể bán quá giờ, muộn nhất 23:00.',
     'corp_accounting': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',

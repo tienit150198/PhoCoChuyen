@@ -19,6 +19,7 @@ export const KIND_OF={
   fruit:'lane',garbage:'lane',drain:'lane',ice_cream:'lane',com:'comtam',
   pagoda:'pagoda',
   pho:'pho',
+  photobooth:'booth',
   pilot:'airfield',flight_attendant:'airfield',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
@@ -137,6 +138,12 @@ const CAREER_WORDS={
     free_eyebrow:'Bếp đang vãn',free_title:'Vãn khách rồi!',free_more:'Mời thêm khách hoặc đóng quán hôm nay.',more_btn:'Mời thêm một khách',
     none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời khách tiếp theo',
     people_sub:'Những người bạn gặp ở quán phở Cây Si.',feed_sub:'Lời nhắn và đánh giá quanh quán phở.',rail_in:'Trong quán',books:'Sổ quán'},
+  photobooth:{shelf:'Rổ đạo cụ',evidence:'Khung mẫu',counter:'Quầy & máy in',warehouse:'Thùng giấy in',finance:'Hộp tiền',ledger:'SỔ TIỆM ẢNH',store:'THÙNG GIẤY',
+    till:'Hộp tiền',door_open:'Đóng tiệm',door_closed:'Mở tiệm',open_sign:'ĐANG CHỤP ẢNH',closed_sign:'HẸN MAI NHA',
+    cat_line:'Mrrr… cho mèo đội bờm tai thỏ chụp một tấm đi.',idle_line:'Sắp tới giờ tan học rồi.',open_hint:'Lau ống kính, chụp thử rồi mở tiệm nhé.',
+    free_eyebrow:'Buồng chụp đang trống',free_title:'Vãn khách rồi!',free_more:'Mời thêm khách hoặc đóng tiệm hôm nay.',more_btn:'Mời thêm một nhóm khách',
+    none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời nhóm khách tiếp theo',
+    people_sub:'Những người bạn gặp ở tiệm ảnh Tách Tách.',feed_sub:'Lời nhắn và đánh giá quanh tiệm ảnh.'},
   pagoda:{shelf:'Chậu cây kiểng',evidence:'Bảng nội quy',counter:'Lư hương lớn',warehouse:'Nhà kho sau chùa',finance:'HÒM CÔNG ĐỨC',ledger:'SỔ CÔNG ĐỨC',store:'NHÀ KHO',
     till:'Tiền chi dùng',door_open:'Đóng cổng chùa',door_closed:'Mở cổng chùa',open_sign:'CỔNG CHÙA ĐANG MỞ',closed_sign:'ĐÃ ĐÓNG CỔNG',property:'Chùa Gió Lành',
     cat_line:'Mrrr… nằm hiên chùa nghe chuông, mát ghê.',pet:'Chơi với Mướp dưới hiên chùa',security:'Trông coi sân chùa',board:'Chuyện xóm',

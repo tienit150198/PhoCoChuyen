@@ -81,6 +81,18 @@ class Week(unittest.TestCase):
         self.assertEqual(sum(d.count('zz_new') for d in after), 1)
         self.assertLessEqual(max(map(len, after)) - min(map(len, after)), 1)
 
+    def test_this_release_s_careers_join_without_moving_anyone(self):
+        """pho, com and photobooth (1.5.0) each take one day; photobooth, added last, moves neither the 35 nor pho/com."""
+        self.assertEqual([c for c in CAREERS if c not in x3.FIRST], ['pho', 'com', 'photobooth'])
+        for w in range(52):
+            t = at(2026, 9, 28) + w * 7 * 86400
+            days = x3.week(t)[1]
+            for cid in ('pho', 'com', 'photobooth'):
+                self.assertEqual(sum(d.count(cid) for d in days), 1, cid)
+            with mock.patch.object(x3, 'CAREERS', tuple(c for c in CAREERS if c != 'photobooth')):
+                without = x3.week(t)[1]
+            self.assertEqual([[c for c in d if c != 'photobooth'] for d in days], without)
+
     def test_the_day_turns_at_midnight_vn_time(self):
         sun, mon = at(2026, 10, 11, 23), at(2026, 10, 12, 0)
         self.assertNotEqual(x3.week(sun)[0], x3.week(mon)[0])

@@ -48,7 +48,7 @@ CAREER_NOUN = dict(
     milk_tea='trà sữa', grocery='tạp hóa', delivery='giao hàng', cafe_bakery='bánh & cà phê', florist='tiệm hoa',
     mother_baby='mẹ & bé', restaurant='mì cay', pet_care='chăm thú cưng', salon='salon tóc', repair='sửa đồ',
     farm='nông trại', homestay='homestay', clothing='shop quần áo', pet_shop='shop thú cưng', tra_da='trà đá',
-    fruit='trái cây', garbage='thu gom rác', drain='thông cống', homemaker='nội trợ', ice_cream='tiệm kem', pho='quán phở', com='quán cơm', nail='tiệm nail', pagoda='việc chùa', customer_care='chăm sóc khách', pharmacy='nhà thuốc',
+    fruit='trái cây', garbage='thu gom rác', drain='thông cống', homemaker='nội trợ', ice_cream='tiệm kem', pho='quán phở', com='quán cơm', nail='tiệm nail', pagoda='việc chùa', photobooth='tiệm ảnh', customer_care='chăm sóc khách', pharmacy='nhà thuốc',
     tour_guide='dẫn tour', teacher='bục giảng', accounting='sổ sách', pilot='buồng lái', flight_attendant='khoang khách',
     corp_accounting='kế toán doanh nghiệp', tax_payroll='thuế & lương', group_accounting='kế toán tập đoàn',
     hr_admin='nhân sự', secretary='thư ký', it_helpdesk='IT văn phòng')

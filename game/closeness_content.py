@@ -61,6 +61,7 @@ STALL = {
     'ice_cream': dict(name='Hộp kem dừa của tiệm', emoji='🍨', price=4, tags=('sweet',)),
     'pho': dict(name='Túi phở mang về của quán', emoji='🍜', price=4, tags=('food',)),
     'com': dict(name='Hộp cơm tấm sườn của quán', emoji='🍚', price=4, tags=('food',)),
+    'photobooth': dict(name='Dải ảnh bốn ô khung dễ thương', emoji='🎞️', price=4, tags=('gift',)),
     'nail': dict(name='Chậu sen đá nhỏ trên bàn nail', emoji='🪴', price=4, tags=('flower',)),
 }
 

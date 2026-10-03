@@ -22,7 +22,7 @@ EMPLOYED = ('pharmacy', 'customer_care', 'teacher', 'tour_guide', 'repair', 'del
             'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'homemaker', 'pilot', 'flight_attendant',
             'hr_admin', 'secretary', 'it_helpdesk')
 OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
-FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain', 'ice_cream', 'nail', 'pho', 'com')
+FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain', 'ice_cream', 'nail', 'pho', 'com', 'photobooth')
 CALLING = ('pagoda',)      # a monk: no boss, no shop, no rent; the pagoda is not a place for a karaoke night
 OWNERS = tuple(c for c in ALL if c not in EMPLOYED + CALLING)
 STOCKED = RETAIL + ('farm',)
@@ -96,6 +96,7 @@ WORK = {
     'nail': ('Chị Diệp với mấy khách ruột', '💅'),
     'pagoda': ('Thầy trụ trì với bà Nhạn', '🛕'),
     'pho': ('Bác Lâm với mấy khách quen', '🍜'),
+    'photobooth': ('Chị Lam với hội bạn 11A1', '📸'),
     'pilot': ('Chị Vân với tổ bay Cánh Cò', '🧑‍✈️'),
     'flight_attendant': ('Chị Thu với các bạn tiếp viên', '💁'),
 }

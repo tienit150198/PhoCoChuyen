@@ -207,6 +207,14 @@ async def play(browser, base: str, cid: str, shots: Path | None, max_steps: int 
                     await page.wait_for_timeout(200)
                 pick = await page.evaluate(PICK)   # the bar may have been drawn again meanwhile
                 sel = (pick or {}).get('sel') or '[data-fd-pick]'
+            # A timed button (a shutter, a stop tap) names the moment to press it: wait for that, as a player would.
+            # (a bottom button that sends the same command waits like the control it stands for)
+            wait = await page.evaluate("s=>{const e=document.querySelector(s);if(!e)return null;const w=e.closest('[data-fd-wait]');if(w)return w.dataset.fdWait;"
+                                       "const c=e.closest('[data-command]')?.dataset.command;"
+                                       "return c?document.querySelector(`[data-fd-wait][data-command=\"${c}\"]`)?.dataset.fdWait||null:null;}", sel)
+            if wait:
+                with contextlib.suppress(Exception):
+                    await page.wait_for_selector(wait, timeout=15000)
             # A live screen (a running timer, a state refresh) may redraw between the pick and the press:
             # the tagged control is gone, so look again instead of failing.
             if not await page.evaluate('s=>{const e=document.querySelector(s);if(!e)return false;e.click();return true;}', sel):
