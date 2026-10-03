@@ -16,16 +16,18 @@
  * tables also download as one CSV (…&format=csv).
  * "Tổng quan đầu tư" (…?name=invest, drawn by ./invest.js): the job's copy of game/admin_kpi.py (computed in the
  * background every 10 minutes while this page asks for it), in tabs with a period selector; CSV per tab
- * (…&part=…) and a printable report (#bao-cao, not in the menu). */
+ * (…&part=…) and a printable report (#bao-cao, not in the menu).
+ * "Tặng xu" (./gifts.js): accounts by username with their gifts, a gift of coins per player, "Quà đã tặng". */
 import {AdminAPI} from './api.js';
 import {Inbox} from './inbox.js';
 import {ChatAdmin} from './chat.js';  // 💬 Chat: reports, hide, mute (live chat)
+import {GiftAdmin} from './gifts.js';  // 🎁 Tặng xu: accounts, a gift of coins per player, "Quà đã tặng"
 import {overviewView,liveView,skeleton,skelCard} from './stats.js';
 import {esc,icon,hm,ago,num,toast} from './ui.js';
 
 const api=new AdminAPI();
 const root=document.getElementById('root');
-const VIEWS={'tong-quan':['Tổng quan','chart'],'dau-tu':['Tổng quan đầu tư','trend'],'giu-chan':['Giữ chân','loop'],'gop-y':['Góp ý','inbox'],'chat':['Chat','chat'],'he-thong':['Hệ thống','server'],
+const VIEWS={'tong-quan':['Tổng quan','chart'],'dau-tu':['Tổng quan đầu tư','trend'],'giu-chan':['Giữ chân','loop'],'gop-y':['Góp ý','inbox'],'chat':['Chat','chat'],'tang-xu':['Tặng xu','gift'],'he-thong':['Hệ thống','server'],
   'bao-cao':['Báo cáo số liệu','print']};
 const HIDDEN=new Set(['bao-cao']);  // reached from "Xuất báo cáo", not listed in the menu
 const INVEST_VIEWS=new Set(['dau-tu','bao-cao']);  // drawn from …/section?name=invest only (no summary request)
@@ -51,6 +53,7 @@ const stats={range:RANGES.includes(store.get('range',7))?store.get('range',7):7,
 let sectionsMod=null;  // ./sections.js once imported
 const loadSectionsMod=()=>sectionsMod?Promise.resolve(sectionsMod):import('./sections.js').then(m=>(sectionsMod=m));
 const chatAdmin=new ChatAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='chat')renderView();},forbidden:()=>reauth()});
+const giftAdmin=new GiftAdmin(api,{rerender:()=>{if(ui.screen==='app'&&ui.view==='tang-xu')renderView();},forbidden:()=>reauth()});
 let retMod=null;  // ./retention.js once imported ("Giữ chân")
 const loadRetMod=()=>retMod?Promise.resolve(retMod):import('./retention.js').then(m=>(retMod=m));
 let invMod=null;  // ./invest.js once imported ("Tổng quan đầu tư" and its printable report)
@@ -90,7 +93,7 @@ let reauthing=null;
 function reauth(){
   reauthing??=api.bootstrap().then(()=>{
     if(!api.admin)toast(api.account?'Tài khoản này không còn quyền vận hành.':'Phiên đăng nhập đã hết. Đăng nhập lại nhé.','bad');
-    resetStats();inbox.reset();chatAdmin.reset();decide();
+    resetStats();inbox.reset();chatAdmin.reset();giftAdmin.reset();decide();
   }).catch(e=>toast(e.message,'bad')).finally(()=>{reauthing=null;});
   return reauthing;
 }
@@ -117,7 +120,7 @@ async function login(form){
 async function logout(){
   try{await api.logout();toast('Đã đăng xuất.');}
   catch(e){toast(e.message,'bad');}
-  resetStats();inbox.reset();chatAdmin.reset();ui.unread=null;ui.navOpen=false;
+  resetStats();inbox.reset();chatAdmin.reset();giftAdmin.reset();ui.unread=null;ui.navOpen=false;
   decide();
 }
 
@@ -314,6 +317,11 @@ function renderBadge(){
 }
 function renderTools(){
   const tools=root.querySelector('[data-tools]'),meta=root.querySelector('[data-meta]');if(!tools)return;
+  if(ui.view==='tang-xu'){
+    tools.innerHTML=`<button type="button" class="btn ghost sm" data-act="giftReload"${giftAdmin.busy?' disabled':''}>${icon('refresh',15)}<span>Tải lại</span></button>`;
+    meta.innerHTML=giftAdmin.meta();
+    return;
+  }
   if(ui.view==='chat'){
     tools.innerHTML=`<button type="button" class="btn ghost sm" data-act="chatReload"${chatAdmin.busy?' disabled':''}>${icon('refresh',15)}<span>Tải lại</span></button>`;
     meta.innerHTML=chatAdmin.meta();
@@ -359,6 +367,7 @@ function renderView(){
   const focusAct=document.activeElement?.closest?.('#view')?document.activeElement.dataset.act+'|'+(document.activeElement.dataset.id||'')+'|'+(document.activeElement.dataset.status||document.activeElement.dataset.value||''):null;
   if(ui.view==='gop-y')view.innerHTML=inbox.view();
   else if(ui.view==='chat')view.innerHTML=chatAdmin.view();
+  else if(ui.view==='tang-xu')view.innerHTML=giftAdmin.view();
   else if(ui.view==='giu-chan')view.innerHTML=`<div class="stats ret${stats.sections.retention.busy&&stats.sections.retention.data?' is-busy':''}">${retentionBody()}</div>`;
   else if(INVEST_VIEWS.has(ui.view))view.innerHTML=`<div class="stats inv-view${stats.sections.invest.busy&&stats.sections.invest.data?' is-busy':''}">${investBody()}</div>`;
   else{
@@ -468,6 +477,7 @@ root.addEventListener('click',async ev=>{
     case'more':{const k=el.dataset.key;if(!(k in MORE))return;stats.more[k]+=MORE[k];renderView();return;}
     case'fbReload':inbox.reset();renderView();return;
   }
+  if(giftAdmin.action(act,el.dataset,el))return;
   if(await chatAdmin.action(act,el.dataset))return;
   await inbox.action(act,el.dataset);
 });
@@ -479,6 +489,7 @@ root.addEventListener('submit',async ev=>{
   ev.preventDefault();
   const f=ev.target;
   if(f.dataset.form==='login'){await login(f);return;}
+  if(giftAdmin.submit(f))return;
   if(await chatAdmin.submit(f))return;
   await inbox.submit(f);
 });

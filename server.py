@@ -708,6 +708,12 @@ class Handler(BaseHTTPRequestHandler):
                 self.require_admin(token)
                 if not self.server.rate_limit("chat-search:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,live_chat.search(self.server.store,{k:v[0] for k,v in parse_qs(split.query).items()}));return
+            if route=="/api/admin/gifts":  # 🎁 Tặng xu (game/system_gift.py): accounts by username, their gifts, the last 50 gifts; admin only, index reads
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                if not self.server.rate_limit("admin-gifts:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,system_gift.admin_view(self.server.store,parse_qs(split.query).get("q",[""])[0]));return
             if route=="/api/admin/stats":  # Thống kê (game/admin_stats.py): admin only, cached ~60 s, never reads a save
                 try:token,_,_,_=self.guarded(light=True)
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
@@ -839,6 +845,10 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("chat-admin:"+token,120):self.error(429,"Chậm lại một chút nhé.");return
                 self.require_admin(token)
                 self.json(200,live_chat.act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
+            if route=="/api/admin/gift":  # 🎁 Tặng xu: queue a gift for one account (game/system_gift.py), paid at its next load; never touches a save
+                if not self.server.rate_limit("admin-gift:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.require_admin(token)
+                self.json(200,system_gift.admin_grant(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
                 pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);self.server.store.delete(token)
@@ -896,6 +906,7 @@ class Handler(BaseHTTPRequestHandler):
         except wedding_live.WeddingError as e:self.error(e.status,e.message,e.code)
         except live_chat.ChatAdminError as e:self.error(e.status,e.message,e.code)
         except accounts.AccountError as e:self.error(e.status,e.message,e.code)
+        except system_gift.GiftError as e:self.error(e.status,e.message,e.code)  # 🎁 /api/admin/gift: before ValueError (its base)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
         except (ValueError,TypeError,KeyError,IndexError,RecursionError,AttributeError,*dbm.DataError):self.error(400,"Dữ liệu không đúng cấu trúc hoặc bản lưu không hợp lệ.","invalid_data")
         except dbm.OperationalError as e:  # busy/unreachable database: nothing was committed (or its receipt replays it)
