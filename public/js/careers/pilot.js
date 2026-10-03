@@ -82,7 +82,8 @@ const PLANE=`<svg class="pl-plane" viewBox="0 0 320 130" aria-hidden="true"><pat
 ${[80,100,120,140,200,220,240].map(cx=>`<rect x="${cx}" y="61" width="10" height="8" rx="3" fill="var(--pl-window)"/>`).join('')}<path d="M270 60 Q286 60 294 68 L276 68Z" fill="var(--pl-window)"/>
 <line x1="90" y1="84" x2="90" y2="104" stroke="var(--pl-edge)" stroke-width="4"/><circle cx="90" cy="110" r="9" fill="var(--pl-tyre)"/><line x1="262" y1="81" x2="262" y2="104" stroke="var(--pl-edge)" stroke-width="3"/><circle cx="262" cy="110" r="7" fill="var(--pl-tyre)"/>
 <text x="120" y="80" font-size="9" font-weight="700" fill="var(--pl-edge)">CÁNH CÒ</text></svg>`;
-const SPOT={gear:[26,76],engine:[56,20],wing:[40,56],hold:[82,52]};
+// Spread so the four tiles never cover each other, down to 320 px (the wing tile used to sit on the engine's).
+const SPOT={gear:[18,78],engine:[60,18],wing:[44,62],hold:[84,50]};
 function walkPanel(t,x){
   const n=t.needs,df=n.defect,points=cc(x).points||[];
   const spots=points.map(p=>{const done=(t.checked||[]).includes(p.id),bad=df&&df.point===p.id,[l,tp]=SPOT[p.id]||[50,50];

@@ -47,8 +47,8 @@ export async function tutorialAction(action,data,el,env){
 /** "?" in a work screen's header (see app.js header()). */
 export const guideHelp=helpButton;
 
-/** Cài đặt → Cách chơi: "❓ Hỏi nhanh" (the most asked questions, short answers) and the whole guide (its first
- * page holds "Xem lại hướng dẫn"). */
+/** Cài đặt → Cách chơi: one quiet link to the whole guide, opened at "❓ Hỏi nhanh" (the most asked questions, short
+ * answers; also one tap away in the menu's footer). The guide's first page above it holds "Xem lại hướng dẫn".
+ * Two buttons to the same guide only repeated each other. */
 export const tutorialSettings=()=>`<section class="settings-block tut-settings"><h3><span aria-hidden="true">📘</span> Hướng dẫn</h3>`+
-  `<div class="row wrap"><button type="button" class="btn small" data-action="tutGuide" data-topic="quick"><span aria-hidden="true">❓</span> Hỏi nhanh</button>`+
-  `<button type="button" class="btn small ghost" data-action="tutGuide">Xem hướng dẫn</button></div></section>`;
+  `<div class="row wrap"><button type="button" class="btn small" data-action="tutGuide" data-topic="quick"><span aria-hidden="true">❓</span> Hỏi nhanh & hướng dẫn</button></div></section>`;

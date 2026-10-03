@@ -14,7 +14,7 @@ since 0.9.16 (no welcome card, no tour unless asked for):
 3. Cài đặt has one quiet "Xem hướng dẫn" link and nothing else; the guide's
    first page replays the tour (it rings the right things; "Bỏ qua" ends it);
    every storefront's "Cách làm" with its pictures;
-4. the Thêm menu (phone) / rail (desktop) no longer lists the guides;
+4. the Thêm menu (phone) / rail (desktop) no longer lists the guides (one "Hỏi nhanh" in its footer);
 5. a workplace that hires first (delivery) through the intro: hired at once,
    the first-day tip shows (phone);
 6. the first time at a workplace: one "Xem hướng dẫn / Bỏ qua" card, once per
@@ -240,7 +240,8 @@ async def new_player(r: Run):
         if pick['kind'] == 'none':
             r.problem(f'stuck on the first customer: {pick}')
             return
-        await p.eval_on_selector(pick.get('sel') or '[data-fd-pick]', 'e=>e.click()')
+        # The page may re-render between the pick and the press: a control that is gone is simply picked again.
+        await p.evaluate('s=>document.querySelector(s)?.click()', pick.get('sel') or '[data-fd-pick]')
         await r.wait(650)
     else:
         r.problem('the first customer was not served in 60 presses')
@@ -358,8 +359,12 @@ async def menu_has_no_guides(r: Run, vname: str):
     if vname == 'phone':
         await r.click('#dock [data-action="v4Menu"]')
         await r.shot('menu')
-    if await p.query_selector('#rail [data-action="help"], #rail [data-action="tutReplay"], #rail [data-action="tutGuide"]'):
+    # The guides stay out of the menu; its footer keeps one "❓ Hỏi nhanh" (short answers, 1.4.x), and nothing else.
+    if await p.query_selector('#rail [data-action="help"], #rail [data-action="tutReplay"], #rail [data-action="tutGuide"]:not([data-topic="quick"])'):
         r.problem('the menu still lists the guides')
+    quick = await p.evaluate("document.querySelectorAll('#rail [data-action=\"tutGuide\"][data-topic=\"quick\"]').length")
+    if quick != 1:
+        r.problem(f'the menu should keep one "Hỏi nhanh", has {quick}')
     if not await p.query_selector('#rail [data-action="settings"]'):
         r.problem('Cài đặt is missing from the menu')
     await p.keyboard.press('Escape')

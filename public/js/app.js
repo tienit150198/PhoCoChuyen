@@ -204,6 +204,7 @@ function morph(el,html){morphTpl.innerHTML=html;morphKids(el,morphTpl.content);m
 function morphKids(from,to){
   let a=from.firstChild,b=to.firstChild;
   while(b){
+    if(a?.nodeType===1&&a.hasAttribute('data-morph-keep')){a=a.nextSibling;continue;}   // a line another module put in the page (tutorial/tips.js inline hint)
     const nb=b.nextSibling;
     if(a&&a.nodeType===b.nodeType&&a.nodeName===b.nodeName&&(a.nodeType!==1||a.id===b.id)){morphNode(a,b);a=a.nextSibling;}
     else if(a){const na=a.nextSibling;from.replaceChild(b,a);a=na;}
@@ -508,6 +509,7 @@ function renderSheet(preserve=true){
     case'future':html=futureView();break;
     case'job':dialog.classList.add('cozy-job');html=jobView();break;
     case'prepare':case'prices':case'workshop':case'passport':case'town':dialog.classList.add('cozy-sheet',ui.view==='prepare'?'prep-sheet':'life-sheet');html=careerUI(career())?.page?.(ui.view,careerContext(env()))||(ui.view==='passport'?moreView:f=>f())(()=>experienceView(ui.view,career(),room(),api.content,meta(),ui,api.state));break;
+    case'carPage':dialog.classList.add('medium');html=careerUI(career())?.page?.(ui.carPage,careerContext(env()))||'';if(!html){ui.view='job';html=jobView();dialog.classList.replace('medium','cozy-job');}break;  // a career's own entry opened outside its work sheet (Bảng nội quy, Sổ tay nhà)
     case'queue':dialog.classList.add('medium');html=queueView();break;
     case'chat':dialog.classList.add('medium');html=chatView();break;
     case'phone':dialog.classList.add('medium');html=phoneView();break;
@@ -1286,7 +1288,14 @@ async function handleAction(action,data,el){
       if((L.inc.m||action==='incident'||action==='incLog')&&await (await viaLazy(L.inc,el)).incidentAction(action,data,el,env()))break;
       if(guideAction(action,data,el))break;
       if(await v4Action(action,data,el,env()))break;
-      if(action.startsWith('car:')){const mod=careerUI(career()),fn=mod?.actions?.[action.slice(4)];if(fn){await fn(data,el,careerContext(env()));break;}}
+      if(action.startsWith('car:')){const mod=careerUI(career()),fn=mod?.actions?.[action.slice(4)];if(fn){
+        // A career's own entry (dock: Bảng nội quy, Sổ tay nhà, Giới thiệu nghề) tapped on the scene, the bar or Thêm,
+        // where its work sheet is not on screen: its own page when it has one, else the work sheet with the pane open.
+        if(!el?.closest?.('.career-job')&&(mod.dock||[]).some(d=>d[0]===action)){
+          if(mod.page?.(action,careerContext(env()))){openSheet('carPage',{carPage:action});break;}
+          if(!($('#sheet').open&&ui.view==='job'))await openJob(null);
+        }
+        await fn(data,el,careerContext(env()));break;}}
       if(L.settings.m?await L.settings.m.settingsAction(action,data,el,env()):await accountAction(action,data,el,env()))break;
       if((L.social.m||action==='social')&&await (await viaLazy(L.social,el)).socialAction(action,data,el,env()))break;
       if((L.fb.m||action==='gopy')&&await (await viaLazy(L.fb,el)).feedbackAction(action,data,el,env()))break;

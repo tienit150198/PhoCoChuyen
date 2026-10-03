@@ -85,6 +85,20 @@ button.ab-row{cursor:pointer;min-height:44px}
 .air-sum .air-tiles b{font-size:1.02rem}
 .air-sum-line{margin:0;padding:10px 12px;border-radius:12px;background:linear-gradient(135deg,var(--air-navy),var(--air-sky));color:#f4f8fc}
 .air-foot .btn{width:100%}
+/* A folded line (crew room: goals, the crew; day summary: the day's flights under "Ngày mai"). */
+.air-fold{border-radius:12px;border:1px solid var(--line);background:var(--surface)}
+.air-fold>summary{display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 12px;cursor:pointer;list-style:none}
+.air-fold>summary::-webkit-details-marker{display:none}
+.air-fold>summary::after{content:'▾';color:var(--muted)}
+.air-fold[open]>summary::after{content:'▴'}
+.air-fold>summary small{color:var(--muted);font-family:var(--air-mono);font-size:.8rem}
+.air-fold>summary .tag{flex:none}
+.air-fold>:not(summary){margin:0 8px 8px}
+/* "🌅 Ngày mai" at the top of the day summary */
+.air-next{padding:10px 12px;border-radius:14px;border:1.5px solid var(--air-sky);background:color-mix(in srgb,var(--air-sky) 10%,var(--surface))}
+.air-next h3{margin:0 0 4px;font-size:1rem}
+.air-next ul{margin:0 0 8px;padding-left:0;list-style:none;display:grid;gap:4px;font-size:.9rem;line-height:1.4}
+.air-next .btn{min-height:44px}
 @media (max-width:420px){
   .ab-row{gap:5px;padding:4px 5px}
   .air-board{font-size:.74rem;padding:6px}
@@ -106,7 +120,7 @@ button.ab-row{cursor:pointer;min-height:44px}
 .air-odd-row>small{padding-top:10px;color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
 .air-segs{display:flex;flex-wrap:wrap;gap:6px}
 .air-words{display:flex;flex-wrap:wrap;gap:6px}
-.air-seg,.air-word{min-height:40px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.86rem;line-height:1.25;cursor:pointer;text-align:left}
+.air-seg,.air-word{min-height:44px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.86rem;line-height:1.25;cursor:pointer;text-align:left}
 .air-seg.on,.air-word.on{background:var(--air-navy);border-color:var(--air-navy);color:#fff}
 .air-word.give{border-style:dashed}
 .air-word.give.on{background:#c0533f;border-color:#c0533f}
@@ -132,6 +146,6 @@ button.ab-row{cursor:pointer;min-height:44px}
 .air-bar i{display:block;width:6px;height:10px;border-radius:2px;background:var(--line)}
 .air-bar i.on{background:#c98a2b}
 .air-rest{margin-top:8px;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface)}
-.air-rest summary{cursor:pointer;font-weight:700;min-height:32px;display:flex;align-items:center}
+.air-rest summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
 .air-rest .air-rest-send{width:100%;margin-top:10px}
 .air-rest-done{margin:8px 0 0}

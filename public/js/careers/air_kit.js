@@ -58,19 +58,21 @@ export function hudCard(c,t,x,cfg,{bell='',first='',wrap=false,note=''}={}){
     <div class="air-pass-top"><span class="air-pass-code">${esc(leg.code||'')}</span><span class="air-pass-route"><b>${esc(upper(leg.frm))}</b><i aria-hidden="true">✈</i><b>${esc(upper(t.where||leg.to))}</b></span><span class="air-pass-when">${esc(leg.dep||'')} · Cửa ${esc(leg.gate||'')}</span></div>
     <div class="air-pass-row">${note}<button type="button" class="calm-what" data-action="job" data-task="${esc(t.id)}" title="${esc(t.title)}"><span class="npc-mini">${x.portrait(who,34)}</span><b>${esc(cfg.next(t))}</b></button>${bell}${x.button('Làm tiếp '+x.icon('arrow',14),'job',{task:t.id},'primary'+first)}</div></article>`;
 }
-/** The crew room ('prepare'): the day's weather, the departures board, who flies today, the day's goals, then report for duty. */
+/** The crew room ('prepare'): the day's weather, the departures board, your record (and rest days), then two folded
+ * lines: today's goals (open by themselves when a reward waits) and who flies today. "Báo danh" stays pinned below. */
 export function crewRoom(x,cfg){
   const c=x.room,d=c.data||{},m=d.mod||{},list=today(x),people=x.cc.people||[];
   const crew=cfg.crew.map(i=>{const p=people[i];if(!p)return '';return `<li>${x.portrait(x.npc(npcId(cfg,i)),40)}<div><b>${esc(p.name)}</b><small>${esc(p.role)}</small></div></li>`;}).join('');
-  const goals=(c.life?.goals||[]).map(g=>`<li class="${g.claimed?'done':''}"><div class="grow"><b>${esc(g.title)}</b><small>Thưởng ${g.reward} xu</small></div>${g.claimed?'<span class="tag green">✓</span>':g.current>=g.goal?x.cmd('Nhận','life_goal',{goal:g.id},'small primary'):`<b class="air-goal-n">${Math.min(g.current,g.goal)}/${g.goal}</b>`}</li>`).join('');
+  const G=c.life?.goals||[],gift=G.some(g=>!g.claimed&&g.current>=g.goal),done=G.filter(g=>g.claimed||g.current>=g.goal).length;
+  const goals=G.map(g=>`<li class="${g.claimed?'done':''}"><div class="grow"><b>${esc(g.title)}</b><small>Thưởng ${g.reward} xu</small></div>${g.claimed?'<span class="tag green">✓</span>':g.current>=g.goal?x.cmd('Nhận','life_goal',{goal:g.id},'small primary'):`<b class="air-goal-n">${Math.min(g.current,g.goal)}/${g.goal}</b>`}</li>`).join('');
   const first=c.metrics?.served>0?'':' gd-pulse';
   const cta=c.open?x.button(esc(cfg.back),'workbench',{},'primary jumbo'):x.button(`🪪 Báo danh · vào ca ngày ${dayNo(x)}`,'start',{},'primary jumbo'+first);
   return head(x,`PHÒNG TỔ BAY · NGÀY ${dayNo(x)}`,cfg.airline,cfg.role_line)+`<div class="sheet-body air-sheet">
     <section class="air-wx"><span aria-hidden="true">${esc(m.emoji||'🌤️')}</span><div class="grow"><b>${esc(m.label||'')}</b><small>${esc(m.hint||'')}</small></div><span class="air-hours">${esc(c.day_clock?.open_time||'05:30')}–${esc(c.day_clock?.close_time||'19:30')}</span></section>
     <h4 class="air-h">Lịch bay hôm nay</h4>${boardRows(x,cfg,list,{tap:c.open})}
-    <h4 class="air-h">Tổ bay</h4><ul class="air-crew">${crew}</ul>
     <h4 class="air-h">Hồ sơ của bạn</h4>${record(x)}${restCard(x,cfg)}
-    ${goals?`<h4 class="air-h">Mục tiêu hôm nay</h4><ul class="air-goals">${goals}</ul>`:''}
+    ${goals?`<details class="air-fold air-goals-fold"${gift?' open data-auto':''}><summary><span aria-hidden="true">🎯</span><b class="grow">Mục tiêu hôm nay</b><small>${done}/${G.length}</small>${gift?'<span class="tag amber">🎁 Có quà</span>':''}</summary><ul class="air-goals">${goals}</ul></details>`:''}
+    ${crew?`<details class="air-fold"><summary><span aria-hidden="true">👥</span><b class="grow">Tổ bay hôm nay</b><small>${cfg.crew.filter(i=>people[i]).length}</small></summary><ul class="air-crew">${crew}</ul></details>`:''}
   </div><footer class="sheet-foot air-foot">${cta}</footer>`;
 }
 /** "Sổ bay" ('prices'): the career's own log instead of Sổ tiệm: big numbers, then the latest entries. */
@@ -81,12 +83,24 @@ export function flightLog(x,cfg){
     <h4 class="air-h">Gần đây</h4>${rows.length?`<ul class="air-log">${rows.map(r=>`<li><span class="ab-time">${esc(r.day)}</span><b>${esc(r.code)}</b><span class="grow">${esc(r.text)}</span><span class="ab-status ${esc(r.tone||'')}">${esc(r.status)}</span></li>`).join('')}</ul>`:'<p class="small muted">Chưa có chuyến nào trong sổ.</p>'}</div>`+
     `<footer class="sheet-foot"><p></p><div class="row wrap">${x.button('Đóng','close',{},'primary')}</div></footer>`;
 }
-/** The top of the end-of-day sheet: the day's flights on a closed board and a few airline numbers. */
+/** "🌅 Ngày mai": what the crew record carries into the next shift (tired: half the flight bonus; demoted: none; a
+ * warning on file), with the way to the crew room, where rest days are asked for. '' when the record is clean. */
+function tomorrow(x){
+  const o=odd(x),cd=o.conduct||{},rows=[];
+  if(o.tired)rows.push('😮‍💨 Bạn đang mệt: còn mệt thì thưởng chuyến chỉ được một nửa. Xin nghỉ bù ở phòng tổ bay.');
+  if(cd.demoted)rows.push('⚖️ Đang bị cách chức: chưa có thưởng chuyến.');
+  else if(['note','warn','ground'].includes(cd.level))rows.push(`${cd.level==='note'?'📝':'⚠️'} Hồ sơ: ${cd.label}.`);
+  if(!rows.length)return '';
+  return `<section class="air-next" aria-label="Ngày mai"><h3>🌅 Ngày mai</h3><ul>${rows.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>${x.button('🪪 Vào phòng tổ bay','prepare',{},'small primary')}</section>`;
+}
+/** The top of the end-of-day sheet: "🌅 Ngày mai" when the record carries something over, then a few airline numbers
+ * and the day's flights on a closed board (folded under them when "Ngày mai" leads). */
 export function daySummary(s,x,cfg){
   const data=s.career||{},done=(x.room.tasks||[]).filter(t=>t.day===s.day&&t.leg&&t.status==='completed'),rv=s.reviews||{};
   const tiles=[...cfg.close(data,s),[rv.count?`★ ${rv.average}`:'—',rv.count?`${rv.count} nhận xét`:'chưa có nhận xét']];
+  const next=tomorrow(x),board=boardRows(x,cfg,done,{tap:false});
   return {eyebrow:'TAN CA BAY',title:`Ngày ${s.journey?.life_day??s.day} · sổ bay`,
-    top:`<div class="air-sum">${s.clock?.finish?`<p class="air-sum-line">🛬 Tan ca lúc <b>${esc(s.clock.finish)}</b>. Về tới hẻm kịp cơm tối.</p>`:''}<div class="air-tiles">${tiles.map(([v,l])=>`<div><b>${esc(v)}</b><small>${esc(l)}</small></div>`).join('')}</div>${boardRows(x,cfg,done,{tap:false})}</div>`};
+    top:`<div class="air-sum">${next}${s.clock?.finish?`<p class="air-sum-line">🛬 Tan ca lúc <b>${esc(s.clock.finish)}</b>. Về tới hẻm kịp cơm tối.</p>`:''}<div class="air-tiles">${tiles.map(([v,l])=>`<div><b>${esc(v)}</b><small>${esc(l)}</small></div>`).join('')}</div>${next?`<details class="air-fold"><summary><span aria-hidden="true">✈️</span><b class="grow">Các chuyến hôm nay</b><small>${done.length}</small></summary>${board}</details>`:board}</div>`};
 }
 /** The menu without shop-only entries: Sổ tiệm becomes "Sổ bay" (the 'prices' page), a few words change. */
 export function nav(items,cfg){
