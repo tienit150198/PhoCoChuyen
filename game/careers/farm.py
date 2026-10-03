@@ -593,20 +593,28 @@ def _thuc_why(c: dict, p: dict, have: int) -> str | None:
     return None
 
 
-def _thuc_view(c: dict, p: dict) -> dict | None:
+def _first_floor(c: dict, d: dict, p: dict, turn: int) -> int:
+    """Clock minute a bed first fed at `turn` may ripen from: 30% of the time it still needed."""
+    now = _clock(c['day'], _beat(d, c['day'], turn))
+    return now + (_ripe_at(dict(c, turn=turn), d, p) - now) * (100 - THUC_MAX) // 100
+
+
+def _thuc_view(c: dict, p: dict, nxt: dict, i: int) -> dict | None:
     """The thúc block of a growing bed: what was applied, up to three amounts to choose with their
-    price and the harvest day they would give (the server's own estimate), or why not."""
+    price and the harvest day they would give (the server's own estimate), or why not.
+    `nxt`: the farm one beat on, when a dose would be sprayed; the harvest day counts from there."""
     if not p['crop']:
         return None
     have = _thuc(c, p)
     room, why = THUC_MAX - have, _thuc_why(c, p, have)
-    floor = (_thuc_rec(c, p) or {}).get('floor', 0)
     options = []
-    for want in sorted({THUC_STEP, 3 * THUC_STEP, room}):
-        if 0 < want <= room:
+    if room > 0:
+        q, turn = nxt['plots'][i], nxt['turn']
+        floor = _thuc_rec(c, p)['floor'] if have else _first_floor(c, nxt, q, turn) if q['growth'] < RIPE else 0
+        for want in sorted({THUC_STEP, 3 * THUC_STEP, room}):
             cost = _thuc_cost(have, want)
             short = None if c['money'] >= cost else f'Ví chưa đủ {cost} xu.'
-            options.append(dict(pct=want, cost=cost, eta=_eta(p, c['day'], _speed(have + want), floor)[0], ok=not (why or short), why=why or short))
+            options.append(dict(pct=want, cost=cost, eta=_eta(q, c['day'], _speed(have + want), floor)[0], ok=not (why or short), why=why or short))
     return dict(pct=have, max=THUC_MAX, room=room, step=THUC_STEP, soil=THUC_SOIL, why=why, options=options)
 
 
@@ -920,8 +928,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         if have:
             floor = _thuc_rec(c, plot)['floor']
         else:       # counted once per crop: the fed bed may not ripen before 30% of the time it still needed
-            now = _clock(c['day'], _beat(d, c['day'], c['turn']))
-            floor = now + (_ripe_at(c, d, plot) - now) * (100 - THUC_MAX) // 100
+            floor = _first_floor(c, d, plot, c['turn'])
         c['ext'][THUC_KEY] = {**(c['ext'].get(THUC_KEY) or {}), plot['id']: dict(crop=plot['crop'], day=plot['planted'], pct=pct, floor=floor)}
         before = plot['soil']
         plot['soil'] = _clamp(before - THUC_SOIL * want // THUC_STEP)
@@ -1256,7 +1263,12 @@ def public_data(c: dict) -> dict:
     _advance(d, c['turn'], c['day'], c['open'], fed)
     start = d['market']['start'] if d['market']['day'] == c['day'] else c['turn']
     care = _care(c, d, start)
-    for p in d['plots']:
+    # A dose is sprayed in the coming beat (the action's own): its harvest day counts from there, as fa_boost does.
+    nxt = dict(plots=tree_copy(d['plots']), market=d['market'], turn=c['turn'])
+    if c['open']:
+        nxt['turn'] += 1
+        _step(nxt, nxt['turn'], _weather(c['day']), c['day'], fed)
+    for i, p in enumerate(d['plots']):
         p['stage'] = _stage(p)
         p['safe_in'] = max(0, p['phi'] - c['turn'])
         p['scouted_ago'] = (c['turn'] - p['scouted']) if p['scouted'] else None
@@ -1264,7 +1276,7 @@ def public_data(c: dict) -> dict:
         speed, floor = fed.get(p['id'], (100, 0))
         p['eta'], p['over_in'] = _eta(p, c['day'], speed, floor)
         p['cap'] = _cap(p, speed) if p['crop'] else 0
-        p['thuc'] = _thuc_view(c, p)
+        p['thuc'] = _thuc_view(c, p, nxt, i)
         p['day_no'] = c['day'] - p['planted'] + 1 if p['crop'] else 0
         p['rotation'] = {k['id']: _rotation_hint(p, k) for k in CROPS} if not p['crop'] else {}
         p.pop('pests', None)   # pests are only known by walking the plot

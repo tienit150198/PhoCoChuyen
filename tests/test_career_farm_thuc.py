@@ -202,6 +202,29 @@ class ThucDoseTests(unittest.TestCase):
         self.assertEqual(sorted(o['pct'] for o in v['thuc']['options']), [10, 30, 40])
         self.assertEqual(v['cap'], F.CROP_INDEX['muong']['cap'] * F._speed(30) // 100)   # the day's budget shows the pace
 
+    def test_offered_harvest_day_is_the_one_the_dose_gives(self):
+        """The beds the farm starts with (and later ones): each option's harvest day is what
+        fa_boost then reports, counted from the beat the dose is sprayed in."""
+        for warm in (0, 5):
+            for pid in F.PLOT_IDS:
+                for want in (10, 30, 70):
+                    j = Journey('farm')
+                    j.act('ask', task=j.task['id'])
+                    for _ in range(warm):
+                        j.act('fa_scout', plot='P1')
+                    v = view(j, pid)
+                    if not v['thuc'] or v['thuc']['why']:
+                        continue
+                    o = next((o for o in v['thuc']['options'] if o['pct'] == want), None)
+                    if not o:
+                        continue
+                    msg = j.act('fa_boost', plot=pid, pct=want, confirm=True)['message']
+                    got = view(j, pid)['eta']
+                    with self.subTest(warm=warm, plot=pid, pct=want):
+                        self.assertEqual(o['eta'], got)
+                        if got is not None:
+                            self.assertIn('hôm nay' if got == 0 else f'{got} ngày nữa', msg)
+
     def test_fed_bed_is_ripe_the_next_morning_not_the_same_day(self):
         j = self.j
         sow(j)
