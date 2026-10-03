@@ -9,12 +9,16 @@
  * persistent stage (canvas + card) back into the page's slot (data-morph-keep: a render never rebuilds it).
  * Light on phones, like the fair's walk (v4/fair-walk.js): the town is painted once per size and state into a cached
  * bitmap; a frame is a slice of it, the glow and the player (one cached sprite). Frames run only while the player
- * walks or the view moves (and ~12 a second for a new player's lit shops; none with reduced motion). */
+ * walks or the view moves (and ~12 a second for a new player's lit shops; none with reduced motion).
+ * 🛵 A player who owns a vehicle (game/garage.py) rides it here (./ride.js): faster, wheels turning; at a door it is
+ * parked beside the door and the player walks the last steps; the next walk starts by hopping back on. The small
+ * "🛵 Đi xe / 🚶 Đi bộ" button on the stage changes it (each vehicle owned in turn, then walking; remembered here). */
 import {plan,route,nearest,itemAt,districtAt,back,marks,LANDMARKS,SIGNS} from '../scenes/town-place.js';
 import {figure,paintPlayer,CANVAS,lookOf} from './look.js';
 import {t as tr,language} from './i18n.js';
 import {lightAt} from './dayclock.js';
 import {escapeHTML as esc,icon} from '../icons.js';
+import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,rider,steer,halfOf} from './ride.js';
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
@@ -26,7 +30,8 @@ const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 
 const W={env:null,h:null,el:null,cv:null,c:null,where:null,whereText:'',card:null,pl:null,bg:null,bgKey:'',bs:1,k:1,cw:0,ch:0,dpr:1,
   cam:{x:0,y:0},free:false,me:null,raf:0,last:0,time:0,drawn:0,down:null,at:'',lastCur:undefined,look:null,st:null,stKey:'',
-  sprite:null,spriteKey:'',ok:null,hooked:false,frames:[]};
+  sprite:null,spriteKey:'',ok:null,hooked:false,frames:[],
+  ride:null,rideKey:'',rv:rider(),park:null,legs:[],leg:null,btn:null};
 
 /* ------------------------------------------------------------ what the town shows */
 const S=()=>W.env.api.state;
@@ -93,8 +98,9 @@ export function townOK(){
 /* ------------------------------------------------------------ the stage */
 function build(){
   const el=document.createElement('div');el.className='tw-stage';el.setAttribute('data-morph-keep','');
-  el.innerHTML=`<canvas class="tw-canvas" tabindex="0" role="img"></canvas><div class="tw-where" aria-hidden="true"></div><div class="tw-card" hidden></div>`;
+  el.innerHTML=`<canvas class="tw-canvas" tabindex="0" role="img"></canvas><div class="tw-where" aria-hidden="true"></div><button type="button" class="rd-toggle" hidden></button><div class="tw-card" hidden></div>`;
   W.el=el;W.cv=el.querySelector('canvas');W.c=W.cv.getContext('2d');W.where=el.querySelector('.tw-where');W.card=el.querySelector('.tw-card');
+  W.btn=el.querySelector('.rd-toggle');W.btn.addEventListener('click',()=>{nextRide(S(),W.env.api.content);setRide();});
   W.cv.setAttribute('aria-label',tr('Khu phố: chạm vào một nơi để đi tới. Mũi tên để đi, Enter để vào.'));
   W.cv.addEventListener('pointerdown',down);W.cv.addEventListener('pointermove',move);W.cv.addEventListener('pointerup',up);W.cv.addEventListener('pointercancel',()=>{W.down=null;});
   W.cv.addEventListener('wheel',wheel,{passive:false});
@@ -128,7 +134,8 @@ function refresh(){
   const t=tint();W.tintNow=t;
   W.stKey=JSON.stringify([W.pl.items.map(it=>{const s=st(it);return [s.lock,s.cur,s.x3,s.glow,s.paused,s.off,s.name];}),t?.m??-1,language()]);
   const cur=S().current||null;
-  if(!W.me||cur!==W.lastCur){W.lastCur=cur;place(spawn());W.free=false;snap();hide();}
+  setRide(false);
+  if(!W.me||cur!==W.lastCur){W.lastCur=cur;place(spawn());W.free=false;snap();hide();parkAtDoor();}
   else if(W.at){const it=W.pl.items.find(x=>x.key===W.at);if(it&&!W.card.hidden)showCard(it,false);}
   W.drawn=0;kick();
 }
@@ -142,7 +149,33 @@ function spawn(){
   const sug=s.journey?.suggested&&doorOf(s.journey.suggested);if(sug)return sug.stand;
   return (doorOf('lm:house')||W.pl.items[0]).stand;
 }
-function place(p){const q=nearest(W.pl,p);W.me={x:q[0],y:q[1],path:null,step:0,len:0};}
+function place(p){const q=nearest(W.pl,p);W.me={x:q[0],y:q[1],path:null,step:0,len:0};W.legs=[];W.leg=null;W.park=null;}
+
+/* ---- 🛵 riding (./ride.js) ---- */
+/** The vehicle ridden now (the toggle, the save), the button brought up to date. `fresh`: a tap on the toggle (or a
+ * change in the garage) while on the map: hop on where the player stands, or off (the vehicle goes home). */
+function setRide(fresh=true){
+  const v=choice(S(),W.env.api.content),key=v?`${v.id}|${v.hex}|${v.plate}`:'';
+  if(W.btn){const own=canRide(S(),W.env.api.content);W.btn.hidden=!own;
+    if(own){const t=tr(rideLabel(v));if(W.btn.textContent!==t)W.btn.textContent=t;W.btn.setAttribute('aria-pressed',String(!!v));W.btn.title=tr(v?v.name:'Đi bộ');}}
+  if(key===W.rideKey)return;
+  const had=W.ride;W.ride=v;W.rideKey=key;
+  if(!v||!had||fresh)W.park=null;
+  W.drawn=0;kick();
+}
+const riding=()=>!!W.ride&&!W.park;
+/** Where the vehicle waits by a door: beside the stand point, on the side the player came from. */
+function parkSpot(it,fromX){
+  const side=fromX<=it.stand[0]?-1:1,off=halfOf(W.ride)*ME+16;
+  return nearest(W.pl,[it.stand[0]+side*off,it.stand[1]+8]);
+}
+/** Just placed at a door (back from work, a new visit): the vehicle parked beside it, the player on foot. */
+function parkAtDoor(){
+  if(!W.ride||!W.me)return;
+  const it=W.pl.items.find(x=>Math.hypot(x.stand[0]-W.me.x,x.stand[1]-W.me.y)<2);
+  if(!it)return;
+  const [x,y]=parkSpot(it,it.stand[0]-1);W.park={x,y,key:it.key,face:1};W.rv=rider(1);
+}
 
 /* ---- size and camera ---- */
 function size(){
@@ -181,7 +214,7 @@ function tapAt(cx,cy){
   const p=toWorld(cx,cy),it=itemAt(W.pl,p);
   if(it&&!W.st(it).off)goItem(it);else{hide();walkTo(p);}
 }
-function goItem(it,focus=false){hide();walkTo(it.stand,()=>showCard(it,focus));}
+function goItem(it,focus=false){hide();walkTo(it.stand,()=>showCard(it,focus),it);}
 function onKey(e){
   const step={ArrowLeft:[-70,0],ArrowRight:[70,0],ArrowUp:[0,-60],ArrowDown:[0,60],a:[-70,0],d:[70,0],w:[0,-60],s:[0,60]}[e.key.length===1?e.key.toLowerCase():e.key];
   if(step){e.preventDefault();hide();walkTo([W.me.x+step[0],W.me.y+step[1]]);return;}
@@ -191,24 +224,49 @@ function onKey(e){
   }
 }
 
-/* ---- walking ---- */
-function walkTo(p,then=null){
+/* ---- walking (riding: back to the vehicle on foot, ride, park by the door, the last steps on foot) ---- */
+function walkTo(p,then=null,door=null){
   W.free=false;W.arrive=then;
-  const path=route(W.pl,[W.me.x,W.me.y],p);
-  if(!path||still()){const end=path?path[path.length-1]:[W.me.x,W.me.y];W.me.x=end[0];W.me.y=end[1];W.me.path=null;snap();W.drawn=0;kick();arrived();return;}
-  let len=0;for(let i=1;i<path.length;i++)len+=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);
-  W.me.path=path.slice(1);W.me.len=len/MAX_WALK;
-  kick();
+  const legs=[];
+  if(!W.ride)legs.push({to:p});
+  else if(door&&W.park?.key===door.key)legs.push({to:door.stand});   // parked at this very door
+  else{
+    if(W.park)legs.push({to:[W.park.x,W.park.y],mount:true});
+    if(door){const from=W.park?W.park.x:W.me.x;legs.push({to:parkSpot(door,from),ride:true,park:door.key},{to:door.stand});}
+    else legs.push({to:p,ride:true});
+  }
+  W.legs=legs;W.leg=null;
+  if(still()){while(W.legs.length){const g=W.legs.shift(),path=route(W.pl,[W.me.x,W.me.y],g.to),end=path?path[path.length-1]:[W.me.x,W.me.y];W.me.x=end[0];W.me.y=end[1];legEnd(g);}
+    W.me.path=null;snap();W.drawn=0;kick();arrived();return;}
+  nextLeg();
 }
-function arrived(){const f=W.arrive;W.arrive=null;if(W.me)W.me.path=null;if(f)f();}
+/** The next leg of the walk (none left: arrived). */
+function nextLeg(){
+  for(;;){
+    const g=W.legs.shift();W.leg=g||null;
+    if(!g){arrived();return;}
+    const path=route(W.pl,[W.me.x,W.me.y],g.to);
+    let len=0;if(path)for(let i=1;i<path.length;i++)len+=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);
+    if(!path||len<.5){legEnd(g);continue;}
+    const fast=g.ride?speedOf(W.ride):1;
+    W.me.path=path.slice(1);W.me.len=Math.max(SPEED*fast,len/(g.ride?MAX_WALK/1.5:MAX_WALK));
+    kick();return;
+  }
+}
+/** What happens at the end of a leg: hop on the parked vehicle, or park it here and get off. */
+function legEnd(g){
+  if(g.mount&&W.park){W.rv=rider(W.park.face??W.rv.face);W.park=null;}
+  if(g.park&&W.ride)W.park={x:W.me.x,y:W.me.y,key:g.park,face:W.rv.face};
+}
+function arrived(){const f=W.arrive;W.arrive=null;W.legs=[];W.leg=null;if(W.me)W.me.path=null;if(f)f();}
 
 /* ---- the card at a door ---- */
 const tag=(t,kind='')=>`<span class="tw-tag ${kind}">${t}</span>`;
 const act=(label,action,data={},style='primary')=>`<button type="button" class="btn ${style} tw-go" data-action="${action}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')}>${label}</button>`;
 function cardHTML(it){
   const s=S(),J=s.journey||{},st=W.st(it),x=`<button type="button" class="tw-card-x" data-tw-x aria-label="Đóng">×</button>`;
-  if(it.lm){const L=LANDMARKS[it.lm];
-    return `<span class="tw-card-ico" aria-hidden="true">${L.emoji}</span><div class="tw-card-text"><b>${esc(L.name)}</b></div>${act(`Vào ${icon('arrow',14)}`,L.action)}${x}`;}
+  if(it.lm){const L=LANDMARKS[it.lm],soft=it.lm==='garage'&&!canRide(s,W.env.api.content)?'<small>Mua xe để chạy quanh phố</small>':'';
+    return `<span class="tw-card-ico" aria-hidden="true">${L.emoji}</span><div class="tw-card-text"><b>${esc(L.name)}</b>${soft}</div>${act(`Vào ${icon('arrow',14)}`,L.action)}${x}`;}
   const m=meta(it.id),c=s.careers[it.id]||{},h=W.h;
   if(st.lock){const n=(W.env.api.content.journey?.unlock_chapter||{})[it.id];
     return `<span class="tw-card-ico locked" aria-hidden="true">${esc(st.emoji)}</span><div class="tw-card-text"><b>🔒 ${n===J.chapter+1?'Sắp mở':'Còn ở phía trước'}</b><small>${esc(h.CATS[h.catOf(m)]||'')}</small></div>${x}`;}
@@ -242,10 +300,13 @@ function loop(now){
   const dt=Math.min(.05,(now-W.last)/1000);W.last=now;W.time+=dt;
   const m=W.me;let busy=false;
   if(m.path?.length){
-    const sp=Math.max(SPEED,m.len||0)*dt,[tx,ty]=m.path[0],dx=tx-m.x,dy=ty-m.y,d=Math.hypot(dx,dy);busy=true;
-    if(d<=sp){m.x=tx;m.y=ty;m.path.shift();if(!m.path.length)arrived();}else{m.x+=dx/d*sp;m.y+=dy/d*sp;}
+    const sp=Math.max(SPEED,m.len||0)*dt,[tx,ty]=m.path[0],dx=tx-m.x,dy=ty-m.y,d=Math.hypot(dx,dy),x0=m.x;busy=true;
+    if(d<=sp){m.x=tx;m.y=ty;m.path.shift();}else{m.x+=dx/d*sp;m.y+=dy/d*sp;}
     m.step+=dt*10;
+    if(riding())steer(W.rv,m.x-x0,Math.min(d,sp)/ME,dt,still());
+    if(!m.path.length){m.path=null;const g=W.leg;if(g){legEnd(g);nextLeg();}else arrived();}
   }
+  else if(W.rv.turn<1){steer(W.rv,0,0,dt,still());busy=true;}
   if(!W.free){const [gx,gy]=camGoal(),k=1-Math.exp(-dt*7),ex=gx-W.cam.x,ey=gy-W.cam.y;
     if(Math.abs(ex)>.4||Math.abs(ey)>.4){W.cam.x+=ex*k;W.cam.y+=ey*k;busy=true;}else{W.cam.x=gx;W.cam.y=gy;}}
   const anim=animating();
@@ -283,10 +344,14 @@ function draw(){
   const inView=it=>it.x1>W.cam.x-20&&it.x0<W.cam.x+vw+20&&it.G>W.cam.y-20&&it.G-it.h<W.cam.y+vh+20;
   const near=W.at?items.find(it=>it.key===W.at):null;
   try{marks(c,W.pl,{t:W.time,reduced:still(),glow:W.marks.glow.filter(inView),arrow:W.marks.arrow&&inView(W.marks.arrow)?W.marks.arrow:null,near});}catch(e){console.warn('town: marks',e);}
-  // The player: the cached sprite, a little hop while walking.
-  const sp=sprite(),m=W.me,hop=m.path?.length&&!still()?Math.abs(Math.sin(m.step))*3:0;
-  c.setTransform(1,0,0,1,0,0);
-  c.drawImage(sp,Math.round((m.x-W.cam.x)*k*d-W.spriteFoot[0]),Math.round((m.y-W.cam.y-hop)*k*d-W.spriteFoot[1]));
+  // The player: the cached sprite, a little hop while walking; on the vehicle (./ride.js), or beside it parked.
+  const sp=sprite(),m=W.me,hop=m.path?.length&&!still()?Math.abs(Math.sin(m.step))*3:0,v=W.ride,world=()=>c.setTransform(k*d,0,0,k*d,-W.cam.x*k*d,-W.cam.y*k*d);
+  const me=()=>{
+    if(riding()){world();if(W.figKey!==W.spriteKey){W.figKey=W.spriteKey;W.fig=figure(S());}drawRide(c,{x:m.x,y:m.y,s:ME,px:k*d,F:W.fig,fkey:W.spriteKey,v,r:W.rv});return;}
+    c.setTransform(1,0,0,1,0,0);
+    c.drawImage(sp,Math.round((m.x-W.cam.x)*k*d-W.spriteFoot[0]),Math.round((m.y-W.cam.y-hop)*k*d-W.spriteFoot[1]));};
+  const pk=v&&W.park,parked=()=>{world();const f=pk.face??1;drawRide(c,{x:pk.x,y:pk.y,s:ME,px:k*d,v,r:{face:f,from:f,turn:1,ang:0}});};
+  if(pk&&pk.y<m.y){parked();me();}else if(pk){me();parked();}else me();
   // Where the view is, top left (written only when it changes: no layout per frame).
   const dist=districtAt(W.pl,[W.cam.x+vw/2,W.cam.y+vh*.58]),text=`${dist.emoji} ${tr(dist.name)}`;
   if(text!==W.whereText){W.whereText=text;W.where.textContent=text;}
@@ -296,7 +361,9 @@ function draw(){
 globalThis.__townWalk={
   state:()=>({on:visible(),me:W.me&&[Math.round(W.me.x),Math.round(W.me.y)],walking:!!W.me?.path?.length,at:W.at,card:!!W.card&&!W.card.hidden,
     cam:[Math.round(W.cam.x),Math.round(W.cam.y)],k:W.k,size:W.pl&&[W.pl.W,W.pl.H],items:W.pl?.items.length,where:W.whereText,
-    lit:W.marks?.glow?.map(it=>it.key)||[],arrow:W.marks?.arrow?.key||null}),
+    lit:W.marks?.glow?.map(it=>it.key)||[],arrow:W.marks?.arrow?.key||null,
+    ride:W.ride?.id||null,riding:riding(),park:W.park&&[Math.round(W.park.x),Math.round(W.park.y)],toggle:W.btn&&!W.btn.hidden?W.btn.textContent:null}),
+  toggle:()=>{W.btn?.click();return W.ride?.id||null;},
   /** Client point of a building's sign (null when it is off the view). */
   screen:key=>{const it=W.pl?.items.find(x=>x.key===key);if(!it||!W.cv)return null;const r=W.cv.getBoundingClientRect(),x=r.left+(it.cx-W.cam.x)*W.k,y=r.top+(it.G-it.h*.55-W.cam.y)*W.k;
     return x>r.left+4&&x<r.right-4&&y>r.top+4&&y<r.bottom-4?[x,y]:null;},

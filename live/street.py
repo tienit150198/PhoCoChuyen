@@ -18,6 +18,11 @@ Moving (memory only, never the database)
   last. Speech bubbles and emotes go out at once.
 * Blocks: blocked players are never put in the same instance; a block made during a stroll makes both
   invisible to each other at once (an `out` for each), and every frame from one never reaches the other.
+* 🛵 Riding (public/js/v4/ride.js): `walk_in` may carry `r` {v: a two-wheeler's id, c: its paint id}, and `ride {r}`
+  (r null: on foot again) changes it during a stroll. A rider moves RIDE_FAST times as fast: their public entry has
+  `r` and `v` (their speed, units a second) only while riding, an `rd` diff {pid, r, v, p, at} tells the room, and
+  their path is re-stamped from where they are. Optional everywhere: an older client sends none and ignores them
+  (it draws a rider walking, a little behind); a café and a wedding are always on foot.
 
 Talking
 * `say {text}` goes through the chat's store_message (filters, mutes, duplicates, kept like all chat) in the
@@ -36,13 +41,13 @@ Tables and happenings
 
 Frames (client → server; replies in brackets)
   walk_places {}                                   [walk_places {places: [{id, name, icon, n}]}]
-  walk_in {place, look, g, title, titles}          [walk_room {place, room, me, people, tables, geo, hap, at}]
-  walk_out {}  move {x, y}  say {text}  emote {e}  sit {table}  stand {}  topic {}
+  walk_in {place, look, g, title, titles, r?}      [walk_room {place, room, me, people, tables, geo, hap, at}]
+  walk_out {}  move {x, y}  say {text}  emote {e}  sit {table}  stand {}  topic {}  ride {r}
   card {pid}                                       [card {...}]
   invite {pid}                                     [invite_sent {id, pid}]; the other gets invited {id, pid, name}
   invite_reply {id, ok}                            [both: walk_room of the café | the inviter: invite_no {id}]
   grab {id}                                        [grabbed {id, n}; the room: happen_end {id, pid, name, n}]
-Server pushes: walk {ev: [{k: mv|in|out|tb, ...}], at}, said, emoted, happen, happen_end, walk_left {why}.
+Server pushes: walk {ev: [{k: mv|in|out|tb|rd, ...}], at}, said, emoted, happen, happen_end, walk_left {why}.
 
 For phase 3 (the dating bench lives in this scene): `spot(place, 'bench')` gives the bench's position,
 `where(player)` the (place, room) a player is strolling in.
@@ -53,6 +58,7 @@ import asyncio
 import heapq
 import math
 import random
+import re
 import secrets
 import time
 
@@ -82,6 +88,11 @@ INVITE_SECS = 30
 INVITES_MAX = 2000
 SEEN_MAX = 6              # rooms a player may still report bubbles of (the last ones they were in)
 STEP = 5.0                # sampling step when checking that a segment stays walkable
+# 🛵 The vehicles a player may ride on a stroll (and at the fair): game/garage.py's two-wheelers (tests/test_ride.py
+# keeps the two lists together). A car stays outside: these are walking places.
+RIDES = frozenset({'xe_dap', 'xe_dap_dien', 'xe_so', 'xe_ga'})
+RIDE_FAST = 1.6
+_WORD = re.compile(r'[a-z0-9_]{1,24}')
 
 
 def _num(v) -> bool:
@@ -193,9 +204,17 @@ class Geo:
 GEO = {k: Geo(k, v) for k, v in PLACES.items()}
 
 
-def pos_at(path: list, t0: float, now: float) -> tuple:
+def clean_ride(r) -> dict | None:
+    """The vehicle a player rides ({v, c}) or None (on foot): never refused, anything odd counts as on foot."""
+    if not isinstance(r, dict) or not isinstance(r.get('v'), str) or r['v'] not in RIDES:
+        return None
+    c = r.get('c')
+    return dict(v=r['v'], c=c if isinstance(c, str) and _WORD.fullmatch(c) else '')
+
+
+def pos_at(path: list, t0: float, now: float, speed: float = SPEED) -> tuple:
     """Where someone walking `path` since t0 is at `now` (the last point once arrived)."""
-    left = max(0.0, now - t0) * SPEED
+    left = max(0.0, now - t0) * speed
     for i in range(len(path) - 1):
         a, b = path[i], path[i + 1]
         seg = math.hypot(b[0] - a[0], b[1] - a[1])
@@ -241,20 +260,28 @@ def clean_look(look, g) -> tuple[dict, str | None]:
 
 
 class Walker:
-    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat')
+    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride')
 
-    def __init__(self, player, look: dict, g, title, at: tuple, now: float):
+    def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None):
         self.pid, self.player = player.pid, player
         self.name = player.name or 'Khách dạo phố'
         self.title, self.look, self.g = title, look, g
         self.path, self.t0, self.seat = [list(at), list(at)], now, None
+        self.ride = ride
+
+    @property
+    def speed(self) -> float:
+        return SPEED * RIDE_FAST if self.ride else SPEED
 
     def at(self, now: float) -> tuple:
-        return pos_at(self.path, self.t0, now)
+        return pos_at(self.path, self.t0, now, self.speed)
 
     def public(self) -> dict:
-        return dict(pid=self.pid, name=self.name, ti=self.title, lk=self.look, g=self.g, p=self.path, at=round(self.t0, 3),
-                    s=list(self.seat) if self.seat else None)
+        d = dict(pid=self.pid, name=self.name, ti=self.title, lk=self.look, g=self.g, p=self.path, at=round(self.t0, 3),
+                 s=list(self.seat) if self.seat else None)
+        if self.ride:
+            d['r'], d['v'] = self.ride, self.speed
+        return d
 
 
 class Table:
@@ -529,7 +556,7 @@ class StreetFeature(Feature):
         now = time.time()
         sx, sy = GEO[place].spots['spawn']
         at = GEO[place].clamp(sx + random.uniform(-150, 150), sy + random.uniform(-45, 45))
-        self._enter(room, conn, Walker(p, look, g, title, at, now))
+        self._enter(room, conn, Walker(p, look, g, title, at, now, clean_ride(f.get('r'))))
         return self._snapshot(room, p, now)
 
     @on('walk_out', rate=(10, 60))
@@ -551,6 +578,21 @@ class StreetFeature(Feature):
         g = GEO[room.data['place']]
         w.path, w.t0 = g.route(w.at(now), g.clamp(x, y)), now
         self._queue(room, w.pid, dict(k='mv', pid=w.pid, p=w.path, at=round(now, 3)))
+        return None
+
+    @on('ride', rate=(6, 10))
+    async def ride(self, conn, f):
+        """🛵 On or off the vehicle mid-stroll (`r`: {v, c} or null). Where they are now stays; the rest of the
+        path goes on at the new speed."""
+        room, w = self._me(conn)
+        r = clean_ride(f.get('r'))
+        if r == w.ride or GEO[room.data['place']].private:
+            return None
+        now = time.time()
+        here, end = w.at(now), tuple(w.path[-1])
+        w.ride = r
+        w.path, w.t0 = GEO[room.data['place']].route(here, end), now
+        self._queue(room, w.pid, dict(k='rd', pid=w.pid, r=r, v=w.speed, p=w.path, at=round(now, 3)))
         return None
 
     @on('say', rate=(5, 10))

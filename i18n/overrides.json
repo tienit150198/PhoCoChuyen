@@ -1,5 +1,16 @@
 {
  "strings": {
+  "Đi xe": "Ride",
+  "🚶 Đi bộ": "🚶 Walk",
+  "Đi bộ": "Walk",
+  "Mua xe để chạy quanh phố": "Buy a vehicle to ride around town",
+  "🚲 Đi xe": "🚲 Ride",
+  "🏍️ Đi xe": "🏍️ Ride",
+  "🛵 Đi xe": "🛵 Ride",
+  "🚗 Đi xe": "🚗 Ride",
+  "🚙 Đi xe": "🚙 Ride",
+  "🏎️ Đi xe": "🏎️ Ride",
+  "🚘 Đi xe": "🚘 Ride",
   "Bắn tim": "Finger heart",
   "Tim nhỏ": "Mini heart",
   "Tim trên đầu": "Heart on head",
@@ -9799,6 +9810,7 @@
   "Cảm ơn cô/thầy đã bù cho con. Tôi giữ nhận xét, mong buổi sau tốt hơn ạ.": "Thank you, teacher, for making it up to my child. I’ll keep my comment and hope next time is better."
  },
  "patterns": {
+  "$1 Đi xe": "$1 Ride",
   "Vào $1": "Go in $1",
   "Đi học $1": "Go study $1",
   "Luống $1": "Bed $1",

@@ -20,9 +20,12 @@ Rooms and positions (memory only, never the database)
 * Blocks: blocked players are never put in the same instance; a block made at the fair makes both invisible to
   each other at once (an `out` for each), and no frame from one reaches the other.
 
+* 🛵 Riding (public/js/v4/ride.js): `fair_in` / `fair_mv` may carry `r` {v: a two-wheeler's id, c: its paint id},
+  like `s` set anew by every walk and sent on with it only while set (live/street.py clean_ride). Older peers ignore it.
+
 Frames (client → server; replies in brackets)
-  fair_in {look, g, x, y, s?}  [fair_room {room, me, people: [{pid, name, lk, g, x, y, s?}], cap}]
-  fair_mv {p, ms, s?}          fair_out {}  [fair_left {why: 'out'}]
+  fair_in {look, g, x, y, s?, r?}  [fair_room {room, me, people: [{pid, name, lk, g, x, y, s?, r?}], cap}]
+  fair_mv {p, ms, s?, r?}          fair_out {}  [fair_left {why: 'out'}]
 Server pushes: fair {ev: [{k: in|mv|out, ...}]}, fair_left {why: 'other'}.
 A live service without this file answers `fair_in` with error 'unknown'; clients only send it when the welcome's
 flags have `fair` (an older service has no such flag: nobody else is drawn, the fairground works as before).
@@ -36,7 +39,7 @@ import re
 import time
 
 from .protocol import Feature, LiveError, on
-from .street import clean_look
+from .street import clean_look, clean_ride
 
 PREFIX = 'fair:'
 CAP = 30                  # players per instance (also the most a client draws)
@@ -69,19 +72,22 @@ def clean_stall(v) -> str | None:
 
 
 class Goer:
-    __slots__ = ('pid', 'player', 'name', 'look', 'g', 'x', 'y', 's')
+    __slots__ = ('pid', 'player', 'name', 'look', 'g', 'x', 'y', 's', 'r')
 
-    def __init__(self, player, look: dict, g, at: list, s: str | None = None):
+    def __init__(self, player, look: dict, g, at: list, s: str | None = None, r: dict | None = None):
         self.pid, self.player = player.pid, player
         self.name = player.name or ''
         self.look, self.g = look, g
         self.x, self.y = at
         self.s = s
+        self.r = r
 
     def public(self) -> dict:
         d = dict(pid=self.pid, name=self.name, lk=self.look, g=self.g, x=self.x, y=self.y)
         if self.s:
             d['s'] = self.s
+        if self.r:
+            d['r'] = self.r
         return d
 
 
@@ -204,7 +210,7 @@ class FairFeature(Feature):
         self._leave_player(p, 'other', keep=conn)
         room = self._pick(p)
         room.add(conn)
-        w = Goer(p, look, g, at, clean_stall(f.get('s')))
+        w = Goer(p, look, g, at, clean_stall(f.get('s')), clean_ride(f.get('r')))
         room.data['people'][p.pid] = w
         p.ext['fair'] = room.id
         conn.ext['fair'] = room.id
@@ -229,9 +235,12 @@ class FairFeature(Feature):
             path.insert(0, [w.x, w.y])
         w.x, w.y = path[-1]
         w.s = clean_stall(f.get('s'))
+        w.r = clean_ride(f.get('r'))
         ev = dict(k='mv', pid=w.pid, p=path, ms=int(min(MAX_MS, max(0, ms))))
         if w.s:
             ev['s'] = w.s
+        if w.r:
+            ev['r'] = w.r
         self._queue(room, w.pid, ev)
         return None
 

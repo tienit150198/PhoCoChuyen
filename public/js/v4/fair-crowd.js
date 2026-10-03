@@ -8,9 +8,13 @@
  * Positions travel as fractions of the floor (the landscape and portrait fairgrounds differ): a walk is the path this
  * client walks ([[x,y],...], 0..1) and how long it takes here; the others replay it from where they see the walker.
  * A live service without the room (no welcome.flags.fair) or no socket at all: nobody else is drawn, nothing is sent.
+ * 🛵 Someone riding their vehicle (./ride.js) says so on every walk (`r`: {v, c}, optional; an older peer or service
+ * leaves it out and they are drawn walking): drawn on it while they move or stand about, beside it parked while they
+ * play a stall. A vehicle this build cannot draw: walking.
  * Light: at most CAP others (the server's instance size), each a cached sprite; frames only while someone walks. */
 import {live} from './live.js';
 import {lookOf,figureOf,paintPlayer,CANVAS} from './look.js';
+import {fromWire,drawRide,rider,steer,halfOf,topOf} from './ride.js';
 
 const CAP=30,GAP=260,PTS=16,AV_W=110,AV_H=160;
 /** Where the 1st, 2nd… of the others at one stall stand around its stand point (scene units; the stand itself is mine). */
@@ -18,17 +22,21 @@ const AROUND=[[50,6],[-50,6],[100,14],[-100,14],[25,28],[-25,28],[75,32],[-75,32
 const word=v=>typeof v==='string'&&/^[a-z]{1,8}$/.test(v)?v:null;
 const ok=()=>Boolean(live.flags?.fair)&&live.state==='open';
 const r3=v=>Math.round(Math.min(1,Math.max(0,v))*1000)/1000;
+/** A vehicle on the wire ({v, c}: short words) or null. */
+const rideOf=r=>r&&typeof r==='object'&&typeof r.v==='string'&&/^[a-z0-9_]{1,24}$/.test(r.v)&&(r.c==null||typeof r.c==='string'&&/^[a-z0-9_]{0,24}$/.test(r.c))?{v:r.v,c:r.c||''}:null;
 
-/** state(): the save (look, gender); redraw(): a frame is due; still(): reduced motion (the others jump). */
-export function crowd({state,redraw,still}){
-  const C={want:false,room:null,me:null,at:null,s:null,people:new Map(),pend:null,sentAt:0,timer:0,retry:0,joining:false};
+/** state(): the save (look, gender); content(): the static lists (the garage's, to draw a vehicle); redraw(): a frame
+ * is due; still(): reduced motion (the others jump). */
+export function crowd({state,content=()=>null,redraw,still}){
+  const C={want:false,room:null,me:null,at:null,s:null,r:null,people:new Map(),pend:null,sentAt:0,timer:0,retry:0,joining:false};
   const clear=()=>{C.room=null;C.me=null;C.joining=false;C.people.clear();clearTimeout(C.timer);C.pend=null;redraw();};
 
-  function join(at){
-    C.want=true;if(at)C.at=at.map(r3);
+  /** `r`: the vehicle ridden ({v, c}, ./ride.js wire) or none. */
+  function join(at,r){
+    C.want=true;if(at)C.at=at.map(r3);if(r!==undefined)C.r=rideOf(r);
     if(C.room||C.joining||!ok())return;
     const st=state()||{};
-    C.joining=live.send({t:'fair_in',look:lookOf(st),g:st.journey?.gender??null,x:C.at?.[0]??.2,y:C.at?.[1]??.95,...(C.s?{s:C.s}:{})});
+    C.joining=live.send({t:'fair_in',look:lookOf(st),g:st.journey?.gender??null,x:C.at?.[0]??.2,y:C.at?.[1]??.95,...(C.s?{s:C.s}:{}),...(C.r?{r:C.r}:{})});
   }
   function leave(){
     if(!C.want&&!C.room)return;
@@ -37,27 +45,29 @@ export function crowd({state,redraw,still}){
     clear();
   }
   /** My walk (scene points already turned into fractions, the first where I stand), ms long here; `s`: the stall I
-   * play at its end (none: walking about). Staying put only to change `s` keeps a walk still waiting to be sent. */
-  function walk(path,ms,s=null){
+   * play at its end (none: walking about), `r` the vehicle ridden (none: on foot). Staying put only to change `s` or
+   * `r` keeps a walk still waiting to be sent. */
+  function walk(path,ms,s=null,r=null){
     if(!path?.length)return;
-    C.at=path[path.length-1].map(r3);C.s=word(s);
+    C.at=path[path.length-1].map(r3);C.s=word(s);C.r=rideOf(r);
     if(!C.room)return;
     let p=path.map(q=>q.map(r3));
     if(p.length>PTS){const n=p.length;p=Array.from({length:PTS},(_,i)=>p[Math.round(i*(n-1)/(PTS-1))]);}
     const put=p.every(q=>Math.abs(q[0]-p[0][0])<.01&&Math.abs(q[1]-p[0][1])<.01);
     C.pend=put&&C.pend?{p:C.pend.p,ms:C.pend.ms}:{p,ms:Math.max(0,Math.round(ms))};
     if(C.s)C.pend.s=C.s;
+    if(C.r)C.pend.r=C.r;
     const wait=C.sentAt+GAP-performance.now();clearTimeout(C.timer);
     if(wait<=0)flush();else C.timer=setTimeout(flush,wait);
   }
   function flush(){if(!C.pend||!C.room)return;live.send({t:'fair_mv',...C.pend});C.pend=null;C.sentAt=performance.now();}
 
   /* ---- the others ---- */
-  function person(e){return {pid:e.pid,name:e.name||'',lk:e.lk,g:e.g,x:e.x,y:e.y,s:word(e.s),path:null,t0:0,ms:0,len:0,sp:null,spk:''};}
+  function person(e){return {pid:e.pid,name:e.name||'',lk:e.lk,g:e.g,x:e.x,y:e.y,s:word(e.s),r:rideOf(e.r),path:null,t0:0,ms:0,len:0,sp:null,spk:'',rv:rider(),lx:null,fig:null,fk:'p'+JSON.stringify([e.lk,e.g])};}
   function add(e){if(e.pid===C.me||C.people.has(e.pid)||C.people.size>=CAP||typeof e.x!=='number')return;C.people.set(e.pid,person(e));}
   function move(e){
     const q=C.people.get(e.pid);if(!q||!Array.isArray(e.p)||!e.p.length)return;
-    q.s=word(e.s);   // every walk says it anew (an older live service never sends it)
+    q.s=word(e.s);q.r=rideOf(e.r);   // every walk says both anew (an older live service never sends them)
     const end=e.p[e.p.length-1];
     if(still()||!(e.ms>0)){q.x=end[0];q.y=end[1];q.path=null;return;}
     const now=performance.now(),[x,y]=at(q,now),path=[[x,y],...e.p.slice(1)];   // from where this player sees them
@@ -110,8 +120,8 @@ export function crowd({state,redraw,still}){
   /** [[depth y, draw]] for each other walker (sorted with the stalls and me by the caller); fills q.sx/q.sy for tags.
    * snap(p): someone standing still is put on free floor of this layout (theirs may be the other one), `key` names it;
    * stand(s): this layout's stand point of stall s (null: no such stall here), where someone playing it stands. */
-  function items(c,{xy,scale,px,t,snap,key,stand}){
-    const out=[],now=performance.now(),slot=new Map();
+  function items(c,{xy,scale,px,unit=px,t,snap,key,stand}){
+    const out=[],now=performance.now(),slot=new Map(),ct=content();
     for(const q of C.people.values()){
       const [u,v,moving]=at(q,now);let [x,y]=xy(u,v);
       const st=!moving&&q.s&&stand?stand(q.s):null;
@@ -119,6 +129,16 @@ export function crowd({state,redraw,still}){
         if(q.snk!==k){const p=[st[0]+d[0],st[1]+d[1]];q.snk=k;q.snp=snap?.(p)||p;}[x,y]=q.snp;}
       else if(!moving&&snap){const k=`${u},${v},${key}`;if(q.snk!==k){q.snk=k;q.snp=snap([x,y])||[x,y];}[x,y]=q.snp;}
       const s=scale(y);q.sx=x;q.sy=y;q.top=y-132*s;
+      if(q.rk!==q.r){q.rk=q.r;q.ride=q.r&&fromWire(q.r,ct);}
+      const ride=q.ride;
+      if(ride){   // 🛵 on their vehicle; at a stall, on foot beside it
+        const dt=Math.min(.1,Math.max(0,(now-(q.lt||now))/1000));
+        if(q.lx!=null)steer(q.rv,x-q.lx,Math.abs(x-q.lx)/s,dt,still());q.lx=x;q.lt=now;
+        if(!moving&&st){const px_=x+(x<st[0]?-1:1)*(halfOf(ride)*s+14),f=q.rv.face;
+          out.push([y+4,()=>drawRide(c,{x:px_,y:y+4,s,px:unit,v:ride,r:{face:f,from:f,turn:1,ang:0}})]);}
+        else{q.fig??=figureOf(q.lk,q.g);q.top=y-topOf(ride)*s;
+          out.push([y,()=>drawRide(c,{x,y,s,px:unit,F:q.fig,fkey:q.fk,v:ride,r:q.rv})]);continue;}
+      }
       out.push([y,()=>{const sp=sprite(q,px),bob=moving&&!still()?-Math.abs(Math.sin(t*9+x*.05))*3:0;
         c.drawImage(sp,x-55*s,y-150*s+bob,AV_W*s,AV_H*s);}]);
     }
@@ -142,8 +162,8 @@ export function crowd({state,redraw,still}){
         c.font='12px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';c.fillStyle='#4a3226';c.fillText(b,x,by+1);}
     }
   }
-  const busy=()=>{for(const q of C.people.values())if(q.path)return true;return false;};
+  const busy=()=>{for(const q of C.people.values())if(q.path||q.rv.turn<1)return true;return false;};
 
   return {join,leave,walk,items,tags,busy,
-    state:()=>({on:Boolean(C.room),room:C.room,me:C.me,s:C.s,people:[...C.people.values()].map(q=>{const [x,y,m]=at(q,performance.now());return {pid:q.pid,name:q.name,x,y,walking:m,s:q.s};})})};
+    state:()=>({on:Boolean(C.room),room:C.room,me:C.me,s:C.s,people:[...C.people.values()].map(q=>{const [x,y,m]=at(q,performance.now());return {pid:q.pid,name:q.name,x,y,walking:m,s:q.s,ride:q.r?.v||null};})})};
 }
