@@ -419,10 +419,11 @@ function enterApproach(){
   setPhase('approach',{g1:late?{stable:true,sent:true}:null,g2:null,g1sent:late,touch:null,callH:1e9,sent:false,auto:false,lowSay:0});
   chip(`🛬 Tiếp cận ${t.where||''}`);
   const lines=[];
-  if((fly.kt||0)>122&&!late)lines.push('Tàu đang nhanh quá, giảm ga ngay!');
-  else if(fly.dots>=2&&!late)lines.push('Mình đang cao, xuống dốc hơn chút.');
-  else if((fly.sink||0)>1000&&!late)lines.push('Xuống gấp quá, kéo nhẹ lên!');
-  say(`🧑‍✈️ Em cầm lái nhé. Giữ 2 trắng 2 đỏ, ${VREF} knot.${lines.length?' '+lines[0]:''}`,{now:true,ms:4200});
+  if((fly.kt||0)>122&&!late)lines.push('🧑‍✈️ Tàu đang nhanh quá, giảm ga ngay!');
+  else if(fly.dots>=2&&!late)lines.push('🧑‍✈️ Mình đang cao, xuống dốc hơn chút.');
+  else if((fly.sink||0)>1000&&!late)lines.push('🧑‍✈️ Xuống gấp quá, kéo nhẹ lên!');
+  say(`🧑‍✈️ Em cầm lái nhé. Giữ 2 trắng 2 đỏ, ${VREF} knot.`,{now:true,ms:3000});
+  if(lines.length)say(lines[0],{ms:3000});
   if(Math.abs(w.cw)/KT>=14)say(`📻 Đài: gió ngang ${Math.round(Math.abs(w.cw)/KT)} knot.`,{ms:2600});
   tip('approach','2 trắng 2 đỏ là đúng dốc. Chị hô thì ghìm mũi cho êm.');
 }
@@ -457,10 +458,11 @@ function stepApproach(){
     say(line,{now:true,ms:3000});
     if(!j.stable||!t.ap&&(fly.rwy===false||(fly.wind||0)>28))F.el.querySelector('.pl-fly-ga').classList.add('hot');
   }
-  for(const [h,s] of [[50,'Năm mươi'],[30,'Ba mươi'],[10,'Mười']])if(hft<=h)say(`🔊 ${s}.`,{key:'ra'+h,ms:900,now:h===30});
+  for(const [h,s] of [[50,'🔊 Năm mươi.'],[30,'🔊 Ba mươi.'],[10,'🔊 Mười.']])if(hft<=h)say(s,{key:'ra'+h,ms:900,now:h===30});
   if(hft<=25&&S.Tt>.15){S.Tt=0;say('🧑‍✈️ Thu ga, ghìm mũi!',{key:'flare',now:true,ms:1600});}
   // The captain takes it: far too low short of the runway, or not lined up at all.
   const dist=AIM-S.z;
+  if(!P.auto&&S.z>LEN-500){P.auto=true;say('🧑‍✈️ Hết đường băng rồi, bay lại!',{now:true,ms:2600});goAround('captain');return;}
   if(!P.auto&&((hft<160&&dist>1200)||(hft<70&&(S.z<-150||Math.abs(S.x)>40))||hft>2000)){
     P.auto=true;say(hft>2000?'🧑‍✈️ Mình bay lại cho chắc.':'🧑‍✈️ Thấp quá! Chị cầm lái, bay lại.',{now:true,ms:2600});goAround('captain');
   }
@@ -544,7 +546,8 @@ function physics(dt){
     return;
   }
   if(TIMELAPSE.includes(ph)){S.vs=0;return;}         // the autopilot's time-lapse moves the aircraft itself
-  const gam=clamp(S.th-alpha(S.V),-14*D2R,16*D2R);
+  const slow=Math.max(0,95-S.V/KT)*.18*D2R;             // too slow: the wings give up some lift
+  const gam=clamp(S.th-alpha(S.V)-slow,-14*D2R,16*D2R);
   S.vs=S.V*Math.sin(gam)+(gu?n2*1.1*gu*calm:0);
   if(S.vs<0&&S.h<12*FT&&ph==='approach')S.vs*=.6;     // the air cushion just above the runway
   S.h+=S.vs*dts;
@@ -574,10 +577,10 @@ function director(){
   if(ph==='approach'||ph==='rollout'){
     const dist=Math.max(30,AIM-S.z),hgs=Math.max(0,dist*Math.tan(GS)),dev=S.h-hgs;
     let gam=clamp(-3-dev*.05,-6,-.6)*D2R;
-    if(S.h<35*FT)gam=-.8*D2R;
+    if(S.h<35*FT)gam=-lerp(.5,2.2,S.h/(35*FT))*D2R;    // the flare: less and less sink, never level
     const vx=S.V*Math.sin(S.psi)+w.cw;
     const want=clamp(-S.x*.0016-vx*.035,-.3,.3)+Math.asin(clamp(-w.cw/Math.max(S.V,40),-.3,.3));
-    return {th:gam+alpha(S.V)+(S.h<35*FT?1.5*D2R:0),ph:clamp((want-S.psi)*3,-20*D2R,20*D2R)};
+    return {th:gam+alpha(S.V),ph:clamp((want-S.psi)*3,-20*D2R,20*D2R)};
   }
   return {th:2*D2R,ph:0};
 }
