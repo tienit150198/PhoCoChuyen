@@ -700,7 +700,7 @@ def _buy(s, c, d, p):
     bill['receipt'] = False
     kit.start_work(t)
     tail = ' Hóa đơn cũ không tính món này: xin ghi lại nhé.' if again else ''
-    return dict(message=f'🛒 Mua {n} phần {_lower(x["name"])} · {price} xu. Ví còn {t["purse"]} xu.{tail}')
+    return dict(message=f'🛒 Mua {n} phần {_lower(x["name"])} · {price} xu. Ví tiền chợ còn {t["purse"]} xu.{tail}')
 
 
 def _return(s, c, d, p):
@@ -759,7 +759,7 @@ def _home(s, c, d, p):
     t['dishes'] = {t['menu'][g]: _fresh_dish() for g in GROUP_ORDER}
     t['table'] = dict(bowls=0, mam=t['_key']['mam'], tasted=False)
     spent = t['needs']['budget'] - t['purse']
-    return dict(message=f'🏠 Xách giỏ về nhà: chợ hết {spent} xu, ví còn {t["purse"]} xu. Vo gạo bắc nồi cơm trước nhé.')
+    return dict(message=f'🏠 Xách giỏ về nhà: chợ hết {spent} xu, ví tiền chợ còn {t["purse"]} xu. Vo gạo bắc nồi cơm trước nhé.')
 
 
 # ---------------------------------------------------------------- the kitchen
@@ -1041,7 +1041,8 @@ def _done(s, c, d, p):
     t['stage'] = 'done'
     head = f'💵 Gửi lại {back} xu tiền thừa cùng sổ chợ ({spent} xu tiền chợ).'
     kit.complete(s, c, t, pay, f'{head} {said}'.strip()[:300])
-    msg = f'{head} {said} 💰 Công bữa nay {pay} xu.'.strip()
+    # The pay first: a toast shows its first note only (chat 03/10 "không có tiền hả").
+    msg = f'💰 Công bữa nay {pay} xu. {head} {said}'.strip()
     return dict(message=f'{msg} 💬 {story}' if story else msg, celebrate=not cq.slips(t))
 
 
@@ -1057,7 +1058,7 @@ def _bring(s, c, d, p):
     d['stats']['extras'] += 1
     head = f'🍽️ Mang {_lower(DISHES[k]["name"])} ra cho {_lower(_who(t))}.'
     kit.complete(s, c, t, pay, f'{head} {said}'.strip()[:300])
-    return dict(message=f'{head} {said} 💰 {pay} xu.'.strip(), celebrate=not cq.slips(t))
+    return dict(message=f'💰 Nhận {pay} xu. {head} {said}'.strip(), celebrate=not cq.slips(t))
 
 
 ACTIONS = {
@@ -1097,11 +1098,16 @@ def on_close(s: dict, c: dict) -> dict:
     today = d['today']
     fam = family_of(c['day'])
     lines = []
+    earned = max(0, int(c.get('earnings') or 0))
     if today['meals']:
         lines.append(f'🍲 Nấu bữa cơm cho {_lower(fam["name"])}' + (f', thêm {today["extras"]} món' if today['extras'] else '') + '.')
+        if earned:
+            lines.append(kit.earned_line(s, earned))
         lines.append(f'📒 Tiền chợ {today["budget"]} xu: tiêu {today["spent"]} xu, gửi lại {today["back"]} xu.')
     else:
         lines.append(f'🍲 Bữa cơm {_lower(fam["name"])} hôm nay chưa xong.')
+        if earned:
+            lines.append(kit.earned_line(s, earned))
     if today['cold']:
         lines.append(f'♨️ Có {today["cold"]} món nguội trên mâm: món lâu chín bắc trước, món nhanh để sau.')
     if desk_note:
@@ -1113,7 +1119,7 @@ def on_close(s: dict, c: dict) -> dict:
                 if st.get('start') is not None and st.get('done') is None:
                     st.update(done=round(kit.now(), 3), q='chay')
     tm, tf = mod_of(c['day'] + 1), family_of(c['day'] + 1)
-    return dict(lines=lines, meals=today['meals'], extras=today['extras'], spent=today['spent'], budget=today['budget'], back=today['back'],
+    return dict(lines=lines, earned=earned, meals=today['meals'], extras=today['extras'], spent=today['spent'], budget=today['budget'], back=today['back'],
                 cold=today['cold'], family=dict(name=fam['name'], emoji=fam['emoji']),
                 tomorrow=dict(emoji=tm['emoji'], label=tm['label'], hint=tm['hint'], family=tf['name'], fam_emoji=tf['emoji']))
 

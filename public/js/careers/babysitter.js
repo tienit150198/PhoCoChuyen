@@ -236,8 +236,8 @@ export default {
     if(!sum||sum.care==null||sum.kid==null)return '';
     const tm=sum.tomorrow,row=(l,v)=>`<div class="kv-row"><span>${l}</span><b>${v}</b></div>`;
     const plan=`<section class="bm-tomorrow" aria-label="Ngày mai"><h4 class="section-title">🌅 Ngày mai</h4>${tm?`<p><span aria-hidden="true">${x.esc(tm.emoji)}</span> <b>${x.esc(tm.label)}</b> <small class="muted">${x.esc(tm.hint)}</small></p>`:''}${sum.note?`<p class="small">${x.esc(sum.note)}</p>`:''}</section>`;
-    const kv=`<div class="kv">${row('Việc trong ngày',sum.blocks)}${row('Chăm kỹ',`${sum.care}%`)}${row('Bàn giao',sum.handed?'✓':'—')}</div>${(sum.lines||[]).length?`<ul class="small">${sum.lines.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>`:''}`;
-    return `<article class="card space-top bm-sum">${plan}<details class="bm-sum-more"><summary>👶 Bé ${x.esc(sum.kid)} hôm nay · chăm kỹ ${sum.care}%</summary>${kv}</details></article>`;
+    const kv=`<div class="kv">${row('Việc trong ngày',sum.blocks)}${row('Chăm kỹ',`${sum.care}%`)}${row('Bàn giao',sum.handed?'✓':'—')}${sum.earned?row('Tiền công',`${sum.earned} xu`):''}</div>${(sum.lines||[]).length?`<ul class="small">${sum.lines.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>`:''}`;
+    return `<article class="card space-top bm-sum">${plan}<details class="bm-sum-more"><summary>👶 Bé ${x.esc(sum.kid)} hôm nay · chăm kỹ ${sum.care}%${sum.earned?` · 💵 ${sum.earned} xu`:''}</summary>${kv}</details></article>`;
   },
   actions:{...kitActions,async notes(d,el,x){x.render();setTimeout(()=>document.querySelector('.bm-kid')?.scrollIntoView({block:'center'}),0);}},
   dock:[['car:notes','book','Giấy dặn của bố mẹ','Dị ứng, giờ ngủ, đồ ôm'],['car:intro','question','Giới thiệu nghề','Công việc & sao']],

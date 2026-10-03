@@ -143,7 +143,35 @@ def submit(t: dict, step_id, answer) -> tuple[bool, str]:
     hint = hints[min(len(hints), ps['attempts'][st['id']]) - 1]
     if st['kind'] == 'order':  # say where it goes wrong, not only the general rule
         return False, f'{order_where(st, answer)} {hint}'
+    if st['kind'] == 'multi':
+        # Feedback #124: the n-th hint came on the n-th try whatever was wrong ("Pháo không an toàn" for a player
+        # who never ticked the fireworks). Say what is off, then the hint about that: a wrong tick first, then a missing one.
+        return False, f'{multi_where(st, answer)} {multi_hint(st, answer) or hint}'
+    if st['kind'] == 'match':
+        return False, f'{match_where(st, answer)} {hint}'
     return False, hint
+
+
+def multi_where(st: dict, answer: list) -> str:
+    """How many of the needed ticks a multiple choice got, and how many extra (never which)."""
+    got, need = set(answer), set(st['_key'])
+    more = len(got - need)
+    return f'Đúng {len(got & need)}/{len(need)} mục cần chọn' + (f', thừa {more} mục' if more else '') + '.'
+
+
+def multi_hint(st: dict, answer: list) -> str | None:
+    """The step's own word about the first wrong tick (it has to go), else about the first missing one.
+    `_why` is private ({option id: hint}, optional): steps without it fall back to their hints."""
+    why = st.get('_why') or {}
+    picked = set(answer)
+    wrong = [o['id'] for o in st.get('options', []) if o['id'] in picked and o['id'] not in st['_key']]
+    missing = [x for x in st['_key'] if x not in picked]
+    return next((why[x] for x in wrong + missing if isinstance(why.get(x), str)), None)
+
+
+def match_where(st: dict, answer: dict) -> str:
+    k = st['_key']
+    return f'Ghép đúng {sum(1 for a, b in k.items() if answer.get(a) == b)}/{len(k)} dòng.'
 
 
 def order_where(st: dict, answer: list) -> str:
