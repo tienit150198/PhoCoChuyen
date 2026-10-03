@@ -12,6 +12,13 @@ from .jsoncopy import tree_copy
 COURSE_IDS = ('basic', 'vn_business')
 PASS_MARK = 80
 DRAW = {'basic': 24, 'vn_business': 40}
+# A choice's right option id follows its prompt's letters (accounting_content.choice), so a wording fix can move
+# it. Answers a released build accepted stay right: {question id: the key it had}. Until 1.4.27 (spaces put back).
+LEGACY_KEYS = {
+    'vn_business_vouchers_practice_2': 'o1',
+    'vn_business_b01_practice_3': 'o2',
+    'vn_business_demanddeposit_exam': 'o1',
+}
 
 
 def _content():
@@ -52,7 +59,9 @@ def _need(ok,message):
     need(ok,message)
 
 
-def _check(q, answer):
+def _check(q, answer, legacy=False):
+    """`legacy`: grade by the key an earlier build used (LEGACY_KEYS), for answers saved back then."""
+    if legacy and q.get('id') in LEGACY_KEYS: q=dict(q,_key=LEGACY_KEYS[q['id']])
     if q['kind']=='entry' and q['_key'] and isinstance(q['_key'][0],dict):
         q=dict(q,_key=[(x['debit'],x['credit'],x['amount']) for x in q['_key']])
     return _shape(q,answer) and procedures.check(q,answer)
@@ -99,9 +108,24 @@ def _draw(s,cid,attempt):
     return chosen
 
 
-def _grade(cid,paper):
-    right=sum(_check(exam_question(cid,qid),paper['answers'][qid]) for qid in paper['qs'])
+def _grade(cid,paper,legacy=False):
+    right=sum(_check(exam_question(cid,qid),paper['answers'][qid],legacy) for qid in paper['qs'])
     return (200*right+len(paper['qs']))//(2*len(paper['qs']))
+
+
+def _graded_legacy(cid,paper,score):
+    """The stored score was given by an earlier build's keys (LEGACY_KEYS), not by today's."""
+    return score!=_grade(cid,paper) and score==_grade(cid,paper,True)
+
+
+def _saved_right(q,answer):
+    """A saved practice answer: right by today's key or by the one it was graded with."""
+    return _check(q,answer) or _check(q,answer,True)
+
+
+def _shown_answer(q,answer):
+    """A practice answer saved under an earlier key points at today's right option, so the solved card shows it."""
+    return q['_key'] if answer is not None and q.get('id') in LEGACY_KEYS and not _check(q,answer) and _check(q,answer,True) else answer
 
 
 def _safe_question(q,answer=None,solved=False,lesson=None):
@@ -280,7 +304,7 @@ def view(s,raw=None):
     if lid and tab in (None,'learn'):
         l=_content().LESSONS[lid]; rec=a['progress'][lid]
         lesson={k:tree_copy(v) for k,v in l.items() if k!='questions' and not k.startswith('_')}
-        lesson['questions']=[_safe_question(q,rec['answers'].get(q['id']),q['id'] in rec['answers'],l) for q in l['questions']]
+        lesson['questions']=[_safe_question(q,_shown_answer(q,rec['answers'].get(q['id'])),q['id'] in rec['answers'],l) for q in l['questions']]
         lesson['done']=lesson_done(s,lid)
     exam=None;paper=a['active_exam']
     if paper:
@@ -291,8 +315,9 @@ def view(s,raw=None):
     for cid,rec in a['exams'].items():
         last=rec.get('last')
         if last and (tab is None or (tab=='exam' and spec['course'] in (None,cid))):
+            old=_graded_legacy(cid,last,rec['score'])
             review[cid]=dict(score=rec['score'],passed=rec['score']>=PASS_MARK,questions=[dict(question=_safe_question(exam_question(cid,qid),last['answers'][qid],True),
-                            correct=_check(exam_question(cid,qid),last['answers'][qid])) for qid in last['qs']])
+                            correct=_check(exam_question(cid,qid),last['answers'][qid],old)) for qid in last['qs']])
     book=a['company']
     out=dict(summary(s),courses=courses,selected=lid,lesson=lesson,active_exam=exam,review=review,
              company_unlocked=certified(s,'vn_business'),referral=_referral(s),
@@ -319,7 +344,7 @@ def validate(s):
         integer(rec['attempts'],0,10**6)
         qs={q['id']:q for q in lessons[lid]['questions']}
         _need(isinstance(rec['answers'],dict) and set(rec['answers'])<=set(qs) and rec['attempts']>=len(rec['answers']),'Đáp án bài học không hợp lệ.')
-        for qid,answer in rec['answers'].items(): _need(_check(qs[qid],answer),'Đáp án đã lưu chưa được chấm đúng.')
+        for qid,answer in rec['answers'].items(): _need(_saved_right(qs[qid],answer),'Đáp án đã lưu chưa được chấm đúng.')
     _need(a['selected'] is None or a['selected'] in a['progress'],'Bài đang mở chưa được đọc.')
     _need(isinstance(a['exams'],dict) and set(a['exams'])<=set(COURSE_IDS),'Kết quả thi có khóa lạ.')
     def check_paper(cid,paper,complete):
@@ -336,12 +361,12 @@ def validate(s):
         integer(rec['attempts'],1,10**6);integer(rec['score'],0,100);integer(rec['best'],rec['score'],100)
         if rec['last'] is not None:
             check_paper(cid,rec['last'],True)
-            _need(rec['last']['attempt']<=rec['attempts'] and rec['score']==_grade(cid,rec['last']),'Điểm thi không khớp bài làm.')
+            _need(rec['last']['attempt']<=rec['attempts'] and rec['score'] in (_grade(cid,rec['last']),_grade(cid,rec['last'],True)),'Điểm thi không khớp bài làm.')
         cert=rec['certificate']
         if cert is not None:
             _need(isinstance(cert,dict) and set(cert)=={'id','course','score','date','serial','proof'} and cert['id']=='pcc-accounting-'+cid and cert['course']==cid,'Chứng nhận sai khóa.')
             check_paper(cid,cert['proof'],True)
-            _need(cert['score']==_grade(cid,cert['proof'])>=PASS_MARK and rec['best']>=cert['score'] and cert['proof']['attempt']<=rec['attempts'] and course_done(s,cid),'Chứng nhận không có bài thi đạt hợp lệ.')
+            _need(cert['score'] in (_grade(cid,cert['proof']),_grade(cid,cert['proof'],True)) and cert['score']>=PASS_MARK and rec['best']>=cert['score'] and cert['proof']['attempt']<=rec['attempts'] and course_done(s,cid),'Chứng nhận không có bài thi đạt hợp lệ.')
             _need(isinstance(cert['date'],str) and re.fullmatch(r'\d{4}-\d{2}-\d{2}',cert['date']) and isinstance(cert['serial'],str) and len(cert['serial'])<=40,'Thông tin chứng nhận không hợp lệ.')
     if certified(s,'vn_business'): _need(certified(s,'basic'),'Chứng nhận doanh nghiệp cần chứng nhận cơ bản.')
     if a['active_exam'] is not None:
