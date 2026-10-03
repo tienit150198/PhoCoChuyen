@@ -2,7 +2,10 @@
  * One hop at a time, one panel at a time: the briefing and the fuel, the walk-around on the
  * aircraft drawing, the switch panel in the checklist's order and the announcement, a decision
  * on the way, then the two approach gates. Dark cockpit look, amber for what needs a decision.
- * Everything is decided on the server; the client shows it and sends one command per tap. */
+ * Everything is decided on the server; the client shows it and sends one command per tap.
+ * ✈️ Tự bay (./pilot_fly.js, loaded when first needed): the take-off, a storm cell on the track and the approach are
+ * flown in a first-person cockpit; ⏩ Bay nhanh keeps these panels. The cockpit shows this file's own decision
+ * panels (turbulence, a sick passenger, weather over the field, the rain set-up) over its instrument panel. */
 import {nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import * as air from './air_kit.js';
@@ -11,6 +14,52 @@ const cc=x=>x.cc||{};
 const kg=n=>`${Number(n||0).toLocaleString('vi-VN')} kg`;
 const carBtn=(x,label,action,d={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-action="car:${action}"${Object.entries(d).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}${extra}>${label}</button>`;
 const cmdTile=(x,command,payload,inner,cls='',disabled=false,extra='')=>`<button type="button" class="pl-tile ${cls}" data-command="${command}" data-payload="${x.esc(JSON.stringify(payload))}"${disabled?' disabled':''}${extra}>${inner}</button>`;
+/* ------------------------------------------------------------ ✈️ Tự bay / ⏩ Bay nhanh */
+// The player's choice, kept in this browser like the other display choices (mnl.*). Tự bay unless they chose
+// Bay nhanh, the cockpit cannot run here (or ran too slowly), or a script drives the browser (the first-day sweeps
+// press what glows: nobody flies them).
+const FLY_KEY='mnl.plFly';
+function flyPref(){try{const v=localStorage.getItem(FLY_KEY);if(v==='1')return true;if(v==='0')return false;}catch{/* storage blocked */}return !navigator.webdriver;}
+function setFly(on){try{localStorage.setItem(FLY_KEY,on?'1':'0');}catch{/* storage blocked */}}
+let FLY=null,flyLoad=null,flyFail=false,shown=null;
+const flyAuto=new Set();   // the hop states the cockpit already opened by itself on (never twice: no loop after a fallback)
+function flyMod(){
+  if(FLY||flyFail)return Promise.resolve(FLY);
+  return flyLoad??=import('./pilot_fly.js').then(m=>(FLY=m)).catch(e=>{flyFail=true;console.warn('Chưa mở được buồng lái',e);return null;});
+}
+const flyCan=()=>!flyFail&&(!FLY||FLY.canFly());
+const flyOn=()=>flyCan()&&flyPref();
+/** What the cockpit shows over its panel while the autopilot flies: this file's decision panels. */
+function flyAsk(t,x){
+  if(t.stage==='cruise')return cruisePanel(t,x);
+  if(t.stage==='approach'&&(t.problem||skyOf(t,x)))return approachPanel(t,x);
+  return '';
+}
+async function openFly(x,t){
+  const m=await flyMod();
+  if(!m||!m.canFly()){x.render();return;}
+  m.open(x,t,{ask:flyAsk,fallback:()=>{setFly(false);x.render();},done:()=>x.render()});
+  m.sync(x,t);
+}
+/** After each render and a few times a second: keep the cockpit current, or open it on a hop in the air. */
+function flyTick(x){
+  const t=shown;if(!x||!t)return;
+  const live=t&&x.room.tasks?.find(r=>r.id===t.id)||t;
+  if(FLY?.isOpen()){FLY.sync(x,live);return;}
+  if(!flyOn()||!['cruise','approach'].includes(live.stage))return;
+  const d=data(x);
+  if(d.desk?.ev||d.odd?.ev){flyAuto.clear();return;}   // after that answer the cockpit comes back
+  if(!d.intro||x.ui.intro)return;
+  const key=`${live.id}|${live.stage}|${live.ap}|${live.gate}|${live.arounds}|${live.problem||''}|${live.at||''}`;
+  if(flyAuto.has(key))return;
+  flyAuto.add(key);openFly(x,live);
+}
+function modeSwitch(x){
+  if(!flyCan())return '';
+  const on=flyPref();
+  return `<div class="pl-mode" role="radiogroup" aria-label="Cách bay">${carBtn(x,'✈️ Tự bay','flyMode',{on:1},on?'on':'',` role="radio" aria-checked="${on}"`)}${carBtn(x,'⏩ Bay nhanh','flyMode',{on:0},on?'':'on',` role="radio" aria-checked="${!on}"`)}</div>`;
+}
+
 const STAGES=[['brief','📋','Bản tin'],['walk','🚶','Vòng tàu'],['start','✅','Checklist'],['cruise','✈️','Bay'],['approach','🛬','Hạ cánh']];
 
 /* ------------------------------------------------------------ cards on top */
@@ -184,7 +233,8 @@ function guide(t,x){
     const done=t.switches||[];
     const steps=(c.checklist||[]).map((r,i)=>({ok:i<done.length?true:null,label:`${r.name}: ${r.state}`,go:i===done.length?{cmd:'pl_switch',payload:{task:id,id:r.id},label:`${x.esc(r.emoji)} ${x.esc(r.name)}: ${x.esc(r.state)}`}:null}));
     if(t.delay)steps.push({ok:t.pa?true:null,label:'Thông báo trễ chuyến cho khách',go:t.pa?null:{sel:'.pl-pa',label:'📢 Chọn câu thông báo'},pulse:first?'.pl-pa-clear':''});
-    return {steps,final:{label:'🛫 CẤT CÁNH',go:finalGo(steps,'pl_takeoff',{task:id}),ready:done.length===(c.checklist||[]).length&&(!t.delay||!!t.pa),why:'làm xong checklist'}};
+    const go=flyOn()?{act:'car:fly',data:{task:id}}:finalGo(steps,'pl_takeoff',{task:id});
+    return {steps,final:{label:'🛫 CẤT CÁNH',go,ready:done.length===(c.checklist||[]).length&&(!t.delay||!!t.pa),why:'làm xong checklist'}};
   }
   if(t.stage==='cruise')return {steps:[{ok:null,label:'Quyết định trên đường bay',go:{sel:'.pl-cruise-opts',label:'👉 Chọn cách xử lý'},pulse:''}],final:null};
   if(t.stage==='approach'){
@@ -245,6 +295,8 @@ export default {
     return {brief:'Nạp dầu',walk:'Kiểm quanh tàu',start:'Checklist, cất cánh',cruise:'Quyết định trên đường bay',approach:'Tiếp cận, hạ cánh',landed:'Tắt máy, ghi sổ'}[t.stage]||'Chuyến bay';
   },
   job(t,x){
+    shown=t;
+    if(flyPref()&&flyCan()&&t.known)flyMod();   // the cockpit's code on its way before the take-off
     const g=guide(t,x),hint=hintFor(g,x),d=data(x);
     const top=`${introCard(x,!!x.ui.intro)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
     if(d.desk?.ev||d.odd?.ev||(d.odd?.conduct?.ground&&['brief','walk','start'].includes(t.stage))||!d.intro||x.ui.intro)return `<div class="career-job pl">${hint}${top}${bottom(t,x,g)}</div>`;
@@ -255,7 +307,8 @@ export default {
     else if(t.stage==='cruise')main=cruisePanel(t,x);
     else if(t.stage==='approach')main=approachPanel(t,x);
     else if(t.stage==='landed')main=`<article class="card pl-landed"><h3>🛬 Đã hạ cánh ở ${x.esc(t.where)}</h3><p class="small">Lăn vào bến, tắt máy, ghi sổ bay.</p></article>`;
-    return `<div class="career-job pl">${hint}${top}${t.known?strip(t,x):''}
+    const mode=t.known&&['brief','walk','start','cruise','approach'].includes(t.stage)?modeSwitch(x):'';
+    return `<div class="career-job pl">${hint}${top}${t.known?strip(t,x):''}${mode}
       <div class="workbench"><section class="wb-main">${main}</section></div>${bottom(t,x,g)}</div>`;
   },
   idle(x){
@@ -266,7 +319,7 @@ export default {
     if(d.desk?.ev||d.odd?.ev||!d.intro||x.ui.intro)return `<div class="career-job pl">${hint}${top}${bar}</div>`;
     return `<div class="career-job pl">${hint}${top}${arcCard(x)}${dayLine(x)}${logbook(x)}${bar}</div>`;
   },
-  tick(root){keepBarAboveFooter(root);},
+  tick(root,x){keepBarAboveFooter(root);try{flyTick(x);}catch(e){console.error(e);}},
   hudCard(c,t,x,o){return air.hudCard(c,t,x,{...AIR,next:t=>this.next(t,x)},o);},
   board(x){return air.board(x,AIR);},
   page(view,x){return air.page(view,x,AIR);},
@@ -280,5 +333,7 @@ export default {
     async sky(d,el,x){x.ui.sky={...(x.ui.sky||{}),[d.k]:d.k==='wipers'?d.v==='1':d.k==='add'?Number(d.v):d.v};x.render();},
     async intro(d,el,x){x.ui.intro=true;x.render();},
     async introClose(d,el,x){x.ui.intro=false;x.render();},
+    async fly(d,el,x){const t=(x.room.tasks||[]).find(r=>r.id===d.task);if(t)await openFly(x,t);},
+    async flyMode(d,el,x){const on=d.on==='1';setFly(on);if(!on&&FLY?.isOpen())FLY.close();x.render();},
   },
 };

@@ -152,3 +152,63 @@
 .career-job.pl .pl-sky-opt{min-height:44px;padding:6px 12px;border-radius:999px;border:1px solid var(--pl-line);background:var(--pl-surface);color:var(--pl-ink);font-weight:700}
 .career-job.pl .pl-sky-opt.on{background:var(--pl-navy);border-color:var(--pl-navy);color:#fff}
 .career-job.pl .pl-sky-go{width:100%}
+
+/* ---------- ✈️ Tự bay / ⏩ Bay nhanh: the switch on the workbench */
+.career-job.pl .pl-mode{display:flex;gap:0;margin-top:10px;border:1px solid var(--pl-line);border-radius:999px;padding:3px;background:var(--pl-surface-2);width:max-content;max-width:100%}
+.career-job.pl .pl-mode .btn{min-height:40px;padding:6px 16px;border-radius:999px;border:0;background:transparent;color:var(--pl-ink);font-weight:700;box-shadow:none}
+.career-job.pl .pl-mode .btn.on{background:var(--pl-navy);color:#fff}
+
+/* ---------- ✈️ the cockpit (pilot_fly.js): the window and the panel are one canvas; the rest sits over it.
+   tall (phones): window, panel, then the yoke and the throttle under it. wide: the controls sit beside the panel. */
+.pl-fly{position:fixed;inset:0;z-index:150;background:#0d1117;color:#eef3f8;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;
+  --pl-fly-view:47vh;--pl-fly-panel:74vh;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.pl-fly-cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pl-fly button{font:inherit;cursor:pointer}
+.pl-fly-top{position:absolute;top:calc(env(safe-area-inset-top,0px) + 8px);left:8px;right:8px;display:flex;align-items:center;gap:6px;pointer-events:none}
+.pl-fly-phase{flex:1;min-width:0;font-weight:800;font-size:14px;text-shadow:0 1px 3px rgb(0 0 0 / 70%);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-fly-top button{pointer-events:auto;min-height:40px;padding:6px 12px;border-radius:999px;border:1px solid rgb(255 255 255 / 30%);background:rgb(10 14 20 / 55%);color:#fff;font-weight:700;font-size:13px;backdrop-filter:blur(4px)}
+.pl-fly-fd[aria-pressed="false"]{opacity:.6}
+.pl-fly-say{position:absolute;left:50%;top:calc(env(safe-area-inset-top,0px) + 56px);transform:translateX(-50%);margin:0;max-width:min(520px,calc(100% - 24px));width:max-content;
+  padding:8px 14px;border-radius:14px;background:rgb(10 14 20 / 72%);color:#fff;font-weight:700;font-size:15px;line-height:1.3;text-align:center;pointer-events:none;box-shadow:0 4px 14px rgb(0 0 0 / 30%)}
+/* the first-time tip and the keyboard line stack at the foot of the window, never on top of each other */
+.pl-fly-help{position:absolute;left:50%;bottom:calc(100% - var(--pl-fly-view) + 14px);transform:translateX(-50%);width:max-content;max-width:min(460px,calc(100% - 24px));
+  display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none}
+.pl-fly-help[hidden]{display:none}
+.pl-fly-tip{margin:0;max-width:100%;
+  padding:7px 12px;border-radius:12px;background:#fff7d6;color:#3b2f0b;font-size:13px;font-weight:600;line-height:1.3;text-align:center;pointer-events:none;box-shadow:0 4px 14px rgb(0 0 0 / 25%)}
+.pl-fly-ga{position:absolute;right:10px;top:calc(var(--pl-fly-view) * .42);min-height:52px;padding:8px 14px;border-radius:14px;border:2px solid #fff;background:rgb(10 14 20 / 60%);color:#fff;font-weight:800;font-size:14px;letter-spacing:.02em}
+@media (max-width:440px){.pl-fly-ga{right:6px;min-height:44px;padding:6px 10px;font-size:13px;border-radius:12px}}
+.pl-fly-ga.mini{min-width:48px;min-height:48px;padding:0;border-radius:50%;font-size:18px}
+.pl-fly-ga .tx{margin-left:.3em}
+.pl-fly-ga.mini .tx{display:none}
+.pl-fly-ga.hot{background:#d9532f;border-color:#ffd7c9;animation:pl-fly-hot 1s ease-in-out infinite}
+@keyframes pl-fly-hot{50%{box-shadow:0 0 0 8px rgb(217 83 47 / 35%)}}
+.pl-fly-yoke,.pl-fly-thr{position:absolute;border-radius:22px;border:1px solid rgb(255 255 255 / 18%);background:rgb(255 255 255 / 6%);touch-action:none;display:grid;place-items:center;transition:opacity .25s}
+.pl-fly-yoke small,.pl-fly-thr small{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:11px;font-weight:700;color:#9fb0c2;pointer-events:none}
+.pl-fly-knob{width:62px;height:62px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#c9d3de 60%,#8794a3);box-shadow:0 4px 12px rgb(0 0 0 / 45%);pointer-events:none;transition:transform .08s}
+.pl-fly-thr{width:76px}
+.pl-fly-thr small{display:none}
+.pl-fly-thr-fd{position:absolute;left:4px;right:4px;height:4px;border-radius:2px;background:#ff4fd8;box-shadow:0 0 6px #ff4fd8;pointer-events:none;top:calc(18px + (1 - var(--thrfd,0)) * (100% - 36px) - 2px)}
+.pl-fly-thr::before{content:"";position:absolute;top:18px;bottom:18px;left:50%;width:8px;margin-left:-4px;border-radius:4px;background:linear-gradient(#f0b44c,#6fd38a 40%,#3d4a59)}
+.pl-fly-thr-knob{position:absolute;left:8px;right:8px;height:26px;border-radius:8px;background:linear-gradient(#e9eef4,#9aa7b5);box-shadow:0 3px 8px rgb(0 0 0 / 45%);pointer-events:none;
+  top:calc(18px + (1 - var(--thr,0)) * (100% - 36px) - 13px)}
+.pl-fly-thr:focus-visible,.pl-fly-top button:focus-visible,.pl-fly-ga:focus-visible{outline:3px solid #ffd23d;outline-offset:2px}
+/* phones: the controls fill the strip under the panel */
+.pl-fly[data-layout="tall"] .pl-fly-yoke{left:10px;right:98px;top:calc(var(--pl-fly-panel) + 8px);bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
+.pl-fly[data-layout="tall"] .pl-fly-thr{right:10px;top:calc(var(--pl-fly-panel) + 8px);bottom:calc(env(safe-area-inset-bottom,0px) + 10px)}
+/* wide screens: beside the instruments */
+.pl-fly[data-layout="wide"] .pl-fly-yoke{left:16px;width:min(220px,calc(50% - 260px));min-width:150px;top:calc(var(--pl-fly-view) + 12px);bottom:16px}
+.pl-fly[data-layout="wide"] .pl-fly-thr{right:16px;top:calc(var(--pl-fly-view) + 12px);bottom:16px}
+.pl-fly-keys{margin:0;max-width:100%;padding:5px 12px;border-radius:14px;background:rgb(10 14 20 / 65%);color:#d6dde6;font-size:12px;line-height:1.35;text-align:center;pointer-events:none}
+/* no keyboard line on a bare touch screen (pilot_fly.js adds .kbd once a key is pressed) */
+@media (hover:none),(pointer:coarse){.pl-fly-keys:not(.kbd){display:none}}
+/* the autopilot flies: the controls rest */
+.pl-fly.auto .pl-fly-yoke,.pl-fly.auto .pl-fly-thr{opacity:.25;pointer-events:none}
+/* a decision while the autopilot flies: the workbench's own panel, over the instruments */
+.pl-fly-ask{position:absolute;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 16px));max-height:calc(100% - var(--pl-fly-view) + 24px - env(safe-area-inset-bottom,0px) - 8px);bottom:calc(env(safe-area-inset-bottom,0px) + 8px);
+  overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;user-select:text;-webkit-user-select:text;margin:0;border-radius:16px;background:var(--surface,#fbfdff);color:var(--ink,#1f2d3d);
+  box-shadow:0 -6px 24px rgb(0 0 0 / 40%);padding:4px}
+.pl-fly-ask:empty{display:none}
+.pl-fly-ask .card{box-shadow:none}
+.pl-fly[data-layout="wide"] .pl-fly-ask{max-height:calc(100% - 80px);bottom:16px}
+@media (prefers-reduced-motion:reduce){.pl-fly-ga.hot{animation:none}.pl-fly-knob{transition:none}}

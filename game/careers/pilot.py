@@ -868,6 +868,28 @@ def _current_gate(t: dict) -> dict:
     return t['needs']['gates'][t['ap']][t['gate']]
 
 
+# ✈️ Tự bay (public/js/careers/pilot_fly.js): the player flies the approach in the cockpit view and the page sends how
+# the gate was flown, `flown: {stable, touch}`. Read loosely: anything else reads as no field, and a page without it
+# (⏩ Bay nhanh, an older page) has the gate judged on its rolled readings, as before. The weather at the gate (the
+# runway still in cloud at 200 ft, a crosswind over the limit) stays the server's, however well it was flown.
+WEATHER = ('no_rwy', 'gust')
+TOUCH = ('soft', 'firm', 'long')
+LANDED = {'firm': '🛬 Bánh chạm hơi mạnh ở {where}, tàu vẫn chạy thẳng tim đường băng. Chị Vân: “Ghìm mũi thêm chút nữa là êm.”',
+          'long': '🛬 Chạm bánh hơi xa ở {where}, phanh vừa kịp. Chị Vân: “Lần sau chạm sớm hơn chút nhé.”'}
+
+
+def _flown(p: dict) -> dict | None:
+    f = p.get('flown')
+    if not isinstance(f, dict) or type(f.get('stable')) is not bool:
+        return None
+    return dict(stable=f['stable'], touch=f.get('touch') if f.get('touch') in TOUCH else None)
+
+
+def _stable(g: dict, fl: dict | None) -> bool:
+    """Whether the gate counts as stable: as rolled, or as flown (the gate's weather still counts)."""
+    return g['stable'] if fl is None else fl['stable'] and g['bad'] not in WEATHER
+
+
 def _gate_ready(t: dict) -> None:
     kit.need(not _arrival_problem(t), 'Quyết trước: bay chờ, đi sân bay dự bị hay hạ cánh.')
     kit.need(t['gate'] < 2, 'Đã qua hết các cổng.')
@@ -878,9 +900,10 @@ def _continue(s, c, d, p):
     _gate_ready(t)
     _sky_ready(d, t)
     g = _current_gate(t)
+    fl = _flown(p)
     t['gates_log'] = (t['gates_log'] + [dict(ap=t['ap'], g=g['id'], go='land')])[-8:]
     msg = ''
-    if not g['stable']:
+    if not _stable(g, fl):
         t['mistakes'] += 1
         if g['bad'] == 'no_rwy':
             cq.slip(t, 'minima', 3, 'Tới độ cao quyết định chưa thấy đường băng mà vẫn cố xuống.', 'xuống dưới mức tối thiểu', safety=True)
@@ -896,7 +919,8 @@ def _continue(s, c, d, p):
         t['stage'] = 'landed'
         if not msg and t['arrive'] == 'land':
             msg = f'🛬 Hạ cánh ở {_where(t)} giữa gió giật, tàu chao mạnh. Khoang khách im phăng phắc.'
-        out = dict(message=(msg or f'🛬 Chạm bánh êm ru ở {_where(t)}. Khoang khách vỗ tay.') + ' Lăn vào bến, tắt máy nhé.')
+        touch = LANDED.get((fl or {}).get('touch'), '🛬 Chạm bánh êm ru ở {where}. Khoang khách vỗ tay.')   # a remark, never a slip
+        out = dict(message=(msg or touch.format(where=_where(t))) + ' Lăn vào bến, tắt máy nhé.')
     else:
         out = dict(message=msg or f'✅ {g["name"]}: ổn định. Tiếp tục xuống.')
     if msg:
@@ -922,7 +946,7 @@ def _around(s, c, d, p):
     t['arounds'] += 1
     t.update(ap=1, gate=0)
     _late(c, d, t, DELAY['around'], 'bay lại để tiếp cận an toàn')
-    if g['stable']:
+    if _stable(g, _flown(p)):
         cq.slip(t, 'needless', 1, 'Tiếp cận đã ổn định mà vẫn bay lại, khách chờ thêm mười phút.', 'bay lại khi đã ổn định')
         return dict(message='↗️ Bay lại. Chị Vân: “Cẩn thận là tốt, nhưng số liệu đã ổn định rồi. Tin vào con số nhé.”')
     return dict(message='↗️ Bay lại! Chị Vân: “Quyết định đúng. Không ổn định thì bay lại, không ai chê cả.” Vòng lại tiếp cận lần nữa.',
@@ -1199,7 +1223,23 @@ def public_task(t: dict) -> dict:
                       event=event, gates=gates)
     v['problem'] = _arrival_problem(t) if t['stage'] == 'approach' else None
     v['where'] = _where(t)
+    if t['stage'] == 'approach':
+        v['fly'] = _fly_view(n['gates'][t['ap']])
     return v
+
+
+def _num(s) -> int:
+    digits = ''.join(ch for ch in str(s) if ch.isdigit())
+    return int(digits) if digits else 0
+
+
+def _fly_view(row: list) -> dict:
+    """✈️ Tự bay: the approach in hand as the cockpit flies it, from the gates' readings (never whether they hold):
+    how the autopilot hands the aircraft over (speed, dots off the glide path, sink) and the crosswind and the
+    runway lights at 200 ft."""
+    g1, g2 = row
+    return dict(kt=_num(g1['rows'][0][1]), dots=_num(g1['rows'][1][1]), sink=_num(g1['rows'][2][1]),
+                wind=_num(g2['rows'][1][1]), rwy=bool(g2['rows'][0][3]))
 
 
 def public_data(c: dict) -> dict:
