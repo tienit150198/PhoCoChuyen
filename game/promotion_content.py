@@ -35,8 +35,8 @@ OWN_TITLES = {
     'farm': ('Nhà nông chăm chỉ', 'Nhà nông có tiếng', 'Chủ trại', 'Chủ trang trại lớn'),
     'homestay': ('Chủ nhà vững tay', 'Homestay có tiếng', 'Chủ homestay được nể', '{ong} chuỗi homestay'),
 }
-# Home careers paid by the household (giúp việc theo giờ, nấu cơm gia đình): a homemaker's standing, not a shop's.
-OWN_TITLES['giupviec'] = OWN_TITLES['naucom'] = OWN_TITLES['homemaker']
+# Home careers paid by the household (giúp việc theo giờ, nấu cơm gia đình, bảo mẫu): a homemaker's standing, not a shop's.
+OWN_TITLES['giupviec'] = OWN_TITLES['naucom'] = OWN_TITLES['babysitter'] = OWN_TITLES['homemaker']
 CHU = {'male': 'Ông chủ', 'female': 'Bà chủ', None: 'Chủ tiệm'}
 ONG = {'male': 'Ông chủ', 'female': 'Bà chủ', None: 'Chủ'}
 BASE_EMP = 'Nhân viên'      # an employee's title before step 1 is the posting's own title
@@ -48,7 +48,8 @@ GROUP = {
                'accounting', 'customer_care'),
     'air': ('pilot', 'flight_attendant'),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
-                'homemaker', 'giupviec', 'naucom', 'pagoda', 'mother_baby'),
+                'homemaker', 'giupviec', 'naucom', 'babysitter', 'pagoda',
+                'mother_baby'),
 }   # every other career: 'trade'
 
 
