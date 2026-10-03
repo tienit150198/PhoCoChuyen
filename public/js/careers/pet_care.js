@@ -105,7 +105,7 @@ function focus(t,x){
 const st=(t,x,key,alt='ghost')=>focus(t,x)===key?'primary':alt;
 
 /* ---------------------------------------------------------------- the day, the counter */
-function todayChip(x){const m=x.room.data?.mod;return m?`<details class="pc-today"><summary><span aria-hidden="true">${x.esc(m.emoji)}</span> <b>Hôm nay: ${x.esc(m.title)}</b></summary><small>${x.esc(m.text)}</small></details>`:'';}
+function todayChip(x){const m=x.room.data?.mod;return m?`<details class="pc-today"><summary aria-label="Hôm nay: ${x.esc(m.title)}"><span aria-hidden="true">${x.esc(m.emoji)}</span> <b>${x.esc(m.title)}</b></summary><small>${x.esc(m.text)}</small></details>`:'';}
 function deskCard(x){
   const ev=x.room.data?.desk?.ev;if(!ev)return '';
   const who=x.npc(ev.npc);

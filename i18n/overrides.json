@@ -6251,6 +6251,7 @@
   "Mang về 32": "Takeaway 32"
  },
  "patterns": {
+  "Hôm nay: $1": "Today: $1",
   "Phòng & cơm −$1": "Room & meals −$1",
   "Nơi làm khác −$1": "Other workplaces −$1",
   "Lương +$1": "Pay +$1",

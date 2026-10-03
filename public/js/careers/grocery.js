@@ -79,7 +79,7 @@ function todayStrip(x,compact=false){
   const tv=x.room.data?.today_view;if(!tv)return '';
   const chips=(tv.rival||[]).map(r=>{const it=item(x,r.item),hi=r.ours>r.theirs;
     return `<span class="gr-flyer ${hi?'hi':'ok'}"><span aria-hidden="true">${it.emoji}</span><span>${x.esc(it.name)}</span><b>${x.fmt(r.theirs)}</b><small>${hi?`tiệm ${x.fmt(r.ours)}`:'tiệm ngang giá'}</small></span>`;}).join('');
-  return `<section class="gr-today" aria-label="Hôm nay ở tiệm"><div class="gr-mood"><span class="gr-mood-emoji" aria-hidden="true">${tv.mod.emoji}</span><div><b>Hôm nay: ${x.esc(tv.mod.name)}</b>${compact?'':`<small>${x.esc(tv.mod.text)}</small>`}</div></div>
+  return `<section class="gr-today" aria-label="Hôm nay ở tiệm"><div class="gr-mood"><span class="gr-mood-emoji" aria-hidden="true">${tv.mod.emoji}</span><div><b>${x.esc(tv.mod.name)}</b>${compact||tv.mod.id==='normal'?'':`<small>${x.esc(tv.mod.text)}</small>`}</div></div>
     ${chips?`<div class="gr-flyers"><small class="gr-flyer-head">📣 Tờ rơi Mây Mart${tv.calm?' · khách quen hôm nay không so giá':''}</small>${chips}</div>`:''}</section>`;
 }
 function deskCard(x){
