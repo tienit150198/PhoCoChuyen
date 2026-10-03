@@ -37,7 +37,7 @@ MIN_XU = 10              # smallest transfer
 SEND_DAY = 2000          # xu a player sends per VN day (also the largest single transfer)
 SEND_COUNT = 10          # transfers a player sends per VN day
 RECV_DAY = 3000          # xu a player receives per VN day, from everyone
-ACCOUNT_DAYS = 3         # both accounts registered at least this long (real days)
+ACCOUNT_DAYS = 1         # both accounts registered at least this long (real days; owner 03/10: 1 day)
 LIFE_DAYS = 10           # the sender's save has lived this many days
 FRIEND_MINUTES = 60      # friends at least this long
 NOTE_MAX = 60
@@ -148,7 +148,7 @@ def _lock(store, sid: str, state: dict | None) -> str | None:
         return 'Chuyển khoản chỉ có trong hành trình.'
     with store.connect() as db:
         if not _old_enough(db, sid):
-            return f'Chuyển khoản mở khi tài khoản đủ {ACCOUNT_DAYS} ngày tuổi.'
+            return f'Chuyển khoản mở khi tài khoản đủ {ACCOUNT_DAYS} ngày chơi game (đời thực).'
     if int(j.get('life_day') or 0) < LIFE_DAYS:
         return f'Chuyển khoản mở từ ngày sống {LIFE_DAYS}.'
     return None
@@ -207,7 +207,7 @@ def send(store, sid: str, display: str, d: dict) -> dict:
         need(since is not None, 'Chỉ chuyển được cho bạn bè thôi nhé.', 'not_friend', 403)
         need(since <= t - FRIEND_MINUTES * 60, f'Kết bạn đủ {FRIEND_MINUTES} phút rồi mới chuyển được nhé.', 'friend_new', 403)
         need(not mr._blocked(db, sid, other), 'Không chuyển được cho người này.', 'blocked', 403)
-        need(_old_enough(db, other), f'Tài khoản của {name} chưa đủ {ACCOUNT_DAYS} ngày tuổi.', 'too_new', 403)
+        need(_old_enough(db, other), f'Tài khoản của {name} chưa đủ {ACCOUNT_DAYS} ngày chơi game (đời thực).', 'too_new', 403)
         db.execute("INSERT INTO bank_xfers(id,code,sender,receiver,from_name,to_name,amount,note,src,status,day,at) "
                    "VALUES(?,?,?,?,?,?,?,?,?,'sent',?,?)", (xid, xcode, sid, other, display[:24], name[:24], amount, note, src, day, t))
         mine = _today(db, sid, day)
@@ -397,7 +397,7 @@ def view(store, sid: str, state: dict) -> dict:
             elif mr._blocked(db, sid, r['friend']):
                 continue
             elif not _old_enough(db, r['friend']):
-                why = f'Tài khoản bạn ấy chưa đủ {ACCOUNT_DAYS} ngày tuổi'
+                why = f'Tài khoản bạn ấy chưa đủ {ACCOUNT_DAYS} ngày chơi game (đời thực)'
             friends.append(dict(code=r['code'], name=mr._display(db, r['friend']), fc=faces.get(r['friend']), ok=why is None, why=why))
         friends.sort(key=lambda f: (not f['ok'], f['name'].lower()))
         mine = _today(db, sid, day)

@@ -53,7 +53,7 @@ function pick(v){
   return `<section class="bk-card bx"><h3>💸 Chuyển khoản cho bạn bè</h3>
     ${v.lock?`<p class="bk-alert warn">${esc(v.lock)}</p>`:`<p class="bk-hint">Hôm nay còn chuyển được <b>${xu(v.today.left)}</b>.</p>`}
     ${list?`<ul class="bx-friends" aria-label="Chọn người nhận">${list}</ul>`:'<p class="bk-hint">Chưa có bạn bè nào. Kết bạn ở mục Bạn bè nhé.</p>'}
-    <details class="bk-tips"><summary>Quy định</summary><ul class="bk-bullets"><li>Mỗi ngày chuyển tối đa ${xu(R.send_day)}, ${R.send_count} lần.</li><li>Mỗi người nhận tối đa ${xu(R.recv_day)} một ngày.</li><li>Tài khoản đủ ${R.account_days} ngày tuổi, kết bạn đủ ${R.friend_minutes} phút.</li></ul></details></section>
+    <details class="bk-tips"><summary>Quy định</summary><ul class="bk-bullets"><li>Mỗi ngày chuyển tối đa ${xu(R.send_day)}, ${R.send_count} lần.</li><li>Mỗi người nhận tối đa ${xu(R.recv_day)} một ngày.</li><li>Tài khoản đã chơi game đủ ${R.account_days} ngày (đời thực), kết bạn đủ ${R.friend_minutes} phút.</li></ul></details></section>
     ${recent?`<section class="bk-card"><h3>Gần đây</h3><ul class="bk-tx">${recent}</ul></section>`:''}`;
 }
 
