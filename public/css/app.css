@@ -2704,3 +2704,8 @@ html[data-layout="phone"] .topbar .cozy-day.hud-day>svg{display:none}
    so the words get the room. */
 html[data-layout="phone"] .calm-what b{flex:1 1 auto;line-height:1.25}
 @media (max-width:360px){html[data-layout="phone"] .task-hud .calm-what .npc-mini{display:none}}
+/* Money boxes that read "6+4", "-500.000", "10 triệu" (js/v4/amount-parse.js): the value under the box, or why it is not read yet. */
+.amt-note{display:block;flex-basis:100%;grid-column:1/-1;margin-top:2px;font-size:.8125rem;line-height:1.35;color:var(--ink-2);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.amt-note:empty{display:none}
+.amt-note.bad{color:var(--warn)}
+input.amt-unread{border-color:var(--warn)!important;border-style:dashed!important}
