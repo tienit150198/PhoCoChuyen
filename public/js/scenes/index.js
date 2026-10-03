@@ -20,6 +20,7 @@ export const KIND_OF={
   pagoda:'pagoda',
   pho:'pho',
   photobooth:'booth',
+  giupviec:'flat',
   pilot:'airfield',flight_attendant:'airfield',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
@@ -144,6 +145,12 @@ const CAREER_WORDS={
     free_eyebrow:'Buồng chụp đang trống',free_title:'Vãn khách rồi!',free_more:'Mời thêm khách hoặc đóng tiệm hôm nay.',more_btn:'Mời thêm một nhóm khách',
     none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời nhóm khách tiếp theo',
     people_sub:'Những người bạn gặp ở tiệm ảnh Tách Tách.',feed_sub:'Lời nhắn và đánh giá quanh tiệm ảnh.'},
+  giupviec:{shelf:'Chậu giặt khăn',evidence:'Lịch hẹn',counter:'Xe đồ nghề',warehouse:'Thùng chai',finance:'Ví tiền công',ledger:'SỔ TỔ GIÚP VIỆC',store:'THÙNG CHAI',
+    till:'Ví tiền công',door_open:'Nghỉ hôm nay',door_closed:'Nhận lịch hẹn',open_sign:'ĐANG NHẬN DỌN',closed_sign:'MAI GỌI NHÉ',
+    cat_line:'Mrrr… nhà sạch thơm thế này, nằm đâu cũng sướng.',idle_line:'Lịch hẹn kế tiếp sắp tới giờ.',open_hint:'Giặt khăn, châm chai rồi lên đường nhé.',
+    free_eyebrow:'Xe đồ nghề đang rảnh',free_title:'Xong lịch rồi!',free_more:'Nhận thêm một nhà hoặc nghỉ hôm nay.',more_btn:'Nhận thêm một nhà',
+    none_waiting:'Chưa có nhà nào đang chờ',next_btn:'Sang nhà tiếp theo',
+    people_sub:'Những khách quen của tổ Nhà Thơm.',feed_sub:'Lời nhắn và đánh giá của khách nhà.',rail_in:'Ở tổ',books:'Sổ tổ'},
   pagoda:{shelf:'Chậu cây kiểng',evidence:'Bảng nội quy',counter:'Lư hương lớn',warehouse:'Nhà kho sau chùa',finance:'HÒM CÔNG ĐỨC',ledger:'SỔ CÔNG ĐỨC',store:'NHÀ KHO',
     till:'Tiền chi dùng',door_open:'Đóng cổng chùa',door_closed:'Mở cổng chùa',open_sign:'CỔNG CHÙA ĐANG MỞ',closed_sign:'ĐÃ ĐÓNG CỔNG',property:'Chùa Gió Lành',
     cat_line:'Mrrr… nằm hiên chùa nghe chuông, mát ghê.',pet:'Chơi với Mướp dưới hiên chùa',security:'Trông coi sân chùa',board:'Chuyện xóm',
