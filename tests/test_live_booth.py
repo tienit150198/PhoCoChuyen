@@ -73,7 +73,7 @@ class Friends(BoothCase):
         self.assertEqual([p['pid'] for p in r['people']], [a.pid])
         self.assertEqual(r['people'][0]['name'], 'Lan Anh')
         self.assertEqual(r['people'][0]['lk']['hair'], 'toc_bob')
-        self.assertEqual(set(r['people'][0]), {'pid', 'name', 'lk', 'g', 'pose', 'prop', 'ready'})   # nothing else of anyone
+        self.assertEqual(set(r['people'][0]), {'pid', 'name', 'lk', 'g', 'pose', 'prop', 'face', 'ready'})   # nothing else of anyone
         b = await self.player('Minh Tú')
         rb = await self.join(b, f'  {code.lower()} ')
         self.assertEqual((rb['me'], rb['host'], [p['pid'] for p in rb['people']]), (b.pid, a.pid, [a.pid, b.pid]))
@@ -129,6 +129,12 @@ class Friends(BoothCase):
         await b.send(t='booth_set', pose='<b>', all=True)   # an odd id: the default, for everyone
         r = await self.last(a)
         self.assertEqual([p['pose'] for p in r['people']], ['dung', 'dung'])
+        await b.send(t='booth_set', face='khoc_nhe')   # an expression over the pose: one's own, the pose stays
+        r = await self.last(a)
+        self.assertEqual({p['pid']: (p['pose'], p['face']) for p in r['people']}, {a.pid: ('dung', 'auto'), b.pid: ('dung', 'khoc_nhe')})
+        await b.send(t='booth_set', face='<x>', all=True)   # an odd id: the pose's own ('auto'); `all` is for poses only
+        r = await self.last(a)
+        self.assertEqual([p['face'] for p in r['people']], ['auto', 'auto'])
         self.assertEqual((await b.call('booth_go', 'error'))['code'], 'host')
         await a.send(t='booth_ready')
         self.assertEqual((await a.call('booth_go', 'error'))['code'], 'not_ready')
