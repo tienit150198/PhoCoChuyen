@@ -1305,6 +1305,44 @@ ARCS = {
                 ('chin', 'Tấm thứ năm mươi treo ngay giữa phòng khách rồi.'),
                 ('me', 'Em sẽ đợi đủ ba giây, để ô nào cũng là nụ cười thật.')]),
         ]),
+    # ------------------------------------------------------------ 🍲 Nấu cơm gia đình
+    'naucom': dict(
+        title='Cuốn sổ chợ bìa xanh', emoji='🍲',
+        keepsake=dict(emoji='📒', name='Cuốn sổ chợ bìa xanh của cô Hạnh', desc='Hai mươi năm đi chợ nấu cỗ, trang nào cũng ghi giá rau, giá cá và tên từng nhà quen.'),
+        cast={'hanh': _p('Cô Hạnh', '👩‍🍳', 'Giới thiệu người nấu cơm nhà', 'naucom_npc_01'),
+              'mai': _p('Chị Mai', '👩‍👧', 'Mẹ bé Bin', 'naucom_npc_02'),
+              'toan': _p('Ông Toàn', '👴', 'Thầy giáo về hưu', 'naucom_npc_03'),
+              'le': _p('Cô Lệ', '👨‍👩‍👧‍👦', 'Nhà bảy miệng ăn', 'naucom_npc_05')},
+        beats=[
+            _b('Nồi cơm nhà người ta', '🍚', 'Cô Hạnh dắt bạn tới cửa nhà chị Mai, dúi vào tay cuốn sổ chợ còn mới tinh.', [
+                ('hanh', 'Nấu cơm nhà người ta thì nhớ ba điều: hỏi kỹ nhà có ai, đi chợ đúng tiền, món lâu chín bắc trước.'),
+                ('hanh', 'Sạp nào cũng xin hóa đơn. Tiền chợ là tiền của nhà người ta, phải rõ từng xu.'),
+                ('me', 'Dạ, con ghi hết vào sổ.')]),
+            _b('Bé Bin không ăn cay', '🧒', 'Bé Bin ôm chân mẹ, ngó vô bếp xem hôm nay có món gì.', [
+                ('mai', 'Bé Bin năm tuổi, sợ xương cá với đồ cay lắm. Món gì cũng cắt nhỏ giúp chị nha.'),
+                ('mai', 'Mà cả nhà chị mê canh chua, tuần nào không có là thèm.'),
+                ('me', 'Dạ, canh chua thì em lóc xương kỹ, phần bé em múc riêng.')],
+                _c('Bé Bin xin đứng xem nấu',
+                   _o('a', 'Cho bé nhặt rau, đứng xa bếp lửa', [('mai', 'Bé khoe với chị là hôm nay bé nấu cơm luôn đó!')], rel='mai'),
+                   _o('b', 'Dỗ bé ra phòng khách chơi, hứa nấu món bé thích', [('mai', 'Em khéo dỗ ghê, bé ngồi chờ ngoan re.')], rel='mai'))),
+            _b('Chén canh nhạt của ông', '👴', 'Ông Toàn ngồi đọc báo bên cửa sổ, bà Toàn đứng cạnh bếp dặn từng câu.', [
+                ('toan', 'Ông răng yếu, huyết áp cao. Ăn gì cũng phải mềm, phải nhạt, khổ lắm con.'),
+                ('me', 'Dạ, con nêm nhạt cho ông. Cơm con nấu mềm hơn, cá con hấp gừng.'),
+                ('toan', 'Vậy thì ông được ăn một bữa ngon như hồi còn đi dạy.')],
+                _c('Ông muốn ăn thịt kho như ngày xưa',
+                   _o('a', 'Hỏi bà Toàn rồi kho nhạt, thịt nạc, ninh thật mềm', [('toan', 'Nhạt mà thơm. Ông ăn hai chén cơm luôn.')], rel='toan'),
+                   _o('b', 'Hẹn ông hôm khác, hôm nay nấu cá hấp', [('toan', 'Ừ, con nói phải. Bữa nào khỏe ông ăn.')], rel='toan'))),
+            _b('Tiền chợ cuối tháng', '📅', 'Cô Lệ đặt xấp tiền lẻ lên bàn, đếm đi đếm lại.', [
+                ('le', 'Cuối tháng rồi con, bảy miệng ăn mà tiền chợ có bấy nhiêu.'),
+                ('me', 'Dạ, con nấu canh bí, đậu hũ sốt cà, rau luộc. Đủ cả nhà, còn dư chút đỉnh.'),
+                ('le', 'Dư bao nhiêu con ghi vào sổ, cô để dành mua sữa cho mấy đứa nhỏ.')]),
+            _b('Cuốn sổ chợ bìa xanh', '📒', 'Tối muộn, cô Hạnh ghé, lật cuốn sổ chợ cũ đã sờn gáy rồi đặt vào tay bạn.', [
+                ('hanh', 'Cuốn này cô ghi từ hồi nấu cỗ. Giá rau, giá cá, nhà nào kiêng gì, nhà nào ăn đậm.'),
+                ('hanh', 'Mấy nhà quen giờ cô giao con hết. Cô yên tâm rồi.'),
+                ('mai', 'Bé Bin dặn: cô nấu cơm phải tới hoài nha!'),
+                ('le', 'Sổ chợ con ghi rõ ràng, cả xóm khen.'),
+                ('me', 'Con sẽ ghi tiếp, từng trang, từng nhà.')]),
+        ]),
     # ------------------------------------------------------------ ✈️ Hãng bay Cánh Cò
     'pilot': dict(
         title='Đường bay ra đảo', emoji='🛩️',
