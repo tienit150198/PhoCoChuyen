@@ -274,6 +274,12 @@ class Handler(BaseHTTPRequestHandler):
     def setup(self):
         super().setup();self.connection.settimeout(20)
 
+    def parse_request(self):
+        # When this request reached us: answers carry it as server_recv next to server_time, so the page's estimate
+        # of our clock (public/js/api.js clockSample) leaves out the time spent here (a lock, a busy CPU).
+        self.recv_time=time.time()
+        return super().parse_request()
+
     def log_message(self,format,*args):
         if not os.environ.get("QUIET"):
             # Never log cookies, request bodies, endpoint keys or dialogue text.
@@ -324,7 +330,8 @@ class Handler(BaseHTTPRequestHandler):
         `known` (routes whose `state` is the public state): for a page that sent X-Game-Delta: 1, the state goes
         as parts named by hashes, those in `known` (the page holds them) as references (game/state_delta.py).
         Pages without the header get the answer of before, byte for byte."""
-        if isinstance(data,dict):data=dict(data,server_time=round(time.time(),3))
+        if isinstance(data,dict):
+            t=time.time();data=dict(data,server_time=round(t,3),server_recv=round(min(t,getattr(self,"recv_time",t)),3))
         if known is not None and isinstance(data,dict) and isinstance(data.get("state"),dict) and self.headers.get("X-Game-Delta")=="1":
             body,data["delta"]=state_delta.encode(data.pop("state"),known)
             raw=dict(raw or {},state=body)

@@ -101,8 +101,12 @@ function lampSpots(w){
 /** Paint the time of day over the scene (canvas already in scene space). Call after people, before labels. */
 export function daylight(w){
   const c=w.ctx,dc=w.c?.day_clock;if(!c||!dc)return;
-  const target=lightAt(dc.minute),now=w._time||0,L=w._light;
-  if(!L||w.reduced||L.career!==w.career){w._light={...target,rgb:[...target.rgb],career:w.career,at:now};}
+  // The fade runs on the wall clock: the world's own time stands still under a sheet (and while paused), so a fade
+  // timed by it never ended there and woke a full-rate repaint of the hidden room on every frame, the whole time a
+  // workbench stayed open (a slow phone then had no time left for the workbench's live bars and taps). Under a
+  // sheet nobody sees the fade: the light is simply set.
+  const target=lightAt(dc.minute),now=performance.now()/1000,L=w._light;
+  if(!L||w.reduced||L.career!==w.career||w.covered?.()){w._light={...target,rgb:[...target.rgb],career:w.career,at:now};}
   else{
     const dt=Math.max(0,Math.min(.5,now-L.at)),k=1-Math.exp(-dt*1.6);L.at=now;
     L.alpha=mixN(L.alpha,target.alpha,k);L.lamps=mixN(L.lamps,target.lamps,k);L.rgb=L.rgb.map((v,i)=>mixN(v,target.rgb[i],k));
