@@ -57,6 +57,7 @@ NOTES = {
     'homemaker': 'Đi chợ từ sáng sớm, 8 giờ hết cá tươi; 11:30 cả nhà ăn trưa, 16:30 đón bé Su.',
     'ice_cream': 'Tiệm mở sau giờ cơm trưa; 16:30 trường tan học là đông nhất.',
     'nail': 'Trưa đông dân văn phòng tranh thủ giờ nghỉ; tối thứ sáu, cuối tuần kín lịch.',
+    'pho': 'Quán mở từ 5:30 sáng; 6:30 người đi làm ghé đông nhất, gần trưa là vãn.',
     'pagoda': 'Bốn giờ sáng thỉnh chuông, 11:00 cúng ngọ; ngày rằm tối có lễ cầu an.',
     'homestay': 'Quầy lễ tân trực tới 22:00; khách tới muộn gọi chuông, sáng mai bàn giao.',
     'milk_tea': 'Ngày đông khách có thể bán quá giờ, muộn nhất 23:00.',

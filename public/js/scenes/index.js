@@ -18,6 +18,7 @@ export const KIND_OF={
   pet_shop:'petshop',
   fruit:'lane',garbage:'lane',drain:'lane',ice_cream:'lane',
   pagoda:'pagoda',
+  pho:'pho',
   pilot:'airfield',flight_attendant:'airfield',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
@@ -124,6 +125,12 @@ const CAREER_WORDS={
     free_eyebrow:'Bàn đang trống',free_title:'Vãn khách rồi!',free_more:'Mời thêm khách hoặc đóng tiệm hôm nay.',more_btn:'Mời thêm một khách',
     none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời khách tiếp theo',
     people_sub:'Những người bạn gặp ở tiệm nail của chị Diệp.',feed_sub:'Lời nhắn và đánh giá quanh tiệm nail.'},
+  pho:{shelf:'Rổ quẩy',evidence:'Bàn ghế nhựa',counter:'Nồi nước dùng',warehouse:'Kho sau bếp',finance:'Hộp tiền',ledger:'SỔ QUÁN PHỞ',store:'KHO BẾP',
+    till:'Hộp tiền lẻ',door_open:'Đóng quán',door_closed:'Mở quán',open_sign:'ĐANG BÁN PHỞ',closed_sign:'HẾT PHỞ, MAI GHÉ NHÉ',
+    cat_line:'Mrrr… cho Mướp xin miếng gân bò thôi mà.',idle_line:'Nồi nước đang lăn tăn, khách sắp ghé.',open_hint:'Vặn lửa, hớt bọt, nếm nước rồi mở quán nhé.',
+    free_eyebrow:'Bếp đang vãn',free_title:'Vãn khách rồi!',free_more:'Mời thêm khách hoặc đóng quán hôm nay.',more_btn:'Mời thêm một khách',
+    none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời khách tiếp theo',
+    people_sub:'Những người bạn gặp ở quán phở Cây Si.',feed_sub:'Lời nhắn và đánh giá quanh quán phở.',rail_in:'Trong quán',books:'Sổ quán'},
   pagoda:{shelf:'Chậu cây kiểng',evidence:'Bảng nội quy',counter:'Lư hương lớn',warehouse:'Nhà kho sau chùa',finance:'HÒM CÔNG ĐỨC',ledger:'SỔ CÔNG ĐỨC',store:'NHÀ KHO',
     till:'Tiền chi dùng',door_open:'Đóng cổng chùa',door_closed:'Mở cổng chùa',open_sign:'CỔNG CHÙA ĐANG MỞ',closed_sign:'ĐÃ ĐÓNG CỔNG',property:'Chùa Gió Lành',
     cat_line:'Mrrr… nằm hiên chùa nghe chuông, mát ghê.',pet:'Chơi với Mướp dưới hiên chùa',security:'Trông coi sân chùa',board:'Chuyện xóm',

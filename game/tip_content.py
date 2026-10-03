@@ -36,6 +36,7 @@ NORMS = {
     'homemaker': dict(rate=.10, cash=0, lo=0, hi=0, bill=18),   # the family thanks with food from the kitchen, never money
     'ice_cream': dict(rate=.12, cash=.65, lo=1, hi=4, bill=10),  # a cone or a cup: the coins are the tip
     'nail': dict(rate=.18, cash=.70, lo=1, hi=5, bill=15),       # a regular rounds up for a neat set
+    'pho': dict(rate=.10, cash=.60, lo=1, hi=4, bill=10),        # a bowl of phở: the small change stays on the table
     'pagoda': dict(rate=.06, cash=0, lo=0, hi=0, bill=8),       # visitors thank with fruit or tea, never money
     # rare, and mostly a thank-you gift: money would not be right here
     'accounting': dict(rate=.08, cash=.30, lo=3, hi=10, bill=50),
@@ -189,6 +190,8 @@ CAREER_LINES = {
              'Nhẹ tay, không đau chút nào.'),
     'ice_cream': ('Viên kem tròn xoe, đủ gam luôn.', 'Kem lạnh mịn, không chảy giọt nào.', 'Nhớ cả lời dặn dị ứng của bé.',
                   'Múc nhanh, cười tươi, bé nhà mê lắm.'),
+    'pho': ('Nước dùng trong, ngọt xương.', 'Tái chín hồng, bánh tơi mềm.', 'Nhớ cả lời dặn không mì chính.',
+            'Bưng ra nóng hổi, húp cạn tô.'),
     'pagoda': ('Sân chùa sạch, mát quá.', 'Thầy nói chuyện nhẹ nhàng, dễ nghe.', 'Chỉ dẫn tận tình, không làm khách ngượng.',
                'Cơm chay ngon, đúng là chay.'),
     'mother_baby': ('Món quà đúng ý bé luôn.', 'Tư vấn kỹ, không bán thừa món nào.', 'Gói quà xinh quá trời.',
@@ -231,6 +234,7 @@ GIFTS = {
     'homemaker': (('🥒', 'hũ dưa cải bà Lành muối'), ('🎨', 'bức tranh bé Su vẽ'), ('🍊', 'túi cam quê anh Dũng')),
     'nail': (('🌸', 'chậu sen đá nhỏ để bàn làm móng'), ('🍯', 'hũ mứt gừng nhà làm'), ('💌', 'tấm thiệp cảm ơn vẽ bàn tay')),
     'ice_cream': (('🎨', 'bức tranh cây kem bé vẽ bằng bút sáp'), ('🍬', 'nắm kẹo me trong túi áo học sinh'), ('💌', 'tấm thiệp cảm ơn của lớp 2A')),
+    'pho': (('🍙', 'gói xôi xéo chị Nguyệt để phần'), ('🎨', 'bức tranh nồi phở bé Bống vẽ'), ('🫙', 'chai tương đen anh Sáu mang từ Sài Gòn')),
     'pagoda': (('🍊', 'túi cam Phật tử biếu'), ('🍵', 'gói trà mạn ông Bảy gửi'), ('💌', 'tấm thiệp bé Na vẽ quả chuông')),
     'mother_baby': (('🍬', 'gói kẹo mừng đầy tháng'), ('🍰', 'hộp bánh bông lan'), ('💌', 'tấm thiệp bé nhà vẽ')),
     'tour_guide': (('🔑', 'móc khóa lưu niệm từ quê khách'), ('💌', 'tấm bưu thiếp có chữ ký cả đoàn'), ('🍫', 'thanh sô-cô-la ngoại')),
