@@ -11,11 +11,11 @@ live in (public/js/v4/home-walk.js, in the room of public/js/v4/reno.js) and tap
   room, one shelf each: DORM_CAP things, no purchase.
 * Đi chợ cất tủ (jr_fridge_buy {item}): one thing into the fridge, paid from the wallet (refused when the wallet does
   not hold the price: food never makes debt), while there is room.
-* Ăn (jr_fridge_eat {item}): one from the fridge (already paid). With none left the same tap buys one and eats it at
-  once ("Mua ăn liền", the owner's "vào nhà mua đồ ăn trong đó cũng được"), paid like a purchase. Eating follows the
-  work day's Ăn thêm (game/needs.py jr_needs_snack): no bụng / tỉnh táo go up (at most 100); a food is refused when no
-  bụng is already at needs.FULL_CAP, the coffee when tỉnh táo is at needs.WAKE_CAP; no tinh thần, no daily cap. Allowed
-  in the work day and in the evening (counted towards tomorrow morning, like the dinner).
+* Ăn (jr_fridge_eat {item}): one from the fridge (already paid; hungry at home with an empty fridge: store one, then
+  eat it, the owner's "vào nhà mua đồ ăn trong đó cũng được"). Eating follows the work day's Ăn thêm (game/needs.py
+  jr_needs_snack): no bụng / tỉnh táo go up (at most 100); a food is refused when no bụng is already at needs.FULL_CAP,
+  the coffee when tỉnh táo is at needs.WAKE_CAP; no tinh thần, no daily cap. Allowed in the work day and in the evening
+  (counted towards tomorrow morning, like the dinner).
 * Prices sit with the street's: a bánh bao or a coffee costs what Ăn thêm asks, a home-cooked hộp cơm a little more
   filling than a gói xôi for the same 5 xu. Nothing spoils.
 * Sổ ví: one row a life day (kind 'living', which every build accepts), "🧊 Đồ ăn ở nhà · N món", updated in place.
@@ -59,6 +59,7 @@ NO_FRIDGE = 'Chưa có tủ lạnh'
 IN_BAG = 'Tủ lạnh còn trong túi đồ'
 FULL = 'Tủ đầy rồi'
 POOR = 'Chưa đủ xu'
+EMPTY = 'Hết trong tủ'
 TOO_FULL = 'Bụng no rồi'
 AWAKE = 'Đang tỉnh rồi'
 
@@ -136,7 +137,8 @@ def _whys(s: dict, sp: dict, fid: str) -> tuple[str, str]:
     if not sp['cap']:
         return sp['why'], sp['why']
     buy = FULL if used(s) >= sp['cap'] else POOR if wallet < x['price'] else ''
-    eat = _eat_why(nd.get(s) or nd.initial(j['life_day']), x) or ('' if have or wallet >= x['price'] else POOR)
+    eat = '' if have else EMPTY
+    eat = eat or _eat_why(nd.get(s) or nd.initial(j['life_day']), x)
     return buy, eat
 
 
@@ -182,42 +184,41 @@ def action(s: dict, name: str, p: dict) -> dict:
         f['b'] = min(10**6, f['b'] + 1)
         return dict(message=f'{x["emoji"]} Cất {_low(x["name"])} vào {shelf} ({x["price"]} xu). Trong tủ: {used(s)}/{sp["cap"]} món.', effects=[])
     # jr_fridge_eat
+    need(eat != EMPTY, f'Trong tủ hết {_low(x["name"])} rồi. Cất thêm một phần rồi ăn nhé.', 'empty')
     need(eat != TOO_FULL, 'Bụng no rồi, để dành trong tủ ăn sau nhé.', 'too_full')
-    need(eat != AWAKE, 'Đang tỉnh rồi, uống nữa tối khó ngủ đó.', 'too_full')
-    need(not eat, f'Ví còn {max(0, j["wallet"])} xu, chưa đủ {x["price"]} xu.', 'not_enough')
+    need(not eat, 'Đang tỉnh rồi, uống nữa tối khó ngủ đó.', 'too_full')
     n = nd.ensure(s)
     f = _ensure(s)
-    if have:
-        if have > 1:
-            f['items'][fid] = have - 1
-        else:
-            f['items'].pop(fid)
-        head = f'{x["emoji"]} Lấy {_low(x["name"])} trong tủ ra: '
+    if have > 1:
+        f['items'][fid] = have - 1
     else:
-        _row(j, x['price'])
-        head = f'{x["emoji"]} Mua {_low(x["name"])} ({x["price"]} xu) ăn liền: '
+        f['items'].pop(fid)
     f['n'] = min(10**6, f['n'] + 1)
     n['full'] = nd._clamp(n['full'] + x['full'])
     n['wake'] = nd._clamp(n['wake'] + x['wake'])
     gain = f'No bụng {n["full"]}.' if x['full'] else f'Tỉnh táo {n["wake"]}.'
-    return dict(message=f'{head}{x["say"]} {gain}', effects=[])
+    return dict(message=f'{x["emoji"]} {x["say"]} {gain}', effects=[])
 
 
 def view(s: dict, L: dict | None = None) -> dict | None:
-    """deco.public()['fridge']: the fridge of the place you live in and the food list (None outside story mode)."""
+    """deco.public()['fridge'] (None outside story mode): {kind, cap, why} of the place you live in, plus, when there
+    is a fridge, what is in it, no bụng / tỉnh táo and the food list. Kept small (it rides in every state answer):
+    a food's buy / eat is the reason it is refused, '' when it can be done."""
     if not _story(s):
         return None
     j = s['journey']
     sp = spot(s, L)
+    out = dict(kind=sp['kind'], cap=sp['cap'], why=sp['why'])
+    if not sp['cap']:
+        return out
     have = stock(s)
     n = nd.get(s) or nd.initial(j['life_day'])
     foods = []
     for k, x in FOODS.items():
         buy, eat = _whys(s, sp, k)
         foods.append(dict(id=k, emoji=x['emoji'], name=x['name'], price=x['price'], full=x['full'], wake=x['wake'], n=have.get(k, 0),
-                          buy=dict(ok=not buy, why=buy), eat=dict(ok=not eat, why=eat)))
-    return dict(kind=sp['kind'], cap=sp['cap'], why=sp['why'], used=sum(have.values()), wallet=int(j.get('wallet', 0)),
-                full=n['full'], wake=n['wake'], foods=foods)
+                          buy=buy, eat=eat))
+    return dict(out, used=sum(have.values()), full=n['full'], wake=n['wake'], foods=foods)
 
 
 def validate(s: dict) -> None:

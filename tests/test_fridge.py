@@ -55,7 +55,7 @@ class NoFridge(unittest.TestCase):
         s = owner()
         v = F(s)
         self.assertEqual((v['cap'], v['kind'], v['why']), (0, '', fr.NO_FRIDGE))
-        self.assertTrue(all(not x['buy']['ok'] and x['buy']['why'] == fr.NO_FRIDGE for x in v['foods']))
+        self.assertNotIn('foods', v)   # no list without a fridge: the state answer stays small
         for name in ('jr_fridge_buy', 'jr_fridge_eat'):
             with self.assertRaises(GameError) as e:
                 act(s, name, item='sua')
@@ -109,7 +109,7 @@ class OwnFridge(unittest.TestCase):
         s = self.s
         for _ in range(fr.FRIDGE_CAP):
             s, _ = act(s, 'jr_fridge_buy', item='sua')
-        self.assertEqual(food(s, 'flan')['buy'], {'ok': False, 'why': fr.FULL})
+        self.assertEqual(food(s, 'flan')['buy'], fr.FULL)
         with self.assertRaises(GameError) as e:
             act(s, 'jr_fridge_buy', item='flan')
         self.assertEqual(e.exception.code, 'full')
@@ -123,13 +123,12 @@ class OwnFridge(unittest.TestCase):
     def test_wallet_never_below_zero(self):
         s = hungry(self.s)
         s['journey']['wallet'] = 4
-        self.assertEqual(food(s, 'com_hop')['buy'], {'ok': False, 'why': fr.POOR})
-        self.assertEqual(food(s, 'com_hop')['eat'], {'ok': False, 'why': fr.POOR})
+        self.assertEqual(food(s, 'com_hop')['buy'], fr.POOR)
+        self.assertEqual(food(s, 'com_hop')['eat'], fr.EMPTY)
         before = copy.deepcopy(s)
-        for name in ('jr_fridge_buy', 'jr_fridge_eat'):
-            with self.assertRaises(GameError) as e:
-                act(s, name, item='com_hop')
-            self.assertEqual(e.exception.code, 'not_enough')
+        with self.assertRaises(GameError) as e:
+            act(s, 'jr_fridge_buy', item='com_hop')
+        self.assertEqual(e.exception.code, 'not_enough')
         self.assertEqual(s, before)
         s, _ = act(s, 'jr_fridge_buy', item='banh_bao')    # 3 of the 4 xu
         self.assertEqual(s['journey']['wallet'], 1)
@@ -150,27 +149,29 @@ class OwnFridge(unittest.TestCase):
         self.assertEqual(s['journey']['wallet'], w)                 # paid when it went in
         self.assertEqual(s['journey']['fridge']['items'], {})
         self.assertEqual(s['journey']['fridge']['n'], 1)
-        self.assertIn('trong tủ', r['message'])
         self.assertIn('No bụng 70', r['message'])
         validate_state(s)
 
-    def test_buy_and_eat_at_once(self):
+    def test_nothing_to_eat_in_an_empty_fridge(self):
         s = hungry(self.s, full=20)
-        w = s['journey']['wallet']
-        self.assertTrue(food(s, 'goi_cuon')['eat']['ok'])
-        s, r = act(s, 'jr_fridge_eat', item='goi_cuon')
-        self.assertEqual(s['journey']['wallet'], w - 4)
+        before = copy.deepcopy(s)
+        self.assertEqual(food(s, 'goi_cuon')['eat'], fr.EMPTY)
+        with self.assertRaises(GameError) as e:
+            act(s, 'jr_fridge_eat', item='goi_cuon')
+        self.assertEqual(e.exception.code, 'empty')
+        self.assertEqual(s, before)
+        s, _ = act(s, 'jr_fridge_buy', item='goi_cuon')     # hungry at home: store one, eat it
+        s, _ = act(s, 'jr_fridge_eat', item='goi_cuon')
         self.assertEqual(s['journey']['needs']['full'], 45)
-        self.assertIn('ăn liền', r['message'])
-        self.assertEqual(s['journey']['fridge']['items'], {})
+        self.assertEqual(s['journey']['fridge'], {'v': 1, 'items': {}, 'n': 1, 'b': 1})
 
     def test_needs_caps_like_an_extra_snack(self):
         s = self.s
         s, _ = act(s, 'jr_fridge_buy', item='flan')
         s, _ = act(s, 'jr_fridge_buy', item='ca_phe')
         s = hungry(s, full=nd.FULL_CAP, wake=nd.WAKE_CAP)
-        self.assertEqual(food(s, 'flan')['eat']['why'], fr.TOO_FULL)
-        self.assertEqual(food(s, 'ca_phe')['eat']['why'], fr.AWAKE)
+        self.assertEqual(food(s, 'flan')['eat'], fr.TOO_FULL)
+        self.assertEqual(food(s, 'ca_phe')['eat'], fr.AWAKE)
         for k in ('flan', 'ca_phe'):
             with self.assertRaises(GameError) as e:
                 act(s, 'jr_fridge_eat', item=k)
@@ -199,7 +200,7 @@ class OwnFridge(unittest.TestCase):
         with self.assertRaises(GameError):
             act(s, 'jr_fridge_eat', item='sua')
         self.assertEqual(s['journey']['fridge']['items'], {'sua': 1})
-        self.assertEqual(food(s, 'sua')['n'], 1)
+        self.assertNotIn('foods', F(s))   # it waits in the save until the fridge is set up again
 
 
 class Rentals(unittest.TestCase):
@@ -237,7 +238,7 @@ class Rentals(unittest.TestCase):
         s, _ = act(s, 'jr_home_rent', kind='ky_tuc_xa', confirm=True)
         v = F(s)
         self.assertEqual((v['kind'], v['cap'], v['used']), ('dorm', fr.DORM_CAP, 6))
-        self.assertEqual(food(s, 'sua')['buy']['why'], fr.FULL)
+        self.assertEqual(food(s, 'sua')['buy'], fr.FULL)
         s = hungry(s)
         s, _ = act(s, 'jr_fridge_eat', item='flan')       # eat first, no buying until there is room
         validate_state(s)
@@ -262,7 +263,7 @@ class Saves(unittest.TestCase):
         self.assertNotIn('fridge', s['journey'])
         s = migrate_state(s)
         validate_state(s)
-        self.assertEqual(F(s)['used'], 0)
+        self.assertEqual(F(s), {'kind': '', 'cap': 0, 'why': fr.NO_FRIDGE})
 
     def old_tree(self):
         old = os.environ.get('MNL_OLD_TREE') or str(ROOT.parent / '_rel1427' / 'mot-ngay-lam-nghe')
