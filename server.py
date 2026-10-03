@@ -1157,10 +1157,15 @@ class Handler(BaseHTTPRequestHandler):
         """POST /api/ai/class {kind:'pupil'|'parent', pupil, task?, op:'reply'|'voice', text?|option?}.
         op 'reply' runs `lesson_answer` / `cl_parent` first (rules decide the effect, the scripted
         reaction is stored); op 'voice' changes nothing but the wording. Then the newest pupil or
-        parent line is reworded in character when AI is allowed and the line passes the guards."""
+        parent line is reworded in character when AI is allowed and the line passes the guards.
+        later=true on a reply (client 1.5.3+): answer right after the rules, without waiting for the model;
+        the client then sends op 'voice', which rewords the newest scripted pupil/parent line (the question
+        or opening message, else the reaction to the teacher's answer). The model's wait (several seconds)
+        used to hold the reply and, behind it, every other tap ("bấm trả lời học sinh mà bị đứng")."""
         from game import classroom
         from game import teach_lesson as TL
         kind,pupil,op,task=data.get("kind"),data.get("pupil"),data.get("op") or "reply",data.get("task")
+        later=op=="reply" and data.get("later") is True
         if kind not in ("pupil","parent"):raise GameError("Loại tin nhắn không hợp lệ.")
         if pupil not in classroom.PUPILS:raise GameError("Không có bạn này trong lớp.")
         if op not in ("reply","voice"):raise GameError("Thao tác không hợp lệ.")
@@ -1183,6 +1188,7 @@ class Handler(BaseHTTPRequestHandler):
             out=self.server.store.command(token,rid,expected if type(expected) is int else revision,"teacher",action,payload)
         mode,reason,line="scripted",None,str(out["result"].get("reply") or "")
         if out.get("replayed"):reason="replayed"
+        elif later:reason="later"
         else:
             fresh,_,_=self.server.store.read(token)
             job=classroom.voice_job(fresh,kind,pupil,task,op)

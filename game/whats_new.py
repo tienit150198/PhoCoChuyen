@@ -32,6 +32,10 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.5.3", date="2026-10-03", items=(
+        dict(emoji="🧮", text="Sổ kế toán và Học TT99: ô số giờ ghi được số âm, phép tính và đơn vị, như -500.000, 6+4 triệu, 1,5tr."),
+        dict(emoji="💍", text="Ly hôn xong chỉ cần chờ 3 tiếng là cầu hôn lại được."),
+    )),
     dict(version="1.5.2", date="2026-10-03", items=(
         dict(emoji="🛠️", text="Chạy ổn định hơn sau bản lớn, sửa vài lỗi nhỏ."),
     )),

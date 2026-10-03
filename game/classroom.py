@@ -1277,8 +1277,10 @@ def voice_job(state: dict, kind: str, kid: str, task: str | None, op: str) -> di
         if not ask or ask['kid'] != kid:
             return None
         lines = ask['lines']
-        if op == 'voice':
-            idx = 0 if ask['state'] == 'up' and ask['result'] is None and lines and lines[0]['who'] == 'pupil' else None
+        # 'voice': the raised hand's question; once answered, the pupil's reaction (a reply sent with
+        # later=true is voiced by a separate 'voice' call). 'reply': the reaction.
+        if op == 'voice' and ask['state'] == 'up':
+            idx = 0 if ask['result'] is None and lines and lines[0]['who'] == 'pupil' else None
             said, direction = '(giơ tay xin hỏi)', DIRECTION['ask']
         else:
             idx = len(lines) - 1 if ask['state'] == 'done' and len(lines) >= 3 and lines[-1]['who'] == 'pupil' else None
@@ -1298,9 +1300,7 @@ def voice_job(state: dict, kind: str, kid: str, task: str | None, op: str) -> di
     if not th or th[-1]['who'] != 'parent' or th[-1]['mode'] != 'scripted':
         return None
     idx, last = len(th) - 1, th[-1]
-    if op == 'voice':
-        if not last.get('ask'):
-            return None
+    if op == 'voice' and last.get('ask'):
         said, direction = '(mở tin nhắn gửi giáo viên)', DIRECTION['open']
     else:
         if last.get('ask') or len(th) < 2 or th[-2]['who'] != 'teacher':
