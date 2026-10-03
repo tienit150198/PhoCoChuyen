@@ -216,3 +216,5 @@ html:not([data-layout="desktop"]) .career-job.rs .rs-side .rs-tabs{display:none}
 .career-job.rs .rs-tcard .rs-tile.wanted::before{display:none}
 .career-job.rs .rs-fill-n{min-height:36px;padding:2px 4px;font-size:.767rem;font-weight:800}
 .career-job.rs .rs-bar-now>.asm-next{font-size:.8rem}
+/* The order ticket's fold line is a 44 px tap target without making the pinned ticket any taller. */
+.career-job.rs button.asm-pin-head{padding:7px 0;margin:-7px 0}
