@@ -16,7 +16,7 @@
 import {t as tr} from '../v4/i18n.js';
 
 const KT=.514444,FT=.3048,D2R=Math.PI/180,G=9.81;
-const LEN=1800,HALF=15,AIM=300,GS=3*D2R,DOT=.35*D2R,RWY_HDG=180;
+const LEN=1800,HALF=22,AIM=300,GS=3*D2R,DOT=.35*D2R,RWY_HDG=180;
 const VREF=115,VR=110,A_T=3,K_D=3.9e-4,EYE=3.2,NEAR=.6;
 const TIPS='mnl.plFlyTips',FD_KEY='mnl.plFd';
 const clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,k)=>a+(b-a)*k,sgn=v=>v<0?-1:1;
@@ -109,7 +109,7 @@ function size(){
   F.W=W;F.H=H;F.cv.width=Math.round(W*F.dpr);F.cv.height=Math.round(H*F.dpr);
   const tall=H>W*1.15;
   const vh=Math.round(tall?H*.47:H*.64),ph=Math.round(tall?clamp(H*.27,170,236):clamp(H-vh,150,300));
-  F.L={tall,view:{x:0,y:0,w:W,h:vh},panel:{x:0,y:vh,w:W,h:ph},f:Math.max(W,vh*1.25)*.9};
+  F.L={tall,view:{x:0,y:0,w:W,h:vh},panel:{x:0,y:vh,w:W,h:ph},f:Math.max(W,vh*1.25)*1.1};   // a little zoomed: the runway reads from far on a phone
   F.el.dataset.layout=tall?'tall':'wide';
   F.el.style.setProperty('--pl-fly-view',vh+'px');F.el.style.setProperty('--pl-fly-panel',(vh+ph)+'px');
   F.sprites=null;
@@ -472,7 +472,7 @@ function stepApproach(){
   const dist=AIM-S.z;
   if(!P.auto&&S.z>LEN-500){P.auto=true;say('🧑‍✈️ Hết đường băng rồi, bay lại!',{now:true,ms:2600});goAround('captain');return;}
   const slope=Math.max(0,dist)*Math.tan(GS)/FT;
-  if(!P.auto&&((dist>400&&hft<slope*.5-20)||(hft<70&&(S.z<-150||Math.abs(S.x)>40))||hft>2000)){
+  if(!P.auto&&((dist>400&&hft<slope*.5-20)||(hft<70&&((S.z<-150&&hft<slope*.45)||Math.abs(S.x)>40))||hft>2000)){
     P.auto=true;say(hft>2000?'🧑‍✈️ Mình bay lại cho chắc.':'🧑‍✈️ Thấp quá! Chị cầm lái, bay lại.',{now:true,ms:2600});goAround('captain');
   }
 }
@@ -698,9 +698,14 @@ function sprites(){
   const mk=(w,h,paint)=>{const cv=document.createElement('canvas');cv.width=w;cv.height=h;paint(cv.getContext('2d'),w,h);return cv;};
   const puff=(c,x,y,r,col)=>{const g=c.createRadialGradient(x,y,r*.1,x,y,r);g.addColorStop(0,col);g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();};
   const cloud=(seed,dark=false)=>mk(256,128,(c,w,h)=>{const r=rngOf(seed);for(let i=0;i<14;i++)puff(c,lerp(40,216,r()),lerp(54,92,r()),lerp(22,48,r()),dark?'rgba(70,76,92,.95)':'rgba(255,255,255,.92)');});
+  // the storm cell: a tall tower, lit on top, dark at the base, an anvil spreading at the top and rain falling out of it
+  const tone=k=>[lerp(222,64,k)|0,lerp(226,71,k)|0,lerp(234,88,k)|0];
+  const blob=(c,x,y,r,k)=>{const [R,G,B]=tone(k),g=c.createRadialGradient(x,y,r*.15,x,y,r);g.addColorStop(0,`rgba(${R},${G},${B},1)`);g.addColorStop(.65,`rgba(${R},${G},${B},.95)`);g.addColorStop(1,`rgba(${R},${G},${B},0)`);c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();};
   F.sprites={clouds:[cloud('a'),cloud('b'),cloud('c')],cell:mk(256,384,(c)=>{const r=rngOf('cell');
-    for(let i=0;i<34;i++){const y=lerp(40,360,r()),wd=lerp(40,110,1-Math.abs(y-120)/300);puff(c,128+(r()-.5)*wd*1.4,y,lerp(30,62,r()),`rgba(${52+r()*20|0},${58+r()*20|0},${74+r()*20|0},.96)`);}
-    const g=c.createLinearGradient(0,300,0,384);g.addColorStop(0,'rgba(60,66,80,.0)');g.addColorStop(1,'rgba(60,66,80,.55)');c.fillStyle=g;c.fillRect(70,300,116,84);})};
+    c.strokeStyle='rgba(90,98,116,.35)';c.lineWidth=3;c.beginPath();for(let i=0;i<16;i++){const x=lerp(78,178,r());c.moveTo(x,300);c.lineTo(x-10,384);}c.stroke();
+    for(let i=0;i<34;i++){const y=lerp(330,96,i/33),wd=lerp(70,124,(y-96)/234);blob(c,128+(r()-.5)*wd,y,lerp(30,50,r()),clamp((y-60)/280,0,1));}
+    for(let i=0;i<18;i++)blob(c,lerp(26,230,r()),lerp(44,84,r()),lerp(20,34,r()),.08+r()*.12);
+  })};
   return F.sprites;
 }
 /* camera: yaw ψ, pitch θ (roll is the canvas' rotation) */
@@ -778,7 +783,7 @@ function runway(c,sc,w){
   polygon(c,[[-HALF,0],[HALF,0],[HALF,LEN],[-HALF,LEN]],night?'#24272c':'#4a4d52');
   const paint=night?'rgba(220,224,230,.55)':'#f2f2ee';
   // threshold bars, the aiming point, touchdown zone, centre line
-  for(let i=0;i<8;i++){const x=-HALF+2+i*3.6+(i>=4?1.6:0);polygon(c,[[x,6],[x+2.2,6],[x+2.2,36],[x,36]],paint);}
+  for(let i=0;i<12;i++){const x=i<6?-HALF+2+i*3.1:2.2+(i-6)*3.1;polygon(c,[[x,6],[x+2.2,6],[x+2.2,36],[x,36]],paint);}
   polygon(c,[[-9,AIM-20],[-5,AIM-20],[-5,AIM+25],[-9,AIM+25]],paint);polygon(c,[[5,AIM-20],[9,AIM-20],[9,AIM+25],[5,AIM+25]],paint);
   for(const z of [150,450,600]){polygon(c,[[-9,z],[-6.5,z],[-6.5,z+22],[-9,z+22]],paint);polygon(c,[[6.5,z],[9,z],[9,z+22],[6.5,z+22]],paint);}
   for(let z=60;z<LEN-40;z+=50){const d=AIM-S.z>6000&&z%100?null:1;if(d)polygon(c,[[-.45,z],[.45,z],[.45,z+28],[-.45,z+28]],paint);}
@@ -786,7 +791,7 @@ function runway(c,sc,w){
   if(fogHide&&S.h>w.base+30)return;
   // lights: the edges, the threshold (green), the end (red), the approach lights
   const bright=night||sc.light==='dusk'||w.vis<5000||w.rain;
-  const dot=(p,col,r0)=>{if(!p)return;const r=Math.max(r0*.6,Math.min(r0*2.2,r0*900/p[2]));c.fillStyle=col;c.fillRect(p[0]-r/2,p[1]-r/2,r,r);};
+  const dot=(p,col,r0)=>{if(!p)return;const r=Math.max(r0*(night?1.2:.6),Math.min(r0*2.4,r0*900/p[2]));c.fillStyle=col;c.fillRect(p[0]-r/2,p[1]-r/2,r,r);};   // at night: never smaller than a pixel or two
   if(bright){
     for(let z=0;z<=LEN;z+=60){dot(point(-HALF-1,.3,z),'#fff6d8',1.6);dot(point(HALF+1,.3,z),'#fff6d8',1.6);}
     for(let x=-HALF;x<=HALF;x+=3){dot(point(x,.3,-1),'#5dff8a',1.8);dot(point(x,.3,LEN+1),'#ff4d4d',1.6);}
