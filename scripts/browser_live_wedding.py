@@ -13,8 +13,8 @@ service needs websockets 17, Python 3.12) when playwright lives in another one. 
   * a guest cheers in a bubble (a phone number masked) and sends ❤️; a guest takes the group photo (3-2-1, flash),
     which lands in the couple's Kỷ niệm; the ceremony starts (hearts), the show runs (MC, neighbours, kids, the lion
     dance, lights); everyone present earns +20 xu a minute, the couple too;
-  * 🧧 a guest gives the couple a red envelope (a quick pick), then a second of any amount typed (no cap; more than the
-    wallet keeps the button off with the reason);
+  * 🎁 a guest with an account gets the admin's 500 xu once on walking in; 🧧 they give the couple four envelopes,
+    650 xu (no cap; the panel stays open), all on the board; an amount the wallet cannot cover is off;
   * 1.3.0: the couple's name tags stand out (gold and rose); the speakers and the stage lights; a guest taps a table:
     the mâm cỗ opens, three dishes give +1 tinh thần each and the fourth nothing (fixed ids), a beer −1 and "Dzô! 🍻"
     for the room, a soft drink nothing; a guest walks onto the stage and dances (💃); the new lion bites the lì xì; the
@@ -317,29 +317,43 @@ async def run(shots: Path) -> list:
             halves = sql(db, "SELECT amount FROM live_effects WHERE id LIKE 'wedenv:%'")
             check(halves == [(25,), (25,)], f'the couple get half each ({halves})')
             await shot(bride, '08d-envelope-board', wait=600)
-            # no cap (owner 03/10): any whole number of xu the wallet holds, as many envelopes as the guest likes
-            await g1.page.click('.walk-sheet [data-wk=env]')
-            cash = (await g1.api('/api/state'))['state']['journey']['wallet']
-            own = '.walk-sheet [data-wk-own]'
-            await g1.page.fill(own, str(cash + 1))
-            off = await g1.page.evaluate("document.querySelector('.walk-sheet [data-wk=envSend]').disabled")
-            why = await dom(g1, '.walk-sheet .wk-env-why')
-            check(off and 'Ví của bạn chỉ còn' in why, f'more than the wallet: the button is off with the reason ({why!r})')
-            await shot(g1, '08f-envelope-too-much')
-            await g1.page.fill(own, '73')
-            sent = await dom(g1, '.walk-sheet [data-wk=envSend]')
-            check('73 xu' in sent, f'the number typed is on the button ({sent!r})')
-            await g1.page.click('.walk-sheet [data-wk=envSend]')
-            for _ in range(50):
-                if '73 xu' in await dom(bride, '.walk-sheet .wk-wishes'):
+            # 🎁 the admin's 500 xu, paid once when a guest walked in; no cap, "cho gửi thoải mái": the panel stays open
+            hist = (await g1.api('/api/state'))['state']['journey']
+            gifts = [h for h in hist['history'] if 'Quà từ admin' in h['label']]
+            check(hist['wed_gift'] is True and len(gifts) == 1 and gifts[0]['amount'] == 500, f'the admin gift once ({gifts})')
+            await g1.page.click('.walk-sheet [data-wk=envAmt][data-n="200"]')
+            for i in range(3):                       # 50 + 3 × 200 = 650: past the old 500 a wedding
+                await g1.page.wait_for_selector('.walk-sheet [data-wk=envSend]:not([disabled])', timeout=10000)
+                await g1.page.click('.walk-sheet [data-wk=envSend]')
+                for _ in range(250):                 # SQLite shared with the live service: a write may wait a while
+                    if len(sql(db, "SELECT 1 FROM marriage_effects WHERE id LIKE 'wenv:%'")) >= 2 + i:
+                        break
+                    await asyncio.sleep(0.1)
+                else:
+                    check(False, f"envelope {i + 2} sent ({await dom(g1, '.walk-sheet .wk-toast', 1)!r})")
+            for _ in range(100):                     # the cheer and the four envelopes
+                if await dom(bride, '.walk-sheet .wk-wish-head small') == '5':
                     break
                 await asyncio.sleep(0.2)
-            board = await dom(bride, '.walk-sheet .wk-wishes')
-            check('73 xu' in board, f'any amount, a second envelope at the same wedding ({board!r})')
-            odd = sql(db, "SELECT amount FROM live_effects WHERE id LIKE 'wedenv:%' AND amount<>25 ORDER BY id")
-            check(odd == [(37,), (36,)], f'exactly what the guest paid, the odd xu to the first spouse ({odd})')
             paid = sql(db, "SELECT amount FROM marriage_effects WHERE id LIKE 'wenv:%' ORDER BY at")
-            check(paid == [(-50,), (-73,)], f"from the guest's wallet ({paid})")
+            check(paid[:4] == [(-50,), (-200,), (-200,), (-200,)], f"four envelopes, 650 xu at one wedding ({paid})")
+            board = await dom(bride, '.walk-sheet .wk-wish-head small')
+            check(board == '5', f'every envelope on the board ({board!r})')
+            await shot(g1, '08f-envelope-after-four')
+            offs = []
+            for _ in range(12):                                                               # 200 more until the wallet runs thin
+                await asyncio.sleep(0.6)
+                offs = await g1.page.evaluate("[...document.querySelectorAll('.walk-sheet [data-wk=envAmt]')].map(b => b.disabled)")
+                if offs[-1]:
+                    break
+                await g1.page.click('.walk-sheet [data-wk=envSend]')
+            cash = (await g1.api('/api/state'))['state']['journey']['wallet']
+            why = await dom(g1, '.walk-sheet .wk-env-why')
+            off = await g1.page.evaluate("document.querySelector('.walk-sheet [data-wk=envSend]').disabled")
+            check(offs == [n > cash for n in (10, 20, 50, 100, 200)] and off and 'chưa đủ phong bì 200 xu' in why,
+                  f'an amount the wallet cannot cover is off, with the reason ({cash}: {offs}, {off}, {why!r})')
+            await shot(g1, '08g-envelope-thin-wallet')
+            await g1.page.click('.walk-sheet [data-wk=env]')
             await bride.page.click('.walk-sheet .wk-wish-head')
             await shot(bride, '08e-wishes-open')
             await bride.page.click('.walk-sheet .wk-wish-head')
