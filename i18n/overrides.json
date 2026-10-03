@@ -1,5 +1,7 @@
 {
  "strings": {
+  "Nhân viên giờ kiếm thêm cho tiệm: mỗi việc làm xong +3 xu (vui vẻ +4), cộng khi khép ca. Sự cố nhân viên cũng hiếm hơn hẳn.": "Staff now earn for the shop: +3 coins per finished job (+4 when cheerful), paid at close. Staff incidents are also much rarer.",
+  "Menu “Tiền & nhà” đổi tên thành “Ngân hàng & nhà” cho dễ tìm.": "The “Money & home” menu is now “Bank & home”, easier to find.",
   "Thưởng việc của đội": "Team job bonus",
   "💰 Mỗi việc người phụ làm xong: +3 xu cho tiệm, cộng lúc khép ca.": "💰 Each job a helper finishes: +3 coins for the shop, added when you close the day.",
   "Canh mức (máy may, tắm thú, ép nắp…): bấm dừng ở đâu kim dừng đúng ở đó, cả khi máy yếu hay mạng chậm.": "Stop meters (sewing, pet bath, cup sealing…): the needle stops right where you tap, even on a slow phone or network.",
