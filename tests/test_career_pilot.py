@@ -4,7 +4,11 @@ announcement, decisions on the way, holding and the alternate, the two approach 
 the go-around, the pay, hidden information, determinism, save validation and old saves."""
 import copy
 import json
+import os
+import subprocess
+import sys
 import unittest
+from pathlib import Path
 
 from tests.helpers import Journey
 from game.careers import kit, PLUGINS
@@ -728,6 +732,113 @@ class Shell(Base):
                 self.assertNotIn('quán', text)
                 said[s].add(text)
         self.assertTrue(said[1].isdisjoint(said[5]))
+
+
+class Flown(Base):
+    """✈️ Tự bay: the page flies the approach and sends `flown`; the gates' weather stays the server's."""
+    to_approach = Approach.to_approach
+
+    def view(self, j, tid):
+        return next(t for t in public_state(j.state)['careers']['pilot']['tasks'] if t['id'] == tid)
+
+    def test_the_cockpit_reads_the_approach_but_never_the_verdict(self):
+        j, tid = self.to_approach(lambda t: t['needs']['gates'][0][0]['bad'] == 'fast' and t['kind'] == 'flight')
+        fly = self.view(j, tid)['fly']
+        self.assertEqual(set(fly), {'kt', 'dots', 'sink', 'wind', 'rwy'})
+        self.assertGreater(fly['kt'], 120)
+        self.assertTrue(fly['rwy'])
+        self.assertNotIn('fly', self.view(self.j, self.j.c['active_task']))          # only once the approach is in hand
+        j2, tid2 = self.to_approach(lambda t: t['needs']['gates'][0][1]['bad'] == 'no_rwy')
+        self.assertFalse(self.view(j2, tid2)['fly']['rwy'])
+        j3, tid3 = self.to_approach(lambda t: t['needs']['gates'][0][1]['bad'] == 'gust')
+        self.assertGreater(self.view(j3, tid3)['fly']['wind'], 28)
+
+    def test_flown_stable_out_of_a_fast_handover_is_no_mistake(self):
+        j, tid = self.to_approach(lambda t: t['needs']['gates'][0][0]['bad'] == 'fast' and t['kind'] == 'flight')
+        r = j.act('pl_gate', task=tid, flown=dict(stable=True))
+        self.assertNotEqual(r.get('correct'), False)
+        r = j.act('pl_gate', task=tid, flown=dict(stable=True, touch='soft'))
+        self.assertIn('êm ru', r['message'])
+        t = j.get(tid)
+        self.assertEqual((t['stage'], t['mistakes'], t.get('slips') or []), ('landed', 0, []))
+        r = j.act('pl_park', task=tid)
+        self.assertIn(f'{PL.BONUS} xu', r['message'])
+
+    def test_flown_unstable_and_landed_is_the_unstable_slip(self):
+        j, tid = self.to_approach(lambda t: t['kind'] == 'flight' and all(g['stable'] for g in t['needs']['gates'][0]))
+        j.act('pl_gate', task=tid, flown=dict(stable=True))
+        r = j.act('pl_gate', task=tid, flown=dict(stable=False, touch='firm'))
+        self.assertFalse(r['correct'])
+        self.assertEqual([x['code'] for x in j.get(tid)['slips']], ['unstable'])
+        self.assertEqual(PL.feedback(j.c, j.get(tid))['criteria'][2]['score'], 3)
+
+    def test_flown_unstable_go_around_is_the_right_call(self):
+        j, tid = self.to_approach(lambda t: t['kind'] == 'flight' and all(g['stable'] for g in t['needs']['gates'][0]))
+        r = j.act('pl_around', task=tid, flown=dict(stable=False))
+        self.assertTrue(r.get('celebrate'))
+        self.assertEqual((j.get(tid)['mistakes'], j.get(tid)['arounds']), (0, 1))
+
+    def test_flown_stable_go_around_is_still_needless(self):
+        j, tid = self.to_approach(lambda t: t['needs']['gates'][0][0]['bad'] == 'fast' and t['kind'] == 'flight')
+        j.act('pl_around', task=tid, flown=dict(stable=True))
+        self.assertEqual(j.get(tid)['slips'][-1]['code'], 'needless')
+
+    def test_the_weather_at_the_gate_is_not_flown_away(self):
+        j, tid = self.to_approach(lambda t: t['needs']['gates'][0][1]['bad'] == 'no_rwy')
+        j.act('pl_gate', task=tid, flown=dict(stable=True))
+        j.act('pl_gate', task=tid, flown=dict(stable=True, touch='soft'))
+        self.assertEqual(j.get(tid)['slips'][-1]['code'], 'minima')
+        j, tid = self.to_approach(lambda t: t['needs']['gates'][0][1]['bad'] == 'gust')
+        j.act('pl_gate', task=tid, flown=dict(stable=True))
+        r = j.act('pl_around', task=tid, flown=dict(stable=True))
+        self.assertTrue(r.get('celebrate'))                         # 32 kt across: going around is right however it was flown
+        j.act('pl_gate', task=tid, flown=dict(stable=True))
+        j.act('pl_gate', task=tid, flown=dict(stable=True))
+        self.assertEqual(j.get(tid)['mistakes'], 0)
+
+    def test_firm_and_long_landings_are_remarks_not_slips(self):
+        for touch, word in (('firm', 'hơi mạnh'), ('long', 'hơi xa')):
+            j, tid = self.to_approach(lambda t: t['kind'] == 'flight' and all(g['stable'] for g in t['needs']['gates'][0]))
+            j.act('pl_gate', task=tid, flown=dict(stable=True))
+            r = j.act('pl_gate', task=tid, flown=dict(stable=True, touch=touch))
+            self.assertIn(word, r['message'])
+            self.assertEqual(j.get(tid).get('slips') or [], [])
+
+    def test_anything_else_reads_as_an_older_page(self):
+        for junk in ('yes', 1, [True], dict(stable='true'), dict(stable=1), dict(touch='soft'), None):
+            j, tid = self.to_approach(lambda t: t['needs']['gates'][0][0]['bad'] == 'fast' and t['kind'] == 'flight')
+            r = j.act('pl_gate', task=tid, flown=junk)
+            self.assertFalse(r['correct'], junk)                     # judged on the rolled readings
+            self.assertEqual(j.get(tid)['slips'][-1]['code'], 'unstable')
+        j, tid = self.to_approach(lambda t: t['kind'] == 'flight' and all(g['stable'] for g in t['needs']['gates'][0]))
+        j.act('pl_gate', task=tid, flown=dict(stable=True, touch='bounced', extra='x' * 5000))
+        r = j.act('pl_gate', task=tid, flown=dict(stable=True, touch='bounced'))
+        self.assertIn('êm ru', r['message'])
+        validate_state(json.loads(json.dumps(j.state)))
+
+
+class OldServer(Base):
+    """1.5.1 (the server live now) keeps and accepts every save a flown hop writes: Tự bay adds no saved field."""
+    to_approach = Approach.to_approach
+
+    def test_flown_saves_cross_the_151_build(self):
+        old = os.environ.get('MNL_OLD_TREE') or str(Path(__file__).resolve().parents[2] / '_rel151' / 'mot-ngay-lam-nghe')
+        if not (Path(old) / 'game' / 'engine.py').is_file():
+            self.skipTest('no 1.5.1 tree (MNL_OLD_TREE)')
+        j, tid = self.to_approach(lambda t: t['needs']['gates'][0][0]['bad'] == 'fast' and t['kind'] == 'flight')
+        j.act('pl_around', task=tid, flown=dict(stable=False))
+        j.act('pl_gate', task=tid, flown=dict(stable=True))          # mid-approach: the old build takes it from here
+        prog = ('import json,sys;from game.engine import validate_state,migrate_state,apply_action;s=json.load(sys.stdin);'
+                's=migrate_state(s);validate_state(s);tid=s["careers"]["pilot"]["active_task"];'
+                's,_=apply_action(s,"pilot","pl_gate",{"task":tid,"flown":{"stable":True,"touch":"firm"}});'
+                's,_=apply_action(s,"pilot","pl_park",{"task":tid});validate_state(s);print(json.dumps(s))')
+        env = dict(os.environ, PYTHONPATH=old + os.pathsep + os.environ.get('PYTHONPATH', ''))
+        out = subprocess.run([sys.executable, '-c', prog], input=json.dumps(j.state), capture_output=True, text=True, cwd=old, env=env,
+                             encoding='utf-8', timeout=300)
+        self.assertEqual(out.returncode, 0, out.stderr[-3000:])
+        back = migrate_state(json.loads(out.stdout))
+        validate_state(back)
+        self.assertEqual(next(t for t in back['careers']['pilot']['tasks'] if t['id'] == tid)['status'], 'completed')
 
 
 if __name__ == '__main__':
