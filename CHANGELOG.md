@@ -1,3 +1,11 @@
+# v1.6.1 — ✈️ phi công tự bay, 📸 buồng chụp một màn, 💸 chuyển khoản cần 1 ngày, 🎁 admin tặng xu
+
+- Phi công tự bay góc nhìn thứ nhất (`public/js/careers/pilot_fly.js`), trường `flown` tùy chọn; ⏩ Bay nhanh làm đường lui.
+- Buồng chụp hội chợ: xem trước dính trên cùng, tab Dáng / Khung ảnh / Phông nền / Đạo cụ cuộn bên dưới; máy tính hai cột.
+- Chuyển khoản: `ACCOUNT_DAYS` 3 → 1, chữ "ngày chơi game (đời thực)".
+- Admin: trang 🎁 Tặng xu (danh sách user, tặng qua `system_gifts`, cột `granted_by`, PG schema 16).
+- Test: `test_live_wedding` chờ xu phút tiệc ghi xong (không đổi game).
+
 # v1.6.0 — 🗺️ phố đi dạo, 🛵 tự lái & đi xe, 🚜 nông trại góc nhìn, 🏪 quầy v2 + bán online, 📸 photobooth đẹp, 💸 chuyển khoản bạn bè
 
 - Màn hình chính là bản đồ phố (`public/js/v4/town-walk.js`); danh sách Hành trình vẫn còn (📋 Danh sách, Cài đặt → Màn hình chính).
