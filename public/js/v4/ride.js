@@ -29,20 +29,43 @@ const TURN_S=.24;
 /* ------------------------------------------------------------ which vehicle */
 const own=(o,k)=>typeof k==='string'&&Object.prototype.hasOwnProperty.call(o,k)?o[k]:null;   // never '__proto__' & co.
 const kindOf=(id,group)=>own(KINDS,id)||own(BY_GROUP,group)||null;
-/** Every vehicle the save can ride now (owned, a road vehicle, not broken), the garage's "đang đi" first. */
-export function options(state,content,{two=false}={}){
-  const J=state?.journey,g=J?.story?J.garage:null,cat=content?.journey?.garage;
-  if(!g||!Array.isArray(g.cars)||!cat)return [];
+/* ---- 💑 the husband's / wife's vehicles (GET /api/garage/spouse, game/couple.py): theirs to ride too ---- */
+let SP=null,SP_AT=0,SP_GO=null;
+/** {pid (their live id), name, cars} or null (not married, a guest, an older server, not loaded yet). */
+export const spouse=()=>SP;
+/** Load it (at most once a minute; `force`: now). Never throws. */
+export function loadSpouse(api,force=false){
+  if(!api?.json)return Promise.resolve(SP);
+  if(SP_GO)return SP_GO;
+  if(!force&&SP_AT&&Date.now()-SP_AT<60000)return Promise.resolve(SP);
+  SP_GO=api.json('/api/garage/spouse').then(d=>{const q=d?.spouse;
+    SP=q&&typeof q.pid==='string'&&/^[0-9a-f]{16}$/.test(q.pid)&&Array.isArray(q.cars)?{pid:q.pid,name:String(q.name||'').slice(0,24)||'Người ấy',cars:q.cars,ride:q.ride}:null;return SP;})
+    .catch(()=>SP).finally(()=>{SP_AT=Date.now();SP_GO=null;});
+  return SP_GO;
+}
+/** For tests: set the spouse as the server would send it. */
+export function setSpouse(q){SP=q||null;SP_AT=Date.now();}
+function entries(cars,cat,two,owner){
   const out=[];
-  for(const c of g.cars){
+  for(const c of cars){
     if(!c||typeof c.id!=='string'||c.broken!=null)continue;
     const it=(cat.vehicles||[]).find(v=>v.id===c.id),kind=it&&kindOf(it.id,it.group);
     if(!kind||(two&&!TWO.has(kind)))continue;
     const paint=(cat.paints||[]).find(p=>p.id===c.color)||(cat.paints||[]).find(p=>p.id===it.paint);
-    out.push({id:it.id,kind,name:it.name||'',emoji:it.emoji||'🛵',hex:/^#[0-9a-f]{6}$/i.test(paint?.hex||'')?paint.hex:'#d9534f',paint:paint?.id||'',plate:typeof c.plate==='string'?c.plate:''});
+    out.push({id:it.id,key:owner?`${owner.pid}:${it.id}`:it.id,kind,name:it.name||'',emoji:it.emoji||'🛵',hex:/^#[0-9a-f]{6}$/i.test(paint?.hex||'')?paint.hex:'#d9534f',
+      paint:paint?.id||'',plate:typeof c.plate==='string'?c.plate:'',...(owner?{o:owner.pid,owner:owner.name}:{})});
   }
-  const main=out.findIndex(v=>v.id===g.ride);
+  return out;
+}
+/** Every vehicle the save can ride now (owned, a road vehicle, not broken), the garage's "đang đi" first, then the
+ * spouse's ("Xe của <tên>", their own "đang đi" first). */
+export function options(state,content,{two=false}={}){
+  const J=state?.journey,g=J?.story?J.garage:null,cat=content?.journey?.garage;
+  if(!J?.story||!cat)return [];
+  const out=g&&Array.isArray(g.cars)?entries(g.cars,cat,two,null):[];
+  const main=out.findIndex(v=>v.id===g?.ride);
   if(main>0)out.unshift(...out.splice(main,1));
+  if(SP){const theirs=entries(SP.cars,cat,two,SP),m=theirs.findIndex(v=>v.id===SP.ride);if(m>0)theirs.unshift(...theirs.splice(m,1));out.push(...theirs);}
   return out;
 }
 function read(){
@@ -60,21 +83,21 @@ export const canRide=(state,content,o)=>options(state,content,o).length>0;
 export function choice(state,content,o){
   const list=options(state,content,o);if(!list.length)return null;
   const p=pref();if(!p.on)return null;
-  return list.find(v=>v.id===p.pick)||list[0];
+  return list.find(v=>v.key===p.pick)||list[0];
 }
 /** The toggle: the next owned vehicle, then walking, then the first again. Returns the new choice. */
 export function next(state,content,o){
   const list=options(state,content,o);if(!list.length)return null;
-  const now=choice(state,content,o),i=now?list.findIndex(v=>v.id===now.id):-1;
+  const now=choice(state,content,o),i=now?list.findIndex(v=>v.key===now.key):-1;
   const v=i<0?list[0]:list[i+1]||null;
-  write(Boolean(v),v?.id||null);
+  write(Boolean(v),v?.key||null);
   return v;
 }
 /** The toggle's words: what the player does now (a tap changes it). */
-export const label=v=>v?`${v.emoji} Đi xe`:'🚶 Đi bộ';
+export const label=v=>v?v.owner?`${v.emoji} Xe của ${v.owner}`:`${v.emoji} Đi xe`:'🚶 Đi bộ';
 export const speedOf=v=>v?FAST[v.kind]||1.5:1;
 /** For the live presence: {v, c} (the plate stays the owner's own: game/garage.py). */
-export const wire=v=>v?{v:v.id,c:v.paint||''}:null;
+export const wire=v=>v?{v:v.id,c:v.paint||'',...(v.o?{o:v.o}:{})}:null;
 /** Someone else's vehicle from the live presence (null: walking, or one this build cannot draw). */
 export function fromWire(r,content){
   if(!r||typeof r!=='object'||typeof r.v!=='string')return null;
@@ -243,8 +266,9 @@ const BOX={x:116,up:228,down:16};   // the bitmap: 232 wide, from 228 above the 
 const CACHE=new Map();
 /** The pen without the character's own ground shadow (it sits on a seat, not on the ground). */
 const SEATED={...CANVAS};
-function body(F,fkey,v,face,px,rider){
-  const key=`${fkey}|${v.id}|${v.kind}|${v.hex}|${v.plate||''}|${face}|${Math.round(px*100)}|${rider?1:0}`;
+function body(F,fkey,v,face,px,rider,F2=null,fkey2=''){
+  const two=F2&&TWO.has(v.kind);
+  const key=`${fkey}|${v.id}|${v.kind}|${v.hex}|${v.plate||''}|${face}|${Math.round(px*100)}|${rider?1:0}|${two?fkey2:''}`;
   let cv=CACHE.get(key);if(cv)return cv;
   if(CACHE.size>96)CACHE.clear();
   cv=document.createElement('canvas');cv.width=Math.ceil(BOX.x*2*px);cv.height=Math.ceil((BOX.up+BOX.down)*px);
@@ -252,6 +276,12 @@ function body(F,fkey,v,face,px,rider){
   c.setTransform(px,0,0,px,BOX.x*px,BOX.up*px);
   try{
     c.save();c.scale(fl,1);A.back(c,P,v);c.restore();
+    if(two){   // 💑 the spouse behind the driver, a little higher, hands on the driver
+      c.save();const [sx,sy]=A.seat,ps=A.ps*.93;c.translate((sx+36)*fl,sy-12);c.scale(ps,ps);
+      let first=true;SEATED.E=(cc,...a)=>{if(first){first=false;return;}CANVAS.E(cc,...a);};
+      paintPlayer(c,F2,SEATED,fl>0?{l:[-30,-62],r:[-26,-58]}:{l:[26,-58],r:[30,-62]});
+      c.restore();
+    }
     if(rider&&F){
       c.save();
       if(A.clip){c.scale(fl,1);c.beginPath();A.clip(c);c.clip();c.scale(fl,1);}
@@ -277,13 +307,13 @@ export function steer(r,dx,dist,dt,still=false){
 }
 /** Draw at (x, y) in the context's units: s = the character's size there, px = device pixels per unit (for a sharp
  * bitmap), F/fkey = the rider's figure and a key for its look (null F: parked, empty), v = the vehicle, r = rider(). */
-export function drawRide(c,{x,y,s,px,F=null,fkey='',v,r,bob=0}){
+export function drawRide(c,{x,y,s,px,F=null,fkey='',F2=null,fkey2='',v,r,bob=0}){
   const A=ART[v.kind]||ART.scooter,k=r.turn<1?Math.cos(r.turn*Math.PI):1,face=r.turn<.5?r.from:r.face;
   c.save();c.translate(x,y);
   E(c,0,2*s,A.half*s,8*s,'#7a5e4428');
   c.scale(s*Math.max(.06,Math.abs(k)),s);c.translate(0,-bob);
   c.save();c.scale(face<0?1:-1,1);wheels(c,A,v.kind,r.ang);c.restore();
-  const cv=body(F,fkey,v,face,s*px,Boolean(F));
+  const cv=body(F,fkey,v,face,s*px,Boolean(F),F2,fkey2);
   c.drawImage(cv,-BOX.x,-BOX.up,BOX.x*2,BOX.up+BOX.down);
   c.restore();
 }

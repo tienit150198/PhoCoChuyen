@@ -62,6 +62,7 @@ from game import leaderboard
 from game import lb_titles
 from game import fair_board  # 🏆 Bảng vàng hội chợ: the fair's titles after the end
 from game import marriage
+from game import couple
 from game import deco_mate  # 💞 the spouse's furniture in the home both live in (read-only)
 from game import system_gift
 from game import live_effects, live_dating
@@ -653,6 +654,10 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("wedding-get:"+token,60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 sid=self.server.store.key(token)
                 self.json(200,wedding_live.race_view(self.server.store,sid) if route.endswith("race") else dict(photos=wedding_live.photos(self.server.store,sid)));return
+            if route=="/api/garage/spouse":  # 🛵 vợ chồng chung xe: the spouse's vehicles (game/couple.py)
+                token,state,_,_=self.require_session()
+                if not self.server.rate_limit("spouse-cars:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                self.json(200,couple.spouse_cars(self.server.store,token));return
             if route=="/api/marriage":  # Hôn nhân: this player's view (+ the price lists with ?catalog=1)
                 token,state,_,_=self.require_session()
                 if not self.server.rate_limit("marriage-get:"+token,120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return

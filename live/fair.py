@@ -22,10 +22,14 @@ Rooms and positions (memory only, never the database)
 
 * 🛵 Riding (public/js/v4/ride.js): `fair_in` / `fair_mv` may carry `r` {v: a two-wheeler's id, c: its paint id},
   like `s` set anew by every walk and sent on with it only while set (live/street.py clean_ride). Older peers ignore it.
+* 💑 Vợ chồng chung xe (live/coride.py): `r` may name the spouse's vehicle; first come drives (the other: `fair_taken
+  {by, name}`, also as `taken` in fair_room). `fair_back {to}` sits behind the spouse riding here (`to` null, with x, y:
+  off again there): the passenger's entry has `b`, every walk of the driver is sent as theirs too (with `b`); a walk
+  without `b` is them on foot. The driver playing a stall, getting off or leaving: the passenger gets off.
 
 Frames (client → server; replies in brackets)
   fair_in {look, g, x, y, s?, r?}  [fair_room {room, me, people: [{pid, name, lk, g, x, y, s?, r?}], cap}]
-  fair_mv {p, ms, s?, r?}          fair_out {}  [fair_left {why: 'out'}]
+  fair_mv {p, ms, s?, r?}          fair_out {}  [fair_left {why: 'out'}]  fair_back {to, x?, y?}
 Server pushes: fair {ev: [{k: in|mv|out, ...}]}, fair_left {why: 'other'}.
 A live service without this file answers `fair_in` with error 'unknown'; clients only send it when the welcome's
 flags have `fair` (an older service has no such flag: nobody else is drawn, the fairground works as before).
@@ -39,6 +43,7 @@ import re
 import time
 
 from .protocol import Feature, LiveError, on
+from . import coride
 from .street import clean_look, clean_ride
 
 PREFIX = 'fair:'
@@ -72,7 +77,7 @@ def clean_stall(v) -> str | None:
 
 
 class Goer:
-    __slots__ = ('pid', 'player', 'name', 'look', 'g', 'x', 'y', 's', 'r')
+    __slots__ = ('pid', 'player', 'name', 'look', 'g', 'x', 'y', 's', 'r', 'b', 'pill')
 
     def __init__(self, player, look: dict, g, at: list, s: str | None = None, r: dict | None = None):
         self.pid, self.player = player.pid, player
@@ -81,6 +86,7 @@ class Goer:
         self.x, self.y = at
         self.s = s
         self.r = r
+        self.b = self.pill = None   # 🛵 the driver I sit behind / who sits behind me (pids)
 
     def public(self) -> dict:
         d = dict(pid=self.pid, name=self.name, lk=self.look, g=self.g, x=self.x, y=self.y)
@@ -88,6 +94,8 @@ class Goer:
             d['s'] = self.s
         if self.r:
             d['r'] = self.r
+        if self.b:
+            d['b'] = self.b
         return d
 
 
@@ -132,10 +140,48 @@ class FairFeature(Feature):
             c.ext.pop('fair', None)
             if why and c is not keep:
                 self.hub.send(c, dict(t='fair_left', why=why))
-        if room.data['people'].pop(p.pid, None) is not None:
-            self._queue(room, p.pid, dict(k='out', pid=p.pid))
+        self._remove(room, p.pid)
         for c in mine:
             room.remove(c)
+
+    def _remove(self, room, pid: str) -> None:
+        people = room.data['people']
+        w = people.pop(pid, None)
+        if w is None:
+            return
+        if w.b:   # 🛵 a passenger left: the seat behind is free
+            d = people.get(w.b)
+            if d is not None and d.pill == pid:
+                d.pill = None
+        if w.pill:   # the driver left: the passenger gets off where the vehicle was going
+            self._hop_off(room, people.get(w.pill))
+        self._queue(room, pid, dict(k='out', pid=pid))
+
+    def _hop_off(self, room, q, at: list | None = None, path: list | None = None, ms: int = 0) -> None:
+        """The passenger q on foot again: at `at` (else where the vehicle was going), or walking `path` (into a stall
+        with the driver)."""
+        if q is None or not q.b:
+            return
+        d = room.data['people'].get(q.b)
+        if d is not None and d.pill == q.pid:
+            d.pill = None
+        q.b = None
+        if path:
+            q.x, q.y = path[-1]
+        elif at:
+            q.x, q.y = at
+        self._queue(room, q.pid, dict(k='mv', pid=q.pid, p=path or [[q.x, q.y]], ms=ms if path else 0))
+
+    def _carry(self, room, w, path: list, ms: int) -> None:
+        q = room.data['people'].get(w.pill) if w.pill else None
+        if q is None or q.b != w.pid:
+            w.pill = None
+            return
+        if not w.r or w.s:   # off the vehicle, or parking at a stall: the passenger walks in too
+            self._hop_off(room, q, path=path, ms=ms)
+            return
+        q.x, q.y = path[-1]
+        self._queue(room, q.pid, dict(k='mv', pid=q.pid, p=path, ms=ms, b=w.pid))
 
     def _me(self, conn):
         rid = conn.ext.get('fair')
@@ -207,17 +253,21 @@ class FairFeature(Feature):
         at = clean_point([x, y]) if x is not None or y is not None else [round(random.uniform(.1, .3), 3), .97]
         p = conn.player
         await self._ensure_loaded(p)
+        r, by = await coride.check(self.db, self.hub, p, clean_ride(f.get('r')))   # no await from here on
         self._leave_player(p, 'other', keep=conn)
         room = self._pick(p)
         room.add(conn)
-        w = Goer(p, look, g, at, clean_stall(f.get('s')), clean_ride(f.get('r')))
+        w = Goer(p, look, g, at, clean_stall(f.get('s')), r)
         room.data['people'][p.pid] = w
         p.ext['fair'] = room.id
         conn.ext['fair'] = room.id
         self._queue(room, p.pid, dict(k='in', **w.public()))
         people = [o.public() for q, o in room.data['people'].items()
                   if q != p.pid and not (q in p.hidden or p.pid in o.player.hidden)]
-        return dict(t='fair_room', room=room.id, me=p.pid, people=people, cap=CAP)
+        out = dict(t='fair_room', room=room.id, me=p.pid, people=people, cap=CAP)
+        if by:
+            out['taken'] = coride.taken_frame('fair_taken', self.hub, by)
+        return out
 
     @on('fair_out', rate=(20, 60))
     async def fair_out(self, conn, f):
@@ -227,21 +277,62 @@ class FairFeature(Feature):
     @on('fair_mv', rate=(4, 1.0))
     async def fair_mv(self, conn, f):
         room, w = self._me(conn)
+        if w.b:   # 🛵 sitting behind: the driver drives
+            return None
         pts, ms = f.get('p'), f.get('ms')
         if not isinstance(pts, list) or not 1 <= len(pts) <= MAX_POINTS or not _num(ms):
             raise LiveError('bad', 'Vị trí không hợp lệ.')
         path = [clean_point(pt) for pt in pts]
+        r = clean_ride(f.get('r'))
+        by = None
+        if r is not None and r != w.r:   # a vehicle not ridden a moment ago: whose is it, is it free
+            r, by = await coride.check(self.db, self.hub, conn.player, r)   # no await from here on
+            room, w = self._me(conn)
+            if w.b:
+                return None
+        elif r is not None:
+            r = w.r
         if len(path) == 1:
             path.insert(0, [w.x, w.y])
         w.x, w.y = path[-1]
         w.s = clean_stall(f.get('s'))
-        w.r = clean_ride(f.get('r'))
-        ev = dict(k='mv', pid=w.pid, p=path, ms=int(min(MAX_MS, max(0, ms))))
+        w.r = r
+        ms = int(min(MAX_MS, max(0, ms)))
+        ev = dict(k='mv', pid=w.pid, p=path, ms=ms)
         if w.s:
             ev['s'] = w.s
         if w.r:
             ev['r'] = w.r
         self._queue(room, w.pid, ev)
+        self._carry(room, w, path, ms)
+        return coride.taken_frame('fair_taken', self.hub, by) if by else None
+
+    @on('fair_back', rate=(6, 10))
+    async def fair_back(self, conn, f):
+        """🛵 `fair_back {to}`: sit behind my husband / wife riding here; to null (x, y: where I am): get off."""
+        room, w = self._me(conn)
+        to = f.get('to')
+        if to is None:
+            x, y = f.get('x'), f.get('y')
+            self._hop_off(room, w, at=clean_point([x, y]) if _num(x) and _num(y) else None)
+            return None
+        if not isinstance(to, str) or not coride.PID.fullmatch(to):
+            raise LiveError('bad', 'Không có ai như vậy.')
+        sp = await coride.spouse(self.db, conn.player)
+        room, w = self._me(conn)
+        d = room.data['people'].get(to)
+        if sp != to or d is None:
+            raise LiveError('no_back', 'Chỉ ngồi sau xe của vợ/chồng mình thôi.')
+        if w.b == to:
+            return None
+        if not d.r or d.s or d.b or d.pill not in (None, w.pid):
+            raise LiveError('no_back', 'Xe này không còn chỗ ngồi sau.')
+        if w.pill:
+            self._hop_off(room, room.data['people'].get(w.pill))
+        w.r = w.s = None
+        w.b, d.pill = to, w.pid
+        w.x, w.y = d.x, d.y
+        self._queue(room, w.pid, dict(k='mv', pid=w.pid, p=[[d.x, d.y]], ms=0, b=to))
         return None
 
     # ---- every second: a block made at the fair --------------------------------------------------------------
@@ -269,8 +360,7 @@ class FairFeature(Feature):
         p = conn.player
         room = self.hub.rooms.get(rid)
         if room is not None and not any(c.player is p for c in room.conns):
-            if room.data['people'].pop(p.pid, None) is not None:
-                self._queue(room, p.pid, dict(k='out', pid=p.pid))
+            self._remove(room, p.pid)
         if p.ext.get('fair') == rid and (room is None or not any(c.player is p for c in room.conns)):
             p.ext.pop('fair', None)
 

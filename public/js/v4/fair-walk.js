@@ -16,10 +16,10 @@
  * (./ride.js), like in the town: faster, parked beside a stall while they play it, hopped back on for the next walk;
  * the "🛵 Đi xe / 🚶 Đi bộ" button on the stage changes it. The others see it: the crowd's walks carry `r`. */
 import {VIEW,plan,route,nearestFree,back as paintBack,props,marks,STALLS} from '../scenes/fair-place.js';
-import {figure,paintPlayer,CANVAS,lookOf} from './look.js';
+import {figure,figureOf,paintPlayer,CANVAS,lookOf} from './look.js';
 import {t as tr} from './i18n.js';
 import {crowd} from './fair-crowd.js';
-import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,rider,steer,halfOf,wire} from './ride.js';
+import {choice,next as nextRide,canRide,label as rideLabel,speedOf,drawRide,rider,steer,halfOf,topOf,wire,spouse as spouseOf,loadSpouse} from './ride.js';
 
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
@@ -29,10 +29,10 @@ export function setup(ctx){
   const {S,F,go,list,bar,esc,food}=ctx;
   const W=S.walk={el:null,cv:null,c:null,say:null,bg:null,bgKey:'',port:false,k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,
     me:null,arrive:null,raf:0,last:0,drawn:0,time:0,sayAt:0,ok:null,down:null,at:'',playing:'',
-    ride:null,rideKey:'',rv:rider(),park:null,legs:[],leg:null,btn:null,fig:null,figKey:''};
+    ride:null,rideKey:'',rv:rider(),park:null,legs:[],leg:null,btn:null,fig:null,figKey:'',back:null,taken:null,blocked:'',co:null};
   const has=()=>({dt:!!F().knife,loan:!!F().cash,xs:!!F().scratch,pb:!!F().photo});   // dt: anh Sáu's stall, the phóng dao since it replaced the phi tiêu
   const pl=()=>plan(W.port,has());
-  const CR=crowd({state:()=>S.env?.api?.state,content:()=>S.env?.api?.content,redraw:()=>{W.drawn=0;},still});
+  const CR=crowd({state:()=>S.env?.api?.state,content:()=>S.env?.api?.content,redraw:()=>{W.drawn=0;paintCo();},still,onBack,onTaken});
   /** Scene point → fractions of the floor (what the others get: their fairground may be the other layout). */
   const frac=([x,y])=>{const f=pl().floor;return [(x-f[0])/(f[2]-f[0]),(y-f[1])/(f[3]-f[1])];};
 
@@ -53,9 +53,14 @@ export function setup(ctx){
   }
   function build(){
     const el=document.createElement('div');el.className='fh-wstage';
-    el.innerHTML=`<canvas class="fh-wcanvas" tabindex="0" role="img" aria-label="${esc(tr('Hội chợ: chạm vào gian hàng để đi tới'))}"></canvas><div class="fh-wsay" role="status" aria-live="polite" hidden></div><button type="button" class="rd-toggle" hidden></button>`;
+    el.innerHTML=`<canvas class="fh-wcanvas" tabindex="0" role="img" aria-label="${esc(tr('Hội chợ: chạm vào gian hàng để đi tới'))}"></canvas><div class="fh-wsay" role="status" aria-live="polite" hidden></div><button type="button" class="rd-toggle" hidden></button><div class="rd-co" hidden></div>`;
     W.el=el;W.cv=el.querySelector('canvas');W.c=W.cv.getContext('2d');W.say=el.querySelector('.fh-wsay');
-    W.btn=el.querySelector('.rd-toggle');W.btn.addEventListener('click',()=>{nextRide(S.env.api.state,S.env.api.content,TWO);setRide(true);if(W.me){const h=frac([W.me.x,W.me.y]);CR.walk([h,h],0,null,wire(W.ride));}});
+    W.btn=el.querySelector('.rd-toggle');W.btn.addEventListener('click',()=>{W.blocked='';W.taken=null;nextRide(S.env.api.state,S.env.api.content,TWO);setRide(true);if(W.me){const h=frac([W.me.x,W.me.y]);CR.walk([h,h],0,null,wire(W.ride));}paintCo();});
+    W.co=el.querySelector('.rd-co');W.co.addEventListener('click',e=>{const a=e.target.closest('[data-co]')?.dataset.co;
+      if(a==='back'){const sp=spouseOf();W.taken=null;if(sp)CR.back(sp.pid);}
+      else if(a==='off'){if(W.me)CR.back(null,frac([W.me.x,W.me.y]));}
+      else if(a==='untake'){W.taken=null;}
+      paintCo();});
     W.cv.addEventListener('pointerdown',e=>{W.down={x:e.clientX,y:e.clientY,t:performance.now()};});
     W.cv.addEventListener('pointerup',e=>{const d=W.down;W.down=null;if(!d||Math.hypot(e.clientX-d.x,e.clientY-d.y)>14||performance.now()-d.t>800)return;tapAt(e.clientX,e.clientY);});
     W.cv.addEventListener('keydown',onKey);
@@ -67,6 +72,7 @@ export function setup(ctx){
     if(!slot||!active())return;
     if(!W.el)build();
     setRide(false);
+    loadSpouse(S.env?.api).then(()=>{setRide(false);paintCo();});   // 💑 the spouse's vehicles and live id (none: unchanged)
     if(W.el.parentNode!==slot){slot.append(W.el);size();}
     else W.drawn=0;   // the state may have changed (a game going on, a stall added): one fresh frame
     if(!W.raf){W.last=performance.now();W.drawn=0;W.raf=requestAnimationFrame(loop);}
@@ -86,6 +92,7 @@ export function setup(ctx){
     const spot=pl().spots.find(q=>q.id===id&&(q.kind==='stall'||q.cart)),key=spot?.id||'-';
     if(W.playing===key)return;
     W.playing=key;
+    if(W.back&&W.me){CR.back(null,frac([W.me.x,W.me.y]));W.back=null;}   // 💑 off the vehicle to play
     setRide(false);
     if(!spot){if(W.me)CR.join(frac([W.me.x,W.me.y]),wire(W.ride));return;}
     const end=nearestFree(pl(),spot.stand)||spot.stand;
@@ -118,17 +125,40 @@ export function setup(ctx){
 
   /* ---- 🛵 riding (./ride.js; two-wheelers only here) ---- */
   const base=()=>W.port?380:440;   // walking speed, scene units a second
-  const riding=()=>!!W.ride&&!W.park;
+  const riding=()=>!!W.ride&&!W.park&&!W.back;
   /** The vehicle ridden now and the button; `fresh` (a tap on the button): hop on here, or off (it goes home). */
   function setRide(fresh){
     const st=S.env?.api?.state,ct=S.env?.api?.content;if(!st)return;
-    const v=choice(st,ct,TWO),key=v?`${v.id}|${v.hex}`:'';
-    if(W.btn){const own=canRide(st,ct,TWO);W.btn.hidden=!own;
-      if(own){const t=tr(rideLabel(v));if(W.btn.textContent!==t)W.btn.textContent=t;W.btn.setAttribute('aria-pressed',String(!!v));W.btn.title=tr(v?v.name:'Đi bộ');}}
+    let v=choice(st,ct,TWO);if(v&&v.key===W.blocked)v=null;   // 💑 the spouse drives that one now
+    const key=v?`${v.key}|${v.hex}`:'';
+    if(W.btn){const own=canRide(st,ct,TWO)&&!W.back;W.btn.hidden=!own;
+      if(own){const t=tr(rideLabel(v));if(W.btn.textContent!==t)W.btn.textContent=t;W.btn.setAttribute('aria-pressed',String(!!v));W.btn.title=tr(v?v.owner?`Xe của ${v.owner}`:v.name:'Đi bộ');}}
     if(key===W.rideKey)return;
     const had=W.ride;W.ride=v;W.rideKey=key;
     if(!v||!had||fresh)W.park=null;
     W.drawn=0;
+  }
+  /* ---- 💑 sitting behind the spouse (live/coride.py) ---- */
+  /** The room says I sit behind `b` now (null: on foot again, at `end`, fractions). */
+  function onBack(b,end){
+    if(b){W.back=b;W.taken=null;if(W.me){W.me.path=null;}W.legs=[];W.leg=null;W.arrive=null;W.park=null;}
+    else if(W.back){W.back=null;
+      if(end&&W.me){const f=pl().floor,q=nearestFree(pl(),[f[0]+end[0]*(f[2]-f[0]),f[1]+end[1]*(f[3]-f[1])]);if(q){W.me.x=q[0];W.me.y=q[1];}}
+      if(W.me&&!W.playing){const h=frac([W.me.x,W.me.y]);CR.walk([h,h],0,null,wire(W.ride));}}   // my own vehicle (if any) again, for the others too
+    setRide(false);W.drawn=0;paintCo();
+  }
+  /** The spouse drives the vehicle I asked for: on foot until another pick, and a little question. */
+  function onTaken(f){W.taken={by:f.by,name:String(f.name||'')};W.blocked=W.ride?.key||W.blocked;setRide(false);W.drawn=0;paintCo();}
+  /** The line under the toggle (written only when it changes): sitting behind, a vehicle taken, or "🛵 Ngồi sau". */
+  function paintCo(){
+    const el=W.co;if(!el)return;
+    const sp=CR.coride()?spouseOf():null,d=sp?CR.where(sp.pid):null,here=Boolean(CR.me());   // an older live service: none of it
+    const free=here&&!W.back&&!W.playing&&d&&d.r&&!d.b&&!CR.pillion(sp.pid);
+    let html='';
+    if(W.back){const dd=CR.where(W.back);html=`<span class="rd-co-msg">🛵 ${esc('Đang ngồi sau xe của '+(dd?.name||sp?.name||''))}</span><button type="button" data-co="off">Xuống xe</button>`;}
+    else if(W.taken&&here)html=`<span class="rd-co-msg">${esc((W.taken.name||'Người ấy')+' đang lái xe này — ngồi sau nhé?')}</span>${free?'<button type="button" class="primary" data-co="back">Ngồi sau</button>':''}<button type="button" data-co="untake" aria-label="Đóng">×</button>`;
+    else if(free)html='<button type="button" class="primary" data-co="back">🛵 Ngồi sau</button>';
+    if(el.dataset.k!==html){el.dataset.k=html;el.innerHTML=html;el.hidden=!html;}
   }
   /** The character's size at depth y (the floor's far edge is a little smaller). */
   function scaleAt(y){const fl=pl().floor;return (W.port?.92:.78)*(.94+.12*(y-fl[1])/Math.max(1,fl[3]-fl[1]));}
@@ -141,6 +171,7 @@ export function setup(ctx){
 
   /* ---- walking (riding: back to the vehicle on foot, ride, park by the stall, the last steps on foot) ---- */
   function walkTo(p,then=null,spot=null){
+    if(W.back&&CR.where(W.back)){W.co?.querySelector('.rd-co-msg')?.animate?.([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:260});return;}   // 💑 the driver drives
     W.arrive=then;
     const legs=[];
     if(!W.ride)legs.push({to:p});
@@ -208,7 +239,9 @@ export function setup(ctx){
     W.raf=requestAnimationFrame(loop);
     const dt=Math.min(.05,(now-W.last)/1000);W.last=now;W.time+=dt;
     const m=W.me;let moving=CR.busy();
-    if(m?.path?.length){
+    const dr=W.back&&m?CR.where(W.back):null;
+    if(dr){const f=pl().floor;m.x=f[0]+dr.x*(f[2]-f[0]);m.y=f[1]+dr.y*(f[3]-f[1]);m.path=null;}   // 💑 where the driver takes me
+    else if(m?.path?.length){
       const sp=Math.max(base(),m.len||0)*dt,[tx,ty]=m.path[0],dx=tx-m.x,dy=ty-m.y,d=Math.hypot(dx,dy),x0=m.x;moving=true;
       if(d<=sp){m.x=tx;m.y=ty;m.path.shift();}else{m.x+=dx/d*sp;m.y+=dy/d*sp;}
       m.step+=dt*9;
@@ -240,7 +273,7 @@ export function setup(ctx){
       const pk=W.ride&&W.park;
       if(pk)items.push([pk.y+.4,()=>drawRide(c,{x:pk.x,y:pk.y,s:base*depth(pk.y),px:W.k*W.dpr,v:W.ride,r:{face:pk.face??1,from:pk.face??1,turn:1,ang:0}})]);
       items.push(...CR.items(c,{xy:(u,v)=>[fl[0]+u*(fl[2]-fl[0]),fl[1]+v*(fl[3]-fl[1])],scale:y=>base*depth(y),px:base*W.k*W.dpr,unit:W.k*W.dpr,t:W.time,
-        snap:q=>nearestFree(p,q),key:[W.port,p.has.dt,p.has.loan,p.has.xs,p.has.pb].join('|'),stand:id=>p.spots.find(q=>q.id===id)?.stand||null}));
+        snap:q=>nearestFree(p,q),key:[W.port,p.has.dt,p.has.loan,p.has.xs,p.has.pb].join('|'),stand:id=>p.spots.find(q=>q.id===id)?.stand||null,me:W.back?myFig():null}));
       items.sort((a,b)=>a[0]-b[0]);for(const [,fn] of items)fn();
       const near=p.spots.find(s=>s.kind==='stall'&&Math.hypot(W.me.x-s.stand[0],W.me.y-s.stand[1])<30);
       marks(c,p,o,near?.id||null);
@@ -250,12 +283,19 @@ export function setup(ctx){
   }
   /** The badge over someone playing stall `id` (the stall's own, a snack for the carts; none for the lender). */
   const badge=id=>id==='loan'?'':STALLS[id]?.icon||CARTS[id]||'';
+  /** My figure for a vehicle (mine, or my spouse's when I sit behind), cached on my look. */
+  function myFig(){
+    const st=S.env.api.state,key=JSON.stringify([lookOf(st),st.journey?.gender]);
+    if(key!==W.figKey){W.figKey=key;W.fig=figure(st);}
+    return {F:W.fig,fk:key};
+  }
   function drawMe(c,s){
     const m=W.me;
+    if(W.back&&CR.where(W.back))return;   // 💑 the crowd draws me behind my driver
     if(riding()){
-      const st=S.env.api.state,key=JSON.stringify([lookOf(st),st.journey?.gender]);
-      if(key!==W.figKey){W.figKey=key;W.fig=figure(st);}
-      drawRide(c,{x:m.x,y:m.y,s,px:W.k*W.dpr,F:W.fig,fkey:key,v:W.ride,r:W.rv});return;
+      const me=myFig(),q=CR.me()?CR.pillion(CR.me()):null;
+      if(q){q.fig??=figureOf(q.lk,q.g);q.byMe=true;q.sx=m.x;q.sy=m.y;q.top=m.y-(topOf(W.ride)+16)*s;}   // her name over mine
+      drawRide(c,{x:m.x,y:m.y,s,px:W.k*W.dpr,F:me.F,fkey:me.fk,F2:q?.fig||null,fkey2:q?.fk||'',v:W.ride,r:W.rv});return;
     }
     c.save();c.translate(m.x,m.y);c.scale(s,s);
     if(m.path?.length&&!still())c.translate(0,-Math.abs(Math.sin(m.step))*3);
@@ -265,7 +305,7 @@ export function setup(ctx){
 
   /* ---- test hooks (scratch browser checks) ---- */
   globalThis.__fairWalk={state:()=>({on:!!W.el?.isConnected,port:W.port,me:W.me&&[W.me.x,W.me.y],walking:!!W.me?.path?.length,at:W.at,
-    ride:W.ride?.id||null,riding:riding(),park:W.park&&[Math.round(W.park.x),Math.round(W.park.y)],toggle:W.btn&&!W.btn.hidden?W.btn.textContent:null,
+    ride:W.ride?.id||null,riding:riding(),back:W.back,co:W.co&&!W.co.hidden?W.co.textContent:null,park:W.park&&[Math.round(W.park.x),Math.round(W.park.y)],toggle:W.btn&&!W.btn.hidden?W.btn.textContent:null,
     spots:pl().spots.map(s=>s.id),stage:W.el?.getBoundingClientRect().toJSON(),crowd:CR.state()}),
     screen:id=>{const s=pl().spots.find(q=>q.id===id);if(!s||!W.cv)return null;const r=W.cv.getBoundingClientRect();return [r.left+W.ox+s.hit[0]*W.k,r.top+W.oy+s.hit[1]*W.k];},
     go:id=>goSpot(pl().spots.find(s=>s.id===id)),walk:(u,v)=>{const f=pl().floor;walkTo([f[0]+u*(f[2]-f[0]),f[1]+v*(f[3]-f[1])]);}};

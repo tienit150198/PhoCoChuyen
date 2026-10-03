@@ -674,3 +674,13 @@ html[data-theme="dem"] .fh-pb-code-chip b{background:#3a2a4f;color:#ffe9a8;borde
 .rd-toggle[aria-pressed="true"]{border-color:#e0a93b;background:#fff3d6f2}
 .rd-toggle:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
 @media (max-width:480px){.rd-toggle{top:5px;right:6px;min-height:36px;padding:3px 10px;font-size:.8rem}}   /* clear of the stall signs on a phone */
+/* 💑 vợ chồng chung xe (v4/ride.js, live/coride.py): "🛵 Ngồi sau", sitting behind ("Xuống xe"), a vehicle taken. */
+.rd-co{position:absolute;right:10px;top:58px;z-index:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:6px;max-width:min(320px,calc(100% - 20px));padding:5px 6px 5px 11px;border-radius:18px;background:#fffaf0f2;color:#4a3a30;font-weight:700;font-size:.84rem;box-shadow:0 2px 8px #0002}
+.rd-co[hidden]{display:none}
+.rd-co:has(> button:only-child){padding:0;background:none;box-shadow:none}
+.rd-co-msg{flex:1 1 140px;text-align:right}
+.rd-co button{min-height:36px;padding:4px 12px;border-radius:var(--radius-pill);border:1.5px solid #c9b49a;background:#fff;color:#4a3a30;font:inherit;font-weight:800;cursor:pointer}
+.rd-co button.primary{border-color:#e0a93b;background:#ffe2a6;color:#4a3a30}
+.rd-co button:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+@media (max-width:480px){.rd-co{right:6px;font-size:.78rem}}
+.fh-wstage .rd-co{top:auto;bottom:8px;right:8px}   /* the fair: under the stalls, never over their signs */
