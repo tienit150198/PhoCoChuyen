@@ -1,5 +1,6 @@
 /** Server-graded courses and the TT99 desk. Drafts are UI-only and never grant progress. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {amountAttrs,amountNote,amountNoteHTML,amountOf} from './amount-parse.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const vnd=n=>n==null?'—':`${fmt(n)} đ`;
@@ -58,14 +59,15 @@ function questionKey(mode,id,context=''){return `${mode}|${context}|${id}`;}
 function draftFor(u,key,q){
   return u.drafts[key]??={values:{},order:[],entries:q.kind==='entry'?[{debit:'',credit:'',amount:''}]:[]};
 }
-const numeric=(name,value,label)=>`<label class="as-field"><span>${esc(label)}</span><input class="input" name="${esc(name)}" type="number" inputmode="numeric" step="1" value="${esc(value??'')}" required></label>`;
+/** A money box takes what a player writes: -500.000, (500.000), 6+4, 10 triệu (amount-parse.js), with the value under it. */
+const numeric=(name,value,label,unit='đ')=>`<label class="as-field" data-amt-box><span>${esc(label)}</span><input class="input${amountNote(value,unit).bad?' amt-unread':''}" name="${esc(name)}" ${amountAttrs(unit)} placeholder="ví dụ: 6+4, -500.000, 1,5 triệu" value="${esc(value??'')}" required>${amountNoteHTML(value,unit)}</label>`;
 function select(name,rows,value,label){return `<label class="as-field"><span>${esc(label)}</span><select name="${esc(name)}" required><option value="">Chọn…</option>${rows.map(r=>`<option value="${esc(r.id)}"${r.id===value?' selected':''}>${esc(r.label||(r.name?`${r.id} — ${r.name}`:r.id))}</option>`).join('')}</select></label>`;}
 
 function questionInput(q,d,key){
   const values=d.values||{};
   switch(q.kind){
     case'choice':case'multi':return `<div class="as-options">${q.options.map((o,i)=>`<label class="as-option"><input type="${q.kind==='choice'?'radio':'checkbox'}" name="ans" value="${esc(o.id)}"${(q.kind==='choice'?values.ans===o.id:(values.ans||[]).includes(o.id))?' checked':''}${q.kind==='choice'?' required':''}><span class="as-option-letter">${String.fromCharCode(65+i)}</span><span>${esc(o.label)}</span></label>`).join('')}</div>`;
-    case'number':return numeric('ans',values.ans,`Đáp số (${q.unit||'đ'})`);
+    case'number':return numeric('ans',values.ans,`Đáp số (${q.unit||'đ'})`,q.unit||'đ');
     case'fields':return `<div class="as-fields">${q.fields.map(f=>f.options?select('f:'+f.id,f.options,values['f:'+f.id],f.label):numeric('f:'+f.id,values['f:'+f.id],f.label+' (VND)')).join('')}</div>`;
     case'match':return `<div class="as-fields">${q.left.map(l=>select('m:'+l.id,q.right,values['m:'+l.id],l.label)).join('')}</div>`;
     case'order':{
@@ -81,7 +83,7 @@ export function questionView(q,{mode,context='',lesson='',ui,number=1,disabled=f
   const key=questionKey(mode,q.id,context),d=draftFor(ui,key,q),message=ui.messages[key];
   const title=`<div class="as-question-title"><span class="as-question-no">${q.solved?'✓':number}</span><h4>${esc(q.title)}</h4>${q.solved?status('Đã làm đúng','good'):''}</div>`;
   if(q.solved)return `<article class="as-question solved">${title}<p>${esc(q.prompt)}</p><div class="as-answer">${answerText(q)}</div>${q.explain?`<p class="as-explain">${esc(q.explain)}</p>`:''}</article>`;
-  const schema={kind:q.kind,items:q.items,left:q.left,fields:q.fields};
+  const schema={kind:q.kind,items:q.items,left:q.left,fields:q.fields,unit:q.unit};
   const help=mode!=='exam'&&q.help?.length?helpView(q.help,key,ui):'';
   return `<article class="as-question">${title}<p class="as-prompt">${esc(q.prompt)}</p>${help}<form data-as-form="${mode}" data-key="${esc(key)}" data-question="${esc(q.id)}" data-lesson="${esc(lesson)}" data-kind="${esc(q.kind)}" data-question-data="${esc(JSON.stringify(schema))}"><fieldset class="as-question-controls"${disabled?' disabled':''}>${questionInput(q,d,key)}${message?`<p class="as-feedback ${message.correct===false?'bad':'good'}" role="status">${esc(message.text)}</p>`:''}<button type="submit" class="btn primary">${mode==='exam'||mode==='check'?'Nộp câu và tiếp tục':mode==='company'?'Kiểm tra và ghi sổ':'Kiểm tra bài tập'}</button></fieldset></form></article>`;
 }
@@ -244,18 +246,19 @@ export function accountingSchoolInput(target,env){
   const form=target.closest?.('form[data-as-form]');if(!form)return false;
   capture(form,state(env));return true;
 }
-const integer=value=>value!==''&&value!=null&&Number.isSafeInteger(Number(value))?Number(value):null;
+/** A box's text as the whole number the server grades (unit: the one shown with the box), or null. */
+const integer=(value,unit='đ')=>amountOf(value,unit);
 export function readAccountingAnswer(form,u){
   capture(form,u);const q=JSON.parse(form.dataset.questionData),d=u.drafts[form.dataset.key],f=new FormData(form);
   switch(q.kind){
     case'choice':return f.get('ans');
     case'multi':{const values=f.getAll('ans');return values.length?values:null;}
-    case'number':return integer(f.get('ans'));
+    case'number':return integer(f.get('ans'),q.unit||'đ');
     case'order':return d.order.length===q.items.length&&new Set(d.order).size===q.items.length&&d.order.every(id=>q.items.some(x=>x.id===id))?[...d.order]:null;
     case'entry':{const rows=d.entries.map(r=>({...r,amount:integer(r.amount)}));return rows.every(r=>r.debit&&r.credit&&r.debit!==r.credit&&r.amount>0&&r.amount<=1e9)?rows:null;}
     case'match':case'fields':{
       const rows=q.kind==='match'?q.left:q.fields,prefix=q.kind==='match'?'m:':'f:',answer={};
-      for(const row of rows){const raw=f.get(prefix+row.id),value=q.kind==='fields'&&!row.options?integer(raw):raw;if(value===null||value==='')return null;answer[row.id]=value;}
+      for(const row of rows){const raw=f.get(prefix+row.id),value=q.kind==='fields'&&!row.options?integer(raw,row.unit||'đ'):raw;if(value===null||value==='')return null;answer[row.id]=value;}
       return answer;
     }
     default:return null;
