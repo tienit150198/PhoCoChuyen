@@ -397,6 +397,20 @@ class HTTP(unittest.TestCase):
         self.assertEqual(data['gifts'], [])
         self.assertIn('state', data)
 
+class LargeGift(unittest.TestCase):
+    """03/10: the owner gives one player 100k xu. The game pays up to MAX_COINS; the tool asks for --large above LARGE."""
+    def test_caps(self):
+        self.assertEqual((sg.MAX_COINS, sg.LARGE), (100_000, 1000))
+
+    def test_the_tool_wants_large_above_1000(self):
+        import subprocess, sys as _s, os as _o
+        root = _o.path.dirname(_o.path.dirname(_o.path.abspath(__file__)))
+        r = subprocess.run([_s.executable, _o.path.join(root, 'scripts', 'grant_gift.py'), '--db', _o.path.join(root, 'no-such.sqlite3'),
+                            '--user', 'x', '--coins', '100000', '--title', 't', '--text', 't'], capture_output=True, text=True,
+                           env={k: v for k, v in _o.environ.items() if k != 'DATABASE_URL'})
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn('--large', r.stderr + r.stdout)
+
 
 if __name__ == '__main__':
     unittest.main()

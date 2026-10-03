@@ -1083,7 +1083,7 @@ def catalog() -> dict:
         extras=[{k: x.get(k) for k in ('id', 'emoji', 'name', 'price', 'per10', 'desc')} for x in W.EXTRAS],
         deposit_pct=W.DEPOSIT_PCT, seats=W.TABLE_SEATS, tables=[W.TABLES_MIN, W.TABLES_MAX],
         days=[W.DAYS_MIN, W.DAYS_MAX, W.DAYS_DEFAULT], tiers=W.TIER_NAMES, sticker=W.STICKER,
-        limits=dict(proposals_per_day=W.PROPOSALS_PER_DAY, decline_days=0, decline_hours=W.DECLINE_HOURS, remarry_days=W.REMARRY_DAYS,
+        limits=dict(proposals_per_day=W.PROPOSALS_PER_DAY, decline_days=0, decline_hours=W.DECLINE_HOURS, remarry_days=0, remarry_hours=W.REMARRY_HOURS,
                     proposal_days=W.PROPOSAL_DAYS, rings_max=RINGS_MAX))
 
 
@@ -1375,7 +1375,7 @@ def _can_propose(db, sid: str, target: dict | None) -> str | None:
         return 'Đây là mã của chính bạn.'
     me = _row(db, 'SELECT * FROM marriage_people WHERE sid=?', (sid,))
     if me and me['remarry_after'] > t:
-        return 'Bạn vừa khép lại một cuộc hôn nhân. Cho lòng nghỉ vài ngày rồi hẵng tính tiếp nhé.'
+        return f'Bạn vừa khép lại một cuộc hôn nhân. Cho lòng nghỉ {W.REMARRY_HOURS} tiếng rồi hẵng tính tiếp nhé.'
     if _bond(db, sid):
         return 'Bạn đang có đôi rồi.'
     if _blocked(db, sid, target['sid']):
@@ -1455,7 +1455,7 @@ def _respond(store, sid: str, display: str, d: dict) -> dict:
              'Lời cầu hôn này không còn chờ trả lời.', 'gone', 409)
         for who in (sid, other):
             pp = _row(db, 'SELECT remarry_after FROM marriage_people WHERE sid=?', (who,))
-            need(not pp or pp['remarry_after'] <= now(), 'Một trong hai bạn vừa khép lại một cuộc hôn nhân, chờ thêm vài ngày nhé.', 'cooldown', 409)
+            need(not pp or pp['remarry_after'] <= now(), f'Một trong hai bạn vừa khép lại một cuộc hôn nhân, chờ thêm {W.REMARRY_HOURS} tiếng nhé.', 'cooldown', 409)
         need(not _blocked(db, sid, other), 'Không nhận lời được.', 'blocked', 409)
         sql, args = "INSERT INTO couples(a,b,ring,status,since) VALUES(?,?,?,'engaged',?)", (other, sid, p['ring'], now())
         cid = db.execute(sql + ' RETURNING id', args).fetchone()[0] if dbm.is_pg(db) else db.execute(sql, args).lastrowid
@@ -1682,13 +1682,13 @@ def _divorce(store, sid: str, display: str, d: dict) -> dict:
         db.execute("UPDATE weddings SET status='cancelled' WHERE couple=? AND status IN ('proposed','rejected','confirmed')", (c['id'],))
         from . import wedding_live as wl
         wl.cancel_party(db, c['id'])   # 💍 a booked live party is off too
-        until = now() + W.REMARRY_DAYS * DAY
+        until = now() + W.REMARRY_HOURS * 3600
         db.execute('UPDATE marriage_people SET remarry_after=? WHERE sid IN (?,?)', (until, sid, other))
         from . import couple as cp  # the joint fund is split, open debts settled from it
         _insert_effects(db, [_effect(f'end:{c["id"]}:a', c['a'], 'status', data=dict(set=None)),
                              _effect(f'end:{c["id"]}:b', c['b'], 'status', data=dict(set=None))] + cp.on_end(db, c, sid))
         _notice(db, other, ('💔 ' + display + (' đã ly hôn.' if c['status'] == 'married' else ' đã hủy hôn ước.')
-                            + f' Cả hai cần {W.REMARRY_DAYS} ngày trước khi tính chuyện mới.'))
+                            + f' Cả hai cần {W.REMARRY_HOURS} tiếng trước khi tính chuyện mới.'))
         return True
     if not store.transaction(run):
         raise MarriageError('Chuyện này đã khép lại rồi.', 'gone', 409)
@@ -1697,7 +1697,7 @@ def _divorce(store, sid: str, display: str, d: dict) -> dict:
             settle(store, who)
         except Exception:  # noqa: BLE001
             pass
-    return dict(message=('Đã ly hôn.' if c['status'] == 'married' else 'Đã hủy hôn ước.') + f' Cả hai cần {W.REMARRY_DAYS} ngày trước khi tính chuyện mới.',
+    return dict(message=('Đã ly hôn.' if c['status'] == 'married' else 'Đã hủy hôn ước.') + f' Cả hai cần {W.REMARRY_HOURS} tiếng trước khi tính chuyện mới.',
                 changed=True)
 
 
