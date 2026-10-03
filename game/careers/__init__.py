@@ -19,6 +19,7 @@ ORDER = (
     'ice_cream',                   # bán kem: cô Hiền's ice-cream corner by the school gate
     'nail',                        # tiệm nail: chị Diệp's little nail shop on the street
     'pagoda',                      # thầy chùa: a young monk at chùa Gió Lành by the river landing
+    'pho',                         # bán phở: bác Lâm's phở shop under the old banyan, the broth pot on all day
     'pilot', 'flight_attendant',
     'hr_admin', 'secretary', 'it_helpdesk',   # Công ty CP Cánh Diều: HR, the director's secretary, IT helpdesk
 )

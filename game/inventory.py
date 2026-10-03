@@ -51,6 +51,7 @@ HOURS = {
     'homemaker': (6 * 60 + 30, 18 * 60 + 30),   # the market at dawn, dinner cooked before going home
     'ice_cream': (11 * 60, 21 * 60),    # after lunch, the school run at 16:30, the evening walk
     'nail': (9 * 60, 21 * 60),          # office lunch breaks, evening and weekend bookings
+    'pho': (5 * 60 + 30, 14 * 60),      # breakfast from 5:30, the pot runs low after lunch
     'pagoda': (5 * 60, 19 * 60),        # the gate opens after morning chanting, closes after the evening one
 }
 EARLY = 30  # goods due after closing wait at the door this many minutes before the next opening

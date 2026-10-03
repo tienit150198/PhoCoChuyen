@@ -1194,6 +1194,43 @@ ARCS = {
                 ('na', 'Thầy ơi, con viết về thầy trong bài văn luôn rồi!'),
                 ('me', 'Con sẽ thỉnh chuông chậm và đều, như thầy.')]),
         ]),
+    'pho': dict(
+        title='Cái muôi đồng của bác Lâm', emoji='🍜',
+        keepsake=dict(emoji='🥄', name='Cái muôi đồng cán quấn vải', desc='Bác Lâm mang từ Nam Định lên, ba mươi năm múc nước dùng. Cầm lên là biết một muôi vừa một tô.'),
+        cast={'lam': _p('Bác Lâm', '🧑‍🍳', 'Chủ quán phở', 'pho_npc_01'),
+              'thu': _p('Ông giáo Thụ', '📰', 'Thầy giáo về hưu', 'pho_npc_02'),
+              'nguyet': _p('Chị Nguyệt', '🍙', 'Bán xôi đầu ngõ', 'pho_npc_03'),
+              'bong': _p('Chị Hạnh', '👧', 'Mẹ bé Bống', 'pho_npc_05')},
+        beats=[
+            _b('Nồi xương ba giờ sáng', '🦴', 'Ba giờ sáng, đèn quán đã sáng. Bác Lâm chần xương, rửa từng khúc dưới vòi nước lạnh.', [
+                ('lam', 'Xương phải chần cho sạch máu, nước mới trong. Gừng với hành nướng cháy vỏ, cạo sạch rồi mới thả.'),
+                ('lam', 'Ninh lửa nhỏ, mặt nồi chỉ lăn tăn. Sôi to một lúc là nước đục cả ngày, gỡ không lại.'),
+                ('me', 'Dạ, con canh lửa cho bác.')]),
+            _b('Ông giáo nếm nước', '📰', 'Ông giáo Thụ trải tờ báo, chưa ăn vội mà húp một thìa nước trước.', [
+                ('thu', 'Phở là ở nước. Nước trong nhìn thấy đáy tô, ngọt là ngọt xương chứ không phải ngọt mì chính.'),
+                ('thu', 'Ông già rồi, uống mì chính vào là khô cổ cả buổi.'),
+                ('lam', 'Nồi nhỏ kia bác nấu riêng cho ông giáo đấy con.')],
+                _c('Ông giáo hỏi chuyện nồi nước',
+                   _o('a', 'Múc nước ở nồi nhỏ, mời ông nếm lại', [('thu', 'Đấy, thế này mới là phở. Cháu nhớ lời ông dặn rồi đấy.')], rel='thu'),
+                   _o('b', 'Hỏi ông phở ngày xưa thế nào', [('thu', 'Ngày xưa phở gánh, một gánh hai đầu: một đầu nồi nước, một đầu bánh với thịt. Nước nóng là được.')], rel='thu'))),
+            _b('Sáng gió mùa', '🌬️', 'Gió mùa về, ngõ vắng hoe. Hơi nước trên nồi phở bốc lên trắng xóa.', [
+                ('nguyet', 'Lạnh thế này bán xôi chẳng ai mua, chị sang ăn bát phở cho ấm.'),
+                ('nguyet', 'Nước béo nhé em, hớt mặt nồi ấy, có tí tủy là ngon.'),
+                ('lam', 'Trời lạnh tô nguội nhanh. Chan xong bưng ra liền, đừng để khách chờ.')],
+                _c('Nồi nước vừa châm, chưa sôi lại',
+                   _o('a', 'Xin chị chờ một phút cho nồi lăn tăn lại', [('nguyet', 'Ừ, chờ được. Tái chín hồng mới ngon.')], rel='nguyet'),
+                   _o('b', 'Mời chị cốc trà nóng trong lúc chờ', [('nguyet', 'Cái quán này chu đáo ghê. Thảo nào đông.')], rel='nguyet'))),
+            _b('Bé Bống ăn hết tô', '👧', 'Chị Hạnh dắt bé Bống vào, bé ôm cái cặp to hơn người.', [
+                ('bong', 'Bé nhà chị kén lắm, thấy hành là gạt ra, nước nhiều là không ăn.'),
+                ('me', 'Em làm tô chín, không hành, ít nước, bánh trụng mềm cho bé.'),
+                ('bong', 'Hôm nay bé ăn sạch tô! Lần đầu tiên đấy em ạ.')]),
+            _b('Cái muôi đồng', '🥄', 'Bác Lâm lau cái muôi đồng sáng bóng, treo lên móc rồi lại gỡ xuống, đưa cho bạn.', [
+                ('lam', 'Ba mươi năm bác múc bằng cái muôi này. Muôi nào cũng được, quan trọng là dừng tay đúng lúc.'),
+                ('lam', 'Mai bác về quê giỗ cụ, quán giao con mấy hôm.'),
+                ('thu', 'Giao đúng người. Nước trong, tái hồng, cháu nó làm được.'),
+                ('nguyet', 'Mai chị vẫn sang ăn, nước béo nhé!'),
+                ('me', 'Con giữ nồi nước như bác đã giữ.')]),
+        ]),
     # ------------------------------------------------------------ ✈️ Hãng bay Cánh Cò
     'pilot': dict(
         title='Đường bay ra đảo', emoji='🛩️',
