@@ -1,3 +1,12 @@
+# v1.5.0 — 🍜 Bán phở, 🍚 Bán cơm, 📸 Photobooth, 🏠 vào nhà & tủ lạnh, 🧧 phong bì
+
+- Nghề mới: Bán phở (quán phở Cây Si), Bán cơm (Cơm tấm Dì Bảy), Photobooth (Tiệm ảnh Tách Tách). Tuần x3 đang chạy giữ nguyên lịch các nghề cũ.
+- Hội chợ: photobooth chụp một mình / với người lạ / với bạn bằng mã, dải ảnh có khung tải về PNG.
+- Vào nhà, phòng trọ, KTX; tủ lạnh (`game/fridge.py`) cất đồ ăn.
+- Đám cưới: phong bì không giới hạn, mức 500 xu từ ngày sống 3. Nút gửi tự quản trạng thái bận (không bị tap guard chung nuốt), mất phản hồi thì gửi lại cùng request id, server trả "đã gửi" thay vì "không đủ xu" cho lần gửi lại (e63e643).
+- Nông trại: phân bón lá thúc. 🌅 Ngày mai trong tổng kết ngày cho các nghề; năm đợt chỉnh UI theo nghề.
+- Đánh giá: nhãn "Đã trả lời" chỉ khi người chơi đã trả lời; nhận xét của tổ bay (đóng ngay, `fb.own`) ghi "không cần trả lời" (Yuika, chat 03/10).
+
 # v1.4.33 — 🌐 Cốc Cốc / trình chặn quảng cáo không còn kẹt màn hình tải
 
 Chủ game: "game vào bằng Cốc Cốc không được… tới bước tải cuối thấy dừng luôn".
