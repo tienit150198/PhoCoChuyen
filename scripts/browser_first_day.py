@@ -2,8 +2,8 @@
 """First-day sweep (dev tool, needs `pip install playwright` + chromium).
 
 Plays a brand-new STORY-mode player the way production runs (story on, MNL_DEV
-off) on a 390×844 phone: the one intro screen (look, name, a chapter-1 workplace)
-→ day 1 opens by itself → finish the first task, only ever pressing the control the game highlights
+off) on a 390×844 phone: the one intro screen (look, name) → the town (walk to the
+chapter-1 workplace, "Vào làm"; with the list as home the intro picks it) → day 1 opens by itself → finish the first task, only ever pressing the control the game highlights
 (the first-time pulse), the bottom button (.gd-cta) or the "Bước tiếp theo"
 hint, and saying yes to confirm dialogs. A career passes when its first task is
 completed without console errors, error toasts or a step that goes nowhere.
@@ -160,16 +160,42 @@ async def play(browser, base: str, cid: str, shots: Path | None, max_steps: int 
             await page.wait_for_timeout(600)
             await dev_start(page, cid)
         else:
-            # The story intro is one screen: look, name, first workplace (milk tea is picked already), go.
+            # The story intro is one screen: look and name, then the town (🗺️ Bản đồ phố, the default home): the
+            # chapter-1 places glow, an arrow on milk tea; walk to the place, "Vào làm". With the list as home
+            # (or no canvas) the intro picks the workplace instead (milk tea picked already).
             # Day 1 of that first workplace then opens by itself, straight into the first customer.
             await page.click('[data-action="jrGender"][data-gender="female"]')
             await page.fill('#sheet[open] input', 'Lan')
-            rec = await page.get_attribute('.onb-job.active', 'data-career')
-            if rec != 'milk_tea':
-                out['problems'].append(f'the recommended first workplace is {rec!r}, not milk_tea')
-            if cid != rec:
-                await page.click(f'.onb-job[data-career="{cid}"]')
-            await page.get_by_role('button', name='Vào làm thôi').click()
+            if await page.locator('.onb-job').count():
+                rec = await page.get_attribute('.onb-job.active', 'data-career')
+                if rec != 'milk_tea':
+                    out['problems'].append(f'the recommended first workplace is {rec!r}, not milk_tea')
+                if cid != rec:
+                    await page.click(f'.onb-job[data-career="{cid}"]')
+                await page.get_by_role('button', name='Vào làm thôi').click()
+            else:
+                await page.get_by_role('button', name='Vào phố thôi').click()
+                await page.wait_for_selector('#sheet[open] .tw-stage canvas', timeout=10000)
+                await page.wait_for_timeout(500)
+                tw = await page.evaluate('__townWalk.state()')
+                if tw['arrow'] != 'milk_tea':
+                    out['problems'].append(f"the town points the new player at {tw['arrow']!r}, not milk_tea")
+                if cid not in tw['lit']:
+                    out['problems'].append(f'{cid} does not glow in the town for a new player')
+                await shot('town')
+                xy = await page.evaluate('k=>__townWalk.screen(k)', cid)
+                if xy:
+                    await page.touchscreen.tap(*xy)   # a tap on the place: the player walks to its door
+                else:
+                    await page.evaluate('k=>__townWalk.go(k)', cid)   # off the view: walk there (as the arrow keys would)
+                for _ in range(50):
+                    tw = await page.evaluate('__townWalk.state()')
+                    if tw['card'] and tw['at'] == cid:
+                        break
+                    await page.wait_for_timeout(100)
+                else:
+                    out['problems'].append(f'walking to {cid} in the town did not reach its door')
+                await page.click('#sheet .tw-card [data-action="choose"]')
             for _ in range(40):
                 st = await page.evaluate(STATE, cid)
                 if st['open'] and st['current'] == cid:
