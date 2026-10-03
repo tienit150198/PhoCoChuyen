@@ -5,7 +5,7 @@
  * - What the player has read is settings.whatsNewSeen in the save, so it
  *   follows the account across devices. localStorage only stands in while the
  *   save has no such key (an older server).
- * - A notice for returning players: it waits for a break point (v4/popup-gate.js): never over the
+ * - A notice for returning players: it waits for a break point (v4/break-gate.js): never over the
  *   day summary, a customer on the work screen, the tutorial or another card, and after a
  *   🎁 gift card. A brand-new player never gets it: naming the character marks
  *   the current notes as read on the server (journey._welcome_settings), and a save
@@ -19,7 +19,7 @@ import NOTES from './whatsnew-data.js';
 import {language} from './i18n.js';
 import {icon,escapeHTML as esc} from '../icons.js';
 import {firstDay} from './onboard.js';
-import {why,turn,want} from './popup-gate.js';
+import {why,turn,want} from './break-gate.js';
 
 const KEY='mnl.wn.seen';
 const VERSION=/^\d{1,3}(\.\d{1,3}){1,2}$/;
@@ -50,7 +50,7 @@ const reduced=()=>document.documentElement.classList.contains('reduce-motion')||
 
 /** Why the card has to wait right now ('' = it may open): loading, a hidden tab, naming the
  * character, the tutorial (the tour or its welcome card), then the shared popup rule
- * (v4/popup-gate.js: another card or question, the day summary, the evening, a customer at work,
+ * (v4/break-gate.js: another card or question, the day summary, the evening, a customer at work,
  * the phone menu, a gift card still to come). The first day is fine. */
 export function blocker(env=E,doc=document){
   const s=env?.api?.state;if(!s)return 'loading';

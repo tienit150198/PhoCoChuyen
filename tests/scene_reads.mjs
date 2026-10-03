@@ -1,7 +1,7 @@
-// Unit test of public/js/scenes/reads.js (what a backdrop paint read of the game, boba-world.js backdrop()).
+// Unit test of public/js/scenes/room-watch.js (what a backdrop paint read of the game, boba-world.js backdrop()).
 // Run by tests/test_scene_reads.py (node tests/scene_reads.mjs); exits non-zero on failure.
 import assert from 'node:assert/strict';
-import {watch} from '../public/js/scenes/reads.js';
+import {watch} from '../public/js/scenes/room-watch.js';
 
 const clone=v=>JSON.parse(JSON.stringify(v));
 const deepFreeze=o=>{if(o&&typeof o==='object'){Object.values(o).forEach(deepFreeze);Object.freeze(o);}return o;};

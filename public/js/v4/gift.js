@@ -8,12 +8,12 @@
  *   a tap in the first moment after it pops up is ignored, reduced motion is respected. Esc counts as
  *   the button (the coins are in the wallet either way).
  * - It waits for the game to be on screen, naming the character, a new player's first 3 customers,
- *   the tutorial, and a break point (v4/popup-gate.js): no other card or question open, not over the
+ *   the tutorial, and a break point (v4/break-gate.js): no other card or question open, not over the
  *   day summary or a customer at work. It comes first of the cards that open by themselves.
  * app.js imports this module only when the bootstrap carried a gift. */
 import {escapeHTML as esc} from '../icons.js';
 import {quiet} from './onboard.js';
-import {why,want} from './popup-gate.js';
+import {why,want} from './break-gate.js';
 
 let E=null,queue=[],dlg=null,timer=0,calm=0,openedAt=0,back=null,cssReady=null;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
