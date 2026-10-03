@@ -216,28 +216,31 @@ function render(){
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
 function head(sub){
-  return `<header class="sheet-head bk-head"><span class="bk-logo" aria-hidden="true">${LOGO}</span><div class="grow"><span class="eyebrow">NGÂN HÀNG PHỐ · ỨNG DỤNG</span><h2 id="bk-title">Ngân hàng Phố</h2><p>${sub}</p></div>
+  return `<header class="sheet-head bk-head"><span class="bk-logo" aria-hidden="true">${LOGO}</span><div class="grow"><span class="eyebrow">NGÂN HÀNG PHỐ · ỨNG DỤNG</span><h2 id="bk-title">Ngân hàng Phố</h2>${sub?`<p>${sub}</p>`:''}</div>
     <button class="icon-btn" type="button" data-bk="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
 }
 const flash=()=>`<p class="bk-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
 function page(){
   const b=B();
   if(!b.story)return head('Tài khoản, tiết kiệm, thẻ và khoản vay của riêng bạn.')+`<div class="sheet-body bk bk-body"><section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏦</div><h3>Ngân hàng chỉ có trong chế độ hành trình</h3><p>Ở chế độ chơi tự do, mỗi nơi làm việc có quỹ riêng. Vào hành trình để có ví, tài khoản ngân hàng, thẻ và khoản vay của một nhân vật.</p></section></div>`;
-  if(!b.open)return head('Tài khoản, tiết kiệm, thẻ và khoản vay của riêng bạn.')+`<div class="sheet-body bk bk-body">${flash()}${welcome(b)}</div>`;
+  if(!b.open)return head('')+`<div class="sheet-body bk bk-body">${flash()}${welcome(b)}</div>`;
   const tabs=[['home','Tổng quan'],['tx','Giao dịch'],['save','Tiết kiệm'],['card','Thẻ'],['loan','Vay']];
   const bar=`<div class="segmented bk-tabs" role="tablist" aria-label="Mục ngân hàng">${tabs.map(([id,l])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'active':''}" data-bk="tab" data-tab="${id}">${l}${id==='card'&&b.card?.past_due||id==='loan'&&(b.loans||[]).some(x=>x.overdue)?'<i class="dot" aria-hidden="true"></i>':''}</button>`).join('')}</div>`;
   const body={home,tx,save,card,loan}[S.tab]||home;
   return head(`Số tài khoản ${acctNo(b.no)} · Ngày sống ${b.life_day}`)+`<div class="sheet-body bk bk-body">${bar}${flash()}${alerts(b)}${body(b)}</div>`;
 }
 
+/** Before an account: four short chips say what it offers, the button opens one; the details fold (owner 03/10: "chữ ít thôi"). */
 function welcome(b){
+  const top=pct(Math.max(...Object.values(b.rules.term_rate)));
   return `<section class="bk-card bk-welcome"><span class="bk-logo big" aria-hidden="true">${LOGO}</span><h3>Chào mừng tới Ngân hàng Phố</h3>
-    <p>Tiền mặt trong ví vẫn là của bạn. Mở một tài khoản để có thêm:</p>
+    <ul class="bk-perks" aria-label="Có trong tài khoản"><li>🏧 Nộp, rút</li><li>🐷 Tiết kiệm tới ${top}</li><li>💳 Thẻ</li><li>💰 Vay</li></ul>
+    <p class="bk-hint">Tiền mặt hiện có: <b>${xu(b.wallet)}</b></p>${btn('Mở tài khoản miễn phí','open',{},'primary big')}
+    <details class="bk-tips"><summary>Xem thêm</summary><p>Tiền mặt trong ví vẫn là của bạn. Mở một tài khoản để có thêm:</p>
     <ul class="bk-bullets"><li><b>Tài khoản thanh toán</b>: nộp, rút ở cây ATM, sổ giao dịch có số dư từng dòng.</li>
     <li><b>Tiết kiệm</b>: không kỳ hạn ${pct(b.rules.demand_rate)}/năm, có kỳ hạn tới ${pct(Math.max(...Object.values(b.rules.term_rate)))}/năm.</li>
     <li><b>Thẻ tín dụng</b>: quẹt trước trả sau, sao kê mỗi ${b.rules.card_cycle} ngày.</li>
-    <li><b>Khoản vay</b>: vay tiêu dùng, vay mở rộng tiệm, vay mua nhà, trả góp từng kỳ.</li></ul>
-    <p class="bk-hint">Tiền mặt hiện có: <b>${xu(b.wallet)}</b></p>${btn('Mở tài khoản miễn phí','open',{},'primary big')}</section>`;
+    <li><b>Khoản vay</b>: vay tiêu dùng, vay mở rộng tiệm, vay mua nhà, trả góp từng kỳ.</li></ul></details></section>`;
 }
 function alerts(b){
   const out=[];

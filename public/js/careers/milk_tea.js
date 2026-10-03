@@ -470,18 +470,16 @@ function orderTicket(t,x,steps){
     <div class="mt-ticket-order"><b>Ly ${g?g.i:1}:</b><ul class="mt-reqs" aria-label="Món khách gọi">${chips.join('')}</ul></div>
     ${meter}</section>`;
 }
-/** The bottom line: the steps the cup still needs, in making order ("Còn 3 bước: … → … → Dán nắp").
- * At most TODO_SHOWN of them (plus the one the button does and any wrong one), then "+N": two short
- * lines on a phone even for a big order; the pinned ticket above shows every part. */
-const TODO_SHOWN=3;
+/** The bottom line: how many steps the cup still needs ("Còn 3 bước"), and any part that is wrong.
+ * The button under it names the step it does and the pinned ticket above shows every part, so the
+ * steps are not listed again here (owner 03/10: "chữ ít thôi"). Before the order: nothing (the button says it). */
 function todoLine(t,x,steps){
-  if(!t.known)return 'Nghe khách gọi món trước';
+  if(!t.known)return '';
   if(!steps.length)return x.esc(status(x,t.cup||{}));
   const left=steps.filter(s=>s.ok!==true);
   if(!left.length)return t.app?'✓ Ly đã xong · giao cho tài xế':'✓ Ly đã xong · trao cho khách';
-  const now=nextOf(steps),shown=left.filter((s,k)=>k<TODO_SHOWN||s===now||s.ok===false),more=left.length-shown.length;
-  return `<b>Còn ${left.length} bước:</b> ${shown.map(s=>{const fix=s.row&&fixable(t,s.row),bad=s.ok===false;
-    return `<span class="${bad?(fix?'warn':'bad'):''}${s===now?' now':''}">${bad?(fix?'! ':'✗ '):''}${x.esc(s.label)}</span>`;}).join(' → ')}${more?` → +${more}`:''}`;
+  return `<b>Còn ${left.length} bước</b>${left.filter(s=>s.ok===false).map(s=>{const fix=s.row&&fixable(t,s.row);
+    return ` · <span class="${fix?'warn':'bad'}">${fix?'! ':'✗ '}${x.esc(s.label)}</span>`;}).join('')}`;
 }
 /** Python's round() (ties to even), so the app fee shown is the fee the server takes. */
 const pyRound=v=>{const f=Math.floor(v),d=v-f;return d>0.5||(d===0.5&&f%2)?f+1:f;};
@@ -610,7 +608,7 @@ function stockTab(x){
   const money=fund(x),J=x.state?.journey,wallet=J?.story&&Number.isFinite(Number(J.wallet))?Number(J.wallet):null;
   const poor=all.some(i=>{const s=station(x,i.id);return s.made&&s.unlocked&&s.on!==false&&prepPlan(x,i.id).poor;});
   const clock=now.is_open?`🕑 <b>${x.esc(now.time||b.clock||'')}</b>${overtime(b)?' · tăng ca, nhà cung cấp đã nghỉ':''}`:`🕑 Đóng cửa · mở lại ${x.esc(now.open||'08:00')}`;
-  const purse=`<div class="mt-fund${poor?' poor':''}" role="status"><p>🏪 Quỹ tiệm <b>${money.toLocaleString('vi-VN')} xu</b>${wallet!=null?` · 👛 Ví ${wallet.toLocaleString('vi-VN')} xu`:''} · ${clock}</p>${poor?`<p class="mt-fund-tip">Quỹ mỏng: bán ly từ hàng còn trong kho để có thêm xu, tắt bớt món ở 🏷️ Giá bán${wallet>0?', hoặc góp tiền từ ví vào quỹ':''}.</p>${wallet>0?topUp(x):''}`:''}</div>`;
+  const purse=`<div class="mt-fund${poor?' poor':''}" role="status"><p>${poor?`🏪 Quỹ tiệm <b>${money.toLocaleString('vi-VN')} xu</b> · `:''}${clock}</p>${poor?`<p class="mt-fund-tip">Quỹ mỏng: bán ly từ hàng còn trong kho để có thêm xu, tắt bớt món ở 🏷️ Giá bán${wallet>0?', hoặc góp tiền từ ví vào quỹ':''}.</p>${wallet>0?topUp(x):''}`:''}</div>`;
   const nOrd=(b.orders||[]).length,maxOrd=b.max_orders||12;
   const care=b.care||[],bad=care.filter(r=>r.tone!=='ok').length,danger=care.some(r=>r.tone==='danger');
   const careBox=care.length?`<details class="mt-care-fold"${x.ui.mtPrepCare??danger?' open':''}><summary data-action="car:fold" data-key="mtPrepCare"><span>🧋 Việc chăm quầy</span>${bad?`<em class="mt-care-count ${danger?'danger':''}">${bad}</em>`:'<em class="mt-care-count ok">ổn</em>'}</summary>${careRows(x,care,true)}</details>`:'';

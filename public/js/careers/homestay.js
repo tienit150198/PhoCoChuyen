@@ -104,7 +104,7 @@ function todayChip(x){
   const rv=d.rating_view,tr=rv?.trend||0;
   const spark=rv?.days?.length>2?`<span class="hs-spark" aria-hidden="true">${rv.days.map(([day,v])=>`<i style="height:${Math.max(12,(v-10)/40*100)}%" title="Ngày ${day}: ${(v/10).toFixed(1)}"></i>`).join('')}</span>`:'';
   const score=d.score!=null?`<span class="hs-score" title="Điểm trung bình trên app đặt phòng">${spark}⭐ ${Number(d.score).toFixed(1)} trên app${tr?` <small class="${tr>0?'hs-up':'hs-down'}">${tr>0?'↑':'↓'}${Math.abs(tr).toFixed(1)}</small>`:''}${rv?.featured?' <small class="hs-up">· nổi bật</small>':''}</span>`:'';
-  return `<p class="hs-today"><span aria-hidden="true">${x.esc(m.emoji)}</span> <b>Hôm nay: ${x.esc(m.title)}</b> <small>${x.esc(m.text)}</small>${score}</p>`;
+  return `<p class="hs-today"><span aria-hidden="true">${x.esc(m.emoji)}</span> <b>${x.esc(m.title)}</b> <small>${x.esc(m.text)}</small>${score}</p>`;
 }
 function todayLine(x){
   const d=x.room.data||{},m=d.mod;if(!m)return '';

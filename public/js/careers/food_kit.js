@@ -7,13 +7,14 @@ import {planBox,dayFold} from './tomorrow_kit.js';
 const DONE=['completed','cancelled','referred'];
 export const openTasks=x=>(x.room.tasks||[]).filter(t=>!DONE.includes(t.status));
 
-/** Luck of the day + served count + streak, as one row of chips: "☀️ Hôm nay: Ngày thường ▸ · ✅ 3 · 🔥 2".
+/** Luck of the day + served count + streak, as one row of chips: "☀️ Ngày thường ▸ · ✅ 3 · 🔥 2" (the group is
+ * labelled "Hôm nay" for screen readers; owner 03/10: "chữ ít thôi").
  * The day's hint is one tap away (the chip is a fold; data-auto, so a re-render shuts it again). */
 export function dayStrip(x,day,compact=false){
   if(!day?.mod)return '';
   const m=day.mod,streak=x.room.life?.streak||0;
   const hint=!compact&&m.hint?`<small class="fk-day-hint">${x.esc(m.hint)}</small>`:'';
-  const chip=`<span aria-hidden="true">${x.esc(m.emoji)}</span><b>Hôm nay: ${x.esc(m.label)}</b>`;
+  const chip=`<span aria-hidden="true">${x.esc(m.emoji)}</span><b>${x.esc(m.label)}</b>`;
   return `<div class="fk-day chip" role="group" aria-label="Hôm nay">
     ${hint?`<details class="fk-mod" data-auto><summary>${chip}</summary>${hint}</details>`:`<p class="fk-mod">${chip}</p>`}
     <p class="fk-stats"><span title="Đã phục vụ">✅ ${Number(day.served)||0}</span>${streak?`<span class="fk-streak" title="Làm đúng liên tiếp">🔥 ${streak}</span>`:''}${day.walkins?`<span title="Khách vãng lai">🚶 ${day.walkins}</span>`:''}</p>
@@ -68,10 +69,20 @@ export function eventLog(x,day){
   return `<ul class="fk-evlog" aria-label="Chuyện trong ngày">${rows.map(e=>`<li class="${e.good?'good':e.good===false?'bad':''}"><span aria-hidden="true">${x.esc(e.emoji)}</span><span><b>${x.esc(e.title)}</b>${e.note?`<small>${x.esc(e.note)}</small>`:''}</span></li>`).join('')}</ul>`;
 }
 
-/** Sticky bottom bar on phones: what's next + the one primary action. */
+/** Letter words of some markup, lower case ("👂 Nghe <b>gọi món</b>" → nghe, gọi, món). */
+const wordsOf=html=>String(html).replace(/<[^>]*>/g,' ').toLowerCase().match(/[\p{L}\d]+/gu)||[];
+/** The line says what the button under it already says (most of its words are on the button). */
+export function sameAsButton(next,buttons){
+  const line=wordsOf(next),cta=String(buttons).match(/<button\b[^>]*class="[^"]*\bgd-cta\b[^>]*>([\s\S]*?)<\/button>/)||String(buttons).match(/<button\b[^>]*>([\s\S]*?)<\/button>/);
+  if(!line.length||!cta)return false;
+  const on=new Set(wordsOf(cta[1]));
+  return line.filter(w=>on.has(w)).length>=Math.ceil(line.length*0.75);
+}
+/** Sticky bottom bar on phones: what's next + the one primary action. A line that only repeats the
+ * button is kept for screen readers alone (owner 03/10: "chữ ít thôi", one thing said once). */
 export function actionBar(next,buttons){
   const cap=String(next).replace(/^\s*(\S)/,(m,c)=>m.replace(c,c.toUpperCase()));
-  return `<div class="fk-bar"><p class="fk-next" aria-live="polite">${cap}</p><div class="fk-bar-btns">${buttons}</div></div>`;
+  return `<div class="fk-bar"><p class="fk-next${sameAsButton(cap,buttons)?' sr-only':''}" aria-live="polite">${cap}</p><div class="fk-bar-btns">${buttons}</div></div>`;
 }
 
 /** Keeps the sticky bar above the sheet's own footer (called from tick). The footer's height comes from a

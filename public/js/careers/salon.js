@@ -75,8 +75,8 @@ function nav(t,x,list,at,tab){
 /* ---------- shared bits ---------- */
 function todayChip(x,fold=false){const d=x.room.data?.today;if(!d)return '';
   // On a job the day's theme is one line; tap to read the detail.
-  return fold?`<details class="sl-today sl-today-fold"><summary><span aria-hidden="true">${x.esc(d.emoji)}</span> <b>Hôm nay: ${x.esc(d.title)}</b></summary><small>${x.esc(d.text)}</small></details>`
-    :`<p class="sl-today"><span aria-hidden="true">${x.esc(d.emoji)}</span> <b>Hôm nay: ${x.esc(d.title)}</b> <small>${x.esc(d.text)}</small></p>`;}
+  // Owner 03/10 "chữ ít thôi": the detail always folds; off the job the chip keeps its wider look.
+  return `<details class="sl-today sl-today-fold${fold?'':' wide'}"><summary aria-label="Hôm nay: ${x.esc(d.title)}"><span aria-hidden="true">${x.esc(d.emoji)}</span> <b>${x.esc(d.title)}</b></summary><small>${x.esc(d.text)}</small></details>`;}
 function deskCard(x){
   const ev=x.room.data?.desk?.ev;if(!ev)return '';
   const who=x.npc(ev.npc);

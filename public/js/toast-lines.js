@@ -30,3 +30,42 @@ export function fillToast(el,message){
   el.append(list);
   return true;
 }
+
+/** Words that count toward a toast's length: an emoji, "·" or "→" alone is not a word. */
+const count=s=>s.split(' ').filter(w=>/[\p{L}\d]/u.test(w)).length;
+const QUOTE=/[“"«][^”"»]*(?:[”"»]|$)/u;
+/** The few words a toast shows (owner 03/10: "chữ ít thôi"): the whole note when it is short; else its first
+ * note, a customer's quoted words dropped when there is a note around them (only the words when there is
+ * not), asides in brackets dropped, the first sentence, then at most `max` words: cut at a " · ", " — ",
+ * ": ", ", " break when one leaves a full phrase, else with "…". An error keeps its whole first sentence:
+ * it says what to fix. {head, more}: more = the full text says more (a tap on the toast shows it). */
+export function toastHead(message,{max=8,error=false}={}){
+  const full=String(message??'').replace(/\s+/g,' ').trim();
+  const bare=t=>t.replace(/^[•\s]+/u,'').replace(/[\s.!?…:·,—–-]+$/u,'');
+  if(count(full)<=max)return {head:full,more:false};
+  const rows=toastParts(full);
+  let s=(rows.length?`${rows[0].icon?rows[0].icon+' ':''}${rows[0].text}`:full).replace(/^[•\s]+/u,'');
+  // "Chị Hạnh: “…”": the speaker alone says nothing, so the words stay; "Linh để lại 5 xu tip: “…”": the note stays.
+  const said=s.match(new RegExp(`^([^“"«]{1,60}?): *(${QUOTE.source})$`,'u'));
+  if(said&&count(said[1])<=7&&!/\d/.test(said[1]))s=said[2].replace(/^[“"«]|[”"»]$/gu,'');
+  else s=s.replace(new RegExp(`: *${QUOTE.source}`,'gu'),'').replace(new RegExp(`([.!?…]) +${QUOTE.source}`,'gu'),'$1').trim()||s;
+  if(!error)s=s.replace(/\s*\((?:[^()]|\([^()]*\))*\)/gu,'');
+  const sentence=s.match(/^(.+?[.!?…])(?=\s|$)/u);
+  // A one-word first sentence ("Bíp!") is not a note: keep the next one with it.
+  if(sentence&&count(sentence[1])>=3)s=sentence[1];
+  else if(sentence){const two=s.match(/^(.+?[.!?…]\s+.+?[.!?…])(?=\s|$)/u);if(two)s=two[1];}
+  s=s.replace(/[\s.:·,—–-]+$/u,'').trim();
+  if(!error&&count(s)>max){
+    let cut='';
+    for(const br of [' · ',' — ',' – ',' → ',': ',', ']){
+      for(let i=s.indexOf(br);i>0;i=s.indexOf(br,i+1)){
+        const head=s.slice(0,i).trim(),n=count(head);
+        if(n>=3&&n<=max&&n>count(cut))cut=head;
+      }
+      if(cut)break;
+    }
+    if(!cut){const w=s.split(' ');let n=0,k=0;while(k<w.length&&(n+=/[\p{L}\d]/u.test(w[k])?1:0)<=max)k++;cut=w.slice(0,k).join(' ').replace(/[\s.:·,—–-]+$/u,'')+'…';}
+    s=cut;
+  }
+  return {head:s||full,more:bare(s)!==bare(full)};
+}

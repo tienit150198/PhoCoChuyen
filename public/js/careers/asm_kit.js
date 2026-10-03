@@ -30,7 +30,7 @@ export function reqPin(x,{title='Khách cần',sub='',chips=[],tabs='',key='',ne
   const n=need.length?`<small class="asm-pin-n${bad?' bad':done===need.length?' ok':''}">${done}/${need.length} ✓</small>`:'';
   const nextTxt=stepText(next);
   const inner=folded
-    ?`<b>🧾 ${x.esc(title)}</b>${n}${nextTxt?`<span class="asm-pin-next"><b>Bước tiếp:</b> ${x.esc(nextTxt)}</span>`:''}`
+    ?`<b>🧾 ${x.esc(title)}</b>${n}${nextTxt?`<span class="asm-pin-next"><b class="sr-only">Bước tiếp:</b>→ ${x.esc(nextTxt)}</span>`:''}`
     :`<b>🧾 ${x.esc(title)}</b>${sub?`<span class="asm-pin-sub">${sub}</span>`:''}${n}`;
   const head=key
     ?`<button type="button" class="asm-pin-head asm-fold" data-action="car:asmFold" data-key="${x.esc(key)}" aria-expanded="${!folded}" title="${folded?'Mở phiếu khách':'Thu gọn phiếu khách'}">${inner}<i class="asm-fold-ico" aria-hidden="true">${folded?'▾':'▴'}</i></button>`
@@ -49,11 +49,12 @@ export function finalStep(final){
   return final&&final.go&&final.ready!==false&&final.label?{label:String(final.label).replace(/<[^>]*>/g,'').trim()}:null;
 }
 
-/** "Bước tiếp: …" from a guide step ({label, note}); '' when nothing is left. */
+/** The next step as one plain line above the bottom button ("Vớt mì khi thanh vào vùng xanh"); "Bước tiếp:"
+ * is for screen readers only (owner 03/10: "chữ ít thôi"). '' when nothing is left. */
 export function nextLine(x,step,done='Xong hết, giao cho khách thôi!'){
   const text=step?stepText(step):done;
   if(!text)return '';
-  return `<p class="asm-next" aria-live="polite"><b>Bước tiếp:</b> <span>${x.esc(text)}</span></p>`;
+  return `<p class="asm-next" aria-live="polite"><b class="sr-only">Bước tiếp:</b><span>${x.esc(text)}</span></p>`;
 }
 
 /** − n + for a part. minus/plus are ready attribute strings (data-command… or data-action…), '' = disabled. */

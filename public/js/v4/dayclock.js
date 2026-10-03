@@ -39,13 +39,14 @@ export function clockCard(dc){
     `<div class="grow"><strong class="dc-big">${esc(dc.time)}</strong><span class="dc-part">${esc(dc.part?.label)}${dc.is_open?'':' · chưa mở cửa'}</span></div><em class="dc-state">${esc(dc.label)}</em></div>`+
     `<div class="dc-shift"><div class="dc-track" role="progressbar" aria-label="Ca làm hôm nay" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>`+
     `<div class="dc-ends"><span>Mở ${esc(dc.open_time)}</span><span>Đóng ${esc(dc.close_time)}</span></div></div>`+
-    (dc.note?`<p class="dc-note">${esc(dc.note)}</p>`:'')+
-    `<details class="dc-rules"><summary>Giờ giấc ở đây</summary><ul>${step}<li>Còn 60 phút và 30 phút có lời nhắc; tới giờ đóng cửa thì không đón thêm khách.</li><li>Khách đã vào quán vẫn được làm nốt. Khép ca lúc nào cũng được: việc dở giữ lại, khách hẹn quay lại khi mở cửa sáng mai, không bị tính là bỏ dở.</li></ul></details></section>`;
+    `<details class="dc-rules"><summary>Giờ giấc ở đây</summary><ul>${dc.note?`<li class="dc-note">${esc(dc.note)}</li>`:''}${step}<li>Còn 60 phút và 30 phút có lời nhắc; tới giờ đóng cửa thì không đón thêm khách.</li><li>Khách đã vào quán vẫn được làm nốt. Khép ca lúc nào cũng được: việc dở giữ lại, khách hẹn quay lại khi mở cửa sáng mai, không bị tính là bỏ dở.</li></ul></details></section>`;
 }
 /** The day summary: when you closed and when tomorrow opens. */
 export function clockSummary(s){
   const k=s?.clock;if(!k)return '';
-  return `<article class="dc-sum"><span class="dc-big-ico" aria-hidden="true">${esc(k.part?.icon||'🌙')}</span><div class="grow"><b>${esc(k.text)}</b><p>${esc(k.next_text)}</p></div></article>`;
+  // Two short facts (owner 03/10 "chữ ít thôi"); a shift closed late keeps the server's line, which says how late.
+  const shut=k.over&&k.text?k.text:`Khép ca ${k.finish}`,next=k.next_open?`Mai mở cửa ${k.next_open}`:k.next_text;
+  return `<article class="dc-sum"><span class="dc-big-ico" aria-hidden="true">${esc(k.part?.icon||'🌙')}</span><div class="grow"><b>${esc(shut)}</b><p>${esc(next||'')}</p></div></article>`;
 }
 /** Past closing on the calm screen: the one clear next step. `busy` = a customer is still in hand. `gate` = the
  * room's more_gate (game/engine.py more_gate): no new customer either because the next one would arrive at closing
