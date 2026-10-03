@@ -272,9 +272,10 @@ function inView(el){
   return !!(r.width&&r.height)&&!coverOf(el);
 }
 
-/** The pinned bar that holds the bottom button (sticky or fixed), or null when the button scrolls with the page. */
+/** The pinned bar that holds the bottom button (sticky or fixed), or null when the button scrolls with the page.
+ * A career's bar that holds its own buttons instead (the office stamp row) names itself with data-cta-bar. */
 function barOf(dialog){
-  const cta=[...dialog.querySelectorAll('.gd-cta')].find(e=>e.getClientRects().length&&!e.closest('details:not([open])'));
+  const cta=[...dialog.querySelectorAll('.gd-cta,[data-cta-bar]')].find(e=>e.getClientRects().length&&!e.closest('details:not([open])'));
   for(let e=cta;e&&e!==dialog;e=e.parentElement){
     const p=getComputedStyle(e).position;
     if(p==='sticky'||p==='fixed')return e;

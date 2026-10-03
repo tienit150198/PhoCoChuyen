@@ -112,6 +112,8 @@ button.jr-stat:hover{border-color:var(--line-strong)}
 .jr-place-text>small{display:block;color:var(--muted);font-size:.8rem;line-height:1.35}
 .jr-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
 .jr-tags:empty{display:none}
+/* A long tag ("🔒 Cần thi chứng nhận") wraps inside a narrow place card instead of running past its edge. */
+.jr-tags .tag{white-space:normal;overflow-wrap:anywhere}
 .jr-fund{margin:5px 0 0;font-size:.8rem;color:var(--ink-2);font-weight:600}
 .jr-place>.btn{flex:none;align-self:center}
 .jr-locked-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}

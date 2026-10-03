@@ -1,5 +1,14 @@
 {
  "strings": {
+  "để sáng mai · hạn 10:00": "for tomorrow morning · due 10:00",
+  "🌙 Hôm nay tăng ca: mai vào muộn 30 phút": "🌙 Overtime today: you start 30 minutes late tomorrow",
+  "📅 Hạn mai:": "📅 Due tomorrow:",
+  "(đã trễ)": "(late)",
+  "Mai:": "Tomorrow:",
+  "đổi từ mai": "change from tomorrow",
+  "sẽ tới khiếu nại sáng mai": "will come to complain tomorrow morning",
+  "🗂️ Chuẩn bị ngày mai": "🗂️ Prepare for tomorrow",
+  "Đã điền đủ các ô — đọc lại rồi nộp.": "Every field is filled — read it over, then hand it in.",
   "📦 Hết:": "📦 Out:",
   "📦 Sắp hết:": "📦 Running low:",
   "🔧 Ghé tiệm Chú Bảy:": "🔧 Stop by Uncle Bảy's repair shop:",
@@ -3652,6 +3661,16 @@
   "Qua màn": "Level cleared"
  },
  "patterns": {
+  "$1 hồ sơ dở": "$1 unfinished dossier(s)",
+  "📂 Xem $1 hồ sơ dở": "📂 See $1 unfinished dossier(s)",
+  "$1 quy định": "$1 rule(s)",
+  "😮‍💨 Sức bền $1/100: mai làm chậm hơn, không tăng ca được": "😮‍💨 Stamina $1/100: slower work tomorrow, no overtime",
+  "Còn trống ô “$1”.": "The “$1” field is still empty.",
+  "$1 hồ sơ đã nộp": "$1 dossier(s) handed in",
+  "$1 bảng lương đã chuyển": "$1 payroll(s) paid out",
+  "$1 việc đã chốt": "$1 task(s) closed",
+  "$1 hồ sơ hoàn tất": "$1 dossier(s) completed",
+  "$1 chứng từ đã đóng dấu": "$1 voucher(s) stamped",
   "⛽ Xăng còn $1%: ghé cây xăng trước khi nhận đơn": "⛽ $1% fuel left: stop at the petrol station before taking orders",
   "📦 $1 thùng hàng đã tới, chờ mở": "📦 $1 crate(s) arrived, waiting to be opened",
   "🚚 Đang về $1 đơn hàng": "🚚 $1 order(s) on the way",

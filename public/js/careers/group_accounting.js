@@ -5,7 +5,7 @@
  *  and a sticky bar with the next step and the main action.
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,hhmm,planCard,mateCards,trackFold,careSummary,foldToggle,
-  coachOf,goto,gotoAction,guideOf,procSteps,coachFill,shut,shutWork,shutBar} from './office_kit.js';
+  coachOf,goto,gotoAction,guideOf,procSteps,coachFill,shut,shutWork,shutBar,summaryCard} from './office_kit.js';
 import {pending,stepLine} from '../v4/guide.js';
 
 const P='ga_';
@@ -419,7 +419,8 @@ export default {
     if(data.packs)row('Gói báo cáo quý',`${data.packs.ok}/${data.packs.total} đã soát${data.packs.bonus?` · thưởng +${data.packs.bonus} xu`:''}${data.packs.silent?.length?` · chưa gọi giục: ${data.packs.silent.join(', ')}`:''}`);
     const life=careSummary(data.care,x);
     if(!rows.length&&!trust&&!data.audit&&!data.board&&!life)return '';
-    return `<article class="card space-top ga-sum"><h4 class="section-title">🏢 Bàn hợp nhất hôm nay</h4>${note(data.audit)}${note(data.board)}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}${life?`<h4 class="section-title">🧭 Đời sống văn phòng</h4><div class="kv">${life}</div>`:''}</article>`;
+    return summaryCard(x,data,{cls:'ga-sum',title:'🏢 Bàn hợp nhất hôm nay',brief:data.dossiers||data.boards?`${(Number(data.dossiers)||0)+(Number(data.boards)||0)} việc đã chốt`:'',
+      body:`${note(data.audit)}${note(data.board)}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}${life?`<h4 class="section-title">🧭 Đời sống văn phòng</h4><div class="kv">${life}</div>`:''}`});
   },
   tick(root,x){
     keepBarAboveFooter(root);

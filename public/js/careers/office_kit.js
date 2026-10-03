@@ -9,7 +9,7 @@
  * Pure string builders plus two client-only helpers (tab switch, bar offset):
  * every game action still goes through the career's own commands. */
 
-import {nextHint,stepCta,pending,goAttrs,firstTime,highlight} from '../v4/guide.js';
+import {nextHint,stepCta,pending,goAttrs,firstTime,bareLabel,guideAction} from '../v4/guide.js';
 
 const DONE=['completed','cancelled','referred'];
 export const openTasks=x=>(x.room.tasks||[]).filter(t=>!DONE.includes(t.status));
@@ -141,6 +141,37 @@ export function careSummary(care,x){
   return rows.join('');
 }
 
+/** "🌅 Ngày mai" at the top of an office desk's day summary, while the day is closed: the dossiers carried over (due
+ * 10:00), a late start after overtime, then what the server already shows for the next day in the room (its calendar
+ * items, its luck, rules that change, low energy) and `extra` lines (ready HTML), with one plain button (the footer's
+ * "Bắt đầu ngày N" stays the one primary): the dossiers kept for tomorrow, or Chuẩn bị. '' when there is nothing to
+ * say or the next day has started (the room shows that day). */
+export function tomorrowPlan(x,data,extra=[]){
+  const room=x.room;if(room.open)return '';
+  const o=data?.office||{},d=room.data||{},lines=[];
+  if(o.carried)lines.push(`📂 <b>${Number(o.carried)} hồ sơ dở</b> để sáng mai · hạn 10:00`);
+  if(o.overtime)lines.push('🌙 Hôm nay tăng ca: mai vào muộn 30 phút');
+  const due=(d.care?.calendar?.[0]?.items||[]).filter(i=>i.state==='due'||i.state==='late');
+  if(due.length)lines.push(`📅 Hạn mai: ${due.map(i=>`<span class="ok-tm-due">${x.esc(i.emoji)} ${x.esc(i.text)}</span>${i.state==='late'?' <span>(đã trễ)</span>':''}`).join(' · ')}`);
+  const mod=d.today?.mod;
+  if(mod&&mod.id!=='normal')lines.push(`${x.esc(mod.emoji)} Mai: <b>${x.esc(mod.name)}</b>${mod.text?` — ${x.esc(mod.text)}`:''}`);
+  const fresh=(d.today?.rules||[]).filter(r=>r.new).length;
+  if(fresh)lines.push(`📋 <b>${fresh} quy định</b> đổi từ mai`);
+  const en=d.care?.energy;
+  if(en?.low)lines.push(`😮‍💨 Sức bền ${Number(en.value)||0}/100: mai làm chậm hơn, không tăng ca được`);
+  lines.push(...extra.filter(Boolean));
+  if(!lines.length)return '';
+  const go=o.carried?x.button(`📂 Xem ${Number(o.carried)} hồ sơ dở`,'queue',{},'small ok-tm-go'):x.button('🗂️ Chuẩn bị ngày mai','prepare',{},'small ok-tm-go');
+  return `<section class="ok-tm" aria-label="Ngày mai"><h4 class="section-title">🌅 Ngày mai</h4><ul class="ok-tm-list">${lines.map(l=>`<li>${l}</li>`).join('')}</ul>${go}</section>`;
+}
+/** An office desk's day-summary card: "🌅 Ngày mai" first when there is one, the day's figures (`body`) folded under
+ * `title` (escaped HTML) with a short `brief`; without it, the card as before. */
+export function summaryCard(x,data,{cls,title,body,brief='',extra=[]}){
+  const plan=tomorrowPlan(x,data,extra);
+  if(!plan)return `<article class="card space-top ${cls}"><h4 class="section-title">${title}</h4>${body}</article>`;
+  return `<article class="card space-top ${cls}">${plan}<details class="ok-sum-more"><summary>${title}${brief?` <small>${x.esc(brief)}</small>`:''}</summary>${body}</details></article>`;
+}
+
 /* ---------------------------------------------------------------- inbox */
 const emoji=e=>`<span class="ok-emoji">${e}</span>`;
 /** One message. Every field is ready HTML (escape before). `act` makes the row a button. */
@@ -243,7 +274,7 @@ export function bar(x,t,next,main='',always=false){
   const cap=String(next).replace(/^\s*(\S)/,(m,c)=>m.replace(c,c.toUpperCase()));
   const label=next&&!echoes(next,main)?`<p class="ok-next" aria-live="polite">${cap}</p>`:'';
   const back=main?'primary big grow gd-cta':'ghost';
-  return `<div class="ok-bar${always?' always':''}${main?'':' bare'}">${label}
+  return `<div class="ok-bar${always?' always':''}${main?'':' bare'}" data-cta-bar>${label}
     ${main?`<div class="ok-bar-btns ok-main">${main}</div>`:''}
     <div class="ok-bar-btns ok-back"><button type="button" class="btn ${back}" data-action="car:tab" data-tab="doc" data-key="${x.esc(tabKey(t))}">📂 Về hồ sơ</button></div></div>`;
 }
@@ -273,10 +304,20 @@ export function shutBar(x,t){
 export const coachOf=(x,t)=>firstTime(x)&&x.room.data?.coach?.[t.id]||null;
 /** A step that lives on the document: bring the 📂 tab forward, then scroll to `sel` and flash it. */
 export const goto=(x,t,sel,label='')=>({act:'car:goto',data:{tab:'doc',key:tabKey(t),sel},...(label?{label}:{})});
+/** car:goto — the 📂 tab comes forward, then the control glows like any pointer (v4/guide.js): a ▼ over it, and when it
+ * was in view already one line above the bar says so. It never does the step. */
 export function gotoAction(data,el,x){
   switchTab(data,el,x);
-  const root=rootOf(el);if(!root||!data.sel)return;
-  requestAnimationFrame(()=>{const all=[...root.querySelectorAll(data.sel)];highlight(all.find(e=>e.offsetParent!==null)||all[0]);});
+  if(!rootOf(el)||!data.sel)return;
+  requestAnimationFrame(()=>guideAction('v4Go',{sel:data.sel},el));
+}
+/** The bottom button of a step that only points (a goto): outlined, “👆 <what to do>”, never filled like a button that
+ * does the step (the WP-4 pointer look). The finish stays reachable as “hoặc …” once it is allowed. */
+function pointCta(x,n,final){
+  const say=bareLabel(n.go.label||'')||bareLabel(n.label,false);
+  const btn=`<button type="button" class="btn big grow gd-cta gd-point"${goAttrs(n.go)} data-say="${x.esc(say)}" aria-label="${x.esc('Chỉ chỗ: '+say)}">👆 ${x.esc(say)}</button>`;
+  if(!final||final.ready===false)return btn;
+  return `<div class="gd-ctas">${btn}<button type="button" class="gd-alt"${goAttrs(final.go)}>hoặc ${final.alt||final.label}</button></div>`;
 }
 const plainLabel=s=>String(s||'').replace(/<[^>]*>/g,'').replace(/^[^\p{L}\p{N}]+/u,'').trim();
 /** The one-line hint (top of the job, pinned in the sheet header) and the bar's main button, from one step list.
@@ -287,9 +328,11 @@ export function guideOf(x,t,steps,final=null,{done='',main=''}={}){
   const hs=steps.map(s=>s.hintGo?{...s,go:s.hintGo}:s.go?{...s,go:{...s.go,label:''}}:s);
   const hint=nextHint(x,hs,{final:final&&final.ready!==false?{label:plainLabel(final.label),go:final.go}:null,done});
   let cta=main;
+  const n=pending(steps);
+  if(!cta&&n?.go?.act==='car:goto')cta=pointCta(x,n,final);
   if(!cta){
     if(final)cta=stepCta(x,steps,final,{style:'primary big grow'});
-    else{const n=pending(steps);cta=n?.go?`<button type="button" class="btn primary big grow gd-cta"${goAttrs(n.go)}>${n.go.label||`👉 ${x.esc(n.label)}`}</button>`:'';}
+    else{cta=n?.go?`<button type="button" class="btn primary big grow gd-cta"${goAttrs(n.go)}>${n.go.label||`👉 ${x.esc(n.label)}`}</button>`:'';}
   }
   return {hint,cta};
 }

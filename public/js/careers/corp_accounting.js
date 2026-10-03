@@ -5,7 +5,7 @@
  *  and a sticky bar with the next step and the main action.
  *  No inline handlers: every button goes through data-command / data-action="car:*". */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle,
-  coachOf,goto,gotoAction,guideOf,procSteps,coachFill,shut,shutWork,shutBar} from './office_kit.js';
+  coachOf,goto,gotoAction,guideOf,procSteps,coachFill,shut,shutWork,shutBar,summaryCard} from './office_kit.js';
 import {pending,stepLine} from '../v4/guide.js';
 
 const P='ca_';
@@ -402,7 +402,8 @@ export default {
     if(cl?.month_end)row('Khóa sổ tháng',`${cl.on_time}/${cl.total} mốc kịp hạn${cl.bonus?` · thưởng +${cl.bonus} xu`:''}${cl.left?.length?` · còn thiếu: ${cl.left.join(', ')}`:''}`);
     const life=careSummary(data.care,x);
     if(!rows.length&&!trust&&!audit&&!life)return '';
-    return `<article class="card space-top ca-sum"><h4 class="section-title">🗂️ Bàn kế toán hôm nay</h4>${audit}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}${life?`<h4 class="section-title">🧭 Đời sống văn phòng</h4><div class="kv">${life}</div>`:''}</article>`;
+    return summaryCard(x,data,{cls:'ca-sum',title:'🗂️ Bàn kế toán hôm nay',brief:data.dossiers?`${data.dossiers} hồ sơ hoàn tất`:desk.stamped?`${desk.stamped} chứng từ đã đóng dấu`:'',
+      body:`${audit}${trust}${rows.length?`<div class="kv">${rows.join('')}</div>`:''}${life?`<h4 class="section-title">🧭 Đời sống văn phòng</h4><div class="kv">${life}</div>`:''}`});
   },
   tick(root,x){
     keepBarAboveFooter(root);
