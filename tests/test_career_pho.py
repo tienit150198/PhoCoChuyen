@@ -390,8 +390,8 @@ class Ladle(Base):
         self.j.act('pho_bowl', task=t['id'], v='to_lon')
         self.j.act('pho_dip', task=t['id'])
         self.j.act('pho_pour', task=t['id'])
-        self.clock.t += 8
-        self.j.act('pho_stop', task=t['id'], tap_at=self.clock.t - 60)   # an old tap is clamped to 3 s back
+        self.clock.t += kit.TAP_LAG + 5
+        self.j.act('pho_stop', task=t['id'], tap_at=self.clock.t - kit.TAP_LAG - 60)   # an old tap is clamped to TAP_LAG back
         self.assertEqual(self.j.get(t['id'])['bowls'][-1]['lvl'], int(5 * PH.VESSELS['to_lon']['rate']))
 
     def test_too_little_too_much_and_spilled(self):
