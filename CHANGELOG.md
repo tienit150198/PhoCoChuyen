@@ -1,3 +1,8 @@
+# v1.6.3 — 💑 vợ chồng chung xe, 🛡️ admin chuyển khoản không giới hạn
+
+- Xe của vợ/chồng (`GET /api/garage/spouse`); live quyết ai lái trước; `back`/`fair_back` để ngồi sau; trường mới đều tùy chọn, cờ `coride` trong welcome (feedback #136).
+- Chuyển khoản: tài khoản trong ADMIN_USERS chuyển ngay, không hạn mức ngày, không chờ kết bạn, không điều kiện tuổi tài khoản/ngày sống; tối đa 1.000.000 xu mỗi lần.
+
 # v1.6.2 — 🛒 quán quá giờ đóng cửa không giữ chân, 🏡 mua nhà không tự dọn, 📖 hướng dẫn 1.6
 
 - `game/abandon.py`: chỗ làm đã quá giờ đóng cửa thì đổi chỗ không hỏi, không phạt, việc dở giữ nguyên (feedback #140: Tạp hóa 21:30 dở ca làm "Ở lại làm nốt" kéo về mãi). Bản xem trước/kết quả thêm khóa tùy chọn `closing`.
