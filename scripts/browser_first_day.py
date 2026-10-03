@@ -48,6 +48,15 @@ PICK = """()=>{
   if(pulse)return tag(pulse,'pulse');
   if(sheet){
     const cta=[...sheet.querySelectorAll('.gd-cta')].find(vis);
+    // A bottom button that only points ("👆 Chọn size trên giá treo") at a glowing set of options: the answer
+    // is the player's, read from the step's note ("Mình mặc size M." → the "M" option), as a player would.
+    if(cta?.matches('.gd-point')&&hint){
+      const note=say(hint),word=s=>(s.match(/[\\p{L}\\d]+/u)||[''])[0];
+      const group=[...sheet.querySelectorAll('.gd-pulse,.gd-flash')].find(e=>vis(e)&&!acts(e));
+      const opts=group?[...group.querySelectorAll('[data-action],[data-command]')].filter(vis):[];
+      const hit=opts.filter(o=>{const w=word(say(o));return w&&new RegExp(`(^|[^\\\\p{L}\\\\d])${w}([^\\\\p{L}\\\\d]|$)`,'u').test(note);});
+      if(hit.length===1)return tag(hit[0],'read');
+    }
     if(cta)return tag(cta,'cta');
     const h=sheet.querySelector('.gd-next .gd-hint');
     if(h&&vis(h)&&acts(h))return tag(h,'hint');
@@ -140,6 +149,12 @@ async def play(browser, base: str, cid: str, shots: Path | None, max_steps: int 
         await page.wait_for_selector('#app:not([hidden])', timeout=20000)
         await page.wait_for_timeout(600)
         if dev:
+            # "Có gì mới" opens by itself on a fresh save and writes whatsNewSeen: let that write land (close it,
+            # as a player would) before the setup's own writes, or it races them (a 409 in the console).
+            with contextlib.suppress(Exception):
+                await page.wait_for_selector('#wnDialog[open]', timeout=4000)
+                await page.eval_on_selector('#wnDialog .wn-foot [data-wn="close"]', 'e=>e.click()')
+            await page.wait_for_timeout(600)
             await dev_start(page, cid)
         else:
             # The story intro is one screen: look, name, first workplace (milk tea is picked already), go.
@@ -182,7 +197,11 @@ async def play(browser, base: str, cid: str, shots: Path | None, max_steps: int 
                 out['problems'].append(f'stuck: pressing "{pick.get("text")}" changes nothing')
                 break
             sel = pick.get('sel') or '[data-fd-pick]'
-            await page.eval_on_selector(sel, 'e=>e.click()')
+            # A live screen (a running timer, a state refresh) may redraw between the pick and the press:
+            # the tagged control is gone, so look again instead of failing.
+            if not await page.evaluate('s=>{const e=document.querySelector(s);if(!e)return false;e.click();return true;}', sel):
+                await page.wait_for_timeout(300)
+                continue
             await page.wait_for_timeout(650)
             for msg in await toasts():
                 if msg not in seen_errors:
