@@ -1,5 +1,9 @@
 {
  "strings": {
+  "Canh mức (máy may, tắm thú, ép nắp…): bấm dừng ở đâu kim dừng đúng ở đó, cả khi máy yếu hay mạng chậm.": "Stop meters (sewing, pet bath, cup sealing…): the needle stops right where you tap, even on a slow phone or network.",
+  "Nhân viên: thẻ ghi rõ hôm nay làm mấy việc, vì sao đang nghỉ; ai tạm dừng vì sự cố không bị tính lương.": "Staff: cards show today's jobs and why someone is resting; staff paused by an incident are no longer paid.",
+  "Tiền của bạn: thêm nút “Vào Ngân hàng” để mở ngân hàng nhanh hơn.": "Your money: a new “Go to the bank” button opens the bank faster.",
+  "Bạn quen qua hẹn hò: sửa nút Hủy kết bạn, Chặn, Cầu hôn không bấm được.": "Friends met on a date: Unfriend, Block and Propose work again.",
   "Vào Ngân hàng": "Go to the bank",
   "Tạm dừng: còn sự cố đang mở": "Paused: an incident is still open",
   "Hôm nay không có ca (lịch ngày lẻ)": "No shift today (odd-day schedule)",

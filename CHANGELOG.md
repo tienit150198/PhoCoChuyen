@@ -1,3 +1,13 @@
+# v1.4.31 — ⏱️ Kim dừng đúng chỗ, nhân viên rõ ràng, nút Ngân hàng
+
+Từ góp ý và tin nhắn nhóm 03/10 (Rizz, kattie #100, Cô Cả, Suzy, Cá Voi Xanh #110) và thống kê lỗi client.
+
+- Canh mức (máy may, tắm thú, ép nắp…): `dayclock.daylight` chạy theo giờ thật (cảnh không còn vẽ lại mỗi khung hình khi bảng mở); màu/chữ thanh cập nhật mỗi khung hình; `TAP_LAG` 3 → 30 s (dung sai giữ nguyên); đồng hồ server ước lượng kiểu NTP (`server_recv`, `api.clockSample`); máy may chấm theo `sew_zone(t)` như trang vẽ, bấm trước vạch báo ngay không gửi.
+- Nhân viên: người bị tạm dừng vì sự cố của mình không còn chấm công, tính lương, tăng mệt; thẻ nhân viên ghi việc hôm nay và lý do nghỉ; tổng kết ngày có dòng "Đội hôm nay" (`attendance[day][id].jobs` tùy chọn).
+- Tiền của bạn: nút "🏦 Vào Ngân hàng" / "Mở tài khoản" (#110: ngân hàng nằm trong Thêm › Tiền & nhà từ 01/10).
+- `/api/ai/review`, `/api/ai/feedback`: `_internal` lấy 4 giá trị từ `store.read()` (chỉ có 3) khi review đã được xử lý trước → 400 `invalid_data` (~70/giờ). Bạn quen qua hẹn hò được cấp mã PCC (`friends.ensure_codes`) nên Hủy kết bạn/Chặn/Cầu hôn chạy. Tên hồ sơ trùng đánh dấu ô tên, không gửi lặp; các từ chối hợp lệ không còn báo là lỗi client.
+- Sổ tiệm: hướng dẫn khép sự cố ghi đúng tên tab "Nhân viên".
+
 # v1.4.30 — 💞 Nhà chung thấy đồ của nhau
 
 Phản ánh của người chơi (TrangChit, góp ý #109): "Mình trang trí nhà nhưng Minh Hưng không thấy đồ đạc trong nhà".
