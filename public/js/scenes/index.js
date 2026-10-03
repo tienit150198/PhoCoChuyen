@@ -20,6 +20,7 @@ export const KIND_OF={
   pagoda:'pagoda',
   pho:'pho',
   photobooth:'booth',
+  babysitter:'nursery',
   pilot:'airfield',flight_attendant:'airfield',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
@@ -144,6 +145,12 @@ const CAREER_WORDS={
     free_eyebrow:'Buồng chụp đang trống',free_title:'Vãn khách rồi!',free_more:'Mời thêm khách hoặc đóng tiệm hôm nay.',more_btn:'Mời thêm một nhóm khách',
     none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời nhóm khách tiếp theo',
     people_sub:'Những người bạn gặp ở tiệm ảnh Tách Tách.',feed_sub:'Lời nhắn và đánh giá quanh tiệm ảnh.'},
+  babysitter:{shelf:'Kệ đồ chơi',evidence:'Giấy dặn của bố mẹ',counter:'Bếp nhỏ của bé',warehouse:'Rương đồ chơi',finance:'Bàn vẽ của bé',ledger:'SỔ TRÔNG BÉ',store:'RƯƠNG ĐỒ',
+    till:'Tiền công',door_open:'Về nhà',door_closed:'Vào trông bé',open_sign:'ĐANG TRÔNG BÉ',closed_sign:'MAI GẶP LẠI',property:'Cũi của bé',
+    cat_line:'Mrrr… bé ngủ rồi, mèo đi nhẹ chân nhé.',pet:'Chơi với Mướp bên cửa sổ',security:'An toàn cho bé',
+    idle_line:'Bố mẹ bé sắp tới gửi bé.',open_hint:'Rửa tay, đọc giấy dặn rồi nhận bé nhé.',free_eyebrow:'Bé đang chơi ngoan',free_title:'Xong việc rồi!',
+    free_more:'Làm thêm một việc hoặc về nhà hôm nay.',more_btn:'Làm thêm một việc',none_waiting:'Chưa có việc nào đang chờ',next_btn:'Sang việc tiếp theo',
+    people_sub:'Những người bạn gặp ở tổ trông trẻ Mèo Con.',feed_sub:'Lời nhắn và nhận xét của bố mẹ các bé.',rail_in:'Trong nhà',books:'Sổ trông bé'},
   pagoda:{shelf:'Chậu cây kiểng',evidence:'Bảng nội quy',counter:'Lư hương lớn',warehouse:'Nhà kho sau chùa',finance:'HÒM CÔNG ĐỨC',ledger:'SỔ CÔNG ĐỨC',store:'NHÀ KHO',
     till:'Tiền chi dùng',door_open:'Đóng cổng chùa',door_closed:'Mở cổng chùa',open_sign:'CỔNG CHÙA ĐANG MỞ',closed_sign:'ĐÃ ĐÓNG CỔNG',property:'Chùa Gió Lành',
     cat_line:'Mrrr… nằm hiên chùa nghe chuông, mát ghê.',pet:'Chơi với Mướp dưới hiên chùa',security:'Trông coi sân chùa',board:'Chuyện xóm',

@@ -1529,7 +1529,7 @@ def content() -> dict:
     return dict(foods=FOODS, groups=GROUPS, prep=PREP, meals=MEALS, acts=ACTS, moods=MOODS, beats={k: dict(line=v[0], opts=[list(o) for o in v[1]]) for k, v in BEATS.items()},
                 haz={k: dict(emoji=v[0], name=v[1], fix=v[3]) for k, v in HAZ.items()}, homes={k: v['name'] for k, v in HOMES.items()},
                 loveys={k: list(v) for k, v in LOVEYS.items()}, bag={k: list(v) for k, v in BAG.items()}, greets={k: list(v) for k, v in GREETS.items()},
-                tempers={k: list(v[:2]) for k, v in TEMPERS.items()}, allergens=ALLERGENS, nap_steps={k: list(v) for k, v in NAP_STEPS.items()},
+                tempers={k: list(v) for k, v in TEMPERS.items()}, allergens=ALLERGENS, nap_steps={k: list(v) for k, v in NAP_STEPS.items()},
                 moves={mk: {k: [v[0], v[1], v[2] > 0] for k, v in mv.items()} for mk, mv in MOVES.items()}, scrape_order=SCRAPE_ORDER,
                 moment_title=MOMENT_TITLE, play_beats=PLAY_BEATS, sleep_pats=SLEEP_PATS, intro=INTRO, apprentice=APPRENTICE,
                 people=[dict(name=p[0], role=p[1], note=p[2]) for p in PEOPLE])
