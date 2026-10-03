@@ -138,6 +138,11 @@ def _jr():
     return journey
 
 
+def _rui():
+    from . import rui
+    return rui
+
+
 def _fmt(n: int) -> str:
     return bk._fmt(n)
 
@@ -239,6 +244,8 @@ def why_not_trip(s: dict, vid: str) -> str | None:
     g = get(s)
     if not g or vid not in g['cars'] or vid not in VEHICLES:
         return 'Bạn chưa có chiếc này.'
+    if _rui().is_broken(s, 'xe', vid):
+        return 'Xe đang hỏng. Sửa xong rồi đi nhé.'
     if g['trip'] == j['life_day']:
         return 'Hôm nay bạn đã đi chơi một chuyến rồi. Mai đi tiếp nhé.'
     fuel = VEHICLES[vid]['fuel']
@@ -389,7 +396,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         g = _mine(s, vid)
         V = VEHICLES[vid]
         need(p.get('confirm') is True, f'Xác nhận bán {lname(V["name"])}.')
-        get_back = sell_price(g['cars'][vid]['p'])
+        get_back = max(0, sell_price(g['cars'][vid]['p']) - _rui().broken_cost(s, 'xe', vid))   # 🛡️ a broken one: less
         g['cars'].pop(vid)
         if g['ride'] == vid:
             g['ride'] = None
@@ -420,9 +427,10 @@ def public(s: dict) -> dict:
         car = g['cars'].get(vid)
         if not car:
             continue
+        fix = _rui().broken_cost(s, 'xe', vid) if _rui().is_broken(s, 'xe', vid) else None
         cars.append(dict(id=vid, color=car['c'] if car['c'] in PAINT_INDEX else VEHICLES[vid]['paint'], plate=car['n'],
-                         day=car['d'], paid=car['p'], sell=sell_price(car['p']), trip_why=why_not_trip(s, vid),
-                         upkeep=up.car_month(vid, car['p'])))
+                         day=car['d'], paid=car['p'], sell=max(0, sell_price(car['p']) - (fix or 0)), trip_why=why_not_trip(s, vid),
+                         upkeep=up.car_month(vid, car['p']), **({'broken': fix} if fix is not None else {})))
     market = [dict(id=vid, why=why_not_buy(s, vid)) for vid in ORDER if vid not in g['cars']]
     out = dict(story=bool(j.get('story')), life_day=j['life_day'], have=_have(s), cars=cars, ride=g['ride'],
                tripped=g['trip'] == j['life_day'], market=market, stats=dict(g['stats']))
