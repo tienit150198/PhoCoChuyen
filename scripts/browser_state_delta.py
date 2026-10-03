@@ -122,6 +122,7 @@ async def run(srv: Server, steps: int, engine: str) -> dict:
         browser = await getattr(pw, engine).launch()
         ctx = await browser.new_context(viewport=dict(width=390, height=844), has_touch=True, is_mobile=True, device_scale_factor=1,
                                         service_workers='block')  # requests through page.route (an old server below)
+        await ctx.add_init_script("try{localStorage.setItem('mnl.home','list')}catch(e){}")  # the list as home: this run picks the workplace on the intro (the town has scripts/browser_first_day.py)
         page = await ctx.new_page()
         # A 409 is expected when another tab moved the save (the page then takes the whole state).
         # HTTP errors are judged by their answers below (a 409 is expected when another tab moved the save).
