@@ -34,7 +34,7 @@ const EXT=`TypeError: Cannot read properties of undefined (reading 'sendMessage'
 // boot.js: the early catcher, then its stack shortener (exposed as __mnlBoot.stack)
 await import('../public/js/boot.js');
 const B=globalThis.__mnlBoot,T=B.tele;
-const {stack,foreign,error,telemetryBoot}=await import('../public/js/telemetry.js');
+const {stack,foreign,error,telemetryBoot,expectedFail}=await import('../public/js/telemetry.js');
 
 { // stack(): path:line:col of this origin, ~ for any other, the top 3 only, never a query string
   assert.equal(stack(V8,ORIGIN),'js/app.js:1:59652 < js/app.js:1:37283 < js/app.js:1:28135');
@@ -84,6 +84,14 @@ const {stack,foreign,error,telemetryBoot}=await import('../public/js/telemetry.j
   assert.equal(errs[0].m,"Cannot read properties of undefined (reading 'filter')");
   assert.ok(!JSON.stringify(body).includes('?v='),'no query strings');
   assert.ok(JSON.stringify(body).length<8000);
+}
+{ // expectedFail(): the game saying no (shown to the player) is not a client error; a server bug still is
+  for(const d of [{route:'/api/command',status:400,code:'error'},{route:'/api/ai/board',status:400,code:'error'},
+    {route:'/api/social/profile',status:400,code:'name_taken'},{route:'/api/social/shop',status:404,code:'not_found'},
+    {route:'/api/marriage/plan',status:400,code:'bad_plan'},{route:'/api/beacon',status:0}])assert.ok(expectedFail(d),JSON.stringify(d));
+  for(const d of [{route:'/api/ai/review',status:400,code:'invalid_data'},{route:'/api/ai/board',status:400,code:'invalid_data'},
+    {route:'/api/social/profile',status:400,code:'social_error'},{route:'/api/marriage/friend_remove',status:400,code:'bad_code'},
+    {route:'/api/social/shop',status:500,code:''},{route:'/api/command',status:500},{}])assert.ok(!expectedFail(d),JSON.stringify(d));
 }
 console.log('telemetry.mjs: ok');
 process.exit(0);

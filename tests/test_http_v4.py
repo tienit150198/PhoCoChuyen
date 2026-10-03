@@ -160,6 +160,62 @@ class HTTPv4Tests(unittest.TestCase):
         data = json.loads(body)
         self.assertEqual(data['mode'], 'scripted')
 
+    def fresh_review(self):
+        """A restaurant save (AI allowed) with one fresh scripted review, no reply yet."""
+        pid = self.awaiting_review(consent=True)
+        state, revision, _ = self.store.read(self.token())
+        post = next(p for p in state['careers']['restaurant']['feed'] if p['id'] == pid)
+        post['feedback'].update(thread=[], status='open', rounds=0, pending=None)
+        with self.store.connect() as db:
+            db.execute('UPDATE sessions SET state=?, revision=revision+1 WHERE sid=?', (json.dumps(state, ensure_ascii=False), self.store.key(self.token())))
+        return pid
+
+    def test_ai_review_rewrites_once(self):
+        self.bootstrap()
+        pid = self.fresh_review()
+        line = 'Mì hơi nhão mà nước dùng thơm, lần sau ghé lại thử tiếp.'
+        with patch.object(ai, 'available', return_value=True), patch.object(ai, 'chat', return_value=(line, None)):
+            status, _, body = self.req('/api/ai/review', 'POST', dict(career='restaurant', post=pid))
+            self.assertEqual(status, 200, body)
+            post = next(p for p in json.loads(body)['state']['careers']['restaurant']['feed'] if p['id'] == pid)
+            self.assertEqual(post['text'], line)
+            status, _, body = self.req('/api/ai/review', 'POST', dict(career='restaurant', post=pid))
+        self.assertEqual((status, json.loads(body)['mode']), (200, 'none'))
+
+    def test_ai_review_after_owner_replied_meanwhile(self):
+        """The model takes seconds; the owner replies in the meantime. The rewrite is dropped, not a 400."""
+        self.bootstrap()
+        pid = self.fresh_review()
+
+        def slow_chat(msgs, **kw):
+            _, revision, _ = self.store.read(self.token())
+            self.store.command(self.token(), 'req-reply-during-ai', revision, 'restaurant', 'fb_reply',
+                               dict(post=pid, text='Cảm ơn anh, quán sẽ canh giờ luộc mì kỹ hơn ạ.', offer='none'))
+            return 'Mì hơi nhão mà nước dùng thơm, lần sau ghé lại thử tiếp.', None
+        with patch.object(ai, 'available', return_value=True), patch.object(ai, 'chat', slow_chat):
+            status, _, body = self.req('/api/ai/review', 'POST', dict(career='restaurant', post=pid))
+        self.assertEqual(status, 200, body)
+        data = json.loads(body)
+        post = next(p for p in data['state']['careers']['restaurant']['feed'] if p['id'] == pid)
+        self.assertEqual(post['feedback']['voice'], 'scripted')
+        self.assertEqual(post['feedback']['thread'][0]['role'], 'owner')
+        self.assertEqual(data['revision'], self.store.read(self.token())[1])
+
+    def test_ai_feedback_after_auto_resolve(self):
+        """The reviewer already answered by itself (tick / another tab): the late AI call returns the save."""
+        self.bootstrap()
+        pid = self.awaiting_review(consent=True)
+
+        def late(msgs, **kw):
+            _, revision, _ = self.store.read(self.token())
+            self.store.command(self.token(), 'srv-resolve-first', None, 'restaurant', 'fb_resolve', dict(post=pid, mode='scripted'), internal=True)
+            return '{"decision":"keep","stars":3,"text":"Ừ thôi, lần sau quán làm kỹ hơn nha."}', None
+        with patch.object(ai, 'available', return_value=True), patch.object(ai, 'chat', late):
+            status, _, body = self.req('/api/ai/feedback', 'POST', dict(career='restaurant', post=pid))
+        self.assertEqual(status, 200, body)
+        post = next(p for p in json.loads(body)['state']['careers']['restaurant']['feed'] if p['id'] == pid)
+        self.assertEqual(len([r for r in post['feedback']['thread'] if r['role'] == 'customer']), 1)
+
     def test_account_delete(self):
         self.bootstrap()
         status, _, _ = self.req('/api/account/delete', 'POST', dict(confirm='nope'))

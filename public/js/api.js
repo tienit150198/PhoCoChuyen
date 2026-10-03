@@ -114,11 +114,11 @@ export class GameAPI extends EventTarget {
     }catch(error){this.failed(url,error);throw error;}
     finally{if(write)this.writing--;this.net(-1);}
   }
-  /** A call that failed for good (after its retries): an 'apifail' event with the status and the path only
-   * (public/js/telemetry.js counts it; no query string, no body). */
+  /** A call that failed for good (after its retries): an 'apifail' event with the status, the path and the server's
+   * error code only (public/js/telemetry.js counts it; no query string, no body). */
   failed(url,error){
     let route=String(url||'');try{route=new URL(route,globalThis.location?.href||'http://x/').pathname;}catch{route=route.split('?')[0];}
-    this.dispatchEvent(new CustomEvent('apifail',{detail:{route,status:error?.status||0}}));
+    this.dispatchEvent(new CustomEvent('apifail',{detail:{route,status:error?.status||0,code:String(error?.data?.code||'')}}));
   }
   async retrying(send){
     const t0=Date.now();let held=false;

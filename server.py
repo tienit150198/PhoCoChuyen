@@ -1207,8 +1207,8 @@ class Handler(BaseHTTPRequestHandler):
     def _internal(self,token:str,rid:str,career:str,action:str,payload:dict,fallback:tuple):
         try:return self.server.store.command(token,rid[:100],None,career,action,payload,internal=True)
         except (Conflict,GameError):
-            # Someone (another tab, the auto-resolve tick) got there first.
-            _,state,revision,_=self.server.store.read(token)
+            # Someone (another tab, the auto-resolve tick, the owner's own reply while the model wrote) got there first.
+            state,revision,_=self.server.store.read(token)  # (state, revision, csrf): unpacking 4 made every late call a 400
             return dict(state=public_state(state),revision=revision,result=dict(message=""),replayed=True)
 
     def ai_feedback(self,token:str,state:dict,revision:int,data:dict)->dict:

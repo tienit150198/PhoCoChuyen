@@ -176,11 +176,14 @@ async function pickReason(env,reasons){
 export async function socialSubmit(form,env){
   const kind=form.dataset.socForm;if(!kind)return false;
   const {api,ui,toast,renderSheet}=env,f=new FormData(form);
-  const send=async(route,body,keys=[])=>{try{const r=await api.socialPost(route,body);if(r.message)toast(r.message);invalidate(ui,...keys);renderSheet();return r;}catch(e){toast(e.message,true);return null;}};
+  const send=async(route,body,keys=[],onError=null)=>{try{const r=await api.socialPost(route,body);if(r.message)toast(r.message);invalidate(ui,...keys);renderSheet();return r;}catch(e){onError?.(e);toast(e.message,true);return null;}};
   switch(kind){
     case'filter':ui.socFilter={q:(f.get('q')||'').trim(),career:f.get('career')||'',follow:f.get('follow')==='on'};renderSheet();break;
     case'profile':{
-      const r=await send('profile',{name:(f.get('name')||'').trim(),bio:(f.get('bio')||'').trim(),avatar:f.get('avatar')||'🌸',visible:f.get('visible')==='on'},['dir:']);
+      // A taken name marks the field itself: the form will not send that same name again until it is changed.
+      const nameIn=form.elements.namedItem('name');
+      const taken=e=>{if(e?.data?.code!=='name_taken'||!nameIn?.setCustomValidity)return;nameIn.setCustomValidity(e.message);nameIn.addEventListener('input',()=>nameIn.setCustomValidity(''),{once:true});nameIn.reportValidity?.();nameIn.focus?.();};
+      const r=await send('profile',{name:(f.get('name')||'').trim(),bio:(f.get('bio')||'').trim(),avatar:f.get('avatar')||'🌸',visible:f.get('visible')==='on'},['dir:'],taken);
       if(r){api.social={...(api.social||{}),me:r.me};if(api.state.settings.publicProfile!==r.me.visible)await env.cmd('settings',{publicProfile:r.me.visible},{quiet:true});ui.socTab='street';renderSheet();}
       break;
     }

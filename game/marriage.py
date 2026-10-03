@@ -1173,6 +1173,8 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
     if not sid or display is None:
         return out
     person = ensure_person(store, sid)
+    from . import friends as fr
+    fr.ensure_codes(store, sid)
     changed = _on_load_sid(store, sid, state)
     if changed:
         got = store.read(token)
