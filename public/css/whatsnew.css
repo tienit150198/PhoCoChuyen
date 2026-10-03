@@ -68,4 +68,8 @@
 .x3-job.lk{opacity:.6}
 .x3-more{margin-top:10px}
 .x3-more>summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer;color:var(--accent-text)}
+.x3-more>summary{list-style:none;gap:6px}
+.x3-more>summary::-webkit-details-marker{display:none}
+.x3-more>summary::after{content:"▸"}
+.x3-more[open]>summary::after{content:"▾"}
 .x3-more .x3-how{margin-top:0}

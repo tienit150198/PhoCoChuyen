@@ -122,6 +122,10 @@
 .bk-score-log li{display:flex;justify-content:space-between;gap:10px;font-size:.9rem}
 .bk-tips{margin-top:10px}
 .bk-tips summary{min-height:44px;display:flex;align-items:center;font-weight:700;cursor:pointer}
+.bk-tips>summary{list-style:none;gap:6px}
+.bk-tips>summary::-webkit-details-marker{display:none}
+.bk-tips>summary::after{content:"▸";color:var(--accent-text)}
+.bk-tips[open]>summary::after{content:"▾"}
 .bk .up{color:var(--good)}
 .bk .down{color:var(--bad)}
 
