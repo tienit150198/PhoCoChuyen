@@ -827,7 +827,8 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("gift:"+token,30):self.error(429,"Chờ một chút nhé.","rate_limited");return
                 self.json(200,dict(ok=True,seen=system_gift.seen(self.server.store,token,data.get("id"))));return
             if route.startswith("/api/marriage/"):  # Hôn nhân: ring, proposal, plan, confirm, divorce… (game/marriage.py)
-                if not self.server.rate_limit("marriage:"+token,60):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
+                env=route=="/api/marriage/envelope"   # 🧧 "cho gửi thoải mái": only an anti-flood (5 a second), not the 60 a minute
+                if not (self.server.rate_limit("wedenv:"+token,10,2) if env else self.server.rate_limit("marriage:"+token,60)):self.error(429,"Nhiều thao tác quá nhanh. Chờ một chút nhé.","rate_limited");return
                 out=marriage.act(self.server.store,token,route[len("/api/marriage/"):],data)
                 if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
                 if not out.pop("quiet",False):out["view"]=marriage.view(self.server.store,token,state)

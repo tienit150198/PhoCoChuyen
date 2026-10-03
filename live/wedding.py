@@ -209,7 +209,7 @@ class WeddingFeature(Feature):
 
     def _info(self, p: dict, room, overflow, pid: str | None = None) -> dict:
         """overflow: False (in the party), 'full' (more than VISIBLE) or 'account' (a player without an account watches).
-        🧧 envs: quick picks; env_free: any amount, no cap (env_max is only the text older clients print)."""
+        🧧 envs: the amounts; env_free: no cap per wedding (env_max is only the text older clients print)."""
         n = len(room.data['people']) + len(room.data['watch'])
         return dict(id=p['id'], a=p['na'], b=p['nb'], pids=[p['pa'], p['pb']], at=p['at'], end=p['at'] + WL.PARTY_SECS, n=n,
                     overflow=overflow, photos=p['photos'] or 0, photos_max=WL.PHOTOS_MAX, visible=WL.VISIBLE,
@@ -511,7 +511,7 @@ class WeddingFeature(Feature):
         return None
 
     # ---- 🧧 a guest's red envelope (paid by the game server, POST /api/marriage/envelope) ----------------------
-    @on('wed_env', rate=(30, 60))   # spam guard only: each one is an envelope already paid (no cap on giving)
+    @on('wed_env', rate=(10, 1))   # an anti-flood only ("cho gửi thoải mái"): each one is an envelope already paid
     async def wed_env(self, conn, f):
         """The sender's client says "sent": the debit row is read back (this player's, this wedding's), then the room
         sees who gave how much and the wish (once per envelope), and the couple's wallets are paid now."""

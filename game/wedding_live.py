@@ -44,9 +44,10 @@ GUEST_MIN_MINUTES = 2           # "đi ăn cưới" counts (the couple's 15 xu, 
 HOST_XU = 15                    # each spouse, for every counted guest who came (owner: 15 xu a guest, no cap but the room's)
 HOST_COUNT_MAX = 360            # VISIBLE + the watchers (live/wedding.py WATCHERS_MAX)
 HOST_BONUS = ((20, 0, 'w_crowd'),)   # (guests, xu, title): the title "Đám cưới đông vui" at 20 guests
-ENVELOPES = (10, 20, 50, 100, 200)   # 🧧 quick picks for a guest's red envelope for the couple (feedback #56), split half and half
-# No cap on giving (owner 03/10: "bỏ giới hạn phong bì"): any whole number of xu the wallet holds, as many envelopes as
-# the guest likes. It is a pure transfer: the couple gets exactly what the guest paid, and nothing else is paid per envelope.
+ENVELOPES = (10, 20, 50, 100, 200)   # 🧧 a guest's red envelope for the couple (feedback #56), split half and half
+# No cap on giving (owner 03/10: "bỏ giới hạn phong bì", "cho gửi thoải mái"): one of ENVELOPES each time, as many
+# envelopes as the guest likes while the wallet holds them. A pure transfer: the couple gets exactly what the guest paid,
+# and nothing else is paid per envelope.
 ENVELOPE_MAX_OLD = 500          # the old per-wedding cap: only printed by older clients ("tối đa … xu mỗi đám"), not enforced
 WISHES = ('Trăm năm hạnh phúc 💕', 'Bách niên giai lão 🎎', 'Sớm có tin vui nha 👶', 'Đầu bạc răng long 👴👵',
           'Thương nhau dài dài nha 💞', 'Hạnh phúc ngập tràn 🥰')
@@ -338,15 +339,14 @@ def on_load(store, token: str, state: dict | None) -> bool:
 # ---------------------------------------------------------------- 🧧 the guests' red envelopes
 def envelope(store, sid: str, display: str, d: dict) -> dict:
     """POST /api/marriage/envelope {wedding, amount, wish, rid}: a guest at an open party (recorded, with an account,
-    not the couple) gives a red envelope from the wallet: any whole number of xu up to the cash in the wallet, as many
-    times as they like. The couple gets exactly that, half each (the odd xu to the first spouse) as live_effects rows
-    (split_env). The sender's debit is a marriage_effects row `wenv:<wedding>:<rid>` (the live service reads it back to
-    tell the room; the couple's end card sums their `wedenv:` rows)."""
+    not the couple) gives a red envelope of one of ENVELOPES from the wallet, as many times as they like (no cap); each
+    spouse gets half as a live_effects row. The sender's debit is a marriage_effects row `wenv:<wedding>:<rid>` (the live
+    service reads it back to tell the room; the couple's end card sums their `wedenv:` rows)."""
     from . import marriage as mr
     from . import db as dbm
     wid, amount, wish = d.get('wedding'), d.get('amount'), d.get('wish', 0)
     mr.need(type(wid) is int and wid >= 1, 'Đám cưới không hợp lệ.', 'bad_envelope')
-    mr.need(type(amount) is int and amount >= 1, 'Chọn số tiền trong phong bì nhé.', 'bad_envelope')
+    mr.need(type(amount) is int and amount in ENVELOPES, 'Chọn số tiền trong phong bì nhé.', 'bad_envelope')
     mr.need(type(wish) is int and 0 <= wish < len(WISHES), 'Chọn một lời chúc nhé.', 'bad_envelope')
     rid = mr._rid(d)[:24]
     eid = f'wenv:{wid}:{rid}'
@@ -367,29 +367,20 @@ def envelope(store, sid: str, display: str, d: dict) -> dict:
     # BANK.PAY: a gift from the wallet, cash (like the spouse transfer)
     out = mr._effect(eid, sid, 'wallet', -amount, f'🧧 Phong bì mừng cưới {names["a"]} & {names["b"]}', dict(wedding=wid, wish=wish))
 
-    def fn(s):   # runs before ops: a sum the wallet does not hold writes nothing
+    def fn(s):
         mr.need(int(s['journey']['wallet']) >= amount, f'Ví của bạn chưa đủ {amount} xu.', 'not_enough')
         mr._apply_effect(s, out)
 
     def ops(db):
         p = check(db, now())
         mr._insert_effects(db, [out], 'applied')
-        for side, part in zip('ab', (amount - amount // 2, amount // 2)):
-            for key, n in split_env(f'wedenv:{wid}:{side}:{rid}', part):
-                grant(db, p[side], 'coins', n, key, dict(src='env'))
+        for side in ('a', 'b'):
+            grant(db, p[side], 'coins', amount // 2, f'wedenv:{wid}:{side}:{rid}', dict(src='env'))
     try:
         mr._mutate_retry(store, {sid: fn}, ops)
     except dbm.IntegrityError:   # the same rid twice (a double tap)
         return dict(message='Phong bì này đã gửi rồi.', changed=False, quiet=True, rid=rid)
     return dict(message=f'Đã gửi phong bì {amount} xu mừng {names["a"]} & {names["b"]} 🧧', changed=True, quiet=True, rid=rid)
-
-
-def split_env(key: str, amount: int) -> list:
-    """One spouse's half of an envelope as live_effects rows of at most live_effects.AMOUNT_MAX each (what every
-    build's payer accepts): `key`, then `key:2`, `key:3`… (envelopes_of and the live end card sum them by prefix).
-    Nothing for 0 (the second half of a 1 xu envelope)."""
-    from .live_effects import AMOUNT_MAX
-    return [(key if i == 1 else f'{key}:{i}', min(AMOUNT_MAX, amount - k)) for i, k in enumerate(range(0, amount, AMOUNT_MAX), 1)]
 
 
 def envelopes_of(db, couple_sid: str, wid: int, side: str) -> int:
