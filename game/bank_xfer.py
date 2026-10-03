@@ -46,6 +46,8 @@ BATCH = 20               # rows credited per load at most (the rest on the next 
 RECENT = 8
 SWEEP_EVERY = 60.0
 CHIPS = (50, 100, 200, 500, 1000)
+ADMIN_MAX = 1_000_000   # an admin (ADMIN_USERS) sends at once, no day caps, no waits (owner 04/10); one transfer at most this
+ADMIN_CHIPS = (1000, 5000, 10000, 50000, 100000)
 KIND = 'bank'            # wallet history kind (journey.HISTORY_KINDS): every build knows it
 BACK_SRC = 'xfer_back'   # live_effects data.src of a refund (game/live_effects.py LABELS)
 DAY = 86400
@@ -141,11 +143,13 @@ def _who(store, token: str) -> tuple:
     return sid, display
 
 
-def _lock(store, sid: str, state: dict | None) -> str | None:
-    """Why this player cannot send yet (None: they can)."""
+def _lock(store, sid: str, state: dict | None, admin: bool = False) -> str | None:
+    """Why this player cannot send yet (None: they can). An admin only needs the journey."""
     j = (state or {}).get('journey') or {}
     if not j.get('story'):
         return 'Chuyển khoản chỉ có trong hành trình.'
+    if admin:
+        return None
     with store.connect() as db:
         if not _old_enough(db, sid):
             return f'Chuyển khoản mở khi tài khoản đủ {ACCOUNT_DAYS} ngày chơi game (đời thực).'
@@ -160,7 +164,7 @@ def _receipt(r: dict, again: bool = False) -> dict:
 
 
 # ---------------------------------------------------------------- send
-def send(store, sid: str, display: str, d: dict) -> dict:
+def send(store, sid: str, display: str, d: dict, admin: bool = False) -> dict:
     rid = d.get('rid')
     need(isinstance(rid, str) and RID_RX.fullmatch(rid), 'Mã giao dịch không hợp lệ. Tải lại trang nhé.', 'bad_rid')
     xid = xid_of(sid, rid)
@@ -169,13 +173,14 @@ def send(store, sid: str, display: str, d: dict) -> dict:
     if old:   # a retry of a transfer that went through: the same receipt, nothing moves
         return dict(message=f'Đã chuyển {fmt(old["amount"])} xu cho {old["to_name"]}.', receipt=_receipt(old, True), changed=False)
     amount = d.get('amount')
-    need(type(amount) is int and MIN_XU <= amount <= SEND_DAY, f'Chuyển từ {MIN_XU} tới {fmt(SEND_DAY)} xu mỗi lần nhé.', 'bad_amount')
+    most = ADMIN_MAX if admin else SEND_DAY
+    need(type(amount) is int and MIN_XU <= amount <= most, f'Chuyển từ {MIN_XU} tới {fmt(most)} xu mỗi lần nhé.', 'bad_amount')
     src = d.get('src', 'acc')
     need(src in ('acc', 'cash'), 'Chọn chuyển từ tài khoản hoặc tiền mặt nhé.', 'bad_src')
     note = clean_note(d.get('note'))
     loaded = mr._read_state(store, sid)
     need(loaded, 'Không tìm thấy tiến trình.', 'session_missing', 404)
-    why = _lock(store, sid, loaded[0])
+    why = _lock(store, sid, loaded[0], admin)
     need(not why, why or '', 'too_new', 403)
     t = now()
     with store.connect() as db:
@@ -190,7 +195,7 @@ def send(store, sid: str, display: str, d: dict) -> dict:
 
     def fn(s):
         j = s['journey']
-        need(j.get('story') and int(j['life_day']) >= LIFE_DAYS, f'Chuyển khoản mở từ ngày sống {LIFE_DAYS}.', 'too_new', 403)
+        need(j.get('story') and (admin or int(j['life_day']) >= LIFE_DAYS), f'Chuyển khoản mở từ ngày sống {LIFE_DAYS}.', 'too_new', 403)
         b = bk.get(s)
         if src == 'acc':
             need(b, 'Mở tài khoản Ngân hàng Phố trước nhé.', 'no_account')
@@ -205,11 +210,13 @@ def send(store, sid: str, display: str, d: dict) -> dict:
     def ops(db):
         since = _friend_since(db, sid, other)
         need(since is not None, 'Chỉ chuyển được cho bạn bè thôi nhé.', 'not_friend', 403)
-        need(since <= t - FRIEND_MINUTES * 60, f'Kết bạn đủ {FRIEND_MINUTES} phút rồi mới chuyển được nhé.', 'friend_new', 403)
+        need(admin or since <= t - FRIEND_MINUTES * 60, f'Kết bạn đủ {FRIEND_MINUTES} phút rồi mới chuyển được nhé.', 'friend_new', 403)
         need(not mr._blocked(db, sid, other), 'Không chuyển được cho người này.', 'blocked', 403)
-        need(_old_enough(db, other), f'Tài khoản của {name} chưa đủ {ACCOUNT_DAYS} ngày chơi game (đời thực).', 'too_new', 403)
+        need(admin or _old_enough(db, other), f'Tài khoản của {name} chưa đủ {ACCOUNT_DAYS} ngày chơi game (đời thực).', 'too_new', 403)
         db.execute("INSERT INTO bank_xfers(id,code,sender,receiver,from_name,to_name,amount,note,src,status,day,at) "
                    "VALUES(?,?,?,?,?,?,?,?,?,'sent',?,?)", (xid, xcode, sid, other, display[:24], name[:24], amount, note, src, day, t))
+        if admin:   # no day caps either way, and it doesn't use up the receiver's room for friends' transfers
+            return
         mine = _today(db, sid, day)
         need(mine['n'] < SEND_COUNT, f'Hôm nay bạn đã chuyển {SEND_COUNT} lần. Mai chuyển tiếp nhé.', 'limit_count', 429)
         left = SEND_DAY - mine['sent']
@@ -369,7 +376,7 @@ def forget(store, token: str) -> None:
 
 
 # ---------------------------------------------------------------- the screen
-def view(store, sid: str, state: dict) -> dict:
+def view(store, sid: str, state: dict, admin: bool = False) -> dict:
     """GET /api/bank/xfer: my friends (who can receive), today's room, the last transfers both ways."""
     sweep(store)
     from . import friends as fr
@@ -392,7 +399,10 @@ def view(store, sid: str, state: dict) -> dict:
         friends = []
         for r in rows:
             why = None
-            if float(r['since']) > t - FRIEND_MINUTES * 60:
+            if admin:
+                if mr._blocked(db, sid, r['friend']):
+                    continue
+            elif float(r['since']) > t - FRIEND_MINUTES * 60:
                 why = f'Kết bạn đủ {FRIEND_MINUTES} phút rồi chuyển nhé'
             elif mr._blocked(db, sid, r['friend']):
                 continue
@@ -409,10 +419,23 @@ def view(store, sid: str, state: dict) -> dict:
             recent.append((float(r['done_at'] or r['at']), dict(dir='in', code=r['code'], name=r['from_name'], amount=int(r['amount']),
                                                                  note=r['note'], status=r['status'], at=int(r['done_at'] or r['at']))))
     recent.sort(key=lambda x: -x[0])
+    if admin:
+        return dict(friends=friends, lock=_lock(store, sid, state, True), recent=[x[1] for x in recent[:RECENT]],
+                    today=dict(sent=mine['sent'], n=mine['n'], left=ADMIN_MAX, count_left=999),
+                    rules=dict(min=MIN_XU, send_day=ADMIN_MAX, send_count=999, recv_day=ADMIN_MAX, account_days=0, life_days=0,
+                               friend_minutes=0, note_max=NOTE_MAX, chips=list(ADMIN_CHIPS), admin=True))
     return dict(friends=friends, lock=_lock(store, sid, state), recent=[x[1] for x in recent[:RECENT]],
                 today=dict(sent=mine['sent'], n=mine['n'], left=max(0, SEND_DAY - mine['sent']), count_left=max(0, SEND_COUNT - mine['n'])),
                 rules=dict(min=MIN_XU, send_day=SEND_DAY, send_count=SEND_COUNT, recv_day=RECV_DAY, account_days=ACCOUNT_DAYS,
                            life_days=LIFE_DAYS, friend_minutes=FRIEND_MINUTES, note_max=NOTE_MAX, chips=list(CHIPS)))
+
+
+def _admin(store, token: str) -> bool:
+    from . import player_feedback as pfb
+    try:
+        return pfb.is_admin(store, token)
+    except Exception:  # noqa: BLE001 - never let the admin check break a player's transfer
+        return False
 
 
 def get(store, token: str, state: dict) -> dict:
@@ -421,7 +444,7 @@ def get(store, token: str, state: dict) -> dict:
     got = receive(store, sid)
     if got:
         state = mr._read_state(store, sid)[0]
-    out = view(store, sid, state)
+    out = view(store, sid, state, _admin(store, token))
     out.update(got=got, changed=bool(got))
     return out
 
@@ -435,4 +458,4 @@ def act(store, token: str, op: str, d: dict) -> dict:
         return dict(message='', got=got, changed=bool(got))
     need(op == 'send', 'Không có thao tác này.', 'not_found', 404)
     mr.ensure_person(store, sid)
-    return send(store, sid, display, d)
+    return send(store, sid, display, d, _admin(store, token))

@@ -330,6 +330,28 @@ class Limits(Base):
         self.assertIn('nhận đủ', e.message)
         self.assertEqual(self.balance(senders[2]), 4900)     # refused sends never moved a coin
 
+    def test_an_admin_sends_at_once_without_limits(self):
+        boss, bob = self.user('boss', old=False, life=1, bank=500000), self.user('bob', old=False)
+        cat = self.user('cat', bank=5000)
+        self.friends(boss, bob, ago=5)                    # friends 5 seconds, both accounts brand new
+        self.friends(cat, bob)
+        with patch.dict(os.environ, ADMIN_USERS='boss_test'):
+            v = bx.get(self.store, boss, self.state(boss))
+            self.assertIsNone(v['lock'])
+            self.assertTrue(v['rules']['admin'])
+            self.assertEqual([f['ok'] for f in v['friends']], [True])
+            self.send(boss, bob, 100000)                  # far above a player's day cap
+            for _ in range(bx.SEND_COUNT + 2):            # and more transfers than a player's count
+                self.send(boss, bob, 1000)
+            self.refused('bad_amount', self.send, boss, bob, bx.ADMIN_MAX + 1)
+        self.assertEqual(self.balance(boss), 500000 - 100000 - 1000 * (bx.SEND_COUNT + 2))
+        with self.store.connect() as db:                  # the admin's transfers never use up bob's room from friends
+            got = db.execute('SELECT got FROM bank_xfer_days WHERE sid=?', (self.sid(bob),)).fetchone()
+        self.assertIsNone(got)
+        self.refused('too_new', self.send, cat, bob, 50)  # a player still meets the rules (bob is a new account)
+        self.load(bob)
+        self.assertEqual(self.balance(bob), 3000 + 100000 + 1000 * (bx.SEND_COUNT + 2))
+
     def test_receiver_cap_holds_when_senders_race(self):
         bob = self.user('bob')
         senders = [self.user(f'p{n}', bank=5000) for n in range(5)]
