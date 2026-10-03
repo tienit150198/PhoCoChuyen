@@ -272,7 +272,7 @@ function placeCard(v){
   const who=p.where_id==='shared'?`<p class="hs-tag">💞 Nhà chung với ${esc(p.with)}</p>`:p.where_id==='own'?'<p class="hs-tag">🔑 Nhà đứng tên bạn</p>':bed?'<p class="hs-tag">👥 Ở ghép · giường dưới cạnh cửa sổ</p>':p.where_id==='rent'?'<p class="hs-tag">🧾 Đang thuê</p>':'';
   let actions='';
   const DC=J().deco,deco=DC?`<p class="hs-chips"><span>🪴 Ấm cúng ${DC.cozy.total} · ${esc(DC.cozy.level)}</span>${DC.bag.length?`<span>🎒 ${DC.bag.length} món trong túi</span>`:''}</p>`:'';
-  const setUp=DC?btn(bed?'🪴 Bày trí góc giường':'🪴 Bày trí phòng','inside',{},'primary'):'';   // 🪴 rentals, the attic, a shared home: decor only
+  const setUp=DC?btn(bed?'🚪 Về góc giường':p.where_id==='shared'?'🚪 Vào nhà':'🚪 Vào phòng','inside',{},'primary'):'';   // 🚶 rentals, the attic, a shared home: walk in, decor inside (v4/home-walk.js)
   if(p.where_id==='rent')actions=`${bed?dormRoom(p.dorm):''}${deco}<div class="bk-actions">${setUp}${btn(bed?'Trả giường, nhận lại cọc':'Trả phòng, nhận lại cọc','leave',{},'ghost')}</div>`;
   else if(p.where_id==='own'&&J().reno){const R=J().reno,worn=R.parts.filter(x=>x.worn).length;
     actions=`<p class="hs-chips"><span>🪴 Ấm cúng ${R.cozy}</span><span>🛠️ ${worn?`${worn} chỗ cần sửa`:'Nhà sạch đẹp'}</span></p><div class="bk-actions">${btn('🚪 Vào nhà','inside',{},'primary')}${worn?btn('🛠️ Sửa nhà','inside',{mode:'fix'},'ghost'):''}</div>`;}
