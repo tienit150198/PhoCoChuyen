@@ -8,6 +8,7 @@ import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import {data,cc,lower,tile,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
+import {linesSummary} from './tomorrow_kit.js';
 
 const FL=(x,k)=>(cc(x).flavours||[]).find(f=>f.id===k)||{id:k,name:k,short:k,emoji:'🍨'};
 const VS=(x,k)=>(cc(x).vessels||{})[k]||{name:k,emoji:'🥤',max:2,item:null};
@@ -295,5 +296,7 @@ export default {
   actions:{...tillActions,...kitActions,
     async press(d,el,x){x.ui.press=d.p;x.render();},
   },
+  // "Ngày mai" first: the lines about tomorrow, what is left in the freezer, the stock room, Kho; the day folded.
+  summary(data,x){return linesSummary(data,x,{note:false,plan:typeof data?.note==='string'&&data.note?[`🧊 ${x.esc(data.note)}`]:[]});},
   dock:[['inventory','box','Kho kem','Nhập hộp kem, ốc quế, kem que…']],
 };
