@@ -25,6 +25,7 @@ Tables: SCHEMA below (SQLite, tests and dev) and game/pg_schema.py (PostgreSQL, 
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 import time
 
@@ -116,11 +117,44 @@ def validate(j: dict) -> None:
 
 
 # ---------------------------------------------------------------- loading a save
+# 🎁 A gift for the whole town (owner 04/10/2026 "tặng thêm 100 xu mỗi người toàn server", "tất cả người chơi trong
+# server k giới hạn"): every save that loads before `until` (guest or account, old or new) gets 100 xu once. No mass
+# insert on prod: the save's own row (id prefix + its sid's hash) is queued the first time, then the usual pending →
+# applied → seen path pays it once and shows the card. MNL_BROADCAST_OFF=1 (tests/__init__.py) turns it off.
+BROADCASTS = (
+    dict(prefix='all1004', coins=100, until=1791727200,   # until 11/10 21:00 (VN)
+         title='Quà cả phố 🎁', text='Phố Có Chuyện gửi mỗi người 100 xu, cảm ơn bạn đã chơi cùng cả phố! Chơi vui nha 💛'),
+)
+
+
+def _broadcast_id(prefix: str, sid: str) -> str:
+    return f"{prefix}-{hashlib.sha256(sid.encode()).hexdigest()[:24]}"
+
+
+def _broadcasts(store, sid: str) -> None:
+    """Queue this save's town-wide gifts (one primary-key lookup each while one is open)."""
+    if os.environ.get('MNL_BROADCAST_OFF') == '1':
+        return
+    t = now()
+    for b in BROADCASTS:
+        if t >= b['until']:
+            continue
+        gid = _broadcast_id(b['prefix'], sid)
+        with store.connect() as db:
+            if db.execute('SELECT 1 FROM system_gifts WHERE id=?', (gid,)).fetchone():
+                continue
+        grant(store, sid, b['coins'], b['title'], b['text'], gid=gid)
+
+
 def on_load(store, token: str, state: dict | None) -> tuple[bool, list]:
     """Bootstrap: pay this save's pending gifts, list the ones not acknowledged yet.
     Returns (the save changed, [{id, coins, title, text}]). One indexed query when there is none."""
     from .engine import GameError
     sid = store.key(token)
+    try:
+        _broadcasts(store, sid)
+    except Exception:   # a town-wide gift never blocks this save's own gifts or the load
+        pass
     with store.connect() as db:
         rows = [dict(r) for r in db.execute("SELECT id,coins,title,text,status FROM system_gifts "
                                             "WHERE sid=? AND status IN ('pending','applied') ORDER BY created,id LIMIT 20", (sid,))]

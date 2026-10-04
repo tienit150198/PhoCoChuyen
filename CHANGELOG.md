@@ -1,3 +1,12 @@
+# v1.6.8 — ✈️ hộp Bỏ dở việc ở Hãng bay
+
+- `abandon.js`/`abandon.css`: hàng nút đổi class `.ab-row` → `.ab-btns`; `careers/air_kit.css` có `.ab-row` (bảng giờ bay, lưới nền tối) nên rời Hãng bay khi làm dở thì hai nút bị bóp thành cột hẹp trên nền đen.
+
+# v1.6.7 — 🎁 quà cả phố 100 xu, 💰 hoàn phí "Nơi làm khác"
+
+- `system_gift.BROADCASTS`: mọi người chơi (khách, tài khoản cũ và mới) nhận 100 xu một lần khi tải game, tới 11/10 21:00; test tắt bằng MNL_BROADCAST_OFF. Không chèn hàng loạt: lúc tải, save tự có dòng `system_gifts` riêng (`all1004-<hash sid>`), rồi đi đường quà sẵn có (pending → applied → seen, có thiệp).
+- `journey._refund_upkeep()` trong `upgrade()`: lần tải đầu, `stats.upkeep_paid` (tổng phí duy trì nơi vắng chủ đã trả) cộng vào ví với dòng "Hoàn phí duy trì nơi vắng chủ 💰", rồi về 0. Không thêm trường save; tải lại không hoàn lần hai.
+
 # v1.6.6 — 🧭 giao đơn quầy: nút theo hướng bản đồ
 
 - `quay-ride.js` `turnChoices()`: nút ở ngã tư hiện hướng trên bản đồ (⬆️ ⬇️ ⬅️ ➡️) tính từ hướng xe, vẫn gửi L/S/R như cũ (feedback #144: xe chạy ngang thì không có nút đi xuống).

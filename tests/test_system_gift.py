@@ -412,5 +412,43 @@ class LargeGift(unittest.TestCase):
         self.assertIn('--large', r.stderr + r.stdout)
 
 
+class TownWide(Base):
+    """Owner 04/10/2026 "tặng thêm 100 xu mỗi người toàn server", "tất cả người chơi k giới hạn": every save, once."""
+
+    def setUp(self):
+        super().setUp()
+        h = patch.dict(os.environ, {'MNL_BROADCAST_OFF': '0'})
+        h.start()
+        self.addCleanup(h.stop)
+
+    def check_once(self, tok):
+        b = sg.BROADCASTS[0]
+        w0 = self.wallet(tok)
+        changed, shown = self.load(tok)
+        self.assertTrue(changed)
+        gid = sg._broadcast_id(b['prefix'], self.store.key(tok))
+        self.assertEqual(shown, [dict(id=gid, coins=100, title=b['title'], text=b['text'])])
+        self.assertEqual(self.wallet(tok), w0 + 100)
+        self.assertTrue(sg.seen(self.store, tok, gid))
+        self.assertEqual(self.load(tok), (False, []))
+        self.assertEqual(self.wallet(tok), w0 + 100)
+        self.assertEqual(self.row(gid)['status'], 'seen')
+
+    def test_a_guest_gets_100_once(self):
+        self.check_once(self.guest())
+
+    def test_a_new_account_gets_100_once(self):
+        tok = accounts.register(self.store, self.guest(), dict(username='lan_test', password='matkhau-dai-lam',
+                                                                 confirm='matkhau-dai-lam', display='Lan'))['token']
+        self.check_once(tok)
+
+    def test_nothing_once_it_closes_or_when_turned_off(self):
+        tok = self.guest()
+        with patch.object(sg, 'now', lambda: sg.BROADCASTS[0]['until']):
+            self.assertEqual(self.load(tok), (False, []))
+        with patch.dict(os.environ, {'MNL_BROADCAST_OFF': '1'}):
+            self.assertEqual(self.load(tok), (False, []))
+
+
 if __name__ == '__main__':
     unittest.main()
