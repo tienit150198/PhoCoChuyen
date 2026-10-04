@@ -371,8 +371,9 @@ class Flow(unittest.TestCase):
         days(s, up.MONTH_DAYS)                     # nothing to pay with: the bill is waived
         self.assertEqual(R(s)['waived'], s['journey']['life_day'])
         s['journey']['wallet'] = 3000
+        s, _ = act(s, 'jr_garage_trip', id='o_to_mini')  # risk only follows real use
         r = R(s)
-        p = next(p for p, k, *_ in rui.candidates(s, r, s['journey']['life_day']) if k == 'xe')
+        p = next(p for p, k, *_ in rui.candidates(s, r, s['journey']['life_day'] + 1) if k == 'xe')
         self.assertEqual(p, rui.XE_P[0] * 2 // (2 if s['journey']['life_day'] < rui.EASE_DAY else 1))
 
 

@@ -169,6 +169,14 @@ def _ensure(s: dict) -> dict:
     return j['garage']
 
 
+def used_before(s: dict, vid: str, day: int) -> bool:
+    """A real outing yesterday, for one life-day risk roll; displaying a vehicle is cosmetic.
+    The optional journey sibling keeps the strict legacy garage block rollback-compatible.
+    """
+    trips=s.get('journey',{}).get('garage_trips',{})
+    return isinstance(trips,dict) and trips.get(vid)==day-1
+
+
 def _have(s: dict) -> dict:
     """The money a purchase may use: the cash in the wallet (none while it is in debt) and the bank account."""
     j = s['journey']
@@ -278,6 +286,8 @@ def validate(s: dict) -> None:
     e.need(set(g) == BLOCK_KEYS and g['v'] == VERSION, bad, 'invalid_save')
     cars = g['cars']
     e.need(isinstance(cars, dict) and len(cars) <= 64 and all(_car_ok(k, v) for k, v in cars.items()), bad, 'invalid_save')
+    trips=j.get('garage_trips',{})
+    e.need(isinstance(trips,dict) and len(trips)<=64 and all(k in cars and type(v) is int and 1<=v<=10**6 for k,v in trips.items()),bad,'invalid_save')
     e.need(g['ride'] is None or g['ride'] in cars, bad, 'invalid_save')
     e.need(type(g['trip']) is int and 0 <= g['trip'] <= 10**6, bad, 'invalid_save')
     st = g['stats']
@@ -303,6 +313,9 @@ def upgrade(j: dict) -> None:
     out['stats'] = {k: st[k] if type(st.get(k)) is int and 0 <= st[k] <= 10**9 else 0 for k in STATS}
     if out != g:
         j['garage'] = out
+    if 'garage_trips' in j:
+        trips=j['garage_trips']
+        j['garage_trips']={k:v for k,v in trips.items() if k in out['cars'] and type(v) is int and 1<=v<=10**6} if isinstance(trips,dict) else {}
 
 
 # ---------------------------------------------------------------- commands
@@ -385,6 +398,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         if V['fuel']:
             _jr()._wallet(j, -V['fuel'], KIND, f'Tiền xăng · {V["name"]}')
         g['trip'] = day
+        j.setdefault('garage_trips',{})[vid]=day
         g['stats']['trips'] = g['stats'].get('trips', 0) + 1
         up = _spirit(s, V['spirit'])
         fuel = f' Tiền xăng {_fmt(V["fuel"])} xu.' if V['fuel'] else ''
@@ -398,6 +412,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         need(p.get('confirm') is True, f'Xác nhận bán {lname(V["name"])}.')
         get_back = max(0, sell_price(g['cars'][vid]['p']) - _rui().broken_cost(s, 'xe', vid))   # 🛡️ a broken one: less
         g['cars'].pop(vid)
+        if isinstance(j.get('garage_trips'),dict):j['garage_trips'].pop(vid,None)
         if g['ride'] == vid:
             g['ride'] = None
         g['stats']['sold'] = g['stats'].get('sold', 0) + 1

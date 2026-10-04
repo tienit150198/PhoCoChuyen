@@ -10,7 +10,7 @@
  * moved by a CSS transition (no frame loop), frozen and resumed around a re-render. Reduced motion: it steps there.
  * reno.js owns the dialog and passes its helpers in (setup); every rule and number is the server's (deco.public
  * 'fridge'); a server from before sends no fridge and the fridge just says a line. */
-import {figure,paintPlayer,SVG} from './look.js';
+import {figure,paintPlayer,SVG,lookOf,figureSVG,wornColor} from './look.js';
 import {escapeHTML as esc} from '../icons.js';
 
 const K=.42;                 // the figure (about 150 units tall) in room pixels
@@ -18,6 +18,8 @@ const SPEED=150;             // room pixels a second
 const SAY_MS=4200;
 const FRIDGES=new Set(['tu_lanh','tu_lanh_magnet']);
 const WARDROBE=new Set(['tu_quan_ao','moc_ao','ban_trang_diem','guong']);
+const CLOSET=new Set(['tu_quan_ao','moc_ao']);
+const CLOTHES=new Set(['top','bottom','shoes','acc']);
 const BEDS=new Set(['giuong','nem']);
 const RELAX={bon_tam:'ngam',phao:'boi',phao_hong_hac:'boi',ghe_tam_nang:'nam'};
 /* What the character says at a piece (one picked at random). Keys: item ids, then its category. */
@@ -44,7 +46,7 @@ const pick=a=>a[Math.random()*a.length|0];
 
 export function setup(ctx){
   const {S,A,roomOf,inRoom,hostFor,send,render,sfx,calm,roomSvg}=ctx;
-  const W={room:'',x:0,y:0,to:null,until:0,timer:0,then:null,say:null,fridge:false,note:null,walked:false};
+  const W={room:'',x:0,y:0,to:null,until:0,timer:0,then:null,say:null,fridge:false,closet:null,note:null,walked:false};
   const st=()=>S.env?.api?.state||{};
   const FR=()=>S.env?.api?.state?.journey?.deco?.fridge||null;
 
@@ -160,6 +162,10 @@ export function setup(ctx){
       if(N?.evening&&!N.evening.chosen&&S.env?.act){S.dlg.close();S.env.act('evening');return;}
       say(N?.evening?.chosen?'Chúc ngủ ngon nhé.':pick(BED_LINE));return;
     }
+    if(CLOSET.has(k)&&S.env?.act){
+      W.closet={room:rm.id,uid:o.id,pick:'',page:0};W.fridge=false;sfx('pop');render();
+      requestAnimationFrame(()=>S.dlg?.querySelector('.hw-closet')?.scrollIntoView?.({block:'nearest',behavior:calm()?'auto':'smooth'}));return;
+    }
     if(WARDROBE.has(k)&&S.env?.act){S.dlg.close();S.env.act('jrWardrobe');return;}
     const act=RELAX[k],a=act&&(ctx.V()?.relax||[]).find(x=>x.id===act);
     if(a){if(a.ok){const r=await send('jr_relax_do',{act:a.id},{loud:true,flash:false});if(r){sfx('chime');say(r.message.replace(/^\S+\s/,''),true);}}else say(a.why);return;}
@@ -190,14 +196,35 @@ export function setup(ctx){
   function openFridge(){
     const F=FR();
     if(!F){say('Tủ lạnh chạy êm ru, mát rượi.');return;}   // a server from before: no food in it yet
-    W.fridge=true;W.note=null;sfx('pop');render();
+    W.fridge=true;W.closet=null;W.note=null;sfx('pop');render();
     requestAnimationFrame(()=>S.dlg?.querySelector('.hw-fridge')?.scrollIntoView?.({block:'nearest',behavior:calm()?'auto':'smooth'}));
   }
   const shelf=F=>F.kind==='dorm'?'Ngăn của bạn trong tủ lạnh chung':'Tủ lạnh';
   const gainOf=x=>x.full?`No bụng +${x.full}`:`Tỉnh táo +${x.wake}`;
+  const closetItems=()=>{
+    const mine=new Set(st().wardrobe?.owned||[]);
+    return (S.env?.api?.content?.journey?.wardrobe?.items||[]).filter(it=>it.id!=='pk_khong'&&CLOTHES.has(it.slot)&&(mine.has(it.id)||(!it.price&&!it.need)));
+  };
+  function closetPanel(rm){
+    const c=W.closet;
+    if(!c||!rm||c.room!==rm.id||!inRoom(rm).some(o=>o.id===c.uid&&CLOSET.has(o.it.id))){W.closet=null;return '';}
+    const items=closetItems(),pages=Math.max(1,Math.ceil(items.length/8));c.page=Math.min(c.page,pages-1);
+    const it=items.find(x=>x.id===c.pick),look=lookOf(st());
+    if(it){look[it.slot]=it.id;look.uniform=false;const tint=wornColor(st(),it.id);if(tint)look.tint={...look.tint,[it.id]:tint};}
+    const preview=figureSVG(look,st().journey?.gender,{w:112,h:160});
+    const page=items.slice(c.page*8,c.page*8+8).map(x=>btn(esc(x.name),'hwClothesPick',{item:x.id},'ghost small',` aria-pressed="${x.id===c.pick}"`)).join('');
+    return `<section class="bk-card hw-closet" aria-label="Quần áo trong tủ"><div class="hw-fridge-top"><h3>🗄️ Quần áo trong tủ</h3>${btn('Đóng tủ','hwClothesClose',{},'ghost small')}</div>
+      <p class="bk-hint">Đồ mua ở shop tự xuất hiện ở đây, cùng quần áo cơ bản sẵn có. Chọn để ngắm thử, rồi mở Tủ đồ để mặc.</p>
+      <div class="bk-center">${preview}<p>${it?esc(it.name):'Trang phục đang mặc'}</p></div>
+      <div class="bk-actions">${page||'<p>Chưa có quần áo trong tủ.</p>'}</div>
+      ${pages>1?`<div class="bk-actions">${btn('‹ Trước','hwClothesPage',{page:c.page-1},'ghost small',c.page?'':' disabled')}<span>${c.page+1}/${pages}</span>${btn('Sau ›','hwClothesPage',{page:c.page+1},'ghost small',c.page<pages-1?'':' disabled')}</div>`:''}
+      <div class="bk-actions">${btn('👗 Mở Tủ đồ để thay','hwWardrobe',{},'primary')}</div></section>`;
+  }
   function panel(v,rm){
+    if(S.edit)return '';
+    if(W.closet)return closetPanel(rm);
     const F=v?.fridge;
-    if(!F||S.edit)return '';
+    if(!F)return '';
     if(!W.fridge){
       if(F.kind==='dorm'&&rm?.type==='bunk')return `<section class="bk-card hw-fridge-door"><p><span aria-hidden="true">🧊</span> <span>Tủ lạnh chung ở cuối phòng, mỗi người một ngăn.</span></p>${btn('🧊 Mở ngăn tủ của bạn','hwOpen',{},'ghost')}</section>`;
       return '';
@@ -225,6 +252,13 @@ export function setup(ctx){
   }
   async function click(op,data){
     switch(op){
+      case'hwClothesClose':W.closet=null;render();return true;
+      case'hwClothesPick':if(W.closet&&closetItems().some(x=>x.id===data.item)){W.closet.pick=data.item;render();}return true;
+      case'hwClothesPage':if(W.closet){W.closet.page=Math.max(0,Math.min(Math.ceil(closetItems().length/8)-1,Number(data.page)||0));render();}return true;
+      case'hwWardrobe':if(W.closet&&S.env?.act){
+        const it=closetItems().find(x=>x.id===W.closet.pick),ui=S.env.ui;
+        if(it&&ui){const wd=ui.wd??={tab:it.slot,draft:{}};wd.tab=it.slot;wd.draft={...wd.draft,[it.slot]:it.id};}
+        S.dlg.close();S.env.act('jrWardrobe');}return true;
       case'hwOpen':openFridge();return true;
       case'hwClose':W.fridge=false;W.note=null;render();return true;
       case'hwBuy':case'hwEat':{
@@ -236,7 +270,7 @@ export function setup(ctx){
     }
     return false;
   }
-  function reset(){stop();W.room='';W.say=null;W.fridge=false;W.note=null;W.walked=false;}
+  function reset(){stop();W.room='';W.say=null;W.fridge=false;W.closet=null;W.note=null;W.walked=false;}
 
   /* ---- test hooks (scratch browser checks) ---- */
   globalThis.__homeWalk={state:()=>({room:W.room,me:[W.x,W.y],to:W.to&&[W.to.x,W.to.y],fridge:W.fridge,say:W.say?.text||''}),

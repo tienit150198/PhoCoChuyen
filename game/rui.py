@@ -105,7 +105,7 @@ GEAR = {
 }
 
 # ---------------------------------------------------------------- odds and costs
-XE_P = (400, 120)                 # a motor vehicle, per 10 000 a life day: the one ridden, the others
+XE_P = (400, 120)                 # per 10 000 after an actual outing: displayed vehicle / another vehicle
 XE_PCT = 400                      # repair: basis points of the price paid
 NHA_P = 200                       # a home you own, per 10 000 a life day
 NHA_SUBS = {   # sub: (weight, reno part, basis points of the list price)
@@ -411,7 +411,7 @@ def candidates(s: dict, r: dict, day: int) -> list[tuple[int, str, str, object]]
     ride = g['ride'] if g else None
     twice = 2 if _waived(r, day) else 1
     for vid, car, V in _motor(s):
-        if vid in r['broken']['xe']:
+        if vid in r['broken']['xe'] or not gr.used_before(s,vid,day):
             continue
         out.append((XE_P[0 if vid == ride else 1] * twice, 'xe', V['group'], vid))
     from . import housing as hs
@@ -436,7 +436,7 @@ def candidates(s: dict, r: dict, day: int) -> list[tuple[int, str, str, object]]
         out.append((p // 2 if 'tui' in r['gear'] else p, 'moc', '', None))
     if cash >= TROM_CASH and _where(s) in ('own', 'rent', 'shared'):
         out.append((TROM_P * 2 // 5 if 'khoa' in r['gear'] else TROM_P, 'trom', '', None))
-    if ride and ride in gr.VEHICLES and gr.VEHICLES[ride]['group'] == 'car' and ride in g['cars'] and ride not in r['broken']['xe']:
+    if ride and ride in gr.VEHICLES and gr.VEHICLES[ride]['group'] == 'car' and ride in g['cars'] and ride not in r['broken']['xe'] and gr.used_before(s,ride,day):
         out.append((PHAT_P, 'phat', '', ride))
     if day < EASE_DAY or wealth(s) < EASE_W:
         out = [(p // 2, k, sub, ref) for p, k, sub, ref in out]

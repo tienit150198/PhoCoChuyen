@@ -15,6 +15,8 @@
 - Đi làm tóc, làm nail với vai trò khách và tự làm đồ DIY, xem mẫu/giá trước khi xác nhận.
 - Kết bạn từ tin nhắn chat, mời bạn vào buồng chụp qua tin nhắn riêng; nhập mã hỗ trợ bộ gõ đang ghép chữ. Kiểm tra quyền xem tin và chặn hai chiều.
 - Trang trí giữ vị trí thanh phòng khi chọn phòng cuối, thêm nút cuộn phòng/cửa hàng; ghi lời báo thú cưng có chỉ dẫn chọn đúng việc đã quan sát.
+- Xe và máy bay chưa sử dụng không tự gặp sự cố hỏng theo ngày; đổi màu/trưng xe không tính là chuyến đi.
+- Chạm tủ quần áo hoặc giá treo trong nhà để xem và thử đồ đã sở hữu, mở Tủ đồ để mặc.
 - Cập nhật hướng dẫn Việt/Anh. Bản này giữ các sửa lỗi đã phát hành ở 1.6.8.
 
 Rollback: giữ hỗ trợ mã tóc/đầm, bank.pref=account, số quầy và sổ thu chi mới; giữ bộ xử lý hoàn lương theo nguồn cho các ca đã giữ tiền. Không chạy nguyên bản 1.6.8 trên save đã dùng tính năng mới. Xem docs/FEEDBACK_2026-10-04.md để biết kiểm tra và triển khai.

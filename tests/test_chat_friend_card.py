@@ -1,6 +1,7 @@
 """Chat friend lookup shares only a public player code after message/account/block checks."""
 import unittest
 import subprocess
+import shutil
 import sqlite3
 from pathlib import Path
 from types import SimpleNamespace
@@ -90,5 +91,6 @@ class FriendCard(unittest.IsolatedAsyncioTestCase):
 
 
 class RoomInput(unittest.TestCase):
+    @unittest.skipUnless(shutil.which('node'), 'Node is needed for the browser input binding')
     def test_ascii_and_composition_in_real_binding(self):
         subprocess.run(['node','tests/booth_input.mjs'],cwd=Path(__file__).resolve().parents[1],check=True,capture_output=True)

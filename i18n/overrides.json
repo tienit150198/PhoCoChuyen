@@ -10539,7 +10539,13 @@
   "🚦 Đèn vừa chuyển đỏ: miễn phạt trong 1 giây đầu để kịp dừng an toàn.": "🚦 The signal just turned red: no fine during the first second, allowing a safe stop.",
   "🔴 Vừa chuyển đỏ · 1 giây để dừng an toàn": "🔴 Just turned red · 1 second to stop safely",
   "Thả ga, giữ phanh trước cửa có người vẫy tay": "Release the throttle and brake outside the door where someone is waving",
-  "Chặng tự lái sai.": "Invalid self-drive route."
+  "Chặng tự lái sai.": "Invalid self-drive route.",
+  "Quần áo trong tủ": "Clothes in the cabinet",
+  "🗄️ Quần áo trong tủ": "🗄️ Clothes in the cabinet",
+  "Đồ mua ở shop tự xuất hiện ở đây, cùng quần áo cơ bản sẵn có. Chọn để ngắm thử, rồi mở Tủ đồ để mặc.": "Clothes bought at the shop appear here automatically, along with your basic clothes. Select an item to preview it, then open Wardrobe to wear it.",
+  "Trang phục đang mặc": "Current outfit",
+  "Chưa có quần áo trong tủ.": "No clothes in the cabinet yet.",
+  "👗 Mở Tủ đồ để thay": "👗 Open Wardrobe to change"
  },
  "patterns": {
   "Mỗi người chi và rút tổng cộng tối đa $1 xu từ quỹ chung trong 24 giờ. Bạn còn $2 xu.": "Each partner can spend and withdraw a combined total of up to $1 xu from the joint fund in 24 hours. You have $2 xu left.",
