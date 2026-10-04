@@ -10562,7 +10562,15 @@
   "Đôi khi có cảnh báo đăng nhập lạ trước 1–2 ngày sống. Mở Bảo hiểm & rủi ro → Đổi mã bảo mật & khóa phiên lạ để chặn vụ hack miễn phí.": "An unusual sign-in warning may arrive 1–2 life days in advance. Open Insurance & risks → Change security code & block unknown session to prevent the hack for free.",
   "Bỏ qua cảnh báo: mất 8% số dư tài khoản thanh toán lúc xảy ra, tối đa 3.000 xu và chịu giới hạn rủi ro chung. Ví, tiết kiệm, thẻ và quỹ chung không bị trừ.": "Ignoring the warning costs 8% of your current account balance at the time, up to 3,000 coins and subject to shared risk limits. Your wallet, savings, cards and joint fund are not charged.",
   "Khoản mất được ghi trong lịch sử ngân hàng. Báo ngân hàng không tự hoàn xu; bảo hiểm hiện tại không bồi thường. Sự cố chỉ chạy theo ngày sống khi đóng ca, không chạy lúc offline.": "The loss is recorded in bank history. Reporting does not automatically refund coins; current insurance does not cover it. Incidents only occur on life-day ticks when closing shifts, never while offline.",
-  "Mở Bảo hiểm & rủi ro": "Open Insurance & risks"
+  "Mở Bảo hiểm & rủi ro": "Open Insurance & risks",
+  "Khóa phiên lạ & báo công an": "Block unknown session & report to the police",
+  "Công an bắt kẻ hack, hoàn tiền": "Police caught the hacker; coins refunded",
+  "Công an chưa bắt được kẻ hack": "Police have not caught the hacker",
+  "🚔 Vụ hack ngân hàng: công an chưa bắt được kẻ gian, chưa thu hồi được xu.": "🚔 Bank hacking case: the police have not caught the culprit or recovered the coins.",
+  "🚔 Tiền hoàn đang chờ: cần tài khoản ngân hàng và số dư dưới mức tối đa để nhận ở ngày sống tiếp theo.": "🚔 Refund pending: you need a bank account with room below its balance limit to receive it on the next life day.",
+  "Bấm Khóa phiên lạ & báo công an: sau 2 ngày sống có kết quả. Có 30% cơ hội bắt được kẻ hack và hoàn đủ khoản mất vào tài khoản, ghi trong lịch sử ngân hàng.": "Tap Block unknown session & report to the police: results arrive after 2 life days. There is a 30% chance of catching the hacker and refunding the full loss to your account, recorded in bank history.",
+  "Bảo hiểm hiện tại không bồi thường hack. Thẻ sự cố quá 3 ngày sống sẽ tự khóa phiên và trình báo. Ngày sống chỉ tiến khi đóng ca, không chạy lúc offline.": "Current insurance does not cover hacking. After 3 life days, the incident card automatically blocks the session and reports it. Life days advance when closing shifts, never while offline.",
+  "Hồ sơ cũ đang chờ nhận tiền. Rút bớt tiền nếu tài khoản đầy; vụ hack này vẫn được giữ để trình báo sau.": "Earlier cases are waiting for refunds. Withdraw some coins if your account is full; this hacking case is kept for a later report."
  },
  "patterns": {
   "Mỗi người chi và rút tổng cộng tối đa $1 xu từ quỹ chung trong 24 giờ. Bạn còn $2 xu.": "Each partner can spend and withdraw a combined total of up to $1 xu from the joint fund in 24 hours. You have $2 xu left.",
@@ -12801,7 +12809,11 @@
   "🚦 Phạt đèn đỏ $1 xu: còn $2 xu trong Hóa đơn của nghề. Trả khi quỹ nghề đủ tiền; biên nhận chỉ ghi một lần.": "🚦 Red-light fine: $1 coins; $2 coins remain in career Bills. Pay when career funds are sufficient; the receipt is recorded only once.",
   "🔐 Tài khoản ngân hàng bị hack: mất $1 xu trong tài khoản thanh toán.": "🔐 Bank account hacked: $1 coins lost from your current account.",
   "−$1 trong tài khoản": "−$1 from account",
-  "Bị hack: mất $1% tài khoản thanh toán, tối đa $2 xu và chịu giới hạn rủi ro chung.": "Account hacked: lose $1% of your current account, up to $2 coins and subject to shared risk limits."
+  "Bị hack: mất $1% tài khoản thanh toán, tối đa $2 xu và chịu giới hạn rủi ro chung.": "Account hacked: lose $1% of your current account, up to $2 coins and subject to shared risk limits.",
+  "Miễn phí; $1% bắt được và hoàn đủ xu sau $2 ngày sống": "Free; $1% chance of catching the culprit and refunding all lost coins after $2 life days",
+  "Đã khóa phiên lạ và trình báo công an. Sau $1 ngày sống sẽ có kết quả; bắt được kẻ hack thì hoàn đủ xu vào tài khoản.": "The unknown session is blocked and the police have been notified. Results arrive after $1 life days; catching the hacker refunds all lost coins to your account.",
+  "🚔 Công an bắt được kẻ hack! Đã hoàn $1 xu vào tài khoản ngân hàng của bạn.": "🚔 Police caught the hacker! $1 coins have been refunded to your bank account.",
+  "🚔 Đã trình báo $1 vụ hack. Kết quả gần nhất sau $2 ngày sống.": "🚔 $1 hacking cases reported. The next result arrives in $2 life days."
  },
   "Góc hẹn hò: ngồi ghế đá chờ ghép đôi, hẹn 5 phút, cùng thả tim là thành “Đang tìm hiểu”.": "Dating corner: sit on a bench to be matched, a 5-minute date, both tap the heart to start “Getting to know”.",
   "Đám cưới trực tiếp: chọn ngày giờ thật, cả phố vào dự, khách nhận +15 xu mỗi 5 phút.": "Live weddings: pick a real date and time, the whole phố can attend, guests get +15 xu every 5 minutes.",

@@ -84,8 +84,9 @@ function ruiPage(){
   const now=r.card||r.warn;
   const alert=now?`<button type="button" class="rui-now" data-rui="pop"><span aria-hidden="true">${now.emoji}</span><span class="grow"><b>${esc(now.title)}</b><small>${esc(now.text)}</small></span>${icon('chevron',18)}</button>`:'';
   const calm=r.calm?`<p class="rui-calm">🌱 Phố còn bình yên với người mới. Cứ yên tâm làm việc.</p>`:'';
+  const pending=r.hack_pending?`<p class="rui-calm">${esc(r.hack_pending.days?`🚔 Đã trình báo ${r.hack_pending.n} vụ hack. Kết quả gần nhất sau ${r.hack_pending.days} ngày sống.`:'🚔 Tiền hoàn đang chờ: cần tài khoản ngân hàng và số dư dưới mức tối đa để nhận ở ngày sống tiếp theo.')}</p>`:'';
   const broken=(r.broken||[]).length?`<h3 class="rui-h">🔧 Đang hỏng</h3><ul class="rui-list">${r.broken.map(b=>`<li class="rui-row"><span class="rui-ico" aria-hidden="true">${b.kind==='xe'?'🚗':'🏠'}</span><span class="grow"><b>${esc(b.name)}</b></span><button type="button" class="btn primary small" data-rui="fix" data-kind="${b.kind}" data-ref="${esc(b.ref)}"${S.busy?' disabled':''}>Sửa · ${xu(b.cost)}</button></li>`).join('')}</ul>`:'';
-  return head('🛡️','Bảo hiểm & rủi ro','Phòng trước, đỡ lo','ruiPageTitle')+`<div class="wn-body">${flash()}${alert}${calm}${broken}`+
+  return head('🛡️','Bảo hiểm & rủi ro','Phòng trước, đỡ lo','ruiPageTitle')+`<div class="wn-body">${flash()}${alert}${calm}${pending}${broken}`+
     `<h3 class="rui-h">🛡️ Bảo hiểm</h3><ul class="rui-list">${(r.pol||[]).map(polRow).join('')}</ul>`+
     `<h3 class="rui-h">🔒 Đồ phòng thân</h3><ul class="rui-list">${CAT().gear.map(g=>gearRow(g,(r.gear||[]).includes(g.id))).join('')}</ul>`+
     help(['Chuyện xấu luôn báo trước 1–2 ngày. Phòng trước là tránh được.',`Ví và tài khoản dưới ${fmt(rules.floor||300)} xu: không có chuyện gì.`,

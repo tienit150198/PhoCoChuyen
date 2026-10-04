@@ -52,6 +52,7 @@ does nothing; unknown fields a newer build adds are kept):
     broken               {xe: {vid: {c: cost, d: day}}, nha: {home id: {p: reno part, c: cost, d: day}}}
     sick, fines          the life day of the last illness (0), parking fines so far
     back                 {day, amount} the police bring back on that morning, or None
+    hack_back            optional [{id, day, amount}]: bank hack investigations; refunds go to the account
     seq, log, stats      card ids; the last LOG_MAX lines; counters (STATS)
 Commands (journey.action, the jr_rui_ prefix): jr_rui_prevent {opt}, jr_rui_choose {id, choice}, jr_rui_pol {id, on},
 jr_rui_gear {id}, jr_rui_fix {kind, ref}. Deterministic: every draw is seeded by the journey seed and the life day.
@@ -123,6 +124,8 @@ DT_PCT, DT_MIN, DT_MAX = 100, 40, 500   # a new phone: basis points of W − FLO
 TROM_P, TROM_CASH = 100, 600      # per 10 000, with cash ≥ TROM_CASH, living in a home or a rented room
 TROM_PCT, TROM_MAX = 20, 4000
 HACK_P, HACK_PCT, HACK_MAX = 120, 8, 3000  # per 10 000; current account only, before shared risk caps
+HACK_BACK_P, HACK_BACK_DAYS = 30, 2  # chance police catch the hacker and return the full loss
+HACK_CASES_MAX = 64
 PHAT_P = 200                      # per 10 000 a life day while driving a car
 PHAT_BP, PHAT_MIN, PHAT_MAX = 30, 20, 300
 BAO_BACK = 30                     # % the police find the money (half of it), BACK_DAYS later
@@ -440,7 +443,7 @@ def candidates(s: dict, r: dict, day: int) -> list[tuple[int, str, str, object]]
         out.append((TROM_P * 2 // 5 if 'khoa' in r['gear'] else TROM_P, 'trom', '', None))
     if ride and ride in gr.VEHICLES and gr.VEHICLES[ride]['group'] == 'car' and ride in g['cars'] and ride not in r['broken']['xe'] and gr.used_before(s,ride,day):
         out.append((PHAT_P, 'phat', '', ride))
-    if _projected(s, r, 'hack', 'account', None) >= MIN_COST:
+    if len(r.get('hack_back', [])) < HACK_CASES_MAX and _projected(s, r, 'hack', 'account', None) >= MIN_COST:
         out.append((HACK_P, 'hack', 'account', None))
     if day < EASE_DAY or wealth(s) < EASE_W:
         out = [(p // 2, k, sub, ref) for p, k, sub, ref in out]
@@ -646,8 +649,8 @@ def options(s: dict, r: dict) -> list[dict]:
         out.append(o('nghi', '🛌', 'Nằm nghỉ', 0, SPIRIT['nghi_lai' if sub == 'lai' else 'nghi'], default=True))
         return out
     if k == 'hack':
-        return [o('secure', '🔐', 'Khóa phiên lạ & báo ngân hàng', default=True,
-                  note='Miễn phí; khoản đã mất không tự hoàn lại')]
+        return [o('secure', '🚔', 'Khóa phiên lạ & báo công an', default=True,
+                  note=f'Miễn phí; {HACK_BACK_P}% bắt được và hoàn đủ xu sau {HACK_BACK_DAYS} ngày sống')]
     if k in ('moc', 'trom') and sub != 'dt':
         return [o('bao', '🚔', 'Báo công an', note='Có khi tìm lại được một nửa'),
                 o('thoi', '🙏', 'Thôi, rút kinh nghiệm', default=True)]
@@ -670,6 +673,9 @@ def _resolve(s: dict, r: dict, choice: str, day: int, auto: bool = False) -> str
     """Apply `choice` to the open card. The message."""
     c = r['card']
     k, sub, ref, cost, cov = c['kind'], c['sub'], c['ref'], c['cost'], c['cover']
+    if k == 'hack' and len(r.get('hack_back', [])) >= HACK_CASES_MAX:
+        # Preserve the unreported loss as its existing card until a refund frees a slot.
+        return 'Hồ sơ cũ đang chờ nhận tiền. Rút bớt tiền nếu tài khoản đầy; vụ hack này vẫn được giữ để trình báo sau.'
     opt = next(x for x in options(s, r) if x['id'] == choice)
     r['card'] = None
     pay = opt['cost']
@@ -714,8 +720,13 @@ def _resolve(s: dict, r: dict, choice: str, day: int, auto: bool = False) -> str
         else:
             msg = 'Nằm nghỉ một hôm, người cũng đỡ dần.'
     elif k == 'hack':
-        msg = 'Đã khóa phiên lạ và báo ngân hàng. Khoản xu đã mất được ghi trong lịch sử tài khoản.'
-        _log(r, day, 'Khóa phiên lạ & báo ngân hàng')
+        cases = r.setdefault('hack_back', [])
+        if not any(x['id'] == c['id'] for x in cases):
+            caught = _rng(s, f'hack_bao:{c["id"]}', day).randint(1, 100) <= HACK_BACK_P
+            cases.append(dict(id=c['id'], day=day + HACK_BACK_DAYS,
+                              amount=min(c['loss'], HACK_MAX) if caught else 0))
+        msg = f'Đã khóa phiên lạ và trình báo công an. Sau {HACK_BACK_DAYS} ngày sống sẽ có kết quả; bắt được kẻ hack thì hoàn đủ xu vào tài khoản.'
+        _log(r, day, 'Khóa phiên lạ & báo công an')
     elif k in ('moc', 'trom') and sub != 'dt':
         if choice == 'bao':
             ok = _rng(s, 'bao', day).randint(1, 100) <= BAO_BACK
@@ -832,6 +843,30 @@ def _repaired(s: dict, r: dict) -> None:
             r['broken']['nha'].pop(hid)
 
 
+def _hack_recovery(s: dict, r: dict, day: int, notes: list[str]) -> None:
+    """Consume each due investigation once; never pay a bank loss into cash."""
+    if not r.get('hack_back'):
+        return
+    pending = []
+    b = bk.get(s)
+    for case in r['hack_back']:
+        amt = case['amount']
+        if day < case['day'] or (amt > 0 and (b is None or b['balance'] > bk.BAL_MAX - amt)):
+            pending.append(case)
+            continue
+        if amt > 0:
+            b['balance'] += amt
+            label = 'Công an bắt kẻ hack, hoàn tiền'
+            bk._log(b, day, 'acc', label, amt)
+            _stat(r, 'back', amt)
+            _log(r, day, label, amt)
+            notes.append(f'🚔 Công an bắt được kẻ hack! Đã hoàn {_fmt(amt)} xu vào tài khoản ngân hàng của bạn.')
+        else:
+            _log(r, day, 'Công an chưa bắt được kẻ hack')
+            notes.append('🚔 Vụ hack ngân hàng: công an chưa bắt được kẻ gian, chưa thu hồi được xu.')
+    r['hack_back'] = pending
+
+
 def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     """Catch up to journey.life_day (idempotent; after the bank, the homes and the month's bills). Only the last life
     day is looked at when several passed (an older build ran them): nothing is back-filled, nothing billed for them."""
@@ -856,6 +891,7 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
             _bill(s, r, n, notes)
         _month(s, r, n)
         _repaired(s, r)
+        _hack_recovery(s, r, n, notes)
         if r['back'] and n >= r['back']['day']:
             amt = r['back']['amount']
             r['back'] = None
@@ -1102,6 +1138,9 @@ def public(s: dict) -> dict | None:
         x = _home(s, hid)
         broken.append(dict(kind='nha', ref=hid, name=_home_name(x) if x else '', cost=fix_cost(s, r, 'nha', hid)))
     out = dict(pol=pol, gear=list(r['gear']), broken=broken)
+    cases = r.get('hack_back', [])
+    if cases:
+        out['hack_pending'] = dict(n=len(cases), days=max(0, min(x['day'] for x in cases) - day))
     if day < START_DAY or j.get('chapter', 1) < START_CHAPTER:
         out['calm'] = True   # a new player: nothing happens yet
     w, c = warn_view(s, r), card_view(s, r)
@@ -1168,6 +1207,14 @@ def validate(s: dict) -> None:
     bb = r['back']
     need(bb is None or (isinstance(bb, dict) and day_ok(bb.get('day'), 1) and type(bb.get('amount')) is int
                         and 0 <= bb['amount'] <= 10**9), bad, 'invalid_save')
+    cases = r.get('hack_back', [])
+    need(isinstance(cases, list) and len(cases) <= HACK_CASES_MAX, bad, 'invalid_save')
+    ids = set()
+    for case in cases:
+        need(isinstance(case, dict) and isinstance(case.get('id'), str) and 0 < len(case['id']) <= 16
+             and case['id'] not in ids and day_ok(case.get('day'), 1) and type(case.get('amount')) is int
+             and 0 <= case['amount'] <= HACK_MAX, bad, 'invalid_save')
+        ids.add(case['id'])
     need(isinstance(r['log'], list) and len(r['log']) <= LOG_MAX
          and all(isinstance(x, dict) and day_ok(x.get('d'), 1) and isinstance(x.get('t'), str) and len(x['t']) <= 120
                  and type(x.get('a')) is int for x in r['log']), bad, 'invalid_save')

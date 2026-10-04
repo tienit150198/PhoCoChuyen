@@ -1,3 +1,8 @@
+# v1.7.2 — công an thu hồi tiền bị hack
+
+- Sau khi xử lý sự cố, công an có 30% cơ hội bắt được kẻ hack; kết quả sau 2 ngày sống. Bắt được thì hoàn đủ khoản mất vào tài khoản ngân hàng và ghi lịch sử.
+- Hồ sơ riêng không đè việc thu hồi tiền mặt; giữ kết quả qua tải lại, không hoàn lặp. Bổ sung trạng thái đang chờ, hướng dẫn và EN.
+
 # v1.7.1 — rủi ro hack ngân hàng
 
 - Thêm cảnh báo đăng nhập lạ trước 1–2 ngày sống; đổi mã và khóa phiên lạ miễn phí để chặn sự cố.
