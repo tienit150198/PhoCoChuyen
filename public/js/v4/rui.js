@@ -51,16 +51,16 @@ function popHTML(){
   const r=R(),c=r?.card,w=!c&&r?.warn;
   if(c){
     const chips=[];
-    if(c.loss)chips.push(`<span class="rui-chip out">−${xu(c.loss)} tiền mặt</span>`);
+    if(c.loss)chips.push(`<span class="rui-chip out">${c.kind==='hack'?`−${xu(c.loss)} trong tài khoản`:`−${xu(c.loss)} tiền mặt`}</span>`);
     if(c.cover)chips.push(`<span class="rui-chip good">🛡️ Bảo hiểm trả ${c.cover}%</span>`);
     return head(c.emoji,c.title,c.left?`Chọn trong ${c.left} ngày`:'')+`<div class="wn-body">${flash()}<p class="rui-line">${esc(c.text)}</p>${chips.length?`<p class="rui-chips">${chips.join('')}</p>`:''}`+
       `<div class="rui-opts">${c.opts.map((o,i)=>optBtn(o,i,'choose',{id:c.id,choice:o.id})).join('')}</div>`+
-      help(['Chuyện đời ai cũng có lúc gặp.','Có bảo hiểm thì trả ít hơn.',`Không chọn sau ${CAT().rules.card_days||3} ngày: tự chọn cách nhẹ nhất.`,'Không bao giờ bị nợ vì chuyện này.'])+`</div>`;
+      help(['Chuyện đời ai cũng có lúc gặp.',c.kind==='hack'?'Bảo hiểm hiện tại không bồi thường vụ hack tài khoản.':'Có bảo hiểm thì trả ít hơn.',`Không chọn sau ${CAT().rules.card_days||3} ngày: tự chọn cách nhẹ nhất.`,'Không bao giờ bị nợ vì chuyện này.'])+`</div>`;
   }
   if(w){
     return head(w.emoji,w.title,w.days?`Còn ${w.days} ngày`:'Sắp xảy ra')+`<div class="wn-body">${flash()}<p class="rui-line">${esc(w.text)}</p>`+
       `<div class="rui-opts">${w.opts.map((o,i)=>optBtn(o,i,'prevent',{opt:o.id})).join('')}</div>`+
-      help(['Phòng trước thì chuyện không xảy ra.','Tiền gửi ngân hàng thì kẻ gian không lấy được.','Bảo hiểm trả cả phần phòng trước.'])+`</div>`+
+      help(['Phòng trước thì chuyện không xảy ra.','Ngân hàng tránh mất tiền mặt do móc túi; tài khoản vẫn có rủi ro bị hack.','Khóa phiên lạ khi được cảnh báo để chặn vụ hack, không tốn xu.'])+`</div>`+
       `<footer class="wn-foot"><button type="button" class="btn ghost full" data-rui="close">Để sau</button></footer>`;
   }
   return head('🛡️','Bình yên')+`<div class="wn-body"><p class="rui-line">Không có chuyện gì cả.</p></div><footer class="wn-foot"><button type="button" class="btn primary big full" data-rui="close">Xong</button></footer>`;
@@ -90,7 +90,9 @@ function ruiPage(){
     `<h3 class="rui-h">🔒 Đồ phòng thân</h3><ul class="rui-list">${CAT().gear.map(g=>gearRow(g,(r.gear||[]).includes(g.id))).join('')}</ul>`+
     help(['Chuyện xấu luôn báo trước 1–2 ngày. Phòng trước là tránh được.',`Ví và tài khoản dưới ${fmt(rules.floor||300)} xu: không có chuyện gì.`,
       `Mỗi lần mất tối đa ${rules.event_pct||8}% tiền của bạn, mỗi tháng tối đa ${rules.month_pct||12}%.`,
-      `Bảo hiểm mới mua có hiệu lực sau ${rules.wait||3} ngày.`,'Tiền gửi ngân hàng không bao giờ bị trộm.','Không bao giờ bị nợ vì rủi ro.'])+`</div>`;
+      `Bảo hiểm mới mua có hiệu lực sau ${rules.wait||3} ngày.`,
+      `Bị hack: mất ${rules.hack_pct||8}% tài khoản thanh toán, tối đa ${fmt(rules.hack_max||3000)} xu và chịu giới hạn rủi ro chung.`,
+      'Khóa phiên lạ khi được cảnh báo để chặn vụ hack, không tốn xu.','Không bao giờ bị nợ vì rủi ro.'])+`</div>`;
 }
 
 /* ---- the gold shop ---- */

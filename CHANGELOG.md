@@ -1,3 +1,9 @@
+# v1.7.1 — rủi ro hack ngân hàng
+
+- Thêm cảnh báo đăng nhập lạ trước 1–2 ngày sống; đổi mã và khóa phiên lạ miễn phí để chặn sự cố.
+- Nếu bỏ qua, mất 8% tài khoản thanh toán, tối đa 3.000 xu và chịu giới hạn rủi ro chung. Ghi lịch sử ngân hàng/rủi ro, không trừ lặp khi tải lại; không trừ ví, tiết kiệm, thẻ hay quỹ chung.
+- Hướng dẫn VI/EN nêu rõ nguồn tiền bị mất, cách phòng và bảo hiểm không bồi thường hack. Không phát sinh khi offline.
+
 # v1.7.0 — phản hồi người chơi và đời sống trong phố
 
 - Homestay kiểm tra cả lịch đặt, giữ phòng điện thoại và OTA trước khi nhận cọc; giao ngày trả/nhận phòng đúng theo đêm lưu trú.

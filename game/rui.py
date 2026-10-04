@@ -9,7 +9,7 @@ draft, but fair:
   a checkup, a repair man, putting the cash in the bank, a lock (PREVENT_PCT % of what the event would cost, covered by
   the insurance like the event). Then, if nothing was done, a story card (`card`) with a choice: pay more and be done,
   pay less and lose some tinh thần, or leave it for later (a broken vehicle cannot be taken out, a broken home loses
-  its Ấm cúng bonus). Only the two thefts take money without asking (the cash in the wallet, never the bank).
+  its Ấm cúng bonus). Street thefts take cash; a bank hack takes only the current account balance.
 * Capped. W = cash + bank account + savings (bank and Mây) + gold. Nothing happens while W < FLOOR; an event costs at
   most EVENT_PCT % of (W − FLOOR); a tháng (MONTH_DAYS life days) at most MONTH_PCT % of (W − FLOOR) at its start,
   MONTH_EVENTS events and one every GAP life days at most. Never a debt: cash, then the bank account, the rest waived.
@@ -32,7 +32,7 @@ draft, but fair:
 
 Kinds (KINDS, ids stored in saves: never rename): xe (a motor vehicle breaks), nha (a home: dột, vỡ ống, chập điện,
 cháy bếp, ngập), om (ill), moc (pickpocket: cash or the phone), trom (burglary: cash at home), phat (a parking fine
-while driving a car; the first one is only a warning).
+while driving a car; the first one is only a warning), hack (a compromised bank account).
 
 Money moves through the wallet with kinds every older build accepts (journey.HISTORY_KINDS of 1.4.31): 'life'
 (vehicles, health, gear), 'home' (homes), 'incident' (thefts, fines, money the police find), 'upkeep' (premiums).
@@ -84,7 +84,7 @@ LOG_MAX = 20
 ACC_MAX = 10**12
 LEAD = (1, 2)                     # life days from the warning to the event
 
-KINDS = ('xe', 'nha', 'om', 'moc', 'trom', 'phat')
+KINDS = ('xe', 'nha', 'om', 'moc', 'trom', 'phat', 'hack')
 STATS = ('warned', 'prevented', 'events', 'paid', 'covered', 'lost', 'waived', 'premiums', 'gear', 'back', 'fizzled')
 WALLET = dict(xe='life', nha='home', om='life', moc='life', trom='incident', phat='incident', pol='upkeep', gear='life')
 
@@ -122,6 +122,7 @@ MOC_PCT, MOC_MAX = 12, 2000       # % of the cash above FLOOR, at most
 DT_PCT, DT_MIN, DT_MAX = 100, 40, 500   # a new phone: basis points of W − FLOOR, clamped
 TROM_P, TROM_CASH = 100, 600      # per 10 000, with cash ≥ TROM_CASH, living in a home or a rented room
 TROM_PCT, TROM_MAX = 20, 4000
+HACK_P, HACK_PCT, HACK_MAX = 120, 8, 3000  # per 10 000; current account only, before shared risk caps
 PHAT_P = 200                      # per 10 000 a life day while driving a car
 PHAT_BP, PHAT_MIN, PHAT_MAX = 30, 20, 300
 BAO_BACK = 30                     # % the police find the money (half of it), BACK_DAYS later
@@ -132,6 +133,7 @@ SPIRIT = dict(tu_xe=-8, tu_nha=-10, thuoc=-4, nghi=-12, nghi_lai=-8, cu=-6)
 KIND_META = {
     'xe': ('🔧', 'Xe hỏng'), 'nha': ('🏚️', 'Nhà gặp sự cố'), 'om': ('🤒', 'Ốm'),
     'moc': ('👛', 'Móc túi'), 'trom': ('🔓', 'Trộm vào nhà'), 'phat': ('🚓', 'Phạt đỗ xe'),
+    'hack': ('🔐', 'Tài khoản ngân hàng bị hack'),
 }
 XE_WARN = {'bike': 'Xe kêu lạch cạch, phanh hơi lỏng.', 'car': 'Đèn báo động cơ cứ chớp tắt.',
            'boat': 'Máy thuyền nổ không đều.', 'plane': 'Thợ máy báo cánh tà hơi kẹt.'}
@@ -438,6 +440,8 @@ def candidates(s: dict, r: dict, day: int) -> list[tuple[int, str, str, object]]
         out.append((TROM_P * 2 // 5 if 'khoa' in r['gear'] else TROM_P, 'trom', '', None))
     if ride and ride in gr.VEHICLES and gr.VEHICLES[ride]['group'] == 'car' and ride in g['cars'] and ride not in r['broken']['xe'] and gr.used_before(s,ride,day):
         out.append((PHAT_P, 'phat', '', ride))
+    if _projected(s, r, 'hack', 'account', None) >= MIN_COST:
+        out.append((HACK_P, 'hack', 'account', None))
     if day < EASE_DAY or wealth(s) < EASE_W:
         out = [(p // 2, k, sub, ref) for p, k, sub, ref in out]
     return [x for x in out if x[0] > 0]
@@ -464,6 +468,9 @@ def eligible(s: dict, r: dict, day: int) -> bool:
 
 def _projected(s: dict, r: dict, kind: str, sub: str, ref) -> int:
     """What the event would cost if it happened today (before the caps)."""
+    if kind == 'hack':
+        b = bk.get(s)
+        return min(HACK_MAX, max(0, b['balance']) * HACK_PCT // 100) if b else 0
     if kind == 'xe':
         from . import garage as gr
         return _xe_cost(gr.get(s)['cars'][ref])
@@ -541,6 +548,23 @@ def _fire(s: dict, r: dict, day: int, notes: list) -> None:
         _stat(r, 'fizzled')
         return
     budget = _budget(s, r, day)
+    if kind == 'hack':
+        b = bk.get(s)
+        loss = min(_projected(s, r, kind, sub, ref), budget)
+        if not b or loss < MIN_COST:
+            _stat(r, 'fizzled')
+            return
+        b['balance'] -= loss
+        label = 'Tài khoản ngân hàng bị hack'
+        bk._log(b, day, 'acc', label, -loss)
+        _stat(r, 'lost', loss)
+        m['lost'] += loss
+        m['n'] += 1
+        _stat(r, 'events')
+        _log(r, day, label, -loss)
+        _new_card(r, day, kind, sub, ref, 0, loss, 0)
+        notes.append(f'🔐 Tài khoản ngân hàng bị hack: mất {_fmt(loss)} xu trong tài khoản thanh toán.')
+        return
     if kind == 'phat' and r['fines'] == 0:   # the first fine: only a warning
         r['fines'] += 1
         _new_card(r, day, kind, 'nhac', ref, 0, 0, 0)
@@ -621,6 +645,9 @@ def options(s: dict, r: dict) -> list[dict]:
             out.append(o('thuoc', '💊', 'Mua thuốc', THUOC, SPIRIT['thuoc'], note='Có khi không đỡ'))
         out.append(o('nghi', '🛌', 'Nằm nghỉ', 0, SPIRIT['nghi_lai' if sub == 'lai' else 'nghi'], default=True))
         return out
+    if k == 'hack':
+        return [o('secure', '🔐', 'Khóa phiên lạ & báo ngân hàng', default=True,
+                  note='Miễn phí; khoản đã mất không tự hoàn lại')]
     if k in ('moc', 'trom') and sub != 'dt':
         return [o('bao', '🚔', 'Báo công an', note='Có khi tìm lại được một nửa'),
                 o('thoi', '🙏', 'Thôi, rút kinh nghiệm', default=True)]
@@ -686,6 +713,9 @@ def _resolve(s: dict, r: dict, choice: str, day: int, auto: bool = False) -> str
                 msg = 'Thuốc đỡ hẳn, mai đi làm lại được.'
         else:
             msg = 'Nằm nghỉ một hôm, người cũng đỡ dần.'
+    elif k == 'hack':
+        msg = 'Đã khóa phiên lạ và báo ngân hàng. Khoản xu đã mất được ghi trong lịch sử tài khoản.'
+        _log(r, day, 'Khóa phiên lạ & báo ngân hàng')
     elif k in ('moc', 'trom') and sub != 'dt':
         if choice == 'bao':
             ok = _rng(s, 'bao', day).randint(1, 100) <= BAO_BACK
@@ -747,6 +777,8 @@ def warn_options(s: dict, r: dict) -> list[dict]:
         return dict(id=oid, emoji=emoji, label=label, cost=pay, ok=ok,
                     why=why or ('' if ok else f'Còn thiếu {_fmt(pay - have)} xu'))
     k = w['kind']
+    if k == 'hack':
+        return [o('secure', '🔐', 'Đổi mã bảo mật & khóa phiên lạ')]
     if k in ('moc', 'trom'):
         g = 'tui' if k == 'moc' else 'khoa'
         out = []
@@ -768,6 +800,8 @@ def warn_options(s: dict, r: dict) -> list[dict]:
 
 def prevent_fee(s: dict, r: dict) -> int:
     w = r['warn']
+    if w['kind'] == 'hack':
+        return 0
     cost = min(w['cost'], max(MIN_COST, _budget(s, r, s['journey']['life_day'])))
     fee = max(3, _ceil_pct(cost, PREVENT_PCT))
     return _part(fee, cover(s, r, w['kind'], w['at']))
@@ -891,6 +925,8 @@ def action(s: dict, name: str, p: dict) -> dict:
             msg = f'Đã gửi {_fmt(amount)} xu vào ngân hàng. Kẻ gian có đến cũng về tay không.'
         elif opt['id'] == 'can':
             msg = 'Máy cất kỹ trong túi. Đi đường yên tâm.'
+        elif opt['id'] == 'secure':
+            msg = 'Đã đổi mã bảo mật và khóa phiên lạ. Chặn được vụ hack này, tài khoản không mất xu.'
         elif opt['id'] in GEAR:
             g = GEAR[opt['id']]
             got = _take(s, g['price'], WALLET['gear'], f'Mua {_lname(g["name"])}')
@@ -1002,6 +1038,8 @@ def warn_view(s: dict, r: dict) -> dict | None:
         emoji, title, text = '👀', 'Coi chừng móc túi', 'Chợ dạo này có nhóm móc túi.'
     elif k == 'trom':
         emoji, title, text = '👀', 'Coi chừng trộm', 'Hàng xóm thấy người lạ dòm ngó.'
+    elif k == 'hack':
+        emoji, title, text = '🔐', 'Đăng nhập ngân hàng bất thường', 'Có phiên đăng nhập lạ. Khóa ngay miễn phí để tránh mất xu trong tài khoản thanh toán.'
     elif k == 'phat':
         emoji, title, text = '🚧', 'Phường dẹp lòng đường', 'Đỗ xe dưới đường dễ bị phạt.'
     return dict(kind=k, sub=sub, ref=ref, emoji=emoji, title=title, text=text,
@@ -1031,6 +1069,8 @@ def card_view(s: dict, r: dict) -> dict | None:
             title, text = 'Bị móc túi', 'Chen chợ đông, về nhà mới thấy ví nhẹ hẳn.'
     elif k == 'trom':
         text = 'Cửa bị cạy, tiền mặt để nhà mất một phần.'
+    elif k == 'hack':
+        text = 'Kẻ gian đã chuyển mất một phần xu trong tài khoản thanh toán. Tiết kiệm và quỹ chung không bị trừ.'
     elif k == 'phat':
         text = 'Lần đầu, chú công an chỉ nhắc nhở.' if sub == 'nhac' else 'Đỗ xe dưới lòng đường, bị dán giấy phạt.'
     return dict(id=c['id'], kind=k, sub=sub, ref=ref, emoji=emoji, title=title, text=text, loss=c['loss'],
@@ -1077,7 +1117,8 @@ def catalogue() -> dict:
     return dict(policies=[dict(id=k, emoji=v['emoji'], name=v['name'], what=v['what'], cover=v['cover']) for k, v in POLICIES.items()],
                 gear=[dict(id=k, **v) for k, v in GEAR.items()],
                 rules=dict(floor=FLOOR, event_pct=EVENT_PCT, month_pct=MONTH_PCT, wait=WAIT, start_day=START_DAY,
-                           start_chapter=START_CHAPTER, prevent_pct=PREVENT_PCT, card_days=CARD_DAYS))
+                           start_chapter=START_CHAPTER, prevent_pct=PREVENT_PCT, card_days=CARD_DAYS,
+                           hack_pct=HACK_PCT, hack_max=HACK_MAX))
 
 
 # ---------------------------------------------------------------- the save

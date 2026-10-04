@@ -10545,7 +10545,24 @@
   "Đồ mua ở shop tự xuất hiện ở đây, cùng quần áo cơ bản sẵn có. Chọn để ngắm thử, rồi mở Tủ đồ để mặc.": "Clothes bought at the shop appear here automatically, along with your basic clothes. Select an item to preview it, then open Wardrobe to wear it.",
   "Trang phục đang mặc": "Current outfit",
   "Chưa có quần áo trong tủ.": "No clothes in the cabinet yet.",
-  "👗 Mở Tủ đồ để thay": "👗 Open Wardrobe to change"
+  "👗 Mở Tủ đồ để thay": "👗 Open Wardrobe to change",
+  "Tài khoản ngân hàng bị hack": "Bank account hacked",
+  "Khóa phiên lạ & báo ngân hàng": "Block the unknown session & report to the bank",
+  "Miễn phí; khoản đã mất không tự hoàn lại": "Free; lost coins are not automatically refunded",
+  "Đã khóa phiên lạ và báo ngân hàng. Khoản xu đã mất được ghi trong lịch sử tài khoản.": "The unknown session is blocked and the bank has been notified. The lost coins appear in your account history.",
+  "Đổi mã bảo mật & khóa phiên lạ": "Change security code & block unknown session",
+  "Đã đổi mã bảo mật và khóa phiên lạ. Chặn được vụ hack này, tài khoản không mất xu.": "Security code changed and unknown session blocked. This hack was prevented; no coins were lost.",
+  "Đăng nhập ngân hàng bất thường": "Unusual bank sign-in",
+  "Có phiên đăng nhập lạ. Khóa ngay miễn phí để tránh mất xu trong tài khoản thanh toán.": "An unknown session has signed in. Block it now for free to prevent losing coins from your current account.",
+  "Kẻ gian đã chuyển mất một phần xu trong tài khoản thanh toán. Tiết kiệm và quỹ chung không bị trừ.": "Someone stole coins from your current account. Savings and joint funds were not charged.",
+  "Bảo hiểm hiện tại không bồi thường vụ hack tài khoản.": "Current insurance policies do not cover account hacking.",
+  "Ngân hàng tránh mất tiền mặt do móc túi; tài khoản vẫn có rủi ro bị hack.": "Bank deposits avoid cash pickpocketing; the account can still be hacked.",
+  "Khóa phiên lạ khi được cảnh báo để chặn vụ hack, không tốn xu.": "Block the unknown session when warned to prevent the hack for free.",
+  "Ngân hàng bị hack thì mất tiền thế nào?": "What happens to my coins if my bank account is hacked?",
+  "Đôi khi có cảnh báo đăng nhập lạ trước 1–2 ngày sống. Mở Bảo hiểm & rủi ro → Đổi mã bảo mật & khóa phiên lạ để chặn vụ hack miễn phí.": "An unusual sign-in warning may arrive 1–2 life days in advance. Open Insurance & risks → Change security code & block unknown session to prevent the hack for free.",
+  "Bỏ qua cảnh báo: mất 8% số dư tài khoản thanh toán lúc xảy ra, tối đa 3.000 xu và chịu giới hạn rủi ro chung. Ví, tiết kiệm, thẻ và quỹ chung không bị trừ.": "Ignoring the warning costs 8% of your current account balance at the time, up to 3,000 coins and subject to shared risk limits. Your wallet, savings, cards and joint fund are not charged.",
+  "Khoản mất được ghi trong lịch sử ngân hàng. Báo ngân hàng không tự hoàn xu; bảo hiểm hiện tại không bồi thường. Sự cố chỉ chạy theo ngày sống khi đóng ca, không chạy lúc offline.": "The loss is recorded in bank history. Reporting does not automatically refund coins; current insurance does not cover it. Incidents only occur on life-day ticks when closing shifts, never while offline.",
+  "Mở Bảo hiểm & rủi ro": "Open Insurance & risks"
  },
  "patterns": {
   "Mỗi người chi và rút tổng cộng tối đa $1 xu từ quỹ chung trong 24 giờ. Bạn còn $2 xu.": "Each partner can spend and withdraw a combined total of up to $1 xu from the joint fund in 24 hours. You have $2 xu left.",
@@ -12781,7 +12798,10 @@
   "Vào ví $1 sau thuế": "Into wallet: $1 after tax",
   "Vào két $1 sau thuế": "Into till: $1 after tax",
   "$1: +$2 xu vào $3 sau thuế; lãi ca $4 xu (lương đã giữ trước).": "$1: +$2 coins into $3 after tax; shift profit $4 coins (wage already reserved).",
-  "🚦 Phạt đèn đỏ $1 xu: còn $2 xu trong Hóa đơn của nghề. Trả khi quỹ nghề đủ tiền; biên nhận chỉ ghi một lần.": "🚦 Red-light fine: $1 coins; $2 coins remain in career Bills. Pay when career funds are sufficient; the receipt is recorded only once."
+  "🚦 Phạt đèn đỏ $1 xu: còn $2 xu trong Hóa đơn của nghề. Trả khi quỹ nghề đủ tiền; biên nhận chỉ ghi một lần.": "🚦 Red-light fine: $1 coins; $2 coins remain in career Bills. Pay when career funds are sufficient; the receipt is recorded only once.",
+  "🔐 Tài khoản ngân hàng bị hack: mất $1 xu trong tài khoản thanh toán.": "🔐 Bank account hacked: $1 coins lost from your current account.",
+  "−$1 trong tài khoản": "−$1 from account",
+  "Bị hack: mất $1% tài khoản thanh toán, tối đa $2 xu và chịu giới hạn rủi ro chung.": "Account hacked: lose $1% of your current account, up to $2 coins and subject to shared risk limits."
  },
   "Góc hẹn hò: ngồi ghế đá chờ ghép đôi, hẹn 5 phút, cùng thả tim là thành “Đang tìm hiểu”.": "Dating corner: sit on a bench to be matched, a 5-minute date, both tap the heart to start “Getting to know”.",
   "Đám cưới trực tiếp: chọn ngày giờ thật, cả phố vào dự, khách nhận +15 xu mỗi 5 phút.": "Live weddings: pick a real date and time, the whole phố can attend, guests get +15 xu every 5 minutes.",

@@ -5990,6 +5990,11 @@ QUICK = [{'id': 'q_goal',
 
 CAREERS['cafe_bakery']['steps'].append('Ở Quầy pha, chọn Nhịp máy pha 1× hoặc 2×. Nhịp 2× giảm một nửa thời gian chiết và đánh sữa; vẫn tự dừng ở vạch xanh và vạch cũng chạy nhanh gấp đôi. Chỉ đổi nhịp khi máy đang nghỉ.')
 FOLLOWUP_GUIDES = [
+    dict(id='q_bank_hack', emoji='🔐', q='Ngân hàng bị hack thì mất tiền thế nào?',
+         a=['Đôi khi có cảnh báo đăng nhập lạ trước 1–2 ngày sống. Mở Bảo hiểm & rủi ro → Đổi mã bảo mật & khóa phiên lạ để chặn vụ hack miễn phí.',
+            'Bỏ qua cảnh báo: mất 8% số dư tài khoản thanh toán lúc xảy ra, tối đa 3.000 xu và chịu giới hạn rủi ro chung. Ví, tiết kiệm, thẻ và quỹ chung không bị trừ.',
+            'Khoản mất được ghi trong lịch sử ngân hàng. Báo ngân hàng không tự hoàn xu; bảo hiểm hiện tại không bồi thường. Sự cố chỉ chạy theo ngày sống khi đóng ca, không chạy lúc offline.'],
+         go=dict(action='rui', label='Mở Bảo hiểm & rủi ro')),
     dict(id='q_account_pay', emoji='🏦', q='Mua sắm bằng tiền trong ngân hàng được không?',
          a=['Khi xác nhận mua sắm cá nhân, chọn Tiền lương / ví, tài khoản ngân hàng, thẻ hoặc quỹ chung nếu khoản chi hỗ trợ. Lương đã nhận nằm trong ví; lương chưa trả chưa dùng được.',
             'Chọn tài khoản là chuyển khoản trực tiếp, thiếu số dư thì dừng. Lựa chọn chỉ áp dụng lần này; đổi mặc định ở Ngân hàng → Cách trả mặc định.',
