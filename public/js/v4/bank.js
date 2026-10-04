@@ -313,7 +313,9 @@ function jointSection(){
   return `<section class="bk-card bk-joint"><h3>Tài khoản chung vợ chồng</h3>
     <div class="bk-plastic joint" role="img" aria-label="Thẻ chung Ngân hàng Phố"><div class="bk-plastic-top"><span class="bk-plastic-logo">${LOGO}<b>NGÂN HÀNG PHỐ</b></span><span class="bk-plastic-kind">THẺ CHUNG</span></div>
       <span class="bk-chip" aria-hidden="true"></span><div class="bk-plastic-no">${xu(f.balance)}</div><div class="bk-plastic-foot"><span>${esc(names.map(plain).join(' & '))}</span></div></div>
-    <p class="bk-hint">Cả hai cùng thấy mọi giao dịch. Mỗi người chi hoặc rút tối đa theo hạn mức ngày; hôm nay bạn còn <b>${xu(f.daily_left)}</b>. Chọn “Ưu tiên thẻ chung” ở mục Thẻ để trả học phí, cửa sau… bằng quỹ chung.</p>
+    <p class="bk-hint">Cả hai cùng thấy mọi giao dịch. Hạn mức tính cả chi và rút trong 24 giờ gần nhất; bạn còn <b>${xu(f.daily_left)}</b>.</p>
+    <p class="bk-hint">Để trả bằng quỹ chung: mở Thẻ → Cách trả mặc định → chọn “Ưu tiên thẻ chung vợ chồng (quỹ chung)” → Lưu.</p>
+    <div class="bk-actions">${btn('Cài thanh toán bằng quỹ chung','tab',{tab:'card'},'ghost small')}</div>
     <div class="bk-move"><label class="bk-field"><span>Số xu</span><input id="bk-joint-amt" type="number" inputmode="numeric" min="1" placeholder="Ví dụ 30"></label></div>
     <div class="bk-actions">${btn('Gửi vào quỹ chung','jointIn',{},'primary')}${btn('Rút bằng thẻ chung','jointOut',{},'ghost')}</div>
     ${reqs||debts?`<h4>Lời nhờ và sổ nợ</h4><ul class="bk-list">${reqs}${debts}</ul>`:''}
@@ -362,7 +364,7 @@ function card(b){
     <tr><th scope="row">Phí trễ hạn</th><td>${xu(R.card_late_fee)} và giảm điểm tín dụng</td></tr>
     <tr><th scope="row">Ứng tiền mặt</th><td>${R.cash_fee_pct}% (ít nhất ${xu(R.cash_fee_min)}), lãi từ ngày đầu, tối đa ${R.cash_share}% hạn mức</td></tr>
     <tr><th scope="row">Sao kê · hạn trả</th><td>Mỗi ${R.card_cycle} ngày · ${R.card_grace} ngày sau sao kê</td></tr></tbody></table></section>`;
-  const pref=`<section class="bk-card"><h3>Khi mua sắm cá nhân</h3><p class="bk-hint">Học phí, đi cửa sau… trả bằng gì khi bạn không chọn riêng.</p>
+  const pref=`<section class="bk-card"><h3>Khi mua sắm cá nhân</h3><p class="bk-hint">Học phí, trang phục, đi cửa sau… dùng cách trả mặc định khi bạn không chọn riêng. Ưu tiên thẻ chung sẽ trừ quỹ chung nếu đủ tiền và hạn mức; nếu không, thử ví rồi thẻ tín dụng. Chi phí quầy lấy từ két và vốn quầy; góp vốn dùng ví.</p>
     <div class="bk-move"><label class="bk-field wide"><span>Cách trả mặc định</span><select id="bk-pref">${Object.entries(b.prefs).map(([k,v])=>`<option value="${k}"${b.pref===k?' selected':''}>${esc(v)}</option>`).join('')}</select></label></div>
     <div class="bk-actions">${btn('Lưu','pref',{},'ghost small')}</div></section>`;
   if(!c){

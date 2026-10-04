@@ -40,7 +40,7 @@ import re
 from . import marriage as mr
 from .engine import GameError
 
-WITHDRAW_CAP = 300                 # xu per spouse per rolling 24 h (withdraw + card spend)
+WITHDRAW_CAP = 1000                # xu per spouse per rolling 24 h (withdraw + card spend)
 FUND_MAX = 10 ** 7
 SEND_MAX, HELP_MAX = 5000, 2000
 SENDS_PER_DAY = 20
@@ -132,7 +132,7 @@ def _fund_move(db, cid: int, sid: str, kind: str, amount: int, label: str, ref: 
     else:
         if kind in ('withdraw', 'spend'):
             left = WITHDRAW_CAP - _used(db, cid, sid)
-            _need(amount <= left, f'Mỗi người rút tối đa {WITHDRAW_CAP} xu từ quỹ chung trong 24 giờ. Bạn còn {max(0, left)} xu.', 'fund_cap', 409)
+            _need(amount <= left, f'Mỗi người chi và rút tổng cộng tối đa {WITHDRAW_CAP} xu từ quỹ chung trong 24 giờ. Bạn còn {max(0, left)} xu.', 'fund_cap', 409)
         _need(db.execute('UPDATE joint_funds SET balance=balance-?,updated=? WHERE couple=? AND balance>=?', (amount, t, cid, amount)).rowcount == 1,
               f'Quỹ chung chỉ còn {mr._xu(_balance(db, cid))} xu.', 'fund_low', 409)
     bal = _balance(db, cid)

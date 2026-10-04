@@ -299,7 +299,7 @@ function listView(v){
   if(!v.stalls.length){
     if(v.lock)return `<section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏪</div><h3>Chưa mở được quầy</h3><p>${esc(v.lock)}</p>${helpBtn('lock')}${helpText('lock',`Làm ${CAT().served} việc ở một nghề bán hàng rồi quay lại.`)}</section>`;
     return `<section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏪</div><h3>Mở quầy đầu tiên</h3><p>Bán món bạn rành, thuê người đứng quầy.</p>
-      <div class="bk-actions center">${btn('Mở quầy','new',{},'primary')}</div>${helpBtn('first')}${helpText('first',`Mỗi ngày sống, quầy tự bán. Hôm đông hôm vắng, đa số ngày có lời. Nhớ ghé thu két: ${CAT().left} ngày không thu, quầy đóng chờ bạn.`)}</section>`;
+      <div class="bk-actions center">${btn('Mở quầy','new',{},'primary')}</div>${helpBtn('first')}${helpText('first',`Thuê nhân viên để quầy tự bán khi bạn kết thúc một ngày sống, hoặc chọn “Đứng quầy hôm nay” để tự bán. Quầy không chạy khi bạn offline. Nhớ ghé thu két: ${CAT().left} ngày không thu, quầy đóng chờ bạn.`)}</section>`;
   }
   const more=v.stalls.length<CAT().max&&!v.lock?`<div class="bk-actions center">${btn('＋ Mở thêm quầy','new',{},'ghost')}</div>`:'';
   return v.stalls.map(stallCard).join('')+more;
@@ -327,6 +327,9 @@ function stallCard(st){
     ${self?selfRow(st):''}
     <div class="qy-till"><div><small>Két</small><strong>${xu(st.till)}</strong>${st.hist.length?`<small>${st.hist.length} ngày qua: ${week>=0?'+':'−'}${xu(Math.abs(week))}</small>`:''}</div>
       ${btn(st.closed&&!st.due&&!st.till?'Mở lại quầy':'Thu két','till',{id:st.id},self?'':'primary',st.till||st.closed?'':'Két đang trống')}</div>
+    <p class="qy-line">Ai bán, lãi tính thế nào? ${helpBtn(`sales:${st.id}`)}</p>
+    ${helpText(`sales:${st.id}`,'Nhân viên đã thuê tự bán khi bạn kết thúc một ngày sống. Chọn “Đứng quầy hôm nay” để tự bán; chưa thuê ai thì quầy không tự bán. Bạn cũng có thể đăng ca thuê người chơi ở mục Người. Quầy không chạy khi bạn offline.')}
+    ${helpText(`sales:${st.id}`,`Lời ngày = doanh thu − tiền hàng (kể cả hàng hư) − lương − điện − phí online/giao hàng (nếu có). Lượng bán tùy thời tiết, khách, menu, lượng hàng và sức phục vụ. Chuyện phát sinh trong ca cũng có thể tăng hoặc giảm lời. Tiền thuê trừ riêng mỗi ${cat.month} ngày sống; tiền thuê và mất két chưa nằm trong số lời ngày.`)}
     <div class="segmented qy-tabs" role="tablist">${tabs.map(([k,l])=>`<button type="button" role="tab" aria-selected="${part===k}" class="${part===k?'active':''}" data-qy="more" data-id="${st.id}" data-part="${k}">${l}</button>`).join('')}</div>
     ${part==='menu'?menuPart(st):part==='look'?lookPart(st):part==='staff'?staffPart(st,P):part==='stock'?stockPart(st):part==='fund'?fundPart(st):part==='up'?upPart(st):''}
   </section>`;
@@ -355,7 +358,8 @@ function stockPart(st){
 }
 function fundPart(st){
   return `<div class="qy-part"><p class="qy-line">Vốn quầy <b>${xu(st.fund)}</b> ${helpBtn('fund')}</p>
-    ${helpText('fund','Tiền hàng, lương, điện lấy từ két trước, thiếu mới lấy vốn. Hết vốn thì quầy nghỉ ngày đó.')}
+    ${helpText('fund','Tiền hàng, lương, điện và phí online lấy từ két trước, thiếu mới lấy vốn quầy. Góp vốn dùng tiền trong ví. Cài ưu tiên thẻ chung không đổi nguồn chi của quầy. Thiếu tiền cho lương và điện thì quầy nghỉ ngày đó.')}
+    ${helpText('fund','Muốn góp vốn bằng quỹ chung: rút từ quỹ chung về ví ở Ngân hàng, rồi Góp vào vốn quầy.')}
     <div class="qy-fund"><label class="bk-field"><span>Số xu</span><input type="number" inputmode="numeric" min="1" step="10" id="qy-fund-${st.id}" value="50"></label>
       ${btn('Góp vào','fund',{id:st.id,sign:'+'},'primary')}${btn('Rút ra','fund',{id:st.id,sign:'-'},'ghost')}</div>
     <div class="bk-actions">${btn('Két vào vốn','till',{id:st.id,to:'fund'},'ghost',st.till?'':'Két đang trống')}${btn(`Sang nhượng · ${xu(st.sell)}`,'sell',{id:st.id},'danger')}</div></div>`;

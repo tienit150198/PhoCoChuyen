@@ -4902,7 +4902,7 @@ GROUPS = [{'id': 'start',
                          '🏦 Tiền trong tài khoản ngân hàng: mở [[Ngân hàng]], gõ số xu, bấm [[Rút tiền]]. Chọn cây ATM '
                          'khác ngân hàng thì mất phí 1 xu.',
                          '💞 Đã cưới: mở [[Hôn nhân]], tab Quỹ chung, gõ số rồi bấm [[Rút ra]]. Mỗi người rút tối đa '
-                         '300 xu trong 24 giờ.',
+                         '1.000 xu trong 24 giờ, tính cả chi bằng thẻ chung.',
                          '📉 Ví âm là đang nợ tiền phòng và câu chuyện tạm dừng. Rút tiền lời về ví là trả được ngay.'],
               'go': {'action': 'stView', 'label': 'Mở ví của bạn', 'data': {'view': 'wallet'}}},
              {'id': 'money_where',
@@ -5745,13 +5745,13 @@ GROUPS = [{'id': 'start',
                          'hôn thì chưa có.',
                          '⬇️ Gửi: tab [[Quỹ chung]] của mục [[Hôn nhân]], gõ số xu rồi bấm [[Gửi vào]]. Tiền đi từ ví '
                          'vào quỹ, tối đa 5.000 xu mỗi lần, gửi bao nhiêu lần cũng được.',
-                         '⬆️ Rút: gõ số xu rồi bấm [[Rút ra]], tiền về ví của bạn. Mỗi người rút tối đa 300 xu trong '
+                         '⬆️ Rút: gõ số xu rồi bấm [[Rút ra]], tiền về ví của bạn. Mỗi người rút tối đa 1.000 xu trong '
                          '24 giờ, tính cả tiền chi bằng thẻ chung.',
                          '🏧 Trong [[Ngân hàng]], tab [[Tổng quan]] có thẻ [[Tài khoản chung vợ chồng]] với nút [[Gửi '
                          'vào quỹ chung]] và [[Rút bằng thẻ chung]]. Cần [[Mở tài khoản miễn phí]] trước.',
                          '💳 Muốn trả bằng thẻ chung: Ngân hàng, tab [[Thẻ]], mục [[Khi mua sắm cá nhân]], chọn [[Ưu '
                          'tiên thẻ chung vợ chồng]] rồi bấm [[Lưu]]. Không cần có thẻ tín dụng.',
-                         '🎓 Thẻ chung trả học phí và tiền đi cửa sau. Quỹ thiếu hoặc hết mức 300 xu thì trả tiền mặt, '
+                         '🎓 Thẻ chung trả học phí và tiền đi cửa sau. Quỹ thiếu hoặc hết mức 1.000 xu thì trả tiền mặt, '
                          'rồi mới tới thẻ tín dụng. Nhẫn, cưới, cơm trưa, gửi tiền, trả nợ không dùng thẻ chung.',
                          '🔔 Mỗi lần gửi, rút hay quẹt thẻ chung, người kia được báo. Lịch sử quỹ ghi ai làm gì, bao '
                          'nhiêu, cả hai cùng thấy.',
