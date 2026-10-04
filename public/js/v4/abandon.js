@@ -26,7 +26,7 @@ function dialogHTML(x){
     `<li><span aria-hidden="true">🚶</span><span class="grow">${x.leaving?`<b>${fmt(x.leaving)} khách</b> đang chờ sẽ bỏ về`:'Việc đã hẹn vẫn giữ, nhưng khách sẽ phật lòng'}</span></li>`].join('');
   const warn=x.warn?`<p class="ab-warn">Hôm nay đã bỏ dở ở đây rồi. Lần này tiền phạt gấp ${x.offence}${x.pocket==='wallet'?' và chủ sẽ nhắc “lần sau cho nghỉ”':', khách quen bắt đầu kháo nhau'}.</p>`:'';
   return `<span class="eyebrow ab-eyebrow">ĐANG LÀM DỞ</span><h2>Bỏ dở việc ở ${esc(x.place)}?</h2><p>${esc(x.what||x.text)}</p><ul class="ab-stakes">${stakes}</ul>${warn}
-    <div class="row ab-row"><button type="button" class="btn ghost ab-go" data-ab="go">Vẫn đi</button><button type="button" class="btn primary ab-stay" data-ab="stay">Ở lại làm nốt</button></div>`;
+    <div class="row ab-btns"><button type="button" class="btn ghost ab-go" data-ab="go">Vẫn đi</button><button type="button" class="btn primary ab-stay" data-ab="stay">Ở lại làm nốt</button></div>`;
 }
 
 /** Before a switch to `target`. Resolves the payload for select_career ({} or {confirm:true}),
