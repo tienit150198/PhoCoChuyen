@@ -454,6 +454,7 @@ def upgrade(j: dict) -> None:
         j.setdefault(k, copy.deepcopy(v))
     for k in STATS:
         j['stats'].setdefault(k, 0)
+    _refund_upkeep(j)
     bk.upgrade(j)   # 🏦 term deposits quoted per year (0.9.5)
     hs.upgrade(j)   # 🏠
     rn.upgrade(j)   # 🛠️
@@ -462,6 +463,19 @@ def upgrade(j: dict) -> None:
     if j.get('story'):
         for n in range(1, min(int(j.get('chapter', 1)), LAST) + 1):
             _unlock_chapter(j, n)
+
+
+REFUND_LABEL = 'Hoàn phí duy trì nơi vắng chủ 💰'
+
+
+def _refund_upkeep(j: dict) -> None:
+    """Owner 04/10/2026: give back every "duy trì khi vắng chủ" fee ever paid (1.6.5 stopped charging it).
+    stats.upkeep_paid is that total (fund and wallet parts); it goes to the wallet once and the stat drops to 0,
+    so no new save field is needed and a second load refunds nothing."""
+    paid = int(j['stats'].get('upkeep_paid') or 0)
+    if paid > 0:
+        _wallet(j, paid, 'upkeep', REFUND_LABEL)
+        j['stats']['upkeep_paid'] = 0
 
 
 def roll_mode(s: dict, career: str, day: int) -> str:

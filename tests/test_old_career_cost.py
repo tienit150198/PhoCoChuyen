@@ -203,5 +203,38 @@ class OldPausedPlace(unittest.TestCase):
         act(s, A, 'start_day')
 
 
+class PastFeesRefund(unittest.TestCase):
+    """Owner 04/10/2026 "làm hoàn phí đi": every old idle fee comes back to the wallet once, on load."""
+
+    def test_the_old_fees_come_back_once(self):
+        from game.engine import migrate_state
+        s = story()
+        s['journey']['stats']['upkeep_paid'] = 56
+        wallet = s['journey']['wallet']
+        s = migrate_state(copy.deepcopy(s))
+        validate_state(s)
+        j = s['journey']
+        self.assertEqual(j['wallet'], wallet + 56)
+        self.assertEqual(j['stats']['upkeep_paid'], 0)
+        self.assertEqual((j['history'][-1]['amount'], j['history'][-1]['label']), (56, jr.REFUND_LABEL))
+        again = migrate_state(copy.deepcopy(s))
+        self.assertEqual(again['journey']['wallet'], wallet + 56)
+        self.assertEqual(len(again['journey']['history']), len(j['history']))
+
+    def test_a_wallet_in_debt_is_refunded_too(self):
+        s = story()
+        j = s['journey']
+        j['wallet'], j['in_debt'], j['stats']['upkeep_paid'] = -20, True, 33
+        jr.upgrade(j)
+        self.assertEqual(j['wallet'], 13)
+        self.assertFalse(j['in_debt'])
+
+    def test_nothing_paid_nothing_written(self):
+        s = story()
+        n = len(s['journey']['history'])
+        jr.upgrade(s['journey'])
+        self.assertEqual(len(s['journey']['history']), n)
+
+
 if __name__ == '__main__':
     unittest.main()
