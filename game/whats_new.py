@@ -32,6 +32,9 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.6.8", date="2026-10-04", items=(
+        dict(emoji="✈️", text="Rời Hãng bay khi đang làm dở: hộp “Bỏ dở việc” hiện lại đủ hai nút Vẫn đi / Ở lại làm nốt, dễ bấm như cũ."),
+    )),
     dict(version="1.6.7", date="2026-10-04", items=(
         dict(emoji="🎁", text="Quà cả phố: mỗi người chơi nhận 100 xu, vào game là thấy thiệp quà nha! Cảm ơn cả nhà đã chơi cùng phố."),
         dict(emoji="💰", text="Ai từng bị trừ phí “Nơi làm khác” được hoàn lại toàn bộ vào ví, xem dòng Hoàn phí trong sổ ví nha!"),
