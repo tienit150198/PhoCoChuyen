@@ -9,7 +9,7 @@ Người dùng đã yêu cầu tổng hợp rồi triển khai, bao gồm đưa 
 3. Tiền lương đã nhận nằm trong ví. Mỗi khoản mua có thể chọn ví/lương, chuyển khoản từ tài khoản, thẻ hoặc quỹ chung nếu phù hợp. Không coi tiền lương chưa được trả là tiền sẵn có. Tiền thuê người là khoản chuyển giao được giữ trước; hoàn về đúng nguồn nếu ca không thực hiện.
 4. Ngày kinh doanh bình thường lời vừa phải. Mục tiêu kiểm thử cân bằng: biên lợi nhuận sau chi phí thường khoảng 8–18% ở cấu hình phổ thông; đây là mục tiêu thiết kế game, không phải số liệu thị trường. Giá/menu, lượng khách, thuê người, tồn kho và nâng cấp vẫn ảnh hưởng kết quả.
 5. Rủi ro có thể biến ngày lời thành ngày lỗ. Sổ tách doanh thu, giá vốn, hư hàng, lương, điện, thuê, phí, thuế, tổn thất và bồi hoàn. Hiển thị dòng tiền và lợi nhuận rõ ràng, không tính trùng tiền thuê hoặc lương ký quỹ.
-6. Kiểm tra chỉ phạt khi có vi phạm cụ thể: thiếu chứng từ, điều kiện vệ sinh, bảo quản. Chuẩn bị tốt thì có thể qua kiểm tra. Trộm/cướp, hàng hỏng, thiết bị hư, đơn bom và đe dọa bảo kê là sự cố có lựa chọn xử lý; có lưu bằng chứng/báo công an, sửa chữa và phục hồi. Mỗi sự cố có giới hạn thiệt hại, không tự xóa toàn bộ chuỗi quầy.
+6. Kiểm tra chỉ phạt khi có vi phạm cụ thể: thiếu chứng từ, điều kiện vệ sinh, bảo quản. Chuẩn bị tốt thì có thể qua kiểm tra. Trộm/cướp, hàng hỏng và đe dọa bảo kê là sự cố có lựa chọn xử lý; có lưu bằng chứng/báo công an, sửa chữa và phục hồi. Mỗi sự cố có giới hạn thiệt hại, không tự xóa toàn bộ chuỗi quầy.
 7. Thuế trong game đơn giản hóa: GTGT trên doanh thu và thuế thu nhập trên phần thu nhập thuộc diện tính thuế, tổng hợp chuỗi; phí vệ sinh, nền tảng và thuê mặt bằng được ghi là phí/chi phí. Không thêm “thuế bảo kê”, không dùng tỷ lệ xu như tư vấn thuế thật.
 8. Shipper có hợp đồng giao hàng và tiến trình nghề, dựa trên đơn thực sự giao thành công; chi phí, chất lượng, thưởng và rủi ro rõ ràng. Không cho nhận thưởng lặp từ cùng một đơn.
 9. Lái xe có đèn và vạch dừng, lựa chọn chờ hoặc vượt. Máy chủ xác nhận vi phạm và trừ một lần. Lái máy bay luôn có mục tiêu từng giai đoạn, chỉ dẫn điều khiển và cách xử lý khi lệch đường bay; giữ lựa chọn đi/bay nhanh.
@@ -30,7 +30,7 @@ Người dùng đã yêu cầu tổng hợp rồi triển khai, bao gồm đưa 
 - [x] Nhánh shipper và giao thông; hướng dẫn lái máy bay; thao tác được trên điện thoại.
 - [x] Đọc bù feedback/tin nhóm mới, xử lý lỗi cuộn phòng và hướng dẫn ghi lời báo thú cưng.
 - [x] Kiểm tra chéo mã, test trọng điểm, trình duyệt 390px và màn hình lớn, hướng dẫn Việt/Anh.
-- [ ] Gói từ Git sạch, kiểm gói, thử DB tách biệt; rolling deploy và kiểm tra phiên bản/asset/HTTP.
-- [ ] Trả lời feedback chính xác theo nội dung đã phát hành, đọc lại kết quả; không đăng tin nhóm.
+- [x] Gói từ Git sạch, kiểm gói, thử DB tách biệt; rolling deploy và kiểm tra phiên bản/asset/HTTP.
+- [x] Trả lời feedback chính xác theo nội dung đã phát hành, đọc lại kết quả; không đăng tin nhóm.
 
 Giữ tương thích save cũ. Rollback phải giữ hỗ trợ mã tóc/đầm mới, tùy chọn thanh toán account và số quầy mới; không khởi chạy nguyên bản cũ trên save đã sử dụng các tính năng này.

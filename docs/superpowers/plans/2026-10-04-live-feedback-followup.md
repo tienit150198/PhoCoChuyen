@@ -18,8 +18,8 @@
 - [x] Home life (chat #18300, #16011–16032): implement opt-in child/pet care with visible progression and meaningful care choices; avoid automatic adoption or recurring costs without the player's choice.
 - [x] Verify remaining recent bug reports against current source/releases (photobooth code/invites, closing-time shops, accounting entry, tap lag, teacher replies); reproduce and fix any still present. Preserve already released fixes.
 - [x] Build Vietnamese/English guides and release notes. Review changes against this list and inspect code quality.
-- [ ] Run focused tests, browser checks for changed flows, package from a clean Git export, verify package, and run isolated PostgreSQL checks where relevant.
-- [ ] Recheck the live release before deployment, use the existing rolling deployment, verify health and changed public assets/flows.
-- [ ] Reply to new/actionable feedback with accurate shipped behavior, read back replies, and report the deployed version. Do not post to chat groups.
+- [x] Run focused tests, browser checks for changed flows, package from a clean Git export, verify package, and run isolated PostgreSQL checks where relevant.
+- [x] Recheck the live release before deployment, use the existing rolling deployment, verify health and changed public assets/flows.
+- [x] Reply to new/actionable feedback with accurate shipped behavior, read back replies, and report the deployed version. Do not post to chat groups.
 
 Larger historical roadmap suggestions already acknowledged in old feedback remain historical context; this follow-up addresses the current unread feedback, #152, and actionable recent chat requests above. Existing old feedback replies are only updated when this release actually resolves their pending item.
