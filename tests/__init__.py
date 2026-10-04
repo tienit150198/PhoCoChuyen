@@ -9,3 +9,6 @@ os.environ.setdefault("DB_POOL", "0")
 os.environ.setdefault("MNL_X3_OFF", "1")
 # 💼 Lương kế toán ×5 ngày lễ (game/accounting_jobs.py) follows the real calendar too: off unless a test turns it on.
 os.environ.setdefault("MNL_HOLIDAY_OFF", "1")
+# 🎁 Quà cả phố (game/system_gift.py BROADCASTS) follows the real calendar: off, so a test's gifts and wallet do not
+# depend on the day it runs (tests/test_system_gift.py turns it on where it checks it).
+os.environ.setdefault("MNL_BROADCAST_OFF", "1")

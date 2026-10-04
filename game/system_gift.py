@@ -25,6 +25,7 @@ Tables: SCHEMA below (SQLite, tests and dev) and game/pg_schema.py (PostgreSQL, 
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 import time
 
@@ -116,13 +117,12 @@ def validate(j: dict) -> None:
 
 
 # ---------------------------------------------------------------- loading a save
-# 🎁 A gift for the whole town (owner 04/10/2026 "tặng thêm 100 xu mỗi người toàn server"): no mass insert on prod.
-# A save loading before `until` whose account existed at `cut` gets its own row (id prefix + its sid's hash) the
-# first time, then the usual pending → applied → seen path pays it once and shows the card. `cut`: the account was
-# made before it (UTC text, accounts.created_at); a guest save (no account) does not get it. The cut is in the past
-# when it ships, so accounts made later (and every test account) never match.
+# 🎁 A gift for the whole town (owner 04/10/2026 "tặng thêm 100 xu mỗi người toàn server", "tất cả người chơi trong
+# server k giới hạn"): every save that loads before `until` (guest or account, old or new) gets 100 xu once. No mass
+# insert on prod: the save's own row (id prefix + its sid's hash) is queued the first time, then the usual pending →
+# applied → seen path pays it once and shows the card. MNL_BROADCAST_OFF=1 (tests/__init__.py) turns it off.
 BROADCASTS = (
-    dict(prefix='all1004', coins=100, cut='2026-10-04 01:00:00', until=1791727200,   # accounts before 04/10 08:00, until 11/10 21:00 (VN)
+    dict(prefix='all1004', coins=100, until=1791727200,   # until 11/10 21:00 (VN)
          title='Quà cả phố 🎁', text='Phố Có Chuyện gửi mỗi người 100 xu, cảm ơn bạn đã chơi cùng cả phố! Chơi vui nha 💛'),
 )
 
@@ -132,7 +132,9 @@ def _broadcast_id(prefix: str, sid: str) -> str:
 
 
 def _broadcasts(store, sid: str) -> None:
-    """Queue this save's town-wide gifts (two primary-key lookups each while one is open)."""
+    """Queue this save's town-wide gifts (one primary-key lookup each while one is open)."""
+    if os.environ.get('MNL_BROADCAST_OFF') == '1':
+        return
     t = now()
     for b in BROADCASTS:
         if t >= b['until']:
@@ -141,9 +143,6 @@ def _broadcasts(store, sid: str) -> None:
         with store.connect() as db:
             if db.execute('SELECT 1 FROM system_gifts WHERE id=?', (gid,)).fetchone():
                 continue
-            acc = db.execute('SELECT created_at FROM accounts WHERE sid=?', (sid,)).fetchone()
-        if not acc or str(acc['created_at']) > b['cut']:
-            continue
         grant(store, sid, b['coins'], b['title'], b['text'], gid=gid)
 
 
