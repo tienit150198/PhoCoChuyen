@@ -412,5 +412,38 @@ class LargeGift(unittest.TestCase):
         self.assertIn('--large', r.stderr + r.stdout)
 
 
+class TownWide(Base):
+    """Owner 04/10/2026 "tặng thêm 100 xu mỗi người toàn server": every account made before the cut gets 100 xu once."""
+
+    def account(self, name='lan_test', created='2026-10-01 10:00:00'):
+        tok = self.guest()
+        tok = accounts.register(self.store, tok, dict(username=name, password='matkhau-dai-lam', confirm='matkhau-dai-lam', display='Lan'))['token']
+        self.store.transaction(lambda db: db.execute('UPDATE accounts SET created_at=? WHERE sid=?', (created, self.store.key(tok))))
+        return tok
+
+    def test_an_old_account_gets_100_once(self):
+        b = sg.BROADCASTS[0]
+        tok = self.account()
+        w0 = self.wallet(tok)
+        changed, shown = self.load(tok)
+        self.assertTrue(changed)
+        gid = sg._broadcast_id(b['prefix'], self.store.key(tok))
+        self.assertEqual(shown, [dict(id=gid, coins=100, title=b['title'], text=b['text'])])
+        self.assertEqual(self.wallet(tok), w0 + 100)
+        self.assertTrue(sg.seen(self.store, tok, gid))
+        self.assertEqual(self.load(tok), (False, []))
+        self.assertEqual(self.wallet(tok), w0 + 100)
+        self.assertEqual(self.row(gid)['status'], 'seen')
+
+    def test_new_accounts_guests_and_a_closed_gift_get_nothing(self):
+        late = self.account('moi_test', '2026-10-04 05:00:00')
+        self.assertEqual(self.load(late), (False, []))
+        guest = self.guest()
+        self.assertEqual(self.load(guest), (False, []))
+        old = self.account('cu_test')
+        with patch.object(sg, 'now', lambda: sg.BROADCASTS[0]['until']):
+            self.assertEqual(self.load(old), (False, []))
+
+
 if __name__ == '__main__':
     unittest.main()
