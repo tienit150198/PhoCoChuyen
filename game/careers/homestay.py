@@ -720,7 +720,14 @@ def _overlap(a: int, an: int, b: int, bn: int) -> bool:
     return a < b + bn and b < a + an
 
 
-def _blocked(c: dict, rid: str, start: int, nights: int) -> str | None:
+def _holds(c: dict) -> list[dict]:
+    """Live phone holds, derived from tickets so release/cancellation frees them."""
+    return [dict(task=t['id'], rooms=list(t['hold']), start=t['needs']['start'], nights=t['needs']['nights'], name=_guest(t))
+            for t in c.get('tasks', []) if t.get('career') == ID and t.get('job') == 'booking' and t.get('hold')
+            and t.get('status') not in ('completed', 'cancelled', 'referred')]
+
+
+def _blocked(c: dict, rid: str, start: int, nights: int, *, skip_task=None, skip_order=None) -> str | None:
     """Why a room cannot be sold for [start, start+nights) — None when free."""
     d = kit.data(c)
     r = d['rooms'][rid]
@@ -731,9 +738,21 @@ def _blocked(c: dict, rid: str, start: int, nights: int) -> str | None:
     # A guest bound to a pending check-out still holds the room tonight; later nights are free once they leave.
     if r['status'] == 'occupied' and (r['until'] > start or (r['task'] and start <= c['day'])):
         return f'Phòng {ROOM_INDEX[rid]["name"]} còn khách ở tới ngày {r["until"]}.'
+    return _reserved(c, rid, start, nights, skip_task=skip_task, skip_order=skip_order)
+
+
+def _reserved(c: dict, rid: str, start: int, nights: int, *, skip_task=None, skip_order=None) -> str | None:
+    """Confirmed bookings, phone holds and rooms already sold by an app."""
+    d = kit.data(c)
     for b in d['bookings']:
         if rid in b['rooms'] and _overlap(b['start'], b['nights'], start, nights):
             return f'Phòng {ROOM_INDEX[rid]["name"]} đã có khách đặt từ ngày {b["start"]} ({b["nights"]} đêm).'
+    for h in _holds(c):
+        if h['task'] != skip_task and rid in h['rooms'] and _overlap(h['start'], h['nights'], start, nights):
+            return f'Phòng {ROOM_INDEX[rid]["name"]} đang giữ cho {h["name"]} từ ngày {h["start"]}.'
+    for o in d.get('ota', []):
+        if o['id'] != skip_order and o['status'] == 'new' and o['room'] == rid and _overlap(o['start'], o['nights'], start, nights):
+            return f'Phòng {ROOM_INDEX[rid]["name"]} có đơn {o["ota"]} chờ đồng bộ từ ngày {o["start"]}.'
     return None
 
 
@@ -755,7 +774,7 @@ def _combos(c: dict):
             yield [a, b]
 
 
-def _can_book(c: dict, n: dict) -> bool:
+def _can_book(c: dict, n: dict, skip_task=None) -> bool:
     if n['start'] < c['day']:
         return False
     need = _counted(n['adults'], n['kids'])
@@ -764,7 +783,7 @@ def _can_book(c: dict, n: dict) -> bool:
             continue
         if not n['stairs_ok'] and any(ROOM_INDEX[r]['stairs'] for r in rooms):
             continue
-        if all(_blocked(c, r, n['start'], n['nights']) is None for r in rooms):
+        if all(_blocked(c, r, n['start'], n['nights'], skip_task=skip_task) is None for r in rooms):
             return True
     return False
 
@@ -781,7 +800,7 @@ def _free_tonight(c: dict, rid: str, nights: int) -> bool:
     d = kit.data(c)
     r = d['rooms'][rid]
     if r['status'] == 'occupied' and r['task'] and r['until'] <= c['day']:
-        return not any(rid in b['rooms'] and _overlap(b['start'], b['nights'], c['day'], nights) for b in d['bookings'])
+        return _reserved(c, rid, c['day'], nights) is None
     return _blocked(c, rid, c['day'], nights) is None
 
 
@@ -1125,7 +1144,7 @@ def _ota_find(d: dict, oid) -> dict:
 
 def _ota_fits(c: dict, o: dict) -> bool:
     for rooms in _combos(c):
-        if sum(ROOM_INDEX[r]['cap'] for r in rooms) >= o['guests'] and all(_blocked(c, r, o['start'], o['nights']) is None for r in rooms):
+        if sum(ROOM_INDEX[r]['cap'] for r in rooms) >= o['guests'] and all(_blocked(c, r, o['start'], o['nights'], skip_order=o['id']) is None for r in rooms):
             return True
     return False
 
@@ -1160,7 +1179,7 @@ def _ota_sync(s: dict, c: dict, p: dict) -> dict:
     rooms = kit.id_list(p.get('rooms'), ROOM_INDEX, 2, 'Chọn 1–2 phòng trong lịch.')
     kit.need(rooms, 'Chọn ít nhất một phòng.')
     for rid in rooms:
-        why = _blocked(c, rid, o['start'], o['nights'])
+        why = _blocked(c, rid, o['start'], o['nights'], skip_order=o['id'])
         kit.need(why is None, (why or '') + ' Chọn phòng khác, hoặc chuyển khách sang nhà hàng xóm.')
     cap = sum(ROOM_INDEX[r]['cap'] for r in rooms)
     kit.need(cap >= o['guests'], f'{len(rooms)} phòng chỉ ngủ được {cap} người, đơn có {o["guests"]} khách.')
@@ -1203,7 +1222,7 @@ def _ota_close(s: dict, c: dict) -> list:
         if o['status'] != 'new' or o['start'] > day:
             continue
         rid = o['room']
-        if ROOM_INDEX[rid]['unlock'] <= kit.level(c) and _blocked(c, rid, o['start'], o['nights']) is None and ROOM_INDEX[rid]['cap'] >= o['guests']:
+        if ROOM_INDEX[rid]['unlock'] <= kit.level(c) and _blocked(c, rid, o['start'], o['nights'], skip_order=o['id']) is None and ROOM_INDEX[rid]['cap'] >= o['guests']:
             _ota_book(c, o, [rid], 'auto')
             lines.append(f'Đơn {o["ota"]} của {o["name"]} chưa đồng bộ, may mà phòng {ROOM_INDEX[rid]["name"]} vẫn trống.')
         else:
@@ -1349,7 +1368,7 @@ def _booking(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         rooms = kit.id_list(p.get('rooms'), ROOM_INDEX, 2, 'Chọn 1–2 phòng trong lịch.')
         kit.need(rooms, 'Chọn ít nhất một phòng.')
         for rid in rooms:
-            why = _blocked(c, rid, n['start'], n['nights'])
+            why = _blocked(c, rid, n['start'], n['nights'], skip_task=t['id'])
             kit.need(why is None, (why or '') + ' Chọn phòng khác để không bị trùng lịch.')
         cap = sum(ROOM_INDEX[r]['cap'] for r in rooms)
         kit.need(cap >= need, f'{len(rooms)} phòng chỉ ngủ được {cap} người, khách có {need} người tính chỗ (bé dưới {KID_FREE_AGE} tuổi ngủ chung không tính).')
@@ -1386,7 +1405,7 @@ def _booking(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         kit.need(t['hold'] and t['quote'], 'Giữ phòng trên lịch trước khi nhận cọc.')
         kit.need(n['start'] >= c['day'], 'Ngày khách hỏi đã qua.')
         for rid in t['hold']:
-            why = _blocked(c, rid, n['start'], n['nights'])
+            why = _blocked(c, rid, n['start'], n['nights'], skip_task=t['id'])
             kit.need(why is None, (why or '') + ' Bỏ giữ và chọn lại nhé.')
         if t.get('gen') and RATE_IDS.index(t['rate']) > _cap(t):
             say = PUSHBACK[t['_x']['budget']]
@@ -1413,7 +1432,7 @@ def _booking(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         return dict(message=f'Đã nhận cọc {dep} xu và gửi xác nhận kèm nội quy (nhận phòng 14h, trả phòng 12h). Lịch đã ghi.', celebrate=True)
     # hs_decline
     kit.confirm(p, 'Xác nhận báo khách hết phòng và giới thiệu Nhà Gỗ Cô Ba.')
-    feasible = _can_book(c, n)
+    feasible = _can_book(c, n, skip_task=t['id'])
     t['decline_ok'] = not feasible
     t['hold'] = []
     t['quote'] = None
@@ -1433,7 +1452,7 @@ def _booking_slips(c: dict, t: dict) -> None:
         cq.slip(t, 'stairs', 2, 'Đã dặn đừng xếp phòng phải leo cầu thang mà vẫn xếp phòng trên lầu.', 'phải leo cầu thang dù đã dặn')
     if n['prefer'] and not any(r in n['prefer'] for r in t['hold']):
         # Only when a room they asked for was really free on those nights.
-        free = [r for r in n['prefer'] if _blocked(c, r, n['start'], n['nights']) is None]
+        free = [r for r in n['prefer'] if _blocked(c, r, n['start'], n['nights'], skip_task=t['id']) is None]
         if free and n['prefer'] == ['suong']:
             cq.slip(t, 'wish', 1, 'Mình xin phòng rẻ nhất mà lại được xếp phòng đắt hơn, dù phòng rẻ còn trống.', 'không xếp phòng khách xin')
         elif free:
@@ -2198,6 +2217,7 @@ def public_data(c: dict) -> dict:
     for k, v in DATA_V2.items():
         d.setdefault(k, tree_copy(v))
     day = c['day']
+    d['holds'] = _holds(c)
     grid = {}
     for rid, r in d['rooms'].items():
         row = []
@@ -2211,6 +2231,9 @@ def public_data(c: dict) -> dict:
             for b in d['bookings']:
                 if rid in b['rooms'] and b['start'] <= night < b['start'] + b['nights']:
                     cell.update(kind='book', label=b['name'], anniv=bool(b.get('anniv')))
+            for h in d['holds']:
+                if cell['kind'] == 'free' and rid in h['rooms'] and h['start'] <= night < h['start'] + h['nights']:
+                    cell.update(kind='hold', label=f'Giữ cho {h["name"]}')
             row.append(cell)
         grid[rid] = row
     d['grid'] = grid
@@ -3023,7 +3046,7 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
     if e['role'] == 'reception' and not busy:
         # Easy app orders (their own room still free) are synced by the receptionist; clashes stay for you.
         o = next((o for o in d['ota'] if o['status'] == 'new' and ROOM_INDEX[o['room']]['unlock'] <= kit.level(c)
-                  and _blocked(c, o['room'], o['start'], o['nights']) is None and ROOM_INDEX[o['room']]['cap'] >= o['guests']), None)
+                  and _blocked(c, o['room'], o['start'], o['nights'], skip_order=o['id']) is None and ROOM_INDEX[o['room']]['cap'] >= o['guests']), None)
         if o:
             _ota_book(c, o, [o['room']], 'synced')
             d['synced'] += 1

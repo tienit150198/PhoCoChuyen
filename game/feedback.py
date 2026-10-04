@@ -18,6 +18,7 @@ or report: a report removes only the fakes the server knows about, and a wrong
 report angers the reviewer. A rude reply gets screenshotted: more 1★ follow.
 """
 from __future__ import annotations
+from copy import deepcopy
 import hashlib
 import re
 import unicodedata
@@ -888,9 +889,29 @@ def _post(c: dict, pid) -> dict:
     return post
 
 
+def can_police(post: dict) -> bool:
+    """Only the explicit money-for-silence scenario offers a simulated report."""
+    fb = post.get('feedback') or {}
+    text = normalize(post.get('text', ''))
+    threat = _kind(fb) == 'bocphot' or (fb.get('persona') == 'drama'
+             and any(line in text for line in ('muon yen thi hoan tien', 'den bu di, khong thi')))
+    return bool(post.get('stars') and threat and not fb.get('police'))
+
+
 def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = False) -> dict:
     from . import engine as e
     need = e.need
+    if name == 'fb_police':
+        post = _post(c, p.get('post'))
+        fb = post['feedback']
+        need(can_police(post), 'Chỉ trình báo được lời đe dọa đòi tiền chưa có hồ sơ.')
+        need(p.get('confirm') is True, 'Xác nhận lưu bằng chứng và trình báo trong game.')
+        fb['police'] = dict(day=c['day'], text=post['text'], stars=post['stars'], thread=deepcopy(fb['thread']))
+        fb['status'] = 'closed'
+        fb['pending'] = None
+        e.metric(c, 'reviews_police')
+        e.log(s, c, 'feedback', f'Lưu bằng chứng và trình báo lời đe dọa đòi tiền của {post["author"]}.', post['npc'], post['id'])
+        return dict(message='Đã lưu đánh giá và cuộc trao đổi vào hồ sơ trình báo trong game. Khép trao đổi trực tiếp; điểm đánh giá vẫn giữ nguyên.', police='filed')
     if name == 'fb_reply':
         post = _post(c, p.get('post'))
         fb = post['feedback']
@@ -953,6 +974,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
     if name == 'fb_report':
         post = _post(c, p.get('post'))
         fb = post['feedback']
+        need(not fb.get('police'), 'Đã lưu đánh giá này trong hồ sơ trình báo.')
         need(post.get('stars') and not fb.get('report'), 'Đánh giá này đã được báo cáo.')
         need(fb['status'] != 'awaiting', 'Chờ khách trả lời trước.')
         today = sum(1 for f in c['feed'] if (f.get('feedback') or {}).get('report_day') == c['day'])
@@ -1002,6 +1024,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
         need(internal, 'Thao tác chỉ dành cho máy chủ.', 'forbidden')
         post = _post(c, p.get('post'))
         fb = post['feedback']
+        need(not fb.get('police'), 'Đã lưu nội dung trong hồ sơ trình báo.')
         need(fb['voice'] == 'scripted' and not fb['thread'], 'Review đã được viết lại.')
         text = e.clean_text(p.get('text'), 700, 8)
         post['text'] = text
@@ -1109,6 +1132,14 @@ def validate_post(post: dict) -> None:
     if fb.get('report') == 'accepted':
         need(post.get('stars') is None and fb['status'] == 'closed', 'Đánh giá đã gỡ vẫn còn sao.')
         integer(fb.get('removed_stars'), 1, 5)
+    police = fb.get('police')
+    if police is not None:
+        need(isinstance(police, dict) and set(police) == {'day', 'text', 'stars', 'thread'}, 'Hồ sơ trình báo sai.')
+        integer(police['day'], 1, 100000)
+        integer(police['stars'], 1, 5)
+        clean_text(police['text'], 700)
+        need(police['thread'] == fb['thread'] and fb['status'] == 'closed' and fb.get('pending') is None,
+             'Cuộc trao đổi đã trình báo không hợp lệ.')
     for k in ('stranger', 'viral', 'ignored', 'own'):
         need(type(fb.get(k, False)) is bool, 'Cờ đánh giá sai.')
     _fv.validate_extra(fb)
@@ -1135,7 +1166,8 @@ def public_post(post: dict, career: str | None = None) -> dict:
     f.pop('report_day', None)
     f['clues'] = list(fb.get('clues') or [])
     f['removed'] = fb.get('report') == 'accepted'
-    f['can_report'] = bool(post.get('stars')) and not fb.get('report') and fb['status'] != 'awaiting' and not fb.get('own')
+    f['can_report'] = bool(post.get('stars')) and not fb.get('report') and fb['status'] != 'awaiting' and not fb.get('own') and not fb.get('police')
+    f['can_police'] = can_police(post)
     f['can_ignore'] = fb['status'] == 'open' and not fb['thread']
     f.pop('style', None)
     f.pop('aspects', None)

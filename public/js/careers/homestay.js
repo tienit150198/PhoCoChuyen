@@ -10,7 +10,7 @@ import {restockGo} from '../v4/restock.js';
 import {tomorrowCard} from './tomorrow_kit.js';
 const JOB_ICON={checkin:'🔑',checkout:'🧾',breakfast:'🍳',booking:'📅',recommend:'🗺️',claim:'📞'};
 const STATUS={clean:['Sạch','green'],dirty:['Cần dọn','amber'],occupied:['Có khách','blue'],maintenance:['Bảo trì','danger']};
-const CELL={occ:'🛏️',book:'📌',maint:'🔧',free:''};
+const CELL={occ:'🛏️',book:'📌',hold:'⏳',maint:'🔧',free:''};
 const MOOD_EMOJI={'Rất vui':'😊','Vui vẻ':'🙂','Tạm ổn':'😐','Không vui':'😟'};
 const EGG_LABEL={raw:'sống',runny:'lòng đào',well:'chín kỹ',burnt:'cháy'};
 const CLAIM_CHOICES=[['give','🎁 Giao đồ cho người gọi','Giao món đồ cho người đang gọi? Nếu không phải chủ đồ, nhà phải chịu trách nhiệm.'],
@@ -136,23 +136,20 @@ function waiting(x,skip=''){
   return `<p class="hs-warn">🧳 Còn khách chờ nhận phòng hôm nay: ${who}. Chừa phòng cho họ trước khi nhận đơn mới.</p>`;
 }
 function roomFree(x,rid,start,nights,skip){
-  const d=x.room.data||{},r=roomInfo(x,rid),room=d.rooms?.[rid];
-  if(r.unlock>(d.level||1))return 'phòng chưa mở';
-  if(room?.status==='maintenance')return 'phòng đang bảo trì';
-  const row=d.grid?.[rid]||[];
-  for(let k=0;k<nights;k++){const cell=row[start+k-d.today];if(cell&&cell.kind!=='free')return `đã có khách đêm ${start+k}`;}
-  const other=pendingOrders(x).find(o=>o.id!==skip&&o.room===rid&&o.start<start+nights&&start<o.start+o.nights);
-  if(other)return `trùng đơn ${other.ota} của ${other.name}`;
-  return '';
+  return holdBlock(x,rid,start,nights,'',skip);
 }
 // Mirrors the server's _blocked(): why a room cannot be held for [start, start+nights) — '' when it can.
-function holdBlock(x,rid,start,nights){
+function holdBlock(x,rid,start,nights,skipTask='',skipOrder=''){
   const d=x.room.data||{},r=roomInfo(x,rid),room=d.rooms?.[rid]||{};
   if(r.unlock>(d.level||1))return `${r.name} chưa mở`;
   if(room.status==='maintenance')return `${r.name} đang bảo trì`;
   if(room.status==='occupied'&&(room.until>start||(room.task&&start<=d.today)))return `${r.name} còn khách ở tới ngày ${room.until}`;
   const b=(d.bookings||[]).find(b=>b.rooms.includes(rid)&&b.start<start+nights&&start<b.start+b.nights);
-  return b?`${r.name} đã có khách đặt từ ngày ${b.start}`:'';
+  if(b)return `${r.name} đã có khách đặt từ ngày ${b.start}`;
+  const h=(d.holds||[]).find(h=>h.task!==skipTask&&h.rooms.includes(rid)&&h.start<start+nights&&start<h.start+h.nights);
+  if(h)return `${r.name} đang giữ cho ${h.name} từ ngày ${h.start}`;
+  const o=pendingOrders(x).find(o=>o.id!==skipOrder&&o.room===rid&&o.start<start+nights&&start<o.start+o.nights);
+  return o?`${r.name} có đơn ${o.ota} chờ đồng bộ từ ngày ${o.start}`:'';
 }
 function otaRow(x,o){
   const r=roomInfo(x,o.room),clash=roomFree(x,o.room,o.start,o.nights,o.id),end=o.start+o.nights-1;
@@ -209,7 +206,7 @@ function calendar(x,{range=null,picked=[],selectable=false,task=''}={}){
     return `<div class="hs-row ${on?'picked':''} ${locked?'locked':''} st-${x.esc(room?.status||'')}">${label}${cells}</div>`;
   }).join('');
   return `<div class="hs-cal-wrap"><div class="hs-cal">${head}${rows}</div></div>
-    <p class="hs-legend small muted">🛏️ có khách · 📌 đã đặt · 🗝️ cô chú phòng số 3 · 📥 đơn OTA chưa đồng bộ · 🔧 bảo trì · 🪜 phải leo cầu thang${range?' · cột tô màu = đêm khách hỏi':''}</p>`;
+    <p class="hs-legend small muted">🛏️ có khách · 📌 đã đặt · ⏳ đang giữ phòng · 🗝️ cô chú phòng số 3 · 📥 đơn OTA chưa đồng bộ · 🔧 bảo trì · 🪜 phải leo cầu thang${range?' · cột tô màu = đêm khách hỏi':''}</p>`;
 }
 
 /* ---------------------------------------------------------------- housekeeping */
@@ -477,7 +474,8 @@ function bookingJob(t,x){
   const stale=n.start<d.today;
   let body=calendar(x,{range:[n.start,n.nights],picked:pick,selectable:!held,task:t.id})+(held?'':waiting(x));
   body+=`<p class="small">👆 Chọn: <b>${pick.map(id=>x.esc(roomInfo(x,id).name)).join(' + ')||'—'}</b> · ${cap}/${need} chỗ · ~${x.money(total)}</p>`;
-  const clash=held?[]:sel.map(id=>holdBlock(x,id,n.start,n.nights)).filter(Boolean);
+  const clash=pick.map(id=>holdBlock(x,id,n.start,n.nights,t.id)).filter(Boolean);
+  if(held&&clash.length)body+=`<p class="notice amber">Lịch giữ phòng đã thay đổi. ${x.esc(clash.join(' '))} Bỏ giữ và chọn lại phòng trước khi nhận cọc.</p>`;
   const short=!held&&sel.length&&cap<need?`Mới đủ ${cap}/${need} chỗ — chọn thêm hoặc đổi phòng rộng hơn.`:'';
   if(!held)body+=`<div class="row wrap">${x.cmd('📌 Giữ phòng trên lịch','hs_hold',t.gen?{task:t.id,rooms:sel,rate}:{task:t.id,rooms:sel},st(t,x,'hold'),!sel.length||stale||clash.length>0||!!short)}${sel.length?x.button('Bỏ chọn','car:clear',{},'ghost small'):''}</div>${clash.length||short?`<p class="small hs-warn">${x.esc([...clash.map(v=>v+' trong những đêm này.'),short].filter(Boolean).join(' '))}</p>`:''}`;
   else body+=`<div class="card hs-quote"><div class="kv"><span>${t.hold.map(id=>x.esc(roomInfo(x,id).name)).join(' + ')} × ${n.nights} đêm${t.gen?` · ${x.esc(rateInfo(x,rate).name.toLowerCase())}`:''}</span><b>${x.money(t.quote.total)}</b></div><div class="kv total"><span>Cọc ${x.cc.deposit_pct}% giữ phòng</span><b>${x.money(t.quote.deposit)}</b></div>${x.cmd('Bỏ giữ, chọn lại','hs_release',{task:t.id},'ghost small')}</div>`;
@@ -496,7 +494,7 @@ function bookingSide(t,x){
   const cap=pick.reduce((a,id)=>a+roomInfo(x,id).cap,0);
   const stairs=pick.some(id=>roomInfo(x,id).stairs);
   const rows=[[pick.length?cap>=need:null,`Đủ chỗ cho ${need} người`,n.kids.length?`bé dưới ${x.cc.kid_free_age} tuổi không tính`:''],
-    [t.hold.length?true:null,'Trống mọi đêm (không trùng lịch)',''],
+    [pick.length?!pick.some(id=>holdBlock(x,id,n.start,n.nights,t.id)):null,'Trống mọi đêm (không trùng lịch)',''],
     ...(!n.stairs_ok?[[pick.length?!stairs:null,'Không phải leo cầu thang','khách đã dặn']]:[]),
     ...(n.prefer.length?[[pick.length?pick.some(id=>n.prefer.includes(id)):null,'Phòng khách thích',n.prefer.map(id=>roomInfo(x,id).name).join(' / ')]]:[])];
   const stale=n.start<x.room.data.today;
@@ -667,17 +665,19 @@ function bookingSteps(t,x){
   if(n.start<d.today)return rows;
   if(t.gen)rows.push({ok:t.asked_budget||null,label:'Hỏi khách ngân sách',go:{cmd:'hs_budget',payload:{task:id},label:'💬 Hỏi khách ngân sách'}});
   if(!t.hold.length){
-    const sel=selection(x,t),valid=sel.length&&capOf(x,sel)>=need&&!sel.some(rid=>holdBlock(x,rid,n.start,n.nights));
-    const best=bestRooms(x,rid=>!holdBlock(x,rid,n.start,n.nights),need,{size:need,prefer:n.prefer,stairs:n.stairs_ok});
+    const sel=selection(x,t),valid=sel.length&&capOf(x,sel)>=need&&!sel.some(rid=>holdBlock(x,rid,n.start,n.nights,t.id));
+    const best=bestRooms(x,rid=>!holdBlock(x,rid,n.start,n.nights,t.id),need,{size:need,prefer:n.prefer,stairs:n.stairs_ok});
     const plan=valid?sel:first?best:null,rate=d.mod?.id==='low'?'low':'std';
     if(!best&&!valid){rows.push({ok:null,label:'Không còn phòng hợp những đêm này'});return rows;}
     const payload=t.gen?{task:id,rooms:plan||[],rate:valid?localRate(x,t):rate}:{task:id,rooms:plan||[]};
-    const why=sel.length&&!valid?(sel.map(rid=>holdBlock(x,rid,n.start,n.nights)).find(Boolean)||`mới đủ ${capOf(x,sel)}/${need} chỗ, chọn thêm (tối đa 2)`):'';
-    const taken=sel.find(rid=>holdBlock(x,rid,n.start,n.nights));
+    const why=sel.length&&!valid?(sel.map(rid=>holdBlock(x,rid,n.start,n.nights,t.id)).find(Boolean)||`mới đủ ${capOf(x,sel)}/${need} chỗ, chọn thêm (tối đa 2)`):'';
+    const taken=sel.find(rid=>holdBlock(x,rid,n.start,n.nights,t.id));
     rows.push({ok:null,label:`Giữ phòng trống mọi đêm, đủ ${need} chỗ`,note:why,go:plan?{cmd:'hs_hold',payload,label:`📌 Giữ ${x.esc(plan.map(rid=>roomInfo(x,rid).name).join(' + '))} trên lịch`}
       :taken?{act:'car:sel',data:{task:id,room:taken},label:`↺ Bỏ chọn ${x.esc(roomInfo(x,taken).name)} (đã có khách), chọn phòng khác`}:{sel:'.hs-cal',label:'👉 Chạm tên phòng trên lịch để chọn'}});
     return rows;
   }
+  const clash=t.hold.map(rid=>holdBlock(x,rid,n.start,n.nights,t.id)).find(Boolean);
+  if(clash){rows.push({ok:null,label:'Lịch giữ phòng đã thay đổi',note:clash,go:{cmd:'hs_release',payload:{task:id},label:'↺ Bỏ giữ, chọn lại phòng'}});return rows;}
   rows.push({ok:true,label:`Đã giữ ${t.hold.map(rid=>roomInfo(x,rid).name).join(' + ')}`});
   if(t.gen&&t.haggles){
     const said=(x.ui.hag??={})[id];
@@ -691,7 +691,8 @@ const bookingFinal=(t,x,steps)=>{
   const n=t.needs,stale=n.start<x.room.data.today;
   if(stale||(!t.hold.length&&steps.some(s=>s.ok===null&&!s.go&&/Không còn phòng/.test(s.label))))
     return {label:'🙏 Báo hết phòng, giới thiệu Nhà Gỗ Cô Ba',go:{cmd:'hs_decline',payload:{task:t.id},confirm:'Báo khách không còn phòng phù hợp và giới thiệu homestay hàng xóm?'},ready:true};
-  return {label:`💰 Nhận cọc${t.quote?' '+x.money(t.quote.deposit):''} & gửi xác nhận`,go:finalGo(steps,'hs_book',{task:t.id},{question:'Tin xác nhận kèm nội quy sẽ gửi cho khách.',confirm:true}),ready:!!t.hold.length,why:'giữ phòng trước'};
+  const clash=t.hold.some(rid=>holdBlock(x,rid,n.start,n.nights,t.id));
+  return {label:`💰 Nhận cọc${t.quote?' '+x.money(t.quote.deposit):''} & gửi xác nhận`,go:finalGo(steps,'hs_book',{task:t.id},{question:'Tin xác nhận kèm nội quy sẽ gửi cho khách.',confirm:true}),ready:!!t.hold.length&&!clash,why:clash?'lịch thay đổi, chọn lại phòng':'giữ phòng trước'};
 };
 
 function recommendSteps(t,x){

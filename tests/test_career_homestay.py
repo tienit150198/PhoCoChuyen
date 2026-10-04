@@ -2055,7 +2055,8 @@ class HomestayCareTests(unittest.TestCase):
         j.act('end_day', carry_event=True)
         j.act('start_day')
 
-    def test_the_couple_of_room_three_book_their_room_every_year(self):
+    @mock.patch.object(H, '_ota_new')  # This scenario starts with room 3 free on every anniversary.
+    def test_the_couple_of_room_three_book_their_room_every_year(self, _ota_new):
         j = Journey('homestay')
         self.data(j)['bookings'] = []
         while j.c['day'] < H.ANNIV_FIRST - H.ANNIV_LEAD:

@@ -90,6 +90,7 @@
 .career-job.hs .hs-cell{display:grid;place-items:center;min-height:44px;border-left:1px solid var(--hs-line);font-size:.95em}
 .career-job.hs .hs-cell.occ{background:color-mix(in srgb,var(--hs-info) 22%,transparent)}
 .career-job.hs .hs-cell.book{background:color-mix(in srgb,var(--hs-warn) 24%,transparent)}
+.career-job.hs .hs-cell.hold{background:color-mix(in srgb,var(--hs-warn) 14%,transparent)}
 .career-job.hs .hs-cell.maint{background:color-mix(in srgb,var(--hs-bad) 20%,transparent)}
 .career-job.hs .hs-cell.want{outline:2px solid var(--hs-accent);outline-offset:-3px}
 .career-job.hs .hs-cell.want.free{background:color-mix(in srgb,var(--hs-good) 16%,transparent)}

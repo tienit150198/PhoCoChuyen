@@ -45,12 +45,15 @@ export function promoView(env){
   const n=p.next,sh=p.shift;
   const line=n?(n.wait?`Hẹn xét lại sau ${n.wait} ngày làm`:`${n.good}/${n.need} ngày tốt → ${esc(n.title)}`):'Bậc cao nhất rồi!';
   const lock=n?.why?`<p class="pm-lock">🔒 ${esc(n.why)}</p>`:'';
+  const work=p.rank>=3?'Bạn có thể mở ca quản lý: giao việc cho đội, kiểm tra kết quả và xử lý chuyện trong ca. Mỗi ngày vẫn có thể chọn tự làm ở quầy.'
+    :'Công việc ở quầy vẫn như trước. Từ bậc 3, bạn có thêm ca quản lý để giao việc cho đội và kiểm tra kết quả.';
+  const benefit=p.track==='emp'?`Thăng chức tăng lương${p.pct?` · hiện tại +${p.pct}%`:''}.`:`Thăng tiến tăng tiền boa từ khách quen${p.pct?` · hiện tại +${p.pct}%`:''}.`;
   let main;
   if(c.open&&sh)main=act('🧑‍💼 Bảng quản lý','pmBoard',{},'primary big full');
   else if(p.mgr&&!c.open)main=act(`🧑‍💼 Mở ca quản lý · ${p.team} người`,'pmStart',{},'primary big full');
   else main=act('Về quầy','close',{},'primary big full');
   const step=`<span class="pm-step">${Array.from({length:p.top},(_,i)=>`<i class="${i<p.rank?'on':''}"></i>`).join('')}</span>`;
-  return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body"><article class="pm-card pm-ladder"><span class="pm-badge" aria-hidden="true">🎖️</span><h3 class="pm-title">${esc(p.title)}</h3>${step}${n?bar(n.good,n.need):''}<p class="pm-line">${line}</p>${lock}${main}${more(p)}</article></div>`;
+  return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body"><article class="pm-card pm-ladder"><span class="pm-badge" aria-hidden="true">🎖️</span><h3 class="pm-title">${esc(p.title)}</h3>${step}${n?bar(n.good,n.need):''}<p class="pm-line">${line}</p><p class="small">💰 ${benefit}</p><p class="small muted">${work}</p>${lock}${main}${more(p)}</article></div>`;
 }
 
 /** The manager's board. */
