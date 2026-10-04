@@ -247,7 +247,7 @@ def handle(s:dict,c:dict,career:str,action:str,p:dict)->dict:
    if place['id'] not in x['visits']:x['visits'].append(place['id']);_metric(c,'town_visits');_sticker(c,'town-'+place['id'],place['name'],place['emoji'])
    r['message']=place['name']+': '+place['description']
   elif name=='festival':
-   need(c['open'] and x['festival'],'Chọn Ngày hội trước khi mở ca.');need(not x['festival_claimed'],'Ngày hội này đã hoàn tất.');need(x['day_metrics'].get('served',0)>=3 and x['day_metrics'].get('activities',0)>=1,'Chuẩn bị 3 công việc hoàn tất và 1 trò nhỏ trước nhé.')
+   need(c['open'] and x['festival'],'Ngày hội xuất hiện ngẫu nhiên. Mở ca có nhịp Ngày hội để tham gia.');need(not x['festival_claimed'],'Ngày hội này đã hoàn tất.');need(x['day_metrics'].get('served',0)>=3 and x['day_metrics'].get('activities',0)>=1,'Chuẩn bị 3 công việc hoàn tất và 1 trò nhỏ trước nhé.')
    x['festival_claimed']=True;_metric(c,'festivals');e.money(s,c,30,'Hoạt động ngày hội',f"festival-{c['day']}",category='festival_reward');_sticker(c,'festival','Một góc ngày hội','🎏')
    e.add_feed(s,c,next(n['id'] for n in e.NPCS if n['career_id']==career),'Góc hoạt động hôm nay đã sẵn sàng. Cảm ơn bạn đã chuẩn bị thật chu đáo!',f"festival-{c['day']}",kind='story');r.update(message='Ngày hội đã có một góc mang dấu ấn của bạn!',celebrate=True)
   elif name=='chapter':

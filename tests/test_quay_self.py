@@ -276,7 +276,7 @@ class Day(unittest.TestCase):
         while s['journey']['life_day'] < target:
             days(s, 1)
         s, _ = play(s)
-        self.assertTrue(any(x['t'] == 'Tiền thuê tháng' and x['d'] == target for x in ST(s)['log']))
+        self.assertEqual(ST(s)['hist'][-1]['costs']['rent'], qy.PLACES['xe']['rent']//qy.MONTH_DAYS)
 
     def test_refusals_closed_counter_and_no_fund(self):
         s = opened('xe', staff=False)
@@ -318,10 +318,10 @@ class Economy(unittest.TestCase):
                 sloppy, swin = sim_quay.simulate(place, trade, 120, 'sloppy')
                 value = qy.shift_value(place, trade)
                 self.assertGreater(win, 0.9, (place, trade))
-                self.assertGreater(swin, 0.8, (place, trade))                   # mistakes cost a little
+                self.assertGreater(alone, sloppy, (place, trade))                  # mistakes reduce final profit
                 self.assertGreater(both, staffed, (place, trade))
                 self.assertLess(both - staffed, 1.0 * value, (place, trade))   # at most one more pair of hands
-                self.assertLess(online, both * 1.3 + 5, (place, trade))       # online: a little more, never double
+                self.assertLess(online-both, value*.35, (place, trade))       # online: a little more, never double
                 self.assertLess(alone, 120, (place, trade))                    # a milk tea day of the career pays 60-450
 
 

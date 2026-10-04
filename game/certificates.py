@@ -176,6 +176,8 @@ def action(s: dict, name: str, p: dict) -> dict:
                           paper=dict(qs=_draw(j, gid, attempt), answers={}, attempt=attempt))
         how = (f'Đã quẹt thẻ {cost} xu học phí lớp cấp tốc' if paid and paid['method'] != 'cash' else
                f'Đã đóng {cost} xu học phí lớp cấp tốc') if cost else 'Bạn mượn sách về tự học'
+        if paid and paid['method'] == 'account':
+            how = f'Đã trả {cost} xu học phí từ tài khoản thanh toán'
         if not days:
             return dict(message=f'{how} · {g["name"]}. Đọc lướt bài học rồi vào thi luôn nhé: được mở sách, câu nào phân vân thì bấm 💡 Gợi ý.')
         return dict(message=f'{how} · {g["name"]}. Bài thi mở {days_.when_day(s, j["life_day"] + days)}; '

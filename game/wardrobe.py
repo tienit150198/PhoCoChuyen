@@ -49,7 +49,7 @@ from __future__ import annotations
 VERSION = 1
 KEY = 'wardrobe'
 SLOTS = ('hair', 'shade', 'skin', 'top', 'bottom', 'shoes', 'acc')
-SLOT_NAMES = dict(hair='Kiểu tóc', shade='Màu tóc', skin='Màu da', top='Áo', bottom='Quần · váy', shoes='Giày dép', acc='Phụ kiện')
+SLOT_NAMES = dict(hair='Kiểu tóc', shade='Màu tóc', skin='Màu da', top='Áo · đầm', bottom='Quần · váy', shoes='Giày dép', acc='Phụ kiện')
 SHOP = 'clothing'                 # Tiệm Áo Chỉ Mây
 SHOP_NAME = 'Tiệm Áo Chỉ Mây'
 STAFF_OFF = 20                    # % off for someone who has worked there
@@ -71,6 +71,9 @@ ITEMS = [
     _i('toc_bob', 'hair', 'Tóc bob ngang vai', 40),
     _i('toc_duoi_ngua', 'hair', 'Tóc đuôi ngựa', 40),
     _i('toc_xoan', 'hair', 'Tóc xoăn bồng', 60),
+    _i('toc_bui_cao', 'hair', 'Tóc búi cao gọn', 50),
+    _i('toc_bui_doi', 'hair', 'Tóc búi đôi tinh nghịch', 60),
+    _i('toc_bui_thap', 'hair', 'Tóc búi thấp thanh lịch', 45),
     # Màu tóc
     _i('mau_nau', 'shade', 'Nâu hạt dẻ'),
     _i('mau_den', 'shade', 'Đen tuyền'),
@@ -96,6 +99,10 @@ ITEMS = [
     _i('ao_vest', 'top', 'Vest công sở', 0, 'title:st_office'),
     _i('ao_cuoi', 'top', 'Áo dài cưới đỏ', 0, 'married', plain='Áo dài cưới'),
     _i('vest_cuoi', 'top', 'Vest chú rể', 0, 'married'),
+    # Full dresses occupy the top slot; the renderer covers the saved bottom without changing it.
+    _i('dam_cong_chua', 'top', 'Đầm công chúa tầng mây', 160),
+    _i('dam_du_tiec', 'top', 'Đầm dạ tiệc đuôi cá', 180),
+    _i('dam_yem', 'top', 'Đầm yếm dạo phố', 120),
     # Quần · váy
     _i('quan_kem', 'bottom', 'Quần lửng kem', plain='Quần lửng'),
     _i('quan_xam', 'bottom', 'Quần tây xám', plain='Quần tây'),
@@ -566,7 +573,7 @@ def _color_args(p: dict, keys: set) -> tuple[str, bool]:
     cid, buy = p.get('color'), p.get('buy', False)
     need(isinstance(cid, str) and (cid == GOC or cid in COLOR_INDEX), 'Màu này không có trong bảng màu.')
     need(buy in (True, False), 'Thông tin màu không hợp lệ.')
-    need(p.get('pay', 'auto') in ('auto', 'cash', 'card', 'joint'), 'Thông tin màu không hợp lệ.')
+    need(p.get('pay', 'auto') in ('auto', 'cash', 'card', 'account', 'joint'), 'Thông tin màu không hợp lệ.')
     return cid, buy
 
 

@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {paymentChoices,confirmPurchase} from '../public/js/v4/payment.js';
+const J={wallet:10,bank:{open:true,balance:100,pref:'account',card:{available:60,locked:null}}};
+let c=paymentChoices(J,30,{balance:80,daily_left:20});
+assert.equal(c.find(x=>x.id==='cash').ok,false);
+assert.equal(c.find(x=>x.id==='account').ok,true);
+assert.equal(c.find(x=>x.id==='joint').ok,false,'rolling joint cap enforced in choices');
+assert.equal(paymentChoices({wallet:-10},0).find(x=>x.id==='cash').ok,true,'free adoption does not require a solvent wallet');
+const calls=[],env={api:{state:{journey:J}},confirmAction:async(...args)=>{calls.push(args);return 'cash';}};
+assert.equal(await confirmPurchase(env,{title:'Mua',cost:30}),null,'unaffordable selected choice is never sent');
+env.confirmAction=async(...args)=>{calls.push(args);return 'card';};
+assert.equal(await confirmPurchase(env,{title:'Mua',cost:30}),'card');
+assert.equal(J.bank.pref,'account','one purchase never persists its choice');
+assert.ok(calls.at(-1)[3].payment.options.find(x=>x.id==='account'));
+console.log('payment choices passed');

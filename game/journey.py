@@ -32,6 +32,9 @@ from . import bank as bk   # 🏦 Ngân hàng Phố (game/bank.py)
 from . import wardrobe as wd   # 👗 Tủ đồ (game/wardrobe.py)
 from . import avatar as avt    # 🙂 Ảnh đại diện khi chat (game/avatar.py)
 from . import housing as hs   # 🏠 Nhà của bạn (game/housing.py)
+from . import household as hh
+from . import outings as outings_
+from . import courier as ship
 from . import reno as rn   # 🛠️ Sửa và trang trí nhà (game/reno.py)
 from . import deco as dc   # 🪴 Bày trí phòng (game/deco.py)
 from . import garage as gr   # 🚗 Xe & phương tiện (game/garage.py)
@@ -668,6 +671,7 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     rui.on_life_day(s, result)   # 🛡️ warnings, cards and premiums (after the bills: a waived bill raises the odds)
     qy.on_life_day(s, result)   # 🏪 each counter runs the day that just ended (after the month's bills)
     qy.on_shift(s, career, action, result)   # 💼 a hired shift at another player's counter ends with its day (game/quay_hire.py)
+    ship.on_action(s, career, action, p, result)
     if action == 'start_day' and career in s['careers']:
         line = _emp().backdoor_remark(s, s['careers'][career], career)   # vào bằng cửa sau: one remark, day one
         if line:
@@ -812,6 +816,12 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(avt.action(s, name, p))
     elif name.startswith('jr_home_'):
         result.update(hs.action(s, name, p))
+    elif name.startswith('jr_hh_'):
+        result.update(hh.action(s, name, p))
+    elif name.startswith('jr_out_'):
+        result.update(outings_.action(s, name, p))
+    elif name.startswith('jr_ship_'):
+        result.update(ship.action(s, name, p))
     elif name.startswith('jr_reno_'):
         result.update(rn.action(s, name, p))
     elif name.startswith('jr_deco_'):
@@ -912,7 +922,7 @@ def public(s: dict) -> dict:
         clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=tree_copy(j['news']),
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
-        bank=bk.public(s), home=hs.public(s), reno=rn.public(s), deco=dc.public(s),
+        bank=bk.public(s), home=hs.public(s), household=hh.public(s), outings=outings_.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
         garage=gr.public(s), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
         **({'quay': qy.public(s)} if qy.visible(s) else {}))   # 🏪 only once a save reaches it (state size)
 
@@ -939,7 +949,7 @@ def content() -> dict:
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
-        garage=gr.catalogue(), rui=rui.catalogue(), quay=qy.catalogue())
+        garage=gr.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content())
 
 
 def validate(s: dict) -> None:
@@ -1012,6 +1022,9 @@ def validate(s: dict) -> None:
     wd.validate(s)
     avt.validate(s)   # 🙂 s['avatar'] (optional)
     hs.validate(s)
+    hh.validate(s)
+    outings_.validate(s)
+    ship.validate(s)
     rn.validate(s)
     dc.validate(s)
     gr.validate(s)   # 🚗 journey['garage'] (optional)

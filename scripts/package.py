@@ -2,9 +2,9 @@
 """Create a clean source ZIP with hashes; excludes runtime data and secrets.
 The public/ JS and CSS go in minified (scripts/build_static.py, needs node/npx); --no-minify keeps the source bytes."""
 from pathlib import Path
-import argparse,datetime,hashlib,json,sys,zipfile
+import argparse,datetime,hashlib,json,re,sys,zipfile
 ROOT=Path(__file__).resolve().parents[1]
-BLOCKED_DIRS={'_v','.git','.venv','node_modules','__pycache__','.pytest_cache','test-results','todo','done','screens'}
+BLOCKED_DIRS={'_v','.git','.venv','node_modules','__pycache__','.pytest_cache','test-results','todo','done','screens','output','.playwright-cli'}
 BLOCKED_SUFFIXES={'.zip','.sqlite','.sqlite3','.db','.pyc','.pyo','.ttf','.otf','.eot'}
 
 def main():
@@ -27,7 +27,8 @@ def main():
         try:built=minify(ROOT)
         except BuildError as e:sys.exit(f'package: {e}')
     data=lambda p:built.get(p.relative_to(ROOT).as_posix()) or p.read_bytes()
-    manifest={'project':'Một ngày làm nghề','version':'0.9.5','created_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'public web game: one character journey across 20 careers, multiplayer street, AI personas, web push, vi/en','minified':len(built),'files':[{'path':str(p.relative_to(ROOT)),'bytes':len(data(p)),'sha256':hashlib.sha256(data(p)).hexdigest()} for p in paths]}
+    version=re.search(r'^__version__\s*=\s*"([^"]+)"',(ROOT/'game/__init__.py').read_text(encoding='utf-8'),re.M).group(1)
+    manifest={'project':'Một ngày làm nghề','version':version,'created_at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'public web game: character journey, multiplayer street, AI personas, web push, vi/en','minified':len(built),'files':[{'path':str(p.relative_to(ROOT)),'bytes':len(data(p)),'sha256':hashlib.sha256(data(p)).hexdigest()} for p in paths]}
     mp=ROOT/'MANIFEST.json';mp.write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding='utf-8')
     args.output.parent.mkdir(parents=True,exist_ok=True)
     with zipfile.ZipFile(args.output,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as out:

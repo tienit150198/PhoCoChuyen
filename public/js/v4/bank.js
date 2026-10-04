@@ -292,7 +292,7 @@ function home(b){
     ${sc.log.length?`<ul class="bk-score-log">${sc.log.slice(0,5).map(r=>`<li><span>Ngày ${r.day} · ${esc(WHY[r.why]||r.why)}</span><b class="${r.delta>0?'up':'down'}">${r.delta>0?'+':'−'}${Math.abs(r.delta)}</b></li>`).join('')}</ul>`:''}
     <details class="bk-tips"><summary>Cách tăng điểm</summary><ul class="bk-bullets">${sc.tips.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
     <p class="bk-hint">Thu nhập 14 ngày gần nhất: ${xu(b.income.total)} (trung bình ${xu(b.income.avg)}/ngày, ${b.income.days} ngày có thu nhập).</p></details></section>`;
-  return hero+tiles+(c?`<section class="bk-card bk-card-mini" >${cardVisual(c,b.holder)}${limitBar(c)}</section>`:'')+
+  return hero+paymentSettings(b)+tiles+(c?`<section class="bk-card bk-card-mini" >${cardVisual(c,b.holder)}${limitBar(c)}</section>`:'')+
     scoreBox+jointSection()+
     `<section class="bk-card"><h3>Tin nhắn & cuộc gọi</h3>${inbox?`<ul class="bk-inbox">${inbox}</ul>`:'<p class="bk-hint">Chưa có tin nhắn nào.</p>'}</section>`+
     `<section class="bk-card"><h3>Cài đặt</h3><label class="bk-toggle"><input type="checkbox" data-bk="sweep"${b.sweep?' checked':''}${S.busy?' disabled':''}><span>Tự động bù ví khi ví âm (tiền phòng, cơm nước) bằng tiền trong tài khoản</span></label></section>`;
@@ -356,6 +356,13 @@ function save(b){
     <section class="bk-card"><h3>Sổ có kỳ hạn</h3>${terms?`<ul class="bk-list">${terms}</ul>`:'<p class="bk-hint">Chưa có sổ nào.</p>'}</section>`;
 }
 
+function paymentSettings(b){
+  return `<section class="bk-card"><h3>Khi mua sắm cá nhân</h3><p class="bk-hint">Học phí, trang phục, đi cửa sau… dùng cách trả mặc định khi bạn không chọn riêng. Ưu tiên thẻ chung sẽ trừ quỹ chung nếu đủ tiền và hạn mức; nếu không, thử ví rồi thẻ tín dụng. Chi phí quầy lấy từ két và vốn quầy; góp vốn dùng ví.</p>
+    <p class="bk-hint">Chọn trả từ tài khoản để mua sắm không cần rút tiền. Chỉ trừ số dư tài khoản thanh toán; thiếu tiền sẽ dừng, không tự dùng ví hoặc vay thẻ. Tiền tiết kiệm không bị trừ.</p>
+    <div class="bk-move"><label class="bk-field wide"><span>Cách trả mặc định</span><select id="bk-pref">${Object.entries(b.prefs).map(([k,v])=>`<option value="${k}"${b.pref===k?' selected':''}>${esc(v)}</option>`).join('')}</select></label></div>
+    <div class="bk-actions">${btn('Lưu','pref',{},'ghost small')}</div></section>`;
+}
+
 function card(b){
   const R=b.rules,c=b.card;
   const fees=`<section class="bk-card"><table class="bk-rates flat"><caption>Biểu phí thẻ</caption><tbody>
@@ -364,9 +371,7 @@ function card(b){
     <tr><th scope="row">Phí trễ hạn</th><td>${xu(R.card_late_fee)} và giảm điểm tín dụng</td></tr>
     <tr><th scope="row">Ứng tiền mặt</th><td>${R.cash_fee_pct}% (ít nhất ${xu(R.cash_fee_min)}), lãi từ ngày đầu, tối đa ${R.cash_share}% hạn mức</td></tr>
     <tr><th scope="row">Sao kê · hạn trả</th><td>Mỗi ${R.card_cycle} ngày · ${R.card_grace} ngày sau sao kê</td></tr></tbody></table></section>`;
-  const pref=`<section class="bk-card"><h3>Khi mua sắm cá nhân</h3><p class="bk-hint">Học phí, trang phục, đi cửa sau… dùng cách trả mặc định khi bạn không chọn riêng. Ưu tiên thẻ chung sẽ trừ quỹ chung nếu đủ tiền và hạn mức; nếu không, thử ví rồi thẻ tín dụng. Chi phí quầy lấy từ két và vốn quầy; góp vốn dùng ví.</p>
-    <div class="bk-move"><label class="bk-field wide"><span>Cách trả mặc định</span><select id="bk-pref">${Object.entries(b.prefs).map(([k,v])=>`<option value="${k}"${b.pref===k?' selected':''}>${esc(v)}</option>`).join('')}</select></label></div>
-    <div class="bk-actions">${btn('Lưu','pref',{},'ghost small')}</div></section>`;
+  const pref=paymentSettings(b);
   if(!c){
     const o=b.card_offer;
     return `<section class="bk-card bk-center"><div class="bk-plastic ghost" aria-hidden="true"><div class="bk-plastic-top"><span class="bk-plastic-logo">${LOGO}<b>NGÂN HÀNG PHỐ</b></span><span class="bk-plastic-kind">CREDIT</span></div><span class="bk-chip"></span><div class="bk-plastic-no">•••• •••• •••• ••••</div></div>

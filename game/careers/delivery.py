@@ -929,6 +929,8 @@ def _ride_effects(c: dict, blocks: int, leg: dict | None = None) -> list[str]:
 
 def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = _data(c)
+    if name in ('dl_signal','dl_cross'):
+        return _traffic(s,c,d,name,p)
     if name == 'dl_decide':
         return _decide(s, c, p)
     if name != 'dl_plan':
@@ -942,6 +944,42 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
             x = kit.desk_script(EVENTS, ev['script'])
             out['message'] = (out.get('message') or '') + f' {x["emoji"]} {x["title"]}!'
     return out
+
+
+def _traffic(s,c,d,name,p):
+    from .. import traffic
+    target=p.get('target')
+    kit.need(isinstance(target,str) and target in NODES and target!=d['at'],'Chọn điểm đến trước khi lái.')
+    scope=f"{c['day']}:{d['at']}:{target}"
+    drive=d.get('drive')
+    if name=='dl_signal':
+        kit.need(set(p)<={'target','i','j','axis'},'Thông tin đèn giao thông sai.')
+        i,j,axis=p.get('i'),p.get('j'),p.get('axis')
+        kit.need(type(i) is int and type(j) is int and (i,j) in traffic.LIT and axis in ('x','y'),'Ngã tư không có đèn này.')
+        # Checkpoints must lie on this leg's route corridor (allow one block of detour).
+        a,b=NODES[d['at']],NODES[target]
+        via=abs(a['x']-i)+abs(a['y']-j)+abs(b['x']-i)+abs(b['y']-j)
+        direct=abs(a['x']-b['x'])+abs(a['y']-b['y'])
+        kit.need(via<=direct+2,'Ngã tư này ngoài chặng đang giao. Quay lại theo mũi tên nhé.')
+        if not drive or drive['scope']!=scope:
+            drive=d['drive']=dict(scope=scope,traffic=traffic.fresh())
+        traffic.issue(drive['traffic'],f'{scope}:{i},{j}:{axis}',(i*7+j*3)%16,axis)
+        return dict(message='',traffic=traffic.public(drive['traffic']))
+    kit.need(set(p)<={'target','token'},'Thông tin vượt ngã tư sai.')
+    kit.need(drive and drive['scope']==scope,'Chặng đã đổi. Xem đèn trước khi qua ngã tư.')
+    r=traffic.cross(drive['traffic'],p.get('token'))
+    from .. import operations as ops
+    bid='traffic-'+r['token'];label='Vượt đèn đỏ · '+r['key']
+    if r['fine'] and not r['duplicate']:
+        paid=min(c['money'],r['fine'])
+        if paid:kit.money(s,c,-paid,label,bid,'fine')
+        if paid<r['fine']:ops.bill(c,bid,'fine',label,r['fine']-paid,c['day']+1,r['token'])
+    bill=next((b for b in c['ops']['finance']['bills'] if b['id']==bid and b['status']=='unpaid'),None)
+    if bill:message=f'🚦 Phạt đèn đỏ {r["fine"]} xu: còn {bill["amount"]} xu trong Hóa đơn của nghề. Trả khi quỹ nghề đủ tiền; biên nhận chỉ ghi một lần.'
+    elif r['fine']:message=f'🚦 Vượt đèn đỏ: phạt {r["fine"]} xu từ quỹ nghề. Biên nhận đã vào sổ thu chi.'
+    elif r['grace']:message='🚦 Đèn vừa chuyển đỏ: miễn phạt trong 1 giây đầu để kịp dừng an toàn.'
+    else:message='🚦 Đã qua ngã tư đúng tín hiệu.'
+    return dict(message=message,traffic=traffic.public(drive['traffic']),receipt=r)
 
 
 def _mod_id(c: dict) -> str | None:
@@ -1460,6 +1498,9 @@ def public_task(t: dict) -> dict:
 
 def public_data(raw: dict) -> dict:
     d = _extend(tree_copy(raw['ext']['data']))
+    if d.get('drive'):
+        from .. import traffic
+        d['drive']['traffic']=traffic.public(d['drive']['traffic'])
     wx = weather(raw['day'])
     d.update(weather=wx, mpu=MPU[wx], rate=FUEL_RATE[wx], load=_load(raw), limit=LOAD_LIMIT, cap=COD_CAP,
              eta=_eta(raw, raw['ext']['data']), clock_text=hm(d['clock']))
@@ -1557,6 +1598,11 @@ def validate_task(t: dict, original: dict) -> None:
 
 
 def validate_data(c: dict) -> None:
+    drive=c['ext']['data'].get('drive')
+    if drive is not None:
+        from .. import traffic
+        kit.need(isinstance(drive,dict) and set(drive)=={'scope','traffic'} and isinstance(drive['scope'],str) and len(drive['scope'])<=70,'Chặng tự lái sai.')
+        traffic.validate(drive['traffic'])
     d = _data(c)
     kit.mark_legacy(c, ID, 'gen')
     for t in c.get('tasks', []):
@@ -1946,7 +1992,7 @@ SPEC = dict(
     tip=2,
     physical=('dl_ride', 'dl_deliver'),
     free_actions=(),
-    no_tick=('dl_plan', 'dl_decide'),
+    no_tick=('dl_plan', 'dl_decide', 'dl_signal', 'dl_cross'),
     waste_items=('food',),
     activity=('🛵', 'Thùng xe gọn gàng', [('Bộ chén gốm', 'Bọc xốp hơi'), ('Thư bảo đảm', 'Túi chống nước'),
                                          ('Sữa chua', 'Túi giữ lạnh'), ('Tủ vải', 'Dây ràng')],

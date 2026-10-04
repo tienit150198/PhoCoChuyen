@@ -468,7 +468,7 @@ def initial() -> dict:
     case = [dict(id='open-croissant', item='croissant', qty=6, day=1, q='golden', sale=False, cost=0),
             dict(id='open-banhmi', item='banhmi', qty=8, day=1, q='golden', sale=False, cost=0),
             dict(id='open-cookie', item='cookie', qty=8, day=1, q='golden', sale=False, cost=0)]
-    return dict(proof=[], oven=[], case=case, drinks=0, pastries=0, cakes=0, donated=0, markdown_sold=0, discarded=0, clean_day=0,
+    return dict(bar_pace=1, proof=[], oven=[], case=case, drinks=0, pastries=0, cakes=0, donated=0, markdown_sold=0, discarded=0, clean_day=0,
                 counter_sold=0, regulars={}, grades=[], ev_hist=[], **_care_initial())
 
 
@@ -503,6 +503,7 @@ def _upgrade_task(t: dict, c: dict | None) -> None:
 
 def _migrate(c: dict) -> dict:
     d = FS.migrate(c)
+    d.setdefault('bar_pace', 1)
     d.setdefault('counter_sold', 0)
     for k, v in _care_initial().items():
         d.setdefault(k, v)
@@ -540,7 +541,7 @@ def _walkin_chance(c: dict, pl: dict) -> float:
 
 SIZE_BASE = 2      # one drink with one pastry (kit.size_factor: a bigger order waits longer)
 SHOP_ACTIONS = ('cb_event', 'cb_box_send', 'cb_clean', 'cb_shape', 'cb_bake', 'cb_unload', 'cb_markdown', 'cb_donate',
-                'cb_discard', 'cb_feed', 'cb_chill')   # work for the shop, not for the guest on the bench
+                'cb_discard', 'cb_feed', 'cb_chill', 'cb_pace')   # work for the shop, not for the guest on the bench
 
 
 def _units(t: dict) -> int:
@@ -799,6 +800,12 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
 
 
 def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
+    if name == 'cb_pace':
+        pace = p.get('pace')
+        kit.need(type(pace) is int and pace in (1, 2), 'Chọn nhịp máy 1× hoặc 2×.')
+        kit.need(not _pulling(c) and not _steaming(c), 'Dừng chiết và tắt vòi hơi trước khi đổi nhịp máy.')
+        d['bar_pace'] = pace
+        return dict(message=f'Nhịp máy {pace}×: vẫn tự bấm dừng ở vạch xanh.')
     if name == 'cb_event':
         return FS.resolve(s, c, pl, EVENT_INDEX, p)
     if name == 'cb_box_send':
@@ -962,7 +969,7 @@ def _bar(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     if name in ('cb_pull', 'cb_stop'):
         if name == 'cb_stop':
             kit.need(dr['pulling'], 'Chưa chiết shot nào. Bấm “Chiết shot” trước nhé.')
-            eff = max(0.0, kit.tap_now(p) - dr['pulling']) * _flow(dr['dose'])
+            eff = max(0.0, kit.tap_now(p) - dr['pulling']) * _flow(dr['dose']) * c['ext']['data']['bar_pace']
         else:
             eff = AUTO_SHOT
         x = _shot_class(eff, dr['dose']['grind'])
@@ -1001,7 +1008,7 @@ def _bar(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     if name in ('cb_milk', 'cb_milk_stop'):
         if name == 'cb_milk_stop':
             kit.need(dr['steaming'], 'Vòi hơi chưa bật. Bấm “Đánh nóng” trước nhé.')
-            temp = min(99.0, steam_temp(max(0.0, kit.tap_now(p) - dr['steaming'])))
+            temp = min(99.0, steam_temp(max(0.0, kit.tap_now(p) - dr['steaming']) * c['ext']['data']['bar_pace']))
         else:
             temp = AUTO_MILK
         tex = _milk_tex(temp)
@@ -1845,7 +1852,7 @@ def public_data(c: dict) -> dict:
         # Beats still to wait before the bake click itself (which is one beat).
         tray['left'] = max(0, tray['ready'] - (c['turn'] + 1))
         tray['over'] = c['turn'] + 1 > tray['ready'] + OVERPROOF
-    d['groups'] = [dict(task=t['id'], start=t['drink']['pulling'], flow=round(_flow(t['drink']['dose']), 3) if t['drink']['dose'] else 1.0) for t in _pulling(c)]
+    d['groups'] = [dict(task=t['id'], start=t['drink']['pulling'], flow=round(_flow(t['drink']['dose']) * d['bar_pace'], 3) if t['drink']['dose'] else 1.0) for t in _pulling(c)]
     d['wand'] = [dict(task=t['id'], start=t['drink']['steaming']) for t in _steaming(c)]
     d['cooling'] = {t['id']: max(0, t['cake']['cool_turn'] - (c['turn'] + 1)) for t in c['tasks'] if _open(t) and t['cake']['sponge']}
     for r in d['oven']:
@@ -2013,6 +2020,7 @@ def validate_task(t: dict, original: dict) -> None:
 def validate_data(c: dict) -> None:
     need = kit.need
     d = _migrate(c)
+    need(type(d['bar_pace']) is int and d['bar_pace'] in (1, 2), 'Nhịp máy pha sai.')
     for k in ('proof', 'oven', 'case'):
         need(isinstance(d.get(k), list), 'Dữ liệu lò bánh sai.')
     need(len(d['proof']) <= 2 and len(d['oven']) <= 2 and len(d['case']) <= 40, 'Lò hoặc tủ bánh quá tải.')
@@ -2732,7 +2740,7 @@ SPEC = dict(
     physical=('cb_pull', 'cb_milk', 'cb_pick', 'cb_serve', 'cb_dump', 'cb_bake', 'cb_frost', 'cb_done', 'cb_box_send'),
     wait=True,  # the queue drains in handle (food_service.patience_tick → kit.wait_tick), not the engine's flat -1
     free_actions=(),
-    no_tick=('cb_stop', 'cb_milk_stop', 'cb_unload', 'cb_lid', 'cb_ice', 'cb_return', 'cb_tab', 'cb_greet'),
+    no_tick=('cb_stop', 'cb_milk_stop', 'cb_unload', 'cb_lid', 'cb_ice', 'cb_return', 'cb_tab', 'cb_greet', 'cb_pace'),
     waste_items=('drink', 'sponge', *CASE_ITEMS),
     activity=('🥐', 'Quầy bánh gọn gàng', [('Sữa tươi', 'Tủ mát'), ('Bột mì', 'Kệ khô'), ('Kem tươi', 'Tủ mát'), ('Hạt cà phê', 'Kệ khô')],
               ['Nhận order', 'Xay mịn và chiết shot', 'Đánh sữa và rót', 'Kiểm ly rồi giao']),

@@ -13,9 +13,12 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {paintCounter} from './quay-scene.js';
 import {figure} from './look.js';
+import {confirmPurchase} from './payment.js';
 import {RIDE,rideSVG,turnChoices} from './quay-ride.js';
+import {signalHTML,mountSignals} from './traffic.js';
 
-const S={md:{},lk:{},run:null,anchor:'',anchorAt:0,dlg:null,env:null,view:'list',tab:'mine',pick:null,busy:false,flash:null,listening:false,open:{},help:{},wage:{},hire:null,loading:false,to:{}};
+const PAGE_SIZE=12;
+const S={page:0,md:{},lk:{},run:null,anchor:'',anchorAt:0,dlg:null,env:null,view:'list',tab:'mine',pick:null,busy:false,flash:null,listening:false,open:{},help:{},wage:{},hire:null,loading:false,to:{}};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
@@ -111,6 +114,12 @@ async function onClick(op,data){
     case'close':S.dlg.close();return;
     case'help':S.help[data.key]=!S.help[data.key];render();return;
     case'back':S.view='list';S.pick=null;render();toTop();return;
+    case'courier':S.dlg.close();S.env.openSheet('home',{jrView:'courier'});return;
+    case'page':S.page=Math.max(0,Number(data.page)||0);render();toTop();return;
+    case'prepare':{const st=stallOf(data.id);if(!st)return;const enabled=data.enabled==='true';
+      if(!enabled&&data.kind!=='security'&&!await ask('Tắt kiểm tra hằng ngày?','Quầy có thể vi phạm khi kiểm tra. Bạn có thể bật lại bất cứ lúc nào.','Tắt kiểm tra'))return;
+      send('jr_quay_prepare',{stall:data.id,kind:data.kind,enabled});return;}
+    case'incident':send('jr_quay_incident',{stall:data.id,choice:data.choice});return;
     case'new':{const can=V()?.can||[];S.view='open';S.pick={trade:can[0]||'',place:'xe',name:''};S.flash=null;render();toTop();return;}
     case'trade':if(S.pick){S.pick.trade=data.id;render();}return;
     case'place':if(S.pick){S.pick.place=data.id;render();}return;
@@ -131,8 +140,8 @@ async function onClick(op,data){
     case'reload':S.hire=null;loadHire();return;
     case'to':S.to[data.id]=data.code||'';render();return;
     case'post':{const st=stallOf(data.id);if(!st)return;const w=S.wage[`p:${st.id}`]??Number(data.wage);
-      if(await ask('Đăng ca làm thêm?',`Giữ ${xu(w)} từ két và vốn quầy. Không ai làm thì về lại.`,`Đăng ca · ${xu(w)}`))
-        hireSend('post',{stall:st.id,wage:w,...(S.to[st.id]?{to:S.to[st.id]}:{})});return;}
+      const src=await confirmPurchase(S.env,{title:'Đăng ca làm thêm?',message:`Giữ ${xu(w)} để trả lương ca này. Nếu hủy hoặc hết hạn, tiền hoàn về nguồn đã chọn. Quỹ chung đã đóng thì hoàn về ví người chi.`,label:`Đăng ca · ${xu(w)}`,cost:w,noCredit:true,defaultMethod:'stall',extraSources:[{id:'stall',label:'Két và vốn quầy',balance:st.till+st.fund,text:'Giữ lương từ két và vốn quầy.'}]});
+      if(src)hireSend('post',{stall:st.id,wage:w,src,rid:globalThis.crypto.randomUUID(),...(S.to[st.id]?{to:S.to[st.id]}:{})});return;}
     case'cancel':hireSend('cancel',{id:data.id});return;
     case'accept':hireSend('accept',{id:data.id});return;
     case'decline':hireSend('decline',{id:data.id});return;
@@ -233,7 +242,7 @@ function head(){
   const v=V(),n=v?.stalls?.length||0,till=(v?.stalls||[]).reduce((a,x)=>a+x.till,0);
   const back=S.view!=='list'?`<button class="icon-btn" type="button" data-qy="back" aria-label="Quay lại">${icon('back',21)}</button>`:'<span class="qy-logo" aria-hidden="true">🏪</span>';
   return `<header class="sheet-head bk-head">${back}
-    <div class="grow"><span class="eyebrow">NGÀY SỐNG ${fmt(J().life_day)}</span><h2 id="qy-title">Quầy của bạn</h2><p>${n?`${n} quầy · két ${xu(till)}`:'Mở quầy, thuê người, thu két'}</p></div>
+    <div class="grow"><span class="eyebrow">NGÀY SỐNG ${fmt(J().life_day)}</span><h2 id="qy-title">Quầy của bạn</h2><p>${n?`${n} quầy · két ${xu(till)}`:'Mở quầy, thuê người, thu két'}</p>${btn('🛵 Sổ shipper','courier',{},'small ghost')}</div>
     <button class="icon-btn" type="button" data-qy="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
 }
 const flash=()=>`<p class="bk-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
@@ -281,16 +290,20 @@ function hirePart(st){
   if(!h){loadHire();return '<p class="bk-hint">Đang tải…</p>';}
   if(h.error)return `<p class="bk-hint">${esc(h.error)}</p>`;
   const R=h.rules||{},max=Math.max(R.wage_min||10,Math.min(R.wage_max||120,st.value||0)),min=R.wage_min||10;
-  const offers=(h.mine||[]).filter(x=>x.stall===st.id).map(x=>`<li class="qy-person"><div class="grow"><b>💼 ${xu(x.wage)}</b><small>${esc((JOB_LINE[x.status]||(()=>''))(x))}</small></div>
+  const offers=(h.mine||[]).filter(x=>x.stall===st.id).map(x=>`<li class="qy-person"><div class="grow"><b>💼 ${xu(x.wage)}</b><small>${esc(x.refund_pending?'Lương giữ chỗ đang chờ quỹ chung có chỗ để hoàn.':(JOB_LINE[x.status]||(()=>''))(x))}</small></div>
       ${x.status==='open'?`<div class="qy-person-act">${btn('Hủy','cancel',{id:x.id},'small ghost')}</div>`:''}</li>`).join('');
   const k=`p:${st.id}`,w=Math.min(max,S.wage[k]??Math.min(30,max));
   const to=S.to[st.id]||'';
-  const chips=[['','Ai cũng được'],...(h.friends||[]).slice(0,8).map(f=>[f.code,f.name])].map(([code,name])=>
-    `<button type="button" class="qy-chip${to===code?' on':''}" data-qy="to" data-id="${st.id}" data-code="${esc(code)}">${esc(name)}</button>`).join('');
-  const form=h.lock?`<p class="bk-hint">${esc(h.lock)}</p>`:`<div class="qy-chips">${chips}</div>
-    <div class="qy-person"><div class="grow"><small>Lương một ca</small></div><div class="qy-person-act">${stepper(k,w,st.id,'',min,max)}${btn('Đăng ca','post',{id:st.id,wage:w},'small primary',st.closed?'Quầy đang đóng':'')}</div></div>`;
+  const friends=h.friends||[],chosen=friends.find(f=>f.code===to);
+  const chips=[{code:'',name:'Ai cũng được'},...friends].map(f=>
+    `<button type="button" class="qy-chip${to===f.code?' on':''}" data-qy="to" data-id="${st.id}" data-code="${esc(f.code)}"${f.eligible===false?' disabled':''}>${esc(f.name)}${f.eligible===false?` · chờ ${f.wait_hours} giờ`:''}</button>`).join('');
+  const pending=(h.mine||[]).some(x=>x.stall===st.id&&['open','taken'].includes(x.status));
+  const form=h.lock?`<p class="bk-hint">${esc(h.lock)}</p>`:`<p class="bk-hint">Mời bạn bè: chọn tên bạn bên dưới rồi gửi lời mời. Bạn ấy vào Quầy của bạn → Quầy cần người để nhận ca. Kết bạn xong là mời được ngay.</p><div class="qy-chips">${chips}</div>
+    ${!friends.length?'<p class="bk-hint">Chưa có bạn bè. Kết bạn trong mục Bạn bè rồi quay lại đây nhé.</p>':''}
+    ${pending?'<p class="bk-hint">Quầy đã có một ca đang chờ hoặc đang làm. Muốn đổi từ “Ai cũng được” sang mời riêng, hủy ca đang chờ rồi chọn tên bạn và gửi lại.</p>':''}
+    <div class="qy-person"><div class="grow"><small>Lương một ca</small></div><div class="qy-person-act">${stepper(k,w,st.id,'',min,max)}${btn(to?'Gửi lời mời':'Đăng ca công khai','post',{id:st.id,wage:w},'small primary',st.closed?'Quầy đang đóng':pending?'Quầy đã có ca':to&&(!chosen||chosen.eligible===false)?'Bạn này hiện chưa nhận lời mời được':'')}</div></div>`;
   return `<h4>🙋 Thuê người chơi ${helpBtn('hire')}</h4>
-    ${helpText('hire',`Một người chơi làm một ngày nghề này cho quầy. Xong ${R.tasks||2} việc thì họ nhận lương, két nhận tiền bán. Lương giữ trước từ két, không ai làm thì về lại.`)}
+    ${helpText('hire',`Một người chơi làm một ngày nghề này cho quầy. Xong ${R.tasks||2} việc thì họ nhận lương, két nhận tiền bán. Chọn nguồn giữ lương trước khi đăng: két/vốn quầy, ví, tài khoản hoặc quỹ chung. Không dùng tín dụng. Không ai làm thì hoàn về nguồn đã chọn.`)}
     ${offers?`<ul class="qy-list">${offers}</ul>`:''}${form}`;
 }
 
@@ -299,26 +312,28 @@ function listView(v){
   if(!v.stalls.length){
     if(v.lock)return `<section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏪</div><h3>Chưa mở được quầy</h3><p>${esc(v.lock)}</p>${helpBtn('lock')}${helpText('lock',`Làm ${CAT().served} việc ở một nghề bán hàng rồi quay lại.`)}</section>`;
     return `<section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏪</div><h3>Mở quầy đầu tiên</h3><p>Bán món bạn rành, thuê người đứng quầy.</p>
-      <div class="bk-actions center">${btn('Mở quầy','new',{},'primary')}</div>${helpBtn('first')}${helpText('first',`Thuê nhân viên để quầy tự bán khi bạn kết thúc một ngày sống, hoặc chọn “Đứng quầy hôm nay” để tự bán. Quầy không chạy khi bạn offline. Nhớ ghé thu két: ${CAT().left} ngày không thu, quầy đóng chờ bạn.`)}</section>`;
+      <div class="bk-actions center">${btn('Mở quầy','new',{},'primary')}</div>${helpBtn('first')}${helpText('first',`Thuê nhân viên để quầy tự bán khi bạn kết thúc một ngày sống, hoặc chọn “Đứng quầy hôm nay” để tự bán. Quầy không chạy khi bạn offline. Nhớ ghé thu két: ${CAT().left} ngày không thu, quầy đóng chờ bạn.`)}</section>${hiredReceipts(v.receipts)}`;
   }
-  const more=v.stalls.length<CAT().max&&!v.lock?`<div class="bk-actions center">${btn('＋ Mở thêm quầy','new',{},'ghost')}</div>`:'';
-  return v.stalls.map(stallCard).join('')+more;
+  const more=(CAT().unlimited||v.stalls.length<CAT().max)&&!v.lock?`<div class="bk-actions center">${btn('＋ Mở thêm quầy','new',{},'ghost')}</div>`:'';
+  const pages=Math.ceil(v.stalls.length/PAGE_SIZE);S.page=Math.min(S.page,pages-1);
+  const nav=pages>1?`<nav class="bk-actions center" aria-label="Trang quầy">${btn('‹ Trước','page',{page:S.page-1},'small',S.page?'':'Trang đầu')}<span>${fmt(v.stalls.length)} quầy · ${S.page+1}/${pages}</span>${btn('Sau ›','page',{page:S.page+1},'small',S.page<pages-1?'':'Trang cuối')}</nav>`:'';
+  return nav+v.stalls.slice(S.page*PAGE_SIZE,(S.page+1)*PAGE_SIZE).map(stallCard).join('')+nav+more+hiredReceipts(v.receipts);
 }
 
 function stallCard(st){
   const P=place(st.place),T=trade(st.trade),cat=CAT();
   const today=st.today||{};
-  const status=st.due?`Chờ đóng ${xu(st.due)} tiền thuê`:st.closed?'Đóng cửa chờ chủ':!st.staff.length?(cat.menus?'Chưa thuê ai: tự đứng quầy nhé':'Chưa có người đứng quầy'):
+  const status=st.due?`Chờ đóng ${xu(st.due)} chi phí quầy`:st.economy?.paused?'Tạm dừng: kiểm hàng và vệ sinh':st.closed?'Đóng cửa chờ chủ':!st.staff.length?(cat.menus?'Chưa thuê ai: tự đứng quầy nhé':'Chưa có người đứng quầy'):
     `Hôm nay ${cat.weather[today.w]||''} · ${cat.pace[today.pace]||''}${today.x3?' · 🔥':''}`;
   const week=st.hist.reduce((a,h)=>a+h[2],0);
   const part=S.open[st.id]||'';
   const alerts=[
     st.case?`<div class="bk-alert bad qy-row"><span>🚨 ${st.case.all?'Mất cả két':'Trộm lấy'} ${xu(st.case.lost)}</span>${st.case.rep?'<small>Đã báo công an</small>':btn('Báo công an','police',{id:st.id},'small')}</div>`:'',
-    st.due?`<div class="bk-alert warn qy-row"><span>🧾 Nợ tiền thuê ${xu(st.due)}</span>${btn('Đóng tiền','pay',{id:st.id},'small primary')}</div>`:'',
+    st.due?`<div class="bk-alert warn qy-row"><span>🧾 Chi phí chưa trả ${xu(st.due)}</span>${btn('Đóng tiền','pay',{id:st.id},'small primary')}</div>`:'',
     !st.closed&&st.left<=1&&st.till>0?`<p class="bk-alert warn">Ghé thu két kẻo quầy đóng nhé.</p>`:'',
   ].join('');
   const self=!!cat.menus&&!!st.menu;   // 🧑‍🍳 a server with the board (1.5.3+)
-  const tabs=[...(self?[['menu','🍽️ Menu'],['look','🎨 Trang trí']]:[]),['staff',`👥 Người (${st.staff.length}/${P.slots||1})`],['stock','📦 Hàng'],['fund','💼 Vốn'],['up','🛠️ Nâng cấp']];
+  const tabs=[...(self?[['menu','🍽️ Menu'],['look','🎨 Trang trí']]:[]),['staff',`👥 Người (${st.staff.length}/${P.slots||1})`],['stock','📦 Hàng'],['fund','💼 Vốn'],['up','🛠️ Nâng cấp'],...(st.economy?[['economy','🧾 Sổ quầy & an toàn']]:[])];
   return `<section class="bk-card qy-stall" data-qk="st:${st.id}">
     ${self?`<canvas class="qy-scene" data-qy-live data-cv="${st.id}" role="img" aria-label="${esc(`Quầy ${st.name}`)}"></canvas>`:''}
     <div class="qy-top"><span class="qy-tile" aria-hidden="true">${P.emoji||'🏪'}<i>${T.emoji}</i></span>
@@ -329,10 +344,28 @@ function stallCard(st){
       ${btn(st.closed&&!st.due&&!st.till?'Mở lại quầy':'Thu két','till',{id:st.id},self?'':'primary',st.till||st.closed?'':'Két đang trống')}</div>
     <p class="qy-line">Ai bán, lãi tính thế nào? ${helpBtn(`sales:${st.id}`)}</p>
     ${helpText(`sales:${st.id}`,'Nhân viên đã thuê tự bán khi bạn kết thúc một ngày sống. Chọn “Đứng quầy hôm nay” để tự bán; chưa thuê ai thì quầy không tự bán. Bạn cũng có thể đăng ca thuê người chơi ở mục Người. Quầy không chạy khi bạn offline.')}
-    ${helpText(`sales:${st.id}`,`Lời ngày = doanh thu − tiền hàng (kể cả hàng hư) − lương − điện − phí online/giao hàng (nếu có). Lượng bán tùy thời tiết, khách, menu, lượng hàng và sức phục vụ. Chuyện phát sinh trong ca cũng có thể tăng hoặc giảm lời. Tiền thuê trừ riêng mỗi ${cat.month} ngày sống; tiền thuê và mất két chưa nằm trong số lời ngày.`)}
+    ${helpText(`sales:${st.id}`,`Lời ngày = doanh thu − tiền hàng (kể cả hàng hư) − lương − điện − phí online/giao hàng (nếu có). Lượng bán tùy thời tiết, khách, menu, lượng hàng và sức phục vụ. Chuyện phát sinh trong ca cũng có thể tăng hoặc giảm lời. Sổ quầy đã trừ thuê chỗ theo ngày có bán, vật tư, bảo vệ, thuế và thiệt hại sự cố. Ngày đóng cửa và thời gian offline không phát sinh phí.`)}
     <div class="segmented qy-tabs" role="tablist">${tabs.map(([k,l])=>`<button type="button" role="tab" aria-selected="${part===k}" class="${part===k?'active':''}" data-qy="more" data-id="${st.id}" data-part="${k}">${l}</button>`).join('')}</div>
-    ${part==='menu'?menuPart(st):part==='look'?lookPart(st):part==='staff'?staffPart(st,P):part==='stock'?stockPart(st):part==='fund'?fundPart(st):part==='up'?upPart(st):''}
+    ${part==='menu'?menuPart(st):part==='look'?lookPart(st):part==='staff'?staffPart(st,P):part==='stock'?stockPart(st):part==='fund'?fundPart(st):part==='up'?upPart(st):part==='economy'?economyPart(st):''}
   </section>`;
+}
+
+function hiredReceipts(rows){
+  if(!rows?.length)return '';
+  const source={stall:'két/vốn quầy',cash:'ví',account:'tài khoản ngân hàng',joint:'quỹ chung'};
+  return `<details class="bk-card"><summary>💼 Biên nhận ca người chơi (${rows.length})</summary><p class="bk-hint">Lương đã giữ trước từ nguồn ghi trên biên nhận. Số vào két/ví chỉ trừ thuế; không trừ lương, hàng hay thuê chỗ lần nữa. Lãi ca tính cả khoản lương đã giữ. Biên nhận tách khỏi ngày tự bán và được tính vào thuế chung của chủ.</p><ul class="qy-list">${[...rows].reverse().map(r=>`<li><b>${esc(r.label)} · ngày ${r.d}</b><p>Doanh thu ${xu(r.rev)} · lương đã giữ ${xu(r.wage)} từ ${source[r.source]||''}</p><p>GTGT ${xu(r.vat)} · thu nhập ${xu(r.income)} · lãi ca ${xu(r.net)}</p><small>${r.pocket==='wallet'?'Vào ví':'Vào két'} ${xu(r.cash_net)} sau thuế</small></li>`).join('')}</ul></details>`;
+}
+
+function economyPart(st){
+  const e=st.economy,tax=CAT().tax||{},c=e.costs;
+  const rows=c?[['Doanh thu',e.revenue],['Hàng, lương, điện, giao hàng',-c.base],['Thuê chỗ',-c.rent],['Vật tư & vệ sinh',-c.supplies],['Bảo vệ',-c.security],['Thuế GTGT (game)',-c.vat],['Thuế thu nhập (game)',-c.income],['Thiệt hại / xử lý vi phạm',-c.incident],['Lời sau mọi chi phí',e.net]]:[];
+  const ledger=rows.length?`<dl>${rows.map(([name,n])=>`<div class="qy-row"><dt>${name}</dt><dd>${n<0?'−':n>0?'+':''}${xu(Math.abs(n))}</dd></div>`).join('')}</dl>`:'<p class="bk-hint">Bán một ngày để có sổ thu chi.</p>';
+  const controls=[['hygiene','Kiểm hàng & vệ sinh','Ngừng bán hàng hỏng; kiểm tra an toàn đạt khi bật.'],['invoices','Lưu chứng từ','Lưu hóa đơn, sổ hàng để đối chiếu khi kiểm tra.'],['security','Bảo vệ quầy',`${xu(e.security_fee)} / ngày có bán, giảm thiệt hại trộm cướp.`]].map(([kind,label,line])=>`<div class="qy-person"><div class="grow"><b>${label} · ${e[kind]?'Bật':'Tắt'}</b><small>${line}</small></div>${btn(e[kind]?'Tắt':'Bật','prepare',{id:st.id,kind,enabled:!e[kind]},'small')}</div>`).join('');
+  const incident=e.incident;
+  const names={theft:'Trộm két',robbery:'Cướp tiền bán hàng',food_check:'Kiểm tra vệ sinh',police_check:'Kiểm tra chứng từ',extortion:'Bị đòi tiền bảo kê'};
+  const states={open:'đang chờ xử lý',clear:'đạt, không phạt',violation:'có vi phạm',repaired:'đã khắc phục',reported:'đã lưu bằng chứng và báo công an',refused:'đã từ chối'};
+  const risk=incident?`<p class="bk-alert">${names[incident.kind]||''}: ${states[incident.status]||''}${incident.loss?` · thiệt hại ${xu(incident.loss)}`:''}</p>${incident.kind==='extortion'&&incident.status==='open'?`<div class="bk-actions">${btn('Lưu bằng chứng & báo công an','incident',{id:st.id,choice:'report'},'small primary')}${btn('Từ chối trả tiền','incident',{id:st.id,choice:'refuse'},'small')}</div>`:''}`:'';
+  return `<h4>🧾 Sổ quầy & an toàn</h4>${ledger}<p class="bk-hint">Mức xu trong game, không phải mức thuế ngoài đời: GTGT ${tax.vat_pct||2}% phần doanh thu vượt ${xu(tax.revenue_allowance||1000)}; thu nhập ${tax.income_pct||5}% phần lãi dương vượt ${xu(tax.profit_allowance||200)} mỗi ${tax.period||30} ngày sống. Cộng chung mọi quầy của chủ; lỗ được bù trong kỳ. Không có lệ phí môn bài.</p><p class="bk-hint">Vật tư và vệ sinh: ${e.supplies_pct}% doanh thu. Lời thay đổi theo khách và chi phí; một sự cố có thể làm cả ngày lỗ. Các khoản phí chỉ trừ ở quầy có bán.</p>${risk}${controls}${hiredReceipts(e.receipts)}`;
 }
 
 function stepper(key,value,id,extra,min=1,max=1e6){
@@ -358,7 +391,7 @@ function stockPart(st){
 }
 function fundPart(st){
   return `<div class="qy-part"><p class="qy-line">Vốn quầy <b>${xu(st.fund)}</b> ${helpBtn('fund')}</p>
-    ${helpText('fund','Tiền hàng, lương, điện và phí online lấy từ két trước, thiếu mới lấy vốn quầy. Góp vốn dùng tiền trong ví. Cài ưu tiên thẻ chung không đổi nguồn chi của quầy. Thiếu tiền cho lương và điện thì quầy nghỉ ngày đó.')}
+    ${helpText('fund','Tiền hàng, lương, điện, phí online, thuê chỗ, vật tư, bảo vệ và thuế lấy từ két trước, thiếu mới lấy vốn quầy. Góp vốn dùng ví trước, thiếu mới lấy tài khoản ngân hàng; không dùng thẻ tín dụng. Xem từng khoản trong Sổ quầy & an toàn. Chi phí chưa trả hiện trên thẻ quầy và tạm dừng quầy; chủ chọn Đóng tiền để trả.')}
     ${helpText('fund','Muốn góp vốn bằng quỹ chung: rút từ quỹ chung về ví ở Ngân hàng, rồi Góp vào vốn quầy.')}
     <div class="qy-fund"><label class="bk-field"><span>Số xu</span><input type="number" inputmode="numeric" min="1" step="10" id="qy-fund-${st.id}" value="50"></label>
       ${btn('Góp vào','fund',{id:st.id,sign:'+'},'primary')}${btn('Rút ra','fund',{id:st.id,sign:'-'},'ghost')}</div>
@@ -511,9 +544,9 @@ function packPanel(st,r){
     <div class="bk-actions">${btn('Xong, đi giao','packdone',{id:st.id},'primary',pk.bag.length?'':'Bỏ món vào túi trước')}${btn('Để sau','unpack',{id:st.id},'ghost')}</div>`;
   else if(pk.step==='way')body=`<p class="qy-line">Giao bằng gì?</p><div class="qy-picks">${btn('🛵 Tự chạy đi giao','way',{id:st.id,k:'self'},'primary')}${btn(`📦 Gọi shipper · ${xu(fee)}`,'way',{id:st.id,k:'ship'},'ghost')}</div>`;
   else{const left=3-pk.picks.length;
-    body=`<p class="qy-line">${left?`Theo đường chấm xanh tới 📍. Ngã tư thứ ${pk.picks.length+1}:`:'Tới nơi rồi!'}</p>${rideSVG(o.route,pk.picks)}
+    body=`<p class="qy-line">${left?`Theo đường chấm xanh tới 📍. Ngã tư thứ ${pk.picks.length+1}:`:'Tới nơi rồi!'}</p>${rideSVG(o.route,pk.picks)}${left?signalHTML(pk.signal||o.ride?.traffic):''}${o.ride?.traffic?.receipts?.some(r=>r.fine)?`<p class="notice">🚦 Phạt giao thông: ${o.ride.traffic.receipts.reduce((n,r)=>n+r.fine,0)} xu · tính vào chi phí khi đóng ca quầy. Biên nhận lưu trong sổ quầy.</p>`:''}
       ${left?`<div class="qy-turns">${turnChoices(pk.picks).map(c=>btn(`${c.emoji} ${c.label}`,'turn',{id:st.id,k:c.k},'ghost')).join('')}</div>`
-        :`<div class="bk-actions">${btn('🤝 Giao tận tay','deliver',{id:st.id},'primary')}${btn('↺ Chạy lại','turnreset',{id:st.id},'ghost')}</div>`}`;}
+        :`<div class="bk-actions">${btn('🤝 Giao tận tay','deliver',{id:st.id},'primary')}</div>`}`;}
   return `<section class="bk-card qy-pack"><div class="qy-say"><b>#${o.j+1} ${esc(o.name)} · ${esc(o.addr)}</b><p>${itemsLine(st,o.items)}</p>${o.note?`<p class="qy-note">📝 ${esc(o.note)}</p>`:''}</div>${body}</section>`;
 }
 function summary(st,r){
@@ -573,9 +606,10 @@ function onSelf(op,data){
       const o=(st.run?.orders||[]).find(x=>x.j===u.pack.j);
       if(data.k==='ship'){ship(st,u,'ship');return true;}
       if(RIDE.external&&o){Promise.resolve(RIDE.external(o)).then(route=>{if(Array.isArray(route)){u.pack.picks=route.slice(0,3);ship(st,u,'self');}}).catch(()=>{u.pack.step='ride';render();});return true;}
-      u.pack.step='ride';render();return true;}
-    case'turn':if(u?.pack&&u.pack.picks.length<3){u.pack.picks.push(data.k);render();}return true;
-    case'turnreset':if(u?.pack){u.pack.picks=[];render();}return true;
+      send('jr_quay_signal',{stall:st.id,order:u.pack.j}).then(r=>{if(r){u.pack.picks=r.picks||[];u.pack.signal=r.traffic;u.pack.step='ride';render();}});return true;}
+    case'turn':if(u?.pack&&u.pack.picks.length<3&&u.pack.signal?.challenge){const pk=u.pack;
+      send('jr_quay_cross',{stall:st.id,order:pk.j,turn:data.k,token:pk.signal.challenge.token}).then(async r=>{if(!r)return;pk.picks=r.picks;pk.signal=r.traffic;
+        if(pk.picks.length<3){const next=await send('jr_quay_signal',{stall:st.id,order:pk.j});if(next)pk.signal=next.traffic;}render();});}return true;
     case'deliver':if(u?.pack&&st)ship(st,u,'self');return true;
     case'runclose':{if(!st)return true;const left=st.run&&!st.run.x&&(st.run.cust||st.run.ev);
       const go=()=>send('jr_quay_close',{stall:st.id}).then(r=>{if(r){if(u){u.phone=false;u.pack=null;}if(!stallOf(st.id)?.run){S.view='list';S.run=null;}render();toTop();}});
@@ -593,6 +627,7 @@ function ship(st,u,way){
 /* ---- the counter's canvas: drawn after each render, only when what it shows changed ---- */
 function paintCanvases(){
   if(!S.dlg)return;
+  mountSignals(S.dlg);
   const cat=CAT();if(!cat?.menus)return;
   for(const cv of S.dlg.querySelectorAll('canvas[data-cv]')){
     const st=stallOf(cv.dataset.cv);if(!st?.menu)continue;

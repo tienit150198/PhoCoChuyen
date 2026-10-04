@@ -65,7 +65,7 @@ function shotMeter(x,start,flow){
 }
 function thermo(x,start){
   const st=cc(x).steam||{base:5,rate:4.2,cool:55,silky:68,hot:76},p=v=>v/TEMP_SCALE*100;
-  const temp=start?st.base+st.rate*Math.max(0,x.now()-start):0;
+  const temp=start?st.base+st.rate*Math.max(0,x.now()-start)*(data(x).bar_pace||1):0;
   return bar('therm',`data-steam-start="${start||''}"`,[['cool',0,p(st.cool)],['silky',p(st.cool),p(st.silky)],['hot',p(st.silky),p(st.hot)],['scalded',p(st.hot),100]],p(temp),start?Math.round(temp)+' °C':'Vòi hơi tắt');
 }
 function rackMeter(x,r){
@@ -442,7 +442,9 @@ function barPanel(t,x){
   const shotLine=d.shots.map((s,i)=>`Shot ${i+1}: ${s.sec}s`).join(' · ');
   const picked=t.bag.items.length,wantPastry=Object.values(n.pastry||{}).reduce((a,b)=>a+b,0);
   // Every station stays reachable (a wrong tap is still possible and still costs); only the current one is open.
-  return `<div class="cb-stations">${S(1,'Ly',d.container?`${cname} ${d.size==='L'?'lớn':'nhỏ'}${d.ice?' · có đá':''}${d.water?' · có nước':''}`:'',
+  const pace=dd.bar_pace||1,busy=groups.length>0||wand.length>0;
+  const pacePicker=`<section class="card cb-pace"><div class="row wrap spread"><b>⚡ Nhịp máy pha</b><div class="row wrap" role="group" aria-label="Nhịp máy pha">${[1,2].map(v=>x.cmd(v===1?'1× · Bình thường':'2× · Nhanh','cb_pace',{pace:v},v===pace?'primary small':'ghost small',busy||v===pace)).join('')}</div></div><p class="muted small">2×: thời gian chờ chiết và đánh sữa còn một nửa. Vẫn tự bấm dừng ở vạch xanh; vạch xanh cũng trôi nhanh gấp đôi.</p>${busy?'<small class="muted">Dừng chiết và tắt vòi hơi trước khi đổi nhịp máy.</small>':''}</section>`;
+  return `${pacePicker}<div class="cb-stations">${S(1,'Ly',d.container?`${cname} ${d.size==='L'?'lớn':'nhỏ'}${d.ice?' · có đá':''}${d.water?' · có nước':''}`:'',
       !!d.container&&(!n.iced||d.ice)&&(!dk.water||d.water),`${sizes}<div class="tile-grid cb-grid3">${cups}</div>${extra}`)}
     ${S(2,'Xay & định lượng',d.dose?'tay cầm đã có bột':`☕ xay mịn ${cc(x).dose?.target||18} g`,d.shots.length>=n.shots||!!d.dose,
       `<div class="tile-grid cb-grid3">${beans}</div>${lockChip(x,beanShut)}${grinds}<div class="row wrap spread">${dose}${x.cmd('⚖️ Xay & nén','cb_dose',{task:t.id,beans:ui.beans||'',grind:ui.grind||'',grams},'',!canDose)}</div>`)}
@@ -703,8 +705,8 @@ export default {
     }
     for(const el of scope.querySelectorAll('[data-steam-start]')){
       const start=Number(el.dataset.steamStart);if(!start)continue;
-      const temp=st.base+st.rate*Math.max(0,x.now()-start);
-      draw(el,temp/TEMP_SCALE*100,st.rate/TEMP_SCALE*100,Math.round(temp)+' °C · '+(temp<st.cool?'còn nguội':temp<=st.silky?'TẮT VÒI!':temp<=st.hot?'quá nóng':'khét sữa'));
+      const rate=st.rate*(data(x).bar_pace||1),temp=st.base+rate*Math.max(0,x.now()-start);
+      draw(el,temp/TEMP_SCALE*100,rate/TEMP_SCALE*100,Math.round(temp)+' °C · '+(temp<st.cool?'còn nguội':temp<=st.silky?'TẮT VÒI!':temp<=st.hot?'quá nóng':'khét sữa'));
       el.classList.toggle('ready',temp>=st.cool&&temp<=st.silky);el.classList.toggle('over',temp>st.hot);now(el,temp>=st.cool&&temp<=st.silky);
     }
     for(const el of scope.querySelectorAll('[data-oven-start]')){

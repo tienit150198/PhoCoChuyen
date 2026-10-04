@@ -728,7 +728,7 @@ def validate(c:dict,career:str) -> None:
     need(isinstance(f['bills'],list) and len(f['bills'])<=1500,'Sổ khoản phải trả quá lớn.');bids=[]
     for b in f['bills']:
         need(isinstance(b,dict),'Khoản phải trả sai cấu trúc.');txt(b.get('id'),160);bids.append(b['id'])
-        need(b.get('kind') in ('wage','utility','insurance','rent','tax','repair'),'Loại chi phí sai.');txt(b.get('label'),300);txt(b.get('source'),160)
+        need(b.get('kind') in ('wage','utility','insurance','rent','tax','repair','fine'),'Loại chi phí sai.');txt(b.get('label'),300);txt(b.get('source'),160)
         for k in ('amount','due','created_day'):integer(b.get(k),1,10**9)
         need(b.get('status') in ('paid','unpaid') and type(b.get('extended')) is bool,'Trạng thái khoản phải trả sai.')
         if b['status']=='paid':integer(b.get('paid_day'),1,10**9)

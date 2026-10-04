@@ -1,0 +1,53 @@
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {experienceView} from '../public/js/experience-ui.js';
+import cafe from '../public/js/careers/cafe_bakery.js';
+import {careerContext} from '../public/js/v4/careers.js';
+const {state,coffee,content}=JSON.parse(readFileSync(0,'utf8'));
+const c=state.careers.mother_baby;
+const view=kind=>experienceView(kind,'mother_baby',c,content,{short:'Tiệm',place:'Tiệm'}, {},state);
+let html=view('passport');
+assert.match(html,/Hẹn ở ngày hội/);
+assert.match(html,/ngẫu nhiên/);
+assert.doesNotMatch(html,/Chọn Ngày hội/);
+c.life.festival=true;c.life.mode='festival';c.life.day_metrics={served:2,activities:0};
+html=view('passport');
+assert.match(html,/2\/3 việc/);
+assert.match(html,/0\/1 trò nhỏ/);
+assert.match(html,/data-action="workshop"/);
+assert.doesNotMatch(html,/data-op="life_festival"/);
+const passport=html;
+c.life.day_metrics={served:3,activities:1};
+assert.match(view('passport'),/data-op="life_festival"/);
+c.life.festival_claimed=true;c.metrics.festivals=1;
+c.life.badges_view.find(b=>b.id==='fair').current=1;
+assert.match(view('passport'),/data-op="life_badge"/);
+c.life.festival=false;c.life.mode='normal';c.life.festival_claimed=false;
+assert.doesNotMatch(view('town'),/Chọn Ngày hội/);
+const x=careerContext({api:{state:coffee,content},ui:{}});
+const task=x.room.tasks.find(t=>t.id===x.room.active_task);
+const bar=cafe.job(task,x);
+assert.match(bar,/data-command="cb_pace"/);
+assert.match(bar,/2× · Nhanh/);
+x.room.data.groups=[{task:task.id,start:1000,flow:2}];
+x.room.data.wand=[{task:task.id,start:1000}];
+x.room.data.bar_pace=2;
+const busy=cafe.job(task,x);
+assert.match(busy,/<button[^>]*data-command="cb_pace"[^>]*disabled/);
+// Actual animation callbacks: shot and steam use the same effective time as the server.
+const element=dataset=>({dataset,classList:{toggle(){}},closest:()=>null,
+  label:{textContent:''},querySelector(sel){return sel==='.cb-meter-label'?this.label:this;}});
+const shot=element({shotStart:'1000',flow:'2'}),steam=element({steamStart:'1000'});
+const scope={closest:()=>null,querySelectorAll:sel=>sel==='[data-shot-start]'?[shot]:sel==='[data-steam-start]'?[steam]:[]};
+x.now=()=>1006.5;
+const motion=[];x.slide=(el,p,rate)=>motion.push({el,p,rate});
+cafe.meters(scope,x);
+assert.match(shot.label.textContent,/13.0 giây/);
+assert.match(steam.label.textContent,/60 °C/);
+assert.equal(motion[0].rate,2/45*100);
+assert.equal(motion[1].rate,8.4/90*100);
+if(process.env.MNL_UI_PREVIEW){
+ mkdirSync('output/coffee-passport',{recursive:true});
+ writeFileSync('output/coffee-passport/preview.html',`<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/public/css/app.css"><link rel="stylesheet" href="/public/css/lifesheets.css"><link rel="stylesheet" href="/public/css/careers/food_kit.css"><link rel="stylesheet" href="/public/css/careers/cafe_bakery.css"><style>body{margin:0;padding:12px;background:#f7f1e7;color:#352c24;font:16px system-ui}main{max-width:820px;margin:auto}dialog{position:relative;display:block;margin:0 0 24px;width:100%;max-width:100%;border:1px solid #ddcfc0;padding:0;border-radius:16px;box-sizing:border-box}button{font:inherit}</style></head><body><main><dialog open class="cozy-sheet life-sheet">${passport}</dialog><dialog open>${bar}</dialog></main></body></html>`);
+}
+console.log('Coffee/passport render checks passed.');

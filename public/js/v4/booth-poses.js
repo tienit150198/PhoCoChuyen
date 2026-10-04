@@ -24,7 +24,7 @@
  * A group pose is the same id on neighbours in the booth: each one takes their part (the left of a big heart, the one
  * with the phone in a squished selfie…); a group pose with nobody next to them in it is drawn as its own solo pose.
  * Ids are short lowercase words (live/booth.py clean_id); the 1.5.1 client draws an id it does not know as 'dung'. */
-import {CANVAS,FRONT,figureOf,defaultLook,paintLegs,paintHairBack,paintTop,paintHairFront,paintAcc} from './look.js';
+import {CANVAS,FRONT,figureOf,defaultLook,paintLegs,paintDress,paintHairBack,paintTop,paintHairFront,paintAcc} from './look.js';
 import {t as tr} from './i18n.js';
 
 const {R,E,L,P,heart}=CANVAS;
@@ -483,8 +483,9 @@ function runLegs(c,F){
   limb(c,[[11.5,-16],[12.5,-8]],col);shoe(c,F,12.5,-2);
   limb(c,[[-11.5,-16],[-14,-12],[-17,-12]],col);shoe(c,F,-19,-9,-.32);
   if(b.short){limb(c,[[11.5,-17],[11.8,-13]],b.c,17);limb(c,[[-11.5,-17],[-13,-14]],b.c,17);}
-  if(b.skirt==='flare')P(c,[[-21,-24],[21,-24],[28,-9],[-28,-9]],b.c);
-  if(b.skirt==='long'){P(c,[[-21,-24],[21,-24],[25,-7],[-25,-7]],b.c);for(const [x,y] of [[-14,-14],[0,-10],[13,-16],[-6,-19],[8,-9]])E(c,x,y,1.8,1.8,'#fff8ee');}
+  if(b.dress)paintDress(c,F);
+  else if(b.skirt==='flare')P(c,[[-21,-24],[21,-24],[28,-9],[-28,-9]],b.c);
+  else if(b.skirt==='long'){P(c,[[-21,-24],[21,-24],[25,-7],[-25,-7]],b.c);for(const [x,y] of [[-14,-14],[0,-10],[13,-16],[-6,-19],[8,-9]])E(c,x,y,1.8,1.8,'#fff8ee');}
   if(F.top.long)P(c,[[-17,-22],[17,-22],[13,-5],[-13,-5]],F.topC);
 }
 /** Squatting, drawn over the (lowered) body: the knees up and out, the feet under them. Behind: a skirt, áo dài flaps. */

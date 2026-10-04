@@ -238,6 +238,19 @@ class HireWorkPay(Base):
         self.owner_load(boss)
         self.assertEqual(self.money(boss), total + 30)
 
+    def test_new_friend_can_be_invited_immediately(self):
+        boss, ann = self.user('boss'), self.user('ann')
+        self.open_stall(boss)
+        mr.ensure_person(self.store, self.sid(ann))
+        t = mr.now()
+        self.store.transaction(lambda db: [db.execute('INSERT INTO friends(sid,friend,since) VALUES(?,?,?)', (x, y, t))
+                                           for x, y in ((self.sid(boss), self.sid(ann)), (self.sid(ann), self.sid(boss)))])
+        with patch.object(qh, 'now', return_value=t):
+            friend = self.view(boss)['friends'][0]
+            self.assertTrue(friend['eligible'])
+            self.assertEqual(friend['wait_hours'], 0)
+            self.assertEqual(self.post(boss, to=friend['code'])['to'], 'Ann')
+
 
 class Quit(Base):
     def test_quit_is_free_and_the_counter_gets_the_wage_back(self):

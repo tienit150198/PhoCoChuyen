@@ -416,6 +416,7 @@ function catsTick(){
 async function onClick(op,data){
   const v=V();
   switch(op){
+    case'scroll':{const rail=S.dlg.querySelector(`[data-dc-rail="${data.rail}"]`);rail?.scrollBy({left:(Number(data.dir)||1)*Math.max(120,rail.clientWidth*.8),behavior:'smooth'});return;}
     case'close':S.dlg.close();return;
     case'back':S.dlg.close();(await import('./house.js')).openHouse(S.env);return;
     case'tab':S.tab=data.tab;S.flash=null;S.held=null;S.sel='';render();return;
@@ -428,7 +429,7 @@ async function onClick(op,data){
       if(S.held&&S.held.k===data.k&&S.held.src===data.src){S.held=null;render();return;}
       S.held={k:data.k,src:data.src};S.sel='';sfx('pop');
       if(!it.rooms.includes(roomOf(S.room)?.type)){const r=roomsFor(it)[0];if(r)S.room=r.id;}
-      render();return;}
+      render();revealRail('rooms','[aria-selected="true"]');revealRail('items','[aria-pressed="true"]');return;}
     case'unhold':S.held=null;render();return;
     case'buyBag':{const it=heldItem();if(!it||S.held.src!=='shop')return;
       if(await ask(`Mua ${low(it.name)}?`,`Cất vào túi đồ, đặt lúc nào cũng được. Ấm cúng +${it.cozy} khi bày ra (mỗi loại tính một lần).`,`Mua · ${xu(it.price)}`,it.price)){
@@ -732,14 +733,17 @@ function paintBusy(){S.dlg?.setAttribute('aria-busy',String(S.busy));S.dlg?.quer
 function render(){
   if(!S.dlg)return;
   catsFreeze();hw().freeze();
-  const body=S.dlg.querySelector('.dc-body'),top=body?.scrollTop,strip=S.dlg.querySelector('.dc-strip'),left=strip?.scrollLeft;
+  const body=S.dlg.querySelector('.dc-body'),top=body?.scrollTop;
+  const scrolls=new Map([...S.dlg.querySelectorAll('[data-dc-rail]')].map(el=>[el.dataset.dcRail,el.scrollLeft]));
   const v=V();
   if(v&&S.undoKey!==v.place.key){S.undoKey=v.place.key;S.undo=[];CATS.room='';}
   if(v){const lv=levelIdx(v.cozy.total);S.cheer=S.lastLv>=0&&lv>S.lastLv;S.lastLv=lv;}
   S.dlg.querySelector('.dc-root').innerHTML=page();
   const b2=S.dlg.querySelector('.dc-body');if(b2&&top!=null)b2.scrollTop=S.toTop?0:top;
   if(S.toTop)S.dlg.scrollTop=0;
-  const s2=S.dlg.querySelector('.dc-strip');if(s2&&left!=null&&!S.resetStrip)s2.scrollLeft=left;
+  for(const rail of S.dlg.querySelectorAll('[data-dc-rail]')){
+    const key=rail.dataset.dcRail;if(scrolls.has(key)&&(!S.resetStrip||key==='rooms'))rail.scrollLeft=scrolls.get(key);
+  }
   S.dlg.setAttribute('aria-busy',String(S.busy));
   S.pop='';S.resetStrip=false;S.toTop=false;
   catsResume();hw().resume();hw().paint();
@@ -774,11 +778,20 @@ function decoPage(v){
   const stage=`<div class="dc-stage">${roomTabs(v)}<div class="dc-roomwrap">${svg}${S.edit?'':`${hw().hint(v,rm)}${hw().sayHTML()}`}</div>${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(v,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
   return `<div class="dc-grid">${stage}<div class="dc-side">${relaxCard(v,rm)}${S.edit&&wide?drawer(v):''}${cozyCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}</div></div>`;
 }
+function scrollRail(key,html){
+  return `<div class="dc-scroll">${btn('‹','scroll',{rail:key,dir:-1},'ghost small',' aria-label="Cuộn sang trái"')}${html}${btn('›','scroll',{rail:key,dir:1},'ghost small',' aria-label="Cuộn sang phải"')}</div>`;
+}
+function revealRail(key,selector){
+  const rail=S.dlg.querySelector(`[data-dc-rail="${key}"]`),item=rail?.querySelector(selector);if(!item)return;
+  const r=rail.getBoundingClientRect(),i=item.getBoundingClientRect();
+  if(i.left<r.left)rail.scrollLeft-=r.left-i.left;
+  else if(i.right>r.right)rail.scrollLeft+=i.right-r.right;
+}
 function roomTabs(v){
   if(v.rooms.length<2)return '';
   const it=heldItem(),n=id=>v.items.filter(i=>i.r===id).length;
-  return `<div class="rn-rooms dc-rooms" role="tablist" aria-label="Các phòng">${v.rooms.map(r=>{const ok=it&&it.rooms.includes(r.type);
-    return `<button type="button" role="tab" aria-selected="${S.room===r.id}" class="rn-room${S.room===r.id?' active':''}${ok?' ok':''}" data-dc="room" data-room="${r.id}"><span aria-hidden="true">${r.emoji}</span>${esc(r.name)}${n(r.id)?`<small>${n(r.id)}</small>`:''}</button>`;}).join('')}</div>`;
+  return scrollRail('rooms',`<div class="rn-rooms dc-rooms" data-dc-rail="rooms" role="tablist" aria-label="Các phòng">${v.rooms.map(r=>{const ok=it&&it.rooms.includes(r.type);
+    return `<button type="button" role="tab" aria-selected="${S.room===r.id}" class="rn-room${S.room===r.id?' active':''}${ok?' ok':''}" data-dc="room" data-room="${r.id}"><span aria-hidden="true">${r.emoji}</span>${esc(r.name)}${n(r.id)?`<small>${n(r.id)}</small>`:''}</button>`;}).join('')}</div>`);
 }
 function heldBar(v){
   const it=heldItem(),rm=roomOf(S.room);if(!it)return '';
@@ -824,8 +837,8 @@ function drawer(v){
   return `<section class="dc-drawer" aria-label="Đồ đạc">
     <div class="dc-drawer-top"><div class="segmented dc-seg" role="tablist">${[['bag',`🎒 Túi · ${v.bag.length}`],['shop','🛒 Cửa hàng'],['skin','🎨 Tường & sàn']].map(([id,l])=>`<button type="button" role="tab" aria-selected="${S.drawer===id}" class="${S.drawer===id?'active':''}" data-dc="drawer" data-d="${id}">${l}</button>`).join('')}</div>
     <span class="dc-money" title="Tài khoản + ví">💰 ${xu(v.ready)}</span></div>
-    ${chips.length>2?`<div class="dc-cats">${chips.map(([id,l])=>`<button type="button" class="dc-catchip${S.cat===id?' on':''}" data-dc="cat" data-cat="${id}" aria-pressed="${S.cat===id}">${l}</button>`).join('')}</div>`:''}
-    ${S.drawer==='skin'?cards:`<div class="dc-strip" role="list">${cards}</div>`}</section>`;
+    ${chips.length>2?scrollRail('cats',`<div class="dc-cats" data-dc-rail="cats">${chips.map(([id,l])=>`<button type="button" class="dc-catchip${S.cat===id?' on':''}" data-dc="cat" data-cat="${id}" aria-pressed="${S.cat===id}">${l}</button>`).join('')}</div>`):''}
+    ${S.drawer==='skin'?cards:scrollRail('items',`<div class="dc-strip" data-dc-rail="items" role="list">${cards}</div>`)}</section>`;
 }
 /** 🎨 the wallpapers and floors this room may take, as swatches. */
 function skinStrip(v,rm){
@@ -841,10 +854,10 @@ function skinStrip(v,rm){
   const row=(part,title)=>{
     const list=all.filter(s=>fitsSkin(s,part));if(list.length<2)return '';
     const cur=rm.skin?.[part==='wall'?'w':'f']||'auto';
-    return `<div class="dc-skins"><h4>${title}</h4><div class="dc-strip dc-skin-strip" role="list">${list.map(s=>{
+    return `<div class="dc-skins"><h4>${title}</h4>${scrollRail(part,`<div class="dc-strip dc-skin-strip" data-dc-rail="${part}" role="list">${list.map(s=>{
       const on=cur===s.id,mine=!s.price||owned.has(s.id),poor=!mine&&s.price>v.ready;
       return `<button type="button" role="listitem" class="dc-swatch-btn${on?' on':''}${poor?' poor':''}" data-dc="skin" data-part="${part}" data-skin="${s.id}" aria-pressed="${on}"${S.busy||poor?' disabled':''}>`
-        +`${A.swatch(s.id,part,58)}<b>${esc(s.name)}</b><small>${on?'Đang dùng':mine?(s.price?'Đã có':'Miễn phí'):xu(s.price)}</small></button>`;}).join('')}</div></div>`;
+        +`${A.swatch(s.id,part,58)}<b>${esc(s.name)}</b><small>${on?'Đang dùng':mine?(s.price?'Đã có':'Miễn phí'):xu(s.price)}</small></button>`;}).join('')}</div>`)}</div>`;
   };
   const out=row('wall','Giấy dán tường')+row('floor',rm.type==='bunk'?'Ga giường':'Sàn nhà');
   return out||`<div class="dc-empty"><p>Chỗ này giữ nguyên như vậy là đẹp rồi.</p></div>`;

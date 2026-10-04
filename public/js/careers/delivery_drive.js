@@ -10,7 +10,7 @@
  *
  * Nothing here is game state: stopping in front of a stop calls opts.arrive(node), which sends the same commands as
  * the tap flow ("Đi nhanh": dl_plan if needed, then dl_ride main road); the server prices the leg by its blocks as
- * always. A bump, the kerb or a red light only slow the scooter and say a word. Stopping at an ordinary house says
+ * always. Traffic-light crossings use server-issued tokens and receive server-priced receipts. Stopping at an ordinary house says
  * "Không phải nhà này"; nothing is sent.
  *
  * Drawn with the 2D canvas, no library: flat ground and box houses projected from the rider's eye (a tiny software 3D
@@ -190,6 +190,7 @@ function build(){
   el.innerHTML=`<canvas class="dd-cv" tabindex="0" role="img" aria-label="${ESC(tr('Xe máy: lái tới nhà có người vẫy tay'))}"></canvas>
     <div class="dd-goal" aria-live="polite"><i class="dd-arrow" aria-hidden="true">${ARROW}</i><span><b></b><small></small></span></div>
     <canvas class="dd-mini" aria-hidden="true"></canvas>
+    <div class="dd-signal" role="status" hidden style="position:absolute;top:76px;left:10px;right:10px;padding:8px 12px;border-radius:12px;background:#fff8e9;color:#342817;font-size:13px;font-weight:700;pointer-events:none"></div>
     <div class="dd-say" role="status" aria-live="polite" hidden></div>
     <div class="dd-pads">
       <div class="dd-pad-l"><button type="button" class="dd-btn" data-dd="l" aria-label="${ESC(tr('Rẽ trái'))}">${TRI(-1)}</button><button type="button" class="dd-btn" data-dd="r" aria-label="${ESC(tr('Rẽ phải'))}">${TRI(1)}</button></div>
@@ -227,6 +228,7 @@ export function mount(slot,opts){
   try{if(!S.el)build();}catch(error){S.fail=true;console.warn('Tự lái: không vẽ được',error);opts.fail?.();return false;}
   if(S.dbg)Object.assign(opts,S.dbg);
   S.opts=opts;S.slot=slot;
+  if(S.lightTarget!==opts.target){S.lightTarget=opts.target;S.lightKey='';S.lightChallenge=null;S.lightPending=false;}
   const key=JSON.stringify(Object.entries(opts.nodes||{}).map(([k,n])=>[k,n.x,n.y]));
   if(key!==S.nodesKey){S.world=buildWorld(opts.nodes);S.nodesKey=key;S.at=null;}
   if(S.at!==opts.at){place(opts.at,opts.target);}
@@ -300,10 +302,11 @@ function spawnPed(R){
 }
 function pedPos(o){const off=o.side*(HW+1.7);if(o.axis==='x'){o.x=o.pos;o.y=o.line*B+off;}else{o.y=o.pos;o.x=o.line*B+off;}}
 function lightState(L,axis,t){const p=(t+L.off)%16;return axis==='y'?(p<6?'g':p<8?'y':'r'):(p<8?'r':p<14?'g':'y');}
+const signalClock=()=>S.opts?.now?.()??S.t;
 function lightAtJunction(i,j){const W=S.world;return W.lit.has(i+','+j)?W.lights.find(l=>l.i===i&&l.j===j):null;}
 
 function moveTraffic(dt){
-  const t=S.t;
+  const t=signalClock();
   for(let n=0;n<S.npcs.length;n++){
     const o=S.npcs[n];
     let want=o.sp;
@@ -347,6 +350,7 @@ function input(){
 }
 function ride(dt){
   const inp=input(),o=S.opts,rain=o.weather==='rain',vmax=VMAX*(rain?.85:1);
+  signalAhead();
   if(S.sending){inp.gas=false;inp.brake=true;}
   if(inp.brake)S.v=Math.max(0,S.v-BRAKE*dt);
   else if(inp.gas)S.v=Math.min(vmax,S.v+ACC*dt*(1-S.v/(vmax*1.08)));
@@ -364,14 +368,36 @@ function ride(dt){
   else if(S.v>.5){bump(tr('Ối, lề đường!'));S.v*=.25;}
   // Scooters: a soft bump, no harm done.
   for(const n of S.npcs)if(Math.abs(n.x-S.x)<1.5&&Math.abs(n.y-S.y)<1.5&&S.v>1){bump(tr('Ối! Chạy chậm thôi'));S.v*=.3;n.v=0;n.honk=1.5;}
-  // Junction boxes: a red light run is said once, nothing else.
+  // Only entering the junction crosses its stop line. Waiting in front sends no crossing.
   const i=Math.round(S.x/B),j=Math.round(S.y/B),inBox=Math.abs(S.x-i*B)<HW&&Math.abs(S.y-j*B)<HW?i+','+j:'';
   if(inBox&&inBox!==S.inBox){
     const L=lightAtJunction(i,j),axis=Math.abs(Math.cos(S.a))>Math.abs(Math.sin(S.a))?'x':'y';
-    if(L&&S.v>2.5&&lightState(L,axis,S.t)==='r'&&S.t-S.lastRed>6){S.lastRed=S.t;say(tr('🚦 Đèn đỏ! Lần sau chờ đèn xanh nhé'));}
+    if(L&&S.v>.1&&o.cross){
+      const key=`${o.target}:${i},${j}:${axis}`;
+      if(S.lightKey===key&&S.lightChallenge&&!S.lightCrossed){
+        S.lightCrossed=true;S.sending=true;
+        Promise.resolve(o.cross(S.lightChallenge.token)).then(r=>{S.sending=false;if(r?.message)say(tr(r.message),4500);}).catch(()=>{S.sending=false;});
+      }
+    }
   }
   S.inBox=inBox;
   stops(dt);
+}
+function signalAhead(){
+ const o=S.opts;if(!o.signal)return;
+ const axis=Math.abs(Math.cos(S.a))>Math.abs(Math.sin(S.a))?'x':'y',dir=(axis==='x'?Math.cos(S.a):Math.sin(S.a))>=0?1:-1;
+ const pos=axis==='x'?S.x:S.y,line=Math.round((axis==='x'?S.y:S.x)/B),next=(dir>0?Math.ceil((pos+.01)/B):Math.floor((pos-.01)/B));
+ const i=axis==='x'?next:line,j=axis==='y'?next:line,L=lightAtJunction(i,j),gap=Math.abs(next*B-pos),box=S.el.querySelector('.dd-signal');
+ if(!L||gap>23){box.hidden=true;return;}
+ const key=`${o.target}:${i},${j}:${axis}`;box.hidden=false;
+ const now=signalClock(),color=lightState(L,axis,now),grace=color==='r'&&((now+L.off)%16-(axis==='y'?8:0))<1,label={r:'🔴 Đèn đỏ · giữ phanh trước vạch',y:'🟡 Đèn vàng · giảm tốc',g:'🟢 Đèn xanh · đi qua ngã tư'}[color];
+ box.textContent=tr(grace?'🔴 Vừa chuyển đỏ · 1 giây để dừng an toàn':label)+' · '+tr('Vượt đèn đỏ: phạt 12 xu');
+ if((key!==S.lightKey||(!S.lightChallenge&&S.t>=(S.lightRetry||0)))&&!S.lightPending){
+  S.lightPending=true;S.lightRetry=S.t+2;S.lightKey=key;S.lightChallenge=null;S.lightCrossed=false;
+  Promise.resolve(o.signal(i,j,axis)).then(r=>{S.lightPending=false;if(S.lightKey===key)S.lightChallenge=r?.traffic?.challenge||null;}).catch(()=>{S.lightPending=false;});
+ }
+ // A slow connection must not carry the rider through an unissued checkpoint.
+ if(gap<HW+1.5&&(!S.lightChallenge||S.lightPending)){S.lightHold=true;S.v=0;S.btn.u=false;S.keys.u=false;}
 }
 function bump(text){if(S.t-S.lastBump>1.4){S.lastBump=S.t;say(text,1600);}if(!still())S.shake=.25;}
 
@@ -721,7 +747,7 @@ function drawLight(c,L,which,pal){
   c.fillStyle=pal.tint('#4b5058');c.fillRect(s.x-.07*k,s.y-3.6*k,.14*k,3.6*k);
   c.fillStyle='#22262c';c.fillRect(s.x-.28*k,s.y-4.9*k,.56*k,1.4*k);
   // The colour for the way the rider is riding.
-  const axis=Math.abs(cam.ca)>Math.abs(cam.sa)?'x':'y',st=lightState(L,axis,S.t),r=.17*k;
+  const axis=Math.abs(cam.ca)>Math.abs(cam.sa)?'x':'y',st=lightState(L,axis,signalClock()),r=.17*k;
   const lamp=(n,on,col)=>{c.fillStyle=on?col:'#3a3f46';c.beginPath();c.arc(s.x,s.y-(4.65-n*.44)*k,r,0,Math.PI*2);c.fill();};
   lamp(0,st==='r','#ff4a3d');lamp(1,st==='y','#ffc23d');lamp(2,st==='g','#38d26b');
 }
@@ -839,7 +865,9 @@ function goal(o,W){
   S.goal.hidden=false;
   const g=T.gate,d=Math.abs(S.x-g.x)+Math.abs(S.y-(g.y-2)),wp=waypoint(S.x,S.y,g);
   const name=`${T.emoji} ${tr(T.name)}`;if(b.textContent!==name)b.textContent=name;
-  const blocks=d<16?tr('Dừng xe trước cửa'):`${Math.max(1,Math.round(d/B*2)/2).toLocaleString('vi-VN')} ${tr('ô')}`;
+  const angle=Math.atan2(wp.y-S.y,wp.x-S.x)-S.a,turn=Math.atan2(Math.sin(angle),Math.cos(angle));
+  const cue=Math.abs(turn)<.35?tr('Đi thẳng'):turn>0?tr('Rẽ phải ở giữa ngã tư'):tr('Rẽ trái ở giữa ngã tư');
+  const blocks=d<16?tr('Thả ga, giữ phanh trước cửa có người vẫy tay'):`${cue} · ${Math.max(1,Math.round(d/B*2)/2).toLocaleString('vi-VN')} ${tr('ô')}`;
   if(s.textContent!==blocks)s.textContent=blocks;
   const ang=Math.atan2(wp.y-S.y,wp.x-S.x)-S.a;
   ar.style.transform=`rotate(${ang}rad)`;   // ⬆ = straight on

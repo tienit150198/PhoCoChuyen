@@ -141,11 +141,11 @@ VENDORS = {
 # What a look may contain (game/wardrobe.py ITEMS and DEFAULTS; public/js/v4/look.js draws them).
 LOOK_SLOTS = ('hair', 'shade', 'skin', 'top', 'bottom', 'shoes', 'acc')
 LOOK_IDS = {
-    'hair': ('toc_ngan', 'toc_bui', 'toc_dai', 'toc_bob', 'toc_duoi_ngua', 'toc_xoan'),
+    'hair': ('toc_ngan', 'toc_bui', 'toc_dai', 'toc_bob', 'toc_duoi_ngua', 'toc_xoan', 'toc_bui_cao', 'toc_bui_doi', 'toc_bui_thap'),
     'shade': ('mau_nau', 'mau_den', 'mau_mat_ong', 'mau_hong', 'mau_xanh_khoi', 'mau_bach_kim'),
     'skin': ('da_sang', 'da_hong', 'da_trung', 'da_ngam'),
     'top': ('ao_quen', 'ao_thun_kem', 'ao_thun_xanh', 'ao_so_mi', 'ao_len', 'ao_hoodie', 'ao_dai', 'ao_chi_may', 'ao_hoa', 'ao_vest',
-            'ao_cuoi', 'vest_cuoi'),
+            'ao_cuoi', 'vest_cuoi', 'dam_cong_chua', 'dam_du_tiec', 'dam_yem'),
     'bottom': ('quan_kem', 'quan_xam', 'quan_jean', 'quan_short', 'vay_xoe', 'vay_dai'),
     'shoes': ('giay_nau', 'dep_lao', 'giay_trang', 'giay_do', 'bot_den'),
     'acc': ('pk_khong', 'kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo'),

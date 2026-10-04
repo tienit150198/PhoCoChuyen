@@ -16,7 +16,7 @@ const DEFAULTS={"male":{"hair":"toc_ngan","shade":"mau_nau","skin":"da_sang","to
 
 /* ---- art per item id ---- */
 export const ART={
-  hair:{toc_ngan:{},toc_bui:{long:1},toc_dai:{long:1},toc_bob:{},toc_duoi_ngua:{},toc_xoan:{}},
+  hair:{toc_ngan:{},toc_bui:{long:1},toc_dai:{long:1},toc_bob:{},toc_duoi_ngua:{},toc_xoan:{},toc_bui_cao:{},toc_bui_doi:{},toc_bui_thap:{}},
   shade:{mau_nau:{c:'#5b4436'},mau_den:{c:'#2f2826'},mau_mat_ong:{c:'#9a6a3f'},mau_hong:{c:'#d98fa3'},mau_xanh_khoi:{c:'#6f8ea8'},mau_bach_kim:{c:'#e3d5b8'}},
   skin:{da_sang:{c:'#f5cfae',neck:'#e6b692',face:'#f8dcc2',ear:'#f3ceb1',hand:'#f5d5ba'},da_hong:{c:'#f8d8c6',neck:'#eab9a3',face:'#fbe2d4',ear:'#f2c9b6',hand:'#f7dccb'},
     da_trung:{c:'#e3b389',neck:'#c9966d',face:'#ebbf98',ear:'#dcaa80',hand:'#e6b890'},da_ngam:{c:'#c48d64',neck:'#a8744e',face:'#cc976e',ear:'#b9825b',hand:'#c79168'}},
@@ -24,7 +24,10 @@ export const ART={
   top:{ao_quen:{c:null},ao_thun_kem:{c:'#efdfc4',d:'tee',x:'#dcc7a6',tx:'d'},ao_thun_xanh:{c:'#9cc39a',d:'tee',x:'#84ab82',tx:'d'},ao_so_mi:{c:'#f7f4ec',d:'collar',x:'#ddd6c6',tx:'d'},
     ao_len:{c:'#c9806a',d:'knit',x:'#e8b49f',tx:'l'},ao_hoodie:{c:'#9d8cc4',d:'hood',x:'#8676b0',tx:'d'},ao_dai:{c:'#5d9ea0',d:'aodai',x:'#f2d38a',long:1},
     ao_chi_may:{c:'#e7a0a8',d:'logo',x:'#fff5ee'},ao_hoa:{c:'#7cc0c8',d:'flowers',x:'#fff3d6'},ao_vest:{c:'#56627a',d:'suit',x:'#9b5b6b'},
-    ao_cuoi:{c:'#c8453c',d:'aodai',x:'#f2c86a',long:1},vest_cuoi:{c:'#3e4a5c',d:'suit',x:'#c8453c',bow:1}},
+    ao_cuoi:{c:'#c8453c',d:'aodai',x:'#f2c86a',long:1},vest_cuoi:{c:'#3e4a5c',d:'suit',x:'#c8453c',bow:1},
+    dam_cong_chua:{c:'#c3a4df',d:'princess',dress:'princess',x:'#eee0fa',tx:'l'},
+    dam_du_tiec:{c:'#395c81',d:'gala',dress:'gala',x:'#d9bd77'},
+    dam_yem:{c:'#c68468',d:'pinafore',dress:'pinafore',x:'#8f533e',tx:'d'}},
   bottom:{quan_kem:{c:'#f0d3b8'},quan_xam:{c:'#6f6a78'},quan_jean:{c:'#5b7ea6'},quan_short:{c:'#c9a978',short:1},vay_xoe:{c:'#e39ab0',skirt:'flare'},vay_dai:{c:'#9fb7d8',skirt:'long'}},
   shoes:{giay_nau:{c:'#785c51'},dep_lao:{c:'#5b8fc0',flat:1},giay_trang:{c:'#f4f1ea',line:'#cfc8bb'},giay_do:{c:'#c9514a'},bot_den:{c:'#3d3533',tall:1}},
   // Each accessory's own colours ("Màu gốc"): c main, d the darker part (frame, band, knot, strap), l the light part.
@@ -83,6 +86,9 @@ export const topColour=(L,gender)=>art(L,'top').c||CLASSIC[gender]||'#c3ab83';
 /* ---- the bust (80×80) ---- */
 function hairBack(h,c){
   switch(h){
+    case'toc_bui_cao':return `<ellipse cx="40" cy="10" rx="9" ry="8" fill="${c}"/><path d="M33 15H47" stroke="#e0b43f" stroke-width="2"/>`;
+    case'toc_bui_doi':return `<g fill="${c}"><circle cx="18" cy="20" r="9"/><circle cx="62" cy="20" r="9"/></g><path d="M14 27l7 1M59 28l7-1" stroke="#e0708a" stroke-width="2"/>`;
+    case'toc_bui_thap':return `<ellipse cx="60" cy="48" rx="9" ry="8" fill="${c}"/><path d="M57 44l5 7" stroke="#dfc795" stroke-width="2"/>`;
     case'toc_bui':return `<circle cx="40" cy="12" r="9" fill="${c}"/><path d="M18 44C12 10 68 10 62 44L64 68H16Z" fill="${c}"/>`;
     case'toc_dai':return `<path d="M18 44C12 10 68 10 62 44L65 72H15Z" fill="${c}"/>`;
     case'toc_bob':return `<path d="M17 50C11 10 69 10 63 50Q52 56 40 54Q28 56 17 50Z" fill="${c}"/>`;
@@ -93,6 +99,9 @@ function hairBack(h,c){
 }
 function hairFront(h,c){
   switch(h){
+    case'toc_bui_cao':return `<path d="M21 35Q20 14 40 14Q60 14 59 35Q51 25 40 23Q29 25 21 35Z" fill="${c}"/>`;
+    case'toc_bui_doi':return `<path d="M21 36Q20 14 40 14Q60 14 59 36Q48 31 40 22Q32 31 21 36Z" fill="${c}"/>`;
+    case'toc_bui_thap':return `<path d="M21 37Q18 14 40 14Q62 15 59 36L51 25Q34 32 21 37Z" fill="${c}"/>`;
     case'toc_ngan':return `<path d="M20 37Q18 13 40 12Q62 13 60 37Q56 25 45 22Q35 30 20 37Z" fill="${c}"/>`;
     case'toc_bob':return `<path d="M21 35Q20 14 40 14Q60 14 59 35Q51 28 40 29Q29 28 21 35Z" fill="${c}"/>`;
     case'toc_xoan':return `<path d="M21 34Q22 17 40 16Q58 17 59 34Q54 26 47 27Q42 22 36 27Q28 25 21 34Z" fill="${c}"/>`;
@@ -103,6 +112,9 @@ function hairFront(h,c){
 export function topDetail(t){
   const x=t.x;
   switch(t.d){
+    case'princess':return `<path d="M28 64Q40 72 52 64M18 76Q40 82 62 76" fill="none" stroke="${x}" stroke-width="3"/><path d="M40 72l-5-3v6zM40 72l5-3v6z" fill="${x}"/>`;
+    case'gala':return `<path d="M29 62Q40 74 51 62" fill="none" stroke="${x}" stroke-width="2"/><path d="M40 70l2 3-2 3-2-3z" fill="${x}"/>`;
+    case'pinafore':return `<path d="M25 62h5v18h-5zM50 62h5v18h-5zM30 70h20v10H30z" fill="${x}"/><g fill="#f8edcf"><circle cx="28" cy="70" r="1.8"/><circle cx="52" cy="70" r="1.8"/></g>`;
     case'tee':return `<path d="M33 61q7 5 14 0" fill="none" stroke="${x}" stroke-width="2.4"/>`;
     case'collar':return `<path d="M31 60L40 66L35 71ZM49 60L40 66L45 71Z" fill="${x}"/><circle cx="40" cy="71" r="1.1" fill="#bdb5a3"/><circle cx="40" cy="76" r="1.1" fill="#bdb5a3"/>`;
     case'knit':return `<path d="M17 70H63M14 76H66" stroke="${x}" stroke-width="2.6"/><path d="M33 61q7 5 14 0" fill="none" stroke="${x}" stroke-width="3"/>`;
@@ -170,7 +182,24 @@ export function figureOf(Lk,g){
   const top=art(Lk,'top');
   // The default shade keeps the two browns the scene always used.
   const hair=Lk.shade==='mau_nau'?(Lk.hair==='toc_ngan'&&g==='male'?'#4f3a30':'#74503f'):hairColour(Lk);
-  return {g,L:Lk,hair,skin:art(Lk,'skin'),top,topC:top.c,classic:topColour(Lk,g),bottom:art(Lk,'bottom'),shoes:art(Lk,'shoes'),long:!!art(Lk,'hair').long,short:Lk.hair==='toc_ngan'};
+  const bottom=top.dress?{c:top.c,skirt:top.dress==='gala'?'long':'flare',dress:top.dress,x:top.x}:art(Lk,'bottom');
+  return {g,L:Lk,hair,skin:art(Lk,'skin'),top,topC:top.c,classic:topColour(Lk,g),bottom,shoes:art(Lk,'shoes'),long:!!art(Lk,'hair').long,short:Lk.hair==='toc_ngan'};
+}
+/** Dress hems share the top's palette and cover the stored bottom in every pose. */
+export function paintDress(c,F,K=CANVAS){
+  const t=F.top,x=t.x;
+  if(t.dress==='princess'){
+    K.path(c,'M-18 -28H18L31 -7Q0 4 -31 -7Z',t.c);
+    K.stroke(c,'M-23 -20Q0 -12 23 -20M-27 -12Q0 -3 27 -12',x,2.2);
+    for(const px of [-14,0,14])K.L(c,px*.6,-25,px,-8,x,1);
+  }else if(t.dress==='gala'){
+    K.path(c,'M-19 -28H19L16 -14Q20 -7 29 -3Q0 5 -29 -3Q-20 -7 -16 -14Z',t.c);
+    K.stroke(c,'M9 -26L11 -12L20 -4',x,1.5);
+    K.E(c,-8,-20,1.3,1.3,x);K.E(c,4,-11,1,1,x);
+  }else if(t.dress==='pinafore'){
+    K.P(c,[[-18,-28],[18,-28],[26,-7],[-26,-7]],t.c);
+    K.R(c,-8,-22,16,9,x,2);K.L(c,-20,-9,20,-9,x,1.5);
+  }
 }
 /** Legs, shoes and skirts (before the torso). */
 export function paintLegs(c,F,step,K=CANVAS){
@@ -179,8 +208,9 @@ export function paintLegs(c,F,step,K=CANVAS){
   if(b.short){K.R(c,-20,-21,17,10,b.c,4);K.R(c,3,-21,17,10,b.c,4);}
   if(s.tall){K.R(c,-20,-13+step,17,16,s.c,5);K.R(c,3,-13-step,17,16,s.c,5);}
   K.R(c,-21,(s.flat?-4:-7)+step,19,s.flat?7:10,s.c,5,s.line||null,1.2);K.R(c,3,(s.flat?-4:-7)-step,19,s.flat?7:10,s.c,5,s.line||null,1.2);
-  if(b.skirt==='flare')K.P(c,[[-21,-24],[21,-24],[28,-9],[-28,-9]],b.c);
-  if(b.skirt==='long'){K.P(c,[[-21,-24],[21,-24],[25,-5],[-25,-5]],b.c);for(const [x,y] of [[-14,-14],[0,-10],[13,-16],[-6,-19],[8,-7]])K.E(c,x,y,1.8,1.8,'#fff8ee');}
+  if(b.dress)paintDress(c,F,K);
+  else if(b.skirt==='flare')K.P(c,[[-21,-24],[21,-24],[28,-9],[-28,-9]],b.c);
+  else if(b.skirt==='long'){K.P(c,[[-21,-24],[21,-24],[25,-5],[-25,-5]],b.c);for(const [x,y] of [[-14,-14],[0,-10],[13,-16],[-6,-19],[8,-7]])K.E(c,x,y,1.8,1.8,'#fff8ee');}
   if(F.top.long)K.P(c,[[-17,-22],[17,-22],[13,-5],[-13,-5]],F.topC);   // áo dài flaps
 }
 /** Hair behind the body and head (long hair, tail, curls). */
@@ -190,11 +220,15 @@ export function paintHairBack(c,F,K=CANVAS){
   else if(h==='toc_bob')K.R(c,-31,-99,62,46,col,20);
   else if(h==='toc_duoi_ngua'){K.E(c,31,-90,10,22,col);K.E(c,34,-70,7,10,col);}
   else if(h==='toc_xoan')for(const [x,y,r] of [[-29,-94,13],[29,-94,13],[-21,-112,14],[20,-113,14],[0,-120,14],[-33,-76,9],[33,-76,9]])K.E(c,x,y,r,r,col);
+  else if(h==='toc_bui_thap'){K.E(c,29,-63,12,11,col);K.L(c,26,-69,33,-58,'#dfc795',2);}
 }
 /** What the character wears on the torso when the work layer is off. */
 export function paintTop(c,F,K=CANVAS){
   const t=F.top,x=t.x;
   switch(t.d){
+    case'princess':K.E(c,-19,-45,8,7,x);K.E(c,19,-45,8,7,x);K.stroke(c,'M-12 -49Q0 -39 12 -49',x,2.5);K.L(c,-18,-27,18,-27,x,3);K.P(c,[[0,-27],[-7,-31],[-7,-23]],x);K.P(c,[[0,-27],[7,-31],[7,-23]],x);break;
+    case'gala':K.stroke(c,'M-13 -49Q0 -36 13 -49',x,1.8);K.P(c,[[0,-42],[2,-38],[0,-35],[-2,-38]],x);K.L(c,-17,-27,17,-27,x,1.5);break;
+    case'pinafore':K.L(c,-12,-50,-12,-25,x,5);K.L(c,12,-50,12,-25,x,5);K.R(c,-12,-39,24,14,x,2);K.E(c,-12,-39,2,2,'#f8edcf');K.E(c,12,-39,2,2,'#f8edcf');break;
     case'tee':K.L(c,-8,-51,8,-51,x,3);break;
     case'collar':K.P(c,[[-10,-52],[0,-44],[10,-52]],x);K.E(c,0,-38,1.5,1.5,'#bdb5a3');K.E(c,0,-29,1.5,1.5,'#bdb5a3');break;
     case'knit':K.L(c,-21,-38,21,-38,x,3);K.L(c,-21,-27,21,-27,x,3);break;
@@ -209,6 +243,8 @@ export function paintTop(c,F,K=CANVAS){
 export function paintHairFront(c,F,K=CANVAS){
   const h=F.L.hair;
   if(h==='toc_bui'){K.E(c,-18,-113,17,15,F.hair);K.L(c,-25,-112,-12,-120,'#9f7660',2);K.bloom(c,20,-99,8,'#ffe5b0');}
+  else if(h==='toc_bui_cao'){K.E(c,0,-126,14,12,F.hair);K.stroke(c,'M-8 -129Q0 -136 8 -128','#ffffff30',1.5);K.L(c,-10,-118,10,-118,'#e0b43f',3);}
+  else if(h==='toc_bui_doi'){for(const x of [-30,30]){K.E(c,x,-111,13,12,F.hair);K.L(c,x-7,-101,x+7,-101,'#e0708a',3);}}
   else if(h==='toc_duoi_ngua')K.E(c,27,-104,4.5,4.5,'#e0708a');
 }
 /** The one accessory (last, over the face and hair). */

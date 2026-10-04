@@ -12,7 +12,7 @@ export const PARTS={
   skin:['s1','s2','s3','s4','s5','s6','s7','s8'],
   shape:['tron','oval','vuong','tim'],
   age:['be','teen','lon','gia'],
-  hair:['ngan','dinh','hoi','lech','dung','xoan','afro','bob','dai','bui','duoi','bim','mai','song','tet','chom'],
+  hair:['ngan','dinh','hoi','lech','dung','xoan','afro','bob','dai','bui','duoi','bim','mai','song','tet','chom','bui_doi','bui_thap'],
   hc:['den','nau','mat_ong','vang','do','hong','xanh','tim','bach_kim','xam','trang'],
   expr:['cuoi','toe','nhay','diu','ngac','then','ngau'],
   glasses:['0','tron','vuong','ram','meo'],
@@ -32,7 +32,7 @@ export const ORDER=['skin','shape','age','hair','hc','expr','glasses','head','hw
 
 // The face that follows the character: wardrobe ids → face parts (game/wardrobe.py ITEMS).
 const FROM_SKIN={da_sang:'s2',da_hong:'s1',da_trung:'s4',da_ngam:'s6'};
-const FROM_HAIR={toc_ngan:'ngan',toc_bui:'bui',toc_dai:'dai',toc_bob:'bob',toc_duoi_ngua:'duoi',toc_xoan:'xoan'};
+const FROM_HAIR={toc_ngan:'ngan',toc_bui:'bui',toc_dai:'dai',toc_bob:'bob',toc_duoi_ngua:'duoi',toc_xoan:'xoan',toc_bui_cao:'chom',toc_bui_doi:'bui_doi',toc_bui_thap:'bui_thap'};
 const FROM_SHADE={mau_nau:'nau',mau_den:'den',mau_mat_ong:'mat_ong',mau_hong:'hong',mau_xanh_khoi:'xanh',mau_bach_kim:'bach_kim'};
 const G={male:'m',female:'f'};
 

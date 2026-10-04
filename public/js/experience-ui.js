@@ -132,6 +132,21 @@ function workshopView(cid,c,content,meta,ui){
   return `<article class="lx-card lx-game${on?' on':''}"><div class="lx-game-head">${tile(KIND_EM[sp.type]||sp.emoji)}<div class="grow"><h4>${esc(name)}</h4><p>${esc(sp.description)}</p></div></div><div class="lx-chips"><span class="chip">🏆 Kỷ lục riêng: ${c.life.activity_best[sp.id]||'—'}</span><span class="chip${got?' done':''}">${got?'✓ ':'🎁 '}Quà ${got?'đã nhận hôm nay':'12 xu + 10 XP'}</span></div><div class="lx-actions">${doB('Chơi ngay','life_activity_start',{spec:sp.id,replace:true},'primary small')}${doB('Luyện không thưởng','life_activity_start',{spec:sp.id,practice:true,replace:true},'ghost small')}</div></article>`;}).join('');
  return shell('workshop',c,meta,`${a?activityBoard(a,spec,ui):''}${theme?`<h3 class="lx-sec">${esc(specs[0].emoji)} ${esc(theme)}</h3>`:''}<div class="lx-games">${cards}</div>`);
 }
+/** The fair badge needs a claimed festival, not just a visit to the town square.
+ * Day pace is rolled by journey.roll_mode; life_mode is deliberately unavailable. */
+function festivalCard(c){
+ const x=c.life,dm=x.day_metrics||{},badge=(x.badges_view||[]).find(v=>v.id==='fair'),earned=badge?.current>=1;
+ const active=c.open&&x.festival,ready=active&&(dm.served||0)>=3&&(dm.activities||0)>=1;
+ const row=(n,goal,label)=>`<li class="${n>=goal?'claimed':''}"><span class="lx-check" aria-hidden="true">${n>=goal?icon('check',14):''}</span><span class="grow">${Math.min(n,goal)}/${goal} ${label}</span></li>`;
+ let status,actions;
+ if(badge?.claimed){status='Đã nhận huy hiệu Hẹn ở ngày hội.';actions='<span class="tag green">✓ Đã nhận</span>';}
+ else if(earned){status='Đã mở góc ngày hội. Bấm Nhận huy hiệu để lưu vào hộ chiếu nghề này.';actions=doB('Nhận huy hiệu','life_badge',{badge:'fair'},'primary');}
+ else if(active){status='Trong cùng ca Ngày hội, làm xong 3 việc và 1 trò nhỏ bằng Chơi ngay (Luyện không thưởng không tính). Sau đó bấm Mở góc ngày hội trước khi đóng ca, rồi Nhận huy hiệu.';
+  actions=ready?doB('Mở góc ngày hội','life_festival',{},'primary'):`${(dm.served||0)<3?b('Làm tiếp công việc','queue',{},'primary'):''}${(dm.activities||0)<1?b('Chơi trò nhỏ','workshop',{},'primary'):''}`;
+ }else{status=x.mode==='festival'&&!c.open?'Ca sắp tới là Ngày hội. Mở ca để bắt đầu 3 việc và 1 trò nhỏ.':'Ngày hội xuất hiện ngẫu nhiên theo nhịp khu phố. Tiếp tục làm việc và xem nhịp ngày ở Chuẩn bị; khi có Ngày hội, mở ca của nghề này.';
+  actions=b(x.mode==='festival'&&!c.open?'Mở ca Ngày hội':'Xem nhịp ngày',x.mode==='festival'&&!c.open?'start':'prepare',{},'primary');}
+ return `<section class="lx-card lx-fest"><div class="lx-play-head">${tile('🎏')}<div class="grow"><h3>Hẹn ở ngày hội</h3><p>${status}</p></div></div>${active&&!earned&&!badge?.claimed?`<ul class="lx-goals">${row(dm.served||0,3,'việc')}${row(dm.activities||0,1,'trò nhỏ')}</ul><p class="lx-hint">Tiến độ tính riêng trong ca của nghề này; đóng ca sẽ tính lại từ đầu.</p>`:''}<div class="lx-actions">${actions}</div></section>`;
+}
 function passportView(cid,c,content,meta){
  const stories=content.experiences.stories.filter(x=>x.career===cid),x=c.life,served=c.metrics.served||0,badges=x.badges_view||[];
  const owned=badges.filter(v=>v.claimed).length,closed=stories.filter(st=>x.chapters[st.id]?.completed).length;
@@ -141,13 +156,12 @@ function passportView(cid,c,content,meta){
  const badge=v=>{const ready=!v.claimed&&v.current>=v.goal,pct=Math.min(100,Math.round(Math.min(v.current,v.goal)/Math.max(1,v.goal)*100));
   return `<article class="lx-badge${v.claimed?' owned':ready?' ready':''}"><span class="lx-medal" aria-hidden="true">${v.emoji}</span><h4>${esc(v.title)}</h4>${v.claimed?'<small class="lx-got">✓ Đã nhận</small>':ready?doB('Nhận','life_badge',{badge:v.id},'primary small'):`<small>${Math.min(v.current,v.goal)}/${v.goal}</small>${v.current>0?`<i class="lx-mini" aria-hidden="true"><i style="width:${pct}%"></i></i>`:''}`}</article>`;};
  const stickers=x.stickers.length?`<div class="lx-postcards">${x.stickers.map(v=>`<article class="lx-postcard"><span aria-hidden="true">${v.emoji}</span><b>${esc(v.title)}</b><small>Ngày ${v.day}</small></article>`).join('')}</div>`:`<p class="lx-none">🎟️ Chưa có thiệp.</p>`;
- return shell('passport',c,meta,`${stats}${goalCard(c)}<h3 class="lx-sec">💌 Những chuyện đang viết tiếp</h3><div class="lx-stories">${stories.map(story).join('')}</div><h3 class="lx-sec">🌟 Huy hiệu của riêng mình</h3><div class="lx-badges">${badges.map(badge).join('')}</div><h3 class="lx-sec">🎟️ Hộp thiệp kỷ niệm · ${x.stickers.length}</h3>${stickers}`);
+ return shell('passport',c,meta,`${stats}${badges.some(v=>v.id==='fair'&&!v.claimed)?festivalCard(c):''}${goalCard(c)}<h3 class="lx-sec">💌 Những chuyện đang viết tiếp</h3><div class="lx-stories">${stories.map(story).join('')}</div><h3 class="lx-sec">🌟 Huy hiệu của riêng mình</h3><div class="lx-badges">${badges.map(badge).join('')}</div><h3 class="lx-sec">🎟️ Hộp thiệp kỷ niệm · ${x.stickers.length}</h3>${stickers}`);
 }
 function townView(cid,c,content,meta,ui){
  const visit=content.experiences.town.find(p=>p.id===ui.townPlace),kind={library:'sequence',garden:'pairs',studio:'match',market:'sort'}[visit?.id],spec=content.experiences.activities.find(v=>v.career===cid&&v.type===kind);
  const visitCard=visit?`<article class="lx-card lx-visit"><div class="lx-play-head">${tile(visit.emoji)}<div class="grow"><h3>${esc(visit.name)}</h3><p>${esc(visit.description)}</p></div></div><div class="lx-actions">${spec?doB('Thử '+spec.title,'life_activity_start',{spec:spec.id,replace:true},'primary'):b('Chuẩn bị ngày hội','prepare',{},'primary')}${b(visit.id==='studio'?'Trang trí góc của mình':'Đọc lời nhắn khu phố',visit.id==='studio'?'decor':'phone',{},'ghost')}</div></article>`:'';
- const dm=c.life.day_metrics,row=(n,goal,label)=>`<li class="${n>=goal?'claimed':''}"><span class="lx-check" aria-hidden="true">${n>=goal?icon('check',14):''}</span><span class="grow">${Math.min(n,goal)}/${goal} ${label}</span></li>`;
- const fest=`<section class="lx-card lx-fest"><div class="lx-play-head">${tile('🎏')}<div class="grow"><h3>Ngày hội của khu phố</h3><p>Chuẩn bị một góc nghề của mình: làm xong 3 việc và 1 trò nhỏ trong ca Ngày hội.</p></div></div><ul class="lx-goals">${row(dm.served||0,3,'việc')}${row(dm.activities||0,1,'trò nhỏ')}</ul><div class="lx-actions">${c.life.festival&&!c.life.festival_claimed?doB('Mở góc ngày hội','life_festival',{},'primary'):c.life.festival_claimed?'<span class="tag green">✓ Đã tổ chức</span>':b('Chọn Ngày hội ở Chuẩn bị','prepare',{},'ghost')}</div></section>`;
+ const fest=festivalCard(c);
  return shell('town',c,meta,`<div class="town-map lx-map"><div class="map-river"></div><div class="map-road"></div><span class="map-cloud cloud-one">☁️</span><span class="map-cloud cloud-two">☁️</span>${content.experiences.town.map(p=>`<button class="town-pin ${c.life.visits.includes(p.id)?'visited':''} ${ui.townPlace===p.id?'selected':''}" style="left:${p.x}%;top:${p.y}%" data-action="expVisit" data-place="${p.id}">${em(p.emoji)}<strong>${p.name}</strong><small>${c.life.visits.includes(p.id)?'✓ Đã ghé':'Chạm để ghé'}</small></button>`).join('')}</div>${visitCard}${fest}`);
 }
 export function experienceView(view,cid,c,content,meta,ui,state){

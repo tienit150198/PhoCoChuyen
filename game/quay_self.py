@@ -30,6 +30,7 @@ cũng đc … nhìn đc quầy của mình … mở bán onl, ship hàng … nhi
 from __future__ import annotations
 
 import random
+import copy
 
 from . import quay as qy
 
@@ -331,6 +332,30 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         return dict(message='🧑‍🍳 Mở hàng! Khách đầu tiên tới rồi.')
     run = _open_run(st, day)
     _need(run is not None, 'Bạn chưa mở hàng hôm nay.', 'no_run')
+    if name in ('jr_quay_signal','jr_quay_cross'):
+        from . import traffic
+        _need(set(p)<=({'stall','order'} if name=='jr_quay_signal' else {'stall','order','token','turn'}),'Thông tin ngã tư sai.')
+        jn=p.get('order')
+        _need(type(jn) is int and 0<=jn<len(run['on']) and run['on'][jn]==0,'Đơn giao không còn chờ.')
+        o=order(s,st,run,jn)
+        _need(run['i']>=o['at']-1 or run['i']>=run['k'],'Đơn này chưa tới.')
+        rides=run.setdefault('rides',{})
+        ride=rides.setdefault(str(jn),dict(picks=[],traffic=traffic.fresh()))
+        if name=='jr_quay_signal':
+            if len(ride['picks'])==3:return dict(message='',traffic=traffic.public(ride['traffic']),picks=list(ride['picks']))
+            step=len(ride['picks'])
+            traffic.issue(ride['traffic'],f'{st["id"]}:{day}:{jn}:{step}',(jn*3+step*5)%16,'y')
+            return dict(message='',traffic=traffic.public(ride['traffic']),picks=list(ride['picks']))
+        turn=p.get('turn');_need(isinstance(turn,str) and turn in TURNS,'Chọn hướng đi ở ngã tư.')
+        _need(ride['traffic']['challenge'] is not None,'Xem tín hiệu trước khi qua ngã tư.')
+        r=traffic.cross(ride['traffic'],p.get('token'))
+        if not r['duplicate']:
+            _need(len(ride['picks'])<3,'Đã qua đủ ba ngã tư.')
+            ride['picks'].append(turn)
+            if r['fine']:
+                run['m']-=r['fine']
+                qy._log(st,day,'🚦 Vượt đèn đỏ · biên nhận '+r['token'][:8],-r['fine'])
+        return dict(message=f'🚦 Vượt đèn đỏ: phạt {r["fine"]} xu, tính vào chi phí khi đóng ca quầy.' if r['fine'] else '🚦 Đèn vừa chuyển đỏ: miễn phạt trong 1 giây đầu để kịp dừng an toàn.' if r['grace'] else '🚦 Đã qua ngã tư đúng tín hiệu.',traffic=traffic.public(ride['traffic']),picks=list(ride['picks']),receipt=r)
     if name == 'jr_quay_serve':
         _need(set(p) <= {'stall', 'items', 'change', 'smile'}, 'Thao tác không hợp lệ.')
         _need(pending_event(run) is None, 'Xử lý chuyện này trước nhé.', 'event')
@@ -416,6 +441,8 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         route = p.get('route', [])
         if way == 'self':
             _need(isinstance(route, list) and len(route) == 3 and all(x in TURNS for x in route), 'Chọn đường đi nhé.')
+            ride=run.get('rides',{}).get(str(jn))
+            if ride:_need(route==ride['picks'] and len(ride['picks'])==3,'Đi đủ ba ngã tư theo tín hiệu trước khi giao.')
         right = sorted(items) == sorted(o['items'])
         extra = list(sorted(items))
         for d in o['items']:
@@ -443,7 +470,8 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         return dict(message=f'{how}. {o["name"]} chấm {"⭐" * stars} ({", ".join(bits)}).', quay_stars=stars)
     if name == 'jr_quay_close':
         _need(set(p) <= {'stall'}, 'Thao tác không hợp lệ.')
-        if run['i'] == 0 and not any(run['on']) and not run['eo']:
+        has_traffic_fine=any(r['fine'] for ride in run.get('rides',{}).values() for r in ride['traffic']['receipts'])
+        if run['i'] == 0 and not any(run['on']) and not run['eo'] and not has_traffic_fine:
             st['run'] = None
             return dict(message='Đã dọn hàng. Hôm nay nhân viên (nếu có) bán thay bạn.')
         line = close(s, st, day)
@@ -497,6 +525,7 @@ def close(s: dict, st: dict, day: int) -> str:
     st['left'] = 0
     qy._rent(s, st, day)
     qy._police(s, st, day)
+    net = st['hist'][-1]['net']
     sign = '+' if net >= 0 else '−'
     return f'🏁 Đóng ca: {sold} khách, lời {sign}{qy._fmt(abs(net))} xu. Két giữ {qy._fmt(st["till"])} xu.'
 
@@ -533,7 +562,10 @@ def run_view(s: dict, st: dict) -> dict | None:
         o = order(s, st, run, jn)
         if run['i'] >= o['at'] - 1 or run['i'] >= run['k'] or st_:
             out['orders'].append(dict(j=jn, name=o['name'], items=o['items'], total=o['total'], note=o['note'], cod=o['cod'], addr=o['addr'],
-                                      route=o['route'], stars=st_))
+                                      route=o['route'], stars=st_, ride=copy.deepcopy(run.get('rides',{}).get(str(jn)))))
+            if out['orders'][-1]['ride']:
+                from . import traffic
+                ride=out['orders'][-1]['ride'];ride['traffic']=traffic.public(ride['traffic'])
     return out
 
 
@@ -574,3 +606,11 @@ def validate(st: dict, need, _int, _text) -> None:
         need(isinstance(run['ev'], list) and len(run['ev']) <= 2 and isinstance(run['eo'], list) and len(run['eo']) <= 2)
         need(isinstance(run['on'], list) and len(run['on']) <= 3 and all(_int(x, 0, 5) for x in run['on']) and type(run['x']) is bool)
         need(run['sum'] is None or isinstance(run['sum'], dict))
+        if 'rides' in run:
+            from . import traffic
+            need(isinstance(run['rides'],dict) and len(run['rides'])<=len(run['on']))
+            for key,ride in run['rides'].items():
+                need(key in {str(i) for i in range(len(run['on']))} and isinstance(ride,dict) and set(ride)=={'picks','traffic'})
+                need(isinstance(ride['picks'],list) and len(ride['picks'])<=3 and all(isinstance(x,str) and x in TURNS for x in ride['picks']))
+                traffic.validate(ride['traffic'])
+                need(len(ride['picks'])==len(ride['traffic']['receipts']))

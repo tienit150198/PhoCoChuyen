@@ -9,7 +9,7 @@
  * replace the host): the stage, its canvas and where you stand live here for the whole page session.
  *
  * World units are metres: x to the east, z to the north, y up. yaw 0 looks north. */
-import {figure,paintLegs,paintAcc} from '../v4/look.js';
+import {figure,paintLegs,paintAcc,paintTop,paintHairFront} from '../v4/look.js';
 import {R,E,L,P} from '../scenes/kit.js';
 import {t as tr} from '../v4/i18n.js';
 
@@ -702,6 +702,7 @@ function player(c,s){
   c.save();c.translate(s.x,s.y);c.scale(sc,sc);
   paintLegs(c,F,step);
   R(c,-23,-52,46,36,top,15);E(c,-25,-36+step*0.6,8,14,sk.hand);E(c,25,-36-step*0.6,8,14,sk.hand);
+  if(!F.L.uniform)paintTop(c,F);
   if(F.L.uniform){if(F.g==='male'){R(c,-15,-34,30,14,pal.dark,6);L(c,-11,-34,-14,-52,pal.dark,4);L(c,11,-34,14,-52,pal.dark,4);}
     else{L(c,-15,-49,12,-27,'#fff7e8',3);L(c,15,-49,-12,-27,'#fff7e8',3);E(c,-6,-24,6,3.5,'#fff7e8');E(c,6,-24,6,3.5,'#fff7e8');}}
   E(c,-29,-74,5,8,sk.ear);E(c,29,-74,5,8,sk.ear);
@@ -710,6 +711,8 @@ function player(c,s){
   E(c,0,-84,32,35,hair);
   if(h==='toc_duoi_ngua'){E(c,0,-66,8,18,hair);E(c,0,-84,4,4,'#e0708a');}
   else if(h==='toc_bui')E(c,0,-113,16,14,hair);
+  else if(h==='toc_bui_cao'||h==='toc_bui_doi')paintHairFront(c,F);
+  else if(h==='toc_bui_thap'){E(c,0,-64,15,11,hair);L(c,-8,-67,8,-60,'#dfc795',2);}
   else if(h==='toc_xoan')for(const [x,y,r] of [[-24,-100,13],[24,-100,13],[0,-112,14],[-30,-80,9],[30,-80,9]])E(c,x,y,r,r,hair);
   if(['non_la','mu_len','no_toc','tui_cheo'].includes(F.L.acc))paintAcc(c,F);
   if(W.me.tool==='can')can(c,30,-30,0.9);else if(W.me.tool==='basket')basket(c,-30,-26,0.7);

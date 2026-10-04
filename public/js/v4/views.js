@@ -9,6 +9,7 @@ import {certInfo,certCss} from './certificates.js';
 import {lockChip} from '../careers/stage_fold.js';
 import {wordsFor} from '../scenes/index.js';
 import {fundLabel} from './money.js';
+import {confirmPurchase} from './payment.js';
 import {orderQuote,fitDraft,vans,vansLine} from './restock.js';
 import {Sound} from '../audio.js';
 
@@ -727,8 +728,9 @@ export async function v4Action(action,data,el,env){
       const id=api.state.current,job=api.state.careers[id]?.job,J=api.state.journey;
       await api.more?.();  // job postings: the catalogue's `more` part (api.js)
       const p=(api.content.employment.postings[id]||[]).find(x=>x.id===job?.application?.posting),b=p?.backdoor;if(!b)return true;
-      const msg=`${b.helper} Phí ${fmt(b.fee)} xu trừ vào ví (ví còn ${fmt(J.wallet)} xu). Bạn vào làm ${p.title.toLowerCase()} với lương khởi điểm ${p.salary[0]} xu/ngày, thử việc ${p.probation_days} ngày như mọi người. Ngày đầu có thể nghe vài lời xì xào.`;
-      if(await confirmAction('🚪 Đi cửa sau?',msg,`Trả ${b.fee} xu`,{cost:b.fee,pocket:'wallet'}))await cmd('job_backdoor',{confirm:true});
+      const msg=`${b.helper} Phí ${fmt(b.fee)} xu. Bạn vào làm ${p.title.toLowerCase()} với lương khởi điểm ${p.salary[0]} xu/ngày, thử việc ${p.probation_days} ngày như mọi người. Ngày đầu có thể nghe vài lời xì xào.`;
+      const how=await confirmPurchase(env,{title:'🚪 Đi cửa sau?',message:msg,label:`Trả ${b.fee} xu`,cost:b.fee});
+      if(how)await cmd('job_backdoor',{confirm:true,pay:how});
       return true;}
     case'inventory':openSheet('inventory',{invFocus:null,invNeed:null,invReturn:null,orderRush:false});return true;
     case'v4Restock':{

@@ -7,6 +7,7 @@
  * Loaded on first use, with /css/palette.css. Markup only: the server checks every command. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {PALETTE} from './look.js';
+import {confirmPurchase} from './payment.js';
 
 export const GOC='goc';
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -41,7 +42,7 @@ function ensureCss(){
   });
 }
 
-/* ---- unlocking: one confirm, one command; the server pays (wallet, then the card) and never goes below zero ---- */
+/* ---- unlocking: one confirm, one command; the server checks the chosen payment source ---- */
 let busy=false;
 function say(env,text,bad=false){
   const open=[...document.querySelectorAll('dialog.pl-dlg[open] .pl-say')].pop();
@@ -53,14 +54,13 @@ export async function unlockColor(env,c){
   const api=env.api;
   if(hasColor(api,c))return true;
   if(busy)return false;
-  const price=priceOf(api,c),full=fullPrice(api,c),name=nameOf(api,c),w=api.state.journey?.wallet??0,card=api.state.journey?.bank?.card;
+  const price=priceOf(api,c),full=fullPrice(api,c),name=nameOf(api,c);
   if(!price)return false;
-  if(w<price&&!card){say(env,`Ví mới có ${fmt(Math.max(0,w))} xu, chưa đủ ${fmt(price)} xu để mở khóa màu ${name}. Làm thêm vài ca rồi quay lại nhé.`,true);return false;}
   const off=price<full?` (giá nhân viên ${W(api).shop_name}, giá gốc ${fmt(full)} xu)`:'';
-  const pay=w>=price?`Ví của bạn đang có ${fmt(w)} xu.`:'Ví chưa đủ nên sẽ quẹt thẻ Ngân hàng Phố.';
-  if(!await env.confirmAction(`Mở khóa màu ${name}?`,`Giá ${fmt(price)} xu${off}. Mở một lần, dùng được cho mọi món: quần áo, giày dép, phụ kiện và đồ trong nhà. ${pay}`,`Mở khóa · ${fmt(price)} xu`))return false;
+  const how=await confirmPurchase(env,{title:`Mở khóa màu ${name}?`,message:`Giá ${fmt(price)} xu${off}. Mở một lần, dùng được cho mọi món: quần áo, giày dép, phụ kiện và đồ trong nhà.`,label:`Mở khóa · ${fmt(price)} xu`,cost:price});
+  if(!how)return false;
   busy=true;
-  try{const r=await api.command('jr_wd_unlock',{color:c});say(env,r?.message||'');return hasColor(api,c)||!!r;}
+  try{const r=await api.command('jr_wd_unlock',{color:c,pay:how});say(env,r?.message||'');return hasColor(api,c)||!!r;}
   catch(e){if(!e.quiet)say(env,e.message||'Chưa mở khóa được. Thử lại nhé.',true);return false;}
   finally{busy=false;}
 }

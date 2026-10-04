@@ -387,6 +387,7 @@ function reportBox(t,x,gd){
   const body=`${seen.length?`<p class="small">Bạn đã thấy: <b>${seen.map(x.esc).join(', ')}</b></p>`:''}
     <div class="stack">${opts.map(r=>`<button type="button" class="pc-say ${say.includes(r.id)?'on':''} ${r.id==='diagnose'?'risky':''}" data-action="car:say" data-id="${x.esc(r.id)}" aria-pressed="${say.includes(r.id)}"><span>${say.includes(r.id)?'☑':'☐'}</span>${x.esc(r.text)}</button>`).join('')}</div>
     <div class="row wrap space-top">${x.cmd(same&&saved.length?'✓ Đã ghi lời báo':'📝 Ghi lời báo','pc_report',{task:t.id,say},same?'ghost small':st(t,x,'report')+' small',same)}</div>
+    <p class="small muted">Chỉ chọn điều đã quan sát hoặc thực sự xảy ra, không chọn hết. “Cắt móng bị chảy máu” chỉ khi có sự cố; “Dừng dịch vụ” chỉ khi bạn đã dừng. Chọn xong bấm Ghi lời báo trước khi trả bé.</p>
     <p class="small muted">🩺 Lạ thì khuyên đi thú y, không tự đoán bệnh.</p>`;
   // Open at the report step (or whenever the player opened it); before and after that it is one line.
   const now=gd?.now||new Set(['report']);

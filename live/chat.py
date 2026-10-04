@@ -411,7 +411,7 @@ class ChatFeature(Feature):
     def me(self, p) -> dict:
         why, wait = self.can_town(p)
         adm = self.is_admin(p)
-        out = dict(pid=p.pid, name=p.name, av=p.av, fc=p.fc or '', account=p.account, online=p.show_online, town=why,
+        out = dict(pid=p.pid, name=p.name, av=p.av, fc=p.fc or '', account=p.account, friend_card=True, online=p.show_online, town=why,
                    wait=round(wait, 1), muted=round(p.muted_until, 1) if p.muted_until > time.time() and not adm else 0)
         if adm:
             out['adm'] = 1
@@ -881,6 +881,50 @@ class ChatFeature(Feature):
         if ch == 'town' and self.pin and self.pin['id'] == mid:   # 📌 its pin goes with it
             await self.db.execute("DELETE FROM chat_pins WHERE channel='town' AND msg=?", (mid,))
             await self.sync_pin()
+
+    @on('friend_card', rate=(10, 60))
+    async def friend_card(self, conn, f):
+        """A readable chat author's public code, used by the existing HTTP friend_request action."""
+        p, mid = conn.player, f.get('id')
+        if not p.account:
+            raise LiveError('account', 'Tạo tài khoản để kết bạn nhé.')
+        if type(mid) is not int or mid <= 0:
+            raise LiveError('bad', 'Tin nhắn không hợp lệ.')
+        row = await self.db.fetchrow('SELECT channel, pid, hidden, deleted FROM chat_messages WHERE id=?', (mid,))
+        if not row or row['hidden'] or row['deleted'] or row['pid'] == p.pid:
+            raise LiveError('gone', 'Không tìm thấy người chơi này.')
+        # Only town/DM/group messages rendered by chat.js; a message ID cannot grant access to a private room.
+        channel = await self.member_chan(p, row['channel'])
+        if mid <= channel.cleared.get(p.pid, 0):
+            raise LiveError('gone', 'Không tìm thấy người chơi này.')
+        await self.load_hidden(p)
+        if row['pid'] in p.hidden or mid in await self.my_hides(p, [mid]):
+            raise LiveError('gone', 'Không tìm thấy người chơi này.')
+        other = self.hub.players.get(row['pid'])
+        if other is not None:
+            sid = other.sid if other.account else None
+        else:
+            sid = await self.db.fetchval('SELECT p.sid FROM profiles p JOIN accounts a ON a.sid=p.sid WHERE p.pid=?', (row['pid'],))
+            if not sid:
+                sid = await self.db.fetchval('SELECT m.sid FROM chat_members m JOIN accounts a ON a.sid=m.sid WHERE m.pid=? LIMIT 1', (row['pid'],))
+        if not sid:
+            raise LiveError('gone', 'Bạn ấy chưa có tài khoản hoặc đã rời phố. Thử lại khi bạn ấy online nhé.')
+        blocked = await self.db.fetchval('SELECT 1 FROM marriage_blocks WHERE (sid=? AND target=?) OR (sid=? AND target=?) LIMIT 1', (p.sid, sid, sid, p.sid))
+        if blocked:
+            raise LiveError('gone', 'Không tìm thấy người chơi này.')
+        code = await self.db.fetchval('SELECT code FROM marriage_people WHERE sid=?', (sid,))
+        if not code:
+            import secrets
+            for _ in range(8):
+                now = time.time()
+                candidate = 'PCC-' + ''.join(secrets.choice('23456789ABCDEFGHJKMNPQRSTUVWXYZ') for _ in range(6))
+                await self.db.execute('INSERT INTO marriage_people(sid, code, created, updated) VALUES(?, ?, ?, ?) ON CONFLICT DO NOTHING', (sid, candidate, now, now))
+                code = await self.db.fetchval('SELECT code FROM marriage_people WHERE sid=?', (sid,))
+                if code:
+                    break
+        if not code:
+            raise LiveError('busy', 'Chưa gửi được, thử lại nhé.')
+        return dict(t='friend_card', id=mid, pid=row['pid'], code=code)
 
     @on('report', rate=(10, 60))
     async def report(self, conn, f):

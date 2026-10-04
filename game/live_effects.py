@@ -36,7 +36,7 @@ import time
 ACTION = 'live_fx'                  # internal command (game/engine.py), never accepted from a client
 RID = 'live-'                       # request id prefix: live-<hash>
 KIND = 'life'                       # journey wallet history kind (journey.HISTORY_KINDS): old saves stay valid
-PAYS = ('coins', 'spirit', 'title', 'quay')  # kinds this build applies to the save ('quay': game/quay_hire.py, a counter's money)
+PAYS = ('coins', 'spirit', 'title', 'quay', 'quay_refund')  # quay_refund preserves the original wage-funding pocket
 BESIDE = ('closeness',)             # kinds this build applies beside the save (player_closeness, game/wedding_live.py)
 LABELS = dict(envelope='🧧 Lì xì dạo phố', date='💕 Buổi hẹn trên phố', guest='💍 Đi ăn cưới', host='💍 Khách tới dự đám cưới',
               anniv='💞 Kỷ niệm ngày cưới', anniv_npc='🧧 Hàng xóm mừng kỷ niệm cưới', race='🥇 Khách mời của tuần', env='🧧 Phong bì mừng cưới',
@@ -84,12 +84,22 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     if kind == 'coins':
         jr._wallet(j, amount, KIND, LABELS.get(p.get('src'), LABEL))
         message = f'+{amount} xu vào ví.'
+    elif kind == 'quay_refund':
+        from . import quay_hire
+        source,label = p.get('source'),p.get('label')
+        e.need(source in ('cash','account') and isinstance(label,str) and 0<len(label)<=160, 'Dữ liệu hoàn lương không hợp lệ.')
+        message = quay_hire.refund_to_save(s,amount,source,label)
     elif kind == 'quay':   # 💼 a hired player's shift into the till, an escrowed wage back (game/quay_hire.py)
         from . import quay as qy
         stall, what, label = p.get('stall'), p.get('what'), p.get('label')
         e.need(isinstance(stall, str) and qy.ID_RE.fullmatch(stall) and what in ('shift', 'back') and isinstance(label, str) and 0 < len(label) <= 120,
                'Dữ liệu quầy không hợp lệ.')
-        message = qy.credit(s, stall, what, amount, label)
+        wage,source=p.get('wage'),p.get('source')
+        if wage is not None:
+            from .quay_hire import WAGE_MAX
+            e.need(what=='shift' and type(wage) is int and 1<=wage<=WAGE_MAX and source in ('stall','cash','account','joint'),
+                   'Dữ liệu quầy không hợp lệ.')
+        message = qy.credit(s, stall, what, amount, label, wage=wage, source=source)
     elif kind == 'title':   # 💍 a wedding title (game/wedding_live.py TITLE_NAMES) or 🏆 a fair one (game/fair_board.py): unlocked once, kept like any title
         from .wedding_live import TITLE_NAMES
         from .fair import AWARD_NAMES
@@ -145,6 +155,10 @@ def on_load(store, token: str, state: dict | None) -> bool:
             payload['title'] = data.get('title')
         elif r['kind'] == 'quay':
             payload.update(stall=data.get('stall'), what=data.get('what'), label=data.get('label'))
+            if 'wage' in data:
+                payload.update(wage=data.get('wage'),source=data.get('source'))
+        elif r['kind'] == 'quay_refund':
+            payload.update(source=data.get('source'),label=data.get('label'))
         try:
             store.command(token, RID + short(r['id']), None, None, ACTION, payload, internal=True)
         except GameError:   # refused (a bad row): stays pending, the operator looks

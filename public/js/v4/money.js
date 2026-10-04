@@ -17,6 +17,24 @@ import {asset} from '../assets.js';
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+/** Mirror bank._method for personal purchases. Joint funds are fetched by the server, so 'auto'
+ * leaves that preference available even when local cash is short. Account debit never borrows. */
+export function personalPayment(J,cost,noJoint=false){
+  if(!(cost>0))return 'cash';
+  const b=J?.bank,c=b?.card,pref=b?.pref||'auto';
+  const can={cash:Number(J?.wallet)>=cost,account:!!b?.open&&Number(b.balance)>=cost,
+    card:!!c&&!c.locked&&Number(c.available)>=cost};
+  if(pref==='joint'&&!noJoint)return 'auto';
+  const order={account:['account'],cash:['cash'],card:['card','cash']}[pref]||['cash','card'];
+  return order.find(k=>can[k])||null;
+}
+export const paymentMoney=(method,cost)=>({cost:['cash','account'].includes(method)?cost:0,pocket:method==='account'?'account':'wallet'});
+export const paymentText=method=>({account:'Trả trực tiếp từ tài khoản thanh toán.',cash:'Trả bằng tiền mặt trong ví.',card:'Quẹt thẻ tín dụng, trả khi có sao kê.',auto:'Ưu tiên quỹ chung; nếu không đủ, thử ví rồi thẻ tín dụng.'}[method]||'');
+export function paymentShortfall(J,cost){
+  const account=J?.bank?.pref==='account',balance=Math.max(0,Number(account?J.bank.balance:J?.wallet)||0);
+  return `${account?'Tài khoản':'Ví'} còn ${fmt(balance)} xu, thiếu ${fmt(Math.max(0,cost-balance))} xu`;
+}
+
 /** Big sums shortened on phones so the chip stays one line: 125.400 → 125,4k, 3.373.500 → 3,37tr. */
 export function shortXu(n,phone=false){
   const v=Number(n||0),a=Math.abs(v);
@@ -42,7 +60,7 @@ export function balances(state,scope,till=''){
   const wallet=story&&Number.isFinite(Number(j.wallet))?Number(j.wallet):null;
   const fund=c&&Number.isFinite(Number(c.money))?Number(c.money):null;
   const out={wallet,fund,fundName:fundLabel(till)};
-  if(scope.account)out.account=story&&j.bank?.open&&Number.isFinite(Number(j.bank.balance))?Number(j.bank.balance):null;
+  if(scope.account||j?.bank?.pref==='account')out.account=story&&j.bank?.open&&Number.isFinite(Number(j.bank.balance))?Number(j.bank.balance):null;
   if(scope.joint!=null)out.joint=story&&Number.isFinite(Number(scope.joint))?Number(scope.joint):null;
   if(wallet==null&&fund==null&&out.account==null&&out.joint==null)return null;
   return out;

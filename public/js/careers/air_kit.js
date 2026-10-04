@@ -58,6 +58,13 @@ export function hudCard(c,t,x,cfg,{bell='',first='',wrap=false,note=''}={}){
     <div class="air-pass-top"><span class="air-pass-code">${esc(leg.code||'')}</span><span class="air-pass-route"><b>${esc(upper(leg.frm))}</b><i aria-hidden="true">✈</i><b>${esc(upper(t.where||leg.to))}</b></span><span class="air-pass-when">${esc(leg.dep||'')} · Cửa ${esc(leg.gate||'')}</span></div>
     <div class="air-pass-row">${note}<button type="button" class="calm-what" data-action="job" data-task="${esc(t.id)}" title="${esc(t.title)}"><span class="npc-mini">${x.portrait(who,34)}</span><b>${esc(cfg.next(t))}</b></button>${bell}${x.button('Làm tiếp '+x.icon('arrow',14),'job',{task:t.id},'primary'+first)}</div></article>`;
 }
+/** Keep the airline's promotion route visible in its own crew room. */
+export function promotionCard(x,cfg){
+  const p=x.room.promo;if(cfg.id!=='pilot'||!p)return '';
+  const n=p.next,progress=n?`${n.good}/${n.need} ngày tốt → ${esc(n.title)}`:'';
+  const help=p.mgr?(x.room.open?'Tan ca hiện tại, rồi chọn Mở ca quản lý để giao việc cho tổ bay.':'Chọn Thăng tiến → Mở ca quản lý để giao việc cho tổ bay.'):'Từ bậc 3 · Cơ trưởng huấn luyện, mở Ca quản lý. Hoàn thành ngày bay tốt và trả lời buổi xét thăng chức.';
+  return `<article class="card"><h4>🎖️ ${esc(p.title)}</h4><p>${progress}</p><p class="small">${help}</p><button type="button" class="ghost" data-action="promo">${p.mgr?'🧑‍💼 Thăng tiến · Ca quản lý':'🎖️ Xem lộ trình thăng tiến'}</button></article>`;
+}
 /** The crew room ('prepare'): the day's weather, the departures board, your record (and rest days), then two folded
  * lines: today's goals (open by themselves when a reward waits) and who flies today. "Báo danh" stays pinned below. */
 export function crewRoom(x,cfg){
@@ -70,7 +77,7 @@ export function crewRoom(x,cfg){
   return head(x,`PHÒNG TỔ BAY · NGÀY ${dayNo(x)}`,cfg.airline,cfg.role_line)+`<div class="sheet-body air-sheet">
     <section class="air-wx"><span aria-hidden="true">${esc(m.emoji||'🌤️')}</span><div class="grow"><b>${esc(m.label||'')}</b><small>${esc(m.hint||'')}</small></div><span class="air-hours">${esc(c.day_clock?.open_time||'05:30')}–${esc(c.day_clock?.close_time||'19:30')}</span></section>
     <h4 class="air-h">Lịch bay hôm nay</h4>${boardRows(x,cfg,list,{tap:c.open})}
-    <h4 class="air-h">Hồ sơ của bạn</h4>${record(x)}${restCard(x,cfg)}
+    <h4 class="air-h">Hồ sơ của bạn</h4>${record(x)}${promotionCard(x,cfg)}${restCard(x,cfg)}
     ${goals?`<details class="air-fold air-goals-fold"${gift?' open data-auto':''}><summary><span aria-hidden="true">🎯</span><b class="grow">Mục tiêu hôm nay</b><small>${done}/${G.length}</small>${gift?'<span class="tag amber">🎁 Có quà</span>':''}</summary><ul class="air-goals">${goals}</ul></details>`:''}
     ${crew?`<details class="air-fold"><summary><span aria-hidden="true">👥</span><b class="grow">Tổ bay hôm nay</b><small>${cfg.crew.filter(i=>people[i]).length}</small></summary><ul class="air-crew">${crew}</ul></details>`:''}
   </div><footer class="sheet-foot air-foot">${cta}</footer>`;

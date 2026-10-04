@@ -503,7 +503,9 @@ function driveOpts(x,node){
   const d=x.room.data||{},first=!readPref(HINT_KEY);
   if(first)savePref(HINT_KEY,'1');
   return {nodes:nodes(x),at:d.at,target:node,useful:usefulStops(x),fuel:d.fuel,weather:d.weather,signs:d.road?.signs||[],
-    minute:x.room.day_clock?.minute??17*60+(Number(d.clock)||0),first,arrive,
+    minute:x.room.day_clock?.minute??17*60+(Number(d.clock)||0),first,arrive,now:()=>lastX?.now?.()||x.now(),
+    signal:(i,j,axis)=>lastX?.send('dl_signal',{target:node,i,j,axis},{quiet:true}),
+    cross:token=>lastX?.send('dl_cross',{target:node,token},{quiet:true}),
     slow:()=>{savePref(MODE_KEY,'fast');lastX?.toast?.('📱 Máy hơi chậm: đã chuyển sang ⏩ Đi nhanh. Bấm 🛵 Tự lái để thử lại.');lastX?.render();},
     fail:()=>{drvOff=true;lastX?.render();}};
 }
@@ -653,7 +655,7 @@ export default {
   // Between orders: new orders first, then this stop (hand in COD cash, refuel), the route folded.
   idle(x){
     if(x.room.data?.desk?.ev)return `<div class="career-job dl">${status(x)}${deskCard(x)}</div>`;
-    return `<div class="career-job dl">${status(x)}${deskCard(x)}${board(x,null)}<div class="workbench"><section class="wb-main">
+    return `<div class="career-job dl">${status(x)}<button type="button" class="ghost small" data-action="jrView" data-view="courier">🛵 Sổ shipper</button>${deskCard(x)}${board(x,null)}<div class="workbench"><section class="wb-main">
       ${stopPanel(x)}${routeSec(x,(x.room.data?.route||[]).length?'ride':'stop','idle')}${careSection(x,'today-idle')}
     </section></div></div>`;
   },

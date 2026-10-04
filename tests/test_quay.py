@@ -161,7 +161,8 @@ class Opening(unittest.TestCase):
         refused(self, s, 'jr_quay_open', trade='milk_tea', place='xe', name='x' * 40, confirm=True)
         s, _ = act(s, 'jr_quay_open', trade='milk_tea', place='xe', confirm=True)
         s, _ = act(s, 'jr_quay_open', trade='milk_tea', place='sap', confirm=True)
-        refused(self, s, 'jr_quay_open', 'max_stalls', trade='milk_tea', place='kiot', confirm=True)
+        s, _ = act(s, 'jr_quay_open', trade='milk_tea', place='kiot', confirm=True)
+        self.assertEqual(len(Q(s)['stalls']), 3)
         s2 = owner(5000)
         s2['journey']['wallet'] = -5
         refused(self, s2, 'jr_quay_open', 'in_debt', trade='milk_tea', place='xe', confirm=True)
@@ -280,10 +281,10 @@ class DailyRun(unittest.TestCase):
 
 
 class Rent(unittest.TestCase):
-    def test_rent_every_month_from_the_till_first(self):
+    def test_daily_rent_totals_one_month_for_five_operating_days(self):
         s = opened('xe')
         days(s, qy.MONTH_DAYS)
-        self.assertTrue(any(x['t'] == 'Tiền thuê tháng' and x['a'] == -qy.PLACES['xe']['rent'] for x in ST(s)['log']))
+        self.assertEqual(sum(h['costs']['rent'] for h in ST(s)['hist']), qy.PLACES['xe']['rent'])
         self.assertEqual(ST(s)['due'], 0)
 
     def test_unpaid_rent_pauses_never_a_debt(self):
@@ -291,6 +292,8 @@ class Rent(unittest.TestCase):
         st = ST(s)
         st['fund'] = 0
         s['journey']['wallet'] = 0
+        # Existing unpaid rent remains payable; idle days add no new charge.
+        st['due'] = qy.PLACES['xe']['rent']
         days(s, qy.MONTH_DAYS)
         self.assertEqual(ST(s)['due'], qy.PLACES['xe']['rent'])
         self.assertEqual(s['journey']['wallet'], 0)                        # never below zero
@@ -303,25 +306,23 @@ class Rent(unittest.TestCase):
 
 
 class Economy(unittest.TestCase):
-    def test_mostly_profitable_everywhere(self):
+    def test_normal_margin_modest_everywhere(self):
+        from game import quay_economy as qe
         for place in qy.PLACE_IDS:
             for trade in qy.TRADE_IDS:
-                nets, _, _ = simulate(place, trade)
-                self.assertGreaterEqual(sum(n > 0 for n in nets) / len(nets), 0.75, (place, trade))
+                s,st=bare(place,trade); qy.ensure(s)['stalls'].append(st)
+                revenue=net=0
+                with mock.patch.object(qe,'_event',return_value=None), mock.patch.object(qy,'_x3',return_value=False):
+                    for d in range(1,601):
+                        qy._sell(s,st,d)
+                        revenue+=st['hist'][-1]['rev'];net+=st['hist'][-1]['net']
+                self.assertTrue(.08 <= net/revenue <= .18,(place,trade,net/revenue))
 
-    def test_every_trade_alike(self):
-        for place in qy.PLACE_IDS:
-            avg = {t: sum(simulate(place, t, 600)[0]) / 600 for t in qy.TRADE_IDS}
-            ref = sum(avg.values()) / len(avg)
-            for t, v in avg.items():
-                self.assertLess(abs(v - ref) / ref, 0.15, (place, t, v, ref))
-
-    def test_payback_and_customers_vary(self):
-        for place, (low, high) in dict(xe=(35, 120), sap=(70, 160), kiot=(90, 180)).items():
-            nets, _, st = simulate(place, 'cafe_bakery', 500)
-            per_day = sum(nets) / len(nets) - qy.PLACES[place]['rent'] / qy.MONTH_DAYS
-            self.assertTrue(low <= qy.PLACES[place]['price'] / per_day <= high, (place, per_day))
-            self.assertGreater(len({x for x in nets}), 20)                  # customers vary by day
+    def test_bad_days_exist_but_business_recovers(self):
+        nets,_,_=simulate('sap','cafe_bakery',600)
+        self.assertGreater(sum(nets),0)
+        self.assertTrue(any(n<0 for n in nets))
+        self.assertGreater(len(set(nets)),20)
 
     def test_shift_value(self):
         for place in qy.PLACE_IDS:
@@ -337,39 +338,21 @@ class Thieves(unittest.TestCase):
             days_ = [d for d, *_ in thefts]
             self.assertTrue(all(b - a >= qy.THEFT_GAP for a, b in zip(days_, days_[1:])))
             self.assertTrue(all(d > qy.THEFT_SAFE_DAYS for d in days_))
-            self.assertTrue(any(whole for _, _, whole, _ in thefts))           # sometimes the whole box (no safe)
+            self.assertTrue(all(lost > 0 for _, lost, _, _ in thefts))
 
     def test_cap_and_safe(self):
-        s, st = bare('xe', 'milk_tea', seed=3)
-        with mock.patch.object(qy, '_x3', lambda t: False):
-            for d in range(1, 9):
-                st['left'] = 0
-                qy.run_day(s, st, d)
-        st['till'] = 5000                       # a till never collected
-        fund = st['fund']
-        cap = qy.THEFT_CAP * max(qy.avg_revenue(st), qy.THEFT_MIN)
-        hits = 0
-        for seed in range(400):
-            x = copy.deepcopy(st)
-            s['journey']['seed'] = seed
-            x['theft'] = 0
-            qy._theft(s, x, 20)
-            if x['theft']:
-                hits += 1
-                self.assertLessEqual(x['case']['lost'], cap)
-                self.assertEqual(x['fund'], fund)
-        self.assertGreater(hits, 0)
-        safe = copy.deepcopy(st)
-        safe['items'] = ['ket']
-        safe_hits = whole = 0
-        for seed in range(2000):
-            x = copy.deepcopy(safe)
-            s['journey']['seed'] = seed
-            qy._theft(s, x, 20)
-            safe_hits += bool(x['theft'])
-            whole += bool(x['case'] and x['case']['all'])
-        self.assertEqual(whole, 0)
-        self.assertLess(safe_hits, hits * 2000 / 400 * 0.6)
+        from game import quay_economy as qe
+        losses=[]
+        for safe in (False,True):
+            s,st=bare('xe','milk_tea',seed=3,items=['ket'] if safe else [])
+            st['till']=5000
+            with mock.patch.object(qe,'_event',return_value='theft'):
+                qy._sell(s,st,20)
+            losses.append(st['case']['lost'])
+            self.assertLessEqual(st['case']['lost'], qy.THEFT_CAP*max(qy.avg_revenue(st),qy.THEFT_MIN))
+            self.assertEqual(st['fund'],10**6)
+            if safe:self.assertFalse(st['case']['all'])
+        self.assertLess(losses[1],losses[0])
 
     def test_police(self):
         s = opened('xe')

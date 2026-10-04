@@ -14,6 +14,7 @@
  * the nose up, as a yoke does), W / S throttle, G go around. The overlay lives in the job sheet next to its
  * content (renders never touch it) and closes itself when the hop is on the ground or the sheet goes. */
 import {t as tr} from '../v4/i18n.js';
+import {flightLesson} from './pilot_tutor.js';
 
 const KT=.514444,FT=.3048,D2R=Math.PI/180,G=9.81;
 const LEN=1800,HALF=22,AIM=300,GS=3*D2R,DOT=.35*D2R,RWY_HDG=180;
@@ -81,7 +82,8 @@ function build(){
   const el=document.createElement('div');
   el.className='pl-fly';el.setAttribute('role','application');el.setAttribute('aria-label',tr('Buồng lái'));
   el.innerHTML=`<canvas class="pl-fly-cv" aria-hidden="true"></canvas>
-    <div class="pl-fly-top"><span class="pl-fly-phase"></span><button type="button" class="pl-fly-fd" aria-pressed="true">${esc(tr('🟣 Gợi ý'))}</button><button type="button" class="pl-fly-fast">${esc(tr('⏩ Bay nhanh'))}</button></div>
+    <div class="pl-fly-top"><span class="pl-fly-phase"></span><button type="button" class="pl-fly-tutor" aria-label="${esc(tr('Học từng bước'))}">${esc(tr('📖 Học'))}</button><button type="button" class="pl-fly-fd" aria-pressed="true">${esc(tr('🟣 Gợi ý'))}</button><button type="button" class="pl-fly-fast">${esc(tr('⏩ Bay nhanh'))}</button></div>
+    <button type="button" class="pl-fly-target" hidden></button><section class="pl-fly-lesson" role="dialog" aria-label="${esc(tr('Học từng bước'))}" hidden><div></div><button type="button" class="pl-fly-try">${esc(tr('Thử bước này'))}</button><button type="button" class="pl-fly-relearn">${esc(tr('Học lại hướng dẫn'))}</button><button type="button" class="pl-fly-endlesson">${esc(tr('Tắt hướng dẫn'))}</button></section>
     <p class="pl-fly-say" role="status" aria-live="polite" hidden></p>
     <div class="pl-fly-help" hidden><p class="pl-fly-tip" hidden></p><p class="pl-fly-keys" hidden>${esc(tr('← → nghiêng · ↑ ↓ mũi (↓ kéo lên) · W/S ga · G bay lại'))}</p></div>
     <button type="button" class="pl-fly-ga" aria-label="${esc(tr('↗️ BAY LẠI'))}" hidden>${gaLabel()}</button>
@@ -92,6 +94,12 @@ function build(){
   F.el=el;F.cv=el.querySelector('canvas');F.c=F.cv.getContext('2d',{alpha:false});
   if(!F.c){F.el.remove();F.el=null;okCanvas=false;return;}
   el.querySelector('.pl-fly-fast').addEventListener('click',()=>leave('manual'));
+  F.teach=false;F.lessonPaused=false;F.lessonSeen=new Set();F.lessonKey='';
+  el.querySelector('.pl-fly-tutor').addEventListener('click',()=>{F.teach=true;lessonShow();});
+  el.querySelector('.pl-fly-target').addEventListener('click',lessonShow);
+  el.querySelector('.pl-fly-try').addEventListener('click',()=>{F.lessonSeen.add(F.phase);F.lessonPaused=false;el.querySelector('.pl-fly-lesson').hidden=true;});
+  el.querySelector('.pl-fly-relearn').addEventListener('click',()=>{F.lessonSeen.clear();store(TIPS,'[]');lessonShow();});
+  el.querySelector('.pl-fly-endlesson').addEventListener('click',()=>{F.teach=false;F.lessonPaused=false;el.querySelector('.pl-fly-lesson').hidden=true;el.querySelector('.pl-fly-target').hidden=true;});
   el.querySelector('.pl-fly-fd').addEventListener('click',e=>{F.fd=!F.fd;store(FD_KEY,F.fd?'1':'0');e.currentTarget.setAttribute('aria-pressed',String(F.fd));});
   el.querySelector('.pl-fly-ga').addEventListener('click',()=>goAround('player'));
   yokeOn(el.querySelector('.pl-fly-yoke'));yokeOn(F.cv,true);throttleOn(el.querySelector('.pl-fly-thr'));
@@ -223,6 +231,17 @@ function tidy(){
   }
 }
 function chip(text){const p=F.el?.querySelector('.pl-fly-phase');const s=tr(text);if(p&&p.textContent!==s)p.textContent=s;}
+function lesson(){return flightLesson(F.phase,{kt:S.V/KT,ft:S.h/FT,ground:S.ground,why:F.phase==='approach'?judge().why:'',canAround:canAround()});}
+function lessonShow(){
+  if(!F.el)return;const l=lesson(),box=F.el.querySelector('.pl-fly-lesson');
+  F.lessonPaused=true;F.keys.clear();F.input.pitch=F.input.roll=F.input.kp=F.input.kr=0;
+  box.querySelector('div').innerHTML=`<h3>${esc(tr(l.step))}</h3><p><b>${esc(tr(l.target))}</b></p><p>${esc(tr(l.controls))}</p><p>${esc(tr(l.recovery))}</p><small>${esc(tr(l.keys))}</small>`;box.hidden=false;
+}
+function lessonTick(){
+  if(!F.teach||!F.el)return;const l=lesson(),target=F.el.querySelector('.pl-fly-target');
+  target.hidden=false;const text=tr(l.step)+' · '+tr(l.target);if(target.textContent!==text)target.textContent=text;
+  if(!F.lessonSeen.has(F.phase)&&['takeoff','cell','ask','approach','around'].includes(F.phase)&&!F.lessonPaused)lessonShow();
+}
 
 /* ================================================================ talking to the server */
 async function send(command,payload={},quiet=true){
@@ -646,6 +665,8 @@ function frame(now){
   // The sheet closed or moved to another page: hold still (and the job's own render will reopen us).
   if(++F.seenCheck%20===0){const here=!!document.querySelector('#sheet[open] #sheetContent .career-job.pl')&&F.el.isConnected;F.hidden=!here;F.el.hidden=!here;}
   if(F.hidden||document.hidden)return;
+  lessonTick();
+  if(F.lessonPaused){draw();return;}
   const dt=Math.min(.05,Math.max(0,raw/1000));
   F.time+=dt;
   measure(raw,now);

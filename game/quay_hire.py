@@ -7,8 +7,8 @@ its sales (quay.shift_value x how the day went), like a day of an NPC hand.
 Flow (one row per shift in `quay_jobs`; every money move is a save write under its revision guard in the same
 transaction as a guarded row update, so each step happens once whatever the retries, tabs or processes):
 
-* post (owner): the wage leaves the counter (till, then fund: the NPC wages' rule) into escrow, the row is 'open'
-  for OPEN_HOURS. To anyone who knows the trade, or to one friend (a friendship of FRIEND_DAYS days at least).
+* post (owner): the chosen counter, wallet, bank account or joint fund reserves the wage in escrow, the row is 'open'
+  for OPEN_HOURS. To anyone who knows the trade, or to one friend (immediately after accepting the friendship).
 * accept (worker): row open -> taken (`UPDATE … WHERE status='open'`: two players tapping at once, one gets it);
   the worker's save gets journey.quay.shift {career, day, base…}. One shift at a time.
 * the worker plays their next day of that career; closing it (journey.after -> quay.on_shift) moves the shift to
@@ -18,7 +18,8 @@ transaction as a guarded row update, so each step happens once whatever the retr
   id quay:<job>:pay, applied once by game/live_effects.py into the till). Otherwise taken -> lapsed and the escrow
   goes back (quay:<job>:back into the fund).
 * quit (worker, always free), cancel (owner, open only), decline (an invited friend), expiry (sweep): the escrow
-  goes back to the counter, never to anyone else.
+  returns to its original pocket. A full joint fund waits in a durable refund row; a closed original marriage
+  returns the escrow to the payer's wallet with an explicit receipt.
 
 Fair and safe: nobody can take xu from another save (the only debit is the owner's own post); the worker's pay is
 the escrow, the owner's refund is the escrow; both sides consent; caps against farming with a second account
@@ -32,6 +33,8 @@ inbox kind: its saves keep journey.quay untouched and 'quay' inbox rows wait pen
 from __future__ import annotations
 
 import json
+import hashlib
+import re
 import secrets
 import time
 
@@ -50,7 +53,7 @@ PAIR_WEEK = 4            # shifts between one owner and one worker per 7 days
 OWNER_DAY = 4            # offers an owner posts per VN day
 ACCOUNT_DAYS = 3         # both accounts registered at least this long
 LIFE_DAYS = 10           # both saves have lived this many days
-FRIEND_DAYS = 2          # a friend-only offer: friends at least this long
+FRIEND_DAYS = 0          # owner request: newly accepted friends can be invited immediately
 BOARD_MAX = 20
 MINE_DAYS = 2            # finished offers shown to their owner this long
 SWEEP_EVERY = 30.0       # seconds between two expiry sweeps of one process
@@ -68,6 +71,10 @@ CREATE TABLE IF NOT EXISTS quay_jobs (
 CREATE INDEX IF NOT EXISTS quay_jobs_owner ON quay_jobs(owner, status);
 CREATE INDEX IF NOT EXISTS quay_jobs_worker ON quay_jobs(worker, status);
 CREATE INDEX IF NOT EXISTS quay_jobs_open ON quay_jobs(status, until);
+CREATE TABLE IF NOT EXISTS quay_funding (
+  job TEXT PRIMARY KEY, owner TEXT NOT NULL, rid TEXT, fingerprint TEXT NOT NULL,
+  source TEXT NOT NULL, couple INTEGER, UNIQUE(owner,rid)
+);
 """
 
 _swept = [0.0]
@@ -120,17 +127,76 @@ def _old_enough(db, sid: str) -> bool:
     return str(r['created_at']) <= cut
 
 
-def _effect(db, eid: str, sid: str, amount: int, stall: str, what: str, label: str) -> None:
+def _effect(db, eid: str, sid: str, amount: int, stall: str, what: str, label: str, *, wage=None, source=None) -> None:
     """One credit into a save's inbox (game/live_effects.py applies it once, by this id)."""
     if amount <= 0:
         return
-    data = json.dumps(dict(stall=stall, what=what, label=label[:80]), ensure_ascii=False)
+    payload=dict(stall=stall, what=what, label=label[:80])
+    if what=='shift' and wage is not None:
+        payload.update(wage=wage,source=source)
+    data = json.dumps(payload, ensure_ascii=False)
     db.execute("INSERT INTO live_effects(id,sid,kind,amount,data,status,at) VALUES(?,?,?,?,?,'pending',?) ON CONFLICT(id) DO NOTHING",
                (eid, sid, KIND, int(amount), data, now()))
 
 
-def _refund(db, r: dict, why: str) -> None:
+def _refund(db, r: dict, why: str) -> bool:
+    """Return True once delivered or queued to the payer; a full joint fund waits durably."""
+    funding = mr._row(db, 'SELECT * FROM quay_funding WHERE job=?', (r['id'],))
+    source = (funding or {}).get('source', 'stall')
+    label = f'💼 {why}: hoàn lương giữ chỗ'
+    if source == 'joint':
+        from . import couple as cp
+        c = mr._row(db, 'SELECT * FROM couples WHERE id=?', (funding['couple'],))
+        if c and c['status'] == 'married' and r['owner'] in (c['a'], c['b']):
+            # Also serialize the capacity check against other fund updates on PostgreSQL.
+            db.execute('UPDATE joint_funds SET updated=updated WHERE couple=?', (c['id'],))
+            if cp._balance(db,c['id']) + r['wage'] > cp.FUND_MAX:
+                db.execute("INSERT INTO live_effects(id,sid,kind,amount,data,status,at) VALUES(?,?,?,?,?,'pending',?) ON CONFLICT(id) DO NOTHING",
+                           (f'quay:{r["id"]}:joint-back',r['owner'],'quay_joint_refund',r['wage'],json.dumps(dict(job=r['id'])),now()))
+                return False
+            cp._fund_move(db, c['id'], r['owner'], 'deposit', r['wage'], label, f'quay:{r["id"]}:back')
+            return True
+        source = 'cash'
+        label += ' (quỹ chung cũ đã đóng, trả về ví người chi)'
+    if source in ('cash', 'account'):
+        data = json.dumps(dict(source=source, label=label), ensure_ascii=False)
+        db.execute("INSERT INTO live_effects(id,sid,kind,amount,data,status,at) VALUES(?,?,?,?,?,'pending',?) ON CONFLICT(id) DO NOTHING",
+                   (f'quay:{r["id"]}:back', r['owner'], 'quay_refund', r['wage'], data, now()))
+        return True
     _effect(db, f'quay:{r["id"]}:back', r['owner'], r['wage'], r['stall'], 'back', f'💼 {why}: lương giữ chỗ về lại')
+    return True
+
+
+def _pending_joint_refunds(store):
+    # Beside-save effects stay in escrow until the original fund has room. Closing
+    # that marriage queues the usual payer-wallet refund instead, under its fixed ID.
+    with store.connect() as db:
+        pending=mr._rows(db,"SELECT id,data FROM live_effects WHERE kind='quay_joint_refund' AND status='pending' ORDER BY at LIMIT 50")
+    for effect in pending:
+        def deliver(db,effect=effect):
+            claimed=db.execute("UPDATE live_effects SET at=? WHERE id=? AND status='pending' RETURNING id",(now(),effect['id'])).fetchone()
+            if not claimed:
+                return
+            row=_row(db,json.loads(effect['data'])['job'])
+            if row and _refund(db,row,'Hoàn lương chờ quỹ chung'):
+                db.execute("UPDATE live_effects SET status='applied',applied_at=? WHERE id=? AND status='pending'",(now(),effect['id']))
+        store.transaction(deliver)
+
+
+def refund_to_save(s, amount, source, label):
+    from . import bank, journey
+    if source == 'account' and bank.get(s):
+        b = bank.get(s)
+        need(b['balance'] + amount <= bank.BAL_MAX, 'Tài khoản chưa nhận được khoản hoàn này.', 'account_full')
+        b['balance'] += amount
+        bank._log(b, s['journey']['life_day'], 'acc', label, amount)
+        return f'{label}: +{amount} xu về tài khoản.'
+    journey._wallet(s['journey'], amount, 'bank', label[:120])
+    return f'{label}: +{amount} xu về ví.'
+
+
+class _PostReplay(Exception):
+    pass
 
 
 def _ping(store, sid: str, text: str) -> None:
@@ -156,6 +222,20 @@ def _end(db, r: dict, status: str, frm: str, extra: str = '', args: tuple = ()) 
 
 # ---------------------------------------------------------------- owner: post, cancel
 def post(store, sid: str, display: str, d: dict) -> dict:
+    source = d.get('src', 'stall')
+    need(isinstance(source, str) and source in ('stall', 'cash', 'account', 'joint'), 'Chọn nguồn tiền có sẵn để giữ lương.', 'bad_source')
+    rid = d.get('rid')
+    need(rid is None or isinstance(rid,str) and re.fullmatch(r'[A-Za-z0-9\-]{8,64}',rid), 'Mã thao tác không hợp lệ.', 'bad_rid')
+    need(source == 'stall' or rid, 'Thiếu mã thao tác giữ lương.', 'bad_rid')
+    fingerprint = hashlib.sha256(json.dumps({k:v for k,v in d.items() if k!='rid'}, sort_keys=True).encode()).hexdigest()
+    def replay(db):
+        old = mr._row(db, 'SELECT * FROM quay_funding WHERE owner=? AND rid=?', (sid, rid)) if rid else None
+        if old:
+            need(old['fingerprint'] == fingerprint, 'Mã thao tác đã dùng cho lời mời khác.', 'rid_conflict', 409)
+        return old
+    with store.connect() as db:
+        if replay(db):
+            return dict(message='Lời mời này đã được ghi nhận.', changed=False)
     loaded = mr._read_state(store, sid)
     need(loaded, 'Không tìm thấy tiến trình.', 'session_missing', 404)
     s = loaded[0]
@@ -163,12 +243,13 @@ def post(store, sid: str, display: str, d: dict) -> dict:
     need(j.get('story'), 'Quầy riêng chỉ có trong hành trình.', 'not_story')
     st = next((x for x in (qy.get(s) or {}).get('stalls', ()) if x['id'] == d.get('stall')), None)
     need(st, 'Không thấy quầy này.', 'no_stall', 404)
-    need(st['due'] == 0 and st['left'] <= qy.LEFT_DAYS, 'Quầy đang đóng. Mở lại quầy trước nhé.', 'closed')
+    need(st['due'] == 0 and st['left'] <= qy.LEFT_DAYS and not st.get('economy', {}).get('paused'), 'Quầy đang đóng. Mở lại quầy trước nhé.', 'closed')
     need(int(j['life_day']) >= LIFE_DAYS, f'Thuê người chơi mở từ ngày sống {LIFE_DAYS}.', 'too_new')
     value = qy.shift_value(st['place'], st['trade'])
     wage = d.get('wage')
     need(type(wage) is int and WAGE_MIN <= wage <= wage_max(value), f'Lương từ {WAGE_MIN} tới {wage_max(value)} xu một ca.', 'bad_wage')
-    need(st['till'] + st['fund'] >= wage, f'Két và vốn quầy chưa đủ {wage} xu để giữ lương.', 'no_funds')
+    if source == 'stall':
+        need(st['till'] + st['fund'] >= wage, f'Két và vốn quầy chưa đủ {wage} xu để giữ lương.', 'no_funds')
     friend = None
     code = d.get('to')
     t = now()
@@ -179,19 +260,40 @@ def post(store, sid: str, display: str, d: dict) -> dict:
             need(p and p['sid'] != sid, 'Không tìm thấy người này.', 'not_found', 404)
             friend = p['sid']
             f = db.execute('SELECT since FROM friends WHERE sid=? AND friend=?', (sid, friend)).fetchone()
-            need(f and float(f['since']) <= t - FRIEND_DAYS * DAY, f'Mời riêng chỉ cho bạn bè đã kết bạn {FRIEND_DAYS} ngày.', 'not_friend')
+            need(f, 'Mời riêng chỉ dành cho bạn bè đã đồng ý kết bạn.', 'not_friend')
             need(not mr._blocked(db, sid, friend), 'Không mời được người này.', 'blocked')
     jid = 'qj-' + secrets.token_hex(8)
     day = vn_day(t)
     P = qy.PLACES[st['place']]
+    selected_couple = [None]
 
     def fn(s2):
+        with store.connect() as db:
+            if replay(db):
+                raise _PostReplay()
         st2 = qy.stall(s2, st['id'])
-        need(st2['till'] + st2['fund'] >= wage, f'Két và vốn quầy chưa đủ {wage} xu để giữ lương.', 'no_funds')
-        qy._from_till_fund(st2, wage)
-        qy._log(st2, int(s2['journey']['life_day']), '💼 Giữ lương ca làm thêm', -wage)
+        need(st2['due'] == 0 and st2['left'] <= qy.LEFT_DAYS and not st2.get('economy', {}).get('paused'), 'Quầy đang đóng.', 'closed')
+        if source == 'stall':
+            need(st2['till'] + st2['fund'] >= wage, f'Két và vốn quầy chưa đủ {wage} xu để giữ lương.', 'no_funds')
+            qy._from_till_fund(st2, wage)
+            qy._log(st2, int(s2['journey']['life_day']), '💼 Giữ lương ca làm thêm', -wage)
+        elif source == 'joint':
+            from . import couple as cp
+            with store.connect() as db:
+                c, who = cp._sid_of(db, s2)
+                need(c and who == sid, 'Bạn chưa có quỹ chung.', 'no_joint')
+                selected_couple[0] = c['id']
+        else:
+            from . import bank
+            need(bank.can_pay(s2, wage, source, no_joint=True), 'Nguồn thanh toán chưa đủ tiền giữ lương.', 'no_funds')
+            bank.pay(s2, wage, 'Giữ lương ca làm thêm', method=source, no_joint=True)
+            (bank.get(s2) or {}).pop('ting', None)
 
     def ops(db):
+        if replay(db):
+            raise _PostReplay()
+        if friend:
+            need(db.execute('SELECT 1 FROM friends WHERE sid=? AND friend=?', (sid, friend)).fetchone() and not mr._blocked(db,sid,friend), 'Không mời được người này.', 'not_friend')
         need(db.execute('SELECT COUNT(*) FROM quay_jobs WHERE owner=? AND day=?', (sid, day)).fetchone()[0] < OWNER_DAY,
              f'Mỗi ngày đăng tối đa {OWNER_DAY} ca thôi nhé.', 'rate_limited', 429)
         need(db.execute("SELECT COUNT(*) FROM quay_jobs WHERE owner=? AND stall=? AND status IN ('open','taken')",
@@ -199,24 +301,45 @@ def post(store, sid: str, display: str, d: dict) -> dict:
         db.execute('INSERT INTO quay_jobs(id,owner,owner_name,stall,stall_name,trade,place,wage,value,friend,worker,status,day,at,until) '
                    "VALUES(?,?,?,?,?,?,?,?,?,?,NULL,'open',?,?,?)",
                    (jid, sid, display[:24], st['id'], st['name'], st['trade'], st['place'], wage, value, friend, day, t, t + OPEN_HOURS * 3600))
-    mr._mutate_retry(store, {sid: fn}, ops)
+        if source == 'joint':
+            from . import couple as cp
+            c = mr._row(db, 'SELECT * FROM couples WHERE id=?', (selected_couple[0],))
+            need(c and c['status'] == 'married' and sid in (c['a'],c['b']), 'Quỹ chung không còn hoạt động.', 'no_joint')
+            cp._fund_move(db,c['id'],sid,'spend',wage,'Giữ lương ca làm thêm',f'quay:{jid}:hold')
+        db.execute('INSERT INTO quay_funding(job,owner,rid,fingerprint,source,couple) VALUES(?,?,?,?,?,?)',
+                   (jid,sid,rid,fingerprint,source,selected_couple[0]))
+    try:
+        mr._mutate_retry(store, {sid: fn}, ops)
+    except _PostReplay:
+        return dict(message='Lời mời này đã được ghi nhận.', changed=False)
     if friend:
         _ping(store, friend, f'💼 {display[:24]} mời bạn làm một ca ở {st["name"]}: {wage} xu.')
-    return dict(message=f'💼 Đã đăng ca làm thêm, lương {wage} xu (đã giữ từ quầy).', changed=True)
+    label = dict(stall='két và vốn quầy',cash='tiền lương / ví',account='tài khoản ngân hàng',joint='quỹ chung')[source]
+    return dict(message=f'💼 Đã đăng ca làm thêm, lương {wage} xu (đã giữ từ {label}).', changed=True)
 
 
 def cancel(store, sid: str, display: str, d: dict) -> dict:
     with store.connect() as db:
         r = _row(db, d.get('id'))
+        funding = mr._row(db, 'SELECT * FROM quay_funding WHERE job=?', (d.get('id'),))
     need(r and r['owner'] == sid and r['status'] == 'open', 'Ca này không hủy được nữa.', 'gone', 409)
+    refunded=[True]
 
     def fn(s):
-        qy.credit(s, r['stall'], 'back', r['wage'], '💼 Hủy ca làm thêm')
+        source = (funding or {}).get('source','stall')
+        if source == 'stall':
+            qy.credit(s, r['stall'], 'back', r['wage'], '💼 Hủy ca làm thêm')
+        elif source in ('cash','account'):
+            refund_to_save(s,r['wage'],source,'💼 Hủy ca làm thêm')
 
     def ops(db):
         need(_end(db, r, 'cancelled', 'open'), 'Ca này vừa có người nhận.', 'taken', 409)
+        if (funding or {}).get('source') == 'joint':
+            refunded[0]=_refund(db,r,'Hủy ca làm thêm')
     mr._mutate_retry(store, {sid: fn}, ops)
-    return dict(message=f'Đã hủy. {r["wage"]} xu về lại vốn quầy.', changed=True)
+    if not refunded[0]:
+        return dict(message='Đã hủy. Lương giữ chỗ đang chờ quỹ chung có chỗ để hoàn.',changed=True)
+    return dict(message=f'Đã hủy. Hoàn {r["wage"]} xu về nguồn đã giữ lương.', changed=True)
 
 
 # ---------------------------------------------------------------- worker: accept, decline, quit
@@ -350,7 +473,9 @@ def flush(store, sid: str) -> bool:
                 if pay:
                     if not _end(db, r, 'paid', 'taken', ',tasks=?,stars=?,earned=?', (o['tasks'], o['stars'], earned)):
                         raise mr._Retry()
-                    _effect(db, f'quay:{r["id"]}:pay', r['owner'], earned, r['stall'], 'shift', f'💼 Ca của {mr._display(db, sid)}')
+                    funding=mr._row(db,'SELECT source FROM quay_funding WHERE job=?',(r['id'],))
+                    _effect(db, f'quay:{r["id"]}:pay', r['owner'], earned, r['stall'], 'shift', f'💼 Ca của {mr._display(db, sid)}',
+                            wage=r['wage'],source=(funding or {}).get('source','stall'))
                 elif _end(db, r, 'lapsed', 'taken', ',tasks=?,stars=?', (o['tasks'], o['stars'])):
                     _refund(db, r, 'Ca chưa đủ việc')
         try:
@@ -376,6 +501,7 @@ def sweep(store, force: bool = False) -> int:
     if not force and t - _swept[0] < SWEEP_EVERY:
         return 0
     _swept[0] = t
+    _pending_joint_refunds(store)
     with store.connect() as db:
         rows = mr._rows(db, "SELECT * FROM quay_jobs WHERE status IN ('open','taken') AND until<? LIMIT 50", (t,))
     for r in rows:
@@ -405,6 +531,9 @@ def _job(r: dict, db, me: str) -> dict:
                wage=r['wage'], status=r['status'], until=int(r['until']), invite=r['friend'] == me)
     if r['owner'] == me:
         out['mine'] = True
+        funding = mr._row(db,'SELECT source FROM quay_funding WHERE job=?',(r['id'],))
+        out['source'] = (funding or {}).get('source','stall')
+        out['refund_pending'] = bool(db.execute("SELECT 1 FROM live_effects WHERE id=? AND status='pending'",(f'quay:{r["id"]}:joint-back',)).fetchone())
         if r['worker']:
             out['worker'] = mr._display(db, r['worker'])
         if r['friend']:
@@ -421,7 +550,8 @@ def view(store, sid: str, state: dict) -> dict:
     q = qy.get(state) or {}
     stalls = [x['id'] for x in q.get('stalls', ())]
     with store.connect() as db:
-        mine = [_job(r, db, sid) for r in mr._rows(db, "SELECT * FROM quay_jobs WHERE owner=? AND (status IN ('open','taken') OR ended>?) "
+        mine = [_job(r, db, sid) for r in mr._rows(db, "SELECT * FROM quay_jobs WHERE owner=? AND (status IN ('open','taken') OR ended>? "
+                                                         "OR EXISTS (SELECT 1 FROM live_effects e WHERE e.id='quay:' || quay_jobs.id || ':joint-back' AND e.status='pending')) "
                                                          'ORDER BY at DESC LIMIT 12', (sid, t - MINE_DAYS * DAY))]
         board = []
         for r in mr._rows(db, "SELECT * FROM quay_jobs WHERE status='open' AND until>? AND owner<>? AND (friend IS NULL OR friend=?) "
@@ -431,10 +561,11 @@ def view(store, sid: str, state: dict) -> dict:
             board.append(_job(r, db, sid))
         friends = []
         if stalls:
-            cut = t - FRIEND_DAYS * DAY
-            for r in mr._rows(db, 'SELECT f.friend, p.code FROM friends f JOIN marriage_people p ON p.sid=f.friend '
-                                  'WHERE f.sid=? AND f.since<=? ORDER BY f.since LIMIT 40', (sid, cut)):
-                friends.append(dict(name=mr._display(db, r['friend']), code=r['code']))
+            for r in mr._rows(db, 'SELECT f.friend, f.since, p.code FROM friends f JOIN marriage_people p ON p.sid=f.friend '
+                                  'WHERE f.sid=? ORDER BY f.since LIMIT 100', (sid,)):
+                wait = max(0, r['since'] + FRIEND_DAYS * DAY - t)
+                friends.append(dict(name=mr._display(db, r['friend']), code=r['code'], eligible=not wait,
+                                    wait_hours=int((wait + 3599) // 3600)))
         ok = _old_enough(db, sid)
     lock = None
     if not ok:
@@ -443,7 +574,7 @@ def view(store, sid: str, state: dict) -> dict:
         lock = f'Mở từ ngày sống {LIFE_DAYS}.'
     return dict(mine=mine, board=board, friends=friends, lock=lock,
                 rules=dict(wage_min=WAGE_MIN, wage_max=WAGE_MAX, tasks=MIN_TASKS, day=WORKER_DAY, week=WORKER_WEEK_XU, pair=PAIR_WEEK,
-                           hours=OPEN_HOURS, shift_hours=SHIFT_HOURS))
+                           hours=OPEN_HOURS, shift_hours=SHIFT_HOURS, friend_days=FRIEND_DAYS))
 
 
 def get(store, token: str, state: dict) -> dict:

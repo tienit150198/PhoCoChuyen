@@ -8,6 +8,9 @@
 .dc-grid{display:grid;gap:14px;min-width:0}
 .dc-stage,.dc-side,.dc-fix{display:grid;gap:10px;min-width:0;align-content:start}
 .dc-side{gap:12px}
+.dc-scroll{display:grid;grid-template-columns:30px minmax(0,1fr) 30px;gap:4px;align-items:center;min-width:0;max-width:100%}
+.dc-scroll>[data-dc="scroll"]{min-width:30px;min-height:42px;padding:2px;font-size:24px;line-height:1}
+.dc-scroll>[data-dc-rail]{min-width:0;max-width:100%;scrollbar-width:thin;overscroll-behavior-x:contain}
 
 /* Rooms */
 .rn-rooms{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px}

@@ -34,7 +34,7 @@ Delta-sync hints (TABLES[i]["sync"]):
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 16  # 16: 🎁 system_gifts.granted_by (nullable, the admin who gave it from /admin) and system_gifts_created, additive. 15: 💸 bank_xfers, bank_xfer_days (transfers between friends: game/bank_xfer.py), additive. 14: 💼 quay_jobs (hired players at a counter: game/quay_hire.py), additive. 13: optional TikTok identities and one-use OAuth flows (additive); chat_hides/chat_clears (see below).
+SCHEMA_VERSION = 17  # 17: additive quay_funding metadata for wage escrow sources and request receipts.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -368,6 +368,10 @@ CREATE TABLE IF NOT EXISTS quay_jobs (
   tasks bigint NOT NULL DEFAULT 0, stars bigint NOT NULL DEFAULT 0, earned bigint NOT NULL DEFAULT 0
 );
 -- 💸 Transfers between friends (game/bank_xfer.py): one row per transfer (the audit log), guarded status changes;
+CREATE TABLE IF NOT EXISTS quay_funding (
+  job {T} PRIMARY KEY, owner {T} NOT NULL, rid {T}, fingerprint {T} NOT NULL,
+  source {T} NOT NULL, couple bigint, UNIQUE(owner,rid)
+);
 -- the day counters move with conditional upserts (the caps hold under concurrency).
 CREATE TABLE IF NOT EXISTS bank_xfers (
   id {T} PRIMARY KEY, code {T} NOT NULL, sender {T} NOT NULL, receiver {T} NOT NULL, from_name {T} NOT NULL,
@@ -862,6 +866,9 @@ TABLES = [
                        'at double precision', 'taken_at double precision', 'ended double precision', 'until double precision',
                        'tasks bigint', 'stars bigint', 'earned bigint'),
          key=('id',), unique=[], identity=None, sync=dict(mode='full', note='status changes in place (open -> taken -> paid…)')),
+    dict(name='quay_funding', source='main', sqlite_table='quay_funding',
+         columns=_cols('job text','owner text','rid text','fingerprint text','source text','couple bigint'),
+         key=('job',), unique=[('owner','rid')], identity=None, sync=dict(mode='full',note='immutable funding and request receipts')),
     dict(name='bank_xfers', source='main', sqlite_table='bank_xfers',
          columns=_cols('id text', 'code text', 'sender text', 'receiver text', 'from_name text', 'to_name text', 'amount bigint',
                        'note text', 'src text', 'status text', 'day text', 'at double precision', 'done_at double precision'),

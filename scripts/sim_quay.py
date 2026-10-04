@@ -105,8 +105,8 @@ def simulate(place, trade, days, mode, online=False, board=None, staff=None):
             else:
                 play_day(s, st, d, rng, care=0.0 if mode == 'sloppy' else 1.0)
             nets.append(st['hist'][-1]['net'] if st['hist'] and st['hist'][-1]['d'] == d else 0)
-    rent = qy.PLACES[place]['rent'] / qy.MONTH_DAYS
-    return sum(nets) / len(nets) - rent, sum(n > 0 for n in nets) / len(nets)
+    # Settlement rows already include rent, taxes and incident losses.
+    return sum(nets) / len(nets), sum(n > 0 for n in nets) / len(nets)
 
 
 def main():

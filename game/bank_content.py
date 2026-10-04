@@ -79,6 +79,7 @@ AUTOPAY = {
 
 PAY_PREF = {
     'auto': 'Tự động: ví đủ thì trả tiền mặt, thiếu thì quẹt thẻ',
+    'account': 'Trả trực tiếp từ tài khoản thanh toán',
     'cash': 'Luôn trả tiền mặt',
     'card': 'Ưu tiên quẹt thẻ tín dụng',
     'joint': 'Ưu tiên thẻ chung vợ chồng (quỹ chung)',

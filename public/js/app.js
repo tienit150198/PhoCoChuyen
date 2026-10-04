@@ -1144,15 +1144,25 @@ let confirmResolve=null;
 function confirmAction(title,message,label='Xác nhận',money=null){
   const under=[...document.querySelectorAll('dialog[open]')].filter(d=>d.id!=='confirmDialog').pop(),b=dialogBalances(under);
   // Not enough in the fund for an exact price: the server would refuse ("Chưa đủ xu"), so the button says so instead.
-  const short=confirmShort(b,[title,message,label],money),yes=short?.sure?`<button type="button" class="btn primary" disabled>Thiếu ${fmt(short.miss)} xu</button>`:button(esc(label),'confirmYes',{},'primary');
+  const short=confirmShort(b,[title,message,label],money),yes=short?.sure?`<button type="button" class="btn primary" data-action="confirmYes" disabled>Thiếu ${fmt(short.miss)} xu</button>`:button(esc(label),'confirmYes',{},'primary');
   $('#confirmContent').innerHTML=`<span class="eyebrow">MỘT BƯỚC XÁC NHẬN</span><h2>${esc(title)}</h2>${message?`<p class="muted">${esc(message)}</p>`:''}${confirmMoney(b,[title,message,label],money)}<div class="row">${button('Để mình xem lại','confirmNo',{},'ghost')}${yes}</div>`;
+  if(money?.payment){
+    const {options,selected,cost}=money.payment;
+    $('#confirmContent').querySelectorAll('.mn-confirm,.mn-short').forEach(x=>x.remove());
+    const choices=document.createElement('div');choices.className='space-bottom';
+    choices.innerHTML=`<label for="confirmPay">Nguồn thanh toán</label><select id="confirmPay" class="input">${options.map(x=>`<option value="${esc(x.id)}"${x.id===selected?' selected':''}>${esc(x.label)} · ${fmt(x.balance)} xu${x.ok?'':' · '+esc(x.why||'Chưa đủ số dư.')}</option>`).join('')}</select><p id="confirmPayHint" class="muted"></p><small class="muted">Lựa chọn chỉ áp dụng cho lần này. Đổi mặc định trong Ngân hàng.</small>`;
+    $('#confirmContent').querySelector('.row').before(choices);
+    const select=choices.querySelector('select'),yesButton=$('#confirmContent').querySelector('[data-action="confirmYes"]')||$('#confirmContent').querySelector('button.primary');
+    const sync=()=>{const x=options.find(o=>o.id===select.value);yesButton.disabled=!x?.ok;yesButton.textContent=x?.ok?label:`Thiếu ${fmt(Math.max(0,cost-(x?.balance||0)))} xu`;choices.querySelector('#confirmPayHint').textContent=x?.ok?x.text:x?.why||'Chọn nguồn thanh toán.';};
+    select.addEventListener('change',sync);sync();
+  }
   $('#confirmDialog').showModal();return new Promise(resolve=>{confirmResolve=resolve;});
 }
 function inputPrompt(title,value,maxLength=100){
   $('#confirmContent').innerHTML=`<span class="eyebrow">GÓC CỦA BẠN</span><h2>${esc(title)}</h2><textarea class="input" id="cozy-prompt" maxlength="${maxLength}" rows="3">${esc(value)}</textarea><div class="row space-top">${button('Để sau','confirmNo',{},'ghost')}${button('Lưu','confirmYes',{},'primary')}</div>`;
   $('#confirmDialog').showModal();$('#cozy-prompt').focus();return new Promise(resolve=>{confirmResolve=ok=>resolve(ok?$('#cozy-prompt').value:null);});
 }
-function finishConfirm(value){$('#confirmDialog').close();confirmResolve?.(value);confirmResolve=null;document.body.append($('#toasts'));}
+function finishConfirm(value){const choice=$('#confirmPay');if(value&&choice)value=choice.value;$('#confirmDialog').close();confirmResolve?.(value);confirmResolve=null;document.body.append($('#toasts'));}
 $('#confirmDialog').addEventListener('cancel',e=>{e.preventDefault();finishConfirm(false);});
 $('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.current)closeSheet();});
 /* Phone bottom sheets show a grab handle: dragging the sheet head down now really closes the sheet (it

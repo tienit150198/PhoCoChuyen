@@ -8,6 +8,7 @@
  * display names only, always escaped; nothing here ever shows a username, an account id or an IP. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {myPortrait} from './look.js';
+import {confirmPurchase} from './payment.js';
 
 const S={dlg:null,env:null,view:null,catalog:null,tab:'home',plan:null,planKey:'',quote:null,qTimer:0,qSeq:0,flash:null,busy:false,
   form:{code:'',ring:'',message:'',announce:true},found:null,confirm:'',answer:{},loading:false,err:'',
@@ -227,8 +228,9 @@ async function onClick(mr,data,el){
     case'ring_buy':{
       const r=S.catalog.rings.find(x=>x.id===data.tier);if(!r)return;
       const pk=pickOf(r.id),price=r.price+colorExtra(r.id,pk.metal,pk.stone),look=colorName(pk.metal,pk.stone);
-      if(!(await env.confirmAction(`Mua ${r.name.toLowerCase()}?`,`${look}. ${xu(price)} được trừ từ ví của bạn. Nhẫn nằm trong hộp cho tới khi bạn trao đi.`,`Mua · ${xu(price)}`)))return;
-      post('ring_buy',{tier:r.id,metal:pk.metal,stone:pk.stone,rid:rid()});return;
+      const how=await confirmPurchase(env,{title:`Mua ${r.name.toLowerCase()}?`,message:`${look}. ${xu(price)}. Nhẫn nằm trong hộp cho tới khi bạn trao đi.`,label:`Mua · ${xu(price)}`,cost:price,noJoint:true});
+      if(!how)return;
+      post('ring_buy',{tier:r.id,metal:pk.metal,stone:pk.stone,pay:how,rid:rid()});return;
     }
     case'mset':S.money[data.k]=data.v==='1';render();return;
     case'pick':{const pk=pickOf(data.tier);pk[data.k]=data.v;render();return;}
@@ -238,8 +240,9 @@ async function onClick(mr,data,el){
     case'recolor_do':{
       const rc=S.recolor,r=rc&&ringById(rc.ring);if(!r)return;
       const fee=recolorFee(r,rc.metal,rc.stone);
-      if(!(await env.confirmAction('Mang nhẫn ra tiệm kim hoàn?',`${colorName(rc.metal,rc.stone)}. Phí ${xu(fee)} trừ từ ví của bạn.`,`Đổi màu · ${xu(fee)}`)))return;
-      const d=await post('ring_recolor',{ring:r.id,metal:rc.metal,stone:rc.stone,rid:rid()});if(d)S.recolor=null;render();return;
+      const how=await confirmPurchase(env,{title:'Mang nhẫn ra tiệm kim hoàn?',message:`${colorName(rc.metal,rc.stone)}. Phí ${xu(fee)}.`,label:`Đổi màu · ${xu(fee)}`,cost:fee,noJoint:true});
+      if(!how)return;
+      const d=await post('ring_recolor',{ring:r.id,metal:rc.metal,stone:rc.stone,pay:how,rid:rid()});if(d)S.recolor=null;render();return;
     }
     case'lookup':lookup(S.form.code);return;
     case'fsearch':{

@@ -12,6 +12,9 @@ import {boardEntry} from './board.js';
 import {abandonTrust} from './abandon.js';
 import {certsView,certsEntry,certBadges,certTitles,certAction} from './certificates.js';
 import {lifeView,lifeEntry,lifeCard,lifeAction,lifeBoot} from './life.js';
+import {householdView,householdAction,householdSubmit} from './household.js';
+import {outingsView,outingsAction} from './outings.js';
+import {courierView,courierAction} from './courier.js';
 import {portrait,lookOf} from './look.js';
 import {lazy,skeleton} from '../lazy.js';
 import {FIRST_JOB,quiet,firstDay} from './onboard.js';
@@ -91,6 +94,9 @@ export function journeyHome(env){
   if(ui.jrView==='wallet')return walletView(env);
   if(ui.jrView==='invest')return investView(env);
   if(ui.jrView==='life')return lifeView(env);
+  if(ui.jrView==='household')return householdView(env);
+  if(ui.jrView==='outings')return outingsView(env);
+  if(ui.jrView==='courier')return courierView(env);
   if(ui.jrView==='profile')return profileView(env);
   if(ui.jrView==='certs')return certsView(env);
   if(ui.jrView==='wardrobe'){const m=WD.use();return m?m.wardrobeView(env):head('Tủ đồ','',{back:true})+skeleton();}
@@ -249,7 +255,7 @@ function houseCard(env){
   const hint=L?(L.overdue?`⏰ Trả góp nhà đang chậm ${fmt(L.overdue)} xu`:`Đã trả ${L.paid_rows}/${L.rows.length} kỳ vay mua nhà`)
     :H.own?'Nhà không còn nợ 🔑':mine.length?`🔑 Bạn có ${mine.length} căn nhà`:can?`${can.emoji} Đủ tiền trả trước ${esc(can.name)} rồi đó!`:next?`${next.emoji} ${esc(next.name)}: còn thiếu ${fmt(next.missing)} xu để trả trước`:'';
   return `<section class="jr-card jr-house" aria-label="Nơi bạn ở"><button type="button" class="jr-house-row" data-action="house"><span class="jr-house-emoji" aria-hidden="true"${tone?` style="--hs-tone:${esc(tone)}"`:''}>${p.emoji||'🏚️'}</span>
-    <span class="grow"><small>${sub} · ${cost}</small><b>${esc(p.name||'')}</b><em>${hint}</em></span><span class="btn cream small" aria-hidden="true">🏠 Nhà của bạn</span></button></section>`;
+    <span class="grow"><small>${sub} · ${cost}</small><b>${esc(p.name||'')}</b><em>${hint}</em></span><span class="btn cream small" aria-hidden="true">🏠 Nhà của bạn</span></button><div class="jr-actions">${btn('🏡 Gia đình · Thú cưng','jrView',{view:'household'},'ghost small')}${btn('🛵 Sổ shipper','jrView',{view:'courier'},'ghost small')}</div></section>`;
 }
 
 /* ------------------------------------------------------------------ intro */
@@ -460,6 +466,9 @@ export async function journeyAction(action,data,el,env){
   if(action?.startsWith('iv'))return investAction(action,data,el,env);
   if(action?.startsWith('lf'))return lifeAction(action,data,el,env);
   if(!action?.startsWith('jr'))return false;
+  if(action.startsWith('jrHh'))return householdAction(action,data,el,env);
+  if(action.startsWith('jrOut'))return outingsAction(action,data,el,env);
+  if(action.startsWith('jrShip'))return courierAction(action,data,el,env);
   E=E||env;
   if(action.startsWith('jrArc'))return storiesAction(action,data,el,env);
   if(action.startsWith('jrCert'))return certAction(action,data,el,env);
@@ -509,6 +518,7 @@ export async function journeyAction(action,data,el,env){
 
 export async function journeySubmit(f,env){
   const kind=f.dataset.jrForm;if(!kind)return false;
+  if(kind==='hhAdopt'||kind==='hhName')return householdSubmit(f,env);
   const {ui,cmd,renderSheet,api}=env;
   if(kind==='start'){   // the intro's one screen: name + look, then the first workplace (no step in between)
     const name=f.querySelector('[name="name"]')?.value.trim()||'',gender=ui.jrGender||api.state.journey.gender;

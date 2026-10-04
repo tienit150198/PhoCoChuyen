@@ -1,3 +1,24 @@
+# v1.7.0 — phản hồi người chơi và đời sống trong phố
+
+- Homestay kiểm tra cả lịch đặt, giữ phòng điện thoại và OTA trước khi nhận cọc; giao ngày trả/nhận phòng đúng theo đêm lưu trú.
+- Đánh giá có lời đe dọa tống tiền có thể lưu bằng chứng và báo công an trong game; không tự đổi sao hoặc trừ xu.
+- Quỹ chung tăng giới hạn chi/rút lên 1.000 xu mỗi người trong 24 giờ; bổ sung hướng dẫn trả bằng quỹ chung và cách tính lời quầy.
+- Thanh toán mua sắm cá nhân trực tiếp từ tài khoản ngân hàng; thiếu số dư sẽ dừng nếu chọn cách này. Giữ nguyên các lựa chọn ví, thẻ và quỹ chung.
+- Cà phê có nhịp máy 1×/2×; Hộ chiếu chỉ rõ tiến độ và cách nhận huy hiệu Hẹn ở ngày hội.
+- Ba kiểu tóc búi, ba mẫu đầm mới, hiển thị đồng nhất trên nhân vật và ảnh đại diện.
+- Thuê người chơi ở quầy hiển thị cả bạn mới, mời riêng ngay sau khi kết bạn; bỏ giới hạn giao diện chỉ hiện 8 bạn.
+- Không giới hạn số quầy, phân trang 12 quầy. Sổ quầy ghi chi phí ngày bán, thuế xu chung toàn chuỗi, trộm/cướp, kiểm tra vệ sinh/chứng từ và đòi bảo kê; kiểm tra đạt không phạt, có cách phòng ngừa và báo công an. Không truy thu ngày cũ khi nâng cấp.
+- Chọn nguồn trả cho từng giao dịch cá nhân và lương thuê người chơi; lương được giữ trước, hoàn về đúng nguồn khi hủy/hết hạn. Quỹ chung cũ đã đóng thì hoàn về ví người chi.
+- Sổ shipper có hợp đồng, bậc nghề, trang bị và thưởng theo đơn thực sự giao; không nhận thưởng lặp. Tự lái giao hàng có đèn giao thông và phạt vượt đèn đỏ.
+- Hướng dẫn tự lái máy bay theo từng giai đoạn, có thể mở lại; thẻ nghề chỉ rõ tiến độ thăng chức và phần quản lý.
+- Góc gia đình: tự chọn nhận nuôi em bé, mèo hoặc cún, đặt tên, chăm sóc theo ngày sống, tiến trình trưởng thành và đồ mặc cho bé. Lưu riêng theo nhân vật, không tự phát sinh phí khi offline.
+- Đi làm tóc, làm nail với vai trò khách và tự làm đồ DIY, xem mẫu/giá trước khi xác nhận.
+- Kết bạn từ tin nhắn chat, mời bạn vào buồng chụp qua tin nhắn riêng; nhập mã hỗ trợ bộ gõ đang ghép chữ. Kiểm tra quyền xem tin và chặn hai chiều.
+- Trang trí giữ vị trí thanh phòng khi chọn phòng cuối, thêm nút cuộn phòng/cửa hàng; ghi lời báo thú cưng có chỉ dẫn chọn đúng việc đã quan sát.
+- Cập nhật hướng dẫn Việt/Anh. Bản này giữ các sửa lỗi đã phát hành ở 1.6.8.
+
+Rollback: giữ hỗ trợ mã tóc/đầm, bank.pref=account, số quầy và sổ thu chi mới; giữ bộ xử lý hoàn lương theo nguồn cho các ca đã giữ tiền. Không chạy nguyên bản 1.6.8 trên save đã dùng tính năng mới. Xem docs/FEEDBACK_2026-10-04.md để biết kiểm tra và triển khai.
+
 # v1.6.8 — ✈️ hộp Bỏ dở việc ở Hãng bay
 
 - `abandon.js`/`abandon.css`: hàng nút đổi class `.ab-row` → `.ab-btns`; `careers/air_kit.css` có `.ab-row` (bảng giờ bay, lưới nền tối) nên rời Hãng bay khi làm dở thì hai nút bị bóp thành cột hẹp trên nền đen.

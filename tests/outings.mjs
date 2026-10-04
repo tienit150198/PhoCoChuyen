@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import {outingsView,outingsAction} from '../public/js/v4/outings.js';
+const f=JSON.parse(readFileSync(0,'utf8')),sent=[];
+const env={api:f,ui:{},renderSheet(){},confirmAction:async()=>true,cmd:async(name,p)=>{sent.push([name,p]);return true;}};
+let html=outingsView(env);
+assert.match(html,/jrOutTab/);assert.match(html,/toc_bui_doi/);
+await outingsAction('jrOutTab',{tab:'nails'},null,env);
+html=outingsView(env);
+assert.match(html,/Bộ móng đang giữ/);assert.match(html,/fill="#de829d"/);
+await outingsAction('jrOutPick',{key:'color',value:'sky'},null,env);
+await outingsAction('jrOutPick',{key:'pattern',value:'stars'},null,env);
+await outingsAction('jrOutBuy',{},null,env);
+assert.deepEqual(sent.at(-1),['jr_out_nails',{color:'sky',pattern:'stars',pay:'cash'}]);
+await outingsAction('jrOutTab',{tab:'craft'},null,env);
+html=outingsView(env);
+assert.match(html,/Kệ kỷ niệm/);assert.match(html,/Chậu gốm nhỏ/);assert.match(html,/Lượn sóng/);
+assert.match(html,/<svg/);assert.match(html,/data-key="kind"/);assert.match(html,/data-key="pattern"/);
+if(process.env.MNL_UI_PREVIEW){mkdirSync('output/outings',{recursive:true});writeFileSync('output/outings/preview.html',`<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/public/css/app.css"><link rel="stylesheet" href="/public/css/journey.css"><body><dialog open style="position:relative;max-width:800px;width:100%;padding:0;margin:auto">${html}</dialog></body></html>`);}
+console.log('Outings previews, saved results, selection and paid command passed.');

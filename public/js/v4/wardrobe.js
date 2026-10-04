@@ -7,6 +7,7 @@
  * unlocked once for every item (v4/palette.js, jr_wd_unlock), then switching is free. A recoloured item is named
  * without its colour word: "Áo hoodie · Xanh navy". */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {confirmPurchase} from './payment.js';
 import {lookOf,portrait,figureSVG,SLOTS,ART,PALETTE,TINT_SLOTS,wornColor as wornOf} from './look.js';
 import {GOC,colorList,haveColors,hasColor,priceOf as colorPrice,nameOf as colorName,swatch,unlockColor,openPalette} from './palette.js';
 
@@ -58,6 +59,8 @@ function status(api,it){
 }
 
 function thumb(look,gender,slot){
+  if(slot==='top'&&ART.top[look.top]?.dress)return figureSVG(look,gender,{w:64,h:80});
+  if(slot==='bottom'&&ART.top[look.top]?.dress)look={...look,top:'ao_quen'};
   if(slot==='bottom'||slot==='shoes')return figureSVG(look,gender,{w:64,h:64,box:slot==='shoes'?'-30 -30 60 36':'-36 -58 72 64'});
   return portrait(look,gender,64,'');
 }
@@ -153,14 +156,6 @@ export function wardrobeView(env){
   </div>`;
 }
 
-/** Wallet first; not enough and no card: a friendly toast instead of the confirm. Returns false to stop. */
-function canAfford(api,env,price,what){
-  const w=api.state.journey.wallet,card=api.state.journey.bank?.card;
-  if(w<price&&!card){env.toast?.(`Ví mới có ${fmt(Math.max(0,w))} xu, chưa đủ ${fmt(price)} xu để mua ${what}. Làm thêm vài ca rồi quay lại nhé.`,true);return false;}
-  return true;
-}
-const payNote=(api,price)=>{const w=api.state.journey.wallet;return w>=price?`Ví của bạn đang có ${fmt(w)} xu.`:`Ví chưa đủ nên sẽ quẹt thẻ Ngân hàng Phố.`;};
-
 /** Wear what is being tried on (slots and colours). true when it was sent and accepted (or nothing to send). */
 async function wearDraft(api,st,cmd){
   const {saved,look:tried}=tryLook(api,st),look={};
@@ -186,9 +181,9 @@ export async function wardrobeAction(action,data,el,env){
     case'jrWdPalette':openPalette(env,{onChange:()=>renderSheet()});return true;
     case'jrWdBuy':{const it=itemOf(api,data.item);if(!it)return true;
       const price=priceOf(api,it);
-      if(!canAfford(api,env,price,it.name))return true;
-      if(!await confirmAction(`Mua ${it.name}?`,`Giá ${fmt(price)} xu${price<it.price?` (giá nhân viên ${c.shop_name}, giá gốc ${fmt(it.price)} xu)`:''}. ${payNote(api,price)}`,`Mua · ${fmt(price)} xu`))return true;
-      if(await cmd('jr_wd_buy',{item:it.id,wear:true})){if(st.draft[it.slot]===it.id)delete st.draft[it.slot];}
+      const how=await confirmPurchase(env,{title:`Mua ${it.name}?`,message:`Giá ${fmt(price)} xu${price<it.price?` (giá nhân viên ${c.shop_name}, giá gốc ${fmt(it.price)} xu)`:''}.`,label:`Mua · ${fmt(price)} xu`,cost:price});
+      if(!how)return true;
+      if(await cmd('jr_wd_buy',{item:it.id,wear:true,pay:how})){if(st.draft[it.slot]===it.id)delete st.draft[it.slot];}
       renderSheet();return true;}
     case'jrWdColorBuy':{const col=data.color;if(!colorList(api).some(x=>x.id===col))return true;
       if(await unlockColor(env,col)){

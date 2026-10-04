@@ -5350,7 +5350,7 @@ GROUPS = [{'id': 'start',
              {'id': 'own_counter',
               'emoji': '🏪',
               'title': 'Quầy của bạn: tự tay bán',
-              'points': ['🏪 Mở một quầy ở [[Quầy của bạn]]. Không thuê ai cũng được: bạn tự đứng bán.',
+              'points': ['🏪 Mở bao nhiêu quầy tùy vốn ở [[Quầy của bạn]], không giới hạn số quầy. Không thuê ai thì tự đứng bán; có nhân viên thì họ bán lúc bạn kết thúc ngày sống.',
                          '🍽️ Tab [[Menu]]: chọn tối đa 4 món, tự đặt giá. Rẻ thì đông khách, đắt thì lời mỗi món hơn '
                          'nhưng ít khách.',
                          '🎨 Tab [[Trang trí]]: tên bảng hiệu, màu mái che, đồ trang trí, bàn ghế. Hình quầy đổi ngay.',
@@ -5986,6 +5986,55 @@ QUICK = [{'id': 'q_goal',
         '🔎 Mở [[Bạn bè]] (menu [[Quan hệ]]), ô [[Tìm bạn]]: gõ đúng tên đăng nhập hoặc mã người chơi (PCC-…) của bạn ấy.',
         '🪪 Mã của bạn ở cuối trang Bạn bè: bấm [[Chép mã]] để gửi cho bạn bè.'],
   'go': {'action': 'friends', 'label': 'Mở Bạn bè'}}]
+
+
+CAREERS['cafe_bakery']['steps'].append('Ở Quầy pha, chọn Nhịp máy pha 1× hoặc 2×. Nhịp 2× giảm một nửa thời gian chiết và đánh sữa; vẫn tự dừng ở vạch xanh và vạch cũng chạy nhanh gấp đôi. Chỉ đổi nhịp khi máy đang nghỉ.')
+FOLLOWUP_GUIDES = [
+    dict(id='q_account_pay', emoji='🏦', q='Mua sắm bằng tiền trong ngân hàng được không?',
+         a=['Khi xác nhận mua sắm cá nhân, chọn Tiền lương / ví, tài khoản ngân hàng, thẻ hoặc quỹ chung nếu khoản chi hỗ trợ. Lương đã nhận nằm trong ví; lương chưa trả chưa dùng được.',
+            'Chọn tài khoản là chuyển khoản trực tiếp, thiếu số dư thì dừng. Lựa chọn chỉ áp dụng lần này; đổi mặc định ở Ngân hàng → Cách trả mặc định.',
+            'Giữ lương thuê người chơi có thể dùng két/vốn quầy, ví, tài khoản hoặc quỹ chung. Hủy ca chưa làm thì hoàn về nguồn cũ; quỹ chung đã đóng thì hoàn về ví người chi.'],
+         go=dict(action='bank', label='Mở Ngân hàng')),
+    dict(id='q_festival_badge', emoji='🎪', q='Lấy huy hiệu Hẹn ở ngày hội thế nào?',
+         a=['Ngày hội xuất hiện ngẫu nhiên ở Chuẩn bị. Trong cùng ca Ngày hội của nghề cần huy hiệu, làm xong 3 việc và 1 trò nhỏ bằng Chơi ngay; Luyện không thưởng không tính.',
+            'Trước khi đóng ca, bấm Mở góc ngày hội rồi Nhận huy hiệu trong Hộ chiếu. Thẻ hướng dẫn ở đó hiển thị tiến độ hiện tại.']),
+    dict(id='q_counter_friend', emoji='🤝', q='Mời bạn bè vào làm ở quầy thế nào?',
+         a=['Mở Quầy của bạn → Người → Thuê người chơi, chọn tên bạn rồi Gửi lời mời. Kết bạn xong là mời được ngay.',
+            'Bạn được mời mở Quầy cần người để nhận ca. Nếu đang có ca công khai chờ người, hủy ca đó rồi mời riêng. Một quầy chỉ có một ca đang chờ hoặc đang làm.'],
+         go=dict(action='quay', label='Mở Quầy của bạn')),
+    dict(id='q_household', emoji='🏡', q='Nhận nuôi em bé, nuôi mèo hoặc cún ở đâu?',
+         a=['Từ ngày sống 10, mở Nhà của bạn → Gia đình · Thú cưng. Tự chọn một em bé và một mèo hoặc cún, đặt tên rồi xác nhận đón về.',
+            'Ăn, vệ sinh và chơi là ba mục chăm sóc mỗi ngày sống. Em bé lớn lên sau 5 và 20 ngày được chăm; có đồ mặc để chọn. Gia đình lưu riêng theo nhân vật, không tự trừ phí khi vắng mặt.'],
+         go=dict(action='house', label='Mở Nhà của bạn')),
+    dict(id='q_personal_outings', emoji='🎨', q='Đi làm tóc, làm nail hoặc DIY cho mình ở đâu?',
+         a=['Mở Nhà của bạn → Gia đình · Thú cưng → Đi làm đẹp · DIY. Đây là đi chơi với vai trò khách, không cần mở ca làm việc.',
+            'Chọn kiểu tóc, mẫu móng hoặc món DIY, xem mẫu và giá trước khi xác nhận. Mẫu móng và đồ thủ công được lưu để xem lại.'],
+         go=dict(action='house', label='Mở Nhà của bạn')),
+    dict(id='q_counter_ledger', emoji='📒', q='Quầy lời, lỗ và nộp thuế ra sao?',
+         a=['Mở Sổ quầy & an toàn để xem doanh thu, hàng/lương/điện/giao hàng, thuê chỗ, vật tư, bảo vệ, thuế và tổn thất. Lời đã trừ các khoản này; ngày không bán và thời gian offline không tính phí.',
+            'Thuế xu trong game tính chung mọi quầy cùng chủ mỗi 30 ngày sống. GTGT 2% phần doanh thu vượt 1.000 xu; thu nhập 5% phần lãi sau GTGT vượt 200 xu.',
+            'Lỗ bù vào lãi cùng kỳ, hoàn tối đa thuế thu nhập đã nộp. Thuê chỗ, vệ sinh và bảo vệ là chi phí, không phải thuế. Đây là mức xu trong game.',
+            'Ngày bình thường lời vừa phải; sự cố có thể gây lỗ. Chi phí chưa đủ chỉ tạm dừng quầy đó; không tự lấy tiền ví, ngân hàng hay quầy khác.'],
+         go=dict(action='quay', label='Mở Quầy của bạn')),
+    dict(id='q_counter_safety', emoji='🛡️', q='Trộm, kiểm tra và bảo kê ở quầy xử lý thế nào?',
+         a=['Kiểm hàng/vệ sinh và lưu chứng từ bật sẵn. Kiểm tra đạt không phạt; tắt chuẩn bị có thể tạo vi phạm. Quầy vi phạm vệ sinh tạm dừng, bật lại kiểm hàng để khắc phục.',
+            'Bảo vệ tốn 2 xu mỗi ngày bán; bảo vệ hoặc két sắt giảm thiệt hại trộm/cướp. Báo công an có thể tìm lại một phần tiền.',
+            'Bị đòi bảo kê: lưu bằng chứng và báo công an hoặc từ chối, không bắt buộc trả tiền. Mỗi ngày tối đa một quầy trong chuỗi gặp sự cố kinh doanh.'],
+         go=dict(action='quay', label='Mở Quầy của bạn')),
+    dict(id='q_courier', emoji='🛵', q='Phát triển nghề shipper thế nào?',
+         a=['Mở Sổ shipper ở Hành trình hoặc Quầy của bạn. Cần mở nghề Giao hàng; chọn hợp đồng và xem phí chuẩn bị trước khi nhận.',
+            'Giao đủ đơn mới phù hợp trong nghề rồi nhận thưởng hợp đồng. Phí giao từng đơn vẫn tính riêng; đơn trễ hoặc sai sót làm giảm thưởng. Một đơn không cộng lại khi bấm nhiều lần.',
+            'Hoàn tất 3 rồi 10 hợp đồng để lên bậc. Túi giữ nhiệt và áo mưa giảm khấu trừ chất lượng, không miễn phạt giao thông. Hủy hợp đồng không hoàn phí chuẩn bị.']),
+    dict(id='q_driving', emoji='🚦', q='Đi qua đèn đỏ và học lái máy bay thế nào?',
+         a=['Khi tự lái giao hàng hoặc giao đơn quầy, đến đèn thì chờ xanh hoặc chọn đi tiếp. Vượt đèn đỏ bị phạt 12 xu một lần cho ngã tư đó; đứng chờ không mất tiền.',
+            'Khi tự bay, mở hướng dẫn để xem mục tiêu từng giai đoạn, nút điều khiển và cách chỉnh lại đường bay. Có thể bật lại hướng dẫn hoặc chọn bay nhanh.']),
+]
+for _entry in FOLLOWUP_GUIDES:
+    _group = 'money' if _entry['id'] == 'q_account_pay' else 'jobs' if _entry['id'] == 'q_counter_friend' else 'life'
+    _points = [part for line in _entry['a'] for part in (line.split('. ') if len(line) > 200 else [line])]
+    next(g for g in GROUPS if g['id'] == _group)['topics'].append(dict(
+        id=_entry['id'][2:], emoji=_entry['emoji'], title=_entry['q'], points=_points,
+        **({'go': _entry['go']} if _entry.get('go') else {})))
 
 
 def public() -> dict:

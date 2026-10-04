@@ -30,6 +30,7 @@ const S={dlg:null,env:null,tab:'town',thread:null,view:null,threads:new Map(),
   nextTown:0,cd:0,older:false,synced:0,bound:false,notifyOpen:false,notify:null,
   sel:null,blocks:null,unblocking:null};   // 🗑️ chats ticked in "Chọn" (a Set, null = not choosing); 🚫 the blocked list
 const TABS=[['town','Cả phố'],['inbox','Tin nhắn'],['friends','Bạn bè']];
+const friendRequests=new Map();   // message id -> pending/sent; only an explicit player's tap starts a request
 const REASONS=[['spam','Spam'],['rude','Thô tục'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
 const rid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
 const me=()=>live.me?.pid;
@@ -160,6 +161,15 @@ export async function openChat(env,data={}){
 /* ---- live frames --------------------------------------------------------------------------------- */
 function bind(){
   if(S.bound)return;S.bound=true;
+  live.on('friend_card',async f=>{
+    if(friendRequests.get(f.id)!=='pending'||typeof f.code!=='string')return;
+    friendRequests.set(f.id,'sending');const api=S.env?.api;
+    try{
+      const d=await api.json('/api/marriage/friend_request',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:JSON.stringify({code:f.code})});
+      friendRequests.set(f.id,'sent');flash(d.message||'Đã gửi lời mời kết bạn.');live.send({t:'sync'});
+    }catch(e){friendRequests.delete(f.id);flash(e.message||'Chưa gửi được, thử lại nhé.');}
+    if(S.dlg?.open)render();
+  });
   live.viewing=ch=>Boolean(S.dlg?.open&&S.thread===ch&&document.visibilityState==='visible');
   live.resume=()=>{const t=S.thread&&S.threads.get(S.thread),last=t?.msgs.at(-1)?.id;return last?{[S.thread]:last}:{};};
   live.on('welcome',()=>{S.town.joined=false;if(S.dlg?.open){enter();render();}});
@@ -224,6 +234,7 @@ function bind(){
     if(S.dlg?.open)render();
   });
   live.on('error',f=>{
+    if(f.ref==='friend_card'){for(const [id,status] of friendRequests)if(status==='pending')friendRequests.delete(id);}
     if(f.ref==='face')return;   // 🙂 the avatar sync (live.js) tries again by itself
     const p=S.pending.get(f.ref);
     if(p){S.pending.delete(f.ref);const ta=S.dlg?.querySelector('textarea');if(ta&&!ta.value){ta.value=p.text;grow(ta);}}
@@ -270,6 +281,13 @@ function openThread(ch,draw=true){S.thread=ch;S.notifyOpen=false;S.view=null;S.a
 function onAct(act,d,el){
   if(act!=='react')S.reactFor=null;
   switch(act){
+    case'friend':{
+      const id=Number(d.id);if(!live.me?.account||!live.me?.friend_card||friendRequests.has(id))return;
+      friendRequests.set(id,'pending');
+      if(!live.send({t:'friend_card',id})){friendRequests.delete(id);flash('Chưa kết nối được. Thử lại nhé.');}
+      setTimeout(()=>{if(friendRequests.get(id)==='pending'){friendRequests.delete(id);if(S.dlg?.open)render();}},15000);
+      break;
+    }
     case'close':S.dlg.close();return;
     case'tab':S.tab=d.tab;S.thread=null;S.view=null;S.act=null;S.report=null;S.sel=null;S.confirm=null;break;
     case'back':if(S.view==='add'){S.view='members';break;}if(S.view){S.view=null;S.pick.clear();break;}S.thread=null;S.act=null;S.report=null;S.confirm=null;break;
@@ -437,11 +455,13 @@ function actBar(m,mine,kind){
   }
   if(S.report===m.id)return `<div class="ch-actbar wrap">${REASONS.map(([k,l])=>`<button type="button" class="ch-mini" data-ch-act="reason" data-id="${m.id}" data-reason="${k}">${l}</button>`).join('')}</div>`;
   const friend=live.friend(m.pid);
+  const status=friendRequests.get(m.id),add=!friend&&!m.del&&live.me?.account&&live.me?.friend_card?
+    `<button type="button" class="ch-mini" data-ch-act="friend" data-id="${m.id}"${status?' disabled':''}>${icon('user',14)} ${status==='sent'?'Đã gửi lời mời':status?'Đang gửi…':'Kết bạn'}</button>`:'';
   if(m.adm){   // nobody reports or blocks the Ban quản lý
-    const row=pin+(friend&&kind!=='dm'?`<button type="button" class="ch-mini" data-ch-act="dm" data-pid="${esc(m.pid)}">${icon('chat',14)} Nhắn riêng</button>`:'')+hide;
+    const row=pin+add+(friend&&kind!=='dm'?`<button type="button" class="ch-mini" data-ch-act="dm" data-pid="${esc(m.pid)}">${icon('chat',14)} Nhắn riêng</button>`:'')+hide;
     return row?`<div class="ch-actbar wrap">${row}</div>`:'';
   }
-  return `<div class="ch-actbar wrap">${pin}${friend&&kind!=='dm'?`<button type="button" class="ch-mini" data-ch-act="dm" data-pid="${esc(m.pid)}">${icon('chat',14)} Nhắn riêng</button>`:''}`+
+  return `<div class="ch-actbar wrap">${pin}${add}${friend&&kind!=='dm'?`<button type="button" class="ch-mini" data-ch-act="dm" data-pid="${esc(m.pid)}">${icon('chat',14)} Nhắn riêng</button>`:''}`+
     `<button type="button" class="ch-mini" data-ch-act="report" data-id="${m.id}">${icon('flag',14)} Báo cáo</button>`+
     `<button type="button" class="ch-mini${S.confirm==='block:'+m.pid?' warn':''}" data-ch-act="block" data-pid="${esc(m.pid)}">${S.confirm==='block:'+m.pid?'Chặn thật?':'Chặn'}</button>${hide}</div>`;
 }

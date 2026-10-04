@@ -24,7 +24,7 @@ export const NAMES={
   shape:{tron:'Mặt tròn',oval:'Mặt trái xoan',vuong:'Mặt vuông',tim:'Cằm nhọn'},
   age:{be:'Nhóc tì',teen:'Tuổi teen',lon:'Người lớn',gia:'Lớn tuổi'},
   hair:{ngan:'Tóc ngắn',dinh:'Đầu đinh',hoi:'Đầu hói',lech:'Tóc rẽ ngôi',dung:'Tóc dựng',xoan:'Tóc xoăn',afro:'Tóc xù',bob:'Tóc bob',dai:'Tóc dài',
-    bui:'Búi cao',duoi:'Đuôi ngựa',bim:'Hai bím',mai:'Mái bằng',song:'Tóc lượn sóng',tet:'Tết lệch',chom:'Búi củ tỏi'},
+    bui:'Búi cao',duoi:'Đuôi ngựa',bim:'Hai bím',mai:'Mái bằng',song:'Tóc lượn sóng',tet:'Tết lệch',chom:'Búi củ tỏi',bui_doi:'Búi đôi',bui_thap:'Búi thấp'},
   hc:{den:'Tóc đen',nau:'Tóc nâu',mat_ong:'Tóc mật ong',vang:'Tóc vàng',do:'Tóc đỏ',hong:'Tóc hồng',xanh:'Tóc xanh khói',tim:'Tóc tím',
     bach_kim:'Tóc bạch kim',xam:'Tóc muối tiêu',trang:'Tóc bạc trắng'},
   expr:{cuoi:'Cười hiền',toe:'Cười toe',nhay:'Nháy mắt',diu:'Dịu dàng',ngac:'Ngạc nhiên',then:'Bẽn lẽn',ngau:'Ngầu'},
@@ -44,6 +44,8 @@ export const PLAIN_HEAD=new Set(['0','non_la']);
 /* ---- hair (the head of a grown-up: centre 40,38; top ≈ 17; sides 21…59) ---- */
 function hairBack(h,c,covered){
   switch(h){
+    case'bui_doi':return covered?'':`<g fill="${c}"><circle cx="18" cy="20" r="9"/><circle cx="62" cy="20" r="9"/></g><path d="M14 27l7 1M59 28l7-1" stroke="#e0708a" stroke-width="2"/>`;
+    case'bui_thap':return `<ellipse cx="60" cy="48" rx="9" ry="8" fill="${c}"/><path d="M57 44l5 7" stroke="#dfc795" stroke-width="2"/>`;
     case'dai':case'mai':return `<path d="M18 44C12 10 68 10 62 44L65 72H15Z" fill="${c}"/>`;
     case'bui':return covered?'':`<circle cx="40" cy="12" r="8.5" fill="${c}"/>`;
     case'chom':return covered?'':`<circle cx="40" cy="12.5" r="6" fill="${c}"/>`;
@@ -59,6 +61,8 @@ function hairBack(h,c,covered){
 }
 function hairFront(h,c){
   switch(h){
+    case'bui_doi':return `<path d="M21 36Q20 14 40 14Q60 14 59 36Q48 31 40 22Q32 31 21 36Z" fill="${c}"/>`;
+    case'bui_thap':return `<path d="M21 37Q18 14 40 14Q62 15 59 36L51 25Q34 32 21 37Z" fill="${c}"/>`;
     case'ngan':return `<path d="M20 37Q18 13 40 12Q62 13 60 37Q56 25 45 22Q35 30 20 37Z" fill="${c}"/>`;
     case'dinh':return `<path d="M21 33Q21 15 40 15Q59 15 59 33Q55 22 40 21Q25 22 21 33Z" fill="${c}" opacity=".85"/>`;
     case'hoi':return `<g fill="${c}"><path d="M20 38Q19 30 23 27Q22 34 24.5 41Z"/><path d="M60 38Q61 30 57 27Q58 34 55.5 41Z"/></g><ellipse cx="33" cy="22" rx="5" ry="2.4" fill="#fff" opacity=".35"/>`;

@@ -421,8 +421,11 @@ def pay_options(s: dict, amount: int, with_joint: bool = False, no_joint: bool =
     j = s['journey']
     b = get(s)
     why = card_usable(s, b)
-    out = dict(cash=j['wallet'] >= amount, card=False, card_why=why, pref='auto', available=0, joint=False, joint_why='')
+    out = dict(cash=j['wallet'] >= amount, account=False, account_why='Bạn chưa mở tài khoản thanh toán.',
+               account_available=0, card=False, card_why=why, pref='auto', available=0, joint=False, joint_why='')
     if b is not None:
+        out.update(account=b['balance'] >= amount, account_available=b['balance'],
+                   account_why='' if b['balance'] >= amount else f'Tài khoản chỉ còn {_fmt(b["balance"])} xu, cần {_fmt(amount)} xu.')
         out.update(card=why is None and available(b) >= amount, card_why=why or ('' if available(b) >= amount else 'Vượt hạn mức còn lại của thẻ.'),
                    pref=b['pref'], available=available(b))
     if no_joint:
@@ -444,9 +447,9 @@ def _method(s: dict, amount: int, method: str, no_joint: bool = False) -> str | 
     if no_joint and method == 'joint':
         method = 'auto'
     opts = pay_options(s, amount, method == 'joint', no_joint)
-    if method in ('cash', 'card', 'joint'):
+    if method in ('cash', 'card', 'joint', 'account'):
         return method if opts[method] else None
-    order = dict(card=('card', 'cash'), cash=('cash',), joint=('joint', 'cash', 'card')).get(opts['pref'], ('cash', 'card'))
+    order = dict(account=('account',), card=('card', 'cash'), cash=('cash',), joint=('joint', 'cash', 'card')).get(opts['pref'], ('cash', 'card'))
     return next((m for m in order if opts[m]), None)
 
 
@@ -456,27 +459,36 @@ def can_pay(s: dict, amount: int, method: str = 'auto', no_joint: bool = False) 
 
 def pay(s: dict, amount: int, label: str, ref: str | None = None, method: str = 'auto', kind: str = KIND,
         career: str | None = None, short: str | None = None, no_joint: bool = False) -> dict:
-    """Pay a personal purchase: cash from the wallet, a swipe of the credit card, or the couple's
+    """Pay a personal purchase: cash, current-account debit, credit card, or the couple's
     joint card ("Thẻ chung", charged to the joint fund through game/couple.py).
 
-    method: 'cash' | 'card' | 'joint' | 'auto' (the player's preference in the bank app: cash when
+    method: 'account' | 'cash' | 'card' | 'joint' | 'auto' (the player's preference in the bank app: cash when
     the wallet is enough, otherwise the card; or card first; or the joint card first).
-    `kind`/`career` label the wallet history row of a cash payment. no_joint=True: cash or card only
+    Account preference is account-only: insufficient funds never silently borrow or spend cash.
+    Debit is entirely in the command's save copy, so command retries use existing store deduplication.
+    `kind`/`career` label the wallet history row of a cash payment. no_joint=True excludes the joint fund
     (use it inside a marriage/couple store transaction; see pay_options). Raises GameError (`short` or
     a default sentence) when no way works. Returns {method, text}."""
     e = _core()
     e.need(type(amount) is int and 0 < amount <= AMOUNT_MAX, 'Số tiền thanh toán không hợp lệ.')
-    method = method if method in ('auto', 'cash', 'card', 'joint') else 'auto'
+    method = method if method in ('auto', 'cash', 'card', 'joint', 'account') else 'auto'
     if no_joint and method == 'joint':
         method = 'auto'
     how = _method(s, amount, method, no_joint)
     if how is None:
+        if method == 'account' or (method == 'auto' and get(s) and get(s)['pref'] == 'account'):
+            raise e.GameError(pay_options(s, amount, no_joint=True)['account_why'], 'not_enough')
         if method in ('card', 'joint'):
             why = pay_options(s, amount, method == 'joint', no_joint)[method + '_why']
             raise e.GameError(f'Thẻ bị từ chối: {why[0].lower() + why[1:]}' if why else 'Thẻ bị từ chối.', 'card_declined')
         raise e.GameError(short or f'Ví chưa đủ {_fmt(amount)} xu.', 'not_enough')
     j = s['journey']
     b = get(s)
+    if how == 'account':
+        b['balance'] -= amount
+        _log(b, j['life_day'], 'acc', f'Thanh toán · {label}', -amount)
+        b['ting'] = b.get('ting', 0) + amount
+        return dict(method='account', text=f'Trả {_fmt(amount)} xu từ tài khoản thanh toán.')
     if how == 'cash':
         _jr()._wallet(j, -amount, kind, label[:120], career)
         return dict(method='cash', text=f'Trả {_fmt(amount)} xu tiền mặt.')

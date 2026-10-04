@@ -36,6 +36,7 @@ import {POSES,POSE,known as knownPose,paintPeople,poseThumb,FACES,knownFace,face
 import {DECO_CATS,DECO,DECO_FILL,decoThumb} from './booth-stickers.js';
 import {createEditor} from './booth-editor.js';
 import {t as tr} from './i18n.js';
+import {bindRoomCode} from './booth-input.js';
 
 const SHOOTER={name:'Chị Mai chụp ảnh',emoji:'👩🏻‍🦰',
   idle:['Vô đây chụp tấm hình kỷ niệm đi nè! Một mình, rủ bạn, hay chụp chung với người lạ cũng vui!','Khung nào cũng đẹp hết, chọn đi rồi tạo dáng nha!','Bốn kiểu một lượt, in ra một dải xinh xắn mang về!'],
@@ -63,6 +64,7 @@ export function setup(ctx){
     url:'',blob:null,building:false,cv:null,raf:0,thumbs:{},sent:{},pendingJoin:false,tick:0,
     conn0:0,connTimer:0,rejoin:'',back:null};   // since when the socket is awaited; a friends' room's code to come back to
   const P=()=>F().photo||null;
+  D.invites={};D.inviteOpen=false;
 
   /* ---- the ticket: paid once, used by the next shoot (kept in this tab if the room breaks up first) ---- */
   function readTicket(){try{return sessionStorage.getItem(TICKET)==='1';}catch{return false;}}
@@ -107,6 +109,8 @@ export function setup(ctx){
   /* ---- the live room (live/booth.py) ---- */
   function wire(){
     if(wire.done)return;wire.done=true;
+    live.on('msg',f=>{const invite=Object.values(D.invites).find(x=>x.cid===f.cid);if(!invite)return;invite.state='sent';redraw();});
+    live.on('error',f=>{const invite=Object.values(D.invites).find(x=>x.cid===f.ref);if(!invite)return;invite.state='error';S.flash={text:f.msg||'Chưa gửi được lời mời.',kind:'bad'};redraw();});
     live.on('booth_room',f=>{
       const fresh=!D.room||D.room.room!==f.room,back=D.back;
       D.room=f;D.me=f.me;D.pendingJoin=false;D.back=null;D.rejoin='';
@@ -391,10 +395,29 @@ export function setup(ctx){
     return `${stage()}<div class="fh-card fh-pb-wait" role="status"><span class="fh-pb-spin" aria-hidden="true">🎲</span><div><b>Đang chờ người lạ ghé buồng…</b><small>Còn <span data-fh-count="pbwait">${left}</span> giây. Có người là vô chụp liền.</small></div></div>
       <div class="fh-go">${btn('Thôi, không chờ nữa','pbcancel',{},'ghost',' data-fh-key="pbcancel"')}</div>`;
   }
+  function inviteView(){
+    const code=D.room?.code,inside=new Set((D.room?.people||[]).map(p=>p.pid));
+    const friends=live.friends.filter(f=>!inside.has(f.pid));
+    return `<section class="fh-card"><b>Mời bạn bè chụp ảnh</b><p>Chọn bạn để gửi mã phòng qua tin nhắn riêng.</p><div class="fh-go">${friends.map(f=>{
+      const sent=D.invites[code+':'+f.pid]?.state,waiting=sent==='pending',done=sent==='sent';
+      return btn(`${esc(f.name)} · ${done?'Đã mời':waiting?'Đang gửi…':'Gửi lời mời'}`,'pbinvite',{pid:f.pid},'ghost small',` data-fh-key="pbinvite-${esc(f.pid)}"${waiting||done?' disabled':''}`);
+    }).join('')||'<span>Chưa có bạn bè để mời.</span>'}</div></section>`;
+  }
+  function inviteFriend(pid){
+    const code=D.room?.code,key=code+':'+pid;
+    if(!live.me?.account||D.mode!=='friends'||!code||!live.friends.some(f=>f.pid===pid)||['pending','sent'].includes(D.invites[key]?.state))return;
+    const cid='pbi-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
+    D.invites[key]={cid,state:'pending'};
+    // The existing DM endpoint checks current friendship, both directions of blocks, and account/mute rules.
+    const text=tr('📸 Mời bạn chụp ảnh ở hội chợ! Mã phòng: {code}. Mở Hội chợ → Chụp ảnh → nhập mã để vào cùng nhé.').replace('{code}',code);
+    if(!live.send({t:'send',to:pid,text,cid})){D.invites[key].state='error';S.flash={text:'Chưa kết nối được. Thử lại nhé.',kind:'bad'};}
+    setTimeout(()=>{if(D.invites[key]?.cid===cid&&D.invites[key].state==='pending'){D.invites[key].state='error';S.flash={text:'Chưa nhận được xác nhận lời mời. Kiểm tra tin nhắn trước khi gửi lại.',kind:'warn'};redraw();}},10000);
+    render();
+  }
   const PANES=[['pose','🕺','Dáng'],['face','😊','Biểu cảm'],['frame','🖼️','Khung ảnh'],['bg','🌅','Phông nền'],['prop','🎀','Đạo cụ']];
   function roomView(){
     const ppl=people(),host=isHost(),r=D.room,shooting=D.step==='shoot'||!!r?.shooting,me=mine();
-    const code=D.mode==='friends'&&r?.code?`<div class="fh-pb-code-chip"><span>Mã phòng</span><b>${esc(r.code)}</b>${btn('📋 Chép mã','pbcopy',{},'cream small',' data-fh-key="pbcopy"')}</div>`:'';
+    const code=D.mode==='friends'&&r?.code?`<div class="fh-pb-code-chip"><span>Mã phòng</span><b>${esc(r.code)}</b>${btn('📋 Chép mã','pbcopy',{},'cream small',' data-fh-key="pbcopy"')}${live.me?.account?btn('👫 Mời bạn bè','pbinvites',{},'cream small',' data-fh-key="pbinvites"'):''}</div>${D.inviteOpen?inviteView():''}`:'';
     const list=D.mode==='solo'?'':`<ul class="fh-pb-people">${ppl.map(p=>`<li><span class="fh-pb-tick${p.ready?' on':''}" aria-hidden="true">${p.ready?'✓':'…'}</span><b>${esc(p.name||tr('Khách đi hội'))}</b>${p.pid===r.host?'<em>👑 chủ phòng</em>':''}${p.pid===D.me?'<em>bạn</em>':''}<small>${p.away?'đang quay lại…':p.ready?'sẵn sàng':'đang chọn dáng'}</small>${host&&p.pid!==D.me&&D.mode==='friends'?btn('Mời ra','pbkick',{pid:p.pid},'ghost small',` data-fh-key="pbkick-${esc(p.pid)}"`):''}</li>`).join('')}${D.mode==='friends'&&ppl.length<(r.cap||4)?`<li class="empty"><span aria-hidden="true">＋</span><small>Còn ${(r.cap||4)-ppl.length} chỗ: gửi mã cho bạn bè</small></li>`:''}</ul>`;
     const fr=frameId(),frames=`${host?'':'<p class="fh-pb-hint">Khung ảnh: chủ phòng chọn</p>'}<div class="fh-pb-frames" role="group" aria-label="Khung ảnh">${BOOTH_FRAMES.map(f=>`<button type="button" class="fh-pb-frame${fr===f.id?' on':''}" data-fh="pbframe" data-v="${f.id}" aria-pressed="${fr===f.id}" data-fh-key="pbframe-${f.id}"${host&&!shooting?'':' disabled'}><img alt="" src="${frameThumb(f.id)}"><span><i aria-hidden="true">${f.emoji}</i> ${esc(f.name)}</span></button>`).join('')}</div>`;
     const bg=bgId(),bgs=`${host?'':'<p class="fh-pb-hint">Phông nền: chủ phòng chọn</p>'}<div class="fh-pb-chips" role="group" aria-label="Phông nền">${BGS.map(b=>chip('pbbg',b.id,bg===b.id,`<span aria-hidden="true">${b.emoji}</span> ${esc(b.name)}`,b.name,!host||shooting)).join('')}</div>`;
@@ -474,7 +497,7 @@ export function setup(ctx){
     D.cv=cv||null;drawStage();
     const ec=S.dlg?.querySelector('.fh-pb-ed');if(ec)edit().attach(ec);
     const box=S.dlg?.querySelector('.fh-pb-code');
-    if(box&&!box._pb){box._pb=1;box.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();join();}});box.addEventListener('input',()=>{const v=box.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4);if(v!==box.value)box.value=v;});}
+    if(box)bindRoomCode(box,join);
     clearTimeout(D.connTimer);   // the "try again" line when the socket has not come in CONN_MS
     if(D.step==='lobby'&&D.conn0&&!shared()&&!slowConn())D.connTimer=setTimeout(()=>{if(D.step==='lobby'&&S.tab==='pb'&&S.dlg?.open)render();},CONN_MS-(Date.now()-D.conn0)+50);
     clearInterval(D.tick);
@@ -482,6 +505,8 @@ export function setup(ctx){
   }
   function click(op,data){
     switch(op){
+      case'pbinvites':D.inviteOpen=!D.inviteOpen;render();return true;
+      case'pbinvite':inviteFriend(data.pid);return true;
       case'pbsolo':startSolo();return true;
       case'pbfind':find();return true;
       case'pbmake':make();return true;

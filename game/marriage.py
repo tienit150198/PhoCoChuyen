@@ -282,25 +282,28 @@ def _apply_effect(s: dict, e: dict) -> bool:
 
 
 def _can_spend(s: dict, amount: int, how=None) -> bool:
-    """🏦 Enough cash in the wallet, or a credit card that covers it (game/bank.py)."""
+    """Enough funds in the selected personal payment source (game/bank.py)."""
     from . import bank
-    return int(s['journey']['wallet']) >= amount or bank.can_pay(s, amount, how if how in ('cash', 'card') else 'auto', no_joint=True)
+    return bank.can_pay(s, amount, how if how in ('cash', 'card', 'account') else 'auto', no_joint=True)
 
 
 def _spend(s: dict, e: dict, how=None) -> bool:
-    """🏦 BANK.PAY: a purchase (a negative 'wallet' effect) paid in cash, or swiped on this save's
-    credit card when the player picked the card (d['pay']) or set "card first" in the bank app.
+    """BANK.PAY: a purchase (a negative 'wallet' effect) follows this save's cash, account or card choice.
     Never the joint fund: this runs inside the store transaction."""
     from . import bank
     m, amount = _box(s), -int(e['amount'])
-    how = how if how in ('cash', 'card') else 'auto'
-    if e['id'] in m['applied'] or amount <= 0 or bank._method(s, amount, how, no_joint=True) != 'card':
+    how = how if how in ('cash', 'card', 'account') else 'auto'
+    if e['id'] in m['applied'] or amount <= 0:
+        return _apply_effect(s, e)
+    selected = bank._method(s, amount, how, no_joint=True)
+    account_only = how == 'account' or (how == 'auto' and (bank.get(s) or {}).get('pref') == 'account')
+    if selected not in ('card', 'account') and not account_only:
         return _apply_effect(s, e)
     try:
-        bank.pay(s, amount, str(e['label']), method='card', kind=KIND, no_joint=True)
+        bank.pay(s, amount, str(e['label']), method=selected or 'account', kind=KIND, no_joint=True)
     except GameError as x:
         raise MarriageError(x.message, x.code, 400) from None
-    (bank.get(s) or {}).pop('ting', None)   # the swipe sound belongs to journey commands
+    (bank.get(s) or {}).pop('ting', None)   # the payment sound belongs to journey commands
     m['applied'] = (m['applied'] + [e['id']])[-APPLIED_KEPT:]
     return True
 
