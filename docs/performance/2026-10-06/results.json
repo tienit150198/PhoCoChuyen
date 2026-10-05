@@ -1,0 +1,904 @@
+{
+  "commit": "f3ada34c1c66b9c7d043138078d98db87a81e415",
+  "fixture": {
+    "players": 1000,
+    "heavy_players": 100,
+    "small_bytes": 162017,
+    "large_bytes": 4701855,
+    "careers": 41,
+    "python": "3.12.15",
+    "build": "3e954b3268dc614bac5d"
+  },
+  "host": "8 CPUs, 16771149824 bytes, 29.1.3",
+  "limits": "/mnl-cap-api cpu=6000000000 mem=6442450944 image=mnl-capacity:20261006\n/mnl-cap-live cpu=1000000000 mem=805306368 image=mnl-capacity:20261006\n/mnl-cap-pg cpu=2000000000 mem=1610612736 image=postgres:16-alpine",
+  "packages": "orjson==3.12.0\npsutil==7.2.2\npsycopg==3.3.6\npsycopg-binary==3.3.6\ntyping_extensions==4.16.0\nwebsockets==17.1",
+  "memory_events": {
+    "initial": {
+      "low": 0,
+      "high": 0,
+      "max": 104610,
+      "oom": 5,
+      "oom_kill": 1,
+      "oom_group_kill": 0
+    },
+    "balanced": {
+      "low": 0,
+      "high": 0,
+      "max": 13948,
+      "oom": 742,
+      "oom_kill": 7,
+      "oom_group_kill": 0
+    },
+    "soak": {
+      "low": 0,
+      "high": 0,
+      "max": 0,
+      "oom": 0,
+      "oom_kill": 0,
+      "oom_group_kill": 0
+    }
+  },
+  "runs": {
+    "town-1000": {
+      "name": "town-1000",
+      "config": {
+        "users": 1000,
+        "movers": 1000,
+        "duration": 60,
+        "period": 0,
+        "chat_rate": 3,
+        "ramp": 40,
+        "profile": "mixed",
+        "name": "town-1000",
+        "procs": 4
+      },
+      "start": 1791223242.8293335,
+      "end": 1791223302.8298564,
+      "stats": {
+        "opened": 1000,
+        "moves_sent": 187020,
+        "chat_sent": 180,
+        "ws_frames": 731471,
+        "ws_bytes": 437120025,
+        "move_deliveries": 5551881,
+        "chat_deliveries": 179895
+      },
+      "errors": {
+        "ws:town_mv:slow": 20
+      },
+      "latency_ms": {
+        "connect": {
+          "n": 1000,
+          "p50": 16.0,
+          "p95": 47.0,
+          "p99": 110.0,
+          "max": 250.0
+        },
+        "move": {
+          "n": 1412355,
+          "p50": 250.0,
+          "p95": 1703.0,
+          "p99": 2297.0,
+          "max": 3984.0
+        },
+        "move_peer": {
+          "n": 1226071,
+          "p50": 250.0,
+          "p95": 1703.0,
+          "p99": 2297.0,
+          "max": 3984.0
+        },
+        "generator_loop_lag": {
+          "n": 2153,
+          "p50": 0,
+          "p95": 87.0,
+          "p99": 150.0,
+          "max": 228.0
+        },
+        "chat": {
+          "n": 179895,
+          "p50": 193.66,
+          "p95": 1855.07,
+          "p99": 2530.27,
+          "max": 5039.57
+        }
+      },
+      "rooms": {
+        "count": 34,
+        "max": 30
+      },
+      "generator": {
+        "cpu_seconds": 92.71875,
+        "rss_bytes": 393043968
+      },
+      "command_rps": 0.0,
+      "ws_mbps": 58.283,
+      "health_midpoint": {
+        "ok": true,
+        "up": 289,
+        "flags": {
+          "chat": true,
+          "street": false,
+          "dating": false,
+          "wedding": false,
+          "fair": false,
+          "home": false,
+          "visits": false,
+          "town": true,
+          "chatdel": true,
+          "blocks": true,
+          "market": true
+        },
+        "conns": 1000,
+        "players": 1000,
+        "rooms": 35,
+        "sent": 391055,
+        "cut": 0
+      },
+      "resources": {
+        "pg": {
+          "average_cores": 0.003,
+          "memory_end_mib": 272.9,
+          "includes_command_drain": true
+        },
+        "api": {
+          "quota_cores": 6,
+          "average_cores": 0.002,
+          "peak_1s_cores": 0.005,
+          "peak_memory_mib": 875.2,
+          "throttled_periods": 0,
+          "periods": 166,
+          "processes": 9
+        },
+        "live": {
+          "quota_cores": 1,
+          "average_cores": 0.384,
+          "peak_1s_cores": 0.531,
+          "peak_memory_mib": 100.6,
+          "throttled_periods": 0,
+          "periods": 574,
+          "processes": 1
+        }
+      }
+    },
+    "town-1000-linux": {
+      "name": "town-1000-linux",
+      "config": {
+        "users": 1000,
+        "movers": 1000,
+        "duration": 60,
+        "period": 0,
+        "chat_rate": 3,
+        "ramp": 40,
+        "profile": "mixed",
+        "name": "town-1000-linux",
+        "procs": 4
+      },
+      "start": 1791223418.3275883,
+      "end": 1791223482.060326,
+      "stats": {
+        "opened": 1000,
+        "moves_sent": 199594,
+        "chat_sent": 180,
+        "ws_frames": 742492,
+        "ws_bytes": 464824457,
+        "move_deliveries": 5942968,
+        "chat_deliveries": 179500
+      },
+      "errors": {},
+      "latency_ms": {
+        "connect": {
+          "n": 1000,
+          "p50": 3.82,
+          "p95": 6.02,
+          "p99": 25.7,
+          "max": 53.47
+        },
+        "move": {
+          "n": 1492584,
+          "p50": 51.35,
+          "p95": 97.38,
+          "p99": 101.8,
+          "max": 121.95
+        },
+        "move_peer": {
+          "n": 1293150,
+          "p50": 51.33,
+          "p95": 97.38,
+          "p99": 101.8,
+          "max": 121.95
+        },
+        "chat": {
+          "n": 179500,
+          "p50": 8.4,
+          "p95": 13.7,
+          "p99": 15.64,
+          "max": 20.64
+        },
+        "generator_loop_lag": {
+          "n": 2388,
+          "p50": 0.47,
+          "p95": 1.03,
+          "p99": 1.19,
+          "max": 14.34
+        }
+      },
+      "rooms": {
+        "count": 34,
+        "max": 30
+      },
+      "generator": {
+        "cpu_seconds": 45.8,
+        "rss_bytes": 301445120
+      },
+      "command_rps": 0.0,
+      "ws_mbps": 61.977,
+      "health_midpoint": {
+        "ok": true,
+        "up": 466,
+        "flags": {
+          "chat": true,
+          "street": false,
+          "dating": false,
+          "wedding": false,
+          "fair": false,
+          "home": false,
+          "visits": false,
+          "town": true,
+          "chatdel": true,
+          "blocks": true,
+          "market": true
+        },
+        "conns": 1000,
+        "players": 1000,
+        "rooms": 35,
+        "sent": 1136351,
+        "cut": 0
+      },
+      "resources": {
+        "api": {
+          "quota_cores": 6,
+          "average_cores": 0.002,
+          "peak_1s_cores": 0.005,
+          "peak_memory_mib": 875.2,
+          "throttled_periods": 0,
+          "periods": 177,
+          "processes": 9
+        },
+        "live": {
+          "quota_cores": 1,
+          "average_cores": 0.325,
+          "peak_1s_cores": 0.407,
+          "peak_memory_mib": 98.5,
+          "throttled_periods": 0,
+          "periods": 592,
+          "processes": 1
+        }
+      }
+    },
+    "mixed-100rps-linux": {
+      "name": "mixed-100rps-linux",
+      "config": {
+        "users": 1000,
+        "movers": 500,
+        "duration": 120,
+        "period": 10.0,
+        "chat_rate": 3,
+        "ramp": 40,
+        "profile": "mixed",
+        "name": "mixed-100rps-linux",
+        "procs": 4
+      },
+      "start": 1791223516.4046254,
+      "end": 1791223643.8728318,
+      "stats": {
+        "bootstrap_status_200": 1000,
+        "opened": 1000,
+        "moves_sent": 199501,
+        "ws_frames": 932584,
+        "ws_bytes": 493305026,
+        "move_deliveries": 5982315,
+        "commands_started": 12000,
+        "chat_deliveries": 359750,
+        "http_status_200": 12000,
+        "http_response_bytes": 14825633,
+        "commands_ok": 12000,
+        "commands_ok_in_window": 11999,
+        "chat_sent": 360
+      },
+      "errors": {},
+      "latency_ms": {
+        "connect": {
+          "n": 1000,
+          "p50": 12.02,
+          "p95": 36.47,
+          "p99": 40.73,
+          "max": 92.52
+        },
+        "move": {
+          "n": 1502005,
+          "p50": 52.43,
+          "p95": 98.52,
+          "p99": 107.14,
+          "max": 143.9
+        },
+        "move_peer": {
+          "n": 1302589,
+          "p50": 52.45,
+          "p95": 98.52,
+          "p99": 107.14,
+          "max": 143.9
+        },
+        "chat": {
+          "n": 359750,
+          "p50": 9.8,
+          "p95": 15.9,
+          "p99": 17.39,
+          "max": 49.29
+        },
+        "command_all": {
+          "n": 12000,
+          "p50": 14.1,
+          "p95": 70.91,
+          "p99": 83.65,
+          "max": 130.0
+        },
+        "command_small": {
+          "n": 10800,
+          "p50": 13.15,
+          "p95": 56.54,
+          "p99": 61.11,
+          "max": 82.74
+        },
+        "generator_loop_lag": {
+          "n": 4772,
+          "p50": 0.55,
+          "p95": 1.09,
+          "p99": 1.73,
+          "max": 26.89
+        },
+        "command_heavy": {
+          "n": 1200,
+          "p50": 70.71,
+          "p95": 93.13,
+          "p99": 109.22,
+          "max": 130.0
+        }
+      },
+      "rooms": {
+        "count": 34,
+        "max": 30
+      },
+      "generator": {
+        "cpu_seconds": 73.32,
+        "rss_bytes": 378011648
+      },
+      "command_rps": 99.99,
+      "ws_mbps": 32.887,
+      "health_midpoint": {
+        "ok": true,
+        "up": 565,
+        "flags": {
+          "chat": true,
+          "street": false,
+          "dating": false,
+          "wedding": false,
+          "fair": false,
+          "home": false,
+          "visits": false,
+          "town": true,
+          "chatdel": true,
+          "blocks": true,
+          "market": true
+        },
+        "conns": 1000,
+        "players": 1000,
+        "rooms": 35,
+        "sent": 1747680,
+        "cut": 0
+      },
+      "resources": {
+        "api": {
+          "quota_cores": 6,
+          "average_cores": 1.373,
+          "peak_1s_cores": 2.214,
+          "peak_memory_mib": 1276.5,
+          "throttled_periods": 0,
+          "periods": 1183,
+          "processes": 9
+        },
+        "live": {
+          "quota_cores": 1,
+          "average_cores": 0.217,
+          "peak_1s_cores": 0.283,
+          "peak_memory_mib": 98.2,
+          "throttled_periods": 0,
+          "periods": 1183,
+          "processes": 1
+        }
+      }
+    },
+    "mixed-200rps-linux": {
+      "name": "mixed-200rps-linux",
+      "config": {
+        "users": 1000,
+        "movers": 1000,
+        "duration": 120,
+        "period": 5.0,
+        "chat_rate": 3,
+        "ramp": 40,
+        "profile": "mixed",
+        "name": "mixed-200rps-linux",
+        "procs": 4
+      },
+      "start": 1791223733.1818063,
+      "end": 1791223860.7524781,
+      "stats": {
+        "bootstrap_status_200": 1000,
+        "opened": 1000,
+        "moves_sent": 396259,
+        "ws_frames": 1522000,
+        "ws_bytes": 920562830,
+        "move_deliveries": 11732156,
+        "chat_deliveries": 358500,
+        "commands_started": 8229,
+        "http_status_200": 1157,
+        "http_response_bytes": 36233899,
+        "commands_ok": 1157,
+        "commands_ok_in_window": 1140,
+        "chat_sent": 360,
+        "command_slots_missed": 16663,
+        "http_status_503": 725,
+        "http_failures": 3926,
+        "http_status_409": 2421
+      },
+      "errors": {
+        "ws:town_mv:slow": 1264,
+        "http:503:db_unavailable": 725,
+        "http:TimeoutError": 3900,
+        "http:409:revision_conflict": 2421,
+        "http:ServerDisconnectedError": 26
+      },
+      "latency_ms": {
+        "connect": {
+          "n": 1000,
+          "p50": 11.86,
+          "p95": 45.23,
+          "p99": 53.48,
+          "max": 100.48
+        },
+        "move": {
+          "n": 2946589,
+          "p50": 57.1,
+          "p95": 101.17,
+          "p99": 144.75,
+          "max": 1830.05
+        },
+        "move_peer": {
+          "n": 2552867,
+          "p50": 57.1,
+          "p95": 101.17,
+          "p99": 144.77,
+          "max": 1830.03
+        },
+        "chat": {
+          "n": 358500,
+          "p50": 178.32,
+          "p95": 1514.69,
+          "p99": 2345.28,
+          "max": 2764.7
+        },
+        "command_all": {
+          "n": 8229,
+          "p50": 14650.04,
+          "p95": 15895.34,
+          "p99": 15976.44,
+          "max": 16062.15
+        },
+        "command_small": {
+          "n": 3944,
+          "p50": 8791.86,
+          "p95": 14650.04,
+          "p99": 15501.3,
+          "max": 15919.86
+        },
+        "generator_loop_lag": {
+          "n": 4716,
+          "p50": 0.62,
+          "p95": 3.15,
+          "p99": 25.53,
+          "max": 401.32
+        },
+        "command_heavy": {
+          "n": 359,
+          "p50": 8639.27,
+          "p95": 14567.93,
+          "p99": 15352.57,
+          "max": 15581.68
+        }
+      },
+      "rooms": {
+        "count": 34,
+        "max": 30
+      },
+      "generator": {
+        "cpu_seconds": 121.69,
+        "rss_bytes": 818614272
+      },
+      "command_rps": 9.5,
+      "ws_mbps": 61.371,
+      "health_midpoint": {
+        "ok": true,
+        "up": 781,
+        "flags": {
+          "chat": true,
+          "street": false,
+          "dating": false,
+          "wedding": false,
+          "fair": false,
+          "home": false,
+          "visits": false,
+          "town": true,
+          "chatdel": true,
+          "blocks": true,
+          "market": true
+        },
+        "conns": 1000,
+        "players": 1000,
+        "rooms": 35,
+        "sent": 2824763,
+        "cut": 0
+      },
+      "resources": {
+        "api": {
+          "quota_cores": 6,
+          "average_cores": 1.386,
+          "peak_1s_cores": 4.628,
+          "peak_memory_mib": 4096.0,
+          "throttled_periods": 11,
+          "periods": 1193,
+          "processes": 9
+        },
+        "live": {
+          "quota_cores": 1,
+          "average_cores": 0.345,
+          "peak_1s_cores": 0.523,
+          "peak_memory_mib": 100.8,
+          "throttled_periods": 16,
+          "periods": 1188,
+          "processes": 1
+        }
+      }
+    },
+    "mixed-200rps-balanced": {
+      "name": "mixed-200rps-balanced",
+      "config": {
+        "users": 1000,
+        "movers": 1000,
+        "duration": 180,
+        "period": 5.0,
+        "chat_rate": 3,
+        "ramp": 40,
+        "profile": "mixed",
+        "name": "mixed-200rps-balanced",
+        "procs": 4
+      },
+      "start": 1791224138.400829,
+      "end": 1791224329.8617272,
+      "stats": {
+        "bootstrap_status_200": 1000,
+        "opened": 1000,
+        "ws_frames": 2260566,
+        "ws_bytes": 1380344323,
+        "chat_deliveries": 539890,
+        "moves_sent": 590733,
+        "commands_started": 35607,
+        "move_deliveries": 17597031,
+        "http_status_200": 35124,
+        "http_response_bytes": 33538199,
+        "commands_ok": 35124,
+        "commands_ok_in_window": 34579,
+        "chat_sent": 540,
+        "http_failures": 478,
+        "command_slots_missed": 788,
+        "http_status_409": 5
+      },
+      "errors": {
+        "ws:town_mv:slow": 23,
+        "http:ServerDisconnectedError": 387,
+        "http:ClientOSError": 13,
+        "http:TimeoutError": 78,
+        "http:409:revision_conflict": 5
+      },
+      "latency_ms": {
+        "connect": {
+          "n": 1000,
+          "p50": 11.75,
+          "p95": 43.84,
+          "p99": 49.23,
+          "max": 124.94
+        },
+        "chat": {
+          "n": 539890,
+          "p50": 13.07,
+          "p95": 109.83,
+          "p99": 1361.69,
+          "max": 2385.44
+        },
+        "command_all": {
+          "n": 35607,
+          "p50": 22.87,
+          "p95": 901.28,
+          "p99": 6408.17,
+          "max": 15994.32
+        },
+        "command_small": {
+          "n": 31638,
+          "p50": 20.54,
+          "p95": 564.63,
+          "p99": 6072.22,
+          "max": 10066.29
+        },
+        "generator_loop_lag": {
+          "n": 7019,
+          "p50": 0.68,
+          "p95": 3.95,
+          "p99": 24.46,
+          "max": 1860.22
+        },
+        "move": {
+          "n": 4419340,
+          "p50": 56.84,
+          "p95": 101.79,
+          "p99": 129.35,
+          "max": 1907.71
+        },
+        "move_peer": {
+          "n": 3828838,
+          "p50": 56.84,
+          "p95": 101.8,
+          "p99": 129.36,
+          "max": 1907.71
+        },
+        "command_heavy": {
+          "n": 3491,
+          "p50": 101.36,
+          "p95": 826.53,
+          "p99": 6345.15,
+          "max": 7849.77
+        }
+      },
+      "rooms": {
+        "count": 34,
+        "max": 30
+      },
+      "generator": {
+        "cpu_seconds": 208.15,
+        "rss_bytes": 701206528
+      },
+      "command_rps": 192.11,
+      "ws_mbps": 61.349,
+      "health_midpoint": {
+        "ok": true,
+        "up": 1187,
+        "flags": {
+          "chat": true,
+          "street": false,
+          "dating": false,
+          "wedding": false,
+          "fair": false,
+          "home": false,
+          "visits": false,
+          "town": true,
+          "chatdel": true,
+          "blocks": true,
+          "market": true
+        },
+        "conns": 1000,
+        "players": 1000,
+        "rooms": 35,
+        "sent": 5258962,
+        "cut": 0
+      },
+      "resources": {
+        "api": {
+          "quota_cores": 6,
+          "average_cores": 3.297,
+          "peak_1s_cores": 5.606,
+          "peak_memory_mib": 6039.7,
+          "throttled_periods": 17,
+          "periods": 1789,
+          "processes": 9
+        },
+        "live": {
+          "quota_cores": 1,
+          "average_cores": 0.396,
+          "peak_1s_cores": 0.564,
+          "peak_memory_mib": 102.3,
+          "throttled_periods": 1,
+          "periods": 1793,
+          "processes": 1
+        }
+      }
+    },
+    "mixed-100rps-soak": {
+      "name": "mixed-100rps-soak",
+      "config": {
+        "users": 1000,
+        "movers": 500,
+        "duration": 300,
+        "period": 10.0,
+        "chat_rate": 3,
+        "ramp": 40,
+        "profile": "mixed",
+        "name": "mixed-100rps-soak",
+        "procs": 4
+      },
+      "start": 1791224493.966117,
+      "end": 1791224813.3815973,
+      "stats": {
+        "bootstrap_status_200": 1000,
+        "opened": 1000,
+        "moves_sent": 498635,
+        "ws_frames": 2347490,
+        "ws_bytes": 1234993167,
+        "move_deliveries": 14956842,
+        "chat_deliveries": 899500,
+        "commands_started": 30000,
+        "http_status_200": 30000,
+        "http_response_bytes": 28791899,
+        "commands_ok": 30000,
+        "commands_ok_in_window": 29999,
+        "chat_sent": 900
+      },
+      "errors": {},
+      "latency_ms": {
+        "connect": {
+          "n": 1000,
+          "p50": 11.85,
+          "p95": 42.91,
+          "p99": 55.02,
+          "max": 121.0
+        },
+        "move": {
+          "n": 3755248,
+          "p50": 51.33,
+          "p95": 99.48,
+          "p99": 105.01,
+          "max": 148.89
+        },
+        "move_peer": {
+          "n": 3256675,
+          "p50": 51.34,
+          "p95": 99.48,
+          "p99": 105.01,
+          "max": 148.89
+        },
+        "chat": {
+          "n": 899500,
+          "p50": 9.99,
+          "p95": 16.55,
+          "p99": 18.87,
+          "max": 59.41
+        },
+        "generator_loop_lag": {
+          "n": 11924,
+          "p50": 0.57,
+          "p95": 1.16,
+          "p99": 1.98,
+          "max": 49.45
+        },
+        "command_all": {
+          "n": 30000,
+          "p50": 13.18,
+          "p95": 73.0,
+          "p99": 81.22,
+          "max": 140.98
+        },
+        "command_small": {
+          "n": 27000,
+          "p50": 12.99,
+          "p95": 53.64,
+          "p99": 59.48,
+          "max": 108.91
+        },
+        "command_heavy": {
+          "n": 3000,
+          "p50": 72.84,
+          "p95": 84.95,
+          "p99": 94.97,
+          "max": 140.98
+        }
+      },
+      "rooms": {
+        "count": 34,
+        "max": 30
+      },
+      "generator": {
+        "cpu_seconds": 182.89,
+        "rss_bytes": 618442752
+      },
+      "command_rps": 100.0,
+      "ws_mbps": 32.933,
+      "health_midpoint": {
+        "ok": true,
+        "up": 1542,
+        "flags": {
+          "chat": true,
+          "street": false,
+          "dating": false,
+          "wedding": false,
+          "fair": false,
+          "home": false,
+          "visits": false,
+          "town": true,
+          "chatdel": true,
+          "blocks": true,
+          "market": true
+        },
+        "conns": 1000,
+        "players": 1000,
+        "rooms": 35,
+        "sent": 7393878,
+        "cut": 0
+      },
+      "resources": {
+        "api": {
+          "quota_cores": 6,
+          "average_cores": 1.419,
+          "peak_1s_cores": 1.993,
+          "peak_memory_mib": 892.5,
+          "throttled_periods": 0,
+          "periods": 2990,
+          "processes": 9
+        },
+        "live": {
+          "quota_cores": 1,
+          "average_cores": 0.213,
+          "peak_1s_cores": 0.3,
+          "peak_memory_mib": 101.3,
+          "throttled_periods": 0,
+          "periods": 2989,
+          "processes": 1
+        }
+      }
+    },
+    "static-1000": {
+      "users": 1000,
+      "requests": 3000,
+      "duration": 19.98831598900142,
+      "status": {
+        "200": 3000
+      },
+      "latency_ms": {
+        "/": {
+          "n": 1000,
+          "p50": 0.81,
+          "p95": 0.95,
+          "p99": 1.06,
+          "max": 34.88
+        },
+        "/api/content?part=core": {
+          "n": 1000,
+          "p50": 1.45,
+          "p95": 1.73,
+          "p99": 1.86,
+          "max": 3.69
+        },
+        "/js/isometric/phaser-world.js": {
+          "n": 1000,
+          "p50": 4.36,
+          "p95": 4.8,
+          "p99": 5.13,
+          "max": 36.15
+        }
+      },
+      "wire_bytes": {
+        "/": 14173000,
+        "/api/content?part=core": 78582000,
+        "/js/isometric/phaser-world.js": 358653000
+      },
+      "scope": "HTML + core catalogue + Phaser only; no browser rendering, no TLS/CDN/Internet"
+    }
+  }
+}
