@@ -1,7 +1,7 @@
 """🚶 Đi dạo (live/street.py): places and instances, moves (clamped, routed, rate limited, batched, never in the
 database), bubbles through the chat's store (filters, mutes, delete, report), emotes, the tám chuyện tables,
 happenings (capped) and the red envelope (paid once, daily cap), blocks, cards and coffee for two. Real sockets
-against a real game database (SQLite here, PostgreSQL with TEST_DATABASE_URL)."""
+against a real game database (PostgreSQL with TEST_DATABASE_URL)."""
 import asyncio
 import math
 import time
@@ -389,15 +389,19 @@ class Happenings(StreetCase):
         self.assertTrue(GEO['boho'].inside(hap['x'], hap['y']))
         await a.send(t='grab', id=hap['id'])
         await b.send(t='grab', id=hap['id'])
+        end = await b.expect('happen_end', id=hap['id'])
+        self.assertIn(end['pid'], (a.welcome['me']['pid'], b.welcome['me']['pid']))
+        if end['pid'] == b.welcome['me']['pid']:
+            a, b = b, a    # independent sockets: either player's tap may reach the server first
         got = await a.expect('grabbed')
         late = await b.expect('error')
         self.assertIn(late['code'], ('late', 'gone'))
-        end = await b.expect('happen_end', id=hap['id'])
         self.assertEqual((end['pid'], end['n']), (a.welcome['me']['pid'], got['n']))
         self.assertEqual((await a.call('grab', 'error', id=hap['id']))['code'], 'gone')
         with self.store.connect() as db:
             rows = db.execute('SELECT id, sid, kind, amount, status FROM live_effects').fetchall()
         self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]['sid'], self.app.hub.players[a.welcome['me']['pid']].sid)
         self.assertEqual((rows[0]['kind'], rows[0]['amount'], rows[0]['status']), ('coins', got['n'], 'pending'))
         self.assertTrue(3 <= got['n'] <= 8)
         # B has had almost the whole day's cap already: the envelope stays for someone else

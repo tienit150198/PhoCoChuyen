@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """🛵 Đi xe quanh phố: a browser walk-through (dev tool, needs `pip install playwright websockets` + chromium).
 
-Starts a game server (story mode, SQLite, the hội chợ open today) and the live service (LIVE_STREET=1, so the fair's
+Starts a game server (story mode, PostgreSQL, the hội chợ open today) and the live service (LIVE_STREET=1, so the fair's
 crowd too) on the same database, then plays two players, at 390x844 (a phone) and 1280x800:
   * Lan owns a scooter (pink, plate "MÂY 01") and an SUV; Minh owns nothing;
   * the town (the home screen): Lan rides (the toggle shows "🛵 Đi xe"), goes to a shop's door: the scooter is parked
@@ -34,6 +34,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / 'scripts'))
 from browser_live_chat import free_port, wait_http  # noqa: E402
+from pg_test_support import test_env, test_connect, schema_for
 
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 and not sys.argv[1].startswith('--') else ROOT.parent / '_ride_shots'
 VN = datetime.timezone(datetime.timedelta(hours=7))
@@ -46,17 +47,17 @@ WALK = "async () => (await import('/js/v4/walk.js')).walk.state()"
 @contextlib.contextmanager
 def servers(tmp: str):
     gp, lp = free_port(), free_port()
-    db = os.path.join(tmp, 'g.sqlite3')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live',
+    db = os.path.join(tmp, 'g.db')
+    env = test_env( QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live',
                MNL_FAIR_START=datetime.datetime.now(VN).date().isoformat())
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'DATABASE_URL'):
         env.pop(k, None)
     glog = open(os.path.join(tmp, 'game.log'), 'w')
-    game = subprocess.Popen([PY, 'server.py', '--port', str(gp), '--db', db], cwd=ROOT, env=env, stdout=glog, stderr=glog)
+    game = subprocess.Popen([PY, 'server.py', '--port', str(gp), '--namespace', db], cwd=ROOT, env=env, stdout=glog, stderr=glog)
     wait_http(f'http://127.0.0.1:{gp}/api/health')
-    lenv = dict(env, LIVE_CHAT='1', LIVE_STREET='1', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
+    lenv = dict(env, DATABASE_URL=env['TEST_DATABASE_URL'], LIVE_CHAT='1', LIVE_STREET='1', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
     llog = open(os.path.join(tmp, 'live.log'), 'w')
-    live = subprocess.Popen([PY, '-m', 'live', '--db', db], cwd=ROOT, env=lenv, stdout=llog, stderr=llog)
+    live = subprocess.Popen([PY, '-m', 'live', '--schema', schema_for(db)], cwd=ROOT, env=lenv, stdout=llog, stderr=llog)
     wait_http(f'http://127.0.0.1:{lp}/live/health')
     try:
         yield f'http://127.0.0.1:{gp}', db

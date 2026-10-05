@@ -1,11 +1,10 @@
-"""💬 Chat, the game server's side: the tables (SQLite twin of game/pg_schema.py), the admin "Chat" tab
+"""💬 Chat, the game server's side: the PostgreSQL tables in game/pg_schema.py, the admin "Chat" tab
 (reports queue, hide / keep, mute 1 h / 24 h / 7 d) and the cleanup when a player deletes their data.
 
 The chat itself runs in the live service (live/, `python3 -m live`, a WebSocket per player): it writes
 messages, reports and auto-hides. The game server never sends a chat message. An admin decision is written
 here, then announced with `pg_notify('mnl_live', <json>)` so the live service applies it at once (drops a
-hidden message from its buffers and from every open screen, mutes an online player). On SQLite (dev, tests)
-there is no NOTIFY: the live service sees the change on its next start.
+hidden message from its buffers and from every open screen, mutes an online player).
 
 DMs and groups are never deleted (owner rule); Cả phố keeps its newest 2,000 messages (owner, 01/10: the live
 service prunes older ones, except a reported one still waiting for review). An author's own delete (Thu hồi, within 24 h)
@@ -36,7 +35,6 @@ import json
 import re
 import time
 
-from . import db as dbm
 
 NOTIFY_CHANNEL = 'mnl_live'
 MUTE_HOURS = (1, 24, 168)
@@ -48,53 +46,8 @@ WINDOW = 20000              # ids looked at per search request at most (one prim
 KINDS = ('all', 'town', 'dm', 'group')
 PID = re.compile(r'[0-9a-f]{16}|admin')
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS chat_channels (
-  id TEXT PRIMARY KEY, kind TEXT NOT NULL, title TEXT NOT NULL DEFAULT '', owner_pid TEXT, created REAL NOT NULL
-);
-CREATE TABLE IF NOT EXISTS chat_members (
-  channel TEXT NOT NULL, pid TEXT NOT NULL, sid TEXT NOT NULL, role TEXT NOT NULL DEFAULT 'member', joined REAL NOT NULL,
-  last_read INTEGER NOT NULL DEFAULT 0, muted_until REAL NOT NULL DEFAULT 0, pushed_at REAL NOT NULL DEFAULT 0,
-  PRIMARY KEY (channel, pid)
-);
-CREATE TABLE IF NOT EXISTS chat_messages (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, channel TEXT NOT NULL, pid TEXT NOT NULL, name TEXT NOT NULL DEFAULT '',
-  av TEXT NOT NULL DEFAULT '', text TEXT NOT NULL, at REAL NOT NULL, hidden INTEGER NOT NULL DEFAULT 0,
-  deleted INTEGER NOT NULL DEFAULT 0, reports INTEGER NOT NULL DEFAULT 0, reviewed_at REAL, adm INTEGER NOT NULL DEFAULT 0, raw TEXT
-);
-CREATE TABLE IF NOT EXISTS chat_mutes (
-  pid TEXT PRIMARY KEY, until REAL NOT NULL, by_admin TEXT NOT NULL DEFAULT '', reason TEXT NOT NULL DEFAULT '', at REAL NOT NULL
-);
-CREATE TABLE IF NOT EXISTS chat_prefs (pid TEXT PRIMARY KEY, online INTEGER NOT NULL DEFAULT 1, updated REAL NOT NULL);
-CREATE TABLE IF NOT EXISTS chat_reacts (msg INTEGER NOT NULL, pid TEXT NOT NULL, emoji TEXT NOT NULL, at REAL NOT NULL, PRIMARY KEY (msg, pid));
-CREATE TABLE IF NOT EXISTS chat_pins (channel TEXT PRIMARY KEY, msg INTEGER NOT NULL, by_pid TEXT NOT NULL, at REAL NOT NULL);
-CREATE TABLE IF NOT EXISTS chat_faces (pid TEXT PRIMARY KEY, code TEXT NOT NULL, at REAL NOT NULL);
-CREATE TABLE IF NOT EXISTS chat_hides (pid TEXT NOT NULL, msg INTEGER NOT NULL, at REAL NOT NULL, PRIMARY KEY (pid, msg));
-CREATE TABLE IF NOT EXISTS chat_clears (channel TEXT NOT NULL, pid TEXT NOT NULL, upto INTEGER NOT NULL, at REAL NOT NULL, PRIMARY KEY (channel, pid));
-CREATE TABLE IF NOT EXISTS live_effects (
-  id TEXT PRIMARY KEY, sid TEXT NOT NULL, kind TEXT NOT NULL, amount INTEGER NOT NULL DEFAULT 0, data TEXT NOT NULL DEFAULT '{}',
-  status TEXT NOT NULL DEFAULT 'pending', at REAL NOT NULL, applied_at REAL
-);
-CREATE INDEX IF NOT EXISTS chat_members_pid ON chat_members(pid, channel);
-CREATE INDEX IF NOT EXISTS chat_messages_channel ON chat_messages(channel, id);
-CREATE INDEX IF NOT EXISTS chat_messages_pid ON chat_messages(pid, id);
-CREATE INDEX IF NOT EXISTS chat_messages_reported ON chat_messages(id) WHERE reports > 0;
-CREATE INDEX IF NOT EXISTS chat_reacts_pid ON chat_reacts(pid);
-CREATE INDEX IF NOT EXISTS chat_hides_msg ON chat_hides(msg);
-CREATE INDEX IF NOT EXISTS chat_clears_pid ON chat_clears(pid);
-CREATE INDEX IF NOT EXISTS live_effects_sid ON live_effects(sid, status);
-CREATE INDEX IF NOT EXISTS live_effects_day ON live_effects(sid, kind, at);
-"""
 
 
-def migrate(db) -> None:
-    """Older SQLite files: chat_messages.adm (1.2.1, admin messages; old rows read 0) and chat_messages.raw (1.2.2,
-    the original of a masked message; old rows read NULL) are added in place."""
-    cols = {r[1] for r in db.execute('PRAGMA table_info(chat_messages)').fetchall()}
-    if 'adm' not in cols:
-        db.execute('ALTER TABLE chat_messages ADD COLUMN adm INTEGER NOT NULL DEFAULT 0')
-    if 'raw' not in cols:
-        db.execute('ALTER TABLE chat_messages ADD COLUMN raw TEXT')
 
 
 class ChatAdminError(Exception):
@@ -119,8 +72,7 @@ def pid_of(sid: str) -> str:
 
 def notify(db, event: dict) -> None:
     """Tell the live service (PostgreSQL LISTEN mnl_live). Delivered when the transaction commits."""
-    if dbm.is_pg(db):
-        db.execute('SELECT pg_notify(?, ?)', (NOTIFY_CHANNEL, json.dumps(event, separators=(',', ':'))))
+    db.execute('SELECT pg_notify(?, ?)', (NOTIFY_CHANNEL, json.dumps(event, separators=(',', ':'))))
 
 
 def _kind(channel: str) -> str:
@@ -223,7 +175,7 @@ def search(store, q: dict) -> dict:
             where.append('pid = ?')
             args.append(pid)
         if text:
-            op = 'ILIKE' if dbm.is_pg(db) else 'LIKE'
+            op = 'ILIKE'
             where.append(f"(text {op} ? ESCAPE '!' OR raw {op} ? ESCAPE '!' OR name {op} ? ESCAPE '!')")
             args += [_like(text)] * 3
         rows = db.execute(f"SELECT * FROM chat_messages WHERE {' AND '.join(where)} ORDER BY id DESC LIMIT ?",

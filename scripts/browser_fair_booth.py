@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """📸 Buồng chụp ảnh at the fair in two browsers (dev tool, needs `pip install playwright websockets` + chromium).
 
-Starts a game server (story mode, SQLite, the fair open today) and the live service (chat and the fairground on) on
+Starts a game server (story mode, PostgreSQL, the fair open today) and the live service (chat and the fairground on) on
 the same database, two phones (390×844) with 300 xu each, then:
   1. Bạn bè: Lan walks up to the booth on the fairground, makes a room and gets a 4-character code; Minh types it
      in and joins; the host's frame and backdrop reach Minh, each picks a pose and a prop; both pay their ticket

@@ -1469,10 +1469,9 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
         ok = not _diff(cup, t['needs'])
         if ok:
             cup['checked'] = True
-            return dict(message='Ly đúng phiếu gọi món. Sẵn sàng dán nắp.')
+            return dict(message='Ly đúng phiếu gọi món. Sẵn sàng dán nắp.', _free=True)
         cup['checked'] = False
-        t['mistakes'] += 1
-        return dict(message='Ly chưa khớp phiếu: soi lại trà, siro, topping, cỡ, đường và đá.')
+        return dict(message='Ly chưa khớp phiếu: soi lại trà, siro, topping, cỡ, đường và đá. So phiếu không tính lỗi.', _free=True)
     if name in ('seal_start', 'seal'):
         need(cup['placed'] and any(ING[k]['group'] == 'base' for k in cup['items']), 'Ly chưa có trà nền: rót trà ở hàng 🫖 Trà nền trước nhé.')
         need(not cup['sealed'], 'Ly đã dán nắp rồi.')

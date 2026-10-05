@@ -23,6 +23,8 @@ import copy
 from .jsoncopy import tree_copy
 import hashlib
 import random
+import re
+from . import wealth_pricing
 
 from . import archive as ar
 from .incident_content import INCIDENTS, INDEX, CATS, EMPLOYEE
@@ -185,6 +187,8 @@ def _fire(s: dict, c: dict, career: str, sid: str, follow: bool = False, practic
     x = INDEX[sid]
     box['seq'] += 1
     row = dict(id=f'inc-{box["seq"]}', script=sid, day=c['day'], practice=practice, follow=follow)
+    if wealth_pricing.ENABLED and sid in ('racket','racket_again'):
+        row.update(wealth_pricing.event_quote(s, f'{career}|{sid}|{row["id"]}|{c["day"]}'))
     box['active'] = row
     if not practice:
         if box['count']['day'] != c['day']:
@@ -293,12 +297,38 @@ def _schedule(box: dict, follow, day: int, src: str) -> None:
         box['follow'].append(dict(script=sid, day=day + max(1, int(days)), src=src))
 
 
+def _priced_spec(row):
+    spec=INDEX[row['script']]
+    if 'wealth' not in row or row['script'] not in ('racket','racket_again'):
+        return spec
+    spec=copy.deepcopy(spec)
+    amounts={}
+    for opt in spec['options']:
+        for source in (opt, (opt.get('luck') or {}).get('win',{}), (opt.get('luck') or {}).get('lose',{})):
+            lines=[]
+            for where,amount,category in source.get('pay',[]):
+                if amount<0:
+                    scaled=(wealth_pricing.event_cost(row) if 'percent' in row and opt['id']=='pay'
+                            else wealth_pricing.cost(-amount,row['wealth']))
+                    amounts[str(-amount)]=str(scaled)
+                    amount=-scaled
+                lines.append((where,amount,category))
+            if 'pay' in source:source['pay']=lines
+    def text(node):
+        if isinstance(node,str):
+            return re.sub(r'(?<!\d)(\d+) xu',lambda m:amounts.get(m[1],m[1])+' xu',node)
+        if isinstance(node,dict):return {k:text(v) for k,v in node.items()}
+        if isinstance(node,list):return [text(v) for v in node]
+        return node
+    return text(spec)
+
+
 def decide(s: dict, c: dict, career: str, option: str, auto: bool = False) -> dict:
     e = _eng()
     box = c['incidents']
     row = box['active']
     e.need(row, 'Không có chuyện nào đang chờ bạn quyết.')
-    x = INDEX[row['script']]
+    x = _priced_spec(row)
     opt = next((o for o in x['options'] if o['id'] == option), None)
     e.need(opt, 'Lựa chọn không có trong chuyện này.')
     practice = row['practice']
@@ -336,6 +366,12 @@ def decide(s: dict, c: dict, career: str, option: str, auto: bool = False) -> di
                                                  trust=trust)], HISTORY, 'incidents.history', c)
     box['last'] = dict(id=row['id'], script=x['id'], choice=opt['id'], day=row['day'], good=good, won=won, auto=auto,
                        practice=practice, lines=done, trust=trust)
+    if 'wealth' in row:
+        box['last']['wealth']=row['wealth']
+        if not practice:box['history'][-1]['wealth']=row['wealth']
+    if 'percent' in row:
+        box['last']['percent']=row['percent']
+        if not practice:box['history'][-1]['percent']=row['percent']
     box['active'] = None
     return dict(message=outcome, celebrate=good is True and not practice)
 
@@ -383,7 +419,7 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
 
 # ---------------------------------------------------------------- public view
 def _history_view(h: dict, gender: str) -> dict:
-    x = INDEX[h['script']]
+    x = _priced_spec(h)
     opt = next(o for o in x['options'] if o['id'] == h['choice'])
     res = None
     if h.get('won') is not None and opt.get('luck'):
@@ -421,7 +457,7 @@ def public(c: dict, career: str, s: dict) -> dict:
                 employee=career in EMPLOYEE)
     row = box['active']
     if row:
-        x = INDEX[row['script']]
+        x = _priced_spec(row)
         emoji, label = CATS[x['cat']]
         view['active'] = dict(
             id=row['id'], script=x['id'], day=row['day'], practice=row['practice'], cat=x['cat'], cat_emoji=emoji,
@@ -431,7 +467,7 @@ def public(c: dict, career: str, s: dict) -> dict:
                           affordable=row['practice'] or _affordable(s, c, o)) for o in x['options']])
     last = box['last']
     if last:
-        x = INDEX[last['script']]
+        x = _priced_spec(last)
         opt = next(o for o in x['options'] if o['id'] == last['choice'])
         res = None
         if last.get('won') is not None and opt.get('luck'):
@@ -480,7 +516,7 @@ def validate(c: dict, career: str) -> None:
         need(isinstance(last.get('lines'), list) and len(last['lines']) <= 8, 'Kết quả chuyện đời sai.')
         for ln in last['lines']:
             need(isinstance(ln, dict) and ln.get('where') in ('fund', 'wallet'), 'Kết quả chuyện đời sai.')
-            integer(ln.get('amount'), -10**6, 10**6)
+            integer(ln.get('amount'), -wealth_pricing.MAX_EVENT_COST, wealth_pricing.MAX_EVENT_COST)
             txt(ln.get('cat'), 40)
         integer(last.get('trust'), -100, 100)
     need(isinstance(box['history'], list) and len(box['history']) <= HISTORY, 'Lịch sử chuyện đời sai.')
@@ -490,9 +526,14 @@ def validate(c: dict, career: str) -> None:
         need(h.get('good') in (True, False, None) and h.get('won') in (True, False, None), 'Lịch sử chuyện đời sai.')
         integer(h.get('day'), 1, 10**7)
         for k in ('fund', 'wallet'):
-            integer(h.get(k), -10**6, 10**6)
+            integer(h.get(k), -wealth_pricing.MAX_EVENT_COST, wealth_pricing.MAX_EVENT_COST)
         integer(h.get('trust'), -100, 100)
     need(isinstance(box['follow'], list) and len(box['follow']) <= FOLLOW_MAX, 'Chuyện chờ về sau sai.')
+    for quoted in [row,last]+box['history']:
+        if quoted and 'wealth' in quoted:
+            need(quoted['script'] in ('racket','racket_again') and wealth_pricing.valid_wealth(quoted['wealth']), 'Báo giá chuyện đời không hợp lệ.', 'invalid_save')
+        if quoted and 'percent' in quoted:
+            need(quoted['script'] in ('racket','racket_again') and wealth_pricing.valid_event_quote(quoted), 'Tỷ lệ chuyện đời không hợp lệ.', 'invalid_save')
     for f in box['follow']:
         need(isinstance(f, dict) and f.get('script') in INDEX, 'Chuyện chờ về sau sai.')
         integer(f.get('day'), 1, 10**7)

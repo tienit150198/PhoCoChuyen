@@ -1,0 +1,84 @@
+import assert from 'node:assert/strict';
+import * as view from '../public/js/v4/home-view.js';
+import {setup} from '../public/js/v4/home-walk.js';
+import {readFile} from 'node:fs/promises';
+import * as art from '../public/js/v4/deco-art.js';
+import {escapeHTML,icon} from '../public/js/icons.js';
+globalThis.location={search:''};
+const {homeGuestsView}=await import('../public/js/v4/home-guests.js');
+
+assert.equal(typeof view.guestSession,'function','guest view needs an isolated, cancellable session');
+const draft={tab:'deco',room:'bed',edit:true,held:{k:'chair'},undo:[{chair:{x:12}}],undoKey:'own',mate:null};
+const S={...draft}, session=view.guestSession(S);
+const a={owner:{code:'A'},deco:{rooms:[],items:[]}},b={owner:{code:'B'},deco:{rooms:[],items:[]}};
+let finishA;
+const first=session.open('A',()=>new Promise(resolve=>finishA=resolve));
+assert.equal(S.edit,false,'guest loading disables editing immediately');
+await session.open('B',async()=>b);
+finishA(a);assert.equal(await first,false,'late home A cannot replace home B');
+assert.equal(S.remote,b);
+let finishRefresh;
+const refresh=session.refresh(()=>new Promise(resolve=>finishRefresh=resolve));
+session.close();finishRefresh(a);await refresh;
+assert.equal(S.remote,null,'a late refresh cannot reopen a closed guest view');
+for(const key of Object.keys(draft))assert.deepEqual(S[key],draft[key],`personal ${key} restored`);
+await assert.rejects(session.open('A',async()=>{throw new Error('revoked');}),/revoked/);
+assert.equal(S.remote,null,'failed opening restores the personal draft');
+
+const room={id:'bed',type:'bed',cols:6,frows:4,fix:[]};
+const pieces=['tu_lanh','giuong','bon_tam','tu_quan_ao'].map((k,i)=>({id:`f${i}`,it:{id:k,w:2,spot:'floor'},q:{x:0,y:0}}));
+const commands=[],actions=[],state={needs:{evening:{}},journey:{deco:{fridge:{cap:5}}}};
+const G={room:'bed',edit:false,remote:a,dlg:{querySelector:()=>null,close:()=>actions.push('close')},env:{ui:{wd:{draft:{top:'own-shirt'}}},api:{state},act:(...args)=>actions.push(args)}};
+const before=JSON.stringify(G.env);
+const ui=setup({S:G,A:{PX:0,CW:40,FR:30,geom:()=>({FY:50}),anchor:()=>[0,50]},V:()=>({relax:[{id:'ngam',ok:true}]}),roomOf:()=>room,inRoom:()=>pieces,hostFor:()=>null,send:(...args)=>commands.push(args),render:()=>{},sfx:()=>{},calm:()=>true,roomSvg:()=>null});
+for(const p of pieces)ui.tap(room,{x:20,y:20},p.id);
+for(const op of ['hwOpen','hwBuy','hwEat','hwWardrobe','hwClothesPick'])await ui.click(op,{item:'food'});
+assert.deepEqual(commands,[],'guest furniture never charges or changes home benefits');
+assert.deepEqual(actions,[],'guest furniture never routes into personal house actions');
+assert.equal(ui.panel({fridge:{cap:5}},room),'','guest never opens own fridge as fallback');
+assert.equal(JSON.stringify(G.env),before,'avatar state and wardrobe drafts remain personal and unchanged');
+ui.reset();
+
+const listing={own_home:{home:{name:'Nhà phố'}},friends:[{code:'A',name:'An <script>'}],incoming:[{id:1,code:'A',name:'An',kind:'stay'}],outgoing:[{id:2,code:'B',name:'Bình',kind:'visit'}],active:[{id:3,code:'A',name:'An',kind:'stay',mine:false},{id:4,code:'B',name:'Bình',kind:'visit',mine:true}],homes:[{code:'A',name:'An',kind:'stay',home:{name:'Nhà phố'}}]};
+const html=homeGuestsView(listing,{code:'A'});
+for(const text of ['Mời vào chơi','Mời ở chung','Không cần kết hôn','Vào nhà','Thu hồi quyền vào nhà','Từ chối','Rời nhà','An &lt;script&gt;'])assert.ok(html.includes(text),text);
+assert.match(html,/value="A" selected/,'friend entrypoint preselects the requested friend');
+assert.ok(!html.includes('<script>'));
+assert.ok(html.includes('Vào chơi trong 2 giờ kể từ khi đồng ý.'),'temporary invitation duration is clear before accepting');
+
+// Exercise the actual renderer with precisely the minimal, private-field-free server projection.
+globalThis.document={body:{classList:{contains:()=>true}}};
+globalThis.window={matchMedia:()=>({matches:false})};
+const source=(await readFile(new URL('../public/js/v4/reno.js',import.meta.url),'utf8')).replace(/^import .*;\r?\n/gm,'').replace(/^export /gm,'');
+const renderer=new Function('A','walkSetup','live','sharedRooms','ownershipOrder','guestSession','icon','esc','Sound',source+'\nreturn {S,page,onClick,send,guest,loadMate,tintOf};')(art,setup,{on:()=>()=>{}},view.sharedRooms,view.ownershipOrder,view.guestSession,icon,escapeHTML,class {});
+const remote={owner:{code:'A',name:'An'},access:{kind:'stay'},deco:{place:{key:'house-A',where:'own',name:'Nhà phố',emoji:'🏡',repairs:false},rooms:[{...room,name:'Phòng ngủ',emoji:'🛏️',wrows:3,skin:{},cap:30}],more:[],items:[]},reno:{parts:[]},mate:{},colors:{deco:{}}};
+Object.assign(renderer.S,{env:{api:{state,content:{journey:{deco:{items:[]}}},command:(...args)=>commands.push(args)}},remote,dlg:{querySelector:()=>null},room:'bed'});
+const screen=renderer.page();
+assert.ok(screen.includes('Nhà An'),'minimal guest projection renders');
+assert.ok(!screen.includes('data-dc="edit"'),'guest has no decorating controls');
+assert.ok(!screen.includes('data-dc="fix"'),'guest has no repair controls');
+for(const op of ['edit','buyBag','flip','pickAll','photoSave','fix','relax'])await renderer.onClick(op,{});
+await renderer.send('jr_deco_buy',{item:'chair'});
+assert.deepEqual(commands,[],'direct forged UI operations cannot reach personal commands during a guest session');
+assert.equal(renderer.S.edit,false);
+state.colors={deco:{same:'my-blue'}};remote.colors.deco.same='host-red';
+assert.equal(renderer.tintOf('same'),'host-red','identical furniture IDs use owner projection colors');
+let closed=0,notified=0;
+await renderer.guest.open('A',async()=>remote);
+renderer.S.env.api.json=async()=>{throw Object.assign(new Error('Access revoked'),{status:403});};
+renderer.S.env.toast=()=>notified++;
+renderer.S.dlg={open:true,close:()=>{closed++;renderer.guest.close();}};
+await renderer.loadMate();
+assert.equal(closed,1,'revocation closes the room on the next refresh');
+assert.equal(notified,1,'revocation explains why the guest view closed');
+assert.equal(renderer.S.remote,null);
+const managerSource=(await readFile(new URL('../public/js/v4/home-guests.js',import.meta.url),'utf8')).replace(/^import .*;\r?\n/gm,'').replace(/^export /gm,'');
+const manager=new Function('icon','esc','live',managerSource+'\nreturn {S,act};')(icon,escapeHTML,{on:()=>()=>{}});
+const sent=[];
+Object.assign(manager.S,{data:listing,env:{api:{csrf:'test',json:async(url,options)=>{if(options?.method==='POST')sent.push(JSON.parse(options.body));return listing;}}},dlg:{open:true,querySelector:()=>({innerHTML:''}),setAttribute:()=>{}}});
+for(const op of ['answer','revoke','leave']){
+  await manager.act(op,{id:'abcdef0123456789abcdef0123456789',answer:'accept'});
+  clearTimeout(manager.S.timer);
+}
+assert.deepEqual(sent.map(r=>r.id),Array(3).fill('abcdef0123456789abcdef0123456789'),'opaque invitation IDs remain strings in accept, revoke, and leave requests');
+console.log('Guest home: isolated state, preserved drafts, stale reads, and denied furniture actions passed');

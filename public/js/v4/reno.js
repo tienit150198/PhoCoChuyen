@@ -17,10 +17,15 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {Sound} from '../audio.js';
 import * as A from './deco-art.js';
 import {setup as walkSetup} from './home-walk.js';
+import {live} from './live.js';
+import {sharedRooms,ownershipOrder,guestSession} from './home-view.js';
 
 const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',busy:false,flash:null,
   undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1,
-  try:null,nudge:null,tryTint:null,mate:null,mateKey:''};
+  try:null,nudge:null,tryTint:null,mate:null,mateState:null,mateKey:'',mateTimer:0,mateSeq:0};
+const guest=guestSession(S);
+let openSeq=0;
+const readGuest=code=>S.env.api.json(`/api/home-guests/view?code=${encodeURIComponent(code)}`);
 const U=A.U;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
@@ -31,10 +36,12 @@ const J=()=>S.env?.api?.state?.journey||{};
 /* The place you live in, its rooms and pieces (deco.public). 1.4.11: the new rooms (the bathroom, a villa's pool) come
  * as `more` [{t: template, s: skin}] with the templates in the catalogue (`kits`); here they join `rooms`. */
 let vSrc=null,vOut=null;
-const V=()=>{const d=J().deco||null;if(!d?.more?.length)return d;
-  if(vSrc!==d){const kits=CD().kits||{};vSrc=d;vOut={...d,rooms:[...d.rooms,...d.more.filter(m=>kits[m.t]).map(m=>({...kits[m.t],skin:m.s||{}}))]};}
-  return vOut;};
-const R=()=>J().reno||null;                       // the structure of a home you own (reno.public)
+const V=()=>{const d=(S.remote?S.remote.deco:J().deco)||null;if(!d)return d;
+  if(vSrc!==d){const kits=CD().kits||{};vSrc=d;vOut={...d,rooms:[...d.rooms,...(d.more||[]).filter(m=>kits[m.t]).map(m=>({...kits[m.t],skin:m.s||{}}))]};}
+  return S.mate?.at===d.place?.key?{...vOut,rooms:sharedRooms(vOut.rooms,S.mate)}:vOut;};
+/** The latest verified common-home capabilities, valid only for the player's current state snapshot. */
+const useV=()=>{const v=V(),m=S.mate;return !S.remote&&v&&m?.at===v.place?.key&&S.mateState===S.env?.api?.state&&m.use?{...v,...m.use}:v;};
+const R=()=>(S.remote?S.remote.reno:J().reno)||null;                       // the structure of a home you own (reno.public)
 const CD=()=>S.env?.api?.content?.journey?.deco||{items:[],cats:[],sets:[],levels:[],skins:[]};
 const CR=()=>S.env?.api?.content?.journey?.reno||{parts:[],steps:[]};
 let itemMap=null,itemSrc=null;
@@ -42,7 +49,7 @@ const ITEM=k=>{const list=CD().items;if(itemSrc!==list){itemSrc=list;itemMap=new
 const SKIN=id=>(CD().skins||[]).find(s=>s.id===id)||null;
 const PART=id=>CR().parts.find(x=>x.id===id)||{};
 /** A piece's colour: the one being tried in the picker, else its own from the palette (state.colors.deco). */
-const tintOf=uid=>S.tryTint?.uid===uid?S.tryTint.c:S.env?.api?.state?.colors?.deco?.[uid]||null;
+const tintOf=uid=>S.tryTint?.uid===uid?S.tryTint.c:(S.remote?S.remote.colors:S.env?.api?.state?.colors)?.deco?.[uid]||null;
 const POCKET=['account','wallet'];
 const condWord=(c,p)=>c>=85?'Như mới':c>=65?'Còn tốt':c>=45?'Hơi cũ':(PART(p).flaw||'Xuống cấp');
 const tone=c=>c>=65?'good':c>=45?'warn':'bad';
@@ -91,43 +98,74 @@ function dialog(){
   d.addEventListener('pointerup',onUp);
   d.addEventListener('pointercancel',onCancel);
   d.addEventListener('cancel',e=>{if(S.held||S.sel){e.preventDefault();S.held=null;S.sel='';render();}});
-  d.addEventListener('close',()=>{S.flash=null;S.held=null;S.sel='';S.photo=null;S.drag=null;S.press=null;S.try=null;floatGhost(null);catsStop();hw().reset();});
+  d.addEventListener('close',()=>{openSeq++;S.flash=null;S.held=null;S.sel='';S.photo=null;S.drag=null;S.press=null;S.try=null;clearTimeout(S.mateTimer);S.mateTimer=0;S.mateSeq++;floatGhost(null);catsStop();hw().reset();guest.close();});
   S.dlg=d;return d;
 }
 
-export async function openReno(env,mode){
+export async function openReno(env,mode,guestCode=''){
+  const seq=++openSeq;
   S.env=env;
   if(!S.listening){
     S.listening=true;
     let seen='';
-    env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet,S.env.api.state?.colors?.deco]);if(key===seen)return;seen=key;
-      if(S.dlg?.open&&(V()?.place?.key||'')!==S.mateKey)loadMate();
+    env.api.addEventListener('state',()=>{const j=S.env.api.state?.journey,sp=S.env.api.state?.marriage?.spouse;const key=JSON.stringify([j?.deco,j?.reno,j?.wallet,S.env.api.state?.colors?.deco,sp]);if(key===seen)return;seen=key;
+      if(S.dlg?.open)refreshMate();
       if(S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();});
+    live.on('home_changed',refreshMate);
+    live.on('home_guests_changed',refreshMate);
+    live.on('welcome',refreshMate);
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshMate();});
   }
   await ensureCss();
+  if(seq!==openSeq)return;
   const d=dialog();
+  clearTimeout(S.mateTimer);S.mateSeq++;hw().reset();
+  if(guestCode){
+    clearTimeout(S.nudge?.t);S.nudge=null;
+    if(!await guest.open(guestCode,readGuest)||seq!==openSeq)return;
+  }else guest.close();
   S.tab=mode==='fix'&&R()?'fix':'deco';S.edit=mode==='decor';S.held=null;S.sel='';S.flash=null;S.photo=null;S.cat='';S.try=null;
   const v=V();
-  if(v){if(!v.rooms.some(r=>r.id===S.room))S.room=v.rooms[0]?.id||'';S.drawer=v.bag.length?'bag':'shop';}
+  if(v){if(!v.rooms.some(r=>r.id===S.room))S.room=v.rooms[0]?.id||'';if(!S.remote)S.drawer=v.bag.length?'bag':'shop';}
   if(!d.open){d.showModal();d.scrollTop=0;S.toTop=true;}
+  hw().reopen();
   loadMate();   // its first lines run now: a room that is not shared any more drops the spouse's pieces before drawing
   render();
 }
+export const openGuestReno=(env,code)=>openReno(env,'visit',code);
 /** 💞 The spouse's pieces when this is the home both live in (each time the room opens, and after a move). */
+function refreshMate(){
+  if(!S.dlg?.open)return;
+  if(S.remote){clearTimeout(S.mateTimer);S.mateTimer=setTimeout(loadMate,120);return;}
+  if((J().deco?.place?.key||'')!==S.mateKey||S.env.api.state?.marriage?.spouse?.status!=='married'){S.mate=null;S.mateState=null;}
+  clearTimeout(S.mateTimer);S.mateTimer=setTimeout(loadMate,120);
+}
 async function loadMate(){
-  const v=V(),key=v?.place?.key||'';S.mateKey=key;
-  if(!v||!['own','shared'].includes(v.place.where)||S.env.api.state?.marriage?.spouse?.status!=='married'){S.mate=null;return;}
-  let m=null;
-  try{m=await S.env.api.json('/api/deco/mate');}catch{/* a home never blocks the room: just our own pieces */}
-  if(S.mateKey!==key)return;   // moved meanwhile: the newer request decides
-  const had=!!S.mate;S.mate=m&&m.at===key&&Array.isArray(m.items)&&m.items.length?m:null;
-  if((had||S.mate)&&S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();
+  clearTimeout(S.mateTimer);S.mateTimer=0;
+  if(S.remote){
+    try{if(await guest.refresh(readGuest)&&S.dlg?.open&&!S.drag&&!S.press)render();}
+    catch(e){
+      if([401,403,404,409,410].includes(e.status)){S.dlg?.close();S.env.toast?.(e.message||'Lời mời vào nhà đã hết hiệu lực.','hint');return;}
+    }
+    if(S.remote&&S.dlg?.open)S.mateTimer=setTimeout(loadMate,5000);
+    return;
+  }
+  const v=V(),key=v?.place?.key||'',seq=++S.mateSeq,state=S.env.api.state;S.mateKey=key;
+  if(!v||!['own','shared'].includes(v.place.where)||state?.marriage?.spouse?.status!=='married'){S.mate=null;S.mateState=null;return;}
+  let m=null,failed=false;
+  try{m=await S.env.api.json('/api/deco/mate');}catch{failed=true;}
+  if(S.mateKey!==key||seq!==S.mateSeq)return;   // moved or reopened meanwhile: the newer request decides
+  const next=failed&&S.mate?.at===key?S.mate:m&&m.at===key&&Array.isArray(m.items)?m:null,changed=JSON.stringify(S.mate)!==JSON.stringify(next);S.mate=next;S.mateState=!failed&&S.env.api.state===state?state:null;
+  if(changed&&S.dlg?.open&&!S.busy&&!S.drag&&!S.press)render();
+  if(S.dlg?.open)S.mateTimer=setTimeout(loadMate,5000);   // fallback when the live service is reconnecting
 }
 
 async function send(action,payload={},opts={}){
+  if(S.remote)return null;
   const {api}=S.env;S.busy=true;paintBusy();
   try{
     const r=await api.command(action,payload);
+    if(action.startsWith('jr_deco_')||action.startsWith('jr_reno_')||action==='jr_wd_deco')await loadMate();
     S.flash=opts.flash===false?null:r.duplicate&&!opts.loud?S.flash:{text:[r.message,...(r.effects||[]).filter(Boolean)].filter(Boolean).join(' '),kind:'good'};
     return r;
   }catch(e){
@@ -138,15 +176,15 @@ async function send(action,payload={},opts={}){
 const ask=(title,msg,label,cost)=>S.env.confirmAction(title,msg,label,cost?{cost,pocket:POCKET}:undefined);
 /** 🚶 the character walking around the room when not decorating (v4/home-walk.js), made on first use. */
 let HW=null;
-const hw=()=>HW??=walkSetup({S,A,V,roomOf,inRoom,hostFor,send,render,sfx,calm,roomSvg});
+const hw=()=>HW??=walkSetup({S,A,V:useV,roomOf,inRoom,mateIn,hostFor,send,render,sfx,calm,roomSvg,live});
 
 /* ---- the layout, as the client sees it (free units; game/deco.py check) ---- */
 const roomOf=id=>(V()?.rooms||[]).find(r=>r.id===id)||null;
 const items=()=>V()?.items||[];
 const placed=uid=>items().find(i=>i.id===uid)||null;
 /** A placed piece as the server keeps it: {r, x, y, f[, on][, z]} in units. */
-function qOf(p){const q={r:p.r,x:p.fx??p.x*U,y:p.fy??p.y*U,f:p.f||0};if(p.on)q.on=p.on;if(p.z)q.z=p.z;return q;}
-const sameQ=(a,b)=>!!a&&!!b&&a.r===b.r&&a.x===b.x&&a.y===b.y&&(a.f||0)===(b.f||0)&&(a.on||'')===(b.on||'')&&(a.z||0)===(b.z||0);
+function qOf(p){const q={r:p.r,x:p.fx??p.x*U,y:p.fy??p.y*U,f:p.f||0};if(p.on)q.on=p.on;if(p.z)q.z=p.z;if(p.face==='back')q.face='back';return q;}
+const sameQ=(a,b)=>!!a&&!!b&&a.r===b.r&&a.x===b.x&&a.y===b.y&&(a.f||0)===(b.f||0)&&(a.on||'')===(b.on||'')&&(a.z||0)===(b.z||0)&&(a.face||'front')===(b.face||'front');
 /** Everything in room `rm` as {id, k, it, q}, without `skip`. */
 function inRoom(rm,skip=new Set()){return items().filter(p=>p.r===rm.id&&!skip.has(p.id)&&ITEM(p.k)).map(p=>({id:p.id,k:p.k,it:ITEM(p.k),q:qOf(p)}));}
 const ridersOf=uid=>items().filter(p=>p.on===uid).map(p=>p.id);
@@ -248,7 +286,7 @@ function grabFor(it){const W=it.w*A.CW;return it.spot==='wall'?[W/2,it.h*A.WR+8]
 function minuteNow(){const d=new Date();return d.getHours()*60+d.getMinutes();}
 
 /* ---- the room ---- */
-function partsMap(){const r=R();return r&&V()?.place.where==='own'?Object.fromEntries(r.parts.map(p=>[p.id,p])):null;}
+function partsMap(){const v=V(),m=S.mate,r=R();if(m?.at===v?.place.key&&Array.isArray(m.parts))return Object.fromEntries(m.parts.map(p=>[p.id,p]));return r&&v?.place.where==='own'?Object.fromEntries(r.parts.map(p=>[p.id,p])):null;}
 /** Back to front: rugs, the wall (and what stands on wall shelves), then the floor by its front edge, each small
  * thing right after what it stands on. `z` orders pieces at the same depth. */
 function depthOrder(rm,list){
@@ -262,7 +300,7 @@ function depthOrder(rm,list){
     if(it.spot==='wall')return [1,q.z||0,q.y];
     return [2,q.y+(it.spot==='top'?U:it.h*U),q.z||0];
   };
-  return [...list].map(o=>[key(o),o]).sort((a,b)=>a[0][0]-b[0][0]||a[0][1]-b[0][1]||a[0][2]-b[0][2]).map(x=>x[1]);
+  return [...list].map(o=>[key(o),o]).sort((a,b)=>a[0][0]-b[0][0]||a[0][1]-b[0][1]||a[0][2]-b[0][2]||ownershipOrder(a[1],b[1],V()?.place.where==='own')).map(x=>x[1]);
 }
 function bbox(it,a){
   const [x,y]=a,w=it.w*A.CW,h=(A.ART[it.id]?.h||30)+4;
@@ -297,16 +335,21 @@ function roomMarkup(rm,opts={}){
   for(const o of depthOrder(rm,all)){
     const it=o.it,a=A.anchor(it,o.q,G,hostFor(rm,o.q,all));
     const g=A.glowAt(it,a[0],a[1],o.q.f);if(g)glows.push(g);
-    const body=(o.q.on?A.contact(it,a[0],a[1]):'')+A.pieceAt(it,a[0],a[1],o.q.f,o.mate?o.c:tintOf(o.id));
+    const body=(o.q.on?A.contact(it,a[0],a[1]):'')+A.pieceAt(it,a[0],a[1],o.q.f,o.mate?o.c:tintOf(o.id),o.q.face);
     if(photo){out.push(body);continue;}
-    if(o.mate){out.push(`<g class="dc-mate"${frontY(rm,G,o,all)} pointer-events="none" aria-hidden="true">${body}</g>`);continue;}   // the spouse's: not ours to move (data-y: the walking figure goes behind it too)
+    if(o.mate){
+      const [bx,by,bw,bh]=bbox(it,a);
+      out.push(edit?`<g class="dc-mate"${frontY(rm,G,o,all)} pointer-events="none" aria-hidden="true">${body}</g>`
+        :`<g class="dc-mate dc-it" data-uid="${esc(o.id)}"${frontY(rm,G,o,all)} tabindex="0" role="button" aria-label="${esc(it.name)} · của ${esc(S.mate?.name||'người ấy')}">${body}<rect class="dc-hit" x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="6"/></g>`);
+      continue;
+    }   // the spouse's may be used while walking; editing keeps every ownership control with its owner
     const [bx,by,bw,bh]=bbox(it,a);
     const sel=S.sel===o.id,pop=S.pop===o.id,ghost=S.held?.src==='room'&&S.held.uid===o.id;
     out.push(`<g class="dc-it${sel?' sel':''}${pop?' pop':''}${ghost?' ghost':''}" data-uid="${esc(o.id)}" data-k="${esc(o.k)}"${o.q.on?` data-on="${esc(o.q.on)}"`:''}${frontY(rm,G,o,list)} tabindex="0" role="button" aria-label="${esc(it.name)}"><g class="dc-piece">${body}</g>`
       +`<rect class="dc-hit" x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="6"/>${sel?`<rect class="dc-selbox" x="${bx-3}" y="${by-3}" width="${bw+6}" height="${bh+6}" rx="9"/>`:''}${pop?sparkles(bx,by,bw,bh):''}</g>`);
   }
   out.push(catsMarkup(rm,G,list,photo));
-  if(!edit&&!photo)out.push(hw().markup(rm,G));
+  if(!photo)out.push(hw().markup(rm,G));
   out.push(A.roomFront(rm,G));
   out.push(A.roomLight(G,Lt,glows,uid));
   out.push('<g class="dc-preview" pointer-events="none"></g>');
@@ -349,7 +392,7 @@ function floorSpot(rm,G){
     if(i>8||!(rm.fix||[]).some(f=>f.t==='pool'&&s.x>A.PX+f.x*A.CW-14&&s.x<A.PX+(f.x+f.w)*A.CW+14&&s.y>G.FY+f.y*A.FR-4&&s.y<G.FY+(f.y+f.h)*A.FR+12))return s;
   }
 }
-function catsWanted(){const v=V();return v&&v.cozy.total>=24?2:1;}
+function catsWanted(){const v=V();return v?.cozy?.total>=24?2:1;}
 function catsFor(rm,G,list){
   const want=catsWanted();
   if(CATS.room!==rm.id||CATS.list.length!==want){
@@ -414,11 +457,13 @@ function catsTick(){
 
 /* ---- clicks ---- */
 async function onClick(op,data){
+  if(S.remote&&!['scroll','close','back','room','guests','hwEmote','hwReply'].includes(op))return;
   const v=V();
   switch(op){
     case'scroll':{const rail=S.dlg.querySelector(`[data-dc-rail="${data.rail}"]`);rail?.scrollBy({left:(Number(data.dir)||1)*Math.max(120,rail.clientWidth*.8),behavior:'smooth'});return;}
     case'close':S.dlg.close();return;
-    case'back':S.dlg.close();(await import('./house.js')).openHouse(S.env);return;
+    case'back':{const remote=!!S.remote;S.dlg.close();if(remote)S.env.act('homeGuests');else (await import('./house.js')).openHouse(S.env);return;}
+    case'guests':S.dlg.close();S.env.act('homeGuests');return;
     case'tab':S.tab=data.tab;S.flash=null;S.held=null;S.sel='';render();return;
     case'room':S.room=data.room;S.sel='';render();return;
     case'edit':S.edit=true;S.flash=null;S.toTop=true;sfx('click');render();return;
@@ -436,6 +481,7 @@ async function onClick(op,data){
         const r=await send('jr_deco_buy',{item:it.id,confirm:true,n:nonce()});if(r){sfx('coins');S.held={k:it.id,src:'bag'};render();}}return;}
     case'move':{const p=placed(data.uid);if(!p)return;S.held={k:p.k,src:'room',uid:p.id};S.sel='';sfx('pop');render();return;}
     case'flip':{const p=placed(data.uid);if(!p)return;await putPiece(p.id,{...qOf(p),f:p.f?0:1});return;}
+    case'face':{const p=placed(data.uid);if(!p||(CD().facing||[]).indexOf(p.k)<0)return;await putPiece(p.id,{...qOf(p),face:p.face==='back'?'front':'back'});return;}
     case'zup':case'zdown':{const p=placed(data.uid);if(!p)return;const rm=roomOf(p.r),zs=inRoom(rm,new Set([p.id])).map(o=>o.q.z||0);
       const z=op==='zup'?Math.min(CD().z_max||99,Math.max(0,...zs)+1):Math.max(0,Math.min(...zs,p.z||0)-1);
       if(z===(p.z||0)){S.flash={text:op==='zup'?'Món này đang ở trên cùng rồi.':'Món này đang ở dưới cùng rồi.',kind:'warn'};render();return;}
@@ -485,6 +531,7 @@ async function putPiece(uid,q,again=''){
   const prev={[uid]:placed(uid)?qOf(placed(uid)):null};
   for(const u of ridersOf(uid))prev[u]=qOf(placed(u));
   const body={uid,r:q.r,x:q.x,y:q.y,f:q.f||0};if(q.on)body.on=q.on;if(q.z!=null)body.z=q.z;
+  if(q.face!=null)body.face=q.face;
   const r=await send('jr_deco_put',body);
   if(r&&!r.duplicate){
     pushUndo(prev);cheer(r,uid);
@@ -545,6 +592,7 @@ function onKey(e){
   const step=e.shiftKey?U:4,d={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]}[e.key];
   if(d){e.preventDefault();nudge(p,d);return;}
   if(e.key==='f'||e.key==='F'){e.preventDefault();putPiece(p.id,{...qOf(p),f:p.f?0:1}).then(focusSel);return;}
+  if((e.key==='r'||e.key==='R')&&(CD().facing||[]).includes(p.k)){e.preventDefault();onClick('face',{uid:p.id}).then(focusSel);return;}
   if(e.key==='PageUp'||e.key==='PageDown'){e.preventDefault();onClick(e.key==='PageUp'?'zup':'zdown',{uid:p.id}).then(focusSel);return;}
   if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();pick(p.id);}
 }
@@ -622,13 +670,15 @@ function dragTo(cx,cy){
     const list=inRoom(rm),q=candidate(rm,D.it,pt.x-D.grab[0],pt.y-D.grab[1],list,0);
     if(!q){g.innerHTML='';D.q=null;return;}
     const a=A.anchor(D.it,q,A.geom(rm),hostFor(rm,q,list));D.q=q;D.bad=checkQ(rm,D.it,q,list);
-    g.innerHTML=`<g class="dc-it drag${D.bad?' bad':''}">${q.on?A.contact(D.it,a[0],a[1]):''}${A.pieceAt(D.it,a[0],a[1],0,D.uid?tintOf(D.uid):null)}</g>`;
+    const facing=D.uid?V()?.bag.find(b=>b.id===D.uid)?.face:undefined;if(facing)q.face=facing;
+    g.innerHTML=`<g class="dc-it drag${D.bad?' bad':''}">${q.on?A.contact(D.it,a[0],a[1]):''}${A.pieceAt(D.it,a[0],a[1],0,D.uid?tintOf(D.uid):null,q.face)}</g>`;
     return;
   }
   if(!pt)return;
   const G=A.geom(D.rm),q=candidate(D.rm,D.it,pt.x-D.grab[0],pt.y-D.grab[1],D.list,D.q0.f);
   if(!q)return;
   q.z=D.q0.z;if(!q.z)delete q.z;
+  if(D.q0.face)q.face=D.q0.face;
   D.q=q;D.bad=checkQ(D.rm,D.it,q,D.list);D.out=!inside;
   showMove(D.uid,q,D);
 }
@@ -637,7 +687,7 @@ function paintPiece(uid){
   const svg=roomSvg(),p=placed(uid),rm=roomOf(p?.r),el=svg?.querySelector(`g[data-uid="${CSS.escape(uid)}"] .dc-piece`);if(!el||!rm)return;
   const list=inRoom(rm),o=list.find(x=>x.id===uid);if(!o)return;
   const a=A.anchor(o.it,o.q,A.geom(rm),hostFor(rm,o.q,list));
-  el.innerHTML=(o.q.on?A.contact(o.it,a[0],a[1]):'')+A.pieceAt(o.it,a[0],a[1],o.q.f,tintOf(uid));
+  el.innerHTML=(o.q.on?A.contact(o.it,a[0],a[1]):'')+A.pieceAt(o.it,a[0],a[1],o.q.f,tintOf(uid),o.q.face);
 }
 /** Draw `uid` (and what stands on it) at `q` without redrawing the room. */
 function showMove(uid,q,D=null){
@@ -736,8 +786,8 @@ function render(){
   const body=S.dlg.querySelector('.dc-body'),top=body?.scrollTop;
   const scrolls=new Map([...S.dlg.querySelectorAll('[data-dc-rail]')].map(el=>[el.dataset.dcRail,el.scrollLeft]));
   const v=V();
-  if(v&&S.undoKey!==v.place.key){S.undoKey=v.place.key;S.undo=[];CATS.room='';}
-  if(v){const lv=levelIdx(v.cozy.total);S.cheer=S.lastLv>=0&&lv>S.lastLv;S.lastLv=lv;}
+  if(v&&!S.remote&&S.undoKey!==v.place.key){S.undoKey=v.place.key;S.undo=[];CATS.room='';}
+  if(v&&!S.remote){const lv=levelIdx(v.cozy.total);S.cheer=S.lastLv>=0&&lv>S.lastLv;S.lastLv=lv;}
   S.dlg.querySelector('.dc-root').innerHTML=page();
   const b2=S.dlg.querySelector('.dc-body');if(b2&&top!=null)b2.scrollTop=S.toTop?0:top;
   if(S.toTop)S.dlg.scrollTop=0;
@@ -760,7 +810,7 @@ function page(){
   const v=V();
   if(!v)return head(v)+`<div class="sheet-body bk dc-body"><section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🪴</div><h3>Chưa có chỗ để bày trí</h3><p>Bày trí phòng có trong chế độ hành trình.</p>${btn('🏠 Nhà của bạn','back',{},'primary')}</section></div>`;
   if(!v.rooms.some(r=>r.id===S.room))S.room=v.rooms[0]?.id||'';
-  const r=R(),own=v.place.repairs&&r;
+  const r=R(),own=!S.remote&&v.place.repairs&&r;
   if(!own)S.tab='deco';
   const worn=own&&r.parts.some(p=>p.worn);
   const tabs=own?`<div class="segmented bk-tabs rn-tabs" role="tablist" aria-label="Trong nhà">${[['deco','🪴 Bày trí'],['fix',`🛠️ Sửa nhà${worn?'<i class="dot" aria-hidden="true"></i>':''}`]].map(([id,l])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'active':''}" data-dc="tab" data-tab="${id}">${l}</button>`).join('')}</div>`:'';
@@ -769,14 +819,16 @@ function page(){
 }
 function decoPage(v){
   const rm=roomOf(S.room);if(!rm)return '';
+  const use=useV();
   const {svg}=roomMarkup(rm,{edit:S.edit});
   const wide=!!window.matchMedia?.('(min-width:720px)').matches;   // a wide sheet: the drawer beside the room, so a card is always in reach
   const tip=S.edit&&!tipSeen()?`<div class="dc-tip" role="note"><span aria-hidden="true">👆</span><p><b>Giữ một món rồi kéo đi đâu cũng được</b><small>Đồ nhỏ thả lên bàn, kệ, giường sẽ đứng trên đó. Chạm món đồ để lật, đổi phòng hoặc cất đi.</small></p>${btn('Hiểu rồi','tipOk',{},'ghost small')}</div>`:'';
-  const bar=S.edit
+  const bar=S.remote?`<div class="dc-actions">${btn('← Bạn bè & nhà','guests',{},'primary')}</div>`:S.edit
     ?`<div class="dc-actions">${btn('↶ Hoàn tác','undo',{},'ghost',S.undo.length?'':' disabled')}${btn('🎒 Cất hết','pickAll',{},'ghost',v.items.length?'':' disabled')}${btn('✓ Xong','done',{},'primary')}</div>`
     :`<div class="dc-actions">${btn(v.items.length?'✏️ Bày trí phòng':'✏️ Bắt đầu bày trí','edit',{},'primary')}${btn('📸 Chụp phòng','photo',{},'ghost')}</div>`;
-  const stage=`<div class="dc-stage">${roomTabs(v)}<div class="dc-roomwrap">${svg}${S.edit?'':`${hw().hint(v,rm)}${hw().sayHTML()}`}</div>${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(v,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
-  return `<div class="dc-grid">${stage}<div class="dc-side">${relaxCard(v,rm)}${S.edit&&wide?drawer(v):''}${cozyCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}</div></div>`;
+  const stage=`<div class="dc-stage">${roomTabs(v)}<div class="dc-roomwrap">${svg}${S.edit?'':`${hw().hint(use,rm)}${hw().sayHTML()}`}</div>${hw().socialPanel()}${S.edit?(S.held?heldBar(v):S.sel?tools(v):''):hw().panel(use,rm)}${tip}${bar}${S.edit&&!wide?drawer(v):''}</div>`;
+  const side=S.remote?`<section class="bk-card"><h3>🏡 Nhà ${esc(S.remote.owner.name)}</h3><p>${S.remote.access?.kind==='stay'?'Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.':'Bạn đang ghé chơi theo lời mời.'}</p><p class="bk-hint">Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.</p></section>`:`${relaxCard(use,rm)}${S.edit&&wide?drawer(v):''}${cozyCard(v)}${guestCard(v)}${setsCard(v)}${placeNote(v)}`;
+  return `<div class="dc-grid">${stage}<div class="dc-side">${side}</div></div>`;
 }
 function scrollRail(key,html){
   return `<div class="dc-scroll">${btn('‹','scroll',{rail:key,dir:-1},'ghost small',' aria-label="Cuộn sang trái"')}${html}${btn('›','scroll',{rail:key,dir:1},'ghost small',' aria-label="Cuộn sang phải"')}</div>`;
@@ -806,6 +858,7 @@ function heldBar(v){
 function toolButtons(v,p,it){
   const tb=(label,op,tip,cls='')=>btn(label,op,{uid:p.id},`ghost small${cls}`,` title="${esc(tip)}" aria-label="${esc(tip)}"`);
   const layered=it.spot==='wall'||it.spot==='rug'||!!p.on,out=[tb('⇋ Lật','flip','Lật ngược'),tb('🎨 Màu','tint','Đổi màu')];
+  if((CD().facing||[]).includes(p.k))out.unshift(tb(`↻ Xoay hướng · ${p.face==='back'?'Mặt sau':'Mặt trước'}`,'face',`Xoay hướng sang ${p.face==='back'?'mặt trước':'mặt sau'} (R)`));
   if(layered)out.push(tb('⬆ Lên','zup','Đưa lên trên'),tb('⬇ Xuống','zdown','Đưa xuống dưới'));
   if(v.rooms.filter(r=>it.rooms.includes(r.type)).length>1)out.push(tb('🚪 Đổi phòng','move','Sang phòng khác'));
   out.push(tb('🎒 Cất túi','pick','Thu hồi vào túi'),tb(`💰 Bán · ${xu(it.sell)}`,'sell',`Bán lại · ${xu(it.sell)}`,' danger'));
@@ -917,7 +970,7 @@ function placeNote(v){
   const theirs=mates();
   const mate=theirs.length?`<p class="dc-mate-note">💞 Có cả đồ ${esc(S.mate.name)} bày (${theirs.length} món). Món của ai người nấy dời.</p>`:'';
   return `<section class="bk-card dc-placenote">${note?`<p>${note}</p>`:''}${mate}<p class="bk-hint">Dọn đi đâu, đồ đạc cũng tự gói vào túi đồ. Mua một lần, mang theo cả hành trình.</p>
-    <p class="dc-stats"><span>🎒 ${v.count}/${v.max} món</span><span>📌 Đã đặt ${st.placed||0} lần</span><span>☕ ${st.guests||0} lượt khách ghé</span></p></section>`;
+    <p class="dc-stats"><span>🎒 ${fmt(v.count)} món</span><span>📌 Đã đặt ${st.placed||0} lần</span><span>☕ ${st.guests||0} lượt khách ghé</span></p></section>`;
 }
 function photoView(){
   const p=S.photo,can=!!(S.env.api.state?.current||S.env.api.state?.focus);

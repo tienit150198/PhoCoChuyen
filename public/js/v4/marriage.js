@@ -9,10 +9,11 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {myPortrait} from './look.js';
 import {confirmPurchase} from './payment.js';
+import {familyView,familyAction,familyRefresh} from './family.js';
 
 const S={dlg:null,env:null,view:null,catalog:null,tab:'home',plan:null,planKey:'',quote:null,qTimer:0,qSeq:0,flash:null,busy:false,
   form:{code:'',ring:'',message:'',announce:true},found:null,confirm:'',answer:{},loading:false,err:'',
-  pick:{},recolor:null,fq:'',fres:null,partyAt:0,
+  pick:{},recolor:null,fq:'',fres:null,partyAt:0,family:{},familySection:null,refresh:null,loadSeq:0,
   money:{dep:'',wd:'',send:'',note:'none',loan:false,help:'',hnote:'none',hloan:false,gift:''},repay:{},cline:{},lline:{}};
 const rid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -51,39 +52,44 @@ function dialog(){
   d.addEventListener('input',e=>{const el=e.target.closest('[data-mr-field]');if(el)onField(el,false);});
   d.addEventListener('submit',e=>e.preventDefault());
   d.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.dataset?.mrField==='fq'){e.preventDefault();onClick('fsearch',{},e.target);}});
-  d.addEventListener('close',()=>{S.flash=null;});
+  d.addEventListener('close',()=>{S.flash=null;S.refresh?.stop();S.loadSeq++;});
   S.dlg=d;return d;
 }
 
 /** Rail "Hôn nhân", Cài đặt → Tài khoản, the ticker. */
-export async function openMarriage(env,tab){
+export async function openMarriage(env,tab,section){
   S.env=env;
   if(!S.listening){
     S.listening=true;
     // Re-render only when what this dialog shows changed (a re-render under a finger would eat the tap).
-    let seen='';env.api.addEventListener('state',()=>{const st=env.api.state,key=JSON.stringify([st?.journey?.wallet,st?.marriage]);if(key===seen)return;seen=key;if(S.dlg?.open&&!S.busy)render();});
-    window.addEventListener('mnl:marriage',()=>{if(S.dlg?.open)load();});
+    let seen='';env.api.addEventListener('state',()=>{const st=env.api.state,key=JSON.stringify([st?.journey?.wallet,st?.marriage]);if(key===seen)return;seen=key;if(S.dlg?.open&&!S.busy&&!editingFamily())render();});
+    window.addEventListener('mnl:marriage',()=>{if(S.dlg?.open&&!editingFamily())load();});
   }
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet();
   await ensureMarriageCss();
   const d=dialog();if(tab)S.tab=tab;
   if(!d.open){d.showModal();d.scrollTop=0;}
-  render();load();
+  render();S.familySection=section||null;load();
+  S.refresh??=familyRefresh({active:()=>Boolean(S.dlg?.open&&!document.hidden&&!S.busy&&!S.loading&&!(S.dlg.contains(document.activeElement)&&['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName))),read:()=>S.env.api.json('/api/marriage'),apply:data=>{take(data);render();}});
+  S.refresh.start();
 }
 export async function marriageAction(action,data,el,env){
   if(action!=='marriage'&&action!=='friends')return false;
   // "Hôn nhân" never reopens on the Bạn bè tab (a pending proposal would stay hidden there).
-  await openMarriage(env,action==='friends'?'friends':data?.tab||(S.tab==='friends'?'home':''));return true;
+  await openMarriage(env,action==='friends'?'friends':data?.tab||(S.tab==='friends'?'home':''),data?.section);return true;
 }
 
+const editingFamily=()=>Boolean(S.dlg?.contains(document.activeElement)&&document.activeElement?.dataset?.mrField?.startsWith('family:'));
+
 async function load(){
-  const {api}=S.env;S.loading=true;S.err='';render();
+  const {api}=S.env,seq=++S.loadSeq;S.refresh?.invalidate();S.loading=true;S.err='';render();
   try{
     const data=await api.json(`/api/marriage${S.catalog?'':'?catalog=1'}`);
+    if(seq!==S.loadSeq||!S.dlg?.open||api!==S.env.api)return;
     if(data.catalog)S.catalog=data.catalog;
     take(data);
-  }catch(e){S.err=e.message||'Chưa tải được mục Hôn nhân.';}
-  finally{S.loading=false;render();}
+  }catch(e){if(seq===S.loadSeq)S.err=e.message||'Chưa tải được mục Hôn nhân.';}
+  finally{if(seq===S.loadSeq){S.loading=false;render();}}
 }
 function take(view){
   if(!view)return;
@@ -91,7 +97,7 @@ function take(view){
   S.view=view;
   const h=view.home||{};
   const alerts=view.guest?0:(view.incoming?.length||0)+(view.me?.notice?1:0)+(view.wedding&&view.wedding.status==='proposed'&&!view.wedding.mine?1:0)+(view.wedding?.status==='done'&&!view.wedding.seen?1:0)
-    +(h.requests||[]).filter(r=>!r.mine).length+(h.debts||[]).filter(d=>!d.lender&&d.claim?.status==='pending').length+(h.moments||[]).filter(m=>m.new).length;
+    +(h.requests||[]).filter(r=>!r.mine).length+(h.debts||[]).filter(d=>!d.lender&&d.claim?.status==='pending').length+(h.moments||[]).filter(m=>m.new).length+(view.family?.requests||[]).filter(r=>!r.mine).length;
   badges(alerts,view.friends?.incoming?.length||0);
   const married=view.couple?.status==='married';
   if(['fund','love'].includes(S.tab)&&!married)S.tab='home';
@@ -116,6 +122,7 @@ export function badges(marriage,friends){
  * buttons are never disabled by a background call; it re-renders once at the end if nothing else is in flight. */
 async function post(op,body={},{quiet=false}={}){
   const {api}=S.env;
+  S.refresh?.invalidate();S.loadSeq++;S.loading=false;
   if(!quiet){S.busy=true;render();}
   try{
     const data=await api.json(`/api/marriage/${op}`,{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':api.csrf},body:JSON.stringify(body)});
@@ -124,7 +131,7 @@ async function post(op,body={},{quiet=false}={}){
     if(data.message)S.flash={text:data.message,kind:'good'};
     return data;
   }catch(e){S.flash={text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
-  finally{if(!quiet){S.busy=false;render();}else if(S.dlg?.open&&!S.busy)render();}
+  finally{S.refresh?.invalidate();if(!quiet){S.busy=false;render();}else if(S.dlg?.open&&!S.busy)render();}
 }
 
 /* ---- the planner (a mirror of wedding_content + marriage.costs, for the live breakdown) ---- */
@@ -181,6 +188,7 @@ function askQuote(){
 /* ---- events ---- */
 function onField(el,committed){
   const f=el.dataset.mrField,v=el.type==='checkbox'?el.checked:el.value;
+  if(f.startsWith('family:')){S.family[f.slice(7)]=v;return;}
   if(f==='code'){S.form.code=v;S.found=null;return;}
   if(f==='confirm'){S.confirm=v;const b=S.dlg.querySelector('[data-mr="divorce"]');if(b)b.disabled=!v.trim();return;}
   if(f==='ring'){S.form.ring=v;return;}
@@ -213,12 +221,22 @@ function onField(el,committed){
 const clampTables=n=>{const max=venueOf(S.plan.venue).max_tables;return Math.max(S.catalog.tables[0],Math.min(max,Math.round(n)||S.catalog.tables[0]));};
 
 async function onClick(mr,data,el){
+  if(S.busy&&mr.startsWith('fam:'))return;
+  if(mr==='fam:request'||mr==='fam:rename'){const field=el.closest('section')?.querySelector('input[data-mr-field]');if(field&&!field.value.trim()){field.value='';field.reportValidity();return;}}
+  if(await familyAction(mr,data,{env:S.env,family:S.view?.family,form:S.family,post}))return;
   const {env}=S;
   switch(mr){
     case'close':S.dlg.close();return;
+    case'homeGuests':case'nav:guests':S.dlg.close();env.act('homeGuests',{code:data.code});return;
+    case'workvisit':S.dlg.close();env.act('workVisit',{code:data.code});return;
+    case'workdiscover':S.dlg.close();env.act('workVisit',{scope:'public'});return;
     case'tab':S.tab=data.tab;S.flash=null;S.recolor=null;render();S.dlg.scrollTop=0;
       if(data.tab==='love'&&(S.view?.home?.moments||[]).some(m=>m.new))post('moments_seen',{},{quiet:true});return;
     case'retry':load();return;
+    case'nav:home':S.dlg.close();env.openSheet('home',{jrView:'home'});return;
+    case'nav:personal':S.dlg.close();env.openSheet('home',{jrView:'household'});return;
+    case'nav:house':S.dlg.close();(await import('./house.js')).openHouse(env);return;
+    case'nav:inside':S.dlg.close();(await import('./reno.js')).openReno(env);return;
     case'register':S.dlg.close();env.ui.acctError='';env.ui.acctMode='register';env.openSheet('settings',{setTab:'account'});return;
     case'copy':{const code=S.view?.me?.code||'';try{await navigator.clipboard.writeText(code);S.flash={text:`Đã chép mã ${code}.`,kind:'good'};}catch{S.flash={text:`Mã của bạn: ${code}`,kind:'good'};}render();return;}
     case'seen':post('seen',data.wedding?{wedding:Number(data.wedding)}:{},{quiet:true});return;
@@ -235,6 +253,11 @@ async function onClick(mr,data,el){
     case'mset':S.money[data.k]=data.v==='1';render();return;
     case'pick':{const pk=pickOf(data.tier);pk[data.k]=data.v;render();return;}
     case'rpick':if(S.recolor){S.recolor[data.k]=data.v;render();}return;
+    case'ring_sell':{
+      const r=ringById(data.ring);if(!r||r.status!=='owned'||!r.sell_price)return;
+      if(!await env.confirmAction('Bán chiếc nhẫn dư?',`${r.name}: nhận ${xu(r.sell_price)} vào ví (80% giá mua). Phí đổi màu không hoàn lại. Nhẫn của hai bạn vẫn được giữ nguyên.`,'Bán nhẫn'))return;
+      const result=await post('ring_sell',{ring:r.id,rid:rid()});if(result)S.recolor=null;render();return;
+    }
     case'recolor':{const r=ringById(data.ring);if(r)S.recolor={ring:r.id,tier:r.tier,metal:r.metal,stone:r.stone};render();return;}
     case'recolor_cancel':S.recolor=null;render();return;
     case'recolor_do':{
@@ -332,16 +355,18 @@ const focusKey=a=>{
 };
 function keepFocus(fn){
   const a=document.activeElement,key=a&&S.dlg.contains(a)?focusKey(a):null;
-  const top=S.dlg.scrollTop;fn();S.dlg.scrollTop=top;
+  const top=S.dlg.scrollTop,opened=[...S.dlg.querySelectorAll('.mr-family details[open]')].map(d=>d.dataset.familyDetails);fn();S.dlg.scrollTop=top;
+  S.dlg.querySelectorAll('.mr-family details').forEach(d=>{if(opened.includes(d.dataset.familyDetails))d.open=true;});
   if(key){const el=S.dlg.querySelector(key);if(el){el.focus({preventScroll:true});if(el.setSelectionRange&&el.type==='text'){const n=el.value.length;try{el.setSelectionRange(n,n);}catch{/* not a text field */}}}}
 }
 function render(){
   if(!S.dlg)return;
   keepFocus(()=>{S.dlg.querySelector('.mr-root').innerHTML=page();});
   S.dlg.setAttribute('aria-busy',String(S.busy||S.loading));
+  if(S.familySection&&!S.loading&&S.tab==='family'){const section=S.familySection==='children'?'children':'home',target=S.dlg.querySelector('#mr-family-invite-'+section)||S.dlg.querySelector('#mr-family-'+section);target?.scrollIntoView({block:'start'});S.familySection=null;}
 }
 function head(sub){
-  return `<header class="sheet-head"><div class="grow"><span class="eyebrow">PHỐ CÓ CHUYỆN</span><h2 id="mr-title">${S.tab==='friends'?'👥 Bạn bè':'💍 Hôn nhân'}</h2><p>${sub}</p></div>
+  return `<header class="sheet-head"><div class="grow"><span class="eyebrow">PHỐ CÓ CHUYỆN</span><h2 id="mr-title">${S.tab==='friends'?'👥 Bạn bè':S.tab==='family'?'🏡 Nhà &amp; Gia đình':'💍 Hôn nhân'}</h2><p>${sub}</p></div>
     <button class="icon-btn" type="button" data-mr="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
 }
 const flash=()=>`<p class="mr-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
@@ -354,13 +379,13 @@ function page(){
   const c=v.couple,engaged=c?.status==='engaged',married=c?.status==='married';
   const fn=v.friends?.incoming?.length||0,hn=(v.home?.moments||[]).filter(m=>m.new).length,rq=(v.home?.requests||[]).filter(r=>!r.mine).length+(v.home?.debts||[]).filter(d=>!d.lender&&d.claim?.status==='pending').length;
   const dot=n=>n?` <em class="mr-dot">${n}</em>`:'';
-  const tabs=married?[['home','🏡 Gia đình'],['fund',`🏦 Quỹ chung${dot(rq)}`],['love',`💞 Tương tác${dot(hn)}`],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
-    :engaged?[['home','💞 Hai bạn'],['plan','📋 Kế hoạch cưới'],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
-    :[['friends',`👥 Bạn bè${dot(fn)}`],['home',`💌 Cầu hôn${dot(v.incoming.length)}`],['shop','💍 Tiệm nhẫn']];
+  const tabs=married?[['family',`🏡 Nhà & Gia đình${dot((v.family?.requests||[]).filter(r=>!r.mine).length)}`],['home','💍 Hai bạn'],['fund',`🏦 Quỹ chung${dot(rq)}`],['love',`💞 Tương tác${dot(hn)}`],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
+    :engaged?[['family','🏡 Nhà & Gia đình'],['home','💞 Hai bạn'],['plan','📋 Kế hoạch cưới'],['friends',`👥 Bạn bè${dot(fn)}`],['shop','💍 Kim hoàn']]
+    :[['family','🏡 Nhà & Gia đình'],['friends',`👥 Bạn bè${dot(fn)}`],['home',`💌 Cầu hôn${dot(v.incoming.length)}`],['shop','💍 Tiệm nhẫn']];
   if(!tabs.some(([id])=>id===S.tab))S.tab='home';
   const tabBar=`<div class="segmented mr-tabs" role="tablist" aria-label="Mục hôn nhân">${tabs.map(([id,label])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'active':''}" data-mr="tab" data-tab="${id}">${label}</button>`).join('')}</div>`;
-  const body=S.tab==='shop'?shop():S.tab==='friends'?friendsTab():S.tab==='fund'?fundTab():S.tab==='love'?loveTab():S.tab==='plan'&&engaged?planner():c?couple():single();
-  const sub=c?(engaged?`Đã đính hôn với ${esc(c.partner.name)}`:`Đã về chung một nhà với ${esc(c.partner.name)}`):'Kết bạn trước, rồi mới trao nhẫn.';
+  const body=S.tab==='family'?familyView(v.family,c,S.family):S.tab==='shop'?shop():S.tab==='friends'?friendsTab():S.tab==='fund'?fundTab():S.tab==='love'?loveTab():S.tab==='plan'&&engaged?planner():c?couple():single();
+  const sub=c?(engaged?`Đã đính hôn với ${esc(c.partner.name)}`:`Đã kết hôn với ${esc(c.partner.name)}`):'Kết bạn trước, rồi mới trao nhẫn.';
   return head(sub)+`<div class="sheet-body mr">${tabBar}${flash()}${body}</div>`;
 }
 
@@ -467,10 +492,10 @@ function friendsTab(){
   const incoming=F.incoming.length?`<section class="mr-card mr-accent"><h3>Lời mời kết bạn</h3><ul class="mr-list">${F.incoming.map(x=>`<li class="mr-li-wrap"><span><b>${esc(x.name)}</b> muốn kết bạn</span><span class="mr-actions tight">${btn('Chấp nhận','frespond',{id:x.id,answer:'accept'},'primary small')}${btn('Từ chối','frespond',{id:x.id,answer:'decline'},'cream small')}${btn('Chặn','frespond',{id:x.id,answer:'block'},'ghost small')}</span></li>`).join('')}</ul></section>`:'';
   const list=F.list.length?F.list.map(x=>`<article class="mr-card mr-friend"><div class="mr-person"><span class="mr-av" aria-hidden="true">${esc(x.name.slice(0,1).toUpperCase())}</span><div class="grow"><b>${esc(x.name)}${x.spouse?' <span class="tag">Người thương</span>':x.dating?' <span class="tag">Đang tìm hiểu 💕</span>':''}</b>
       <small>${x.career?`${esc(x.career.career)} · cấp ${x.career.level}`:'Mới vào phố'} · ${esc(STATUS[x.status]||'')}${x.close?` · 🤝 ${x.close}`:''}</small>${x.wed?`<small>${esc(x.wed)}</small>`:''}</div></div>
-      <div class="mr-actions tight">${single&&x.status==='single'?btn('💍 Cầu hôn','fpropose',{code:x.code},'primary small'):''}${x.spouse?'':btn('Hủy kết bạn','fremove',{code:x.code,name:x.name},'ghost small')+btn('Chặn','fblock',{code:x.code,name:x.name},'ghost small')}</div></article>`).join('')
+      <div class="mr-actions tight">${btn('🏪 Ghé chỗ làm','workvisit',{code:x.code},'primary small')}${btn('🏡 Mời về nhà','homeGuests',{code:x.code},'small')}${single&&x.status==='single'?btn('💍 Cầu hôn','fpropose',{code:x.code},'primary small'):''}${x.spouse?'':btn('Hủy kết bạn','fremove',{code:x.code,name:x.name},'ghost small')+btn('Chặn','fblock',{code:x.code,name:x.name},'ghost small')}</div></article>`).join('')
     :`<section class="mr-card"><p>Chưa có bạn bè nào. Xin tên đăng nhập của người quen ngoài đời rồi tìm ở trên nhé.</p></section>`;
   const outgoing=F.outgoing.length?`<section class="mr-card"><h3>Đang chờ trả lời</h3><ul class="mr-list">${F.outgoing.map(x=>`<li><span>${esc(x.name)}</span>${btn('Rút lại','fcancel',{id:x.id},'ghost small')}</li>`).join('')}</ul></section>`:'';
-  return `${notice()}${incoming}${search}<h3 class="mr-h">Bạn bè (${F.list.length})</h3>${list}${outgoing}
+  return `${notice()}${btn('🏘️ Mọi người đang làm gì?','workdiscover',{},'cream full')}${incoming}${search}<h3 class="mr-h">Bạn bè (${F.list.length})</h3>${list}${outgoing}
     <section class="mr-card"><label class="switch-row"><span class="grow"><b>Cho phép tìm tôi bằng tên đăng nhập</b><small class="muted"> Tắt đi thì chỉ ai có mã người chơi mới tìm được bạn.</small></span><input type="checkbox" data-mr-field="findable"${F.findable!==false?' checked':''} aria-label="Cho phép tìm tôi bằng tên đăng nhập"><i aria-hidden="true"></i></label>
       <p class="mr-hint">Mã người chơi của bạn: <b class="mr-code sm">${esc(me.code)}</b> ${btn('Chép mã','copy',{},'ghost small')}</p>
       <p class="mr-hint">Người khác chỉ thấy tên hiển thị <b>${esc(me.name)}</b>, không bao giờ thấy tên đăng nhập của bạn. Còn ${F.requests_left??''} lời mời kết bạn hôm nay.</p></section>`;
@@ -488,7 +513,7 @@ function couple(){
   const ring=c.ring?`<div class="mr-home-ring">${ringSVG(c.ring.colors,84,`Nhẫn của hai bạn: ${c.ring.name}, ${colorName(c.ring.metal,c.ring.stone)}`)}<small>${esc(colorName(c.ring.metal,c.ring.stone))}</small></div>`:'';
   const h=v.home||{},hp=h.happy;
   const top=married
-    ?`<section class="mr-card mr-home"><div class="mr-sticker mr-me" aria-hidden="true">${myPortrait(S.env?.api?.state,64,'')}<i>${S.catalog.sticker.emoji}</i></div><div class="grow"><span class="tag">${esc(S.catalog.sticker.name)}</span><h3>Bạn & ${esc(c.partner.name)}</h3><p>${c.wed_label?esc(c.wed_label):`Cưới ngày ${esc(w?.result?.date?viDate(w.result.date):'')}`}${w?.result?` · ${esc(w.result.venue)}`:''} · bên nhau ${c.days_together} ngày</p></div>${ring}</section>
+    ?`<section class="mr-card mr-home"><div class="mr-sticker mr-me" aria-hidden="true">${myPortrait(S.env?.api?.state,64,'')}<i>${S.catalog.sticker.emoji}</i></div><div class="grow"><span class="tag">${esc(v.family?.together?S.catalog.sticker.name:'Đã kết hôn')}</span><h3>Bạn & ${esc(c.partner.name)}</h3><p>${c.wed_label?esc(c.wed_label):`Cưới ngày ${esc(w?.result?.date?viDate(w.result.date):'')}`}${w?.result?` · ${esc(w.result.venue)}`:''} · bên nhau ${c.days_together} ngày</p></div>${ring}</section>
       ${hp?`<section class="mr-card mr-glance"><button type="button" class="mr-stat" data-mr="tab" data-tab="love"><small>Điểm hạnh phúc</small><b>💗 ${hp.points}/${hp.max}</b><small>${hp.streak?`${hp.streak} ngày liền`:'Gửi một lời chào hôm nay nhé'}</small></button>
         <button type="button" class="mr-stat" data-mr="tab" data-tab="fund"><small>Quỹ chung</small><b>🏦 ${xu(h.fund?.balance||0)}</b><small>${(h.requests||[]).filter(r=>!r.mine).length?'Có lời nhờ đang chờ':'Gửi, rút, giúp nhau'}</small></button></section>`:''}`
     :`<section class="mr-card mr-home"><div class="mr-sticker" aria-hidden="true">💞</div><div class="grow"><h3>Bạn & ${esc(c.partner.name)}</h3><p>Đã đính hôn ${c.days_together?`${c.days_together} ngày`:'hôm nay'}</p></div>${ring}</section>`;
@@ -522,7 +547,7 @@ function couple(){
     <label class="field" for="mr-confirm">Gõ <b>${word}</b> để xác nhận<input class="input" id="mr-confirm" data-mr-field="confirm" value="${esc(S.confirm)}" autocomplete="off" spellcheck="false"></label>
     ${btn(married?'Ly hôn':'Hủy hôn ước','divorce',{},'danger',S.confirm.trim()?'':' disabled')}</details>`;
   const split=married?`<p class="mr-hint">Nếu chia tay: quỹ chung chia đôi (lẻ 1 xu thuộc về người không đệ đơn); ai còn nợ thì trả từ phần của mình trước, phần nợ còn lại được xóa.</p>`:'';
-  return `${notice()}${top}${partyCard(c)}${result}${plan}${danger.replace('</details>',split+'</details>')}`;
+  return `${notice()}${top}${married?`<section class="mr-card"><h3>🏡 Nhà &amp; Gia đình</h3><p>${(v.family?.requests||[]).some(r=>!r.mine)?'Có lời mời đang chờ bạn trả lời.':'Vào nhà, mời người ấy về ở và cùng chăm con.'}</p>${btn('Mở Nhà & Gia đình','tab',{tab:'family'},'primary')}</section>`:''}${partyCard(c)}${result}${plan}${danger.replace('</details>',split+'</details>')}`;
 }
 const viDate=d=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(d||'');return m?`${m[3]}/${m[2]}/${m[1]}`:'';};
 
@@ -563,9 +588,9 @@ function shop(){
       <p class="mr-hint">Phí tiệm kim hoàn ${xu(S.catalog.recolor_fee)}${recolorFee(r,rc.metal,rc.stone)>S.catalog.recolor_fee?` + ${xu(recolorFee(r,rc.metal,rc.stone)-S.catalog.recolor_fee)} chênh lệch màu`:''}.</p>
       <div class="mr-actions">${btn(`Đổi màu · ${xu(recolorFee(r,rc.metal,rc.stone))}`,'recolor_do',{},'primary',rc.metal===r.metal&&rc.stone===r.stone||w<recolorFee(r,rc.metal,rc.stone)?' disabled':'')}${btn('Thôi','recolor_cancel',{},'ghost')}</div></div></div>`:'';
     return `<li class="mr-box-item"><div class="mr-box-row"><span class="mr-li-ring">${ringSVG(r.colors,40)}<span>${esc(r.name)}<small>${esc(colorName(r.metal,r.stone))}</small></span></span>
-      ${r.wear?'<span class="tag">nhẫn của hai bạn</span>':r.status==='proposed'?'<span class="tag">đang trao đi</span>':''}${can&&!open?btn('🎨 Đổi màu','recolor',{ring:r.id},'cream small'):''}</div>${editor}</li>`;
+      ${r.wear?'<span class="tag">nhẫn của hai bạn</span>':r.status==='proposed'?'<span class="tag">đang trao đi</span>':''}${can&&!open?btn('🎨 Đổi màu','recolor',{ring:r.id},'cream small'):''}${!r.wear&&r.status==='owned'&&r.sell_price?btn(`Bán lại · ${xu(r.sell_price)}`,'ring_sell',{ring:r.id},'ghost small'):''}</div>${editor}</li>`;
   };
-  const box=mine.length?`<section class="mr-card"><h3>Hộp nhẫn · tiệm kim hoàn</h3><p class="mr-hint">Mang nhẫn ra tiệm kim hoàn để đổi màu vàng, bạc hay màu đá.</p><ul class="mr-list mr-box">${mine.map(row).join('')}</ul></section>`:'';
+  const box=mine.length?`<section class="mr-card"><h3>Hộp nhẫn · tiệm kim hoàn</h3><p class="mr-hint">Đổi màu nhẫn hoặc bán nhẫn dư trong hộp để nhận lại 80% giá mua vào ví. Nhẫn đang cầu hôn và nhẫn của hai bạn không bán được.</p><ul class="mr-list mr-box">${mine.map(row).join('')}</ul></section>`:'';
   return `<p class="mr-wallet">Ví của bạn: <b>${xu(w)}</b></p>${box}<p class="mr-hint">Chọn màu kim loại và màu đá, xem trước rồi mới mua. Nhẫn trả bằng ví riêng; người ấy từ chối thì nhẫn vẫn nằm trong hộp của bạn.</p>${cards}`;
 }
 
@@ -582,7 +607,7 @@ function fundTab(){
     :`<li class="mr-li-wrap mr-ask"><span><b>${partner}</b> ${r.loan?'hỏi mượn':'xin trợ giúp'} <b>${xu(r.amount)}</b>${r.note?`: “${esc(r.note)}”`:''}${r.loan?'<small>Có ghi sổ nợ</small>':''}</span><span class="mr-actions tight">${btn(`Giúp ${xu(r.amount)}`,'help_answer',{id:r.id,answer:'accept'},'primary small',wallet()<r.amount?' disabled':'')}${btn('Để lần sau','help_answer',{id:r.id,answer:'decline'},'cream small')}</span></li>`).join('');
   return `${notice()}<section class="mr-card mr-fund"><div class="mr-fund-top"><div><small>Quỹ chung của hai bạn</small><b class="mr-fund-bal">${xu(f.balance)}</b></div><div class="mr-fund-wallet"><small>Ví của bạn</small><b>${xu(wallet())}</b></div></div>
       <div class="mr-fund-grid"><div><p class="mr-label">Gửi vào quỹ chung</p>${money('dep','Gửi vào',{op:'fund',data:{k:'dep'}},'primary',L.send_max)}</div>
-      <div><p class="mr-label">Rút về ví</p>${money('wd','Rút ra',{op:'fund',data:{k:'wd'}},'cream',L.withdraw_cap)}<p class="mr-hint">Hôm nay bạn còn rút được ${xu(f.daily_left)} (mỗi người ${xu(L.withdraw_cap)} / 24 giờ). ${partner} được báo mỗi lần rút.</p></div></div>
+      <div><p class="mr-label">Rút về ví</p>${money('wd','Rút ra',{op:'fund',data:{k:'wd'}},'cream',f.balance)}<p class="mr-hint">Rút và chi theo số dư ${xu(f.balance)}, không có hạn mức mỗi ngày. ${partner} được báo mỗi lần rút.</p></div></div>
       <h4>Lịch sử quỹ</h4>${hist}</section>
     ${reqs?`<section class="mr-card mr-accent"><h3>Lời nhờ</h3><ul class="mr-list">${reqs}</ul></section>`:''}
     <section class="mr-card"><h3>💸 Gửi tiền cho ${partner}</h3>

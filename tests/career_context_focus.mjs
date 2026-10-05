@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {careerContext} from '../public/js/v4/careers.js';
+const careers={mother_baby:{tasks:[],inventory:{stock:{}}},clothing:{tasks:[],inventory:{stock:{shirt:3}}}};
+const content={careers:{mother_baby:{label:'mother'},clothing:{label:'clothes'}},npcs:[]};
+const context=(current,focus)=>careerContext({api:{state:{current,focus,careers},content},ui:{}});
+assert.equal(context(null,'clothing').room,careers.clothing);
+assert.equal(context(null,'clothing').cc,content.careers.clothing);
+assert.equal(context(null,'clothing').stock('shirt'),3);
+assert.equal(context('mother_baby','clothing').room,careers.mother_baby);
+assert.equal(context(null,null).room,careers.mother_baby);
+console.log('career context: focus before shift and current during shift pass');

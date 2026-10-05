@@ -275,15 +275,14 @@ class Placement(unittest.TestCase):
             with self.subTest(bad=bad), self.assertRaises(GameError):
                 act(s, 'jr_deco_layout', set=bad)
 
-    def test_items_max(self):
+    def test_buy_more_than_sixty_owned_pieces(self):
         s = owner(wallet=20000)
         s, _ = act(s, 'jr_deco_buy', item='lich', confirm=True)
         r = s['journey']['reno']
-        r['items'] += [dict(id=f'x{i}', k='lich', r=None, x=None) for i in range(rn.ITEMS_MAX - 1)]
+        r['items'] += [dict(id=f'x{i}', k='lich', r=None, x=None) for i in range(60)]
         validate_state(s)
-        with self.assertRaises(GameError) as e:
-            act(s, 'jr_deco_buy', item='lich', confirm=True)
-        self.assertEqual(e.exception.code, 'full')
+        t, _ = act(s, 'jr_deco_buy', item='lich', confirm=True)
+        self.assertEqual(len(rn.get(t)['items']), 62)
 
     def test_story_only(self):
         from game.engine import new_state
@@ -667,7 +666,7 @@ class FreePlacement(unittest.TestCase):
         b = renter('ky_tuc_xa', wallet=20000)
         rm = next(r for r in dc.layout(b)['rooms'] if r['id'] == 'bunk')
         cap = dc.room_cap(rm)
-        self.assertEqual(cap, min(60, rm['cols'] * (rm['wrows'] + rm['frows']) + 4))
+        self.assertEqual(cap, rm['cols'] * (rm['wrows'] + rm['frows']) + 4)
         self.assertEqual(D(b)['rooms'][0]['cap'], cap)
         for i in range(cap):
             b, _ = act(b, 'jr_deco_buy', item='lich', confirm=True, put=dict(r='bunk', x=i * 2 % 80, y=i % 3))

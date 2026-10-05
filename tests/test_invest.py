@@ -1,6 +1,7 @@
 """Personal investing: savings, Mây Coin and scam offers (game/invest.py)."""
 import copy
 import unittest
+from unittest.mock import patch
 
 from game import invest as iv
 from game import journey as jr
@@ -59,19 +60,19 @@ class Unlock(unittest.TestCase):
         s = new_state()
         pub = iv.public(s)
         self.assertFalse(pub['unlocked'])
-        self.assertEqual(len(pub['coin']['prices']), iv.PREHISTORY)
+        self.assertEqual(pub['coin']['prices'], iv.rm.quote('coin')['history'])
         iv.validate(s)  # absent: nothing to check
 
 
 class Market(unittest.TestCase):
-    def test_price_path_is_deterministic_for_a_seed(self):
+    def test_price_path_is_shared_across_seeds(self):
         a, b, c = state(seed=7), state(seed=7), state(seed=8)
         days(a, 15)
         days(b, 15)
         days(c, 15)
         self.assertEqual(inv(a)['prices'], inv(b)['prices'])
-        self.assertNotEqual(inv(a)['prices'], inv(c)['prices'])
-        self.assertEqual(len(inv(a)['prices']), iv.HISTORY)
+        self.assertEqual(inv(a)['prices'], inv(c)['prices'])
+        self.assertEqual(inv(a)['prices'], iv.rm.quote('coin')['history'])
 
     def test_catch_up_is_idempotent_and_equals_step_by_step(self):
         a, b = state(seed=3), state(seed=3)
@@ -144,11 +145,13 @@ class Coin(unittest.TestCase):
     def test_profit_and_loss_follow_the_price(self):
         s = state(wallet=600)
         s, _ = act(s, 'iv_buy', amount=200)
-        inv(s)['price'] *= 2
-        inv(s)['prices'][-1] = inv(s)['price']
-        pub = iv.public(s)['coin']
-        self.assertGreater(pub['unrealised'], 150)
-        s, _ = act(s, 'iv_sell', all=True)
+        q = iv.rm.quote('coin')
+        q['price'] *= 2
+        q['history'][-1] = q['price']
+        with patch.object(iv.rm, 'quote', return_value=q):
+            pub = iv.public(s)['coin']
+            self.assertGreater(pub['unrealised'], 150)
+            s, _ = act(s, 'iv_sell', all=True)
         self.assertGreater(inv(s)['coin']['realised'], 150)
         self.assertGreater(s['journey']['stats']['max_wallet'], 750)
 

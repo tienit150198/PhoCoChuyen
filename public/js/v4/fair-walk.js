@@ -28,11 +28,13 @@ const IDLE_MS=80,SAY_MS=4200,WALK_S=.85,CARTS={candy:'🍡',cane:'🥤'},TWO={tw
 export function setup(ctx){
   const {S,F,go,list,bar,esc,food}=ctx;
   const W=S.walk={el:null,cv:null,c:null,say:null,bg:null,bgKey:'',port:false,k:1,ox:0,oy:0,dpr:1,cw:0,ch:0,
-    me:null,arrive:null,raf:0,last:0,drawn:0,time:0,sayAt:0,ok:null,down:null,at:'',playing:'',
+    me:null,arrive:null,raf:0,timer:0,last:0,drawn:0,time:0,sayAt:0,ok:null,down:null,at:'',playing:'',avatar:null,
     ride:null,rideKey:'',rv:rider(),park:null,legs:[],leg:null,btn:null,fig:null,figKey:'',back:null,taken:null,blocked:'',co:null};
   const has=()=>({dt:!!F().knife,loan:!!F().cash,xs:!!F().scratch,pb:!!F().photo});   // dt: anh Sáu's stall, the phóng dao since it replaced the phi tiêu
   const pl=()=>plan(W.port,has());
-  const CR=crowd({state:()=>S.env?.api?.state,content:()=>S.env?.api?.content,redraw:()=>{W.drawn=0;paintCo();},still,onBack,onTaken});
+  const pixels=new Map();let pixelsKey='',fontEpoch=0;
+  document.fonts?.addEventListener?.('loadingdone',()=>{fontEpoch++;W.bgKey='';W.drawn=0;wake();});
+  const CR=crowd({state:()=>S.env?.api?.state,content:()=>S.env?.api?.content,redraw:()=>{W.drawn=0;paintCo();wake();},still,onBack,onTaken});
   /** Scene point → fractions of the floor (what the others get: their fairground may be the other layout). */
   const frac=([x,y])=>{const f=pl().floor;return [(x-f[0])/(f[2]-f[0]),(y-f[1])/(f[3]-f[1])];};
 
@@ -75,13 +77,13 @@ export function setup(ctx){
     loadSpouse(S.env?.api).then(()=>{setRide(false);paintCo();});   // 💑 the spouse's vehicles and live id (none: unchanged)
     if(W.el.parentNode!==slot){slot.append(W.el);size();}
     else W.drawn=0;   // the state may have changed (a game going on, a stall added): one fresh frame
-    if(!W.raf){W.last=performance.now();W.drawn=0;W.raf=requestAnimationFrame(loop);}
+    W.drawn=0;wake();
     hook();
     if(W.me){const here=frac([W.me.x,W.me.y]);if(W.playing){W.playing='';CR.walk([here,here],0,null,wire(W.ride));}CR.join(here,wire(W.ride));}   // off the stall: no badge
   }
   function hook(){if(!W.hooked&&S.dlg){W.hooked=true;S.dlg.addEventListener('close',off);}}
   /** The sheet closed or the fair is over: out of the room. */
-  function off(){W.playing='';CR.leave();}
+  function off(){W.playing='';CR.leave();sleep();}
   /** After every render of fair.js on a stall page (`id`: the stall's tab, or the food cart): for the others the player
    * stands at that stall, its badge over them, until they come back to the walk or leave. Opened from the list, the
    * walk there is played to them; the player stands there too when they come back. "Vay nóng" shows no badge (who
@@ -114,12 +116,13 @@ export function setup(ctx){
       if(W.me){const a=plan(was,has()).floor,b=pl().floor,u=(W.me.x-a[0])/(a[2]-a[0]),v=(W.me.y-a[1])/(a[3]-a[1]);place([b[0]+u*(b[2]-b[0]),b[1]+v*(b[3]-b[1])]);}
     }
     const r=W.el.getBoundingClientRect(),cw=Math.max(1,r.width),ch=Math.max(1,r.height);
-    W.dpr=Math.min(2,globalThis.devicePixelRatio||1);W.cw=cw;W.ch=ch;
+    // Bound the phone fairground's raster area; movement still runs at the display's frame rate.
+    W.dpr=Math.min(port?1.5:2,globalThis.devicePixelRatio||1);W.cw=cw;W.ch=ch;
     const w=Math.round(cw*W.dpr),h=Math.round(ch*W.dpr);if(W.cv.width!==w)W.cv.width=w;if(W.cv.height!==h)W.cv.height=h;
     const [x0,y0,x1,y1]=VIEW[W.port?'port':'land'],k=Math.min(cw/(x1-x0),ch/(y1-y0));
     W.k=k;W.ox=(cw-(x1-x0)*k)/2-x0*k;W.oy=(ch-(y1-y0)*k)/2-y0*k;
     if(!W.me){const g=pl().entry.gate;place([g[0]+(Math.random()-.5)*90,g[1]+Math.random()*14]);}   // a little apart from whoever came in just before
-    W.drawn=0;draw();
+    W.drawn=0;draw();wake();
   }
   function place(p){const q=nearestFree(pl(),p)||p;W.me={x:q[0],y:q[1],path:null,step:0};W.park=null;W.legs=[];W.leg=null;}
 
@@ -137,6 +140,7 @@ export function setup(ctx){
     const had=W.ride;W.ride=v;W.rideKey=key;
     if(!v||!had||fresh)W.park=null;
     W.drawn=0;
+    wake();
   }
   /* ---- 💑 sitting behind the spouse (live/coride.py) ---- */
   /** The room says I sit behind `b` now (null: on foot again, at `end`, fractions). */
@@ -145,7 +149,7 @@ export function setup(ctx){
     else if(W.back){W.back=null;
       if(end&&W.me){const f=pl().floor,q=nearestFree(pl(),[f[0]+end[0]*(f[2]-f[0]),f[1]+end[1]*(f[3]-f[1])]);if(q){W.me.x=q[0];W.me.y=q[1];}}
       if(W.me&&!W.playing){const h=frac([W.me.x,W.me.y]);CR.walk([h,h],0,null,wire(W.ride));}}   // my own vehicle (if any) again, for the others too
-    setRide(false);W.drawn=0;paintCo();
+    setRide(false);W.drawn=0;paintCo();wake();
   }
   /** The spouse drives the vehicle I asked for: on foot until another pick, and a little question. */
   function onTaken(f){W.taken={by:f.by,name:String(f.name||'')};W.blocked=W.ride?.key||W.blocked;setRide(false);W.drawn=0;paintCo();}
@@ -171,6 +175,7 @@ export function setup(ctx){
 
   /* ---- walking (riding: back to the vehicle on foot, ride, park by the stall, the last steps on foot) ---- */
   function walkTo(p,then=null,spot=null){
+    wake();
     if(W.back&&CR.where(W.back)){W.co?.querySelector('.rd-co-msg')?.animate?.([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:260});return;}   // 💑 the driver drives
     W.arrive=then;
     const legs=[];
@@ -234,10 +239,18 @@ export function setup(ctx){
   function hush(){if(W.say&&!W.say.hidden){W.say.hidden=true;W.say.textContent='';}}
 
   /* ---- frames ---- */
+  function sleep(){cancelAnimationFrame(W.raf);clearTimeout(W.timer);W.raf=0;W.timer=0;}
+  function wake(){
+    clearTimeout(W.timer);W.timer=0;
+    if(!W.raf&&W.el?.isConnected&&S.dlg?.open&&!document.hidden){W.last=performance.now();W.raf=requestAnimationFrame(loop);}
+  }
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)sleep();else{W.drawn=0;wake();}});
+  RM?.addEventListener?.('change',()=>{W.drawn=0;wake();});
   function loop(now){
+    W.raf=0;
     if(!W.el?.isConnected||!S.dlg?.open){W.raf=0;if(!S.dlg?.open)off();return;}   // a stall page (still in the room) or the sheet closed
-    W.raf=requestAnimationFrame(loop);
-    const dt=Math.min(.05,(now-W.last)/1000);W.last=now;W.time+=dt;
+    if(document.hidden)return;
+    const elapsed=Math.max(0,(now-W.last)/1000),dt=Math.min(.05,elapsed);W.last=now;W.time+=Math.min(.25,elapsed);
     const m=W.me;let moving=CR.busy();
     const dr=W.back&&m?CR.where(W.back):null;
     if(dr){const f=pl().floor;m.x=f[0]+dr.x*(f[2]-f[0]);m.y=f[1]+dr.y*(f[3]-f[1]);m.path=null;}   // 💑 where the driver takes me
@@ -250,8 +263,11 @@ export function setup(ctx){
     }
     else if(W.rv.turn<1){steer(W.rv,0,0,dt,still());moving=true;}
     if(W.say&&!W.say.hidden&&now-W.sayAt>SAY_MS)hush();
-    if(!moving&&(still()||document.hidden?W.drawn>0:now-W.drawn<IDLE_MS))return;
-    W.drawn=now||1;draw();
+    if(moving||!W.drawn||!still()&&now-W.drawn>=IDLE_MS){W.drawn=now||1;draw();}
+    if(!W.el?.isConnected||!S.dlg?.open||document.hidden||W.raf||W.timer)return;
+    if(moving)W.raf=requestAnimationFrame(loop);
+    else if(!still())W.timer=setTimeout(()=>{W.timer=0;W.raf=requestAnimationFrame(loop);},IDLE_MS);
+    else if(W.say&&!W.say.hidden)W.timer=setTimeout(()=>{W.timer=0;wake();},Math.max(1,SAY_MS-(now-W.sayAt)));
   }
   function backdrop(){
     const key=[W.port,W.cv.width,W.cv.height,has().dt,has().loan,has().xs,has().pb].join('|');
@@ -266,7 +282,9 @@ export function setup(ctx){
     const c=W.c;if(!c||!W.cw||!W.me)return;
     c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,W.cv.width,W.cv.height);c.drawImage(backdrop(),0,0);
     c.setTransform(W.dpr*W.k,0,0,W.dpr*W.k,W.dpr*W.ox,W.dpr*W.oy);
-    const f=F(),p=pl(),o={t:W.time,reduced:still(),live:{lt:f.loto?.stage==='play',oaq:f.oaq?.stage==='play'}};
+    const f=F(),p=pl(),o={t:W.time,reduced:still(),bitmap,live:{lt:f.loto?.stage==='play',oaq:f.oaq?.stage==='play'}};
+    const key=[W.port,W.dpr,W.k,fontEpoch,document.documentElement.lang].join('|');
+    if(key!==pixelsKey){pixels.clear();pixelsKey=key;}
     try{
       const items=props(c,p,o),fl=p.floor,base=W.port?.92:.78,depth=y=>.94+.12*(y-fl[1])/Math.max(1,fl[3]-fl[1]);
       items.push([W.me.y+.5,()=>drawMe(c,base*depth(W.me.y))]);
@@ -278,8 +296,19 @@ export function setup(ctx){
       const near=p.spots.find(s=>s.kind==='stall'&&Math.hypot(W.me.x-s.stand[0],W.me.y-s.stand[1])<30);
       marks(c,p,o,near?.id||null);
       c.setTransform(W.dpr,0,0,W.dpr,0,0);
-      CR.tags(c,{sx:x=>W.ox+x*W.k,sy:y=>W.oy+y*W.k,fallback:tr('Khách đi hội'),badge});
+      CR.tags(c,{sx:x=>W.ox+x*W.k,sy:y=>W.oy+y*W.k,fallback:tr('Khách đi hội'),badge,dpr:W.dpr});
     }catch(e){console.warn('hội chợ: draw',e);}
+  }
+  /** Small transparent sprites keep each static prop at its original depth; markers translate them as they bob. */
+  function bitmap(id,box,paint){
+    let entry=pixels.get(id);
+    if(!entry){
+      const [x,y,w,h]=box,px=W.dpr*W.k,cv=document.createElement('canvas');
+      cv.width=Math.ceil(w*px);cv.height=Math.ceil(h*px);
+      const c=cv.getContext('2d');c.setTransform(px,0,0,px,-x*px,-y*px);paint(c);
+      entry={cv,box};pixels.set(id,entry);
+    }
+    const [x,y,w,h]=entry.box;W.c.drawImage(entry.cv,x,y,w,h);
   }
   /** The badge over someone playing stall `id` (the stall's own, a snack for the carts; none for the lender). */
   const badge=id=>id==='loan'?'':STALLS[id]?.icon||CARTS[id]||'';
@@ -299,7 +328,14 @@ export function setup(ctx){
     }
     c.save();c.translate(m.x,m.y);c.scale(s,s);
     if(m.path?.length&&!still())c.translate(0,-Math.abs(Math.sin(m.step))*3);
-    try{paintPlayer(c,figure(S.env.api.state),CANVAS);}catch{/* look not ready */}
+    try{
+      const me=myFig(),px=Math.max(.1,W.dpr*W.k*s),key=`${me.fk}|${Math.round(px*100)}`;
+      if(W.avatar?.key!==key){
+        const cv=document.createElement('canvas');cv.width=Math.ceil(110*px);cv.height=Math.ceil(160*px);
+        const q=cv.getContext('2d');q.setTransform(px,0,0,px,55*px,150*px);paintPlayer(q,me.F,CANVAS);W.avatar={key,cv};
+      }
+      c.drawImage(W.avatar.cv,-55,-150,110,160);
+    }catch{/* look not ready */}
     c.restore();
   }
 

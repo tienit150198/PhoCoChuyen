@@ -73,7 +73,9 @@ OPS_MAX = 12                       # nonces remembered
 OWNED_MAX = 64
 LAYER_RANK = {'rug': 0, 'wall': 1, 'floor': 2, 'top': 3}
 PIECE_KEYS = ('r', 'x', 'y', 'f')  # every placed piece
-PIECE_OPT = ('on', 'z')            # optional keys of a placed piece (add new optional keys here and in _piece_ok)
+PIECE_OPT = ('on', 'z', 'face')    # face is exposed in commands/views, saved separately for older readers
+FACING_ITEMS = ('tv', 'sofa')
+FACES_VERSION = 1
 _ID = re.compile(r'^[a-z0-9_]{1,24}$')
 _KEY = re.compile(r'^[a-z0-9_:]{1,48}$')
 _ON = re.compile(r'^#?[a-z0-9_]{1,24}$')
@@ -155,6 +157,9 @@ def sig(pos: dict) -> int:
 # ---------------------------------------------------------------- where you live, its rooms
 def place(j: dict) -> dict:
     """Where the player lives now: key (changes with every move), where ('own'|'shared'|'rent'|'attic'), home kind."""
+    lease = hs.active_lease(j)
+    if lease:
+        return dict(key=f"lease:{lease['id'][5:]}:{lease['kind']}", where='lease', kind=lease['kind'])
     h = j.get('home') if isinstance(j.get('home'), dict) else None
     where, kind = hs.where(h)
     if where == 'own':
@@ -188,7 +193,7 @@ def rooms_of(key: str) -> list | None:
         out, kind = list(DC.RENT_ROOMS['attic']), 'attic'
     elif bits[0] == 'rent' and len(bits) == 3 and bits[1] in DC.RENT_ROOMS:
         out, kind = list(DC.RENT_ROOMS[bits[1]]), bits[1]
-    elif bits[0] in ('own', 'shared') and bits[-1] in _rn().HOUSES:
+    elif bits[0] in ('own', 'shared', 'lease') and bits[-1] in _rn().HOUSES:
         out, kind = [DC.own_room(*row) for row in _rn().HOUSES[bits[-1]]['rooms']], bits[-1]
     if out is not None:
         out += [kit_room(k) for k in DC.EXTRA_ROOMS.get(kind, ())]
@@ -341,7 +346,7 @@ def _ff(f: dict) -> dict:
 
 def room_cap(room: dict) -> int:
     """How many pieces one room takes (small things on tables count too)."""
-    return min(_rn().ITEMS_MAX, room['cols'] * (room['wrows'] + room['frows']) + 4)
+    return room['cols'] * (room['wrows'] + room['frows']) + 4
 
 
 def zone(room: dict, k: str) -> tuple[int, int] | None:
@@ -449,12 +454,14 @@ def riders(pos: dict, uid: str) -> list:
     return [u for u, v in pos.items() if v.get('on') == uid]
 
 
-def _q(r: str, x: int, y: int, f: int, on: str = '', z: int = 0) -> dict:
+def _q(r: str, x: int, y: int, f: int, on: str = '', z: int = 0, face: str = 'front') -> dict:
     q = dict(r=r, x=int(x), y=int(y), f=int(f))
     if on:
         q['on'] = on
     if z:
         q['z'] = int(z)
+    if face == 'back':
+        q['face'] = 'back'
     return q
 
 
@@ -575,8 +582,18 @@ def layout(s: dict) -> dict:
     X = get_new(s)
     if X is not None and X['at'] == pl['key']:   # the new rooms' pieces (a piece an older build has placed since: its spot)
         pos.update({u: dict(v) for u, v in X['items'].items() if u in kinds and u not in pos})
+    faces = _faces(j)
+    for u, q in pos.items():
+        if faces.get(u) == 'back' and kinds.get(u) in FACING_ITEMS:
+            q['face'] = 'back'
     pos, _ = settle_free(rooms, kinds, pos, order)
-    return dict(place=pl, rooms=rooms, kinds=kinds, order=order, pos=pos, skins=skins, journey=j)
+    return dict(place=pl, rooms=rooms, kinds=kinds, order=order, pos=pos, skins=skins, faces=faces, journey=j)
+
+
+def _faces(j: dict) -> dict:
+    """Facing travels with a piece, including while it is in the bag. Older layout blocks keep their exact shape."""
+    b = j.get('decor_faces')
+    return b['items'] if isinstance(b, dict) and isinstance(b.get('items'), dict) else {}
 
 
 def _match(need: tuple, items: list, tags: tuple) -> tuple[int, list]:
@@ -776,14 +793,26 @@ def _store(d: dict, D: dict, L: dict, pos: dict) -> None:
     """Write the free layout and its grid mirror (what an older build reads). The pieces in the new rooms go to
     journey.decor_new, the others to journey.decor (an older build checks every piece there against its own rooms)."""
     j = L['journey']
+    faces = {u: v for u, v in _faces(j).items() if u in L['kinds']}
+    for u, q in pos.items():
+        if q.get('face') == 'back':
+            faces[u] = 'back'
+        else:
+            faces.pop(u, None)
+    if faces:
+        j['decor_faces'] = dict(v=FACES_VERSION, items=faces)
+    else:
+        j.pop('decor_faces', None)
+    L['faces'] = faces
+    saved = {u: {k: v for k, v in q.items() if k != 'face'} for u, q in pos.items()}
     new = {r['id'] for r in L['rooms'] if r.get('new')}
-    D['items'] = {u: dict(pos[u]) for u in L['order'] if u in pos and pos[u]['r'] not in new}
-    xs = {u: dict(pos[u]) for u in L['order'] if u in pos and pos[u]['r'] in new}
+    D['items'] = {u: saved[u] for u in L['order'] if u in pos and pos[u]['r'] not in new}
+    xs = {u: saved[u] for u in L['order'] if u in pos and pos[u]['r'] in new}
     if xs:
         j['decor_new'] = dict(v=NEW_VERSION, at=L['place']['key'], items=xs)
     else:
         j.pop('decor_new', None)
-    L['pos'] = {u: dict(v) for u, v in list(D['items'].items()) + list(xs.items())}
+    L['pos'] = {u: dict(pos[u]) for u in L['order'] if u in pos}
     g = to_grid(L['rooms'], L['kinds'], D['items'], L['order'])
     d['pos'] = {u: list(g[u]) for u in L['order'] if u in g}
     D['sig'] = sig(d['pos'])
@@ -827,7 +856,7 @@ def _grid_q(L: dict, k: str, room: dict, x: int, y: int, f: int, skip: str = '')
         q = from_grid(L['rooms'], {**L['kinds'], '\x00': k}, {**{u: g[u] for u in g if ITEMS[L['kinds'][u]]['spot'] == 'floor'},
                                                                '\x00': (room['id'], x, y, f)})
         return q.get('\x00') or _q(room['id'], x * U, y * U, f)
-    return _q(room['id'], x * U, y * U, f)
+    return _q(room['id'], x * U, y * U, f, face=L.get('faces', {}).get(skip, 'front'))
 
 
 def _fine(p: dict, L: dict, k: str, uid: str = '') -> dict:
@@ -842,6 +871,9 @@ def _fine(p: dict, L: dict, k: str, uid: str = '') -> dict:
     need(f in (0, 1), 'Hướng đặt không hợp lệ.')
     need(isinstance(on, str) and (not on or (_ON.match(on) and on != uid)), 'Chỗ này không đặt đồ được.')
     need(z is None or (type(z) is int and 0 <= z <= Z_MAX), 'Thứ tự không hợp lệ.')
+    face = p.get('face', L.get('faces', {}).get(uid, 'front'))
+    need(isinstance(face, str) and face in ('front', 'back') and (face == 'front' or k in FACING_ITEMS),
+         'Hướng nhìn không hợp lệ.')
     it = ITEMS[k]
     if on:
         others = {u: v for u, v in L['pos'].items() if u != uid}
@@ -860,7 +892,7 @@ def _fine(p: dict, L: dict, k: str, uid: str = '') -> dict:
         else:
             zs = [v.get('z', 0) for u, v in L['pos'].items() if u != uid and v['r'] == room['id']]
             z = min(Z_MAX, max(zs) + 1) if zs else 0
-    return _q(room['id'], x, y, f, on, z)
+    return _q(room['id'], x, y, f, on, z, face)
 
 
 def _put(L: dict, uid: str, q: dict) -> tuple[dict, list, list]:
@@ -928,6 +960,8 @@ def _placed_msg(L: dict, it: dict, was: dict | None, q: dict, room: dict) -> str
         return f'Đã đặt {lname(it["name"])} lên {_host_name(L, room, on)}.' if on else f'Đã đặt {lname(it["name"])} ở {lname(room["name"])}.'
     if _same(was, q):
         return f'Đã đưa {lname(it["name"])} lên trên.' if q.get('z', 0) > was.get('z', 0) else f'Đã đưa {lname(it["name"])} xuống dưới.'
+    if was.get('face', 'front') != q.get('face', 'front'):
+        return f'Đã xoay hướng {lname(it["name"])}: {"mặt sau" if q.get("face") == "back" else "mặt trước"}.'
     if {k: v for k, v in was.items() if k not in ('f', 'z')} == {k: v for k, v in q.items() if k not in ('f', 'z')}:
         return f'Đã lật {lname(it["name"])}.'
     if was['r'] != q['r']:
@@ -969,7 +1003,6 @@ def apply(s: dict, name: str, p: dict) -> dict:
             if there:
                 return dict(message=f'{it["name"]} đã ở đây rồi.', duplicate=True, uid=there)
         r = rn.ensure_block(s)
-        need(len(r['items']) < rn.ITEMS_MAX, f'Bạn đã có {rn.ITEMS_MAX} món đồ. Bán bớt đồ trong túi trước nhé.', 'full')
         rn._pay(s, it['price'], f'Mua {lname(it["name"])} · trang trí', day)
         uid = rn.new_uid(r)
         r['items'].append(dict(id=uid, k=k, r=None, x=None))
@@ -996,7 +1029,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         return _skin(s, p)
     if name == 'jr_deco_layout':   # Hoàn tác: put the pieces back where they were before the last change
         ch = p.get('set')
-        need(isinstance(ch, dict) and 1 <= len(ch) <= rn.ITEMS_MAX, 'Không có gì để hoàn tác.')
+        need(isinstance(ch, dict) and bool(ch), 'Không có gì để hoàn tác.')
         d, D, L = _ensure(s)
         before = sets_of(L)
         pos = {u: dict(v) for u, v in L['pos'].items()}
@@ -1013,10 +1046,14 @@ def apply(s: dict, name: str, p: dict) -> dict:
                 pos.pop(uid, None)
             else:
                 need(isinstance(v, dict) and _piece_ok(v) and v['r'] in rs, 'Không hoàn tác được.')
-                pos[uid] = _q(v['r'], v['x'], v['y'], v['f'], v.get('on', ''), v.get('z', 0))
+                need(v.get('face', 'front') == 'front' or L['kinds'][uid] in FACING_ITEMS, 'Hướng nhìn không hợp lệ.')
+                pos[uid] = _q(v['r'], v['x'], v['y'], v['f'], v.get('on', ''), v.get('z', 0), v.get('face', 'front'))
         if grid:
             g = grid_guess(L['rooms'], L['kinds'], {u: v for u, v in pos.items() if ITEMS[L['kinds'][u]]['spot'] == 'floor'})
             pos.update({u: q for u, q in from_grid(L['rooms'], L['kinds'], {**g, **grid}).items() if u in grid})
+            for u in grid:
+                if u in pos and L['faces'].get(u) == 'back':
+                    pos[u]['face'] = 'back'
         kept, out = settle_free(L['rooms'], L['kinds'], pos, L['order'])
         need(not out, 'Không hoàn tác được: chỗ cũ giờ không đặt được nữa.', 'taken')
         _store(d, D, L, kept)
@@ -1046,7 +1083,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         else:
             q = _fine(p, L, kinds[uid], uid)
         if was:   # a piece's own looks (optional keys besides on / z) stay with it when it moves
-            q.update({k2: was[k2] for k2 in PIECE_OPT if k2 not in ('on', 'z') and k2 in was})
+            q.update({k2: was[k2] for k2 in PIECE_OPT if k2 not in ('on', 'z') and k2 in was and k2 not in p})
         if was == q:
             return dict(message=f'{it["name"]} đang ở đây rồi.', duplicate=True)
         room = next(x for x in L['rooms'] if x['id'] == q['r'])
@@ -1100,6 +1137,10 @@ def _skin(s: dict, p: dict) -> dict:
     rn = _rn()
     j = s['journey']
     L0 = layout(s)
+    from .home_decor import SKINS as shared_skins
+    effective = shared_skins.get()
+    if effective is not None:
+        L0['skins'] = effective
     rs = {r['id']: r for r in L0['rooms']}
     need(p.get('r') in rs, 'Chọn phòng nhé.')
     room = rs[p['r']]
@@ -1124,6 +1165,8 @@ def _skin(s: dict, p: dict) -> dict:
         if h:
             hs._log(h, j['life_day'], f'Mua {lname(S["name"])} để trang trí.', -pay)
     d, D, L = _ensure(s)
+    if effective is not None:
+        D['skins'] = {rm: dict(v) for rm, v in effective.items()}
     if pay:
         D['owned'].append(sk)
     sk_room = dict(D['skins'].get(room['id'], {}))
@@ -1189,7 +1232,7 @@ def catalogue() -> dict:
                        for k, v in SKINS.items()],
                 levels=[dict(min=low, name=n) for low, n in LEVELS], rent_steps=[dict(min=low, spirit=n) for low, n in RENT_STEPS],
                 fix_names=dict(FIX_NAMES), sell_pct=SELL_PCT, guest_min=GUEST_MIN, u=U, z_max=Z_MAX,
-                kits={k: _room_view(kit_room(k)) for k in DC.KITS}, no_skin=list(DC.NO_SKIN))
+                kits={k: _room_view(kit_room(k)) for k in DC.KITS}, no_skin=list(DC.NO_SKIN), facing=list(FACING_ITEMS))
 
 
 def _place_name(pl: dict) -> tuple[str, str]:
@@ -1241,7 +1284,12 @@ def public(s: dict) -> dict | None:
     for u, q in L['pos'].items():
         g = mirror.get(u) or (q['r'], 0, 0, q['f'])
         placed.append(dict(id=u, k=L['kinds'][u], r=q['r'], x=g[1], y=g[2], f=q['f'], fx=q['x'], fy=q['y'], on=q.get('on', ''), z=q.get('z', 0)))
+        if q.get('face') == 'back':
+            placed[-1]['face'] = 'back'
     bag = [dict(id=it['id'], k=it['k']) for it in (r['items'] if r else []) if it['id'] not in L['pos'] and it['k'] in ITEMS]
+    for it in bag:
+        if L['faces'].get(it['id']) == 'back':
+            it['face'] = 'back'
     have = hs._have(s)
     g = guest(s, L, total, j['life_day'])
     stats = dict(d['stats']) if d else {k: 0 for k in STATS}
@@ -1252,15 +1300,17 @@ def public(s: dict) -> dict | None:
     more = [dict(t=x['kit'], s=skin(x)) if skin(x) else dict(t=x['kit']) for x in L['rooms'] if x.get('new')]
     out = dict(place=dict(key=pl['key'], where=pl['where'], kind=pl['kind'], name=name, emoji=emoji, repairs=own),
                rooms=[dict(_room_view(x), skin=skin(x)) for x in L['rooms'] if not x.get('new')], more=more,
-               items=placed, bag=bag, count=len(r['items']) if r else 0, max=rn.ITEMS_MAX, owned=owned,
+               items=placed, bag=bag, count=len(r['items']) if r else 0, max=None, owned=owned,
                cozy=dict(total=total, items=pts['items'], sets=pts['sets'], up=up, level=level_of(total), perk=perk,
                          off=off, steps=steps, next=nxt),
                sets=[x for x in sets if x['done'] or x['possible']], guest=g, stats=stats, tip=stats['placed'] == 0 and not placed,
                ready=have['wallet'] + have['balance'])
-    acts = _rx().view(s, L)
+    from . import deco_mate
+    use = deco_mate.use_layout(s, L)
+    acts = _rx().view(s, use)
     if acts:
         out['relax'] = acts
-    fridge = _fr().view(s, L)   # 🧊 game/fridge.py (a page loaded before ignores it)
+    fridge = _fr().view(s, use)   # 🧊 game/fridge.py (a page loaded before ignores it)
     if fridge:
         out['fridge'] = fridge
     return out
@@ -1275,6 +1325,12 @@ def upgrade(j: dict) -> None:
     r = j.get('reno') if isinstance(j, dict) else None
     items = r.get('items') if isinstance(r, dict) else None
     kinds = {it['id']: it['k'] for it in items if isinstance(it, dict) and isinstance(it.get('id'), str)} if isinstance(items, list) else {}
+    F = j.get('decor_faces') if isinstance(j, dict) else None
+    if isinstance(F, dict) and isinstance(F.get('items'), dict):
+        for u in [u for u in F['items'] if u not in kinds]:
+            F['items'].pop(u)
+        if not F['items']:
+            j.pop('decor_faces', None)
     if isinstance(d, dict) and isinstance(d.get('stats'), dict) and isinstance(d.get('pos'), dict):
         for k in STATS:
             d['stats'].setdefault(k, 0)
@@ -1317,6 +1373,8 @@ def _piece_ok(v) -> bool:
         return False
     if 'z' in v and not (type(v['z']) is int and 0 <= v['z'] <= Z_MAX):
         return False
+    if 'face' in v and not (isinstance(v['face'], str) and v['face'] in ('front', 'back')):
+        return False
     return True
 
 
@@ -1328,6 +1386,13 @@ def validate(s: dict) -> None:
         return
     r = j.get('reno')
     kinds = {it['id']: it['k'] for it in r['items']} if isinstance(r, dict) else {}
+    if j.get('decor_faces') is not None:
+        F = j['decor_faces']
+        bad = 'Hướng nhìn đồ đạc trong bản lưu không hợp lệ.'
+        need(isinstance(F, dict) and set(F) == {'v', 'items'} and type(F['v']) is int and F['v'] == FACES_VERSION
+             and isinstance(F['items'], dict), bad, 'invalid_save')
+        need(all(u in kinds and kinds[u] in FACING_ITEMS and isinstance(v, str) and v == 'back'
+                 for u, v in F['items'].items()), bad, 'invalid_save')
     if j.get('deco') is not None:
         d = j['deco']
         bad = 'Dữ liệu bày trí phòng không hợp lệ.'
@@ -1339,7 +1404,7 @@ def validate(s: dict) -> None:
         for v in d['stats'].values():
             integer(v, 0, 10**9)
         pos = d['pos']
-        need(isinstance(pos, dict) and len(pos) <= _rn().ITEMS_MAX, bad)
+        need(isinstance(pos, dict), bad)
         for uid, v in pos.items():
             need(uid in kinds, bad)
             need(isinstance(v, list) and len(v) == 4 and isinstance(v[0], str) and _ID.match(v[0])
@@ -1354,7 +1419,7 @@ def validate(s: dict) -> None:
         need(isinstance(D, dict) and set(D) == FREE_KEYS and D['v'] == FREE_VERSION, bad, 'invalid_save')
         need(isinstance(D['at'], str) and _KEY.match(D['at']), bad)
         integer(D['sig'], 0, 2**32 - 1)
-        need(isinstance(D['items'], dict) and len(D['items']) <= _rn().ITEMS_MAX, bad)
+        need(isinstance(D['items'], dict), bad)
         for uid, v in D['items'].items():
             need(uid in kinds and _piece_ok(v), bad)
         need(isinstance(D['skins'], dict) and len(D['skins']) <= 16, bad)
@@ -1375,7 +1440,7 @@ def validate(s: dict) -> None:
         bad = 'Dữ liệu bày trí phòng không hợp lệ.'
         need(isinstance(X, dict) and set(X) == NEW_KEYS and X['v'] == NEW_VERSION, bad, 'invalid_save')
         need(isinstance(X['at'], str) and _KEY.match(X['at']), bad)
-        need(isinstance(X['items'], dict) and 0 < len(X['items']) <= _rn().ITEMS_MAX, bad)
+        need(isinstance(X['items'], dict) and bool(X['items']), bad)
         D = j.get('decor')
         placed = set(D['items']) if isinstance(D, dict) else set()
         for uid, v in X['items'].items():

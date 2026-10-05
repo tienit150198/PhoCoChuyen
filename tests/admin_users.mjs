@@ -1,0 +1,73 @@
+import assert from 'node:assert/strict';
+import {UsersAdmin} from '../public/js/admin/users.js';
+
+const page=(offset=0)=>({q:'',offset,limit:50,total:55,has_more:offset===0,items:[
+  {id:1,username:'hong.nguyen',display:'Nguyễn Hồng',name:'Bé Đào',created_at:'2026-10-01 12:00:00',last_active_at:'2026-10-04 01:00:00'},
+]});
+let calls=[],forbidden=0,draws=0;
+const hooks={rerender:()=>draws++,forbidden:()=>forbidden++};
+const api={get:async(url,timeout,signal)=>{calls.push({url,signal});return page(Number(new URL(url,'http://local').searchParams.get('offset')||0));}};
+const users=new UsersAdmin(api,hooks);
+assert.match(users.view(),/Tìm theo tên hoặc username/);
+await users.load();
+assert.match(calls.at(-1).url,/\/api\/admin\/users\?/);
+assert.match(users.view(),/hong\.nguyen/);
+assert.match(users.view(),/Bé Đào/);
+assert.match(users.view(),/Nguyễn Hồng/);
+assert.match(users.view(),/usersNext/);
+users.input({name:'q',value:' BÉ ĐÀO ',closest:()=>({dataset:{form:'usersSearch'}})});
+assert.equal(users.draft,' BÉ ĐÀO ');
+assert.equal(users.submit({dataset:{form:'login'}}),false);
+assert.equal(users.submit({dataset:{form:'usersSearch'},elements:{q:{value:' BÉ ĐÀO '}}}),true);
+await new Promise(resolve=>setImmediate(resolve));
+assert.equal(new URL(calls.at(-1).url,'http://local').searchParams.get('q'),'BÉ ĐÀO');
+assert.equal(users.offset,0);
+assert.equal(users.action('usersNext'),true);
+await new Promise(resolve=>setImmediate(resolve));
+assert.equal(new URL(calls.at(-1).url,'http://local').searchParams.get('offset'),'50');
+assert.equal(users.action('usersPrev'),true);
+await new Promise(resolve=>setImmediate(resolve));
+assert.equal(users.offset,0);
+assert.equal(users.action('usersClear'),true);
+await new Promise(resolve=>setImmediate(resolve));
+assert.equal(users.q,'');
+assert.equal(users.draft,'');
+assert.equal(users.action('unrelated'),false);
+
+users.data={...page(),items:[{...page().items[0],name:'<img onerror="bad">',username:'<script>',display:'&name'}]};
+const html=users.view();
+assert.ok(!html.includes('<img onerror='));
+assert.ok(!html.includes('<script>'));
+assert.ok(html.includes('&lt;img'));
+users.data={...page(),total:0,items:[],has_more:false};
+users.q='nobody';
+assert.match(users.view(),/Không tìm thấy/);
+
+const pending=[];
+const racing=new UsersAdmin({get:(url,timeout,signal)=>new Promise((resolve,reject)=>pending.push({url,signal,resolve,reject}))},hooks);
+const old=racing.load();
+racing.q='new';
+const newer=racing.load();
+assert.equal(pending[0].signal.aborted,true);
+pending[1].resolve({...page(),q:'new'});
+await newer;
+pending[0].resolve({...page(),q:'old'});
+await old;
+assert.equal(racing.data.q,'new');
+const reset=racing.load();
+racing.reset();
+assert.equal(pending[2].signal.aborted,true);
+pending[2].resolve(page());
+await reset;
+assert.equal(racing.data,null);
+assert.equal(racing.busy,false);
+
+const denied=new UsersAdmin({get:async()=>{throw Object.assign(new Error('denied'),{status:403});}},hooks);
+await denied.load();
+assert.equal(forbidden,1);
+const offline=new UsersAdmin({get:async()=>{throw new Error('Mất kết nối');}},hooks);
+await offline.load();
+assert.match(offline.view(),/Mất kết nối/);
+assert.match(offline.view(),/usersReload/);
+assert.ok(draws>0);
+console.log('Admin users: search, pages, escaping, stale requests, reset and errors passed.');

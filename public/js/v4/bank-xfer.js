@@ -37,7 +37,7 @@ async function load(){
   finally{X.loading=false;C.render();}
 }
 
-const room=()=>{const v=X.view||{},bk=C.B();const have=X.src==='cash'?Math.max(0,C.J().wallet||0):(bk.balance||0);return Math.min(v.today?.left??0,have);};
+const room=()=>{const v=X.view||{},bk=C.B();const have=X.src==='cash'?Math.max(0,C.J().wallet||0):(bk.balance||0);return v.rules?.unlimited?have:Math.min(v.today?.left??0,have);};
 
 export function xferPage(){
   const v=X.view,top=`<button type="button" class="bx-back" data-bk="${X.step==='pick'||X.step==='done'?'tab':'x-back'}" data-tab="home">‹ ${X.step==='pick'||X.step==='done'?'Tổng quan':'Quay lại'}</button>`;
@@ -51,9 +51,9 @@ function pick(v){
   const recent=(v.recent||[]).map(r=>`<li><div class="bk-tx-main"><small>${when(r.at)} · ${esc(r.code)}</small><span>${r.dir==='out'?`Tới ${esc(r.name)}`:`Từ ${esc(r.name)}`}${r.note?` · «${esc(r.note)}»`:''}</span></div>
     <div class="bk-tx-amt"><b class="${r.dir==='out'?'down':'up'}">${r.dir==='out'?'−':'+'}${fmt(r.amount)}</b><small>${r.dir==='in'?'Đã nhận':r.status==='done'?'Bạn ấy đã nhận':r.status==='back'?'Đã trả lại':'Chờ bạn ấy vào game'}</small></div></li>`).join('');
   return `<section class="bk-card bx"><h3>💸 Chuyển khoản cho bạn bè</h3>
-    ${v.lock?`<p class="bk-alert warn">${esc(v.lock)}</p>`:`${R.admin?'':`<p class="bk-hint">Hôm nay còn chuyển được <b>${xu(v.today.left)}</b>.</p>`}`}
+    ${v.lock?`<p class="bk-alert warn">${esc(v.lock)}</p>`:`<p class="bk-hint">${R.unlimited?'Không giới hạn số lần hay tổng xu chuyển mỗi ngày. Chuyển trong số dư bạn đang có.':`Hôm nay còn chuyển được <b>${xu(v.today.left)}</b>.`}</p>`}
     ${list?`<ul class="bx-friends" aria-label="Chọn người nhận">${list}</ul>`:'<p class="bk-hint">Chưa có bạn bè nào. Kết bạn ở mục Bạn bè nhé.</p>'}
-    ${R.admin?'<p class="bk-hint">🛡️ Admin: chuyển ngay, không giới hạn.</p>':`<details class="bk-tips"><summary>Quy định</summary><ul class="bk-bullets"><li>Mỗi ngày chuyển tối đa ${xu(R.send_day)}, ${R.send_count} lần.</li><li>Mỗi người nhận tối đa ${xu(R.recv_day)} một ngày.</li><li>Tài khoản đã chơi game đủ ${R.account_days} ngày (đời thực), kết bạn đủ ${R.friend_minutes} phút.</li></ul></details>`}</section>
+    ${R.admin?'<p class="bk-hint">🛡️ Admin: chuyển ngay, không giới hạn.</p>':`<details class="bk-tips"><summary>Quy định</summary><ul class="bk-bullets">${R.unlimited?'':`<li>Mỗi ngày chuyển tối đa ${xu(R.send_day)}, ${R.send_count} lần.</li><li>Mỗi người nhận tối đa ${xu(R.recv_day)} một ngày.</li>`}<li>Tài khoản đã chơi game đủ ${R.account_days} ngày (đời thực), kết bạn đủ ${R.friend_minutes} phút.</li></ul></details>`}</section>
     ${recent?`<section class="bk-card"><h3>Gần đây</h3><ul class="bk-tx">${recent}</ul></section>`:''}`;
 }
 
@@ -66,7 +66,7 @@ function amount(v){
     <div class="bx-chips" role="group" aria-label="Chọn nhanh">${chips}</div>
     <label class="bk-field"><span>Lời nhắn (không bắt buộc)</span><input id="bx-note" type="text" maxlength="${R.note_max}" value="${esc(X.note)}" placeholder="Ví dụ: Cảm ơn nha!" autocomplete="off"></label>
     <label class="bk-field"><span>Chuyển từ</span><select id="bx-src"><option value="acc"${X.src==='acc'?' selected':''}>Tài khoản (${xu(bk.balance)})</option><option value="cash"${X.src==='cash'?' selected':''}>Tiền mặt (${xu(Math.max(0,C.J().wallet||0))})</option></select></label>
-    ${X.err?`<p class="bk-alert bad" role="alert">${esc(X.err)}</p>`:(R.admin?'':`<p class="bk-hint">Hôm nay còn chuyển được ${xu(v.today.left)}.</p>`)}
+    ${X.err?`<p class="bk-alert bad" role="alert">${esc(X.err)}</p>`:`<p class="bk-hint">${R.unlimited?`Số dư có thể chuyển: ${xu(most)}.`:`Hôm nay còn chuyển được ${xu(v.today.left)}.`}</p>`}
     <div class="bk-actions">${b('Tiếp tục','x-next',{},'primary big')}</div></section>`;
 }
 
@@ -107,7 +107,7 @@ export async function xferClick(op,data){
     case'x-next':{
       const R=v.rules,most=room(),a=X.amount;X.note=X.note.trim();
       if(!a||a<R.min)X.err=`Chuyển ít nhất ${xu(R.min)} nhé.`;
-      else if(a>v.today.left)X.err=v.today.left?`Hôm nay bạn còn chuyển được ${xu(v.today.left)} thôi.`:'Hôm nay bạn đã chuyển đủ rồi. Mai chuyển tiếp nhé.';
+      else if(!R.unlimited&&a>v.today.left)X.err=v.today.left?`Hôm nay bạn còn chuyển được ${xu(v.today.left)} thôi.`:'Hôm nay bạn đã chuyển đủ rồi. Mai chuyển tiếp nhé.';
       else if(a>most)X.err=X.src==='cash'?`Tiền mặt chỉ còn ${fmt(Math.max(0,C.J().wallet||0))} xu.`:`Tài khoản chỉ còn ${fmt(C.B().balance)} xu.`;
       else if(X.note.length>R.note_max)X.err=`Lời nhắn tối đa ${R.note_max} ký tự nhé.`;
       else{X.step='confirm';X.rid=rid();}

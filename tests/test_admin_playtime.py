@@ -1,7 +1,7 @@
 """Play time ("Thời gian chơi", game/admin_stats.py): the stat_play trigger on receipts (one
-receipt = one game command) on SQLite and PostgreSQL, the one-off backfill from receipts, the
+receipt = one game command) on PostgreSQL, the one-off backfill from receipts, the
 admin section and the purge. Runs on PostgreSQL with TEST_DATABASE_URL (tests/pg_support.py)."""
-import datetime, json, random, sqlite3, tempfile, time, unittest
+import datetime, json, random, tempfile, time, unittest
 from pathlib import Path
 from unittest.mock import patch
 
@@ -173,21 +173,15 @@ class TriggerTests(Base):
         self.assertEqual(len(self.rows(sid)), 1)      # statistics are kept forever (owner, 02/10)
         self.assertEqual(len(self.rows(osid)), 1)
 
-    def test_schema_is_idempotent_and_matches_on_both_backends(self):
+    def test_schema_is_idempotent_and_matches_postgres_tables(self):
         st.ensure(self.store)
-        if self.store.pg:
-            with self.store.connect() as db:
-                self.assertTrue(pg_schema.ensure(db, force=True))
-                names = {r[0] for r in db.execute("SELECT tgname FROM pg_trigger WHERE NOT tgisinternal")}
-                self.assertEqual(pg_schema.installed_version(db), pg_schema.SCHEMA_VERSION)
-        else:
-            with self.store.connect() as db:
-                names = {r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type = 'trigger'")}
+        with self.store.connect() as db:
+            self.assertTrue(pg_schema.ensure(db, force=True))
+            names = {r[0] for r in db.execute("SELECT tgname FROM pg_trigger WHERE NOT tgisinternal")}
+            self.assertEqual(pg_schema.installed_version(db), pg_schema.SCHEMA_VERSION)
+            cols = [r[0] for r in db.execute("SELECT column_name FROM information_schema.columns WHERE table_schema=current_schema() AND table_name='stat_play' ORDER BY ordinal_position")]
         self.assertIn('stat_play_cmd', names)
-        if not self.store.pg:
-            self.assertNotIn('stat_play_gone', names)   # a deleted save keeps its play rows (kept forever)
         self.assertIn(('receipts', 'stat_play_cmd'), pg_schema.TRIGGERS)
-        cols = [c for c, _ in pg_schema.TABLE['stat_play']['columns']]
         self.assertEqual(cols[:7], ['day', 'sid', 'secs', 'sessions', 'cmds', 'first_at', 'last_at'])
         self.assertEqual(self.rows(), [])
 
@@ -209,7 +203,7 @@ class BackfillTests(Base):
                 db.execute('INSERT INTO receipts(sid, request_id, request_hash, result, created_at) VALUES (?, ?, ?, ?, ?)',
                            (sid, f'old-{self.n:08d}', 'h', '{}', utc_text(t)))
             for day in {st._vn_day(t) for t in times}:
-                db.execute('INSERT OR IGNORE INTO stat_active(day, sid) VALUES (?, ?)', (day, sid))
+                db.execute('INSERT INTO stat_active(day, sid) VALUES (?, ?) ON CONFLICT DO NOTHING', (day, sid))
 
     def untracked(self):
         self.sql('DELETE FROM stat_play')
@@ -377,18 +371,6 @@ class SectionTests(Base):
 
     def test_request_reads_only_the_stat_tables_and_is_cached(self):
         self.seed()
-        if not self.store.pg:
-            seen = []
-            real = sqlite3.connect
-            def traced(*a, **k):
-                con = real(*a, **k)
-                con.set_trace_callback(seen.append)
-                return con
-            with patch.object(st.sqlite3, 'connect', traced):
-                st.get_section(self.store, 'playtime')
-            self.assertTrue(seen)
-            self.assertFalse([q for q in seen if 'sessions' in q.replace('sessions,', '').replace('sessions FROM', '')], seen)
-            self.assertFalse([q for q in seen if 'receipts' in q])
         st.clear_cache()
         a = st.get_section(self.store, 'playtime')
         b = st.get_section(self.store, 'playtime')

@@ -316,7 +316,7 @@ class Selling(unittest.TestCase):
         self.assertIn('m_home', s['journey']['titles'])                      # a title stays earned
 
     def test_value_growth_is_capped(self):
-        own = dict(price=1000, day=1)
+        own = dict(price=1000, day=1, kind='tap_the')
         self.assertEqual(hs.value_of(own, 1), 1000)
         self.assertEqual(hs.value_of(own, 1 + 60 * 50), 1300)
 
@@ -416,8 +416,7 @@ class SpouseEffects(unittest.TestCase):
         s['name'] = 'An'
         s, _ = buy(s, 'tap_the')
         effects = hs.partner_effects(s, 7, 'a', 'sid-b', mr._effect)
-        self.assertEqual([e['id'] for e in effects], ['home:7:a:h1'])
-        self.assertEqual(effects[0]['sid'], 'sid-b')
+        self.assertEqual(effects, [])  # purchasing requires an explicit family invitation
         s, _ = act(s, 'jr_home_sell', confirm=True, value=hs.value_of(H(s)['own'], s['journey']['life_day']))
         self.assertEqual([e['id'] for e in hs.partner_effects(s, 7, 'a', 'sid-b', mr._effect)], ['homeoff:7:a:h1'])
 
@@ -612,6 +611,11 @@ class CoupleHome(CoupleBase):
     def cmd(self, tok, action, rid, **p):
         return self.store.command(tok, rid, self.store.read(tok)[1], None, action, p)
 
+    def share(self):
+        self.act(self.a, 'family_home_request', rid='home-consent-' + str(int(self.clock.t)))
+        request = self.view(self.b)['family']['requests'][0]
+        self.act(self.b, 'family_answer', id=request['id'], answer='accept', rid='home-accept-' + str(request['id']))
+
     def test_buy_together_from_the_joint_fund_and_move_in(self):
         from game import couple as cp
         from game import marriage as mr
@@ -628,10 +632,12 @@ class CoupleHome(CoupleBase):
         for _ in range(2):
             mr.on_load(self.store, self.a, self.state(self.a))
             mr.on_load(self.store, self.b, self.state(self.b))
+        self.assertFalse((self.state(self.b)['journey'].get('home') or {}).get('shared'))
+        self.share()
         sb = self.state(self.b)
         self.assertEqual(sb['journey']['home']['shared']['kind'], 'tap_the')
         self.assertEqual(jr.living_cost(sb['journey'])['where'], 'shared')
-        self.assertEqual(self.row("SELECT COUNT(*) AS n FROM marriage_effects WHERE id LIKE 'home:%'")['n'], 1)
+        self.assertEqual(self.row("SELECT COUNT(*) AS n FROM marriage_effects WHERE id LIKE 'home:%'")['n'], 0)
         self.assertEqual(self.row("SELECT status FROM joint_ledger WHERE kind='home'")['status'], 'done')
         # selling the home moves the spouse back out
         sa = self.state(self.a)
@@ -669,6 +675,7 @@ class CoupleHome(CoupleBase):
         for _ in range(2):
             mr.on_load(self.store, self.a, self.state(self.a))
             mr.on_load(self.store, self.b, self.state(self.b))
+        self.share()
         self.assertEqual(self.state(self.b)['journey']['home']['shared']['kind'], 'biet_thu_vuon')
 
     def row(self, sql):

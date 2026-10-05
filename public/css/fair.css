@@ -421,22 +421,29 @@ html[data-theme="dem"] .fh-ringstage{background:linear-gradient(180deg,#1f2a3c 0
 .fh-track{position:absolute;left:0;right:0;top:10px;height:30px}
 .fh-track::before{content:"";position:absolute;left:5%;right:5%;top:14px;height:2px;border-radius:2px;background:color-mix(in srgb,var(--ink) 18%,transparent)}
 .fh-aim{position:absolute;top:2px;width:0;height:0}
+.fh-ringstage:not(.live) .fh-aim{display:none}
 .fh-aim i{position:absolute;left:-17px;top:4px;width:34px;height:14px;border-radius:50%;border:4px solid var(--fh-red);box-shadow:0 2px 4px rgba(0,0,0,.25)}
 .fh-ringstage.live .fh-aim::after{content:"";position:absolute;left:-1px;top:22px;width:2px;height:70px;background:repeating-linear-gradient(180deg,color-mix(in srgb,var(--fh-red) 55%,transparent) 0 5px,transparent 5px 10px)}
 .fh-fly-layer{position:absolute;inset:0;pointer-events:none}
 .fh-fly{position:absolute;top:16px;width:34px;height:14px;margin-left:-17px;border-radius:50%;border:4px solid var(--fh-red)}
-.fh-fly.hit{animation:fh-ringhit .42s ease-in forwards}
+.fh-fly.hit{border-width:3px;animation:fh-ringhit .42s ease-in forwards}
 .fh-fly.miss{animation:fh-ringmiss .65s ease-in forwards}
+.fh-fly.pending{animation:fh-ringpending .42s ease-in forwards}
+.fh-ring-pending-note{position:absolute;left:10px;right:10px;bottom:7px;text-align:center;font-size:.72rem;color:var(--ink)}
+@keyframes fh-ringpending{to{transform:translateY(20px) scale(.85)}}
 html.reduce-motion .fh-fly{animation-duration:.05s}
 @media (prefers-reduced-motion:reduce){.fh-fly{animation-duration:.05s}}
-@keyframes fh-ringhit{to{transform:translateY(60px) scaleX(.8)}}
-@keyframes fh-ringmiss{60%{transform:translateY(70px) rotate(25deg)}100%{transform:translateY(118px) rotate(70deg);opacity:0}}
+@keyframes fh-ringhit{from{left:var(--ring-from);transform:translateY(20px) scale(.85)}to{top:calc(100% - 99px - var(--ring-level,0)*5px);transform:none}}
+@keyframes fh-ringmiss{from{left:var(--ring-from);transform:translateY(20px) scale(.85)}60%{transform:translateY(70px) rotate(25deg)}100%{transform:translateY(118px) rotate(70deg);opacity:0}}
 .fh-shelf{position:absolute;left:0;right:0;bottom:44px;height:0}
 .fh-bottle{position:absolute;bottom:0;width:0;height:0}
-.fh-bottle i{position:absolute;left:-14px;bottom:0;width:28px;height:46px;border-radius:9px 9px 6px 6px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 70%,#fff) 0 22%,var(--c) 40%,color-mix(in srgb,var(--c) 70%,#000) 100%);box-shadow:0 3px 4px rgba(0,0,0,.25)}
+.fh-bottle i{position:absolute;z-index:1;left:-14px;bottom:0;width:28px;height:46px;border-radius:9px 9px 6px 6px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 70%,#fff) 0 22%,var(--c) 40%,color-mix(in srgb,var(--c) 70%,#000) 100%);box-shadow:0 3px 4px rgba(0,0,0,.25)}
 .fh-bottle i::before{content:"";position:absolute;left:9px;top:-30px;width:10px;height:32px;border-radius:4px 4px 0 0;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 70%,#fff),var(--c) 50%,color-mix(in srgb,var(--c) 70%,#000))}
-.fh-bottle i::after{content:"";position:absolute;left:1px;top:-14px;width:26px;height:9px;border-radius:50%;border:4px solid var(--fh-red);opacity:0;box-sizing:border-box}
-.fh-bottle.ringed i::after{opacity:1}
+/* The glass hides the rear arc; the front arc wraps over the neck at the shoulder. */
+.fh-neck-ring{position:absolute;left:0;bottom:0;width:0;height:0}
+.fh-neck-ring::before,.fh-neck-ring::after{content:"";position:absolute;left:-17px;bottom:calc(41px + var(--ring-level,0)*5px);width:34px;height:14px;border-radius:50%;border:3px solid var(--fh-red);box-sizing:border-box}
+.fh-neck-ring::before{z-index:0;clip-path:inset(0 0 50% 0)}
+.fh-neck-ring::after{z-index:2;clip-path:inset(50% 0 0 0)}
 .fh-ringsleft{display:flex;justify-content:center;gap:8px;margin:0 0 10px}
 .fh-ringsleft i{display:block;width:26px;height:12px;border-radius:50%;border:4px solid var(--fh-red)}
 .fh-ringsleft i.used{border-color:var(--line-strong);opacity:.5}

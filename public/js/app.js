@@ -1,6 +1,14 @@
 /** Front-end orchestration. Economic rules live on the Python server, not in chat. */
 import {GameAPI} from './api.js';
-import {BobaWorld} from './boba-world.js';
+import {sellerVisitStrip,customerTaskBanner,visitCustomer,customerPortrait} from './v4/workplace-visit-ui.js';
+import {equipmentView,staffRefresh,staffRefreshPaused} from './v4/work-equipment.js';
+import {suppressMediaGesture} from './v4/media-gestures.js';
+for(const event of ['contextmenu','dragstart','dblclick'])document.addEventListener(event,suppressMediaGesture);
+import {PhaserWorld} from './isometric/phaser-world.js';
+import {bootIsometricShell,updateIsometricShell,isometricAction} from './isometric-shell.js';
+import {bootIsometricMovement} from './isometric-movement.js';
+import {bootIsometricTown} from './isometric-town.js';
+import {bootCozyPortraits} from './isometric/portraits.js';
 import {wordsFor,kindOf} from './scenes/index.js';
 // Scene kinds load on demand: the current career's before the first frame, another career's before switching
 // to it (careerAssets below), so no career flashes the storefront and startup isn't waiting on all of them.
@@ -12,7 +20,7 @@ import {olderRows,olderButton,loadOlder,syncOlder} from './archive.js';
 import {Sound} from './audio.js';
 import {soundsBoot} from './v4/sounds.js';
 import {dayclockBoot,clockChip,clockAria,clockCard,clockSummary,closingNote,clockStep} from './v4/dayclock.js';  // giờ trong ngày
-import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCareerData,careerContext,startTicker,tickNow} from './v4/careers.js';
+import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCareerData,careerContext,startTicker,tickNow,careerSwitchButton} from './v4/careers.js';
 import {applyGuide,guideAction,nextHint,stepCta,plainText,firstTime} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
@@ -103,7 +111,7 @@ function shortWork(html){
 }
 const closedBar=()=>notice(`<b>Ca đang nghỉ</b> · mở ca để làm tiếp. ${button(icon('sun',14)+' Mở ca','startHere',{},'primary small')}`,'amber','sun');
 const ui={opsTab:'staff',staffId:null,lessonSequence:[],tourRoute:[],activityCard:null,view:null,tab:'',task:null,npc:null,jobTab:'shelf',journalTab:'quests',libraryQuery:'',docs:new Set(),transactions:new Set(),drafts:{},ai:{},suggestions:{},busy:false,paused:false};
-const world=new BobaWorld($('#world'),interact);
+const world=new PhaserWorld($('#world'),interact);
 soundsBoot({api,world,sound});  // character voices, detail sounds, bank speaker
 api.addEventListener('result',e=>{if(e.detail?.result?.card_swipe)import('./v4/bank.js').then(m=>m.swipeSound(api)).catch(()=>{});});  // 🏦 quẹt thẻ: ting ting
 dayclockBoot();  // giờ trong ngày: HUD clock, closing prompt, the scene's light
@@ -186,7 +194,7 @@ async function cmd(action,payload={},options={}){
 const acctDue=cid=>!!api.state?.accounting_school?.jobs?.places?.[cid]?.[2]&&!api.state.careers?.[cid]?.open;
 async function acctCheck(cid){const m=await viaLazy(L.accountingSchool);if(await m.accountingCheckOpen(env(),cid))openSheet('accountingSchool');}
 function closeSheet(){if($('#sheet').open)$('#sheet').close();ui.view=null;ui.ai={};world.paused=ui.paused;}
-function openSheet(view,data={}){if(view!=='job'&&view!=='chat'){ui.task=null;}Object.assign(ui,data);ui.view=view;renderSheet(false);if(!$('#sheet').open){const d=$('#sheet');d.showModal();d.scrollTop=0;d.tabIndex=-1;d.focus({preventScroll:true});}}
+function openSheet(view,data={}){$('#sheet').resetGesture?.();if(view!=='job'&&view!=='chat'){ui.task=null;}Object.assign(ui,data);ui.view=view;renderSheet(false);if(!$('#sheet').open){const d=$('#sheet');d.showModal();d.scrollTop=0;d.tabIndex=-1;d.focus({preventScroll:true});}}
 /** "?" of a work screen before the tutorial module has loaded (same markup as tutorial/guide.js helpButton;
  * a tap loads it: TUT_OPEN). Every career's work screen carries it, in the header, next to "Đóng". */
 const helpQ=cid=>`<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(cid||'')}" data-tab="work" aria-label="Hướng dẫn nghề này">?</button>`;
@@ -216,6 +224,8 @@ const morphTpl=document.createElement('template');
 const morphSame=(cur,src)=>cur===src||cur===i18nT(src);
 function morph(el,html){morphTpl.innerHTML=html;morphKids(el,morphTpl.content);morphTpl.innerHTML='';}
 function morphKids(from,to){
+  // Runtime-owned views keep their canvas and focus during state refreshes.
+  if(from.nodeType===1&&to.nodeType===1&&from.hasAttribute('data-morph-static')&&to.hasAttribute('data-morph-static'))return;
   let a=from.firstChild,b=to.firstChild;
   while(b){
     if(a?.nodeType===1&&a.hasAttribute('data-morph-keep')){a=a.nextSibling;continue;}   // a line another module put in the page (tutorial/tips.js inline hint)
@@ -259,7 +269,7 @@ function sceneActions(){
   return list;
 }
 function navItems(c){
-  const items=[['home','grid','Hành trình'],['prepare','coffee','Chuẩn bị'],['feedback','star','Đánh giá',lowOpen(c)],['phone','phone','Chuyện phố',feedUnread(c)?'dot':0],['situation','flag','Tình huống',openSituation(c)?'dot':0],['incident','shield','Chuyện đời',L.inc.m?.incidentBadge(c)||0]];
+  const items=[['home','grid','Đổi nghề'],['prepare','coffee','Chuẩn bị'],['feedback','star','Đánh giá',lowOpen(c)],['phone','phone','Chuyện phố',feedUnread(c)?'dot':0],['situation','flag','Tình huống',openSituation(c)?'dot':0],['incident','shield','Chuyện đời',L.inc.m?.incidentBadge(c)||0]];
   items.splice(4,0,['nhom','chat','Nhóm phố',boardUnread(api)],['social','globe','Phố nghề',api.social?.unread||0]);  // Nhóm Cư Dân Phố (v4/board.js), Phố nghề (v4/social.js)
   if(c.job?.required)items.push(['jobapp','briefcase','Việc làm',needsJob()?'dot':0]);
   items.push(['operations','store','Sổ tiệm',c.ops?.alerts?.length?'dot':0]);
@@ -276,12 +286,13 @@ function navItems(c){
   if(api.state?.journey?.story)items.push(['house','home','Nhà của bạn',api.state.journey.home?.own?.loan?.overdue?'dot':0]);  // 🏠 Nhà của bạn (v4/house.js, own dialog)
   if(api.state?.journey?.story&&api.state.journey.garage)items.push(['garage','bike','Xe & phương tiện']);  // 🚗 (v4/garage.js, own dialog): only once the server has it
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
-  if(api.state?.vang)items.push(['vang','award','Tiệm vàng']);  // 💰 Tiệm vàng Kim Phát (v4/rui.js)
+  if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
   if(api.state?.fair?.show)items.push(['fair','flag','Hội chợ',api.state.fair.open&&!api.state.fair.played?'dot':0]);  // 🏮 Hội chợ dân gian (v4/fair.js, own dialog): only around the fair's days
   // A career with its own shell (the air crew: no Sổ tiệm, a flight log instead) reshapes the list; others keep it.
   const result=careerUI(career())?.nav?.(items,careerContext(env()))||items;
   if(!result.some(x=>x[0]==='accountingSchool'))result.push(['accountingSchool','calculator','Học kế toán']);  // 📒 Học kế toán (v4/accounting-school.js): every career, after a career's own reshaping
+  if(api.state?.journey?.story&&!result.some(x=>x[0]==='jrInvest'))result.push(['jrInvest','coin','Đầu tư']);
   return result;
 }
 /** 🏪 A dot when a counter needs its owner: a thief, rent to pay, closed waiting, or a till to collect soon. */
@@ -290,11 +301,11 @@ function quayBadge(){const q=api.state?.journey?.quay;return q?.shift||(q?.stall
 async function quayFlush(){try{const d=await api.post('/api/quay/flush',{});if(d?.state&&typeof d.revision==='number')api.accept({state:d.state,revision:d.revision});}catch{/* the next load settles it */}}
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
 /** One line under the look-alike Khu phố entries, so each says what it is (owner D5: names stay, lines added). */
-const RAIL_NOTE={jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
+const RAIL_NOTE={home:'Hành trình · mục tiêu của bạn',jrTown:'Dạo phố, vào nơi làm',social:'Ghé tiệm người chơi khác',nhom:'Tin nhắn hàng xóm',phone:'Khách khen, chê, kể chuyện'};
 const railItem=([a,i,label,badge],extra='',hide='')=>`<button type="button" class="rail-item${a==='social'?' top-social':''}${extra} ${ui.view===a?'active':''}" data-action="${a}"${ui.view===a?' aria-current="page"':''}${hide}>${icon(i,21)}<span>${label}</span>${RAIL_NOTE[a]?`<small class="rail-note">${RAIL_NOTE[a]}</small>`:''}${badgeHTML(badge)}</button>`;
 /** The work pages, always in sight (rail on desktop/tablet, top of "Thêm" on the phone), in this order. Any
  * entry that is in no group below (a career's own page) joins them, so nothing a career adds is lost. */
-const RAIL_MAIN=['liveChat','home','prepare','operations','prices','feedback','jobapp','accountingSchool'];   // 💬 Chat first, one tap (owner, 01/10)
+const RAIL_MAIN=['liveChat','home','prepare','operations','jrInvest','prices','feedback','jobapp','accountingSchool'];   // 💬 Chat first, one tap (owner, 01/10)
 /** Học kế toán is a work page for the office accountants; everyone else finds it under "Của mình". */
 const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accounting'];
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()));
@@ -302,7 +313,7 @@ const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREE
 const RAIL_GROUPS=[
   ['pho','building','Khu phố',['fair','liveWalk','liveWed','nhom','phone','social','jrTown','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
-  ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage','rui','vang','quay']],
+  ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
   ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal','accountingSchool']],
 ];
@@ -448,7 +459,7 @@ function taskCards(c){
   else if(!c.open)main=`<article class="note-card calm-card">${button(icon('sun',16)+' Chuẩn bị ngày mới'+(c.day_clock?` · mở ${esc(c.day_clock.open_time)}`:''),'prepare',{},'primary big grow'+first)}${eveningDue()?'<button type="button" class="icon-btn hud-sum nd-moon-btn" data-action="evening" aria-label="Buổi tối: ăn gì, ngủ mấy giờ"><span aria-hidden="true">🌙</span></button>':''}${c.shift_summary?`<button type="button" class="icon-btn hud-sum" data-action="summary" aria-label="Xem ngày vừa qua">${icon('clipboard',18)}</button>`:''}${bell}</article>`;
   // The one line is the work screen's "Bước tiếp theo" (career modules' next() = guide.stepLine of the next
   // step, plain text); "Làm tiếp" opens the work screen, whose bottom button (stepCta) does that step.
-  else if(t)main=`<article class="note-card calm-card task-card">${closingNote(c.day_clock,true,moreGate(c))}<button type="button" class="calm-what" data-action="job" data-task="${esc(t.id)}" title="${esc(t.title)}"><span class="npc-mini">${portrait(npc(t.npc),34)}</span><b>${esc(plainText(taskNext(t)))}</b></button>${bell}${button('Làm tiếp '+icon('arrow',14),'job',{task:t.id},'primary'+first)}</article>`;
+  else if(t)main=`<article class="note-card calm-card task-card">${closingNote(c.day_clock,true,moreGate(c))}<button type="button" class="calm-what" data-action="job" data-task="${esc(t.id)}" title="${esc(t.title)}"><span class="npc-mini">${customerPortrait(visitCustomer(t,npc(t.npc)),34)}</span><b>${esc(plainText(taskNext(t)))}</b></button>${bell}${button('Làm tiếp '+icon('arrow',14),'job',{task:t.id},'primary'+first)}</article>`;
   // Day one, its three jobs done: closing the day is the next step (and the chapter goal).
   // Closing time with nobody in hand: close the day (the summary follows).
   // So is a day whose customers are all dealt, or whose next customer would arrive at closing time (more_gate).
@@ -470,7 +481,7 @@ function taskCards(c){
   if(lunch)main=main.replace(/^<article class="/,'<article class="nd-has-lunch ').replace(/^(<article[^>]*>)/,'$1'+lunch);
   // Desktop has a side column for the list; phone and tablet keep it behind the bell (status sheet).
   const list=notes.length&&layout()==='desktop'?`<article class="note-card hud-notes"><span class="eyebrow">Cần để ý · ${notes.length}</span>${noteRows(notes)}</article>`:'';
-  return main+list;
+  return main+sellerVisitStrip(c)+list;
 }
 /** When the next step of the task in hand changes while the player is in the scene, draw the eye to the card once. */
 function stepHint(c){
@@ -506,12 +517,17 @@ function hudFeedback(c){
 }
 /** Restart a CSS animation class without forcing layout: off now, back on two frames later. */
 function replay(el,add,off=add){el.classList.remove(...off);requestAnimationFrame(()=>requestAnimationFrame(()=>el.isConnected&&el.classList.add(...add)));}
+let mainDeferred=false;
 function renderMain(){
-  if(!api.state||!api.content)return;const c=room(),m=meta();
+  if(!api.state||!api.content)return;
+  // The fair owns its visible HUD. Rebuilding the obscured workplace also marks its
+  // canvas dirty, competing with the last throw/result frame on mobile devices.
+  if(document.querySelector('dialog.fh-sheet[open]')){mainDeferred=true;return;}
+  mainDeferred=false;const c=room(),m=meta();
   document.body.classList.toggle('reduce-motion',api.state.settings.reduceMotion);document.body.classList.toggle('large-text',api.state.settings.largeText);shell.career(m);
   setHTML($('#topbar'),hudHTML(c,m));
   setHTML($('#rail'),railHTML(c));
-  setHTML($('#sceneHeading'),`${shell.mark(m)}<div class="scene-title"><h1>${esc(c.life.shop_name||m.place)}</h1></div>`);
+  setHTML($('#sceneHeading'),`${shell.mark(m)}<div class="scene-title"><h1>${esc(c.life.shop_name||m.place)}</h1></div>${careerSwitchButton()}`);
   setHTML($('#sceneBadge'),'');  // open/closed, weather and mode: status sheet (tap the day)
   setHTML($('#taskHUD'),taskCards(c));
   setHTML($('#dock'),dockHTML(c));
@@ -519,8 +535,9 @@ function renderMain(){
   $('#ambientCaption').textContent='';$('#saveState').classList.toggle('offline',!api.connected);
   setHTML($('#saveState'),api.connected?`<i class="saved-dot"></i>Đã lưu`:`<i class="saved-dot"></i>Mất kết nối <button type="button" class="linkish" data-action="reconnect">Thử lại</button>`);
   hudFeedback(c);stepHint(c);
-  sound.configure(api.state.settings);world.update(api.state,api.content);
+  sound.configure(api.state.settings);world.update(api.state,api.content);updateIsometricShell(env());
 }
+document.addEventListener('close',()=>{if(mainDeferred)renderMain();},true);
 /* Toasts (and the update pill) sit just under the open sheet's sticky header: never over its title and buttons,
  * nor over the career's action bar at the bottom. The header's bottom edge is kept in --sheet-head-b, read in a
  * ResizeObserver callback (after layout: no forced layout) and once the opening animation has ended. */
@@ -599,7 +616,7 @@ function renderSheet(preserve=true){
   if(!preserve||fresh||box._html===undefined)box.innerHTML=html;else if(changed)morph(box,html);
   box._html=html;
   tickNow(env());document.dispatchEvent(new Event('sheetrender'));
-  applyGuide(dialog);watchHead(dialog);
+  applyGuide(dialog);watchHead(dialog);updateIsometricShell(env());
   if(preserve){const now=folds(),keys=foldKeys(now);now.forEach((el,i)=>{const want=openedDetails.has(keys[i])?openedDetails.get(keys[i]):(el._mk??el.open);if(el.open!==want)el.open=want;el._mk=undefined;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});dialog.scrollTop=scroll;if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);el?.focus({preventScroll:true});try{el?.setSelectionRange(selection,selection);}catch{/* not a text input */}}}
   if(!preserve)dialog.scrollTop=0;
   if(ui.view==='chat'){$('#messages')?.scrollTo(0,$('#messages').scrollHeight);}
@@ -609,7 +626,7 @@ function homeView(){return homeV4(env());}
 const placeOf=cid=>{const m=api.content?.catalogue.find(x=>x.id===cid)||{id:cid};return {name:m.place||m.short||cid,emoji:emojiOf(m)};};
 function wealthView(){return wealthHTML(api.state,{joint:jointBalance(),current:career(),place:placeOf,head:(t,sub)=>header(t,'',sub||'NGÂN HÀNG & NHÀ')});}
 function futureView(){if(api.state.journey)return futureV4(env());return header('Cả một khu phố phía trước','Những nghề sẽ mở sau','DANH MỤC 19 NGHỀ')+`<div class="sheet-body"><div class="future-grid">${api.content.catalogue.filter(c=>!api.state.careers[c.id]).map(c=>`<article class="future-card">${pill(icon('lock',11)+' Mở sau')}<h3>${esc(c.title||c.name)}</h3><p>${esc(c.core_loop||c.focus||c.summary||c.unique_mechanic||'Một trải nghiệm nghề mới, có cơ chế và câu chuyện riêng.')}</p></article>`).join('')}</div></div>`+footer('',button('Về các nghề đang mở','home',{},'primary'));}
-function queueView(){const own=careerUI(career())?.board?.(careerContext(env()));if(own)return own;const c=room(),tasks=c.tasks.filter(t=>!ended(t)),lead=(tasks.find(t=>t.id===c.active_task)||tasks[0])?.id;return header('Việc đang chờ','','SỔ VIỆC · '+esc(meta().place))+`<div class="sheet-body">${!c.open?notice('Ca đang nghỉ. '+button('Bắt đầu ngày','start',{},'small primary'),'amber','sun'):''}<div class="queue-grid">${tasks.map(t=>`<article class="queue-card ${t.id===c.active_task?'active':''}"><div class="row">${portrait(npc(t.npc),44)}<div class="grow"><h3>${esc(t.title)}</h3>${String(t.title||'').includes(npc(t.npc).display_name)?'':`<small class="muted">${esc(npc(t.npc).display_name)}</small>`}</div>${t.deferred?pill('Đã hẹn','amber'):''}</div><p>${esc(t.opening)}</p><div class="row spread">${pill(taskNext(t),'green')}${button('Làm tiếp '+icon('arrow',13),'job',{task:t.id},t.id===lead?'small primary':'small')}</div></article>`).join('')||empty('Hết việc rồi!','','coffee')}</div></div>`+(c.open?footer(`${c.day_completed} việc đã xong hôm nay`,(moreGate(c)?'':commandButton(icon('plus',14)+' Nhận thêm việc','more_work',{},tasks.length?'ghost':'primary'))+button('Khép ca','end',{},moreGate(c)&&!tasks.length?'primary':'ghost')):'');}
+function queueView(){const own=careerUI(career())?.board?.(careerContext(env()));if(own)return own;const c=room(),tasks=c.tasks.filter(t=>!ended(t)),lead=(tasks.find(t=>t.id===c.active_task)||tasks[0])?.id;return header('Việc đang chờ','','SỔ VIỆC · '+esc(meta().place))+`<div class="sheet-body">${!c.open?notice('Ca đang nghỉ. '+button('Bắt đầu ngày','start',{},'small primary'),'amber','sun'):''}<div class="queue-grid">${tasks.map(t=>`<article class="queue-card ${t.id===c.active_task?'active':''}"><div class="row">${customerPortrait(visitCustomer(t,npc(t.npc)),44)}<div class="grow"><h3>${esc(t.title)}</h3>${String(t.title||'').includes(npc(t.npc).display_name)?'':`<small class="muted">${esc(npc(t.npc).display_name)}</small>`}</div>${t.deferred?pill('Đã hẹn','amber'):''}</div><p>${esc(t.opening)}</p><div class="row spread">${pill(taskNext(t),'green')}${button('Làm tiếp '+icon('arrow',13),'job',{task:t.id},t.id===lead?'small primary':'small')}</div></article>`).join('')||empty('Hết việc rồi!','','coffee')}</div></div>`+(c.open?footer(`${c.day_completed} việc đã xong hôm nay`,(moreGate(c)?'':commandButton(icon('plus',14)+' Nhận thêm việc','more_work',{},tasks.length?'ghost':'primary'))+button('Khép ca','end',{},moreGate(c)&&!tasks.length?'primary':'ghost')):'');}
 function customerAside(t){const n=npc(t.npc),c=room();let needs='';if(t.needs){if(career()==='mother_baby'){const p=product(t.needs.product),paper=api.content.papers.find(p=>p.id===t.needs.paper);needs=`<strong>${t.needs.qty} × ${esc(p.name)}</strong><br>Ngân sách: ${fmt(t.needs.budget)} xu<br>${t.needs.gift?'Gói giấy '+esc(paper.name):'Không cần gói quà'}`;}}
   return `<aside class="work-aside ${t.known?'known':''} ${!Object.keys(t.basket||{}).length?'empty-tray':''}">${t.known?`<div class="needs"><h4>${icon('clipboard',15)} Điều đã xác nhận</h4><p>${needs||'Đã hiểu mục tiêu.'}</p></div>`:''}${career()==='mother_baby'?basketView(t):''}</aside>`;
 }
@@ -643,7 +660,7 @@ function jobView(){
   // A workplace with its own workbench whose code or data part did not come (a weak network): a skeleton while it is
   // asked for again (ensureCareerUI), never the customer-care view, which read its task as a ticket and threw.
   else if(CAREER_MODULES.includes(career())){ensureCareerUI();inner=skeleton();}else inner=supportJob(t);
-  return header(esc(t.title),taskNext(t),esc(meta().work).toUpperCase()+' · NGÀY '+t.day,headMenu(commandButton('Để lát nữa','defer',{task:t.id},'ghost')+button('Xem các việc khác','queue',{},'ghost')))+`<div class="sheet-body">${!c.open?closedBar():''}${['teacher','tour_guide','milk_tea'].includes(career())||plugin()||t.desk||careerUI(career())?'':guestRibbon(t,c,api.content)}${inner}</div>`;
+  return header(esc(t.title),taskNext(t),esc(meta().work).toUpperCase()+' · NGÀY '+t.day,headMenu(commandButton('Để lát nữa','defer',{task:t.id},'ghost')+button('Xem các việc khác','queue',{},'ghost')))+`<div class="sheet-body">${!c.open?closedBar():''}${['teacher','tour_guide','milk_tea'].includes(career())||plugin()||t.desk||careerUI(career())?'':guestRibbon(t,c,api.content)}${customerTaskBanner(t)}${inner}</div>`;
 }
 /* The done screen's "Việc giữa ca" fold remembers that the player opened it (for this task): its data-auto
  * markup is redrawn on every render, so the state lives here. */
@@ -884,7 +901,7 @@ function journalView(){const c=room(),tab=ui.journalTab;let inner='';
   else {const q=ui.libraryQuery.toLocaleLowerCase('vi-VN'),items=api.content.event_catalogue.filter(e=>e.career===career()&&(`${e.id} ${e.title}`.toLocaleLowerCase('vi-VN').includes(q)));inner=`<input class="input" id="library-search" data-preserve placeholder="Tìm: review, clip, quên ví, mất hàng…" value="${esc(ui.libraryQuery)}" aria-label="Tìm tình huống"><div class="event-library space-top">${items.map(e=>`<article class="library-item"><small class="muted">Diễn tập</small><h4>${esc(e.title)}</h4>${button('Thử tình huống '+icon('arrow',13),'practice',{event:e.id},'small ghost')}</article>`).join('')||empty('Chưa có tình huống khớp')}</div>`;}
   return header('Sổ tay','','SỔ TAY')+`<div class="sheet-body"><nav class="pill-tabs">${[['quests','Câu chuyện'],['history','Nhật ký'],['memories','Ký ức'],['library','24 tình huống']].map(([id,label])=>`<button data-action="journalTab" data-tab="${id}" class="${tab===id?'active':''}">${label}</button>`).join('')}</nav>${inner}</div>`;
 }
-function decorView(){const c=room(),spots={window:'Bên cửa sổ',corner:'Góc phòng',front:'Gần cửa',center:'Giữa phòng',wall:'Trên tường'};return header('Trang trí & nâng cấp','','GÓC CỦA BẠN',pill(icon('coin',13)+' '+fmt(c.money)+' xu','amber'))+`<div class="sheet-body"><div class="row spread"><div><h3>Chọn sắc cho căn phòng</h3><p class="muted small">Đổi màu tường không tốn xu.</p></div>${icon('plant',25)}</div><div class="theme-options">${[['boba','Trà sữa'],['warm','Ấm áp'],['sage','Xanh dịu'],['lavender','Tím mây']].map(([id,l])=>commandButton(`${(c.theme||'boba')===id?icon('check',13):icon('sun',13)} ${l}`,'theme',{theme:id},'small '+((c.theme||'boba')===id?'primary':'ghost'))).join('')}</div><div class="upgrade-grid">${api.content.upgrades.filter(u=>!u.careers||u.careers.includes(career())).map(u=>{const owned=c.upgrades.includes(u.id);return `<article class="upgrade-card"><div class="row spread"><span class="upgrade-icon">${icon(u.icon,31)}</span>${pill(owned?'ĐÃ CÓ':u.min_level>c.level?'CẤP '+u.min_level:u.price+' XU',owned?'green':'')}</div><h3>${esc(u.name)}</h3><p>${esc(u.description)}</p>${owned?(u.kind==='decor'?`<select aria-label="Vị trí ${esc(u.name)}" data-decor-item="${u.id}">${Object.entries(spots).filter(([s])=>u.id==='poster'?s==='wall':s!=='wall').map(([id,label])=>`<option value="${id}"${c.decor[u.id]?.spot===id?' selected':''}>${label}</option>`).join('')}</select>`:u.id==='assistant'?commandButton('Nhờ hỗ trợ hôm nay','assistant_help',{},'small',c.assistant_day===c.day):pill('Đang dùng trong nghề','green')):u.min_level>c.level?`<button type="button" class="btn ghost full" disabled>🔒 Mở ở cấp ${u.min_level} (đang cấp ${c.level})</button>`:c.money<u.price?`<button type="button" class="btn ghost full" disabled>Thiếu ${fmt(u.price-c.money)} xu</button>`:button(icon('plus',14)+' Đặt trong phòng','buyUpgrade',{item:u.id},'primary full')}</article>`;}).join('')}</div></div>`+footer('',button('Xem căn phòng','close',{},'primary'));}
+function decorView(){const c=room(),spots={window:'Bên cửa sổ',corner:'Góc phòng',front:'Gần cửa',center:'Giữa phòng',wall:'Trên tường'};return header('Trang trí & nâng cấp','','GÓC CỦA BẠN',pill(icon('coin',13)+' '+fmt(c.money)+' xu','amber'))+`<div class="sheet-body">${equipmentView(c,career(),api.content.upgrades)}<div class="row spread space-top"><div><h3>Chọn sắc cho căn phòng</h3><p class="muted small">Đổi màu tường không tốn xu.</p></div>${icon('plant',25)}</div><div class="theme-options">${[['boba','Trà sữa'],['warm','Ấm áp'],['sage','Xanh dịu'],['lavender','Tím mây']].map(([id,l])=>commandButton(`${(c.theme||'boba')===id?icon('check',13):icon('sun',13)} ${l}`,'theme',{theme:id},'small '+((c.theme||'boba')===id?'primary':'ghost'))).join('')}</div><div class="upgrade-grid">${api.content.upgrades.filter(u=>u.kind!=='equipment'&&(!u.careers||u.careers.includes(career()))).map(u=>{const owned=c.upgrades.includes(u.id);return `<article class="upgrade-card"><div class="row spread"><span class="upgrade-icon">${icon(u.icon,31)}</span>${pill(owned?'ĐÃ CÓ':u.min_level>c.level?'CẤP '+u.min_level:u.price+' XU',owned?'green':'')}</div><h3>${esc(u.name)}</h3><p>${esc(u.description)}</p>${owned?(u.kind==='decor'?`<select aria-label="Vị trí ${esc(u.name)}" data-decor-item="${u.id}">${Object.entries(spots).filter(([s])=>u.id==='poster'?s==='wall':s!=='wall').map(([id,label])=>`<option value="${id}"${c.decor[u.id]?.spot===id?' selected':''}>${label}</option>`).join('')}</select>`:u.id==='assistant'?commandButton('Nhờ hỗ trợ hôm nay','assistant_help',{},'small',c.assistant_day===c.day):pill('Đang dùng trong nghề','green')):u.min_level>c.level?`<button type="button" class="btn ghost full" disabled>🔒 Mở ở cấp ${u.min_level} (đang cấp ${c.level})</button>`:c.money<u.price?`<button type="button" class="btn ghost full" disabled>Thiếu ${fmt(u.price-c.money)} xu</button>`:button(icon('plus',14)+' Đặt trong phòng','buyUpgrade',{item:u.id},'primary full')}</article>`;}).join('')}</div></div>`+footer('',button('Xem căn phòng','close',{},'primary'));}
 /* ---- Many days at the original desks + the stock room (warehouseView): legacy parcels on the
    shop clock (mother_baby, pharmacy), the pharmacy's lot book · fridge log · regulars, the
    bookkeeping client files and the support follow-up board, plus the support call panel.
@@ -1164,17 +1181,25 @@ function inputPrompt(title,value,maxLength=100){
 }
 function finishConfirm(value){const choice=$('#confirmPay');if(value&&choice)value=choice.value;$('#confirmDialog').close();confirmResolve?.(value);confirmResolve=null;document.body.append($('#toasts'));}
 $('#confirmDialog').addEventListener('cancel',e=>{e.preventDefault();finishConfirm(false);});
-$('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.current)closeSheet();});
+$('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.current||world.mode==='town'&&townOn({...env(),ui:{...ui,jrView:'home',homeMode:'town'}}))closeSheet();});
 /* Phone bottom sheets show a grab handle: dragging the sheet head down now really closes the sheet (it
  * used to do nothing). Only transform moves while dragging; past 90 px or a quick flick it slides away and
  * closes through the same 'cancel' path as Escape (so sheets that may not close yet stay put). */
-{const d=$('#sheet'),HANDLE='.sheet-head,.home-top';let y0=0,t0=0,dy=0,drag=false;
-  d.addEventListener('pointerdown',e=>{if(layout()!=='phone'||e.pointerType==='mouse'||d.scrollTop>2||!e.target.closest?.(HANDLE)||e.target.closest('button,a,input,select,textarea,summary,label'))return;drag=true;y0=e.clientY;t0=e.timeStamp;dy=0;});
-  d.addEventListener('pointermove',e=>{if(!drag)return;dy=Math.max(0,e.clientY-y0);d.style.transition='none';d.style.transform=dy?`translateY(${dy}px)`:'';},{passive:true});
-  const end=e=>{if(!drag)return;drag=false;const flick=dy>40&&dy/Math.max(1,e.timeStamp-t0)>.5;d.style.transition='transform .2s ease-out';
-    if(dy>90||flick){d.style.transform='translateY(100%)';setTimeout(()=>{d.style.transition='';d.style.transform='';d.dispatchEvent(new Event('cancel',{cancelable:true}));},190);}
-    else{d.style.transform='';setTimeout(()=>{if(!drag)d.style.transition='';},220);}};
-  d.addEventListener('pointerup',end);d.addEventListener('pointercancel',end);}
+{const d=$('#sheet'),HANDLE='.sheet-head,.home-top';let y0=0,t0=0,dy=0,pointer=null,timer=0;
+  const release=()=>{const id=pointer;pointer=null;if(id!==null&&d.hasPointerCapture?.(id))d.releasePointerCapture(id);};
+  const reset=()=>{clearTimeout(timer);timer=0;release();dy=0;d.style.transition='';d.style.transform='';};
+  d.resetGesture=reset;
+  d.addEventListener('pointerdown',e=>{const head=e.target.closest?.(HANDLE);if(layout()!=='phone'||e.pointerType==='mouse'||e.isPrimary===false||pointer!==null||d.scrollTop>2||!head||e.clientY-head.getBoundingClientRect().top>22||e.target.closest('button,a,input,select,textarea,summary,label'))return;reset();pointer=e.pointerId;y0=e.clientY;t0=e.timeStamp;dy=0;try{d.setPointerCapture(pointer);}catch{/* pointer already cancelled by native scrolling */reset();}});
+  d.addEventListener('pointermove',e=>{if(pointer===null||e.pointerId!==pointer)return;dy=Math.max(0,e.clientY-y0);d.style.transition='none';d.style.transform=dy?`translateY(${dy}px)`:'';},{passive:true});
+  const end=e=>{if(pointer===null||e.pointerId!==pointer)return;release();const flick=dy>40&&dy/Math.max(1,e.timeStamp-t0)>.5;d.style.transition='transform .2s ease-out';
+    if(dy>90||flick){d.style.transform='translateY(100%)';timer=setTimeout(()=>{reset();if(d.open)d.dispatchEvent(new Event('cancel',{cancelable:true}));},190);}
+    else{d.style.transform='';timer=setTimeout(reset,220);}};
+  d.addEventListener('pointerup',end);
+  d.addEventListener('pointercancel',e=>{if(e.pointerId===pointer)reset();});
+  d.addEventListener('lostpointercapture',e=>{if(e.pointerId===pointer)reset();});
+  d.addEventListener('close',()=>{if(!d.open)reset();});
+  window.addEventListener('blur',reset);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)reset();});}
 $('#sheet').addEventListener('close',()=>{document.body.append($('#toasts'));
   // The close event is async: the sheet may already be reopened with another view.
   if($('#sheet').open)return;
@@ -1189,7 +1214,7 @@ async function selectCareer(id){
   ui.task=null;ui.docs.clear();ui.transactions.clear();ui.ai={};ui.phFilter='';ui.jobTab='shelf';
   await careerAssets(id);  // its workbench, stylesheet and scene first: the new place never renders half-styled
   const r=await cmd('select_career',pass, {career:id,quiet:true});if(!r)return;if(r.hired)toast(r.message,'good');
-  closeSheet();world.say(greeting());setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
+  world.setMode('work');closeSheet();world.say(greeting());setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
   abandonAfter(r);
 }
 /** A brand-new player's first workplace (v4/onboard.js quickOpen): day 1 opens at once, straight into the first
@@ -1211,6 +1236,8 @@ async function openJob(id,tab){
   if(select){const r=await cmd('task_select',{task:target},{quiet:true});if(!r&&ui.view==='job'&&ui.task===target){ui.task=room().active_task||null;renderSheet(false);}}
 }
 function interact(id){sound.unlock();sound.click();if(ui.paused)return;
+  if(id.startsWith('career:')){handleAction('choose',{career:id.slice(7)});return;}
+  if(id.startsWith('outing:')){void handleAction('leisurePlace',{kind:id.slice(7)}).catch(error=>toast(error.message,true));return;}
   {const alt=careerUI(career())?.spots?.[id];if(alt){openSheet(alt);return;}}  // a career's own place for a scene spot (air crew: no Sổ tiệm)
   if(id.startsWith('staff:')){ui.staffId=id.slice(6);openSheet('operations',{opsTab:'staff'});return;}
   if(id.startsWith('ops:')){openSheet('operations',{opsTab:id.slice(4)});return;}
@@ -1225,6 +1252,13 @@ function interact(id){sound.unlock();sound.click();if(ui.paused)return;
 }
 async function talk(text){if(!ui.npc||!text.trim())return;const id=ui.npc;const r=await (await L.chat.get()).aiTalk(env(),id,text);if(!r)return;ui.suggestions[id]=r.suggestions||[];world.say(r.reply,id);renderSheet();}
 async function handleAction(action,data,el){
+  if(action==='leisurePlace'){
+    if(!['fishing','boat','pool'].includes(data.kind))return;
+    const [{openPixelPlace},{loadLeisureArt}]=await Promise.all([import('./pixel/places.js'),import('./isometric/leisure-art.js')]);
+    const leisureArt=await loadLeisureArt(data.kind);closeSheet();openPixelPlace(data.kind,{...env(),leisureArt});return;
+  }
+  if(action==='home'&&townOn({...env(),ui:{...ui,jrView:'home',homeMode:'town'}}))action='isoTown';
+  if(await isometricAction(action,data,el,env()))return;
   switch(action){
     case'close':closeSheet();break;
     case'confirmNo':finishConfirm(false);break;
@@ -1313,7 +1347,7 @@ async function handleAction(action,data,el){
     case'executeCS':if(await confirmAction('Gửi việc tới đầu mối?','Kho, bên vận chuyển hay kế toán có thể mất vài giờ tới vài ngày. Vụ vẫn mở tới khi bạn kiểm kết quả.','Gửi việc'))await cmd('cs_execute',{task:activeTask().id});break;
     case'closeCS':if(await confirmAction('Đóng vụ đã có kết quả?','','Đóng vụ'))await cmd('cs_close',{task:activeTask().id});break;
     case'end':if(!room().open){openSheet('summary');break;}if(await confirmAction(wordsFor(career()).end_title,wordsFor(career()).end_text,'Khép ca')){const r=await cmd('end_day',{carry_event:true});if(r){ui.task=null;openSheet('summary');world.say('Hẹn gặp lại vào một ngày dịu dàng.');}}break;
-    case'buyUpgrade':{const u=api.content.upgrades.find(x=>x.id===data.item);if(await confirmAction('Đặt '+u.name.toLowerCase()+'?',`Dùng ${u.price} xu của nghề này. ${u.description}`,'Mua & đặt'))await cmd('buy_upgrade',{item:data.item});break;}
+    case'buyUpgrade':{const u=api.content.upgrades.find(x=>x.id===data.item);if(await confirmAction((u.kind==='equipment'?'Lắp ':'Đặt ')+u.name.toLowerCase()+'?',`Dùng ${u.price} xu của nghề này. ${u.description}`,u.kind==='equipment'?'Mua & lắp':'Mua & đặt'))await cmd('buy_upgrade',{item:data.item});break;}
     case'restock':{const quantity=Number(document.getElementById('qty-'+data.item)?.value);if(!Number.isInteger(quantity)||quantity<1||quantity>6){toast('Mỗi lần đặt từ 1 đến 6 món.',true);break;}const p=product(data.item);if(await confirmAction('Đặt một kiện hàng?',`${quantity} × ${p.name}, tổng ${quantity*p.cost} xu. Chỉ cộng kho sau khi kiện tới và bạn kiểm nhận.`, 'Đặt hàng'))await cmd('order_stock',{item:data.item,qty:quantity});break;}
     case'confirmEvent':{const e=room().event,o=e.options.find(o=>o.id===e.chosen);if(await confirmAction('Xác nhận cách xử lý?',`${o.label}. ${e.practice?'Diễn tập không trừ xu.':o.cost?'Chi '+o.cost+' xu từ quỹ nghề.':'Không tốn xu.'}`, 'Bắt đầu thực hiện'))await cmd('event_confirm');break;}
     case'eventStep':{const r=await cmd('event_step');if(r){world.say(r.message);world.go(room().event.station,()=>{});}break;}
@@ -1340,7 +1374,11 @@ async function handleAction(action,data,el){
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
       if(action==='garage'){await (await import('./v4/garage.js')).garageAction(action,data,el,env());break;}  // 🚗 Xe & phương tiện: lazy
-      if(action==='rui'||action==='vang'){await (await import('./v4/rui.js')).ruiAction(action,data,el,env());break;}  // 🛡️ Bảo hiểm, 💰 Tiệm vàng: lazy
+      if(action==='vang'){ui.ivMarket='gold';await journeyAction('jrInvest',data,el,env());break;}
+      if(action==='rui'){await (await import('./v4/rui.js')).ruiAction(action,data,el,env());break;}
+      if(action==='homeGuests'){await (await import('./v4/home-guests.js')).openHomeGuests(env(),data);break;}
+      if(action==='workVisit'){await (await import('./v4/workplace-visit.js')).openWorkplaceVisit(env(),data);break;}
+      if(action==='workVisitServe'){if(data.kind==='quay'){await (await import('./v4/quay.js')).quayAction('quay',{visitor:data.order},el,env());break;}if(data.career&&data.career!==career()){await selectCareer(data.career);if(career()!==data.career)break;}await openJob(data.task);break;}
       if(action==='quay'){await (await import('./v4/quay.js')).quayAction(action,data,el,env());break;}  // 🏪 Quầy của bạn: lazy
       if(action==='fair'){await (await import('./v4/fair.js')).fairAction(action,data,el,env());break;}  // 🏮 Hội chợ dân gian: lazy
       if(L.people.m&&await L.people.m.closenessAction(action,data,el,env()))break;
@@ -1445,7 +1483,9 @@ document.addEventListener('change',async e=>{
 });
 window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').open&&!$('#confirmDialog').open&&api.state?.current){setPaused(!ui.paused);}});
 // Back in the tab: re-sync, unless the state is fresh anyway (every focus used to refetch and re-render all).
-window.addEventListener('focus',()=>{if(api.state&&!ui.busy&&Date.now()-(api.syncedAt||0)>15000)api.refresh().catch(()=>{});});
+window.addEventListener('focus',()=>{if(api.state&&!ui.busy&&!(ui.view==='home'&&ui.jrView==='invest')&&Date.now()-(api.syncedAt||0)>15000)api.refresh().catch(()=>{});});
+const stopStaffRefresh=staffRefresh({state:()=>api.state,refresh:()=>api.refresh(),busy:()=>staffRefreshPaused(ui,!!document.querySelector('dialog.qy-sheet[open]'),!!document.querySelector('dialog.fh-sheet[open]')),lastSync:()=>api.syncedAt||0});
+window.addEventListener('pagehide',event=>{if(!event.persisted)stopStaffRefresh();});
 let responsiveTimer;
 window.addEventListener('resize',()=>{clearTimeout(responsiveTimer);responsiveTimer=setTimeout(()=>{if(api.state&&api.content)renderMain();},140);});
 // Badges set outside a render (v4/ticker.js, v4/marriage.js): redraw the rail so its hubs carry them too.
@@ -1527,7 +1567,9 @@ try{
   CAREER_MODULES.push(...Object.keys(api.content.careers||{}),'milk_tea','mother_baby');
   // Its stylesheet only styles the workbench: wait for it only when a sheet opens right away (day closed).
   await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
-  shell.boot(env());journeyBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
+  import('./v4/home-guests.js').then(m=>m.homeGuestsBoot(env())).catch(e=>console.warn('homeGuests:',e));
+  import('./v4/workplace-visit.js').then(m=>m.workVisitsBoot(env())).catch(e=>console.warn('workVisits:',e));
+  shell.boot(env());journeyBoot(env());boardBoot(env());bootIsometricShell(env);bootIsometricMovement(env);bootIsometricTown(env);bootCozyPortraits();startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
   const oauthReturned=accountBoot(env());
   ensureCareerUI();  // its workbench failed to come above (the game opens anyway): ask again in the background
   try{performance.mark('mnl-first-frame');}catch{/* no User Timing */}   // "time to first game frame" (telemetry.js load beacon)
@@ -1558,7 +1600,7 @@ try{
   if(!oauthReturned){
     const deep=new URLSearchParams(location.search);
     if(deep.get('social')){history.replaceState(null,'','/');openSocial(deep.get('social'));}
-    else if(!api.state.current)openSheet('home');else{if(!room().open)openSheet(room().shift_summary?'summary':'prepare');}
+    else if(!api.state.current){if(!townOn(env()))openSheet('home');}else if(world.mode==='work'&&!room().open)openSheet(room().shift_summary?'summary':'prepare');
   }
   // Callback feedback gets the first screen. Start automatic cards only after the player closes it;
   // a queued close event from a sheet already reopened is not a dismissal.

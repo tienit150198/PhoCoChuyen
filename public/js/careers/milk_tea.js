@@ -164,7 +164,7 @@ function hud(x){
     ${st>=2?`<span class="mt-chip hot">🔥 <b>${st}</b> ly liên tiếp</span>`:''}
     <span class="mt-chip">⭐ Tay nghề <b>${b.level||1}</b>${b.next_tier!=null?` · ${b.total||0}/${b.next_tier} ly`:''}</span>
     ${mod.title?`<span class="mt-chip mod">${x.esc(mod.emoji||'')} ${x.esc(mod.title)}</span>`:''}
-  </div>`;
+  </div>${(x.room.ops?.staff||[]).some(e=>e.status==='hired')?`<p class="muted small">👥 Người phụ kiếm thêm xu khi khép ca; bạn vẫn tự pha từng ly. ${x.button('Xem việc đội đang làm','staff',{},'ghost small')}</p>`:''}`;
 }
 function alerts(x){
   const b=B(x),out=[];
@@ -425,7 +425,7 @@ function finish(t,x){
   return `<div class="mt-finish">${sealer(t,x)}
     <div class="mt-minor">${x.confirmCmd('🗑️ Đổ ly','tea_discard',{task:t.id},'Đổ ly đang làm? Nguyên liệu đã dùng được ghi hao hụt và tính là một lần làm lại.','ghost small',!(cup.placed||(cup.items||[]).length))}
     ${jb(x,'🔎 So phiếu','tea_check',{task:t.id},'ghost small',!t.known||!(cup.items||[]).length||cup.sealed)}</div>
-    <p class="muted small">So phiếu sai sẽ tính một lỗi.</p></div>`;
+    <p class="muted small">So phiếu miễn phí: không tính lỗi, không trôi thời gian. Trao ly sai hoặc đổ làm lại vẫn tính lỗi.</p></div>`;
 }
 function nextStep(t,x,detail=true){
   if(!t)return 'Chờ khách ghé quầy';

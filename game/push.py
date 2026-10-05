@@ -163,19 +163,6 @@ def public_config() -> dict:
     return dict(enabled=bool(k), key=k['public'] if k else None)
 
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS push_subs (
-  endpoint TEXT PRIMARY KEY, sid TEXT NOT NULL, created REAL NOT NULL, last_ok REAL, fails INTEGER NOT NULL DEFAULT 0,
-  prefs TEXT NOT NULL DEFAULT '{}'
-);
-CREATE INDEX IF NOT EXISTS push_subs_sid ON push_subs(sid);
-CREATE TABLE IF NOT EXISTS push_queue (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, sid TEXT NOT NULL, kind TEXT NOT NULL, body TEXT NOT NULL, url TEXT NOT NULL,
-  at REAL NOT NULL, sent INTEGER NOT NULL DEFAULT 0, shown INTEGER NOT NULL DEFAULT 0
-);
-CREATE INDEX IF NOT EXISTS push_queue_sid ON push_queue(sid, id);
-CREATE TABLE IF NOT EXISTS push_daily (sid TEXT PRIMARY KEY, day TEXT NOT NULL);
-"""
 TITLES = dict(visit='Có khách ghé quán 👀', review='Đánh giá mới từ Phố nghề ⭐', reply='Có người trả lời bạn 💬', gift='Bạn nhận được quà 🎁',
               sale='Hàng đã bán ở chợ 🧺', comment='Bình luận mới 💬', daily='Quán đang chờ bạn mở cửa ☀️', community='Mục tiêu cả phố 🎉', chat='Tin nhắn mới 💬',
               wedding='Sắp tới giờ cưới 💍', quay='Làm thêm ở quầy 💼')
@@ -184,10 +171,6 @@ DEFAULT_PREFS = dict(social=True, daily=False, hour=19, tz=420)
 
 def ensure(store) -> None:
     _key_dir['path'] = Path(store.path).resolve().parent
-    if getattr(store, 'pg', None):
-        return  # PostgreSQL: created with every other table (game/pg_schema.py)
-    with store.connect() as db:
-        db.executescript(SCHEMA)
 
 
 def _valid_endpoint(endpoint) -> bool:

@@ -38,6 +38,7 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 sys.path.insert(0, str(ROOT))
 from browser_first_day import CMD, PICK  # noqa: E402  (the same "press what glows" loop)
 from game import boba  # noqa: E402
+from pg_test_support import test_env, test_connect, schema_for
 
 IMPORT = """async ()=>{const e=await fetch('/api/save/export').then(r=>r.json());
   const st=await fetch('/api/state').then(r=>r.json());const csrf=(await fetch('/api/bootstrap').then(r=>r.json())).csrf;
@@ -89,10 +90,10 @@ class Server:
         self.p = None
 
     def start(self):
-        env = dict(os.environ, QUIET='1', PUSH_DISABLED='1')
+        env = test_env( QUIET='1', PUSH_DISABLED='1')
         for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'LLM_BASE_URL', 'DATABASE_URL'):
             env.pop(k, None)
-        self.p = subprocess.Popen([sys.executable, 'server.py', '--port', str(self.port), '--db', os.path.join(self.tmp, 'g.sqlite3')],
+        self.p = subprocess.Popen([sys.executable, 'server.py', '--port', str(self.port), '--namespace', os.path.join(self.tmp, 'g.db')],
                                   cwd=ROOT, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         for _ in range(600):
             try:

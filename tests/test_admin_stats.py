@@ -1,6 +1,7 @@
+import psycopg
 """Admin statistics ("Thống kê"): metrics on a seeded DB, privacy of the payload,
 the cache, the AI counters and the admin-only HTTP route (game/admin_stats.py)."""
-import copy, datetime, http.client, io, json, os, sqlite3, subprocess, sys, tempfile, threading, time, unittest
+import copy, datetime, http.client, io, json, os, subprocess, sys, tempfile, threading, time, unittest
 from pathlib import Path
 from unittest.mock import patch
 
@@ -16,7 +17,7 @@ SECRET_NAME = 'Tên Riêng Bí Mật'
 
 # Time budgets: these tests check the numbers, not the machine's speed (a busy disk can take
 # seconds to extend a file); the budget test passes its own small `ms`.
-_BUDGETS = dict(REQUEST_MS=60000, STATEMENT_MS=60000, CHUNK_MS=60000, COUNT_MS=60000)
+_BUDGETS = dict(REQUEST_MS=60000, STATEMENT_MS=60000, CHUNK_MS=60000, COUNT_MS=60000, SYSTEM_MS=60000, LIVE_MS=60000)
 _saved = {}
 
 
@@ -69,7 +70,7 @@ class Seeded(unittest.TestCase):
         self.tokens = []
 
     def tearDown(self):
-        st.stop_jobs()
+        st.stop_jobs(timeout=60)
         st.clear_cache()
         self.store.close_pool()  # Windows: no open handle on the file being removed
         self.tmp.cleanup()
@@ -365,18 +366,6 @@ class SplitTests(Seeded):
         self.assertTrue(full['pending'])
         self.assertEqual(full['play']['sample'], 0)
         self.assertEqual(top['names']['grocery'], st.career_names()['grocery'])
-        if not getattr(self.store, 'pg', None):  # SQLite: not one statement of the summary names the save column
-            seen = []
-            real = sqlite3.connect
-            def traced(*a, **k):
-                con = real(*a, **k)
-                con.set_trace_callback(seen.append)
-                return con
-            st.clear_cache()
-            with patch.object(st.sqlite3, 'connect', traced), patch.object(st, 'wake', lambda store, fresh=False: None):
-                st.get_summary(self.store, 90)
-            self.assertTrue(seen)
-            self.assertFalse([s for s in seen if 'state' in s.replace('statement', '')])
 
     def test_reads_are_read_only_and_budgeted(self):
         self.seed(1)
@@ -464,19 +453,19 @@ class SplitTests(Seeded):
         st._unlock(fd)
         st.wake(self.store)
         self.assertIn(self.store.path, st._jobs)
-        for _ in range(250):
+        for _ in range(3000):
             sv = st.get_section(self.store, 'saves')
             if not sv.get('pending'):
                 break
             time.sleep(0.02)
         self.assertEqual(sv['play']['sample'], 3)
-        for _ in range(250):
+        for _ in range(3000):
             sysd = st.get_section(self.store, 'system')
             if not sysd.get('pending'):
                 break
             time.sleep(0.02)
         self.assertIn('sessions', {t['name'] for t in sysd['server']['tables']})
-        st.stop_jobs()
+        st.stop_jobs(timeout=60)
         self.assertNotIn(self.store.path, st._jobs)
         fd = st._try_lock(lock)                      # released when the job stopped
         self.assertIsNotNone(fd)
@@ -550,7 +539,7 @@ class FreshnessTests(Seeded):
     """Is the snapshot current, and does the job come back after a crash? (module doc)"""
 
     def wait_saves(self):
-        for _ in range(300):
+        for _ in range(3000):
             sv = st.get_section(self.store, 'saves')
             if not sv.get('pending'):
                 return sv
@@ -575,7 +564,7 @@ class FreshnessTests(Seeded):
         beat = json.loads(Path(lock).read_text())
         self.assertEqual(beat['pid'], os.getpid())      # the job's heartbeat, in its lock file
         self.assertEqual(st.job_state(self.store)['state'], 'running')
-        st.stop_jobs()
+        st.stop_jobs(timeout=60)
         self.assertEqual(st.job_state(self.store)['state'], 'idle')
 
     def test_an_operator_hold_is_honoured_and_shown(self):
@@ -604,7 +593,7 @@ class FreshnessTests(Seeded):
             proc.kill(); proc.wait(); proc.stdout.close()
         st.wake(self.store)                                # hold released: the job runs again
         self.assertIn(self.store.path, st._jobs)
-        for _ in range(300):
+        for _ in range(3000):
             sv = st.get_section(self.store, 'saves', fresh=True)
             if sv['play']['sample'] == 2:
                 break
@@ -640,17 +629,17 @@ class FreshnessTests(Seeded):
         calls = []
         def broken(store, days, ms=None):
             calls.append(days)
-            raise sqlite3.OperationalError('no such column: boom')
+            raise psycopg.OperationalError('no such column: boom')
         err = io.StringIO()
         with patch.object(st, 'summary', broken), patch.object(sys, 'stderr', err):
             st.wake(self.store)
             sv = self.wait_saves()                      # the saves pass ran after the failed summary
-            for _ in range(300):
+            for _ in range(3000):
                 if (st._result(self.store).get('errors') or {}).get('summary'):
                     break
                 time.sleep(0.02)
             time.sleep(2.5)                             # a loop turn later: no retry storm
-            st.stop_jobs()
+            st.stop_jobs(timeout=60)
         self.assertEqual(sv['play']['sample'], 1)
         self.assertEqual(calls, [7])                    # tried once, next try after SUMMARY_EVERY
         self.assertIn('[admin-stats] job summary: OperationalError: no such column: boom', err.getvalue())
@@ -672,7 +661,7 @@ class LiveTests(Seeded):
         self.assertEqual(live['active'], dict(m5=3, h1=4, h24=6))   # the unplayed save was opened just now
         self.assertEqual(live['new_today'], dict(sessions=7, players=6, accounts=1))
         self.assertGreater(live['db_bytes'], 0)
-        self.assertEqual(live['backend'], 'PostgreSQL' if self.store.pg else 'SQLite')
+        self.assertEqual(live['backend'], 'PostgreSQL')
         self.assertTrue(live['database'].startswith(live['backend']))
         self.assertEqual(live['today'], vn_today().isoformat())
         again = st.get_live(self.store)
@@ -840,7 +829,7 @@ class StatsHTTPTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.server.shutdown(); cls.server.server_close(); cls.thread.join(); st.stop_jobs(); cls.server.store.close_pool(); cls.temp.cleanup(); cls.env.stop()
+        cls.server.shutdown(); cls.server.server_close(); cls.thread.join(); st.stop_jobs(timeout=60); cls.server.store.close_pool(); cls.temp.cleanup(); cls.env.stop()
         st.clear_cache()
 
     def setUp(self):
@@ -945,7 +934,7 @@ class StatsHTTPTests(unittest.TestCase):
         play = ready('/api/admin/stats/section?name=playtime')
         self.assertEqual([p['key'] for p in play['periods']], ['today', 'yesterday', 'd7', 'd30'])
         self.assertEqual(len(play['hours']['avg']), 24)
-        self.assertIn(live['backend'], ('SQLite', 'PostgreSQL'))
+        self.assertEqual(live['backend'], 'PostgreSQL')
         with st._cmd_lock:
             self.assertGreaterEqual(sum(r[0] for r in st._cmd[st._cmd_prefix(self.server.store)].values()), 1)
         self.assertEqual(self.req(admin, '/api/admin/stats/summary?range=365')[0], 400)

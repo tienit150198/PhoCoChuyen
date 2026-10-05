@@ -1,31 +1,9 @@
-"""🧑‍🍳 Quầy của bạn, tự tay (game/quay.py): your menu, your counter's look, selling online, and a day you stand at
-your own counter yourself, staff or no staff.
+"""Owner-operated counters, configurable boards, and bounded rolling order queues.
 
-Owner 03/10: "cho người ta tự setup được menu, quán … tham khảo tiệm trà sữa … k thuê nhân viên cũng đc, tự mở quầy
-cũng đc … nhìn đc quầy của mình … mở bán onl, ship hàng … nhiều cái oái oăm". Simple, a few taps, hands-on.
-
-* Menu (st['menu'] = {on, p}): pick 1..MENU_MAX dishes of the trade's MENUS for today and price each within BAND %
-  of its base (like the milk tea board's 75-125 %). Customers react: dearer means fewer of them (ELASTIC), a cheap
-  board wins a little reputation, a dear one loses a little; more dishes bring a few more (VARIETY). A counter with
-  no menu sells its first three dishes at their base: exactly the 1.5.1 numbers.
-* Look (st['look'] = {c, d, t}): the awning colour, up to DECOR_MAX free decor pieces, tables or stools (TABLES: a
-  one-time price each, +TABLE_PCT % customers). The sign is the counter's name.
-* Online (st['online']): more people reach the counter (ONLINE_REACH %) for a fee (the app takes ONLINE_FEE % of what
-  online orders pay, a passive day pays PASSIVE_FEE % of its takings). Online customers rate (st['rate'] = [n, avg x10]).
-* A day at the counter (st['run'], one per life day): K walk-in customers served by hand (take the order, pick it
-  from your menu, give the right change, thank them), online orders packed by hand (the right dishes, sealed, the
-  utensils, the note) and shipped yourself (a short ride: the right turns) or by a shipper (SHIPPER_FEE %), and two
-  tricky moments of the day (game/quay_events.py). Closing it ("Đóng ca") settles the whole life day like a staffed
-  day (game/quay.py _sell): the rest of the day's customers are served by your hands plus your staff's, a little
-  more of them when your service was good (quality from the stars). The day's sales come from the same forecast,
-  stock and hands as an unattended day, so a day at the counter earns what one more pair of unpaid hands earns
-  plus at most QUALITY_MAX % (scripts/sim_quay.py): never a second income. Nothing a client sends is money: it sends
-  steps (dishes, the change, a choice, the turns) and the server prices them.
-  Closing runs the day's book (rent, the police, a thief, the till) and moves the counter's day to today, so the
-  life day's end skips it on this build and on the previous one (no day runs twice). A run still open when the life
-  day ends is closed then with what was done.
-* Losses are capped (EVENT_LOSS units a day, a wrong change at most what the customer paid) and paid from the till
-  and the fund only; what neither covers is waived: never a debt.
+Continuous counters sell only fulfilled orders from prepaid inventory. The owner
+can serve or deliver throughout the day; closing never creates additional sales.
+NPC activity and elapsed expenses are settled by quay_business before mutations.
+The legacy run representation remains readable for imported saves.
 """
 from __future__ import annotations
 
@@ -34,8 +12,8 @@ import copy
 
 from . import quay as qy
 
-MENU_MAX = 4
-BAND = (75, 125)                      # % of a dish's base price the board accepts
+MENU_MAX = 18
+BAND = (75, 125)                      # legacy metadata; band() now exposes technical money bounds
 ELASTIC = 150                         # customers: -1.5 % for each 1 % over the base (and + under it)
 VARIETY = {1: 88, 2: 95, 3: 100, 4: 104}
 CHEAP, DEAR = 90, 115                 # a board under / over this % of the base: reputation +1 / -1 a day
@@ -71,6 +49,19 @@ MENUS = {
     'clothing': [('ao_thun', '👕', 'Áo thun', 22), ('quan_jean', '👖', 'Quần jean', 35), ('vay', '👗', 'Váy', 33),
                  ('non', '🧢', 'Nón', 15), ('khan', '🧣', 'Khăn', 20), ('dep', '🩴', 'Dép', 18)],
 }
+# Complete boards: every dish may be offered together.
+MORE_MENUS = {
+ 'tra_da': [('sau_da','🥤','Sấu đá',5),('mo_da','🥤','Mơ đá',5),('nuoc_loc','💧','Nước lọc',2),('bot_san','🥛','Bột sắn',6),('nuoc_dua','🥥','Nước dừa',8),('tra_gung','🫖','Trà gừng',5)],
+ 'fruit': [('dua_luoi','🍈','Dưa lưới',10),('thanh_long','🍉','Thanh long',8),('du_du','🥭','Đu đủ',7),('dua','🍍','Dứa cắt',8),('nho','🍇','Nho',12),('tao','🍎','Táo cắt',9)],
+ 'ice_cream': [('kem_socola','🍫','Kem sô cô la',8),('kem_dau','🍓','Kem dâu',8),('kem_matcha','🍵','Kem matcha',9),('kem_vani','🍨','Kem vani',7),('kem_sau_rieng','🍨','Kem sầu riêng',12),('kem_sundae','🍧','Kem sundae',11)],
+ 'cafe_bakery': [('espresso','☕','Espresso',8),('latte','☕','Latte',12),('cappuccino','☕','Cappuccino',12),('tiramisu','🍰','Tiramisu',15),('banh_pho_mai','🧀','Bánh phô mai',14),('banh_chuoi','🍌','Bánh chuối',7)],
+ 'milk_tea': [('olong','🫖','Trà ô long',9),('tra_vai','🍒','Trà vải',10),('tra_sen','🪷','Trà sen',11),('ts_khoai_mon','🧋','Trà sữa khoai môn',12),('cacao','🍫','Ca cao',10),('sua_chua','🥛','Sữa chua uống',8)],
+ 'florist': [('bo_sen','🪷','Bó sen',20),('cam_chuong','🌸','Cẩm chướng',18),('hong_trang','🤍','Hồng trắng',24),('baby','💐','Hoa baby',18),('cau','🌸','Cẩm tú cầu',26),('hoa_kho','🍂','Bó hoa khô',23)],
+ 'grocery': [('sua','🥛','Hộp sữa',10),('dau_an','🫙','Dầu ăn',18),('duong','🧂','Túi đường',12),('muoi','🧂','Túi muối',5),('giay','🧻','Khăn giấy',9),('xa_phong','🧼','Xà phòng',11)],
+ 'clothing': [('ao_somi','👔','Áo sơ mi',30),('ao_khoac','🧥','Áo khoác',45),('quan_short','🩳','Quần short',24),('tat','🧦','Đôi tất',8),('tui','👜','Túi vải',20),('do_bo','👚','Đồ bộ',32)],
+}
+for _trade, _dishes in MORE_MENUS.items():
+    MENUS[_trade].extend(_dishes)
 DISH = {t: {d[0]: dict(id=d[0], emoji=d[1], name=d[2], base=d[3]) for d in rows} for t, rows in MENUS.items()}
 TOOL = {'tra_da': ('🥤', 'Ống hút'), 'fruit': ('🍴', 'Nĩa, muỗng'), 'ice_cream': ('🥄', 'Muỗng'), 'cafe_bakery': ('🥤', 'Ống hút, khăn giấy'),
         'milk_tea': ('🥤', 'Ống hút'), 'florist': ('💌', 'Thiệp'), 'grocery': ('🛍️', 'Túi'), 'clothing': ('🛍️', 'Túi giấy')}
@@ -91,6 +82,7 @@ NAMES = ('Chị Lan', 'Anh Tuấn', 'Bé Na', 'Cô Ba', 'Chú Sáu', 'Bạn Minh
 TURNS = ('L', 'S', 'R')
 ORDER_SIZE = {'xe': (1, 1, 2), 'sap': (1, 1, 2, 2), 'kiot': (1, 1, 2, 2, 3)}   # dishes per online order: a cart's phone rings for small ones
 RUN_KEYS = frozenset({'d', 'i', 'k', 'n', 'sk', 'u', 'rv', 'co', 'm', 'b', 'r', 'ss', 'sn', 'ev', 'eo', 'on', 'x', 'sum'})
+OWNER_QUEUE_MAX = 8                  # including the person at the counter
 
 
 def _rng(s: dict, st: dict, day: int, *tag) -> random.Random:
@@ -98,7 +90,7 @@ def _rng(s: dict, st: dict, day: int, *tag) -> random.Random:
 
 
 def band(base: int) -> tuple[int, int]:
-    return max(1, round(base * BAND[0] / 100)), max(1, round(base * BAND[1] / 100))
+    return 1, 1000000
 
 
 def cost_of(trade: str, dish: str) -> float:
@@ -121,10 +113,9 @@ def price(st: dict, dish: str, board: dict | None = None) -> int:
 
 
 def board_pct(st: dict, board: dict | None = None) -> float:
-    """What a dish of today's board costs on average, against the trade's usual price (game/quay.py TRADES price):
-    100.0 for the default board (its three dishes average the trade's price). Customers compare to that."""
+    """Average of each dish's price/base ratio; informational, not an aggregate demand floor."""
     b = board or menu(st)
-    return 100.0 * sum(b['p'][d] for d in b['on']) / len(b['on']) / qy.TRADES[st['trade']]['price']
+    return 100.0 * sum(b['p'][d] / DISH[st['trade']][d]['base'] for d in b['on']) / len(b['on'])
 
 
 def goods_pct(st: dict, board: dict | None = None) -> float:
@@ -138,7 +129,9 @@ def demand_pct(st: dict) -> float:
     """The board, the look and online selling, as a % of the customers (100: a 1.5.1 counter)."""
     b = menu(st)
     pct = board_pct(st, b)
-    f = max(40.0, min(160.0, 100 - ELASTIC * (pct - 100) / 100)) * VARIETY[len(b['on'])] / 100
+    from .quay_business import demand
+    f = 100 * sum(demand(DISH[st['trade']][d]['base'], b['p'][d]) for d in b['on']) / len(b['on'])
+    f *= VARIETY.get(len(b['on']), 110) / 100
     f *= 1 + TABLE_PCT * look(st)['t'] / 100
     if st.get('online'):
         f *= ONLINE_REACH / 100
@@ -185,12 +178,19 @@ def _say(name: str, items: list[str], rows: dict) -> str:
 
 def customer(s: dict, st: dict, run: dict, i: int) -> dict:
     """The i-th walk-in of the run: {name, look, items, total, pay, say}. From the board as it was when the run began."""
+    if run.get('continuous') and run.get('current') and run['current'].get('index') == i:
+        return dict(run['current'])
     board = menu(st)
     rows = DISH[st['trade']]
-    r = _rng(s, st, run['d'], 'c', i)
+    r = _rng(s, st, run['d'], 'c', run.get('nonce', 0), i)
     name = r.choice(NAMES)
     on = board['on']
-    if len(on) >= 2 and r.random() < 0.25:
+    if run.get('continuous'):
+        from .quay_business import demand
+        stock = st['business']['stock']
+        on = [d for d in on if stock.get(d, 0)] or on
+        items = r.choices(on, weights=[demand(rows[d]['base'], board['p'][d]) for d in on], k=1)
+    elif len(on) >= 2 and r.random() < 0.25:
         items = sorted(r.sample(on, 2))
     else:
         d = r.choice(on)
@@ -204,10 +204,19 @@ def customer(s: dict, st: dict, run: dict, i: int) -> dict:
 
 def order(s: dict, st: dict, run: dict, j: int) -> dict:
     """The j-th online order: {items, total, note, sticker, tool, cod, addr, route, at}."""
+    if run.get('continuous') and str(j) in run.get('order_data', {}):
+        return dict(run['order_data'][str(j)])
     board = menu(st)
-    r = _rng(s, st, run['d'], 'o', j)
+    r = _rng(s, st, run['d'], 'o', run.get('nonce', 0), run.get('order_seq', 0), j)
     n = r.choice(ORDER_SIZE[st['place']])
-    items = sorted(r.choice(board['on']) for _ in range(n))
+    on = board['on']
+    if run.get('continuous'):
+        from .quay_business import demand
+        on = [d for d in on if st['business']['stock'].get(d, 0)] or on
+        n = 1
+        items = r.choices(on, weights=[demand(DISH[st['trade']][d]['base'], board['p'][d]) for d in on], k=1)
+    else:
+        items = sorted(r.choice(on) for _ in range(n))
     note, sticker, tool = r.choice(NOTES)
     if tool is None:
         tool = TOOL_DEFAULT[st['trade']]
@@ -255,7 +264,7 @@ def _need(cond, msg: str, code: str = 'invalid_action'):
 
 def _open_run(st: dict, day: int) -> dict | None:
     run = st.get('run')
-    return run if isinstance(run, dict) and run['d'] == day and not run['x'] else None
+    return run if isinstance(run, dict) and (run.get('continuous') or run['d'] == day) and not run['x'] else None
 
 
 def action(s: dict, name: str, p: dict, st: dict) -> dict:
@@ -264,11 +273,14 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
     j = s['journey']
     day = int(j['life_day'])
     trade, rows = st['trade'], DISH[st['trade']]
+    if name=='jr_quay_serve' and 'visitor_id' in p:
+        from .player_service_tasks import serve_visit
+        return serve_visit(st,p)
     if name == 'jr_quay_menu':
         _need(set(p) <= {'stall', 'on', 'p'}, 'Menu không hợp lệ.')
         _need(_open_run(st, day) is None, 'Đang đứng quầy. Đóng ca rồi sửa menu nhé.', 'busy')
         on, prices = p.get('on'), p.get('p', {})
-        _need(isinstance(on, list) and 1 <= len(on) <= MENU_MAX and len(set(on)) == len(on) and all(d in rows for d in on),
+        _need(isinstance(on, list) and 1 <= len(on) <= MENU_MAX and all(isinstance(d, str) for d in on) and len(set(on)) == len(on) and all(d in rows for d in on),
               f'Chọn từ 1 đến {MENU_MAX} món nhé.')
         _need(isinstance(prices, dict) and set(prices) <= set(rows), 'Giá không hợp lệ.')
         cur = menu(st)['p']
@@ -309,42 +321,42 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
     if name == 'jr_quay_start':
         _need(set(p) <= {'stall'}, 'Thao tác không hợp lệ.')
         _need(st['due'] <= 0, 'Đóng tiền thuê rồi mở hàng nhé.', 'closed')
-        run = st.get('run')
-        _need(not (isinstance(run, dict) and run['d'] == day), 'Hôm nay bạn đứng quầy rồi. Mai ghé tiếp nhé!' if isinstance(run, dict) and run['x']
-              else 'Bạn đang đứng quầy.', 'done_today')
-        _need(st['day'] < day, 'Hôm nay quầy đã bán xong rồi. Mai ghé nhé!', 'done_today')
-        P = qy.PLACES[st['place']]
-        _need(st['fund'] + st['till'] >= sum(x['wage'] for x in st['staff']) + P['power'], 'Hết vốn quầy: góp thêm vốn rồi mở hàng nhé.', 'no_money')
-        fc = qy.forecast(s, st, day)
-        # you buy the day's goods yourself: never more than your hands and your staff's can sell
-        stock = max(1, round(min(fc['n'] * qy.ORDERS[st['order']] / 100, (player_hands(st) + qy._hands(st)) * 1.15)))
-        online = bool(st.get('online'))
-        n_on = (ONLINE_N + (1 if rating(st)[1] >= 45 else 0)) if online else 0
-        run = dict(d=day, i=0, k=_walkins(fc['n']), n=fc['n'], sk=stock, u=0, rv=0, co=0, m=0, b=0, r=0, ss=0, sn=0,
-                   ev=[], eo=[], on=[0] * n_on, x=False, sum=None)
-        run['ev'] = _pick_events(s, st, day, online)
-        # enough for the people you will meet by hand (the queue and the phone): never "sold out" with a queue waiting
-        # (up to the day's demand and a little: a small cart's queue may still empty its shelf)
-        mine = sum(len(customer(s, st, run, i)['items']) for i in range(run['k'])) + sum(len(order(s, st, run, j)['items']) for j in range(n_on))
-        run['sk'] = max(stock, min(mine, round(fc['n'] * 1.2)))
+        _need(_open_run(st, day) is None, 'Bạn đang đứng quầy.', 'busy')
+        b = st['business']
+        _need(not b['paused'], 'Mở lại quầy trước khi đứng bán.', 'closed')
+        _need(any(b['stock'].get(d, 0) for d in menu(st)['on']), 'Nhập hàng vào kho trước nhé.', 'sold_out')
+        from .work_gear import factor
+        b['manual_seq'] += 1
+        run = dict(d=day, i=0, k=1, n=1, sk=sum(b['stock'].values()), u=0, rv=0, co=0, m=0, b=0, r=0, ss=0, sn=0,
+                   ev=[], eo=[], on=[0] * (3 if st.get('online') else 0), x=False, sum=None,
+                   continuous=True, nonce=b['manual_seq'], next_at=max(b.get('owner_next', b['cursor']), b['cursor'] + (_queue_wait(st) if react(st) == 'dear' else 0)), order_seq=0, order_data={},
+                   drive_factor=factor(s.get('careers', {}).get('delivery', {})))
         st['run'] = run
+        run['current'] = dict(customer(s, st, run, 0), index=0)
+        if any(price(st, d) > DISH[trade][d]['base'] * 1.15 for d in run['current']['items']):
+            run['next_at'] = max(run['next_at'], b['cursor'] + _queue_wait(st))
+        for jn in range(len(run['on'])):
+            _next_order(s, st, run, jn, b['cursor'] + (jn + 1) * _manual_wait(st, s))
+        settle_queue(s, st, b['cursor'])
         st['left'] = 0
-        return dict(message='🧑‍🍳 Mở hàng! Khách đầu tiên tới rồi.')
+        return dict(message='🧑‍🍳 Bạn đã đứng quầy. Khách đang tới, đơn sẽ hiện ngay tại đây.' if run['next_at'] > b['cursor']
+                    else '🧑‍🍳 Mở hàng! Khách đầu tiên tới rồi, người tiếp theo đang ghé.')
     run = _open_run(st, day)
     _need(run is not None, 'Bạn chưa mở hàng hôm nay.', 'no_run')
     if name in ('jr_quay_signal','jr_quay_cross'):
         from . import traffic
-        _need(set(p)<=({'stall','order'} if name=='jr_quay_signal' else {'stall','order','token','turn'}),'Thông tin ngã tư sai.')
+        _need(set(p)<=({'stall','order','order_id'} if name=='jr_quay_signal' else {'stall','order','order_id','token','turn'}),'Thông tin ngã tư sai.')
         jn=p.get('order')
         _need(type(jn) is int and 0<=jn<len(run['on']) and run['on'][jn]==0,'Đơn giao không còn chờ.')
         o=order(s,st,run,jn)
+        _check_order(st, run, o, p)
         _need(run['i']>=o['at']-1 or run['i']>=run['k'],'Đơn này chưa tới.')
         rides=run.setdefault('rides',{})
         ride=rides.setdefault(str(jn),dict(picks=[],traffic=traffic.fresh()))
         if name=='jr_quay_signal':
             if len(ride['picks'])==3:return dict(message='',traffic=traffic.public(ride['traffic']),picks=list(ride['picks']))
             step=len(ride['picks'])
-            traffic.issue(ride['traffic'],f'{st["id"]}:{day}:{jn}:{step}',(jn*3+step*5)%16,'y')
+            traffic.issue(ride['traffic'],f'{st["id"]}:{day}:{run.get("nonce", 0)}:{o.get("id", jn)}:{step}',(jn*3+step*5)%16,'y')
             return dict(message='',traffic=traffic.public(ride['traffic']),picks=list(ride['picks']))
         turn=p.get('turn');_need(isinstance(turn,str) and turn in TURNS,'Chọn hướng đi ở ngã tư.')
         _need(ride['traffic']['challenge'] is not None,'Xem tín hiệu trước khi qua ngã tư.')
@@ -354,16 +366,23 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
             ride['picks'].append(turn)
             if r['fine']:
                 run['m']-=r['fine']
+                if run.get('continuous'):
+                    from .quay_business import assess_fine
+                    assess_fine(st, r['fine'])
                 qy._log(st,day,'🚦 Vượt đèn đỏ · biên nhận '+r['token'][:8],-r['fine'])
-        return dict(message=f'🚦 Vượt đèn đỏ: phạt {r["fine"]} xu, tính vào chi phí khi đóng ca quầy.' if r['fine'] else '🚦 Đèn vừa chuyển đỏ: miễn phạt trong 1 giây đầu để kịp dừng an toàn.' if r['grace'] else '🚦 Đã qua ngã tư đúng tín hiệu.',traffic=traffic.public(ride['traffic']),picks=list(ride['picks']),receipt=r)
+        return dict(message=f'🚦 Vượt đèn đỏ: phạt {r["fine"]} xu, đã ghi vào chi phí quầy.' if r['fine'] else '🚦 Đèn vừa chuyển đỏ: miễn phạt trong 1 giây đầu để kịp dừng an toàn.' if r['grace'] else '🚦 Đã qua ngã tư đúng tín hiệu.',traffic=traffic.public(ride['traffic']),picks=list(ride['picks']),receipt=r)
     if name == 'jr_quay_serve':
         _need(set(p) <= {'stall', 'items', 'change', 'smile'}, 'Thao tác không hợp lệ.')
         _need(pending_event(run) is None, 'Xử lý chuyện này trước nhé.', 'event')
         _need(run['i'] < run['k'], 'Hết khách đứng chờ rồi. Đóng ca nhé!', 'no_customer')
-        _need(run['u'] < run['sk'], 'Hết hàng rồi. Đóng ca nhé!', 'sold_out')
+        if run.get('continuous'):
+            _need(not st['business']['paused'] or run['next_at'] <= st['business'].get('closed_at', 0), 'Quầy đã đóng, chưa nhận khách mới.', 'closed')
+            _need(st['business']['cursor'] >= run['next_at'], 'Khách tiếp theo đang tới.', 'waiting')
+        else:
+            _need(run['u'] < run['sk'], 'Hết hàng rồi. Đóng ca nhé!', 'sold_out')
         items = p.get('items')
         _need(isinstance(items, list) and 1 <= len(items) <= 6 and all(isinstance(d, str) and d in rows for d in items), 'Chọn món cho khách nhé.')
-        change = e.integer(p.get('change'), 0, 10**4)
+        change = e.integer(p.get('change'), 0, 6000000)
         smile = p.get('smile') is True
         c = customer(s, st, run, run['i'])
         want = sorted(c['items'])
@@ -377,6 +396,10 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         waste = sum(cost_of(trade, d) for d in extra)
         lost = min(change - due, c['pay']) if change > due else 0
         stars = 1 + (2 if right else 0) + (1 if change == due else 0) + (1 if smile else 0)
+        if run.get('continuous'):
+            from .quay_business import sale
+            _need_stock(st, want)
+            run['m'] += sale(st, want, st['business']['cursor'], stars=stars, total=c['total'], extra_loss=lost + round(waste))
         run['i'] += 1
         run['u'] += len(want)          # stock and demand count dishes (a 1.5.1 customer buys one)
         run['rv'] += c['total']
@@ -384,6 +407,16 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         run['m'] -= lost
         run['ss'] += stars
         run['sn'] += 1
+        if run.get('continuous'):
+            run['k'] = run['i'] + 1
+            if 'crowd' in run:
+                _next_customer(s, st, run)
+            else:
+                run['next_at'] = max(st['business']['cursor'], run['next_at'] + _manual_wait(st, s))
+                run.pop('current', None)
+                run['current'] = dict(customer(s, st, run, run['i']), index=run['i'])
+            st['business']['owner_next'] = run['next_at']
+            run['sk'] = run['u'] + sum(st['business']['stock'].values())
         lines = []
         lines.append(f'{c["name"]}: ' + ('đúng món! ' if right else 'ủa, mình gọi món khác mà. Bạn làm lại. '))
         if change == due:
@@ -425,13 +458,15 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         tail = f' (+{qy._fmt(money)} xu)' if money > 0 else f' (−{qy._fmt(-money)} xu)' if money < 0 else ''
         return dict(message=f'{evd["emoji"]} {o["t"]}{tail}')
     if name == 'jr_quay_ship':
-        _need(set(p) <= {'stall', 'order', 'items', 'seal', 'tool', 'note', 'way', 'route'}, 'Thao tác không hợp lệ.')
+        _need(set(p) <= {'stall', 'order', 'order_id', 'items', 'seal', 'tool', 'note', 'way', 'route'}, 'Thao tác không hợp lệ.')
         jn = p.get('order')
         _need(type(jn) is int and 0 <= jn < len(run['on']), 'Không có đơn này.')
         _need(run['on'][jn] == 0, 'Đơn này giao rồi.')
         o = order(s, st, run, jn)
+        _check_order(st, run, o, p)
         _need(run['i'] >= o['at'] - 1 or run['i'] >= run['k'], 'Đơn này chưa tới.')
-        _need(run['u'] < run['sk'], 'Hết hàng rồi, không làm đơn này được.', 'sold_out')
+        if not run.get('continuous'):
+            _need(run['u'] < run['sk'], 'Hết hàng rồi, không làm đơn này được.', 'sold_out')
         items = p.get('items')
         _need(isinstance(items, list) and 1 <= len(items) <= 6 and all(isinstance(d, str) and d in rows for d in items), 'Bỏ món vào túi nhé.')
         for k in ('seal', 'tool', 'note'):
@@ -459,11 +494,25 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
             late = _rng(s, st, day, 'late', jn).random() < 0.2
         stars = max(1, stars - (1 if late else 0))
         app = round(o['total'] * ONLINE_FEE / 100)
+        if run.get('continuous'):
+            from .quay_business import sale
+            _need_stock(st, o['items'])
+            run['m'] += sale(st, o['items'], st['business']['cursor'], channel='online', stars=stars, total=o['total'], extra_fee=fee,
+                             extra_loss=round(sum(cost_of(trade, d) for d in extra)))
         run['on'][jn] = stars
         run['u'] += len(o['items'])
         run['rv'] += o['total'] - app - fee
         run['co'] += round(sum(cost_of(trade, d) for d in o['items']) + sum(cost_of(trade, d) for d in extra))
-        _rate(st, stars)
+        if not run.get('continuous'):
+            _rate(st, stars)
+        else:
+            run['ss'] += stars
+            run['sn'] += 1
+            run['on'][jn] = 0
+            run.get('rides', {}).pop(str(jn), None)
+            delivery_speed = o.get('drive_factor', 1) if way == 'self' else 1
+            _next_order(s, st, run, jn, max(st['business']['cursor'], o['available_at'] + round(_manual_wait(st, s) * 2 / delivery_speed)))
+            run['sk'] = run['u'] + sum(st['business']['stock'].values())
         bits = ['đúng món' if right else 'sai món', 'dán kín' if p.get('seal') else 'quên dán']
         how = ('🛵 Bạn tự giao' + (', lạc đường một chút' if late else ', tới nhanh')) if way == 'self' else \
             (f'🛵 Shipper giao (phí {fee} xu)' + (', hơi trễ' if late else ''))
@@ -479,6 +528,149 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
     raise e.GameError('Thao tác quầy không hợp lệ.', 'unknown_action')
 
 
+def _manual_wait(st, s=None):
+    from .quay_business import demand
+    from .work_gear import factor
+    board = menu(st)
+    available = [d for d in board['on'] if st['business']['stock'].get(d, 0)] or board['on']
+    willingness = sum(demand(DISH[st['trade']][d]['base'], board['p'][d]) for d in available) / len(available)
+    speed = factor((s or {}).get('careers', {}).get(st['trade'], {}))
+    from .quay_market import snapshot
+    market_factor = snapshot(st['business']['cursor'])['demand_factor']
+    return min(10**15, max(5000, round(15000 / max(1e-12, willingness) / speed / market_factor)))
+
+
+def _queue_wait(st):
+    """Busy normal-price footfall; expensive menus retain cubic resistance.
+
+    This interval uses the menu, not the remaining stock mix. Selling one item
+    cannot change the clock differently under frequent and offline settlements.
+    """
+    from .quay_business import demand
+    board = menu(st)
+    willingness = sum(demand(DISH[st['trade']][d]['base'], board['p'][d]) for d in board['on']) / len(board['on'])
+    return min(10**15, max(1000, round(3000 / max(1e-12, willingness) / st['business'].get('speed_factor', 1))))
+
+
+def reopen_queue(st):
+    """Retain arrived customers/quotes, reanchor only future closed footfall."""
+    b, run = st['business'], st.get('run')
+    if not isinstance(run, dict) or not run.get('continuous') or run['x']:
+        return
+    closed_at = b.get('closed_at', b['cursor'])
+    if run['next_at'] > closed_at:
+        run['next_at'] = b['cursor'] + _queue_wait(st)
+        run['current']['arrival_at'] = run['next_at']
+    b['owner_next'] = run['next_at']
+    if 'crowd' in run:
+        run['crowd']['next_at'] = max(b['cursor'], run['next_at']) + _queue_wait(st)
+    for row in run.get('order_data', {}).values():
+        if row['available_at'] > closed_at:
+            row['available_at'] = b['cursor'] + _manual_wait(st)
+
+
+def _queue_traits(s, st, run, row, ticket, at):
+    r = _rng(s, st, run['d'], 'patience', run['nonce'], ticket)
+    row.update(ticket=ticket, arrival_at=at, temperament='fussy' if r.randrange(3) == 0 else 'relaxed',
+               patience=r.randint(18, 30) * 1000)
+    return row
+
+
+def _queue_customer(s, st, run, ticket, at):
+    # The arrival ticket, not the number already served, seeds this customer.
+    # Keep the active person's tray and payment stable as other people arrive.
+    draft = dict(run, current=None)
+    row = customer(s, st, draft, ticket)
+    present = {p['name'] for p in [run['current']] + run.get('crowd', {}).get('waiting', [])}
+    if row['name'] in present:
+        row['name'] = _rng(s, st, run['d'], 'queue-name', run['nonce'], ticket).choice([name for name in NAMES if name not in present])
+        row['say'] = _say(row['name'], row['items'], DISH[st['trade']])
+    return _queue_traits(s, st, run, row, ticket, at)
+
+
+def settle_queue(s, st, at):
+    """Advance only the bounded owner queue; arrivals never spend or earn xu.
+
+    Called before each NPC stock mutation and at the final business cursor.
+    Once full, skip elapsed arrival slots arithmetically, even after years away.
+    The person currently being served is never replaced by a poll or migration.
+    """
+    run = st.get('run')
+    if not isinstance(run, dict) or not run.get('continuous') or run['x']:
+        return False
+    if st['business']['paused']:
+        return False
+    changed = False
+    if 'crowd' not in run:
+        _queue_traits(s, st, run, run['current'], 0, run['next_at'])
+        run['crowd'] = dict(v=1, next_at=run['next_at'] + _queue_wait(st), seq=1, waiting=[])
+        changed = True
+    crowd = run['crowd']
+    interval = _queue_wait(st)
+    stock = st['business']['stock']
+    stocked = any(stock.get(d, 0) for d in menu(st)['on'])
+    while crowd['next_at'] <= at and stocked and len(crowd['waiting']) < OWNER_QUEUE_MAX - 1:
+        crowd['waiting'].append(_queue_customer(s, st, run, crowd['seq'], crowd['next_at']))
+        crowd['seq'] += 1
+        crowd['next_at'] += interval
+        changed = True
+    if crowd['next_at'] <= at:
+        skipped = (at - crowd['next_at']) // interval + 1
+        crowd['seq'] += skipped
+        crowd['next_at'] += skipped * interval
+        changed = True
+    return changed
+
+
+def _next_customer(s, st, run):
+    crowd, stock = run['crowd'], st['business']['stock']
+    # Waiting people whose dish just sold out have not paid or reserved goods.
+    # Move to a serviceable request before it becomes the active tray.
+    crowd['waiting'] = [row for row in crowd['waiting']
+                        if all(stock.get(d, 0) >= row['items'].count(d) for d in set(row['items']))]
+    if crowd['waiting']:
+        row = crowd['waiting'].pop(0)
+    else:
+        row = _queue_customer(s, st, run, crowd['seq'], crowd['next_at'])
+        crowd['seq'] += 1
+        crowd['next_at'] += _queue_wait(st)
+    run['current'] = dict(row, index=run['i'])
+    run['next_at'] = row['arrival_at']
+
+
+def _customer_mood(row, at):
+    waited = max(0, at - row['arrival_at'])
+    fussy = row['temperament'] == 'fussy'
+    mood = 'angry' if fussy and waited >= row['patience'] * 2 else 'impatient' if fussy and waited >= row['patience'] else 'calm'
+    speech = ('Món của tôi đâu rồi? Tôi chờ lâu lắm rồi đấy!' if mood == 'angry' else
+              'Nhanh giúp tôi nhé, tôi đang vội!' if mood == 'impatient' else
+              'Bạn cứ làm lần lượt nhé, tôi đợi được.' if not fussy else 'Làm nhanh giúp tôi nhé.')
+    return dict(ticket=row['ticket'], name=row['name'], look=row['look'], temperament=row['temperament'],
+                mood=mood, speech=speech, arrival_at=row['arrival_at'] / 1000)
+
+
+def _need_stock(st, items):
+    stock = st['business']['stock']
+    _need(all(stock.get(d, 0) >= items.count(d) for d in set(items)), 'Món trong đơn đã hết. Nhập thêm hàng để phục vụ.', 'sold_out')
+
+
+def _next_order(s, st, run, jn, at):
+    from .work_gear import factor
+    run['order_seq'] += 1
+    run['order_data'].pop(str(jn), None)
+    o = order(s, st, run, jn)
+    o.update(id=f"{run['nonce']}:{run['order_seq']}", available_at=at, at=1,
+             drive_factor=factor(s.get('careers', {}).get('delivery', {})))
+    run['order_data'][str(jn)] = o
+
+
+def _check_order(st, run, o, p):
+    if run.get('continuous'):
+        _need(not st['business']['paused'] or o['available_at'] <= st['business'].get('closed_at', 0), 'Quầy đã đóng, chưa nhận đơn mới.', 'closed')
+        _need(st['business']['cursor'] >= o['available_at'], 'Đơn này chưa tới.', 'waiting')
+        _need(p.get('order_id', o['id']) == o['id'], 'Đơn này đã thay đổi. Xem đơn mới nhé.', 'stale_order')
+
+
 def player_hands(st: dict) -> float:
     P, T = qy.PLACES[st['place']], qy.TRADES[st['trade']]
     return P['cap'] * T['mult'] / 100 * SELF_HANDS / 100
@@ -487,6 +679,12 @@ def player_hands(st: dict) -> float:
 def close(s: dict, st: dict, day: int) -> str:
     """Settle the run as the counter's whole life day `day` (also called when the life day ends with it open)."""
     run = st['run']
+    if run.get('continuous'):
+        run['x'] = True
+        st['day'] = max(st['day'], day)
+        run['sum'] = dict(n=run['u'], hand=run['i'], on=run['sn']-run['i'], auto=0, rev=run['rv'], net=run['rv']-run['co']+run['m'], st=round(run['ss']*10/max(1,run['sn'])))
+        st['left'] = 0
+        return f'🏁 Đã kết thúc ca: tự phục vụ {run["u"]} món. Nhân viên tiếp tục bán nếu đủ hàng và vốn.'
     P, T = qy.PLACES[st['place']], qy.TRADES[st['trade']]
     fc = qy.forecast(s, st, day)
     demand = fc['n'] * qy._rng(s, st, day, 'd').uniform(0.8, 1.2)
@@ -495,7 +693,7 @@ def close(s: dict, st: dict, day: int) -> str:
     qf = 1 + (QUALITY_MAX * (stars - 3) / 2 if stars >= 3 else 15 * (stars - 3) / 2) / 100
     hands = player_hands(st) + qy._hands(st)
     rest = max(0.0, demand + run['b'] - run['u'])
-    auto = int(max(0.0, min(rest * qf, run['sk'] - run['u'], hands - run['u'])))
+    auto = 0  # legacy runs book only orders the owner actually fulfilled
     pct = board_pct(st)
     unit = T['price'] * goods_pct(st) / 100 * T['cogs'] / 100
     spoil = T['spoil'] * (0.5 if 'tu' in st['items'] else 1) / 100
@@ -532,7 +730,7 @@ def close(s: dict, st: dict, day: int) -> str:
 
 # ---------------------------------------------------------------- views
 def catalogue() -> dict:
-    return dict(menus={t: [dict(id=d[0], emoji=d[1], name=d[2], base=d[3], band=list(band(d[3]))) for d in rows] for t, rows in MENUS.items()},
+    return dict(menus={t: [dict(id=d[0], emoji=d[1], name=d[2], base=d[3], cost=max(1, __import__('math').ceil(cost_of(t, d[0]))), band=list(band(d[3]))) for d in rows] for t, rows in MENUS.items()},
                 tools={t: list(v) for t, v in TOOL.items()}, colors=[list(c) for c in COLORS], decor=[list(d) for d in DECOR],
                 tables={k: list(v) for k, v in TABLES.items()}, menu_max=MENU_MAX, decor_max=DECOR_MAX, coins=list(COINS),
                 online=dict(fee=ONLINE_FEE, ship=SHIPPER_FEE, reach=ONLINE_REACH), turns=list(TURNS))
@@ -541,27 +739,45 @@ def catalogue() -> dict:
 def run_view(s: dict, st: dict) -> dict | None:
     run = st.get('run')
     day = int(s['journey']['life_day'])
-    if not isinstance(run, dict) or run['d'] != day:
+    if not isinstance(run, dict) or (not run.get('continuous') and run['d'] != day):
         return None
     out = dict(i=run['i'], k=run['k'], u=run['u'], sk=run['sk'], rv=run['rv'], x=run['x'], sum=run['sum'],
                stars=round(10 * (run['ss'] + sum(run['on'])) / max(1, run['sn'] + sum(1 for x in run['on'] if x))) if run['sn'] or any(run['on']) else 0)
     if run['x']:
         return out
+    if run.get('continuous'):
+        out['next_at'] = run['next_at'] / 1000
+        out['drive_factor'] = run.get('drive_factor', 1)
+        out['sk'] = run['u'] + sum(st['business']['stock'].values())
+        if 'crowd' in run:
+            at = st['business']['cursor']
+            arrived_by = min(at, st['business'].get('closed_at', 0)) if st['business']['paused'] else at
+            out['crowd'] = [_customer_mood(row, at) for row in [run['current']] + run['crowd']['waiting']
+                            if row['arrival_at'] <= arrived_by]
+            out['voices'] = [row for row in out['crowd'] if row['mood'] != 'calm'][:2]
+            relaxed = next((row for row in out['crowd'] if row['temperament'] == 'relaxed'), None)
+            if relaxed:
+                out['voices'].append(relaxed)
     n = pending_event(run)
     if n is not None:
         from .quay_events import BY_ID
         e = BY_ID[run['ev'][n]]
         out['ev'] = dict(id=e['id'], emoji=e['emoji'], title=e['title'], text=e['text'], picks=[[k, label] for k, label, _ in e['picks']])
-    elif run['i'] < run['k'] and run['u'] < run['sk']:
+    elif run['i'] < run['k'] and (not run.get('continuous') and run['u'] < run['sk'] or run.get('continuous') and (not st['business']['paused'] or run['next_at'] <= st['business'].get('closed_at', 0)) and st['business']['cursor'] >= run['next_at'] and any(st['business']['stock'].get(d, 0) for d in menu(st)['on'])):
         out['cust'] = {k: v for k, v in customer(s, st, run, run['i']).items()}
         out['queue'] = [customer(s, st, run, i)['look'] for i in range(run['i'] + 1, min(run['k'], run['i'] + 4))]
-    out['out'] = run['u'] >= run['sk']
+        if 'crowd' in out:
+            out['queue'] = [row['look'] for row in out['crowd'][1:]]
+            out['cust'].update(_customer_mood(run['current'], st['business']['cursor']))
+    out['out'] = not any(st['business']['stock'].get(d, 0) for d in menu(st)['on']) if run.get('continuous') else run['u'] >= run['sk']
     out['done'] = [x[:2] for x in run['eo']]
     out['orders'] = []
     for jn, st_ in enumerate(run['on']):
         o = order(s, st, run, jn)
-        if run['i'] >= o['at'] - 1 or run['i'] >= run['k'] or st_:
-            out['orders'].append(dict(j=jn, name=o['name'], items=o['items'], total=o['total'], note=o['note'], cod=o['cod'], addr=o['addr'],
+        if run.get('continuous') and st['business']['paused'] and o.get('available_at', 0) > st['business'].get('closed_at', 0):
+            continue
+        if (st['business']['cursor'] >= o.get('available_at', 0) if run.get('continuous') else run['i'] >= o['at'] - 1 or run['i'] >= run['k'] or st_):
+            out['orders'].append(dict(j=jn, id=o.get('id'), available_at=o.get('available_at', 0)/1000, drive_factor=o.get('drive_factor',1), name=o['name'], items=o['items'], total=o['total'], note=o['note'], cod=o['cod'], addr=o['addr'],
                                       route=o['route'], stars=st_, ride=copy.deepcopy(run.get('rides',{}).get(str(jn)))))
             if out['orders'][-1]['ride']:
                 from . import traffic
@@ -583,7 +799,7 @@ def validate(st: dict, need, _int, _text) -> None:
     rows = DISH.get(st['trade'], {})
     if 'menu' in st and st['menu'] is not None:
         m = st['menu']
-        need(isinstance(m, dict) and isinstance(m.get('on'), list) and 1 <= len(m['on']) <= MENU_MAX and len(set(m['on'])) == len(m['on'])
+        need(isinstance(m, dict) and isinstance(m.get('on'), list) and 1 <= len(m['on']) <= MENU_MAX and all(isinstance(d, str) for d in m['on']) and len(set(m['on'])) == len(m['on'])
              and set(m['on']) <= set(rows) and isinstance(m.get('p', {}), dict))
         for d, v in m.get('p', {}).items():
             need(d in rows and _int(v, *band(rows[d]['base'])))
@@ -606,6 +822,43 @@ def validate(st: dict, need, _int, _text) -> None:
         need(isinstance(run['ev'], list) and len(run['ev']) <= 2 and isinstance(run['eo'], list) and len(run['eo']) <= 2)
         need(isinstance(run['on'], list) and len(run['on']) <= 3 and all(_int(x, 0, 5) for x in run['on']) and type(run['x']) is bool)
         need(run['sum'] is None or isinstance(run['sum'], dict))
+        if 'continuous' in run:
+            need(run['continuous'] is True and isinstance(st.get('business'), dict))
+            need(all(_int(run.get(k), 0, 10**18) for k in ('nonce', 'next_at', 'order_seq')))
+            need(type(run.get('drive_factor', 1)) in (int, float) and run.get('drive_factor', 1) in (1, 1.15, 1.35, 1.6))
+            need(isinstance(run.get('order_data'), dict) and set(run['order_data']) == {str(i) for i in range(len(run['on']))})
+            cur = run.get('current')
+            need(isinstance(cur, dict) and _int(cur.get('index'), 0, 10**6))
+            records = [cur] + list(run['order_data'].values())
+            if 'crowd' in run:
+                crowd = run['crowd']
+                need(isinstance(crowd, dict) and set(crowd) == {'v', 'next_at', 'seq', 'waiting'} and type(crowd['v']) is int and crowd['v'] == 1)
+                need(_int(crowd['next_at'], 0, 10**18) and _int(crowd['seq'], 1, 10**18))
+                need(isinstance(crowd['waiting'], list) and len(crowd['waiting']) < OWNER_QUEUE_MAX)
+                people = [cur] + crowd['waiting']
+                for row in people:
+                    need(isinstance(row, dict) and _int(row.get('ticket'), 0, crowd['seq'] - 1))
+                    need(_int(row.get('arrival_at'), 0, crowd['next_at']) and row.get('temperament') in ('fussy', 'relaxed'))
+                    need(_int(row.get('patience'), 18000, 30000) and _int(row.get('look'), 0, 10**6) and _text(row.get('say'), 1000))
+                    need(_int(row.get('total'), 1, 6000000))
+                    need(_int(row.get('pay'), row['total'], 6000000))
+                need(len({row['ticket'] for row in people}) == len(people))
+                need([row['arrival_at'] for row in people] == sorted(row['arrival_at'] for row in people))
+                records += crowd['waiting']
+            for record in records:
+                need(isinstance(record, dict) and isinstance(record.get('items'), list) and 1 <= len(record['items']) <= 6)
+                need(all(isinstance(d, str) and d in rows for d in record['items']))
+                need(_int(record.get('total'), 1, 6000000) and _text(record.get('name'), 40))
+                if not run['x']:
+                    need(record['total'] == sum(price(st, d) for d in record['items']))
+            need(_int(cur.get('pay'), cur['total'], 6000000))
+            for key, record in run['order_data'].items():
+                need(_text(record.get('id'), 80) and _int(record.get('available_at'), 0, 10**18))
+                need(type(record.get('drive_factor', 1)) in (int, float) and record.get('drive_factor', 1) in (1, 1.15, 1.35, 1.6))
+                need(record.get('j') == int(key) and _int(record.get('at'), 0, 10**6))
+                need(isinstance(record.get('route'), list) and len(record['route']) == 3 and all(x in TURNS for x in record['route']))
+                need(_text(record.get('addr'), 100) and _text(record.get('note'), 100))
+                need(all(type(record.get(k)) is bool for k in ('cod', 'tool', 'sticker')))
         if 'rides' in run:
             from . import traffic
             need(isinstance(run['rides'],dict) and len(run['rides'])<=len(run['on']))

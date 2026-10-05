@@ -70,6 +70,7 @@ MILK_TEX = ('cool', 'silky', 'hot', 'scalded')
 MILK_TEX_LABEL = dict(cool='còn nguội', silky='mịn, 55–68 °C', hot='quá nóng, mất vị ngọt', scalded='khét sữa')
 MAX_GROUPS = 2      # two group heads on the machine
 MAX_WANDS = 1       # one steam wand
+PACES = (1, 2, 4)
 # Onboarding (v0.7), day one only: the machine's timer does the timing. A pull or a steam
 # sent with auto=true ends at once at these marks (grind, beans, milk kind and foam still
 # count as chosen). From day 2 the barista stops every shot and jug by hand.
@@ -94,6 +95,9 @@ DRINKS = {
     'latte': dict(id='latte', name='Latte', emoji='🥛', milk=True, water=False, hot_only=False, iced_only=False, foam='thin', unlock=1),
     'cappuccino': dict(id='cappuccino', name='Cappuccino', emoji='☁️', milk=True, water=False, hot_only=True, iced_only=False, foam='thick', unlock=1),
     'bacxiu': dict(id='bacxiu', name='Bạc xỉu', emoji='🧋', milk=True, water=False, hot_only=False, iced_only=True, foam=None, unlock=3),
+    'matcha_latte': dict(id='matcha_latte', name='Matcha latte', emoji='🍵', milk=True, water=False, hot_only=False, iced_only=True, foam=None, unlock=3, base='matcha'),
+    'matcha_blend': dict(id='matcha_blend', name='Matcha đá xay', emoji='🍵', milk=True, water=False, hot_only=False, iced_only=True, foam=None, unlock=3, base='matcha', blend=True),
+    'cacao_blend': dict(id='cacao_blend', name='Cacao đá xay thạch', emoji='🍫', milk=True, water=False, hot_only=False, iced_only=True, foam=None, unlock=3, base='cacao', blend=True, jelly=True),
 }
 CONTAINERS = {
     'mug': dict(id='mug', name='Tách sứ', emoji='☕', note='Uống nóng tại quán'),
@@ -125,8 +129,12 @@ BAKES = {
                     rule='Có sốt bơ trứng: chỉ bán trong ngày, không để qua đêm, không tặng.'),
     'sponge': dict(id='sponge', name='Cốt bông lan bánh kem', emoji='🎂', proof=False, qty=1, window=(18, 24, 30),
                    recipe={'flour': 1, 'egg': 3, 'sugar': 1}, allergens=['gluten'], fresh=0, max_age=0, donate=False, unlock=1, cake=True),
+    'matcha_cookie': dict(id='matcha_cookie', name='Cookie matcha', emoji='🍵', proof=False, qty=8, window=(8, 12, 16),
+                         recipe={'flour': 1, 'butter': 1, 'sugar': 1, 'egg': 1, 'matcha': 1}, allergens=['gluten', 'lactose'], fresh=2, max_age=3, donate=True, unlock=3),
+    'cacao_muffin': dict(id='cacao_muffin', name='Muffin cacao', emoji='🧁', proof=False, qty=6, window=(14, 20, 25),
+                        recipe={'flour': 1, 'butter': 1, 'egg': 2, 'sugar': 1, 'cacao': 1}, allergens=['gluten', 'lactose'], fresh=0, max_age=1, donate=True, unlock=3),
 }
-CASE_ITEMS = ('croissant', 'banhmi', 'cookie', 'bonglan')
+CASE_ITEMS = ('croissant', 'banhmi', 'cookie', 'bonglan', 'matcha_cookie', 'cacao_muffin')
 DONENESS = ('pale', 'golden', 'dark', 'burnt')
 LOT_Q = ('golden', 'dark', 'pale', 'flat', 'dense')
 LOT_Q_LABEL = dict(golden='vàng đều', dark='hơi sậm', pale='nhạt màu', flat='xẹp vì ủ quá lâu', dense='đặc ruột vì men đói')
@@ -189,6 +197,9 @@ ITEMS = [
     dict(id='egg', name='Trứng gà', emoji='🥚', group='fridge', unit='quả', cost=1, life=8, start=18),
     dict(id='sugar', name='Đường', emoji='🍬', group='dry', unit='mẻ 100 g', cost=1, life=90, start=10),
     dict(id='almond', name='Hạnh nhân lát', emoji='🌰', group='dry', unit='phần', cost=3, life=30, start=4, allergen='nuts'),
+    dict(id='matcha', name='Bột matcha', emoji='🍵', group='dry', unit='phần', cost=4, life=30, start=0, unlock=3),
+    dict(id='cacao', name='Bột cacao', emoji='🍫', group='dry', unit='phần', cost=3, life=30, start=0, unlock=3),
+    dict(id='jelly', name='Thạch dừa', emoji='🧊', group='fridge', unit='phần', cost=2, life=4, start=0, unlock=3),
     dict(id='cup', name='Ly giấy + nắp', emoji='🥤', group='pack', unit='bộ', cost=1, start=20),
     dict(id='bag', name='Túi giấy', emoji='🛍️', group='pack', unit='cái', cost=1, start=16),
     dict(id='cake_box', name='Hộp bánh kem + nến', emoji='📦', group='pack', unit='bộ', cost=3, start=4),
@@ -252,7 +263,21 @@ ORDERS = [
 OPENINGS = dict(drink='Cho mình gọi đồ uống nha!', pastry='Hôm nay tủ bánh có gì ngon vậy?', cake='Mình tới hỏi bánh kem đã đặt nè.',
                 mood='Hôm nay mình chưa biết gọi gì… để mình tả cho nghe nha!')
 NPC_GUEST = {0: 'regular', 1: 'rush', 2: 'chatty', 3: 'generous', 4: 'plain', 5: 'picky', 6: 'rush'}
-GEN = 2          # task generator version (older saved tasks are regenerated once)
+GEN = 3          # gen2 keeps its exact order book and work in progress
+
+# A separate deck leaves the release179 generator reproducible for saved orders.
+MENU_ORDERS = [
+    _o(npc=1, kind='drink', title='Matcha latte yến mạch', drink='matcha_latte', beans=None, size='L', iced=True, takeaway=True,
+       milk='oat', art=None, shots=0, lactose=True, note='Hòa matcha, thêm đá và sữa yến mạch; không thêm cà phê.'),
+    _o(npc=4, kind='drink', title='Matcha đá xay mát lạnh', drink='matcha_blend', beans=None, size='L', iced=True, takeaway=False,
+       milk='milk', art=None, shots=0, note='Hòa matcha rồi xay mịn cùng đá và sữa.'),
+    _o(npc=2, kind='drink', title='Cacao đá xay thêm thạch', drink='cacao_blend', beans=None, size='L', iced=True, takeaway=True,
+       milk='milk', art=None, shots=0, note='Xay cacao cùng đá, sữa; thêm một phần thạch dừa sau khi xay.'),
+    _o(npc=3, kind='pastry', title='Một túi cookie matcha', items={'matcha_cookie': 2}, takeaway=True, day_old_ok=False,
+       allergy=None, note='Hai bánh cookie matcha mới, gói mang về.'),
+    _o(npc=6, kind='pastry', title='Muffin cacao mang về', items={'cacao_muffin': 2}, takeaway=True, day_old_ok=False,
+       allergy=None, note='Hai chiếc muffin cacao mới ra lò nhé.'),
+]
 
 
 def _drink(drink: str, beans: str, size: str, iced: bool, takeaway: bool, milk: str | None, art: str | None = None,
@@ -328,7 +353,7 @@ MODS = [
     dict(id='festival', emoji='🎉', label='Cuối tuần có hội', hint='Giá bán +10%. Nhiều bánh kem đặt trước, khách đi theo nhóm.', min_day=5, weight=1, walkin=0.3, patience=1, buyers=2),
 ]
 MOD_INDEX = {m['id']: m for m in MODS}
-BUYER_WANTS = dict(croissant=3, banhmi=3, cookie=2, bonglan=2)   # what walk-in buyers ask for at the case
+BUYER_WANTS = dict(croissant=3, banhmi=3, cookie=2, bonglan=2, matcha_cookie=2, cacao_muffin=2)
 
 
 def _level_hint(day: int) -> int:
@@ -381,9 +406,10 @@ def _twist(n: dict, title: str, mod: str) -> tuple[dict, str]:
     return n, title
 
 
-def make_task(day: int, slot: int, serial: int) -> dict:
+def make_task(day: int, slot: int, serial: int, legacy: bool = False) -> dict:
     mod = FS.pick_mod(ID, day, MODS)['id']
-    style = _style(day, slot, mod)
+    special = not legacy and day >= 6 and slot % 4 == 0
+    style = 'classic' if special else _style(day, slot, mod)
     if style == 'mood':
         pool = [m for m in MOODS if m['day'] <= day]
         m = pool[kit.rng(ID, 'mood', day, slot).randrange(len(pool))]
@@ -397,7 +423,7 @@ def make_task(day: int, slot: int, serial: int) -> dict:
         needs = dict(kind='drink', style='tray', **party[0], pastry={}, note=tr['note'], party=party)
         npc, title, opening = tr['npc'], tr['title'], tr['opening']
     else:
-        o = _classic(day, slot, mod)
+        o = MENU_ORDERS[(day - 6 + slot // 4) % len(MENU_ORDERS)] if special else _classic(day, slot, mod)
         npc, title, opening = o['npc'], o['title'], OPENINGS[o['kind']]
         if o['kind'] == 'drink':
             d = DRINKS[o['drink']]
@@ -412,7 +438,7 @@ def make_task(day: int, slot: int, serial: int) -> dict:
             needs = dict(kind='cake', text=o['text'], cream=o['cream'], color=o['color'], note=o['note'])
         needs['style'] = 'classic'
     cups = len(needs.get('party') or [None])
-    return kit.base_task(ID, day, slot, serial, npc, title, opening, needs=needs, guest=FS.guest(NPC_GUEST[npc]), gen=GEN,
+    return kit.base_task(ID, day, slot, serial, npc, title, opening, needs=needs, guest=FS.guest(NPC_GUEST[npc]), gen=2 if legacy else GEN,
                          drink=_empty_drink(), bag=_empty_bag(), cake=_empty_cake(), quoted_price=None, served=None, refused=0,
                          guessed=False, guesses=[], cur=0, cups=[None] * cups)
 
@@ -511,7 +537,7 @@ def _migrate(c: dict) -> dict:
         if isinstance(x, dict):
             x.setdefault('dense', False)
     for t in c['tasks']:
-        if t['career'] == ID and t.get('gen') != GEN:
+        if t['career'] == ID and t.get('gen') not in (2, GEN):
             _upgrade_task(t, c)
     return d
 
@@ -589,7 +615,7 @@ def quote(c: dict, n: dict) -> int:
 
 
 def on_task(s: dict, c: dict, t: dict) -> None:
-    if t.get('gen') != GEN:
+    if t.get('gen') not in (2, GEN):
         _upgrade_task(t, c)
     if t.get('quoted_price') is None:
         t['quoted_price'] = quote(c, t['needs'])
@@ -610,7 +636,13 @@ def on_start(s: dict, c: dict) -> None:
 def _drink_text(n: dict) -> str:
     d = DRINKS[n['drink']]
     parts = [f'{d["name"]} {"đá" if n["iced"] else "nóng"}', f'ly {"lớn" if n["size"] == "L" else "nhỏ"}',
-             'mang về' if n['takeaway'] else 'uống tại quán', f'hạt {BEAN_INDEX[n["beans"]]["name"]}', f'{n["shots"]} shot']
+             'mang về' if n['takeaway'] else 'uống tại quán']
+    if d.get('base'):
+        parts += [ITEM_INDEX[d['base']]['name'].lower(), 'không thêm cà phê']
+        if d.get('blend'): parts.append('xay mịn cùng đá')
+        if d.get('jelly'): parts.append('thêm thạch dừa sau khi xay')
+    else:
+        parts += [f'hạt {BEAN_INDEX[n["beans"]]["name"]}', f'{n["shots"]} shot']
     if n['milk']:
         parts.append(MILKS[n['milk']]['name'].lower() + (' (bọt dày)' if n['foam'] == 'thick' else ' (bọt mỏng)' if n['foam'] == 'thin' else ''))
     if n['art']:
@@ -631,6 +663,8 @@ def known_request(c: dict, t: dict) -> str:
         cups = '; '.join(f'ly {i + 1} là {_drink_text(x)}' for i, x in enumerate(n['party']))
         return f'{len(n["party"])} ly {"mang về" if n["takeaway"] else "tại quán"}: {cups}. {n["note"]}'
     if n['kind'] == 'drink':
+        if DRINKS[n['drink']].get('base'):
+            return _drink_text(n) + '. ' + n['note']
         d = DRINKS[n['drink']]
         parts = [f'{d["name"]} {"đá" if n["iced"] else "nóng"}', f'ly {"lớn" if n["size"] == "L" else "nhỏ"}',
                  'mang về' if n['takeaway'] else 'uống tại quán', f'hạt {BEAN_INDEX[n["beans"]]["name"]}', f'{n["shots"]} shot']
@@ -710,6 +744,12 @@ def steam_temp(seconds: float) -> float:
     return round(STEAM['base'] + STEAM['rate'] * seconds, 1)
 
 
+def _machine_rate(c: dict) -> float:
+    """Snapshot paid equipment and the chosen pace when an operation starts."""
+    from ..work_gear import factor
+    return round(c['ext']['data'].get('bar_pace', 1) * factor(c), 4)
+
+
 def _milk_tex(temp: float) -> str:
     if temp < STEAM['cool']:
         return 'cool'
@@ -784,7 +824,7 @@ def _task_for_rack(c: dict, tid: str | None) -> dict | None:
 
 # --- actions ------------------------------------------------------------------
 
-BAR_ACTIONS = ('cb_cup', 'cb_ice', 'cb_water', 'cb_dose', 'cb_pull', 'cb_stop', 'cb_milk', 'cb_milk_stop', 'cb_art', 'cb_lid')
+BAR_ACTIONS = ('cb_cup', 'cb_ice', 'cb_water', 'cb_dose', 'cb_pull', 'cb_stop', 'cb_milk', 'cb_milk_stop', 'cb_art', 'cb_lid', 'cb_mix', 'cb_blend', 'cb_jelly')
 
 
 def handle(s: dict, c: dict, name: str, p: dict) -> dict:
@@ -802,10 +842,10 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
 def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
     if name == 'cb_pace':
         pace = p.get('pace')
-        kit.need(type(pace) is int and pace in (1, 2), 'Chọn nhịp máy 1× hoặc 2×.')
+        kit.need(type(pace) is int and pace in PACES, 'Chọn nhịp làm 1×, 2× hoặc 4×.')
         kit.need(not _pulling(c) and not _steaming(c), 'Dừng chiết và tắt vòi hơi trước khi đổi nhịp máy.')
         d['bar_pace'] = pace
-        return dict(message=f'Nhịp máy {pace}×: vẫn tự bấm dừng ở vạch xanh.')
+        return dict(message=f'Nhịp làm {pace}×: chiết, đánh sữa và mẻ bánh mới nhanh hơn. Vẫn tự bấm dừng ở vạch xanh; mẻ đang nướng giữ nhịp lúc vào lò.')
     if name == 'cb_event':
         return FS.resolve(s, c, pl, EVENT_INDEX, p)
     if name == 'cb_box_send':
@@ -900,7 +940,7 @@ def _tray_action(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         t['cur'] = i
         return dict(message=f'Đang làm ly {i + 1}.')
     kit.need(cups[cur] is None, f'Ly {cur + 1} đã ở trên khay.')
-    kit.need(dr['container'] and dr['shots'], f'Ly {cur + 1} cần có ly và espresso trước.')
+    kit.need(dr['container'] and (dr['shots'] or dr.get('base')), f'Ly {cur + 1} cần có ly và phần đồ uống trước.')
     kit.need(not dr['pulling'] and not dr['steaming'] and not dr['dose'], 'Còn shot đang chiết hoặc sữa đang đánh.')
     kit.need(dr['container'] != 'paper' or dr['lid'], 'Đậy nắp ly mang về rồi mới đặt lên khay.')
     cups[cur] = dr
@@ -944,6 +984,7 @@ def _bar(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
             t['mistakes'] += 1
         return dict(message='Đã thêm nước ' + ('lạnh.' if n['iced'] else 'nóng 90 °C.'))
     if name == 'cb_dose':
+        kit.need(not spec.get('base'), 'Món này dùng bột matcha hoặc cacao, không thêm espresso.')
         kit.need(not dr['pulling'], 'Tay cầm đang gắn trên máy, chờ chiết xong.')
         kit.need(dr['dose'] is None, 'Đã có bột trong tay cầm. Chiết shot đó trước.')
         kit.need(len(dr['shots']) < 3, 'Ly đủ shot rồi.')
@@ -965,17 +1006,19 @@ def _bar(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         kit.need(len(_pulling(c)) < MAX_GROUPS, 'Cả hai họng pha đang bận. Dừng một shot trước nhé.')
         if not _auto(c, p):
             dr['pulling'] = round(kit.now(), 3)
+            dr['pull_rate'] = _machine_rate(c)
             return dict(message=f'Đang chiết… Dừng khi vào vùng cân bằng ({EXTRACT["bright"]}–{EXTRACT["balanced"]} giây).')
     if name in ('cb_pull', 'cb_stop'):
         if name == 'cb_stop':
             kit.need(dr['pulling'], 'Chưa chiết shot nào. Bấm “Chiết shot” trước nhé.')
-            eff = max(0.0, kit.tap_now(p) - dr['pulling']) * _flow(dr['dose']) * c['ext']['data']['bar_pace']
+            eff = max(0.0, kit.tap_now(p) - dr['pulling']) * _flow(dr['dose']) * dr.get('pull_rate', c['ext']['data']['bar_pace'])
         else:
             eff = AUTO_SHOT
         x = _shot_class(eff, dr['dose']['grind'])
         dr['shots'].append(dict(beans=dr['dose']['beans'], grind=dr['dose']['grind'], grams=dr['dose']['grams'], x=x, sec=round(min(eff, 999), 1)))
         dr['dose'] = None
         dr['pulling'] = None
+        dr.pop('pull_rate', None)
         if x in ('sour', 'bitter'):
             t['mistakes'] += 1
         if len(dr['shots']) > n['shots']:
@@ -994,6 +1037,7 @@ def _bar(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
             kit.need(len(_steaming(c)) < MAX_WANDS, 'Vòi đánh sữa đang bận với ly khác.')
             dr['cost'] += kit.take(c, m['item'], 1)
             dr['steaming'] = round(kit.now(), 3)
+            dr['steam_rate'] = _machine_rate(c)
             dr['steam'] = dict(kind=kind, foam=foam)
             if kind != n['milk'] or n['iced'] or not spec['milk'] or foam != n['foam']:
                 t['mistakes'] += 1
@@ -1008,12 +1052,13 @@ def _bar(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
     if name in ('cb_milk', 'cb_milk_stop'):
         if name == 'cb_milk_stop':
             kit.need(dr['steaming'], 'Vòi hơi chưa bật. Bấm “Đánh nóng” trước nhé.')
-            temp = min(99.0, steam_temp(max(0.0, kit.tap_now(p) - dr['steaming']) * c['ext']['data']['bar_pace']))
+            temp = min(99.0, steam_temp(max(0.0, kit.tap_now(p) - dr['steaming']) * dr.get('steam_rate', c['ext']['data']['bar_pace'])))
         else:
             temp = AUTO_MILK
         tex = _milk_tex(temp)
         dr['milk'] = dict(kind=dr['steam']['kind'], mode='steam', foam=dr['steam']['foam'], temp=temp, tex=tex)
         dr['steaming'] = None
+        dr.pop('steam_rate', None)
         dr['steam'] = None
         if tex in ('cool', 'scalded'):
             t['mistakes'] += 1
@@ -1032,6 +1077,29 @@ def _bar(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         if dr['art'] == 'blob':
             return dict(message='Bọt sữa không mịn nên hình bị loang thành một đốm… Sữa phải trong khoảng 55–68 °C.')
         return dict(message=f'Rót được hình {a["name"].lower()}!')
+    if name == 'cb_mix':
+        kit.need(spec.get('base'), 'Món cà phê này cần chiết espresso.')
+        kit.need(not dr.get('base') and not dr['shots'] and not dr['dose'], 'Ly đã có phần nền; đổ ly nếu muốn làm lại.')
+        base = _one_of(p.get('base'), ('matcha', 'cacao'), 'Chọn bột matcha hoặc cacao.')
+        dr['cost'] += kit.take(c, base, 1)
+        dr['base'] = base
+        if base != spec['base']:
+            t['mistakes'] += 1
+        return dict(message=f'Đã hòa tan một phần {ITEM_INDEX[base]["name"].lower()}.')
+    if name == 'cb_blend':
+        kit.need(spec.get('blend'), 'Món này không cần xay đá.')
+        kit.need(not dr.get('blended'), 'Ly đã được xay mịn.')
+        kit.need(dr.get('base') and dr['ice'] and dr['milk'] and dr['milk']['mode'] == 'cold' and not dr['steaming'],
+                 'Hòa bột, thêm đá và rót sữa lạnh trước khi xay.')
+        dr['blended'] = True
+        return dict(message='Đã xay mịn phần nền cùng đá và sữa; rót lại vào ly.')
+    if name == 'cb_jelly':
+        kit.need(spec.get('jelly'), 'Khách không gọi thêm thạch cho món này.')
+        kit.need(dr.get('blended'), 'Xay xong rồi mới thêm thạch để giữ nguyên miếng.')
+        kit.need(not dr.get('jelly'), 'Ly đã có một phần thạch.')
+        dr['cost'] += kit.take(c, 'jelly', 1)
+        dr['jelly'] = True
+        return dict(message='Đã thêm một phần thạch dừa.')
     # cb_lid
     kit.need(dr['container'] == 'paper', 'Chỉ ly giấy mang về mới cần nắp.')
     kit.need(not dr['lid'], 'Đã đậy nắp.')
@@ -1262,20 +1330,20 @@ def _bake(s: dict, c: dict, d: dict, p: dict) -> dict:
         else:
             cost = _consume(c, b['recipe'])
     shift = HOT_OVEN if _plan(c)['rules'].get('hot_oven') else 0
-    rack = dict(id=kit.next_id(c, 'ov'), item=item, qty=b['qty'], start=round(kit.now(), 3), task=task['id'] if task else None, cost=cost, flat=flat, shift=shift,
+    rack = dict(id=kit.next_id(c, 'ov'), item=item, qty=b['qty'], start=round(kit.now(), 3), pace=_machine_rate(c), task=task['id'] if task else None, cost=cost, flat=flat, shift=shift,
                 dense=dense)
     d['oven'].append(rack)
-    a, g, z = (max(1, x - shift) for x in b['window'])
+    a, g, z = (max(0, x - shift) / rack['pace'] for x in b['window'])
     hot = ' Lò đang nóng hơn thường, bánh chín nhanh hơn!' if shift else ''
     cold = ' Bột ủ lạnh qua đêm vào lò luôn, không phải chờ nở.' if chilled else ''
-    return dict(message=f'Đã cho {b["name"].lower()} vào lò. Lấy ra khi vàng đều ({a}–{g} giây).{hot}{cold}')
+    return dict(message=f'Đã cho {b["name"].lower()} vào lò · {rack["pace"]}×. Lấy ra khi vàng đều ({a:g}–{g:g} giây thực).{hot}{cold}')
 
 
 def _unload(s: dict, c: dict, d: dict, p: dict) -> dict:
     rack = next((r for r in d['oven'] if r['id'] == p.get('rack')), None)
     kit.need(rack, 'Tầng lò này đang trống.')
     b = BAKES[rack['item']]
-    sec = max(0.0, kit.tap_now(p) - rack['start'])
+    sec = max(0.0, kit.tap_now(p) - rack['start']) * rack.get('pace', 1)
     done = _doneness(rack['item'], sec + rack.get('shift', 0))
     d['oven'] = [r for r in d['oven'] if r['id'] != rack['id']]
     label = dict(pale='còn nhạt màu, ruột chưa chín', golden='vàng đều, thơm lừng', dark='hơi sậm màu', burnt='cháy đen')[done]
@@ -1362,6 +1430,13 @@ def _refuse(s: dict, c: dict, pl: dict, t: dict, why: str, line: str = '') -> di
 def _cup_problem(n: dict, dr: dict) -> str | None:
     """Why the guest hands a drink back (None = they accept it)."""
     spec = DRINKS[n['drink']]
+    if spec.get('base'):
+        if dr.get('base') != spec['base'] or dr['shots']:
+            return f'{spec["name"]} cần đúng phần nền, không có espresso. Đổ ly và làm lại.'
+        if spec.get('blend') and not dr.get('blended'):
+            return 'đá xay cần xay mịn cùng đá và sữa trước khi giao.'
+        if spec.get('jelly') and not dr.get('jelly'):
+            return 'khách đã gọi thêm thạch dừa, thêm đúng một phần rồi giao.'
     if spec['milk'] and not dr['milk']:
         return f'{spec["name"]} mà không có sữa. Thêm sữa hoặc làm lại.'
     if not spec['milk'] and dr['milk']:
@@ -1384,7 +1459,7 @@ def _serve(s: dict, c: dict, d: dict, pl: dict, t: dict, p: dict) -> dict:
             label = f'Ly {cur + 1}' if tray else 'Ly'
             kit.need(dr['container'], 'Chưa có ly.' if not tray else f'{label} chưa có ly.')
             kit.need(not dr['pulling'] and not dr['steaming'] and not dr['dose'], 'Còn shot đang chiết hoặc sữa đang đánh.')
-            kit.need(dr['shots'], f'{label} chưa có espresso.')
+            kit.need(dr['shots'] or dr.get('base'), f'{label} chưa có phần nền đồ uống.')
         if tray:
             missing = [str(i + 1) for i, x in enumerate(cups) if x is None and i != cur]
             kit.need(not missing, 'Còn ly ' + ', '.join(missing) + ' chưa xong. Làm xong từng ly rồi giao cả khay nhé.')
@@ -1713,15 +1788,18 @@ SHOT_SCORE = dict(sour=2, bright=4, balanced=5, strong=4, bitter=2)
 
 def _cup_score(n: dict, dr: dict, rules: dict) -> tuple:
     """(taste, note, accuracy penalty, notes, presentation, note) for one served drink."""
-    worst = min(dr['shots'], key=lambda x: SHOT_SCORE[x['x']])
-    taste, tnote = SHOT_SCORE[worst['x']], 'espresso ' + SHOT_LABEL[worst['x']]
+    if DRINKS[n['drink']].get('base'):
+        taste, tnote = 5, 'phần nền hòa tan, đúng vị' + (', đá xay mịn' if dr.get('blended') else '')
+    else:
+        worst = min(dr['shots'], key=lambda x: SHOT_SCORE[x['x']])
+        taste, tnote = SHOT_SCORE[worst['x']], 'espresso ' + SHOT_LABEL[worst['x']]
     if any(abs(x['grams'] - DOSE_TARGET) >= 3 for x in dr['shots']):
         taste, tnote = taste - 1, tnote + ', liều bột lệch'
     if dr['milk'] and dr['milk']['mode'] == 'steam':
         ms = dict(cool=3, silky=5, hot=4, scalded=2)[dr['milk']['tex']]
         if ms < taste:
             taste, tnote = ms, 'sữa ' + MILK_TEX_LABEL[dr['milk']['tex']]
-    if rules.get('grinder') and taste > 4:
+    if rules.get('grinder') and dr['shots'] and taste > 4:
         taste, tnote = 4, 'bột xay không đều, vị hơi gắt'
     if rules.get('sour_milk') and dr['milk'] and dr['milk']['kind'] == 'milk':
         taste, tnote = min(taste, 2), 'sữa có mùi chua'
@@ -1826,7 +1904,7 @@ def feedback(c: dict, t: dict) -> dict:
 
 def public_task(t: dict) -> dict:
     v = tree_copy(t)
-    if v.get('gen') != GEN:
+    if v.get('gen') not in (2, GEN):
         _upgrade_task(v, None)
     v['cups_total'] = _cups_total(v)
     if not v['known']:
@@ -1845,6 +1923,8 @@ def public_task(t: dict) -> dict:
 
 def public_data(c: dict) -> dict:
     d = tree_copy(kit.data(c))
+    # Reads may precede the first command that migrates an older save.
+    d.setdefault('bar_pace', 1)
     for lot in d['case']:
         lot['age'] = _age(c, lot['day'])
         lot['state'] = lot_state(c, lot['item'], lot['day'])
@@ -1852,11 +1932,12 @@ def public_data(c: dict) -> dict:
         # Beats still to wait before the bake click itself (which is one beat).
         tray['left'] = max(0, tray['ready'] - (c['turn'] + 1))
         tray['over'] = c['turn'] + 1 > tray['ready'] + OVERPROOF
-    d['groups'] = [dict(task=t['id'], start=t['drink']['pulling'], flow=round(_flow(t['drink']['dose']) * d['bar_pace'], 3) if t['drink']['dose'] else 1.0) for t in _pulling(c)]
-    d['wand'] = [dict(task=t['id'], start=t['drink']['steaming']) for t in _steaming(c)]
+    d['groups'] = [dict(task=t['id'], start=t['drink']['pulling'], flow=_flow(t['drink']['dose']) * t['drink'].get('pull_rate', d['bar_pace']) if t['drink']['dose'] else 1.0) for t in _pulling(c)]
+    d['wand'] = [dict(task=t['id'], start=t['drink']['steaming'], rate=t['drink'].get('steam_rate', d['bar_pace'])) for t in _steaming(c)]
     d['cooling'] = {t['id']: max(0, t['cake']['cool_turn'] - (c['turn'] + 1)) for t in c['tasks'] if _open(t) and t['cake']['sponge']}
     for r in d['oven']:
         r.setdefault('shift', 0)
+        r.setdefault('pace', 1)
     pl = _peek_plan(c)
     d.pop('plan', None)
     d.pop('ev_hist', None)
@@ -1942,13 +2023,25 @@ def _valid_ts(v) -> bool:
     return v is None or (isinstance(v, (int, float)) and not isinstance(v, bool) and 0 <= v < 10**11)
 
 
+def _valid_rate(v) -> bool:
+    return type(v) in (int, float) and 1 <= v <= 6.4
+
+
 def _valid_drink(dr) -> None:
     need = kit.need
     need(isinstance(dr, dict) and set(_empty_drink()) <= set(dr), 'Ly thiếu dữ liệu.')
+    need(dr.get('base') in (None, 'matcha', 'cacao'), 'Phần nền sai.')
+    for k in ('blended', 'jelly'):
+        need(type(dr.get(k, False)) is bool, 'Trạng thái món đá xay sai.')
+    need(not dr.get('base') or (dr.get('container') and not dr.get('shots') and not dr.get('dose')), 'Phần nền lẫn espresso.')
+    need(not dr.get('blended') or (dr.get('base') and dr.get('ice') and dr.get('milk') and dr['milk'].get('mode') == 'cold'), 'Đá xay thiếu nguyên liệu.')
+    need(not dr.get('jelly') or dr.get('blended'), 'Thạch phải thêm sau khi xay.')
     need(dr['container'] in (None, *CONTAINERS) and dr['size'] in (None, 'S', 'L'), 'Ly sai.')
     for k in ('ice', 'water', 'lid'):
         need(type(dr[k]) is bool, 'Trạng thái ly sai.')
     need(_valid_ts(dr['pulling']) and _valid_ts(dr['steaming']), 'Đồng hồ máy pha sai.')
+    for key in ('pull_rate', 'steam_rate'):
+        if key in dr:need(_valid_rate(dr[key]), 'Nhịp máy pha sai.')
     if dr['dose'] is not None:
         need(isinstance(dr['dose'], dict) and dr['dose'].get('beans') in BEAN_INDEX and dr['dose'].get('grind') in GRIND, 'Tay cầm sai.')
         kit.integer(dr['dose'].get('grams'), DOSE_MIN, DOSE_MAX)
@@ -1974,7 +2067,7 @@ def _valid_drink(dr) -> None:
 
 def validate_task(t: dict, original: dict) -> None:
     need = kit.need
-    need(t.get('gen') == GEN, 'Đơn cũ chưa được cập nhật.')
+    need(t.get('gen') in (2, GEN), 'Đơn cũ chưa được cập nhật.')
     _valid_drink(t['drink'])
     total = _cups_total(t)
     cups = t.get('cups')
@@ -2020,7 +2113,7 @@ def validate_task(t: dict, original: dict) -> None:
 def validate_data(c: dict) -> None:
     need = kit.need
     d = _migrate(c)
-    need(type(d['bar_pace']) is int and d['bar_pace'] in (1, 2), 'Nhịp máy pha sai.')
+    need(type(d['bar_pace']) is int and d['bar_pace'] in PACES, 'Nhịp máy pha sai.')
     for k in ('proof', 'oven', 'case'):
         need(isinstance(d.get(k), list), 'Dữ liệu lò bánh sai.')
     need(len(d['proof']) <= 2 and len(d['oven']) <= 2 and len(d['case']) <= 40, 'Lò hoặc tủ bánh quá tải.')
@@ -2035,6 +2128,7 @@ def validate_data(c: dict) -> None:
         need(x.get('task') is None or isinstance(x['task'], str), 'Tầng lò sai.')
         need(type(x.get('flat')) is bool and type(x.get('dense', False)) is bool, 'Tầng lò sai.')
         kit.integer(x.get('shift', 0), 0, 10)
+        need(_valid_rate(x.get('pace', 1)), 'Nhịp lò bánh sai.')
         kit.integer(x.get('qty'), 1, 12)
         kit.integer(x.get('cost'), 0, 10000)
     for x in d['case']:
@@ -2247,6 +2341,8 @@ def _assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
 
 def hint(c: dict, t: dict) -> str:
     n = t.get('needs') if t.get('known') else None
+    if n and n['kind'] == 'drink' and DRINKS[n['drink']].get('base'):
+        return 'Lấy ly → hòa đúng bột → thêm đá và sữa lạnh → xay nếu là đá xay → thêm thạch nếu khách gọi → nắp mang về → giao.'
     if n and n['kind'] == 'drink' and _hidden(t):
         return 'Nghe khách tả rồi chọn món hợp ý: nóng hay đá, có sữa không, đậm hay ngọt, có kiêng gì không.'
     if n and n['kind'] == 'drink' and n.get('party'):
@@ -2735,9 +2831,10 @@ SPEC = dict(
     roles={'barista': 'Pha chế', 'baker': 'Thợ bánh', 'cashier': 'Thu ngân'},
     inventory=dict(items=ITEMS, capacity=40),
     prices={'espresso': 25, 'americano': 30, 'latte': 38, 'cappuccino': 38, 'bacxiu': 32,
-            'croissant': 22, 'banhmi': 12, 'cookie': 12, 'bonglan': 20, 'cake': 160},
+            'matcha_latte': 40, 'matcha_blend': 45, 'cacao_blend': 45,
+            'croissant': 22, 'banhmi': 12, 'cookie': 12, 'bonglan': 20, 'cake': 160, 'matcha_cookie': 16, 'cacao_muffin': 24},
     tip=3,
-    physical=('cb_pull', 'cb_milk', 'cb_pick', 'cb_serve', 'cb_dump', 'cb_bake', 'cb_frost', 'cb_done', 'cb_box_send'),
+    physical=('cb_pull', 'cb_milk', 'cb_pick', 'cb_serve', 'cb_dump', 'cb_bake', 'cb_frost', 'cb_done', 'cb_box_send', 'cb_mix', 'cb_blend', 'cb_jelly'),
     wait=True,  # the queue drains in handle (food_service.patience_tick → kit.wait_tick), not the engine's flat -1
     free_actions=(),
     no_tick=('cb_stop', 'cb_milk_stop', 'cb_unload', 'cb_lid', 'cb_ice', 'cb_return', 'cb_tab', 'cb_greet', 'cb_pace'),

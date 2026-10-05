@@ -232,6 +232,25 @@ class Arrive(Base):
         self.assertEqual(self.j.get(t['id'])['status'], 'completed')
         self.assertFalse(self.codes(t['id']))
 
+    def test_wrong_greeting_can_be_retried_before_accepting_child(self):
+        t=self.at(1,0,learning=True);tid=t['id'];f=self.fam(t)
+        self.j.act('bm_wash',task=tid);self.j.act('bm_note',task=tid)
+        self.j.act('bm_greet',task=tid,greet='grab')
+        self.j.act('bm_bag',task=tid);self.j.act('bm_ask',task=tid,item=t['needs']['missing'])
+        right=BM.TEMPERS[f['temper']][2]
+        self.assertTrue(self.j.act('bm_greet',task=tid,greet=right)['correct'])
+        self.assertTrue(self.j.act('bm_take',task=tid)['celebrate'])
+        self.assertNotIn('greet',self.codes(tid));validate_state(self.j.state)
+
+    def test_each_family_can_recover_from_wrong_greeting(self):
+        for fid in BM.FAMILIES:
+            with self.subTest(family=fid):
+                day,slot=find('arrive',days=range(1,150),pred=lambda t:t['needs']['fam']==fid)
+                t=self.at(day,slot);tid=t['id'];right=BM.TEMPERS[self.fam(t)['temper']][2]
+                self.j.act('bm_greet',task=tid,greet='grab')
+                self.assertTrue(self.j.act('bm_greet',task=tid,greet=right)['correct'])
+                with self.assertRaises(GameError):self.j.act('bm_greet',task=tid,greet='grab')
+
     def test_the_note_comes_before_any_other_block(self):
         t = self.at(*find('play'))
         BM._today(self.j.c, self.d)['note'] = 0

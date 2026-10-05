@@ -1,3 +1,4 @@
+import psycopg
 """💍 Live weddings, the game server's side (game/wedding_live.py, game/marriage.py booking, game/live_effects.py kinds):
 booking a real date and time, legacy couples' dates, the party cancelled by a divorce, anniversaries paid once, the
 reward kinds (title, closeness, the private card), the weekly race view (ties) and the group photo upload."""
@@ -290,6 +291,7 @@ class Envelopes(WedBase):
         another request): every envelope with its own request id is either written exactly once (debit, both halves)
         or refused with an error the client shows; never "already sent" for one that was not."""
         import threading
+        import time
         a, b, wid, at = self.couple()
         g = self.user('khach', wallet=5000)
         self.guest_at(wid, g)
@@ -311,14 +313,24 @@ class Envelopes(WedBase):
             for i in range(6):
                 give(f'rid-{tag}-{i:04d}')
 
+        wallet_errors = []
         def wallet_moves():                                         # the save changes under the envelopes
             for i in range(6):
-                mr._mutate_retry(self.store, {self.sid(g): lambda s: s['journey'].__setitem__('wallet', s['journey']['wallet'] + 1)})
+                for attempt in range(12):
+                    try:
+                        mr._mutate_retry(self.store, {self.sid(g): lambda s: s['journey'].__setitem__('wallet', s['journey']['wallet'] + 1)})
+                        break
+                    except mr.MarriageError as error:
+                        if error.code != 'busy' or attempt == 11:
+                            wallet_errors.append(error.code)
+                            return
+                        time.sleep(0.01)
         threads = [threading.Thread(target=burst, args=(t,)) for t in ('t1', 't2')] + [threading.Thread(target=wallet_moves)]
         for t in threads:
             t.start()
         for t in threads:
             t.join(60)
+        self.assertEqual(wallet_errors, [])
         self.assertEqual(quiet, [], 'no new envelope answered "already sent"')
         self.assertTrue(all(code == 'busy' for _, code in errors), errors)   # a refusal the client toasts
         debits = [r['id'] for r in self.rows("SELECT id FROM marriage_effects WHERE sid=? AND id LIKE 'wenv:%'", self.sid(g))]
@@ -328,10 +340,9 @@ class Envelopes(WedBase):
         self.assertEqual(self.wallet(g), 5000 + 6 - 50 * len(sent), 'the wallet paid exactly the envelopes written')
         again = self.give(g, wid, 50, sent[-1])                     # a real double tap is still "already sent"
         self.assertFalse(again['changed'])
-        import sqlite3
 
         def clash(*_a, **_k):
-            raise sqlite3.IntegrityError('another row')
+            raise psycopg.IntegrityError('another row')
         with patch('game.wedding_live.grant', clash), self.assertRaises(mr.MarriageError) as e:
             self.give(g, wid, 50, 'rid-clash-0001')                 # not a double tap: an error, nothing written
         self.assertEqual(e.exception.code, 'busy')
@@ -593,8 +604,6 @@ class WeekScript(WedBase):
         import sys
         import time
         from pathlib import Path
-        if self.store.pg:
-            self.skipTest('the script is run against SQLite here')
         a, b = self.user('an'), self.user('binh')
         prev = wl.week_start(time.time()) - 7 * DAY + 3600
         for i, tok in enumerate((a, b, a)):
@@ -604,7 +613,7 @@ class WeekScript(WedBase):
                 (10 + i, sid, 'p' + sid[:15], prev + i, 'd', wl.vn_week(prev))))
         env = {k: v for k, v in os.environ.items() if k != 'DATABASE_URL'}
         root = Path(__file__).resolve().parents[1]
-        run = lambda *x: subprocess.run([sys.executable, str(root / 'scripts' / 'wedding_week.py'), '--db', str(self.store.path), *x],
+        run = lambda *x: subprocess.run([sys.executable, str(root / 'scripts' / 'wedding_week.py'), '--namespace', str(self.store.path), *x],
                                          capture_output=True, text=True, env=env, timeout=60)
         dry = run('--dry-run')
         self.assertEqual(dry.returncode, 0, dry.stderr)
@@ -626,7 +635,6 @@ class Schema(unittest.TestCase):
         for t in ('wedding_dates', 'wedding_parties', 'wedding_guests', 'wedding_photos', 'wedding_race', 'player_closeness'):
             self.assertIn(t, names)
             self.assertIn(f'CREATE TABLE IF NOT EXISTS {t} ', pg_schema.TABLES_DDL)
-            self.assertIn(f'CREATE TABLE IF NOT EXISTS {t} ', wl.SCHEMA)
 
 
 class Photos(WedBase):

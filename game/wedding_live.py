@@ -3,7 +3,7 @@
 The live party itself runs in the live service (live/wedding.py: the room `wed:<id>`, attendance, the guests' and the
 couple's rewards, the reminder, the weekly settle). This module holds what the game server does:
 
-* the tables (SQLite twin of game/pg_schema.py), all new: nothing existing changes;
+* the PostgreSQL tables in game/pg_schema.py, all new: nothing existing changes;
 * booking: a confirmed plan with a real date and time (`plan.at`, 1 hour to 14 days ahead) stores the couple's date
   for good (`wedding_dates`, insert-only) and books the party (`wedding_parties`). The in-game ceremony then
   resolves at that time (`weddings.due_at`) instead of after N life days; older plans keep their life days;
@@ -77,30 +77,6 @@ TITLE_NAMES = dict(w_crowd='🎉 Đám cưới đông vui', w_100='💞 Trăm ng
                    w_1000='👑 Nghìn ngày son sắt', w_vip='🥇 Khách quý của phố', w_pro='🎊 Ăn cưới chuyên nghiệp')
 VN = datetime.timezone(datetime.timedelta(hours=7))
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS wedding_dates (
-  couple INTEGER PRIMARY KEY, at REAL NOT NULL, source TEXT NOT NULL, wedding INTEGER, created REAL NOT NULL
-);
-CREATE TABLE IF NOT EXISTS wedding_parties (
-  wedding INTEGER PRIMARY KEY, couple INTEGER NOT NULL, a TEXT NOT NULL, b TEXT NOT NULL, at REAL NOT NULL,
-  status TEXT NOT NULL DEFAULT 'booked', reminded REAL, guests INTEGER NOT NULL DEFAULT 0, done_at REAL, created REAL NOT NULL
-);
-CREATE TABLE IF NOT EXISTS wedding_guests (
-  wedding INTEGER NOT NULL, sid TEXT NOT NULL, pid TEXT NOT NULL, ok INTEGER NOT NULL DEFAULT 0, paid INTEGER NOT NULL DEFAULT 0,
-  steps INTEGER NOT NULL DEFAULT 0, counted_at REAL NOT NULL, day TEXT NOT NULL, week TEXT NOT NULL,
-  PRIMARY KEY (wedding, sid)
-);
-CREATE TABLE IF NOT EXISTS wedding_photos (
-  wedding INTEGER NOT NULL, n INTEGER NOT NULL, sid TEXT NOT NULL, at REAL NOT NULL, image TEXT, PRIMARY KEY (wedding, n)
-);
-CREATE TABLE IF NOT EXISTS wedding_race (week TEXT PRIMARY KEY, settled REAL NOT NULL, top TEXT NOT NULL DEFAULT '[]');
-CREATE TABLE IF NOT EXISTS player_closeness (
-  sid TEXT NOT NULL, other TEXT NOT NULL, points INTEGER NOT NULL DEFAULT 0, updated REAL NOT NULL, PRIMARY KEY (sid, other)
-);
-CREATE INDEX IF NOT EXISTS wedding_parties_at ON wedding_parties(status, at);
-CREATE INDEX IF NOT EXISTS wedding_guests_week ON wedding_guests(week, ok);
-CREATE INDEX IF NOT EXISTS wedding_guests_sid ON wedding_guests(sid, day);
-"""
 
 
 class WeddingError(Exception):

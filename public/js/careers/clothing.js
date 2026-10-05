@@ -456,7 +456,7 @@ function gridCard(x){
     return `<li class="ao-grow${out?' short':''}"><span class="ao-gname"><span aria-hidden="true">${x.esc(it.emoji)}</span>${x.esc(it.name)}<small>${total}/${cap}${on[it.id]?` · 🚚 +${on[it.id]}`:''}</small></span>
       <span class="ao-gsizes">${sizes(x,it.id).map(z=>`<span class="ao-gs${onRack(x,it.id,z)<=0?' out':onRack(x,it.id,z)<=1?' low':''}"><b>${x.esc(z==='F'?'F':z)}</b>${onRack(x,it.id,z)}</span>`).join('')}</span>
       ${out?restockButton(x.room,[{id:it.id,need:6}],{},'small ghost'):''}</li>`;}).join('');
-  return `<section class="card ao-grid"><h4>👚 Giá treo theo size</h4><ul>${rows}</ul><p class="small muted">Hàng nhập về tự chia size bán chạy trước (M, L…).</p></section>`;
+  return `<section class="card ao-grid"><h4>👚 Giá treo theo size</h4><ul>${rows}</ul><p class="small muted">Nhập hàng → chọn size đang thiếu, hoặc chọn “Tự chia size” để ưu tiên M, L… Đếm nhận xong mới lên giá.</p></section>`;
 }
 function bookCard(x){
   const rows=data(x).book_view||[];

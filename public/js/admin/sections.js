@@ -111,13 +111,13 @@ export function playtimeCard(d){
 /** `top`: the summary; `sys`: the system section (table rows); `sv`: the saves section or null. */
 export function systemView(top,sys,sv,api,more){
   const s={...top.server,...sys.server},tables=[...s.tables].sort((a,b)=>b.rows-a.rows||a.name.localeCompare(b.name));
-  const pg=/^PostgreSQL/.test(s.database||''),dbName=esc(s.database||`SQLite ${s.sqlite}`),approx=tables.some(t=>t.approx);
+  const dbName=esc(s.database||'PostgreSQL'),approx=tables.some(t=>t.approx);
   const total=tables.reduce((a,t)=>a+t.rows,0),max=Math.max(1,...tables.map(t=>t.rows)),shown=Math.min(tables.length,more.tables);
   const rows=tables.slice(0,shown).map(t=>`<tr><td><code>${esc(t.name)}</code></td><td>${t.approx?'≈ ':''}${num(t.rows)}</td><td class="share-cell"><div><span class="track" aria-hidden="true"><i style="width:${Math.max(t.rows?1:0,Math.round(100*t.rows/max))}%"></i></span><small>${share(t.rows,total)||'0%'}</small></div></td></tr>`);
   const kpis=`<div class="kpis k4">
     ${kpi('Phiên bản',`v${esc(s.version)}`,`Python ${esc(s.python)} · ${dbName}`,{ic:'sparkle'})}
     ${kpi('Chạy liên tục',span(s.uptime),`từ ${stamp(s.started)}`,{ic:'clock'})}
-    ${kpi('Dung lượng dữ liệu',bytes(s.db_bytes),pg?'cơ sở dữ liệu':'cơ sở dữ liệu + WAL',{ic:'server'})}
+    ${kpi('Dung lượng dữ liệu',bytes(s.db_bytes),'cơ sở dữ liệu',{ic:'server'})}
     ${kpi('Tổng số dòng',(approx?'≈ ':'')+num(total),`${num(tables.length)} bảng`,{ic:'chart'})}
   </div>`;
   const env=card('Môi trường',kv([
@@ -131,7 +131,7 @@ export function systemView(top,sys,sv,api,more){
   const calc=card('Số liệu thống kê',kv([
     ['Tổng quan tính lúc',when(top.computed_at??top.generated_at)],['Thời gian tính',`${dec(top.took_ms)} ms${sv?` <small>+ mẫu ${dec(sv.took_ms)} ms</small>`:''}`],['Bộ nhớ đệm',top.stale?'bản tính nền':top.cached?`dùng bản ${dec(top.age)} giây trước`:'vừa tính mới'],
     ['Việc tính nền',job],['Bản lưu tính lúc',when(sv?.snapshot?.computed_at)],['Bảng dữ liệu tính lúc',when(sys.snapshot?.computed_at??sys.generated_at)],
-    ['Mẫu lượt chơi',sample?`${num(sample.size)} <small>/ tối đa ${num(sample.limit)}</small>`:'—'],['Cách đọc mẫu',sample?(sample.engine==='sql'?(pg?'PostgreSQL jsonb':'SQLite JSON'):'Python (dự phòng)'):'—'],['Ngày (giờ VN)',esc(top.today)],
+    ['Mẫu lượt chơi',sample?`${num(sample.size)} <small>/ tối đa ${num(sample.limit)}</small>`:'—'],['Cách đọc mẫu',sample?(sample.engine==='sql'?'PostgreSQL jsonb':'Python (dự phòng)'):'—'],['Ngày (giờ VN)',esc(top.today)],
   ],'kv2')+Object.entries(errors).map(([k,e])=>`<div class="notice bad">${icon('alert',16)}<div>Lần tính “${esc(k)}” lúc ${hm(e.at)} bị lỗi: <code>${esc(e.error)}</code></div></div>`).join(''),
   {note:'Tóm tắt lưu đệm 30 giây, số trực tiếp 10 giây. Bảng dữ liệu tính nền 2 phút một lần; số liệu từ lượt chơi 30 phút một lần, trên mẫu lượt chơi gần nhất, và tạm giữ khi máy chủ bận để không làm chậm người chơi.'});
   const who=card('Phiên vận hành',kv([

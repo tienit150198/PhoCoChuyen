@@ -299,3 +299,132 @@
 .dd-btn.on{background:rgba(255,207,63,.92);color:#2b2118;transform:scale(.96)}
 @media (hover:hover) and (pointer:fine){.dd-btn{width:56px;height:56px;font-size:20px;opacity:.85}}
 @media (max-width:340px){.dd-btn{width:58px;height:58px}.dd-pad-l,.dd-pad-r{gap:6px}}
+
+/* Courier neighbourhood: road navigation stays legible above the moving scene. */
+.dd-stage{overflow:hidden;border-radius:20px;background:#bfd8dc;isolation:isolate}
+.dd-goal{z-index:3;right:auto;width:min(420px,calc(100% - 150px));max-width:none;align-items:flex-start;padding:10px;gap:8px;border:1px solid rgba(255,255,255,.2);border-radius:14px;background:rgba(21,38,40,.94);box-shadow:0 3px 14px #132a3020;box-sizing:border-box}
+.dd-goal b{font-size:13px;line-height:1.35}
+.dd-goal small{margin-top:4px;line-height:1.45;opacity:1;color:#fff5d6}
+.dd-nav-detail{display:block;font-size:11px;line-height:1.4;color:#c9e2dc;margin-top:4px}
+.dd-parking{display:block;width:100%;height:7px;margin-top:7px;accent-color:#7adbb6;border:0;border-radius:8px;overflow:hidden}
+.dd-parking[hidden]{display:none}
+.dd-map-toggle{position:absolute;z-index:4;right:8px;top:8px;display:block;padding:0;overflow:hidden;border:2px solid #fff8e6;border-radius:13px;background:#f4ead6;box-shadow:0 3px 14px #142d3633;cursor:pointer;touch-action:manipulation}
+.dd-map-toggle .dd-mini{position:static;display:block;border:0;border-radius:0;pointer-events:none}
+.dd-map-toggle:focus-visible,.dd-tools button:focus-visible,.dd-map-close:focus-visible,.dd-help-close:focus-visible{outline:3px solid #f5c358;outline-offset:2px}
+.dd-map-toggle>span{display:block;padding:4px 6px;font:700 11px/1.2 system-ui;color:#344841}
+.dd-tools{position:absolute;right:8px;top:130px;z-index:4;display:flex;gap:5px}
+.dd-help-toggle{min-height:40px;max-width:126px;padding:7px 10px;border:1px solid #fff8e6;border-radius:12px;background:rgba(21,38,40,.92);color:#fff;font:inherit;font-size:12px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.dd-signal{position:absolute;z-index:3;top:142px;left:8px;right:8px;max-width:calc(100% - 16px);padding:8px 12px;border:1px solid #e8cba5;border-radius:12px;background:#fff8e9;color:#342817;font-size:12px;font-weight:700;line-height:1.4;pointer-events:none;box-shadow:0 2px 8px #142d3620}
+.dd-signal[hidden]{display:none}
+.dd-say{z-index:5;top:auto;bottom:92px;max-width:calc(100% - 24px);border-radius:12px;font-size:13px;line-height:1.4}
+.dd-pads{z-index:4;bottom:12px}
+.dd-btn{width:62px;height:62px;box-shadow:0 3px 12px #142d3640}
+.dd-btn.dd-gas{background:#26794de8}
+.dd-btn.dd-brake{background:#a53c2be8}
+.dd-map-panel,.dd-help-panel{position:absolute;z-index:12;inset:8px;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;padding:12px;border:1px solid #ddcfb7;border-radius:16px;background:#fffaf0;color:#283e3d;box-shadow:0 8px 26px #172c3940}
+.dd-map-panel[hidden],.dd-help-panel[hidden]{display:none}
+.dd-map-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.dd-map-heading h3,.dd-help-panel h3{margin:0;font-size:17px;line-height:1.3}
+.dd-map-close,.dd-help-close{flex:none;min-height:44px;min-width:44px;padding:8px 12px;border:1px solid #d9cfbc;border-radius:10px;background:#f3e9d8;color:#344841;font:inherit;font-size:13px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.dd-map-canvas{display:block;width:100%;height:auto;max-height:48vh;object-fit:contain;background:#e7ecd8;border:1px solid #d9dfc8;border-radius:12px}
+.dd-map-legend{display:flex;flex-wrap:wrap;gap:6px 12px;margin:10px 0;font-size:12px;line-height:1.4}
+.dd-map-caption{margin:8px 0;font-size:12px;line-height:1.5;color:#536660}
+.dd-help-panel p,.dd-help-panel li{font-size:14px;line-height:1.55}
+.dd-help-panel ul{padding-left:20px}
+.career-job.dl .dl-map{overflow:hidden;border:1px solid var(--dl-line);border-radius:16px;background:var(--dl-s1)}
+.career-job.dl .dl-map svg{max-height:none;border:0;border-radius:0;background:#f3eddc}
+.career-job.dl .dl-map-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--dl-line)}
+.career-job.dl .dl-map-head h3,.career-job.dl .dl-map-head strong{margin:0;font-size:15px}
+.career-job.dl .dl-map-head small{font-size:12px;color:var(--dl-muted)}
+.career-job.dl .dl-map-legend{display:flex;flex-wrap:wrap;gap:8px 12px;padding:10px 12px;font-size:11px;color:var(--dl-muted);line-height:1.4;border-top:1px solid var(--dl-line)}
+.career-job.dl .dl-map-legend span{display:inline-flex;gap:5px;align-items:center}
+.career-job.dl .dl-map-legend i{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid currentColor}
+.career-job.dl .dl-map-legend .route{color:#228b73}
+.career-job.dl .dl-map-legend .draft{color:#bd741c}
+.career-job.dl .dl-map-legend .pick{color:#3976b9}
+.career-job.dl .dl-map-legend .drop{color:#27816e}
+.career-job.dl .dl-map figcaption{padding:0 12px 12px;font-size:11px;line-height:1.5}
+@media(max-width:420px){
+  .dd-goal{right:auto;width:calc(100% - 126px);padding:8px;gap:6px}
+  .dd-goal .dd-arrow{width:25px;height:25px}
+  .dd-goal b{font-size:12px}
+  .dd-goal small{font-size:11px}
+  .dd-tools{top:122px}
+  .dd-btn{width:54px;height:54px;font-size:21px}
+  .dd-pad-l,.dd-pad-r{gap:6px}
+  .dd-help-toggle{font-size:11px;max-width:110px}
+  .dd-map-panel,.dd-help-panel{padding:10px}
+}
+@media(prefers-reduced-motion:reduce){.dd-btn{transition:none}.dd-btn.on{transform:none}}
+
+/* One continuous analogue stick; no directional sectors or buttons. */
+.dd-pads{align-items:flex-end}
+.dd-stick-wrap{display:grid;justify-items:center;gap:4px;color:#fff;text-shadow:0 1px 3px #142a32}
+.dd-stick-wrap>small{font-size:11px;font-weight:700;line-height:1.2}
+.dd-stick{position:relative;display:grid;place-items:center;width:108px;height:108px;box-sizing:border-box;border-radius:50%;border:2px solid #a3e0e4b3;background:radial-gradient(circle,#426f8270 0 55%,#234f6470 57% 65%,#7cd3e14d 67% 70%,#183d5666 72%);box-shadow:inset 0 0 15px #071f4459,0 3px 15px #0619253d;touch-action:none;cursor:grab;outline:none}
+.dd-stick:focus-visible{outline:3px solid #ffcf3f;outline-offset:3px}
+.dd-stick.on{cursor:grabbing;border-color:#c0f1f0}
+.dd-stick-knob{display:block;width:40px;height:40px;border-radius:50%;border:2px solid #d2f4eabf;background:radial-gradient(circle at 35% 28%,#81c1c9,#37687d 70%);box-shadow:0 3px 9px #0c253a80,inset 0 1px 4px #ddfffa80;pointer-events:none;transition:transform .12s ease-out}
+.dd-stick.on .dd-stick-knob{transition:none}
+@media(max-width:420px){.dd-stick{width:96px;height:96px}.dd-stick-knob{width:36px;height:36px}}
+@media(prefers-reduced-motion:reduce){.dd-stick-knob{transition:none}}
+
+.dd-tools{flex-direction:column;align-items:flex-end}
+.dd-full-toggle{min-height:40px;padding:7px 10px;border:1px solid #fff8e6;border-radius:12px;background:#214c50ed;color:#fff;font:700 12px/1.2 system-ui;cursor:pointer;touch-action:manipulation}
+.dd-signal{right:144px;max-width:none}
+.sheet.dd-expanded-host,.sheet:has(.dd-stage.dd-expanded){position:fixed!important;inset:0!important;width:100vw!important;max-width:none!important;height:100dvh!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;transform:none!important;animation:none!important;overflow:hidden!important}
+.dd-stage.dd-expanded,.dd-stage:fullscreen{position:fixed!important;inset:0!important;z-index:100;width:100vw!important;height:100dvh!important;max-width:none!important;max-height:none!important;border-radius:0!important}
+.dd-stage:fullscreen::backdrop{background:#142c31}
+.dd-expanded .dd-goal{top:max(8px,env(safe-area-inset-top));left:max(8px,env(safe-area-inset-left))}
+.dd-expanded .dd-map-toggle{top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right))}
+.dd-expanded .dd-tools{top:calc(130px + env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right))}
+.dd-expanded .dd-pads{bottom:max(16px,env(safe-area-inset-bottom));padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+.dd-expanded .dd-map-canvas{max-height:65vh}
+@media(max-width:420px){.dd-full-toggle{font-size:11px;padding:7px 8px}.dd-signal{right:124px}}
+
+/* Rider guidance uses the same stop-light colors as the crossing itself. */
+.dd-signal{display:flex;align-items:center;gap:7px;padding:9px;color:#285744;border-color:#6ca98b;min-height:54px;box-sizing:border-box;background:#fffaf0}
+.dd-signal>i{font-style:normal;font-size:23px;line-height:1;flex:none}
+.dd-signal>span{flex:1;min-width:0}
+.dd-signal b{display:block;font-size:12px;line-height:1.3}
+.dd-signal small{display:block;font-size:10px;line-height:1.3;margin-top:3px;color:#526059}
+.dd-signal>strong{flex:none;font-size:19px;font-variant-numeric:tabular-nums;min-width:2.2ch;text-align:right}
+.dd-signal[data-color="red"]{color:#a93428;border-color:#c46a59}
+.dd-signal[data-color="yellow"]{color:#8b6611;border-color:#bca15a}
+.dd-map-zoom{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:0 0 8px}
+.dd-map-zoom button{min-height:44px;min-width:44px;padding:7px 10px;border:1px solid #d9cfbc;border-radius:9px;background:#f3e9d8;color:#344841;font:700 13px system-ui;touch-action:manipulation;cursor:pointer}
+.dd-map-zoom button:disabled{opacity:.45;cursor:default}
+.dd-map-zoom button:focus-visible{outline:3px solid #bd741c;outline-offset:2px}
+.dd-map-zoom output{min-width:4ch;text-align:center;font:700 12px system-ui;font-variant-numeric:tabular-nums}
+.dd-map-canvas,.dd-expanded .dd-map-canvas{max-height:none;touch-action:none;cursor:grab}
+.dd-map-canvas:active{cursor:grabbing}
+.dd-goal small{font-weight:800;font-size:13px}
+.dd-goal .dd-arrow{transition:transform .15s ease-out}
+@media(prefers-reduced-motion:reduce){.dd-goal .dd-arrow{transition:none}}
+
+/* Isometric delivery: warm paper controls keep the street and destination readable. */
+.dd-view-toggle{min-height:36px;max-width:126px;padding:7px 10px;border:1px solid #d8c7a6;border-radius:12px;background:#fff7e8;color:#70523e;font:700 11px/1.25 system-ui;cursor:pointer;touch-action:manipulation}
+.dd-view-toggle:focus-visible{outline:3px solid #bd741d;outline-offset:2px}
+.dd-isometric{background:#f2ecd7}
+.dd-isometric .dd-goal{border-color:#d5bc94;background:#fff8e9f5;color:#70523e;box-shadow:0 3px 10px #70523e16}
+.dd-isometric .dd-goal small{color:#7a583a}
+.dd-isometric .dd-nav-detail{color:#8b755e}
+.dd-isometric .dd-arrow{background:#f2d787;color:#70523e}
+.dd-isometric .dd-help-toggle,.dd-isometric .dd-full-toggle{border-color:#d8c7a6;background:#fff7e8ed;color:#70523e}
+.dd-isometric .dd-stick-wrap{color:#70523e;text-shadow:0 1px #fff7e8}
+.dd-isometric .dd-stick{border-color:#b39a70;background:radial-gradient(circle,#f8edcecc 0 54%,#decca4cc 56% 66%,#fff4dacc 68% 70%,#bba98299 72%);box-shadow:inset 0 0 10px #96795020,0 3px 9px #70523e20}
+.dd-isometric .dd-stick-knob{border-color:#a98a59;background:radial-gradient(circle at 35% 28%,#f8e4b3,#c7a66d 75%);box-shadow:0 3px 6px #70523e30,inset 0 1px 4px #fff8e8}
+.dd-isometric .dd-stick.on{border-color:#8a7957}
+.dd-isometric .dd-btn{border-color:#f7ecd0;color:#5c4434;box-shadow:0 3px 8px #70523e25}
+.dd-isometric .dd-btn.dd-gas{background:#a6bd8cf2}
+.dd-isometric .dd-btn.dd-brake{background:#dfa787f2}
+.dd-isometric .dd-btn.on{background:#edcf85;color:#70523e}
+.dd-isometric .dd-parking{accent-color:#819e6d}
+@media(max-width:420px){
+  .dd-view-toggle{max-width:110px;padding:6px 8px;font-size:10px}
+  .dd-isometric .dd-tools{gap:4px}
+  .dd-isometric .dd-help-toggle,.dd-isometric .dd-full-toggle{min-height:36px}
+  .dd-isometric .dd-goal b{white-space:normal;overflow-wrap:anywhere}
+  .dd-isometric .dd-pads{bottom:max(12px,env(safe-area-inset-bottom))}
+}
+.dd-isometric.dd-expanded .dd-tools{top:calc(130px + env(safe-area-inset-top))}

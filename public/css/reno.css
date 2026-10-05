@@ -220,6 +220,14 @@
 
 /* 🚶 Ở nhà (v4/home-walk.js): the character walking in the room, the line over them, the fridge */
 .hw-me{transition-property:transform;transition-timing-function:ease-in-out;transition-duration:0ms;pointer-events:none}
+.hc-person,.hc-effect{pointer-events:none}
+.hc-name{font:700 11px "Trebuchet MS",sans-serif;fill:#4a3226;stroke:#fffaf0;stroke-width:3px;paint-order:stroke fill;stroke-linejoin:round}
+.hc-panel{margin:10px 0;padding:10px 14px;border:1px solid #dfcbb9;border-radius:16px;background:#fff8ed}
+.hc-panel p{margin:0 0 7px}.hc-panel .bk-actions{flex-wrap:wrap;gap:8px}
+.hc-status{font-size:.85rem;color:#805244}.hc-status:empty{display:none}
+.hc-heart{font-size:24px}
+@media(prefers-reduced-motion:no-preference){body:not(.reduce-motion) .hc-heart{animation:hc-affection 2.6s ease-out both}}
+@keyframes hc-affection{0%{opacity:0;transform:translateY(7px) scale(.85)}15%,70%{opacity:1}100%{opacity:0;transform:translateY(-30px) scale(1.1)}}
 .hw-say{position:absolute;z-index:2;max-width:min(240px,74%);margin:0;transform:translate(-50%,-100%);padding:8px 12px;border-radius:14px;background:#fffaf0;color:#4a3226;font-size:.88rem;font-weight:600;line-height:1.35;box-shadow:0 4px 14px rgba(0,0,0,.25);pointer-events:none}
 .hw-say::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:#fffaf0}
 .hw-say[hidden]{display:none}
@@ -264,3 +272,17 @@
   .dc-stage{position:sticky;top:0;z-index:1}
   .dc-fix{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);align-items:start}
 }
+/* Shared-home gestures: the actual dressed bodies lean; hands come from paintPlayer. */
+.hc-pose .hc-body{transform-origin:0 -8px;transform-box:view-box}
+.hc-effect .hc-heart{fill:#de557c;font-size:19px;paint-order:stroke fill;stroke:#fff6ed;stroke-width:1px;transform:translate(calc(var(--hc-flight-x)/2),calc(var(--hc-flight-y)/2))}
+.hc-panel button:disabled{opacity:.55;cursor:wait}
+.hc-response{margin-top:9px;padding-top:9px;border-top:1px dashed #dfcbb9}
+.dc-stage>.hc-panel{grid-row:2;margin:0}
+@media(prefers-reduced-motion:no-preference){
+ body:not(.reduce-motion) .hc-pose .hc-body{animation:hc-body-pose 3.2s ease-in-out both;animation-delay:var(--hc-delay,0ms)}
+ body:not(.reduce-motion) .hc-effect .hc-heart{animation:hc-heart-reach 3.2s ease-in-out both;animation-delay:var(--hc-delay,0ms)}
+ body:not(.reduce-motion) .hc-effect-heart .hc-heart{animation-name:hc-heart-flight}
+}
+@keyframes hc-body-pose{0%,100%{transform:rotate(0deg)}22%,72%{transform:rotate(var(--hc-lean))}45%{transform:rotate(calc(var(--hc-lean)*.8))}}
+@keyframes hc-heart-reach{0%,100%{opacity:0;transform:translate(calc(var(--hc-flight-x)/2),0) scale(.7)}25%,75%{opacity:1;transform:translate(calc(var(--hc-flight-x)/2),-8px) scale(1)}}
+@keyframes hc-heart-flight{0%,14%{opacity:0;transform:translate(0,0) scale(.5)}28%{opacity:1;transform:translate(0,-3px) scale(1)}62%,85%{opacity:1;transform:translate(var(--hc-flight-x),var(--hc-flight-y)) scale(1.2)}100%{opacity:0;transform:translate(var(--hc-flight-x),calc(var(--hc-flight-y) - 8px)) scale(.8)}}

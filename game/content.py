@@ -86,6 +86,8 @@ UPGRADES = [
     dict(id="assistant",name="Bạn phụ việc",icon="people",price=160,kind="tool",description="Một bạn phụ việc có mặt ở tiệm; mỗi ngày hỗ trợ một đơn nhập hoặc một gợi ý nghiệp vụ.",min_level=3),
     dict(id="poster",name="Tranh khu phố",icon="image",price=70,kind="decor",description="Một bức tranh nho nhỏ trên tường.",min_level=1),
 ]
+from .work_gear import catalogue as _work_equipment
+UPGRADES.extend(_work_equipment())
 UPGRADE_INDEX={u["id"]:u for u in UPGRADES}
 
 # Concrete milestone conditions; story text comes from the authored baseline.
@@ -211,6 +213,7 @@ def public_content() -> dict:
     catalogue=copy.deepcopy(CATALOG)
     for c in catalogue:
         c.update(CAREER_META.get(c["id"], {}))
+        c['playable'] = c['id'] in CAREERS
         if c["id"] in PLUGINS:  # its work needs the shift open (engine: "Mở ca trước…"): greyed out while closed
             sp=PLUGINS[c["id"]].SPEC;c["shift_gate"]=dict(prefix=sp["prefix"],free=list(sp.get("free_actions",())))
     return dict(version="0.9.5",experiences=extra.public_content(),inventory=inventory.content(),employment=employment.content(CAREERS),

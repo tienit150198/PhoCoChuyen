@@ -62,8 +62,10 @@ export function setup(ctx){
     ticket:readTicket(),paying:false,ready:false,waitUntil:0,shoot:null,shots:[],flash:0,count:0,filter:'none',stickers:[],
     text:'hoi',date:true,tab:'solo',face:'auto',dcat:'mat',ed:null,base:null,dirty:false,
     url:'',blob:null,building:false,cv:null,raf:0,thumbs:{},sent:{},pendingJoin:false,tick:0,
-    conn0:0,connTimer:0,rejoin:'',back:null};   // since when the socket is awaited; a friends' room's code to come back to
+    conn0:0,connTimer:0,rejoin:'',back:null,visit:0};   // since when the socket is awaited; a friends' room's code to come back to
   const P=()=>F().photo||null;
+  let preview=null,fontEpoch=0;
+  document.fonts?.addEventListener?.('loadingdone',()=>{fontEpoch++;if(S.tab==='pb'&&S.dlg?.open)drawStage();});
   D.invites={};D.inviteOpen=false;
 
   /* ---- the ticket: paid once, used by the next shoot (kept in this tab if the room breaks up first) ---- */
@@ -75,8 +77,8 @@ export function setup(ctx){
     D.paying=true;S.flash=null;render();
     const r=await send('fair_photo',{mode:D.mode||'solo'});
     D.paying=false;
-    if(r?.fair?.game==='photo'){keepTicket(true);sfx('open');return true;}
-    render();return false;
+    if(r?.fair?.game==='photo'){keepTicket(true);if(S.tab==='pb'&&S.dlg?.open)sfx('open');return true;}
+    if(S.tab==='pb'&&S.dlg?.open)render();return false;
   }
   const canPay=()=>D.ticket||!!P()?.ok;
   const payWhy=()=>D.ticket?'':P()?.why||'';
@@ -162,7 +164,7 @@ export function setup(ctx){
     toLobby();S.flash={text:'Mất kết nối, phòng chụp đã đóng. Vé chưa dùng vẫn giữ cho lượt sau.',kind:'warn'};
   }
   function redraw(){if(S.tab==='pb'&&S.dlg?.open)render();else drawStage();}
-  function toLobby(){stopLoop();D.step='lobby';D.tab='solo';D.mode=null;D.room=null;D.ready=false;D.shoot=null;D.pendingJoin=false;D.rejoin='';D.back=null;}
+  function toLobby(){D.visit++;stopLoop();D.step='lobby';D.tab='solo';D.mode=null;D.room=null;D.ready=false;D.shoot=null;D.pendingJoin=false;D.rejoin='';D.back=null;}
 
   /** Leave whatever shared thing is going on (the tab changes, the sheet closes). */
   function leave(){
@@ -174,7 +176,7 @@ export function setup(ctx){
   }
 
   /* ---- actions ---- */
-  function startSolo(){D.mode='solo';D.room=null;D.me='me';D.step='room';D.say=pick(SHOOTER.room);S.flash=null;render();}
+  function startSolo(){D.visit++;D.mode='solo';D.room=null;D.me='me';D.step='room';D.say=pick(SHOOTER.room);S.flash=null;render();}
   function find(){if(!shared()){wake(true);render();return;}D.mode='stranger';S.flash=null;if(live.send({t:'booth_find',...look()})){D.step='wait';D.waitUntil=Date.now()+60000;D.say=pick(SHOOTER.wait);}render();}
   function make(){if(!shared()){wake(true);render();return;}D.mode='friends';S.flash=null;D.pendingJoin=live.send({t:'booth_make',...look()});render();}
   function join(){
@@ -215,7 +217,10 @@ export function setup(ctx){
   }
   async function shootSolo(){
     if(D.mode!=='solo'||D.shoot)return;
+    const visit=D.visit;
     if(!await pay())return;
+    // Payment survives leaving, but the old click must not consume that ticket in a new visit.
+    if(D.visit!==visit||D.mode!=='solo'||S.tab!=='pb'||!S.dlg?.open){if(S.tab==='pb'&&S.dlg?.open)render();return;}
     startShoot(SHOTS,GAP);
   }
   function go(){if(!inRoom()||!isHost())return;live.send({t:'booth_go'});}
@@ -249,7 +254,7 @@ export function setup(ctx){
     const left=Math.ceil((due-now)/1000);
     if(left!==s.last&&left>0&&left<=3){s.last=left;sfx('call');}
     D.count=left>0&&left<=3?left:0;
-    if(now>=due){capture();s.done++;s.last=0;if(s.done>=s.n){D.shoot=null;D.count=0;setTimeout(()=>{D.step='print';D.say=pick(SHOOTER.done);render();build();},500);}else render();}
+    if(now>=due){capture();s.done++;s.last=0;if(s.done>=s.n){const visit=D.visit;D.shoot=null;D.count=0;setTimeout(()=>{if(D.visit!==visit||D.step!=='shoot')return;D.step='print';D.say=pick(SHOOTER.done);render();build();},500);}else render();}
     return true;
   }
   function loop(){
@@ -272,12 +277,18 @@ export function setup(ctx){
     const c=cv.getContext('2d'),W=CELL[0],H=CELL[1],k=cv.width/W;
     c.setTransform(k,0,0,k,0,0);c.clearRect(0,0,W,H);
     const ppl=D.step==='lobby'?people().slice(0,1):people();
-    const at=paintCell(c,{people:ppl,bg:bgId()},W,H);
+    const bg=bgId(),key=JSON.stringify([ppl,bg,cv.width,cv.height,fontEpoch,document.documentElement.lang]);
+    if(preview?.key!==key){
+      const layer=document.createElement('canvas');layer.width=cv.width;layer.height=cv.height;
+      const q=layer.getContext('2d');q.setTransform(k,0,0,k,0,0);
+      preview={key,cv:layer,at:paintCell(q,{people:ppl,bg},W,H)};
+    }
+    c.drawImage(preview.cv,0,0,W,H);const at=preview.at;
     // the curtain's edges and the marquee over the booth (its bulbs run while the camera counts)
     const g=c.createLinearGradient(0,0,22,0);g.addColorStop(0,'#8f1f2a');g.addColorStop(1,'#c8323a00');c.fillStyle=g;c.fillRect(0,0,22,H);
     const g2=c.createLinearGradient(W,0,W-22,0);g2.addColorStop(0,'#8f1f2a');g2.addColorStop(1,'#c8323a00');c.fillStyle=g2;c.fillRect(W-22,0,22,H);
-    const fast=D.count?110:260;
-    for(let i=0;i<13;i++){const on=reduce()||Math.floor(now/fast+i)%3!==0;CANVAS.E(c,6+i*(W-12)/12,4,2.6,2.6,on?'#ffe28a':'#b98f4a');}
+    const fast=D.count?110:260,reduced=reduce();
+    for(let i=0;i<13;i++){const on=reduced||Math.floor(now/fast+i)%3!==0;CANVAS.E(c,6+i*(W-12)/12,4,2.6,2.6,on?'#ffe28a':'#b98f4a');}
     c.textAlign='center';c.textBaseline='middle';c.font='700 8px "Trebuchet MS",sans-serif';
     if(D.step!=='lobby')ppl.forEach((p,i)=>{
       const x=at[i]?.x??W*(i+.5)/ppl.length,room=ppl.length>1?Math.min(...at.map((a,j)=>j===i?Infinity:Math.abs(a.x-x)),W)-6:W*.6;

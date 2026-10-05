@@ -1,4 +1,4 @@
-"""The live service end to end: real sockets against a real game database (SQLite here, PostgreSQL with
+"""The live service end to end: real sockets against a real game database (PostgreSQL with
 TEST_DATABASE_URL). Auth and origin, Cả phố (slow mode, new sessions read-only, filters), friend DMs, groups,
 blocks, reports and auto-hide, mutes, deletes, unread, presence, resume after a reconnect, push throttling,
 graceful restart and the socket limits."""
@@ -16,7 +16,7 @@ class AuthTests(LiveCase):
         token, sid = self.account('Mây Bếp')
         c = await self.connect(token)
         w = c.welcome
-        self.assertEqual(w['flags'], dict(chat=True, street=False, dating=False, wedding=False, fair=False, chatdel=True, blocks=True))
+        self.assertEqual(w['flags'], dict(chat=True, street=False, dating=False, wedding=False, fair=False, home=False, visits=False, chatdel=True, blocks=True))
         self.assertEqual(w['me']['pid'], self.pid(sid))
         self.assertEqual(w['me']['name'], 'Mây Bếp')
         self.assertEqual(w['me']['town'], 'ok')
@@ -109,7 +109,7 @@ class TownTests(LiveCase):
         await anon.send(t='send', ch='town', text='alo', cid='a')
         self.assertEqual((await anon.expect('error', ref='a'))['code'], 'name')
 
-    async def test_filters_and_duplicates(self):
+    async def test_filters_allow_repeated_content(self):
         self.cfg.town_every = 0
         a = await self.connect(self.account('Mây Hồng')[0])
         await a.call('join', 'joined', ch='town')
@@ -119,7 +119,14 @@ class TownTests(LiveCase):
         with self.store.connect() as db:
             self.assertEqual(db.execute('SELECT text FROM chat_messages WHERE id=?', (m['id'],)).fetchone()[0], m['text'])
         await a.send(t='send', ch='town', text='GỌI 0912 345 678 — Zalo minh123 vl thật!!', cid='d')
-        self.assertEqual((await a.expect('error', ref='d'))['code'], 'dup')
+        repeated = await a.expect('msg', cid='d')
+        self.assertNotEqual(repeated['id'], m['id'])
+        self.assertEqual(repeated['text'], 'GỌI ••• — Zalo ••• vl thật!!')
+        await a.send(t='send', ch='town', text='gọi 0912 345 678, zalo minh123, vl thật', cid='exact')
+        exact = await a.expect('msg', cid='exact')
+        self.assertEqual(exact['text'], m['text'])
+        history = await a.call('history', 'history', ch='town')
+        self.assertEqual([x['id'] for x in history['msgs']], [m['id'], repeated['id'], exact['id']])
 
     async def test_delete_own_keeps_the_row(self):
         a = await self.connect(self.account('Mây Hồng')[0])
@@ -188,6 +195,23 @@ class FriendTests(LiveCase):
         self.ta, self.sa = self.account('An')
         self.tb, self.sb = self.account('Bình')
         self.pa, self.pb = self.pid(self.sa), self.pid(self.sb)
+
+    async def test_repeated_dm_and_group_messages_reach_recipient_and_history(self):
+        self.befriend(self.sa, self.sb)
+        a, b = await self.connect(self.ta), await self.connect(self.tb)
+        group = await a.call('group_new', 'chan', title='Bạn bè', pids=[self.pb])
+        for target in ({'to': self.pb}, {'ch': group['chan']['id']}):
+            ids = []
+            for i in range(3):
+                await a.send(t='send', **target, text='alo', cid=f'repeat-{i}')
+                sent = await a.expect('msg', cid=f'repeat-{i}')
+                got = await b.expect('msg', id=sent['id'])
+                self.assertEqual(got['text'], 'alo')
+                ids.append(sent['id'])
+            self.assertEqual(len(set(ids)), 3)
+            history = await b.call('history', 'history', ch=sent['ch'])
+            self.assertEqual([m['id'] for m in history['msgs']], ids)
+            self.assertEqual([m['text'] for m in history['msgs']], ['alo'] * 3)
 
     async def test_dm_only_between_friends(self):
         a = await self.connect(self.ta)

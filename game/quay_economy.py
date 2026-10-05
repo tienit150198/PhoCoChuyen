@@ -40,7 +40,7 @@ def _event(s, st, day):
     stalls = (qy.get(s) or {}).get('stalls') or [st]
     rng = qy._rng(s, dict(id='owner'), day, 'business-risk')
     chosen = stalls[rng.randrange(len(stalls))]['id']
-    if chosen != st['id'] or day - st['opened'] < 5 or rng.random() >= .10:
+    if chosen != st['id'] or day - st['opened'] < 5 or rng.random() >= .30:
         return None
     event = EVENTS[rng.randrange(len(EVENTS))]
     if event in ('theft','robbery') and st['theft'] and day-st['theft'] < qy.THEFT_GAP:

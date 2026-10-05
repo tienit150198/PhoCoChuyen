@@ -1,5 +1,6 @@
 import copy
 import unittest
+from unittest.mock import patch
 from game import traffic
 from game.careers import kit
 from game.engine import GameError
@@ -109,14 +110,20 @@ class Traffic(unittest.TestCase):
         s=opened('xe',staff=False);sid=ST(s)['id'];wallet=s['journey']['wallet']
         s,_=act(s,'jr_quay_online',stall=sid,on=True)
         s,_=act(s,'jr_quay_start',stall=sid)
+        clock_patch=patch('game.quay_business.time.time',return_value=ST(s)['run']['order_data']['0']['available_at']/1000)
+        clock_patch.start();self.addCleanup(clock_patch.stop)
         s,r=act(s,'jr_quay_signal',stall=sid,order=0)
         ch=r['traffic']['challenge'];self.time=1120+10-ch['offset']
         s,_=act(s,'jr_quay_cross',stall=sid,order=0,turn='S',token=ch['token'])
+        paid=ST(s)['business']['expenses']['loss']
+        self.assertEqual(paid,12)
         s,_=act(s,'jr_quay_close',stall=sid)
         self.assertIsNotNone(ST(s)['run'])
         self.assertTrue(ST(s)['run']['x'])
         self.assertEqual(ST(s)['run']['rides']['0']['traffic']['receipts'][0]['fine'],12)
         self.assertEqual(s['journey']['wallet'],wallet)
+        self.assertEqual(ST(s)['business']['expenses']['loss'],paid)
+        self.assertEqual(ST(s)['run']['sum']['auto'],0)
 
     def test_counter_crossings_are_ordered_resume_and_charge_shift_once(self):
         from tests.test_quay import opened,ST,act
@@ -125,6 +132,8 @@ class Traffic(unittest.TestCase):
         s,_=act(s,'jr_quay_online',stall=sid,on=True)
         s,_=act(s,'jr_quay_start',stall=sid)
         run=ST(s)['run'];order=qs.order(s,ST(s),run,0);cost=run['m']
+        clock_patch=patch('game.quay_business.time.time',return_value=order['available_at']/1000)
+        clock_patch.start();self.addCleanup(clock_patch.stop)
         with self.assertRaises(GameError):act(s,'jr_quay_cross',stall=sid,order=0,turn='L',token='fake')
         for step,turn in enumerate(order['route']):
             s,r=act(s,'jr_quay_signal',stall=sid,order=0)
@@ -137,7 +146,40 @@ class Traffic(unittest.TestCase):
         s,r=act(s,'jr_quay_signal',stall=sid,order=0)
         self.assertEqual(r['picks'],order['route'])
         s,_=act(s,'jr_quay_ship',stall=sid,order=0,items=order['items'],seal=True,tool=order['tool'],note=order['sticker'],way='self',route=r['picks'])
-        self.assertGreater(ST(s)['run']['on'][0],0)
+        self.assertEqual(ST(s)['business']['sold'],1)
+        self.assertNotEqual(qs.order(s,ST(s),ST(s)['run'],0)['id'],order['id'])
+        self.assertEqual(ST(s)['run']['on'][0],0)
+
+    def test_counter_unpaid_fine_survives_close_and_uses_sales_then_local_funding(self):
+        from tests.test_quay import opened,ST,act
+        from tests.test_quay_self import serve_well
+        s=opened('xe',staff=False);sid=ST(s)['id'];wallet=s['journey']['wallet']
+        s,_=act(s,'jr_quay_online',stall=sid,on=True)
+        s,_=act(s,'jr_quay_start',stall=sid)
+        ST(s)['fund']=ST(s)['till']=0
+        clock_patch=patch('game.quay_business.time.time',return_value=ST(s)['run']['order_data']['0']['available_at']/1000)
+        clock_patch.start();self.addCleanup(clock_patch.stop)
+        s,r=act(s,'jr_quay_signal',stall=sid,order=0)
+        ch=r['traffic']['challenge'];self.time=1120+10-ch['offset']
+        s,_=act(s,'jr_quay_cross',stall=sid,order=0,turn='S',token=ch['token'])
+        self.assertEqual(ST(s)['business'].get('unpaid_fines'),12)
+        from game import quay as qy, quay_business as qb
+        self.assertEqual(qy.sell_back(ST(s)),qy.PLACES['xe']['price']//2-12)
+        self.assertEqual(qb.public(ST(s))['unpaid_fines'],12)
+        s,_=serve_well(s)
+        unpaid=ST(s)['business']['unpaid_fines']
+        self.assertGreater(unpaid,0)
+        self.assertEqual(ST(s)['till']+ST(s)['fund'],0)
+        self.assertEqual(ST(s)['business']['expenses']['loss']+unpaid,12)
+        s,_=act(s,'jr_quay_close',stall=sid)
+        self.assertEqual(ST(s)['business']['unpaid_fines'],unpaid)
+        self.assertEqual(s['journey']['wallet'],wallet)
+        s,_=act(s,'jr_quay_fund',stall=sid,amount=20)
+        self.assertEqual(ST(s)['business']['unpaid_fines'],0)
+        self.assertEqual(ST(s)['business']['expenses']['loss'],12)
+        self.assertEqual(ST(s)['fund']+ST(s)['till'],20-unpaid)
+        s,_=act(s,'jr_quay_fund',stall=sid,amount=10)
+        self.assertEqual(ST(s)['business']['expenses']['loss'],12)
 
 
 if __name__=='__main__':unittest.main()

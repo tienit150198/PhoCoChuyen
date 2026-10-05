@@ -263,6 +263,47 @@ class Transfers(Base):
 
 
 class Limits(Base):
+    def test_large_transfer_and_unclaimed_refund_preserve_all_coins(self):
+        ann,bob=self.user('ann',bank=0),self.user('bob',bank=0)
+        self.friends(ann,bob)
+        amount=30_000_000
+        self.store_state_balance(ann,amount)
+        self.send(ann,bob,amount)
+        self.assertEqual(self.balance(ann),0)
+        self.store.transaction(lambda db:db.execute('UPDATE bank_xfers SET at=?',(mr.now()-31*86400,)))
+        bx.sweep(self.store,force=True)
+        before=self.wallet(ann)
+        self.assertTrue(lfx.on_load(self.store,ann,self.state(ann)))
+        self.assertEqual(self.wallet(ann),before+amount)
+        self.assertFalse(lfx.on_load(self.store,ann,self.state(ann)))
+
+    def store_state_balance(self,tok,amount):
+        mr._mutate(self.store,{self.sid(tok):lambda s:s['journey']['bank'].__setitem__('balance',amount)})
+
+    def test_full_receiver_keeps_pending_transfer_then_receives_after_spending(self):
+        ann,bob=self.user('ann'),self.user('bob',bank=0)
+        self.friends(ann,bob)
+        self.store_state_balance(bob,bx.MAX_TRANSFER-50)
+        self.send(ann,bob,100)
+        self.assertEqual(self.load(bob),(False,[]))
+        self.assertEqual(self.rows()[0]['status'],'sent')
+        self.store_state_balance(bob,200)
+        self.assertTrue(self.load(bob)[0])
+        self.assertEqual(self.balance(bob),300)
+
+    def test_large_pending_rows_do_not_block_a_later_transfer_that_fits(self):
+        ann,bob=self.user('ann',bank=5000),self.user('bob',bank=0)
+        self.friends(ann,bob)
+        self.store_state_balance(bob,bx.MAX_TRANSFER-50)
+        for _ in range(bx.BATCH):self.send(ann,bob,100)
+        self.send(ann,bob,10)
+        self.assertTrue(self.load(bob)[0])
+        self.assertEqual(self.balance(bob),bx.MAX_TRANSFER-40)
+        rows=self.rows()
+        self.assertEqual(sum(r['status']=='sent' for r in rows),bx.BATCH)
+        self.assertEqual(sum(r['status']=='done' for r in rows),1)
+        self.assertEqual(self.load(bob),(False,[]))
+
     def test_who_can_send_to_whom(self):
         ann, bob = self.user('ann'), self.user('bob')
         self.refused('not_friend', self.send, ann, bob, 50)
@@ -274,7 +315,7 @@ class Limits(Base):
         self.refused('blocked', self.send, ann, bob, 50)
         self.store.transaction(lambda db: db.execute('DELETE FROM marriage_blocks'))
         self.refused('bad_amount', self.send, ann, bob, bx.MIN_XU - 1)
-        self.refused('bad_amount', self.send, ann, bob, bx.SEND_DAY + 1)
+        self.refused('bad_amount', self.send, ann, bob, bx.MAX_TRANSFER + 1)
         self.refused('bad_amount', self.send, ann, bob, 50.0)
         self.refused('bad_rid', bx.act, self.store, ann, 'send', dict(to=self.code(bob), amount=50, rid='x'))
         self.send(ann, bob, 50)
@@ -296,39 +337,36 @@ class Limits(Base):
         self.refused('account_required', bx.act, self.store, guest, 'send', {})
         self.assertEqual(self.balance(ann), 3000)
 
-    def test_sender_day_caps(self):
+    def test_sender_has_no_daily_amount_or_count_quota(self):
         ann, bob, cat = self.user('ann', bank=9000), self.user('bob'), self.user('cat')
         self.friends(ann, bob)
         self.friends(ann, cat)
         self.send(ann, bob, 1500)
-        e = self.refused('limit_send', self.send, ann, cat, 600)
-        self.assertIn('500', e.message)
-        self.send(ann, cat, 500)
-        e = self.refused('limit_send', self.send, ann, cat, 10)
-        self.assertIn('đủ', e.message)
-        self.assertEqual(self.balance(ann), 9000 - 2000)
+        self.send(ann, cat, 600)
+        self.send(ann, cat, 5000)
+        self.assertEqual(self.balance(ann), 1900)
         v = bx.view(self.store, self.sid(ann), self.state(ann))
-        self.assertEqual(v['today'], dict(sent=2000, n=2, left=0, count_left=bx.SEND_COUNT - 2))
+        self.assertEqual(v['today'], dict(sent=7100, n=3, left=None, count_left=None))
+        self.assertTrue(v['rules']['unlimited'])
         # the count: a fresh day for a new sender
         dan = self.user('dan', bank=9000)
         self.friends(dan, bob)
-        for _ in range(bx.SEND_COUNT):
+        for _ in range(12):
             self.send(dan, bob, 10)
-        self.refused('limit_count', self.send, dan, bob, 10)
+        self.assertEqual(self.balance(dan), 8880)
+        self.refused('not_enough', self.send, dan, bob, 8881)
 
-    def test_receiver_day_cap_across_senders(self):
+    def test_receiver_has_no_daily_quota_across_senders(self):
         bob = self.user('bob')
         senders = [self.user(n, bank=5000) for n in ('ann', 'cat', 'dan')]
         for s in senders:
             self.friends(s, bob)
         self.send(senders[0], bob, 2000)
         self.send(senders[1], bob, 900)
-        e = self.refused('limit_receive', self.send, senders[2], bob, 200)
-        self.assertIn('100', e.message)
-        self.send(senders[2], bob, 100)
-        e = self.refused('limit_receive', self.send, senders[2], bob, 10)
-        self.assertIn('nhận đủ', e.message)
-        self.assertEqual(self.balance(senders[2]), 4900)     # refused sends never moved a coin
+        self.send(senders[2], bob, 5000)
+        self.assertEqual(self.balance(senders[2]), 0)
+        self.load(bob)
+        self.assertEqual(self.balance(bob), 10900)
 
     def test_an_admin_sends_at_once_without_limits(self):
         boss, bob = self.user('boss', old=False, life=1, bank=500000), self.user('bob', old=False)
@@ -341,18 +379,18 @@ class Limits(Base):
             self.assertTrue(v['rules']['admin'])
             self.assertEqual([f['ok'] for f in v['friends']], [True])
             self.send(boss, bob, 100000)                  # far above a player's day cap
-            for _ in range(bx.SEND_COUNT + 2):            # and more transfers than a player's count
+            for _ in range(12):
                 self.send(boss, bob, 1000)
-            self.refused('bad_amount', self.send, boss, bob, bx.ADMIN_MAX + 1)
-        self.assertEqual(self.balance(boss), 500000 - 100000 - 1000 * (bx.SEND_COUNT + 2))
+            self.refused('bad_amount', self.send, boss, bob, bx.MAX_TRANSFER + 1)
+        self.assertEqual(self.balance(boss), 500000 - 100000 - 1000 * 12)
         with self.store.connect() as db:                  # the admin's transfers never use up bob's room from friends
             got = db.execute('SELECT got FROM bank_xfer_days WHERE sid=?', (self.sid(bob),)).fetchone()
         self.assertIsNone(got)
         self.refused('too_new', self.send, cat, bob, 50)  # a player still meets the rules (bob is a new account)
         self.load(bob)
-        self.assertEqual(self.balance(bob), 3000 + 100000 + 1000 * (bx.SEND_COUNT + 2))
+        self.assertEqual(self.balance(bob), 3000 + 100000 + 1000 * 12)
 
-    def test_receiver_cap_holds_when_senders_race(self):
+    def test_concurrent_senders_preserve_money_without_receiver_quota(self):
         bob = self.user('bob')
         senders = [self.user(f'p{n}', bank=5000) for n in range(5)]
         for s in senders:
@@ -367,9 +405,11 @@ class Limits(Base):
         ts = [threading.Thread(target=go, args=(s,)) for s in senders]
         [t.start() for t in ts]
         [t.join() for t in ts]
-        self.assertEqual(sum(r['amount'] for r in self.rows()), bx.RECV_DAY)
-        self.assertEqual(sorted(errs), ['limit_receive', 'limit_receive'])
-        self.assertEqual(sum(self.balance(s) for s in senders), 5 * 5000 - bx.RECV_DAY)
+        self.assertEqual(sum(r['amount'] for r in self.rows()), 5000)
+        self.assertEqual(errs, [])
+        self.assertEqual(sum(self.balance(s) for s in senders), 5 * 5000 - 5000)
+        self.load(bob)
+        self.assertEqual(self.balance(bob), 8000)
 
 
 class Back(Base):
@@ -401,7 +441,8 @@ class Back(Base):
         self.assertEqual([g['amount'] for g in out['got']], [30])
         self.assertEqual(out['friends'], [dict(code=self.code(bob), name='Bob', fc=None, ok=True, why=None)])
         self.assertEqual([(x['dir'], x['amount'], x['status']) for x in out['recent']], [('in', 30, 'done'), ('out', 70, 'sent')])
-        self.assertEqual(out['rules']['send_day'], bx.SEND_DAY)
+        self.assertIsNone(out['rules']['send_day'])
+        self.assertTrue(out['rules']['unlimited'])
 
 
 @unittest.skipUnless((OLD / 'game' / 'engine.py').exists(), 'previous release tree not found')

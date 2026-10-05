@@ -2,11 +2,10 @@
 Only ADMIN_USERS with the session's CSRF; the server checks the account, the amount (1..MAX_COINS, an integer, a second
 confirmation above LARGE), the words; the gift id comes from the server and a retry with the same key finds the same
 gift; the coins reach the player's wallet once, at their next load, through the normal gift path; the admin is recorded.
-Runs on SQLite, and on PostgreSQL with TEST_DATABASE_URL."""
+Runs on PostgreSQL with TEST_DATABASE_URL."""
 import http.client
 import json
 import os
-import sqlite3
 import tempfile
 import threading
 import unittest
@@ -195,35 +194,17 @@ class AdminGiftHTTP(unittest.TestCase):
 class AdminGiftSchema(unittest.TestCase):
     def test_postgres_column_and_index(self):
         self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 16)
-        self.assertEqual(pg_schema.TABLE['system_gifts']['columns'][-1], ('granted_by', 'text'))
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'g.db')
+            try:
+                with store.connect() as db:
+                    column = db.execute("SELECT column_name,data_type FROM information_schema.columns WHERE table_schema=current_schema() AND table_name='system_gifts' ORDER BY ordinal_position DESC LIMIT 1").fetchone()
+                    self.assertEqual(tuple(column), ('granted_by', 'text'))
+            finally:
+                store.close_pool()
         self.assertIn('ALTER TABLE system_gifts ADD COLUMN IF NOT EXISTS granted_by', pg_schema.TABLES_DDL)
         self.assertIn('system_gifts (created)', pg_schema.INDEX_DDL)
 
-    @unittest.skipIf(dbm.database_url(), 'SQLite file upgrade')
-    def test_an_older_sqlite_file_gets_the_column_and_old_queries_still_work(self):
-        with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
-            path = Path(tmp) / 'old.db'
-            db = sqlite3.connect(path)
-            db.executescript("""CREATE TABLE system_gifts (
-              id TEXT PRIMARY KEY, sid TEXT NOT NULL, coins INTEGER NOT NULL, title TEXT NOT NULL, text TEXT NOT NULL,
-              status TEXT NOT NULL, created REAL NOT NULL, applied_at REAL, seen_at REAL);
-              INSERT INTO system_gifts VALUES('old-1','s',5,'t','x','seen',1,2,3);""")
-            db.commit()
-            db.close()
-            store = Store(path, story=True)
-            try:
-                with store.connect() as c:
-                    cols = [r[1] for r in c.execute('PRAGMA table_info(system_gifts)')]
-                    self.assertEqual(cols[-1], 'granted_by')
-                    self.assertIsNone(c.execute("SELECT granted_by FROM system_gifts WHERE id='old-1'").fetchone()[0])
-                    idx = [r[1] for r in c.execute('PRAGMA index_list(system_gifts)')]
-                    self.assertIn('system_gifts_created', idx)
-                    # what 1.5.4 runs (explicit columns): unaffected by the new nullable column
-                    c.execute("INSERT INTO system_gifts(id,sid,coins,title,text,status,created) VALUES('old-2','s',1,'t','x','pending',4)")
-                    self.assertEqual(len(c.execute("SELECT id,coins,title,text,status FROM system_gifts WHERE sid='s' "
-                                                   "AND status IN ('pending','applied') ORDER BY created,id LIMIT 20").fetchall()), 1)
-            finally:
-                store.close_pool()
 
 
 if __name__ == '__main__':

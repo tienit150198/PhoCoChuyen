@@ -655,7 +655,8 @@ def cart_view(c: dict, career: str, x: dict) -> list[dict]:
             it = item(career, l['item'])
             r = rows.get(l['item']) or dict(line_price(it, l['qty'], sup), item=it['id'], qty=l['qty'])
             room = max(0, capacity(career) - count(c, it['id']) - _in_transit(x, it['id']))
-            lines.append(dict(r, oos=l.get('oos') == day, room=room, locked=it.get('unlock', 1) > level))
+            lines.append(dict(r, **({'size': l['size']} if l.get('size') is not None else {}),
+                              oos=l.get('oos') == day, room=room, locked=it.get('unlock', 1) > level))
         deal = cart.get('deal') if (cart.get('deal') or {}).get('day') == day else None
         asked = (x.get('haggle') or {}).get(sid) == day
         if placing is None:
@@ -694,6 +695,26 @@ def item(career: str, item_id: str) -> dict:
 def capacity(career: str) -> int:
     spec = _spec(career)
     return spec.get('capacity', 40) if spec else 0
+
+
+def _order_size(career: str, item_id: str, value) -> str | None:
+    from .engine import need
+    if value is None:
+        return None  # automatic distribution for older orders and unsized goods
+    sizes = (_spec(career) or {}).get('sizes', {}).get(item_id, ())
+    need(isinstance(value, str) and value in sizes, 'Mặt hàng này không có size đó.')
+    return value
+
+
+def _receive_lot(c: dict, career: str, order: dict, it: dict, sup: dict) -> None:
+    if not order['actual']:
+        return
+    from .careers import PLUGINS
+    mod = PLUGINS.get(career)
+    if mod and hasattr(mod, 'on_receive'):
+        mod.on_receive(c, order)
+    life = _life(it) + (sup.get('fresh', 0) if it.get('life') else 0)
+    add_lot(c, it['id'], order['actual'], order['unit_cost'], life, order['supplier'])
 
 
 def initial(career: str) -> dict | None:
@@ -879,6 +900,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
     if name == 'inv_order':
         it = item(career, p.get('item'))
         qty = e.integer(p.get('qty'), 1, 30)
+        size = _order_size(career, it['id'], p.get('size'))
         sup = supplier(career, p.get('supplier', 'partner'))
         need(sup, 'Nhà cung cấp không tồn tại.')
         need(sells(sup, it['id']), f'{sup["name"]} không bán {it["name"]}. Chọn nhà cung cấp khác nhé.')
@@ -902,6 +924,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         o = dict(id=oid, item=it['id'], qty=qty, actual=qty - short, supplier=sup['id'], cost=cost,
                  unit_cost=price['unit_cost'], status='in_transit', day=c['day'],
                  claimed=False, rating=None, reply=None, ship=fee, **when_)
+        if size is not None:
+            o['size'] = size
         x['orders'].append(o)
         _trim_orders(x)
         x['day_bought'] += cost + fee
@@ -967,9 +991,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         need(order['actual'] <= room, f'Kệ {it["name"]} chỉ còn chỗ cho {max(0, room)} {it.get("unit", "phần")}. '
              'Bán hoặc bỏ bớt lô cũ rồi nhận thùng này nhé.')
         sup = _known(career, order['supplier'])
-        if order['actual']:
-            life = _life(it) + (sup.get('fresh', 0) if it.get('life') else 0)
-            add_lot(c, it['id'], order['actual'], order['unit_cost'], life, order['supplier'])
+        _receive_lot(c, career, order, it, sup)
         order['status'] = 'received'
         e.metric(c, 'restocked')
         e.log(s, c, 'stock', f'Kiểm nhận {order["actual"]}/{order["qty"]} {it["name"]} từ {sup["name"]}.', ref=order['id'])
@@ -1047,7 +1069,8 @@ def _cart_edit(c: dict, career: str, x: dict, p: dict, level: int) -> dict:
         lines.clear()
         msg = f'Đã bỏ đơn {sup["name"]}.'
     elif op == 'add':
-        want = p.get('lines') if p.get('lines') is not None else [dict(item=p.get('item'), qty=p.get('qty'))]
+        want = p.get('lines') if p.get('lines') is not None else [
+            dict(item=p.get('item'), qty=p.get('qty'), **({'size': p['size']} if 'size' in p else {}))]
         fit = p.get('fit') is True
         # `fit` (the stock room's "Gộp N món" step) may list more than one draft holds: a shop with many
         # items low (the nail shop has 20) sent them all, and the whole batch was refused. The lines past
@@ -1062,6 +1085,9 @@ def _cart_edit(c: dict, career: str, x: dict, p: dict, level: int) -> dict:
             need(sells(sup, it['id']), f'{sup["name"]} không bán {it["name"]}. Chọn nhà cung cấp khác nhé.')
             need(it.get('unlock', 1) <= level, f'Mở khóa {it["name"]} ở cấp {it.get("unlock", 1)}.')
             row = next((l for l in lines if l['item'] == it['id']), None)
+            size = _order_size(career, it['id'], w.get('size') if 'size' in w else (row or {}).get('size'))
+            need(row is None or row.get('size') == size,
+                 'Món này đã có size khác trong đơn. Đặt đơn hiện tại trước, hoặc bỏ dòng cũ rồi chọn size mới.')
             have = row['qty'] if row else 0
             if fit:
                 qty = min(qty, 30 - have, room(it) - have)
@@ -1077,7 +1103,7 @@ def _cart_edit(c: dict, career: str, x: dict, p: dict, level: int) -> dict:
                     left_out += 1
                     continue
                 need(len(lines) < CART_LINES, f'Một đơn tối đa {CART_LINES} món. Đặt đơn này trước nhé.')
-                lines.append(dict(item=it['id'], qty=new))
+                lines.append(dict(item=it['id'], qty=new, **({'size': size} if size is not None else {})))
             added += 1
         need(added or not left_out, f'Đơn {sup["name"]} đủ {CART_LINES} món. Đặt đơn này trước rồi thêm tiếp nhé.')
         need(added, 'Kệ đã đủ hàng, không cần nhập thêm.')
@@ -1175,6 +1201,8 @@ def _cart_place(s: dict, c: dict, career: str, x: dict, p: dict, level: int) -> 
         o = dict(id=f'{gid}-{k + 1}', group=gid, item=l['item'], qty=l['qty'], actual=l['qty'] - short, supplier=sup['id'],
                  cost=cost, unit_cost=r['unit_cost'], status='in_transit', day=day, claimed=False, rating=None, reply=None,
                  **when_)
+        if l.get('size') is not None:
+            o['size'] = l['size']
         if first is None:
             o.update(ship=q['ship'], off=q['off'])
             first = o
@@ -1185,7 +1213,7 @@ def _cart_place(s: dict, c: dict, career: str, x: dict, p: dict, level: int) -> 
     # The draft keeps only what could not ship today.
     keep = held + ([dict(gone, oos=day)] if gone else [])
     if keep:
-        x['cart'][sup['id']] = dict(lines=[dict(item=l['item'], qty=l['qty'], oos=day) for l in keep])
+        x['cart'][sup['id']] = dict(lines=[dict(l, oos=day) for l in keep])
     else:
         x['cart'].pop(sup['id'], None)
         if not x['cart']:
@@ -1226,9 +1254,7 @@ def _group_action(s: dict, c: dict, career: str, x: dict, name: str, p: dict) ->
         got, short = [], []
         for o in lines:
             it = item(career, o['item'])
-            if o['actual']:
-                life = _life(it) + (sup.get('fresh', 0) if it.get('life') else 0)
-                add_lot(c, it['id'], o['actual'], o['unit_cost'], life, o['supplier'])
+            _receive_lot(c, career, o, it, sup)
             o['status'] = 'received'
             e.metric(c, 'restocked')
             got.append(f'{o["actual"]}/{o["qty"]} {it["name"]}')
@@ -1299,6 +1325,7 @@ def public(c: dict, career: str) -> dict | None:
     v['capacity'] = capacity(career)
     v['transit_cap'], v['transit_lines'] = TRANSIT_CAP, TRANSIT_LINES
     v['cart_lines'] = CART_LINES  # lines in one draft (inv_cart refuses one more)
+    v['sizes'] = tree_copy((_spec(career) or {}).get('sizes', {}))
     # Derived numbers for the stock screen: what is on the way, room left on
     # each shelf and how many game days the oldest lot still has.
     v['arriving'] = {i['id']: _in_transit(x, i['id']) for i in catalogue(career)}
@@ -1372,6 +1399,7 @@ def validate(c: dict, career: str) -> None:
     need(isinstance(x['orders'], list) and len(x['orders']) <= 40, 'Đơn nhập không hợp lệ.')
     for o in x['orders']:
         need(isinstance(o, dict) and o.get('item') in ids and o.get('supplier') in known, 'Đơn nhập sai.')
+        _order_size(career, o['item'], o.get('size'))
         integer(o.get('qty'), 1, 30)
         integer(o.get('actual'), 0, o['qty'])
         integer(o.get('cost'), 0, 10**6)
@@ -1405,7 +1433,8 @@ def validate(c: dict, career: str) -> None:
             lines = cart.get('lines')
             need(isinstance(lines, list) and 0 < len(lines) <= CART_LINES, 'Đơn gộp không hợp lệ.')
             for l in lines:
-                need(isinstance(l, dict) and set(l) <= {'item', 'qty', 'oos'} and l.get('item') in ids, 'Dòng đơn gộp sai.')
+                need(isinstance(l, dict) and set(l) <= {'item', 'qty', 'oos', 'size'} and l.get('item') in ids, 'Dòng đơn gộp sai.')
+                _order_size(career, l['item'], l.get('size'))
                 integer(l.get('qty'), 1, 30)
                 if 'oos' in l:
                     integer(l['oos'], 1, 10**7)

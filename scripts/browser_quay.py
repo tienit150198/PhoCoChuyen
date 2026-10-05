@@ -25,6 +25,7 @@ import tempfile
 import time
 import urllib.request
 from pathlib import Path
+from pg_test_support import test_env, test_connect, schema_for
 
 ROOT = Path(__file__).resolve().parents[1]
 ARGS = [a for a in sys.argv[1:] if not a.startswith('--')]
@@ -43,12 +44,12 @@ def free_port() -> int:
 def server():
     port = free_port()
     tmp = tempfile.mkdtemp(prefix='mnl-quay-')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1')
+    env = test_env( QUIET='1', PUSH_DISABLED='1')
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'LLM_BASE_URL'):
         env.pop(k, None)
-    db = os.path.join(tmp, 'g.sqlite3')
+    db = os.path.join(tmp, 'g.db')
     log = open(os.path.join(tmp, 'server.log'), 'wb')
-    p = subprocess.Popen([PY, 'server.py', '--port', str(port), '--db', db], cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
+    p = subprocess.Popen([PY, 'server.py', '--port', str(port), '--namespace', db], cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
     base = f'http://127.0.0.1:{port}'
     for _ in range(600):
         try:

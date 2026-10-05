@@ -1,7 +1,7 @@
 """Investor KPIs ("📊 Tổng quan đầu tư"): cheap counters written as events happen, and daily rollups
 frozen once a Vietnam day is over. Never reads a save; never blocks a player.
 
-Tables (created idempotently by admin_stats.ensure(): SQLite SCHEMA here, PostgreSQL PG_DDL, additive only,
+Tables (created idempotently by admin_stats.ensure(): PostgreSQL PG_DDL, additive only,
 no change to any existing table):
 * stat_counters(day, key, n), primary key (day, key): per Vietnam day, counters kept by the game itself.
   `n` is a sum, except keys starting with `max:` (the highest value seen that day). Keys (identifiers only):
@@ -79,16 +79,6 @@ def feature_of(action: str) -> str:
             return key
     return 'work'
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS stat_counters (day TEXT NOT NULL, key TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0,
-  PRIMARY KEY(day, key)) WITHOUT ROWID;
-CREATE TABLE IF NOT EXISTS stat_kpi_daily (day TEXT NOT NULL, key TEXT NOT NULL, value REAL, at REAL NOT NULL,
-  PRIMARY KEY(day, key)) WITHOUT ROWID;
-CREATE TABLE IF NOT EXISTS stat_players (sid TEXT PRIMARY KEY, first_day TEXT NOT NULL, last_day TEXT NOT NULL,
-  days INTEGER NOT NULL) WITHOUT ROWID;
-CREATE INDEX IF NOT EXISTS stat_players_first ON stat_players(first_day);
-CREATE INDEX IF NOT EXISTS stat_players_last ON stat_players(last_day);
-"""
 _T = 'text COLLATE "C"'
 PG_DDL = (
     ('stat_counters', f'CREATE TABLE IF NOT EXISTS stat_counters (day {_T} NOT NULL, key {_T} NOT NULL, n bigint NOT NULL DEFAULT 0, '
@@ -231,8 +221,7 @@ def flush(store) -> int:
             return 0
         sums, maxes = slot[1], slot[2]
         slot[1], slot[2] = {}, {}
-        gone = (not os.path.exists(store.path)) if not getattr(store, 'pg', None) else (
-            dbm.test_mode() and not os.path.isdir(os.path.dirname(os.path.abspath(store.path))))
+        gone = dbm.test_mode() and not os.path.isdir(os.path.dirname(os.path.abspath(store.path)))
         if gone:   # a test's temporary store
             _bufs.pop(store.path, None)
             return 0
@@ -446,9 +435,7 @@ def count_session(store, ua: str, accept_language: str = '', now: float | None =
 
 # ---------------------------------------------------------------- frozen daily numbers
 def _exists(db, table: str) -> bool:
-    if dbm.is_pg(db):
-        return db.pg('SELECT to_regclass(%s) IS NOT NULL', (table,)).fetchone()[0]
-    return bool(db.execute("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?", (table,)).fetchone())
+    return db.pg('SELECT to_regclass(%s) IS NOT NULL', (table,)).fetchone()[0]
 
 
 def chat_range(db, t0: float, t1: float) -> tuple[int, int] | None:

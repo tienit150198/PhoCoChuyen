@@ -18,7 +18,6 @@ import unicodedata
 
 from . import accounts
 from .ai import redact
-from .db import is_pg
 from .social import BANNED
 
 KINDS = ('bug', 'idea', 'praise', 'hard')
@@ -142,10 +141,7 @@ def submit(store, token: str, state: dict, data: dict, ua: str = '', version: st
     with store.connect() as db:
         sql = 'INSERT INTO player_feedback(sid,account,kind,text,context,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)'
         args = (sid, account, kind, text, json.dumps(context, ensure_ascii=False), 'new', now, now)
-        if is_pg(db):
-            fid = db.execute(sql + ' RETURNING id', args).fetchone()[0]
-        else:
-            fid = db.execute(sql, args).lastrowid
+        fid = db.execute(sql + ' RETURNING id', args).fetchone()[0]
     return dict(ok=True, id=fid, message=THANKS)
 
 

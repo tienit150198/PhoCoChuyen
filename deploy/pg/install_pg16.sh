@@ -8,7 +8,7 @@
 #   The dk_bike postgres containers are never touched (they publish nothing on the host).
 # - tuning in /etc/postgresql/16/main/conf.d/mnl.conf (8 GB RAM shared with other apps, slow disk);
 #   reload, or restart postgresql@16-main only when a restart-only setting changed.
-# - role mnl + database phocochuyen (collation C: byte order, like SQLite), a random password
+# - role mnl + database phocochuyen (collation C: stable byte order), a random password
 #   written ONLY to /etc/mot-ngay-lam-nghe/pg.env (root:root 600, read by systemd EnvironmentFile).
 #   The password is never printed. An existing pg.env is kept (and its password re-applied).
 set -euo pipefail
@@ -76,7 +76,7 @@ random_page_cost = 2.0
 # Every command rewrites a whole save: keep autovacuum ahead of the dead rows.
 autovacuum_naptime = 30s
 autovacuum_vacuum_cost_limit = 1000
-# A transaction left open pins old row versions (the SQLite WAL incident, PostgreSQL edition).
+# A transaction left open pins old row versions (long-running readers retain old row versions).
 idle_in_transaction_session_timeout = 5min
 log_min_duration_statement = 1000
 # Never log bind parameters: they are whole saves (100 KB-1.3 MB of player data) -> huge logs, more IO, privacy.

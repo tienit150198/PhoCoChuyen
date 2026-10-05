@@ -69,8 +69,8 @@ export function setup(ctx){
 
   /* ---- the silver: painted on a canvas, scratched with destination-out strokes ---- */
   function seeded(id){let x=(id>>>0)||1;return ()=>{x^=x<<13;x>>>=0;x^=x>>>17;x^=x<<5;x>>>=0;return x/4294967296;};}
-  function paint(cv){
-    const box=cv.getBoundingClientRect(),dpr=Math.min(2,globalThis.devicePixelRatio||1),w=Math.max(1,box.width),h=Math.max(1,box.height);
+  function paint(cv,box){
+    const dpr=Math.min(2,globalThis.devicePixelRatio||1),w=box.width,h=box.height;
     cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
     const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.globalCompositeOperation='source-over';
     const g=c.createLinearGradient(0,0,w,h);g.addColorStop(0,'#aeb4bd');g.addColorStop(.45,'#e6e9ed');g.addColorStop(.55,'#d5d9df');g.addColorStop(1,'#9fa6b0');
@@ -104,18 +104,23 @@ export function setup(ctx){
     let on=0;for(const v of cov)on+=v;D.pct=on/cov.length;
   }
   function bind(cv){
-    let cur=null;
-    const at=e=>{const b=cv.getBoundingClientRect();return [Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)),Math.max(0,Math.min(1,(e.clientY-b.top)/b.height))];};
-    const add=p=>{if(!cur||D.done||D.fading)return;const last=cur[cur.length-1];cur.push(p);stroke(cv,[last,p]);progress();
-      const now=performance.now();if(now-D.sound>110){D.sound=now;sfx('scratch');}};
-    cv.addEventListener('pointerdown',e=>{if(D.done||D.fading||e.button>0)return;e.preventDefault();try{cv.setPointerCapture(e.pointerId);}catch{/* fine */}
-      cur=[at(e)];D.strokes.push(cur);stroke(cv,cur);progress();});
-    cv.addEventListener('pointermove',e=>{if(!cur)return;e.preventDefault();const all=e.getCoalescedEvents?.();for(const ev of all?.length?all:[e])add(at(ev));});
-    const end=()=>{cur=null;if(D.pct>=REVEAL)reveal();};
-    cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);cv.addEventListener('lostpointercapture',()=>{if(cur)end();});
+    let cur=null,pointer=null;
+    const at=(e,b)=>[Math.max(0,Math.min(1,(e.clientX-b.left)/b.width)),Math.max(0,Math.min(1,(e.clientY-b.top)/b.height))];
+    cv.addEventListener('pointerdown',e=>{if(cur||D.done||D.fading||e.button>0)return;e.preventDefault();pointer=e.pointerId;try{cv.setPointerCapture(pointer);}catch{/* fine */}
+      cur=[at(e,cv.getBoundingClientRect())];D.strokes.push(cur);stroke(cv,cur);progress();});
+    cv.addEventListener('pointermove',e=>{
+      if(!cur||e.pointerId!==pointer||D.done||D.fading)return;
+      e.preventDefault();const box=cv.getBoundingClientRect(),all=e.getCoalescedEvents?.(),segment=[cur[cur.length-1]];
+      for(const ev of all?.length?all:[e]){const p=at(ev,box);cur.push(p);segment.push(p);}
+      // Preserve every sampled point, but erase/count/update the DOM once per dispatched event.
+      stroke(cv,segment);progress();
+      const now=performance.now();if(now-D.sound>110){D.sound=now;sfx('scratch');}
+    });
+    const end=e=>{if(!cur||e.pointerId!==pointer)return;cur=null;pointer=null;if(D.pct>=REVEAL)reveal();};
+    cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);cv.addEventListener('lostpointercapture',end);
   }
   function progress(){
-    const el=S.dlg?.querySelector('.fh-xs-pct');if(el)el.textContent=`${Math.round(D.pct*100)}%`;
+    const el=S.dlg?.querySelector('.fh-xs-pct'),text=`${Math.round(D.pct*100)}%`;if(el&&el.textContent!==text)el.textContent=text;
     if(D.pct>=REVEAL&&!D.fading)reveal();
   }
   /** The rest of the silver falls away; then the result. */
@@ -132,9 +137,13 @@ export function setup(ctx){
   }
   /** After every render: a new silver slot gets its paint, its strokes and its finger. */
   function mount(){
+    // A paid ticket may arrive after closing. Leave its canvas unmounted until
+    // reopening gives it real dimensions; a hidden 1px bitmap reveals on one tap.
+    if(!S.dlg?.open)return;
     const cv=S.dlg?.querySelector('.fh-xs-cv');
     if(!cv||cv._xs)return;
-    cv._xs=1;paint(cv);bind(cv);
+    const box=cv.getBoundingClientRect();if(box.width<=0||box.height<=0)return;
+    paint(cv,box);cv._xs=1;bind(cv);
   }
   async function buy(){
     if(D.buying||S.busy||live())return;

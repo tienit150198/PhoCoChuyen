@@ -1,0 +1,16 @@
+{
+  "generation": "Built-in image_gen, referenced user Phố Có Chuyện boards; approved soft style on 2026-10-05",
+  "assets": [
+    {"id":"character-male"},
+    {"id":"character-female"},
+    {"id":"pharmacy"},
+    {"id":"mother-baby"},
+    {"id":"garage"},
+    {"id":"pho"},
+    {"id":"leisure-lake","background":true},
+    {"id":"leisure-pool","background":true},
+    {"id":"boat","width":240},
+    {"id":"fishing-actions","atlas":true,"columns":4,"rows":2,"width":1024},
+    {"id":"fish","width":256}
+  ]
+}

@@ -47,6 +47,7 @@ Care (sub-project 3, docs/superpowers/specs/2026-09-29-delivery-care-design.md):
 * The next shift's weather and road board are forecast with concrete advice.
 """
 from __future__ import annotations
+import math
 import copy
 from ..jsoncopy import tree_copy, strip_copy
 from . import kit
@@ -366,7 +367,8 @@ def _leg(c: dict, a: str, b: str, clock: int, way: str = 'main') -> dict:
         if h['works'] in touch:
             blocks += 2
             notes.append('🚧 đi vòng công trình +2 ô')
-    minutes = blocks * MPU[wx]
+    from ..work_gear import factor
+    minutes = math.ceil(blocks * MPU[wx] / factor(c))
     if way == 'main':
         for j in h['jams']:
             if j['node'] in touch and j['start'] <= clock < j['end']:
@@ -1497,7 +1499,9 @@ def public_task(t: dict) -> dict:
 
 
 def public_data(raw: dict) -> dict:
+    from ..work_gear import factor
     d = _extend(tree_copy(raw['ext']['data']))
+    d['drive_factor'] = factor(raw)
     if d.get('drive'):
         from .. import traffic
         d['drive']['traffic']=traffic.public(d['drive']['traffic'])

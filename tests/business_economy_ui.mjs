@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {businessControls} from '../public/js/v4/business-economy-ui.js';
+import {staffLifeCard} from '../public/js/staff-life-ui.js';
+const calls=[],button=(label,op,data,style,why='')=>{calls.push({label,op,data,why});return `<button${why?' disabled':''}>${label}</button>`;};
+const st={id:'q1',business:{paused:false,market:{label:'Suy giảm <mạnh>',demand_factor:.25},protection:{level:'basic',period_cost:3,options:[{level:'none',label:'Tự bảo vệ',period_cost:0},{level:'basic',label:'Cơ bản',period_cost:3},{level:'premium',label:'Tăng cường',period_cost:7}]},period_seconds:600}};
+let html=businessControls(st,button);
+assert.ok(calls.some(x=>x.op==='pause'&&x.data.on===true));assert.match(html,/Suy giảm &lt;mạnh&gt;/);assert.match(html,/25%/);
+calls.length=0;st.business.paused=true;html=businessControls(st,button);assert.ok(calls.some(x=>x.op==='pause'&&x.data.on===false));
+assert.match(html,/Mở quầy/);assert.match(html,/Đơn đã nhận/);assert.ok(calls.some(x=>x.op==='protection'&&x.data.level==='premium'));
+const view={pending:{id:'ev1',title:'Xin tăng lương',name:'<An>',text:'Đề nghị mới',choices:[{id:'yes',label:'Đồng ý',cost:15,effect:'Tăng lương',affordable:false},{id:'no',label:'Trao đổi',cost:0,effect:'Giữ lương',affordable:true}]},recent:[],employees:[{id:'a',name:'<An>',wage:20,morale:50}]};
+const prices=[];html=staffLifeCard(view,(label,event,choice)=>{prices.push(choice);return `<button${choice.affordable===false?' disabled':''}>${label}</button>`;});
+assert.match(html,/&lt;An&gt;/);assert.match(html,/15 xu/);assert.match(html,/disabled/);assert.equal(prices[1].cost,0);assert.equal(staffLifeCard(null,button),'');
+assert.doesNotMatch(html,/<An>/);console.log('Economy UI: real open/close, market, protection, NPC costs and escaping passed.');

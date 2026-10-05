@@ -48,60 +48,10 @@ GIFT_COINS = (0, 10, 20)
 LISTING_DAYS = 3
 BANNED = ('địt', 'đjt', 'đụ', 'lồn', 'cặc', 'buồi', 'đéo', 'vcl', 'vkl', 'đĩ', 'fuck', 'shit', 'bitch', 'cunt', 'dick', 'đm', 'dmm', 'clgt', 'óc chó', 'ngu như')
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS profiles (
-  pid TEXT PRIMARY KEY, sid TEXT UNIQUE NOT NULL, name TEXT, name_key TEXT UNIQUE, bio TEXT NOT NULL DEFAULT '',
-  avatar TEXT NOT NULL DEFAULT '🌸', visible INTEGER NOT NULL DEFAULT 0, shop TEXT NOT NULL DEFAULT '{}',
-  served INTEGER NOT NULL DEFAULT 0, week_key TEXT NOT NULL DEFAULT '', week_base INTEGER NOT NULL DEFAULT 0,
-  reports INTEGER NOT NULL DEFAULT 0, hidden INTEGER NOT NULL DEFAULT 0,
-  created REAL NOT NULL, updated REAL NOT NULL, seen REAL NOT NULL
-);
-CREATE TABLE IF NOT EXISTS visits (from_pid TEXT, to_pid TEXT, day TEXT, at REAL, PRIMARY KEY(from_pid,to_pid,day));
-CREATE TABLE IF NOT EXISTS previews (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, from_pid TEXT NOT NULL, to_pid TEXT NOT NULL, career TEXT NOT NULL, day TEXT NOT NULL,
-  stars INTEGER NOT NULL, text TEXT NOT NULL, reply TEXT, reply_at REAL, at REAL NOT NULL, reports INTEGER NOT NULL DEFAULT 0,
-  hidden INTEGER NOT NULL DEFAULT 0, UNIQUE(from_pid,to_pid,day)
-);
-CREATE TABLE IF NOT EXISTS gifts (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, from_pid TEXT NOT NULL, to_pid TEXT NOT NULL, sticker TEXT NOT NULL, coins INTEGER NOT NULL,
-  note TEXT NOT NULL DEFAULT '', day TEXT NOT NULL, at REAL NOT NULL, claimed INTEGER NOT NULL DEFAULT 0
-);
-CREATE TABLE IF NOT EXISTS market (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, seller TEXT NOT NULL, career TEXT NOT NULL, item TEXT NOT NULL, qty INTEGER NOT NULL,
-  price INTEGER NOT NULL, life_left INTEGER NOT NULL, unit_cost INTEGER NOT NULL, listed_day INTEGER NOT NULL,
-  status TEXT NOT NULL, buyer TEXT, at REAL NOT NULL, sold_at REAL, settled INTEGER NOT NULL DEFAULT 0,
-  reports INTEGER NOT NULL DEFAULT 0, hidden INTEGER NOT NULL DEFAULT 0
-);
-CREATE TABLE IF NOT EXISTS board (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, pid TEXT NOT NULL, career TEXT NOT NULL, kind TEXT NOT NULL, text TEXT NOT NULL,
-  at REAL NOT NULL, reports INTEGER NOT NULL DEFAULT 0, hidden INTEGER NOT NULL DEFAULT 0
-);
-CREATE TABLE IF NOT EXISTS comments (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, post INTEGER NOT NULL, pid TEXT NOT NULL, text TEXT NOT NULL, at REAL NOT NULL,
-  reports INTEGER NOT NULL DEFAULT 0, hidden INTEGER NOT NULL DEFAULT 0
-);
-CREATE TABLE IF NOT EXISTS reactions (post INTEGER NOT NULL, pid TEXT NOT NULL, emoji TEXT NOT NULL, PRIMARY KEY(post,pid,emoji));
-CREATE TABLE IF NOT EXISTS follows (pid TEXT NOT NULL, target TEXT NOT NULL, at REAL NOT NULL, PRIMARY KEY(pid,target));
-CREATE TABLE IF NOT EXISTS blocks (pid TEXT NOT NULL, target TEXT NOT NULL, at REAL NOT NULL, PRIMARY KEY(pid,target));
-CREATE TABLE IF NOT EXISTS reports (reporter TEXT NOT NULL, kind TEXT NOT NULL, target TEXT NOT NULL, reason TEXT NOT NULL, at REAL NOT NULL,
-  PRIMARY KEY(reporter,kind,target));
-CREATE TABLE IF NOT EXISTS inbox (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, pid TEXT NOT NULL, kind TEXT NOT NULL, text TEXT NOT NULL, ref TEXT, at REAL NOT NULL,
-  read INTEGER NOT NULL DEFAULT 0
-);
-CREATE INDEX IF NOT EXISTS inbox_pid ON inbox(pid, id);
-CREATE INDEX IF NOT EXISTS board_career ON board(career, id);
-CREATE INDEX IF NOT EXISTS market_status ON market(status, career);
-CREATE INDEX IF NOT EXISTS preview_to ON previews(to_pid, id);
-CREATE INDEX IF NOT EXISTS gifts_to ON gifts(to_pid, claimed);
-"""
 
 
 def ensure(store) -> None:
-    if getattr(store, 'pg', None):
-        return  # PostgreSQL: created with every other table (game/pg_schema.py)
-    with store.connect() as db:
-        db.executescript(SCHEMA)
+    """The shared PostgreSQL schema is initialized by Store before social hooks run."""
 
 
 # ---------------------------------------------------------------- helpers
@@ -240,7 +190,7 @@ def touch(store, sid: str, state: dict | None, must: bool = False) -> dict:
     def write(db):
         cur = _profile(db, pid)
         if not cur:
-            db.execute('INSERT OR IGNORE INTO profiles(pid,sid,created,updated,seen,week_key) VALUES(?,?,?,?,?,?)', (pid, sid, t, 0, t, week()))
+            db.execute('INSERT INTO profiles(pid,sid,created,updated,seen,week_key) VALUES(?,?,?,?,?,?) ON CONFLICT DO NOTHING', (pid, sid, t, 0, t, week()))
             cur = _profile(db, pid)
         if snap:
             wk = week()
@@ -267,7 +217,7 @@ def _touch(db, sid: str, state: dict | None) -> dict:
     p = _profile(db, pid)
     t = now()
     if not p:
-        db.execute('INSERT OR IGNORE INTO profiles(pid,sid,created,updated,seen,week_key) VALUES(?,?,?,?,?,?)', (pid, sid, t, 0, t, week()))
+        db.execute('INSERT INTO profiles(pid,sid,created,updated,seen,week_key) VALUES(?,?,?,?,?,?) ON CONFLICT DO NOTHING', (pid, sid, t, 0, t, week()))
         p = _profile(db, pid)
     if state is not None and t - p['updated'] > 120:
         shop, served = snapshot(state)
@@ -463,7 +413,7 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
             t = _target(db, q.get('pid'))
             need(not _blocked(db, mine, t['pid']), 'Không thể xem quán này.', 'blocked', 403)
             if t['pid'] != mine and me['name']:
-                fresh = db.execute('INSERT OR IGNORE INTO visits(from_pid,to_pid,day,at) VALUES(?,?,?,?)', (mine, t['pid'], today(), now())).rowcount
+                fresh = db.execute('INSERT INTO visits(from_pid,to_pid,day,at) VALUES(?,?,?,?) ON CONFLICT DO NOTHING', (mine, t['pid'], today(), now())).rowcount
                 if fresh:
                     notify(store, db, t['pid'], 'visit', f'{me["name"]} vừa ghé thăm quán của bạn 👀', mine)
                 db.commit()  # the reads below must not run under the write lock
@@ -682,7 +632,7 @@ def post(store, token: str, state: dict, route: str, d: dict) -> dict:
             b = db.execute('SELECT id FROM board WHERE id=? AND hidden=0', (ival(d.get('post'), 1, 10 ** 12, 'Bài'),)).fetchone()
             need(b, 'Không thấy bài này.', 'not_found', 404)
             if db.execute('DELETE FROM reactions WHERE post=? AND pid=? AND emoji=?', (b['id'], mine, emoji)).rowcount == 0:
-                db.execute('INSERT OR IGNORE INTO reactions(post,pid,emoji) VALUES(?,?,?)', (b['id'], mine, emoji))
+                db.execute('INSERT INTO reactions(post,pid,emoji) VALUES(?,?,?) ON CONFLICT DO NOTHING', (b['id'], mine, emoji))
         return dict(message='')
     if route == 'delete_post':
         with store.connect() as db:
@@ -697,7 +647,7 @@ def post(store, token: str, state: dict, route: str, d: dict) -> dict:
             need(isinstance(tp, str) and re.fullmatch(r'[0-9a-f]{16}', tp) and tp != mine and _profile(db, tp), 'Người chơi không hợp lệ.')
             table = 'follows' if route.endswith('follow') else 'blocks'
             if route in ('follow', 'block'):
-                db.execute(f'INSERT OR IGNORE INTO {table}(pid,target,at) VALUES(?,?,?)', (mine, tp, now()))
+                db.execute(f'INSERT INTO {table}(pid,target,at) VALUES(?,?,?) ON CONFLICT DO NOTHING', (mine, tp, now()))
                 if route == 'block':
                     db.execute('DELETE FROM follows WHERE (pid=? AND target=?) OR (pid=? AND target=?)', (mine, tp, tp, mine))
             else:
@@ -710,12 +660,12 @@ def post(store, token: str, state: dict, route: str, d: dict) -> dict:
         need(reason in REPORT_REASONS, 'Lý do không hợp lệ.')
         target = str(d.get('id', ''))[:32]
         table, key = dict(profile=('profiles', 'pid'), review=('previews', 'id'), board=('board', 'id'), comment=('comments', 'id'), listing=('market', 'id'))[kind]
-        # Numeric ids are compared as numbers (SQLite converted '12' itself; PostgreSQL would reject 'abc').
+        # Numeric ids are validated before PostgreSQL compares them as numbers.
         need(key == 'pid' or (target.isascii() and target.isdigit()), 'Không thấy nội dung này.', 'not_found', 404)
         ref = target if key == 'pid' else int(target)
         with store.connect() as db:
             need(db.execute(f'SELECT 1 FROM {table} WHERE {key}=?', (ref,)).fetchone(), 'Không thấy nội dung này.', 'not_found', 404)
-            if db.execute('INSERT OR IGNORE INTO reports(reporter,kind,target,reason,at) VALUES(?,?,?,?,?)', (mine, kind, target, reason, now())).rowcount:
+            if db.execute('INSERT INTO reports(reporter,kind,target,reason,at) VALUES(?,?,?,?,?) ON CONFLICT DO NOTHING', (mine, kind, target, reason, now())).rowcount:
                 db.execute(f'UPDATE {table} SET reports=reports+1, hidden=CASE WHEN reports+1>=? THEN 1 ELSE hidden END WHERE {key}=?', (HIDE_AFTER, ref))
         return dict(message='Cảm ơn bạn đã báo cáo. Nội dung bị nhiều người báo cáo sẽ tự ẩn và được xem xét.')
     if route == 'inbox_read':

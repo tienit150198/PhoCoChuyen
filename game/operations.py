@@ -7,12 +7,14 @@ Only this module/engine can change assets or money; dialogue is descriptive.
 from __future__ import annotations
 import copy
 import math
+import contextvars
+from contextlib import contextmanager
 from typing import Any
 from .jsoncopy import tree_copy
 
 CAREERS = ('mother_baby', 'pharmacy', 'accounting', 'customer_care', 'teacher', 'tour_guide', 'milk_tea')
 RULES = {
-    'period_days': 7, 'tax_percent': 5, 'utility_base': 3,
+    'period_days': 7, 'tax_percent': 4, 'utility_base': 3,
     'training_cost': 18, 'bonus_cost': 8, 'max_staff': 4,
     'security_reward': 18, 'reward_cap_period': 54,
     'insurance_percent': 60, 'insurance_daily': 2,
@@ -29,7 +31,7 @@ PROPERTIES = [
 PROPERTY_INDEX = {x['id']: x for x in PROPERTIES}
 SECURITY_ITEMS = [
     dict(id='bell', name='Chuông cửa nhỏ', price=25, protection=1, icon='sun', description='Có tín hiệu khi khách tới, thêm một điểm phòng ngừa.'),
-    dict(id='camera', name='Camera góc quầy', price=70, protection=2, icon='camera', description='Mở nguồn ghi hình trong những vụ phát sinh sau khi lắp.'),
+    dict(id='camera', name='Camera góc quầy', price=70, protection=2, icon='camera', description='Giảm đúng 50% xác suất trộm trong tình huống chủ tiệm; vẫn có thể xảy ra. Mở nguồn ghi hình cho vụ việc sau khi lắp.'),
     dict(id='lock', name='Khóa kho chắc chắn', price=45, protection=2, icon='lock', description='Giảm nguy cơ mất đồ ở kho; không thay bước kiểm chứng.'),
     dict(id='light', name='Đèn trước hiên', price=30, protection=1, icon='lamp', description='Hiên sáng hơn và dễ quan sát, hiện trực tiếp trong cảnh.'),
 ]
@@ -144,6 +146,23 @@ LEDGER_KEEP=120   # down to this many, but never rows of the last LEDGER_DAYS da
 LEDGER_DAYS=8     # (the lãi/lỗ chart reads 7 days), and never more than LEDGER_MAX rows.
 LEDGER_MAX=1200
 
+_LEDGER_BATCH = contextvars.ContextVar('recent_ledger_batch', default=None)
+
+
+@contextmanager
+def recent_ledger_batch():
+    """Cache a proven property only within one NPC settlement's append loop.
+
+    The caller may append through record_money; ledger rewrites are not allowed
+    inside this scope. Every append still trims at the original thresholds and
+    archives immediately. Nothing is cached on a save or across commands.
+    """
+    token = _LEDGER_BATCH.set({})
+    try:
+        yield
+    finally:
+        _LEDGER_BATCH.reset(token)
+
 def trim_ledger(c:dict) -> None:
     """Bounded cash book in the save. Rows moved to the archive are summed into the
     opening balance, so opening_balance + the rows in the save == the wallet, and
@@ -152,12 +171,28 @@ def trim_ledger(c:dict) -> None:
     f=c['ops']['finance'];rows=f['ledger']
     if len(rows)<=LEDGER_HIGH:return
     cut=len(rows)-LEDGER_KEEP;recent=c['day']-LEDGER_DAYS
-    while cut>0 and rows[cut-1]['day']>=recent:cut-=1
+    cache = _LEDGER_BATCH.get()
+    all_recent = False
+    if cache is not None:
+        previous = cache.get(id(c))
+        if (previous is not None and previous[0] is c and previous[1] is rows
+                and previous[2] + 1 == len(rows) and previous[3] == recent
+                and rows[-1]['day'] >= recent):
+            all_recent = previous[4]
+        else:
+            # Read every date once; no ordering assumption about imported rows.
+            all_recent = all(row['day'] >= recent for row in rows)
+    if all_recent:
+        cut = 0
+    else:
+        while cut>0 and rows[cut-1]['day']>=recent:cut-=1
     cut=max(cut,len(rows)-LEDGER_MAX)
-    if cut<=0:return
-    ar.record(rows[:cut],'ledger',c)
-    f['opening_balance']+=sum(x['amount'] for x in rows[:cut])
-    f['ledger']=rows[cut:]
+    if cut>0:
+        ar.record(rows[:cut],'ledger',c)
+        f['opening_balance']+=sum(x['amount'] for x in rows[:cut])
+        f['ledger']=rows[cut:]
+    if cache is not None:
+        cache[id(c)] = (c, f['ledger'], len(f['ledger']), recent, all_recent)
 
 
 def bill(c:dict, bid:str, kind:str, label:str, amount:int, due:int, source:str) -> dict|None:
@@ -184,7 +219,10 @@ def trim_bills(c:dict,owner=None) -> None:
 
 def _attendance(c:dict, employee:dict) -> None:
     day=str(c['day']);a=c['ops']['attendance'].setdefault(day,{})
-    a.setdefault(employee['id'],dict(name=employee['name'],wage=employee['wage'],role=employee['role']))
+    from .staff_life import wage
+    # The shift captures its supplement once; a raise never reprices earned work.
+    a.setdefault(employee['id'],dict(name=employee['name'],wage=employee['wage'],role=employee['role'],
+                                    raise_amount=wage(c['ops'],employee)-employee['wage']))
 
 
 def paused(o:dict, e:dict) -> bool:
@@ -197,7 +235,7 @@ def _payroll(c:dict, day:int, staff_id:str|None=None) -> list[dict]:
     created=[]
     for sid,a in c['ops']['attendance'].get(str(day),{}).items():
         if staff_id and sid!=staff_id:continue
-        b=bill(c,f'wage-{day}-{sid}','wage',f"Lương {a['name']} · ngày {day}",a['wage'],day+1,sid)
+        b=bill(c,f'wage-{day}-{sid}','wage',f"Lương {a['name']} · ngày {day}",a['wage']+a.get('raise_amount',0),day+1,sid)
         if b:created.append(b)
     return created
 
@@ -221,6 +259,9 @@ def job_bonus(c:dict, day:int) -> list[dict]:
 
 
 def on_start(s:dict,c:dict,career:str) -> None:
+    from . import wealth_pricing
+    if wealth_pricing.ENABLED:
+        c['ops']['insurance_quote'] = dict(day=c['day'], wealth=wealth_pricing.total(s))
     for e in c['ops']['staff']:
         if e['status']!='hired':continue
         if e['schedule']=='daily':e['on_shift']=True
@@ -228,7 +269,8 @@ def on_start(s:dict,c:dict,career:str) -> None:
         elif e['schedule']=='even':e['on_shift']=c['day']%2==0
         e['fatigue']=max(0,e['fatigue']-25)
         e['rest_until']=0
-    # No real-time accrual: nothing happens while the server or game is idle.
+    from . import workplace_business
+    workplace_business.refresh(c,career)
 
 
 def on_close(s:dict,c:dict,career:str) -> dict:
@@ -248,7 +290,9 @@ def on_close(s:dict,c:dict,career:str) -> dict:
     utility=RULES['utility_base']+workers+(1 if 'camera' in o['security']['items'] else 0)
     bill(c,f'utility-{day}','utility',f'Điện nước · ngày {day}',utility,day+1,f'day-{day}')
     if o['security']['insurance']:
-        bill(c,f'insurance-{day}','insurance','Phí bảo vệ tài sản',RULES['insurance_daily'],day+1,f'day-{day}')
+        from . import wealth_pricing
+        premium=wealth_pricing.cost(RULES['insurance_daily'],o.get('insurance_quote',{}).get('wealth',0))
+        bill(c,f'insurance-{day}','insurance','Phí bảo vệ tài sản',premium,day+1,f'day-{day}')
     f['period_days']+=1;f['period_rent']+=PROPERTY_INDEX[o['property']['tier']]['daily_rent']
     period=None
     if f['period_days']>=RULES['period_days']:
@@ -410,11 +454,18 @@ WORK_ACTIONS = {'advance','more_work','ask','order_stock','receive_stock','event
 
 def tick(s:dict,c:dict,career:str,action:str) -> list[str]:
     eng=_core();o=c['ops'];notes=[]
+    from . import staff_life
+    staff_life.tick_career(s,c,career)
+    from . import shop_events
+    shop_events.tick_career(s,c,career)
     # Viewing menus, chatting and every practice-only action do NOT advance work.
     prefixes=('lesson_','tour_','tea_','inv_order','inv_receive')+((_PLUGINS[career].SPEC['prefix'],) if career in _PLUGINS else ())
     if not c['open'] or (action not in WORK_ACTIONS and not action.startswith(prefixes)):return notes
     o['work_ticks']+=1
     for e in o['staff']:
+        # Server-clock orders own staff production and payroll after activation.
+        # The incident/security transitions below still follow the owner's turns.
+        if o.get('business') is not None:continue
         if e['status']!='hired' or not e['on_shift']:continue
         # Their own open incident pauses them until it is closed. Checked before the shift is recorded: a paused
         # employee used to be logged present (wage billed, "ca thực làm") and grow tired for days doing nothing.
@@ -461,7 +512,7 @@ def tick(s:dict,c:dict,career:str,action:str) -> list[str]:
     sec=o['security']
     active=next((x for x in sec['cases'] if x['id']==sec['active']),None)
     busy=(active and active['status']!='closed') or (incident and incident['status']!='resolved') or (c['event'] and c['event']['stage']!='resolved')
-    if c['day']>=2 and c['day_completed']>=1 and o['work_ticks']>=10 and sec['last_event_day']!=c['day'] and not busy and s['settings'].get('securityEvents',True):
+    if not shop_events.career_eligible(career) and c['day']>=2 and c['day_completed']>=1 and o['work_ticks']>=10 and sec['last_event_day']!=c['day'] and not busy and s['settings'].get('securityEvents',True):
         if c['life']['mode']=='calm':kind='misplaced'
         else:kind=['misplaced','unpaid','theft','snatch'][(c['day']-2)%4]
         protection=sum(SECURITY_INDEX[i]['protection'] for i in sec['items'])+sum(e['role']=='patrol' and e['on_shift'] and e['status']=='hired' for e in o['staff'])*2
@@ -469,11 +520,18 @@ def tick(s:dict,c:dict,career:str,action:str) -> list[str]:
             sec['last_event_day']=c['day'];eng.log(s,c,'security','Đã kiểm quầy trong ca đông. Không phát sinh thiệt hại hôm nay.')
         else:
             spawn_case(s,c,career,kind);notes.append('Có chuyện cần kiểm tra ở quầy. Mở Sổ tiệm → An ninh.')
+    shop_events.tick_career(s,c,career)
     return notes
 
 
 def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
     eng=_core();need=eng.need;o=c['ops'];f=o['finance'];sec=o['security'];result=dict(message='Đã cập nhật Sổ tiệm.')
+    if name=='ops_staff_event':
+        from .staff_life import choose_career
+        return choose_career(s,c,career,p)
+    if name=='ops_shop_event':
+        from .shop_events import choose_career
+        return choose_career(s,c,career,p)
     # Mutations requiring coins/assets always require an explicit confirmation.
     confirm_names={'hire','train','bonus','dismiss','pay_bill','pay_all','move_property','buy_security','incident_choose','report','recover','reward','insurance_claim','grant','insurance_toggle'}
     name=name.removeprefix('ops_')
@@ -486,7 +544,7 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
         eng.money(s,c,-candidate['hire_cost'],'Tuyển '+candidate['name'],candidate['id'],category='recruitment')
         old=next((e for e in o['staff'] if e['id']==candidate['id']),None)
         if old:o['staff'].remove(old)
-        employee=dict(candidate,status='hired',hired_day=c['day'],schedule='daily',on_shift=c['open'],morale=85,fatigue=0,
+        employee=dict(candidate,status='hired',hired_day=c['day'],schedule='daily',on_shift=True,morale=85,fatigue=0,
                       progress=0,jobs=old['jobs'] if old else 0,errors=old['errors'] if old else 0,training=old['training'] if old else 0,
                       trained_day=old['trained_day'] if old else 0,bonus_day=old['bonus_day'] if old else 0,rest_until=0,last_work='Chưa bắt đầu công việc.',warnings=old['warnings'] if old else 0)
         if old:employee['precision']=old['precision']
@@ -648,12 +706,26 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
             need(i['practice'] or i['status']=='resolved','Sự cố thật cần kiểm kết quả trước khi cất.');o['incident']=None;result['message']='Đã cất tình huống nhân viên.'
         eng.log(s,c,'staff_practice' if i['practice'] else 'staff_incident',result['message'],ref=i['id'])
     else:raise eng.GameError('Thao tác Sổ tiệm chưa được hỗ trợ.','unknown_action')
+    from . import workplace_business
+    workplace_business.refresh(c,career)
+    from . import staff_life
+    staff_life.tick_career(s,c,career)
     return result
 
 
 def public_operations(c:dict) -> dict:
     # Called on public_state's private save: what is only read is shared, what is written below is copied.
     raw=c['ops'];o=dict(raw)
+    from . import wealth_pricing
+    o['insurance_daily']=wealth_pricing.cost(RULES['insurance_daily'],raw.get('insurance_quote',{}).get('wealth',0))
+    from . import staff_life
+    o['staff_life']=staff_life.public(c)
+    o['staff']=[dict(e,wage=staff_life.wage(raw,e)) for e in raw['staff']]
+    from .shop_events import public as events_public
+    o['shop_events']=events_public(c)
+    if 'business' in raw:
+        from . import workplace_business
+        o['business']=workplace_business.public(c)
     f=o['finance']=dict(raw['finance']);sec=o['security']=dict(raw['security']);sec['cases']=tree_copy(sec['cases'])
     o['property']=dict(raw['property']);o['incident']=tree_copy(raw['incident'])
     active=next((x for x in sec['cases'] if x['id']==sec['active']),None)
@@ -668,12 +740,14 @@ def public_operations(c:dict) -> dict:
     f['unpaid_total']=sum(b['amount'] for b in due);f['due_total']=sum(b['amount'] for b in due if b['due']<=c['day'])
     f['estimate_tax']=math.ceil(f['period_revenue']*RULES['tax_percent']/100)
     f['wallet_check']=f['opening_balance']+sum(x['amount'] for x in f['ledger'])==c['money']
-    f['current_wages']=sum(x['wage'] for x in o['attendance'].get(str(c['day']),{}).values())
+    f['current_wages']=sum(x['wage']+x.get('raise_amount',0) for x in o['attendance'].get(str(c['day']),{}).values())
     f['days_to_period']=RULES['period_days']-f['period_days']
     o['property']['details']=PROPERTY_INDEX[o['property']['tier']]
     o['security']['protection']=sum(SECURITY_INDEX[i]['protection'] for i in sec['items'])
     o['security']['current_case']=active
     o['alerts']=[]
+    if o['staff_life']['pending']:o['alerts'].append(dict(kind='staff',text=o['staff_life']['pending']['title'],tab='staff'))
+    if o['shop_events'] and o['shop_events']['pending']:o['alerts'].append(dict(kind='shop_event',text=o['shop_events']['pending']['title'],tab='security'))
     if f['due_total']:o['alerts'].append(dict(kind='finance',text=f"Có {f['due_total']} xu đến hạn",tab='finance'))
     if o['incident'] and o['incident']['status']!='resolved':o['alerts'].append(dict(kind='staff',text=o['incident']['title'],tab='staff'))
     if active and active['status']!='closed':o['alerts'].append(dict(kind='security',text=active['title'],tab='security'))
@@ -694,6 +768,10 @@ def validate(c:dict,career:str) -> None:
     """
     eng=_core();need=eng.need;integer=eng.integer;txt=eng.clean_text
     o=c.get('ops');need(isinstance(o,dict) and o.get('version')==1,'Thiếu hoặc sai phiên bản Sổ tiệm.')
+    from . import staff_life
+    staff_life.validate(o,career)
+    from .shop_events import validate as validate_events
+    validate_events(o,career,career)
     template=initial_operations(career);need(set(template)<=set(o),'Bản lưu thiếu dữ liệu Sổ tiệm.')
     for k in ('seq','rng','day_staff_incident','work_ticks'):integer(o.get(k),0,2**40)
     need(isinstance(o['property'],dict) and o['property'].get('tier') in PROPERTY_INDEX,'Mặt bằng không hợp lệ.');integer(o['property'].get('changed_day'),0,10**9)
@@ -709,12 +787,15 @@ def validate(c:dict,career:str) -> None:
         for k in ('progress','jobs','errors','training','trained_day','bonus_day','rest_until','warnings','hired_day'):integer(e.get(k),0,10**9)
         txt(e.get('last_work'),2000)
     need(len(ids)==len(set(ids)),'Nhân viên trùng hồ sơ.');need(sum(x['status']=='hired' for x in o['staff'])<=PROPERTY_INDEX[o['property']['tier']]['staff_cap'],'Nhân viên vượt chỗ của mặt bằng.')
+    from . import workplace_business
+    workplace_business.validate(c,career)
     need(isinstance(o['attendance'],dict) and len(o['attendance'])<=30,'Bảng ca không hợp lệ.')
     for day,rows in o['attendance'].items():
         need(isinstance(day,str) and day.isdigit() and isinstance(rows,dict),'Bảng ca sai cấu trúc.')
         for sid,row in rows.items():
             need(sid in CANDIDATE_INDEX and CANDIDATE_INDEX[sid]['career']==career,'Ca sai nhân viên.');need(isinstance(row,dict) and row.get('wage')==CANDIDATE_INDEX[sid]['wage'] and row.get('name')==CANDIDATE_INDEX[sid]['name'] and row.get('role') in ROLES[career],'Dữ kiện ca sai.')
             if 'jobs' in row:integer(row['jobs'],0,10**6)  # 1.4.31+: jobs done that day; absent in older saves
+            if 'raise_amount' in row:integer(row['raise_amount'],0,10000-CANDIDATE_INDEX[sid]['wage'])
     need(isinstance(o['equipment'],dict),'Thiếu trạng thái dụng cụ.');integer(o['equipment'].get('condition'),0,100);txt(o['equipment'].get('label'),100)
     f=o['finance'];need(isinstance(f,dict) and set(template['finance'])<=set(f),'Sổ thu chi thiếu trường.')
     integer(f['opening_balance'],-10**12,10**12)
@@ -738,7 +819,13 @@ def validate(c:dict,career:str) -> None:
     for h in f['history']:
         need(isinstance(h,dict),'Lịch sử kỳ sai.');txt(h.get('id'),100)
         for k in ('start','end','revenue','tax','rent','rate'):integer(h.get(k),0,10**12)
-        need(h['rate']==RULES['tax_percent'] and h['tax']==math.ceil(h['revenue']*h['rate']/100),'Công thức thuế trong bản lưu không đúng.')
+        # Closed periods retain the former 5% rate and their original bills.
+        need(h['rate'] in (4, 5) and h['tax']==math.ceil(h['revenue']*h['rate']/100),'Công thức thuế trong bản lưu không đúng.')
+    if 'insurance_quote' in o:
+        from . import wealth_pricing
+        q=o['insurance_quote']
+        need(isinstance(q,dict) and set(q)=={'day','wealth'} and wealth_pricing.valid_wealth(q['wealth']),'Báo giá bảo vệ không hợp lệ.')
+        integer(q['day'],1,10**12)
     sec=o['security'];need(isinstance(sec,dict) and set(template['security'])<=set(sec),'Sổ an ninh thiếu trường.')
     need(isinstance(sec['items'],list) and all(i in SECURITY_INDEX for i in sec['items']) and len(set(sec['items']))==len(sec['items']),'Thiết bị an ninh sai.')
     need(type(sec['insurance']) is bool,'Trạng thái bảo vệ sai.')

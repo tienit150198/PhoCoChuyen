@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {rentalMarketView,rentalPrice,rentalDemandHint,rentalRetryable,propertyNews} from '../public/js/v4/rentals-ui.js';
+assert.equal(rentalPrice('42'),42);for(const v of ['','-1','3.5','NaN','1e30'])assert.equal(rentalPrice(v),null);
+assert.match(rentalDemandHint(100,100),/50%/);assert.match(rentalDemandHint(300,100),/NPC chưa thuê/);
+for(const status of [undefined,500,502,503,504,408,429])assert.equal(rentalRetryable({status}),true);
+for(const status of [400,403,404,409])assert.equal(rentalRetryable({status}),false);
+const calls=[];const btn=(label,op,data={},cls='',extra='')=>{calls.push({op,data});return `<button${extra}>${label}</button>`;};
+const html=rentalMarketView({market:[{id:2,name:'Nhà <x>',owner_name:'A & B',rent:30}],mine:[],rules:{period_days:5}},[{id:'h1',name:'Nhà mình',let_rent:20}],{},btn);
+assert.match(html,/Nhà &lt;x&gt;/);assert.match(html,/A &amp; B/);assert.match(html,/data-rental-price="h1"/);assert.match(html,/30 xu/);
+assert.ok(calls.some(c=>c.op==='rentalList'));assert.ok(calls.some(c=>c.op==='rentalNpc'));assert.ok(calls.some(c=>c.op==='rentalAccept'&&c.data.id===2));
+assert.match(propertyNews({title:'Có <tin>',phase:'recovery'}),/Có &lt;tin&gt;/);
+const active=rentalMarketView({market:[],mine:[],tenancy:{id:1,name:'Nhà',rent:30,end_day:8}},[],{},btn);assert.match(active,/ngày sống 8/);
+assert.match(rentalMarketView({market:[],mine:[],next_offset:100},[],{},btn),/Xem thêm nhà/);
+console.log('Rental UI: prices, listings, lease actions and escaped market news passed');

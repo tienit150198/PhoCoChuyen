@@ -672,14 +672,30 @@ JOB = ow.OfficeJob(dict(
     id=ID, prefix=P, boss=BOSS, boss_npc=0, forms=FORMS, mods=MODS, forced={4: 'payday'}, intro={2: 'hiring', 3: 'boss', 4: 'labor'},
     more_mods=('hiring',), busy_mod='boss', helpers=('Chị Huyền',), crunch='payday', audit='labor', auditor='Cô Kim (thanh tra lao động)', care=CARE, desk=DESK,
     rules=rules,
-    hints=dict(cv='Đọc yêu cầu vị trí → chạm từng hồ sơ, chọn khay. So CV với dòng tra cứu BHXH; ghi chú bên lề không phải tiêu chí.',
-               timesheet='Đối chiếu từng ô với giờ làm và tờ đơn từ trong tuần: chạm ô sai, chọn lý do. Ô đúng thì để nguyên.',
+    hints=dict(cv='Đọc yêu cầu vị trí → chạm từng hồ sơ, chọn khay. So CV với BHXH và thông tin bổ sung mới nhất; bỏ qua lời thiên vị về giới tính, quê quán.',
+               timesheet='Đối chiếu từng ô với giờ làm và tờ đơn từ, kể cả đơn vừa duyệt bổ sung. Bấm “Mở ô vừa cập nhật” để xem đúng người và ngày; ô đúng thì để nguyên.',
                contract='So từng chỗ trong hợp đồng với thư mời nhận việc, CCCD và quy định: chạm chỗ sai, chọn cách viết đúng.',
                interview='Chọn một buổi phỏng vấn → chạm ô phòng/giờ. Xem bảng quy định: ai bận, phòng nào đã có người đặt.',
                case='Tìm hiểu từng chuyện trước, rồi chọn cách trả lời vừa đúng quy định vừa có lối ra.'),
     staff_area={'recruit': ('cv', 'interview'), 'admin': ('timesheet', 'contract')},
 ))
 JOB.bind(globals())
+
+
+def public_task(t: dict) -> dict:
+    """Keep supplemental evidence beside the original paperwork, read-only."""
+    v=ow.public_task(t);w=v.get('work') or {};tw=w.get('twist')
+    if not tw:return v
+    note='📞 Bổ sung mới: '+tw['note']
+    if t.get('form')=='timesheet':
+        paper=next((p for p in v['papers'] if p['id']=='notes'),None)
+        if paper is not None:
+            paper['lines']=[note]+[line for line in paper['lines'] if line!='Tuần này không có đơn từ nào.']
+    elif t.get('form')=='cv':
+        card=next((r for r in w.get('items',[]) if r['id']==tw.get('item')),None)
+        if card is not None:card['lines']=[note]+card['lines']
+    return v
+
 
 EMPLOYMENT = dict(
     postings=[

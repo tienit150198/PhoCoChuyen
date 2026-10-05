@@ -407,7 +407,7 @@ class Approach(Base):
         self.assertEqual(j.get(tid)['stage'], 'landed')
         r = j.act('pl_park', task=tid)
         self.assertEqual(j.get(tid)['status'], 'completed')
-        self.assertIn(f'{PL.BONUS} xu', r['message'])
+        self.assertIn(f'{j.get(tid)["flight_bonus"]} xu', r['message'])
 
     def test_landing_unstable_is_a_mistake(self):
         j, tid = self.to_approach(lambda t: t['needs']['gates'][0][0]['bad'] and t['kind'] == 'flight')
@@ -519,13 +519,14 @@ class Day(Base):
         j.act('pl_intro')
         money = j.c['money']
         tids = [t['id'] for t in j.c['tasks']]
+        quoted = [PL.public_task(t)['expected_bonus'] for t in j.c['tasks']]
         self.assertEqual(len(tids), 3)
         for tid in tids:
             self.fly(j, tid)
             self.assertEqual(j.get(tid)['status'], 'completed')
             self.assertEqual(j.get(tid)['mistakes'], 0)
         paid = [r['amount'] for r in j.c['ops']['finance']['ledger'] if r.get('ref') in tids and r.get('category') == 'revenue']
-        self.assertEqual(paid, [PL.BONUS] * 3)
+        self.assertEqual(paid, quoted)
         stars = [f['stars'] for f in j.c['feed'] if f.get('kind') == 'review']
         self.assertTrue(stars and min(stars) >= 4)
         self.assertEqual(self.d['logbook']['flights'], 3)
@@ -534,7 +535,7 @@ class Day(Base):
         self.assertEqual(r['summary']['career']['flights'], 3)
         salary = [r['amount'] for r in j.c['ops']['finance']['ledger'] if r.get('category') == 'salary']
         self.assertEqual(salary, [j.c['job']['salary']])
-        self.assertGreaterEqual(j.c['money'], money + 3 * PL.BONUS + j.c['job']['salary'])
+        self.assertGreaterEqual(j.c['money'], money + sum(quoted) + j.c['job']['salary'])
         validate_state(json.loads(json.dumps(j.state)))
 
     def test_hours_are_the_crew_day(self):
@@ -762,7 +763,7 @@ class Flown(Base):
         t = j.get(tid)
         self.assertEqual((t['stage'], t['mistakes'], t.get('slips') or []), ('landed', 0, []))
         r = j.act('pl_park', task=tid)
-        self.assertIn(f'{PL.BONUS} xu', r['message'])
+        self.assertIn(f'{j.get(tid)["flight_bonus"]} xu', r['message'])
 
     def test_flown_unstable_and_landed_is_the_unstable_slip(self):
         j, tid = self.to_approach(lambda t: t['kind'] == 'flight' and all(g['stable'] for g in t['needs']['gates'][0]))
@@ -818,7 +819,7 @@ class Flown(Base):
 
 
 class OldServer(Base):
-    """1.5.1 (the server live now) keeps and accepts every save a flown hop writes: Tự bay adds no saved field."""
+    """Flown-hop state crosses 1.5.1; this is not a whole-save rollback guarantee for unrelated menus."""
     to_approach = Approach.to_approach
 
     def test_flown_saves_cross_the_151_build(self):
@@ -828,7 +829,12 @@ class OldServer(Base):
         j, tid = self.to_approach(lambda t: t['needs']['gates'][0][0]['bad'] == 'fast' and t['kind'] == 'flight')
         j.act('pl_around', task=tid, flown=dict(stable=False))
         j.act('pl_gate', task=tid, flown=dict(stable=True))          # mid-approach: the old build takes it from here
-        prog = ('import json,sys;from game.engine import validate_state,migrate_state,apply_action;s=json.load(sys.stdin);'
+        cafe = j.state['careers']['cafe_bakery']
+        self.assertEqual((cafe['day'], cafe['open'], cafe['tasks'], cafe['active_task'], cafe['metrics']),
+                         (1, False, [], None, {}))
+        # Only the untouched cafe uses historical menu defaults; retain every pilot field/task.
+        prog = ('import json,sys;from game.engine import validate_state,migrate_state,new_state,apply_action;s=json.load(sys.stdin);'
+                's["careers"]["cafe_bakery"]=new_state()["careers"]["cafe_bakery"];'
                 's=migrate_state(s);validate_state(s);tid=s["careers"]["pilot"]["active_task"];'
                 's,_=apply_action(s,"pilot","pl_gate",{"task":tid,"flown":{"stable":True,"touch":"firm"}});'
                 's,_=apply_action(s,"pilot","pl_park",{"task":tid});validate_state(s);print(json.dumps(s))')

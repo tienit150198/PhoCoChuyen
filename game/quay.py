@@ -1,10 +1,7 @@
-"""Player-owned counters: unlimited locations, NPC/player staffing and hands-on sales.
+"""Player-owned counters with prepaid inventory and continuous NPC operation.
 
-Business days advance only with the player's life days. Each operated day posts
-one row containing costs, rent, aggregate-owner game taxes and local incidents
-(game.quay_economy). Closed/idle days and prior-release backlog incur no charges.
-Old unpaid bills remain local and payable; new charges never automatically take
-personal wallet/bank money. Public views retain full save compatibility fields.
+quay_business owns timestamp-based receipts and expenses. The old life-day engine
+remains available only for unmigrated records; player shift escrow is independent.
 """
 from __future__ import annotations
 
@@ -55,9 +52,13 @@ TRADES = {
 }
 TRADE_IDS = tuple(TRADES)
 ITEMS = {
+    'camera': dict(id='camera', emoji='📹', name='Camera quầy', price=dict(xe=70, sap=140, kiot=250), line='Giảm đúng 50% xác suất trộm; vẫn có thể xảy ra'),
     'bang': dict(id='bang', emoji='🪧', name='Bảng hiệu đèn', price=dict(xe=150, sap=600, kiot=2000), line='+8% khách'),
     'tu': dict(id='tu', emoji='🧊', name='Tủ mát', price=dict(xe=200, sap=700, kiot=2500), line='Ít hư hàng, +4% khách'),
     'ket': dict(id='ket', emoji='🔐', name='Két sắt', price=dict(xe=250, sap=700, kiot=1500), line='Ít trộm, không mất cả két'),
+    'alarm': dict(id='alarm', emoji='🔔', name='Chuông chống trộm', price=dict(xe=100, sap=300, kiot=900), line='Giảm thêm 25% xác suất trộm'),
+    'surge': dict(id='surge', emoji='🔌', name='Bộ chống chập điện', price=dict(xe=120, sap=400, kiot=1100), line='Giảm 50% chi phí sửa nguồn điện'),
+    'hygiene': dict(id='hygiene', emoji='🧼', name='Tủ vệ sinh', price=dict(xe=90, sap=280, kiot=800), line='Giảm 50% chi phí khắc phục kiểm tra cửa tiệm'),
 }
 ITEM_IDS = tuple(ITEMS)
 ORDERS = {'it': 75, 'vua': 100, 'nhieu': 130}          # stock, % of the day's forecast
@@ -93,7 +94,7 @@ def _qs():
 
 
 SELF_ACTIONS = frozenset({'jr_quay_menu', 'jr_quay_look', 'jr_quay_online', 'jr_quay_start', 'jr_quay_serve', 'jr_quay_ship', 'jr_quay_choose',
-                          'jr_quay_close','jr_quay_signal','jr_quay_cross'})   # 🧑‍🍳 game/quay_self.py
+                          'jr_quay_close','jr_quay_signal','jr_quay_cross','jr_quay_restock','jr_quay_pause','jr_quay_sync'})   # 🧑‍🍳 game/quay_self.py
 
 
 def _fmt(n: int) -> str:
@@ -295,6 +296,8 @@ def _from_till_fund(st: dict, amount: int) -> int:
 # ---------------------------------------------------------------- a day at the counter
 def run_day(s: dict, st: dict, day: int) -> str | None:
     """One life day of a counter. Returns its line for the morning (None: nothing to say)."""
+    if 'business' in st:
+        return None
     P, T = PLACES[st['place']], TRADES[st['trade']]
     run = st.get('run')
     if isinstance(run, dict) and not run.get('x'):
@@ -399,6 +402,10 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     last = int(j['life_day']) - 1
     notes = []
     for st in q['stalls']:
+        if 'business' in st:
+            st['day'] = max(st['day'], last)
+            _police(s, st, last)
+            continue
         if 'economy' not in st:
             # Previous-release days are never replayed under the new prices/taxes.
             # Existing unpaid bills remain visible and payable exactly once.
@@ -442,6 +449,8 @@ def action(s: dict, name: str, p: dict) -> dict:
     need(j.get('story'), 'Quầy riêng chỉ có trong hành trình.', 'not_story')
     need(isinstance(p, dict), 'Dữ liệu không hợp lệ.')
     day = int(j['life_day'])
+    from . import quay_business
+    quay_business.settle(s)
     if name == 'jr_quay_open':
         need(set(p) <= {'trade', 'place', 'name', 'confirm'}, 'Thông tin mở quầy không hợp lệ.')
         why = why_locked(s)
@@ -464,18 +473,34 @@ def action(s: dict, name: str, p: dict) -> dict:
         _take(s, total, f'Mở quầy {nm}', trade)
         _log(st, day, 'Mở quầy', -total)
         q['stalls'].append(st)
+        quay_business.initialize(s, st)
         return dict(message=f'🏪 {nm} đã mở! Thuê người đứng quầy nhé.')
     q = get(s)
     need(q is not None, 'Bạn chưa có quầy nào.', 'no_stall')
     st = stall(s, p.get('stall'))
+    if name == 'jr_quay_event':
+        from .shop_events import choose_quay
+        return choose_quay(s, st, p)
     P, T = PLACES[st['place']], TRADES[st['trade']]
     if name in ('jr_quay_prepare', 'jr_quay_incident'):
         from .quay_economy import action as economy_action
         return economy_action(s, st, name, p)
     if name == 'jr_quay_start':
         need(not st.get('economy', {}).get('paused'), 'Kiểm hàng và vệ sinh trước khi mở lại quầy.')
+    if name in ('jr_quay_restock', 'jr_quay_pause', 'jr_quay_sync', 'jr_quay_protection'):
+        return quay_business.action(s, st, name, p)
+    if name == 'jr_quay_staff_event':
+        from .staff_life import choose_quay
+        result = choose_quay(s, st, p)
+        quay_business._schedule(st, st['business']['cursor'])
+        return result
     if name in SELF_ACTIONS:
-        return _qs().action(s, name, p, st)
+        result = _qs().action(s, name, p, st)
+        from .shop_events import tick_quay
+        tick_quay(s, st)
+        from .staff_life import tick_quay as tick_staff
+        tick_staff(s, st)
+        return result
     if name == 'jr_quay_till':
         need(set(p) <= {'stall', 'to'} and p.get('to', 'wallet') in ('wallet', 'fund'), 'Thao tác két không hợp lệ.')
         amount = st['till']
@@ -499,6 +524,7 @@ def action(s: dict, name: str, p: dict) -> dict:
             need(j['wallet'] >= amount, 'Ví không đủ số này.', 'no_money')
             _jr()._wallet(j, -amount, KIND_IN, f'Góp vốn quầy {st["name"]}', st['trade'])
             st['fund'] = min(MONEY_MAX, st['fund'] + amount)
+            quay_business.collect_fines(st)
             return dict(message=f'Đã góp {_fmt(amount)} xu vào vốn quầy.')
         need(st['fund'] >= -amount, f'Vốn quầy chỉ còn {_fmt(st["fund"])} xu.', 'no_money')
         st['fund'] += amount
@@ -520,14 +546,17 @@ def action(s: dict, name: str, p: dict) -> dict:
         member['mo'] = _target_mood(member)
         st['staff'].append(member)
         _log(st, day, f'Thuê {cand["name"]}', 0)
-        return dict(message=f'{cand["name"]} nhận việc, lương {wage} xu/ngày.')
+        return dict(message=f'{cand["name"]} nhận việc, lương {wage} xu/10 phút hoạt động.')
     if name in ('jr_quay_wage', 'jr_quay_fire'):
         need(set(p) <= {'stall', 'staff', 'wage', 'confirm'}, 'Thao tác nhân viên không hợp lệ.')
         member = next((x for x in st['staff'] if x['id'] == p.get('staff')), None)
         need(member, 'Không có người này ở quầy.')
         if name == 'jr_quay_fire':
             need(p.get('confirm') is True, 'Xác nhận cho nghỉ.')
+            need(len(st['staff']) > 1 or not any(r['status'] == 'queued' for r in st['business'].get('visitor_orders', [])), 'Phục vụ nốt đơn đã nhận trước khi nhân viên cuối nghỉ.', 'staff_busy')
             st['staff'] = [x for x in st['staff'] if x is not member]
+            from .staff_life import tick_quay as tick_staff
+            tick_staff(s, st)
             _log(st, day, f'{member["name"]} nghỉ', 0)
             return dict(message=f'{member["name"]} đã nghỉ. Cảm ơn bạn ấy nhé.')
         wage = e.integer(p.get('wage'), 1, 10**4)
@@ -535,7 +564,8 @@ def action(s: dict, name: str, p: dict) -> dict:
         need(wage * 100 <= member['ask'] * WAGE_MAX_PCT, f'Lương tối đa {_fmt(member["ask"] * WAGE_MAX_PCT // 100)} xu.', 'too_high')
         up = wage > member['wage']
         member['wage'] = wage
-        return dict(message=f'{member["name"]}: lương {wage} xu/ngày.' + (' Bạn ấy vui lắm!' if up else ''))
+        st.get('staff_life', {}).get('raises', {}).pop(member['id'], None)
+        return dict(message=f'{member["name"]}: lương {wage} xu/10 phút hoạt động.' + (' Bạn ấy vui lắm!' if up else ''))
     if name == 'jr_quay_buy':
         need(set(p) <= {'stall', 'item', 'confirm'} and p.get('item') in ITEMS, 'Món này không có.')
         it = ITEMS[p['item']]
@@ -577,19 +607,26 @@ def action(s: dict, name: str, p: dict) -> dict:
 def sell_back(st: dict) -> int:
     P = PLACES[st['place']]
     ups = sum(ITEMS[i]['price'][st['place']] for i in st['items'] if i in ITEMS)
-    return max(0, P['price'] * SELL_PCT // 100 + ups * UPGRADE_BACK // 100 + st['till'] + st['fund'] - st['due'])
+    return max(0, P['price'] * SELL_PCT // 100 + ups * UPGRADE_BACK // 100 + st['till'] + st['fund'] - st['due']
+               - st.get('business', {}).get('unpaid_fines', 0))
 
 
 # ---------------------------------------------------------------- hired players (applied by game/quay_hire.py)
-def credit(s: dict, sid: str, what: str, amount: int, label: str, *, wage=None, source=None) -> str:
+def credit(s: dict, sid: str, what: str, amount: int, label: str, *, wage=None, source=None, now=None) -> str:
     """Money for one counter from outside a command (a hired player's shift into the till, an escrowed wage back into
     the fund). A counter that was sold meanwhile: into the wallet. Returns the line to show."""
+    # Inbox effects and escrow callbacks bypass engine.apply_action. Anchor the
+    # old cash balance before this receipt can finance any further operation.
+    from .quay_business import settle, collect_fines
+    settle(s, now=now)
     j = s['journey']
     q = get(s)
     st = next((x for x in (q or {}).get('stalls', ()) if x['id'] == sid), None)
     if what == 'shift' and wage is not None and source is not None:
         from .quay_economy import shift_receipt
         r=shift_receipt(s,st,sid,amount,wage,source,label)
+        if st:
+            collect_fines(st)
         pocket='két' if st else 'ví'
         return f'{label}: +{_fmt(r["cash_net"])} xu vào {pocket} sau thuế; lãi ca {_fmt(r["net"])} xu (lương đã giữ trước).'
     if st is None:
@@ -597,9 +634,11 @@ def credit(s: dict, sid: str, what: str, amount: int, label: str, *, wage=None, 
         return f'{label}: +{_fmt(amount)} xu vào ví.'
     if what == 'shift':
         st['till'] = min(MONEY_MAX, st['till'] + amount)
+        collect_fines(st)
         _log(st, j['life_day'], label, amount)
         return f'{label}: +{_fmt(amount)} xu vào két.'
     st['fund'] = min(MONEY_MAX, st['fund'] + amount)
+    collect_fines(st)
     _log(st, j['life_day'], label, amount)
     return f'{label}: +{_fmt(amount)} xu về vốn quầy.'
 
@@ -653,11 +692,17 @@ def _stall_view(s: dict, st: dict) -> dict:
     day = int(s['journey']['life_day'])
     fc = forecast(s, st, day)
     out = dict({k: st[k] for k in ('id', 'trade', 'place', 'name', 'fund', 'till', 'order', 'due', 'rep', 'items')},
-               closed=st['due'] > 0 or st['left'] > LEFT_DAYS or st.get('economy', {}).get('paused', False), left=max(0, LEFT_DAYS - st['left']),
+               closed=st['due'] > 0 or ('business' not in st and st['left'] > LEFT_DAYS) or st.get('economy', {}).get('paused', False) or st.get('business', {}).get('paused', False), left=max(0, LEFT_DAYS - st['left']),
                staff=[{k: x[k] for k in ('id', 'name', 'wage', 'ask', 'mo', 'g')} for x in st['staff']],
                case=dict(lost=st['case']['lost'], all=st['case']['all'], rep=st['case']['rep']) if st['case'] else None,
                hist=[[x['d'], x['n'], x['net']] for x in st['hist']], today=fc, sell=sell_back(st),
                value=shift_value(st['place'], st['trade']), **_qs().stall_view(s, st))
+    from .quay_business import public as business_public
+    out['business'] = business_public(st)
+    from .staff_life import public as staff_public
+    out['staff_life'] = staff_public(st, quay=True)
+    from .shop_events import public as events_public
+    out['shop_events'] = events_public(st, quay=True)
     from .quay_economy import public as economy_public
     out['economy'] = economy_public(st)
     out['economy']['receipts']=[r for r in (get(s) or {}).get('receipts',[]) if r['stall']==st['id']]
@@ -702,6 +747,8 @@ def validate(s: dict) -> None:
     ids = set()
     for st in q['stalls']:
         need(isinstance(st, dict) and STALL_KEYS <= set(st))
+        from .shop_events import validate as validate_events
+        validate_events(st, st['id'], st['trade'], st['place'])
         need(isinstance(st['id'], str) and ID_RE.fullmatch(st['id']) is not None and st['id'] not in ids)
         ids.add(st['id'])
         need(st['trade'] in TRADES and st['place'] in PLACES and st['order'] in ORDERS)
@@ -730,6 +777,10 @@ def validate(s: dict) -> None:
                  and _int(x['a'], -MONEY_MAX, MONEY_MAX))
         from .quay_economy import validate as economy_validate
         economy_validate(q, st, need, _int)
+        from .quay_business import validate as business_validate
+        business_validate(st, need, _int)
+        from .staff_life import validate as staff_validate
+        staff_validate(st, st['id'], quay=True)
         _qs().validate(st, need, _int, _text)   # 🧑‍🍳 the board, the look, online, the day at the counter (optional keys)
     sh = q['shift']
     need(sh is None or (isinstance(sh, dict) and SHIFT_KEYS <= set(sh) and isinstance(sh['id'], str) and JOB_RE.fullmatch(sh['id']) is not None

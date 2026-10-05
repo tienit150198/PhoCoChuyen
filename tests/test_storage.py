@@ -7,7 +7,7 @@ from tests.helpers import Journey
 class StorageTests(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.path=Path(self.tmp.name)/'game.db';self.store=Store(self.path);self.token,self.csrf,_=self.store.session()
-    def tearDown(self):self.tmp.cleanup()
+    def tearDown(self):self.store.close_pool();self.tmp.cleanup()
     def call(self,key='request-001',rev=0,career='mother_baby',action='start_day',payload=None):return self.store.command(self.token,key,rev,career,action,payload or {})
     def test_reload_persists(self):
         self.call();again=Store(self.path);s,rev,csrf=again.read(self.token);self.assertTrue(s['careers']['mother_baby']['open']);self.assertEqual(rev,1);self.assertEqual(csrf,self.csrf)

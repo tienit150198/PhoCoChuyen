@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import asyncio
 import os
-import sqlite3
 import sys
 import tempfile
 import time
@@ -24,6 +23,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import browser_ride as br  # noqa: E402
+from pg_test_support import test_env, test_connect, schema_for
 
 PW = 'matkhau-rat-dai'
 API = """async ([path, body]) => {
@@ -42,15 +42,15 @@ async def api(p, path, body=None):
 
 
 def marry(db: str, a: str, b: str) -> None:
-    con = sqlite3.connect(db)
+    con = test_connect(db)
     with con:
-        cid = con.execute("INSERT INTO couples(a, b, status, since, married_at) VALUES(?, ?, 'married', ?, ?)", (a, b, time.time(), time.time())).lastrowid
+        cid = con.execute("INSERT INTO couples(a, b, status, since, married_at) VALUES(?, ?, 'married', ?, ?) RETURNING id", (a, b, time.time(), time.time())).fetchone()[0]
         con.executemany('INSERT INTO marriage_bonds(sid, couple) VALUES(?, ?)', [(a, cid), (b, cid)])
     con.close()
 
 
 def sid_of(db: str, username: str) -> str:
-    con = sqlite3.connect(db)
+    con = test_connect(db)
     try:
         return con.execute('SELECT sid FROM accounts WHERE username=?', (username,)).fetchone()[0]
     finally:

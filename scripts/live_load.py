@@ -2,7 +2,7 @@
 """Load test of the live service (live/): N WebSocket clients against a live service started on a THROWAWAY
 database, so production data is never touched.
 
-  # local (SQLite, a temporary file):
+  # local disposable PostgreSQL (TEST_DATABASE_URL):
   python scripts/live_load.py --conns 2000
   # on the server: a scratch PostgreSQL database next to the real one
   sudo -u postgres createdb -O <game db user> mnl_loadtest
@@ -12,8 +12,8 @@ database, so production data is never touched.
 
 What it does
   1. creates N guest saves in that database (sessions, a name, born before today) and pairs some of them as
-     friends, with the game's own schema (game/pg_schema.py / game/storage.py);
-  2. starts `python3 -m live` on a free port against it (LIVE_CHAT=1), or uses --url for one already running;
+     friends, with the game's own schema (game/pg_schema.py);
+  2. starts `python3 -m live` on a free port against that isolated PostgreSQL schema (LIVE_CHAT=1);
   3. opens N sockets (spread over --procs client processes). The first --strollers of them stroll (Đi dạo,
      LIVE_STREET=1): groups of 20 walk into the four places (so 500 strollers fill 25 instances), each moves to a
      random walkable spot every --move-every seconds and says something every --say-every seconds. The others
@@ -95,11 +95,13 @@ def make_players(n: int, db_url: str | None, db_path: str | None, friends_every:
     """N accounts (1.0.1: only accounts post, date and count at weddings) with named saves born before today, each
     signed in on its own device (a `logins` row); every `friends_every`-th pair are friends. Returns their cookie
     tokens (sid_of(token) is the save)."""
-    if db_url:
-        os.environ['DATABASE_URL'] = db_url
+    if not db_url:
+        raise SystemExit('A disposable PostgreSQL URL is required')
+    os.environ.pop('DATABASE_URL', None)
+    os.environ['TEST_DATABASE_URL'] = db_url
     from game import admin_stats, push, social
     from game.storage import Store
-    store = Store(db_path or 'loadtest.sqlite3')
+    store = Store(db_path)
     social.ensure(store)
     push.ensure(store)
     admin_stats.ensure(store)
@@ -126,10 +128,12 @@ def make_players(n: int, db_url: str | None, db_path: str | None, friends_every:
 def make_weddings(tokens: list, n: int, per: int, db_url: str | None, db_path: str | None) -> list:
     """N couples (the first two of each group of per + 2 tokens) with a party booked a minute from now (open). Returns
     the wedding ids."""
-    if db_url:
-        os.environ['DATABASE_URL'] = db_url
+    if not db_url:
+        raise SystemExit('A disposable PostgreSQL URL is required')
+    os.environ.pop('DATABASE_URL', None)
+    os.environ['TEST_DATABASE_URL'] = db_url
     from game.storage import Store
-    store = Store(db_path or 'loadtest.sqlite3')
+    store = Store(db_path)
     t = time.time()
     ids = []
 
@@ -153,7 +157,9 @@ def start_live(port: int, db_url: str | None, db_path: str | None, origin: str, 
     env.pop('DATABASE_URL', None)
     if db_url:
         env['DATABASE_URL'] = db_url
-    args = [sys.executable, '-m', 'live'] + ([] if db_url else ['--db', db_path])
+    from game.storage import Store
+    schema = Store(db_path).pg.schema
+    args = [sys.executable, '-m', 'live', '--schema', schema]
     log = open(log_path, 'w')
     p = subprocess.Popen(args, cwd=ROOT, env=env, stdout=log, stderr=log, preexec_fn=lambda: raise_fd_limit())
     end = time.time() + 60
@@ -486,9 +492,9 @@ def main():
     ap.add_argument('--procs', type=int, default=max(2, min(8, (os.cpu_count() or 4) // 2)))
     ap.add_argument('--ramp', type=int, default=400, help='new sockets per second while ramping up')
     ap.add_argument('--friends-every', type=int, default=4, help='every n-th pair of players are friends')
-    ap.add_argument('--db-url', help='a THROWAWAY PostgreSQL database (never the game database)')
-    ap.add_argument('--url', help='a live service already running against the same throwaway database')
-    ap.add_argument('--pid', type=int, help='its process id (CPU, RSS) with --url')
+    ap.add_argument('--db-url', default=os.environ.get('TEST_DATABASE_URL'), help='a THROWAWAY PostgreSQL database (never the game database)')
+    ap.add_argument('--url', help='unsupported: this harness starts a service on its isolated PostgreSQL schema')
+    ap.add_argument('--pid', type=int, help='unsupported existing-service option')
     ap.add_argument('--every', type=float, default=10.0, help="a chatter's pause between messages (slow mode: >= 10)")
     ap.add_argument('--strollers', type=int, default=500, help='sockets strolling (Đi dạo) in groups of 20 per instance')
     ap.add_argument('--weddings', type=int, default=0, help='live wedding parties (LIVE_WEDDING), each with --guests guests and the couple')
@@ -498,23 +504,23 @@ def main():
     ap.add_argument('--dates', type=int, default=0, help='💕 café dates at the same time (2 more players each; LIVE_DATING=1)')
     ap.add_argument('--date-speed', type=float, default=1.0, help='LIVE_DATE_SPEED of the service it starts (1 = real time)')
     args = ap.parse_args()
+    if args.url is not None or args.pid is not None:
+        raise SystemExit('--url/--pid are unsupported: this harness creates an isolated PostgreSQL schema and starts its matching live service')
     raise_fd_limit()
-    if args.db_url and 'loadtest' not in args.db_url:
+    if not args.db_url:
+        raise SystemExit('Set TEST_DATABASE_URL or pass --db-url for a disposable PostgreSQL database')
+    if not os.environ.get('TEST_DATABASE_URL') and 'loadtest' not in args.db_url:
         raise SystemExit('--db-url must name a scratch database whose name contains "loadtest" (never the game database)')
     tmp = tempfile.mkdtemp(prefix='mnl-live-load-')
-    db_path = None if args.db_url else os.path.join(tmp, 'load.sqlite3')
+    db_path = os.path.join(tmp, 'load')
     t0 = time.time()
     tokens = make_players(args.conns + 2 * args.dates, args.db_url, db_path, args.friends_every)
     tokens, daters = tokens[:args.conns], tokens[args.conns:]
     print(f'players: {len(tokens)} in {time.time() - t0:.1f}s', file=sys.stderr)
     origin = 'http://load.test'
-    live = None
-    if args.url:
-        url, pid = args.url, args.pid
-    else:
-        port = free_port()
-        live = start_live(port, args.db_url, db_path, origin, os.path.join(tmp, 'live.log'), dating=bool(args.dates), speed=args.date_speed)
-        url, pid = f'ws://127.0.0.1:{port}/live', live.pid
+    port = free_port()
+    live = start_live(port, args.db_url, db_path, origin, os.path.join(tmp, 'live.log'), dating=bool(args.dates), speed=args.date_speed)
+    url, pid = f'ws://127.0.0.1:{port}/live', live.pid
     from live.street_data import PUBLIC
     per = args.guests + 2
     wed_n = min(len(tokens), args.weddings * per)
@@ -598,7 +604,7 @@ def main():
                   connect_failures=tot['failed'], reconnects=tot['reconnects'], presence_frames=tot['presence'],
                   live_cpu_pct=dict(avg=round(statistics.mean(steady), 1) if steady else None, peak=round(max(steady), 1) if steady else None),
                   live_rss_mb=round(peak_rss, 1), live_cpu_s_total=round((last[0] - cpu0), 1) if pid else None, health=health,
-                  db='postgresql' if args.db_url else 'sqlite')
+                  db='postgresql')
     if dres:
         def ms(key):
             xs = sorted(x for r in dres for x in r['lat'][key])
@@ -617,7 +623,7 @@ def main():
                                date_length_s=round(statistics.median(lengths), 1) if lengths else None,
                                errors=sum(r['errors'] for r in dres), error_codes=codes, connect_failures=sum(r['failed'] for r in dres))
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    shutil.rmtree(tmp, ignore_errors=True)   # the SQLite file and the service's log
+    shutil.rmtree(tmp, ignore_errors=True)   # temporary logs; PostgreSQL schemas are cleaned at exit
 
 
 if __name__ == '__main__':

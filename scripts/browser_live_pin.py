@@ -2,7 +2,7 @@
 """📌 Admin messages and the pinned message of Cả phố in two browsers (dev tool, needs `pip install playwright
 websockets` + chromium).
 
-Starts a game server (story mode, SQLite) and the live service (chat on, ADMIN_USERS=op_admin) on the same
+Starts a game server (story mode, PostgreSQL) and the live service (chat on, ADMIN_USERS=op_admin) on the same
 database. MNL_PY picks the servers' Python (the live service needs websockets, Python 3.12) when playwright lives
 in another one; MNL_PYTHONPATH their library path. Two phones (390×844):
   * the admin (account op_admin, a brand-new session: players would wait 10 minutes) posts on Cả phố at once, twice,
@@ -22,7 +22,6 @@ import argparse
 import asyncio
 import contextlib
 import os
-import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -32,6 +31,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from browser_live_chat import PW, free_port, phone, send, text_of, wait_http  # noqa: E402
+from pg_test_support import test_env, test_connect, schema_for
 
 ANN = '📢 Ban quản lý Phố'
 ANN_TEXT = ('Chào cả phố! Từ tối nay Phố Có Chuyện mở sự kiện Trung thu 🏮 — rước đèn, phá cỗ, quà cho cả nhà.\n'
@@ -41,19 +41,19 @@ ANN_TEXT = ('Chào cả phố! Từ tối nay Phố Có Chuyện mở sự kiệ
 @contextlib.contextmanager
 def servers(tmp: str):
     gp, lp = free_port(), free_port()
-    db = os.path.join(tmp, 'g.sqlite3')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live', ADMIN_USERS='OP_Admin')
+    db = os.path.join(tmp, 'g.db')
+    env = test_env( QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live', ADMIN_USERS='OP_Admin')
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'DATABASE_URL'):
         env.pop(k, None)
     py = os.environ.get('MNL_PY') or sys.executable
     if os.environ.get('MNL_PYTHONPATH'):
         env['PYTHONPATH'] = os.environ['MNL_PYTHONPATH']
-    game = subprocess.Popen([py, 'server.py', '--port', str(gp), '--db', db], cwd=ROOT, env=env,
+    game = subprocess.Popen([py, 'server.py', '--port', str(gp), '--namespace', db], cwd=ROOT, env=env,
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     wait_http(f'http://127.0.0.1:{gp}/api/health')
-    lenv = dict(env, LIVE_CHAT='1', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
+    lenv = dict(env, DATABASE_URL=env['TEST_DATABASE_URL'], LIVE_CHAT='1', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
     log = open(os.path.join(tmp, 'live.log'), 'w')
-    live = subprocess.Popen([py, '-m', 'live', '--db', db], cwd=ROOT, env=lenv, stdout=log, stderr=log)
+    live = subprocess.Popen([py, '-m', 'live', '--schema', schema_for(db)], cwd=ROOT, env=lenv, stdout=log, stderr=log)
     wait_http(f'http://127.0.0.1:{lp}/live/health')
     try:
         yield f'http://127.0.0.1:{gp}', db, py, env
@@ -93,7 +93,7 @@ async def run(shots: Path) -> list:
             b = await phone(browser, base, 'Minh Tú', problems)
             await a.api('/api/account/register', dict(username='op_admin', password=PW, confirm=PW, display='Ban Quản Lý'))
             await b.api('/api/account/register', dict(username='minhtu_t', password=PW, confirm=PW, display='Minh Tú'))
-            with sqlite3.connect(db) as con:   # only the player is a long-time one; the admin's session is brand new
+            with test_connect(db) as con:   # only the player is a long-time one; the admin's session is brand new
                 con.execute("UPDATE stat_births SET day='2026-01-01' WHERE sid=(SELECT sid FROM accounts WHERE username='minhtu_t')")
             for p in (a, b):
                 await p.page.reload()
@@ -168,10 +168,10 @@ async def run(shots: Path) -> list:
             check(True, 'unpinned on both phones')
 
             # ---- the operator's announcement, pinned from the server ----
-            with sqlite3.connect(db) as con:
+            with test_connect(db) as con:
                 mid = con.execute("INSERT INTO chat_messages(channel, pid, name, av, text, at) VALUES('town', 'admin', ?, '📢', ?, ?) RETURNING id",
                                   (ANN, ANN_TEXT, time.time())).fetchone()[0]
-            out = subprocess.run([py, 'scripts/chat_pin.py', '--db', db, '--msg', str(mid)], cwd=ROOT, env=env, capture_output=True,
+            out = subprocess.run([py, 'scripts/chat_pin.py', '--namespace', db, '--msg', str(mid)], cwd=ROOT, env=env, capture_output=True,
                                  text=True, encoding='utf-8')
             check(out.returncode == 0 and 'Đã ghim' in out.stdout, f'scripts/chat_pin.py ({out.stdout.strip()[-80:]!r} {out.stderr[-200:]!r})')
             t0 = time.monotonic()

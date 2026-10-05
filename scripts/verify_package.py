@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Extract ZIP to a fresh folder, verify hashes, start server and test an API write."""
 from pathlib import Path
+from pg_test_support import test_env
 import argparse,datetime,hashlib,http.cookiejar,json,re,subprocess,sys,tempfile,urllib.error,urllib.request,zipfile
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('zip',type=Path);parser.add_argument('--report',type=Path);args=parser.parse_args()
+    env=test_env()
     checks=[]
     with tempfile.TemporaryDirectory(prefix='mngln-package-') as temp:
         with zipfile.ZipFile(args.zip) as archive:
@@ -20,7 +22,7 @@ def main():
             if hashlib.sha256(data).hexdigest()!=entry['sha256']:raise RuntimeError('Hash mismatch: '+entry['path'])
         checks.append(f"All {len(manifest['files'])} source/asset hashes match")
         log=open(Path(temp)/'server.log','w+',encoding='utf-8')
-        proc=subprocess.Popen([sys.executable,str(root/'server.py'),'--port','0','--db',str(Path(temp)/'new.sqlite3')],cwd=root,stdout=subprocess.PIPE,stderr=log,text=True)
+        proc=subprocess.Popen([sys.executable,str(root/'server.py'),'--port','0','--namespace',str(Path(temp)/'package-test')],cwd=root,env=env,stdout=subprocess.PIPE,stderr=log,text=True)
         try:
             base=None
             for _ in range(40):
@@ -31,7 +33,7 @@ def main():
             if not base:raise RuntimeError('Could not read server address.')
             client=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
             def get(path):return client.open(base+path,timeout=8)
-            assert json.load(get('/api/health'))['status']=='ok';checks.append('Fresh extracted server starts with empty SQLite')
+            assert json.load(get('/api/health'))['status']=='ok';checks.append('Fresh extracted server starts with an isolated PostgreSQL schema')
             with get('/') as response:assert response.status==200 and b'world' in response.read()
             for asset in ['/js/app.js','/js/world.js','/js/boba-world.js','/js/operations-ui.js','/css/cozy.css','/js/experience-ui.js','/css/boba.css','/css/game.css','/favicon.svg','/audio/sfx/ting.mp3']:
                 with get(asset) as response:assert response.status==200 and len(response.read())>0

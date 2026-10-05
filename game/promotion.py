@@ -203,32 +203,41 @@ def _care_rank(c: dict) -> int:
     return r if type(r) is int else 0
 
 
-def gate(s: dict, c: dict, career: str, rec: dict) -> str | None:
-    """Why the next step is not open yet besides good days (a short line), or None."""
+def _gates(s: dict, c: dict, career: str, rec: dict) -> list[dict]:
+    """All career-specific requirements, shared by eligibility and its public explanation."""
     n = rec['rank'] + 1
     if n > TOP:
-        return None
+        return []
     emp = track(career) == 'emp'
     st = (EMP_STEPS if emp else OWN_STEPS)[n]
-    if emp and n == 1 and (c.get('job') or {}).get('probation'):
-        return 'Hết thử việc trước đã'
-    if emp and career in ACCT and n in ACCT_CARE and _care_rank(c) < ACCT_CARE[n]:
-        return '🧭 Lộ trình phòng kế toán: bậc ' + str(ACCT_CARE[n])
+    rows = []
+    if emp and n == 1:
+        rows.append(dict(id='probation', met=not bool((c.get('job') or {}).get('probation')),
+                         label='Hết thử việc trước đã'))
+    if emp and career in ACCT and n in ACCT_CARE:
+        rows.append(dict(id='care', met=_care_rank(c) >= ACCT_CARE[n],
+                         label='🧭 Lộ trình phòng kế toán: bậc ' + str(ACCT_CARE[n])))
     served = st.get('served', 0)
     if st.get('cert'):
         from . import certificates as ct
-        if not ct.held_for(s, career) and _served(c) < served:
-            return f'🎓 Chứng chỉ nhóm nghề hoặc {served} lượt khách'
-    elif served and _served(c) < served:
-        return f'{served} lượt khách ({_served(c)} rồi)'
+        rows.append(dict(id='certificate_or_served', met=bool(ct.held_for(s, career) or _served(c) >= served),
+                         label=f'🎓 Chứng chỉ nhóm nghề hoặc {served} lượt khách'))
+    elif served:
+        rows.append(dict(id='served', met=_served(c) >= served, label=f'{served} lượt khách ({_served(c)} rồi)'))
     if st.get('rating'):
         r = _rating10(c)
-        if r is not None and r < st['rating']:
-            return f'Điểm đánh giá ★{st["rating"] / 10:.1f}'
+        rows.append(dict(id='rating', met=r is None or r >= st['rating'],
+                         label=f'Điểm đánh giá ★{st["rating"] / 10:.1f}'))
     j = s.get('journey') or {}
-    if st.get('chapter') and j.get('story') and int(j.get('chapter') or 1) < st['chapter']:
-        return f'Tới chương {st["chapter"]}'
-    return None
+    if st.get('chapter') and j.get('story'):
+        rows.append(dict(id='chapter', met=int(j.get('chapter') or 1) >= st['chapter'],
+                         label=f'Tới chương {st["chapter"]}'))
+    return rows
+
+
+def gate(s: dict, c: dict, career: str, rec: dict) -> str | None:
+    """First unmet career requirement; kept for callers that need one short line."""
+    return next((row['label'] for row in _gates(s, c, career, rec) if not row['met']), None)
 
 
 def ready(s: dict, c: dict, career: str, rec: dict) -> bool:
@@ -657,8 +666,23 @@ def _next(s: dict, c: dict, career: str, rec: dict) -> dict | None:
     if n > TOP:
         return None
     st = (EMP_STEPS if track(career) == 'emp' else OWN_STEPS)[n]
+    requirements = [dict(id='good', met=rec['good'] >= st['good'],
+                         label=f'{rec["good"]}/{st["good"]} ngày tốt từ lần lên bậc gần nhất')]
+    if st.get('ratio'):
+        # Keep the full numerator and compare integers, exactly as ready does. A rounded
+        # percentage (e.g. 69.99 -> 70) must never make a blocked review appear eligible.
+        pct = rec['good'] * 100 // rec['worked'] if rec['worked'] else 0
+        requirements.append(dict(id='ratio', met=rec['good'] * 100 >= st['ratio'] * rec['worked'],
+                                 good=rec['good'], worked=rec['worked'], need=st['ratio'],
+                                 label=f'Tỷ lệ ngày tốt ít nhất {st["ratio"]}%: {rec["good"]}/{rec["worked"]} ngày làm ({pct}%)'))
+    requirements.extend(_gates(s, c, career, rec))
+    if rec['wait'] > 0:
+        requirements.append(dict(id='wait', met=False, label=f'Hẹn xét lại sau {rec["wait"]} ngày làm'))
+    if rec['due']:
+        requirements.append(dict(id='review', met=False, label='Đã có lịch xét bậc ở đầu ca sau'))
     return dict(title=title(s, c, career, n), good=min(rec['good'], st['good']), need=st['good'],
-                why=gate(s, c, career, rec), wait=rec['wait'], pct=step_pct(career, n, rec['extra']))
+                why=gate(s, c, career, rec), wait=rec['wait'], pct=step_pct(career, n, rec['extra']),
+                requirements=requirements)
 
 
 def _due_view(s: dict, c: dict, career: str, rec: dict) -> dict | None:

@@ -17,7 +17,7 @@ leaves it out of the badges (live.unread). The chat list (`state.chans`) carries
 Frames (client → server; replies in brackets)
   sync {}                                   [state {friends, chans}]
   join {ch:'town', after?}  leave {ch}      [joined {ch, msgs, more, wait, why}]
-  send {ch | to, text, cid}                 [msg {..., cid} to me; msg to the others]
+  send {ch | to, text, cid, reply_to?}      [msg {..., cid, reply?} to me; msg to the others]
   history {ch, before?}                     [history {ch, msgs, more}]
   read {ch, id}                             [read {ch, id} to my other tabs]
   del {id}                                  [deleted {ch, id} to everyone who sees it]
@@ -32,6 +32,10 @@ Frames (client → server; replies in brackets)
   clear {chs: [ch, ...]}                    [cleared {chs: {ch: upto}} to my tabs]
   blocks {}                                 [blocks {list: [{pid, name, av, fc?}]}]     🚫 when welcome.flags.blocks
 Server pushes: msg, deleted, presence {pid, on}, chan {chan}, unchan {ch}, muted {until}, read, pinned, reacts, quiet, faced.
+
+Replies store only a source ID. Each output resolves it to reply={id,pid,name,text} (160 characters), or
+{id,unavailable:true}, using current source visibility for that reader. Buffer and pin caches never retain
+quoted text. reply_hidden {pid} invalidates already displayed quotes after a bilateral block or account erasure.
 
 🗑️ Deleting (owner, 03/10: "nhấn giữ để xóa tin nhắn", "bạn bè cho chọn xóa tin nhắn, xóa hết ở màn list"):
 * `del {id}` (Thu hồi): my own message, for everyone, within RECALL_SECS (24 h; admins any time). The row stays as a
@@ -63,7 +67,7 @@ in pages (joined, history, missed) carry `r` and `my` (my own). Counts are cache
 by one grouped query over the page's ids, the primary key); `my` is read only for messages that have reactions.
 
 📌 Admins (owner, 01/10): an account whose username is in ADMIN_USERS (cfg.admins, read from `accounts` with the
-player's name and age) posts on Cả phố with no slow mode, no "new player" wait, no mute and no duplicate check, up
+player's name and age) posts on Cả phố with no slow mode, no "new player" wait and no mute, up
 to 500 characters and 6 lines, links and numbers left as written; their frames carry `adm: 1` (column
 chat_messages.adm; a row with pid 'admin', written straight into the database, counts as one too). Nobody can
 report an admin message. An admin pins one Cả phố message for everyone (`chat_pins`, one row): the `joined` frame
@@ -83,6 +87,8 @@ import time
 
 from . import faces as facemod
 from . import filters
+from . import chat_reply
+from . import player_names
 from .auth import pid_of, profile
 from .db import Error as DbError
 from .limits import LRU
@@ -94,7 +100,6 @@ CH_GROUP = re.compile(r'g:[0-9a-f]{10}')
 PID = re.compile(r'[0-9a-f]{16}')
 REASONS = ('spam', 'rude', 'private', 'scam', 'other')
 HIDE_AFTER = 3            # distinct reports that hide a message until an admin decides
-DUP_SECS = 120            # the same text again in the same chat within this: dropped
 PAGE = 30                 # messages per load: the first one and each "Xem cũ hơn" (owner, 01/10)
 RESUME = 50               # messages sent after a reconnect, per open chat
 TOWN_KEEP = 2000          # Cả phố keeps its newest 2,000 messages (owner, 01/10); DMs and groups keep everything
@@ -149,6 +154,8 @@ def msg_frame(r: dict) -> dict:
         f['adm'] = 1
     if r.get('deleted'):
         f['text'], f['del'] = '', 1
+    elif r.get('reply_to'):
+        f['reply_to'] = int(r['reply_to'])  # internal only; resolve for each viewer at the output boundary
     return f
 
 
@@ -170,6 +177,8 @@ class ChatFeature(Feature):
         self.faces = LRU(FACE_CACHE)    # 🙂 pid -> face code ('' = none, shows the emoji)
         self.del_ok = False             # 🗑️ chat_hides / chat_clears exist (SCHEMA_VERSION 13)
         self._del_at = 0.0              # next look for them while they are missing
+        self.reply_epoch = 0            # invalidates quote SELECTs already in flight
+        self.names = LRU(20000)         # pid -> current account display; '' means keep a guest/system snapshot
 
     # ---- extension: other features' channels -------------------------------------------------------------
     def route(self, prefix: str, audience, can_read) -> None:
@@ -224,15 +233,19 @@ class ChatFeature(Feature):
             raise LiveError('admin', 'Chỉ Ban quản lý ghim được tin.')
 
     # ---- 📌 the pinned message of Cả phố -------------------------------------------------------------------
-    def pin_for(self, p) -> dict | None:
+    async def pin_for(self, p, *, resolve=True) -> dict | None:
         """The pin as this player sees it: nothing when they blocked its author (or were blocked)."""
-        return self.pin if self.pin and self.pin['pid'] not in p.hidden else None
+        pin = self.pin
+        if not pin or pin['pid'] in p.hidden or await self.my_hides(p, [pin['id']]):
+            return None
+        result = (await chat_reply.project(self, p, [pin]))[0] if resolve else pin
+        return result if self.pin is pin else None
 
     async def sync_pin(self, announce: bool = True) -> None:
         """Read the pin row (one primary-key lookup, its message by primary key). A pin whose message is gone
         (deleted, hidden, pruned, not on Cả phố) is removed. When it changed, tell everyone on Cả phố."""
         r = await self.db.fetchrow(
-            'SELECT p.msg AS pin_msg, p.at AS pin_at, m.id, m.channel, m.pid, m.name, m.av, m.text, m.at, m.hidden, m.deleted, m.adm '
+            'SELECT p.msg AS pin_msg, p.at AS pin_at, m.id, m.channel, m.pid, m.name, m.av, m.text, m.at, m.hidden, m.deleted, m.adm, m.reply_to '
             "FROM chat_pins p LEFT JOIN chat_messages m ON m.id=p.msg WHERE p.channel='town'")
         pin, key = None, None
         if r:
@@ -246,16 +259,13 @@ class ChatFeature(Feature):
             return
         self.pin, self.pin_key = pin, key
         if announce:
-            self.announce_pin()
+            await self.announce_pin()
 
-    def announce_pin(self, extra=()) -> None:
+    async def announce_pin(self, extra=()) -> None:
         """`pinned` to everyone on Cả phố (and `extra` sockets): null to those who blocked its author."""
-        frame = dict(t='pinned', ch='town', pin=self.pin)
         conns = list(self.town.conns) + [c for c in extra if c not in self.town.conns and c.ready]
-        hid = [c for c in conns if self.pin and self.pin['pid'] in c.player.hidden]
-        self.hub.send_many([c for c in conns if c not in hid], frame)
-        if hid:
-            self.hub.send_many(hid, dict(frame, pin=None))
+        for c in conns:
+            self.hub.send(c, dict(t='pinned', ch='town', pin=await self.pin_for(c.player)))
 
     @on('pin', rate=(10, 60))
     async def pin_msg(self, conn, f):
@@ -269,7 +279,7 @@ class ChatFeature(Feature):
                               'ON CONFLICT(channel) DO UPDATE SET msg=excluded.msg, by_pid=excluded.by_pid, at=excluded.at',
                               (mid, p.pid, time.time()))
         await self.sync_pin(announce=False)
-        self.announce_pin(extra=[conn])
+        await self.announce_pin(extra=[conn])
         return None
 
     @on('unpin', rate=(10, 60))
@@ -277,7 +287,7 @@ class ChatFeature(Feature):
         self.need_admin(conn.player)
         await self.db.execute("DELETE FROM chat_pins WHERE channel='town'")
         await self.sync_pin(announce=False)
-        self.announce_pin(extra=[conn])
+        await self.announce_pin(extra=[conn])
         return None
 
     # ---- loading a player -----------------------------------------------------------------------------------
@@ -346,6 +356,9 @@ class ChatFeature(Feature):
             if m and m['hidden'] == 0 and m['pid'] not in p.hidden:
                 c['last'] = msg_frame(m)
             out.append(c)
+        previews = await chat_reply.project(self, p, [c['last'] for c in out if 'last' in c])
+        for c, preview in zip((c for c in out if 'last' in c), previews):
+            c['last'] = preview
         return out
 
     def friend_list(self, p) -> list:
@@ -401,10 +414,18 @@ class ChatFeature(Feature):
             if code is not None and await self.store_face(p, code):
                 self.announce_face(p, skip_conn=conn)
         conn.ext['chans'] = await self.chan_list(p)
+        conn.ext['reply_epoch'] = self.reply_epoch
 
     def welcome(self, conn) -> dict:
         p = conn.player
-        return dict(me=self.me(p), friends=self.friend_list(p), chans=conn.ext.pop('chans', []),
+        chans = conn.ext.pop('chans', [])
+        if conn.ext.pop('reply_epoch', self.reply_epoch) != self.reply_epoch:
+            # Other features may await after our on_hello, before welcome is written.
+            for channel in chans:
+                last = channel.get('last', {})
+                if last.get('reply'):
+                    last['reply'] = dict(id=last['reply']['id'], unavailable=True)
+        return dict(me=self.me(p), friends=self.friend_list(p), chans=chans,
                     limits=dict(town_every=self.cfg.town_every, town_len=self.cfg.town_len, text_len=self.cfg.text_len, group_max=self.cfg.group_max,
                                 admin_len=self.cfg.admin_len))
 
@@ -502,11 +523,37 @@ class ChatFeature(Feature):
             return
         self.hub.to_pids(c.members, frame, sender if c.kind == 'group' else None, skip)
 
+    async def deliver_message(self, c: Chan, frame, sender=None, skip=None) -> None:
+        """Project quotes for their recipient; keep the existing channel audience/block rules."""
+        if not frame.get('reply_to'):
+            self.send_to_chan(c, frame, sender=sender, skip=skip)
+            return
+        if c.kind == 'town':
+            targets = list(self.town.conns)
+        else:
+            targets = [conn for pid in c.members for conn in self.hub.conns_of(pid)]
+        by_player = {}
+        for conn in targets:
+            if conn is skip or not conn.ready:
+                continue
+            if sender and c.kind != 'dm' and (conn.player.pid in sender.hidden or sender.pid in conn.player.hidden):
+                continue
+            by_player.setdefault(conn.player, []).append(conn)
+        projected = await chat_reply.project_many(self, list(by_player), [frame])
+        for player, conns in by_player.items():
+            if sender and c.kind != 'dm' and (player.pid in sender.hidden or sender.pid in player.hidden):
+                continue
+            if c.kind != 'town' and player.pid not in c.members:
+                continue
+            if c.kind == 'town':
+                conns = [conn for conn in conns if conn in self.town.conns]
+            self.hub.send_many(conns, projected[player.pid][0])
+
     # ---- storing a message (also for phase 2/3 channels) -----------------------------------------------------
-    async def store_message(self, p, ch: str, text, limit: int, lines: int = 4, admin: bool = False) -> dict:
+    async def store_message(self, p, ch: str, text, limit: int, lines: int = 4, admin: bool = False, reply_to=None) -> dict:
         """Check, filter and insert one message by player p in channel ch; returns its `msg` frame.
-        Raises LiveError: text (empty/too long), name, muted, dup. admin=True (an admin on Cả phố): no mute,
-        no duplicate check, no masking; the row and the frame are marked adm=1."""
+        Repeated content is allowed. Raises LiveError: text (empty/too long), name, muted.
+        admin=True (an admin on Cả phố): no mute or masking; the row/frame are marked adm=1."""
         t = time.time()
         clean = filters.clean(text, limit, lines)
         if clean is None:
@@ -517,28 +564,26 @@ class ChatFeature(Feature):
             raise LiveError('account', 'Tạo tài khoản để chat nhé.')
         if not p.name:
             raise LiveError('name', 'Đặt tên nhân vật trước khi nhắn nhé.')
-        fp = filters.fingerprint(clean)
+        self.names.put(p.pid, p.name)
         if admin:
-            row = await self.db.fetchrow('INSERT INTO chat_messages(channel, pid, name, av, text, at, adm) VALUES(?, ?, ?, ?, ?, ?, 1) RETURNING id',
-                                         (ch, p.pid, p.name, p.av, clean, t))
-            p.recent.append((ch, fp, t))
-            return self._faced(p, dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=clean, at=round(t, 3), adm=1))
+            row = await self.db.fetchrow('INSERT INTO chat_messages(channel, pid, name, av, text, at, adm, reply_to) VALUES(?, ?, ?, ?, ?, ?, 1, ?) RETURNING id',
+                                         (ch, p.pid, p.name, p.av, clean, t, reply_to))
+            return self._faced(p, dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=clean, at=round(t, 3), adm=1,
+                                       **({'reply_to': reply_to} if reply_to else {})))
         if p.muted_until > t:
             raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
-        if any(c == ch and f == fp and t - at < DUP_SECS for c, f, at in p.recent):
-            raise LiveError('dup', 'Bạn vừa gửi câu này rồi.')
         masked = filters.mask(clean)
         raw = clean if masked != clean else None   # 🔎 what was typed, for the admin screen only (never sent to players)
         row = await self.db.fetchrow(
-            'INSERT INTO chat_messages(channel, pid, name, av, text, at, raw) SELECT ?, ?, ?, ?, ?, ?, ? '
+            'INSERT INTO chat_messages(channel, pid, name, av, text, at, raw, reply_to) SELECT ?, ?, ?, ?, ?, ?, ?, ? '
             'WHERE NOT EXISTS (SELECT 1 FROM chat_mutes WHERE pid=? AND until>?) RETURNING id',
-            (ch, p.pid, p.name, p.av, masked, t, raw, p.pid, t))
+            (ch, p.pid, p.name, p.av, masked, t, raw, reply_to, p.pid, t))
         if not row:
             until = await self.db.fetchval('SELECT until FROM chat_mutes WHERE pid=?', (p.pid,))
             p.muted_until = float(until or 0)
             raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
-        p.recent.append((ch, fp, t))
-        return self._faced(p, dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=masked, at=round(t, 3)))
+        return self._faced(p, dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=masked, at=round(t, 3),
+                                   **({'reply_to': reply_to} if reply_to else {})))
 
     # ---- 🙂 faces ---------------------------------------------------------------------------------------------
     @staticmethod
@@ -647,9 +692,14 @@ class ChatFeature(Feature):
         if type(after) is int and after > 0 and (not self.town.buffer or self.town.buffer[0]['id'] <= after + 1):
             msgs, inc = [m for m in self.town.buffer if m['id'] > after and m['pid'] not in p.hidden], True
         msgs = await self.without_hides(p, msgs)
+        msgs = await self.with_faces(await self.with_reacts(p, msgs))
+        pin = await self.pin_for(p, resolve=False)
+        projected = await chat_reply.project(self, p, msgs + ([pin] if pin else []))
+        msgs = projected[:len(msgs)]
+        pin = projected[-1] if pin is not None and self.pin is pin else None
         why, wait = self.can_town(p)
-        return dict(t='joined', ch='town', msgs=await self.with_faces(await self.with_reacts(p, msgs)), more=more, inc=inc, why=why, wait=round(wait, 1),
-                    n=len(self.town.players()), pin=self.pin_for(p))
+        return dict(t='joined', ch='town', msgs=msgs, more=more, inc=inc, why=why, wait=round(wait, 1),
+                    n=len(self.town.players()), pin=pin)
 
     @on('leave', rate=(20, 10))
     async def leave(self, conn, f):
@@ -659,11 +709,13 @@ class ChatFeature(Feature):
     @on('send', rate=(12, 10))
     async def send(self, conn, f):
         p, t = conn.player, time.time()
+        reply_to = chat_reply.reply_id(f)
         cid = f.get('cid') if isinstance(f.get('cid'), str) and len(f.get('cid')) <= 40 else None
         if f.get('to') is not None and f.get('ch') is None:
             c = await self.open_dm(p, f.get('to'))
         else:
             c = await self.member_chan(p, f.get('ch'))
+        await chat_reply.validate(self, p, c.id, reply_to)
         if c.kind == 'town':
             if not p.name or not p.account:
                 await self.refresh(p)   # a guest who just registered can post at once, no reconnect
@@ -678,28 +730,30 @@ class ChatFeature(Feature):
             if why == 'muted':
                 raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
             if admin:   # 📌 admins post freely: no slow mode, longer, links kept (owner, 01/10)
-                frame = await self.store_message(p, 'town', f.get('text'), self.cfg.admin_len, self.cfg.admin_lines, admin=True)
+                frame = await self.store_message(p, 'town', f.get('text'), self.cfg.admin_len, self.cfg.admin_lines, admin=True, reply_to=reply_to)
             else:
                 if wait > 0:
                     raise LiveError('slow', f'Cả phố: {self.cfg.town_every:g} giây một tin.', wait=round(wait, 1))
                 p.town_next = t + self.cfg.town_every          # before the await: a second tab cannot slip in
                 try:
-                    frame = await self.store_message(p, 'town', f.get('text'), self.cfg.town_len, 3)
+                    frame = await self.store_message(p, 'town', f.get('text'), self.cfg.town_len, 3, reply_to=reply_to)
                 except BaseException:
                     p.town_next = 0.0
                     raise
             self.town.buffer.append(frame)
             n = len({c.player.pid for c in self.town.conns})
-            self.town.send(dict(frame, n=n), sender=p, skip=conn)   # n: people on Cả phố now
-            self.hub.send(conn, dict(frame, cid=cid, wait=0 if admin else self.cfg.town_every, n=n))
+            await self.deliver_message(c, dict(frame, n=n), sender=p, skip=conn)   # n: people on Cả phố now
+            mine = (await chat_reply.project(self, p, [frame]))[0]
+            self.hub.send(conn, dict(mine, cid=cid, wait=0 if admin else self.cfg.town_every, n=n))
             return None
         if c.kind == 'dm':
             other = next((x for x in c.members if x != p.pid), None)
             if not other or not await self.friendship(p, other):
                 raise LiveError('not_friend', 'Hai bạn không còn là bạn bè, không nhắn riêng được nữa.')
-        frame = await self.store_message(p, c.id, f.get('text'), self.cfg.text_len, 12)
-        self.send_to_chan(c, frame, sender=p, skip=conn)
-        self.hub.send(conn, dict(frame, cid=cid, to=f.get('to')) if f.get('to') else dict(frame, cid=cid))
+        frame = await self.store_message(p, c.id, f.get('text'), self.cfg.text_len, 12, reply_to=reply_to)
+        await self.deliver_message(c, frame, sender=p, skip=conn)
+        mine = (await chat_reply.project(self, p, [frame]))[0]
+        self.hub.send(conn, dict(mine, cid=cid, to=f.get('to')) if f.get('to') else dict(mine, cid=cid))
         self.push_offline(c, p, frame)
         return None
 
@@ -757,7 +811,7 @@ class ChatFeature(Feature):
         msgs = [msg_frame(r) for r in reversed(rows[:PAGE]) if r['pid'] not in p.hidden]
         if not r:   # 😍 Cả phố, DMs, groups (not the street's bubbles)
             msgs = await self.with_reacts(p, await self.without_hides(p, msgs))
-        return dict(t='history', ch=ch, msgs=await self.with_faces(msgs), more=more, before=f.get('before'))
+        return dict(t='history', ch=ch, msgs=await chat_reply.project(self, p, await self.with_faces(msgs)), more=more, before=f.get('before'))
 
     @on('read', rate=(40, 10))
     async def read(self, conn, f):
@@ -826,6 +880,7 @@ class ChatFeature(Feature):
         await self.member_chan(p, row['channel'])
         await self.db.execute('INSERT INTO chat_hides(pid, msg, at) VALUES(?, ?, ?) ON CONFLICT(pid, msg) DO NOTHING', (p.pid, mid, time.time()))
         p.ext['hides'] = True
+        self.reply_epoch += 1
         self.hub.send_many([x for x in p.conns if x.ready], dict(t='hid', ch=row['channel'], id=mid))
         return None
 
@@ -856,6 +911,7 @@ class ChatFeature(Feature):
                 out[c.id] = upto
             return out
         done = await self.db.transaction(run)
+        self.reply_epoch += 1
         for c in cs:
             if done.get(c.id):
                 c.cleared[p.pid] = max(c.cleared.get(p.pid, 0), done[c.id])
@@ -864,6 +920,7 @@ class ChatFeature(Feature):
 
     async def gone(self, ch: str, mid: int, hidden: bool) -> None:
         """A message left everyone's screen: deleted by its author (the text is gone) or hidden (moderation)."""
+        self.reply_epoch += 1
         self.reacts.pop(mid, None)   # 😍 its reactions leave the screens with it (clients drop them on `deleted`)
         if ch == 'town':
             for m in list(self.town.buffer):
@@ -963,11 +1020,26 @@ class ChatFeature(Feature):
         p, other = conn.player, f.get('pid')
         if not isinstance(other, str) or not PID.fullmatch(other) or other == p.pid:
             raise LiveError('bad', 'Người chơi không hợp lệ.')
-        await self.db.execute('INSERT INTO blocks(pid, target, at) VALUES(?, ?, ?) ON CONFLICT(pid, target) DO NOTHING', (p.pid, other, time.time()))
+        from game.home_guests import LOCK_PAIR_SQL, pair_lock_key
+        from . import jsonx
+
+        async def block_pair(tx):
+            sid = await tx.fetchval("SELECT sid FROM accounts WHERE substring(encode(sha256(convert_to('pid:' || sid,'UTF8')),'hex'),1,16)=? LIMIT 1", (other,))
+            if sid:
+                await tx.execute(LOCK_PAIR_SQL, (pair_lock_key(p.sid, sid),))
+            await tx.execute('INSERT INTO blocks(pid, target, at) VALUES(?, ?, ?) ON CONFLICT(pid, target) DO NOTHING', (p.pid, other, time.time()))
+            if sid:
+                await tx.execute("UPDATE home_guest_invites SET status='revoked' WHERE status IN ('pending','accepted') AND ((owner=? AND guest=?) OR (owner=? AND guest=?))", (p.sid, sid, sid, p.sid))
+                for target in (p.sid, sid):
+                    await tx.execute("SELECT pg_notify('mnl_live',?)", (jsonx.dumps(dict(t='home_changed',sid=target)).decode(),))
+        await self.db.transaction(block_pair)
+        self.reply_epoch += 1
         p.hidden.add(other)
+        self.hub.send_many(self.hub.conns_of(p.pid), dict(t='reply_hidden', pid=other))
         o = self.hub.players.get(other)
         if o:
             o.hidden.add(p.pid)
+            self.hub.send_many(self.hub.conns_of(other), dict(t='reply_hidden', pid=p.pid))
             if p.announced:
                 self.hub.send_many([c for c in o.conns if c.ready], dict(t='presence', pid=p.pid, on=False))
         return dict(t='blocked', pid=other, on=True)
@@ -1103,6 +1175,7 @@ class ChatFeature(Feature):
         if x == p.pid or x not in c.members:
             raise LiveError('bad', 'Người này không ở trong nhóm.')
         await self.db.execute('DELETE FROM chat_members WHERE channel=? AND pid=?', (c.id, x))
+        self.reply_epoch += 1
         c.members.pop(x, None)
         self.hub.send_many(self.hub.conns_of(x), dict(t='unchan', ch=c.id))
         self._push_chan(c)
@@ -1125,6 +1198,7 @@ class ChatFeature(Feature):
                 return nxt['pid'] if nxt else None
             return c.owner
         c.owner = await self.db.transaction(run)
+        self.reply_epoch += 1
         c.members.pop(p.pid, None)
         self.hub.send_many([x for x in p.conns if x.ready], dict(t='unchan', ch=c.id))
         self._push_chan(c)
@@ -1249,13 +1323,57 @@ class ChatFeature(Feature):
             rows = await self.db.fetch('SELECT * FROM chat_messages WHERE channel=? AND id>? AND hidden=0 ORDER BY id LIMIT ?',
                                        (c.id, max(after, c.cleared.get(p.pid, 0)), RESUME + 1))
             msgs = await self.without_hides(p, [msg_frame(r) for r in rows[:RESUME] if r['pid'] not in p.hidden])
-            msgs = await self.with_faces(await self.with_reacts(p, msgs))
+            msgs = await chat_reply.project(self, p, await self.with_faces(await self.with_reacts(p, msgs)))
             self.hub.send(conn, dict(t='missed', ch=c.id, msgs=msgs, more=len(rows) > RESUME))
 
     # ---- admin events (game/live_chat.py NOTIFY) -------------------------------------------------------------
+    async def renamed(self, sid):
+        """Publish only the public identity; the account name comes from the committed profile."""
+        ident = await profile(self.db, sid)
+        if not ident or not ident.name:
+            return
+        pid, name = ident.pid, ident.name
+        self.names.put(pid, name)
+        player = self.hub.players.get(pid)
+        if player:
+            player.name = name
+            for conn in player.conns:
+                for room in conn.rooms:
+                    resident = room.data.get('people', {}).get(pid)
+                    if isinstance(resident, dict) and 'name' in resident:
+                        resident['name'] = name  # shared-home snapshots for later entrants
+        for other in self.hub.players.values():
+            if pid in other.friends:
+                other.friends[pid]['name'] = name
+        for message in self.town.buffer:
+            if message['pid'] == pid:
+                message['name'] = name
+        if self.pin and self.pin['pid'] == pid:
+            self.pin['name'] = name
+        # Friends, current DM/group peers, and people sharing an active room can see the label.
+        peers = {r['pid'] for r in await self.db.fetch(
+            'SELECT DISTINCT peer.pid FROM chat_members mine JOIN chat_members peer ON peer.channel=mine.channel WHERE mine.pid=?', (pid,))}
+        peers.add(pid)
+        conns = set(self.town.conns)
+        for other in self.hub.players.values():
+            if other.pid in peers or pid in other.friends:
+                conns.update(c for c in other.conns if c.ready)
+        if player:
+            for conn in player.conns:
+                for room in conn.rooms:
+                    conns.update(c for c in room.conns if c.ready)
+        # Read both block systems now, including changes made through the game HTTP API.
+        from types import SimpleNamespace
+        visibility = SimpleNamespace(pid=pid, sid=sid, hidden=set())
+        await self.load_hidden(visibility)
+        conns = [c for c in conns if c.ready and c.player.pid not in visibility.hidden and pid not in c.player.hidden]
+        self.hub.send_many(conns, dict(t='renamed', pid=pid, name=name))
+
     async def on_notify(self, e: dict):
         op = e.get('op')
-        if op == 'hide' and type(e.get('id')) is int and isinstance(e.get('ch'), str):
+        if op == 'name' and isinstance(e.get('sid'), str) and re.fullmatch(r'[0-9a-f]{64}', e['sid']):
+            await self.renamed(e['sid'])
+        elif op == 'hide' and type(e.get('id')) is int and isinstance(e.get('ch'), str):
             await self.gone(e['ch'], e['id'], hidden=True)
         elif op == 'unhide' and type(e.get('id')) is int:
             r = await self.db.fetchrow('SELECT * FROM chat_messages WHERE id=? AND hidden=0', (e['id'],))
@@ -1269,11 +1387,22 @@ class ChatFeature(Feature):
                         self.town.buffer.extend(items[-self.cfg.buffer:])
                 c = await self.chan(r['channel']) if kind_of(r['channel']) in ('town', 'dm', 'group') else Chan(r['channel'], kind_of(r['channel']))
                 if c:
-                    self.send_to_chan(c, frame)
+                    await self.deliver_message(c, frame)
         elif op == 'pin':   # scripts/chat_pin.py on PostgreSQL
             await self.sync_pin()
         elif op == 'face' and isinstance(e.get('pid'), str):   # 🙂 a player deleted their data (game/live_chat.py forget)
+            self.reply_epoch += 1
+            self.names.put(e['pid'], '')
             self.faces.put(e['pid'], '')
+            # Account erasure emits this event: invalidate existing quotes on every open screen,
+            # while new pages always re-read the source's deleted flag from the database.
+            self.hub.send_many([c for c in self.hub.conns if c.ready], dict(t='reply_hidden', pid=e['pid']))
+            for m in self.town.buffer:
+                if m['pid'] == e['pid']:
+                    m['text'], m['del'] = '', 1
+                    m.pop('reply_to', None)
+            self.chans.clear()  # the erased player was removed from chat_members
+            await self.sync_pin()
             p = self.hub.players.get(e['pid'])
             if p:
                 p.fc = None
@@ -1300,6 +1429,15 @@ class ChatFeature(Feature):
                 p = self.hub.players.get(pid)
                 if p:
                     p.muted_until = got.get(pid, 0.0)
+        known = {p.pid: (p.sid, p.name) for p in self.hub.players.values()}
+        for p in self.hub.players.values():
+            for pid, friend in p.friends.items():
+                known.setdefault(pid, (friend['sid'], friend['name']))
+        self.names.clear()
+        current = await player_names.names_of(self, known)
+        for pid, (sid, old_name) in known.items():
+            if current.get(pid) and current[pid] != old_name:
+                await self.renamed(sid)
 
     # ---- Cả phố keeps its newest TOWN_KEEP messages -------------------------------------------------------------
     async def tick(self, now: float):

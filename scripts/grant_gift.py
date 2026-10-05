@@ -14,7 +14,7 @@ for a different save, amount or text is refused. Without --id the id is derived 
 the coins and the words, so an exact repeat is a no-op too. --user <username> finds the sid of
 an account. Coins: 1..100000; above 1000 also pass --large.
 
-With DATABASE_URL set (PostgreSQL, see docs/POSTGRES.md) --db is ignored. The table comes with
+DATABASE_URL is required (PostgreSQL, see docs/POSTGRES_ONLY.md). The table comes with
 the release (schema 4); on PostgreSQL the tool refuses to run before that release is live.
 """
 from __future__ import annotations
@@ -67,7 +67,7 @@ def describe(store: Store, sid: str) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--db', default=os.environ.get('GAME_DB', str(ROOT / 'storage' / 'game.sqlite3')))
+    ap.add_argument('--namespace', default=os.environ.get('GAME_NAMESPACE', str(ROOT / 'storage' / 'game')), help='PostgreSQL test namespace (default: GAME_NAMESPACE)')
     who = ap.add_mutually_exclusive_group(required=True)
     who.add_argument('--sid', help='the save (sessions.sid)')
     who.add_argument('--user', help='an account username: its save')
@@ -80,11 +80,10 @@ def main() -> int:
     a = ap.parse_args()
     if a.coins > sg.LARGE and not a.large:
         sys.exit(f'Không ghi gì: {a.coins} xu lớn hơn {sg.LARGE}. Đúng số này thì thêm --large.')
-    if not dbm.database_url() and not Path(a.db).exists():
-        sys.exit(f'Không thấy cơ sở dữ liệu: {a.db}')
-    if not _table_ready(a.db):
+    dbm.database_url()  # requires PostgreSQL; no file fallback
+    if not _table_ready(a.namespace):
         sys.exit('Chưa có bảng system_gifts: bản phát hành có quà chưa chạy trên máy chủ này. Không ghi gì.')
-    store = Store(a.db, story=True)
+    store = Store(a.namespace, story=True)
     sid = a.sid
     if a.user:
         with store.connect() as db:

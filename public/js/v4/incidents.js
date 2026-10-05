@@ -33,7 +33,11 @@ const verdict=g=>g===true?['good','Xử lý đúng mực']:g===false?['bad','Đ�
 
 function trustMeter(box){
   const t=Math.max(0,Math.min(100,box.trust|0));
-  return `<div class="inc-meter" role="img" aria-label="Uy tín với khu phố: ${t} trên 100, ${esc(box.trust_name)}"><div class="row spread"><b>${icon('shield',15)} Uy tín với khu phố</b><span>${esc(box.trust_name)}</span></div><div class="inc-bar"><i style="width:${Math.max(4,t)}%"></i></div></div>`;
+  return `<div class="inc-meter" role="img" aria-label="Uy tín với khu phố: ${t} trên 100, ${esc(box.trust_name)}"><div class="row spread"><b>${icon('shield',15)} Uy tín với khu phố</b><span>${esc(box.trust_name)}</span></div><div class="inc-bar"><i style="width:${Math.max(4,t)}%"></i></div></div>
+    <details class="small space-top"><summary>Khôi phục uy tín thế nào?</summary>
+      <p>Uy tín này đổi theo cách xử lý những Chuyện đời mới ở nơi đang làm. Trả lại đồ nhặt được, hợp tác hoặc xử lý hậu quả đúng mực có thể tăng điểm; kết quả sẽ ghi mức tăng hoặc giảm. Bỏ dở việc có thể làm giảm uy tín.</p>
+      <p>Tình làng nghĩa xóm là chỉ số riêng. Trò chuyện, nhậu, karaoke và Nhớ lại chuyện cũ không tăng uy tín này.</p>
+      ${btn('🏮 Xem Tình làng nghĩa xóm','incNeighbours',{},'ghost small')}</details>`;
 }
 
 function decisionView(x){
@@ -94,6 +98,7 @@ export async function incidentAction(action,data,el,env){
   const {ui,openSheet,cmd,confirmAction,renderSheet}=env;
   switch(action){
     case'incident':case'incLog':ui.incResult=null;openSheet('incident');return true;
+    case'incNeighbours':openSheet('home',{jrView:'life'});return true;
     case'incChoose':{
       const box=env.api.state.careers[env.api.state.current].incidents,x=box?.active;if(!x||x.id!==data.id)return true;
       const o=x.options.find(v=>v.id===data.option);if(!o)return true;

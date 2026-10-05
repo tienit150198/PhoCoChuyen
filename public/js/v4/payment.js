@@ -7,7 +7,7 @@ export function paymentChoices(J,cost,joint=null,{noJoint=false,noCredit=false,e
     option('cash','Tiền lương / ví',J?.wallet,true),
     option('account','Chuyển khoản từ tài khoản ngân hàng',b?.balance,!!b?.open),
     ...(!noCredit?[option('card','Thẻ tín dụng',c?.available,!!c,c?.locked||'')]:[]),
-    ...(!noJoint?[option('joint','Quỹ chung vợ chồng',Math.min(joint?.balance||0,joint?.daily_left||0),!!joint, joint&&joint.daily_left<cost?'Vượt hạn mức quỹ chung trong 24 giờ.':'')]:[])];
+    ...(!noJoint?[option('joint','Quỹ chung vợ chồng',joint?.balance||0,!!joint)]:[])];
 }
 export async function confirmPurchase(env,{title,message='',label='Thanh toán',cost,noJoint=false,noCredit=false,extraSources=[],defaultMethod}={}){
   const J=env.api.state.journey;

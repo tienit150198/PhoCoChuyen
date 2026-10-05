@@ -45,7 +45,6 @@ import threading
 import time
 from collections import OrderedDict
 
-from . import db as dbm
 from . import lb_titles as lbt   # 🏅 Danh hiệu tuần (the top of each board, refreshed daily)
 from . import fair as fh          # 🏮 Hội chợ dân gian: its board (fh.board()) while it runs
 from .content import CAREERS
@@ -61,21 +60,6 @@ GUEST_DEFAULT = 0           # guests are hidden until they opt in (privacy polic
 XP_PER_LEVEL = 90
 MASTER_LEVEL = 3            # the career titles are earned at level 3
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS leaderboard (
-  sid TEXT NOT NULL, board TEXT NOT NULL,
-  score INTEGER NOT NULL, k1 INTEGER NOT NULL, k2 INTEGER NOT NULL,
-  level INTEGER NOT NULL, days INTEGER NOT NULL, served INTEGER NOT NULL,
-  stars INTEGER NOT NULL, mastered INTEGER NOT NULL,
-  since REAL NOT NULL, updated REAL NOT NULL,
-  PRIMARY KEY(sid, board)
-);
-CREATE INDEX IF NOT EXISTS leaderboard_rank ON leaderboard(board, score DESC, k1 DESC, k2 DESC, since, sid);
-CREATE TABLE IF NOT EXISTS leaderboard_players (
-  sid TEXT PRIMARY KEY, name TEXT, show INTEGER, updated REAL NOT NULL DEFAULT 0
-);
-CREATE TABLE IF NOT EXISTS leaderboard_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);
-"""
 
 # score, k1, k2, level, days, served, stars (x10), mastered
 _FIELDS = ('score', 'k1', 'k2', 'level', 'days', 'served', 'stars', 'mastered')
@@ -233,12 +217,9 @@ _UPSERT = ("INSERT INTO leaderboard(sid,board,score,k1,k2,level,days,served,star
            "score=excluded.score,k1=excluded.k1,k2=excluded.k2,level=excluded.level,days=excluded.days,served=excluded.served,"
            "stars=excluded.stars,mastered=excluded.mastered,updated=excluded.updated "
            "WHERE (leaderboard.score,leaderboard.k1,leaderboard.k2,leaderboard.level,leaderboard.days,leaderboard.served,leaderboard.stars,leaderboard.mastered)"
-           " IS NOT (excluded.score,excluded.k1,excluded.k2,excluded.level,excluded.days,excluded.served,excluded.stars,excluded.mastered)")
+           " IS DISTINCT FROM (excluded.score,excluded.k1,excluded.k2,excluded.level,excluded.days,excluded.served,excluded.stars,excluded.mastered)")
 _NAME = ("INSERT INTO leaderboard_players(sid,name,updated) VALUES(?,?,?) ON CONFLICT(sid) DO UPDATE SET name=excluded.name,updated=excluded.updated "
-         "WHERE leaderboard_players.name IS NOT excluded.name")
-# PostgreSQL spells SQLite's null-safe "a IS NOT b" as "a IS DISTINCT FROM b".
-_UPSERT_PG = _UPSERT.replace(' IS NOT (', ' IS DISTINCT FROM (')
-_NAME_PG = _NAME.replace(' IS NOT excluded.', ' IS DISTINCT FROM excluded.')
+         "WHERE leaderboard_players.name IS DISTINCT FROM excluded.name")
 
 
 def write(db, sid: str, rows: dict, now: float | None = None) -> None:
@@ -249,13 +230,12 @@ def write(db, sid: str, rows: dict, now: float | None = None) -> None:
         return
     now = time.time() if now is None else now
     boards = [b for b in rows if b != NAME]
-    pg = dbm.is_pg(db)
     for b in boards:
-        db.execute(_UPSERT_PG if pg else _UPSERT, (sid, b, *rows[b], now, now))
+        db.execute(_UPSERT, (sid, b, *rows[b], now, now))
     marks = ','.join('?' * len(boards))
     db.execute(f"DELETE FROM leaderboard WHERE sid=? AND board NOT IN ({marks})" if boards else "DELETE FROM leaderboard WHERE sid=?", (sid, *boards))
     if NAME in rows:
-        db.execute(_NAME_PG if pg else _NAME, (sid, rows[NAME], now))
+        db.execute(_NAME, (sid, rows[NAME], now))
 
 
 def forget(db, sids) -> None:
@@ -313,11 +293,11 @@ def backfill(store, stop: threading.Event | None = None, batch: int = 40, pause:
         if not force and _meta(db, 'backfill') == str(VERSION):
             return 0
     done = 0
-    # Walk the saves in key order: SQLite by rowid, PostgreSQL (no rowid) by sid.
-    order = 'sid' if getattr(store, 'pg', None) else 'rowid'
+    # Walk the saves in primary-key order so each batch resumes without a table scan.
+    order = 'sid'
     for accounts_first in (True, False):
         cond = "sid IN (SELECT sid FROM accounts)" if accounts_first else "sid NOT IN (SELECT sid FROM accounts)"
-        last = '' if order == 'sid' else 0
+        last = ''
         while True:
             if stop is not None and stop.is_set():
                 return done
@@ -365,7 +345,7 @@ def run_backfill(store, stop: threading.Event | None = None) -> None:
 
 
 # ---------------------------------------------------------------- reading
-# Integers only (no boolean inside the CASE), so SQLite and PostgreSQL read it the same way.
+# Keep integer flags inside the CASE to match the PostgreSQL column types.
 _VISIBLE = ("(CASE WHEN a.uid IS NOT NULL THEN COALESCE(p.show,1) "
             f"WHEN p.name IS NOT NULL THEN COALESCE(p.show,{int(GUEST_DEFAULT)}) ELSE 0 END)=1")
 _FROM = "FROM leaderboard l LEFT JOIN accounts a ON a.sid=l.sid LEFT JOIN leaderboard_players p ON p.sid=l.sid"
@@ -535,4 +515,3 @@ def export_rows(store, sid: str) -> list:
     """Every row of one save (tests and support tools)."""
     with store.connect() as db:
         return [dict(r) for r in db.execute("SELECT * FROM leaderboard WHERE sid=? ORDER BY board", (sid,))]
-

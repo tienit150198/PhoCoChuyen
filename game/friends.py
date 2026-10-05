@@ -14,7 +14,7 @@
 * "Cho phép tìm tôi bằng tên đăng nhập" (default on) only hides the username search; a code you
   shared still works.
 
-Tables (created with game/marriage.SCHEMA): friend_prefs, friend_requests, friends (one row per
+Tables (created with game/pg_schema.py): friend_prefs, friend_requests, friends (one row per
 direction), friend_searches.
 """
 from __future__ import annotations
@@ -172,8 +172,8 @@ def _befriend(db, a: str, b: str, rid: int | None) -> None:
     t = mr.now()
     if rid:
         db.execute("UPDATE friend_requests SET status='accepted',decided=? WHERE id=?", (t, rid))
-    db.execute('INSERT OR IGNORE INTO friends(sid,friend,since) VALUES(?,?,?)', (a, b, t))
-    db.execute('INSERT OR IGNORE INTO friends(sid,friend,since) VALUES(?,?,?)', (b, a, t))
+    db.execute('INSERT INTO friends(sid,friend,since) VALUES(?,?,?) ON CONFLICT DO NOTHING', (a, b, t))
+    db.execute('INSERT INTO friends(sid,friend,since) VALUES(?,?,?) ON CONFLICT DO NOTHING', (b, a, t))
     db.execute("UPDATE friend_requests SET status='cancelled',decided=? WHERE status='pending' AND ((from_sid=? AND to_sid=?) OR (from_sid=? AND to_sid=?))",
                (t, a, b, b, a))
 
@@ -217,18 +217,24 @@ def _by_code(db, sid: str, d: dict) -> str:
 def unfriend(store, sid: str, display: str, d: dict) -> dict:
     def run(db):
         other = _by_code(db, sid, d)
+        from . import home_guests
+        home_guests.lock_pair(db,sid,other)
         c = mr._bond(db, sid)
         mr.need(not (c and other in (c['a'], c['b'])), 'Hai bạn đang là một đôi. Muốn dừng lại thì dùng mục Hôn nhân nhé.', 'spouse', 409)
         db.execute('DELETE FROM friends WHERE (sid=? AND friend=?) OR (sid=? AND friend=?)', (sid, other, other, sid))
+        home_guests.invalidate(db,sid)
         return mr._display(db, other)
     name = store.transaction(run)
     return dict(message=f'Đã hủy kết bạn với {name}.', changed=False)
 
 
 def _block_db(db, sid: str, other: str) -> None:
+    from . import home_guests
+    home_guests.lock_pair(db,sid,other)
     t = mr.now()
-    db.execute('INSERT OR IGNORE INTO marriage_blocks(sid,target,at) VALUES(?,?,?)', (sid, other, t))
+    db.execute('INSERT INTO marriage_blocks(sid,target,at) VALUES(?,?,?) ON CONFLICT DO NOTHING', (sid, other, t))
     db.execute('DELETE FROM friends WHERE (sid=? AND friend=?) OR (sid=? AND friend=?)', (sid, other, other, sid))
+    home_guests.invalidate(db,sid)
     db.execute("UPDATE friend_requests SET status='declined',decided=? WHERE status='pending' AND ((from_sid=? AND to_sid=?) OR (from_sid=? AND to_sid=?))",
                (t, sid, other, other, sid))
     for q in _rows(db, "SELECT id,ring FROM proposals WHERE status='pending' AND ((from_sid=? AND to_sid=?) OR (from_sid=? AND to_sid=?))", (sid, other, other, sid)):

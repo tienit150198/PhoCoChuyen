@@ -58,3 +58,10 @@ assert.equal(overlaps,0,'buildings overlap');
 assert.equal(Object.keys(W.marks).length,Object.keys(nodes).length,'every stop has its building');
 assert.ok(W.houses.every(h=>Number.isInteger(h.no)&&h.no>0),'every house has its number');
 console.log(`ok: ${Object.keys(nodes).length} stops, ${legs} legs ridden by the arrow, ${boxes.length} buildings`);
+
+assert.ok(W.gardens.length>=6,'visible garden pockets break up house rows');
+for(const g of W.gardens){
+ assert.ok(!onRoad((g.x0+g.x1)/2,(g.y0+g.y1)/2,-3),'garden is inside its block');
+ for(const b of boxes)assert.ok(g.x1<=b.x0+.01||g.x0>=b.x1-.01||g.y1<=b.y0+.01||g.y0>=b.y1-.01,'garden clear of buildings');
+}
+for(const p of W.props)assert.ok(!onRoad((p.x0+p.x1)/2,(p.y0+p.y1)/2,0),'street furniture clear of roads');

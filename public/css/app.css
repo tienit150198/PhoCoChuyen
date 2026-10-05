@@ -237,7 +237,10 @@ button.chip{min-height:40px;padding:6px 14px;font-weight:700;transition:backgrou
 #app{position:relative;display:grid;height:100vh;height:100dvh;min-height:420px;overflow:hidden;background:var(--bg)}
 .brand{grid-area:brand;display:grid;place-items:center;background:var(--surface);border-right:1px solid var(--line);border-bottom:1px solid var(--line);z-index:6}
 .brand img{width:54px;height:54px;border-radius:14px;box-shadow:var(--shadow-sm);transition:transform var(--dur) var(--ease)}
-@media (hover:hover){.brand:hover img{transform:rotate(-6deg) scale(1.04)}}
+/* Game art is not a draggable/long-press image preview. Keep touch scrolling and pinch zoom. */
+img,canvas{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
+img{touch-action:manipulation}
+[data-drag-card] img{-webkit-user-drag:auto}
 
 /* Top bar: day · till · rating · social · settings */
 .topbar{grid-area:top;display:flex;align-items:center;gap:12px;min-width:0;padding:0 16px 0 14px;background:var(--surface);border-bottom:1px solid var(--line);z-index:6}
@@ -1614,7 +1617,8 @@ a,summary,label,select,input,textarea,[data-action],[data-command]{touch-action:
 /* Phone sheets cover the stage: no full-screen backdrop blur (re-blurred on every canvas frame). */
 html[data-layout="phone"] .sheet::backdrop{backdrop-filter:none;-webkit-backdrop-filter:none}
 /* The phone sheet head is the drag handle (drag down to close, app.js): the browser must not pan it. */
-html[data-layout="phone"] .sheet .sheet-head,html[data-layout="phone"] .sheet .home-top{touch-action:none}
+/* Titles stay scrollable: a swipe cancelled by native scrolling must not dismiss the sheet. */
+html[data-layout="phone"] .sheet .sheet-head,html[data-layout="phone"] .sheet .home-top{touch-action:pan-y pinch-zoom}
 /* Phone and any coarse pointer: 44px targets, 16px inputs (no iOS zoom). */
 html[data-layout="phone"] input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]),html[data-layout="phone"] select,html[data-layout="phone"] textarea,html[data-layout="phone"] .input{font-size:16px;min-height:44px}
 @media (pointer:coarse){
@@ -2389,6 +2393,7 @@ html[data-layout="phone"] .cozy-till strong span{display:inline}
 .scene-mark,html[data-layout="phone"] .scene-mark{width:30px;height:30px;border-radius:9px;box-shadow:none;font-size:1.05rem}
 .scene-heading h1,html[data-layout="phone"] .scene-heading h1{font-size:.967rem;font-weight:700;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .scene-heading .eyebrow,.scene-heading p,.scene-badge,.ambient-caption{display:none}
+.scene-heading .career-switch{pointer-events:auto;flex-shrink:0}
 html[data-layout="desktop"] .scene-heading{top:14px;left:18px}
 .scene-hint{box-shadow:none;background:color-mix(in srgb,var(--surface) 80%,transparent)}
 html:not(.reduce-motion) .scene-hint:not(:empty){animation:calm-fade 1s ease 8s forwards}
@@ -2709,3 +2714,17 @@ html[data-layout="phone"] .calm-what b{flex:1 1 auto;line-height:1.25}
 .amt-note:empty{display:none}
 .amt-note.bad{color:var(--warn)}
 input.amt-unread{border-color:var(--warn)!important;border-style:dashed!important}
+.shop-event-card{padding:16px;margin:0 0 16px;border:1px solid var(--line-strong);border-radius:18px;background:var(--surface);color:var(--ink);overflow-wrap:anywhere}
+.shop-event-card header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.shop-event-card h3{margin:10px 0 6px;font-size:1.1rem}
+.shop-event-card p{line-height:1.5}
+.shop-event-choices{display:grid;gap:8px;margin-top:12px}
+.shop-event-choice.btn{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;width:100%;min-height:56px;text-align:left;white-space:normal;padding:10px 14px;gap:4px}
+.shop-event-choice small{font-size:.8rem;font-weight:400;line-height:1.4}
+.shop-event-history{margin-top:12px;font-size:.85rem}
+.shop-event-history summary{cursor:pointer;padding:8px 0}
+.rental-card{border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0;background:var(--surface)}
+.rental-card h3{font-size:1rem;margin:0 0 8px}
+.rental-price{display:grid;gap:6px;margin:10px 0}
+.rental-price input{max-width:100%;width:100%;min-height:44px;border:1px solid var(--line-strong);border-radius:10px;padding:10px;background:var(--surface);color:var(--ink)}
+.rental-news{border-left:3px solid var(--accent);padding:8px 12px;background:var(--surface-2);font-size:.85rem;line-height:1.4}

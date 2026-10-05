@@ -1,0 +1,88 @@
+{
+  "style": "reference-cozy-2.5d",
+  "assets": [
+    {
+      "id": "character-male",
+      "url": "/icons/cozy-v2/character-male.webp",
+      "width": 1024,
+      "height": 768,
+      "bytes": 160034,
+      "columns": 4,
+      "rows": 3
+    },
+    {
+      "id": "character-female",
+      "url": "/icons/cozy-v2/character-female.webp",
+      "width": 1024,
+      "height": 768,
+      "bytes": 167526,
+      "columns": 4,
+      "rows": 3
+    },
+    {
+      "id": "pharmacy",
+      "url": "/icons/cozy-v2/pharmacy.webp",
+      "width": 720,
+      "height": 707,
+      "bytes": 140554
+    },
+    {
+      "id": "mother-baby",
+      "url": "/icons/cozy-v2/mother-baby.webp",
+      "width": 720,
+      "height": 800,
+      "bytes": 194102
+    },
+    {
+      "id": "garage",
+      "url": "/icons/cozy-v2/garage.webp",
+      "width": 720,
+      "height": 682,
+      "bytes": 147594
+    },
+    {
+      "id": "pho",
+      "url": "/icons/cozy-v2/pho.webp",
+      "width": 720,
+      "height": 702,
+      "bytes": 162778
+    },
+    {
+      "id": "leisure-lake",
+      "url": "/icons/cozy-v2/leisure-lake.webp",
+      "width": 960,
+      "height": 600,
+      "bytes": 157064
+    },
+    {
+      "id": "leisure-pool",
+      "url": "/icons/cozy-v2/leisure-pool.webp",
+      "width": 960,
+      "height": 600,
+      "bytes": 163976
+    },
+    {
+      "id": "boat",
+      "url": "/icons/cozy-v2/boat.webp",
+      "width": 240,
+      "height": 559,
+      "bytes": 34896
+    },
+    {
+      "id": "fishing-actions",
+      "url": "/icons/cozy-v2/fishing-actions.webp",
+      "width": 1024,
+      "height": 768,
+      "bytes": 165656,
+      "columns": 4,
+      "rows": 2
+    },
+    {
+      "id": "fish",
+      "url": "/icons/cozy-v2/fish.webp",
+      "width": 256,
+      "height": 214,
+      "bytes": 15820
+    }
+  ]
+}

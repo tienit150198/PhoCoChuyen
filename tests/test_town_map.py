@@ -83,6 +83,12 @@ class ClosedAndLocked(unittest.TestCase):
         self.assertIn("act('📋 Danh sách','jrList'", WALK)
 
     @unittest.skipUnless(shutil.which('node'), 'node not installed')
+    def test_navigation_controls(self):
+        out = subprocess.run([shutil.which('node'), str(ROOT / 'tests' / 'delivery_town_navigation.mjs')], cwd=ROOT,
+                             capture_output=True, text=True, encoding='utf-8', timeout=30)
+        self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+
+    @unittest.skipUnless(shutil.which('node'), 'node not installed')
     def test_walking_the_town(self):
         out = subprocess.run([shutil.which('node'), str(ROOT / 'scripts' / 'check_town_walk.mjs')], cwd=ROOT, capture_output=True,
                              text=True, encoding='utf-8', timeout=240)

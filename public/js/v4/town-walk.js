@@ -30,12 +30,21 @@ const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 
 const W={env:null,h:null,el:null,cv:null,c:null,where:null,whereText:'',card:null,pl:null,bg:null,bgKey:'',bs:1,k:1,cw:0,ch:0,dpr:1,
   cam:{x:0,y:0},free:false,me:null,raf:0,last:0,time:0,drawn:0,down:null,at:'',lastCur:undefined,look:null,st:null,stKey:'',
-  sprite:null,spriteKey:'',ok:null,hooked:false,frames:[],
+  sprite:null,spriteKey:'',ok:null,hooked:false,frames:[],zoom:1,destination:'',destinationKey:'',
   ride:null,rideKey:'',rv:rider(),park:null,legs:[],leg:null,btn:null};
 
 /* ------------------------------------------------------------ what the town shows */
 const S=()=>W.env.api.state;
 const meta=id=>W.env.api.content.catalogue.find(m=>m.id===id)||{id,short:id,place:id};
+/** Only destinations this save can visit are offered by the route chooser. */
+export function destinations(items,state){
+  return items.flatMap(it=>{const s=state(it);return s.off||s.lock?[]:[{key:it.key,label:`${s.emoji||'📍'} ${s.name}`}];});
+}
+/** Join the current leg and queued road legs; no straight line through buildings. */
+export function remainingPath(me,legs){
+  if(!me?.path?.length)return [];
+  return [[me.x,me.y],...me.path,...legs.flatMap(g=>(g.preview||[]).slice(1))];
+}
 /** Every career this save has, in catalogue order. */
 const careerIds=()=>W.env.api.content.catalogue.map(m=>m.id).filter(id=>S().careers[id]);
 const CH1=()=>(W.env.api.content.journey?.chapters?.[0]?.unlocks||[]);
@@ -85,8 +94,9 @@ export function townHTML(env,h){
   const close=s.current?`<button type="button" class="icon-btn tw-close" data-action="close" aria-label="Đóng">${icon('x',20)}</button>`:'';
   const day=J.story?`<small>Ngày sống ${fmt(J.life_day)}</small>`:'';
   const hint=g.fresh?`<p class="tw-hint" role="status"><span aria-hidden="true">👉</span> Đi tới một tiệm đang sáng để làm</p>`:'';
+  const goals=J.story&&h.chapterCard?`<div class="tw-goals">${h.chapterCard(env,{compact:true})}</div>`:'';
   return `<div class="tw-home"><header class="tw-top home-top"><div class="tw-title"><h2>Khu phố</h2>${day}</div>${x3}
-    <button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button>${close}</header>${hint}
+    <button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button>${close}</header>${goals}${hint}
     <div class="tw-slot" data-tw-slot><i class="tw-end" hidden></i></div></div>`;
 }
 /** Can this browser draw it? (else the list shows, as before) */
@@ -98,9 +108,22 @@ export function townOK(){
 /* ------------------------------------------------------------ the stage */
 function build(){
   const el=document.createElement('div');el.className='tw-stage';el.setAttribute('data-morph-keep','');
-  el.innerHTML=`<canvas class="tw-canvas" tabindex="0" role="img"></canvas><div class="tw-where" aria-hidden="true"></div><button type="button" class="rd-toggle" hidden></button><div class="tw-card" hidden></div>`;
+  el.innerHTML=`<canvas class="tw-canvas" tabindex="0" role="img"></canvas>
+    <form class="tw-route-picker"><select aria-label="${esc(tr('Chọn điểm đến'))}"></select><button type="submit">${esc(tr('Chỉ đường'))}</button></form>
+    <div class="tw-where" aria-live="polite"></div><button type="button" class="rd-toggle" hidden></button>
+    <div class="tw-map-tools" role="group" aria-label="${esc(tr('Độ phóng bản đồ'))}"><button type="button" data-tw-zoom="out" aria-label="${esc(tr('Thu nhỏ bản đồ'))}">−</button><output>100%</output><button type="button" data-tw-zoom="in" aria-label="${esc(tr('Phóng to bản đồ'))}">+</button><button type="button" data-tw-zoom="me" aria-label="${esc(tr('Về vị trí của bạn'))}">◎</button></div>
+    <div class="tw-card" hidden></div>`;
   W.el=el;W.cv=el.querySelector('canvas');W.c=W.cv.getContext('2d');W.where=el.querySelector('.tw-where');W.card=el.querySelector('.tw-card');
   W.btn=el.querySelector('.rd-toggle');W.btn.addEventListener('click',()=>{nextRide(S(),W.env.api.content);setRide();});
+  el.querySelector('.tw-route-picker').addEventListener('submit',e=>{
+    e.preventDefault();const key=el.querySelector('.tw-route-picker select').value,it=W.pl.items.find(it=>it.key===key);
+    if(it&&!W.st(it).off&&!W.st(it).lock)goItem(it,true);
+  });
+  for(const button of el.querySelectorAll('[data-tw-zoom]'))button.addEventListener('click',()=>{
+    const action=button.dataset.twZoom;
+    if(action!=='me')W.zoom=Math.max(.65,Math.min(2,W.zoom*(action==='in'?1.25:1/1.25)));
+    W.free=false;size();
+  });
   W.cv.setAttribute('aria-label',tr('Khu phố: chạm vào một nơi để đi tới. Mũi tên để đi, Enter để vào.'));
   W.cv.addEventListener('pointerdown',down);W.cv.addEventListener('pointermove',move);W.cv.addEventListener('pointerup',up);W.cv.addEventListener('pointercancel',()=>{W.down=null;});
   W.cv.addEventListener('wheel',wheel,{passive:false});
@@ -131,6 +154,13 @@ function refresh(){
   const ids=careerIds(),cats=Object.fromEntries(ids.map(id=>[id,meta(id).category||'']));
   W.pl=plan(ids,cats);
   const st=stateFn();W.st=st;
+  const choices=destinations(W.pl.items,st),key=JSON.stringify(choices),select=W.el.querySelector('.tw-route-picker select');
+  if(key!==W.destinationKey){
+    const selected=select.value;W.destinationKey=key;
+    select.innerHTML=choices.map(it=>`<option value="${esc(it.key)}">${esc(tr(it.label))}</option>`).join('');
+    if(choices.some(it=>it.key===selected))select.value=selected;
+    select.disabled=!choices.length;W.el.querySelector('.tw-route-picker button').disabled=!choices.length;
+  }
   const t=tint();W.tintNow=t;
   W.stKey=JSON.stringify([W.pl.items.map(it=>{const s=st(it);return [s.lock,s.cur,s.x3,s.glow,s.paused,s.off,s.name];}),t?.m??-1,language()]);
   const cur=S().current||null;
@@ -149,7 +179,7 @@ function spawn(){
   const sug=s.journey?.suggested&&doorOf(s.journey.suggested);if(sug)return sug.stand;
   return (doorOf('lm:house')||W.pl.items[0]).stand;
 }
-function place(p){const q=nearest(W.pl,p);W.me={x:q[0],y:q[1],path:null,step:0,len:0};W.legs=[];W.leg=null;W.park=null;}
+function place(p){const q=nearest(W.pl,p);W.me={x:q[0],y:q[1],path:null,step:0,len:0};W.legs=[];W.leg=null;W.park=null;W.destination='';}
 
 /* ---- 🛵 riding (./ride.js) ---- */
 /** The vehicle ridden now (the toggle, the save), the button brought up to date. `fresh`: a tap on the toggle (or a
@@ -183,7 +213,10 @@ function size(){
   const r=W.el.getBoundingClientRect(),cw=Math.max(1,r.width),ch=Math.max(1,r.height);
   W.dpr=Math.min(2,globalThis.devicePixelRatio||1);W.cw=cw;W.ch=ch;
   const w=Math.round(cw*W.dpr),h=Math.round(ch*W.dpr);if(W.cv.width!==w)W.cv.width=w;if(W.cv.height!==h)W.cv.height=h;
-  W.k=Math.max(.6,Math.min(1,cw/560,ch/600));
+  W.k=Math.max(.6,Math.min(1,cw/560,ch/600))*W.zoom;
+  W.el.querySelector('.tw-map-tools output').textContent=Math.round(W.zoom*100)+'%';
+  W.el.querySelector('[data-tw-zoom="out"]').disabled=W.zoom<=.65;
+  W.el.querySelector('[data-tw-zoom="in"]').disabled=W.zoom>=2;
   if(W.me)snap();
   W.drawn=0;draw();
 }
@@ -226,7 +259,8 @@ function onKey(e){
 
 /* ---- walking (riding: back to the vehicle on foot, ride, park by the door, the last steps on foot) ---- */
 function walkTo(p,then=null,door=null){
-  W.free=false;W.arrive=then;
+  W.free=false;W.arrive=then;W.destination=door?.key||'';
+  if(door&&!W.st(door).off&&!W.st(door).lock)W.el.querySelector('.tw-route-picker select').value=door.key;
   const legs=[];
   if(!W.ride)legs.push({to:p});
   else if(door&&W.park?.key===door.key)legs.push({to:door.stand});   // parked at this very door
@@ -235,6 +269,8 @@ function walkTo(p,then=null,door=null){
     if(door){const from=W.park?W.park.x:W.me.x;legs.push({to:parkSpot(door,from),ride:true,park:door.key},{to:door.stand});}
     else legs.push({to:p,ride:true});
   }
+  let from=[W.me.x,W.me.y];
+  for(const g of legs){g.preview=route(W.pl,from,g.to);if(g.preview?.length)from=g.preview.at(-1);}
   W.legs=legs;W.leg=null;
   if(still()){while(W.legs.length){const g=W.legs.shift(),path=route(W.pl,[W.me.x,W.me.y],g.to),end=path?path[path.length-1]:[W.me.x,W.me.y];W.me.x=end[0];W.me.y=end[1];legEnd(g);}
     W.me.path=null;snap();W.drawn=0;kick();arrived();return;}
@@ -344,6 +380,14 @@ function draw(){
   const sx=Math.max(0,W.cam.x),sy=Math.max(0,W.cam.y),ex=Math.min(W.pl.W,W.cam.x+vw),ey=Math.min(W.pl.H,W.cam.y+vh);
   if(ex>sx&&ey>sy)c.drawImage(bg,sx*bs,sy*bs,(ex-sx)*bs,(ey-sy)*bs,(sx-W.cam.x)*k*d,(sy-W.cam.y)*k*d,(ex-sx)*k*d,(ey-sy)*k*d);
   c.setTransform(k*d,0,0,k*d,-W.cam.x*k*d,-W.cam.y*k*d);
+  const trail=remainingPath(W.me,W.legs);
+  if(trail.length>1){
+    c.save();c.lineCap='round';c.lineJoin='round';c.beginPath();
+    trail.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));
+    c.strokeStyle='#fff9e8';c.lineWidth=9/k;c.stroke();c.strokeStyle='#167b75';c.lineWidth=5/k;c.stroke();
+    const end=trail.at(-1);c.fillStyle='#167b75';c.strokeStyle='#fff9e8';c.lineWidth=3/k;
+    c.beginPath();c.arc(end[0],end[1],8/k,0,Math.PI*2);c.fill();c.stroke();c.restore();
+  }
   const inView=it=>it.x1>W.cam.x-20&&it.x0<W.cam.x+vw+20&&it.G>W.cam.y-20&&it.G-it.h<W.cam.y+vh+20;
   const near=W.at?items.find(it=>it.key===W.at):null;
   try{marks(c,W.pl,{t:W.time,reduced:still(),glow:W.marks.glow.filter(inView),arrow:W.marks.arrow&&inView(W.marks.arrow)?W.marks.arrow:null,near});}catch(e){console.warn('town: marks',e);}
@@ -356,14 +400,15 @@ function draw(){
   const pk=v&&W.park,parked=()=>{world();const f=pk.face??1;drawRide(c,{x:pk.x,y:pk.y,s:ME,px:k*d,v,r:{face:f,from:f,turn:1,ang:0}});};
   if(pk&&pk.y<m.y){parked();me();}else if(pk){me();parked();}else me();
   // Where the view is, top left (written only when it changes: no layout per frame).
-  const dist=districtAt(W.pl,[W.cam.x+vw/2,W.cam.y+vh*.58]),text=`${dist.emoji} ${tr(dist.name)}`;
+  const dist=districtAt(W.pl,[W.cam.x+vw/2,W.cam.y+vh*.58]),dest=W.destination&&doorOf(W.destination);
+  const text=dest?`${W.me.path?.length?'➜': '📍'} ${tr(W.st(dest).name)}`:`${dist.emoji} ${tr(dist.name)}`;
   if(text!==W.whereText){W.whereText=text;W.where.textContent=text;}
 }
 
 /* ---- test hooks (scratch browser checks) ---- */
 globalThis.__townWalk={
   state:()=>({on:visible(),me:W.me&&[Math.round(W.me.x),Math.round(W.me.y)],walking:!!W.me?.path?.length,at:W.at,card:!!W.card&&!W.card.hidden,
-    cam:[Math.round(W.cam.x),Math.round(W.cam.y)],k:W.k,size:W.pl&&[W.pl.W,W.pl.H],items:W.pl?.items.length,where:W.whereText,
+    cam:[Math.round(W.cam.x),Math.round(W.cam.y)],k:W.k,zoom:W.zoom,route:remainingPath(W.me,W.legs),destination:W.destination,size:W.pl&&[W.pl.W,W.pl.H],items:W.pl?.items.length,where:W.whereText,
     lit:W.marks?.glow?.map(it=>it.key)||[],arrow:W.marks?.arrow?.key||null,
     ride:W.ride?.id||null,riding:riding(),park:W.park&&[Math.round(W.park.x),Math.round(W.park.y)],toggle:W.btn&&!W.btn.hidden?W.btn.textContent:null}),
   toggle:()=>{W.btn?.click();return W.ride?.id||null;},

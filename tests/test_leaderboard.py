@@ -9,7 +9,6 @@ from game import accounts, social
 from game import leaderboard as lb
 from game.engine import new_state
 from game.storage import Store
-from tests.pg_support import sqlite_only
 
 ROOT =Path(__file__).resolve().parents[1]
 FORMAT = 'mot-ngay-lam-nghe/save-v4'
@@ -241,12 +240,6 @@ class BoardTests(Base):
         self.assertEqual(v['rows'][0]['certs'], 2)
         self.assertEqual(v['rows'][0]['best'], 185)
 
-    @sqlite_only  # EXPLAIN QUERY PLAN is SQLite's
-    def test_top_query_uses_the_index(self):
-        with self.store.connect() as db:
-            plan = ' '.join(r[3] for r in db.execute(f"EXPLAIN QUERY PLAN SELECT l.sid {lb._FROM} WHERE l.board=? AND {lb._VISIBLE} {lb._ORDER} LIMIT 50", ('all',)))
-        self.assertIn('leaderboard_rank', plan)
-        self.assertNotIn('TEMP B-TREE', plan)
 
     def test_parse_query(self):
         self.assertEqual(lb.parse_query({}), ('all', 50))
@@ -306,7 +299,7 @@ class StorageHookTests(Base):
         idle = self.player(crafted(grocery=(200, 3, 5)))
         sid = self.sid(idle)
         with self.store.connect() as db:
-            db.execute("UPDATE sessions SET updated_at=datetime('now','-400 days') WHERE sid=?", (sid,))
+            db.execute("UPDATE sessions SET updated_at=to_char((statement_timestamp() AT TIME ZONE 'UTC') - interval '400 days', 'YYYY-MM-DD HH24:MI:SS') WHERE sid=?", (sid,))
         self.store.prune(idle_days=180)
         with self.store.connect() as db:
             self.assertEqual(db.execute("SELECT COUNT(*) FROM leaderboard WHERE sid=?", (sid,)).fetchone()[0], 0)

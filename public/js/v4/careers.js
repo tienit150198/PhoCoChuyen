@@ -1,5 +1,6 @@
+import {visitCustomer,customerPortrait} from './workplace-visit-ui.js';
 /** Registry of plugin career workbenches (public/js/careers/<id>.js). */
-import {icon,portrait,escapeHTML as esc} from '../icons.js';
+import {icon,portrait as basePortrait,escapeHTML as esc} from '../icons.js';
 import {t as tr} from './i18n.js';
 import {procedureView} from './procedure.js';
 import {asset} from '../assets.js';
@@ -45,16 +46,23 @@ export const hasCareerUI=id=>Boolean(modules[id]);
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const attrs=obj=>Object.entries(obj).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 
+/** The career picker keeps each workplace's progress; switching still uses the existing leave-shift check. */
+export function careerSwitchButton(){
+  return `<button type="button" class="btn ghost small career-switch" data-action="home" aria-label="Đổi nghề hoặc nơi làm việc" title="Chọn nghề khác; tiến trình từng nghề vẫn được lưu">${icon('grid',15)} Đổi nghề</button>`;
+}
+
 /** Context passed to a career module. `env` comes from app.js. */
 export function careerContext(env){
   const {api,cmd,confirmAction,toast,renderSheet}=env;
-  const state=api.state,id=state.current,room=state.careers[id];
+  const state=api.state,id=state.current||state.focus||'mother_baby',room=state.careers[id];
   const content=api.content,cc=content.careers?.[id]||{};
   const ui=scratch[id]??={};
   const button=(label,action,data={},style='',disabled=false)=>`<button type="button" class="btn ${style}" data-action="${action}"${attrs(data)}${disabled?' disabled':''}>${label}</button>`;
   const cmdBtn=(label,command,payload={},style='',disabled=false)=>`<button type="button" class="btn ${style}" data-command="${command}" data-payload="${esc(JSON.stringify(payload))}"${disabled?' disabled':''}>${label}</button>`;
   const confirmCmd=(label,command,payload={},question='',style='',disabled=false)=>`<button type="button" class="btn ${style}" data-action="v4Cmd" data-op="${command}" data-payload="${esc(JSON.stringify(payload))}" data-confirm="${esc(question)}"${disabled?' disabled':''}>${label}</button>`;
-  const npc=nid=>content.npcs.find(n=>n.id===nid)||{display_name:state.name,role:'',personality:''};
+  const active=room.tasks?.find(t=>t.id===(env.ui.task||room.active_task));
+  const npc=nid=>{const base=content.npcs.find(n=>n.id===nid)||{display_name:state.name,role:'',personality:''};return active?.npc===nid?visitCustomer(active,base):base;};
+  const portrait=(person,size)=>person?.visit?customerPortrait(person,size):basePortrait(person,size);
   const stock=item=>room.inventory?.stock?.[item]??0;
   return {
     api,state,room,content,cc,ui,esc,icon,portrait,fmt,t:tr,npc,stock,

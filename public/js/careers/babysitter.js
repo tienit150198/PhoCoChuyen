@@ -55,13 +55,13 @@ function arrivePanel(t,x){
   const chores=`<div class="tile-grid bm-chores">${tile(x,'bm_wash',{task:t.id},'<span class="tile-emoji">🧼</span><b>Rửa tay</b>',st.wash?'selected':'')}
     ${tile(x,'bm_note',{task:t.id},'<span class="tile-emoji">📝</span><b>Đọc giấy dặn</b>',st.note?'selected':'')}
     ${tile(x,'bm_bag',{task:t.id},'<span class="tile-emoji">🎒</span><b>Mở túi đồ</b>',st.bag?'selected':'')}</div>`;
-  const greets=Object.entries(cc(x).greets||{}).map(([k,[e,l]])=>tile(x,'bm_greet',{task:t.id,greet:k},`<span class="tile-emoji">${x.esc(e)}</span><b>${x.esc(l)}</b>`,st.greet===k?'selected':'',st.greet!=null)).join('');
+  const greets=Object.entries(cc(x).greets||{}).map(([k,[e,l]])=>tile(x,'bm_greet',{task:t.id,greet:k},`<span class="tile-emoji">${x.esc(e)}</span><b>${x.esc(l)}</b>`,st.greet===k?'selected':'',st.greet!=null&&st.greet===((cc(x).tempers||{})[fam(x).temper]||[])[2])).join('');
   const have=(n.bag||[]).filter(k=>k!==n.missing);
   const bag=st.bag?`<h4 class="section-title">🎒 Trong túi</h4><p class="bm-bagin">${have.map(k=>`<span>${x.esc(BAGI(x,k)[0])} ${x.esc(BAGI(x,k)[1])}</span>`).join('')}${st.ask?`<span class="got">${x.esc(BAGI(x,st.ask)[0])} ${x.esc(BAGI(x,st.ask)[1])}</span>`:''}</p>
     <h4 class="section-title">🙋 Túi của ${x.esc(kidName(x))} cần có <small class="muted">chạm món còn thiếu để hỏi</small></h4>
     <div class="tile-grid bm-need">${(n.bag||[]).map(k=>tile(x,'bm_ask',{task:t.id,item:k},`<span class="tile-emoji">${x.esc(BAGI(x,k)[0])}</span><b>${x.esc(BAGI(x,k)[1])}</b>`,st.ask===k?'selected':'',!!st.ask)).join('')}</div>`:'';
   return `<section class="card bm-arrive"><h4>👋 Đón ${x.esc(kidName(x))}</h4>${chores}
-    <h4 class="section-title">🙂 Chào bé</h4><div class="tile-grid bm-greets">${greets}</div>${bag}</section>`;
+    <h4 class="section-title">🙂 Chào bé</h4>${st.greet&&st.greet!==((cc(x).tempers||{})[fam(x).temper]||[])[2]?'<p class="small" role="status">Bé chưa chịu làm quen. Bạn có thể thử cách chào khác hợp tính bé.</p>':''}<div class="tile-grid bm-greets">${greets}</div>${bag}</section>`;
 }
 function foodPanel(t,x){
   const st=t.st||{},n=need(t),plate=st.plate||[],full=plate.length>=(n.groups||[]).length+1;
@@ -135,7 +135,7 @@ function stepsOf(t,x){
     const right=((cc(x).tempers||{})[f.temper]||[])[2];
     rows.push({ok:st.wash||null,label:'Rửa tay',go:go('bm_wash',{task:id},'🧼 Rửa tay')});
     rows.push({ok:st.note||null,label:'Đọc giấy dặn',go:go('bm_note',{task:id},'📝 Đọc giấy dặn')});
-    rows.push({ok:st.greet?true:null,label:'Chào bé hợp tính',go:first&&right?{cmd:'bm_greet',payload:{task:id,greet:right},label:`${x.esc((cc(x).greets||{})[right]?.[0]||'')} Chào bé`}:{sel:'.bm-greets',label:'👉 Chọn cách chào bé'}});
+    rows.push({ok:st.greet?st.greet===right:null,label:'Chào bé hợp tính',go:first&&right?{cmd:'bm_greet',payload:{task:id,greet:right},label:`${x.esc((cc(x).greets||{})[right]?.[0]||'')} Chào bé`}:{sel:'.bm-greets',label:'👉 Chọn cách chào bé'}});
     rows.push({ok:st.bag||null,label:'Mở túi đồ',go:go('bm_bag',{task:id},'🎒 Mở túi đồ')});
     if(st.bag)rows.push({ok:st.ask?true:null,label:'Hỏi món còn thiếu',go:first&&n.missing?{cmd:'bm_ask',payload:{task:id,item:n.missing},label:`🙋 Hỏi xin ${x.esc(lower(BAGI(x,n.missing)[1]))}`}:{sel:'.bm-need',label:'👉 Hỏi món còn thiếu'}});
     return {steps:rows,final:{label:'👶 NHẬN BÉ',go:finalGo(rows,'bm_take',{task:id}),ready:true}};

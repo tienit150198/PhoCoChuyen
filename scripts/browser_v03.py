@@ -127,7 +127,7 @@ def main():
    close();act('help',root='#dock');act('settings');before=state()
    with page.expect_download() as download:act('export')
    exported=json.loads(Path(download.value.path()).read_text());assert exported['format']=='mot-ngay-lam-nghe/save-v3'
-   h.reload();settle();assert state()['careers']['teacher']['day_completed']==1;assert state()['careers']['milk_tea']['day']==2;record('v3 export plus real SQLite reload restores independent career progress')
+   h.reload();settle();assert state()['careers']['teacher']['day_completed']==1;assert state()['careers']['milk_tea']['day']==2;record('v3 export plus real PostgreSQL reload restores independent career progress')
    assert not errors,errors
    report=dict(version='0.3.0',status='passed',checks=checks,count=len(checks),page_errors=errors,screenshots=screens,mode='in-process Chromium DOM with local HTTP bridge' if args.bridge else 'direct Chromium browser',direct_browser_network_validated=not args.bridge,elapsed_seconds=round(time.monotonic()-started,2),timestamp_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
    (ART/'browser-v03-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print(json.dumps(report,ensure_ascii=False,indent=2))

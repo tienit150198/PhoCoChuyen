@@ -654,6 +654,62 @@ class CafeBakeryTests(unittest.TestCase):
         self.assertEqual(len(pub['wand']), 1)
         self.assertEqual(pub['proof'][0]['left'], 2)
 
+    def test_old_save_mid_pull_projects_default_pace_without_mutation(self):
+        j = self.journey(lambda n: n['kind'] == 'drink', days=[1])
+        j.act('ask')
+        n = j.task['needs']
+        j.act('cb_cup', kind='mug', size=n['size'])
+        j.act('cb_dose', beans=n['beans'], grind='fine', grams=18)
+        j.act('cb_pull')
+        j.c['ext']['data'].pop('bar_pace')
+        before = copy.deepcopy(j.state)
+        pub = public_state(j.state)['careers']['cafe_bakery']['data']
+        self.assertEqual(pub['bar_pace'], 1)
+        self.assertEqual(len(pub['groups']), 1)
+        self.assertEqual(pub['groups'][0]['flow'], CB._flow(j.task['drink']['dose']))
+        self.assertEqual(j.state, before)
+
+    def test_work_gear_snapshots_pull_and_steam_rates(self):
+        from game import work_gear
+        j=self.journey(lambda n:n['kind']=='drink' and n['milk']=='milk' and not n['iced'],days=[1])
+        j.c['upgrades'].append(work_gear.item_id('cafe_bakery',1))
+        j.act('ask');n=j.task['needs'];j.act('cb_cup',kind='mug',size=n['size'])
+        j.act('cb_dose',beans=n['beans'],grind='fine',grams=18);j.act('cb_pull')
+        self.assertEqual(j.task['drink']['pull_rate'],1.15)
+        j.c['upgrades'] += [work_gear.item_id('cafe_bakery',2),work_gear.item_id('cafe_bakery',3)]
+        pub=public_state(j.state)['careers']['cafe_bakery']['data']
+        self.assertEqual(pub['groups'][0]['flow'],CB._flow(j.task['drink']['dose'])*1.15)
+        self.clock.t += 27/1.15;j.act('cb_stop')
+        self.assertEqual(j.task['drink']['shots'][-1]['x'],'balanced')
+        j.act('cb_milk',milk=n['milk'],mode='steam',foam=n['foam'])
+        self.assertEqual(j.task['drink']['steam_rate'],1.6)
+        pub=public_state(j.state)['careers']['cafe_bakery']['data']
+        self.assertEqual(pub['wand'][0]['rate'],1.6)
+        self.clock.t += 13/1.6;j.act('cb_milk_stop')
+        self.assertEqual(j.task['drink']['milk']['tex'],'silky')
+        validate_state(j.state)
+
+    def test_oven_gear_and_pace_snapshot_accepts_fractional_rate(self):
+        from game import work_gear
+        j=self.j
+        j.c['upgrades'] += [work_gear.item_id('cafe_bakery',i) for i in range(1,4)]
+        j.act('cb_pace',pace=4);j.act('cb_bake',item='cookie')
+        rack=j.c['ext']['data']['oven'][0]
+        self.assertEqual(rack['pace'],6.4)
+        j.act('cb_pace',pace=1)
+        self.assertEqual(j.c['ext']['data']['oven'][0]['pace'],6.4)
+        self.clock.t += 14/6.4;j.act('cb_unload',rack=rack['id'])
+        self.assertTrue(any(x['item']=='cookie' and x['q']=='golden' for x in j.c['ext']['data']['case']))
+        validate_state(j.state)
+
+    def test_optional_machine_rate_rejects_invalid_values(self):
+        j=self.journey(lambda n:n['kind']=='drink',days=[1])
+        for value in (True,0,6.5,float('nan')):
+            with self.subTest(value=value):
+                bad=copy.deepcopy(j.state)
+                bad['careers']['cafe_bakery']['tasks'][0]['drink']['pull_rate']=value
+                with self.assertRaises(GameError):validate_state(bad)
+
     def test_staff_assist_never_breaks(self):
         j = self.journey(lambda n: n['kind'] == 'drink', days=[1])
         j.act('ask')

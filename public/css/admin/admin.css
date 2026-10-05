@@ -312,6 +312,30 @@ small{font-size:.857em}
 .ret .foot{text-align:left;padding:0 2px}
 .ret .foot .ic{vertical-align:-2px}
 
+/* ---- account directory ------------------------------------------------------------ */
+.users-admin{display:grid;gap:12px;min-width:0}
+.users-admin[aria-busy=true] .card{opacity:.65}
+.users-table th,.users-table td{text-align:left;white-space:nowrap}
+.users-table td:first-child{white-space:normal;min-width:140px;overflow-wrap:anywhere}
+.users-table td small{display:block;margin-top:2px}
+.users-username{font-family:monospace}
+.users-pages{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}
+.users-pages>div{display:flex;gap:8px}
+#users-password-modal{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:16px}
+#users-password-modal[hidden]{display:none}
+.users-password-account{display:grid;gap:2px;margin:0;overflow-wrap:anywhere}
+.users-password-account .users-username{font-size:13px;color:var(--muted)}
+.users-password-form{display:grid;gap:6px;min-width:0}
+.users-password-form label{margin-top:6px;font-size:13px;font-weight:700;color:var(--ink-2)}
+.users-password-form input{width:100%;min-width:0;min-height:42px;padding:0 12px;border:1px solid var(--field-line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink);font-size:16px}
+.users-password-form input:focus-visible{outline:2px solid var(--focus);outline-offset:1px;border-color:var(--focus)}
+.users-password-form input[aria-invalid=true]{border-color:var(--bad)}
+.users-password-form input:disabled{opacity:.65}
+.users-password-form .note{margin:2px 0;font-size:12.5px}
+.users-password-error{min-height:20px;margin:4px 0 0;font-size:13px;font-weight:700;color:var(--bad);overflow-wrap:anywhere}
+.users-password-buttons{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:6px}
+@media (max-width:640px){.users-password-buttons .btn{flex:1 1 auto;min-height:44px}.users-table td:last-child .btn{min-height:44px}}
+
 /* ---- inbox ------------------------------------------------------------------------ */
 .inbox{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
 .inbox-bar>*{min-width:0}

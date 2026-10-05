@@ -80,6 +80,7 @@ from . import archive as ar
 from . import bank as bk
 from . import bank_content as BK
 from . import days as dy
+from . import property_market as pm
 from . import upkeep as up   # 🧾 phí bảo trì a tháng
 
 VERSION = 2                       # 2: several homes (props); version 1 blocks are upgraded in place
@@ -101,7 +102,7 @@ PAYOFF_FEE_PCT, PAYOFF_FEE_MIN = 1, 5
 LOG_MAX, PAST_MAX = 30, 6
 OWNED_MAX = 4                     # homes owned at once, the one you live in included
 MOVE_FEE = 20                     # dọn nhà: a truck for the furniture
-RENT_BP = 500                     # cho thuê: a month's rent = list price × 5 % a year / 12
+RENT_BP = 1000                    # reference monthly asking rent: list price × 10 % a year / 12
 TENANT_GAP = 3 * MONTH_DAYS       # life days between two tenant moments, at least
 TENANT_ODDS = 4                   # one month boundary in four (seeded) brings one
 LATE_DAYS = 2                     # a tenant who asks pays this many days later
@@ -301,7 +302,34 @@ def find(h: dict | None, hid) -> dict | None:
 
 def rent_of(kind: str) -> int:
     """A month's rent from a tenant: RENT_BP a year of today's list price."""
-    return -(-HOMES[kind]['price'] * RENT_BP // (10000 * 12))
+    return -(-HOMES[kind]['price'] * RENT_BP * pm.quote(kind)['rent_bp'] // (10000 * 12 * 10000))
+
+
+def active_lease(j: dict) -> dict | None:
+    lease = j.get('rental')
+    return lease if isinstance(lease, dict) and j.get('life_day', 0) < lease.get('end_day', 0) else None
+
+
+def demand(ask: int, reference: int) -> int:
+    """Daily percent chance; decreases to zero at three times reference rent."""
+    return max(0, min(90, (300 * reference - 100 * ask) // (4 * max(1, reference))))
+
+
+def _tick_ad(s: dict, h: dict, x: dict, day: int, notes: list) -> None:
+    j = s['journey']
+    ad = j.get('rental_ads', {}).get(x['id'])
+    if not ad or not ad.get('active') or x['let'] or day <= ad['checked']:
+        return
+    ad['checked'] = day
+    rng = random.Random(f"rental-demand|{j.get('seed', 0)}|{x['id']}|{day}")
+    if rng.randrange(100) >= demand(ad['rent'], rent_of(x['kind'])):
+        return
+    who = rng.randrange(len(TENANTS))
+    x['let'] = dict(who=who, since=day, rent=ad['rent'], paid=day, ev=day, owed=0, od=0)
+    ad['active'] = False
+    label = f"{TENANTS[who][1]} thuê {HOMES[x['kind']]['name']}, {_fmt(ad['rent'])} xu/tháng."
+    _log(h, day, label)
+    notes.append(label)
 
 
 def tenant(L: dict) -> tuple[str, str]:
@@ -329,12 +357,13 @@ def sell_fee(value: int) -> int:
     return max(FEE_MIN, -(-value * SELL_FEE_PCT // 100))
 
 
-def value_of(own: dict, day: int) -> int:
+def value_of(own: dict, day: int, basis: int = 10000) -> int:
     """Market value today: the price plus GROW_RATE per year held, capped, rounded down to 10 xu."""
     price = own['price']
     held = max(0, day - own['day'])
     grown = price + price * GROW_RATE * held // (10000 * YEAR_DAYS)
-    return min(price * (100 + GROW_CAP_PCT) // 100, grown) // 10 * 10
+    base = min(price * (100 + GROW_CAP_PCT) // 100, grown)
+    return base * pm.quote(own['kind'])['multiplier_bp'] // basis // 10 * 10
 
 
 def rate_for(score: int) -> int:
@@ -379,7 +408,10 @@ def living(j: dict, total: int) -> dict:
     rent = total * 6 // 10
     meals = total - rent
     place, kind = where(j.get('home') if isinstance(j.get('home'), dict) else None)
-    if place in ('own', 'shared'):
+    lease = active_lease(j)
+    if lease:
+        place, kind = 'lease', lease['kind']
+    if place in ('own', 'shared', 'lease'):
         rent, label = HOMES[kind]['upkeep'], 'Cơm nước và điện nước nhà mình'
     elif place == 'rent':
         rent, label = HOMES[kind]['rent'], 'Tiền giường ký túc xá và cơm nước' if kind == DORM else 'Tiền phòng trọ và cơm nước'
@@ -583,15 +615,19 @@ def _tick_let(s: dict, h: dict, x: dict, n: int, notes: list) -> None:
 def _tick(s: dict, h: dict, n: int, notes: list) -> None:
     """Morning of life day `n`: the tenants' rent first (it may pay an installment), then every home loan."""
     for x in h['props']:
+        _tick_ad(s, h, x, n, notes)
         if x['let']:
             _tick_let(s, h, x, n, notes)
     for x in homes(h):
         if x['loan']:
             _tick_loan(s, h, x, n, notes)
     place, kind = where(h)
+    lease = s['journey'].get('rental')
+    if lease and lease['start_day'] <= n < lease['end_day']:
+        place, kind = 'lease', lease['kind']
     if place == 'attic':
         return
-    h['stats']['rent_days' if place == 'rent' else 'home_days'] += 1
+    h['stats']['rent_days' if place in ('rent', 'lease') else 'home_days'] += 1
     if not _late(h['own']['loan'] if h['own'] else None):
         h['stats']['comfort'] += _spirit(s, HOMES[kind]['comfort'])
 
@@ -618,6 +654,8 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     while h['day'] < target:
         h['day'] += 1
         _tick(s, h, h['day'], notes)
+    if j.get('rental') and not active_lease(j):
+        j.pop('rental', None)
     if notes and isinstance(result, dict):
         result.setdefault('effects', []).extend(notes)
     return notes
@@ -625,18 +663,11 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
 
 # ---------------------------------------------------------------- the spouse's home (game/couple.py, game/marriage.py)
 def partner_effects(state: dict, couple_id: int, side: str, other_sid: str, effect) -> list:
-    """Marriage inbox effects that bring the spouse into this save's home (and out of homes sold since).
-    `effect` is marriage._effect; ids are fixed, so each is inserted and applied once."""
+    """End accepted sharing when a home is sold. Moving in requires family consent."""
     h = get(state)
     if not h or not (state.get('journey') or {}).get('story'):
         return []
     out = []
-    own = h['own']
-    if own:   # only the home you live in; moving into it again (mv) is a new effect, so the spouse follows every move
-        name = str(state.get('name') or 'Người ấy')[:24]
-        out.append(effect(f'home:{couple_id}:{side}:{own["id"]}' + (f'.{own["mv"]}' if own.get('mv') else ''), other_sid, 'home', 0,
-                          f'{name} đón bạn về ở chung {lname(HOMES[own["kind"]]["name"])}',
-                          dict(set='in', couple=couple_id, id=own['id'], kind=own['kind'], name=name)))
     for p in h['past']:
         out.append(effect(f'homeoff:{couple_id}:{side}:{p["id"]}', other_sid, 'home', 0, 'Căn nhà chung đã bán',
                           dict(set='out', couple=couple_id, id=p['id'])))
@@ -664,6 +695,27 @@ def apply_effect(s: dict, data: dict) -> None:
             sh = h['shared']
             h['shared'] = None
             _log(h, j['life_day'], f'{sh["name"]} đã bán {lname(HOMES[sh["kind"]]["name"])}.')
+
+
+def accept_shared(s: dict, data: dict) -> None:
+    """Explicit consent, inside the family transaction. Personal homes remain owned.
+
+    Moving in is free; a personal home becomes empty with its renovation retained.
+    A rented room ends and returns its deposit once. Furniture remains personal.
+    """
+    _core().need(not active_lease(s['journey']), 'Trả nhà đang thuê của người chơi trước khi dọn về nhà chung.', 'active_lease')
+    h = _ensure(s)
+    if h['own']:
+        _move_out(s, h, s['journey']['life_day'])
+    apply_effect(s, dict(data, set='in'))
+
+
+def leave_shared(s: dict) -> None:
+    h = get(s)
+    if h and h['shared']:
+        sh = h['shared']
+        h['shared'] = None
+        _log(h, s['journey']['life_day'], f'Dọn khỏi {lname(HOMES[sh["kind"]]["name"])} của {sh["name"]}.')
 
 
 # ---------------------------------------------------------------- commands
@@ -731,6 +783,8 @@ def _move_in(s: dict, h: dict, x: dict, day: int) -> None:
     keep, x['keep'] = x['keep'], None
     x['mv'] += 1
     h['own'] = x
+    if x['id'] in s['journey'].get('rental_ads', {}):
+        s['journey']['rental_ads'][x['id']]['active'] = False
     _rn().enter_home(s, x, keep, day)
 
 
@@ -752,6 +806,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
     h = get(s)
     own = h['own'] if h else None
     rent = h['rent'] if h else None
+    need(not active_lease(j) or name in ('jr_home_pay', 'jr_home_payoff', 'jr_home_let', 'jr_home_sell'),
+         'Trả nhà đang thuê của người chơi trước khi đổi chỗ ở nhé.', 'active_lease')
     if name == 'jr_home_rent':
         kind = p.get('kind')
         need(kind in RENT, 'Chọn phòng muốn thuê nhé.')
@@ -842,6 +898,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
             bk._inbox(b, day, 'sms', f'{BK.BANK_NAME}: Khoản vay mua nhà {_fmt(loan)} xu đã giải ngân cho bên bán. Trả góp {months} kỳ, mỗi kỳ '
                                      f'{_fmt(q["installment"])} xu, cứ {MONTH_DAYS} ngày một kỳ, kỳ đầu Ngày {q["rows"][0]["due"]}.')
         x = dict(id=hid, kind=kind, price=price, day=day, down=down, fee=fee, joint=joint, loan=ln, mv=0, let=None, keep=None)
+        j.setdefault('property_market_basis', {})[hid] = pm.quote(kind)['multiplier_bp']
         left, back = h['own'], 0
         if move_in:
             if left:
@@ -916,13 +973,18 @@ def apply(s: dict, name: str, p: dict) -> dict:
         if on:
             need(x is not own, 'Bạn đang ở căn này: dọn sang căn khác rồi mới cho thuê được nhé.', 'here')
             need(not x['let'], f'{H["name"]} đang có người thuê rồi.', 'let')
-            who = random.Random(f'tenant-in|{j.get("seed", 0)}|{x["id"]}|{day}').randrange(len(TENANTS))
-            x['let'] = dict(who=who, since=day, rent=rent_of(x['kind']), paid=day, ev=day, owed=0, od=0)
-            emoji, tname = TENANTS[who]
-            _log(h, day, f'Cho {tname} thuê {hn}, {_fmt(x["let"]["rent"])} xu/tháng.')
-            to = 'tài khoản' if bk.get(s) is not None else 'ví'
-            return dict(message=f'{emoji} {tname} dọn vào {hn}. Tiền thuê {_fmt(x["let"]["rent"])} xu/tháng, vào {to} mỗi {MONTH_DAYS} ngày, '
-                                f'kỳ đầu {dy.on_day(s, next_rent_day(x, day))} (tính theo số ngày ở).')
+            need(not x.get('joint'), 'Nhà mua bằng quỹ chung cần giữ quyền của cả hai, chưa thể cho thuê.', 'joint_home')
+            ask = p.get('rent', rent_of(x['kind']))
+            need(type(ask) is int and 1 <= ask <= bk.AMOUNT_MAX, 'Giá thuê phải là số xu nguyên dương.', 'bad_rent')
+            ads = j.setdefault('rental_ads', {})
+            old = ads.get(x['id'], {})
+            ads[x['id']] = dict(rent=ask, since=day, checked=max(day, old.get('checked', day)), active=True)
+            _log(h, day, f'Đăng cho thuê {hn}, {_fmt(ask)} xu/tháng; đang tìm khách.')
+            return dict(message=f'Đã đăng {hn}: {_fmt(ask)} xu mỗi {MONTH_DAYS} ngày sống. Khách sẽ cân nhắc từ ngày sống tiếp theo.')
+        ad = j.get('rental_ads', {}).get(x['id'])
+        if ad and ad.get('active') and not x['let']:
+            ad['active'] = False
+            return dict(message='Đã gỡ tin cho NPC thuê nhà.')
         need(x['let'], f'{H["name"]} đang để trống.', 'empty')
         tname = tenant(x['let'])[1]
         got = _settle(s, h, x, day)
@@ -969,7 +1031,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
     x = _pick(h, p)
     need(x, 'Bạn chưa có nhà để bán.')
     need(p.get('confirm') is True, 'Xác nhận bán nhà.')
-    value = value_of(x, day)
+    value = value_of(x, day, s['journey'].get('property_market_basis', {}).get(x['id'], 10000))
     need(p.get('value') == value, 'Giá thị trường vừa thay đổi. Xem lại rồi bán nhé.', 'stale_quote')
     fee = sell_fee(value)
     off = _payoff(x['loan'], day, fee=False) if x['loan'] else None
@@ -992,6 +1054,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
         h['own'] = None
     else:
         h['props'] = [o for o in h['props'] if o is not x]
+    j.get('rental_ads', {}).pop(x['id'], None)
+    j.get('property_market_basis', {}).pop(x['id'], None)
     h['stats']['sold'] += 1
     _log(h, day, f'Bán {lname(H["name"])} được {_fmt(value)} xu, phí {_fmt(fee)} xu' + (f', trả nợ vay {_fmt(off["total"])} xu' if off else '') + '.', got)
     msg = f'Đã bán {lname(H["name"])} giá {_fmt(value)} xu (phí môi giới, thuế {_fmt(fee)} xu)'
@@ -1047,6 +1111,8 @@ def _market(ready: int, back: int = 0) -> list[dict]:
 def _place_view(s: dict, h: dict | None) -> dict:
     j = s['journey']
     place, kind = where(h)
+    if active_lease(j):
+        place, kind = 'lease', j['rental']['kind']
     cost = living(j, _jr().LIVING.get(j['chapter'], _jr().LIVING[_jr().LAST]))
     if place == 'attic':
         return dict(ATTIC, where_id='attic', kind=None, group=None, comfort=0, perk=None, cost=cost)
@@ -1075,7 +1141,7 @@ def dorm_view(s: dict) -> dict:
 def _home_view(s: dict, h: dict, x: dict, day: int, ready: int) -> dict:
     """One home you own as the page shows it (`own` keeps 0.9's fields; the others add their tenant and what can be done)."""
     H = HOMES[x['kind']]
-    value = value_of(x, day)
+    value = value_of(x, day, s['journey'].get('property_market_basis', {}).get(x['id'], 10000))
     fee = sell_fee(value)
     ln = x['loan']
     loan = None
@@ -1093,6 +1159,9 @@ def _home_view(s: dict, h: dict, x: dict, day: int, ready: int) -> dict:
                let_rent=rent_of(x['kind']), care=up.home_month(x['kind'], x['price']),
                sell=dict(value=value, fee=fee, payoff=off_sale['total'] if off_sale else 0, get=get_, ok=get_ >= 0,
                          why='' if get_ >= 0 else 'Tiền bán chưa đủ trả hết nợ vay'))
+    ad = s['journey'].get('rental_ads', {}).get(x['id'])
+    out['rental_ad'] = dict(ad, demand_pct=demand(ad['rent'], rent_of(x['kind'])), market_rent=rent_of(x['kind']), listed_day=ad['since']) if ad and ad.get('active') else None
+    out['market_news'] = pm.quote(x['kind'])['news']
     L = x['let']
     if L:
         emoji, who = tenant(L)
@@ -1135,6 +1204,8 @@ def public(s: dict) -> dict:
                 savings=bk._savings_total(b) if b else 0), place=_place_view(s, h), attic_rent=attic, market=market, offer=o,
                 own=own, rent=rent, shared=shared, married=bool(sp), spouse=(sp or {}).get('name'),
                 log=list(reversed(h['log'])) if h else [], stats=dict(h['stats']) if h else {k: 0 for k in STATS}, rules=rules(),
+                tenancy=dict(active_lease(j)) if active_lease(j) else None,
+                market_news=[dict(kind=k, **pm.quote(k)) for k in OWN if pm.quote(k)['news']],
                 props=props, count=count, owned=[x['kind'] for x in homes(h)],
                 can_buy=dict(ok=not full, why=f'Đã có {OWNED_MAX} căn nhà: bán bớt một căn rồi hãy mua thêm' if full else ''))
     if bills and (bills['home'] or bills['due']['home']):   # 🧾 this tháng's phí bảo trì (absent: none; an older server)

@@ -88,8 +88,9 @@ function arcCard(x){
   return `<article class="pl-arc card"><small>Chuyện nghề bay</small><h3>${x.esc(due.emoji)} ${x.esc(due.title)}</h3>${due.text.map(s=>`<p>${x.esc(s)}</p>`).join('')}${x.cmd('Ghi nhớ','pl_arc',{},'small primary')}</article>`;
 }
 function dayLine(x){
-  const m=data(x).mod||{};
-  return `<div class="pl-day"><span aria-hidden="true">${x.esc(m.emoji||'🌤️')}</span><b class="grow">${x.esc(m.label||'')}</b><small>${x.esc(m.hint||'')}</small>${carBtn(x,'❔','intro',{},'ghost small pl-help',' aria-label="Giới thiệu nghề"')}</div>`;
+  const m=data(x).mod||{},s=data(x).schedule;
+  const roster=s&&x.room.open?`<p class="small">✈️ Lịch hôm nay: ${x.esc(s.total)} chặng · ${x.esc(s.completed)} đã bay · ${x.esc(s.remaining)} còn lại</p>`:'';
+  return `<div class="pl-day"><span aria-hidden="true">${x.esc(m.emoji||'🌤️')}</span><b class="grow">${x.esc(m.label||'')}</b><small>${x.esc(m.hint||'')}</small>${carBtn(x,'❔','intro',{},'ghost small pl-help',' aria-label="Giới thiệu nghề"')}</div>${roster}`;
 }
 /** The flight strip: code, route, time, passengers and where the hop is. */
 function strip(t,x){
@@ -97,7 +98,8 @@ function strip(t,x){
   const dots=STAGES.map(([id,e,label],i)=>`<li class="${i<stage?'done':i===stage?'now':''}"><span aria-hidden="true">${e}</span><small>${x.esc(label)}</small></li>`).join('');
   const late=(t.delay||0)+(t.air_late||0);
   return `<article class="pl-strip"><div class="pl-strip-top"><b class="pl-code">${x.esc(leg.code||'')}</b><span class="pl-route">${x.esc(leg.frm||'')} → ${x.esc(t.where||leg.to||'')} ${x.esc(leg.emoji||'')}</span></div>
-    <div class="pl-strip-sub"><span>⏱️ ${leg.minutes||0}′</span><span>👥 ${n.pax||0}</span>${late?`<span class="pl-late">+${late}′</span>`:''}${t.at?`<span class="pl-late">↪️ ${x.esc(t.at)}</span>`:''}</div>
+    <div class="pl-strip-sub"><span>⏱️ ${leg.minutes||0}′</span><span>👥 ${n.pax||0}</span><span>Thưởng dự kiến ${x.esc(t.expected_bonus??12)} xu</span>${late?`<span class="pl-late">+${late}′</span>`:''}${t.at?`<span class="pl-late">↪️ ${x.esc(t.at)}</span>`:''}</div>
+    <p class="small muted">Thưởng đủ khi bay đúng quy trình; lỗi an toàn mất thưởng. Lương theo hợp đồng.</p>
     <ol class="pl-stages" aria-label="Các bước chuyến bay">${dots}</ol></article>`;
 }
 
@@ -271,7 +273,7 @@ const AIR={id:'pilot',airline:'Hãng bay Cánh Cò',role:'CƠ PHÓ',role_down:'C
   row(t){
     if(t.status==='completed')return {status:t.at?`Hạ cánh ${t.at}`:'Đã hạ cánh',tone:'done'};
     if(done(t))return {status:'Hủy',tone:'bad'};
-    if(!t.known)return {status:'Chờ bản tin'};
+    if(!t.known)return {status:`Chờ bản tin · Thưởng dự kiến ${t.expected_bonus??12} xu`};
     const late=(t.delay||0)+(t.air_late||0);
     if(t.stage==='cruise'||t.stage==='approach')return {status:'Đang bay',tone:'air'};
     if(t.stage==='landed')return {status:'Đã hạ cánh',tone:'done'};
@@ -298,7 +300,7 @@ export default {
     shown=t;
     if(flyPref()&&flyCan()&&t.known)flyMod();   // the cockpit's code on its way before the take-off
     const g=guide(t,x),hint=hintFor(g,x),d=data(x);
-    const top=`${introCard(x,!!x.ui.intro)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
+    const top=`${dayLine(x)}${introCard(x,!!x.ui.intro)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
     if(d.desk?.ev||d.odd?.ev||(d.odd?.conduct?.ground&&['brief','walk','start'].includes(t.stage))||!d.intro||x.ui.intro)return `<div class="career-job pl">${hint}${top}${bottom(t,x,g)}</div>`;
     let main='';
     if(!t.known||t.stage==='brief')main=briefPanel(t,x);
@@ -320,8 +322,13 @@ export default {
     return `<div class="career-job pl">${hint}${top}${arcCard(x)}${dayLine(x)}${logbook(x)}${bar}</div>`;
   },
   tick(root,x){keepBarAboveFooter(root);try{flyTick(x);}catch(e){console.error(e);}},
-  hudCard(c,t,x,o){return air.hudCard(c,t,x,{...AIR,next:t=>this.next(t,x)},o);},
-  board(x){return air.board(x,AIR);},
+  hudCard(c,t,x,o){
+    const card=air.hudCard(c,t,x,{...AIR,next:t=>this.next(t,x)},o),s=data(x).schedule;
+    if(!c.open||!s)return card;
+    const summary=`<div class="pl-flight-summary"><span>Lịch hôm nay: ${x.esc(s.total)} chặng · ${x.esc(s.remaining)} còn lại</span>${t?`<span>Thưởng dự kiến ${x.esc(t.expected_bonus??12)} xu</span>`:''}</div>`;
+    return card.replace(/<\/article>$/,summary+'</article>');
+  },
+  board(x){return `<div class="pl pl-board">${dayLine(x)}${air.board(x,AIR)}</div>`;},
   page(view,x){return air.page(view,x,AIR);},
   daySummary(s,x){return air.daySummary(s,x,AIR);},
   nav(items){return air.nav(items,AIR);},

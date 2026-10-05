@@ -66,11 +66,11 @@ For a few seconds both releases serve the same PostgreSQL database:
   until no older release will ever be rolled back to.
 * **Single-instance jobs.** Housekeeping (receipt, guest and save pruning, push delivery, rate-limit
   pruning, the leaderboard backfill) now runs only in the server that holds the flock of
-  `<GAME_DB>-maintenance.lock` next to the game database (`server.py maintenance_lock`). A second server
+  `<GAME_NAMESPACE>-maintenance.lock` next to the game database (`server.py maintenance_lock`). A second server
   logs `[maintenance] another server on this database runs housekeeping: waiting for it to stop` and
   takes over within 10 s of the first one exiting. The admin statistics job already had its own lock
-  file (`<GAME_DB>-adminstats.lock`). Rate limits live in PostgreSQL (`hits`), so they are shared. The
-  SQLite checkpointer is safe to run twice (and does nothing on PostgreSQL). Release 0.9.4 does not
+  file (`<GAME_NAMESPACE>-adminstats.lock`). Rate limits live in PostgreSQL (`hits`), so they are shared. The
+  PostgreSQL manages its WAL independently of the application. Release 0.9.4 did not
   have the housekeeping lock yet: during the one switch from 0.9.4 to 0.9.5, and during a rollback to
   0.9.4, both servers may run a prune/push pass at the same moment. Those passes are idempotent deletes;
   the worst case is one web push sent twice.

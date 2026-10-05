@@ -28,6 +28,7 @@ import tempfile
 import time
 import urllib.request
 from pathlib import Path
+from pg_test_support import test_env, test_connect, schema_for
 
 ROOT = Path(__file__).resolve().parents[1]
 CHAPTER_ONE = ('milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist', 'mother_baby', 'restaurant')
@@ -96,12 +97,12 @@ def server(dev: bool = False):
     """Like production: the story is on (MNL_DEV unset), no AI key, no push. `dev`: every place open."""
     port = free_port()
     tmp = tempfile.mkdtemp(prefix='mnl-first-day-')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1')
+    env = test_env( QUIET='1', PUSH_DISABLED='1')
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY'):
         env.pop(k, None)
     if dev:
         env['MNL_DEV'] = '1'
-    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--db', os.path.join(tmp, 'g.sqlite3')],
+    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--namespace', os.path.join(tmp, 'g.db')],
                          cwd=ROOT, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     base = f'http://127.0.0.1:{port}'
     for _ in range(600):

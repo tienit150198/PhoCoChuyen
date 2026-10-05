@@ -1,3 +1,5 @@
+> Tài liệu lịch sử của bản phát hành cũ. Cấu hình và công cụ database mô tả dưới đây không còn áp dụng; cách chạy hiện tại dùng PostgreSQL duy nhất tại [POSTGRES_ONLY.md](POSTGRES_ONLY.md).
+
 # Cutover runbook: SQLite to PostgreSQL
 
 This runbook moves production from SQLite to PostgreSQL 16 without losing a row. The game stays up

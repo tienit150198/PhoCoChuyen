@@ -40,7 +40,6 @@ from .jsoncopy import tree_copy
 VERSION = 1
 COMMANDS = ('jr_reno_fix', 'jr_reno_up', 'jr_reno_buy', 'jr_reno_move', 'jr_reno_store', 'jr_reno_sell')
 STATS = ('fixed', 'upgraded', 'bought', 'sold', 'cozy_days', 'spirit')
-ITEMS_MAX = 60                     # furniture owned (placed + bag): 1.2.0 builds refuse more
 COND_MIN = 30                      # wear stops here: tired, never ruined
 WEAR_DAYS = (4, 6, 8)              # life days per point of wear, by upgrade level
 WORN_AT = 60                       # below this the drawing shows the flaw and the morning says so once
@@ -432,7 +431,7 @@ def catalogue() -> dict:
     """Static (journey.content()['reno'], sent once at bootstrap): parts and the comfort rules (furniture: deco.catalogue)."""
     return dict(parts=[dict(id=k, emoji=v['emoji'], name=v['name'], flaw=v['flaw'], up=[n for n, _ in v['up']]) for k, v in PARTS.items()],
                 steps=[dict(min=low, spirit=n) for low, n in COZY_STEPS], cozy_lv=COZY_LV, cozy_cond=COZY_COND, worn_at=WORN_AT,
-                sell_pct=SELL_PCT, items_max=ITEMS_MAX)
+                sell_pct=SELL_PCT, items_max=None)
 
 
 def public(s: dict) -> dict | None:
@@ -473,7 +472,7 @@ def validate(s: dict) -> None:
     need(r['hid'] is None or (isinstance(r['hid'], str) and 1 <= len(r['hid']) <= 16), bad)
     integer(r['day'], 1, 10**6)
     need(r['day'] <= j['life_day'], bad)
-    integer(r['seq'], 0, 10**6)
+    need(type(r['seq']) is int and r['seq'] >= 0, bad)
     integer(r['spent'], 0, 10**9)
     need(isinstance(r['stats'], dict) and set(r['stats']) == set(STATS), bad)
     for v in r['stats'].values():
@@ -485,7 +484,7 @@ def validate(s: dict) -> None:
         integer(x['c'], 0, 100)
         integer(x['lv'], 0, LV_MAX)
     items = r['items']
-    need(isinstance(items, list) and len(items) <= ITEMS_MAX, bad)
+    need(isinstance(items, list), bad)
     ids, spots = set(), set()
     for it in items:
         # Kinds and rooms are checked by shape only: a newer build's furniture survives a rollback (not drawn).

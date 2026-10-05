@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+const src=readFileSync(new URL('../public/js/v4/fair.js',import.meta.url),'utf8');
+const body=src.slice(src.indexOf('async function send('),src.indexOf('/* ---- rendering ----'));
+const response={fair:{wealth_raid:{amount:30000,message:'Công an kiểm tra: thu 30.000 xu.'}}};
+const S={env:{api:{command:async()=>response}}};
+const context=vm.createContext({S});
+vm.runInContext(body,context);
+assert.equal(await vm.runInContext("send('fair_bc',{})",context),response);
+assert.equal(S.wealthRaid?.amount,30000,'successful command retains the separate seizure receipt');
+assert.match(src,/\$\{wealthRaidCard\(\)\}/,'receipt is visible on every fair stall');
+assert.match(src,/case'wealthraidok'/,'receipt has an explicit dismiss action');
+console.log('Wealth raid receipt preserved alongside game result.');

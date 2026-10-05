@@ -48,6 +48,7 @@ from . import wedding_live as wl   # 🎁 the admin's gift for the weddings (jou
 from . import needs as nd   # 🍚 No bụng, 😴 Tỉnh táo (game/needs.py)
 from . import chua as cg    # 🛕 Đi chùa (game/chua.py)
 from . import relax as rx   # 🏊 Thư giãn ở nhà: hồ bơi, bồn tắm (game/relax.py)
+from . import leisure as ls   # private, free pixel fishing/boat/community-pool rounds
 from . import fridge as fr   # 🧊 Tủ lạnh ở nhà: cất đồ ăn, đói thì ăn (game/fridge.py)
 from . import x3_week as x3   # 🔥 Nghề x3 trong tuần (game/x3_week.py)
 from . import accounting_jobs as aj   # 💼 Việc làm kế toán: exam gate, entry check, ×3/×5 (game/accounting_jobs.py)
@@ -834,6 +835,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(cg.action(s, name, p))
     elif name.startswith('jr_relax_'):
         result.update(rx.action(s, name, p))
+    elif name.startswith('jr_leisure_'):
+        result.update(ls.action(s, name, p))
     elif name.startswith('jr_fridge_'):
         result.update(fr.action(s, name, p))
     elif name.startswith('jr_rui_'):
@@ -922,7 +925,7 @@ def public(s: dict) -> dict:
         clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=tree_copy(j['news']),
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
-        bank=bk.public(s), home=hs.public(s), household=hh.public(s), outings=outings_.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
+        bank=bk.public(s), home=hs.public(s), household=hh.public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
         garage=gr.public(s), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
         **({'quay': qy.public(s)} if qy.visible(s) else {}))   # 🏪 only once a save reaches it (state size)
 
@@ -949,7 +952,7 @@ def content() -> dict:
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
-        garage=gr.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content())
+        garage=gr.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content())
 
 
 def validate(s: dict) -> None:
@@ -988,7 +991,8 @@ def validate(s: dict) -> None:
     for row in j['history']:
         need(isinstance(row, dict) and row.get('kind') in HISTORY_KINDS, 'Dòng sổ ví không hợp lệ.')
         integer(row.get('day'), 1, 10**6)
-        integer(row.get('amount'), -10**7, 10**7)
+        limit = 10**9 if row.get('kind') == 'bank' else 10**7
+        integer(row.get('amount'), -limit, limit)
         txt(row.get('label'), 120)
         need(row.get('career') is None or row['career'] in CAREERS, 'Dòng sổ ví sai nơi làm việc.')
     need(isinstance(j['news'], list) and len(j['news']) <= 12, 'Tin hành trình không hợp lệ.')
@@ -1016,12 +1020,15 @@ def validate(s: dict) -> None:
     promotion.validate(s)   # 🎖️ journey['promo'] (optional)
 
     rx.validate(s)   # 🏊 journey['relax'] (optional)
+    ls.validate(s)   # private pixel leisure rounds (optional)
     fr.validate(s)   # 🧊 journey['fridge'] (optional)
     ct.validate(s)
     bk.validate(s)
     wd.validate(s)
     avt.validate(s)   # 🙂 s['avatar'] (optional)
     hs.validate(s)
+    from . import rentals
+    rentals.validate(s)
     hh.validate(s)
     outings_.validate(s)
     ship.validate(s)

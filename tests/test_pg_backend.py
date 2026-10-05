@@ -32,13 +32,20 @@ class TranslateTests(unittest.TestCase):
         self.assertEqual(self.t("SELECT 1 WHERE n LIKE 'a%' AND m=?"), "SELECT 1 WHERE n LIKE 'a%%' AND m=%s")
         self.assertEqual(self.t("SELECT 5 % 2", params=False), "SELECT 5 % 2")
 
-    def test_insert_or_ignore_and_timestamps(self):
-        self.assertEqual(self.t('INSERT OR IGNORE INTO v(a) VALUES(?)'), 'INSERT INTO v(a) VALUES(%s) ON CONFLICT DO NOTHING')
+    def test_native_conflicts_and_timestamps(self):
+        self.assertEqual(self.t('INSERT INTO v(a) VALUES(?) ON CONFLICT DO NOTHING'), 'INSERT INTO v(a) VALUES(%s) ON CONFLICT DO NOTHING')
         self.assertIn(dbm.NOW_TEXT, self.t('UPDATE s SET u=CURRENT_TIMESTAMP WHERE sid=?'))
-        q = self.t("SELECT 1 FROM l WHERE seen_at<datetime('now','-1 hour') AND x<datetime('now',?)")
-        self.assertIn("CAST('-1 hour' AS interval)", q)
-        self.assertIn('CAST(%s AS interval)', q)
-        self.assertNotIn('datetime', q)
+
+    def test_sqlite_syntax_is_rejected_instead_of_translated(self):
+        for sql in ('INSERT OR IGNORE INTO v(a) VALUES(?)', 'BEGIN IMMEDIATE',
+                    ' begin  immediate ', 'BEGIN EXCLUSIVE',
+                    "SELECT datetime('now','-1 hour')", "SELECT DATETIME('now',?)"):
+            with self.subTest(sql=sql), self.assertRaises(NotImplementedError):
+                self.t(sql)
+
+    def test_sqlite_words_in_literals_and_identifiers_are_preserved(self):
+        sql = '''SELECT 'BEGIN IMMEDIATE datetime(''now'') INSERT OR IGNORE', "datetime(?)" FROM t WHERE a=?'''
+        self.assertEqual(self.t(sql), sql[:-1] + '%s')
 
     def test_a_malformed_database_url_stops_the_process(self):
         """Never fall back to the (frozen) SQLite file when DATABASE_URL is set but unusable."""
@@ -54,8 +61,9 @@ class TranslateTests(unittest.TestCase):
                 os.environ['DATABASE_URL'] = old
 
     def test_kinds(self):
-        self.assertEqual(dbm.translate('BEGIN IMMEDIATE')[1], 'begin')
-        self.assertEqual(dbm.translate('PRAGMA foreign_keys=ON')[1], 'pragma')
+        self.assertEqual(dbm.translate('BEGIN')[1], 'begin')
+        with self.assertRaises(NotImplementedError):
+            dbm.translate('PRAGMA foreign_keys=ON')
         self.assertEqual(dbm.translate(' delete FROM t')[1], 'dml')
         with self.assertRaises(NotImplementedError):
             dbm.translate('INSERT OR REPLACE INTO t VALUES(?)')
@@ -95,9 +103,18 @@ class PgStoreTests(unittest.TestCase):
 
     def test_backend_is_postgres(self):
         self.assertEqual(self.store.backend, 'pg')
-        self.assertTrue(self.store.writing())  # no global writer turn
-        self.store.done_writing()
-        self.assertIsNone(self.store.checkpoint())
+        with self.store.connect() as db:
+            self.assertEqual(db.dialect, 'pg')
+        self.assertFalse(Path(self.store.path).exists())
+
+    def test_rejected_sqlite_syntax_leaves_the_connection_idle(self):
+        with self.store.connect() as db:
+            for execute in (db.execute, db.pg):
+                for sql in ('BEGIN IMMEDIATE', 'INSERT OR IGNORE INTO hits(k,at) VALUES(?,?)', "SELECT datetime('now')"):
+                    with self.subTest(sql=sql, api=execute.__name__), self.assertRaises(NotImplementedError):
+                        execute(sql, ('rejected', 1) if sql.startswith('INSERT') else ())
+                    self.assertFalse(db.in_transaction)
+            self.assertEqual(db.execute('SELECT 42').fetchone()[0], 42)
 
     def test_different_players_do_not_wait_for_each_other(self):
         a, b = self.player(), self.player()
@@ -215,12 +232,13 @@ class PgStoreTests(unittest.TestCase):
         finally:
             pool.cap, pool.wait = old
 
-    def test_timestamps_are_sqlite_text(self):
+    def test_timestamps_are_utc_text(self):
         a = self.player()
         with self.store.connect() as db:
             updated = db.execute('SELECT updated_at FROM sessions WHERE sid=?', (self.store.key(a),)).fetchone()[0]
             receipt = db.execute('SELECT created_at FROM receipts WHERE sid=?', (self.store.key(a),)).fetchone()['created_at']
-            hour = db.execute("SELECT datetime('now','-1 hour')").fetchone()[0]
+            db.execute("SET TIME ZONE 'Pacific/Auckland'")
+            hour = db.execute(f"SELECT {dbm.UTC_INTERVAL_TEXT}", ('-1 hour',)).fetchone()[0]
             now = db.execute('SELECT CURRENT_TIMESTAMP').fetchone()[0]
         for v in (updated, receipt, hour, now):
             self.assertRegex(v, TS)
@@ -340,9 +358,9 @@ class PgStoreTests(unittest.TestCase):
 
     def test_shared_limits_live_in_postgres(self):
         import server
-        lim = server.SharedLimits(str(Path(self.tmp.name) / 'unused-limits.sqlite3'), self.store)
+        lim = server.SharedLimits(self.store)
         self.assertEqual([lim.hit('acct-login:1.2.3.4', 3, 60) for _ in range(4)], [True, True, True, False])
-        self.assertFalse(Path(self.tmp.name, 'unused-limits.sqlite3').exists())
+        self.assertEqual(list(Path(self.tmp.name).iterdir()), [])
         lim.prune()
         with self.store.connect() as db:
             self.assertEqual(db.execute('SELECT COUNT(*) FROM hits').fetchone()[0], 3)

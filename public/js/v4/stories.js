@@ -8,6 +8,7 @@ import {avatar,emojiOf} from './journey.js';
 import {lookOf} from './look.js';
 import {firstDay} from './onboard.js';
 import {quiet,turn,want,whenQuiet} from './break-gate.js';
+import {acctPlace} from './acct-jobs.js';
 
 let E=null;
 let cur=null;              // {id, shown, answered:{reply,note,label}|null, keepsake}
@@ -138,12 +139,20 @@ export function storiesCard(env){
   rows.sort((a,b)=>rank(a)-rank(b)||b.seen-a.seen);
   const row=a=>{
     const m=meta(a.career),dots=Array.from({length:a.total},(_,i)=>`<i class="${i<a.seen?'on':''}"></i>`).join('');
-    const lead=a.pending?`<p class="st-row-note due">✨ Có chuyện mới</p>`:a.done?`<p class="st-row-note done">${esc(a.keepsake?.emoji||'🎁')} ${esc(a.keepsake?.name||'')}</p>`:`<p class="st-row-note">${esc(a.hint||'')}</p>`;
-    const past=a.beats.length?`<details class="st-past"><summary>Đã qua ${a.beats.length} đoạn</summary><ol>${a.beats.map(b=>`<li><span aria-hidden="true">${esc(b.emoji)}</span><span>${esc(b.title)}${b.pick?`<small>Bạn chọn: ${esc(b.pick)}</small>`:''}</span></li>`).join('')}</ol></details>`:'';
-    const go=a.pending?btn(`Xem ${icon('arrow',13)}`,'jrArcOpen',{id:a.pending},'primary small'):'';
+    const lead=a.pending?`<p class="st-row-note due">✨ Có chuyện mới</p>`:a.done?`<p class="st-row-note done">${esc(a.keepsake?.emoji||'🎁')} ${esc(a.keepsake?.name||'')}</p><p class="st-memory">${esc(a.keepsake?.desc||'')}</p>`:'';
+    const recap=a.recap?`<p class="st-recap"><b>Gần nhất</b> ${esc(a.recap)}</p>`:'';
+    const unlock=!a.pending&&a.next?`<div class="st-unlock"><b>Để gặp đoạn tiếp theo</b><p>Các mốc tính riêng tại nơi làm này, theo ngày trong game.</p>
+      <ul>${a.next.requirements.map(r=>`<li class="${r.met?'met':''}"><span>${esc(r.label)}</span><strong>${fmt(r.current)}/${fmt(r.target)}</strong><small>${r.met?'Đã đạt':`Còn ${fmt(r.remaining)}`}</small></li>`).join('')}</ul>
+      ${a.next.ready?'<p class="st-ready">Đủ điều kiện. Tiếp tục làm việc ở đây để gặp đoạn mới.</p>':''}</div>`:'';
+    const past=a.beats.length?`<details class="st-past"><summary>Đã qua ${a.beats.length} đoạn</summary><ol>${a.beats.map(b=>`<li><span aria-hidden="true">${esc(b.emoji)}</span><span>${esc(b.title)}${b.recap?`<p>${esc(b.recap)}</p>`:''}${b.pick?`<small>Bạn chọn: ${esc(b.pick)}</small>`:''}</span></li>`).join('')}</ol></details>`:'';
+    const J=env.api.state.journey,job=careers[a.career]?.job;
+    const available=(!J?.story||J.unlocked?.includes(a.career))&&!J?.places?.[a.career]?.paused
+      &&acctPlace(env.api,a.career)?.ok!==false&&(!job?.required||job.status==='hired');
+    const go=a.pending?btn(`Xem ${icon('arrow',13)}`,'jrArcOpen',{id:a.pending},'primary small'):!a.done?
+      available?btn('Tiếp tục làm việc','choose',{career:a.career},'ghost small'):btn('Xem nơi làm việc','jrPlaces',{},'ghost small'):'';
     return `<li class="st-row ${a.pending?'due':''} ${a.done?'done':''}" style="--career:${colour(m.color)}"><span class="jr-place-emoji" aria-hidden="true">${esc(a.emoji)}</span>
       <div class="st-row-text"><span class="eyebrow">${esc(m.place||m.short||a.career)}</span><h3>${esc(a.title)}</h3>
-        <span class="st-dots" role="img" aria-label="${a.seen}/${a.total} đoạn">${dots}</span>${lead}${past}</div>${go}</li>`;
+        <span class="st-dots" role="img" aria-label="${a.seen}/${a.total} đoạn">${dots}</span>${lead}${recap}${unlock}${past}<div class="st-row-actions">${go}</div></div></li>`;
   };
   const body=rows.length?`<ul class="st-rows">${rows.map(row).join('')}</ul>`:`<p class="muted small st-empty">Làm việc ở một nơi, câu chuyện của nơi đó sẽ bắt đầu.</p>`;
   return `<section class="jr-card st-home" aria-labelledby="stHomeTitle"><div class="jr-sec-head"><h2 id="stHomeTitle">${icon('book',18)} Truyện nghề</h2><small>${fmt(done)}/${fmt(st.arcs.length)} trọn truyện</small></div>${body}</section>`;

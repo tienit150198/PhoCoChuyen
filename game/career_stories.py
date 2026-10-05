@@ -11,8 +11,8 @@ for letters from abroad, a fake invoice in the office…
 * `after()` runs after every career action and queues the acting workplace's
   next beat into a small queue; the client shows it as a scene and answers with
   `st_seen` (plain beat) or `st_choose` (beat with a two-option choice).
-* Choices are flavour only: reply lines, a small relationship bump with a
-  linked NPC and at most a few coins. Arcs never gate the journey or the work.
+* Choices can be remembered in later dialogue and personal keepsakes, alongside
+  a small relationship bump and at most a few coins. Arcs never gate work.
 
 State lives in the root `s['stories']` (setdefault in `migrate`, checked by
 `validate`), like `s['journey']`. See docs/superpowers/specs/2026-09-29-career-stories-design.md.
@@ -80,6 +80,8 @@ ARCS = {
             _b('Công thức mới', '🍵', 'Nhi đang nghĩ một món mới cho người thức khuya.', [
                 ('nhi', 'Ô long, sữa tươi, ít ngọt, thêm thạch nha đam. Món cho người thức khuya mà không muốn say đường!'),
                 ('me', 'Để mình canh lại lượng trà cho khỏi đắng.'),
+                ('linh', 'Em vẫn nhớ ly trà gừng hôm đó. Có người lo cho mình, em thấy bớt căng thẳng hơn.', ('milk_tea_2', 'a')),
+                ('linh', '“Từng trang một thôi” vẫn là hình nền của em. Hôm nào nản em lại đọc câu trên nắp ly.', ('milk_tea_2', 'b')),
                 ('linh', 'Uống xong thấy đầu nhẹ hẳn. {Anh} đặt tên món này đi!'),
                 ('nhi', 'Chưa được. Đợi bạn thi xong rồi mới đặt tên.')]),
             _b('Ngày thi', '✏️', 'Mấy hôm nay bàn cửa sổ bỏ trống.', [
@@ -89,7 +91,8 @@ ARCS = {
                 ('miu', 'Em chụp ly này gửi Linh liền. Chắc bạn ấy vui lắm.')]),
             _b('Trà Mùa Thi', '🎓', 'Sắp có tin vui từ bàn cửa sổ.', [
                 ('linh', '{Anh} ơi! Em đậu rồi! Đậu nguyện vọng một luôn!'),
-                ('bac_tu', 'Bác biết mà. Con bé học chăm vậy thì phải đậu chứ.'),
+                ('linh', 'Em viết vào công thức: “Gửi người đã cho em một ly ấm lòng.” {Anh} giữ giúp em nha.', ('milk_tea_2', 'a')),
+                ('linh', 'Em viết “Từng trang một thôi” vào công thức. Câu trên nắp ly giờ thành lời nhắn cho các bạn khóa sau.', ('milk_tea_2', 'b')),
                 ('linh', 'Em muốn món trà ô long đó có tên. Để mấy bạn khóa sau cũng được uống.'),
                 ('nhi', 'Vậy thì ghi lên bảng menu nha: “Trà Mùa Thi”.'),
                 ('me', 'Mùa thi năm sau, bàn cửa sổ vẫn để dành cho người cần.')]),
@@ -489,6 +492,8 @@ ARCS = {
                    _o('a', '“Con hứa sẽ đi tìm linh kiện cho ông.”', [('ong_bay', 'Ừ. Ông chờ được. Bà nhà ông cũng hay chờ ông vậy đó.')], rel='ong_bay'),
                    _o('b', '“Nói thật là khó ông ạ, nhưng tiệm sẽ thử hết cách.”', [('ong_bay', 'Nói thật vậy ông thích. Thợ nói thật là thợ tốt.')], rel='ong_bay'))),
             _b('Chợ linh kiện', '🔎', 'Tiệm đang đi tìm một bóng đèn điện tử đời cũ.', [
+                ('me', 'Mình đã hứa đi tìm linh kiện cho Ông Bảy. Hôm nay có tin rồi, mình phải báo ông ngay.', ('repair_2', 'a')),
+                ('me', 'Mình đã nói thật là khó với Ông Bảy. Có đèn rồi, nhưng phải thử xong mới báo chắc cho ông.', ('repair_2', 'b')),
                 ('lam', 'Kiếm được rồi! Đèn cũ tháo máy, còn tốt. Mười năm mới gặp một cái.'),
                 ('be_ngan', 'Em tìm được sơ đồ mạch trên diễn đàn nước ngoài. In ra rồi nè.'),
                 ('chu_tu', 'Có sơ đồ, có đèn. Giờ tới tay nghề.')]),
@@ -500,6 +505,8 @@ ARCS = {
             _b('Vọng cổ buổi chiều', '🎶', 'Đến lúc trả radio cho Ông Bảy.', [
                 ('ong_bay', 'Đúng đài này. Chiều nào bà cũng mở đài này.'),
                 ('ong_bay', 'Nghe như bà còn ngồi đây.'),
+                ('ong_bay', 'Ông ghi lên hộp đèn: “Gửi người giữ lời.” Con đã đi tìm như lời con hứa.', ('repair_2', 'a')),
+                ('ong_bay', 'Ông ghi lên hộp đèn: “Gửi người thợ nói thật.” Cảm ơn con đã nói rõ từng bước cho ông.', ('repair_2', 'b')),
                 ('ong_bay', 'Bóng đèn cũ cháy đó, con giữ đi. Nó chở bài hát của bà nhà ông mấy chục năm.'),
                 ('chu_tu', 'Món này sửa không lấy tiền công. Tiệm mình nhận vậy đủ rồi.')]),
         ]),
@@ -1719,6 +1726,35 @@ def next_beat(s: dict, cid: str) -> dict | None:
     return arc['beats'][n] if n < len(arc['beats']) else None
 
 
+def _requirements(s: dict, cid: str, beat: dict) -> list[dict]:
+    """The same counters power both eligibility and spoiler-free guidance."""
+    c = s.get('careers', {}).get(cid, {})
+    a = s.get('stories', {}).get('arcs', {}).get(cid, {})
+    w, metrics = beat['when'], c.get('metrics', {})
+    day = int(c.get('day', 1))
+    rows = []
+
+    def add(key, label, current, target):
+        rows.append(dict(id=key, label=label, current=current, target=target,
+                         remaining=max(0, target - current), met=current >= target))
+
+    if w['served']:
+        add('served', 'Hoàn thành công việc', int(metrics.get('served', 0)), w['served'])
+    if w['days']:
+        add('days', 'Kết thúc ngày làm', day - 1, w['days'])
+    if w['level'] > 1:
+        add('level', 'Đạt cấp nghề', _level(c), w['level'])
+    if w['metric']:
+        key, target = w['metric']
+        add(key, 'Hoàn thành mốc nghề', int(metrics.get(key, 0)), target)
+    if a.get('seen') and w['gap']:
+        last = a.get('last', 0)
+        # A reset counts the gap as passed, exactly as the original trigger did.
+        since = day - last if day >= last else w['gap']
+        add('gap', 'Qua ngày làm kể từ đoạn trước', since, w['gap'])
+    return rows
+
+
 def due(s: dict, cid: str) -> bool:
     """Is the next beat of this workplace due now (and not already queued)?"""
     st = s['stories']
@@ -1726,19 +1762,7 @@ def due(s: dict, cid: str) -> bool:
     c = s['careers'].get(cid)
     if not beat or not c or any(q['career'] == cid for q in st['queue']):
         return False
-    w = beat['when']
-    a = st['arcs'].get(cid) or dict(seen=[], last=0)
-    day = int(c.get('day', 1))
-    metrics = c.get('metrics', {})
-    if int(metrics.get('served', 0)) < w['served'] or day - 1 < w['days'] or _level(c) < w['level']:
-        return False
-    if w['metric'] and int(metrics.get(w['metric'][0], 0)) < w['metric'][1]:
-        return False
-    if a['seen'] and w['gap']:
-        since = day - a['last'] if day >= a['last'] else 10**6   # reset_career: time has passed
-        if since < w['gap']:
-            return False
-    return True
+    return all(r['met'] for r in _requirements(s, cid, beat))
 
 
 def check(s: dict, cid: str) -> dict | None:
@@ -1822,13 +1846,34 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
     cid = result['story']['career']
     arc = ARCS[cid]
     if len(s['stories']['arcs'][cid]['seen']) == len(arc['beats']):
-        result['story']['keepsake'] = copy.deepcopy(arc['keepsake'])
-        result['message'] = f'Trọn truyện “{arc["title"]}”. Kỷ vật: {arc["keepsake"]["name"]}.'
+        result['story']['keepsake'] = _keepsake(s, cid)
+        result['message'] = f'Trọn truyện “{arc["title"]}”. Kỷ vật: {result["story"]["keepsake"]["name"]}.'
     e.validate_state(s)
     return s, result
 
 
 # ------------------------------------------------------------------ views
+KEEPSAKE_NOTES = {
+    'milk_tea': {
+        'a': 'Linh viết trên công thức “Trà Mùa Thi”: “Gửi người đã cho em một ly ấm lòng.”',
+        'b': 'Linh chép câu trên nắp ly vào công thức “Trà Mùa Thi”: “Từng trang một thôi.”',
+    },
+    'repair': {
+        'a': 'Ông Bảy ghi lên hộp đèn: “Gửi người giữ lời.” Kỷ niệm lời hứa đi tìm linh kiện của bạn.',
+        'b': 'Ông Bảy ghi lên hộp đèn: “Gửi người thợ nói thật.” Kỷ niệm sự thẳng thắn của bạn khi nhận sửa radio.',
+    },
+}
+
+
+def _keepsake(s: dict, cid: str) -> dict:
+    keep = tree_copy(ARCS[cid]['keepsake'])
+    pick = s.get('stories', {}).get('arcs', {}).get(cid, {}).get('picks', {}).get(f'{cid}_2')
+    note = KEEPSAKE_NOTES.get(cid, {}).get(pick)
+    if note:
+        keep['desc'] = note
+    return keep
+
+
 def _due_view(s: dict, item: dict) -> dict:
     cid = item['career']
     arc = ARCS[cid]
@@ -1844,7 +1889,7 @@ def _due_view(s: dict, item: dict) -> dict:
     return dict(id=item['id'], career=cid, beat=beat['id'], step=i + 1, total=len(arc['beats']), title=beat['title'],
                 emoji=beat['emoji'], arc=arc['title'], arc_emoji=arc['emoji'], place=_place(cid),
                 lines=_lines(s, cid, beat['lines'], picks), choice=choice, last=last,
-                keepsake=tree_copy(arc['keepsake']) if last else None)
+                keepsake=_keepsake(s, cid) if last else None)
 
 
 def public(s: dict) -> dict:
@@ -1862,12 +1907,20 @@ def public(s: dict) -> dict:
         for bid in a['seen']:
             b = arc['beats'][BEAT_INDEX[cid][bid]]
             pick = a['picks'].get(bid)
-            label = next((o['label'] for o in (b['choice'] or {}).get('options', []) if o['id'] == pick), None)
-            beats.append(dict(title=b['title'], emoji=b['emoji'], pick=label))
+            opt = next((o for o in (b['choice'] or {}).get('options', []) if o['id'] == pick), None)
+            label = resolve(opt['label'], _gender(s), s.get('name')) if opt else None
+            # A remembered reply or closing line comes only from a seen beat.
+            lines = _lines(s, cid, opt['reply'] if opt else b['lines'], a['picks'])
+            last = lines[-1]
+            recap = f'{last["name"]}: {last["text"]}'
+            beats.append(dict(title=b['title'], emoji=b['emoji'], pick=label, recap=recap))
         nxt = None if done else arc['beats'][n]
+        reqs = _requirements(s, cid, nxt) if nxt else []
+        pending = queued.get(cid)
         arcs.append(dict(career=cid, title=arc['title'], emoji=arc['emoji'], seen=n, total=len(arc['beats']), done=done,
-                         hint=nxt['hint'] if nxt else None, pending=queued.get(cid),
-                         keepsake=tree_copy(arc['keepsake']) if done else None, beats=beats))
+                         hint=None, pending=pending, recap=beats[-1]['recap'] if beats else None,
+                         next=dict(requirements=reqs, ready=all(r['met'] for r in reqs), queued=bool(pending)) if nxt else None,
+                         keepsake=_keepsake(s, cid) if done else None, beats=beats))
     return dict(due=[_due_view(s, q) for q in st.get('queue', [])], arcs=arcs)
 
 

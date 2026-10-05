@@ -2,22 +2,24 @@
 
 **Web game mô phỏng nghề nghiệp bằng tiếng Việt (có tiếng Anh).** Chọn một nghề, mở ca, làm đúng công việc thật của nghề đó, gặp các tình huống ngoài đời và nhìn chúng từ nhiều phía: khách, đồng nghiệp, chủ, phụ huynh. Chơi một mình hoặc ghé quán của người chơi khác ở **Phố nghề**.
 
-Máy chủ chạy bằng Python thuần (thư viện chuẩn + SQLite), không cần `pip install` hay `npm install`. Chơi được trên điện thoại, máy tính bảng và máy tính, và cài được lên màn hình chính (PWA).
+Máy chủ chạy bằng Python và PostgreSQL, dùng `psycopg` để kết nối cơ sở dữ liệu. Chơi được trên điện thoại, máy tính bảng và máy tính, và cài được lên màn hình chính (PWA).
 
 ## Chạy trên máy
 
-Cần Python 3.10 trở lên.
+Cần Python 3.10 trở lên và PostgreSQL 16 trở lên. Sao chép `.env.example` thành `.env`, đặt `DATABASE_URL` tới cơ sở dữ liệu PostgreSQL của bạn.
 
 ```bash
 # Windows: mở start.bat, hoặc
+python -m pip install -r requirements.txt
 python server.py --open
 # macOS / Linux
+python3 -m pip install -r requirements.txt
 python3 server.py --open
 ```
 
-Mở `http://127.0.0.1:8765`. Nếu cổng bận, thêm `--port 8766`; `--db đường/dẫn.sqlite3` để chọn tệp dữ liệu khác; `--help` xem thêm tham số.
+Mở `http://127.0.0.1:8765`. Nếu cổng bận, thêm `--port 8766`; `--help` xem thêm tham số. Máy chủ dừng với lỗi rõ ràng nếu thiếu `DATABASE_URL`; không tạo tệp cơ sở dữ liệu dự phòng.
 
-**Mở cho mọi người chơi qua Internet:** xem [`docs/DEPLOY.md`](docs/DEPLOY.md) (Docker + Caddy HTTPS tự động, hoặc systemd + Nginx).
+**Docker, vận hành và kiểm thử:** xem [`docs/POSTGRES_ONLY.md`](docs/POSTGRES_ONLY.md) (PostgreSQL + Docker + Caddy HTTPS, hoặc máy chủ PostgreSQL riêng).
 
 ## Các nghề
 
@@ -94,7 +96,7 @@ public/js/app.js           shell, router giao diện
 public/js/v4/*.js          cài đặt, xã hội, push, nhạc, i18n, thủ tục, lớp học
 public/js/careers/*.js     giao diện từng nghề
 public/i18n/en.json        gói tiếng Anh (tạo bằng scripts/i18n_extract.py)
-tests/                     test luật, HTTP, SQLite, xã hội, push
+tests/                     test luật, HTTP, PostgreSQL, xã hội, push
 docs/                      API, triển khai, bảo mật, plugin nghề
 ```
 
@@ -103,10 +105,16 @@ Muốn thêm nghề: đọc [`docs/PLUGIN_CAREERS.md`](docs/PLUGIN_CAREERS.md).
 ## Kiểm thử
 
 ```bash
+# Chỉ dùng PostgreSQL dùng riêng cho kiểm thử; không dùng DATABASE_URL production.
+export TEST_DATABASE_URL=postgresql://user@127.0.0.1:5432/phocochuyen_test
 python scripts/run_checks.py          # toàn bộ test Python
 python scripts/browser_v04.py         # kiểm trình duyệt (cần playwright)
 python scripts/i18n_extract.py status # độ phủ bản dịch tiếng Anh
 ```
+
+Trên PowerShell dùng `$env:TEST_DATABASE_URL='postgresql://user@127.0.0.1:5432/phocochuyen_test'`. Mỗi fixture có schema riêng, tự dọn sau lần chạy. Các script kiểm thử trình duyệt cũng yêu cầu `TEST_DATABASE_URL`.
+
+Dịch vụ live và test socket cần Python 3.11 trở lên cùng `python -m pip install -r requirements-live.txt`. Báo cáo test ghi rõ số lượng và lý do các test bị bỏ qua.
 
 ## Pháp lý và liên hệ
 

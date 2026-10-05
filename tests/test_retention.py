@@ -548,7 +548,7 @@ class MathTests(Base):
             self.sql('UPDATE sessions SET updated_at = ? WHERE sid = ?', (utc_text(updated), sid))
             self.sql('DELETE FROM stat_active WHERE sid = ? AND day = ?', (sid, day()))
             for d in active:
-                self.sql('INSERT OR IGNORE INTO stat_active(day, sid) VALUES (?, ?)', (d, sid))
+                self.sql('INSERT INTO stat_active(day, sid) VALUES (?, ?) ON CONFLICT DO NOTHING', (d, sid))
         if created_at is not None:
             self.sql('INSERT INTO stat_milestones(sid, key, at, day) VALUES (?, ?, ?, 1)', (sid, 'created', created_at))
 

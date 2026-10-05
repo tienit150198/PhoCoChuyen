@@ -4,12 +4,14 @@ The diff rules are tested directly. The gate itself runs against the live releas
 this is a git checkout that has that commit: tasks the live server generated must still validate here.
 """
 import importlib.util
+import os
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 # The release players are on: bump it to the new live commit after each release (0.9.12 = main bded2ef).
@@ -62,6 +64,28 @@ class DiffRules(unittest.TestCase):
 
     def test_a_row_the_new_tree_no_longer_generates_fails(self):
         self.assertTrue(gate.compare_career('clothing', rows({}), {}, LATE, ['needs']))
+
+
+class WorkerImports(unittest.TestCase):
+    def test_worker_preserves_dependency_paths_with_selected_tree_first(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tree, competing, deps = root / 'selected', root / 'competing', root / 'deps'
+            for folder in (tree, competing):
+                (folder / 'game').mkdir(parents=True)
+                (folder / 'game' / '__init__.py').write_text('', encoding='utf-8')
+                (folder / 'game' / 'engine.py').write_text('', encoding='utf-8')
+            deps.mkdir()
+            (deps / 'taskcompat_dependency.py').write_text("VALUE = 'dependency-loaded'\n", encoding='utf-8')
+            (tree / 'game' / 'content.py').write_text(
+                "from taskcompat_dependency import VALUE\nCAREERS = {'fixture': {}}\n"
+                "def make_task(*args): return {'tree': 'selected', 'dependency': VALUE}\n", encoding='utf-8')
+            (competing / 'game' / 'content.py').write_text("raise AssertionError('wrong source tree')\n", encoding='utf-8')
+            paths = os.pathsep.join(filter(None, (str(competing), str(deps), os.environ.get('PYTHONPATH'))))
+            with patch.dict(os.environ, {'PYTHONPATH': paths}):
+                generated = gate.run_worker(tree, 'fixture', 1, root)
+            self.assertEqual(len(generated), gate.SLOTS * 2)
+            self.assertTrue(all(row == {'tree': 'selected', 'dependency': 'dependency-loaded'} for row in generated.values()))
 
 
 @unittest.skipUnless(shutil.which('git') and (ROOT / '.git').exists(), 'needs a git checkout')

@@ -3,7 +3,6 @@
 import http.client
 import json
 import os
-import sqlite3
 import tempfile
 import threading
 import time
@@ -193,7 +192,7 @@ class ReactTests(LiveCase):
 class SearchTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
-        self.store = Store(Path(self.tmp.name) / 'g.sqlite3')
+        self.store = Store(Path(self.tmp.name) / 'g.db')
         social.ensure(self.store)
 
     def tearDown(self):
@@ -245,16 +244,6 @@ class SearchTests(unittest.TestCase):
             self.assertEqual(len(w2['items']), 100)
             self.assertTrue(all(x['id'] < w['next'] for x in w2['items']))
 
-    def test_old_sqlite_file_gets_raw(self):
-        path = Path(self.tmp.name) / 'old.sqlite3'
-        db = sqlite3.connect(path)
-        db.execute('CREATE TABLE chat_messages (id INTEGER PRIMARY KEY, channel TEXT, pid TEXT, name TEXT, av TEXT, text TEXT, at REAL)')
-        db.execute("INSERT INTO chat_messages(channel, pid, name, av, text, at) VALUES('town', 'a', 'A', '', 'cũ', 0)")
-        live_chat.migrate(db)
-        cols = [r[1] for r in db.execute('PRAGMA table_info(chat_messages)').fetchall()]
-        self.assertEqual(cols[-2:], ['adm', 'raw'])
-        self.assertEqual(db.execute('SELECT text, adm, raw FROM chat_messages').fetchone(), ('cũ', 0, None))
-        db.close()
 
 
 class SearchEndpointTests(unittest.TestCase):

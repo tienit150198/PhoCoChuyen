@@ -14,7 +14,7 @@ Tài liệu này tóm tắt các biện pháp đang có trong mã nguồn và ph
 
 ## Luật game và chống gian lận cơ bản
 
-- Server giữ luật (server-authoritative). Mọi thay đổi tiền, kho hay thưởng đều đi qua reducer thuần, với revision và `request_id` idempotent, trong một giao dịch SQLite.
+- Server giữ luật (server-authoritative). Mọi thay đổi tiền, kho hay thưởng đều đi qua reducer thuần, với revision và `request_id` idempotent, trong một giao dịch PostgreSQL.
 - Các action nội bộ (`fb_resolve`, `fb_voice`, `soc_*`) chỉ chạy được từ bên trong server. Gửi qua HTTP sẽ bị từ chối.
 - Đáp án thủ tục và bài tập (`_key`) và dữ kiện ẩn của vụ việc không bao giờ được gửi xuống trình duyệt.
 - Chợ Phố nghề dùng cơ chế giữ hàng (escrow): hàng rời kho người bán ngay khi đăng, bị khóa khi có người mua, và tiền được chuyển bằng lệnh idempotent. Giá bị giới hạn từ 0,5× đến 3× giá vốn, người nhận quà nhận tối đa 100 xu/ngày, nên không bơm tiền giữa các tài khoản được.
@@ -33,7 +33,7 @@ Tài liệu này tóm tắt các biện pháp đang có trong mã nguồn và ph
 - Văn bản tự do bị lọc: chặn link, email và số điện thoại; che từ thô tục.
 - Có chặn, báo cáo (nội dung bị 3 người báo cáo sẽ tự ẩn), giới hạn tần suất, và mỗi quán chỉ nhận một review/ngày từ mỗi người, sau khi người đó đã thực sự ghé thăm.
 - Người chơi có thể ẩn hồ sơ khỏi danh bạ, hoặc tự xóa toàn bộ dữ liệu (Cài đặt → Dữ liệu).
-- Phần quản trị hiện được làm thủ công qua SQLite (xem `DEPLOY.md`). Chưa có bảng quản trị riêng.
+- Trang `/admin` kiểm quyền theo `ADMIN_USERS`; dữ liệu vận hành nằm trong PostgreSQL (xem `DEPLOY.md`).
 
 ## Web push
 

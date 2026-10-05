@@ -21,6 +21,7 @@ import tempfile
 import time
 import urllib.request
 from pathlib import Path
+from pg_test_support import test_env, test_connect, schema_for
 
 ROOT = Path(__file__).resolve().parents[1]
 VIEWPORTS = {'phone': (390, 844, True), 'tablet': (820, 1180, True), 'desktop': (1440, 900, False)}
@@ -58,14 +59,14 @@ def free_port() -> int:
 def server():
     port = free_port()
     tmp = tempfile.mkdtemp(prefix='mnl-v04-')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1', MNL_DEV='1')  # MNL_DEV allows the job_quick shortcut
+    env = test_env( QUIET='1', PUSH_DISABLED='1', MNL_DEV='1')  # MNL_DEV allows the job_quick shortcut
     env.pop('MNL_CAREERS', None)
     env.pop('LLM_API_KEY', None)
     # The server's output goes to a log file next to the throwaway database: a pipe that nobody reads fills
     # up after a few thousand lines and the server then blocks on its next write (the sweep froze mid-run).
     log_path = os.path.join(tmp, 'server.log')
     log = open(log_path, 'wb')
-    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--db', os.path.join(tmp, 'g.sqlite3')],
+    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--namespace', os.path.join(tmp, 'g.db')],
                          cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
     base = f'http://127.0.0.1:{port}'
     # Up to a minute: a loaded machine can take a while to import every career.

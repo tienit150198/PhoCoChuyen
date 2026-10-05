@@ -524,7 +524,17 @@ class Save(unittest.TestCase):
         v = public_state(s)
         self.assertIn('card', v['rui'])
         self.assertLess(len(json.dumps(v['rui'], ensure_ascii=False)), 1500)
-        self.assertLess(len(json.dumps(v['vang'], ensure_ascii=False)), 400)
+        gold = dict(v['vang'])
+        market_news = gold.pop('market_news', None)
+        clock = gold.pop('market_clock')
+        self.assertLess(len(json.dumps(clock)), 600)
+        self.assertLessEqual(len(clock['timestamps']), 30)
+        self.assertLess(len(json.dumps(gold, ensure_ascii=False)), 400)
+        # The existing quote budget stays intact; one optional bounded headline
+        # adds at most 175 characters, with no future episode schedule attached.
+        if market_news:
+            self.assertEqual(set(market_news), {'title', 'direction', 'active'})
+            self.assertLess(len(json.dumps(market_news, ensure_ascii=False)), 175)
         self.assertNotIn('rui', v['journey'])
 
 

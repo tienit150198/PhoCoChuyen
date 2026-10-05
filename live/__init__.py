@@ -4,6 +4,5 @@ docs/superpowers/specs/2026-09-30-live-chat-street-design.md; plan and extension
 docs/superpowers/plans/2026-10-01-live-chat-v1.md.
 
 It never reads or writes a save. It needs the `websockets` library (vendored into shared/pyvendor,
-scripts/vendor_websockets.sh) and, in production, psycopg 3 (DATABASE_URL); on SQLite (--db) it runs for dev
-and tests."""
+scripts/vendor_websockets.sh) and psycopg 3 with a PostgreSQL DATABASE_URL."""
 PROTOCOL = 1

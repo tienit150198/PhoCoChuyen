@@ -2,7 +2,7 @@
 """😍 Reactions in chat and 🔎 the admin "Tin nhắn" tab in real browsers (dev tool, needs `pip install playwright
 websockets` + chromium).
 
-Starts a game server and the live service (chat on, ADMIN_USERS=op_admin) on one SQLite database (servers() of
+Starts a game server and the live service (chat on, ADMIN_USERS=op_admin) on one PostgreSQL database (servers() of
 scripts/browser_live_pin.py; MNL_PY / MNL_PYTHONPATH as there). Two phones (390×844, touch):
   * the player holds the admin's message with a real touch (CDP touchStart, 600 ms, touchEnd): the emoji bar opens,
     with the action row under it (🗑️ since 03/10), no text selected; ❤️ → a chip "❤️ 1" on both phones (highlighted on the player's own);
@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import sqlite3
 import sys
 import tempfile
 from pathlib import Path
@@ -27,6 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from browser_live_chat import PW, phone, send, text_of  # noqa: E402
 from browser_live_pin import servers, until  # noqa: E402
+from pg_test_support import test_env, test_connect, schema_for
 
 TYPED = 'Ai cần bánh trung thu nhắn mình nha, gọi 0912 345 678'
 
@@ -72,7 +72,7 @@ async def run(shots: Path) -> list:
             b = await phone(browser, base, 'Minh Tú', problems)
             await a.api('/api/account/register', dict(username='op_admin', password=PW, confirm=PW, display='Ban Quản Lý'))
             await b.api('/api/account/register', dict(username='minhtu_t', password=PW, confirm=PW, display='Minh Tú'))
-            with sqlite3.connect(db) as con:
+            with test_connect(db) as con:
                 con.execute("UPDATE stat_births SET day='2026-01-01' WHERE sid=(SELECT sid FROM accounts WHERE username='minhtu_t')")
             for p in (a, b):
                 await p.page.reload()

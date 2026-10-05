@@ -10,8 +10,9 @@
  * moved by a CSS transition (no frame loop), frozen and resumed around a re-render. Reduced motion: it steps there.
  * reno.js owns the dialog and passes its helpers in (setup); every rule and number is the server's (deco.public
  * 'fridge'); a server from before sends no fridge and the fridge just says a line. */
-import {figure,paintPlayer,SVG,lookOf,figureSVG,wornColor} from './look.js';
+import {figure,lookOf,figureSVG,wornColor} from './look.js';
 import {escapeHTML as esc} from '../icons.js';
+import {crowd} from './home-crowd.js';
 
 const K=.42;                 // the figure (about 150 units tall) in room pixels
 const SPEED=150;             // room pixels a second
@@ -48,7 +49,38 @@ export function setup(ctx){
   const {S,A,roomOf,inRoom,hostFor,send,render,sfx,calm,roomSvg}=ctx;
   const W={room:'',x:0,y:0,to:null,until:0,timer:0,then:null,say:null,fridge:false,closet:null,note:null,walked:false};
   const st=()=>S.env?.api?.state||{};
-  const FR=()=>S.env?.api?.state?.journey?.deco?.fridge||null;
+  const FR=()=>S.remote?null:ctx.V?.()?.fridge||S.env?.api?.state?.journey?.deco?.fridge||null;
+  const useRoom=rm=>[...inRoom(rm),...(ctx.mateIn?.(rm)||[])];
+  const homeHost=()=>S.remote?.owner?.code||(ctx.V?.()?.place?.where==='own'?S.env.api.homeGuests?.own_home?.code||'':'');
+  const homeScope=()=>{const sp=st().marriage?.spouse;return JSON.stringify([ctx.V?.()?.place?.key,sp?.pid,sp?.status,S.remote?.owner?.code||'']);};
+  let crowdRender=0;
+  // Replacing the room DOM during a gesture loses pointer capture and its furniture nodes.
+  // Coalesce live events and wait for an idle dialog, including gestures started after scheduling.
+  function redrawCrowd(){
+    if(!S.dlg?.open||crowdRender)return;
+    crowdRender=setTimeout(function flush(){
+      crowdRender=0;if(!S.dlg?.open)return;
+      if(S.busy||S.drag||S.press){crowdRender=setTimeout(flush,120);return;}
+      // The short avatar pose can finish while the longer invitation is still open.
+      // Restore that exact response control after replacing the room DOM.
+      const focused=globalThis.document?.activeElement;
+      const response=focused?.dataset?.dc==='hwReply'&&S.dlg?.contains?.(focused)
+        ?{id:focused.dataset.id,answer:focused.dataset.answer}:null;
+      render();
+      if(response&&S.dlg?.open){
+        const next=[...S.dlg.querySelectorAll('[data-dc="hwReply"]')]
+          .find(el=>el.dataset.id===response.id&&el.dataset.answer===response.answer&&!el.disabled);
+        next?.focus({preventScroll:true});
+      }
+    },16);
+  }
+  const HC=crowd({live:ctx.live,state:st,still:calm,svg:roomSvg,
+    isWalking:()=>Boolean(W.to),
+    redraw:redrawCrowd,
+    xy:p=>{const rm=roomOf(S.room);if(!rm)return [0,0];const b=box(rm,A.geom(rm));return [b.x0+p[0]*(b.x1-b.x0),b.y0+p[1]*(b.y1-b.y0)];},
+    approach:(p,then)=>{const rm=roomOf(S.room);if(!rm)return;const G=A.geom(rm),b=box(rm,G),x=b.x0+p[0]*(b.x1-b.x0),y=b.y0+p[1]*(b.y1-b.y0);
+      walkTo(clampTo(rm,G,x+(x>(b.x0+b.x1)/2?-34:34),y+3),then,true);}});
+  function fractions(p){const rm=roomOf(W.room);if(!rm)return [.5,.8];const b=box(rm,A.geom(rm));return [(p[0]-b.x0)/(b.x1-b.x0),(p[1]-b.y0)/(b.y1-b.y0)];}
 
   /* ---- where the feet may go ---- */
   function box(rm,G){return {x0:A.PX+12,x1:A.PX+rm.cols*A.CW-12,y0:G.FY+A.FR*.55,y1:G.FY+rm.frows*A.FR-3};}
@@ -79,22 +111,24 @@ export function setup(ctx){
   function enter(rm,G){
     const d=(rm.fix||[]).find(f=>f.t==='door'&&f.layer==='floor'),b=box(rm,G);
     const p=d?clampTo(rm,G,A.PX+(d.x+.5)*A.CW,G.FY+A.FR*1.2):clampTo(rm,G,(b.x0+b.x1)/2,b.y1-6);
+    if(ctx.V?.()?.place?.where==='shared')p[0]=Math.min(b.x1,p[0]+28);
     stop();W.room=rm.id;W.x=p[0];W.y=p[1];W.say=null;
   }
 
   /* ---- the figure ---- */
   function markup(rm,G){
     if(W.room!==rm.id)enter(rm,G);
-    const out=[];try{paintPlayer(out,figure(st()),SVG);}catch{/* look not ready */}
+    const out=[];try{out.push(HC.figure(figure(st())));}catch{/* look not ready */}
     const at=W.to||{x:W.x,y:W.y};
-    return `<g class="hw-me" aria-hidden="true" style="transform:translate(${W.x.toFixed(1)}px,${W.y.toFixed(1)}px)" data-to="${at.x.toFixed(1)},${at.y.toFixed(1)}"><g class="hw-fig${W.to?' walk':''}"><g transform="scale(${K})">${out.join('')}</g></g></g>`;
+    return `<g class="hw-me" data-y="${at.y}" aria-hidden="true" style="transform:translate(${W.x.toFixed(1)}px,${W.y.toFixed(1)}px)" data-to="${at.x.toFixed(1)},${at.y.toFixed(1)}"><g class="hw-fig${W.to?' walk':''}"><g transform="scale(${K})">${out.join('')}</g></g></g>${HC.markup(W.room,homeScope())}`;
   }
   const meEl=()=>roomSvg()?.querySelector('.hw-me');
   /** Put the figure among the pieces by where its feet are going: behind what stands further forward (reno.js marks each
    * floor piece with its front edge, data-y; the spouse's pieces in a shared home too). */
   function order(){
     const el=meEl();if(!el)return;
-    const y=W.to?.y??W.y,next=[...el.parentNode.querySelectorAll(':scope>g.dc-it[data-y],:scope>g.dc-mate[data-y]')].find(g=>+g.dataset.y>y+2);
+    const y=W.to?.y??W.y;el.dataset.y=String(y);
+    const next=[...el.parentNode.querySelectorAll(':scope>g.dc-it[data-y],:scope>g.dc-mate[data-y],:scope>g.hc-person[data-y]')].find(g=>+g.dataset.y>y+2);
     const before=next||el.parentNode.querySelector(':scope>.dc-cats')||el;
     if(before!==el&&el.nextSibling!==before)el.parentNode.insertBefore(el,before);
   }
@@ -105,6 +139,9 @@ export function setup(ctx){
   }
   /** After it redrew: the walk carries on to where it was going. */
   function resume(){
+    if(S.dlg?.open&&roomSvg()&&W.room===S.room){
+      HC.join(W.room,fractions([W.x,W.y]),homeScope(),homeHost());HC.resume();}
+    else HC.leave();
     order();
     const el=meEl();if(!el||!W.to)return;
     const left=Math.max(0,W.until-performance.now());
@@ -119,14 +156,15 @@ export function setup(ctx){
     const el=meEl();if(el){el.style.transitionDuration='0ms';el.style.transform=`translate(${W.x.toFixed(1)}px,${W.y.toFixed(1)}px)`;el.querySelector('.hw-fig')?.classList.remove('walk');}
     const f=W.then;W.then=null;if(f)f();
   }
-  function walkTo(p,then=null){
+  function walkTo(p,then=null,approaching=false){
     clearTimeout(W.timer);
     const el=meEl();
     if(el&&W.to){const m=new DOMMatrixReadOnly(getComputedStyle(el).transform);W.x=m.e;W.y=m.f;}
     W.to=null;W.then=then;
     const d=Math.hypot(p[0]-W.x,p[1]-W.y);
+    const ms=!el||calm()||d<3?0:Math.min(3000,Math.round(Math.max(250,d/SPEED*1000)));
+    HC.walk([fractions([W.x,W.y]),fractions(p)],ms,approaching);
     if(!el||calm()||d<3){W.x=p[0];W.y=p[1];if(el){el.style.transitionDuration='0ms';el.style.transform=`translate(${W.x.toFixed(1)}px,${W.y.toFixed(1)}px)`;}arrive();return;}
-    const ms=Math.round(Math.max(250,d/SPEED*1000));
     W.to={x:p[0],y:p[1]};W.until=performance.now()+ms;order();
     el.querySelector('.hw-fig')?.classList.add('walk');
     void el.getBoundingClientRect();
@@ -138,7 +176,7 @@ export function setup(ctx){
   function tap(rm,pt,uid){
     if(!rm||!pt)return;
     if(!W.walked){W.walked=true;S.dlg?.querySelector('.hw-walkhint')?.remove();}   // the walking hint has done its job: it leaves the floor to the character
-    const G=A.geom(rm),list=inRoom(rm);
+    const G=A.geom(rm),list=useRoom(rm);
     if(W.room!==rm.id)enter(rm,G);
     hush();
     const o=uid&&list.find(x=>x.id===uid);
@@ -157,6 +195,7 @@ export function setup(ctx){
   /** What a piece does when the character reaches it. */
   async function use(rm,o){
     const k=o.it.id,N=st().needs;
+    if(S.remote){say(pick(LINES[k]||LINES[o.it.cat]||FLOOR_LINE));return;}
     if(FRIDGES.has(k)){openFridge();return;}
     if(BEDS.has(k)){
       if(N?.evening&&!N.evening.chosen&&S.env?.act){S.dlg.close();S.env.act('evening');return;}
@@ -207,7 +246,7 @@ export function setup(ctx){
   };
   function closetPanel(rm){
     const c=W.closet;
-    if(!c||!rm||c.room!==rm.id||!inRoom(rm).some(o=>o.id===c.uid&&CLOSET.has(o.it.id))){W.closet=null;return '';}
+    if(!c||!rm||c.room!==rm.id||!useRoom(rm).some(o=>o.id===c.uid&&CLOSET.has(o.it.id))){W.closet=null;return '';}
     const items=closetItems(),pages=Math.max(1,Math.ceil(items.length/8));c.page=Math.min(c.page,pages-1);
     const it=items.find(x=>x.id===c.pick),look=lookOf(st());
     if(it){look[it.slot]=it.id;look.uniform=false;const tint=wornColor(st(),it.id);if(tint)look.tint={...look.tint,[it.id]:tint};}
@@ -221,6 +260,7 @@ export function setup(ctx){
       <div class="bk-actions">${btn('👗 Mở Tủ đồ để thay','hwWardrobe',{},'primary')}</div></section>`;
   }
   function panel(v,rm){
+    if(S.remote)return '';
     if(S.edit)return '';
     if(W.closet)return closetPanel(rm);
     const F=v?.fridge;
@@ -251,7 +291,10 @@ export function setup(ctx){
     return W.walked?'':pill('Chạm sàn để đi · chạm đồ để dùng',' hw-walkhint');
   }
   async function click(op,data){
+    if(S.remote&&!['hwEmote','hwReply'].includes(op))return true;
     switch(op){
+      case'hwEmote':HC.emote(data.kind,data.to);return true;
+      case'hwReply':HC.reply(data.answer,data.id);return true;
       case'hwClothesClose':W.closet=null;render();return true;
       case'hwClothesPick':if(W.closet&&closetItems().some(x=>x.id===data.item)){W.closet.pick=data.item;render();}return true;
       case'hwClothesPage':if(W.closet){W.closet.page=Math.max(0,Math.min(Math.ceil(closetItems().length/8)-1,Number(data.page)||0));render();}return true;
@@ -270,11 +313,11 @@ export function setup(ctx){
     }
     return false;
   }
-  function reset(){stop();W.room='';W.say=null;W.fridge=false;W.closet=null;W.note=null;W.walked=false;}
+  function reset(){HC.leave();clearTimeout(crowdRender);crowdRender=0;stop();W.room='';W.say=null;W.fridge=false;W.closet=null;W.note=null;W.walked=false;}
 
   /* ---- test hooks (scratch browser checks) ---- */
   globalThis.__homeWalk={state:()=>({room:W.room,me:[W.x,W.y],to:W.to&&[W.to.x,W.to.y],fridge:W.fridge,say:W.say?.text||''}),
     screen:uid=>{const svg=roomSvg(),g=svg?.querySelector(`g[data-uid="${CSS.escape(uid)}"] .dc-hit`);if(!g)return null;const r=g.getBoundingClientRect();return [r.left+r.width/2,r.top+r.height/2];}};
 
-  return {markup,freeze,resume,tap,key,panel,hint,click,paint,sayHTML,reset,stop};
+  return {markup,freeze,resume,tap,key,panel,hint,click,paint,sayHTML,reset,stop,socialPanel:()=>HC.panel(W.room,homeScope()),reopen:HC.reopen};
 }

@@ -300,7 +300,7 @@ function infraTab(d){
   const x=d.infra;if(!x)return notices(d);
   const ss=x.save_sizes,c=x.command||{};
   const hist=ss?.hist?.length?(()=>{const labels=['< 10 KB','10–25 KB','25–50 KB','50–100 KB','100–200 KB','200–400 KB','≥ 400 KB'],max=Math.max(1,...ss.hist);
-    return `<ul class="hbars compact">${ss.hist.map((v,i)=>`<li><span class="hl">${labels[i]}</span><b class="hv">${num(v)}</b><span class="track" aria-hidden="true"><i style="width:${Math.round(100*v/max)}%"></i></span></li>`).join('')}</ul>`;})():'<p class="note">Chưa đo (mẫu bản lưu chưa tính, hoặc SQLite cũ).</p>';
+    return `<ul class="hbars compact">${ss.hist.map((v,i)=>`<li><span class="hl">${labels[i]}</span><b class="hv">${num(v)}</b><span class="track" aria-hidden="true"><i style="width:${Math.round(100*v/max)}%"></i></span></li>`).join('')}</ul>`;})():'<p class="note">Chưa đo (mẫu bản lưu chưa tính).</p>';
   const tables=(x.tables||[]).slice(0,15).map(t=>`<tr><td><code>${esc(t.name)}</code></td><td>${t.approx?'≈ ':''}${num(t.rows)}</td></tr>`);
   return notices(d)+`<div class="kpis inv">
       ${metric(d,'db_bytes',null,{text:bytes(x.db_bytes)})}

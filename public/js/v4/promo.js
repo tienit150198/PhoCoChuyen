@@ -22,10 +22,10 @@ function more(p){
   const emp=p.track==='emp';
   const rows=(p.log||[]).map(x=>`<li>✓ Ngày ${x.d}: bậc ${x.to}</li>`).join('');
   return `<details class="pm-more"><summary>Xem thêm</summary><ul class="pm-rules">
-    <li>Ngày tốt: xong từ 2 việc, khách chấm từ ★3.5.</li>
+    <li>Ngày tốt: ca thường xong từ 2 việc, đánh giá trong ngày từ ★3.5 nếu có. Nghề văn phòng theo kết quả “ngày chắc tay”; ca quản lý đạt chất lượng từ 60%.</li>
     <li>${emp?'Mỗi bậc: tăng lương 8% → 16% → 25% → 35%.':'Mỗi bậc: khách quen boa thêm 3% → 6% → 9% → 12%.'}</li>
     <li>Bậc 3: mở 🧑‍💼 Ca quản lý${p.track==='own'?' (nhân viên + phụ việc thời vụ)':''}.</li>
-    <li>Không bao giờ bị giáng chức. Ngày chưa tốt chỉ chưa tính.</li>${rows}</ul></details>`;
+    <li>Không bao giờ bị giáng chức. Ngày chưa tốt không cộng ngày tốt và vẫn tính vào tỷ lệ ngày làm.</li>${rows}</ul></details>`;
 }
 
 /** The review: one question at a time, then (employees) the pay ask. */
@@ -43,8 +43,9 @@ export function promoView(env){
   if(!p)return head('🎖️ Thăng tiến')+`<div class="sheet-body"><p class="muted">Có việc làm rồi mới tính chuyện lên chức nhé.</p></div>`;
   if(p.due)return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body">${review(p)}</div>`;
   const n=p.next,sh=p.shift;
-  const line=n?(n.wait?`Hẹn xét lại sau ${n.wait} ngày làm`:`${n.good}/${n.need} ngày tốt → ${esc(n.title)}`):'Bậc cao nhất rồi!';
-  const lock=n?.why?`<p class="pm-lock">🔒 ${esc(n.why)}</p>`:'';
+  const line=n?`${n.good}/${n.need} ngày tốt → ${esc(n.title)}`:'Bậc cao nhất rồi!';
+  const lock=n?.requirements?.length?`<ul class="pm-rules">${n.requirements.map(r=>`<li>${r.met?'✓':'🔒'} ${esc(r.label)}</li>`).join('')}</ul>`
+    :[n?.why,n?.wait?`Hẹn xét lại sau ${n.wait} ngày làm`:null].filter(Boolean).map(s=>`<p class="pm-lock">🔒 ${esc(s)}</p>`).join('');
   const work=p.rank>=3?'Bạn có thể mở ca quản lý: giao việc cho đội, kiểm tra kết quả và xử lý chuyện trong ca. Mỗi ngày vẫn có thể chọn tự làm ở quầy.'
     :'Công việc ở quầy vẫn như trước. Từ bậc 3, bạn có thêm ca quản lý để giao việc cho đội và kiểm tra kết quả.';
   const benefit=p.track==='emp'?`Thăng chức tăng lương${p.pct?` · hiện tại +${p.pct}%`:''}.`:`Thăng tiến tăng tiền boa từ khách quen${p.pct?` · hiện tại +${p.pct}%`:''}.`;
@@ -96,8 +97,16 @@ export function promoSummary(p){
   if(p.manager)bits.push(`🧑‍💼 Ca quản lý: ${p.manager.good}/${p.manager.size} việc tốt · +${p.manager.bonus} xu`);
   if(p.tip)bits.push(`🎖️ Khách quen boa thêm +${p.tip} xu`);
   if(p.line)bits.push(esc(p.line));
-  else if(p.next&&!p.next.wait)bits.push(`🎖️ ${p.good?'Ngày tốt!':'Ngày này chưa tính.'} ${p.next.good}/${p.next.need} → ${esc(p.next.title)}`);
-  return bits.length?`<div class="notice ${p.line?'success':''}">${icon('star',17)}<div>${bits.map(b=>`<p>${b}</p>`).join('')}${p.line?`<button type="button" class="btn small" data-action="promo">🎖️ Xem</button>`:''}</div></div>`:'';
+  else if(p.next){
+    bits.push(`🎖️ ${p.good?'Ngày tốt!':'Hôm nay chưa đạt ngày tốt.'} ${p.next.good}/${p.next.need} → ${esc(p.next.title)}`);
+    const blockers=p.next.requirements?.filter(r=>!r.met)||[];
+    if(blockers.length)bits.push(...blockers.map(r=>`🔒 ${esc(r.label)}`));
+    else if(!p.next.requirements){
+      if(p.next.why)bits.push(`🔒 ${esc(p.next.why)}`);
+      if(p.next.wait)bits.push(`Hẹn xét lại sau ${p.next.wait} ngày làm`);
+    }
+  }
+  return bits.length?`<div class="notice ${p.line?'success':''}">${icon('star',17)}<div>${bits.map(b=>`<p>${b}</p>`).join('')}${p.line||p.next?`<button type="button" class="btn small" data-action="promo">🎖️ Xem</button>`:''}</div></div>`:'';
 }
 
 export async function promoAction(action,data,el,env){

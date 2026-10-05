@@ -57,7 +57,7 @@ RESERVE = 350          # kg: 30 minutes of final reserve
 HOLD = 250             # kg: 20 minutes of holding over the destination
 TANKS = 2000           # kg: full tanks
 FULL_PAX = 64          # from this many passengers full tanks are over the take-off weight
-BONUS = 12             # xu for a hop flown by the book (the salary is the pay)
+BONUS = 12             # legacy saved hops keep their original bonus
 DELAY = dict(fog=30, tech=30, recheck=10, hold=20, around=10, divert=45, caught=15)
 LOG_MAX = 12
 MAX_AROUNDS = 2
@@ -394,6 +394,21 @@ def _where(t: dict) -> str:
 
 
 # ================================================================ tasks
+def daily_task_count(day: int) -> int:
+    """Dispatch sets the roster once per day; day one keeps all three lessons."""
+    return 3 if day == 1 else kit.rng(ID, 'roster', day).randint(2, 5)
+
+
+def _flight_bonus(t: dict) -> int:
+    """A separate seed leaves every existing route, defect and weather roll intact."""
+    return kit.rng(ID, 'flight-bonus', t['id']).randint(8, 20) + (2 if t['needs']['full'] else 0)
+
+
+def on_task(s: dict, c: dict, t: dict) -> None:
+    # Only newly dispatched flights reach this hook. Never rewrite legacy saves.
+    t.setdefault('flight_bonus', _flight_bonus(t))
+
+
 def _kind(day: int, slot: int, mod: str) -> str:
     if day == 1:
         return {2: 'tech'}.get(slot, 'flight')
@@ -958,7 +973,7 @@ def _park(s, c, d, p):
     t = _task(c, p, 'landed')
     n = t['needs']['leg']
     pts = cq.points(t)
-    full = 0 if cq.safety(t) else max(0, BONUS - 3 * pts)
+    full = 0 if cq.safety(t) else max(0, t.get('flight_bonus', BONUS) - 3 * pts)
     reward = ao.bonus(d['odd'], full)
     t['stage'] = 'done'
     if d['sky'] and d['sky']['task'] == t['id']:
@@ -1200,6 +1215,7 @@ def public_task(t: dict) -> dict:
         if k.startswith('_'):
             del v[k]
     v['leg'] = t['needs']['leg']          # the departures board shows every hop, briefed or not
+    v['expected_bonus'] = t.get('flight_bonus', BONUS)
     if not t['known']:
         v['needs'] = None
         return v
@@ -1250,7 +1266,10 @@ def public_data(c: dict) -> dict:
     mod = mod_of(c['day'])
     arc = d['arc']
     due = ARC_INDEX.get(arc['due']) if arc.get('due') else None
+    remaining = sum(t['status'] not in ('completed', 'referred', 'cancelled') for t in c['tasks'])
+    completed = d['today']['flights'] if d['today']['day'] == c['day'] else 0
     return dict(intro=d['intro'], logbook=d['logbook'], log=d['log'][-6:], today=d['today'],
+                schedule=dict(total=completed + remaining, completed=completed, remaining=remaining),
                 regulars={k: dict(v) for k, v in d['regulars'].items()},
                 mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']),
                 arc=dict(seen=list(arc['seen']), total=len(ARC),
@@ -1302,6 +1321,9 @@ def _vbool(x) -> None:
 
 
 def validate_task(t: dict, original: dict) -> None:
+    if 'flight_bonus' in t:
+        kit.integer(t['flight_bonus'], 8, 22)
+        kit.need(t['flight_bonus'] == _flight_bonus(original), 'Thưởng chuyến bay sai.')
     kit.need(t.get('gen') == GEN, 'Phiên bản chuyến bay không hợp lệ.')
     kit.need(t.get('kind') in KINDS and t.get('stage') in STAGES, 'Trạng thái chuyến bay sai.')
     n = t['needs']

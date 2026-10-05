@@ -64,6 +64,7 @@ import random
 
 from . import archive as ar
 from . import bank as bk
+from . import wealth_pricing
 
 VERSION = 1
 KEY = 'rui'
@@ -103,30 +104,38 @@ GEAR = {
     'khoa': dict(emoji='🔐', name='Khóa chống trộm', price=150, what='Trộm vào nhà giảm 60%'),
     'ket': dict(emoji='🗄️', name='Két sắt mini', price=500, what='Trộm chỉ lấy được 1/4'),
     'binh': dict(emoji='🧯', name='Bình chữa cháy', price=120, what='Cháy bếp chỉ thiệt 1/3'),
+    'hai_lop': dict(emoji='🔑', name='Bảo mật ngân hàng hai lớp', price=1200, what='Giảm 60% khả năng bị hack tài khoản'),
+    'diet_virus': dict(emoji='💻', name='Phần mềm diệt virus', price=1800, what='Giảm một nửa số xu mất khi bị hack, trước giới hạn chung'),
+    'bao_dong': dict(emoji='🚨', name='Chuông báo trộm', price=900, what='Giảm một nửa khả năng trộm vào nhà; dùng cùng khóa và két sắt'),
 }
 
 # ---------------------------------------------------------------- odds and costs
-XE_P = (400, 120)                 # per 10 000 after an actual outing: displayed vehicle / another vehicle
+XE_P = (1200, 360)                # per 10 000 after an actual outing: displayed vehicle / another vehicle
 XE_PCT = 400                      # repair: basis points of the price paid
-NHA_P = 200                       # a home you own, per 10 000 a life day
+NHA_P = 600                       # a home you own, per 10 000 a life day
 NHA_SUBS = {   # sub: (weight, reno part, basis points of the list price)
     'dot': (30, 'roof', 120), 'ong': (30, 'power', 100), 'dien': (20, 'power', 150),
     'chay': (10, 'kitchen', 300), 'ngap': (10, 'floor', 250),
 }
 NGAP_GROUPS = ('townhouse', 'villa')   # a flat high up does not flood
-OM_P = (100, 200, 100)            # per 10 000: everyone, + no bụng or tỉnh táo low, + tinh thần < 35
+OM_P = (300, 600, 300)            # per 10 000: everyone, + no bụng or tỉnh táo low, + tinh thần < 35
 OM_PCT, OM_MIN, OM_MAX = 150, 30, 600   # the clinic: basis points of W − FLOOR, clamped
 THUOC = 15                        # medicine from the pharmacy
 THUOC_LAI = 30                    # % it does not help: a second card two days later
-MOC_P, MOC_RICH = 120, 3000       # per 10 000 with cash ≥ FLOOR + 100; ×1,5 with more cash than MOC_RICH
+MOC_P, MOC_RICH = 360, 3000       # per 10 000 with cash ≥ FLOOR + 100; ×1,5 with more cash than MOC_RICH
 MOC_PCT, MOC_MAX = 12, 2000       # % of the cash above FLOOR, at most
 DT_PCT, DT_MIN, DT_MAX = 100, 40, 500   # a new phone: basis points of W − FLOOR, clamped
-TROM_P, TROM_CASH = 100, 600      # per 10 000, with cash ≥ TROM_CASH, living in a home or a rented room
+TROM_P, TROM_CASH = 300, 600      # per 10 000, with cash ≥ TROM_CASH, living in a home or a rented room
 TROM_PCT, TROM_MAX = 20, 4000
-HACK_P, HACK_PCT, HACK_MAX = 120, 8, 3000  # per 10 000; current account only, before shared risk caps
+HACK_P, HACK_PCT, HACK_MAX = 360, 8, 3000  # per 10 000; current account only, before shared risk caps
 HACK_BACK_P, HACK_BACK_DAYS = 30, 2  # chance police catch the hacker and return the full loss
 HACK_CASES_MAX = 64
-PHAT_P = 200                      # per 10 000 a life day while driving a car
+# Total financial wealth determines exposure; no account identity or real time is used.
+# (minimum wealth, theft/hack odds as % of base, scalable loss ceiling as % of wealth).
+# Below 10k retains existing risk. Shared 8% event / 12% month caps still apply.
+WEALTH_BANDS = ((0, 100, 0), (10000, 150, 5), (100000, 200, 6), (1000000, 300, 8))
+LOSS_MAX = 10**9                 # saved warnings/cards/recovery claims stay within existing numeric bounds
+PHAT_P = 600                      # per 10 000 a life day while driving a car
 PHAT_BP, PHAT_MIN, PHAT_MAX = 30, 20, 300
 BAO_BACK = 30                     # % the police find the money (half of it), BACK_DAYS later
 BACK_DAYS = 2
@@ -225,6 +234,17 @@ def wealth(s: dict) -> int:
 def room(s: dict) -> int:
     """W − FLOOR (0 below the floor): what the caps are taken from."""
     return max(0, wealth(s) - FLOOR)
+
+
+def wealth_risk(s: dict) -> dict:
+    """Current exposure and pre-protection ceilings; read-only for the UI and candidate draw."""
+    from . import wealth_pricing
+    w = wealth_pricing.total(s)
+    threshold, odds_pct, cap_pct = next(b for b in reversed(WEALTH_BANDS) if w >= b[0])
+    scalable = min(LOSS_MAX, w * cap_pct // 100)
+    return dict(threshold=threshold, odds_pct=odds_pct,
+                hack_max=max(HACK_MAX, scalable), theft_max=max(TROM_MAX, scalable),
+                event_max=room(s) * EVENT_PCT // 100)
 
 
 def _have(s: dict) -> int:
@@ -398,7 +418,7 @@ def _theft(s: dict, r: dict, kind: str) -> int:
     cash = max(0, s['journey']['wallet'])
     if kind == 'moc':
         return min(MOC_MAX, (cash - FLOOR) * MOC_PCT // 100) if cash > FLOOR else 0
-    loss = min(TROM_MAX, (cash - FLOOR) * TROM_PCT // 100) if cash > FLOOR else 0
+    loss = min(wealth_risk(s)['theft_max'], (cash - FLOOR) * TROM_PCT // 100) if cash > FLOOR else 0
     return loss // 4 if 'ket' in r['gear'] else loss
 
 
@@ -436,15 +456,22 @@ def candidates(s: dict, r: dict, day: int) -> list[tuple[int, str, str, object]]
         p = OM_P[0] + (OM_P[1] if _needs_low(s) else 0) + (OM_P[2] if _spirit_now(s) < 35 else 0)
         out.append((p, 'om', '', None))
     cash = max(0, j['wallet'])
+    exposure = wealth_risk(s)['odds_pct']
     if cash >= FLOOR + 100:
-        p = MOC_P * (3 if cash > MOC_RICH else 2) // 2
+        p = MOC_P * (3 if cash > MOC_RICH else 2) // 2 * exposure // 100
         out.append((p // 2 if 'tui' in r['gear'] else p, 'moc', '', None))
     if cash >= TROM_CASH and _where(s) in ('own', 'rent', 'shared'):
-        out.append((TROM_P * 2 // 5 if 'khoa' in r['gear'] else TROM_P, 'trom', '', None))
+        p = TROM_P * exposure // 100
+        if 'khoa' in r['gear']:
+            p = p * 2 // 5
+        if 'bao_dong' in r['gear']:
+            p //= 2
+        out.append((p, 'trom', '', None))
     if ride and ride in gr.VEHICLES and gr.VEHICLES[ride]['group'] == 'car' and ride in g['cars'] and ride not in r['broken']['xe'] and gr.used_before(s,ride,day):
         out.append((PHAT_P, 'phat', '', ride))
     if len(r.get('hack_back', [])) < HACK_CASES_MAX and _projected(s, r, 'hack', 'account', None) >= MIN_COST:
-        out.append((HACK_P, 'hack', 'account', None))
+        p = HACK_P * exposure // 100
+        out.append((p * 2 // 5 if 'hai_lop' in r['gear'] else p, 'hack', 'account', None))
     if day < EASE_DAY or wealth(s) < EASE_W:
         out = [(p // 2, k, sub, ref) for p, k, sub, ref in out]
     return [x for x in out if x[0] > 0]
@@ -473,7 +500,8 @@ def _projected(s: dict, r: dict, kind: str, sub: str, ref) -> int:
     """What the event would cost if it happened today (before the caps)."""
     if kind == 'hack':
         b = bk.get(s)
-        return min(HACK_MAX, max(0, b['balance']) * HACK_PCT // 100) if b else 0
+        loss = min(wealth_risk(s)['hack_max'], max(0, b['balance']) * HACK_PCT // 100) if b else 0
+        return loss // 2 if 'diet_virus' in r['gear'] else loss
     if kind == 'xe':
         from . import garage as gr
         return _xe_cost(gr.get(s)['cars'][ref])
@@ -495,7 +523,9 @@ def _roll(s: dict, r: dict, day: int, notes: list) -> None:
         return
     rng = _rng(s, 'roll', day)
     cands = candidates(s, r, day)
-    u = rng.random() * 10000
+    # Many owned assets can exceed 100% combined odds. Keep every eligible
+    # kind in the draw instead of letting the first assets hide later risks.
+    u = rng.random() * max(10000, sum(p for p, *_ in cands))
     for p, kind, sub, ref in cands:
         if u >= p:
             u -= p
@@ -517,6 +547,9 @@ def _roll(s: dict, r: dict, day: int, notes: list) -> None:
             return
         lead = rng.choice(LEAD)
         r['warn'] = dict(kind=kind, sub=sub, ref=ref, day=day + lead, at=day, cost=int(cost))
+        if wealth_pricing.ENABLED and kind in ('hack', 'trom'):
+            r['warn'].update(wealth_pricing.event_quote(s, f'rui|{kind}|{day}|{r["seq"]}'))
+            r['warn']['cost'] = _security_loss(s, r, r['warn'], day)
         r['next_ok'] = day + GAP
         _stat(r, 'warned')
         w = warn_view(s, r)
@@ -553,7 +586,8 @@ def _fire(s: dict, r: dict, day: int, notes: list) -> None:
     budget = _budget(s, r, day)
     if kind == 'hack':
         b = bk.get(s)
-        loss = min(_projected(s, r, kind, sub, ref), budget)
+        loss = (_security_loss(s, r, w, day) if 'percent' in w
+                else min(_projected(s, r, kind, sub, ref), budget))
         if not b or loss < MIN_COST:
             _stat(r, 'fizzled')
             return
@@ -574,7 +608,8 @@ def _fire(s: dict, r: dict, day: int, notes: list) -> None:
         m['n'] += 1
         return
     if kind in ('moc', 'trom') and (kind == 'trom' or sub == 'vi'):
-        loss = min(_theft(s, r, kind), budget, max(0, s['journey']['wallet']))
+        loss = (_security_loss(s, r, w, day) if 'percent' in w
+                else min(_theft(s, r, kind), budget, max(0, s['journey']['wallet'])))
         if loss < MIN_COST:
             _stat(r, 'fizzled')
             return
@@ -601,6 +636,24 @@ def _fire(s: dict, r: dict, day: int, notes: list) -> None:
     _new_card(r, day, kind, sub, ref, cost, 0, cover(s, r, kind, w['at']))
     c = card_view(s, r)
     notes.append(f'{c["emoji"]} {c["title"]}: {c["text"]}')
+
+
+def _security_loss(s, r, quote, day):
+    """Saved 1–20% asset quote, reduced by gear and available target funds.
+
+    A month may lose at most 20% of this event's saved asset basis. Other risk
+    kinds and pre-update warnings keep their original 8% / 12% budgets.
+    """
+    loss = wealth_pricing.event_cost(quote)
+    if quote['kind'] == 'hack':
+        b = bk.get(s)
+        cash = b['balance'] if b else 0
+        if 'diet_virus' in r['gear']: loss //= 2
+    else:
+        cash = max(0, s['journey']['wallet'])
+        if 'ket' in r['gear']: loss //= 4
+    monthly = max(0, quote['wealth'] * 20 // 100 - _month(s, r, day)['lost'])
+    return max(0, min(loss, monthly, cash, _have(s) - FLOOR))
 
 
 def _new_card(r: dict, day: int, kind: str, sub: str, ref, cost: int, loss: int, cov: int) -> None:
@@ -724,7 +777,7 @@ def _resolve(s: dict, r: dict, choice: str, day: int, auto: bool = False) -> str
         if not any(x['id'] == c['id'] for x in cases):
             caught = _rng(s, f'hack_bao:{c["id"]}', day).randint(1, 100) <= HACK_BACK_P
             cases.append(dict(id=c['id'], day=day + HACK_BACK_DAYS,
-                              amount=min(c['loss'], HACK_MAX) if caught else 0))
+                              amount=min(c['loss'], LOSS_MAX) if caught else 0))
         msg = f'Đã khóa phiên lạ và trình báo công an. Sau {HACK_BACK_DAYS} ngày sống sẽ có kết quả; bắt được kẻ hack thì hoàn đủ xu vào tài khoản.'
         _log(r, day, 'Khóa phiên lạ & báo công an')
     elif k in ('moc', 'trom') and sub != 'dt':
@@ -1137,7 +1190,7 @@ def public(s: dict) -> dict | None:
     for hid, b in r['broken']['nha'].items():
         x = _home(s, hid)
         broken.append(dict(kind='nha', ref=hid, name=_home_name(x) if x else '', cost=fix_cost(s, r, 'nha', hid)))
-    out = dict(pol=pol, gear=list(r['gear']), broken=broken)
+    out = dict(pol=pol, gear=list(r['gear']), broken=broken, wealth_risk=wealth_risk(s))
     cases = r.get('hack_back', [])
     if cases:
         out['hack_pending'] = dict(n=len(cases), days=max(0, min(x['day'] for x in cases) - day))
@@ -1157,7 +1210,8 @@ def catalogue() -> dict:
                 gear=[dict(id=k, **v) for k, v in GEAR.items()],
                 rules=dict(floor=FLOOR, event_pct=EVENT_PCT, month_pct=MONTH_PCT, wait=WAIT, start_day=START_DAY,
                            start_chapter=START_CHAPTER, prevent_pct=PREVENT_PCT, card_days=CARD_DAYS,
-                           hack_pct=HACK_PCT, hack_max=HACK_MAX))
+                           hack_pct=HACK_PCT, hack_max=HACK_MAX,
+                           wealth_bands=[dict(threshold=t, odds_pct=p, cap_pct=c) for t, p, c in WEALTH_BANDS]))
 
 
 # ---------------------------------------------------------------- the save
@@ -1183,6 +1237,8 @@ def validate(s: dict) -> None:
     need(isinstance(m, dict) and {'i', 'w', 'lost', 'n'} <= set(m)
          and all(type(m[k]) is int and -1 <= m[k] <= 10**12 for k in ('i', 'w', 'lost', 'n')), bad, 'invalid_save')
     w = r['warn']
+    if isinstance(w, dict) and 'percent' in w:
+        need(w.get('kind') in ('hack','trom') and wealth_pricing.valid_event_quote(w), bad, 'invalid_save')
     need(w is None or (isinstance(w, dict) and {'kind', 'sub', 'ref', 'day', 'at', 'cost'} <= set(w) and w['kind'] in KINDS
                        and isinstance(w['sub'], str) and len(w['sub']) <= 8 and (w['ref'] is None or isinstance(w['ref'], str))
                        and day_ok(w['day'], 1) and day_ok(w['at'], 1) and type(w['cost']) is int and 0 <= w['cost'] <= 10**9),
@@ -1213,7 +1269,7 @@ def validate(s: dict) -> None:
     for case in cases:
         need(isinstance(case, dict) and isinstance(case.get('id'), str) and 0 < len(case['id']) <= 16
              and case['id'] not in ids and day_ok(case.get('day'), 1) and type(case.get('amount')) is int
-             and 0 <= case['amount'] <= HACK_MAX, bad, 'invalid_save')
+             and 0 <= case['amount'] <= LOSS_MAX, bad, 'invalid_save')
         ids.add(case['id'])
     need(isinstance(r['log'], list) and len(r['log']) <= LOG_MAX
          and all(isinstance(x, dict) and day_ok(x.get('d'), 1) and isinstance(x.get('t'), str) and len(x['t']) <= 120

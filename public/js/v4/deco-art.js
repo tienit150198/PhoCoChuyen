@@ -42,14 +42,20 @@ const star=(x,y,r,c,sw=0)=>Pa('M'+Array.from({length:10},(_,i)=>{const a=-Math.P
  * g: where it glows at night [cx, cy, r]. */
 export const ART={
   sofa:{h:60,d:(W)=>shadow(W,30)+legs([8,W-12],-8,8)+R(6,-58,W-12,32,P.pinkD,12)+R(10,-54,W/2-12,24,P.pink,9)+R(W/2+2,-54,W/2-12,24,P.pink,9)
-    +box(2,W-4,6,16,10,P.pinkD,P.pinkL,6)+R(0,-44,16,38,P.pink,7)+R(W-16,-44,16,38,P.pink,7)+C(W/2-14,-42,7,P.butter)+L(`M${W/2-17} -44l3 3l3-3`,OL,1.1)},
+    +box(2,W-4,6,16,10,P.pinkD,P.pinkL,6)+R(0,-44,16,38,P.pink,7)+R(W-16,-44,16,38,P.pink,7)+C(W/2-14,-42,7,P.butter)+L(`M${W/2-17} -44l3 3l3-3`,OL,1.1),
+    back:(W)=>shadow(W,30)+legs([8,W-12],-8,8)+R(0,-58,W,50,P.pinkD,10)+R(6,-52,W-12,38,P.pink,7)
+      +L(`M10 -17h${W-20}M${W/2} -49v31`,P.pinkD,1.5)+R(3,-12,W-6,6,P.pinkD,3)},
   ban_tra:{h:26,d:(W)=>shadow(W,30)+legs([8,W-12],-14,14)+box(2,W-4,12,6,10,P.woodD,P.woodL,4)+shine(10,-26,W-24,2)},
   giuong:{h:96,d:(W,D)=>shadow(W,D)+legs([4,W-8],-6,6)+R(2,-D-34,W-4,32,P.woodD,12)+R(10,-D-28,W-20,20,P.wood,8)
     +R(2,-D-4,W-4,D-6,P.white,6)+E(W*.3,-D+2,16,7,P.cream)+E(W*.66,-D+2,16,7,P.cream)
     +Pa(`M4 ${-D*0.62}q${W/2-4} -8 ${W-8} 0v${D*0.62-14}h${-(W-8)}z`,P.sky)+[0.2,0.4,0.6,0.8].map(t=>C(W*t,-D*0.36,2,P.skyL,0)).join('')
     +R(2,-14,W-4,10,P.wood,3)},
   tv:{h:66,d:(W)=>shadow(W,30)+box(4,W-8,0,16,8,P.woodD,P.woodL)+C(W/2,-9,1.6,P.cream,1)+R(W/2-3,-30,6,6,P.dark,1,1)
-    +R(8,-66,W-16,38,P.dark,5)+R(12,-62,W-24,30,'#7ec8e3',3,0)+Pa(`M14 -36l10-12l8 7l9-12l${W-62} 17z`,'#a8e0f0',0)+C(W-24,-54,4,P.butter,0)},
+    +R(8,-66,W-16,38,P.dark,5)+R(12,-62,W-24,30,'#7ec8e3',3,0)+Pa(`M14 -36l10-12l8 7l9-12l${W-62} 17z`,'#a8e0f0',0)+C(W-24,-54,4,P.butter,0),
+    back:(W)=>shadow(W,30)+box(4,W-8,0,16,8,P.woodD,P.woodL)+R(W/2-3,-34,6,10,P.dark,1,1)
+      +R(8,-66,W-16,38,P.dark,5)+R(16,-60,W-32,25,'#575366',3)
+      +Array.from({length:5},(_,i)=>L(`M${W/2-12+i*6} -55v9`,'#282634',1.5)).join('')
+      +C(W-23,-37,1.5,'#282634',0)+L(`M${W-23} -35v12q0 6-8 8`,'#282634',1.4)},
   be_ca:{h:64,d:(W)=>shadow(W,30)+box(4,W-8,0,16,8,P.woodD,P.woodL)+R(6,-64,W-12,40,'#bfe7f7',5)+Rn(8,-56,W-16,30,'#8fd2ef',3,.75)
     +Pa('M18 -26q-4-12 2-18q2 10 2 18','#7cc47f',1)+Pa(`M${W-20} -26q-5-10 0-16q4 8 3 16`,P.leafD,1)
     +E(30,-44,7,4,P.peachD,1.2)+Pa('M23 -44l-6-4v8z',P.peachD,1.2)+C(32,-45,.9,OL,0)+E(W-30,-36,6,3.5,P.butterD,1.2)+Pa(`M${W-24} -36l5-3v6z`,P.butterD,1.2)
@@ -611,9 +617,9 @@ export function anchor(it,q,G,host=null){
   return [PX+q.x*SX,G.FY+(q.y+it.h*U)*SF-3];
 }
 /** One piece's drawing with its origin at (ax, ay) (f: mirrored; tint: its colour from the palette, if any). */
-export function pieceAt(it,ax,ay,f,tint=null){
+export function pieceAt(it,ax,ay,f,tint=null,face='front'){
   const a=ART[it.id];if(!a)return '';
-  const W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR,body=tinted(it.id,a.d(W,D),tint);
+  const W=it.w*CW,D=it.spot==='wall'?it.h*WR:it.h*FR,draw=face==='back'&&a.back?a.back:a.d,body=tinted(it.id,draw(W,D),tint);
   return `<g transform="translate(${n(ax)} ${n(ay)})">${f?`<g transform="translate(${W} 0) scale(-1 1)">${body}</g>`:body}</g>`;
 }
 /** A small soft shadow under a thing standing on a surface (the floor pieces draw their own). */

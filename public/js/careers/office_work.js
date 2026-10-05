@@ -55,7 +55,9 @@ function papersView(t,x){
 
 function twistBanner(t,x){
   const tw=W(t).twist;if(!tw)return '';
-  return `<p class="ow-twist" role="status"><b>📞 Vừa đổi:</b> ${x.esc(tw.note)}</p>`;
+  const label=tw.item?'Xem hồ sơ vừa cập nhật':tw.seg?'Mở ô vừa cập nhật':'';
+  const open=label&&!t.filed?x.button(label,'car:reviewUpdate',{task:t.id},'ghost small'):'';
+  return `<div class="ow-twist" role="status"><p><b>📞 Thông tin mới:</b> ${x.esc(tw.note)}</p>${open}</div>`;
 }
 
 function hintBox(t,x,c){
@@ -104,7 +106,7 @@ function markDoc(t,x){
     const o=optsOf(w,sg),cur=sg.id in ans?ans[sg.id]:sg.keep;
     return `<div class="ow-picker" data-step-card="${x.esc(t.id)}:${x.esc(sg.id)}"><p><b>“${x.esc(sg.t)}”</b> ${w.opts?'— ô này đúng chưa?':'— sửa thành:'}</p><div class="ow-choices">${o.map((v,i)=>
       `<button type="button" class="ow-choice${i===cur?' on':''}" data-action="car:mark" data-task="${x.esc(t.id)}" data-seg="${x.esc(sg.id)}" data-opt="${i}" aria-pressed="${i===cur}"><span class="ow-box" aria-hidden="true">${i===cur?'●':''}</span>${x.esc(v)}${i===sg.keep&&!w.opts?' <small>(giữ nguyên)</small>':''}</button>`).join('')}</div>
-      ${x.button('Đóng','car:segx',{task:t.id},'ghost small')}</div>`;};
+      ${sg.id===tw?`<p class="ow-note">📞 ${x.esc(w.twist.note)}</p>`:''}${x.button('Đóng','car:segx',{task:t.id},'ghost small')}</div>`;};
   const sel=segsOf(w).find(sg=>sg.id===s.seg);
   const blocks=(w.blocks||[]).map(b=>{
     let html,has=false;
@@ -352,6 +354,11 @@ export function officeWork(c){
       fold:foldToggle,
       goto:gotoAction,
       seen(d,el,x){x.ui.seen=d.key;x.render();},
+      reviewUpdate(d,el,x){
+        const t=taskOf(x,d.task),tw=t&&W(t).twist;if(!tw||t.filed)return;
+        const state=u(x,t);if(tw.item)state.card=tw.item;if(tw.seg)state.seg=tw.seg;
+        x.render();
+      },
       card(d,el,x){const t=taskOf(x,d.task);if(!t)return;u(x,t).card=d.card;x.render();},
       async put(d,el,x){const t=taskOf(x,d.task);if(!t)return;u(x,t).card=null;await send(x,'put',{task:d.task,item:d.item,bin:d.bin||null});},
       seg(d,el,x){const t=taskOf(x,d.task);if(!t)return;const s=u(x,t);s.seg=s.seg===d.seg?null:d.seg;x.render();},

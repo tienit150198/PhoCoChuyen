@@ -624,6 +624,31 @@ def _free(c: dict, item: str, size: str, t: dict | None = None) -> int:
     return _data(c)['grid'].get(item, {}).get(size, 0) - _held(c, item, size, t)
 
 
+
+def staff_size(c: dict, item: str) -> str | None:
+    """Read-only size allocation; picked counter/parcel pieces stay reserved."""
+    original=c['ext']['data'].get('grid',{}).get(item,{})
+    row={size:original.get(size,0) for size in SIZES[item]}
+    delta=kit.stock(c,item)-sum(row.values())
+    if delta>0:_fill(row,item,delta)
+    elif delta<0:_drain(row,item,-delta)
+    return next((size for size,qty in row.items() if qty>_held(c,item,size)),None)
+
+
+def staff_order(c: dict, served: int) -> tuple | None:
+    """Rotate autonomous customers over the catalogue, skipping unavailable goods.
+
+    Selection happens at completion. Accepted player orders keep their own fixed
+    product and quote. The existing receipt count makes offline/polled runs equal.
+    """
+    items=list(ITEM)
+    for offset in range(len(items)):
+        item=items[(served+offset)%len(items)]
+        if staff_size(c,item) is not None:
+            return ('Đơn riêng: '+ITEM[item]['name'],PRICES[item],2,{item:1})
+    return None
+
+
 def _sell(c: dict, item: str, size: str) -> int:
     d = _data(c)
     row = d['grid'][item]
@@ -698,6 +723,14 @@ def _sale_options(price: int, pct: int) -> list:
 
 def on_stock(s: dict, c: dict, action: str) -> None:
     _sync(c)
+
+
+def on_receive(c: dict, order: dict) -> None:
+    """A counted delivery fills the size the player ordered; older orders still auto-fill."""
+    size = order.get('size')
+    if size is not None:
+        _sync(c)  # reconcile existing stock before inventory adds the new lot
+        _data(c)['grid'][order['item']][size] += order['actual']
 
 
 def on_start(s: dict, c: dict) -> None:
@@ -2126,7 +2159,7 @@ SPEC = dict(
            ('Thư', 'ao_steam', 'Cầm bàn ủi hơi như cầm cọ vẽ, phối ma-nơ-canh có gu.', 74, 88),
            ('Lộc', 'ao_floor', 'Vui tính, khách vào là có người đon đả.', 88, 76)],
     roles={'ao_floor': 'Phụ bán & phòng thử', 'ao_pack': 'Đóng gói đơn online', 'ao_steam': 'Ủi hơi & trưng bày'},
-    inventory=dict(items=ITEMS, capacity=CAPACITY),
+    inventory=dict(items=ITEMS, capacity=CAPACITY, sizes=SIZES),
     prices=PRICES,
     tip=2,
     physical=('ao_pick', 'ao_try', 'ao_pay', 'ao_measure', 'ao_sew_start', 'ao_steam', 'ao_pack', 'ao_ship', 'ao_room_check',

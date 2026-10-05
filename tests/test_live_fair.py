@@ -1,6 +1,6 @@
 """🏮 Đi hội chợ cùng nhau (live/fair.py): instances, positions as fractions of the floor (clamped, validated, rate
 limited, batched, never in the database), blocks, a second tab, the switch, and no notification of any kind. Real
-sockets against a real game database (SQLite here, PostgreSQL with TEST_DATABASE_URL)."""
+sockets against a real game database (PostgreSQL with TEST_DATABASE_URL)."""
 import asyncio
 import math
 import time
@@ -32,12 +32,12 @@ class Units(unittest.TestCase):
     def test_switch_follows_the_street_unless_set(self):
         import os
         from unittest import mock
-        with mock.patch.dict(os.environ, {'LIVE_STREET': '1'}, clear=False):
+        with mock.patch.dict(os.environ, {'LIVE_STREET': '1', 'DATABASE_URL': 'postgresql://config-only@127.0.0.1:1/fixture'}, clear=False):
             os.environ.pop('LIVE_FAIR', None)
             self.assertTrue(from_env([]).flags()['fair'])
             os.environ['LIVE_FAIR'] = '0'
             self.assertFalse(from_env([]).flags()['fair'])
-        with mock.patch.dict(os.environ, {'LIVE_STREET': '0'}, clear=False):
+        with mock.patch.dict(os.environ, {'LIVE_STREET': '0', 'DATABASE_URL': 'postgresql://config-only@127.0.0.1:1/fixture'}, clear=False):
             os.environ.pop('LIVE_FAIR', None)
             self.assertFalse(from_env([]).flags()['fair'])
             os.environ['LIVE_FAIR'] = '1'

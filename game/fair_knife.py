@@ -1,4 +1,9 @@
-"""🗡️ Phóng dao at the fair (owner 03/10, replacing the 🎯 phi tiêu stall: "càng ngày càng khó, chơi 1 màn xong chọn chơi
+"""Owner 05/10 follow-up: new knife levels use real collisions again. Both client
+and server replay the same schedule/tap times; no chance draw can turn a clean
+board into a loss. New levels use the gentler 135% schedule. The simulation figures
+below describe the original 100% schedule, not the current 135% setting.
+
+🗡️ Phóng dao at the fair (owner 03/10, replacing the 🎯 phi tiêu stall: "càng ngày càng khó, chơi 1 màn xong chọn chơi
 tiếp hoặc dừng, chơi tiếp mà thua thì thua hết, dừng thì nhận thưởng hiện tại. Lâu lâu thì hiển thị "màn sau x2""). Pure
 functions; the commands, the wallet, the Sổ ví row and the save are in game/fair.py (fair_kn_*), the stall in
 public/js/v4/fair-knife.js (which draws the same numbers).
@@ -47,7 +52,7 @@ from __future__ import annotations
 import bisect
 import random
 
-STAKES = (2, 5, 10, 20)
+STAKES = (2, 5, 10, 20, 50, 100, 200, 500)
 LEVELS = 10
 # After clearing level k (1..LEVELS), "Dừng" pays LADDER[k - 1] tenths of the stake (rounded, half up), and at least
 # 1 xu more than after level k - 1 (prizes(): at 2 and 5 xu the rounding would make a step worth nothing).
@@ -61,6 +66,8 @@ MIN_TAP = 120                  # ms between two throws at least (the knife in th
 LEVEL_MS = 60_000              # a level is finished within this (taps later than this do not count)
 SLACK = 4000                   # ms: the network's share between the player's last tap and the server seeing it
 PRE_SEP = 3 * GAP              # the knives already in the board at a level's start are this far apart at least
+CHANCE_DIFFICULTY = 135        # previous chance release; its saved boards still replay exactly
+SKILL_DIFFICULTY = 135         # keep the gentle speed/count when restoring skill play
 # A level by its difficulty d (the level number, plus today's heat, see heat()): knives to throw, knives already
 # stuck, the board's base speed (degrees a second) and how often a stretch of its turning is a 'wave' (speeds up or
 # slows down smoothly), a 'rev' (turns back abruptly) or a 'stut' (stops short, then bursts on, sometimes the other
@@ -120,7 +127,7 @@ def x2_bonus(stake: int, level: int) -> int:
 
 
 # ---------------------------------------------------------------- the board's turning
-def schedule(seed: int, level: int, hot: int = 0) -> dict:
+def schedule(seed: int, level: int, hot: int = 0, difficulty: int = 100) -> dict:
     """A level drawn from its seed: the knives to throw (need), the ones already stuck (pre, board degrees), the
     starting angle th0 and the turning, segs: [[ms, degrees a second, ramp ms], …] covering LEVEL_MS. The client gets
     exactly this and draws angle_at(); the server judges taps with the same."""
@@ -152,6 +159,9 @@ def schedule(seed: int, level: int, hot: int = 0) -> dict:
         a = round(r.uniform(0, 360), 1)
         if all(dist(a, b) >= PRE_SEP for b in pre):
             pre.append(a)
+    if difficulty in (135, 150):
+        need = (need * difficulty + 99) // 100
+        segs = [[ms, speed * (difficulty / 100), ramp] for ms, speed, ramp in segs]
     return dict(lv=level, hot=hot, d=d, need=need, pre=pre, th0=round(r.uniform(0, 360), 1), segs=segs)
 
 
@@ -210,6 +220,11 @@ def dist(a: float, b: float) -> float:
 def lands(sc: dict, tap: int) -> float:
     """Where on the board (board degrees 0..360) a knife thrown at `tap` ms sticks."""
     return (IMPACT - angle_at(sc, tap + FLY_MS)) % 360.0
+
+
+def chance_positions(need: int, count: int) -> list[float]:
+    """Display positions for chance mode; no collision is judged from the player's aim."""
+    return [round(360 * i / need, 2) for i in range(min(need, count))]
 
 
 def judge(sc: dict, taps: list[int]) -> tuple[list[float], int]:

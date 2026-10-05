@@ -194,6 +194,7 @@ export function inventoryView(env){
 
   /* Crates at the door: always on top, one big button each; opened, the goods are tapped to count. */
   const sup=o=>supOf(o.supplier);
+  const sizeNote=o=>o.size?` · size ${esc(o.size)}`:'';
   // Scatter the goods a little (stable per order) so counting is looking, not reading.
   const goodsOf=(o,i)=>{const n=Number(o.count_hint)||0,on=new Set(ui.invTally?.[o.id]||[]);let h=0;for(const ch of o.id)h=(h*31+ch.charCodeAt(0))>>>0;
     return Array.from({length:n},(_,k)=>{h=(Math.imul(h,1103515245)+12345)>>>0;const r=(h%21)-10,dy=((h>>>5)%7)-3;
@@ -204,12 +205,12 @@ export function inventoryView(env){
     const form=`<div class="inv-slip"><span>Phiếu giao ghi</span><b>${o.qty} ${esc(unit(i))}</b></div><p class="inv-tip">${COUNT_TIP}</p><ul class="inv-crate" aria-label="Trong thùng">${goodsOf(o,i)}</ul>`+
       `<form class="inv-receive" data-v4-receive="${esc(o.id)}"><label for="count-${esc(o.id)}">Bạn đếm được</label>${counter(o)}<button class="btn primary" type="button" data-action="v4Receive" data-order="${esc(o.id)}">${icon('check',15)} Nhận vào kệ</button></form>`+
       `<p class="muted small">Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`;
-    return `<article class="card inv-crate-card${isOpen?' open':''}" id="crate-${esc(o.id)}"><div class="row spread"><div><strong>${name(i)}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf({lines:[o]}))} xu${o.arrives_time?` · tới lúc ${esc(o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${isOpen?form:button(`📦 Mở thùng & xếp lên kệ`,'v4InvOpen',{order:o.id},'primary big full inv-open')}</article>`;};
+    return `<article class="card inv-crate-card${isOpen?' open':''}" id="crate-${esc(o.id)}"><div class="row spread"><div><strong>${name(i)}${sizeNote(o)}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf({lines:[o]}))} xu${o.arrives_time?` · tới lúc ${esc(o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${isOpen?form:button(`📦 Mở thùng & xếp lên kệ`,'v4InvOpen',{order:o.id},'primary big full inv-open')}</article>`;};
   // One crate for a merged order: a slip and a pile per line, one count each, one "receive" for all.
   const groupCrate=g=>{
-    const s=sup(g.o),isOpen=opened(g),list=g.lines.map(o=>`${esc(byId[o.item]?.emoji||'📦')} ${esc(byId[o.item]?.name||o.item)} ×${o.qty}`).join(' · ');
+    const s=sup(g.o),isOpen=opened(g),list=g.lines.map(o=>`${esc(byId[o.item]?.emoji||'📦')} ${esc(byId[o.item]?.name||o.item)}${sizeNote(o)} ×${o.qty}`).join(' · ');
     const body=isOpen?`<p class="inv-tip">${COUNT_TIP}</p>`+g.lines.map(o=>{const i=byId[o.item]||{name:o.item};
-        return `<div class="inv-gline" id="crate-${esc(o.id)}"><div class="inv-slip"><span>${name(i)}</span><b>${o.qty} ${esc(unit(i))}</b></div><ul class="inv-crate" aria-label="${esc(i.name)} trong thùng">${goodsOf(o,i)}</ul><div class="inv-receive"><label for="count-${esc(o.id)}">Đếm được</label>${counter(o)}</div></div>`;}).join('')+
+        return `<div class="inv-gline" id="crate-${esc(o.id)}"><div class="inv-slip"><span>${name(i)}${sizeNote(o)}</span><b>${o.qty} ${esc(unit(i))}</b></div><ul class="inv-crate" aria-label="${esc(i.name)} trong thùng">${goodsOf(o,i)}</ul><div class="inv-receive"><label for="count-${esc(o.id)}">Đếm được</label>${counter(o)}</div></div>`;}).join('')+
       `<button class="btn primary big full" type="button" data-action="v4ReceiveGroup" data-group="${esc(g.id)}">${icon('check',15)} Nhận cả thùng lên kệ</button><p class="muted small">Phiếu có thể ghi khác; thiếu thì nhận đúng số có rồi khiếu nại.</p>`
       :`<p class="inv-gnames">${list}</p>${button(`📦 Mở thùng gộp · ${g.lines.length} món`,'v4InvOpen',{order:g.id},'primary big full inv-open')}`;
     return `<article class="card inv-crate-card inv-group${isOpen?' open':''}" id="crate-${esc(g.id)}"><div class="row spread"><div><strong>🛒 Đơn gộp · ${g.lines.length} món</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf(g))} xu${g.o.arrives_time?` · tới lúc ${esc(g.o.arrives_time)}`:''}</small></div>${pill('ĐÃ TỚI','green')}</div>${body}</article>`;};
@@ -256,8 +257,8 @@ export function inventoryView(env){
     const waiting=g=>{const o=g.o,i=byId[o.item]||{name:o.item},s=sup(o),late=Boolean(o.late_note),pct=Math.round(Math.max(0,Math.min(1,Number(o.progress)||0))*100);
       // Waiting helps only for goods due later today; the rest arrive while you work or overnight.
       const wait=today(o)?cmdBtn(waitGo.label,'inv_wait',{},'ghost small'):'';
-      const title=g.group?`🛒 Đơn gộp · ${g.lines.length} món`:`${name(i)} · ${o.qty} ${esc(unit(i))}`;
-      const list=g.group?`<p class="inv-gnames">${g.lines.map(l=>`${esc(byId[l.item]?.emoji||'📦')} ${esc(byId[l.item]?.name||l.item)} ×${l.qty}`).join(' · ')}</p>`:'';
+      const title=g.group?`🛒 Đơn gộp · ${g.lines.length} món`:`${name(i)}${sizeNote(o)} · ${o.qty} ${esc(unit(i))}`;
+      const list=g.group?`<p class="inv-gnames">${g.lines.map(l=>`${esc(byId[l.item]?.emoji||'📦')} ${esc(byId[l.item]?.name||l.item)}${sizeNote(l)} ×${l.qty}`).join(' · ')}</p>`:'';
       return `<article class="card order-row${g.lines.some(mine)&&focus.length?' mine':''}"><div class="row spread"><div class="grow"><strong>${title}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · đã trả ${fmt(paidOf(g))} xu</small></div>${pill(late?'TRỄ HẸN':`⏱ ${esc(o.left_label||'đang giao')}`,late?'amber':'blue')}</div>${list}`+
         `<div><span class="small">Dự kiến nhận: <b>${esc(o.eta_label||'đang trên đường')}</b></span>${o.window?`<small class="muted block">Hẹn giao ${esc(o.window)}</small>`:''}</div>`+
         `<span class="inv-bar" role="progressbar" aria-label="Quãng đường đã đi" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i class="on" style="width:${pct}%"></i></span>`+
@@ -270,8 +271,8 @@ export function inventoryView(env){
       if(rated)act+=`<div class="row wrap rate-row" role="group" aria-label="Đánh giá ${esc(s?.name||'')}">${[1,2,3,4,5].map(n=>cmdBtn('★'.repeat(n),'inv_rate',{...ref,stars:n,note:''},'ghost small')).join('')}</div>`;
       if(o.reply)act+=`<p class="bubble small"><b>${esc(s?.name||'')}:</b> ${esc(o.reply)}</p>`;
       const got=g.lines.reduce((n,l)=>n+l.actual,0),of=g.lines.reduce((n,l)=>n+l.qty,0);
-      const title=g.group?`🛒 Đơn gộp ${g.lines.length} món · nhận ${got}/${of}`:`${name(i)} · nhận ${o.actual}/${o.qty}`;
-      const list=g.group?`<p class="inv-gnames">${g.lines.map(l=>`${esc(byId[l.item]?.emoji||'📦')} ${esc(byId[l.item]?.name||l.item)} ${l.actual}/${l.qty}`).join(' · ')}</p>`:'';
+      const title=g.group?`🛒 Đơn gộp ${g.lines.length} món · nhận ${got}/${of}`:`${name(i)}${sizeNote(o)} · nhận ${o.actual}/${o.qty}`;
+      const list=g.group?`<p class="inv-gnames">${g.lines.map(l=>`${esc(byId[l.item]?.emoji||'📦')} ${esc(byId[l.item]?.name||l.item)}${sizeNote(l)} ${l.actual}/${l.qty}`).join(' · ')}</p>`:'';
       return `<article class="card order-row"><div class="row spread"><div><strong>${title}</strong><small class="muted block">${esc(s?.emoji||'')} ${esc(s?.name||'')} · ${fmt(paidOf(g))} xu · ngày ${o.day}</small></div>${short?pill(due.length?'GIAO THIẾU':'ĐÃ HOÀN TIỀN','amber'):o.rating?pill(stars(o.rating),'amber'):''}</div>${list}${act}</article>`;};
     const done=shipments(orders.filter(o=>o.status==='received').reverse()).slice(0,10);
     body=(transitS.length?`<h4 class="section-title">🚚 Đang giao</h4>${transitS.map(waiting).join('')}`:'')+
@@ -295,6 +296,8 @@ export function inventoryView(env){
 function orderCard(env,pick,{cap,stock,on,space,unit,name}){
   const {api,ui}=env,c=api.state.careers[api.state.current],sups=supplierList(env),carts=c.inventory?.carts||[];
   const sup=pickSupplier(env,pick.id),max=Math.min(30,space);
+  const sizes=c.inventory?.sizes?.[pick.id]||[],chosen=orderSize(env,pick.id);
+  const sizePicker=sizes.length?`<fieldset class="space-top"><legend class="field">Chọn size nhập</legend><div class="chip-row" role="group" aria-label="Size nhập ${esc(pick.name)}">${[null,...sizes].map(s=>`<button type="button" class="btn small ${chosen===s?'primary':'ghost'}" data-action="v4OrderSize" data-item="${esc(pick.id)}" data-size="${esc(s||'')}" aria-pressed="${chosen===s}">${s?`Size ${esc(s)}`:'Tự chia size'}</button>`).join('')}</div><p class="small muted">${chosen?`Toàn bộ số hàng thực nhận sẽ vào size ${esc(chosen)}.`:'Tự chia ưu tiên các size bán chạy. Chọn một size nếu đang thiếu đúng cỡ đó.'}</p></fieldset>`:'';
   // First suggestion: up to 10, never past the room left or what the till can pay.
   const afford=Math.floor(c.money/Math.max(1e-9,pick.cost*sup.factor)),qty=Math.max(1,Math.min(max||1,ui.orderQty||Math.min(10,max||1,Math.max(1,afford))));
   const q=orderQuote(pick,qty,sup),cost=q.total;
@@ -317,7 +320,7 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
   const ship=sup.free_from==null?'':q.ship?`Hàng ${fmt(q.cost)} + ship ${fmt(q.ship)} xu`:`Hàng ${fmt(q.cost)} xu · miễn ship`;
   return `<section class="card order-card inv-order" aria-label="Nhập ${esc(pick.name)}"><div class="row spread"><h3>Nhập ${name}</h3>${button(icon('x',14),'v4Order',{item:''},'ghost small')}</div>`+
     `<p class="inv-facts"><span>Trên kệ <b>${stock}</b></span><span>Đang giao <b>${on}</b></span><span>Còn chỗ <b>${space}</b></span>${vansLine(c.inventory)?`<span>${vansLine(c.inventory)}</span>`:''}<span>Giá gốc <b>${pick.cost}</b> xu/${esc(unit)}</span>${pick.life?`<span>Dùng trong <b>${pick.life}</b> ngày</span>`:''}</p>`+
-    `<label class="field" for="order-qty">Số lượng</label><div class="inv-qty"><div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Qty" data-step="-1" aria-label="Bớt một"${qty<=1?' disabled':''}>−</button><input id="order-qty" class="input" type="number" inputmode="numeric" min="1" max="${Math.max(1,max)}" value="${qty}" data-v4-qty aria-describedby="order-total"><button type="button" class="btn ghost" data-action="v4Qty" data-step="1" aria-label="Thêm một"${qty>=max?' disabled':''}>+</button></div><span class="chip-row">${chips}</span></div>`+
+    sizePicker+`<label class="field" for="order-qty">Số lượng</label><div class="inv-qty"><div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Qty" data-step="-1" aria-label="Bớt một"${qty<=1?' disabled':''}>−</button><input id="order-qty" class="input" type="number" inputmode="numeric" min="1" max="${Math.max(1,max)}" value="${qty}" data-v4-qty aria-describedby="order-total"><button type="button" class="btn ghost" data-action="v4Qty" data-step="1" aria-label="Thêm một"${qty>=max?' disabled':''}>+</button></div><span class="chip-row">${chips}</span></div>`+
     // The bill right under the number you choose: total, what the fund keeps, and why it cannot go yet.
     `<div class="inv-total inv-bill"><div class="grow"><strong id="order-total" data-cost="${pick.cost}" data-factor="${sup.factor}" data-terms="${esc(JSON.stringify({bulk:sup.bulk||[],ship:sup.ship,free_from:sup.free_from}))}" data-money="${c.money}" data-fund="${esc(fn)}" data-shelf="${stock+on}" data-cap="${cap}" data-max="${max}">Tổng: ${fmt(cost)} xu</strong> <span id="order-tier">${tier}</span><small class="block inv-after" id="order-after">${esc(fn)} còn ${fmt(Math.max(0,c.money-cost))} xu · kệ sau khi nhận ${stock+on+qty}/${cap}</small><small class="block" id="order-ship">${esc(ship)}</small><small class="block" id="order-eta">Dự kiến nhận: <b>${esc(sup.quote?.eta_label||sup.window||'')}</b></small><small class="danger-text block" id="order-why" role="status">${esc(why)}</small></div></div>`+
     `<label class="field">Nhà cung cấp</label><div class="inv-sups">${sups.map(supplier).join('')}</div>${supMore(sup)}`+
@@ -331,7 +334,7 @@ function cartCard(env,k,{byId,unit}){
   const qtyBtn=(l,q,label,aria,dis=false)=>`<button type="button" class="btn ghost" data-action="v4CartQty" data-supplier="${esc(sid)}" data-item="${esc(l.item)}" data-qty="${q}" aria-label="${esc(aria)}"${dis?' disabled':''}>${label}</button>`;
   const line=l=>{const i=byId[l.item]||{name:l.item},max=Math.min(30,l.room);
     const tag=l.oos?pill('Hết hàng hôm nay','danger'):l.bulk?pill(`sỉ −${l.bulk}%`,'green'):l.next_tier&&l.next_tier[0]<=max?`<button type="button" class="chip inv-tier" data-action="v4CartQty" data-supplier="${esc(sid)}" data-item="${esc(l.item)}" data-qty="${l.next_tier[0]}">Lấy ${l.next_tier[0]}: −${l.next_tier[1]}%</button>`:'';
-    return `<li class="inv-cl${l.oos?' oos':''}"><span class="inv-cl-name"><span aria-hidden="true">${esc(i.emoji||'📦')}</span> <b>${esc(i.name)}</b>${tag?`<span class="inv-cl-tag">${tag}</span>`:''}</span>`+
+    return `<li class="inv-cl${l.oos?' oos':''}"><span class="inv-cl-name"><span aria-hidden="true">${esc(i.emoji||'📦')}</span> <b>${esc(i.name)}${l.size?` · size ${esc(l.size)}`:''}</b>${tag?`<span class="inv-cl-tag">${tag}</span>`:''}</span>`+
       `<span class="inv-cl-qty">${qtyBtn(l,l.qty-1,'−',`Bớt một ${i.name}`)}<b aria-label="${l.qty} ${esc(unit(i))}">${l.qty}</b>${qtyBtn(l,l.qty+1,'+',`Thêm một ${i.name}`,l.qty>=max)}</span>`+
       `<b class="inv-cl-amt">${l.oos?'—':fmt(l.cost)}</b>${qtyBtn(l,0,icon('x',14),`Bỏ ${i.name} khỏi đơn`).replace('class="btn ghost"','class="icon-btn inv-cl-x"')}</li>`;};
   const rows=[];
@@ -378,12 +381,12 @@ export function feedbackView(env){
   // Chùa Gió Lành: visitors' impressions, not a shop's reviews (game/pagoda_voice.py); same stars and data.
   const pagoda=api.state.current==='pagoda',word=pagoda?'cảm nhận':'đánh giá';
   const summary=`<section class="rv-summary"><div class="rv-score"><strong>${avg}</strong><span class="stars" aria-hidden="true">${stars(Math.round(c.rating||0))||'☆☆☆☆☆'}</span><small>${count} ${word}</small></div><div class="rv-dist">${dist.map(([s,n])=>`<button type="button" class="rv-bar ${starF===s?'active':''}" data-action="v4FbStars" data-stars="${s}" aria-pressed="${starF===s}" aria-label="Lọc đánh giá ${s} sao: ${n}"><span>${s}★</span><i><em style="width:${Math.round(n/max*100)}%"></em></i><b>${n}</b></button>`).join('')}</div></section>`;
-  const chips=`<div class="chip-row rv-chips"><button type="button" class="chip ${filter==='all'&&!starF?'selected':''}" data-action="v4FbFilter" data-tab="all">Tất cả · ${count}</button><button type="button" class="chip ${filter==='open'?'selected':''}" data-action="v4FbFilter" data-tab="open">${pagoda?'Chưa hồi đáp':'Chưa trả lời'} · ${open}</button>${flagged||filter==='flag'?`<button type="button" class="chip ${filter==='flag'?'selected':''}" data-action="v4FbFilter" data-tab="flag">${icon('flag',12)} Đáng ngờ · ${flagged}</button>`:''}${starF?`<button type="button" class="chip selected" data-action="v4FbStars" data-stars="${starF}" aria-label="Bỏ lọc ${starF} sao">${starF}★ ${icon('x',12)}</button>`:''}</div>`;
+  const chips=`<div class="chip-row rv-chips"><button type="button" class="chip ${filter==='all'&&!starF?'selected':''}" data-action="v4FbFilter" data-tab="all">Tất cả · ${count}</button><button type="button" class="chip ${filter==='open'?'selected':''}" data-action="v4FbFilter" data-tab="open">${pagoda?'Cần hồi đáp':'Cần trả lời'} · ${open}</button>${flagged||filter==='flag'?`<button type="button" class="chip ${filter==='flag'?'selected':''}" data-action="v4FbFilter" data-tab="flag">${icon('flag',12)} Đáng ngờ · ${flagged}</button>`:''}${starF?`<button type="button" class="chip selected" data-action="v4FbStars" data-stars="${starF}" aria-label="Bỏ lọc ${starF} sao">${starF}★ ${icon('x',12)}</button>`:''}</div>`;
   const st=c.feedback_stats||{criteria:[]};
   const crit=st.criteria?.length?`<details class="rv-criteria"><summary>Điểm theo tiêu chí</summary>${st.criteria.map(x=>`<div class="crit"><small>${esc(x.label)}</small><div class="bar ${x.avg<=3?'low':''}"><i style="width:${x.avg*20}%"></i></div><b>${x.avg}</b></div>`).join('')}${st.improved?`<p class="muted small">${pagoda?`${st.improved} lần khách thập phương sửa sao lên sau khi đọc lời chùa hồi đáp.`:`${st.improved} lần khách sửa sao lên sau khi bạn trả lời.`}</p>`:''}</details>`:'';
   const parent=api.state.current==='teacher';
   const card=p=>{const f=p.feedback,s=f?.status;
-    const tag=!f?'':f.removed?pill('Đã gỡ',''):s==='awaiting'?pill('Đang đọc…','blue'):s==='open'?`<span class="rv-reply">${icon('chat',13)} ${f.thread.length?'Khách hỏi lại':pagoda?'Hồi đáp':'Trả lời'}</span>`:f.ignored?pill('Đã bỏ qua',''):f.report==='rejected'?pill('Báo cáo bị từ chối','danger'):p.stars&&f.stars_original&&p.stars>f.stars_original?pill(`Đã sửa ★${f.stars_original} → ★${p.stars}`,'green'):f.thread.some(x=>x.role==='owner')?pill(pagoda?'Đã hồi đáp':'Đã trả lời','green'):'';
+    const tag=!f?'':f.removed?pill('Đã gỡ',''):s==='awaiting'?pill('Đang đọc…','blue'):s==='open'?`<span class="rv-reply">${icon('chat',13)} ${f.thread.some(x=>x.role==='owner')?'Khách hỏi lại':pagoda?'Hồi đáp':'Trả lời'}</span>`:f.ignored?pill('Đã bỏ qua',''):f.report==='rejected'?pill('Báo cáo bị từ chối','danger'):p.stars&&f.stars_original&&p.stars>f.stars_original?pill(`Đã sửa ★${f.stars_original} → ★${p.stars}`,'green'):f.thread.some(x=>x.role==='owner')?pill(pagoda?'Đã hồi đáp':'Đã trả lời','green'):'';
     const flags=f?.clues?.length&&!f.removed?`<span class="rv-flags">${f.clues.map(x=>`<span class="tag amber">${icon('flag',11)} ${esc(x)}</span>`).join('')}</span>`:'';
     // The latest exchange (your reply, then what the reviewer did) right under the quote.
     const peek=f&&!f.removed?rvBoxes(p,parent,true,pagoda).filter(x=>x.role!=='guest').slice(-2).map(x=>x.html).join(''):'';
@@ -391,6 +394,10 @@ export function feedbackView(env){
   const list=all.length?rows.map(card).join('')||`<p class="muted small rv-none">Không có ${word} nào ở mục này.</p>`:`<div class="empty">${icon('star',30)}<h3>Chưa có ${word} nào</h3></div>`;
   const body=all.length?`<div class="fb-layout ${selected?'has-detail':''}"><section class="fb-list">${summary}${chips}<div class="stack rv-list">${list}</div>${crit}</section><section class="fb-detail ${selected?'':'auto'}">${shown?threadView(shown,env):''}</section></div>`:list;
   return head(pagoda?'Cảm nhận của khách thập phương':'Đánh giá',esc(place),pagoda?'LỜI KHÁCH THẬP PHƯƠNG':'PHẢN HỒI')+`<div class="sheet-body">${body}</div>`;
+}
+function orderSize(env,item){
+  const sizes=env.api.state.careers[env.api.state.current]?.inventory?.sizes?.[item]||[],value=env.ui.orderSize?.[item];
+  return sizes.includes(value)?value:null;
 }
 function threadView(p,env){
   const f=p.feedback,api=env.api,aiOn=api.state.settings.aiConsent&&api.ai?.configured;
@@ -765,7 +772,7 @@ export async function v4Action(action,data,el,env){
       const item=api.content.inventory.items[api.state.current].find(i=>i.id===data.item);if(!item)return true;
       const inp=document.getElementById('order-qty'),max=Math.max(1,Number(inp?.max)||30);
       const qty=Math.max(1,Math.min(max,Number(inp?.value)||ui.orderQty||1)),sup=pickSupplier(env,item.id);
-      if(await cmd('inv_cart',{supplier:sup.id,op:'add',item:item.id,qty})){ui.orderSupplier=sup.id;ui.orderItem=null;ui.orderQty=0;ui.invTab='stock';renderSheet(false);}
+      if(await cmd('inv_cart',{supplier:sup.id,op:'add',item:item.id,qty,size:orderSize(env,item.id)})){ui.orderSupplier=sup.id;ui.orderItem=null;ui.orderQty=0;ui.invTab='stock';renderSheet(false);}
       return true;}
     case'v4CartPut':{  // a career's own stock list (grocery.js): one line straight into the draft
       if(await cmd('inv_cart',{supplier:data.supplier,op:'add',item:data.item,qty:Number(data.qty)||1}))renderSheet();return true;}
@@ -791,6 +798,7 @@ export async function v4Action(action,data,el,env){
         if(ui.invOpen===data.group||lines.some(o=>o.id===ui.invOpen))ui.invOpen=null;renderSheet();}
       return true;}
     case'v4Supplier':ui.orderSupplier=data.supplier;renderSheet();return true;
+    case'v4OrderSize':{(ui.orderSize??={})[data.item]=data.size||null;renderSheet();return true;}
     case'v4Qty':{const inp=document.getElementById('order-qty'),max=Math.max(1,Number(inp?.max)||30),cur=Number(inp?.value)||ui.orderQty||1;
       ui.orderQty=Math.max(1,Math.min(max,data.set?Number(data.set):cur+Number(data.step||0)));renderSheet();return true;}
     case'v4Count':{const inp=document.getElementById(data.target);if(inp){inp.value=String(Math.max(0,Math.min(60,(Number(inp.value)||0)+Number(data.step||0))));(ui.invCount??={})[inp.dataset.v4Count]=inp.value;(ui.invTyped??={})[inp.dataset.v4Count]=true;}return true;}
@@ -801,8 +809,9 @@ export async function v4Action(action,data,el,env){
       const qty=Math.max(1,Math.min(max,Number(inp?.value)||ui.orderQty||1));ui.orderQty=qty;
       const sup=pickSupplier(env,item.id);
       const q=orderQuote(item,qty,sup),cost=q.total,eta=sup.quote?.eta_label||sup.window||'';
-      if(!await confirmAction('Đặt hàng?',`${qty} ${item.unit||'phần'} ${item.name} từ ${sup.name}: trả ${cost} xu ngay${q.ship?` (ship ${q.ship} xu)`:''}.${eta?` Dự kiến nhận: ${eta}.`:''} Hàng chỉ vào kho sau khi bạn đếm nhận.`,'Đặt hàng',{cost,pocket:'fund'}))return true;
-      const r=await cmd('inv_order',{item:item.id,qty,supplier:sup.id,confirm:true});if(r){ui.orderItem=null;ui.orderQty=0;ui.invTab='orders';renderSheet(false);}
+      const size=orderSize(env,item.id);
+      if(!await confirmAction('Đặt hàng?',`${qty} ${item.unit||'phần'} ${item.name}${size?` · size ${size}`:''} từ ${sup.name}: trả ${cost} xu ngay${q.ship?` (ship ${q.ship} xu)`:''}.${eta?` Dự kiến nhận: ${eta}.`:''} Hàng chỉ vào kho sau khi bạn đếm nhận.`,'Đặt hàng',{cost,pocket:'fund'}))return true;
+      const r=await cmd('inv_order',{item:item.id,qty,size,supplier:sup.id,confirm:true});if(r){ui.orderItem=null;ui.orderQty=0;ui.invTab='orders';renderSheet(false);}
       return true;}
     case'v4FbFilter':ui.fbFilter=data.tab;ui.fbStars=0;ui.fbPost=null;renderSheet(false);return true;
     case'v4FbStars':{const s=Number(data.stars)||0;ui.fbStars=ui.fbStars===s?0:s;ui.fbFilter='all';ui.fbPost=null;renderSheet(false);return true;}

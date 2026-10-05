@@ -25,8 +25,8 @@ const TITLE_NAMES={f_kinh2:'🎎 Kinh đôi rộn ràng',f_nguoc:'🙃 Đọc ng
 const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🗡️','Phóng dao'],xs:['🎟️','Vé số cào'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng'],food:['🍡','Hàng ăn vặt'],pb:['📸','Chụp ảnh']};
 const MINI_BOARD='<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2" y="6" width="60" height="28" rx="14" fill="#e9c98f" stroke="#8a5a26" stroke-width="2"/><path d="M14 6v28M50 6v28M14 20h36M23 6v28M32 6v28M41 6v28" stroke="#8a5a26" stroke-width="1.6"/><circle cx="8" cy="20" r="4" fill="#5b4636"/><circle cx="56" cy="20" r="4" fill="#5b4636"/><g fill="#7a8b99"><circle cx="18" cy="13" r="1.8"/><circle cx="27" cy="27" r="1.8"/><circle cx="36" cy="13" r="1.8"/><circle cx="45" cy="27" r="1.8"/><circle cx="20" cy="28" r="1.8"/><circle cx="38" cy="25" r="1.8"/></g></svg>';
 const MINI_BOTTLES='<svg viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2d5a3d" stroke-width="1.4"><path d="M12 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#7cc79a"/><path d="M28 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#8fb6e8"/><path d="M44 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#f0b46a"/></g><ellipse cx="34" cy="10" rx="7" ry="2.6" fill="none" stroke="#e2462d" stroke-width="2.4"/></svg>';
-const CHIPS=[1,2,5,10];
-const XD_STAKES=[10,20,30,50];
+const CHIPS=[1,2,5,10,50,100,200,500];
+const XD_STAKES=[10,20,30,50,100,200,500];
 const NPC_GRACE=2000,ROLL_MS=450,ROUND_GAP=450;   // the bowl shakes this long; the server wants rounds ≥0.4 s apart (GAP_MS)
 const LS='mnl.fair.lt';
 
@@ -114,7 +114,7 @@ function dialog(){
     const el=e.target.closest('[data-fh]');if(!el||!d.contains(el)||el.disabled)return;
     e.preventDefault();S.anchor=el.dataset.fhKey||'';S.anchorAt=performance.now();onClick(el.dataset.fh,el.dataset,el);
   });
-  d.addEventListener('close',()=>{pauseLoto();ltMusic();stopRing();KN?.stop();PB?.leave();clearInterval(S.tick);S.tick=null;S.flash=null;});
+  d.addEventListener('close',()=>{pauseLoto();ltMusic();S.oaq.anim=null;stopRing();KN?.stop();PB?.leave();clearInterval(S.tick);S.tick=null;S.flash=null;});
   S.dlg=d;return d;
 }
 export async function openFair(env,data={}){
@@ -149,11 +149,11 @@ export async function fairAction(action,data,el,env){
   if(action!=='fair')return false;
   await openFair(env,data);return true;
 }
-const animating=()=>!!KN?.busy()||!!XS?.busy()||!!PB?.busy()||S.bc.phase!=='idle'||S.xd.phase!=='idle'||S.busy||!!S.oaq.anim||S.ring.taps.length>0&&!S.ring.result;
+const animating=()=>S.busy||S.tab==='dt'&&!!KN?.busy()||S.tab==='xs'&&!!XS?.busy()||S.tab==='pb'&&!!PB?.busy()||S.tab==='bc'&&S.bc.phase!=='idle'||S.tab==='xd'&&S.xd.phase!=='idle'||S.tab==='oaq'&&!!S.oaq.anim||S.tab==='ring'&&!!S.ring.finishing;
 
 async function send(action,payload={}){
   const {api}=S.env;
-  try{return await api.command(action,payload);}
+  try{const result=await api.command(action,payload);if(result?.fair?.wealth_raid)S.wealthRaid=result.fair.wealth_raid;return result;}
   catch(e){S.err=e.code||e.data?.code||'';S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
 }
 
@@ -263,7 +263,11 @@ function page(){
   if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng hội chợ','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
   const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().knife?kn().view():homeView(),xs:()=>F().scratch?xs().view():homeView(),pb:()=>F().photo?pb().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
-  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab):''}${body}${note()}</div>`;
+  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${wealthRaidCard()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab):''}${body}${note()}</div>`;
+}
+function wealthRaidCard(){
+  const r=S.wealthRaid;if(!r)return '';
+  return `<section class="fh-card fh-raid" role="alert" data-fh-key="wealth-raid"><h3>🚨 Công an kiểm tra</h3><p>${esc(r.message)}</p><p>Ví còn <b>${xu(r.wallet)}</b>. Khoản thu đã được ghi trong Sổ ví.</p>${btn('Đã hiểu','wealthraidok',{},'primary')}</section>`;
 }
 function closedCard(gone){
   const f=F();
@@ -278,7 +282,7 @@ const meter=(e,label='Hôm nay đã kiếm')=>{if(e?.nocap)return '';e=e||{today
   return `<span class="fh-meter${e.today>=e.cap?' full':''}" aria-hidden="true"><i style="width:${pct}%"></i></span><small class="fh-meterlabel">${e.today>=e.cap?'Hôm nay đã kiếm đủ':label} <b>${fmt(e.today)}</b>/${xu(e.cap)}</small>`;};
 const homeView=()=>walkOn()?WALK.html():gateList();
 function gateList(){
-  const f=F(),r=R(),e=f.earn||{},o=f.oaq,m=won(),pr=r.oaq_prize||{de:15,kho:30};
+  const f=F(),r=R(),e=f.earn||{},o=f.oaq,m=won(),pr=r.oaq_prize||{de:50,kho:500};
   const oaqLine=o?.stage==='play'?`<em class="fh-live">Đang chơi dở với ${esc(o.name)} · chơi tiếp</em>`:`Đấu với Bé Bi (thắng +${pr.de} xu) hoặc Ông Hai (thắng +${pr.kho} xu)`;
   const luck=(id,ico,name,sub,warn='')=>`<button type="button" class="fh-luckgame" data-fh="tab" data-tab="${id}" data-fh-key="g-${id}"><span class="fh-lico" aria-hidden="true">${ico}</span><span class="grow"><b>${name}</b><small>${sub}</small></span>${warn}${f.loto?.stage==='play'&&id==='lt'||id==='dt'&&['play','choice'].includes(f.knife?.run?.stage)?'<i class="fh-dot" aria-label="đang chơi"></i>':''}</button>`;
   return `<section class="fh-gate" aria-label="Cổng hội">
@@ -313,7 +317,7 @@ function oaqBoard(){
   return `<div class="fh-oaq" aria-label="Bàn ô ăn quan">${cell(0)}<div class="fh-orow opp">${ROW_OPP.map(cell).join('')}</div><div class="fh-orow me">${ROW_ME.map(cell).join('')}</div>${cell(6)}</div>`;
 }
 function oaqView(){
-  const f=F(),r=R(),o=f.oaq,e=(f.earn||{}).oaq,pr=r.oaq_prize||{de:15,kho:30},people=r.oaq_people||{de:['Bé Bi','👦'],kho:['Ông Hai','👴']};
+  const f=F(),r=R(),o=f.oaq,e=(f.earn||{}).oaq,pr=r.oaq_prize||{de:50,kho:500},people=r.oaq_people||{de:['Bé Bi','👦'],kho:['Ông Hai','👴']};
   const how=`<details class="fh-how"${o?'':' open'}><summary>Cách chơi</summary><ul>
       <li>Mỗi bên 5 ô dân, mỗi ô 5 quân. Hai đầu là ô quan: mỗi quan ${r.quan||10} điểm, mỗi dân 1 điểm.</li>
       <li>Tới lượt: chọn một ô bên mình còn quân, chọn hướng, bốc hết rải mỗi ô một quân (rải qua cả ô quan).</li>
@@ -362,20 +366,22 @@ async function oaqStart(lv){
 async function oaqMove(dir){
   const o=F().oaq,cell=S.oaq.sel;if(!o||o.stage!=='play'||cell==null||S.busy||S.oaq.anim)return;
   S.oaq.sel=null;S.oaq.quit=false;S.busy=true;S.flash=null;
-  S.oaq.anim={b:[...o.b],q:[...o.q],cap:[...o.cap],hand:0,at:null,hl:cell,flash:null,side:0};render();
+  const a=S.oaq.anim={b:[...o.b],q:[...o.q],cap:[...o.cap],hand:0,at:null,hl:cell,flash:null,side:0};render();
   const r=await send('fair_oaq_move',{cell,dir,...(R().oaq_turn&&Number.isInteger(o.ply)?{ply:o.ply}:{})});   // the newer server refuses a move for a board that moved on
-  if(!r?.fair){S.oaq.anim=null;S.busy=false;if(S.err==='fair_oaq_turn')await S.env.api.refresh().catch(()=>{/* the next state */});render();return;}
+  if(!r?.fair){S.oaq.anim=null;S.busy=false;if(S.err==='fair_oaq_turn')await S.env.api.refresh().catch(()=>{/* the next state */});if(S.dlg?.open)render();return;}
   await playTrace(r.fair.trace||[],o.lv);
+  const visible=S.tab==='oaq'&&S.dlg?.open&&!document.hidden&&S.oaq.anim===a;
   S.oaq.anim=null;S.busy=false;
   const x=r.fair.end;
   if(x){S.oaq.end={...x,titles:r.fair.titles||[]};S.oaq.showEnd=true;S.oaq.say=pick((OPP[o.lv]||OPP.de)[x.stage==='won'?'lost':x.stage==='lost'?'won':'draw']);
-    sfx(x.stage==='won'?'kinh':x.stage==='lost'?'lose':'open');}
-  render();
+    if(visible)sfx(x.stage==='won'?'kinh':x.stage==='lost'?'lose':'open');}
+  if(S.dlg?.open)render();
 }
 async function playTrace(trace,lv){
   const a=S.oaq.anim,lines=OPP[lv]||OPP.de,step=()=>S.oaq.fast?50:115;
+  if(!a)return;   // closed while the command was pending: the server's final board is already in F()
   for(const ev of trace){
-    if(!S.oaq.anim)return;
+    if(S.oaq.anim!==a||!S.dlg?.open||S.tab!=='oaq'||document.hidden)return;
     const [k]=ev;
     if(k==='turn'){a.side=ev[1];a.hl=ev[2];a.at=null;a.flash=null;if(ev[1]===1){S.oaq.say=pick(lines.think);render();await wait(S.oaq.fast?250:480);}continue;}
     if(k==='pick'){a.b[ev[1]]=0;a.hand=ev[2];a.at=ev[1];a.hl=null;sfx('stone');render();await wait(step()+40);continue;}
@@ -400,29 +406,30 @@ function ringView(){
   if(!R0.say)R0.say=pick(RINGER.idle);
   const hits=res?res.hits:R0.hits,rings=r.rings||5,used=res?rings:R0.taps.length;
   const xs=rd?.xs||[10,30,50,70,90],colors=['#6cc08b','#7fb0ea','#f0b064','#d98ad6','#e7d36a'];
-  const bottles=xs.map((x,i)=>`<span class="fh-bottle${hits.includes(i)?' ringed':''}" data-x="${x}" style="left:${trackPos(x)};--c:${colors[i]}" aria-label="Chai ${i+1}${hits.includes(i)?', đã trúng':''}" role="img"><i></i></span>`).join('');
+  const bottles=xs.map((x,i)=>{const count=hits.filter(h=>h===i).length,hoops=Array.from({length:count},(_,level)=>`<span class="fh-neck-ring" aria-hidden="true" style="--ring-level:${level}"></span>`).join('');return `<span class="fh-bottle${count?' ringed':''}" data-x="${x}" style="left:${trackPos(x)};--c:${colors[i]}" aria-label="Chai ${i+1}${count?`, đã trúng ${count} vòng`:''}" role="img"><i></i>${hoops}</span>`;}).join('');
+  const pending=rd&&!res?R0.taps.map(t=>`<i class="fh-fly pending" style="left:${trackPos(ringX(rd,t))}"></i>`).join(''):'';   // restore unfinished throws when returning to this stall
   const left=Array.from({length:rings},(_,i)=>`<i class="${i<used?'used':''}"></i>`).join('');
   let go;
-  if(res){const n=res.n;go=`<div class="fh-card fh-ringres ${n>=3?'good':''}"><h3>${n===rings?'🎉 Trúng cả '+n+' chai!':`Trúng ${n}/${rings} chai`}</h3>${res.prize?`<p class="fh-prize">+${xu(res.prize)}</p>`:n&&res.capped?'<p class="muted small">Hôm nay đã kiếm đủ xu từ ném vòng, mai ghé tiếp nha!</p>':'<p class="muted small">Lượt sau canh kỹ hơn nha!</p>'}${res.titles?.includes('f_ring')?'<p class="fh-award">💍 Danh hiệu mới: <b>Tay ném vòng thần sầu</b></p>':''}</div>`+
+  if(res){const n=res.n;go=`<div class="fh-card fh-ringres ${n>=3?'good':''}"><h3>${n===rings?'🎉 Trúng cả '+n+' vòng!':`Trúng ${n}/${rings} vòng`}</h3>${res.prize?`<p class="fh-prize">+${xu(res.prize)}</p>`:n&&res.capped?'<p class="muted small">Hôm nay đã kiếm đủ xu từ ném vòng, mai ghé tiếp nha!</p>':'<p class="muted small">Lượt sau canh kỹ hơn nha!</p>'}${res.titles?.includes('f_ring')?'<p class="fh-award">💍 Danh hiệu mới: <b>Tay ném vòng thần sầu</b></p>':''}</div>`+
     btn('🎯 Ném lượt nữa (miễn phí)','ringstart',{},'primary big full',S.busy||!r.ring_left?' disabled':' data-fh-key="ringstart"');}
   else if(rd)go=btn(R0.taps.length>=rings?'Đang đếm…':'🫳 Ném!','throw',{},'primary big full fh-throw',R0.taps.length>=rings?' disabled':' data-fh-key="throw"');
   else go=btn(S.busy?'Cô Tư đang phát vòng…':`🎯 Phát ${rings} vòng (miễn phí)`,'ringstart',{},'primary big full',S.busy||!r.ring_left?' disabled':' data-fh-key="ringstart"');
   return `<section class="fh-stall fh-ringstall" aria-label="Ném vòng cổ chai">
     ${say(RINGER,R0.say)}
-    <div class="fh-ringstage${rd&&!res?' live':''}"><div class="fh-track" aria-hidden="true" data-fh-live><span class="fh-aim" style="left:${trackPos(rd?ringX(rd,0):50)}"><i></i></span></div><div class="fh-fly-layer" aria-hidden="true" data-fh-live></div><div class="fh-shelf">${bottles}</div></div>
+    <div class="fh-ringstage${rd&&!res&&used<rings?' live':''}"><div class="fh-track" aria-hidden="true" data-fh-live><span class="fh-aim" style="left:${trackPos(rd?ringX(rd,0):50)}"><i></i></span></div><div class="fh-fly-layer" aria-hidden="true" data-fh-live>${pending}</div><div class="fh-shelf">${bottles}</div>${rd&&!res&&used?`<small class="fh-ring-pending-note">${used<rings?`${used}/${rings} vòng đã ném · chờ ném đủ vòng`:'Đang nhận kết quả…'}</small>`:''}</div>
     <div class="fh-ringsleft" aria-label="Còn ${rings-used} vòng">${left}</div>
     ${go}
     <div class="fh-ringmeter">${meter(e)}</div>
-    <p class="fh-rule">${r.nocap?`Bấm “Ném!” khi vòng ở ngay trên miệng chai. Một chai ăn được nhiều vòng. Mỗi vòng trúng ${r.ring_hit} xu, trúng cả ${rings} vòng thêm ${r.ring_all} xu.`:`Bấm “Ném!” khi vòng ở ngay trên miệng chai. Mỗi chai chỉ tính một lần. Trúng ${r.ring_hit||2} xu một chai, đủ ${rings} chai thêm ${r.ring_all||5} xu.`}</p>
+    <p class="fh-rule">${(rd?rd.chance:r.ring_chance)?`Bấm “Ném!” đủ ${rings} vòng rồi xem kết quả may rủi. Canh vị trí không quyết định thắng thua. Mỗi vòng trúng ${r.ring_hit} xu, trúng cả ${rings} vòng thêm ${r.ring_all} xu.`:r.nocap?`Bấm “Ném!” khi vòng ở ngay trên miệng chai. Một chai ăn được nhiều vòng. Mỗi vòng trúng ${r.ring_hit} xu, trúng cả ${rings} vòng thêm ${r.ring_all} xu.`:`Bấm “Ném!” khi vòng ở ngay trên miệng chai. Mỗi chai chỉ tính một lần. Trúng ${r.ring_hit||2} xu một chai, đủ ${rings} chai thêm ${r.ring_all||5} xu.`}</p>
   </section>`;
 }
 function stopRing(){cancelAnimationFrame(S.ring.raf);S.ring.raf=0;}
 function startRingLoop(){
   const v=F().ring;
   if(!S.ring.round&&v&&!S.ring.result){S.ring={...S.ring,round:v,t0:performance.now(),taps:[],hits:[]};render();}   // a round from another visit: the swing starts again now
-  if(S.ring.raf||!S.ring.round||S.ring.result)return;
+  if(S.ring.raf||!S.ring.round||S.ring.result||S.ring.finishing)return;
   const loop=()=>{
-    if(!S.ring.round||S.ring.result||S.tab!=='ring'||!S.dlg?.open){S.ring.raf=0;return;}
+    if(!S.ring.round||S.ring.result||S.ring.finishing||S.tab!=='ring'||!S.dlg?.open){S.ring.raf=0;return;}
     const el=S.dlg.querySelector('.fh-aim'),x=ringX(S.ring.round,performance.now()-S.ring.t0);if(el){el.style.left=trackPos(x);el.dataset.x=x.toFixed(2);}
     S.ring.raf=requestAnimationFrame(loop);
   };
@@ -431,7 +438,7 @@ function startRingLoop(){
 async function ringStart(){
   if(S.busy)return;S.busy=true;S.flash=null;render();
   const r=await send('fair_ring_start',{});S.busy=false;
-  if(r?.fair?.round){stopRing();S.ring={...S.ring,round:r.fair.round,t0:performance.now(),taps:[],hits:[],result:null,say:pick(RINGER.idle)};}
+  if(r?.fair?.round){stopRing();S.dlg?.querySelector('.fh-fly-layer')?.replaceChildren();S.ring={...S.ring,round:r.fair.round,t0:performance.now(),taps:[],hits:[],result:null,finishing:false,say:r.fair.round.chance?'Ném đủ năm vòng rồi cô Tư đếm quà nha!':pick(RINGER.idle)};}
   render();startRingLoop();
 }
 function ringThrow(){
@@ -439,26 +446,36 @@ function ringThrow(){
   const t=Math.round(performance.now()-R0.t0);
   if(R0.taps.length&&t-R0.taps[R0.taps.length-1]<260)return;   // the server wants throws a little apart
   R0.taps.push(t);
-  const judged=ringJudge(rd,R0.taps),hit=judged[judged.length-1],x=ringX(rd,t);
+  const x=ringX(rd,t);
   sfx('throw');
   const layer=S.dlg?.querySelector('.fh-fly-layer');
-  if(layer){const fly=document.createElement('i');fly.className='fh-fly '+(hit>=0?'hit':'miss');fly.style.left=trackPos(hit>=0?rd.xs[hit]:x);layer.append(fly);setTimeout(()=>fly.remove(),700);}
-  setTimeout(()=>{
-    if(S.ring.round!==rd)return;
-    if(hit>=0){R0.hits=[...R0.hits,hit];R0.say=pick(RINGER.hit);sfx('clink');}else{R0.say=pick(RINGER.miss);sfx('miss');}
-    if(R0.taps.length>=rings)finishRing(rd);else{render();startRingLoop();}
-  },reduce()?60:430);
+  // Until all five taps are judged, hold above the bottle mouths: neither a hit nor a miss yet.
+  if(layer){const fly=document.createElement('i');fly.className='fh-fly pending';fly.style.left=trackPos(x);layer.append(fly);}
+  R0.say=R0.taps.length>=rings?'Cô Tư đang xem kết quả, chờ chút nha!':`Đã ném ${R0.taps.length}/${rings} vòng. Ném đủ rồi cùng xem kết quả nha!`;
+  if(R0.taps.length>=rings)finishRing(rd);else{render();startRingLoop();}
 }
 async function finishRing(rd){
-  render();
-  const r=await send('fair_ring_throw',{id:rd.id,taps:S.ring.taps});
-  if(S.ring.round!==rd)return;
+  if(S.ring.round!==rd||S.ring.finishing||S.ring.result||S.ring.taps.length<(R().rings||5))return;
+  S.ring.finishing=true;
   stopRing();
-  if(r?.fair){const x=r.fair;S.ring.result={...x,titles:x.titles||[]};S.ring.hits=(x.hits||[]).filter(h=>h>=0);
-    S.ring.say=x.n>=(R().rings||5)?'Trời ơi, trúng hết luôn! Tay ném thần sầu!':x.n>=3?'Ném hay quá! Nhận quà nè!':'Lượt sau chắc chắn trúng nhiều hơn!';
-    if(x.n>=3)sfx('win');}
-  else{S.ring.round=null;S.ring.taps=[];S.ring.hits=[];}
   render();
+  const taps=[...S.ring.taps],r=await send('fair_ring_throw',{id:rd.id,taps});
+  if(S.ring.round!==rd)return;
+  S.ring.finishing=false;
+  stopRing();
+  const visible=S.tab==='ring'&&S.dlg?.open,layer=S.dlg?.querySelector('.fh-fly-layer');
+  layer?.replaceChildren();
+  if(r?.fair){const x=r.fair;S.ring.result={...x,titles:x.titles||[]};S.ring.hits=(x.hits||[]).filter(h=>Number.isInteger(h)&&h>=0);
+    S.ring.say=rd.chance?(x.n?'Có quà rồi! Cô Tư đếm thưởng cho nha!':'Lượt này chưa trúng, thử vận may lần sau nha!'):x.n>=(R().rings||5)?'Trời ơi, trúng hết luôn! Tay ném thần sầu!':x.n>=3?'Ném hay quá! Nhận quà nè!':'Lượt sau thử lại nha!';
+    if(visible){
+      // Replay only the server's answer. Misses land between bottles; awarded rings stay on the shelf.
+      if(layer&&!x.late)taps.forEach((t,i)=>{const hit=x.hits?.[i]??-1,gap=i%Math.max(1,rd.xs.length-1),miss=(rd.xs[gap]+rd.xs[gap+1])/2;
+        const fly=document.createElement('i');fly.className='fh-fly '+(hit>=0?'hit':'miss');fly.style.left=trackPos(hit>=0?rd.xs[hit]:miss);
+        fly.style.setProperty('--ring-from',trackPos(ringX(rd,t)));if(hit>=0)fly.style.setProperty('--ring-level',x.hits.slice(0,i).filter(h=>h===hit).length);layer.append(fly);setTimeout(()=>fly.remove(),reduce()?60:700);});
+      sfx(x.n>=3?'win':x.n?'clink':'miss');
+    }}
+  else{S.ring.round=null;S.ring.taps=[];S.ring.hits=[];}
+  if(visible)render();
 }
 
 /* ---- 🦀 Bầu cua ---- */
@@ -571,7 +588,7 @@ async function shakeXd(){
 const colOf=n=>n<10?0:n>=90?8:Math.floor(n/10);
 const COLS=['1–9','10–19','20–29','30–39','40–49','50–59','60–69','70–79','80–90'];
 const SPEEDS=[['🐢','Chậm',3300],['🙂','Vừa',2300],['🐇','Nhanh',1200]];
-const TIER_NAME={nho:'Vé nhỏ',vua:'Vé vừa',lon:'Vé lớn'};
+const TIER_NAME={nho:'Vé nhỏ',vua:'Vé vừa',lon:'Vé lớn',dai:'Vé tài lộc',tram:'Vé phú quý',cao:'Vé thịnh vượng',dac_biet:'Vé đặc biệt'};
 const MODE_INFO={thuong:['🎱','Vòng thường','Đủ một hàng ngang trên một tờ là kinh.'],
   nguoc:['🙃','Vòng lật ngược','Cô Bảy đọc số lộn ngược: nghe 21 là số 12, nghe 07 là số 70. Dò cho tỉnh nha!'],
   doi:['🎎','Vòng Kinh đôi','Phải đủ hai hàng ngang trên cùng một tờ mới kinh.'],
@@ -768,10 +785,10 @@ function buyPanel(){
   const g=G(),f=F(),m=curMode()||'thuong',[me,,md]=MODE_INFO[m]||MODE_INFO.thuong,lt=S.lt,price=g.tiers[lt.tier]||5;
   const prize=(g.prizes?.[m]?.[lt.tier]||[])[lt.n-1]||0,rule=g.modes_rule?.[m]||{npcs:4};
   const side=(lt.cl?lt.cls:0)+(lt.cot!=null?lt.cots:0),total=lt.n*price+side;
-  const why=total>(f.wallet||0)?'Ví không đủ xu':S.busy?'Đang mua…':'';   // no daily limit: only the wallet
+  const why=total>(g.max_stake||500)?`Tổng tiền vé và cược phụ tối đa ${g.max_stake||500} xu/ván`:total>(f.wallet||0)?'Ví không đủ xu':S.busy?'Đang mua…':'';
   const next=g.modes.filter(x=>x[0]>nowSlot()).slice(0,2).map(([s,k])=>`<span class="fh-nextmode">${esc(new Date(s*60000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Ho_Chi_Minh'}))} · ${MODE_INFO[k]?.[0]||''} ${esc(modeLabel(k))}</span>`).join('');
   const tiers=Object.entries(g.tiers).map(([k,p])=>`<button type="button" class="fh-tier${lt.tier===k?' on':''}" data-fh="lttier" data-v="${k}" aria-pressed="${lt.tier===k}" data-fh-key="tier-${k}"><b>${esc(TIER_NAME[k]||k)}</b><small>${xu(p)}/tờ</small></button>`).join('');
-  const ns=Array.from({length:g.cards},(_,i)=>i+1).map(n=>`<button type="button" class="fh-chip${lt.n===n?' on':''}" data-fh="ltn" data-v="${n}" aria-pressed="${lt.n===n}" data-fh-key="ltn-${n}">${n}</button>`).join('');
+  const ns=Array.from({length:g.cards},(_,i)=>i+1).map(n=>`<button type="button" class="fh-chip${lt.n===n?' on':''}" data-fh="ltn" data-v="${n}" aria-pressed="${lt.n===n}" data-fh-key="ltn-${n}"${n*price+side>(g.max_stake||500)?' disabled':''}>${n}</button>`).join('');
   const chip=(op,v,on)=>`<button type="button" class="fh-chip small${on?' on':''}" data-fh="${op}" data-v="${v}" aria-pressed="${on}" data-fh-key="${op}-${v}">${v}</button>`;
   const cl=[['chan','Chẵn'],['le','Lẻ']].map(([k,l])=>`<button type="button" class="fh-pickb${lt.cl===k?' on':''}" data-fh="ltcl" data-v="${k}" aria-pressed="${lt.cl===k}" data-fh-key="cl-${k}">${l}</button>`).join('');
   const cot=COLS.map((l,i)=>`<button type="button" class="fh-pickb${lt.cot===i?' on':''}" data-fh="ltcot" data-v="${i}" aria-pressed="${lt.cot===i}" data-fh-key="cot-${i}">${l}</button>`).join('');
@@ -866,6 +883,7 @@ function roundView(v){
 async function buy(){
   if(S.busy)return;
   const g=G(),lt=S.lt;
+  if(g&&lt.n*(g.tiers[lt.tier]||5)+(lt.cl?lt.cls:0)+(lt.cot!=null?lt.cots:0)>(g.max_stake||500))return;
   const mode=curMode();
   const p=g?{tier:lt.tier,n:lt.n,...(mode?{mode}:{}),...(lt.cl?{cl:[lt.cl,lt.cls]}:{}),...(lt.cot!=null?{cot:[lt.cot,lt.cots]}:{})}:{};
   S.busy=true;S.flash=null;render();
@@ -1049,7 +1067,7 @@ async function onClick(op,data){
   const b=S.bc,x=S.xd;
   switch(op){
     case'close':S.dlg.close();return;
-    case'tab':if(S.tab==='pb'&&data.tab!=='pb')PB?.leave();S.tab=data.tab;S.flash=null;S.anchor='';if(S.tab!=='lt')pauseLoto();ltMusic();render();S.dlg.scrollTop=0;if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();if(S.tab==='dt'&&F().knife)kn().start();return;
+    case'tab':if(S.tab==='pb'&&data.tab!=='pb')PB?.leave();if(S.tab==='oaq'&&data.tab!=='oaq')S.oaq.anim=null;S.tab=data.tab;S.flash=null;S.anchor='';if(S.tab!=='lt')pauseLoto();ltMusic();render();S.dlg.scrollTop=0;if(S.tab==='board')loadBoard();if(S.tab==='lt')resumeLoto();if(S.tab==='ring')startRingLoop();if(S.tab==='dt'&&F().knife)kn().start();return;
     case'oaqstart':oaqStart(data.lv==='kho'?'kho':'de');return;
     case'oaqsel':{if(S.oaq.anim||S.busy)return;const c=Number(data.c);S.oaq.sel=S.oaq.sel===c?null:c;S.oaq.quit=false;sfx('mark');render();return;}   // owner 03/10: change or unpick the ô freely until a direction is chosen
     case'oaqmove':oaqMove(Number(data.d)===-1?-1:1);return;
@@ -1069,6 +1087,7 @@ async function onClick(op,data){
     case'stake':x.stake=Number(data.v)||10;render();return;
     case'shakexd':shakeXd();return;
     case'raidok':x.raid=null;S.tab=data.tab||'bc';render();S.dlg.scrollTop=0;if(S.tab==='lt')resumeLoto();return;
+    case'wealthraidok':S.wealthRaid=null;render();return;
     case'buy':buy();return;
     case'mark':mark(Number(data.c)||0,Number(data.n));return;
     case'kinh':kinh();return;

@@ -1,13 +1,33 @@
 # Public deployment: the game listens only on localhost; Caddy terminates HTTPS.
-# 1) cp .env.example .env and set ALLOWED_HOSTS=<your domain>, TRUST_PROXY=1 (+ optional LLM_*)
+# 1) cp .env.example .env and set POSTGRES_PASSWORD, DATABASE_URL (host postgres), ALLOWED_HOSTS, TRUST_PROXY=1
 # 2) set the domain in deploy/Caddyfile   3) docker compose up -d --build
 services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-phocochuyen}
+      POSTGRES_DB: ${POSTGRES_DB:-phocochuyen}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
   game:
     build: .
     env_file: .env
     environment:
       HOST: 0.0.0.0
       PORT: "8765"
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL with host postgres and a URL-encoded password in .env}
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "127.0.0.1:8765:8765"
     volumes:
@@ -25,5 +45,6 @@ services:
     restart: unless-stopped
     profiles: ["public"]
 volumes:
+  postgres-data:
   game-data:
   caddy-data:

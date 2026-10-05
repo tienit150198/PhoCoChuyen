@@ -122,6 +122,8 @@ ANIMALS = {
 }
 FISH = ('guppy', 'betta', 'barb', 'goldfish')
 TANKS = dict(tank_10=10, tank_30=30, tank_60=60)
+TANK_GEAR = ('filter', 'heater', 'conditioner')
+TANK_KEYS = tuple(TANKS) + FISH + TANK_GEAR
 # Adoptees of the corner (kittens and puppies are never sold: they go home through Chân Nhỏ).
 ADOPTEES = {
     'vang': dict(name='Vàng', emoji='🐕', kind='dog', coat='yellow', text='Chó ta 6 tuổi, hiền, đã triệt sản, thích nằm hiên.'),
@@ -935,6 +937,18 @@ def _cart(s, c, t, p):
     _open_bill(t)
     key = kit.one_of(p.get('key'), CART_KEYS, 'Món này tiệm không bán.')
     qty = kit.integer(p.get('qty'), 0, 20)
+    if t['job'] == 'tank' and key in TANK_KEYS:
+        if key in TANKS:
+            kit.need(qty == 1, 'Chọn cỡ bể hoặc bỏ bể bằng nút trên từng bể nhé.')
+            return _tank(s, c, t, dict(p, size=key))
+        rows = _tank_groups(t)
+        index = kit.integer(p.get('tank', 0), 0, len(rows) - 1)
+        if qty:
+            rows[index][key] = qty
+        else:
+            rows[index].pop(key, None)
+        _set_tanks(c, t, rows)
+        return dict(message=f'Bể {index + 1} · {_name(key, t)}: {qty}')
     kit.need(key != 'adopt' or (t['job'] == 'screen' and t['needs']['kind'] == 'adopt'), 'Chỉ nhận nuôi qua góc nhận nuôi.')
     kit.need(key not in ANIMALS or t['job'] in ('tank', 'screen'), 'Bán cá, chim, hamster ở phần setup bể hoặc bán thú nhé.')
     if t['job'] == 'screen':
@@ -991,17 +1005,58 @@ def _swap(s, c, t, p):
     return dict(message=f'Bạn cất mấy lon quá hạn, lấy {g["qty"]} lon mới trên kệ. {_who(t)} gật gù: “Vậy mới yên tâm.”')
 
 
+def _tank_groups(t):
+    """Old saves are one aquarium; new orders retain explicit assignments."""
+    return tree_copy(t.get('tanks', [{k: q for k, q in t['cart'].items() if k in TANK_KEYS}]))
+
+
+def _tank_totals(rows):
+    total = {}
+    for row in rows:
+        for k, q in row.items():
+            total[k] = total.get(k, 0) + q
+    return total
+
+
+def _set_tanks(c, t, rows):
+    total = _tank_totals(rows)
+    for k, q in total.items():
+        kit.need(q <= 20 and _have(c, k) >= q, f'Không đủ {_name(k, t).lower()} cho các bể. Mở Kho nhập thêm nhé.')
+    for k in TANK_KEYS:
+        t['cart'].pop(k, None)
+    t['cart'].update(total)
+    t['tanks'] = rows
+    for k in total:
+        _unit(c, t, k)
+
+
 def _tank(s, c, t, p):
     _start(t)
     _job(t, 'tank')
     _open_bill(t)
     size = kit.one_of(p.get('size'), tuple(TANKS), 'Chọn một cỡ bể nhé.')
-    kit.need(kit.stock(c, size) >= 1, f'Hết {ITEM[size]["name"].lower()}. Mở Kho nhập thêm nhé.')
+    rows = _tank_groups(t)
+    index = kit.integer(p.get('tank', 0), 0, len(rows))
+    if index == len(rows):
+        kit.need(len(rows) < 20, 'Hoàn tất đơn này trước khi setup thêm bể nhé.')
+        rows.append({})
     for k in TANKS:
-        t['cart'].pop(k, None)
-    t['cart'][size] = 1
-    _unit(c, t, size)
-    return dict(message=f'Chọn {ITEM[size]["name"].lower()}.')
+        rows[index].pop(k, None)
+    rows[index][size] = 1
+    _set_tanks(c, t, rows)
+    return dict(message=f'Bể {index + 1}: chọn {ITEM[size]["name"].lower()}.')
+
+
+def _tank_remove(s, c, t, p):
+    _start(t)
+    _job(t, 'tank')
+    _open_bill(t)
+    rows = _tank_groups(t)
+    index = kit.integer(p.get('tank'), 0, len(rows) - 1)
+    kit.need(not any(rows[index].get(k) for k in FISH), 'Bớt cá ở bể này rồi thêm sang bể khác trước khi bỏ bể nhé.')
+    rows.pop(index)
+    _set_tanks(c, t, rows or [{}])
+    return dict(message=f'Đã bỏ bể {index + 1} và đồ dùng của bể khỏi quầy.')
 
 
 def _advice(s, c, t, p):
@@ -1042,6 +1097,8 @@ def _ready(c: dict, t: dict) -> None:
     if t['job'] == 'tank':
         kit.need(any(k in TANKS for k in t['cart']), 'Chọn cỡ bể trước đã.')
         kit.need(any(k in FISH for k in t['cart']), 'Chọn cá cho bể trước đã.')
+        for row in _tank_groups(t):
+            kit.need(not any(row.get(k) for k in FISH) or any(row.get(k) for k in TANKS), 'Chọn cỡ bể cho từng nhóm cá trước đã.')
     if t['job'] == 'screen':
         kit.need(t['work']['verdict'] == 'sell', 'Chỉ tính tiền khi đã đồng ý giao bé.')
         pet = t['needs']['pet']
@@ -1260,8 +1317,9 @@ def tank_problems(cart: dict) -> list:
 
 
 def _judge_tank(c: dict, t: dict) -> None:
-    for code, sev, safety, text, note in tank_problems(t['cart']):
-        _slip(t, code, sev, text, note, safety)
+    for i, row in enumerate(_tank_groups(t)):
+        for code, sev, safety, text, note in tank_problems(row):
+            _slip(t, code, sev, text, f'Bể {i + 1}: {note}', safety)
     keep = t['needs']['keep']
     if any(t['cart'].get(k, 0) < q for k, q in keep.items()):
         _slip(t, 'not_wanted', 2, 'Tôi muốn nuôi con đó nhất mà tiệm lại không bán.', 'bỏ mất con cá khách muốn nhất')
@@ -1677,7 +1735,7 @@ def _ship(s, c, t, p):
 
 
 ACTIONS = dict(
-    ps_ask=_ask, ps_cart=_cart, ps_coat=_coat, ps_food=_food, ps_date=_date, ps_swap=_swap, ps_tank=_tank, ps_advice=_advice,
+    ps_ask=_ask, ps_cart=_cart, ps_coat=_coat, ps_food=_food, ps_date=_date, ps_swap=_swap, ps_tank=_tank, ps_tank_remove=_tank_remove, ps_advice=_advice,
     ps_scan=_scan, ps_void=_void, ps_total=_total_act, ps_rescan=_rescan, ps_handover=_handover,
     ps_verdict=_verdict, ps_sign=_sign,
     ps_feed=_feed, ps_clean=_clean, ps_temp=_temp, ps_heat=_heat, ps_look=_look, ps_isolate=_isolate, ps_care_done=_care_done,
@@ -1740,9 +1798,13 @@ def public_task(t: dict) -> dict:
         g = x.get('grab')
         v['grab'] = dict(item=g['item'], qty=g['qty'], label=g['label'] if t['work']['dated'] else '') if g else None
     elif job == 'tank':
-        v['problems'] = [dict(code=p[0], note=p[4]) for p in tank_problems(t['cart'])] if t['judged'] else []
-        size = next((k for k in TANKS if t['cart'].get(k)), None)
-        v['load'] = dict(litres=sum(ANIMALS[k]['litres'] * t['cart'].get(k, 0) for k in FISH), size=TANKS[size] if size else 0)
+        v['tanks'] = []
+        for i, row in enumerate(_tank_groups(t)):
+            size = next((k for k in TANKS if row.get(k)), None)
+            load = dict(litres=sum(ANIMALS[k]['litres'] * row.get(k, 0) for k in FISH), size=TANKS[size] if size else 0)
+            v['tanks'].append(dict(cart=row, load=load, problems=[dict(code=p[0], note=p[4]) for p in tank_problems(row)]))
+        v['problems'] = [dict(code=p['code'], note=f'Bể {i + 1}: {p["note"]}') for i, row in enumerate(v['tanks']) for p in row['problems']] if t['judged'] else []
+        v['load'] = {k: sum(row['load'][k] for row in v['tanks']) for k in ('litres', 'size')}
     elif job == 'care':
         v['pens'] = [dict(id=p, temp=_temp_of(t, p) if p in t['work']['read'] else None,
                           sign=_sign_of(t, p) if p in t['work']['looked'] else '', dirty=p in x['dirty']) for p in x['pens']]
@@ -1822,6 +1884,14 @@ def validate_task(t: dict, original: dict) -> None:
         _bool(w['swapped'])
     elif job == 'tank':
         _ids(w['advice'], tuple(TIPS), 6)
+        if 'tanks' in t:
+            rows = t['tanks']
+            kit.need(isinstance(rows, list) and 1 <= len(rows) <= 20, 'Danh sách bể không hợp lệ.', 'invalid_save')
+            for row in rows:
+                kit.need(isinstance(row, dict) and all(k in TANK_KEYS for k in row), 'Bể không hợp lệ.', 'invalid_save')
+                _qtys(row, 20)
+                kit.need(sum(row.get(k, 0) for k in TANKS) <= 1, 'Mỗi nhóm cá chỉ có một bể.', 'invalid_save')
+            kit.need(_tank_totals(rows) == {k: q for k, q in t['cart'].items() if k in TANK_KEYS}, 'Cá và đồ dùng trong các bể không khớp hóa đơn.', 'invalid_save')
     elif job == 'screen':
         kit.need(w['verdict'] is None or w['verdict'] in VERDICTS, 'Quyết định không hợp lệ.', 'invalid_save')
         _ids(w['signed'], tuple(SIGNS), 3)
@@ -1914,7 +1984,7 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
 def hint(c: dict, t: dict) -> str:
     return dict(
         food='Hỏi tuổi, cân nặng, dị ứng → đọc nhãn bao: đúng loài, đúng tuổi, đúng cỡ, tránh đồ bé dị ứng → món khách tự lấy trong rổ thì xem hạn → quét từng món, chốt, thối tiền.',
-        tank='Chọn bể đủ lít (bảy màu 2 L, tứ vân 4 L, betta 5 L, cá vàng 10 L mỗi con) → betta ở một mình, không chung cá rỉa vây, cá vàng không chung cá nhiệt đới → lọc, khử clo → dặn cách thả cá, thay nước → tính tiền.',
+        tank='Chọn bể đủ lít (bảy màu 2 L, tứ vân 4 L, betta 5 L, cá vàng 10 L mỗi con) → bấm Thêm bể riêng để tách cá: betta ở một mình, cá vàng không chung cá nhiệt đới → chọn cá, lọc và khử clo cho từng bể; xem cảnh báo trước khi tính tiền → dặn cách thả cá, thay nước.',
         screen='Hỏi ai chăm, người lớn đồng ý chưa, nhà ở, thời gian, thú đang nuôi, dị ứng → chưa hợp thì hẹn lại hoặc từ chối nhẹ nhàng → hợp thì giao bé kèm đủ đồ, nhận nuôi thì làm đủ giấy.',
         care='Cho ăn đúng khẩu phần (cá một nhúm, chuồng một chén) → bể cá thay 1/3 nước, chuồng thay lót → đo nhiệt, lạnh thì bật sưởi (cá vàng không cần) → soi từng bể, bé ốm thì cách ly.',
         ret=POLICY + ' Xem hóa đơn, seal, mã lô, hạn, lỗi rồi mới quyết.',

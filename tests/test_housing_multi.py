@@ -41,6 +41,16 @@ def buy2(s, kind, down=None, months=36, **p):
     return act(s, 'jr_home_buy', **q)
 
 
+def legacy_tenant(s, hid):
+    """Existing NPC contracts keep their own fixed rent; new advert demand is tested in test_rentals."""
+    s = copy.deepcopy(s)
+    x = hs.find(H(s), hid)
+    day = s['journey']['life_day']
+    x['let'] = dict(who=0, since=day, rent=hs.rent_of(x['kind']), paid=day, ev=day, owed=0, od=0)
+    validate_state(s)
+    return s, dict(message=f"{x['let']['rent']} xu/tháng")
+
+
 def to_v1(s):
     """The save as 1.4.5 wrote it: version 1, one home, no props, no mv/let/keep, eight stats."""
     s = copy.deepcopy(s)
@@ -111,7 +121,7 @@ class OldSaves(unittest.TestCase):
         self.assertEqual(len(view['deco']['items']), 1)                     # the decor still stands
         from game import marriage as mr
         ids = [e['id'] for e in hs.partner_effects(new, 7, 'a', 'sid-b', mr._effect)]
-        self.assertEqual(ids, [f'home:7:a:{h1["own"]["id"]}'])              # the same id: the spouse is not moved twice
+        self.assertEqual(ids, [])                                        # upgrading never creates new sharing without consent
         tick(new, 5, salary=60)                                              # the schedule goes on
         self.assertEqual(H(new)['own']['loan']['rows'][2]['paid'], H(new)['own']['loan']['rows'][2]['amount'])
 
@@ -231,24 +241,24 @@ class Letting(unittest.TestCase):
     def test_rent_at_the_month_boundary(self):
         s = self.owner2()
         x = H(s)['props'][0]
-        self.assertEqual(hs.rent_of('can_ho_studio'), 10)                   # 2.400 × 5 % / 12
+        self.assertEqual(hs.rent_of('can_ho_studio'), 20)                   # 2.400 × 10 % / 12
         tick(s, 2)
-        s, r = act(s, 'jr_home_let', id=x['id'], on=True, confirm=True)
+        s, r = legacy_tenant(s, x['id'])
         x = H(s)['props'][0]
         L = x['let']
-        self.assertEqual((L['rent'], L['since'], L['paid']), (10, x['day'] + 2, x['day'] + 2))
-        self.assertIn('10 xu/tháng', r['message'])
+        self.assertEqual((L['rent'], L['since'], L['paid']), (20, x['day'] + 2, x['day'] + 2))
+        self.assertIn('20 xu/tháng', r['message'])
         w = s['journey']['wallet']
         tick(s, 2)
         self.assertEqual(s['journey']['wallet'], w)                          # nothing before the boundary
         notes = tick(s, 1)                                                   # the boundary: 3 days of 5
-        self.assertEqual(s['journey']['wallet'], w + 6)
+        self.assertEqual(s['journey']['wallet'], w + 12)
         self.assertTrue(any('tiền thuê' in n for n in notes))
         tick(s, 5)
-        self.assertEqual(H(s)['stats']['rent_in'], 6 + 10 - (H(s)['props'][0]['let']['owed']))
+        self.assertEqual(H(s)['stats']['rent_in'], 12 + 20 - (H(s)['props'][0]['let']['owed']))
         self.assertEqual(jr.living_cost(s['journey'])['rent'], hs.HOMES['tap_the']['upkeep'])   # tenants pay their own bills
         view = hs.public(s)['props'][0]
-        self.assertEqual((view['let']['rent'], view['live'], view['move']['ok']), (10, False, False))
+        self.assertEqual((view['let']['rent'], view['live'], view['move']['ok']), (20, False, False))
         with self.assertRaises(GameError) as e:
             act(s, 'jr_home_move', id=x['id'], confirm=True)
         self.assertEqual(e.exception.code, 'let')
@@ -258,17 +268,17 @@ class Letting(unittest.TestCase):
         tick(s, 2)
         w = s['journey']['wallet'] + H(s)['props'][0]['let']['owed']
         s, r = act(s, 'jr_home_let', id=x['id'], on=False, confirm=True)     # 2 days of rent, and anything owed
-        self.assertEqual(s['journey']['wallet'], w + 4)
+        self.assertEqual(s['journey']['wallet'], w + 8)
         self.assertIsNone(H(s)['props'][0]['let'])
         validate_state(s)
 
     def test_rent_lands_before_the_installment_of_the_same_home(self):
         s = self.owner2(loan=True)
         x = H(s)['props'][0]
-        s, _ = act(s, 'jr_home_let', id=x['id'], on=True, confirm=True)
+        s, _ = legacy_tenant(s, x['id'])
         B(s)['balance'] = 0
         due = x['loan']['rows'][0]
-        s['journey']['wallet'] = due['amount'] - 10                         # short by exactly one month's rent
+        s['journey']['wallet'] = due['amount'] - 20                         # short by exactly one month's rent
         tick(s, hs.MONTH_DAYS)                                               # no tenant moment in the first TENANT_GAP days
         row = H(s)['props'][0]['loan']['rows'][0]
         self.assertEqual((row['paid'], row['late'], H(s)['props'][0]['let']['owed']), (row['amount'], False, 0))
@@ -278,7 +288,7 @@ class Letting(unittest.TestCase):
     def test_tenant_moments_are_light_and_capped(self):
         s = self.owner2()
         x = H(s)['props'][0]
-        s, _ = act(s, 'jr_home_let', id=x['id'], on=True, confirm=True)
+        s, _ = legacy_tenant(s, x['id'])
         start = s['journey']['wallet']
         days = 60 * hs.MONTH_DAYS
         notes = tick(s, days)
@@ -287,8 +297,8 @@ class Letting(unittest.TestCase):
         self.assertLessEqual(len(moments), days // hs.TENANT_GAP + 1)         # …never often
         got = s['journey']['wallet'] - start
         self.assertEqual(got, H(s)['stats']['rent_in'])
-        self.assertLessEqual(got, 60 * 10)
-        self.assertGreaterEqual(got, 60 * 10 * 8 // 10)                      # repairs only ever take a little
+        self.assertLessEqual(got, 60 * 20)
+        self.assertGreaterEqual(got, 60 * 20 * 8 // 10)                      # repairs only ever take a little
         validate_state(s)
 
 
@@ -352,7 +362,7 @@ class Moving(unittest.TestCase):
         self.assertEqual((H(s)['rent'], H(s)['own']['kind']), (None, 'tap_the'))
         validate_state(s)
 
-    def test_the_spouse_follows_every_move(self):
+    def test_moving_never_creates_automatic_spouse_invitations(self):
         from game import marriage as mr
         s = story(wallet=20000)
         s['name'] = 'An'
@@ -360,13 +370,13 @@ class Moving(unittest.TestCase):
         s, _ = buy2(s, 'nha_pho')
         a, b = H(s)['own']['id'], H(s)['props'][0]['id']
         ids = lambda: [e['id'] for e in hs.partner_effects(s, 7, 'a', 'sid-b', mr._effect) if e['id'].startswith('home:')]
-        self.assertEqual(ids(), [f'home:7:a:{a}'])
+        self.assertEqual(ids(), [])
         s, _ = act(s, 'jr_home_move', id=b, confirm=True)
-        self.assertEqual(ids(), [f'home:7:a:{b}.1'])
+        self.assertEqual(ids(), [])
         s, _ = act(s, 'jr_home_move', id=a, confirm=True)
-        self.assertEqual(ids(), [f'home:7:a:{a}.1'])
+        self.assertEqual(ids(), [])
         s, _ = act(s, 'jr_home_move', id=b, confirm=True)
-        self.assertEqual(ids(), [f'home:7:a:{b}.2'])                         # a new id each time: applied again
+        self.assertEqual(ids(), [])                                      # returning still needs a new explicit invitation
 
 
 class SellingAndPaying(unittest.TestCase):
@@ -375,7 +385,7 @@ class SellingAndPaying(unittest.TestCase):
         s, _ = buy(s, 'tap_the')
         s, _ = buy2(s, 'nha_pho')
         x = H(s)['props'][0]
-        s, _ = act(s, 'jr_home_let', id=x['id'], on=True, confirm=True)
+        s, _ = legacy_tenant(s, x['id'])
         tick(s, 3)
         w = s['journey']['wallet']
         value = hs.value_of(x, s['journey']['life_day'])
@@ -418,7 +428,7 @@ class SaveChecks(unittest.TestCase):
         s = story(wallet=20000)
         s, _ = buy(s, 'tap_the')
         s, _ = buy2(s, 'nha_pho')
-        s, _ = act(s, 'jr_home_let', id=H(s)['props'][0]['id'], on=True, confirm=True)
+        s, _ = legacy_tenant(s, H(s)['props'][0]['id'])
         validate_state(s)
         let = copy.deepcopy(H(s)['props'][0]['let'])
         breaks = [
@@ -444,7 +454,7 @@ class SaveChecks(unittest.TestCase):
         s = story(wallet=20000)
         s, _ = buy(s, 'tap_the')
         s, _ = buy2(s, 'nha_pho')
-        s, _ = act(s, 'jr_home_let', id=H(s)['props'][0]['id'], on=True, confirm=True)
+        s, _ = legacy_tenant(s, H(s)['props'][0]['id'])
         tick(s, 12)
         again = migrate_state(copy.deepcopy(s))
         self.assertEqual(H(again), H(s))
@@ -469,7 +479,7 @@ from tests.test_couple import CoupleBase   # noqa: E402  (the database side of a
 
 
 class CoupleMoves(CoupleBase):
-    """The spouse shares the home you live in and follows each move; your other homes stay yours alone."""
+    """The spouse accepts each new home explicitly; ownership stays personal."""
 
     def cmd(self, tok, action, rid, **p):
         return self.store.command(tok, rid, self.store.read(tok)[1], None, action, p)
@@ -481,14 +491,20 @@ class CoupleMoves(CoupleBase):
             mr.on_load(self.store, self.a, self.state(self.a))
             mr.on_load(self.store, self.b, self.state(self.b))
 
+    def share(self):
+        self.act(self.a, 'family_home_request', rid='move-home-invite-' + str(int(self.clock.t)))
+        request = self.view(self.b)['family']['requests'][0]
+        self.act(self.b, 'family_answer', id=request['id'], answer='accept', rid='move-home-accept-' + str(request['id']))
+
     def shared(self):
         sh = self.state(self.b)['journey']['home']['shared']
         return sh and sh['kind']
 
-    def test_spouse_follows_the_lived_in_home(self):
+    def test_spouse_accepts_each_lived_in_home(self):
         self.fund(self.a, 20000)
         self.cmd(self.a, 'jr_home_buy', 'multi-buy-0001', kind='tap_the', down=1800, confirm=True)
         self.load()
+        self.share()
         self.assertEqual(self.shared(), 'tap_the')
         out = self.cmd(self.a, 'jr_home_buy', 'multi-buy-0002', kind='nha_pho', down=7800, move_in=False, confirm=True)
         self.assertTrue(out['result']['approved'])
@@ -497,11 +513,13 @@ class CoupleMoves(CoupleBase):
         hid = self.state(self.a)['journey']['home']['props'][0]['id']
         self.cmd(self.a, 'jr_home_move', 'multi-move-0001', id=hid, confirm=True)
         self.load()
+        self.share()
         self.assertEqual(self.shared(), 'nha_pho')
         old = self.state(self.a)['journey']['home']['props'][0]['id']
         self.cmd(self.a, 'jr_home_move', 'multi-move-0002', id=old, confirm=True)
         self.load()
-        self.assertEqual(self.shared(), 'tap_the')                         # and back again
+        self.share()
+        self.assertEqual(self.shared(), 'tap_the')                         # explicitly accepted again
         sa = self.state(self.a)
         x = sa['journey']['home']['props'][0]
         self.cmd(self.a, 'jr_home_sell', 'multi-sell-0001', id=x['id'], confirm=True, value=hs.value_of(x, sa['journey']['life_day']))
@@ -514,6 +532,7 @@ class CoupleMoves(CoupleBase):
         self.fund(self.a, 20000)
         self.cmd(self.a, 'jr_home_buy', 'sh-buy-0001', kind='nha_pho', down=7800, confirm=True)
         self.load()
+        self.share()
         self.assertEqual(self.shared(), 'nha_pho')
         self.fund(self.b, 20000)
         out = self.cmd(self.b, 'jr_home_buy', 'sh-buy-0002', kind='tap_the', down=1800, confirm=True)   # no move_in: stays empty

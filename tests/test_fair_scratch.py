@@ -4,6 +4,7 @@ of tickets in its own key (journey['fair_run2']), nothing new in journey['fair']
 import json
 import random
 import unittest
+from unittest import mock
 
 from game import fair as fh
 from game import fair_scratch as xs
@@ -30,12 +31,11 @@ class Table(unittest.TestCase):
         total = sum(w for _, w in xs.PRIZES)
         return p * sum(m * w for m, w in xs.PRIZES) / total
 
-    def test_wins_feel_winnable_and_the_return_stays_near_even(self):
-        # owner 03/10: "có cảm giác thắng thua, không lỗ quá hoặc không quá lời"
-        for p in (xs.P_HI, xs.P_LO):
-            self.assertTrue(.35 <= p <= .45, p)
-            self.assertTrue(.95 <= self.ev(p) <= 1.05, (p, self.ev(p)))
-        self.assertGreater(xs.P_HI, xs.P_LO)
+    def test_rebalanced_prize_table_prefers_small_prizes(self):
+        self.assertEqual((xs.P_HI, xs.P_LO), (.50, .50))
+        self.assertAlmostEqual(self.ev(xs.P_HI), .50 * 1.59)
+        self.assertAlmostEqual(self.ev(xs.P_LO), .50 * 1.59)
+        self.assertEqual(xs.P_HI, xs.P_LO)
         self.assertEqual(xs.MULTS[0], 1)                                  # hoàn vé
         self.assertEqual(sorted(xs.MULTS), list(xs.MULTS))
         self.assertEqual(len(set(xs.MULTS)), len(xs.MULTS))
@@ -108,7 +108,8 @@ class Scratch(FairBase):
         self.assertEqual(s['journey']['fair_run2']['g'], 'xs')
         self.assertNotIn('xs', fh.RUN_GAMES)
 
-    def test_the_odds_follow_todays_net(self):
+    @mock.patch.object(fh, 'featured_game', return_value='xs')
+    def test_the_odds_follow_todays_net(self, _featured):
         s = story(100)
         s['journey']['fair'] = fh.initial()
         s['journey']['fair']['date'] = fh.vn_date(self.clock.t + 2)
@@ -125,17 +126,18 @@ class Scratch(FairBase):
         s, r = self.buy(s, 2, [xs.P_HI - .005])
         self.assertGreater(r['fair']['mult'], 0)
 
-    def test_a_long_run_of_tickets_cools_to_the_floor(self):
+    @mock.patch.object(fh, 'featured_game', return_value='xs')
+    def test_a_long_run_of_tickets_cools_to_the_floor(self, _featured):
         j, f = {}, dict(fh.initial(), date=fh.vn_date(OPEN))
-        ps = [fh.luck_p(j, f, 'xs', OPEN + 5 * i, xs.P_HI, xs.P_LO) for i in range(40)]
+        ps = [fh.luck_p(j, f, 'xs', OPEN + 5 * i, stake=2) for i in range(40)]
         self.assertEqual(ps[:fh.RUN_FREE], [xs.P_HI] * fh.RUN_FREE)
         self.assertAlmostEqual(ps[fh.RUN_FREE], xs.P_HI - xs.RUN_STEP)
-        self.assertEqual(ps[-1], xs.P_LO)
+        self.assertEqual(ps[-1], fh.P_FLOOR)
         self.assertEqual(ps, sorted(ps, reverse=True))
         self.assertEqual(set(j), {'fair_run2'})
         fh.luck_p(j, f, 'bc', OPEN + 300)                           # another stall: one run at a time
         self.assertEqual(set(j), {'fair_run'})
-        self.assertEqual(fh.luck_p(j, f, 'xs', OPEN + 305, xs.P_HI, xs.P_LO), xs.P_HI)
+        self.assertEqual(fh.luck_p(j, f, 'xs', OPEN + 305, stake=2), xs.P_HI)
         self.assertEqual(set(j), {'fair_run2'})
         s = story(100)
         s['journey']['fair_run2'] = dict(g='xs', n=3, at=1)
@@ -149,7 +151,8 @@ class Scratch(FairBase):
         with self.assertRaises(GameError):
             validate_state(s)
 
-    def test_win_rate_and_return_over_many_tickets(self):
+    @mock.patch.object(fh, 'featured_game', return_value='xs')
+    def test_win_rate_and_return_over_many_tickets(self, _featured):
         s = story(10**6)
         self.dice(random.Random(11))
         wins = paid = back = 0
@@ -160,12 +163,12 @@ class Scratch(FairBase):
             wins += r['fair']['mult'] > 0
             paid += 2
             back += r['fair']['prize']
-        self.assertTrue(.37 < wins / 1200 < .47, wins)
-        self.assertTrue(.8 < back / paid < 1.3, back / paid)
+        self.assertTrue(.45 < wins / 1200 < .55, wins)
+        self.assertTrue(.65 < back / paid < .95, back / paid)
 
     def test_prices_and_bad_payloads(self):
         s = story(100)
-        for p in (dict(price=3), dict(price='5'), dict(price=5.0), dict(price=True), dict(price=50), dict(price=5, extra=1), dict()):
+        for p in (dict(price=3), dict(price='5'), dict(price=5.0), dict(price=True), dict(price=501), dict(price=5, extra=1), dict()):
             with self.assertRaises(GameError, msg=p):
                 self.dice(Draws([.1]))
                 self.act(s, 'fair_xs', **p)

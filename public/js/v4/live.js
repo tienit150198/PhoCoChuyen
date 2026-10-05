@@ -7,7 +7,7 @@
  * server), and nothing shows until the service says `welcome.flags.chat`. Before a first welcome ever arrives
  * (service down, nginx not routing /live) it retries slowly (1, 2, 5, 10 minutes) so the game server never sees a
  * reconnect storm; after one it reconnects with back-off (1, 2, 4, 8, 15 s, jitter), at once when the tab comes
- * back or the network returns, and resumes from the last message id it holds per open chat. Close codes from
+ * back or the network returns; the chat dialog refreshes its latest history page. Close codes from
  * the service: 1012 restart (jittered return), 4001 switched off (10 minutes), 4002 another tab took over.
  *
  * For other features: live.on(type, fn) for any server frame, live.send(frame), live.flags, live.unread().
@@ -19,15 +19,29 @@ import {icon} from '../icons.js';
 import {stylesheet} from '../lazy.js';
 import {faceCode} from './face-code.js';
 
-const RETRY=[1,2,4,8,15],SLOW=[60,120,300,600],PING_MS=25000,DEAD_MS=60000;
+const RETRY=[1,2,4,8,15],SLOW=[60,120,300,600],PING_MS=25000,DEAD_MS=60000,CONNECT_MS=20000;
 const listeners=new Map();
 let env=null,ws=null,attempt=0,timer=0,pinger=0,lastFrame=0,tried=0,probing=false,fab=null,shown=false,shownDate=false,renderTimer=0,lastTotal=-1,cssAsked=false,sentFc=null,faceTimer=0;
+let connectTimer=0,probeTimer=0;
 /** The face code of this save ('' while the save is not loaded). */
 const myFc=()=>{try{return env?.api?.state?faceCode(env.api.state):'';}catch(e){console.warn('face:',e);return '';}};
 /** 🙂 After a change of face or clothes: tell a service that knows faces (once per change). */
 function syncFace(){clearTimeout(faceTimer);const fc=myFc();if(!fc||fc===sentFc||!live.me||!('fc' in live.me))return;if(live.send({t:'face',fc}))sentFc=fc;}
 /** Trying outfits changes the save many times a minute: one frame once the player settles (the server allows 6 a minute). */
 const syncFaceSoon=(ms=2000)=>{clearTimeout(faceTimer);faceTimer=setTimeout(syncFace,ms);};
+/** A read started before a rename may still contain the old name. Wait for it before a fresh read. */
+async function syncName(){
+  const api=env?.api;if(!api?.refresh)return;
+  try{
+    if(api.refreshing)await api.refreshing.catch(()=>{});
+    if(api.state?.name!==live.me?.name)await api.refresh();
+  }catch(e){console.warn('name refresh:',e);}
+}
+function adoptName(){
+  const name=live.me?.name;if(typeof name!=='string'||!name.trim())return;
+  if(env?.api?.account)env.api.account.display=name;
+  if(env?.api?.state?.name!==name)syncName();
+}
 
 export const live={
   state:'idle',            // idle | connecting | open | down | off
@@ -65,18 +79,22 @@ function url(){
 }
 
 function connect(){
+  if(ws)return;
   clearTimeout(timer);tried=Date.now();
   if(typeof WebSocket!=='function'||document.visibilityState==='hidden'&&!live.welcomed)return schedule();
   live.state='connecting';
   let sock;
   try{sock=new WebSocket(url());}catch{return schedule();}
   ws=sock;
-  sock.onopen=()=>{lastFrame=Date.now();const r=live.resume(),fc=myFc();sentFc=fc||null;
+  // A half-open transport may never emit error/close, or never send welcome.
+  connectTimer=setTimeout(()=>{if(ws!==sock||live.state!=='connecting')return;console.info('[live] connection deadline');abandon();schedule();},CONNECT_MS);
+  sock.onopen=()=>{if(ws!==sock)return;lastFrame=Date.now();const r=live.resume(),fc=myFc();sentFc=fc||null;
     sock.send(JSON.stringify({t:'hello',v:1,...(r&&Object.keys(r).length?{resume:r}:{}),...(fc?{fc}:{})}));};
-  sock.onmessage=e=>{lastFrame=Date.now();let f;try{f=JSON.parse(e.data);}catch{return;}if(f&&typeof f.t==='string')frame(f);};
+  sock.onmessage=e=>{if(ws!==sock)return;lastFrame=Date.now();let f;try{f=JSON.parse(e.data);}catch{return;}if(f&&typeof f.t==='string')frame(f);};
   sock.onclose=e=>{
     if(ws!==sock)return;
-    ws=null;clearInterval(pinger);
+    console.info('[live] connection closed',e.code,Boolean(e.wasClean));
+    ws=null;clearSocketTimers();
     const wasOpen=live.state==='open';
     live.state=e.code===4001?'off':'down';
     emit('down',{code:e.code});paint();
@@ -88,10 +106,11 @@ function connect(){
   };
   sock.onerror=()=>{};
 }
+function clearSocketTimers(){clearInterval(pinger);clearTimeout(connectTimer);clearTimeout(probeTimer);probing=false;}
 /** Let go of the current socket without waiting for its close (a dead one may take minutes): 'down' when it was open. */
 function abandon(){
   const s=ws;if(!s)return;
-  ws=null;clearInterval(pinger);
+  ws=null;clearSocketTimers();
   const was=live.state==='open';live.state='down';
   try{s.close();}catch{/* already closing */}
   if(was){emit('down',{code:0});paint();}
@@ -100,7 +119,7 @@ function abandon(){
 function probe(){
   if(probing||!ws)return;
   probing=true;const t0=lastFrame,s=ws;live.send({t:'ping'});
-  setTimeout(()=>{probing=false;if(ws===s&&live.state==='open'&&lastFrame===t0){abandon();attempt=0;connect();}},4000);
+  probeTimer=setTimeout(()=>{probing=false;if(ws===s&&live.state==='open'&&lastFrame===t0){abandon();attempt=0;connect();}},4000);
 }
 function schedule(secs){
   clearTimeout(timer);
@@ -111,19 +130,32 @@ function schedule(secs){
 function frame(f){
   switch(f.t){
     case'welcome':
+      clearTimeout(connectTimer);
       live.welcomed=true;live.flags=f.flags||{};
-      if(!live.flags.chat&&!live.flags.street&&!live.flags.dating&&!live.flags.wedding&&!live.flags.fair){live.state='off';break;}
+      if(!live.flags.chat&&!live.flags.street&&!live.flags.dating&&!live.flags.wedding&&!live.flags.fair&&!live.flags.home&&!live.flags.visits&&!live.flags.town){live.state='off';break;}
       live.state='open';attempt=0;
       live.me=f.me||null;live.friends=f.friends||[];live.chans=f.chans||[];live.limits=f.limits||{};live.bonds=f.bonds||[];
+      adoptName();
       if(live.flags.dating&&(f.date||f.bench))import('./dating.js').then(m=>m.datingBoot(env,f)).catch(e=>console.warn('dating:',e));   // back in a date after a reload
-      clearInterval(pinger);pinger=setInterval(()=>{if(Date.now()-lastFrame>DEAD_MS){ws?.close();return;}live.send({t:'ping'});},PING_MS);
+      // Browser timers can pause in the background. Old frame age alone isn't
+      // evidence of a dead socket: ask for a fresh reply before replacing it.
+      clearInterval(pinger);pinger=setInterval(()=>{if(Date.now()-lastFrame>DEAD_MS){probe();return;}live.send({t:'ping'});},PING_MS);
       deepLink();syncFace();   // the save may have loaded after the hello
       break;
     case'state':
       if(f.friends)live.friends=f.friends;if(f.chans)live.chans=f.chans;if(f.me)live.me=f.me;
+      if(f.me)adoptName();
       if(live.me){if(f.town)live.me.town=f.town;if(typeof f.online==='boolean')live.me.online=f.online;}
       break;
     case'presence':{const x=live.friend(f.pid);if(x)x.on=f.on;for(const c of live.chans)if(c.peer?.pid===f.pid)c.peer.on=f.on;break;}
+    case'renamed':{
+      if(typeof f.pid!=='string'||typeof f.name!=='string'||!f.name.trim())return;
+      const put=x=>{if(x?.pid===f.pid)x.name=f.name;};
+      put(live.me);for(const x of live.friends)put(x);
+      for(const c of live.chans){put(c.peer);put(c.last);put(c.last?.reply);}
+      if(f.pid===live.me?.pid)adoptName();
+      window.dispatchEvent(new CustomEvent('mnl:marriage'));
+      break;}
     case'prefs':if(live.me)live.me.online=f.online;if(!f.online){for(const x of live.friends)x.on=false;for(const c of live.chans)if(c.peer)c.peer.on=false;}break;
     case'muted':if(live.me){live.me.muted=f.until;live.me.town=f.until*1000>Date.now()?'muted':'ok';}break;
     case'chan':{const c=live.chan(f.chan.id);if(c)Object.assign(c,f.chan,{unread:c.unread,last:c.last});else live.chans.unshift(f.chan);break;}

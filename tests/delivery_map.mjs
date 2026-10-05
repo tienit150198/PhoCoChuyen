@@ -1,0 +1,28 @@
+import assert from 'node:assert/strict';
+import {routePoints,renderNeighborhoodMap} from '../public/js/careers/delivery_map.js';
+
+const nodes={hub:{x:1,y:2,name:'Bưu cục',emoji:'📮',label:'Bưu cục'},school:{x:2,y:0,name:'Trường học',emoji:'🏫',label:'Trường'},apt:{x:6,y:3,name:'Chung cư',emoji:'🏢',label:'Chung cư'}};
+assert.equal(routePoints(nodes,'hub',['school','apt']),'132,228 216,228 216,60 552,60 552,312');
+const options={nodes,at:'hub',route:['school'],draft:['apt'],status:{school:{pick:2},apt:{drop:1}},minutes:3};
+const html=renderNeighborhoodMap(options);
+assert.match(html,/class="dm-route" points="132,228 216,228 216,60"/);
+assert.match(html,/class="dm-draft" points="216,60 552,60 552,312"/,'draft begins at last committed stop');
+assert.match(html,/class="dm-current"/);
+assert.match(html,/class="dm-stop-number"[^>]*>[\s\S]*?>1<\/text>/);
+assert.match(html,/class="dm-stop-number draft"[^>]*>[\s\S]*?>2<\/text>/);
+assert.match(html,/class="dm-building"/);
+assert.match(html,/class="dm-tree"/);
+assert.equal((html.match(/class="dm-block /g)||[]).length,24,'one decorative block in each real grid cell');
+assert.equal((html.match(/class="dm-road" /g)||[]).length,12,'exactly seven vertical and five horizontal roads');
+assert.equal(html,renderNeighborhoodMap(options),'scenery does not jump on rerender');
+const nasty='<img src=x onerror="evil()">';
+const escaped=renderNeighborhoodMap({...options,nodes:{...nodes,hub:{...nodes.hub,name:nasty,label:nasty,emoji:nasty}},text:{title:nasty}});
+assert.ok(!escaped.includes(nasty),'all externally supplied text is escaped');
+assert.match(escaped,/&lt;img src=x onerror=&quot;evil\(\)&quot;&gt;/);
+const empty=renderNeighborhoodMap({nodes,at:'hub'});
+assert.ok(!empty.includes('class="dm-route"'));
+assert.ok(!empty.includes('class="dm-draft"'));
+const repeated=renderNeighborhoodMap({...options,route:['school','hub','school']});
+assert.match(repeated,/>1\+<\/text>/,'repeat visits remain legible in a compact marker');
+assert.match(repeated,/1, 3/,'all repeat visits remain in accessible title');
+console.log('delivery planner map: route geometry, markers, scenery and escaping passed');

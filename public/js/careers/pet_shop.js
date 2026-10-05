@@ -214,36 +214,51 @@ function foodSteps(t,x){
 }
 
 /* ------------------------------------------------------------ tank */
-function tankPanel(t,x,now=new Set()){
-  const c=cc(x),n=t.needs||{},load=t.load||{litres:0,size:0},id=t.id,lock=t.billed;
-  const want=Object.entries(n.want||{}).map(([k,q])=>`${q} ${lower(c.animals[k]?.name||k)}`).join(', ');
-  const tanks=Object.entries(c.tanks||{}).map(([k,l])=>tile(x,'ps_tank',{task:id,size:k},`<span class="ps-glass" aria-hidden="true"><i></i></span><b>${l} lít</b><small>${price(x,k)} xu · còn ${x.stock(k)}</small>`,`ps-tanktile ${t.cart?.[k]?'selected':''}`,!x.stock(k)||lock)).join('');
-  const fish=(c.fish||[]).map(k=>{const a=c.animals[k],q=t.cart?.[k]||0;
+export function tankPanel(t,x,now=new Set()){
+  const c=cc(x),id=t.id,lock=t.billed,cart=t.cart||{};
+  const groups=t.tanks||[{cart,load:t.load||{litres:0,size:0},problems:[]}];
+  const fishNames=row=>(c.fish||[]).filter(k=>row[k]).map(k=>`${row[k]} ${x.esc(lower(c.animals[k]?.name||k))}`).join(', ');
+  const heading=(row,i)=>`<h5>Bể ${i+1}${fishNames(row)?` · ${fishNames(row)}`:''}</h5>`;
+  const tanks=groups.map(({cart:row,load,problems=[]},i)=>{
+    const choices=Object.entries(c.tanks||{}).map(([k,l])=>tile(x,'ps_tank',{task:id,tank:i,size:k},`<span class="ps-glass" aria-hidden="true"><i></i></span><b>${l} lít</b><small>${price(x,k)} xu</small>`,`ps-tanktile ${row[k]?'selected':''}`,lock||x.stock(k)<(cart[k]||0)+(row[k]?0:1))).join('');
+    const pct=load.size?Math.min(100,load.litres/load.size*100):0,over=load.size&&load.litres>load.size;
+    const hasFish=(c.fish||[]).some(k=>row[k]);
+    return `<div class="ps-aquarium">${heading(row,i)}<div class="ps-grid three">${choices}</div>
+      <div class="ps-load ${over?'over':''}"><span>Nước cá cần</span><span class="ps-meter"><i style="width:${pct.toFixed(0)}%"></i></span><b>${load.litres}/${load.size||'?'} L</b></div>
+      ${problems.length?`<p class="ps-tank-warning" role="status">⚠ ${problems.map(p=>x.esc(p.note)).join(' · ')}</p>`:''}
+      <button type="button" class="btn small ghost" ${cmdAttr(x,'ps_tank_remove',{task:id,tank:i})}${lock||hasFish?' disabled':''}>Bỏ bể ${i+1}</button>${hasFish?'<small class="muted">Bớt cá trước khi bỏ bể.</small>':''}</div>`;
+  }).join('');
+  const add=Object.entries(c.tanks||{}).map(([k,l])=>tile(x,'ps_tank',{task:id,tank:groups.length,size:k},`<b>+ Bể ${l} lít</b><small>${price(x,k)} xu · còn ${Math.max(0,x.stock(k)-(cart[k]||0))}</small>`,'',lock||groups.length>=20||x.stock(k)<=(cart[k]||0))).join('');
+  const fish=groups.map(({cart:row},i)=>`<div class="ps-aquarium">${heading(row,i)}${(c.fish||[]).map(k=>{
+    const a=c.animals[k],q=row[k]||0;
     const dots=(data(x).coats?.[k]||[]).map(id=>swatch(x,coatOf(x,k,id),'sm')).join('');
     return `<div class="ps-stepper ${q?'on':''}"><span class="ps-st-ico" aria-hidden="true">${x.esc(a.emoji)}</span><div class="grow"><b>${x.esc(a.name)} <span class="ps-dots">${dots}</span></b><small>${x.esc(a.note||'')} · ${a.litres} L/con · ${price(x,k)} xu</small></div>
-      <button type="button" class="ps-step" ${cmdAttr(x,'ps_cart',{task:id,key:k,qty:Math.max(0,q-1)})}${!q||lock?' disabled':''} aria-label="Bớt ${x.esc(lower(a.name))}">−</button><b class="ps-q">${q}</b>
-      <button type="button" class="ps-step" ${cmdAttr(x,'ps_cart',{task:id,key:k,qty:q+1})}${q>=20||have(x,k)<=q||lock?' disabled':''} aria-label="Thêm ${x.esc(lower(a.name))}">+</button></div>${coatChips(t,x,k)}`;}).join('');
-  const gear=['filter','heater','conditioner'].map(k=>{const i=c.items[k],q=t.cart?.[k]||0;
-    return tile(x,'ps_cart',{task:id,key:k,qty:q?0:1},`<span class="ps-bag" aria-hidden="true">${x.esc(i.emoji)}</span><b>${x.esc(i.name)}</b><small>${price(x,k)} xu${q?' · ✓ trên quầy':''}</small>`,q?'selected':'',lock||(!q&&!x.stock(k)));}).join('');
-  const pct=load.size?Math.min(100,load.litres/load.size*100):0,over=load.size&&load.litres>load.size;
+      <button type="button" class="ps-step" ${cmdAttr(x,'ps_cart',{task:id,tank:i,key:k,qty:Math.max(0,q-1)})}${!q||lock?' disabled':''} aria-label="Bớt ${x.esc(lower(a.name))} ở bể ${i+1}">−</button><b class="ps-q">${q}</b>
+      <button type="button" class="ps-step" ${cmdAttr(x,'ps_cart',{task:id,tank:i,key:k,qty:q+1})}${(cart[k]||0)>=20||have(x,k)<=(cart[k]||0)||lock?' disabled':''} aria-label="Thêm ${x.esc(lower(a.name))} vào bể ${i+1}">+</button></div>`;
+  }).join('')}</div>`).join('')+(c.fish||[]).map(k=>coatChips(t,x,k)).join('');
+  const gear=groups.map(({cart:row},i)=>`<div class="ps-aquarium">${heading(row,i)}<div class="ps-grid three">${['filter','heater','conditioner'].map(k=>{
+    const item=c.items[k],q=row[k]||0;
+    return tile(x,'ps_cart',{task:id,tank:i,key:k,qty:q?0:1},`<span class="ps-bag" aria-hidden="true">${x.esc(item.emoji)}</span><b>${x.esc(item.name)}</b><small>${price(x,k)} xu${q?' · ✓ bể này':''}</small>`,q?'selected':'',lock||(!q&&x.stock(k)<=(cart[k]||0)));
+  }).join('')}</div></div>`).join('');
   const tips=Object.entries(c.tips||{}).map(([k,[,s]])=>{const on=(t.work?.advice||[]).includes(k),next=on?(t.work.advice||[]).filter(v=>v!==k):[...(t.work?.advice||[]),k];
     return `<button type="button" class="ps-tip ${on?'on':''}" aria-pressed="${on}" ${cmdAttr(x,'ps_advice',{task:id,tips:next})}><span aria-hidden="true">${on?'☑':'☐'}</span>${x.esc(s)}</button>`;}).join('');
-  const cart=t.cart||{},size=Object.keys(c.tanks||{}).find(k=>cart[k]),fishIn=(c.fish||[]).filter(k=>cart[k]),gearIn=['filter','heater','conditioner'].filter(k=>cart[k]),adv=(t.work?.advice||[]).length;
+  const adv=(t.work?.advice||[]).length,hasSize=groups.every(g=>g.load.size>0);
   const P=(key,title,body,done,sum)=>SF.part(x,t.id,now,key,title,body,{done,sum});
-  return P('tanks','🫙 Chọn bể',`<section class="card ps-tanks"><h4>🫙 Chọn bể</h4><div class="ps-grid three">${tanks}</div>
-      <div class="ps-load ${over?'over':''}"><span>Nước cá cần</span><span class="ps-meter"><i style="width:${pct.toFixed(0)}%"></i></span><b>${load.litres}/${load.size||'?'} L</b></div></section>`,!!size,size?`${c.tanks[size]} lít · nước cá cần ${load.litres}/${load.size||'?'} L`:'')
-    +P('fish','🐟 Cá thả bể',`<section class="card ps-fish"><h4>🐟 Cá thả bể</h4>${fish}</section>`,fishIn.length>0,fishIn.map(k=>`${cart[k]} ${x.esc(lower(c.animals[k]?.name||k))}`).join(', '))
-    +P('gear','🌀 Đồ cho bể',`<section class="card ps-gear"><h4>🌀 Đồ cho bể</h4><div class="ps-grid three">${gear}</div></section>`,gearIn.length>0,gearIn.map(k=>x.esc(c.items[k]?.name||k)).join(', '))
+  const warnings=groups.flatMap((g,i)=>(g.problems||[]).map(p=>`Bể ${i+1}: ${x.esc(p.note)}`));
+  return (warnings.length?`<p class="ps-tank-warning" role="status">⚠ ${warnings.join('<br>')}</p>`:'')+P('tanks','🫙 Chọn & chia bể',`<section class="card ps-tanks"><h4>🫙 Chọn & chia bể</h4><p class="small muted">Betta ở riêng; cá vàng tách cá nhiệt đới. Mỗi bể chọn cá và đồ dùng riêng bên dưới.</p>${tanks}<h5>Thêm bể riêng</h5><div class="ps-grid three">${add}</div></section>`,hasSize,`${groups.length} bể · ${groups.map((g,i)=>`Bể ${i+1}: ${g.load.litres}/${g.load.size||'?'} L`).join(' · ')}`)
+    +P('fish','🐟 Cá trong từng bể',`<section class="card ps-fish"><h4>🐟 Cá trong từng bể</h4><p class="small muted">Muốn chuyển cá: bấm − ở bể cũ, rồi + ở bể mới.</p>${fish}</section>`,!!fishNames(cart),fishNames(cart))
+    +P('gear','🌀 Đồ cho từng bể',`<section class="card ps-gear"><h4>🌀 Đồ cho từng bể</h4>${gear}</section>`,groups.every(g=>g.cart.conditioner),`${groups.length} bể · chọn lọc, sưởi, khử clo riêng`)
     +P('tips','🗒️ Dặn khách',`<section class="card ps-tips"><h4>🗒️ Dặn khách</h4><div class="ps-tiplist">${tips}</div></section>`,adv>0,adv?`${adv} lời dặn`:'');
 }
 function tankSteps(t,x){
   const c=cc(x),rows=[],cart=t.cart||{};
-  const size=Object.keys(c.tanks||{}).find(k=>cart[k]);
-  rows.push({stage:'tanks',ok:size?true:null,label:'Chọn bể đủ nước cho cả đàn',go:{sel:'.ps-tanks',label:'🫙 Chọn cỡ bể'},pulse:''});
-  const fish=(c.fish||[]).some(k=>cart[k]);
+  const groups=t.tanks||[{cart,load:t.load||{},problems:[]}],problems=groups.flatMap(g=>g.problems||[]);
+  const size=groups.every(g=>g.load.size>0)&&!problems.some(p=>p.code==='crowded');
+  rows.push({stage:'tanks',ok:size?true:null,label:'Chọn đủ dung tích cho từng bể',go:{sel:'.ps-tanks',label:'🫙 Chọn cỡ bể'},pulse:''});
+  const fish=(c.fish||[]).some(k=>cart[k])&&!problems.some(p=>['betta_fight','fin_nip','temp_mix'].includes(p.code));
   rows.push({stage:'fish',ok:fish?true:null,label:'Chọn cá thả bể (cá hợp nhau)',go:{sel:'.ps-fish',label:'🐟 Chọn cá thả bể'},pulse:''});
   rows.push(...coatSteps(t,x,'.ps-fish').map(r=>({...r,stage:'fish'})));
-  rows.push({stage:'gear',ok:['filter','heater','conditioner'].some(k=>cart[k])?true:null,label:'Đồ cho bể: lọc, sưởi, khử clo',go:{sel:'.ps-gear',label:'🌀 Chọn đồ cho bể'},pulse:''});
+  rows.push({stage:'gear',ok:groups.every(g=>g.cart.conditioner)&&!problems.some(p=>['no_filter','chlorine'].includes(p.code))?true:null,label:'Đồ cho từng bể: lọc, sưởi, khử clo',go:{sel:'.ps-gear',label:'🌀 Chọn đồ cho bể'},pulse:''});
   rows.push({stage:'tips',ok:(t.work?.advice||[]).length?true:null,label:'Dặn khách cách thả cá, thay nước, cho ăn',go:{sel:'.ps-tips',label:'🗒️ Dặn khách cách chăm'},pulse:''});
   return rows;
 }

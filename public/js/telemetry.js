@@ -10,11 +10,13 @@
  *   game's are never sent (foreign(): a script of another origin or none, an in-app browser's injected bridge);
  * - once per page load: load timings (first byte, DOMContentLoaded, first game frame), the network type, coarse
  *   device memory / cores, cold or warm cache; and where a new player came from (referrer site, utm_*).
+ * - on 10% of page loads: bounded parse/apply/render, long-task and slow-interaction durations, attached to
+ *   those same load/leave beacons. No extra requests or polling; only numeric count/total/max summaries.
  * Only identifiers and numbers; no text typed by the player, no query strings, no ids. Nothing is stored. */
 import {observabilityBoot,analyticsError} from './observability.js';
 const URL_PATH='/api/beacon',MAX_PAGE=30,MAX_SESSION=60,ERR_DELAY=5000,MAX_TEXT=200;
 const ID=/^[A-Za-z0-9_:.-]{1,48}$/;
-let env=null,taps=[],seen=new Map(),queue=[],timer=0,lastLeave=0,sentPage=0;
+let env=null,taps=[],seen=new Map(),queue=[],timer=0,lastLeave=0,sentPage=0,clientPerformance=null;
 
 const store={get(k){try{return sessionStorage.getItem(k);}catch{return null;}},set(k,v){try{sessionStorage.setItem(k,v);}catch{/* blocked */}}};
 const local={get(k){try{return localStorage.getItem(k);}catch{return null;}},set(k,v){try{localStorage.setItem(k,v);}catch{/* blocked */}}};
@@ -22,6 +24,68 @@ const id=v=>typeof v==='string'&&ID.test(v)?v:undefined;
 /** A URL as its path only (no origin, query or hash). */
 function path(u){try{const x=new URL(String(u),location.href);return x.origin===location.origin?x.pathname:x.host+x.pathname;}catch{return String(u||'').split(/[?#]/)[0];}}
 const text=v=>String(v??'').replace(/https?:\/\/[^\s?#]*[?#]\S*/g,m=>m.split(/[?#]/)[0]).slice(0,MAX_TEXT);
+
+const PERF_PHASES=['parse','apply','render'],PERF_LIMIT=200,PERF_MS=60000;
+/** Sample after the first frame, without touching event targets, names, response bodies or player input.
+ * GameAPI emits `clientperf` only while perfEnabled is true. Native event durations are the longest slow
+ * event per interaction (>=40 ms), not INP. Caps apply to this entire page, even when a beacon drains data.
+ * Unsupported browsers still report API phases; no PerformanceObserver or timer fallback is installed. */
+export function createClientPerformance(api,{random=Math.random,Observer=globalThis.PerformanceObserver}={}){
+  if(api)api.perfEnabled=false;
+  if(random()>=.1)return {take:()=>null,stop(){}};
+  let stopped=false,phaseCount=0,eventCount=0,totals={};
+  const counts={},watchers=[],interactions=new Map(),reported=new Set();
+  const ms=value=>typeof value==='number'&&Number.isFinite(value)&&value>=0?Math.min(PERF_MS,Math.round(value)):null;
+  function add(key,value){
+    if((counts[key]||0)>=PERF_LIMIT)return;
+    const duration=ms(value);if(duration===null)return;
+    counts[key]=(counts[key]||0)+1;
+    const row=totals[key]||(totals[key]={n:0,total:0,max:0});
+    row.n++;row.total+=duration;row.max=Math.max(row.max,duration);
+  }
+  function phases(ev){
+    if(stopped||phaseCount>=PERF_LIMIT)return;
+    const d=ev.detail;if(!d||!PERF_PHASES.some(k=>ms(d[k])!==null))return;
+    for(const key of PERF_PHASES)add(key,d[key]);
+    if(++phaseCount>=PERF_LIMIT){if(api)api.perfEnabled=false;api?.removeEventListener?.('clientperf',phases);}
+  }
+  api?.addEventListener?.('clientperf',phases);if(api)api.perfEnabled=true;
+  function watch(type,consume,options={}){
+    if(!Observer?.supportedEntryTypes?.includes(type))return;
+    let observer;
+    try{
+      const read=entries=>{for(const entry of entries){if(stopped||consume(entry)===false){observer.disconnect();break;}}};
+      observer=new Observer(list=>read(list.getEntries()));
+      observer.observe({type,buffered:true,...options});watchers.push({observer,read});
+    }catch{try{observer?.disconnect();}catch{/* unsupported browser */}}
+  }
+  watch('longtask',entry=>{
+    if((counts.longtask||0)>=PERF_LIMIT)return false;
+    if(entry.duration>=50)add('longtask',entry.duration);
+    return (counts.longtask||0)<PERF_LIMIT;
+  });
+  watch('event',entry=>{
+    if(eventCount>=PERF_LIMIT)return false;
+    eventCount++;
+    const duration=ms(entry.duration),key=entry.interactionId;
+    if(duration!==null&&duration>=40&&typeof key==='number'&&Number.isFinite(key)&&key>0&&!reported.has(key))
+      interactions.set(key,Math.max(interactions.get(key)||0,duration));
+    return eventCount<PERF_LIMIT;
+  },{durationThreshold:40});
+  return {
+    take(){
+      // Delivery can race pagehide. Consume already queued entries before the last beacon.
+      if(!stopped)for(const {observer,read} of watchers)try{read(observer.takeRecords());}catch{/* unsupported browser */}
+      for(const [key,duration] of interactions){add('interaction',duration);reported.add(key);}
+      interactions.clear();
+      const out=totals;totals={};return Object.keys(out).length?out:null;
+    },
+    stop(){
+      stopped=true;if(api)api.perfEnabled=false;api?.removeEventListener?.('clientperf',phases);
+      for(const {observer} of watchers)try{observer.disconnect();}catch{/* unsupported browser */}
+    }
+  };
+}
 
 function post(body){
   const data=JSON.stringify(body);if(data.length>8000)return;
@@ -107,7 +171,8 @@ function flush(extra={}){
 }
 function leave(){
   const now=Date.now();if(now-lastLeave<2000)return;lastLeave=now;   // visibilitychange then pagehide: one beacon
-  flush({leave:where()});
+  const leave=where(),perf=clientPerformance?.take();if(perf)leave.perf=perf;
+  flush({leave});
 }
 
 function loadTimes(){
@@ -145,6 +210,7 @@ export function expectedFail({route,status,code}={}){
 }
 export function telemetryBoot(e){
   if(env)return;env=e;
+  try{clientPerformance=createClientPerformance(e.api);}catch{/* measurement must never affect the game */}
   try{observabilityBoot(e);}catch{/* Google must never affect game beacons */}
   const B=globalThis.__mnlBoot||(globalThis.__mnlBoot={}),T=B.tele||(B.tele={errs:[]});T.on=true;
   // boot.js kept these (with the screen: 'loading' while the splash shows, 'start' between the first frame and now).
@@ -172,9 +238,10 @@ export function telemetryBoot(e){
   });
   api?.addEventListener?.('rejected',ev=>{const d=ev.detail||{};error('toast',d.code&&d.code!=='invalid_action'?`${d.code}: ${d.message}`:d.message);});
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')leave();});
-  addEventListener('pagehide',leave);
+  addEventListener('pagehide',ev=>{leave();if(!ev.persisted)clientPerformance?.stop();});
   const hello=()=>setTimeout(()=>{
     const acq=acquisition(),body={load:loadTimes()};
+    const perf=clientPerformance?.take();if(perf)body.load.perf=perf;
     if(acq){body.acq=acq;local.set('mnl.acq','1');}
     post(body);
   },1500);

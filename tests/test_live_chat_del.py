@@ -174,7 +174,7 @@ class DeleteTests(LiveCase):
         self.assertEqual(len((await b.call('history', 'history', ch=m1['ch']))['msgs']), 1)   # everything else as before
         self.assertEqual(len((await b.call('sync', 'state'))['chans']), 1)
         with self.store.connect() as db:   # the game server of this release starts: on again at the next look
-            db.executescript(live_chat.SCHEMA)
+            pg_schema.ensure(db, force=True)
         await self.app.chat.tick(time.time() + 3600)
         self.assertTrue(self.app.chat.del_ok)
         b2 = await self.connect(self.tb)
@@ -201,16 +201,17 @@ class DeleteTests(LiveCase):
 
 
 class SchemaTests(unittest.TestCase):
-    def test_both_backends(self):
+    def test_postgres_schema(self):
+        from tests.pg_support import columns, primary_key
         self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 13)   # 13: chat_hides, chat_clears
         for t, key in (('chat_hides', ('pid', 'msg')), ('chat_clears', ('channel', 'pid'))):
             self.assertIn(f'CREATE TABLE IF NOT EXISTS {t} (', pg_schema.TABLES_DDL)
-            self.assertEqual(pg_schema.TABLE[t]['key'], key)
         self.assertIn('CREATE INDEX IF NOT EXISTS chat_hides_msg ON chat_hides (msg);', pg_schema.INDEX_DDL)
         with tempfile.TemporaryDirectory() as d:
-            store = Store(Path(d) / 'g.sqlite3')
+            store = Store(Path(d) / 'g.db')
             with store.connect() as db:
-                for t in ('chat_hides', 'chat_clears'):
-                    cols = {r[1] for r in db.execute(f'PRAGMA table_info({t})').fetchall()}
-                    self.assertEqual(cols, {c for c, _ in pg_schema.TABLE[t]['columns']}, t)
+                for t, expected, key in (('chat_hides', {'pid', 'msg', 'at'}, ('pid', 'msg')), ('chat_clears', {'channel', 'pid', 'upto', 'at'}, ('channel', 'pid'))):
+                    cols = columns(db, t)
+                    self.assertEqual(cols, expected, t)
+                    self.assertEqual(primary_key(db, t), key)
             store.close_pool()

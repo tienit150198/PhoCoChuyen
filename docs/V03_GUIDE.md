@@ -1,3 +1,5 @@
+> Tài liệu lịch sử của bản phát hành cũ. Cấu hình và công cụ database mô tả dưới đây không còn áp dụng; cách chạy hiện tại dùng PostgreSQL duy nhất tại [POSTGRES_ONLY.md](POSTGRES_ONLY.md).
+
 # Hướng dẫn v0.3 — bảy nghề và những khoảng nghỉ thú vị
 
 ## 1. Một ngày mới

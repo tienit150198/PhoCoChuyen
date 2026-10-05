@@ -142,7 +142,7 @@ function serverSec(d){
   const tables=s.tables.map(t=>`<tr><td data-no-translate>${esc(t.name)}</td><td>${num(t.rows)}</td></tr>`).join('');
   return section('Máy chủ',
     kv([['Phiên bản',`v${esc(s.version)}`],['Chạy liên tục',span(s.uptime)],['Dung lượng dữ liệu',bytes(s.db_bytes)],['Chế độ câu chuyện',s.story?'bật':'tắt'],
-      ['Python · SQLite',`${esc(s.python)} · ${esc(s.sqlite)}`],['Tính số liệu',`${dec(d.took_ms)} ms`]])+
+      ['Python · PostgreSQL',`${esc(s.python)} · ${esc(s.database||'PostgreSQL')}`],['Tính số liệu',`${dec(d.took_ms)} ms`]])+
     `<details class="as-details"><summary>Số dòng mỗi bảng</summary><div class="as-scroll"><table class="as-table"><thead><tr><th>Bảng</th><th>Dòng</th></tr></thead><tbody>${tables}</tbody></table></div></details>`);
 }
 

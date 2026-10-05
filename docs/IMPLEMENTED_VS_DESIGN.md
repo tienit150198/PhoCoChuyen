@@ -1,3 +1,5 @@
+> Tài liệu lịch sử của bản phát hành cũ. Cấu hình và công cụ database mô tả dưới đây không còn áp dụng; cách chạy hiện tại dùng PostgreSQL duy nhất tại [POSTGRES_ONLY.md](POSTGRES_ONLY.md).
+
 # Phạm vi thực tế v0.3.0
 
 Nguồn đối chiếu là code và báo cáo kiểm thử. Tài liệu trong `reference/` mô tả thiết kế dài hạn, không có nghĩa toàn bộ đã được triển khai. Phân biệt số lượng bộ nội dung với số loại cơ chế trò chơi.

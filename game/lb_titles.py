@@ -21,7 +21,7 @@ When
   moment become that week's final holders (`final`=1, kept, never deleted) — then the new week starts from the
   same standings and moves with them, day by day.
 
-Table `lb_weekly` (SQLite here, PostgreSQL in game/pg_schema.py): one row per (week, board, rank). `final`=0 rows
+Table `lb_weekly` (PostgreSQL in game/pg_schema.py): one row per (week, board, rank). `final`=0 rows
 are the current holders (the latest daily refresh), `final`=1 rows are past weeks. `title` holds the title text so
 the live service (live/street.py) can show it without importing the game.
 """
@@ -56,15 +56,6 @@ CAREER_NOUN = dict(
 CAREER_TITLE = dict(pagoda=('🪷', 'Siêng việc chùa nhất tuần'))
 HOLDERS_SECONDS = 60.0          # how long a process trusts its copy of the current holders
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS lb_weekly (
-  week TEXT NOT NULL, board TEXT NOT NULL, rank INTEGER NOT NULL, sid TEXT NOT NULL, score INTEGER NOT NULL,
-  title TEXT NOT NULL, final INTEGER NOT NULL DEFAULT 0, day TEXT NOT NULL, at REAL NOT NULL,
-  PRIMARY KEY (week, board, rank)
-);
-CREATE INDEX IF NOT EXISTS lb_weekly_sid ON lb_weekly(sid, final);
-CREATE INDEX IF NOT EXISTS lb_weekly_board ON lb_weekly(board, final, week);
-"""
 
 
 def now() -> float:

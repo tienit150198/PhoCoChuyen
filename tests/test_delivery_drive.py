@@ -27,6 +27,17 @@ class Town(unittest.TestCase):
 
 
 class Wiring(unittest.TestCase):
+    def test_touch_navigation_and_signal_regressions(self):
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        for filename in ('delivery_controls.mjs', 'delivery_pointer_controls.mjs',
+                         'delivery_input_lifecycle.mjs', 'delivery_navigation.mjs', 'delivery_signal_clock.mjs'):
+            with self.subTest(filename=filename):
+                out = subprocess.run([node, str(ROOT / 'tests' / filename)], cwd=ROOT,
+                                     capture_output=True, text=True, encoding='utf-8', timeout=30)
+                self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+
     def test_drive_uses_the_tap_flow_commands(self):
         js = (ROOT / 'public' / 'js' / 'careers' / 'delivery.js').read_text(encoding='utf-8')
         drive = (ROOT / 'public' / 'js' / 'careers' / 'delivery_drive.js').read_text(encoding='utf-8')

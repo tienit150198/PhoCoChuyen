@@ -104,7 +104,7 @@ class BankHackTests(unittest.TestCase):
         validate_state(s)  # old save without the optional queue
         good = dict(id='r1', day=43, amount=800)
         for queue in (None, [dict(good, amount=-1)], [dict(good, amount=True)],
-                      [dict(good, day='43')], [good, good], [dict(good, amount=3001)]):
+                      [dict(good, day='43')], [good, good], [dict(good, amount=rui.LOSS_MAX + 1)]):
             x = copy.deepcopy(s)
             R(x)['hack_back'] = queue
             with self.assertRaises(GameError):
@@ -221,7 +221,7 @@ class BankHackTests(unittest.TestCase):
         self.assertEqual(R(s)['stats']['fizzled'], 1)
 
     def test_loss_caps_and_current_balance(self):
-        for balance, expected in ((1000000, 3000), (10000, 800), (100, 8)):
+        for balance, expected in ((1000000, 80000), (10000, 800), (100, 8)):
             s = grown(day=40, bank=10000)
             warn(s, 'hack', 'account')
             bk.get(s)['balance'] = balance

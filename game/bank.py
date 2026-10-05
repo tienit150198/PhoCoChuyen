@@ -436,8 +436,6 @@ def pay_options(s: dict, amount: int, with_joint: bool = False, no_joint: bool =
             out['joint_why'] = 'Bạn chưa có quỹ chung vợ chồng.'
         elif acc['balance'] < amount:
             out['joint_why'] = f'Quỹ chung chỉ còn {_fmt(acc["balance"])} xu.'
-        elif acc['daily_left'] < amount:
-            out['joint_why'] = f'Thẻ chung hôm nay chỉ còn chi được {_fmt(acc["daily_left"])} xu.'
         else:
             out['joint'] = True
     return out
@@ -1173,7 +1171,7 @@ def validate(s: dict) -> None:
         txt(r['id'], 16)
         txt(r['text'], 120)
         integer(r['day'], 1, 10**6)
-        integer(r['amt'], -AMOUNT_MAX * 2, AMOUNT_MAX * 2)
+        integer(r['amt'], -BAL_MAX, BAL_MAX)
         integer(r['bal'], -BAL_MAX, BAL_MAX * 2)
     need(isinstance(b['inbox'], list) and len(b['inbox']) <= INBOX_MAX, bad)
     for m in b['inbox']:

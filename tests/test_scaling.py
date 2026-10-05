@@ -1,3 +1,4 @@
+import psycopg
 """Load-related guarantees: optimistic commands, best-effort writes, lazy saves,
 pruning, shared rate limits, the static fast path and WORKERS (pre-fork)."""
 import concurrent.futures
@@ -5,7 +6,6 @@ import json
 import os
 import signal
 import socket
-import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -21,7 +21,7 @@ from game import social
 from game.engine import GameError, new_state
 from game.storage import FRESH, Conflict, Store
 from tests.helpers import Journey
-from tests.pg_support import on_pg, sqlite_only
+from tests.pg_support import on_pg
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -43,19 +43,12 @@ class Base(unittest.TestCase):
         return self.store.command(token or self.token, rid, rev, career, action, payload or {}, internal=internal)
 
     def raw(self, sql, args=()):
-        """Read outside the Store's own connections (SQLite: a plain connection)."""
-        if on_pg():
-            with self.store.connect() as db:
-                return [tuple(r) for r in db.execute(sql, args).fetchall()]
-        db = sqlite3.connect(self.path)
-        try:
-            return db.execute(sql, args).fetchall()
-        finally:
-            db.close()
+        """Read fixture rows through PostgreSQL."""
+        with self.store.connect() as db:
+            return [tuple(r) for r in db.execute(sql, args).fetchall()]
 
     def pg_blocker(self, *tables):
-        """PostgreSQL: another session that holds write locks on `tables` (reads still work),
-        as SQLite's BEGIN IMMEDIATE blocks every other writer."""
+        """Another PostgreSQL session holds write locks on `tables` (reads still work)."""
         import psycopg
         from game import db as dbm
         c = psycopg.connect(dbm.database_url())
@@ -222,18 +215,8 @@ class OptimisticCommandTests(Base):
         wrote = []
 
         def slow(*a, **k):
-            if on_pg():
-                self.assertEqual(self.store.transaction(lambda db: db.execute("UPDATE logins SET seen_at=seen_at WHERE 1=0").rowcount, 200), 0)
-                wrote.append(True)
-                return real(*a, **k)
-            db = sqlite3.connect(self.path, timeout=0.2)
-            try:
-                db.execute('BEGIN IMMEDIATE')
-                db.execute("UPDATE logins SET seen_at=seen_at WHERE 0")
-                db.commit()
-                wrote.append(True)
-            finally:
-                db.close()
+            self.assertEqual(self.store.transaction(lambda db: db.execute("UPDATE logins SET seen_at=seen_at WHERE 1=0").rowcount, 200), 0)
+            wrote.append(True)
             return real(*a, **k)
         self.store._compute = slow
         self.cmd('compute-lock1', 1)
@@ -242,11 +225,7 @@ class OptimisticCommandTests(Base):
 
 class BestEffortTests(Base):
     def lock_db(self):
-        if on_pg():
-            return self.pg_blocker('profiles', 'logins', 'sessions')
-        db = sqlite3.connect(self.path, timeout=1, isolation_level=None)
-        db.execute('BEGIN IMMEDIATE')
-        return db
+        return self.pg_blocker('profiles', 'logins', 'sessions')
 
     def test_social_me_survives_a_busy_database(self):
         social.ensure(self.store)
@@ -293,7 +272,7 @@ class BestEffortTests(Base):
         out = accounts.register(self.store, self.token, dict(username='bestuser', password='mat-khau-1', confirm='mat-khau-1', display='Best'))
         token = out['token']
         with self.store.connect() as db:
-            db.execute("UPDATE logins SET seen_at=datetime('now','-2 hours')")
+            db.execute("UPDATE logins SET seen_at=to_char((statement_timestamp() AT TIME ZONE 'UTC') - interval '2 hours', 'YYYY-MM-DD HH24:MI:SS')")
         blocker = self.lock_db()
         try:
             t = time.monotonic()
@@ -304,27 +283,8 @@ class BestEffortTests(Base):
             blocker.rollback()
             blocker.close()
         self.store.session(token)
-        self.assertEqual(self.raw("SELECT seen_at>datetime('now','-10 minutes') FROM logins")[0][0], 1)
+        self.assertTrue(self.raw("SELECT seen_at>to_char((statement_timestamp() AT TIME ZONE 'UTC') - interval '10 minutes', 'YYYY-MM-DD HH24:MI:SS') FROM logins")[0][0])
 
-    @unittest.skipUnless(hasattr(os, 'fork'), 'flock is POSIX')
-    @sqlite_only
-    def test_writer_turn_is_shared_between_processes(self):
-        other = Store(self.path)  # another worker: its own lock-file descriptor
-        self.addCleanup(other.close_pool)
-        self.assertTrue(self.store.writing(100))
-        try:
-            t = time.monotonic()
-            got = []
-            th = threading.Thread(target=lambda: got.append(other.writing(150)))
-            th.start()
-            th.join()
-            self.assertEqual(got, [False])
-            self.assertGreaterEqual(time.monotonic() - t, 0.14)
-        finally:
-            self.store.done_writing()
-        self.assertTrue(other.writing(100))
-        other.done_writing()
-        self.assertTrue(os.path.exists(str(self.path) + '-writer.lock'))  # next to the database
 
     def test_pool_rolls_back_uncommitted_work(self):
         db = self.store.connect()
@@ -390,7 +350,7 @@ class PruneTests(Base):
         sid = self.store.digest(token)
         text = FRESH if state is None else json.dumps(state)
         with self.store.connect() as db:
-            db.execute("UPDATE sessions SET revision=?, state=?, updated_at=datetime('now',?) WHERE sid=?", (rev, text, f'-{days_idle} days', sid))
+            db.execute("UPDATE sessions SET revision=?, state=?, updated_at=to_char((statement_timestamp() AT TIME ZONE 'UTC') + CAST(? AS interval), 'YYYY-MM-DD HH24:MI:SS') WHERE sid=?", (rev, text, f'-{days_idle} days', sid))
             db.execute('INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)', (sid, 'r-' + sid[:10], 'h', '{}'))
         return token, sid
 
@@ -409,7 +369,7 @@ class PruneTests(Base):
         tok2, kept_named = self.add_session()
         social.post(self.store, tok2, self.store.read(tok2)[0], 'profile', dict(name='Ten Quan', bio='', avatar='🌸', visible=True))
         with self.store.connect() as db:
-            db.execute("UPDATE sessions SET updated_at=datetime('now','-5 days'), revision=0 WHERE sid IN (?,?)", (kept_account, kept_named))
+            db.execute("UPDATE sessions SET updated_at=to_char((statement_timestamp() AT TIME ZONE 'UTC') - interval '5 days', 'YYYY-MM-DD HH24:MI:SS'), revision=0 WHERE sid IN (?,?)", (kept_account, kept_named))
         n = self.store.prune_guests(3)
         sids = {r[0] for r in self.raw('SELECT sid FROM sessions')}
         self.assertEqual(n, 2)
@@ -423,11 +383,11 @@ class PruneTests(Base):
     def test_prune_receipts_age_and_cap(self):
         sid = self.store.key(self.token)
         with self.store.connect() as db:
-            db.executemany("INSERT INTO receipts(sid,request_id,request_hash,result,created_at) VALUES(?,?,?,?,datetime('now',?))",
+            db.executemany("INSERT INTO receipts(sid,request_id,request_hash,result,created_at) VALUES(?,?,?,?,to_char((statement_timestamp() AT TIME ZONE 'UTC') + CAST(? AS interval), 'YYYY-MM-DD HH24:MI:SS'))",
                            [(sid, f'old-{i}', 'h', '{}', '-3 days') for i in range(30)] + [(sid, f'new-{i:04d}', 'h', '{}', '-1 hours') for i in range(250)])
         n = self.store.prune_receipts(2, 200)
         self.assertEqual(n, 30 + 50)
-        left = [r[0] for r in self.raw('SELECT request_id FROM receipts ORDER BY ' + ('created_at, request_id' if on_pg() else 'rowid'))]
+        left = [r[0] for r in self.raw('SELECT request_id FROM receipts ORDER BY created_at, request_id')]
         self.assertEqual(len(left), 200)
         self.assertEqual(left[0], 'new-0050')
 
@@ -440,23 +400,14 @@ class PruneTests(Base):
 
 
 class SharedLimitTests(unittest.TestCase):
-    def test_limits_db_follows_game_db(self):
-        import server
-        self.assertEqual(server.limits_path('/var/lib/mot-ngay-lam-nghe/game.sqlite3'), '/var/lib/mot-ngay-lam-nghe/game-limits.sqlite3')
-        with tempfile.TemporaryDirectory() as tmp:
-            os.makedirs(os.path.join(tmp, 'data'))
-            here = os.getcwd()
-            os.chdir(tmp)
-            try:
-                self.assertEqual(server.limits_path('data/g.sqlite3'), os.path.join(os.getcwd(), 'data', 'g-limits.sqlite3'))
-            finally:
-                os.chdir(here)
 
     def test_shared_between_processes(self):
         import server
         with tempfile.TemporaryDirectory() as tmp:
-            a = server.SharedLimits(os.path.join(tmp, 'l.sqlite3'))
-            b = server.SharedLimits(os.path.join(tmp, 'l.sqlite3'))  # another worker
+            store = Store(Path(tmp) / 'limits')
+            self.addCleanup(store.close_pool)
+            a = server.SharedLimits(store)
+            b = server.SharedLimits(store)  # another worker
             got = [x.hit('ai-global', 3, 60) for x in (a, b, a, b)]
             self.assertEqual(got, [True, True, True, False])
             self.assertTrue(a.hit('ai-other', 1, 60))
@@ -464,8 +415,12 @@ class SharedLimitTests(unittest.TestCase):
     def test_fails_closed_except_new_sessions(self):
         import server
         with tempfile.TemporaryDirectory() as tmp:
-            lim = server.SharedLimits(os.path.join(tmp, 'l.sqlite3'))
-            lim.path = os.path.join(tmp, 'missing-dir', 'x.sqlite3')
+            store = Store(Path(tmp) / 'limits')
+            self.addCleanup(store.close_pool)
+            lim = server.SharedLimits(store)
+            failure = unittest.mock.patch.object(store, 'connect', side_effect=psycopg.OperationalError('database unavailable'))
+            failure.start()
+            self.addCleanup(failure.stop)
             self.assertFalse(lim.hit('ai:tok', 5, 60))
             self.assertTrue(lim.hit('newsession:1.2.3.4', 5, 60))
 
@@ -485,7 +440,7 @@ class WorkersTests(unittest.TestCase):
             port = free_port()
             env = dict(os.environ, QUIET='1', PUSH_DISABLED='1', WORKERS='3', MNL_DEV='1')
             env.pop('LLM_API_KEY', None)
-            p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--db', os.path.join(tmp, 'g.sqlite3')],
+            p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--namespace', os.path.join(tmp, 'g.db')],
                                  cwd=ROOT, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
             base = f'http://127.0.0.1:{port}'
             try:
@@ -516,9 +471,9 @@ class WorkersTests(unittest.TestCase):
                 p.send_signal(signal.SIGTERM)
                 p.wait(10)
             self.assertEqual(p.returncode, 0)
-            # SQLite: next to --db, not beside the code. PostgreSQL: the table hits, no file at all.
-            self.assertEqual(os.path.exists(os.path.join(tmp, 'g-limits.sqlite3')), not on_pg())
-            self.assertFalse(os.path.exists(ROOT / 'storage' / 'g-limits.sqlite3'))
+            # Rate limits use the hits table; no database file is created.
+            self.assertEqual(os.path.exists(os.path.join(tmp, 'g-limits.db')), False)
+            self.assertFalse(os.path.exists(ROOT / 'storage' / 'g-limits.db'))
             time.sleep(0.3)
             for pid in children:
                 with self.assertRaises(ProcessLookupError):

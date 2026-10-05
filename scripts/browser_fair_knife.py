@@ -71,7 +71,7 @@ async def run(base, db, problems, errors):
     from playwright.async_api import async_playwright
     from browser_fair import seed
     async with async_playwright() as pw:
-        browser = await pw.chromium.launch()
+        browser = await getattr(pw, os.environ.get('MNL_BROWSER', 'chromium')).launch()
         for w, h in ((390, 844), (320, 640), (430, 932)):
             ctx = await browser.new_context(viewport=dict(width=w, height=h), has_touch=True)
             await ctx.add_init_script("try{localStorage.setItem('mnl.home','list')}catch(e){}")  # the list as home (the town is the default): the fair's row

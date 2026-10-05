@@ -11,7 +11,7 @@ from game.storage import Store
 from live import filters
 from live.auth import clean_name, pid_of, token_from
 from live.config import Config
-from live.db import PgDB, SqliteDB, to_pg
+from live.db import PgDB, to_pg
 from live.hub import Hub
 from live.limits import LRU, Bucket, Keyed, Window
 
@@ -142,8 +142,8 @@ class EffectsTests(unittest.IsolatedAsyncioTestCase):
     async def test_grant_caps_and_idempotency(self):
         from live.effects import grant
         with tempfile.TemporaryDirectory() as d:
-            store = Store(Path(d) / 'g.sqlite3')
-            db = PgDB(store.pg.url, store.pg.schema) if store.pg else SqliteDB(store.path)
+            store = Store(Path(d) / 'g.db')
+            db = PgDB(store.pg.url, store.pg.schema)
             try:
                 self.assertTrue(await grant(db, 's1', 'coins', 5, key='env:1', cap=12))
                 self.assertFalse(await grant(db, 's1', 'coins', 5, key='env:1', cap=12))   # same key: once

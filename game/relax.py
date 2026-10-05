@@ -71,7 +71,8 @@ def _spots(s: dict, L: dict) -> dict:
 
 def why_not(s: dict, act: str, L: dict | None = None) -> str:
     """Why `act` cannot be done now ('' = it can)."""
-    L = L or _dc().layout(s)
+    from . import deco_mate
+    L = deco_mate.use_layout(s, L)
     x = ACTS[act]
     room = _spots(s, L).get(x['room'])
     if room is None:
@@ -94,6 +95,8 @@ def why_not(s: dict, act: str, L: dict | None = None) -> str:
 
 def view(s: dict, L: dict) -> list:
     """The acts of the place you live in (deco.public 'relax'): [] where there is none."""
+    from . import deco_mate
+    L = deco_mate.use_layout(s, L)
     spots = _spots(s, L)
     if not spots:
         return []

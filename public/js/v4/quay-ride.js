@@ -15,36 +15,28 @@ export function pathOf(route){
 /** The three ways out of the next crossing as the map shows them (#144: ⬅️ ⬆️ ➡️ were turns from the scooter's seat,
  * so a scooter heading right had no ⬇️ for a road going down). Each still sends the server its turn L/S/R. */
 const WAYS=[['⬆️','Đi lên'],['➡️','Sang phải'],['⬇️','Đi xuống'],['⬅️','Sang trái']];
-export function turnChoices(picks){
-  let h=0;for(const t of picks)h=(h+TURN[t]+4)%4;
-  return ['L','S','R'].map(k=>{const d=(h+TURN[k]+4)%4;return {k,d,emoji:WAYS[d][0],label:WAYS[d][1]};})
-    .sort((a,b)=>[3,0,2,1].indexOf(a.d)-[3,0,2,1].indexOf(b.d));
-}
+export function turnChoices(){return [{k:'L',d:3,emoji:'↰',label:'Rẽ trái'},{k:'S',d:0,emoji:'↑',label:'Đi thẳng'},{k:'R',d:1,emoji:'↱',label:'Rẽ phải'}];}
+
 const line=(pts,attrs)=>`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" ${attrs}/>`;
 /** The map as inline SVG: `route` the order's turns, `picks` the turns taken so far. */
 export function rideSVG(route,picks){
-  const want=pathOf(route),mine=pathOf(picks);
-  // the crossings met so far: a stub for every way out of each (roads, not hints)
-  const stubs=[];
-  const nodes=pathOf(picks.slice(0,3));
-  let h=0;
-  for(let i=1;i<Math.min(nodes.length,4);i++){
-    const [x,y]=nodes[i];
-    for(const d of [-1,0,1]){const hh=(h+d+4)%4;stubs.push([[x,y],[x+DIRS[hh][0]*SEG*.55,y+DIRS[hh][1]*SEG*.55]]);}
-    if(i-1<picks.length)h=(h+TURN[picks[i-1]]+4)%4;
-  }
-  const all=[...want,...mine,...stubs.flat()];
-  const xs=all.map(p=>p[0]),ys=all.map(p=>p[1]);
-  const pad=26,minX=Math.min(...xs)-pad,minY=Math.min(...ys)-pad,w=Math.max(...xs)-minX+pad,hgt=Math.max(...ys)-minY+pad;
-  const end=want[want.length-1],me=mine[mine.length-1],done=picks.length>=route.length;
-  const road='stroke="#d9cbb8" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"';
-  return `<svg class="qy-map" viewBox="${minX} ${minY} ${w} ${hgt}" role="img" aria-label="Bản đồ giao hàng">
-    <rect x="${minX}" y="${minY}" width="${w}" height="${hgt}" fill="#eef3e4"/>
-    ${stubs.map(s=>line(s,road)).join('')}${line(want,road)}${line(mine,road)}
-    ${line(want,'stroke="#3f86c9" stroke-width="3" stroke-dasharray="5 6" stroke-linecap="round" opacity=".85"')}
-    ${line(mine,'stroke="#e0483e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"')}
-    <text x="0" y="12" text-anchor="middle" font-size="16">🏪</text>
-    <text x="${end[0]}" y="${end[1]-4}" text-anchor="middle" font-size="18">📍</text>
-    <text x="${me[0]}" y="${me[1]+6}" text-anchor="middle" font-size="${done?20:17}">${done&&me[0]===end[0]&&me[1]===end[1]?'🎉':'🛵'}</text>
-  </svg>`;
+ const done=picks.length>=route.length,next=route[picks.length],sign={L:'↰ RẼ TRÁI',S:'↑ ĐI THẲNG',R:'RẼ PHẢI ↱'}[next]||'ĐIỂM GIAO HÀNG';
+ const wrong=picks.some((turn,i)=>turn!==route[i]);
+ return `<svg class="qy-map qy-rider-view" viewBox="0 0 480 320" role="img" aria-label="Góc nhìn người lái, ${done?'đã qua các ngã tư':`ngã tư ${picks.length+1}, ${sign}`}" xmlns="http://www.w3.org/2000/svg">
+ <rect width="480" height="320" rx="16" fill="#dcebed"/><circle cx="384" cy="49" r="23" fill="#fff5d2"/><path d="M0 148L87 124L137 130L188 120L263 127L344 117L480 136V205H0Z" fill="#c4d4b8"/>
+ <path d="M0 111L157 133V211H0Z" fill="#e2bb95"/><path d="M480 104L322 132V211H480Z" fill="#d3c4a5"/>
+ <g fill="#83a4a2" stroke="#f3dfbd" stroke-width="4"><path d="M16 136L55 143V176L16 173Z"/><path d="M80 147L112 152V180L80 178Z"/><path d="M362 147L400 139V175L362 180Z"/><path d="M423 132L462 124V172L423 175Z"/></g>
+ <path d="M195 134H285L435 320H45Z" fill="#8d928a"/><path d="M0 178L480 178V218L0 218Z" fill="#8d928a"/>
+ <path d="M195 134L45 320M285 134L435 320" stroke="#e6dfc5" stroke-width="5"/><path d="M240 139V158M240 182V207M240 230V278" stroke="#fff1c8" stroke-width="4" stroke-dasharray="13 9"/>
+ <path d="M173 172H307" stroke="#f9f5df" stroke-width="8" stroke-dasharray="10 5"/><path d="M179 227H301" stroke="#f9f5df" stroke-width="10" stroke-dasharray="12 7"/>
+ <rect x="165" y="37" width="150" height="43" rx="8" fill="#52776c" stroke="#fff5da" stroke-width="3"/><text x="240" y="63" text-anchor="middle" font-family="sans-serif" font-size="17" font-weight="700" fill="#fff5da">${sign}</text>
+ <path d="M185 81V127M295 81V127" stroke="#77796f" stroke-width="4"/>
+ ${done?`<rect x="312" y="93" width="71" height="54" rx="7" fill="#fff5dd"/><text x="347" y="126" text-anchor="middle" font-size="29">${wrong?'↪':'📦'}</text>`:''}
+ <path d="M90 279L177 268M303 268L390 279" stroke="#494d48" stroke-width="13" stroke-linecap="round"/>
+ <ellipse cx="72" cy="267" rx="36" ry="16" fill="#454e4b"/><ellipse cx="408" cy="267" rx="36" ry="16" fill="#454e4b"/>
+ <ellipse cx="72" cy="264" rx="28" ry="11" fill="#b9d5d3"/><ellipse cx="408" cy="264" rx="28" ry="11" fill="#b9d5d3"/>
+ <path d="M156 320L172 277Q240 245 308 277L324 320Z" fill="#a75344" stroke="#734f3b" stroke-width="3"/>
+ <rect x="197" y="276" width="86" height="32" rx="12" fill="#edf0db"/><text x="240" y="297" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#4e6557">${picks.length} / ${route.length} NGÃ TƯ</text>
+ <ellipse cx="139" cy="291" rx="28" ry="17" fill="#d9ab8a"/><ellipse cx="341" cy="291" rx="28" ry="17" fill="#d9ab8a"/>
+ </svg>`;
 }

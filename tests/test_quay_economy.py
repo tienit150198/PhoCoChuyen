@@ -143,10 +143,13 @@ class Economy(unittest.TestCase):
         self.assertEqual(h['costs']['rent'],0)
 
     def test_hired_receipt_keeps_sales_row_and_does_not_debit_wage_twice(self):
+        from game import quay_business as qb
         s,st=self.sample()
         with patch.object(qe,'_event',return_value=None):qy._sell(s,st,1)
+        qb.settle(s,now=1000)  # Anchor migration's explicit starter-stock purchase first.
         hist=copy.deepcopy(st['hist']);cash=st['till'];wallet=s['journey']['wallet']
-        qy.credit(s,st['id'],'shift',60,'Hired shift',wage=30,source='cash')
+        with patch.object(qb.time,'time',return_value=1000):
+            qy.credit(s,st['id'],'shift',60,'Hired shift',wage=30,source='cash')
         r=Q(s)['receipts'][-1]
         self.assertEqual((r['rev'],r['wage'],r['net'],r['cash_net']),(60,30,30,60))
         self.assertEqual(st['till'],cash+60)

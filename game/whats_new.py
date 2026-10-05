@@ -32,6 +32,43 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.7.15", date="2026-10-05", items=(
+        dict(emoji='-', text='thay đổi cơ cấu đầu tư: giá vàng/coin sẽ biến động theo thời gian thực: quy đổi 1h đời thực = 1 ngày game'),
+        dict(emoji='-', text='tăng tốc độ xử lý, giảm lag'),
+        dict(emoji='-', text='tăng cơ hội kiếm tiền khi đầu tư quầy'),
+        dict(emoji='-', text='cân bằng game'),
+    )),
+    dict(version="1.7.10", date="2026-10-05", items=(
+        dict(emoji='🎁', text='Tặng xu chơi hội chợ'),
+        dict(emoji='🎪', text='Tăng tỷ lệ thắng khi chơi hội chợ'),
+        dict(emoji='🏪', text='Tăng tỷ lệ lãi khi mở tiệm riêng'),
+    )),
+    dict(version="1.7.9", date="2026-10-04", items=(
+        dict(emoji="⚡", text="Tối ưu tải chỗ làm và cập nhật đơn dịch vụ, giảm xử lý nền để thao tác chơi nhẹ hơn."),
+        dict(emoji="🏪", text="Bảng Khách ghé gọn lại, không che nút Làm tiếp hay Hoàn thành. Trên điện thoại, khách và công việc nằm ở hai hàng riêng."),
+        dict(emoji="💬", text="Danh sách bạn bè gọn hơn: nút nhắn tin và ghé chỗ làm nhỏ đều nhau, nằm cạnh tên bạn."),
+    )),
+    dict(version="1.7.8", date="2026-10-04", items=(
+        dict(emoji="🏪", text="Quầy riêng mở không giới hạn, menu thêm nhiều món và tự đặt giá. Giá bán ảnh hưởng lượng khách, tiền lãi và đánh giá."),
+        dict(emoji="🧑‍🍳", text="Nhân viên tự động ở Quầy riêng và Sổ tiệm làm cả khi bạn offline, đến khi hết hàng hoặc quỹ lương. Không thuê thì tự làm!"),
+        dict(emoji="🔧", text="Mỗi nghề có thiết bị giúp làm nhanh hơn; giao hàng cũng có đồ tăng tốc. Mở mục Làm nhanh hơn để chọn nhé!"),
+        dict(emoji="🤝", text="Ghé chỗ làm của bạn bè, làm khách và đặt dịch vụ. Xong đơn mới đánh giá; chủ tiệm có thể trả lời nhận xét của bạn."),
+        dict(emoji="🏡", text="Mời bạn ghé nhà hoặc ở chung lâu dài, không cần kết hôn. Bạn đã nhận lời ở chung có thể vào khi chủ offline."),
+        dict(emoji="💞", text="Cùng thấy nhau và đồ trang trí trong nhà. Gửi ôm, hôn, thả tim; người kia chọn Đáp lại, Ngại ngùng hay Giận dỗi!"),
+        dict(emoji="👶", text="Nhà & Gia đình, Mời về ở và Con chung dễ tìm hơn; lời mời cần trả lời nằm ngay đầu trang."),
+        dict(emoji="🧸", text="Xưởng handmade có gấu bông: tự đo, cắt, may, nhồi bông rồi gắn mặt và nơ. Làm lại từng bước ngay trên bàn thủ công."),
+        dict(emoji="💬", text="Chọn một tin nhắn rồi bấm Trả lời để trích đúng tin. Đổi tên nhân vật cũng cập nhật tên trong bạn bè và chat."),
+        dict(emoji="🐠", text="Shop thú cưng chia cá vào từng bể riêng, kiểm tra sức chứa và loài phù hợp; không còn gom nhiều loại cá vào một bể."),
+        dict(emoji="☕", text="Sửa lỗi mở lại máy cà phê đang pha ở bản lưu cũ. Công việc đang làm được giữ để bạn tiếp tục."),
+    )),
+    dict(version="1.7.4", date="2026-10-04", items=(
+        dict(emoji="👶", text="Vợ chồng có thể cùng đón con và chăm bé: mở Hôn nhân để gửi lời mời, người kia đồng ý rồi cùng bắt đầu."),
+        dict(emoji="🏡", text="Về ở chung có lời mời và xác nhận; dùng đồ trong nhà chung, vẫn giữ nhà riêng và tiền cọc thuê được hoàn đúng."),
+        dict(emoji="🛋️", text="Bỏ giới hạn 60 món nội thất! TV và sofa có hướng trước/sau để bạn sắp nhà theo ý mình."),
+        dict(emoji="💸", text="Chuyển khoản bạn bè và rút quỹ chung không còn hạn mức ngày; vẫn cần đủ số dư."),
+        dict(emoji="💬", text="Sửa chat riêng: tin mới không còn bị mất khỏi màn hình khi mở phòng, tải tin cũ hoặc kết nối lại."),
+        dict(emoji="☕", text="Máy cà phê có nhịp 1×/2×/4×; nhập áo chọn đúng size, đổi nghề dễ tìm hơn và bảng trên điện thoại dễ cuộn hơn."),
+    )),
     dict(version="1.6.8", date="2026-10-04", items=(
         dict(emoji="✈️", text="Rời Hãng bay khi đang làm dở: hộp “Bỏ dở việc” hiện lại đủ hai nút Vẫn đi / Ở lại làm nốt, dễ bấm như cũ."),
     )),

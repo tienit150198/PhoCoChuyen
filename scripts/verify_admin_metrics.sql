@@ -15,7 +15,6 @@
 --   sessions         PRIMARY KEY (sid)                 the "ghost" check of the day's cohort only
 -- No statement reads a save (sessions.state) or a whole big table.
 --
--- SQLite: the same queries work with ?-parameters in place of :'day' and the date arithmetic done by hand
 -- (VN day D = UTC from D-1 17:00:00 to D 17:00:00); there is no statement_timeout, run them on a copy.
 
 \set ON_ERROR_STOP on

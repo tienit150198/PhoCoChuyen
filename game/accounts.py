@@ -117,6 +117,23 @@ def status(store, token: str | None) -> dict | None:
         return public_account(db, a) if a else None
 
 
+def sync_character_name(db, sid: str, before: dict, after: dict) -> None:
+    """Commit a settings rename with its save; login identity/profile nicknames stay separate.
+
+    The Store already owns the session row lock. The reducer has validated and
+    cleaned this character name, so account-registration naming restrictions do
+    not add a second, conflicting validation policy to settings.
+    """
+    name = after.get('name')
+    if before.get('name') == name:
+        return
+    changed = db.execute('UPDATE accounts SET display=?,updated_at=CURRENT_TIMESTAMP '
+                         'WHERE sid=? AND display IS DISTINCT FROM ?', (name, sid, name)).rowcount
+    if changed:
+        from .live_chat import notify
+        notify(db, dict(op='name', sid=sid))
+
+
 def _new_login(db, sid: str, csrf: str | None = None) -> tuple[str, str]:
     token, csrf = secrets.token_hex(32), csrf or secrets.token_hex(24)
     db.execute('INSERT INTO logins(token,sid,csrf) VALUES(?,?,?)', (store_digest(token), sid, csrf))
@@ -158,7 +175,7 @@ def register(store, token: str, d: dict) -> dict:
     need(not login_csrf, 'Bạn đang đăng nhập rồi.', 'already_signed_in')
     db = store.connect()
     try:
-        db.execute('BEGIN IMMEDIATE')
+        db.execute('BEGIN')
         row = db.execute('SELECT csrf FROM sessions WHERE sid=?' + dbm.for_update(db), (sid,)).fetchone()
         need(row, 'Phiên chơi không còn tồn tại. Tải lại trang nhé.', 'session_missing', 401)
         need(not _account_for(db, sid), 'Bạn đang đăng nhập rồi.', 'already_signed_in')
@@ -209,8 +226,17 @@ def login(store, token: str | None, d: dict) -> dict:
     old_sid, old_login = store.resolve(token) if token else (None, None)
     db = store.connect()
     try:
-        db.execute('BEGIN IMMEDIATE')
-        need(db.execute('SELECT 1 FROM sessions WHERE sid=?', (a['sid'],)).fetchone(), WRONG, 'bad_login', 401)
+        db.execute('BEGIN')
+        # Match TikTok's stable session-first ordering when switching accounts.
+        # Only session identity is needed; never load a save for these locks.
+        for locked_sid in sorted({a['sid'], old_sid} - {None}):
+            row = db.execute('SELECT sid FROM sessions WHERE sid=?' + dbm.for_update(db), (locked_sid,)).fetchone()
+            if locked_sid == a['sid']:
+                need(row, WRONG, 'bad_login', 401)
+        # A reset may finish after verification. Recheck the verified hash under
+        # the account lock, so reset either revokes this login or rejects it here.
+        need(db.execute('SELECT 1 FROM accounts WHERE uid=? AND sid=? AND pw=?' + dbm.for_update(db),
+                        (a['uid'], a['sid'], a['pw'])).fetchone(), WRONG, 'bad_login', 401)
         if token:
             db.execute('DELETE FROM tiktok_flows WHERE source_token=?', (store_digest(token),))
         if old_login:
@@ -247,6 +273,15 @@ def change_password(store, token: str, d: dict) -> dict:
     need(verify_password(current, a['pw']), 'Mật khẩu hiện tại chưa đúng.', 'bad_login', 401)
     pw = hash_password(new)
     with store.connect() as db:
+        db.begin()
+        need(db.execute('SELECT sid FROM sessions WHERE sid=?' + dbm.for_update(db),
+                        (sid,)).fetchone(), 'Bạn chưa đăng nhập.', 'not_signed_in')
+        # Share the reset/login lock order and reject a stale verification or
+        # a device revoked while its password change was being prepared.
+        need(db.execute('SELECT 1 FROM accounts WHERE uid=? AND sid=? AND pw=?' + dbm.for_update(db),
+                        (a['uid'], sid, a['pw'])).fetchone(), 'Mật khẩu hiện tại chưa đúng.', 'bad_login', 401)
+        need(db.execute('SELECT 1 FROM logins WHERE token=? AND sid=?' + dbm.for_update(db),
+                        (store_digest(token), sid)).fetchone(), 'Bạn chưa đăng nhập.', 'not_signed_in')
         db.execute('UPDATE accounts SET pw=?,updated_at=CURRENT_TIMESTAMP WHERE uid=?', (pw, a['uid']))
         # Other devices must sign in again with the new password.
         db.execute('DELETE FROM tiktok_flows WHERE source_token IN (SELECT token FROM logins WHERE sid=? AND token<>?)', (sid, store_digest(token)))

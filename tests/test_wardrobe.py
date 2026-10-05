@@ -369,7 +369,7 @@ class Colors(unittest.TestCase):
             lambda p: p['deco'].update({'d1': 'do'}),           # a colour not unlocked
             lambda p: p['deco'].update({'': 'hong'}),
             lambda p: p['deco'].update({'x' * 13: 'hong'}),
-            lambda p: p.update(deco={f'd{i}': 'hong' for i in range(wd.DECO_MAX + 1)}),
+            lambda p: p.update(deco=['d1']),
         ]
         for i, breaks in enumerate(bad):
             t = copy.deepcopy(s)

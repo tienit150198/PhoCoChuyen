@@ -42,6 +42,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from browser_v04 import OVERFLOW  # noqa: E402
 from browser_first_day import PICK, STATE as ROOM  # noqa: E402
+from pg_test_support import test_env, test_connect, schema_for
 
 VIEWPORTS = {'phone': (390, 844, True), 'desktop': (1280, 800, False)}
 CAREERS = ['milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist']   # the guide's "Cách làm" pages
@@ -74,10 +75,10 @@ def story_server():
         s.bind(('127.0.0.1', 0))
         port = s.getsockname()[1]
     tmp = tempfile.mkdtemp(prefix='mnl-tut-')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1')
+    env = test_env( QUIET='1', PUSH_DISABLED='1')
     for k in ('MNL_DEV', 'LLM_API_KEY', 'MNL_CAREERS'):
         env.pop(k, None)
-    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--db', os.path.join(tmp, 'g.sqlite3')],
+    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--namespace', os.path.join(tmp, 'g.db')],
                          cwd=ROOT, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     base = f'http://127.0.0.1:{port}'
     for _ in range(600):

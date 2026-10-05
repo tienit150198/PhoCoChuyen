@@ -1,20 +1,17 @@
-"""Database backends: SQLite (default, exactly as before) or PostgreSQL.
+"""PostgreSQL connections, SQL parameter adaptation, pooling and isolated test schemas.
 
-DATABASE_URL=postgresql://user@host:port/db switches the game to PostgreSQL (the
-password comes from the URL, ~/.pgpass or PGPASSWORD; never log the URL). Without it
-the game uses the SQLite file given by --db / GAME_DB, unchanged.
+DATABASE_URL=postgresql://user@host:port/db is required (the password comes from
+the URL, ~/.pgpass or PGPASSWORD; never log the URL). TEST_DATABASE_URL may be used
+instead for isolated tests. There is no local database fallback.
 
-On PostgreSQL the game code keeps its SQLite-style SQL; PgConnection translates it:
+The game uses native PostgreSQL SQL; PgConnection adapts its parameters:
 * `?` placeholders -> `%s` (never inside string literals), a literal `%` -> `%%`;
-* INSERT OR IGNORE -> INSERT ... ON CONFLICT DO NOTHING;
-* CURRENT_TIMESTAMP and datetime('now', X) -> the same TEXT SQLite produces,
+* CURRENT_TIMESTAMP -> UTC timestamp TEXT,
   'YYYY-MM-DD HH:MM:SS' in UTC (the columns stay text, see game/pg_schema.py);
-* BEGIN IMMEDIATE -> BEGIN; PRAGMA -> nothing.
-SQL that has no faithful translation (rowid, sqlite_master, JSON1, date()) is written
-per dialect at its call site (see is_pg()). Rows are read by name AND by index, like
-sqlite3.Row; SUM() of integers comes back as int, as in SQLite.
+Unsupported database syntax is rejected. Rows are read by name AND by
+index; SUM() of integers comes back as int.
 
-Transactions follow Python's sqlite3 rules: the psycopg connection is in autocommit
+Transactions preserve the Store interface: the psycopg connection is in autocommit
 mode, a data change (INSERT/UPDATE/DELETE) opens a transaction, commit()/rollback()
 or leaving `with store.connect() as db:` ends it. A SELECT outside a transaction runs
 on its own and leaves nothing open: rows are fetched completely by execute(), there is
@@ -49,7 +46,6 @@ import hashlib
 import os
 import re
 import secrets
-import sqlite3
 import sys
 import threading
 import time
@@ -59,16 +55,19 @@ try:
     import psycopg
     from psycopg import pq
     from psycopg.adapt import Loader
-except ImportError:  # SQLite-only installs do not need psycopg
-    psycopg = None
+    from psycopg.conninfo import conninfo_to_dict
+except ImportError as exc:  # pragma: no cover - deployment dependency guard
+    raise SystemExit('[db] PostgreSQL requires psycopg; install the project dependencies') from exc
 
-Error = (sqlite3.Error,) + ((psycopg.Error,) if psycopg else ())
-IntegrityError = (sqlite3.IntegrityError,) + ((psycopg.IntegrityError,) if psycopg else ())
-OperationalError = (sqlite3.OperationalError,) + ((psycopg.OperationalError,) if psycopg else ())
+Error = (psycopg.Error,)
+IntegrityError = (psycopg.IntegrityError,)
+OperationalError = (psycopg.OperationalError,)
 # bad client data the database refuses (e.g. a NUL in a text value on PostgreSQL): a 400, not a 500
-DataError = (sqlite3.DataError,) + ((psycopg.DataError,) if psycopg else ())
+DataError = (psycopg.DataError,)
 
 NOW_TEXT = "to_char(statement_timestamp() AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS')"
+# The interval is a bound parameter, so housekeeping uses the database's UTC clock.
+UTC_INTERVAL_TEXT = "to_char((statement_timestamp() AT TIME ZONE 'UTC') + CAST(? AS interval), 'YYYY-MM-DD HH24:MI:SS')"
 FMT = '%Y-%m-%d %H:%M:%S'
 
 
@@ -80,70 +79,71 @@ def _env_int(name: str, default: int) -> int:
 
 
 def utc_text(offset_seconds: float = 0.0) -> str:
-    """Now (+ offset) as SQLite's CURRENT_TIMESTAMP text: 'YYYY-MM-DD HH:MM:SS', UTC."""
+    """Now (+ offset) as timestamp text: 'YYYY-MM-DD HH:MM:SS', UTC."""
     return time.strftime(FMT, time.gmtime(time.time() + offset_seconds))
 
 
-# ---------------------------------------------------------------- backend choice
-def database_url() -> str | None:
-    """The PostgreSQL URL, or None for SQLite. A DATABASE_URL that is set but is not a
-    postgresql:// URL stops the process: silently running on the (frozen) SQLite file
-    after the cut-over would serve old saves."""
+# ---------------------------------------------------------------- configuration
+def validate_url(url: str | None, setting: str = 'DATABASE_URL') -> str:
+    """Require a PostgreSQL URL, reporting configuration errors without credentials."""
+    url = (url or '').strip()
+    if not url:
+        raise SystemExit(f'[db] {setting} is required; set a postgresql:// URL')
+    if not url.startswith(('postgresql://', 'postgres://')):
+        raise SystemExit(f'[db] {setting} must be a postgresql:// URL')
+    try:
+        config = conninfo_to_dict(url)
+        for port in (config.get('port') or '').split(','):
+            if port and (not port.isdigit() or not 1 <= int(port) <= 65535):
+                raise ValueError('invalid PostgreSQL port')
+    except (psycopg.Error, ValueError):
+        raise SystemExit(f'[db] {setting} is not a valid PostgreSQL URL') from None
+    return url
+
+
+def database_url() -> str:
+    """The required PostgreSQL URL; tests can use TEST_DATABASE_URL in its absence."""
     url = (os.environ.get('DATABASE_URL') or '').strip()
-    if url.startswith(('postgresql://', 'postgres://')):
-        return url
     if url:
-        raise SystemExit('[db] DATABASE_URL is set but is not a postgresql:// URL: refusing to start '
-                         '(unset it to run on SQLite)')
+        return validate_url(url)
     test = (os.environ.get('TEST_DATABASE_URL') or '').strip()
-    return test if test.startswith(('postgresql://', 'postgres://')) else None
+    return validate_url(test, 'TEST_DATABASE_URL') if test else validate_url(url)
 
 
 def test_mode() -> bool:
-    return not (os.environ.get('DATABASE_URL') or '').strip() and database_url() is not None
-
-
-def is_pg(db) -> bool:
-    return getattr(db, 'dialect', 'sqlite') == 'pg'
+    return not (os.environ.get('DATABASE_URL') or '').strip() and bool((os.environ.get('TEST_DATABASE_URL') or '').strip())
 
 
 def for_update(db, of: str = '') -> str:
-    """' FOR UPDATE' (row lock until commit) on PostgreSQL, '' on SQLite (BEGIN IMMEDIATE locks all)."""
-    return (' FOR UPDATE' + (' OF ' + of if of else '')) if is_pg(db) else ''
+    """Lock the selected rows until the PostgreSQL transaction ends."""
+    return ' FOR UPDATE' + (' OF ' + of if of else '')
 
 
-# ---------------------------------------------------------------- SQL translation
+# ---------------------------------------------------------------- SQL parameter adaptation
 _TOKENS = re.compile(r"('(?:[^']|'')*')|(\"(?:[^\"]|\"\")*\")|(\?\d*)|(%)")
-_DATETIME = re.compile(r"datetime\(\s*'now'\s*(?:,\s*('(?:[^']|'')*'|\?)\s*)?\)", re.I)
-_OR_IGNORE = re.compile(r'^\s*INSERT\s+OR\s+IGNORE\s+INTO\b', re.I)
-_OR_REPLACE = re.compile(r'^\s*(INSERT\s+OR\s+REPLACE|REPLACE)\s+INTO\b', re.I)
+_SQLITE_SYNTAX = re.compile(r'\b(?:INSERT\s+OR\s+(?:IGNORE|REPLACE)|REPLACE\s+INTO|BEGIN\s+(?:IMMEDIATE|EXCLUSIVE)|PRAGMA)\b|\b(?:datetime|julianday|strftime|unixepoch)\s*\(', re.I)
 _FIRST = re.compile(r'^\s*(\w+)(?:\s+(\w+))?')
 _KINDS = dict(SELECT='select', WITH='select', VALUES='select', SHOW='select', INSERT='dml', UPDATE='dml', DELETE='dml',
               CREATE='ddl', DROP='ddl', ALTER='ddl', DO='ddl', BEGIN='begin', COMMIT='commit', END='commit',
-              ROLLBACK='rollback', PRAGMA='pragma', SET='set')
+              ROLLBACK='rollback', SET='set')
 
 
-def _datetime(m) -> str:
-    arg = m.group(1)
-    if arg is None:
-        return NOW_TEXT
-    return f"to_char((statement_timestamp() AT TIME ZONE 'UTC') + CAST({arg} AS interval), 'YYYY-MM-DD HH24:MI:SS')"
+def _validate_sql(sql: str) -> None:
+    syntax = _TOKENS.sub(lambda m: ' ' * len(m.group()) if m.group(1) or m.group(2) else m.group(), sql)
+    if _SQLITE_SYNTAX.search(syntax):
+        raise NotImplementedError('SQLite-only SQL syntax is not supported; write native PostgreSQL SQL')
 
 
 @functools.lru_cache(maxsize=1024)
 def translate(sql: str, params: bool = True) -> tuple[str, str]:
-    """(PostgreSQL SQL, kind) of a SQLite-dialect statement. kind: select, dml, ddl,
-    begin, commit, rollback, pragma, set. `params`: placeholders will be bound (psycopg
+    """(Parameter-adapted PostgreSQL SQL, kind) of a statement. kind: select, dml, ddl,
+    begin, commit, rollback, set. `params`: placeholders will be bound (psycopg
     then needs `%` doubled)."""
+    _validate_sql(sql)
     m = _FIRST.match(sql)
     kind = _KINDS.get(m.group(1).upper(), 'select') if m else 'select'
-    if kind in ('begin', 'commit', 'rollback', 'pragma'):
+    if kind in ('begin', 'commit', 'rollback'):
         return '', kind
-    if _OR_REPLACE.match(sql):
-        raise NotImplementedError('INSERT OR REPLACE: write an explicit ON CONFLICT ... DO UPDATE')
-    ignore = bool(_OR_IGNORE.match(sql))
-    if ignore:
-        sql = _OR_IGNORE.sub('INSERT INTO', sql, count=1)
     out = []
     pos = 0
     for tok in _TOKENS.finditer(sql):
@@ -163,12 +163,7 @@ def translate(sql: str, params: bool = True) -> tuple[str, str]:
             out.append('%%' if params else '%')
         pos = tok.end()
     out.append(re.sub(r'\bCURRENT_TIMESTAMP\b', NOW_TEXT, sql[pos:], flags=re.I))
-    text = ''.join(out)
-    # datetime('now', X): X is a literal or a %s placeholder, both kept as they are.
-    text = re.sub(r"datetime\(\s*'now'\s*(?:,\s*('(?:[^']|'')*'|%s)\s*)?\)", _datetime, text, flags=re.I)
-    if ignore:
-        text = text.rstrip().rstrip(';') + ' ON CONFLICT DO NOTHING'
-    return text, kind
+    return ''.join(out), kind
 
 
 # ---------------------------------------------------------------- rows and cursors
@@ -177,7 +172,7 @@ def _row_class(names: tuple):
     index = {n: i for i, n in enumerate(names)}
 
     class Row(tuple):
-        """sqlite3.Row look-alike: r[0], r['name'], keys(), dict(r)."""
+        """A row with positional and named access: r[0], r['name'], keys(), dict(r)."""
         __slots__ = ()
         _index = index
         _names = names
@@ -203,14 +198,13 @@ def _row_factory(cursor):
 
 class Cursor:
     """The complete result of one statement (already fetched: nothing stays open)."""
-    __slots__ = ('_rows', '_i', 'rowcount', 'description', 'lastrowid')
+    __slots__ = ('_rows', '_i', 'rowcount', 'description')
 
     def __init__(self, rows=(), rowcount=-1, description=None):
         self._rows = rows
         self._i = 0
         self.rowcount = rowcount
         self.description = description
-        self.lastrowid = None
 
     def fetchone(self):
         if self._i >= len(self._rows):
@@ -237,29 +231,27 @@ class Cursor:
         self._rows = ()
 
 
-if psycopg is not None:
-    class _NumericLoader(Loader):
-        """numeric -> int when whole (SUM of integers, like SQLite), else float."""
-        def load(self, data):
-            s = bytes(data).decode()
-            try:
-                return int(s)
-            except ValueError:
-                return float(s)
+class _NumericLoader(Loader):
+    """numeric -> int when whole (SUM of integers), else float."""
+    def load(self, data):
+        s = bytes(data).decode()
+        try:
+            return int(s)
+        except ValueError:
+            return float(s)
 
-    IDLE = pq.TransactionStatus.IDLE
-    INERROR = pq.TransactionStatus.INERROR
-    INTRANS = pq.TransactionStatus.INTRANS
 
-    class PoolTimeout(psycopg.OperationalError):
-        pass
-else:  # pragma: no cover
-    class PoolTimeout(Exception):
-        pass
+IDLE = pq.TransactionStatus.IDLE
+INERROR = pq.TransactionStatus.INERROR
+INTRANS = pq.TransactionStatus.INTRANS
+
+
+class PoolTimeout(psycopg.OperationalError):
+    pass
 
 
 class PgConnection:
-    """A pooled psycopg connection that speaks the game's SQLite-style SQL (see module doc)."""
+    """A pooled psycopg connection compatible with existing game queries."""
     dialect = 'pg'
 
     def __init__(self, raw, pool):
@@ -343,19 +335,18 @@ class PgConnection:
 
     # ---- statements
     def execute(self, sql: str, params=()):
-        """SQLite-dialect SQL (see translate)."""
+        """PostgreSQL SQL using ? placeholders (see translate)."""
         q, kind = translate(sql, bool(params))
         return self._run(q, kind, params)
 
     def pg(self, sql: str, params=()):
         """Native PostgreSQL SQL (%s / %(name)s placeholders), same transaction rules."""
+        _validate_sql(sql)
         m = _FIRST.match(sql)
         kind = _KINDS.get(m.group(1).upper(), 'select') if m else 'select'
         return self._run(sql, kind, params)
 
     def _run(self, q: str, kind: str, params):
-        if kind == 'pragma':
-            return Cursor()
         if kind == 'begin':
             self.begin()
             return Cursor()
@@ -383,7 +374,7 @@ class PgConnection:
         return out
 
     def executemany(self, sql: str, seq) -> Cursor:
-        """One SQLite-dialect statement for each parameter tuple (a data change: opens a transaction)."""
+        """One game statement for each parameter tuple (a data change opens a transaction)."""
         q, kind = translate(sql, True)
         if kind == 'dml':
             self.begin()
@@ -394,11 +385,6 @@ class PgConnection:
             return Cursor((), cur.rowcount, None)
         finally:
             cur.close()
-
-    def executescript(self, script: str) -> None:
-        """Several statements, no parameters (PostgreSQL DDL)."""
-        self.raw.execute(script)
-        self._used = True
 
     def set_local(self, name: str, value: str) -> None:
         """SET LOCAL for the current transaction (opened if needed)."""
@@ -427,9 +413,7 @@ class PgPool:
     """Connections of one Store in one process (see the module doc)."""
 
     def __init__(self, url: str, schema: str | None = None):
-        if psycopg is None:
-            raise RuntimeError('DATABASE_URL is set but psycopg (python3-psycopg) is not installed')
-        self.url = url
+        self.url = validate_url(url)
         self.schema = schema
         self.keep = max(0, _env_int('PG_POOL', 6))
         self.cap = max(1, _env_int('PG_POOL_MAX', 12), self.keep)
@@ -656,12 +640,10 @@ _POOLS: dict = {}
 _POOLS_LOCK = threading.Lock()
 
 
-def pool_for(path: str) -> PgPool | None:
-    """The PostgreSQL pool behind a Store(path), or None for SQLite. With DATABASE_URL
-    every path shares one database; in test mode each path gets its own schema."""
+def pool_for(path: str) -> PgPool:
+    """The PostgreSQL pool behind a Store namespace. Production namespaces share one
+    database; in test mode each namespace gets its own schema."""
     url = database_url()
-    if not url:
-        return None
     schema = _test_schema(path) if test_mode() else None
     with _POOLS_LOCK:
         key = (url, schema)

@@ -619,12 +619,13 @@ class Wiring(unittest.TestCase):
         with patch.object(cp, 'joint_account', return_value=fund), \
                 patch.object(cp, 'joint_spend', side_effect=lambda st, amount, label, ref: spent.append((amount, label, ref)) or {}):
             self.assertTrue(bk.can_pay(s, 50, 'joint'))
-            self.assertFalse(bk.can_pay(s, 70, 'joint'))   # over the daily limit
+            self.assertTrue(bk.can_pay(s, 70, 'joint'))    # no daily quota
+            self.assertFalse(bk.can_pay(s, 101, 'joint'))  # actual balance
             out = bk.pay(s, 50, 'Đi chợ', method='joint')
             self.assertEqual(out['method'], 'joint')
             self.assertEqual(spent[0][0], 50)
             with self.assertRaises(GameError) as cm:
-                bk.pay(s, 70, 'Tủ', method='joint')
+                bk.pay(s, 101, 'Tủ', method='joint')
             self.assertEqual(cm.exception.code, 'card_declined')
             B(s)['pref'] = 'joint'
             again = copy.deepcopy(s)

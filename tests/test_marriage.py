@@ -63,7 +63,7 @@ class Base(unittest.TestCase):
     def befriend(self, a_sid, b_sid):
         def run(db):
             for x, y in ((a_sid, b_sid), (b_sid, a_sid)):
-                db.execute('INSERT OR IGNORE INTO friends(sid,friend,since) VALUES(?,?,?)', (x, y, mr.now()))
+                db.execute('INSERT INTO friends(sid,friend,since) VALUES(?,?,?) ON CONFLICT DO NOTHING', (x, y, mr.now()))
         self.store.transaction(run)
 
     def act(self, tok, op, **d):

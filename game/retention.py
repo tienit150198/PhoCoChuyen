@@ -1,7 +1,7 @@
 """Retention logging ("Giữ chân"): where and how players drop off. Records only into its own
 stat tables, never into a save, and never reads a save to do it.
 
-What is recorded (tables on both backends: SCHEMA here for SQLite, game/pg_schema.py for PostgreSQL):
+What is recorded (PostgreSQL tables in game/pg_schema.py):
 * stat_milestones(sid, key, at, day, career, detail), primary key (sid, key): once per save, the
   moment it first reached a step of MILESTONES (created, named, picked a workplace, 1st/3rd/10th
   customer, first level up, life day 1/2/3/7/14/30 over, first change of workplace, chapters 2-4,
@@ -33,6 +33,9 @@ What is recorded (tables on both backends: SCHEMA here for SQLite, game/pg_schem
     the game's (foreign_error: injected scripts, extensions) are dropped. Kept ERRORS_KEEP_DAYS.
   - load {ttfb, dcl, frame (ms), net, mem, cpu, cache} -> stat_loads(day, metric, net, who,
     cache, tier, bucket, n): histograms (who: new = the save was born today). Kept LOADS_KEEP_DAYS.
+  - load.perf / leave.perf: 10% page sample of parse/apply/render/longtask/interaction numeric
+    {n, total, max} summaries. Leave keeps the bounded summary; load adds <metric>_avg/_max rows
+    to stat_loads. Those histograms count sampled beacon summaries, not individual interactions.
   - acq {ref (referrer host), src, med, cmp (utm_*)} -> stat_acquisition(sid, at, day, source,
     medium, campaign, ref_domain): once per save, only for a save born today or yesterday.
 * Every new milestone is also handed to emit(): the one hook for mirroring key events to an
@@ -103,38 +106,13 @@ SERVED = (1, 3, 10)
 DAYS = (1, 2, 3, 7, 14, 30)
 CHAPTERS = (2, 3, 4)
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS stat_milestones (sid TEXT NOT NULL, key TEXT NOT NULL, at REAL, day INTEGER, career TEXT,
-  detail TEXT, PRIMARY KEY(sid, key)) WITHOUT ROWID;
-CREATE INDEX IF NOT EXISTS stat_milestones_key ON stat_milestones(key, at);
-CREATE TABLE IF NOT EXISTS stat_actions (day TEXT NOT NULL, sid TEXT NOT NULL, career TEXT NOT NULL, action TEXT NOT NULL,
-  n INTEGER NOT NULL, errors INTEGER NOT NULL DEFAULT 0, err TEXT, PRIMARY KEY(day, sid, career, action)) WITHOUT ROWID;
-CREATE TABLE IF NOT EXISTS stat_actions_daily (day TEXT NOT NULL, career TEXT NOT NULL, action TEXT NOT NULL,
-  players INTEGER NOT NULL, n INTEGER NOT NULL, errors INTEGER NOT NULL, err TEXT, PRIMARY KEY(day, career, action)) WITHOUT ROWID;
-CREATE TABLE IF NOT EXISTS stat_rollups (kind TEXT NOT NULL, day TEXT NOT NULL, rows INTEGER NOT NULL, at REAL NOT NULL,
-  PRIMARY KEY(kind, day)) WITHOUT ROWID;
-CREATE TABLE IF NOT EXISTS stat_leaves (id INTEGER PRIMARY KEY, sid TEXT NOT NULL, at REAL NOT NULL,
-  day TEXT NOT NULL, payload TEXT NOT NULL);
-CREATE INDEX IF NOT EXISTS stat_leaves_sid ON stat_leaves(sid);
-CREATE TABLE IF NOT EXISTS stat_leave_last (sid TEXT PRIMARY KEY, at REAL NOT NULL, payload TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS stat_client_errors (day TEXT NOT NULL, kind TEXT NOT NULL, message_key TEXT NOT NULL,
-  screen TEXT NOT NULL, count INTEGER NOT NULL, last_at REAL NOT NULL, sample TEXT,
-  PRIMARY KEY(day, kind, message_key, screen)) WITHOUT ROWID;
-CREATE TABLE IF NOT EXISTS stat_loads (day TEXT NOT NULL, metric TEXT NOT NULL, net TEXT NOT NULL, who TEXT NOT NULL,
-  cache TEXT NOT NULL, tier TEXT NOT NULL, bucket INTEGER NOT NULL, n INTEGER NOT NULL,
-  PRIMARY KEY(day, metric, net, who, cache, tier, bucket)) WITHOUT ROWID;
-CREATE TABLE IF NOT EXISTS stat_acquisition (sid TEXT PRIMARY KEY, at REAL NOT NULL, day TEXT NOT NULL, source TEXT,
-  medium TEXT, campaign TEXT, ref_domain TEXT);
-CREATE INDEX IF NOT EXISTS stat_acquisition_day ON stat_acquisition(day);
-DROP TRIGGER IF EXISTS stat_retention_gone;
-"""
 SID_LEN = 16   # stat_actions / stat_leaves keep this many hex characters of the save id (64 bits)
 
 
 def short(sid: str) -> str:
     """The save id as the two big tables keep it: its first 16 hex characters. 64 bits tell even
     millions of saves apart, and each row is ~100 bytes smaller (heap + primary key). Join with
-    `substr(s.sid, 1, 16)` (SQLite) / `left(s.sid, 16)` (PostgreSQL)."""
+    `left(s.sid, 16)` (PostgreSQL)."""
     return sid[:SID_LEN]
 
 
@@ -241,7 +219,7 @@ def life_day(state) -> int | None:
         return None
 
 
-_MARK_SQL = 'INSERT OR IGNORE INTO stat_milestones(sid, key, at, day, career, detail) VALUES (?, ?, ?, ?, ?, ?)'
+_MARK_SQL = 'INSERT INTO stat_milestones(sid, key, at, day, career, detail) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING'
 
 
 def write_marks(db, sid: str, rows: list, day: int | None = None, at: float | None = None) -> None:
@@ -323,7 +301,7 @@ def backfill(store, start: str, end: str, dry_run: bool = False, batch: int = 10
                 t = datetime.datetime.strptime(str(acc[sid])[:19], '%Y-%m-%d %H:%M:%S').replace(tzinfo=datetime.timezone.utc).timestamp()
                 rows.append((sid, 'account', t, None, None, 'backfill'))
             out['saves'] += 1
-        for a, b, since, married in couples:   # real times: they come first (INSERT OR IGNORE keeps the first)
+        for a, b, since, married in couples:   # real times come first; conflict handling keeps the first row
             for who in (a, b):
                 if who in part:
                     rows.insert(0, (who, 'engaged', since, None, None, 'backfill'))
@@ -519,10 +497,6 @@ FROM unnest(%s::text[], %s::text[], %s::text[], %s::text[], %s::bigint[], %s::bi
 WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
 ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
   err = COALESCE(EXCLUDED.err, a.err)"""
-_UPSERT_SQLITE = """INSERT INTO stat_actions(day, sid, career, action, n, errors, err)
-SELECT ?, substr(?, 1, 16), ?, ?, ?, ?, ? WHERE EXISTS (SELECT 1 FROM sessions WHERE sid = ?)
-ON CONFLICT(day, sid, career, action) DO UPDATE SET n = stat_actions.n + excluded.n,
-  errors = stat_actions.errors + excluded.errors, err = COALESCE(excluded.err, stat_actions.err)"""
 
 
 def flush(store) -> int:
@@ -533,20 +507,15 @@ def flush(store) -> int:
         if not slot or not slot[1]:
             return 0
         rows, slot[1] = slot[1], {}
-        gone = (not os.path.exists(store.path)) if not getattr(store, 'pg', None) else (
-            dbm.test_mode() and not os.path.isdir(os.path.dirname(os.path.abspath(store.path))))
-        if gone:   # a test's temporary store (a SQLite file, or a test schema whose directory is gone)
+        gone = dbm.test_mode() and not os.path.isdir(os.path.dirname(os.path.abspath(store.path)))
+        if gone:   # a test schema whose namespace directory is gone
             _bufs.pop(store.path, None)
             return 0
     items = sorted(rows.items())
     try:
-        if getattr(store, 'pg', None):
-            cols = list(zip(*[(k[0], k[1], k[2], k[3], v[0], v[1], v[2]) for k, v in items]))
-            with store.connect() as db:
-                db.pg(_UPSERT_PG, tuple(list(c) for c in cols))
-        else:
-            args = [(k[0], k[1], k[2], k[3], v[0], v[1], v[2], k[1]) for k, v in items]
-            store.transaction(lambda db: db.executemany(_UPSERT_SQLITE, args))
+        cols = list(zip(*[(k[0], k[1], k[2], k[3], v[0], v[1], v[2]) for k, v in items]))
+        with store.connect() as db:
+            db.pg(_UPSERT_PG, tuple(list(c) for c in cols))
     except Exception:
         with _buf_lock:  # put them back (merged with what arrived meanwhile), bounded
             slot = _bufs.setdefault(store.path, [store, {}, 0])
@@ -601,6 +570,7 @@ _leaves: dict = {}      # sid -> [day, stored today]; bounded (cleared past LEAV
 LEAVES_SEEN = 50000
 NETS = ('4g', '3g', '2g', 'slow-2g')
 METRICS = ('ttfb', 'dcl', 'frame')
+PERF_METRICS = ('parse', 'apply', 'render', 'longtask', 'interaction')
 # Load-time buckets (ms, upper bounds): 100 ms steps to 2 s, 250 ms to 5 s, 1 s to 15 s, 5 s to 60 s.
 LOAD_EDGES = tuple(list(range(100, 2001, 100)) + list(range(2250, 5001, 250)) + list(range(6000, 15001, 1000)) +
                    list(range(20000, 60001, 5000)))
@@ -623,6 +593,29 @@ def _num(v, low, high):
     return None
 
 
+def performance_payload(raw) -> dict:
+    """10% of browser pages: capped numeric durations only, never targets, IDs, URLs or player text.
+
+    The client drains count/total/max summaries onto existing load/leave beacons. Each phase/native observer
+    stops after at most 200 samples for the entire page; one duration is capped at 60 seconds.
+    """
+    if type(raw) is not dict:
+        return {}
+    out = {}
+    for metric in PERF_METRICS:
+        row = raw.get(metric)
+        if type(row) is not dict:
+            continue
+        n = row.get('n')
+        if type(n) is not int or not 1 <= n <= 200:
+            continue
+        total, maximum = _num(row.get('total'), 0, 12000000), _num(row.get('max'), 0, 60000)
+        if total is None or maximum is None or not maximum <= total <= maximum * n:
+            continue
+        out[metric] = dict(n=n, total=total, max=maximum)
+    return out
+
+
 def leave_payload(d) -> str | None:
     """The compact JSON of a leave beacon, from known fields only (identifiers and small numbers)."""
     if type(d) is not dict:
@@ -641,6 +634,9 @@ def leave_payload(d) -> str | None:
         a = [x for x in (_ident(x) for x in acts[-3:]) if x]
         if a:
             out['a'] = a
+    perf = performance_payload(d.get('perf'))
+    if perf:
+        out['perf'] = perf
     return json.dumps(out, separators=(',', ':'), ensure_ascii=True) if out else None
 
 
@@ -760,6 +756,9 @@ def beacon(store, sid: str, data, now: float | None = None, own_host: str = '') 
             mem = _num(load.get('mem'), 0.1, 64)
             dims = (day, net, 'new' if born == day else 'ret', cache, _tier(mem))
             rows = [(m, load_bucket(v)) for m in METRICS if (v := _num(load.get(m), 0, 600000)) is not None]
+            for metric, summary in performance_payload(load.get('perf')).items():
+                rows.append((metric + '_avg', load_bucket(summary['total'] / summary['n'])))
+                rows.append((metric + '_max', load_bucket(summary['max'])))
             cpu = _num(load.get('cpu'), 1, 256)
             if cpu is not None:
                 rows.append(('cores', min(int(cpu), 32)))
@@ -769,7 +768,7 @@ def beacon(store, sid: str, data, now: float | None = None, own_host: str = '') 
                            (dims[0], metric, *dims[1:], b))
             got['load'] = len(rows)
         if acq is not None and born is not None and born >= _plus(day, -1):
-            db.execute('INSERT OR IGNORE INTO stat_acquisition(sid, at, day, source, medium, campaign, ref_domain) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            db.execute('INSERT INTO stat_acquisition(sid, at, day, source, medium, campaign, ref_domain) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING',
                        (sid, now, born, utm(acq.get('src')), utm(acq.get('med')), utm(acq.get('cmp')), ref_domain(acq.get('ref'), own_host)))
             got['acq'] = 1
     store.transaction(write, 1000)
@@ -809,23 +808,15 @@ def _unlock(fd) -> None:
 
 
 def _delete_batches(store, table: str, where: str, args: tuple, pause: float) -> int:
-    """Delete matching rows in small transactions (PostgreSQL: by ctid; SQLite: by key)."""
+    """Delete matching rows in bounded transactions using PostgreSQL tuple ids."""
     total = 0
     while True:
         def step(db):
-            if dbm.is_pg(db):
-                return db.execute(f'DELETE FROM {table} WHERE ctid = ANY(ARRAY(SELECT ctid FROM {table} WHERE {where} LIMIT {BATCH}))',
-                                  args).rowcount
-            if table == 'stat_actions':
-                return db.execute(f'DELETE FROM stat_actions WHERE (day, sid) IN (SELECT DISTINCT day, sid FROM stat_actions '
-                                  f'WHERE {where} LIMIT {max(1, BATCH // 20)})', args).rowcount
-            if table == 'stat_leaves':
-                return db.execute(f'DELETE FROM stat_leaves WHERE id IN (SELECT id FROM stat_leaves WHERE {where} ORDER BY id LIMIT {BATCH})',
-                                  args).rowcount
-            return db.execute(f'DELETE FROM {table} WHERE {where}', args).rowcount
+            return db.execute(f'DELETE FROM {table} WHERE ctid = ANY(ARRAY(SELECT ctid FROM {table} WHERE {where} LIMIT {BATCH}))',
+                              args).rowcount
         n = store.transaction(step) or 0
         total += n
-        if n <= 0 or (not getattr(store, 'pg', None) and table not in ('stat_actions', 'stat_leaves')):
+        if n <= 0:
             return total
         if pause:
             time.sleep(pause)
@@ -841,7 +832,7 @@ def rollup_actions(store, day: str, now: float | None = None) -> int:
         n = db.execute('INSERT INTO stat_actions_daily(day, career, action, players, n, errors, err) '
                        'SELECT day, career, action, COUNT(*), SUM(n), SUM(errors), MAX(err) FROM stat_actions WHERE day = ? '
                        'GROUP BY day, career, action ON CONFLICT(day, career, action) DO NOTHING', (day,)).rowcount
-        db.execute("INSERT OR IGNORE INTO stat_rollups(kind, day, rows, at) VALUES ('actions', ?, ?, ?)", (day, max(0, n), now))
+        db.execute("INSERT INTO stat_rollups(kind, day, rows, at) VALUES ('actions', ?, ?, ?) ON CONFLICT DO NOTHING", (day, max(0, n), now))
         return n
     return store.transaction(run) or 0
 

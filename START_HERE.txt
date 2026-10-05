@@ -1,8 +1,10 @@
 MỘT NGÀY LÀM NGHỀ — v0.3 / NHỮNG NGÀY NHIỀU CHUYỆN
 
 CHẠY NGAY
-1. Giải nén TOÀN BỘ ZIP. Cần Python 3.11 trở lên.
-2. Windows: mở start.bat.
+1. Giải nén TOÀN BỘ ZIP. Cần Python 3.10 trở lên và PostgreSQL 16+.
+2. Cài kết nối DB: python -m pip install -r requirements.txt
+   Sao chép .env.example thành .env và đặt DATABASE_URL PostgreSQL.
+   Windows: mở start.bat.
    macOS/Linux: python3 server.py --open
 3. Mở http://127.0.0.1:8765 — giữ Terminal đang mở.
 4. Chọn 1 trong 7 nghề → Chuẩn bị → Mở ca → Tiếp tục công việc.
@@ -24,10 +26,11 @@ THỬ CÁC TRẢI NGHIỆM MỚI
 NÂNG TỪ BẢN CŨ
 Xuất JSON bản cũ → giữ bản sao → dừng server cũ → chạy bản mới → nhập JSON.
 Migration schema 1/2 → 3, không truy thu chi phí ngày cũ. Không nhập v3 ngược v2.
-Không cần API key / npm install / pip install. Không mở index.html bằng file://.
+Không cần API key / npm install. PostgreSQL và psycopg là bắt buộc.
+Máy chủ dừng nếu thiếu DATABASE_URL. Không mở index.html bằng file://.
 Cổng bận: python server.py --port 8766 --open
 
 Đây là playable prototype local, chưa phải bản thương mại/online multiplayer.
 7 nghề mở, 12 nghề tương lai khóa. Chat mặc định theo kịch bản.
 Thuế, bảo hiểm, công an/thưởng, tiền vé, nghiệp vụ chuyên môn đều giả lập.
-Chi tiết: README.md, docs/V03_GUIDE.md, docs/IMPLEMENTED_VS_DESIGN.md.
+Chi tiết chạy và kiểm thử: README.md, docs/POSTGRES_ONLY.md.

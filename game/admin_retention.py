@@ -55,7 +55,7 @@ STAT_TABLES = ('stat_births', 'stat_active', 'stat_play', 'stat_play_est', 'stat
 
 
 def _plus_sql(db, col: str, n: int) -> str:
-    return f"to_char({col}::date + {int(n)}, 'YYYY-MM-DD')" if st._is_pg(db) else f"date({col}, '+{int(n)} day')"
+    return f"to_char({col}::date + {int(n)}, 'YYYY-MM-DD')"
 
 
 def _day(today: datetime.date, back: int) -> str:
@@ -136,22 +136,11 @@ def funnel_period(db, start: str, end: str) -> dict:
     base = ("FROM stat_births b JOIN stat_milestones c ON c.sid = b.sid AND c.key = 'created' "
             "JOIN stat_milestones m ON m.sid = b.sid WHERE b.day >= ? AND b.day <= ? AND m.key NOT LIKE 'start:%'")
     got = {}
-    if st._is_pg(db):
-        for key, n, est, med in db.execute(
-                'SELECT m.key, COUNT(*), SUM(CASE WHEN m.at IS NULL OR c.at IS NULL THEN 1 ELSE 0 END), '
-                'percentile_cont(0.5) WITHIN GROUP (ORDER BY m.at - c.at) FILTER (WHERE m.at IS NOT NULL AND c.at IS NOT NULL) '
-                + base + ' GROUP BY m.key', (start, end)):
-            got[key] = (int(n), int(est or 0), med)
-    else:
-        acc = {}
-        for key, m_at, c_at in db.execute('SELECT m.key, m.at, c.at ' + base, (start, end)):
-            a = acc.setdefault(key, [0, 0, []])
-            a[0] += 1
-            if m_at is None or c_at is None:
-                a[1] += 1
-            else:
-                a[2].append(m_at - c_at)
-        got = {k: (a[0], a[1], _median(a[2])) for k, a in acc.items()}
+    for key, n, est, med in db.execute(
+            'SELECT m.key, COUNT(*), SUM(CASE WHEN m.at IS NULL OR c.at IS NULL THEN 1 ELSE 0 END), '
+            'percentile_cont(0.5) WITHIN GROUP (ORDER BY m.at - c.at) FILTER (WHERE m.at IS NOT NULL AND c.at IS NOT NULL) '
+            + base + ' GROUP BY m.key', (start, end)):
+        got[key] = (int(n), int(est or 0), med)
     n = got.get('created', (0, 0, None))[0]
     steps = []
     for key, label in rt.MILESTONES:
@@ -448,22 +437,9 @@ def client_errors(db, today: datetime.date) -> dict:
 
 # ---------------------------------------------------------------- table sizes
 def sizes(db) -> dict:
-    rows = []
-    if st._is_pg(db):
-        rows = [(r[0], int(r[1])) for r in db.pg(
-            "SELECT c.relname, pg_total_relation_size(c.oid) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
-            "WHERE n.nspname = current_schema() AND c.relkind = 'r' AND c.relname = ANY(%s)", (list(STAT_TABLES),))]
-    else:
-        try:
-            owner = {r[0]: r[1] for r in db.execute("SELECT name, tbl_name FROM sqlite_master WHERE type IN ('table', 'index')")}
-            acc = {}
-            for name, size in db.execute('SELECT name, SUM(pgsize) FROM dbstat GROUP BY name'):
-                t = owner.get(name)
-                if t in STAT_TABLES:
-                    acc[t] = acc.get(t, 0) + int(size or 0)
-            rows = list(acc.items())
-        except st._db_errors():
-            rows = []   # this SQLite has no dbstat: sizes are shown on PostgreSQL only
+    rows = [(r[0], int(r[1])) for r in db.pg(
+        "SELECT c.relname, pg_total_relation_size(c.oid) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+        "WHERE n.nspname = current_schema() AND c.relkind = 'r' AND c.relname = ANY(%s)", (list(STAT_TABLES),))]
     rows.sort(key=lambda r: -r[1])
     return dict(tables=[dict(name=n, bytes=b) for n, b in rows], total=sum(b for _, b in rows) if rows else None)
 

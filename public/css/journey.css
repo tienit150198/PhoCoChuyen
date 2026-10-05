@@ -78,6 +78,11 @@ button.jr-stat:hover{border-color:var(--line-strong)}
 .jr-goals li.done{background:var(--good-soft)}
 .jr-goals li.done .grow{color:var(--good)}
 .jr-goals li.done b{color:var(--good)}
+.jr-goals li>.grow{display:grid;gap:6px;min-width:0}
+.jr-goal-cta{justify-self:start;white-space:normal;min-height:44px;text-align:left}
+.jr-goal-hint{color:var(--muted)}
+.jr-recommend{margin:10px 0 14px}
+.jr-recommend-reason{font-size:.85rem;color:var(--ink-2);margin:0 0 4px}
 .jr-check{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:2px solid var(--line-strong);background:var(--surface)}
 .jr-goals li.done .jr-check{background:var(--good);border-color:var(--good);color:var(--surface)}
 .jr-debt{background:var(--bad-soft);border-color:transparent}
@@ -339,8 +344,8 @@ html[data-theme="dem"] .jr-fair{border-color:#8a5a1c;background:linear-gradient(
 @keyframes jr-fair-sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
 
 /* ---------- Home order (WP-5) ------------------------------------------------
-   The way back to work first, then the character, then the workplaces; the fair, house, life, board,
-   chapter and stories after them. Desktop: the first two and the rest share the left column, the
+   Current goals and their recommendation first, then the character and workplaces; fair, house,
+   life, board and stories follow. Desktop: the goals, character and rest share the left column, the
    workplaces fill the right one (the 1fr row takes their extra height, so the left column has no gap). */
 .jr-columns{grid-template-rows:auto 1fr}
 .jr-lead{grid-column:1;grid-row:1}

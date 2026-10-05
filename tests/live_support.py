@@ -1,4 +1,4 @@
-"""Helpers for the live service tests: a real game database (SQLite, or PostgreSQL with TEST_DATABASE_URL),
+"""Helpers for the live service tests: a real game database (PostgreSQL with TEST_DATABASE_URL),
 the live service on a free port, and WebSocket clients. Skipped when the `websockets` library is missing
 (production vendors it into shared/pyvendor; locally: pip install websockets)."""
 import asyncio
@@ -100,13 +100,12 @@ class LiveCase(unittest.IsolatedAsyncioTestCase):
         from live.app import App
         from live.config import Config
         self.tmp = tempfile.TemporaryDirectory()
-        self.store = Store(Path(self.tmp.name) / 'g.sqlite3')
+        self.store = Store(Path(self.tmp.name) / 'g.db')
         social.ensure(self.store)
         push.ensure(self.store)
         admin_stats.ensure(self.store)
         pg = self.store.pg
-        self.cfg = Config(port=0, chat=True, origins=frozenset({ORIGIN}), db_path=None if pg else self.store.path,
-                          db_url=pg.url if pg else None, db_schema=pg.schema if pg else None, presence_grace=0.3, **self.cfg_extra)
+        self.cfg = Config(port=0, chat=True, origins=frozenset({ORIGIN}),                           db_url=pg.url, db_schema=pg.schema, presence_grace=0.3, **self.cfg_extra)
         self.app = App(self.cfg)
         await self.app.start()
         self.port = self.app.port()

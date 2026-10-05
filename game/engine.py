@@ -2,7 +2,7 @@
 
 UI and dialogue can propose actions; only this reducer mutates money, inventory,
 evidence, workflow, relationships, or quests. The storage layer executes it in
-an atomic SQLite transaction with revision checking and command receipts.
+an atomic PostgreSQL transaction with revision checking and command receipts.
 """
 from __future__ import annotations
 import base64
@@ -20,6 +20,8 @@ from .content import (CAREERS,CAREER_META,NPCS,NPC_INDEX,PRODUCTS,PRODUCT_INDEX,
     LOT_INDEX,UPGRADE_INDEX,QUESTS,QUEST_INDEX,make_task,initial_career)
 from .events import SCRIPTS,instantiate,event_view
 from . import operations as ops
+from . import business
+from . import player_service_tasks as player_services
 from . import experiences as life
 from . import extra_content as extra
 from . import feedback as fbk
@@ -261,6 +263,7 @@ def remember(s:dict,c:dict,npc:str,text:str,ref:str|None=None) -> None:
 
 def money(s:dict,c:dict,amount:int,reason:str,ref:str|None=None,category:str|None=None) -> None:
     need(type(amount) is int,"Giao dịch không hợp lệ.")
+    if player_services.suppress_money(c,amount,ref):return
     need(c["money"]+amount>=0,"Chưa đủ xu. Chọn phương án không tốn xu hoặc hoàn thành thêm một việc nhé.")
     c["money"]+=amount
     ops.record_money(c,amount,reason,ref,category)
@@ -342,6 +345,9 @@ def task_done(s:dict,c:dict,t:dict,reward:int,narrative:str,status:str="complete
     c["day_completed"]+=1
     metric(c,"served"); metric(c,f"served:{t['npc']}")
     c["xp"]+=30
+    if t.get('player_order'):
+        player_services.complete(s,c,t,narrative)
+        return
     if reward: money(s,c,reward,"Hoàn thành: "+t["title"],t["id"])
     remember(s,c,t["npc"],narrative,t["id"])
     made=fbk.make_review(s,c,t,status)
@@ -514,18 +520,27 @@ def apply_action(state:dict,career:str|None,action:str,payload:dict|None=None,in
     acting=ar.acting(career if career in CAREERS else None)  # whose rows cut lists archive by default
     # bank_speaker: transfers into the shop's account during the command ride along as result['bank'].
     token=_SCOPED.set(True) if scoped else None
-    try:return bank_speaker.collect(lambda:_apply_action(state,career,action,payload,internal,owned))
+    def run():
+        with player_services.command(state,career,action,payload):
+            out,result=_apply_action(state,career,action,payload,internal,owned)
+        if business.reconcile(out):validate_state(out)
+        return out,result
+    try:return bank_speaker.collect(run)
     finally:
         if token is not None:_SCOPED.reset(token)
         ar.done_acting(acting)
 
 def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,internal:bool,owned:bool) -> tuple[dict,dict]:
     s=migrate_state(state,owned=owned)
+    if business.settle(s):validate_state(s)
     fh.settle(s)  # 💸 a vay nóng of a fair that has closed is collected (game/fair_cash.py)
     p=payload or {}
     need(isinstance(p,dict),"Dữ liệu thao tác không hợp lệ.")
     result=dict(message="Đã thực hiện.",effects=[])
     care_notes=[]
+    if action==business.ACTION:
+        need(internal,"Thao tác chỉ dành cho máy chủ.","forbidden")
+        return s,dict(message="Đã cập nhật hoạt động các tiệm.")
     if action=="select_career":
         need(career in CAREERS,"Nghề này đang ở danh mục mở rộng, chưa chơi được.")
         jr.gate(s,career,action,internal,p)
@@ -640,6 +655,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         ops.on_start(s,c,career)
         inv.on_open(s,c,career)  # kho: ghi nhịp mở ca cho đồng hồ giao hàng
         target=0 if manager else {"calm":2,"festival":4}.get(c["life"]["mode"],3)  # the day's pace is rolled at the previous close
+        if not manager and mod and hasattr(mod, 'daily_task_count'):
+            target=mod.daily_task_count(c['day'])
         unfinished=[t for t in c["tasks"] if t["status"] not in ("completed","referred","cancelled")]
         slots=[int(t["id"].split("-")[-1]) for t in c["tasks"] if t["day"]==c["day"]]
         first=max(slots,default=-1)+1
@@ -970,12 +987,13 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         item=p.get("item");u=UPGRADE_INDEX.get(item);need(u,"Không có nâng cấp này.")
         need(item not in c["upgrades"],"Bạn đã có món này rồi.")
         need(career in u.get("careers",CAREERS),"Nâng cấp không thuộc nghề này.")
+        need(not u.get('requires') or u['requires'] in c['upgrades'],"Lắp bậc trước rồi nâng tiếp nhé.")
         need(1+c["xp"]//90>=u["min_level"],f'Cần cấp {u["min_level"]}. Hoàn thành thêm vài việc nhé.')
         money(s,c,-u["price"],"Mua "+u["name"]);c["upgrades"].append(item)
         if u["kind"]=="decor":
             metric(c,"decorations");c["decor"][item]=dict(spot={"plant":"window","rug":"center","lamp":"corner","seat":"front","poster":"wall"}.get(item,"window"))
         log(s,c,"upgrade","Đã đặt "+u["name"]+" vào không gian.")
-        result.update(message=u["name"]+" đã xuất hiện trong cảnh.",celebrate=True)
+        result.update(message=u["name"]+(" đã lắp, áp dụng cho lượt làm tiếp theo." if u['kind']=='equipment' else " đã xuất hiện trong cảnh."),celebrate=True)
     elif action=="decor_move":
         item=p.get("item");spot=p.get("spot")
         need(item in c["decor"],"Bạn chưa sở hữu đồ trang trí này.")
@@ -1125,6 +1143,10 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
 
 
 def task_view(t:dict) -> dict:
+    return player_services.project(t,_task_view(t))
+
+
+def _task_view(t:dict) -> dict:
     if t["career"] in extra.NEW_CAREERS or t["career"] in PLUGINS:return life.public_task(t)
     if t.get("desk"):return dk.public_task(t)
     v=tree_copy(t)
@@ -1151,6 +1173,7 @@ def career_summary(raw:dict,cid:str) -> dict:
     (a stock room's view is never empty), without building those full views."""
     return dict(summary=True,started=raw["started"],open=raw["open"],day=raw["day"],xp=raw["xp"],level=1+raw["xp"]//90,money=raw["money"],
                 job=dict(required=emp.required(cid),status=raw["job"].get("status")),
+                business_running=raw.get('ops',{}).get('business',{}).get('reason')=='working' or player_services.staff_working(raw),
                 inventory=raw.get("ext",{}).get("inv") is not None,life=dict(shop_name=raw.get("life",{}).get("shop_name")))
 
 
@@ -1308,12 +1331,19 @@ then runs validate_career on every career the command changed (see Store._comput
     _finite(s)  # no NaN/Infinity anywhere
 
 
+def _feed_author(value) -> bool:
+    # Large histories must not rebuild and linearly scan the entire NPC catalogue
+    # for every post/comment. Keep malformed JSON values on the GameError path.
+    return isinstance(value,str) and (value=="player" or value in NPC_INDEX)
+
+
 def validate_career(c:dict,cid:str,finite:bool=True) -> None:
     """Every check of one career record. It reads only that record and the fixed
     content, so a record equal to one that passed with this build still passes."""
     from . import consequences as cq
     from . import classroom
     need(isinstance(c,dict),"Tiến trình nghề không hợp lệ.")
+    player_services.validate_staff(c,cid)
     template_keys,ext_keys=_template_keys(cid)
     ops.validate(c,cid)
     life.validate(c,cid)
@@ -1337,10 +1367,13 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
     need(set(c["stock"])==set(expected_items),"Danh mục kho không hợp lệ.")
     for k,n in c["stock"].items():integer(n,0,24)
     need(all(u in UPGRADE_INDEX for u in c["upgrades"]) and len(c["upgrades"])==len(set(c["upgrades"])),"Nâng cấp không hợp lệ.")
+    need(all(cid in UPGRADE_INDEX[u].get('careers',CAREERS) for u in c['upgrades'] if UPGRADE_INDEX[u].get('kind')=='equipment'),"Thiết bị không thuộc nghề này.")
+    need(all(not UPGRADE_INDEX[u].get('requires') or UPGRADE_INDEX[u]['requires'] in c['upgrades'] for u in c['upgrades']),"Thiết bị thiếu bậc trước.")
     need(all(l in LOT_INDEX for l in c["held_lots"]),"Lô tạm giữ không hợp lệ.")
     need(len(c["tasks"])<=80,"Quá nhiều công việc trong bản lưu.")
     taskids=[]
     for t in c["tasks"]:
+        player_services.validate(t)
         if "patience" in t:integer(t["patience"],25,100)
         need(isinstance(t,dict) and t.get("career")==cid and t.get("npc") in NPC_INDEX,"Công việc không hợp lệ.")
         need(NPC_INDEX[t["npc"]]["career_id"]==cid,"Nhân vật sai nghề.")
@@ -1351,6 +1384,9 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
         slot=int(t["id"].rsplit("-",1)[1]);need(slot<12,"Chỉ số lượt công việc không hợp lệ.")
         # Tasks made before the paperwork desks keep the original counter task of their slot.
         original=make_task(cid,t["day"],slot,t["created_turn"],(cid in dk.CAREERS and not t.get("desk")) or (cid=="mother_baby" and not t.get("gen")))
+        if cid == 'cafe_bakery':
+            # Expanded menu applies to new orders; old tickets keep their recipe.
+            original = PLUGINS[cid].make_task(t['day'], slot, t['created_turn'], legacy=t.get('gen', 1) < 3)
         need(t["id"]==original["id"],"Mã công việc sai ngày.")
         need(set(original)<=set(t),"Bản lưu thiếu trường công việc.")
         for key in ("npc","title","opening","kind","needs","variant","solution","value","evidence"):
@@ -1429,7 +1465,7 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
         need(e.get("chosen") in (None,"a","b") and isinstance(e.get("read"),list) and type(e.get("practice")) is bool,"Dữ liệu sự kiện thiếu.")
         integer(e.get("step"),0,2)
     for f in c["feed"]:
-        need(isinstance(f,dict) and f.get("npc") in ["player",*NPC_INDEX] and isinstance(f.get("comments"),list),"Bài đăng không hợp lệ.")
+        need(isinstance(f,dict) and _feed_author(f.get("npc")) and isinstance(f.get("comments"),list),"Bài đăng không hợp lệ.")
         clean_text(f.get("text"),3000);clean_text(f.get("id"),100)
         need(f.get("stars") in (None,1,2,3,4,5),"Số sao không hợp lệ.")
         fbk.validate_post(f)
@@ -1462,7 +1498,7 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
         integer(post.get("day"),1,999999);need(type(post.get("liked")) is bool,"Trạng thái bài đăng thiếu.")
         for comment in post["comments"]:
             clean_text(comment.get("author"),100);clean_text(comment.get("text"),3000);integer(comment.get("day"),1,999999)
-            need(comment.get("npc") in ("player",*NPC_INDEX),"Người bình luận không hợp lệ.")
+            need(_feed_author(comment.get("npc")),"Người bình luận không hợp lệ.")
     need(len(c["album"])<=6,"Album quá lớn.")
     for photo in c["album"]:
         need(isinstance(photo.get("image"),str) and len(photo["image"])<=450000 and photo["image"].startswith(("data:image/webp;base64,","data:image/png;base64,","data:image/jpeg;base64,")),"Ảnh lưu không hợp lệ.")

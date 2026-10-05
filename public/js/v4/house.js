@@ -6,13 +6,15 @@
  * journey card, the bank's savings/loan tabs and the guide. Styles: /css/bank.css + /css/house.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {portrait,myPortrait} from './look.js';
+import {rentalMarketView,rentalPrice,rentalDemandHint,rentalRetryable,propertyNews} from './rentals-ui.js';
 
-const S={dlg:null,env:null,view:'home',busy:false,flash:null,buy:{kind:'',down:0,months:36,joint:0,move_in:true},joint:null,jointAt:0,listening:false};
+const S={dlg:null,env:null,view:'home',busy:false,flash:null,buy:{kind:'',down:0,months:36,joint:0,move_in:true},joint:null,family:null,couple:null,jointAt:0,listening:false};
+S.rentals=null;S.rentalsLoading=false;S.rentalSeq=0;S.rentalDrafts={};S.rentalRequests=new Map();
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
 const pct=bp=>`${(bp/100).toLocaleString('vi-VN',{maximumFractionDigits:2})}%`;
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
-const btn=(label,op,data={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-hs="${op}"${attrs(data)}${S.busy?' disabled':''}${extra}>${label}</button>`;
+const btn=(label,op,data={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-hs="${op}"${attrs(data)}${S.busy||(S.rentalsLoading&&(op.startsWith('rental')&&op!=='rentals'||op==='unlet'))?' disabled':''}${extra}>${label}</button>`;
 const J=()=>S.env?.api?.state?.journey||{};
 const V=()=>J().home||{};
 const care=c=>c>0?`<span>🧾 Bảo trì ${xu(c)}/tháng</span>`:'';   // 🧾 game/upkeep.py (absent: an older server)
@@ -25,6 +27,8 @@ const byPrice=list=>[...list].sort((a,b)=>a.price-b.price);
 const PROPS=v=>Array.isArray(v.props)?v.props:[];
 const MINE=v=>[...(v.own?[v.own]:[]),...PROPS(v)];
 const HOME=(v,id)=>MINE(v).find(x=>x.id===id)||v.own;
+const rentalStatusReady=()=>Boolean(S.rentals&&!S.rentals.error&&!S.rentalsLoading);
+const playerListing=id=>(S.rentals?.mine||[]).find(row=>row.property===id&&['listing','leased'].includes(row.status));
 const canBuy=v=>v.can_buy?v.can_buy:{ok:!v.own,why:''};
 const withId=(o,x)=>x&&Array.isArray(V().props)?{...o,id:x.id}:o;   // a server from before knows only the home you live in
 /* The homes on the market: the static list (content.journey.homes, housing.catalogue) joined by id with what the
@@ -66,10 +70,10 @@ function dialog(){
     const el=e.target.closest('[data-hs]');if(!el||!d.contains(el)||el.disabled)return;
     e.preventDefault();onClick(el.dataset.hs,el.dataset);
   });
-  d.addEventListener('input',e=>{if(e.target.closest('[data-hs-buy]'))onBuyField(e.target,false);});
+  d.addEventListener('input',e=>{if(e.target.dataset.rentalPrice){S.rentalDrafts[e.target.dataset.rentalPrice]=e.target.value;const out=e.target.closest('.rental-card')?.querySelector('[data-rental-demand]');if(out)out.textContent=rentalDemandHint(e.target.value,Number(e.target.dataset.reference));}else if(e.target.closest('[data-hs-buy]'))onBuyField(e.target,false);});
   d.addEventListener('change',e=>{if(e.target.closest('[data-hs-buy]'))onBuyField(e.target,true);});
   d.addEventListener('submit',e=>e.preventDefault());
-  d.addEventListener('close',()=>{S.flash=null;S.view='home';});
+  d.addEventListener('close',()=>{invalidateRentals();S.flash=null;S.view='home';});
   S.dlg=d;return d;
 }
 export async function openHouse(env,kind){
@@ -83,25 +87,27 @@ export async function openHouse(env,kind){
   const d=dialog();
   if(kind&&MK().some(m=>m.id===kind))startBuy(kind);else S.view='home';
   if(!d.open){d.showModal();d.scrollTop=0;}
-  render();loadJoint();
+  render();loadJoint();loadRentals();
 }
 export async function houseAction(action,data,el,env){
   if(action!=='house')return false;
   await openHouse(env,data?.kind);return true;
 }
 
-/* The couple's joint fund (game/couple.py via GET /api/marriage). Loading it also lets the server bring
-   the spouse into a home bought since the last visit (couple.on_load). */
+/* Joint fund and explicit family invitations, refreshed when this home sheet opens. */
 async function loadJoint(force=false){
   if(!force&&Date.now()-S.jointAt<15000)return;
   S.jointAt=Date.now();
-  try{const v=await S.env.api.json('/api/marriage');S.joint=v?.home?.fund?{balance:v.home.fund.balance,partner:v.couple?.partner?.name||''}:null;}
-  catch{S.joint=null;}
+  try{const v=await S.env.api.json('/api/marriage');S.joint=v?.home?.fund?{balance:v.home.fund.balance,partner:v.couple?.partner?.name||''}:null;S.family=v?.family||null;S.couple=v?.couple||null;if(v.state&&typeof v.revision==='number')S.env.api.accept({state:v.state,revision:v.revision});}
+  catch{S.joint=null;S.family=null;S.couple=null;}
   if(S.dlg){if(S.joint)S.dlg.dataset.joint=String(S.joint.balance);else delete S.dlg.dataset.joint;}
   if(S.dlg?.open&&!S.busy)render();
 }
 
 async function send(action,payload={}){
+  if(S.busy)return;
+  const refreshRentals=S.rentalsLoading||['jr_home_let','jr_home_sell','jr_home_move'].includes(action);
+  invalidateRentals();
   const {api}=S.env;S.busy=true;render();
   try{
     const r=await api.command(action,payload);
@@ -109,10 +115,34 @@ async function send(action,payload={}){
     S.flash={text:[r.message,...extra].filter(Boolean).join(' '),kind:r.approved===false?'warn':'good'};
     return r;
   }catch(e){S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}  // quiet: api.js, the save moved under the tap twice
-  finally{S.busy=false;render();S.dlg?.querySelector('.hs-body')?.scrollTo?.(0,0);}
+  finally{S.busy=false;if(S.dlg?.open){if(refreshRentals)loadRentals();else render();S.dlg.querySelector('.hs-body')?.scrollTo?.(0,0);}}
 }
 const ask=(title,msg,label,money)=>S.env.confirmAction(title,msg,label,money);  // money: {cost,pocket} → "còn thiếu" (v4/money.js)
 const FROM_BANK=['account','wallet'];   // housing takes the account first, the rest in cash
+
+// A background market read must never take or release the payment lock.
+function invalidateRentals(){S.rentalSeq++;S.rentalsLoading=false;}
+async function loadRentals(more=false){
+  if(S.busy||S.rentalsLoading){render();return;}
+  const seq=++S.rentalSeq;
+  S.rentalsLoading=true;render();
+  const offset=more?S.rentals?.next_offset:null;
+  try{const data=await S.env.api.json('/api/rentals'+(offset!=null?'?offset='+encodeURIComponent(offset):''));if(seq!==S.rentalSeq)return;if(more&&offset!=null){const merged=new Map([...(S.rentals?.market||[]),...(data.market||[])].map(row=>[row.id,row]));data.market=[...merged.values()];}S.rentals=data;if(data.state&&typeof data.revision==='number')S.env.api.accept(data);}
+  catch(e){if(seq!==S.rentalSeq)return;if(more)S.flash={text:e.message||'Chưa tải thêm được. Thử lại nhé.',kind:'bad'};else S.rentals={error:e.message||'Chưa tải được chợ nhà. Thử lại nhé.'};}
+  finally{if(seq===S.rentalSeq){S.rentalsLoading=false;render();}}
+}
+async function rentalPost(op,payload){
+  if(S.busy)return;invalidateRentals();S.busy=true;render();
+  const key=JSON.stringify([op,payload]);
+  if(!S.rentalRequests.has(key))S.rentalRequests.set(key,crypto.randomUUID());
+  try{
+    const r=await S.env.api.post('/api/rentals/'+op,{...payload,rid:S.rentalRequests.get(key)});
+    S.rentalRequests.delete(key);S.rentals=r.rentals;
+    if(r.state&&typeof r.revision==='number')S.env.api.accept(r);
+    S.flash={text:op==='accept'?'Đã thanh toán và dọn vào nhà thuê.':r.message||'Đã cập nhật.',kind:'good'};
+  }catch(e){if(!rentalRetryable(e))S.rentalRequests.delete(key);S.flash={text:rentalRetryable(e)?'Chưa xác nhận được kết quả. Bấm lại để kiểm tra cùng giao dịch, không trả tiền lần hai.':e.message||'Chưa thực hiện được giao dịch.',kind:'bad'};}
+  finally{S.busy=false;render();}
+}
 
 function startBuy(kind){
   const m=MK().find(x=>x.id===kind);if(!m)return;
@@ -123,6 +153,23 @@ function startBuy(kind){
 async function onClick(op,data){
   const v=V(),R=v.rules||{};
   switch(op){
+    case'rentals':case'rentalReload':S.view='rentals';await loadRentals();return;
+    case'rentalMore':await loadRentals(true);return;
+    case'rentalNpc':case'rentalList':{
+      const x=HOME(v,data.id);if(!x)return;
+      const rent=rentalPrice(S.rentalDrafts[data.id]??x.let_rent);
+      if(!rent){S.flash={text:'Nhập giá thuê là số nguyên dương hợp lệ nhé.',kind:'bad'};render();return;}
+      if(op==='rentalNpc'){await send('jr_home_let',{id:x.id,on:true,rent,confirm:true});return;}
+      await rentalPost('listing',{property:x.id,rent});return;
+    }
+    case'rentalAccept':case'rentalRenew':{
+      const row=op==='rentalAccept'?S.rentals?.market?.find(x=>String(x.id)===String(data.id)):S.rentals?.tenancy;
+      if(!row)return;
+      const terms=S.rentals?.rules?.terms||'Trả trước 5 ngày sống của bạn. Hết kỳ cần gia hạn.';
+      if(await ask(op==='rentalAccept'?`Thuê ${row.name}?`:'Gia hạn thuê nhà?',terms,`Trả ${xu(row.rent)}`,{cost:row.rent,pocket:FROM_BANK}))await rentalPost(op==='rentalAccept'?'accept':'renew',{id:row.id});return;
+    }
+    case'rentalLeave':if(await ask('Trả nhà đang thuê?',S.rentals?.rules?.leave_terms||'Tiền thuê đã trả trước cho những ngày còn lại không được hoàn. Bạn dọn khỏi nhà thuê và giữ đồ của mình.','Trả nhà'))await rentalPost('leave',{id:S.rentals?.tenancy?.id});return;
+    case'rentalCancel':await rentalPost('cancel',{id:data.id});return;
     case'close':S.dlg.close();return;
     case'back':S.view='home';S.flash=null;render();return;
     case'look':startBuy(data.kind);S.flash=null;render();S.dlg.querySelector('.hs-body')?.scrollTo?.(0,0);return;
@@ -130,6 +177,8 @@ async function onClick(op,data){
     case'inside':S.dlg.close();(await import('./reno.js')).openReno(S.env,data.mode);return;   // 🛠️ Trong nhà: xem, sửa, trang trí
     case'garage':S.dlg.close();(await import('./garage.js')).openGarage(S.env);return;   // 🚗 the vehicle parked out front
     case'family':S.dlg.close();S.env.openSheet('home',{jrView:'household'});return;
+    case'homeGuests':S.dlg.close();S.env.act('homeGuests',{});return;
+    case'sharedFamily':S.dlg.close();(await import('./marriage.js')).openMarriage(S.env,data.tab||'family',data.section);return;
     case'rent':{const m=MK().find(x=>x.id===data.kind);if(!m)return;
       const was=v.rent,back=was?.deposit||0,bed=m.id===DORM,unit=bed?'Tiền giường':'Tiền phòng';
       const body=(was?`Trả ${lname(was.name)}, nhận lại cọc ${xu(back)}. `:'')+`Cọc ${xu(m.deposit)}, trả lại khi dọn đi. ${unit} ${xu(m.rent)}/ngày (gác Bà Tám: ${xu(v.attic_rent)}).`+(bed?' Ở ghép với 3 bạn cùng phòng.':'');
@@ -155,14 +204,13 @@ async function onClick(op,data){
       const after=live?(PROPS(v).length?'. Bạn về gác Bà Tám (muốn ở căn khác thì dọn qua đó trước rồi hãy bán)':'')+(v.married?'. Người ấy dọn ra cùng bạn':''):o.let?`. ${o.let.name} trả nhà, gửi nốt tiền thuê`:'';
       if(await ask(`Bán ${lname(o.name)}?`,`Giá hôm nay ${xu(sl.value)}, phí ${xu(sl.fee)}${sl.payoff?`, trả nợ vay ${xu(sl.payoff)}`:''}. Nhận ${xu(sl.get)} vào ${v.have?.bank?'tài khoản':'ví'}${after}.`,`Bán · nhận ${xu(sl.get)}`))send('jr_home_sell',withId({confirm:true,value:sl.value},o));return;}
     case'move':{const x=HOME(v,data.id);if(!x||x.live!==false)return;const back=v.rent?.deposit||0;
-      const body=`Thuê xe chở đồ ${xu(R.move_fee)}.`+(v.own?` ${v.own.name} sẽ để trống.`:'')+(back?` Trả phòng trọ, nhận lại cọc ${xu(back)}.`:'')+' Đồ trang trí gói vào túi đồ, bày lại ở nhà mới.'+(v.married?' Người ấy dọn về cùng bạn.':'');
+      const body=`Thuê xe chở đồ ${xu(R.move_fee)}.`+(v.own?` ${v.own.name} sẽ để trống.`:'')+(back?` Trả phòng trọ, nhận lại cọc ${xu(back)}.`:'')+' Đồ trang trí gói vào túi đồ, bày lại ở nhà mới.'+(v.married?' Gửi lời mời mới nếu muốn người ấy dọn về cùng.':'');
       if(await ask(`Dọn về ${lname(x.name)}?`,body,`Dọn nhà · ${xu(R.move_fee)}`,R.move_fee>back?{cost:R.move_fee-back,pocket:FROM_BANK}:undefined))send('jr_home_move',{id:x.id,confirm:true});return;}
     case'moveShared':{const sh=v.shared;if(!sh||!v.own)return;   // 💞 back to the spouse's home (housing.py jr_home_move to='shared')
       if(await ask(`Về ở chung ${lname(sh.home)}?`,`Thuê xe chở đồ ${xu(R.move_fee)}. ${v.own.name} sẽ để trống, vẫn là nhà của bạn. Đồ trang trí gói vào túi đồ.`,`Dọn nhà · ${xu(R.move_fee)}`,{cost:R.move_fee,pocket:FROM_BANK}))send('jr_home_move',{to:'shared',confirm:true});return;}
-    case'let':{const x=HOME(v,data.id);if(!x||x.live!==false||x.let)return;
-      if(await ask(`Cho thuê ${lname(x.name)}?`,`Người thuê trả ${xu(x.let_rent)}/tháng (${R.month_days} ngày), vào đúng ngày trả góp của căn này. Họ tự trả điện nước. Muốn dọn về thì lấy lại nhà lúc nào cũng được.`,'Cho thuê'))send('jr_home_let',{id:x.id,on:true,confirm:true});return;}
-    case'unlet':{const x=HOME(v,data.id);if(!x?.let)return;
-      if(await ask(`Lấy lại ${lname(x.name)}?`,`${x.let.name} dọn đi, gửi nốt tiền thuê những ngày đã ở. Căn nhà để trống, không tốn gì.`,'Lấy lại nhà'))send('jr_home_let',{id:x.id,on:false,confirm:true});return;}
+    case'let':S.view='rentals';await loadRentals();return;
+    case'unlet':{const x=HOME(v,data.id);if(!x?.let&&!x?.rental_ad)return;
+      if(await ask(`Ngừng cho thuê ${lname(x.name)}?`,x.let?`${x.let.name} dọn đi, gửi nốt tiền thuê những ngày đã ở.`:'Gỡ tin đang tìm khách NPC.','Xác nhận'))await send('jr_home_let',{id:x.id,on:false,confirm:true});return;}
   }
 }
 
@@ -225,7 +273,7 @@ const flash=()=>`<p class="bk-flash ${S.flash?.kind||''}" role="status" aria-liv
 function page(){
   const v=V();
   if(!v.story)return head()+`<div class="sheet-body bk hs-body"><section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏠</div><h3>Nhà cửa chỉ có trong chế độ hành trình</h3><p>Vào hành trình để thuê phòng, để dành và mua nhà cho nhân vật của bạn.</p></section></div>`;
-  return head()+`<div class="sheet-body bk hs-body">${flash()}${S.view==='buy'?buyView(v):homeView(v)}</div>`;
+  return head()+`<div class="sheet-body bk hs-body">${flash()}${S.view==='rentals'?btn('← Nhà của bạn','back',{},'ghost small')+rentalMarketView(S.rentals,PROPS(v),S.rentalDrafts,btn):S.view==='buy'?buyView(v):homeView(v)}</div>`;
 }
 
 /* Wallet, account and Quỹ chung are in the 💰 chip on the header (v4/money.js); savings in the 🐷 card. */
@@ -237,7 +285,7 @@ function moneyStrip(v){
 /* "Bước tiếp theo" (the guide's line, v4/guide.js look): the one thing to do now on the way to a home of your own. */
 function nextStep(v){
   const h=v.have||{},late=MINE(v).find(x=>x.loan?.overdue),L=late?.loan,homes=byPrice(MK().filter(m=>m.kind==='own'));
-  const empty=PROPS(v).find(x=>!x.let&&x.move?.ok);
+  const empty=rentalStatusReady()&&PROPS(v).find(x=>!x.let&&x.move?.ok&&!playerListing(x.id));
   let go=null;
   if(L?.overdue)go=L.overdue<=(h.ready||0)?{op:'pay',data:withId({},late),label:`⏰ Trả ${xu(L.overdue)} trả góp đang quá hạn`}:{op:'bank',data:{tab:'home'},label:'🏦 Nộp tiền vào tài khoản để trả góp',note:`thiếu ${xu(L.overdue-(h.ready||0))}`};
   else if(!v.own&&!v.shared&&empty)go={op:'move',data:{id:empty.id},label:`🚚 Dọn về ${lname(empty.name)}`,note:'nhà của bạn đang để trống'};
@@ -272,8 +320,8 @@ function dormRoom(D){
 }
 function placeCard(v){
   const p=v.place||{},c=p.cost||{},bed=p.kind===DORM;
-  const costLine=`${p.where_id==='own'||p.where_id==='shared'?'Điện nước':bed?'Tiền giường':'Tiền phòng'} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`;
-  const who=p.where_id==='shared'?`<p class="hs-tag">💞 Nhà chung với ${esc(p.with)}</p>`:p.where_id==='own'?'<p class="hs-tag">🔑 Nhà đứng tên bạn</p>':bed?'<p class="hs-tag">👥 Ở ghép · giường dưới cạnh cửa sổ</p>':p.where_id==='rent'?'<p class="hs-tag">🧾 Đang thuê</p>':'';
+  const costLine=`${['own','shared','lease'].includes(p.where_id)?'Điện nước':bed?'Tiền giường':'Tiền phòng'} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`;
+  const who=p.where_id==='shared'?`<p class="hs-tag">💞 Nhà chung với ${esc(p.with)}</p>`:p.where_id==='own'?'<p class="hs-tag">🔑 Nhà đứng tên bạn</p>':bed?'<p class="hs-tag">👥 Ở ghép · giường dưới cạnh cửa sổ</p>':['rent','lease'].includes(p.where_id)?'<p class="hs-tag">🧾 Đang thuê</p>':'';
   let actions='';
   const DC=J().deco,deco=DC?`<p class="hs-chips"><span>🪴 Ấm cúng ${DC.cozy.total} · ${esc(DC.cozy.level)}</span>${DC.bag.length?`<span>🎒 ${DC.bag.length} món trong túi</span>`:''}</p>`:'';
   const setUp=DC?btn(bed?'🚪 Về góc giường':p.where_id==='shared'?'🚪 Vào nhà':'🚪 Vào phòng','inside',{},'primary'):'';   // 🚶 rentals, the attic, a shared home: walk in, decor inside (v4/home-walk.js)
@@ -281,8 +329,9 @@ function placeCard(v){
   else if(p.where_id==='own'&&J().reno){const R=J().reno,worn=R.parts.filter(x=>x.worn).length;
     actions=`<p class="hs-chips"><span>🪴 Ấm cúng ${R.cozy}</span><span>🛠️ ${worn?`${worn} chỗ cần sửa`:'Nhà sạch đẹp'}</span></p><div class="bk-actions">${btn('🚪 Vào nhà','inside',{},'primary')}${worn?btn('🛠️ Sửa nhà','inside',{mode:'fix'},'ghost'):''}</div>`;}
   else if(DC)actions=`${deco}<div class="bk-actions">${setUp}</div>`;
+  if(p.where_id==='lease')actions+=`<div class="bk-actions">${btn('Hợp đồng & gia hạn','rentals',{},'ghost')}</div>`;
   actions+=parked();
-  actions+=`<div class="bk-actions">${btn('🏡 Gia đình · Thú cưng','family',{},'ghost')}</div>`;
+  actions+=`<div class="bk-actions">${btn('🏡 Nhà & Gia đình','sharedFamily',{},'cream')}${btn('Mời bạn về nhà','homeGuests',{},'cream')}${btn('👶 Con chung','sharedFamily',{section:'children'},'cream')}</div>`;
   const comfort=p.comfort?`<p class="bk-hint"><span>😊 Tinh thần +${p.comfort} mỗi sáng</span>${v.own?.loan?.late?' <span>(tạm dừng khi trễ hạn trả góp)</span>':''}</p>`:'';
   return `<section class="bk-card hs-place ${esc(p.where_id||'')}"${toneStyle(p.group)}><div class="hs-place-top"><span class="hs-emoji" aria-hidden="true">${p.emoji||'🏚️'}</span><div class="grow"><small>Nơi bạn đang ở</small><h3>${esc(p.name)}</h3><small>${esc(p.where||'')}</small></div></div>
     ${who}<p class="hs-cost">${costLine}</p>${comfort}${p.perk&&!bed?`<p class="bk-hint">${esc(p.perk)}</p>`:''}${actions}</section>`;
@@ -317,7 +366,7 @@ function ownCard(v){
   return `<section class="bk-card"><h3>${o.emoji} ${esc(o.name)}</h3>
     <dl class="hs-facts"><div><dt>Ngày mua</dt><dd>Ngày ${o.day} · ${xu(o.price)}</dd></div><div><dt>Giá thị trường hôm nay</dt><dd>${xu(o.value)}${grow>0?` <small class="up">(+${fmt(grow)})</small>`:''}</dd></div>
     <div><dt>Điện nước</dt><dd>${xu(o.upkeep)}/ngày</dd></div>${o.care?`<div><dt>Phí bảo trì</dt><dd>${xu(o.care)}/tháng</dd></div>`:''}<div><dt>Bán ngay thì nhận</dt><dd>${xu(o.sell.get)}</dd></div></dl>
-    <p class="bk-hint">Giá nhà tăng ~${pct(v.rules.grow_rate)} mỗi năm. Bán mất ${v.rules.sell_fee_pct}% phí.</p>
+    ${propertyNews(o.market_news)}<p class="bk-hint">Giá nền tăng ~${pct(v.rules.grow_rate)} mỗi năm; tin khu vực có thể làm giá tăng hoặc giảm mạnh. Bán mất ${v.rules.sell_fee_pct}% phí.</p>
     <div class="bk-actions">${btn('Bán nhà','sell',{id:o.id},'ghost small danger')}</div></section>`;
 }
 
@@ -333,17 +382,19 @@ function sharedCard(v){
 /* 🏘️ Another home you own: empty or let (a home from 6.000 xu pays its phí bảo trì either way); move in, let it, take it back, sell it. */
 function propCard(v,x){
   const grow=x.value-x.price,L=x.let,mv=x.move||{},sl=x.sell||{};
-  const status=L?`<p class="hs-tag let">${L.emoji} Cho thuê · ${esc(L.name)}</p>`:'<p class="hs-tag idle">🔑 Đang để trống</p>';
+  const checking=!rentalStatusReady(),listing=playerListing(x.id);
+  const occupied=listing?.status==='leased';
+  const status=L?`<p class="hs-tag let">${L.emoji} Cho thuê · ${esc(L.name)}</p>`:listing?`<p class="hs-tag let">${occupied?'🧾 Đang cho người chơi thuê':'📣 Đang đăng cho người chơi thuê'}</p>`:x.rental_ad?'<p class="hs-tag idle">📣 Đang tìm khách NPC</p>':checking?`<p class="hs-tag idle">${S.rentals?.error?'Chưa kiểm tra được trạng thái cho thuê.':'Đang kiểm tra trạng thái cho thuê…'}</p>`:'<p class="hs-tag idle">🔑 Đang để trống</p>';
   const fee=x.care?` Phí bảo trì ${xu(x.care)}/tháng.`:'';
   const rent=L?`<p class="bk-hint">Tiền thuê ${xu(L.rent)}/tháng · kỳ tới ${onDay(L.next)}${L.next_amount!==L.rent?` (${xu(L.next_amount)} cho số ngày đã ở)`:''}${L.owed?` · đang khất ${xu(L.owed)}`:''}.${fee}</p>`
     :`<p class="bk-hint">${x.care?`Để trống vẫn tốn phí bảo trì ${xu(x.care)}/tháng.`:'Để trống không tốn gì.'} Cho thuê được khoảng ${xu(x.let_rent)}/tháng.</p>`;
-  const acts=L?btn('Lấy lại nhà','unlet',{id:x.id},'ghost')
-    :btn(`🚚 Dọn về ở · ${xu(mv.fee)}`,'move',{id:x.id},'primary',mv.ok?'':' disabled')+btn('Cho thuê','let',{id:x.id},'ghost');
+  const acts=listing||x.rental_ad?btn('Quản lý cho thuê','rentals',{},'primary'):L?btn('Lấy lại nhà','unlet',{id:x.id},'ghost')
+    :btn(`🚚 Dọn về ở · ${xu(mv.fee)}`,'move',{id:x.id},'primary',mv.ok&&!checking?'':' disabled')+btn('Cho thuê','let',{id:x.id},'ghost');
   const why=[!L&&!mv.ok?mv.why:'',sl.ok===false?sl.why:''].filter(Boolean).map(t=>`<p class="bk-hint">${esc(t)}</p>`).join('');
   return `<section class="bk-card hs-prop"${toneStyle(x.group)}><div class="hs-home-top"><span class="hs-emoji" aria-hidden="true">${x.emoji}</span><div class="grow"><small>${esc(x.where)}</small><h3>${esc(x.name)}</h3></div></div>${status}
     <dl class="hs-facts"><div><dt>Ngày mua</dt><dd>Ngày ${x.day} · ${xu(x.price)}</dd></div><div><dt>Giá thị trường hôm nay</dt><dd>${xu(x.value)}${grow>0?` <small class="up">(+${fmt(grow)})</small>`:''}</dd></div>
     <div><dt>Còn nợ vay</dt><dd>${x.loan?xu(x.loan.left):'Không'}</dd></div><div><dt>Bán ngay thì nhận</dt><dd>${xu(sl.get)}</dd></div></dl>
-    ${rent}<div class="bk-actions">${acts}${btn('Bán nhà','sell',{id:x.id},'ghost small danger',sl.ok===false?' disabled':'')}</div>${why}</section>`;
+    ${propertyNews(x.market_news)}${rent}<div class="bk-actions">${acts}${btn('Bán nhà','sell',{id:x.id},'ghost small danger',sl.ok===false||occupied||listing||checking?' disabled':'')}</div>${why}</section>`;
 }
 
 /* One listing, phone first: the price and the monthly installment up front, "thiếu N xu" when it is not there yet. */
@@ -393,9 +444,16 @@ function homeView(v){
   const more=PROPS(v).map(x=>propCard(v,x)+loanCard(v,x)).join('');
   const cap=Array.isArray(v.props)&&MINE(v).length?` Có thể có tới ${v.rules.owned_max} căn${canBuy(v).ok?'':`: ${esc(canBuy(v).why)}`}.`:'';
   const bill=v.care?.month?`<p class="bk-hint hs-care">🧾 Phí bảo trì các căn của bạn khoảng ${xu(v.care.month)}/tháng, trừ cùng hóa đơn ${onDay(v.care.next)}: tiền mặt trước, thiếu thì lấy từ tài khoản, không bao giờ làm ví âm.</p>`:'';
-  return moneyStrip(v)+nextStep(v)+placeCard(v)+sharedCard(v)+ownCard(v)+loanCard(v)+more+bill+
+  return moneyStrip(v)+`<section class="bk-card"><h3>🏘️ Thuê & cho thuê</h3><p>Tự đặt giá, tìm khách NPC hoặc thuê nhà người chơi.</p>${btn('Mở chợ thuê nhà','rentals',{},'primary')}</section>`+familyCard()+nextStep(v)+placeCard(v)+sharedCard(v)+ownCard(v)+loanCard(v)+more+bill+
     `<section class="bk-card hs-listing"><h3>Nhà đang rao</h3><p class="bk-hint">Trả trước ${v.rules.down_pct}% + phí, còn lại vay 3 năm.${cap}</p>${marketGroups(v)}</section>`+
     savingsCard(v)+(log?`<section class="bk-card"><h3>Sổ nhà cửa</h3><ul class="bk-score-log">${log}</ul></section>`:'');
+}
+
+function familyCard(){
+  const f=S.family;if(!f)return '';
+  const requests=f.requests||[],incoming=requests.filter(r=>!r.mine),sent=requests.filter(r=>r.mine);
+  const status=incoming.length?`Bạn có ${incoming.length} lời mời cần trả lời.`:sent.length?'Đã gửi lời mời · Chờ người ấy đồng ý.':f.together?'Hai bạn đang ở chung nhà.':S.couple?.status==='married'?(f.can_invite?'Bạn có thể mời người ấy về căn nhà đang ở.':f.partner_can_invite?'Người ấy có nhà. Nhờ người ấy gửi lời mời về ở chung.':'Mua nhà hoặc dọn về căn nhà bạn sở hữu để mời người ấy.'): 'Mời bạn bè vào chơi hoặc ở chung mà không cần kết hôn. Con chung nằm trong mục Gia đình.';
+  return `<section class="bk-card"><h3>🏡 Nhà &amp; Gia đình</h3><p>${status}</p><div class="bk-actions">${btn('👥 Bạn bè & người ở cùng','homeGuests',{},'primary')}${btn(incoming.length?'Xem và trả lời lời mời':sent.length?'Xem lời mời đã gửi':'Mở Nhà & Gia đình','sharedFamily',{},'primary')}</div></section>`;
 }
 
 function previewHTML(){
@@ -426,6 +484,6 @@ function buyView(v){
       ${loan>0?monthsSel:''}${moveField}${jointField}</div>
     ${bankNote}
     <div class="hs-preview">${previewHTML()}</div>
-    ${v.married&&moveIn?'<p class="bk-hint">💞 Có nhà rồi, người ấy về ở chung.</p>':''}
+    ${v.married&&moveIn?'<p class="bk-hint">💞 Góp từ quỹ chung để mua nhà. Mua xong, mở Gia đình chung gửi lời mời ở chung; người ấy cần đồng ý.</p>':''}
     <div class="bk-actions">${btn(loan>0?'Xem lại & ký hợp đồng':'Mua nhà','sign',{},'primary big',preview().ok?'':' disabled')}${btn('Quay lại','back',{},'ghost')}</div></section>`;
 }

@@ -1,5 +1,5 @@
-/** 🛵 Tự lái: the delivery career's ride, seen from the rider's seat (owner, 03/10: "tự điều khiển xe đi và ở góc
- * nhìn thứ nhất… thông tin trải ra thì dễ chơi và vui hơn"). Loaded by careers/delivery.js only while a leg is to be
+/** 🛵 Tự lái: the delivery career's ride, shown in a cozy isometric neighbourhood by default.
+ * The rider's-seat view remains selectable in the stage. Loaded by careers/delivery.js only while a leg is to be
  * ridden in Tự lái mode.
  *
  * The neighbourhood is the route map's 7×5 grid of junctions (content nodes x 0–6, y 0–4), one map block ("ô phố")
@@ -13,17 +13,25 @@
  * always. Traffic-light crossings use server-issued tokens and receive server-priced receipts. Stopping at an ordinary house says
  * "Không phải nhà này"; nothing is sent.
  *
- * Drawn with the 2D canvas, no library: flat ground and box houses projected from the rider's eye (a tiny software 3D
+ * Both views use the same 2D canvas and physics. delivery_isometric.js caches the ground and building sprites.
+ * The rider's-seat view uses flat ground and box houses projected from the rider's eye (a tiny software 3D
  * of quads clipped at the near plane), painted far to near; people, scooters, lamps and signs are billboards; the
  * handlebars, mirrors and the speedometer are one cached bitmap. Frames are measured: a phone that cannot keep up
  * first draws fewer pixels, then opts.slow() switches the career to "Đi nhanh". */
 import {t as tr} from '../v4/i18n.js';
 import {lightAt} from '../v4/dayclock.js';
 
-export const B=40;                 // one map block in metres
+import {B,onRoad,gateOf,waypoint,roadRoute,navigation,mapTransform} from './delivery_navigation.js';
+import {joystickAxes,nextSpeed,nextSteer,motionSign,holdPointer} from './delivery_controls.js';
+import {signalState} from '../v4/traffic.js';
+import {stageFullscreen} from './delivery_fullscreen.js';
+import {drawStreetPerson,drawStreetTree,drawStreetScooter} from './delivery_sprites.js';
+import {drawHouseFacade,drawLandmarkFacade} from './delivery_architecture.js';
+import {createIsometricRenderer,needsDrivingFrames} from './delivery_isometric.js';
+export {B,onRoad,gateOf,waypoint} from './delivery_navigation.js';
 const HW=5,SW=3,FRONT=HW+SW;       // half the road, the pavement, the house fronts from the street's middle
 const EYE=1.35,NEAR=.35,FAR=190;
-const VMAX=15,ACC=7,BRAKE=16,DRAG=1.8;
+const VMAX=15;
 const GX=6,GY=4;                   // last junction index on each axis
 const RM=globalThis.matchMedia?.('(prefers-reduced-motion: reduce)');
 const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contains('reduce-motion')||document.body.classList.contains('reduce-motion');
@@ -41,7 +49,7 @@ const LOOK={
   villa:{col:'#f3efe4',h:7,shape:'villa'},vet:{col:'#c9e3cf',h:7,awn:'#3b8f87',shape:'shop'},
   garage:{col:'#9aa3ad',h:6,awn:'#e07a2f',shape:'garage'},
 };
-const HOUSE=['#f3d9b1','#f6e6c8','#e9c7a3','#cfe0e8','#f2cfc4','#e6e0b8','#d9d2e6','#f7efe0','#cde3c6','#f0c9a0'];
+const HOUSE=['#d8c9ad','#e8dec9','#cbb29a','#c0d1d2','#d9bab0','#d4d0b7','#c7c6cf','#eee5d5','#becbb8','#d8bd9f'];
 const SHIRT=['#e0823a','#3b7dd8','#d94f6b','#3f9f6b','#8a5bb8','#d9b23b','#3aa6b9'];
 
 /* ---------------------------------------------------------------- tiny helpers */
@@ -52,38 +60,9 @@ const css=([r,g,b],a=1)=>a<1?`rgba(${r|0},${g|0},${b|0},${a})`:`rgb(${r|0},${g|0
 const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
 const ESC=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-/** Is (x,y) on a street (with room for the scooter)? */
-export function onRoad(x,y,m=.6){
-  const i=Math.round(x/B),j=Math.round(y/B);
-  if(i>=0&&i<=GX&&Math.abs(x-i*B)<=HW-m&&y>=-HW+m&&y<=GY*B+HW-m)return true;
-  return j>=0&&j<=GY&&Math.abs(y-j*B)<=HW-m&&x>=-HW+m&&x<=GX*B+HW-m;
-}
-/** Where a stop's door is: its landmark stands on the corner north-east of its junction (north-west on the last
- * street), facing the street; `x` is the door, `y` the street it faces. */
-export function gateOf(n){
-  const gx=Number(n.x)||0,gy=Number(n.y)||0,east=gx<GX;
-  return {x:gx*B+(east?FRONT+6:-FRONT-6),y:gy*B,gx,gy,east};
-}
-/** The next point to ride to on the way to `T` (a gateOf): along this street to the target's street (turning in the
- * middle of a junction), then to the door. The ▲ of the HUD points at it. */
-export function waypoint(px,py,T){
-  const i=Math.round(px/B),j=Math.round(py/B),onH=Math.abs(py-j*B)<=HW+.5,onV=Math.abs(px-i*B)<=HW+.5;
-  const ti=clamp(Math.round(T.x/B),0,GX);
-  let w;
-  if(onH&&j===T.gy)w={x:T.x,y:T.y-2,last:true};                 // on the target's street: to the door
-  else if(onV&&(i===ti||!onH))w={x:i*B,y:T.gy*B};                // on the right avenue (or between junctions on one)
-  else w={x:ti*B,y:j*B};                                         // along this street to the target's avenue
-  // In a junction, line up with the street about to be taken (its middle) before turning, so the arrow never cuts a corner.
-  if(onH&&onV){
-    const across=w.y===j*B||w.last?Math.abs(py-j*B)>1.5:Math.abs(px-i*B)>1.5;
-    if(across)return {x:i*B,y:j*B};
-  }
-  return w;
-}
-
 /* ---------------------------------------------------------------- the world (built once per set of stops) */
 export function buildWorld(nodes){
-  const R=rng(20261003),houses=[],cells=new Map(),lamps=[],trees=[],signs=[],lights=[],marks={};
+  const R=rng(20261003),houses=[],cells=new Map(),lamps=[],trees=[],signs=[],lights=[],marks={},gardens=[],props=[];
   const cellAdd=(cx,cy,o)=>{const k=cx+','+cy;(cells.get(k)||cells.set(k,[]).get(k)).push(o);};
   // Landmarks: two house slots of the south row of the corner cell.
   const taken=new Set();
@@ -120,7 +99,10 @@ export function buildWorld(nodes){
         const idx=along?cx*4+k:cy*4+(full?k:k+1),odd=face==='S'||face==='E';
         Object.assign(b,{zb:0,h,col,face,k:'house',no:Math.max(1,odd?2*idx+1:2*idx+2),shop:R()<.45,awn:R()<.5?SHIRT[Math.floor(R()*SHIRT.length)]:null,
           street:along?STREETS_H[line]:STREETS_V[line],win:R()<.5?1:2});
-        houses.push(b);cellAdd(cx,cy,b);
+        // Small open courtyards on selected north facades expose the green block interior.
+        if(inX&&inY&&face==='N'&&k===1&&(cx+cy)%2===0){
+          gardens.push({...b,col:'#abc49b'});trees.push({x:(b.x0+b.x1)/2,y:b.y0+3.7,r:1.5});
+        }else{houses.push(b);cellAdd(cx,cy,b);}
       }
     }
   }
@@ -139,7 +121,11 @@ export function buildWorld(nodes){
     signs.push({x:i*B-HW-1.2,y:j*B+HW+1.2,v:STREETS_V[i],h:STREETS_H[j]});
     if(LIT.has(i+','+j))lights.push({i,j,x:i*B+HW+.8,y:j*B-HW-.8,x2:i*B-HW-.8,y2:j*B+HW+.8,off:((i*7+j*3)%16)});
   }
-  return {houses,cells,lamps,trees,signs,lights,marks,lit:LIT};
+  // Low planters sit between crossings on the pavement, outside the riding surface.
+  for(let cx=0;cx<GX;cx++)for(let cy=0;cy<=GY;cy++)if((cx+cy)%2===0){
+    props.push({x0:cx*B+24,x1:cx*B+26,y0:cy*B+6,y1:cy*B+7.2,zb:0,h:.6,col:'#b67f5a',face:'N',k:'garden'});
+  }
+  return {houses,cells,lamps,trees,signs,lights,marks,gardens,props,lit:LIT};
 }
 /** The boxes a stop is built of (all on its south row, front face south). */
 function landmarkBoxes(L){
@@ -171,54 +157,134 @@ function landmarkBoxes(L){
 }
 
 /* ---------------------------------------------------------------- the stage */
-const S={el:null,cv:null,c:null,mini:null,mc:null,goal:null,say:null,slot:null,world:null,nodesKey:'',opts:null,
-  at:null,x:0,y:0,a:0,v:0,steer:0,roll:0,keys:{},btn:{},raf:0,last:0,t:0,w:0,h:0,dpr:1,bars:null,barsKey:'',
+const S={el:null,cv:null,c:null,mini:null,mc:null,goal:null,say:null,slot:null,world:null,nodesKey:'',opts:null,view:'isometric',iso:null,idle:0,
+  at:null,x:0,y:0,a:0,v:0,steer:0,roll:0,keys:{},btn:{},joy:{steer:0,drive:0},raf:0,last:0,t:0,w:0,h:0,dpr:1,bars:null,barsKey:'',
   pal:null,palKey:'',still:0,stopDone:false,sending:false,sayT:0,shake:0,lastRed:0,lastBump:0,inBox:'',
   npcs:[],peds:[],rain:[],frames:[],cost:[],perf:{n:0,sum:0,bad:0,skip:40},visible:true,hinted:false,miniT:0,goalT:0,fail:false};
 globalThis.__dlDrive={
   stats:()=>{const f=[...S.frames].sort((a,b)=>a-b),n=f.length;const d=[...S.cost].sort((a,b)=>a-b),m=d.length;return {n,avg:n?f.reduce((s,v)=>s+v,0)/n:0,p50:n?f[n>>1]:0,p95:n?f[Math.min(n-1,Math.floor(n*.95))]:0,draw:m?d.reduce((s,v)=>s+v,0)/m:0,draw95:m?d[Math.min(m-1,Math.floor(m*.95))]:0,dpr:S.dpr,w:S.w,h:S.h};},
   state:()=>{const T=S.opts&&S.world?.marks[S.opts.target];return {x:S.x,y:S.y,a:S.a,v:S.v,at:S.at,target:S.opts?.target||null,sending:S.sending,
-    gate:T?{x:T.gate.x,y:T.gate.y,gy:T.gate.gy}:null,wp:T?waypoint(S.x,S.y,T.gate):null,running:!!S.raf,B,HW};},
+    gate:T?{x:T.gate.x,y:T.gate.y,gy:T.gate.gy}:null,wp:T?waypoint(S.x,S.y,T.gate):null,running:!!(S.raf||S.idle),view:S.view,B,HW};},
   reset:()=>{S.frames=[];S.cost=[];},
   look:o=>{S.dbg=o||null;if(S.opts&&o)Object.assign(S.opts,o);S.pal=null;},   // checks only: {minute, weather}
 };
 
 const ARROW='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3 4 13h5v8h6v-8h5z" fill="currentColor"/></svg>';
-const TRI=d=>`<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="${d<0?'M17 4 6 12l11 8z':'M7 4l11 8-11 8z'}" fill="currentColor"/></svg>`;
 function build(){
-  const el=document.createElement('div');el.className='dd-stage';
+  const el=document.createElement('div');el.className='dd-stage dd-isometric';
   el.innerHTML=`<canvas class="dd-cv" tabindex="0" role="img" aria-label="${ESC(tr('Xe máy: lái tới nhà có người vẫy tay'))}"></canvas>
-    <div class="dd-goal" aria-live="polite"><i class="dd-arrow" aria-hidden="true">${ARROW}</i><span><b></b><small></small></span></div>
-    <canvas class="dd-mini" aria-hidden="true"></canvas>
-    <div class="dd-signal" role="status" hidden style="position:absolute;top:76px;left:10px;right:10px;padding:8px 12px;border-radius:12px;background:#fff8e9;color:#342817;font-size:13px;font-weight:700;pointer-events:none"></div>
+    <div class="dd-goal" aria-live="polite"><i class="dd-arrow" aria-hidden="true">${ARROW}</i><span><b></b><small></small><span class="dd-nav-detail"></span><progress class="dd-parking" max="1" value="0" hidden aria-label="${ESC(tr('Tiến độ dừng xe'))}"></progress></span></div>
+    <button type="button" class="dd-map-toggle" aria-label="${ESC(tr('Mở bản đồ'))}" aria-haspopup="dialog" aria-expanded="false"><canvas class="dd-mini" aria-hidden="true"></canvas><span>${ESC(tr('Bản đồ'))}</span></button>
+    <div class="dd-tools"><button type="button" class="dd-full-toggle" aria-pressed="false">⛶ ${ESC(tr('Toàn màn hình'))}</button><button type="button" class="dd-help-toggle" aria-haspopup="dialog" aria-expanded="false">${ESC(tr('Cách lái'))}</button></div>
+    <section class="dd-map-panel" role="dialog" aria-modal="true" aria-label="${ESC(tr('Bản đồ khu phố'))}" hidden>
+      <div class="dd-map-heading"><h3>${ESC(tr('Bản đồ khu phố'))}</h3><button type="button" class="dd-map-close">${ESC(tr('Tiếp tục lái'))}</button></div>
+      <div class="dd-map-zoom"><button type="button" data-map-zoom="out" aria-label="${ESC(tr('Thu nhỏ'))}">−</button><output>100%</output><button type="button" data-map-zoom="in" aria-label="${ESC(tr('Phóng to'))}">+</button><button type="button" data-map-zoom="me">${ESC(tr('Về xe'))}</button><button type="button" data-map-zoom="all">${ESC(tr('Toàn phố'))}</button></div>
+      <canvas class="dd-map-canvas" role="img" aria-label="${ESC(tr('Lộ trình theo đường phố tới điểm giao'))}"></canvas>
+      <div class="dd-map-legend"><span>▲ ${ESC(tr('Bạn đang ở đây'))}</span><span>● ${ESC(tr('Điểm đến'))}</span><span>━ ${ESC(tr('Lộ trình'))}</span></div>
+      <p class="dd-map-caption"></p><p>${ESC(tr('Kéo bản đồ để xem · Xe đã dừng'))}</p>
+    </section>
+    <section class="dd-help-panel" role="dialog" aria-modal="true" aria-label="${ESC(tr('Cách lái'))}" hidden>
+      <div class="dd-map-heading"><h3>${ESC(tr('Cách lái'))}</h3><button type="button" class="dd-help-close">${ESC(tr('Tiếp tục lái'))}</button></div>
+      <p>${ESC(tr('W / ↑: tiến · S / ↓: lùi · Space: phanh'))}</p><p>${ESC(tr('A / ←: rẽ trái · D / →: rẽ phải'))}</p>
+      <p>${ESC(tr('Kéo núm tròn tự do: lên để tiến, xuống để lùi, kéo chéo để vừa chạy vừa rẽ. Kéo xa tâm để tăng tốc; thả tay để giảm tốc.'))}</p>
+      <p>${ESC(tr('Rẽ ở giữa ngã tư. Thả ga và giữ phanh trong ô vàng trước cửa có người vẫy tay.'))}</p>
+      <p>${ESC(tr('Xe đã dừng · Esc để tiếp tục'))}</p>
+    </section>
+    <div class="dd-signal" role="status" hidden><i aria-hidden="true">●</i><span><b></b><small></small></span><strong></strong></div>
     <div class="dd-say" role="status" aria-live="polite" hidden></div>
     <div class="dd-pads">
-      <div class="dd-pad-l"><button type="button" class="dd-btn" data-dd="l" aria-label="${ESC(tr('Rẽ trái'))}">${TRI(-1)}</button><button type="button" class="dd-btn" data-dd="r" aria-label="${ESC(tr('Rẽ phải'))}">${TRI(1)}</button></div>
+      <div class="dd-pad-l"><div class="dd-stick-wrap"><div class="dd-stick" tabindex="0" role="group" aria-label="${ESC(tr('Joystick lái xe. Kéo tự do để tiến, lùi và rẽ; hoặc dùng W A S D.'))}"><span class="dd-stick-knob" aria-hidden="true"></span></div><small>${ESC(tr('Kéo để lái'))}</small></div></div>
       <div class="dd-pad-r"><button type="button" class="dd-btn dd-brake" data-dd="d"><span aria-hidden="true">✋</span><small>${ESC(tr('Phanh'))}</small></button><button type="button" class="dd-btn dd-gas" data-dd="u">${ARROW}<small>${ESC(tr('Ga'))}</small></button></div>
     </div>`;
   S.el=el;S.cv=el.querySelector('.dd-cv');S.mini=el.querySelector('.dd-mini');S.goal=el.querySelector('.dd-goal');S.say=el.querySelector('.dd-say');
   S.c=S.cv.getContext('2d',{alpha:false});S.mc=S.mini.getContext('2d');
   if(!S.c)throw new Error('no 2d canvas');
+  S.wake=wake;
+  const fullButton=el.querySelector('.dd-full-toggle');
+  S.full=stageFullscreen(el,fullButton,{reset:()=>{clearInput();S.v=0;},resize:size,text:tr});
+  fullButton.addEventListener('click',()=>S.full.toggle());
+  const stick=el.querySelector('.dd-stick'),knob=stick.querySelector('.dd-stick-knob');
+  S.resetControls=[];
+  S.resetStick=holdPointer(stick,{enabled:()=>!S.overlay,start:()=>{
+    S.joy={steer:0,drive:0};stick.classList.add('on');stick.focus({preventScroll:true});S.wake?.();
+  },move:(e,origin)=>{
+    const radius=stick.getBoundingClientRect().width*.3,dx=e.clientX-origin.x,dy=e.clientY-origin.y;
+    const scale=Math.min(1,radius/(Math.hypot(dx,dy)||1));
+    S.joy=joystickAxes(dx/radius,dy/radius);
+    S.wake?.();
+    knob.style.transform=`translate(${dx*scale}px,${dy*scale}px)`;
+  },end:()=>{S.joy={steer:0,drive:0};stick.classList.remove('on');knob.style.transform='';}});
   // Pedals: held while the finger is on them (each its own pointer, so steer + gas together works).
   for(const b of el.querySelectorAll('[data-dd]')){
-    const k=b.dataset.dd,on=e=>{e.preventDefault();S.btn[k]=true;b.classList.add('on');try{b.setPointerCapture(e.pointerId);}catch{/* old browser */}},
-      off=()=>{S.btn[k]=false;b.classList.remove('on');};
-    b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off);b.addEventListener('lostpointercapture',off);
-    b.addEventListener('contextmenu',e=>e.preventDefault());
+    const k=b.dataset.dd;
+    S.resetControls.push(holdPointer(b,{enabled:()=>!S.overlay,
+      start:()=>{S.btn[k]=true;b.classList.add('on');S.wake?.();},end:()=>{S.btn[k]=false;b.classList.remove('on');}}));
   }
+  for(const name of ['map','help']){
+    el.querySelector('.dd-'+name+'-toggle').addEventListener('click',()=>panel(name));
+    el.querySelector('.dd-'+name+'-close').addEventListener('click',()=>panel(null));
+  }
+  S.mapZoom=1;S.mapCenter={x:120,y:80};
+  for(const button of el.querySelectorAll('[data-map-zoom]'))button.addEventListener('click',()=>{
+    const action=button.dataset.mapZoom;
+    if(action==='all'){S.mapZoom=1;S.mapCenter={x:120,y:80};}
+    else if(action==='me'){S.mapZoom=Math.max(1.5,S.mapZoom);S.mapCenter={x:S.x,y:S.y};}
+    else {if(S.mapZoom===1)S.mapCenter={x:S.x,y:S.y};S.mapZoom=clamp(S.mapZoom*(action==='in'?1.5:1/1.5),1,3);}
+    expandedMap();
+  });
+  const map=el.querySelector('.dd-map-canvas');let panStart;
+  S.resetMap=holdPointer(map,{enabled:()=>S.overlay==='map',start:()=>{panStart={...S.mapCenter};},move:(e,origin)=>{
+    const ratio=map.width/map.getBoundingClientRect().width,k=S.mapView.scale;
+    S.mapCenter={x:panStart.x-(e.clientX-origin.x)*ratio/k,y:panStart.y-(e.clientY-origin.y)*ratio/k};expandedMap();
+  }});
   new ResizeObserver(()=>size()).observe(el);
   try{new IntersectionObserver(es=>{S.visible=es.some(e=>e.isIntersecting);if(S.visible)wake();}).observe(el);}catch{/* always drawn */}
   document.addEventListener('keydown',key,true);document.addEventListener('keyup',key,true);
-  addEventListener('blur',()=>{S.keys={};S.btn={};});
-  document.addEventListener('visibilitychange',()=>{S.keys={};if(!document.hidden)wake();});
+  addEventListener('blur',()=>{clearInput();S.v=0;});
+  document.addEventListener('visibilitychange',()=>{clearInput();S.v=0;if(!document.hidden)wake();});
 }
-const KEYS={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'u',KeyW:'u',ArrowDown:'d',KeyS:'d',Space:'d'};
+function resetStick(){
+  S.resetStick?.();S.joy={steer:0,drive:0};
+}
+function clearInput(){S.keys={};S.btn={};S.steer=0;resetStick();S.resetMap?.();for(const reset of S.resetControls||[])reset();for(const b of S.el?.querySelectorAll('[data-dd]')||[])b.classList.remove('on');}
+const KEYS={ArrowLeft:'l',KeyA:'l',ArrowRight:'r',KeyD:'r',ArrowUp:'u',KeyW:'u',ArrowDown:'back',KeyS:'back',Space:'d'};
 function key(e){
+  // Key ownership ends even if focus moved to a toolbar or a dialog while held.
+  if(e.type==='keyup'&&KEYS[e.code]){S.keys[KEYS[e.code]]=false;return;}
+  if(S.overlay&&live()){
+    if(e.type==='keydown'&&e.code==='Escape'){e.preventDefault();e.stopPropagation();panel(null);}
+    else if(e.type==='keydown'&&e.code==='Tab'){
+      const targets=[...S.el.querySelector('.dd-'+S.overlay+'-panel').querySelectorAll('button:not([disabled])')],at=targets.indexOf(document.activeElement);
+      if(at<0||e.shiftKey&&at===0||!e.shiftKey&&at===targets.length-1){e.preventDefault();targets[e.shiftKey?targets.length-1:0]?.focus();}
+    }else if(KEYS[e.code])e.preventDefault();
+    return;
+  }
+  if(e.type==='keydown'&&e.code==='Escape'&&S.full?.active){e.preventDefault();e.stopPropagation();S.full.exit();return;}
+  if(e.type==='keydown'&&e.code==='Tab'&&S.full?.active){
+    const targets=[...S.el.querySelectorAll('button:not([disabled]),[tabindex="0"]')].filter(el=>el.getClientRects().length&&!el.closest('[hidden],[inert]'));
+    const at=targets.indexOf(document.activeElement);
+    if(targets.length&&(at<0||e.shiftKey&&at===0||!e.shiftKey&&at===targets.length-1)){
+      e.preventDefault();targets[e.shiftKey?targets.length-1:0].focus();
+    }
+  }
   const k=KEYS[e.code];if(!k||!live())return;
   if(e.target?.closest?.('input,textarea,select,[contenteditable="true"]'))return;
   const dlg=e.target?.closest?.('dialog');if(dlg&&!dlg.contains(S.el))return;   // a question on top of the sheet
   if(e.ctrlKey||e.metaKey||e.altKey)return;
-  e.preventDefault();S.keys[k]=e.type==='keydown';
+  if(e.code==='Space'&&e.target?.closest?.('button:not([data-dd])'))return;
+  e.preventDefault();S.keys[k]=e.type==='keydown';S.wake?.();
+}
+function panel(name){
+  const previous=document.activeElement;
+  S.resetMap?.();S.overlay=name;S.v=0;S.steer=0;clearInput();
+  for(const b of S.el.querySelectorAll('[data-dd]'))b.classList.remove('on');
+  for(const kind of ['map','help']){
+    S.el.querySelector('.dd-'+kind+'-panel').hidden=name!==kind;
+    S.el.querySelector('.dd-'+kind+'-toggle').setAttribute('aria-expanded',String(name===kind));
+  }
+  for(const child of S.el.children)if(!child.classList.contains('dd-map-panel')&&!child.classList.contains('dd-help-panel'))child.inert=Boolean(name);
+  if(name){S.panelReturn=previous;if(name==='map')expandedMap();S.el.querySelector('.dd-'+name+'-close').focus();}
+  else {S.last=performance.now();S.perf.skip=30;(S.panelReturn?.isConnected?S.panelReturn:S.cv).focus();wake();}
 }
 const live=()=>!!(S.el?.isConnected&&S.el.closest('dialog[open],#sheet[open]')&&!document.hidden);
 
@@ -240,13 +306,15 @@ export function mount(slot,opts){
 /** The player chose Tự lái again after a fallback: try once more at full size. */
 export function again(){S.fail=false;S.perf={n:0,sum:0,bad:0,skip:40,level:0};if(S.el)size();}
 /** The work sheet moved on (no leg to ride): the frames stop. */
-export function park(){if(S.raf){cancelAnimationFrame(S.raf);S.raf=0;}S.keys={};S.btn={};}
+export function park(){if(S.full?.active)S.full.exit();if(S.overlay)panel(null);if(S.raf){cancelAnimationFrame(S.raf);S.raf=0;}if(S.idle){clearTimeout(S.idle);S.idle=0;}clearInput();S.v=0;}
 
 /** Start of a leg: the scooter at the door of the stop the courier is at, facing the way to go. */
 function place(at,target){
   const W=S.world,from=W.marks[at],to=W.marks[target];
   S.at=at;S.v=0;S.steer=0;S.stopDone=true;S.sending=false;S.still=0;S.inBox='';
+  clearInput();
   if(from){S.x=from.gate.x;S.y=from.gate.y-2.2;}else{S.x=B;S.y=2*B;}
+  S.stopX=S.x;S.stopY=S.y;
   const wp=to?waypoint(S.x,S.y,to.gate):null;
   S.a=wp&&wp.x<S.x-1?Math.PI:0;
   seedTraffic(true);
@@ -255,16 +323,17 @@ function place(at,target){
 function size(){
   if(!S.el?.isConnected||!S.el.clientWidth)return;   // detached while the sheet re-renders: keep the last size
   const w=Math.max(200,S.el.clientWidth);
-  const h=Math.round(clamp(w*(w<560?1.04:.62),300,Math.min(480,Math.max(300,innerHeight*.6))));
-  S.el.style.height=h+'px';
+  const expanded=S.full?.active;
+  const h=expanded?Math.max(180,Math.round(S.el.clientHeight)):Math.round(clamp(w*(w<560?1.04:.62),360,Math.min(480,Math.max(360,innerHeight*.6))));
+  if(!expanded)S.el.style.height=h+'px';
   const lv=S.perf.level||0,dpr=Math.min(devicePixelRatio||1,lv?1:1.5)*(lv>=2?.75:1);
   S.w=w;S.h=h;S.dpr=dpr;
   S.cv.width=Math.round(w*dpr);S.cv.height=Math.round(h*dpr);
   const mw=Math.round(clamp(w*.24,78,120)),mh=Math.round(mw*.74);
   S.mini.style.width=mw+'px';S.mini.style.height=mh+'px';S.mini.width=Math.round(mw*Math.min(2,devicePixelRatio||1));S.mini.height=Math.round(mh*Math.min(2,devicePixelRatio||1));
-  S.barsKey='';
+  S.barsKey='';if(S.overlay==='map')expandedMap();wake();
 }
-function wake(){if(!S.raf&&S.el?.isConnected){S.last=performance.now();S.raf=requestAnimationFrame(frame);}}
+function wake(){if(S.idle){clearTimeout(S.idle);S.idle=0;}if(!S.raf&&S.el?.isConnected){S.last=performance.now();S.raf=requestAnimationFrame(frame);}}
 function say(text,ms=2600){
   if(!S.say)return;S.say.textContent=text;S.say.hidden=false;S.sayT=performance.now()+ms;
 }
@@ -293,7 +362,7 @@ function npcPos(o){
 function spawnPed(R){
   for(let k=0;k<20;k++){
     const axis=R()<.5?'x':'y',line=axis==='x'?Math.floor(R()*(GY+1)):Math.floor(R()*(GX+1)),side=R()<.5?1:-1,max=(axis==='x'?GX:GY)*B;
-    const pos=R()*max,o={axis,line,side,pos,dir:R()<.5?1:-1,sp:.8+R()*.6,col:SHIRT[Math.floor(R()*SHIRT.length)],hat:R()<.35,t:R()*9};
+    const pos=R()*max,o={axis,line,side,pos,dir:R()<.5?1:-1,sp:.8+R()*.6,col:SHIRT[Math.floor(R()*SHIRT.length)],hat:R()<.25,t:R()*9,variant:Math.floor(R()*12)};
     pedPos(o);
     const d=Math.hypot(o.x-S.x,o.y-S.y);
     if(d>12&&d<130)return o;
@@ -346,33 +415,32 @@ function moveTraffic(dt){
 /* ---------------------------------------------------------------- riding */
 function input(){
   const k=S.keys,b=S.btn;
-  return {steer:((k.r||b.r)?1:0)-((k.l||b.l)?1:0),gas:!!(k.u||b.u),brake:!!(k.d||b.d)};
+  const keyboardSteer=(k.r?1:0)-(k.l?1:0),keyboardDrive=((k.u||b.u)?1:0)-(k.back?1:0);
+  return {steer:keyboardSteer||S.joy.steer,drive:keyboardDrive||S.joy.drive,brake:!!(k.d||b.d)};
 }
 function ride(dt){
-  const inp=input(),o=S.opts,rain=o.weather==='rain',vmax=VMAX*(rain?.85:1);
-  signalAhead();
-  if(S.sending){inp.gas=false;inp.brake=true;}
-  if(inp.brake)S.v=Math.max(0,S.v-BRAKE*dt);
-  else if(inp.gas)S.v=Math.min(vmax,S.v+ACC*dt*(1-S.v/(vmax*1.08)));
-  else S.v=Math.max(0,S.v-DRAG*dt);
-  S.steer+=clamp(inp.steer-S.steer,-6*dt,6*dt);
-  const rate=1.75*(.5+.5*Math.min(1,S.v/6));
-  S.a+=S.steer*rate*dt;
+  const inp=input(),o=S.opts,rain=o.weather==='rain',vmax=VMAX*(rain?.85:1)*clamp(Number(o.driveFactor)||1,1,1.6);
+  S.lightHold=false;signalAhead(motionSign(S.v,inp.drive));
+  if(S.sending||S.lightHold){inp.drive=0;inp.brake=true;}
+  S.v=nextSpeed(S.v,inp,dt,vmax);
+  S.steer=nextSteer(S.steer,inp.steer,dt);
+  const speed=Math.abs(S.v),rate=1.75*(.5+.5*Math.min(1,speed/6));
+  S.a+=S.steer*rate*dt*(S.v<0?-1:1);
   // Let go of the bar: it settles on the street's direction (phones: no fiddly straightening).
-  if(!inp.steer&&S.v>.8){const q=Math.round(S.a/(Math.PI/2))*(Math.PI/2),d=q-S.a;if(Math.abs(d)<.55)S.a+=Math.sign(d)*Math.min(Math.abs(d),1.1*dt);}
+  if(!inp.steer&&speed>.8){const q=Math.round(S.a/(Math.PI/2))*(Math.PI/2),d=q-S.a;if(Math.abs(d)<.55)S.a+=Math.sign(d)*Math.min(Math.abs(d),1.1*dt);}
   S.a=((S.a+Math.PI)%(2*Math.PI)+2*Math.PI)%(2*Math.PI)-Math.PI;
   const nx=S.x+Math.cos(S.a)*S.v*dt,ny=S.y+Math.sin(S.a)*S.v*dt;
   if(onRoad(nx,ny)){S.x=nx;S.y=ny;}
   else if(onRoad(nx,S.y)){S.x=nx;S.v*=Math.pow(.6,dt);}
   else if(onRoad(S.x,ny)){S.y=ny;S.v*=Math.pow(.6,dt);}
-  else if(S.v>.5){bump(tr('Ối, lề đường!'));S.v*=.25;}
+  else if(speed>.5){bump(tr('Ối, lề đường!'));S.v*=.25;}
   // Scooters: a soft bump, no harm done.
-  for(const n of S.npcs)if(Math.abs(n.x-S.x)<1.5&&Math.abs(n.y-S.y)<1.5&&S.v>1){bump(tr('Ối! Chạy chậm thôi'));S.v*=.3;n.v=0;n.honk=1.5;}
+  for(const n of S.npcs)if(Math.abs(n.x-S.x)<1.5&&Math.abs(n.y-S.y)<1.5&&Math.abs(S.v)>1){bump(tr('Ối! Chạy chậm thôi'));S.v*=.3;n.v=0;n.honk=1.5;}
   // Only entering the junction crosses its stop line. Waiting in front sends no crossing.
   const i=Math.round(S.x/B),j=Math.round(S.y/B),inBox=Math.abs(S.x-i*B)<HW&&Math.abs(S.y-j*B)<HW?i+','+j:'';
   if(inBox&&inBox!==S.inBox){
     const L=lightAtJunction(i,j),axis=Math.abs(Math.cos(S.a))>Math.abs(Math.sin(S.a))?'x':'y';
-    if(L&&S.v>.1&&o.cross){
+    if(L&&Math.abs(S.v)>.1&&o.cross){
       const key=`${o.target}:${i},${j}:${axis}`;
       if(S.lightKey===key&&S.lightChallenge&&!S.lightCrossed){
         S.lightCrossed=true;S.sending=true;
@@ -383,15 +451,18 @@ function ride(dt){
   S.inBox=inBox;
   stops(dt);
 }
-function signalAhead(){
+function signalAhead(travel=1){
  const o=S.opts;if(!o.signal)return;
- const axis=Math.abs(Math.cos(S.a))>Math.abs(Math.sin(S.a))?'x':'y',dir=(axis==='x'?Math.cos(S.a):Math.sin(S.a))>=0?1:-1;
+ const axis=Math.abs(Math.cos(S.a))>Math.abs(Math.sin(S.a))?'x':'y',dir=((axis==='x'?Math.cos(S.a):Math.sin(S.a))>=0?1:-1)*travel;
  const pos=axis==='x'?S.x:S.y,line=Math.round((axis==='x'?S.y:S.x)/B),next=(dir>0?Math.ceil((pos+.01)/B):Math.floor((pos-.01)/B));
  const i=axis==='x'?next:line,j=axis==='y'?next:line,L=lightAtJunction(i,j),gap=Math.abs(next*B-pos),box=S.el.querySelector('.dd-signal');
  if(!L||gap>23){box.hidden=true;return;}
  const key=`${o.target}:${i},${j}:${axis}`;box.hidden=false;
- const now=signalClock(),color=lightState(L,axis,now),grace=color==='r'&&((now+L.off)%16-(axis==='y'?8:0))<1,label={r:'🔴 Đèn đỏ · giữ phanh trước vạch',y:'🟡 Đèn vàng · giảm tốc',g:'🟢 Đèn xanh · đi qua ngã tư'}[color];
- box.textContent=tr(grace?'🔴 Vừa chuyển đỏ · 1 giây để dừng an toàn':label)+' · '+tr('Vượt đèn đỏ: phạt 12 xu');
+ const state=signalState(signalClock(),L.off,axis);
+ box.dataset.color=state.color;
+ const label=tr(state.grace?'Vừa chuyển đỏ · giữ phanh':{red:'Đèn đỏ · giữ phanh',yellow:'Đèn vàng · giảm tốc',green:'Đèn xanh · đi tiếp'}[state.color]);
+ const detail=`${Math.max(0,Math.round(gap-HW))} m · ${tr('Vượt đỏ: 12 xu')}`;
+ for(const [selector,text] of [['b',label],['small',detail],['strong',state.left+'s']]){const item=box.querySelector(selector);if(item.textContent!==text)item.textContent=text;}
  if((key!==S.lightKey||(!S.lightChallenge&&S.t>=(S.lightRetry||0)))&&!S.lightPending){
   S.lightPending=true;S.lightRetry=S.t+2;S.lightKey=key;S.lightChallenge=null;S.lightCrossed=false;
   Promise.resolve(o.signal(i,j,axis)).then(r=>{S.lightPending=false;if(S.lightKey===key)S.lightChallenge=r?.traffic?.challenge||null;}).catch(()=>{S.lightPending=false;});
@@ -403,14 +474,17 @@ function bump(text){if(S.t-S.lastBump>1.4){S.lastBump=S.t;say(text,1600);}if(!st
 
 /** Standing still in front of a door: arrive (a stop), or a friendly word (an ordinary house, a stop with nothing to do). */
 function stops(dt){
-  if(S.v>1.4){S.stopDone=false;S.still=0;return;}
-  if(S.v>.6||S.stopDone||S.sending)return;
+  // A light joystick touch can leave a bay without ever reaching 1.4 m/s.
+  if(S.stopDone&&Math.hypot(S.x-S.stopX,S.y-S.stopY)>2)S.stopDone=false;
+  if(Math.abs(S.v)>1.4){S.stopDone=false;S.still=0;return;}
+  if(Math.abs(S.v)>.6||S.sending){S.still=0;return;}
+  if(S.stopDone)return;
   S.still+=dt;if(S.still<.35)return;
   const W=S.world,o=S.opts;
   for(const L of Object.values(W.marks)){
     const g=L.gate;
     if(Math.abs(S.x-g.x)<6.5&&S.y>=g.y-HW-1&&S.y<=g.y+HW+1){
-      S.stopDone=true;
+      S.stopDone=true;S.stopX=S.x;S.stopY=S.y;
       if(L.id===S.at)return;
       if(L.id!==o.target&&!o.useful?.[L.id]){say(tr('Ở đây chưa có việc'));return;}
       S.sending=true;say(`${L.emoji} ${tr('Tới rồi!')}`,1800);
@@ -419,7 +493,7 @@ function stops(dt){
     }
   }
   if(S.still<.6)return;
-  S.stopDone=true;
+  S.stopDone=true;S.stopX=S.x;S.stopY=S.y;
   if(!o.target)return;
   // An ordinary house: the courier by its kerb.
   for(const b of W.houses){
@@ -493,11 +567,14 @@ function frame(now){
   if(!S.el?.isConnected||!S.opts){return;}
   const dt=Math.min(.05,Math.max(0,(now-S.last)/1000)),ms=now-S.last;S.last=now;
   if(!live()){park();return;}
+  if(S.overlay){if(S.view==='firstperson')S.raf=requestAnimationFrame(frame);return;}
+  const moving=needsDrivingFrames(S);
   S.t+=dt;
-  ride(dt);moveTraffic(dt);
-  if(S.visible&&S.w){const t0=performance.now();draw(now);S.cost.push(performance.now()-t0);if(S.cost.length>600)S.cost.shift();measure(ms);}
+  ride(dt);if(S.view==='firstperson'||moving)moveTraffic(dt);
+  if(S.visible&&S.w){const t0=performance.now();draw(now);S.cost.push(performance.now()-t0);if(S.cost.length>600)S.cost.shift();if(S.view==='firstperson'||moving)measure(ms);}
   if(S.sayT&&now>S.sayT){S.sayT=0;S.say.hidden=true;}
-  S.raf=requestAnimationFrame(frame);
+  if(S.view==='firstperson'||needsDrivingFrames(S))S.raf=requestAnimationFrame(frame);
+  else S.idle=setTimeout(()=>{S.idle=0;wake();},1000);
 }
 /** Frame times; a phone that keeps missing them draws fewer pixels, then switches to "Đi nhanh". */
 function measure(ms){
@@ -518,16 +595,21 @@ function measure(ms){
 function draw(now){
   const c=S.c,w=S.w,h=S.h,pal=palette(),o=S.opts,W=S.world;
   c.setTransform(S.dpr,0,0,S.dpr,0,0);
+  if(S.view==='isometric'){
+    if(!S.iso)S.iso=createIsometricRenderer({onAsset:()=>{if(live()&&!S.overlay)wake();}});
+    S.iso.draw(c,S,W,o,signalClock());goal(o,W);mini(o,W);return;
+  }
   // Camera: the rider's eye, a slight lean into the turn and a bob with speed.
-  const calm=still(),lean=calm?0:-S.steer*.035*Math.min(1,S.v/7);
+  const calm=still(),lean=calm?0:-S.steer*.035*Math.min(1,Math.abs(S.v)/7);
   S.roll+=(lean-S.roll)*.15;
-  const bob=calm?0:Math.sin(S.t*9)*.6*Math.min(1,S.v/VMAX),sh=S.shake>0?(S.shake-=1/60,(Math.random()-.5)*6):0;
-  cam.x=S.x;cam.y=S.y;cam.ca=Math.cos(S.a);cam.sa=Math.sin(S.a);cam.F=w*.78;cam.cx=w/2+sh;cam.hz=h*.42+bob;
+  const bob=calm?0:Math.sin(S.t*9)*.6*Math.min(1,Math.abs(S.v)/VMAX),sh=S.shake>0?(S.shake-=1/60,(Math.random()-.5)*6):0;
+  cam.x=S.x;cam.y=S.y;cam.ca=Math.cos(S.a);cam.sa=Math.sin(S.a);cam.F=Math.min(w*.78,h*1.25);cam.cx=w/2+sh;cam.hz=h*.42+bob;
   c.save();
   if(S.roll){c.translate(w/2,h*.6);c.rotate(S.roll);c.translate(-w/2,-h*.6);}
   // Sky, far town, ground.
   const g=c.createLinearGradient(0,-40,0,cam.hz);g.addColorStop(0,pal.top);g.addColorStop(1,pal.bot);
   c.fillStyle=g;c.fillRect(-40,-40,w+80,cam.hz+41);
+  skyDetails(c,w,pal);
   skyline(c,w,pal);
   c.fillStyle=pal.tint('#a9a78a');c.fillRect(-40,cam.hz,w+80,h-cam.hz+60);
   ground(c,pal,o,W);
@@ -547,6 +629,24 @@ function draw(now){
 }
 
 const SKYRING=(()=>{const R=rng(7);return Array.from({length:36},()=>[.6+R()*.5,10+R()*26]);})();
+function skyDetails(c,w,pal){
+  c.save();
+  const daylight=1-pal.lamps;
+  if(!pal.rain&&daylight>.15){
+    const sx=w*(.72-Math.sin(S.a)*.3),sy=cam.hz*.42,r=Math.max(25,w*.055);
+    const glow=c.createRadialGradient(sx,sy,1,sx,sy,r*2.7);
+    glow.addColorStop(0,`rgba(255,228,179,${.32*daylight})`);glow.addColorStop(1,'rgba(255,228,179,0)');
+    c.fillStyle=glow;c.fillRect(sx-r*3,sy-r*3,r*6,r*6);
+  }
+  // Fixed formations rotate with the view; they do not jitter between frames.
+  const span=w*2,offset=S.a/(Math.PI*2)*span;
+  for(let i=0;i<7;i++){
+    const x=((i*span/7-offset)%span+span)%span-w*.35,y=cam.hz*(.2+(i%3)*.16),s=w*(.035+(i%2)*.015);
+    c.fillStyle=`rgba(239,237,226,${(pal.rain?.09:.18)*daylight})`;
+    c.beginPath();c.ellipse(x,y,s*2.4,s*.27,0,0,Math.PI*2);c.ellipse(x-s*.6,y-s*.12,s,s*.37,0,0,Math.PI*2);c.ellipse(x+s*.45,y-s*.21,s*.8,s*.46,0,0,Math.PI*2);c.fill();
+  }
+  c.restore();
+}
 function skyline(c,w,pal){
   // A ring of far buildings around the town, turning with the heading.
   const n=SKYRING.length,span=w*3.2,off=(((S.a/(2*Math.PI))*span)%span+span)%span;
@@ -562,12 +662,42 @@ function skyline(c,w,pal){
 }
 
 function ground(c,pal,o,W){
-  const side=pal.tint('#cfc4ae'),road=pal.tint(pal.rain?'#4c5057':'#5e6168'),line=pal.tint('#efe9d8'),yel=pal.tint('#e7bf43');
+  const side=pal.tint('#c6bfae'),road=pal.tint(pal.rain?'#485258':'#64696a'),line=pal.tint('#e2dfd2'),yel=pal.tint('#d0b66a');
+  for(const g of W.gardens){
+    if(Math.abs((g.x0+g.x1)/2-S.x)+Math.abs((g.y0+g.y1)/2-S.y)>100)continue;
+    gquad(c,g.x0,g.y0,g.x1,g.y1,pal.tint('#9fba8a'));
+    gquad(c,g.x0+2,g.y0,g.x0+3,g.y1,pal.tint('#d6c5a4'));
+  }
   // Pavements, then asphalt over them (junctions stay asphalt).
   for(let i=0;i<=GX;i++)gquad(c,i*B-FRONT,-FRONT,i*B+FRONT,GY*B+FRONT,side);
   for(let j=0;j<=GY;j++)gquad(c,-FRONT,j*B-FRONT,GX*B+FRONT,j*B+FRONT,side);
   for(let i=0;i<=GX;i++)gquad(c,i*B-HW,-HW,i*B+HW,GY*B+HW,road);
   for(let j=0;j<=GY;j++)gquad(c,-HW,j*B-HW,GX*B+HW,j*B+HW,road);
+  // Pale kerbs outline each block without adding geometry to the streets.
+  for(let x=0;x<GX;x++)for(let y=0;y<GY;y++){
+    const x0=x*B+HW,y0=y*B+HW,x1=(x+1)*B-HW,y1=(y+1)*B-HW;
+    if(Math.abs((x0+x1)/2-S.x)+Math.abs((y0+y1)/2-S.y)>100)continue;
+    const curb=pal.tint('#ded5c2');
+    gquad(c,x0,y0,x1,y0+.2,curb);gquad(c,x0,y1-.2,x1,y1,curb);
+    gquad(c,x0,y0,x0+.2,y1,curb);gquad(c,x1-.2,y0,x1,y1,curb);
+    // Recessed gutters and paving joints give the street a human scale.
+    if(Math.abs((x0+x1)/2-S.x)+Math.abs((y0+y1)/2-S.y)<50){
+      const seam=pal.tint('#aaa99c'),gutter=pal.tint('#535d5c');
+      gquad(c,x0-.2,y0,x0,y1,gutter);gquad(c,x1,y0,x1+.2,y1,gutter);
+      gquad(c,x0,y0-.2,x1,y0,gutter);gquad(c,x0,y1,x1,y1+.2,gutter);
+      for(let n=1;n<12;n++){
+        const u=x0+n*2.5,v=y0+n*2.5;
+        gquad(c,u,y0+.25,u+.035,y0+2.8,seam);gquad(c,u,y1-2.8,u+.035,y1-.25,seam);
+        gquad(c,x0+.25,v,x0+2.8,v+.035,seam);gquad(c,x1-2.8,v,x1-.25,v+.035,seam);
+      }
+      // Shallow building shade sits on pavement rather than darkening the whole road.
+      gquad(c,x0+.4,y0+1.75,x1-.4,y0+2.95,'rgba(38,48,44,.12)');
+      gquad(c,x0+1.7,y0+.4,x0+2.95,y1-.4,'rgba(38,48,44,.10)');
+      const dx=x0+4,dy=y1-.35;
+      gquad(c,dx,dy,dx+1.3,dy+.28,gutter);
+      for(let n=0;n<5;n++)gquad(c,dx+.12+n*.23,dy,dx+.18+n*.23,dy+.28,seam);
+    }
+  }
   // Hazards of the day on the street by their stop (the server applies them; here they are only seen).
   for(const s of o.signs||[]){
     const L=W.marks[s.node];if(!L)continue;const g=L.gate;
@@ -602,20 +732,22 @@ function ground(c,pal,o,W){
   }
   // The stop to ride to: a glowing bay on the street in front of its door.
   const T=W.marks[o.target];
-  if(T&&T.id!==S.at){const g=T.gate,a=.35+.25*Math.sin(S.t*4);gquad(c,g.x-5.5,g.y-HW+.3,g.x+5.5,g.y-.4,`rgba(255,206,64,${a})`);}
+  if(T&&T.id!==S.at){const g=T.gate,a=still()?.5:.35+.25*Math.sin(S.t*4);gquad(c,g.x-5.5,g.y-HW+.3,g.x+5.5,g.y-.4,`rgba(255,206,64,${a})`);}
 }
 
 /** Everything standing up within sight, with its depth. */
 function collect(W,o){
   const out=[],lim=FAR,ca=cam.ca,sa=cam.sa;
   const zOf=(x,y)=>(x-cam.x)*ca+(y-cam.y)*sa,xOf=(x,y)=>-(x-cam.x)*sa+(y-cam.y)*ca;
-  const seen=(x,y,r)=>{const z=zOf(x,y);if(z<-r||z>lim+r)return null;const xr=xOf(x,y);if(Math.abs(xr)>Math.max(0,z)*.75+r+6)return null;return z;};
+  const viewHalf=S.w/(2*cam.F)+.12;
+  const seen=(x,y,r)=>{const z=zOf(x,y);if(z<-r||z>lim+r)return null;const xr=xOf(x,y);if(Math.abs(xr)>Math.max(0,z)*viewHalf+r+6)return null;return z;};
   const cx0=Math.floor((S.x-lim)/B),cx1=Math.floor((S.x+lim)/B),cy0=Math.floor((S.y-lim)/B),cy1=Math.floor((S.y+lim)/B);
   for(let cx=Math.max(-1,cx0);cx<=Math.min(GX,cx1);cx++)for(let cy=Math.max(-1,cy0);cy<=Math.min(GY,cy1);cy++){
     const list=W.cells.get(cx+','+cy);if(!list)continue;
     if(seen(cx*B+B/2,cy*B+B/2,B*.8)===null)continue;
     for(const b of list){const z=seen((b.x0+b.x1)/2,(b.y0+b.y1)/2,8);if(z!==null)out.push({z,k:'box',o:b});}
   }
+  for(const p of W.props){const z=seen((p.x0+p.x1)/2,(p.y0+p.y1)/2,2);if(z!==null&&z<65)out.push({z,k:'box',o:p});}
   for(const p of W.lamps){const z=seen(p.x,p.y,1);if(z!==null&&z<130)out.push({z,k:'lamp',o:p});}
   for(const p of W.trees){const z=seen(p.x,p.y,2);if(z!==null&&z<150)out.push({z,k:'tree',o:p});}
   for(const p of W.signs){const z=seen(p.x,p.y,1);if(z!==null&&z<110)out.push({z,k:'sign',o:p});}
@@ -651,50 +783,32 @@ function drawBox(c,b,z,pal){
   const {x0,x1,y0,y1,zb}=b,zt=zb+b.h,col=b.col,dark=b.canopy?'#a8321f':shade(col,.8);
   const P=(x,y,hh)=>toCam(x,y,hh);
   const tint=pal.tint;
+  const wall=color=>{
+    if(z>65)return tint(color);
+    const base=spot((x0+x1)/2,(y0+y1)/2,zb),top=spot((x0+x1)/2,(y0+y1)/2,zt);
+    if(!base||!top)return tint(color);
+    const wash=c.createLinearGradient(0,top.y,0,base.y);
+    wash.addColorStop(0,tint(shade(color,1.04)));wash.addColorStop(.7,tint(color));wash.addColorStop(1,tint(shade(color,.87)));
+    return wash;
+  };
+  const lightWall=wall(col),sideWall=wall(dark);
   // Walls facing the rider (back faces culled), a top when below the eye, the underside of a canopy above it.
-  if(cam.y>y1)poly(c,[P(x0,y1,zb),P(x1,y1,zb),P(x1,y1,zt),P(x0,y1,zt)],tint(col));
-  if(cam.y<y0)poly(c,[P(x1,y0,zb),P(x0,y0,zb),P(x0,y0,zt),P(x1,y0,zt)],tint(col));
-  if(cam.x>x1)poly(c,[P(x1,y1,zb),P(x1,y0,zb),P(x1,y0,zt),P(x1,y1,zt)],tint(dark));
-  if(cam.x<x0)poly(c,[P(x0,y0,zb),P(x0,y1,zb),P(x0,y1,zt),P(x0,y0,zt)],tint(dark));
+  if(cam.y>y1)poly(c,[P(x0,y1,zb),P(x1,y1,zb),P(x1,y1,zt),P(x0,y1,zt)],lightWall);
+  if(cam.y<y0)poly(c,[P(x1,y0,zb),P(x0,y0,zb),P(x0,y0,zt),P(x1,y0,zt)],lightWall);
+  if(cam.x>x1)poly(c,[P(x1,y1,zb),P(x1,y0,zb),P(x1,y0,zt),P(x1,y1,zt)],sideWall);
+  if(cam.x<x0)poly(c,[P(x0,y0,zb),P(x0,y1,zb),P(x0,y1,zt),P(x0,y0,zt)],sideWall);
   if(zt<EYE)poly(c,[P(x0,y0,zt),P(x1,y0,zt),P(x1,y1,zt),P(x0,y1,zt)],tint(shade(col,1.08)));
   if(zb>EYE)poly(c,[P(x0,y0,zb),P(x1,y0,zb),P(x1,y1,zb),P(x0,y1,zb)],tint(shade(col,.62)));
   if(!faceSeen(b)||z>95)return;
+  if(b.k==='garden')return;
   if(b.k==='house')houseFront(c,b,z,pal);else markFront(c,b,z,pal);
 }
 const shadeMemo=new Map();
 function shade(h,f){const k=h+f;let v=shadeMemo.get(k);if(!v){const r=hex(h).map(x=>clamp(Math.round(x*f),0,255));v='#'+r.map(x=>x.toString(16).padStart(2,'0')).join('');shadeMemo.set(k,v);}return v;}
 function windowCol(pal){return pal.lamps>.45?`rgb(255,${Math.round(205+20*pal.lamps)},${Math.round(120+30*pal.lamps)})`:pal.tint('#7fa4bd');}
-function houseFront(c,b,z,pal){
-  const floors=Math.max(1,Math.floor(b.h/3)),tint=pal.tint,wc=windowCol(pal);
-  // Ground floor: a roll-up shutter or a gate; a little awning; windows above.
-  if(b.shop)fquad(c,b,.12,.88,0,2.5,tint('#8d929a'));else{fquad(c,b,.18,.62,0,2.2,tint('#6f5a48'));}
-  if(b.awn)fquad(c,b,.05,.95,2.55,2.95,tint(b.awn));
-  if(z<70)for(let f=1;f<floors;f++){
-    const v0=f*3+.7;
-    if(b.win===1)fquad(c,b,.3,.7,v0,v0+1.4,wc);else{fquad(c,b,.14,.44,v0,v0+1.4,wc);fquad(c,b,.56,.86,v0,v0+1.4,wc);}
-  }
-  // The number plate by the gate: blue, white number, readable near by.
-  const s=b.no?fquad(c,b,.68,.9,1.7,2.3,'#2c63b8'):null;
-  if(s&&z<38){
-    const cx=(s[0][0]+s[1][0]+s[2][0]+s[3][0])/4,cy=(s[0][1]+s[1][1]+s[2][1]+s[3][1])/4,fh=Math.abs(s[3][1]-s[0][1])*.8;
-    if(fh>=6){c.fillStyle='#fff';c.font=`700 ${fh|0}px system-ui,sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillText(String(b.no),cx,cy+.5);}
-  }
-}
-function markFront(c,b,z,pal){
-  const L=b.L,tint=pal.tint,wc=windowCol(pal);
-  if(b.pump||b.canopy)return;
-  if(b.tower){const fl=Math.floor(b.h/3);for(let f=1;f<fl&&z<80;f++){const v=f*3+.6;for(let k=0;k<4;k++)fquad(c,b,.06+k*.235,.06+k*.235+.17,v,v+1.5,wc);}fquad(c,b,.38,.62,0,2.6,tint('#3d4a55'));}
-  if(b.shopfront||b.open){fquad(c,b,.08,.92,0,2.7,tint(b.open?'#2f3338':'#6b4d3a'));if(z<60&&b.shopfront)fquad(c,b,.14,.86,.9,2.4,wc);}
-  if(b.stalls){for(let k=0;k<4;k++)fquad(c,b,.05+k*.24,.05+k*.24+.2,.8,1.4,tint(['#e6a23c','#7cb342','#e57373','#ffd54f'][k]));}
-  if(b.awn)for(let k=0;k<6;k++)fquad(c,b,k/6,(k+1)/6,2.75,3.25,tint(k%2?'#f5efe3':b.awn));
-  if(b.win&&!b.tower){const fl=Math.max(1,Math.floor(b.h/3));for(let f=b.gate?0:1;f<fl&&z<80;f++){const v=f*3+.7;for(let k=0;k<b.win;k++){const u=(k+.5)/b.win;fquad(c,b,u-.12,u+.12,v,v+1.4,wc);}}}
-  if(b.gate){fquad(c,b,.35,.65,0,2.1,tint('#5b4636'));}
-  if(b.arch&&z<70){const s=fquad(c,b,.1,.9,.1,.9,'#7a2c22');if(s)label(c,s,L.name,'#ffe7a8');return;}
-  if(!b.sign)return;
-  // The sign over the door: emoji and the stop's name.
-  const top=b.h>9?Math.min(b.h-.4,6.8):b.h-.3,s=fquad(c,b,.06,.94,top-1.6,top,tint('#fbf6ea'));
-  if(s)label(c,s,`${L.emoji} ${L.name}`,'#3b2a1e');
-}
+const facadeHelpers={fquad,label,shade,windowCol};
+function houseFront(c,b,z,pal){drawHouseFacade(c,b,z,pal,facadeHelpers);}
+function markFront(c,b,z,pal){drawLandmarkFacade(c,b,z,pal,facadeHelpers);}
 function label(c,s,text,col){
   const w=Math.hypot(s[1][0]-s[0][0],s[1][1]-s[0][1]),hh=Math.abs(s[3][1]-s[0][1]);if(w<26||hh<6)return;
   const cx=(s[0][0]+s[1][0]+s[2][0]+s[3][0])/4,cy=(s[0][1]+s[1][1]+s[2][1]+s[3][1])/4;
@@ -721,11 +835,26 @@ function drawLamp(c,p,z,pal){
     c.globalCompositeOperation='source-over';
   }
 }
+const treePaints=new Map();let treePaintPalette='';
 function drawTree(c,p,pal){
-  const s=spot(p.x,p.y);if(!s)return;const k=s.k,r=p.r*k;
-  c.fillStyle=pal.tint('#6b4f36');c.fillRect(s.x-.13*k,s.y-2.4*k,.26*k,2.4*k);
-  c.fillStyle=pal.tint('#4f8a4a');c.beginPath();c.arc(s.x,s.y-3*k,r,0,Math.PI*2);c.fill();
-  c.fillStyle=pal.tint('#64a35a');c.beginPath();c.arc(s.x-r*.3,s.y-3.3*k,r*.62,0,Math.PI*2);c.fill();
+  const s=spot(p.x,p.y);if(!s)return;
+  const variant=Math.abs(Math.round(p.x*13+p.y*7))%3;
+  // The foliage is static: paint once per palette instead of tracing hundreds of
+  // curves for every distant tree on every frame. Close trees retain vector detail.
+  if(s.k>120){drawStreetTree(c,{x:s.x,y:s.y,k:s.k,r:p.r,variant,tint:pal.tint});return;}
+  if(treePaintPalette!==S.palKey){treePaintPalette=S.palKey;treePaints.clear();}
+  const radius=Math.round(p.r*4)/4,key=variant+':'+radius;
+  let paint=treePaints.get(key);
+  if(!paint){
+    const k=80,canvas=document.createElement('canvas');
+    canvas.width=Math.ceil((radius*2.5+.5)*k);canvas.height=Math.ceil((3.3+radius*1.3+.4)*k);
+    const x=canvas.width/2,y=canvas.height-24,ctx=canvas.getContext('2d');
+    if(!ctx){drawStreetTree(c,{x:s.x,y:s.y,k:s.k,r:p.r,variant,tint:pal.tint});return;}
+    drawStreetTree(ctx,{x,y,k,r:radius,variant,tint:pal.tint});
+    paint={canvas,x,y,k};treePaints.set(key,paint);
+  }
+  const scale=s.k/paint.k;
+  c.drawImage(paint.canvas,s.x-paint.x*scale,s.y-paint.y*scale,paint.canvas.width*scale,paint.canvas.height*scale);
 }
 function drawSign(c,p,z,pal){
   const s=spot(p.x,p.y);if(!s)return;const k=s.k;
@@ -751,32 +880,17 @@ function drawLight(c,L,which,pal){
   const lamp=(n,on,col)=>{c.fillStyle=on?col:'#3a3f46';c.beginPath();c.arc(s.x,s.y-(4.65-n*.44)*k,r,0,Math.PI*2);c.fill();};
   lamp(0,st==='r','#ff4a3d');lamp(1,st==='y','#ffc23d');lamp(2,st==='g','#38d26b');
 }
-function rider(c,x,y,k,col,hel,front,tail,pal){
-  // A scooter and its rider, seen from behind or from the front.
-  c.fillStyle='#24272c';c.fillRect(x-.16*k,y-.62*k,.32*k,.62*k);
-  c.fillStyle=pal.tint(col);c.fillRect(x-.36*k,y-1.0*k,.72*k,.5*k);
-  c.fillStyle=pal.tint(shade(col,.75));c.fillRect(x-.3*k,y-1.55*k,.6*k,.62*k);
-  c.fillStyle=pal.tint(hel);c.beginPath();c.arc(x,y-1.75*k,.22*k,0,Math.PI*2);c.fill();
-  if(front){c.fillStyle='#fff6c8';c.fillRect(x-.1*k,y-.95*k,.2*k,.12*k);}
-  else if(tail){c.fillStyle='#ff3b30';c.fillRect(x-.1*k,y-.78*k,.2*k,.1*k);}
-}
 function drawNpc(c,o,pal){
   const s=spot(o.x,o.y);if(!s)return;
   const fx=o.axis==='x'?o.dir:0,fy=o.axis==='y'?o.dir:0,dot=fx*cam.ca+fy*cam.sa;
-  rider(c,s.x,s.y,s.k,o.col,o.hel,dot<-.3,dot>.3,pal);
+  drawStreetScooter(c,{x:s.x,y:s.y,k:s.k,col:o.col,helmet:o.hel,front:dot<-.3,tail:dot>.3,tint:pal.tint,variant:o.line});
   if(o.honk>0&&s.z<45){c.fillStyle='#fff';c.font=`700 ${Math.max(9,.5*s.k)|0}px system-ui,sans-serif`;c.textAlign='center';c.fillText(tr('Bíp!'),s.x,s.y-2.2*s.k);}
 }
-function person(c,x,y,k,col,hat,t,wave){
-  const leg=Math.sin(t*6)*.12*k;
-  c.strokeStyle='#3a3530';c.lineWidth=Math.max(1,.13*k);c.beginPath();c.moveTo(x-.1*k,y-.8*k);c.lineTo(x-.1*k+leg,y);c.moveTo(x+.1*k,y-.8*k);c.lineTo(x+.1*k-leg,y);c.stroke();
-  c.fillStyle=col;c.fillRect(x-.24*k,y-1.42*k,.48*k,.66*k);
-  c.fillStyle='#e8c09a';c.beginPath();c.arc(x,y-1.6*k,.17*k,0,Math.PI*2);c.fill();
-  if(hat){c.fillStyle='#e9d39a';c.beginPath();c.moveTo(x-.42*k,y-1.62*k);c.lineTo(x+.42*k,y-1.62*k);c.lineTo(x,y-1.98*k);c.closePath();c.fill();}
-  else{c.fillStyle='#2e2622';c.beginPath();c.arc(x,y-1.66*k,.17*k,Math.PI,0);c.fill();}
-  if(wave){const a=-1.2+Math.sin(t*7)*.5;c.strokeStyle=col;c.lineWidth=Math.max(1.5,.12*k);c.beginPath();c.moveTo(x+.22*k,y-1.32*k);c.lineTo(x+.22*k+Math.cos(a)*.6*k,y-1.32*k+Math.sin(a)*.6*k);c.stroke();
-    c.fillStyle='#e8c09a';c.beginPath();c.arc(x+.22*k+Math.cos(a)*.66*k,y-1.32*k+Math.sin(a)*.66*k,.09*k,0,Math.PI*2);c.fill();}
+function drawPed(c,o,pal){
+  const s=spot(o.x,o.y);if(!s)return;
+  const fx=o.axis==='x'?o.dir:0,fy=o.axis==='y'?o.dir:0;
+  drawStreetPerson(c,{x:s.x,y:s.y,k:s.k,col:o.col,hat:o.hat,t:o.t,wave:false,variant:o.variant||0,facing:-(fx*cam.ca+fy*cam.sa),calm:still(),tint:pal.tint});
 }
-function drawPed(c,o,pal){const s=spot(o.x,o.y);if(!s)return;person(c,s.x,s.y,s.k,pal.tint(o.col),o.hat,o.t,false);}
 function drawWorks(c,p,pal){
   const s=spot(p.x,p.y);if(!s)return;const k=s.k;
   for(let n=-1;n<=1;n++){const x=s.x+n*1.1*k;c.fillStyle='#f28c28';c.fillRect(x-.45*k,s.y-1*k,.9*k,.22*k);c.fillStyle='#fff';c.fillRect(x-.45*k,s.y-.72*k,.9*k,.16*k);c.fillStyle=pal.tint('#555');c.fillRect(x-.4*k,s.y-.5*k,.08*k,.5*k);c.fillRect(x+.32*k,s.y-.5*k,.08*k,.5*k);}
@@ -784,7 +898,7 @@ function drawWorks(c,p,pal){
 }
 function drawCustomer(c,p,z,pal,o){
   const s=spot(p.x,p.y);if(!s)return;const k=s.k;
-  person(c,s.x,s.y,k,'#e0823a',false,S.t,true);
+  drawStreetPerson(c,{x:s.x,y:s.y,k,col:'#bd7c4c',hat:false,t:S.t,wave:true,variant:2,facing:1,calm:still(),tint:pal.tint});
   // A bubble with what is waiting there, and a ▼ that can be seen from the far end of the street.
   const emo=o.useful?.[o.target]?.emoji||'👋';
   if(z<70){const fs=Math.max(12,.75*k);c.font=`${fs|0}px system-ui,sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillStyle='rgba(255,255,255,.92)';c.beginPath();c.arc(s.x,s.y-2.45*k,fs*.75,0,Math.PI*2);c.fill();c.fillStyle='#000';c.fillText(emo,s.x,s.y-2.45*k+1);}
@@ -848,7 +962,7 @@ function bars(c,w,h,pal,o){
   c.save();c.translate(w/2,h+bm.H*.6);c.rotate(turn);c.translate(-w/2,-(h+bm.H*.6));
   c.drawImage(bm.cv,0,top,w,bm.H);
   // Needle and the fuel bar under it.
-  const cx=bm.cx,cy=top+bm.cy,r=bm.r,f=clamp(S.v/VMAX,0,1),a=Math.PI*.8+f*Math.PI*1.4;
+  const cx=bm.cx,cy=top+bm.cy,r=bm.r,f=clamp(Math.abs(S.v)/VMAX,0,1),a=Math.PI*.8+f*Math.PI*1.4;
   c.strokeStyle='#d9442b';c.lineWidth=2.2;c.beginPath();c.moveTo(cx,cy);c.lineTo(cx+Math.cos(a)*r*.8,cy+Math.sin(a)*r*.8);c.stroke();
   c.fillStyle='#33363d';c.beginPath();c.arc(cx,cy,2.6,0,Math.PI*2);c.fill();
   const fuel=clamp(Number(o.fuel)||0,0,100)/100,fw=r*1.3;
@@ -859,32 +973,84 @@ function bars(c,w,h,pal,o){
 }
 
 /* ---------------------------------------------------------------- HUD: the way to go, a tiny map */
+function routeNow(o,W){
+  const T=W.marks[o.target];return T?roadRoute(S.x,S.y,T.gate):[];
+}
 function goal(o,W){
   const T=W.marks[o.target],b=S.goal.querySelector('b'),s=S.goal.querySelector('small'),ar=S.goal.querySelector('.dd-arrow');
   if(!T||T.id===S.at){S.goal.hidden=true;return;}
   S.goal.hidden=false;
-  const g=T.gate,d=Math.abs(S.x-g.x)+Math.abs(S.y-(g.y-2)),wp=waypoint(S.x,S.y,g);
+  const route=routeNow(o,W),nav=navigation(route,S.a,T.gate),detail=S.goal.querySelector('.dd-nav-detail'),parking=S.goal.querySelector('.dd-parking');
   const name=`${T.emoji} ${tr(T.name)}`;if(b.textContent!==name)b.textContent=name;
-  const angle=Math.atan2(wp.y-S.y,wp.x-S.x)-S.a,turn=Math.atan2(Math.sin(angle),Math.cos(angle));
-  const cue=Math.abs(turn)<.35?tr('Đi thẳng'):turn>0?tr('Rẽ phải ở giữa ngã tư'):tr('Rẽ trái ở giữa ngã tư');
-  const blocks=d<16?tr('Thả ga, giữ phanh trước cửa có người vẫy tay'):`${cue} · ${Math.max(1,Math.round(d/B*2)/2).toLocaleString('vi-VN')} ${tr('ô')}`;
-  if(s.textContent!==blocks)s.textContent=blocks;
-  const ang=Math.atan2(wp.y-S.y,wp.x-S.x)-S.a;
-  ar.style.transform=`rotate(${ang}rad)`;   // ⬆ = straight on
+  let cue=tr({left:'Rẽ trái',right:'Rẽ phải',uturn:'Quay đầu ở ngã tư',straight:'Đi thẳng',arrive:'Giữ phanh để dừng xe'}[nav.cue]);
+  if(nav.cue!=='arrive'&&nav.cue!=='straight')cue+=` · ${Math.round(nav.turnDistance)} m`;
+  const arriving=nav.cue==='arrive';
+  if(arriving&&S.sending&&S.stopDone)cue=tr('Tới rồi!');
+  if(s.textContent!==cue)s.textContent=cue;
+  const info=S.v<-.1?tr('Đang lùi · giữ phanh để dừng'):arriving?tr('Dừng trong ô vàng trước người vẫy tay'):`${Math.round(nav.distance)} m · ${tr('theo đường phố')}`;
+  if(detail.textContent!==info)detail.textContent=info;
+  parking.hidden=!arriving;parking.value=S.sending?1:Math.abs(S.v)<=.6&&!S.stopDone?clamp(S.still/.35,0,1):0;
+  ar.style.transform=`rotate(${{left:-90,right:90,uturn:180,straight:0,arrive:0}[nav.cue]}deg)`;
 }
-function mini(o,W){
-  const c=S.mc,cw=S.mini.width,ch=S.mini.height,k=Math.min(cw/(GX+1.2),ch/(GY+1.2)),ox=(cw-GX*k)/2,oy=(ch-GY*k)/2;
-  c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,cw,ch);
-  c.fillStyle='rgba(24,28,36,.82)';c.fillRect(0,0,cw,ch);
-  c.strokeStyle='rgba(230,226,214,.55)';c.lineWidth=Math.max(1.5,k*.16);c.beginPath();
-  for(let i=0;i<=GX;i++){c.moveTo(ox+i*k,oy);c.lineTo(ox+i*k,oy+GY*k);}
-  for(let j=0;j<=GY;j++){c.moveTo(ox,oy+j*k);c.lineTo(ox+GX*k,oy+j*k);}
-  c.stroke();
-  for(const L of Object.values(W.marks)){
-    const x=ox+L.gate.x/B*k,y=oy+(L.gate.y/B-.18)*k,tgt=L.id===o.target,use=o.useful?.[L.id];
-    if(!tgt&&!use)continue;
-    c.fillStyle=tgt?'#ffcf3f':'#8fc3ff';c.beginPath();c.arc(x,y,tgt?k*(.2+.06*Math.sin(S.t*5)):k*.12,0,Math.PI*2);c.fill();
+const DISTRICTS=[['Khu dân cư','#d1dfcf'],['Khu dịch vụ','#ead3ac'],['Khu nhà vườn','#bfd9cd']];
+function district(x){return x<2?0:x<4?1:2;}
+function drawMap(cv,o,W,large=false){
+  const c=cv.getContext('2d'),cw=cv.width,ch=cv.height,pad=large?cw*.075:cw*.10;
+  const view=mapTransform(cw,ch,large?S.mapZoom:1,large?S.mapCenter:undefined),k=view.scale,ox=view.ox,oy=view.oy;
+  if(large){S.mapView=view;S.mapCenter=view.center;}
+  const pixels=large?Math.min(2,devicePixelRatio||1):1;
+  const X=x=>ox+x*k,Y=y=>oy+y*k;
+  c.setTransform(1,0,0,1,0,0);c.clearRect(0,0,cw,ch);c.fillStyle='#f6efde';c.fillRect(0,0,cw,ch);
+  // Every coloured parcel is inside a road block; footprints use the actual world geometry.
+  for(let x=0;x<GX;x++)for(let y=0;y<GY;y++){
+    c.fillStyle=DISTRICTS[district(x,y)][1];c.fillRect(X(x*B+HW),Y(y*B+HW),(B-HW*2)*k,(B-HW*2)*k);
   }
-  const x=ox+S.x/B*k,y=oy+S.y/B*k;
-  c.save();c.translate(x,y);c.rotate(S.a);c.fillStyle='#ff6b4a';c.beginPath();c.moveTo(k*.3,0);c.lineTo(-k*.18,k*.18);c.lineTo(-k*.18,-k*.18);c.closePath();c.fill();c.restore();
+  for(const list of W.cells.values())for(const b of list){
+    if(b.x0<0||b.x1>GX*B||b.y0<0||b.y1>GY*B)continue;
+    c.fillStyle=b.L?'#bd9b77':'#a9b5a3';c.fillRect(X(b.x0),Y(b.y0),(b.x1-b.x0)*k,(b.y1-b.y0)*k);
+  }
+  for(const g of W.gardens){c.fillStyle='#759b66';c.fillRect(X(g.x0),Y(g.y0),(g.x1-g.x0)*k,(g.y1-g.y0)*k);}
+  c.strokeStyle='#fffaf0';c.lineWidth=HW*2*k;c.beginPath();
+  for(let i=0;i<=GX;i++){c.moveTo(X(i*B),Y(-6));c.lineTo(X(i*B),Y(GY*B+6));}
+  for(let j=0;j<=GY;j++){c.moveTo(X(-6),Y(j*B));c.lineTo(X(GX*B+6),Y(j*B));}c.stroke();
+  if(large){
+    c.strokeStyle='#dfd4bd';c.lineWidth=Math.max(1,k*.35);c.setLineDash([3*k,4*k]);c.stroke();c.setLineDash([]);
+    c.font=`600 ${12*pixels}px system-ui`;c.textAlign='center';c.textBaseline='middle';
+    for(const [idx,x,y] of [[0,40,20],[1,120,140],[2,200,100]]){
+      const label=tr(DISTRICTS[idx][0]),w=c.measureText(label).width;
+      c.fillStyle='rgba(255,250,239,.9)';c.fillRect(X(x)-w/2-5,Y(y)-9,w+10,18);c.fillStyle='#405746';c.fillText(label,X(x),Y(y));
+    }
+  }
+  const route=routeNow(o,W);
+  if(route.length>1){
+    c.lineJoin='round';c.lineCap='round';c.beginPath();route.forEach((p,i)=>i?c.lineTo(X(p.x),Y(p.y)):c.moveTo(X(p.x),Y(p.y)));
+    c.strokeStyle='#fff7dc';c.lineWidth=Math.max(4,5*k);c.stroke();c.strokeStyle='#b85b28';c.lineWidth=Math.max(2,2.6*k);c.stroke();
+  }
+  for(const L of Object.values(W.marks)){
+    const tgt=L.id===o.target,at=L.id===S.at,use=o.useful?.[L.id];if(!large&&!tgt&&!at&&!use)continue;
+    const x=X(L.gate.x),y=Y(L.gate.y-2),r=Math.max(large?5:2.5,k*(tgt?3:1.8));
+    c.fillStyle=tgt?'#e5a02b':at?'#367f72':'#818d99';c.strokeStyle='#fff9e8';c.lineWidth=large?2:1.5;
+    c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();c.stroke();
+    if(large){
+      c.font=`${17*pixels}px system-ui`;c.textAlign='center';c.fillText(L.emoji,x,y-10*pixels);
+      if(tgt||at||S.mapZoom>=2){
+        const label=tr(L.node.label||L.name);c.font=`700 ${12*pixels}px system-ui`;
+        const width=c.measureText(label).width;c.fillStyle='#fffaf0';c.fillRect(x-width/2-3*pixels,y+8*pixels,width+6*pixels,17*pixels);
+        c.fillStyle='#243d37';c.fillText(label,x,y+17*pixels);
+      }
+    }
+  }
+  const x=X(S.x),y=Y(S.y),r=Math.max(large?7:4,3.7*k);
+  c.save();c.translate(x,y);c.rotate(S.a);c.fillStyle='#276d66';c.strokeStyle='#fff';c.lineWidth=1.5;c.beginPath();c.moveTo(r,0);c.lineTo(-r*.7,r*.7);c.lineTo(-r*.45,0);c.lineTo(-r*.7,-r*.7);c.closePath();c.fill();c.stroke();c.restore();
+  c.fillStyle='#36554b';c.font=`700 ${Math.max(10,cw*(large?.021:.07))}px system-ui`;c.textAlign='right';c.textBaseline='top';c.fillText('↑ N',cw-pad*.4,pad*.2);
+}
+function mini(o,W){drawMap(S.mini,o,W);}
+function expandedMap(){
+  const cv=S.el.querySelector('.dd-map-canvas'),w=Math.max(260,S.el.clientWidth-40),dpr=Math.min(2,devicePixelRatio||1);
+  cv.width=Math.round(w*dpr);cv.height=Math.round(w*.76*dpr);drawMap(cv,S.opts,S.world,true);
+  S.el.querySelector('.dd-map-zoom output').textContent=Math.round(S.mapZoom*100)+'%';
+  S.el.querySelector('[data-map-zoom="out"]').disabled=S.mapZoom<=1;
+  S.el.querySelector('[data-map-zoom="in"]').disabled=S.mapZoom>=3;
+  const T=S.world.marks[S.opts.target],route=routeNow(S.opts,S.world);
+  S.el.querySelector('.dd-map-caption').textContent=T?`${T.emoji} ${tr(T.name)} · ${Math.round(navigation(route,S.a,T.gate).distance)} m · ${tr('theo đường phố')}`:'';
 }

@@ -324,7 +324,7 @@ class TikTokStoreTests(unittest.TestCase):
         owner = self.finish(self.begin()); owner_sid = self.store.key(owner['token'])
         with self.store.connect() as db: uid = db.execute('SELECT uid FROM accounts WHERE sid=?', (owner_sid,)).fetchone()[0]
         guest, _, _ = self.store.session(); flow = self.begin(guest)
-        holder = self.store.connect(); holder.execute('BEGIN IMMEDIATE')
+        holder = self.store.connect(); holder.execute('BEGIN')
         holder.execute('SELECT sid FROM sessions WHERE sid=? FOR UPDATE', (owner_sid,))
         # Pause deletion at the exact production ordering: old logins/flows are
         # already removed, while the account's session lock is still held.

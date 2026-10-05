@@ -1,5 +1,5 @@
-"""💕 Dates of the live service (live/dating.py), the game server's side: the tables (SQLite twin of
-game/pg_schema.py), the bond "Đang tìm hiểu 💕" shown on a friend's card (game/friends.py), and the cleanup when a
+"""💕 Dates of the live service (live/dating.py), the game server's side: the PostgreSQL tables in
+game/pg_schema.py, the bond "Đang tìm hiểu 💕" shown on a friend's card (game/friends.py), and the cleanup when a
 player deletes their data.
 
 * `live_dates`: one row per café date (pids a < b and their saves, start, end, how it ended, cards in common, right
@@ -9,15 +9,6 @@ player deletes their data.
 The game server never writes these rows (the live service does); it only reads the bond and forgets a player."""
 from __future__ import annotations
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS live_dates (
-  id TEXT PRIMARY KEY, a TEXT NOT NULL, b TEXT NOT NULL, a_sid TEXT NOT NULL, b_sid TEXT NOT NULL, at REAL NOT NULL,
-  ended REAL, how TEXT NOT NULL DEFAULT '', same INTEGER NOT NULL DEFAULT 0, hits INTEGER NOT NULL DEFAULT 0
-);
-CREATE TABLE IF NOT EXISTS date_bonds (a TEXT NOT NULL, b TEXT NOT NULL, at REAL NOT NULL, PRIMARY KEY (a, b));
-CREATE INDEX IF NOT EXISTS live_dates_at ON live_dates(at);
-CREATE INDEX IF NOT EXISTS date_bonds_b ON date_bonds(b);
-"""
 
 
 def bonded(db, sid: str, other: str) -> bool:

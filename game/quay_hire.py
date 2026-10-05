@@ -27,7 +27,7 @@ the escrow, the owner's refund is the escrow; both sides consent; caps against f
 WORKER_WEEK_XU xu a week; one pair PAIR_WEEK shifts a week; an owner OWNER_DAY posts a day; a shift with too few
 tasks pays nobody). Blocked players never see each other's offers.
 
-Tables: SCHEMA below (SQLite) and game/pg_schema.py (PostgreSQL). The previous build has neither the table nor the
+Tables: game/pg_schema.py (PostgreSQL). The previous build has neither the table nor the
 inbox kind: its saves keep journey.quay untouched and 'quay' inbox rows wait pending for this build.
 """
 from __future__ import annotations
@@ -61,21 +61,6 @@ KIND = 'quay'            # live_effects kind (game/live_effects.py PAYS)
 DAY = 86400
 STATUSES = ('open', 'taken', 'paid', 'lapsed', 'quit', 'cancelled', 'declined', 'expired', 'gone')
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS quay_jobs (
-  id TEXT PRIMARY KEY, owner TEXT NOT NULL, owner_name TEXT NOT NULL, stall TEXT NOT NULL, stall_name TEXT NOT NULL,
-  trade TEXT NOT NULL, place TEXT NOT NULL, wage INTEGER NOT NULL, value INTEGER NOT NULL, friend TEXT, worker TEXT,
-  status TEXT NOT NULL, day TEXT NOT NULL, taken_day TEXT, at REAL NOT NULL, taken_at REAL, ended REAL, until REAL NOT NULL,
-  tasks INTEGER NOT NULL DEFAULT 0, stars INTEGER NOT NULL DEFAULT 0, earned INTEGER NOT NULL DEFAULT 0
-);
-CREATE INDEX IF NOT EXISTS quay_jobs_owner ON quay_jobs(owner, status);
-CREATE INDEX IF NOT EXISTS quay_jobs_worker ON quay_jobs(worker, status);
-CREATE INDEX IF NOT EXISTS quay_jobs_open ON quay_jobs(status, until);
-CREATE TABLE IF NOT EXISTS quay_funding (
-  job TEXT PRIMARY KEY, owner TEXT NOT NULL, rid TEXT, fingerprint TEXT NOT NULL,
-  source TEXT NOT NULL, couple INTEGER, UNIQUE(owner,rid)
-);
-"""
 
 _swept = [0.0]
 
@@ -248,8 +233,8 @@ def post(store, sid: str, display: str, d: dict) -> dict:
     value = qy.shift_value(st['place'], st['trade'])
     wage = d.get('wage')
     need(type(wage) is int and WAGE_MIN <= wage <= wage_max(value), f'Lương từ {WAGE_MIN} tới {wage_max(value)} xu một ca.', 'bad_wage')
-    if source == 'stall':
-        need(st['till'] + st['fund'] >= wage, f'Két và vốn quầy chưa đủ {wage} xu để giữ lương.', 'no_funds')
+    # Stall cash is checked after elapsed business is settled inside the CAS
+    # callback. A stale pre-read may omit earned revenue or unpaid running costs.
     friend = None
     code = d.get('to')
     t = now()
@@ -271,6 +256,8 @@ def post(store, sid: str, display: str, d: dict) -> dict:
         with store.connect() as db:
             if replay(db):
                 raise _PostReplay()
+        from .quay_business import settle
+        settle(s2, now=now())
         st2 = qy.stall(s2, st['id'])
         need(st2['due'] == 0 and st2['left'] <= qy.LEFT_DAYS and not st2.get('economy', {}).get('paused'), 'Quầy đang đóng.', 'closed')
         if source == 'stall':
@@ -326,9 +313,12 @@ def cancel(store, sid: str, display: str, d: dict) -> dict:
     refunded=[True]
 
     def fn(s):
+        from .quay_business import settle
+        at = now()
+        settle(s, now=at)
         source = (funding or {}).get('source','stall')
         if source == 'stall':
-            qy.credit(s, r['stall'], 'back', r['wage'], '💼 Hủy ca làm thêm')
+            qy.credit(s, r['stall'], 'back', r['wage'], '💼 Hủy ca làm thêm', now=at)
         elif source in ('cash','account'):
             refund_to_save(s,r['wage'],source,'💼 Hủy ca làm thêm')
 

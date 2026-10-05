@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """🚶 Đi dạo in three browsers (dev tool, needs `pip install playwright websockets` + chromium).
 
-Starts a game server (story mode, SQLite) and the live service (LIVE_CHAT=1, LIVE_STREET=1; happenings come
+Starts a game server (story mode, PostgreSQL) and the live service (LIVE_CHAT=1, LIVE_STREET=1; happenings come
 every ~20 s here instead of every 10 minutes, so the run sees them) on the same database, then plays three phones
 (390×844) in one place:
   * the menu entry "Đi dạo" shows only once the service says the street is on;
@@ -25,7 +25,6 @@ import asyncio
 import contextlib
 import json
 import os
-import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -35,6 +34,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from browser_live_chat import API, PW, free_port, phone, wait_http  # noqa: E402
+from pg_test_support import test_env, test_connect, schema_for
 
 # The live service as in production, but with happenings every ~20 s (an envelope first, then a lion, a vendor).
 LIVE_DEV = """
@@ -56,16 +56,16 @@ STATE = "async () => (await import('/js/v4/walk.js')).walk.state()"
 @contextlib.contextmanager
 def servers(tmp: str):
     gp, lp = free_port(), free_port()
-    db = os.path.join(tmp, 'g.sqlite3')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live')
+    db = os.path.join(tmp, 'g.db')
+    env = test_env( QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live')
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'DATABASE_URL'):
         env.pop(k, None)
-    game = subprocess.Popen([sys.executable, 'server.py', '--port', str(gp), '--db', db], cwd=ROOT, env=env,
+    game = subprocess.Popen([sys.executable, 'server.py', '--port', str(gp), '--namespace', db], cwd=ROOT, env=env,
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     wait_http(f'http://127.0.0.1:{gp}/api/health')
-    lenv = dict(env, LIVE_CHAT='1', LIVE_STREET='1', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
+    lenv = dict(env, DATABASE_URL=env['TEST_DATABASE_URL'], LIVE_CHAT='1', LIVE_STREET='1', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
     log = open(os.path.join(tmp, 'live.log'), 'w')
-    live = subprocess.Popen([sys.executable, '-c', LIVE_DEV, '--db', db], cwd=ROOT, env=lenv, stdout=log, stderr=log)
+    live = subprocess.Popen([sys.executable, '-c', LIVE_DEV, '--schema', schema_for(db)], cwd=ROOT, env=lenv, stdout=log, stderr=log)
     wait_http(f'http://127.0.0.1:{lp}/live/health')
     try:
         yield f'http://127.0.0.1:{gp}', db, os.path.join(tmp, 'live.log')
@@ -215,7 +215,7 @@ async def run(shots: Path) -> list:
                 boot1 = await c.api('/api/bootstrap?lite=1', None)
                 gained = boot1['state']['journey']['wallet'] - w0
                 check(3 <= gained <= 8, f'C got the envelope ({toast!r}), wallet +{gained} xu, paid once')
-                with sqlite3.connect(db) as con:
+                with test_connect(db) as con:
                     rows = con.execute('SELECT status FROM live_effects').fetchall()
                 check(rows == [('applied',)], f'one live_effects row, applied ({rows})')
             seen = set()

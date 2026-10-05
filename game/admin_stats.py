@@ -12,14 +12,10 @@ name or free text other than the operator's own feedback previews.
 
 How players are protected
 * No request ever reads a save. The summary is SQL on small tables and indexes: the day
-  tables `stat_births` / `stat_active` kept by triggers (see SCHEMA; on PostgreSQL the
-  same triggers live in game/pg_schema.py), the covering index stat_sessions_seen, and
+  tables `stat_births` / `stat_active` kept by triggers in game/pg_schema.py, the covering index stat_sessions_seen, and
   feedback / account rows.
 * Every request-time read has a hard time budget and cannot write:
-  - SQLite: a separate read-only connection (mode=ro, query_only), closed afterwards, with
-    a progress handler that aborts past the budget. Each statement is its own short read
-    snapshot, so no read can pin the WAL.
-  - PostgreSQL: a READ ONLY transaction with SET LOCAL statement_timeout.
+  A PostgreSQL READ ONLY transaction uses SET LOCAL statement_timeout.
   Nothing here takes the writer lock on a request.
 * The save-derived numbers and the table sizes come from ONE background job per database
   (a lock file elects the worker process that runs it; the others read its result file).
@@ -43,7 +39,7 @@ How players are protected
   save, never the job. Command timings: `install_command_timer()` wraps store.command with
   an in-memory per-minute histogram per worker process, flushed at most every CMD_FLUSH
   seconds to `<db>-adminstats-cmd.<pid>.json`; the admin merges the workers' files.
-  `sessions.updated_at` is TEXT 'YYYY-MM-DD HH:MM:SS' (UTC) on both backends: it is compared
+  `sessions.updated_at` is TEXT 'YYYY-MM-DD HH:MM:SS' (UTC): it is compared
   with a threshold in that same text form (dbm.utc_text), never cast, so the covering index
   stat_sessions_seen serves the range.
 * Play time (GET /api/admin/stats/section?name=playtime, cached PLAY_TTL): minutes per player
@@ -79,7 +75,6 @@ import glob
 import hashlib
 import json
 import os
-import sqlite3
 import sys
 import threading
 import time
@@ -89,10 +84,7 @@ from . import __version__
 from . import kpi
 from .pg_schema import PLAY_GAP, PLAY_IDLE_TAIL
 
-try:  # PostgreSQL backend (game/db.py); a tree without it is SQLite only
-    from . import db as dbm
-except ImportError:  # pragma: no cover
-    dbm = None
+from . import db as dbm
 
 RANGES = (7, 30, 90)
 TTL = 60.0                 # full payload (in-game tab)
@@ -133,6 +125,7 @@ REQUEST_MS = int(os.environ.get('ADMIN_STATS_REQUEST_MS', '1500') or 1500)   # a
 STATEMENT_MS = int(os.environ.get('ADMIN_STATS_STATEMENT_MS', '1000') or 1000)  # one statement (PostgreSQL)
 CHUNK_MS = 800             # one chunk of saves in the job
 COUNT_MS = 250             # an exact COUNT(*) of one table in the job; past it the size is estimated
+SYSTEM_MS = 3000           # database metadata and size read in the background job
 JOB_SUMMARY_MS = 30000     # the job's summary (a cold disk can take seconds per index); each statement is its own read
 CHUNK = 40                 # saves per chunk (halved when a chunk runs out of time)
 PAUSE = 3.0                # the job sleeps PAUSE x the time a chunk took (a quarter of one core at most)
@@ -148,51 +141,6 @@ CMD_WINDOW = 5             # the page shows the last CMD_WINDOW minutes plus the
 # Latency histogram (ms, upper bounds); one more bucket past the last edge.
 CMD_EDGES = (2, 5, 10, 15, 20, 30, 40, 50, 75, 100, 150, 200, 300, 400, 500, 750, 1000, 1500, 2000, 3000, 5000, 10000)
 
-_NOW = "((julianday('now') - 2440587.5) * 86400.0)"   # unix time with milliseconds, like PostgreSQL's epoch
-SCHEMA = f"""
-CREATE INDEX IF NOT EXISTS stat_sessions_seen ON sessions(updated_at, revision, sid);
-CREATE TABLE IF NOT EXISTS stat_births (sid TEXT PRIMARY KEY, day TEXT NOT NULL);
-CREATE INDEX IF NOT EXISTS stat_births_day ON stat_births(day);
-CREATE TABLE IF NOT EXISTS stat_active (day TEXT NOT NULL, sid TEXT NOT NULL, PRIMARY KEY(day, sid)) WITHOUT ROWID;
-CREATE INDEX IF NOT EXISTS stat_active_sid ON stat_active(sid);
-CREATE TABLE IF NOT EXISTS stat_fb_ack (id INTEGER PRIMARY KEY, at REAL NOT NULL);
-CREATE INDEX IF NOT EXISTS stat_fb_created ON player_feedback(created_at);
-CREATE INDEX IF NOT EXISTS stat_accounts_created ON accounts(created_at);
-CREATE TRIGGER IF NOT EXISTS stat_session_born AFTER INSERT ON sessions BEGIN
-  INSERT OR IGNORE INTO stat_births(sid, day) VALUES (NEW.sid, date('now', '{TZ}'));
-END;
-CREATE TRIGGER IF NOT EXISTS stat_session_active AFTER UPDATE OF updated_at ON sessions BEGIN
-  INSERT OR IGNORE INTO stat_active(day, sid) VALUES (date('now', '{TZ}'), NEW.sid);
-END;
-DROP TRIGGER IF EXISTS stat_session_gone;
-CREATE TABLE IF NOT EXISTS stat_play (day TEXT NOT NULL, sid TEXT NOT NULL, secs INTEGER NOT NULL, sessions INTEGER NOT NULL,
-  cmds INTEGER NOT NULL, first_at REAL NOT NULL, last_at REAL NOT NULL, hours INTEGER NOT NULL DEFAULT 0,
-  sess_at REAL NOT NULL, lens TEXT NOT NULL DEFAULT '', PRIMARY KEY(day, sid)) WITHOUT ROWID;
-CREATE INDEX IF NOT EXISTS stat_play_sid ON stat_play(sid);
-CREATE TABLE IF NOT EXISTS stat_play_est (day TEXT PRIMARY KEY, saves INTEGER NOT NULL, capped INTEGER NOT NULL, at REAL NOT NULL);
-CREATE TABLE IF NOT EXISTS stat_play_daily (day TEXT PRIMARY KEY, players INTEGER NOT NULL, secs INTEGER NOT NULL, sessions INTEGER NOT NULL,
-  cmds INTEGER NOT NULL, data TEXT NOT NULL, at REAL NOT NULL);
-CREATE TRIGGER IF NOT EXISTS stat_play_cmd AFTER INSERT ON receipts BEGIN
-  INSERT INTO stat_play(day, sid, secs, sessions, cmds, first_at, last_at, hours, sess_at, lens)
-  VALUES (date('now', '{TZ}'), NEW.sid, {PLAY_IDLE_TAIL}, 1, 1, {_NOW}, {_NOW},
-          1 << CAST(strftime('%H', 'now', '{TZ}') AS INTEGER), {_NOW}, '')
-  ON CONFLICT(day, sid) DO UPDATE SET
-    secs = secs + CASE WHEN excluded.last_at - last_at <= {PLAY_GAP} THEN MAX(0, CAST(round(excluded.last_at - last_at) AS INTEGER)) ELSE {PLAY_IDLE_TAIL} END,
-    sessions = sessions + CASE WHEN excluded.last_at - last_at <= {PLAY_GAP} THEN 0 ELSE 1 END,
-    cmds = cmds + 1,
-    last_at = MAX(last_at, excluded.last_at),
-    hours = hours | excluded.hours,
-    sess_at = CASE WHEN excluded.last_at - last_at <= {PLAY_GAP} THEN sess_at ELSE excluded.last_at END,
-    lens = CASE WHEN excluded.last_at - last_at <= {PLAY_GAP} THEN lens
-                ELSE lens || (CAST(round(last_at - sess_at) AS INTEGER) + {PLAY_IDLE_TAIL}) || ',' END;
-END;
-DROP TRIGGER IF EXISTS stat_play_gone;
-CREATE TRIGGER IF NOT EXISTS stat_fb_seen AFTER UPDATE OF status ON player_feedback
-  WHEN OLD.status = 'new' AND NEW.status != 'new' BEGIN
-  INSERT OR IGNORE INTO stat_fb_ack(id, at) VALUES (NEW.id, NEW.updated_at);
-END;
-DROP TRIGGER IF EXISTS stat_fb_gone;
-"""
 # PostgreSQL: tables, indexes and triggers come from game/pg_schema.py; these two indexes
 # serve only the admin queries (small tables, built in milliseconds). Created here too so
 # a database made by an older pg_schema gets them.
@@ -200,23 +148,14 @@ PG_INDEXES = (('stat_fb_created', 'CREATE INDEX IF NOT EXISTS stat_fb_created ON
               ('stat_accounts_created', 'CREATE INDEX IF NOT EXISTS stat_accounts_created ON accounts (created_at)'))
 
 
-def _is_pg(db) -> bool:
-    return getattr(db, 'dialect', 'sqlite') == 'pg'
 
 
-def _store_pg(store) -> bool:
-    return bool(getattr(store, 'pg', None))
 
 
 def ensure(store) -> None:
     """Idempotent: indexes, day tables and triggers (see the module doc), and the investor KPI tables of
     game/kpi.py (stat_counters, stat_kpi_daily, stat_players: new tables only, nothing existing is altered)."""
-    if _store_pg(store):
-        _ensure_pg(store)
-    else:
-        with store.connect() as db:
-            db.executescript(SCHEMA)
-            db.executescript(kpi.SCHEMA)
+    _ensure_pg(store)
     install_ai_counters(store)
     install_command_timer(store)
 
@@ -539,33 +478,10 @@ def _truthy(v) -> bool:
 
 # ---------------------------------------------------------------- state sample
 # One compact row per save: the few fields the dashboard reads, nothing personal.
-_COMPACT = """json_object(
-  'lang', json_extract(state, '$.settings.lang'),
-  'theme', json_extract(state, '$.settings.uiTheme'),
-  'ai', json_extract(state, '$.settings.aiConsent'),
-  'music', json_extract(state, '$.settings.music'),
-  'track', json_extract(state, '$.settings.musicTrack'),
-  'story', json_extract(state, '$.journey.story'),
-  'chapter', json_extract(state, '$.journey.chapter'),
-  'life_day', json_extract(state, '$.journey.life_day'),
-  'wallet', json_extract(state, '$.journey.wallet'),
-  'in_debt', json_extract(state, '$.journey.in_debt'),
-  'iv', json_array(json_extract(state, '$.journey.invest.coin.trades'), json_extract(state, '$.journey.invest.coin.units'),
-                   json_extract(state, '$.journey.invest.saving.balance'), json_extract(state, '$.journey.invest.saving.earned'),
-                   json_extract(state, '$.journey.invest.stats.lost'), json_extract(state, '$.journey.invest.stats.joined')),
-  'life', CASE WHEN json_type(state, '$.journey.life') = 'object' THEN json_object(
-            'spirit', json_extract(state, '$.journey.life.spirit'), 'stats', json_extract(state, '$.journey.life.stats')) END,
-  'board', CASE WHEN json_type(state, '$.journey.board') = 'object' THEN json_object(
-            'posts', json_array_length(state, '$.journey.board.posts'), 'stats', json_extract(state, '$.journey.board.stats')) END,
-  'careers', (SELECT json_group_object(key, json_array(json_extract(value, '$.started'), json_extract(value, '$.day'), json_extract(value, '$.xp')))
-              FROM json_each(state, '$.careers'))
-)"""
-_SAMPLE_SQL = f"SELECT {_COMPACT} FROM (SELECT state FROM sessions WHERE revision > 0 ORDER BY updated_at DESC LIMIT ?)"
 
 
-# PostgreSQL twin of _COMPACT over `j` (the save as jsonb): one jsonb parse per save. JSON
-# booleans stay booleans (SQLite's json_extract turns them into 1/0); play_stats reads both
-# the same way.
+# Compact projection over `j` (the save as jsonb): one parse per save. JSON booleans
+# keep their types, matching the Python fallback.
 _COMPACT_PG = """jsonb_build_object(
   'lang', j #> '{settings,lang}', 'theme', j #> '{settings,uiTheme}', 'ai', j #> '{settings,aiConsent}',
   'music', j #> '{settings,music}', 'track', j #> '{settings,musicTrack}',
@@ -587,7 +503,7 @@ _SAMPLE_PG = (f"SELECT {_COMPACT_PG} FROM (SELECT state::jsonb AS j FROM session
 
 
 def compact(state: dict) -> dict:
-    """Pure Python twin of _COMPACT (fallback and tests)."""
+    """Pure Python twin of _COMPACT_PG (fallback and tests)."""
     s = state if isinstance(state, dict) else {}
     st = s.get('settings') if isinstance(s.get('settings'), dict) else {}
     j = s.get('journey') if isinstance(s.get('journey'), dict) else {}
@@ -617,19 +533,13 @@ def sample(db, limit: int = SAMPLE) -> tuple[list[dict], str]:
     """(compact rows, engine) for the `limit` most recently active saves, in ONE statement.
     Reference computation for tests and tools only: it reads every sampled save, so no
     request path calls it (the background job reads saves incrementally, see _Job)."""
-    if _is_pg(db):
-        try:
-            db.set_local('statement_timeout', os.environ.get('ADMIN_STATS_TIMEOUT', '120s'))
-            rows = [json.loads(r[0]) for r in db.pg(_SAMPLE_PG, (int(limit),))]
-            db.commit()
-            return rows, 'sql'
-        except dbm.Error:  # e.g. a save jsonb refuses (\u0000): read them in Python
-            db.rollback()
-    else:
-        try:
-            return [json.loads(r[0]) for r in db.execute(_SAMPLE_SQL, (int(limit),))], 'sql'
-        except sqlite3.OperationalError:  # no JSON1 in this SQLite
-            pass
+    try:
+        db.set_local('statement_timeout', os.environ.get('ADMIN_STATS_TIMEOUT', '120s'))
+        rows = [json.loads(r[0]) for r in db.pg(_SAMPLE_PG, (int(limit),))]
+        db.commit()
+        return rows, 'sql'
+    except dbm.Error:  # e.g. a save jsonb refuses (\u0000): read them in Python
+        db.rollback()
     out = []
     for r in db.execute('SELECT state FROM sessions WHERE revision > 0 ORDER BY updated_at DESC LIMIT ?', (int(limit),)):
         try:
@@ -775,22 +685,15 @@ def players(db, days: int, today: datetime.date) -> dict:
     owned = db.execute('SELECT COUNT(*) FROM sessions WHERE sid IN (SELECT sid FROM accounts)').fetchone()[0]
     guests = db.execute('SELECT COUNT(*) FROM sessions WHERE revision > 0 AND sid NOT IN (SELECT sid FROM accounts)').fetchone()[0] - ghost_guests
     # Activity: the day log, plus each save's last change for the days before the log.
-    pg = _is_pg(db)
-    if pg:
-        run = db.pg
-        act = ("WITH act AS (SELECT day, sid FROM stat_active WHERE day >= %(from)s UNION "
-               "SELECT to_char(updated_at::timestamp + interval '7 hours', 'YYYY-MM-DD'), sid FROM sessions "
-               "WHERE updated_at >= %(since)s AND updated_at < %(until)s AND revision > 0) ")
-        mark = '%(start)s'
-    else:
-        run = db.execute
-        act = (f"WITH act AS (SELECT day, sid FROM stat_active WHERE day >= :from UNION "
-               f"SELECT date(updated_at, '{TZ}'), sid FROM sessions WHERE updated_at >= :since AND updated_at < :until AND revision > 0) ")
-        mark = ':start'
+    run = db.pg
+    act = ("WITH act AS (SELECT day, sid FROM stat_active WHERE day >= %(from)s UNION "
+           "SELECT to_char(updated_at::timestamp + interval '7 hours', 'YYYY-MM-DD'), sid FROM sessions "
+           "WHERE updated_at >= %(since)s AND updated_at < %(until)s AND revision > 0) ")
+    mark = '%(start)s'
     args = dict(since=since, until=until, **{'from': (today - datetime.timedelta(days=max(days, 30) - 1)).isoformat()})
     dau = _series(span, run(act + f'SELECT day, COUNT(*) FROM act WHERE day >= {mark} GROUP BY day', dict(args, start=start)))
     # 7 and 30 days in one pass over the union (it is the heaviest read of the summary).
-    w7, m30 = ('%(w7)s', '%(start)s') if pg else (':w7', ':start')
+    w7, m30 = '%(w7)s', '%(start)s'
     wau, mau = (int(x or 0) for x in run(act + f'SELECT COUNT(DISTINCT CASE WHEN day >= {w7} THEN sid END), COUNT(DISTINCT sid) '
                                                 f'FROM act WHERE day >= {m30}',
                                                 dict(args, w7=(today - datetime.timedelta(days=6)).isoformat(),
@@ -802,7 +705,7 @@ def players(db, days: int, today: datetime.date) -> dict:
                                            '(SELECT 1 FROM stat_active a WHERE a.sid = b.sid AND a.day = b.day) GROUP BY b.day', (start,)))
     # created_at is UTC text: the range starts at Vietnam midnight of `start` (an index range, not a scan).
     utc_start = (datetime.datetime.fromisoformat(start) - datetime.timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
-    day_of = "to_char(created_at::timestamp + interval '7 hours', 'YYYY-MM-DD')" if pg else f"date(created_at, '{TZ}')"
+    day_of = "to_char(created_at::timestamp + interval '7 hours', 'YYYY-MM-DD')"
     new_accounts = _series(span, db.execute(f'SELECT {day_of} AS d, COUNT(*) FROM accounts WHERE created_at >= ? GROUP BY d', (utc_start,)))
     return dict(days=span, total=total, played=played, accounts=accounts, guests=guests, account_saves=owned,
                 dau=dau, new_sessions=new_sessions, new_players=new_players, new_accounts=new_accounts,
@@ -810,15 +713,6 @@ def players(db, days: int, today: datetime.date) -> dict:
                 unplayed_migrated=ghost)
 
 
-_RETENTION_SQL = """
-  WITH c AS (SELECT b.sid, b.day FROM stat_births b WHERE b.day >= :start
-             AND EXISTS (SELECT 1 FROM stat_active a WHERE a.sid = b.sid AND a.day = b.day))
-  SELECT COUNT(*),
-    SUM(CASE WHEN date(day, '+1 day') < :t THEN 1 ELSE 0 END),
-    SUM(CASE WHEN date(day, '+1 day') < :t AND EXISTS (SELECT 1 FROM stat_active a WHERE a.sid = c.sid AND a.day = date(c.day, '+1 day')) THEN 1 ELSE 0 END),
-    SUM(CASE WHEN date(day, '+7 day') < :t THEN 1 ELSE 0 END),
-    SUM(CASE WHEN date(day, '+7 day') < :t AND EXISTS (SELECT 1 FROM stat_active a WHERE a.sid = c.sid AND a.day = date(c.day, '+7 day')) THEN 1 ELSE 0 END)
-  FROM c"""
 _PLUS = "to_char({}::date + {}, 'YYYY-MM-DD')"
 _RETENTION_PG = f"""
   WITH c AS (SELECT b.sid, b.day FROM stat_births b WHERE b.day >= %(start)s
@@ -836,7 +730,7 @@ def retention(db, today: datetime.date, window: int) -> dict:
     did something on its first day; it is kept when it did something again exactly
     1 (or 7) days later. Only cohorts whose day 1 / day 7 is over count."""
     args = dict(start=(today - datetime.timedelta(days=window - 1)).isoformat(), t=today.isoformat())
-    row = (db.pg(_RETENTION_PG, args) if _is_pg(db) else db.execute(_RETENTION_SQL, args)).fetchone()
+    row = db.pg(_RETENTION_PG, args).fetchone()
     cohort, n1, k1, n7, k7 = (int(x or 0) for x in row)
     pct = lambda k, n: round(100 * k / n, 1) if n else None
     return dict(window=window, cohort=cohort, d1=pct(k1, n1), d1_n=n1, d7=pct(k7, n7), d7_n=n7)
@@ -853,10 +747,9 @@ def feedback(db, days: int, now: float) -> dict:
     from_t = kpi.epoch_of((today - datetime.timedelta(days=days - 1)).isoformat())
     in_range = db.execute('SELECT COUNT(*) FROM player_feedback WHERE created_at >= ?', (from_t,)).fetchone()[0]
     # First time a note left "new": the trigger's exact time, else the best guess from older rows.
-    least = 'LEAST' if _is_pg(db) else 'MIN'  # SQLite's MIN(a, b) is PostgreSQL's LEAST(a, b)
     ack_from = kpi.epoch_of((today - datetime.timedelta(days=max(days, 30) - 1)).isoformat())
     waits = [r[0] for r in db.execute(
-        f"SELECT COALESCE(a.at, {least}(p.updated_at, COALESCE(p.replied_at, p.updated_at))) - p.created_at FROM player_feedback p "
+        "SELECT COALESCE(a.at, LEAST(p.updated_at, COALESCE(p.replied_at, p.updated_at))) - p.created_at FROM player_feedback p "
         'LEFT JOIN stat_fb_ack a ON a.id = p.id WHERE p.status != ? AND p.created_at >= ?', ('new', ack_from)) if r[0] is not None]
     waits = [max(0.0, w) for w in waits]
     # The median above only knows the notes already read: the ones still waiting are told apart
@@ -876,24 +769,13 @@ def feedback(db, days: int, now: float) -> dict:
                 newest=newest)
 
 
-def _file_bytes(store) -> int:
-    size = 0
-    for suffix in ('', '-wal'):
-        try:
-            size += os.path.getsize(store.path + suffix)
-        except OSError:
-            pass
-    return size
 
 
 def server_light(store) -> dict:
-    """The server facts the first screen shows. SQLite: two stat() calls; PostgreSQL: the
-    size measured by the job (no query here)."""
-    pg = _store_pg(store)
+    """The server facts the first screen shows; database size is measured by the job."""
     return dict(version=__version__, uptime=int(time.time() - STARTED), started=round(STARTED, 3),
-                db_bytes=None if pg else _file_bytes(store), python='.'.join(map(str, sys.version_info[:3])),
-                sqlite=None if pg else sqlite3.sqlite_version, database='PostgreSQL' if pg else 'SQLite ' + sqlite3.sqlite_version,
-                backend='PostgreSQL' if pg else 'SQLite', story=bool(getattr(store, 'story', False)))
+                db_bytes=None, python='.'.join(map(str, sys.version_info[:3])), database='PostgreSQL',
+                backend='PostgreSQL', story=bool(getattr(store, 'story', False)))
 
 
 SIZE_EDGES = (10_000, 25_000, 50_000, 100_000, 200_000, 400_000)   # bytes
@@ -901,25 +783,20 @@ SIZE_EDGES = (10_000, 25_000, 50_000, 100_000, 200_000, 400_000)   # bytes
 
 def save_sizes(store, sids: list) -> dict | None:
     """Stored size of the given saves (the job's sample): median, p90, max and a histogram.
-    PostgreSQL: pg_column_size (the stored, compressed bytes; no detoasting). SQLite:
-    octet_length (3.43+, read from the record header), else None. 100 saves per statement."""
-    pg = _store_pg(store)
-    if not pg and sqlite3.sqlite_version_info < (3, 43, 0):
-        return None
-    expr = 'pg_column_size(state)' if pg else 'octet_length(state)'
+    Uses pg_column_size (the stored, compressed bytes; no detoasting), 100 saves per statement."""
     sizes = []
     for i in range(0, len(sids), 100):
         part = sids[i:i + 100]
         with _read(store, 2000) as db:
             sizes += [int(r[0] or 0) for r in db.execute(
-                f"SELECT {expr} FROM sessions WHERE sid IN ({','.join('?' * len(part))})", tuple(part))]
+                f"SELECT pg_column_size(state) FROM sessions WHERE sid IN ({','.join('?' * len(part))})", tuple(part))]
     if not sizes:
-        return dict(n=0, median=None, p90=None, max=None, hist=[], edges=list(SIZE_EDGES), stored='compressed' if pg else 'raw')
+        return dict(n=0, median=None, p90=None, max=None, hist=[], edges=list(SIZE_EDGES), stored='compressed')
     hist = [0] * (len(SIZE_EDGES) + 1)
     for b in sizes:
         hist[bisect.bisect_right(SIZE_EDGES, b)] += 1
     return dict(n=len(sizes), median=_pct(sizes, .5), p90=_pct(sizes, .9), max=max(sizes), avg=round(sum(sizes) / len(sizes)),
-                hist=hist, edges=list(SIZE_EDGES), stored='compressed' if pg else 'raw')
+                hist=hist, edges=list(SIZE_EDGES), stored='compressed')
 
 
 def career_names() -> dict:
@@ -970,9 +847,7 @@ class _PgBudget:
 class _read:
     """`with _read(store, ms) as db:` a connection that cannot write and gives up after `ms`
     in all (one statement: at most `statement_ms` on PostgreSQL).
-    SQLite: its own read-only connection (never pooled, closed at the end); every statement
-    is its own snapshot, aborted by a progress handler at the deadline. PostgreSQL: a pooled
-    connection in a READ ONLY transaction, each statement under statement_timeout = the time
+    Uses a pooled connection in a READ ONLY transaction, each statement under statement_timeout = the time
     left, rolled back at the end."""
 
     def __init__(self, store, ms: int = REQUEST_MS, statement_ms: int | None = None):
@@ -980,31 +855,22 @@ class _read:
         self.statement_ms = int(statement_ms) if statement_ms else min(self.ms, STATEMENT_MS)
 
     def __enter__(self):
-        if _store_pg(self.store):
-            db = self.db = self.store.connect()
-            try:
-                db.begin()
-                db.pg('SET TRANSACTION READ ONLY')
-            except BaseException:
-                db.close()
-                raise
-            return _PgBudget(db, time.monotonic() + self.ms / 1000, self.statement_ms)
-        uri = Path(self.store.path).resolve().as_uri() + '?mode=ro'
-        db = self.db = sqlite3.connect(uri, uri=True, timeout=1.0, check_same_thread=False)
-        db.row_factory = sqlite3.Row
-        deadline = time.monotonic() + self.ms / 1000
-        db.set_progress_handler(lambda: 1 if time.monotonic() > deadline else 0, 5000)
-        db.execute('PRAGMA query_only=1')
-        return db
+        db = self.db = self.store.connect()
+        try:
+            db.begin()
+            db.pg('SET TRANSACTION READ ONLY')
+        except BaseException:
+            db.close()
+            raise
+        return _PgBudget(db, time.monotonic() + self.ms / 1000, self.statement_ms)
 
     def __exit__(self, exc_type, exc, tb):
         db = self.db  # the raw connection (not the _PgBudget wrapper)
         try:
-            if _store_pg(self.store):
-                try:
-                    db.rollback()
-                except Exception:  # noqa: BLE001 - closing matters more
-                    pass
+            try:
+                db.rollback()
+            except Exception:  # noqa: BLE001 - closing matters more
+                pass
         finally:
             db.close()
         if exc is not None and isinstance(exc, _db_errors()) and _timed_out(exc):
@@ -1013,7 +879,7 @@ class _read:
 
 
 def _db_errors() -> tuple:
-    return dbm.Error if dbm is not None else (sqlite3.Error,)
+    return dbm.Error
 
 
 def _brief(exc) -> str:
@@ -1041,7 +907,6 @@ def live(store) -> dict:
     today = datetime.datetime.now(VN).date()
     since = lambda s: time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(now - s))   # the TEXT form of updated_at (UTC)
     midnight = (datetime.datetime.combine(today, datetime.time()) - datetime.timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
-    pg = _store_pg(store)
     with _read(store, LIVE_MS) as db:
         # Text against text in the same format: the range is read from stat_sessions_seen (a cast would scan).
         m5, h1, d1 = (int(x or 0) for x in db.execute(
@@ -1051,20 +916,17 @@ def live(store) -> dict:
         played = db.execute('SELECT COUNT(*) FROM stat_births b WHERE b.day = ? AND EXISTS '
                             '(SELECT 1 FROM stat_active a WHERE a.sid = b.sid)', (today.isoformat(),)).fetchone()[0]
         accounts_today = db.execute('SELECT COUNT(*) FROM accounts WHERE created_at >= ?', (midnight,)).fetchone()[0]
-        if pg:
-            size, version = db.pg("SELECT pg_database_size(current_database()), current_setting('server_version')").fetchone()
-            database = 'PostgreSQL ' + str(version).split()[0]
-        else:
-            size, database = _file_bytes(store), 'SQLite ' + sqlite3.sqlite_version
+        size, version = db.pg("SELECT pg_database_size(current_database()), current_setting('server_version')").fetchone()
+        database = 'PostgreSQL ' + str(version).split()[0]
     out = dict(active=dict(m5=m5, h1=h1, h24=d1), new_today=dict(sessions=int(born), players=int(played), accounts=int(accounts_today)),
                commands=command_stats(store, now), db_bytes=int(size or 0), database=database,
-               backend='PostgreSQL' if pg else 'SQLite', today=today.isoformat())
+               backend='PostgreSQL', today=today.isoformat())
     return _stamp(out, t0)
 
 
 # ---------------------------------------------------------------- play time ("Thời gian chơi")
 # stat_play holds one row per save per Vietnam day it sent a command, kept by the trigger
-# stat_play_cmd on receipts (see SCHEMA; game/pg_schema.py on PostgreSQL): secs played,
+# stat_play_cmd on receipts (game/pg_schema.py): secs played,
 # sessions, commands, the first/last command, the hours of the day it played (bit mask), the
 # start of its current session and the lengths of its closed sessions ("lens", "90,300,").
 # Days seeded from receipts by backfill_play() are listed in stat_play_est: their numbers are
@@ -1348,7 +1210,7 @@ def backfill_play(store, days: int = 2, cap: int | None = None, batch: int = 100
         def write(db, by=by, part=part, marks=marks):
             rows = {(r['day'], r['sid']): r for r in db.execute(
                 f"SELECT day, sid, secs, sessions, cmds, first_at, last_at, hours, sess_at, lens FROM stat_play "
-                f"WHERE day IN ({','.join('?' * len(span))}) AND sid IN ({marks})" + (dbm.for_update(db) if dbm else ''), (*span, *part))}
+                f"WHERE day IN ({','.join('?' * len(span))}) AND sid IN ({marks})" + dbm.for_update(db), (*span, *part))}
             seeded = {d: [0, 0] for d in span}
             for (day, sid), ts in by.items():
                 row = rows.get((day, sid))
@@ -1360,8 +1222,8 @@ def backfill_play(store, days: int = 2, cap: int | None = None, batch: int = 100
                 e = _play_from(ts)
                 if row is None:
                     if not dry_run:
-                        n = db.execute('INSERT OR IGNORE INTO stat_play(day, sid, secs, sessions, cmds, first_at, last_at, hours, sess_at, lens) '
-                                       'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                        n = db.execute('INSERT INTO stat_play(day, sid, secs, sessions, cmds, first_at, last_at, hours, sess_at, lens) '
+                                       'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING',
                                        (day, sid, e['secs'], e['sessions'], e['cmds'], e['first_at'], e['last_at'], e['hours'], e['sess_at'],
                                         ''.join(f'{x},' for x in e['lens']))).rowcount
                         if n != 1:   # the trigger wrote it meanwhile: the next run joins these commands to it
@@ -1581,16 +1443,12 @@ class _Job:
         store = self.store
         try:
             with _read(store, CHUNK_MS) as db:
-                if _is_pg(db):
-                    sql = (f"SELECT sid, revision, {_COMPACT_PG} FROM (SELECT sid, revision, state::jsonb AS j "
-                           f"FROM sessions WHERE sid = ANY(%s) AND state <> '') s")
-                    return [(r[0], r[1], json.loads(r[2])) for r in db.pg(sql, (list(part),))]
-                marks = ','.join('?' * len(part))
-                return [(r[0], r[1], json.loads(r[2])) for r in
-                        db.execute(f'SELECT sid, revision, {_COMPACT} FROM sessions WHERE sid IN ({marks})', part)]
+                sql = (f"SELECT sid, revision, {_COMPACT_PG} FROM (SELECT sid, revision, state::jsonb AS j "
+                       f"FROM sessions WHERE sid = ANY(%s) AND state <> '') s")
+                return [(r[0], r[1], json.loads(r[2])) for r in db.pg(sql, (list(part),))]
         except Busy:
             raise
-        except _db_errors():  # malformed JSON, no JSON1, or jsonb refuses a save: read these in Python
+        except _db_errors():  # malformed JSON or jsonb refuses a save: read these in Python
             out = []
             with _read(store, CHUNK_MS) as db:
                 marks = ','.join('?' * len(part))
@@ -1703,16 +1561,11 @@ class _Job:
     def pass_system(self) -> None:
         t0 = time.perf_counter()
         store, tables = self.store, []
-        pg = _store_pg(store)
-        with _read(store, 3000) as db:
-            if pg:
-                names = [r[0] for r in db.pg("SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
-                                             "WHERE c.relkind = 'r' AND n.nspname = current_schema() AND c.relname <> 'mnl_meta' ORDER BY c.relname")]
-                size = db.pg('SELECT pg_database_size(current_database())').fetchone()[0]   # as the live counter
-                engine = 'PostgreSQL ' + db.pg('SHOW server_version').fetchone()[0].split()[0]
-            else:
-                names = [r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name")]
-                size, engine = _file_bytes(store), 'SQLite ' + sqlite3.sqlite_version
+        with _read(store, SYSTEM_MS) as db:
+            names = [r[0] for r in db.pg("SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+                                         "WHERE c.relkind = 'r' AND n.nspname = current_schema() AND c.relname <> 'mnl_meta' ORDER BY c.relname")]
+            size = db.pg('SELECT pg_database_size(current_database())').fetchone()[0]   # as the live counter
+            engine = 'PostgreSQL ' + db.pg('SHOW server_version').fetchone()[0].split()[0]
         for name in names:
             rows, approx = None, False
             try:
@@ -1722,8 +1575,7 @@ class _Job:
                 approx = True
                 try:
                     with _read(store, COUNT_MS) as db:
-                        rows = (db.pg('SELECT GREATEST(reltuples, 0)::bigint FROM pg_class WHERE oid = to_regclass(%s)', (name,)) if pg else
-                                db.execute(f'SELECT MAX(rowid) FROM "{name}"')).fetchone()[0]
+                        rows = db.pg('SELECT GREATEST(reltuples, 0)::bigint FROM pg_class WHERE oid = to_regclass(%s)', (name,)).fetchone()[0]
                 except (Busy,) + _db_errors():
                     rows = None
             tables.append(dict(name=name, rows=int(rows or 0), approx=approx or rows is None))
@@ -1836,7 +1688,7 @@ def play_rollup(store, day: str) -> bool:
                            first_at=d['first_at'], new=dict(d['new'], hist=_sparse(d['new']['hist'])), buckets=PLAY_BUCKETS),
                       separators=(',', ':'))
     with store.connect() as db:
-        db.execute('INSERT OR IGNORE INTO stat_play_daily(day, players, secs, sessions, cmds, data, at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        db.execute('INSERT INTO stat_play_daily(day, players, secs, sessions, cmds, data, at) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING',
                    (day, d['players'], d['secs'], d['sessions'], d['cmds'], data, time.time()))
     return True
 

@@ -1,0 +1,125 @@
+{
+  "generated": "2026-10-05",
+  "assets": [
+    {
+      "id": "grocery",
+      "url": "/icons/isometric/grocery.webp",
+      "width": 768,
+      "height": 750,
+      "bytes": 176362,
+      "source": "docs/isometric-assets/grocery-source.png"
+    },
+    {
+      "id": "home",
+      "url": "/icons/isometric/home.webp",
+      "width": 768,
+      "height": 795,
+      "bytes": 176166,
+      "source": "docs/isometric-assets/home-source.png"
+    },
+    {
+      "id": "cafe",
+      "url": "/icons/isometric/cafe.webp",
+      "width": 768,
+      "height": 606,
+      "bytes": 144270,
+      "source": "docs/isometric-assets/cafe-source.png"
+    },
+    {
+      "id": "interior-shop",
+      "url": "/icons/isometric/interior-shop.webp",
+      "width": 1280,
+      "height": 945,
+      "bytes": 285578,
+      "source": "docs/isometric-assets/interior-shop-source.png"
+    },
+    {
+      "id": "interior-office",
+      "url": "/icons/isometric/interior-office.webp",
+      "width": 1280,
+      "height": 848,
+      "bytes": 201912,
+      "source": "docs/isometric-assets/interior-office-source.png"
+    },
+    {
+      "id": "interior-cafe",
+      "url": "/icons/isometric/interior-cafe.webp",
+      "width": 1144,
+      "height": 885,
+      "bytes": 244210,
+      "source": "docs/isometric-assets/interior-cafe-source.png"
+    },
+    {
+      "id": "interior-home",
+      "url": "/icons/isometric/interior-home.webp",
+      "width": 1269,
+      "height": 1006,
+      "bytes": 216074,
+      "source": "docs/isometric-assets/interior-home-source.png"
+    },
+    {
+      "id": "tree",
+      "url": "/icons/isometric/tree.webp",
+      "width": 768,
+      "height": 784,
+      "bytes": 213996,
+      "source": "docs/isometric-assets/tree-source.png"
+    },
+    {
+      "id": "bench",
+      "url": "/icons/isometric/bench.webp",
+      "width": 768,
+      "height": 686,
+      "bytes": 134882,
+      "source": "docs/isometric-assets/bench-source.png"
+    },
+    {
+      "id": "counter",
+      "url": "/icons/isometric/counter.webp",
+      "width": 768,
+      "height": 587,
+      "bytes": 94042,
+      "source": "docs/isometric-assets/counter-source.png"
+    },
+    {
+      "id": "shelf",
+      "url": "/icons/isometric/shelf.webp",
+      "width": 768,
+      "height": 1023,
+      "bytes": 181568,
+      "source": "docs/isometric-assets/shelf-source.png"
+    },
+    {
+      "id": "desk",
+      "url": "/icons/isometric/desk.webp",
+      "width": 768,
+      "height": 687,
+      "bytes": 75944,
+      "source": "docs/isometric-assets/desk-source.png"
+    },
+    {
+      "id": "crates",
+      "url": "/icons/isometric/crates.webp",
+      "width": 768,
+      "height": 845,
+      "bytes": 91730,
+      "source": "docs/isometric-assets/crates-source.png"
+    },
+    {
+      "id": "character-male",
+      "url": "/icons/isometric/character-male.webp",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 122348,
+      "source": "docs/isometric-assets/character-male-source.png"
+    },
+    {
+      "id": "character-female",
+      "url": "/icons/isometric/character-female.webp",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 116020,
+      "source": "docs/isometric-assets/character-female-source.png"
+    }
+  ]
+}

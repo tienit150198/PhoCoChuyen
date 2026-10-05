@@ -156,8 +156,7 @@ class Features160(unittest.TestCase):
         self.assertIn(f'đủ {BX.ACCOUNT_DAYS} ngày (đời thực)', text)
         self.assertIn(f'{BX.LIFE_DAYS} ngày sống', text)
         self.assertIn(f'{BX.FRIEND_MINUTES} phút', text)
-        for n in (BX.SEND_DAY, BX.RECV_DAY):
-            self.assertIn(f'{n:,}'.replace(',', '.') + ' xu', text)
+        self.assertIn('Không giới hạn số lần, tổng xu gửi hoặc nhận mỗi ngày', text)
 
 class QuickAnswers(unittest.TestCase):
     """❓ Hỏi nhanh: a short answer per question players ask, naming real buttons; its button only opens a screen."""

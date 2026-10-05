@@ -111,7 +111,7 @@ class PaidOnce(Base):
         self.assertEqual(len(self.rows(tok)), 2)
 
     def test_the_real_grant_then_load(self):
-        from live.db import PgDB, SqliteDB
+        from live.db import PgDB
         from live.effects import grant
         tok = self.guest()
         w0 = self.wallet(tok)
@@ -119,7 +119,7 @@ class PaidOnce(Base):
 
         async def run():
             pg = self.store.pg
-            db = PgDB(pg.url, pg.schema) if pg else SqliteDB(str(self.path))
+            db = PgDB(pg.url, pg.schema)
             try:
                 a = await grant(db, sid, 'coins', 6, key='env:walk:boho:1:aaaa0001', data=dict(src='envelope'), cap=10)
                 b = await grant(db, sid, 'coins', 6, key='env:walk:boho:1:aaaa0002', data=dict(src='envelope'), cap=10)   # over the cap

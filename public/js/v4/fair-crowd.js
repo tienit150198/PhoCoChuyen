@@ -35,6 +35,8 @@ const pidOf=v=>typeof v==='string'&&/^[0-9a-f]{16}$/.test(v)?v:null;
  * is due; still(): reduced motion (the others jump). */
 export function crowd({state,content=()=>null,redraw,still,onBack=()=>{},onTaken=()=>{}}){
   const C={want:false,room:null,me:null,at:null,s:null,r:null,people:new Map(),pend:null,sentAt:0,timer:0,retry:0,joining:false,back:null};
+  let fontEpoch=0;
+  globalThis.document?.fonts?.addEventListener?.('loadingdone',()=>{fontEpoch++;redraw();});
   const clear=()=>{const was=C.back;C.room=null;C.me=null;C.joining=false;C.people.clear();clearTimeout(C.timer);C.pend=null;C.back=null;if(was)onBack(null,null);redraw();};
 
   /** `r`: the vehicle ridden ({v, c}, ./ride.js wire) or none. */
@@ -171,20 +173,29 @@ export function crowd({state,content=()=>null,redraw,still,onBack=()=>{},onTaken
   }
   /** Small names over the others (screen units; `fallback` for a player without a name); badge(s): the emoji of
    * the stall someone plays ('': none), in a small bubble over their name. */
-  function tags(c,{sx,sy,fallback,badge}){
+  function tags(c,{sx,sy,fallback,badge,dpr=1}){
     if(!C.people.size)return;
-    c.textAlign='center';c.textBaseline='middle';
     for(const q of C.people.values()){
       if(typeof q.sx!=='number'||q.on&&q.b===C.me&&!q.byMe)continue;
       const name=q.name||fallback,x=sx(q.sx),y=sy(q.top)-8;
-      c.font='700 10px "Trebuchet MS",sans-serif';const w=c.measureText(name).width+10;
-      c.fillStyle='rgba(255,250,240,.82)';c.beginPath();c.roundRect?c.roundRect(x-w/2,y-7.5,w,15,7.5):c.rect(x-w/2,y-7.5,w,15);c.fill();
-      c.fillStyle='#4a3226';c.fillText(name,x,y+.5);
       const b=q.s&&badge?badge(q.s):'';
-      if(b){const by=y-20;   // a round bubble with a little tail down to the name
-        c.fillStyle='rgba(255,250,240,.95)';c.strokeStyle='rgba(143,45,42,.6)';c.lineWidth=1;
-        c.beginPath();c.arc(x,by,10,Math.PI*.62,Math.PI*2.38);c.lineTo(x,by+13);c.closePath();c.fill();c.stroke();
-        c.font='12px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';c.fillStyle='#4a3226';c.fillText(b,x,by+1);}
+      const px=Math.max(1,Math.min(2,dpr)),key=JSON.stringify([name,b,px,fontEpoch]);
+      if(q.tag?.key!==key){
+        // One small bitmap per room member; replacing/leaving the room drops it with that member.
+        const cv=document.createElement('canvas'),t=cv.getContext('2d');t.font='700 10px "Trebuchet MS",sans-serif';
+        const w=Math.max(22,Math.ceil(t.measureText(name).width+10)),h=40;
+        cv.width=Math.ceil(w*px);cv.height=Math.ceil(h*px);t.setTransform(px,0,0,px,0,0);
+        t.textAlign='center';t.textBaseline='middle';t.font='700 10px "Trebuchet MS",sans-serif';
+        t.fillStyle='rgba(255,250,240,.82)';t.beginPath();t.roundRect?t.roundRect(0,23.5,w,15,7.5):t.rect(0,23.5,w,15);t.fill();
+        t.fillStyle='#4a3226';t.fillText(name,w/2,31.5);
+        if(b){
+          t.fillStyle='rgba(255,250,240,.95)';t.strokeStyle='rgba(143,45,42,.6)';t.lineWidth=1;
+          t.beginPath();t.arc(w/2,11,10,Math.PI*.62,Math.PI*2.38);t.lineTo(w/2,24);t.closePath();t.fill();t.stroke();
+          t.font='12px "Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif';t.fillStyle='#4a3226';t.fillText(b,w/2,12);
+        }
+        q.tag={key,cv,w,h};
+      }
+      c.drawImage(q.tag.cv,x-q.tag.w/2,y-31,q.tag.w,q.tag.h);
     }
   }
   const busy=()=>{for(const q of C.people.values())if(q.path||q.rv.turn<1)return true;return false;};

@@ -15,17 +15,24 @@ const hash=(seed,i)=>{const v=Math.sin((seed+1)*12.9898+i*78.233)*43758.5453;ret
 const pick=(seed,i,list)=>list[Math.floor(hash(seed,i)*list.length)%list.length];
 const KEYS=k=>Object.keys(ART[k]);
 const NOT_TOPS=new Set(['ao_cuoi','vest_cuoi']);
+const figures=new Map(),sprites=new WeakMap();
 /** A passer-by's look from a number (the same customer always looks the same). */
 export function customerFigure(seed){
+  if(figures.has(seed))return figures.get(seed);
   const g=hash(seed,1)<.5?'female':'male',L=defaultLook(g);
   L.hair=pick(seed,2,KEYS('hair'));L.shade=pick(seed,3,['mau_nau','mau_den','mau_mat_ong','mau_nau','mau_den']);
   L.skin=pick(seed,4,KEYS('skin'));L.top=pick(seed,5,KEYS('top').filter(k=>!NOT_TOPS.has(k)&&k!=='ao_quen'));
   L.bottom=pick(seed,6,KEYS('bottom'));L.shoes=pick(seed,7,KEYS('shoes'));L.acc=hash(seed,8)<.7?'pk_khong':pick(seed,9,['kinh_tron','non_la','mu_len','no_toc']);
   L.uniform=false;
-  return figureOf(L,g);
+  const figure=figureOf(L,g);if(figures.size>=96)figures.delete(figures.keys().next().value);figures.set(seed,figure);return figure;
 }
 const STAFF_SEED=[11,23,37];
-function person(c,F,x,y,s){c.save();c.translate(x,y);c.scale(s,s);try{paintPlayer(c,F,CANVAS);}catch{/* a look this build does not know */}c.restore();}
+function person(c,F,x,y,s){
+  let sprite=sprites.get(F);
+  if(!sprite){sprite=document.createElement('canvas');sprite.width=240;sprite.height=340;const pen=sprite.getContext('2d');pen.setTransform(2,0,0,2,120,310);try{paintPlayer(pen,F,CANVAS);}catch{/* a look this build does not know */}sprites.set(F,sprite);}
+  c.drawImage(sprite,x-60*s,y-155*s,120*s,170*s);
+}
+function actor(c,p,x,y,s){person(c,customerFigure(p.seed),x,y,s);if(p.state==='completed')T(c,p.emoji||'🛍️',x+21*s,y-29*s,19*s,'#4d382a',500);}
 function apron(c,x,y,s,col){c.save();c.translate(x,y);c.scale(s,s);R(c,-17,-44,34,30,col,8);L(c,-12,-44,-16,-56,col,2.5);L(c,12,-44,16,-56,col,2.5);c.restore();}
 
 /* ---- the pieces ---- */
@@ -101,8 +108,9 @@ function counterBody(c,place,A,col){
 }
 
 /** Paint `opts` on `canvas`: {place, name, color, decor[], tables, menu:[{emoji,name,price}], me (a figure) or null,
- * staff (count), cust (a seed or null), queue [seeds], online, closed}. */
+ * staff (count), actors [{seed,state,emoji}], online, closed}. */
 export function paintCounter(canvas,o){
+  if(o.firstPerson)return paintBehindCounter(canvas,o);
   if(!canvas?.getContext)return;
   const cssW=canvas.clientWidth||W,dpr=Math.min(2,globalThis.devicePixelRatio||1),k=cssW/W;
   const pw=Math.round(cssW*dpr),ph=Math.round(H*k*dpr);
@@ -134,8 +142,51 @@ export function paintCounter(canvas,o){
   for(let i=0;i<tb;i++)table(c,...A.tables[i]);
   for(const id of ['cay','hoa','bang_phan'])if(has.has(id))DECOR[id](c,A);
   // customers: the one being served by the counter, the queue behind
-  const q=[...(o.cust!=null?[o.cust]:[]),...(o.queue||[])].slice(0,A.cust.length+1);
-  q.slice(1).reverse().forEach((seed,i,arr)=>{const p=A.cust[Math.min(A.cust.length-1,arr.length-1-i)];person(c,customerFigure(seed),p[0]-(arr.length-1-i)*0,p[1],.5);});
-  if(o.cust!=null){const p=A.cust[0];person(c,customerFigure(o.cust),p[0]+44,p[1],.58);}
+  const actors=(o.actors||[]).slice(0,8);
+  actors.slice(4).forEach((p,i)=>actor(c,p,42+i*86,179,.39));
+  actors.slice(0,4).forEach((p,i)=>actor(c,p,70+i*76,209,.48));
+  if(o.activityLabel){R(c,82,72,196,21,'#fff8e8',7);T(c,o.activityLabel,180,83,10,'#6a503c',700);}
   if(o.closed){c.fillStyle='#3a2a2055';c.fillRect(0,0,W,H);R(c,W/2-70,H/2-18,140,36,'#fffaf0',10,'#c79879',2);T(c,'ĐÓNG CỬA',W/2,H/2,15,'#8a4b1f',800);}
+}
+
+/** The owner's eye level: the customer is across the worktop, tools are in reach.
+ * Each portrait represents a real current customer or a clearly labelled recent receipt. */
+export function paintBehindCounter(canvas,o){
+ if(!canvas?.getContext)return;
+ const h=270,cssW=canvas.clientWidth||W,dpr=Math.min(2,globalThis.devicePixelRatio||1),k=cssW/W;
+ const pw=Math.round(cssW*dpr),ph=Math.round(h*k*dpr);if(canvas.width!==pw||canvas.height!==ph){canvas.width=pw;canvas.height=ph;}
+ const c=canvas.getContext('2d');c.setTransform(dpr*k,0,0,dpr*k,0,0);
+ const col=o.color||'#a86d51';
+ R(c,0,0,W,h,'#f8edda');R(c,0,80,W,118,'#d7c5a7');
+ // Looking out into a small neighbourhood through the shop opening.
+ R(c,24,49,84,89,'#e8c9a8',2);R(c,255,47,84,96,'#cbd8c8',2);
+ for(const x of [35,69,265,301]){R(c,x,65,24,38,'#f7e7cd',3);R(c,x+3,68,18,27,'#98b7b6',2);}
+ R(c,122,45,113,91,'#f1dabb',2);R(c,147,62,51,64,'#a3bdba',4);R(c,146,61,54,9,'#be9370',2);
+ P(c,[[0,139],[360,139],[360,210],[0,210]],'#dfcdb0');
+ for(let i=0;i<6;i++)L(c,i*80-60,270,180+(i-3)*20,139,'#cfb797',1);
+ awning(c,0,0,360,24,col);R(c,0,0,12,213,'#835b42');R(c,348,0,12,213,'#835b42');
+ const actors=(o.actors||[]).slice(0,8);
+ if(actors.length){
+  const spots=[[33,173,.42],[80,174,.44],[124,177,.46],[240,177,.46],[283,174,.44],[326,173,.42],[302,205,.56]];
+  actors.slice(1).forEach((p,i)=>actor(c,p,...spots[i]));
+  actor(c,actors[0],180,224,.92);
+ }else{
+  R(c,106,111,148,45,'#fff8e9',10,'#d9c3a1',1);
+  T(c,o.observe?'Tiệm đang mở':'Chờ khách ghé quầy',180,127,12,'#6f543e',700);
+  T(c,o.observe?'Sổ bán hàng ở bên dưới':'Mọi đơn đều được ghi tại quầy',180,143,8,'#94795d',500);
+ }
+ if(o.activityLabel){R(c,184,38,156,26,'#fff8e8',8);T(c,o.activityLabel,262,52,9,'#6a503c',700);}
+ if(o.orderLabel){R(c,25,41,150,40,'#fff8e8',8,'#dfc8aa',1);c.font='700 11px sans-serif';T(c,clip(c,o.orderLabel,132),100,56,11,'#6a503c',700);T(c,o.observe?'LƯỢT BÁN VỪA GHI NHẬN':'KHÁCH ĐANG CHỜ',100,71,7,'#95765c',700);}
+ // Broad oak worktop hides lower bodies, placing the owner behind the counter.
+ P(c,[[9,184],[351,184],[378,270],[-18,270]],'#b8865d');
+ P(c,[[13,181],[347,181],[365,237],[-5,237]],'#e6bd88');
+ for(const y of [197,218,239,258])L(c,0,y,360,y,'#a4714f33',1);
+ R(c,13,190,75,50,'#f6e9cf',7,'#bd986b',1);T(c,'KHAY MÓN',50,201,7,'#8d6e51',800);
+ (o.menu||[]).slice(0,3).forEach((dish,i)=>T(c,dish.emoji,29+i*21,221,17,'#4e3828',500));
+ R(c,265,190,68,49,'#655344',7);R(c,271,196,56,15,'#dae5cc',3);T(c,'KÉT QUẦY',299,204,8,'#4d5d43',700);
+ for(let i=0;i<3;i++)for(let j=0;j<2;j++)R(c,275+i*17,216+j*9,12,6,'#cfb79a',2);
+ R(c,112,202,103,29,'#f7ead3',5,'#c4a070',1);T(c,o.name||'Quầy của bạn',163,216,fit(c,o.name||'Quầy của bạn',93,11,700),'#775239',700);
+ // Your apron and hands frame the lower edge without covering controls or stock.
+ E(c,112,265,32,19,'#d9a685');E(c,245,265,32,19,'#d9a685');R(c,132,248,93,23,col,12);
+ if(o.closed){R(c,73,98,214,47,'#fff7e8',10);T(c,'Quầy đang tạm dừng',180,117,14,'#705139',800);T(c,o.reason||'Xem nguyên liệu và vốn ở bên dưới',180,135,8,'#95765c',500);}
 }

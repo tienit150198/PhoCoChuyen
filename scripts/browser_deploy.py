@@ -25,6 +25,7 @@ import tempfile
 import time
 import urllib.request
 from pathlib import Path
+from pg_test_support import test_env, test_connect, schema_for
 
 ROOT = Path(__file__).resolve().parents[1]
 EAGER, LATE = 'public/js/ui-kit.js', 'public/js/careers/grocery.js'
@@ -45,9 +46,9 @@ def mark(app: Path, version: str):
 
 @contextlib.contextmanager
 def serve(app: Path, port: int, db: str, cas: str):
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1', MNL_DEV='1', STATIC_CAS_DIR=cas)
+    env = test_env( QUIET='1', PUSH_DISABLED='1', MNL_DEV='1', STATIC_CAS_DIR=cas)
     env.pop('LLM_API_KEY', None)
-    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--db', db], cwd=app, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--namespace', db], cwd=app, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     for _ in range(600):
         try:
             urllib.request.urlopen(f'http://127.0.0.1:{port}/api/health', timeout=1)
@@ -69,7 +70,7 @@ async def main() -> int:
     for rel in ('server.py', 'game', 'public', 'reference'):
         src = ROOT / rel
         (shutil.copytree(src, app / rel, ignore=shutil.ignore_patterns('_v', '__pycache__')) if src.is_dir() else (app.mkdir(exist_ok=True), shutil.copy(src, app / rel)))
-    db, cas, port = str(tmp / 'g.sqlite3'), str(tmp / 'cas'), free_port()
+    db, cas, port = str(tmp / 'g.db'), str(tmp / 'cas'), free_port()
     problems: list[str] = []
     check = lambda ok, what: ok or problems.append(what)
     mark(app, 'v1')

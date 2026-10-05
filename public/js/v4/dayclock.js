@@ -25,10 +25,10 @@ export function clockChip(dc){
   if(!dc)return '';
   const cls=WARN_CLASS[dc.level]||'';
   const bar=dc.is_open?`<i class="dc-bar" aria-hidden="true"><i style="width:${Math.round((dc.progress||0)*100)}%"></i></i>`:'';
-  return `<span class="dc-chip ${cls}" data-testid="clock"><span class="dc-ico" aria-hidden="true">${esc(dc.part?.icon)}</span><b>${esc(dc.time)}</b><small>${esc(dc.part?.label)}</small>${bar}</span>`;
+  return `<span class="dc-chip ${cls}" data-testid="clock" title="Giờ trong game"><span class="dc-ico" aria-hidden="true">${esc(dc.part?.icon)}</span><b>${esc(dc.time)}</b><small>${esc(dc.part?.label)}</small>${bar}</span>`;
 }
 /** Words for the day button's aria-label. */
-export const clockAria=dc=>dc?`${dc.time}, ${dc.part?.label||''}. ${dc.label}. ${dc.hours}.`:'';
+export const clockAria=dc=>dc?`Giờ trong game: ${dc.time}, ${dc.part?.label||''}. ${dc.label}. ${dc.hours}.`:'';
 
 /** The status sheet's first card: the big time, the shift bar with the hours, what is left, the rule. */
 export function clockCard(dc){
@@ -39,7 +39,7 @@ export function clockCard(dc){
     `<div class="grow"><strong class="dc-big">${esc(dc.time)}</strong><span class="dc-part">${esc(dc.part?.label)}${dc.is_open?'':' · chưa mở cửa'}</span></div><em class="dc-state">${esc(dc.label)}</em></div>`+
     `<div class="dc-shift"><div class="dc-track" role="progressbar" aria-label="Ca làm hôm nay" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>`+
     `<div class="dc-ends"><span>Mở ${esc(dc.open_time)}</span><span>Đóng ${esc(dc.close_time)}</span></div></div>`+
-    `<details class="dc-rules"><summary>Giờ giấc ở đây</summary><ul>${dc.note?`<li class="dc-note">${esc(dc.note)}</li>`:''}${step}<li>Còn 60 phút và 30 phút có lời nhắc; tới giờ đóng cửa thì không đón thêm khách.</li><li>Khách đã vào quán vẫn được làm nốt. Khép ca lúc nào cũng được: việc dở giữ lại, khách hẹn quay lại khi mở cửa sáng mai, không bị tính là bỏ dở.</li></ul></details></section>`;
+    `<p class="dc-note">Giờ trong game · đồng hồ ca làm tiến theo thao tác của bạn.</p><details class="dc-rules"><summary>Giờ giấc ở đây</summary><ul>${dc.note?`<li class="dc-note">${esc(dc.note)}</li>`:''}${step}<li>Còn 60 phút và 30 phút có lời nhắc; tới giờ đóng cửa thì không đón thêm khách.</li><li>Khách đã vào quán vẫn được làm nốt. Khép ca lúc nào cũng được: việc dở giữ lại, khách hẹn quay lại khi mở cửa sáng mai, không bị tính là bỏ dở.</li></ul></details></section>`;
 }
 /** The day summary: when you closed and when tomorrow opens. */
 export function clockSummary(s){

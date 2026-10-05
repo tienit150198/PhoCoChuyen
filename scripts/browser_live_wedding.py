@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """💍 A live wedding in five browsers: the couple and three guests (dev tool, needs `pip install playwright websockets`).
 
-Starts a game server (story mode, SQLite) and the live service (chat, street, wedding on) on the same database. Here a
+Starts a game server (story mode, PostgreSQL) and the live service (chat, street, wedding on) on the same database. Here a
 paid minute is 10 s (the party 100 s), at most 4 avatars are visible (so the third guest watches from the gate) and
 the schedule is read every 2 s; everything else is as in production. MNL_PY picks the servers' Python (the live
 service needs websockets 17, Python 3.12) when playwright lives in another one. Five phones (390×844):
@@ -34,7 +34,6 @@ import asyncio
 import contextlib
 import json
 import os
-import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -45,6 +44,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 sys.path.insert(0, str(ROOT))
 from browser_live_chat import PW, free_port, phone, wait_http  # noqa: E402
+from pg_test_support import test_env, test_connect, schema_for
 
 LIVE_DEV = """
 import sys
@@ -67,19 +67,19 @@ STATE = "async () => (await import('/js/v4/walk.js')).walk.state()"
 @contextlib.contextmanager
 def servers(tmp: str):
     gp, lp = free_port(), free_port()
-    db = os.path.join(tmp, 'g.sqlite3')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live')
+    db = os.path.join(tmp, 'g.db')
+    env = test_env( QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live')
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'DATABASE_URL'):
         env.pop(k, None)
     py = os.environ.get('MNL_PY') or sys.executable
     if os.environ.get('MNL_PYTHONPATH'):   # the servers' own library path (e.g. a vendored websockets for MNL_PY)
         env['PYTHONPATH'] = os.environ['MNL_PYTHONPATH']
-    game = subprocess.Popen([py, 'server.py', '--port', str(gp), '--db', db], cwd=ROOT, env=env,
+    game = subprocess.Popen([py, 'server.py', '--port', str(gp), '--namespace', db], cwd=ROOT, env=env,
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     wait_http(f'http://127.0.0.1:{gp}/api/health')
-    lenv = dict(env, LIVE_CHAT='1', LIVE_STREET='1', LIVE_WEDDING='1', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
+    lenv = dict(env, DATABASE_URL=env['TEST_DATABASE_URL'], LIVE_CHAT='1', LIVE_STREET='1', LIVE_WEDDING='1', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
     log = open(os.path.join(tmp, 'live.log'), 'w')
-    live = subprocess.Popen([py, '-c', LIVE_DEV, '--db', db], cwd=ROOT, env=lenv, stdout=log, stderr=log)
+    live = subprocess.Popen([py, '-c', LIVE_DEV, '--schema', schema_for(db)], cwd=ROOT, env=lenv, stdout=log, stderr=log)
     wait_http(f'http://127.0.0.1:{lp}/live/health')
     try:
         yield f'http://127.0.0.1:{gp}', db, os.path.join(tmp, 'live.log')
@@ -152,7 +152,7 @@ async def phone_as(browser, base, name, problems, gender):
 
 
 def sql(db, q, *args):
-    with sqlite3.connect(db) as con:
+    with test_connect(db) as con:
         return con.execute(q, args).fetchall()
 
 
@@ -331,7 +331,7 @@ async def run(shots: Path) -> list:
             for i in range(3):                       # 50 + 3 × 200 = 650: past the old 500 a wedding
                 await g1.page.wait_for_selector('.walk-sheet [data-wk=envSend]:not([disabled])', timeout=10000)
                 await g1.page.click('.walk-sheet [data-wk=envSend]')
-                for _ in range(250):                 # SQLite shared with the live service: a write may wait a while
+                for _ in range(250):                 # PostgreSQL shared with the live service: a write may wait a while
                     if len(sql(db, "SELECT 1 FROM marriage_effects WHERE id LIKE 'wenv:%'")) >= 2 + i:
                         break
                     await asyncio.sleep(0.1)

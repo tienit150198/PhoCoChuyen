@@ -94,8 +94,21 @@ class LoadsTests(unittest.TestCase):
         self.assertEqual(fj.loads('"\\ud800"'), '\ud800')        # a lone surrogate
         self.assertEqual(fj.loads('[1e400]'), [math.inf])
         self.assertTrue(math.isnan(fj.loads('NaN')))
-        deep = '[' * 3000 + ']' * 3000   # deeper than orjson's limit (1024)
-        self.assertEqual(fj.loads(deep), json.loads(deep))
+        for depth in (1200, 3000):   # deeper than orjson's limit (1024)
+            deep = '[' * depth + ']' * depth
+            try:
+                expected = json.loads(deep)
+            except RecursionError:
+                with self.assertRaises(RecursionError):
+                    fj.loads(deep)
+            else:
+                actual = fj.loads(deep)
+                # Check every level without unittest's recursive list comparison.
+                for _ in range(depth - 1):
+                    self.assertEqual(len(actual), 1)
+                    self.assertEqual(len(expected), 1)
+                    actual, expected = actual[0], expected[0]
+                self.assertEqual(actual, expected)
         for bad in ('', '[1,', '{"a":1,}', '"\x00"', 'nul'):
             with self.assertRaises(ValueError):
                 fj.loads(bad)
@@ -178,7 +191,7 @@ class StoredSaveTests(unittest.TestCase):
 
     def test_commands_store_json_text(self):
         with tempfile.TemporaryDirectory() as tmp:
-            store = Store(Path(tmp) / 'g.sqlite3')
+            store = Store(Path(tmp) / 'g.db')
             token, _, _ = store.session()
             rev = store.read(token)[1]
             career = next(iter(store.read(token)[0]['careers']))

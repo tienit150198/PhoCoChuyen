@@ -81,6 +81,19 @@
 .st-past ol{list-style:none;margin:2px 0 0;padding:0;display:grid;gap:4px}
 .st-past li{display:flex;gap:8px;font-size:.8rem;line-height:1.35}
 .st-past li small{display:block;color:var(--muted)}
+.st-past li p{margin:3px 0;color:var(--ink-2)}
+.st-recap,.st-memory{margin:7px 0;font-size:.85rem;line-height:1.5;color:var(--ink-2);overflow-wrap:anywhere}
+.st-recap b{display:block;color:var(--ink)}
+.st-unlock{margin:10px 0;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:.85rem}
+.st-unlock>b{display:block;color:var(--ink)}
+.st-unlock p{margin:4px 0 8px;line-height:1.45;color:var(--ink-2)}
+.st-unlock ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.st-unlock li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;line-height:1.4}
+.st-unlock li small{grid-column:1/-1;color:var(--ink-2)}
+.st-unlock li.met small,.st-unlock .st-ready{color:var(--good);font-weight:700}
+.st-unlock li strong{font-variant-numeric:tabular-nums}
+.st-row-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.st-row-actions:empty{display:none}
 .st-empty{margin:0}
 
 /* ---------- Layouts & motion --------------------------------------------- */

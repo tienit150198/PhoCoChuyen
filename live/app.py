@@ -29,10 +29,14 @@ from .fair import FairFeature
 from .config import Config, from_env
 from .db import Error as DbError, log, open_db, wait_for_tables
 from .hub import Conn, Hub
+from .home import HomeFeature
+from .market import MarketFeature
+from .work_visits import WorkVisitsFeature
 from .limits import LRU, Keyed
 from .protocol import Core, Dispatcher
 from .street import StreetFeature
 from .wedding import WeddingFeature
+from .town import TownFeature
 
 try:
     import websockets
@@ -42,7 +46,7 @@ except ImportError:  # pragma: no cover
     websockets = None
 
 # Phase 2 adds live.street.StreetFeature, phase 3 live.dating.DatingFeature (one line each).
-FEATURES = [ChatFeature, StreetFeature, DatingFeature, WeddingFeature, FairFeature, BoothFeature]   # 📸 live/booth.py: with the fair
+FEATURES = [ChatFeature, StreetFeature, DatingFeature, WeddingFeature, FairFeature, BoothFeature, HomeFeature, WorkVisitsFeature, MarketFeature, TownFeature]
 HELLO_SECS = 10.0
 NOTIFY_CHANNEL = 'mnl_live'
 
@@ -272,6 +276,9 @@ class App:
                 pass
         for t in self.bg:
             t.cancel()
+        if self.bg:
+            # LISTEN must unregister its socket reader before the database closes.
+            await asyncio.gather(*self.bg, return_exceptions=True)
         if self.db is not None:
             await self.db.close()
 
@@ -291,4 +298,6 @@ class App:
 
 def main(argv=None) -> None:
     cfg = from_env(argv)
+    if os.name == 'nt':
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(App(cfg).run())

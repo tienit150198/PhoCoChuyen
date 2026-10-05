@@ -4,39 +4,34 @@ wallet and the Sổ ví row are in game/fair.py (fair_xs), the stall (dì Hai's 
 in public/js/v4/fair-scratch.js.
 
 The player buys a vé of one TIERS price; the ticket is decided and paid on the server at the purchase: it wins with
-game.fair.luck_p(…, 'xs', …, P_HI, P_LO) (today's fair net and the run of tickets), and a winning ticket's prize is a
+game.fair.luck_p(…, 'xs', …, stake=price) (same base chance for every ticket), and a winning ticket's prize is a
 multiple of its price drawn from PRIZES. layout() then draws the CELLS boxes under the silver: a winning ticket shows
 its prize in exactly 3 boxes and every other amount at most twice, a losing one every amount at most twice (so the
 rule on the ticket, "3 ô giống nhau trúng số đó", always reads the same as the result). The client only scratches it
 open; nothing it sends decides anything.
 
-The table (a simulation of these functions, 100 000 tickets each):
-  P_HI 39.5 %: wins 39.5 %, 0.97 xu back per xu of tickets, 21 % of tickets come out ahead; at the floor (P_LO 39 %:
-  today's net far up, or a long run of tickets in a row): wins 39.0 %, 0.96 xu back; runs of 60 tickets then a break:
-  0.97. About one winning ticket in two only gives the price back (hoàn vé); 10x or more is ~1 ticket in 50, 50x ~1 in
-  1 300. 50 tickets of 5 xu: median -25 xu, 37 % of such sessions end ahead.
-  (Until 03/10 P_HI was 42 %, 1.03 back: the stall paid out more than it took. The xu sinks, docs/ECONOMY_SINKS.md, give
-  it a small house edge like a real vé số, still "không lỗ quá".)
+Owner 05/10 latest: 50% base chance at every ticket price. The server's symmetric
+streak guard prevents five identical luck draws in a row. Prize weights stay at
+mean 1.59x conditional on a prize, including refunds; winning does not always mean
+net profit. Already purchased tickets retain their layout and payment.
 """
 from __future__ import annotations
 
-TIERS = (2, 5, 10, 20)          # the vé's price, xu
-NAMES = {2: 'Vé Lộc Nhỏ', 5: 'Vé Phát Tài', 10: 'Vé Như Ý', 20: 'Vé Đại Cát'}
+TIERS = (2, 5, 10, 20, 50, 100, 200, 500)  # the vé's price, xu
+NAMES = {2: 'Vé Lộc Nhỏ', 5: 'Vé Phát Tài', 10: 'Vé Như Ý', 20: 'Vé Đại Cát',
+         50: 'Vé Tài Lộc', 100: 'Vé Phú Quý', 200: 'Vé Thịnh Vượng', 500: 'Vé Đại Lộc'}
 CELLS = 9                       # a 3 × 3 grid under the silver
 MATCH = 3                       # 3 boxes of the same amount: that amount is won
-# (multiple of the price, weight per 1000 winning tickets): E[multiple | win] = 2.46
-PRIZES = ((1, 470), (2, 280), (3, 115), (5, 85), (10, 40), (20, 8), (50, 2))
+# (multiple of price, weight per 1000 winning tickets): E[multiple | win] = 1.59
+PRIZES = ((1, 675), (2, 230), (3, 60), (5, 25), (10, 8), (20, 1), (50, 1))
 MULTS = tuple(m for m, _ in PRIZES)
-# the odds a ticket wins anything: the shared taper (game.fair.odds) with the stall's own ends; a long run of tickets
-# cools RUN_STEP a ticket (game.fair.RUN_RULES['xs']) down to P_LO too
-P_HI, P_LO = .395, .39    # 0.97 / 0.96 xu back per xu (03/10; P_HI was .42: 1.03)
-RUN_STEP = .005
+# Historical API retained at the current fixed base probability.
+P_HI, P_LO = .50, .50
+RUN_STEP = 0
 
 
 def win_p(net: int) -> float:
-    """The odds a ticket wins given the player's fair net today (game.fair.odds, from P_HI down to P_LO)."""
-    from .fair import odds
-    return odds(net, P_HI, P_LO)
+    return .50
 
 
 def prize_mult(rng) -> int:

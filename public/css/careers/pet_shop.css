@@ -80,6 +80,10 @@
 .career-job.ps .ps-tanktile:nth-child(2) .ps-glass{width:58px;height:36px}
 .career-job.ps .ps-tanktile:nth-child(3) .ps-glass{width:68px;height:40px}
 .career-job.ps .ps-tanks{background:linear-gradient(180deg,color-mix(in srgb,var(--ps-water) 50%,var(--ps-surface)),var(--ps-surface) 100px)}
+.career-job.ps .ps-aquarium+.ps-aquarium{border-top:2px solid var(--ps-line);margin-top:16px;padding-top:8px}
+.career-job.ps .ps-aquarium h5{margin:8px 0;font-size:14px;overflow-wrap:anywhere}
+.career-job.ps .ps-tank-warning{padding:10px 12px;border:1px solid #c68c36;border-radius:10px;background:#fff3d6;color:#68420d;font-size:13px;line-height:1.5}
+.career-job.ps .ps-aquarium>.muted{display:block;margin-top:4px}
 .career-job.ps .ps-load{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin-top:10px;font-size:14px}
 .career-job.ps .ps-meter{display:block;height:10px;border-radius:99px;background:var(--ps-surface-2);overflow:hidden;border:1px solid var(--ps-line)}
 .career-job.ps .ps-meter i{display:block;height:100%;background:var(--ps-teal);border-radius:inherit}

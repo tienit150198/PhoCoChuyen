@@ -18,6 +18,11 @@ from tests.helpers import Journey
 
 class OperationsTests(unittest.TestCase):
     def setUp(self):
+        # Explicit pre-clock fixture: preserve legacy assistance, attendance and
+        # unpaid invoices during import/upgrade. Current server-clock production
+        # is exercised separately in test_workplace_business across all careers.
+        for target in ('game.workplace_business.refresh','game.workplace_business.settle'):
+            mocked=patch(target,return_value=False);mocked.start();self.addCleanup(mocked.stop)
         self.j=Journey()
         self.j.state['settings']['securityEvents']=False
     @property
@@ -239,9 +244,38 @@ class OperationsTests(unittest.TestCase):
             if n<6:
                 self.assertFalse(self.o['finance']['history']);self.j.act('start_day')
         f=self.o['finance'];h=f['history'][0]
-        self.assertEqual((h['revenue'],h['tax'],h['rent']),(700,35,42))
+        self.assertEqual((h['revenue'],h['tax'],h['rent'],h['rate']),(700,28,42,4))
         self.assertEqual(len([b for b in f['bills'] if b['kind']=='utility']),7)
         self.assertEqual(f['period_revenue'],0);self.assertEqual(f['period_days'],0);self.assert_valid()
+
+    def test_tax_reduction_preserves_closed_five_percent_periods(self):
+        with patch.dict(ops.RULES, tax_percent=5):
+            for n in range(7):
+                money(self.j.state,self.c,100,'Việc đã làm',category='revenue')
+                self.close()
+                if n<6:self.j.act('start_day')
+        old_period=copy.deepcopy(self.o['finance']['history'][0])
+        old_bill=copy.deepcopy(next(b for b in self.o['finance']['bills'] if b['kind']=='tax'))
+        with patch.dict(ops.RULES, tax_percent=4):
+            self.j.state=migrate_state(self.j.state)
+            self.assert_valid()
+            for _ in range(7):
+                self.j.act('start_day')
+                money(self.j.state,self.c,100,'Việc mới',category='revenue')
+                self.close()
+            f=self.o['finance']
+            self.assertEqual(next(h for h in f['history'] if h['id']==old_period['id']),old_period)
+            self.assertEqual(next(b for b in f['bills'] if b['id']==old_bill['id']),old_bill)
+            self.assertEqual((f['history'][0]['rate'],f['history'][0]['tax']),(4,28))
+            self.assert_valid()
+            bad=copy.deepcopy(self.j.state)
+            h=bad['careers'][self.j.career]['ops']['finance']['history'][0]
+            h.update(rate=3,tax=21)
+            with self.assertRaises(GameError):validate_state(bad)
+
+    def test_current_tax_estimate_rounds_up_at_four_percent(self):
+        money(self.j.state,self.c,101,'Việc thử',category='revenue')
+        self.assertEqual(ops.public_operations(self.c)['finance']['estimate_tax'],5)
 
     def test_rent_respects_tier_per_completed_day(self):
         self.close();self.act('move_property',tier='sunny',confirm=True)
@@ -378,16 +412,32 @@ class OperationsTests(unittest.TestCase):
         self.spawn();self.no_effect('case_demo',kind='snatch');self.no_effect('case_close')
 
     def test_natural_security_mode_toggle_and_one_case_cooldown(self):
+        from game import shop_events
         self.j.state['settings'].update(securityEvents=False);self.c['life']['mode']='calm';self.c.update(day=4,day_completed=1,event=None);self.o['work_ticks']=20
         self.advance();self.assertIsNone(self.o['security']['active'])
-        self.j.state['settings']['securityEvents']=True;self.c['event']=None;self.advance();self.assertEqual(self.case()['kind'],'misplaced')
-        self.investigate();self.act('case_close');self.c['event']=None;self.advance()
+        self.assertIsNone(self.o['shop_events']['pending'])
+        self.j.state['settings']['securityEvents']=True;self.c['event']=None
+        self.o['work_ticks']=self.o['shop_events']['next'];shop_events.tick_career(self.j.state,self.c,self.j.career)
+        event=shop_events.public(self.c)['pending'];self.assertIsNotNone(event)
+        choice=next(x for x in event['choices'] if x['affordable'])
+        self.act('shop_event',event=event['id'],choice=choice['id'],confirm=True)
+        self.c['event']=None;self.advance();self.assertIsNone(self.o['shop_events']['pending'])
         self.assertIsNone(self.o['security']['active']);self.assert_valid()
 
     def test_natural_theft_has_fixed_truth_and_real_loss(self):
+        from game import shop_events
         self.j.state['settings'].update(securityEvents=True);self.c['life']['mode']='normal';self.c.update(day=4,day_completed=1,event=None);self.o['work_ticks']=20
-        before=sum(self.c['stock'].values());self.advance();self.assertEqual(self.case()['kind'],'theft');self.assertFalse(self.case()['practice'])
-        self.assertEqual(sum(self.c['stock'].values()),before-1);self.assert_valid()
+        with patch.object(shop_events,'select_kind',return_value='theft'):
+            shop_events.tick_career(self.j.state,self.c,self.j.career)
+            self.o['work_ticks']=self.o['shop_events']['next']
+            shop_events.tick_career(self.j.state,self.c,self.j.career)
+        event=copy.deepcopy(self.o['shop_events']['pending']);before=self.c['money']
+        self.assertEqual(event['kind'],'theft');self.assertIsNone(self.o['security']['active'])
+        shop_events.tick_career(self.j.state,self.c,self.j.career)
+        self.assertEqual(event,self.o['shop_events']['pending']);self.assertEqual(before,self.c['money'])
+        expected=min(before,(event['wealth']*event['percent']+99)//100)
+        self.act('shop_event',event=event['id'],choice='record',confirm=True)
+        self.assertEqual(self.c['money'],before-expected);self.assert_valid()
 
     def test_ledger_compaction_preserves_wallet(self):
         for _ in range(1505):money(self.j.state,self.c,1,'Thu nhỏ',category='other_income')
@@ -467,19 +517,23 @@ class StaffJobBonusTests(unittest.TestCase):
         self.assertEqual(self.j.act('end_day',carry_event=True)['summary']['operations']['staff_bonus'],0);self.assert_valid()
 
     def test_save_written_here_validates_on_release_1431(self):
-        """Rolling releases: an older server must accept every save this build writes (ledger category,
-        attendance rows, the incident gap reusing day_staff_incident)."""
+        """Staff ledger/attendance and incident fields cross 1.4.31; not a whole-save rollback guarantee."""
         import os,subprocess,sys
         old=Path(os.environ.get('MNL_OLD_TREE','D:/projects/Mot_ngay_lam_nghe/_rel1431/mot-ngay-lam-nghe'))
         if not (old/'game'/'engine.py').exists():self.skipTest('1.4.31 tree not available')
         sid=self.hire();self.act('assign',employee=sid,role='patrol');self.advance(30);self.close()
         self.assertTrue(self.rows(self.c['day']-1));self.j.act('start_day');self.advance(5)
+        cafe=self.j.state['careers']['cafe_bakery']
+        self.assertEqual((cafe['day'],cafe['open'],cafe['tasks'],cafe['active_task'],cafe['metrics']),
+                         (1,False,[],None,{}))
         with tempfile.TemporaryDirectory() as tmp:
             path=Path(tmp)/'save.json';path.write_text(json.dumps(self.j.state,ensure_ascii=False),encoding='utf-8')
             paths=[str(old)]+[p for p in os.environ.get('PYTHONPATH','').split(os.pathsep) if p and p!='.']
-            # The careers 1.5.0 adds (phở, cơm, photobooth) are unknown there: a rollback takes their blocks out first.
-            code=('import json,sys;from game.engine import validate_state,public_state;from game.content import CAREERS;'
+            # Exclude unknown careers and use old defaults for the untouched cafe's newer menu only.
+            # Keep the active workplace and all operations/ledger data exactly as written here.
+            code=('import json,sys;from game.engine import validate_state,public_state,new_state;from game.content import CAREERS;'
                   's=json.load(open(sys.argv[1],encoding="utf-8"));s["careers"]={k:v for k,v in s["careers"].items() if k in CAREERS};'
+                  's["careers"]["cafe_bakery"]=new_state()["careers"]["cafe_bakery"];'
                   'validate_state(s);public_state(s);print("ok")')
             r=subprocess.run([sys.executable,'-c',code,str(path)],cwd=str(old),env=dict(os.environ,PYTHONPATH=os.pathsep.join(paths),PYTHONDONTWRITEBYTECODE='1'),capture_output=True,text=True,encoding='utf-8',timeout=120)
         self.assertEqual((r.returncode,r.stdout.strip()),(0,'ok'),r.stderr[-2000:])
@@ -488,6 +542,10 @@ class StaffJobBonusTests(unittest.TestCase):
 class StaffIncidentRateTests(unittest.TestCase):
     """Owner 03/10: staff incidents are rare and calm, about one every 4-5 working days per shop (was most days).
     Drives operations.tick/on_close/on_start directly so many simulated days stay fast."""
+    def setUp(self):
+        # Legacy turn-clock rate simulation, not current continuous production.
+        for target in ('game.workplace_business.refresh','game.workplace_business.settle'):
+            mocked=patch(target,return_value=False);mocked.start();self.addCleanup(mocked.stop)
     def days_with_incident(self,seed,staff=1,days=60,moves=32):
         j=Journey();j.state['settings']['securityEvents']=False;s=j.state;c=j.c;cid=j.career;c['ops']['rng']=seed
         c['ops']['property']['tier']='garden';c['money']+=500;c['ops']['finance']['opening_balance']+=500
@@ -541,7 +599,7 @@ class OperationsSaveTests(unittest.TestCase):
         j=Journey();v=ops.spawn_case(j.state,j.c,j.career,'theft');v.update(reward_claimed=True,reward=18)
         with self.assertRaises(GameError):validate_state(j.state)
 
-    def test_existing_sqlite_migrated_once(self):
+    def test_legacy_save_migrated_once(self):
         with tempfile.TemporaryDirectory() as td:
             store=Store(Path(td)/'save.db');token,_,_=store.session()
             with store.connect() as db:db.execute('UPDATE sessions SET state=? WHERE sid=?',(json.dumps(self.legacy()),store.key(token)))

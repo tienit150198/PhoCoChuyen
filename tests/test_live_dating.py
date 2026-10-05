@@ -1,7 +1,7 @@
 """💕 Dates (live/dating.py): the matcher (fairness, preferences, blocks, the 24 h rule), the date's steps and
 timeouts, private picks that never leak before the reveal, an end that only says "match" for a mutual ❤️ (the same
 frame for both otherwise), and the rewards (capped per day, paid once). End to end over real sockets against a real
-game database (SQLite here, PostgreSQL with TEST_DATABASE_URL)."""
+game database (PostgreSQL with TEST_DATABASE_URL)."""
 import asyncio
 import random
 import time

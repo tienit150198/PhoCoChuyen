@@ -4,7 +4,8 @@ const J={wallet:10,bank:{open:true,balance:100,pref:'account',card:{available:60
 let c=paymentChoices(J,30,{balance:80,daily_left:20});
 assert.equal(c.find(x=>x.id==='cash').ok,false);
 assert.equal(c.find(x=>x.id==='account').ok,true);
-assert.equal(c.find(x=>x.id==='joint').ok,false,'rolling joint cap enforced in choices');
+assert.equal(c.find(x=>x.id==='joint').ok,true,'joint payments use balance without a daily quota');
+assert.equal(paymentChoices(J,81,{balance:80}).find(x=>x.id==='joint').ok,false,'actual fund balance still protects purchases');
 assert.equal(paymentChoices({wallet:-10},0).find(x=>x.id==='cash').ok,true,'free adoption does not require a solvent wallet');
 const calls=[],env={api:{state:{journey:J}},confirmAction:async(...args)=>{calls.push(args);return 'cash';}};
 assert.equal(await confirmPurchase(env,{title:'Mua',cost:30}),null,'unaffordable selected choice is never sent');

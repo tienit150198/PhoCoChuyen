@@ -1,10 +1,9 @@
 """Vợ chồng: what a married couple shares after the wedding.
 
 * 🏦 Quỹ chung (joint fund, table joint_funds + joint_ledger). Each spouse deposits from their
-  own wallet ("Gửi vào quỹ chung") and withdraws to it ("Rút từ quỹ chung"). Rule chosen: a
-  CAP of WITHDRAW_CAP xu per spouse per rolling 24 hours (withdrawals and bank card spends
-  together), AND a notice to the partner on every withdrawal: the cap stops one spouse
-  emptying the fund in one night, the notice keeps it open. Deposits are free.
+  own wallet ("Gửi vào quỹ chung") and withdraws to it ("Rút từ quỹ chung").
+  Withdrawals and spends use the available balance, with a partner notice every time.
+  There is no daily withdrawal quota. Deposits are free.
   On divorce the fund is split 50/50 (the odd xu goes to the spouse who did not file):
   contributions are shared money once deposited, like a real joint account, and a
   "by contribution" rule would reward depositing then withdrawing. Open debts between the two
@@ -28,8 +27,7 @@ applied once to their save. Each request carries a client rid, so a retried tap 
 twice (the effect id / ledger ref are UNIQUE).
 
 For game/bank.py ("Thẻ chung"): joint_account(s) and joint_spend(s, amount, label, ref).
-🏠 For game/housing.py: joint_spend(..., kind='home') pays a home's down payment from the fund (not
-counted in the daily cap), and on_load brings the spouse into the home through the inbox ('home' effects).
+🏠 For game/housing.py: joint_spend(..., kind='home') pays a home's down payment from the fund and on_load removes sharing after a sale. Moving in requires a family invitation.
 """
 from __future__ import annotations
 
@@ -40,7 +38,6 @@ import re
 from . import marriage as mr
 from .engine import GameError
 
-WITHDRAW_CAP = 1000                # xu per spouse per rolling 24 h (withdraw + card spend)
 FUND_MAX = 10 ** 7
 SEND_MAX, HELP_MAX = 5000, 2000
 SENDS_PER_DAY = 20
@@ -53,7 +50,7 @@ HOLD_S = 30                        # a card spend not in the spender's save afte
 HISTORY = 12
 VN = datetime.timezone(datetime.timedelta(hours=7))
 
-# Tables: joint_funds, joint_ledger, couple_requests, couple_debts, couple_moments, couple_stats (in marriage.SCHEMA).
+# Tables: joint_funds, joint_ledger, couple_requests, couple_debts, couple_moments, couple_stats (in game/pg_schema.py).
 
 NOTES = {
     'none': '', 'ngon': 'Mua gì ngon đi em', 'ngon_anh': 'Mua gì ngon đi anh', 'no': 'Trả nợ giúp anh', 'no_em': 'Trả nợ giúp em',
@@ -117,22 +114,15 @@ def _balance(db, cid: int) -> int:
     return int(r['balance']) if r else 0
 
 
-def _used(db, cid: int, sid: str) -> int:
-    return int(db.execute("SELECT COALESCE(SUM(amount),0) FROM joint_ledger WHERE couple=? AND sid=? AND kind IN ('withdraw','spend') "
-                          "AND status IN ('done','held') AND at>?", (cid, sid, mr.now() - mr.DAY)).fetchone()[0])
-
-
 def _fund_move(db, cid: int, sid: str, kind: str, amount: int, label: str, ref: str, status: str = 'done') -> int:
     """Change the fund and write its ledger row (UNIQUE ref: a replay raises IntegrityError)."""
     t = mr.now()
-    db.execute('INSERT OR IGNORE INTO joint_funds(couple,balance,updated) VALUES(?,0,?)', (cid, t))
+    db.execute('INSERT INTO joint_funds(couple,balance,updated) VALUES(?,0,?) ON CONFLICT DO NOTHING', (cid, t))
+    db.execute('SELECT balance FROM joint_funds WHERE couple=? FOR UPDATE', (cid,)).fetchone()
     if kind == 'deposit':
         _need(_balance(db, cid) + amount <= FUND_MAX, 'Quỹ chung đã đầy.', 'fund_full', 409)
         db.execute('UPDATE joint_funds SET balance=balance+?,updated=? WHERE couple=?', (amount, t, cid))
     else:
-        if kind in ('withdraw', 'spend'):
-            left = WITHDRAW_CAP - _used(db, cid, sid)
-            _need(amount <= left, f'Mỗi người chi và rút tổng cộng tối đa {WITHDRAW_CAP} xu từ quỹ chung trong 24 giờ. Bạn còn {max(0, left)} xu.', 'fund_cap', 409)
         _need(db.execute('UPDATE joint_funds SET balance=balance-?,updated=? WHERE couple=? AND balance>=?', (amount, t, cid, amount)).rowcount == 1,
               f'Quỹ chung chỉ còn {mr._xu(_balance(db, cid))} xu.', 'fund_low', 409)
     bal = _balance(db, cid)
@@ -203,7 +193,7 @@ def deposit(store, sid, display, d):
 
 @_once
 def withdraw(store, sid, display, d):
-    amount = _amount(d, 'amount', WITHDRAW_CAP)
+    amount = _amount(d, 'amount', FUND_MAX)
     with store.connect() as db:
         c = _married(db, sid)
     eid = f'fundw:{c["id"]}:{mr._rid(d)}'
@@ -525,7 +515,7 @@ def on_end(db, c: dict, filer: str | None, deleted: str | None = None) -> list:
     effects = []
     if bal:
         db.execute('UPDATE joint_funds SET balance=0,updated=? WHERE couple=?', (t, cid))
-        db.execute("INSERT OR IGNORE INTO joint_ledger(couple,sid,kind,amount,balance,label,ref,status,at) VALUES(?,?,'split',?,0,?,?,'done',?)",
+        db.execute("INSERT INTO joint_ledger(couple,sid,kind,amount,balance,label,ref,status,at) VALUES(?,?,'split',?,0,?,?,'done',?) ON CONFLICT DO NOTHING",
                    (cid, filer, bal, 'Chia quỹ chung khi chia tay', f'split:{cid}', t))
     for who, amount in share.items():
         if amount and who != deleted:
@@ -560,7 +550,7 @@ def on_load(store, sid: str, state: dict | None, c: dict | None) -> None:
                 st = mr._row(db, 'SELECT happy FROM couple_stats WHERE couple=?', (c['id'],))
             gift = 5 + int((st or {}).get('happy') or 0) // 10
             effects.append(mr._effect(f'anniv:{c["id"]}:{side}:{k}', sid, 'wallet', gift, f'Quà kỷ niệm {k * ANNIV_DAYS} ngày về chung một nhà'))
-    effects += _home_effects(store, state, c, sid, side)   # 🏠 the spouse moves into this save's home
+    effects += _home_effects(store, state, c, sid, side)   # 🏠 remove accepted sharing after a sale
     if not effects:
         return
 
@@ -652,7 +642,7 @@ def joint_account(s: dict) -> dict | None:
         if not c:
             return None
         return dict(id=c['id'], balance=_balance(db, c['id']), members=[dict(name=mr._display(db, c[x]), me=c[x] == sid) for x in ('a', 'b')],
-                    history=_history(db, c['id']), daily_left=max(0, WITHDRAW_CAP - _used(db, c['id'], sid)))
+                    history=_history(db, c['id']), daily_left=_balance(db, c['id']))
 
 
 def joint_spend(s: dict, amount: int, label: str, ref: str, kind: str = 'spend') -> dict:
@@ -661,11 +651,8 @@ def joint_spend(s: dict, amount: int, label: str, ref: str, kind: str = 'spend')
     Idempotent by `ref` (the same ref never charges twice; retries of the same command are
     fine). The fund is debited at once in its own transaction ("held") and `s` records it
     (s['marriage']['applied']); when the command's save write never lands, the next load of
-    that save refunds the hold after HOLD_S seconds. Counts toward the WITHDRAW_CAP daily
-    limit. Raises GameError when not allowed. Returns {balance, daily_left}.
-    Do not call it while holding the store's write lock (e.g. inside Store._command_locked):
-    it raises GameError('busy') instead of waiting on itself.
-    kind='home' (🏠 game/housing.py): a home's down payment, outside the daily cap."""
+    that save refunds the hold after HOLD_S seconds. Uses the available balance. Raises GameError when not allowed. Returns {balance, daily_left}.
+    kind='home' (🏠 game/housing.py): a home's down payment."""
     store = mr.STORE
     if kind not in ('spend', 'home'):
         raise GameError('Loại giao dịch không hợp lệ.', 'bad_kind')
@@ -675,9 +662,6 @@ def joint_spend(s: dict, amount: int, label: str, ref: str, kind: str = 'spend')
         raise GameError('Mã giao dịch không hợp lệ.', 'bad_ref')
     if store is None:
         raise GameError('Quỹ chung chưa sẵn sàng.', 'no_joint')
-    owned = getattr(store._wlock, '_is_owned', None)
-    if store._depth and callable(owned) and owned():
-        raise GameError('Quỹ chung đang bận. Thử lại sau một chút nhé.', 'busy')
     with store.connect() as db:
         c, sid = _sid_of(db, s)
     if not c:
@@ -696,13 +680,13 @@ def joint_spend(s: dict, amount: int, label: str, ref: str, kind: str = 'spend')
             except mr.MarriageError as e:
                 raise GameError(e.message, e.code) from None
             mr._notice(db, mr._other(c, sid), f'{"🏠" if kind == "home" else "💳"} {mr._display(db, sid)} vừa chi {amount} xu từ quỹ chung: {str(label or "Thẻ chung")[:60]}')
-        return dict(balance=_balance(db, c['id']), daily_left=max(0, WITHDRAW_CAP - _used(db, c['id'], sid)))
+        return dict(balance=_balance(db, c['id']), daily_left=_balance(db, c['id']))
     if key in box['applied']:
         with store.connect() as db:
             r = mr._row(db, 'SELECT status FROM joint_ledger WHERE ref=?', (key,))
             if r and r['status'] == 'void':
                 raise GameError('Giao dịch này đã hết hạn. Thử lại nhé.', 'expired')
-            return dict(balance=_balance(db, c['id']), daily_left=max(0, WITHDRAW_CAP - _used(db, c['id'], sid)))
+            return dict(balance=_balance(db, c['id']), daily_left=_balance(db, c['id']))
     out = store.transaction(run)
     box['applied'] = (box['applied'] + [key])[-mr.APPLIED_KEPT:]
     return out
@@ -726,7 +710,7 @@ def view(db, sid: str, c: dict | None) -> dict:
                claim_lines={k: dict(tone=v[0], text=v[1]) for k, v in CLAIM_LINES.items()}, later_lines=LATER_LINES,
                moments_kinds={k: dict(emoji=v[0], label=v[1], points=v[3]) for k, v in MOMENTS.items()},
                gifts={k: dict(name=v['name'], emoji=v['emoji']) for k, v in _received()[0].items()},
-               limits=dict(withdraw_cap=WITHDRAW_CAP, send_max=SEND_MAX, help_max=HELP_MAX, lunch=LUNCH_COST, anniv_days=ANNIV_DAYS))
+               limits=dict(withdraw_cap=None, send_max=SEND_MAX, help_max=HELP_MAX, lunch=LUNCH_COST, anniv_days=ANNIV_DAYS))
     if not c or c['status'] != 'married':
         return out
     cid = c['id']
@@ -742,7 +726,7 @@ def view(db, sid: str, c: dict | None) -> dict:
                       (cid, mr.now() - HELP_DAYS * mr.DAY)):
         reqs.append(dict(id=r['id'], mine=r['from_sid'] == sid, amount=r['amount'], note=r['note'], loan=bool(r['loan']), at=int(r['at']),
                          expires=int(r['at'] + HELP_DAYS * mr.DAY)))
-    out.update(fund=dict(balance=_balance(db, cid), daily_left=max(0, WITHDRAW_CAP - _used(db, cid, sid)), history=_history(db, cid)),
+    out.update(fund=dict(balance=_balance(db, cid), daily_left=_balance(db, cid), history=_history(db, cid)),
                happy=dict(points=st['happy'], streak=streak, best=st['best'], today=st['today'] if st['last_day'] == day else 0, max=HAPPY_MAX),
                done_today=sorted(done), moments=moments, requests=reqs)
     return out

@@ -3,7 +3,7 @@
 websockets` + chromium).
 
 Starts a game server and the live service (chat and dates on, LIVE_DATE_SPEED=40 so the neighbour comes after 3 s)
-on one SQLite database. MNL_PY picks the servers' Python (the live service needs websockets), MNL_PYTHONPATH their
+on one PostgreSQL database. MNL_PY picks the servers' Python (the live service needs websockets), MNL_PYTHONPATH their
 library path. Two phones (390×844, touch), friends:
   * An makes a group with Bình, taps 🔔 in its header, picks "🔕 Tắt": the bell turns 🔕; Bình writes in the group:
     An's list shows the chat quiet (🔕, a grey count), the chat button's badge leaves it out; "🔔 Bật" again counts it;
@@ -20,7 +20,6 @@ import argparse
 import asyncio
 import contextlib
 import os
-import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -31,24 +30,25 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from browser_live_chat import PW, free_port, phone, send, text_of, wait_http  # noqa: E402
 from browser_live_pin import until  # noqa: E402
+from pg_test_support import test_env, test_connect, schema_for
 
 
 @contextlib.contextmanager
 def servers(tmp: str):
     gp, lp = free_port(), free_port()
-    db = os.path.join(tmp, 'g.sqlite3')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live')
+    db = os.path.join(tmp, 'g.db')
+    env = test_env( QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live')
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'DATABASE_URL'):
         env.pop(k, None)
     py = os.environ.get('MNL_PY') or sys.executable
     if os.environ.get('MNL_PYTHONPATH'):
         env['PYTHONPATH'] = os.environ['MNL_PYTHONPATH']
-    game = subprocess.Popen([py, 'server.py', '--port', str(gp), '--db', db], cwd=ROOT, env=env,
+    game = subprocess.Popen([py, 'server.py', '--port', str(gp), '--namespace', db], cwd=ROOT, env=env,
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     wait_http(f'http://127.0.0.1:{gp}/api/health')
-    lenv = dict(env, LIVE_CHAT='1', LIVE_DATING='1', LIVE_DATE_SPEED='40', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
+    lenv = dict(env, DATABASE_URL=env['TEST_DATABASE_URL'], LIVE_CHAT='1', LIVE_DATING='1', LIVE_DATE_SPEED='40', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
     log = open(os.path.join(tmp, 'live.log'), 'w')
-    live = subprocess.Popen([py, '-m', 'live', '--db', db], cwd=ROOT, env=lenv, stdout=log, stderr=log)
+    live = subprocess.Popen([py, '-m', 'live', '--schema', schema_for(db)], cwd=ROOT, env=lenv, stdout=log, stderr=log)
     wait_http(f'http://127.0.0.1:{lp}/live/health')
     try:
         yield f'http://127.0.0.1:{gp}', db
@@ -77,7 +77,7 @@ async def run(shots: Path) -> list:
             b = await phone(browser, base, 'Bình', problems)
             await a.api('/api/account/register', dict(username='an_test', password=PW, confirm=PW, display='An'))
             await b.api('/api/account/register', dict(username='binh_test', password=PW, confirm=PW, display='Bình'))
-            with sqlite3.connect(db) as con:
+            with test_connect(db) as con:
                 sa, sb = (con.execute('SELECT sid FROM accounts WHERE username=?', (u,)).fetchone()[0] for u in ('an_test', 'binh_test'))
                 con.execute("UPDATE stat_births SET day='2026-01-01' WHERE sid IN (?, ?)", (sa, sb))
                 for x, y in ((sa, sb), (sb, sa)):

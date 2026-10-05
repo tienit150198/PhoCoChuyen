@@ -24,7 +24,7 @@ game/system_gift.py way:
   (a system_gifts row written as 'applied'): the couple's party total, an anniversary, the weekly race.
 * Loading the game never fails because of an effect: the caller logs the error and loads the save.
 
-Table: `live_effects` (game/live_chat.py SCHEMA on SQLite, game/pg_schema.py on PostgreSQL).
+Table: `live_effects` (game/pg_schema.py on PostgreSQL).
 """
 from __future__ import annotations
 
@@ -75,14 +75,15 @@ def apply(s: dict, p: dict) -> tuple[dict, dict]:
     e.need(valid_id(eid), 'Mã phần thưởng không hợp lệ.')
     kind = p.get('kind')
     e.need(kind in PAYS, 'Loại phần thưởng không hợp lệ.')
-    amount = e.integer(p.get('amount'), SPIRIT_DOWN if kind == 'spirit' else 1, AMOUNT_MAX)
+    transfer_refund = kind == 'coins' and p.get('src') == 'xfer_back'
+    amount = e.integer(p.get('amount'), SPIRIT_DOWN if kind == 'spirit' else 1, 10**9 if transfer_refund else AMOUNT_MAX)
     e.need(amount != 0, 'Số lượng không hợp lệ.')
     h = short(eid)
     got = j.get('live_fx') if isinstance(j.get('live_fx'), list) else []
     if h in got:   # already paid (a receipt pruned meanwhile): nothing moves
         return s, dict(message='', live=dict(id=eid, kind=kind, amount=0, already=True))
     if kind == 'coins':
-        jr._wallet(j, amount, KIND, LABELS.get(p.get('src'), LABEL))
+        jr._wallet(j, amount, 'bank' if transfer_refund else KIND, LABELS.get(p.get('src'), LABEL))
         message = f'+{amount} xu vào ví.'
     elif kind == 'quay_refund':
         from . import quay_hire

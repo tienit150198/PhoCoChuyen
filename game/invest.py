@@ -3,8 +3,9 @@
 
 Everything lives under `s['journey']['invest']` and moves money only between
 the journey wallet and the invest holdings, through `journey._wallet` so the
-wallet history, max_wallet, debt flags and titles keep working. Prices, scam
+wallet history, max_wallet, debt flags and titles keep working. Scam
 offers and payouts are deterministic from `journey.seed` and the life day.
+Coin quotes are shared wall-clock prices; savings and scams keep their life-day clock.
 Server authoritative: the client renders `public()` and sends `iv_*` commands.
 Design: docs/superpowers/specs/2026-09-29-invest-design.md
 
@@ -19,6 +20,8 @@ import copy
 import math
 import random
 from . import archive as ar
+from . import market_trends as mt
+from . import realtime_market as rm
 
 VERSION = 1
 UNLOCK = 500            # the wallet must have held this much once (stats.max_wallet)
@@ -26,6 +29,8 @@ BASE = 10000            # Mây Coin base price, hundredths of a xu (100 xu)
 PRICE_MIN, PRICE_MAX = 100, 10_000_000
 COIN = 1000             # units per coin (thousandths)
 CENT = 100              # price scale
+REALTIME_KEY = 'coin_realtime_v'  # optional journey sidecar, never part of legacy invest schema
+MAX_UNITS = 10**15       # includes maximum valid legacy units redenominated at PRICE_MAX
 FEE_PCT = 2
 MIN_TRADE = 10
 RATE_MILLI = 3          # 0.3 % a day: 3 thousandths of a xu per xu
@@ -104,8 +109,42 @@ def _value(units: int, price: int) -> int:
     return units * price // (COIN * CENT)
 
 
+def _live_units(j: dict, iv: dict) -> int:
+    """Project legacy holdings at the fixed epoch, never at first-login's quote.
+
+    Floor to a thousandth of a coin; retain one unit for nonzero dust so its
+    cost basis survives. Epoch precision loss/gain is strictly below 0.1 xu.
+    """
+    units = iv['coin']['units']
+    if j.get(REALTIME_KEY) == 1 or not units:
+        return units
+    return max(1, units * iv['price'] // rm.base_price('coin'))
+
+
+def market_clock(q: dict) -> dict:
+    return dict(tick=q['tick'], market_day=q['market_day'], as_of=q['as_of'], next_at=q['next_at'],
+                tick_seconds=rm.TICK_SECONDS, day_seconds=rm.DAY_SECONDS, timestamps=list(q['timestamps']))
+
+
+def sync_market(s: dict) -> dict:
+    """Persist the one-time conversion and a current quote during a transaction."""
+    iv = _state(s)
+    q = rm.quote('coin')
+    iv['coin']['units'] = _live_units(s['journey'], iv)
+    s['journey'][REALTIME_KEY] = 1
+    iv['price'], iv['prices'] = q['price'], list(q['history'])
+    return q
+
+
+def value(s: dict) -> int:
+    """Read-only live coin valuation, including unconverted legacy holdings."""
+    j = s.get('journey') or {}
+    iv = j.get('invest')
+    return _value(_live_units(j, iv), rm.quote('coin')['price']) if iv else 0
+
+
 def _step(price: int, rng: random.Random) -> tuple[int, str]:
-    """One life day of Mây Coin: rare crash or pump, otherwise a noisy walk."""
+    """Legacy walk, retained verbatim for initial prehistory and old saves."""
     r = rng.random()
     if r < .04:
         move, kind = -rng.uniform(.30, .50), 'crash'
@@ -115,6 +154,23 @@ def _step(price: int, rng: random.Random) -> tuple[int, str]:
         move, kind = max(-.15, min(.15, rng.gauss(.004, .055))), ''
     move += .04 * math.log(BASE / price)
     return max(PRICE_MIN, min(PRICE_MAX, round(price * (1 + move)))), kind
+
+
+def _market_step(price: int, seed: int, day: int) -> tuple[int, mt.Episode | None]:
+    """Future life-day close: sustained news, otherwise a gently rising noisy market.
+
+    The linear anchor avoids compounding into PRICE_MAX after a long journey.
+    Mean reversion only acts on quiet days, so it cannot reverse a headline.
+    """
+    event = mt.episode('coin', seed, day)
+    rng = random.Random(f'may-trend-v1|{seed}|{day}')
+    if event:
+        move = rng.uniform(.015, .04) * (1 if event.direction == 'up' else -1)
+    else:
+        anchor = min(PRICE_MAX / 4, BASE * (1 + .001 * day))
+        pull = max(-.035, min(.035, .018 * math.log(anchor / price)))
+        move = max(-.09, min(.09, rng.gauss(.0018, .018) + pull))
+    return max(PRICE_MIN, min(PRICE_MAX, round(price * math.exp(move)))), event
 
 
 def initial(seed: int = 0, day: int = 1) -> dict:
@@ -186,21 +242,9 @@ def _pct(a: int, b: int) -> int:
 
 # ---------------------------------------------------------------- daily tick
 def _tick(s: dict, iv: dict, d: int, notes: list[str]) -> None:
-    """Close life day `d`: move the market, accrue interest, run the scam clock."""
+    """Close life day `d`: accrue interest and run the scam clock."""
     j = s['journey']
     seed = j.get('seed', 0)
-    # Market.
-    old = iv['price']
-    iv['price'], kind = _step(old, random.Random(f'may|{seed}|{d}'))
-    iv['prices'] = ar.last(iv['prices'] + [iv['price']], HISTORY, 'invest.prices', ar.JOURNEY)
-    if kind:
-        pct = _pct(old, iv['price'])
-        text = (f'Mây Coin tăng vọt {pct}% sau tin đồn “sắp lên sàn lớn”.' if kind == 'pump'
-                else f'Mây Coin lao dốc {-pct}% sau tin một ví lớn bán tháo.')
-        _log(iv, d, kind, text)
-        if iv['coin']['units']:
-            notes.append(('📈 ' if kind == 'pump' else '📉 ') + text +
-                         f' Coin của bạn giờ trị giá {_value(iv["coin"]["units"], iv["price"])} xu.')
     # Savings: daily accrual, credited at the end of each 7-day term.
     sv = iv['saving']
     if sv['balance'] > 0:
@@ -253,12 +297,15 @@ def _tick(s: dict, iv: dict, d: int, notes: list[str]) -> None:
 
 
 def on_life_day(s: dict, result: dict | None = None) -> list[str]:
-    """Catch the market, savings and scam clock up to `journey.life_day`.
-    Idempotent: safe to call after any action (does nothing unless a life day passed)."""
+    """Sync the real-time quote, then catch savings/scams up to `journey.life_day`.
+    Idempotent within a quote tick; life days never drive coin prices.
+    The existing 400-day replay safety cap also bounds exact batch/day equivalence.
+    """
     j = s.get('journey')
     if not isinstance(j, dict):
         return []
     iv = _state(s)
+    sync_market(s)
     notes: list[str] = []
     target = int(j['life_day'])
     iv['day'] = max(iv['day'], target - 400)
@@ -294,6 +341,14 @@ def apply(s: dict, name: str, p: dict) -> dict:
     need(name in COMMANDS, 'Thao tác đầu tư không hợp lệ.', 'unknown_action')
     need(unlocked(s), LOCKED, 'locked')
     iv = _state(s)
+    # Stage price/quantity conversion until payload and funds checks succeed.
+    # Failed direct calls, as well as failed engine transactions, keep the save.
+    if name in ('iv_buy', 'iv_sell'):
+        projected_units = _live_units(j, iv)
+        iv = copy.deepcopy(iv)
+        q = rm.quote('coin')
+        iv['coin']['units'] = projected_units
+        iv['price'], iv['prices'] = q['price'], list(q['history'])
     day, wallet = j['life_day'], j['wallet']
     coin, sv, sc = iv['coin'], iv['saving'], iv['scam']
     result = dict(message='', effects=[])
@@ -336,7 +391,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         _log(iv, day, 'buy', f'Mua {_coins_text(units)} MÂY giá {_price_text(iv["price"])} xu (phí {fee} xu).')
         result['message'] = f'Đã mua Mây Coin bằng {amount} xu (phí {fee} xu).'
         if first:
-            result['effects'].append('Giá coin lên xuống mỗi ngày. Chỉ dùng tiền nhàn rỗi nhé.')
+            result['effects'].append('Giá coin cập nhật mỗi 10 phút thực. Chỉ dùng tiền nhàn rỗi nhé.')
     elif name == 'iv_sell':
         value = _value(coin['units'], iv['price'])
         need(coin['units'] > 0, 'Bạn chưa có Mây Coin để bán.')
@@ -383,6 +438,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
         result['message'] = 'Bạn đã từ chối. Lãi “cam kết” 30%/tuần, thưởng khi rủ người khác… là dấu hiệu lừa đảo quen thuộc.'
         if first:
             result['effects'].append(f'🛡️ Huy hiệu mới: {BADGES["scam_spotter"]["name"]}.')
+    if name in ('iv_buy', 'iv_sell'):
+        j['invest'] = iv
+        j[REALTIME_KEY] = 1
     return result
 
 
@@ -405,8 +463,10 @@ def public(s: dict) -> dict:
     iv = j.get('invest') or initial(int(j.get('seed', 0)), int(j.get('life_day', 1)))
     coin, sv, sc = iv['coin'], iv['saving'], iv['scam']
     flat = flat_term(s, sv) if sv['balance'] else False
-    value = _value(coin['units'], iv['price'])
-    prices = list(iv['prices'])
+    q = rm.quote('coin')
+    units = _live_units(j, iv)
+    value = _value(units, q['price'])
+    prices = list(q['history'])
     scam = None
     if sc:
         meta = SCAMS[sc['kind']]
@@ -421,9 +481,10 @@ def public(s: dict) -> dict:
         saving=dict(balance=sv['balance'], pending=sv['pending'] // 1000, earned=sv['earned'], forfeited=sv['forfeited'],
                     term_left=max(0, TERM - (j['life_day'] - sv['term_day'])) if sv['balance'] else TERM,
                     daily=accrual(sv['balance'], flat) // 1000, daily_milli=accrual(sv['balance'], flat), flat=flat),
-        coin=dict(price=iv['price'], prices=prices, change=_pct(prices[-2], prices[-1]) if len(prices) > 1 else 0,
-                  units=coin['units'], value=value, basis=coin['basis'], unrealised=value - coin['basis'] if coin['units'] else 0,
-                  realised=coin['realised'], fees=coin['fees'], trades=coin['trades']),
+        coin=dict(price=q['price'], prices=prices, change=round((q['price'] - q['previous']) * 100 / q['previous'], 2),
+                  units=units, value=value, basis=coin['basis'], unrealised=value - coin['basis'] if units else 0,
+                  realised=coin['realised'], fees=coin['fees'], trades=coin['trades'],
+                  market_news=q['news'], market_clock=market_clock(q)),
         scam=scam, log=list(reversed(iv['log'])),
         badges=[dict(id=b, **BADGES[b]) for b in iv['badges']],
         stats=dict(declined=iv['stats']['declined'], joined=iv['stats']['joined'], lost=iv['stats']['lost']))
@@ -437,6 +498,8 @@ def validate(s: dict) -> None:
         return
     iv = j['invest']
     bad = 'Dữ liệu đầu tư không hợp lệ.'
+    if REALTIME_KEY in j:
+        need(type(j[REALTIME_KEY]) is int and j[REALTIME_KEY] == 1, bad, 'invalid_save')
     need(isinstance(iv, dict) and set(iv) == set(initial()), bad, 'invalid_save')
     need(iv['version'] == VERSION, bad, 'invalid_save')
     integer(iv['day'], 1, 10**6)
@@ -447,7 +510,7 @@ def validate(s: dict) -> None:
         integer(x, PRICE_MIN, PRICE_MAX)
     coin = iv['coin']
     need(isinstance(coin, dict) and set(coin) == {'units', 'basis', 'realised', 'fees', 'trades'}, bad)
-    integer(coin['units'], 0, 10**12)
+    integer(coin['units'], 0, MAX_UNITS if j.get(REALTIME_KEY) == 1 else 10**12)
     integer(coin['basis'], 0, 10**9)
     integer(coin['realised'], -10**9, 10**9)
     integer(coin['fees'], 0, 10**9)

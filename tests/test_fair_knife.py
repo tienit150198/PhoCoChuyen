@@ -152,7 +152,7 @@ class Knife(FairBase):
 
     def board(self, s):
         run = s['journey']['fair_kn']['run']
-        return kn.schedule(run['sd'], run['lv'], run['hot'])
+        return fh._kn_sched(run, s['journey'])
 
     def clear(self, s):
         """Throw the level clean (the clock moved on enough for every throw)."""
@@ -165,6 +165,7 @@ class Knife(FairBase):
         sc = self.board(s)
         taps = safe_taps(sc, 2)
         taps.append(crash_tap(sc, taps))
+        self.dice(Dice(draws=[.99]))
         self.clock.t += taps[-1] / 1000
         return self.act(s, 'fair_kn_throw', lv=s['journey']['fair_kn']['run']['lv'], taps=taps)
 
@@ -173,13 +174,13 @@ class Knife(FairBase):
         s, r = self.start(s, 10)
         run = r['fair']['run']
         self.assertEqual((run['lv'], run['stage'], run['prize'], run['win']), (1, 'play', 0, kn.prize(10, 1)))
-        self.assertEqual(run['board']['need'], kn.DIFF[1][0])
+        self.assertEqual(run['board']['need'], (kn.DIFF[1][0]*135+99)//100)
         self.assertEqual(s['journey']['wallet'], 90)
         row = s['journey']['history'][-1]
         self.assertEqual((row['kind'], row['amount'], row['label']), ('fair', -10, f'{fh.LABELS["kn"]} · 1 lượt'))
         s, r = self.clear(s)
         x = r['fair']
-        self.assertEqual((x['cleared'], x['hit'], len(x['stuck'])), (True, -1, kn.DIFF[1][0]))
+        self.assertEqual((x['cleared'], x['hit'], len(x['stuck'])), (True, -1, (kn.DIFF[1][0]*135+99)//100))
         self.assertEqual((x['run']['stage'], x['run']['prize'], x['run']['win']), ('choice', 11, kn.prize(10, 2)))
         self.assertEqual(s['journey']['wallet'], 90)                         # paid only on Dừng
         s, r = self.act(s, 'fair_kn_stop')
@@ -222,7 +223,7 @@ class Knife(FairBase):
 
     def test_x2_levels(self):
         s = story(500)
-        self.dice(Dice(draws=[.1]))                                         # clearing level 1: the next is 🔥 x2
+        self.dice(Dice(draws=[.1, .1]))                                    # win, then the next is 🔥 x2
         s, _ = self.start(s, 10)
         s, r = self.clear(s)
         self.assertTrue(r['fair']['run']['nx'])
@@ -235,7 +236,7 @@ class Knife(FairBase):
         bonus = kn.x2_bonus(10, 2)
         self.assertEqual((r['fair']['run']['prize'], s['journey']['fair_kn']['run']['bn']), (kn.prize(10, 2) + bonus, bonus))
         s, _ = self.act(s, 'fair_kn_next')
-        self.dice(Dice(draws=[.2]))                                         # after a plain level it may come again
+        self.dice(Dice(draws=[.1, .2]))                                    # win, then x2 may come again
         s, r = self.clear(s)
         self.assertTrue(r['fair']['run']['nx'])
         s, r = self.act(s, 'fair_kn_stop')
@@ -341,6 +342,7 @@ class Knife(FairBase):
         taps = safe_taps(sc, sc['need'])
         self.clock.t = fh.window()[1] - 5                                    # the level began just before the close
         s['journey']['fair_kn']['run']['at'] = int(self.clock.t * 1000) - taps[-1] - 100
+        s['journey']['fair_kn_skill']['at'] = s['journey']['fair_kn']['run']['at']
         s, r = self.act(s, 'fair_kn_throw', lv=1, taps=taps)                 # may still be finished
         self.assertTrue(r['fair']['cleared'])
         with self.assertRaises(GameError) as e:                              # but not played on
@@ -378,7 +380,7 @@ class Knife(FairBase):
         s, r = self.start(s, 10)
         self.assertEqual(s['journey']['fair_kn']['run']['hot'], 2)
         self.assertEqual(self.board(s)['d'], 3)
-        self.assertEqual(r['fair']['run']['board']['need'], kn.DIFF[3][0])
+        self.assertEqual(r['fair']['run']['board']['need'], (kn.DIFF[3][0]*135+99)//100)
         self.assertEqual(public_state(s)['fair']['knife']['hot'], 2)
 
     def test_the_phi_tieu_is_gone(self):
@@ -401,7 +403,8 @@ class Saves(FairBase):
         s, _ = self.act(s, 'fair_kn_start', stake=10)
         j = s['journey']
         self.assertEqual(set(j['fair']), set(fh.KEYS))                      # nothing new where 1.4.20 checks the keys
-        self.assertNotIn('fair_run', j)                                      # nor in the luck stalls' runs
+        self.assertNotIn('fair_run', j)                                    # skill play has no chance streak
+        self.assertEqual(j['fair_kn_skill']['difficulty'], 135)
         self.assertNotIn('fair_run2', j)
         self.assertEqual(set(j['fair_kn']), set(fh.KN_KEYS))
         validate_state(s)
@@ -431,6 +434,7 @@ class Saves(FairBase):
         v = public_state(s)['fair']['knife']
         json.dumps(v)
         self.assertEqual(set(v['run']['board']), {'lv', 'need', 'pre', 'th0', 'segs'})
+        self.assertFalse(v['run']['chance'])
         self.assertEqual(v['ladder'], list(kn.LADDER))
         self.assertNotIn('sd', json.dumps(v['run']))
 

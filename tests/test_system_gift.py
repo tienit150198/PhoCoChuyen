@@ -269,7 +269,7 @@ class Grant(Base):
 
     def run_script(self, *args):
         env = {k: v for k, v in os.environ.items() if k != 'DATABASE_URL'}
-        return subprocess.run([sys.executable, str(ROOT / 'scripts' / 'grant_gift.py'), '--db', str(self.path), *args],
+        return subprocess.run([sys.executable, str(ROOT / 'scripts' / 'grant_gift.py'), '--namespace', str(self.path), *args],
                               capture_output=True, text=True, env=env, timeout=60)
 
     def test_script(self):
@@ -299,10 +299,17 @@ class Grant(Base):
 
 class Schema(unittest.TestCase):
     def test_postgres_table_matches(self):
+        from tests.pg_support import primary_key
         self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 4)
-        t = pg_schema.TABLE['system_gifts']
-        self.assertEqual([c for c, _ in t['columns']], ['id', 'sid', 'coins', 'title', 'text', 'status', 'created', 'applied_at', 'seen_at', 'granted_by'])
-        self.assertEqual(t['key'], ('id',))
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Store(Path(tmp) / 'g.db')
+            try:
+                with store.connect() as db:
+                    cols = [r[0] for r in db.execute("SELECT column_name FROM information_schema.columns WHERE table_schema=current_schema() AND table_name='system_gifts' ORDER BY ordinal_position")]
+                    self.assertEqual(primary_key(db, 'system_gifts'), ('id',))
+                self.assertEqual(cols, ['id', 'sid', 'coins', 'title', 'text', 'status', 'created', 'applied_at', 'seen_at', 'granted_by'])
+            finally:
+                store.close_pool()
         self.assertIn('CREATE TABLE IF NOT EXISTS system_gifts', pg_schema.TABLES_DDL)
         self.assertIn('system_gifts (sid, status)', pg_schema.INDEX_DDL)
 
@@ -405,7 +412,7 @@ class LargeGift(unittest.TestCase):
     def test_the_tool_wants_large_above_1000(self):
         import subprocess, sys as _s, os as _o
         root = _o.path.dirname(_o.path.dirname(_o.path.abspath(__file__)))
-        r = subprocess.run([_s.executable, _o.path.join(root, 'scripts', 'grant_gift.py'), '--db', _o.path.join(root, 'no-such.sqlite3'),
+        r = subprocess.run([_s.executable, _o.path.join(root, 'scripts', 'grant_gift.py'), '--namespace', _o.path.join(root, 'no-such.db'),
                             '--user', 'x', '--coins', '100000', '--title', 't', '--text', 't'], capture_output=True, text=True,
                            env={k: v for k, v in _o.environ.items() if k != 'DATABASE_URL'})
         self.assertNotEqual(r.returncode, 0)
@@ -417,6 +424,9 @@ class TownWide(Base):
 
     def setUp(self):
         super().setUp()
+        broadcast = patch.object(sg, 'BROADCASTS', (sg.BROADCASTS[0],))
+        broadcast.start()
+        self.addCleanup(broadcast.stop)
         h = patch.dict(os.environ, {'MNL_BROADCAST_OFF': '0'})
         h.start()
         self.addCleanup(h.stop)

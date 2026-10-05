@@ -1,3 +1,103 @@
+# 1.7.15 — 2026-10-05
+
+- Coin/vàng chung thị trường theo giờ thực: 10 phút một phiên, 1 giờ một ngày thị trường; giữ tài sản và giá vốn khi chuyển đổi.
+- Tối ưu sổ giao dịch khi xử lý nhiều đơn NPC, kiểm tra lịch sử và vẽ hội chợ/buồng ảnh/cào vé.
+- Quầy hiển thị khách thật và lượt mua vừa xác nhận; giữ bảng doanh thu, thông tin, vị trí cuộn khi cập nhật.
+- Cược trò có phí tối đa 500 xu/lượt; phóng dao mới tăng số dao/tốc độ bia, giữ xác suất thắng và ván đang dở.
+- Bổ sung đề nghị lương gấp đôi của NPC và các lựa chọn chi phí kinh doanh; giữ kiểm tra số dư và chống trừ lặp.
+- Có gì mới gồm đúng bốn dòng chủ game cung cấp; không phát lại quà.
+
+# 1.7.14 — 2026-10-05
+
+- Quầy có trạng thái mở/đóng thật, giữ đơn đã nhận và không cộng bù khách trong thời gian đóng.
+- Thị trường thay đổi lượng khách; bổ sung thuế thu nhập, phí môi trường, gói bảo vệ và vật dụng giảm rủi ro có tác dụng cụ thể.
+- Rủi ro trộm/hack tăng theo bậc tài sản, thêm thiết bị phòng vệ; giữ giới hạn thiệt hại và không truy thu sự cố cá nhân offline.
+- Nhân viên NPC có chuyện tăng lương, cưới, xin nghỉ; chất lượng phục vụ tạo đánh giá và lịch sử chi phí rõ ràng.
+- Phát hành yên lặng: không thêm Có gì mới, không phát lại quà.
+
+# 1.7.13 — 2026-10-05
+
+- Giảm tải khi ghé chỗ làm và xử lý đơn nhân viên tích lũy; giữ nguyên tiền, lịch sử và bảo vệ giao dịch.
+- Chat giữ danh sách tin khi nội dung không đổi; Nhà không khóa điều hướng trong lúc tải chợ thuê.
+- Không thêm Có gì mới hoặc phát lại quà.
+
+# 1.7.12 — 2026-10-05
+
+- Thêm tình huống có lựa chọn cho chủ tiệm và Quầy riêng; camera giảm nguy cơ trộm, lịch sử lưu kết quả xử lý.
+- Chủ nhà tự đặt giá cho NPC hoặc người chơi thuê; hợp đồng trả trước, gia hạn và nội thất nhà thuê riêng.
+- Tin bất động sản trong game ảnh hưởng giá bán lại và giá thuê, có giai đoạn hồi phục.
+- Phát hành yên lặng: giữ thông báo ba dòng đã chỉnh, không tạo Có gì mới và không phát lại quà.
+
+# 1.7.11 — 2026-10-05
+
+- Thêm mục Đầu tư trực tiếp trong menu, gom Mây Coin và Vàng với giá, tài sản, lãi/lỗ và giao dịch trên cùng màn hình.
+- Tin thị trường trong game tạo xu hướng 2–5 ngày; khoảng 70% đợt tin có chiều tăng. Giữ nguyên tài sản và giá vốn đã lưu.
+- Giữ lịch sử vàng đến 05/10; cơ chế mới áp dụng từ 06/10. Coin tiếp tục đổi giá theo ngày sống.
+- Phát hành yên lặng: không thêm Có gì mới, không tặng lại quà hội chợ.
+
+# 1.7.10 — 2026-10-05
+
+- Tặng toàn server 300 xu hội chợ, xác nhận một lần cho mỗi bản lưu; giữ quà chờ cho người offline.
+- Tăng xác suất hội chợ, giảm khi lặp một trò; giữ Ô ăn quan. Giảm 20% xác suất bị bắt tại hội chợ.
+- Thêm 40% lợi nhuận đủ điều kiện, khách xếp hàng liên tục, nhân viên bán đa dạng hàng thay vì chỉ áo thun.
+- Bản đồ, chỉ đường và điều khiển giao hàng rõ hơn; sửa đồng hồ đèn giao thông bị tạo lặp.
+- Sửa kết nối live tự phục hồi, thưởng/lịch phi công biến thiên, bán nhẫn dư và hướng dẫn đón bé.
+
+# v1.7.9 — giảm xử lý API và thu gọn khách ghé
+
+- Dựng dịch vụ chỉ sao chép nghề cần dùng; bỏ tải lại bản lưu khi hỏi hộp đơn rỗng và khi xác thực API ghé tiệm.
+- Dùng chung dữ liệu trước thay đổi trong transaction; dùng kết quả tính tiền nhân viên đã commit cho API trạng thái.
+- Giảm hỏi đơn nền khi không có đơn đang xử lý, tạm dừng khi tab ẩn; vẫn theo dõi nhanh các đơn đang phục vụ.
+- Khách ghé nằm trong bố cục, không đè nút Làm tiếp/Hoàn thành; giữ nguyên chiều rộng phiếu công việc trên điện thoại.
+- Nút chat và ghé tiệm trong danh sách bạn bè cùng kích thước, nằm cùng hàng.
+- Có gì mới thông báo ba mục tốc độ, khách ghé và danh sách bạn bè; chưa thiết kế lại toàn bộ màn ghé tiệm.
+
+# v1.7.8 — tiệm tự vận hành, ghé thăm bạn và trò chuyện
+
+- Nhân viên tự động của Quầy riêng và Sổ tiệm phục vụ liên tục, tính cả thời gian offline tới khi thiếu hàng hoặc quỹ; mở không giới hạn quầy, chọn menu và định giá từng món.
+- Trang bị tăng tốc cho các nghề; ghé chỗ làm, đặt dịch vụ người chơi và đánh giá sau khi hoàn thành.
+- Bạn bè mời ghé nhà hoặc ở chung lâu dài, kể cả khi chủ offline; quyền vào nhà theo lời mời đã chấp nhận.
+- Trả lời từng tin nhắn; tên nhân vật cập nhật trong bạn bè, chat và phòng chung, giữ nguyên username.
+- Shop thú cưng tách cá theo bể; sửa đọc bản lưu café cũ thiếu bar_pace.
+- Có gì mới giới thiệu các phần trên cùng xưởng gấu bông và trải nghiệm gia đình đã phát hành ở 1.7.5–1.7.7.
+- Chưa bao gồm lỗi vốn góp của chủ Quầy riêng không liên kết quỹ nghề của người chơi làm thuê; các nghề mới vẫn để đợt riêng.
+
+# v1.7.7 — nhà dễ tìm, cử chỉ có lời đáp
+
+- Đưa Nhà & Gia đình, Vào nhà, Mời về ở và Con chung ngay dưới nhân vật trong Hành trình; lời mời cần trả lời nằm đầu trang gia đình.
+- Làm rõ điều kiện đón con của cả hai, trạng thái đang chờ, cùng chăm bé và các lối vào nhà; gom tùy chọn phụ để thao tác chính dễ thấy trên điện thoại.
+- Người gửi bước tới và thực sự ôm, hôn hoặc thả tim. Người nhận chọn Đáp lại để cả hai cùng tương tác, hoặc Ngại ngùng, Giận dỗi, Để sau.
+- Cử chỉ đồng bộ hai màn hình, tự khép lại khi hết hạn, di chuyển hay rời phòng; có hỗ trợ giảm chuyển động và bàn phím.
+
+# v1.7.6 — tự tay may bạn gấu
+
+- Xưởng handmade có gấu bông: đo vải, cắt hai mặt, may viền, nhồi bông và gắn mặt, nơ, dấu trang trí.
+- Bàn thủ công có hướng dẫn trực tiếp, thao tác kéo hoặc bàn phím, làm lại từng bước và giữ bản nháp trên máy theo tài khoản.
+- Gốm, vòng tay và thiệp có công đoạn tương ứng; thành phẩm giữ dấu trang trí trên kệ. Chỉ trả vật liệu khi hoàn thiện và xác nhận thanh toán.
+
+# v1.7.5 — cùng ở trong nhà
+
+- Người sống chung thấy nhân vật của nhau trong cùng phòng, cùng di chuyển và gửi ôm, hôn, thả tim.
+- Nội thất, màu tường/sàn và phần sửa sang hiển thị thống nhất; thay đổi trang trí cập nhật sang người kia.
+- Giữ đồ mua riêng của từng người; đổi tường/sàn lưu cùng thanh toán, không trừ lặp. Rời nhà, đổi phòng, nối lại mạng và nhiều tab được đồng bộ.
+
+# v1.7.4 — thông báo cập nhật trong game
+
+- Bổ sung bảng “Có gì mới” cho đợt sửa vừa phát hành: con chung, ở chung, nội thất, chuyển khoản/quỹ chung, chat và thao tác nghề.
+- Người chơi quay lại thấy thông báo một lần vào lúc nghỉ phù hợp; có thể mở lại trong Cài đặt → Cách chơi → Có gì mới. Có bản tiếng Anh.
+- Các nghề mới vẫn ở đợt sau.
+
+# v1.7.3 — sửa phản hồi, gia đình và PostgreSQL
+
+- Admin có danh sách người chơi, tìm theo tên hoặc username; chat riêng giữ đủ tin mới khi mở phòng, tải lịch sử và nối lại mạng.
+- PostgreSQL là cơ sở dữ liệu duy nhất cho game, live và công cụ vận hành; bỏ nhánh SQLite và công cụ chuyển đổi cũ.
+- Vợ chồng có con chung, cùng chăm bé và gửi lời mời về ở chung; bảo toàn nhà riêng, tiền cọc và dữ liệu con khi thay đổi quan hệ.
+- Bỏ giới hạn tổng 60 món nội thất; thêm hướng trước/sau cho TV và sofa, dùng đồ trong nhà chung và cập nhật bạn cùng nhà.
+- Bỏ hạn mức ngày của chuyển khoản và rút quỹ chung; vẫn kiểm tra số dư, người nhận và chống xử lý lặp.
+- Cà phê có tốc độ máy 1×/2×/4×; nhập áo chọn đúng size; làm rõ lương, nhân viên quầy, đánh giá cần trả lời và chỉ số tình làng nghĩa xóm.
+- Bổ sung hoạt động gặp NPC trong phố; cải thiện đổi nghề, hướng dẫn, thao tác bảng trên điện thoại và điều khiển tự lái giao hàng.
+- Các nghề mới theo đề xuất được tách sang đợt sau.
+
 # v1.7.2 — công an thu hồi tiền bị hack
 
 - Sau khi xử lý sự cố, công an có 30% cơ hội bắt được kẻ hack; kết quả sau 2 ngày sống. Bắt được thì hoàn đủ khoản mất vào tài khoản ngân hàng và ghi lịch sử.

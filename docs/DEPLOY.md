@@ -1,6 +1,6 @@
 # Mở game cho mọi người chơi (triển khai công khai)
 
-Game là một tiến trình Python duy nhất: thư viện chuẩn, SQLite, không cần `pip install`. Để mở cho mọi người, đặt nó sau một reverse proxy HTTPS. Service worker, web push và cookie `Secure` đều cần HTTPS.
+Game chạy bằng Python và PostgreSQL, cần driver `psycopg` (`python -m pip install -r requirements.txt`). PostgreSQL là bắt buộc; xem [POSTGRES_ONLY.md](POSTGRES_ONLY.md). Để mở cho mọi người, đặt nó sau một reverse proxy HTTPS. Service worker, web push và cookie `Secure` đều cần HTTPS.
 
 ## Cách nhanh nhất: Docker + Caddy (HTTPS tự động)
 
@@ -9,6 +9,8 @@ Game là một tiến trình Python duy nhất: thư viện chuẩn, SQLite, kh�
    ```bash
    cp .env.example .env
    # sửa trong .env:
+   #   POSTGRES_PASSWORD=<mật khẩu database>
+   #   DATABASE_URL=postgresql://phocochuyen:<mật khẩu đã URL-encode>@postgres:5432/phocochuyen
    #   ALLOWED_HOSTS=game.example.com
    #   TRUST_PROXY=1
    #   (tùy chọn) LLM_BASE_URL / LLM_MODEL / LLM_API_KEY cho AI nhân vật
@@ -20,12 +22,16 @@ Game là một tiến trình Python duy nhất: thư viện chuẩn, SQLite, kh�
    ```
 5. Mở `https://game.example.com`, rồi kiểm tra `https://game.example.com/api/health`.
 
-Dữ liệu (SQLite + khóa VAPID của web push) nằm trong volume `game-data`, được mount vào `/app/storage`. Hãy sao lưu volume này định kỳ, ví dụ:
+Dữ liệu PostgreSQL nằm trong volume `postgres-data`; khóa VAPID và tệp phụ trợ nằm trong `game-data` (`/app/storage`). Sao lưu database bằng `pg_dump`; ví dụ dưới đây tạo archive PostgreSQL trong thư mục backup của service database. Hãy chép archive ra nơi sao lưu riêng và lưu cả khóa VAPID.
+
 ```bash
-docker compose exec game python -c "import sqlite3;s=sqlite3.connect('/app/storage/game.sqlite3');d=sqlite3.connect('/app/storage/backup.sqlite3');s.backup(d)"
+docker compose exec postgres sh -c 'mkdir -p /tmp/mnl-backup && pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc -f /tmp/mnl-backup/game.dump'
+docker compose cp postgres:/tmp/mnl-backup/game.dump ./game.dump
 ```
 
 ## Không dùng Docker (systemd + Nginx/Caddy)
+
+Cài PostgreSQL, tạo tài khoản/database game, đặt `DATABASE_URL` trong `.env` hoặc `EnvironmentFile` của systemd. Cài driver bằng `python3 -m pip install -r requirements.txt` trước khi chạy.
 
 ```bash
 python3 server.py --host 127.0.0.1 --port 8765
@@ -89,6 +95,7 @@ location @asset_miss {                              # mã chưa có trong kho: t
 
 | Biến | Ý nghĩa |
 |---|---|
+| `DATABASE_URL` | Bắt buộc: URL PostgreSQL. Thiếu hoặc sai định dạng thì máy chủ dừng. |
 | `ALLOWED_HOSTS` | Tên miền/IP được phép. Header `Host` khác sẽ bị từ chối, để chống DNS rebinding. |
 | `TRUST_PROXY=1` | Tin `X-Forwarded-For` (lấy giá trị cuối do proxy thêm) và `X-Forwarded-Proto`. Chỉ bật khi đứng sau proxy của bạn. |
 | `COOKIE_SECURE=1` | Luôn gắn cờ `Secure` cho cookie. Không bật cũng được: cờ tự bật khi proxy báo `https`. |
@@ -96,7 +103,8 @@ location @asset_miss {                              # mã chưa có trong kho: t
 | `FEEDBACK_PER_10MIN`, `FEEDBACK_PER_DAY` | Số góp ý tối đa mỗi phiên trong 10 phút (mặc định 5) và trong 24 giờ (mặc định 30). Mỗi IP được gấp 4 lần mức 10 phút. |
 | `ADMIN_USERS` | Tên đăng nhập (cách nhau bằng dấu phẩy) được xem **📥 Hộp góp ý** trong mục Góp ý: đọc, đổi trạng thái, trả lời người chơi. Mặc định trống = không ai. Tài khoản phải đăng nhập; tạo bằng nút Đăng ký trong game. |
 | `SESSION_IDLE_DAYS` | Số ngày không hoạt động trước khi bản lưu bị xóa (mặc định 180). |
-| `WORKERS` | Số tiến trình phục vụ cùng một cổng (mặc định 1). Đặt bằng số CPU (ví dụ `WORKERS=4`). Không cần đổi cấu hình proxy: các tiến trình cùng nhận kết nối trên một socket. Giới hạn AI, đăng nhập, phiên mới và góp ý được chia sẻ giữa các tiến trình (tệp `*-limits.sqlite3` cạnh cơ sở dữ liệu); việc dọn dẹp và gửi thông báo chỉ chạy ở một tiến trình. |
+| `WORKERS` | Số tiến trình phục vụ cùng một cổng (mặc định 1). Đặt bằng số CPU (ví dụ `WORKERS=4`). Không cần đổi cấu hình proxy: các tiến trình cùng nhận kết nối trên một socket. Giới hạn AI, đăng nhập, phiên mới và góp ý được chia sẻ giữa các tiến trình (bảng PostgreSQL `hits`); việc dọn dẹp và gửi thông báo chỉ chạy ở một tiến trình. |
+| `GAME_NAMESPACE` | Đường dẫn nhận diện khóa bảo trì, cache thống kê và thư mục khóa web push (mặc định `storage/game`); không phải tệp database. Khi nâng cấp, chuyển nguyên giá trị `GAME_DB` cũ sang biến này để giữ các vị trí hiện có. |
 | `PRUNE_GUEST_DAYS` | Bản lưu khách chưa từng chơi thật (không tài khoản, không tên công khai, `revision <= 1`, không có tiến trình) bị xóa sau số ngày này (mặc định 3, `0` = tắt). Chạy mỗi giờ, từng nhóm nhỏ. |
 | `LAZY_SAVES` | `1` = phiên mới chỉ lưu một dấu nhỏ (~200 byte) cho tới thao tác đầu tiên, thay vì cả bản lưu ~90 KB (khách vào rồi đi không làm phình cơ sở dữ liệu). Mặc định `0`. Chỉ bật khi MỌI tiến trình dùng chung cơ sở dữ liệu đã chạy bản mới: bản cũ không đọc được dấu này. |
 | `RECEIPT_DAYS`, `RECEIPTS_PER_SAVE` | Biên nhận chống gửi trùng được giữ bao lâu (mặc định 2 ngày) và tối đa bao nhiêu cho mỗi bản lưu (mặc định 200). |
@@ -107,23 +115,23 @@ location @asset_miss {                              # mã chưa có trong kho: t
 | `API_GZIP_LEVEL` | Mức gzip của phản hồi `/api/` (mặc định 4: tốn ~2/3 CPU so với mức 5, dữ liệu gửi đi nhiều hơn ~5%). Tệp tĩnh luôn được nén sẵn ở mức 6. |
 | `GC_THRESHOLD` | Ngưỡng bộ gom rác của Python (mặc định `50000,20,20`: ít lượt gom hơn khi đọc/ghi bản lưu lớn; `700,10,10` là mặc định của Python). Đối tượng lúc khởi động được `gc.freeze()` giữ ngoài các lượt gom. |
 | `MNL_DEV` | **Không bao giờ đặt trên máy chủ thật.** `MNL_DEV=1` tắt hành trình (mở mọi nghề, không trừ tiền sinh hoạt) và cho nhận việc không cần phỏng vấn. Chỉ dùng cho script kiểm trình duyệt. |
-| `VAPID_SUBJECT`, `VAPID_PRIVATE_KEY`, `PUSH_DISABLED` | Web push. Mặc định khóa được tự tạo ở `storage/vapid.json`; đừng xóa tệp này, nếu mất thì mọi đăng ký thông báo cũ hết hiệu lực. |
+| `VAPID_SUBJECT`, `VAPID_PRIVATE_KEY`, `VAPID_KEY_FILE`, `PUSH_DISABLED` | Web push. Mặc định khóa được tự tạo ở `vapid.json` trong thư mục của `GAME_NAMESPACE`; `VAPID_KEY_FILE` chọn một tệp khóa hiện có. Đừng xóa hoặc thay khóa này: mọi đăng ký thông báo cũ cần dùng cùng khóa. |
 
 ## Bảo mật và vận hành
 
 - **Khóa API AI** chỉ để trong `.env` hoặc biến môi trường của máy chủ. Không commit, không đưa vào ảnh Docker (`.dockerignore` đã loại `.env`). Nếu khóa từng bị dán vào chat, email hay issue, hãy **đổi khóa** ở nhà cung cấp.
 - Máy chủ đã bật sẵn: CSP chặt (script inline chỉ gồm import map và boot script, được cho phép bằng mã băm SHA-256), cookie HttpOnly + SameSite=Strict, token CSRF, kiểm tra Origin/Host, giới hạn tần suất, giới hạn kích thước request và gzip. Tài nguyên tĩnh có ETag.
-- Phố nghề lọc link, e-mail, số điện thoại và từ thô tục. Nội dung bị 3 người báo cáo sẽ tự ẩn. Để gỡ hay khôi phục thủ công, sửa cột `hidden` trong SQLite (bảng `board`, `comments`, `previews`, `market`, `profiles`).
+- Phố nghề lọc link, e-mail, số điện thoại và từ thô tục. Nội dung bị 3 người báo cáo sẽ tự ẩn. Để gỡ hay khôi phục thủ công, sửa cột `hidden` trong PostgreSQL (bảng `board`, `comments`, `previews`, `market`, `profiles`).
 - Người chơi tự xóa dữ liệu được trong Cài đặt → Dữ liệu. Nếu ai đó gửi yêu cầu qua email `trachanhtv.works@gmail.com`, hãy tìm hồ sơ theo tên hiển thị trong bảng `profiles`, rồi xóa bằng `sid` tương ứng.
 - Nhật ký (log) không ghi cookie hay nội dung người chơi gõ. Bật `QUIET=1` để tắt hẳn access log.
 - JSON nhanh (tùy chọn): có gói `orjson` trong `PYTHONPATH` thì bản lưu được đọc nhanh ~2 lần, ghi nhanh ~4 lần (văn bản lưu giống hệt từng byte, xem `game/fastjson.py`). Không có thì game dùng `json` chuẩn như trước. Cài: `scripts/vendor_orjson.sh /opt/mot-ngay-lam-nghe/shared/pyvendor` (hoặc `download` trên máy có mạng rồi `install <wheel> <thư mục>` trên máy chủ), rồi khởi động lại dịch vụ.
 - Một tiến trình Python chỉ dùng được một CPU. Máy nhiều CPU: đặt `WORKERS` bằng số CPU. Nên để proxy (Nginx/Caddy) phục vụ thẳng thư mục `public/` để Python chỉ lo `/api/`.
-- Tệp SQLite không tự nhỏ lại khi dữ liệu được dọn (chỗ trống được dùng lại). Muốn thu nhỏ: lúc vắng người, dừng game rồi chạy `sqlite3 storage/game.sqlite3 'VACUUM'` (cần trống đĩa gấp đôi kích thước tệp).
+- PostgreSQL tự autovacuum các bảng; theo dõi dung lượng database, WAL và bản sao lưu. Công cụ sao lưu systemd có tại `deploy/pg/pg_backup.sh`.
 
 ## Kiểm tra trước khi mở
 
 ```bash
-python scripts/run_checks.py        # toàn bộ test Python
+TEST_DATABASE_URL=postgresql://test_user@127.0.0.1:5432/game_test python scripts/run_checks.py # DB dùng riêng cho test
 python server.py --port 8899 &       # chạy thử
 curl -s localhost:8899/api/health
 ```

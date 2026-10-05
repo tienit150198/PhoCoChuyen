@@ -4,7 +4,7 @@
 
 ## Thành phần
 
-Frontend JavaScript ES modules không framework, CSS responsive, Canvas 2D cho cảnh và SVG inline cho icon/vật phẩm. Python stdlib phục vụ static/API; SQLite là nơi lưu state. Không cần bước build frontend để chạy. Hình và âm đều tạo tại máy.
+Frontend JavaScript ES modules không framework, CSS responsive, Canvas 2D cho cảnh và SVG inline cho icon/vật phẩm. Python stdlib phục vụ static/API; PostgreSQL là nơi lưu state, kết nối qua psycopg. Không cần bước build frontend để chạy. Hình và âm đều tạo tại máy.
 
 Luồng:
 
@@ -16,7 +16,7 @@ app.js → api.js (hàng đợi, request_id, expected_revision)
        │ HTTP JSON + cookie + X-Game-CSRF
        ▼
 server.py → storage.Store.command
-       │ BEGIN IMMEDIATE + kiểm idempotency/revision
+       │ SELECT … FOR UPDATE + kiểm idempotency/revision
        ▼
 engine.apply_action(copy(state), career, action, payload)
        │ kiểm nghề, bước, chứng cứ, tồn, giá và điều kiện
@@ -27,7 +27,7 @@ state mới + event journal + kết quả
 public_state → app.js / world.js → cảnh + phản hồi
 ```
 
-Một lệnh không hợp lệ không thay đổi bản state đầu vào. Chống gửi lặp nằm ở kho dữ liệu, không dựa vào nút bị disable trên giao diện. SQLite dùng WAL; receipt và state cùng giao dịch. Revision ngăn tab cũ ghi đè. Khi mất kết nối không giả rằng một thao tác đã thành công.
+Một lệnh không hợp lệ không thay đổi bản state đầu vào. Chống gửi lặp nằm ở kho dữ liệu, không dựa vào nút bị disable trên giao diện. PostgreSQL khóa dòng bản lưu; receipt và state cùng giao dịch. Revision ngăn tab cũ ghi đè. Khi mất kết nối không giả rằng một thao tác đã thành công.
 
 ## Các loại trạng thái
 
@@ -61,7 +61,7 @@ Thêm định nghĩa nội dung, factory task, luật/validation/public projecti
 
 ## v0.2 business layer
 
-`operations.py` owns fictional rules, employee records, premises, bills, staff assistance, security cases, proof-gated conclusions, recovery and reward. `engine.apply_action` runs these on a deep-copied candidate state then validates; `Store.command` commits once under `BEGIN IMMEDIATE`, expected revision and request receipt.
+`operations.py` owns fictional rules, employee records, premises, bills, staff assistance, security cases, proof-gated conclusions, recovery and reward. `engine.apply_action` runs these on a deep-copied candidate state then validates; `Store.command` commits once under `SELECT … FOR UPDATE`, expected revision and request receipt.
 
 `money()` appends to the operations ledger for every asset-related cash mutation. The invariant is `opening_balance + sum(ledger.amount) == career.money`. Compaction rolls pruned amounts into the opening balance. Bills have stable IDs by day/person/period or incident; paying is separate from accruing and cannot repeat. Tax is a fictional 5% ceil of earned career revenue; other rewards and restitution have distinct categories.
 

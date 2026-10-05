@@ -1,4 +1,7 @@
-"""💍 Ném vòng cổ chai at the fair: a timing game that earns xu without a stake. Pure functions; the commands, the
+"""Since 05/10, new rounds use server chance draws in fair.apply. These timing
+functions animate the aim and judge only legacy rounds already in progress.
+
+💍 Ném vòng cổ chai at the fair: a timing game that earns xu without a stake. Pure functions; the commands, the
 reward and the save are in game/fair.py, the stall in public/js/v4/fair.js (which draws the same numbers).
 
 A round: BOTTLES bottles stand on a shelf at x (0..100); a ring swings over them, back and forth, x(t) a triangle wave

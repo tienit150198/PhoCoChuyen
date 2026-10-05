@@ -46,6 +46,7 @@ const dist=(a,b)=>{const x=Math.abs(a-b)%360;return x>180?360-x:x;};
  * (-1: none), compared unrounded like the server. */
 export const lands=(b,K,tap)=>mod(K.impact-angleAt(b,tap+K.fly));
 export function judge(b,K,taps){
+  if(b.chance)return {stuck:taps.slice(0,b.need).map(tap=>lands(b,K,tap)),hit:-1};
   const stuck=[];
   for(let i=0;i<Math.min(taps.length,b.need);i++){const a=lands(b,K,taps[i]);if([...b.pre,...stuck].some(x=>dist(a,x)<K.gap))return {stuck,hit:i};stuck.push(a);}
   return {stuck,hit:-1};
@@ -53,7 +54,7 @@ export function judge(b,K,taps){
 
 export function setup(ctx){
   const {S,F,btn,say,xu,esc,send,render,sfx,pick,reduce,serverNow}=ctx;
-  const D=S.kn={stake:5,say:'',L:null,raf:0,cv:null,busy:false,last:null,chips:[],idleT0:performance.now()};
+  const D=S.kn={stake:5,say:'',L:null,raf:0,timer:0,cv:null,busy:false,last:null,chips:[],idleT0:performance.now(),bg:null,wood:null};
   const K=()=>F().knife||null;
   const run=()=>K()?.run||null;
   const prize=(st,k)=>{   // the server's ladder for this stake (knife.prizes; else the same rule: tenths, +1 xu at least)
@@ -76,6 +77,12 @@ export function setup(ctx){
   }
   const live=()=>{const r=run();return !!r&&(r.stage==='play'||r.stage==='choice');};
   const busy=()=>D.busy||!!(D.L&&D.L.over&&!D.L.done);
+  const visible=()=>S.tab==='dt'&&S.dlg?.open&&!globalThis.document?.hidden;
+  const current=L=>D.L===L&&(run()?.stage!=='play'||run().id===L.id);
+  function restBoard(L,stuck=L.stuck){
+    const now=performance.now();
+    D.rest=stuck.concat(L.b.pre);D.restAngle=L.frozen??angleAt(L.b,now-L.t0);D.idleT0=now;D.L=null;
+  }
 
   /* ---- the page ---- */
   function status(r,L){
@@ -113,23 +120,24 @@ export function setup(ctx){
   }
   function view(){
     const k=K(),r=run(),L=level();
-    if(!D.say)D.say=pick(KEEPER.idle);
+    const chance=r?r.chance??r.board?.chance:k.chance;
+    if(!D.say)D.say=chance?'Hoàn thành màn đang dở nhé; màn sau canh chỗ trống để phóng!':pick(KEEPER.idle);
     let body;
     if(L&&(r?.stage==='play'||L.over&&!L.done)){
-      const left=L.b.need-L.taps.length,ended=L.over;
+      const left=L.b.need-L.taps.length,ended=L.over,retry=ended==='retry';
       body=`${r?.stage==='play'?status(r,L):''}
-        <div class="fh-go fh-kn-go">${btn(ended?'Đang tính…':'🗡️ Phóng!','knthrow',{},'primary big',ended||left<=0?' disabled data-fh-key="knthrow"':' data-fh-key="knthrow"')}</div>`;
+        <div class="fh-go fh-kn-go">${btn(retry?'Kiểm tra lại kết quả':ended?'Đang tính…':'🗡️ Phóng!',retry?'knretry':'knthrow',{},'primary big',D.busy||!retry&&(ended||left<=0)?' disabled data-fh-key="knthrow"':' data-fh-key="knthrow"')}</div>`;
     }else if(r?.stage==='choice')body=status(r)+choiceCard(r);
     else body=resultCard()+stakeRow();
     const ladder=k.ladder.map((m,i)=>`<li>Qua màn ${i+1}: <b>${xu(prize(r&&live()?r.stake:D.stake,i+1))}</b></li>`).join('');
-    const hot=k.hot?`<p class="fh-why">🔥 Hôm nay bạn đang thắng đậm ở hội chợ nên bia quay gắt hơn.</p>`:'';
+    const hot=!chance&&k.hot?`<p class="fh-why">🔥 Hôm nay bạn đang thắng đậm ở hội chợ nên bia quay gắt hơn.</p>`:'';
     const tally=k.n?`<p class="fh-rule">Bạn đã chơi <b>${k.n}</b> lượt, dừng nhận thưởng <b>${k.w}</b> lượt, xa nhất màn <b>${k.b}</b>${k.top?`, thưởng lớn nhất ${xu(k.top)}`:''}.</p>`:'';
     return `<section class="fh-stall fh-kn" aria-label="Phóng dao">
       ${say(KEEPER,D.say)}
       <div class="fh-kn-stage" data-fh-live data-fh-key="kn-stage"><canvas class="fh-kn-cv" tabindex="0" role="img" aria-label="Bia gỗ đang quay. Chạm vào bia để phóng dao."></canvas></div>
       ${body}${hot}
       <details class="fh-how" data-fh-key="knhow"><summary>Bậc thưởng đặt ${xu(r&&live()?r.stake:D.stake)}</summary><ol class="fh-kn-ladder">${ladder}</ol><p class="small muted">Lâu lâu có màn 🔥 x2: qua màn đó, phần thưởng tăng thêm của màn được nhân đôi.</p></details>
-      <p class="fh-rule">Chạm vào bia (hoặc bấm “Phóng!”) để phóng dao từ dưới lên. Dao cắm vô gỗ là được, chạm trúng dao khác là thua cả lượt. Cắm đủ số dao là qua màn: dừng để nhận thưởng, hoặc chơi tiếp màn khó hơn, thưởng cao hơn. Mỗi màn phải xong trong ${Math.round(k.level_ms/1000)} giây.</p>
+      <p class="fh-rule">${chance?'Màn cũ đang chơi dở: phóng đủ dao để hoàn thành. Từ màn tiếp theo, dao chạm dao mới thua; cắm đủ dao là qua màn.':'Chạm vào bia (hoặc bấm “Phóng!”) để phóng dao từ dưới lên. Dao cắm vô gỗ là được, chạm trúng dao khác là thua cả lượt. Cắm đủ số dao là qua màn: dừng để nhận thưởng, hoặc chơi tiếp màn khó hơn, thưởng cao hơn.'} Mỗi màn phải xong trong ${Math.round(k.level_ms/1000)} giây.</p>
       ${tally}
     </section>`;
   }
@@ -138,17 +146,38 @@ export function setup(ctx){
   function knife(c,x,y,ang,o={}){   // tip at (x,y), the knife lying along `ang` (radians) from the tip to the handle
     c.save();c.translate(x,y);c.rotate(ang-Math.PI/2);   // local: the tip at 0,0, the handle down +y
     c.globalAlpha=o.alpha??1;
+    const px=D.cv?._s||1,key=`${px}|${!!o.old}`,pad=11,height=KL+8;
+    if(D.blades?.scale!==px)D.blades={scale:px};
+    if(!D.blades[key]){
+      const cv=document.createElement('canvas');cv.width=Math.ceil(pad*2*px);cv.height=Math.ceil(height*px);
+      const q=cv.getContext('2d');q.setTransform(px,0,0,px,pad*px,2*px);knifeFace(q,o.old);
+      D.blades[key]=cv;
+    }
+    c.drawImage(D.blades[key],-pad,-2,pad*2,height);
+    c.restore();
+  }
+  function knifeFace(c,old){
     const g=c.createLinearGradient(-7,0,7,0);g.addColorStop(0,'#9aa3ad');g.addColorStop(.45,'#f4f6f8');g.addColorStop(.55,'#d8dde3');g.addColorStop(1,'#8a939d');
     c.fillStyle=g;c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(7.6,10,7.4,34);c.lineTo(-7.4,34);c.quadraticCurveTo(-7.6,10,0,0);c.fill();
     c.strokeStyle='#6d7680';c.lineWidth=.8;c.stroke();
     c.fillStyle='#c9a23a';c.fillRect(-9,33,18,5);
-    c.fillStyle=o.old?'#5a3a1e':'#7a4a22';c.beginPath();c.roundRect?.(-5.5,38,11,KL-38,4);if(!c.roundRect)c.rect(-5.5,38,11,KL-38);c.fill();
+    c.fillStyle=old?'#5a3a1e':'#7a4a22';c.beginPath();c.roundRect?.(-5.5,38,11,KL-38,4);if(!c.roundRect)c.rect(-5.5,38,11,KL-38);c.fill();
     c.fillStyle='#00000033';for(let i=0;i<3;i++)c.fillRect(-5.5,44+i*7,11,2);
     c.fillStyle='#d9472b';c.beginPath();c.arc(0,KL+2,3.2,0,Math.PI*2);c.fill();   // a red tassel knot
-    c.restore();
   }
   function wood(c,th,dark,flash){
     c.save();c.translate(CX,CY);c.rotate(th*Math.PI/180);
+    const px=D.cv?._s||1,key=`${px}|${dark}`,pad=BR+14;
+    if(D.wood?.key!==key){
+      const cv=document.createElement('canvas');cv.width=cv.height=Math.ceil(pad*2*px);
+      const q=cv.getContext('2d');q.setTransform(px,0,0,px,pad*px,pad*px);woodFace(q,dark);
+      D.wood={key,cv};
+    }
+    c.drawImage(D.wood.cv,-pad,-pad,pad*2,pad*2);
+    if(flash){c.fillStyle=`rgba(217,71,43,${flash})`;c.beginPath();c.arc(0,0,BR,0,Math.PI*2);c.fill();}
+    c.restore();
+  }
+  function woodFace(c,dark){
     c.fillStyle='#00000030';c.beginPath();c.arc(4,6,BR+6,0,Math.PI*2);c.fill();
     c.fillStyle='#5b3a1c';c.beginPath();c.arc(0,0,BR+6,0,Math.PI*2);c.fill();   // bark
     const g=c.createRadialGradient(-18,-22,8,0,0,BR);g.addColorStop(0,dark?'#c99a62':'#e8bf86');g.addColorStop(1,dark?'#8d6136':'#b98048');
@@ -159,20 +188,28 @@ export function setup(ctx){
     c.fillStyle='#d9472b';c.beginPath();c.arc(0,0,15,0,Math.PI*2);c.fill();
     c.strokeStyle='#f2b53a';c.lineWidth=3;c.stroke();
     c.fillStyle='#f2b53a';c.beginPath();c.arc(0,0,4,0,Math.PI*2);c.fill();
-    if(flash){c.fillStyle=`rgba(217,71,43,${flash})`;c.beginPath();c.arc(0,0,BR,0,Math.PI*2);c.fill();}
-    c.restore();
   }
-  function stuckKnife(c,th,a,old){const p=(a+th)*Math.PI/180;knife(c,CX+TIP*Math.cos(p),CY+TIP*Math.sin(p),p,{old});}
+  function background(c,cv,dark){
+    const key=`${cv.width}|${cv.height}|${dark}`;
+    if(D.bg?.key!==key){
+      const layer=document.createElement('canvas');layer.width=cv.width;layer.height=cv.height;
+      const q=layer.getContext('2d');q.setTransform(cv._s,0,0,cv._s,0,0);
+      const bg=q.createRadialGradient(CX,CY,30,CX,CY,240);bg.addColorStop(0,dark?'#4a3420':'#fff1cf');bg.addColorStop(1,dark?'#20160d':'#f0cf95');
+      q.fillStyle=bg;q.fillRect(0,0,W,H);
+      for(let i=0;i<5;i++){const x=30+i*60;q.fillStyle=dark?'#ffb44a33':'#d9472b22';q.beginPath();q.ellipse(x,14,9,12,0,0,Math.PI*2);q.fill();}
+      D.bg={key,cv:layer};
+    }
+    c.drawImage(D.bg.cv,0,0,W,H);
+  }
+  function stuckKnife(c,th,a,old,alpha=1){const p=(a+th)*Math.PI/180;knife(c,CX+TIP*Math.cos(p),CY+TIP*Math.sin(p),p,{old,alpha});}
   function draw(now){
     const cv=D.cv;if(!cv||!cv.isConnected)return false;
     const c=cv.getContext('2d'),k=K();if(!c||!k)return false;
     const dark=theme(),L=level(),r=run();
     c.setTransform(cv._s,0,0,cv._s,0,0);c.clearRect(0,0,W,H);
-    const bg=c.createRadialGradient(CX,CY,30,CX,CY,240);bg.addColorStop(0,dark?'#4a3420':'#fff1cf');bg.addColorStop(1,dark?'#20160d':'#f0cf95');
-    c.fillStyle=bg;c.fillRect(0,0,W,H);
-    for(let i=0;i<5;i++){const x=30+i*60;c.fillStyle=dark?'#ffb44a33':'#d9472b22';c.beginPath();c.ellipse(x,14,9,12,0,0,Math.PI*2);c.fill();}   // lantern glow along the top
+    background(c,cv,dark);
     if(!L){   // no level on screen: the board idles (or rests after a run)
-      const t=reduce()?0:now-D.idleT0,th=(t*.03)%360;
+      const t=reduce()?0:now-D.idleT0,th=(D.rest?D.restAngle||0:0)+t*.03;
       wood(c,th,dark,0);
       const shown=D.rest||[];for(const a of shown)stuckKnife(c,th,a,true);
       if(!D.rest)for(const a of [30,150,270])stuckKnife(c,th,a,true);
@@ -187,9 +224,11 @@ export function setup(ctx){
     L.taps.forEach((tap,i)=>{if(i<L.stuck.length&&t>=tap+k.fly)stuckKnife(c,th,L.stuck[i]);});
     for(const tap of L.taps){   // knives in the air
       if(t>=tap+k.fly||t<tap)continue;
-      const p=(t-tap)/k.fly,y=READY_Y+(CY+BR-READY_Y)*p;knife(c,CX,y,Math.PI/2);
+      const p=(t-tap)/k.fly,y=READY_Y+(CY+TIP-READY_Y)*p;knife(c,CX,y,Math.PI/2);
     }
-    if(L.bounce){const e=(now-L.bounce.at)/1000;if(e<BOUNCE_MS/1000){const x=CX+L.bounce.dx*e*120,y=CY+BR+40*e+420*e*e,rot=Math.PI/2+L.bounce.dx*e*9;knife(c,x,y,rot,{alpha:1-e/(BOUNCE_MS/1000)*.5});}}
+    // The final chance knife keeps its physical slot while the server decides its result.
+    if((L.over==='pending'||L.over==='retry'&&L.retryOver==='pending')&&t>=L.taps[L.taps.length-1]+k.fly)stuckKnife(c,th,lands(L.b,k,L.taps[L.taps.length-1]),false,.45);
+    if(L.bounce){const e=(now-L.bounce.at)/1000;if(e<BOUNCE_MS/1000){const x=(L.bounce.x??CX)+L.bounce.dx*e*120,y=(L.bounce.y??CY+TIP)+40*e+420*e*e,rot=(L.bounce.angle??Math.PI/2)+L.bounce.dx*e*9;knife(c,x,y,rot,{alpha:1-e/(BOUNCE_MS/1000)*.5});}}
     const left=L.b.need-L.taps.length;
     if(!L.over&&left>0)knife(c,CX,READY_Y,Math.PI/2);
     for(let i=0;i<L.b.need;i++){   // the knives left, down the left side
@@ -209,11 +248,13 @@ export function setup(ctx){
   }
   function loop(){
     D.raf=0;
-    if(S.tab!=='dt'||!S.dlg?.open||!D.cv?.isConnected)return;
+    if(S.tab!=='dt'||!S.dlg?.open||!D.cv?.isConnected||document.hidden)return;
+    // The preview/result board rotates too; cached artwork keeps it smooth at display cadence.
     if(draw(performance.now()))D.raf=requestAnimationFrame(loop);
   }
-  function start(){if(!D.raf)D.raf=requestAnimationFrame(loop);}
-  function stop(){cancelAnimationFrame(D.raf);D.raf=0;}
+  function start(){clearTimeout(D.timer);D.timer=0;if(!D.raf&&!globalThis.document?.hidden)D.raf=requestAnimationFrame(loop);}
+  function stop(){cancelAnimationFrame(D.raf);clearTimeout(D.timer);D.raf=0;D.timer=0;}
+  globalThis.document?.addEventListener?.('visibilitychange',()=>{if(document.hidden)stop();else if(S.tab==='dt'&&S.dlg?.open)start();});
 
   /** After every render: a new canvas slot gets its size, its finger and its frames. */
   function mount(){
@@ -225,6 +266,19 @@ export function setup(ctx){
       size();new ResizeObserver(()=>{size();start();}).observe(cv);
       cv.addEventListener('pointerdown',e=>{if(e.button>0)return;e.preventDefault();throwKnife();});
       cv.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();throwKnife();}});
+    }
+    const fire=S.dlg.querySelector('[data-fh="knthrow"]');
+    if(fire&&!fire._knThrow){
+      fire._knThrow=true;let pointerPress=false;
+      fire.addEventListener('pointerdown',e=>{
+        if(fire.disabled||e.button>0||e.isPrimary===false)return;
+        e.preventDefault();pointerPress=true;S.anchor='knthrow';S.anchorAt=performance.now();throwKnife();
+      });
+      fire.addEventListener('click',e=>{
+        const handled=pointerPress;pointerPress=false;
+        // Pointer release must not throw again; keyboard and assistive clicks still use the dialog handler.
+        if(handled&&(e.detail!==0||e.pointerType)){e.preventDefault();e.stopPropagation();}
+      });
     }
     D.cv=cv;start();
   }
@@ -239,42 +293,105 @@ export function setup(ctx){
     L.taps.push(t);
     const j=judge(L.b,k,L.taps);L.stuck=j.stuck;
     sfx('throw');
-    if(j.hit>=0){L.over='lost';setTimeout(()=>{L.bounce={at:performance.now(),dx:Math.random()<.5?-1:1};L.at=performance.now();sfx('clink');setTimeout(()=>sfx('lose'),120);},k.fly);finish(L);}
-    else{setTimeout(()=>sfx('mark'),k.fly);if(L.stuck.length>=L.b.need){L.over='clear';finish(L);}}
+    if(j.hit>=0){L.over='lost';setTimeout(()=>{if(!current(L)||!visible())return;L.bounce={at:performance.now(),dx:Math.random()<.5?-1:1};L.at=performance.now();sfx('clink');setTimeout(()=>{if(current(L)&&visible())sfx('lose');},120);},k.fly);finish(L);}
+    else{
+      const final=L.taps.length>=L.b.need;
+      if(L.b.chance&&final)L.stuck.pop();
+      else setTimeout(()=>{if(current(L)&&visible())sfx('mark');},k.fly);
+      if(final){L.over=L.b.chance?'pending':'clear';finish(L);}
+    }
     if(L.over)render();
     start();
   }
   function timeUp(){
     const L=D.L;if(!L||L.over)return;
-    L.over='late';L.frozen=angleAt(L.b,performance.now()-L.t0);D.say=pick(KEEPER.late);sfx('lose');
+    L.over='late';L.frozen=angleAt(L.b,performance.now()-L.t0);D.say='Đã hết giờ phóng. Đang kiểm tra kết quả…';
     setTimeout(()=>{finishLate(L);},400);render();
   }
   async function finishLate(L){
+    if(!current(L))return;
     // the server marks the level lost once its time (and the network's share) is over: send what was thrown
-    const r=L.taps.length?await send('fair_kn_throw',{lv:L.lv,taps:L.taps}):null;
+    const r=L.taps.length?await send('fair_kn_throw',{id:L.id,lv:L.lv,taps:L.taps}):null;
+    if(!current(L))return;
     if(r?.fair?.run?.stage==='play'||!r)await new Promise(ok=>setTimeout(ok,4500)).then(()=>S.env.api.refresh().catch(()=>{}));
+    if(!current(L))return;
     const now=run();
-    D.last={kind:'lost',late:true,lv:L.lv,stake:now?.stake||0,gone:now?.gone||0};
-    L.done=true;D.L=null;D.rest=L.stuck;render();
+    if(now?.stage==='play')recover(L);
+    else{
+      if(now?.stage==='lost'){D.last={kind:'lost',late:true,lv:L.lv,stake:now.stake||0,gone:now.gone||0};D.say=pick(KEEPER.late);if(visible())sfx('lose');}
+      else if(now?.stage==='choice')D.say=pick(KEEPER.clear);
+      L.done=true;restBoard(L);
+    }
+    if(S.dlg?.open)render();
   }
   async function finish(L){
-    const k=K(),wait=new Promise(ok=>setTimeout(ok,k.fly+(L.over==='lost'?BOUNCE_MS:CLEAR_MS)));
-    if(L.over==='clear')setTimeout(()=>{L.frozen=angleAt(L.b,performance.now()-L.t0);burst();sfx('cap');},k.fly+60);
-    const [r]=await Promise.all([send('fair_kn_throw',{lv:L.lv,taps:L.taps}),wait]);
-    const x=r?.fair;L.done=true;
-    if(!x){D.L=null;render();return;}   // refused (the flash says why): the server's state shows
+    // Chance mode animates the authoritative result below, after the last knife lands.
+    const k=K(),wait=new Promise(ok=>setTimeout(ok,k.fly+(L.b.chance?0:L.over==='lost'?BOUNCE_MS:CLEAR_MS)));
+    if(L.over==='clear')setTimeout(()=>{if(!current(L)||!visible())return;L.frozen=angleAt(L.b,performance.now()-L.t0);burst();sfx('cap');},k.fly+60);
+    const [r]=await Promise.all([send('fair_kn_throw',{id:L.id,lv:L.lv,taps:L.taps}),wait]);
+    if(!current(L))return;
+    const x=r?.fair;
+    if(x&&(x.lost||x.cleared)){
+      // Chance responses carry display placeholders: only their confirmed count is authoritative here.
+      L.stuck=L.b.chance?judge(L.b,k,L.taps).stuck.slice(0,x.stuck?.length??(x.cleared?L.taps.length:L.stuck.length)):x.stuck||L.stuck;
+    }
+    if(L.b.chance&&x&&visible()){
+      if(x.lost){
+        L.over='lost';L.at=performance.now();
+        const p=(lands(L.b,k,L.taps[L.taps.length-1])+(L.frozen??angleAt(L.b,L.at-L.t0)))*Math.PI/180;
+        L.bounce={at:L.at,dx:1,x:CX+TIP*Math.cos(p),y:CY+TIP*Math.sin(p),angle:p};sfx('lose');
+      }
+      else if(x.cleared){L.over='clear';L.frozen=angleAt(L.b,performance.now()-L.t0);burst();sfx('cap');}
+      if(x.lost||x.cleared)await new Promise(ok=>setTimeout(ok,x.lost?BOUNCE_MS:CLEAR_MS));
+      if(!current(L))return;
+    }
+    L.done=true;
+    if(!x){
+      // A lost response is not a lost level: keep the exact taps until a fresh server state resolves it.
+      if(run()?.stage==='play'&&run().id===L.id)recover(L);
+      else D.L=null;
+      if(S.dlg?.open)render();return;
+    }
     if(x.lost){
       D.last={kind:'lost',late:!!x.late,lv:x.lv,stake:x.run?.stake||0,gone:x.run?.gone||0};D.say=pick(x.late?KEEPER.late:KEEPER.lost);
-      D.rest=(x.stuck||[]).concat(L.b.pre);D.L=null;
+      restBoard(L);
     }else if(x.cleared){
-      D.rest=(x.stuck||[]).concat(L.b.pre);D.L=null;
-      if(x.all){D.last={kind:'paid',all:true,paid:x.paid,lv:x.lv,stake:x.run?.stake||0};D.say=pick(KEEPER.all);sfx('win');}
-      else if(x.run?.nx){D.say=pick(KEEPER.x2);setTimeout(()=>sfx('open'),200);}
+      restBoard(L);
+      if(x.all){D.last={kind:'paid',all:true,paid:x.paid,lv:x.lv,stake:x.run?.stake||0};D.say=pick(KEEPER.all);if(visible())sfx('win');}
+      else if(x.run?.nx){D.say=pick(KEEPER.x2);setTimeout(()=>{if(visible()&&run()?.stage==='choice'&&run()?.lv===x.lv)sfx('open');},200);}
       else D.say=pick(KEEPER.clear);
     }else{   // the server took fewer knives than this screen thought: carry on from its count
       L.over=null;L.done=false;L.frozen=undefined;L.taps=[...(x.run?.tp||[])];L.stuck=judge(L.b,k,L.taps).stuck;L.bounce=null;
     }
-    render();start();
+    if(S.dlg?.open){render();start();}
+  }
+  function recover(L){
+    L.done=true;L.retryOver=L.over;L.over='retry';D.say='Chưa nhận được kết quả. Bấm kiểm tra lại để tiếp tục nha.';
+  }
+  async function retry(){
+    const L=D.L;
+    if(D.busy||S.busy||!L||L.over!=='retry')return;
+    D.busy=true;render();
+    try{
+      await S.env.api.refresh();
+      if(D.L!==L)return;
+      const r=run();
+      // The first request may have succeeded, or another tab may have started a different round.
+      if(r?.stage!=='play'||r.id!==L.id||(r.tp||[]).some((tap,i)=>tap!==L.taps[i])){
+        D.L=null;
+        if(r?.stage==='choice'||r?.stage==='done'){
+          restBoard(L,judge(L.b,K(),L.taps).stuck);D.say=pick(r.stage==='choice'?(r.nx?KEEPER.x2:KEEPER.clear):KEEPER.paid);
+        }else if(r?.stage==='lost'){restBoard(L);D.say=pick(KEEPER.lost);}
+        else{D.rest=null;D.say=r?.board?.chance?'Hoàn thành màn đang dở nhé; màn sau canh chỗ trống để phóng!':pick(KEEPER.start);}
+        return;
+      }
+      L.over=L.retryOver;L.done=false;
+      if(L.over==='late')await finishLate(L);else await finish(L);
+    }catch{
+      D.say='Chưa kết nối được. Giữ nguyên lượt này và kiểm tra lại nhé.';
+    }finally{
+      D.busy=false;if(S.dlg?.open){render();start();}
+    }
   }
   function burst(){
     const now=performance.now(),cols=['#b98048','#e8bf86','#8a5a26','#f2b53a'];
@@ -287,9 +404,9 @@ export function setup(ctx){
     const r=await send(name,payload);
     D.busy=false;D.act='';
     const x=r?.fair;
-    if(x?.run?.stage==='play'){D.L=null;D.rest=null;D.last=null;D.say=pick(KEEPER.start);level();sfx('open');}
-    else if(x?.stopped){D.last={kind:'paid',paid:x.prize,lv:x.run?.lv||0,stake:x.run?.stake||0};D.say=pick(KEEPER.paid);if(x.prize)sfx('win');}
-    render();start();
+    if(x?.run?.stage==='play'){D.L=null;D.rest=null;D.last=null;D.say=x.run.board?.chance?'Hoàn thành màn đang dở nhé; màn sau canh chỗ trống để phóng!':pick(KEEPER.start);level();if(visible())sfx('open');}
+    else if(x?.stopped){D.last={kind:'paid',paid:x.prize,lv:x.run?.lv||0,stake:x.run?.stake||0};D.say=pick(KEEPER.paid);if(x.prize&&visible())sfx('win');}
+    if(S.dlg?.open){render();start();}
   }
   function click(op,data){
     if(op==='knstake'){const v=Number(data.v);if((K()?.stakes||[]).includes(v)&&!live())D.stake=v;render();return true;}
@@ -297,6 +414,7 @@ export function setup(ctx){
     if(op==='knnext'){act('fair_kn_next',{},'next');return true;}
     if(op==='knstop'){act('fair_kn_stop',{},'stop');return true;}
     if(op==='knthrow'){throwKnife();return true;}
+    if(op==='knretry'){retry();return true;}
     return false;
   }
 

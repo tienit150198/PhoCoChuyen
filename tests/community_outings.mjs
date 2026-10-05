@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {communityView,communityAction} from '../public/js/v4/community-outings.js';
+const choice={id:'ending',name:'Kết thúc khác',keepsake:'Trang sách',story:['Chuyện <mới>']};
+const place={id:'reading',name:'CLB đọc sách',host:'Cô Trang',intro:'Cùng đọc',emoji:'📖',cost:0,choices:[choice]};
+const d={day:1,last:{},visits:{},memories:[]};
+const env={api:{content:{journey:{outings:{community:[place]}}},state:{journey:{outings:{community:d}}}},renderSheet(){this.rendered=true;}};
+const el={isConnected:true,disabled:false};
+env.cmd=async(name,p)=>{assert.equal(name,'jr_out_community');assert.deepEqual(p,{place:'reading',choice:'ending',pay:'cash'});d.last.reading=1;d.visits.reading=1;d.memories.push({place:'reading',choice:'ending',day:1,visit:1});return true;};
+await communityAction({place:'reading',choice:'ending'},el,env);
+assert.equal(el.disabled,true,'morphed completed choice stays disabled');
+assert.equal(env.rendered,true);
+assert.match(communityView(env),/Chuyện &lt;mới&gt;/);
+assert.match(communityView(env),/ disabled/);
+d.day=2;el.disabled=false;env.cmd=async()=>false;
+await communityAction({place:'reading',choice:'ending'},el,env);
+assert.equal(el.disabled,false,'failed request can be retried');
+console.log('Community outings: command payload, retained disabled state, retry and escaping pass.');

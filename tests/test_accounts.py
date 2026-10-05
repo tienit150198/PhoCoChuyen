@@ -1,4 +1,4 @@
-import http.client, json, os, sqlite3, tempfile, threading, unittest
+import http.client, json, os, tempfile, threading, unittest
 from pathlib import Path
 from unittest.mock import patch
 
@@ -165,7 +165,7 @@ class AccountStoreTests(unittest.TestCase):
         a = accounts.register(self.store, self.token, REG)['token']
         anon, _, _ = self.store.session()
         with self.store.connect() as db:
-            db.execute("UPDATE sessions SET updated_at=datetime('now','-400 days')")
+            db.execute("UPDATE sessions SET updated_at=to_char((statement_timestamp() AT TIME ZONE 'UTC') - interval '400 days', 'YYYY-MM-DD HH24:MI:SS')")
         self.store.prune(180)
         self.store.read(a)
         with self.assertRaises(Exception):
@@ -175,14 +175,9 @@ class AccountStoreTests(unittest.TestCase):
         path = Path(self.tmp.name) / 'old.db'
         old = Store(path)
         token, _, _ = old.session()
-        if on_pg():  # PostgreSQL: the same tables, dropped in this Store's own schema
-            with old.connect() as db:
-                db.execute('DROP TABLE logins')
-                db.execute('DROP TABLE accounts')
-        else:
-            with sqlite3.connect(path) as db:
-                db.execute('DROP TABLE logins')
-                db.execute('DROP TABLE accounts')
+        with old.connect() as db:
+            db.execute('DROP TABLE logins')
+            db.execute('DROP TABLE accounts')
         again = Store(path)
         self.assertEqual(again.read(token)[1], 0)
         self.assertIsNone(accounts.status(again, token))

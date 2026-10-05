@@ -11,8 +11,7 @@ announcement written straight into the database (pid 'admin', name '📢 Ban qu�
   python3 scripts/chat_pin.py --msg 5496                   # pin it (replaces the current pin)
   python3 scripts/chat_pin.py --unpin
 
-The database: --pg <postgresql://...> or DATABASE_URL (production), else --db <SQLite file> (GAME_DB,
-storage/game.sqlite3). It never runs DDL: before the release that creates `chat_pins` (schema 10) is live,
+The database: --pg <postgresql://...> or required DATABASE_URL. It never runs DDL: before the release that creates `chat_pins` (schema 10) is live,
 it refuses to run.
 """
 from __future__ import annotations
@@ -21,7 +20,6 @@ import argparse
 import datetime
 import json
 import os
-import sqlite3
 import sys
 import time
 from pathlib import Path
@@ -35,55 +33,33 @@ def _when(t) -> str:
 
 
 class Side:
-    """One connection, `?` placeholders on both backends."""
-
-    def __init__(self, pg_url: str | None, db_path: str | None, schema: str | None = None):
-        self.pg = bool(pg_url)
-        if self.pg:
-            try:
-                import psycopg
-                from psycopg.rows import dict_row
-            except ImportError:
-                sys.exit('Thiếu thư viện psycopg (PYTHONPATH tới shared/pyvendor?).')
-            self.conn = psycopg.connect(pg_url, autocommit=False, row_factory=dict_row, application_name='mnl-chat-pin')
-            self.conn.execute("SELECT set_config('statement_timeout', '5000', false), set_config('lock_timeout', '3000', false)")
-            if schema:
-                self.conn.execute("SELECT set_config('search_path', %s, false)", (schema,))
-        else:
-            if not db_path or not Path(db_path).exists():
-                sys.exit(f'Không thấy cơ sở dữ liệu: {db_path}')
-            self.conn = sqlite3.connect(db_path, timeout=10, isolation_level=None)
-            self.conn.row_factory = sqlite3.Row
-            self.conn.execute('PRAGMA busy_timeout=10000')
-
-    def q(self, sql: str, args=()):
-        if self.pg:
-            return self.conn.execute(sql.replace('?', '%s'), args)
-        return self.conn.execute(sql, args)
-
-    def one(self, sql: str, args=()):
-        r = self.q(sql, args).fetchone()
-        return dict(r) if r is not None else None
-
-    def has_table(self, name: str) -> bool:
-        if self.pg:
-            return self.one('SELECT to_regclass(?) AS t', (name,))['t'] is not None
-        return self.one("SELECT 1 AS t FROM sqlite_master WHERE type='table' AND name=?", (name,)) is not None
-
+    """One PostgreSQL connection with the operational tool's short timeouts."""
+    def __init__(self, pg_url, namespace, schema=None):
+        import psycopg
+        from psycopg.rows import dict_row
+        sys.path.insert(0, str(ROOT))
+        from game import db as dbm
+        url = pg_url or dbm.database_url()
+        if not schema and dbm.test_mode():
+            schema = dbm.pool_for(namespace).schema
+        self.conn = psycopg.connect(url, autocommit=False, row_factory=dict_row, application_name='mnl-chat-pin')
+        self.conn.execute("SELECT set_config('statement_timeout', '5000', false), set_config('lock_timeout', '3000', false)")
+        if schema:
+            self.conn.execute("SELECT set_config('search_path', %s, false)", (schema,))
+    def q(self, sql, args=()):
+        return self.conn.execute(sql.replace('?', '%s'), args)
+    def one(self, sql, args=()):
+        return self.q(sql, args).fetchone()
+    def has_table(self, name):
+        return self.one('SELECT to_regclass(?) AS t', (name,))['t'] is not None
     def begin(self):
-        if not self.pg:
-            self.conn.execute('BEGIN IMMEDIATE')
-
+        pass
     def commit(self):
-        self.conn.commit() if self.pg else self.conn.execute('COMMIT')
-
+        self.conn.commit()
     def rollback(self):
-        self.conn.rollback() if self.pg else self.conn.execute('ROLLBACK')
-
+        self.conn.rollback()
     def notify(self):
-        if self.pg:
-            self.q('SELECT pg_notify(?, ?)', (NOTIFY_CHANNEL, json.dumps(dict(op='pin'))))
-
+        self.q('SELECT pg_notify(?, ?)', (NOTIFY_CHANNEL, json.dumps(dict(op='pin'))))
     def close(self):
         self.conn.close()
 
@@ -96,7 +72,7 @@ def show_msg(m: dict) -> str:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--pg', default=os.environ.get('DATABASE_URL') or None, help='PostgreSQL URL (default: DATABASE_URL)')
-    ap.add_argument('--db', default=os.environ.get('GAME_DB', str(ROOT / 'storage' / 'game.sqlite3')), help='SQLite file (when no --pg)')
+    ap.add_argument('--namespace', default=os.environ.get('GAME_NAMESPACE', str(ROOT / 'storage' / 'game')), help='PostgreSQL test namespace')
     ap.add_argument('--schema', help='PostgreSQL search_path (tests)')
     what = ap.add_mutually_exclusive_group(required=True)
     what.add_argument('--msg', type=int, help='the chat_messages.id to pin on Cả phố')
@@ -105,7 +81,7 @@ def main(argv=None) -> int:
     ap.add_argument('--by', default='admin', help="who pinned it (chat_pins.by_pid; default 'admin')")
     ap.add_argument('--dry-run', action='store_true', help='check and print, write nothing')
     a = ap.parse_args(argv)
-    side = Side(a.pg, None if a.pg else a.db, a.schema)
+    side = Side(a.pg, a.namespace, a.schema)
     try:
         if not side.has_table('chat_pins'):
             print('Chưa có bảng chat_pins: bản phát hành có ghim tin chưa chạy trên máy chủ này. Không ghi gì.', file=sys.stderr)

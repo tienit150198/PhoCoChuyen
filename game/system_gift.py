@@ -20,7 +20,7 @@ Flow (statuses pending → applied → seen)
   keeps its gift pending, never paid elsewhere, until it is a story save.
 * Loading the game never fails because of a gift: the server logs the error and loads the save.
 
-Tables: SCHEMA below (SQLite, tests and dev) and game/pg_schema.py (PostgreSQL, production).
+Tables: game/pg_schema.py (PostgreSQL).
 """
 from __future__ import annotations
 
@@ -44,23 +44,8 @@ SHOWN = 5                           # cards per load at most (the rest come on t
 ID_RX = re.compile(r'[A-Za-z0-9][A-Za-z0-9._-]{2,63}')
 _CONTROL = re.compile(r'[\x00-\x08\x0b-\x1f\x7f]')
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS system_gifts (
-  id TEXT PRIMARY KEY, sid TEXT NOT NULL, coins INTEGER NOT NULL, title TEXT NOT NULL, text TEXT NOT NULL,
-  status TEXT NOT NULL, created REAL NOT NULL, applied_at REAL, seen_at REAL, granted_by TEXT
-);
-CREATE INDEX IF NOT EXISTS system_gifts_sid ON system_gifts(sid, status);
-"""
-# The admin page's "Quà đã tặng" (newest first, LIMIT): run after migrate(), see storage.py.
-INDEXES = "CREATE INDEX IF NOT EXISTS system_gifts_created ON system_gifts(created);"
 
 
-def migrate(db) -> None:
-    """Older SQLite files: system_gifts.granted_by (the admin who gave it from /admin, schema 16; NULL for the
-    grant tool and older rows) is added in place, nullable without a default: 1.5.4 never reads it."""
-    cols = {r[1] for r in db.execute('PRAGMA table_info(system_gifts)').fetchall()}
-    if 'granted_by' not in cols:
-        db.execute('ALTER TABLE system_gifts ADD COLUMN granted_by TEXT')
 
 
 class GiftError(ValueError):
@@ -119,11 +104,15 @@ def validate(j: dict) -> None:
 # ---------------------------------------------------------------- loading a save
 # 🎁 A gift for the whole town (owner 04/10/2026 "tặng thêm 100 xu mỗi người toàn server", "tất cả người chơi trong
 # server k giới hạn"): every save that loads before `until` (guest or account, old or new) gets 100 xu once. No mass
-# insert on prod: the save's own row (id prefix + its sid's hash) is queued the first time, then the usual pending →
+# insert is needed for lazy grants: the save's own row (id prefix + its sid's hash) is queued the first time, then the usual pending →
 # applied → seen path pays it once and shows the card. MNL_BROADCAST_OFF=1 (tests/__init__.py) turns it off.
+# The fair1005 grant is also prequeued by scripts/grant_town_broadcast.py for all
+# existing saves, so offline players retain their pending gift beyond the window.
 BROADCASTS = (
     dict(prefix='all1004', coins=100, until=1791727200,   # until 11/10 21:00 (VN)
          title='Quà cả phố 🎁', text='Phố Có Chuyện gửi mỗi người 100 xu, cảm ơn bạn đã chơi cùng cả phố! Chơi vui nha 💛'),
+    dict(prefix='fair1005', coins=300, until=1791727200,
+         title='300 xu chơi hội chợ 🎪', text='Phố gửi bạn 300 xu vào ví để vui hội chợ! Tỷ lệ thắng đã tăng, ghé các gian chơi và thử vận may nhé 💛'),
 )
 
 

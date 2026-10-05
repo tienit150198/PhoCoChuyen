@@ -185,7 +185,7 @@ class SittingBehind(Couple):
         self.assertNotIn('b', await self.ev(husband, 'walk', 'mv', pid=wife.pid))
         self.assertIsNone(self.walker(wife).back)
         await husband.send(t='ride', r=SCOOTER)
-        await self.ev(wife, 'walk', 'rd', pid=husband.pid)
+        await self.ev(wife, 'walk', 'rd', pid=husband.pid, r=SCOOTER)
         await wife.send(t='back', to=husband.pid)
         self.assertEqual((await self.ev(husband, 'walk', 'mv', pid=wife.pid))['b'], husband.pid)
         await husband.send(t='sit', table=0)                                 # parks to sit: she gets off too
@@ -236,6 +236,7 @@ class SittingBehind(Couple):
         self.assertEqual((await wife.expect('error'))['code'], 'no_back')
         await asyncio.sleep(0.3)
         await husband.send(t='fair_mv', p=[[0.14, 0.08], [0.3, 0.6]], ms=300, r=SCOOTER)
+        await self.ev(wife, 'fair', 'mv', pid=husband.pid, p=[[0.14, 0.08], [0.3, 0.6]])
         await wife.send(t='fair_back', to=husband.pid)
         await self.ev(friend, 'fair', 'mv', pid=wife.pid, b=husband.pid)
         await husband.call('fair_out', 'fair_left')                          # he leaves: she stays, on foot

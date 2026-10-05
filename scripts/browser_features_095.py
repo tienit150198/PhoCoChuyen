@@ -42,6 +42,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / 'scripts'))
 from browser_v04 import OVERFLOW, free_port  # noqa: E402
+from pg_test_support import test_env, test_connect, schema_for
 
 STEPS = ('whatsnew', 'wardrobe', 'house', 'bank', 'money', 'claim', 'retry', 'toast', 'wealth')
 
@@ -79,13 +80,13 @@ STATE = "fetch('/api/state').then(r=>r.json()).then(d=>d.state)"
 def server():
     port = free_port()
     tmp = tempfile.mkdtemp(prefix='mnl-f095-')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1')
+    env = test_env( QUIET='1', PUSH_DISABLED='1')
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'LLM_BASE_URL'):
         env.pop(k, None)
-    db = os.path.join(tmp, 'g.sqlite3')
+    db = os.path.join(tmp, 'g.db')
     log_path = os.path.join(tmp, 'server.log')
     log = open(log_path, 'wb')
-    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--db', db], cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
+    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--namespace', db], cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
     base = f'http://127.0.0.1:{port}'
     for _ in range(600):
         try:

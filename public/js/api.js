@@ -161,7 +161,16 @@ export class GameAPI extends EventTarget {
       const got=early?early.got?.()??Date.now():Date.now();   // the headers are in (boot.js stamps its own)
       const version=response.headers.get('X-Game-Version');
       let data=null;
-      try{data=await response.json();}catch{/* not JSON: the proxy's own 502/504 page, or a body cut off */}
+      try{
+        if(this.perfEnabled){
+          const raw=await response.text();   // body/network wait is not JSON parse CPU time
+          if(this.perfEnabled){
+            const started=performance.now();
+            try{data=JSON.parse(raw);}
+            finally{this.dispatchEvent(new CustomEvent('clientperf',{detail:{parse:performance.now()-started}}));}
+          }else data=JSON.parse(raw);   // the page reached its sample cap while the body was arriving
+        }else data=await response.json();
+      }catch{/* not JSON: the proxy's own 502/504 page, or a body cut off */}
       // Server clock for real-time workbenches (boiling, ovens, dye timers, stop taps): see clockSample.
       if(typeof data?.server_time==='number')this.clockOffset=clockSample(this.clock,sent,got,data.server_time,data.server_recv);
       const outdated=response.status===426||OUTDATED_CODES.has(data?.code);
@@ -220,16 +229,22 @@ export class GameAPI extends EventTarget {
   }
   /** Adopt a state from the server. `since` (a read: this.accepted when it was sent): an answer older than a state
    * adopted meanwhile (a command's, while /api/state was on the wire) is left out, so the screen never shows a done
-   * step undone and the next tap is not sent against that older revision. Returns whether it was adopted. */
-  accept(data,since){
+   * step undone and the next tap is not sent against that older revision. Returns whether it was adopted.
+   * `inflatedMs`: sampled delta reconstruction already done by command(), before entering this method. */
+  accept(data,since,inflatedMs=0){
     if(since!==undefined&&since!==this.accepted&&typeof data?.revision==='number'&&data.revision<this.revision)return false;
+    const started=this.perfEnabled?performance.now():null;
     // A command's answer was filled in command(); any other `delta` only names parts (it has no references).
     const held=inflate(data,this.held);
+    if(this.account&&this.state?.name!==undefined&&this.state.name!==data.state?.name&&typeof data.state?.name==='string'&&data.state.name.trim())this.account.display=data.state.name;
     this.accepted++;
     this.state=DELTA_CHECK?freeze(data.state):data.state;this.revision=data.revision;this.connected=true;this.syncedAt=Date.now();this.held=held||NONE;
     // boot.js starts the English pack early for English players.
     const lang=data.state?.settings?.lang;if(lang&&lang!==this.lang){this.lang=lang;try{localStorage.setItem('mnl.lang',lang);}catch{/* storage blocked */}}
+    const applied=started===null?null:performance.now();
     this.dispatchEvent(new CustomEvent('state',{detail:data}));
+    // Includes synchronous state listeners (the app's renderMain/renderSheet), not later paint or async work.
+    if(started!==null&&this.perfEnabled)this.dispatchEvent(new CustomEvent('clientperf',{detail:{apply:applied-started+inflatedMs,render:performance.now()-applied}}));
     return true;
   }
   /** Dev only (DELTA_CHECK): the state built from references equals the server's whole state. */
@@ -244,7 +259,13 @@ export class GameAPI extends EventTarget {
       if(a!==b){let i=0;while(a[i]===b[i])i++;D.bad++;console.error('state delta: the merged state differs from /api/state at revision',revision,a.slice(Math.max(0,i-160),i+60),b.slice(Math.max(0,i-160),i+60));}
     }catch(error){console.warn('deltaCheck',error);}
   }
-  async refresh(){const since=this.accepted,data=await this.json('/api/state');this.accept(data,since);return data;}
+  async refresh(){
+    if(this.refreshing)return this.refreshing;
+    const since=this.accepted;
+    const work=(async()=>{const data=await this.json('/api/state');this.accept(data,since);return data;})();
+    this.refreshing=work;
+    try{return await work;}finally{if(this.refreshing===work)this.refreshing=null;}
+  }
   command(action,payload={},career=this.state?.current){
     const tap=JSON.stringify([career,action,payload]);
     // A stop tap on a running meter (v4/careers.js): the moment the finger came down rides along as tap_at.
@@ -282,11 +303,15 @@ export class GameAPI extends EventTarget {
             throw error;
           }
         }
-        try{inflate(data,held);}
+        let inflatedMs=0;
+        try{
+          const started=this.perfEnabled?performance.now():null;
+          try{inflate(data,held);}finally{if(started!==null)inflatedMs=performance.now()-started;}
+        }
         catch(error){  // never seen: a reference to a part not held. The whole state instead (the command did land).
           console.warn(error);const whole=await this.json('/api/state');data={...data,state:whole.state,revision:whole.revision,delta:whole.delta};
         }
-        this.accept(data);
+        this.accept(data,undefined,inflatedMs);
         if(DELTA_CHECK&&data.delta?.refs?.length)this.deltaCheck();
         this.done.push({tap,revision:data.revision,at:Date.now()});if(this.done.length>8)this.done.shift();   // landed (or replayed: landed before)
         // v4/sounds.js: detail sounds and the bank speaker (result.bank) follow each confirmed command.

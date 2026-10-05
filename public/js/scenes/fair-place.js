@@ -113,7 +113,8 @@ function lanterns(c,x0,y0,x1,y1,sag,step,o,big=1){
     L(c,x,y,x,y+6*big,'#5a3a2a',1.4);E(c,x,y+16*big,9*big,11*big,col);R(c,x-5*big,y+5*big,10*big,3*big,WOOD_D,1);R(c,x-5*big,y+26*big,10*big,3*big,WOOD_D,1);
     L(c,x,y+29*big,x,y+35*big,col,1.4);E(c,x-3*big,y+12*big,2.4*big,4*big,'#ffffff55');}
 }
-function sign(c,x,y,text,{size=16,bg=CREAM,ink=INK,edge=WOOD_D,min=70}={}){
+function sign(c,x,y,text,{size=16,bg=CREAM,ink=INK,edge=WOOD_D,min=70,bitmap=null}={}){
+  if(bitmap){bitmap('sign:'+text,[x-190,y-34,380,68],q=>sign(q,x,y,text,{size,bg,ink,edge,min}));return;}
   const sz=fit(c,text,320,size,800),wd=Math.max(min,c.measureText(text).width+sz*1.4),h=sz*1.9;
   R(c,x-wd/2,y-h/2,wd,h,bg,h/2.4,edge,2);T(c,text,x,y+1,sz,ink,800);
 }
@@ -180,23 +181,25 @@ function emptyStall(c,s,big){const {x,y,w}=s;R(c,x-w/2+20,y-30,w-40,26,'#b4936c'
 /** The things on the floor: [[depth y, draw]] (sorted with the player by the caller). */
 export function props(c,pl,o={}){
   const port=pl.port,Lo=LAYOUT[port?'port':'land'],big=port?1.25:1,out=[],s1=(port?.92:.78);
-  const ts={t:o.t||0,reduced:!!o.reduced};
+  const ts={t:o.t||0,reduced:!!o.reduced,bitmap:o.bitmap};
+  // Keep the original depth ordering; only these unchanging floor objects use caller-owned bitmaps.
+  const fixed=(id,s,paint,half=150,head=270)=>out.push([s.y,()=>o.bitmap?o.bitmap('prop:'+id,[s.x-half,s.y-head,half*2,head+24],paint):paint(c)]);
   if(!Lo.back.includes('dt')&&pl.has.dt){const s=Lo.dt;out.push([s.y,()=>booth(c,s,big,ts)]);}
   {const s=Lo.xd;out.push([s.y,()=>corner(c,s,big,ts)]);}
-  {const s=Lo.oaq;out.push([s.y,()=>mat(c,s,big,ts)]);}
-  {const s=Lo.board;out.push([s.y,()=>board(c,s,big)]);}
-  if(pl.has.loan){const s=Lo.loan;out.push([s.y,()=>lender(c,s,big)]);}
+  {const s=Lo.oaq;fixed('oaq',s,q=>mat(q,s,big,ts));}
+  {const s=Lo.board;fixed('board',s,q=>board(q,s,big),80,160);}
+  if(pl.has.loan){const s=Lo.loan;fixed('loan',s,q=>lender(q,s,big),120,170);}
   if(pl.has.xs){const s=Lo.xs;out.push([s.y,()=>tickets(c,s,big,ts)]);}
   if(pl.has.pb){const s=Lo.pb;out.push([s.y,()=>photobooth(c,s,port?1.12:1,ts)]);}
-  {const g=Lo.gate;out.push([g.y-110,()=>gate(c,g,big)]);}   // the player walks through it: in front of it at the way in
-  out.push([Lo.candy.y,()=>cart(c,Lo.candy,big,'candy')],[Lo.cane.y,()=>cart(c,Lo.cane,big,'cane')]);
+  {const g=Lo.gate;fixed('gate',g,q=>gate(q,g,big));out[out.length-1][0]=g.y-110;}   // the player walks through it: in front of it at the way in
+  for(const id of ['candy','cane'])fixed(id,Lo[id],q=>cart(q,Lo[id],big,id),65,110);
   for(const q of pl.crowd)out.push([q.y,()=>folk(c,q.x,q.y,s1,q.seed,{...ts,kid:q.seed%5===0,hat:q.seed%4===2?'non':''})]);
   return out;
 }
 /** Anh Sáu's phóng dao as a booth on the floor (portrait). */
 function booth(c,s,big,ts){
   const {x,y,w}=s,hw=w/2,cy=y-118;
-  L(c,x-hw+12,y,x-hw+12,cy-40,WOOD_D,5);L(c,x+hw-12,y,x+hw-12,cy-40,WOOD_D,5);R(c,x-hw+8,cy-56,w-16,22,'#5aa06a',6);sign(c,x,cy-66,'PHÓNG DAO',{size:14*big,min:80});
+  L(c,x-hw+12,y,x-hw+12,cy-40,WOOD_D,5);L(c,x+hw-12,y,x+hw-12,cy-40,WOOD_D,5);R(c,x-hw+8,cy-56,w-16,22,'#5aa06a',6);sign(c,x,cy-66,'PHÓNG DAO',{size:14*big,min:80,bitmap:ts.bitmap});
   knifeBoard(c,x,cy,32);
   folk(c,x+hw-20,y-4,.86,14,{...ts,top:'#4b7a5a'});
   R(c,x-hw+6,y-30,w-12,30,WOOD,6,WOOD_D,2);
@@ -208,7 +211,8 @@ function corner(c,s,big,ts){
   R(c,x-hw+6,y-42,w-12,30,'#c9a65a',5,'#8a6a2a',1.5);for(let i=1;i<6;i++)L(c,x-hw+6+i*(w-12)/6,y-41,x-hw+6+i*(w-12)/6,y-13,'#a8883e',1);
   E(c,x+hw-22,y-30,14,14,'#ffcf6a33');R(c,x+hw-25,y-36,6,10,'#fff3df',2);E(c,x+hw-22,y-39,2.4,4,'#ffb43a');
   folk(c,x-6,y-30,.82*Math.min(big,1.2),31,{...ts,top:'#2f3d4a',hat:'shades'});
-  T(c,'🕯️',x-hw+20,y-128,14*big,'#fff',400);
+  const candle=q=>T(q,'🕯️',x-hw+20,y-128,14*big,'#fff',400);
+  if(ts.bitmap)ts.bitmap('candle',[x-hw,y-148,40,40],candle);else candle(c);
 }
 /** The ô ăn quan board drawn on a mat, Bé Bi on one end and Ông Hai on the other. */
 function mat(c,s,big,ts){
@@ -241,7 +245,7 @@ function tickets(c,s,big,ts){
   for(let r=0;r<2;r++)for(let i=0;i<5;i++){const tx=x-30+i*12.5,ty=y-55+r*12;R(c,tx,ty,10,9,TICKET[(i+r*2)%5],1.5);R(c,tx+2,ty+3,6,3,'#dfe3e8',1);}
   E(c,x-20,y-56,10,2,'#ffffff66');
   L(c,x-26,y-62,x-26,y-80,WOOD_D,2.4);L(c,x+26,y-62,x+26,y-80,WOOD_D,2.4);
-  sign(c,x,y-86,'VÉ SỐ CÀO',{size:12*big,bg:'#fff1d6',edge:RED_D,ink:RED_D,min:84});
+  sign(c,x,y-86,'VÉ SỐ CÀO',{size:12*big,bg:'#fff1d6',edge:RED_D,ink:RED_D,min:84,bitmap:ts.bitmap});
 }
 /** The 📸 photobooth: a little purple kiosk, a marquee of bulbs round its sign, a camera on top, a red velvet curtain
  * drawn half open over the stool inside, a strip of sample photos pinned on its side. */
@@ -258,7 +262,8 @@ function photobooth(c,s,k,ts){
   R(c,x-hw+2,y-8,w-4,8,'#4a2a66',3);
   // the sign and its marquee
   const sy=top-4*k,sh=30*k;R(c,x-hw-6,sy-sh,w+12,sh,'#fff4df',8,'#e6b34a',2.5);
-  T(c,'CHỤP ẢNH',x,sy-sh/2+1,fit(c,'CHỤP ẢNH',w-6,13*k,900),'#6b3f8f',900);
+  const label=q=>T(q,'CHỤP ẢNH',x,sy-sh/2+1,fit(q,'CHỤP ẢNH',w-6,13*k,900),'#6b3f8f',900);
+  if(ts.bitmap)ts.bitmap('photo-label',[x-hw,sy-sh,w,sh],label);else label(c);
   const n=8;for(let i=0;i<n;i++){const bx=x-hw-2+i*(w+4)/(n-1);E(c,bx,sy-sh-1,2.6*k,2.6*k,on(i)?'#ffe28a':'#b98f4a');E(c,bx,sy+1,2.6*k,2.6*k,on(i+1)?'#ffe28a':'#b98f4a');}
   // the camera on the roof, its flash
   R(c,x-14*k,sy-sh-20*k,28*k,16*k,'#3b3b46',4);E(c,x,sy-sh-12*k,5.5*k,5.5*k,'#9fc3e8');E(c,x,sy-sh-12*k,2.5*k,2.5*k,'#2a3a5a');R(c,x+7*k,sy-sh-24*k,7*k,5*k,'#dfe4ea',1.5);
@@ -288,9 +293,14 @@ export function marks(c,pl,o={},near=null){
   for(const s of pl.spots){
     if(s.kind!=='stall'||near===s.id)continue;
     const [x,y]=s.mark||[s.hit[0],s.hit[1]-30],bob=o.reduced?0:Math.sin((o.t||0)*2+x)*3,st=STALLS[s.id],yy=y+bob;
-    E(c,x,yy,17*big,17*big,'#fffaf0');c.strokeStyle=GOLD;c.lineWidth=2;c.beginPath();c.arc(x,yy,17*big,0,Math.PI*2);c.stroke();
-    T(c,st.icon,x,yy+1,16*big,INK,400);
-    if(o.live?.[s.id]){E(c,x+13*big,yy-13*big,6*big,6*big,'#e2462d');E(c,x+13*big,yy-13*big,2.4*big,2.4*big,'#fff');}
+    const live=!!o.live?.[s.id],paint=q=>{
+      E(q,0,0,17*big,17*big,'#fffaf0');q.strokeStyle=GOLD;q.lineWidth=2;q.beginPath();q.arc(0,0,17*big,0,Math.PI*2);q.stroke();
+      T(q,st.icon,0,1,16*big,INK,400);
+      if(live){E(q,13*big,-13*big,6*big,6*big,'#e2462d');E(q,13*big,-13*big,2.4*big,2.4*big,'#fff');}
+    };
+    c.save();c.translate(x,yy);
+    if(o.bitmap){const r=21*big;o.bitmap('mark:'+s.id+':'+live,[-r,-r,2*r,2*r],paint);}else paint(c);
+    c.restore();
   }
 }
 export {T,fit,R,E,L};

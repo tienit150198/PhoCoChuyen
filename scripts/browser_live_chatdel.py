@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-import sqlite3
 import sys
 import tempfile
 from pathlib import Path
@@ -28,6 +27,7 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 from browser_live_chat import PW, phone, send, text_of  # noqa: E402
 from browser_live_pin import servers, until  # noqa: E402
 from browser_live_react import hold_touch  # noqa: E402
+from pg_test_support import test_env, test_connect, schema_for
 
 COUNT = "document.querySelectorAll('.ch-msg .ch-bub').length"
 FITS = "(() => { const b = document.querySelector('.chat-sheet .ch-body'); return b.scrollWidth <= b.clientWidth + 1 && document.documentElement.scrollWidth <= 391; })()"
@@ -53,7 +53,7 @@ async def run(shots: Path) -> list:
             await a.api('/api/marriage/friend_request', dict(username='minhtu_t'))
             rid = (await b.api('/api/marriage'))['friends']['incoming'][0]['id']
             await b.api('/api/marriage/friend_respond', dict(id=rid, answer='accept'))
-            with sqlite3.connect(db) as con:
+            with test_connect(db) as con:
                 con.execute("UPDATE stat_births SET day='2026-01-01'")
             for p in (a, b):
                 await p.page.reload()

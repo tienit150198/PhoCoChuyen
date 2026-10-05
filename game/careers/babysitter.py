@@ -768,15 +768,15 @@ def _note(s, c, d, p):
 def _greet(s, c, d, p):
     t = _task(c, p, ('arrive',))
     g = kit.one_of(p.get('greet'), GREETS, 'Cách chào này không có.')
-    kit.need(t['st']['greet'] is None, 'Chào bé rồi mà.')
+    f = fam(t['needs']['fam'])
+    kit.need(t['st']['greet'] != TEMPERS[f['temper']][2], 'Bé đã vui vẻ làm quen rồi.')
     t['st']['greet'] = g
     kit.start_work(t)
-    f = fam(t['needs']['fam'])
     ok = g == TEMPERS[f['temper']][2]
     k = kid(f, True)
     if ok:
         return dict(message=f'{GREETS[g][0]} {k} nhìn bạn một lúc, rồi cười, chìa tay ra.', correct=True)
-    return dict(message=f'{GREETS[g][0]} {k} nép sau lưng {_lower(PEOPLE[f["npc"]][0])}, chưa chịu theo bạn.', correct=False)
+    return dict(message=f'{GREETS[g][0]} {k} nép sau lưng {_lower(PEOPLE[f["npc"]][0])}, chưa chịu theo bạn. Hãy thử cách chào khác hợp tính bé.', correct=False)
 
 
 def _bag(s, c, d, p):

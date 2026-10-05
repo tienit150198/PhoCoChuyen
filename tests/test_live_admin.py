@@ -1,4 +1,4 @@
-"""💬 Chat on the game server: the tables on both backends, the admin "Chat" tab (reports queue, hide / keep,
+"""💬 Chat on the game server: PostgreSQL tables, the admin "Chat" tab (reports queue, hide / keep,
 mute 1 h / 24 h / 7 d) behind ADMIN_USERS, the page CSP that lets the page open its own socket, the cleanup
 when a player deletes their data, and (PostgreSQL) the NOTIFY that makes the live service apply an admin
 decision at once."""
@@ -34,17 +34,25 @@ class SchemaTests(unittest.TestCase):
             self.assertIn(f'CREATE TABLE IF NOT EXISTS {t} (', pg_schema.TABLES_DDL)
             self.assertIn(t, pg_schema.TABLE)
         with tempfile.TemporaryDirectory() as d:
-            store = Store(Path(d) / 'g.sqlite3')
+            store = Store(Path(d) / 'g.db')
             with store.connect() as db:
-                for t in ('chat_channels', 'chat_members', 'chat_messages', 'chat_mutes', 'chat_prefs', 'live_effects'):
-                    self.assertEqual(columns(db, t), {c for c, _ in pg_schema.TABLE[t]['columns']}, t)
+                expected = {
+                    'chat_channels': {'id', 'kind', 'title', 'owner_pid', 'created'},
+                    'chat_members': {'channel', 'pid', 'sid', 'role', 'joined', 'last_read', 'muted_until', 'pushed_at'},
+                    'chat_messages': {'id', 'channel', 'pid', 'name', 'av', 'text', 'at', 'hidden', 'deleted', 'reports', 'reviewed_at', 'adm', 'raw'},
+                    'chat_mutes': {'pid', 'until', 'by_admin', 'reason', 'at'},
+                    'chat_prefs': {'pid', 'online', 'updated'},
+                    'live_effects': {'id', 'sid', 'kind', 'amount', 'data', 'status', 'at', 'applied_at'},
+                }
+                for t, names in expected.items():
+                    self.assertEqual(columns(db, t), names, t)
             store.close_pool()
 
 
 class AdminChatTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.store = Store(Path(self.tmp.name) / 'g.sqlite3')
+        self.store = Store(Path(self.tmp.name) / 'g.db')
         social.ensure(self.store)
 
     def tearDown(self):

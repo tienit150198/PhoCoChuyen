@@ -251,6 +251,7 @@ class Choices(unittest.TestCase):
             for o in x['options']:
                 s = copy.deepcopy(bases[cid])
                 row = fire(s, cid, x['id'])
+                o = next(opt for opt in inc._priced_spec(row)['options'] if opt['id'] == o['id'])
                 c0 = s['careers'][cid]
                 fund0, wallet0, n0, trust0 = c0['money'], s['journey']['wallet'], len(c0['ops']['finance']['ledger']), c0['incidents']['trust']
                 s, r = choose(s, cid, o['id'], row['id'])

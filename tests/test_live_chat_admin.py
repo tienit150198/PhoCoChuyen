@@ -2,10 +2,9 @@
 wait, no mute, no duplicate check, links and numbers kept, 500 characters / 6 lines) and pins one message for
 everyone. The pin is durable (chat_pins), goes away with its message, survives pruning, and a pin written from the
 server (scripts/chat_pin.py, e.g. the operator's pid 'admin' announcement) reaches players within the 30 s poll.
-Plus the schema on both backends (chat_messages.adm, chat_pins, SCHEMA_VERSION 10) and the SQLite upgrade."""
+Plus the PostgreSQL schema (chat_messages.adm, chat_pins, SCHEMA_VERSION 10)."""
 import io
 import secrets
-import sqlite3
 import tempfile
 import time
 import unittest
@@ -15,7 +14,7 @@ from pathlib import Path
 from game import live_chat, pg_schema
 from game.storage import Store
 from tests.live_support import LiveCase
-from tests.pg_support import columns, on_pg, sqlite_only
+from tests.pg_support import columns, on_pg, primary_key
 
 ANN = '📢 Ban quản lý Phố'
 
@@ -188,7 +187,7 @@ class PinTests(AdminCase):
         await b.send(t='del', id=m['id'])           # its author takes it back
         await a.expect('pinned', pin=None)
         self.assertIsNone(self.pin_row())
-        # an admin hides it (game server, SQLite: no NOTIFY): gone within the poll
+        # an admin hides it (game server, PostgreSQL NOTIFY): gone within the poll
         mid = self.add('tin bị ẩn')
         await a.send(t='pin', id=mid)
         await a.expect('pinned')
@@ -233,7 +232,6 @@ class PinTests(AdminCase):
             self.assertEqual(db.execute('SELECT COUNT(*) FROM chat_messages WHERE id=?', (first,)).fetchone()[0], 1)
         self.assertEqual(self.pin_row(), (first, 'admin'))
 
-    @sqlite_only
     async def test_pin_from_the_server_script(self):
         from scripts import chat_pin
         mid = self.add('Phố Có Chuyện chào mọi người!\nXem thêm: https://phocochuyen.io.vn/tin-tuc.', pid='admin', name=ANN)
@@ -241,13 +239,12 @@ class PinTests(AdminCase):
         self.assertIsNone((await c.call('join', 'joined', ch='town'))['pin'])
         out = io.StringIO()
         with redirect_stdout(out):
-            self.assertEqual(chat_pin.main(['--db', self.store.path, '--msg', str(mid), '--dry-run']), 0)
+            self.assertEqual(chat_pin.main(['--schema', self.store.pg.schema, '--pg', self.store.pg.url, '--msg', str(mid), '--dry-run']), 0)
         self.assertIn('Thử (không ghi)', out.getvalue())
         self.assertIsNone(self.pin_row())
         with redirect_stdout(io.StringIO()):
-            self.assertEqual(chat_pin.main(['--db', self.store.path, '--msg', str(mid)]), 0)
+            self.assertEqual(chat_pin.main(['--schema', self.store.pg.schema, '--pg', self.store.pg.url, '--msg', str(mid)]), 0)
         self.assertEqual(self.pin_row(), (mid, 'admin'))
-        await c.nothing('pinned', wait=0.2)
         await self.poll()                          # the service reads the pin row every 30 s
         f = await c.expect('pinned')
         self.assertEqual((f['pin']['id'], f['pin']['adm'], f['pin']['name']), (mid, 1, ANN))
@@ -255,7 +252,7 @@ class PinTests(AdminCase):
         await c.nothing('pinned', wait=0.2)
         out = io.StringIO()
         with redirect_stdout(out):
-            self.assertEqual(chat_pin.main(['--db', self.store.path, '--show']), 0)
+            self.assertEqual(chat_pin.main(['--schema', self.store.pg.schema, '--pg', self.store.pg.url, '--show']), 0)
         self.assertIn(f'#{mid}', out.getvalue())
         # a restart reads it at start
         await self.app.stop()
@@ -269,49 +266,31 @@ class PinTests(AdminCase):
         hid = self.add('ẩn', hidden=2)
         err = io.StringIO()
         with redirect_stdout(io.StringIO()), redirect_stderr(err):
-            self.assertEqual(chat_pin.main(['--db', self.store.path, '--msg', str(hid)]), 2)
-            self.assertEqual(chat_pin.main(['--db', self.store.path, '--msg', '999999']), 2)
+            self.assertEqual(chat_pin.main(['--schema', self.store.pg.schema, '--pg', self.store.pg.url, '--msg', str(hid)]), 2)
+            self.assertEqual(chat_pin.main(['--schema', self.store.pg.schema, '--pg', self.store.pg.url, '--msg', '999999']), 2)
         self.assertEqual(self.pin_row(), (mid, 'admin'))
         with redirect_stdout(io.StringIO()):
-            self.assertEqual(chat_pin.main(['--db', self.store.path, '--unpin']), 0)
+            self.assertEqual(chat_pin.main(['--schema', self.store.pg.schema, '--pg', self.store.pg.url, '--unpin']), 0)
         self.assertIsNone(self.pin_row())
         await self.poll()
         await c2.expect('pinned', pin=None)
 
 
 class SchemaTests(unittest.TestCase):
-    def test_both_backends(self):
+    def test_postgres_schema(self):
         self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 10)   # 10: chat_messages.adm, chat_pins
         self.assertIn('CREATE TABLE IF NOT EXISTS chat_pins (', pg_schema.TABLES_DDL)
         self.assertIn('ALTER TABLE chat_messages ADD COLUMN IF NOT EXISTS adm bigint NOT NULL DEFAULT 0;', pg_schema.TABLES_DDL)
-        self.assertEqual(pg_schema.TABLE['chat_pins']['key'], ('channel',))
-        self.assertEqual([c for c, _ in pg_schema.TABLE['chat_messages']['columns']][-2:], ['adm', 'raw'])
         with tempfile.TemporaryDirectory() as d:
-            store = Store(Path(d) / 'g.sqlite3')
+            store = Store(Path(d) / 'g.db')
             with store.connect() as db:
-                for t in ('chat_messages', 'chat_pins'):
-                    self.assertEqual(columns(db, t), {c for c, _ in pg_schema.TABLE[t]['columns']}, t)
+                self.assertEqual(columns(db, 'chat_messages'), {'id', 'channel', 'pid', 'name', 'av', 'text', 'at', 'hidden', 'deleted', 'reports', 'reviewed_at', 'adm', 'raw', 'reply_to'})
+                self.assertEqual(columns(db, 'chat_pins'), {'channel', 'msg', 'by_pid', 'at'})
+                self.assertEqual(primary_key(db, 'chat_pins'), ('channel',))
+                ordered = [r[0] for r in db.execute("SELECT column_name FROM information_schema.columns WHERE table_schema=current_schema() AND table_name='chat_messages' ORDER BY ordinal_position")]
+                self.assertEqual(ordered[-3:], ['adm', 'raw', 'reply_to'])
             store.close_pool()
 
-    @unittest.skipIf(on_pg(), 'SQLite upgrade')
-    def test_older_sqlite_file_gains_adm(self):
-        with tempfile.TemporaryDirectory() as d:
-            path = Path(d) / 'g.sqlite3'
-            db = sqlite3.connect(path)
-            db.executescript("""CREATE TABLE chat_messages (
-              id INTEGER PRIMARY KEY AUTOINCREMENT, channel TEXT NOT NULL, pid TEXT NOT NULL, name TEXT NOT NULL DEFAULT '',
-              av TEXT NOT NULL DEFAULT '', text TEXT NOT NULL, at REAL NOT NULL, hidden INTEGER NOT NULL DEFAULT 0,
-              deleted INTEGER NOT NULL DEFAULT 0, reports INTEGER NOT NULL DEFAULT 0, reviewed_at REAL);
-              INSERT INTO chat_messages(channel, pid, name, text, at) VALUES('town', 'a', 'Ai', 'cũ', 1);""")
-            db.commit()
-            db.close()
-            store = Store(path)
-            with store.connect() as db:
-                self.assertEqual(tuple(db.execute('SELECT text, adm FROM chat_messages').fetchone()), ('cũ', 0))
-                self.assertIn('chat_pins', {r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")})
-            self.assertEqual(live_chat.view(store)['town'][0]['adm'], 0)
-            store.close_pool()
-            Store(path).close_pool()   # a second start: nothing to add
 
 
 if __name__ == '__main__':

@@ -5,6 +5,12 @@
 html[data-layout="phone"] .sheet.home.tw-sheet{height:calc(100dvh - max(10px,var(--safe-t)))}
 .sheet.tw-sheet #sheetContent{height:100%}
 .tw-home{display:flex;flex-direction:column;height:100%;min-height:0}
+.tw-goals{flex:0 1 auto;max-height:44%;overflow:auto;overscroll-behavior:contain;padding:8px 12px}
+.tw-goals .jr-chapter{padding:12px}
+.tw-goals .jr-ch-top{margin-bottom:6px}
+.tw-goals .jr-ch-art{width:36px;height:36px;font-size:1.3rem}
+.tw-goals .jr-goals-title{margin-top:6px}
+.tw-goals .jr-recommend{margin-bottom:4px}
 .tw-top{position:relative;display:flex;align-items:center;gap:8px;padding:12px 14px 10px 18px;background:var(--surface);border-bottom:1px solid var(--line)}
 html[data-layout="phone"] .tw-top{padding:18px max(12px,var(--safe-r)) 8px max(14px,var(--safe-l))}
 .tw-title{flex:1 1 auto;min-width:0;display:flex;align-items:baseline;gap:8px}
@@ -54,3 +60,17 @@ html[data-layout="phone"] .tw-card{gap:10px;padding:10px 10px 10px 12px}
 html[data-layout="phone"] .tw-go{padding:0 14px}
 /* The list (v4/journey.js) keeps a way back to the town. */
 .jr-top .jr-town{flex:none}
+
+/* A destination and an outlined street route remain legible while walking or riding. */
+.tw-route-picker{position:absolute;top:10px;left:10px;right:10px;z-index:2;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:6px;margin:0;border:1px solid #c9b49a;border-radius:13px;background:#fffaf0f5;box-shadow:0 2px 8px #0002}
+.tw-route-picker select{min-width:0;width:100%;min-height:44px;padding:7px;border:1px solid #d5c5aa;border-radius:8px;background:#fffdf7;color:#40392f;font:700 14px system-ui;text-overflow:ellipsis}
+.tw-route-picker button,.tw-map-tools button{min-width:44px;min-height:44px;border:1px solid #c9b49a;border-radius:9px;background:#fffaf0;color:#374d42;font:800 14px system-ui;cursor:pointer;touch-action:manipulation}
+.tw-route-picker button{padding:8px 10px;background:#226e62;color:#fff;border-color:#226e62}
+.tw-route-picker :focus-visible,.tw-map-tools button:focus-visible{outline:3px solid var(--focus,#bd741c);outline-offset:2px}
+.tw-where{top:78px;max-width:calc(100% - 145px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tw-stage .rd-toggle{top:78px}
+.tw-map-tools{position:absolute;right:10px;bottom:12px;z-index:1;display:flex;align-items:center;gap:4px;padding:4px;border:1px solid #c9b49a;border-radius:12px;background:#fffaf0f5;box-shadow:0 2px 8px #0002}
+.tw-map-tools output{min-width:4ch;text-align:center;color:#4a3a30;font:800 12px system-ui;font-variant-numeric:tabular-nums}
+.tw-map-tools button:disabled{opacity:.4;cursor:default}
+.tw-stage:has(.tw-card:not([hidden])) .tw-map-tools{bottom:110px}
+@media(max-height:740px){.tw-goals{max-height:28%}.tw-slot{min-height:320px}}

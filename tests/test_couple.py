@@ -193,51 +193,45 @@ class CoupleBase(Base):
 
 
 class FundTests(CoupleBase):
-    def test_withdraw_1000_per_spouse_and_reset_after_24_hours(self):
+    def test_withdrawals_above_1000_have_no_daily_quota(self):
         self.fund(self.a, 3000)
-        self.act(self.a, 'fund_deposit', amount=3000, rid='limit-deposit-1')
-        for tok, rid in ((self.a, 'limit-withdraw-a'), (self.b, 'limit-withdraw-b')):
-            before = self.wallet(tok)
-            self.act(tok, 'fund_withdraw', amount=1000, rid=rid)
-            self.act(tok, 'fund_withdraw', amount=1000, rid=rid)  # retry: no second debit
-            self.assertEqual(self.wallet(tok), before + 1000)
-            self.assertEqual(self.home(tok)['fund']['daily_left'], 0)
-            with self.assertRaises(mr.MarriageError) as err:
-                self.act(tok, 'fund_withdraw', amount=1, rid=rid + '-over')
-            self.assertEqual(err.exception.code, 'fund_cap')
-        self.assertEqual(self.home(self.a)['limits']['withdraw_cap'], 1000)
-        self.assertEqual(self.home(self.a)['fund']['balance'], 1000)
-        self.clock.t += DAY - 1
+        self.act(self.a, 'fund_deposit', amount=3000, rid='large-deposit-1')
+        before = self.wallet(self.a)
+        for _ in range(2):
+            self.act(self.a, 'fund_withdraw', amount=1500, rid='large-withdraw-1')
+        self.assertEqual(self.wallet(self.a), before + 1500)
+        self.act(self.a, 'fund_withdraw', amount=1000, rid='large-withdraw-2')
+        self.assertEqual(self.home(self.a)['fund']['daily_left'], 500)
+        self.assertEqual(self.home(self.b)['fund']['daily_left'], 500)
+        self.assertIsNone(self.home(self.a)['limits']['withdraw_cap'])
         with self.assertRaises(mr.MarriageError) as err:
-            self.act(self.a, 'fund_withdraw', amount=1, rid='limit-before-reset')
-        self.assertEqual(err.exception.code, 'fund_cap')
-        self.clock.t += 2
-        self.assertEqual(self.home(self.a)['fund']['daily_left'], 1000)
-        self.act(self.a, 'fund_withdraw', amount=1000, rid='limit-after-reset')
+            self.act(self.b, 'fund_withdraw', amount=501, rid='large-over-balance')
+        self.assertEqual(err.exception.code, 'fund_low')
+        self.act(self.b, 'fund_withdraw', amount=500, rid='large-withdraw-3')
         self.assertEqual(self.home(self.a)['fund']['balance'], 0)
 
-    def test_1000_limit_combines_card_spend_and_withdrawals(self):
+    def test_card_spend_and_withdrawals_share_actual_balance(self):
         self.fund(self.a, 2000)
-        self.act(self.a, 'fund_deposit', amount=2000, rid='limit-deposit-2')
+        self.act(self.a, 'fund_deposit', amount=2000, rid='large-deposit-2')
         for _ in range(2):
-            mr._mutate(self.store, {self.sid(self.a): lambda s: cp.joint_spend(s, 700, 'Học phí', 'limit-card-700')})
-        self.assertEqual(cp.joint_account(self.state(self.a))['daily_left'], 300)
-        self.act(self.a, 'fund_withdraw', amount=300, rid='limit-withdraw-rest')
-        self.assertEqual(self.home(self.a)['fund']['daily_left'], 0)
-        self.assertEqual(self.home(self.b)['fund']['daily_left'], 1000)
+            mr._mutate(self.store, {self.sid(self.a): lambda s: cp.joint_spend(s, 1200, 'Học phí', 'large-card-1200')})
+        self.assertEqual(cp.joint_account(self.state(self.a))['daily_left'], 800)
+        self.act(self.a, 'fund_withdraw', amount=300, rid='large-withdraw-rest')
+        self.assertEqual(self.home(self.a)['fund']['daily_left'], 500)
+        self.assertEqual(self.home(self.b)['fund']['daily_left'], 500)
         with self.assertRaises(GameError) as err:
-            cp.joint_spend(self.state(self.a), 1, 'Mua thêm', 'limit-card-over')
-        self.assertEqual(err.exception.code, 'fund_cap')
+            cp.joint_spend(self.state(self.a), 501, 'Mua thêm', 'large-card-over')
+        self.assertEqual(err.exception.code, 'fund_low')
         with self.assertRaises(mr.MarriageError) as err:
-            self.act(self.a, 'fund_withdraw', amount=1, rid='limit-withdraw-over')
-        self.assertEqual(err.exception.code, 'fund_cap')
-        self.assertEqual(self.home(self.a)['fund']['balance'], 1000)
+            self.act(self.a, 'fund_withdraw', amount=501, rid='large-withdraw-over')
+        self.assertEqual(err.exception.code, 'fund_low')
+        self.assertEqual(self.home(self.a)['fund']['balance'], 500)
 
     def test_spouse_block_links_the_couple(self):
         sp = self.state(self.a)['marriage']['spouse']
         self.assertEqual((sp['couple'], sp['side'], sp['status']), (self.cid, 'a', 'married'))
 
-    def test_deposit_withdraw_cap_and_history(self):
+    def test_deposit_withdraw_balance_and_history(self):
         self.act(self.a, 'fund_deposit', amount=500, rid='deposit-0001')
         self.act(self.a, 'fund_deposit', amount=500, rid='deposit-0001')           # a retried tap
         self.assertEqual(self.wallet(self.a), 500)
@@ -248,13 +242,13 @@ class FundTests(CoupleBase):
         self.assertEqual((self.wallet(self.b), self.label(self.b)['label']), (1200, 'Rút từ quỹ chung'))
         self.assertIn('rút 200 xu', self.view(self.a)['me']['notice'])
         with self.assertRaises(mr.MarriageError) as e:
-            self.act(self.b, 'fund_withdraw', amount=cp.WITHDRAW_CAP - 200 + 1, rid='withdraw-002')
-        self.assertEqual(e.exception.code, 'fund_cap')
-        self.assertEqual(self.home(self.b)['fund']['daily_left'], cp.WITHDRAW_CAP - 200)
-        self.act(self.a, 'fund_withdraw', amount=250, rid='withdraw-003')           # the cap is per spouse
+            self.act(self.b, 'fund_withdraw', amount=301, rid='withdraw-002')
+        self.assertEqual(e.exception.code, 'fund_low')
+        self.assertEqual(self.home(self.b)['fund']['daily_left'], 300)
+        self.act(self.a, 'fund_withdraw', amount=250, rid='withdraw-003')           # both spouses share the balance
         with self.assertRaises(mr.MarriageError) as e:
-            self.act(self.a, 'fund_withdraw', amount=cp.WITHDRAW_CAP - 250 + 1, rid='withdraw-004')
-        self.assertEqual(e.exception.code, 'fund_cap')
+            self.act(self.a, 'fund_withdraw', amount=51, rid='withdraw-004')
+        self.assertEqual(e.exception.code, 'fund_low')
         self.clock.t += DAY + 1
         with self.assertRaises(mr.MarriageError) as e:
             self.act(self.a, 'fund_withdraw', amount=60, rid='withdraw-005')
@@ -413,7 +407,7 @@ class BankHelperTests(CoupleBase):
     def test_joint_account_and_spend(self):
         self.act(self.a, 'fund_deposit', amount=400, rid='deposit-0001')
         acc = cp.joint_account(self.state(self.a))
-        self.assertEqual((acc['id'], acc['balance'], acc['daily_left']), (self.cid, 400, cp.WITHDRAW_CAP))
+        self.assertEqual((acc['id'], acc['balance'], acc['daily_left']), (self.cid, 400, 400))
         self.assertEqual([m['me'] for m in acc['members']], [True, False])
         self.assertIsNone(cp.joint_account(migrate_state(new_state(), owned=True)))
         # a command that lands: spent once whatever the retries
@@ -433,17 +427,13 @@ class BankHelperTests(CoupleBase):
         with self.assertRaises(GameError) as e:
             cp.joint_spend(s, 50, 'Mua quạt', 'card-2')
         self.assertEqual(e.exception.code, 'expired')
-        # the daily cap counts card spends; not married / busy
+        # actual balance protects card spends; not married / malformed reference
         with self.assertRaises(GameError) as e:
-            cp.joint_spend(self.state(self.a), cp.WITHDRAW_CAP - 120 + 1, 'Mua xe', 'card-3')
-        self.assertEqual(e.exception.code, 'fund_cap')
+            cp.joint_spend(self.state(self.a), 281, 'Mua xe', 'card-3')
+        self.assertEqual(e.exception.code, 'fund_low')
         with self.assertRaises(GameError) as e:
             cp.joint_spend(migrate_state(new_state(), owned=True), 5, 'x', 'card-4')
         self.assertEqual(e.exception.code, 'no_joint')
-        if not on_pg():  # SQLite's writer turn is held; PostgreSQL has no global writer lock to wait on
-            with self.assertRaises(GameError) as e:
-                self.store.transaction(lambda db: cp.joint_spend(self.state(self.b), 5, 'x', 'card-5'))
-            self.assertEqual(e.exception.code, 'busy')
         with self.assertRaises(GameError):
             cp.joint_spend(self.state(self.a), 5, 'x', 'bad ref!')
 

@@ -10,12 +10,11 @@ in each workplace's fund. The save still passes `validate_state`.
 The password is never taken from the command line (it would land in the
 shell history): it is read from $GRANT_PASSWORD or asked for.
 
-  python3 scripts/grant_admin.py --db storage/game.sqlite3 --username admin
+  python3 scripts/grant_admin.py --namespace storage/game --username admin
 
 Run it on the machine that hosts the game's database. Players who are signed
-in to that account see the new save after a reload. With DATABASE_URL set (the
-game runs on PostgreSQL, see docs/POSTGRES.md) --db is ignored and the account is
-made in that database.
+in to that account see the new save after a reload. DATABASE_URL is required
+(PostgreSQL, see docs/POSTGRES_ONLY.md). The account is made in that database.
 """
 from __future__ import annotations
 
@@ -87,14 +86,13 @@ def ensure_account(store: Store, username: str, display: str, password: str | No
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--db', default=os.environ.get('GAME_DB', str(ROOT / 'storage' / 'game.sqlite3')))
+    ap.add_argument('--namespace', default=os.environ.get('GAME_NAMESPACE', str(ROOT / 'storage' / 'game')), help='PostgreSQL test namespace (default: GAME_NAMESPACE)')
     ap.add_argument('--username', default='admin')
     ap.add_argument('--display', default='Admin')
     ap.add_argument('--reset-password', action='store_true', help='set a new password on an existing account')
     a = ap.parse_args()
-    if not dbm.database_url() and not Path(a.db).exists():
-        sys.exit(f'Không thấy cơ sở dữ liệu: {a.db}')
-    store = Store(a.db, story=True)
+    dbm.database_url()  # requires PostgreSQL; no file fallback
+    store = Store(a.namespace, story=True)
     with store.connect() as db:
         exists = db.execute('SELECT 1 FROM accounts WHERE username=?', (a.username.strip().lower(),)).fetchone()
     password = None
@@ -103,7 +101,7 @@ def main() -> None:
     sid = ensure_account(store, a.username, a.display, password, a.reset_password)
     db = store.connect()
     try:
-        db.execute('BEGIN IMMEDIATE')
+        db.execute('BEGIN')
         row = db.execute('SELECT state,revision FROM sessions WHERE sid=?' + dbm.for_update(db), (sid,)).fetchone()
         state = max_out(migrate_state(store.parse_state(row['state'], sid)))
         validate_state(state)

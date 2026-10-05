@@ -13,7 +13,7 @@ lines gained 'ask'/'told').
 
 OLD_TREE / NEW_TREE are source checkouts (e.g. `git worktree add /tmp/live rel096`, or
 `git archive rel096 | tar -x -C /tmp/live`). Each tree is imported in its own subprocess
-(`python -I`, sys.path = that tree only), never in this process.
+(`python -I`, with that tree before declared PYTHONPATH dependency directories), never in this process.
 
 For every career, day 1..DAYS, slot 0..11 and classic False/True (the desk flag the
 validator passes: pre-desk counter tasks, mother_baby before gift generation) it compares
@@ -98,11 +98,12 @@ def worker(tree: str, career: str, days: int, out: str) -> None:
 def run_worker(tree: Path, career: str, days: int, tmp: Path) -> dict:
     out = tmp / f'{tree.name}-{abs(hash(str(tree)))}-{career}.json'
     env = {k: v for k, v in os.environ.items() if not k.startswith('PYTHON')}
+    env['PYTHONPATH'] = os.pathsep.join(str(Path(p).resolve()) for p in os.environ.get('PYTHONPATH', '').split(os.pathsep) if p)
     env['MNL_TASK_COMPAT'] = '1'
-    code = ('import sys; sys.path.insert(0, sys.argv[1]); '
+    code = ('import os, sys; sys.path[:0] = [sys.argv[1], *filter(None, os.environ.get("PYTHONPATH", "").split(os.pathsep))]; '
             'import importlib.util as u; s=u.spec_from_file_location("gate", sys.argv[2]); m=u.module_from_spec(s); s.loader.exec_module(m); '
             'm.worker(sys.argv[3], sys.argv[4], int(sys.argv[5]), sys.argv[6])')
-    # The worker code comes from this file; the game code comes only from `tree` (-I: no cwd, no PYTHONPATH).
+    # -I excludes implicit cwd/environment imports; explicitly retain dependency directories after the selected tree.
     p = subprocess.run([sys.executable, '-I', '-c', code, str(tree), __file__, str(tree), career, str(days), str(out)],
                        cwd=str(tree), env=env, capture_output=True, text=True)
     if p.returncode != 0:

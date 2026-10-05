@@ -13,16 +13,15 @@ Saves are per-player documents, so a transfer is a row between two saves (`bank_
   one (statement line + bank SMS), else into the cash in hand (wallet line). The receiver may be offline for weeks:
   the row waits. Unclaimed for UNCLAIMED_DAYS (or the receiver deleted their data): 'back', and the coins return to
   the sender through the live_effects inbox (kind 'coins', applied once by id).
-* No new key in any save: only bank statement/SMS rows and wallet history rows of kinds every build knows, so saves
-  stay valid for the previous server, and the previous server leaves the rows waiting (it never reads the table).
+* No new key in any save: only bank statement/SMS and wallet history rows. Old saves still load here.
+  Large transfers require this build's widened history amount validation; older servers must be patched before rollback.
 
-Against farming with second accounts (the main risk): both accounts registered ACCOUNT_DAYS days at least, the
-sender at life day LIFE_DAYS, friends for FRIEND_MINUTES at least and not blocked, MIN_XU..SEND_DAY xu, at most
-SEND_COUNT transfers and SEND_DAY xu sent per VN day, RECV_DAY xu received per VN day. The day counters
-(`bank_xfer_days`) move with a conditional upsert in the same transaction, so two senders racing for one receiver
-cannot pass the cap. No fee. The rows (sender, receiver, names, amount, note, time, status) are the audit log.
+Both accounts must be registered ACCOUNT_DAYS days, the sender at life day LIFE_DAYS,
+friends for FRIEND_MINUTES and not blocked. Transfers have no daily amount/count quota;
+the sender must have the money. Day counters are accounting only, updated atomically.
+No fee. Transfer rows and the save revision guard preserve money and retry safety.
 
-Tables: SCHEMA below (SQLite) and game/pg_schema.py (PostgreSQL, schema 15).
+Tables: game/pg_schema.py (PostgreSQL, schema 15).
 """
 from __future__ import annotations
 
@@ -34,9 +33,7 @@ import time
 from . import marriage as mr
 
 MIN_XU = 10              # smallest transfer
-SEND_DAY = 2000          # xu a player sends per VN day (also the largest single transfer)
-SEND_COUNT = 10          # transfers a player sends per VN day
-RECV_DAY = 3000          # xu a player receives per VN day, from everyone
+MAX_TRANSFER = 10**9     # save's representable bank balance, not a daily quota
 ACCOUNT_DAYS = 1         # both accounts registered at least this long (real days; owner 03/10: 1 day)
 LIFE_DAYS = 10           # the sender's save has lived this many days
 FRIEND_MINUTES = 60      # friends at least this long
@@ -46,7 +43,6 @@ BATCH = 20               # rows credited per load at most (the rest on the next 
 RECENT = 8
 SWEEP_EVERY = 60.0
 CHIPS = (50, 100, 200, 500, 1000)
-ADMIN_MAX = 1_000_000   # an admin (ADMIN_USERS) sends at once, no day caps, no waits (owner 04/10); one transfer at most this
 ADMIN_CHIPS = (1000, 5000, 10000, 50000, 100000)
 KIND = 'bank'            # wallet history kind (journey.HISTORY_KINDS): every build knows it
 BACK_SRC = 'xfer_back'   # live_effects data.src of a refund (game/live_effects.py LABELS)
@@ -55,20 +51,6 @@ STATUSES = ('sent', 'done', 'back')
 GONE = 'Một người chơi'  # the name left on a deleted player's rows (game/marriage.py _display says the same)
 RID_RX = re.compile(r'[A-Za-z0-9\-]{8,64}')
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS bank_xfers (
-  id TEXT PRIMARY KEY, code TEXT NOT NULL, sender TEXT NOT NULL, receiver TEXT NOT NULL, from_name TEXT NOT NULL,
-  to_name TEXT NOT NULL, amount INTEGER NOT NULL, note TEXT NOT NULL DEFAULT '', src TEXT NOT NULL, status TEXT NOT NULL,
-  day TEXT NOT NULL, at REAL NOT NULL, done_at REAL
-);
-CREATE INDEX IF NOT EXISTS bank_xfers_receiver ON bank_xfers(receiver, status);
-CREATE INDEX IF NOT EXISTS bank_xfers_sender ON bank_xfers(sender, at);
-CREATE INDEX IF NOT EXISTS bank_xfers_open ON bank_xfers(status, at);
-CREATE TABLE IF NOT EXISTS bank_xfer_days (
-  sid TEXT NOT NULL, day TEXT NOT NULL, sent INTEGER NOT NULL DEFAULT 0, n INTEGER NOT NULL DEFAULT 0,
-  got INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (sid, day)
-);
-"""
 
 _swept = [0.0]
 
@@ -173,7 +155,7 @@ def send(store, sid: str, display: str, d: dict, admin: bool = False) -> dict:
     if old:   # a retry of a transfer that went through: the same receipt, nothing moves
         return dict(message=f'Đã chuyển {fmt(old["amount"])} xu cho {old["to_name"]}.', receipt=_receipt(old, True), changed=False)
     amount = d.get('amount')
-    most = ADMIN_MAX if admin else SEND_DAY
+    most = MAX_TRANSFER
     need(type(amount) is int and MIN_XU <= amount <= most, f'Chuyển từ {MIN_XU} tới {fmt(most)} xu mỗi lần nhé.', 'bad_amount')
     src = d.get('src', 'acc')
     need(src in ('acc', 'cash'), 'Chọn chuyển từ tài khoản hoặc tiền mặt nhé.', 'bad_src')
@@ -217,28 +199,15 @@ def send(store, sid: str, display: str, d: dict, admin: bool = False) -> dict:
                    "VALUES(?,?,?,?,?,?,?,?,?,'sent',?,?)", (xid, xcode, sid, other, display[:24], name[:24], amount, note, src, day, t))
         if admin:   # no day caps either way, and it doesn't use up the receiver's room for friends' transfers
             return
-        mine = _today(db, sid, day)
-        need(mine['n'] < SEND_COUNT, f'Hôm nay bạn đã chuyển {SEND_COUNT} lần. Mai chuyển tiếp nhé.', 'limit_count', 429)
-        left = SEND_DAY - mine['sent']
-        need(amount <= left, f'Hôm nay bạn còn chuyển được {fmt(max(0, left))} xu thôi.' if left > 0
-             else f'Hôm nay bạn đã chuyển đủ {fmt(SEND_DAY)} xu. Mai chuyển tiếp nhé.', 'limit_send', 429)
-        room = RECV_DAY - _today(db, other, day)['got']
-        need(amount <= room, f'Hôm nay {name} chỉ nhận thêm được {fmt(max(0, room))} xu.' if room >= MIN_XU
-             else f'Hôm nay {name} đã nhận đủ chuyển khoản. Mai gửi tiếp nhé.', 'limit_receive', 429)
-
-        # Conditional upserts: the caps hold even when two transactions race (the row lock / SQLite's write lock).
+        # Atomic accounting; no gameplay quota on sending or receiving.
         # Both rows in sid order, so A->B and B->A at once never wait on each other (no PostgreSQL deadlock).
         def mine_up():
-            n = db.execute('INSERT INTO bank_xfer_days(sid,day,sent,n,got) VALUES(?,?,?,1,0) ON CONFLICT(sid,day) DO UPDATE SET '
-                           'sent=bank_xfer_days.sent+excluded.sent, n=bank_xfer_days.n+1 '
-                           'WHERE bank_xfer_days.sent+excluded.sent<=? AND bank_xfer_days.n<?',
-                           (sid, day, amount, SEND_DAY, SEND_COUNT)).rowcount
-            need(n == 1, 'Hôm nay bạn đã chuyển đủ rồi. Mai chuyển tiếp nhé.', 'limit_send', 429)
+            db.execute('INSERT INTO bank_xfer_days(sid,day,sent,n,got) VALUES(?,?,?,1,0) ON CONFLICT(sid,day) DO UPDATE SET '
+                       'sent=bank_xfer_days.sent+excluded.sent, n=bank_xfer_days.n+1', (sid, day, amount))
 
         def theirs_up():
-            n = db.execute('INSERT INTO bank_xfer_days(sid,day,sent,n,got) VALUES(?,?,0,0,?) ON CONFLICT(sid,day) DO UPDATE SET '
-                           'got=bank_xfer_days.got+excluded.got WHERE bank_xfer_days.got+excluded.got<=?', (other, day, amount, RECV_DAY)).rowcount
-            need(n == 1, f'Hôm nay {name} đã nhận đủ chuyển khoản. Mai gửi tiếp nhé.', 'limit_receive', 429)
+            db.execute('INSERT INTO bank_xfer_days(sid,day,sent,n,got) VALUES(?,?,0,0,?) ON CONFLICT(sid,day) DO UPDATE SET '
+                       'got=bank_xfer_days.got+excluded.got', (other, day, amount))
         for _, up in sorted(((sid, mine_up), (other, theirs_up)), key=lambda x: x[0]):
             up()
     from . import db as dbm
@@ -265,7 +234,7 @@ def _ping(store, sid: str, text: str) -> None:
 
 
 # ---------------------------------------------------------------- receive
-def _credit(s: dict, r: dict) -> str:
+def _credit(s: dict, r: dict) -> str | None:
     """One transfer into the receiver's save. Returns where it went: 'acc' or 'cash'."""
     from . import bank as bk
     from . import bank_content as K
@@ -274,11 +243,13 @@ def _credit(s: dict, r: dict) -> str:
     said = f': «{note}»' if note else ''
     b = bk.get(s)
     if b is not None:
+        if b['balance'] + amount > bk.BAL_MAX:return None
         b['balance'] += amount
         bk._log(b, j['life_day'], 'acc', f'💸 {name} chuyển khoản{said}', amount)
         bk._inbox(b, j['life_day'], 'sms', f'{K.BANK_NAME}: +{fmt(amount)} xu từ {name}. Mã GD {code}.' + (f' Lời nhắn: «{note}»' if note else ''))
         return 'acc'
     from . import journey as jr
+    if j['wallet'] + amount > MAX_TRANSFER:return None
     jr._wallet(j, amount, KIND, f'💸 {name} chuyển khoản{said}')
     return 'cash'
 
@@ -286,24 +257,30 @@ def _credit(s: dict, r: dict) -> str:
 def receive(store, sid: str, story: bool | None = None) -> list:
     """Credit this save's waiting transfers. Returns [{code, name, amount, note, to}] of what arrived now."""
     got: list = []
+    class NoRoom(Exception):
+        pass
+    from . import bank as bk
     for _ in range(6):
+        loaded = mr._read_state(store, sid)
+        if not loaded or story is False or not (loaded[0].get('journey') or {}).get('story'):
+            return got
+        state = loaded[0]
+        bank = bk.get(state)
+        room = max(0, (bk.BAL_MAX-bank['balance']) if bank is not None else MAX_TRANSFER-state['journey']['wallet'])
         with store.connect() as db:
-            rows = mr._rows(db, "SELECT * FROM bank_xfers WHERE receiver=? AND status='sent' ORDER BY at,id LIMIT ?", (sid, BATCH))
+            # Skip transfers that cannot fit so a long queue of large pending rows cannot starve smaller ones.
+            # _credit checks again under the save revision guard when another tab changes the balance.
+            rows = mr._rows(db, "SELECT * FROM bank_xfers WHERE receiver=? AND status='sent' AND amount<=? ORDER BY at,id LIMIT ?", (sid, room, BATCH))
         if not rows:
             return got
-        if story is None:
-            loaded = mr._read_state(store, sid)
-            story = bool(loaded and (loaded[0].get('journey') or {}).get('story'))
-        if not story:   # a non-story save (dev, tests): the rows wait until it is one
-            return got
         where: dict = {}
-        ids = [r['id'] for r in rows]
-
         def fn(s, rows=rows, where=where):
             for r in rows:
                 where[r['id']] = _credit(s, r)
+            if not any(where.values()):raise NoRoom()
 
-        def ops(db, ids=ids):
+        def ops(db):
+            ids = [rid for rid, target in where.items() if target]
             t = now()
             marks = ','.join('?' * len(ids))
             if db.execute(f"UPDATE bank_xfers SET status='done',done_at=? WHERE status='sent' AND receiver=? AND id IN ({marks})",
@@ -311,10 +288,12 @@ def receive(store, sid: str, story: bool | None = None) -> list:
                 raise mr._Retry()   # another tab credited some of them: compute again
         try:
             mr._mutate(store, {sid: fn}, ops)
+        except NoRoom:
+            continue  # the balance moved after the read; recompute which waiting rows fit
         except mr._Retry:
             time.sleep(.01)
             continue
-        got += [dict(code=r['code'], name=r['from_name'], amount=int(r['amount']), note=r['note'], to=where.get(r['id'], 'cash')) for r in rows]
+        got += [dict(code=r['code'], name=r['from_name'], amount=int(r['amount']), note=r['note'], to=where[r['id']]) for r in rows if where.get(r['id'])]
         if len(rows) < BATCH:
             return got
     return got
@@ -421,12 +400,12 @@ def view(store, sid: str, state: dict, admin: bool = False) -> dict:
     recent.sort(key=lambda x: -x[0])
     if admin:
         return dict(friends=friends, lock=_lock(store, sid, state, True), recent=[x[1] for x in recent[:RECENT]],
-                    today=dict(sent=mine['sent'], n=mine['n'], left=ADMIN_MAX, count_left=999),
-                    rules=dict(min=MIN_XU, send_day=ADMIN_MAX, send_count=999, recv_day=ADMIN_MAX, account_days=0, life_days=0,
+                    today=dict(sent=mine['sent'], n=mine['n'], left=None, count_left=None),
+                    rules=dict(min=MIN_XU, send_day=None, send_count=None, recv_day=None, unlimited=True, account_days=0, life_days=0,
                                friend_minutes=0, note_max=NOTE_MAX, chips=list(ADMIN_CHIPS), admin=True))
     return dict(friends=friends, lock=_lock(store, sid, state), recent=[x[1] for x in recent[:RECENT]],
-                today=dict(sent=mine['sent'], n=mine['n'], left=max(0, SEND_DAY - mine['sent']), count_left=max(0, SEND_COUNT - mine['n'])),
-                rules=dict(min=MIN_XU, send_day=SEND_DAY, send_count=SEND_COUNT, recv_day=RECV_DAY, account_days=ACCOUNT_DAYS,
+                today=dict(sent=mine['sent'], n=mine['n'], left=None, count_left=None),
+                rules=dict(min=MIN_XU, send_day=None, send_count=None, recv_day=None, unlimited=True, account_days=ACCOUNT_DAYS,
                            life_days=LIFE_DAYS, friend_minutes=FRIEND_MINUTES, note_max=NOTE_MAX, chips=list(CHIPS)))
 
 

@@ -175,7 +175,7 @@ async function onClick(op,data){
     case'jointIn':{const a=amountOf('bk-joint-amt');if(!a){S.flash={text:'Nhập số xu nhé.',kind:'warn'};render();return;}
       if(await ask(`Gửi ${xu(a)} vào quỹ chung?`,'Tiền mặt trong ví chuyển vào tài khoản chung của hai vợ chồng. Người ấy sẽ thấy giao dịch này.',`Gửi · ${xu(a)}`,{cost:a,pocket:'wallet'}))marriagePost('fund_deposit',{amount:a,rid:rid()});return;}
     case'jointOut':{const a=amountOf('bk-joint-amt');if(!a){S.flash={text:'Nhập số xu nhé.',kind:'warn'};render();return;}
-      if(await ask(`Rút ${xu(a)} bằng thẻ chung?`,`Tiền về ví của bạn. Hôm nay thẻ chung còn chi được ${xu(S.joint?.fund?.daily_left)}. Người ấy nhận thông báo về giao dịch này.`,`Rút · ${xu(a)}`))marriagePost('fund_withdraw',{amount:a,rid:rid()});return;}
+      if(await ask(`Rút ${xu(a)} bằng thẻ chung?`,`Tiền về ví của bạn. Quỹ chung còn ${xu(S.joint?.fund?.balance)}. Người ấy nhận thông báo về giao dịch này.`,`Rút · ${xu(a)}`))marriagePost('fund_withdraw',{amount:a,rid:rid()});return;}
     case'marriage':S.dlg.close();(await import('./marriage.js')).openMarriage(S.env,'home');return;
     case'retry':render();return;
     case'xfer':S.tab='xfer';S.flash=null;xferOpen();render();S.dlg.querySelector('.bk-body')?.scrollTo?.(0,0);return;
@@ -313,7 +313,7 @@ function jointSection(){
   return `<section class="bk-card bk-joint"><h3>Tài khoản chung vợ chồng</h3>
     <div class="bk-plastic joint" role="img" aria-label="Thẻ chung Ngân hàng Phố"><div class="bk-plastic-top"><span class="bk-plastic-logo">${LOGO}<b>NGÂN HÀNG PHỐ</b></span><span class="bk-plastic-kind">THẺ CHUNG</span></div>
       <span class="bk-chip" aria-hidden="true"></span><div class="bk-plastic-no">${xu(f.balance)}</div><div class="bk-plastic-foot"><span>${esc(names.map(plain).join(' & '))}</span></div></div>
-    <p class="bk-hint">Cả hai cùng thấy mọi giao dịch. Hạn mức tính cả chi và rút trong 24 giờ gần nhất; bạn còn <b>${xu(f.daily_left)}</b>.</p>
+    <p class="bk-hint">Cả hai cùng thấy mọi giao dịch. Chi và rút theo số dư <b>${xu(f.balance)}</b>, không giới hạn mỗi ngày.</p>
     <p class="bk-hint">Để trả bằng quỹ chung: mở Thẻ → Cách trả mặc định → chọn “Ưu tiên thẻ chung vợ chồng (quỹ chung)” → Lưu.</p>
     <div class="bk-actions">${btn('Cài thanh toán bằng quỹ chung','tab',{tab:'card'},'ghost small')}</div>
     <div class="bk-move"><label class="bk-field"><span>Số xu</span><input id="bk-joint-amt" type="number" inputmode="numeric" min="1" placeholder="Ví dụ 30"></label></div>
@@ -357,7 +357,7 @@ function save(b){
 }
 
 function paymentSettings(b){
-  return `<section class="bk-card"><h3>Khi mua sắm cá nhân</h3><p class="bk-hint">Học phí, trang phục, đi cửa sau… dùng cách trả mặc định khi bạn không chọn riêng. Ưu tiên thẻ chung sẽ trừ quỹ chung nếu đủ tiền và hạn mức; nếu không, thử ví rồi thẻ tín dụng. Chi phí quầy lấy từ két và vốn quầy; góp vốn dùng ví.</p>
+  return `<section class="bk-card"><h3>Khi mua sắm cá nhân</h3><p class="bk-hint">Học phí, trang phục, đi cửa sau… dùng cách trả mặc định khi bạn không chọn riêng. Ưu tiên thẻ chung sẽ trừ quỹ chung nếu đủ số dư; nếu không, thử ví rồi thẻ tín dụng. Chi phí quầy lấy từ két và vốn quầy; góp vốn dùng ví.</p>
     <p class="bk-hint">Chọn trả từ tài khoản để mua sắm không cần rút tiền. Chỉ trừ số dư tài khoản thanh toán; thiếu tiền sẽ dừng, không tự dùng ví hoặc vay thẻ. Tiền tiết kiệm không bị trừ.</p>
     <div class="bk-move"><label class="bk-field wide"><span>Cách trả mặc định</span><select id="bk-pref">${Object.entries(b.prefs).map(([k,v])=>`<option value="${k}"${b.pref===k?' selected':''}>${esc(v)}</option>`).join('')}</select></label></div>
     <div class="bk-actions">${btn('Lưu','pref',{},'ghost small')}</div></section>`;

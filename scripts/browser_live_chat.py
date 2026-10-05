@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """💬 Chat in two browsers (dev tool, needs `pip install playwright websockets` + chromium).
 
-Starts a game server (story mode, SQLite) and the live service (live/, `python3 -m live`) on the same
+Starts a game server (story mode, PostgreSQL) and the live service (live/, `python3 -m live`) on the same
 database, then plays two phones (390×844) that become friends, plus a brand-new guest:
   * the chat button and its badge appear only once the service says chat is on;
   * Cả phố: A posts, the send button counts down (10 s slow mode), B reads and answers; the new guest reads
@@ -22,13 +22,13 @@ import contextlib
 import json
 import os
 import socket
-import sqlite3
 import subprocess
 import sys
 import tempfile
 import time
 import urllib.request
 from pathlib import Path
+from pg_test_support import test_env, test_connect, schema_for
 
 ROOT = Path(__file__).resolve().parents[1]
 PW = 'matkhau-rat-dai'
@@ -54,25 +54,34 @@ def wait_http(url: str, secs: float = 60) -> None:
 @contextlib.contextmanager
 def servers(tmp: str):
     gp, lp = free_port(), free_port()
-    db = os.path.join(tmp, 'g.sqlite3')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live', ADMIN_USERS='op_admin')
+    db = os.path.join(tmp, 'g.db')
+    env = test_env( QUIET='1', PUSH_DISABLED='1', LIVE_URL=f'ws://127.0.0.1:{lp}/live', ADMIN_USERS='op_admin')
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'DATABASE_URL'):
         env.pop(k, None)
-    game = subprocess.Popen([sys.executable, 'server.py', '--port', str(gp), '--db', db], cwd=ROOT, env=env,
-                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    wait_http(f'http://127.0.0.1:{gp}/api/health')
-    lenv = dict(env, LIVE_CHAT='1', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
-    log = open(os.path.join(tmp, 'live.log'), 'w')
-    live = subprocess.Popen([sys.executable, '-m', 'live', '--db', db], cwd=ROOT, env=lenv, stdout=log, stderr=log)
-    wait_http(f'http://127.0.0.1:{lp}/live/health')
+    game = live = log = None
     try:
+        game = subprocess.Popen([sys.executable, 'server.py', '--port', str(gp), '--namespace', db], cwd=ROOT, env=env,
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        wait_http(f'http://127.0.0.1:{gp}/api/health')
+        lenv = dict(env, DATABASE_URL=env['TEST_DATABASE_URL'], LIVE_CHAT='1', LIVE_ORIGINS=f'http://127.0.0.1:{gp}', LIVE_PORT=str(lp))
+        log = open(os.path.join(tmp, 'live.log'), 'w')
+        live = subprocess.Popen([sys.executable, '-m', 'live', '--schema', schema_for(db)], cwd=ROOT, env=lenv, stdout=log, stderr=log)
+        wait_http(f'http://127.0.0.1:{lp}/live/health')
         yield f'http://127.0.0.1:{gp}', db, os.path.join(tmp, 'live.log')
     finally:
         for p in (live, game):
-            p.terminate()
+            if p is None:
+                continue
             with contextlib.suppress(Exception):
-                p.wait(5)
-        log.close()
+                if p.poll() is None:
+                    p.terminate()
+                try:
+                    p.wait(5)
+                except subprocess.TimeoutExpired:
+                    p.kill()
+                    p.wait(5)
+        if log is not None:
+            log.close()
 
 
 API = """async ([path, body]) => {
@@ -154,7 +163,7 @@ async def run(shots: Path) -> list:
             rid = view['friends']['incoming'][0]['id']
             await b.api('/api/marriage/friend_respond', dict(id=rid, answer='accept'))
             # both are long-time players (not "new"): their save was born before today
-            with sqlite3.connect(db) as con:
+            with test_connect(db) as con:
                 con.execute("UPDATE stat_births SET day='2026-01-01'")
             for p in (a, b):
                 await p.page.reload()

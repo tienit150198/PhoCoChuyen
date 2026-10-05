@@ -7,6 +7,13 @@ from tests.helpers import Journey
 
 
 class CareerSummaryTests(unittest.TestCase):
+    def test_other_career_advertises_active_staff_without_full_payload(self):
+        j=Journey('accounting')
+        j.act('ops_hire',candidate='accounting-staff-1',confirm=True)
+        summary=career_summary(j.c,'accounting')
+        self.assertTrue(summary['business_running'])
+        self.assertNotIn('ops',summary)
+
     def test_summary_matches_the_full_views(self):
         j = Journey('milk_tea')
         j.act('advance')

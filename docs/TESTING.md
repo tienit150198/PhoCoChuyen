@@ -1,4 +1,12 @@
-# Kiểm thử v0.5
+# Kiểm thử
+
+Các test dùng database cần `TEST_DATABASE_URL` tới PostgreSQL dùng riêng cho kiểm thử và không có `DATABASE_URL` production. Toàn bộ suite, gồm test WebSocket, cần Python 3.11 trở lên và `requirements-live.txt`. Mỗi namespace tạm có schema riêng, tự dọn sau lần chạy. Các launcher trình duyệt/package cũng yêu cầu endpoint này. Báo cáo JSON ghi tên và lý do từng test bị bỏ qua; không xem các test socket bị bỏ qua là bằng chứng dịch vụ live đã được kiểm.
+
+```powershell
+$env:TEST_DATABASE_URL='postgresql://test_user@127.0.0.1:5432/game_test'
+Remove-Item Env:DATABASE_URL -ErrorAction SilentlyContinue
+python scripts/run_checks.py
+```
 
 Từ v0.5 máy chủ thật chạy **hành trình**: một nhân vật, nghề mở dần theo chương, ví riêng có tiền sinh hoạt, nghề văn phòng phải phỏng vấn xong mới được làm. Để kiểm được mọi nghề trong trình duyệt, chạy server với `MNL_DEV=1`: hành trình tắt, mọi nghề mở và có lệnh `job_quick` (nhận việc nhanh). `browser_v04.py` tự đặt biến này cho server tạm của nó. Các script cũ (`browser_smoke.py`, `browser_operations.py`, `browser_v03.py`) nhận `--base`, nên cần tự chạy `MNL_DEV=1 python server.py` trước. Máy chủ thật không được đặt `MNL_DEV`.
 
@@ -11,7 +19,7 @@ Từ v0.5 máy chủ thật chạy **hành trình**: một nhân vật, nghề m
 
 | Lệnh | Kiểm gì |
 |---|---|
-| `python scripts/run_checks.py` | Toàn bộ test Python (luật lõi, 20 nghề, Kế hoạch lớp, phản hồi/AI, Phố nghề, web push, HTTP, SQLite, migration). Báo cáo ở `artifacts/python-test-report.json`. |
+| `python scripts/run_checks.py` | Toàn bộ test Python (luật lõi, 20 nghề, Kế hoạch lớp, phản hồi/AI, Phố nghề, web push, HTTP, PostgreSQL, migration bản lưu). Báo cáo ở `artifacts/python-test-report.json`. |
 | `MNL_CAREERS=restaurant python -m unittest discover -s tests -t .` | Chạy nhanh khi chỉ sửa một nghề. Test của các nghề bị lọc sẽ tự bỏ qua. |
 | `python scripts/browser_v04.py [--shots DIR] [--lang en]` | Trình duyệt thật (Playwright + Chromium) trên điện thoại 390×844, máy tính bảng 820×1180 và máy tính 1440×900: màn chọn nghề, mọi thẻ công việc của 20 nghề, các thẻ Cài đặt, 5 phong cách, Phố nghề và tiếng Anh. Báo lỗi console, lỗi 5xx và tràn ngang. `--lang en` chạy cả vòng bằng tiếng Anh; số chuỗi chưa dịch nằm ở `i18n_misses`/`sample_misses`. Báo cáo ở `artifacts/browser-v04-report.json`. |
 | `python scripts/i18n_extract.py extract` rồi `status` | Tìm chuỗi tiếng Việt mới chưa có bản dịch tiếng Anh. Dịch phần thiếu trong `i18n/todo/`, rồi chạy `merge` và `build`. Chuỗi ghép theo ngữ cảnh (ví dụ "lượt $1" → "turn $1") thêm vào `i18n/overrides.json`. |

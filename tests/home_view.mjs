@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {sharedRooms,ownershipOrder} from '../public/js/v4/home-view.js';
+const rooms=[{id:'living',skin:{w:'old',f:'wood'}},{id:'bed',skin:{w:'pink'}}];
+assert.equal(sharedRooms(rooms,null),rooms);
+assert.deepEqual(sharedRooms(rooms,{skins:{living:{w:'blue'}}}).map(r=>r.skin),[{w:'blue'},{}]);
+assert.equal(rooms[0].skin.w,'old','snapshot does not mutate personal save');
+const owner=[{id:'d1',mate:false},{id:'p:d1',mate:true}];
+const resident=[{id:'d1',mate:false},{id:'p:d1',mate:true}];
+assert.equal(owner.sort((a,b)=>ownershipOrder(a,b,true))[0].mate,false);
+assert.equal(resident.sort((a,b)=>ownershipOrder(a,b,false))[0].mate,true,'homeowner stays behind resident from either view');
+assert.equal(ownershipOrder({id:'d2'},{id:'d3'},true)<0,true);
+console.log('Shared home view: canonical skins/reset, immutable inputs, stable ownership tie-break passed');

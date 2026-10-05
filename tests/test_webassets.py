@@ -49,7 +49,10 @@ class PageAndContentTests(unittest.TestCase):
         self.assertLess(html.index('type="importmap"'),html.index('type="module"'))
         # Every static import of app.js is preloaded in one round.
         preloaded={u.split('?')[0] for u in re.findall(r'rel="modulepreload" href="([^"]+)"',html)}
-        self.assertTrue({'/js/api.js','/js/world.js','/js/v4/journey.js','/js/v4/stories.js'}<=preloaded)
+        self.assertTrue({'/js/api.js','/js/isometric/phaser-world.js','/js/v4/journey.js','/js/v4/stories.js'}<=preloaded)
+        # Runtime sprites resolve through the same release map as their scene code.
+        self.assertEqual(imap['/icons/isometric/grocery.webp'],
+                         f"/icons/isometric/grocery.webp?v={content_hash((PUBLIC/'icons/isometric/grocery.webp').read_bytes())}")
         # 304 on revalidation.
         self.assertEqual(self.req('/',{'If-None-Match':h['ETag']})[0],304)
 

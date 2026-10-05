@@ -112,7 +112,8 @@ def spot(s: dict, L: dict | None = None) -> dict:
     place, kind = hs.where(hs.get(s))
     if place == 'rent' and kind == hs.DORM:
         return dict(kind='dorm', cap=DORM_CAP, why='')
-    L = L or _dc().layout(s)
+    from . import deco_mate
+    L = deco_mate.use_layout(s, L)
     count = sum(1 for u in L['pos'] if L['kinds'].get(u) in FRIDGES)
     if count:
         return dict(kind='own', cap=FRIDGE_CAP * min(FRIDGES_MAX, count), why='')

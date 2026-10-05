@@ -40,6 +40,23 @@
 .qy-have{color:var(--good);font-weight:800;font-size:1.2rem}
 
 .qy-order>button{min-height:44px}
+.qy-owner-queue{padding:12px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface);margin:12px 0;min-width:0}
+.qy-queue-heading{display:flex;align-items:baseline;justify-content:space-between;gap:6px 12px;flex-wrap:wrap;margin-bottom:10px}
+.qy-queue-heading>span{font-size:.85rem;color:var(--muted)}
+.qy-queue-people{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));list-style:none;padding:0;margin:0;gap:6px}
+.qy-queue-person{display:flex;gap:6px;align-items:center;min-width:0;padding:7px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--surface-2)}
+.qy-queue-person>span:last-child{display:grid;min-width:0}
+.qy-queue-person b{font-size:.85rem;overflow-wrap:anywhere}
+.qy-queue-person small{font-size:.75rem;color:var(--muted)}
+.qy-queue-person.current{border-color:var(--accent,var(--good))}
+.qy-queue-person.angry,.qy-queue-person.impatient{border-color:var(--warn,var(--bad))}
+.qy-queue-voices{display:grid;gap:6px;margin-top:8px}
+.qy-queue-voice{font-size:.85rem;line-height:1.45;margin:0;overflow-wrap:anywhere;color:var(--ink-2)}
+.qy-queue-voice.angry,.qy-customer-call{color:var(--bad)}
+.qy-customer-temper{display:inline-block;margin-left:8px;font-size:.8rem;color:var(--muted)}
+.qy-customer-temper.angry,.qy-customer-temper.impatient{color:var(--bad)}
+.qy-say .qy-customer-call{font-size:.9rem;margin-top:4px;font-weight:700}
+@media(min-width:620px){.qy-queue-people{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .qy-days{list-style:none;margin:0;padding:0;display:grid;gap:2px;font-size:.9rem}
 .qy-days li{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;padding:4px 2px;border-bottom:1px dashed var(--line)}
 .qy-days b.up{color:var(--good)}
@@ -144,3 +161,19 @@
   .qy-turns .btn{padding-inline:6px;font-size:.9rem}
   .qy-tiles{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))}
 }
+
+/* The owner's warm worktop and the live, server-confirmed business ledger. */
+.qy-economy-controls{display:grid;gap:8px;margin-block:12px}.qy-economy-controls .btn{min-height:44px;white-space:normal}.qy-economy-controls .bk-actions{display:flex;gap:8px;flex-wrap:wrap}.qy-market{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.qy-market.down{border-left:4px solid var(--warn)}.qy-market.up{border-left:4px solid var(--good)}.qy-market p{font-size:.78rem;line-height:1.5;margin:4px 0 0}.qy-protection summary{cursor:pointer;padding-block:10px;min-height:44px;font-size:.82rem}.qy-business .staff-life-card{margin-block:12px}.staff-life-card details{margin-top:8px}.staff-life-card summary{cursor:pointer;min-height:40px;padding-block:8px}.staff-life-card p{overflow-wrap:anywhere}.qy-market b{overflow-wrap:anywhere}
+.qy-scene-first{aspect-ratio:360/270;max-width:560px}.qy-visit{display:grid;gap:16px}.qy-visit-title{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.qy-visit-title>span{font-size:.8rem;font-weight:800;letter-spacing:.05em}.qy-visit-title small{color:var(--muted)}
+.qy-business{padding:15px 16px;background:var(--surface-2);border-radius:14px;border:1px solid var(--line)}.qy-business-heading{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.qy-business-heading>b{flex:1}.qy-business-heading .btn{min-height:44px}.qy-business-dot{width:9px;height:9px;border-radius:50%;background:#b79461;flex:none}.qy-business-dot.running{background:#66885a}.qy-business>p{margin:6px 0;color:var(--ink-2);font-size:.85rem;line-height:1.6}.qy-business-numbers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:14px 0;padding:12px 0;border-block:1px solid var(--line)}.qy-business-numbers>div{display:grid;gap:4px}.qy-business-numbers small{font-size:.73rem;color:var(--muted)}.qy-business-numbers strong{font-size:1.12rem;font-variant-numeric:tabular-nums}.qy-business-numbers .loss,.qy-price-feedback.loss{color:var(--bad)}.qy-business .qy-business-note{font-size:.75rem}.qy-business .qy-sync-error{color:var(--warn);font-weight:600}.qy-business h4{margin:14px 0 8px}.qy-ledger summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-size:.85rem}.qy-ledger dl{margin:0}.qy-ledger dl>div{display:flex;justify-content:space-between;font-size:.85rem;padding:4px 0}.qy-ledger dd{margin:0;font-variant-numeric:tabular-nums}.qy-recent{list-style:none;padding:0;margin:0;display:grid;gap:6px}.qy-recent li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:.85rem}.qy-recent li span{display:grid;gap:3px}.qy-recent small{font-size:.75rem;color:var(--muted)}.qy-recent li>b{white-space:nowrap}
+.qy-menu-tools{display:flex;gap:12px;align-items:end}.qy-menu-tools .bk-field{flex:1;min-width:0}.qy-price-field{display:grid;gap:4px;max-width:150px;margin:0 6px 4px}.qy-price-field>span,.qy-stock-item label>span{font-size:.75rem;color:var(--muted)}.qy-price-field input,.qy-stock-item input{min-height:44px;width:100%;border:1px solid var(--line-strong);border-radius:8px;padding:8px 10px;background:var(--surface);color:var(--ink);font:700 1rem inherit;box-sizing:border-box}.qy-price-field input[aria-invalid=true]{border-color:var(--bad)}.qy-price-feedback{flex-basis:100%;padding:0 8px 7px;font-size:.75rem;line-height:1.6;color:var(--ink-2)}.qy-price-feedback.dear{color:var(--warn)}.qy-menu-disclaimer{font-size:.8rem;line-height:1.6;color:var(--muted);margin:0}.qy-stock-item{display:flex;gap:16px;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--line);border-radius:12px}.qy-stock-item>span{display:grid;gap:5px;flex:1;min-width:0;font-size:.85rem}.qy-stock-item small{color:var(--muted);font-size:.75rem}.qy-stock-item label{display:grid;gap:3px;width:86px;flex:none}.qy-stock-quote{display:grid;gap:5px;font-weight:800}.qy-stock-quote small{font-weight:400;color:var(--muted)}.qy-rider-view{max-width:560px;max-height:none;aspect-ratio:480/320;background:#dcebed}.qy-run .qy-scene-first{border-radius:16px}.qy-runbar{font-size:.85rem}
+@media(max-width:420px){.qy-business{padding:12px}.qy-business-numbers{gap:7px}.qy-business-numbers strong{font-size:.97rem}.qy-business-numbers small{font-size:.65rem}.qy-price-field{max-width:none;flex:1 1 100%;margin:0 8px 4px}.qy-dish-pick{flex-basis:100%}.qy-menu-tools{gap:8px}.qy-menu-tools>.btn{padding-inline:9px;font-size:.8rem}.qy-visit-title small{font-size:.72rem}.qy-business-heading>b{font-size:.85rem}.qy-stock-item{padding:10px;gap:10px}}
+@media(prefers-reduced-motion:reduce){.qy-switch,.qy-knob::after,.qy-tile-btn,.qy-coin{transition:none;transform:none}}
+.qy-counter-activity{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
+.qy-counter-activity>p{margin:0 0 8px;font-size:.82rem}.qy-counter-activity>small{display:block;margin-top:8px;color:var(--muted);font-size:.7rem}
+.qy-counter-activity ol{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0;padding:0}
+.qy-activity-person{display:flex;align-items:center;gap:6px;min-width:0;padding:6px;border-radius:8px;background:var(--surface);animation:qy-arrival .45s ease-out both}
+.qy-activity-person>span:last-child{min-width:0;display:grid;gap:2px}.qy-activity-person b{font-size:.73rem;overflow-wrap:anywhere}.qy-activity-person small{font-size:.67rem;color:var(--muted)}
+.qy-activity-person.completed{border-left:2px solid var(--good)}.qy-activity-person.serving{border-left:2px solid var(--accent)}
+@keyframes qy-arrival{from{opacity:.35;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.qy-activity-person{animation:none}}

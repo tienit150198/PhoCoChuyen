@@ -5,7 +5,7 @@ optional journey.outings block. No workplace is opened and no daily bill is crea
 """
 from __future__ import annotations
 import copy
-from . import bank, wardrobe
+from . import bank, wardrobe, community_outings, craft_work
 
 SALON_FEE, NAIL_FEE, CRAFT_FEE = 12, 18, 22
 MAX_CRAFTS = 24
@@ -14,7 +14,7 @@ COLORS = [dict(id='rose',name='Hồng cánh hoa',hex='#de829d'),dict(id='mint',n
           dict(id='sky',name='Xanh trời',hex='#79abd4'),dict(id='cream',name='Kem sữa',hex='#eedcc4')]
 PATTERNS = [dict(id='plain',name='Trơn',emoji='○'),dict(id='flower',name='Hoa nhỏ',emoji='✿'),
             dict(id='stars',name='Ngôi sao',emoji='✦'),dict(id='waves',name='Lượn sóng',emoji='≈')]
-CRAFTS = [dict(id='pot',name='Chậu gốm nhỏ',emoji='🪴'),dict(id='bracelet',name='Vòng tay hạt',emoji='📿'),
+CRAFTS = [dict(id='teddy',name='Gấu bông tự may',emoji='🧸'),dict(id='pot',name='Chậu gốm nhỏ',emoji='🪴'),dict(id='bracelet',name='Vòng tay hạt',emoji='📿'),
           dict(id='card',name='Thiệp thủ công',emoji='💌')]
 COLOR_IDS = frozenset(x['id'] for x in COLORS)
 PATTERN_IDS = frozenset(x['id'] for x in PATTERNS)
@@ -46,8 +46,9 @@ def action(s: dict, name: str, p: dict) -> dict:
     j=s['journey']
     _need(j.get('story'), 'Vào hành trình để đi chơi bằng ví cá nhân.')
     _need(isinstance(p,dict))
+    if name=='jr_out_community':return community_outings.action(s,p)
     allowed={'jr_out_salon':{'hair','pay'},'jr_out_nails':{'color','pattern','pay'},
-             'jr_out_craft':{'kind','color','pattern','pay'}}
+             'jr_out_craft':{'kind','color','pattern','pay','work'}}
     _need(name in allowed and set(p)<=allowed[name])
     method=p.get('pay','auto')
     _choice(method,('auto','cash','account','card','joint'))
@@ -78,27 +79,34 @@ def action(s: dict, name: str, p: dict) -> dict:
         d['nails']=dict(color=color,pattern=pattern,day=day,cost=NAIL_FEE)
         return dict(message='Bộ móng mới đã lưu trong góc đi chơi của bạn.',celebrate=True)
     kind=_choice(p.get('kind'),CRAFT_IDS)
-    if any(x['kind']==kind and x['color']==color and x['pattern']==pattern for x in old['crafts']):
+    work=p.get('work')
+    craft_work.validate(kind,work)
+    design=craft_work.identity(kind,color,pattern,work)
+    if any(craft_work.identity(x['kind'],x['color'],x['pattern'],x.get('work'))==design for x in old['crafts']):
         return dict(message='Mẫu thủ công này đã có trên kệ kỷ niệm của bạn.',duplicate=True)
     _need(len(old['crafts'])<MAX_CRAFTS,'Kệ đã đủ 24 món. Những món đã làm vẫn được giữ ở đây.')
     bank.pay(s,CRAFT_FEE,'Xưởng DIY · '+next(x['name'] for x in CRAFTS if x['id']==kind),method=method,kind='life')
     d=j.setdefault('outings',_fresh());d['seq']+=1
-    d['crafts'].append(dict(id=d['seq'],kind=kind,color=color,pattern=pattern,day=day,cost=CRAFT_FEE))
+    item=dict(id=d['seq'],kind=kind,color=color,pattern=pattern,day=day,cost=CRAFT_FEE)
+    if work is not None:item['work']=copy.deepcopy(work)
+    d['crafts'].append(item)
     return dict(message='Đã làm xong và cất món thủ công lên kệ kỷ niệm!',celebrate=True)
 
 
 def public(s: dict) -> dict:
     out=copy.deepcopy(s['journey'].get('outings') or _fresh())
     out['hairstyles']=_hair(s)
+    out['community']=community_outings.public(s)
     return out
 
 
 def content() -> dict:
     return copy.deepcopy(dict(colors=COLORS,patterns=PATTERNS,crafts=CRAFTS,salon_fee=SALON_FEE,
-                              nail_fee=NAIL_FEE,craft_fee=CRAFT_FEE,max_crafts=MAX_CRAFTS))
+                              nail_fee=NAIL_FEE,craft_fee=CRAFT_FEE,max_crafts=MAX_CRAFTS,workshop=craft_work.RECIPES,community=community_outings.PLACES))
 
 
 def validate(s: dict) -> None:
+    community_outings.validate(s)
     if 'outings' not in s['journey']:return
     d=s['journey']['outings'];msg='Kỷ niệm đi chơi không hợp lệ.'
     _need(isinstance(d,dict) and set(d)=={'v','seq','salon','nails','crafts'},msg)
@@ -117,7 +125,8 @@ def validate(s: dict) -> None:
     _need(isinstance(d['crafts'],list) and len(d['crafts'])==d['seq'],msg)
     combos=set()
     for index,x in enumerate(d['crafts'],1):
-        record(x,{'id','kind','color','pattern','day','cost'})
+        record(x,{'id','kind','color','pattern','day','cost'}|({'work'} if isinstance(x,dict) and 'work' in x else set()))
         _need(type(x['id']) is int and x['id']==index and x['cost']==CRAFT_FEE,msg)
         _choice(x['kind'],CRAFT_IDS);_choice(x['color'],COLOR_IDS);_choice(x['pattern'],PATTERN_IDS)
-        combo=(x['kind'],x['color'],x['pattern']);_need(combo not in combos,msg);combos.add(combo)
+        craft_work.validate(x['kind'],x.get('work'))
+        combo=craft_work.identity(x['kind'],x['color'],x['pattern'],x.get('work'));_need(combo not in combos,msg);combos.add(combo)

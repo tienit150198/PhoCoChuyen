@@ -4,8 +4,7 @@ Runs the real app on a throwaway story-mode server. Two registered accounts seed
 old, life day 20, a bank account with 5,000 xu, friends since yesterday). Lan opens Ngân hàng → Chuyển khoản, picks
 Minh, taps a chip, writes a note, confirms, gets the receipt. Minh, online on the street, gets the toast from the
 ticker's poll (no reload) and sees the line in the bank statement; a second transfer arrives on Minh's reload. Then
-the caps: an amount above today's room is stopped on the confirm step, and Minh's daily receive cap is refused by
-the server with its message. Any console error fails the run.
+a transfer passes the former daily quota, then a transfer above the actual balance is refused. Any console error fails the run.
 
     python scripts/browser_bank_xfer.py [out_dir]
 The server and the seeding run with MNL_PY (default: this interpreter), so playwright may live in another Python.
@@ -20,6 +19,7 @@ import tempfile
 import time
 import urllib.request
 from pathlib import Path
+from pg_test_support import test_env, test_connect, schema_for
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT.parent / '_w095_shots' / 'bankxfer'
@@ -37,12 +37,12 @@ def free_port() -> int:
 def server():
     port = free_port()
     tmp = tempfile.mkdtemp(prefix='mnl-xfer-')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1')
+    env = test_env( QUIET='1', PUSH_DISABLED='1')
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'LLM_BASE_URL'):
         env.pop(k, None)
-    db = os.path.join(tmp, 'g.sqlite3')
+    db = os.path.join(tmp, 'g.db')
     log = open(os.path.join(tmp, 'server.log'), 'wb')
-    p = subprocess.Popen([PY, 'server.py', '--port', str(port), '--db', db], cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
+    p = subprocess.Popen([PY, 'server.py', '--port', str(port), '--namespace', db], cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
     base = f'http://127.0.0.1:{port}'
     for _ in range(600):
         try:
@@ -97,18 +97,6 @@ db, a, b = sys.argv[1], sys.argv[2], sys.argv[3]
 store = Store(db, story=True)
 x, y, t = store.key(a), store.key(b), time.time() - 86400
 store.transaction(lambda d: [d.execute('INSERT INTO friends(sid,friend,since) VALUES(?,?,?)', p) for p in ((x, y, t), (y, x, t))])
-store.close_pool()
-print('ok')
-'''
-
-NEAR_CAP = r'''
-import sys
-from game import bank_xfer as bx
-from game.storage import Store
-db, tok = sys.argv[1], sys.argv[2]
-store = Store(db, story=True)
-sid, day = store.key(tok), bx.vn_day()
-store.transaction(lambda d: d.execute('UPDATE bank_xfer_days SET got=? WHERE sid=? AND day=?', (bx.RECV_DAY - 100, sid, day)))
 store.close_pool()
 print('ok')
 '''
@@ -247,28 +235,25 @@ async def main():
                 await popups(minh)
                 await minh.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close())")
                 await shot(minh, '8-minh-toast-on-load')
-                # Caps: Lan's room today (2,000 - 620) is checked before the confirm step...
+                # No daily quota: this transfer takes the daily total above 2,000.
                 await click(lan, '.bk-sheet [data-bk="x-again"]')
                 await lan.wait_for_selector('.bk-sheet .bx-friend', timeout=10000)
-                await shot(lan, '9-pick-recent')
                 await send(lan, amount=1500)
-                await click(lan, '.bk-sheet [data-bk="x-next"]')
-                await lan.wait_for_selector('.bk-sheet .bx .bk-alert.bad', timeout=5000)
-                text = await lan.inner_text('.bk-sheet .bx .bk-alert.bad')
-                assert 'còn chuyển được 1.380 xu' in text, text
-                await shot(lan, '10-limit-sender')
-                # ... and Minh's daily receive cap is the server's answer.
-                py(NEAR_CAP, db, pages['Minh'][1])
-                await lan.fill('.bk-sheet #bx-amt', '300')
                 await click(lan, '.bk-sheet [data-bk="x-next"]')
                 await lan.wait_for_selector('.bk-sheet .bx-confirm', timeout=5000)
                 await click(lan, '.bk-sheet [data-bk="x-send"]')
-                await lan.wait_for_selector('.bk-sheet .bx-confirm .bk-alert.bad', timeout=10000)
-                text = await lan.inner_text('.bk-sheet .bx-confirm .bk-alert.bad')
-                assert 'Minh chỉ nhận thêm được 100 xu' in text, text
-                await shot(lan, '11-limit-receiver')
+                await lan.wait_for_selector('.bk-sheet .bx-done', timeout=10000)
+                await shot(lan, '10-above-former-daily-quota')
+                await click(lan, '.bk-sheet [data-bk="x-again"]')
+                await lan.wait_for_selector('.bk-sheet .bx-friend', timeout=10000)
+                await send(lan, amount=9000)
+                await click(lan, '.bk-sheet [data-bk="x-next"]')
+                await lan.wait_for_selector('.bk-sheet .bx .bk-alert.bad', timeout=5000)
+                text = await lan.inner_text('.bk-sheet .bx .bk-alert.bad')
+                assert 'Tài khoản chỉ còn' in text, text
+                await shot(lan, '11-insufficient-balance')
                 rows = json.loads(py(CHECK, db))
-                assert [(r['amount'], r['status']) for r in rows] == [(500, 'done'), (120, 'done')], rows
+                assert [r['amount'] for r in rows] == [500, 120, 1500], rows
                 print(tag, 'ok', rows)
             except Exception:
                 for who, (pg, _) in pages.items():
@@ -278,7 +263,6 @@ async def main():
                 for pg, _ in pages.values():
                     await pg.context.close()
         await browser.close()
-    errors = [e for e in errors if 'status of 429' not in e]   # the receive cap step answers 429 on purpose
     if errors:
         print('CONSOLE ERRORS:', *errors, sep='\n  ')
         sys.exit(1)

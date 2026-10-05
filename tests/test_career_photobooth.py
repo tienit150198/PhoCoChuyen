@@ -613,7 +613,7 @@ class Release1aba75d(Base):
         with tempfile.TemporaryDirectory() as tmp:
             p = Path(tmp, 's.json')
             p.write_text(json.dumps(state, ensure_ascii=False), encoding='utf-8')
-            env = dict(os.environ, PYTHONPATH=OLD_TREE, DB_POOL='0')
+            env = dict(os.environ, PYTHONPATH=OLD_TREE)
             env.pop('MNL_CAREERS', None)
             out = subprocess.run([sys.executable, '-c', OLD_CHECK, str(p)], cwd=OLD_TREE, env=env, capture_output=True, text=True, timeout=120)
             self.assertEqual(out.returncode, 0, out.stderr[-2000:])
@@ -631,7 +631,7 @@ s, _ = apply_action(s, 'milk_tea', 'select_career', {})
 s, _ = apply_action(s, 'milk_tea', 'start_day', {})
 print(json.dumps(s, ensure_ascii=False))
 '''
-        env = dict(os.environ, PYTHONPATH=OLD_TREE, DB_POOL='0')
+        env = dict(os.environ, PYTHONPATH=OLD_TREE)
         env.pop('MNL_CAREERS', None)
         out = subprocess.run([sys.executable, '-c', code], cwd=OLD_TREE, env=env, capture_output=True, text=True, timeout=120, encoding='utf-8')
         self.assertEqual(out.returncode, 0, out.stderr[-2000:])

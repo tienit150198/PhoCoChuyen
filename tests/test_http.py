@@ -31,7 +31,7 @@ class HTTPTests(unittest.TestCase):
     def test_session_cookie_http_only(self):
         _,h,_=self.req('/api/bootstrap');self.assertIn('HttpOnly',h['Set-Cookie']);self.assertIn('SameSite=Strict',h['Set-Cookie'])
     def test_source_and_secret_paths_are_not_served(self):
-        for path in ('/server.py','/.env','/storage/game.sqlite3','/../server.py','/%2e%2e/server.py','/reference/data/npcs_24.json'):
+        for path in ('/server.py','/.env','/storage/game.db','/../server.py','/%2e%2e/server.py','/reference/data/npcs_24.json'):
             self.assertEqual(self.req(path)[0],404)
     def test_host_validation(self):self.assertEqual(self.req(headers={'Host':'evil.example'})[0],403)
     def test_state_requires_session(self):self.assertEqual(self.req('/api/state')[0],401)

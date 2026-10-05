@@ -45,7 +45,7 @@ class Player:
 class SocialTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.store = Store(Path(self.tmp.name) / 'g.sqlite3')
+        self.store = Store(Path(self.tmp.name) / 'g.db')
         social.ensure(self.store)
         push.ensure(self.store)
         self.a = Player(self.store, 'Mây Bếp')
@@ -186,7 +186,7 @@ class SocialTests(unittest.TestCase):
 class PushTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.store = Store(Path(self.tmp.name) / 'g.sqlite3')
+        self.store = Store(Path(self.tmp.name) / 'g.db')
         social.ensure(self.store)
         push.ensure(self.store)
         push._keys.clear()

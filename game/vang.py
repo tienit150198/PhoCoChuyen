@@ -3,12 +3,11 @@
 Owner 03/10 (docs/ECONOMY_RISKS.md): somewhere to put the xu, "đầu tư", with visible gains and a real risk. Gold is
 the street's calm investment next to the bank's savings (sure, small) and Mây Coin (wild):
 
-* One price for everyone, by the Vietnam date (like the 🔥 x3 week): a walk that drifts up slowly (DRIFT a day, about
-  3 % a month), pulled back towards that trend (KAPPA), with a daily wobble (SIGMA) and now and then news that moves it
-  2–5 % (SHOCK_P). From BASE xu a chỉ on EPOCH. MNL_GOLD_SALT (the server's environment) keeps the walk unknown in
-  advance; every server of one deployment must share it.
+* One shared price every ten real minutes; one real hour is a market day.
+  Explicit-date helpers retain the historical walk to anchor the transition.
+  The realtime_market module owns the server clock, salt, trends and news.
 * The shop buys and sells around that price: you pay SPREAD_BP more, it pays SPREAD_BP less (a round trip costs
-  about 5 %, so gold pays only when held a while: weeks, not hours). Bought and sold by the phân (a tenth of a chỉ),
+  about 5 %, so selling immediately loses xu). Bought and sold by the phân (a tenth of a chỉ),
   so a small wallet can try too.
 * Paid like a vehicle (game/garage.py): the cash in the wallet first, then the bank account; never a loan, never
   below 0 (a wallet in debt buys nothing). The sale goes to the wallet. Wallet rows of kind 'invest' (older builds
@@ -28,15 +27,18 @@ import hashlib
 import math
 import os
 import random
-import time
 
 from . import archive as ar
 from . import bank as bk
+from . import market_trends as mt
+from . import realtime_market as rm
 
 VERSION = 1
 KEY = 'vang'
 VN = datetime.timezone(datetime.timedelta(hours=7))
 EPOCH = datetime.date(2026, 9, 1)  # the walk starts here (a month of history on the first day)
+TREND_START = datetime.date(2026, 10, 6)
+PRICE_MIN, PRICE_MAX = 50, 100_000
 BASE = 500                         # xu a chỉ on EPOCH
 DRIFT = 0.001                      # the trend, log a day (about +3 % a month)
 KAPPA = 0.06                       # pull back towards the trend, a day
@@ -55,7 +57,7 @@ NEWS = (('Tin vàng thế giới tăng mạnh', 1), ('Người dân đổ xô mu
 
 
 def now() -> float:
-    return time.time()
+    return rm.now()
 
 
 def today() -> datetime.date:
@@ -74,6 +76,24 @@ def _walk(salt: str, upto: datetime.date) -> tuple[tuple[int, int], ...]:
     for t in range((upto - EPOCH).days + 1):
         if t:
             d = EPOCH + datetime.timedelta(days=t)
+            if d >= TREND_START:
+                age = (d - TREND_START).days
+                if age == 0:
+                    anchor = out[-1][0]
+                    x = math.log(anchor)
+                event = mt.episode('gold', salt, age)
+                rng = random.Random(f'vang-trend-v1|{salt}|{d.isoformat()}')
+                if event:
+                    move = rng.uniform(.008, .016) * (1 if event.direction == 'up' else -1)
+                    news = event.headline + (0 if event.direction == 'up' else 3)
+                else:
+                    trend = math.log(min(PRICE_MAX / 4, anchor * (1 + DRIFT * (age + 1))))
+                    pull = max(-.008, min(.008, .03 * (trend - x)))
+                    move = max(-.025, min(.025, rng.gauss(.0008, .007) + pull))
+                    news = -1
+                x = max(math.log(PRICE_MIN), min(math.log(PRICE_MAX), x + move))
+                out.append((max(PRICE_MIN, min(PRICE_MAX, round(math.exp(x)))), news))
+                continue
             h = hashlib.sha256(f'vang|{salt}|{d.isoformat()}'.encode()).digest()
             rng = random.Random(int.from_bytes(h[:8], 'big'))
             trend = math.log(BASE) + DRIFT * t
@@ -89,23 +109,30 @@ def _walk(salt: str, upto: datetime.date) -> tuple[tuple[int, int], ...]:
 
 
 def price(d: datetime.date | None = None) -> int:
-    """The price of one chỉ on day `d` (today by default), xu."""
-    d = d or today()
+    """Current real-time xu/chỉ; explicit dates retain the historical walk API."""
+    if d is None:
+        return rm.quote('gold', at=now())['price']
     if d <= EPOCH:
         return BASE
     return _walk(_salt(), d)[-1][0]
 
 
 def history(d: datetime.date | None = None, n: int = HIST) -> list[int]:
-    d = d or today()
+    if d is None:
+        return list(rm.quote('gold', at=now())['history'][-n:])
     if d <= EPOCH:
         return [BASE]
     return [p for p, _ in _walk(_salt(), d)[-n:]]
 
 
 def news(d: datetime.date | None = None) -> str:
-    """Today's headline when the price jumped ('' most days)."""
-    d = d or today()
+    """Today's fictional headline ('' on quiet days), preserving the legacy string API."""
+    if d is None:
+        event = rm.quote('gold', at=now())['news']
+        return event['title'] if event else ''
+    if d >= TREND_START:
+        event = mt.episode('gold', _salt(), (d - TREND_START).days)
+        return event.title if event else ''
     if d <= EPOCH:
         return ''
     k = _walk(_salt(), d)[-1][1]
@@ -246,13 +273,17 @@ def public(s: dict) -> dict | None:
     j = s['journey']
     if not j.get('story'):
         return None
-    d = today()
-    hist = history(d)
-    pr = hist[-1]
+    at = now()
+    d = datetime.datetime.fromtimestamp(at, VN).date()
+    q = rm.quote('gold', at=at)
+    hist, pr = list(q['history']), q['price']
     g = get(s) or initial()
-    out = dict(date=d.isoformat(), p=pr, buy=buy_price(pr), sell=sell_price(pr), y=hist[-2] if len(hist) > 1 else pr,
+    out = dict(date=d.isoformat(), p=pr, buy=buy_price(pr), sell=sell_price(pr), y=q['previous'],
                hist=hist, phan=g['phan'], cost=g['cost'], value=worth(g['phan'], pr))
-    headline = news(d)
+    from .invest import market_clock
+    out['market_news'] = q['news']
+    out['market_clock'] = market_clock(q)
+    headline = q['news']['title'] if q['news'] else ''
     if headline:
         out['news'] = headline
     return out

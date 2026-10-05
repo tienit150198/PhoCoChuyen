@@ -1,9 +1,12 @@
-# Tests make and delete many temp databases. Pooled idle connections would keep
-# those files open, and Windows then refuses to delete them (WinError 32), leaving
-# temp folders behind. Tests that need the pool set DB_POOL themselves.
+# PostgreSQL tests use TEST_DATABASE_URL and isolated schemas for temporary namespaces.
+import asyncio
 import os
+import sys
 
-os.environ.setdefault("DB_POOL", "0")
+if sys.platform == "win32":
+    # psycopg async connections require add_reader(), unavailable on Proactor.
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 # 🔥 Nghề x3 (game/x3_week.py) follows the real calendar: off, so a test's wallet does not depend on the day it runs
 # (tests/test_x3_week.py turns it on where it checks it).
 os.environ.setdefault("MNL_X3_OFF", "1")

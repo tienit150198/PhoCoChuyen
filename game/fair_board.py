@@ -16,7 +16,7 @@ nhận danh hiệu vua trò chơi nhé").
   (a memo per process: no database read after that). Called from the server's housekeeping loop and, best effort,
   from /api/bootstrap and GET /api/leaderboard of the fair board.
 
-No new table, no schema change: leaderboard, leaderboard_meta and live_effects exist on SQLite and PostgreSQL.
+No new table, no schema change: leaderboard, leaderboard_meta and live_effects exist in PostgreSQL.
 """
 from __future__ import annotations
 

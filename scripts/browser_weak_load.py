@@ -6,7 +6,7 @@ screen. A returning player whose workplace's code or data part failed to come (t
 customer-care view for their own workplace's task (app.js jobView → supportJob: `t.evidence.filter`), thrown from
 the async paths that open the job sheet (a scene tap, "Nhận thêm", ensureCareerUI) before telemetry.js was in.
 
-Starts a game server (story mode, SQLite) on --tree (default: this checkout; give an unzipped release or a
+Starts a game server (story mode, PostgreSQL) on --tree (default: this checkout; give an unzipped release or a
 scripts/build_static.py --out tree to test the minified files) and checks, each in a fresh phone browser (390×844):
   * part: a returning restaurant player; the workplace's data part fails three times (500) and its workbench
     module once: the job sheet shows a skeleton (never another workplace's view), then the workbench by itself;
@@ -31,6 +31,7 @@ import tempfile
 import time
 import urllib.request
 from pathlib import Path
+from pg_test_support import test_env, test_connect, schema_for
 
 ROOT = Path(__file__).resolve().parents[1]
 SLOW4G = dict(offline=False, latency=562.5, downloadThroughput=180000, uploadThroughput=84375)
@@ -58,10 +59,10 @@ def free_port() -> int:
 @contextlib.contextmanager
 def server(tree: Path, tmp: str):
     port = free_port()
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1')
+    env = test_env( QUIET='1', PUSH_DISABLED='1')
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'DATABASE_URL', 'LIVE_URL'):
         env.pop(k, None)
-    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--db', os.path.join(tmp, 'g.sqlite3')], cwd=tree, env=env,
+    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--namespace', os.path.join(tmp, 'g.db')], cwd=tree, env=env,
                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     base = f'http://127.0.0.1:{port}'
     end = time.time() + 60

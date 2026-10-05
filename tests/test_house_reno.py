@@ -247,14 +247,13 @@ class OldPage(unittest.TestCase):
         s, _ = act(s, 'jr_reno_buy', item='cay_canh', room='living', slot='f1', confirm=True)
         self.assertEqual(view(s)['cozy'], 2)
 
-    def test_items_max(self):
+    def test_legacy_buy_more_than_sixty_owned_pieces(self):
         s = owner(wallet=20000)
         s, _ = act(s, 'jr_reno_buy', item='lich', room='living', slot='w0', confirm=True)
-        R(s)['items'] += [dict(id=f'x{i}', k='lich', r=None, x=None) for i in range(rn.ITEMS_MAX - 1)]
+        R(s)['items'] += [dict(id=f'x{i}', k='lich', r=None, x=None) for i in range(60)]
         validate_state(s)
-        with self.assertRaises(GameError) as e:
-            act(s, 'jr_reno_buy', item='lich', room='living', slot='w1', confirm=True)
-        self.assertEqual(e.exception.code, 'full')
+        t, _ = act(s, 'jr_reno_buy', item='lich', room='living', slot='w1', confirm=True)
+        self.assertEqual(len(R(t)['items']), 62)
 
 
 class Cozy(unittest.TestCase):

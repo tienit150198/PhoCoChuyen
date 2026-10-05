@@ -11,19 +11,28 @@
  * (./quay-ride.js), answer the day's tricky moments, then "Đóng ca". The client sends steps; the server prices them.
  * An older server (no content.journey.quay.menus): none of this shows. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {avInner} from './face.js';
+import {visitorSelectionValid} from './workplace-visit-ui.js';
 import {paintCounter} from './quay-scene.js';
 import {figure} from './look.js';
 import {confirmPurchase} from './payment.js';
 import {RIDE,rideSVG,turnChoices} from './quay-ride.js';
 import {signalHTML,mountSignals} from './traffic.js';
+import {cloneMenu,selectDishes,menuPayload,filterDishes,pricePreview,restockQuote,createQuayPoller,focusSnapshot,restoreInputFocus,syncDraftValue} from './quay-business-ui.js';
+import {businessControls} from './business-economy-ui.js';
+import {staffLifeCard} from '../staff-life-ui.js';
+import {ownerQueueHTML,ownerArrivalText,counterActivity,counterActivityHTML} from './quay-owner-queue.js';
+import {shopEventCard} from '../shop-events-ui.js';
+import {createQuaySync} from './quay-sync.js';
 
 const PAGE_SIZE=12;
 const S={page:0,md:{},lk:{},run:null,anchor:'',anchorAt:0,dlg:null,env:null,view:'list',tab:'mine',pick:null,busy:false,flash:null,listening:false,open:{},help:{},wage:{},hire:null,loading:false,to:{}};
+S.search={};S.stockDraft={};S.visit=null;S.visitor=null;S.visitorDraft={};S.syncFailed=false;S.poller=null;S.account=null;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
 const btn=(label,op,data={},cls='',why='')=>`<button type="button" class="btn ${cls}" data-qy="${op}"${attrs(data)}${S.busy||why?' disabled':''}${why?` title="${esc(why)}"`:''}>${label}</button>`;
-const J=()=>S.env?.api?.state?.journey||{};
+const J=()=>S.sync?.journey()||S.env?.api?.state?.journey||{};
 const V=()=>J().quay;
 const CAT=()=>S.env?.api?.content?.journey?.quay||null;
 const place=id=>CAT()?.places.find(p=>p.id===id)||{};
@@ -47,12 +56,18 @@ function dialog(){
   d.className='sheet v4-sheet medium bk-sheet qy-sheet';d.setAttribute('aria-labelledby','qy-title');
   d.innerHTML='<div class="qy-root"></div>';
   document.body.append(d);
+  // A drag can retarget its click to <dialog>. Only a complete backdrop gesture dismisses it.
+  const outside=e=>{const r=d.getBoundingClientRect();return e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom;};
+  let backdropPress=false;
+  d.addEventListener('pointerdown',e=>{backdropPress=e.button===0&&e.target===d&&outside(e);});
+  d.addEventListener('pointercancel',()=>{backdropPress=false;});
   d.addEventListener('click',e=>{
-    if(e.target===d){d.close();return;}
+    const dismiss=backdropPress&&e.target===d&&outside(e);backdropPress=false;
+    if(dismiss){d.close();return;}
     const el=e.target.closest('[data-qy]');if(!el||!d.contains(el)||el.disabled)return;
     e.preventDefault();S.anchor=selOf(el);S.anchorAt=performance.now();onClick(el.dataset.qy,el.dataset,el);
   });
-  d.addEventListener('input',e=>{const t=e.target;if(t.name==='qy-name'&&S.pick)S.pick.name=t.value;
+  d.addEventListener('input',e=>{const t=e.target;if(t.name==='qy-price'){const st=stallOf(t.dataset.id);if(st){menuDraft(st).p[t.dataset.k]=t.value;render();}return;}if(t.name==='qy-search'){S.search[t.dataset.id]=t.value;render();return;}if(t.name==='qy-stock'){(S.stockDraft[t.dataset.id]??={})[t.dataset.k]=t.value;render();return;}if(t.name==='qy-name'&&S.pick)S.pick.name=t.value;
     if(t.name==='qy-sign'){const st=stallOf(t.dataset.id);if(st){lookDraft(st).name=t.value;paintCanvases();}}});
   d.addEventListener('submit',e=>e.preventDefault());
   // the spacer under the page goes away as the player scrolls back up (never while a render is holding the spot)
@@ -60,38 +75,45 @@ function dialog(){
     const sp=d.querySelector('.qy-spacer'),h=sp?.offsetHeight||0;if(!h||!up||S.hold)return;
     const spare=d.scrollHeight-(top+d.clientHeight);if(spare>1)sp.style.height=`${Math.max(0,h-spare)}px`;},{passive:true});
   for(const ev of ['wheel','touchstart','keydown'])d.addEventListener(ev,()=>{S.hold=null;},{passive:true});
-  d.addEventListener('close',()=>{S.flash=null;S.view='list';S.pick=null;S.run=null;});
+  d.addEventListener('close',()=>{import('./workplace-visit.js').then(m=>m.workVisitsOwnerFocus(S.env)).catch(()=>{});S.poller?.stop();S.flash=null;S.view='list';S.pick=null;S.run=null;});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')S.poller?.stop();else if(d.open)S.poller?.start();});
   S.dlg=d;return d;
 }
-export async function openQuay(env){
+export async function openQuay(env,data={}){
+  const account=env.api.account?.username||'';if(account!==S.account){S.md={};S.lk={};S.search={};S.stockDraft={};S.visitorDraft={};S.account=account;}
   S.env=env;
-  if(!S.listening){
-    S.listening=true;
-    let seen='';env.api.addEventListener('state',()=>{const key=JSON.stringify([J().wallet,J().quay]);if(key===seen)return;seen=key;if(S.dlg?.open&&!S.busy)render();});
+  if(S.syncApi!==env.api){
+    S.sync?.dispose();S.syncApi=env.api;
+    S.sync=createQuaySync(env.api,()=>{if(S.dlg?.open&&!S.busy)render();});
   }
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet();
   await ensureCss();
   const d=dialog();
-  S.view='list';S.pick=null;S.hire=null;
+  S.focusedVisitorPlace=null;S.view='list';S.pick=null;S.hire=null;S.visitor=data.visitor||null;if(S.visitor){const st=V()?.stalls?.find(st=>st.business?.visitor_orders?.some(o=>String(o.id)===String(S.visitor)));if(st){S.visit=st.id;S.view='visitor';}}
   if(!d.open){d.showModal();toTop();}
   render();
+  S.poller??=createQuayPoller({refresh:()=>S.sync.refresh(),active:()=>!!S.dlg?.open&&!S.busy&&document.visibilityState!=='hidden',failed:failed=>{if(S.syncFailed!==failed){S.syncFailed=failed;if(S.dlg?.open)render();}}});S.poller.start();
   if(S.tab==='jobs')loadHire();
 }
 export async function quayAction(action,data,el,env){
   if(action!=='quay')return false;
-  await openQuay(env);return true;
+  await openQuay(env,data);return true;
 }
 
 async function send(action,payload={}){
-  const {api}=S.env;S.busy=true;render();
+  S.busy=true;render();
   try{
-    const r=await api.command(action,payload);
+    const r=await S.sync.command(action,payload);
     S.flash={text:[r.message,...(r.effects||[]).filter(Boolean)].filter(Boolean).join(' '),kind:'good'};
     return r;
   }catch(e){S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
   finally{S.busy=false;render();}
 }
-const ask=(title,msg,label,money)=>S.env.confirmAction(title,msg,label,money);
+async function preparePayment(){
+  try{await S.sync.ensureCurrent();return true;}
+  catch(e){S.flash={text:e.message||'Chưa đồng bộ được số dư. Thử lại nhé.',kind:'bad'};render();return false;}
+}
+const ask=async(title,msg,label,money)=>!money||await preparePayment()?S.env.confirmAction(title,msg,label,money):false;
 /* 💼 hired players: the server's view (offers, my offers, friends) and its ops */
 const took=d=>{if(d?.state&&typeof d.revision==='number')S.env.api.accept({state:d.state,revision:d.revision});};
 async function loadHire(){
@@ -111,6 +133,11 @@ const num=(sel,fallback=0)=>{const v=Number(S.dlg?.querySelector(sel)?.value);re
 
 async function onClick(op,data){
   switch(op){
+    case'visit':S.visit=data.id;S.view='visit';S.flash=null;render();toTop();return;
+    case'pause':send('jr_quay_pause',{stall:data.id,on:data.on==='true'});return;
+    case'protection':{const st=stallOf(data.id),plan=st?.business?.protection?.options?.find(x=>x.level===data.level);if(!plan)return;if(await ask('Đổi gói bảo vệ quầy?',`${plan.label} · ${xu(plan.period_cost)} / ${Math.round((st.business.period_seconds||600)/60)} phút hoạt động, lấy từ két/vốn quầy.`,'Chọn gói'))await send('jr_quay_protection',{stall:data.id,level:data.level});return;}
+    case'staffEvent':{const st=stallOf(data.id),event=st?.staff_life?.pending,choice=event?.choices?.find(x=>x.id===data.choice);if(!event||event.id!==data.event||!choice)return;if(await ask(event.title,`${choice.label}${choice.cost?` · ${xu(choice.cost)} từ két/vốn`:''}. ${choice.effect||''}`,'Xác nhận'))await send('jr_quay_staff_event',{stall:data.id,event:event.id,choice:choice.id,confirm:true});return;}
+    case'restock':{const st=stallOf(data.id);if(!st)return;const quote=restockQuote(S.stockDraft[st.id],st.business?.stock||[]);if(!quote){S.flash={text:'Nhập số lượng nguyên dương cho ít nhất một món.',kind:'bad'};render();return;}if(await ask('Nhập hàng vào kho quầy?',`${quote.count} phần nguyên liệu · ${xu(quote.total)} từ két/vốn quầy.`,`Nhập hàng · ${xu(quote.total)}`)){const pendingDraft=JSON.stringify(S.stockDraft[st.id]);const r=await send('jr_quay_restock',{stall:st.id,items:quote.items});if(r&&JSON.stringify(S.stockDraft[st.id])===pendingDraft){delete S.stockDraft[st.id];render();}}return;}
     case'close':S.dlg.close();return;
     case'help':S.help[data.key]=!S.help[data.key];render();return;
     case'back':S.view='list';S.pick=null;render();toTop();return;
@@ -140,7 +167,9 @@ async function onClick(op,data){
     case'reload':S.hire=null;loadHire();return;
     case'to':S.to[data.id]=data.code||'';render();return;
     case'post':{const st=stallOf(data.id);if(!st)return;const w=S.wage[`p:${st.id}`]??Number(data.wage);
-      const src=await confirmPurchase(S.env,{title:'Đăng ca làm thêm?',message:`Giữ ${xu(w)} để trả lương ca này. Nếu hủy hoặc hết hạn, tiền hoàn về nguồn đã chọn. Quỹ chung đã đóng thì hoàn về ví người chi.`,label:`Đăng ca · ${xu(w)}`,cost:w,noCredit:true,defaultMethod:'stall',extraSources:[{id:'stall',label:'Két và vốn quầy',balance:st.till+st.fund,text:'Giữ lương từ két và vốn quầy.'}]});
+      if(!await preparePayment())return;
+      const current=stallOf(st.id);if(!current)return;
+      const src=await confirmPurchase(S.env,{title:'Đăng ca làm thêm?',message:`Giữ ${xu(w)} để trả lương ca này. Nếu hủy hoặc hết hạn, tiền hoàn về nguồn đã chọn. Quỹ chung đã đóng thì hoàn về ví người chi.`,label:`Đăng ca · ${xu(w)}`,cost:w,noCredit:true,defaultMethod:'stall',extraSources:[{id:'stall',label:'Két và vốn quầy',balance:current.till+current.fund,text:'Giữ lương từ két và vốn quầy.'}]});
       if(src)hireSend('post',{stall:st.id,wage:w,src,rid:globalThis.crypto.randomUUID(),...(S.to[st.id]?{to:S.to[st.id]}:{})});return;}
     case'cancel':hireSend('cancel',{id:data.id});return;
     case'accept':hireSend('accept',{id:data.id});return;
@@ -153,6 +182,7 @@ async function onClick(op,data){
     case'buy':{const st=stallOf(data.id),it=CAT()?.items.find(x=>x.id===data.item);if(!st||!it)return;const price=it.price[st.place];
       if(await ask(`Lắp ${it.name.toLowerCase()}?`,it.line,`Lắp · ${xu(price)}`,{cost:price,pocket:['wallet','account']}))send('jr_quay_buy',{stall:data.id,item:data.item,confirm:true});return;}
     case'police':send('jr_quay_police',{stall:data.id});return;
+    case'ownerEvent':if(!S.busy)send('jr_quay_event',{stall:data.id,event:data.event,choice:data.choice,confirm:true});return;
     case'pay':send('jr_quay_pay',{stall:data.id});return;
     case'sell':{const st=stallOf(data.id);if(!st)return;
       if(await ask(`Sang nhượng ${st.name}?`,'Nhận lại một nửa giá chỗ, cả két và vốn quầy.',`Sang nhượng · ${xu(st.sell)}`))send('jr_quay_sell',{stall:data.id,confirm:true});return;}
@@ -166,20 +196,26 @@ async function onClick(op,data){
  * dialog never loses its height for a moment. The control just tapped is then held at the same spot on screen (a
  * flash line or a part opening above it may change heights); a part that shrinks leaves a spacer under the page
  * until the player scrolls back up, so nothing jumps to the top (owner 03/10: "bấm vào là tự scroll lên"). */
-const keyOf=n=>n.nodeType!==1?'':(n.getAttribute('data-qk')||'')+'|'+(n.getAttribute('data-qy')||'')+'|'+(n.getAttribute('data-id')||'')+(n.nodeName==='SECTION'?'|'+n.className:'');
+const keyOf=n=>n.nodeType!==1?'':(n.getAttribute('data-qk')||n.id||'')+'|'+(n.getAttribute('data-qy')||'')+'|'+(n.getAttribute('data-id')||'')+(['SECTION','DETAILS'].includes(n.nodeName)?'|'+n.className:'')+(n.nodeName==='DETAILS'&&!n.className?'|'+n.querySelector('summary')?.textContent:'');
 const same=(a,b)=>a.nodeType===b.nodeType&&a.nodeName===b.nodeName&&keyOf(a)===keyOf(b);
 function morph(from,to){
   if(from.nodeType!==1){if(from.nodeValue!==to.nodeValue)from.nodeValue=to.nodeValue;return;}
   if(from.hasAttribute('data-qy-live')){   // drawn by script (the counter's canvas, its own width/height): only its label follows
     const l=to.getAttribute('aria-label');if(l!==null&&from.getAttribute('aria-label')!==l)from.setAttribute('aria-label',l);return;}
-  for(const {name} of [...from.attributes])if(!to.hasAttribute(name))from.removeAttribute(name);
+  // Native disclosure state belongs to the reader, not to a fresh server-state template.
+  for(const {name} of [...from.attributes])if(!to.hasAttribute(name)&&!(from.nodeName==='DETAILS'&&name==='open'))from.removeAttribute(name);
   for(const {name,value} of [...to.attributes])if(from.getAttribute(name)!==value)from.setAttribute(name,value);
+  if(from.nodeName==='INPUT'&&['qy-price','qy-search','qy-stock'].includes(from.name))syncDraftValue(from,to.value);
   const a=[...from.childNodes].filter(n=>!n.classList?.contains('mn-line')),b=[...to.childNodes];   // the header's money chip (v4/money.js) stays
   let i=0,j=0;
   for(;j<b.length;j++){
     const n=b[j],o=a[i];
     if(!o){from.append(n);continue;}
     if(same(o,n)){morph(o,n);i++;continue;}
+    if(n.nodeName==='DETAILS'){
+      const match=a.findIndex((node,index)=>index>i&&same(node,n));
+      if(match>=0){const kept=a.splice(match,1)[0];from.insertBefore(kept,o);morph(kept,n);continue;}
+    }
     if(a[i+1]&&same(a[i+1],n)){o.remove();morph(a[i+1],n);i+=2;continue;}   // a node went away
     if(b[j+1]&&same(o,b[j+1])){from.insertBefore(n,o);continue;}   // a node came in
     from.replaceChild(n,o);i++;
@@ -187,9 +223,10 @@ function morph(from,to){
   for(;i<a.length;i++)a[i].remove();
 }
 const tplEl=document.createElement('template');
-const DATA=['qy','id','part','key','by','level','cand','staff','item','tab','to','code','sign','k','j'];
+const DATA=['qy','id','part','key','by','level','cand','staff','item','tab','to','code','sign','k','j','on','event','choice'];
 /** A selector that finds "the same control" again after a render (its data-qy and the data that says which one). */
 function selOf(el){
+  if(el?.id)return `#${CSS.escape(el.id)}`;
   if(!el?.dataset?.qy)return '';
   return DATA.filter((k,i)=>DATA.indexOf(k)===i&&el.dataset[k]!==undefined).map(k=>`[data-${k}="${CSS.escape(el.dataset[k])}"]`).join('');
 }
@@ -218,10 +255,11 @@ function holdAt(d,sel,y0,top){
 }
 function keep(fn){
   const d=S.dlg,an=anchorEl(d),sel=selOf(an),y0=an?an.getBoundingClientRect().top:0;
-  const top=d.scrollTop,a=document.activeElement,asel=a&&d.contains(a)?selOf(a):'';
+  const top=d.scrollTop,a=document.activeElement,asel=a&&d.contains(a)?selOf(a):'',input=a&&d.contains(a)&&a.matches('input,textarea')?focusSnapshot(a):null;
   fn();
   holdAt(d,sel,y0,top);
   if(asel&&!a.isConnected)bySel(asel)?.focus({preventScroll:true});
+  if(input&&a!==document.activeElement)restoreInputFocus(d,input);
   // a few frames more: the canvas, the fonts or the money chip may still settle; the player's own scroll ends it
   const hold=S.hold={};let n=0;
   const tick=()=>{if(S.hold!==hold||!S.dlg)return;if(sel||top>0)holdAt(d,sel,y0,top);if(++n<12)requestAnimationFrame(tick);else S.hold=null;};
@@ -229,6 +267,10 @@ function keep(fn){
 }
 function render(){
   if(!S.dlg)return;
+  if(S.run){const st=stallOf(S.run.sid),r=st?.run,key=r?.cust?`${r.i}:${r.cust.name}`:null;
+    if(S.run.customerKey!==undefined&&S.run.customerKey!==key)Object.assign(S.run,{step:'pick',tray:[],change:0,hint:''});S.run.customerKey=key;
+    if(S.run.pack?.orderId){const order=r?.orders?.find(o=>o.j===S.run.pack.j);if(!order||order.id!==S.run.pack.orderId){const submitted=S.run.pack.submitting;S.run.pack=null;if(!submitted)S.flash={text:'Đơn này đã được cập nhật. Chọn đơn đang chờ để đóng gói tiếp nhé.',kind:'good'};}}
+  }
   keep(()=>{const root=S.dlg.querySelector('.qy-root');tplEl.innerHTML=page();
     const box=document.createElement('div');box.append(tplEl.content);box.className=root.className;morph(root,box);});
   S.dlg.setAttribute('aria-busy',String(S.busy));
@@ -255,6 +297,8 @@ function page(){
   if(S.tab==='jobs'&&S.view!=='open')return head()+`<div class="sheet-body bk qy-body">${tabs}${flash()}${jobsView()}</div>`;
   if(!v)return head()+`<div class="sheet-body bk qy-body">${tabs}<section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏪</div><h3>Chưa mở được quầy</h3><p>Mở từ chương ${cat.chapter}.</p>${helpBtn('lock')}${helpText('lock',`Làm ${cat.served} việc ở một nghề bán hàng (trà sữa, tạp hóa, hoa…) rồi quay lại.`)}</section></div>`;
   if(S.view==='run'&&stallOf(S.run?.sid))return head()+`<div class="sheet-body bk qy-body">${runView(stallOf(S.run.sid))}</div>`;
+  if(S.view==='visitor'&&stallOf(S.visit))return head()+`<div class="sheet-body bk qy-body">${visitorPanel(stallOf(S.visit))}</div>`;
+  if(S.view==='visit'&&stallOf(S.visit))return head()+`<div class="sheet-body bk qy-body">${visitView(stallOf(S.visit))}</div>`;
   const inner=S.view==='open'?openView(v):listView(v);
   return head()+`<div class="sheet-body bk qy-body">${tabs}${flash()}${inner}</div>`;
 }
@@ -312,7 +356,7 @@ function listView(v){
   if(!v.stalls.length){
     if(v.lock)return `<section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏪</div><h3>Chưa mở được quầy</h3><p>${esc(v.lock)}</p>${helpBtn('lock')}${helpText('lock',`Làm ${CAT().served} việc ở một nghề bán hàng rồi quay lại.`)}</section>`;
     return `<section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏪</div><h3>Mở quầy đầu tiên</h3><p>Bán món bạn rành, thuê người đứng quầy.</p>
-      <div class="bk-actions center">${btn('Mở quầy','new',{},'primary')}</div>${helpBtn('first')}${helpText('first',`Thuê nhân viên để quầy tự bán khi bạn kết thúc một ngày sống, hoặc chọn “Đứng quầy hôm nay” để tự bán. Quầy không chạy khi bạn offline. Nhớ ghé thu két: ${CAT().left} ngày không thu, quầy đóng chờ bạn.`)}</section>${hiredReceipts(v.receipts)}`;
+      <div class="bk-actions center">${btn('Mở quầy','new',{},'primary')}</div>${helpBtn('first')}${helpText('first',`Thuê nhân viên để quầy bán cả lúc bạn offline, tới khi hết nguyên liệu hoặc tiền lương. Chưa thuê ai thì bạn tự đứng quầy hoặc giao hàng. Nhập nguyên liệu và giữ đủ vốn để tiệm tiếp tục hoạt động.`)}</section>${hiredReceipts(v.receipts)}`;
   }
   const more=(CAT().unlimited||v.stalls.length<CAT().max)&&!v.lock?`<div class="bk-actions center">${btn('＋ Mở thêm quầy','new',{},'ghost')}</div>`:'';
   const pages=Math.ceil(v.stalls.length/PAGE_SIZE);S.page=Math.min(S.page,pages-1);
@@ -320,31 +364,32 @@ function listView(v){
   return nav+v.stalls.slice(S.page*PAGE_SIZE,(S.page+1)*PAGE_SIZE).map(stallCard).join('')+nav+more+hiredReceipts(v.receipts);
 }
 
+const ownerEvents=st=>shopEventCard(st.shop_events,(label,e,ch)=>btn(label,'ownerEvent',{id:st.id,event:e.id,choice:ch.id},'shop-event-choice',ch.affordable===false?'Chưa đủ tiền':''));
 function stallCard(st){
   const P=place(st.place),T=trade(st.trade),cat=CAT();
   const today=st.today||{};
-  const status=st.due?`Chờ đóng ${xu(st.due)} chi phí quầy`:st.economy?.paused?'Tạm dừng: kiểm hàng và vệ sinh':st.closed?'Đóng cửa chờ chủ':!st.staff.length?(cat.menus?'Chưa thuê ai: tự đứng quầy nhé':'Chưa có người đứng quầy'):
+  const status=st.business?st.business.reason:st.due?`Chờ đóng ${xu(st.due)} chi phí quầy`:st.economy?.paused?'Tạm dừng: kiểm hàng và vệ sinh':st.closed?'Đóng cửa chờ chủ':!st.staff.length?(cat.menus?'Chưa thuê ai: tự đứng quầy nhé':'Chưa có người đứng quầy'):
     `Hôm nay ${cat.weather[today.w]||''} · ${cat.pace[today.pace]||''}${today.x3?' · 🔥':''}`;
   const week=st.hist.reduce((a,h)=>a+h[2],0);
   const part=S.open[st.id]||'';
   const alerts=[
     st.case?`<div class="bk-alert bad qy-row"><span>🚨 ${st.case.all?'Mất cả két':'Trộm lấy'} ${xu(st.case.lost)}</span>${st.case.rep?'<small>Đã báo công an</small>':btn('Báo công an','police',{id:st.id},'small')}</div>`:'',
     st.due?`<div class="bk-alert warn qy-row"><span>🧾 Chi phí chưa trả ${xu(st.due)}</span>${btn('Đóng tiền','pay',{id:st.id},'small primary')}</div>`:'',
-    !st.closed&&st.left<=1&&st.till>0?`<p class="bk-alert warn">Ghé thu két kẻo quầy đóng nhé.</p>`:'',
+    !st.business&&!st.closed&&st.left<=1&&st.till>0?`<p class="bk-alert warn">Ghé thu két kẻo quầy đóng nhé.</p>`:'',
   ].join('');
   const self=!!cat.menus&&!!st.menu;   // 🧑‍🍳 a server with the board (1.5.3+)
   const tabs=[...(self?[['menu','🍽️ Menu'],['look','🎨 Trang trí']]:[]),['staff',`👥 Người (${st.staff.length}/${P.slots||1})`],['stock','📦 Hàng'],['fund','💼 Vốn'],['up','🛠️ Nâng cấp'],...(st.economy?[['economy','🧾 Sổ quầy & an toàn']]:[])];
   return `<section class="bk-card qy-stall" data-qk="st:${st.id}">
-    ${self?`<canvas class="qy-scene" data-qy-live data-cv="${st.id}" role="img" aria-label="${esc(`Quầy ${st.name}`)}"></canvas>`:''}
+    ${self?`<canvas class="qy-scene" data-qy-live data-cv="${st.id}" role="img" aria-label="${esc(`Quầy ${st.name}`)}"></canvas>${counterActivityHTML(st,esc)}`:''}
     <div class="qy-top"><span class="qy-tile" aria-hidden="true">${P.emoji||'🏪'}<i>${T.emoji}</i></span>
       <div class="grow"><h3>${esc(st.name)}</h3><p class="qy-line">${esc(status)}</p></div></div>
-    ${alerts}
-    ${self?selfRow(st):''}
+    ${alerts}${ownerEvents(st)}
+    ${self?selfRow(st):''}${businessPanel(st)}${visitorQueue(st)}
     <div class="qy-till"><div><small>Két</small><strong>${xu(st.till)}</strong>${st.hist.length?`<small>${st.hist.length} ngày qua: ${week>=0?'+':'−'}${xu(Math.abs(week))}</small>`:''}</div>
       ${btn(st.closed&&!st.due&&!st.till?'Mở lại quầy':'Thu két','till',{id:st.id},self?'':'primary',st.till||st.closed?'':'Két đang trống')}</div>
     <p class="qy-line">Ai bán, lãi tính thế nào? ${helpBtn(`sales:${st.id}`)}</p>
-    ${helpText(`sales:${st.id}`,'Nhân viên đã thuê tự bán khi bạn kết thúc một ngày sống. Chọn “Đứng quầy hôm nay” để tự bán; chưa thuê ai thì quầy không tự bán. Bạn cũng có thể đăng ca thuê người chơi ở mục Người. Quầy không chạy khi bạn offline.')}
-    ${helpText(`sales:${st.id}`,`Lời ngày = doanh thu − tiền hàng (kể cả hàng hư) − lương − điện − phí online/giao hàng (nếu có). Lượng bán tùy thời tiết, khách, menu, lượng hàng và sức phục vụ. Chuyện phát sinh trong ca cũng có thể tăng hoặc giảm lời. Sổ quầy đã trừ thuê chỗ theo ngày có bán, vật tư, bảo vệ, thuế và thiệt hại sự cố. Ngày đóng cửa và thời gian offline không phát sinh phí.`)}
+    ${helpText(`sales:${st.id}`,'Nhân viên tự bán cả khi bạn offline, tới khi hết hàng hoặc hết tiền vận hành. Chọn “Tự đứng quầy” để tự phục vụ và giao hàng; chưa thuê ai thì đóng quầy không sinh doanh thu. Ca thuê người chơi được ghi riêng.')}
+    ${helpText(`sales:${st.id}`,`Lời ngày = doanh thu − tiền hàng (kể cả hàng hư) − lương − điện − phí online/giao hàng (nếu có). Lượng bán tùy thời tiết, khách, menu, lượng hàng và sức phục vụ. Chuyện phát sinh trong ca cũng có thể tăng hoặc giảm lời. Sổ quầy đã trừ thuê chỗ theo ngày có bán, vật tư, bảo vệ, thuế và thiệt hại sự cố. Quầy tự động tính hàng và chi phí cho phần thời gian thực sự hoạt động, kể cả khi bạn offline; không tự rút ví hay ngân hàng khi thiếu vốn.`)}
     <div class="segmented qy-tabs" role="tablist">${tabs.map(([k,l])=>`<button type="button" role="tab" aria-selected="${part===k}" class="${part===k?'active':''}" data-qy="more" data-id="${st.id}" data-part="${k}">${l}</button>`).join('')}</div>
     ${part==='menu'?menuPart(st):part==='look'?lookPart(st):part==='staff'?staffPart(st,P):part==='stock'?stockPart(st):part==='fund'?fundPart(st):part==='up'?upPart(st):part==='economy'?economyPart(st):''}
   </section>`;
@@ -365,7 +410,7 @@ function economyPart(st){
   const names={theft:'Trộm két',robbery:'Cướp tiền bán hàng',food_check:'Kiểm tra vệ sinh',police_check:'Kiểm tra chứng từ',extortion:'Bị đòi tiền bảo kê'};
   const states={open:'đang chờ xử lý',clear:'đạt, không phạt',violation:'có vi phạm',repaired:'đã khắc phục',reported:'đã lưu bằng chứng và báo công an',refused:'đã từ chối'};
   const risk=incident?`<p class="bk-alert">${names[incident.kind]||''}: ${states[incident.status]||''}${incident.loss?` · thiệt hại ${xu(incident.loss)}`:''}</p>${incident.kind==='extortion'&&incident.status==='open'?`<div class="bk-actions">${btn('Lưu bằng chứng & báo công an','incident',{id:st.id,choice:'report'},'small primary')}${btn('Từ chối trả tiền','incident',{id:st.id,choice:'refuse'},'small')}</div>`:''}`:'';
-  return `<h4>🧾 Sổ quầy & an toàn</h4>${ledger}<p class="bk-hint">Mức xu trong game, không phải mức thuế ngoài đời: GTGT ${tax.vat_pct||2}% phần doanh thu vượt ${xu(tax.revenue_allowance||1000)}; thu nhập ${tax.income_pct||5}% phần lãi dương vượt ${xu(tax.profit_allowance||200)} mỗi ${tax.period||30} ngày sống. Cộng chung mọi quầy của chủ; lỗ được bù trong kỳ. Không có lệ phí môn bài.</p><p class="bk-hint">Vật tư và vệ sinh: ${e.supplies_pct}% doanh thu. Lời thay đổi theo khách và chi phí; một sự cố có thể làm cả ngày lỗ. Các khoản phí chỉ trừ ở quầy có bán.</p>${risk}${controls}${hiredReceipts(e.receipts)}`;
+  return `${st.business?'<p class="bk-hint">Bảng dưới dành cho ca thuê người chơi và kỳ cũ. Hoạt động liên tục ghi thuế thu nhập trên lãi dương, phí môi trường và bảo vệ riêng; xem chi phí và lãi hiện tại trong bảng vận hành của quầy.</p>':''}<h4>🧾 ${st.business?'Sổ ca thuê & kỳ trước':'Sổ quầy & an toàn'}</h4>${ledger}<p class="bk-hint">Mức xu trong game, không phải mức thuế ngoài đời: GTGT ${tax.vat_pct||2}% phần doanh thu vượt ${xu(tax.revenue_allowance||1000)}; thu nhập ${tax.income_pct||5}% phần lãi dương vượt ${xu(tax.profit_allowance||200)} mỗi ${tax.period||30} ngày sống. Cộng chung mọi quầy của chủ; lỗ được bù trong kỳ. Không có lệ phí môn bài.</p><p class="bk-hint">Vật tư và vệ sinh: ${e.supplies_pct}% doanh thu. Lời thay đổi theo khách và chi phí; một sự cố có thể làm cả ngày lỗ. Các khoản phí chỉ trừ ở quầy có bán.</p>${risk}${controls}${hiredReceipts(e.receipts)}`;
 }
 
 function stepper(key,value,id,extra,min=1,max=1e6){
@@ -373,10 +418,10 @@ function stepper(key,value,id,extra,min=1,max=1e6){
 }
 function staffPart(st,P){
   const rows=st.staff.map(x=>{const k=`s:${st.id}:${x.id}`,w=S.wage[k]??x.wage;
-    return `<li class="qy-person"><div class="grow"><b>${MOOD(x.mo)} ${esc(x.name)}</b>${x.g?' <span title="Rất cẩn thận">⭐</span>':''}<small>Lương ${xu(x.wage)}/ngày · xin ${xu(x.ask)}</small></div>
+    return `<li class="qy-person"><div class="grow"><b>${MOOD(x.mo)} ${esc(x.name)}</b>${x.g?' <span title="Rất cẩn thận">⭐</span>':''}<small>Lương ${xu(x.wage)}/${st.business?`${Math.round(st.business.period_seconds/60)} phút hoạt động`:'ngày'} · xin ${xu(x.ask)}</small></div>
       <div class="qy-person-act">${stepper(k,w,st.id)}${w!==x.wage?btn('Lưu','wage',{id:st.id,staff:x.id,wage:w},'small primary'):btn('Cho nghỉ','fire',{id:st.id,staff:x.id,name:x.name},'small ghost')}</div></li>`;}).join('');
   const cands=(st.cands||[]).map(c=>{const k=`c:${st.id}:${c.id}`,w=S.wage[k]??c.ask;
-    return `<li class="qy-person"><div class="grow"><b>${esc(c.name)}</b>${c.g?' ⭐':''}<small>${esc(c.bio)}</small><small>Xin ${xu(c.ask)}/ngày</small></div>
+    return `<li class="qy-person"><div class="grow"><b>${esc(c.name)}</b>${c.g?' ⭐':''}<small>${esc(c.bio)}</small><small>Xin ${xu(c.ask)}/${st.business?`${Math.round(st.business.period_seconds/60)} phút hoạt động`:'ngày'}</small></div>
       <div class="qy-person-act">${stepper(k,w,st.id)}${btn('Thuê','hire',{id:st.id,cand:c.id,wage:w},'small primary')}</div></li>`;}).join('');
   return `<div class="qy-part">${rows?`<ul class="qy-list">${rows}</ul>`:''}
     ${cands?`<h4>Đang tìm việc ${helpBtn('cand')}</h4>${helpText('cand','Tự đặt lương. Trả cao thì vui, bán đắt hàng hơn. Dưới 60% mức xin là họ không nhận.')}<ul class="qy-list">${cands}</ul>`:''}
@@ -384,6 +429,9 @@ function staffPart(st,P){
 }
 function stockPart(st){
   const cat=CAT();
+  if(st.business){const b=st.business,rows=b.stock||[],draft=S.stockDraft[st.id]||{},quote=restockQuote(draft,rows);
+    return `<div class="qy-part"><h4>Kho nguyên liệu · ${fmt(b.stock_total)} phần</h4><p class="bk-hint">Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; giữ lại tiền lương để nhân viên tiếp tục làm.</p><ul class="qy-list">${rows.map(row=>{const dish=dishOf(st,row.id);return `<li class="qy-stock-item" data-qk="stock:${st.id}:${row.id}"><span><b>${dish.emoji} ${esc(dish.name)}</b><small>Còn ${fmt(row.qty)} · ${xu(row.cost)} / phần</small></span><label><span>Nhập thêm</span><input type="number" inputmode="numeric" name="qy-stock" id="qy-stock-${st.id}-${row.id}" data-id="${st.id}" data-k="${row.id}" min="0" max="20000" step="1" value="${esc(draft[row.id]??'')}" placeholder="0"/></label></li>`;}).join('')}</ul><p class="qy-stock-quote">${quote?`${fmt(quote.count)} phần · tổng ${xu(quote.total)}`:'Nhập số lượng để xem tổng tiền'}<small>Két + vốn hiện có: ${xu(st.till+st.fund)}</small></p><div class="bk-actions">${btn(quote?`Nhập hàng · ${xu(quote.total)}`:'Nhập hàng','restock',{id:st.id},'primary',!quote?'Nhập số lượng trước':quote.total>st.till+st.fund?'Két và vốn chưa đủ':'')}${btn('Xem tiệm','visit',{id:st.id},'ghost')}</div></div>`;
+  }
   return `<div class="qy-part"><p class="qy-line">Hôm nay ${cat.weather[st.today?.w]||''} · ${cat.pace[st.today?.pace]||''} · khoảng ${fmt(st.today?.n)} khách ${helpBtn('stock')}</p>
     ${helpText('stock','Ít: không lo ế. Nhiều: không lo hết hàng. Hàng tươi (hoa, bánh) ế thì hư.')}
     <div class="segmented qy-order" role="radiogroup" aria-label="Nhập hàng">${cat.orders.map(o=>`<button type="button" role="radio" aria-checked="${st.order===o.id}" class="${st.order===o.id?'active':''}" data-qy="order" data-id="${st.id}" data-level="${o.id}"${S.busy?' disabled':''}>${esc(o.name)}</button>`).join('')}</div>
@@ -421,7 +469,7 @@ function openView(v){
 const dishes=st=>CAT()?.menus?.[st.trade]||[];
 const dishOf=(st,k)=>dishes(st).find(d=>d.id===k)||{id:k,emoji:'•',name:k,base:1,band:[1,1]};
 const clone=o=>JSON.parse(JSON.stringify(o));
-const menuDraft=st=>S.md[st.id]??=clone(st.menu);
+const menuDraft=st=>S.md[st.id]??=cloneMenu(st.menu);
 const lookDraft=st=>S.lk[st.id]??={...clone(st.look),name:st.name};
 const sameMenu=(a,b)=>JSON.stringify([[...a.on].sort(),[...a.on].sort().map(k=>a.p[k])])===JSON.stringify([[...b.on].sort(),[...b.on].sort().map(k=>b.p[k])]);
 /** Customers' feeling about a board: the average dish against the trade's usual price (its first three dishes). */
@@ -433,28 +481,28 @@ function feel(st,m){
 const stars=v=>v?`⭐ ${(v/10).toFixed(1)}`:'';
 
 function selfRow(st){
-  const r=st.run,rate=st.rate||[0,0];
-  const day=r?.x?btn('✅ Xem kết quả hôm nay','runopen',{id:st.id},'ghost')
-    :r?btn('🧑‍🍳 Vào quầy tiếp','runopen',{id:st.id},'primary')
-    :btn('🧑‍🍳 Đứng quầy hôm nay','runstart',{id:st.id},'primary',st.due?'Đóng tiền thuê trước nhé':'');
-  const on=!!st.online;
-  return `<div class="qy-self">${day}
-    <button type="button" class="qy-switch${on?' on':''}" role="switch" aria-checked="${on}" data-qy="online" data-id="${st.id}"${S.busy?' disabled':''}>
-      <span class="qy-knob" aria-hidden="true"></span>📱 Bán online${on&&rate[0]?` <small>${stars(rate[1])} · ${rate[0]}</small>`:''}</button></div>`;
+ const r=st.run,rate=st.rate||[0,0],on=!!st.online;
+ const label=r&&!r.x?'🧑‍🍳 Tiếp tục tự đứng quầy':'🧑‍🍳 Tự đứng quầy';
+ return `<div class="qy-self">${st.staff.length?btn('🏪 Vào xem tiệm','visit',{id:st.id},'primary'):''}${btn(label,r&&!r.x?'runopen':'runstart',{id:st.id},st.staff.length?'ghost':'primary',st.due?'Đóng chi phí còn thiếu trước nhé':st.business?.paused&&(!r||r.x)?'Mở quầy để bắt đầu nhận khách':'')}<button type="button" class="qy-switch${on?' on':''}" role="switch" aria-checked="${on}" data-qy="online" data-id="${st.id}"${S.busy?' disabled':''}><span class="qy-knob" aria-hidden="true"></span>📱 Bán online${on&&rate[0]?` <small>${stars(rate[1])} · ${rate[0]}</small>`:''}</button></div>`;
 }
-
+function businessPanel(st,detail=false){
+ const b=st.business;if(!b)return '';
+ const label={running:'Nhân viên đang bán',paused:'Quầy đang tạm dừng',no_staff:'Chờ bạn tự đứng quầy',out_of_stock:'Đã hết nguyên liệu',no_funds:'Thiếu tiền vận hành'}[b.status]||'Đang cập nhật quầy';
+ const recent=(b.recent||[]).slice(-5).reverse(),expense=b.expenses||{};
+ const controls=businessControls(st,btn)+staffLifeCard(st.staff_life,(label,e,ch)=>btn(label,'staffEvent',{id:st.id,event:e.id,choice:ch.id},'shop-event-choice',ch.affordable===false?'Két/vốn chưa đủ':''));
+ return `<section class="qy-business" data-qk="business:${st.id}"><div class="qy-business-heading"><span class="qy-business-dot ${b.status==='running'?'running':''}" aria-hidden="true"></span><b>${label}</b></div><p>${esc(b.reason||'')}</p>${controls}<div class="qy-business-numbers"><div><small>Nguyên liệu còn</small><strong>${fmt(b.stock_total)} phần</strong></div><div><small>Đã bán</small><strong>${fmt(b.sold)} món</strong></div><div><small>Lãi đã ghi sổ</small><strong class="${b.net<0?'loss':''}">${xu(b.net)}</strong></div></div><p class="qy-business-note">Lãi đơn hoàn tất được cộng thêm 40% sau chi phí. Đã cộng: ${xu(b.profit_bonus||0)}. ${Number(b.speed_factor||1)>1?`Thiết bị ×${Number(b.speed_factor).toFixed(2)} · Nhân viên xử lý đơn nhanh hơn. `:''}Lương ${xu(b.wage)} / ${Math.round((b.period_seconds||600)/60)} phút hoạt động · ${st.staff.length?'Nhân viên tiếp tục bán khi bạn rời game, tới khi hết hàng hoặc hết tiền.':'Quầy chỉ bán khi bạn tự phục vụ hoặc giao hàng.'}</p>${b.unpaid_fines?`<p class="bk-alert warn">Còn ${xu(b.unpaid_fines)} tiền phạt chưa trả, đã tính vào lãi. Khoản này sẽ trừ từ tiền bán hàng hoặc vốn bổ sung của quầy.</p>`:''}${S.syncFailed?'<p class="qy-sync-error" role="status">Chưa kết nối được để cập nhật. Số liệu đang giữ là lần xác nhận gần nhất.</p>':''}${detail?`<details class="qy-ledger"><summary>Doanh thu ${xu(b.revenue)} · xem chi phí</summary><dl>${[['Nguyên liệu','goods'],['Lương','wages'],['Thuê chỗ','rent'],['Điện','power'],['Online / giao hàng','online'],['Thuế kỳ cũ','tax'],['Thuế thu nhập','income_tax'],['Phí môi trường','environment'],['Bảo vệ quầy','protection'],['Thiệt hại','loss']].map(([label,key])=>`<div><dt>${label}</dt><dd>${xu(expense[key])}</dd></div>`).join('')}</dl></details><h4>Vừa bán tại quầy</h4>${recent.length?`<ul class="qy-recent">${recent.map(event=>`<li data-qk="sale:${esc(event.id)}"><span>${dishOf(st,event.dish).emoji} ${esc(dishOf(st,event.dish).name)} ×${fmt(event.qty)}<small>${event.channel==='online'?'Đơn online':'Khách tại quầy'}${event.stars?` · ${event.stars}/5 sao`:''}${event.name?` · ${esc(event.name)}`:''}</small>${event.text?`<small>${esc(event.text)}</small>`:''}</span><b>${xu(event.total)}</b></li>`).join('')}</ul>`:'<p class="bk-hint">Chưa có lượt bán được ghi nhận. Sổ sẽ cập nhật khi nhân viên bán được hàng.</p>'}`:''}</section>`;
+}
+function visitorQueue(st){const rows=(st.business?.visitor_orders||[]).filter(o=>o.status==='queued');return rows.length?`<section class="qy-part"><h4>Khách người chơi · ${rows.length}</h4>${rows.map(o=>`<div class="row"><span style="width:44px;flex:none">${avInner({fc:o.buyer?.fc,av:'🙂'})}</span><div class="grow"><b>${esc(o.buyer?.name||'Khách')}</b><small class="muted block">${esc(dishOf(st,o.dish).name)} · ${o.staffed?'Nhân viên đang phục vụ':'Đã thanh toán'}</small></div>${o.staffed?'':btn('Phục vụ','visitor',{id:st.id,key:o.id},'primary small')}</div>`).join('')}</section>`:'';}
+function focusVisitorRoom(st){if(S.focusedVisitorPlace===st.id)return;S.focusedVisitorPlace=st.id;import('./workplace-visit.js').then(m=>m.workVisitsOwnerFocus(S.env,{kind:'quay',target:st.id,host:S.dlg})).catch(()=>{});}
+function visitorPanel(st){focusVisitorRoom(st);const o=(st.business?.visitor_orders||[]).find(o=>String(o.id)===String(S.visitor));if(!o||o.status!=='queued')return `<section class="bk-card">${flash()}<h3>Đơn khách đã được cập nhật</h3>${btn('Về quầy','back',{},'primary')}</section>`;const d=S.visitorDraft[S.visitor]??={items:[],step:'pick'};return `<section class="bk-card">${flash()}<div class="row"><span style="width:64px;flex:none">${avInner({fc:o.buyer?.fc,av:'🙂'})}</span><div><h3>${esc(o.buyer?.name||'Khách')} đang làm khách</h3><p>${esc(dishOf(st,o.dish).name)} · Đã trả ${xu(o.price)}</p></div></div>${o.note?`<p class="qy-order-note">${esc(o.note)}</p>`:''}${o.staffed?'<p>Nhân viên đang thực hiện đơn này.</p>':d.step==='pick'?`<h4>Chọn món vào khay</h4><div class="qy-tiles">${dishes(st).map(item=>`<button type="button" class="qy-tile-btn ${d.items.includes(item.id)?'on':''}" data-qy="vtray" data-id="${st.id}" data-k="${esc(item.id)}" aria-pressed="${d.items.includes(item.id)}"><span>${item.emoji}</span><b>${esc(item.name)}</b></button>`).join('')}</div><p>Khay: ${d.items.map(id=>esc(dishOf(st,id).name)).join(', ')||'Chưa có món'}</p>${btn('Kiểm khay & bàn giao','vcheck',{id:st.id},'primary',!d.items.length?'Chọn món trước':'')}`:`<p>✓ Đúng món · khách đã trả tiền, không cần thối lại.</p>${btn('😊 Giao món & cảm ơn','vserve',{id:st.id},'primary')}`}${btn('Về quầy','back',{},'ghost')}</section>`;}
+function visitView(st){focusVisitorRoom(st);
+ return `<section class="bk-card qy-visit"><div class="qy-visit-title"><span>SAU QUẦY · ${esc(st.name)}</span><small>Khách và số liệu từ sổ bán hàng</small></div><canvas class="qy-scene qy-scene-first" data-qy-live data-cv="${st.id}" role="img" aria-label="Góc nhìn sau quầy ${esc(st.name)}"></canvas>${counterActivityHTML(st,esc)}${flash()}${businessPanel(st,true)}<div class="bk-actions">${btn('📦 Nhập thêm hàng','visitstock',{id:st.id},'primary')}${btn('Tự đứng quầy',st.run&&!st.run.x?'runopen':'runstart',{id:st.id},'ghost')}${btn('Quản lý tiệm','back',{},'ghost')}</div></section>`;
+}
 function menuPart(st){
-  const m=menuDraft(st),max=CAT().menu_max||4,changed=!sameMenu(m,st.menu);
-  const rows=dishes(st).map(d=>{const on=m.on.includes(d.id),p=m.p[d.id]??d.base,[lo,hi]=d.band;
-    return `<li class="qy-dish${on?' on':''}"><button type="button" class="qy-dish-pick" data-qy="dish" data-id="${st.id}" data-k="${d.id}" aria-pressed="${on}"${!on&&m.on.length>=max?' disabled':''}>
-        <span class="qy-up-emoji" aria-hidden="true">${d.emoji}</span><span class="grow"><b>${esc(d.name)}</b><small>Giá gốc ${xu(d.base)}</small></span><span class="qy-check" aria-hidden="true">${on?'✓':'＋'}</span></button>
-      ${on?`<span class="qy-step">${btn('−','dprice',{id:st.id,k:d.id,by:-1},'small ghost',p<=lo?'Thấp nhất rồi':'')}<b>${fmt(p)}</b>${btn('＋','dprice',{id:st.id,k:d.id,by:1},'small ghost',p>=hi?'Cao nhất rồi':'')}</span>`:''}</li>`;}).join('');
-  const [k,line]=feel(st,m);
-  return `<div class="qy-part"><p class="qy-line">Chọn tối đa ${max} món bán hôm nay, tự đặt giá. ${helpBtn('menu')}</p>
-    ${helpText('menu','Giá cao thì mỗi món lời hơn nhưng ít khách hơn. Giá mềm thì đông, khách quý quầy. Nhiều món thì thêm chút khách.')}
-    <ul class="qy-list">${rows}</ul>
-    <p class="qy-feel ${k}">${line}</p>
-    <div class="bk-actions">${btn('Lưu menu','menusave',{id:st.id},'primary',!changed?'Chưa đổi gì':!m.on.length?'Chọn ít nhất 1 món':'')}${changed?btn('Hoàn tác','menureset',{id:st.id},'ghost'):''}</div></div>`;
+ const m=menuDraft(st),ds=dishes(st),changed=!sameMenu(m,st.menu),query=S.search[st.id]||'',payload=menuPayload(m,ds);
+ const rows=filterDishes(ds,query).map(d=>{const on=m.on.includes(d.id),p=m.p[d.id]??d.base,preview=pricePreview(p,d.cost,d.base);
+ return `<li class="qy-dish${on?' on':''}" data-qk="dish:${st.id}:${d.id}"><button type="button" class="qy-dish-pick" data-qy="dish" data-id="${st.id}" data-k="${d.id}" aria-pressed="${on}"><span class="qy-up-emoji" aria-hidden="true">${d.emoji}</span><span class="grow"><b>${esc(d.name)}</b><small>Nguyên liệu ${xu(d.cost)} · tham khảo ${xu(d.base)}</small></span><span class="qy-check" aria-hidden="true">${on?'✓':'＋'}</span></button>${on?`<label class="qy-price-field"><span>Giá bán (xu)</span><input id="qy-price-${st.id}-${d.id}" name="qy-price" data-id="${st.id}" data-k="${d.id}" type="number" inputmode="numeric" min="1" max="1000000" step="1" value="${esc(p)}" aria-invalid="${!preview.valid}"/></label><div class="qy-price-feedback ${preview.kind||'loss'}">${preview.valid?`Chênh lệch sau nguyên liệu: <b>${xu(preview.margin)}</b>. `:''}${preview.label}</div>`:''}</li>`;}).join('');
+ return `<div class="qy-part"><p class="qy-line">Đang chọn ${m.on.length}/${ds.length} món. Bạn có thể chọn toàn bộ danh mục.</p><div class="qy-menu-tools"><label class="bk-field"><span>Tìm món</span><input type="search" id="qy-search-${st.id}" name="qy-search" data-id="${st.id}" value="${esc(query)}" placeholder="Tên món…"/></label>${btn('Chọn tất cả','dishall',{id:st.id},'small ghost')}</div><ul class="qy-list">${rows||'<li class="bk-hint">Không có món trùng từ tìm kiếm.</li>'}</ul><p class="qy-menu-disclaimer">Chênh lệch trên chưa trừ lương, thuê chỗ, điện, thuế và phí giao hàng. Phản ứng giá là gợi ý; lượng bán và đánh giá thật được ghi trong sổ quầy.</p><div class="bk-actions">${btn('Lưu menu & giá','menusave',{id:st.id},'primary',!payload?'Kiểm tra giá và chọn ít nhất một món':!changed?'Chưa đổi gì':'')}${changed?btn('Hoàn tác','menureset',{id:st.id},'ghost'):''}</div></div>`;
 }
 
 function lookPart(st){
@@ -476,23 +524,24 @@ function lookPart(st){
 /* ---- the day at the counter ---- */
 const R=()=>S.run;
 const freshRun=sid=>({sid,step:'pick',tray:[],change:0,phone:false,pack:null,hint:''});
-function runView(st){
+function runView(st){focusVisitorRoom(st);
   const r=st.run;
-  if(!r)return `<section class="bk-card bk-center"><p>Hôm nay chưa mở hàng.</p><div class="bk-actions center">${btn('🧑‍🍳 Đứng quầy','runstart',{id:st.id},'primary')}${btn('Về quầy','back',{},'ghost')}</div></section>`;
+  if(!r)return `<section class="bk-card bk-center qy-owner-opening">${flash()}<h3>${S.busy?'Đang vào quầy của bạn…':'Chưa vào được quầy'}</h3><p>${S.busy?'Đang lấy menu và đơn khách. Bạn có thể tự bán ở đây khi muốn.':'Bạn có thể thử mở lại hoặc về quản lý quầy để kiểm tra hàng và chi phí.'}</p><div class="bk-actions center">${btn(S.busy?'Đang mở quầy…':'🧑‍🍳 Thử đứng quầy lại','runstart',{id:st.id},'primary')}${btn('Về quầy','back',{},'ghost')}</div></section>`;
   const waiting=(r.orders||[]).filter(o=>!o.stars).length;
-  const bar=`<div class="qy-runbar"><span title="Khách">🧍 ${r.i}/${r.k}</span><span title="Doanh thu tạm">💰 ${xu(r.rv)}</span>${r.stars?`<span>${stars(r.stars)}</span>`:''}
+  const bar=`<div class="qy-runbar"><span title="Khách đã phục vụ">🧍 ${r.i} khách</span><span title="Doanh thu đã bán">💰 ${xu(r.rv)}</span>${r.stars?`<span>${stars(r.stars)}</span>`:''}
+    ${r.crowd?.length>1?`<span title="Khách chờ tới lượt">${r.crowd.length-1} chờ</span>`:''}
     ${st.online&&!r.x?`<button type="button" class="qy-phone-btn${R().phone?' on':''}" data-qy="phone" data-id="${st.id}" aria-pressed="${R().phone}" aria-label="Đơn online">📱${waiting?`<i>${waiting}</i>`:''}</button>`:''}
-    ${r.x?'':btn('Đóng ca','runclose',{id:st.id},'small ghost')}</div>`;
+    ${r.x?'':btn('Rời quầy','runclose',{id:st.id},'small ghost')}</div>`;
   let panel;
   if(r.x)panel=summary(st,r);
   else if(R().pack)panel=packPanel(st,r);
   else if(R().phone)panel=phonePanel(st,r);
   else if(r.ev)panel=eventCard(st,r.ev);
   else if(r.cust)panel=customerPanel(st,r.cust);
-  else panel=`<section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">${r.out?'📦':'🌙'}</div><h3>${r.out?'Hết hàng rồi!':'Hết khách xếp hàng'}</h3>
-    <p>${waiting?`Còn ${waiting} đơn online chờ giao.`:'Đóng ca để tính tiền cả ngày nhé.'}</p><div class="bk-actions center">${waiting?btn('📱 Xem đơn','phone',{id:st.id},'ghost'):''}${btn('🏁 Đóng ca','runclose',{id:st.id},'primary')}</div></section>`;
-  return `<section class="bk-card qy-run" data-qk="run:${st.id}">${bar}
-    <canvas class="qy-scene" data-qy-live data-cv="${st.id}" role="img" aria-label="${esc(`Quầy ${st.name}`)}"></canvas>${flash()}</section>${panel}`;
+  else panel=`<section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">${r.out?'📦':'☕'}</div><h3>${r.out?'Cần nhập thêm nguyên liệu':'Bạn đã đứng quầy'}</h3>
+    <p>${esc(r.out?'Nhập thêm món trong menu để phục vụ khách.':ownerArrivalText(r,st.business))}</p>${waiting?`<p>Còn ${waiting} đơn online chờ giao.</p>`:''}<div class="bk-actions center">${waiting?btn('📱 Xem đơn','phone',{id:st.id},'ghost'):''}${r.out?btn('Nhập hàng','visitstock',{id:st.id},'primary'):''}${btn('Rời quầy','runclose',{id:st.id},'ghost')}</div></section>`;
+  return `<section class="bk-card qy-run" data-qk="run:${st.id}">${bar}${flash()}</section>${ownerEvents(st)}${panel}
+    <canvas class="qy-scene qy-scene-first" data-qy-live data-cv="${st.id}" role="img" aria-label="${esc(`Góc nhìn của bạn sau quầy ${st.name}`)}"></canvas>${!r.x?ownerQueueHTML(r,esc):''}`;
 }
 function trayChips(st,list,op){
   if(!list.length)return '<p class="qy-muted">Chạm món bên dưới để bỏ vào.</p>';
@@ -515,7 +564,7 @@ function customerPanel(st,c){
       :'<p class="qy-bill">Khách đưa vừa đủ 👍</p>'}
       <div class="bk-actions">${btn(due?'🤲 Trả tiền thối':'🤲 Nhận tiền','paid',{id:st.id},'primary')}</div>`;
   }else body=`<p class="qy-bill">Đưa món cho khách và…</p><div class="bk-actions">${btn('😊 Cảm ơn, hẹn gặp lại!','serve',{id:st.id,k:1},'primary')}${btn('Xong','serve',{id:st.id,k:0},'ghost')}</div>`;
-  return `<section class="bk-card qy-cust"><div class="qy-say"><b>${esc(c.name)}</b><p>“${esc(c.say)}”</p></div>${body}</section>`;
+  return `<section class="bk-card qy-cust"><div class="qy-say"><b>${esc(c.name)}</b>${c.temperament?`<span class="qy-customer-temper ${esc(c.mood||'calm')}">${c.mood==='angry'?'😤 Đang giục lớn':c.mood==='impatient'?'😠 Sốt ruột':c.temperament==='relaxed'?'🙂 Dễ tính':'😐 Khó tính'}</span>`:''}<p>“${esc(c.say)}”</p>${c.mood&&c.mood!=='calm'?`<p class="qy-customer-call" aria-live="polite">${esc(c.speech)}</p>`:''}</div>${body}</section>`;
 }
 function eventCard(st,ev){
   return `<section class="bk-card qy-event"><div class="qy-top"><span class="qy-tile" aria-hidden="true">${ev.emoji}</span><div class="grow"><h3>${esc(ev.title)}</h3><p class="qy-line">${esc(ev.text)}</p></div></div>
@@ -544,7 +593,7 @@ function packPanel(st,r){
     <div class="bk-actions">${btn('Xong, đi giao','packdone',{id:st.id},'primary',pk.bag.length?'':'Bỏ món vào túi trước')}${btn('Để sau','unpack',{id:st.id},'ghost')}</div>`;
   else if(pk.step==='way')body=`<p class="qy-line">Giao bằng gì?</p><div class="qy-picks">${btn('🛵 Tự chạy đi giao','way',{id:st.id,k:'self'},'primary')}${btn(`📦 Gọi shipper · ${xu(fee)}`,'way',{id:st.id,k:'ship'},'ghost')}</div>`;
   else{const left=3-pk.picks.length;
-    body=`<p class="qy-line">${left?`Theo đường chấm xanh tới 📍. Ngã tư thứ ${pk.picks.length+1}:`:'Tới nơi rồi!'}</p>${rideSVG(o.route,pk.picks)}${left?signalHTML(pk.signal||o.ride?.traffic):''}${o.ride?.traffic?.receipts?.some(r=>r.fine)?`<p class="notice">🚦 Phạt giao thông: ${o.ride.traffic.receipts.reduce((n,r)=>n+r.fine,0)} xu · tính vào chi phí khi đóng ca quầy. Biên nhận lưu trong sổ quầy.</p>`:''}
+    body=`<p class="qy-line">${left?`Nhìn biển chỉ đường phía trước. Ngã tư thứ ${pk.picks.length+1}:`:'Tới nơi rồi!'}</p>${Number(o.drive_factor||st.run?.drive_factor||1)>1?`<p class="bk-hint">Trang bị giao hàng ×${Number(o.drive_factor||st.run?.drive_factor).toFixed(2)} · Chuẩn bị chuyến tiếp theo nhanh hơn.</p>`:''}${rideSVG(o.route,pk.picks)}${left?signalHTML(pk.signal||o.ride?.traffic):''}${o.ride?.traffic?.receipts?.some(r=>r.fine)?`<p class="notice">🚦 Phạt giao thông: ${o.ride.traffic.receipts.reduce((n,r)=>n+r.fine,0)} xu · đã ghi vào chi phí quầy. Biên nhận lưu trong sổ quầy.</p>`:''}
       ${left?`<div class="qy-turns">${turnChoices(pk.picks).map(c=>btn(`${c.emoji} ${c.label}`,'turn',{id:st.id,k:c.k},'ghost')).join('')}</div>`
         :`<div class="bk-actions">${btn('🤝 Giao tận tay','deliver',{id:st.id},'primary')}</div>`}`;}
   return `<section class="bk-card qy-pack"><div class="qy-say"><b>#${o.j+1} ${esc(o.name)} · ${esc(o.addr)}</b><p>${itemsLine(st,o.items)}</p>${o.note?`<p class="qy-note">📝 ${esc(o.note)}</p>`:''}</div>${body}</section>`;
@@ -553,9 +602,9 @@ function summary(st,r){
   const s=r.sum||{};
   return `<section class="bk-card bk-center qy-sum"><div class="bk-big-emoji" aria-hidden="true">🏁</div><h3>Đóng ca rồi!</h3>
     <ul class="qy-sumlist"><li><span>Khách bạn phục vụ</span><b>${fmt(s.hand)}</b></li>${s.on?`<li><span>Đơn online</span><b>${fmt(s.on)}</b></li>`:''}
-      <li><span>Khách cả ngày</span><b>${fmt(s.n)}</b></li><li><span>Doanh thu</span><b>${xu(s.rev)}</b></li>
+      <li><span>Khách trong lượt này</span><b>${fmt(s.n)}</b></li><li><span>Doanh thu</span><b>${xu(s.rev)}</b></li>
       <li><span>Lời</span><b class="${s.net>=0?'up':'down'}">${s.net>=0?'+':'−'}${xu(Math.abs(s.net||0))}</b></li>${s.st?`<li><span>Khách chấm</span><b>${stars(s.st)}</b></li>`:''}</ul>
-    <p class="qy-muted">Tiền đã vào két. Mai ghé đứng quầy tiếp nhé!</p><div class="bk-actions center">${btn('Về quầy','back',{},'primary')}</div></section>`;
+    <p class="qy-muted">Tiền đã vào két. Bạn có thể mở lượt phục vụ tiếp khi sẵn sàng.</p><div class="bk-actions center">${btn('Về quầy','back',{},'primary')}</div></section>`;
 }
 
 /** The 🧑‍🍳 taps. Returns true when it was one. */
@@ -563,18 +612,28 @@ function onSelf(op,data){
   const st=stallOf(data.id);
   const u=R();
   switch(op){
-    case'runstart':send('jr_quay_start',{stall:data.id}).then(r=>{if(r){S.view='run';S.run=freshRun(data.id);S.flash={text:r.message,kind:'good'};render();toTop();}});return true;
-    case'runopen':S.view='run';S.run=freshRun(data.id);S.flash=null;render();toTop();return true;
+    case'visitor':S.visitor=data.key;S.visit=data.id;S.view='visitor';render();toTop();return true;
+    case'vtray':{const d=S.visitorDraft[S.visitor]??={items:[],step:'pick'};d.items=[data.k];render();return true;}
+    case'vcheck':{const o=st?.business?.visitor_orders?.find(o=>String(o.id)===String(S.visitor)),d=S.visitorDraft[S.visitor];if(visitorSelectionValid(o,d?.items)){d.step='thanks';}else S.flash={text:'Chọn đúng món trên phiếu của khách nhé.',kind:'bad'};render();return true;}
+    case'vserve':{const o=st?.business?.visitor_orders?.find(o=>String(o.id)===String(S.visitor)),d=S.visitorDraft[S.visitor];if(!visitorSelectionValid(o,d?.items)||d.step!=='thanks')return true;send('jr_quay_serve',{stall:st.id,visitor_id:o.id,items:d.items,change:0,smile:true}).then(r=>{if(r){delete S.visitorDraft[S.visitor];S.view='list';S.visitor=null;render();}});return true;}
+    case'visitstock':S.view='list';S.open[data.id]='stock';render();toTop();return true;
+    case'dishall':if(st){selectDishes(menuDraft(st),dishes(st));render();}return true;
+    case'runstart':{
+      if(!st)return true;
+      S.tab='mine';S.view='run';S.run=freshRun(data.id);S.flash=null;toTop();
+      if(st.run&&!st.run.x){render();return true;}
+      send('jr_quay_start',{stall:data.id}).then(()=>{render();toTop();});return true;}
+    case'runopen':S.tab='mine';S.view='run';S.run=freshRun(data.id);S.flash=null;render();toTop();return true;
     case'online':if(st)send('jr_quay_online',{stall:st.id,on:!st.online});return true;
     case'dish':{if(!st)return true;const m=menuDraft(st),i=m.on.indexOf(data.k);
-      if(i>=0){if(m.on.length>1)m.on.splice(i,1);}else if(m.on.length<(CAT().menu_max||4))m.on.push(data.k);
+      if(i>=0){if(m.on.length>1)m.on.splice(i,1);}else m.on.push(data.k);
       render();return true;}
     case'dprice':{if(!st)return true;const m=menuDraft(st),d=dishOf(st,data.k),p=(m.p[data.k]??d.base)+Number(data.by);
       m.p[data.k]=Math.max(d.band[0],Math.min(d.band[1],p));render();return true;}
     case'menureset':delete S.md[data.id];render();return true;
     case'menusave':{if(!st)return true;const m=menuDraft(st),ds=dishes(st);
-      const p=Object.fromEntries(ds.map(d=>[d.id,m.p[d.id]??d.base]));
-      send('jr_quay_menu',{stall:st.id,on:ds.map(d=>d.id).filter(k=>m.on.includes(k)),p}).then(r=>{if(r){delete S.md[st.id];render();}});return true;}
+      const payload=menuPayload(m,ds);if(!payload){S.flash={text:'Giá phải là số nguyên dương, tối đa 1.000.000 xu.',kind:'bad'};render();return true;}
+      const submitted=JSON.stringify(payload);send('jr_quay_menu',{stall:st.id,...payload}).then(r=>{if(r&&JSON.stringify(menuPayload(menuDraft(st),ds))===submitted){delete S.md[st.id];render();}});return true;}
     case'color':if(st){lookDraft(st).c=Number(data.k);render();}return true;
     case'decor':{if(!st)return true;const lk=lookDraft(st),i=lk.d.indexOf(data.k);if(i>=0)lk.d.splice(i,1);else if(lk.d.length<(CAT().decor_max||3))lk.d.push(data.k);render();return true;}
     case'tables':{if(!st)return true;const lk=lookDraft(st),most=CAT().tables[st.place]?.[0]||0;lk.t=Math.max(0,Math.min(most,lk.t+Number(data.by)));render();return true;}
@@ -596,7 +655,7 @@ function onSelf(op,data){
       send('jr_quay_serve',{stall:st.id,items:u.tray,change:due?u.change:0,smile:data.k==='1'}).then(r=>{if(r){Object.assign(u,{step:'pick',tray:[],change:0,hint:''});render();}});return true;}
     case'pick':send('jr_quay_choose',{stall:data.id,pick:data.k});return true;
     case'phone':if(u){u.phone=!u.phone;u.pack=null;render();toTop();}return true;
-    case'pack':if(u){u.pack={j:Number(data.j),bag:[],seal:false,tool:false,note:false,step:'pack',picks:[]};render();toTop();}return true;
+    case'pack':if(u){u.pack={j:Number(data.j),orderId:st?.run?.orders?.find(o=>o.j===Number(data.j))?.id,bag:[],seal:false,tool:false,note:false,step:'pack',picks:[]};render();toTop();}return true;
     case'unpack':if(u){u.pack=null;render();}return true;
     case'bag':if(u?.pack&&u.pack.bag.length<6){u.pack.bag.push(data.k);render();}return true;
     case'unbag':if(u?.pack){u.pack.bag.splice(Number(data.k),1);render();}return true;
@@ -606,22 +665,22 @@ function onSelf(op,data){
       const o=(st.run?.orders||[]).find(x=>x.j===u.pack.j);
       if(data.k==='ship'){ship(st,u,'ship');return true;}
       if(RIDE.external&&o){Promise.resolve(RIDE.external(o)).then(route=>{if(Array.isArray(route)){u.pack.picks=route.slice(0,3);ship(st,u,'self');}}).catch(()=>{u.pack.step='ride';render();});return true;}
-      send('jr_quay_signal',{stall:st.id,order:u.pack.j}).then(r=>{if(r){u.pack.picks=r.picks||[];u.pack.signal=r.traffic;u.pack.step='ride';render();}});return true;}
+      send('jr_quay_signal',{stall:st.id,order:u.pack.j,order_id:u.pack.orderId}).then(r=>{if(r&&u.pack){u.pack.picks=r.picks||[];u.pack.signal=r.traffic;u.pack.step='ride';render();}});return true;}
     case'turn':if(u?.pack&&u.pack.picks.length<3&&u.pack.signal?.challenge){const pk=u.pack;
-      send('jr_quay_cross',{stall:st.id,order:pk.j,turn:data.k,token:pk.signal.challenge.token}).then(async r=>{if(!r)return;pk.picks=r.picks;pk.signal=r.traffic;
-        if(pk.picks.length<3){const next=await send('jr_quay_signal',{stall:st.id,order:pk.j});if(next)pk.signal=next.traffic;}render();});}return true;
+      send('jr_quay_cross',{stall:st.id,order:pk.j,order_id:pk.orderId,turn:data.k,token:pk.signal.challenge.token}).then(async r=>{if(!r)return;pk.picks=r.picks;pk.signal=r.traffic;
+        if(pk.picks.length<3){const next=await send('jr_quay_signal',{stall:st.id,order:pk.j,order_id:pk.orderId});if(next)pk.signal=next.traffic;}render();});}return true;
     case'deliver':if(u?.pack&&st)ship(st,u,'self');return true;
     case'runclose':{if(!st)return true;const left=st.run&&!st.run.x&&(st.run.cust||st.run.ev);
       const go=()=>send('jr_quay_close',{stall:st.id}).then(r=>{if(r){if(u){u.phone=false;u.pack=null;}if(!stallOf(st.id)?.run){S.view='list';S.run=null;}render();toTop();}});
-      if(left)ask('Đóng ca sớm?','Khách còn lại trong ngày do nhân viên (nếu có) và bạn bán tiếp như thường.','Đóng ca').then(ok=>{if(ok)go();});else go();
+      if(left)ask('Rời quầy?','Chốt những món bạn đã phục vụ. Nếu có nhân viên, họ tiếp tục vận hành theo hàng và vốn còn lại.','Rời quầy').then(ok=>{if(ok)go();});else go();
       return true;}
   }
   return false;
 }
 function ship(st,u,way){
-  const pk=u.pack;
-  send('jr_quay_ship',{stall:st.id,order:pk.j,items:pk.bag,seal:pk.seal,tool:pk.tool,note:pk.note,way,...(way==='self'?{route:pk.picks}:{})})
-    .then(r=>{if(r){u.pack=null;u.phone=true;render();}});
+  const pk=u.pack;pk.submitting=true;
+  send('jr_quay_ship',{stall:st.id,order:pk.j,order_id:pk.orderId,items:pk.bag,seal:pk.seal,tool:pk.tool,note:pk.note,way,...(way==='self'?{route:pk.picks}:{})})
+    .then(r=>{pk.submitting=false;if(r){u.pack=null;u.phone=true;}render();});
 }
 
 /* ---- the counter's canvas: drawn after each render, only when what it shows changed ---- */
@@ -632,10 +691,13 @@ function paintCanvases(){
   for(const cv of S.dlg.querySelectorAll('canvas[data-cv]')){
     const st=stallOf(cv.dataset.cv);if(!st?.menu)continue;
     const m=S.md[st.id]||st.menu,lk=S.lk[st.id]||{...st.look,name:st.name};
-    const inRun=S.view==='run'&&S.run?.sid===st.id,r=st.run;
+    const inRun=S.view==='run'&&S.run?.sid===st.id,observe=S.view==='visit'&&S.visit===st.id,r=st.run,activity=counterActivity(st);
+    const actors=[...activity.current,...activity.completed].map(p=>({...p,emoji:p.dish?dishOf(st,p.dish).emoji:''}));
     const o={place:st.place,name:(lk.name||'').trim()||st.name,color:cat.colors[lk.c]?.[1],decor:lk.d,tables:lk.t,
       menu:m.on.map(k=>{const d=dishOf(st,k);return {emoji:d.emoji,name:d.name,price:m.p[k]??d.base};}),
-      me:inRun||!st.staff.length,staff:st.staff.length,cust:inRun&&r?.cust?r.cust.look:null,queue:inRun?(r?.queue||[]):[],online:!!st.online,closed:st.closed&&!inRun};
+      me:inRun||!st.staff.length,staff:st.staff.length,actors,online:!!st.online,closed:activity.closed,
+      firstPerson:inRun||observe,observe,reason:st.business?.reason||'',orderLabel:inRun?r?.cust?.name||'':'',
+      activityLabel:activity.current.length?`${activity.current.length} khách tại quầy`:activity.completed.length?`${activity.completed.length} lượt vừa mua xong`:''};
     const key=JSON.stringify(o)+'|'+cv.clientWidth;
     if(cv._key===key)continue;cv._key=key;
     try{paintCounter(cv,{...o,me:o.me?figure(S.env.api.state):null});}catch(e){console.warn('quay scene',e);}

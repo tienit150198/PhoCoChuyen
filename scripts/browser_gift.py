@@ -29,6 +29,7 @@ import tempfile
 import time
 import urllib.request
 from pathlib import Path
+from pg_test_support import test_env, test_connect, schema_for
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -54,11 +55,11 @@ def server():
     """Like production: the story is on, no AI key, no push. The temporary database goes afterwards."""
     port = free_port()
     tmp = tempfile.mkdtemp(prefix='mnl-gift-')
-    env = dict(os.environ, QUIET='1', PUSH_DISABLED='1')
+    env = test_env( QUIET='1', PUSH_DISABLED='1')
     for k in ('MNL_DEV', 'MNL_CAREERS', 'LLM_API_KEY', 'LLM_BASE_URL', 'DATABASE_URL'):
         env.pop(k, None)
-    db = os.path.join(tmp, 'g.sqlite3')
-    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--db', db], cwd=ROOT, env=env,
+    db = os.path.join(tmp, 'g.db')
+    p = subprocess.Popen([sys.executable, 'server.py', '--port', str(port), '--namespace', db], cwd=ROOT, env=env,
                          stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     base = f'http://127.0.0.1:{port}'
     for _ in range(600):

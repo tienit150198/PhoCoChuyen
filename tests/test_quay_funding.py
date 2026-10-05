@@ -7,6 +7,54 @@ from game import quay_hire as qh, live_effects as lfx
 from game import marriage as mr, couple as cp
 
 class Funding(Base):
+    def _continuous_staffed(self, tok, at, fund=1000):
+        from game import quay as qy, quay_business as qb
+        self.open_stall(tok)
+        def prepare(s):
+            st=s['journey']['quay']['stalls'][0]
+            candidate=qy.candidates(s,st)[0]
+            st['staff']=[dict(id=candidate['id'],name=candidate['name'],wage=candidate['ask'],ask=candidate['ask'],mo=60,d=0,g=candidate['g'])]
+            st.pop('business',None)
+            st['fund']=fund;st['till']=0
+            qb.initialize(s,st,now=at)
+            st['fund']=fund;st['till']=0
+            st['business']['stock']={'ts_tran_chau':100,'hong_tra':100,'tra_dao':100}
+        mr._mutate(self.store,{self.sid(tok):prepare})
+
+    def test_stall_escrow_debit_first_settles_work_inside_authoritative_callback(self):
+        from game import quay_business as qb
+        at=1800000000
+        with patch('game.quay_business.time.time',return_value=at):
+            boss=self.user('escrow_clock');self._continuous_staffed(boss,at)
+        expected=copy.deepcopy(self.state(boss))
+        qb.settle(expected,now=at+600)
+        target=expected['journey']['quay']['stalls'][0]
+        before=target['fund']+target['till']
+        with patch('game.quay_business.time.time',return_value=at+600):
+            self.post(boss,wage=30)
+        actual=self.stall(boss)
+        self.assertEqual(actual['business'],target['business'])
+        self.assertEqual(actual['fund']+actual['till'],before-30)
+
+    def test_stall_cancel_refund_cannot_backpay_bankrupt_interval(self):
+        from game import quay_business as qb
+        at=1800000000
+        with patch('game.quay_business.time.time',return_value=at):
+            boss=self.user('refund_clock');self._continuous_staffed(boss,at)
+            job=self.post(boss,wage=30)
+        def empty(s):
+            st=s['journey']['quay']['stalls'][0]
+            st['fund']=st['till']=0
+        mr._mutate(self.store,{self.sid(boss):empty})
+        with patch('game.quay_business.time.time',return_value=at+3600):
+            self.act(boss,'cancel',id=job['id'])
+        after=self.state(boss)
+        qb.settle(after,now=at+3600)
+        st=after['journey']['quay']['stalls'][0]
+        self.assertEqual(st['business']['sold'],0)
+        self.assertEqual(st['fund']+st['till'],30)
+        self.assertEqual(st['business']['cursor'],(at+3600)*1000)
+
     def test_paid_shift_transports_escrow_wage_and_source_once(self):
         boss,worker=self.user('boss'),self.user('worker');st=self.open_stall(boss)
         self.act(boss,'post',stall=st['id'],wage=30,src='cash',rid='paid-ledger-0001')

@@ -9,6 +9,7 @@ if %errorlevel%==0 (
 )
 if errorlevel 1 (
     echo.
-    echo Can Python 3.11 tro len. Cai Python va chon Add Python to PATH.
+    echo Can Python 3.10+, psycopg va DATABASE_URL PostgreSQL trong .env.
+    echo Chay: python -m pip install -r requirements.txt
     pause
 )

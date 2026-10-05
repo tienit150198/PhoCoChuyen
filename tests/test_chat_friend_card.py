@@ -1,8 +1,9 @@
 """Chat friend lookup shares only a public player code after message/account/block checks."""
 import unittest
+import tempfile
+from game.storage import Store
 import subprocess
 import shutil
-import sqlite3
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
@@ -54,11 +55,11 @@ class FriendCard(unittest.IsolatedAsyncioTestCase):
     async def test_social_blocks_are_reloaded_before_lookup(self):
         for blocker in ('me','other'):
             f,c=self.setup_feature()
-            db=sqlite3.connect(':memory:');db.row_factory=sqlite3.Row
+            tmp=tempfile.TemporaryDirectory()
+            store=Store(Path(tmp.name)/'friend-card')
+            db=store.connect()
             try:
-                db.execute('CREATE TABLE blocks(pid TEXT,target TEXT)')
-                db.execute('CREATE TABLE marriage_blocks(sid TEXT,target TEXT)')
-                db.execute('INSERT INTO blocks VALUES(?,?)',(blocker,'other' if blocker=='me' else 'me'))
+                db.execute('INSERT INTO blocks(pid,target,at) VALUES(?,?,0)',(blocker,'other' if blocker=='me' else 'me'))
                 f.db.fetch=AsyncMock(side_effect=lambda query,params:db.execute(query,params).fetchall())
                 f.load_hidden=ChatFeature.load_hidden.__get__(f,ChatFeature)
                 with self.subTest(blocker=blocker),self.assertRaises(LiveError):
@@ -66,6 +67,8 @@ class FriendCard(unittest.IsolatedAsyncioTestCase):
                 f.db.fetchval.assert_not_awaited()
             finally:
                 db.close()
+                store.close_pool()
+                tmp.cleanup()
 
     async def test_self_malformed_and_bidirectional_block_denied(self):
         for mid in (None,True,0,'12'):

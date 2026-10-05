@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""v0.2 UI tests against real local HTTP/SQLite.
+"""v0.2 UI tests against real local HTTP/PostgreSQL.
 
 Optional --bridge is the same about:blank adapter as browser_smoke.py, NOT a
 network/CSP bypass. Controlled live-case fixtures use official save import and

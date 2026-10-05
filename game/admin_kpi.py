@@ -153,7 +153,7 @@ DEFS = {
     'source': _d('Nguồn người chơi', 'Nơi người chơi đến từ (utm_source hoặc trang giới thiệu; không có = trực tiếp).', 'stat_acquisition'),
     'device': _d('Thiết bị', 'Loại máy / hệ điều hành / trình duyệt của lượt mở game mới (theo User-Agent). Bot tách riêng.', 'stat_counters dev_*', since='counters'),
     # infra
-    'db_bytes': _d('Dung lượng cơ sở dữ liệu', 'Kích thước cơ sở dữ liệu trên đĩa.', 'pg_database_size / tệp SQLite', 'byte'),
+    'db_bytes': _d('Dung lượng cơ sở dữ liệu', 'Kích thước cơ sở dữ liệu trên đĩa.', 'pg_database_size', 'byte'),
     'save_size': _d('Kích thước bản lưu', 'Dung lượng một bản lưu trong mẫu (PostgreSQL: sau nén).', 'pg_column_size(state) / octet_length', 'byte'),
 }
 

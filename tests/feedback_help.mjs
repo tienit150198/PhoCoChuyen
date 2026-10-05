@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+globalThis.document={createElement:()=>({getContext:()=>null}),getElementById:()=>null,querySelector:()=>({sheet:{}}),addEventListener:()=>{}};
+globalThis.addEventListener=()=>{};
+const {journeyHome,journeyAction}=await import('../public/js/v4/journey.js');
+const {incidentView,incidentAction}=await import('../public/js/v4/incidents.js');
+const box={trust:40,trust_name:'Bình thường',active:null,last:null,log:[],replay:[]};
+const env={api:{state:{name:'An',current:'milk_tea',careers:{milk_tea:{started:true,level:1,day:2,job:{},metrics:{served:3},incidents:box}},journey:{story:true,intro:true,gender:'female',chapter:1,life_day:2,wallet:123,debt:0,titles:[],skills:[],places:{milk_tea:{employed:true,fund:0,withdraw_max:0}},unlocked:['milk_tea'],maturity:{level:1,xp:0,floor:0,next:100,name:'Mới đến'},goals:[],living:{where:'attic',rent:5,meals:5},history:[{day:1,kind:'salary',amount:42,label:'Lương ngày 1 · <x>'}]}},content:{catalogue:[{id:'milk_tea',place:'Trà sữa',category:'food'}],journey:{chapters:[{n:1,title:'Chương một',tagline:'Làm quen phố',art:'🏡',intro:[]}],skills:[],reserve:20}}},ui:{view:'home',homeMode:'list'},renderSheet:()=>{},cmd:()=>assert.fail('help must not issue a game command')};
+
+env.api.content.journey.chapters[0].intro.push({emoji:'🙂',name:'Hàng xóm',text:'Thử việc nhé'});
+const home=journeyHome(env),salary=home.match(/<button[^>]*data-action="jrView"[^>]*data-view="wallet"[^>]*>💵 Xem lương[^<]*<\/button>/)?.[0];
+assert.ok(salary,'employed workplace card has a direct salary-history entry');
+const before=JSON.stringify(env.api.state);
+assert.equal(await journeyAction('jrView',{view:'wallet'},null,env),true);
+assert.equal(env.ui.jrView,'wallet');
+const wallet=journeyHome(env);
+assert.match(wallet,/Lương ngày 1 · &lt;x&gt;/,'existing salary row remains escaped and visible');
+assert.match(wallet,/\+42 xu/,'salary amount is the recorded amount');
+assert.match(wallet,/Sổ ví gần đây/);
+assert.equal(JSON.stringify(env.api.state),before,'salary help is navigation only');
+
+env.ui.view='incident';
+const log=incidentView(env);
+assert.match(log,/Khôi phục uy tín thế nào/);
+assert.match(log,/Tình làng nghĩa xóm là chỉ số riêng/);
+const link=log.match(/data-action="([^"]+)"[^>]*>🏮 Xem Tình làng nghĩa xóm/);
+assert.ok(link,'the distinction links to the existing neighbour view');
+let opened;
+env.openSheet=(view,data)=>{opened={view,data};env.ui.view=view;Object.assign(env.ui,data);};
+assert.equal(await incidentAction(link[1],{},null,env),true);
+assert.equal(opened.view,'home','cross-sheet destination really changes to journey home');
+assert.equal(env.ui.jrView,'life');
+assert.equal(JSON.stringify(env.api.state),before,'help never increases either score by itself');
+console.log('Salary-history entry and trust/neighbour-help navigation use existing views without mutating game state');

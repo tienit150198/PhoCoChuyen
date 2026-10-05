@@ -7,7 +7,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {olderRows,olderButton} from '../archive.js';
 import {accountChip} from './account.js';
 import {storiesBoot,storiesCard,storiesAction,maybeStory} from './stories.js';
-import {investView,investEntry,investAction} from './invest.js';
+import {investView,investEntry,investAction,investBoot} from './invest.js';
 import {boardEntry} from './board.js';
 import {abandonTrust} from './abandon.js';
 import {certsView,certsEntry,certBadges,certTitles,certAction} from './certificates.js';
@@ -46,7 +46,7 @@ export function townOn(env){
   return !(J.story&&!J.intro&&!J.gender);   // a brand-new player picks a look and a name first
 }
 /** What the town needs from here (the list's own helpers, so both say the same). */
-const TOWN_HELP={emojiOf:m=>emojiOf(m),catOf:m=>catOf(m),get CATS(){return CATS;},FIRST_JOB,acctPlace:(api,cid)=>acctPlace(api,cid)};
+const TOWN_HELP={emojiOf:m=>emojiOf(m),catOf:m=>catOf(m),get CATS(){return CATS;},FIRST_JOB,acctPlace:(api,cid)=>acctPlace(api,cid),chapterCard};
 function townPage(env){
   const m=TW.use();
   return m?m.townHTML(env,TOWN_HELP):`<div class="tw-home"><header class="tw-top home-top"><div class="tw-title"><h2>Khu phố</h2></div><button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button></header>${skeleton()}</div>`;
@@ -57,6 +57,8 @@ export const EMOJI={restaurant:'🍜',cafe_bakery:'🥐',grocery:'🛒',repair:'
   pet_care:'🐾',farm:'🌾',delivery:'🛵',clothing:'👕',pet_shop:'🐠',tra_da:'🧊',ice_cream:'🍨',com:'🍚',nail:'💅',pagoda:'🛕',pho:'🍜',photobooth:'📸',giupviec:'🧹',naucom:'🍲',babysitter:'👶'};
 const CATS={food:'Ăn uống',shop:'Buôn bán',service:'Dịch vụ',office:'Văn phòng',outdoor:'Ngoài trời'};
 const LEGACY_CAT={mother_baby:'shop',pharmacy:'shop',accounting:'office',customer_care:'office',teacher:'service',tour_guide:'outdoor',milk_tea:'food'};
+// The workplaces counted by game/journey.py OFFICE, rather than every office-category career.
+const CHAPTER_OFFICE=['corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk'];
 const SKILL_SHORT={careful:'Cẩn thận',communication:'Giao tiếp',patience:'Kiên nhẫn',numbers:'Con số',teamwork:'Làm nhóm',creative:'Sáng tạo',tech:'Máy tính',calm:'Bình tĩnh',learning:'Ham học'};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const colour=v=>/^#[0-9a-f]{3,8}$/i.test(v||'')?v:'#c44b30';
@@ -104,7 +106,7 @@ export function journeyHome(env){
   return homeMain(env);
 }
 
-// Hôn nhân (v4/marriage.js): the spouse and the "Đã về chung một nhà" sticker under the name.
+// Hôn nhân (v4/marriage.js): the spouse and the relationship status under the name.
 /* 🏷️ Đang đeo (game/journey.py WEAR_MAX): game titles and certificates worn at once; a save from an older server
  * only has `equipped_title`. 🏅 The weekly leaderboard title held now (api.lbTitles, game/lb_titles.py) shows first. */
 export const wornOf=J=>Array.isArray(J?.worn)?J.worn:J?.equipped_title?[{...J.equipped_title,kind:'title'}]:[];
@@ -115,7 +117,7 @@ function wornChips(api,J){
   const top=rank?`<button type="button" class="jr-title-chip rank" data-action="rank" data-board="${esc(rank.board)}" title="${esc(rank.label)} tuần này"><span aria-hidden="true">${esc(rank.emoji)}</span> ${esc(rank.name)}</button>`:'';
   return `<div class="jr-worn">${top}${worn.map(w=>chip(w)).join('')||`<button type="button" class="jr-title-chip empty" data-action="jrView" data-view="titles">Chọn danh hiệu để đeo</button>`}</div>`;
 }
-const spouseChip=api=>{const sp=api.state.marriage?.spouse;return sp?`<button type="button" class="jr-title-chip" data-action="marriage"><span aria-hidden="true">${sp.status==='married'?'🏡':'💞'}</span> ${sp.status==='married'?'Đã về chung một nhà':'Đã đính hôn'} · ${esc(sp.name)}</button>`:'';};
+const spouseChip=api=>{const sp=api.state.marriage?.spouse;return sp?`<button type="button" class="jr-title-chip" data-action="marriage" data-tab="family"><span aria-hidden="true">${sp.status==='married'?'💍':'💞'}</span> ${sp.status==='married'?'Đã kết hôn':'Đã đính hôn'} · ${esc(sp.name)}</button>`:'';};
 /* 🚗 The vehicle the player rides (game/garage.py), next to Thay đồ; it opens the garage (v4/garage.js). */
 const rideChip=api=>{const g=api.state.journey.garage,c=g?.ride&&g.cars?.find(x=>x.id===g.ride),it=c&&(api.content.journey?.garage?.vehicles||[]).find(v=>v.id===c.id);
   return it?`<button type="button" class="jr-title-chip" data-action="garage"><span aria-hidden="true">${it.emoji}</span> ${esc(it.name)}</button>`:'';};
@@ -137,30 +139,65 @@ function meCard(env){
   </section>`;
 }
 
-/** The way back to work, first thing on the journey home: the workplace the story suggests (game/journey.py
- * suggested), worded by where the player stands there (hired, offer, started). The chapter card below keeps the
- * story and its goals, without a second copy of this button. */
-function resumeCard(env){
-  const {api}=env,sid=api.state.journey.suggested,room=sid?api.state.careers[sid]:null;if(!room)return '';
-  const sm=meta(api,sid),place=sm.place||sm.short,job=room.job||{};
-  const label=job.required&&job.status!=='hired'?(job.status==='offer'?`Xem thư mời ở ${place}`:`Xin việc ở ${place}`):room.started?`Tiếp tục ở ${place}`:`Thử làm ở ${place}`;
-  return `<button type="button" class="btn primary big full jr-cta jr-resume" data-action="choose" data-career="${esc(sid)}"><span aria-hidden="true">${emojiOf(sm)}</span> ${esc(label)} ${icon('arrow',16)}</button>`;
+/** Only offer direct entry to an unlocked, open place whose certificate requirements are met. */
+function availablePlaces(api){
+  const J=api.state.journey;
+  return (J.story?J.unlocked:Object.keys(api.state.careers)).filter(id=>api.state.careers[id]&&!J.places[id]?.paused&&acctPlace(api,id)?.ok!==false);
+}
+function goalLink(env,goal,{primary=false}={}){
+  const {api}=env,J=api.state.journey,open=availablePlaces(api);
+  const work=open.includes(api.state.current)?api.state.current:open.includes(J.suggested)?J.suggested:open[0];
+  const go=(id,label)=>id?btn(label,'choose',{career:id},`${primary?'primary':'cream'} small jr-goal-cta`):btn('Xem nơi làm việc','jrPlaces',{},'cream small jr-goal-cta');
+  switch(goal.id){
+    case'places':return btn('Chọn một nơi khác','jrPlaces',{},'cream small jr-goal-cta');
+    case'draw':return btn('Xem quỹ để rút lời','jrView',{view:'wallet'},'cream small jr-goal-cta');
+    case'clean':return `<small class="jr-goal-hint">Giữ ví không nợ qua các ngày sống liên tiếp.</small>${btn('Kiểm tra ví','jrView',{view:'wallet'},'cream small jr-goal-cta')}`;
+    case'titles':return btn('Xem cách nhận danh hiệu','jrView',{view:'titles'},'cream small jr-goal-cta');
+    case'office_hired':case'office_days':{
+      const office=open.filter(id=>CHAPTER_OFFICE.includes(id)&&api.state.careers[id].job?.required);
+      const hired=office.find(id=>api.state.careers[id].job.status==='hired');
+      return go(hired||office[0],hired?'Tới văn phòng làm việc':'Xem việc văn phòng');
+    }
+    case'level':return go(open.filter(id=>api.state.careers[id].started).sort((a,b)=>(api.state.careers[b].level||1)-(api.state.careers[a].level||1))[0]||work,'Tiếp tục lên cấp nghề');
+    case'days':return go(work,'Tới nơi làm để khép ngày');
+    case'tasks':return go(work,'Tới nơi làm nhận việc');
+    case'mature':return go(work,'Làm việc để trưởng thành');
+    default:return '';
+  }
 }
 
-function chapterCard(env){
+/** The recommendation stays beside its reason and uses the existing workplace entry flow. */
+function resumeCard(env,{reasonOnly=false}={}){
+  const {api}=env,J=api.state.journey,sid=J.suggested,room=sid?api.state.careers[sid]:null;if(!room||!availablePlaces(api).includes(sid))return '';
+  const sm=meta(api,sid),place=sm.place||sm.short,job=room.job||{};
+  const label=job.required&&job.status!=='hired'?(job.status==='offer'?`Xem thư mời ở ${place}`:`Xin việc ở ${place}`):room.started?`Tiếp tục ở ${place}`:`Thử làm ở ${place}`;
+  const pending=(J.goals||[]).filter(x=>!x.done);
+  const reason=pending.some(x=>x.id==='places')&&!room.metrics?.served?'Thử một nơi mới để tiến tới mục tiêu làm ở nhiều nơi.'
+    :pending.some(x=>x.id.startsWith('office_'))&&CHAPTER_OFFICE.includes(sid)?'Mục tiêu chương này cần kinh nghiệm làm việc văn phòng.'
+    :room.started?'Tiếp tục công việc ở nơi bạn đã bắt đầu.':'Một nơi đã mở để bạn bắt đầu làm việc.';
+  return `<div class="jr-recommend"><p class="jr-recommend-reason">${esc(reason)}</p>${reasonOnly?'':`<button type="button" class="btn primary big full jr-cta jr-resume" data-action="choose" data-career="${esc(sid)}"><span aria-hidden="true">${emojiOf(sm)}</span> ${esc(label)} ${icon('arrow',16)}</button>`}</div>`;
+}
+
+export function chapterCard(env,{compact=false}={}){
   const {api}=env,J=api.state.journey,C=api.content.journey,g=J.gender;
   if(J.finale){
     const last=C.chapters[C.chapters.length-1];
     return `<section class="jr-card jr-chapter finale"><div class="jr-ch-art" aria-hidden="true">🏮</div><span class="eyebrow">HÀNH TRÌNH TIẾP DIỄN</span><h2>Người của khu phố</h2><p class="muted">Khu phố đã là nhà. Mỗi ngày vẫn còn những việc nhỏ đáng làm.</p>${say(last.outro[0],g)}</section>`;
   }
   const ch=C.chapters.find(x=>x.n===J.chapter);if(!ch)return '';
-  const goals=J.goals.map(x=>`<li class="${x.done?'done':''}"><span class="jr-check" aria-hidden="true">${x.done?icon('check',14):''}</span><span class="grow">${esc(x.text)}</span><b>${fmt(Math.min(x.cur,x.goal))}/${fmt(x.goal)}</b></li>`).join('');
+  const pending=J.goals.filter(x=>!x.done),first=pending[0];
+  // Receiving work comes before closing the first day; retain the full chapter's authored order in the list.
+  const next=first?.id==='days'?pending.find(x=>x.id==='tasks')||first:first;
+  const expanded=compact&&env.ui.jrGoalsExpanded;
+  const shown=compact&&!expanded?(next?[next]:[]):J.goals;
+  const goals=shown.map(x=>`<li class="${x.done?'done':''}" data-goal="${esc(x.id)}"><span class="jr-check" aria-hidden="true">${x.done?icon('check',14):''}</span><div class="grow"><span>${esc(x.text)}</span>${x.done?'':goalLink(env,x,{primary:compact&&!expanded})}</div><b>${fmt(Math.min(x.cur,x.goal))}/${fmt(x.goal)}</b></li>`).join('');
+  const directWork=compact&&goals.includes('data-action="choose"');
+  const recommendation=directWork?(goals.includes(`data-career="${esc(J.suggested)}"`)?resumeCard(env,{reasonOnly:true}):''):resumeCard(env);
   const done=J.goals.filter(x=>x.done).length;
   const paused=J.progress_paused?`<div class="notice jr-debt">${icon('coin',17)}<div>Ví đang nợ ${fmt(J.debt)} xu nên câu chuyện tạm dừng. Rút tiền lời từ một nơi làm việc để trả là đi tiếp được.</div></div>${btn('Mở ví của bạn','jrView',{view:'wallet'},'ghost small')}`:'';
-  return `<section class="jr-card jr-chapter"><div class="jr-ch-top"><div class="jr-ch-art" aria-hidden="true">${ch.art}</div><div class="grow"><span class="eyebrow">Chương ${ch.n}/${C.chapters.length}</span><h2>${esc(ch.title)}</h2><p class="muted">${esc(ch.tagline)}</p></div></div>
-    ${say(ch.intro[ch.intro.length-1],g,'compact')}
-    <button type="button" class="jr-link" data-action="jrStory" data-n="${ch.n}">${icon('book',14)} Nghe lại câu chuyện</button>
-    <h3 class="jr-goals-title">Việc cần làm <small>${done}/${J.goals.length}</small></h3><ul class="jr-goals">${goals}</ul>${paused}</section>`;
+  return `<section class="jr-card jr-chapter"><div class="jr-ch-top"><div class="jr-ch-art" aria-hidden="true">${ch.art}</div><div class="grow"><span class="eyebrow">Chương ${ch.n}/${C.chapters.length}</span><h2>${esc(ch.title)}</h2>${compact?'':`<p class="muted">${esc(ch.tagline)}</p>`}</div></div>
+    <h3 class="jr-goals-title">Việc cần làm <small>${done}/${J.goals.length}</small></h3><ul class="jr-goals">${goals}</ul>${paused}${recommendation}
+    ${compact?btn(expanded?'Thu gọn mục tiêu':'Xem tất cả mục tiêu','jrGoals',{},'ghost small',` aria-expanded="${!!expanded}"`):`${say(ch.intro[ch.intro.length-1],g,'compact')}<button type="button" class="jr-link" data-action="jrStory" data-n="${ch.n}">${icon('book',14)} Nghe lại câu chuyện</button>`}</section>`;
 }
 
 function placeCard(env,cid){
@@ -175,7 +212,7 @@ function placeCard(env,cid){
   if(api.state.x3?.today?.includes(cid))tags.push(tag(`🔥 Lời x${api.state.x3.x} hôm nay`,'amber'));   // game/x3_week.py
   if(acctTag(aj))tags.push(tag(acctTag(aj),'amber'));
   let money='';
-  if(p&&J.story)money=p.employed?`<p class="jr-fund">Làm thuê · lương về ví${abandonTrust(api,cid)}</p>`:`<p class="jr-fund">Quỹ ${fmt(p.fund)} xu · ${p.paused?'tạm đóng, mở lại miễn phí':'vắng chủ không tốn phí'}</p>`;
+  if(p&&J.story)money=p.employed?`<p class="jr-fund">Làm thuê · lương về ví${abandonTrust(api,cid)}</p>${btn('💵 Xem lương trong Sổ ví','jrView',{view:'wallet'},'ghost small')}`:`<p class="jr-fund">Quỹ ${fmt(p.fund)} xu · ${p.paused?'tạm đóng, mở lại miễn phí':'vắng chủ không tốn phí'}</p>`;
   if(aj&&!aj.ok)money=`<p class="jr-fund">🔒 ${esc(aj.why)}</p>`;
   const action=aj&&!aj.ok?btn(`Đi học ${icon('arrow',13)}`,'accountingSchool',{},'cream small'):p?.paused?btn('Mở lại','jrReopen',{career:cid},'cream small'):
     btn(`${c.started?'Tiếp tục':job.required&&job.status!=='hired'?'Xin việc':'Bắt đầu'} ${icon('arrow',13)}`,'choose',{career:cid},c.started?'primary small':'cream small');
@@ -219,7 +256,7 @@ function placesSection(env){
   // The next chapter's places show as silhouettes; the rest stay one quiet tile.
   const soon=locked.filter(id=>order(id)===J.chapter+1),later=locked.length-soon.length;
   const rest=later?`<article class="jr-locked more" aria-label="Những nơi còn ở phía trước"><span class="jr-place-emoji silhouette" aria-hidden="true">🏙️</span><b>+${later} nơi nữa</b><small>Còn ở phía trước</small></article>`:'';
-  return `<section class="jr-places" aria-label="Nơi làm việc"><div class="jr-sec-head"><h2>Nơi làm việc</h2><small>${open.length}/${all.length} nơi đã mở</small></div>${x3Banner(env)}${chips}
+  return `<section class="jr-places" tabindex="-1" aria-label="Nơi làm việc"><div class="jr-sec-head"><h2>Nơi làm việc</h2><small>${open.length}/${all.length} nơi đã mở</small></div>${x3Banner(env)}${chips}
     <div class="jr-grid">${shown.map(id=>placeCard(env,id)).join('')}</div>
     ${locked.length?`<h3 class="jr-sub">Còn ở phía trước</h3><div class="jr-locked-grid">${soon.map(id=>lockedTile(env,id)).join('')}${rest}</div>`:''}</section>`;
 }
@@ -228,8 +265,8 @@ function homeMain(env){
   const {api}=env,J=api.state.journey;
   const town=townOK()?btn('🗺️ Bản đồ phố','jrTown',{},'cream small jr-town'):'';
   const top=`<header class="jr-top"><div class="grow"><span class="eyebrow">${J.story?`Khu phố nhỏ · Ngày sống ${fmt(J.life_day)}`:'Khu phố nhỏ · mọi nơi đều mở'}</span><h1>Hành trình của bạn</h1></div>${town}${accountChip(env)}${api.state.current?btn(icon('x',20),'close',{},'ghost small jr-close','aria-label="Đóng"'):''}</header>`;
-  const more=`${J.story?fairCard(env):''}${J.story?houseCard(env):''}${lifeCard(env)}${boardEntry(env)}${J.study?certsEntry(env):''}${J.story?chapterCard(env):''}${J.study?'':certsEntry(env)}${storiesCard(env)}`;
-  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${resumeCard(env)}${meCard(env)}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
+  const more=`${J.story?fairCard(env):''}${lifeCard(env)}${boardEntry(env)}${certsEntry(env)}${storiesCard(env)}`;
+  return `<div class="jr-home">${top}<div class="jr-columns"><div class="jr-col jr-lead">${J.story?chapterCard(env):''}${!J.story||J.finale?resumeCard(env):''}${meCard(env)}${J.story?houseCard(env):''}</div><div class="jr-col wide">${placesSection(env)}</div><div class="jr-col jr-more">${more}</div></div></div>`;
 }
 
 /* 🏮 Hội chợ dân gian (v4/fair.js, own dialog; game/fair.py): a small banner while the fair is open or about to open. */
@@ -255,7 +292,7 @@ function houseCard(env){
   const hint=L?(L.overdue?`⏰ Trả góp nhà đang chậm ${fmt(L.overdue)} xu`:`Đã trả ${L.paid_rows}/${L.rows.length} kỳ vay mua nhà`)
     :H.own?'Nhà không còn nợ 🔑':mine.length?`🔑 Bạn có ${mine.length} căn nhà`:can?`${can.emoji} Đủ tiền trả trước ${esc(can.name)} rồi đó!`:next?`${next.emoji} ${esc(next.name)}: còn thiếu ${fmt(next.missing)} xu để trả trước`:'';
   return `<section class="jr-card jr-house" aria-label="Nơi bạn ở"><button type="button" class="jr-house-row" data-action="house"><span class="jr-house-emoji" aria-hidden="true"${tone?` style="--hs-tone:${esc(tone)}"`:''}>${p.emoji||'🏚️'}</span>
-    <span class="grow"><small>${sub} · ${cost}</small><b>${esc(p.name||'')}</b><em>${hint}</em></span><span class="btn cream small" aria-hidden="true">🏠 Nhà của bạn</span></button><div class="jr-actions">${btn('🏡 Gia đình · Thú cưng','jrView',{view:'household'},'ghost small')}${btn('🛵 Sổ shipper','jrView',{view:'courier'},'ghost small')}</div></section>`;
+    <span class="grow"><small>${sub} · ${cost}</small><b>${esc(p.name||'')}</b><em>${hint}</em></span><span class="btn cream small" aria-hidden="true">🏠 Nhà của bạn</span></button><div class="jr-actions">${btn('🚪 Vào nhà','jrEnterHome',{},'primary')}${btn('🏡 Nhà & Gia đình','marriage',{tab:'family'},'cream')}${btn('Mời bạn về nhà','homeGuests',{},'cream')}${btn('👶 Con chung','marriage',{tab:'family',section:'children'},'cream')}${btn('🛵 Sổ shipper','jrView',{view:'courier'},'ghost small')}</div></section>`;
 }
 
 /* ------------------------------------------------------------------ intro */
@@ -348,7 +385,7 @@ function walletView(env){
       <button type="button" class="btn ghost small" data-action="tutGuide" data-topic="money_withdraw">❔ Rút tiền thế nào?</button></section>
     ${investEntry(env)}${lifeEntry(env)}
     <h3 class="jr-sub">Quỹ các nơi làm việc</h3><div class="jr-funds">${places}</div>
-    <h3 class="jr-sub">Sổ ví gần đây</h3><ul class="jr-history">${hist}</ul>${olderButton('','wallet',J.history.length,J.history.length>=30)}</div>`;
+    <h3 class="jr-sub">Sổ ví gần đây</h3><p class="small muted">Lương nhận sau khi kết thúc ngày làm được chuyển về ví và ghi ở dòng 💵 Lương ngày… bên dưới. Bấm Xem cũ hơn để tìm những ngày trước.</p><ul class="jr-history">${hist}</ul>${olderButton('','wallet',J.history.length,J.history.length>=30)}</div>`;
 }
 
 /* ------------------------------------------------------------------ future (locked) */
@@ -453,7 +490,7 @@ function hud(){document.getElementById('jrHud')?.remove();}
 
 /* ------------------------------------------------------------------ wiring */
 export function journeyBoot(env){
-  E=env;sceneDialog();storiesBoot(env);lifeBoot(env);
+  E=env;sceneDialog();storiesBoot(env);lifeBoot(env);investBoot(env);
   document.addEventListener('sheetrender',()=>{if(TW.m&&E?.ui.view==='home')TW.m.townMount(E,TOWN_HELP);});   // 🗺️ the stage back into its slot
   const sheet=document.getElementById('sheet');
   // The first-run intro cannot be dismissed into an empty scene.
@@ -466,6 +503,13 @@ export async function journeyAction(action,data,el,env){
   if(action?.startsWith('iv'))return investAction(action,data,el,env);
   if(action?.startsWith('lf'))return lifeAction(action,data,el,env);
   if(!action?.startsWith('jr'))return false;
+  if(action==='jrInvest'){
+    const open=env.ui.view==='home'&&document.getElementById('sheet')?.open;
+    if(open){env.ui.jrView='invest';env.renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);}
+    else env.openSheet('home',{jrView:'invest'});
+    return true;
+  }
+  if(action==='jrEnterHome'){env.closeSheet();await (await import('./reno.js')).openReno(env);return true;}
   if(action.startsWith('jrHh'))return householdAction(action,data,el,env);
   if(action.startsWith('jrOut'))return outingsAction(action,data,el,env);
   if(action.startsWith('jrShip'))return courierAction(action,data,el,env);
@@ -480,6 +524,8 @@ export async function journeyAction(action,data,el,env){
   if(action.startsWith('jrAv'))return (await AV.get()).avatarAction(action,data,el,env);
   const {ui,cmd,renderSheet,confirmAction,api}=env;
   switch(action){
+    case'jrGoals':ui.jrGoalsExpanded=!ui.jrGoalsExpanded;renderSheet(false);return true;
+    case'jrPlaces':{ui.homeMode='list';ui.jrView='home';ui.homeCat='all';renderSheet(false);const places=document.querySelector('.jr-places');places?.scrollIntoView?.({block:'start'});places?.focus?.({preventScroll:true});return true;}
     case'jrView':ui.jrView=data.view||'home';renderSheet(false);document.getElementById('sheet')?.scrollTo?.(0,0);return true;
     case'jrStep':ui.jrStep=data.step;renderSheet(false);return true;
     case'jrJob':ui.jrJob=data.career;renderSheet();return true;

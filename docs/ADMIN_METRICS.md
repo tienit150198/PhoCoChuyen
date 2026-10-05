@@ -138,7 +138,7 @@ Trang còn cho tải về:
 
 | Chỉ số | Cách tính |
 |---|---|
-| Dung lượng cơ sở dữ liệu | `pg_database_size` hoặc kích thước tệp SQLite |
+| Dung lượng cơ sở dữ liệu | `pg_database_size` của PostgreSQL |
 | Kích thước bản lưu | `pg_column_size(state)` (sau nén) hoặc `octet_length`, trên mẫu 400 bản lưu, đọc 100 bản mỗi câu lệnh |
 | Bảng lớn nhất | số dòng đếm nền mỗi 2 phút; bảng lớn dùng số ước tính (≈) |
 | Phiên bản, số tiến trình, CPU, thao tác/phút lúc này | thông tin của máy chủ |
@@ -186,19 +186,6 @@ Theo yêu cầu chủ game (02/10): số liệu thống kê người chơi khôn
 ## 12. Bảng mới (thêm, không sửa bảng cũ)
 
 Các bảng này được tạo idempotent bởi `admin_stats.ensure()`: chạy lại không sao, chỉ thêm bảng.
-
-SQLite (`game/kpi.py SCHEMA`):
-
-```sql
-CREATE TABLE IF NOT EXISTS stat_counters (day TEXT NOT NULL, key TEXT NOT NULL, n INTEGER NOT NULL DEFAULT 0,
-  PRIMARY KEY(day, key)) WITHOUT ROWID;
-CREATE TABLE IF NOT EXISTS stat_kpi_daily (day TEXT NOT NULL, key TEXT NOT NULL, value REAL, at REAL NOT NULL,
-  PRIMARY KEY(day, key)) WITHOUT ROWID;
-CREATE TABLE IF NOT EXISTS stat_players (sid TEXT PRIMARY KEY, first_day TEXT NOT NULL, last_day TEXT NOT NULL,
-  days INTEGER NOT NULL) WITHOUT ROWID;
-CREATE INDEX IF NOT EXISTS stat_players_first ON stat_players(first_day);
-CREATE INDEX IF NOT EXISTS stat_players_last ON stat_players(last_day);
-```
 
 PostgreSQL (`game/kpi.py PG_DDL`):
 

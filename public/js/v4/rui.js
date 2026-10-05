@@ -81,28 +81,31 @@ function gearRow(g,have){
 }
 function ruiPage(){
   const r=R()||{pol:[],gear:[],broken:[]},rules=CAT().rules||{};
+  const exposure=r.wealth_risk;
+  const wealthNote=exposure?.threshold?`<p class="rui-calm">${esc(`Tài sản từ ${xu(exposure.threshold)}: khả năng trộm/hack gấp ${fmt(exposure.odds_pct/100)} lần mức cơ bản, trước đồ bảo vệ. Thiệt hại trộm/hack tính theo tài sản, đồ bảo vệ và tiền đang có.`)}</p>`:'';
   const now=r.card||r.warn;
   const alert=now?`<button type="button" class="rui-now" data-rui="pop"><span aria-hidden="true">${now.emoji}</span><span class="grow"><b>${esc(now.title)}</b><small>${esc(now.text)}</small></span>${icon('chevron',18)}</button>`:'';
   const calm=r.calm?`<p class="rui-calm">🌱 Phố còn bình yên với người mới. Cứ yên tâm làm việc.</p>`:'';
   const pending=r.hack_pending?`<p class="rui-calm">${esc(r.hack_pending.days?`🚔 Đã trình báo ${r.hack_pending.n} vụ hack. Kết quả gần nhất sau ${r.hack_pending.days} ngày sống.`:'🚔 Tiền hoàn đang chờ: cần tài khoản ngân hàng và số dư dưới mức tối đa để nhận ở ngày sống tiếp theo.')}</p>`:'';
   const broken=(r.broken||[]).length?`<h3 class="rui-h">🔧 Đang hỏng</h3><ul class="rui-list">${r.broken.map(b=>`<li class="rui-row"><span class="rui-ico" aria-hidden="true">${b.kind==='xe'?'🚗':'🏠'}</span><span class="grow"><b>${esc(b.name)}</b></span><button type="button" class="btn primary small" data-rui="fix" data-kind="${b.kind}" data-ref="${esc(b.ref)}"${S.busy?' disabled':''}>Sửa · ${xu(b.cost)}</button></li>`).join('')}</ul>`:'';
-  return head('🛡️','Bảo hiểm & rủi ro','Phòng trước, đỡ lo','ruiPageTitle')+`<div class="wn-body">${flash()}${alert}${calm}${pending}${broken}`+
+  return head('🛡️','Bảo hiểm & rủi ro','Phòng trước, đỡ lo','ruiPageTitle')+`<div class="wn-body">${flash()}${alert}${calm}${wealthNote}${pending}${broken}`+
     `<h3 class="rui-h">🛡️ Bảo hiểm</h3><ul class="rui-list">${(r.pol||[]).map(polRow).join('')}</ul>`+
     `<h3 class="rui-h">🔒 Đồ phòng thân</h3><ul class="rui-list">${CAT().gear.map(g=>gearRow(g,(r.gear||[]).includes(g.id))).join('')}</ul>`+
-    help(['Chuyện xấu luôn báo trước 1–2 ngày. Phòng trước là tránh được.',`Ví và tài khoản dưới ${fmt(rules.floor||300)} xu: không có chuyện gì.`,
-      `Mỗi lần mất tối đa ${rules.event_pct||8}% tiền của bạn, mỗi tháng tối đa ${rules.month_pct||12}%.`,
+    help(['Chuyện xấu luôn báo trước 1–2 ngày. Phòng trước là tránh được.',`Tổng ví, tài khoản, tiết kiệm và vàng dưới ${fmt(rules.floor||300)} xu: không có chuyện gì.`,
+      `Trộm/hack mới: mức mất được chốt theo tổng tài sản khi báo trước, có giới hạn theo tháng và tiền thực có. Các sự cố khác: mỗi lần tối đa ${rules.event_pct||8}%, mỗi tháng tối đa ${rules.month_pct||12}% phần tài sản trên ${fmt(rules.floor||300)} xu.`,
       `Bảo hiểm mới mua có hiệu lực sau ${rules.wait||3} ngày.`,
-      `Bị hack: mất ${rules.hack_pct||8}% tài khoản thanh toán, tối đa ${fmt(rules.hack_max||3000)} xu và chịu giới hạn rủi ro chung.`,
-      'Khóa phiên lạ khi được cảnh báo để chặn vụ hack, không tốn xu.','Không bao giờ bị nợ vì rủi ro.'])+`</div>`;
+      `Bị hack: mất ${rules.hack_pct||8}% tài khoản thanh toán, tối đa ${fmt(exposure?.hack_max||rules.hack_max||3000)} xu trước đồ bảo vệ và chịu giới hạn rủi ro chung.`,
+      ...(rules.wealth_bands||[]).filter(b=>b.threshold).map(b=>`Từ ${xu(b.threshold)} tài sản: khả năng trộm/hack gấp ${fmt(b.odds_pct/100)} lần; trần trộm nhà/hack tăng theo ${b.cap_pct}% tài sản nếu cao hơn trần cơ bản.`),
+      'Khóa phiên lạ khi được cảnh báo để chặn vụ hack, không tốn xu.','Không truy thu rủi ro trong thời gian offline.','Không bao giờ bị nợ vì rủi ro.'])+`</div>`;
 }
 
 /* ---- the gold shop ---- */
-function spark(hist){
+function spark(hist,clock){
   if(!hist?.length)return '';
   const w=300,h=64,lo=Math.min(...hist),hi=Math.max(...hist),span=Math.max(1,hi-lo);
   const pts=hist.map((p,i)=>`${(i*w/Math.max(1,hist.length-1)).toFixed(1)},${(h-4-(p-lo)*(h-8)/span).toFixed(1)}`).join(' ');
   const up=hist[hist.length-1]>=hist[0];
-  return `<svg class="rui-spark ${up?'up':'down'}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Giá vàng ${hist.length} ngày: thấp nhất ${fmt(lo)}, cao nhất ${fmt(hi)}"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+  return `<svg class="rui-spark ${up?'up':'down'}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Giá vàng ${hist.length} ${clock?'phiên 10 phút':'ngày'}: thấp nhất ${fmt(lo)}, cao nhất ${fmt(hi)}"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
 }
 const amount=n=>n<10?`${n} phân`:n%10?`${fmt(Math.floor(n/10))},${n%10} chỉ`:`${fmt(n/10)} chỉ`;
 const costOf=(n,g)=>Math.ceil(n*g.buy/10);
@@ -114,14 +117,14 @@ function vangPage(){
   const q=Math.max(1,Math.min(S.qty,100000)),gain=g.value-g.cost;
   const mine=g.phan?`<div class="rui-mine"><b>Bạn có ${amount(g.phan)}</b><span>Bán ngay được ${xu(g.value)}</span><span class="${gain>=0?'good':'out'}">${gain>=0?'Lãi':'Lỗ'} ${xu(Math.abs(gain))}</span></div>`:'';
   const sellN=Math.min(q,g.phan||0);
-  return head('💰','Tiệm vàng Kim Phát','Giá chung cả phố, đổi mỗi ngày','vangTitle')+`<div class="wn-body">${flash()}`+
-    `<div class="rui-price"><b>${xu(g.p)}</b><span>/ chỉ</span>${chip}</div>${g.news?`<p class="rui-news">📰 ${esc(g.news)}</p>`:''}${spark(g.hist)}`+
+  return head('💰','Tiệm vàng Kim Phát',g.market_clock?'Giá chung cả phố · 10 phút/phiên · 1 giờ thực = 1 ngày thị trường':'Giá chung cả phố, đổi mỗi ngày','vangTitle')+`<div class="wn-body">${flash()}`+
+    `<div class="rui-price"><b>${xu(g.p)}</b><span>/ chỉ</span>${chip}</div>${g.news?`<p class="rui-news">📰 ${esc(g.news)}</p>`:''}${spark(g.hist,g.market_clock)}`+
     `<p class="rui-sub">Tiệm bán ${xu(g.buy)} · mua lại ${xu(g.sell)}</p>${mine}`+
     `<div class="rui-qty" role="group" aria-label="Số vàng"><button type="button" class="btn small" data-rui="qty" data-d="-1" aria-label="Bớt">−</button><b>${amount(q)}</b><button type="button" class="btn small" data-rui="qty" data-d="1" aria-label="Thêm">+</button></div>`+
     `<div class="rui-quick">${[[1,'1 phân'],[10,'1 chỉ'],[50,'5 chỉ']].map(([n,l])=>`<button type="button" class="btn ghost small${q===n?' on':''}" data-rui="set" data-n="${n}">${l}</button>`).join('')}</div>`+
     `<div class="rui-trade"><button type="button" class="btn primary big" data-rui="buy"${S.busy?' disabled':''}>Mua · ${xu(costOf(q,g))}</button>`+
     `<button type="button" class="btn big" data-rui="sell"${S.busy||!g.phan?' disabled':''}>Bán · nhận ${xu(worthOf(sellN||q,g))}</button></div>`+
-    help(['Mua đắt hơn giá 2,5%, bán rẻ hơn 2,5%.','Giữ lâu vài tuần mới mong có lời.','Giá lên xuống mỗi ngày, có thể lỗ.','1 chỉ = 10 phân.'])+`</div>`;
+    help(['Mua đắt hơn giá 2,5%, bán rẻ hơn 2,5%.','Giá có thể tăng hoặc giảm, giữ lâu vẫn có thể lỗ.',g.market_clock?'Giá đổi mỗi 10 phút thực, kể cả khi offline.':'Giá lên xuống mỗi ngày, có thể lỗ.','1 chỉ = 10 phân.'])+`</div>`;
 }
 
 /* ---- dialogs ---- */

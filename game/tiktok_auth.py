@@ -135,7 +135,7 @@ def start(store, token, mode):
     state, binding = secrets.token_urlsafe(32), secrets.token_urlsafe(32)
     db = store.connect()
     try:
-        db.execute('BEGIN IMMEDIATE')
+        db.execute('BEGIN')
         sid, login = store._resolve(db, digest(token))
         flow = dict(source_token=digest(token), source_sid=sid, source_login=int(bool(login)))
         _source(store, db, flow, lock_login=False)
@@ -199,7 +199,7 @@ def _confirmation_flow(db, binding):
 def callback(store, state, binding, code=None, error=None):
     db = store.connect()
     try:
-        db.execute('BEGIN IMMEDIATE')
+        db.execute('BEGIN')
         preflight = _flow(db, state, binding, 'pending', lock=False)
         _lock_saves(db, preflight)
         flow = _flow(db, state, binding, 'pending')
@@ -237,7 +237,7 @@ def _finish(store, state, binding, open_id, display):
     db = store.connect()
     adopt = False
     try:
-        db.execute('BEGIN IMMEDIATE')
+        db.execute('BEGIN')
         preflight = _flow(db, state, binding, 'exchanging', lock=False)
         pre_identity = db.execute('SELECT * FROM tiktok_identities WHERE client_key=? AND open_id=?',
                                   (preflight['client_key'], open_id)).fetchone()
@@ -292,7 +292,7 @@ def confirmation(store, binding):
     if not isinstance(binding, str) or not 20 <= len(binding) <= 128: fail()
     db = store.connect()
     try:
-        db.execute('BEGIN IMMEDIATE')
+        db.execute('BEGIN')
         flow = _confirmation_flow(db, binding)
         _source(store, db, flow)
         account = db.execute('SELECT display FROM accounts WHERE uid=?', (flow['target_uid'],)).fetchone()
@@ -313,7 +313,7 @@ def confirm(store, binding, nonce, choice):
     if choice not in ('confirm', 'cancel'): fail()
     db = store.connect()
     try:
-        db.execute('BEGIN IMMEDIATE')
+        db.execute('BEGIN')
         flow = _confirmation_flow(db, binding)
         if not secrets.compare_digest(flow['nonce_hash'] or '', digest(nonce)): fail()
         source = _source(store, db, flow)

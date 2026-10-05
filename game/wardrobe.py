@@ -141,7 +141,6 @@ GOC = 'goc'                            # "Màu gốc": the item's own colour, fr
 COLOR_PRICE = 40                       # once, for every item (1.3.1: 20 xu per accessory)
 METAL_PRICE = 60                       # ánh kim (gold, silver)
 UNLOCK_LABEL = 'Mở khóa màu'           # wallet row: "Mở khóa màu · Xanh navy" (kind 'life')
-DECO_MAX = 60                          # = reno.ITEMS_MAX: furniture a player may own
 
 
 def _c(cid, name, price=COLOR_PRICE):
@@ -314,7 +313,7 @@ def _repair_palette(p) -> dict:
     out['have'] = [c['id'] for c in COLORS if c['id'] in have]
     out['wear'] = {k: v for k, v in _part(p, 'wear', dict).items() if k in CLOTHES and v in out['have']}
     deco = [(k, v) for k, v in _part(p, 'deco', dict).items() if _uid_ok(k) and isinstance(v, str) and v in out['have']]
-    out['deco'] = dict(deco[:DECO_MAX])
+    out['deco'] = dict(deco)
     return out
 
 
@@ -440,7 +439,7 @@ def validate_palette(s: dict) -> None:
     e.need(isinstance(wear, dict) and all(k in CLOTHES and isinstance(v, str) and v in have for k, v in wear.items()),
            bad, 'invalid_save')
     deco = p['deco']
-    e.need(isinstance(deco, dict) and len(deco) <= DECO_MAX
+    e.need(isinstance(deco, dict)
            and all(_uid_ok(k) and isinstance(v, str) and v in have for k, v in deco.items()), bad, 'invalid_save')
 
 
@@ -669,11 +668,9 @@ def action(s: dict, name: str, p: dict) -> dict:
                 s[PAL_KEY]['deco'].pop(uid, None)
             return dict(message=f'{nm} trở lại màu gốc.')
         deco = _pbox(s)['deco']
-        if uid not in deco and len(deco) >= DECO_MAX:   # entries of pieces sold today: drop them first
-            mine = _furniture(s) or set()
-            for u in [u for u in deco if u not in mine]:
-                deco.pop(u)
-        need(uid in deco or len(deco) < DECO_MAX, 'Không đổi màu được thêm món nào nữa.')
+        mine = _furniture(s) or set()
+        for u in [u for u in deco if u not in mine]:
+            deco.pop(u)
         deco[uid] = cid
         return dict(message=f'{paid} {nm} giờ mang màu {cname}.'.strip())
     if name == 'jr_wd_buy':

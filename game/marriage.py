@@ -8,7 +8,7 @@ comes the neighbours attend, give tiền mừng, and the money is shared by the 
 ratio → married, with a server-wide news line on the ticker if both allowed it.
 
 Where things live
-* Cross-account state is in SQLite (tables in game/storage.py): marriage_people
+* Cross-account state is in PostgreSQL (tables in game/pg_schema.py): marriage_people
   (public code, "nhận lời cầu hôn", cached life day and guest pool, cooldown,
   last notice), marriage_rings, proposals, couples, marriage_bonds (PRIMARY KEY
   sid: one spouse at a time, even with two acceptances at once), weddings (plan,
@@ -27,7 +27,7 @@ Where things live
   "Đã về chung một nhà", optional couple id/side), exposed by public_state and checked by validate_save.
 * Proposals go only to friends (game/friends.py: exact-username search, requests, blocks).
   After the wedding, game/couple.py adds the joint fund, transfers, help requests, IOUs,
-  daily moments and anniversaries; its tables are in SCHEMA below. Rings carry a metal and
+  daily moments and anniversaries; its tables are in game/pg_schema.py. Rings carry a metal and
   a stone colour (NULL = the tier's own), re-coloured at "tiệm kim hoàn" (ring_recolor).
 
 Races: accepting two proposals at once → the second bond insert fails; a divorce
@@ -71,90 +71,6 @@ STORE = None                        # the Store, set by bind() (game/bank.py hel
 
 # Created by Store.__init__ (game/storage.py). Money never lives here: only what two saves
 # share, and the effects waiting to be applied to each save.
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS marriage_people (
-  sid TEXT PRIMARY KEY, code TEXT UNIQUE NOT NULL, accept INTEGER NOT NULL DEFAULT 1,
-  life_day INTEGER, pool TEXT, remarry_after REAL NOT NULL DEFAULT 0,
-  notice TEXT, notice_at REAL, created REAL NOT NULL, updated REAL NOT NULL
-);
-CREATE TABLE IF NOT EXISTS marriage_rings (
-  id TEXT PRIMARY KEY, sid TEXT NOT NULL, tier TEXT NOT NULL, price INTEGER NOT NULL,
-  status TEXT NOT NULL, at REAL NOT NULL, metal TEXT, stone TEXT
-);
-CREATE INDEX IF NOT EXISTS marriage_rings_sid ON marriage_rings(sid, status);
-CREATE TABLE IF NOT EXISTS proposals (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, from_sid TEXT NOT NULL, to_sid TEXT NOT NULL, ring TEXT NOT NULL,
-  message TEXT NOT NULL, announce INTEGER NOT NULL DEFAULT 1, status TEXT NOT NULL, at REAL NOT NULL, decided REAL
-);
-CREATE INDEX IF NOT EXISTS proposals_to ON proposals(to_sid, status);
-CREATE INDEX IF NOT EXISTS proposals_from ON proposals(from_sid, at);
-CREATE TABLE IF NOT EXISTS couples (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, a TEXT NOT NULL, b TEXT NOT NULL, ring TEXT,
-  status TEXT NOT NULL, since REAL NOT NULL, married_at REAL, ended REAL, ended_by TEXT
-);
-CREATE TABLE IF NOT EXISTS marriage_bonds (sid TEXT PRIMARY KEY, couple INTEGER NOT NULL);
-CREATE TABLE IF NOT EXISTS weddings (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, couple INTEGER NOT NULL, status TEXT NOT NULL,
-  version INTEGER NOT NULL DEFAULT 1, planner TEXT, plan TEXT NOT NULL, quote TEXT NOT NULL,
-  split_a INTEGER NOT NULL DEFAULT 50, announce_a INTEGER NOT NULL DEFAULT 1, announce_b INTEGER NOT NULL DEFAULT 1,
-  days INTEGER NOT NULL, target_a INTEGER, target_b INTEGER, due_at REAL,
-  deposit_a INTEGER NOT NULL DEFAULT 0, deposit_b INTEGER NOT NULL DEFAULT 0, result TEXT,
-  seen_a INTEGER NOT NULL DEFAULT 0, seen_b INTEGER NOT NULL DEFAULT 0,
-  created REAL NOT NULL, confirmed_at REAL, done_at REAL
-);
-CREATE INDEX IF NOT EXISTS weddings_couple ON weddings(couple, status);
-CREATE TABLE IF NOT EXISTS marriage_effects (
-  id TEXT PRIMARY KEY, sid TEXT NOT NULL, kind TEXT NOT NULL, amount INTEGER NOT NULL DEFAULT 0,
-  label TEXT NOT NULL DEFAULT '', data TEXT NOT NULL DEFAULT '{}', status TEXT NOT NULL,
-  due REAL NOT NULL DEFAULT 0, at REAL NOT NULL, applied_at REAL
-);
-CREATE INDEX IF NOT EXISTS marriage_effects_sid ON marriage_effects(sid, status, due);
-CREATE TABLE IF NOT EXISTS marriage_blocks (sid TEXT NOT NULL, target TEXT NOT NULL, at REAL NOT NULL, PRIMARY KEY(sid, target));
-CREATE TABLE IF NOT EXISTS news (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, kind TEXT NOT NULL, ref TEXT UNIQUE NOT NULL, text TEXT NOT NULL,
-  a TEXT, b TEXT, at REAL NOT NULL
-);
-CREATE INDEX IF NOT EXISTS news_at ON news(at);
--- 👥 Bạn bè (game/friends.py)
-CREATE TABLE IF NOT EXISTS friend_prefs (sid TEXT PRIMARY KEY, findable INTEGER NOT NULL DEFAULT 1);
-CREATE TABLE IF NOT EXISTS friend_requests (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, from_sid TEXT NOT NULL, to_sid TEXT NOT NULL, status TEXT NOT NULL, at REAL NOT NULL, decided REAL
-);
-CREATE INDEX IF NOT EXISTS friend_requests_to ON friend_requests(to_sid, status);
-CREATE INDEX IF NOT EXISTS friend_requests_from ON friend_requests(from_sid, at);
-CREATE TABLE IF NOT EXISTS friends (sid TEXT NOT NULL, friend TEXT NOT NULL, since REAL NOT NULL, PRIMARY KEY(sid, friend));
-CREATE TABLE IF NOT EXISTS friend_searches (sid TEXT NOT NULL, at REAL NOT NULL);
-CREATE INDEX IF NOT EXISTS friend_searches_sid ON friend_searches(sid, at);
--- Vợ chồng (game/couple.py)
-CREATE TABLE IF NOT EXISTS joint_funds (couple INTEGER PRIMARY KEY, balance INTEGER NOT NULL DEFAULT 0, updated REAL NOT NULL);
-CREATE TABLE IF NOT EXISTS joint_ledger (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, couple INTEGER NOT NULL, sid TEXT, kind TEXT NOT NULL, amount INTEGER NOT NULL,
-  balance INTEGER NOT NULL, label TEXT NOT NULL DEFAULT '', ref TEXT UNIQUE NOT NULL, status TEXT NOT NULL DEFAULT 'done', at REAL NOT NULL
-);
-CREATE INDEX IF NOT EXISTS joint_ledger_couple ON joint_ledger(couple, id);
-CREATE INDEX IF NOT EXISTS joint_ledger_held ON joint_ledger(sid, status);
-CREATE TABLE IF NOT EXISTS couple_requests (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, couple INTEGER NOT NULL, from_sid TEXT NOT NULL, to_sid TEXT NOT NULL, kind TEXT NOT NULL,
-  amount INTEGER NOT NULL DEFAULT 0, note TEXT NOT NULL DEFAULT '', loan INTEGER NOT NULL DEFAULT 0, debt INTEGER,
-  status TEXT NOT NULL, at REAL NOT NULL, decided REAL
-);
-CREATE INDEX IF NOT EXISTS couple_requests_couple ON couple_requests(couple, status);
-CREATE TABLE IF NOT EXISTS couple_debts (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, couple INTEGER NOT NULL, lender TEXT NOT NULL, borrower TEXT NOT NULL,
-  amount INTEGER NOT NULL, repaid INTEGER NOT NULL DEFAULT 0, status TEXT NOT NULL, note TEXT NOT NULL DEFAULT '',
-  ref TEXT UNIQUE NOT NULL, at REAL NOT NULL, updated REAL NOT NULL
-);
-CREATE INDEX IF NOT EXISTS couple_debts_people ON couple_debts(lender, borrower);
-CREATE TABLE IF NOT EXISTS couple_moments (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, couple INTEGER NOT NULL, sid TEXT NOT NULL, kind TEXT NOT NULL, text TEXT NOT NULL,
-  key TEXT UNIQUE NOT NULL, at REAL NOT NULL, seen INTEGER NOT NULL DEFAULT 0
-);
-CREATE INDEX IF NOT EXISTS couple_moments_couple ON couple_moments(couple, id);
-CREATE TABLE IF NOT EXISTS couple_stats (
-  couple INTEGER PRIMARY KEY, happy INTEGER NOT NULL DEFAULT 0, streak INTEGER NOT NULL DEFAULT 0, best INTEGER NOT NULL DEFAULT 0,
-  last_day INTEGER NOT NULL DEFAULT 0, today INTEGER NOT NULL DEFAULT 0
-);
-"""
 
 
 def _xu(n) -> str:
@@ -264,9 +180,15 @@ def _apply_effect(s: dict, e: dict) -> bool:
         elif what is None:
             m['spouse'] = None
             m['sticker'] = False
+            from . import housing
+            housing.leave_shared(s)
     elif e['kind'] == 'home':  # 🏠 the spouse's home (game/housing.py): moving in, or a home sold
         from . import housing
-        housing.apply_effect(s, json.loads(e['data'] or '{}'))
+        data = json.loads(e['data'] or '{}')
+        # Old pending auto-move effects cannot bypass the new explicit invitation.
+        # Already shared saves are retained; only sold-home removals still use the inbox.
+        if data.get('set') == 'out':
+            housing.apply_effect(s, data)
     elif e['kind'] == 'bag':  # a small gift from the spouse, into the closeness gift bag
         item = json.loads(e['data'] or '{}').get('item')
         st = (s.get('journey') or {}).get('closeness')
@@ -360,6 +282,10 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
                           (text, rev + 1, sid, rev)).rowcount != 1:
                 raise _Retry()
             _write_archive(db, sid, cut)
+        from . import rentals
+        for sid, (_, _, _, state) in sorted(prepared.items()):
+            original = store.parse_state(rows[sid]['state'], sid)
+            rentals.command_commit(db, sid, original, state, 'shared_mutation')
         return db_ops(db) if db_ops else None
     out = store.transaction(write)
     return dict(db=out, states={sid: (p[3], p[0] + 1) for sid, p in prepared.items()})
@@ -448,7 +374,7 @@ def ensure_person(store, sid: str) -> dict:
         t = now()
         try:
             def add(db, code=_new_code(), t=t):
-                db.execute('INSERT OR IGNORE INTO marriage_people(sid,code,created,updated) VALUES(?,?,?,?)', (sid, code, t, t))
+                db.execute('INSERT INTO marriage_people(sid,code,created,updated) VALUES(?,?,?,?) ON CONFLICT DO NOTHING', (sid, code, t, t))
             store.transaction(add)
         except dbm.IntegrityError:  # the code was taken: draw another
             continue
@@ -465,7 +391,7 @@ def ensure_person_db(db, sid: str) -> None:
         if db.execute('SELECT 1 FROM marriage_people WHERE sid=?', (sid,)).fetchone():
             return
         t = now()
-        db.execute('INSERT OR IGNORE INTO marriage_people(sid,code,created,updated) VALUES(?,?,?,?)', (sid, _new_code(), t, t))
+        db.execute('INSERT INTO marriage_people(sid,code,created,updated) VALUES(?,?,?,?) ON CONFLICT DO NOTHING', (sid, _new_code(), t, t))
 
 
 def bind(store) -> None:
@@ -473,18 +399,6 @@ def bind(store) -> None:
     while game/bank.py computes a save, and get only the save."""
     global STORE
     STORE = store
-    if getattr(store, 'pg', None):  # PostgreSQL: game/pg_schema.py has every column already
-        return
-    with store.connect() as db:   # rings bought before "nhẫn đổi màu": NULL colours read as the tier's own
-        cols = {r['name'] for r in db.execute('PRAGMA table_info(marriage_rings)')}
-    missing = [c for c in ('metal', 'stone') if c not in cols]
-    if missing:
-        def add(db):
-            have = {r['name'] for r in db.execute('PRAGMA table_info(marriage_rings)')}
-            for c in missing:
-                if c not in have:
-                    db.execute(f'ALTER TABLE marriage_rings ADD COLUMN {c} TEXT')
-        store.transaction(add)
 
 
 def clean_code(value) -> str:
@@ -878,7 +792,7 @@ def _news_stale() -> None:
 
 
 def _post_news(db, kind: str, ref: str, text: str, a: str, b: str) -> bool:
-    n = db.execute('INSERT OR IGNORE INTO news(kind,ref,text,a,b,at) VALUES(?,?,?,?,?,?)', (kind, ref, text[:200], a, b, now())).rowcount
+    n = db.execute('INSERT INTO news(kind,ref,text,a,b,at) VALUES(?,?,?,?,?,?) ON CONFLICT DO NOTHING', (kind, ref, text[:200], a, b, now())).rowcount
     if n:
         _news_stale()
     return bool(n)
@@ -939,6 +853,7 @@ def alerts(store, sid: str) -> dict | None:
         from .bank_xfer import waiting   # 💸 a friend's transfer waits: the client asks to receive it (game/bank_xfer.py)
         xfer = waiting(db, sid)
         n += cp.alerts(db, sid, r['couple'])
+        n += int(db.execute("SELECT COUNT(*) FROM family_requests WHERE to_sid=? AND status='pending'",(sid,)).fetchone()[0])
         target = None
         if r['couple']:
             c = _row(db, 'SELECT * FROM couples WHERE id=?', (r['couple'],))
@@ -1124,6 +1039,7 @@ def _ring_view(r: dict) -> dict:
     metal, stone = ring_colors(r['tier'], r.get('metal'), r.get('stone'))
     m, st = W.METAL_INDEX[metal], W.STONE_INDEX.get(stone)
     return dict(id=r['id'], tier=r['tier'], name=spec['name'], emoji=spec['emoji'], tone=spec['tone'], price=r['price'], status=r['status'],
+                sell_price=r['price'] * 80 // 100 if r['status'] == 'owned' else 0,
                 metal=metal, stone=stone, metal_name=m['name'], stone_name=st['name'] if st else None,
                 colors=dict(metal=m['hex'], metal_dark=m['dark'], stone=st['hex'] if st else None, stone_dark=st['dark'] if st else None))
 
@@ -1236,9 +1152,10 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
             if w:
                 c0 = _row(db, 'SELECT * FROM couples WHERE id=?', (w['couple'],))
                 last = dict(status=c0['status'], date=json.loads(w['result']).get('date')) if c0 else None
-        from . import friends as fr, couple as cp
+        from . import friends as fr, couple as cp, family as fam
         friends = fr.view(db, sid)
         home = cp.view(db, sid, c)
+        family = fam.view(db, sid, c, state or {})
         bag = (((state or {}).get('journey') or {}).get('closeness') or {}).get('bag')
         home['bag'] = {k: int(n) for k, n in bag.items() if k in home['gifts'] and type(n) is int and n > 0} if isinstance(bag, dict) else {}
     j = (state or {}).get('journey') or {}
@@ -1247,7 +1164,7 @@ def view(store, token: str, state: dict | None, with_catalog: bool = False) -> d
                        proposals_left=max(0, W.PROPOSALS_PER_DAY - len(today)), notice=person['notice'], notice_at=int(person['notice_at'] or 0),
                        sticker=bool(((state or {}).get('marriage') or {}).get('sticker'))),
                rings=rings, incoming=incoming, outgoing=outgoing, blocks=blocks, couple=couple, wedding=wedding, last=last,
-               friends=friends, home=home)
+               friends=friends, home=home, family=family)
     return out
 
 
@@ -1291,8 +1208,8 @@ def act(store, token: str, op: str, d: dict) -> dict:
 
 
 def _more_actions() -> dict:
-    from . import friends as fr, couple as cp
-    return {**fr.ACTIONS, **cp.ACTIONS}
+    from . import friends as fr, couple as cp, family as fam
+    return {**fr.ACTIONS, **cp.ACTIONS, **fam.ACTIONS}
 
 
 def _ring_buy(store, sid: str, display: str, d: dict) -> dict:
@@ -1325,6 +1242,28 @@ def _ring_buy(store, sid: str, display: str, d: dict) -> dict:
     except dbm.IntegrityError:
         return dict(message='Nhẫn này bạn đã mua rồi.', changed=False)
     return dict(message=f'Đã mua {spec["name"].lower()} ({spec["price"]} xu). Giờ chỉ còn thiếu một lời cầu hôn.', changed=True)
+
+
+def _ring_sell(store, sid: str, display: str, d: dict) -> dict:
+    """Sell only a spare owned ring; wallet and guarded receipt commit together."""
+    ring_id = d.get('ring')
+    need(isinstance(ring_id, str) and 1 <= len(ring_id) <= 20, 'Chọn một chiếc nhẫn trong hộp.', 'bad_ring')
+    eid = 'ring-sell:' + ring_id
+    with store.connect() as db:
+        r = _row(db, 'SELECT * FROM marriage_rings WHERE id=? AND sid=?', (ring_id, sid))
+        need(r, 'Không tìm thấy chiếc nhẫn này trong hộp của bạn.', 'bad_ring', 404)
+        if r['status'] == 'sold':
+            return dict(message='Chiếc nhẫn này đã được bán, tiền đã về ví.', changed=False)
+        need(r['status'] == 'owned', 'Chỉ bán được nhẫn dư trong hộp. Nhẫn đang cầu hôn hoặc nhẫn của hai bạn được giữ lại.', 'bad_ring', 409)
+    amount = r['price'] * 80 // 100
+    eff = _effect(eid, sid, 'wallet', amount, 'Bán nhẫn dư tại tiệm kim hoàn')
+
+    def ops(db):
+        need(db.execute("UPDATE marriage_rings SET status='sold' WHERE id=? AND sid=? AND status='owned'", (ring_id, sid)).rowcount == 1,
+             'Chiếc nhẫn vừa thay đổi. Mở lại hộp nhẫn nhé.', 'bad_ring', 409)
+        _insert_effects(db, [eff], 'applied')
+    _mutate_retry(store, {sid: lambda s: _apply_effect(s, eff)}, ops)
+    return dict(message=f'Đã bán nhẫn dư, {amount} xu vào ví (80% giá mua nhẫn).', changed=True)
 
 
 def _ring_recolor(store, sid: str, display: str, d: dict) -> dict:
@@ -1463,7 +1402,7 @@ def _respond(store, sid: str, display: str, d: dict) -> dict:
             need(not pp or pp['remarry_after'] <= now(), f'Một trong hai bạn vừa khép lại một cuộc hôn nhân, chờ thêm {W.REMARRY_HOURS} tiếng nhé.', 'cooldown', 409)
         need(not _blocked(db, sid, other), 'Không nhận lời được.', 'blocked', 409)
         sql, args = "INSERT INTO couples(a,b,ring,status,since) VALUES(?,?,?,'engaged',?)", (other, sid, p['ring'], now())
-        cid = db.execute(sql + ' RETURNING id', args).fetchone()[0] if dbm.is_pg(db) else db.execute(sql, args).lastrowid
+        cid = db.execute(sql + ' RETURNING id', args).fetchone()[0]
         try:
             db.execute('INSERT INTO marriage_bonds(sid,couple) VALUES(?,?)', (other, cid))
             db.execute('INSERT INTO marriage_bonds(sid,couple) VALUES(?,?)', (sid, cid))
@@ -1518,7 +1457,10 @@ def _target_sid(db, sid: str, d: dict) -> str:
 def _block(store, sid: str, display: str, d: dict) -> dict:
     def run(db):
         other = _target_sid(db, sid, d)
-        db.execute('INSERT OR IGNORE INTO marriage_blocks(sid,target,at) VALUES(?,?,?)', (sid, other, now()))
+        from . import home_guests
+        home_guests.lock_pair(db,sid,other)
+        db.execute('INSERT INTO marriage_blocks(sid,target,at) VALUES(?,?,?) ON CONFLICT DO NOTHING', (sid, other, now()))
+        home_guests.invalidate(db,sid)
         for q in _rows(db, "SELECT id,ring FROM proposals WHERE status='pending' AND ((from_sid=? AND to_sid=?) OR (from_sid=? AND to_sid=?))",
                        (sid, other, other, sid)):
             db.execute("UPDATE proposals SET status='cancelled',decided=? WHERE id=?", (now(), q['id']))
@@ -1689,7 +1631,8 @@ def _divorce(store, sid: str, display: str, d: dict) -> dict:
         wl.cancel_party(db, c['id'])   # 💍 a booked live party is off too
         until = now() + W.REMARRY_HOURS * 3600
         db.execute('UPDATE marriage_people SET remarry_after=? WHERE sid IN (?,?)', (until, sid, other))
-        from . import couple as cp  # the joint fund is split, open debts settled from it
+        from . import couple as cp, family as fam  # the joint fund and child custody are settled atomically
+        fam.end(db, c)
         _insert_effects(db, [_effect(f'end:{c["id"]}:a', c['a'], 'status', data=dict(set=None)),
                              _effect(f'end:{c["id"]}:b', c['b'], 'status', data=dict(set=None))] + cp.on_end(db, c, sid))
         _notice(db, other, ('💔 ' + display + (' đã ly hôn.' if c['status'] == 'married' else ' đã hủy hôn ước.')
@@ -1757,7 +1700,7 @@ def _wed_gift(store, sid: str, display: str, d: dict) -> dict:
     return wl.wed_gift(store, sid, display, d)
 
 
-ACTIONS = dict(ring_buy=_ring_buy, ring_recolor=_ring_recolor, lookup=_lookup, propose=_propose, respond=_respond, cancel=_cancel, block=_block, unblock=_unblock,
+ACTIONS = dict(ring_buy=_ring_buy, ring_sell=_ring_sell, ring_recolor=_ring_recolor, lookup=_lookup, propose=_propose, respond=_respond, cancel=_cancel, block=_block, unblock=_unblock,
                settings=_settings, plan=_plan, withdraw=_withdraw, reject=_reject, confirm=_confirm, divorce=_divorce, seen=_seen,
                party=_party, party_invite=_party_invite, envelope=_envelope, wed_gift=_wed_gift)
 
@@ -1775,7 +1718,8 @@ def forget(store, token: str) -> None:
             db.execute("UPDATE couples SET status='ended',ended=?,ended_by=? WHERE id=?", (now(), 'deleted', c['id']))
             db.execute('DELETE FROM marriage_bonds WHERE couple=?', (c['id'],))
             db.execute("UPDATE weddings SET status='cancelled' WHERE couple=? AND status IN ('proposed','rejected','confirmed')", (c['id'],))
-            from . import couple as cp  # the one who stays keeps the joint fund
+            from . import couple as cp, family as fam  # the one who stays keeps the joint fund and child
+            fam.end(db, c, deleted=sid)
             _insert_effects(db, [_effect(f'end:{c["id"]}:{_side(c, other)}', other, 'status', data=dict(set=None))] + cp.on_end(db, c, None, deleted=sid))
             _notice(db, other, 'Người ấy đã xóa tài khoản. Chuyện hai bạn khép lại ở đây.')
         for q in _rows(db, "SELECT id,ring,from_sid FROM proposals WHERE status='pending' AND to_sid=?", (sid,)):
@@ -1786,6 +1730,8 @@ def forget(store, token: str) -> None:
         from . import friends as fr, couple as cp
         fr.forget(db, sid)
         cp.forget(db, sid)
+        from . import family as fam
+        fam.forget(db, sid)
         db.execute('DELETE FROM marriage_effects WHERE sid=?', (sid,))
         db.execute('DELETE FROM marriage_people WHERE sid=?', (sid,))
         if db.execute('DELETE FROM news WHERE a=? OR b=?', (sid, sid)).rowcount:

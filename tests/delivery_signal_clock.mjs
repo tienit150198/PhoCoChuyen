@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {signalHTML,signalState,mountSignals} from '../public/js/v4/traffic.js';
+let now=0;Object.defineProperty(globalThis,'performance',{value:{now:()=>now},configurable:true});
+const traffic={server_now:1001,challenge:{token:'clock-test',offset:0,axis:'y'}};
+const initial=signalHTML(traffic);
+assert.match(initial,/Đèn đỏ/,'first paint is complete, never an empty flashing label');
+now=7000;
+const rerender=signalHTML(traffic);
+assert.match(rerender,/Đèn xanh/,'rendering old server data must not rewind the phase');
+assert.match(signalHTML({...traffic,server_now:1007.9}),/Đèn xanh/,'a delayed fresh response must not rewind across a phase boundary');
+assert.deepEqual(signalState(1008,0,'y'),{color:'green',left:6,grace:false});
+let timers=0;globalThis.setInterval=()=>++timers;globalThis.clearInterval=()=>{};
+const nodes=new Map();
+const box={dataset:{token:'clock-test',server:'1001',offset:'0',axis:'y'},style:{},isConnected:true,
+ querySelector:s=>nodes.get(s)||nodes.set(s,{textContent:'',style:{}}).get(s),querySelectorAll:()=>[]};
+const root={querySelectorAll:()=>[box]};
+mountSignals(root);delete box.dataset.mounted;mountSignals(root);mountSignals(root);
+assert.equal(timers,1,'DOM morphs must not create duplicate clocks');
+assert.match(signalHTML({...traffic,challenge:{...traffic.challenge,token:'second-crossing'},server_now:1009}),/Đèn xanh/);
+console.log('traffic complete first paint, stable server clock across rerenders and one timer per element passed');

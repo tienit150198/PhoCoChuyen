@@ -6,8 +6,9 @@ import {reqList} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
+import {renderNeighborhoodMap} from './delivery_map.js';
+import {lookOf} from '../v4/look.js';
 
-const CELL=60,PAD=30;
 /* ---------- 🛵 Tự lái / ⏩ Đi nhanh: ride each leg yourself (careers/delivery_drive.js, loaded on the first leg) or tap ---------- */
 const MODE_KEY='mnl.dlDrive',HINT_KEY='mnl.dlDriveHint';
 let drv=null,drvLoad=null,drvOff=false,lastX=null,canvasOk=null;
@@ -205,28 +206,15 @@ function deskCard(x){
 }
 
 /* ---------- map ---------- */
-function lPath(x,from,route){
-  const pts=[];let cur=nodeOf(x,from);pts.push([cur.x,cur.y]);
-  for(const id of route){const n=nodeOf(x,id);pts.push([n.x,cur.y]);pts.push([n.x,n.y]);cur=n;}
-  return pts.map(([a,b])=>`${PAD+a*CELL},${PAD+b*CELL}`).join(' ');
-}
 function map(x){
-  const d=x.room.data||{},u=ui(x),all=nodes(x),W=PAD*2+6*CELL,H=PAD*2+4*CELL+16;
-  const streets=[...Array(7).keys()].map(i=>`<line x1="${PAD+i*CELL}" y1="${PAD}" x2="${PAD+i*CELL}" y2="${H-PAD}"/>`).join('')+[...Array(5).keys()].map(i=>`<line x1="${PAD}" y1="${PAD+i*CELL}" x2="${W-PAD}" y2="${PAD+i*CELL}"/>`).join('');
-  const marks=Object.entries(all).map(([id,n])=>{
-    const s=stopsAt(x,id),cls=[s.pick.length?'pick':'',s.drop.length?'drop':'',id===d.at?'here':''].join(' ');
-    const sign=(d.road?.signs||[]).find(g=>g.node===id),hz=sign?{jam:'🚦',works:'🚧',flood:'🌊'}[sign.kind]||'':'';
-    // Short map label: the kind of place ("Chung cư" / "Apartments"), which
-    // comes first in Vietnamese and last in English.
-    const label=language()==='en'?enLabel(t(n.name)):n.name.split(' ').slice(0,2).join(' ');
-    return `<g class="dl-node ${cls}" transform="translate(${PAD+n.x*CELL},${PAD+n.y*CELL})"><circle r="17"/><text class="e" y="6">${x.esc(n.emoji)}</text><text class="l" y="31" data-no-translate>${x.esc(label)}</text>${s.pick.length||s.drop.length?`<text class="n" x="15" y="-12">${s.pick.length+s.drop.length}</text>`:''}${hz?`<text class="h" x="-24" y="-10">${hz}</text>`:''}</g>`;
-  }).join('');
-  const here=nodeOf(x,d.at);
-  const planned=(d.route||[]).length?`<polyline class="dl-route" points="${lPath(x,d.at,d.route)}"/>`:'';
-  const draftFrom=(d.route||[]).length?d.route[d.route.length-1]:d.at;
-  const draft=u.draft.length?`<polyline class="dl-draft" points="${lPath(x,draftFrom,u.draft)}"/>`:'';
-  return `<figure class="dl-map"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Bản đồ khu phố: bạn đang ở ${x.esc(here.name)}"><g class="dl-streets">${streets}</g>${planned}${draft}${marks}<text class="dl-rider" x="${PAD+here.x*CELL-24}" y="${PAD+here.y*CELL-16}">🛵</text></svg>
-    <figcaption class="small muted"><span class="dl-key pick"></span> có hàng cần lấy · <span class="dl-key drop"></span> có hàng cần giao · mỗi ô phố ${x.esc(d.mpu)} phút</figcaption></figure>`;
+  const d=x.room.data||{},all={},status={};
+  for(const [id,n] of Object.entries(nodes(x))){
+    all[id]={...n,name:t(n.name),label:language()==='en'?enLabel(t(n.name)):n.name.split(' ').slice(0,2).join(' ')};
+    const s=stopsAt(x,id);status[id]={pick:s.pick.length,drop:s.drop.length};
+  }
+  return renderNeighborhoodMap({nodes:all,at:d.at,route:d.route||[],draft:ui(x).draft,status,signs:d.road?.signs||[],minutes:d.mpu,
+    text:{title:t('Khu phố Mây Chiều'),here:t('Bạn đang ở'),planned:t('Tuyến đã chốt'),draft:t('Tuyến nháp'),pick:t('Điểm lấy hàng'),drop:t('Điểm giao hàng'),
+      residential:t('Khu dân cư'),services:t('Khu dịch vụ'),garden:t('Khu nhà vườn'),order:t('Thứ tự điểm dừng'),scale:t(`Mỗi ô phố ${d.mpu} phút`)}});
 }
 
 /* ---------- route planner ---------- */
@@ -502,7 +490,8 @@ function usefulStops(x){
 function driveOpts(x,node){
   const d=x.room.data||{},first=!readPref(HINT_KEY);
   if(first)savePref(HINT_KEY,'1');
-  return {nodes:nodes(x),at:d.at,target:node,useful:usefulStops(x),fuel:d.fuel,weather:d.weather,signs:d.road?.signs||[],
+  return {nodes:nodes(x),at:d.at,target:node,useful:usefulStops(x),fuel:d.fuel,weather:d.weather,driveFactor:d.drive_factor||1,signs:d.road?.signs||[],
+    look:lookOf(x.state),player:{name:x.state.name,gender:x.state.journey?.gender},
     minute:x.room.day_clock?.minute??17*60+(Number(d.clock)||0),first,arrive,now:()=>lastX?.now?.()||x.now(),
     signal:(i,j,axis)=>lastX?.send('dl_signal',{target:node,i,j,axis},{quiet:true}),
     cross:token=>lastX?.send('dl_cross',{target:node,token},{quiet:true}),
@@ -526,7 +515,7 @@ function modeSwitch(x){
   return `<div class="dl-mode" role="group" aria-label="Cách chạy xe"><button type="button" class="dl-mode-b${on?' on':''}" data-action="car:mode" data-mode="drive" aria-pressed="${on}">🛵 Tự lái</button><button type="button" class="dl-mode-b${on?'':' on'}" data-action="car:mode" data-mode="fast" aria-pressed="${!on}">⏩ Đi nhanh</button></div>`;
 }
 function driveSec(x,node){
-  return `<section class="dl-drive" aria-label="Tự lái tới ${x.esc(nodeOf(x,node).name)}"><div class="dl-drive-slot" data-dl-drive="${x.esc(node)}"></div>${modeSwitch(x)}</section>`;
+  return `<section class="dl-drive" aria-label="Tự lái tới ${x.esc(nodeOf(x,node).name)}"><div class="dl-drive-slot" data-morph-static data-dl-drive="${x.esc(node)}"></div>${modeSwitch(x)}</section>`;
 }
 /** Hand the COD cash in at the hub: count what the statement says, then give it to the accountant. */
 function settleSteps(x){

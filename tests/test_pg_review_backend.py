@@ -5,7 +5,7 @@ its own schema, see game/db.py). Without it every test here is skipped.
 
 Covers: pool hygiene after errors / timeouts / server-side disconnects, lost updates across
 threads and processes, unicode / NUL / very large saves, and the order and content of every
-API that lists rows compared with SQLite on the same data."""
+PostgreSQL transaction and data-fidelity behavior."""
 import contextlib
 import datetime
 import json
@@ -28,14 +28,6 @@ from game.storage import Store
 from tests.pg_support import on_pg, pg_only
 
 
-@contextlib.contextmanager
-def sqlite_backend():
-    """Build a SQLite Store in a PostgreSQL test run (the backend is chosen at Store())."""
-    saved = {k: os.environ.pop(k) for k in ('DATABASE_URL', 'TEST_DATABASE_URL') if k in os.environ}
-    try:
-        yield
-    finally:
-        os.environ.update(saved)
 
 
 @contextlib.contextmanager
@@ -194,7 +186,7 @@ class PoolHygieneTests(Base):
         self.assertEqual(failures, [], 'requests failed on dead pooled connections')
 
     def test_commit_of_a_transaction_with_a_failed_statement_keeps_nothing(self):
-        """SQLite keeps the statements before a failed one; PostgreSQL aborts the whole
+        """PostgreSQL aborts the whole
         transaction. The adapter must make that loud (commit raises), never silent."""
         db = self.store.connect()
         try:
@@ -279,20 +271,7 @@ class FidelityTests(Base):
         self.assertEqual([r['text'] for r in got], TEXTS)
         self.assertEqual({(r['kind'], r['ref']) for r in got}, {('k?', 'lit ? %')})
 
-    def test_player_text_goes_through_the_api_the_same_as_on_sqlite(self):
-        text = 'Quán mình bị lỗi 😭 khi bấm "Nhập hàng" ? 100% bị\u0000 treo\x07 ở ngày 3'
-        outs = []
-        for maker in (lambda: self.store, self._sqlite_store):
-            store = maker()
-            token, _, _ = store.session()
-            state = store.read(token)[0]
-            pfb.submit(store, token, state, dict(kind='bug', text=text))
-            outs.append([(r['text'], r['kind'], r['status']) for r in pfb.list_mine(store, token)])
-        self.assertEqual(outs[0], outs[1])
 
-    def _sqlite_store(self):
-        with sqlite_backend():
-            return Store(str(Path(self.tmp.name) / 'lite.db'))
 
     def test_raw_nul_is_refused_and_the_connection_survives(self):
         with self.assertRaises(dbm.Error):
@@ -332,117 +311,9 @@ class FidelityTests(Base):
 
 
 # ---------------------------------------------------------------- same data, same answers
-class SameAnswers(unittest.TestCase):
-    """Every listing API on SQLite and on PostgreSQL, on identical rows."""
-
-    def setUp(self):
-        self.tmp = tempfile.TemporaryDirectory()
-        self.base = time.time() - 3600
-        self.today = datetime.datetime.now(st.VN).date()
-        self._env = env(PG_STATEMENT_TIMEOUT_MS=120000)
-        self._env.__enter__()
-
-    def tearDown(self):
-        self._env.__exit__(None, None, None)
-        self.tmp.cleanup()
-
-    def stores(self):
-        with sqlite_backend():
-            lite = Store(str(Path(self.tmp.name) / 'lite.db'), story=True)
-        pg = Store(str(Path(self.tmp.name) / 'pg.db'), story=True)
-        for s in (lite, pg):
-            social.ensure(s)
-            st.ensure(s)
-            self.seed(s)
-        return lite, pg
-
-    TOKEN = 'e' * 64
-
-    def seed(self, store):
-        b = self.base
-        me = Store.digest(self.TOKEN)
-        pids = [f'{i:016x}' for i in range(1, 9)]
-        with store.connect() as db:
-            db.execute('INSERT INTO sessions(sid,csrf,state,revision) VALUES(?,?,?,1)', (me, 'c', '{}'))
-            for i, pid in enumerate(pids):
-                # equal `served - week_base` for several players (ties), equal `seen` for two
-                db.execute('INSERT INTO profiles(pid,sid,name,name_key,bio,avatar,visible,shop,served,week_key,week_base,created,updated,seen) '
-                           'VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-                           (pid, f'sid{i}', f'Người {i} Ánh', f'nguoi {i} anh', 'bio 🍜', '🌸', 1, '{"careers":[]}',
-                            10 + (i % 3) * 5, social.week(), 0 if i % 2 else 5, b, b, b + (i // 2) * 10))
-            for i in range(12):  # board posts, some with reactions in non-sorted order
-                db.execute('INSERT INTO board(id,pid,career,kind,text,at) VALUES(?,?,?,?,?,?)',
-                           (i + 1, pids[i % 8], 'all' if i % 3 else 'restaurant', 'tip', f'Bài {i} ở phố ☕', b + i))
-            for post in (12, 11, 5):
-                for j, emoji in enumerate(('👏', '❤️', '💡', '😂', '👏', '😂')):
-                    db.execute('INSERT OR IGNORE INTO reactions(post,pid,emoji) VALUES(?,?,?)', (post, pids[j], emoji))
-                for j in range(3):
-                    db.execute('INSERT INTO comments(post,pid,text,at) VALUES(?,?,?,?)', (post, pids[j], f'Bình luận {j}', b + 5))
-            for i in range(9):
-                db.execute('INSERT INTO market(id,seller,career,item,qty,price,life_left,unit_cost,listed_day,status,at) '
-                           'VALUES(?,?,?,?,?,?,?,?,?,?,?)', (i + 1, pids[i % 8], 'restaurant', 'rice', 2, 5, 3, 4, 1,
-                                                             'active' if i % 4 else 'sold', b + (i % 3)))
-            mypid = social.pid_of(me)
-            for i in range(7):
-                db.execute('INSERT INTO inbox(pid,kind,text,ref,at,read) VALUES(?,?,?,?,?,?)', (mypid, 'visit', f'Thư {i} 👀', None, b + 1, i % 2))
-            for i in range(4):
-                db.execute('INSERT INTO gifts(from_pid,to_pid,sticker,coins,note,day,at,claimed) VALUES(?,?,?,?,?,?,?,1)',
-                           (pids[i], mypid, '🌸', 0, 'quà', social.today(), b + 2))
-            for i in range(25):
-                db.execute('INSERT INTO player_feedback(sid,account,kind,text,context,status,reply,created_at,updated_at,replied_at) '
-                           'VALUES(?,?,?,?,?,?,?,?,?,?)',
-                           (me if i % 2 else f'other{i}', None, ('bug', 'idea', 'praise', 'hard')[i % 4], f'Góp ý {i} 🐞', '{}',
-                            ('new', 'seen', 'done')[i % 3], 'Cảm ơn' if i % 3 == 2 else None, b + i * 60, b + i * 60 + 30,
-                            b + i * 60 + 90 if i % 3 == 2 else None))
-            # activity: saves with a range of updated_at, stat_active days, accounts per day
-            for i in range(20):
-                day = self.today - datetime.timedelta(days=i % 10)
-                stamp = (datetime.datetime.combine(day, datetime.time(3, 0)) - datetime.timedelta(hours=7)).strftime('%Y-%m-%d %H:%M:%S')
-                s = new_state()
-                enable_story(s, i)
-                s['journey']['wallet'] = 100 * i
-                s['settings']['aiConsent'] = bool(i % 2)
-                db.execute('INSERT INTO sessions(sid,csrf,state,revision,updated_at) VALUES(?,?,?,?,?)',
-                           (f'act{i:02d}', 'c', json.dumps(s, ensure_ascii=False), 1 + i % 3, stamp))
-                db.execute('INSERT OR IGNORE INTO stat_active(day,sid) VALUES(?,?)', (day.isoformat(), f'act{i:02d}'))
-                db.execute('INSERT OR IGNORE INTO stat_active(day,sid) VALUES(?,?)', ((day + datetime.timedelta(days=1)).isoformat(), f'act{i:02d}'))
-                db.execute('UPDATE stat_births SET day=? WHERE sid=?', (day.isoformat(), f'act{i:02d}'))
-                if i % 4 == 0:
-                    db.execute('INSERT INTO accounts(username,display,pw,sid,created_at) VALUES(?,?,?,?,?)', (f'u{i}', 'U', 'x', f'act{i:02d}', stamp))
-
-    def answers(self, store):
-        state = {'current': None, 'careers': {}}
-        out = {}
-        for route, q in (('directory', {}), ('board', {}), ('board', {'career': 'restaurant'}), ('market', {}), ('inbox', {}), ('community', {}), ('me', {})):
-            got = social.get(store, self.TOKEN, state, route, q)
-            out[f'{route}{q}'] = got
-        out['bootstrap'] = social.bootstrap(store, self.TOKEN, state)
-        out['fb_admin'] = pfb.list_admin(store)
-        out['fb_admin_seen'] = pfb.list_admin(store, status='seen', limit=3)
-        out['fb_admin_page2'] = pfb.list_admin(store, before=out['fb_admin']['items'][-1]['id'])
-        out['fb_mine'] = pfb.list_mine(store, self.TOKEN)
-        with store.connect() as db:
-            out['players'] = st.players(db, 30, self.today)
-            out['retention'] = st.retention(db, self.today, 30)
-            out['feedback'] = st.feedback(db, 30, self.base + 7200)
-            rows, _ = st.sample(db)
-            out['play'] = st.play_stats(rows)
-        return json.loads(json.dumps(out, sort_keys=True, ensure_ascii=False, default=str))
-
-    @pg_only
-    def test_every_listing_matches_sqlite(self):
-        lite, pg = self.stores()
-        try:
-            a, b = self.answers(lite), self.answers(pg)
-            for key in sorted(a):
-                with self.subTest(key=key):
-                    self.assertEqual(b[key], a[key])
-        finally:
-            lite.close_pool()
-            pg.close_pool()
 
 
-# ---------------------------------------------------------------- races without SQLite's global writer lock
+# ---------------------------------------------------------------- concurrent PostgreSQL row-lock behavior
 @pg_only
 class DeleteRaceTests(Base):
     def test_delete_during_a_command_leaves_no_archive_or_receipt_rows(self):
@@ -470,13 +341,13 @@ class DeleteRaceTests(Base):
 
 
 class BackendChoiceTests(unittest.TestCase):
-    def test_a_malformed_database_url_is_an_error_not_a_silent_sqlite_fallback(self):
+    def test_a_malformed_database_url_is_rejected(self):
         with env(DATABASE_URL='postgresql+psycopg://mnl@127.0.0.1/mnl'):
             try:
                 got = dbm.database_url()
             except (Exception, SystemExit):  # noqa: BLE001 - refusing is the point
                 return
-        self.fail(f'DATABASE_URL set but unusable, and the game would run on SQLite (database_url() -> {got!r})')
+        self.fail(f'DATABASE_URL set but unusable, but it was accepted (database_url() -> {got!r})')
 
 
 if __name__ == '__main__':
