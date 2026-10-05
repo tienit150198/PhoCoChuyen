@@ -9,19 +9,20 @@ import {kindOf,wordsFor} from '/js/scenes/index.js';
 import {activeTasks,advanceRoute,CAMERA_ZOOM,canvasDescription,cameraWorldPoint,defaultCamera,effectFrameState,findRoute,followCamera,gestureIsDrag,groundCacheRegion,inside,interpolateRoute,isWalkable,landmarkPlaneGeometry,makeNavigation,moveOnGround,nearestReachableHotspot,nearestWalkable,normalizeMovementInput,presenceDirection,project,publicTownPlayers,resizedCamera,roomAppearance,townBuildingArt,townBuildings,townGarden,townLandmarks,townNavigation,townRoads,unproject,WORK_FOOD_SHELF,WORK_WINDOW,workWindowAnchors} from './model';
 import type {Building,Career,Facing,Navigation,Point,Rect,RemotePlayer,RoomAppearance} from './model';
 import {islandCoastline,islandOverviewCamera,SEA_COLOR,TOWN_ZOOM} from './island';
+import {TextureFrames} from './texture-frames';
 
 export type WorldMode = 'town' | 'work';
 interface Hotspot extends Point {id:string;label:string;approach:Point;point:Point;z:number;range:number}
 type PublicState = {current?:string;focus?:string;careers?:Record<string,any>;journey?:any;settings?:any;[key:string]:any};
 type Content = {catalogue?:Career[];npcs?:any[];[key:string]:any};
-const FONT='"Trebuchet MS", "Segoe UI", sans-serif';
+const FONT='"Be Vietnam Pro", "Segoe UI", sans-serif';
 const COLORS={grass:0xb6c598,grassLight:0xc2cda8,road:0xe7d3b5,edge:0xc5ac89,ink:0x6e5141,cream:0xfff3da,roof:0xb86c4e,sage:0x8ba77a,water:0x98bfb8};
 const asHex=(s:string|undefined,fallback=COLORS.sage)=>s&&/^#[0-9a-f]{6}$/i.test(s)?parseInt(s.slice(1),16):fallback;
 const px=(p:Point,z=0):Point=>{const q=project(p);return {x:q.x,y:q.y-z};};
 const noOp=()=>{};
 const CHARACTER_SCALE=.65;
 const ASSETS:Record<string,string>=Object.fromEntries(['grocery','home','cafe','tree','bench','counter','shelf','desk','crates','interior-shop','interior-office','interior-cafe','interior-home'].map(kind=>[kind,'/icons/isometric/'+kind+'.webp']));
-Object.assign(ASSETS,{pharmacy:'/icons/cozy-v2/pharmacy.webp','mother-baby':'/icons/cozy-v2/mother-baby.webp',garage:'/icons/cozy-v2/garage.webp',pho:'/icons/cozy-v2/pho.webp',pond:'/icons/cozy-v2/leisure-lake.webp',pool:'/icons/cozy-v2/leisure-pool.webp',boat:'/icons/cozy-v2/boat.webp'});
+Object.assign(ASSETS,{pharmacy:'/icons/cozy-v2/pharmacy.webp','mother-baby':'/icons/cozy-v2/mother-baby.webp',garage:'/icons/cozy-v2/garage.webp',pho:'/icons/cozy-v2/pho.webp',pond:'/icons/cozy-v2/leisure-lake.webp',pool:'/icons/cozy-v2/leisure-pool.webp',boat:'/icons/cozy-v2/boat.webp',vegetation:'/icons/cozy-v2/vegetation.webp'});
 const assetURL=(path:string)=>(window as any).__mnlBoot?.asset?.(path)||path;
 
 /** Phaser owns the scene and draw list; server mechanics stay in the existing DOM modules. */
@@ -185,7 +186,7 @@ export class PhaserWorld {
     let moving=false;const before={x:this.player.x,y:this.player.y};
     if(this.keys.size||this.movementInput.x||this.movementInput.y){let sx=this.movementInput.x,sy=this.movementInput.y;if(this.keys.has('a')||this.keys.has('arrowleft'))sx--;if(this.keys.has('d')||this.keys.has('arrowright'))sx++;if(this.keys.has('w')||this.keys.has('arrowup'))sy--;if(this.keys.has('s')||this.keys.has('arrowdown'))sy++;
       const next=moveOnGround(stage.navigation,this.player,normalizeMovementInput(sx,sy),dt);this.player.path=[];this.player.goal=null;this.pending=null;moving=Math.hypot(next.x-this.player.x,next.y-this.player.y)>1e-8;Object.assign(this.player,next);
-    }else if(this.player.path.length){const next=advanceRoute(this.player,this.player.path,2.9*dt);Object.assign(this.player,next.point);this.player.path=next.path;moving=true;if(next.arrived){this.player.goal=null;const cb=this.pending;this.pending=null;cb?.();}}
+    }else if(this.player.path.length){const next=advanceRoute(this.player,this.player.path,170*dt,'screen');Object.assign(this.player,next.point);this.player.path=next.path;moving=true;if(next.arrived){this.player.goal=null;const cb=this.pending;this.pending=null;cb?.();}}
     if(moving&&![...this.pointers.values()].some(p=>p.drag)){const camera=stage.cameras.main,view=followCamera({width:this.width,height:this.height,scrollX:camera.scrollX,scrollY:camera.scrollY,zoom:camera.zoom},px(this.player,55),dt);camera.setScroll(view.scrollX,view.scrollY);}
     if(moving)this.direction=presenceDirection(before,this.player,this.direction);
     stage.positionPlayer(moving);
@@ -228,6 +229,7 @@ class DioramaScene extends Phaser.Scene {
   private actorDirection:Facing='se';
   private actorWalkFrame=0;
   private background?:Phaser.GameObjects.Graphics;
+  private terrainChunks=new Map<string,{graphics:Phaser.GameObjects.Graphics;bounds:Rect}>();
   private groundCache?:Phaser.GameObjects.Image;
   private groundRegion?:Rect;
   private groundScale=0;
@@ -249,9 +251,10 @@ class DioramaScene extends Phaser.Scene {
   private requestedAssets=new Set<string>();
   private artRefreshQueued=false;
   private characterRevision=0;
+  private characterFrames=new TextureFrames(key=>{if(this.textures.exists(key))this.textures.remove(key);});
   constructor(owner:PhaserWorld){super({key:'Diorama'});this.owner=owner;}
   preload(){this.queueAssets(['grocery','home','cafe','tree','bench']);}
-  create(){this.load.on(Phaser.Loader.Events.COMPLETE,this.assetsReady);preloadIllustratedCharacters(this.charactersReady);this.owner.boot(this);}
+  create(){this.load.on(Phaser.Loader.Events.COMPLETE,this.assetsReady);preloadIllustratedCharacters(this.charactersReady);this.owner.boot(this);document.fonts?.load('700 17px "Be Vietnam Pro"','Phố Có Chuyện').then(()=>{if(this.sys.isActive())this.queueArtRefresh();}).catch(()=>{});this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>this.characterFrames.clear());}
   private queueAssets(kinds:string[]){let queued=false;for(const kind of kinds){if(!ASSETS[kind]||this.textures.exists('art-'+kind)||this.requestedAssets.has(kind))continue;this.requestedAssets.add(kind);this.load.image('art-'+kind,assetURL(ASSETS[kind]));queued=true;}return queued;}
   private ensureAssets(kinds:string[]){if(this.queueAssets(kinds)&&!this.load.isLoading())this.load.start();}
   private assetsReady=()=>{if(!this.sys.isActive())return;this.owner['cachedPreview'].clear();this.queueArtRefresh();};
@@ -264,7 +267,8 @@ class DioramaScene extends Phaser.Scene {
   lineClear(a:Point,b:Point){return findClear(this.navigation,a,b);}
   rebuild(){
     if(!this.sys.isActive())return;
-    for(const object of this.staticObjects)object.destroy();this.staticObjects=[];for(const key of new Set(this.npcArt.map(n=>n.texture)))if(this.textures.exists(key))this.textures.remove(key);this.npcArt=[];this.groundCache=undefined;this.groundRegion=undefined;this.hits=[];this.placards=[];this.imageById.clear();this.marker?.destroy();this.marker=undefined;this.selected?.destroy();this.selected=undefined;this.clearSpeech();
+    this.terrainChunks.clear();
+    for(const object of this.staticObjects)object.destroy();this.staticObjects=[];for(const seed of new Set(this.npcArt.map(n=>n.seed)))this.characterFrames.release('iso-person-'+seed);this.npcArt=[];this.groundCache=undefined;this.groundRegion=undefined;this.hits=[];this.placards=[];this.imageById.clear();this.marker?.destroy();this.marker=undefined;this.selected?.destroy();this.selected=undefined;this.clearSpeech();
     const changed=this.previousMode!==this.owner.mode||this.owner.mode==='work'&&this.previousCareer!==this.owner.career;
     this.previousMode=this.owner.mode;this.previousCareer=this.owner.career;this.cameras.main.setBackgroundColor(this.owner.mode==='town'?SEA_COLOR:'#ede3ce');this.background=this.add.graphics().setDepth(-10000);this.staticObjects.push(this.background);
     if(this.owner.mode==='town')this.town();else this.work();
@@ -284,21 +288,42 @@ class DioramaScene extends Phaser.Scene {
     this.background.setVisible(true);
     // Phaser's public graphics Canvas compositor accepts an explicit context and camera.
     (this.background as any).renderCanvas(this.game.renderer,this.background,cacheCamera,null,canvas.getContext('2d'),false);
-    this.background.setVisible(false);cacheCamera.destroy();if(this.groundCache){const old=this.groundCache;old.destroy();this.staticObjects=this.staticObjects.filter(o=>o!==old);}if(this.textures.exists('iso-ground'))this.textures.remove('iso-ground');this.textures.addCanvas('iso-ground',canvas)!.setFilter(Phaser.Textures.FilterMode.LINEAR);
+    for(const {graphics,bounds} of this.terrainChunks.values()){
+      if(bounds.x1<region.x0||bounds.x0>region.x1||bounds.y1<region.y0||bounds.y0>region.y1)continue;
+      (graphics as any).renderCanvas(this.game.renderer,graphics,cacheCamera,null,canvas.getContext('2d'),false);
+    }
+    this.background.setVisible(false);cacheCamera.destroy();if(this.groundCache){const old=this.groundCache;old.destroy();this.staticObjects=this.staticObjects.filter(o=>o!==old);}if(this.textures.exists('iso-ground'))this.textures.remove('iso-ground');
+    // A read-only canvas source needs no CanvasTexture pixel buffer. Avoid its full
+    // getImageData readback every time the camera crosses the cached region.
+    const texture=this.textures.create('iso-ground',canvas)!;texture.add('__BASE',0,0,0,canvas.width,canvas.height);texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
     this.groundCache=this.add.image(region.x0,region.y0,'iso-ground').setOrigin(0,0).setScale(1/cache.scale).setDepth(-10000);this.staticObjects.push(this.groundCache);this.groundRegion=region;this.groundScale=cache.scale;this.requestRender();
   }
   resetCamera(focusPlayer=true){const view=defaultCamera(this.owner.mode,this.owner.width,this.owner.height);if(focusPlayer&&this.owner.mode==='town'){const p=px(this.owner.player,55);view.scrollX=p.x-this.owner.width/2;view.scrollY=p.y-this.owner.height/2;}this.islandOverview=false;this.cameras.main.setZoom(view.zoom).setScroll(view.scrollX,view.scrollY);this.cameraSet=true;this.requestRender();}
   overviewIsland(){const view=islandOverviewCamera(this.owner.width,this.owner.height);this.islandOverview=true;this.cameras.main.setZoom(view.zoom).setScroll(view.scrollX,view.scrollY);this.cameraSet=true;this.requestRender();}
   private polygon(points:Point[],fill:number,alpha=1,stroke?:number,width=1){const g=this.background!;g.fillStyle(fill,alpha);g.fillPoints(points,true);if(stroke!==undefined){g.lineStyle(width,stroke,1);g.strokePoints(points,true);}}
+  /** Paving and grass are baked by neighbourhood so panning does not repaint the whole island. */
+  private terrainAt(p:Point){
+    const x=Math.floor(p.x/7)*7,y=Math.floor(p.y/7)*7,key=x+':'+y;
+    let chunk=this.terrainChunks.get(key);if(!chunk){
+      const a=px({x,y}),left=px({x,y:y+7}),right=px({x:x+7,y}),bottom=px({x:x+7,y:y+7}),graphics=this.add.graphics().setVisible(false);
+      chunk={graphics,bounds:{x0:left.x-100,y0:a.y-50,x1:right.x+100,y1:bottom.y+50}};this.terrainChunks.set(key,chunk);this.staticObjects.push(graphics);
+    }return chunk.graphics;
+  }
   private floorRect(r:Rect,color:number,alpha=1,z=0){this.polygon([px({x:r.x0,y:r.y0},z),px({x:r.x1,y:r.y0},z),px({x:r.x1,y:r.y1},z),px({x:r.x0,y:r.y1},z)],color,alpha);}
   private town(){
     this.buildings=townBuildings(this.owner.game?.catalogue||[]);this.navigation=townNavigation(this.buildings);const b=this.navigation.bounds,roads=townRoads(this.buildings);
     this.islandGround();
     // Rounded moss patches, worn shoulders and uneven paving soften the shared road grid.
     const ground=this.background!;
-    for(let x=.6;x<b.x1;x+=1.8)for(let y=.6;y<b.y1;y+=1.7){const p={x:x+Math.sin(y*3)*.4,y:y+Math.cos(x*2)*.3};if(roads.some(r=>inside(p,r)))continue;const q=px(p),seed=Math.round(x*11+y*7);ground.fillStyle([0x97b778,0xa9be83,0xc4cf93][Math.abs(seed)%3],.36);ground.fillEllipse(q.x,q.y,100+Math.sin(x+y)*42,48+Math.cos(x-y)*17);if(seed%3===0){ground.fillStyle(seed%2?0xf2dca5:0xf5eec8,.75);for(let k=0;k<4;k++)ground.fillCircle(q.x+Math.sin(k*2+seed)*28,q.y+Math.cos(k*3+seed)*12,2);}}
+    for(let x=.6;x<b.x1;x+=1.8)for(let y=.6;y<b.y1;y+=1.7){const p={x:x+Math.sin(y*3)*.4,y:y+Math.cos(x*2)*.3};if(roads.some(r=>inside(p,r)))continue;const q=px(p),seed=Math.round(x*11+y*7),detail=this.terrainAt(p);detail.fillStyle([0x97b778,0xa9be83,0xc4cf93][Math.abs(seed)%3],.36);detail.fillEllipse(q.x,q.y,100+Math.sin(x+y)*42,48+Math.cos(x-y)*17);if(seed%3===0){detail.fillStyle(seed%2?0xf2dca5:0xf5eec8,.75);for(let k=0;k<4;k++)detail.fillCircle(q.x+Math.sin(k*2+seed)*28,q.y+Math.cos(k*3+seed)*12,2);}}
     for(const road of roads){this.floorRect({x0:road.x0-.12,y0:road.y0-.12,x1:road.x1+.12,y1:road.y1+.12},0xa7af88,.5);this.floorRect({x0:road.x0-.035,y0:road.y0-.035,x1:road.x1+.035,y1:road.y1+.035},0xc8b28f);this.floorRect(road,0xe7d7ba);}
-    for(let x=0;x<b.x1;x+=.54)for(let y=0;y<b.y1;y+=.54){const p={x:x+.27,y:y+.27};if(!roads.some(r=>inside(p,r)))continue;const q=px(p),seed=Math.round(x*29+y*17);ground.fillStyle(seed%3?0xf2e5cb:0xdac5a6,.43);ground.fillRoundedRect(q.x-19+Math.sin(seed)*3,q.y-7,35,13,4);if(seed%5===0){ground.lineStyle(1,0xc4ad89,.3);ground.lineBetween(q.x-15,q.y+6,q.x+12,q.y+6);}}
+    for(let x=0;x<b.x1;x+=.54)for(let y=0;y<b.y1;y+=.54){
+      const p={x:x+.27,y:y+.27};if(!roads.some(r=>inside(p,r)))continue;
+      const seed=Math.round(x*29+y*17),jitter=Math.sin(seed)*.025;
+      const tile=[px({x:x+.025+jitter,y:y+.025}),px({x:x+.505,y:y+.03+jitter}),px({x:x+.51-jitter,y:y+.50}),px({x:x+.03,y:y+.51-jitter})];
+      const detail=this.terrainAt(p);detail.fillStyle([0xf1e1c4,0xe0c9a6,0xebd4b3,0xf4e6cd,0xe4ceae][Math.abs(seed)%5],.7);detail.fillPoints(tile,true);
+      detail.lineStyle(1,0xfdf0d7,.4);detail.lineBetween(tile[0].x,tile[0].y,tile[1].x,tile[1].y);
+    }
     this.owner.hotspots=[];
     for(const building of this.buildings){const foot=px(building.at);ground.fillStyle(0x7e906b,.2);ground.fillEllipse(foot.x,foot.y-24,370+building.slot%3*20,160+building.slot%2*30);
       const kind=townBuildingArt(building.meta,building.variant);this.ensureAssets([kind]);const key=this.textures.exists('art-'+kind)?'art-'+kind:'art-'+building.variant;
@@ -423,18 +448,20 @@ class DioramaScene extends Phaser.Scene {
   }
   private textureObject(key:string,width:number,height:number,draw:(ctx:CanvasRenderingContext2D)=>void){if(!this.textures.exists(key)){const c=document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d')!;ctx.imageSmoothingEnabled=true;draw(ctx);this.textures.addCanvas(key,c)!.setFilter(Phaser.Textures.FilterMode.LINEAR);}return key;}
   private characterTexture(prefix:string,look:any,gender:string,direction:Facing,uniformColor:string,walkFrame=0){
-    const stamp=getCharacterStamp({look,gender,direction,uniformColor,walkFrame,onReady:this.charactersReady}),key=prefix+'-'+JSON.stringify([look,gender,direction,uniformColor,walkFrame,this.characterRevision]);
-    if(!this.textures.exists(key))this.textures.addCanvas(key,stamp.canvas)!.setFilter(Phaser.Textures.FilterMode.LINEAR);return key;
+    return this.characterFrames.get(prefix,JSON.stringify([look,gender,uniformColor,this.characterRevision]),direction+':'+walkFrame,key=>{
+      const stamp=getCharacterStamp({look,gender,direction,uniformColor,walkFrame,onReady:this.charactersReady});
+      this.textures.addCanvas(key,stamp.canvas)!.setFilter(Phaser.Textures.FilterMode.LINEAR);
+    });
   }
   syncRemotePlayers(){
     if(!this.sys.isActive())return;const peers=this.owner.mode==='town'?publicTownPlayers(this.owner.remotePlayers,this.navigation):[],present=new Set(peers.map(p=>p.pid));
-    for(const [pid,actor] of this.remoteActors)if(!present.has(pid)){actor.image.destroy();actor.tag.destroy();if(this.textures.exists(actor.texture))this.textures.remove(actor.texture);this.remoteActors.delete(pid);}
+    for(const [pid,actor] of this.remoteActors)if(!present.has(pid)){actor.image.destroy();actor.tag.destroy();this.characterFrames.release('iso-peer-'+pid);this.remoteActors.delete(pid);}
     for(const peer of peers){
       const look={...defaultLook(peer.gender),...peer.look},key=this.characterTexture('iso-peer-'+peer.pid,look,peer.gender,peer.direction,'#8ba77a');
       let actor=this.remoteActors.get(peer.pid);
       if(!actor){const image=this.add.image(0,0,key).setOrigin(.5,1).setScale(CHARACTER_SCALE),tag=this.add.text(0,0,peer.name,{fontFamily:FONT,fontSize:'13px',color:'#654a39',backgroundColor:'#fff3da',padding:{x:6,y:3}}).setOrigin(.5,1);actor={peer,at:{x:peer.x,y:peer.y},from:{x:peer.x,y:peer.y},path:[],started:0,image,tag,texture:key};this.remoteActors.set(peer.pid,actor);}
       else{
-        if(actor.texture!==key){const old=actor.texture;actor.image.setTexture(key);actor.texture=key;if(this.textures.exists(old))this.textures.remove(old);}
+        if(actor.texture!==key){actor.image.setTexture(key);actor.texture=key;}
         if(Math.hypot(actor.peer.x-peer.x,actor.peer.y-peer.y)>1e-5){actor.from={...actor.at};actor.path=this.owner.reduced?[]:findRoute(this.navigation,actor.at,peer);actor.started=this.owner.time;if(!actor.path.length)actor.at={x:peer.x,y:peer.y};}
         actor.peer=peer;actor.tag.setText(peer.name);
       }
@@ -446,7 +473,7 @@ class DioramaScene extends Phaser.Scene {
     for(const actor of this.remoteActors.values()){
       let moving=false;
       if(actor.path.length){const progress=Math.min(1,(now-actor.started)/.24);actor.at=interpolateRoute(actor.from,actor.path,progress);moving=progress<1;if(!moving)actor.path=[];active||=moving;}
-      const walkFrame=moving&&!this.owner.reduced?1+Math.floor(now*7)%2:0,key=this.characterTexture('iso-peer-'+actor.peer.pid,{...defaultLook(actor.peer.gender),...actor.peer.look},actor.peer.gender,actor.peer.direction,'#8ba77a',walkFrame);if(key!==actor.texture){const old=actor.texture;actor.image.setTexture(key);actor.texture=key;if(this.textures.exists(old))this.textures.remove(old);}
+      const walkFrame=moving&&!this.owner.reduced?1+Math.floor(now*7)%2:0,key=this.characterTexture('iso-peer-'+actor.peer.pid,{...defaultLook(actor.peer.gender),...actor.peer.look},actor.peer.gender,actor.peer.direction,'#8ba77a',walkFrame);if(key!==actor.texture){actor.image.setTexture(key);actor.texture=key;}
       const point=px(actor.at);actor.image.setPosition(point.x,point.y).setDepth(point.y+.5);actor.tag.setPosition(point.x,point.y-112).setDepth(point.y+.7).setVisible(this.cameras.main.zoom>=.22);
     }
     return active;
@@ -502,7 +529,7 @@ class DioramaScene extends Phaser.Scene {
   }
   refreshPlayer(walkFrame=0){
     const F=figure(this.owner.state),uniformColor=this.owner.mode==='work'?this.owner.game?.catalogue?.find(c=>c.id===this.owner.career)?.color||'#8ba77a':'#8ba77a',key=this.characterTexture('iso-player',F.L,F.g||'none',this.owner.direction,uniformColor,walkFrame);this.actorDirection=this.owner.direction;this.actorWalkFrame=walkFrame;
-    if(key===this.actorKey)return false;this.actor?.destroy();this.actor=this.add.image(0,0,key).setOrigin(.5,1).setScale(CHARACTER_SCALE);if(this.actorKey&&this.textures.exists(this.actorKey))this.textures.remove(this.actorKey);this.actorKey=key;return true;
+    if(key===this.actorKey)return false;if(this.actor)this.actor.setTexture(key);else this.actor=this.add.image(0,0,key).setOrigin(.5,1).setScale(CHARACTER_SCALE);this.actorKey=key;return true;
   }
   positionPlayer(moving:boolean){const walkFrame=moving&&!this.owner.reduced?1+Math.floor(this.owner.time*7)%2:0;if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==walkFrame)this.refreshPlayer(walkFrame);if(!this.actor)return;const f=px(this.owner.player);this.actor.setPosition(f.x,f.y).setDepth(f.y+.5);if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138};this.speech.setPosition(at.x,at.y);} }
   hitTest(point:Point){const ground=unproject(point),hits=this.hits.filter(h=>h.rect?.contains(point.x,point.y)||h.footprint&&inside(ground,h.footprint)||h.object?.visible&&h.object.getBounds().contains(point.x,point.y)).sort((a,b)=>b.hotspot.point.y-a.hotspot.point.y);return hits[0]?.hotspot;}

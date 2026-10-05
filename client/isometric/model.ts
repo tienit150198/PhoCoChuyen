@@ -29,7 +29,7 @@ export function landmarkPlaneGeometry(r:Rect){const w=r.x1-r.x0,d=r.y1-r.y0;retu
 /** Our camera never rotates; this transform stays current even while Phaser is asleep. */
 export const cameraWorldPoint = (p:Point,camera:{width:number;height:number;scrollX:number;scrollY:number;zoom:number}): Point => ({x:camera.scrollX+camera.width/2+(p.x-camera.width/2)/camera.zoom,y:camera.scrollY+camera.height/2+(p.y-camera.height/2)/camera.zoom});
 export function defaultCamera(mode:'town'|'work',width:number,height:number):CameraView{
-  const work=mode==='work',zoom=mode==='town'&&width<=620?.64:Math.max(work?CAMERA_ZOOM.min:.38,Math.min(work?1.1:.92,width/(work?1340:1220),height/(work?1040:900))),center=work?{x:0,y:225}:project({x:6.7,y:6.7},64,32,{x:0,y:-260});
+  const work=mode==='work',zoom=width<=620?(work?Math.min(.64,Math.max(.5,width/700)):.64):Math.max(work?CAMERA_ZOOM.min:.38,Math.min(work?1.1:.92,width/(work?1340:1220),height/(work?1040:900))),center=work?{x:0,y:225}:project({x:6.7,y:6.7},64,32,{x:0,y:-260});
   return {width,height,zoom,scrollX:center.x-width/2,scrollY:center.y-height/2};
 }
 /** Keep intentional pan at one viewport size; a phone transition starts with a fitted room. */
@@ -50,10 +50,10 @@ export function moveOnGround(nav:Navigation,from:Point,input:Point,dt:number):Po
   const slides=[{x:next.x,y:from.y},{x:from.x,y:next.y}].sort((a,b)=>Math.hypot(b.x-from.x,b.y-from.y)-Math.hypot(a.x-from.x,a.y-from.y));
   return slides.find(p=>lineClear(nav,from,p))||{x:from.x,y:from.y};
 }
-export function advanceRoute(from:Point,path:Point[],stride:number):{point:Point;path:Point[];arrived:boolean}{
+export function advanceRoute(from:Point,path:Point[],stride:number,metric:'ground'|'screen'='ground'):{point:Point;path:Point[];arrived:boolean}{
   if(!path.length)return {point:{x:from.x,y:from.y},path:[],arrived:false};
   let point={...from},step=Number.isFinite(stride)?Math.max(0,stride):0,index=0;
-  while(index<path.length){const goal=path[index],dx=goal.x-point.x,dy=goal.y-point.y,distance=Math.hypot(dx,dy);
+  while(index<path.length){const goal=path[index],dx=goal.x-point.x,dy=goal.y-point.y,delta=metric==='screen'?project({x:dx,y:dy}):{x:dx,y:dy},distance=Math.hypot(delta.x,delta.y);
     if(distance>step+1e-9)return {point:{x:point.x+dx/distance*step,y:point.y+dy/distance*step},path:path.slice(index),arrived:false};
     point={...goal};step=Math.max(0,step-distance);index++;
   }

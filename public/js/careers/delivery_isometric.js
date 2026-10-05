@@ -253,7 +253,7 @@ export function createIsometricRenderer({createCanvas=surface,ImageClass=globalT
     }
   }
   function label(c,text,x,y,highlight=false){
-    c.font='700 11px system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';
+    c.font='700 11px "Be Vietnam Pro",system-ui,sans-serif';c.textAlign='center';c.textBaseline='middle';
     const width=Math.min(155,c.measureText(text).width+18);
     paper(c,x-width*.5,y-12,width,24,highlight?'#fce5a5':CREAM);c.fillStyle=INK;c.fillText(text,x,y,width-10);
   }
@@ -283,7 +283,7 @@ export function createIsometricRenderer({createCanvas=surface,ImageClass=globalT
   }
   function dash(c,state,o,w,h){
     const speed=Math.round(Math.abs(state.v||0)*3.6),fuel=clamp(Number(o.fuel)||0,0,100),width=110,x=w*.5-width*.5,y=h-48;
-    paper(c,x,y,width,34);c.fillStyle=INK;c.font='700 11px system-ui';c.textAlign='center';c.textBaseline='middle';c.fillText(`${speed} km/h  ·  ${tr('Xăng')} ${Math.round(fuel)}%`,w*.5,y+16);
+    paper(c,x,y,width,34);c.fillStyle=INK;c.font='700 11px "Be Vietnam Pro",system-ui';c.textAlign='center';c.textBaseline='middle';c.fillText(`${speed} km/h  ·  ${tr('Xăng')} ${Math.round(fuel)}%`,w*.5,y+16);
   }
   function drawScene(c,state,W,o,now,camera){
     const w=state.w,h=state.h,k=camera.scale,T=W.marks?.[o.target];
@@ -335,7 +335,7 @@ export function createIsometricRenderer({createCanvas=surface,ImageClass=globalT
     const w=state.w,h=state.h,camera=isoCamera(state,w,h);c.imageSmoothingEnabled=true;
     drawScene(c,state,W,o,now,camera);
     destinationBadge(c,state,W.marks?.[o.target],camera,w,h);dash(c,state,o,w,h);
-    const p=isoProject(state.x,state.y,0,camera);c.font='700 10px system-ui';c.textAlign='center';c.textBaseline='middle';paper(c,p.x-18,p.y+26,36,17);c.fillStyle=INK;c.fillText(tr('Bạn'),p.x,p.y+35);
+    const p=isoProject(state.x,state.y,0,camera);c.font='700 10px "Be Vietnam Pro",system-ui';c.textAlign='center';c.textBaseline='middle';paper(c,p.x-18,p.y+26,36,17);c.fillStyle=INK;c.fillText(tr('Bạn'),p.x,p.y+35);
     return camera;
   }
   return {draw,stats:()=>({groundBuilds,groundChunks:groundCache.size,stamps:stamps.size,images:images.size}),invalidate:()=>{groundCache.clear();},dispose:()=>{disposed=true;groundCache.clear();stamps.clear();for(const record of images.values()){record.image.onload=null;record.image.onerror=null;}images.clear();}};

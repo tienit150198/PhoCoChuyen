@@ -23,4 +23,9 @@ for(const input of [{x:1,y:1},{x:-1,y:1},{x:1,y:-1},{x:-1,y:-1}]){
  assert.ok(Math.sign(p.x)===Math.sign(input.x)&&Math.sign(p.y)===Math.sign(input.y),'all four screen diagonals remain diagonal');
  assert.ok(Math.abs(Math.hypot(p.x,p.y)-8.5)<1e-7,'diagonals have the same speed as cardinal directions');
 }
+for(const goal of [{x:5,y:0},{x:0,y:5},{x:5,y:5},{x:-5,y:5}]){
+ const next=m.advanceRoute({x:0,y:0},[goal],8.5,'screen');
+ const screen=m.project(next.point);
+ assert.ok(Math.abs(Math.hypot(screen.x,screen.y)-8.5)<1e-7,'tap walking has the same visible speed as the joystick in every direction');
+}
 console.log('Town polish: open diagonals, natural setbacks, garden collision and continuous routes passed');

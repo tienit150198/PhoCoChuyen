@@ -17,7 +17,7 @@ assert.deepEqual(m.cameraWorldPoint(cursor,camera),before,'zoom anchor remains u
 const desktop=m.defaultCamera('work',1440,900),mobile=m.resizedCamera('work',desktop,390,844);
 assert.ok(m.defaultCamera('town',390,844).zoom>=.6,'phone town opens close enough to see illustrated characters and frontage detail');
 assert.ok(m.defaultCamera('work',1440,900).zoom<=900/1040,'desktop work camera includes the tall cutaway roof');
-assert.ok(1280*mobile.zoom<390,'phone work camera fits the full room width');
+assert.ok(mobile.zoom>=.5,'phone work opens close enough to read the counter and see the actor; pan/zoom covers the whole room');
 assert.deepEqual(m.cameraWorldPoint({x:195,y:422},mobile),{x:0,y:225},'desktop-to-phone resize recentres the workplace');
 assert.deepEqual(m.defaultCamera('work',390,844),mobile,'reset uses the same phone fit');
 const panned={...desktop,scrollX:desktop.scrollX+240,scrollY:desktop.scrollY-80,zoom:desktop.zoom*1.2};

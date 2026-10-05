@@ -15,6 +15,7 @@ await Promise.resolve();
 assert.equal(calls[0]?.[0],'boot','the visible conversation entry initializes live before waiting for idle app boot');
 assert.equal(calls[0][1],environment,'the real live service receives the same authenticated app environment');
 assert.ok(calls.some(([type,event])=>type==='subscribe'&&event==='read'),'read receipts refresh the HUD badge');
+assert.ok(calls.some(([type,event])=>type==='subscribe'&&event==='connection'),'silent handshake timeouts and retry starts refresh the HUD status');
 context.boot(()=>environment);
 await Promise.resolve();
 assert.equal(calls.filter(([type])=>type==='boot').length,1,'recovery renders do not add another set of live subscriptions');

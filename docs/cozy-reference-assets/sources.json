@@ -11,6 +11,7 @@
     {"id":"leisure-pool","background":true},
     {"id":"boat","width":240},
     {"id":"fishing-actions","atlas":true,"columns":4,"rows":2,"width":1024},
-    {"id":"fish","width":256}
+    {"id":"fish","width":256},
+    {"id":"vegetation","atlas":true,"columns":4,"rows":2,"width":1536,"regions":[[0,0,391,544],[391,0,410,544],[801,0,330,544],[1131,0,405,544],[0,544,364,480],[364,544,416,480],[780,544,369,480],[1149,544,387,480]]}
   ]
 }

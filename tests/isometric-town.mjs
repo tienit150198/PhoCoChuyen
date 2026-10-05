@@ -4,25 +4,37 @@ import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {createLeisurePresence,publicActivity} from '../public/js/isometric/leisure-presence.js';
 
-function harness({state='open',flag=true,mode='town'}={}){
+function harness({state='open',flag=true,mode='town',url='/live'}={}){
   const source=readFileSync(new URL('../public/js/isometric-town.js',import.meta.url),'utf8')
     .replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
-  let now=1000,id=0;const timers=new Map(),listeners=new Map(),events=new Map(),sent=[],drawn=[];
+  let now=1000,id=0;const timers=new Map(),listeners=new Map(),events=new Map(),sent=[],drawn=[],statuses=[];
   const live={state,flags:{town:flag},on(t,fn){listeners.set(t,fn);return()=>listeners.delete(t);},send(f){if(this.state!=='open')return false;sent.push(f);return true;}};
   const eventTarget={addEventListener(t,fn){events.set(t,fn);},removeEventListener(t){events.delete(t);}};
   const doc={visibilityState:'visible',...eventTarget};
   const world={mode,getPresence(){return this.mode==='town'?{x:6,y:6,direction:1,name:'Spoof',task:'private'}:null;},setRemotePlayers(p){drawn.push(p);}};
-  const env={world,api:{state:{private:'secret',journey:{gender:'female'}}}};
+  const env={world,api:{live:{url},state:{private:'secret',journey:{gender:'female'}}}};
   const context=vm.createContext({live,leisurePresence:createLeisurePresence(),publicActivity,lookOf:()=>({top:'ao_quen'}),console,document:doc,window:eventTarget,
     setInterval:(fn)=>{timers.set(++id,fn);return id;},clearInterval:i=>timers.delete(i),
     setTimeout:(fn)=>{timers.set(++id,fn);return id;},clearTimeout:i=>timers.delete(i),Date:{now:()=>now}});
   vm.runInContext(source+'\nglobalThis.factory=createTownPresence;',context);
-  const bridge=context.factory(()=>env,{transport:live,document:doc,events:eventTarget,now:()=>now,status:()=>{}});
+  const bridge=context.factory(()=>env,{transport:live,document:doc,events:eventTarget,now:()=>now,status:(text,visible)=>statuses.push({text,visible})});
   bridge.start();
-  return {bridge,live,world,sent,drawn,doc,emit:(t,f)=>listeners.get(t)?.(f),
+  return {bridge,live,world,sent,drawn,doc,statuses,emit:(t,f)=>listeners.get(t)?.(f),
     mode(m){world.mode=m;events.get('mnl:iso-mode')?.({detail:{mode:m}});},
     tick(ms=280){now+=ms;for(const fn of [...timers.values()])fn();}};
 }
+test('presence announces actual connection state and only real room peers',()=>{
+  for(const [state,label] of [['idle','Khu phố chưa kết nối'],['connecting','Đang kết nối khu phố…'],['down','Khu phố mất kết nối'],['off','Khu phố trực tuyến không khả dụng']]){
+    const h=harness({state});
+    assert.equal(h.statuses.at(-1).text,label);
+    h.bridge.stop();
+  }
+  assert.equal(harness({state:'idle',url:''}).statuses.at(-1).text,'Chưa bật kết nối khu phố');
+  const h=harness();
+  h.emit('town_room',{map:'iso-town-v1',room:'r',me:'me',people:[{pid:'p',name:'Lan',x:6,y:8}]});
+  assert.equal(h.statuses.at(-1).text,'Khu phố trực tuyến · 1 người cùng dạo');
+  h.mode('work');assert.equal(h.statuses.at(-1).visible,false);
+});
 test('join sends only public look and canonical ground coordinates',()=>{
   const h=harness();assert.equal(h.sent[0].t,'town_in');assert.equal(h.sent[0].map,'iso-town-v1');
   assert.deepEqual(Object.keys(h.sent[0]).sort(),['cid','direction','g','look','map','t','x','y']);

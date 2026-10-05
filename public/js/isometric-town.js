@@ -54,17 +54,18 @@ export function createTownPresence(envGetter,options={}){
       taken?'Khu phố đang mở ở tab khác':
       !env()?.api?.live?.url?'Chưa bật kết nối khu phố':
       socket.state==='open'&&!socket.flags?.town?'Khu phố trực tuyến đang tắt':
-      socket.state==='open'?'Đang vào khu phố…':'Đang chờ kết nối khu phố…';
+      socket.state==='open'?'Đang vào khu phố…':
+      socket.state==='connecting'?'Đang kết nối khu phố…':
+      socket.state==='down'?'Khu phố mất kết nối':
+      socket.state==='off'?'Khu phố trực tuyến không khả dụng':'Khu phố chưa kết nối';
     if(options.status){options.status(text,inTown);return;}
     if(!statusNode&&doc?.createElement){
       statusNode=doc.getElementById('townPresenceStatus')||doc.createElement('div');
       statusNode.id='townPresenceStatus';statusNode.className='town-presence-status';
       statusNode.setAttribute('role','status');statusNode.setAttribute('aria-live','polite');
       statusNode.setAttribute('aria-atomic','true');
-      // A small HUD label; CSS may refine it without coupling the network to the renderer.
-      Object.assign(statusNode.style,{position:'absolute',left:'14px',bottom:'14px',zIndex:'6',
-        padding:'7px 11px',borderRadius:'18px',background:'#fff8e9e8',color:'#524336',
-        fontSize:'12px',pointerEvents:'none',maxWidth:'calc(100% - 28px)'});
+      // Layout belongs to the responsive HUD stylesheet. Keep this node outside
+      // #isoHUD so shell rerenders cannot replace its live status announcement.
       if(!statusNode.parentNode)(doc.getElementById('stage')||doc.getElementById('world')?.parentNode||doc.body)?.append(statusNode);
     }
     if(statusNode){statusNode.hidden=!inTown;statusNode.dataset.connected=room?'true':'false';

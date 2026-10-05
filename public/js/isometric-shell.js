@@ -12,7 +12,7 @@ let rendered='';
 let chatLive=null;
 
 /** Pure presentation state, including the server's task order and chosen career. */
-export function isometricHUDModel(state={},content={},mode='town',social={}){
+export function isometricHUDModel(state={},content={},mode='town',social={},connection){
   const current=state.current&&state.careers?.[state.current]?state.current:null;
   const room=current?state.careers[current]:null;
   const meta=content?.catalogue?.find(c=>c.id===current)||{};
@@ -23,11 +23,17 @@ export function isometricHUDModel(state={},content={},mode='town',social={}){
   const storyDay=state.journey?.story!==false&&Number.isInteger(state.journey?.life_day)?state.journey.life_day:null;
   const day=storyDay??(Number.isInteger(room?.day)?room.day:null);
   const place=room?.life?.shop_name||meta.place||meta.name||'Nơi làm việc';
+  const chatOff=social.flags?.chat===false;
+  const chatOnline=social.state==='open'&&!chatOff;
+  const chatStatus=chatOff?'Tạm nghỉ':chatOnline?'Cả phố · Bạn bè':
+    connection&&!connection.url?'Chưa khả dụng':
+    social.state==='connecting'?'Đang kết nối':
+    social.state==='down'?'Mất kết nối':social.state==='off'?'Không khả dụng':'Chưa kết nối';
   return {current,mode:sceneMode,name:state.name||'Bạn',day,place,careerName:meta.name||place,
     sceneTitle:sceneMode==='work'?place:'Đảo Hoàng Sa',money:hudMoney(state,current),
     task,taskCount:tasks.length,needsJob,open:Boolean(room?.open),
     missionAction:!current?'isoCareers':needsJob?'isoApply':!room.open?'isoPrepare':task?'isoMission':'isoQueue',
-    chatUnread:Math.max(0,Number(social.unread?.())||0),chatOnline:social.state==='open',chatOff:social.flags?.chat===false,
+    chatUnread:Math.max(0,Number(social.unread?.())||0),chatOnline,chatOff,chatStatus,
     menuOpen:false};
 }
 
@@ -67,7 +73,7 @@ export function isometricHUDHTML(model,state={}){
     ${control('Về giữa','isoRecenter','compass','iso-round',' aria-label="Đưa góc nhìn về nhân vật" title="Về giữa"')}
     ${control('Toàn đảo','isoOverview','overview','iso-round iso-overview',' aria-label="Xem toàn đảo" title="Xem toàn đảo"')}
   </div>
-  <button type="button" class="iso-chat${m.chatOnline?'':' is-offline'}" data-action="isoChat" aria-label="Trò chuyện${m.chatUnread?` · ${m.chatUnread} tin chưa đọc`:''}" aria-haspopup="dialog" aria-controls="townChat"><span class="iso-chat-mark">${icon('chats',26)}</span><span class="iso-chat-copy"><b>Trò chuyện</b><small>${m.chatOff?'Tạm nghỉ':m.chatOnline?'Cả phố · Bạn bè':'Đang kết nối'}</small></span><em class="iso-chat-unread"${m.chatUnread?'':' hidden'}>${m.chatUnread>99?'99+':m.chatUnread||''}</em></button>
+  <button type="button" class="iso-chat${m.chatOnline?'':' is-offline'}" data-action="isoChat" aria-label="Trò chuyện${m.chatUnread?` · ${m.chatUnread} tin chưa đọc`:''}" aria-haspopup="dialog" aria-controls="townChat"><span class="iso-chat-mark">${icon('chats',26)}</span><span class="iso-chat-copy"><b>Trò chuyện</b><small>${esc(m.chatStatus)}</small></span><em class="iso-chat-unread"${m.chatUnread?'':' hidden'}>${m.chatUnread>99?'99+':m.chatUnread||''}</em></button>
   <p class="iso-key-hint"><kbd>W A S D</kbd> / <kbd>↑ ↓ ← →</kbd> di chuyển · Chạm đường để đi</p>
   <div class="iso-scene"><span class="iso-scene-symbol">${icon(m.mode==='work'?'store':'leaf',24)}</span><span class="iso-scene-copy"><small>${esc(m.mode==='work'?m.careerName:'Phố Có Chuyện')}</small><b>${esc(m.sceneTitle)}</b></span><button type="button" class="iso-scene-go" data-action="${m.mode==='work'?'isoTown':m.current?'isoWork':'isoCareers'}" aria-label="${esc(m.mode==='work'?'Ra Đảo Hoàng Sa':m.current?`Vào làm tại ${m.place}`:'Chọn một nghề trên đảo')}">${m.mode==='work'?'Ra đảo':m.current?'Vào làm':'Chọn nghề'}${icon('arrow',17)}</button></div>
   <nav class="iso-nav" aria-label="Điều hướng chính">${nav.map(([action,ico,label])=>control(label,action,ico,`iso-tab${action===active?' is-active':''}`,action==='isoMore'?` aria-controls="rail" aria-expanded="${m.menuOpen}"`:action===active?' aria-current="page"':'')).join('')}</nav>`;
@@ -104,7 +110,7 @@ export function bootIsometricShell(envGetter){
       // The entry is already visible; do not wait for the app's deferred feature boot.
       liveBoot(getEnvironment?.());
       chatLive=live;
-      for(const event of ['welcome','down','state','msg','read','quiet','cleared','blocked','chan'])live.on(event,()=>updateIsometricShell(getEnvironment?.()));
+      for(const event of ['connection','welcome','down','state','msg','read','quiet','cleared','blocked','chan'])live.on(event,()=>updateIsometricShell(getEnvironment?.()));
       updateIsometricShell(getEnvironment?.());
     }).catch(()=>{});
     // The existing shell closes its More menu on outside click/Escape, without a server change.
@@ -141,7 +147,7 @@ export function updateIsometricShell(env){
       header.append(close);
     }
   }
-  const model=isometricHUDModel(env.api.state,env.api.content,env.world?.mode,chatLive||{});
+  const model=isometricHUDModel(env.api.state,env.api.content,env.world?.mode,chatLive||{},env.api.live||{});
   const root=document.documentElement;
   root.dataset.sceneMode=model.mode;
   hud.dataset.sceneMode=model.mode;

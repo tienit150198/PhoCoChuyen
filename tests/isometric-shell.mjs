@@ -51,8 +51,16 @@ assert.match(html,/class="iso-chat-unread"[^>]*>99\+</,'the visible unread count
 assert.match(html,/Trò chuyện/);
 html=isometricHUDHTML(isometricHUDModel(state,content,'town',{state:'down',unread:()=>0}),state);
 assert.match(html,/data-action="isoChat"/,'the conversation entry stays discoverable while offline');
-assert.match(html,/Đang kết nối/);
+assert.match(html,/Mất kết nối/);
 assert.match(html,/class="iso-chat-unread"[^>]*hidden/,'zero unread messages do not get an empty badge');
+for(const [state,label] of [['idle','Chưa kết nối'],['connecting','Đang kết nối'],['off','Không khả dụng']]){
+  html=isometricHUDHTML(isometricHUDModel({},content,'town',{state}),{});
+  assert.match(html,new RegExp(`<small>${label}</small>`),`chat describes the actual ${state} state`);
+}
+html=isometricHUDHTML(isometricHUDModel({},content,'town',{state:'open',flags:{chat:false}}),{});
+assert.match(html,/<small>Tạm nghỉ<\/small>/,'a disabled chat does not claim to be connected');
+html=isometricHUDHTML(isometricHUDModel({},content,'town',{state:'idle'}, {url:''}),{});
+assert.match(html,/<small>Chưa khả dụng<\/small>/,'a missing live URL never claims a pending connection');
 
 const calls=[];
 const env={api:{state,content},ui:{},world:{mode:'town',setMode:mode=>calls.push(['mode',mode]),overviewIsland:()=>calls.push(['overview'])},closeSheet:()=>calls.push(['close']),

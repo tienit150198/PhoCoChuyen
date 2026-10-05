@@ -15,7 +15,7 @@ html[data-game="isometric"] {
   --iso-tile-dark: #8d3f2b;
   --iso-tile-ink: #fff9ed;
   --iso-debt: #aa392b;
-  --iso-lift: 0 2px 0 #9c754940, 0 5px 14px #543b2421;
+  --iso-lift: 0 3px 12px #543b241a, inset 0 1px 0 #fffdf5b3;
   --iso-focus: #2f604c;
   --iso-nav-h: 78px;
   --iso-scene-h: 60px;
@@ -102,6 +102,7 @@ html[data-game="isometric"] #isoHUD button {
   color: inherit;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
 }
 html[data-game="isometric"] #isoHUD button:focus-visible {
   outline: 3px solid var(--iso-focus);
@@ -581,9 +582,9 @@ html[data-game="isometric"] #pauseOverlay {z-index: 30;}
   .iso-scene-copy small {display: none;}
   .iso-camera {right: 12px;bottom: 78px;flex-direction: row;gap: 5px;}
   html[data-game="isometric"][data-scene-mode="work"] #sceneAreas {top: 67px;left: 84px;flex-direction: row;width: auto;max-width: 180px;}
-  html[data-game="isometric"][data-scene-mode="work"] #taskHUD {top: 67px !important;right: 12px !important;width: 252px !important;max-height: calc(100dvh - 192px) !important;}
-  html[data-game="isometric"][data-scene-mode="work"] .wv-work-hud {top: 67px !important;right: 12px !important;width: 252px !important;max-height: calc(100dvh - 192px) !important;}
-  html[data-game="isometric"][data-scene-mode="work"] #dock {bottom: 83px !important;left: 90px !important;transform: none;max-width: calc(100% - 250px);}
+  html[data-game="isometric"][data-scene-mode="work"] #taskHUD {top: 67px !important;right: 12px !important;width: 252px !important;max-height: calc(100dvh - 208px) !important;}
+  html[data-game="isometric"][data-scene-mode="work"] .wv-work-hud {top: 67px !important;right: 12px !important;width: 252px !important;max-height: calc(100dvh - 208px) !important;}
+  html[data-game="isometric"][data-scene-mode="work"] #dock {bottom: 83px !important;left: 104px !important;transform: none;max-width: calc(100% - 320px);}
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -594,7 +595,7 @@ html[data-game="isometric"] [hidden] {display: none !important;}
 
 /* The mobile stick lives beside the scene canvas so HUD updates cannot replace an active touch. */
 .iso-movement {display:none;position:absolute;z-index:32;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(var(--iso-nav-h) + var(--iso-scene-h) + 46px + env(safe-area-inset-bottom,0px));width:104px;pointer-events:auto;user-select:none;-webkit-user-select:none;}
-.iso-stick-caption {display:block;margin-bottom:6px;text-align:center;color:var(--iso-ink);font:700 10px/14px system-ui,sans-serif;text-shadow:0 1px var(--iso-paper);}
+.iso-stick-caption {display:block;margin-bottom:6px;text-align:center;color:var(--iso-ink);font:700 10px/14px var(--font,system-ui,sans-serif);text-shadow:0 1px var(--iso-paper);}
 .iso-stick-base {position:relative;width:104px;height:104px;border-radius:50%;border:2px solid var(--iso-wood);background:radial-gradient(circle at 38% 30%,#fff7dfdd,#d9c99ee0);box-shadow:inset 0 0 0 7px #fff8e275,inset 0 0 0 9px #b49b6650,0 4px 0 #71513725;touch-action:none;cursor:grab;outline-offset:5px;}
 .iso-stick-base::before,.iso-stick-base::after {content:'';position:absolute;background:#8c755630;pointer-events:none;}
 .iso-stick-base::before {left:20%;right:20%;top:50%;height:1px;}
@@ -628,22 +629,30 @@ html[data-game="isometric"] {--iso-nav-h:72px;}
 .iso-scene-copy small {display:none;}
 .iso-scene-symbol {display:none;}
 .iso-camera {bottom:calc(104px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(2,44px);gap:7px;}
-.iso-chat {position:absolute;right:max(24px,env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;min-height:54px;min-width:176px;padding:8px 14px;background:var(--iso-paper);border:1px solid var(--iso-seam);text-align:left;}
+.iso-chat {position:absolute;right:max(24px,env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:10px;min-height:54px;min-width:176px;padding:8px 14px;background:var(--iso-paper);border:1px solid var(--iso-seam);border-radius:18px;box-shadow:var(--iso-lift);text-align:left;}
 .iso-chat-mark {display:grid;place-items:center;flex:none;width:26px;height:34px;color:var(--iso-leaf);}
 .iso-chat-copy {display:flex;flex-direction:column;gap:2px;}
-.iso-chat-copy b {font:400 26px/1 var(--ui-pixel-font,inherit);white-space:nowrap;}
+.iso-chat-copy b {font-size:14px;font-weight:700;line-height:1.4;white-space:nowrap;}
 .iso-chat-copy small {color:var(--iso-caption);font-size:10px;line-height:1.4;}
 .iso-chat-unread {position:absolute;right:-7px;top:-9px;display:grid;place-items:center;min-width:24px;height:24px;padding:0 5px;border:2px solid var(--iso-paper-top);border-radius:8px;background:var(--iso-tile);color:var(--iso-tile-ink);font:700 11px/1 var(--font,system-ui);font-style:normal;}
 html[data-game="isometric"] .live-fab {display:none;}
-.iso-key-hint {position:absolute;left:max(24px,env(safe-area-inset-left,0px));bottom:calc(91px + env(safe-area-inset-bottom,0px));margin:0;padding:5px 8px;border-radius:4px;background:var(--iso-paper-top);color:var(--iso-caption);font-size:10px;}
+.iso-key-hint {position:absolute;left:max(24px,env(safe-area-inset-left,0px));bottom:calc(91px + env(safe-area-inset-bottom,0px));margin:0;padding:5px 8px;border-radius:10px;background:var(--iso-paper-top);color:var(--iso-caption);font-size:10px;}
 .iso-key-hint kbd {font:inherit;color:var(--iso-ink);font-weight:700;}
+/* A dedicated status strip above navigation stays clear of the scene and chat cards. */
+html[data-game="isometric"] .town-presence-status {position:absolute;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:21;transform:translateX(-50%);width:max-content;max-width:calc(100% - 24px);padding:3px 10px;border:1px solid var(--iso-seam-soft);border-radius:12px;background:var(--iso-paper-top);color:var(--iso-caption);font:400 11px/16px var(--font,"Be Vietnam Pro",system-ui,sans-serif);text-align:center;pointer-events:none;}
+html[data-game="isometric"] .town-presence-status[data-connected="true"] {color:var(--iso-leaf);}
 @media (hover:hover) {.iso-chat:hover {background:var(--iso-paper-top);border-color:var(--iso-wood);}}
 @media (pointer:coarse), (max-width:699px) {.iso-key-hint {display:none;}}
 @media (min-width:700px) and (max-width:1100px) and (min-height:521px) {
-  .iso-scene {bottom:calc(104px + env(safe-area-inset-bottom,0px));max-width:300px;}
-  .iso-chat {bottom:calc(106px + env(safe-area-inset-bottom,0px));}
-  .iso-camera {bottom:calc(182px + env(safe-area-inset-bottom,0px));}
-  .iso-key-hint {bottom:calc(170px + env(safe-area-inset-bottom,0px));}
+  .iso-scene {bottom:calc(128px + env(safe-area-inset-bottom,0px));max-width:300px;}
+  .iso-chat {bottom:calc(130px + env(safe-area-inset-bottom,0px));}
+  .iso-camera {bottom:calc(206px + env(safe-area-inset-bottom,0px));}
+  .iso-key-hint {bottom:calc(194px + env(safe-area-inset-bottom,0px));}
+  html[data-game="isometric"] .iso-movement[data-mode="town"] {bottom:calc(var(--iso-nav-h) + var(--iso-scene-h) + 70px + env(safe-area-inset-bottom,0px));}
+  html[data-game="isometric"][data-scene-mode="work"] .iso-scene {bottom:calc(104px + env(safe-area-inset-bottom,0px));}
+  html[data-game="isometric"][data-scene-mode="work"] .iso-chat {bottom:calc(106px + env(safe-area-inset-bottom,0px));}
+  html[data-game="isometric"][data-scene-mode="work"] .iso-camera {bottom:calc(182px + env(safe-area-inset-bottom,0px));}
+  html[data-game="isometric"][data-scene-mode="work"] .iso-key-hint {bottom:calc(170px + env(safe-area-inset-bottom,0px));}
 }
 @media (max-width:699px) {
   html[data-game="isometric"] {--iso-nav-h:68px;}
@@ -652,16 +661,18 @@ html[data-game="isometric"] .live-fab {display:none;}
   .iso-mission {top:78px;width:calc(100% - 99px);max-width:250px;padding:9px 11px;}
   .iso-nav {min-height:68px;width:calc(100% - 24px);padding:4px;}
   .iso-tab {min-height:56px;}
-  .iso-scene {left:max(12px,env(safe-area-inset-left,0px));bottom:calc(94px + env(safe-area-inset-bottom,0px));width:calc(100% - 172px);max-width:230px;min-height:52px;gap:5px;padding:5px 6px;}
+  .iso-scene {left:max(12px,env(safe-area-inset-left,0px));bottom:calc(112px + env(safe-area-inset-bottom,0px));width:calc(100% - 172px);max-width:230px;min-height:52px;gap:5px;padding:5px 6px;}
   .iso-scene-copy {flex:1;}
-  html[data-game="isometric"] #isoHUD .iso-scene-copy b {font-size:20px;}
-  html[data-game="isometric"] #isoHUD .iso-scene-go {min-width:62px;min-height:40px;padding:5px;font-size:18px;}
+  html[data-game="isometric"] #isoHUD .iso-scene-copy b {font-size:12px;}
+  html[data-game="isometric"] #isoHUD .iso-scene-go {min-width:62px;min-height:40px;padding:5px;font-size:11px;}
   .iso-scene-go .icon {display:none;}
-  .iso-chat {right:max(12px,env(safe-area-inset-right,0px));bottom:calc(94px + env(safe-area-inset-bottom,0px));min-width:0;width:136px;min-height:52px;gap:5px;padding:6px 8px;}
+  .iso-chat {right:max(12px,env(safe-area-inset-right,0px));bottom:calc(112px + env(safe-area-inset-bottom,0px));min-width:0;width:136px;min-height:52px;gap:5px;padding:6px 8px;border-radius:14px;}
   .iso-chat-mark {width:24px;}
   .iso-chat-mark .icon {width:24px;height:24px;}
-  .iso-chat-copy b {font-size:23px;white-space:nowrap;}
-  .iso-chat-copy small {font-size:9px;}
+  .iso-chat-copy b {font-size:12px;white-space:nowrap;}
+  .iso-chat-copy small {font-size:10px;}
+  html[data-game="isometric"] .town-presence-status {bottom:calc(84px + env(safe-area-inset-bottom,0px));}
+  html[data-game="isometric"][data-scene-mode="work"] :is(.iso-scene,.iso-chat) {bottom:calc(94px + env(safe-area-inset-bottom,0px));}
 }
 @media (max-height:520px) and (orientation:landscape) {
   .iso-top {top:max(8px,env(safe-area-inset-top,0px));left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));}
@@ -671,12 +682,23 @@ html[data-game="isometric"] .live-fab {display:none;}
   .iso-mission {top:70px;right:12px;width:236px;padding:8px 10px;}
   .iso-nav {left:max(12px,env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));width:330px;max-width:40%;min-height:58px;padding:3px;transform:none;}
   .iso-tab {min-height:48px;gap:2px;}
-  html[data-game="isometric"] #isoHUD .iso-tab {font-size:18px;}
-  .iso-scene {left:calc(40% + 28px);right:auto;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:210px;min-height:54px;padding:5px 8px;}
-  html[data-game="isometric"] #isoHUD .iso-scene-copy b {font-size:20px;}
+  html[data-game="isometric"] #isoHUD .iso-tab {font-size:10px;}
+  .iso-scene {left:calc(40% + 28px);right:auto;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:min(210px,calc(60% - 216px));min-height:54px;padding:5px 8px;}
+  html[data-game="isometric"] #isoHUD .iso-scene-copy b {font-size:12px;}
   .iso-scene-go {min-width:70px;}
   .iso-chat {right:max(12px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));width:160px;min-width:0;min-height:54px;padding:6px 9px;gap:6px;}
-  .iso-chat-copy b {font-size:24px;}
+  .iso-chat-copy b {font-size:13px;}
   html[data-game="isometric"] #isoHUD .iso-camera {display:flex;flex-direction:row;right:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px));}
   .iso-key-hint {display:none;}
+  html[data-game="isometric"] .town-presence-status {left:calc(40% + 28px);bottom:calc(74px + env(safe-area-inset-bottom,0px));max-width:calc(60% - 240px);transform:none;font-size:10px;}
+  html[data-game="isometric"][data-scene-mode="work"] :is(.iso-scene,.iso-chat) {bottom:calc(12px + env(safe-area-inset-bottom,0px));}
+}
+
+/* Short portrait phones need the shortcuts above the walking controls. */
+@media (max-width:699px) and (max-height:650px) and (orientation:portrait) {
+  html[data-game="isometric"][data-scene-mode="town"] .iso-quick {top:calc(182px + env(safe-area-inset-top,0px));flex-direction:row;gap:7px;}
+  html[data-game="isometric"][data-scene-mode="work"] .iso-quick {gap:6px;}
+  html[data-game="isometric"][data-scene-mode="work"] .iso-quick-button {min-height:44px;gap:2px;padding:4px 2px;}
+  html[data-game="isometric"] .iso-movement[data-mode="work"] {bottom:calc(232px + env(safe-area-inset-bottom,0px));width:80px;}
+  html[data-game="isometric"] .iso-movement[data-mode="work"] .iso-stick-base {width:80px;height:80px;}
 }

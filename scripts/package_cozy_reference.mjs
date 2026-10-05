@@ -10,7 +10,19 @@ for(const source of manifest.assets){
   const path=`${root}/${source.id}-source.png`,meta=await sharp(path).metadata();
   if(!meta.hasAlpha&&!source.background)throw new Error(`${source.id}: transparent alpha required`);
   const character=source.id.startsWith('character-'),atlas=character||source.atlas;
-  const input=atlas||source.background?sharp(path):sharp(path).trim({background:'#00000000',threshold:10});
+  let input=atlas||source.background?sharp(path):sharp(path).trim({background:'#00000000',threshold:10});
+  if(source.regions){
+    // Asset packing only: isolate each source cell and add transparent gutters.
+    // All foliage, shading and alpha come from the generated artwork.
+    const layers=[];
+    for(let i=0;i<source.regions.length;i++){
+      const [left,top,width,height]=source.regions[i];
+      const cell=await sharp(path).extract({left,top,width,height}).png().toBuffer();
+      const packed=await sharp(cell).trim({background:'#00000000',threshold:10}).resize({width:336,height:438,fit:'inside'}).png().toBuffer({resolveWithObject:true});
+      layers.push({input:packed.data,left:i%4*384+Math.round((384-packed.info.width)/2),top:Math.floor(i/4)*512+476-packed.info.height});
+    }
+    input=sharp({create:{width:1536,height:1024,channels:4,background:'#00000000'}}).composite(layers);
+  }
   const {data,info}=await input.resize({width:source.width||(character?1024:source.background?960:720),withoutEnlargement:true}).webp({quality:86,alphaQuality:100,effort:6}).toBuffer({resolveWithObject:true});
   await writeFile(`${out}/${source.id}.webp`,data);
   assets.push({id:source.id,url:`/icons/cozy-v2/${source.id}.webp`,width:info.width,height:info.height,bytes:data.length,...(atlas?{columns:source.columns||4,rows:source.rows||3}: {})});

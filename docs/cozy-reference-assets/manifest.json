@@ -83,6 +83,15 @@
       "width": 256,
       "height": 214,
       "bytes": 15820
+    },
+    {
+      "id": "vegetation",
+      "url": "/icons/cozy-v2/vegetation.webp",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 476206,
+      "columns": 4,
+      "rows": 2
     }
   ]
 }
