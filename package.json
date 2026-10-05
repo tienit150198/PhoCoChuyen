@@ -9,7 +9,7 @@
     "build:isometric": "node scripts/build_isometric.mjs",
     "assets:isometric": "node scripts/prepare_isometric_assets.mjs",
     "typecheck:isometric": "tsc -p tsconfig.isometric.json",
-    "test:isometric": "node tests/isometric-world.mjs && node tests/isometric-shell.mjs && node tests/isometric-chat-boot.mjs && node tests/isometric-character.mjs && node tests/isometric-texture-frames.mjs && node tests/isometric-movement.mjs && node tests/isometric-town.mjs && node tests/isometric-leisure-presence.mjs && node tests/cozy-portraits.mjs && node tests/delivery_isometric.mjs && node tests/pixel-places.mjs && node tests/leisure-art.mjs && node tests/leisure-actors.mjs && node tests/town-map-contract.mjs && node tests/town-polish.mjs",
+    "test:isometric": "node tests/isometric-world.mjs && node tests/isometric-shell.mjs && node tests/isometric-chat-boot.mjs && node tests/isometric-character.mjs && node tests/isometric-texture-frames.mjs && node tests/isometric-movement.mjs && node tests/isometric-town.mjs && node tests/isometric-leisure-presence.mjs && node tests/cozy-portraits.mjs && node tests/delivery_isometric.mjs && node tests/pixel-places.mjs && node tests/leisure-art.mjs && node tests/leisure-actors.mjs && node tests/town-map-contract.mjs && node tests/town-polish.mjs && node tests/town-art-polish.mjs && node tests/illustrated-icons.mjs && node tests/isometric-camera.mjs",
     "assets:reference": "node scripts/package_cozy_reference.mjs"
   },
   "dependencies": {

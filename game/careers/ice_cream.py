@@ -1722,7 +1722,7 @@ def validate_data(c: dict) -> None:
 # ================================================================ the plugin spec
 SPEC = dict(
     id=ID, prefix='kem_', category='food',
-    meta=dict(short='Bán kem', place='Tiệm kem Góc Phượng', tagline='Viên kem tròn, lạnh vừa, đủ gam.', icon='cake',
+    meta=dict(short='Bán kem', place='Tiệm kem Góc Phượng', tagline='Viên kem tròn, lạnh vừa, đủ gam.', icon='ice_cream',
               color='#e0679a', light='#ffe9f2', weather='Nắng trưa cổng trường', work='Khách gọi kem', station='Tủ kem & cân',
               greeting='Xem nhiệt kế tủ, soi hộp kem, thay nước muỗng rồi mở tiệm. Múc viên nào cũng nhìn cân, múc xong đậy nắp tủ liền tay nhé.',
               caption='Viên kem nào cũng lên cân', map_label='23 · TIỆM KEM GÓC PHƯỢNG'),

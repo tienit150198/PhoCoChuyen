@@ -1,13 +1,17 @@
 {
-  "version": 2,
+  "version": 3,
   "setbacks": [[0,0],[-0.28,0.16],[0.3,-0.22],[-0.18,-0.3],[0.24,0.26],[0.05,-0.18]],
   "gardens": [
-    [{"x":0.27,"y":2.2,"kind":"banana","size":0.78},{"x":3.3,"y":0.23,"kind":"flamboyant","size":1.03}],
-    [{"x":0.25,"y":3.1,"kind":"flowers","size":0.7},{"x":2.7,"y":0.24,"kind":"palm","size":0.93}],
+    [{"x":0.27,"y":2.2,"kind":"banana","size":0.78},{"x":3.3,"y":0.23,"kind":"flamboyant","size":1.03},{"x":5.15,"y":0.35,"kind":"flowers","size":0.52}],
+    [{"x":0.25,"y":3.1,"kind":"flowers","size":0.7},{"x":2.7,"y":0.24,"kind":"palm","size":0.93},{"x":0.4,"y":4.85,"kind":"rocks","size":0.48}],
     [{"x":0.3,"y":1.5,"kind":"bamboo","size":0.86},{"x":4.1,"y":0.18,"kind":"shrubs","size":0.8}],
-    [{"x":0.28,"y":2.2,"kind":"banyan","size":1.04},{"x":3.2,"y":0.16,"kind":"flowers","size":0.68}],
-    [{"x":0.24,"y":1.8,"kind":"rocks","size":0.64},{"x":4,"y":0.25,"kind":"banana","size":0.89}],
-    [{"x":0.25,"y":3.3,"kind":"shrubs","size":0.79},{"x":2.8,"y":0.2,"kind":"bamboo","size":0.98}]
+    [{"x":0.28,"y":2.2,"kind":"banyan","size":1.04},{"x":4.6,"y":0.16,"kind":"flowers","size":0.68},{"x":0.2,"y":4.9,"kind":"shrubs","size":0.48}],
+    [{"x":0.24,"y":1.8,"kind":"rocks","size":0.64},{"x":4,"y":0.25,"kind":"banana","size":0.89},{"x":2,"y":0.32,"kind":"flowers","size":0.54}],
+    [{"x":0.25,"y":3.3,"kind":"shrubs","size":0.79},{"x":2.8,"y":0.2,"kind":"bamboo","size":0.98}],
+    [{"x":0.23,"y":1.1,"kind":"palm","size":0.84},{"x":0.38,"y":4.4,"kind":"flowers","size":0.51},{"x":4.65,"y":0.24,"kind":"bamboo","size":0.72}],
+    [{"x":0.28,"y":3.65,"kind":"flamboyant","size":0.84},{"x":2.4,"y":0.3,"kind":"rocks","size":0.49},{"x":4.7,"y":0.24,"kind":"shrubs","size":0.6}],
+    [{"x":0.32,"y":1.75,"kind":"banana","size":0.9},{"x":4.3,"y":0.22,"kind":"flowers","size":0.68}],
+    [{"x":0.27,"y":2.9,"kind":"bamboo","size":0.75},{"x":4.65,"y":0.23,"kind":"banyan","size":0.93},{"x":0.25,"y":4.9,"kind":"rocks","size":0.44}]
   ],
   "commons": [
     {"id":"outing:fishing","label":"Ao câu cá","kind":"pond","at":{"x":8.5,"y":10.2},"approach":{"x":6.4,"y":9.4},"footprint":{"x0":7.2,"y0":8.7,"x1":9.5,"y1":11.5}},

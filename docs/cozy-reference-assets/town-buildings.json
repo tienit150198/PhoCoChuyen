@@ -1,0 +1,58 @@
+[
+  {
+    "id": "florist",
+    "url": "/icons/cozy-v3/florist.webp",
+    "width": 291,
+    "height": 387,
+    "bytes": 54392
+  },
+  {
+    "id": "salon",
+    "url": "/icons/cozy-v3/salon.webp",
+    "width": 296,
+    "height": 372,
+    "bytes": 47962
+  },
+  {
+    "id": "office",
+    "url": "/icons/cozy-v3/office.webp",
+    "width": 292,
+    "height": 390,
+    "bytes": 49494
+  },
+  {
+    "id": "pet",
+    "url": "/icons/cozy-v3/pet.webp",
+    "width": 303,
+    "height": 377,
+    "bytes": 46028
+  },
+  {
+    "id": "school",
+    "url": "/icons/cozy-v3/school.webp",
+    "width": 311,
+    "height": 384,
+    "bytes": 48176
+  },
+  {
+    "id": "pagoda",
+    "url": "/icons/cozy-v3/pagoda.webp",
+    "width": 341,
+    "height": 385,
+    "bytes": 54614
+  },
+  {
+    "id": "airport",
+    "url": "/icons/cozy-v3/airport.webp",
+    "width": 330,
+    "height": 384,
+    "bytes": 44822
+  },
+  {
+    "id": "market",
+    "url": "/icons/cozy-v3/market.webp",
+    "width": 308,
+    "height": 357,
+    "bytes": 47046
+  }
+]

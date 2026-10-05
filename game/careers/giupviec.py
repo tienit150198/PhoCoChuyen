@@ -881,7 +881,7 @@ def validate_data(c: dict) -> None:
 # ================================================================ the plugin spec
 SPEC = dict(
     id=ID, prefix='gv_', category='service',
-    meta=dict(short='Giúp việc theo giờ', place='Tổ giúp việc Nhà Thơm', tagline='Trên cao trước, khô trước ướt sau.', icon='sparkles',
+    meta=dict(short='Giúp việc theo giờ', place='Tổ giúp việc Nhà Thơm', tagline='Trên cao trước, khô trước ướt sau.', icon='cleaning',
               color='#3f9d8f', light='#e2f4f0', weather='Sáng nắng nhẹ', work='Nhà khách hẹn', station='Xe đồ nghề',
               greeting='Giặt khăn, châm chai rồi lên đường. Tới nhà khách thì nghe dặn, dọn từ trên cao xuống, khô trước ướt sau nhé.',
               caption='Nhà ai cũng sạch thơm', map_label='25 · TỔ GIÚP VIỆC NHÀ THƠM'),

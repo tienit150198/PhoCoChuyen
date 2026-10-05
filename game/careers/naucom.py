@@ -1298,7 +1298,7 @@ def validate_data(c: dict) -> None:
 # ================================================================ the plugin spec
 SPEC = dict(
     id=ID, prefix='nc_', category='food',
-    meta=dict(short='Nấu cơm gia đình', place='Bếp nhà khách quen', tagline='Đi chợ vừa túi tiền, cơm nhà nóng hổi.', icon='basket',
+    meta=dict(short='Nấu cơm gia đình', place='Bếp nhà khách quen', tagline='Đi chợ vừa túi tiền, cơm nhà nóng hổi.', icon='com',
               color='#5e8c46', light='#eef6e4', weather='Sáng mát, chợ phường đông vui', work='Bữa cơm nhà', station='Bếp nhà khách',
               greeting='Nghe chủ nhà dặn, lên thực đơn hợp cả nhà, đi chợ vừa túi tiền rồi nấu cho kịp bữa. Món lâu chín bắc trước nhé.',
               caption='Bữa cơm nhà người ta, nấu như cho nhà mình', map_label='27 · BẾP NHÀ KHÁCH QUEN'),

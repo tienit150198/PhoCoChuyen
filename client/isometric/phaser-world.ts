@@ -8,8 +8,10 @@ import {getCharacterStamp,preloadIllustratedCharacters} from '/js/isometric/char
 import {kindOf,wordsFor} from '/js/scenes/index.js';
 import {activeTasks,advanceRoute,CAMERA_ZOOM,canvasDescription,cameraWorldPoint,defaultCamera,effectFrameState,findRoute,followCamera,gestureIsDrag,groundCacheRegion,inside,interpolateRoute,isWalkable,landmarkPlaneGeometry,makeNavigation,moveOnGround,nearestReachableHotspot,nearestWalkable,normalizeMovementInput,presenceDirection,project,publicTownPlayers,resizedCamera,roomAppearance,townBuildingArt,townBuildings,townGarden,townLandmarks,townNavigation,townRoads,unproject,WORK_FOOD_SHELF,WORK_WINDOW,workWindowAnchors} from './model';
 import type {Building,Career,Facing,Navigation,Point,Rect,RemotePlayer,RoomAppearance} from './model';
-import {islandCoastline,islandOverviewCamera,SEA_COLOR,TOWN_ZOOM} from './island';
+import {insideIsland,islandCoastline,islandOverviewCamera,SEA_COLOR,TOWN_ZOOM} from './island';
 import {TextureFrames} from './texture-frames';
+import {facadeTextLines,FACADE_SIGNS,NEW_BUILDING_ART} from './building-art';
+import {walkingPose} from './model';
 
 export type WorldMode = 'town' | 'work';
 interface Hotspot extends Point {id:string;label:string;approach:Point;point:Point;z:number;range:number}
@@ -23,6 +25,7 @@ const noOp=()=>{};
 const CHARACTER_SCALE=.65;
 const ASSETS:Record<string,string>=Object.fromEntries(['grocery','home','cafe','tree','bench','counter','shelf','desk','crates','interior-shop','interior-office','interior-cafe','interior-home'].map(kind=>[kind,'/icons/isometric/'+kind+'.webp']));
 Object.assign(ASSETS,{pharmacy:'/icons/cozy-v2/pharmacy.webp','mother-baby':'/icons/cozy-v2/mother-baby.webp',garage:'/icons/cozy-v2/garage.webp',pho:'/icons/cozy-v2/pho.webp',pond:'/icons/cozy-v2/leisure-lake.webp',pool:'/icons/cozy-v2/leisure-pool.webp',boat:'/icons/cozy-v2/boat.webp',vegetation:'/icons/cozy-v2/vegetation.webp'});
+for(const kind of NEW_BUILDING_ART)ASSETS[kind]=`/icons/cozy-v3/${kind}.webp`;
 const assetURL=(path:string)=>(window as any).__mnlBoot?.asset?.(path)||path;
 
 /** Phaser owns the scene and draw list; server mechanics stay in the existing DOM modules. */
@@ -58,6 +61,7 @@ export class PhaserWorld {
   private pointers=new Map<number,{start:Point;last:Point;drag:boolean}>();
   private pinch:{distance:number;zoom:number;world:Point}|null=null;
   private keys=new Set<string>();
+  walkDistance=0;
   private movementInput:Point={x:0,y:0};
   private remoteSignature='';
   private speechTimer:ReturnType<typeof setTimeout>|null=null;
@@ -186,9 +190,9 @@ export class PhaserWorld {
     let moving=false;const before={x:this.player.x,y:this.player.y};
     if(this.keys.size||this.movementInput.x||this.movementInput.y){let sx=this.movementInput.x,sy=this.movementInput.y;if(this.keys.has('a')||this.keys.has('arrowleft'))sx--;if(this.keys.has('d')||this.keys.has('arrowright'))sx++;if(this.keys.has('w')||this.keys.has('arrowup'))sy--;if(this.keys.has('s')||this.keys.has('arrowdown'))sy++;
       const next=moveOnGround(stage.navigation,this.player,normalizeMovementInput(sx,sy),dt);this.player.path=[];this.player.goal=null;this.pending=null;moving=Math.hypot(next.x-this.player.x,next.y-this.player.y)>1e-8;Object.assign(this.player,next);
-    }else if(this.player.path.length){const next=advanceRoute(this.player,this.player.path,170*dt,'screen');Object.assign(this.player,next.point);this.player.path=next.path;moving=true;if(next.arrived){this.player.goal=null;const cb=this.pending;this.pending=null;cb?.();}}
+    }else if(this.player.path.length){const next=advanceRoute(this.player,this.player.path,170*dt,'screen',stage.navigation);Object.assign(this.player,next.point);this.player.path=next.path;moving=true;if(next.arrived){this.player.goal=null;const cb=this.pending;this.pending=null;cb?.();}}
     if(moving&&![...this.pointers.values()].some(p=>p.drag)){const camera=stage.cameras.main,view=followCamera({width:this.width,height:this.height,scrollX:camera.scrollX,scrollY:camera.scrollY,zoom:camera.zoom},px(this.player,55),dt);camera.setScroll(view.scrollX,view.scrollY);}
-    if(moving)this.direction=presenceDirection(before,this.player,this.direction);
+    if(moving){this.direction=presenceDirection(before,this.player,this.direction);const delta=project({x:this.player.x-before.x,y:this.player.y-before.y});this.walkDistance+=Math.hypot(delta.x,delta.y);}
     stage.positionPlayer(moving);
     const remoteMoving=stage.stepRemotePlayers(this.time);
     const ev=this._fx?.ev,effect=effectFrameState(ev,this.time,this.reduced);
@@ -354,8 +358,9 @@ class DioramaScene extends Phaser.Scene {
     const plants=islandCoastline(-2.6);for(let i=3;i<plants.length;i+=7){const at=plants[i];this.vegetation(i%3?'palm':'rocks',at,.82+(i%4)*.09);const p=px(at);ground.fillStyle(0x829773,.28);ground.fillEllipse(p.x,p.y,93,35);if(i%2)this.vegetation('shrubs',{x:at.x+.7,y:at.y+.25},.8);}
     const stones=islandCoastline(-.25);for(let i=5;i<stones.length;i+=7){const p=px(stones[i]);ground.fillStyle(i%2?0xb7b694:0xc4c09e,.95);ground.fillEllipse(p.x,p.y,20+i%4*5,9+i%3*2);ground.lineStyle(1,0x8d9b84,.48);ground.strokeEllipse(p.x,p.y,20+i%4*5,9+i%3*2);}
     // Static inland groves reserve future districts without loading more gameplay.
-    for(const grove of [{x:-25,y:29},{x:-13,y:15},{x:62,y:28},{x:66,y:45},{x:-5,y:43},{x:33,y:-6},{x:43,y:57},{x:53,y:6}]){
+    for(const grove of [{x:-4,y:5},{x:5,y:-4},{x:-4,y:18},{x:18,y:-4},{x:-25,y:29},{x:-13,y:15},{x:62,y:28},{x:66,y:45},{x:-5,y:43},{x:33,y:-6},{x:43,y:57},{x:53,y:6}]){
       for(let i=0;i<19;i++){const angle=i*2.4,radius=1.1+Math.sqrt(i)*1.6,at={x:grove.x+Math.cos(angle)*radius,y:grove.y+Math.sin(angle)*radius*.72},p=px(at);
+        if(!insideIsland(at)||(at.x>-.8&&at.x<44&&at.y>-.8&&at.y<51))continue;
         ground.fillStyle(i%2?0x9cb384:0xa9bb8d,.34);ground.fillEllipse(p.x,p.y,410,160);this.vegetation(['banyan','banana','bamboo','flamboyant','shrubs','flowers'][i%6],at,.95+(i%4)*.14);
       }
     }
@@ -442,9 +447,15 @@ class DioramaScene extends Phaser.Scene {
   }
   private placard(text:string,at:Point,size:number,maxWidth:number,color:number,height=42){const p=px(at),post=this.add.graphics().setDepth(p.y+.3);post.fillStyle(0x8b6d4c);post.fillRoundedRect(p.x-4,p.y-height,8,height,2);post.fillStyle(0xc6aa7d);post.fillRect(p.x-1,p.y-height,2,height-3);post.fillStyle(0x71583e,.13);post.fillEllipse(p.x+3,p.y+1,26,8);this.staticObjects.push(post);const tag=this.label(text,p.x,p.y-height,size,maxWidth,color);tag.setDepth(p.y+.4);this.placards.push({tag,size});return tag;}
   private facadeSign(text:string,image:Phaser.GameObjects.Image,kind:string,color:number){
-    const anchor:Record<string,[number,number]>={grocery:[.35,.33],cafe:[.34,.32],home:[.35,.47],pharmacy:[.38,.36],'mother-baby':[.38,.4],garage:[.44,.31],pho:[.36,.35]};
-    const [x,y]=anchor[kind]||anchor.home,tag=this.label(text,image.x+(x-.5)*image.displayWidth,image.y-(1-y)*image.displayHeight,17,170,color);
-    tag.setRotation(.24).setDepth(image.depth+.4);tag.setData('buildingSign',true);this.placards.push({tag,size:17,mounted:true});return tag;
+    const sign=FACADE_SIGNS[kind]||FACADE_SIGNS.home,width=image.displayWidth*sign.width,height=image.displayHeight*sign.height;
+    const title=this.add.text(0,0,facadeTextLines(text),{fontFamily:FONT,fontSize:'16px',fontStyle:'bold',color:'#68472e',align:'center',lineSpacing:1,resolution:2}).setOrigin(.5,.5);
+    // Use the sign already painted on the building, rather than a second floating board.
+    const fit=Math.min(1,width/Math.max(1,title.width),height/Math.max(1,title.height));title.setScale(fit);
+    const layers:Phaser.GameObjects.GameObject[]=[];
+    if(sign.panel){const panel=this.add.graphics();panel.fillStyle(0x9b744e);panel.fillRoundedRect(-width/2-5,-height/2-4,width+10,height+8,3);panel.fillStyle(0xffefcd);panel.fillRoundedRect(-width/2-2,-height/2-1,width+4,height+2,2);panel.fillStyle(0x98764e);for(const side of [-1,1])panel.fillCircle(side*(width/2-3),0,1.4);layers.push(panel);}
+    layers.push(title);
+    const tag=this.add.container(image.x+(sign.x-.5)*image.displayWidth,image.y-(1-sign.y)*image.displayHeight,layers);this.staticObjects.push(tag);
+    tag.setRotation(sign.angle).setDepth(image.depth+.4);tag.setData('buildingSign',true);this.placards.push({tag,size:16,mounted:true});return tag;
   }
   private textureObject(key:string,width:number,height:number,draw:(ctx:CanvasRenderingContext2D)=>void){if(!this.textures.exists(key)){const c=document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d')!;ctx.imageSmoothingEnabled=true;draw(ctx);this.textures.addCanvas(key,c)!.setFilter(Phaser.Textures.FilterMode.LINEAR);}return key;}
   private characterTexture(prefix:string,look:any,gender:string,direction:Facing,uniformColor:string,walkFrame=0){
@@ -478,7 +489,7 @@ class DioramaScene extends Phaser.Scene {
     }
     return active;
   }
-  artSource(kind:string){if(['pharmacy','mother-baby','garage','pho'].includes(kind)&&!this.textures.exists('art-'+kind))kind=kind==='pho'?'cafe':'home';return this.textures.get(this.artTexture(kind)).getSourceImage() as HTMLImageElement|HTMLCanvasElement;}
+  artSource(kind:string){if(ASSETS[kind]&&!this.textures.exists('art-'+kind)){this.ensureAssets([kind]);kind=kind==='pho'?'cafe':'home';}return this.textures.get(this.artTexture(kind)).getSourceImage() as HTMLImageElement|HTMLCanvasElement;}
   private artTexture(kind:string,variant:string|number=0){this.ensureAssets([kind]);if(this.textures.exists('art-'+kind))return 'art-'+kind;const key='illustrated-detail-'+kind+'-'+variant,size:Record<string,[number,number]>={lamp:[192,512],window:[384,360],cat:[384,300],cup:[256,300],bread:[384,260],pond:[512,320],pool:[512,320],boat:[512,360]};const [width,height]=size[kind]||[384,384];return this.textureObject(key,width,height,ctx=>drawIllustratedDetail(ctx,kind,String(variant)));}
   private artObject(kind:string,p:Point,z:number,width:number,variant:string|number=0){
     const key=this.artTexture(kind,variant),source=this.textures.get(key).getSourceImage() as HTMLImageElement|HTMLCanvasElement,point=px(p,z),image=this.add.image(point.x,point.y,key).setOrigin(.5,1).setDisplaySize(width,width*source.height/source.width).setDepth(px(p).y+.2);this.staticObjects.push(image);return image;
@@ -531,7 +542,7 @@ class DioramaScene extends Phaser.Scene {
     const F=figure(this.owner.state),uniformColor=this.owner.mode==='work'?this.owner.game?.catalogue?.find(c=>c.id===this.owner.career)?.color||'#8ba77a':'#8ba77a',key=this.characterTexture('iso-player',F.L,F.g||'none',this.owner.direction,uniformColor,walkFrame);this.actorDirection=this.owner.direction;this.actorWalkFrame=walkFrame;
     if(key===this.actorKey)return false;if(this.actor)this.actor.setTexture(key);else this.actor=this.add.image(0,0,key).setOrigin(.5,1).setScale(CHARACTER_SCALE);this.actorKey=key;return true;
   }
-  positionPlayer(moving:boolean){const walkFrame=moving&&!this.owner.reduced?1+Math.floor(this.owner.time*7)%2:0;if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==walkFrame)this.refreshPlayer(walkFrame);if(!this.actor)return;const f=px(this.owner.player);this.actor.setPosition(f.x,f.y).setDepth(f.y+.5);if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138};this.speech.setPosition(at.x,at.y);} }
+  positionPlayer(moving:boolean){const pose=walkingPose(this.owner.walkDistance,moving,this.owner.reduced);if(this.actorDirection!==this.owner.direction||this.actorWalkFrame!==pose.frame)this.refreshPlayer(pose.frame);if(!this.actor)return;const f=px(this.owner.player);this.actor.setPosition(f.x,f.y).setDepth(f.y+.5).setRotation(pose.lean).setScale(CHARACTER_SCALE,CHARACTER_SCALE*pose.squash);if(this.speech){const target=this.speechTarget?this.owner.hotspots.find(h=>h.id===this.speechTarget):null,at=target?px(target,138):{x:f.x,y:f.y-138};this.speech.setPosition(at.x,at.y);} }
   hitTest(point:Point){const ground=unproject(point),hits=this.hits.filter(h=>h.rect?.contains(point.x,point.y)||h.footprint&&inside(ground,h.footprint)||h.object?.visible&&h.object.getBounds().contains(point.x,point.y)).sort((a,b)=>b.hotspot.point.y-a.hotspot.point.y);return hits[0]?.hotspot;}
   highlight(id:string){
     this.selected?.destroy();const h=this.owner.hotspots.find(h=>h.id===id);if(!h)return;const f=px(h.approach),key='illustrated-selection';this.textureObject(key,160,80,ctx=>{ctx.strokeStyle='#f7d391';ctx.lineWidth=7;ctx.beginPath();ctx.ellipse(80,40,65,27,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#aa875a';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(80,40,69,31,0,0,Math.PI*2);ctx.stroke();});this.selected=this.add.image(f.x,f.y,key).setScale(.5).setDepth(f.y-1);this.requestRender();

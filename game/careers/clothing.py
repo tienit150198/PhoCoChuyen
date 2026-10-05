@@ -2149,7 +2149,7 @@ SITUATIONS = [
 
 SPEC = dict(
     id=ID, prefix=PREFIX, category='shop',
-    meta=dict(short='Shop quần áo', place='Tiệm Áo Chỉ Mây', tagline='Đúng size. Đúng dáng. Đúng dịp.', icon='bag',
+    meta=dict(short='Shop quần áo', place='Tiệm Áo Chỉ Mây', tagline='Đúng size. Đúng dáng. Đúng dịp.', icon='shirt',
               color='#6a58a6', light='#f1edfa', weather='Nắng nhẹ qua cửa kính', work='Khách', station='Giá treo & quầy',
               greeting='Tìm đúng size, phối đúng dịp, trông phòng thử và thối tiền cho đúng nhé.',
               caption='Tiệm may cũ của mẹ, khoác áo mới', map_label='21 · TIỆM ÁO CHỈ MÂY'),

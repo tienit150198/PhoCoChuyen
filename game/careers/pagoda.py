@@ -722,7 +722,7 @@ def validate_data(c: dict) -> None:
 # ================================================================ the plugin spec
 SPEC = dict(
     id=ID, prefix='chua_', category='service',
-    meta=dict(short='Thầy ở chùa', place='Chùa Gió Lành', tagline='Sân sạch, hương đèn an toàn, sổ công đức rõ từng xu.', icon='bell',
+    meta=dict(short='Thầy ở chùa', place='Chùa Gió Lành', tagline='Sân sạch, hương đèn an toàn, sổ công đức rõ từng xu.', icon='pagoda',
               color='#a8641f', light='#fbf1e0', weather='Gió sông mát, lá bàng rơi đầy sân', work='Việc chùa', station='Sân chùa & chánh điện',
               greeting='Thỉnh chuông, công phu sáng rồi vào việc. Thời khóa, hương đèn, bếp chay, công đức: xem Bảng nội quy nhé.',
               caption='Tiếng chuông trầm bên bến sông', map_label='CHÙA GIÓ LÀNH'),

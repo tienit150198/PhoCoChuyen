@@ -228,9 +228,17 @@ html[data-game="isometric"] .chat-sheet .ch-head .icon-btn {flex:none;width:40px
 html[data-game="isometric"] .chat-sheet .ch-tabs {flex-basis:100%;padding:4px;border-radius:15px;background:var(--surface-3);gap:4px;}
 html[data-game="isometric"] .chat-sheet .ch-tabs button {min-height:40px;padding:5px 7px;font:700 13px/1.4 var(--font,"Be Vietnam Pro",system-ui,sans-serif);border:1px solid transparent;color:var(--ink-2);}
 html[data-game="isometric"] .chat-sheet .ch-tabs button.on {background:var(--surface);border-color:var(--line-strong);color:var(--accent-text);box-shadow:0 2px 5px #66462f0d;}
+html[data-game="isometric"] .chat-sheet .ch-tabs button {display:flex;align-items:center;justify-content:center;gap:6px;}
+html[data-game="isometric"] .chat-sheet .ch-tabs button > .icon {flex:none;}
+html[data-game="isometric"] .chat-sheet .ch-tabs button > span {white-space:nowrap;}
+html[data-game="isometric"] .chat-sheet .ch-head .icon-btn {width:44px;min-height:44px;}
 html[data-game="isometric"] .chat-sheet .ch-body {padding:14px 16px 18px;background:var(--surface);}
 html[data-game="isometric"] .chat-sheet .ch-msg {gap:9px;}
 html[data-game="isometric"] .chat-sheet .ch-msg.first {margin-top:16px;}
+.ch-day {display:flex;align-items:center;justify-content:center;gap:12px;margin:20px 0 2px;color:var(--muted);font-size:11px;font-weight:600;}
+.ch-day::before,.ch-day::after {content:'';flex:1;height:1px;background:var(--line);}
+.ch-day time {padding:4px 10px;border-radius:12px;background:var(--surface-2);white-space:nowrap;}
+.ch-day:first-child {margin-top:0;}
 html[data-game="isometric"] .chat-sheet .ch-body[data-view="thread"] > .ch-msg:first-child {margin-top:auto;}
 html[data-game="isometric"] .chat-sheet .ch-av {width:34px;height:34px;border:1px solid var(--line);border-radius:11px;background:var(--surface-3);overflow:hidden;}
 html[data-game="isometric"] .chat-sheet .ch-av.md {width:44px;height:44px;border-radius:13px;}
@@ -255,7 +263,8 @@ html[data-game="isometric"] .chat-sheet :is(.ch-mini,.ch-older,.ch-new) {min-hei
 html[data-game="isometric"] .chat-sheet .ch-emo {font-size:22px;min-height:40px;border-radius:50%;}
 html[data-game="isometric"] .chat-sheet .ch-chip {min-height:30px;border-radius:12px;}
 html[data-game="isometric"] .chat-sheet .ch-quote {background:var(--surface);font-size:12px;}
-html[data-game="isometric"] .chat-sheet .ch-ro {padding:12px;font-size:13px !important;}
+html[data-game="isometric"] .chat-sheet .ch-ro {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:var(--surface-2);text-align:left;font-size:12px !important;line-height:1.5;}
+html[data-game="isometric"] .chat-sheet .ch-ro .btn {flex:none;min-height:44px;background:var(--accent);color:var(--accent-ink);border:1px solid var(--accent);}
 html[data-game="isometric"] .chat-sheet .ch-net {padding:6px 10px;font-size:12px;}
 @media (hover:hover) {
   html[data-game="isometric"] .chat-sheet :is(.ch-row,.ch-mini,.ch-older):hover {background:var(--surface-2);}
@@ -267,6 +276,7 @@ html[data-game="isometric"] .chat-sheet .ch-net {padding:6px 10px;font-size:12px
   html[data-game="isometric"] .chat-sheet .ch-home-title small {font-size:10px;}
   html[data-game="isometric"] .chat-sheet .ch-body {padding:12px 10px 16px;}
   html[data-game="isometric"] .chat-sheet .ch-tabs button {font-size:12px;}
+  html[data-game="isometric"] .chat-sheet .ch-tabs button > .icon {display:none;}
   html[data-game="isometric"] .chat-sheet .ch-head .ch-mini {min-height:34px;font-size:11px;padding:5px 7px;}
   html[data-game="isometric"] .chat-sheet .ch-col {max-width:calc(100% - 43px);}
   html[data-game="isometric"] .chat-sheet .ch-msg.mine .ch-col {max-width:88%;}

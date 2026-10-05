@@ -6,31 +6,65 @@ async page => {
   await page.evaluate(()=>document.fonts.ready);
   for(const [width,height] of [[320,568],[390,844],[667,375],[844,390],[820,1180],[1180,820],[1440,900]]){
     await page.setViewportSize({width,height});
-    const result=await page.evaluate(()=>{
-      const items=Array.from(document.querySelectorAll('.iso-profile,.iso-pockets,.iso-settings,.iso-quick,.iso-mission,.iso-camera,.iso-chat,.iso-scene,.iso-nav,.iso-movement,#townPresenceStatus,#dock,#taskHUD'))
-        .map(e=>({name:e.id||e.className,r:e.getBoundingClientRect(),display:getComputedStyle(e).display,visibility:getComputedStyle(e).visibility}))
+    const measure=()=>{
+      const items=Array.from(document.querySelectorAll('.iso-profile,.iso-pockets,.iso-settings,.iso-quick,.iso-mission,.iso-camera,.iso-camera-options,.iso-chat,.iso-scene,.iso-nav,.iso-movement,#townPresenceStatus,#dock,#taskHUD'))
+        .map(e=>({e,name:e.id||e.className,r:e.getBoundingClientRect(),display:getComputedStyle(e).display,visibility:getComputedStyle(e).visibility}))
         .filter(x=>x.r.width&&x.r.height&&x.display!=='none'&&x.visibility!=='hidden');
       const overlap=[];
       for(let i=0;i<items.length;i++)for(let j=i+1;j<items.length;j++){
         const a=items[i],b=items[j];
+        if(a.e.contains(b.e)||b.e.contains(a.e))continue;
         if(Math.min(a.r.right,b.r.right)-Math.max(a.r.left,b.r.left)>1&&Math.min(a.r.bottom,b.r.bottom)-Math.max(a.r.top,b.r.top)>1)overlap.push([a.name,b.name]);
       }
       const outside=items.filter(x=>x.r.left<0||x.r.top<0||x.r.right>innerWidth+1||x.r.bottom>innerHeight+1).map(x=>x.name);
       const chat=document.querySelector('.iso-chat'),r=chat.getBoundingClientRect();
       const pixelFonts=Array.from(document.querySelectorAll('#isoHUD button,#townPresenceStatus')).filter(e=>/Pixel|VT323/i.test(getComputedStyle(e).fontFamily)).map(e=>e.className);
       const clippedLabels=Array.from(document.querySelectorAll('.iso-chat-copy b,.iso-chat-copy small,.iso-tab > span')).filter(e=>e.scrollWidth>e.clientWidth+1).map(e=>e.textContent);
-      return {mode:document.documentElement.dataset.sceneMode,width:innerWidth,height:innerHeight,coarse:matchMedia('(pointer:coarse)').matches,stick:items.some(x=>x.name==='isoMovement'),chatHit:chat.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)),presence:items.some(x=>x.name==='townPresenceStatus'),overlap,outside,pixelFonts,clippedLabels};
-    });
+      const smallCamera=Array.from(document.querySelectorAll('.iso-camera button')).filter(e=>e.getClientRects().length).filter(e=>{const r=e.getBoundingClientRect();return r.width<44||r.height<44;}).map(e=>e.getAttribute('aria-label'));
+      return {mode:document.documentElement.dataset.sceneMode,width:innerWidth,height:innerHeight,coarse:matchMedia('(pointer:coarse)').matches,stick:items.some(x=>x.name==='isoMovement'),chatHit:chat.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)),presence:items.some(x=>x.name==='townPresenceStatus'),overlap,outside,pixelFonts,clippedLabels,smallCamera};
+    };
+    const result=await page.evaluate(measure);
     output.push(result);
     await page.screenshot({path:`output/playwright/soft-hud-${result.mode}-${width}x${height}.png`,scale:'css'});
+    const camera=page.locator('[data-action="isoCamera"]');
+    if(await camera.isVisible()){
+      await camera.click();
+      if(await camera.getAttribute('aria-expanded')!=='true')throw new Error('Camera disclosure did not open');
+      output.push({...await page.evaluate(measure),cameraOpen:true});
+      if(width===320){
+        // Keyboard activation emits no outside pointerdown; a modal still owns Escape.
+        await camera.press('Tab');
+        for(let step=0;step<4;step++)await page.keyboard.press('Tab');
+        if(await page.evaluate(()=>document.activeElement?.dataset.action)!=='isoChat')throw new Error('Camera tab order did not reach chat');
+        await page.keyboard.press('Enter');
+        await page.locator('#townChat').waitFor({state:'visible'});
+        if(await camera.getAttribute('aria-expanded')!=='false')throw new Error('Modal opening did not reset camera');
+        await page.keyboard.press('Escape');
+        await page.locator('#townChat').waitFor({state:'hidden'});
+        if(await page.locator('#pauseOverlay').isVisible())throw new Error('Dismissing chat also paused the game');
+        result.cameraModalKeyboard=true;
+      }else{
+        await camera.press('Escape');
+        if(await camera.getAttribute('aria-expanded')!=='false')throw new Error('Escape did not close camera');
+      }
+    }
+    // Exercise this disclosure at every town viewport, including narrow landscape.
     if(result.mode==='town'){
       await page.locator('.iso-outings > summary').click();
       const dropdown=await page.locator('.iso-outings-menu').evaluate(e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,viewport:[innerWidth,innerHeight]};});
       if(dropdown.left<0||dropdown.right>width||dropdown.top<0||dropdown.bottom>height)throw new Error('Outings menu is clipped: '+JSON.stringify(dropdown));
+      dropdown.actions=[];
+      for(const button of await page.locator('.iso-outings-menu button').all()){
+        await button.scrollIntoViewIfNeeded();
+        const action=await button.evaluate(b=>{const r=b.getBoundingClientRect();return {label:b.textContent,hit:b.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2))};});
+        if(!action.hit)throw new Error('Outings action is covered: '+JSON.stringify(action));
+        dropdown.actions.push(action);
+      }
+      result.outings=dropdown;
       await page.locator('.iso-outings > summary').click();
     }
   }
-  const failures=output.filter(r=>r.overlap.length||r.outside.length||r.pixelFonts.length||r.clippedLabels.length||!r.chatHit||r.presence!==(r.mode==='town'));
+  const failures=output.filter(r=>r.overlap.length||r.outside.length||r.pixelFonts.length||r.clippedLabels.length||r.smallCamera.length||!r.chatHit||r.presence!==(r.mode==='town'));
   if(failures.length)throw new Error(JSON.stringify(failures,null,2));
   return output;
 }

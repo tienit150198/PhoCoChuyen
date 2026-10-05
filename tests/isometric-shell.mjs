@@ -24,6 +24,9 @@ assert.match(html,/3,37tr/);assert.match(html,/125,4k/);
 assert.match(html,/3\.373\.500 xu/,'accessible amounts retain the full real value');
 assert.doesNotMatch(html,/XP|Kinh nghiệm|level|Đã xong/,'HUD contains neither invented progress nor ended task titles');
 assert.match(html,/data-action="isoOverview"[^>]*aria-label="Xem toàn đảo"/,'overview is a clearly labelled camera action');
+assert.match(html,/data-action="isoCamera"[^>]*aria-expanded="false"[^>]*aria-controls="isoCameraOptions"/,'small-screen camera controls have an accessible collapsed entry');
+assert.match(html,/id="isoCameraOptions"/);
+assert.match(html,/Đang ở/,'the scene name is explicitly a current-place label');
 for(const kind of ['fishing','boat','pool'])assert.match(html,new RegExp(`data-action="isoLeisure" data-kind="${kind}"`),'outdoor activities have semantic controls');
 
 model=isometricHUDModel({...state,careers:{florist:{...state.careers.florist,active_task:'last'}}},content,'work');
@@ -61,6 +64,8 @@ html=isometricHUDHTML(isometricHUDModel({},content,'town',{state:'open',flags:{c
 assert.match(html,/<small>Tạm nghỉ<\/small>/,'a disabled chat does not claim to be connected');
 html=isometricHUDHTML(isometricHUDModel({},content,'town',{state:'idle'}, {url:''}),{});
 assert.match(html,/<small>Chưa khả dụng<\/small>/,'a missing live URL never claims a pending connection');
+html=isometricHUDHTML(isometricHUDModel({},content,'town',{state:'open',me:{account:false}}),{});
+assert.match(html,/<small>Khách · Chỉ xem<\/small>/,'a connected guest sees their actual chat permission at the entry');
 
 const calls=[];
 const env={api:{state,content},ui:{},world:{mode:'town',setMode:mode=>calls.push(['mode',mode]),overviewIsland:()=>calls.push(['overview'])},closeSheet:()=>calls.push(['close']),
@@ -81,6 +86,7 @@ assert.equal(await isometricAction('unrelated',{},null,env),false);
 await isometricAction('isoChat',{},null,env);
 assert.deepEqual(calls.pop(),['act','liveChat',{}],'the HUD opens the existing real chat route');
 await isometricAction('isoOverview',{},null,env);assert.deepEqual(calls.pop(),['overview']);
+assert.equal(await isometricAction('isoCamera',{},null,env),true,'camera disclosure stays local to the HUD');
 for(const kind of ['fishing','boat','pool']){
   await isometricAction('isoLeisure',{kind},null,env);
   assert.deepEqual(calls.pop(),['act','leisurePlace',{kind}],'activity uses the existing full-screen location router');

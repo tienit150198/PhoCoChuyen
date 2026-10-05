@@ -1470,7 +1470,7 @@ def validate_data(c: dict) -> None:
 # ================================================================ the plugin spec
 SPEC = dict(
     id=ID, prefix='nl_', category='service',
-    meta=dict(short='Làm móng', place='Tiệm nail của chị Diệp', tagline='Móng xinh, dụng cụ sạch, gel bền.', icon='sparkles',
+    meta=dict(short='Làm móng', place='Tiệm nail của chị Diệp', tagline='Móng xinh, dụng cụ sạch, gel bền.', icon='nail',
               color='#c2477f', light='#fde8f1', weather='Chiều mát trên phố', work='Khách làm móng', station='Bàn làm móng & đèn',
               greeting='Thử đèn hơ gel, hấp dụng cụ, coi kệ hàng rồi mở tiệm. Xem móng khách trước khi làm, lớp gel nào cũng hơ đủ giờ nhé.',
               caption='Dụng cụ hấp sạch, dũa mới từng khách', map_label='24 · TIỆM NAIL CHỊ DIỆP'),

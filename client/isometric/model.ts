@@ -1,6 +1,7 @@
 /** Geometry stays in ground coordinates; the camera never changes navigation. */
 import {TOWN_ZOOM} from './island';
 import townLayout from '../../game/town_layout.json';
+import {BUILDING_ART} from './building-art';
 export interface Point { x: number; y: number }
 export interface Rect { x0: number; y0: number; x1: number; y1: number }
 export interface Career { id: string; short?: string; name?: string; place?: string; station?: string; category?: string; color?: string; [key: string]: unknown }
@@ -23,7 +24,7 @@ export function groundCacheRegion(view:Rect,zoom=1){
   return {region,width,height,scale,scroll:{x:region.x0+width/(2*scale)-width/2,y:region.y0+height/(2*scale)-height/2}};
 }
 /** Art aliases never change stable catalogue IDs or the public town geometry. */
-export function townBuildingArt(meta:Career,fallback:Building['variant']){return ({pharmacy:'pharmacy',mother_baby:'mother-baby',repair:'garage',garage:'garage',pho:'pho'} as Record<string,string>)[meta.id]||fallback;}
+export function townBuildingArt(meta:Career,fallback:Building['variant']){return BUILDING_ART[meta.id]||fallback;}
 /** Aerial leisure artwork lies flat on its reserved footprint rather than standing upright. */
 export function landmarkPlaneGeometry(r:Rect){const w=r.x1-r.x0,d=r.y1-r.y0;return {x:(r.x0-r.y1)*64,y:(r.x0+r.y0)*32,width:(w+d)*64,height:(w+d)*32,a:w*64,b:w*32,c:-d*64,d:d*32,e:d*64,depth:(r.x1+r.y1)*32};}
 /** Our camera never rotates; this transform stays current even while Phaser is asleep. */
@@ -50,11 +51,15 @@ export function moveOnGround(nav:Navigation,from:Point,input:Point,dt:number):Po
   const slides=[{x:next.x,y:from.y},{x:from.x,y:next.y}].sort((a,b)=>Math.hypot(b.x-from.x,b.y-from.y)-Math.hypot(a.x-from.x,a.y-from.y));
   return slides.find(p=>lineClear(nav,from,p))||{x:from.x,y:from.y};
 }
-export function advanceRoute(from:Point,path:Point[],stride:number,metric:'ground'|'screen'='ground'):{point:Point;path:Point[];arrived:boolean}{
+export function advanceRoute(from:Point,path:Point[],stride:number,metric:'ground'|'screen'='ground',nav?:Navigation):{point:Point;path:Point[];arrived:boolean}{
   if(!path.length)return {point:{x:from.x,y:from.y},path:[],arrived:false};
   let point={...from},step=Number.isFinite(stride)?Math.max(0,stride):0,index=0;
   while(index<path.length){const goal=path[index],dx=goal.x-point.x,dy=goal.y-point.y,delta=metric==='screen'?project({x:dx,y:dy}):{x:dx,y:dy},distance=Math.hypot(delta.x,delta.y);
-    if(distance>step+1e-9)return {point:{x:point.x+dx/distance*step,y:point.y+dy/distance*step},path:path.slice(index),arrived:false};
+    const next=distance>step+1e-9?{x:point.x+dx/distance*step,y:point.y+dy/distance*step}:goal;
+    // A frame spanning a sharp corner must not visually cut through a trunk/wall.
+    // Finish at the corner only when that direct chord is blocked; open turns keep their stride.
+    if(nav&&index>0&&!lineClear(nav,from,next))return {point,path:path.slice(index),arrived:false};
+    if(distance>step+1e-9)return {point:next,path:path.slice(index),arrived:false};
     point={...goal};step=Math.max(0,step-distance);index++;
   }
   return {point,path:[],arrived:true};
@@ -68,7 +73,17 @@ export function followCamera(camera:CameraView,point:Point,dt:number):CameraView
 }
 export function presenceDirection(from:Point,to:Point,previous:Facing='se'):Facing{
   const dx=to.x-from.x,dy=to.y-from.y;if(Math.hypot(dx,dy)<1e-8)return previous;
+  // Four illustrated facings meet at screen-horizontal/vertical boundaries.
+  // Retain the current valid facing around that boundary to avoid rapid flipping.
+  const xFacing:Facing=dx>=0?'se':'nw',yFacing:Facing=dy>=0?'sw':'ne';
+  if(Math.abs(Math.abs(dx)-Math.abs(dy))<Math.max(Math.abs(dx),Math.abs(dy))*.12&&(previous===xFacing||previous===yFacing))return previous;
   return Math.abs(dx)>=Math.abs(dy)?dx>=0?'se':'nw':dy>=0?'sw':'ne';
+}
+/** Gait follows distance, so slow joystick walking and frame drops never shuffle in place. */
+export function walkingPose(distance:number,moving:boolean,reduced=false){
+  if(!moving||reduced)return {frame:0,lean:0,squash:1};
+  const phase=Math.max(0,distance)/104*Math.PI*2;
+  return {frame:[0,1,0,2][Math.floor(Math.max(0,distance)/26)%4],lean:Math.sin(phase)*.018,squash:1-Math.abs(Math.sin(phase))*.012};
 }
 /** Copy only the public presence contract; private game data never enters the renderer. */
 export function publicTownPlayers(peers:unknown,nav?:Navigation):RemotePlayer[]{
@@ -144,7 +159,11 @@ function interval(a:Point,b:Point,r:Rect): [number,number] | null {
 }
 export function lineClear(nav:Navigation,a:Point,b:Point): boolean {
   if(!isWalkable(nav,a)||!isWalkable(nav,b))return false;
-  for(const o of nav.obstacles)if(interval(a,b,{x0:o.x0-nav.clearance,y0:o.y0-nav.clearance,x1:o.x1+nav.clearance,y1:o.y1+nav.clearance}))return false;
+  for(const o of nav.obstacles){const span=interval(a,b,{x0:o.x0-nav.clearance,y0:o.y0-nav.clearance,x1:o.x1+nav.clearance,y1:o.y1+nav.clearance});
+    // Touching one padded corner has no interior overlap. Ignore sub-nanoframe
+    // intervals from floating-point rounding, consistently for long and short segments.
+    if(span&&span[1]-span[0]>1e-9)return false;
+  }
   const spans=nav.roads.map(r=>interval(a,b,r)).filter((r):r is [number,number]=>!!r).sort((a,b)=>a[0]-b[0]);
   let covered=0;for(const [lo,hi] of spans){if(lo>covered+1e-8)return false;covered=Math.max(covered,hi);if(covered>=1-1e-8)return true;}return false;
 }

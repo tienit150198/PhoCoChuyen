@@ -10,6 +10,7 @@ let getEnvironment=null;
 let listening=false;
 let rendered='';
 let chatLive=null;
+let cameraOpen=false;
 
 /** Pure presentation state, including the server's task order and chosen career. */
 export function isometricHUDModel(state={},content={},mode='town',social={},connection){
@@ -25,7 +26,7 @@ export function isometricHUDModel(state={},content={},mode='town',social={},conn
   const place=room?.life?.shop_name||meta.place||meta.name||'Nơi làm việc';
   const chatOff=social.flags?.chat===false;
   const chatOnline=social.state==='open'&&!chatOff;
-  const chatStatus=chatOff?'Tạm nghỉ':chatOnline?'Cả phố · Bạn bè':
+  const chatStatus=chatOff?'Tạm nghỉ':chatOnline?(social.me?.account===false?'Khách · Chỉ xem':'Cả phố · Bạn bè'):
     connection&&!connection.url?'Chưa khả dụng':
     social.state==='connecting'?'Đang kết nối':
     social.state==='down'?'Mất kết nối':social.state==='off'?'Không khả dụng':'Chưa kết nối';
@@ -34,7 +35,7 @@ export function isometricHUDModel(state={},content={},mode='town',social={},conn
     task,taskCount:tasks.length,needsJob,open:Boolean(room?.open),
     missionAction:!current?'isoCareers':needsJob?'isoApply':!room.open?'isoPrepare':task?'isoMission':'isoQueue',
     chatUnread:Math.max(0,Number(social.unread?.())||0),chatOnline,chatOff,chatStatus,
-    menuOpen:false};
+    menuOpen:false,cameraOpen:false};
 }
 
 const control=(label,action,ico,cls='',extra='')=>`<button type="button" class="${cls}" data-action="${action}"${extra}>${icon(ico,22)}<span>${label}</span></button>`;
@@ -67,15 +68,18 @@ export function isometricHUDHTML(model,state={}){
     ${m.mode==='town'?`<details class="iso-outings"><summary class="iso-quick-button">${icon('fish',22)}<span>Thư giãn</span></summary><div class="iso-outings-menu" role="group" aria-label="Hoạt động ngoài trời"><b>Ra ngoài chơi</b>${[['fishing','fish','Câu cá'],['boat','boat','Chèo thuyền'],['pool','pool','Bơi']].map(([kind,ico,label])=>control(label,'isoLeisure',ico,'iso-outing-button',` data-kind="${kind}" aria-label="${label}: mở địa điểm ngoài trời"`)).join('')}</div></details>`:''}
   </nav>
   <button type="button" class="iso-mission" data-action="${m.missionAction}" aria-label="${esc(missionAria)}"><span class="iso-mission-heading">${icon('note',18)}<small>${esc(missionMeta)}</small></span><b>${esc(missionTitle)}</b><span class="iso-mission-next">${esc(missionLabel)} ${icon('arrow',16)}</span></button>
-  <div class="iso-camera" role="group" aria-label="Góc nhìn Đảo Hoàng Sa">
+  <div class="iso-camera${m.cameraOpen?' is-open':''}" role="group" aria-label="Góc nhìn Đảo Hoàng Sa">
+    ${control('Góc nhìn','isoCamera','overview','iso-camera-toggle',' aria-label="Điều chỉnh góc nhìn" aria-expanded="'+Boolean(m.cameraOpen)+'" aria-controls="isoCameraOptions"')}
+    <div class="iso-camera-options" id="isoCameraOptions">
     ${control('Phóng to','isoZoomIn','plus','iso-round',' aria-label="Phóng to cảnh" title="Phóng to"')}
     ${control('Thu nhỏ','isoZoomOut','minus','iso-round',' aria-label="Thu nhỏ cảnh" title="Thu nhỏ"')}
     ${control('Về giữa','isoRecenter','compass','iso-round',' aria-label="Đưa góc nhìn về nhân vật" title="Về giữa"')}
     ${control('Toàn đảo','isoOverview','overview','iso-round iso-overview',' aria-label="Xem toàn đảo" title="Xem toàn đảo"')}
+    </div>
   </div>
   <button type="button" class="iso-chat${m.chatOnline?'':' is-offline'}" data-action="isoChat" aria-label="Trò chuyện${m.chatUnread?` · ${m.chatUnread} tin chưa đọc`:''}" aria-haspopup="dialog" aria-controls="townChat"><span class="iso-chat-mark">${icon('chats',26)}</span><span class="iso-chat-copy"><b>Trò chuyện</b><small>${esc(m.chatStatus)}</small></span><em class="iso-chat-unread"${m.chatUnread?'':' hidden'}>${m.chatUnread>99?'99+':m.chatUnread||''}</em></button>
   <p class="iso-key-hint"><kbd>W A S D</kbd> / <kbd>↑ ↓ ← →</kbd> di chuyển · Chạm đường để đi</p>
-  <div class="iso-scene"><span class="iso-scene-symbol">${icon(m.mode==='work'?'store':'leaf',24)}</span><span class="iso-scene-copy"><small>${esc(m.mode==='work'?m.careerName:'Phố Có Chuyện')}</small><b>${esc(m.sceneTitle)}</b></span><button type="button" class="iso-scene-go" data-action="${m.mode==='work'?'isoTown':m.current?'isoWork':'isoCareers'}" aria-label="${esc(m.mode==='work'?'Ra Đảo Hoàng Sa':m.current?`Vào làm tại ${m.place}`:'Chọn một nghề trên đảo')}">${m.mode==='work'?'Ra đảo':m.current?'Vào làm':'Chọn nghề'}${icon('arrow',17)}</button></div>
+  <div class="iso-scene"><span class="iso-scene-symbol">${icon(m.mode==='work'?'store':'leaf',24)}</span><span class="iso-scene-copy"><small>Đang ở</small><b title="${esc(m.sceneTitle)}">${esc(m.sceneTitle)}</b></span><button type="button" class="iso-scene-go" data-action="${m.mode==='work'?'isoTown':m.current?'isoWork':'isoCareers'}" aria-label="${esc(m.mode==='work'?'Ra Đảo Hoàng Sa':m.current?`Vào làm tại ${m.place}`:'Chọn một nghề trên đảo')}">${m.mode==='work'?'Ra đảo':m.current?'Vào làm':'Chọn nghề'}${icon('arrow',17)}</button></div>
   <nav class="iso-nav" aria-label="Điều hướng chính">${nav.map(([action,ico,label])=>control(label,action,ico,`iso-tab${action===active?' is-active':''}`,action==='isoMore'?` aria-controls="rail" aria-expanded="${m.menuOpen}"`:action===active?' aria-current="page"':'')).join('')}</nav>`;
 }
 
@@ -86,6 +90,14 @@ function syncMenu(){
   button?.setAttribute('aria-expanded',String(open));
   button?.classList.toggle('is-active',open);
   if(!open&&document.getElementById('rail')?.contains(document.activeElement))button?.focus({preventScroll:true});
+}
+
+function closeCamera(){
+  cameraOpen=false;
+  const camera=document.querySelector('#isoHUD .iso-camera');
+  camera?.classList.remove('is-open');
+  camera?.querySelector('[data-action="isoCamera"]')?.setAttribute('aria-expanded','false');
+  rendered='';
 }
 
 /** Called once after the app's real state has loaded. Safe to call again after a recovery. */
@@ -103,7 +115,7 @@ export function bootIsometricShell(envGetter){
   }
   if(!listening){
     listening=true;
-    window.addEventListener('mnl:iso-mode',()=>updateIsometricShell(getEnvironment?.()));
+    window.addEventListener('mnl:iso-mode',()=>{if(cameraOpen)closeCamera();updateIsometricShell(getEnvironment?.());});
     window.addEventListener('layoutchange',()=>updateIsometricShell(getEnvironment?.()));
     // Subscribe to the same live data as the real inbox; the entry itself is always discoverable.
     import('./v4/live.js').then(({live,liveBoot})=>{
@@ -115,14 +127,24 @@ export function bootIsometricShell(envGetter){
     }).catch(()=>{});
     // The existing shell closes its More menu on outside click/Escape, without a server change.
     new MutationObserver(syncMenu).observe(root,{attributes:true,attributeFilter:['class']});
+    new MutationObserver(records=>{
+      if(cameraOpen&&records.some(record=>record.target.tagName==='DIALOG'&&record.target.open))closeCamera();
+    }).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
     window.addEventListener('pointerdown',event=>{
       const outing=document.querySelector('#isoHUD .iso-outings[open]');
       if(outing&&!outing.contains(event.target))outing.open=false;
+      // Do not replace the tapped control between pointerdown and click.
+      if(cameraOpen&&!event.target.closest?.('.iso-camera'))closeCamera();
     });
     window.addEventListener('keydown',event=>{
+      if(event.key!=='Escape'||document.querySelector('dialog[open]'))return;
       const outing=document.querySelector('#isoHUD .iso-outings[open]');
-      if(event.key==='Escape'&&outing){outing.open=false;outing.querySelector('summary')?.focus({preventScroll:true});}
-    });
+      if(!outing&&!cameraOpen)return;
+      // Escape belongs to the open disclosure, before the app's pause shortcut.
+      event.preventDefault();event.stopPropagation();
+      if(outing){outing.open=false;outing.querySelector('summary')?.focus({preventScroll:true});}
+      if(cameraOpen){closeCamera();document.querySelector('#isoHUD [data-action="isoCamera"]')?.focus({preventScroll:true});}
+    },true);
   }
   updateIsometricShell(getEnvironment?.());
 }
@@ -152,6 +174,7 @@ export function updateIsometricShell(env){
   root.dataset.sceneMode=model.mode;
   hud.dataset.sceneMode=model.mode;
   model.menuOpen=root.classList.contains('menu-open');
+  model.cameraOpen=cameraOpen;
   if(env.ui?.view&&document.getElementById('sheet')?.open)model.activeTab=env.ui.isoTab;
   const html=isometricHUDHTML(model,env.api.state);
   if(html!==rendered){
@@ -187,6 +210,7 @@ export async function isometricAction(action,data={},el=null,env){
     case'isoAvatar':env.ui&&(env.ui.isoTab='isoAvatar');env.openSheet('home',{jrView:'wardrobe'});break;
     case'isoBag':env.ui&&(env.ui.isoTab='isoBag');if(model.current)await act('warehouse');else env.openSheet('home',{homeMode:'list',jrView:'home'});break;
     case'isoChat':await act('liveChat');break;
+    case'isoCamera':cameraOpen=!cameraOpen;break;
     case'isoMore':
       await act('v4Menu');
       if(typeof document!=='undefined'&&document.documentElement.classList.contains('menu-open')){

@@ -127,7 +127,7 @@ const remote=m.findRoute(town,{x:6.2,y:6.2},lots.at(-1).door);
 assert.ok(remote.length>0,'the farthest catalogue door stays connected to the entry');
 last={x:6.2,y:6.2};for(const p of remote){assert.ok(m.lineClear(town,last,p),'remote route never cuts through a building');last=p;}
 let walk={point:{x:6.2,y:6.2},path:remote,arrived:false},walkFrames=0;
-while(walk.path.length&&walkFrames++<4000){const previous=walk.point;walk=m.advanceRoute(walk.point,walk.path,.145);assert.ok(m.lineClear(town,previous,walk.point),'door walking stays on the shared town roads');}
+while(walk.path.length&&walkFrames++<4000){const previous=walk.point;walk=m.advanceRoute(walk.point,walk.path,.145,'ground',town);assert.ok(m.lineClear(town,previous,walk.point),'door walking stays on the shared town roads, including frames spanning garden corners');}
 assert.ok(walk.arrived,'the remote town door walk reaches arrival');
 assert.deepEqual(walk.point,lots.at(-1).door,'the town route arrives at the exact door approach');
 assert.equal(m.advanceRoute(walk.point,walk.path,.145).arrived,false,'idle frames do not retrigger door arrival');

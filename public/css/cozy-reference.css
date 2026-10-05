@@ -36,6 +36,8 @@ html[data-game="isometric"] #taskHUD .note-card :is(p, small) {line-height: 1.6;
 html[data-game="isometric"] .tut-note {font-size: 13px;line-height: 1.6;}
 
 .iso-outings {position: relative;pointer-events: auto;}
+/* The open menu must paint above the independently mounted presence strip and stick. */
+html[data-game="isometric"] #isoHUD:has(.iso-outings[open]) {z-index:34;}
 /* Keep the complete coastline visible while browsing the island overview. */
 #stage[data-island-overview="true"] :is(.iso-quick, .iso-mission, #isoMovement),
 html[data-game="isometric"] body:has(#stage[data-island-overview="true"]) .tut-note {visibility: hidden;pointer-events: none;}
@@ -59,26 +61,15 @@ html[data-game="isometric"] #isoHUD .iso-overview {color: var(--iso-leaf);backgr
 @media (hover:hover) {
   .iso-outing-button:hover {background: var(--iso-leaf-soft);border-color: var(--iso-seam);}
 }
-@media (max-width:699px) {
-  html[data-game="isometric"] #isoHUD .iso-camera {
-    display: grid;grid-template-columns: repeat(2, 44px);gap: 6px;
-    bottom: calc(var(--iso-nav-h) + var(--iso-scene-h) + 50px + env(safe-area-inset-bottom, 0px));
-  }
-  html[data-game="isometric"][data-scene-mode="work"] #isoHUD .iso-camera {
-    grid-template-columns: repeat(4, 44px);
-    bottom: calc(var(--iso-nav-h) + var(--iso-scene-h) + 118px + env(safe-area-inset-bottom, 0px));
-  }
-}
 @media (max-width:360px) {.iso-outings-menu {width:208px;}}
 @media (max-width:699px) and (max-height:650px) and (orientation:portrait) {
-  .iso-outings-menu {left:auto;right:0;top:calc(100% + 8px);max-height:calc(100dvh - 280px);overflow-y:auto;}
+  .iso-outings {position:static;}
+  .iso-outings-menu {left:0;right:auto;top:calc(100% + 8px);max-height:calc(100dvh - 280px);overflow-y:auto;}
 }
 @media (max-height:520px) and (orientation:landscape) {
-  .iso-outings-menu {left:auto;right:0;top:calc(100% + 8px);max-height:calc(100dvh - 206px);overflow-y:auto;}
+  .iso-outings-menu {left:0;right:auto;top:calc(100% + 8px);max-height:calc(100dvh - 206px);overflow-y:auto;}
   html[data-game="isometric"] #isoHUD .iso-scene-go {font-size:0;min-width:42px;width:42px;padding:8px;}
   html[data-game="isometric"] #isoHUD .iso-scene-go .icon {display:block;}
-  html[data-game="isometric"] #isoHUD .iso-camera,
-  html[data-game="isometric"][data-scene-mode="work"] #isoHUD .iso-camera {display:flex;bottom:calc(84px + env(safe-area-inset-bottom,0px));}
 }
 
 /* Private outings remain full-screen locations with familiar, rounded controls. */

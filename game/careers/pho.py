@@ -1494,7 +1494,7 @@ def validate_data(c: dict) -> None:
 # ================================================================ the plugin spec
 SPEC = dict(
     id=ID, prefix='pho_', category='food',
-    meta=dict(short='Bán phở', place='Quán phở Cây Si', tagline='Nước trong, tái hồng, bánh tơi.', icon='cake',
+    meta=dict(short='Bán phở', place='Quán phở Cây Si', tagline='Nước trong, tái hồng, bánh tơi.', icon='pho',
               color='#c8642a', light='#fff0e3', weather='Sáng sớm đầu ngõ', work='Khách gọi phở', station='Nồi nước dùng & rổ trụng',
               greeting='Vặn lửa lăn tăn, hớt bọt, nếm nước rồi mở quán. Mỗi tô: nhúng bánh ba bốn lượt, xếp thịt, chan nước dừng muôi đúng vạch khách dặn nhé.',
               caption='Nồi nước lăn tăn từ ba giờ sáng', map_label='26 · QUÁN PHỞ CÂY SI'),

@@ -5,19 +5,46 @@ import test from 'node:test';
 import {escapeHTML} from '../public/js/icons.js';
 const source=readFileSync(new URL('../public/js/v4/chat.js',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
 function harness(){
-  const listeners=new Map(),nodes=new Map();let writes=0,html='';
+  const listeners=new Map(),nodes=new Map();let writes=0,html='',headWrites=0,headHTML='';
   const body={dataset:{},scrollHeight:1000,scrollTop:200,clientHeight:200,onlineChecked:false,get innerHTML(){return html;},set innerHTML(v){writes++;html=v;this.onlineChecked=/data-ch-field="online" checked/.test(v);}};
   const ta={value:'Bản nháp',maxLength:300};
   for(const s of ['.ch-head','.ch-net','.ch-flash','.ch-ro','.ch-pinbar','.ch-reply-compose','.ch-count'])nodes.set(s,{});
+  nodes.set('.ch-head',{get innerHTML(){return headHTML;},set innerHTML(v){headWrites++;headHTML=v;}});
   nodes.set('.ch-body',body);nodes.set('textarea',ta);nodes.set('.ch-compose',{querySelector:()=>ta});
   nodes.set('.ch-send',{classList:{remove(){}},querySelector:()=>true,setAttribute(){}});
   const live={state:'open',welcomed:true,me:{pid:'me',name:'Mình',account:true},flags:{},friends:[],limits:{},chans:[],on:(t,f)=>listeners.set(t,f),unread:()=>live.unreadCount||0,friend:()=>null,send(){}};
-  const ctx=vm.createContext({live,esc:escapeHTML,icon:()=>'',avInner:()=>'',faceCode:()=>'',stylesheet:async()=>{},clearTimeout(){},setTimeout(){},document:{visibilityState:'visible'},console});
+  const document={visibilityState:'visible',createElement:()=>({dataset:{}})};
+  const ctx=vm.createContext({live,esc:escapeHTML,icon:()=>'',avInner:()=>'',faceCode:()=>'',stylesheet:async()=>{},clearTimeout(){},setTimeout(){},document,console});
+  nodes.get('.ch-ro').append=()=>{};
   vm.runInContext(source+'\nglobalThis.h={S,render,bind,onClose,onAct,openChat};',ctx);
   const h=ctx.h;h.S.dlg={open:true,querySelector:s=>nodes.get(s)};h.S.town.loaded=true;
   h.S.town.msgs=[{id:1,pid:'peer',name:'Bạn',text:'Tin nhắn',at:1700000000}];h.bind();
-  return {...h,live,body,ta,nodes,writes:()=>writes,emit:(t,frame={})=>listeners.get(t)?.(frame)};
+  return {...h,live,body,ta,nodes,document,writes:()=>writes,headWrites:()=>headWrites,emit:(t,frame={})=>listeners.get(t)?.(frame)};
 }
+test('incoming messages preserve the unchanged header and the composer draft',()=>{
+  const h=harness();h.render();const writes=h.headWrites();
+  h.S.town.msgs.push({id:2,pid:'peer',name:'Bạn',text:'Tin thứ hai',at:1700000060});h.render();
+  assert.equal(h.headWrites(),writes);assert.equal(h.ta.value,'Bản nháp');
+});
+test('incoming messages restore keyboard focus to the same message control',()=>{
+  const h=harness();h.render();let focused=false;
+  h.document.activeElement={dataset:{chAct:'msg',id:'1'}};
+  h.body.contains=e=>e===h.document.activeElement;
+  h.body.querySelectorAll=()=>[{dataset:{chAct:'msg',id:'1'},focus:()=>{focused=true;}}];
+  h.S.town.msgs.push({id:2,pid:'peer',name:'Bạn',text:'Tin thứ hai',at:1700000060});h.render();
+  assert.equal(focused,true);assert.equal(h.ta.value,'Bản nháp');
+});
+test('message dates split groups at local midnight, even within five minutes',()=>{
+  const h=harness(),before=new Date(2026,9,5,23,59).getTime()/1000;
+  h.S.town.msgs=[{id:1,pid:'peer',name:'Bạn',text:'Hôm trước',at:before},{id:2,pid:'peer',name:'Bạn',text:'Ngày mới',at:before+120}];h.render();
+  assert.equal((h.body.innerHTML.match(/class="ch-day"/g)||[]).length,2);
+  assert.equal((h.body.innerHTML.match(/class="ch-msg first"/g)||[]).length,2);
+});
+test('guest gate states read-only access and routes its login action to the existing account screen',()=>{
+  const h=harness(),calls=[];h.live.me.account=false;h.S.dlg.close=()=>{};h.S.env={act:(...args)=>calls.push(args)};
+  h.render();assert.match(h.nodes.get('.ch-ro').textContent,/khách.*Đăng nhập/i);assert.equal(h.nodes.get('.ch-compose').hidden,true);
+  h.onAct('account',{});assert.equal(calls[0][0],'v4AccountOpen');assert.equal(calls[0][1].mode,'login');
+});
 test('presence and read refresh header without replacing unchanged messages or moving scroll',()=>{
   const h=harness();h.render();const count=h.writes();
   h.live.friends=[{pid:'friend',on:true}];h.live.unreadCount=2;h.emit('presence');h.emit('read');
