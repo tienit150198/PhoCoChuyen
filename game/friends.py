@@ -67,14 +67,16 @@ def _status_of(db, sid: str) -> str:
 def _career(db, sid: str) -> dict | None:
     """Main workplace and level, read from the leaderboard rows (game/leaderboard.py) when present."""
     try:
-        rows = db.execute("SELECT board,level,score FROM leaderboard WHERE sid=? AND board NOT IN ('all','certs') ORDER BY score DESC LIMIT 1",
-                          (sid,)).fetchall()
+        # Workplace boards only: not titles, 💰 wealth (xu, not XP) or a fair's board (fair<date>xu, an older fair<date>).
+        rows = db.execute("SELECT board,level,score FROM leaderboard WHERE sid=? AND board NOT IN ('all','certs','titles','wealth') "
+                          "AND board NOT LIKE 'fair%' ORDER BY score DESC LIMIT 4", (sid,)).fetchall()
         overall = db.execute("SELECT level FROM leaderboard WHERE sid=? AND board='all'", (sid,)).fetchone()
     except Exception:  # noqa: BLE001 - no leaderboard table in this build
         return None
+    from .content import CAREER_META, CAREERS
+    rows = [r for r in rows if r['board'] in CAREERS]
     if not rows:
         return None
-    from .content import CAREER_META
     cid = rows[0]['board']
     meta = CAREER_META.get(cid) or {}
     return dict(career=str(meta.get('short') or cid)[:40], level=int(overall['level'] if overall else rows[0]['level']))

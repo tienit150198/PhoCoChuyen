@@ -456,7 +456,8 @@ class Store:
     def _compute(self,sid:str,text:str,career,action:str,payload:dict,internal:bool,revision:int,*,before_out:list|None=None)->tuple[dict,dict,str,list,tuple,tuple]:
         """(new save, result, its text, archive rows, board, steps): what the command cut off from the
         save's lists, to be written in the same transaction as the save (see game/archive.py),
-        board = (the save's leaderboard rows, whether a number on a board moved) (game/leaderboard.py)
+        board = (the save's leaderboard rows, whether a number on a board moved, the rows before when they are
+        known to be the ones in the table: remembered after this process committed that revision, else None) (game/leaderboard.py)
         and steps = ([(milestone, career, detail)], life day): the funnel steps this command crossed
         (game/retention.py: a dozen counters read from the save before and after, no extra parse)."""
         raw=self.parse_state(text,sid)
@@ -474,7 +475,7 @@ class Store:
         ranks=lb.summary(raw)
         steps=(rt.reached(marked,rt.marks(raw,ranks)),rt.life_day(raw)) if marked else ((),None)
         # An imported backup's own archive is older than anything its migration moved out.
-        return raw,result,serialized,extra+_archive_rows(box,before,raw,career if career in CAREERS else ""),(ranks,ranks!=ranked or (hit is None and lb.heal(ranks))),steps
+        return raw,result,serialized,extra+_archive_rows(box,before,raw,career if career in CAREERS else ""),(ranks,ranks!=ranked or (hit is None and lb.heal(ranks)),ranked if hit is not None else None),steps
 
     def _apply(self,raw:dict,text:str,career,action:str,payload:dict,internal:bool,revision:int):
         extra=[]
@@ -562,7 +563,7 @@ class Store:
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,current)
             _write_archive(db,sid,cut)
-            if board and board[1]:lb.write(db,sid,board[0])  # only when a number on a board moved
+            if board and board[1]:lb.write(db,sid,board[0],old=board[2] if len(board)>2 else None)  # only when a number on a board moved, only those rows
             if steps[0]:rt.write_marks(db,sid,steps[0],steps[1])  # rare: only when a funnel step was crossed
             db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,receipt))
             from .home_decor import notify
@@ -616,7 +617,7 @@ class Store:
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,raw)
             _write_archive(db,sid,cut)
-            if board[1]:lb.write(db,sid,board[0])
+            if board[1]:lb.write(db,sid,board[0],old=board[2])
             if steps[0]:rt.write_marks(db,sid,steps[0],steps[1])
             db.execute("INSERT INTO receipts(sid,request_id,request_hash,result) VALUES(?,?,?,?)",(sid,request_id,fingerprint,_receipt(result)))
             from .home_decor import notify

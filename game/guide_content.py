@@ -5542,15 +5542,19 @@ GROUPS = [{'id': 'start',
               'emoji': '🏆',
               'title': 'Bảng xếp hạng',
               'points': ['🏆 [[Trải nghiệm]]: bảng [[Tất cả]] cho cả phố và một bảng cho từng nơi làm. [[Danh hiệu]]: '
-                         'xếp theo số danh hiệu đã có. [[Chứng chỉ]]: xếp theo số chứng chỉ đã có.',
-                         '🏅 Danh hiệu tuần: top 1, top 2–3 và top 4–10 của bảng Tất cả, Danh hiệu, Chứng chỉ, và top 1 '
-                         'mỗi nơi làm giữ một danh hiệu riêng, hiện cạnh tên. Cập nhật mỗi ngày, chốt tuần lúc 0:00 thứ Hai.',
+                         'xếp theo số danh hiệu đã có. [[Chứng chỉ]]: xếp theo số chứng chỉ đã có. [[Tài phú]]: ai giàu nhất phố.',
+                         '🏅 Danh hiệu tuần: top 1, top 2–3 và top 4–10 của bảng Tất cả, Danh hiệu, Chứng chỉ, Tài phú, và '
+                         'top 1 mỗi nơi làm giữ một danh hiệu riêng, hiện cạnh tên. Cập nhật mỗi ngày, chốt tuần lúc 0:00 thứ Hai.',
                          '🌟 Bảng cả phố: XP mọi nơi làm, cộng 80 cho mỗi nơi đã phục vụ khách. Bằng điểm thì ai thạo '
                          'nhiều nghề hơn, rồi làm nhiều ngày hơn đứng trước.',
                          '🏪 Bảng từng nơi: XP ở nơi đó. Bằng điểm thì ai làm nhiều ngày hơn, rồi được nhiều sao hơn '
                          'đứng trước.',
                          '📜 Top chứng chỉ: bằng số chứng chỉ thì ai có tổng điểm thi cao hơn, rồi ai có sớm hơn đứng '
                          'trước.',
+                         '💰 Top tài phú: tài sản ròng như ở Tiền của bạn (ví, quỹ nơi làm, ngân hàng, nhà theo giá thị '
+                         'trường, trừ hết nợ). Chỉ tính người chơi theo câu chuyện.',
+                         '➕ Tài phú còn cộng sổ tiết kiệm Mây, xe theo giá bán lại, quầy riêng theo giá sang nhượng, và '
+                         'trừ vay nóng hội chợ. Chưa tính Mây Coin, vàng và Quỹ chung.',
                          '👀 Mỗi bảng hiện 50 người đầu, chỉ có tên, điểm, cấp, số ngày làm và sao. Ô của bạn cho biết '
                          'hạng của bạn, kể cả khi đang ẩn tên.',
                          '👤 Tài khoản hiện tên hiển thị sẵn. Khách chỉ hiện khi tự bật và đã đặt tên nhân vật khác '
