@@ -1,3 +1,8 @@
+# Chưa phát hành — Kiểm tra giao diện trước phát hành (tiệc cưới, hội chợ, màn live)
+
+- Tiệc cưới khi xoay ngang: lễ đường lại hiện trọn cả sân (cô dâu chú rể, sân khấu, múa lân, pháo hoa), không bám theo khách đứng ở cổng hoa nữa; thanh trên cùng gọn một hàng, mâm cỗ một hàng 8 món, bảng chọn nhạc 4 bài một hàng.
+- Hội chợ xoay ngang: bản đồ hội chợ không lấn xuống thanh vuốt ở đáy màn hình.
+- Điện thoại hẹp (360 px): tiêu đề dài nhường chỗ cho số xu ở thanh trên (Bày trí phòng không còn cắt "860 xu").
 # Chưa phát hành — WP1 Nhân viên tiệm & nhập hàng
 
 - Nhân viên bán theo cả danh mục hàng của tiệm (Mẹ & Bé, tạp hóa, thú cưng, trái cây, hoa, trà đá, kem, cơm, phở, mì cay, cà phê, salon, nail, sửa chữa…), chỉ món còn hàng, ưu tiên món còn nhiều; hết thỏ bông vẫn bán món khác.

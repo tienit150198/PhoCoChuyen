@@ -41,6 +41,9 @@ html[data-layout="phone"] .sheet-head>.grow~*{order:2}
 html[data-layout="phone"] .sheet-head>.grow~.mn-line,html[data-layout="phone"] .sheet-head>.mn-line,html[data-layout="phone"] .preparation-topline>.mn-line{order:1;flex:0 1 auto;min-width:0;margin:0 2px 0 4px;align-self:center}
 html[data-layout="phone"] .sheet-head:has(>.mn-line)>.grow{flex:1 1 auto}
 html[data-layout="phone"] .sheet-head>.mn-line,html[data-layout="phone"] .preparation-topline>.mn-line{flex-shrink:0;max-width:52%}
+/* The title gives way, never the amount: a long room name beside ← and ✕ (Bày trí phòng, 360 px) cut "860 xu" to "860 x". */
+html[data-layout="phone"] .sheet-head>.grow~.mn-line{flex-shrink:0}
+html[data-layout="phone"] .sheet-head:has(>.mn-line)>.grow{min-width:0}
 html[data-layout="phone"] .mn-line .mn-chip{gap:4px;padding:3px 8px;box-shadow:none}
 html[data-layout="phone"] .mn-line .mn-part{font-size:0;gap:3px}
 html[data-layout="phone"] .mn-line .mn-part>*,html[data-layout="phone"] .mn-line .mn-sep{font-size:.8rem}
@@ -196,8 +199,8 @@ html[data-layout="phone"][data-orientation="landscape"] .fh-headrow h2{font-size
 html[data-layout="phone"][data-orientation="landscape"] .fh-logo{width:36px;height:36px;font-size:1.2rem}
 html[data-layout="phone"][data-orientation="landscape"] .fh-body{padding:6px 12px 12px}
 html[data-layout="phone"][data-orientation="landscape"] .fh-strip{margin-bottom:6px}
-html[data-layout="phone"][data-orientation="landscape"] .fh-wstage.land{max-width:calc((var(--vvh,100dvh) - 110px) * 1100 / 660)}
-html[data-layout="phone"][data-orientation="landscape"] .fh-wstage.port{max-width:calc((var(--vvh,100dvh) - 110px) * 672 / 764)}
+html[data-layout="phone"][data-orientation="landscape"] .fh-wstage.land{max-width:calc((var(--vvh,100dvh) - 110px - var(--safe-b)) * 1100 / 660)}
+html[data-layout="phone"][data-orientation="landscape"] .fh-wstage.port{max-width:calc((var(--vvh,100dvh) - 110px - var(--safe-b)) * 672 / 764)}
 
 /* ---------- B. Landscape phone --------------------------------------------- */
 /* Shell: a left rail (the dock + chat) instead of the bottom dock, a 44 px top bar, the task card floating
@@ -284,6 +287,14 @@ html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-t
 html[data-layout="phone"][data-orientation="landscape"] .lx-head>.grow{display:flex;align-items:center;gap:6px 14px;flex-wrap:nowrap;min-width:0}
 html[data-layout="phone"][data-orientation="landscape"] .lx-head>.grow>h2{flex:0 1 auto;min-width:0;max-width:50%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
 html[data-layout="phone"][data-orientation="landscape"] .lx-head>.grow>:not(h2):not(.eyebrow){flex:1 1 auto;min-width:0;margin:0}
+/* Wedding party, landscape: the couple, the clock and the buttons in one row (the hall gets the height); the mâm cỗ
+   shows its eight dishes in one row and the music picker four songs a row, so the drinks and the songs stay in view. */
+html[data-layout="phone"][data-orientation="landscape"] .wk-head-wed{flex-wrap:nowrap;min-height:50px;padding-top:4px;padding-bottom:4px}
+html[data-layout="phone"][data-orientation="landscape"] .wk-head-wed .wk-wed{flex:0 1 auto;min-width:0}
+html[data-layout="phone"][data-orientation="landscape"] .wk-head-wed [data-wk=close]{order:3}
+html[data-layout="phone"][data-orientation="landscape"] .wk-mam{grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;padding:8px}
+html[data-layout="phone"][data-orientation="landscape"] .wk-dish{min-height:52px}
+html[data-layout="phone"][data-orientation="landscape"] .wk-dj-list{grid-template-columns:repeat(4,minmax(0,1fr))}
 /* Wardrobe: the preview on the left, the items on the right. */
 html[data-layout="phone"][data-orientation="landscape"] .wd-stage{box-shadow:none}
 

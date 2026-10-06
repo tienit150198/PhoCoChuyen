@@ -667,7 +667,9 @@ function size(){
   const cw=Math.round(w*S.dpr),chh=Math.round(h*S.dpr);if(S.cv.width!==cw||S.cv.height!==chh){S.cv.width=cw;S.cv.height=chh;}
   // A wide, short stage (a phone held sideways, or the keyboard up): the 600×900 place would shrink to a third of
   // the width. It is drawn larger instead (two fifths of its height in view) and the camera follows the player up and down.
-  S.k=w>h*1.2?Math.min(w/W,h/(H*.4)):Math.min(w/W,h/H);S.ox=(w-W*S.k)/2;
+  // Not at a wedding party: the guests sit by the flower gate, and following them would leave the couple, the stage,
+  // the lion dance and the fireworks out of view; the whole hall stays in view there, as before.
+  S.k=w>h*1.2&&!S.wed?Math.min(w/W,h/(H*.4)):Math.min(w/W,h/H);S.ox=(w-W*S.k)/2;
   S.follow=H*S.k>h+2;S.oy=S.follow?camY():(h-H*S.k)/2;S.bgKey='';
 }
 /** The camera's top offset that keeps the player in the middle of a stage shorter than the place (clamped to it). */
