@@ -201,6 +201,7 @@ CERTS = {
     'cert:archive_craft': '🗂️ Chứng chỉ nghiệp vụ lưu trữ',
     'cert:rail_safety': '🚦 Chứng chỉ An toàn đường ngang',
     'cert:patient_safety': '🏥 Chứng chỉ An toàn người bệnh',
+    'cert:pool_rescue': '🛟 Chứng chỉ Cứu hộ hồ bơi',
 }
 
 EMOTES = {'wave': '👋', 'heart': '❤️', 'laugh': '😂', 'wow': '😮', 'pray': '🙏', 'dance': '💃'}   # 💃: a wedding's stage (live/wedding.py)

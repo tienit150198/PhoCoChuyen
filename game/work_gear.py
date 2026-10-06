@@ -23,6 +23,7 @@ NAMES = {
  'it_helpdesk':'Bộ chẩn đoán và linh kiện dự phòng',
  'railway':'Bộ cờ đèn và tay quay cần chắn',
  'nurse':'Xe tiêm và bộ máy đo cầm tay',
+ 'lifeguard':'Phao ống, sào cứu hộ và máy AED',
 }
 RATES=(100,115,135,160)
 PRICES=(0,90,220,480)

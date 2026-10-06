@@ -655,6 +655,22 @@ HAPPENINGS = [
     H('ward_bag', 'trom', '👜', 'Túi xách để ở bàn trực bị lấy',
       'Bạn chạy vào giường 3 trả lời chuông, quay ra thì chiếc túi để dưới gầm bàn trực không còn. Hành lang giờ thăm đông người lạ.',
       ('nurse',), 'pick', 'pickpocket', 'door', 'Mất ví ở bàn trực', dict(wallet=(25, 70)), ['shout', 'call', 'camera', 'let'], min_day=5),
+    # ================================================================ 🛟 Hồ bơi Sóng Xanh (lifeguard)
+    H('pool_locker', 'trom', '🔐', 'Tủ đồ nhân viên ở hồ bơi bị cạy',
+      'Hết ca trực ghế quay vào phòng nhân viên, tủ đồ của bạn hé mở, ổ khóa cong vênh. Ví trong túi quần đã biến mất.',
+      ('lifeguard',), 'pick', 'pickpocket', 'door', 'Mất ví ở phòng nhân viên hồ bơi', dict(wallet=(20, 60)), ['shout', 'call', 'camera', 'let'], weight=2, min_day=3),
+    H('pool_goggles', 'den', '🥽', 'Làm gãy kính bơi của ông Tư',
+      'Bạn đỡ ông Tư lên bậc, chiếc kính bơi trên trán ông rơi xuống sàn, bạn lỡ giẫm gãy quai.',
+      ('lifeguard',), 'drop', 'self', 'table', 'Đền kính bơi cho ông Tư', dict(comp=(5, 15)), min_day=2),
+    H('pool_phone', 'den', '📱', 'Vướng chân máy, điện thoại của Kha rơi xuống hồ',
+      'Bạn bước vội tới mép hồ, vướng chân máy quay của Kha, chiếc điện thoại rơi tõm xuống làn chậm.',
+      ('lifeguard',), 'drop', 'self', 'table', 'Đền một phần tiền sửa điện thoại', dict(comp=(15, 40)), min_day=4),
+    H('pool_helmet', 'trom', '⛑️', 'Mất mũ bảo hiểm ở bãi xe hồ bơi',
+      'Tan ca ra bãi xe, chiếc mũ bảo hiểm móc trên gương đã không còn. Trời lại sắp có dông.',
+      ('lifeguard',), 'ride', 'biker', 'door', 'Mua mũ bảo hiểm mới', dict(wallet=(15, 35)), ['call', 'camera', 'let'], min_day=3),
+    H('pool_sunnies', 'den', '🕶️', 'Làm rơi kính râm của cô Hằng xuống hồ',
+      'Bạn dời ghế nằm cho nhóm aerobic, chiếc kính râm cô Hằng gác trên tay ghế rơi xuống làn chậm, trầy cả hai tròng.',
+      ('lifeguard',), 'drop', 'self', 'table', 'Đền một phần kính râm cho cô Hằng', dict(comp=(8, 20)), min_day=3),
 ]
 INDEX = {x['id']: x for x in HAPPENINGS}
 
