@@ -629,7 +629,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.json(200,dict(state=view,revision=revision,csrf=csrf,ai=dict(public_config(),configured=ai.available(),chat=True),
                                    social=social.bootstrap(self.server.store,token,state),push=push.public_config(),account=accounts.status(self.server.store,token),auth=dict(tiktok=tiktok_auth.public_config()),
                                    admin=pfb.is_admin(self.server.store,token),content_version=version,content_url=f"/api/content?v={version}",
-                                   game_version=self.server.game_version(),gifts=gifts,xfers=xfers,lb_titles=[dict(emoji=h["emoji"],name=h["name"],label=h["label"],board=h["board"]) for h in ranks],**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]),known=FULL);return
+                                   game_version=self.server.game_version(),gifts=gifts,xfers=xfers,quay_invites=0 if created else quay_hire.invite_count(self.server.store,token),lb_titles=[dict(emoji=h["emoji"],name=h["name"],label=h["label"],board=h["board"]) for h in ranks],**live_hint()),extra,raw=None if lite else dict(content=self.server.content_blob()[0]),known=FULL);return
             if route=="/api/state":
                 token,state,revision,_=self.require_session()
                 settled=business.on_load_result(self.server.store,token,state)

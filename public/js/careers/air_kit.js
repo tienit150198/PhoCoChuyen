@@ -8,7 +8,8 @@
  * Each module passes a small cfg: its crew, how a task reads as a row, the stats it keeps. Styles: air_kit.css.
  * Also the chuyện oái oăm (server: game/careers/air_odd.py): oddCard lets the player answer in their own way
  * (a tone, one or two things to say, whom to bring in, how many units in a bargain), restCard asks for rest days,
- * and the crew record (conduct, fatigue) shows in the crew room and on the boarding pass. */
+ * and the crew record (conduct, fatigue) shows in the crew room and on the boarding pass. Another career may reuse oddCard and
+ * restCard with its own words: cfg.kinds (the kind labels) and cfg.rest_to ([[id, label]×2], where the request goes). */
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const upper=s=>String(s||'').toLocaleUpperCase('vi-VN');
 const ended=t=>['completed','cancelled','referred'].includes(t.status);
@@ -164,7 +165,7 @@ export function oddCard(x,cfg){
   const payload={tone:u.tone||'soft',say:u.say,to:u.to,...(b?{n:u.n}:{})};
   const thread=ev.said.length?`<p class="air-odd-me">Bạn (${esc(ev.said[ev.said.length-1].tone.toLowerCase())}): ${esc(ev.said[ev.said.length-1].say.join(' '))}</p>`:'';
   return `<section class="air-odd kind-${esc(ev.kind)}" role="group" aria-labelledby="air-odd-title">
-    <div class="air-odd-head">${who}<div class="grow"><small>${esc(KIND[ev.kind]||'')} · ${esc(ev.who)}</small><h3 id="air-odd-title">${ev.npc?esc(ev.emoji)+' ':''}${esc(ev.title)}</h3></div>${ev.round>1?`<span class="air-round">${ev.round}/${ev.rounds}</span>`:''}</div>
+    <div class="air-odd-head">${who}<div class="grow"><small>${esc((cfg.kinds||KIND)[ev.kind]||'')} · ${esc(ev.who)}</small><h3 id="air-odd-title">${ev.npc?esc(ev.emoji)+' ':''}${esc(ev.title)}</h3></div>${ev.round>1?`<span class="air-round">${ev.round}/${ev.rounds}</span>`:''}</div>
     ${thread}<p class="air-odd-line">${esc(ev.line)}</p>${ev.cue?`<p class="air-odd-cue">${esc(ev.cue)}</p>`:''}
     <div class="air-odd-row"><small>Giọng</small><div class="air-segs">${seg(ev.tones,u.tone,'oddTone')}</div></div>
     <div class="air-odd-row"><small>Nói</small><div class="air-words">${words}</div></div>${count}
@@ -177,7 +178,7 @@ export function restCard(x,cfg){
   if(o.rest_today)return '<p class="small muted air-rest-done">📝 Hôm nay đã xin nghỉ rồi.</p>';
   const u=x.ui.rest||(x.ui.rest={n:1,say:[],to:'self'});
   const words=(o.rest_words||[]).map(w=>car(x,esc(w.label),'restSay',{v:w.id},`air-word${u.say.includes(w.id)?' on':''}`,` aria-pressed="${u.say.includes(w.id)}"`)).join('');
-  const seg=[['self','Gửi điều phái'],['company','Nhờ công đoàn']].map(([id,l])=>car(x,l,'restTo',{v:id},`air-seg${u.to===id?' on':''}`,` aria-pressed="${u.to===id}"`)).join('');
+  const seg=(cfg.rest_to||[['self','Gửi điều phái'],['company','Nhờ công đoàn']]).map(([id,l])=>car(x,l,'restTo',{v:id},`air-seg${u.to===id?' on':''}`,` aria-pressed="${u.to===id}"`)).join('');
   const days=[1,2].map(n=>car(x,`${n} ngày`,'restN',{v:n},`air-seg${u.n===n?' on':''}`,` aria-pressed="${u.n===n}"`)).join('');
   return `<details class="air-rest"${o.tired?' open':''}><summary>🛌 Xin nghỉ bù${o.tired?' · đang mệt':''}</summary>
     <div class="air-odd-row"><small>Xin</small><div class="air-segs">${days}</div></div>

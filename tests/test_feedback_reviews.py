@@ -66,7 +66,8 @@ class Rolls(unittest.TestCase):
         a = F.make_review({}, dict(day=15), t, 'completed')
         b = F.make_review({}, dict(day=15), copy.deepcopy(t), 'completed')
         self.assertEqual(json.dumps(a, sort_keys=True, ensure_ascii=False), json.dumps(b, sort_keys=True, ensure_ascii=False))
-        self.assertTrue(a['npc'] and not a['npc'].startswith('milk_tea_'))
+        # Chat C#23729: a stranger from the same trade signs it (not the customer served), so it reads as this shop's.
+        self.assertTrue(a['npc'] and a['npc'].startswith('milk_tea_npc_') and a['npc'] != t['npc'])
         self.assertNotIn('Trà sữa', a['text'])        # never the player's own trade
         self.assertFalse(a['aside'])
 
@@ -125,34 +126,48 @@ class Actions(unittest.TestCase):
         self.assertEqual(pub['feedback']['kind_label'], 'Tài khoản cài cắm')
         validate_state(self.j.state)
 
-    def test_wrong_report_costs(self):
-        real = self.post('mood')
+    def test_wrong_report_costs_no_star(self):
+        # Góp ý #196: a report the platform does not accept keeps the stars and adds no review.
+        for i in range(2000):                   # a bad-day reviewer with no off-topic gripe: a real experience
+            t = fake_task(f'real-{i}')
+            made = F.make_review(self.j.state, self.j.c, t, 'completed')
+            if kind_of(made) == 'mood' and not made['feedback'].get('gripe'):
+                break
+        real = engine.add_feed(self.j.state, self.j.c, t['npc'], made['text'], t['id'], made['stars'], 'review')
+        F.attach(real, made)
+        self.assertFalse(F.removable(real))
         before = real['stars']
+        n = len(self.j.c['feed'])
         r = self.j.act('fb_report', post=real['id'])
         self.assertEqual(r['report'], 'rejected')
+        self.assertIn('Sao giữ nguyên', r['message'])
         p = self.get(real['id'])
-        self.assertEqual(p['stars'], max(1, before - 1))
+        self.assertEqual(p['stars'], before)
+        self.assertEqual(len(self.j.c['feed']), n)
         self.assertEqual(p['feedback']['thread'][-1]['role'], 'customer')
+        self.assertEqual(p['feedback']['thread'][-1]['decision'], 'keep')
         self.assertEqual(p['feedback']['status'], 'closed')
         validate_state(self.j.state)
 
-    def test_wrong_report_at_one_star_spreads(self):
-        troll = self.post('offtopic')           # irrelevant but a real visit: not removable
+    def test_offtopic_one_star_is_removed_without_a_pile_on(self):
+        troll = self.post('offtopic')
         self.assertEqual(troll['stars'], 1)
         n = len(self.j.c['feed'])
         r = self.j.act('fb_report', post=troll['id'])
-        self.assertEqual(r['report'], 'rejected')
-        self.assertEqual(len(self.j.c['feed']), n + 1)
-        self.assertEqual(self.j.c['feed'][0]['stars'], 1)
+        self.assertEqual(r['report'], 'accepted')
+        self.assertEqual(len(self.j.c['feed']), n)
+        p = self.get(troll['id'])
+        self.assertIsNone(p['stars'])
+        self.assertEqual(p['feedback']['removed_stars'], 1)   # kept, marked, out of the average
         validate_state(self.j.state)
 
     def test_report_limit_per_day(self):
-        a, b, c = self.post('wrong_shop'), self.post('no_visit'), self.post('competitor')
-        self.j.act('fb_report', post=a['id'])
-        self.j.act('fb_report', post=b['id'])
+        a, b, c, d = self.post('wrong_shop'), self.post('no_visit'), self.post('competitor'), self.post('offtopic')
+        for x in (a, b, c):
+            self.j.act('fb_report', post=x['id'])
         with self.assertRaises(GameError):
-            self.j.act('fb_report', post=c['id'])
-        self.assertEqual(self.get(c['id'])['stars'], c['stars'])
+            self.j.act('fb_report', post=d['id'])
+        self.assertEqual(self.get(d['id'])['stars'], d['stars'])
 
     def test_public_hides_the_twist(self):
         p = self.post('competitor')
@@ -190,7 +205,16 @@ class Actions(unittest.TestCase):
 
     def test_fakes_do_not_move_on_replies(self):
         p = self.post('competitor')
-        self.j.act('fb_reply', post=p['id'], text='Xin lỗi anh, tiệm sẽ cải thiện. Theo hóa đơn thì hôm đó...', offer='refund')
+        cash = self.j.state['money'] if 'money' in self.j.state else None
+        # Chat C#15809: bù xu on a review it can never change is refused with a warning, and no xu leaves the wallet.
+        with self.assertRaises(GameError) as e:
+            self.j.act('fb_reply', post=p['id'], text='Xin lỗi anh, tiệm sẽ cải thiện. Theo hóa đơn thì hôm đó...', offer='refund')
+        self.assertIn('Chưa trừ xu nào', str(e.exception))
+        if cash is not None:
+            self.assertEqual(self.j.state['money'], cash)
+        pub = next(x for x in public_state(self.j.state)['careers']['milk_tea']['feed'] if x['id'] == p['id'])
+        self.assertIn('Bù xu không đổi được', pub['feedback']['offer_note'])
+        self.j.act('fb_reply', post=p['id'], text='Xin lỗi anh, tiệm sẽ cải thiện. Theo hóa đơn thì hôm đó...', offer='none')
         self.j.act('advance')
         self.j.act('advance')
         self.assertEqual(self.get(p['id'])['stars'], 1)

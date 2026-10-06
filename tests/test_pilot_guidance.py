@@ -12,7 +12,7 @@ class PilotGuidance(unittest.TestCase):
         self.assertFalse(public_state(j.state)['careers']['pilot']['promo']['mgr'])
         rec['rank']=3
         p=public_state(j.state)['careers']['pilot']['promo']
-        self.assertEqual(p['title'],'Cơ trưởng huấn luyện');self.assertTrue(p['mgr'])
+        self.assertEqual(p['title'],'Cơ trưởng Huấn luyện');self.assertTrue(p['mgr'])
         j.act('start_day',manager=True)
         result=run_board(j)
         self.assertEqual(result['manager']['done'],result['manager']['size'])

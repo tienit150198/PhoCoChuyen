@@ -15,3 +15,50 @@ export function staffRefresh({state,refresh,busy,visible=()=>!document.hidden,in
  const timer=setInterval(async()=>{if(stopped||pending||busy()||!visible()||now()-lastSync()<interval||!hasWorkingStaff(state()))return;pending=true;try{await refresh();}catch{/* next visible tick retries */}finally{pending=false;}},interval);
  return ()=>{stopped=true;clearInterval(timer);};
 }
+
+/* The open sheet while the player scrolls it (BACKLOG #12: review lists and details "jump back", decor items move away
+ * before a tap lands). A background answer (the 30 s staff refresh, a minute's money, a friend's event) used to redraw
+ * the sheet in the middle of a fling: the scroll was read and written back, which stops the fling, and an inner list
+ * written anew started again from the top. scrollGuard() watches the sheet: while a finger is down or it scrolled in
+ * the last `quiet` ms, busy() is true and later(fn) waits (the newest fn wins, once); restore() puts back the scroll
+ * of inner lists the player scrolled that a redraw had to write anew (the same node keeps its own). A tap alone
+ * (no scrolling) never holds anything up. */
+export function scrollGuard({quiet=350,now=()=>performance.now(),setT=(f,ms)=>setTimeout(f,ms),clearT=t=>clearTimeout(t)}={}){
+  let fingers=0,last=-1e9,timer=0,pending=null;const watched=new WeakSet(),spots=new Map();let seen=new WeakMap();
+  const busy=()=>fingers>0||now()-last<quiet;
+  const selOf=el=>el.tagName.toLowerCase()+[...el.classList].map(c=>'.'+(globalThis.CSS?.escape?CSS.escape(c):c)).join('');
+  const keyOf=(el,root)=>el.id?{sel:'#'+(globalThis.CSS?.escape?CSS.escape(el.id):el.id),i:0}:{sel:selOf(el),i:[...root.querySelectorAll(selOf(el))].indexOf(el)};
+  function kick(){
+    clearT(timer);timer=0;if(!pending)return;
+    if(busy()){timer=setT(kick,fingers>0?quiet:Math.max(16,quiet-(now()-last)));return;}
+    const f=pending;pending=null;f();
+  }
+  return {
+    busy,
+    watch(root){
+      if(!root||watched.has(root))return;watched.add(root);
+      const opt={passive:true,capture:true};
+      root.addEventListener('touchstart',e=>{fingers=e.touches?.length||1;},opt);
+      const up=e=>{fingers=e.touches?.length||0;kick();};
+      root.addEventListener('touchend',up,opt);root.addEventListener('touchcancel',up,opt);
+      root.addEventListener('wheel',()=>{last=now();},opt);
+      root.addEventListener('scroll',e=>{last=now();const t=e.target;
+        if(t&&t!==root&&t.nodeType===1){const was=seen.get(t);   // a fling fires every frame: the key is worked out once per list
+          if(was){was.top=t.scrollTop;was.left=t.scrollLeft;return;}
+          const k=keyOf(t,root),id=k.sel+'|'+k.i,spot={...k,el:t,top:t.scrollTop,left:t.scrollLeft};seen.set(t,spot);spots.delete(id);spots.set(id,spot);
+          if(spots.size>8)spots.delete(spots.keys().next().value);}},opt);
+    },
+    later(fn){pending=fn;kick();},
+    restore(root){
+      for(const [id,v] of spots){
+        if(v.el.isConnected)continue;
+        const el=[...root.querySelectorAll(v.sel)][v.i];
+        if(!el){spots.delete(id);continue;}
+        if(el.scrollTop!==v.top)el.scrollTop=v.top;
+        if(el.scrollLeft!==v.left)el.scrollLeft=v.left;
+        v.el=el;seen.set(el,v);
+      }
+    },
+    reset(){spots.clear();seen=new WeakMap();},
+  };
+}

@@ -177,3 +177,8 @@
 .qy-activity-person.completed{border-left:2px solid var(--good)}.qy-activity-person.serving{border-left:2px solid var(--accent)}
 @keyframes qy-arrival{from{opacity:.35;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){.qy-activity-person{animation:none}}
+/* WP6: invite badge, a locked invite's reason, the open counter's running cost */
+.qy-badge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--bad);color:#fff;font-size:.72rem;font-weight:800;vertical-align:middle}
+.qy-locked{display:block;color:var(--warn,var(--bad));margin-top:2px}
+.qy-runcost{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.qy-runcost p{margin:0 0 4px}.qy-runcost p:last-child{margin:0}.qy-runcost small{color:var(--muted)}
+.qy-risk{margin:0}

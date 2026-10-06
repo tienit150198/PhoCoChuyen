@@ -23,6 +23,8 @@ html[data-theme="dem"] .career-job.bm{--sk-accent:#ffa77a;--sk-accent-2:#c47a55;
 .career-job.bm .bm-chores{grid-template-columns:repeat(3,minmax(0,1fr))}
 .career-job.bm .bm-greets,.career-job.bm .bm-need,.career-job.bm .bm-loveys{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
 .career-job.bm .bm-greets .sk-tile b{font-size:13px}
+.career-job.bm .bm-temper{margin:0 0 6px;padding:6px 10px;border-radius:var(--sk-rs);background:var(--bm-peach);font-size:14px;line-height:1.4}
+.career-job.bm .bm-temper.warn{outline:2px solid var(--bm-warn)}
 .career-job.bm .bm-bagin{display:flex;flex-wrap:wrap;gap:6px;margin:0}
 .career-job.bm .bm-bagin span{padding:3px 8px;border-radius:8px;background:var(--sk-surface-2);font-size:13px}
 .career-job.bm .bm-bagin .got{outline:2px solid var(--bm-mint)}

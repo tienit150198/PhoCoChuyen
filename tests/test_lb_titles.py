@@ -98,6 +98,11 @@ class Weekly(Base):
         lbt.clear_cache()
         lbt._done.clear()
         lbt._pending.clear()
+        # Refreshes the game triggers by itself (bootstrap, board views) read the real clock; pin it before the
+        # test's own dates so a run on one of those days (Monday 05/10/2026 is MON) is not marked done already.
+        clock = unittest.mock.patch.object(lbt, 'now', return_value=at(2026, 9, 1, 12))
+        clock.start()
+        self.addCleanup(clock.stop)
 
     def test_ranks_hold_their_tier(self):
         toks = {}

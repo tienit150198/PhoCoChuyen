@@ -32,6 +32,10 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.8.0", date="2026-10-06", items=(
+        dict(emoji='✨', text='Cập nhật toàn bộ UI UX'),
+        dict(emoji='💰', text='Thêm Top tài phú trên Bảng xếp hạng', go=dict(action='rank')),
+    )),
     dict(version="1.7.15", date="2026-10-05", items=(
         dict(emoji='-', text='thay đổi cơ cấu đầu tư: giá vàng/coin sẽ biến động theo thời gian thực: quy đổi 1h đời thực = 1 ngày game'),
         dict(emoji='-', text='tăng tốc độ xử lý, giảm lag'),

@@ -388,6 +388,9 @@ INTERVIEWERS = {
     'it_helpdesk': _iv('Anh Long', 'Trưởng nhóm IT, Công ty CP Cánh Diều', 'anh', 'em',
                        'nói ít, hay hỏi "em làm từng bước thế nào?"', face='🖥️', npc='it_helpdesk_npc_01',
                        particles=('nhé',), cares=('sao lưu trước khi sửa', 'không ai được hỏi mã OTP')),
+    'oil': _iv('Chú Toàn', 'Trưởng ca vận hành, giàn Hải Âu · Dầu khí Sóng Bạc', 'chú', 'con',
+               'chậm rãi, ít nói, hay hỏi "không chắc thì con làm gì?"', face='👷', npc='oil_npc_02',
+               particles=('nghen', 'hen'), cares=('không bỏ bước an toàn nào', 'dám dừng việc khi thấy lạ')),
     # postings with someone else at the table
     'tch-center': _iv('Chị Thùy', 'Quản lý Trung tâm Kỹ năng Sao Nhỏ', 'chị', 'em',
                       'nhanh, thực tế, hay hỏi phụ huynh sẽ nghĩ gì', face='🌟',

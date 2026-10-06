@@ -450,6 +450,10 @@ small{font-size:.857em}
 .chat-ctx summary{cursor:pointer;color:var(--muted);font-size:12.5px}
 .chat-ctx .chat-line{padding:6px 0 6px 12px;font-size:13px}
 .tag.bad{background:var(--bad-soft,#fde2e2);color:var(--bad,#b42318)}
+/* 🛟 safety reports (reason 'minor') first and highlighted */
+.chat-item.safety{border:2px solid var(--bad,#b42318);background:color-mix(in srgb,var(--bad-soft,#fde2e2) 45%,var(--surface,#fff))}
+.chat-safety-note{margin:0;font-size:13px}
+.chat-safety-count{color:var(--bad,#b42318)}
 /* 🔎 "Tin nhắn": search, filters, originals of masked text */
 .chat-search{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .chat-search input[type=search]{flex:1 1 220px;min-width:0;min-height:34px;padding:0 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface);color:var(--ink);font-size:14px}

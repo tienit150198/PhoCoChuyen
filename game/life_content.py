@@ -19,10 +19,10 @@ from __future__ import annotations
 from .incident_content import ALL, EMPLOYEE, RETAIL
 
 EMPLOYED = ('pharmacy', 'customer_care', 'teacher', 'tour_guide', 'repair', 'delivery', 'pet_care', 'salon',
-            'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'homemaker', 'naucom', 'babysitter', 'pilot', 'flight_attendant',
-            'hr_admin', 'secretary', 'it_helpdesk', 'giupviec')
+            'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'homemaker', 'naucom', 'babysitter', 'library', 'pilot', 'flight_attendant', 'oil',
+            'hr_admin', 'secretary', 'it_helpdesk', 'giupviec', 'railway', 'nurse')
 OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
-FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain', 'ice_cream', 'nail', 'pho', 'com', 'photobooth', 'giupviec')
+FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain', 'ice_cream', 'nail', 'pho', 'com', 'photobooth', 'giupviec', 'library')
 CALLING = ('pagoda',)      # a monk: no boss, no shop, no rent; the pagoda is not a place for a karaoke night
 OWNERS = tuple(c for c in ALL if c not in EMPLOYED + CALLING)
 STOCKED = RETAIL + ('farm',)
@@ -100,8 +100,12 @@ WORK = {
     'giupviec': ('Cô Mai với tổ Nhà Thơm', '🧹'),
     'naucom': ('Cô Hạnh với mấy nhà quen', '🍲'),
     'babysitter': ('Cô Tâm với bé Bin', '👶'),
+    'library': ('Cô Nguyệt với ông Thạc', '📚'),
     'pilot': ('Chị Vân với tổ bay Cánh Cò', '🧑‍✈️'),
     'flight_attendant': ('Chị Thu với các bạn tiếp viên', '💁'),
+    'oil': ('Chú Toàn với ca trực giàn Hải Âu', '🛢️'),
+    'railway': ('Chú Sáu với ca gác Bến Mây', '🚦'),
+    'nurse': ('Chị Hoa với các bạn khoa Nội', '🏥'),
 }
 
 
@@ -548,6 +552,28 @@ HARD = [
           who='ba_tam', bond=3, default=True),
         C('gift', 'Mai mang quà từ đảo về biếu bà', 'Túi hải sản khô từ đảo, bà khoe với cả hẻm.', spirit=5, money=-10, who='ba_tam', bond=2)],
       careers=('pilot', 'flight_attendant'), hit=-11, mild=True),
+    # ================================================================ 🚦 Gác chắn đường ngang Bến Mây (railway)
+    H('rw_clip', 'khach', '📱', 'Bị quay clip “gác chắn hách dịch”', [
+        'Chiều nay giữ chắn cho một anh không chịu chờ.',
+        'Tối về mở điện thoại: clip “gác chắn hách dịch” đã có mấy nghìn lượt xem.',
+        'Đoạn tàu lao qua ngay sau đó thì bị cắt mất.'], [
+        C('ignore', 'Tắt điện thoại, kể với chú Sáu rồi đi ngủ sớm', 'Chú Sáu cười: “Mình giữ được người ta sống, clip thì kệ clip.”', spirit=5, default=True),
+        C('read', 'Ngồi đọc hết bình luận', 'Có người chửi, nhưng cũng nhiều người bênh: “Người ta làm đúng mà.”', spirit=2)],
+      careers=('railway',), hit=-13, mild=True),
+    H('rw_night', 'xui', '🌙', 'Ca đêm dài như không có sáng', [
+        'Ba ca đêm liền, tàu hàng chậm hết chuyến này tới chuyến khác.',
+        'Về tới hẻm thì trời đã sáng, chim kêu inh ỏi.',
+        'Mắt mở không lên, đầu ong ong.'], [
+        C('sleep', 'Kéo rèm, tắt chuông điện thoại, ngủ một mạch', 'Chiều dậy người nhẹ hẳn.', spirit=5, default=True),
+        C('pho', 'Ghé quán phở đầu hẻm ăn tô nóng rồi mới ngủ', 'Tô phở nóng lúc sáng sớm, ấm cả bụng.', spirit=6, money=-6)],
+      careers=('railway',), hit=-12, mild=True),
+    H('rw_scare', 'xui', '😨', 'Thót tim vì cậu thanh niên chui chắn', [
+        'Cậu thanh niên lách qua cần chắn đúng lúc còi tàu rúc lên.',
+        'Bạn kéo được cậu ta ra, chỉ cách đầu tàu vài chục mét.',
+        'Tối về tay vẫn còn run.'], [
+        C('talk', 'Gọi cho chú Sáu kể lại', 'Chú Sáu nghe hết rồi bảo: “Con làm đúng. Ngủ đi, mai còn gác.”', spirit=6, default=True),
+        C('walk', 'Đi bộ một vòng bờ sông cho bình tâm', 'Gió sông mát rượi, lòng nhẹ dần.', spirit=5)],
+      careers=('railway',), hit=-14, mild=True),
 ]
 
 # ---------------------------------------------------------------- neighbours come round

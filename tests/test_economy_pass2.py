@@ -45,10 +45,12 @@ class PaidStakeLimits(FairBase):
         board = result['fair']['run']['board']
         run = state['journey']['fair_kn']['run']
         legacy = kn.schedule(run['sd'], run['lv'], run['hot'])
-        self.assertEqual(board['need'], (legacy['need']*135+99)//100)
-        self.assertEqual(board['segs'], [[ms,speed*1.35,ramp] for ms,speed,ramp in legacy['segs']])
+        soft = kn.SOFT_DIFFICULTY   # levels started since 06/10 use the softer board (WP6), not 135%
+        self.assertEqual(board['need'], (legacy['need']*soft+99)//100)
+        self.assertEqual(board['segs'], [[ms,speed*(soft/100),ramp] for ms,speed,ramp in legacy['segs']])
         self.assertFalse(board.get('chance', False))
         self.assertEqual(state['journey'].pop('fair_kn_skill')['difficulty'], 135)
+        state['journey'].pop('fair_kn_soft', None)   # a level started by an older worker carries neither marker
         state = copy.deepcopy(state)
         self.assertEqual(public_state(state)['fair']['knife']['run']['board']['need'], legacy['need'])
         self.dice(Dice(draws=[.1]))
@@ -57,23 +59,26 @@ class PaidStakeLimits(FairBase):
         state, result = self.act(state, 'fair_kn_throw', lv=1, taps=taps)
         self.assertTrue(result['fair']['cleared'])
         state, result = self.act(state, 'fair_kn_next')
-        self.assertEqual(result['fair']['run']['board']['need'], 10)
+        nxt = state['journey']['fair_kn']['run']
+        self.assertEqual(result['fair']['run']['board']['need'], fh._kn_sched(nxt, state['journey'])['need'])
         validate_state(state)
 
     def test_new_knife_partial_10_tap_save_validates_and_finishes(self):
         state, result = self.act(story(1000), 'fair_kn_start', stake=500)
-        self.assertEqual(result['fair']['run']['board']['need'], 10)
+        legacy = kn.schedule(state['journey']['fair_kn']['run']['sd'], 1, state['journey']['fair_kn']['run']['hot'])
+        self.assertEqual(result['fair']['run']['board']['need'], (legacy['need']*kn.SOFT_DIFFICULTY+99)//100)
         sc = fh._kn_sched(state['journey']['fair_kn']['run'], state['journey'])
         taps = safe_taps(sc, sc['need'])
         self.clock.t += taps[-1] / 1000
-        state, _ = self.act(state, 'fair_kn_throw', lv=1, taps=taps[:9])
+        state, _ = self.act(state, 'fair_kn_throw', lv=1, taps=taps[:sc['need'] - 1])   # one short of clearing
         validate_state(copy.deepcopy(state))
         self.dice(Dice(draws=[.1]))
         state, result = self.act(state, 'fair_kn_throw', lv=1, taps=taps)
         self.assertTrue(result['fair']['cleared'])
         state, result = self.act(state, 'fair_kn_next')
-        self.assertEqual(result['fair']['run']['board']['need'], 10)
-        self.assertEqual(state['journey']['fair_kn_skill']['difficulty'], 135)
+        nxt = state['journey']['fair_kn']['run']
+        self.assertEqual(result['fair']['run']['board']['need'], fh._kn_sched(nxt, state['journey'])['need'])
+        self.assertEqual(state['journey']['fair_kn_skill']['difficulty'], 135)   # what an older worker validates
 
     def test_each_paid_game_accepts_500_and_roundtrips(self):
         for name, payload in [('fair_bc', {'bets': {'bau': 300, 'cua': 200}}),

@@ -1,14 +1,10 @@
 /** Front-end orchestration. Economic rules live on the Python server, not in chat. */
 import {GameAPI} from './api.js';
 import {sellerVisitStrip,customerTaskBanner,visitCustomer,customerPortrait} from './v4/workplace-visit-ui.js';
-import {equipmentView,staffRefresh,staffRefreshPaused} from './v4/work-equipment.js';
+import {equipmentView,staffRefresh,staffRefreshPaused,scrollGuard} from './v4/work-equipment.js';
 import {suppressMediaGesture} from './v4/media-gestures.js';
 for(const event of ['contextmenu','dragstart','dblclick'])document.addEventListener(event,suppressMediaGesture);
-import {PhaserWorld} from './isometric/phaser-world.js';
-import {bootIsometricShell,updateIsometricShell,isometricAction} from './isometric-shell.js';
-import {bootIsometricMovement} from './isometric-movement.js';
-import {bootIsometricTown} from './isometric-town.js';
-import {bootCozyPortraits} from './isometric/portraits.js';
+import {BobaWorld} from './boba-world.js';
 import {wordsFor,kindOf} from './scenes/index.js';
 // Scene kinds load on demand: the current career's before the first frame, another career's before switching
 // to it (careerAssets below), so no career flashes the storefront and startup isn't waiting on all of them.
@@ -63,7 +59,7 @@ const L={
   promo:lazy(()=>import('./v4/promo.js'),{css:['/css/promo.css']}),  // 🎖️ Thăng tiến, 🧑‍💼 Ca quản lý (game/promotion.py)
 };
 const TUT_OPEN=new Set(['help','tutGuide','tutReplay']);  // tutorial actions whose buttons other modules render
-const PROMO_OPEN=new Set(['promo','pmBoard','pmStart','pmPick','pmMate']);  // 🎖️ v4/promo.js
+const PROMO_OPEN=new Set(['promo','pmBoard','pmStart','pmPick','pmMate','pmOffice']);  // 🎖️ v4/promo.js
 /** A sheet whose code is not in yet: its header (with the close button) and a skeleton. */
 const lazyView=(h,fn)=>h.use()?fn(h.m):header('')+`<div class="sheet-body">${skeleton()}</div>`;
 /** A sheet that reads the catalogue's `more` part (api.more(): job postings, the shop book, situations, story texts):
@@ -111,7 +107,7 @@ function shortWork(html){
 }
 const closedBar=()=>notice(`<b>Ca đang nghỉ</b> · mở ca để làm tiếp. ${button(icon('sun',14)+' Mở ca','startHere',{},'primary small')}`,'amber','sun');
 const ui={opsTab:'staff',staffId:null,lessonSequence:[],tourRoute:[],activityCard:null,view:null,tab:'',task:null,npc:null,jobTab:'shelf',journalTab:'quests',libraryQuery:'',docs:new Set(),transactions:new Set(),drafts:{},ai:{},suggestions:{},busy:false,paused:false};
-const world=new PhaserWorld($('#world'),interact);
+const world=new BobaWorld($('#world'),interact);
 soundsBoot({api,world,sound});  // character voices, detail sounds, bank speaker
 api.addEventListener('result',e=>{if(e.detail?.result?.card_swipe)import('./v4/bank.js').then(m=>m.swipeSound(api)).catch(()=>{});});  // 🏦 quẹt thẻ: ting ting
 dayclockBoot();  // giờ trong ngày: HUD clock, closing prompt, the scene's light
@@ -188,6 +184,9 @@ async function cmd(action,payload={},options={}){
   try{const r=await api.command(action,payload,options.career||career());if(pm){pmWant=null;ui.pmPick=null;ui.task=null;setTimeout(()=>openSheet('manager'),0);}if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);if(r.quay)quayFlush();return r;}
   catch(error){if(error.quiet)return null;
     if(error.data?.code==='acct_check'&&!payload?.acct_check){acctCheck(options.career||career());return null;}   // 💼 kế toán: the entry check first (v4/accounting-school.js)
+    // A command aimed at another workplace while work is in progress here (engine: ab.check with no confirm): ask once
+    // with the real numbers, switch with the player's confirm, then send the command again. Never a silent loop.
+    if(error.data?.code==='abandon_confirm'&&action!=='select_career'&&!options.abandonRetry){const target=options.career||career();const sw=await switchCareer(target);if(!sw)return null;abandonAfter(sw);return cmd(action,payload,{...options,career:target,abandonRetry:true});}
     toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}  // quiet: a tap the save moved under twice (api.js), the screen already shows why
 }
 /** 💼 A certified accountant's shift opens with the knowledge check (game/accounting_jobs.py): state.accounting_school.jobs. */
@@ -221,6 +220,7 @@ function setHTML(el,html){if(el&&el._html!==html){if(el._html===undefined)el.inn
  * attribute wins (a fold the career opens for the current step and shuts after it). English mode: text the
  * i18n layer already translated from the same Vietnamese source is left alone. */
 const morphTpl=document.createElement('template');
+const sheetScroll=scrollGuard();   // the open sheet's scroll: redraws wait for a fling, inner lists keep their place
 const morphSame=(cur,src)=>cur===src||cur===i18nT(src);
 function morph(el,html){morphTpl.innerHTML=html;morphKids(el,morphTpl.content);morphTpl.innerHTML='';}
 function morphKids(from,to){
@@ -296,7 +296,7 @@ function navItems(c){
   return result;
 }
 /** 🏪 A dot when a counter needs its owner: a thief, rent to pay, closed waiting, or a till to collect soon. */
-function quayBadge(){const q=api.state?.journey?.quay;return q?.shift||(q?.stalls||[]).some(st=>(st.case&&!st.case.rep)||st.due||st.closed||(st.left<=1&&st.till>0))?'dot':0;}
+function quayBadge(){const q=api.state?.journey?.quay;if(api.quayInvites>0)return api.quayInvites;return q?.shift||(q?.stalls||[]).some(st=>(st.case&&!st.case.rep)||st.due||st.closed||(st.left<=1&&st.till>0))?'dot':0;}   // 💼 a friend's shift invitation: its count
 /** 💼 A hired shift's day just closed (game/quay.py on_shift): settle it now (game/quay_hire.py flush; every load does too). */
 async function quayFlush(){try{const d=await api.post('/api/quay/flush',{});if(d?.state&&typeof d.revision==='number')api.accept({state:d.state,revision:d.revision});}catch{/* the next load settles it */}}
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
@@ -535,7 +535,7 @@ function renderMain(){
   $('#ambientCaption').textContent='';$('#saveState').classList.toggle('offline',!api.connected);
   setHTML($('#saveState'),api.connected?`<i class="saved-dot"></i>Đã lưu`:`<i class="saved-dot"></i>Mất kết nối <button type="button" class="linkish" data-action="reconnect">Thử lại</button>`);
   hudFeedback(c);stepHint(c);
-  sound.configure(api.state.settings);world.update(api.state,api.content);updateIsometricShell(env());
+  sound.configure(api.state.settings);world.update(api.state,api.content);
 }
 document.addEventListener('close',()=>{if(mainDeferred)renderMain();},true);
 /* Toasts (and the update pill) sit just under the open sheet's sticky header: never over its title and buttons,
@@ -613,11 +613,12 @@ function renderSheet(preserve=true){
   const openedDetails=preserve?(list=>new Map(foldKeys(list).map((k,i)=>[k,list[i].open])))(folds()):null,scroll=preserve?dialog.scrollTop:0,active=document.activeElement,selection=active?.selectionStart;
   const fkey=el=>el.id||(el.name&&el.form?`${el.form.dataset.socForm||el.form.id||''}|${el.form.dataset.pid||el.form.dataset.post||el.form.dataset.id||''}|${el.name}`:null);
   const fields={};if(preserve)dialog.querySelectorAll('[data-preserve]').forEach(el=>{const k=fkey(el);if(k)fields[k]={value:el.value,checked:el.checked};});const focusKey=preserve&&active&&dialog.contains(active)?fkey(active):null;
+  sheetScroll.watch(dialog);if(!preserve)sheetScroll.reset();
   if(!preserve||fresh||box._html===undefined)box.innerHTML=html;else if(changed)morph(box,html);
   box._html=html;
   tickNow(env());document.dispatchEvent(new Event('sheetrender'));
-  applyGuide(dialog);watchHead(dialog);updateIsometricShell(env());
-  if(preserve){const now=folds(),keys=foldKeys(now);now.forEach((el,i)=>{const want=openedDetails.has(keys[i])?openedDetails.get(keys[i]):(el._mk??el.open);if(el.open!==want)el.open=want;el._mk=undefined;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});dialog.scrollTop=scroll;if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);el?.focus({preventScroll:true});try{el?.setSelectionRange(selection,selection);}catch{/* not a text input */}}}
+  applyGuide(dialog);watchHead(dialog);
+  if(preserve){const now=folds(),keys=foldKeys(now);now.forEach((el,i)=>{const want=openedDetails.has(keys[i])?openedDetails.get(keys[i]):(el._mk??el.open);if(el.open!==want)el.open=want;el._mk=undefined;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});if(dialog.scrollTop!==scroll)dialog.scrollTop=scroll;sheetScroll.restore(dialog);if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);el?.focus({preventScroll:true});try{el?.setSelectionRange(selection,selection);}catch{/* not a text input */}}}
   if(!preserve)dialog.scrollTop=0;
   if(ui.view==='chat'){$('#messages')?.scrollTo(0,$('#messages').scrollHeight);}
 }
@@ -929,12 +930,14 @@ function warehouseView(){
   const body=tab==='lots'?phLotBook():tab==='regulars'?phRegulars():stockDesk(cap);
   return header(ph?'Kho & sổ quầy':'Kho nhỏ sau tiệm',esc(c.stock_desk?.clock?.label||''),'KHO HÀNG · SỨC CHỨA '+cap+' / MÃ')+`<div class="sheet-body wh">${tabs}${body}</div>`+footer('',c.open?commandButton('⏳ Chờ thêm 20 phút','advance',{},'ghost small'):'');
 }
-const SHIP_CAP=8;
+const SHIP_CAP=8,MERGE_CAP=12;
+/** Deliveries on the way (game/engine.py stock_vans): the lines of one merged order share a van. */
+const stockVans=c=>new Set(c.shipments.filter(s=>s.status==='in_transit').map(s=>s.placed!=null?`${s.supplier}|${s.placed}|${s.lo}|${s.hi}`:s.id)).size;
 function stockDesk(cap){
   const c=room(),id=career(),mb=id==='mother_baby',desk=c.stock_desk||{},care=mb?null:careData(),list=mb?api.content.products:api.content.lots.filter(l=>l.status==='available');
   const waiting=c.shipments.filter(s=>s.status!=='received'),arrived=waiting.filter(s=>s.ready_now),onWay=k=>waiting.filter(s=>s.item===k).reduce((n,s)=>n+s.qty,0),low=list.filter(p=>c.stock[p.id]+onWay(p.id)<=2);
-  // order_stock takes at most SHIP_CAP parcels on the way (game/engine.py): past that, receive one first.
-  const vansFull=c.shipments.filter(s=>s.status==='in_transit').length>=SHIP_CAP;
+  // order_stock takes at most SHIP_CAP deliveries on the way (game/engine.py): past that, receive one first.
+  const vansFull=stockVans(c)>=SHIP_CAP,picks=ui.whPick?.[id]||{};
   const sups=desk.suppliers||[],picked=ui.whSup?.[id],supId=sups.some(s=>s.id===picked)?picked:(desk.default||sups[0]?.id),sup=sups.find(s=>s.id===supId);
   const next=waiting.filter(s=>!s.ready_now).sort((a,b)=>(a.left_min??0)-(b.left_min??0))[0];
   const chip=(n,label,kind)=>n?`<span class="inv-chip ${kind}"><b>${n}</b> ${label}</span>`:'';
@@ -948,8 +951,30 @@ function stockDesk(cap){
     const qty=Math.min(Math.max(1,max),state?Math.min(4,Math.max(1,max)):1),can=!!(max&&c.open&&!vansFull),cost=Math.max(1,Math.ceil(p.cost*qty*(sup?.factor??1)));
     const lots=care?.batches?.filter(b=>b.lot===p.id)||[],first=lots.find(b=>!b.flag),flagged=lots.filter(b=>b.flag).reduce((n,b)=>n+b.qty,0);
     return `<div class="inventory-row inv-row ${state}">${itemArt(p.icon||'box',45,p.color)}<div class="grow"><h4>${esc(p.name)}${mb?'':` · ${esc(p.id)}`}</h4><small><b class="inv-big">${q}</b>/${cap} trên kệ${on?` · <span class="inv-flag info">+${on} đang giao</span>`:''}${held?` · đang giữ ${held}`:''} · ${fmt(p.cost)} xu/món</small>${!mb&&(first||flagged)?`<small class="block">${first?`HSD gần nhất: ngày ${first.exp}`:''}${flagged?` · <b class="wh-bad">${flagged} hộp cần rút</b>`:''}</small>`:''}<span class="inv-bar" aria-hidden="true"><i style="width:${Math.round(q/cap*100)}%"></i><i class="on" style="width:${Math.round(on/cap*100)}%"></i></span></div>`+
-      `<span class="inv-row-act">${whQty(p,max,qty)}<button type="button" class="btn small${state&&max&&!vansFull?' primary':''}" data-wh-order="${esc(p.id)}"${can?` data-cost="${p.cost}" data-factor="${sup?.factor??1}" data-money="${c.money}"`:''}${can&&cost<=c.money?'':' disabled'}>${!max?'Kệ đầy':vansFull?`Đủ ${SHIP_CAP} kiện`:!c.open?(mb?'Mở tiệm trước':'Mở quầy trước'):whLabel(qty,cost,c.money)}</button>${!mb?(c.held_lots.includes(p.id)?commandButton('Cô Thu kiểm lại','ph_release',{lot:p.id},'small primary'):commandButton('Tạm giữ','ph_quarantine',{lot:p.id},'small ghost')):''}</span></div>`;};
-  return strip+(waiting.length?`<h3>Kiện hàng</h3>${arrived.map(parcel).join('')}${waiting.filter(s=>!s.ready_now).map(parcel).join('')}<div class="divider"></div>`:'')+pick+`<h3>Hàng trên kệ</h3>${list.map(row).join('')}`;
+      `<span class="inv-row-act">${whQty(p,max,qty)}${can?`<label class="wh-pick"><input type="checkbox" data-wh-pick="${esc(p.id)}"${picks[p.id]?' checked':''}> Gộp</label>`:''}<button type="button" class="btn small${state&&max&&!vansFull?' primary':''}" data-wh-order="${esc(p.id)}"${can?` data-cost="${p.cost}" data-factor="${sup?.factor??1}" data-money="${c.money}"`:''}${can&&cost<=c.money?'':' disabled'}>${!max?'Kệ đầy':vansFull?`Đủ ${SHIP_CAP} kiện`:!c.open?(mb?'Mở tiệm trước':'Mở quầy trước'):whLabel(qty,cost,c.money)}</button>${!mb?(c.held_lots.includes(p.id)?commandButton('Cô Thu kiểm lại','ph_release',{lot:p.id},'small primary'):commandButton('Tạm giữ','ph_quarantine',{lot:p.id},'small ghost')):''}</span></div>`;};
+  // Đơn gộp (F#194): tick “Gộp” on several rows, then one order, one payment, one van (engine order_stock `lines`).
+  const n=list.filter(p=>picks[p.id]).length;
+  const merge=c.open?`<div class="wh-merge"><button type="button" class="btn small${n?' primary':''}" data-wh-merge="1"${n&&!vansFull?'':' disabled'}>🛒 Đặt đơn gộp · <span data-wh-merge-n>${n}</span> mã</button><small class="muted">Tick “Gộp” ở các mã cần nhập, chỉnh số rồi đặt một lần: một chuyến xe, trả một lần (tối đa ${MERGE_CAP} mã).</small></div>`:'';
+  return strip+(waiting.length?`<h3>Kiện hàng</h3>${arrived.map(parcel).join('')}${waiting.filter(s=>!s.ready_now).map(parcel).join('')}<div class="divider"></div>`:'')+pick+merge+`<h3>Hàng trên kệ</h3>${list.map(row).join('')}`;
+}
+/** A "Gộp" box was ticked: remember it and update the merged-order button without redrawing the rows. */
+function whPick(box){
+  const id=career(),picks=(ui.whPick??={})[id]??={};
+  if(box.checked)picks[box.dataset.whPick]=true;else delete picks[box.dataset.whPick];
+  const n=document.querySelectorAll('[data-wh-pick]:checked').length,b=document.querySelector('[data-wh-merge]');
+  if(b){b.querySelector('[data-wh-merge-n]').textContent=String(n);b.disabled=!n||stockVans(room())>=SHIP_CAP;b.classList.toggle('primary',!!n);}
+}
+async function whMerge(){
+  const c=room(),id=career(),desk=c.stock_desk||{},sups=desk.suppliers||[],picked=ui.whSup?.[id],supId=sups.some(s=>s.id===picked)?picked:(desk.default||sups[0]?.id),sup=sups.find(s=>s.id===supId)||{factor:1,name:'nhà cung cấp',quote:{}};
+  const items=[...document.querySelectorAll('[data-wh-pick]:checked')].map(b=>b.dataset.whPick);
+  if(!items.length){toast('Tick “Gộp” ở ít nhất một mã nhé.',true);return;}
+  if(items.length>MERGE_CAP){toast(`Một đơn gộp tối đa ${MERGE_CAP} mã.`,true);return;}
+  const lines=[];
+  for(const item of items){const qty=Number(document.getElementById('qty-'+item)?.value);if(!Number.isInteger(qty)||qty<1||qty>6){toast('Mỗi mã từ 1 đến 6 món.',true);return;}lines.push({item,qty});}
+  const cost=lines.reduce((n,l)=>n+Math.max(1,Math.ceil(product(l.item).cost*l.qty*sup.factor)),0);
+  const what=lines.map(l=>`${l.qty} × ${product(l.item).name}`).join(', ');
+  if(cost>c.money){toast(`Quỹ còn ${fmt(c.money)} xu, đơn gộp cần ${fmt(cost)} xu.`,true);return;}
+  if(await confirmAction(`Đặt đơn gộp ${lines.length} mã?`,`${what} từ ${sup.name}: trả ${fmt(cost)} xu một lần. Dự kiến nhận: ${sup.quote?.eta_label||sup.window||''}, cả đơn một chuyến. Hàng chỉ cộng kho sau khi bạn đếm nhận từng kiện.`,'Đặt đơn gộp')&&await cmd('order_stock',{lines,supplier:supId}))(ui.whPick??={})[id]={};
 }
 /** Quantity with − / + (44 px) around the number for a stock-desk row; disabled when the shelf is full. */
 const whQty=(p,max,qty)=>`<span class="wh-qty"><button type="button" class="btn ghost" data-wh-step="-1" aria-label="Bớt một"${max>1?'':' disabled'}>−</button><input class="input" type="number" id="qty-${p.id}" min="1" max="${Math.max(1,max)}" value="${qty}" inputmode="numeric" aria-label="Số nhập ${esc(p.name)}"${max?'':' disabled'}><button type="button" class="btn ghost" data-wh-step="1" aria-label="Thêm một"${max>1?'':' disabled'}>+</button></span>`;
@@ -1068,8 +1093,10 @@ async function csCallSend(task,body){
   }finally{csCallPending=null;renderSheet();}
 }
 document.addEventListener('click',async e=>{
-  const el=e.target.closest?.('[data-wh-tab],[data-wh-sup],[data-wh-order],[data-wh-open],[data-wh-step],[data-cs-pick]');if(!el||el.disabled||ui.busy)return;
-  if(el.dataset.whStep){const input=el.parentElement.querySelector('input');if(input){input.value=String(Math.max(1,Math.min(Number(input.max)||1,(Math.floor(Number(input.value))||1)+Number(el.dataset.whStep))));whBill(input);}}
+  const el=e.target.closest?.('[data-wh-tab],[data-wh-sup],[data-wh-order],[data-wh-open],[data-wh-step],[data-wh-pick],[data-wh-merge],[data-cs-pick]');if(!el||el.disabled||ui.busy)return;
+  if(el.dataset.whPick)whPick(el);
+  else if(el.dataset.whMerge)await whMerge();
+  else if(el.dataset.whStep){const input=el.parentElement.querySelector('input');if(input){input.value=String(Math.max(1,Math.min(Number(input.max)||1,(Math.floor(Number(input.value))||1)+Number(el.dataset.whStep))));whBill(input);}}
   else if(el.dataset.whTab){ui.whTab=el.dataset.whTab;renderSheet(false);}
   else if(el.dataset.whSup){(ui.whSup??={})[career()]=el.dataset.whSup;renderSheet();}
   else if(el.dataset.whOrder)await whOrder(el.dataset.whOrder);
@@ -1125,6 +1152,8 @@ function summaryView(){
   if(job?.salary)notes.push(notice(`<b>Lương hôm nay +${fmt(job.salary)} xu</b>${job.result==='official'?'<p>Hết thử việc: bạn đã được ký hợp đồng chính thức! 🎉</p>':job.result==='extended'?'<p>Thử việc được gia hạn thêm 2 ngày. Cố lên nhé!</p>':job.probation?'<p>Đang thử việc: nhận 85% lương.</p>':''}`,'success','briefcase'));
   if(rv.open||(rv.count&&rv.weakest&&rv.average<4.5))notes.push(notice(pagoda?`${rv.count&&rv.weakest&&rv.average<4.5?`Khách thập phương nhắc nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` ${rv.open} cảm nhận chờ hồi đáp.`:''}<br>${button('Xem cảm nhận','feedback',{filter:rv.open?'open':'all'},'small')}`:`${rv.count&&rv.weakest&&rv.average<4.5?`Khách góp ý nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` ${rv.open} đánh giá chờ trả lời.`:''}<br>${button('Xem đánh giá','feedback',{filter:rv.open?'open':'all'},'small')}`,'amber','star'));
   if(ops?.unpaid)notes.push(notice(`<b>${esc(wordsFor(career()).books)}: còn ${fmt(ops.unpaid)} xu cần trả</b><p class="ck-chips">${ops.wages?`<span class="ck-delta flat">Lương ${fmt(ops.wages)}</span>`:''}${ops.utilities?`<span class="ck-delta flat">điện nước ${fmt(ops.utilities)}</span>`:''}${ops.rent_accrued?`<span class="ck-delta flat">thuê ${fmt(ops.rent_accrued)} xu</span>`:''}${ops.period?'<span class="ck-delta warn">vừa kết kỳ thuế</span>':''}</p>${button('Mở sổ thu chi','finance',{},'small')}`,'','mail'));
+  // 🧾 A tax period closed today (operations.py on_close): the calculation, not just a bill (players asked "5k xu thuế ở đâu ra?").
+  if(ops?.period){const p=ops.period;notes.push(notice(`<b>🧾 Kết kỳ thuế ngày ${fmt(p.start)}–${fmt(p.end)}</b><p>Doanh thu cả kỳ ${fmt(p.revenue)} xu × ${fmt(p.rate)}% = <b>${fmt(p.tax)} xu thuế</b> (làm tròn lên). Mặt bằng cả kỳ ${fmt(p.rent)} xu. Hai khoản nằm trong ${esc(wordsFor(career()).books)} → Thu chi, hạn đóng ngày ${fmt(p.end+2)}.</p>${button('Mở sổ thu chi','finance',{},'small')}`,'amber','mail'));}
   // Hired staff (operations.py on_close): what each one did today, or why not (no shift, paused by an open incident),
   // and what their finished jobs earned the shop (staff_bonus, one cash-book row; absent from older servers).
   const team=ops?.staff||[],held=team.some(t=>t.paused);
@@ -1158,7 +1187,7 @@ function helpView(){const guides={teacher:['Soạn ba bước: ví dụ → th�
 let confirmResolve=null;
 /** `money` (optional): {cost, pocket:'wallet'|'fund'} of a payment, for the "còn thiếu" line; without it a
  * confirm that talks money still shows the balances of the sheet under it (v4/money.js confirmMoney). */
-function confirmAction(title,message,label='Xác nhận',money=null){
+function confirmAction(title,message,label='Xác nhận',money=null,opts=null){
   const under=[...document.querySelectorAll('dialog[open]')].filter(d=>d.id!=='confirmDialog').pop(),b=dialogBalances(under);
   // Not enough in the fund for an exact price: the server would refuse ("Chưa đủ xu"), so the button says so instead.
   const short=confirmShort(b,[title,message,label],money),yes=short?.sure?`<button type="button" class="btn primary" data-action="confirmYes" disabled>Thiếu ${fmt(short.miss)} xu</button>`:button(esc(label),'confirmYes',{},'primary');
@@ -1173,7 +1202,10 @@ function confirmAction(title,message,label='Xác nhận',money=null){
     const sync=()=>{const x=options.find(o=>o.id===select.value);yesButton.disabled=!x?.ok;yesButton.textContent=x?.ok?label:`Thiếu ${fmt(Math.max(0,cost-(x?.balance||0)))} xu`;choices.querySelector('#confirmPayHint').textContent=x?.ok?x.text:x?.why||'Chọn nguồn thanh toán.';};
     select.addEventListener('change',sync);sync();
   }
-  $('#confirmDialog').showModal();return new Promise(resolve=>{confirmResolve=resolve;});
+  $('#confirmDialog').showModal();
+  // A second tap of a double tap must not land on "Đồng ý" (Xin nghỉ việc): the button wakes up a moment later.
+  if(opts?.arm>0){const yesButton=$('#confirmContent').querySelector('[data-action="confirmYes"]');if(yesButton&&!yesButton.disabled){yesButton.disabled=true;setTimeout(()=>{if(yesButton.isConnected)yesButton.disabled=false;},opts.arm);}}
+  return new Promise(resolve=>{confirmResolve=resolve;});
 }
 function inputPrompt(title,value,maxLength=100){
   $('#confirmContent').innerHTML=`<span class="eyebrow">GÓC CỦA BẠN</span><h2>${esc(title)}</h2><textarea class="input" id="cozy-prompt" maxlength="${maxLength}" rows="3">${esc(value)}</textarea><div class="row space-top">${button('Để sau','confirmNo',{},'ghost')}${button('Lưu','confirmYes',{},'primary')}</div>`;
@@ -1181,7 +1213,7 @@ function inputPrompt(title,value,maxLength=100){
 }
 function finishConfirm(value){const choice=$('#confirmPay');if(value&&choice)value=choice.value;$('#confirmDialog').close();confirmResolve?.(value);confirmResolve=null;document.body.append($('#toasts'));}
 $('#confirmDialog').addEventListener('cancel',e=>{e.preventDefault();finishConfirm(false);});
-$('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.current||world.mode==='town'&&townOn({...env(),ui:{...ui,jrView:'home',homeMode:'town'}}))closeSheet();});
+$('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.current)closeSheet();});
 /* Phone bottom sheets show a grab handle: dragging the sheet head down now really closes the sheet (it
  * used to do nothing). Only transform moves while dragging; past 90 px or a quick flick it slides away and
  * closes through the same 'cancel' path as Escape (so sheets that may not close yet stay put). */
@@ -1209,12 +1241,30 @@ $('#sheet').addEventListener('close',()=>{document.body.append($('#toasts'));
 /** The career's how-to line in the scene's speech bubble, a few words of it (the bubble holds three short lines). */
 const greeting=()=>toastHead(String(i18nT(String(meta().greeting||'')))).head;
 async function start(){if(needsJob()){openSheet('jobapp');return;}const r=await cmd('start_day');if(r){ui.task=null;closeSheet();world.say(greeting());}}
+/** Bỏ dở việc: the server's own gates (locked place, certificate, profile) answer first, with no payload; only its
+ * "abandon_confirm" refusal opens the "Vẫn đi" dialog, built from a fresh state. Any other refusal refreshes the state
+ * too, so a stale preview can never bring the dialog back in a loop. Resolves the switch result or null. */
+async function switchCareer(id){
+  let r;
+  try{r=await api.command('select_career',{},id);}
+  catch(error){
+    if(error.quiet)return null;
+    if(error.data?.code!=='abandon_confirm'){await api.refresh().catch(()=>{});toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}
+    await api.refresh().catch(()=>{});
+    const pass=await abandonGate(api,id);
+    if(!pass)return null;   // "Ở lại làm nốt"
+    if(!pass.confirm){toast('Việc đang làm vừa thay đổi. Bấm chuyển lần nữa để xem lại nhé.');return null;}   // never confirm unseen
+    try{r=await api.command('select_career',pass,id);}
+    catch(again){if(again.quiet)return null;await api.refresh().catch(()=>{});toast(again.status?again.message:'Mất kết nối. Thử lại sau một chút nhé.',true);sound.error();return null;}
+  }
+  sound.click();for(const note of new Set(r.effects||[]))toast(note);
+  return r;
+}
 async function selectCareer(id){
-  const pass=await abandonGate(api,id);if(!pass){closeSheet();setPaused(false);return;}  // bỏ dở việc: "Ở lại làm nốt" goes back to the counter
   ui.task=null;ui.docs.clear();ui.transactions.clear();ui.ai={};ui.phFilter='';ui.jobTab='shelf';
   await careerAssets(id);  // its workbench, stylesheet and scene first: the new place never renders half-styled
-  const r=await cmd('select_career',pass, {career:id,quiet:true});if(!r)return;if(r.hired)toast(r.message,'good');
-  world.setMode('work');closeSheet();world.say(greeting());setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
+  const r=await switchCareer(id);if(!r){closeSheet();setPaused(false);return;}if(r.hired)toast(r.message,'good');
+  closeSheet();world.say(greeting());setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
   abandonAfter(r);
 }
 /** A brand-new player's first workplace (v4/onboard.js quickOpen): day 1 opens at once, straight into the first
@@ -1236,8 +1286,6 @@ async function openJob(id,tab){
   if(select){const r=await cmd('task_select',{task:target},{quiet:true});if(!r&&ui.view==='job'&&ui.task===target){ui.task=room().active_task||null;renderSheet(false);}}
 }
 function interact(id){sound.unlock();sound.click();if(ui.paused)return;
-  if(id.startsWith('career:')){handleAction('choose',{career:id.slice(7)});return;}
-  if(id.startsWith('outing:')){void handleAction('leisurePlace',{kind:id.slice(7)}).catch(error=>toast(error.message,true));return;}
   {const alt=careerUI(career())?.spots?.[id];if(alt){openSheet(alt);return;}}  // a career's own place for a scene spot (air crew: no Sổ tiệm)
   if(id.startsWith('staff:')){ui.staffId=id.slice(6);openSheet('operations',{opsTab:'staff'});return;}
   if(id.startsWith('ops:')){openSheet('operations',{opsTab:id.slice(4)});return;}
@@ -1252,13 +1300,6 @@ function interact(id){sound.unlock();sound.click();if(ui.paused)return;
 }
 async function talk(text){if(!ui.npc||!text.trim())return;const id=ui.npc;const r=await (await L.chat.get()).aiTalk(env(),id,text);if(!r)return;ui.suggestions[id]=r.suggestions||[];world.say(r.reply,id);renderSheet();}
 async function handleAction(action,data,el){
-  if(action==='leisurePlace'){
-    if(!['fishing','boat','pool'].includes(data.kind))return;
-    const [{openPixelPlace},{loadLeisureArt}]=await Promise.all([import('./pixel/places.js'),import('./isometric/leisure-art.js')]);
-    const leisureArt=await loadLeisureArt(data.kind);closeSheet();openPixelPlace(data.kind,{...env(),leisureArt});return;
-  }
-  if(action==='home'&&townOn({...env(),ui:{...ui,jrView:'home',homeMode:'town'}}))action='isoTown';
-  if(await isometricAction(action,data,el,env()))return;
   switch(action){
     case'close':closeSheet();break;
     case'confirmNo':finishConfirm(false);break;
@@ -1484,7 +1525,7 @@ document.addEventListener('change',async e=>{
 window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').open&&!$('#confirmDialog').open&&api.state?.current){setPaused(!ui.paused);}});
 // Back in the tab: re-sync, unless the state is fresh anyway (every focus used to refetch and re-render all).
 window.addEventListener('focus',()=>{if(api.state&&!ui.busy&&!(ui.view==='home'&&ui.jrView==='invest')&&Date.now()-(api.syncedAt||0)>15000)api.refresh().catch(()=>{});});
-const stopStaffRefresh=staffRefresh({state:()=>api.state,refresh:()=>api.refresh(),busy:()=>staffRefreshPaused(ui,!!document.querySelector('dialog.qy-sheet[open]'),!!document.querySelector('dialog.fh-sheet[open]')),lastSync:()=>api.syncedAt||0});
+const stopStaffRefresh=staffRefresh({state:()=>api.state,refresh:()=>api.refresh(),busy:()=>staffRefreshPaused(ui,!!document.querySelector('dialog.qy-sheet[open]'),!!document.querySelector('dialog.fh-sheet[open]'))||sheetScroll.busy(),lastSync:()=>api.syncedAt||0});
 window.addEventListener('pagehide',event=>{if(!event.persisted)stopStaffRefresh();});
 let responsiveTimer;
 window.addEventListener('resize',()=>{clearTimeout(responsiveTimer);responsiveTimer=setTimeout(()=>{if(api.state&&api.content)renderMain();},140);});
@@ -1494,7 +1535,8 @@ window.addEventListener('layoutchange',()=>{world.resize();if(api.state&&api.con
 /* A workbench showing picks ahead of the server (milk tea: module.settling) skips drawing its sheet for an answer that
  * another queued answer follows: the sheet shows those picks already, and the last answer draws it. */
 const settling=()=>{if(ui.view!=='job')return false;try{return !!careerUI(career())?.settling?.(careerContext(env()));}catch{return false;}};
-api.addEventListener('state',()=>{syncOlder(api.revision);ensureCareerUI();renderMain();if(ui.view&&!settling())renderSheet();shell.update(env());});
+// While the player scrolls the open sheet, its redraw waits for the scroll to settle (work-equipment.js scrollGuard).
+api.addEventListener('state',()=>{syncOlder(api.revision);ensureCareerUI();renderMain();if(ui.view&&!settling()){if(sheetScroll.busy())sheetScroll.later(()=>{if(ui.view&&!settling())renderSheet();});else renderSheet();}shell.update(env());});
 api.addEventListener('busy',e=>{ui.busy=e.detail;document.body.classList.toggle('busy',ui.busy);$('#saveState')?.setAttribute('aria-busy',String(ui.busy));if(!ui.busy&&heldTap)setTimeout(replayHeld,60);else if(!ui.busy)holdMark(null);});
 /* "Game mất chữ": an iPhone tab left open across a deploy came back with every card of the work sheet
  * blank (containers, portrait and button shapes drawn, no words) while the DOM still held the text.
@@ -1569,7 +1611,7 @@ try{
   await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
   import('./v4/home-guests.js').then(m=>m.homeGuestsBoot(env())).catch(e=>console.warn('homeGuests:',e));
   import('./v4/workplace-visit.js').then(m=>m.workVisitsBoot(env())).catch(e=>console.warn('workVisits:',e));
-  shell.boot(env());journeyBoot(env());boardBoot(env());bootIsometricShell(env);bootIsometricMovement(env);bootIsometricTown(env);bootCozyPortraits();startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
+  shell.boot(env());journeyBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
   const oauthReturned=accountBoot(env());
   ensureCareerUI();  // its workbench failed to come above (the game opens anyway): ask again in the background
   try{performance.mark('mnl-first-frame');}catch{/* no User Timing */}   // "time to first game frame" (telemetry.js load beacon)
@@ -1600,7 +1642,7 @@ try{
   if(!oauthReturned){
     const deep=new URLSearchParams(location.search);
     if(deep.get('social')){history.replaceState(null,'','/');openSocial(deep.get('social'));}
-    else if(!api.state.current){if(!townOn(env()))openSheet('home');}else if(world.mode==='work'&&!room().open)openSheet(room().shift_summary?'summary':'prepare');
+    else if(!api.state.current)openSheet('home');else{if(!room().open)openSheet(room().shift_summary?'summary':'prepare');}
   }
   // Callback feedback gets the first screen. Start automatic cards only after the player closes it;
   // a queued close event from a sheet already reopened is not a dismissal.

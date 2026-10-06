@@ -33,12 +33,12 @@ class KnifeSchedule(unittest.TestCase):
 class SavedRoundCompatibility(FairBase):
     def test_first_board_ten_throws_and_reload_partial_round(self):
         s, result = self.act(story(100), 'fair_kn_start', stake=10)
-        self.assertEqual(result['fair']['run']['board']['need'], 10)
+        self.assertEqual(result['fair']['run']['board']['need'], 9)   # 06/10: the softer 115% board
         self.assertEqual(s['journey']['fair_kn_skill']['difficulty'], 135)
         sc = fh._kn_sched(s['journey']['fair_kn']['run'], s['journey'])
         taps = safe_taps(sc, sc['need'])
         self.clock.t += taps[-1] / 1000
-        s, partial = self.act(s, 'fair_kn_throw', lv=1, taps=taps[:9])
+        s, partial = self.act(s, 'fair_kn_throw', lv=1, taps=taps[:8])
         self.assertEqual(partial['fair']['run']['stage'], 'play')
         s = json.loads(json.dumps(s))
         validate_state(s)
@@ -54,6 +54,7 @@ class SavedRoundCompatibility(FairBase):
             with self.subTest(probability=probability):
                 s, _ = self.act(story(100), 'fair_kn_start', stake=10)
                 s['journey'].pop('fair_kn_skill')
+                s['journey'].pop('fair_kn_soft')
                 fh._set_chance(s['journey'], 'kn', s['journey']['fair_kn']['run'], probability / 1000)
                 s['journey']['fair_chance']['kn'].update(p=probability, difficulty=150)
                 s = json.loads(json.dumps(s))
@@ -64,7 +65,7 @@ class SavedRoundCompatibility(FairBase):
                 s, result = self.act(s, 'fair_kn_throw', lv=1, taps=list(range(0, 11 * 120, 120)))
                 self.assertTrue(result['fair']['cleared'])
                 s, result = self.act(s, 'fair_kn_next')
-                self.assertEqual(result['fair']['run']['board']['need'], 10)
+                self.assertEqual(result['fair']['run']['board']['need'], 9)
                 self.assertFalse(result['fair']['run']['chance'])
                 self.assertNotIn('kn', s['journey']['fair_chance'])
                 self.assertEqual(s['journey']['fair_kn_skill']['difficulty'], 135)

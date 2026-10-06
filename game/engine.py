@@ -111,22 +111,14 @@ def default_settings() -> dict:
 from .jsoncopy import tree_copy,_SCALARS  # noqa: F401 (re-exported)
 
 def _build_id() -> str:
-    """Fingerprint of this game code (every game/*.py and the career list). The storage
-    layer stamps it on a save (state["check"]["build"]) once the save has been migrated
-    and fully validated by this code; a stamped save skips migrate_state, and commands
-    on it only re-validate what they changed (see Store._compute). Any code change, so
-    any deploy, gives a new build: every save is migrated and fully validated again."""
-    h=hashlib.sha256(",".join(CAREERS).encode())
-    root=os.path.dirname(os.path.abspath(__file__))
-    try:
-        for folder,dirs,files in os.walk(root):
-            dirs[:]=sorted(d for d in dirs if d!="__pycache__")
-            for name in sorted(f for f in files if f.endswith(".py")):
-                with open(os.path.join(folder,name),"rb") as fh:
-                    h.update(os.path.relpath(os.path.join(folder,name),root).encode()+b"\0"+fh.read()+b"\0")
-    except OSError:
-        return "unknown-"+secrets.token_hex(8)  # never matches: always the full migrate + validation
-    return h.hexdigest()[:20]
+    """Fingerprint of the code that migrates and validates saves (game/build_id.py: every game
+    module engine can import, the career list and SAVE_EPOCH). The storage layer stamps it on
+    a save (state["check"]["build"]) once the save has been migrated and fully validated by
+    this code; a stamped save skips migrate_state, and commands on it only re-validate what
+    they changed (see Store._compute). A deploy that changes any of that code gives a new
+    build: every save is migrated and fully validated again."""
+    from .build_id import build_id
+    return build_id(CAREERS)
 
 BUILD=_build_id()
 
@@ -551,7 +543,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         return s,dict(message=hired or "Chào mừng tới "+CAREER_META[career]["place"]+".",hired=bool(hired),**({"abandon":left} if left else {}))
     if action=="settings":
         for k,v in p.items():
-            if k=="name":s["name"]=clean_text(v,24)
+            if k=="name":from .accounts import character_name;s["name"]=character_name(v,s.get("name"))  # moderation #13: display-name rules
             elif k=="mode":pass  # Old clients may still send it: each day's pace is the luck of the day now.
             elif k in SETTING_CHOICES:
                 need(v in SETTING_CHOICES[k],"Thiết lập không hợp lệ.");s["settings"][k]=v
@@ -613,7 +605,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if mod:no_tick|=set(mod.SPEC.get('no_tick',()))
     no_tick|=CARE_FREE
     if action.startswith("cl_"):need(c["open"],"Mở ca trước khi làm hoạt động lớp nhé.")
-    no_tick|={"pm_answer","pm_ask","pm_close"}  # 🎖️ the review and closing the board take no time; a manager's moves do
+    no_tick|={"pm_answer","pm_ask","pm_close","pm_of_plan","pm_of_hr","pm_of_inbox"}  # 🎖️ the review, closing the board and the 🏢 office take no time; a manager's moves do
     if action not in no_tick and not action.startswith(("ops_","fb_","job_","soc_","cl_","inc_","hap_",*life.NEW_ACTION_PREFIXES)):c["turn"]+=1
     if action.startswith(life.NEW_ACTION_PREFIXES):
         result.update(life.handle(s,c,career,action,p))
@@ -821,28 +813,41 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         t["basket"]={};task_done(s,c,t,25,"Bạn đã chuyển yêu cầu cho cô Thu, không đoán ngoài phạm vi.","referred")
         result.update(message="Cô Thu đã tiếp nhận. Quầy vẫn làm việc bình thường.",celebrate=True)
     elif action=="order_stock":
+        # One item (`item`, `qty`) or a merged order (`lines`: [{item, qty}], F#194): one payment, one van,
+        # one shipment row per line with the same supplier promise, so saved shipments keep their shape.
         need(career in ("mother_baby","pharmacy"),"Nghề này không cần nhập hàng.")
-        item=p.get("item");qty=integer(p.get("qty"),1,6)
         catalogue=PRODUCT_INDEX if career=="mother_baby" else LOT_INDEX
-        need(item in catalogue,"Mã hàng không hợp lệ.")
-        if career=="pharmacy":need(LOT_INDEX[item]["status"]=="available","Chỉ đặt lô hợp lệ.")
+        raw=p.get("lines") if p.get("lines") is not None else [dict(item=p.get("item"),qty=p.get("qty"))]
+        need(isinstance(raw,list) and 1<=len(raw)<=STOCK_LINES,f"Một đơn gộp tối đa {STOCK_LINES} mã hàng.")
+        want={}
+        for w in raw:
+            need(isinstance(w,dict),"Danh sách hàng không hợp lệ.")
+            item=w.get("item");qty=integer(w.get("qty"),1,6)
+            need(item in catalogue,"Mã hàng không hợp lệ.")
+            need(item not in want,"Mỗi mã chỉ một dòng trong đơn gộp.")
+            if career=="pharmacy":need(LOT_INDEX[item]["status"]=="available","Chỉ đặt lô hợp lệ.")
+            want[item]=qty
         sup=_stock_supplier(career,p.get("supplier",STOCK_DEFAULT));need(sup,"Nhà cung cấp không tồn tại.")
         cap=max(ops.PROPERTY_INDEX[c["ops"]["property"]["tier"]]["stock_cap"],24 if "shelf" in c["upgrades"] else 12)
-        in_transit=sum(x["qty"] for x in c["shipments"] if x["item"]==item and x["status"]!="received")
-        need(c["stock"].get(item,0)+qty+in_transit<=cap,f"Kho mỗi mã chứa tối đa {cap}. Nhận đủ rồi bán bớt hoặc nâng kệ.")
-        need(sum(x["status"]=="in_transit" for x in c["shipments"])<8,"Đang có nhiều kiện chờ giao. Nhận bớt rồi đặt tiếp nhé.")
-        cost=max(1,math.ceil(catalogue[item]["cost"]*qty*sup["factor"]))
-        s["seq"]+=1;sid=f"shipment-{s['seq']}"
-        money(s,c,-cost,"Đặt nhập "+item+" · "+sup["name"],sid)
+        for item,qty in want.items():
+            in_transit=sum(x["qty"] for x in c["shipments"] if x["item"]==item and x["status"]!="received")
+            need(c["stock"].get(item,0)+qty+in_transit<=cap,f"Kho mỗi mã chứa tối đa {cap}"+(f" ({catalogue[item]['name']})" if len(want)>1 else "")+". Nhận đủ rồi bán bớt hoặc nâng kệ.")
+        need(stock_vans(c)<STOCK_VANS,"Đang có nhiều kiện chờ giao. Nhận bớt rồi đặt tiếp nhé.")
+        costs={item:max(1,math.ceil(catalogue[item]["cost"]*qty*sup["factor"])) for item,qty in want.items()}
+        ids=[f"shipment-{s['seq']+k+1}" for k in range(len(want))]
+        names=[catalogue[item]["name"] for item in want]
+        what=f'{want[next(iter(want))]} × {names[0]}' if len(want)==1 else f'gộp {len(want)} mã'
+        money(s,c,-sum(costs.values()),("Đặt nhập "+next(iter(want)) if len(want)==1 else f"Đặt nhập gộp {len(want)} mã")+" · "+sup["name"],ids[0])
+        s["seq"]+=len(want)
         clk=_clock(c,career)
-        when_=inv._schedule(sup,career,clk["abs"],f"{career}:{c['day']}:{sid}:{item}:{sup['id']}")
-        x=dict(id=sid,item=item,qty=qty,actual=qty,supplier=sup["id"],cost=cost,status="in_transit",day=c["day"],**when_)
-        c["shipments"].append(x)
+        when_=inv._schedule(sup,career,clk["abs"],f"{career}:{c['day']}:{ids[0]}:{next(iter(want))}:{sup['id']}")
+        for sid,(item,qty) in zip(ids,want.items()):
+            c["shipments"].append(dict(id=sid,item=item,qty=qty,actual=qty,supplier=sup["id"],cost=costs[item],status="in_transit",day=c["day"],**when_))
+        x=c["shipments"][-len(want)]
         eta=inv._eta(x,clk["abs"],c,career,clk)
         promise=eta["window"] if x["lo"]!=x["hi"] else eta["arrives_time"]
-        name=catalogue[item]["name"]
-        result.update(message=f'Đã đặt {qty} × {name} · {cost} xu. {sup["name"]} giao {eta["eta_label"][0].lower()+eta["eta_label"][1:]} ({promise}); kiện tới rồi mới đếm và nhập kho.',
-                      eta=dict(eta,shipment=sid))
+        result.update(message=f'Đã đặt {what} · {sum(costs.values())} xu. {sup["name"]} giao {eta["eta_label"][0].lower()+eta["eta_label"][1:]} ({promise}){" trong một chuyến" if len(want)>1 else ""}; kiện tới rồi mới đếm và nhập kho.',
+                      eta=dict(eta,shipment=ids[0],shipments=ids))
     elif action=="receive_stock":
         shipment=next((x for x in c["shipments"] if x["id"]==p.get("shipment")),None)
         need(shipment and shipment["status"]!="received","Kiện đã nhận hoặc không tồn tại.")
@@ -1308,7 +1313,7 @@ then runs validate_career on every career the command changed (see Store._comput
     need(s.get("current") in CAREERS or s.get("current") is None,"Nghề trong bản lưu không hợp lệ.")
     clean_text(s.get("name"),24);integer(s.get("seq"),0,10**9)
     jr.validate(s)
-    if not _SCOPED.get():accounting_school_.validate(s)  # scoped: only as_* commands change it (they validate it themselves)
+    if _SCOPED.get() is not True:accounting_school_.validate(s)  # scoped commands: only as_* commands change it (they validate it themselves)
     iv.validate(s)
     bd.validate(s)
     doi.validate(s)
@@ -1331,21 +1336,38 @@ then runs validate_career on every career the command changed (see Store._comput
     _finite(s)  # no NaN/Infinity anywhere
 
 
+def scoped_validation(s:dict) -> None:
+    """validate_state of everything outside the careers, the accounting school's block included,
+    for a writer outside apply_action on a save stamped by this build (marriage._mutate): it
+    then validates each career it changed (storage.serialize_bytes(known=...)); the others are
+    byte for byte records that passed."""
+    token=_SCOPED.set("outside_careers")
+    try:validate_state(s)
+    finally:_SCOPED.reset(token)
+
+
 def _feed_author(value) -> bool:
     # Large histories must not rebuild and linearly scan the entire NPC catalogue
     # for every post/comment. Keep malformed JSON values on the GameError path.
     return isinstance(value,str) and (value=="player" or value in NPC_INDEX)
 
 
-def validate_career(c:dict,cid:str,finite:bool=True) -> None:
+def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) -> None:
     """Every check of one career record. It reads only that record and the fixed
-    content, so a record equal to one that passed with this build still passes."""
+    content, so a record equal to one that passed with this build still passes.
+
+    `same` (game/settle_scope.py): keys of c, and "ops.<key>" of c["ops"], whose value is
+    byte for byte (JSON) the value of the stored record that passed these checks with this
+    build. A group of checks that reads only such values passes again and is skipped: the
+    per-task regeneration, the long lists (reviews, chats, journal, memories, album, ...) and
+    the cash book's rows. Everything else runs, in the same order, so a record that fails
+    fails with the same message. Empty (the default): every check runs."""
     from . import consequences as cq
     from . import classroom
     need(isinstance(c,dict),"Tiến trình nghề không hợp lệ.")
     player_services.validate_staff(c,cid)
     template_keys,ext_keys=_template_keys(cid)
-    ops.validate(c,cid)
+    ops.validate(c,cid,same)
     life.validate(c,cid)
     ext=c.get("ext");need(isinstance(ext,dict) and ext_keys<=set(ext),"Bản lưu thiếu dữ liệu v0.4.")
     integer(ext.get("seq"),0,10**9);need(isinstance(ext.get("data"),dict),"Dữ liệu nghề không hợp lệ.")
@@ -1372,7 +1394,7 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
     need(all(l in LOT_INDEX for l in c["held_lots"]),"Lô tạm giữ không hợp lệ.")
     need(len(c["tasks"])<=80,"Quá nhiều công việc trong bản lưu.")
     taskids=[]
-    for t in c["tasks"]:
+    for t in (() if "tasks" in same else c["tasks"]):  # same tasks: the regeneration below passes again
         player_services.validate(t)
         if "patience" in t:integer(t["patience"],25,100)
         need(isinstance(t,dict) and t.get("career")==cid and t.get("npc") in NPC_INDEX,"Công việc không hợp lệ.")
@@ -1456,6 +1478,7 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
             integer(t.get("ready_turn"),0,10**9)
             for key in ("identity","confirmed","handed_over"):need(type(t.get(key)) is bool,"Trạng thái xử lý thiếu.")
             need(t.get("proposal") in (None,"reship","trace","exchange","refund","guide"),"Phương án đề nghị không hợp lệ.")
+    if "tasks" in same:taskids=[t["id"] for t in c["tasks"]]
     need(len(taskids)==len(set(taskids)),"Công việc bị trùng mã.")
     need(c["active_task"] is None or c["active_task"] in taskids,"Công việc đang chọn không tồn tại.")
     for k in c["stock"]:need(available(c,k)>=0,"Hàng đã giữ nhiều hơn tồn kho.")
@@ -1464,12 +1487,12 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
         need(e.get("stage") in ("noticed","investigating","proposed","executing","resolved"),"Bước sự kiện sai.")
         need(e.get("chosen") in (None,"a","b") and isinstance(e.get("read"),list) and type(e.get("practice")) is bool,"Dữ liệu sự kiện thiếu.")
         integer(e.get("step"),0,2)
-    for f in c["feed"]:
+    for f in (() if "feed" in same else c["feed"]):
         need(isinstance(f,dict) and _feed_author(f.get("npc")) and isinstance(f.get("comments"),list),"Bài đăng không hợp lệ.")
         clean_text(f.get("text"),3000);clean_text(f.get("id"),100)
         need(f.get("stars") in (None,1,2,3,4,5),"Số sao không hợp lệ.")
         fbk.validate_post(f)
-    for npc,chat in c["chats"].items():
+    for npc,chat in (() if "chats" in same else c["chats"].items()):
         need(npc in NPC_INDEX and isinstance(chat,list) and len(chat)<=40,"Chat bản lưu không hợp lệ.")
         for row in chat:need(row.get("role") in ("user","npc"),"Vai chat không hợp lệ.");clean_text(row.get("text"),2000)
     need(isinstance(c["relationships"],dict) and isinstance(c["decor"],dict),"Dữ liệu quan hệ/trang trí không hợp lệ.")
@@ -1478,31 +1501,39 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
     for item,position in c["decor"].items():
         need(item in c["upgrades"] and UPGRADE_INDEX[item]["kind"]=="decor" and isinstance(position,dict),"Món trang trí chưa sở hữu.")
         need(position.get("spot") in ("window","corner","front","center","wall"),"Vị trí trang trí không hợp lệ.")
-    for shipment in c["shipments"]:
+    for shipment in (() if "shipments" in same else c["shipments"]):
         need(isinstance(shipment,dict) and shipment.get("item") in expected_items,"Kiện hàng sai mã.")
         clean_text(shipment.get("id"),100);integer(shipment.get("qty"),1,6);integer(shipment.get("actual"),1,6);integer(shipment.get("cost"),0,10000)
         if "at" not in shipment:integer(shipment.get("ready"),0,10**9)
         need(shipment.get("status") in ("in_transit","received"),"Trạng thái kiện sai.")
-    for pending in c["pending"]:
+    for pending in (() if "pending" in same else c["pending"]):
         need(isinstance(pending,dict) and pending.get("kind") in ("return_note","event_followup","comment"),"Thông báo chờ không hợp lệ.")
         integer(pending.get("day"),1,999999);integer(pending.get("turn"),0,10**9);clean_text(pending.get("ref"),200);clean_text(pending.get("text"),3000)
         need(pending.get("npc") in NPC_INDEX,"Thông báo thiếu nhân vật.")
-    for memory in c["memories"]:
+    for memory in (() if "memories" in same else c["memories"]):
         need(isinstance(memory,dict) and memory.get("npc") in NPC_INDEX,"Ký ức sai nhân vật.")
         clean_text(memory.get("text"),3000);clean_text(memory.get("source"),200)
-    for row in c["journal"]:
+    for row in (() if "journal" in same else c["journal"]):
         for key in ("id","kind","text"):clean_text(row.get(key),4000)
         integer(row.get("day"),1,999999);integer(row.get("turn"),0,10**9)
-    for post in c["feed"]:
+    for post in (() if "feed" in same else c["feed"]):
         for key in ("author","source","kind"):clean_text(post.get(key),200)
         integer(post.get("day"),1,999999);need(type(post.get("liked")) is bool,"Trạng thái bài đăng thiếu.")
         for comment in post["comments"]:
             clean_text(comment.get("author"),100);clean_text(comment.get("text"),3000);integer(comment.get("day"),1,999999)
             need(_feed_author(comment.get("npc")),"Người bình luận không hợp lệ.")
     need(len(c["album"])<=6,"Album quá lớn.")
-    for photo in c["album"]:
+    for photo in (() if "album" in same else c["album"]):
         need(isinstance(photo.get("image"),str) and len(photo["image"])<=450000 and photo["image"].startswith(("data:image/webp;base64,","data:image/png;base64,","data:image/jpeg;base64,")),"Ảnh lưu không hợp lệ.")
-    if finite:_finite(c)  # no NaN/Infinity
+    nullfree=getattr(same,"nullfree",None)
+    if finite and nullfree:  # values whose JSON has no null cannot hold NaN/Infinity (orjson writes them as null)
+        for k,value in c.items():
+            if k in nullfree or type(value) in _LEAVES:continue
+            if k=="ops" and type(value) is dict:  # its values are pieces too ("ops.<key>")
+                for x,y in value.items():
+                    if "ops."+x not in nullfree and type(y) not in _LEAVES:_finite(y)
+            else:_finite(value)
+    elif finite:_finite(c)  # no NaN/Infinity
 
 
 # =====================================================================================
@@ -1596,6 +1627,13 @@ STOCK_SUPPLIERS={
     ],
 }
 STOCK_DEFAULT="partner"
+STOCK_LINES=12   # lines (one per item) in one merged order_stock
+STOCK_VANS=8     # deliveries on the way: the lines of one merged order share a van
+
+
+def stock_vans(c:dict)->int:
+    """Deliveries on the way. Lines of a merged order share placed time, arrival and supplier: one van."""
+    return len({(x.get("supplier"),x["placed"],x["at"]) if "at" in x else x["id"] for x in c["shipments"] if x["status"]=="in_transit"})
 
 
 def stock_suppliers(career:str)->list[dict]:

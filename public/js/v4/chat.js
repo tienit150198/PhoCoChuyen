@@ -17,21 +17,27 @@
  * message (or a right click) opens the emoji bar AND its action row: "Xóa ở phía tôi" (any message, a recalled one too:
  * gone from my screens only) and, on mine, "Thu hồi" for 24 h (for everyone); both ask "…thật?" first. Tin nhắn: "Chọn"
  * (or holding a row) ticks chats, "Xóa" empties them for me only (a DM leaves the list until someone writes again).
- * 🚫 Tin nhắn → "Đã chặn" (welcome.flags.blocks; feedback #93): who I blocked, "Bỏ chặn" each. */
+ * 🚫 Tin nhắn → "Đã chặn" (welcome.flags.blocks; feedback #93): who I blocked, "Bỏ chặn" each.
+ * 🛟 Safety (moderation #14): my own message back with `safety` (live/filters.py safety_cue: hẹn gặp, địa chỉ, số điện
+ * thoại, zalo/fb/ig…) opens a friendly notice once per device (SAFETY_KEY); the report reasons have "An toàn / trẻ vị
+ * thành niên" (reason 'minor': first in the admin queue). Nothing is blocked by it. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
 import {avInner} from './face.js';
 import {faceCode} from './face-code.js';
 
-const S={dlg:null,env:null,tab:'town',thread:null,view:null,bodyHTML:null,headHTML:null,threads:new Map(),
+const S={dlg:null,env:null,tab:'town',thread:null,view:null,bodyHTML:null,threads:new Map(),
   town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false,pin:null},pinOpen:false,reactFor:null,lp:null,
   act:null,report:null,confirm:null,flash:'',flashTimer:0,pending:new Map(),pick:new Set(),gtitle:'',members:null,
   nextTown:0,cd:0,older:false,synced:0,bound:false,notifyOpen:false,notify:null,
   sel:null,blocks:null,unblocking:null,reply:null,composeEpoch:0,failed:new Map()};   // 🗑️ chats ticked in "Chọn" (a Set, null = not choosing); 🚫 the blocked list
 const TABS=[['town','Cả phố'],['inbox','Tin nhắn'],['friends','Bạn bè']];
 const friendRequests=new Map();   // message id -> pending/sent; only an explicit player's tap starts a request
-const REASONS=[['spam','Spam'],['rude','Thô tục'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
+const REASONS=[['minor','🛟 An toàn / trẻ vị thành niên'],['spam','Spam'],['rude','Thô tục'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
+const SAFETY_KEY='pcc.chat.safety.v1';   // 🛟 the notice was read on this device
+const SAFETY_TEXT='Nhắc nhẹ nè 💛 Ở phố mình chơi vui là chính, nhưng đừng gửi địa chỉ nhà, trường, số điện thoại hay nick Zalo/FB/IG/TikTok cho người mới quen, và đừng hẹn gặp người lạ ngoài đời nha. Bạn dưới 18 tuổi thì càng cần cẩn thận hơn. Ai làm bạn thấy không ổn: chạm vào tin nhắn → Báo cáo → “An toàn / trẻ vị thành niên”, hoặc kể với người lớn bạn tin tưởng.';
+const safetySeen=()=>{try{return localStorage.getItem(SAFETY_KEY)==='1';}catch{return false;}};
 const rid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
 const me=()=>live.me?.pid;
 const dmId=pid=>{const [a,b]=[me(),pid].sort();return `dm:${a}:${b}`;};
@@ -54,9 +60,10 @@ const css=()=>stylesheet('/css/chat.css');   // the same link the chat button lo
 function dialog(){
   if(S.dlg)return S.dlg;
   const d=document.createElement('dialog');
-  d.id='townChat';d.className='sheet v4-sheet medium chat-sheet';d.setAttribute('aria-label','Trò chuyện');
-  d.innerHTML=`<div class="ch-root"><header class="ch-head"></header><div class="ch-net" role="status" hidden>${icon('refresh',14)} Đang kết nối lại… <button type="button" class="ch-mini" data-ch-act="reconnect">Thử lại</button></div>
+  d.className='sheet v4-sheet medium chat-sheet';d.setAttribute('aria-label','Chat');
+  d.innerHTML=`<div class="ch-root"><header class="ch-head"></header><div class="ch-net" hidden>${icon('refresh',14)} Đang kết nối lại…</div>
     <div class="ch-pinbar" hidden></div><div class="ch-body"></div><div class="ch-flash" role="status" aria-live="polite" hidden></div>
+    <div class="ch-safety" role="status" aria-live="polite" hidden></div>
     <form class="ch-compose" hidden><div class="ch-reply-compose" hidden></div><textarea rows="1" enterkeyhint="send" autocomplete="off" aria-label="Tin nhắn" placeholder="Nhắn gì đó…"></textarea>
     <button type="submit" class="ch-send" aria-label="Gửi">${icon('send',20)}</button><small class="ch-count" hidden></small></form>
     <p class="ch-ro" hidden></p></div>`;
@@ -182,7 +189,7 @@ export async function openChat(env,data={}){
   else if(!d.open&&!S.thread)S.tab=live.unread()?'inbox':S.tab;
   S.view=null;S.act=null;S.report=null;S.confirm=null;
   if(!d.open){S.bodyHTML=null;d.showModal();d.scrollTop=0;}
-  if(live.flags.chat!==false&&(Date.now()-S.synced>15000||live.me&&!live.me.account)){S.synced=Date.now();live.send({t:'sync'});}   // a guest who just registered: chat at once
+  if(Date.now()-S.synced>15000||live.me&&!live.me.account){S.synced=Date.now();live.send({t:'sync'});}   // a guest who just registered: chat at once
   restoreFailed(composeChannel());enter();render(true);
 }
 
@@ -228,6 +235,7 @@ function bind(){
   });
   live.on('msg',f=>{
     const mine=f.cid&&S.pending.has(f.cid);if(mine)S.pending.delete(f.cid);
+    if(f.safety&&f.pid===me()&&!safetySeen())S.safety=true;   // 🛟 once per device
     if(f.ch==='town'){
       if(f.n)S.town.n=f.n;
       if(!S.town.msgs.some(m=>m.id===f.id)){S.town.msgs.push(f);S.town.msgs.sort(byK);if(S.town.msgs.length>400)S.town.msgs.splice(0,S.town.msgs.length-400);}
@@ -302,7 +310,7 @@ function bind(){
     if(!f.on){clearTimeout(S.syncT);S.syncT=setTimeout(()=>live.send({t:'sync'}),1500);}   // unblocked: friends and chats come back (one sync for several)
     if(S.dlg?.open){flash(f.on?'Đã chặn. Hai bạn không thấy tin của nhau nữa.':'Đã bỏ chặn.');render();}
   });
-  live.on('reported',()=>{if(S.dlg?.open){flash('Đã báo cáo. Cảm ơn bạn!');render();}});
+  live.on('reported',()=>{if(S.dlg?.open){flash(S.safeReport?'Đã báo cáo an toàn. Ban quản lý sẽ xem trước tiên. Cảm ơn bạn nhiều 💛':'Đã báo cáo. Cảm ơn bạn!');S.safeReport=false;render();}});
   live.on('hid',f=>{dropMsg(f.ch,f.id);if(S.dlg?.open)render();});            // 🗑️ deleted on my side (maybe in another tab)
   live.on('reply_hidden',f=>{redactReplies({pid:f.pid});if(S.dlg?.open)render();});
   live.on('cleared',f=>{dropCleared(f.chs);if(S.dlg?.open)render();});
@@ -322,7 +330,6 @@ function markRead(ch){const c=live.chan(ch),t=S.threads.get(ch),last=t?.msgs.at(
 
 /** What the screen shows needs: join Cả phố while it is on screen, load an open chat. */
 function enter(){
-  if(live.flags.chat===false)return;
   const onTown=S.dlg?.open&&!S.thread&&S.tab==='town'&&!S.view;
   if(onTown&&!S.town.joined&&live.state==='open'){S.town.joined=live.send({t:'join',ch:'town',...(lastId(S.town.msgs)?{after:lastId(S.town.msgs)}:{})});}
   if(!onTown&&S.town.joined){live.send({t:'leave',ch:'town'});S.town.joined=false;}
@@ -344,7 +351,6 @@ function onAct(act,d,el){
       break;
     }
     case'close':S.dlg.close();return;
-    case'reconnect':live.reconnect(true);break;
     case'tab':resetReply();S.tab=d.tab;S.thread=null;S.view=null;S.act=null;S.report=null;S.sel=null;S.confirm=null;break;
     case'back':if(S.view==='add'){S.view='members';break;}if(S.view){S.view=null;S.pick.clear();break;}resetReply();S.thread=null;S.act=null;S.report=null;S.confirm=null;break;
     case'open':openThread(d.ch);return;
@@ -379,7 +385,9 @@ function onAct(act,d,el){
     case'pinOpen':S.pinOpen=!S.pinOpen;renderPin();return;
     case'react':live.send({t:'react',id:Number(d.id),e:d.e});S.reactFor=null;break;   // the server toggles: the same one again takes it back
     case'report':S.report=Number(d.id);break;
+    case'safetyOk':S.safety=false;try{localStorage.setItem(SAFETY_KEY,'1');}catch{}break;
     case'reason':live.send({t:'report',id:Number(d.id),reason:d.reason});S.act=null;S.report=null;
+      if(d.reason==='minor')S.safeReport=true;   // the thanks says the admins look at it first
       dropMsg(composeChannel(),Number(d.id));break;   // gone for me at once
     case'block':if(S.confirm!=='block:'+d.pid){S.confirm='block:'+d.pid;break;}live.send({t:'block',pid:d.pid});S.confirm=null;S.act=null;break;
     case'groupNew':S.view='group';S.pick.clear();S.gtitle='';break;
@@ -390,7 +398,7 @@ function onAct(act,d,el){
     case'kick':if(S.confirm!=='kick:'+d.pid){S.confirm='kick:'+d.pid;break;}live.send({t:'group_kick',ch:S.thread,pid:d.pid});S.confirm=null;S.members=null;setTimeout(()=>live.send({t:'members',ch:S.thread}),300);break;
     case'leave':if(S.confirm!=='leave'){S.confirm='leave';break;}live.send({t:'group_leave',ch:S.thread});S.confirm=null;break;
     case'friends':S.dlg.close();S.env?.act?.('friends');return;   // Bạn bè (v4/marriage.js): find friends, requests
-    case'account':S.dlg.close();S.env?.act?.('v4AccountOpen',{mode:'login'});return;
+    case'account':S.dlg.close();S.env?.act?.('v4AccountOpen',{mode:'register'});return;   // guests: register to chat (v4/account.js)
     case'date':S.dlg.close();import('./live.js').then(m=>m.openDate());return;   // 💕 Góc hẹn hò (v4/dating.js)
     case'avatar':S.dlg.close();S.env?.act?.('jrAvatar');return;   // 🙂 the builder (v4/avatar.js)
     case'notifyMenu':S.notifyOpen=!S.notifyOpen;break;
@@ -449,38 +457,29 @@ function head(){
     const title=grp?esc(c?.title||'Nhóm'):esc(peer.name||'Bạn bè');
     const sub=grp?`${c?.n||''} người`:peer.on?'Đang online':'';
     const q=live.quiet(c),bell=c?`<button type="button" class="icon-btn ch-bell${q?' off':''}" data-ch-act="notifyMenu" aria-expanded="${Boolean(S.notifyOpen)}" aria-label="Thông báo: ${q?'Tắt':'Bật'}" title="Thông báo: ${q?'Tắt':'Bật'}"><span aria-hidden="true">${q?'🔕':'🔔'}</span></button>`:'';
-    const more=(!grp&&peer.pid?`<button type="button" class="ch-mini" data-ch-act="workvisit" data-pid="${esc(peer.pid)}">Ghé chỗ làm</button>`:'')+(grp?`<button type="button" class="ch-mini" data-ch-act="members">${icon('people',19)} Thành viên</button>`:
+    const more=(!grp&&peer.pid?`<button type="button" class="ch-mini" data-ch-act="workvisit" data-pid="${esc(peer.pid)}">Ghé chỗ làm</button>`:'')+bell+(grp?`<button type="button" class="icon-btn" data-ch-act="members" aria-label="Thành viên">${icon('people',19)}</button>`:
       (peer.pid?`<button type="button" class="ch-mini${S.confirm==='block:'+peer.pid?' warn':''}" data-ch-act="block" data-pid="${esc(peer.pid)}">${S.confirm==='block:'+peer.pid?'Chặn thật?':'Chặn'}</button>`:''));
-    return `<div class="ch-thread-main">${back}${grp?av('👥','md'):`<span class="ch-av-wrap">${av(peer,'md')}${dot(peer.on)}</span>`}<div class="grow ch-title"><h2 data-no-translate>${title}</h2>${sub?`<small>${sub}</small>`:''}</div>${bell}${x}</div>${more?`<div class="ch-thread-tools">${more}</div>`:''}`;
+    return `${back}${grp?av('👥','md'):`<span class="ch-av-wrap">${av(peer,'md')}${dot(peer.on)}</span>`}<div class="grow ch-title"><h2 data-no-translate>${title}</h2>${sub?`<small>${sub}</small>`:''}</div>${more}${x}`;
   }
   const n=live.unread(),on=live.friends.filter(f=>f.on).length;
   const date=live.flags.dating?`<button type="button" class="icon-btn ch-date" data-ch-act="date" aria-label="Góc hẹn hò" title="Góc hẹn hò">${icon('heart',19)}</button>`:'';   // 💕 v4/dating.js
-  const context=S.tab==='town'?'Chuyện chung của người trong phố':S.tab==='inbox'?'Những cuộc trò chuyện riêng của bạn':'Ghé chào những người bạn quen';
-  return `<div class="ch-home-title"><span class="ch-title-mark">${icon('chats',24)}</span><div class="grow"><h2>Trò chuyện</h2><small>${context}</small></div>${date}${x}</div><div class="ch-tabs grow" role="tablist" aria-label="Kênh trò chuyện">${TABS.map(([id,label])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'on':''}" data-ch-act="tab" data-tab="${id}">${icon(id==='town'?'chats':id==='inbox'?'chat':'people',16)}<span>${label}</span>${id==='inbox'&&n?`<em class="badge">${n>99?'99+':n}</em>`:''}${id==='friends'&&on?`<i class="ch-on-n">${on}</i>`:''}</button>`).join('')}</div>`;
+  return `<div class="ch-tabs grow" role="tablist">${TABS.map(([id,label])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'on':''}" data-ch-act="tab" data-tab="${id}">${label}${id==='inbox'&&n?`<em class="badge">${n>99?'99+':n}</em>`:''}${id==='friends'&&on?`<i class="ch-on-n">${on}</i>`:''}</button>`).join('')}</div>${date}${x}`;
 }
 
-const dayKey=at=>new Date(at*1000).toLocaleDateString('vi-VN');
-function dayLabel(at){
-  const now=new Date(),yesterday=new Date(now);yesterday.setDate(now.getDate()-1);
-  const key=dayKey(at);
-  return key===dayKey(now.getTime()/1000)?'Hôm nay':key===dayKey(yesterday.getTime()/1000)?'Hôm qua':key;
-}
 function msgList(list,kind,more){
   if(!list.length)return '';
   let out=more?`<button type="button" class="ch-older" data-ch-act="older"${S.older?' disabled':''}>${S.older?'Đang tải…':'Xem cũ hơn'}</button>`:'';
-  let prev=null,day=null;
+  let prev=null;
   for(const m of list){
     if(m.sys){if(m.sys==='date'&&Date.now()/1000-m.at<CALL_SHOW)out+=callLine(m);prev=null;continue;}
-    const nextDay=dayKey(m.at),newDay=nextDay!==day;
-    if(newDay){out+=`<div class="ch-day"><time datetime="${new Date(m.at*1000).toISOString()}">${dayLabel(m.at)}</time></div>`;day=nextDay;}
-    const mine=m.pid===me(),first=newDay||!prev||prev.pid!==m.pid||m.at-prev.at>300;
+    const mine=m.pid===me(),first=!prev||prev.pid!==m.pid||m.at-prev.at>300;
     const name=!mine&&first&&kind!=='dm'?`<b class="ch-name"><span data-no-translate>${esc(m.name)}</span>${badge(m)}</b>`:'';
     const bar=S.act===m.id?actBar(m,mine,kind):'';
     const pinned=kind==='town'&&S.town.pin?.id===m.id?'<i class="ch-pinned" aria-label="Đang ghim">📌</i>':'';
     // an admin message with links: a div acting as the button (a link cannot sit inside a <button>)
     const quote=m.del?'':replyQuote(m.reply);
-    const bub=m.adm&&!m.del?`<div role="button" tabindex="0" class="ch-bub adm" data-ch-act="msg" data-id="${m.id}">${quote}<span data-no-translate>${text(m)}</span><time>${pinned}${clock(m.at)}</time></div>`:
-      `<button type="button" class="ch-bub${m.del?' del':''}" data-ch-act="msg" data-id="${m.id}"${m.del&&!DEL()?' disabled':''}>${quote}<span data-no-translate>${m.del?'':lines(m.text)}</span>${m.del?'<i>Tin nhắn đã thu hồi</i>':''}<time>${pinned}${clock(m.at)}</time></button>`;
+    const bub=m.adm&&!m.del?`<div role="button" tabindex="0" class="ch-bub adm" data-ch-act="msg" data-id="${m.id}">${quote}<span data-no-translate>${text(m)}</span><time>${pinned}${hm(m.at)}</time></div>`:
+      `<button type="button" class="ch-bub${m.del?' del':''}" data-ch-act="msg" data-id="${m.id}"${m.del&&!DEL()?' disabled':''}>${quote}<span data-no-translate>${m.del?'':lines(m.text)}</span>${m.del?'<i>Tin nhắn đã thu hồi</i>':''}<time>${pinned}${hm(m.at)}</time></button>`;
     out+=`<div class="ch-msg${mine?' mine':''}${first?' first':''}${m.adm?' adm':''}">${mine?'':first?av(m):'<span class="ch-av gap"></span>'}<div class="ch-col">${name}${bub}${reactBar(m)}${chips(m)}${bar}</div></div>`;
     prev=m;
   }
@@ -537,11 +536,10 @@ function actBar(m,mine,kind){
     `<button type="button" class="ch-mini" data-ch-act="report" data-id="${m.id}">${icon('flag',14)} Báo cáo</button>`+
     `<button type="button" class="ch-mini${S.confirm==='block:'+m.pid?' warn':''}" data-ch-act="block" data-pid="${esc(m.pid)}">${S.confirm==='block:'+m.pid?'Chặn thật?':'Chặn'}</button>${hide}</div>`;
 }
-const empty=(ico,text,btn='')=>`<div class="ch-empty"><span class="ch-empty-mark">${icon(ico,32)}</span><p>${text}</p>${btn}</div>`;
+const empty=(ico,text,btn='')=>`<div class="ch-empty">${icon(ico,30)}<p>${text}</p>${btn}</div>`;
 
 function body(){
-  if(live.state!=='open'&&!live.welcomed)return empty('chats','Chưa kết nối được với phố.',`<button type="button" class="btn ghost" data-ch-act="reconnect">${icon('refresh',16)} Kết nối lại</button>`);
-  if(live.flags.chat===false)return empty('chats','Trò chuyện đang tạm nghỉ. Hẹn gặp bạn sau nhé!');
+  if(live.state!=='open'&&!live.welcomed)return empty('refresh','Đang kết nối…');
   if(S.view==='group'||S.view==='add'){
     const inGroup=new Set((S.members?.members||[]).map(m=>m.pid));
     const list=live.friends.filter(f=>S.view!=='add'||!inGroup.has(f.pid));
@@ -607,12 +605,11 @@ function body(){
 
 /** What the composer may do on this screen: null = hidden, {ro: line} = read-only, {} = write. */
 function compose(){
-  if(live.flags.chat===false)return null;
   if(S.view)return null;
   if(!S.thread&&S.tab!=='town')return null;
   if(live.state!=='open')return {ro:'Mất kết nối. Đang thử lại…'};
   if(live.me?.muted&&live.me.muted*1000>Date.now())return {ro:`Bạn đang bị tạm khóa chat đến ${new Date(live.me.muted*1000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'})}.`};
-  if(live.me&&!live.me.account)return {ro:'Bạn đang xem với tư cách khách. Đăng nhập để cùng trò chuyện.',act:'account'};
+  if(live.me&&!live.me.account)return {ro:'Tạo tài khoản để chat.',act:'account'};   // guests read only (owner, 01/10)
   if(S.thread){
     if(!live.me?.name)return {ro:'Đặt tên nhân vật để nhắn.'};
     if(S.thread.startsWith('dm:')){const c=live.chan(S.thread),p=c?.peer;if(c&&p&&p.friend===false&&!live.friend(p.pid))return {ro:'Hai bạn không còn là bạn bè.'};}
@@ -636,34 +633,27 @@ function renderPin(){
     (adm()?`<button type="button" class="ch-mini" data-ch-act="unpin">Bỏ ghim</button>`:'')+`</div>`;
 }
 
-function replaceKeepingFocus(container,html){
-  const active=document.activeElement;
-  const key=active?.dataset?.chAct&&container.contains?.(active)?{...active.dataset}:null;
-  container.innerHTML=html;
-  if(key){
-    const same=Array.from(container.querySelectorAll('[data-ch-act]')).find(el=>Object.entries(key).every(([name,value])=>el.dataset[name]===value));
-    same?.focus({preventScroll:true});
-  }
-}
 function render(bottom=false,keepFromBottom=false){
   const d=S.dlg;if(!d)return;
   renderPin();
   const b=d.querySelector('.ch-body'),fromBottom=b.scrollHeight-b.scrollTop-b.clientHeight,atBottom=fromBottom<60;
-  const header=d.querySelector('.ch-head'),headerHTML=head();
-  if(S.headHTML!==headerHTML){replaceKeepingFocus(header,headerHTML);S.headHTML=headerHTML;}
+  d.querySelector('.ch-head').innerHTML=head();
   d.querySelector('.ch-net').hidden=!(live.welcomed&&live.state!=='open');
   // Presence/read updates usually change only the header. Keep message nodes (and focus) intact.
   // Forms still redraw from state: a locally toggled preference may have failed to save.
   const html=body(),messages=!S.view&&(S.thread||S.tab==='town');
-  if(!messages||html!==S.bodyHTML)replaceKeepingFocus(b,html);
+  if(!messages||html!==S.bodyHTML)b.innerHTML=html;
   S.bodyHTML=messages?html:null;
   b.dataset.view=S.view||(S.thread?'thread':S.tab);
   if(keepFromBottom)b.scrollTop=b.scrollHeight-b.clientHeight-fromBottom;
   else if(bottom||atBottom)b.scrollTop=b.scrollHeight;
   const f=d.querySelector('.ch-flash');f.hidden=!S.flash;f.textContent=S.flash;
+  const sf=d.querySelector('.ch-safety');sf.hidden=!S.safety;
+  if(S.safety&&!sf.firstChild)sf.innerHTML=`<p><b>🛟 Giữ an toàn nha</b> ${esc(SAFETY_TEXT)}</p><button type="button" class="btn primary small" data-ch-act="safetyOk">Mình hiểu rồi</button>`;
+  else if(!S.safety)sf.textContent='';
   const c=compose(),form=d.querySelector('.ch-compose'),ro=d.querySelector('.ch-ro'),ta=form.querySelector('textarea');
   form.hidden=!c||Boolean(c.ro);ro.hidden=!c?.ro;ro.textContent=c?.ro||'';
-  if(c?.act==='account'){const b=document.createElement('button');b.type='button';b.className='btn primary small';b.dataset.chAct='account';b.textContent='Đăng nhập';ro.append(' ',b);}
+  if(c?.act==='account'){const b=document.createElement('button');b.type='button';b.className='btn primary small';b.dataset.chAct='account';b.textContent='Tạo tài khoản';ro.append(' ',b);}
   const town=!S.thread;ta.maxLength=town?(adm()?(live.limits.admin_len||500):(live.limits.town_len||300)):(live.limits.text_len||1000);
   ta.placeholder=town?'Nhắn cả phố…':'Nhắn tin…';
   renderReply();counter();countdown();

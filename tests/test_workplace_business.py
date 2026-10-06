@@ -48,8 +48,8 @@ class WorkplaceBusinessTests(unittest.TestCase):
         snap=copy.deepcopy(s);self.assertFalse(wb.settle(s,now));self.assertEqual(s,snap)
         self.assertEqual(c['money'],c['ops']['finance']['opening_balance']+sum(x['amount'] for x in c['ops']['finance']['ledger']))
 
-    def test_all_41_careers_have_real_independent_orders_and_keep_manual_work(self):
-        self.assertEqual(len(new_state()['careers']),41)
+    def test_all_45_careers_have_real_independent_orders_and_keep_manual_work(self):
+        self.assertEqual(len(new_state()['careers']),45)   # 41 + library (thư viện), oil (thợ dầu khí), railway (gác chắn đường sắt), nurse (điều dưỡng)
         for career in new_state()['careers']:
             with self.subTest(career=career):
                 s,c,e=self.sample(career);tasks=copy.deepcopy(c['tasks'])
@@ -75,12 +75,16 @@ class WorkplaceBusinessTests(unittest.TestCase):
 
     def test_stock_is_consumed_fefo_and_stops_without_autobuy(self):
         s,c,e=self.sample('grocery')
-        inv=c['ext']['inv'];inv['lots']=[dict(id='late',item='rice',qty=1,unit_cost=5,expires=7,received=1,supplier='opening'),dict(id='early',item='rice',qty=1,unit_cost=4,expires=3,received=1,supplier='opening')]
+        inv=c['ext']['inv'];inv['lots']=[dict(id='late',item='rice',qty=10,unit_cost=5,expires=7,received=1,supplier='opening'),dict(id='early',item='rice',qty=6,unit_cost=4,expires=3,received=1,supplier='opening')]
         wallet=s['journey']['wallet'];wb.settle(s,self.next(c))
-        self.assertEqual([x['id'] for x in inv['lots']],['late'])
+        row=wb._recent(c)[-1];q=row['items']['rice']
+        self.assertEqual(set(row['items']),{'rice'});self.assertGreater(q,1)
+        lots={x['id']:x['qty'] for x in inv['lots']}
+        self.assertEqual(lots.get('late'),10);self.assertEqual(lots.get('early',0),6-q)
+        self.assertEqual(row['goods'],4*q)
         wb.settle(s,self.next(c)+10000)
-        self.assertEqual(c['ops']['business']['served'],2)
         self.assertEqual(c['ops']['business']['reason'],'stock')
+        self.assertEqual(sum(r['items']['rice'] for r in wb._recent(c)),16-sum(x['qty'] for x in inv['lots']))
         self.assertEqual(s['journey']['wallet'],wallet)
 
     def test_insufficient_funds_stop_before_stock_or_income(self):
@@ -194,7 +198,9 @@ class WorkplaceBusinessTests(unittest.TestCase):
         self.assertEqual(s,before)
 
     def test_legacy_basket_reservation_is_not_consumed(self):
-        s,c,e=self.sample('mother_baby');c['stock']['bunny']=1
+        s,c,e=self.sample('mother_baby')
+        for k in c['stock']:c['stock'][k]=0
+        c['stock']['bunny']=1
         c['tasks']=[dict(status='waiting',basket={'bunny':1})]
         wb.settle(s,self.next(c))
         self.assertEqual(c['stock']['bunny'],1)
@@ -225,9 +231,8 @@ class WorkplaceBusinessTests(unittest.TestCase):
 
     def test_grocery_scanned_goods_are_reserved_for_owner(self):
         s,c,e=self.sample('grocery')
-        for lot in c['ext']['inv']['lots']:
-            if lot['item']=='rice':lot['qty']=1
-        c['tasks']=[dict(id='manual',career='grocery',kind='checkout',status='waiting',stage='basket',scanned={'rice':1},weighed={})]
+        c['ext']['inv']['lots']=[dict(id='only',item='rice',qty=6,unit_cost=14,expires=99,received=1,supplier='opening')]
+        c['tasks']=[dict(id='manual',career='grocery',kind='checkout',status='waiting',stage='basket',scanned={'rice':2},weighed={})]
         wb.settle(s,self.next(c))
         self.assertEqual(c['ops']['business']['served'],0)
         self.assertEqual(c['ops']['business']['reason'],'stock')
@@ -255,6 +260,184 @@ class WorkplaceBusinessTests(unittest.TestCase):
                 if not missing:
                     self.assertEqual(b['cups']['M'],0)
                     self.assertEqual(boba.stock(c)['milk'],0)
+
+
+class StaffCatalogueTests(unittest.TestCase):
+    """F#197 / F#195: staff sell across the real catalogue, in stock, and every order earns."""
+
+    def sample(self, career, who=1):
+        s = new_state(); c = s['careers'][career]; c.update(open=True, started=True)
+        with patch.object(wb.time, 'time', return_value=2000000000):
+            ops.action(s, c, career, 'ops_hire', {'candidate': f'{career}-staff-{who}', 'confirm': True})
+            wb.settle(s)
+        c['ops']['finance']['opening_balance'] += 100000 - c['money']; c['money'] = 100000
+        return s, c, c['ops']['staff'][0]
+
+    def next(self, c):
+        return min(x['at'] for x in c['ops']['business']['pending'].values())
+
+    def run_out(self, s, c):
+        wb.settle(s, self.next(c) + 100000)
+        return wb._recent(c)
+
+    def test_mother_baby_sells_many_products_and_keeps_going_without_bunnies(self):
+        s, c, e = self.sample('mother_baby')
+        c['stock']['bunny'] = 0
+        before = {k: v for k, v in c['stock'].items() if v}
+        self.assertGreater(len(before), 3)
+        wb.settle(s, self.next(c) + 2000)
+        rows = wb._recent(c)
+        self.assertGreater(c['ops']['business']['served'], 3)
+        sold = {i for r in rows for i in r['items']}
+        self.assertGreater(len(sold), 2)
+        self.assertNotIn('bunny', sold)
+        for r in rows:
+            for item, qty in r['items'].items():
+                self.assertLessEqual(qty, before[item])
+        ops.validate(c, 'mother_baby')
+
+    def test_every_menu_career_order_earns_against_replacement_cost(self):
+        from game import staff_orders as so
+        for career in sorted(so.MENUS):
+            for who in (1, 4):
+                with self.subTest(career=career, who=who):
+                    try:
+                        s, c, e = self.sample(career, who)
+                    except GameError:
+                        continue
+                    # A raise must not turn staff orders into losses: baskets grow instead.
+                    if who == 4:
+                        c['ops']['staff_life']['raises'][e['id']] = 6
+                        wb.refresh(c, career, 2000000001)
+                    rows = self.run_out(s, c)
+                    self.assertTrue(rows, career)
+                    cost = so.costs(career)
+                    for r in rows:
+                        replacement = sum(cost[i] * q for i, q in r['items'].items())
+                        self.assertGreaterEqual(r['revenue'] - r['cash_expenses'] - replacement, 1, r)
+                        self.assertGreaterEqual(r['revenue'] * 100 // 84 * 84 // 100 - r['cash_expenses'] - replacement, 1, r)
+                    self.assertEqual(c['ops']['business']['reason'], 'stock')
+                    self.assertEqual(c['ops']['business']['recent'], [])
+                    ops.validate(c, career)
+
+    def test_ice_cream_never_sells_a_tub_at_a_scoop_price(self):
+        s, c, e = self.sample('ice_cream')
+        rows = self.run_out(s, c)
+        tubs = [r for r in rows if set(r['items']) - {'que'}]
+        self.assertTrue(tubs)
+        for r in tubs:
+            self.assertEqual(sum(r['items'].values()), 1)
+            self.assertIn('1,2 kg', r['label'])
+            self.assertGreaterEqual(r['revenue'], 50)
+        self.assertGreaterEqual(wb.ORDERS['ice_cream'][1], 60)
+
+    def test_poll_and_offline_pick_the_same_catalogue_orders(self):
+        for career in ('mother_baby', 'grocery', 'com'):
+            with self.subTest(career=career):
+                s, c, e = self.sample(career); other = copy.deepcopy(s)
+                start = self.next(c)
+                step = next(iter(c['ops']['business']['pending'].values()))['seconds']
+                for at in range(start, start + step * 8, step): wb.settle(s, at)
+                wb.settle(other, start + step * 7)
+                self.assertEqual(s, other)
+
+    def test_receipts_stay_readable_by_the_previous_release(self):
+        s, c, e = self.sample('mother_baby')
+        legacy = wb._new(0)['recent']
+        self.assertEqual(legacy, [])
+        wb.settle(s, self.next(c))
+        b = c['ops']['business']
+        self.assertEqual(b['recent'], [])
+        self.assertEqual(len(c['ops']['business_receipts']), 1)
+        self.assertNotIn('business_clothing_receipts', c['ops'])
+        # A legacy bunny receipt from the old release merges with the sidecar.
+        row = dict(c['ops']['business_receipts'][0], id='staff-order-mother_baby-99', items={'bunny': 1})
+        b['recent'] = [row]
+        ops.validate(c, 'mother_baby')
+        self.assertEqual(len(wb.public(c)['recent']), 2)
+        bad = copy.deepcopy(c); bad['ops']['business_receipts'][0]['items'] = {'tee': 1}
+        with self.assertRaises(GameError): ops.validate(bad, 'mother_baby')
+        bad = copy.deepcopy(c); bad['ops']['business_clothing_receipts'] = []
+        with self.assertRaises(GameError): ops.validate(bad, 'mother_baby')
+
+    def test_public_explains_next_order_and_names_what_ran_out(self):
+        s, c, e = self.sample('pho')
+        nxt = wb.public(c)['next_order']
+        self.assertTrue(nxt['label'].startswith('Đơn riêng: phở'))
+        self.assertEqual(nxt['wage'], 3); self.assertEqual(nxt['materials'], 2)
+        self.assertGreater(nxt['margin'], 0)
+        self.assertIn('quỹ nghề', wb.public(c)['money_note'])
+        for lot in c['ext']['inv']['lots']:
+            if lot['item'] == 'rau': lot['qty'] = 0
+        wb.settle(s, self.next(c) + 1000)
+        pub = wb.public(c)
+        self.assertEqual(pub['reason'], 'stock')
+        self.assertIn('Đĩa rau thơm', pub['reason_text'])
+        self.assertNotIn('next_order', pub)
+
+    def test_low_prices_stop_with_a_reason_instead_of_losing(self):
+        s, c, e = self.sample('grocery')
+        c['ext']['inv']['lots'] = [dict(id='few', item='egg', qty=3, unit_cost=2, expires=99, received=1, supplier='opening')]
+        wb.settle(s, self.next(c) + 1000)
+        self.assertEqual(c['ops']['business']['served'], 0)
+        self.assertIn('không đủ bù lương', wb.public(c)['reason_text'])
+
+
+class MergedStockOrder(unittest.TestCase):
+    """F#194: the mother & baby stock room orders several items in one supplier order."""
+
+    def journey(self, money=5000):
+        from tests.helpers import Journey
+        j = Journey()
+        j.c['ops']['finance']['opening_balance'] += money - j.c['money']; j.c['money'] = money
+        return j
+
+    def test_one_payment_one_van_one_row_per_line(self):
+        from game.engine import public_state, validate_state, stock_vans
+        j = self.journey()
+        money = j.c['money']
+        r = j.act('order_stock', lines=[dict(item='cat_bag', qty=2), dict(item='bunny', qty=3), dict(item='bear', qty=1)], supplier='express')
+        rows = j.c['shipments'][-3:]
+        self.assertEqual([(x['item'], x['qty']) for x in rows], [('cat_bag', 2), ('bunny', 3), ('bear', 1)])
+        self.assertEqual(len({(x['placed'], x['lo'], x['hi'], x['at'], x['supplier']) for x in rows}), 1)
+        self.assertEqual(stock_vans(j.c), 1)
+        self.assertEqual(money - j.c['money'], sum(x['cost'] for x in rows))
+        self.assertEqual(len([x for x in j.c['ops']['finance']['ledger'] if x['ref'] == rows[0]['id']]), 1)
+        self.assertIn('gộp 3 mã', r['message'])
+        validate_state(j.state)
+        for _ in range(8):
+            if all(x['ready_now'] for x in public_state(j.state)['careers']['mother_baby']['shipments']): break
+            j.act('advance')
+        for x in rows:
+            j.act('receive_stock', shipment=x['id'], count=x['qty'])
+        self.assertEqual(j.c['stock']['bunny'], 6 + 3)
+        validate_state(j.state)
+
+    def test_bad_lines_change_nothing(self):
+        for lines in ([], [dict(item='bunny', qty=1)] * 2, [dict(item='nope', qty=1)], [dict(item='bunny', qty=7)],
+                      [dict(item='bunny', qty=6), dict(item='bear', qty=0)], 'bunny', [dict(item=f'x{i}', qty=1) for i in range(13)]):
+            with self.subTest(lines=lines):
+                j = self.journey(); before = copy.deepcopy(j.state)
+                with self.assertRaises(GameError): j.act('order_stock', lines=lines)
+                self.assertEqual(j.state, before)
+
+    def test_vans_cap_counts_merged_orders_once(self):
+        from game.engine import STOCK_VANS, stock_vans
+        j = self.journey(money=50000)
+        from game.content import PRODUCTS
+        ids = [p['id'] for p in PRODUCTS][:STOCK_VANS + 3]
+        j.act('order_stock', lines=[dict(item=i, qty=1) for i in ids[:4]])
+        for i in ids[4:4 + STOCK_VANS - 1]:
+            j.act('order_stock', item=i, qty=1)
+        self.assertEqual(stock_vans(j.c), STOCK_VANS)
+        with self.assertRaises(GameError): j.act('order_stock', item=ids[-1], qty=1)
+
+    def test_single_item_order_is_unchanged(self):
+        j = self.journey()
+        r = j.act('order_stock', item='cat_bag', qty=2, supplier='express')
+        self.assertTrue(r['message'].startswith('Đã đặt 2 × '))
+        self.assertNotIn('một chuyến', r['message'])
+        self.assertEqual(j.c['shipments'][-1]['item'], 'cat_bag')
 
 
 if __name__=='__main__':unittest.main()

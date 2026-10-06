@@ -67,7 +67,7 @@ class AdminChatTests(unittest.TestCase):
             for i, reason in enumerate(('spam', 'spam', 'rude')):
                 db.execute("INSERT INTO reports(reporter, kind, target, reason, at) VALUES(?, 'chat', ?, ?, ?)", (f'{i:016x}', str(bad), reason, time.time()))
         v = live_chat.view(self.store)
-        self.assertEqual(v['counts'], dict(pending=1, auto_hidden=1))
+        self.assertEqual(v['counts'], dict(pending=1, auto_hidden=1, safety=0, names=0))   # 🛟 safety, names: moderation #13/#14
         item = v['items'][0]
         self.assertEqual((item['id'], item['text'], item['reasons']), (bad, 'tin xấu', dict(spam=2, rude=1)))
         self.assertEqual([m['id'] for m in item['context']], [before, after])

@@ -47,8 +47,8 @@ const dist=(a,b)=>{const x=Math.abs(a-b)%360;return x>180?360-x:x;};
 export const lands=(b,K,tap)=>mod(K.impact-angleAt(b,tap+K.fly));
 export function judge(b,K,taps){
   if(b.chance)return {stuck:taps.slice(0,b.need).map(tap=>lands(b,K,tap)),hit:-1};
-  const stuck=[];
-  for(let i=0;i<Math.min(taps.length,b.need);i++){const a=lands(b,K,taps[i]);if([...b.pre,...stuck].some(x=>dist(a,x)<K.gap))return {stuck,hit:i};stuck.push(a);}
+  const stuck=[],gap=b.gap??K.gap;   // a board may carry its own (gentler) gap: game/fair_knife.py schedule()
+  for(let i=0;i<Math.min(taps.length,b.need);i++){const a=lands(b,K,taps[i]);if([...b.pre,...stuck].some(x=>dist(a,x)<gap))return {stuck,hit:i};stuck.push(a);}
   return {stuck,hit:-1};
 }
 
@@ -264,15 +264,15 @@ export function setup(ctx){
       cv._kn=1;D.cv=cv;
       const size=()=>{const b=cv.getBoundingClientRect(),dpr=Math.min(2,globalThis.devicePixelRatio||1),w=Math.max(1,b.width);cv.width=Math.round(w*dpr);cv.height=Math.round(w*H/W*dpr);cv._s=cv.width/W;};
       size();new ResizeObserver(()=>{size();start();}).observe(cv);
-      cv.addEventListener('pointerdown',e=>{if(e.button>0)return;e.preventDefault();throwKnife();});
-      cv.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();throwKnife();}});
+      cv.addEventListener('pointerdown',e=>{if(e.button>0)return;e.preventDefault();throwKnife(tapTime(e));});
+      cv.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();throwKnife(tapTime(e));}});
     }
     const fire=S.dlg.querySelector('[data-fh="knthrow"]');
     if(fire&&!fire._knThrow){
       fire._knThrow=true;let pointerPress=false;
       fire.addEventListener('pointerdown',e=>{
         if(fire.disabled||e.button>0||e.isPrimary===false)return;
-        e.preventDefault();pointerPress=true;S.anchor='knthrow';S.anchorAt=performance.now();throwKnife();
+        e.preventDefault();pointerPress=true;S.anchor='knthrow';S.anchorAt=performance.now();throwKnife(tapTime(e));
       });
       fire.addEventListener('click',e=>{
         const handled=pointerPress;pointerPress=false;
@@ -284,10 +284,17 @@ export function setup(ctx){
   }
 
   /* ---- playing ---- */
-  function throwKnife(){
+  /** When the finger actually touched (the event's own time, on performance.now()'s clock), not when a busy frame got
+   * round to the handler: 30–100 ms of lag used to move the knife 7–30° on a fast board. A missing or odd stamp (an
+   * old browser, a synthetic event) falls back to now. */
+  function tapTime(e){
+    const now=performance.now(),at=Number(e?.timeStamp);
+    return Number.isFinite(at)&&at>0&&at<=now&&now-at<250?at:now;
+  }
+  function throwKnife(at){
     const L=level(),k=K(),r=run();
     if(!L||L.over||!r||r.stage!=='play'||L.id!==r.id)return;
-    const t=Math.round(performance.now()-L.t0),last=L.taps[L.taps.length-1];
+    const t=Math.max(0,Math.round((Number.isFinite(at)?at:performance.now())-L.t0)),last=L.taps[L.taps.length-1];
     if(t>k.level_ms||L.taps.length>=L.b.need)return;
     if(last!==undefined&&t-last<k.min_tap)return;   // the knife in the air sticks first
     L.taps.push(t);

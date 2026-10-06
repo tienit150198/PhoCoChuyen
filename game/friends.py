@@ -67,14 +67,16 @@ def _status_of(db, sid: str) -> str:
 def _career(db, sid: str) -> dict | None:
     """Main workplace and level, read from the leaderboard rows (game/leaderboard.py) when present."""
     try:
-        rows = db.execute("SELECT board,level,score FROM leaderboard WHERE sid=? AND board NOT IN ('all','certs') ORDER BY score DESC LIMIT 1",
-                          (sid,)).fetchall()
+        # Workplace boards only: not titles, 💰 wealth (xu, not XP) or a fair's board (fair<date>xu, an older fair<date>).
+        rows = db.execute("SELECT board,level,score FROM leaderboard WHERE sid=? AND board NOT IN ('all','certs','titles','wealth') "
+                          "AND board NOT LIKE 'fair%' ORDER BY score DESC LIMIT 4", (sid,)).fetchall()
         overall = db.execute("SELECT level FROM leaderboard WHERE sid=? AND board='all'", (sid,)).fetchone()
     except Exception:  # noqa: BLE001 - no leaderboard table in this build
         return None
+    from .content import CAREER_META, CAREERS
+    rows = [r for r in rows if r['board'] in CAREERS]
     if not rows:
         return None
-    from .content import CAREER_META
     cid = rows[0]['board']
     meta = CAREER_META.get(cid) or {}
     return dict(career=str(meta.get('short') or cid)[:40], level=int(overall['level'] if overall else rows[0]['level']))
@@ -164,8 +166,25 @@ def request(store, sid: str, display: str, d: dict) -> dict:
         mr._notice(db, other, f'👋 {display} muốn kết bạn với bạn. Mở mục Bạn bè để trả lời nhé.')
         return 'sent', mr._display(db, other)
     what, name = store.transaction(run)
+    if what == 'missing' and isinstance(d.get('code'), str) and d['code'].strip():
+        mr.need(False, _code_miss(store, sid, d['code']), 'not_found', 404)
     mr.need(what != 'missing', NOT_FOUND, 'not_found', 404)
     return dict(message=f'Hai bạn đã là bạn bè: {name} cũng vừa mời bạn!' if what == 'accepted' else f'Đã gửi lời mời kết bạn tới {name}.', changed=False)
+
+
+def _code_miss(store, sid: str, raw: str) -> str:
+    """Why a request by player code (the chat's Kết bạn, a shared PCC-…) did not go out. The code was shown to
+    the player, so saying it is theirs or a guest's tells nothing new; a block keeps one neutral line."""
+    code = mr.clean_code(raw)
+    with store.connect() as db:
+        p = _row(db, 'SELECT sid FROM marriage_people WHERE code=?', (code,))
+        if not p:
+            return 'Không thấy mã người chơi này. Bạn ấy có thể đã đổi tài khoản hoặc rời phố.'
+        if p['sid'] == sid:
+            return 'Đây là mã của chính bạn.'
+        if not db.execute('SELECT 1 FROM accounts WHERE sid=?', (p['sid'],)).fetchone():
+            return 'Bạn ấy đang chơi bằng phiên khách (chưa có tài khoản) nên chưa kết bạn được. Nhắn bạn ấy tạo tài khoản nhé.'
+    return 'Không gửi được lời mời tới người này.'
 
 
 def _befriend(db, a: str, b: str, rid: int | None) -> None:

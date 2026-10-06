@@ -189,9 +189,7 @@ class WebAssets:
         content = self.content_version() or ""
         build = hashlib.sha256(json.dumps([sorted(files.items()), content, self.release]).encode()).hexdigest()[:HASH_LEN]
         version = f"{self.release}+{build}" if self.release else build
-        imports = {url: f"{url}?v={h}" for url, h in files.items()
-                   if (url.endswith(MAPPED_SUFFIXES) or url.startswith("/icons/isometric/"))
-                   and not url.startswith("/js/admin/")}
+        imports = {url: f"{url}?v={h}" for url, h in files.items() if url.endswith(MAPPED_SUFFIXES) and not url.startswith("/js/admin/")}
         importmap = json.dumps({"imports": imports}, separators=(",", ":"), sort_keys=True)
         preload = [f"{u}?v={files[u]}" for u in self.module_graph(ENTRY) if u in files]
         template = (self.public / "index.html").read_text(encoding="utf-8")

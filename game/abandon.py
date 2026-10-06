@@ -61,7 +61,7 @@ TRUST_BASE, TRUST_JOB, TRUST_ONE_MAX, TRUST_MAX = 2, 4, 10, 25
 VALUE_DEFAULT = 30
 
 WHERE = dict(corp_accounting='bàn', tax_payroll='bàn', group_accounting='bàn', teacher='lớp', tour_guide='đoàn',
-             delivery='đơn', accounting='bàn', customer_care='bàn', hr_admin='bàn', secretary='bàn', it_helpdesk='bàn')
+             delivery='đơn', accounting='bàn', customer_care='bàn', hr_admin='bàn', secretary='bàn', it_helpdesk='bàn', oil='ca')
 
 BOSS_LINES = {
     1: ['Đi đâu mà bỏ {where} vậy em? Khách chờ rồi bỏ về hết.',

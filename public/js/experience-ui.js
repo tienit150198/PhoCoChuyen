@@ -110,6 +110,10 @@ function priceView(cid,c,content,meta){
   body=`<section class="lx-card">${h3('🎁 Những món nhỏ xinh')}<p class="lx-hint">Đổi giá trong khoảng 75%–125% giá gốc trước khi mở ca${c.open?' (đang mở ca: đóng ca rồi đổi)':''}.</p><ul class="lx-prices">${content.products.map(i=>priceRow(i,c.life.prices[i.id]||i.price,...band(i.price),c.open,`<span class="lx-tile art" aria-hidden="true">${itemArt(i.icon,40,i.color)}</span>`)).join('')}</ul></section>`;
  }else if(cid==='tour_guide'){
   body=`<section class="lx-card">${h3('🧭 Chuyến đi hôm nay')}<ul class="lx-rows">${content.experiences.places.filter(i=>i.id!=='gate').map(p=>`<li>${tile(p.emoji)}<span class="grow">${esc(p.name)}</span><small>${p.minutes}′</small><b>${p.fee} xu</b></li>`).join('')}</ul><p class="lx-hint">Nghề này nhận thù lao theo công việc.</p></section>`;
+ }else if(content.experiences.price_board?.[cid]?.length){
+  // 🏷️ Every shop whose SPEC has prices (Quán cơm, phở, tạp hóa…): the same 75–125% band life_price checks.
+  const rows=content.experiences.price_board[cid];
+  body=`<section class="lx-card">${h3('🏷️ Bảng giá của tiệm')}<p class="lx-hint">Đổi giá từng món trong khoảng 75%–125% giá gốc trước khi mở ca${c.open?' (đang mở ca: đóng ca rồi đổi)':''}. Giá mới dùng cho đơn mới.</p><ul class="lx-prices">${rows.map(i=>priceRow(i,c.life.prices?.[i.id]??i.base,...band(i.base),c.open)).join('')}</ul></section>`;
  }else{
   const [title,steps]=craftSteps(cid);
   body=`<section class="lx-card lx-empty">${tile('🏷️','big')}<p>${c.inventory?'Giá tính ngay trong từng việc.':'Nghề này nhận thù lao theo công việc.'}</p>${c.inventory?b(icon('box',16)+' Kho','inventory',{},'ghost'):''}</section>${title?`<section class="lx-card">${h3(title)}<ol class="lx-steps">${steps.map(s=>`<li>${s}</li>`).join('')}</ol></section>`:''}`;

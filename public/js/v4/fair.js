@@ -25,8 +25,8 @@ const TITLE_NAMES={f_kinh2:'🎎 Kinh đôi rộn ràng',f_nguoc:'🙃 Đọc ng
 const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🗡️','Phóng dao'],xs:['🎟️','Vé số cào'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng'],food:['🍡','Hàng ăn vặt'],pb:['📸','Chụp ảnh']};
 const MINI_BOARD='<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2" y="6" width="60" height="28" rx="14" fill="#e9c98f" stroke="#8a5a26" stroke-width="2"/><path d="M14 6v28M50 6v28M14 20h36M23 6v28M32 6v28M41 6v28" stroke="#8a5a26" stroke-width="1.6"/><circle cx="8" cy="20" r="4" fill="#5b4636"/><circle cx="56" cy="20" r="4" fill="#5b4636"/><g fill="#7a8b99"><circle cx="18" cy="13" r="1.8"/><circle cx="27" cy="27" r="1.8"/><circle cx="36" cy="13" r="1.8"/><circle cx="45" cy="27" r="1.8"/><circle cx="20" cy="28" r="1.8"/><circle cx="38" cy="25" r="1.8"/></g></svg>';
 const MINI_BOTTLES='<svg viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2d5a3d" stroke-width="1.4"><path d="M12 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#7cc79a"/><path d="M28 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#8fb6e8"/><path d="M44 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#f0b46a"/></g><ellipse cx="34" cy="10" rx="7" ry="2.6" fill="none" stroke="#e2462d" stroke-width="2.4"/></svg>';
-const CHIPS=[1,2,5,10,50,100,200,500];
-const XD_STAKES=[10,20,30,50,100,200,500];
+const CHIPS=[1,2,5,10,50,100,200,500,1000];
+const XD_STAKES=[10,20,30,50,100,200,500,1000];
 const NPC_GRACE=2000,ROLL_MS=450,ROUND_GAP=450;   // the bowl shakes this long; the server wants rounds ≥0.4 s apart (GAP_MS)
 const LS='mnl.fair.lt';
 
@@ -292,6 +292,7 @@ function gateList(){
       <button type="button" class="fh-game" data-fh="tab" data-tab="ring" data-fh-key="g-ring"><span class="fh-gico">${MINI_BOTTLES}</span><span class="grow"><b>Ném vòng cổ chai</b><small>${r.nocap?`Mỗi vòng trúng +${r.ring_hit} xu, trúng cả ${r.rings||5} vòng thêm ${r.ring_all} xu`:`Trúng mỗi chai +${r.ring_hit||2} xu, đủ ${r.rings||5} chai thêm ${r.ring_all||5} xu`}</small>${meter(e.ring)}</span></button>
     </div>
     <div class="fh-sec"><h3>🎲 Thử vận may</h3><span class="fh-tag">Cược nhỏ bằng xu</span></div>
+    ${r.win_pct?`<p class="fh-rule">🍀 Bầu cua, chiếu trong, lô tô, vé cào, ném vòng: khoảng ${r.win_pct} ván trên 100 là thắng. Thua liền 4 ván thì ván sau chắc thắng; thắng liền 4 ván thì vận hơi nguội, còn ${r.cool_pct}%.</p>`:''}
     <div class="fh-luck">
       ${luck('bc',FACE_ART.cua,'Bầu cua',`Đặt 1–${r.bc_max||20} xu một ván`)}
       ${f.knife?luck('dt','🗡️','Phóng dao',`Đặt ${Math.min(...f.knife.stakes)}–${Math.max(...f.knife.stakes)} xu, qua màn nhận thưởng hoặc liều chơi tiếp`):''}
@@ -399,6 +400,8 @@ async function playTrace(trace,lv){
 /** Where the ring is at `t` ms (0..100): the same arithmetic as x_at in game/fair_ring.py. */
 const ringX=(p,t)=>{const u=((t/p.period)+p.phase)%1;return 100*(1-Math.abs(2*u-1));};
 const trackPos=x=>`calc(6% + ${x*0.88}%)`;
+/** Where a missed ring falls: the gap (or shelf end) nearest to its aim, never on a bottle's neck. */
+function ringMiss(xs,x){const gaps=[Math.max(0,xs[0]-9),...xs.slice(1).map((b,k)=>(xs[k]+b)/2),Math.min(100,xs[xs.length-1]+9)];return gaps.reduce((a,g)=>Math.abs(g-x)<Math.abs(a-x)?g:a,gaps[0]);}
 /** Same as judge in game/fair_ring.py: the newer server lets one bottle take several rings (rules.nocap). */
 function ringJudge(p,taps){const rung=new Set(),many=!!R().nocap;return taps.map(t=>{const x=ringX(p,t);const i=p.xs.findIndex((bx,k)=>(many||!rung.has(k))&&Math.abs(x-bx)<=R().ring_tol);if(i>=0)rung.add(i);return i;});}
 function ringView(){
@@ -469,7 +472,9 @@ async function finishRing(rd){
     S.ring.say=rd.chance?(x.n?'Có quà rồi! Cô Tư đếm thưởng cho nha!':'Lượt này chưa trúng, thử vận may lần sau nha!'):x.n>=(R().rings||5)?'Trời ơi, trúng hết luôn! Tay ném thần sầu!':x.n>=3?'Ném hay quá! Nhận quà nè!':'Lượt sau thử lại nha!';
     if(visible){
       // Replay only the server's answer. Misses land between bottles; awarded rings stay on the shelf.
-      if(layer&&!x.late)taps.forEach((t,i)=>{const hit=x.hits?.[i]??-1,gap=i%Math.max(1,rd.xs.length-1),miss=(rd.xs[gap]+rd.xs[gap+1])/2;
+      // A miss drops into the gap nearest to where that ring was let go, a hit onto its bottle: the server's answer,
+      // drawn from the player's own aim.
+      if(layer&&!x.late)taps.forEach((t,i)=>{const hit=x.hits?.[i]??-1,miss=ringMiss(rd.xs,ringX(rd,t));
         const fly=document.createElement('i');fly.className='fh-fly '+(hit>=0?'hit':'miss');fly.style.left=trackPos(hit>=0?rd.xs[hit]:miss);
         fly.style.setProperty('--ring-from',trackPos(ringX(rd,t)));if(hit>=0)fly.style.setProperty('--ring-level',x.hits.slice(0,i).filter(h=>h===hit).length);layer.append(fly);setTimeout(()=>fly.remove(),reduce()?60:700);});
       sfx(x.n>=3?'win':x.n?'clink':'miss');
@@ -588,7 +593,7 @@ async function shakeXd(){
 const colOf=n=>n<10?0:n>=90?8:Math.floor(n/10);
 const COLS=['1–9','10–19','20–29','30–39','40–49','50–59','60–69','70–79','80–90'];
 const SPEEDS=[['🐢','Chậm',3300],['🙂','Vừa',2300],['🐇','Nhanh',1200]];
-const TIER_NAME={nho:'Vé nhỏ',vua:'Vé vừa',lon:'Vé lớn',dai:'Vé tài lộc',tram:'Vé phú quý',cao:'Vé thịnh vượng',dac_biet:'Vé đặc biệt'};
+const TIER_NAME={nho:'Vé nhỏ',vua:'Vé vừa',lon:'Vé lớn',dai:'Vé tài lộc',tram:'Vé phú quý',cao:'Vé thịnh vượng',dac_biet:'Vé đặc biệt',nghin:'Vé ngàn lộc'};
 const MODE_INFO={thuong:['🎱','Vòng thường','Đủ một hàng ngang trên một tờ là kinh.'],
   nguoc:['🙃','Vòng lật ngược','Cô Bảy đọc số lộn ngược: nghe 21 là số 12, nghe 07 là số 70. Dò cho tỉnh nha!'],
   doi:['🎎','Vòng Kinh đôi','Phải đủ hai hàng ngang trên cùng một tờ mới kinh.'],
@@ -785,10 +790,10 @@ function buyPanel(){
   const g=G(),f=F(),m=curMode()||'thuong',[me,,md]=MODE_INFO[m]||MODE_INFO.thuong,lt=S.lt,price=g.tiers[lt.tier]||5;
   const prize=(g.prizes?.[m]?.[lt.tier]||[])[lt.n-1]||0,rule=g.modes_rule?.[m]||{npcs:4};
   const side=(lt.cl?lt.cls:0)+(lt.cot!=null?lt.cots:0),total=lt.n*price+side;
-  const why=total>(g.max_stake||500)?`Tổng tiền vé và cược phụ tối đa ${g.max_stake||500} xu/ván`:total>(f.wallet||0)?'Ví không đủ xu':S.busy?'Đang mua…':'';
+  const why=total>(g.max_stake||1000)?`Tổng tiền vé và cược phụ tối đa ${g.max_stake||1000} xu/ván`:total>(f.wallet||0)?'Ví không đủ xu':S.busy?'Đang mua…':'';
   const next=g.modes.filter(x=>x[0]>nowSlot()).slice(0,2).map(([s,k])=>`<span class="fh-nextmode">${esc(new Date(s*60000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Ho_Chi_Minh'}))} · ${MODE_INFO[k]?.[0]||''} ${esc(modeLabel(k))}</span>`).join('');
   const tiers=Object.entries(g.tiers).map(([k,p])=>`<button type="button" class="fh-tier${lt.tier===k?' on':''}" data-fh="lttier" data-v="${k}" aria-pressed="${lt.tier===k}" data-fh-key="tier-${k}"><b>${esc(TIER_NAME[k]||k)}</b><small>${xu(p)}/tờ</small></button>`).join('');
-  const ns=Array.from({length:g.cards},(_,i)=>i+1).map(n=>`<button type="button" class="fh-chip${lt.n===n?' on':''}" data-fh="ltn" data-v="${n}" aria-pressed="${lt.n===n}" data-fh-key="ltn-${n}"${n*price+side>(g.max_stake||500)?' disabled':''}>${n}</button>`).join('');
+  const ns=Array.from({length:g.cards},(_,i)=>i+1).map(n=>`<button type="button" class="fh-chip${lt.n===n?' on':''}" data-fh="ltn" data-v="${n}" aria-pressed="${lt.n===n}" data-fh-key="ltn-${n}"${n*price+side>(g.max_stake||1000)?' disabled':''}>${n}</button>`).join('');
   const chip=(op,v,on)=>`<button type="button" class="fh-chip small${on?' on':''}" data-fh="${op}" data-v="${v}" aria-pressed="${on}" data-fh-key="${op}-${v}">${v}</button>`;
   const cl=[['chan','Chẵn'],['le','Lẻ']].map(([k,l])=>`<button type="button" class="fh-pickb${lt.cl===k?' on':''}" data-fh="ltcl" data-v="${k}" aria-pressed="${lt.cl===k}" data-fh-key="cl-${k}">${l}</button>`).join('');
   const cot=COLS.map((l,i)=>`<button type="button" class="fh-pickb${lt.cot===i?' on':''}" data-fh="ltcot" data-v="${i}" aria-pressed="${lt.cot===i}" data-fh-key="cot-${i}">${l}</button>`).join('');
@@ -876,14 +881,14 @@ function roundView(v){
     <div class="fh-go"><span class="fh-speed" role="group" aria-label="Tốc độ gọi số">${speed}</span>${btn('📣 Kinh!','kinh',{},'primary big fh-kinh',S.lt.claiming?' disabled data-fh-key="kinh"':' data-fh-key="kinh"')}</div>
     ${hut?`<p class="fh-hutline">🙈 Kinh hụt ${hut}${v.hut_max?`/${v.hut_max}`:' lần'}${S.lt.hut?.fine?` · đã bỏ ${xu(S.lt.hut.fine)} vô hũ phạt`:''}</p>`:''}
     <div class="fh-go">${musicBtn()}</div>
-    <p class="fh-rule">Tự chạm số cô Bảy vừa hô trên tờ của bạn. Đủ ${need(v)===1?'một hàng ngang':need(v)===2?'hai hàng ngang trên một tờ':'cả tờ'} thì bấm “Kinh!” trước người khác. Kinh hụt chỉ bị phạt nhẹ, dò lại rồi hô tiếp nha!</p></section>`;
+    <p class="fh-rule">Tự chạm số cô Bảy vừa hô trên tờ của bạn. Đủ ${need(v)===1?'một hàng ngang':need(v)===2?'hai hàng ngang trên một tờ':'cả tờ'} thì bấm “Kinh!” trước người khác. Chưa đủ hàng thì cô Bảy nhắc, không phạt; chỉ đánh dấu số chưa gọi mới là Kinh hụt, phạt nhẹ thôi, dò lại rồi hô tiếp nha!</p></section>`;
 }
 
 /* ---- actions ---- */
 async function buy(){
   if(S.busy)return;
   const g=G(),lt=S.lt;
-  if(g&&lt.n*(g.tiers[lt.tier]||5)+(lt.cl?lt.cls:0)+(lt.cot!=null?lt.cots:0)>(g.max_stake||500))return;
+  if(g&&lt.n*(g.tiers[lt.tier]||5)+(lt.cl?lt.cls:0)+(lt.cot!=null?lt.cots:0)>(g.max_stake||1000))return;
   const mode=curMode();
   const p=g?{tier:lt.tier,n:lt.n,...(mode?{mode}:{}),...(lt.cl?{cl:[lt.cl,lt.cls]}:{}),...(lt.cot!=null?{cot:[lt.cot,lt.cots]}:{})}:{};
   S.busy=true;S.flash=null;render();
@@ -899,7 +904,10 @@ async function kinh(){
     const m=new Set(S.lt.marks[0]||[]),row=v.card.findIndex(r=>r.every(n=>m.has(n)));
     if(row<0){S.flash={text:'Hàng nào đủ 5 số mới kinh được nha!',kind:'warn'};render();return;}
     p={row,at:S.lt.shown};
-  }else{const ci=bestCard(v);p={card:ci,at:S.lt.shown,marks:[...(S.lt.marks[ci]||[])]};}
+  }else{const ci=bestCard(v),rows=fullRows(v,ci),k=need(v);
+    // Kinh đôi needs 2 full rows on one tờ, Hũ đêm hội 3 (game/fair.py LOTO_MODES): say so here instead of a Kinh hụt.
+    if(rows<k){S.flash={text:k===1?'Chưa có hàng nào đủ 5 số đâu, dò tiếp nha!':`Vòng này cần đủ ${k} hàng trên một tờ (đang có ${rows}). Dò tiếp rồi kinh nha!`,kind:'warn'};render();return;}
+    p={card:ci,at:S.lt.shown,marks:[...(S.lt.marks[ci]||[])]};}
   S.lt.claiming=true;pauseLoto();render();
   const r=await send('fair_loto_kinh',p);
   S.lt.claiming=false;

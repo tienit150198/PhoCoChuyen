@@ -958,6 +958,99 @@ def _quote(c: dict, services) -> int:
     return sum(kit.price(c, x, PRICES[x]) for x in services)
 
 
+# ------------------------------------------------------------------ over budget: talk it through (1.7.16, góp ý #199)
+# A plan over the client's budget opens a talk instead of a flat "xem lại giá": explain and let the client
+# put a service off for next time, ask for a bit more money, take some off the price, or say honestly that
+# today's plan does not fit. The client decides by hidden traits (persona: how far the wallet stretches,
+# what they would put off), seeded by the task id; mood (patience) narrows the stretch.
+# t['talk'] (absent until needed): {state: 'open'|'raised'|'off'|'swap', over: billable quote refused,
+#   budget: the budget agreed now, asks: 0|1, off: the discount promised, drop: services put off}
+TALK_STATES = ('open', 'raised', 'off', 'swap')
+TALK_KEYS = frozenset({'state', 'over', 'budget', 'asks', 'off', 'drop'})
+SALON_FLEX = {'picky': (5, 12), 'genz': (0, 6), 'warm': (5, 15), 'quiet': (0, 10), 'bossy': (10, 20), 'sour': (0, 5)}
+DROP_ORDER = ('style', 'treatment', 'toner', 'cut')   # what a client would put off first (never the colour itself)
+OFF_BIG = 20      # % of the quote: more than this the salon owner would not allow
+OFF_SMALL = 5     # % a regular may get without the owner frowning
+
+
+def _persona(t: dict) -> str:
+    return PEOPLE[int(t['npc'].rsplit('_', 1)[1]) - 1][3]
+
+
+def _talk(t: dict) -> dict | None:
+    k = t.get('talk')
+    return k if isinstance(k, dict) else None
+
+
+def _talk_budget(t: dict) -> int:
+    k = _talk(t)
+    return k['budget'] if k and k['state'] == 'raised' else t['_key']['budget']
+
+
+def _talk_off(t: dict) -> int:
+    k = _talk(t)
+    return min(k['off'], t['quote'] or 0) if k and k['state'] == 'off' else 0
+
+
+def _dropped(t: dict) -> list:
+    k = _talk(t)
+    return list(k['drop']) if k else []
+
+
+def _flex(t: dict) -> int:
+    """Hidden: how many percent over the budget this client would still pay today."""
+    lo, hi = SALON_FLEX.get(_persona(t), (0, 8))
+    pct = kit.rng(ID, 'flex', t['id']).randint(lo, hi)
+    return pct // 2 if t.get('patience', 100) < 50 else pct
+
+
+def _talk_action(s, c, t, p, who):
+    k = _talk(t)
+    kit.need(k and k['state'] == 'open' and not _work_started(t), 'Khách chưa phàn nàn gì về giá.')
+    answer = kit.one_of(p.get('answer'), ('swap', 'raise', 'discount', 'decline'),
+                        'Chọn: dời bớt dịch vụ, xin thêm ngân sách, bớt giá hoặc nói thật.')
+    budget, over = t['_key']['budget'], k['over']
+    if answer == 'swap':
+        picky = _persona(t) == 'picky'
+        cut_to = [x for x in DROP_ORDER if x in t['needs']['services'] and x not in k['drop'] and (not picky or x == 'style')]
+        drop = next((x for x in cut_to if over - _quote(c, [x]) <= budget), None)
+        t['patience'] = max(25, t.get('patience', 100) - 4)
+        if not drop:
+            return dict(message=f'Bạn giải thích từng khoản. {who} lắc đầu: “Phần nào mình cũng cần hết á.” '
+                                'Thử xin thêm ngân sách, bớt giá hoặc nói thật là hôm nay chưa làm đủ được.', refused=True)
+        k['state'] = 'swap'
+        k['drop'] = k['drop'] + [drop]
+        return dict(message=f'Bạn giải thích giá từng khoản. {who} gật gù: “Vậy {SERVICE_INDEX[drop]["name"].lower()} để lần sau nha.” '
+                            'Bỏ dịch vụ đó ra rồi chốt lại phương án.')
+    if answer == 'raise':
+        if k['asks']:
+            t['mistakes'] += 1
+            t['patience'] = max(25, t.get('patience', 100) - 10)
+            cq.slip(t, 'pushy_money', 1, 'Đã nói không thêm tiền rồi mà thợ cứ nài.', 'nài khách thêm tiền')
+            return dict(message=f'{who} cau mày: “Mình nói rồi mà, không thêm nữa đâu.”', refused=True)
+        k['asks'] = 1
+        if over * 100 <= budget * (100 + _flex(t)):
+            k['state'] = 'raised'
+            k['budget'] = over
+            return dict(message=f'{who} ngập ngừng rồi gật: “Thôi làm cho đẹp, mình thêm {over - budget} xu.” Chốt lại phương án nhé.')
+        t['patience'] = max(25, t.get('patience', 100) - 10)
+        return dict(message=f'{who}: “Không được đâu, mình chỉ mang {budget} xu thôi.”', refused=True)
+    if answer == 'discount':
+        off = over - budget
+        kit.need(off * 100 <= over * OFF_BIG, f'Phải bớt {off} xu, quá {OFF_BIG}% báo giá — tiệm không cho. Thử cách khác nhé.')
+        k['state'] = 'off'
+        k['off'] = off
+        line = f'Bạn bớt {off} xu cho vừa {budget} xu. {who} cười: “Vậy được, cảm ơn nha!”'
+        if off * 100 > over * OFF_SMALL:
+            line += ' Bớt hơi nhiều — tiệm chịu phần này.'
+        return dict(message=line + ' Chốt lại phương án nhé.')
+    t['plan'], t['quote'] = None, None
+    t['mistakes'] += 1
+    cq.slip(t, 'no_sale', 1, f'Tiệm báo thật là hôm nay không làm vừa {budget} xu được. Tiếc, nhưng ít ra nói thẳng.', 'không có phương án vừa túi tiền')
+    kit.complete(s, c, t, 0, f'{who} chưa làm tóc vì vượt ngân sách.')
+    return dict(message=f'Bạn nói thật: với {budget} xu hôm nay chưa làm đủ được. {who} hơi tiếc nhưng cảm ơn bạn đã không vẽ thêm.')
+
+
 def _window(kind: str, fragile: bool, fast: bool = False) -> dict:
     w = WINDOWS['bleach_fragile' if kind == 'bleach' and fragile else kind]
     if fast:   # a hot day: the chemistry runs about a fifth faster
@@ -1324,6 +1417,9 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             return dict(message=f'{label}: bé Bin sáng mắt, ngồi yên hẳn (+{gain} bình tĩnh). Bố bé thở phào.', celebrate=True)
         return dict(message=f'{label}: bé chỉ chịu yên được một chút (+{gain}). Nghe lại bố kể thói quen của bé xem.')
 
+    if name == 'sl_talk':
+        return _talk_action(s, c, t, p, who)
+
     if name == 'sl_plan':
         kit.need(not _work_started(t), 'Đã bắt đầu làm rồi, không đổi phương án giữa chừng.')
         services = kit.id_list(p.get('services'), SERVICE_IDS, 6, 'Chọn dịch vụ trong danh sách.')
@@ -1340,7 +1436,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         if t['patch_done'] and any(x in DYE_SERVICES for x in services):
             t['mistakes'] += 1
             return dict(message='Vừa thử dị ứng xong: phải chờ tới ngày sau mới nhuộm. Bỏ phần màu khỏi phương án hôm nay.', refused=True)
-        unjust = [x for x in n['services'] if x not in services and not _may_postpone(c, t, x)]
+        unjust = [x for x in n['services'] if x not in services and not _may_postpone(c, t, x) and x not in _dropped(t)]
         if unjust:
             t['mistakes'] += 1
             return dict(message=f'{who}: “Sao lại bỏ {_names(unjust)}? Mình vẫn muốn làm mà.”', refused=True)
@@ -1349,8 +1445,19 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             return dict(message=f'{who}: “Tới {sessions} buổi lận hả? Tóc mình đâu cần lâu vậy?”', refused=True)
         quote = _quote(c, services)
         # The client agrees to pay for a treatment her hair really needs, beyond what she planned to spend.
-        if quote - (_quote(c, ['treatment']) if advised else 0) > key['budget']:
-            return dict(message=f'{who}: “{quote} xu hả… vượt ngân sách mất rồi.” Xem lại giá dịch vụ nhé.', refused=True)
+        billable = quote - (_quote(c, ['treatment']) if advised else 0)
+        talk = _talk(t)
+        covered = talk and talk['state'] == 'off' and billable - talk['off'] <= key['budget']
+        if billable > _talk_budget(t) and not covered:
+            if talk and talk['state'] in ('swap', 'raised', 'off'):
+                # Agreed on something and came back over the budget anyway: that one is a slip.
+                t['mistakes'] += 1
+                cq.slip(t, 'over_budget', 1, 'Đã thống nhất ngân sách rồi mà vẫn báo giá vượt.', 'vượt ngân sách khách dặn')
+            t['patience'] = max(25, t.get('patience', 100) - 3)
+            t['talk'] = dict(state='open', over=billable, budget=key['budget'], asks=talk['asks'] if talk else 0, off=0,
+                             drop=talk['drop'] if talk else [])
+            return dict(message=f'{who}: “{quote} xu hả… vượt ngân sách mất rồi.” 💬 Trao đổi với khách: dời bớt dịch vụ, '
+                                'xin thêm ngân sách, bớt giá, hoặc nói thật là hôm nay chưa làm đủ được.', refused=True)
         informed = set(key['must_ask']) <= set(t['asked']) and set(key['must_inspect']) <= set(t['inspected'])
         if _case(t) == 'photo' and not t['photo_seen']:
             informed = False
@@ -1659,7 +1766,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         if mood in ('walkout', 'refuse'):
             products = []                  # nobody buys shampoo on the way out of a bad visit
             book = []                      # …nor books the next visit
-        left = key['budget'] - t['quote'] - t['patch_fee']
+        left = _talk_budget(t) - t['quote'] - t['patch_fee'] + _talk_off(t)
         sold, declined, retail, notes = [], [], 0, []
         for pid in products:
             it = ITEM_INDEX[pid]
@@ -1696,7 +1803,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         if t.get('gen'):
             t['memo'] = _memo(c, t)
         # Money for a job done wrong is settled once, by the client's reaction (services only; products are their own sale).
-        r = cq.react(s, c, t, t['quote'] + t['patch_fee'], who=who)
+        r = cq.react(s, c, t, t['quote'] + t['patch_fee'] - _talk_off(t), who=who)
         reward = r['pay'] + retail + bonus
         d['served'] += 1
         d['day_served'] += 1
@@ -2022,7 +2129,18 @@ def feedback(c: dict, t: dict) -> dict:
         dict(key='quality', label='Tay nghề màu & cắt', score=max(1, qual), note=', '.join(qn) or 'màu và đường cắt chuẩn'),
         dict(key='care', label='An toàn & sức khỏe tóc', score=max(1, care), note=', '.join(cn) or 'an toàn từng bước'),
         dict(key='attitude', label='Tư vấn thật lòng', score=max(1, att), note=', '.join(tnotes) or 'hỏi kỹ, nói thật, không ép mua'),
-        dict(key='speed', label='Thời gian chờ', score=speed, note=speed_note)] + _memory_row(t))
+        dict(key='speed', label='Thời gian chờ', score=speed, note=speed_note)] + _talk_row(t) + _memory_row(t))
+
+
+def _talk_row(t: dict) -> list:
+    k = _talk(t)
+    if not k:
+        return []
+    codes = {x['code'] for x in cq.slips(t)}
+    score = 2 if codes & {'pushy_money', 'over_budget'} else 4 if k['state'] == 'raised' else 5
+    note = ('nài khách thêm tiền' if 'pushy_money' in codes else 'báo giá vượt ngân sách đã thống nhất' if 'over_budget' in codes else
+            {'raised': 'khách chịu chi thêm', 'off': 'được bớt cho vừa túi', 'swap': 'dời bớt dịch vụ cho vừa túi tiền'}.get(k['state'], 'nói thật, không ép'))
+    return [dict(key='budget', label='Chuyện ngân sách', score=score, note=note)]
 
 
 def _memory_row(t: dict) -> list:
@@ -2063,6 +2181,12 @@ def public_task(t: dict) -> dict:
     v['answers'] = {x: _answer(t, x) for x in t['asked']}
     v['findings'] = {z: h['find'][z] for z in t['inspected']}
     v['budget'] = k['budget'] if 'budget' in t['asked'] else None
+    talk = _talk(t)
+    if talk and talk['state'] == 'open':
+        gap = talk['over'] - k['budget']
+        # What each answer would take (never the client's hidden stretch).
+        v['talk_view'] = dict(off=gap, off_ok=gap * 100 <= talk['over'] * OFF_BIG, small=gap * 100 <= talk['over'] * OFF_SMALL,
+                              asked=bool(talk['asks']), budget=k['budget'])
     v['strand_text'] = h['strand'] if t['strand'] else None
     v['look'] = _look(t)
     v['cut_ask'] = cut_ask(t)
@@ -2153,6 +2277,15 @@ def validate_task(t: dict, original: dict) -> None:
     kit.integer(t['patch_fee'], 0, 200)
     kit.integer(t['cost'], 0, 100000)
     kit.need(t['quote'] is None or kit.integer(t['quote'], 0, 5000) >= 0, 'Báo giá sai.')
+    talk = t.get('talk')
+    if talk is not None:
+        kit.need(isinstance(talk, dict) and set(talk) == TALK_KEYS and talk['state'] in TALK_STATES, 'Chuyện ngân sách sai.')
+        budget = original['_key']['budget'] if '_key' in original else t['_key']['budget']
+        kit.integer(talk['over'], 1, 5000)
+        kit.integer(talk['budget'], budget, max(budget, talk['over']))
+        kit.integer(talk['asks'], 0, 1)
+        kit.integer(talk['off'], 0, talk['over'] * OFF_BIG // 100)
+        ids(talk['drop'], DROP_ORDER, 'Dịch vụ dời lại sai.')
     pl = t['plan']
     if pl is not None:
         kit.need(isinstance(pl, dict) and set(pl) == {'services', 'sessions', 'informed', 'overpromise'}, 'Phương án sai.')

@@ -23,8 +23,8 @@ GROUP = {'milk_tea': 'shop', 'cafe_bakery': 'shop', 'restaurant': 'shop', 'groce
          'accounting': 'office', 'corp_accounting': 'office', 'tax_payroll': 'office', 'group_accounting': 'office',
          'customer_care': 'support', 'tour_guide': 'tour', 'homestay': 'stay', 'teacher': 'teacher',
          'delivery': 'delivery', 'farm': 'farm', 'clothing': 'shop', 'tra_da': 'shop',
-         'fruit': 'shop', 'garbage': 'delivery', 'drain': 'shop', 'homemaker': 'stay', 'ice_cream': 'shop', 'pho': 'shop', 'com': 'shop', 'nail': 'shop', 'pagoda': 'pagoda', 'photobooth': 'shop', 'giupviec': 'stay', 'naucom': 'stay', 'babysitter': 'stay', 'pilot': 'air', 'flight_attendant': 'air',
-         'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office'}
+         'fruit': 'shop', 'garbage': 'delivery', 'drain': 'shop', 'homemaker': 'stay', 'ice_cream': 'shop', 'pho': 'shop', 'com': 'shop', 'nail': 'shop', 'pagoda': 'pagoda', 'photobooth': 'shop', 'giupviec': 'stay', 'naucom': 'stay', 'babysitter': 'stay', 'library': 'support', 'pilot': 'air', 'flight_attendant': 'air', 'railway': 'rail',
+         'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office', 'nurse': 'office'}
 CUST = ('shop', 'office', 'support', 'tour', 'stay', 'delivery', 'farm')
 # 'pagoda' has no gripe of its own: its visitors never write the shops' ones (game/pagoda_voice.py).
 LABEL = 'Chuyện ngoài lề'
@@ -128,6 +128,11 @@ GRIPES = dict((
     _G('ears', ('air',), 'ù tai khi hạ cánh', 'Ù tai.', ['lúc hạ cánh tai tôi ù đặc, dù chẳng phải lỗi ai']),
     _G('bus_gate', ('air',), 'xe buýt ra tàu chạy vòng', 'Xe buýt.', ['xe buýt từ cổng ra tàu chạy vòng vèo mãi mới tới']),
     _G('sea_view', ('air',), 'thấy biển từ trên cao', '', ['nhìn qua cửa sổ thấy biển xanh ngắt, đẹp như tranh'], None, True),
+    _G('long_freight', ('rail',), 'tàu hàng dài lê thê', 'Dài.', ['đoàn tàu hàng ba chục toa, đếm mãi không hết']),
+    _G('bell_loud', ('rail',), 'chuông đường ngang to', 'Ồn.', ['cái chuông đường ngang kêu to quá, ù cả tai']),
+    _G('sun_wait', ('rail',), 'đứng chờ giữa nắng', 'Nắng.', ['đứng chờ tàu giữa trưa nắng, không có lấy một bóng cây']),
+    _G('horn', ('rail',), 'còi tàu rúc to', 'Còi.', ['còi tàu rúc ngay lúc tôi đang nghe điện thoại']),
+    _G('train_wave', ('rail',), 'lái tàu vẫy tay', '', ['lái tàu vẫy tay chào, tụi nhỏ nhà tôi thích mê'], None, True),
     _G('sunrise', ('air',), 'bay lúc bình minh', '', ['bay đúng lúc bình minh, mặt trời đỏ au ngay cánh tàu'], None, True),
 ))
 

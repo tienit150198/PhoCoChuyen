@@ -120,6 +120,8 @@ location @asset_miss {                              # mã chưa có trong kho: t
 | `MNL_DEV` | **Không bao giờ đặt trên máy chủ thật.** `MNL_DEV=1` tắt hành trình (mở mọi nghề, không trừ tiền sinh hoạt) và cho nhận việc không cần phỏng vấn. Chỉ dùng cho script kiểm trình duyệt. |
 | `VAPID_SUBJECT`, `VAPID_PRIVATE_KEY`, `VAPID_KEY_FILE`, `PUSH_DISABLED` | Web push. Mặc định khóa được tự tạo ở `vapid.json` trong thư mục của `GAME_NAMESPACE`; `VAPID_KEY_FILE` chọn một tệp khóa hiện có. Đừng xóa hoặc thay khóa này: mọi đăng ký thông báo cũ cần dùng cùng khóa. |
 
+**Nginx production (06/10/2026):** upstream `phocochuyen_app` không có `keepalive`. Vì vậy nginx đóng kết nối tới Python sau mỗi request, và `Connection: close` cùng `HTTP_KEEPALIVE_SECONDS` không đổi gì ở đó. Header này là hop-by-hop, trình duyệt không nhận được. Phần có tác dụng là `COMMAND_CONCURRENCY` và delta. Nếu sau này bật `keepalive` cho upstream, hãy đặt `keepalive_timeout` của upstream **nhỏ hơn** `HTTP_KEEPALIVE_SECONDS`. Nếu không, nginx có thể dùng lại một kết nối Python vừa đóng. `/api/` có `proxy_next_upstream … non_idempotent` nên gửi lại được. Các location khác như `/api/account/login` và `/api/bootstrap` thì không: request sẽ nhận 502.
+
 ## Theo dõi PostgreSQL khi tải ghi lớn
 
 Bài 1.000 người/200 command mỗi giây ghi nhận nhiều `COMMIT` chờ `WALWrite` hơn 0,5 giây. Thử nén WAL, tăng ngưỡng checkpoint và thay RAM/CPU trong một lượt chẩn đoán **không cải thiện kết quả**; không áp dụng các cấu hình thử đó làm mặc định. [Báo cáo và giới hạn phép đo](performance/2026-10-06-fix/REPORT.md) giữ cả các lượt không đạt.

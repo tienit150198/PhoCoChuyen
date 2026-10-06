@@ -7,7 +7,6 @@
 | `LIVE_WEDDING` | 0 | live wedding parties, the reminder and the weekly guest race (live/wedding.py) |
 | `LIVE_FAIR` | as `LIVE_STREET` | players walking the hội chợ's fairground see each other (live/fair.py), and its photobooth's shared rooms (live/booth.py, welcome flag `booth`) |
 | `LIVE_HOME` | as `LIVE_STREET` | married players in the same home see each other and share gestures (live/home.py) |
-| `LIVE_TOWN` | 0 | real player presence on the shared isometric career map, independent of chat (live/town.py) |
 | `LIVE_ORIGINS` | the local game | allowed `Origin` values, comma-separated (`https://phocochuyen.io.vn,...`) |
 | `LIVE_TRUST_PROXY` | 0 | 1 behind nginx: the client IP is `X-Real-IP` (set by nginx), else the socket peer |
 | `LIVE_MAX_CONN` | 5000 | open sockets at most; more are refused (503) |
@@ -49,7 +48,6 @@ class Config:
     fair: bool = False               # 🏮 the fairground's crowd (live/fair.py); from_env: LIVE_FAIR, else as LIVE_STREET
     home: bool = False               # private presence in a verified shared home
     visits: bool = False             # workplace visits with persisted access checks
-    town: bool = False               # shared isometric career map; explicitly LIVE_TOWN=1
     origins: frozenset = frozenset({'http://localhost:8765', 'http://127.0.0.1:8765'})
     trust_proxy: bool = False
     max_conn: int = 5000
@@ -76,10 +74,10 @@ class Config:
     flags_extra: dict = field(default_factory=dict)
 
     def flags(self) -> dict:
-        return dict(chat=self.chat, street=self.street, dating=self.dating, wedding=self.wedding, fair=self.fair, home=self.home, visits=self.visits, town=self.town, **self.flags_extra)
+        return dict(chat=self.chat, street=self.street, dating=self.dating, wedding=self.wedding, fair=self.fair, home=self.home, visits=self.visits, **self.flags_extra)
 
     def any_on(self) -> bool:
-        return self.chat or self.street or self.dating or self.wedding or self.fair or self.home or self.visits or self.town
+        return self.chat or self.street or self.dating or self.wedding or self.fair or self.home or self.visits
 
 
 def admin_users(raw: str | None = None) -> frozenset:
@@ -103,7 +101,6 @@ def from_env(argv=None) -> Config:
                  fair=_flag('LIVE_FAIR', '1' if street else '0'),
                  home=_flag('LIVE_HOME', '1' if street else '0'),
                  visits=_flag('LIVE_VISITS', '1' if street else '0'),
-                 town=_flag('LIVE_TOWN'),
                  trust_proxy=_flag('LIVE_TRUST_PROXY'), max_conn=_int('LIVE_MAX_CONN', 5000), per_player=_int('LIVE_PER_PLAYER', 5),
                  per_ip=_int('LIVE_PER_IP', 40), pool_max=max(1, _int('LIVE_PG_POOL', 8)), db_url=url, new_secs=float(_int('LIVE_NEW_SECS', 600)),
                  handshakes_per_ip=_int('LIVE_HANDSHAKES_PER_IP', 60), admins=admin_users(), db_schema=args.schema)

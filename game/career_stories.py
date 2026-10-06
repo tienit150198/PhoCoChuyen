@@ -1388,6 +1388,44 @@ ARCS = {
                 ('le', 'Sổ chợ con ghi rõ ràng, cả xóm khen.'),
                 ('me', 'Con sẽ ghi tiếp, từng trang, từng nhà.')]),
         ]),
+    # ------------------------------------------------------------ 🚦 Gác chắn đường ngang Bến Mây
+    'railway': dict(
+        title='Cái còi đồng của chú Sáu', emoji='🚦',
+        keepsake=dict(emoji='📯', name='Cái còi đồng của chú Sáu', desc='Mòn bóng chỗ ngậm, đã theo chú Sáu hai mươi tám năm cầm cờ ở đường ngang Bến Mây.'),
+        cast={'sau': _p('Chú Sáu Cờ', '🚩', 'Gác chắn lâu năm', 'railway_npc_01'),
+              'nguyet': _p('Chị Nguyệt', '📻', 'Trực ban ga Bến Mây', 'railway_npc_02'),
+              'quy': _p('Anh Quý', '📋', 'Cung trưởng cung đường', 'railway_npc_03'),
+              'bong': _p('Bà Bông', '🍵', 'Hàng nước chè sát ray', 'railway_npc_04')},
+        beats=[
+            _b('Chòi gác sọc đỏ trắng', '🚧', 'Chú Sáu mở cửa chòi, đưa bạn cuốn sổ giao ca dày cộp.', [
+                ('sau', 'Nghề này là nghề chờ. Chờ tàu, chờ người, chờ cho đúng lúc.'),
+                ('sau', 'Ga gọi thì nhắc lại cho rõ. Chuông trước, chắn sau. Chắn hạ rồi thì ai năn nỉ cũng không mở.'),
+                ('me', 'Dạ. Con nhớ: chuông trước, chắn sau.')]),
+            _b('Giọng bộ đàm', '📻', 'Bộ đàm rè rè lúc sáng sớm, giọng chị Nguyệt sang sảng.', [
+                ('nguyet', 'Cậu mới hả? Nhắc lại lệnh cho rõ từng chữ nhé, chị ghét nhất ai “rõ rõ” cho qua.'),
+                ('me', 'Dạ, tàu SE, rời Bến Gỗ lúc bảy giờ ba mươi ba, qua đường ngang bảy giờ bốn mươi. Rõ.'),
+                ('nguyet', 'Được. Ca này chị yên tâm.')],
+                _c('Chị Nguyệt hỏi có muốn học thêm giờ tàu đêm',
+                   _o('a', 'Xin chị gửi bảng giờ tàu đêm để học thuộc', [('nguyet', 'Chịu khó đấy. Chị chụp gửi cậu ngay.')], rel='nguyet'),
+                   _o('b', 'Hẹn chị khi nào có ca đêm em học', [('nguyet', 'Ừ, tới đâu học tới đó cũng được.')], rel='nguyet'))),
+            _b('Chén chè và tiếng còi', '🍵', 'Bà Bông bưng chén chè ra tận chòi, mặt vẫn còn hằm hằm.', [
+                ('bong', 'Còi tàu sáng nào cũng rúc, cháu bà mất ngủ. Cháu nói với ga đi.'),
+                ('me', 'Còi là để người qua đường biết có tàu, bà ạ. Cháu ghi phiếu ý kiến của bà gửi xí nghiệp nhé.'),
+                ('bong', 'Ừ… thôi thì có người nghe là được. Uống chè đi, nguội bây giờ.')],
+                _c('Bà Bông muốn phơi ớt sát ray “có một hôm”',
+                   _o('a', 'Chỉ bà chỗ phơi trên mái hiên, cháu bê giúp', [('bong', 'Cháu này được, lễ phép mà cứng.')], rel='bong'),
+                   _o('b', 'Nhờ chú Sáu nói khéo với bà', [('sau', 'Để chú. Bà ấy thương con mà ngại nói thôi.')], rel='sau'))),
+            _b('Sổ nhật ký không vênh một phút', '📋', 'Anh Quý ngồi trong chòi, lật từng trang sổ, so với sổ ga.', [
+                ('quy', 'Tháng này có ba chuyến chậm. Cậu ghi đủ, có lý do.'),
+                ('quy', 'Nhiều người bảo tôi khó. Nhưng sổ mà sai một lần thì hết ai tin sổ.'),
+                ('me', 'Dạ, em ghi đúng những gì xảy ra thôi ạ.')]),
+            _b('Cái còi đồng', '📯', 'Chiều muộn, chú Sáu tháo cái còi đồng cũ khỏi cổ, đặt vào tay bạn.', [
+                ('sau', 'Năm chín mấy, cái còi này gọi được một xe bò ra khỏi ray kịp lúc.'),
+                ('sau', 'Giờ chú giao cho con. Gác cho cẩn thận nghe.'),
+                ('nguyet', 'Ca Bến Mây cả tháng không sơ suất lần nào. Cả ga khen đấy.'),
+                ('bong', 'Bà vẫn ghét còi tàu. Nhưng cái còi này thì bà thương.'),
+                ('me', 'Con sẽ giữ, và gác như chú dạy.')]),
+        ]),
     # ------------------------------------------------------------ 👶 Tổ trông trẻ Mèo Con
     'babysitter': dict(
         title='Con gấu bông nâu', emoji='🧸',
@@ -1425,6 +1463,44 @@ ARCS = {
                 ('quan', 'Nhóm phụ huynh lớp Lá hỏi số của em đó, anh cho rồi nha.'),
                 ('tu', 'Bà giới thiệu con cho cả xóm rồi.'),
                 ('me', 'Con sẽ nhớ đồ ôm của từng bé, như nhớ tên các bé vậy.')]),
+        ]),
+    # ------------------------------------------------------------ 📚 Thư viện – Lưu trữ phường Mây
+    'library': dict(
+        title='Chùm chìa khóa kho', emoji='🗝️',
+        keepsake=dict(emoji='🔖', name='Chiếc kẹp sách tre của cô Nguyệt', desc='Mảnh tre mỏng khắc chữ “Giữ hộ”, mòn nhẵn sau ba mươi năm kẹp trong sổ mượn.'),
+        cast={'nguyet': _p('Cô Nguyệt', '📚', 'Phụ trách Thư viện – Lưu trữ phường', 'library_npc_01'),
+              'thac': _p('Ông Thạc', '👓', 'Cụ hưu đọc báo mỗi sáng', 'library_npc_02'),
+              'tuan': _p('Anh Tuấn', '📜', 'Nghiên cứu sinh ngành sử', 'library_npc_05'),
+              'dat': _p('Đạt', '📗', 'Học sinh lớp 8 mê truyện tranh', 'library_npc_08')},
+        beats=[
+            _b('Chùm chìa khóa kho', '🗝️', 'Cô Nguyệt tháo chùm chìa khóa buộc mấy mẩu vải màu, đặt vào tay bạn.', [
+                ('nguyet', 'Chìa đỏ là kho lưu trữ, chìa xanh là phòng đọc, chìa vàng là tủ sách quý.'),
+                ('nguyet', 'Hồ sơ của dân là của dân. Mình chỉ giữ hộ thôi, con nhớ nghe.'),
+                ('me', 'Dạ. Đủ giấy tờ mới cấp, bản gốc không rời kho.')]),
+            _b('Ghế của ông Thạc', '🪑', 'Bảy giờ rưỡi, ông Thạc lên tới nơi thì ghế gần cửa sổ đã có một bạn sinh viên ngồi.', [
+                ('thac', 'Ghế đó của tôi ba mươi năm nay rồi đấy!'),
+                ('nguyet', 'Nội quy thì ai tới trước ngồi trước. Mà người già cũng cần một chỗ quen.'),
+                ('me', 'Ông chờ cháu một chút, để cháu tìm cách.')],
+                _c('Ông Thạc đứng khoanh tay, bạn sinh viên ngước lên ngại ngùng',
+                   _o('a', 'Kê thêm cái bàn nhỏ sát cửa sổ cho ông', [('thac', 'Ừ, chỗ này còn sáng hơn. Được, cháu được đấy.')], rel='thac'),
+                   _o('b', 'Mời ông ngồi góc báo, pha cho ông cốc trà', [('thac', 'Trà ngon. Thôi, mai tôi lên sớm hơn vậy.')], rel='thac'))),
+            _b('Đạt trả trễ lần thứ năm', '📗', 'Đạt đứng trước quầy, giấu cuốn truyện tranh sau lưng, mặt đỏ lựng.', [
+                ('dat', 'Em xin lỗi… em trả trễ nữa rồi. Em không có tiền nộp phạt.'),
+                ('nguyet', 'Nội quy là để nhắc nhau, không phải để làm khó một đứa trẻ thích đọc.'),
+                ('me', 'Mình tìm cách để em nhớ hạn trả nhé.')],
+                _c('Đạt cúi gằm mặt chờ',
+                   _o('a', 'Rủ Đạt làm trợ lý giờ kể chuyện cuối tuần', [('dat', 'Thật hả cô? Em kể chuyện siêu nhân hay lắm!')], rel='dat'),
+                   _o('b', 'Cùng Đạt dán lịch trả sách lên cặp', [('dat', 'Có lịch là em nhớ liền. Lần này em hứa!')], rel='dat'))),
+            _b('Hộp hồ sơ năm 1976', '📜', 'Anh Tuấn ngồi lặng trước hộp hồ sơ, tay đeo găng vải, lật từng tờ giấy giòn.', [
+                ('tuan', 'Biên bản họp tổ dân phố, chữ viết tay của ông nội tôi đây này.'),
+                ('tuan', 'Tôi tìm khắp nơi, không ngờ nó nằm ngay trong kho phường mình.'),
+                ('me', 'Để em làm bản sao có đóng dấu. Bản gốc mình giữ lại cho cả phường.')]),
+            _b('Buổi kể chuyện cuối năm', '🎄', 'Cuối năm, tầng hai nhà văn hóa chật kín. Đạt cầm micro kể chuyện, ông Thạc ngồi hàng đầu.', [
+                ('dat', 'Ngày xửa ngày xưa, ở phường Mây có một cái thư viện…'),
+                ('thac', 'Thằng bé kể hay thật. Hồi trước nó trả sách trễ nhất phường đấy.'),
+                ('tuan', 'Cuốn sách của tôi in xong rồi. Trang đầu ghi tên thư viện phường mình.'),
+                ('nguyet', 'Cô sắp nghỉ hưu. Chiếc kẹp sách này, con giữ giúp cô nhé.'),
+                ('me', 'Con sẽ giữ hộ, như cô đã giữ.')]),
         ]),
     # ------------------------------------------------------------ ✈️ Hãng bay Cánh Cò
     'pilot': dict(
@@ -1504,6 +1580,82 @@ ARCS = {
                 ('thu', 'Ghim này của chị từ ngày đầu đi bay. Giờ em cài nhé.'),
                 ('chin', 'Lần sau bà bay, bà vẫn tìm cô tiếp viên này.'),
                 ('me', 'Em sẽ giữ khoang khách như chị giữ: nhỏ nhẹ mà chắc chắn.')]),
+        ]),
+    # ------------------------------------------------------------ 🛢️ Giàn Hải Âu, mỏ Sao Biển
+    'oil': dict(
+        title='Ổ khóa đỏ giữa biển', emoji='🛢️',
+        keepsake=dict(emoji='🔒', name='Ổ khóa đỏ khắc tên bạn', desc='Ổ khóa đầu tiên chị Hạnh phát cho bạn trên giàn Hải Âu. Chỉ một chìa, chìa luôn nằm trong túi áo bạn.'),
+        cast={'hanh': _p('Chị Hạnh', '🦺', 'Cán bộ an toàn của giàn', 'oil_npc_01'),
+              'toan': _p('Chú Toàn', '👷', 'Trưởng ca vận hành', 'oil_npc_02'),
+              'sau': _p('Cô Sáu', '🍲', 'Bếp trưởng nhà ăn giàn', 'oil_npc_03'),
+              'ma': _p('Má', '👵', 'Má ở quê', 'oil_npc_05'),
+              'gau': _p('Tuấn “Gấu”', '😴', 'Bạn cùng phòng', 'oil_npc_06')},
+        beats=[
+            _b('Ổ khóa mang tên mình', '🔒', 'Ngày đầu trên giàn, chị Hạnh gọi bạn lên phòng an toàn.', [
+                ('hanh', 'Ổ khóa này khắc tên em. Một ổ, một chìa, chìa nằm trong túi em.'),
+                ('hanh', 'Em làm ở đâu thì ổ khóa của em ở đó. Không ai được mở thay.'),
+                ('me', 'Dạ. Em sẽ không bao giờ cho ai mượn chìa.')]),
+            _b('Tiếng máy nén lúc nửa đêm', '🌀', 'Chú Toàn rủ bạn đi một vòng khu máy nén sau giờ cơm tối.', [
+                ('toan', 'Nghe kỹ coi. Máy khỏe thì kêu đều, như người ngủ ngon.'),
+                ('me', 'Còn cái tiếng lục cục bên trái là sao chú?'),
+                ('toan', 'Đó. Con nghe ra rồi đó. Mai mình mở phiếu kiểm tra.')],
+               _c('Báo cái tiếng lạ thế nào?',
+                  _o('a', 'Ghi vào sổ ca, báo phòng điều khiển ngay tối nay', [('toan', 'Thấy lạ là báo liền. Lỡ là chuyện nhỏ thì mình mừng.')], rel='toan'),
+                  _o('b', 'Hỏi chú Toàn cách mở phiếu kiểm tra, tự viết luôn', [('toan', 'Ừ, viết đi, chú ký. Người mới mà viết phiếu kỹ ghê.')], rel='toan'))),
+            _b('Hộp mắm của Má', '🫙', 'Tàu dịch vụ mang lên giàn một hộp quấn ba lớp băng keo, đề tên bạn.', [
+                ('sau', 'Hộp gì mà Má con quấn kỹ dữ vậy?'),
+                ('me', 'Mắm ruốc xào sả cô ơi. Má sợ nó đổ.'),
+                ('gau', 'Ê chia tao với, cả tháng nay ăn cơm giàn nhạt miệng quá.'),
+                ('ma', 'Con chia cho bạn bè ăn với nghe. Ở xa nhà, có bạn là quý.')],
+               _c('Chia hộp mắm thế nào?',
+                  _o('a', 'Nhờ cô Sáu xào thêm với sả, mời cả bàn ăn chung', [('sau', 'Bữa nay cả giàn ăn hết sạch nồi cơm.')], rel='sau'),
+                  _o('b', 'Chia Gấu một nửa, gọi video cho Má coi', [('ma', 'Má thấy con với bạn ăn ngon là má vui.')], rel='ma'))),
+            _b('Đêm bão', '🌀', 'Áp thấp mạnh lên thành bão, trực thăng không bay. Đợt đi biển dài thêm.', [
+                ('toan', 'Bão rồi. Mình ở lại thêm, giàn này chịu được, con đừng lo.'),
+                ('ma', 'Con ơi, tivi nói bão to lắm…'),
+                ('me', 'Con ở trong khu ở, đèn sáng, cơm nóng. Má ngủ ngon nghe.'),
+                ('gau', 'Tao không ngáy nữa đâu, tao thức canh bão với mày.')]),
+            _b('Chìa khóa thứ hai', '🗝️', 'Cuối đợt, chú Toàn đưa bạn một tấm thẻ trưởng nhóm.', [
+                ('toan', 'Từ đợt sau con kèm hai đứa mới. Dạy tụi nó khóa, xả, kiểm về không, đo khí.'),
+                ('hanh', 'Và dạy tụi nó dám dừng việc. Cái đó khó dạy nhất.'),
+                ('me', 'Em sẽ dạy như chị dạy em: không chắc thì dừng, dừng không ai trách.')]),
+        ]),
+    # ------------------------------------------------------------ 🏥 Bệnh viện phường Lá Sen (chương 4)
+    'nurse': dict(
+        title='Sổ giao ca của chị Hoa', emoji='📒',
+        keepsake=dict(emoji='⏱️', name='Đồng hồ quả quýt của chị Hoa', desc='Chiếc đồng hồ chị Hoa đeo trên túi áo hai mươi năm, đếm mạch bằng kim giây. Giờ nó nằm trên túi áo bạn.'),
+        cast={'hoa': _p('Chị Hoa', '👩‍⚕️', 'Điều dưỡng trưởng khoa Nội', 'nurse_npc_01'),
+              'khang': _p('Bác sĩ Khang', '🩺', 'Bác sĩ điều trị khoa Nội', 'nurse_npc_02'),
+              'tu': _p('Bà Tư', '👵', 'Người bệnh giường 3', 'nurse_npc_03'),
+              'tuan': _p('Tuấn', '🤳', 'Người bệnh giường 8', 'nurse_npc_06')},
+        beats=[
+            _b('Hỏi tên mỗi lần', '🪪', 'Chị Hoa đứng nhìn bạn hỏi tên bà Tư lần thứ ba trong buổi sáng.', [
+                ('tu', 'Cháu hỏi tên bà hoài, bà nhớ cháu rồi mà.'),
+                ('me', 'Dạ, cháu hỏi để chắc là thuốc này đúng của bà.'),
+                ('hoa', 'Đúng rồi. Người bệnh nhớ mình là một chuyện, mình chắc là đúng người là chuyện khác.')]),
+            _b('Chuông giường 3', '🔔', 'Đèn chuông giường 3 sáng lần thứ năm trong ca.', [
+                ('tu', 'Bà không đau gì đâu cháu. Bà chỉ muốn có người nói chuyện.'),
+                ('me', 'Ca hôm nay đông, mà bà ngồi một mình cả tuần rồi.'),
+                ('hoa', 'Cô đơn cũng là một thứ bệnh, em ạ. Nghĩ cách giúp bà đi.')],
+               _c('Làm sao cho bà Tư bớt cô đơn?',
+                  _o('a', 'Giúp bà gọi video cho con trai ở xa', [('tu', 'Thằng Quang nó cười, nó bảo cuối tuần về. Cảm ơn cháu.')], rel='tu'),
+                  _o('b', 'Xin chị Hoa nhờ nhóm tình nguyện ghé đọc báo cho bà', [('hoa', 'Ý hay. Chị gọi nhóm sinh viên tình nguyện, chiều mai họ tới.')], rel='hoa'))),
+            _b('Hai giờ sáng', '📞', 'Ca trực đêm, SpO2 bà Tư tụt dưới thẻ báo động.', [
+                ('me', 'Em gọi anh lúc hai giờ sáng, xin lỗi anh…'),
+                ('khang', 'Đừng xin lỗi. Bất thường mà không gọi thì anh mới giận.'),
+                ('khang', 'Em kể lại anh nghe: chỉ số nào, từ lúc nào, em đã làm gì rồi.')],
+               _c('Báo bác sĩ thế nào cho rõ?',
+                  _o('a', 'Nói lần lượt: người bệnh, chỉ số bất thường, đã làm gì, cần anh làm gì', [('khang', 'Gọn, đủ, anh hình dung được ngay. Ca sau dạy lại cho bạn mới nhé.')], rel='khang'),
+                  _o('b', 'Đọc hết phiếu theo dõi từ đầu ca', [('khang', 'Đủ thật, nhưng lần sau nói chỉ số bất thường trước, anh nghe nhanh hơn.')], rel='khang'))),
+            _b('Clip của Tuấn', '🤳', 'Tuấn khoe clip mới: “một ngày nằm viện đúng quy định”.', [
+                ('tuan', 'Chị xem nè, em quay lại, không lộ mặt ai hết. Có cả đoạn chị sát khuẩn tay.'),
+                ('me', 'Bảng tên bệnh án cũng che rồi hả?'),
+                ('tuan', 'Che hết rồi bro. Chị dạy em mà.')]),
+            _b('Đồng hồ quả quýt', '⏱️', 'Chị Hoa lên phòng Điều dưỡng, bàn giao khoa lại cho người mới.', [
+                ('hoa', 'Hồi chị mới vào nghề, máy đo còn hiếm. Chị đếm mạch bằng cái đồng hồ này.'),
+                ('hoa', 'Máy báo sai được. Mắt mình mở to, tay mình sạch, miệng mình dám nói, thì ít khi sai.'),
+                ('khang', 'Khoa Nội có người giữ sổ giao ca kỹ như chị rồi, anh yên tâm.'),
+                ('me', 'Em sẽ giữ sổ như chị: thật, đủ, ca sau đọc là hiểu.')]),
         ]),
     # ------------------------------------------------------------ Công ty CP Cánh Diều (chương 5)
     'hr_admin': dict(

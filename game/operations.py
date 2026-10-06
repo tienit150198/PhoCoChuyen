@@ -7,6 +7,7 @@ Only this module/engine can change assets or money; dialogue is descriptive.
 from __future__ import annotations
 import copy
 import math
+import re
 import contextvars
 from contextlib import contextmanager
 from typing import Any
@@ -304,7 +305,7 @@ def on_close(s:dict,c:dict,career:str) -> dict:
         f['history'].insert(0,period);f['history']=ar.first(f['history'], 60, 'finance.periods', c)
         f.update(period_start=day+1,period_days=0,period_revenue=0,period_rent=0,period_tax_adjustments=0)
         o['security']['period_rewards']=0;o['security']['period_claims']=0
-        eng.log(s,c,'period',f'Kết kỳ: doanh thu {period["revenue"]} xu, thuế {tax} xu, thuê {period["rent"]} xu.',ref=pid)
+        eng.log(s,c,'period',f'Kết kỳ {period["start"]}–{day}: doanh thu {period["revenue"]} xu × {RULES["tax_percent"]}% = thuế {tax} xu (làm tròn lên), thuê {period["rent"]} xu; hạn đóng ngày {day+2}.',ref=pid)
     f['last_closed']=day
     o['attendance']={k:v for k,v in o['attendance'].items() if int(k)>=day-14}
     return dict(wages=sum(b['amount'] for b in invoices),utilities=utility,rent_accrued=PROPERTY_INDEX[o['property']['tier']]['daily_rent'],
@@ -760,11 +761,27 @@ def content() -> dict:
                 incident_kinds=[dict(id=k,title=v[0],description=v[1]) for k,v in INCIDENT_KINDS.items()])
 
 
-def validate(c:dict,career:str) -> None:
+_CONTROL_ANY=re.compile(r"[\x00-\x08\x0b-\x1f]")  # = engine._CONTROL: clean_text's control characters
+
+
+def _ledger_row_ok(row) -> bool:
+    """The checks of one cash-book row below, inlined (a row that fails any of them, or holds a
+    control character, takes the original checks, which raise the same error)."""
+    if type(row) is not dict:return False
+    i=row.get('id');r=row.get('reason');k=row.get('category');a=row.get('amount');d=row.get('day');t=row.get('turn');ref=row.get('ref')
+    return (isinstance(i,str) and isinstance(r,str) and isinstance(k,str) and type(a) is int and type(d) is int and type(t) is int
+            and -10**9<=a<=10**9 and 1<=d<=10**9 and 0<=t<=10**9 and (ref is None or isinstance(ref,str))
+            and 1<=len(i.strip())<=100 and 1<=len(r.strip())<=1000 and 1<=len(k.strip())<=60
+            and not _CONTROL_ANY.search(i+r+k))
+
+
+def validate(c:dict,career:str,same:frozenset=frozenset()) -> None:
     """Validate imported operations data before it can reach a reducer.
 
     Saves are user-owned single-player backups, not competitive certificates.
     Nonetheless reject corrupt types, cross-career IDs and impossible payouts.
+    `same`: see engine.validate_career ("ops.<key>" whose value is the stored, validated one):
+    the cash book, bills, security cases, incidents and staff chats are not walked again then.
     """
     eng=_core();need=eng.need;integer=eng.integer;txt=eng.clean_text
     o=c.get('ops');need(isinstance(o,dict) and o.get('version')==1,'Thiếu hoặc sai phiên bản Sổ tiệm.')
@@ -790,7 +807,7 @@ def validate(c:dict,career:str) -> None:
     from . import workplace_business
     workplace_business.validate(c,career)
     need(isinstance(o['attendance'],dict) and len(o['attendance'])<=30,'Bảng ca không hợp lệ.')
-    for day,rows in o['attendance'].items():
+    for day,rows in (() if 'ops.attendance' in same else o['attendance'].items()):
         need(isinstance(day,str) and day.isdigit() and isinstance(rows,dict),'Bảng ca sai cấu trúc.')
         for sid,row in rows.items():
             need(sid in CANDIDATE_INDEX and CANDIDATE_INDEX[sid]['career']==career,'Ca sai nhân viên.');need(isinstance(row,dict) and row.get('wage')==CANDIDATE_INDEX[sid]['wage'] and row.get('name')==CANDIDATE_INDEX[sid]['name'] and row.get('role') in ROLES[career],'Dữ kiện ca sai.')
@@ -802,12 +819,18 @@ def validate(c:dict,career:str) -> None:
     for k in ('period_start','period_days','period_revenue','period_rent','period_tax_adjustments','last_closed'):integer(f[k],0,10**12)
     need(f['period_days']<RULES['period_days'] and type(f['grant_used']) is bool,'Kỳ thu chi không hợp lệ.')
     need(isinstance(f['ledger'],list) and len(f['ledger'])<=2000,'Sổ giao dịch quá lớn.');lids=[]
-    for row in f['ledger']:
+    rows=f['ledger']
+    if 'ops.finance.ledger' in same:rows=()  # the stored cash book: its rows and their ids passed
+    else:
+        old=getattr(same,'prefix',{}).get('ops.finance.ledger',0)  # the stored rows, then new ones
+        if old:lids=[row['id'] for row in rows[:old]];rows=rows[old:]
+    for row in rows:
+        if _ledger_row_ok(row):lids.append(row['id']);continue
         need(isinstance(row,dict),'Dòng giao dịch sai.');txt(row.get('id'),100);lids.append(row['id']);integer(row.get('amount'),-10**9,10**9);integer(row.get('day'),1,10**9);integer(row.get('turn'),0,10**9);txt(row.get('reason'),1000);txt(row.get('category'),60)
         need(row.get('ref') is None or isinstance(row['ref'],str),'Nguồn giao dịch sai.')
     need(len(lids)==len(set(lids)),'Giao dịch bị trùng.');need(f['opening_balance']+sum(x['amount'] for x in f['ledger'])==c['money'],'Ví và Sổ thu chi không khớp.')
     need(isinstance(f['bills'],list) and len(f['bills'])<=1500,'Sổ khoản phải trả quá lớn.');bids=[]
-    for b in f['bills']:
+    for b in (() if 'ops.finance.bills' in same else f['bills']):
         need(isinstance(b,dict),'Khoản phải trả sai cấu trúc.');txt(b.get('id'),160);bids.append(b['id'])
         need(b.get('kind') in ('wage','utility','insurance','rent','tax','repair','fine'),'Loại chi phí sai.');txt(b.get('label'),300);txt(b.get('source'),160)
         for k in ('amount','due','created_day'):integer(b.get(k),1,10**9)
@@ -816,7 +839,7 @@ def validate(c:dict,career:str) -> None:
         else:need(b.get('paid_day') is None,'Khoản chưa trả không có ngày trả.')
     need(len(bids)==len(set(bids)),'Khoản phải trả trùng mã.')
     need(isinstance(f['history'],list) and len(f['history'])<=60,'Lịch sử kỳ sai.')
-    for h in f['history']:
+    for h in (() if 'ops.finance.history' in same else f['history']):
         need(isinstance(h,dict),'Lịch sử kỳ sai.');txt(h.get('id'),100)
         for k in ('start','end','revenue','tax','rent','rate'):integer(h.get(k),0,10**12)
         # Closed periods retain the former 5% rate and their original bills.
@@ -832,7 +855,8 @@ def validate(c:dict,career:str) -> None:
     for k in ('last_event_day','period_rewards','period_claims'):integer(sec[k],0,10**9)
     need(sec['period_rewards']<=RULES['reward_cap_period'],'Thưởng vượt giới hạn kỳ.')
     need(isinstance(sec['cases'],list) and len(sec['cases'])<=120,'Hồ sơ an ninh quá lớn.');caseids=[]
-    for case in sec['cases']:
+    stored='ops.security' in same and 'stock' in same  # the stored book: its cases passed with this stock
+    for case in (() if stored else sec['cases']):
         need(isinstance(case,dict),'Hồ sơ sai.');txt(case.get('id'),100);caseids.append(case['id'])
         need(case.get('kind') in CASE_KINDS and case.get('_truth') in ('misplaced','forgot_payment','theft'),'Thiếu dữ kiện gốc của hồ sơ.')
         expected='misplaced' if case['kind']=='misplaced' else 'forgot_payment' if case['kind']=='unpaid' else 'theft';need(case['_truth']==expected,'Dữ kiện gốc không khớp loại vụ.')
@@ -856,9 +880,11 @@ def validate(c:dict,career:str) -> None:
         need(not case['insurance_claimed'] or (case['outcome']=='unrecovered' and case['insured_at_event'] and loss['kind'] in ('stock','cash')),'Hỗ trợ sai điều kiện.')
         need(isinstance(case.get('timeline'),list) and len(case['timeline'])<=30,'Nhật ký an ninh sai.')
         for line in case['timeline']:txt(line,2000)
+    # The ids of skipped cases still count: 'active' points at one of them (as engine.validate_career's taskids).
+    if stored:caseids=[case['id'] for case in sec['cases']]
     need(len(caseids)==len(set(caseids)) and (sec['active'] is None or sec['active'] in caseids),'Tham chiếu hồ sơ an ninh sai.')
     need(isinstance(o['incident_history'],list) and len(o['incident_history'])<=60,'Lịch sử sự cố sai.')
-    for i in ([o['incident']] if o['incident'] else [])+o['incident_history']:
+    for i in (() if {'ops.incident','ops.incident_history','ops.staff'}<=same else ([o['incident']] if o['incident'] else [])+o['incident_history']):
         need(isinstance(i,dict) and i.get('kind') in INCIDENT_KINDS and i.get('status') in ('noticed','repairing','ready','resolved'),'Sự cố nhân viên sai.')
         for k in ('id','title','opening','employee_name'):txt(i.get(k),2000)
         need(type(i.get('practice')) is bool and (i.get('employee') is None or i['employee'] in ids),'Sự cố sai nhân viên.')
@@ -870,6 +896,6 @@ def validate(c:dict,career:str) -> None:
         need(isinstance(i.get('timeline'),list),'Thiếu nhật ký sự cố.')
         for line in i['timeline']:txt(line,2000)
     need(isinstance(o['staff_chats'],dict),'Hội thoại nhân viên sai.')
-    for sid,rows in o['staff_chats'].items():
+    for sid,rows in (() if {'ops.staff_chats','ops.staff'}<=same else o['staff_chats'].items()):
         need(sid in ids and isinstance(rows,list) and len(rows)<=24,'Hội thoại sai nhân viên.')
         for row in rows:need(row.get('role') in ('user','staff'),'Vai hội thoại sai.');txt(row.get('text'),2000)

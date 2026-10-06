@@ -1,1812 +1,1422 @@
 [
  {
-  "vi": "Bài thi $1 đã mở",
-  "en": "",
-  "pattern": true
+  "vi": "📤 Xong thì bấm [[Nộp hồ sơ]]. Kết quả hiện từng dòng đúng, sai và vì sao.",
+  "en": ""
  },
  {
-  "vi": "(còn $1 ngày)",
-  "en": "",
-  "pattern": true
+  "vi": "⚖️ Chỉ xét yêu cầu công việc: không loại vì giới tính, hôn nhân, tuổi, quê quán. Người quen vẫn xét như mọi người.",
+  "en": ""
  },
  {
-  "vi": "điểm cao nhất $1",
-  "en": "",
-  "pattern": true
+  "vi": "🔎 CV lệch tra cứu BHXH hoặc thiếu bản sao bằng bắt buộc: Cần xác minh, chưa mời ngay.",
+  "en": ""
  },
  {
-  "vi": "Ngày sống $1 · đã đeo đủ",
-  "en": "",
-  "pattern": true
+  "vi": "🕗 Trễ tới 08:05 vẫn đủ công. Sửa nhầm ô đúng cũng tính là sai.",
+  "en": ""
  },
  {
-  "vi": "Đã thi $1 lần · cao nhất $2 điểm",
-  "en": "",
-  "pattern": true
+  "vi": "📝 Thử việc tối đa 60 ngày, lương thử việc ít nhất 85%, hợp đồng phải đóng bảo hiểm, không ký thay.",
+  "en": ""
  },
  {
-  "vi": "Bài thi · lần $1",
-  "en": "",
-  "pattern": true
+  "vi": "⏰ Nộp kịp hạn, không sai chỗ nào: +1 tin tưởng và đủ thưởng.",
+  "en": ""
  },
  {
-  "vi": "✏️ Làm thử $1 câu$2",
-  "en": "",
-  "pattern": true
+  "vi": "Xếp nhầm khay, sửa nhầm ô",
+  "en": ""
  },
  {
-  "vi": "đúng $1/",
-  "en": "",
-  "pattern": true
+  "vi": "Mỗi chỗ sai bớt 3 xu thưởng; lỗi nặng bớt thêm 3 xu và mất tin tưởng.",
+  "en": ""
  },
  {
-  "vi": "📖 Mở sách: $1 ý chính",
-  "en": "",
-  "pattern": true
+  "vi": "Loại người vì giới tính, tuổi, hôn nhân",
+  "en": ""
  },
  {
-  "vi": "📖 Bài học · $1 ý chính",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi nặng: ngày đó không tính là chắc tay, chị Huyền mất tin tưởng.",
+  "en": ""
  },
  {
-  "vi": "Bài thi mở từ Ngày $1",
-  "en": "",
-  "pattern": true
+  "vi": "Bớt 8 xu thưởng, sếp mất 3 tin tưởng; ngày đó không tính là chắc tay.",
+  "en": ""
  },
  {
-  "vi": "(còn $1 ngày$2). Làm một ngày ở đâu đó rồi quay lại thi nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Sếp kiểm lại mọi hồ sơ, mỗi lần nộp tốn thêm 20 phút.",
+  "en": ""
  },
  {
-  "vi": "đã đóng $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Bỏ dở việc cuối ngày",
+  "en": ""
  },
  {
-  "vi": "📚 Ôn & thi lại ngay · $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Mỗi việc dở mất 2 tin tưởng, tối đa 6.",
+  "en": ""
  },
  {
-  "vi": "📖 Tự học, thi từ Ngày $1",
-  "en": "",
-  "pattern": true
+  "vi": "💼 Phải được tuyển trước: bấm [[Ứng tuyển]], nộp CV, thư xin việc, phỏng vấn với chị Huyền.",
+  "en": ""
  },
  {
-  "vi": "Bài thi gần nhất · Ngày $1",
-  "en": "",
-  "pattern": true
+  "vi": "💰 Lương theo ngày (Cánh Diều 55–80 xu, văn phòng tuyển dụng 50–70 xu) vào ví khi khép ca, nếu xong ít nhất một việc.",
+  "en": ""
  },
  {
-  "vi": "điểm · đúng $1/$2 câu",
-  "en": "",
-  "pattern": true
+  "vi": "🎁 Mỗi hồ sơ thưởng 20–30 xu, trừ dần theo chỗ sai và số lần hỏi.",
+  "en": ""
  },
  {
-  "vi": "Xem lời giải ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "🧭 Lộ trình: Thử việc → Chuyên viên nhân sự chính thức → Phụ trách tuyển dụng → Được đề cử phó phòng nhân sự.",
+  "en": ""
  },
  {
-  "vi": "Tỷ lệ được nhận +$1% (tối đa $2%) ở $3 khi điểm phỏng vấn chưa đủ 60.",
-  "en": "",
-  "pattern": true
+  "vi": "🤝 Từ ngày 2, đồng nghiệp nhờ việc: [[Giúp]] hoặc [[Để hôm khác]]. Đã giúp ai thì sau có thể [[Nhờ đỡ]], lùi một hạn thêm 1 giờ.",
+  "en": ""
  },
  {
-  "vi": "Cần đúng $1/$2 câu. Xem lời giải bên dưới rồi thi lại: mỗi lần là một đề khác, vẫn có 💡 gợi ý.",
-  "en": "",
-  "pattern": true
+  "vi": "☕ [[Nghỉ giải lao 15 phút]] mỗi ngày một lần khi mệt.",
+  "en": ""
  },
  {
-  "vi": "Ví còn $1 xu, thiếu $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "📨 Mùa tuyển dụng: hồ sơ nào cũng dày hơn thường lệ.",
+  "en": ""
  },
  {
-  "vi": "Thi từ Ngày $1",
-  "en": "",
-  "pattern": true
+  "vi": "🔄 Anh Quân đổi ý liên tục: hồ sơ hay có tin “Vừa đổi” giữa chừng.",
+  "en": ""
  },
  {
-  "vi": "✓ Đã có · $1 điểm",
-  "en": "",
-  "pattern": true
+  "vi": "🗂️ Thanh tra lao động ghé: không lỗi nặng +10 xu, +3 tin tưởng; còn lỗi −10 xu, −3 tin tưởng.",
+  "en": ""
  },
  {
-  "vi": "Đã thi $1 lần · cao nhất $2",
-  "en": "",
-  "pattern": true
+  "vi": "📆 Ngày thứ 5 mỗi đợt là chốt công cuối tháng: hạn sớm hơn 30 phút, tăng ca được 18 xu.",
+  "en": ""
  },
  {
-  "vi": "Đề ngắn $1 câu, đúng $2 là đạt, được mở sách và có 💡 gợi ý. Có chứng chỉ thì khi phỏng vấn chưa đủ điểm vẫn thêm $3% cơ hội được nhận.",
-  "en": "",
-  "pattern": true
+  "vi": "🧺 Cháu giám đốc vào thẳng, ứng viên gửi giỏ trái cây, đồng nghiệp nhờ quẹt thẻ hộ: chọn cách xử lý, có cách đúng nguyên tắc.",
+  "en": ""
  },
  {
-  "vi": "Các chứng chỉ · ví còn $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn giữ lịch, thư từ và điện thoại cho Anh Quân: sếp quyết nhanh, đổi ý còn nhanh hơn.",
+  "en": ""
  },
  {
-  "vi": "Đăng ký $1?",
-  "en": "",
-  "pattern": true
+  "vi": "Mỗi thư một thẻ: Trình sếp, Tự trả lời, Chuyển phòng ban hay Rác / lừa đảo.",
+  "en": ""
  },
  {
-  "vi": "học phí $1 xu trừ vào ví (ví còn $2 xu).",
-  "en": "",
-  "pattern": true
+  "vi": "Đọc cuộc gọi, điền họ tên, đơn vị, số gọi lại, giờ gọi lại (24 giờ) và việc gì.",
+  "en": ""
  },
  {
-  "vi": "Bài thi mở từ Ngày $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Thư mời, thông báo, thư trả lời: chạm chỗ sai (tên, ngày, thứ, giờ), chọn cách viết đúng.",
+  "en": ""
  },
  {
-  "vi": "Đóng $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn một cuộc họp rồi chạm ô trống: đủ chỗ, có máy chiếu khi cần, tránh giờ sếp bận.",
+  "en": ""
  },
  {
-  "vi": "Chọn bạn · tối đa $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chạm các bước sẽ làm theo thứ tự (↑ ↓ để đổi chỗ, ✕ để bỏ). Bước có hại thì bỏ qua.",
+  "en": ""
  },
  {
-  "vi": "Bạn đang bị tạm khóa chat đến $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Tìm hiểu trước, rồi chọn cách trả lời khách khó cho khéo mà đúng.",
+  "en": ""
  },
  {
-  "vi": "Người mới vào phố: đọc trước, $1 phút nữa nhắn được.",
-  "en": "",
-  "pattern": true
+  "vi": "📤 Xong thì bấm [[Nộp hồ sơ]], [[Nộp lời nhắn]] hoặc [[Chốt các bước]].",
+  "en": ""
  },
  {
-  "vi": "Chờ $1 giây",
-  "en": "",
-  "pattern": true
+  "vi": "📞 Số gọi lại: lấy số sau cùng người gọi đọc. Giờ ghi theo 24 giờ: 2 giờ rưỡi chiều là 14:30.",
+  "en": ""
  },
  {
-  "vi": "Điểm thân quen $1 trên 100",
-  "en": "",
-  "pattern": true
+  "vi": "🎣 Thư đòi chuyển tiền gấp, báo đổi số tài khoản: Rác / lừa đảo, rồi gọi xác minh bằng số đã biết.",
+  "en": ""
  },
  {
-  "vi": "❓ Còn $1 điều chưa biết",
-  "en": "",
-  "pattern": true
+  "vi": "📅 Ngày và thứ phải khớp lịch. Tên người nhận đúng từng dấu.",
+  "en": ""
  },
  {
-  "vi": "Trả lời trước khi hết Ngày $1$2.",
-  "en": "",
-  "pattern": true
+  "vi": "🔒 Lịch, thư và giấy tờ của sếp không đưa người ngoài xem.",
+  "en": ""
  },
  {
-  "vi": "🎉 Đi dự · $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Ghi sai số gọi lại, sai giờ",
+  "en": ""
  },
  {
-  "vi": "💌 Lời nhắn và quà$1",
-  "en": "",
-  "pattern": true
+  "vi": "Sếp gọi nhầm người; mỗi ô sai bớt 3 xu thưởng.",
+  "en": ""
  },
  {
-  "vi": "Tiền mua quà lấy từ quỹ nơi bạn đang làm (còn $1 xu).",
-  "en": "",
-  "pattern": true
+  "vi": "Làm theo thư lừa đảo",
+  "en": ""
  },
  {
-  "vi": "Còn $1 điểm nữa tới “$2”.",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi nặng: mất tin tưởng, ngày đó không tính là chắc tay.",
+  "en": ""
  },
  {
-  "vi": "Hợp nhau $1/",
-  "en": "",
-  "pattern": true
+  "vi": "💼 Phải được tuyển trước: bấm [[Ứng tuyển]], nộp CV, thư xin việc, phỏng vấn với Anh Quân.",
+  "en": ""
  },
  {
-  "vi": "Gọi trúng món $1/2",
-  "en": "",
-  "pattern": true
+  "vi": "💰 Lương theo ngày (Cánh Diều 55–80 xu, văn phòng dịch vụ 50–70 xu) vào ví khi khép ca, nếu xong ít nhất một việc.",
+  "en": ""
  },
  {
-  "vi": "+$1 tinh thần",
-  "en": "",
-  "pattern": true
+  "vi": "🧭 Lộ trình: Thử việc → Thư ký chính thức → Thư ký riêng của giám đốc → Được đề cử trợ lý giám đốc.",
+  "en": ""
  },
  {
-  "vi": "Chờ $1…",
-  "en": "",
-  "pattern": true
+  "vi": "✈️ Sếp sắp đi công tác: kế hoạch hay đổi phút chót.",
+  "en": ""
  },
  {
-  "vi": "thèm $1 cơ 😅",
-  "en": "",
-  "pattern": true
+  "vi": "🎩 Ngày đón khách lớn: thư từ, điện thoại dày hơn.",
+  "en": ""
  },
  {
-  "vi": "Bạn gọi cho $1",
-  "en": "",
-  "pattern": true
+  "vi": "🔍 Chị Khuê soát việc cuối ngày: không lỗi nặng +10 xu, +3 tin tưởng; còn lỗi −10 xu, −3 tin tưởng.",
+  "en": ""
  },
  {
-  "vi": "Chờ $1 gọi món…",
-  "en": "",
-  "pattern": true
+  "vi": "🏛️ Ngày thứ 5 mỗi đợt là họp hội đồng quản trị: hạn sớm hơn 30 phút, tăng ca được 18 xu.",
+  "en": ""
  },
  {
-  "vi": "Chọn món cho nhau · $1/2",
-  "en": "",
-  "pattern": true
+  "vi": "📲 Tin nhắn “sếp” xin mua thẻ cào, phòng họp bị chiếm, khách đến sớm một tiếng: chọn cách xử lý, có cách đúng nguyên tắc.",
+  "en": ""
  },
  {
-  "vi": "Gọi gì cho $1?",
-  "en": "",
-  "pattern": true
+  "vi": "Nộp lời nhắn",
+  "en": ""
  },
  {
-  "vi": "Hẹn $1 lần nữa?",
-  "en": "",
-  "pattern": true
+  "vi": "Chốt các bước",
+  "en": ""
  },
  {
-  "vi": "Gặp $1!",
-  "en": "",
-  "pattern": true
+  "vi": "IT văn phòng",
+  "en": ""
  },
  {
-  "vi": "Mỗi thao tác ở quầy mất khoảng $1 phút.",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn trực bàn IT cùng Anh Long: phiếu hỗ trợ, máy hỏng, tủ mạng, quyền truy cập và những cuộc gọi đòi mã OTP.",
+  "en": ""
  },
  {
-  "vi": "Mở $1",
-  "en": "",
-  "pattern": true
+  "vi": "Mỗi phiếu một thẻ: Khẩn — làm ngay, Trong ngày, Xếp lịch hay Không phải việc IT.",
+  "en": ""
  },
  {
-  "vi": "Đóng $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chạm các bước sửa theo thứ tự. Sao lưu trước, sửa sau; bước có hại thì bỏ qua.",
+  "en": ""
  },
  {
-  "vi": "Đủ $1 khách hôm nay",
-  "en": "",
-  "pattern": true
+  "vi": "Đọc tem trên máy, ghi số seri, mã tài sản, người dùng, phòng ban và hạn bảo hành.",
+  "en": ""
  },
  {
-  "vi": "Còn $1 bước chưa xong: $2.$3 Vẫn làm luôn?",
-  "en": "",
-  "pattern": true
+  "vi": "Mỗi ổ mạng một thẻ: xếp vào mạng nhân viên, kế toán, khách hay camera.",
+  "en": ""
  },
  {
-  "vi": "hoặc $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chạm ô sai trong bảng quyền: Cấp quyền, Thu hồi hay Giữ nguyên.",
+  "en": ""
  },
  {
-  "vi": "năm ($1 tháng)",
-  "en": "",
-  "pattern": true
+  "vi": "Tìm hiểu trước, rồi chọn cách trả lời người xin mật khẩu, mã OTP, cài phần mềm lạ.",
+  "en": ""
  },
  {
-  "vi": "Thuê $1?",
-  "en": "",
-  "pattern": true
+  "vi": "💾 Sao lưu trước khi sửa. Máy nghi nhiễm mã độc: rút mạng trước.",
+  "en": ""
  },
  {
-  "vi": "Cọc $1, trả lại khi dọn đi. Tiền phòng $2/ngày (gác Bà Tám: $3).",
-  "en": "",
-  "pattern": true
+  "vi": "🔐 Không ai được hỏi mã OTP hay mật khẩu, kể cả giám đốc.",
+  "en": ""
  },
  {
-  "vi": "Thuê · cọc $1",
-  "en": "",
-  "pattern": true
+  "vi": "🚪 Nghỉ việc thì khóa quyền ngay hôm đó; ai cần quyền nào thì cấp đúng quyền đó.",
+  "en": ""
  },
  {
-  "vi": "Nhận lại $1 tiền cọc, về gác Bà Tám.",
-  "en": "",
-  "pattern": true
+  "vi": "🔥 Cả công ty dừng việc, nghi mã độc: Khẩn. Chuột hơi rít: Xếp lịch.",
+  "en": ""
  },
  {
-  "vi": "Trả ngay $1 (gồm phí $2)",
-  "en": "",
-  "pattern": true
+  "vi": "Sửa mà không sao lưu, làm bước có hại",
+  "en": ""
  },
  {
-  "vi": "Vay $1, $2 kỳ × $3, lãi $4/năm.",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi nặng: mất dữ liệu, mất tin tưởng, ngày đó không tính là chắc tay.",
+  "en": ""
  },
  {
-  "vi": "Gốc $1$2 + lãi $3 + phí $4. Bớt được $5 tiền lãi.",
-  "en": "",
-  "pattern": true
+  "vi": "Cấp quyền thừa, quên khóa người nghỉ việc",
+  "en": ""
  },
  {
-  "vi": "+ quá hạn $1",
-  "en": "",
-  "pattern": true
+  "vi": "Mỗi ô sai bớt 3 xu thưởng; lỗi nặng bớt thêm.",
+  "en": ""
  },
  {
-  "vi": "Bán $1?",
-  "en": "",
-  "pattern": true
+  "vi": "💼 Phải được tuyển trước: bấm [[Ứng tuyển]], nộp CV, thư xin việc, phỏng vấn với Anh Long.",
+  "en": ""
  },
  {
-  "vi": "Giá hôm nay $1, phí $2$3. Nhận $4 vào $5$6.",
-  "en": "",
-  "pattern": true
+  "vi": "💰 Lương theo ngày (Cánh Diều 55–80 xu, tiệm máy tính 50–70 xu) vào ví khi khép ca, nếu xong ít nhất một việc.",
+  "en": ""
  },
  {
-  "vi": "trả nợ vay $1",
-  "en": "",
-  "pattern": true
+  "vi": "🎁 Mỗi hồ sơ thưởng 20–25 xu, trừ dần theo chỗ sai và số lần hỏi.",
+  "en": ""
  },
  {
-  "vi": "Bán · nhận $1",
-  "en": "",
-  "pattern": true
+  "vi": "🧭 Lộ trình: Thử việc → Kỹ thuật viên chính thức → Phụ trách an toàn thông tin → Được đề cử phó nhóm IT.",
+  "en": ""
  },
  {
-  "vi": "Trả trước từ $1 ($2% giá nhà) tới $3.",
-  "en": "",
-  "pattern": true
+  "vi": "⚡ Mất điện sáng nay: máy nào cũng có chuyện, phiếu dày hơn.",
+  "en": ""
  },
  {
-  "vi": "Vay ít nhất $1, hoặc trả đủ luôn nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "🎣 Tuần diễn tập lừa đảo: mọi thứ có thể đổi bất ngờ.",
+  "en": ""
  },
  {
-  "vi": "Quỹ chung chỉ cần góp tối đa $1.",
-  "en": "",
-  "pattern": true
+  "vi": "🔍 Kiểm tra an toàn thông tin: không lỗi nặng +10 xu, +3 tin tưởng; còn lỗi −10 xu, −3 tin tưởng.",
+  "en": ""
  },
  {
-  "vi": "Quỹ chung chỉ còn $1.",
-  "en": "",
-  "pattern": true
+  "vi": "🚚 Ngày thứ 5 mỗi đợt là chuyển máy chủ: hạn sớm hơn 30 phút, tăng ca được 18 xu.",
+  "en": ""
  },
  {
-  "vi": "Còn thiếu $1 cho khoản trả trước và phí.",
-  "en": "",
-  "pattern": true
+  "vi": "🔑 Mật khẩu dán trên màn hình, laptop sếp cho con chơi game, khách xin wifi nội bộ: chọn cách xử lý, có cách đúng nguyên tắc.",
+  "en": ""
  },
  {
-  "vi": "Vay mua $1 cần điểm tín dụng từ $2 (bạn đang có $3). Trả đủ một lần, hoặc giữ điểm tốt thêm ít lâu nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn gác đường ngang Km 7+250 phố Ray cho Xí nghiệp Đường sắt Sông Mây, cùng chú Sáu Cờ. Mỗi việc là nhận ca, một chuyến tàu, hoặc một buổi tuần đường.",
+  "en": ""
  },
  {
-  "vi": "Mỗi kỳ $1 vượt $2% thu nhập một tháng ($3): ngân hàng sẽ không duyệt. Trả trước nhiều hơn hoặc vay dài hơn nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Nhận ca",
+  "en": ""
  },
  {
-  "vi": "AN CƯ · NGÀY SỐNG $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đọc sổ giao ca, thử từng thiết bị. Hỏng thì tự xử lý nếu được, báo đúng nơi, rồi [[KÝ NHẬN CA]].",
+  "en": ""
  },
  {
-  "vi": "⏰ Trả $1 trả góp đang quá hạn",
-  "en": "",
-  "pattern": true
+  "vi": "Bấm [[Nghe ga gọi bộ đàm]], nhắc lại lệnh, dẹp người trên ray, chuông trước chắn sau, giữ chắn tới khi tàu qua.",
+  "en": ""
  },
  {
-  "vi": "còn thiếu $1 cho $2",
-  "en": "",
-  "pattern": true
+  "vi": "Tàu chậm, tàu thứ hai",
+  "en": ""
  },
  {
-  "vi": "💞 Nhà chung với $1",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 2. Ga báo chậm: hỏi ga tàu còn đứng không rồi mới mở tạm. Tàu qua rồi vẫn hỏi ga còn tàu nào không.",
+  "en": ""
  },
  {
-  "vi": "🪴 Ấm cúng $1",
-  "en": "",
-  "pattern": true
+  "vi": "Tuần đường",
+  "en": ""
  },
  {
-  "vi": "😊 Tinh thần +$1 mỗi sáng",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 2. Đi từng điểm Km 7 – Km 8: tự xử lý việc nhỏ, chỗ nguy hiểm cắm cờ phòng vệ và điện khẩn, rồi [[KÝ SỔ TUẦN ĐƯỜNG]].",
+  "en": ""
  },
  {
-  "vi": "(thiếu $1)",
-  "en": "",
-  "pattern": true
+  "vi": "📻 Bấm [[Nghe ga gọi bộ đàm]], chọn câu nhắc lại đúng số hiệu tàu, giờ rời ga, giờ qua.",
+  "en": ""
  },
  {
-  "vi": "Đã trả $1 trên $2 kỳ",
-  "en": "",
-  "pattern": true
+  "vi": "👀 Bấm [[Nhìn đường ngang]]. Ai, cái gì còn trên ray thì chọn cách dẹp: thổi còi, ra tận nơi, phụ đẩy.",
+  "en": ""
  },
  {
-  "vi": "kỳ × $1 ngày · còn nợ",
-  "en": "",
-  "pattern": true
+  "vi": "🔔 [[Bật chuông đèn]] trước, còn khoảng 3 phút thì [[Hạ chắn]].",
+  "en": ""
  },
  {
-  "vi": "Đã trả $1/$2 kỳ.",
-  "en": "",
-  "pattern": true
+  "vi": "✋ Người đòi qua: tự chọn cách trả lời. Không bao giờ nâng chắn cho ai.",
+  "en": ""
  },
  {
-  "vi": "Mỗi kỳ tự trích từ tài khoản, thiếu thì lấy tiền mặt. Thiếu tiền: $1 ngày ân hạn, không phạt.",
-  "en": "",
-  "pattern": true
+  "vi": "🟩 [[Giơ cờ xanh]] khi trên ray không còn ai, rồi [[Đứng chờ tàu]]. Không dẹp kịp thì báo dừng tàu.",
+  "en": ""
  },
  {
-  "vi": "Kỳ tới $1, $2.",
-  "en": "",
-  "pattern": true
+  "vi": "👁️ Tàu qua: [[Nhìn hết đoàn tàu]], thấy bất thường thì báo ga, hỏi ga còn tàu không.",
+  "en": ""
  },
  {
-  "vi": "Chưa tính phí trong $1 ngày.",
-  "en": "",
-  "pattern": true
+  "vi": "🚧 [[Nâng chắn, tắt chuông]] rồi [[GHI SỔ, KÝ TÊN]] đúng những gì đã xảy ra.",
+  "en": ""
  },
  {
-  "vi": "Giá nhà tăng ~$1 mỗi năm. Bán mất $2% phí.",
-  "en": "",
-  "pattern": true
+  "vi": "📻 Nhắc lại lệnh đúng ngay lần đầu.",
+  "en": ""
  },
  {
-  "vi": "🔒 Cọc $1",
-  "en": "",
-  "pattern": true
+  "vi": "⏱️ Hạ chắn đúng lúc: sớm quá dân sốt ruột chui chắn, muộn quá là lỗi an toàn.",
+  "en": ""
  },
  {
-  "vi": "😊 +$1/ngày",
-  "en": "",
-  "pattern": true
+  "vi": "✋ Giữ chắn mà nói năng tử tế với người đang khổ.",
+  "en": ""
  },
  {
-  "vi": "cần điểm tín dụng $1",
-  "en": "",
-  "pattern": true
+  "vi": "🏮 Nhìn đủ đoàn tàu tới đèn đuôi, hỏi ga trước khi nâng.",
+  "en": ""
  },
  {
-  "vi": "⚡ $1/ngày",
-  "en": "",
-  "pattern": true
+  "vi": "📒 Sổ nhật ký đúng sự thật.",
+  "en": ""
  },
  {
-  "vi": "🏦 Điểm $1+",
-  "en": "",
-  "pattern": true
+  "vi": "Nâng chắn cho người năn nỉ khi tàu đang tới",
+  "en": ""
  },
  {
-  "vi": "1 tháng = $1 ngày sống, 1 năm = $2 ngày sống.",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi an toàn, không có thưởng ca, hồ sơ bị ghi điểm vi phạm.",
+  "en": ""
  },
  {
-  "vi": "Trả trước $1% + phí, còn lại vay 3 năm.",
-  "en": "",
-  "pattern": true
+  "vi": "Hạ chắn không bật chuông, không nhìn đường ngang",
+  "en": ""
  },
  {
-  "vi": "Mỗi kỳ ($1 ngày)",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi an toàn: xe đâm vào cần chắn, người kẹt giữa hai cần.",
+  "en": ""
  },
  {
-  "vi": "Lịch trả góp dự kiến ($1 kỳ)",
-  "en": "",
-  "pattern": true
+  "vi": "Tàu tới mà chắn chưa hạ, hoặc trên ray còn người",
+  "en": ""
  },
  {
-  "vi": "Lấy từ quỹ chung (còn $1)",
-  "en": "",
-  "pattern": true
+  "vi": "Lái tàu phanh khẩn cấp. Lỗi an toàn nặng nhất.",
+  "en": ""
  },
  {
-  "vi": "(điểm tín dụng $1$2). Mỗi kỳ tối đa $3.",
-  "en": "",
-  "pattern": true
+  "vi": "Nâng chắn mà chưa hỏi ga",
+  "en": ""
  },
  {
-  "vi": "căn này cần từ $1",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi nhỏ; nếu còn tàu thứ hai thì là lỗi an toàn.",
+  "en": ""
  },
  {
-  "vi": "Trả trước (ít nhất $1)",
-  "en": "",
-  "pattern": true
+  "vi": "Thấy hỏng mà báo sai nơi",
+  "en": ""
  },
  {
-  "vi": "Làm thuê · lương về ví$1",
-  "en": "",
-  "pattern": true
+  "vi": "Chỗ nguy hiểm không gọi ga là lỗi an toàn. Báo dư cho chắc thì không sao.",
+  "en": ""
  },
  {
-  "vi": "Nhà chung với $1",
-  "en": "",
-  "pattern": true
+  "vi": "🕠 Nhận ca 5:30 ở chòi gác Bến Mây; ngày ca chiều tối thì tàu qua tới khuya.",
+  "en": ""
  },
  {
-  "vi": "Điện nước $1 xu/ngày",
-  "en": "",
-  "pattern": true
+  "vi": "💼 Là việc làm thuê: nộp hồ sơ [[Ứng tuyển]] ở Xí nghiệp Đường sắt Sông Mây, có lương ngày và thưởng từng chuyến gác đúng quy trình.",
+  "en": ""
  },
  {
-  "vi": "Tiền phòng $1 xu/ngày",
-  "en": "",
-  "pattern": true
+  "vi": "🎓 Chứng chỉ An toàn đường ngang giúp dễ được nhận hơn.",
+  "en": ""
  },
  {
-  "vi": "⏰ Trả góp nhà đang chậm $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, ca chiều tối, mưa lớn, cao điểm lễ, nắng gắt.",
+  "en": ""
  },
  {
-  "vi": "Đã trả $1/$2 kỳ vay mua nhà",
-  "en": "",
-  "pattern": true
+  "vi": "🛵 Người đòi qua chắn: xe ôm, đám tang, xe hoa, xe cứu thương, người dúi tiền, TikToker, chú Hớn say…",
+  "en": ""
  },
  {
-  "vi": "Đủ tiền trả trước $1 rồi đó!",
-  "en": "",
-  "pattern": true
+  "vi": "🐄 Bò, vịt, chó, tụi nhỏ, khách chụp ảnh trên ray; cung trưởng kiểm tra đột xuất; bà Bông kêu còi tàu.",
+  "en": ""
  },
  {
-  "vi": "còn thiếu $1 xu để trả trước",
-  "en": "",
-  "pattern": true
+  "vi": "KÝ NHẬN CA",
+  "en": ""
  },
  {
-  "vi": "Vào làm thôi $1",
-  "en": "",
-  "pattern": true
+  "vi": "Nghe ga gọi bộ đàm",
+  "en": ""
  },
  {
-  "vi": "Ngày sống $1 · đã đeo đủ $2",
-  "en": "",
-  "pattern": true
+  "vi": "KÝ SỔ TUẦN ĐƯỜNG",
+  "en": ""
  },
  {
-  "vi": "Chọn tối đa $1 danh hiệu và chứng chỉ. Cái đầu tiên hiện tên, các cái sau hiện biểu tượng.",
-  "en": "",
-  "pattern": true
+  "vi": "Nhìn đường ngang",
+  "en": ""
  },
  {
-  "vi": "Cất $1",
-  "en": "",
-  "pattern": true
+  "vi": "Bật chuông đèn",
+  "en": ""
  },
  {
-  "vi": "Mỗi ngày sống: $1 $2 xu và cơm nước $3 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "Hạ chắn",
+  "en": ""
  },
  {
-  "vi": "Đeo tối đa $1 cái. Chạm một cái đang đeo để cất bớt nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Đứng chờ tàu",
+  "en": ""
  },
  {
-  "vi": "Điểm là XP ở $1. Bằng điểm thì ai làm nhiều ngày hơn, rồi được nhiều sao hơn đứng trước.",
-  "en": "",
-  "pattern": true
+  "vi": "Nhìn hết đoàn tàu",
+  "en": ""
  },
  {
-  "vi": "mới nhất Ngày $1",
-  "en": "",
-  "pattern": true
+  "vi": "Nâng chắn, tắt chuông",
+  "en": ""
  },
  {
-  "vi": "có từ Ngày $1",
-  "en": "",
-  "pattern": true
+  "vi": "GHI SỔ, KÝ TÊN",
+  "en": ""
  },
  {
-  "vi": "+$1 người",
-  "en": "",
-  "pattern": true
+  "vi": "🏘️ Bạn là một người trẻ vừa dọn tới căn gác nhà Bà Tám, trong một con hẻm nhỏ.",
+  "en": ""
  },
  {
-  "vi": "Cập nhật hằng ngày · lần cuối $1",
-  "en": "",
-  "pattern": true
+  "vi": "👤 Lần đầu vào game: chọn Nam hoặc Nữ và đặt tên. Hàng xóm gọi bạn theo đó.",
+  "en": ""
  },
  {
-  "vi": "chốt sau $1 ngày",
-  "en": "",
-  "pattern": true
+  "vi": "✏️ Đổi tên sau: [[Cài đặt]] → [[Cách chơi]] → [[Hồ sơ]].",
+  "en": ""
  },
  {
-  "vi": "ở $1",
-  "en": "",
-  "pattern": true
+  "vi": "🧭 Chỉ có một nhân vật, sống một đời, làm nhiều nghề khác nhau.",
+  "en": ""
  },
  {
-  "vi": "Bạn chưa làm ở $1. Làm việc đầu tiên ở đó để có tên trên bảng này.",
-  "en": "",
-  "pattern": true
+  "vi": "Việc làm đầu tiên",
+  "en": ""
  },
  {
-  "vi": "Nếu hiện tên, bạn đứng hạng $1$2.",
-  "en": "",
-  "pattern": true
+  "vi": "🏪 Chương 1 mở sẵn 7 chỗ: trà sữa, tạp hoá, giao hàng, bánh & cà phê, tiệm hoa, mẹ & bé, quán mì.",
+  "en": ""
  },
  {
-  "vi": "Chưa ai hiện tên ở $1. Bạn thử làm người đầu tiên nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "👆 Mở [[Hành trình]]: dạo phố, tới chỗ đang sáng rồi bấm [[Vào làm]]. Thích kiểu cũ thì bấm [[Danh sách]].",
+  "en": ""
  },
  {
-  "vi": "Nghề khác ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "⚠️ Đang làm dở mà bỏ đi chỗ khác là bị phạt và mất điểm tin cậy. Làm xong việc đang cầm rồi hãy đi.",
+  "en": ""
  },
  {
-  "vi": "🥇 $1 xu + $2 · 🥈🥉 $3 xu + $4. Bằng nhau thì ai đạt trước đứng trên. Còn $5 ngày.",
-  "en": "",
-  "pattern": true
+  "vi": "🌱 Ngày đầu dễ: cứ bấm vào chỗ đang sáng lên là làm được.",
+  "en": ""
  },
  {
-  "vi": "Tuần này bạn đã dự $1 đám cưới.",
-  "en": "",
-  "pattern": true
+  "vi": "Mở Hành trình",
+  "en": ""
  },
  {
-  "vi": "Tinh thần $1 trên 100",
-  "en": "",
-  "pattern": true
+  "vi": "Màn hình chính",
+  "en": ""
  },
  {
-  "vi": "Mất $1 xu. Tin lan khắp hẻm…",
-  "en": "",
-  "pattern": true
+  "vi": "🖼️ Giữa màn hình là cảnh tiệm. Chạm sàn để đi, chạm người hoặc đồ vật để làm.",
+  "en": ""
  },
  {
-  "vi": "Ví $1",
-  "en": "",
-  "pattern": true
+  "vi": "🃏 Thẻ việc ở dưới chỉ ghi một dòng: việc cần làm ngay bây giờ.",
+  "en": ""
  },
  {
-  "vi": "Tinh thần $1/100",
-  "en": "",
-  "pattern": true
+  "vi": "▶️ Bấm [[Làm tiếp]] để mở màn hình làm việc.",
+  "en": ""
  },
  {
-  "vi": "Xả stress · Hàng xóm · Nhật ký đời thường$1",
-  "en": "",
-  "pattern": true
+  "vi": "🔔 Chuông có số: những chuyện cần để ý (hàng sắp hết, hóa đơn, khách chờ).",
+  "en": ""
  },
  {
-  "vi": "Thân thiết $1 trên 100",
-  "en": "",
-  "pattern": true
+  "vi": "⌨️ Trên máy tính: WASD hoặc phím mũi tên để đi, E để dùng đồ gần nhất.",
+  "en": ""
  },
  {
-  "vi": "Xả stress $1",
-  "en": "",
-  "pattern": true
+  "vi": "Bước tiếp theo",
+  "en": ""
  },
  {
-  "vi": "Chat · $1 tin chưa đọc",
-  "en": "",
-  "pattern": true
+  "vi": "🔘 Nút to ở cuối màn hình làm việc luôn làm bước kế tiếp, hoặc nói rõ còn thiếu gì. Chỗ cần bấm sẽ sáng lên.",
+  "en": ""
  },
  {
-  "vi": "🎉 Tiệc cưới lúc $1",
-  "en": "",
-  "pattern": true
+  "vi": "📌 Khi nút ở cuối chưa làm được bước đó, đầu màn hình hiện dòng “Bước tiếp theo”: chạm vào là làm luôn.",
+  "en": ""
  },
  {
-  "vi": "bàn × $1 xu · thực đơn $2",
-  "en": "",
-  "pattern": true
+  "vi": "✅ Danh sách việc: ✓ là xong, ✗ là sai cần sửa, ○ là chưa làm. Chạm dòng có → để nhảy tới.",
+  "en": ""
  },
  {
-  "vi": "Đã chép mã $1.",
-  "en": "",
-  "pattern": true
+  "vi": "⋯ Nút ⋯ ở góc trên thẻ việc có [[Để lát nữa]] (cất việc này lại) và [[Xem các việc khác]].",
+  "en": ""
  },
  {
-  "vi": ". $1 được trừ từ ví của bạn. Nhẫn nằm trong hộp cho tới khi bạn trao đi.",
-  "en": "",
-  "pattern": true
+  "vi": "✅ Xong một việc: còn việc chờ thì bấm [[Công việc tiếp theo]]; hết việc thì [[Khép ca hôm nay]] hoặc nhận thêm.",
+  "en": ""
  },
  {
-  "vi": ". Phí $1 trừ từ ví của bạn.",
-  "en": "",
-  "pattern": true
+  "vi": "✨ Việc đầu tiên ở mỗi chỗ: nút cần bấm sẽ sáng nhấp nháy.",
+  "en": ""
  },
  {
-  "vi": "Hủy kết bạn với $1?",
-  "en": "",
-  "pattern": true
+  "vi": "❓ Nút ? ở góc trên mở hướng dẫn của đúng nghề đang làm.",
+  "en": ""
  },
  {
-  "vi": "Chặn $1?",
-  "en": "",
-  "pattern": true
+  "vi": "Giờ trong ngày",
+  "en": ""
  },
  {
-  "vi": "Cho $1 mượn $2?",
-  "en": "",
-  "pattern": true
+  "vi": "🕘 Cạnh số ngày ở trên cùng là đồng hồ của nơi làm: giờ, buổi (Sáng, Trưa, Chiều, Tối, Đêm) và một vạch nhỏ cho biết ca đã đi được bao nhiêu.",
+  "en": ""
  },
  {
-  "vi": "Gửi $1 $2?",
-  "en": "",
-  "pattern": true
+  "vi": "⏱️ Mỗi thao tác làm việc tốn khoảng 20 phút giờ tiệm (tiệm sửa đồ 10 phút). Làm xong một bước sẽ hiện số phút vừa trôi, như “+20 phút”.",
+  "en": ""
  },
  {
-  "vi": "Giúp $1 $2?",
-  "en": "",
-  "pattern": true
+  "vi": "🏪 Mỗi nơi có giờ mở và đóng cửa riêng: tạp hoá 06:30–21:30, quán mì 10:00–22:00, giao hàng ca tối 17:00–23:00. Chạm số ngày để xem giờ của nơi đang làm.",
+  "en": ""
  },
  {
-  "vi": "Trả từ 1 đến $1 nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "💼 Văn phòng 08:00–17:30, xin tăng ca thì tới 20:00. Tiệm trà sữa 08:00–20:00, ngày đông bán nốt tới muộn nhất 23:00.",
+  "en": ""
  },
  {
-  "vi": "Phần cọc của bạn là $1, của $2 là $3. Cọc không hoàn lại nếu hủy.",
-  "en": "",
-  "pattern": true
+  "vi": "⚽ Có ngày đóng cửa muộn hơn: quán trà đá hôm có trận bóng bán tới 22:00.",
+  "en": ""
  },
  {
-  "vi": "🏦 Quỹ chung$1",
-  "en": "",
-  "pattern": true
+  "vi": "☕ Chưa mở ca thì đồng hồ chỉ giờ chuẩn bị, sớm hơn giờ mở cửa 30 phút.",
+  "en": ""
  },
  {
-  "vi": "💞 Tương tác$1",
-  "en": "",
-  "pattern": true
+  "vi": "🌇 Cảnh tiệm đổi theo giờ: sáng dịu, trưa nắng, chiều vàng, tối lên đèn, đêm tối hẳn.",
+  "en": ""
  },
  {
-  "vi": "👥 Bạn bè$1",
-  "en": "",
-  "pattern": true
+  "vi": "🚚 Hàng nhập về theo đồng hồ này: “15–30 phút”, “chiều nay”, “sáng mai trước giờ mở”.",
+  "en": ""
  },
  {
-  "vi": "💌 Cầu hôn$1",
-  "en": "",
-  "pattern": true
+  "vi": "🎲 Mỗi ngày có một nhịp hên xui: thư thả (2 việc), đời thường (3 việc) hoặc ngày hội khu phố (4 việc).",
+  "en": ""
  },
  {
-  "vi": "Đã đính hôn với $1",
-  "en": "",
-  "pattern": true
+  "vi": "Giờ đóng cửa",
+  "en": ""
  },
  {
-  "vi": "Đã về chung một nhà với $1",
-  "en": "",
-  "pattern": true
+  "vi": "⏰ Còn 60 phút và còn 30 phút có lời nhắc; đồng hồ đổi sang vàng rồi cam.",
+  "en": ""
  },
  {
-  "vi": "Bạn vừa khép lại một chuyện cũ. Có thể cầu hôn lại sau $1.",
-  "en": "",
-  "pattern": true
+  "vi": "🔔 Tới giờ đóng cửa đồng hồ chuyển đỏ và không đón thêm khách mới.",
+  "en": ""
  },
  {
-  "vi": "Còn $1 lượt cầu hôn hôm nay. Bị từ chối thì chiếc nhẫn vẫn là của bạn.",
-  "en": "",
-  "pattern": true
+  "vi": "🧑‍🍳 Khách đã vào quán vẫn được làm nốt, không tốn thêm gì. Đồng hồ ghi “Quá giờ đóng cửa … · làm nốt rồi khép ca”.",
+  "en": ""
  },
  {
-  "vi": "Gõ đúng từng ký tự: không tìm gần đúng, không có danh sách để lướt. Có mã người chơi (PCC-…) thì nhập mã cũng được. Còn $1 lượt tìm hôm nay.",
-  "en": "",
-  "pattern": true
+  "vi": "🧋 Tiệm trà sữa khác một chút: ngày đông vẫn bán nốt khách đang đợi, muộn nhất 23:00.",
+  "en": ""
  },
  {
-  "vi": "Bạn bè ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "🌙 Bấm [[Khép ca hôm nay]] lúc nào cũng được: việc dở giữ lại, khách hẹn quay lại khi mở cửa sáng mai. Khép ca đàng hoàng không bị tính là bỏ dở việc.",
+  "en": ""
  },
  {
-  "vi": "không bao giờ thấy tên đăng nhập của bạn. Còn $1 lời mời kết bạn hôm nay.",
-  "en": "",
-  "pattern": true
+  "vi": "🌅 Bản tổng kết ghi bạn khép ca lúc mấy giờ (sớm, đúng giờ hay quá giờ) và giờ mở cửa hôm sau.",
+  "en": ""
  },
  {
-  "vi": "Đặt cọc ($1%)",
-  "en": "",
-  "pattern": true
+  "vi": "Mở ca và khép ca",
+  "en": ""
  },
  {
-  "vi": "cưới sau $1 ngày sống",
-  "en": "",
-  "pattern": true
+  "vi": "☀️ Đầu ngày bấm [[Chuẩn bị ngày mới]] để mở ca.",
+  "en": ""
  },
  {
-  "vi": "Bạn góp $1%",
-  "en": "",
-  "pattern": true
+  "vi": "➕ Hết việc có thể nhận thêm việc, hoặc bấm [[Khép ca hôm nay]].",
+  "en": ""
  },
  {
-  "vi": "cọc $1 · nốt $2",
-  "en": "",
-  "pattern": true
+  "vi": "🧾 Khép ca: lương người phụ, điện nước, tiền thuê ghi vào sổ tiệm để trả sau.",
+  "en": ""
  },
  {
-  "vi": "bên nhau $1 ngày",
-  "en": "",
-  "pattern": true
+  "vi": "🏠 Mỗi lần khép ca là qua một ngày sống: ví trả tiền phòng và cơm nước.",
+  "en": ""
  },
  {
-  "vi": "Cưới ngày $1",
-  "en": "",
-  "pattern": true
+  "vi": "📋 Xem lại bản tổng kết ngày ở biểu tượng bảng kẹp trên thẻ việc.",
+  "en": ""
  },
  {
-  "vi": "Đã đính hôn $1",
-  "en": "",
-  "pattern": true
+  "vi": "💰 Trong bản tổng kết, thẻ “✓ Lãi/lỗ hôm nay” (làm công ăn lương: “✓ Kết quả ngày làm”) gập gọn; chạm để xem chi tiết.",
+  "en": ""
  },
  {
-  "vi": "Bạn đã báo muốn bàn lại. Tự sửa kế hoạch rồi gửi cho $1 cũng được.",
-  "en": "",
-  "pattern": true
+  "vi": "Các mục dễ bị bỏ sót",
+  "en": ""
  },
  {
-  "vi": "Đang chờ $1 xác nhận",
-  "en": "",
-  "pattern": true
+  "vi": "📱 Trên điện thoại, nút [[Thêm]] mở các mục còn lại. Mục có dấu › mở một nhóm nhỏ.",
+  "en": ""
  },
  {
-  "vi": "📋 $1 gửi kế hoạch cưới",
-  "en": "",
-  "pattern": true
+  "vi": "💼 Việc: [[Hành trình]], [[Chuẩn bị]], [[Sổ tiệm]], [[Đánh giá]], [[Việc làm]] (nơi làm thuê).",
+  "en": ""
  },
  {
-  "vi": "Ví của bạn còn $1, chưa đủ $2 tiền cọc. Rút tiền lời từ nơi làm việc về ví trước nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "🏘️ [[Khu phố]]: [[Nhóm phố]], [[Chuyện phố]], [[Phố nghề]], [[Bản đồ phố]], [[Xếp hạng]].",
+  "en": ""
  },
  {
-  "vi": "Xác nhận & đặt cọc $1",
-  "en": "",
-  "pattern": true
+  "vi": "👥 [[Quan hệ]]: [[Người quen]], [[Bạn bè]] (người chơi thật), [[Hôn nhân]].",
+  "en": ""
  },
  {
-  "vi": "Cưới lúc $1",
-  "en": "",
-  "pattern": true
+  "vi": "💰 [[Ngân hàng & nhà]]: [[Tiền của bạn]], [[Ngân hàng]], [[Nhà của bạn]].",
+  "en": ""
  },
  {
-  "vi": "Đã đặt cọc: bạn $1, $2 $3.",
-  "en": "",
-  "pattern": true
+  "vi": "🚩 [[Chuyện của bạn]]: [[Tình huống]], [[Chuyện đời]]. Chấm đỏ là có chuyện chờ bạn quyết.",
+  "en": ""
  },
  {
-  "vi": "Tới ngày khi một trong hai bạn sống thêm đủ ngày$1. Cỗ cưới tự diễn ra kể cả khi người kia đang vắng.",
-  "en": "",
-  "pattern": true
+  "vi": "🎒 [[Của mình]]: [[Tủ đồ]], [[Kỷ niệm]], [[Hộ chiếu]], [[Trò nhỏ]], [[Sổ tay]].",
+  "en": ""
  },
  {
-  "vi": "Đã đặt cọc: bạn $1, $2 $3. Ngày cưới trả nốt từ tiền mừng trước, thiếu thì mỗi người bù theo tỉ lệ đã chọn.",
-  "en": "",
-  "pattern": true
+  "vi": "Bản đồ phố: đi tới chỗ làm",
+  "en": ""
  },
  {
-  "vi": "Còn $1 ngày nữa là tới ngày cưới$2",
-  "en": "",
-  "pattern": true
+  "vi": "🗺️ Bấm [[Hành trình]] trong menu là ra bản đồ phố. Chạm đường để đi, chạm một tiệm để đi tới cửa.",
+  "en": ""
  },
  {
-  "vi": "(Ngày $1)",
-  "en": "",
-  "pattern": true
+  "vi": "🚪 Tới cửa hiện một thẻ nhỏ: bấm [[Vào làm]] (hoặc Vào tiếp) là vào làm ở đó. Muốn đổi nghề thì cứ đi sang tiệm khác.",
+  "en": ""
  },
  {
-  "vi": "hoặc muộn nhất sau $1 giờ nữa",
-  "en": "",
-  "pattern": true
+  "vi": "🔒 Tiệm có ổ khóa là chưa mở: chạm vào để xem chương nào mở. ⏸ Tiệm bạn đã tạm đóng thì bấm [[Mở lại]].",
+  "en": ""
  },
  {
-  "vi": "mừng $1",
-  "en": "",
-  "pattern": true
+  "vi": "📋 Thích kiểu cũ thì bấm [[Danh sách]] ở góc trên. Cài đặt → Màn hình chính chọn mở bản đồ hay danh sách.",
+  "en": ""
  },
  {
-  "vi": "Phần của bạn ($1, góp $2%): cọc $3, trả nốt $4, nhận mừng $5$6 →",
-  "en": "",
-  "pattern": true
+  "vi": "Mở Bản đồ phố",
+  "en": ""
  },
  {
-  "vi": ". $1 nhận phần còn lại.",
-  "en": "",
-  "pattern": true
+  "vi": "Chuẩn bị, nhiệm vụ và bảng giá",
+  "en": ""
  },
  {
-  "vi": "(trống $1 ghế)",
-  "en": "",
-  "pattern": true
+  "vi": "🧺 Bấm [[Chuẩn bị]] (hoặc [[Chuẩn bị ngày mới]] khi chưa mở ca): xem thời tiết, nhịp của ngày và việc cần lo trước giờ mở cửa.",
+  "en": ""
  },
  {
-  "vi": "gồm $1 màu",
-  "en": "",
-  "pattern": true
+  "vi": "🎲 Nhịp ngày là hên xui: thư thả (2 việc đầu ca, khách không mất kiên nhẫn), đời thường (3 việc) hoặc Ngày hội khu phố (4 việc).",
+  "en": ""
  },
  {
-  "vi": "Phí tiệm kim hoàn $1$2.",
-  "en": "",
-  "pattern": true
+  "vi": "🌞 Nhiệm vụ hôm nay: xong 2 việc +20 xu, xong 1 trò nhỏ +12 xu, trò chuyện với 2 người +8 xu. Mỗi mục thêm 10 XP.",
+  "en": ""
  },
  {
-  "vi": "+ $1 chênh lệch màu",
-  "en": "",
-  "pattern": true
+  "vi": "🎁 Đủ số thì bấm [[Nhận quà]] ở mục đó. Tiền vào quỹ nơi đang làm. Sang ngày mới nhiệm vụ làm lại từ đầu.",
+  "en": ""
  },
  {
-  "vi": "Bạn $1",
-  "en": "",
-  "pattern": true
+  "vi": "🔥 Làm liền 3 việc không lỗi được thưởng thêm 8 xu, mỗi ngày một lần.",
+  "en": ""
  },
  {
-  "vi": "Giúp $1",
-  "en": "",
-  "pattern": true
+  "vi": "🌟 Thẻ cấp cho biết cấp của nơi này, mỗi cấp cần 90 XP. Bấm [[Đổi tên]] để treo biển tên mới cho tiệm.",
+  "en": ""
  },
  {
-  "vi": "Hôm nay bạn còn rút được $1 (mỗi người $2 / 24 giờ). $3 được báo mỗi lần rút.",
-  "en": "",
-  "pattern": true
+  "vi": "🏷️ [[Bảng giá]]: tiệm trà sữa và tiệm mẹ & bé đổi được giá từ 75% tới 125% giá gốc, chỉ trước khi mở ca, rồi bấm [[Lưu giá]]. Nơi khác chỉ để xem.",
+  "en": ""
  },
  {
-  "vi": "💸 Gửi tiền cho $1",
-  "en": "",
-  "pattern": true
+  "vi": "☀️ Xong xuôi thì bấm [[Mở cửa ngày]] để bắt đầu ca.",
+  "en": ""
  },
  {
-  "vi": "🙏 Nhờ $1 giúp",
-  "en": "",
-  "pattern": true
+  "vi": "Mở Chuẩn bị",
+  "en": ""
  },
  {
-  "vi": "Bạn nợ $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chương và nơi làm mới",
+  "en": ""
  },
  {
-  "vi": "Trả hết $1",
-  "en": "",
-  "pattern": true
+  "vi": "📚 Hành trình có 6 chương. Mỗi chương có vài mục tiêu, đọc từ việc bạn đã làm thật.",
+  "en": ""
  },
  {
-  "vi": "+$1 điểm",
-  "en": "",
-  "pattern": true
+  "vi": "🔓 Xong chương 1 mở tiệm thú cưng, salon, tiệm sửa đồ, nông trại, homestay.",
+  "en": ""
  },
  {
-  "vi": "Chưa có gì. Gửi một lời chào buổi sáng cho $1 nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "🔓 Xong chương 2 mở shop quần áo, shop thú cưng, trà đá vỉa hè.",
+  "en": ""
  },
  {
-  "vi": "Mỗi ngày có qua có lại thì điểm tăng dần (chuỗi ngày liền được thưởng thêm). Cứ $1 ngày sống về chung nhà là một lần kỷ niệm, điểm càng cao quà càng dày.",
-  "en": "",
-  "pattern": true
+  "vi": "🔓 Xong chương 3 mở nhà thuốc, chăm sóc khách hàng, hướng dẫn viên, giáo viên, kế toán.",
+  "en": ""
  },
  {
-  "vi": "Gửi tới $1",
-  "en": "",
-  "pattern": true
+  "vi": "💼 Xong chương 4 mở văn phòng: kế toán doanh nghiệp, thuế & tiền lương. Xong chương 5 mở kế toán tập đoàn.",
+  "en": ""
  },
  {
-  "vi": "Phí $1 · tối đa $2 bàn",
-  "en": "",
-  "pattern": true
+  "vi": "🎯 Mục tiêu ví dụ: làm ở 2 nơi, hoàn thành 10 việc, rút tiền lời về ví một lần, giữ ví không nợ vài ngày liền.",
+  "en": ""
  },
  {
-  "vi": "mâm · $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "⏸️ Ví đang âm thì câu chuyện tạm dừng: trả hết nợ tiền phòng là đi tiếp được.",
+  "en": ""
  },
  {
-  "vi": "($1 xu/10 khách)",
-  "en": "",
-  "pattern": true
+  "vi": "Trưởng thành và danh hiệu",
+  "en": ""
  },
  {
-  "vi": "Mỗi bàn $1 người. Ghế trống vẫn phải trả tiền cỗ.",
-  "en": "",
-  "pattern": true
+  "vi": "🌱 Cấp trưởng thành (tối đa 30) cộng từ kinh nghiệm mọi nơi, cộng thêm mỗi nơi bạn đã phục vụ khách.",
+  "en": ""
  },
  {
-  "vi": "Đặt cọc $1% (khi cả hai xác nhận)",
-  "en": "",
-  "pattern": true
+  "vi": "🧠 Kỹ năng lớn dần theo việc: cẩn thận, giao tiếp, kiên nhẫn, con số, làm nhóm, sáng tạo…",
+  "en": ""
  },
  {
-  "vi": "Bạn $1 · $2 $3 (trừ vào tiền mừng trước)",
-  "en": "",
-  "pattern": true
+  "vi": "🏅 Danh hiệu mở khi đạt mốc: câu chuyện, hành trình, nghề, kỹ năng. Có danh hiệu ẩn.",
+  "en": ""
  },
  {
-  "vi": "Chưa trừ tiền. $1 xác nhận thì cả hai mới đặt cọc.",
-  "en": "",
-  "pattern": true
+  "vi": "🎖️ Đeo cùng lúc tối đa 3 danh hiệu và chứng chỉ: cái đầu hiện tên, các cái sau hiện biểu tượng cạnh tên bạn. Chạm lần nữa để cất.",
+  "en": ""
  },
  {
-  "vi": "Không khí: $1. Hàng xóm càng thân càng hay tới và mừng dày.",
-  "en": "",
-  "pattern": true
+  "vi": "Xem danh hiệu",
+  "en": ""
  },
  {
-  "vi": "Ví của bạn còn $1, chưa đủ phần cọc $2.",
-  "en": "",
-  "pattern": true
+  "vi": "🧩 Mở [[Trò nhỏ]]: mỗi nơi làm có 4 trò ngắn theo đúng nghề đó, chơi lúc nào cũng được.",
+  "en": ""
  },
  {
-  "vi": "⏰ Giờ cưới phải cách bây giờ ít nhất 1 tiếng: chọn từ $1 hôm nay trở đi.",
-  "en": "",
-  "pattern": true
+  "vi": "🧺 Xếp đúng góc: bấm một thẻ rồi bấm ngăn hợp với nó. Trên máy tính kéo thả cũng được.",
+  "en": ""
  },
  {
-  "vi": "Gửi kế hoạch cho $1",
-  "en": "",
-  "pattern": true
+  "vi": "🃏 Ghép đôi nhãn: mỗi lượt lật hai thẻ để tìm cặp giống nhau. Khác nhau thì nhớ vị trí rồi lật thẻ khác.",
+  "en": ""
  },
  {
-  "vi": "Ví $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "🔢 Xếp nhịp công việc: chọn các bước theo đúng thứ tự, lỡ tay thì [[Hoàn tác]], đủ bước thì bấm [[Kiểm nhịp công việc]]. Sai nhịp thì xếp lại.",
+  "en": ""
  },
  {
-  "vi": "Tài khoản $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "🔗 Nối hai nửa: đọc dấu hiệu, bấm một thẻ rồi bấm nhãn đi với nó.",
+  "en": ""
  },
  {
-  "vi": "Quỹ chung $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "⭐ Mỗi trò bắt đầu 100 điểm, mỗi lần thử chưa khớp trừ 8, thấp nhất 30. Thử sai không mất xu. Điểm cao nhất lưu ở Kỷ lục riêng.",
+  "en": ""
  },
  {
-  "vi": "⚠️ $1 còn thiếu",
-  "en": "",
-  "pattern": true
+  "vi": "🎁 [[Chơi ngay]]: xong mỗi trò lần đầu trong ngày được 12 xu vào quỹ nơi đó, 10 XP và một thiệp vào Hộ chiếu.",
+  "en": ""
  },
  {
-  "vi": "⭐ Còn $1 khách nữa là lên cấp",
-  "en": "",
-  "pattern": true
+  "vi": "🎯 [[Luyện không thưởng]]: chơi thử thoải mái, không có quà.",
+  "en": ""
  },
  {
-  "vi": "Lên cấp $1!",
-  "en": "",
-  "pattern": true
+  "vi": "🗺️ Các điểm trong Khu phố cũng mở thẳng từng trò. Xong 1 trò nhỏ còn tính vào Nhiệm vụ hôm nay.",
+  "en": ""
  },
  {
-  "vi": "Quà của Bà Tám: +$1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Mở Trò nhỏ",
+  "en": ""
  },
  {
-  "vi": "cần chỗ $1$2.",
-  "en": "",
-  "pattern": true
+  "vi": "Hộ chiếu nghề",
+  "en": ""
  },
  {
-  "vi": "Đặt $1 ở $2. Ấm cúng +$3 nếu nhà chưa có món này.",
-  "en": "",
-  "pattern": true
+  "vi": "🌟 Mở [[Hộ chiếu]]: sổ riêng của từng nơi làm, gồm chuyện nhỏ, huy hiệu và hộp thiệp kỷ niệm.",
+  "en": ""
  },
  {
-  "vi": "Bán lại $1?",
-  "en": "",
-  "pattern": true
+  "vi": "💌 Mỗi nơi có 3 chuyện nhỏ, mở sau 2, 4 và 6 việc đã xong. Mỗi chuyện có 3 nhịp: đọc rồi chọn cách đáp.",
+  "en": ""
  },
  {
-  "vi": "Nhận $1 ($2% giá mua).",
-  "en": "",
-  "pattern": true
+  "vi": "⏳ Sau nhịp đầu, bấm [[Làm tiếp một công việc]], xong thêm một việc rồi quay lại kể tiếp.",
+  "en": ""
  },
  {
-  "vi": "Sửa $1?",
-  "en": "",
-  "pattern": true
+  "vi": "🎉 Khép một chuyện được 25 xu vào quỹ nơi đó và một thiệp 💌. Người trong chuyện cũng nhớ bạn.",
+  "en": ""
  },
  {
-  "vi": "($1%) → như mới.",
-  "en": "",
-  "pattern": true
+  "vi": "🏅 12 huy hiệu theo mốc: việc đầu tiên, 8 và 20 việc, 1 và 8 trò nhỏ, 3 việc không lỗi, 3 lần trả lời review…",
+  "en": ""
  },
  {
-  "vi": "như mới, bền hơn. Ấm cúng +$1.",
-  "en": "",
-  "pattern": true
+  "vi": "🏅 …trang trí lần đầu, khép một chuyện, 7 ngày làm, một ngày hội, ghé 4 điểm trong Khu phố.",
+  "en": ""
  },
  {
-  "vi": "🛠️ Sửa nhà$1",
-  "en": "",
-  "pattern": true
+  "vi": "✅ Đủ mốc thì bấm [[Nhận]] trên huy hiệu: +15 XP và một thiệp.",
+  "en": ""
  },
  {
-  "vi": "Chỗ trống $1",
-  "en": "",
-  "pattern": true
+  "vi": "🎟️ Thiệp còn tự đến khi xong việc đầu tiên, xong trò nhỏ, ghé một điểm trong Khu phố hay mở góc ngày hội.",
+  "en": ""
  },
  {
-  "vi": "😊 +$1 tinh thần mỗi sáng",
-  "en": "",
-  "pattern": true
+  "vi": "Mở Hộ chiếu",
+  "en": ""
  },
  {
-  "vi": "😊 +$1 tinh thần tạm dừng khi trễ hạn trả góp",
-  "en": "",
-  "pattern": true
+  "vi": "Khu phố và Ngày hội",
+  "en": ""
  },
  {
-  "vi": "🛠️ Sửa nhà tới $1% để có +$2 tinh thần mỗi sáng",
-  "en": "",
-  "pattern": true
+  "vi": "🗺️ Mở [[Khu phố]]: bản đồ nhỏ có 5 điểm. Chạm một điểm để ghé; lần đầu ghé mỗi điểm được một thiệp vào Hộ chiếu.",
+  "en": ""
  },
  {
-  "vi": "Thêm $1 điểm: +$2 tinh thần mỗi sáng.",
-  "en": "",
-  "pattern": true
+  "vi": "📚 Thư viện góc phố mở trò xếp bước. Vườn nghỉ nhỏ mở trò lật thẻ.",
+  "en": ""
  },
  {
-  "vi": "Tình trạng nhà · $1%",
-  "en": "",
-  "pattern": true
+  "vi": "🎨 Xưởng đồ xinh mở trò nối nhãn và lối sang trang trí góc của bạn. Chợ cuối phố mở trò xếp món và lời nhắn khu phố.",
+  "en": ""
  },
  {
-  "vi": "món$1",
-  "en": "",
-  "pattern": true
+  "vi": "🎏 Quảng trường Mây là nơi nhận lời mời ngày hội của khu phố.",
+  "en": ""
  },
  {
-  "vi": "Nâng cấp $1/2",
-  "en": "",
-  "pattern": true
+  "vi": "🎉 Hôm nào là Ngày hội khu phố (hên xui), xong 3 việc và 1 trò nhỏ trong ca rồi bấm [[Mở góc ngày hội]]: +30 xu vào quỹ và một thiệp.",
+  "en": ""
  },
  {
-  "vi": "Có $1 (tài khoản + ví).",
-  "en": "",
-  "pattern": true
+  "vi": "🧭 Ghé đủ 4 điểm là đủ mốc huy hiệu Dấu chân khu phố.",
+  "en": ""
  },
  {
-  "vi": "Chọn chỗ trống $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Mở Khu phố",
+  "en": ""
  },
  {
-  "vi": "📦 Kho · $1 món",
-  "en": "",
-  "pattern": true
+  "vi": "📓 Mở [[Sổ tay]] của nơi đang làm. Tiệm trà sữa, lớp học và nghề hướng dẫn viên không có Sổ tay: xem Hộ chiếu.",
+  "en": ""
  },
  {
-  "vi": "🚚 $1/$2 đơn đang về",
-  "en": "",
-  "pattern": true
+  "vi": "📜 [[Nhật ký]]: mọi chuyện ở nơi này theo từng ngày, như tiền vào ra, việc đã xong, chuyện bất ngờ.",
+  "en": ""
  },
  {
-  "vi": "📦 Mở thùng đã tới ($1) · đủ $2 đơn",
-  "en": "",
-  "pattern": true
+  "vi": "💭 [[Ký ức]]: những kỷ niệm chung với từng người quen ở nơi này.",
+  "en": ""
  },
  {
-  "vi": "🚚 Đủ $1 đơn đang về$2",
-  "en": "",
-  "pattern": true
+  "vi": "📖 [[Câu chuyện]] (tiệm mẹ & bé, nhà thuốc, kế toán, chăm sóc khách hàng): 3 tuyến chuyện, mỗi tuyến vài bước đếm theo việc bạn làm thật.",
+  "en": ""
  },
  {
-  "vi": "📦 Mở thùng lên kệ ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "🎁 Đủ các bước thì bấm [[Nhận kỷ niệm]]: +75 xu vào quỹ, kỷ vật hiện trong [[Kỷ niệm]].",
+  "en": ""
  },
  {
-  "vi": "🚚 Hàng đang về$1",
-  "en": "",
-  "pattern": true
+  "vi": "🎯 [[24 tình huống]] (cũng ở 4 nơi đó): tìm một tình huống rồi bấm [[Thử tình huống]] để diễn tập, không mất tiền, sao hay quan hệ.",
+  "en": ""
  },
  {
-  "vi": "🚚 $1 đang về$2",
-  "en": "",
-  "pattern": true
+  "vi": "📚 Mỗi nơi làm có một truyện riêng 5 đoạn với vài nhân vật quen: bạn học sinh ôn thi, mùa mưa bão ở nông trại…",
+  "en": ""
  },
  {
-  "vi": "📦 Hết $1: nhập hàng",
-  "en": "",
-  "pattern": true
+  "vi": "✨ Thẻ Truyện nghề ghi điều kiện cho đoạn tiếp: số việc, ngày làm và thời gian chờ ở đúng nơi đó. Mục đã đủ được đánh dấu.",
+  "en": ""
  },
  {
-  "vi": "Đã nhận $1 khoản, $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "▶️ Truyện hiện như một cảnh: bấm [[Tiếp]] để đọc từng câu, hoặc [[Xem hết]] để hiện cả đoạn.",
+  "en": ""
  },
  {
-  "vi": "Đã nhận $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "🅰️ Có đoạn cho chọn A hoặc B. Với Linh và chiếc radio ở tiệm sửa đồ, người quen nhắc lại lựa chọn của bạn; kỷ vật cũng lưu dấu chuyện đó.",
+  "en": ""
  },
  {
-  "vi": "Điểm danh $1 bạn đang ngồi",
-  "en": "",
-  "pattern": true
+  "vi": "📖 Thẻ truyện tóm tắt chuyện đã qua. Mở các đoạn đã đọc để xem lại tóm tắt và lựa chọn của mình.",
+  "en": ""
  },
  {
-  "vi": "Ghi điểm danh cho $1",
-  "en": "",
-  "pattern": true
+  "vi": "💤 Chưa muốn đọc thì đóng lại. Đoạn đó chờ ở thẻ Truyện nghề trong [[Hành trình]], ghi “Có chuyện mới”.",
+  "en": ""
  },
  {
-  "vi": "📋 Ghi điểm danh cho $1",
-  "en": "",
-  "pattern": true
+  "vi": "🎁 Đoạn cuối bấm [[Khép lại câu chuyện]] để nhận kỷ vật của truyện.",
+  "en": ""
  },
  {
-  "vi": "⏱ $1–$2 phút",
-  "en": "",
-  "pattern": true
+  "vi": "Rút tiền về ví thế nào?",
+  "en": ""
  },
  {
-  "vi": "🗂️ Chọn thẻ $1/3",
-  "en": "",
-  "pattern": true
+  "vi": "👛 Tiền khách trả nằm trong quỹ của từng nơi làm (quỹ tiệm), không phải trong ví. Muốn tiêu thì rút tiền lời từ quỹ về ví.",
+  "en": ""
  },
  {
-  "vi": "Lại gần hỏi $1",
-  "en": "",
-  "pattern": true
+  "vi": "1️⃣ Mở [[Hành trình]], bấm ô [[Ví của bạn]]. (Hoặc chạm số ngày, chọn ô Ví của bạn.)",
+  "en": ""
  },
  {
-  "vi": "✏️ Lại gần hỏi $1",
-  "en": "",
-  "pattern": true
+  "vi": "2️⃣ Ở mục “Quỹ các nơi làm việc”, chạm tên nơi muốn rút để mở ra.",
+  "en": ""
  },
  {
-  "vi": "🙋 Trả lời $1",
-  "en": "",
-  "pattern": true
+  "vi": "3️⃣ Gõ số xu vào ô “Rút về ví”, hoặc bấm [[Tối đa]]. Rồi bấm [[Rút]]: tiền vào ví ngay.",
+  "en": ""
  },
  {
-  "vi": "Giúp $1 hiểu bài",
-  "en": "",
-  "pattern": true
+  "vi": "🔒 Quỹ luôn phải giữ lại 80 xu và đủ tiền các hóa đơn chưa trả. Rút được tối đa = quỹ − 80 − hóa đơn chưa trả.",
+  "en": ""
  },
  {
-  "vi": "🙋 Giúp $1 hiểu bài",
-  "en": "",
-  "pattern": true
+  "vi": "🧮 Ví dụ: quỹ 200 xu, hóa đơn chưa trả 30 xu. Rút được tối đa 200 − 80 − 30 = 90 xu.",
+  "en": ""
  },
  {
-  "vi": "Sang hoạt động $1",
-  "en": "",
-  "pattern": true
+  "vi": "⛔ Báo “Quỹ cần giữ 80 xu và đủ tiền hóa đơn chưa trả, nên chưa rút được”: quỹ còn mỏng. Làm thêm việc ở nơi đó rồi quay lại rút.",
+  "en": ""
  },
  {
-  "vi": "Chấm phiếu của $1",
-  "en": "",
-  "pattern": true
+  "vi": "⚠️ Báo “Chỉ rút được tối đa … xu”: số bạn gõ lớn hơn mức cho phép. Bấm [[Tối đa]] để điền đúng số.",
+  "en": ""
  },
  {
-  "vi": "🎫 Chấm phiếu của $1",
-  "en": "",
-  "pattern": true
+  "vi": "✏️ Báo “Nhập số xu là số nguyên dương”: gõ số nguyên từ 1 trở lên, không có dấu chấm hay phẩy.",
+  "en": ""
  },
  {
-  "vi": "🗺️ Chọn điểm $1 (3–5 điểm)",
-  "en": "",
-  "pattern": true
+  "vi": "⬇️ Chiều ngược lại: gõ số vào ô “Góp vốn” rồi bấm [[Góp]] để đưa tiền từ ví vào quỹ, khi tiệm thiếu tiền nhập hàng.",
+  "en": ""
  },
  {
-  "vi": "🔋 Cắm sạc loa · $1%",
-  "en": "",
-  "pattern": true
+  "vi": "💼 Nơi làm thuê (nhà thuốc, lớp học, văn phòng…) không cần rút: lương và tiền bo về thẳng ví khi khép ca.",
+  "en": ""
  },
  {
-  "vi": "Chặng $1/4",
-  "en": "",
-  "pattern": true
+  "vi": "🏦 Tiền trong tài khoản ngân hàng: mở [[Ngân hàng]], gõ số xu, bấm [[Rút tiền]]. Chọn cây ATM khác ngân hàng thì mất phí 1 xu.",
+  "en": ""
  },
  {
-  "vi": "vào két $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "💞 Đã cưới: mở [[Hôn nhân]], tab Quỹ chung, gõ số rồi bấm [[Rút ra]]. Rút và chi theo số dư quỹ chung, không có hạn mức mỗi ngày.",
+  "en": ""
  },
  {
-  "vi": "về ví $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "📉 Ví âm là đang nợ tiền phòng và câu chuyện tạm dừng. Rút tiền lời về ví là trả được ngay.",
+  "en": ""
  },
  {
-  "vi": "cả đội nhận $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Ví, quỹ tiệm, tài khoản: khác nhau thế nào?",
+  "en": ""
  },
  {
-  "vi": "Tip hôm nay$1",
-  "en": "",
-  "pattern": true
+  "vi": "👛 Ví (tiền mặt): tiền riêng của bạn, bắt đầu 60 xu. Trả tiền phòng, cơm nước, học phí, chuyện đời, mua sắm.",
+  "en": ""
  },
  {
-  "vi": "📦 Mở thùng $1 & xếp lên kệ",
-  "en": "",
-  "pattern": true
+  "vi": "🏪 Quỹ tiệm: tiền của từng nơi làm. Khách trả, nhập hàng, lương người phụ, hóa đơn, tiền phạt của tiệm đều đi qua đây.",
+  "en": ""
  },
  {
-  "vi": "Đếm $1 trong thùng",
-  "en": "",
-  "pattern": true
+  "vi": "🏦 Tài khoản ngân hàng: chỗ cất tiền, gửi tiết kiệm, trả thẻ và trả góp. Cần mở tài khoản trước.",
+  "en": ""
  },
  {
-  "vi": "✅ Nhận $1 lên kệ",
-  "en": "",
-  "pattern": true
+  "vi": "💞 Quỹ chung vợ chồng: tiền hai người cùng góp sau khi cưới, cả hai cùng thấy mọi khoản.",
+  "en": ""
  },
  {
-  "vi": "Mở thùng gộp $1 món",
-  "en": "",
-  "pattern": true
+  "vi": "🚫 Mỗi khoản trừ đúng chỗ của nó: nhập hàng trừ quỹ tiệm, tiền phòng trừ ví. Tiền nằm chỗ này muốn dùng cho chỗ kia thì rút hoặc góp trước.",
+  "en": ""
  },
  {
-  "vi": "📦 Mở thùng gộp · $1 món",
-  "en": "",
-  "pattern": true
+  "vi": "🔁 Quỹ → ví: [[Rút]]. Ví → quỹ: [[Góp]]. Ví → tài khoản: [[Nộp tiền]]. Tài khoản → ví: [[Rút tiền]].",
+  "en": ""
  },
  {
-  "vi": "Đếm $1",
-  "en": "",
-  "pattern": true
+  "vi": "🧾 Sổ ví ghi từng khoản vào ra của ví; [[Sổ tiệm]] → [[Thu chi]] ghi quỹ của từng nơi.",
+  "en": ""
  },
  {
-  "vi": "📝 Khiếu nại phần thiếu · hoàn $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "💰 Lúc nhập hàng, mua sắm, gửi rút tiền: ngay dưới tiêu đề trang luôn có dòng “Ví … · Quỹ tiệm …”. Không đủ tiền thì bảng xác nhận ghi rõ còn thiếu bao nhiêu.",
+  "en": ""
  },
  {
-  "vi": "Khiếu nại $1 giao thiếu",
-  "en": "",
-  "pattern": true
+  "vi": "Lương khi đi làm thuê",
+  "en": ""
  },
  {
-  "vi": "🚚 Đặt $1",
-  "en": "",
-  "pattern": true
+  "vi": "🏢 Giáo viên, hướng dẫn viên, nhà thuốc, văn phòng… là làm thuê: phải xin việc trước.",
+  "en": ""
  },
  {
-  "vi": "🚚 Đặt đơn gộp · $1 món",
-  "en": "",
-  "pattern": true
+  "vi": "💵 Lương tính theo ngày: khép ca một ngày có làm xong ít nhất một việc là lương về thẳng ví.",
+  "en": ""
  },
  {
-  "vi": "🛒 Gộp $1 món thiếu · một đơn",
-  "en": "",
-  "pattern": true
+  "vi": "📝 Thử việc nhận 85% lương. Làm tốt thì ký hợp đồng chính thức, nhận đủ.",
+  "en": ""
  },
  {
-  "vi": "Gộp $1 món thiếu vào một đơn",
-  "en": "",
-  "pattern": true
+  "vi": "🙅 Ngày không làm xong việc nào thì không có lương hôm đó.",
+  "en": ""
  },
  {
-  "vi": "📦 Nhập $1",
-  "en": "",
-  "pattern": true
+  "vi": "🎁 Tiền bo khi làm thuê là của bạn: cũng về thẳng ví.",
+  "en": ""
  },
  {
-  "vi": "🛒 Xem đơn đang soạn · $1 món",
-  "en": "",
-  "pattern": true
+  "vi": "📒 Xem lại trong sổ ví: dòng “Lương ngày … · tên nơi làm”.",
+  "en": ""
  },
  {
-  "vi": "Chờ $1 về",
-  "en": "",
-  "pattern": true
+  "vi": "Chi phí sống",
+  "en": ""
  },
  {
-  "vi": "🛒 Gộp $1 món sắp hết · một đơn",
-  "en": "",
-  "pattern": true
+  "vi": "🍚 Mỗi lần khép ca là qua một ngày sống: ví trả tiền phòng và cơm nước 10–20 xu, tăng dần theo chương.",
+  "en": ""
  },
  {
-  "vi": "Nhập thêm $1 món sắp hết",
-  "en": "",
-  "pattern": true
+  "vi": "💡 Nơi bạn không làm hôm đó không tốn đồng nào: quỹ, hàng và người làm cứ để nguyên chờ bạn quay lại.",
+  "en": ""
  },
  {
-  "vi": "📦 Nhập thêm $1",
-  "en": "",
-  "pattern": true
+  "vi": "🏃 Chỉ khi bỏ đi lúc đang làm dở mới bị phạt một lần, hộp xác nhận ghi rõ số tiền trước khi đi.",
+  "en": ""
  },
  {
-  "vi": "Đơn gộp $1 món",
-  "en": "",
-  "pattern": true
+  "vi": "📉 Ví âm là đang nợ tiền phòng: câu chuyện tạm dừng tới khi trả xong.",
+  "en": ""
  },
  {
-  "vi": "🛒 Đơn gộp · $1 món",
-  "en": "",
-  "pattern": true
+  "vi": "🏦 Có tài khoản ngân hàng còn tiền: sáng hôm sau tài khoản tự bù phần ví đang âm (tắt được trong Ngân hàng).",
+  "en": ""
  },
  {
-  "vi": "🛒 Đơn gộp · thiếu $1",
-  "en": "",
-  "pattern": true
+  "vi": "Thu tiền và thối tiền",
+  "en": ""
  },
  {
-  "vi": "giao thiếu $1$2 · đã trả $3 xu",
-  "en": "",
-  "pattern": true
+  "vi": "💵 Khách đưa tờ tiền. Bạn tự chọn tờ để thối, đủ từng xu.",
+  "en": ""
  },
  {
-  "vi": "Đơn gộp $1: $2 món, $3 xu",
-  "en": "",
-  "pattern": true
+  "vi": "🧮 Tiền thối = tiền khách đưa − tiền hàng. Đếm lại trước khi bấm giao.",
+  "en": ""
  },
  {
-  "vi": "🛒 Đơn gộp $1 món · nhận $2/",
-  "en": "",
-  "pattern": true
+  "vi": "😠 Thối thiếu: khách kỹ tính đếm ngay và đòi thêm. Khách khác về nhà mới thấy: review 2★, có khi báo lên app.",
+  "en": ""
  },
  {
-  "vi": "Mỗi loại chứa tối đa $1",
-  "en": "",
-  "pattern": true
+  "vi": "💸 Thối dư: khách thật thà trả lại. Khách khác giữ luôn, tiệm mất đúng số đó.",
+  "en": ""
  },
  {
-  "vi": "còn $1 xu, thiếu $2 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "🙏 Thối đúng: đôi khi khách nói “khỏi thối, giữ tiền lẻ đi”. Tiền đó thành tiền bo.",
+  "en": ""
  },
  {
-  "vi": "ship $1 xu (miễn từ $2)",
-  "en": "",
-  "pattern": true
+  "vi": "Tiền bo",
+  "en": ""
  },
  {
-  "vi": "sỉ từ $1: −$2%",
-  "en": "",
-  "pattern": true
+  "vi": "🍀 Làm tốt thì thỉnh thoảng khách bo thêm tiền hoặc một món quà nhỏ. Hên xui.",
+  "en": ""
  },
  {
-  "vi": "đơn đang soạn $1 món",
-  "en": "",
-  "pattern": true
+  "vi": "💇 Salon, tour, chăm thú cưng, homestay hay được bo. Quầy bán hàng thỉnh thoảng. Kế toán hiếm, thường là quà.",
+  "en": ""
  },
  {
-  "vi": "sỉ −$1%",
-  "en": "",
-  "pattern": true
+  "vi": "🎀 Nhà thuốc, lớp học, chăm sóc khách hàng, văn phòng: thỉnh thoảng có quà cảm ơn, không bao giờ bo tiền.",
+  "en": ""
  },
  {
-  "vi": "Lấy $1: −$2%",
-  "en": "",
-  "pattern": true
+  "vi": "⭐ Việc 5★ dễ được bo nhất, 4★ chỉ bằng một nửa, 3★ rất hiếm, 1–2★ không bao giờ.",
+  "en": ""
  },
  {
-  "vi": "Hàng $1 + ship $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "😤 Khách càu nhàu hay đang bực thì hiếm bo. Khách đòi giảm, đòi hoàn, bỏ về, từ chối, hoặc có lỗi an toàn: không bo.",
+  "en": ""
  },
  {
-  "vi": "Hàng $1 xu · miễn ship",
-  "en": "",
-  "pattern": true
+  "vi": "💵 Tiền bo thường khoảng 5–15% hóa đơn. Hiếm hoi có khách bo đậm, khoảng nửa hóa đơn, tối đa 100 xu.",
+  "en": ""
  },
  {
-  "vi": "còn $1 xu · kệ sau khi nhận $2/",
-  "en": "",
-  "pattern": true
+  "vi": "🙏 Thối đúng tiền, đôi khi khách nói “khỏi thối, giữ tiền lẻ đi”: số lẻ đó thành tiền bo.",
+  "en": ""
  },
  {
-  "vi": "🛒 Thêm vào đơn$1",
-  "en": "",
-  "pattern": true
+  "vi": "🎉 Ngày hội, ngày lương, mùa cưới khách rộng tay hơn. Khách thân với bạn cũng hay bo hơn.",
+  "en": ""
  },
  {
-  "vi": "Bỏ $1 khỏi đơn",
-  "en": "",
-  "pattern": true
+  "vi": "👛 Tiệm của bạn: bo vào quỹ tiệm. Làm thuê: bo về ví. Có nhân viên trong ca: bo chia cho cả đội.",
+  "en": ""
  },
  {
-  "vi": "💬 Đơn từ $1 xu được xin bớt",
-  "en": "",
-  "pattern": true
+  "vi": "📋 Mỗi lần được bo có thông báo nhỏ; bản tổng kết ngày có mục “Tip hôm nay”.",
+  "en": ""
  },
  {
-  "vi": "nhận đơn gộp từ $1 xu (còn thiếu $2 xu hàng).",
-  "en": "",
-  "pattern": true
+  "vi": "🌱 Việc đầu tiên ở mỗi nơi không có bo.",
+  "en": ""
  },
  {
-  "vi": "thiếu $1 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "Sổ tiệm và hóa đơn",
+  "en": ""
  },
  {
-  "vi": "Đủ $1 đơn đang về: nhận bớt thùng rồi đặt tiếp.",
-  "en": "",
-  "pattern": true
+  "vi": "📒 [[Sổ tiệm]] → [[Thu chi]]: mọi khoản thu, chi và hóa đơn của nơi đó.",
+  "en": ""
  },
  {
-  "vi": "Đơn gộp $1",
-  "en": "",
-  "pattern": true
+  "vi": "🧾 Khép ca sinh hóa đơn: lương người phụ, điện nước. Tiền mặt bằng tính theo kỳ.",
+  "en": ""
  },
  {
-  "vi": "Thêm $1 xu hàng: miễn ship",
-  "en": "",
-  "pattern": true
+  "vi": "💳 Bấm [[Thanh toán]] để trả từng hóa đơn trước hạn.",
+  "en": ""
  },
  {
-  "vi": "Đặt đơn · $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "📊 Bản tổng kết cuối ngày có thẻ “✓ Lãi/lỗ hôm nay: +N xu”; chạm vào để xem chi tiết thu chi.",
+  "en": ""
  },
  {
-  "vi": "Bỏ cả đơn $1?",
-  "en": "",
-  "pattern": true
+  "vi": "Mở Sổ tiệm",
+  "en": ""
  },
  {
-  "vi": "điểm · lần sau vẫn có $1% cơ hội",
-  "en": "",
-  "pattern": true
+  "vi": "Thuế và tiền phạt",
+  "en": ""
  },
  {
-  "vi": "lớp $1 xu hoặc tự học miễn phí · thêm $2% cơ hội được nhận",
-  "en": "",
-  "pattern": true
+  "vi": "🏛️ Cứ 7 ngày là một kỳ: thuế 4% doanh thu và tiền mặt bằng thành hóa đơn.",
+  "en": ""
  },
  {
-  "vi": "🚪 Đi cửa sau ($1 xu)",
-  "en": "",
-  "pattern": true
+  "vi": "👮 Tiền phạt đến từ chuyện đời: kiểm tra, vi phạm, công an phường.",
+  "en": ""
  },
  {
-  "vi": "Ứng tuyển lại $1, hoặc làm ở nơi khác trong hành trình",
-  "en": "",
-  "pattern": true
+  "vi": "⚖️ Mỗi vụ có vài cách xử lý. Cách đúng luật, trung thực thường nhẹ nhất về lâu dài.",
+  "en": ""
  },
  {
-  "vi": "🚪 Qua cửa sau ($1 xu)",
-  "en": "",
-  "pattern": true
+  "vi": "🚪 Bỏ dở việc giữa chừng để đi nơi khác cũng bị phạt.",
+  "en": ""
  },
  {
-  "vi": "nếu điểm chưa đủ 60, vẫn có $1% cơ hội được nhận.",
-  "en": "",
-  "pattern": true
+  "vi": "Ngân hàng: nộp, rút và tiết kiệm",
+  "en": ""
  },
  {
-  "vi": "($1 điểm): nếu điểm chưa đủ 60, bạn vẫn có $2% cơ hội được nhận ở đây.",
-  "en": "",
-  "pattern": true
+  "vi": "🏦 Mở [[Ngân hàng]], bấm [[Mở tài khoản miễn phí]]. Chỉ có trong hành trình.",
+  "en": ""
  },
  {
-  "vi": "thì khi điểm chưa đủ 60 vẫn còn $1% cơ hội được nhận ở đây.",
-  "en": "",
-  "pattern": true
+  "vi": "⬇️ Nộp: gõ số xu, bấm [[Nộp tiền]]. Tiền đi từ ví vào tài khoản.",
+  "en": ""
  },
  {
-  "vi": "🎓 +$1% cơ hội",
-  "en": "",
-  "pattern": true
+  "vi": "⬆️ Rút: gõ số xu, chọn cây ATM, bấm [[Rút tiền]]. Cây ATM Ngân hàng Phố miễn phí, cây ATM khác ngân hàng mất 1 xu.",
+  "en": ""
  },
  {
-  "vi": "📅 $1 lại $2.",
-  "en": "",
-  "pattern": true
+  "vi": "🐷 Tab Tiết kiệm: không kỳ hạn lãi 3%/năm, rút lúc nào cũng được. Có kỳ hạn từ 7 ngày tới 3 năm, lãi 6–8,8%/năm, gửi càng lâu lãi càng cao.",
+  "en": ""
  },
  {
-  "vi": "từ Ngày $1",
-  "en": "",
-  "pattern": true
+  "vi": "🗓️ Trong game, 1 tháng là 5 ngày sống, 1 năm là 60 ngày sống. Kỳ hạn 12 tháng là 60 ngày sống.",
+  "en": ""
  },
  {
-  "vi": "lại · Còn $1 ngày",
-  "en": "",
-  "pattern": true
+  "vi": "📅 Sổ kỳ hạn gửi ít nhất 20 xu, tối đa 5 sổ. Đáo hạn thì gốc và lãi về tài khoản, hoặc chọn tự tái tục để gửi tiếp. [[Tất toán sớm]] chỉ được lãi không kỳ hạn.",
+  "en": ""
  },
  {
-  "vi": "Bạn chạm đếm được $1 món nhưng ô ghi $2.",
-  "en": "",
-  "pattern": true
+  "vi": "🛟 “Tự động bù ví khi ví âm” bật sẵn: ví âm thì sáng hôm sau tài khoản tự trả phần đang nợ. Bỏ dấu chọn để tắt.",
+  "en": ""
  },
  {
-  "vi": "Phí $1 xu trừ vào ví (ví còn $2 xu). Bạn vào làm $3 với lương khởi điểm $4 xu/ngày, thử việc $5 ngày như mọi người. Ngày đầu có thể nghe vài lời xì xào.",
-  "en": "",
-  "pattern": true
+  "vi": "💬 Tin nhắn và cuộc gọi của ngân hàng hiện trong tab Tổng quan.",
+  "en": ""
  },
  {
-  "vi": "Trả $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Mở Ngân hàng",
+  "en": ""
  },
  {
-  "vi": "món từ $1: trả $2 xu ngay$3. Dự kiến: $4. Một chuyến, một thùng.",
-  "en": "",
-  "pattern": true
+  "vi": "Chuyển khoản cho bạn bè",
+  "en": ""
  },
  {
-  "vi": "Đếm $1 trong thùng trước đã nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "🏦 Mở [[Ngân hàng]] → [[Chuyển khoản cho bạn bè]]: chọn bạn, gõ số xu, lời nhắn rồi bấm [[Tiếp tục]] để xem lại và gửi.",
+  "en": ""
  },
  {
-  "vi": "từ $1: trả $2 xu ngay$3.$4 Hàng chỉ vào kho sau khi bạn đếm nhận.",
-  "en": "",
-  "pattern": true
+  "vi": "💰 Không giới hạn số lần, tổng xu gửi hoặc nhận mỗi ngày. Chỉ chuyển số xu bạn đang có; không mất phí.",
+  "en": ""
  },
  {
-  "vi": "🧧 +$1 xu vào ví",
-  "en": "",
-  "pattern": true
+  "vi": "💳 Tiền đi từ tài khoản ngân hàng hoặc tiền mặt. Bạn ấy nhận ngay, hoặc khi vào game.",
+  "en": ""
  },
  {
-  "vi": "🧧 $1 mừng $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Mở Chuyển khoản",
+  "en": ""
  },
  {
-  "vi": "💰 $1 xu/phút",
-  "en": "",
-  "pattern": true
+  "vi": "Thẻ tín dụng: quẹt trước, trả sau",
+  "en": ""
  },
  {
-  "vi": "Đám cưới $1 và $2: $3 khách",
-  "en": "",
-  "pattern": true
+  "vi": "💳 Tab Thẻ, bấm [[Nộp hồ sơ mở thẻ]]. Cần điểm tín dụng từ 580 và thu nhập đều: ít nhất 3 ngày có lương hoặc tiền lời rút về ví trong 14 ngày.",
+  "en": ""
  },
  {
-  "vi": "🧧 mừng $1 xu$2",
-  "en": "",
-  "pattern": true
+  "vi": "🛍️ Thẻ dùng để trả học phí, đi cửa sau, mua nhẫn và lo cưới. Chọn cách trả mặc định ở mục “Khi mua sắm cá nhân”.",
+  "en": ""
  },
  {
-  "vi": "tối đa $1 xu mỗi đám",
-  "en": "",
-  "pattern": true
+  "vi": "🧾 Cứ 7 ngày sống có một sao kê. Hạn trả là 3 ngày sau sao kê.",
+  "en": ""
  },
  {
-  "vi": "🧧 Gửi phong bì $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "✅ [[Trả hết sao kê]] trước hạn thì không mất lãi. [[Trả tối thiểu]] (10% sao kê, ít nhất 10 xu) thì phần còn lại chịu lãi 0,5%/ngày.",
+  "en": ""
  },
  {
-  "vi": "Mâm cỗ bàn $1",
-  "en": "",
-  "pattern": true
+  "vi": "⏰ Trễ hạn: phạt 8 xu, trừ điểm tín dụng, thẻ tạm khóa tới khi trả phần quá hạn.",
+  "en": ""
  },
  {
-  "vi": "Gắp món thêm tinh thần$1 · Bia say nhẹ, trừ tinh thần",
-  "en": "",
-  "pattern": true
+  "vi": "🤖 Chọn “Tự động trả toàn bộ sao kê” hoặc “Tự động trả tối thiểu” rồi bấm [[Lưu cách tự động trả]] để khỏi quên.",
+  "en": ""
  },
  {
-  "vi": "(còn $1 lần)",
-  "en": "",
-  "pattern": true
+  "vi": "🏧 [[Ứng tiền mặt]]: phí 4% (ít nhất 3 xu), lãi tính ngay, tối đa 50% hạn mức. Chỉ dùng khi thật cần.",
+  "en": ""
  },
  {
-  "vi": "Gắp $1",
-  "en": "",
-  "pattern": true
+  "vi": "Vay tiền và điểm tín dụng",
+  "en": ""
  },
  {
-  "vi": "Đổi chủ đề$1",
-  "en": "",
-  "pattern": true
+  "vi": "💸 Vay tiêu dùng: tiền vào tài khoản của bạn, lãi 4% mỗi kỳ 7 ngày.",
+  "en": ""
  },
  {
-  "vi": "💐 $1 bắt được hoa cưới!",
-  "en": "",
-  "pattern": true
+  "vi": "🏪 Vay mở rộng tiệm: tiền vào thẳng quỹ một tiệm bạn làm chủ, lãi 3,5% mỗi kỳ.",
+  "en": ""
  },
  {
-  "vi": "Mở ở Trưởng thành cấp $1",
-  "en": "",
-  "pattern": true
+  "vi": "📆 Vay 50–5.000 xu, kỳ hạn 14, 21 hoặc 28 ngày, tối đa 2 khoản cùng lúc. Xem lịch trả rồi bấm [[Xem lại & ký hợp đồng]].",
+  "en": ""
  },
  {
-  "vi": "Mở khi có danh hiệu “$1”",
-  "en": "",
-  "pattern": true
+  "vi": "🔁 Tới ngày trả góp, ngân hàng tự trích từ tài khoản (thiếu thì lấy thêm tiền mặt). Trễ hạn phạt 5% kỳ đó, ít nhất 3 xu.",
+  "en": ""
  },
  {
-  "vi": "Chỉ bán cho người làm ở $1",
-  "en": "",
-  "pattern": true
+  "vi": "⚠️ Trễ hạn (thẻ hay khoản vay) 3 lần là bị ghi nợ xấu 30 ngày: không mở thẻ, không vay mới, thẻ tạm ngưng.",
+  "en": ""
  },
  {
-  "vi": "🏷️ Giá nhân viên $1: −$2%",
-  "en": "",
-  "pattern": true
+  "vi": "📈 Điểm tín dụng 300–850, bắt đầu 650. Trả đúng hạn, dư nợ thẻ dưới 30% hạn mức, thu nhập đều thì điểm tăng.",
+  "en": ""
  },
  {
-  "vi": "🏷️ Làm ở $1: giảm $2%",
-  "en": "",
-  "pattern": true
+  "vi": "📉 Mỗi lần nộp hồ sơ vay hay mở thẻ, điểm giảm một chút. Đừng nộp dồn dập.",
+  "en": ""
  },
  {
-  "vi": "Ví mới có $1 xu, chưa đủ $2 xu để mua $3. Làm thêm vài ca rồi quay lại nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Thuê phòng, mua nhà",
+  "en": ""
  },
  {
-  "vi": "Ví của bạn đang có $1 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "🏠 Mở [[Nhà của bạn]] ở trang Hành trình hoặc trong Ngân hàng. Luôn thấy tiền mặt, tài khoản và còn thiếu bao nhiêu.",
+  "en": ""
  },
  {
-  "vi": "Giá $1 xu$2.",
-  "en": "",
-  "pattern": true
+  "vi": "🛏️ Phòng trọ khép kín: cọc 60 xu (trả lại khi dọn đi), tiền phòng 14 xu/ngày, tinh thần +1 mỗi sáng.",
+  "en": ""
  },
  {
-  "vi": "(giá nhân viên $1, giá gốc $2 xu)",
-  "en": "",
-  "pattern": true
+  "vi": "👥 Ký túc xá Hẻm 7: ở ghép giường tầng, cọc 20 xu, 7 xu/ngày. Từ chương 3 rẻ hơn gác Bà Tám, có 3 bạn cùng phòng.",
+  "en": ""
  },
  {
-  "vi": "Quỹ nơi làm việc: $1 xu. Xem tiền của bạn",
-  "en": "",
-  "pattern": true
+  "vi": "🏢 Căn hộ, nhà phố, biệt thự rao bán từ 1.800 tới 60.000 xu. Trả trước ít nhất 30% giá và 2% phí công chứng, sang tên.",
+  "en": ""
  },
  {
-  "vi": "Ví của bạn: $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "📝 Phần còn lại vay Ngân hàng Phố 1–3 năm, trả góp mỗi tháng (5 ngày sống). Lãi 9–11,4%/năm tùy điểm tín dụng.",
+  "en": ""
  },
  {
-  "vi": "Rút về ví · tối đa $1",
-  "en": "",
-  "pattern": true
+  "vi": "🔑 Có nhà thì hết tiền phòng, chỉ còn điện nước 2–16 xu/ngày, và tinh thần được cộng mỗi sáng.",
+  "en": ""
  },
  {
-  "vi": "Rút $1 xu về ví?",
-  "en": "",
-  "pattern": true
+  "vi": "🧾 Nhà từ 6.000 xu có phí bảo trì mỗi tháng: 0,2–0,35% giá mua, dù ở, để trống hay cho thuê. Căn hộ nhỏ dưới 6.000 xu không tốn phí này.",
+  "en": ""
  },
  {
-  "vi": "Từ quỹ $1. Quỹ vẫn giữ tiền dự phòng và tiền hóa đơn chưa trả.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Rút · $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang diễn ra · còn $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mở sau $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vào dự$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ảnh cưới $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đổi nhạc rồi: $1! Quẩy lên nào! 🎧",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bản $1",
-  "en": "",
-  "pattern": true
+  "vi": "🏰 Penthouse cần điểm tín dụng từ 670 mới vay được, biệt thự từ 700 hoặc 740.",
+  "en": ""
  }
 ]

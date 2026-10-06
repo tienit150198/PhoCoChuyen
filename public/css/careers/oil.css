@@ -1,0 +1,88 @@
+/* Thợ dầu khí (public/js/careers/oil.js): built on street_kit.css and air_kit.css (both loaded first, v4/careers.js
+   CSS_KIT): the street trades' layout, the air crew's encounter card and crew record. A deep sea-blue with safety
+   orange for what needs a decision; theme tokens for surfaces and text, so the dark theme works. */
+
+html[data-career="oil"]{--air-navy:#1f5f7a;--air-sky:#2f88a8}
+.career-job.sk.dk{--sk-accent:#1f5f7a;--sk-accent-2:#e07a2f;--dk-orange:#e07a2f;--dk-red:#c0533f}
+
+.career-job.sk.dk .dk-hitch b{font-variant-numeric:tabular-nums}
+.career-job.sk.dk .dk-hitch .air-record{margin-top:6px}
+.career-job.sk.dk .dk-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.career-job.sk.dk .dk-list>li{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.career-job.sk.dk .dk-list>li>span[aria-hidden]{font-size:20px;width:26px;text-align:center;flex:none}
+.career-job.sk.dk .dk-list small{display:block;color:var(--sk-muted);font-size:13px;line-height:1.35}
+.career-job.sk.dk .grow{flex:1 1 auto;min-width:0}
+
+.career-job.sk.dk .dk-who{padding:10px 12px}
+.career-job.sk.dk .dk-who .row{gap:10px;align-items:flex-start}
+.career-job.sk.dk .dk-who .sk-pane-sum{min-height:40px;padding:6px 8px;margin-top:4px;background:transparent;text-align:left}
+.career-job.sk.dk .dk-who .sk-pane-sum span{white-space:normal;line-height:1.35}
+
+/* readings: what a check showed (red = something is wrong) */
+.career-job.sk.dk .dk-read{margin:4px 0;padding:8px 10px;border-radius:var(--sk-rs);border:1px solid var(--sk-line);background:var(--sk-surface-2);font-size:14px;line-height:1.4}
+.career-job.sk.dk .dk-read.ok{border-color:var(--sk-good)}
+.career-job.sk.dk .dk-read.bad{border:2px solid var(--dk-red);background:color-mix(in srgb,var(--dk-red) 9%,var(--sk-surface));font-weight:700}
+.career-job.sk.dk .dk-read.fixed{border-color:var(--sk-good);border-style:dashed}
+.career-job.sk.dk .dk-read.fact{border-color:var(--sk-accent);border-style:dashed}
+.career-job.sk.dk .dk-checks .btn,.career-job.sk.dk .dk-checks button{min-height:44px}
+
+/* the stop-work box: always there, orange */
+.career-job.sk.dk .dk-stop{border:2px solid var(--dk-orange)}
+.career-job.sk.dk .dk-stop .row.spread{gap:8px;align-items:center}
+.career-job.sk.dk .dk-stop-go{min-height:44px;font-weight:800}
+.career-job.sk.dk .dk-reasons{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.career-job.sk.dk .dk-reasons .btn{min-height:44px;flex:1 1 45%;white-space:normal;text-align:left}
+.career-job.sk.dk .dk-nm{border:2px dashed var(--sk-accent)}
+
+/* the bag, the gear, tiles */
+.career-job.sk.dk .sk-tile.dk-out{opacity:.62;border-style:dashed}
+.career-job.sk.dk .dk-quiz .sk-opt,.career-job.sk.dk .dk-alarm .sk-opt{min-height:52px}
+
+/* isolation points */
+.career-job.sk.dk .dk-point{padding:8px;border-radius:var(--sk-rs);border:1px solid var(--sk-line);background:var(--sk-surface)}
+.career-job.sk.dk .dk-point.on{border-color:var(--dk-red);box-shadow:inset 4px 0 0 var(--dk-red)}
+.career-job.sk.dk .dk-point .btn{min-height:44px}
+
+/* gauges */
+.career-job.sk.dk .dk-gauge{padding:8px;border-radius:var(--sk-rs);border:1px solid var(--sk-line);background:var(--sk-surface)}
+.career-job.sk.dk .dk-dial{display:flex;align-items:baseline;gap:8px;margin-top:2px}
+.career-job.sk.dk .dk-val{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.career-job.sk.dk .dk-gbtn{gap:6px}
+.career-job.sk.dk .dk-gbtn .btn{min-height:44px}
+.career-job.sk.dk .dk-areas .btn,.career-job.sk.dk .dk-stations .btn,.career-job.sk.dk .dk-door .btn{min-height:44px}
+
+/* the door sign, the alarm */
+.career-job.sk.dk .dk-sign{margin:4px 0 8px;padding:10px;border-radius:8px;background:#20313b;color:#fff;font-weight:700;letter-spacing:.03em;text-align:center}
+.career-job.sk.dk .dk-sign b{color:#ffd166}
+.career-job.sk.dk .dk-tone p{margin:0 0 4px}
+.career-job.sk.dk .dk-tone .btn{min-height:44px}
+.career-job.sk.dk .dk-alarm{border-color:var(--dk-red)}
+
+/* storm, handover */
+.career-job.sk.dk .dk-loose .btn{min-height:44px}
+.career-job.sk.dk .dk-notes>li{display:block}
+.career-job.sk.dk .dk-note{width:100%;align-items:flex-start;text-align:left;min-height:56px}
+
+/* the shore day */
+.career-job.sk.dk .dk-reqs{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px}
+.career-job.sk.dk .dk-req p{margin:4px 0}
+.career-job.sk.dk .dk-req-emoji{font-size:28px;margin-right:8px}
+.career-job.sk.dk .dk-words{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.career-job.sk.dk .dk-word{min-height:44px;border-radius:999px;white-space:normal;text-align:left}
+.career-job.sk.dk .dk-word.on{background:var(--sk-accent);border-color:var(--sk-accent);color:#fff}
+.career-job.sk.dk .dk-req .row.wrap{gap:6px}
+.career-job.sk.dk .dk-send{min-height:48px}
+
+/* the logbook */
+.career-job.sk.dk .dk-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:8px}
+.career-job.sk.dk .dk-stats div{padding:8px 4px;border-radius:var(--sk-rs);background:var(--sk-surface-2);text-align:center}
+.career-job.sk.dk .dk-stats b{display:block;font-size:18px}
+.career-job.sk.dk .dk-stats small{color:var(--sk-muted);font-size:12px;line-height:1.2}
+.career-job.sk.dk .dk-loglist li{font-size:14px}
+.career-job.sk.dk .dk-crew .air-rest{margin-top:8px}
+
+@media (max-width:420px){
+  .career-job.sk.dk .dk-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .career-job.sk.dk .dk-gauge{flex-direction:column;align-items:stretch}
+  .career-job.sk.dk .dk-reasons .btn{flex:1 1 100%}
+}

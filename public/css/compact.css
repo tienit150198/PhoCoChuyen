@@ -1,0 +1,299 @@
+/* ==========================================================================
+   Mobile compact layout + landscape (WP8, owner 06/10: "mobile cũng đang bị nhiều cái che quá … tối ưu lại
+   mobile gọn hơn … hỗ trợ thêm mode xoay màn ngang").
+
+   Phones only: every rule is under html[data-layout="phone"], so tablet and desktop are unchanged. Loaded after
+   app.css and the other first-frame sheets (index.html); career sheets and money.css load later, so the rules
+   that restyle them carry more specificity (html[data-layout] + a class) rather than relying on order.
+
+   A. Portrait, compact
+      1. one-row sheet header (~56 px): close, a one-line title, ❔/⋯; the eyebrow and the money line fold into it
+      2. one shared action bar (the 16 career bars + .abar from v4/action-bar.js), with matching scroll padding
+      3. notes (toasts) sit in the header's title row, never over a control or the action bar
+      4. home: the scene gets ~70% (slim title card, no second "Đổi nghề", 44 px area chips, a 64 px task card
+         with "Khách ghé" beside it, a 64 px dock)
+      5. secondary panels stop pinning (prep tabs, side panels, the wardrobe preview)
+      6. "Thêm": three columns of 64 px items, at most 60% tall, the dock stays visible
+      7. tap targets at least 44 px
+   B. Landscape (html[data-orientation="landscape"]): a left rail instead of the bottom dock, a slim top bar,
+      full-height sheets, two panes on work screens (the desktop .wb-side layout, through the sheet container
+      query), "Thêm" as a right drawer, safe-area insets for the notch.
+   C. Keyboard (html.kb-open, v4/shell.js): header folded, chat box capped, action bar scrolls away.
+   Theme tokens only (docs/DESIGN.md).
+   ========================================================================== */
+
+/* ---------- A1. One-row sheet header ---------------------------------------- */
+html[data-layout="phone"] .sheet-head{align-items:center;gap:2px;min-height:52px;box-sizing:border-box;padding:7px max(6px,var(--safe-r)) 1px max(14px,var(--safe-l))}
+html[data-layout="phone"] .sheet-head::before,html[data-layout="phone"] .preparation-topline::before{top:3px;height:4px}
+/* The eyebrow repeats what the title says (place · day); the title stays on one line (its full text is in title=). */
+html[data-layout="phone"] .sheet-head:has(h2) .eyebrow{display:none}
+html[data-layout="phone"] .sheet-head h2,html[data-layout="phone"] .sheet.cozy-job .sheet-head>.grow>h2{margin:0;font-size:1.067rem;line-height:1.3;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;line-clamp:1;overflow:hidden;overflow-wrap:anywhere}
+html[data-layout="phone"] .sheet-head>.grow>p,html[data-layout="phone"] .sheet-head>div:first-child>p{margin:1px 0 0;font-size:.8rem;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* A work screen's header is its title only: the level note under it is on the career's home already. */
+html[data-layout="phone"] .sheet.cozy-job .sheet-head>.grow>p{display:none}
+html[data-layout="phone"] .sheet-head>.icon-btn,html[data-layout="phone"] .sheet-head>.btn.icon-btn,html[data-layout="phone"] .sheet-head>.head-more>summary,html[data-layout="phone"] .sheet-head>.btn:last-child{width:44px;height:44px;min-width:44px;min-height:44px;margin:0;padding:0}
+html[data-layout="phone"] .sheet-head>.tut-help{width:40px;height:40px;min-width:40px;min-height:40px;margin:2px}
+html[data-layout="phone"] .sheet.cozy-job .sheet-head{padding-top:7px;padding-bottom:1px}
+/* The money line joins the title row: just the numbers ("🏪 365"), the words stay in the chip's text for readers.
+   On a work screen only the workplace fund shows (that is what it spends). */
+html[data-layout="phone"] .sheet-head:has(>.mn-line),html[data-layout="phone"] .preparation-topline:has(>.mn-line){flex-wrap:nowrap;row-gap:0}
+html[data-layout="phone"] .sheet-head>.grow~*{order:2}
+html[data-layout="phone"] .sheet-head>.grow~.mn-line,html[data-layout="phone"] .sheet-head>.mn-line,html[data-layout="phone"] .preparation-topline>.mn-line{order:1;flex:0 1 auto;min-width:0;margin:0 2px 0 4px;align-self:center}
+html[data-layout="phone"] .sheet-head:has(>.mn-line)>.grow{flex:1 1 auto}
+html[data-layout="phone"] .sheet-head>.mn-line,html[data-layout="phone"] .preparation-topline>.mn-line{flex-shrink:0;max-width:52%}
+html[data-layout="phone"] .mn-line .mn-chip{gap:4px;padding:3px 8px;box-shadow:none}
+html[data-layout="phone"] .mn-line .mn-part{font-size:0;gap:3px}
+html[data-layout="phone"] .mn-line .mn-part>*,html[data-layout="phone"] .mn-line .mn-sep{font-size:.8rem}
+html[data-layout="phone"] .sheet.cozy-job .mn-line .mn-part:not(.mn-fund):has(~.mn-fund),html[data-layout="phone"] .sheet.cozy-job .mn-line .mn-sep{display:none}
+/* Career home and the other life sheets: the tab bar under the header scrolls with the page; only the header pins. */
+html[data-layout="phone"] .lx-top{display:contents}
+html[data-layout="phone"] .lx-top>.sheet-head{position:sticky;top:0;z-index:6;background:var(--surface);border-bottom:1px solid var(--line);padding-bottom:3px}
+html[data-layout="phone"] .lx-top>.lx-nav{margin-top:10px}
+html[data-layout="phone"] .lx-head .eyebrow{display:none}
+html[data-layout="phone"] .lx-head h2{font-size:1.067rem}
+/* The milk-tea prep top line ("← Hành trình · CHUẨN BỊ · ✕"): one slim row. */
+html[data-layout="phone"] .preparation-topline{min-height:56px;box-sizing:border-box;padding:9px max(8px,var(--safe-r)) 3px max(10px,var(--safe-l))}
+html[data-layout="phone"] .preparation-topline .btn{min-height:44px}
+
+/* ---------- A2. One shared action bar ------------------------------------- */
+/* The careers' bars (and any bar the guide marks .abar): flush with the sheet's bottom edge, one compact row,
+   the same surface, padding and radius everywhere. */
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar){
+  position:sticky;bottom:0;z-index:5;gap:6px 8px;margin-top:8px;margin-bottom:0;
+  padding:6px 8px calc(6px + var(--safe-b,0px));border-radius:16px 16px 0 0;border:1px solid var(--line);border-bottom:0;
+  background:var(--surface);box-shadow:0 -6px 16px -12px rgba(0,0,0,.35)}
+html[data-layout="phone"] dialog.sheet .career-job.ok>.ok-bar.abar,html[data-layout="phone"] dialog.sheet .career-job.ok>.ok-bar{bottom:0}
+/* The bars keep their own inner layout; their big buttons get one compact height (48 px, a thumb and a bit). */
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar) .btn.big{min-height:46px;padding-top:7px;padding-bottom:7px;font-size:1rem;line-height:1.25}
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar) .fk-next:empty{display:none}
+/* "Bước tiếp" + "hoặc <kết thúc>": one row, the way out as a small outlined button beside the step. */
+html[data-layout="phone"] dialog.sheet .gd-ctas:has(>.gd-alt){flex-direction:row;align-items:stretch;gap:6px}
+html[data-layout="phone"] dialog.sheet .gd-ctas>.gd-cta{flex:1 1 auto;width:auto;min-width:0}
+html[data-layout="phone"] dialog.sheet .gd-ctas>.gd-alt{flex:0 1 34%;align-self:stretch;display:flex;align-items:center;justify-content:center;min-height:48px;margin:0;padding:4px 8px;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface);font-size:.767rem;line-height:1.2;text-align:center;text-decoration:none;overflow:hidden}
+html[data-layout="phone"] dialog.sheet .gd-why{font-size:.75rem}
+/* Matching scroll padding: a control scrolled to (guide "go to", focus) stops clear of the bar and the header. */
+html[data-layout="phone"] dialog#sheet[data-abar]{scroll-padding-bottom:calc(var(--abar-h,64px) + 8px);scroll-padding-top:calc(var(--hd-h,56px) + 8px)}
+html[data-layout="phone"] dialog#sheet[data-abar] .sheet-body{padding-bottom:calc(8px + var(--safe-b))}
+/* A sheet's own footer (prep "Bắt đầu", career home) and the life sheets' sticky button: the same slim bar. */
+html[data-layout="phone"] .life-sticky{padding:6px max(10px,var(--safe-r)) calc(6px + var(--safe-b)) max(10px,var(--safe-l))}
+html[data-layout="phone"] .life-sticky>.btn{min-height:48px;padding-top:8px;padding-bottom:8px}
+html[data-layout="phone"] .life-sticky>small{margin-top:2px}
+html[data-layout="phone"] .sheet-foot{padding-top:6px;padding-bottom:calc(6px + var(--safe-b))}
+html[data-layout="phone"] .sheet-foot .btn{min-height:44px}
+
+/* ---------- A3. Notes (toasts) never cover a control ----------------------- */
+/* Over a sheet: inside the header's title row, left of its buttons (v4/action-bar.js measures --hd-*). One line;
+   a red note may take two (it says why something failed); "▾" still opens the whole text. */
+html[data-layout="phone"] dialog#sheet.sheet .toasts,html[data-layout="phone"] dialog#sheet.sheet[data-gd-bar] .toasts,html[data-layout="phone"] dialog#sheet.sheet[data-gd-bar="below"] .toasts{
+  top:calc(var(--hd-t,10px) + 5px);bottom:auto;left:calc(max(8px,var(--safe-l)) + 0px);right:auto;transform:none;
+  width:calc(100vw - max(8px,var(--safe-l)) - var(--hd-btns,140px) - max(6px,var(--safe-r)) - 4px);align-items:stretch;gap:4px}
+html[data-layout="phone"] #sheet .toast{width:100%;box-sizing:border-box;min-height:36px;padding:7px 10px;border-radius:10px;font-size:.833rem;line-height:1.3;text-align:left;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+html[data-layout="phone"] #sheet .toast:not(.multi):not(.hint):not(.open){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden}
+html[data-layout="phone"] #sheet .toast.error:not(.multi):not(.open){-webkit-line-clamp:2}
+html[data-layout="phone"] #sheet .toast.multi:not(.open) .toast-lines li:nth-child(n+2){display:none}
+html[data-layout="phone"] #sheet .toast.multi:not(.open) .toast-lines .tl-tx{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-layout="phone"] #sheet .toast.hint:not(.open){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html[data-layout="phone"] #sheet .toast.open{max-height:calc(var(--vvh,100dvh) * .5);overflow-y:auto}
+html[data-layout="phone"] #sheet .toasts>.toast+.toast{display:none}
+/* Over the scene: under the title card and area chips, on the street itself (never on a chip or the task card). */
+html[data-layout="phone"] .toasts{top:calc(var(--topbar-h) + var(--safe-t) + 112px)}
+/* Coin pops and the bank chip float over the scene, never over the header buttons of a sheet. */
+html[data-layout="phone"] .bank-chip{top:calc(var(--safe-t) + 112px);pointer-events:none}
+html[data-layout="phone"] .coin-pop{pointer-events:none}
+
+/* ---------- A4. Home, portrait: the scene gets the room -------------------- */
+html[data-layout="phone"][data-orientation="portrait"]{--topbar-h:56px;--dock-h:64px}
+html[data-layout="phone"][data-orientation="portrait"].large-text{--dock-h:70px}
+/* "Đổi nghề" is in Thêm and on the career home already: the title card keeps the place name only. */
+html[data-layout="phone"] .scene-heading .career-switch{display:none}
+html[data-layout="phone"] .scene-heading:not(:empty){padding:2px 12px 2px 2px}
+html[data-layout="phone"] .scene-mark{width:32px;height:32px}
+/* Area chips: a thumb tall. */
+html[data-layout="phone"] .sa-chip{min-height:44px;min-width:44px;padding:0 10px}
+/* Portrait: icon-only chips (the name stays in title/aria-label), so they fit beside the title card. */
+html[data-layout="phone"][data-orientation="portrait"] .sa-chip{padding:0 6px}
+html[data-layout="phone"][data-orientation="portrait"] .sa-chip b{display:none}
+html[data-layout="phone"][data-orientation="portrait"] .scene-areas{gap:2px;padding:2px}
+html[data-layout="phone"][data-orientation="portrait"] .scene-heading:not(:empty){padding-right:8px}
+/* Dock: 64 px, icon over a one-line label (two for a long name). */
+html[data-layout="phone"][data-orientation="portrait"] .dock-btn{height:calc(var(--dock-h) - 4px);min-height:56px;gap:1px;padding-top:4px}
+html[data-layout="phone"][data-orientation="portrait"] .dock-btn>svg{height:26px}
+html[data-layout="phone"][data-orientation="portrait"] .dock-btn>span{font-size:.767rem;line-height:1.1}
+/* Task card: one 64 px row (who + the step + "Làm tiếp"); "🏡 Khách ghé" sits beside it as a small tile. */
+html[data-layout="phone"][data-orientation="portrait"] .task-hud{bottom:calc(var(--dock-h) + var(--safe-b) + 8px)}
+html[data-layout="phone"] .task-hud .note-card{padding:8px 8px 8px 10px;column-gap:8px}
+html[data-layout="phone"] .task-hud .note-card>.btn{min-height:44px;padding:6px 10px}
+html[data-layout="phone"] .task-hud .calm-what{min-height:44px}
+html[data-layout="phone"] .task-hud .calm-what .npc-mini svg{width:30px;height:30px}
+html[data-layout="phone"] .task-hud .task-step{margin-top:2px;padding:3px 8px}
+html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud{bottom:calc(var(--dock-h) + var(--safe-b) + 8px);flex-direction:row;align-items:flex-end;gap:6px;overflow:visible}
+html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud>.task-hud{flex:1 1 auto;min-width:0;width:auto}
+html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud>.wv-owner{flex:0 0 64px;width:64px}
+html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud>.wv-owner .wv-owner-toggle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:62px;min-height:56px;padding:4px;border-radius:14px;text-align:center;line-height:1.15;font-size:.7rem;overflow:hidden}
+html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud>.wv-owner .wv-owner-toggle b{display:block;font-size:.6rem;line-height:1.1}
+/* Other cards in the swipe row (a visit, a notice) stay as short as the task card; their extra lines scroll. */
+html[data-layout="phone"][data-orientation="portrait"] .task-hud .note-card:not(.task-card){max-height:64px;overflow-y:auto;overscroll-behavior:contain}
+/* Opened, the visitors' panel takes the whole row above the task card. */
+html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud:has(.wv-owner-toggle[aria-expanded="true"]){flex-direction:column-reverse}
+html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud:has(.wv-owner-toggle[aria-expanded="true"])>.wv-owner{flex:none;width:100%}
+html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud:has(.wv-owner-toggle[aria-expanded="true"]) .wv-owner-toggle{flex-direction:row;height:auto;min-height:44px}
+/* Chat sits in the top-right corner of the scene, level with the title card. */
+html[data-layout="phone"] .live-fab{top:8px;right:max(8px,var(--safe-r))}
+
+/* ---------- A5. Secondary panels stop pinning on a phone ------------------- */
+html[data-layout="phone"][data-orientation="portrait"] :is(.mt-tabs,.wd-stage,.wb-side,.sl-side,.sl-timer-card,.pc-running,.mb-strip,.cl-tabs,.dc-stage){position:relative;top:auto}
+html[data-layout="phone"][data-orientation="portrait"] .career-job :where(.wb-side){position:relative;top:auto}
+
+/* The milk-tea order ticket stays pinned (the order is what the stations below are for) but as one slim line:
+   the cup's asks in a row that scrolls sideways and a thin patience bar; who and the price are on the customer
+   card right above. */
+html[data-layout="phone"] .career-job .mt-ticket{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:4px 8px;padding:5px 8px 6px}
+html[data-layout="phone"] .career-job .mt-ticket>*{grid-column:1/-1;min-width:0}
+html[data-layout="phone"] .career-job .mt-ticket>.mt-ticket-top:not(:has(.mt-ticket-tabs)){grid-column:1;flex-direction:column;align-items:flex-start;flex-wrap:nowrap;gap:0;line-height:1.15}
+html[data-layout="phone"] .career-job .mt-ticket>.mt-ticket-top:not(:has(.mt-ticket-tabs))+.mt-ticket-order{grid-column:2}
+html[data-layout="phone"] .career-job .mt-ticket>.mt-ticket-top:not(:has(.mt-ticket-tabs))>.mt-face{display:none}
+html[data-layout="phone"] .career-job .mt-ticket>.mt-ticket-top:not(:has(.mt-ticket-tabs))>b{margin:0;font-size:.767rem;white-space:nowrap;max-width:7em;overflow:hidden;text-overflow:ellipsis}
+html[data-layout="phone"] .career-job .mt-ticket-order{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
+html[data-layout="phone"] .career-job .mt-ticket-order::-webkit-scrollbar{display:none}
+html[data-layout="phone"] .career-job .mt-ticket-order>*{flex:none}
+html[data-layout="phone"] .career-job .mt-ticket .mt-reqs{flex-wrap:nowrap}
+html[data-layout="phone"] .career-job .mt-ticket .mt-req{flex:none;white-space:nowrap}
+html[data-layout="phone"] .career-job .mt-ticket .mt-patience>span,html[data-layout="phone"] .career-job .mt-ticket .mt-patience>small{display:none}
+html[data-layout="phone"] .career-job .mt-ticket .mt-bar{height:4px}
+
+/* ---------- A6. "Thêm" ----------------------------------------------------- */
+html[data-layout="phone"][data-orientation="portrait"] .rail{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;bottom:calc(var(--dock-h) + var(--safe-b));max-height:min(60dvh,calc(100dvh - var(--dock-h) - var(--safe-b) - var(--topbar-h) - var(--safe-t)));overflow-y:auto;overscroll-behavior:contain;padding-top:20px;padding-bottom:12px;border-radius:22px 22px 0 0;box-shadow:0 -10px 30px -12px rgba(0,0,0,.35)}
+html[data-layout="phone"][data-orientation="portrait"] .rail::before{top:7px}
+html[data-layout="phone"] .rail-item,html[data-layout="phone"] .rail-sub .rail-item{min-height:64px;padding:6px 4px;gap:3px}
+html[data-layout="phone"][data-orientation="portrait"].menu-open #app::after{bottom:calc(var(--dock-h) + var(--safe-b))}
+html[data-layout="phone"].menu-open .dock{position:relative;z-index:41}
+/* A hub with notes under its names: two columns of rows, still 64 px. */
+html[data-layout="phone"] .rail-sub:not([hidden]):has(.rail-note) .rail-item{min-height:64px}
+
+/* ---------- A7. Tap targets at least 44 px ---------------------------------- */
+html[data-layout="phone"] :is(.chat-about,.rv-criteria,.sum-more,.idle-fold,.wh-sups-fold,details.jr-fold)>summary{min-height:44px;box-sizing:border-box}
+html[data-layout="phone"] .wl-link{min-height:44px;display:inline-flex;align-items:center}
+html[data-layout="phone"] .ch-tabs button,html[data-layout="phone"] .ch-tab{min-height:44px}
+html[data-layout="phone"] .soc-tabs button{min-height:48px}
+html[data-layout="phone"] .lx-tab{min-height:44px}
+html[data-layout="phone"] .quay-help,html[data-layout="phone"] .qy-help,html[data-layout="phone"] .icon-btn.small{min-width:44px;min-height:44px}
+
+/* ---------- A8. Town map, fair ------------------------------------------------ */
+/* Town: the goals fold to a short strip (the full list is one tap away, "Danh sách"); the route picker is one slim
+   row at the top-left; zoom stays above the home bar. */
+html[data-layout="phone"] .tw-top{padding-top:12px;padding-bottom:4px}
+html[data-layout="phone"] .tw-goals{max-height:min(22%,150px);padding:4px 10px}
+html[data-layout="phone"] .tw-goals .jr-chapter{padding:8px 10px}
+html[data-layout="phone"] .tw-route-picker{top:8px;left:8px;right:auto;width:min(calc(100% - 16px),340px);padding:4px;gap:4px;box-sizing:border-box}
+html[data-layout="phone"] .tw-where,html[data-layout="phone"] .tw-stage .rd-toggle{top:66px}
+html[data-layout="phone"] .tw-map-tools{bottom:calc(12px + var(--safe-b))}
+html[data-layout="phone"] .tw-stage:has(.tw-card:not([hidden])) .tw-map-tools{bottom:calc(104px + var(--safe-b))}
+html[data-layout="phone"] .tw-card-x{width:44px;height:44px;top:-18px;right:-10px}
+/* Fair, landscape: the bunting and lanterns go, the header is one row and the fairground gets the height. */
+html[data-layout="phone"][data-orientation="landscape"] .fh-head{padding:2px 8px 2px 14px}
+html[data-layout="phone"][data-orientation="landscape"] .fh-bunting,html[data-layout="phone"][data-orientation="landscape"] .fh-lanterns,html[data-layout="phone"][data-orientation="landscape"] .fh-headrow .eyebrow{display:none}
+html[data-layout="phone"][data-orientation="landscape"] .fh-headrow h2{font-size:1.067rem}
+html[data-layout="phone"][data-orientation="landscape"] .fh-logo{width:36px;height:36px;font-size:1.2rem}
+html[data-layout="phone"][data-orientation="landscape"] .fh-body{padding:6px 12px 12px}
+html[data-layout="phone"][data-orientation="landscape"] .fh-strip{margin-bottom:6px}
+html[data-layout="phone"][data-orientation="landscape"] .fh-wstage.land{max-width:calc((var(--vvh,100dvh) - 110px) * 1100 / 660)}
+html[data-layout="phone"][data-orientation="landscape"] .fh-wstage.port{max-width:calc((var(--vvh,100dvh) - 110px) * 672 / 764)}
+
+/* ---------- B. Landscape phone --------------------------------------------- */
+/* Shell: a left rail (the dock + chat) instead of the bottom dock, a 44 px top bar, the task card floating
+   bottom right. Rows: top + stage; columns: rail + stage. */
+html[data-layout="phone"][data-orientation="landscape"]{--topbar-h:44px;--dock-h:0px;--lrail-w:68px}
+html[data-layout="phone"][data-orientation="landscape"] #app{grid-template-columns:calc(var(--lrail-w) + var(--safe-l)) minmax(0,1fr);grid-template-rows:calc(var(--topbar-h) + var(--safe-t)) minmax(0,1fr);grid-template-areas:"dock top" "dock stage"}
+html[data-layout="phone"][data-orientation="landscape"] .topbar{grid-area:top;padding:var(--safe-t) max(6px,var(--safe-r)) 0 6px}
+html[data-layout="phone"][data-orientation="landscape"] .topbar .top-social,html[data-layout="phone"][data-orientation="landscape"] .top-settings,html[data-layout="phone"][data-orientation="landscape"] .day-control{width:44px;height:44px;min-height:44px}
+html[data-layout="phone"][data-orientation="landscape"] .hud-chip,html[data-layout="phone"][data-orientation="landscape"] .topbar .cozy-day.hud-day{min-height:40px}
+html[data-layout="phone"][data-orientation="landscape"] .dock{grid-area:dock;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:2px;height:auto;padding:calc(var(--safe-t) + 4px) 4px calc(var(--safe-b) + 60px) calc(var(--safe-l) + 4px);border-top:0;border-right:1px solid var(--line);overflow-x:hidden;overflow-y:auto;scroll-snap-type:y proximity;box-shadow:6px 0 18px -12px rgba(0,0,0,.25)}
+html[data-layout="phone"][data-orientation="landscape"] .dock-btn{flex:0 0 auto;flex-direction:column;justify-content:center;align-items:center;gap:1px;width:100%;max-width:none;height:auto;min-height:54px;padding:4px 2px;font-size:.667rem;line-height:1.1;scroll-snap-align:start}
+html[data-layout="phone"][data-orientation="landscape"] .dock-btn>svg{width:40px;height:26px;padding:1px 8px}
+html[data-layout="phone"][data-orientation="landscape"] .dock-btn>span{-webkit-line-clamp:2;text-align:center;font-size:.667rem;line-height:1.1}
+html[data-layout="phone"][data-orientation="landscape"] .dock-btn.long>svg{height:22px}
+html[data-layout="phone"][data-orientation="landscape"] .dock-btn .badge{top:0;right:2px}
+/* Chat: the bottom of the rail, clear of the home indicator and the notch. */
+html[data-layout="phone"][data-orientation="landscape"] .live-fab{position:fixed;top:auto;right:auto;left:calc(var(--safe-l) + (var(--lrail-w) - 44px) / 2);bottom:calc(var(--safe-b) + 8px);z-index:6}
+html[data-layout="phone"][data-orientation="landscape"] .stage:has(.live-fab:not([hidden])) .scene-heading{max-width:calc(100% - 20px)}
+html[data-layout="phone"][data-orientation="landscape"] .scene-heading{top:8px;left:8px}
+/* Task card: a 280 px card floating bottom right. */
+html[data-layout="phone"][data-orientation="landscape"] #app .task-hud,html[data-layout="phone"][data-orientation="landscape"] #app .wv-work-hud{left:auto;top:auto;right:max(8px,var(--safe-r));bottom:calc(var(--safe-b) + 8px);width:min(310px,44%);max-height:calc(100% - var(--topbar-h) - var(--safe-t) - 16px)}
+html[data-layout="phone"][data-orientation="landscape"] #app .wv-work-hud>.task-hud{position:static;right:auto;bottom:auto;width:100%}
+html[data-layout="phone"][data-orientation="landscape"] .task-hud .note-card:not(.task-card){max-height:96px;overflow-y:auto;overscroll-behavior:contain}
+html[data-layout="phone"][data-orientation="landscape"] .wv-owner-toggle{min-height:44px;padding:6px 12px}
+html[data-layout="phone"][data-orientation="landscape"] .toasts{top:calc(var(--topbar-h) + var(--safe-t) + 60px);left:calc(50% + (var(--lrail-w) + var(--safe-l)) / 2);width:min(460px,calc(100vw - var(--lrail-w) - var(--safe-l) - var(--safe-r) - 24px))}
+html[data-layout="phone"][data-orientation="landscape"] .bank-chip{top:calc(var(--safe-t) + 56px)}
+/* "Thêm": a right drawer, three columns, the rest of the scene visible. */
+html[data-layout="phone"][data-orientation="landscape"] .rail{left:auto;right:0;top:0;bottom:0;width:min(380px,48vw);max-height:none;grid-template-columns:repeat(3,minmax(0,1fr));align-content:start;overflow-y:auto;overscroll-behavior:contain;padding:14px max(12px,var(--safe-r)) calc(12px + var(--safe-b)) 12px;border-top:0;border-left:1px solid var(--line);border-radius:22px 0 0 22px;transform:translateX(105%)}
+html[data-layout="phone"][data-orientation="landscape"].menu-open .rail{transform:none}
+html[data-layout="phone"][data-orientation="landscape"] .rail::before{display:none}
+html[data-layout="phone"][data-orientation="landscape"] .rail-item,html[data-layout="phone"][data-orientation="landscape"] .rail-sub .rail-item{min-height:60px;padding:6px 4px}
+html[data-layout="phone"][data-orientation="landscape"] .rail:has(>.rail-sub:not([hidden]) .rail-note){grid-template-columns:minmax(0,1fr)}
+/* Sheets: full-height panes over the whole screen; the notch and the home bar pad their content. */
+html[data-layout="phone"][data-orientation="landscape"] :is(.sheet,.sheet.narrow,.sheet.medium,.sheet.wide,.sheet.home,.sheet.cozy-sheet,.sheet.cozy-job,.sheet.operations,.sheet.drawer,.sheet.walk-sheet){box-sizing:border-box;width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;padding:0 var(--safe-r) 0 var(--safe-l);border:0;border-radius:0}
+html[data-layout="phone"][data-orientation="landscape"] .wv-dialog{box-sizing:border-box;width:100vw;max-width:100vw;max-height:100dvh;margin:0;padding:0 var(--safe-r) 0 var(--safe-l);border-radius:0}
+html[data-layout="phone"][data-orientation="landscape"] .sheet[open]{animation:mnl-pop-in .2s var(--ease)}
+html[data-layout="phone"][data-orientation="landscape"] .sheet-head,html[data-layout="phone"][data-orientation="landscape"] .sheet.cozy-job .sheet-head{min-height:44px;padding:0 8px 0 14px}
+html[data-layout="phone"][data-orientation="landscape"] .tw-top::before,html[data-layout="phone"][data-orientation="landscape"] .home-top::before,html[data-layout="phone"][data-orientation="landscape"] .sheet-head::before,html[data-layout="phone"][data-orientation="landscape"] .preparation-topline::before{display:none}
+html[data-layout="phone"][data-orientation="landscape"] .sheet-head>.grow>p,html[data-layout="phone"][data-orientation="landscape"] .sheet-head>div:first-child>p{display:none}
+html[data-layout="phone"][data-orientation="landscape"] .preparation-topline{min-height:48px;padding-top:2px;padding-bottom:2px}
+html[data-layout="phone"][data-orientation="landscape"] .sheet-body,html[data-layout="phone"][data-orientation="landscape"] .life-content{padding:10px 12px calc(16px + var(--safe-b)) 12px}
+/* Two panes on work screens: the sheet container query (min-width:760px, the desktop .wb-side layout) measures
+   the whole pane instead of the padded body, so 780–932 px phones get it too. */
+html[data-layout="phone"][data-orientation="landscape"] #sheetContent{container:sheet/inline-size}
+html[data-layout="phone"][data-orientation="landscape"] #sheetContent>.sheet-body,html[data-layout="phone"][data-orientation="landscape"] #sheetContent>.life-content{container:none}
+/* A pinned side panel fits between the header and the action bar and scrolls on its own. */
+html[data-layout="phone"][data-orientation="landscape"] :is(.wb-side,.mt-side,.sl-side,.rs-side,.work-aside,.feed-aside,.fb-detail,.settings-tabs,.mr-breakdown){top:calc(var(--hd-h,48px) + 6px)!important;max-height:calc(100dvh - var(--hd-h,48px) - var(--abar-h,0px) - 16px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+html[data-layout="phone"][data-orientation="landscape"] :is(.mt-ticket,.mt-tabs,.wd-stage,.mb-strip,.asm-pin,.sl-timer-card,.pc-running,.cl-tabs){position:relative;top:auto}
+/* Milk tea's bench switches to two panes by viewport width (≥900px); a landscape phone gets them too. */
+@media (max-width:899px){
+html[data-layout="phone"][data-orientation="landscape"] .mt-bench{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:10px;align-items:start}
+html[data-layout="phone"][data-orientation="landscape"] .mt-side{display:flex;flex-direction:column;gap:8px;position:sticky;grid-column:2;grid-row:1}
+html[data-layout="phone"][data-orientation="landscape"] .mt-stations{grid-column:1;grid-row:1}
+html[data-layout="phone"][data-orientation="landscape"] .mt-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+/* Bar: one slim row (48 px buttons), right-aligned beside the order. */
+html[data-layout="phone"][data-orientation="landscape"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar){padding-top:2px;padding-bottom:calc(2px + var(--safe-b,0px));margin-left:auto;width:min(100%,400px);box-sizing:border-box;border-radius:16px 16px 0 0}
+html[data-layout="phone"][data-orientation="landscape"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar) .btn.big{min-height:44px;padding-top:6px;padding-bottom:6px}
+/* The bar's lines sit side by side (what is left on the left, the buttons on the right): one row, ~60 px.
+   A bar with more than three parts (the office stamp row, a desk's choices) keeps its own wrapping. */
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar):not(:has(>:nth-child(4))){flex-direction:row;flex-wrap:nowrap;align-items:center}
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar):not(:has(>:nth-child(4)))>*{min-width:0}
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar):not(:has(>:nth-child(4)))>:is(.gd-ctas,.fk-bar-btns,.btn,.gd-cta,[class$="-btns"],[class$="-acts"]){flex:1 1 58%;margin:0}
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar):not(:has(>:nth-child(4)))>:not(.gd-ctas):not(.fk-bar-btns):not(.btn):not([class$="-btns"]):not([class$="-acts"]):not([class$="-cup"]){flex:0 1 auto;max-width:42%;margin:0;font-size:.8rem;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+html[data-layout="phone"] dialog.sheet .mt-bar-cup{flex:none}
+html[data-layout="phone"] dialog.sheet .mt-bar-cup svg{width:30px;height:36px}
+html[data-layout="phone"][data-orientation="landscape"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar):not(:has(>:nth-child(4)))>:is(.gd-ctas,.fk-bar-btns,.btn,.gd-cta,[class$="-btns"],[class$="-acts"]){flex:0 1 60%}
+/* Delivery, driving in landscape: the drive view fills the pane, so the bar waits under it instead of sitting on
+   the pedals (Ga / Phanh). */
+html[data-layout="phone"][data-orientation="landscape"] dialog.sheet .career-job.dl:has(.dd-btn) .dl-bar{position:relative}
+html[data-layout="phone"][data-orientation="landscape"] .life-sticky{padding-top:4px;padding-bottom:calc(4px + var(--safe-b))}
+html[data-layout="phone"][data-orientation="landscape"] .life-sticky>.btn{min-height:44px}
+html[data-layout="phone"][data-orientation="landscape"] .life-sticky>small{display:none}
+/* Career home and prep: the tabs run down the left side of the pane. */
+html[data-layout="phone"][data-orientation="landscape"] .lx-top{display:contents}
+html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-top>.lx-nav){display:grid;grid-template-columns:minmax(150px,190px) minmax(0,1fr);grid-template-rows:auto 1fr auto;align-items:start}
+html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-top>.lx-nav)>.lx-top>.sheet-head{grid-column:1/-1;grid-row:1}
+html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-top>.lx-nav)>.lx-top>.lx-nav{grid-column:1;grid-row:2;position:sticky;top:calc(var(--hd-h,48px) + 8px);flex-direction:column;margin:8px 0 8px max(10px,var(--safe-l));overflow:visible}
+html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-top>.lx-nav) .lx-tab{flex:0 0 auto;justify-content:flex-start}
+html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-top>.lx-nav)>.life-content{grid-column:2;grid-row:2}
+html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-top>.lx-nav)>:not(.lx-top):not(.life-content){grid-column:1/-1}
+html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-top>.lx-nav)>.life-sticky:not(.lx-top):not(.life-content){grid-column:2;margin-left:8px;border-radius:16px 0 0 0;border-left:1px solid var(--line)}
+/* The header's level line sits beside the name, not under it. */
+html[data-layout="phone"][data-orientation="landscape"] .lx-head>.grow{display:flex;align-items:center;gap:6px 14px;flex-wrap:nowrap;min-width:0}
+html[data-layout="phone"][data-orientation="landscape"] .lx-head>.grow>h2{flex:0 1 auto;min-width:0;max-width:50%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+html[data-layout="phone"][data-orientation="landscape"] .lx-head>.grow>:not(h2):not(.eyebrow){flex:1 1 auto;min-width:0;margin:0}
+/* Wardrobe: the preview on the left, the items on the right. */
+html[data-layout="phone"][data-orientation="landscape"] .wd-stage{box-shadow:none}
+
+/* ---------- C. Keyboard open (v4/shell.js kb-open) ----------------------------- */
+html.kb-open[data-layout="phone"] .sheet-head{min-height:44px;padding-top:0;padding-bottom:0}
+html.kb-open[data-layout="phone"] .sheet-head::before,html.kb-open[data-layout="phone"] .mn-line,html.kb-open[data-layout="phone"] .sheet-head .gd-next{display:none}
+html.kb-open[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar),html.kb-open[data-layout="phone"] .life-sticky{position:relative}
+html.kb-open[data-layout="phone"] textarea{max-height:calc(2lh + 20px)}
+html.kb-open[data-layout="phone"] .toasts{display:none}
+/* Landscape with the keyboard up: chat and the street keep only the messages and the input (a strip over the
+   keyboard); the tabs and the place picker come back when the keyboard goes. */
+html.kb-open[data-layout="phone"][data-orientation="landscape"] :is(.ch-head,.ch-tabs,.wk-head,.wk-places){display:none}
+html.kb-open[data-layout="phone"][data-orientation="landscape"] .sheet{height:var(--vvh,100dvh);max-height:var(--vvh,100dvh)}

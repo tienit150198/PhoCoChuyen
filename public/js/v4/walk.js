@@ -665,14 +665,25 @@ function size(){
   const w=S.stage.clientWidth,h=S.stage.clientHeight;if(!w||!h)return;
   S.dpr=Math.min(2,window.devicePixelRatio||1);S.cw=w;S.ch=h;
   const cw=Math.round(w*S.dpr),chh=Math.round(h*S.dpr);if(S.cv.width!==cw||S.cv.height!==chh){S.cv.width=cw;S.cv.height=chh;}
-  S.k=Math.min(w/W,h/H);S.ox=(w-W*S.k)/2;S.oy=(h-H*S.k)/2;S.bgKey='';
+  // A wide, short stage (a phone held sideways, or the keyboard up): the 600×900 place would shrink to a third of
+  // the width. It is drawn larger instead (two fifths of its height in view) and the camera follows the player up and down.
+  S.k=w>h*1.2?Math.min(w/W,h/(H*.4)):Math.min(w/W,h/H);S.ox=(w-W*S.k)/2;
+  S.follow=H*S.k>h+2;S.oy=S.follow?camY():(h-H*S.k)/2;S.bgKey='';
+}
+/** The camera's top offset that keeps the player in the middle of a stage shorter than the place (clamped to it). */
+function camY(){
+  const me=S.room&&S.people.get(S.room.me),y=me?posAt(me.p,me.at,nowS(),me.v)[1]:H/2;
+  return Math.round(Math.min(0,Math.max(S.ch-H*S.k,S.ch/2-y*S.k)));
 }
 function background(){
-  const key=`${S.room.place}|${S.cw}x${S.ch}|${S.dpr}|${night()}`;
+  const key=`${S.room.place}|${S.cw}x${S.ch}|${S.dpr}|${night()}|${S.follow?S.k:''}`;
   if(S.bgKey===key&&S.bg)return S.bg;
-  const cv=S.bg||document.createElement('canvas');cv.width=S.cv.width;cv.height=S.cv.height;
+  const cv=S.bg||document.createElement('canvas');
+  // Following: the whole place once, at its drawn size; draw() puts it under the camera.
+  if(S.follow){cv.width=Math.ceil(W*S.k*S.dpr);cv.height=Math.ceil(H*S.k*S.dpr);}else{cv.width=S.cv.width;cv.height=S.cv.height;}
   const c=cv.getContext('2d');c.setTransform(1,0,0,1,0,0);c.fillStyle=EDGE[S.room.place]||'#e8dcc6';c.fillRect(0,0,cv.width,cv.height);
-  c.setTransform(S.dpr*S.k,0,0,S.dpr*S.k,S.dpr*S.ox,S.dpr*S.oy);
+  if(S.follow)c.setTransform(S.dpr*S.k,0,0,S.dpr*S.k,0,0);
+  else c.setTransform(S.dpr*S.k,0,0,S.dpr*S.k,S.dpr*S.ox,S.dpr*S.oy);
   paintPlace(c,S.room.place,S.geo,night());
   S.bg=cv;S.bgKey=key;return cv;
 }
@@ -698,7 +709,11 @@ function draw(ts,t){
   const c=S.ctx,dpr=S.dpr;if(!c||!S.cw)return;
   c.setTransform(1,0,0,1,0,0);
   if(!S.room||!S.geo){c.fillStyle=night()?'#1d1c26':'#efe6d6';c.fillRect(0,0,S.cv.width,S.cv.height);return;}
-  c.drawImage(background(),0,0);
+  if(S.follow){
+    S.oy=camY();
+    c.fillStyle=EDGE[S.room.place]||'#e8dcc6';c.fillRect(0,0,S.cv.width,S.cv.height);
+    c.drawImage(background(),Math.round(dpr*S.ox),Math.round(dpr*S.oy));
+  }else c.drawImage(background(),0,0);
   c.setTransform(dpr*S.k,0,0,dpr*S.k,dpr*S.ox,dpr*S.oy);
   const sec=ts/1000,dark=night();
   for(const s of spots.values()){const at=spotAt(s);if(at&&s.draw)try{s.draw(c,{x:at[0],y:at[1],t:sec,night:dark,place:S.room.place});}catch(e){console.warn('walk spot:',e);}}

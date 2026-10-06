@@ -21,6 +21,7 @@
  * pinned at the bottom, notes (toasts) sit in one line right above it (placeToasts).
  * Pure string builders + one DOM pass. */
 import {escapeHTML as esc} from '../icons.js';
+import {syncBar} from './action-bar.js';
 
 /** The next step: the first one not done yet that can be done from here (wrong ones count
  * as not done); a step with no way to do it (sold out, waiting) only counts when nothing else is left. */
@@ -290,6 +291,7 @@ function placeToasts(dialog){
   if(!dialog||dialog.id!=='sheet')return;
   watchToasts(dialog);
   const bar=dialog.open?barOf(dialog):null,r=bar?.getBoundingClientRect();
+  syncBar(dialog,r?.height?bar:null);   // the shared phone bar (v4/action-bar.js, css/compact.css)
   if(!r||!r.height){if(dialog.hasAttribute('data-gd-bar'))dialog.removeAttribute('data-gd-bar');return;}
   // A short screen leaves the bar halfway up (it sticks only once the page is taller than the sheet): the
   // note goes just under it, in the empty space, rather than over the customer above it.

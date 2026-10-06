@@ -22,8 +22,4 @@ Nhà là nơi quay về, mời người thương, chăm bé, nhận lời mời 
 - [x] Family navigation và thứ bậc nội dung/nút/trạng thái dễ đọc trên điện thoại.
 - [x] Tư thế người gửi và phản ứng nhận, cleanup đúng vòng đời; không thay ngoại hình/đồ mặc.
 - [x] Hai tài khoản thật trên PostgreSQL thử nghiệm: mời về, đồng ý, con chung; cử chỉ và ba phản ứng.
-- [x] Review độc lập, bản dịch, gói chung, kiểm tra tương thích và deploy một lần.
-
-## Quy tắc phát hành từ sau 1.7.7
-
-Chỉ deploy khi người dùng yêu cầu rõ, đồng thời ghi Có gì mới cho bản phát hành được yêu cầu. Bản sửa tương thích café cũ đang ở local, chưa deploy; xem docs/DEPLOY_1.7.7_2026-10-04.md.
+- [ ] Review độc lập, bản dịch, gói chung, kiểm tra tương thích và deploy một lần.

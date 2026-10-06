@@ -1,3 +1,124 @@
+# v1.8.0 — 2026-10-06
+
+Có gì mới (chủ game duyệt): "Cập nhật toàn bộ UI UX", "Thêm Top tài phú trên Bảng xếp hạng".
+
+## Sửa: kiểm tra theo phần (tắt mặc định)
+
+- Kiểm tra rút gọn (SCOPED_CAREER_VALIDATION): tiệm có hồ sơ an ninh đang mở, khi sổ an ninh không đổi mà tiệm vẫn bị tính lương/sổ thu chi, không còn bị từ chối nhầm "Tham chiếu hồ sơ an ninh sai." (mã hồ sơ bỏ qua vẫn được đếm). Mặc định vẫn tắt; bật lên thì kết quả giống hệt kiểm tra đầy đủ.
+
+## Nghề mới: Cán bộ thư viện – lưu trữ
+
+- 📚 Thư viện – Lưu trữ phường Mây (mở ở chương 4 “Được tin cậy”): phụ cô Nguyệt giữ sách và hồ sơ của phường. Sáng xem ẩm kế kho (trên 60% bật máy hút ẩm), soi bẫy mọt, chuột, gián, mở phòng đọc.
+- Quầy mượn trả: tra ký hiệu, kiểm thẻ (hết hạn, đủ 3 cuốn, còn nợ phí), sách tra cứu chỉ đọc tại chỗ, đặt trước sách đang có người mượn; gợi ý sách theo gu ẩn của bạn đọc.
+- Trả sách: tự đề xuất tiền phạt (1 xu/ngày, tối đa 15, cộng phí hỏng), bạn đọc tự quyết theo tính (trả, mặc cả, khất, cãi); miễn khi có lý do chính đáng, ghi sổ nợ, đòi nợ; sửa sách đúng cách.
+- Biên mục: xếp 10 lớp, ký hiệu tác giả, lọc sách tặng mốc, lậu, lỗi thời mà giữ sách cũ quý. Phòng đọc: nhắc ồn ào, ăn uống, ngủ ngáy, đôi bạn tình tứ, hút thuốc cạnh kho… mỗi người phản ứng một kiểu.
+- Kho lưu trữ: tập huấn trước lượt đầu, kiểm giấy tờ, mức tiếp cận, đúng hộp, tìm hồ sơ kẹp nhầm, cấp bản sao (bản gốc không rời kho), ghi sổ. Hơn 60 kiểu nhờ vả oái oăm, 16 chuyện bất ngờ, 6 tình huống, truyện nghề, Chứng chỉ nghiệp vụ lưu trữ.
+
+## Nghề mới: Thợ dầu khí
+
+- Nghề mới 🛢️ Thợ dầu khí (chương 4, cạnh phi công): kỹ thuật viên vận hành trên giàn Hải Âu của Dầu khí Sóng Bạc, việc làm thuê lương đi biển cao. Đợt 14 ngày: ngày bay trực thăng ra giàn, bốn ngày ca 12 tiếng, ngày bàn giao về bờ; bão tới thì ở lại thêm trên giàn hoặc chờ ở bờ.
+- Ngày bay: soạn túi (không bật lửa, bình xịt, dao, rượu, thuốc lá điện tử, tối đa 15 kg), mặc đồ bơi giữ nhiệt, áo phao, bình thở, chụp tai, trả lời câu thoát hiểm trực thăng, sương mù thì ngồi chờ. Lên giàn: gắn thẻ bảng đếm người, nhận xuồng cứu sinh theo biển cửa phòng, nhớ ba tiếng còi.
+- Mỗi ca: họp an toàn (đồ bảo hộ, thử khí mẫu máy đo, mối nguy), bảo dưỡng có giấy phép (đúng loại giấy phép, đối chiếu việc cẩu, khóa và treo thẻ từng điểm, xả áp, kiểm về không, đo khí, người canh lửa/canh bồn), đi tuần đọc đồng hồ, báo động đi ngược gió về đúng xuồng. Có lúc van lọt, khí rò, thiếu ôxy, cẩu trên đầu, cầu dao ghi nhầm: ✋ Dừng việc luôn đúng, dừng mà không có gì sai cũng không bị trừ; báo suýt sự cố được cảm ơn.
+- Ngày về bờ: bàn giao thật cho ca sau, rồi cả nhà nhờ tiền: hỏi rõ, gửi số mình chọn hoặc không gửi, mặc cả với người nhà; có khoản cần thật, có khoản là trò lừa.
+- 42 chuyện oái oăm (sếp ép bỏ bước đo khí, nhà thầu ký khống checklist, bạn cùng phòng ngáy, chê cơm nhà ăn, Má gọi lúc mất sóng, em đòi điện thoại mới, anh họ rủ góp tiền ảo, ở lại thêm ca, quấy rối và bắt nạt…), 15 chuyện bất ngờ theo ngày đi biển, 6 tình huống; chứng chỉ An toàn cơ bản ngoài khơi, thang thăng tiến 4 bậc, truyện nghề, hướng dẫn, cảnh giàn khoan và tòa nhà ở khu Sân bay.
+
+## Nghề mới: Gác chắn đường sắt
+
+- Nghề mới ở chương 4 (Được tin cậy): nhân viên gác chắn đường ngang Bến Mây kiêm tuần đường cho Xí nghiệp Đường sắt Sông Mây. Việc làm thuê: ứng tuyển, có lương ngày và thưởng mỗi chuyến gác đúng quy trình. Chứng chỉ An toàn đường ngang giúp dễ được nhận.
+- Nhận ca: đọc sổ giao ca, thử từng thiết bị (chuông đèn, cần chắn, bộ đàm, cờ đèn…), hỏng thì tự xử lý (thay pin, lắp tay quay) và báo đúng nơi: sổ giao ca, phiếu báo hỏng hay gọi ga.
+- Mỗi chuyến tàu: nghe ga gọi và nhắc lại lệnh, dẹp người trên ray (khách chụp ảnh, tụi nhỏ, chú Hớn ngủ quên, con bò, xe ba gác kẹt…), chuông trước chắn sau, hạ chắn đúng lúc, giữ chắn trước gần 30 kiểu người đòi qua (xe ôm, đám tang, xe hoa, xe cứu thương, người dúi tiền, TikToker…); bạn tự chọn cách trả lời, người ta tự quyết theo tính. Không dẹp kịp thì báo dừng tàu: luôn đúng.
+- Tàu chậm giữa chừng, tàu thứ hai chạy ngược chiều, toa thiếu đèn đuôi, bầu trục bốc khói: nhìn hết đoàn tàu, hỏi ga trước khi nâng chắn, ghi sổ nhật ký đúng sự thật.
+- Tuần đường Km 7 – Km 8: bu lông lỏng, tà vẹt nứt, đá ba-lát trôi, ray nứt, ray cong vì nắng, đèn tín hiệu tắt, nong ớt trên ray… tự xử lý, cắm cờ phòng vệ, điện khẩn hay ghi đúng phiếu.
+- Chuyện oái oăm quanh chòi gác: lời mời “có ý”, quấy rối, sếp bảo sửa giờ cho đẹp, đồng nghiệp nhờ ký sổ khống, gác thêm ca đêm; ca đêm làm mệt, mệt thì phải tỉnh táo trước khi nghe lệnh. Có truyện nghề “Cái còi đồng của chú Sáu”.
+
+## Nghề mới: Điều dưỡng
+
+- 🏥 Nghề mới **Điều dưỡng khoa Nội** ở Bệnh viện phường Lá Sen (chương 4, mở cùng nhà thuốc, phi công): ứng tuyển, phỏng vấn, thử việc; lương ngày cộng thưởng nhỏ cho mỗi việc làm đúng. Cũng là nghề “bệnh viện” người chơi xin.
+- Một ca gồm: nhận giao ca (đọc sổ, chọn giường xem trước), đo dấu hiệu sinh tồn rồi tự gõ số vào phiếu, so thẻ báo động và báo bác sĩ, cho thuốc theo y lệnh (hỏi tên + ngày sinh, vòng dị ứng, nhãn khay, đường huyết, biển nhịn ăn), chuông gọi, phân loại ở quầy tiếp đón theo thẻ màu, chuẩn bị thủ thuật (giấy cam đoan, nhịn ăn, trang sức), ra viện (giấy ra viện, BHYT, rút kim luồn, dặn dò, nhờ nhắc lại).
+- Chị Hoa kèm ba việc đầu, nhắc trước mỗi lỗi một lần. Người bệnh có quyền từ chối: hỏi, giải thích, báo bác sĩ; ép là lỗi. Không có liều thuốc nào trong game: bác sĩ quyết điều trị.
+- Hơn bốn mươi người “oái oăm” quanh khoa: phong bì, 500 xu đổi giường đẹp, đòi bác sĩ giỏi nhất, cả họ vào thăm, “thần y” mang thuốc nam, quay clip, khách say ca tối, đồng nghiệp rủ làm tắt, ép trực thêm ca, người nhà xin giấy nghỉ ốm giả… Bạn tự chọn giọng, lời nói và báo ai; chiều theo không bao giờ có thưởng.
+- Cuối ca tự viết sổ giao ca từ những gì thật sự đã xảy ra (ghi khống bị trừ điểm hồ sơ). Chứng chỉ An toàn người bệnh giúp dễ được nhận; thang thăng tiến Điều dưỡng chính → Trưởng phòng Điều dưỡng.
+## WP1 Nhân viên tiệm & nhập hàng
+
+- Nhân viên bán theo cả danh mục hàng của tiệm (Mẹ & Bé, tạp hóa, thú cưng, trái cây, hoa, trà đá, kem, cơm, phở, mì cay, cà phê, salon, nail, sửa chữa…), chỉ món còn hàng, ưu tiên món còn nhiều; hết thỏ bông vẫn bán món khác.
+- Đơn riêng của nhân viên tính theo giá kệ của chính nghề và luôn có lãi sau lương, vật tư; món lãi mỏng thì bán theo lố (vài ký gạo, chục trứng), kem bán nguyên hộp 1,2 kg thay vì giá một viên.
+- Sổ tiệm hiện đơn tiếp theo: giá thu, lương, vật tư, giá vốn, lãi ước tính; tiền vào quỹ nghề; khi đội dừng thì nói rõ đang hết món gì hoặc giá không đủ bù lương.
+- Tiệm Mẹ & Bé đặt đơn gộp nhiều mã một lần (tối đa 12 mã, một chuyến xe, trả một lần).
+- Đơn gộp ở kho: tối đa 20 dòng, nhiều size của cùng một món trong một đơn, 12 đơn đang giao cùng lúc; báo rõ tiền nhập hàng trừ vào quỹ nghề.
+## WP2 Đánh giá, kiểm duyệt & an toàn
+
+- Đánh giá NPC: mọi đánh giá đều báo cáo được. Đánh giá lạc đề, nhầm quán, chưa ghé, cài cắm, chê chuyện ngoài lề và "hùa theo" bị gỡ khỏi điểm trung bình (vẫn giữ, có đánh dấu). Báo cáo không được duyệt giữ nguyên sao, không kéo thêm 1★; hùa theo không bao giờ kéo hùa theo.
+- Khách lạ viết đánh giá là khách cùng nghề; đánh giá "nhầm quán" ít hơn. Bù xu cho đánh giá không thể đổi (nhầm quán, chưa ghé…) được cảnh báo trước, không trừ xu; khung trả lời ghi "khách trả lời sau ~2 lượt làm".
+- Đánh giá giữa người chơi (Phố nghề, dịch vụ chỗ làm): chỉ tính đánh giá mới nhất của mỗi người, tài khoản từ 3 ngày tuổi, không tính đánh giá trong 24 giờ quanh lúc chủ quán chuyển xu/tặng quà xu. Không xóa đánh giá nào.
+- Tên hiển thị: đổi tên ở Cài đặt và Hành trình dùng chung bộ lọc tên tài khoản, chặn thêm cách viết không dấu/viết liền (concac, dcm…). Quản trị có danh sách tên vi phạm và nút "Đổi tên an toàn"; không tự đổi tên ai.
+- Chat: nhắc nhở an toàn thân thiện (một lần) khi tin nhắn có hẹn gặp, địa chỉ, số điện thoại, zalo/fb/ig/tiktok; lý do báo cáo "An toàn / trẻ vị thành niên" lên đầu hàng chờ quản trị; khóa chat theo phút và chế độ chậm cho từng người hoặc cả Cả phố; @tên người chơi đang có trong Cả phố không bị che. Không tự cấm ai.
+## WP3 Nghề & hàng tiệm
+
+- Tiệm áo, salon: bill/phương án lố ngân sách mở 💬 Trao đổi: gợi ý món rẻ hơn hoặc dời dịch vụ, xin thêm ngân sách (khách tự quyết theo tính, chỉ hỏi một lần), bớt giá trong mức chủ cho, hoặc nói thật. Lờ khách hay thất hứa vẫn bị trừ.
+- Tiệm áo thêm 14 món: đầm maxi, váy babydoll, set áo + chân váy, blazer, cardigan, polo, chân váy chữ A, quần tây, quần short, sneaker, sandal, túi xách, bông tai, khăn lụa; khách quen hay dặn thêm (lấy thêm món, muốn mặc đầm, không jean, giày đi biển). Món mới nhập qua Kho; tủ đồ có thêm đồ tương ứng.
+- Lớp học: lời học trò hiện ngay sau tối đa 2 giây (AI viết lại thì thay sau); phiếu cuối tiết có dòng hướng dẫn chấm.
+- Giữ trẻ: tính bé hiện rõ dưới “🙂 Chào bé”, chào sai thì nhắc đúng tính bé.
+- Buồng ảnh: mã phòng gõ được R, S, F, X, J, W, DD dù đang bật Telex.
+- Giao hàng: đơn mới hiện giờ hẹn trước khi nhận (ngày 1: giao trong bao nhiêu phút).
+- Thú cưng: thẻ việc có nút Khép ca khi đang để lát nữa, hết giờ hoặc thiếu hàng (kèm dòng “Hết …”).
+- Homestay: 📥 Hộp đơn OTA có huy hiệu số đơn trùng và hướng dẫn xử lý.
+## WP4 Thăng tiến dài hơn
+
+- Phi công: cấp hàm có gạch/sao (Cơ phó cấp thấp 1 gạch → Trưởng đội bay 4 gạch 1 sao), thêm Phó Giám đốc, Giám đốc Khối khai thác bay và Phó Tổng Giám đốc (trần).
+- Giáo viên lên tới Hiệu trưởng. Các nghề khác giữ thang 4 bậc; không ai bị hạ bậc, bậc cũ giữ nguyên.
+- 🏢 Phòng điều hành cho bậc lãnh đạo: điều phối chuyến bay/phân công, nhân sự NPC (nói chuyện, khen, nhắc nhở, cảnh cáo, kiểm điểm, đình chỉ, thăng/giáng chức, tăng/hạ bậc lương) theo tính cách ẩn, việc khó cần quyết; ảnh hưởng đúng giờ, phàn nàn, tinh thần, quỹ lương và thưởng điều hành.
+- Bản lưu: bậc trên 4 và phòng điều hành nằm ở khóa phụ, bản cũ vẫn đọc được khi lùi phiên bản.
+## WP5 Nhà, nội thất & cuộn ổn định
+
+- Thêm 55 món nội thất cho mọi phòng (phòng khách, ngủ, bếp, tắm, ban công, sân vườn) và đồ nhỏ: đèn, cây, thảm, khung ảnh, kệ, đồ chơi, đồ bếp; kệ mới "Bếp & ăn uống", ba bộ góc mới, máy chiếu dải ngân hà phủ sao lên tường.
+- Xoay mặt trước/mặt sau cho 29 món (giường, bàn, ghế, tủ, tủ lạnh, piano…), không chỉ ti vi và sofa.
+- Mỗi phòng bày được gấp rưỡi số món; khi đầy, báo đúng số món tối đa và cách bày thêm.
+- Nhà của bạn có mục "Đồ đạc của bạn": mọi món đang có (nội thất từng phòng và trong túi, quần áo, xe, đồ ăn trong tủ lạnh, giấy dán tường) kèm tên và thông tin.
+- Thanh trượt đồ trong Bày trí kéo được tới món cuối, nút ‹ › không bị khóa khi đang chờ máy chủ, không nhảy về đầu khi cập nhật.
+- Danh sách trong các bảng không còn giật về đầu khi đang cuộn hoặc sau khi bấm; chi tiết đánh giá trên màn rộng cuộn được.
+- Không đổi tiền hay dữ liệu cũ; bản lưu mới vẫn đọc được trên bản 1.7.15 (đồ vượt sức chứa cũ và hướng xoay mới nằm ở khóa riêng).
+## WP10 💰 Top tài phú
+
+Chủ game (05/10): "thêm top tài phú nhé … thêm top tài phú cho toàn server". Không có "Có gì mới", không thông báo. Chuyển từ nhánh lb-wealth-17 sang đúng cây đang chạy (7b3b72c, 1.7.15) và tính thêm tiền/tài sản có từ 1.5–1.7.
+
+- Bảng xếp hạng có tab mới 💰 **Tài phú** (`board=wealth`): ai giàu nhất phố. Điểm = tài sản ròng tính trên server từ bản lưu (`game/wealth.py` `worth()`):
+  - đúng như "Tiền của bạn" (`public/js/v4/wealth.js` pockets(): Tổng tài sản − Tổng nợ): ví (âm thì là nợ), quỹ mọi nơi làm đã mở, ngân hàng (tài khoản + tiết kiệm không kỳ hạn + các sổ có kỳ hạn − nợ vay còn lại − dư nợ thẻ), mọi căn nhà đang sở hữu theo giá thị trường hôm nay (`housing.value_of` với hệ số thị trường nhà lúc mua) − nợ vay mua nhà còn lại;
+  - cộng thêm những gì bảng tiền chưa liệt kê nhưng bản lưu giữ sẵn bằng số: sổ tiết kiệm Mây (`invest.saving.balance`), Mây Coin và vàng theo **giá vốn** đã lưu (`invest.coin.basis` khi còn `units`, `vang.cost` khi còn `phan`: số xu đã trả, gồm phí/chênh lệch; không tra giá thị trường), mọi xe theo giá cửa hàng mua lại (`garage.sell_price`), mọi quầy riêng theo giá sang nhượng (`quay.sell_back`: giá chỗ × 50 % + đồ lắp × 30 % + két + vốn), trừ tiền quầy còn nợ (`due`, phạt chưa nộp) và vay nóng hội chợ (`fair_cash`: khoản đang vay + nợ còn lại).
+  - Mua coin/vàng không đổi tài sản ròng (xu chỉ chuyển túi); bán ra thì tài sản ròng đổi đúng bằng phần lãi/lỗ đã chốt.
+  - Không tính: Quỹ chung vợ chồng (ở ngoài bản lưu, của hai người), tiền đang chuyển khoản / lương giữ trước / tiền thuê nhà trả trước (nằm trong bảng dữ liệu, không trong bản lưu). Dòng luật trên bảng nói rõ điều này.
+- Chỉ người chơi theo câu chuyện; tài sản ròng ≤ 0 thì không có dòng. Bằng nhau: ai nhiều tổng tài sản hơn, rồi ai đạt mức đó trước. Ẩn tên / khách tự bật giống các bảng khác. Số trên bảng cập nhật mỗi khi bản lưu được ghi (giá nhà theo lịch đổi thì bảng theo ở lệnh kế tiếp).
+- Danh hiệu tuần (top 1 / 2–3 / 4–10): 💎 Đại gia của phố, 💰 Đại gia mới nổi, 🤑 Hội nhà giàu; cập nhật hằng ngày, chốt tuần 0:00 thứ Hai như các bảng khác.
+- `leaderboard.VERSION` 2 → 3: lần khởi động đầu tiên dựng lại mọi dòng ở nền (danh hiệu tuần chờ dựng xong). Không có DDL, không đổi bản lưu (bảng chỉ đọc bản lưu).
+- Ghi bảng: khi các bảng của một bản lưu không đổi và bản tóm tắt trước đó được biết là khớp với bảng (`lb.synced()`: tiến trình này vừa ghi các dòng đó, hoặc lệnh trước không đổi số nào trên các dòng đã khớp; cùng revision), chỉ ghi những dòng có số thay đổi (tài phú đổi theo hầu hết lệnh có tiền: 1 câu lệnh thay vì 1 câu/bảng). Thêm hoặc mất một bảng, lệnh đầu tiên của tiến trình với bản lưu đó, hay bảng hội chợ cần tự chữa (`lb.heal`): đồng bộ đủ như cũ.
+- Tab trên điện thoại (390 px): 4 tab xếp 2 × 2, có 💍 Khách mời thì 5 tab xếp 3 + 2, đủ chữ.
+- Thẻ bạn bè (`game/friends.py`) chỉ lấy nghề chính từ bảng nơi làm (bảng danh hiệu, tài phú, hội chợ `fair…xu` không lọt vào).
+- Hướng dẫn › Bảng xếp hạng thêm dòng Top tài phú (`public/js/tutorial/guide-content.js` tạo lại). Chưa có bản tiếng Anh cho các dòng mới.
+## WP6 Quầy, hội chợ, tiền & luồng
+
+- Quầy: camera, chuông, két sắt, bảo vệ giảm đúng khả năng bị trộm như nhãn ghi; két sắt giữ lại ít nhất nửa két. Thẻ quầy hiện "Rủi ro trộm" và chi phí mở quầy chạy trực tiếp.
+- Thuê bạn: lời mời có huy hiệu trong game, lời mời chưa nhận được hiện lý do; nói rõ hàng nhập dùng quỹ nghề của người làm thêm; ghi "chỗ đứng" thay cho số người.
+- "3 ngày tuổi": nói rõ tài khoản của ai, còn bao nhiêu giờ (đời thực), phiên khách có câu riêng; kết bạn từ chat báo lý do cụ thể.
+- Bỏ dở việc: máy chủ kiểm tra trước rồi mới hỏi "Vẫn đi", không lặp hộp thoại; "Xin nghỉ việc" chờ một nhịp mới bấm được "Đồng ý".
+- Bảng giá tiệm vẽ đủ món cho mọi nghề có bảng giá (quán cơm, phở, tạp hóa…). Kết kỳ thuế có thông báo kèm phép tính.
+- Hội chợ: khoảng 65% ván may rủi là thắng (thắng liền 4 ván thì nguội còn 55%); phóng dao màn mới nhẹ hơn, tính giờ theo lúc chạm; ném vòng rơi đúng gần chỗ ném; lô tô chưa đủ hàng chỉ nhắc, không phạt.
+## WP8 Điện thoại gọn + xoay ngang
+
+- Điện thoại dọc: đầu màn hình làm việc còn một hàng (~56 px: tên, quỹ, ❔ ⋯ ✕); 16 thanh nút của các nghề dùng chung một thanh gọn (~60 px) sát đáy, có khoảng cuộn khớp.
+- Thông báo trên màn làm việc nằm trong hàng tiêu đề, không còn đè nút hay thanh nút; chỉ một dòng, chạm ▾ để xem hết.
+- Màn chính: bỏ "Đổi nghề" trùng (vẫn ở Thêm), thẻ việc 64 px với "Khách ghé" bên cạnh, thanh dưới 64 px: cảnh được ~70% chiều cao.
+- Tab Chuẩn bị, khung bên, ô xem trước tủ đồ không còn ghim trên điện thoại; menu Thêm 3 cột, cao tối đa 60%, thanh dưới vẫn thấy; nút chạm tối thiểu 44 px.
+- Xoay ngang: thanh nghề chuyển sang cột trái (kèm chat), thanh trên 44 px, thẻ việc nổi góc phải, Thêm thành ngăn kéo bên phải; màn hình làm việc tràn toàn màn, hai cột như máy tính, chừa tai thỏ và thanh home.
+- Đi dạo xoay ngang: phố được vẽ to hơn và camera đi theo nhân vật; khi bàn phím mở (kb-open) đầu màn hình gọn lại, ô chat tối đa 2 dòng, chat/đi dạo chỉ còn tin nhắn và ô nhập.
+- Bản đồ phố gọn hơn trên điện thoại (mục tiêu thu nhỏ, ô tìm đường một hàng, nút phóng to tránh thanh home); hội chợ xoay ngang bỏ dây cờ, bản đồ to hơn. Máy tính bảng và máy tính giữ nguyên.
+## WP7 Phase-0 performance
+
+- Lệnh nhanh hơn với bản lưu lớn: nghề chỉ đổi phần tiền/sổ thu chi do nhân viên chạy đơn thì chỉ kiểm tra lại phần đã đổi (sổ thu chi: chỉ các dòng mới); bản lưu ghi ra giữ nguyên từng byte.
+- Ảnh chụp chỗ làm cho bạn bè ghé (work visits) được tính trước khi khóa bản lưu; khóa giữ ngắn hơn.
+- Bản lưu đi thẳng dạng UTF-8 từ lúc đọc tới lúc ghi PostgreSQL, không giải mã/mã hóa lại 1–7 MB mỗi lệnh.
+- Cưới hỏi, chuyển khoản, quỹ đôi, thuê quầy, ghé chỗ làm: chỉ kiểm tra lại các nghề bị thay đổi thay vì cả 41 nghề.
+- Kiểm tra toàn bộ định kỳ mỗi 200 lệnh (VALIDATE_FULL_EVERY, trước 50); mã BUILD chỉ đổi khi mã di trú/kiểm tra bản lưu có thể đổi (lên số phiên bản, hướng dẫn, quan sát hệ thống không còn ép kiểm tra lại mọi bản lưu).
+- Thêm scripts/bench_command.py đo từng pha của một lệnh trên bản lưu tổng hợp 225 KB / 1.4 MB / 3 MB.
+
 # 1.7.15 — 2026-10-05
 
 - Coin/vàng chung thị trường theo giờ thực: 10 phút một phiên, 1 giờ một ngày thị trường; giữ tài sản và giá vốn khi chuyển đổi.
@@ -747,7 +868,7 @@ Theo chat người chơi và số thao tác bị từ chối trên máy chủ (s
 - Bấm cả hàng phòng để chọn (không chỉ ô tên), có dấu ✓ và thông báo "Đã chọn … · 1/2 chỗ"; màn 360px thấy đủ 7 đêm, cột tên phòng đứng yên.
 - Thông báo nhỏ không còn đè lên lịch; màn ngang có chỗ để thao tác.
 
-# Chưa phát hành — Dễ nhìn hơn
+## Dễ nhìn hơn
 
 ## Giao diện
 - Quán mì cay: phiếu order giờ là danh sách từng dòng (nước dùng, topping, cấp cay, mang về, dị ứng) có dấu ✓/✗/○ theo tô đang làm, thay cho câu dài và mục "Kiểm tô" bị ẩn.

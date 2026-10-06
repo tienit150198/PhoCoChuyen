@@ -10,28 +10,28 @@ its prize in exactly 3 boxes and every other amount at most twice, a losing one 
 rule on the ticket, "3 ô giống nhau trúng số đó", always reads the same as the result). The client only scratches it
 open; nothing it sends decides anything.
 
-Owner 05/10 latest: 50% base chance at every ticket price. The server's symmetric
-streak guard prevents five identical luck draws in a row. Prize weights stay at
+Owner 06/10: about 65% of tickets win at every price (game.fair WIN_P, with its streak
+rules: a sure win after four losses, a cool-off to 55% after four wins). Prize weights stay at
 mean 1.59x conditional on a prize, including refunds; winning does not always mean
 net profit. Already purchased tickets retain their layout and payment.
 """
 from __future__ import annotations
 
-TIERS = (2, 5, 10, 20, 50, 100, 200, 500)  # the vé's price, xu
+TIERS = (2, 5, 10, 20, 50, 100, 200, 500, 1000)  # the vé's price, xu
 NAMES = {2: 'Vé Lộc Nhỏ', 5: 'Vé Phát Tài', 10: 'Vé Như Ý', 20: 'Vé Đại Cát',
-         50: 'Vé Tài Lộc', 100: 'Vé Phú Quý', 200: 'Vé Thịnh Vượng', 500: 'Vé Đại Lộc'}
+         50: 'Vé Tài Lộc', 100: 'Vé Phú Quý', 200: 'Vé Thịnh Vượng', 500: 'Vé Đại Lộc', 1000: 'Vé Ngàn Lộc'}
 CELLS = 9                       # a 3 × 3 grid under the silver
 MATCH = 3                       # 3 boxes of the same amount: that amount is won
 # (multiple of price, weight per 1000 winning tickets): E[multiple | win] = 1.59
 PRIZES = ((1, 675), (2, 230), (3, 60), (5, 25), (10, 8), (20, 1), (50, 1))
 MULTS = tuple(m for m, _ in PRIZES)
 # Historical API retained at the current fixed base probability.
-P_HI, P_LO = .50, .50
+P_HI, P_LO = .65, .65
 RUN_STEP = 0
 
 
 def win_p(net: int) -> float:
-    return .50
+    return P_HI
 
 
 def prize_mult(rng) -> int:

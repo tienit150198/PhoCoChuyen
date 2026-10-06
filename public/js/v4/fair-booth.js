@@ -398,7 +398,7 @@ export function setup(ctx){
         ${card('pbfind','🎲','Người lạ','Ghép với một người đang ở hội chợ',!shared()||busy)}
         ${card('pbmake','👫','Bạn bè · tạo phòng','Nhận mã phòng gửi cho bạn bè, tối đa 4 người',!shared()||busy)}
       </div>
-      <div class="fh-pb-join"><label for="fh-pb-code">Có mã phòng của bạn bè?</label><div class="fh-pb-joinrow"><input id="fh-pb-code" class="fh-pb-code" data-fh-key="pb-code" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="VD: A7K2"${shared()?'':' disabled'}>${btn(D.pendingJoin&&D.mode==='friends'?'Đang vào…':'Vào phòng','pbjoin',{},'primary',!shared()||busy?' disabled data-fh-key="pbjoin"':' data-fh-key="pbjoin"')}</div></div>
+      <div class="fh-pb-join"><label for="fh-pb-code">Có mã phòng của bạn bè?</label><div class="fh-pb-joinrow"><input id="fh-pb-code" class="fh-pb-code" data-fh-key="pb-code" maxlength="8" lang="en" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="VD: A7K2"${shared()?'':' disabled'}>${btn(D.pendingJoin&&D.mode==='friends'?'Đang vào…':'Vào phòng','pbjoin',{},'primary',!shared()||busy?' disabled data-fh-key="pbjoin"':' data-fh-key="pbjoin"')}</div></div>
       <p class="fh-rule">Mỗi lượt chụp 4 kiểu, in thành một dải ảnh có khung. Mỗi người tự trả ${xu(p?.price||5)}${D.ticket?' (bạn đang có sẵn một vé chưa dùng)':''}. Ảnh chỉ nằm trên máy của bạn, không lưu lên đâu cả.</p>`;
   }
   function waiting(){

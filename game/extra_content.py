@@ -8,7 +8,7 @@ NEW_CAREERS = ('teacher', 'tour_guide', 'milk_tea')
 META = {
  'teacher':dict(short='Một ngày làm giáo viên',place='Lớp học Mầm Nắng',tagline='Một cách giảng mới. Một ánh mắt hiểu bài.',icon='book',color='#779e72',light='#edf3dd',weather='Sân trường nắng',work='Tiết học',station='Bảng và góc học tập',greeting='Soạn tiết học, điểm danh và giúp từng bạn hiểu bài theo cách riêng.',caption='Dạy học là tìm một cách giải thích khác',map_label='05 · LỚP HỌC MẦM NẮNG'),
  'tour_guide':dict(short='Hướng dẫn viên du lịch',place='Chuyến đi Mây Lang Thang',tagline='Đi cùng nhau. Mang về một câu chuyện.',icon='compass',color='#418d94',light='#e0f3f0',weather='Gió trên bến',work='Đoàn tham quan',station='Bản đồ hành trình',greeting='Hỏi sở thích đoàn, chọn lộ trình và kiểm đủ người trước khi đi nhé.',caption='Chuyến đi vui không chỉ là tới đủ điểm',map_label='06 · MÂY LANG THANG'),
- 'milk_tea':dict(short='Tiệm trà sữa',place='Trà Mây & Trân Châu',tagline='Một chút trà. Một chút chuyện dễ thương.',icon='milk_tea',color='#df7196',light='#fff0e8',weather='Nắng bên hiên',work='Ly nước',station='Quầy pha chế',greeting='Đọc món khách gọi, chọn trà, thêm topping rồi chỉnh đường và đá nhé.',caption='Pha một ly vui, nghe một chuyện nhỏ',map_label='07 · TRÀ MÂY & TRÂN CHÂU'),
+ 'milk_tea':dict(short='Tiệm trà sữa',place='Trà Mây & Trân Châu',tagline='Một chút trà. Một chút chuyện dễ thương.',icon='coffee',color='#df7196',light='#fff0e8',weather='Nắng bên hiên',work='Ly nước',station='Quầy pha chế',greeting='Đọc món khách gọi, chọn trà, thêm topping rồi chỉnh đường và đá nhé.',caption='Pha một ly vui, nghe một chuyện nhỏ',map_label='07 · TRÀ MÂY & TRÂN CHÂU'),
 }
 CATALOG = [dict(id=cid,title=m['short'],name=m['short'],status='playable',core_loop=m['tagline'],**m) for cid,m in META.items()]
 PEOPLE={
@@ -148,8 +148,39 @@ def make_task(career:str,day:int,slot:int,serial:int)->dict:
   t.update(boba.task_fields(day,slot))
  return t
 
+# 🏷️ Bảng giá (life_price): names for SPEC price keys a career's own tables do not name.
+PRICE_NAMES = dict(them='Thêm', com_tam='Cơm tấm', com_trang='Cơm trắng', vien='Kem viên', vien_bo='Kem viên bơ', top='Topping',
+                   cake='Bánh kem', breakfast='Bữa sáng', guide='Dẫn đường', patch='Thử dị ứng', room='Dọn phòng',
+                   groom_s='Tắm tỉa thú nhỏ', groom_m='Tắm tỉa thú vừa', groom_l='Tắm tỉa thú lớn', groom_cat='Tắm tỉa mèo',
+                   board_dog='Trông chó', board_cat='Trông mèo', care='Chăm sóc', adopt='Nhận nuôi', ship_bike='Giao xe máy',
+                   ship_van='Giao xe tải', cat_dua='Cắt dũa', son_thuong='Sơn thường', son_gel='Sơn gel', thao_gel='Tháo gel',
+                   noi='Nối móng', french='Vẽ French', hoa='Vẽ hoa', cham_da='Chấm đá')
+
+
+def price_board() -> dict:
+ """{career: [{id, name, emoji, base}]} for every plugin career with SPEC['prices'] (life_price's 75–125% band)."""
+ from .careers import PLUGINS
+ out = {}
+ for cid, mod in PLUGINS.items():
+  prices = mod.SPEC.get('prices') or {}
+  if not prices:
+   continue
+  names = {}
+  for attr in sorted(dir(mod)):
+   if attr.startswith('_') or attr == 'SPEC':
+    continue
+   v = getattr(mod, attr)
+   rows = v.items() if isinstance(v, dict) else ((x.get('id'), x) for x in v if isinstance(x, dict)) if isinstance(v, (list, tuple)) else ()
+   for k, x in rows:
+    if isinstance(k, str) and k in prices and k not in names and isinstance(x, dict) and isinstance(x.get('name'), str):
+     names[k] = (x['name'], x.get('emoji') if isinstance(x.get('emoji'), str) else None)
+  out[cid] = [dict(id=k, name=(names.get(k) or (PRICE_NAMES.get(k) or k.replace('_', ' ').capitalize(), None))[0][:60],
+                   emoji=(names.get(k) or (None, None))[1] or '🏷️', base=int(v)) for k, v in prices.items()]
+ return out
+
+
 def public_content():
- return dict(new_careers=list(NEW_CAREERS),ingredients=INGREDIENTS,methods=METHODS,lesson_steps=LESSON_STEPS,places=[{k:v for k,v in x.items() if k!='answer'} for x in PLACES],photo_objects=PHOTO_OBJECTS,modes=MODES,weather=WEATHERS,activities=[{k:v for k,v in x.items() if k not in ('cards','steps')} for x in ACTIVITIES],achievements=ACHIEVEMENTS,stories=STORIES,town=TOWN)
+ return dict(price_board=price_board(),new_careers=list(NEW_CAREERS),ingredients=INGREDIENTS,methods=METHODS,lesson_steps=LESSON_STEPS,places=[{k:v for k,v in x.items() if k!='answer'} for x in PLACES],photo_objects=PHOTO_OBJECTS,modes=MODES,weather=WEATHERS,activities=[{k:v for k,v in x.items() if k not in ('cards','steps')} for x in ACTIVITIES],achievements=ACHIEVEMENTS,stories=STORIES,town=TOWN)
 
 # Gentle humour appended only after an actually completed, accurate task.
 # Never invent health outcomes, failed products or real people reviews.

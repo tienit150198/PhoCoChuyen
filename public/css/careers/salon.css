@@ -35,6 +35,10 @@
 .career-job.sl .sl-sub{margin:6px 0 0;font-size:.8em;color:var(--sl-muted);text-transform:uppercase;letter-spacing:.05em}
 .career-job.sl .sl-note{padding:8px 10px;border-radius:var(--sl-rs);background:var(--sl-s2);border-left:4px solid var(--sl-info);font-size:.9em}
 .career-job.sl .sl-note.good{border-left-color:var(--sl-good)}
+/* 1.7.16: over the budget, talk it through */
+.career-job.sl .sl-talk{margin:8px 0;padding:10px;border-radius:var(--sl-rs);background:var(--sl-s2);border-left:4px solid var(--sl-bad)}
+.career-job.sl .sl-talk .btn{white-space:normal;line-height:1.25;text-align:left;min-height:40px}
+.career-job.sl .sl-talk p{margin:4px 0}
 
 /* Consultation */
 .career-job.sl .sl-qa-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}

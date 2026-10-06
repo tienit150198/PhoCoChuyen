@@ -1,0 +1,69 @@
+/* Thư viện – Lưu trữ phường Mây — scoped styles (.career-job.tv), over the street kit (street_kit.css).
+   Its own look: library blue and kraft paper, call-number chips, a hygrometer bar and quiet reading-room cards. */
+.career-job.tv{--sk-accent:#5b6f9e;--sk-accent-2:#c9a46a;--tv-paper:color-mix(in srgb,#efe2c8 55%,var(--sk-surface));--tv-ink:#36466e}
+
+.career-job.tv .tv-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.career-job.tv .tv-btn,.career-job.tv .tv-opt{min-height:44px;white-space:normal;text-align:left;line-height:1.25}
+.career-job.tv .tv-btn.full{width:100%;justify-content:flex-start}
+.career-job.tv .tv-on{border-color:var(--sk-accent);background:color-mix(in srgb,var(--sk-accent) 14%,var(--sk-surface));font-weight:700}
+.career-job.tv .tv-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;margin-top:6px}
+.career-job.tv .tv-opt{display:flex;align-items:center;padding:8px 10px;border:1px solid var(--sk-line);border-radius:var(--sk-rs);background:var(--sk-surface);color:var(--sk-ink);font:inherit;cursor:pointer}
+.career-job.tv .tv-opt:disabled{opacity:.5;cursor:not-allowed}
+.career-job.tv .tv-opt.ghost{border-style:dashed;color:var(--sk-muted)}
+.career-job.tv .tv-note{margin:0 0 6px;padding:8px 10px;border-radius:var(--sk-rs);background:var(--sk-surface-2)}
+
+/* ---------- lists of what was looked at */
+.career-job.tv .tv-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.tv .tv-list li.seen{display:flex;gap:8px;align-items:flex-start;padding:6px 8px;border-radius:10px;background:var(--tv-paper)}
+.career-job.tv .tv-list li.seen>span{font-size:18px;line-height:1.3}
+.career-job.tv .tv-list li.seen small{display:block;font-size:14px;line-height:1.35}
+.career-job.tv .tv-list .tag{margin-top:4px;display:inline-block}
+
+/* ---------- the morning */
+.career-job.tv .tv-hum{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center}
+.career-job.tv .tv-hum small{grid-column:1/-1;color:var(--sk-muted)}
+.career-job.tv .tv-hum.hi b{color:var(--sk-bad)}
+.career-job.tv .sk-meter.bad i{background:var(--sk-bad)}
+
+/* ---------- fees */
+.career-job.tv .tv-fees{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:4px}
+.career-job.tv .tv-fees li{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dashed var(--sk-line)}
+.career-job.tv .tv-counter{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0}
+.career-job.tv .tv-fee{border-left:6px solid var(--sk-accent-2)}
+
+/* ---------- cataloguing */
+.career-job.tv .tv-books{display:grid;gap:6px;margin-top:8px}
+.career-job.tv .tv-book .sk-pane-sum{display:flex;align-items:center;gap:8px;min-height:48px}
+.career-job.tv .tv-book-sum{display:flex;flex-direction:column;flex:1;text-align:left}
+.career-job.tv .tv-book-sum small{color:var(--sk-muted)}
+.career-job.tv .tv-book.done .tv-book-sum b{color:var(--sk-good)}
+.career-job.tv .tv-ok{font-style:normal;color:var(--sk-good);font-weight:800}
+.career-job.tv h5{margin:8px 0 4px;font-size:13px;color:var(--sk-muted);text-transform:uppercase;letter-spacing:.04em}
+.career-job.tv .tv-classes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.career-job.tv .tv-marks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.career-job.tv .tv-chip{min-height:44px;border:2px solid var(--sk-line);border-radius:10px;background:var(--tv-paper);color:var(--tv-ink);font:inherit;font-weight:700;font-family:ui-monospace,Menlo,Consolas,monospace;cursor:pointer}
+.career-job.tv .tv-chip.on{border-color:var(--sk-accent);background:var(--sk-accent);color:#fff}
+.career-job.tv .tv-legend,.career-job.tv .tv-tips{margin:0;padding-left:18px;display:grid;gap:3px;font-size:14px}
+.career-job.tv .tv-tips{margin-top:8px;color:var(--sk-muted)}
+
+/* ---------- the reading room */
+.career-job.tv .tv-quiet{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.career-job.tv .tv-off{padding:10px;border:1px solid var(--sk-line);border-radius:var(--sk-r);background:var(--sk-surface)}
+.career-job.tv .tv-off+.tv-off{margin-top:8px}
+.career-job.tv .tv-off.done{opacity:.75;background:var(--sk-surface-2)}
+.career-job.tv .tv-off-head{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px}
+.career-job.tv .tv-off-head>span{font-size:26px;line-height:1}
+.career-job.tv .tv-off-head small{display:block;color:var(--sk-muted);line-height:1.35}
+
+/* ---------- the archive */
+.career-job.tv .tv-quiz{margin:0;padding-left:0;list-style:none;display:grid;gap:10px}
+.career-job.tv .tv-boxes .tv-opt{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px}
+.career-job.tv .tv-arc{border-left:6px solid var(--sk-accent)}
+.career-job.tv .kv{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.career-job.tv .kv li{display:flex;justify-content:space-between}
+
+@media (max-width:640px){
+  .career-job.tv .workbench{grid-template-columns:minmax(0,1fr)}
+  .career-job.tv .wb-side{position:static}
+  .career-job.tv .tv-opts{grid-template-columns:minmax(0,1fr)}
+}

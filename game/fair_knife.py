@@ -1,7 +1,8 @@
 """Owner 05/10 follow-up: new knife levels use real collisions again. Both client
 and server replay the same schedule/tap times; no chance draw can turn a clean
-board into a loss. New levels use the gentler 135% schedule. The simulation figures
-below describe the original 100% schedule, not the current 135% setting.
+board into a loss. Levels started before 06/10 replay their 135% schedule; levels
+started since use SOFT_DIFFICULTY (115%) and the narrower SOFT_GAP, and the client sends
+the touch's own event time. The simulation figures below describe the 100% schedule.
 
 🗡️ Phóng dao at the fair (owner 03/10, replacing the 🎯 phi tiêu stall: "càng ngày càng khó, chơi 1 màn xong chọn chơi
 tiếp hoặc dừng, chơi tiếp mà thua thì thua hết, dừng thì nhận thưởng hiện tại. Lâu lâu thì hiển thị "màn sau x2""). Pure
@@ -52,7 +53,7 @@ from __future__ import annotations
 import bisect
 import random
 
-STAKES = (2, 5, 10, 20, 50, 100, 200, 500)
+STAKES = (2, 5, 10, 20, 50, 100, 200, 500, 1000)
 LEVELS = 10
 # After clearing level k (1..LEVELS), "Dừng" pays LADDER[k - 1] tenths of the stake (rounded, half up), and at least
 # 1 xu more than after level k - 1 (prizes(): at 2 and 5 xu the rounding would make a step worth nothing).
@@ -68,6 +69,11 @@ SLACK = 4000                   # ms: the network's share between the player's la
 PRE_SEP = 3 * GAP              # the knives already in the board at a level's start are this far apart at least
 CHANCE_DIFFICULTY = 135        # previous chance release; its saved boards still replay exactly
 SKILL_DIFFICULTY = 135         # keep the gentle speed/count when restoring skill play
+# 06/10 (players: "phi đao nhanh quá", "ném trúng mà không vào"): levels started from this build are softer: 115% speed
+# and knives instead of 135%, and a knife only bounces off one closer than SOFT_GAP (the open space between knives
+# widens). Marked per level by journey['fair_kn_soft'] (game/fair.py), so a level keeps the rules it started with.
+SOFT_DIFFICULTY = 115
+SOFT_GAP = 8.5
 # A level by its difficulty d (the level number, plus today's heat, see heat()): knives to throw, knives already
 # stuck, the board's base speed (degrees a second) and how often a stretch of its turning is a 'wave' (speeds up or
 # slows down smoothly), a 'rev' (turns back abruptly) or a 'stut' (stops short, then bursts on, sometimes the other
@@ -159,10 +165,13 @@ def schedule(seed: int, level: int, hot: int = 0, difficulty: int = 100) -> dict
         a = round(r.uniform(0, 360), 1)
         if all(dist(a, b) >= PRE_SEP for b in pre):
             pre.append(a)
-    if difficulty in (135, 150):
+    if difficulty in (SOFT_DIFFICULTY, 135, 150):
         need = (need * difficulty + 99) // 100
         segs = [[ms, speed * (difficulty / 100), ramp] for ms, speed, ramp in segs]
-    return dict(lv=level, hot=hot, d=d, need=need, pre=pre, th0=round(r.uniform(0, 360), 1), segs=segs)
+    out = dict(lv=level, hot=hot, d=d, need=need, pre=pre, th0=round(r.uniform(0, 360), 1), segs=segs)
+    if difficulty == SOFT_DIFFICULTY:
+        out['gap'] = SOFT_GAP
+    return out
 
 
 def _table(sc: dict) -> list:
@@ -231,9 +240,10 @@ def judge(sc: dict, taps: list[int]) -> tuple[list[float], int]:
     """Throw the taps in order: (the knives stuck, board degrees; the index of the throw that hit a knife, or -1).
     Throws after a hit or after the level's `need` do not count."""
     stuck: list[float] = []   # compared unrounded, like judge() in public/js/v4/fair-knife.js
+    gap = sc.get('gap', GAP)
     for i, t in enumerate(taps[:sc['need']]):
         a = lands(sc, t)
-        if any(dist(a, b) < GAP for b in sc['pre'] + stuck):
+        if any(dist(a, b) < gap for b in sc['pre'] + stuck):
             return [round(x, 2) for x in stuck], i
         stuck.append(a)
     return [round(x, 2) for x in stuck], -1
@@ -251,4 +261,4 @@ def taps_ok(taps: object, need: int, elapsed_ms: int) -> bool:
 
 def public_schedule(sc: dict) -> dict:
     """What the client draws a level from (no cache keys)."""
-    return {k: sc[k] for k in ('lv', 'need', 'pre', 'th0', 'segs')}
+    return {k: sc[k] for k in ('lv', 'need', 'pre', 'th0', 'segs', 'gap') if k in sc}

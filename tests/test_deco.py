@@ -81,7 +81,8 @@ def renter(kind='tro_moi', wallet=6000):
 
 class Catalogue(unittest.TestCase):
     def test_items(self):
-        self.assertEqual(len(DC.ITEMS), 116)
+        self.assertEqual(len(DC.ITEMS), 171)
+        self.assertEqual(DC.KNOWN_1715[-1], 'mam_ngu_qua')                  # the last piece 1.7.15 knows
         self.assertEqual(DC.KNOWN_132, tuple(DC.ITEMS)[:65])                # what a 1.3.2 build knows: its mirror holds only these
         self.assertNotIn('ke_go_treo', DC.KNOWN_132)
         self.assertEqual((DC.ITEMS['ke_go_treo']['spot'], DC.ITEMS['ke_go_treo']['ledge']), ('wall', 24))
@@ -666,13 +667,17 @@ class FreePlacement(unittest.TestCase):
         b = renter('ky_tuc_xa', wallet=20000)
         rm = next(r for r in dc.layout(b)['rooms'] if r['id'] == 'bunk')
         cap = dc.room_cap(rm)
-        self.assertEqual(cap, rm['cols'] * (rm['wrows'] + rm['frows']) + 4)
+        old = rm['cols'] * (rm['wrows'] + rm['frows']) + 4                 # 1.7.15's cap; ×1.5 since (góp ý #192)
+        self.assertEqual((dc.old_cap(rm), cap), (old, old * 3 // 2))
         self.assertEqual(D(b)['rooms'][0]['cap'], cap)
         for i in range(cap):
             b, _ = act(b, 'jr_deco_buy', item='lich', confirm=True, put=dict(r='bunk', x=i * 2 % 80, y=i % 3))
         with self.assertRaises(GameError) as e:
             act(b, 'jr_deco_buy', item='lich', confirm=True, put=dict(r='bunk', x=79, y=5))
         self.assertIn(f'đủ {cap} món', str(e.exception))
+        self.assertIn('phòng khác', str(e.exception))                       # and how to get more room
+        self.assertEqual(len(b['journey']['decor']['items']), old)           # what a 1.7.15 build accepts
+        self.assertEqual(len(b['journey']['decor_more']['items']), cap - old)   # the rest, which it shows in its bag
         first = D(b)['items'][0]['id']
         b, _ = act(b, 'jr_deco_put', uid=first, r='bunk', x=33, y=1)        # moving inside a full room is fine
         validate_state(b)

@@ -47,7 +47,12 @@ class Client:
 
     async def send(self, **frame):
         from live import jsonx
-        await self.ws.send(jsonx.dumps(frame).decode())
+        try:
+            text = jsonx.dumps(frame).decode()
+        except TypeError:   # orjson refuses ints past 64 bits; a hostile client can still send them as text
+            import json
+            text = json.dumps(frame, ensure_ascii=False, separators=(',', ':'))
+        await self.ws.send(text)
 
     async def expect(self, t, timeout=3.0, **match):
         """The first received frame of type t (and fields equal to `match`), removed from the inbox."""

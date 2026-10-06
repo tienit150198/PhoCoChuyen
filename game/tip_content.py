@@ -41,7 +41,8 @@ NORMS = {
     'photobooth': dict(rate=.12, cash=.60, lo=1, hi=4, bill=18),  # a group rounds the bill up after a good strip
     'giupviec': dict(rate=.30, cash=.85, lo=2, hi=8, bill=30),   # a happy client presses a note into your hand at the door
     'naucom': dict(rate=.16, cash=.55, lo=2, hi=6, bill=45),     # a family slips a little extra into the market change
-    'babysitter': dict(rate=.10, cash=0, lo=0, hi=0, bill=18),  # the money tip comes with the day's pay; the blocks get thanks
+    'babysitter': dict(rate=.10, cash=0, lo=0, hi=0, bill=18),
+    'library': dict(rate=.06, cash=0, lo=0, hi=0, bill=10),     # a public library: readers thank with a word or a small gift, never money  # the money tip comes with the day's pay; the blocks get thanks
     'pagoda': dict(rate=.06, cash=0, lo=0, hi=0, bill=8),       # visitors thank with fruit or tea, never money
     # rare, and mostly a thank-you gift: money would not be right here
     'accounting': dict(rate=.08, cash=.30, lo=3, hi=10, bill=50),
@@ -57,6 +58,12 @@ NORMS = {
     # ✈️ Hãng bay Cánh Cò: nobody tips the crew; a thank-you now and then
     'pilot': dict(rate=.06, cash=0, lo=0, hi=0, bill=12),
     'flight_attendant': dict(rate=.07, cash=0, lo=0, hi=0, bill=8),
+    # 🛢️ giàn Hải Âu: nobody tips a technician; a thank-you from the crew or the family
+    'oil': dict(rate=.05, cash=0, lo=0, hi=0, bill=12),
+    # 🚦 nobody tips a crossing keeper; now and then a thank-you from the street
+    'railway': dict(rate=.05, cash=0, lo=0, hi=0, bill=12),
+    # 🏥 Bệnh viện Lá Sen: never money (no envelopes on the ward); a letter or a drawing now and then
+    'nurse': dict(rate=.06, cash=0, lo=0, hi=0, bill=10),
 }
 DEFAULT_NORM = dict(rate=.15, cash=.70, lo=2, hi=10, bill=40)
 OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
@@ -201,6 +208,8 @@ CAREER_LINES = {
                  'Sàn lau nước sạch, thơm mà không nồng.'),
     'naucom': ('Cơm nhà nóng hổi, vừa miệng cả nhà.', 'Nhớ cả lời dặn kiêng muối của ông.', 'Đi chợ khéo, tiền chợ còn dư.',
                'Sổ chợ rõ ràng, hóa đơn đủ cả.'),
+    'library': ('Tìm sách trúng phóc, chẳng phải chờ.', 'Phí phạt rõ ràng, có biên lai.', 'Gợi ý cuốn sách đúng gu luôn.',
+                'Phòng đọc yên mà ai cũng được nói nhẹ nhàng.'),
     'babysitter': ('Bé về nhà vui, kể về cô suốt bữa tối.', 'Nhớ từng dòng giấy dặn, không phải nhắc.', 'Nhật ký trong ngày rõ ràng, kể thật.',
                    'Bé ăn ngoan, ngủ ngon.'),
     'ice_cream': ('Viên kem tròn xoe, đủ gam luôn.', 'Kem lạnh mịn, không chảy giọt nào.', 'Nhớ cả lời dặn dị ứng của bé.',
@@ -225,6 +234,9 @@ CAREER_LINES = {
     'it_helpdesk': ('Máy chạy lại rồi, cứu một bàn thua trông thấy.', 'Giảng dễ hiểu, lần sau tự làm được.'),
     'pilot': ('Hạ cánh êm ru, cả khoang vỗ tay.', 'Thông báo rõ ràng, nghe là yên tâm.'),
     'flight_attendant': ('Tiếp viên chu đáo quá, cảm ơn nhiều.', 'Chuyến bay dễ chịu ghê.'),
+    'oil': ('Khóa đủ, đo khí đủ, cả ca yên tâm.', 'Dừng việc đúng lúc, cảm ơn em.'),
+    'railway': ('Chờ có ba phút mà yên tâm cả nhà.', 'Gác chắn nói rõ ràng, chờ cũng không bực.'),
+    'nurse': ('Hỏi tên, ngày sinh kỹ lưỡng, yên tâm ghê.', 'Giải thích từng bước, cả nhà bớt lo.', 'Báo bác sĩ kịp lúc, cảm ơn nhiều.'),
 }
 
 # Thank-you gifts that carry no money: (emoji, what).
@@ -252,6 +264,7 @@ GIFTS = {
     'photobooth': (('🎞️', 'một dải ảnh cả nhóm tặng lại'), ('🍬', 'bịch kẹo dẻo hội bạn chia'), ('💌', 'tấm thiệp vẽ cái máy ảnh')),
     'giupviec': (('🍵', 'gói trà bà Xuân gói sẵn'), ('🍰', 'hộp bánh anh Tùng để trên bàn'), ('🐟', 'túi bánh cá chị Hà mua cho bạn')),
     'naucom': (('🐟', 'bịch khô cá cô Lệ phơi'), ('🎨', 'bức tranh mâm cơm bé Bin vẽ'), ('📜', 'bài thơ ông Toàn chép tay')),
+    'library': (('🔖', 'chiếc kẹp sách tự làm'), ('🍵', 'gói trà ông Thạc gửi'), ('💌', 'tấm thiệp cảm ơn của Đạt')),
     'babysitter': (('🎨', 'bức tranh bé vẽ bằng bút sáp'), ('🍘', 'túi bánh gạo bé chia cho'), ('💌', 'tấm thiệp mẹ bé viết tay')),
     'ice_cream': (('🎨', 'bức tranh cây kem bé vẽ bằng bút sáp'), ('🍬', 'nắm kẹo me trong túi áo học sinh'), ('💌', 'tấm thiệp cảm ơn của lớp 2A')),
     'pho': (('🍙', 'gói xôi xéo chị Nguyệt để phần'), ('🎨', 'bức tranh nồi phở bé Bống vẽ'), ('🫙', 'chai tương đen anh Sáu mang từ Sài Gòn')),
@@ -271,6 +284,9 @@ GIFTS = {
     'it_helpdesk': (('☕', 'ly cà phê sữa đá'), ('🍪', 'hộp bánh quy'), ('💌', 'mẩu giấy “cảm ơn anh IT” dán trên màn hình')),
     'pilot': (('✏️', 'bức vẽ chiếc máy bay của một em nhỏ'), ('🥭', 'mấy trái xoài cát'), ('💌', 'tấm thiệp gửi tổ bay')),
     'flight_attendant': (('💌', 'mẩu giấy cảm ơn kẹp trong túi ghế'), ('🍬', 'gói kẹo dừa Bến Tre'), ('🥭', 'trái xoài chín')),
+    'oil': (('🍮', 'hũ bánh flan cô Sáu để phần'), ('🫙', 'hộp mắm ruốc Má gửi lên giàn'), ('💌', 'tấm thiệp cả ca ký tên')),
+    'railway': (('🍵', 'ấm chè xanh bà Bông pha'), ('🍙', 'gói xôi nóng của cô bán xôi'), ('💌', 'tấm thiệp tụi nhỏ vẽ con tàu')),
+    'nurse': (('💌', 'lá thư cảm ơn viết tay'), ('📝', 'vài dòng khen trong sổ góp ý của khoa'), ('🎨', 'bức tranh cháu người bệnh vẽ tặng khoa')),
 }
 DEFAULT_GIFTS = (('💌', 'tấm thiệp cảm ơn'), ('🍊', 'mấy trái quýt'))
 

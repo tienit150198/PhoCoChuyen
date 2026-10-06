@@ -1399,7 +1399,7 @@ def validate_data(c: dict) -> None:
 # ================================================================ the plugin spec
 SPEC = dict(
     id=ID, prefix='pl_', category='service',
-    meta=dict(short='Phi công', place='Hãng bay Cánh Cò', tagline='Đúng giờ là lời hứa, an toàn là điều kiện.', icon='pilot',
+    meta=dict(short='Phi công', place='Hãng bay Cánh Cò', tagline='Đúng giờ là lời hứa, an toàn là điều kiện.', icon='send',
               color='#2f5d8a', light='#e6eef7', weather='Trời quang trên đường bay', work='Chuyến bay', station='Buồng lái',
               greeting='Sáng đi từ đầu hẻm ra sân bay. Đọc bản tin, tính dầu, đi một vòng quanh tàu rồi bay cùng chị Vân.',
               caption='Sáu mươi tám người phía sau, một checklist phía trước', map_label='19 · SÂN BAY CÁNH CÒ'),

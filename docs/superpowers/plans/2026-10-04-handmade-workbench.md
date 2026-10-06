@@ -16,19 +16,15 @@ Món may đầu tiên mặc định là gấu bông: đo 24×30 cm → cắt →
 
 ## Công việc
 
-- [x] Thêm kiểm tra thất bại trước: hoàn thành công đoạn, dữ liệu lỗi, thanh toán một lần, kỷ niệm cũ.
-- [x] Thêm catalog và validator `game/craft_work.py`, nối vào `game/outings.py`; dữ liệu mới không buộc migration database.
-- [x] Bàn thao tác `craft-workbench.js`, helpers gesture, CSS riêng; bản nháp theo tài khoản và loại món, giữ khi đóng hoặc lưu thất bại.
-- [x] Nút mở bàn từ outings; SVG thành phẩm và dấu trang trí trên kệ; không thay salon/nail.
-- [x] Kiểm tra gesture không nhảy qua đường dẫn, thứ tự bước, draft, keyboard, payment failure và hành vi mobile.
-- [x] Rà soát độc lập, chạy gói phát hành trên PostgreSQL riêng, kiểm tra tương thích nghề và deploy.
+- [ ] Thêm kiểm tra thất bại trước: hoàn thành công đoạn, dữ liệu lỗi, thanh toán một lần, kỷ niệm cũ.
+- [ ] Thêm catalog và validator `game/craft_work.py`, nối vào `game/outings.py`; dữ liệu mới không buộc migration database.
+- [ ] Bàn thao tác `craft-workbench.js`, helpers gesture, CSS riêng; bản nháp theo tài khoản và loại món, giữ khi đóng hoặc lưu thất bại.
+- [ ] Nút mở bàn từ outings; SVG thành phẩm và dấu trang trí trên kệ; không thay salon/nail.
+- [ ] Kiểm tra gesture không nhảy qua đường dẫn, thứ tự bước, draft, keyboard, payment failure và hành vi mobile.
+- [ ] Rà soát độc lập, chạy gói phát hành trên PostgreSQL riêng, kiểm tra tương thích nghề và deploy.
 
 ## Giao thức lưu
 
 `jr_out_craft {kind,color,pattern,pay,work:{v:1,steps:[...],size:[w,h],marks:[[x,y],...]}}`.
 
 Recipe teddy: measure/cut/sew/stuff/decorate; pot: shape/glaze/decorate; bracelet: thread/beads/decorate; card: fold/decorate. Kích thước tương ứng 24×30, 20×24, 18×1, 15×20. Dấu trang trí 1–12, tọa độ hữu hạn 0–1. Kiểm tra mọi dữ liệu trước thanh toán. Legacy không có work vẫn đọc và nhận cho ba loại cũ; teddy bắt buộc work.
-
-## Kết quả kiểm chứng
-
-35 kiểm tra handmade/outings/guide và harness craft_workbench qua; chạy lại 19 handmade/outings trên nguồn đóng gói qua. Trình duyệt 390px: đo, cắt/may bằng kéo, nhồi bằng kéo và nút, gắn mặt, dấu trang trí, hủy/nhận thanh toán; ví 500→478 cho gấu và 478→456 cho thiệp, hai món trên kệ. Bản nháp mở lại đúng bước. Không có lỗi console. Reviewer xác nhận không còn lỗi chặn. Gói kiểm chứng PostgreSQL riêng; 40.800 dòng nhiệm vụ tương thích.

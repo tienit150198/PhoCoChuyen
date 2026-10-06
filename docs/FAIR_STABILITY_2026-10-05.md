@@ -34,13 +34,3 @@ Phần API chậm đuôi vẫn liên quan chi phí xử lý/lưu bản game nhi�
 Gói nền: `release-1715-knife-smooth`, SHA256 `aa3a3db5768c4adcbce655e37af16b4ac377a2db2ee5de3c5863cbd0e4088a45`. Chỉ overlay các tệp được liệt kê. Workspace đang có một nhánh tích hợp renderer khác sửa chung `app.js`; bản deploy dùng bản app cô lập, giữ renderer hiện hành. Hoàn tác riêng các sửa của đợt này trong bản cô lập rồi minify cho SHA256 **trùng tuyệt đối** app đang chạy `8e11079fc9e752f0314468bef2c984a8947c9a7ca90f8b82aad9c812e95192bc`. Không đụng các chỉnh sửa đang làm chung workspace.
 
 Không thay đổi schema, epoch/salt thị trường, xác suất, giá vé, tiền thưởng hoặc nội dung thông báo.
-
-## Kết quả triển khai
-
-Đã triển khai 14:43:34 ngày 05/10/2026 (UTC+7), build giao diện `1.7.15+b4da02e62da7`, engine Linux `1150f8b5b8ae1f9d51f0`. SHA256 gói `76b48517570199c274c03cce46bd01b557affd0bd14aa4750c821569f625eafd`.
-
-Gói minify cuối đã khởi động toàn ứng dụng trên Chromium/WebKit, không lỗi JS; 12 ca hội chợ và 6 luồng phi đao ở mỗi trình duyệt đạt. Đối chiếu HTTPS app/fair/knife/booth/CSS và thông báo khớp manifest. Dịch vụ API, live và selfheal hoạt động; bridge đã tắt, epoch thị trường giữ nguyên. Không đăng thông báo mới.
-
-Chi tiết gói và đo browser: `output/release-1715-fair-stability/package.json`, `production-https.json`, `bundle-boot.json`, `knife-bundle/browser-report.json`.
-
-Cửa sổ đo 142 giây từ lúc bắt đầu rolling deploy: 2.624 request, 0 HTTP5xx, 0 traceback. 1.361 lệnh có P50/P95/P99 **133/327/626 ms**; 47 lần đọc state **175/493/918 ms**. Cửa sổ ngắn và có cả lúc chuyển server; chưa dùng để kết luận cải thiện lâu dài hoặc toàn bộ API đã đạt vài chục ms.

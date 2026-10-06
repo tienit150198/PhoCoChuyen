@@ -6,7 +6,7 @@
 
 Nguồn lưu tại `_feedback_audit_20261004`: `inbox-and-channels.json` kiểm tra lúc 10:04:32 ngày 04/10 (24 góp ý: #115, #130–152); `chat-24h.json` có 715 tin công khai/nhóm, #14923–18352, từ 03/10 10:10 đến 04/10 10:03 theo thời gian hiển thị; các lần bổ sung `chat-followup.json` và `pre-release-followup.json` tới góp ý #154 và tin #18415. `replied-170.json` ghi 8 phản hồi hoàn tất (#115,147,149–154) lúc 11:30:34. Không suy ra rằng mọi yêu cầu trong một phản hồi gộp đã được làm.
 
-Đối chiếu thêm `docs/FEEDBACK_2026-10-04.md` và ba kế hoạch `2026-10-04-player-feedback`, `2026-10-04-live-feedback-followup`, `2026-10-04-expanded-street-life`. Báo cáo cũ ghi bản 1.7.0 triển khai lúc 11:28:43 UTC+7. Các sửa mới đã phát hành ở 1.7.3; phần kết quả và báo cáo deploy phía dưới ghi bằng chứng mới nhất.
+Đối chiếu thêm `docs/FEEDBACK_2026-10-04.md` và ba kế hoạch `2026-10-04-player-feedback`, `2026-10-04-live-feedback-followup`, `2026-10-04-expanded-street-life`. Báo cáo cũ ghi bản 1.7.0 triển khai lúc 11:28:43 UTC+7. Các sửa mới trong lượt làm việc này chưa được xem là triển khai.
 
 **Quyết định phạm vi mới của chủ dự án:** sửa tính năng hiện có trước; tất cả nghề mới làm ở đợt riêng. Các nghề YouTube, quản lý khách sạn, bác sĩ, diễn viên, ca sĩ, MC, shop giày, tiệm sách cũ và karaoke nghề nghiệp dưới đây được hoãn theo quyết định này. Hoạt động đi chơi với NPC không thay cho nghề được hoãn.
 
@@ -15,12 +15,12 @@ Lần đọc trực tiếp bổ sung gồm các góp ý tới #164, 200 tin côn
 - **Đã hẹn, còn thiếu**: có lời nhận làm nhưng chưa có bằng chứng hoàn thành yêu cầu.
 - **Đã triển khai theo báo cáo**: tài liệu/lời hồi đáp ghi đã phát hành; không phải kiểm tra lại trực tiếp bản đang chạy.
 - **Có một phần**: một phần cơ chế tồn tại, phần yêu cầu còn thiếu.
-- **Đã sửa trong mã hiện tại**: đã đối chiếu, kiểm tra và phát hành trong 1.7.3; tên trạng thái giữ lại để liên hệ bảng đối chiếu ban đầu.
+- **Đã sửa trong mã hiện tại**: đã đối chiếu thay đổi và kiểm tra tại máy phát triển; chưa phát hành lên dịch vụ.
 - **Cần xác minh**: thiếu ngữ cảnh hoặc chưa tái hiện; không tự đánh dấu đã sửa.
 
 ## Tính năng hiện có: kết quả sửa và những việc cần đối chiếu
 
-Các mục có trạng thái **Đã sửa trong mã hiện tại** đã phát hành trong bản **1.7.3** lúc **17:35:26 ngày 04/10/2026 (UTC+7)**. Các mục cần xác minh, còn thiếu hoặc nghề mới hoãn vẫn giữ nguyên trạng thái; không suy ra toàn bộ backlog đã hoàn tất. Bằng chứng triển khai: `DEPLOY_1.7.3_2026-10-04.md`.
+Các sửa dưới đây chưa được phát hành. Chỉ đánh dấu tính năng có trong mã khi đã đối chiếu đường xử lý và kiểm tra; việc triển khai là bước riêng.
 
 | Nguồn | Nội dung đã gộp | Trạng thái và bằng chứng |
 |---|---|---|

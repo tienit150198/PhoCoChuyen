@@ -72,12 +72,6 @@ export const live={
   },
 };
 const emit=(type,f)=>{for(const fn of listeners.get(type)||[]){try{fn(f);}catch(e){console.warn('live:',type,e);}}for(const fn of listeners.get('*')||[]){try{fn(f);}catch(e){console.warn('live:*',e);}}};
-// Transport status is distinct from the server's social `state` frame. Publishing
-// it separately keeps HUD labels current without re-entering open conversations.
-function setConnectionState(state){
-  if(live.state===state)return;
-  live.state=state;emit('connection',{state});
-}
 
 function url(){
   const u=env?.api?.live?.url||'';
@@ -88,9 +82,9 @@ function connect(){
   if(ws)return;
   clearTimeout(timer);tried=Date.now();
   if(typeof WebSocket!=='function'||document.visibilityState==='hidden'&&!live.welcomed)return schedule();
-  setConnectionState('connecting');
+  live.state='connecting';
   let sock;
-  try{sock=new WebSocket(url());}catch{setConnectionState('down');return schedule();}
+  try{sock=new WebSocket(url());}catch{return schedule();}
   ws=sock;
   // A half-open transport may never emit error/close, or never send welcome.
   connectTimer=setTimeout(()=>{if(ws!==sock||live.state!=='connecting')return;console.info('[live] connection deadline');abandon();schedule();},CONNECT_MS);
@@ -102,7 +96,7 @@ function connect(){
     console.info('[live] connection closed',e.code,Boolean(e.wasClean));
     ws=null;clearSocketTimers();
     const wasOpen=live.state==='open';
-    setConnectionState(e.code===4001?'off':'down');
+    live.state=e.code===4001?'off':'down';
     emit('down',{code:e.code});paint();
     if(e.code===4001)return schedule(600);
     if(e.code===4002)return schedule(60);
@@ -117,7 +111,7 @@ function clearSocketTimers(){clearInterval(pinger);clearTimeout(connectTimer);cl
 function abandon(){
   const s=ws;if(!s)return;
   ws=null;clearSocketTimers();
-  const was=live.state==='open';setConnectionState('down');
+  const was=live.state==='open';live.state='down';
   try{s.close();}catch{/* already closing */}
   if(was){emit('down',{code:0});paint();}
 }
@@ -138,8 +132,8 @@ function frame(f){
     case'welcome':
       clearTimeout(connectTimer);
       live.welcomed=true;live.flags=f.flags||{};
-      if(!live.flags.chat&&!live.flags.street&&!live.flags.dating&&!live.flags.wedding&&!live.flags.fair&&!live.flags.home&&!live.flags.visits&&!live.flags.town){setConnectionState('off');break;}
-      setConnectionState('open');attempt=0;
+      if(!live.flags.chat&&!live.flags.street&&!live.flags.dating&&!live.flags.wedding&&!live.flags.fair&&!live.flags.home){live.state='off';break;}
+      live.state='open';attempt=0;
       live.me=f.me||null;live.friends=f.friends||[];live.chans=f.chans||[];live.limits=f.limits||{};live.bonds=f.bonds||[];
       adoptName();
       if(live.flags.dating&&(f.date||f.bench))import('./dating.js').then(m=>m.datingBoot(env,f)).catch(e=>console.warn('dating:',e));   // back in a date after a reload

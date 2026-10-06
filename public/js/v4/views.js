@@ -313,7 +313,7 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
   const supMore=x=>{const notes=[priceWord(x),x.short>=15?'hay thiếu hàng':'',x.late>=12?'hay trễ hẹn':'',x.fresh?`tươi thêm ${x.fresh} ngày`:'',x.rating?`${x.rating}★`:''].filter(Boolean).join(' · ');
     const terms=x.free_from!=null?[x.ship?`ship ${x.ship} xu (miễn từ ${x.free_from})`:'',(x.bulk||[]).length?`sỉ từ ${x.bulk[0][0]}: −${x.bulk[0][1]}%`:''].filter(Boolean).join(' · '):'';
     return `<details class="inv-sup-more"><summary>${esc(x.emoji)} ${esc(x.name)}: giờ giao & điều kiện</summary><p class="small">${x.kind==='rush'||!x.window?'':`${esc(x.window)} · `}${esc(notes)}</p>${terms?`<p class="small">${esc(terms)}</p>`:''}${x.note?`<p class="small muted">${esc(x.note)}</p>`:''}</details>`;};
-  const k=carts.find(k=>k.supplier===sup.id),inDraft=k?.lines.find(l=>l.item===pick.id)?.qty||0;
+  const k=carts.find(k=>k.supplier===sup.id),inDraft=k?.lines.find(l=>l.item===pick.id&&(l.size??null)===(orderSize(env,pick.id)??null))?.qty||0;
   // A full draft takes no new line (inv_cart): the button opens that draft to place it instead.
   const lineCap=Number(c.inventory?.cart_lines)||8,cartFull=!!k&&!inDraft&&k.lines.length>=lineCap;
   const tier=q.pct?`<span class="tag green">sỉ −${q.pct}%</span>`:q.tier&&q.tier[0]<=max?`<button type="button" class="chip inv-tier" data-action="v4Qty" data-set="${q.tier[0]}">Lấy ${q.tier[0]}: −${q.tier[1]}%</button>`:'';
@@ -331,9 +331,9 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
  * the haggled discount, the total, what the fund lacks, then ONE "Đặt đơn". Server-priced (inventory.cart_view). */
 function cartCard(env,k,{byId,unit}){
   const {api}=env,s=supplierList(env).find(x=>x.id===k.supplier)||{name:k.supplier,emoji:'🛒'},fn=fundName(api.state.current),sid=k.supplier;
-  const qtyBtn=(l,q,label,aria,dis=false)=>`<button type="button" class="btn ghost" data-action="v4CartQty" data-supplier="${esc(sid)}" data-item="${esc(l.item)}" data-qty="${q}" aria-label="${esc(aria)}"${dis?' disabled':''}>${label}</button>`;
+  const qtyBtn=(l,q,label,aria,dis=false)=>`<button type="button" class="btn ghost" data-action="v4CartQty" data-supplier="${esc(sid)}" data-item="${esc(l.item)}" data-size="${esc(l.size??'')}" data-qty="${q}" aria-label="${esc(aria)}"${dis?' disabled':''}>${label}</button>`;
   const line=l=>{const i=byId[l.item]||{name:l.item},max=Math.min(30,l.room);
-    const tag=l.oos?pill('Hết hàng hôm nay','danger'):l.bulk?pill(`sỉ −${l.bulk}%`,'green'):l.next_tier&&l.next_tier[0]<=max?`<button type="button" class="chip inv-tier" data-action="v4CartQty" data-supplier="${esc(sid)}" data-item="${esc(l.item)}" data-qty="${l.next_tier[0]}">Lấy ${l.next_tier[0]}: −${l.next_tier[1]}%</button>`:'';
+    const tag=l.oos?pill('Hết hàng hôm nay','danger'):l.bulk?pill(`sỉ −${l.bulk}%`,'green'):l.next_tier&&l.next_tier[0]<=max?`<button type="button" class="chip inv-tier" data-action="v4CartQty" data-supplier="${esc(sid)}" data-item="${esc(l.item)}" data-size="${esc(l.size??'')}" data-qty="${l.next_tier[0]}">Lấy ${l.next_tier[0]}: −${l.next_tier[1]}%</button>`:'';
     return `<li class="inv-cl${l.oos?' oos':''}"><span class="inv-cl-name"><span aria-hidden="true">${esc(i.emoji||'📦')}</span> <b>${esc(i.name)}${l.size?` · size ${esc(l.size)}`:''}</b>${tag?`<span class="inv-cl-tag">${tag}</span>`:''}</span>`+
       `<span class="inv-cl-qty">${qtyBtn(l,l.qty-1,'−',`Bớt một ${i.name}`)}<b aria-label="${l.qty} ${esc(unit(i))}">${l.qty}</b>${qtyBtn(l,l.qty+1,'+',`Thêm một ${i.name}`,l.qty>=max)}</span>`+
       `<b class="inv-cl-amt">${l.oos?'—':fmt(l.cost)}</b>${qtyBtn(l,0,icon('x',14),`Bỏ ${i.name} khỏi đơn`).replace('class="btn ghost"','class="icon-btn inv-cl-x"')}</li>`;};
@@ -386,7 +386,7 @@ export function feedbackView(env){
   const crit=st.criteria?.length?`<details class="rv-criteria"><summary>Điểm theo tiêu chí</summary>${st.criteria.map(x=>`<div class="crit"><small>${esc(x.label)}</small><div class="bar ${x.avg<=3?'low':''}"><i style="width:${x.avg*20}%"></i></div><b>${x.avg}</b></div>`).join('')}${st.improved?`<p class="muted small">${pagoda?`${st.improved} lần khách thập phương sửa sao lên sau khi đọc lời chùa hồi đáp.`:`${st.improved} lần khách sửa sao lên sau khi bạn trả lời.`}</p>`:''}</details>`:'';
   const parent=api.state.current==='teacher';
   const card=p=>{const f=p.feedback,s=f?.status;
-    const tag=!f?'':f.removed?pill('Đã gỡ',''):s==='awaiting'?pill('Đang đọc…','blue'):s==='open'?`<span class="rv-reply">${icon('chat',13)} ${f.thread.some(x=>x.role==='owner')?'Khách hỏi lại':pagoda?'Hồi đáp':'Trả lời'}</span>`:f.ignored?pill('Đã bỏ qua',''):f.report==='rejected'?pill('Báo cáo bị từ chối','danger'):p.stars&&f.stars_original&&p.stars>f.stars_original?pill(`Đã sửa ★${f.stars_original} → ★${p.stars}`,'green'):f.thread.some(x=>x.role==='owner')?pill(pagoda?'Đã hồi đáp':'Đã trả lời','green'):'';
+    const tag=!f?'':f.removed?pill('Đã gỡ',''):s==='awaiting'?pill('Đang đọc…','blue'):s==='open'?`<span class="rv-reply">${icon('chat',13)} ${f.thread.some(x=>x.role==='owner')?'Khách hỏi lại':pagoda?'Hồi đáp':'Trả lời'}</span>`:f.ignored?pill('Đã bỏ qua',''):f.report==='rejected'?pill('Báo cáo không được duyệt',''):p.stars&&f.stars_original&&p.stars>f.stars_original?pill(`Đã sửa ★${f.stars_original} → ★${p.stars}`,'green'):f.thread.some(x=>x.role==='owner')?pill(pagoda?'Đã hồi đáp':'Đã trả lời','green'):'';
     const flags=f?.clues?.length&&!f.removed?`<span class="rv-flags">${f.clues.map(x=>`<span class="tag amber">${icon('flag',11)} ${esc(x)}</span>`).join('')}</span>`:'';
     // The latest exchange (your reply, then what the reviewer did) right under the quote.
     const peek=f&&!f.removed?rvBoxes(p,parent,true,pagoda).filter(x=>x.role!=='guest').slice(-2).map(x=>x.html).join(''):'';
@@ -406,7 +406,10 @@ function threadView(p,env){
   const sub=[f?.persona_name,f?.title].filter(Boolean).map(esc).join(' · ');
   const top=`<div class="row rv-head"><span class="persona big ck-avatar" aria-hidden="true">${esc(f?.persona_emoji||'🙂')}</span><div class="grow"><div class="ck-meta"><h3>${esc(p.author)}</h3><small>Ngày ${p.day}</small></div><div>${p.stars?`<span class="stars ck-stars" aria-label="${p.stars} sao">${stars(p.stars)}</span>`:''}${f&&p.stars&&p.stars!==f.stars_original?` <small class="muted">ban đầu ${f.stars_original}★</small>`:''}</div>${sub?`<small class="rv-sub">${sub}</small>`:''}</div></div>`;
   const quote=`<p class="ck-box review-text"><b class="ck-label rv-who">👤 ${parent?'Phụ huynh':pagoda?'Khách thập phương':'Khách'}</b> “${esc(p.text)}”</p>`;
-  if(!f)return `<article class="card review-card">${back}${top}${quote}</article>`;
+  if(!f){   // a review a shift event wrote (no thread): reportable too; the platform keeps it, at no cost
+    const kept=p.reported?`<p class="notice amber" role="status">${icon('flag',16)} Đã báo cáo: nền tảng giữ đánh giá này vì nó gắn với chuyện có thật trong ca. Sao giữ nguyên.</p>`:'';
+    const rep=p.can_report?`<div class="row wrap rv-actions">${confirmCmd(`${icon('flag',14)} Báo cáo`,'fb_report',{post:p.id},reportQuestion(parent,pagoda),'ghost small')}</div>`:'';
+    return `<article class="card review-card">${back}${top}${quote}${kept}${rep}</article>`;}
   const offered=f.thread.some(x=>x.role==='owner'&&x.offer&&x.offer!=='none');
   const crit=f.criteria.map(x=>`<div class="crit"><small>${esc(x.label)}</small><div class="bar ${x.score<=3?'low':''}"><i style="width:${x.score*20}%"></i></div><b>${x.score}</b>${x.note?`<small class="muted">${esc(x.note)}</small>`:''}</div>`).join('');
   const thread=rvBoxes(p,parent,false,pagoda).map(x=>x.html).join('');
@@ -420,23 +423,31 @@ function threadView(p,env){
   const tplRow=f.tones?.length?`<div class="rv-tones" role="group" aria-label="Chọn giọng trả lời">${f.tones.map(t=>`<button type="button" class="rv-tone ${esc(t.risk)}${t.id===tone?' selected':''}" data-action="v4FbTpl" data-tone="${esc(t.id)}" data-text="${esc(t.text)}" aria-pressed="${t.id===tone}"><span aria-hidden="true">${esc(t.emoji)}</span><span class="rv-tone-txt"><b>${esc(t.label)}</b>${t.risk==='risky'?'<small>được ăn cả, ngã về không</small>':t.risk==='bad'?'<small>dễ bị chụp màn hình</small>':''}</span></button>`).join('')}<button type="button" class="rv-tone free${tone==='free'?' selected':''}" data-action="v4FbTpl" data-tone="free" data-text="" aria-pressed="${tone==='free'}"><span aria-hidden="true">✍️</span><b>Tự viết</b></button></div>`
     :`<div class="chip-row rv-tpl" role="group" aria-label="Gợi ý giọng trả lời">${tpl.map(([l,t],i)=>`<button type="button" class="chip${i===3?' rv-tpl-rude':''}" data-action="v4FbTpl" data-text="${esc(t)}">${l}</button>`).join('')}</div>`;
   const clues=f.clues?.length&&!f.report?`<div class="rv-clues" role="note">${icon('flag',14)}<div class="rv-flags">${f.clues.map(x=>`<span class="tag amber">${esc(x)}</span>`).join('')}</div></div>`:'';
-  const reportQ=parent?'Báo cáo tin nhắn này với ban đại diện lớp? Chỉ tin nhắn nhầm lớp hoặc giả mới bị gỡ. Nếu là góp ý thật, phụ huynh sẽ biết và bực hơn.':pagoda?'Báo cáo cảm nhận này là giả hoặc nhầm chỗ? Chỉ cảm nhận giả, nhầm chỗ hoặc của người chưa lên chùa mới bị gỡ. Nếu là cảm nhận thật, khách sẽ biết và hạ thêm sao.':'Báo cáo đánh giá này là giả hoặc nhầm quán? Nền tảng chỉ gỡ đánh giá giả, nhầm chỗ hoặc chưa dùng dịch vụ. Nếu là trải nghiệm thật, khách sẽ biết và hạ thêm sao.';
+  const reportQ=reportQuestion(parent,pagoda);
   const policeQ='Lưu đánh giá và cuộc trao đổi làm bằng chứng, trình báo lời đe dọa đòi tiền trong game? Trao đổi trực tiếp sẽ khép; điểm đánh giá vẫn giữ nguyên.';
   const side=(f.can_report||f.can_ignore||f.can_police)?`<div class="row wrap rv-actions">${f.can_ignore?cmdBtn(`${icon('check',14)} Bỏ qua`,'fb_ignore',{post:p.id},'ghost small'):''}${f.can_police?confirmCmd('🚓 Lưu bằng chứng & trình báo','fb_police',{post:p.id},policeQ,'cream small'):''}${f.can_report?confirmCmd(`${icon('flag',14)} Báo cáo`,'fb_report',{post:p.id},reportQ,'ghost small'):''}</div>`:'';
-  const verdict=f.removed?`<p class="notice green" role="status">${icon('check',16)} Đã gỡ${f.kind_label?`: ${esc(f.kind_label)}`:''}. Không còn tính vào điểm trung bình.</p>`:f.report==='rejected'?`<p class="notice amber" role="status">${icon('flag',16)} Báo cáo bị từ chối${f.kind_label?` (${esc(f.kind_label)})`:''}: đây là trải nghiệm thật.</p>`:'';
+  const verdict=f.removed?`<p class="notice green" role="status">${icon('check',16)} Đã gỡ${f.kind_label?`: ${esc(f.kind_label)}`:''}. Không còn tính vào điểm trung bình.</p>`:f.report==='rejected'?`<p class="notice amber" role="status">${icon('flag',16)} Báo cáo không được duyệt${f.kind_label?` (${esc(f.kind_label)})`:''}: đây là trải nghiệm thật. Sao giữ nguyên.</p>`:'';
   const police=f.police?`<details class="fact-check"><summary>🚓 Đã trình báo trong game · ngày ${f.police.day}</summary><p class="small">Đã lưu lời đe dọa và ${f.police.thread.length} lượt trao đổi làm bằng chứng. Hồ sơ giữ nguyên điểm đánh giá, không bảo đảm gỡ sao.</p><blockquote>${esc(f.police.text)}</blockquote></details>`:'';
   const choice=offered?'none':(env.ui.fbOffer||'none');
   // Nothing is paid at the pagoda, so there is nothing to give back: a cup of tea or a vegetarian gift only.
-  const offers=offered?[['none','Không bù']]:[['none','Không bù'],...(pagoda?['drink','gift']:['drink','gift','refund']).map(id=>[id,offerLabel(id,parent,true,pagoda)])];
+  const offers=offered||f.offer_note?[['none','Không bù']]:[['none','Không bù'],...(pagoda?['drink','gift']:['drink','gift','refund']).map(id=>[id,offerLabel(id,parent,true,pagoda)])];
+  // Chat C#15809: where bù xu changes nothing, say so instead of taking the xu (game/feedback.py offer_note).
+  const offerNote=f.offer_note?`<p class="notice amber small rv-offer-note" role="note">${icon('flag',14)} ${esc(f.offer_note)}</p>`:'';
   const form=canReply?`<form class="reply-box" data-v4-fb="${esc(p.id)}"><label class="field" for="fb-text">${pagoda?'Hồi đáp':'Trả lời'} ${esc(p.author)}</label>${tplRow}<input type="hidden" name="tone" value="${esc(tone)}"><textarea id="fb-text" class="input" rows="3" maxlength="600" data-preserve placeholder="${parent?'Cảm ơn, xin lỗi nếu cần, và nói rõ lớp sẽ làm gì…':pagoda?'A Di Đà Phật, cảm ơn, xin lỗi nếu cần, và nói rõ chùa sẽ làm gì…':'Cảm ơn, xin lỗi nếu cần, và nói rõ tiệm sẽ làm gì…'}" required></textarea>
-    <div class="field">${pagoda?'Chút quà biếu':'Bù đắp'}</div><div class="segmented rv-offer" role="radiogroup" aria-label="${pagoda?'Chút quà biếu':'Bù đắp'}">${offers.map(([id,l])=>`<label><input type="radio" name="offer" value="${id}"${choice===id?' checked':''}><span>${l}</span></label>`).join('')}</div>
-    <div class="row spread space-top"><small class="muted">Lượt ${f.rounds+1}/3</small><button class="btn primary" type="submit">${icon('send',14)} ${pagoda?'Gửi lời hồi đáp':'Gửi trả lời'}</button></div></form>`:
+    <div class="field">${pagoda?'Chút quà biếu':'Bù đắp'}</div><div class="segmented rv-offer" role="radiogroup" aria-label="${pagoda?'Chút quà biếu':'Bù đắp'}">${offers.map(([id,l])=>`<label><input type="radio" name="offer" value="${id}"${(f.offer_note?'none':choice)===id?' checked':''}><span>${l}</span></label>`).join('')}</div>${offerNote}
+    <div class="row spread space-top"><small class="muted">Lượt ${f.rounds+1}/3 · ${parent?'phụ huynh':'khách'} trả lời sau ~2 lượt làm</small><button class="btn primary" type="submit">${icon('send',14)} ${pagoda?'Gửi lời hồi đáp':'Gửi trả lời'}</button></div></form>`:
     f.status==='awaiting'?`<p class="notice blue">${icon('clock',16)} ${esc(p.author)} đang đọc trả lời của bạn…</p>`:f.removed||f.report?'':`<p class="rv-closed">${f.ignored?'Bạn đã bỏ qua đánh giá này.':f.own?'Nhận xét sau chuyến bay, không cần trả lời.':'Cuộc trao đổi đã khép.'}</p>`;
   // Chat 03/10: an edited review says so in words, not only with a small "ban đầu 1★".
   const edited=!f.removed&&p.stars&&f.stars_original&&p.stars!==f.stars_original?`<p class="notice ${p.stars>f.stars_original?'green':'amber'}" role="status">${icon('star',16)} ${parent?'Phụ huynh':pagoda?'Khách thập phương':'Khách'} đã sửa đánh giá: ★${f.stars_original} → ★${p.stars}</p>`:'';
   return `<article class="card review-card${f.removed?' removed':''}">${back}${top}${quote}${verdict}${police}${edited}${clues}${f.unfair?`<details class="fact-check"><summary>${icon('search',14)} Đối chiếu sự thật</summary><p class="small">Khách nói: <b>${esc(f.unfair.claim)}</b>. Sổ ghi: ${esc(f.unfair.truth)}. Bạn có thể nhắc lại dữ kiện một cách lịch sự.</p></details>`:''}
     <details class="criteria"><summary>${parent?'Phụ huynh chấm theo tiêu chí':pagoda?'Khách thập phương cảm nhận theo tiêu chí':'Khách chấm theo tiêu chí'}</summary>${crit}</details>${thread?`<div class="thread">${thread}</div>`:''}${form}${side}
     ${f.status==='open'&&f.thread.length?`<div class="row space-top">${cmdBtn('Khép trao đổi','fb_close',{post:p.id},'ghost small')}</div>`:''}</article>`;
+}
+/** Góp ý #196: what a report does, said before it is sent. A report that is not accepted costs no star. */
+function reportQuestion(parent,pagoda){
+  return parent?'Báo cáo tin nhắn này với ban đại diện lớp? Tin nhắn nhầm lớp, không liên quan tới buổi học hoặc hùa theo sẽ bị gỡ khỏi điểm. Nếu là góp ý thật, tin nhắn được giữ nguyên và không mất sao.'
+    :pagoda?'Báo cáo cảm nhận này? Cảm nhận giả, nhầm chỗ, không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm. Nếu là cảm nhận thật, chùa giữ nguyên và không mất sao.'
+    :'Báo cáo đánh giá này? Đánh giá giả, nhầm quán, chưa dùng dịch vụ, chê chuyện không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm trung bình. Nếu là trải nghiệm thật, đánh giá được giữ nguyên và không mất sao.';
 }
 const TONE_NAME={warm:'ấm áp',funny:'hài hước',sassy:'cà khịa',facts:'nêu sự thật',sorry:'xin lỗi',invite:'mời quay lại',process:'giải thích',genz:'Gen Z',silent:'ngắn gọn',harsh:'gắt'};
 const PAGODA_TONE={warm:'từ tốn',funny:'tự trào',sassy:'đùa nhẹ',invite:'mời ghé lễ',process:'kể nếp chùa',genz:'trẻ trung'};
@@ -729,7 +740,7 @@ function countOff(env,id,count,what=''){
 export async function v4Action(action,data,el,env){
   const {api,ui,cmd,confirmAction,renderSheet,openSheet}=env;
   switch(action){
-    case'v4Cmd':{const payload=JSON.parse(data.payload||'{}');if(data.confirm&&!await confirmAction('Xác nhận',data.confirm,'Đồng ý',data.cost?{cost:Number(data.cost),pocket:data.pocket||'fund'}:null))return true;if(data.confirm)payload.confirm=true;await cmd(data.op,payload);return true;}
+    case'v4Cmd':{const payload=JSON.parse(data.payload||'{}');if(data.confirm&&!await confirmAction('Xác nhận',data.confirm,'Đồng ý',data.cost?{cost:Number(data.cost),pocket:data.pocket||'fund'}:null,data.op==='job_quit'?{arm:700}:null))return true;if(data.confirm)payload.confirm=true;await cmd(data.op,payload);return true;}
     case'v4Backdoor':{
       // 🚪 Honest about what it is: a fee to a helper, a normal probation, maybe some whispers on day one.
       const id=api.state.current,job=api.state.careers[id]?.job,J=api.state.journey;
@@ -776,7 +787,7 @@ export async function v4Action(action,data,el,env){
       return true;}
     case'v4CartPut':{  // a career's own stock list (grocery.js): one line straight into the draft
       if(await cmd('inv_cart',{supplier:data.supplier,op:'add',item:data.item,qty:Number(data.qty)||1}))renderSheet();return true;}
-    case'v4CartQty':{if(await cmd('inv_cart',{supplier:data.supplier,op:'set',item:data.item,qty:Math.max(0,Number(data.qty)||0)},{quiet:true}))renderSheet();return true;}
+    case'v4CartQty':{if(await cmd('inv_cart',{supplier:data.supplier,op:'set',item:data.item,...(data.size!==undefined?{size:data.size}:{}),qty:Math.max(0,Number(data.qty)||0)},{quiet:true}))renderSheet();return true;}
     case'v4CartFill':{
       const lines=String(data.items||'').split(',').map(x=>x.split(':')).filter(([id])=>id).map(([item,q])=>({item,qty:Math.max(1,Math.min(30,Number(q)||10))}));
       if(lines.length&&await cmd('inv_cart',{supplier:data.supplier,op:'add',lines,fit:true})){ui.invCart=data.supplier;ui.orderItem=null;ui.invTab='stock';renderSheet(false);}

@@ -296,7 +296,9 @@ function rightMark(t,R,x){
 function checkStage(t,c,R,first){
   const todo=R.tickets.filter(x=>!x.mark),done=R.tickets.length-todo.length;
   const card=x=>`<article class="tt-ticket" data-kid="${esc(x.kid)}"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${x.emoji}</span><div><b>${esc(x.name)}</b><small>${esc(x.note)}</small></div><strong class="tt-answer" aria-label="Bài làm: ${esc(x.answer)}">${esc(x.answer)}</strong></div><div class="tt-marks">${R.marks.map(m=>act(`${em(m.emoji)} <span>${esc(m.label)}</span>`,'lesson_mark',{task:t.id,kid:x.kid,mark:m.id},'tt-option',{attr:` data-mark="${esc(m.id)}"`})).join('')}</div></article>`;
-  const key=`<div class="tt-key"><b>Đáp án đúng</b><p>${esc(t.lesson.fact)}</p></div>`;
+  // How to grade, in one line (players asked "chấm phiếu sao ạ"): which feedback fits which paper.
+  const how=`<p class="tt-tip">So bài với đáp án: đúng → 🌟 Khen cụ thể · sai hoặc chép nhầm → 🪜 Gợi ý một bước · ghi "Giống hệt phiếu của…" → 🤝 Gặp riêng. Chấm hết các phiếu rồi bấm Khép tiết.</p>`;
+  const key=`<div class="tt-key"><b>Đáp án đúng</b><p>${esc(t.lesson.fact)}</p></div>${how}`;
   const steps=todo.map(x=>{const box=`.tt-ticket[data-kid="${x.kid}"]`;
     return {ok:null,label:`Chấm phiếu của ${x.name}`,go:{sel:box,label:`🎫 Chấm phiếu của ${esc(x.name)}`},...glow(first,`${box} [data-mark="${rightMark(t,R,x)}"]`)};});
   const rest=todo.slice(1),queue=rest.length?`<p class="tt-queue">Phiếu tiếp theo: ${rest.map(x=>`${x.emoji} ${esc(x.name)}`).join(' · ')}</p>`:'';
@@ -352,8 +354,11 @@ const clRid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random(
 const held=p=>performance.now()-p.at<VOICE_HOLD;
 /** The answers wait: a reply on its way, or a question still being reworded (for VOICE_HOLD at most). */
 const blocking=p=>!!p&&(!p.voice||p.hide==='first'&&held(p));
-/** "Typing…" shows: a reply on its way, a reaction being reworded, a question for VOICE_HOLD. */
-const typingNow=p=>!!p&&(!p.voice||p.hide==='last'||held(p));
+/** "Typing…" shows: a reply on its way, or a line being reworded for VOICE_HOLD at most. */
+const typingNow=p=>!!p&&(!p.voice||held(p));
+/** A reaction being reworded hides its scripted words for VOICE_HOLD only; after that the scripted line shows
+ * and the AI wording replaces it when it comes (a slow model used to keep "typing…" up for up to 25 s). */
+const hidingLast=p=>!!p&&p.voice&&p.hide==='last'&&held(p);
 
 export async function classSend(body,key,text,{hide='first'}={}){
   const api=classApi,voice=body.op==='voice',prev=clPending[key];
@@ -361,7 +366,7 @@ export async function classSend(body,key,text,{hide='first'}={}){
   if(!api||prev&&(voice||!prev.voice))return null;
   const mine={text:text||'',voice,hide:voice?hide:null,at:performance.now()};
   clPending[key]=mine;delete clError[key];rerender();
-  if(voice&&hide==='first')setTimeout(()=>{if(clPending[key]===mine)rerender();},VOICE_HOLD+50);
+  if(voice)setTimeout(()=>{if(clPending[key]===mine)rerender();},VOICE_HOLD+50);
   const rid=clRid(),since=api.accepted,post=()=>api.post('/api/ai/class',{...body,request_id:rid,expected_revision:api.revision,...voice?{}:{later:true}},25000);
   const send=voice?post:()=>clQueued(api,post);
   try{
@@ -397,8 +402,8 @@ export function clBubbles(lines,key,{typing='',mine=''}={}){
     return `<div class="cl-bub ${me?'me':'them'}${ai?' ai':''}"${me||ai?' data-no-translate':''}>${ai?`<span class="cl-ai" title="${esc('Lời gốc: '+(l.canonical||''))}" aria-label="Câu này do AI viết">AI</span>`:''}<p>${esc(l.text)}</p></div>`;
   };
   const wait=clPending[key],last=lines[lines.length-1];
-  // A reaction being reworded: "typing…" stands where its scripted words will be (they show if the model fails).
-  if(wait?.hide==='last'&&last&&last.who!=='teacher'&&last.mode==='scripted')lines=lines.slice(0,-1);
+  // A reaction being reworded: "typing…" stands where its scripted words will be, for VOICE_HOLD at most.
+  if(hidingLast(wait)&&last&&last.who!=='teacher'&&last.mode==='scripted')lines=lines.slice(0,-1);
   const pend=typingNow(wait)?`${wait.text?`<div class="cl-bub me pending" data-no-translate><p>${esc(wait.text)}</p></div>`:''}<div class="cl-bub them typing" role="status" aria-label="${esc(typing||'Đang trả lời…')}"><span class="cl-dots" aria-hidden="true"><i></i><i></i><i></i></span></div>`:'';
   return `<div class="cl-thread" role="log" aria-live="polite">${lines.map(row).join('')}${pend}</div>${clError[key]?`<p class="cl-err" role="alert">${esc(clError[key])}</p>`:''}`;
 }

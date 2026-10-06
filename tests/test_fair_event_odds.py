@@ -11,15 +11,15 @@ from tests.test_fair_knife import safe_taps, crash_tap
 
 class EventOdds(unittest.TestCase):
     def test_each_chance_stall_starts_at_requested_rate(self):
-        for game, rate in [(g, .50) for g in fh.CHANCE_GAMES]:
+        for game in fh.CHANCE_GAMES:   # owner 06/10: the neutral draw that gives 65% won rounds in the long run
             with self.subTest(game=game):
-                self.assertAlmostEqual(fh.luck_p({}, None, game, OPEN), rate)
-        self.assertEqual((xs.P_HI, xs.P_LO), (.50, .50))
+                self.assertAlmostEqual(fh.luck_p({}, None, game, OPEN), fh.XD_BASE if game == 'xd' else fh.LUCK_BASE)
+        self.assertEqual((xs.P_HI, xs.P_LO), (fh.WIN_P, fh.WIN_P))
 
-    def test_repetition_keeps_half_probability(self):
+    def test_repetition_keeps_the_same_probability(self):
         for game in fh.CHANCE_GAMES:
             j={}
-            self.assertEqual([fh.luck_p(j,None,game,OPEN+i*5) for i in range(100)], [.5]*100)
+            self.assertEqual(set(fh.luck_p(j,None,game,OPEN+i*5) for i in range(100)), {fh.chance_rate(game, OPEN)})
 
     def test_switch_or_break_resets_run(self):
         j = {}
@@ -36,9 +36,7 @@ class EventOdds(unittest.TestCase):
         for game in fh.CHANCE_GAMES:
             j = {}
             rates = [fh.luck_p(j, f, game, OPEN + i) for i in range(100)]
-            self.assertAlmostEqual(rates[0], .50)
-            self.assertTrue(all(p == .50 for p in rates))
-            self.assertAlmostEqual(rates[-1], .50)
+            self.assertTrue(all(p == fh.chance_rate(game, OPEN) >= fh.WIN_P_LOW for p in rates))
 
 
 class RaidOdds(FairBase):
@@ -125,7 +123,7 @@ class ServerDecides(FairBase):
         for i in range(50):
             s, _ = self.act(s, 'fair_ring_start')
             s = json.loads(json.dumps(s))
-            self.assertEqual(s['journey']['fair_chance']['ring']['p'], 500)
+            self.assertEqual(s['journey']['fair_chance']['ring']['p'], round(fh.LUCK_BASE * 1000))   # 06/10: 665, within the older validator's 400..700
             validate_state(s)
         self.assertTrue(public_state(s)['fair']['ring']['chance'])
 

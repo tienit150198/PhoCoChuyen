@@ -1,1678 +1,1802 @@
 [
  {
-  "vi": "Tổ dân phố chúc mừng cháu nhé! Có tin vui cứ chia sẻ để cả khu phố cùng mừng ạ.",
+  "vi": "Chi phí khác",
   "en": ""
  },
  {
-  "vi": "Chuyện này cháu hỏi tổ là đúng rồi. Cô sẽ tìm hiểu và trả lời trong nhóm sớm nhất ạ.",
+  "vi": "Chi phí thuế thu nhập doanh nghiệp",
   "en": ""
  },
  {
-  "vi": "Cô ghi nhận rồi. Tổ sẽ nhờ các hộ gần đó hỗ trợ cháu nhé.",
+  "vi": "Chi phí thuế thu nhập doanh nghiệp hiện hành theo quy định của Luật thuế thu nhập doanh nghiệp",
   "en": ""
  },
  {
-  "vi": "Cô cảm ơn cháu đã phản ánh. Tổ sẽ nhắc nhở riêng, mong cháu thông cảm ít hôm ạ.",
+  "vi": "Chi phí thuế thu nhập doanh nghiệp bổ sung theo quy định về thuế tối thiểu toàn cầu",
   "en": ""
  },
  {
-  "vi": "Cháu có thể gửi thông tin đồ thất lạc ở nhà văn hóa, ai nhặt được tổ sẽ báo ngay nhé.",
+  "vi": "Chọn cách xử lý",
   "en": ""
  },
  {
-  "vi": "Chào cháu! Nhóm là nơi bà con giúp nhau, cháu nhớ giữ lời lẽ lịch sự nhé.",
+  "vi": "Tính giá trị",
   "en": ""
  },
  {
-  "vi": "Cháu được đăng bán đồ tự làm ạ. Nhắc chung: không đăng số điện thoại, địa chỉ lên nhóm nhé.",
+  "vi": "Tính số tiền",
   "en": ""
  },
  {
-  "vi": "Tổ dân phố đã đọc ý kiến của cháu. Cảm ơn cháu đã chia sẻ ạ.",
+  "vi": "Lập bút toán",
   "en": ""
  },
  {
-  "vi": "Buồn thì qua tiệm chú ngồi. Chú không hỏi gì đâu. Có ấm trà thôi.",
+  "vi": "Hoàn thành bảng",
   "en": ""
  },
  {
-  "vi": "Hừ. Mặt mũi vậy là không được. Mai ghé chú. Không phải chú lo đâu nhé.",
+  "vi": "Sắp xếp quy trình",
   "en": ""
  },
  {
-  "vi": "Ừ. Cũng được. …Chúc mừng. Đừng có kiêu.",
+  "vi": "Chọn các điều kiện",
   "en": ""
  },
  {
-  "vi": "Hỏi gì mà hỏi. Mang qua tiệm chú coi cho. Đừng cảm ơn.",
+  "vi": "Ghép nội dung",
   "en": ""
  },
  {
-  "vi": "Phiền ghê. Thôi được, mấy giờ? Chú qua. Không phải vì thương đâu, tiện đường thôi.",
+  "vi": "Căn cứ chuẩn mực:",
   "en": ""
  },
  {
-  "vi": "Cãi nhau chi cho mệt. Cái gì hư thì chú sửa, còn lại kệ đi.",
+  "vi": "Ví dụ có lời giải",
   "en": ""
  },
  {
-  "vi": "Cảm ơn gì. Có làm gì đâu.",
+  "vi": "Loại 1 – tài sản ngắn hạn",
   "en": ""
  },
  {
-  "vi": "Ừ, chào. Đồ hư thì mang qua.",
+  "vi": "Loại 2 – tài sản dài hạn",
   "en": ""
  },
  {
-  "vi": "Đọc rồi. …Có cần gì không? Hỏi vậy thôi.",
+  "vi": "Loại 3 – nợ phải trả",
   "en": ""
  },
  {
-  "vi": "Thật ra theo anh tìm hiểu, buồn là phản ứng bình thường của não khi áp lực kéo dài. Em ngủ đủ, ăn đủ, đi bộ chút là đỡ liền. Anh nói vậy thôi, nặng quá thì nói chuyện với người thân hoặc người có chuyên môn nha.",
+  "vi": "Loại 4 – vốn chủ sở hữu",
   "en": ""
  },
  {
-  "vi": "Chúc mừng em! Thật ra anh đoán trước rồi, vì theo anh quan sát thì người chăm chỉ như em sớm muộn gì cũng được. Nói chung là đúng quy luật.",
+  "vi": "Loại 5 – doanh thu",
   "en": ""
  },
  {
-  "vi": "Câu này anh trả lời được nè. Thật ra có ba cách: một là hỏi người đã làm rồi, hai là tự thử cái nhỏ trước, ba là so vài chỗ rồi chọn. Theo anh tìm hiểu thì cách hai là đỡ tốn nhất. Nhưng mà tùy em nha.",
+  "vi": "Loại 6 – chi phí sản xuất, kinh doanh",
   "en": ""
  },
  {
-  "vi": "Thật ra chuyện này nhiều người hiểu sai lắm. Nói chung là em cứ hỏi kỹ người làm trực tiếp, đừng nghe đồn. Anh tìm hiểu rồi mà.",
+  "vi": "Loại 7 – thu nhập khác",
   "en": ""
  },
  {
-  "vi": "Để anh chỉ em cách làm, dễ lắm. Thật ra quan trọng là đúng thứ tự, sai một bước là làm lại từ đầu đó.",
+  "vi": "Loại 8 – chi phí khác và thuế TNDN",
   "en": ""
  },
  {
-  "vi": "Thật ra vụ này có quy định rõ ràng hết, em cứ báo tổ trưởng là đúng quy trình nhất.",
+  "vi": "Loại 9 – xác định kết quả kinh doanh",
   "en": ""
  },
  {
-  "vi": "Thật ra chuyện này anh có đọc qua, nói chung là còn tùy nhiều yếu tố lắm em à 🤓",
+  "vi": "tăng ghi Nợ, giảm ghi Có",
   "en": ""
  },
  {
-  "vi": "ủa alo xịn vậy trời 😭✨ chúc mừnggg",
+  "vi": "tăng ghi Có, giảm ghi Nợ",
   "en": ""
  },
  {
-  "vi": "câu này em khum biết nhưng em hóng người biết 🍿",
+  "vi": "phải thu: tăng ghi Nợ, giảm ghi Có; theo dõi từng khách, khách trả trước tạo dư Có",
   "en": ""
  },
  {
-  "vi": "hỏi anh Khoa đó, ảnh biết tuốt á 🤣",
+  "vi": "phải trả: tăng ghi Có, giảm ghi Nợ; theo dõi từng người bán, ứng trước tạo dư Nợ",
   "en": ""
  },
  {
-  "vi": "em phụ được nha, chiều em rảnh sau giờ học thêm 💪",
+  "vi": "điều chỉnh giảm tài sản: hao mòn tăng ghi Có, giảm ghi Nợ",
   "en": ""
  },
  {
-  "vi": "nghe đói bụng dã man 🤤 cho em xin một phần nha",
+  "vi": "điều chỉnh giảm tài sản: dự phòng tăng ghi Có, hoàn nhập ghi Nợ",
   "en": ""
  },
  {
-  "vi": "ủa hay dị 😳",
+  "vi": "điều chỉnh giảm vốn: mua lại ghi Nợ",
   "en": ""
  },
  {
-  "vi": "Bà coi rồi, tháng này sao xấu chiếu nên gặp chuyện buồn đó con. Qua tháng sau là sao tốt, mọi chuyện sẽ khá lên. Mà nhớ nghe, tin vừa thôi, quan trọng là mình sống tử tế, ăn ngủ đầy đủ. Tối nay đi ngủ sớm nghe con 🙏",
+  "vi": "chênh lệch: tăng ghi Có, giảm ghi Nợ; có thể dư hai bên",
   "en": ""
  },
  {
-  "vi": "Muốn làm chuyện đó thì chọn ngày đẹp nghe con. Để bà coi lịch, thứ Năm tuần này tốt lắm đó.",
+  "vi": "chênh lệch: lãi ghi Có, lỗ ghi Nợ; có thể dư hai bên",
   "en": ""
  },
  {
-  "vi": "Bà già yếu không làm được gì nhiều, mà bà coi ngày giùm cho. Ngày mai giờ Thìn là tốt nhất đó con.",
+  "vi": "lợi nhuận chưa phân phối: lãi ghi Có, lỗ và phân phối ghi Nợ",
   "en": ""
  },
  {
-  "vi": "Mất đồ thì tìm theo hướng Đông Nam trước nghe con. Mà của đi thay người, đừng buồn quá.",
+  "vi": "giảm trừ doanh thu: phát sinh ghi Nợ, cuối kỳ kết chuyển sang 511",
   "en": ""
  },
  {
-  "vi": "Buồn thì buồn một bữa thôi con, rồi tính tiếp. Chuyện gì cũng có cách, ngồi xuống viết ra giấy từng khoản là thấy nhẹ liền.",
+  "vi": "khóa sổ: chi phí kết chuyển vào bên Nợ, doanh thu vào bên Có; không có số dư",
   "en": ""
  },
  {
-  "vi": "Được đó con. Nhớ để dành một phần, đừng xài hết một lần nha.",
+  "vi": "tập hợp chi phí sản xuất: nhận kết chuyển bên Nợ, giá thành hoàn thành ghi Có",
   "en": ""
  },
  {
-  "vi": "Hỏi giá trước, so hai ba chỗ, chỗ nào rẻ mà chắc thì làm. Cô buôn bán cả đời, cô biết.",
+  "vi": "tài sản:",
   "en": ""
  },
  {
-  "vi": "Cái đó ra chợ chiều mua là rẻ nhất nè con, sau 5 giờ người ta bán tháo.",
+  "vi": "nợ phải trả:",
   "en": ""
  },
  {
-  "vi": "Cần gì thì ghé tiệm cô, có đồ cô bán giá gốc cho.",
+  "vi": "vốn chủ sở hữu:",
   "en": ""
  },
  {
-  "vi": "Bán bao nhiêu con? Giá hợp lý thì cô lấy vài cái bỏ tiệm bán giùm cho.",
+  "vi": "doanh thu, thu nhập: phát sinh ghi Có, cuối kỳ kết chuyển sang 911",
   "en": ""
  },
  {
-  "vi": "Bực làm gì cho tốn sức. Nói thẳng một lần cho rõ rồi thôi.",
+  "vi": "chi phí sản xuất: phát sinh ghi Nợ, cuối kỳ kết chuyển sang 154",
   "en": ""
  },
  {
-  "vi": "Nấu ở nhà là tiết kiệm nhất. Tính ra mỗi tháng để dành được kha khá đó con.",
+  "vi": "chi phí: phát sinh ghi Nợ, cuối kỳ kết chuyển sang 911",
   "en": ""
  },
  {
-  "vi": "Tính ra cũng được đó con. Làm thì làm cho tới nơi.",
+  "vi": "xem hướng dẫn tài khoản trong Phụ lục II",
   "en": ""
  },
  {
-  "vi": "…ổn không.",
+  "vi": "phát sinh ghi Có",
   "en": ""
  },
  {
-  "vi": "cần gì thì nhắn.",
+  "vi": "phát sinh ghi Nợ",
   "en": ""
  },
  {
-  "vi": "ok. để tối xem.",
+  "vi": "chỉ dùng khi khóa sổ",
   "en": ""
  },
  {
-  "vi": "được. mấy giờ.",
+  "vi": ". Có tài khoản ghi ngược chiều nhóm hoặc theo dõi theo từng đối tượng: xem cột “tính chất” trong Tra cứu TT99",
   "en": ""
  },
  {
-  "vi": "chào.",
+  "vi": "không có thuế",
   "en": ""
  },
  {
-  "vi": "Trời ơi em buồn chuyện gì đó, kể chị nghe đi, chị hứa không nói ai đâu 👀 Mà thôi, nói vậy chứ chị lo cho em thiệt đó. Sáng mai ghé chị cho gói xôi nóng, ăn vô là đỡ buồn liền à 🍙",
+  "vi": "không có gtgt",
   "en": ""
  },
  {
-  "vi": "Ơ tin này chị chưa biết luôn á!!! Chúc mừng em nha 🎉 Để chị kể cho cả hẻm nghe liền 😂",
+  "vi": "chưa có nghĩa vụ thuế",
   "en": ""
  },
  {
-  "vi": "Chuyện này nghe đâu hồi trước nhà cuối hẻm cũng hỏi y chang, để chị hỏi lại coi họ làm sao rồi kể em nghe nha 👀",
+  "vi": "chưa thuế",
   "en": ""
  },
  {
-  "vi": "Để chị hỏi mấy khách mua xôi sáng mai, ai thấy gì chị báo em liền 👀",
+  "vi": "thuế đầu",
   "en": ""
  },
  {
-  "vi": "Chị share cho mấy khách quen của chị nha, khách chị đông lắm đó 🍙",
+  "vi": "tách giá chưa thuế khỏi tiền thuế",
   "en": ""
  },
  {
-  "vi": "Vụ này chị biết là nhà ai nè 👀 mà thôi chị không nói đâu, em hiểu mà.",
+  "vi": "chưa trả",
   "en": ""
  },
  {
-  "vi": "Chào em!!! Chị là Tư Zalo bán xôi đầu hẻm nè, sáng nào ghé chị cũng được 🍙",
+  "vi": "chưa thu",
   "en": ""
  },
  {
-  "vi": "Ơ vụ này hay nha, chị hóng tiếp 👀🍿",
+  "vi": "chưa thanh toán",
   "en": ""
  },
  {
-  "vi": "Tin vui kiểu này phải có tiệc chứ nhỉ 🎉 tui góp phần ăn, không góp tiền 🤣",
+  "vi": "tiền đã đi/về chưa hay còn là công nợ",
   "en": ""
  },
  {
-  "vi": "Câu này khó quá, để tui hỏi con mèo nhà bà Sáu, nó sống ở hẻm lâu hơn tui 😂",
+  "vi": "báo có",
   "en": ""
  },
  {
-  "vi": "Đề nghị trao giải “Than phiền của tháng” cho bài này 🏆😂",
+  "vi": "báo nợ",
   "en": ""
  },
  {
-  "vi": "🖼️ [Ảnh chế] Con chó đeo kính: “Tôi đọc bài này và tôi đồng ý.” 🤣",
+  "vi": "phiếu chi",
   "en": ""
  },
  {
-  "vi": "Bài này hay, tui chấm 10 điểm, trừ 2 điểm vì chưa có meme 😂",
+  "vi": "phiếu thu",
   "en": ""
  },
  {
-  "vi": "Người trẻ thì phải cứng cỏi lên. …Nhưng mà cần gì thì sang nhà tôi.",
+  "vi": "ngân hàng",
   "en": ""
  },
  {
-  "vi": "Ừ. Chúc mừng. Ăn mừng thì nhỏ tiếng thôi!!!",
+  "vi": "đã trả",
   "en": ""
  },
  {
-  "vi": "Tôi không biết. Nhưng đừng làm ồn.",
+  "vi": "tiền đi qua quỹ hay qua ngân hàng",
   "en": ""
  },
  {
-  "vi": "Tôi già rồi. Nhưng có cái xe đạp, cần thì mượn.",
+  "vi": "đối tượng công nợ là ai",
   "en": ""
  },
  {
-  "vi": "Đúng!!! Tôi nói mãi mà không ai nghe. Cháu nói đúng lắm.",
+  "vi": "kết chuyển",
   "en": ""
  },
  {
-  "vi": "Chào. Xe để gọn. 10 giờ tối là tắt nhạc.",
+  "vi": "khóa sổ",
   "en": ""
  },
  {
-  "vi": "Nói ít thôi!!!",
+  "vi": "số dư nào phải đưa về 0 khi khóa sổ",
   "en": ""
  },
  {
-  "vi": "Ừ. Biết rồi.",
+  "vi": "tỷ giá",
   "en": ""
  },
  {
-  "vi": "Buồn thì đi shopping nè, Trang dẫn đi, bảo đảm vui liền ✨ Hồi trước Trang cũng buồn, xong Trang mua cái túi mới là hết liền, không có ý khoe đâu nha 😘",
+  "vi": "tỷ giá dùng cho lần ghi này",
   "en": ""
  },
  {
-  "vi": "Cái này Trang rành nè, Trang từng mua loại xịn nhất rồi 😌 để Trang chỉ chỗ mua chính hãng.",
+  "vi": "12 kỳ",
   "en": ""
  },
  {
-  "vi": "Trang share lên trang bán hàng cho nha, bảo đảm hết veo 😘",
+  "vi": "ba kỳ",
   "en": ""
  },
  {
-  "vi": "Hay đó! Trang cũng vừa làm y vậy tuần trước, mà làm xịn hơn chút xíu, không có ý khoe đâu nha 😌",
+  "vi": "3 kỳ",
   "en": ""
  },
  {
-  "vi": "D-dạ em… em cũng từng vậy ạ. {You} cố lên ạ 🥺",
+  "vi": "kỳ hạn",
   "en": ""
  },
  {
-  "vi": "Em… em không biết ạ, em xin lỗi ạ 🥺",
+  "vi": "6 tháng",
   "en": ""
  },
  {
-  "vi": "D-dạ em đọc rồi ạ 🥺",
+  "vi": "khoản này thuộc riêng kỳ này hay trải ra nhiều kỳ",
   "en": ""
  },
  {
-  "vi": "TRỜI ƠI em ơi chị hiểu cảm giác đó mà 😭😭 chị cũng từng khóc cả đêm luôn, sáng dậy mắt sưng như con ong đốt. Mà rồi cũng qua em à, giờ chị vẫn sống nhăn răng nè 😭 Em cần gì cứ nhắn chị nha!!!",
+  "vi": "nghiệp vụ gì đã xảy ra và số tiền nào là căn cứ ghi sổ",
   "en": ""
  },
  {
-  "vi": "TRỜI ƠI vui quá chị khóc luôn nè 😭😭🎉 Em giỏi quá trời!!!",
+  "vi": "Viết phép tính ra giấy: lấy đúng số trong đề, tách giá chưa thuế, thuế và tổng; kiểm lại phương trình tài sản = nợ + vốn.",
   "en": ""
  },
  {
-  "vi": "Chị không biết nhưng chị cũng đang cần hỏi y chang vậy nè 😭 ai biết chỉ tụi chị với!!!",
+  "vi": "Kế toán luôn đi: chứng từ → ghi sổ → đối chiếu → khóa sổ → báo cáo. Đặt từng bước vào đúng chặng đó.",
   "en": ""
  },
  {
-  "vi": "Chị cũng bị vậy nè em ơi 😭 đêm qua chị mất ngủ luôn, cuộc đời sao khổ vậy!!!",
+  "vi": "Loại trừ phương án trái với nguyên tắc của bài",
   "en": ""
  },
  {
-  "vi": "TRỜI ƠI chuyện gì vậy em 😭 kể chị nghe với!!!",
+  "vi": "Mở tab “Cân đối phát sinh” và “Sổ chi tiết”: mọi số của báo cáo đều lấy từ sổ đã ghi, không ước lượng.",
   "en": ""
  },
  {
-  "vi": "Buồn thì chiều ra đây chú mời cốc trà đá, ngồi nói chuyện một tí là nhẹ người ngay. Đàn ông con trai hay con gái gì cũng thế, cứ ngồi với nhau là ổn nhé!",
+  "vi": "B01: tài sản = nợ phải trả + vốn chủ, công nợ tách dư Nợ/dư Có theo từng đối tượng. B02: lấy phát sinh trước kết chuyển. B03: chỉ dòng tiền thật qua 111/112, bỏ chuyển tiền nội bộ.",
   "en": ""
  },
  {
-  "vi": "Tin vui thế này phải làm vài cốc chứ! Dô! 🍻 Tối nay chú mời!",
+  "vi": "Đọc “Hồ sơ chính sách”: đơn vị tiền, cơ sở lập, cách trình bày công nợ và tiền gửi.",
   "en": ""
  },
  {
-  "vi": "Cần chở gì thì gọi chú, xe chú sẵn đây, không lấy tiền nhé!",
+  "vi": "Thuyết minh phải khớp đúng chính sách và số trong sổ; loại phương án bù trừ công nợ hoặc bỏ qua bút toán không bằng tiền.",
   "en": ""
  },
  {
-  "vi": "Cái này chú không biết, nhưng ra quán bia hỏi là có người biết ngay 😂",
+  "vi": "Các dòng đã ghi đúng tài khoản nhưng còn thiếu một dòng: chứng từ có thêm một khoản phải tách riêng (thường là thuế hoặc giá vốn).",
   "en": ""
  },
  {
-  "vi": "Có đồ nhắm thì gọi chú nhé 🍢🍺",
+  "vi": "Tài khoản đúng; kiểm lại số tiền từng dòng so với chứng từ.",
   "en": ""
  },
  {
-  "vi": "Chào cháu! Hôm nào ra quán đầu ngõ chú mời cốc trà đá làm quen nhé!",
+  "vi": "Kết quả chưa khớp. Viết lại từng bước tính và kiểm đơn vị (đồng, %, kỳ).",
   "en": ""
  },
  {
-  "vi": "Chuyện gì rồi cũng xong, chiều ra làm cốc nhé cháu 🍺",
+  "vi": "Phương án đã chọn chưa đúng. Đọc lại điều kiện trong đề: phương án đúng phải khớp mọi chi tiết, không chỉ một phần.",
   "en": ""
  },
  {
-  "vi": "Cố lên em nhé. Na nhà chị những lúc buồn chị cho con đi học vẽ, đổi không khí là vui lại ngay đấy.",
+  "vi": "còn thiếu ít nhất một phương án đúng",
   "en": ""
  },
  {
-  "vi": "Giỏi quá! Hồi nhỏ em học giỏi không? Na nhà chị lớp 2 đã được 10 điểm toán rồi đấy.",
+  "vi": "có phương án không nên chọn",
   "en": ""
  },
  {
-  "vi": "Chị cũng đang tìm hiểu cái này cho Na nhà chị, em biết thì chỉ chị với nhé.",
+  "vi": "chọn chưa đúng",
   "en": ""
  },
  {
-  "vi": "Em giỏi thế, sau này Na nhà chị phải học theo mới được 😊",
+  "vi": "Ô chưa khớp:",
   "en": ""
  },
  {
-  "vi": "Con cũng thích ăn món đó ạ 🤤",
+  "vi": ". Lấy lại số từ sổ hoặc đề bài.",
   "en": ""
  },
  {
-  "vi": "Mẹ con đọc cho con nghe rồi ạ 🥰",
+  "vi": "Kiểm lại từng ô.",
   "en": ""
  },
  {
-  "vi": "Người trẻ gặp khó là chuyện thường. Thời chúng tôi còn khổ hơn nhiều. Nhưng tôi nói thật lòng: cháu biết nói ra là đã mạnh mẽ rồi. Cố lên.",
+  "vi": "Kiểm lại từng cặp.",
   "en": ""
  },
  {
-  "vi": "Tốt. Làm ra thành quả bằng sức mình thì tôi khen thật lòng. Nhưng đừng vì thế mà tự mãn nhé cháu.",
+  "vi": "Bước đầu tiên chưa đúng: việc gì phải làm trước mọi việc khác?",
   "en": ""
  },
  {
-  "vi": "Muốn biết thì phải tự tìm hiểu. Giới trẻ bây giờ cái gì cũng hỏi trên mạng. Nhưng thôi, tôi trả lời: hỏi người có kinh nghiệm, đừng nghe đồn.",
+  "vi": "Chưa đúng. Đọc lại đề và thử lại.",
   "en": ""
  },
  {
-  "vi": "Cháu nói đúng. Chuyện này là do ý thức. Tôi đã nói nhiều lần rồi.",
+  "vi": "Ngày Giải phóng miền Nam 30/4",
   "en": ""
  },
  {
-  "vi": "Buôn bán thì phải thật thà, chữ tín quý hơn vàng. Tôi ủng hộ nếu hàng tốt.",
+  "vi": "Ngày Quốc tế Lao động 1/5",
   "en": ""
  },
  {
-  "vi": "Tôi đọc rồi. Giới trẻ bây giờ đăng bài nhiều quá, nhưng bài này thì được.",
+  "vi": "Quốc khánh 2/9",
   "en": ""
  },
  {
-  "vi": "Có ai làm gì em không? Nếu có người lạ nhắn tin dụ dỗ hay đòi tiền thì báo anh liền nha.",
+  "vi": "Tết Nguyên đán",
   "en": ""
  },
  {
-  "vi": "Chúc mừng. Mà có tiền thì cẩn thận, dạo này lừa đảo nhiều lắm.",
+  "vi": "Giỗ Tổ Hùng Vương",
   "en": ""
  },
  {
-  "vi": "Nhớ hỏi rõ ràng, có giấy tờ, đừng tin lời hứa miệng. Anh nói trước.",
+  "vi": "Nơi làm việc kế toán không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Bán hàng thì đừng đưa số tài khoản lên nhóm nha, coi chừng bị lợi dụng.",
+  "vi": "Làm bài kiểm tra kiến thức đầu ca trước nhé.",
   "en": ""
  },
  {
-  "vi": "Cần gì anh phụ. Mà người lạ nhắn đòi giúp thì đừng tin nha.",
+  "vi": "Bài kiểm tra không khớp đề hôm nay. Mở lại bài kiểm tra nhé.",
   "en": ""
  },
  {
-  "vi": "Anh thấy chưa có gì đáng ngờ. Nhưng cẩn thận vẫn hơn.",
+  "vi": "Câu trả lời chưa đúng định dạng.",
   "en": ""
  },
  {
-  "vi": "Không sao đâu, ai cũng có ngày như vậy. Qua được rồi mình sẽ mạnh mẽ hơn nè 💪🌈",
+  "vi": "Ca này không cần kiểm tra kiến thức.",
   "en": ""
  },
  {
-  "vi": "Tuyệt vời quá 🌈🎉 {You} xứng đáng lắm luôn!",
+  "vi": "Thao tác học kế toán không tồn tại.",
   "en": ""
  },
  {
-  "vi": "Chị không chắc lắm, mà chắc chắn sẽ có cách thôi nè 🌈",
+  "vi": "Học kế toán: chọn khóa hoặc tiếp tục bài đang học.",
   "en": ""
  },
  {
-  "vi": "Nhìn mặt tích cực nè: ít nhất mình biết được vấn đề để sửa 🙌",
+  "vi": "Bài học không tồn tại.",
   "en": ""
  },
  {
-  "vi": "Có gì đâu nè, cả hẻm mình thương nhau mà 🌈",
+  "vi": ". Đọc ví dụ rồi tự làm bài tập.",
   "en": ""
  },
  {
-  "vi": "Chào em nha!!! Chị Tư Zalo bán xôi đầu hẻm, admin nhóm nè. Sáng mai ghé chị, người mới chị bớt 3 nghìn, mà đừng nói ai nha 🤫🍙",
+  "vi": "Mở bài và đọc ví dụ trước khi làm bài tập.",
   "en": ""
  },
  {
-  "vi": "Chào. Xe để gọn một bên. 10 giờ tối là tắt nhạc.",
+  "vi": "Câu hỏi không thuộc bài này.",
   "en": ""
  },
  {
-  "vi": "À là đứa hôm qua xách cái ba lô xanh đi vô hẻm lúc 5 giờ 20 chiều đó hả. Cô thấy rồi 👀 Chào cháu nha, cô bán nước đầu hẻm, cần gì ghé cô.",
+  "vi": "Bài tập này đã được chấm đúng.",
   "en": ""
  },
  {
-  "vi": "Đồ hư thì mang qua. Tính rẻ. Không phải ưu ái gì đâu.",
+  "vi": "Khóa học không tồn tại.",
   "en": ""
  },
  {
-  "vi": "Chào cháu. Người trẻ đi làm xa nhà thì nhớ giữ nếp ăn nếp ở. Tôi nói vậy thôi, ở lâu rồi biết.",
+  "vi": "Hoàn thành hoặc hủy bài thi đang làm trước.",
   "en": ""
  },
  {
-  "vi": "Bà biết mà! Đứa nhỏ ở gác nhà bà giỏi lắm bà con ơi 🥹 tối nay bà nấu chè ăn mừng.",
+  "vi": "Hoàn thành tất cả bài tập của khóa trước khi thi.",
   "en": ""
  },
  {
-  "vi": "Giỏi quá, sau này Na nhà chị phải học theo mới được 😊",
+  "vi": "Thi đạt khóa Kế toán cơ bản trước khi thi khóa doanh nghiệp.",
   "en": ""
  },
  {
-  "vi": "🖼️ [Ảnh chế] Nhân vật game lên cấp, chú thích: “Level up! Kỹ năng mới: được cả hẻm khen.” 🎉",
+  "vi": "Bắt đầu bài thi. Kết quả và lời giải xuất hiện sau khi nộp đủ bài.",
   "en": ""
  },
  {
-  "vi": "Tốt. Giới trẻ mà được như cháu thì tôi không phàn nàn gì nữa.",
+  "vi": "Xác nhận hủy bài thi đang làm.",
   "en": ""
  },
  {
-  "vi": "Hèn gì dạo này cô thấy cháu đi sớm về khuya, thì ra là vậy 👀",
+  "vi": "Đã hủy bài thi. Tiến độ học và chứng chỉ đã có được giữ nguyên.",
   "en": ""
  },
  {
-  "vi": "Làm chỗ đó được không con? Nhớ hỏi rõ tiền công từ đầu nha.",
+  "vi": "Bạn chưa bắt đầu bài thi.",
   "en": ""
  },
  {
-  "vi": "Để Trang qua check-in ủng hộ luôn 📸✨",
+  "vi": "Nộp câu hiện tại; câu đã nộp không được nộp lại.",
   "en": ""
  },
  {
-  "vi": "Bà coi rồi, chỗ đó hợp tuổi con lắm đó, làm ăn thuận lợi nghe 🙏",
+  "vi": "Đã ghi nhận câu trả lời. Tiếp tục câu kế tiếp.",
   "en": ""
  },
  {
-  "vi": "Có giảm giá cho hàng xóm không cháu? Chú ghé làm khách đầu tiên nhé!",
+  "vi": "Chưa đạt 80 điểm; xem bài chữa và thi lại miễn phí.",
   "en": ""
  },
  {
-  "vi": "Đi làm chỗ mới nhớ ăn sáng đàng hoàng nghe con.",
+  "vi": "Thi đạt chứng chỉ Kế toán doanh nghiệp Việt Nam trước khi vào làm.",
   "en": ""
  },
  {
-  "vi": "Giỏi quá nè 🌈 cứ đà này là thành cao thủ luôn!",
+  "vi": "Nghề kế toán doanh nghiệp chưa được bật trên máy chủ này.",
   "en": ""
  },
  {
-  "vi": "Chăm chỉ thế là phải giỏi thôi. Na nhà chị cũng chăm lắm đấy ạ.",
+  "vi": "Hoàn thành hoặc hủy hồ sơ ứng tuyển kế toán đang làm trước.",
   "en": ""
  },
  {
-  "vi": "Ừ. Cũng được. Đừng có kiêu.",
+  "vi": "Khép ca kế toán hiện tại trước khi nhận việc.",
   "en": ""
  },
  {
-  "vi": "level up rồi kìa 🆙🔥",
+  "vi": "Nhận việc doanh nghiệp trước khi làm hồ sơ.",
   "en": ""
  },
  {
-  "vi": "📢 Hôm nay khu phố có hội! Đầu hẻm có hàng quán, trò chơi cho các cháu, tối có văn nghệ. Các tiệm trong phố sẽ đông khách, bà con đi lại nhường nhau nhé 🏮",
+  "vi": "Nhận lại việc kế toán trước khi tiếp tục doanh nghiệp.",
   "en": ""
  },
  {
-  "vi": "có hội là có kẹo bông 🍭 em đi liền",
+  "vi": "Đã mở chứng từ gốc. Đối chiếu trước khi ghi.",
   "en": ""
  },
  {
-  "vi": "Văn nghệ đến mấy giờ???",
+  "vi": "Hoàn thành sổ và bốn báo cáo trước khi nhận lương ca thực hành.",
   "en": ""
  },
  {
-  "vi": "Đến 9 giờ 30 tối ạ bác.",
+  "vi": "Lương ca này đã nhận; không thể nhận lần hai.",
   "en": ""
  },
  {
-  "vi": "Có hội là có bia 🍻 chú chờ mọi người ở quán nhé!",
+  "vi": "Lương thực hành chuyển về ví",
   "en": ""
  },
  {
-  "vi": "Trang sẽ livestream toàn bộ lễ hội nha, nhớ vào xem 📱✨",
+  "vi": "Nhận lương và xem tổng kết trước khi mở kỳ kế tiếp.",
   "en": ""
  },
  {
-  "vi": "Con muốn đi xem múa lân ạ 🦁",
+  "vi": "Mở kỳ tiếp theo; số dư cuối kỳ trước chuyển thành số dư đầu kỳ này.",
   "en": ""
  },
  {
-  "vi": "lừa đảo.",
+  "vi": "Đạt chứng chỉ trong game.",
   "en": ""
  },
  {
-  "vi": "Lãi gì mà một tuần bằng cô bán tạp hóa cả năm. Nghe là biết có vấn đề.",
+  "vi": "Hoàn thành tất cả bài tập của khóa.",
   "en": ""
  },
  {
-  "vi": "Hồi trước chị bị một vố y chang rồi 😭 mất sạch tiền dành dụm, giờ nhắc lại còn muốn khóc. Mọi người tránh xa nha!!!",
+  "vi": "Thi đạt khóa cơ bản trước.",
   "en": ""
  },
  {
-  "vi": "Bà cũng nhận tin nhắn đó! Bà tính bấm vô coi thử…",
+  "vi": "Hoàn thành bài thi đang làm.",
   "en": ""
  },
  {
-  "vi": "ĐỪNG BÀ ƠI!!!",
+  "vi": "Chứng nhận hoàn thành trong Phố Có Chuyện",
   "en": ""
  },
  {
-  "vi": "Thật ra đây là mô hình Ponzi kinh điển: lấy tiền người sau trả lãi người trước, tới lúc không còn người mới là sập. Theo anh tìm hiểu thì chưa có dự án nào như vầy mà không sập.",
+  "vi": "Thông tư 99/2025/TT-BTC chính thức",
   "en": ""
  },
  {
-  "vi": "Anh nói rồi mà. Lãi càng cao, rủi ro càng lớn.",
+  "vi": "Tiến độ học kế toán không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Ai lỡ mất tiền thì đừng tự trách mình quá nghe, qua bà ăn cơm, người còn là còn tất cả.",
+  "vi": "Bài học đang mở không tồn tại.",
   "en": ""
  },
  {
-  "vi": "Tiền làm ra bằng mồ hôi thì giữ bằng cái đầu. Cô nói hoài.",
+  "vi": "Tiến độ có bài học lạ.",
   "en": ""
  },
  {
-  "vi": "Coi như bài học, mình rút kinh nghiệm là được nè 🌱",
+  "vi": "Dữ liệu bài học không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Mấy đứa ở trọ nhà bà nghe nè: tháng này ai kẹt tiền phòng thì cứ từ từ, bà không hối đâu. Cơm thì cứ xuống ăn, bà không tính. Người với người sống với nhau bằng cái tình mà 🥹",
+  "vi": "Đáp án bài học không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Ai cần làm thêm thì qua tiệm chú phụ. Không phải thương hại gì đâu, tiệm đang thiếu người thôi.",
+  "vi": "Đáp án đã lưu chưa được chấm đúng.",
   "en": ""
  },
  {
-  "vi": "Viết ra giấy từng khoản chi, cái gì chưa cần thì hoãn. Qua được tháng này là ổn.",
+  "vi": "Bài đang mở chưa được đọc.",
   "en": ""
  },
  {
-  "vi": "Khó khăn một chút rồi sẽ qua thôi nè 🌈",
+  "vi": "Kết quả thi có khóa lạ.",
   "en": ""
  },
  {
-  "vi": "Đi làm văn phòng nhớ ăn trưa đàng hoàng nghe con, đừng ngồi máy tính cả ngày.",
+  "vi": "Bài thi không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Làm văn phòng thì ổn định đấy, Na nhà chị sau này chị cũng định hướng thế.",
+  "vi": "Đề thi không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "chào đồng nghiệp.",
+  "vi": "Đề thi không khớp lần thi đã mở.",
   "en": ""
  },
  {
-  "vi": "Lương về thì nhớ khao chú cốc bia nhé 🍺",
+  "vi": "Tiến độ đề thi sai thứ tự.",
   "en": ""
  },
  {
-  "vi": "Gần 12 giờ đêm mới về… Làm gì mà khuya dữ. Thím hỏi vậy thôi 🌙",
+  "vi": "Bài thi chưa đủ hoặc đã hết câu.",
   "en": ""
  },
  {
-  "vi": "Sáng đằng này, chiều đằng kia… Một ngày mấy chỗ. Thím hỏi vậy thôi.",
+  "vi": "Đáp án thi sai định dạng.",
   "en": ""
  },
  {
-  "vi": "Mới tới mấy bữa mà đồ mới xách về hoài… Làm gì nhanh có tiền dữ.",
+  "vi": "Kết quả thi không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Nghe đâu nợ tiền phòng bà Tám… Tội bà.",
+  "vi": "Điểm thi không khớp bài làm.",
   "en": ""
  },
  {
-  "vi": "Nói nhỏ nha, nghe đâu có người ở gác nhà bà Tám đang kẹt tiền phòng đó 👀 Chị không nói ai đâu, chị chỉ lo cho bà Tám thôi.",
+  "vi": "Chứng nhận sai khóa.",
   "en": ""
  },
  {
-  "vi": "Rút tiền hoài… chắc nợ ai. Thím đoán vậy thôi.",
+  "vi": "Chứng nhận không có bài thi đạt hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Hai đứa đi ăn riêng… về chung một đường. Thím thấy vậy thôi.",
+  "vi": "Thông tin chứng nhận không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Hóng nè: tối qua có hai người trong hẻm đi ăn riêng rồi về chung một đường đó 👀 chị không nói tên đâu, ai biết thì biết nha 🤭",
+  "vi": "Chứng nhận doanh nghiệp cần chứng nhận cơ bản.",
   "en": ""
  },
  {
-  "vi": "Mấy bữa nay đi về một mình… chắc bị bỏ rồi. Tội.",
+  "vi": "Bài thi đang làm không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Ờ chị cũng nghe người ta nói vậy đó 👀 mà thôi, chị không nói đâu…",
+  "vi": "Khóa đang thi không tồn tại.",
   "en": ""
  },
  {
-  "vi": "Nghe đâu cũng có người thấy y vậy đó mọi người 👀",
+  "vi": "Bài thi chưa đủ điều kiện.",
   "en": ""
  },
  {
-  "vi": "Giới trẻ bây giờ về khuya, tiêu hoang, tôi thấy nhiều rồi. Không nói ai, nhưng tự ai nấy biết.",
+  "vi": "Bài thi doanh nghiệp cần chứng nhận cơ bản.",
   "en": ""
  },
  {
-  "vi": "Thời chúng tôi, con nhà tử tế không ai đi đêm về hôm. Tôi nói chung thôi.",
+  "vi": "Doanh nghiệp chưa có chứng nhận hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Thời chúng tôi yêu là cưới. Giới trẻ bây giờ yêu nhanh, bỏ cũng nhanh. Tôi nói chung thôi.",
+  "vi": "Máy sản xuất đầu năm",
   "en": ""
  },
  {
-  "vi": "Nam nữ đi riêng tối muộn, thời chúng tôi là thành chuyện cả làng đấy. Tôi nói chung thôi.",
+  "vi": "Thiết bị quản lý đầu năm",
   "en": ""
  },
  {
-  "vi": "Tiền làm ra phải biết giữ. Giới trẻ bây giờ rút ra rút vào, tôi thấy nhiều rồi.",
+  "vi": "3%/6 tháng, trả lãi khi đáo hạn",
   "en": ""
  },
  {
-  "vi": "Ơ hay, đứa nhỏ ở gác nhà tui đi làm cực khổ, về khuya là vì dọn dẹp xong mới về! Mọi người đừng nói bậy tội nghiệp nó 😤",
+  "vi": "Không phát sinh trong bộ hồ sơ mô phỏng này.",
   "en": ""
  },
  {
-  "vi": "Tui ở chung nhà tui biết: nó đi làm đàng hoàng, tiền phòng tiền cơm đâu ra đó. Đừng có đặt điều nghe mấy bà!",
+  "vi": "Công ty CP Mây Tre Xanh; doanh nghiệp giả lập sản xuất và thương mại tại Việt Nam.",
   "en": ""
  },
  {
-  "vi": "Chuyện buồn của người ta mà đem ra bàn, mấy bà có thấy kỳ không! Đứa nhỏ đang buồn, để nó yên 😤",
+  "vi": "Công ty cổ phần chưa đại chúng, vốn góp bằng tiền; không có cổ phiếu ưu đãi.",
   "en": ""
  },
  {
-  "vi": "Hàng xóm rủ nhau đi ăn tô phở mà cũng thành chuyện! Tui ngồi hiên thấy hai đứa về sớm, cười nói đàng hoàng 😤",
+  "vi": "Sản xuất, thương mại và dịch vụ.",
   "en": ""
  },
  {
-  "vi": "Không biết thì đừng nói. Người ta đi làm thôi.",
+  "vi": "Sản phẩm mây tre; hàng hóa mua để bán; hợp đồng dịch vụ 3 tháng.",
   "en": ""
  },
  {
-  "vi": "Nói vậy nghe chướng tai. Thôi đi.",
+  "vi": "Chu kỳ sản xuất 1 tháng, dịch vụ 3 tháng.",
   "en": ""
  },
  {
-  "vi": "Chuyện buồn của người ta. Đem ra bàn làm gì. Thôi đi.",
+  "vi": "Tăng máy sản xuất và vốn góp mỗi kỳ theo hồ sơ được cung cấp.",
   "en": ""
  },
  {
-  "vi": "Đi ăn tô phở cũng đồn. Rảnh ghê.",
+  "vi": "Một pháp nhân, không có công ty con hoặc chi nhánh. Báo cáo riêng.",
   "en": ""
  },
  {
-  "vi": "nói xấu người ta trên nhóm là khum ổn nha mọi người 😤",
+  "vi": "10 người theo hồ sơ nhân sự giả lập.",
   "en": ""
  },
  {
-  "vi": "ủa đi ăn chung là có gì với nhau hả, vậy em với thằng Bin ăn chung hoài là sao 😤",
+  "vi": "So sánh tháng trước theo cùng chính sách; tháng 1 lấy số dư đầu năm, chưa có số kết quả năm 2025.",
   "en": ""
  },
  {
-  "vi": "Chuyện nhà người ta mình không rõ thì đừng đoán nha, nói ra dễ làm người ta tổn thương lắm 🌱 {You} ơi kệ người ta, sống thật là được. Nếu buồn thì nói chuyện thẳng thắn một lần cho rõ.",
+  "vi": "Quyền cổ tức phát sinh khi công ty không còn quyền từ chối thanh toán; chứng từ đã hoàn tất điều kiện.",
   "en": ""
  },
  {
-  "vi": "Nhắc nhẹ cả nhà: nhóm không bàn chuyện riêng của người khác khi chưa rõ. Có thắc mắc thì hỏi thẳng người đó, lịch sự nhé.",
+  "vi": "Năm 2026; bài thực hành lập báo cáo từng tháng. Đây là số liệu học tập.",
   "en": ""
  },
  {
-  "vi": "Hàng xóm rủ nhau ăn tô phở thôi mà mọi người. Thật ra đồn vậy là thiếu dữ kiện đó, anh nói thẳng 😅",
+  "vi": "Đồng Việt Nam (VND); không thay đổi đồng tiền ghi sổ.",
   "en": ""
  },
  {
-  "vi": "Bà nói con nghe: kệ người ta, sống thật là được. Người trong hẻm này ai thương con thì vẫn thương 🥹",
+  "vi": "Áp dụng TT99/2025/TT-BTC và các nguyên tắc VAS có liên quan tới tình huống đã cung cấp.",
   "en": ""
  },
  {
-  "vi": "Bà coi rồi, tuổi con năm nay bị tiểu nhân quấy chút thôi 😅 Mà nói thiệt, miệng người ta mình không bịt được, con sống tử tế là đủ nghe.",
+  "vi": "TT99/2025/TT-BTC, có hiệu lực 01/01/2026; mẫu Phụ lụcIV.",
   "en": ""
  },
  {
-  "vi": "Cô nhắc chung: chuyện chưa rõ thì đừng lan. Còn cháu, làm ăn đàng hoàng thì không cần giải thích với ai cả, cứ ngẩng đầu mà đi.",
+  "vi": "Bộ hồ sơ phục vụ học ghi nhận, khóa sổ và trình bày; không là báo cáo thực tế đã kiểm toán hoặc đã nộp.",
   "en": ""
  },
  {
-  "vi": "Thật ra tin đồn sống được là nhờ người ta nhắc lại. Em không trả lời thì nó tự tắt. Kệ người ta, sống thật là được 🤓",
+  "vi": "Chính sách nhất quán, cơ sở dồn tích, hoạt động liên tục; bảng nghĩa vụ thuế do bộ phận thuế cung cấp.",
   "en": ""
  },
  {
-  "vi": "Người ta nói ra nói vào, mình làm ăn đàng hoàng là được. Buôn bán mấy chục năm cô bị đồn đủ kiểu, giờ vẫn đứng đây nè.",
+  "vi": "Ghi sổ VND, không chuyển đổi báo cáo từ đồng tiền khác.",
   "en": ""
  },
  {
-  "vi": "Kệ người ta nha, sống thật là được 🌱 Ai hiểu mình thì tự khắc hiểu. Buồn thì ghé chị, chị pha trà gừng cho.",
+  "vi": "Hóa đơn USD: tỷ giá giao dịch thực tế 25.000+(tháng−1)×100VND/USD. Cuối kỳ dùng tỷ giá mua bán chuyển khoản trung bình 26.000+(tháng−1)×100; đánh giá cả hóa đơn cũ chưa thu.",
   "en": ""
  },
  {
-  "vi": "Dạ mình đang thử làm ở vài chỗ trong phố để học nghề thôi ạ, không có gì bí mật đâu.",
+  "vi": "Tiền gửi trả cuối kỳ: lãi hợp đồng 3%/6 tháng, dự thu hàng tháng 0,5% gốc theo hồ sơ; không có khoản chiết khấu khác.",
   "en": ""
  },
  {
-  "vi": "Dạ tiền mình đi làm từng ngày để dành đó ạ, không có gì mờ ám đâu nha.",
+  "vi": "Tiền gồm 111 và 112; tiền gửi 6 tháng ở 1281, không là tương đương tiền. Chuyển 111/112 không là dòng tiền hoạt động.",
   "en": ""
  },
  {
-  "vi": "Dạ đó là hàng nhập cho tiệm mình đang làm thôi ạ, có hóa đơn đàng hoàng.",
+  "vi": "Khoản 1281 theo dõi riêng gốc, lãi dự thu, ngày đáo hạn.",
   "en": ""
  },
  {
-  "vi": "Dạ bạn mình ghé hỏi thăm thôi ạ.",
+  "vi": "Theo từng khách, giữ USD; dự phòng 2293 ghi chênh lệch mức cần có cuối kỳ.",
   "en": ""
  },
  {
-  "vi": "Dạ tiền phòng mình đang trả dần với bà Tám, bà biết hết ạ.",
+  "vi": "Kê khai thường xuyên; giá xuất và giá thành theo bảng giá trị đã xác định trong hồ sơ, không tự suy ra đơn giá khi thiếu số lượng.",
   "en": ""
  },
  {
-  "vi": "Dạ mình rút tiền lời về trả tiền phòng với cơm nước thôi ạ, không nợ ai đâu.",
+  "vi": "Khấu hao đường thẳng: máy đầu năm 100 tháng, máy mới 120 tháng. Mua đầu tháng, đủ 1 tháng khấu hao theo giả định thời điểm đưa vào sử dụng.",
   "en": ""
  },
  {
-  "vi": "Dạ hàng xóm rủ nhau đi ăn thôi ạ, mọi người đừng đoán nha.",
+  "vi": "Mỗi hợp đồng bảo hiểm hưởng lợi 12 tháng, phân bổ đồng đều; tính cả hợp đồng mua các tháng trước.",
   "en": ""
  },
  {
-  "vi": "Dạ chuyện riêng của mình, mình đang ổn dần. Mong mọi người đừng bàn thêm nha.",
+  "vi": "Tách từng người bán, ứng trước bên Nợ và nghĩa vụ bên Có; không bù giữa đối tượng.",
   "en": ""
  },
  {
-  "vi": "Dạ dạo này mình đi làm hơi nhiều nên mệt thôi ạ, cảm ơn mọi người đã hỏi thăm.",
+  "vi": "Cổ tức ghi 332 khi đã phát sinh nghĩa vụ, giảm 421; không là chi phí.",
   "en": ""
  },
  {
-  "vi": "Cười trừ",
+  "vi": "Hợp đồng dịch vụ 3 tháng được nghiệm thu đều từng tháng;3387 chuyển 511 theo tiến độ toàn bộ hợp đồng còn hiệu lực.",
   "en": ""
  },
  {
-  "vi": "“Phố đêm” duy nhất mình biết là phố bán đồ ăn khuya thôi ạ 🌙😂",
+  "vi": "Thuế hoãn lại 347 theo bảng chênh lệch tạm thời chịu thuế đã soát xét; không tự dùng một thuế suất chung từ TT99.",
   "en": ""
  },
  {
-  "vi": "Mình đang tập làm siêu nhân đa nhiệm đó ạ 🦸 chưa có cánh thôi 😂",
+  "vi": "Các khoản vay đều đến hạn trong 12 tháng tới theo hợp đồng, trình bày ngắn hạn.",
   "en": ""
  },
  {
-  "vi": "Đồ mới là… đôi dép tổ ong đó ạ 😂",
+  "vi": "Lãi vay phục vụ hoạt động, không có tài sản đủ điều kiện vốn hóa; ghi 635.",
   "en": ""
  },
  {
-  "vi": "Xe đó chở hàng cho tiệm, không phải chở tiền tỷ của mình đâu ạ 😂",
+  "vi": "Vốn tiền đã góp ghi 411; cổ tức theo nghị quyết; lợi nhuận kỳ hiện tại 4212 sau khóa sổ.",
   "en": ""
  },
  {
-  "vi": "Người lạ đó là shipper giao trà sữa cho mình thôi ạ 🧋😂",
+  "vi": "Bán hàng khi điều kiện hồ sơ hoàn tất; dịch vụ theo phần nghiệm thu; lãi tiền gửi dự thu từng kỳ.",
   "en": ""
  },
  {
-  "vi": "Mình chỉ nợ bà Tám… mấy chén chè thôi ạ 😂",
+  "vi": "Giảm giá có hồ sơ điều chỉnh doanh thu 521 và thuế; không giả định có hàng trả lại.",
   "en": ""
  },
  {
-  "vi": "Mình rút tiền đi mua… xôi chị Tư đó ạ, nợ nần gì đâu 😂",
+  "vi": "632 theo giá trị xuất kho; sản xuất tập hợp 621/622/627→154→155 rồi 632 khi bán.",
   "en": ""
  },
  {
-  "vi": "Tụi mình có gì với nhau thật: một tô phở với hai ly trà đá 😂",
+  "vi": "635 gồm lãi vay; đánh giá ngoại tệ và lãi gửi phát sinh515 trong hồ sơ hiện tại.",
   "en": ""
  },
  {
-  "vi": "Tính mình khó thật: khó bỏ được chè bà Tám 😂",
+  "vi": "Bán hàng 641; quản lý 642 gồm lương, khấu hao, phân bổ và điều chỉnh dự phòng.",
   "en": ""
  },
  {
-  "vi": "Mặt mình phờ phạc sẵn rồi ạ, không phải tại chuyện gì đâu 😂",
+  "vi": "8211/3334 thuế hiện hành và 8212/347 hoãn lại theo bảng nghĩa vụ. TT99 không quyết định nghĩa vụ thuế.",
   "en": ""
  },
  {
-  "vi": "Hỏi thẳng",
+  "vi": "Công nợ tách theo đối tượng; VAT đủ điều kiện được khấu trừ cuối kỳ bằng bút toán 3331/133 theo bảng. Lưu chứng từ, sổ chi tiết và dấu vết chỉ ghi một lần.",
   "en": ""
  },
  {
-  "vi": "Kệ thôi",
+  "vi": "Xem sổ chi tiết và bảng dưới đây; mọi số đều lấy từ các bút toán đã được ghi.",
   "en": ""
  },
  {
-  "vi": "Đó, bà nói rồi mà! Thôi chuyện qua rồi, tối nay xuống ăn cơm với bà nghe 🥹",
+  "vi": "Lãi đánh giá lại phải thu ghi 515, không vào 413 trong bộ hồ sơ này.",
   "en": ""
  },
  {
-  "vi": "Chấm 10 điểm cho màn đáp trả 🤣 cả hẻm cười xỉu",
+  "vi": "Mọi giá trị thuế, lương và giá xuất kho đã cho có căn cứ riêng; người học thực hành kế toán bằng VND.",
   "en": ""
  },
  {
-  "vi": "Nói vậy dễ làm người ta tổn thương lắm ạ. Có gì mình hỏi riêng, nhẹ nhàng thôi nhé.",
+  "vi": "Kết quả kỳ hiện tại tính từ phát sinh trước kết chuyển.",
   "en": ""
  },
  {
-  "vi": "Không trả lời cũng là một cách hay nè. Sống tử tế thì lời đồn tự tắt thôi 🌈",
+  "vi": "Phương pháp trực tiếp; loại chuyển tiền nội bộ, khấu hao, phân bổ, đánh giá ngoại tệ, dự thu và kết chuyển.",
   "en": ""
  },
  {
-  "vi": "Kệ người ta. Làm việc của mình đi.",
+  "vi": "Khấu hao, dự phòng, dự thu lãi, đánh giá ngoại tệ, chi phí thuế chưa trả và giao dịch mua chịu không có dòng tiền tại thời điểm ghi nhận.",
   "en": ""
  },
  {
-  "vi": "Mấy nay thấy đứa nhỏ ở gác buồn buồn. Bà không hỏi chuyện riêng đâu, chỉ nói vầy: ai buồn thì qua nhà bà, bà có chè, có cháo, có cả cái ghế ngồi hóng mát. Không cần kể gì hết 🥹",
+  "vi": "Giả định hồ sơ hoàn chỉnh, hoạt động liên tục; không có sự kiện điều chỉnh sau ngày kỳ báo cáo được cung cấp.",
   "en": ""
  },
  {
-  "vi": "Buồn rồi sẽ qua nè, mình còn cả hẻm thương mà 🌈",
+  "vi": "Góp vốn và cổ tức với cổ đông theo hồ sơ nghị quyết, đã phản ánh 411/421/332.",
   "en": ""
  },
  {
-  "vi": "Tối qua tiệm chú. Có ấm trà. Không hỏi gì đâu.",
+  "vi": "Số B01 so với cuối tháng trước; B02/B03 so với tháng trước, tháng 1 chưa có số 2025.",
   "en": ""
  },
  {
-  "vi": "Chị hiểu cảm giác đó 😭 có gì nhắn chị nha, chị từng trải rồi.",
+  "vi": "Theo hồ sơ giả lập ban giám đốc xác nhận hoạt động liên tục; người học vẫn cần kiểm tra nếu tình huống thay đổi.",
   "en": ""
  },
  {
-  "vi": "Con gửi một cái kẹo ạ 🍬",
+  "vi": "Tuổi thọ tài sản, phần nghiệm thu, dự phòng và thuế hoãn lại theo bảng giả định đã soát xét trong hồ sơ.",
   "en": ""
  },
  {
-  "vi": "📢 Tổ dân phố nhắc chung: ai bị chèn ép, nói nặng ở chỗ làm thì đừng im lặng chịu một mình. Ghi lại sự việc, nói với người phụ trách, cần thì nhờ tổ hỗ trợ. Không ai đáng bị đối xử như vậy.",
+  "vi": "Giữ nguyên mã và nhãn mẫu TT99; giao diện thêm cột tiến độ và so sánh tháng phục vụ học. Chỉ tiêu không phát sinh bằng 0; EPS không áp dụng với hồ sơ doanh nghiệp chưa đại chúng này.",
   "en": ""
  },
  {
-  "vi": "Đúng đó. Ai ăn hiếp con cháu trong hẻm là bà không chịu đâu nghe 😤",
+  "vi": "Cuối tháng trước / đầu năm",
   "en": ""
  },
  {
-  "vi": "Nói tên chỗ đó. …Đùa thôi. Nhưng có gì thì nói.",
+  "vi": "Tháng trước",
   "en": ""
  },
  {
-  "vi": "Thật ra ghi chép lại ngày giờ, lời nói cụ thể là cách tốt nhất khi phản ánh. Anh từng thấy nhiều người được giúp nhờ vậy đó.",
+  "vi": "Đã khóa sổ",
   "en": ""
  },
  {
-  "vi": "Mình tử tế không có nghĩa là phải chịu đựng nè 💪",
+  "vi": "Đang ghi sổ · chỉ gồm nghiệp vụ đã làm",
   "en": ""
  },
  {
-  "vi": "⚠️ Lại có người trong phố mình dính lừa. Anh không nói tên. Chỉ nhắc: mất tiền không phải vì mình ngu, mà vì tụi nó chuyên nghiệp. Báo ngân hàng, báo công an càng sớm càng tốt, và đừng tự trách.",
+  "vi": "1. Phạm vi, tổ chức và chính sách",
   "en": ""
  },
  {
-  "vi": "Ai lỡ mất tiền thì xuống bà ăn cơm, người còn là còn tất cả con à.",
+  "vi": "TT99, VAS và pháp luật thuế",
   "en": ""
  },
  {
-  "vi": "Tiền mất rồi thì làm lại. Cô từng mất cả tháng lời vì tin người, giờ vẫn sống khỏe.",
+  "vi": "Xác định phạm vi TT99",
   "en": ""
  },
  {
-  "vi": "đổi mật khẩu hết đi.",
+  "vi": "Tách ba lớp căn cứ",
   "en": ""
  },
  {
-  "vi": "Chị từng bị rồi 😭 đừng buồn quá nha, rồi sẽ ổn.",
+  "vi": "TT99 hướng dẫn chứng từ, tài khoản, sổ và báo cáo tài chính doanh nghiệp. Điều 1 tách nghĩa vụ thuế sang pháp luật thuế. Ghi nhận và đo lường còn phải xét Luật Kế toán, VAS và nguyên tắc của chế độ; một mã tài khoản có sẵn không có nghĩa mọi giao dịch vào mã đó đều thỏa điều kiện ghi nhận.",
   "en": ""
  },
  {
-  "vi": "Nhắc nhẹ cả hẻm: dạo này ai thấy mệt thì cho phép mình nghỉ một chút nha 🌿 Ngủ sớm, ăn đủ, gọi điện về nhà. Làm việc chăm là quý, nhưng mình còn quý hơn 🌈",
+  "vi": "Thông tư hiệu lực 01/01/2026 cho năm tài chính bắt đầu từ hoặc sau ngày này. Doanh nghiệp có năm khác năm dương lịch cần kiểm tra ngày bắt đầu năm; không suy ra đổi giữa kỳ chỉ từ lịch hiện tại. Doanh nghiệp nhỏ lựa chọn áp dụng cần tuân thủ yêu cầu áp dụng nhất quán ít nhất một kỳ kế toán năm và nghĩa vụ thông báo, tổ chức theo quy định.",
   "en": ""
  },
  {
-  "vi": "Đúng rồi, mấy đứa trẻ đi làm cứ quên ăn quên ngủ, bà xót lắm.",
+  "vi": "Năm tài chính bắt đầu 01/01/2026: thuộc mốc áp dụng TT99.",
   "en": ""
  },
  {
-  "vi": "Mệt thì chiều ra ngồi trà đá với chú, không uống bia cũng được 😄",
+  "vi": "Năm bắt đầu 01/10/2025 kết thúc 30/09/2026: không kết luận phải đổi từ 01/01/2026 chỉ vì đang sang năm mới.",
   "en": ""
  },
  {
-  "vi": "nghỉ ngơi cũng là một kỹ năng nha mọi người 🛌",
+  "vi": "Văn bản nào quyết định nghĩa vụ VAT của một giao dịch?",
   "en": ""
  },
  {
-  "vi": "📢 Cảm ơn bà con đã chung tay giúp một bạn trẻ trong khu phố vượt qua lúc khó khăn. Tình làng nghĩa xóm là thứ quý nhất của hẻm mình ạ 🤝",
+  "vi": "Pháp luật thuế áp dụng cho giao dịch",
   "en": ""
  },
  {
-  "vi": "Có gì đâu, người trong hẻm mà 🥹",
+  "vi": "Chỉ tên tài khoản 133",
   "en": ""
  },
  {
-  "vi": "Góp chút xíu thôi. Đừng nhắc nữa.",
+  "vi": "Chỉ mẫu sổ TT99",
   "en": ""
  },
  {
-  "vi": "Có khó thì mới có lúc nhờ nhau. Sau này khá lên thì giúp lại người khác là được.",
+  "vi": "Điều 1 xác định thuế theo pháp luật thuế.",
   "en": ""
  },
  {
-  "vi": "Hôm nay bà nấu nồi canh chua to, đứa nào mệt mỏi thì ghé bà ăn chén cơm nóng nghe. Đi làm xa nhà, có chỗ về ăn cơm là đỡ tủi lắm 🥹",
+  "vi": "Năm bắt đầu 01/04/2026. Có qua mốc bắt đầu năm tài chính áp dụng TT99 chưa?",
   "en": ""
  },
  {
-  "vi": "D-dạ em xin ghé ạ 🥺",
+  "vi": "Chưa vì không bắt đầu 01/01",
   "en": ""
  },
  {
-  "vi": "bà Tám là số 1 🥹",
+  "vi": "Chỉ khi kết thúc năm 2027",
   "en": ""
  },
  {
-  "vi": "Để phần tôi một bát. Ít ớt.",
+  "vi": "Bắt đầu sau 01/01/2026 thuộc mốc hiệu lực nêu ở Điều 31.",
   "en": ""
  },
  {
-  "vi": "Hẻm mình dạo này nhiều chuyện ghê, mà chuyện gì thì chuyện, mình có nhau là được nè 🌈",
+  "vi": "Chọn các lớp căn cứ khi gặp nghiệp vụ chưa được hướng dẫn cụ thể.",
   "en": ""
  },
  {
-  "vi": "Đúng rồi con, có gì cứ nói với nhau nghe.",
+  "vi": "Luật Kế toán và VAS",
   "en": ""
  },
  {
-  "vi": "Nhóm mình là nhóm cư dân dễ thương nhất quả đất 🌍😂",
+  "vi": "Nguyên tắc của TT99 và bản chất giao dịch",
   "en": ""
  },
  {
-  "vi": "Bà đây, bà đây!",
+  "vi": "Tự chọn theo số lợi nhuận mong muốn",
   "en": ""
  },
  {
-  "vi": "Cô đọc được rồi ạ.",
+  "vi": "Điều 11 hướng dẫn vận dụng khi chưa có nghiệp vụ cụ thể.",
   "en": ""
  },
  {
-  "vi": "Gọi chi.",
+  "vi": "Tên tài khoản TT99 có thay thế điều kiện ghi nhận tài sản theo VAS không?",
   "en": ""
  },
  {
-  "vi": "Anh nghe nè, để anh giải thích.",
+  "vi": "Không; phải xét cả ghi nhận và đo lường",
   "en": ""
  },
  {
-  "vi": "em đâyyy 🙋",
+  "vi": "Có, cứ có mã là ghi tài sản",
   "en": ""
  },
  {
-  "vi": "Bà nghe nè con.",
+  "vi": "Có nếu phần mềm cho nhập",
   "en": ""
  },
  {
-  "vi": "Cô đây.",
+  "vi": "Hệ thống tài khoản và tiêu chuẩn ghi nhận có vai trò khác nhau.",
   "en": ""
  },
  {
-  "vi": "Chị đây chị đây 👀",
+  "vi": "Điều 1,11,31",
   "en": ""
  },
  {
-  "vi": "Có mặt! 🫡",
+  "vi": "Đơn vị tiền tệ và chuyển đổi báo cáo",
   "en": ""
  },
  {
-  "vi": "Gì!!!",
+  "vi": "Lựa chọn tiền tệ có căn cứ",
   "en": ""
  },
  {
-  "vi": "Trang đây nè 😘",
+  "vi": "Phân biệt ghi sổ với trình bày",
   "en": ""
  },
  {
-  "vi": "D-dạ em đây ạ…",
+  "vi": "Đơn vị tiền tệ kế toán phải theo các điều kiện pháp luật và TT99, xét tiền chủ yếu tác động giá bán, chi phí và tài trợ vốn. Việc có vài giao dịch USD không tự đủ để chọn USD cho toàn sổ. Đơn vị lựa chọn ngoại tệ cần hồ sơ, thông báo và quy trình nhất quán theo Điều 4–7.",
   "en": ""
  },
  {
-  "vi": "TRỜI ƠI gọi chị hả 😭",
+  "vi": "Chuyển báo cáo sang VND không phải đổi tất cả chỉ tiêu bằng một tỷ giá duy nhất. Tài sản, nợ, vốn, doanh thu chi phí và chênh lệch chuyển đổi có quy tắc riêng; cần theo hướng dẫn và thuyết minh phương pháp. Bài tính một khoản tiền dưới đây chỉ minh họa phép quy đổi với tỷ giá đề cho, không phải công thức toàn bộ báo cáo.",
   "en": ""
  },
  {
-  "vi": "Chú đây!",
+  "vi": "Khoản tiền 1.000 USD, tỷ giá đề 25.000đ/USD: quy đổi 25.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Chị đây.",
+  "vi": "Hồ sơ lựa chọn tiền tệ xem giá bán, tiền chi phí và nguồn tài trợ chủ yếu, rồi kiểm tra điều kiện pháp lý.",
   "en": ""
  },
  {
-  "vi": "Dạ con đây ạ 🌸",
+  "vi": "Quy đổi 800USD với tỷ giá giả định 25.500đ/USD. Giá trị VND?",
   "en": ""
  },
  {
-  "vi": "Tôi đây.",
+  "vi": "800×25.500=20.400.000đ.",
   "en": ""
  },
  {
-  "vi": "Anh đây. Có chuyện gì?",
+  "vi": "Chỉ vì có một hóa đơn USD, doanh nghiệp có tự đổi tiền tệ kế toán không?",
   "en": ""
  },
  {
-  "vi": "Chị đây nè 🌈",
+  "vi": "Không; phải xét điều kiện và hồ sơ lựa chọn",
   "en": ""
  },
  {
-  "vi": "tin nhắn đòi “phí giao hàng”",
+  "vi": "Có; đổi ngay cả năm",
   "en": ""
  },
  {
-  "vi": "cuộc gọi giả nhân viên ngân hàng",
+  "vi": "Có; không cần thông báo",
   "en": ""
  },
  {
-  "vi": "tin “trúng thưởng xe máy”",
+  "vi": "Lựa chọn dựa điều kiện và bản chất môi trường kinh tế.",
   "en": ""
  },
  {
-  "vi": "vụ Facebook bạn thân bị hack mượn tiền",
+  "vi": "Khi chuyển cả bộ báo cáo ngoại tệ sang VND có dùng một tỷ giá cho mọi khoản không?",
   "en": ""
  },
  {
-  "vi": "việc làm thêm “nhẹ lương cao”",
+  "vi": "Không; cần theo quy tắc từng nhóm chỉ tiêu",
   "en": ""
  },
  {
-  "vi": "vụ đặt cọc phòng trọ ảo",
+  "vi": "Có; luôn dùng tỷ giá ngày cuối năm",
   "en": ""
  },
  {
-  "vi": "nhóm “chuyên gia” chứng khoán",
+  "vi": "Có; dùng tỷ giá ngày thành lập",
   "en": ""
  },
  {
-  "vi": "vụ quyên góp giả",
+  "vi": "TT99 có hướng dẫn riêng cho các khoản và chênh lệch chuyển đổi.",
   "en": ""
  },
  {
-  "vi": "một vụ lừa ở chỗ làm",
+  "vi": "Khoản phải trả 2.000USD theo tỷ giá đề 24.800đ/USD. Giá trị quy đổi?",
   "en": ""
  },
  {
-  "vi": "dự án “lãi khủng” Mây Coin",
+  "vi": "2.000×24.800=49.600.000đ.",
   "en": ""
  },
  {
-  "vi": "Trời đất, bà cũng từng nhận tin y vậy đó. May có thằng Tí xóa giùm 😥",
+  "vi": "Điều 4–7; Phụ lục II – nguyên tắc ngoại tệ",
   "en": ""
  },
  {
-  "vi": "Cái gì hứa lời nhanh, đòi chuyển trước là lừa. Buôn bán cả đời cô chưa thấy ai cho không cái gì.",
+  "vi": "Chính sách và hệ thống tài khoản",
   "en": ""
  },
  {
-  "vi": "Chị từng bị rồi 😭 đừng tự trách mình nha, ai cũng có lúc lỡ tin người.",
+  "vi": "Thiết kế chi tiết phù hợp",
   "en": ""
  },
  {
-  "vi": "Hèn gì hôm qua cô thấy có đứa ngồi đầu hẻm thẫn thờ cả buổi 👀 tội ghê.",
+  "vi": "Không làm sai nội dung tài khoản",
   "en": ""
  },
  {
-  "vi": "Có gì đâu, người trong hẻm mà 🥹 Tối nay xuống bà ăn cơm nghe con.",
+  "vi": "Hệ thống tài khoản TT99 quy định kết cấu và nội dung cơ bản. Doanh nghiệp có thể tổ chức chi tiết theo nhu cầu quản trị nhưng phải giữ bản chất và khả năng tổng hợp lập báo cáo. Những tài khoản như 111,112,153,154,156,211,212,213 không nên tự gắn hệ thống tiểu khoản cũ như thể đó là danh mục bắt buộc của TT99.",
   "en": ""
  },
  {
-  "vi": "Góp chút đỡ tiền chợ. Tính ra mất tiền mua được bài học, sau này khá lên giúp lại người khác là được.",
+  "vi": "Chính sách về giá xuất kho, khấu hao, phân bổ, xác định doanh thu và đối tượng tập hợp chi phí cần văn bản phê duyệt và áp dụng nhất quán. Thêm tài khoản chi tiết để quản trị khác với sửa phương pháp ghi nhận. Tài khoản ngoài danh mục hoặc sửa nội dung phải theo điều kiện Điều 11, không dùng phần mềm để hợp thức hóa cách tùy ý.",
   "en": ""
  },
  {
-  "vi": "Cô góp phần của tổ nhé.",
+  "vi": "Doanh nghiệp mở 112 theo từng ngân hàng và loại tiền để đối chiếu, nhưng tổng hợp đúng tiền gửi không kỳ hạn.",
   "en": ""
  },
  {
-  "vi": "Anh góp chút nha. Thật ra tụi lừa đảo giờ chuyên nghiệp lắm, dính là chuyện thường, đừng buồn lâu 🤓",
+  "vi": "Mã quản trị cho xưởngA/xưởngB đi cùng 621,622,627 để tập hợp 154 theo sản phẩm.",
   "en": ""
  },
  {
-  "vi": "em góp tiền heo đất nè 🐷 ít thôi mà thương nhiều nha",
+  "vi": "Mở chi tiết 112 theo từng ngân hàng phục vụ mục đích nào?",
   "en": ""
  },
  {
-  "vi": "Bà góp chút đỉnh. Bà coi rồi, qua tháng này là hết hạn nghe con 🙏",
+  "vi": "Đối chiếu và quản trị vẫn giữ bản chất 112",
   "en": ""
  },
  {
-  "vi": "Cháu nó cảm ơn mà nhất định không nhận, nói tự lo được. Cô gửi lại bà con nha, tấm lòng thì cháu nhận rồi ạ 🥹",
+  "vi": "Biến tiền có kỳ hạn thành 112",
   "en": ""
  },
  {
-  "vi": "Bà con ơi tối nay bà nấu nồi lẩu chua to lắm. Đứa nhỏ ở gác dạo này ít cười, mấy đứa trẻ trẻ rủ nó xuống ăn cho vui nghe. Không ai hỏi gì hết, ăn thôi 🍲",
+  "vi": "Biến khoản vay thành tài sản tiền",
   "en": ""
  },
  {
-  "vi": "{You} ơi tối nay ra quán chú ngồi, không uống bia thì uống trà đá, chú kể chuyện cười cho nghe 🍺",
+  "vi": "Chi tiết tăng khả năng kiểm soát, không đổi bản chất tài khoản.",
   "en": ""
  },
  {
-  "vi": "Chị hiểu cảm giác đó 😭 thứ Bảy đi karaoke với chị, hát cho khàn giọng rồi về ngủ một giấc là nhẹ lòng à.",
+  "vi": "Ghép tài khoản TT99 với nội dung đúng.",
   "en": ""
  },
  {
-  "vi": "Sáng mai đi bộ bờ hồ với chị nè, gió mát lắm. Buồn rồi sẽ qua, mình còn cả hẻm thương mà 🌈",
+  "vi": "Các tên này phản ánh danh mục TT99 cập nhật.",
   "en": ""
  },
  {
-  "vi": "Đứa nhỏ ở gác nay ốm rồi bà con ơi, bà nấu nồi cháo hành rồi. Mấy đứa đi ngang đừng gõ cửa ồn nghe, để nó ngủ 🥣",
+  "vi": "Thay phương pháp FIFO sang bình quân cần xem gì ngoài việc đổi mã phần mềm?",
   "en": ""
  },
  {
-  "vi": "Cô gửi gói gừng với chai dầu gió qua. Ốm thì nghỉ, tiền làm lại được.",
+  "vi": "VAS29, lý do thay đổi và trình bày ảnh hưởng",
   "en": ""
  },
  {
-  "vi": "Cần đi khám thì gọi chú, xe chú nổ máy sẵn, không lấy tiền nhé.",
+  "vi": "Chỉ nút cài đặt",
   "en": ""
  },
  {
-  "vi": "Tôi sẽ nhắc nhà karaoke tối nay nhỏ loa!!! Người ốm cần ngủ.",
+  "vi": "Chỉ số hóa đơn tháng này",
   "en": ""
  },
  {
-  "vi": "D-dạ em có thuốc hạ sốt, em để trước cửa rồi ạ 🥺",
+  "vi": "Đổi chính sách cần xử lý và thuyết minh theo chuẩn mực.",
   "en": ""
  },
  {
-  "vi": "📢 Cô thấy dạo này mấy bạn trẻ trong hẻm đi làm về mặt mũi buồn thiu. Cô nhắc nhẹ: bị chèn ép ở chỗ làm thì nói ra, đừng ôm một mình. Tối nào nhà văn hóa cũng mở cửa, có ấm trà, có người nghe.",
+  "vi": "Danh mục mặc định TT99 còn TK 611 và 631 không?",
   "en": ""
  },
  {
-  "vi": "📢 Mưa đêm qua nhà bà Sáu dột tứ tung, nước chảy cả vô góc để ảnh ông. Tổ gom tiền mua tôn lợp lại; ai có sức thì sáng mai qua phụ một tay nhé.",
+  "vi": "Không; không dùng hai mã đó như danh mục TT99 mặc định",
   "en": ""
  },
  {
-  "vi": "Chú mang thang với búa qua. Không phải vì thương đâu, mái dột thì phiền cả dãy.",
+  "vi": "Có, luôn bắt buộc dùng",
   "en": ""
  },
  {
-  "vi": "Chú chở tôn từ đại lý về, không lấy tiền xe nhé!",
+  "vi": "Chỉ 631 là bắt buộc cho mọi đơn vị",
   "en": ""
  },
  {
-  "vi": "Cô góp mấy tấm bạt che tạm tối nay.",
+  "vi": "Phụ lục II TT99 không có 611/631; không sao chép nguyên danh mục cũ.",
   "en": ""
  },
  {
-  "vi": "Bà cảm ơn cả xóm nghe 🙏 Con Mướp cũng cảm ơn nữa, tối qua nó ướt như chuột lột 😿",
+  "vi": "Điều 11; Phụ lục II – danh mục tài khoản",
   "en": ""
  },
  {
-  "vi": "⚠️ Đêm qua tạp hóa cô Ba bị cạy cửa, mất thùng sữa với két tiền lẻ. Nhà nào có camera trước cửa thì trích giúp đoạn từ 1 giờ tới 4 giờ sáng. Tối nay anh đi tuần thêm một vòng.",
+  "vi": "Tổ chức kế toán và phân quyền",
   "en": ""
  },
  {
-  "vi": "Tiếc ghê, đêm qua cô ngủ sớm nên không thấy gì hết 😭 lần đầu tiên trong đời luôn đó.",
+  "vi": "Phân nhiệm phù hợp quy mô",
   "en": ""
  },
  {
-  "vi": "camera nhà mình quay được. gửi công an rồi.",
+  "vi": "Thiết lập trách nhiệm kiểm tra",
   "en": ""
  },
  {
-  "vi": "Tổ góp tiền giúp cô Ba sửa khóa và nhập lại hàng, ai góp được nhắn cô nhé.",
+  "vi": "Người quản lý tổ chức công tác kế toán để chứng từ, tài khoản, sổ và báo cáo nhất quán. Phân công rõ người lập, duyệt, ghi sổ, giữ tiền và kiểm tra; bảo đảm người làm công tác kế toán có quyền truy cập tài liệu cần thiết. Dịch vụ thuê ngoài không xóa trách nhiệm cung cấp chứng từ thật và tổ chức kiểm soát của đơn vị.",
   "en": ""
  },
  {
-  "vi": "Cảm ơn cả hẻm. Mất thì làm lại, tính ra còn lời được cái tình 🥲",
+  "vi": "Hệ thống phân quyền cần kiểm soát cả danh mục và giao dịch: tạo nhà cung cấp, sửa số tài khoản nhận tiền, duyệt thanh toán, mở kỳ đã khóa. Đơn vị ít người dùng kiểm soát bù trừ có bằng chứng, như người quản lý xem sao kê từ ngân hàng. Nhật ký truy cập và phê duyệt là công cụ kiểm tra, không thay sự kiểm tra bản chất.",
   "en": ""
  },
  {
-  "vi": "📢 Chú Tư mổ ruột thừa gấp tối qua, giờ đã ổn. Tiệm sửa đồ tạm đóng mấy hôm. Tổ gom chút tiền thăm chú, ai rảnh thì thay phiên vào viện trông chú giúp nhé.",
+  "vi": "Kế toán lập lệnh trả 15.000.000đ; người có thẩm quyền duyệt; ngân hàng xác nhận; người khác đối chiếu.",
   "en": ""
  },
  {
-  "vi": "Bà nấu cháo mang vô rồi nè. Ổng còn chê nhạt 😅",
+  "vi": "Nếu đổi tài khoản người bán, gọi xác nhận bằng kênh đã biết trước khi duyệt trả.",
   "en": ""
  },
  {
-  "vi": "Trang gửi giỏ trái cây nha 🍎 không có ý khoe đâu, giỏ nhỏ thôi à.",
+  "vi": "Sắp xếp quy trình trả người bán có kiểm soát.",
   "en": ""
  },
  {
-  "vi": "Tôi vào thăm chiều nay. Ông ấy mà than đau thì tôi mắng cho!!!",
+  "vi": "Kiểm tra hóa đơn và công nợ",
   "en": ""
  },
  {
-  "vi": "Mổ có tí mà làm như to chuyện. …Cảm ơn. Vậy thôi.",
+  "vi": "Người có quyền phê duyệt lệnh",
   "en": ""
  },
  {
-  "vi": "Bé Tí nhà mình sắp thi vào 10 rồi mọi người 📚 Nhà em dạo này hơi khó, chị đang gom chút tiền học thêm cho em. Ai rành toán, văn, tiếng Anh thì kèm em buổi tối được không nè 🌈",
+  "vi": "Thực hiện trả và đối chiếu sao kê",
   "en": ""
  },
  {
-  "vi": "Tôi dạy toán ba mươi năm. Tối thứ Ba, thứ Năm cháu sang nhà tôi. Không lấy tiền. Nhưng phải làm bài đầy đủ.",
+  "vi": "Căn cứ và quyền duyệt được kiểm tra trước chuyển tiền.",
   "en": ""
  },
  {
-  "vi": "Tiếng Anh để anh. Thật ra học từ vựng qua bài hát là nhanh nhất đó 🤓",
+  "vi": "Người lập nhà cung cấp giả cũng tự duyệt trả tiền là rủi ro gì?",
   "en": ""
  },
  {
-  "vi": "Chị mua cho em bộ đề ôn thi nhé. Na nhà chị sau này cũng phải thi mà 😊",
+  "vi": "Xung đột nhiệm vụ tạo đối tượng và duyệt chi",
   "en": ""
  },
  {
-  "vi": "mọi người ơi em cảm động xỉu 😭 em hứa đậu trường điểm luôn 💪",
+  "vi": "Chỉ rủi ro đổi màu giao diện",
   "en": ""
  },
  {
-  "vi": "Thật ra thì… anh vừa bị cắt giảm 😅 Công ty tái cơ cấu. Anh vẫn ổn, chỉ là tháng này hơi kẹt. Ai biết chỗ nào tuyển thì chỉ anh với nha. Theo anh tìm hiểu thì tháng này thị trường cũng khó.",
+  "vi": "Không rủi ro nếu sổ cân",
   "en": ""
  },
  {
-  "vi": "Qua tiệm cô ăn cơm, chuyện việc từ từ tính. Cô nuôi được mà.",
+  "vi": "Cần tách hoặc kiểm soát bù trừ hai quyền.",
   "en": ""
  },
  {
-  "vi": "gửi CV. mình giới thiệu.",
+  "vi": "Chọn bằng chứng kiểm soát hữu ích.",
   "en": ""
  },
  {
-  "vi": "Biết đâu chỗ mới hợp anh hơn nè 🌈",
+  "vi": "Dấu vết phê duyệt lệnh chi",
   "en": ""
  },
  {
-  "vi": "Cảm ơn cả nhà, anh không nghĩ nhóm mình ấm vậy 🥲",
+  "vi": "Đối chiếu sao kê độc lập",
   "en": ""
  },
  {
-  "vi": "⚠️ Bà Tám vừa bị gọi giả “công an”, mất tiền dưỡng già. Anh nói lại lần nữa: công an KHÔNG BAO GIỜ gọi điện bắt chuyển tiền. Nhà nào có ông bà thì dặn giùm.",
+  "vi": "Ghi nhớ miệng không lưu gì",
   "en": ""
  },
  {
-  "vi": "Tổ đang gom chút tiền đỡ bà, ai góp được nhắn cô nhé.",
+  "vi": "Bằng chứng giúp tái kiểm tra trách nhiệm và nghiệp vụ.",
   "en": ""
  },
  {
-  "vi": "em qua cài chặn số lạ cho bà rồi 😤 đứa nào gọi nữa là bị chặn liền",
+  "vi": "Thuê dịch vụ kế toán có làm doanh nghiệp hết trách nhiệm về chứng từ cung cấp không?",
   "en": ""
  },
  {
-  "vi": "Tối nay chú qua ngồi với bà.",
+  "vi": "Không; đơn vị vẫn phải tổ chức và cung cấp thông tin trung thực",
   "en": ""
  },
  {
-  "vi": "Bà già rồi lẩm cẩm, làm cả hẻm lo 🥹 Cảm ơn mấy đứa nhiều lắm.",
+  "vi": "Có; mọi trách nhiệm chuyển hết",
   "en": ""
  },
  {
-  "vi": "📢 Trung thu năm nay tổ làm cho các cháu trong hẻm: lồng đèn, bánh nướng, múa lân. Tổ đang gom tiền mua lồng đèn; ai khéo tay thì tối thứ Sáu qua nhà văn hóa dán lồng đèn với cô nhé 🏮",
+  "vi": "Có nếu phí dịch vụ cao",
   "en": ""
  },
  {
-  "vi": "Con muốn lồng đèn con thỏ ạ 🐰",
+  "vi": "Hợp đồng dịch vụ không thay trách nhiệm pháp lý của đơn vị.",
   "en": ""
  },
  {
-  "vi": "em xin làm đầu lân 🦁",
+  "vi": "Điều 3,28; yêu cầu tổ chức kế toán",
   "en": ""
  },
  {
-  "vi": "Chú góp bia… à không, góp nước ngọt cho tụi nhỏ 😅",
+  "vi": "2. Chứng từ, sổ và phần mềm",
   "en": ""
  },
  {
-  "vi": "Cảm ơn bà con, năm nay các cháu có Trung thu to nhất phường ạ 🥮",
+  "vi": "Bộ chứng từ mua bán và thanh toán",
   "en": ""
  },
  {
-  "vi": "📢 Nhà bà cụ cuối hẻm ngập tới gối, đồ đạc hư nhiều. Ai rảnh qua phụ tát nước, khiêng đồ lên cao; tổ gom tiền mua lại cái nồi cơm với tấm nệm cho bà.",
+  "vi": "Đối chiếu hợp đồng với giao nhận",
   "en": ""
  },
  {
-  "vi": "Chú qua liền, xe chú chở đồ lên nhà văn hóa để tạm.",
+  "vi": "Xác định kỳ từ bằng chứng",
   "en": ""
  },
  {
-  "vi": "Tôi nói cái cống đầu hẻm bao nhiêu lần rồi!!! …Tôi góp một phần.",
+  "vi": "Một bộ mua hàng thường liên kết đề nghị mua, phê duyệt, hợp đồng, giao nhận, hóa đơn và chứng từ thanh toán. Mỗi tài liệu chứng minh khía cạnh khác nhau: hóa đơn không tự chứng minh đã nhận hàng; sao kê không chứng minh khoản đã trả đúng đối tượng; biên bản giao nhận không tự quyết định mọi điều kiện khấu trừ thuế.",
   "en": ""
  },
  {
-  "vi": "Tui mang ủng qua nè, hẻm mình giờ thành Venice rồi 🛶",
+  "vi": "TT99 cho phép thiết kế chứng từ đáp ứng quy định thay vì chỉ điền mẫu tham khảo. Khi chứng từ chênh lượng, ngày hoặc giá, ghi hồ sơ xác minh và tách phần giao dịch đã đủ căn cứ. Ngày nhận quyền kiểm soát và nghĩa vụ có thể khác ngày hóa đơn; ghi đúng kỳ vẫn cần phối hợp quy định thuế và pháp luật hợp đồng.",
   "en": ""
  },
  {
-  "vi": "Cảm ơn cả nhà, bà cụ khóc quá trời, nói chưa thấy hẻm nào thương nhau như hẻm mình 🥹",
+  "vi": "Hợp đồng 100 bộ ×150.000đ, kho xác nhận 98 bộ: phần nhận 14.700.000đ, còn 2 bộ cần xử lý theo hợp đồng.",
   "en": ""
  },
  {
-  "vi": "Trời đất, giống y chang! Bà dán lên tủ lạnh nghe 🥹",
+  "vi": "Hồ sơ trả người bán nối khoản nợ, số hóa đơn và người nhận được xác minh.",
   "en": ""
  },
  {
-  "vi": "Tranh xịn xò, Trang xin repost nha ✨",
+  "vi": "Kho nhận 36 bộ ×250.000đ theo giá chưa thuế. Giá trị phần nhận?",
   "en": ""
  },
  {
-  "vi": "Đẹp đấy. Na nhà chị năm ngoái cũng được giải vẽ tranh cấp quận đấy ạ 😊",
+  "vi": "36×250.000=9.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Vẽ có hồn. Tốt.",
+  "vi": "Hóa đơn ghi 40 bộ nhưng nhận 36 bộ. Nên làm gì?",
   "en": ""
  },
  {
-  "vi": "Bà nấu nồi canh chua cá lóc, để phần đứa nhỏ ở gác một tô to, dán giấy trên nắp rồi đó 🍲 Mấy đứa khác đói thì xuống bà múc nghe.",
+  "vi": "Đối chiếu và lập hồ sơ phần chênh",
   "en": ""
  },
  {
-  "vi": "D-dạ em xin một chén ạ 🥺",
+  "vi": "Tự sửa phiếu nhận thành 40",
   "en": ""
  },
  {
-  "vi": "Canh chua bà Tám là đặc sản hẻm, ship đi toàn quốc được luôn á 🛵",
+  "vi": "Ghi mọi phần thiếu vào doanh thu",
   "en": ""
  },
  {
-  "vi": "Bà con ơi con Mướp đẻ rồi!!! Bốn đứa, ba vàng một mướp 🐱 Bà cho đứa nhỏ ở gác đặt tên một đứa, ai muốn nhận nuôi thì nói bà nghe. Bà coi rồi, mèo đẻ đầu tháng là nhà có lộc đó.",
+  "vi": "Chứng từ phải phản ánh thực tế, phần chênh cần xác minh.",
   "en": ""
  },
  {
-  "vi": "Con xin đặt tên một bạn là Bánh Bao ạ 🥟",
+  "vi": "Một khoản trả người bán cần đối chiếu với gì?",
   "en": ""
  },
  {
-  "vi": "Đừng cho chúng nó sang nhà tôi!!! …Mà gửi tôi xem ảnh.",
+  "vi": "Công nợ và hóa đơn liên quan",
   "en": ""
  },
  {
-  "vi": "Chúc mừng bà Sáu, chúc mừng Mướp ạ 🎉",
+  "vi": "Danh tính và tài khoản nhận đã xác minh",
   "en": ""
  },
  {
-  "vi": "cute xỉu 😭 em xin làm cha nuôi",
+  "vi": "Tên người nhận gần giống là đủ",
   "en": ""
  },
  {
-  "vi": "Mưa đầu mùa rồi cả nhà ơi 🌦️ Cả hẻm thơm mùi đất, ai rảnh ngồi hiên nghe mưa với chị nè.",
+  "vi": "Kiểm tra nghĩa vụ và đúng đối tượng tránh trả trùng hoặc trả sai.",
   "en": ""
  },
  {
-  "vi": "Mưa đầu mùa là điềm lành đó con.",
+  "vi": "Nhận 90 kg nguyên liệu đơn giá 80.000đ, vận chuyển cần thiết 300.000đ, bỏ qua thuế. Giá gốc?",
   "en": ""
  },
  {
-  "vi": "Shipper tụi tui thì… lãng mạn trong áo mưa cánh dơi 🥲",
+  "vi": "90×80.000+300.000=7.500.000đ.",
   "en": ""
  },
  {
-  "vi": "Ướt ghế thím rồi.",
+  "vi": "Chứng từ điện tử và tính toàn vẹn",
   "en": ""
  },
  {
-  "vi": "Bà biết mà! Đứa nhỏ ở gác nhà bà tử tế lắm 🥹",
+  "vi": "Bảo quản thông tin và xác thực",
   "en": ""
  },
  {
-  "vi": "Chúc mừng cháu, làm nghề có tâm là vậy đó.",
+  "vi": "Truy vết bản sửa đổi",
   "en": ""
  },
  {
-  "vi": "Được khách nhớ ơn là quý hơn tiền. Tôi khen thật.",
+  "vi": "Chứng từ điện tử cần bảo đảm nội dung, tính toàn vẹn, xác thực và khả năng đọc, tra cứu trong thời hạn lưu trữ. Khi nhận hóa đơn điện tử cần giữ dữ liệu gốc và thông tin tra cứu phù hợp, không chỉ ảnh hiển thị. Việc ký, truyền và chuyển đổi chứng từ phải theo pháp luật liên quan ngoài mẫu tham khảo TT99.",
   "en": ""
  },
  {
-  "vi": "Sáng nay 9 giờ 10 cô thấy shipper khiêng thùng quà quê to đùng lên gác nhà bà Tám 📦 Mẹ gửi đó hả cháu, thơm mùi mắm từ đầu hẻm 👀 Lần này cô nói thiệt: cô mừng cho cháu nha.",
+  "vi": "Hệ thống cần phát hiện trùng số chứng từ, sửa dữ liệu sau phê duyệt và thay file không lưu lịch sử. Sai chứng từ điện tử được xử lý theo loại chứng từ và quy định áp dụng; kế toán không tự sửa file gốc để khớp sổ. Bản hủy hoặc điều chỉnh vẫn giữ liên kết với bản gốc và lý do nhằm tái lập sự kiện.",
   "en": ""
  },
  {
-  "vi": "Mẹ nó gửi đó, có cả lá thư nữa 🥹",
+  "vi": "Hai file hóa đơn cùng số, ký hiệu và bên bán: kiểm tra trùng trước khi ghi thêm nợ.",
   "en": ""
  },
  {
-  "vi": "Mắm quê là quý nhất, cất chỗ mát, đừng để lâu.",
+  "vi": "File điều chỉnh giảm 500.000đ liên kết hóa đơn gốc; sổ lưu cả căn cứ gốc và điều chỉnh.",
   "en": ""
  },
  {
-  "vi": "Chiều nay cô với đứa nhỏ ở gác ngồi uống trà đầu hẻm, ngó người qua lại. Trà ngon mà có người ngồi chung còn ngon hơn 🍵",
+  "vi": "Chỉ lưu ảnh màn hình hóa đơn thay dữ liệu gốc có luôn đủ không?",
   "en": ""
  },
  {
-  "vi": "Thím thấy hai cô cháu ngồi từ 4 giờ tới 5 giờ rưỡi.",
+  "vi": "Không; cần dữ liệu và khả năng xác thực theo quy định",
   "en": ""
  },
  {
-  "vi": "Cô thấy luôn 👀 mà lần này cô không nói gì hết nha, dễ thương thôi.",
+  "vi": "Có; ảnh đẹp là đủ",
   "en": ""
  },
  {
-  "vi": "Mai qua bà, bà pha trà sen.",
+  "vi": "Có nếu chụp bằng điện thoại mới",
   "en": ""
  },
  {
-  "vi": "Quạt nhà đứa nhỏ ở gác kêu rè rè. Sửa rồi. Đừng cảm ơn.",
+  "vi": "Bảo quản phải giữ tính toàn vẹn, đọc và xác thực.",
   "en": ""
  },
  {
-  "vi": "Chú Tư: “đừng cảm ơn”. Cả nhóm: cảm ơn chú Tư 🤣",
+  "vi": "Hai chứng từ gốc 2.000.000đ và 3.000.000đ; hóa đơn 3.000.000đ nhập trùng một lần. Tổng đúng?",
   "en": ""
  },
  {
-  "vi": "Ổng vậy đó, ngoài miệng cằn nhằn chứ thương tụi nhỏ lắm 🥹",
+  "vi": "Chỉ có hai giao dịch thật:2+3=5 triệu đồng.",
   "en": ""
  },
  {
-  "vi": "Đã nói đừng.",
+  "vi": "Sắp xếp việc xử lý bản điều chỉnh điện tử.",
   "en": ""
  },
  {
-  "vi": "ảnh đẹp dữ, cho em xin làm hình nền 😍",
+  "vi": "Xác minh bản gốc và nội dung điều chỉnh",
   "en": ""
  },
  {
-  "vi": "Chiều nay đẹp thiệt nè 🌈",
+  "vi": "Phê duyệt ghi sổ theo căn cứ hợp lệ",
   "en": ""
  },
  {
-  "vi": "Chụp ít thôi, ngắm nhiều vào.",
+  "vi": "Lưu liên kết bản gốc với bản điều chỉnh",
   "en": ""
  },
  {
-  "vi": "Thật ra anh mua dư một ly nước mía nên đưa đứa nhỏ ở gác uống giùm, chứ không phải anh tốt bụng gì đâu nha 😅 Theo anh tìm hiểu thì nước mía giải nhiệt tốt lắm.",
+  "vi": "Không thay mất bản gốc và dấu vết.",
   "en": ""
  },
  {
-  "vi": "Học ai cái câu “không phải tốt bụng gì đâu” vậy.",
+  "vi": "Người dùng sửa file đã ký để đổi số tiền rồi ghi sổ. Vấn đề chính?",
   "en": ""
  },
  {
-  "vi": "Mua dư ly nước mà mua đúng ly ít đá của người ta ha 👀🤭",
+  "vi": "Làm mất tính toàn vẹn và xác thực chứng từ",
   "en": ""
  },
  {
-  "vi": "Ly nước mía mười nghìn mà nói cả đoạn văn 😆",
+  "vi": "Chỉ sai màu nền",
   "en": ""
  },
  {
-  "vi": "Dạ mình đi làm đàng hoàng thôi ạ, mọi người đừng đoán nha.",
+  "vi": "Không vấn đề nếu tổng sổ cân",
   "en": ""
  },
  {
-  "vi": "Rẻ nhất. Đặt trước 13:00, hàng tới chiều nay; đặt sau, hàng tới sáng mai trước giờ mở cửa.",
+  "vi": "File đã ký cần được bảo toàn, sửa sai phải theo quy trình pháp lý.",
   "en": ""
  },
  {
-  "vi": "Giá niêm yết. Bốn chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng.",
+  "vi": "Điều 8–10,28; pháp luật chứng từ điện tử",
   "en": ""
  },
  {
-  "vi": "Xe giao của Hạt Nắng kẹt ở cầu Mây, bên em báo trễ chừng nửa tiếng tới một tiếng ạ.",
+  "vi": "Sổ nhật ký và đối chiếu sổ cái",
   "en": ""
  },
  {
-  "vi": "Đắt nhất, tới trong 15–30 phút. Dùng khi hết hàng giữa ca.",
+  "vi": "Thiết kế dấu vết chứng từ",
   "en": ""
  },
  {
-  "vi": "Tài xế phải vòng tránh đoạn đường ngập, tới trễ chừng mười lăm phút ạ.",
+  "vi": "Phát hiện chênh tổng hợp",
   "en": ""
  },
  {
-  "vi": "Topping đóng hộp và ly in logo giá xưởng: rẻ hẳn nhưng 1–2 ngày mới tới. Đặt sớm cho cả tuần.",
+  "vi": "Sổ kế toán theo Điều 12–13 và Phụ lục III phải phản ánh đầy đủ nghiệp vụ, căn cứ, thời gian và số liệu phục vụ báo cáo. Nhật ký theo thời gian, sổ cái theo tài khoản và sổ chi tiết theo đối tượng là những góc nhìn của cùng giao dịch, không phải ba lần ghi độc lập tạo ba giao dịch.",
   "en": ""
  },
  {
-  "vi": "Xe tuyến kẹt ở trạm nên về trễ mấy tiếng, xưởng xin lỗi quán.",
+  "vi": "Đối chiếu theo cùng kỳ, đơn vị tiền tệ và phạm vi. Một khoản khách ứng trước phải ở đúng đối tượng để trình bày nghĩa vụ, không trừ mọi phải thu. Chênh sổ tổng hợp và chi tiết thường do thiếu mã đối tượng, sai ánh xạ hoặc bỏ sót; phải truy chứng từ chứ không tạo dòng điều chỉnh không căn cứ.",
   "en": ""
  },
  {
-  "vi": "Món này không có trong bảng giá.",
+  "vi": "Dư Nợ chi tiết 131: A 10.000.000đ, B 6.000.000đ; tổng 16.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Chọn bán hay ngừng bán món này.",
+  "vi": "C ứng trước 3.000.000đ là dư Có riêng, không biến tổng phải thu thành 13.000.000đ khi trình bày.",
   "en": ""
  },
  {
-  "vi": "Quán cần bán ít nhất một loại trà nền.",
+  "vi": "Sổ cái 156 là 25.000.000đ, chi tiết các kho cộng 24.400.000đ. Chênh cần tìm?",
   "en": ""
  },
  {
-  "vi": "Ly đã có trà. Muốn đổi cỡ thì bấm 🗑️ Đổ ly rồi lấy ly mới nhé.",
+  "vi": "25.000.000−24.400.000=600.000đ.",
   "en": ""
  },
  {
-  "vi": "Ly chưa có trà nền: rót trà ở hàng 🫖 Trà nền trước nhé.",
+  "vi": "Chứng từ có ở nhật ký và sổ cái có nghĩa phát sinh hai nghiệp vụ?",
   "en": ""
  },
  {
-  "vi": "Chưa chọn mức đường: chọn ở hàng 🍯 Đường rồi dán nắp nhé.",
+  "vi": "Không; đó là hai cách tổ chức cùng dữ liệu",
   "en": ""
  },
  {
-  "vi": "Chưa chọn mức đá: chọn ở hàng 🧊 Đá rồi dán nắp nhé.",
+  "vi": "Có; phải nhân đôi số tiền",
   "en": ""
  },
  {
-  "vi": "Nhả tay sớm quá, màng chưa dính. Ép lại, hoặc bấm “Dán thường”.",
+  "vi": "Có nếu có hai người nhập",
   "en": ""
  },
  {
-  "vi": "Món ngừng bán sai.",
+  "vi": "Cần một nguồn giao dịch và liên kết sổ.",
   "en": ""
  },
  {
-  "vi": "Tiệm may của mẹ",
+  "vi": "A dư Nợ 8.000.000đ, B dư Nợ 5.000.000đ, C dư Có 2.000.000đ ở 131. Điền tổng từng bên chi tiết.",
   "en": ""
  },
  {
-  "vi": "Cây kéo cắt vải của Bà Tư",
+  "vi": "Dư Nợ chi tiết",
   "en": ""
  },
  {
-  "vi": "Bà Tư trao cây kéo cũ khi tiệm mới treo bảng hiệu “Tiệm Áo Chỉ Mây”.",
+  "vi": "Dư Có chi tiết",
   "en": ""
  },
  {
-  "vi": "Thợ may, mẹ chị Vy",
+  "vi": "Cộng riêng hai bên để giữ quyền thu và nghĩa vụ.",
   "en": ""
  },
  {
-  "vi": "Sinh viên năm cuối",
+  "vi": "Chi tiết vật tư 3.000.000đ, công cụ 2.000.000đ, hàng hóa 9.000.000đ. Tổng ba khoản tồn theo số liệu đề?",
   "en": ""
  },
  {
-  "vi": "Chìa khóa tiệm cũ",
+  "vi": "3+2+9=14 triệu đồng; vẫn giữ phân loại tài khoản.",
   "en": ""
  },
  {
-  "vi": "Chị Vy đứng trước tấm bảng “May đo” đã bạc màu.",
+  "vi": "Phần mềm, sao lưu và khóa kỳ",
   "en": ""
  },
  {
-  "vi": "Mẹ may ở đây ba chục năm. Giờ con Vy muốn bán đồ may sẵn.",
+  "vi": "Kiểm tra kết quả thay vì tin phần mềm",
   "en": ""
  },
  {
-  "vi": "Con giữ cái máy may của mẹ ở gian bên. Tiệm mới mà vẫn là tiệm mình.",
+  "vi": "Tổ chức quyền sửa dữ liệu",
   "en": ""
  },
  {
-  "vi": "Để em phụ chị. Có gì cần sửa đồ mình còn có Bà Tư.",
+  "vi": "Điều 28 đặt yêu cầu cho phần mềm kế toán đáp ứng pháp luật và nghiệp vụ của đơn vị. Phần mềm phải hỗ trợ chứng từ, sổ, báo cáo và khả năng kiểm tra dữ liệu. Không mặc định phần mềm tự đúng: mẫu tài khoản cũ, quy tắc kết chuyển sai hoặc ánh xạ báo cáo sai vẫn tạo báo cáo cân nhưng sai bản chất.",
   "en": ""
  },
  {
-  "vi": "Bài học thước dây",
+  "vi": "Cần phân quyền sửa danh mục, nhập giao dịch, duyệt, khóa kỳ và phục hồi. Sao lưu được kiểm tra khôi phục, ghi rõ phiên bản và người có quyền. Mở lại kỳ đã khóa cần phê duyệt và lịch sử; bản báo cáo đã phát hành vẫn giữ để phân biệt với số liệu điều chỉnh sau này. Dữ liệu có khóa kỳ không thay kiểm tra chứng từ.",
   "en": ""
  },
  {
-  "vi": "Bà Tư ngoắc bạn vào gian bên.",
+  "vi": "Chạy thử mua chịu 2.000.000đ: kiểm tra 156 và 331 cùng tăng, rồi kiểm tra sổ và báo cáo.",
   "en": ""
  },
  {
-  "vi": "Lại đây bà chỉ. Đo vai, đo ngực, đo eo, đo hai lần.",
+  "vi": "Khôi phục bản sao lưu trên môi trường kiểm tra, xác nhận số chứng từ và tổng trước khi dùng thực tế.",
   "en": ""
  },
  {
-  "vi": "Khách nói size gì cũng nghe, nhưng tin cái thước dây.",
+  "vi": "Phần mềm còn tên 242 Chi phí trả trước. Khi cập nhật TT99 cần làm gì?",
   "en": ""
  },
  {
-  "vi": "Dạ, đo hai lần, cắt một lần.",
+  "vi": "Rà cả tên và nội dung thành Chi phí chờ phân bổ",
   "en": ""
  },
  {
-  "vi": "Bà Tư đưa thước dây",
+  "vi": "Chỉ đổi logo",
   "en": ""
  },
  {
-  "vi": "Xin bà dạy thêm cách lên lai quần",
+  "vi": "Giữ mọi quy tắc cũ không kiểm tra",
   "en": ""
  },
  {
-  "vi": "Được. Gấp mép hai lần, may mũi nhỏ, ủi cho phẳng.",
+  "vi": "Đổi tên phải đi cùng kiểm tra phạm vi phản ánh và báo cáo.",
   "en": ""
  },
  {
-  "vi": "Nhờ bà đo thử cho mình một lần",
+  "vi": "Sắp xếp một kiểm thử phục hồi dữ liệu.",
   "en": ""
  },
  {
-  "vi": "Vai con lệch chút xíu. Người ta ai cũng có chỗ lệch, áo phải chiều người.",
+  "vi": "Lấy bản sao lưu được xác định",
   "en": ""
  },
  {
-  "vi": "Chiếc sơ mi đầu tiên",
+  "vi": "Khôi phục trên môi trường kiểm tra",
   "en": ""
  },
  {
-  "vi": "Tuấn ghé tiệm, ôm tập hồ sơ xin việc.",
+  "vi": "Đối chiếu chứng từ và số dư",
   "en": ""
  },
  {
-  "vi": "Chị ơi, em sắp phỏng vấn mà chỉ có áo thun thôi.",
+  "vi": "Cần xác nhận bản sao có thể dùng và số liệu toàn vẹn.",
   "en": ""
  },
  {
-  "vi": "Tuấn đưa cái ví coi, mình chọn cái vừa túi tiền trước.",
+  "vi": "Quyền nào cần hạn chế và có lịch sử?",
   "en": ""
  },
  {
-  "vi": "Sơ mi trắng, vừa vai là đủ tự tin rồi.",
+  "vi": "Mở kỳ đã khóa",
   "en": ""
  },
  {
-  "vi": "Tuấn còn thiếu cà vạt",
+  "vi": "Sửa tài khoản nhận tiền người bán",
   "en": ""
  },
  {
-  "vi": "Mượn cà vạt cũ của Bà Tư",
+  "vi": "Đọc tên bài học công khai",
   "en": ""
  },
  {
-  "vi": "Cà vạt ông nhà bà để dành, đeo đi cho may mắn nghe con.",
+  "vi": "Hai quyền ảnh hưởng trực tiếp độ tin cậy dữ liệu và thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo phần mềm cân nhưng dùng mã B02 cũ. Có thể tuyên bố phù hợp TT99 không?",
+  "en": ""
+ },
+ {
+  "vi": "Không; phải kiểm tra ánh xạ mẫu và công thức mới",
+  "en": ""
+ },
+ {
+  "vi": "Có; cân là đủ",
+  "en": ""
+ },
+ {
+  "vi": "Có nếu in đượcPDF",
+  "en": ""
+ },
+ {
+  "vi": "Sự cân đối số học không chứng minh dùng đúng biểu mẫu.",
+  "en": ""
+ },
+ {
+  "vi": "Điều 28; Phụ lục II–IV",
+  "en": ""
+ },
+ {
+  "vi": "3. Tiền và ngoại tệ ban đầu",
+  "en": ""
+ },
+ {
+  "vi": "TK 111 và kiểm kê quỹ",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm soát thu chi quỹ",
+  "en": ""
+ },
+ {
+  "vi": "Ghi thiếu quỹ chờ xử lý có căn cứ",
+  "en": ""
+ },
+ {
+  "vi": "TK 111 phản ánh tiền tại quỹ, được theo dõi theo loại tiền và thông tin cần quản lý. Thu chi có chứng từ hợp lệ, người giao nhận và phê duyệt. Kế toán đối chiếu sổ với thủ quỹ và kiểm kê; không dùng tiền cá nhân để che thiếu quỹ rồi sửa chứng từ thu bán hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Khi kiểm kê thiếu, lập biên bản và xác định nguyên nhân. Phần chưa rõ có thể theo dõi phải thu khác chờ xử lý theo hướng dẫn; khi có quyết định mới ghi bồi thường hoặc chi phí phù hợp. Thiếu tiền không tự đồng nghĩa giảm doanh thu; thừa cũng không tự đồng nghĩa doanh thu của đơn vị.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ 10.000.000đ, kiểm kê 9.800.000đ: thiếu 200.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Có biên bản chờ xử lý: Nợ 138/Có 111 200.000đ theo tình huống; quyết định xử lý theo hồ sơ riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ quỹ 6.500.000đ, kiểm kê 6.350.000đ. Thiếu bao nhiêu?",
+  "en": ""
+ },
+ {
+  "vi": "6.500.000−6.350.000=150.000đ.",
+  "en": ""
+ },
+ {
+  "vi": "Biên bản kiểm kê xác định thiếu quỹ 100.000đ chưa rõ nguyên nhân, đưa vào 138 chờ xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Giảm tiền thực có và theo dõi khoản thiếu chờ xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Có nên giảm doanh thu tùy ý để làm quỹ khớp?",
+  "en": ""
+ },
+ {
+  "vi": "Không; xác minh và xử lý theo biên bản",
+  "en": ""
+ },
+ {
+  "vi": "Có; doanh thu luôn là nguồn thiếu",
+  "en": ""
+ },
+ {
+  "vi": "Có nếu thiếu dưới 1 triệu",
+  "en": ""
+ },
+ {
+  "vi": "Chênh quỹ cần căn cứ và quyết định, không sửa bản chất doanh thu.",
+  "en": ""
+ },
+ {
+  "vi": "Thu tiền bán hàng đã ghi phải thu 800.000đ bằng tiền mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Tăng tiền quỹ, giảm nợ khách; không ghi doanh thu lần nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục II – TK 111,138",
+  "en": ""
+ },
+ {
+  "vi": "TK 112 và đối chiếu ngân hàng",
+  "en": ""
+ },
+ {
+  "vi": "Tách tiền gửi không kỳ hạn",
+  "en": ""
+ },
+ {
+  "vi": "Nhận diện phí và thấu chi",
+  "en": ""
+ },
+ {
+  "vi": "Theo TT99, TK 112 là Tiền gửi không kỳ hạn. Theo dõi từng ngân hàng, loại tiền và số tài khoản để đối chiếu sao kê. Tiền gửi có kỳ hạn thuộc đầu tư nắm giữ đến ngày đáo hạn theo bản chất; thấu chi phản ánh như khoản vay, không trình bày 112 âm để bù tiền ở ngân hàng khác.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng đối chiếu chỉ rõ khoản đã ghi sổ chưa có sao kê, khoản sao kê có mà sổ thiếu và lỗi cần xác minh. Phí ngân hàng đã trừ cần ghi vào chi phí phù hợp sau kiểm tra; không ghi lại khoản đang chờ ngân hàng nếu đã có ở sổ và chỉ chênh thời điểm. Quyền duyệt chuyển tiền tách khỏi nhập giao dịch.",
   "en": ""
  }
 ]

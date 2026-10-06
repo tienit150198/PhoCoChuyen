@@ -64,30 +64,68 @@ ITEMS = [
     dict(id='hat', name='Nón vành', emoji='👒', group='acc', unit='cái', cost=30, start=6),
     dict(id='belt', name='Thắt lưng da', emoji='🪢', group='acc', unit='sợi', cost=35, start=6),
     dict(id='socks', name='Tất cổ ngắn', emoji='🧦', group='acc', unit='đôi', cost=8, start=12),
+    # 1.7.16 (góp ý #191): more dresses, separates, shoes and accessories. They start at 0 on the rack
+    # (Kho → nhập hàng); a save only gets their grid rows once one of them is stocked (see _sync).
+    dict(id='maxi', name='Đầm maxi', emoji='👘', group='one', unit='cái', cost=150, start=0),
+    dict(id='babydoll', name='Váy babydoll', emoji='🎀', group='one', unit='cái', cost=95, start=0),
+    dict(id='set2', name='Set áo + chân váy', emoji='👚', group='one', unit='bộ', cost=140, start=0),
+    dict(id='blazer', name='Áo blazer', emoji='🧥', group='top', unit='cái', cost=180, start=0),
+    dict(id='cardigan', name='Áo cardigan len', emoji='🧶', group='top', unit='cái', cost=85, start=0),
+    dict(id='polo', name='Áo polo', emoji='🎽', group='top', unit='cái', cost=70, start=0),
+    dict(id='skirt', name='Chân váy chữ A', emoji='💃', group='bottom', unit='cái', cost=70, start=0),
+    dict(id='trousers', name='Quần tây ống suông', emoji='🕴️', group='bottom', unit='cái', cost=110, start=0),
+    dict(id='shorts', name='Quần short kaki', emoji='🩳', group='bottom', unit='cái', cost=50, start=0),
+    dict(id='sneaker', name='Giày sneaker', emoji='👟', group='shoes', unit='đôi', cost=150, start=0),
+    dict(id='sandal', name='Sandal quai mảnh', emoji='👡', group='shoes', unit='đôi', cost=70, start=0),
+    dict(id='bag', name='Túi xách tay', emoji='👜', group='acc', unit='cái', cost=90, start=0),
+    dict(id='earrings', name='Bông tai ngọc trai', emoji='💎', group='acc', unit='đôi', cost=25, start=0),
+    dict(id='scarf', name='Khăn lụa', emoji='🧣', group='acc', unit='chiếc', cost=40, start=0),
 ]
+LEGACY = ('tee', 'shirt', 'jeans', 'dress', 'aodai', 'pajama', 'kids', 'hat', 'belt', 'socks')
 ITEM = {x['id']: x for x in ITEMS}
 GROUP = {x['id']: x['group'] for x in ITEMS}
 PRICES = {'tee': 115, 'shirt': 220, 'jeans': 280, 'dress': 265, 'aodai': 420, 'pajama': 145, 'kids': 105,
-          'hat': 85, 'belt': 95, 'socks': 25}
+          'hat': 85, 'belt': 95, 'socks': 25,
+          'maxi': 340, 'babydoll': 230, 'set2': 320, 'blazer': 390, 'cardigan': 195, 'polo': 165, 'skirt': 170,
+          'trousers': 250, 'shorts': 125, 'sneaker': 350, 'sandal': 170, 'bag': 230, 'earrings': 75, 'scarf': 110}
 SIZES = {'tee': ('S', 'M', 'L', 'XL'), 'shirt': ('S', 'M', 'L', 'XL'), 'jeans': ('28', '29', '30', '31', '32'),
          'dress': ('S', 'M', 'L'), 'aodai': ('S', 'M', 'L'), 'pajama': ('M', 'L', 'XL'), 'kids': ('3T', '5T', '7T', '9T'),
-         'hat': ('F',), 'belt': ('F',), 'socks': ('F',)}
+         'hat': ('F',), 'belt': ('F',), 'socks': ('F',),
+         'maxi': ('S', 'M', 'L'), 'babydoll': ('S', 'M', 'L'), 'set2': ('S', 'M', 'L'), 'blazer': ('S', 'M', 'L', 'XL'),
+         'cardigan': ('S', 'M', 'L'), 'polo': ('S', 'M', 'L', 'XL'), 'skirt': ('S', 'M', 'L'),
+         'trousers': ('28', '29', '30', '31', '32'), 'shorts': ('S', 'M', 'L', 'XL'),
+         'sneaker': ('36', '37', '38', '39', '40', '41'), 'sandal': ('35', '36', '37', '38', '39'),
+         'bag': ('F',), 'earrings': ('F',), 'scarf': ('F',)}
 # New goods fill the sizes that sell most first (M before S before XL…).
 FILL = {'tee': ('M', 'L', 'S', 'XL'), 'shirt': ('M', 'L', 'S', 'XL'), 'jeans': ('29', '30', '28', '31', '32'),
         'dress': ('M', 'S', 'L'), 'aodai': ('M', 'S', 'L'), 'pajama': ('L', 'M', 'XL'), 'kids': ('5T', '7T', '3T', '9T'),
-        'hat': ('F',), 'belt': ('F',), 'socks': ('F',)}
+        'hat': ('F',), 'belt': ('F',), 'socks': ('F',),
+        'maxi': ('M', 'S', 'L'), 'babydoll': ('M', 'S', 'L'), 'set2': ('M', 'S', 'L'), 'blazer': ('M', 'L', 'S', 'XL'),
+        'cardigan': ('M', 'S', 'L'), 'polo': ('M', 'L', 'S', 'XL'), 'skirt': ('M', 'S', 'L'),
+        'trousers': ('29', '30', '28', '31', '32'), 'shorts': ('M', 'L', 'S', 'XL'),
+        'sneaker': ('38', '37', '39', '40', '36', '41'), 'sandal': ('37', '36', '38', '35', '39'),
+        'bag': ('F',), 'earrings': ('F',), 'scarf': ('F',)}
 COLOURS = {'tee': ('trắng', 'đen', 'xanh than', 'be'), 'shirt': ('trắng', 'xanh nhạt', 'hồng phấn', 'đen'),
            'jeans': ('xanh đậm', 'xanh nhạt', 'đen'), 'dress': ('hoa nhí', 'đỏ đô', 'xanh mint', 'trắng'),
            'aodai': ('đỏ', 'vàng', 'trắng', 'xanh ngọc'), 'pajama': ('hồng', 'xanh', 'caro'),
-           'kids': ('vàng', 'xanh', 'hồng'), 'hat': ('cói', 'be', 'đen'), 'belt': ('nâu', 'đen'), 'socks': ('trắng', 'đen', 'sọc')}
+           'kids': ('vàng', 'xanh', 'hồng'), 'hat': ('cói', 'be', 'đen'), 'belt': ('nâu', 'đen'), 'socks': ('trắng', 'đen', 'sọc'),
+           'maxi': ('vàng nghệ', 'xanh biển', 'trắng', 'hoa nhí'), 'babydoll': ('hồng phấn', 'be', 'xanh mint'),
+           'set2': ('be', 'hồng phấn', 'đen'), 'blazer': ('đen', 'be', 'xanh than'), 'cardigan': ('kem', 'xám', 'nâu'),
+           'polo': ('trắng', 'xanh than', 'đỏ đô'), 'skirt': ('đen', 'be', 'caro'), 'trousers': ('đen', 'xanh than', 'be'),
+           'shorts': ('be', 'xanh than', 'trắng'), 'sneaker': ('trắng', 'đen', 'be'), 'sandal': ('nâu', 'đen', 'be'),
+           'bag': ('đen', 'nâu', 'be'), 'earrings': ('ngọc trai', 'vàng kim', 'bạc'), 'scarf': ('đỏ đô', 'xanh ngọc', 'be')}
 SWATCH = {'trắng': '#f7f5ef', 'đen': '#2d2a2e', 'xanh than': '#2f3f63', 'be': '#dcc7a4', 'xanh nhạt': '#a9c9e8',
           'hồng phấn': '#f2c1cf', 'xanh đậm': '#2f4f86', 'hoa nhí': '#f3d4dc', 'đỏ đô': '#8e2437', 'xanh mint': '#a6dcc8',
           'đỏ': '#d23b3b', 'vàng': '#f0c23b', 'xanh ngọc': '#3aa6a0', 'hồng': '#f4a7bb', 'xanh': '#6fa3d6',
-          'caro': '#c9a27e', 'cói': '#d9bb7c', 'nâu': '#8a5a3b', 'sọc': '#9aa3b5'}
+          'caro': '#c9a27e', 'cói': '#d9bb7c', 'nâu': '#8a5a3b', 'sọc': '#9aa3b5',
+          'vàng nghệ': '#e7a72a', 'xanh biển': '#2f8fc4', 'kem': '#f1e6cc', 'xám': '#9a9da3',
+          'ngọc trai': '#efe9df', 'vàng kim': '#d4af37', 'bạc': '#c7ccd3'}
 # Size charts (the shop's own labels).
 TOP_CHART = (('S', 150, 157, 40, 47), ('M', 158, 164, 48, 55), ('L', 165, 171, 56, 64), ('XL', 172, 180, 65, 75))
 JEANS_WAIST = {'28': 71, '29': 74, '30': 76, '31': 79, '32': 81}
 KIDS_AGE = {'3T': (2, 3), '5T': (4, 5), '7T': (6, 7), '9T': (8, 9)}
+WAIST_ITEMS = ('jeans', 'trousers')            # sized by the waist (JEANS_WAIST)
+SHOES = ('sneaker', 'sandal')                   # sized by the foot (EU sizes)
 RUNS_SMALL = {'shirt': 1}   # our office shirts are cut slim: one size up from other shops
 LETTERS = ('S', 'M', 'L', 'XL')
 CAPACITY = 30
@@ -123,21 +161,34 @@ POLICY = ['Đổi trả trong 7 ngày, đồ còn tem mác, chưa mặc.',
           'Lỗi của tiệm (bung chỉ, lỗi vải): luôn đổi hoặc hoàn tiền, kể cả đã giặt.']
 
 OCCASIONS = {
-    'wedding': dict(name='Đi ăn cưới', emoji='💒', mains=(('dress',), ('aodai',), ('shirt', 'jeans')),
-                    bad=('trắng', 'đen'), bad_on=('one',), colours={}, need=(), plus=('belt',), odd=('pajama', 'kids', 'hat'),
+    # mains: the legacy sets first (the judge takes the first set the pieces complete), the 1.7.16 goods after.
+    'wedding': dict(name='Đi ăn cưới', emoji='💒',
+                    mains=(('dress',), ('aodai',), ('shirt', 'jeans'), ('maxi',), ('babydoll',), ('set2',), ('shirt', 'trousers'),
+                           ('blazer', 'trousers'), ('blazer', 'skirt'), ('shirt', 'skirt')),
+                    bad=('trắng', 'đen'), bad_on=('one',), colours={}, need=(), plus=('belt', 'bag', 'earrings'),
+                    odd=('pajama', 'kids', 'hat', 'shorts', 'sneaker'),
                     tips=['Váy, áo dài hoặc sơ mi với quần tối màu đều lịch sự.', 'Không mặc váy trắng (trùng cô dâu) hay đồ đen.',
-                          'Thắt lưng da giúp bộ đồ gọn gàng hơn.']),
-    'interview': dict(name='Đi phỏng vấn', emoji='💼', mains=(('shirt', 'jeans'),), bad=(), bad_on=(),
-                      colours={'shirt': ('trắng', 'xanh nhạt'), 'jeans': ('xanh đậm', 'đen')}, need=(), plus=('belt',),
-                      odd=('hat', 'pajama', 'kids', 'aodai'),
+                          'Thắt lưng da giúp bộ đồ gọn gàng hơn.', 'Túi xách tay, bông tai ngọc trai là điểm nhấn dự tiệc.']),
+    'interview': dict(name='Đi phỏng vấn', emoji='💼',
+                      mains=(('shirt', 'jeans'), ('shirt', 'trousers'), ('blazer', 'trousers'), ('blazer', 'skirt'), ('shirt', 'skirt')),
+                      bad=(), bad_on=(),
+                      colours={'shirt': ('trắng', 'xanh nhạt'), 'jeans': ('xanh đậm', 'đen'), 'trousers': ('đen', 'xanh than'),
+                               'blazer': ('đen', 'xanh than', 'be'), 'skirt': ('đen', 'be')}, need=(), plus=('belt', 'bag'),
+                      odd=('hat', 'pajama', 'kids', 'aodai', 'maxi', 'babydoll', 'shorts', 'sandal'),
                       tips=['Sơ mi sáng màu (trắng, xanh nhạt) với quần tối màu.', 'Thêm thắt lưng cho gọn gàng.',
-                            'Không đội nón, không đồ quá sặc sỡ.']),
-    'beach': dict(name='Đi biển', emoji='🏖️', mains=(('dress',), ('tee', 'jeans')), bad=(), bad_on=(), colours={},
-                  need=('hat',), plus=('hat',), odd=('aodai', 'shirt', 'belt', 'pajama'),
-                  tips=['Váy liền hoặc áo thun cho mát.', 'Phải có nón vành che nắng.', 'Sơ mi, áo dài để ở nhà.']),
-    'tet': dict(name='Du xuân ngày Tết', emoji='🧧', mains=(('aodai',), ('dress',)), bad=('đen', 'trắng'), bad_on=('one', 'top'),
-                colours={'aodai': ('đỏ', 'vàng'), 'dress': ('đỏ đô', 'hoa nhí')}, need=(), plus=('hat',), odd=('pajama',),
-                tips=['Áo dài đỏ hoặc vàng là đẹp nhất ngày Tết.', 'Tết kiêng đồ đen, đồ trắng.', 'Nón vành đi chụp ảnh xuân rất hợp.']),
+                            'Không đội nón, không đồ quá sặc sỡ.', 'Blazer với quần tây hoặc chân váy tối màu cũng rất chuyên nghiệp.']),
+    'beach': dict(name='Đi biển', emoji='🏖️',
+                  mains=(('dress',), ('tee', 'jeans'), ('maxi',), ('babydoll',), ('tee', 'shorts'), ('polo', 'shorts')),
+                  bad=(), bad_on=(), colours={},
+                  need=('hat',), plus=('hat', 'sandal'), odd=('aodai', 'shirt', 'belt', 'pajama', 'blazer', 'trousers', 'cardigan'),
+                  tips=['Váy liền hoặc áo thun cho mát.', 'Phải có nón vành che nắng.', 'Sơ mi, áo dài để ở nhà.',
+                        'Đầm maxi, quần short với sandal đi biển là chuẩn bài.']),
+    'tet': dict(name='Du xuân ngày Tết', emoji='🧧', mains=(('aodai',), ('dress',), ('set2',), ('babydoll',), ('maxi',)),
+                bad=('đen', 'trắng'), bad_on=('one', 'top'),
+                colours={'aodai': ('đỏ', 'vàng'), 'dress': ('đỏ đô', 'hoa nhí'), 'set2': ('hồng phấn',), 'babydoll': ('hồng phấn',),
+                         'maxi': ('vàng nghệ', 'hoa nhí')}, need=(), plus=('hat', 'scarf', 'bag'), odd=('pajama', 'shorts'),
+                tips=['Áo dài đỏ hoặc vàng là đẹp nhất ngày Tết.', 'Tết kiêng đồ đen, đồ trắng.', 'Nón vành đi chụp ảnh xuân rất hợp.',
+                      'Khăn lụa, túi xách nhỏ làm bộ đồ du xuân thêm sang.']),
 }
 KIND_NAMES = {'fit': 'Tìm size', 'outfit': 'Phối đồ', 'alter': 'Sửa đồ', 'room': 'Phòng thử', 'return': 'Đổi trả',
               'sale': 'Tem sale', 'online': 'Đơn online', 'display': 'Ma-nơ-canh'}
@@ -158,6 +209,7 @@ VY, DIEM, TUAN, HANG, BA_NAM, DI_SAU, KIEU, BA_TU = range(8)
 REGULARS = (DIEM, TUAN, HANG, BA_NAM, DI_SAU, KIEU)
 BODY = {DIEM: 'M', TUAN: 'M', HANG: 'M', BA_NAM: 'L', DI_SAU: 'L', KIEU: 'S'}          # tops / dresses
 WAIST = {DIEM: '28', TUAN: '29', HANG: '29', BA_NAM: '31', DI_SAU: '31', KIEU: '28'}   # jeans
+FOOT = {DIEM: '37', TUAN: '41', HANG: '37', BA_NAM: '38', DI_SAU: '38', KIEU: '36'}     # shoes (sandals stop at 39)
 LOOKS = (
     dict(served=0, name='Tiệm may cũ của Bà Tư', text='Bảng hiệu cũ còn chữ “May đo”, một giá treo và chiếc máy may đạp chân.'),
     dict(served=4, name='Bảng hiệu mới', text='Chị Vy treo bảng “Tiệm Áo Chỉ Mây”, thêm một ma-nơ-canh cạnh cửa.'),
@@ -232,8 +284,12 @@ def _clue(rng, item: str, size: str, easy: bool) -> tuple[str, str, str]:
     """(clue kind, what the customer says about the size, the same clue as a short note for the
     order card) that leads to `size` for `item`. The note never names a size the player must work out
     (a 'label' clue is the size itself: the customer said it)."""
-    if item == 'jeans':
+    if item in WAIST_ITEMS:
         return 'waist', f'Eo mình {JEANS_WAIST[size]} phân.', f'eo {JEANS_WAIST[size]} cm'
+    if item in SHOES:
+        return 'foot', f'Chân mình mang size {size}.', f'chân size {size}'
+    if _free_size(item):
+        return 'free', 'Loại free size.', 'free size'
     if item == 'kids':
         lo, hi = KIDS_AGE[size]
         age = rng.choice((lo, hi))
@@ -256,9 +312,18 @@ def _clue(rng, item: str, size: str, easy: bool) -> tuple[str, str, str]:
     return 'label', f'Mình mặc {_sz(size)}.', f'mặc {_sz(size)}'
 
 
+def _free_size(item: str) -> bool:
+    return SIZES[item] == ('F',)
+
+
 def _pick_size(rng, item: str, npc: int) -> str:
-    if item == 'jeans':
+    if item in WAIST_ITEMS:
         return WAIST.get(npc) or rng.choice(SIZES['jeans'])
+    if item in SHOES:
+        foot = FOOT.get(npc)
+        return foot if foot in SIZES[item] else rng.choice(SIZES[item])
+    if _free_size(item):
+        return 'F'
     if item in ('hat', 'belt', 'socks'):
         return 'F'
     if item == 'kids':
@@ -527,7 +592,7 @@ STAT_KEYS = ('sales', 'customers', 'swaps', 'room_saved', 'room_lost', 'frauds',
 def initial() -> dict:
     d = dict(grid={})
     _extend(d)
-    for it in ITEMS:
+    for it in [x for x in ITEMS if x['id'] in LEGACY]:
         row = {s: 0 for s in SIZES[it['id']]}
         _fill(row, it['id'], it['start'])
         d['grid'][it['id']] = row
@@ -585,7 +650,11 @@ def _sync(c: dict) -> None:
     for it in ITEMS:
         sizes = SIZES[it['id']]
         row = g.get(it['id'])
+        have = kit.stock(c, it['id'])
         if not isinstance(row, dict):
+            if it['id'] not in LEGACY and have <= 0:
+                g.pop(it['id'], None)
+                continue    # 1.7.16 goods get their row once stocked: a save without them stays loadable by 1.7.15
             row = g[it['id']] = {}
         for s in list(row):
             if s not in sizes:
@@ -593,7 +662,6 @@ def _sync(c: dict) -> None:
         for s in sizes:
             if type(row.get(s)) is not int or row[s] < 0:
                 row[s] = 0
-        have = kit.stock(c, it['id'])
         cur = sum(row.values())
         if cur < have:
             _fill(row, it['id'], have - cur)
@@ -641,12 +709,13 @@ def staff_order(c: dict, served: int) -> tuple | None:
     Selection happens at completion. Accepted player orders keep their own fixed
     product and quote. The existing receipt count makes offline/polled runs equal.
     """
-    items=list(ITEM)
-    for offset in range(len(items)):
-        item=items[(served+offset)%len(items)]
-        if staff_size(c,item) is not None:
-            return ('Đơn riêng: '+ITEM[item]['name'],PRICES[item],2,{item:1})
-    return None
+    # Rotate over the goods on the rack only: skipping gaps in the full catalogue would hand every sale after an
+    # unstocked run (the 14 goods added in WP3 start at 0) to the next stocked item.
+    items=[item for item in ITEM if staff_size(c,item) is not None]
+    if not items:
+        return None
+    item=items[served%len(items)]
+    return ('Đơn riêng: '+ITEM[item]['name'],PRICES[item],2,{item:1})
 
 
 def _sell(c: dict, item: str, size: str) -> int:
@@ -664,7 +733,8 @@ def _restock_one(c: dict, item: str, size: str) -> None:
     if kit.stock(c, item) >= CAPACITY:
         return
     kit.add_lot(c, item, 1, ITEM[item]['cost'], 999, 'return')
-    _data(c)['grid'][item][size] = _data(c)['grid'][item].get(size, 0) + 1
+    row = _data(c)['grid'].setdefault(item, {z: 0 for z in SIZES[item]})
+    row[size] = row.get(size, 0) + 1
 
 
 def _price(c: dict, item: str) -> int:
@@ -697,6 +767,10 @@ def _look(c: dict) -> int:
 def on_task(s: dict, c: dict, t: dict) -> None:
     if t.get('career') != ID:
         return
+    if 'wish' not in t and not t.get('known') and t.get('status') == 'new':
+        w = make_wish(c, t)
+        if w:
+            t['wish'] = w
     if t['kind'] == 'sale' and not t['sale']['base']:
         base, options = {}, []
         for ln in t['needs']['lines']:
@@ -730,7 +804,8 @@ def on_receive(c: dict, order: dict) -> None:
     size = order.get('size')
     if size is not None:
         _sync(c)  # reconcile existing stock before inventory adds the new lot
-        _data(c)['grid'][order['item']][size] += order['actual']
+        row = _data(c)['grid'].setdefault(order['item'], {z: 0 for z in SIZES[order['item']]})
+        row[size] += order['actual']
 
 
 def on_start(s: dict, c: dict) -> None:
@@ -740,14 +815,201 @@ def on_start(s: dict, c: dict) -> None:
     d['swaps'] = [x for x in d['swaps'] if x['day'] >= c['day']]
 
 
+# ---------------------------------------------------------------- wishes (1.7.16, góp ý #191)
+# A customer's extra demand, rolled once when the task reaches the shop (on_task), seeded by the task id.
+# It is task state, never part of the generated task (scripts/check_task_compat.py): tasks made before
+# simply have none, and an older build ignores the key.
+WISH_FROM_DAY = 2
+WISH_CHANCE = 0.45
+CALL = {DIEM: 'chị', TUAN: 'em', HANG: 'chị', BA_NAM: 'bà', DI_SAU: 'dì', KIEU: 'chị'}
+ADDON = {   # fit: what each regular adds once the order is told ("À mà em ơi…")
+    DIEM: ('blazer', 'trousers', 'cardigan', 'bag', 'scarf'),
+    TUAN: ('polo', 'sneaker', 'shorts'),
+    HANG: ('babydoll', 'cardigan', 'sandal', 'scarf'),
+    BA_NAM: ('scarf', 'set2', 'bag'),
+    DI_SAU: ('sandal', 'scarf', 'shorts'),
+    KIEU: ('bag', 'earrings', 'maxi', 'sandal', 'skirt'),
+}
+OUTFIT_WISHES = {'wedding': ('dress', 'no_jeans', 'bag'), 'interview': ('no_jeans', 'bag'),
+                 'beach': ('shoes', 'dress'), 'tet': ('dress', 'bag')}
+WISH_KINDS = ('addon', 'dress', 'no_jeans', 'bag', 'shoes')
+MUST = ('dress', 'no_jeans', 'shoes')        # 'bag' is "if it fits the budget": no slip without it
+SHOE_EXTRA = 170                             # the shoes wish comes with this much more money (a sandal's price)
+
+
+def _wish(t: dict) -> dict | None:
+    w = t.get('wish')
+    return w if isinstance(w, dict) else None
+
+
+def _wanted_lines(t: dict) -> list:
+    """A fit order's lines, plus the add-on the customer asked for (unless it was out of stock)."""
+    w = _wish(t)
+    extra = [w['line']] if w and w['kind'] == 'addon' and not w.get('skipped') else []
+    return list(t['needs']['lines']) + extra
+
+
+def _stocked(c: dict, item: str, size: str | None = None) -> bool:
+    sizes = (size,) if size else SIZES[item]
+    return any(_free(c, item, z) > 0 for z in sizes)
+
+
+def make_wish(c: dict, t: dict) -> dict | None:
+    """The extra demand of a fit or outfit customer (None for most): deterministic from the task id
+    and the shop's racks at the moment the customer walks in."""
+    if t.get('kind') not in ('fit', 'outfit') or t['day'] < WISH_FROM_DAY:
+        return None
+    npc = _npc_index(t)
+    if npc not in CALL:
+        return None
+    rng = kit.rng(ID, 'wish', t['id'])
+    if rng.random() >= WISH_CHANCE:
+        return None
+    me = CALL[npc]
+    if t['kind'] == 'fit':
+        if len(t['needs']['lines']) >= MAX_PICKS:
+            return None
+        have = {ln['item'] for ln in t['needs']['lines']}
+        pool = [i for i in ADDON[npc] if i not in have]
+        if not pool:
+            return None
+        item = rng.choice(pool)
+        size = _pick_size(rng, item, npc)
+        colour = rng.choice(COLOURS[item])
+        clue, said, ask = _clue(rng, item, size, True)
+        line = dict(item=item, colour=colour, clue=clue, ask=ask, told=size if clue in ('label', 'foot') else None,
+                    say=f'À mà em ơi, lấy thêm {ITEM[item]["name"].lower()} màu {colour} cho {me} nữa. {said}', _size=size)
+        return dict(kind='addon', line=line, skipped=False)
+    occ = t['needs']['occasion']
+    kinds = [k for k in OUTFIT_WISHES[occ] if not (k == 'dress' and npc == TUAN)]
+    if not any(_stocked(c, i) for i in ('trousers', 'skirt')):
+        kinds = [k for k in kinds if k != 'no_jeans']
+    if not _stocked(c, 'bag'):
+        kinds = [k for k in kinds if k != 'bag']
+    foot = FOOT[npc]
+    if not any(foot in SIZES[i] and _stocked(c, i, foot) for i in SHOES):
+        kinds = [k for k in kinds if k != 'shoes']
+    if not kinds:
+        return None
+    kind = rng.choice(kinds)
+    say = {'dress': f'À, lần này {me} muốn mặc đầm hoặc váy liền nha, không mặc áo quần rời đâu.',
+           'no_jeans': f'Mà đừng đưa quần jean nha, {me} mặc jean chán rồi — quần tây hay chân váy gì cũng được.',
+           'bag': f'Có túi xách tay hợp bộ thì lấy luôn cho {me}, miễn đừng lố ngân sách.',
+           'shoes': f'Lựa giùm {me} đôi giày hoặc sandal đi biển luôn nha, chân {me} size {foot} — {me} gửi thêm {SHOE_EXTRA} xu cho đôi giày.'}[kind]
+    return dict(kind=kind, say=say, foot=foot if kind == 'shoes' else None, extra=SHOE_EXTRA if kind == 'shoes' else 0)
+
+
+def _wish_slips(t: dict) -> None:
+    """Outfit: a "must" wish the set ignores is a slip (fit add-ons go through the bill's pairing)."""
+    w = _wish(t)
+    if not w or t['kind'] != 'outfit' or w['kind'] not in MUST:
+        return
+    items = [x['item'] for x in t['picks']]
+    miss = {'dress': not any(GROUP[i] == 'one' for i in items), 'no_jeans': 'jeans' in items,
+            'shoes': not any(i in SHOES for i in items)}[w['kind']]
+    if miss:
+        t['mistakes'] += 1
+        cq.slip(t, 'wish_miss', 1, {'dress': 'Đã dặn muốn mặc đầm mà tiệm vẫn phối áo quần rời.',
+                                    'no_jeans': 'Đã nói không mặc jean nữa mà vẫn bị đưa quần jean.',
+                                    'shoes': 'Dặn lựa giùm đôi giày đi biển mà tiệm quên mất.'}[w['kind']], 'quên lời khách dặn')
+
+
+# ---------------------------------------------------------------- over budget: talk it through (1.7.16, góp ý #199)
+# A bill over the budget is no longer a flat refusal with a mistake: the customer frowns and the player
+# chooses how to talk. Each customer has hidden traits (how far the wallet stretches today) seeded by the
+# task id; mood (patience) narrows the stretch. t['talk'] (absent until it is needed):
+#   {state: 'open'|'raised'|'off'|'swap', over: the total that was refused, budget: the budget agreed now,
+#    asks: times the player asked for more money, off: the discount promised}
+TALK_STATES = ('open', 'raised', 'off', 'swap')
+TALK_KEYS = frozenset({'state', 'over', 'budget', 'asks', 'off'})
+FLEX = {DIEM: (5, 15), TUAN: (0, 6), HANG: (0, 10), BA_NAM: (12, 25), DI_SAU: (0, 3), KIEU: (10, 25)}
+TALK_PATIENCE = {'raise_no': 10, 'swap': 4, 'open': 5}
+
+
+def _base_budget(t: dict) -> int:
+    """The budget the customer came with (+ what a shoes wish brought along)."""
+    w = _wish(t)
+    return t['needs']['budget'] + (w.get('extra', 0) if w and w['kind'] != 'addon' else 0)
+
+
+def _budget(t: dict) -> int:
+    k = t.get('talk')
+    return k['budget'] if isinstance(k, dict) and k.get('state') == 'raised' else _base_budget(t)
+
+
+def _flex(t: dict) -> int:
+    """Hidden: how many percent over the budget this customer would still pay today."""
+    lo, hi = FLEX.get(_npc_index(t), (0, 8))
+    pct = kit.rng(ID, 'flex', t['id']).randint(lo, hi)
+    return pct // 2 if t.get('patience', 100) < 50 else pct
+
+
+def _off_cap(sub: int) -> int:
+    return sub * HAGGLE_BIG // 100
+
+
+def _talk(s, c, t, p):
+    k = t.get('talk')
+    kit.need(t['kind'] == 'outfit' and isinstance(k, dict) and k['state'] == 'open' and t['stage'] == 'pick',
+             'Khách chưa phàn nàn gì về ngân sách.')
+    answer = kit.one_of(p.get('answer'), ('swap', 'raise', 'discount', 'decline'),
+                        'Chọn: gợi ý món rẻ hơn, xin thêm ngân sách, bớt giá hoặc thôi.')
+    who, me = _who(t), CALL.get(_npc_index(t), 'chị')
+    budget, over = _base_budget(t), k['over']
+    d = _data(c)
+    if answer == 'swap':
+        k['state'] = 'swap'
+        t['patience'] = max(25, t.get('patience', 100) - TALK_PATIENCE['swap'])
+        return dict(message=f'Bạn giải thích từng món và gợi ý vài món rẻ hơn. {who} gật gù: “Ừ, em lựa giùm {me} bộ nào '
+                            f'dưới {budget} xu nha.” Treo bớt món đắt rồi chốt bill lại.')
+    if answer == 'raise':
+        if k['asks']:
+            t['mistakes'] += 1
+            t['patience'] = max(25, t.get('patience', 100) - TALK_PATIENCE['raise_no'])
+            cq.slip(t, 'pushy', 1, 'Đã nói không thêm tiền rồi mà nhân viên cứ nài.', 'nài khách thêm tiền')
+            return dict(message=f'{who} khoanh tay: “{me.capitalize()} nói rồi, không thêm đồng nào nữa.” Gợi ý món rẻ hơn, bớt giá hoặc thôi.',
+                        refused=True)
+        k['asks'] = 1
+        if over * 100 <= budget * (100 + _flex(t)):
+            k['state'] = 'raised'
+            k['budget'] = over
+            return dict(message=f'{who} ngắm bộ đồ một hồi rồi gật: “Thôi đẹp vậy thì {me} thêm {over - budget} xu, '
+                                f'lần này thôi nha.” Ngân sách mới {over} xu — chốt bill thôi.')
+        t['patience'] = max(25, t.get('patience', 100) - TALK_PATIENCE['raise_no'])
+        return dict(message=f'{who} lắc đầu: “Không được em ơi, {me} chỉ có {budget} xu thôi.” '
+                            'Gợi ý món rẻ hơn, bớt giá (trong mức chị Vy cho) hoặc thôi.', refused=True)
+    if answer == 'discount':
+        off = over - budget
+        kit.need(off <= _off_cap(over), f'Phải bớt {off} xu, quá {HAGGLE_BIG}% chị Vy cho phép. Gợi ý món rẻ hơn hoặc xin thêm ngân sách nhé.')
+        k['state'] = 'off'
+        k['off'] = off
+        line = f'Bạn bớt {off} xu cho vừa {budget} xu. {who} cười tít: “Vậy mới là tiệm ruột của {me} chứ!”'
+        if off * 100 > over * HAGGLE_SMALL:
+            d['stats']['haggle_off'] += off
+            _note(c, f'Bớt {off} xu cho {who} để vừa ngân sách, quá mức {HAGGLE_SMALL}% chị Vy dặn.')
+            line += ' Chị Vy đứng trong nhìn ra, hơi nhíu mày.'
+        return dict(message=line + ' Chốt bill thôi.')
+    # decline: the shop has nothing in that budget today; the customer leaves without buying.
+    t['picks'], t['tried'] = [], []
+    t['stage'] = 'done'
+    t['result'] = dict(total=0, net=0, loss=0, tip=0)
+    t['mistakes'] += 1
+    cq.slip(t, 'no_sale', 1, f'Tiệm không có bộ nào vừa {budget} xu, nhân viên nói thật nên cũng không trách.', 'không có bộ vừa túi tiền')
+    d['stats']['customers'] += 1
+    kit.complete(s, c, t, 0, f'{who} chưa tìm được bộ vừa túi tiền: “{t["title"]}”.')
+    return dict(message=f'Bạn nói thật: hôm nay tiệm chưa có bộ hợp dịp nào dưới {budget} xu. {who} hơi tiếc nhưng cảm ơn bạn đã thẳng thắn.')
+
+
 def known_request(c: dict, t: dict) -> str:
     n = t['needs']
     k = t['kind']
+    w = _wish(t)
     if k == 'fit':
-        return n['note']
+        return n['note'] + (' ' + w['line']['say'] if w and w['kind'] == 'addon' else '')
     if k == 'outfit':
         o = OCCASIONS[n['occasion']]
-        return f'{o["emoji"]} {o["name"]}. Ngân sách tối đa {n["budget"]} xu. Áo size {n["top"]}, quần jean {n["waist"]}.'
+        return (f'{o["emoji"]} {o["name"]}. Ngân sách tối đa {n["budget"]} xu. Áo size {n["top"]}, quần jean {n["waist"]}.'
+                + (' ' + w['say'] if w else ''))
     if k == 'alter':
         return n['note'] + f' Công sửa {n["fee"]} xu.'
     if k == 'room':
@@ -767,10 +1029,11 @@ def _units(t: dict) -> int:
     for an outfit, the guests of the fitting room. Feeds kit.size_factor."""
     n = t.get('needs') or {}
     k = t.get('kind')
+    w = _wish(t)
     if k in ('fit', 'online'):
-        return len(n.get('lines') or ())
+        return len(n.get('lines') or ()) + (1 if k == 'fit' and w and w['kind'] == 'addon' else 0)
     if k == 'outfit':
-        return 2 + len(OCCASIONS.get(n.get('occasion'), {}).get('need', ()))
+        return 2 + len(OCCASIONS.get(n.get('occasion'), {}).get('need', ())) + (1 if w and w['kind'] == 'shoes' else 0)
     if k == 'room':
         return len(n.get('queue') or ())
     return 1
@@ -858,7 +1121,7 @@ def _counter(s, c, t, name, p):
         kit.need(t['picks'], 'Lấy đồ ra trước rồi mới mời khách thử.')
         i = kit.integer(p.get('index'), 0, len(t['picks']) - 1)
         x = t['picks'][i]
-        kit.need(x['item'] not in ('hat', 'belt', 'socks'), 'Phụ kiện free size, khỏi cần thử.')
+        kit.need(not _free_size(x['item']), 'Phụ kiện free size, khỏi cần thử.')
         kit.need(t['tried'][i] is None, 'Khách thử món này rồi.')
         right = _want_size(t, x)
         verdict = 'ok' if right is None or x['size'] == right else ('small' if _smaller(x['item'], x['size'], right) else 'big')
@@ -880,6 +1143,8 @@ def _counter(s, c, t, name, p):
         return dict(message='Đã mở lại bill.')
     if name == 'ao_haggle':
         return _haggle(s, c, t, p)
+    if name == 'ao_talk':
+        return _talk(s, c, t, p)
     if name == 'ao_pay':
         kit.confirm(p, 'Xác nhận giao đồ và tiền thối cho khách.')
         return _pay(s, c, t, p)
@@ -894,20 +1159,24 @@ def _smaller(item: str, size: str, right: str) -> bool:
 def _want_size(t: dict, x: dict) -> str | None:
     """The size that fits this customer for this pick (None when anything goes)."""
     item = x['item']
-    if item in ('hat', 'belt', 'socks'):
+    if _free_size(item):
         return None
     n = t['needs']
     if t['kind'] == 'fit':
-        for ln in n['lines']:
+        lines = _wanted_lines(t)
+        for ln in lines:
             if ln['item'] == item and ln['colour'] == x['colour']:
                 return ln['_size']
-        ln = next((ln for ln in n['lines'] if ln['item'] == item), None)
+        ln = next((ln for ln in lines if ln['item'] == item), None)
         return ln['_size'] if ln else None
     if t['kind'] == 'room':
         return n['buy']['size'] if item == n['buy']['item'] else None
     if t['kind'] == 'outfit':
-        if item == 'jeans':
+        if item in WAIST_ITEMS:
             return n['waist']
+        if item in SHOES:
+            w = _wish(t)
+            return w['foot'] if w and w.get('foot') in SIZES[item] else None
         if item == 'kids':
             return None
         top = n['top']
@@ -919,7 +1188,7 @@ def _want_size(t: dict, x: dict) -> str | None:
 def _pairing(t: dict) -> tuple[list, list, list]:
     """Fit/room: match picks to what was asked (item + colour). Returns (missing lines, wrong-colour picks, extra picks)."""
     n = t['needs']
-    wanted = list(n['lines']) if t['kind'] == 'fit' else [n['buy']]
+    wanted = _wanted_lines(t) if t['kind'] == 'fit' else [n['buy']]
     left = list(range(len(t['picks'])))
     missing, wrong = [], []
     for ln in wanted:
@@ -964,32 +1233,56 @@ def _lock_bill(s, c, t):
             t['mistakes'] += 1
             cq.slip(t, 'extra', 1, 'Bill có thêm món tôi không lấy, phải nhắc mới bỏ ra.', 'tính dư món')
             return dict(message=f'{who}: “Ủa, {ITEM[x["item"]]["name"].lower()} này đâu phải của chị?” Bỏ món dư ra rồi tính lại.', refused=True)
+        w = _wish(t)
+        if w and w['kind'] == 'addon' and not w['skipped'] and w['line'] in missing and not _stocked(c, w['line']['item'], w['line']['_size']):
+            # The add-on is sold out in their size: say so and sell the rest (a business hint, not a mistake).
+            w['skipped'] = True
+            missing.remove(w['line'])
+            _note(c, f'{who} hỏi {ITEM[w["line"]["item"]]["name"].lower()} {_sz(w["line"]["_size"])} mà giá treo hết — nhập về bán nhé.')
         kit.need(not missing, f'{who}: “Còn thiếu {ITEM[missing[0]["item"]]["name"].lower()} màu {missing[0]["colour"]} nữa em.”' if missing else '')
-    else:
+    off = 0
+    if t['kind'] == 'outfit':
         items = [x['item'] for x in t['picks']]
         kit.need(_is_set(items), f'{who}: “Vậy chưa thành một bộ em ơi — cần váy/áo dài, hoặc áo với quần.”')
         total = sum(_price(c, x['item']) for x in t['picks'])
-        if total > t['needs']['budget']:
-            t['mistakes'] += 1
-            cq.slip(t, 'over_budget', 1, 'Tôi đã nói ngân sách rồi mà vẫn chọn đồ vượt tiền.', 'vượt ngân sách khách dặn')
-            return dict(message=f'{who} nhìn tem giá: “{total} xu lận hả? Chị nói tối đa {t["needs"]["budget"]} xu mà.” Chọn lại cho vừa túi tiền.', refused=True)
+        budget = _budget(t)
+        k = t.get('talk')
+        if total > budget and isinstance(k, dict) and k['state'] == 'off' and total - k['off'] <= _base_budget(t):
+            off = k['off']                      # the discount the player promised covers it
+        elif total > budget:
+            me = CALL.get(_npc_index(t), 'chị')
+            if isinstance(k, dict) and k['state'] in ('open', 'swap', 'raised', 'off'):
+                # Ignored the frown, or promised a cheaper set (or a deal) and came back over the budget: a slip.
+                t['mistakes'] += 1
+                cq.slip(t, 'over_budget', 1, 'Tôi đã nói ngân sách rồi mà vẫn chọn đồ vượt tiền.', 'vượt ngân sách khách dặn')
+                k['state'] = 'open'
+                k['over'] = total
+                return dict(message=f'{who} nhìn tem giá, nhíu mày: “Lại {total} xu nữa hả? {me.capitalize()} đã nói tối đa {budget} xu rồi mà.” '
+                                    'Trao đổi lại với khách hoặc treo bớt món.', refused=True)
+            t['patience'] = max(25, t.get('patience', 100) - TALK_PATIENCE['open'])
+            t['talk'] = dict(state='open', over=total, budget=_base_budget(t),
+                             asks=k['asks'] if isinstance(k, dict) else 0, off=0)
+            return dict(message=f'{who} nhìn tem giá: “{total} xu lận hả? {me.capitalize()} nói tối đa {budget} xu mà.” '
+                                '💬 Trao đổi với khách: gợi ý món rẻ hơn, xin thêm ngân sách, bớt giá hoặc nói thật là không có.', refused=True)
     lines = [dict(label=ITEM[x['item']]['name'], item=x['item'], size=x['size'], colour=x['colour'],
                   unit=_price(c, x['item']), qty=1, amount=_price(c, x['item'])) for x in t['picks']]
-    return _open_bill(c, t, lines)
+    return _open_bill(c, t, lines, off)
 
 
-def _open_bill(c, t, lines):
+def _open_bill(c, t, lines, off=0):
     sub = sum(x['amount'] for x in lines)
-    t['bill'] = dict(lines=lines, sub=sub, off=0, total=sub, sale=bool(any(
+    off = max(0, min(off, sub))
+    t['bill'] = dict(lines=lines, sub=sub, off=off, total=sub - off, sale=bool(any(
         isinstance(_data(c).get('sale'), dict) and _data(c)['sale'].get('day') == c['day'] and x['item'] in _data(c)['sale'].get('tags', {})
         for x in lines)))
     t['stage'] = 'pay'
     who = _who(t)
-    if t['needs'].get('haggle') and t['kind'] in ('fit', 'outfit') and t['haggle'] is None:
+    if t['needs'].get('haggle') and t['kind'] in ('fit', 'outfit') and t['haggle'] is None and not off:
         t['haggle'] = 'ask'
         return dict(message=f'Bill {sub} xu. {who} chống nạnh: “Khách quen mà con, bớt cho dì chút đi!”')
-    t['cash'] = till.new(sub, t['id'], c=c, t=t)
-    return dict(message=f'Bill {sub} xu. {who} đưa {" + ".join(str(v) for v in t["cash"]["tender"])} xu.' + (' Vừa đủ, khỏi thối.' if not till.due(t['cash']) else ''))
+    t['cash'] = till.new(sub - off, t['id'], c=c, t=t)
+    head = f'Bill {sub} xu, bớt {off} xu còn {sub - off} xu.' if off else f'Bill {sub} xu.'
+    return dict(message=f'{head} {who} đưa {" + ".join(str(v) for v in t["cash"]["tender"])} xu.' + (' Vừa đủ, khỏi thối.' if not till.due(t['cash']) else ''))
 
 
 def _haggle(s, c, t, p):
@@ -1022,7 +1315,7 @@ def _pay(s, c, t, p):
         if x['item']:
             need[(x['item'], x['size'])] = need.get((x['item'], x['size']), 0) + 1
     for (item, size), q in need.items():
-        if _data(c)['grid'][item].get(size, 0) < q:
+        if _data(c)['grid'].get(item, {}).get(size, 0) < q:
             t['stage'] = 'pick'
             t['bill'] = None
             t['cash'] = None
@@ -1042,6 +1335,7 @@ def _finish(s, c, t):
     wrong = _size_slips(t) if t['kind'] in ('fit', 'outfit', 'room') else []
     if t['kind'] == 'outfit':
         _judge_slips(t, OCCASIONS[t['needs']['occasion']], [(x['item'], x['colour']) for x in t['picks']])
+        _wish_slips(t)
     if t['kind'] == 'alter':
         _alter_slips(t)
     react = cq.react(s, c, t, total, who=who)
@@ -1146,8 +1440,10 @@ def _remember_sizes(c: dict, t: dict) -> None:
         right = _want_size(t, x)
         if right is None:
             continue
-        if x['item'] == 'jeans':
+        if x['item'] in WAIST_ITEMS:
             row['waist'] = right
+        elif x['item'] in SHOES:
+            continue
         elif x['item'] == 'kids':
             if right not in row['kid']:
                 row['kid'] = (row['kid'] + [right])[-3:]
@@ -1542,7 +1838,7 @@ def _ship(s, c, t):
     d = _data(c)
     who = _who(t)
     for x in pc['items']:
-        kit.need(d['grid'][x['item']].get(x['size'], 0) > 0, f'Giá treo vừa hết {ITEM[x["item"]]["name"].lower()} {_sz(x["size"])}.')
+        kit.need(d['grid'].get(x['item'], {}).get(x['size'], 0) > 0, f'Giá treo vừa hết {ITEM[x["item"]]["name"].lower()} {_sz(x["size"])}.')
     missing, wrong, extra = _parcel_diff(t)
     loss = 0
     if wrong:
@@ -1741,7 +2037,7 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
 def hint(c: dict, t: dict) -> str:
     return {
         'fit': 'Nghe khách tả → xem bảng size (form sơ mi ôm: lấy lớn hơn một size so với shop khác) → lấy đúng món, đúng màu → chưa chắc thì mời thử → tính tiền, thối đúng.',
-        'outfit': 'Xem dịp và ngân sách → chọn váy/áo dài hoặc áo + quần, đúng size khách nói → tránh màu kiêng → thêm phụ kiện hợp dịp → tính tiền.',
+        'outfit': 'Xem dịp, ngân sách và lời khách dặn → chọn váy/đầm hoặc áo + quần, đúng size khách nói → tránh màu kiêng → thêm phụ kiện hợp dịp → tính tiền. Lố ngân sách: 💬 trao đổi với khách.',
         'alter': 'Đo trước → tự may (dừng máy đúng vạch xanh) hoặc gửi Bà Tư (chắc ăn, mất 40% công) → tính tiền công.',
         'room': 'Đếm số món khách cầm vào → đưa thẻ số → khách ra thì đếm lại → thiếu: kiểm phòng trước, rồi hỏi khéo → tính tiền cho khách mua.',
         'return': 'Xem tem, hóa đơn, tình trạng đồ → đối chiếu chính sách → hoàn tiền, đổi hoặc từ chối nhẹ nhàng.',
@@ -1762,8 +2058,17 @@ def feedback(c: dict, t: dict) -> dict:
         size_ok = 'wrong_size' not in codes
         rows.insert(0, dict(key='accuracy', label='Đúng size, đúng màu', score=5 if size_ok and 'wrong_colour' not in codes else 3,
                             note='mặc vừa như đo' if size_ok else 'phải quay lại đổi size'))
+        w = _wish(t)
+        if w and (t.get('result') or {}).get('total', 1):
+            rows.append(dict(key='wish', label='Nhớ lời khách dặn', score=2 if codes & {'wish_miss'} else 4 if w.get('skipped') else 5,
+                             note='quên mất lời dặn' if 'wish_miss' in codes else 'tiệm hết món khách hỏi' if w.get('skipped') else 'nhớ đúng lời dặn'))
+        talk = t.get('talk')
+        if k == 'outfit' and isinstance(talk, dict):
+            rows.append(dict(key='budget', label='Chuyện ngân sách', score=2 if codes & {'pushy', 'no_sale'} else 4 if talk['state'] == 'raised' else 5,
+                             note={'raised': 'khách chịu chi thêm', 'off': 'được bớt cho vừa túi', 'swap': 'tư vấn món vừa túi tiền'}.get(
+                                 talk['state'], 'nài khách thêm tiền' if 'pushy' in codes else 'nói thật, không ép')))
         if k == 'outfit':
-            miss = codes & {'occasion_miss', 'colour_taboo', 'colour_off', 'missing_acc', 'odd_piece'}
+            miss = codes & {'occasion_miss', 'colour_taboo', 'colour_off', 'missing_acc', 'odd_piece', 'wish_miss'}
             plus = any(x['item'] in OCCASIONS[t['needs']['occasion']]['plus'] for x in t['picks'])
             rows.append(dict(key='style', label='Gu phối đồ', score=2 if miss & {'occasion_miss', 'colour_taboo'} else 4 if miss or not plus else 5,
                              note='hợp dịp, có điểm nhấn' if not miss and plus else 'hợp dịp' if not miss else 'chưa hợp dịp'))
@@ -1802,7 +2107,14 @@ def public_task(t: dict) -> dict:
     v = strip_copy(t)
     if not t['known']:
         v['needs'] = None
+        v.pop('wish', None)
         return v
+    k = t.get('talk')
+    if isinstance(k, dict) and k['state'] == 'open':
+        # What each answer would take (never the customer's hidden stretch).
+        gap = k['over'] - _base_budget(t)
+        v['talk_view'] = dict(off=gap, off_ok=gap <= _off_cap(k['over']), small=gap * 100 <= k['over'] * HAGGLE_SMALL,
+                              asked=bool(k['asks']), budget=_base_budget(t))
     v['cash'] = till.public(t.get('cash'))
     if t['kind'] == 'return':
         v['facts'] = {w: _fact(t['needs'], w) for w in t['ret']['seen']}
@@ -1872,6 +2184,24 @@ STAGES = {'fit': ('pick', 'pay', 'done'), 'outfit': ('pick', 'pay', 'done'), 'al
           'display': ('dress', 'done')}
 
 
+def _validate_wish(t: dict) -> None:
+    w = t.get('wish')
+    if w is None:
+        return
+    kit.need(isinstance(w, dict) and w.get('kind') in WISH_KINDS, 'Lời dặn của khách sai.')
+    if w['kind'] == 'addon':
+        kit.need(t['kind'] == 'fit' and set(w) == {'kind', 'line', 'skipped'} and type(w['skipped']) is bool, 'Lời dặn của khách sai.')
+        ln = w['line']
+        kit.need(isinstance(ln, dict) and set(ln) == {'item', 'colour', 'clue', 'ask', 'told', 'say', '_size'} and ln['item'] in ITEM
+                 and ln['colour'] in COLOURS[ln['item']] and ln['_size'] in SIZES[ln['item']] and ln['told'] in (None, ln['_size']), 'Lời dặn của khách sai.')
+        for key in ('clue', 'ask', 'say'):
+            kit.text(ln[key], 300)
+    else:
+        kit.need(t['kind'] == 'outfit' and set(w) == {'kind', 'say', 'foot', 'extra'} and w['foot'] in (None, *SIZES['sneaker'])
+                 and w['extra'] in (0, SHOE_EXTRA) and (w['extra'] > 0) == (w['kind'] == 'shoes'), 'Lời dặn của khách sai.')
+        kit.text(w['say'], 300)
+
+
 def validate_task(t: dict, original: dict) -> None:
     k = t.get('kind')
     kit.need(k in KINDS and t.get('gen') == original.get('gen'), 'Loại việc tiệm áo sai.')
@@ -1883,6 +2213,14 @@ def validate_task(t: dict, original: dict) -> None:
              and all(v in (None, 'ok', 'small', 'big') for v in t['tried']), 'Kết quả thử đồ sai.')
     kit.need(t.get('haggle') in (None, 'ask', 'hold', 'small', 'big'), 'Chuyện trả giá sai.')
     kit.need(t['haggle'] is None or original['needs'].get('haggle'), 'Khách này không trả giá.')
+    _validate_wish(t)
+    talk = t.get('talk')
+    if talk is not None:
+        kit.need(k == 'outfit' and isinstance(talk, dict) and set(talk) == TALK_KEYS and talk['state'] in TALK_STATES, 'Chuyện ngân sách sai.')
+        kit.integer(talk['over'], 1, 10 ** 5)
+        kit.integer(talk['budget'], original['needs']['budget'], max(original['needs']['budget'] + SHOE_EXTRA, talk['over']))
+        kit.integer(talk['asks'], 0, 1)
+        kit.integer(talk['off'], 0, _off_cap(talk['over']))
     b = t.get('bill')
     if b is not None:
         kit.need(isinstance(b, dict) and set(b) == {'lines', 'sub', 'off', 'total', 'sale'} and type(b['sale']) is bool, 'Bill sai.')
@@ -1977,7 +2315,7 @@ def validate_data(c: dict) -> None:
     till.validate_book(c)
     kit.wait_validate(c)
     g = d['grid']
-    kit.need(isinstance(g, dict) and set(g) == set(ITEM), 'Giá treo sai.')
+    kit.need(isinstance(g, dict) and set(LEGACY) <= set(g) <= set(ITEM), 'Giá treo sai.')
     for item, row in g.items():
         kit.need(isinstance(row, dict) and set(row) == set(SIZES[item]), 'Giá treo sai size.')
         _ints(row.values(), 0, 10 ** 4)
@@ -2043,7 +2381,7 @@ def content() -> dict:
     return dict(
         sizes=SIZES, colours=COLOURS, swatch=SWATCH, groups=GROUP, base_prices=PRICES, denoms=till.DENOMS,
         top_chart=[list(r) for r in TOP_CHART], jeans_waist=JEANS_WAIST, kids_age={k: list(v) for k, v in KIDS_AGE.items()},
-        runs_small=RUNS_SMALL, occasions={k: dict(name=v['name'], emoji=v['emoji'], tips=v['tips'], need=list(v['need']), bad=list(v['bad']),
+        runs_small=RUNS_SMALL, waist_items=list(WAIST_ITEMS), shoes=list(SHOES), occasions={k: dict(name=v['name'], emoji=v['emoji'], tips=v['tips'], need=list(v['need']), bad=list(v['bad']),
                                                mains=[list(m) for m in v['mains']]) for k, v in OCCASIONS.items()},
         policy=POLICY, return_days=RETURN_DAYS, haggle=dict(small=HAGGLE_SMALL, big=HAGGLE_BIG), alter_fees=ALTER_FEES,
         tailor_share=TAILOR_SHARE, tailor_turns=TAILOR_TURNS, kinds=KIND_NAMES, looks=[dict(x) for x in LOOKS],
@@ -2149,7 +2487,7 @@ SITUATIONS = [
 
 SPEC = dict(
     id=ID, prefix=PREFIX, category='shop',
-    meta=dict(short='Shop quần áo', place='Tiệm Áo Chỉ Mây', tagline='Đúng size. Đúng dáng. Đúng dịp.', icon='shirt',
+    meta=dict(short='Shop quần áo', place='Tiệm Áo Chỉ Mây', tagline='Đúng size. Đúng dáng. Đúng dịp.', icon='bag',
               color='#6a58a6', light='#f1edfa', weather='Nắng nhẹ qua cửa kính', work='Khách', station='Giá treo & quầy',
               greeting='Tìm đúng size, phối đúng dịp, trông phòng thử và thối tiền cho đúng nhé.',
               caption='Tiệm may cũ của mẹ, khoác áo mới', map_label='21 · TIỆM ÁO CHỈ MÂY'),

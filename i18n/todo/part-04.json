@@ -1,1802 +1,1438 @@
 [
  {
-  "vi": "Thắt lưng tiệm tặng kèm",
+  "vi": "Sổ 112 15.000.000đ, sao kê 14.950.000đ do phí 50.000đ chưa ghi: bổ sung phí, còn 14.950.000đ.",
   "en": ""
  },
  {
-  "vi": "Coi như quà tiệm mừng Tuấn đi làm. Nhớ quay lại khoe nha!",
+  "vi": "Khoản vay thấu chi 3.000.000đ phản ánh nợ 341 theo hồ sơ, không coi là tiền âm.",
   "en": ""
  },
  {
-  "vi": "Bảng hiệu mới",
+  "vi": "Sổ tiền gửi 22.000.000đ, phí đã trừ chưa ghi 40.000đ. Số dư sau bổ sung?",
   "en": ""
  },
  {
-  "vi": "Có tiếng khoan tường trước cửa tiệm.",
+  "vi": "22.000.000−40.000=21.960.000đ.",
   "en": ""
  },
  {
-  "vi": "Bảng “Tiệm Áo Chỉ Mây” lên rồi nè! Chỉ là sợi chỉ, Mây là tên mẹ hồi con gái.",
+  "vi": "Ngân hàng thu phí dịch vụ quản lý tài khoản 30.000đ, đơn vị xác định vào 642, không xét thuế.",
   "en": ""
  },
  {
-  "vi": "Con Vy này… đặt tên mà không hỏi mẹ.",
+  "vi": "Tăng chi phí quản lý và giảm tiền gửi theo sao kê.",
   "en": ""
  },
  {
-  "vi": "Đẹp. Mà vẫn là tiệm của mình.",
+  "vi": "Thấu chi có được trình bày là số tiền 112 âm để bù ngân hàng khác không?",
   "en": ""
  },
  {
-  "vi": "Chị ơi em đậu rồi! Em qua khoe nè!",
+  "vi": "Không; phản ánh bản chất khoản vay",
   "en": ""
  },
  {
-  "vi": "Cây kéo của Bà Tư",
+  "vi": "Có; mọi số âm là tiền",
   "en": ""
  },
  {
-  "vi": "Bà Tư gói một thứ trong khăn vải.",
+  "vi": "Có nếu cùng ngày",
   "en": ""
  },
  {
-  "vi": "Cây kéo này theo bà từ hồi mới học may.",
+  "vi": "Hướng dẫn 112 yêu cầu khoản thấu chi phản ánh như vay.",
   "en": ""
  },
  {
-  "vi": "Bà già rồi, tay run. Con giữ đi, nhớ đo hai lần.",
+  "vi": "Tiền gửi kỳ hạn 6 tháng thuộc mã nào trong tình huống đầu tư giữ đến đáo hạn?",
   "en": ""
  },
  {
-  "vi": "Con cảm ơn bà. Con sẽ giữ tiệm cho đàng hoàng.",
+  "vi": "112 mặc định cho mọi tiền gửi",
   "en": ""
  },
  {
-  "vi": "Tiệm thú nhỏ đổi nếp",
+  "vi": "TK 112 chỉ phản ánh tiền gửi không kỳ hạn; kỳ hạn xem 128.",
   "en": ""
  },
  {
-  "vi": "Tấm biển “Hỏi kỹ rồi mới bán”",
+  "vi": "Phụ lục II – TK 112,128,341",
   "en": ""
  },
  {
-  "vi": "Chú Út tự tay viết, treo ngay trên quầy tính tiền.",
+  "vi": "Tiền đang chuyển và thanh toán điện tử",
   "en": ""
  },
  {
-  "vi": "Nhã",
+  "vi": "Xác định trạng thái tiền",
   "en": ""
  },
  {
-  "vi": "Cháu gái chú Út, sinh viên thú y",
+  "vi": "Không ghi trùng khi báo Có",
   "en": ""
  },
  {
-  "vi": "Chú Út",
+  "vi": "TK 113 phản ánh tiền đang chuyển trong những tình huống thỏa hướng dẫn: đã nộp hoặc chuyển mà chưa có xác nhận vào tài khoản đích, hoặc khoản thu qua trung gian cần xem điều khoản và chứng từ. Không mặc định mọi doanh thu qua ứng dụng là tiền đang chuyển; có thể là phải thu đơn vị thanh toán.",
   "en": ""
  },
  {
-  "vi": "Chủ tiệm cũ",
+  "vi": "Khi có báo Có hoặc báo Nợ hoàn tất, chuyển 113 sang tài khoản thích hợp thay vì ghi lại doanh thu. Đối chiếu từng lô, thời điểm, phí và khoản hoàn trả. Nếu trung gian giữ phí, tách tiền thực nhận và chi phí theo hợp đồng; tiền vào ngân hàng thuần phí không đủ để ghi doanh thu bằng số thuần.",
   "en": ""
  },
  {
-  "vi": "Cậu bé lớp 4 mê hamster",
+  "vi": "Nộp quỹ 5.000.000đ ngân hàng chưa báo Có: Nợ 113/Có 111 theo căn cứ.",
   "en": ""
  },
  {
-  "vi": "Anh Khánh",
+  "vi": "Khi báo Có 5.000.000đ: Nợ 112/Có 113; chỉ một lần tăng tổng tiền.",
   "en": ""
  },
  {
-  "vi": "Nhóm cứu hộ Chân Nhỏ",
+  "vi": "Nộp tiền mặt 2.000.000đ vào ngân hàng chưa báo Có, đủ căn cứ ghi tiền đang chuyển.",
   "en": ""
  },
  {
-  "vi": "Tiệm cũ của chú Út",
+  "vi": "Chuyển tiền quỹ sang tiền đang chuyển.",
   "en": ""
  },
  {
-  "vi": "Nhã đứng lau từng tấm kính bể cá đục mờ.",
+  "vi": "Ngân hàng báo Có khoản 2.000.000đ đã theo dõi 113.",
   "en": ""
  },
  {
-  "vi": "Khách hỏi gì thì bán nấy. Hỏi han chi cho mất khách.",
+  "vi": "Kết thúc trạng thái đang chuyển, không tạo doanh thu.",
   "en": ""
  },
  {
-  "vi": "Em thì muốn khác: bán cho đúng bé, giao cho đúng người.",
+  "vi": "Trung gian thanh toán đối soát 6.000.000đ, giữ phí 60.000đ. Tiền thực nhận?",
   "en": ""
  },
  {
-  "vi": "Vậy mình làm từng chút một. Bắt đầu từ mấy cái bể này.",
+  "vi": "6.000.000−60.000=5.940.000đ; phí theo dõi riêng.",
   "en": ""
  },
  {
-  "vi": "Cái rổ giảm giá",
+  "vi": "Có 3.000.000đ đang chuyển, ngân hàng xác nhận 2.200.000đ, không chênh khác. Còn 113?",
   "en": ""
  },
  {
-  "vi": "Chú Út đang xếp thêm mấy lon pate vào cái rổ trước quầy.",
+  "vi": "3.000.000−2.200.000=800.000đ.",
   "en": ""
  },
  {
-  "vi": "Lon nào cận ngày thì thả vô đây, bán rẻ, khách mê lắm.",
+  "vi": "Phụ lục II – TK 113,131,138",
   "en": ""
  },
  {
-  "vi": "Chú ơi, có lon quá hạn cả tuần rồi, lon còn phồng nữa.",
+  "vi": "Ghi nhận ban đầu giao dịch ngoại tệ",
   "en": ""
  },
  {
-  "vi": "Thì… bán rẻ mà.",
+  "vi": "Dùng tỷ giá giao dịch phù hợp",
   "en": ""
  },
  {
-  "vi": "Làm gì với cái rổ?",
+  "vi": "Tách tỷ giá sổ tiền với khoản nợ",
   "en": ""
  },
  {
-  "vi": "Dán nhãn ngày lên từng lon, bỏ riêng lon quá hạn",
+  "vi": "Nghiệp vụ ngoại tệ phải giữ nguyên tệ cùng giá trị quy đổi theo tỷ giá thích hợp trong hướng dẫn. Tỷ giá giao dịch khi ghi nhận doanh thu, mua tài sản hoặc công nợ không tự giống tỷ giá ghi sổ khoản tiền xuất. Phần chênh khi thanh toán là kết quả tài chính theo quy định, không đổi số lượng nguyên tệ.",
   "en": ""
  },
  {
-  "vi": "Ờ… có nhãn nhìn cũng đàng hoàng hơn.",
+  "vi": "Khoản trả trước, ứng trước và khoản mục tiền tệ có cách xử lý cần đọc riêng. Bài cơ bản này cung cấp rõ tỷ giá của đề và loại giao dịch; khi làm thực tế cần xác định ngân hàng, điều khoản hợp đồng và chính sách tỷ giá được phép. Không dùng một tỷ giá tự chọn để làm công nợ bằng tiền thanh toán.",
   "en": ""
  },
  {
-  "vi": "Kể chú nghe chuyện con mèo ăn pate quá hạn phải đi cấp cứu",
+  "vi": "Mua hàng chịu 1.000 USD, tỷ giá đề 25.000đ/USD: Nợ 156/Có 331 25.000.000đ, bỏ qua thuế.",
   "en": ""
  },
  {
-  "vi": "Trời đất. Thôi, cái rổ đó để chú dẹp.",
+  "vi": "Trả sau với giá trị tiền xuất 25.300.000đ: trả nợ 25.000.000đ và ghi lỗ tỷ giá 300.000đ theo giả định.",
   "en": ""
  },
  {
-  "vi": "Con heo đất của Bin",
+  "vi": "Mua chịu nguyên liệu 600USD, tỷ giá đề 25.000đ/USD. Giá trị quy đổi?",
   "en": ""
  },
  {
-  "vi": "Một cậu bé ôm con heo đất đứng trước chuồng hamster.",
+  "vi": "600×25.000=15.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Con để dành cả năm đó! Con muốn mua một bé hamster.",
+  "vi": "Mua hàng chịu 800USD, tỷ giá giao dịch đề 25.000đ/USD, không thuế và không chi phí khác.",
   "en": ""
  },
  {
-  "vi": "Mẹ Bin biết chưa nè?",
+  "vi": "Ghi hàng và nợ 20.000.000đ, đồng thời theo dõi 800USD.",
   "en": ""
  },
  {
-  "vi": "Dạ… chưa. Con định làm mẹ bất ngờ.",
+  "vi": "Thanh toán nợ ngoại tệ có thể có chênh lệch tỷ giá dù nguyên tệ bằng nhau không?",
   "en": ""
  },
  {
-  "vi": "Nói gì với Bin?",
+  "vi": "Có; do giá trị quy đổi lúc ghi và lúc thanh toán khác",
   "en": ""
  },
  {
-  "vi": "Hẹn Bin về hỏi mẹ, mai hai mẹ con cùng ghé",
+  "vi": "Không; USD bằng nhau là VND bằng nhau",
   "en": ""
  },
  {
-  "vi": "Mai con dẫn mẹ tới! Anh chị giữ bé hamster má phính giùm con nha!",
+  "vi": "Chỉ khi ghi sai hóa đơn",
   "en": ""
  },
  {
-  "vi": "Cho Bin cầm thử hamster, dặn cách chăm để về kể mẹ",
+  "vi": "Tỷ giá thay đổi ảnh hưởng giá trị VND của khoản tiền tệ.",
   "en": ""
  },
  {
-  "vi": "Nó mềm quá trời! Con về kể mẹ liền.",
+  "vi": "Phải thu 500USD ghi theo 24.800đ/USD. Giá trị sổ ban đầu?",
   "en": ""
  },
  {
-  "vi": "Góc nhận nuôi",
+  "vi": "500×24.800=12.400.000đ.",
   "en": ""
  },
  {
-  "vi": "Anh Khánh chở tới một lồng mèo con và một tấm bảng gỗ.",
+  "vi": "Phụ lục II – nguyên tắc tỷ giá, TK 111,112,131,331,515,635",
   "en": ""
  },
  {
-  "vi": "Nhóm Chân Nhỏ xin một góc nhỏ trong tiệm. Mèo con, cún con về nhà mới qua đây.",
+  "vi": "4. Phải thu và dự phòng",
   "en": ""
  },
  {
-  "vi": "Cho không thì tiệm lời gì?",
+  "vi": "Công nợ khách hàng và ứng trước",
   "en": ""
  },
  {
-  "vi": "Người nhận nuôi sẽ mua hạt, mua cát, mua vòng cổ ở tiệm mình. Mà quan trọng là các bé có nhà.",
+  "vi": "Theo dõi nợ theo hợp đồng",
   "en": ""
  },
  {
-  "vi": "Thôi được. Kê cái góc cạnh cửa sổ, chỗ đó mát.",
+  "vi": "Trình bày dư chi tiết hai bên",
   "en": ""
  },
  {
-  "vi": "Băng rôn treo trước cửa, cả xóm kéo tới.",
+  "vi": "TK 131 theo dõi phải thu khách và khoản khách trả trước theo từng đối tượng. Bán chịu chỉ ghi doanh thu khi đủ điều kiện; thu nợ giảm 131; ứng trước chưa đủ doanh thu theo dõi nghĩa vụ. Theo dõi tuổi nợ, hạn trả và chứng từ cấn trừ giúp kiểm soát khả năng thu hồi.",
   "en": ""
  },
  {
-  "vi": "Bốn bé có nhà mới trong một buổi sáng! Chưa bao giờ nhóm làm được vậy.",
+  "vi": "Có thể cùng lúc tồn tại khách nợ và khách ứng trước. Lập báo cáo dựa trên dư chi tiết, không bù số dư các đối tượng không có căn cứ. Công nợ được xác nhận vẫn phải đánh giá khả năng thu hồi; xác nhận số nợ không bảo đảm khách sẽ trả và không thay dự phòng khi có dấu hiệu tổn thất.",
   "en": ""
  },
  {
-  "vi": "Bánh Bao nhà con cũng tới dự nè!",
+  "vi": "A nợ 12.000.000đ, trả 5.000.000đ: còn 7.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Chú viết tấm biển này treo trên quầy: “Hỏi kỹ rồi mới bán.”",
+  "vi": "B ứng trước 3.000.000đ: theo dõi Có 131 riêng với nghĩa vụ giao hàng.",
   "en": ""
  },
  {
-  "vi": "Chú Út mà cũng chịu đổi nếp. {Anh} thấy chưa?",
+  "vi": "Khách ứng trước 4.000.000đ vào tài khoản thanh toán; chưa thỏa ghi doanh thu.",
   "en": ""
  },
  {
-  "vi": "Tiệm vẫn là tiệm của chú, chỉ là các bé được thương đúng cách hơn.",
+  "vi": "Theo dõi khách ứng trước qua dư Có chi tiết 131.",
   "en": ""
  },
  {
-  "vi": "Chiếc ghế xanh gốc bàng",
+  "vi": "Khách nợ 17.000.000đ, thu 6.000.000đ và thu tiếp 2.000.000đ. Còn phải thu?",
   "en": ""
  },
  {
-  "vi": "Cuốn sổ bìa xanh của bà Lựu",
+  "vi": "17−6−2=9 triệu đồng.",
   "en": ""
  },
  {
-  "vi": "Hai mươi năm tên khách quen, gạch nợ bằng bút bi. Giờ đến lượt bạn ghi.",
+  "vi": "Xác nhận nợ có tự chứng minh không cần dự phòng không?",
   "en": ""
  },
  {
-  "vi": "Chủ quán trà đá",
+  "vi": "Không; còn phải xét khả năng thu hồi",
   "en": ""
  },
  {
-  "vi": "Chú Tường",
+  "vi": "Có, ký là chắc trả",
   "en": ""
  },
  {
-  "vi": "Xe ôm đầu ngõ",
+  "vi": "Có nếu hóa đơn còn lưu",
   "en": ""
  },
  {
-  "vi": "Học sinh lớp 11",
+  "vi": "Xác nhận số dư khác đánh giá khả năng thu tiền.",
   "en": ""
  },
  {
-  "vi": "Bán xôi đầu ngõ",
+  "vi": "A dư Nợ 9.000.000đ, B dư Có 2.500.000đ ở 131. Điền quyền thu và ứng trước.",
   "en": ""
  },
  {
-  "vi": "Chiếc ghế xanh",
+  "vi": "Khách ứng trước",
   "en": ""
  },
  {
-  "vi": "Có một ông khách cứ nhất định ngồi đúng một chiếc ghế.",
+  "vi": "Hai đối tượng được trình bày theo bản chất riêng.",
   "en": ""
  },
  {
-  "vi": "Cái ghế xanh sát gốc bàng là của chú đấy nhé. Hai chục năm nay rồi.",
+  "vi": "Phụ lục II – TK 131; Phụ lục IV – B01",
   "en": ""
  },
  {
-  "vi": "Ông ấy ngồi đấy từ hồi còn chạy xe Cub, giờ xe cũng già như người.",
+  "vi": "Phải thu nội bộ và phải thu khác",
   "en": ""
  },
  {
-  "vi": "Cốc trà đá, không đường. Ghi sổ, cuối tuần chú trả.",
+  "vi": "Phân biệt 136 với 138",
   "en": ""
  },
  {
-  "vi": "Dạ, cháu nhớ rồi. Ghế xanh, trà đá, ghi sổ.",
+  "vi": "Loại giao dịch nội bộ khi cần",
   "en": ""
  },
  {
-  "vi": "Cuốc xe ế",
+  "vi": "TK 136 phản ánh quan hệ phải thu nội bộ trong phạm vi áp dụng; TK 138 dùng khoản phải thu khác theo nội dung hướng dẫn, như khoản thiếu chờ xử lý hoặc bồi thường có căn cứ. Tên chung không cho phép đưa mọi khoản chưa biết bản chất vào 138 lâu dài. Công ty con là pháp nhân riêng cần xem loại giao dịch và báo cáo đang lập.",
   "en": ""
  },
  {
-  "vi": "Chú Tường ngồi lâu hơn mọi hôm, điện thoại úp trên đùi.",
+  "vi": "Đối chiếu 136 với 336 theo đơn vị đối ứng, thời điểm và nguyên tệ giúp tránh chênh nội bộ. Báo cáo tổng hợp hoặc hợp nhất có yêu cầu loại trừ theo phạm vi; sổ riêng vẫn cần phản ánh giao dịch thật. Vốn góp hợp đồng hợp tác kinh doanh cần xét 2281 theo hướng dẫn chuyển đổi, không giữ 138 chỉ theo thói quen cũ.",
   "en": ""
  },
  {
-  "vi": "Bây giờ người ta bấm điện thoại gọi xe hết. Cả sáng chú chưa được cuốc nào.",
+  "vi": "Đơn vị phụ thuộc nợ 8.000.000đ đã đối chiếu: theo dõi 136/336 theo cấu trúc.",
   "en": ""
  },
  {
-  "vi": "Ông Tường cứ ngồi đây than, sao không cài cái ứng dụng như tụi thanh niên?",
+  "vi": "Nhân viên phải bồi thường thiếu hàng 500.000đ theo quyết định: theo dõi phải thu khác và thu hồi có chứng từ.",
   "en": ""
  },
  {
-  "vi": "Chữ trên đấy bé tí, chú đọc không ra.",
+  "vi": "Khoản thiếu chờ xử lý có biên bản thường xét tài khoản nào?",
   "en": ""
  },
  {
-  "vi": "Chiều nay giúp chú Tường thế nào?",
+  "vi": "511 cho mọi khoản thiếu",
   "en": ""
  },
  {
-  "vi": "Viết số điện thoại chú lên tấm bảng phấn",
+  "vi": "411 tự động",
   "en": ""
  },
  {
-  "vi": "Ơ, ba người gọi rồi đấy! Cái bảng phấn còn nhanh hơn cái điện thoại.",
+  "vi": "Phải thu khác có nội dung theo dõi tài sản thiếu chờ xử lý.",
   "en": ""
  },
  {
-  "vi": "Ngồi chỉ chú từng bước bật ứng dụng",
+  "vi": "Phải thu nội bộ đầu 12.000.000đ, thu 4.000.000đ. Còn phải thu?",
   "en": ""
  },
  {
-  "vi": "Phóng chữ to lên là chú đọc được. Cuốc đầu tiên trên máy đây rồi!",
+  "vi": "12−4=8 triệu đồng theo số liệu đề.",
   "en": ""
  },
  {
-  "vi": "Bàn học gốc bàng",
+  "vi": "Thu khoản phải thu bồi thường đã ghi 138 là 600.000đ bằng tiền mặt.",
   "en": ""
  },
  {
-  "vi": "Linh trải sách vở ra chiếc bàn gỗ thấp.",
+  "vi": "Tăng tiền và giảm phải thu khác.",
   "en": ""
  },
  {
-  "vi": "Ở nhà đang sửa, ồn quá. Em ngồi đây học nhờ một buổi được không ạ?",
+  "vi": "Vốn góp BCC trước theo 138 khi chuyển TT99 cần xem hướng chuyển nào?",
   "en": ""
  },
  {
-  "vi": "Ngồi đi cháu. Quán này nuôi được mấy lứa học trò rồi đấy.",
+  "vi": "2281 theo Điều 29 nếu đúng bản chất khoản vốn góp",
   "en": ""
  },
  {
-  "vi": "Tuần sau em thi học kỳ môn Toán, mà hình không gian khó quá.",
+  "vi": "Đưa hết vào 511",
   "en": ""
  },
  {
-  "vi": "Linh ngồi học đến tối",
+  "vi": "Giữ 138 bất kể hướng dẫn",
   "en": ""
  },
  {
-  "vi": "Giữ riêng một ghế và pha cốc trà chanh cho Linh",
+  "vi": "Điều 29 có hướng chuyển khoản vốn góp hợp đồng hợp tác kinh doanh.",
   "en": ""
  },
  {
-  "vi": "Ngồi đây mát hơn ở nhà nhiều. Em làm xong ba đề rồi!",
+  "vi": "Phụ lục II – TK 136,138,336,228; Điều 29",
   "en": ""
  },
  {
-  "vi": "Nhờ chú Tường giảng hộ, hồi trẻ chú dạy Toán",
+  "vi": "Tạm ứng và quyết toán",
   "en": ""
  },
  {
-  "vi": "Hồi xưa chú dạy cấp ba đấy, cháu tưởng chú chỉ biết chạy xe à?",
+  "vi": "Kiểm soát mục đích tạm ứng",
   "en": ""
  },
  {
-  "vi": "Chú giảng dễ hiểu hơn cả cô giáo ạ!",
+  "vi": "Quyết toán theo chứng từ thực tế",
   "en": ""
  },
  {
-  "vi": "Gạch sổ",
+  "vi": "TK 141 theo dõi tạm ứng cho người lao động thực hiện công việc được giao, có người nhận, mục đích và thời hạn. Tạm ứng không là chi phí ngay khi xuất tiền. Quyết toán dùng chứng từ hợp lệ để chuyển vào tài sản hoặc chi phí đúng bản chất; tiền dư nộp lại và chi vượt được xử lý theo phê duyệt.",
   "en": ""
  },
  {
-  "vi": "Chú Tường tới sớm, tay cầm một xấp tiền lẻ.",
+  "vi": "Không để các khoản ứng kéo dài mà thiếu đối chiếu, hoặc tự bù khoản người này với người khác. Các khoản nhân viên vay riêng, bồi thường hay chi hộ có thể thuộc tài khoản khác cần xét. Quy trình tạm ứng có hạn mức và kiểm soát tránh cấp tiếp trong khi khoản trước chưa rõ, nhưng chính sách đơn vị phải phù hợp công việc và pháp luật.",
   "en": ""
  },
  {
-  "vi": "Tháng này chạy được, chú trả hết sổ. Gạch đi, gạch hết đi cháu.",
+  "vi": "Ứng 3.000.000đ, chi hợp lệ 2.400.000đ, nộp lại 600.000đ:141 hết số dư người này.",
   "en": ""
  },
  {
-  "vi": "Hai chục năm bà chưa thấy ông ấy trả một lần hết sạch thế này.",
+  "vi": "Khi ứng Nợ 141/Có 111; quyết toán chi đúng tài khoản/Có 141.",
   "en": ""
  },
  {
-  "vi": "Ông Tường có cháu nội đấy, hôm nay ông khao cả phố xôi.",
+  "vi": "Tạm ứng tiền mặt 2.500.000đ cho nhân viên đi công tác theo phê duyệt.",
   "en": ""
  },
  {
-  "vi": "Cháu gạch rồi đây chú. Mai lại ghi dòng mới nhé.",
+  "vi": "Ứng trước tạo khoản 141, chưa ghi toàn bộ chi phí.",
   "en": ""
  },
  {
-  "vi": "Bà Lựu gói một thứ trong túi ni lông, buộc chun cẩn thận.",
+  "vi": "Ứng 4.000.000đ, chứng từ được duyệt 3.250.000đ. Tiền còn phải nộp?",
   "en": ""
  },
  {
-  "vi": "Cuốn sổ này bà ghi từ hồi quán mới có hai cái ghế.",
+  "vi": "4.000.000−3.250.000=750.000đ.",
   "en": ""
  },
  {
-  "vi": "Ai nợ bao nhiêu không quan trọng bằng ai hay ngồi ghế nào. Cháu giữ lấy.",
+  "vi": "Nhân viên nộp lại tiền tạm ứng thừa 500.000đ vào quỹ.",
   "en": ""
  },
  {
-  "vi": "Em thi được chín điểm Toán! Em mang cả bảng điểm ra khoe quán đây!",
+  "vi": "Thu tiền thừa giảm 141.",
   "en": ""
  },
  {
-  "vi": "Quán vẫn là quán của bà Lựu. Chỉ là giờ có người pha trà trẻ hơn.",
+  "vi": "Quyết toán tạm ứng bằng chi phí quản lý hợp lệ 1.800.000đ, đề không xét VAT.",
   "en": ""
  },
  {
-  "vi": "Cháu sẽ giữ chiếc ghế xanh cho chú, và giữ quán cho cả phố.",
+  "vi": "Ghi chi phí thực tế và giảm tạm ứng có chứng từ.",
   "en": ""
  },
  {
-  "vi": "Quả cân đồng của dì Tư",
+  "vi": "Phụ lục II – TK 141",
   "en": ""
  },
  {
-  "vi": "Quả cân đồng một ký",
+  "vi": "Ước tính tổn thất có căn cứ",
   "en": ""
  },
  {
-  "vi": "Mòn bóng vì mười lăm năm sáng nào cũng đặt lên cân. Giờ đến lượt bạn thử cân.",
+  "vi": "Phân biệt dự phòng với xóa nợ",
   "en": ""
  },
  {
-  "vi": "Dì Tư",
+  "vi": "Dự phòng phải thu khó đòi phản ánh ước tính phần khó thu hồi theo hồ sơ và nguyên tắc áp dụng. Lập bảng tuổi nợ, tình trạng khách và tài sản bảo đảm; tỷ lệ tính trong bài là giả định riêng, không khẳng định mọi khoản quá hạn đều phải dùng tỷ lệ ấy. TK 2293 điều chỉnh giảm giá trị trình bày phải thu, không xóa hồ sơ công nợ gốc.",
   "en": ""
  },
  {
-  "vi": "Chủ sạp trái cây",
+  "vi": "So số dự phòng cần có cuối kỳ với số đã ghi để lập thêm hoặc hoàn nhập. Xóa nợ cần căn cứ và quyết định theo hướng dẫn, xét trách nhiệm tiếp tục theo dõi thu hồi; không tự xóa vì đã lập dự phòng. Điều kiện dự phòng kế toán và khoản chi được trừ thuế phải đối chiếu pháp luật thuế riêng.",
   "en": ""
  },
  {
-  "vi": "Nội trợ đi chợ sớm",
+  "vi": "Nợ 10.000.000đ, mức tổn thất ước tính 40% theo đề: cần 4.000.000đ dự phòng.",
   "en": ""
  },
  {
-  "vi": "Bà Hai",
+  "vi": "Đã có 3.000.000đ: lập thêm 1.000.000đ Nợ 642/Có 2293.",
   "en": ""
  },
  {
-  "vi": "Cụ bà xóm chợ",
+  "vi": "Nợ 8.000.000đ, mức tổn thất đề giả định 25%. Dự phòng cần có?",
   "en": ""
  },
  {
-  "vi": "Bé Mơ",
+  "vi": "8.000.000×25%=2.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Học sinh lớp 6",
+  "vi": "Dự phòng phải thu cần tăng thêm 700.000đ theo hồ sơ cuối kỳ.",
   "en": ""
  },
  {
-  "vi": "Sạp đầu chợ",
+  "vi": "Tăng chi phí quản lý và dự phòng phải thu.",
   "en": ""
  },
  {
-  "vi": "Bốn giờ sáng, dì Tư đã chất đầy mấy rổ trái lên sạp.",
+  "vi": "Lập dự phòng có tự xóa khoản khách nợ trên sổ 131 không?",
   "en": ""
  },
  {
-  "vi": "Dì đi chợ đầu mối về là mệt rã. Con trông sạp giúp dì nghe.",
+  "vi": "Không; gốc công nợ vẫn theo dõi",
   "en": ""
  },
  {
-  "vi": "Sạp dì Tư bán hai chục năm, chưa ai chê cân thiếu đâu con.",
+  "vi": "Có, phải xóa hết",
   "en": ""
  },
  {
-  "vi": "Trái nào xanh để dành, trái nào chín bán liền. Nhìn cuống là biết.",
+  "vi": "Có, chuyển hết sang tiền",
   "en": ""
  },
  {
-  "vi": "Dạ, con nhớ rồi: xanh để dành, chín bán liền.",
+  "vi": "2293 là tài khoản điều chỉnh, không thay quyền đòi nợ gốc.",
   "en": ""
  },
  {
-  "vi": "Cái cân của bà Hai",
+  "vi": "Dự phòng cần 5.000.000đ, đã có 3.600.000đ. Số lập thêm?",
   "en": ""
  },
  {
-  "vi": "Bà Hai đặt cái cân đồng hồ nhỏ xíu lên sạp, nheo mắt nhìn.",
+  "vi": "5.000.000−3.600.000=1.400.000đ.",
   "en": ""
  },
  {
-  "vi": "Hồi trước bà mua ở chợ khác, cứ một ký là thiếu cả lạng.",
+  "vi": "Phụ lục II – TK 131,2293,642",
   "en": ""
  },
  {
-  "vi": "Từ đó đi đâu bà cũng mang cân theo. Cháu đừng giận nhé.",
+  "vi": "5. Tồn kho và tính giá thành",
   "en": ""
  },
  {
-  "vi": "Bà cân lại thoải mái, sạp này không sợ.",
+  "vi": "Nguyên liệu và hàng mua đi đường",
   "en": ""
  },
  {
-  "vi": "Bà Hai cân lại túi cam",
+  "vi": "Tính giá nhập nguyên liệu",
   "en": ""
  },
  {
-  "vi": "Mời bà cân trước mặt cả dãy chợ",
+  "vi": "Phân biệt 151 với 152",
   "en": ""
  },
  {
-  "vi": "Đủ một ký, còn dư chút. Được, từ nay bà mua ở đây.",
+  "vi": "TK 152 theo dõi nguyên liệu, vật liệu theo loại, kho và đối tượng sử dụng. Giá gốc gồm giá mua và chi phí đưa vật liệu về trạng thái hiện tại theo VAS02; thuế được khấu trừ không nằm trong giá gốc. Hàng đã thuộc quyền của đơn vị nhưng chưa về kho có thể theo 151 khi đủ căn cứ, không chỉ dựa việc đã chuyển tiền.",
   "en": ""
  },
  {
-  "vi": "Chỉ bà cách thử cân bằng quả cân một ký",
+  "vi": "Khi hàng đi đường về kho, chuyển 151 sang 152 hoặc tài khoản phù hợp; không ghi lại nợ người bán đã ghi trước. Xuất vật liệu trực tiếp cho sản xuất vào 621; dùng cho quản lý hoặc bán hàng vào chức năng tương ứng. Hao hụt bình thường và bất thường cần phân biệt theo chuẩn mực, hồ sơ và nguyên nhân.",
   "en": ""
  },
  {
-  "vi": "À, thử vậy là biết cân nào lệch liền. Bà học được rồi!",
+  "vi": "Mua vật liệu 10.000.000đ, vận chuyển 500.000đ không thuế: giá gốc 10.500.000đ.",
   "en": ""
  },
  {
-  "vi": "Mùa xoài",
+  "vi": "Lô đã theo 151 về kho: Nợ 152/Có 151 10.500.000đ.",
   "en": ""
  },
  {
-  "vi": "Xoài cát về đầy chợ, vàng ươm cả dãy sạp.",
+  "vi": "Giá mua nguyên liệu 7.000.000đ, vận chuyển cần thiết 400.000đ, thuế khấu trừ tách riêng. Giá gốc?",
   "en": ""
  },
  {
-  "vi": "Xoài chín cây thì cuống thơm, vỏ vàng không đều. Xoài ủ thuốc vàng đều như sơn.",
+  "vi": "7.000.000+400.000=7.400.000đ.",
   "en": ""
  },
  {
-  "vi": "Mình chỉ lấy xoài xanh về tự để chín. Chậm một hôm mà ăn ngọt thật.",
+  "vi": "Nguyên liệu đã theo dõi 151 trị giá 5.000.000đ nay về kho đủ số lượng.",
   "en": ""
  },
  {
-  "vi": "Cô mua ở đây vì ăn yên tâm.",
+  "vi": "Đổi trạng thái hàng đi đường thành nguyên liệu trong kho.",
   "en": ""
  },
  {
-  "vi": "Có người chào bán thuốc ủ chín",
+  "vi": "Xuất nguyên liệu trực tiếp cho sản xuất 2.800.000đ.",
   "en": ""
  },
  {
-  "vi": "Từ chối, kể cho cô Năm nghe",
+  "vi": "Tập hợp nguyên liệu trực tiếp vào 621.",
   "en": ""
  },
  {
-  "vi": "Đúng rồi con. Giữ tiếng còn hơn giữ tiền.",
+  "vi": "Vật liệu đầu kho 6.000.000đ, nhập 4.500.000đ, xuất 3.200.000đ. Giá trị cuối theo đề?",
   "en": ""
  },
  {
-  "vi": "Hỏi rõ nguồn gốc rồi mới từ chối",
+  "vi": "6+4,5−3,2=7,3 triệu đồng.",
   "en": ""
  },
  {
-  "vi": "Hỏi cho biết cũng được. Không giấy tờ là mình không đụng.",
+  "vi": "Phụ lục II – TK 151,152,621; VAS02",
   "en": ""
  },
  {
-  "vi": "Giỏ trái cho mẹ",
+  "vi": "Hàng hóa, hàng gửi bán và kho bảo thuế",
   "en": ""
  },
  {
-  "vi": "Bé Mơ đứng trước sạp, tay cầm tờ giấy mẹ ghi.",
+  "vi": "Tách tồn kho với hàng đã bán",
   "en": ""
  },
  {
-  "vi": "Mẹ con nằm viện mấy hôm rồi. Con muốn mua trái cây ngon nhất cho mẹ.",
+  "vi": "Theo dõi quyền sở hữu hàng gửi bán",
   "en": ""
  },
  {
-  "vi": "Con có mười xu thôi ạ.",
+  "vi": "Hàng hóa mua để bán theo 156; sản phẩm do đơn vị sản xuất theo 155 với tên TT99 là Sản phẩm. Hàng gửi đại lý hoặc gửi khách chưa đủ điều kiện doanh thu theo 157 theo bản chất. Nguyên liệu, vật tư tại kho bảo thuế có tài khoản 158 và cần theo quy định liên quan, không gọi 158 là mọi hàng hóa thông thường.",
   "en": ""
  },
  {
-  "vi": "Để cô lựa cho con mấy trái cam ngọt, trái chuối vừa chín.",
+  "vi": "Chuyển hàng từ kho đến đại lý không tự tạo doanh thu nếu chưa thỏa VAS14. Khi có căn cứ bán, ghi doanh thu và giá vốn, giảm 157 tương ứng. Theo dõi đại lý, lô hàng, số lượng bán, trả lại và phí riêng; đối soát tiền thuần phí không thay xác định doanh thu gộp và khoản phí.",
   "en": ""
  },
  {
-  "vi": "Giỏ trái cho mẹ bé Mơ",
+  "vi": "Gửi hàng giá vốn 3.000.000đ: Nợ 157/Có 156.",
   "en": ""
  },
  {
-  "vi": "Lựa trái ngon, tính đúng giá, bớt cho bé chút",
+  "vi": "Đại lý bán được giá vốn 2.000.000đ: Nợ 632/Có 157; còn gửi 1.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Mẹ con khen cam ngọt lắm ạ!",
+  "vi": "Gửi đại lý hàng hóa giá vốn 2.400.000đ, chưa đủ điều kiện ghi doanh thu.",
   "en": ""
  },
  {
-  "vi": "Tặng thêm trái bưởi nhỏ “cho mẹ mau khỏe”",
+  "vi": "Chuyển vị trí theo dõi nhưng còn là tài sản đơn vị.",
   "en": ""
  },
  {
-  "vi": "Con cảm ơn cô! Mẹ con bảo khỏe rồi sẽ ra cảm ơn.",
+  "vi": "Hàng gửi bán 4.000.000đ, phần đã bán giá vốn 2.500.000đ. Còn gửi?",
   "en": ""
  },
  {
-  "vi": "Quả cân đồng",
+  "vi": "4−2,5=1,5 triệu đồng.",
   "en": ""
  },
  {
-  "vi": "Dì Tư lau quả cân đồng bằng khăn ướt, đặt vào tay bạn.",
+  "vi": "Tên TK 158 theo TT99 là gì?",
   "en": ""
  },
  {
-  "vi": "Quả cân này dì dùng mười lăm năm, sáng nào cũng thử cân bằng nó.",
+  "vi": "Sản phẩm đã bán",
   "en": ""
  },
  {
-  "vi": "Cân đúng thì bán được lâu. Giờ con giữ.",
+  "vi": "Danh mục TT99 phân biệt 158 với hàng hóa 156.",
   "en": ""
  },
  {
-  "vi": "Bà bỏ cân ở nhà rồi đấy. Tin sạp này.",
+  "vi": "Đã đủ căn cứ đại lý bán lô hàng đang ở 157, giá vốn 1.700.000đ. Chỉ ghi giá vốn.",
   "en": ""
  },
  {
-  "vi": "Mẹ con ra viện rồi ạ! Mẹ gửi cô hộp bánh.",
+  "vi": "Phần đã bán chuyển từ hàng gửi bán sang giá vốn.",
   "en": ""
  },
  {
-  "vi": "Con sẽ thử cân mỗi sáng, như dì.",
+  "vi": "Phụ lục II – TK 155,156,157,158,632; VAS02,14",
   "en": ""
  },
  {
-  "vi": "Chiếc xe đẩy ba ngăn",
+  "vi": "Sản phẩm dở dang và sản phẩm hoàn thành",
   "en": ""
  },
  {
-  "vi": "Chiếc áo phản quang cũ của chị Hạnh",
+  "vi": "Xác định đối tượng 154",
   "en": ""
  },
  {
-  "vi": "Sờn vai, bạc màu, mười hai năm đi qua từng ngõ. Chị bảo mặc nó thì xe nào cũng thấy.",
+  "vi": "Tính giá thành từ dở dang",
   "en": ""
  },
  {
-  "vi": "Tổ trưởng tổ thu gom",
+  "vi": "TK 154 tập hợp chi phí sản xuất, kinh doanh dở dang theo sản phẩm, đơn hàng hoặc dịch vụ. Chi phí sản xuất hợp lệ được chuyển từ 621,622,623,627 theo loại hoạt động và phương pháp. Phải tách phần hoàn thành, dở dang cuối kỳ và chi phí bất thường không đủ điều kiện vào giá gốc.",
   "en": ""
  },
  {
-  "vi": "Bác Tâm",
+  "vi": "Giá thành hoàn thành bằng dở dang đầu kỳ cộng chi phí hợp lệ phát sinh trừ dở dang cuối kỳ và các điều chỉnh liên quan. Dở dang cần tiêu thức đánh giá có căn cứ về lượng và mức hoàn thành, không tự đặt số để giảm giá vốn. Sản phẩm hoàn thành nhập kho vào 155; dịch vụ hoàn thành có xử lý phù hợp thay vì giả định mọi hoạt động đều có kho vật chất.",
   "en": ""
  },
  {
-  "vi": "Tổ trưởng dân phố ngõ 12",
+  "vi": "Dở dang đầu 2.000.000đ, phát sinh 18.000.000đ, cuối 3.000.000đ: hoàn thành 17.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Học sinh lớp 8",
+  "vi": "100 sản phẩm hoàn thành: đơn giá 170.000đ theo giả định một loại sản phẩm.",
   "en": ""
  },
  {
-  "vi": "Tiếng xe đầu ngõ",
+  "vi": "Dở dang đầu 1.000.000đ, chi phí kỳ 9.000.000đ, dở dang cuối 2.000.000đ. Giá thành hoàn thành?",
   "en": ""
  },
  {
-  "vi": "Sáu giờ chiều, tiếng lọc xọc của xe đẩy vang lên đầu ngõ 12.",
+  "vi": "1+9−2=8 triệu đồng.",
   "en": ""
  },
  {
-  "vi": "Nghe tiếng xe là cả ngõ mang rác ra. Mình mà trễ là mèo bới tung.",
+  "vi": "Nhập kho sản phẩm hoàn thành từ 154 giá thành 6.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Tổ thu gom mới có người à? Nhớ giờ ngõ này nhé cháu.",
+  "vi": "Chi phí dở dang chuyển sang sản phẩm hoàn thành.",
   "en": ""
  },
  {
-  "vi": "Túi nào lạ thì mở xem. Pin với kim tiêm là không đùa được đâu.",
+  "vi": "Có được chọn giá trị dở dang tùy ý để giảm giá vốn không?",
   "en": ""
  },
  {
-  "vi": "Dạ, em nhớ rồi.",
+  "vi": "Không; cần lượng, mức hoàn thành và tiêu thức hợp lý",
   "en": ""
  },
  {
-  "vi": "Túi vàng của cô Tám",
+  "vi": "Có nếu tổng sổ cân",
   "en": ""
  },
  {
-  "vi": "Cô Tám dựng xe ba gác ở điểm tập kết, cân từng bao lon.",
+  "vi": "Có nếu chưa kiểm toán",
   "en": ""
  },
  {
-  "vi": "Túi vàng sạch là cô mua. Lẫn cơm canh vào là bán không ai lấy.",
+  "vi": "Đánh giá dở dang ảnh hưởng tài sản và kết quả nên cần căn cứ.",
   "en": ""
  },
  {
-  "vi": "Tiền ve chai tổ để dành, cuối năm cả tổ đi Vũng Tàu.",
+  "vi": "Giá thành hoàn thành 15.000.000đ cho 75 sản phẩm đồng nhất. Đơn giá?",
   "en": ""
  },
  {
-  "vi": "Mà giờ nhiều nhà vẫn đổ chung lắm.",
+  "vi": "15.000.000/75=200.000đ/sản phẩm.",
   "en": ""
  },
  {
-  "vi": "Làm sao cho túi vàng sạch hơn?",
+  "vi": "Phụ lục II – TK 154,155; VAS02",
   "en": ""
  },
  {
-  "vi": "Nhắc từng nhà, nói nhẹ nhàng",
+  "vi": "621,622,623,627 và công suất bình thường",
   "en": ""
  },
  {
-  "vi": "Tuần này túi vàng sạch hẳn. Cô trả thêm cho tổ nè.",
+  "vi": "Tập hợp theo chức năng sản xuất",
   "en": ""
  },
  {
-  "vi": "Rủ bé Na vẽ tờ hướng dẫn dán đầu ngõ",
+  "vi": "Phân bổ chi phí chung hợp lý",
   "en": ""
  },
  {
-  "vi": "Em vẽ ba cái thùng có mặt cười nha!",
+  "vi": "Nguyên liệu trực tiếp vào 621, nhân công trực tiếp 622, sử dụng máy thi công 623 trong hoạt động phù hợp, chi phí sản xuất chung 627. Theo dõi đối tượng chịu phí ngay từ chứng từ để tránh phân bổ tùy ý cuối kỳ. Các chi phí này không mặc nhiên kết chuyển hết vào 911 khi chưa xác định sản phẩm hoàn thành và phần đã bán.",
   "en": ""
  },
  {
-  "vi": "Tờ hướng dẫn của bé Na",
+  "vi": "Chi phí chung cố định được phân bổ theo công suất bình thường theo VAS02; phần không phân bổ do sản lượng thấp có thể vào chi phí kỳ theo hướng dẫn. Chi phí bất thường không vốn hóa để đẩy vào kho. Dự phòng giảm giá tồn 2294 khi giá trị thuần có thể thực hiện thấp hơn giá gốc được xem riêng với việc tính giá thành.",
   "en": ""
  },
  {
-  "vi": "Bé Na chạy theo xe, tay cầm xấp giấy vẽ.",
+  "vi": "621 4.000.000đ, 622 3.000.000đ, 627 2.000.000đ hợp lệ: chuyển 154 tổng 9.000.000đ.",
   "en": ""
  },
  {
-  "vi": "{Anh} ơi, em vẽ tờ hướng dẫn phân loại rác nè. Dán ở đâu được ạ?",
+  "vi": "Tồn kho giá gốc 5.000.000đ, giá trị thuần 4.300.000đ: mức giảm 700.000đ theo giả định.",
   "en": ""
  },
  {
-  "vi": "Dán ở bảng tin đầu ngõ, bác cho phép.",
+  "vi": "Chi phí trực tiếp 5.000.000đ, nhân công 4.000.000đ, chung hợp lệ 3.000.000đ. Tổng tập hợp?",
   "en": ""
  },
  {
-  "vi": "Tụi nhỏ mà nhắc thì người lớn nghe hơn mình nhắc.",
+  "vi": "5+4+3=12 triệu đồng.",
   "en": ""
  },
  {
-  "vi": "Dán tờ hướng dẫn của bé Na",
+  "vi": "Kết chuyển chi phí nguyên liệu trực tiếp 621 đủ điều kiện 4.500.000đ vào 154.",
   "en": ""
  },
  {
-  "vi": "Dán cạnh bảng giờ thu gom",
+  "vi": "Tập hợp vào đối tượng giá thành trước khi xác định giá vốn.",
   "en": ""
  },
  {
-  "vi": "Đẹp đấy. Để bác nhắc thêm trong buổi họp tổ.",
+  "vi": "Lập thêm dự phòng giảm giá hàng tồn kho 300.000đ theo hồ sơ.",
   "en": ""
  },
  {
-  "vi": "Dán lên chính chiếc xe đẩy",
+  "vi": "Dự phòng giảm giá hàng tồn kho làm tăng giá vốn theo hướng dẫn.",
   "en": ""
  },
  {
-  "vi": "Xe đi tới đâu tờ hướng dẫn đi tới đó luôn!",
+  "vi": "Kho giá gốc 9.000.000đ, giá trị thuần có thể thực hiện 7.800.000đ, chưa có dự phòng. Mức cần lập?",
   "en": ""
  },
  {
-  "vi": "Đêm mưa",
+  "vi": "9.000.000−7.800.000=1.200.000đ.",
   "en": ""
  },
  {
-  "vi": "Mưa như trút, nước ngập ngang mắt cá, túi rác trôi lềnh bềnh.",
+  "vi": "Phụ lục II – TK 621,622,623,627,154,2294,632; VAS02",
   "en": ""
  },
  {
-  "vi": "Vớt rác chặn miệng cống trước đã, không thì ngập cả ngõ.",
+  "vi": "6. Tài sản cố định và tài sản sinh học",
   "en": ""
  },
  {
-  "vi": "Bác cầm đèn pin soi cho hai chị em.",
+  "vi": "TSCĐ hữu hình và chi phí sau ghi nhận",
   "en": ""
  },
  {
-  "vi": "Nước rút rồi chị ơi!",
+  "vi": "Xác định nguyên giá 211",
   "en": ""
  },
  {
-  "vi": "Ướt hết rồi, về uống bát gừng cho ấm.",
+  "vi": "Tách duy trì với nâng cấp",
   "en": ""
  },
  {
-  "vi": "Chiếc áo phản quang",
+  "vi": "TSCĐ hữu hình theo 211 khi thỏa điều kiện của VAS03 và quy định liên quan; nguyên giá gồm giá mua và khoản trực tiếp đưa tài sản vào trạng thái sẵn sàng dùng. Thuế được khấu trừ tách riêng. Chi phí đào tạo vận hành, chi phí bất thường hoặc chi phí sau tài sản sẵn sàng dùng không tự được cộng nguyên giá.",
   "en": ""
  },
  {
-  "vi": "Chị Hạnh cởi chiếc áo phản quang cũ, gấp lại cẩn thận.",
+  "vi": "Chi sau ghi nhận ban đầu phải đánh giá lợi ích tương lai và điều kiện ghi tăng tài sản: duy trì hoạt động thông thường khác nâng công suất hoặc kéo dài thời gian hữu ích. Nâng cấp, cải tạo có thể tập hợp 2414 trước khi hoàn thành; sửa chữa, bảo dưỡng định kỳ có 2413. Phân biệt dự án và kết quả giúp tránh đồng nhất mọi sửa chữa với vốn hóa.",
   "en": ""
  },
  {
-  "vi": "Tháng sau chị chuyển lên làm tổ trưởng khu. Tuyến này chị giao em.",
+  "vi": "Máy 40.000.000đ, lắp đặt 2.000.000đ cần thiết, không VAT: nguyên giá 42.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Áo này mười hai năm rồi. Mặc nó thì xe nào cũng thấy mình.",
+  "vi": "Khấu hao đều 42 tháng, thu hồi 0 theo đề: tháng 1.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Ngõ 12 sạch nhất phường, cả tổ được khen trước phường.",
+  "vi": "Giá máy 35.000.000đ, lắp đặt 1.500.000đ cần thiết, thuế khấu trừ riêng. Nguyên giá?",
   "en": ""
  },
  {
-  "vi": "Em được giải báo tường nhờ bài viết về xe rác đó!",
+  "vi": "35.000.000+1.500.000=36.500.000đ.",
   "en": ""
  },
  {
-  "vi": "Em sẽ giữ ngõ sạch như chị đã giữ.",
+  "vi": "Mua máy đủ điều kiện 211 giá 36.000.000đ trả bằng tiền gửi, đề không xét thuế.",
   "en": ""
  },
  {
-  "vi": "Cuộn dây lò xo của chú Hai",
+  "vi": "Ghi tăng TSCĐ và giảm tiền theo căn cứ.",
   "en": ""
  },
  {
-  "vi": "Cuộn dây lò xo mòn tay cầm",
+  "vi": "Chi bảo dưỡng thường xuyên có tự làm tăng nguyên giá không?",
   "en": ""
  },
  {
-  "vi": "Hai mươi năm đi qua không biết bao nhiêu đường ống. Tay cầm bóng lên vì mồ hôi.",
+  "vi": "Không; xét bản chất và điều kiện ghi nhận",
   "en": ""
  },
  {
-  "vi": "Thợ thông cống lâu năm",
+  "vi": "Có; cứ liên quan máy là 211",
   "en": ""
  },
  {
-  "vi": "Chủ quán bún bò",
+  "vi": "Có; chỉ cần hóa đơn",
   "en": ""
  },
  {
-  "vi": "Bà Ngọc",
+  "vi": "Không phải mọi chi liên quan TSCĐ đều là nâng cấp đủ điều kiện.",
   "en": ""
  },
  {
-  "vi": "Nhà phố cổ ống gang",
+  "vi": "Nguyên giá 90.000.000đ, thu hồi giả định 6.000.000đ, khấu hao 84 tháng. Khấu hao tháng?",
   "en": ""
  },
  {
-  "vi": "Ông Lộc",
+  "vi": "(90−6)/84=1 triệu đồng.",
   "en": ""
  },
  {
-  "vi": "Nghe tiếng nước",
+  "vi": "Phụ lục II – TK 211,214,2413,2414; VAS03",
   "en": ""
  },
  {
-  "vi": "Chú Hai đặt tai sát miệng ống, ra hiệu cho bạn im lặng.",
+  "vi": "TSCĐ vô hình và chi phí nghiên cứu",
   "en": ""
  },
  {
-  "vi": "Nghe không? Ọc ọc là thiếu hơi. Ì ạch là tắc xa. Rít rít là tắc gần.",
+  "vi": "Đánh giá điều kiện 213",
   "en": ""
  },
  {
-  "vi": "Chưa biết bệnh thì đừng cầm đồ nghề.",
+  "vi": "Tách nghiên cứu với triển khai",
   "en": ""
  },
  {
-  "vi": "Dạ, hỏi, nhìn, xả nước thử rồi mới làm.",
+  "vi": "TSCĐ vô hình cần khả năng xác định, quyền kiểm soát, lợi ích tương lai và đo lường đáng tin cậy theo VAS04. Mua phần mềm có quyền dùng dài hạn khác với thuê dịch vụ theo tháng. Nhãn hiệu tự tạo hoặc danh tiếng của đơn vị không tự ghi 213 chỉ vì có giá trị kinh doanh.",
   "en": ""
  },
  {
-  "vi": "Bồn rửa quán bún",
+  "vi": "Chi nghiên cứu và chi triển khai có nguyên tắc khác; chi triển khai chỉ được vốn hóa khi thỏa toàn bộ điều kiện chuẩn mực và có hồ sơ. Chi trước thời điểm thỏa điều kiện không tự phục hồi thành tài sản bằng cách đổi tên dự án. Theo dõi nguyên giá và hao mòn 213/214 cùng thời gian sử dụng phù hợp, tách điều kiện thuế khi tính chi phí được trừ.",
   "en": ""
  },
  {
-  "vi": "Bốn giờ sáng, chị Hồng gọi điện, giọng run run.",
+  "vi": "Bản quyền phần mềm 36.000.000đ đủ điều kiện 213 dùng 36 tháng, thu hồi 0: khấu hao tháng 1.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Nồi nước lèo sắp xong mà bồn rửa ngập mỡ. Cứu chị với!",
+  "vi": "Quyền phần mềm 48.000.000đ trong 24 tháng đủ điều kiện TSCĐ: khấu hao tháng 2.000.000đ theo giả định.",
   "en": ""
  },
  {
-  "vi": "Mỡ đông thì phải phun, thông tạm bằng lò xo vài hôm lại tắc.",
+  "vi": "Nhãn hiệu đơn vị tự xây dựng có tự ghi 213 theo số tiền ước đoán không?",
   "en": ""
  },
  {
-  "vi": "Mà chị sắp bán rồi…",
+  "vi": "Không; phải theo điều kiện và giới hạn VAS04",
   "en": ""
  },
  {
-  "vi": "Bồn rửa quán chị Hồng",
+  "vi": "Có; tên đẹp là tài sản",
   "en": ""
  },
  {
-  "vi": "Nói rõ, xin thêm hai mươi phút phun tận gốc",
+  "vi": "Có; theo giá chủ tự chọn",
   "en": ""
  },
  {
-  "vi": "Trễ chút mà cả tháng khỏi lo. Cảm ơn em!",
+  "vi": "Danh tiếng tự tạo không tự thỏa ghi nhận TSCĐ vô hình.",
   "en": ""
  },
  {
-  "vi": "Thông tạm cho kịp bán, hẹn chiều quay lại phun",
+  "vi": "Quyền phần mềm 36.000.000đ đủ điều kiện TSCĐ, khấu hao đều 36 tháng, thu hồi 0. Mỗi tháng?",
   "en": ""
  },
  {
-  "vi": "Chiều em nhớ quay lại nha, chị để phần tô bún.",
+  "vi": "36.000.000/36=1.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Ống gang nhà bà Ngọc",
+  "vi": "Mua quyền phần mềm đủ điều kiện 213 giá 40.000.000đ chưa trả, bỏ qua thuế.",
   "en": ""
  },
  {
-  "vi": "Bà Ngọc đứng chờ ở cửa, tay cầm gói bột thông cống.",
+  "vi": "Ghi TSCĐ vô hình và nghĩa vụ trả người bán.",
   "en": ""
  },
  {
-  "vi": "Đổ cái này cho nhanh, thợ trước cũng đổ.",
+  "vi": "Chi nghiên cứu không đủ điều kiện vốn hóa có thể chuyển 213 chỉ vì dự án thành công sau này không?",
   "en": ""
  },
  {
-  "vi": "Ống gang cũ gỉ rồi, đổ xút vào là thủng như chơi.",
+  "vi": "Không; xử lý theo VAS04, không tự phục hồi chi đã ghi",
   "en": ""
  },
  {
-  "vi": "Thế thì làm sao bây giờ?",
+  "vi": "Có; chuyển hết mọi năm",
   "en": ""
  },
  {
-  "vi": "Ống nhà bà Ngọc",
+  "vi": "Có nếu có doanh thu đầu tiên",
   "en": ""
  },
  {
-  "vi": "Soi camera cho bà xem tận mắt",
+  "vi": "Thời điểm đáp ứng điều kiện và quy tắc chuẩn mực quyết định ghi nhận.",
   "en": ""
  },
  {
-  "vi": "Trời, rễ cây chui cả vào ống. Bà tin cháu rồi.",
+  "vi": "Phụ lục II – TK 213,214; VAS04",
   "en": ""
  },
  {
-  "vi": "Giải thích kỹ, dùng máy lò xo cắt rễ",
+  "vi": "Tài sản thuê tài chính và thuê hoạt động",
   "en": ""
  },
  {
-  "vi": "Nước rút rồi! Gói bột này bà cất đi.",
+  "vi": "Phân loại theo rủi ro lợi ích",
   "en": ""
  },
  {
-  "vi": "Hố ga đầu ngõ",
+  "vi": "Tách gốc nợ với lãi thuê",
   "en": ""
  },
  {
-  "vi": "Trời sắp mưa, ông Lộc giục tổ thợ xuống hố ga.",
+  "vi": "Thuê tài chính theo VAS06 dựa chuyển giao phần lớn rủi ro và lợi ích, không chỉ tên hợp đồng hay việc sở hữu pháp lý ngay. Bên thuê ghi tài sản 212 và nợ thuê theo hướng dẫn khi đủ điều kiện; thuê hoạt động có cách ghi chi phí thuê khác. Cần đọc thời hạn, quyền mua, giá trị thanh toán và điều khoản hợp đồng.",
   "en": ""
  },
  {
-  "vi": "Xuống múc luôn đi cháu, đo đạc gì cho mất thời gian!",
+  "vi": "Khoản trả thuê tài chính gồm gốc nợ và lãi theo lịch trả; chỉ lãi thuộc chi phí tài chính hoặc chi phí được vốn hóa nếu đủ điều kiện. Tài sản thuê được khấu hao theo chính sách thích hợp. Tổng tiền chuyển ngân hàng không được ghi hết chi phí thuê khi đã nhận tài sản và ghi nghĩa vụ.",
   "en": ""
  },
  {
-  "vi": "Không đo khí thì không ai xuống. Mười phút thôi ông ạ.",
+  "vi": "Nhận tài sản thuê tài chính 30.000.000đ theo giá trị đề: Nợ 212/Có 341.",
   "en": ""
  },
  {
-  "vi": "Ừ… năm ngoái phường bên có chuyện, tôi quên mất.",
+  "vi": "Trả 3.000.000đ gồm gốc 2.500.000đ và lãi 500.000đ: tách 341 và 635 theo giả định không vốn hóa.",
   "en": ""
  },
  {
-  "vi": "Khí an toàn rồi chú. Cháu xuống, chú canh trên này.",
+  "vi": "Nhận tài sản thuê tài chính giá trị ghi nhận 36.000.000đ; đề cho nợ thuê bằng đúng giá trị.",
   "en": ""
  },
  {
-  "vi": "Cuộn dây lò xo",
+  "vi": "Tăng tài sản thuê và nợ thuê tài chính.",
   "en": ""
  },
  {
-  "vi": "Chú Hai tháo cuộn dây lò xo cũ khỏi xe, buộc lên xe của bạn.",
+  "vi": "Trả kỳ thuê 4.000.000đ, lãi 600.000đ. Phần gốc?",
   "en": ""
  },
  {
-  "vi": "Hai mươi năm chú đi với cuộn dây này. Giờ chú về trông cháu nội.",
+  "vi": "4.000.000−600.000=3.400.000đ.",
   "en": ""
  },
  {
-  "vi": "Nhớ: đúng bệnh, đúng đồ nghề, đúng giá.",
+  "vi": "Phân loại thuê tài chính chỉ căn cứ tiêu đề hợp đồng có đủ không?",
   "en": ""
  },
  {
-  "vi": "Từ nay bếp quán chị có chuyện là gọi em đó.",
+  "vi": "Không; xét chuyển giao rủi ro và lợi ích theo VAS06",
   "en": ""
  },
  {
-  "vi": "Phường giao hố ga cả khu cho tổ thợ của cháu.",
+  "vi": "Có; tên hợp đồng quyết định hết",
   "en": ""
  },
  {
-  "vi": "Cháu sẽ giữ bảng giá của chú, không đổi theo mặt khách.",
+  "vi": "Có nếu có hóa đơn",
   "en": ""
  },
  {
-  "vi": "Đường bay ra đảo",
+  "vi": "Bản chất điều khoản thuê quyết định phân loại.",
   "en": ""
  },
  {
-  "vi": "Chiếc la bàn cũ của chị Vân",
+  "vi": "Trả gốc nợ thuê 2.000.000đ và lãi 300.000đ bằng 112, lãi vào 635, bỏ qua thuế.",
   "en": ""
  },
  {
-  "vi": "La bàn đồng theo chị Vân từ chuyến bay đầu tiên. Kim vẫn chỉ đúng hướng về nhà.",
+  "vi": "Tách giảm nợ gốc và chi phí lãi thuê.",
   "en": ""
  },
  {
-  "vi": "Cơ trưởng Vân",
+  "vi": "Phụ lục II – TK 212,214,341,635; VAS06",
   "en": ""
  },
  {
-  "vi": "Cơ trưởng, người kèm bạn bay",
+  "vi": "TK 215: tài sản sinh học",
   "en": ""
  },
  {
-  "vi": "Chú Mẫn",
+  "vi": "Phân biệt phạm vi 215 và 211",
   "en": ""
  },
  {
-  "vi": "Thợ máy trưởng",
+  "vi": "Theo dõi giai đoạn và sản phẩm thu hoạch",
   "en": ""
  },
  {
-  "vi": "Chị Thu",
+  "vi": "TT99 có TK 215 để theo dõi tài sản sinh học theo nội dung cụ thể, không phải gán mọi cây và vật nuôi vào một mã. Cây lâu năm cho sản phẩm định kỳ và súc vật làm việc thuộc 211 theo hướng dẫn; cần phân loại loại tài sản, mục đích và giai đoạn. Tài sản sinh học có hệ chi tiết phục vụ theo dõi nguyên giá, khấu hao và loại tài sản.",
   "en": ""
  },
  {
-  "vi": "Tiếp viên trưởng",
+  "vi": "Khi thu hoạch, sản phẩm thu hoạch được xử lý như hàng tồn kho theo VAS02 và hướng dẫn, không giữ mọi sản phẩm mã 215. Chi phí và tổn thất cần hồ sơ số lượng, giai đoạn, mức lợi ích và quyết định. TK 2295 theo dõi dự phòng tổn thất tài sản sinh học; không nhập chung 2294 chỉ vì sản phẩm sau này có thể bán.",
   "en": ""
  },
  {
-  "vi": "Học sinh lớp 6 mơ làm phi công",
+  "vi": "Đàn vật nuôi đủ phạm vi 215 có giá trị 20.000.000đ; theo dõi theo nhóm và giai đoạn.",
   "en": ""
  },
  {
-  "vi": "Chậm mà không sót",
+  "vi": "Giá trị cần dự phòng theo hồ sơ 2.000.000đ, đã có 500.000đ: cần lập thêm 1.500.000đ theo loại chi phí phù hợp.",
   "en": ""
  },
  {
-  "vi": "Chị Vân nhìn bạn đọc checklist rất lâu.",
+  "vi": "Cây lâu năm cho sản phẩm định kỳ theo hướng dẫn TT99 xét tài khoản nào?",
   "en": ""
  },
  {
-  "vi": "Em đọc checklist chậm quá.",
+  "vi": "215 cho mọi cây không phân biệt",
   "en": ""
  },
  {
-  "vi": "Dạ, em sợ bỏ sót dòng nào.",
+  "vi": "Phạm vi 215 loại trừ cây lâu năm cho sản phẩm định kỳ và súc vật làm việc.",
   "en": ""
  },
  {
-  "vi": "Chậm mà không sót thì chị chịu. Nhanh mà sót thì chị không chịu.",
+  "vi": "Dự phòng sinh học cần 3.000.000đ, đã có 1.200.000đ. Số tăng cần xem xét?",
   "en": ""
  },
  {
-  "vi": "Vệt dầu dưới cánh",
+  "vi": "3.000.000−1.200.000=1.800.000đ theo hồ sơ đề.",
   "en": ""
  },
  {
-  "vi": "Chú Mẫn gọi bạn ra sân đỗ trước giờ bay.",
+  "vi": "Sản phẩm nông nghiệp đã thu hoạch cần chuyển sang nguyên tắc nào?",
   "en": ""
  },
  {
-  "vi": "Cháu nhìn cái vệt này xem, dầu hay nước mưa?",
+  "vi": "Hàng tồn kho và VAS02 theo hướng dẫn",
   "en": ""
  },
  {
-  "vi": "Dạ… cháu không chắc.",
+  "vi": "Giữ mã 215 cho mọi thời điểm",
   "en": ""
  },
  {
-  "vi": "Không chắc thì hỏi. Hỏi không mất gì, bay mà sai thì mất nhiều.",
+  "vi": "Ghi tiền ngay dù chưa bán",
   "en": ""
  },
  {
-  "vi": "Học phân biệt vệt dầu",
+  "vi": "Sau thu hoạch, sản phẩm có bản chất hàng tồn kho.",
   "en": ""
  },
  {
-  "vi": "Xin chú Mẫn dạy cách quệt tay, ngửi mùi",
+  "vi": "Dự phòng tổn thất tài sản sinh học có mã chi tiết nào được bổ sung?",
   "en": ""
  },
  {
-  "vi": "Dầu máy bay mùi hắc, sờ vào trơn tay. Nước mưa thì không. Nhớ đời nhé.",
+  "vi": "TT99 bổ sung 2295 cho tổn thất tài sản sinh học.",
   "en": ""
  },
  {
-  "vi": "Chụp ảnh gửi chị Vân hỏi luôn",
+  "vi": "Phụ lục II – TK 211,215,2295; VAS02 cho sản phẩm thu hoạch",
   "en": ""
  },
  {
-  "vi": "Hỏi đúng người rồi. Nhưng lần sau ra đó với chú Mẫn, học tận tay.",
+  "vi": "7. Dự án, phân bổ và bất động sản",
   "en": ""
  },
  {
-  "vi": "Lá thư của Bé Na",
+  "vi": "Tập hợp 241 theo dự án",
   "en": ""
  },
  {
-  "vi": "Có một lá thư gửi “tổ bay Cánh Cò”.",
+  "vi": "Bàn giao tài sản khi đủ điều kiện",
   "en": ""
  },
  {
-  "vi": "Bé Na viết thư về hãng, chị mang tới cho em đây.",
+  "vi": "TK 241 tập hợp chi phí đầu tư, xây dựng và các công việc có nội dung theo hướng dẫn, cần chi tiết từng dự án và hạng mục. Hóa đơn tạm ứng nhà thầu không tự đồng nghĩa khối lượng đã thực hiện. Chi phí đi vay chỉ vốn hóa khi thỏa VAS16; phần không đủ điều kiện vào chi phí kỳ.",
   "en": ""
  },
  {
-  "vi": "Con muốn làm phi công. Nhưng con học Toán dở lắm.",
+  "vi": "Khi công trình hoàn thành, sẵn sàng sử dụng và đủ căn cứ ghi tài sản, chuyển chi phí hợp lệ sang 211 hoặc tài khoản phù hợp; không đợi vô hạn chỉ vì chưa quyết toán cuối cùng nếu phải ghi theo hướng dẫn. Khoản vượt, không hợp lệ hoặc tổn thất cần xử lý riêng. Hồ sơ gồm nghiệm thu, bàn giao, tập hợp chi phí và chính sách khấu hao.",
   "en": ""
  },
  {
-  "vi": "Phải trả lời Na cho thật lòng mới được.",
+  "vi": "Chi phí công trình 32.000.000đ gồm 30.000.000đ xây lắp và 2.000.000đ trực tiếp hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Viết gì cho Na?",
+  "vi": "Bàn giao đủ điều kiện 211: Nợ 211/Có 241 32.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Kể thật: phải học Toán, học tiếng Anh, và đừng ngại hỏi",
+  "vi": "Xây lắp 25.000.000đ, thiết kế 2.000.000đ đủ điều kiện, không thuế. Chi phí dự án?",
   "en": ""
  },
  {
-  "vi": "Con dán thư lên bàn học rồi, ngày nào con cũng đọc!",
+  "vi": "25+2=27 triệu đồng.",
   "en": ""
  },
  {
-  "vi": "Gửi Na tấm ảnh buồng lái có chữ ký cả tổ bay",
+  "vi": "Công trình đã đủ điều kiện đưa vào 211, giá trị hợp lệ từ 241 là 35.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Con khoe cả lớp! Cô giáo bảo muốn lái máy bay thì học giỏi Toán.",
+  "vi": "Chuyển dự án dở dang sang tài sản sẵn sàng sử dụng.",
   "en": ""
  },
  {
-  "vi": "Giông trên đảo",
+  "vi": "Tạm ứng nhà thầu có tự chứng minh khối lượng xây lắp hoàn thành không?",
   "en": ""
  },
  {
-  "vi": "Giông kéo tới đảo sớm hơn dự báo.",
+  "vi": "Không; cần nghiệm thu và căn cứ quyền nghĩa vụ",
   "en": ""
  },
  {
-  "vi": "Radar đỏ hết phía trước rồi. Em tính sao?",
+  "vi": "Có; cứ trả tiền là 241 hoàn thành",
   "en": ""
  },
  {
-  "vi": "Mình còn dầu chờ hai mươi phút, sân bay dự bị là Cần Thơ.",
+  "vi": "Có nếu chuyển khoản",
   "en": ""
  },
  {
-  "vi": "Khoang khách thắt dây hết rồi, hai đứa cứ quyết.",
+  "vi": "Thanh toán trước khác khối lượng thực hiện.",
   "en": ""
  },
  {
-  "vi": "Nói tiếp đi. Chị nghe.",
+  "vi": "Dự án đã tập hợp 40.000.000đ, phần không đủ điều kiện vốn hóa xác định 3.000.000đ. Phần hợp lệ theo đề?",
   "en": ""
  },
  {
-  "vi": "Quyết định cuối cùng",
+  "vi": "40−3=37 triệu đồng; phần loại ra xử lý riêng.",
   "en": ""
  },
  {
-  "vi": "Bay chờ mười lăm phút, không tan thì đi Cần Thơ",
+  "vi": "Phụ lục II – TK 241,211; VAS03,16",
   "en": ""
  },
  {
-  "vi": "Có mốc giờ, có đường lui. Đó là cách nghĩ của một cơ trưởng.",
+  "vi": "Sửa chữa định kỳ, nâng cấp và TK 242",
   "en": ""
  },
  {
-  "vi": "Đi Cần Thơ luôn, không chờ",
+  "vi": "Tách 2413 với 2414",
   "en": ""
  },
  {
-  "vi": "Chắc ăn. Khách về muộn, nhưng về đủ. Chị ký.",
+  "vi": "Phân bổ chi phí thực tế nhiều kỳ",
   "en": ""
  },
  {
-  "vi": "Chiếc la bàn",
+  "vi": "TT99 phân biệt 2413 Sửa chữa, bảo dưỡng định kỳ TSCĐ với 2414 Nâng cấp, cải tạo TSCĐ. Chi sửa chữa định kỳ thực tế có thể chuyển 242 nếu đủ điều kiện hưởng lợi nhiều kỳ; nâng cấp đủ điều kiện tăng tài sản xử lý theo hồ sơ. Không coi mọi chi sửa chữa là nguyên giá hoặc mọi khoản 242 là tiền đã trả trước.",
   "en": ""
  },
  {
-  "vi": "Chị Vân gói một vật nhỏ trong khăn tay.",
+  "vi": "Công cụ 153 khi xuất dùng có thể được phân bổ qua 242 theo thời gian hưởng lợi hợp lý. Đơn vị cần bảng phân bổ theo từng khoản và chức năng sử dụng. Quy định chuyển tiếp đối với trích trước sửa chữa lớn cần đọc Điều 30: ngừng trích tiếp đến khi thực hiện và đối chiếu thực tế, không tiếp tục máy móc theo cách cũ.",
   "en": ""
  },
  {
-  "vi": "Chị bay chặng cuối trước khi lên làm huấn luyện.",
+  "vi": "Công cụ quản lý 6.000.000đ đủ điều kiện phân bổ 6 tháng: Nợ 242/Có 153; mỗi tháng Nợ 642/Có 242 1.000.000đ.",
   "en": ""
  },
  {
-  "vi": "La bàn này theo chị từ chuyến đầu tiên. Giờ nó theo em.",
+  "vi": "Khoản nâng cấp dở dang cũ ở 2413 cần xem chuyển 2414 theo Điều 29.",
   "en": ""
  },
  {
-  "vi": "Chú đứng dưới sân đỗ mười lăm năm, lần đầu thấy chị Vân rưng rưng đấy.",
+  "vi": "Xuất công cụ 153 giá 3.000.000đ dùng nhiều kỳ, đủ điều kiện đưa 242.",
   "en": ""
  },
  {
-  "vi": "Em sẽ bay như chị dạy: chậm mà không sót.",
+  "vi": "Chuyển công cụ sang chi phí chờ phân bổ.",
   "en": ""
  },
  {
-  "vi": "Khoang khách nhỏ",
+  "vi": "Chi phí sửa chữa thực tế đủ điều kiện 242 là 8.000.000đ phân bổ 8 tháng. Mỗi tháng?",
   "en": ""
  },
  {
-  "vi": "Chiếc ghim cài hình con cò",
+  "vi": "8.000.000/8=1.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Ghim cài của chị Thu từ hồi mới bay. Cánh cò đã bạc màu vì nắng đảo.",
+  "vi": "Ghép mã với công việc theo TT99.",
   "en": ""
  },
  {
-  "vi": "Bà Chín",
+  "vi": "Sửa chữa, bảo dưỡng định kỳ",
   "en": ""
  },
  {
-  "vi": "Hành khách lần đầu đi máy bay",
+  "vi": "Nâng cấp, cải tạo",
   "en": ""
  },
  {
-  "vi": "Mẹ của bé Bơ",
+  "vi": "Hai công việc có nội dung tài khoản riêng.",
   "en": ""
  },
  {
-  "vi": "Ông Tư",
+  "vi": "Phân bổ công cụ cho sản xuất chung kỳ này 900.000đ từ 242.",
   "en": ""
  },
  {
-  "vi": "Cựu chiến binh về thăm đảo",
+  "vi": "Phân bổ vào chức năng sử dụng, không luôn 642.",
   "en": ""
  },
  {
-  "vi": "Nụ cười ở cửa tàu",
+  "vi": "Phụ lục II – TK 153,2413,2414,242; Điều 29–30",
   "en": ""
  },
  {
-  "vi": "Chị Thu đứng cạnh bạn ở cửa, nhìn bạn chào khách.",
+  "vi": "Xác định mục đích 217",
   "en": ""
  },
  {
-  "vi": "Em chào khách như chào người lạ. Chào như chào hàng xóm xem.",
+  "vi": "Tách kết quả bán bất động sản đầu tư",
   "en": ""
  },
  {
-  "vi": "Dạ… “Con chào bà, bà ra đảo thăm cháu hả bà?”",
+  "vi": "Bất động sản đầu tư theo 217 được nắm giữ nhằm thu tiền thuê hoặc tăng giá, khác tài sản dùng trong sản xuất quản lý và khác bất động sản để bán trong hoạt động thông thường. Phân loại phải theo mục đích thực tế và VAS05, có hồ sơ khi đổi mục đích; không đổi mã chỉ để thay kết quả kế toán.",
   "en": ""
  },
  {
-  "vi": "Ừ, thăm thằng cháu đích tôn! Cô tiếp viên dễ thương ghê.",
+  "vi": "Nguyên giá, khấu hao, chi phí khai thác và doanh thu được xử lý theo chuẩn mực và hướng dẫn. Mẫu B02 TT99 có chỉ tiêu lãi/lỗ bán, thanh lý bất động sản đầu tư mã 21; không ghép sai vào mã tài chính của mẫu cũ. Ví dụ giá bán trừ giá trị còn lại minh họa phần kết quả, bỏ qua thuế và chi phí bán theo giả định.",
   "en": ""
  },
  {
-  "vi": "Túi xoài của bà Chín",
+  "vi": "Tòa nhà cho thuê có nguyên giá 80.000.000đ, hao mòn 20.000.000đ: còn 60.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Bà Chín ôm túi xoài, không chịu cất lên hộc.",
+  "vi": "Bán giá 70.000.000đ không thuế/chi khác: chênh minh họa 10.000.000đ, trình bày đúng chỉ tiêu.",
   "en": ""
  },
  {
-  "vi": "Xoài chín cây, để trên đó dập hết cô ơi.",
+  "vi": "Nhà đang dùng làm trụ sở quản lý có mặc định là 217 không?",
   "en": ""
  },
  {
-  "vi": "Túi này để dưới gầm ghế phía trước được, miễn không chắn lối đi.",
+  "vi": "Không; mục đích dùng nội bộ khác bất động sản đầu tư",
   "en": ""
  },
  {
-  "vi": "Để con xếp cho bà nhé.",
+  "vi": "Có; mọi nhà đất đều 217",
   "en": ""
  },
  {
-  "vi": "Cất túi xoài",
+  "vi": "Có nếu giá thị trường tăng",
   "en": ""
  },
  {
-  "vi": "Xếp túi dưới gầm ghế, dặn bà gác chân cho thoải mái",
+  "vi": "Phân loại dựa mục đích nắm giữ theo VAS05.",
   "en": ""
  },
  {
-  "vi": "Vậy mà bà cứ lo. Tới đảo bà biếu cô hai trái.",
+  "vi": "BĐSĐT nguyên giá 100.000.000đ, hao mòn 30.000.000đ. Giá trị còn lại?",
   "en": ""
  },
  {
-  "vi": "Nhờ chị Thu tìm chỗ trong tủ bếp",
+  "vi": "100−30=70 triệu đồng.",
   "en": ""
  },
  {
-  "vi": "Tủ bếp để vừa một túi. Lần này thôi nhé bà.",
+  "vi": "Bán BĐSĐT 80.000.000đ, giá trị còn lại 65.000.000đ, bỏ qua thuế và chi phí bán. Chênh lệch?",
   "en": ""
  },
  {
-  "vi": "Bé Bơ đau tai",
+  "vi": "80−65=15 triệu đồng theo giả định đề.",
   "en": ""
  },
  {
-  "vi": "Tàu hạ độ cao, bé Bơ khóc thét.",
+  "vi": "Mã 21 B02 TT99 dùng cho nội dung nào?",
   "en": ""
  },
  {
-  "vi": "Chị xin lỗi mọi người, bé đau tai…",
+  "vi": "Lãi/lỗ bán, thanh lý bất động sản đầu tư",
   "en": ""
  },
  {
-  "vi": "Chị cho bé bú hoặc uống từng ngụm nước lúc này nhé.",
+  "vi": "Doanh thu tài chính theo mẫu cũ",
   "en": ""
  },
  {
-  "vi": "Nín rồi! Sao em biết hay vậy?",
+  "vi": "B02 TT99 thay đổi vị trí mã so với mẫu trước.",
   "en": ""
  },
  {
-  "vi": "Tiếp viên nào cũng thuộc bài này. Giờ em thuộc rồi đấy.",
+  "vi": "Phụ lục II – TK 217; Phụ lục IV – B02 mã 21; VAS05",
   "en": ""
  },
  {
-  "vi": "Tấm ảnh cũ của ông Tư",
+  "vi": "Ký quỹ, ký cược và tài sản bảo đảm",
   "en": ""
  },
  {
-  "vi": "Ông Tư nhìn ra cửa sổ rất lâu.",
+  "vi": "Tách 244 với 344",
   "en": ""
  },
  {
-  "vi": "Ngày xưa ông ra đảo bằng tàu thủy, say sóng ba ngày.",
+  "vi": "Theo dõi tài sản thế chấp",
   "en": ""
  },
  {
-  "vi": "Giờ bay năm mươi phút. Đồng đội ông không ai được đi thế này.",
+  "vi": "TK 244 theo dõi ký quỹ, ký cược của đơn vị; TK 344 theo dõi tiền nhận ký quỹ, ký cược theo nội dung. Trả tiền bảo đảm thực hiện hợp đồng khác chi phí ngay; nhận ký cược không là doanh thu nếu còn nghĩa vụ hoàn lại. Có hợp đồng, điều kiện hoàn trả và đối tượng chi tiết để phân loại thời hạn.",
   "en": ""
  },
  {
-  "vi": "Ông kể thêm cho con nghe được không ạ?",
+  "vi": "Tài sản đem cầm cố hoặc thế chấp có thể vẫn là tài sản của đơn vị theo quyền và bản chất; không tự ghi giảm 211 chỉ vì ngân hàng giữ hồ sơ. Cần thuyết minh hạn chế và tài sản bảo đảm, theo dõi nghĩa vụ vay riêng. Khi ký cược bị khấu trừ, phải có căn cứ xử lý vào công nợ hoặc chi phí phù hợp, không tự xóa 244.",
   "en": ""
  },
  {
-  "vi": "Ông Tư muốn gửi lời",
+  "vi": "Đặt ký cược 3.000.000đ bằng 112: Nợ 244/Có 112.",
   "en": ""
  },
  {
-  "vi": "Xin chị Thu đọc lời chào mừng ông trên loa",
+  "vi": "Nhận ký cược 2.000.000đ: Nợ 112/Có 344; khi hoàn trả giảm 344.",
   "en": ""
  },
  {
-  "vi": "“Tổ bay hân hạnh đưa bác Tư về thăm đảo.” Cả khoang vỗ tay.",
+  "vi": "Chuyển khoản ký cược thuê mặt bằng 4.000.000đ, có quyền nhận lại theo hợp đồng.",
   "en": ""
  },
  {
-  "vi": "Ông đi bao nhiêu chuyến, lần đầu có người gọi tên ông.",
+  "vi": "Khoản bảo đảm chưa là chi phí thuê.",
   "en": ""
  },
  {
-  "vi": "Ngồi ghế phụ cạnh ông, nghe ông kể tới lúc hạ cánh",
+  "vi": "Nhận tiền ký cược khách 5.000.000đ vào 112, còn nghĩa vụ hoàn trả.",
   "en": ""
  },
  {
-  "vi": "Kể được với người trẻ, ông thấy nhẹ lòng.",
+  "vi": "Ghi tiền và nghĩa vụ ký cược nhận.",
   "en": ""
  },
  {
-  "vi": "Chiếc ghim con cò",
+  "vi": "Máy thế chấp vay có tự bị xóa khỏi 211 không?",
   "en": ""
  },
  {
-  "vi": "Chị Thu tháo chiếc ghim trên ngực áo.",
+  "vi": "Không; xem quyền kiểm soát, tiếp tục theo dõi và thuyết minh",
   "en": ""
  },
  {
-  "vi": "Chị chuyển lên làm huấn luyện tiếp viên mới rồi.",
+  "vi": "Có; ngân hàng giữ giấy là không còn tài sản",
   "en": ""
  },
  {
-  "vi": "Ghim này của chị từ ngày đầu đi bay. Giờ em cài nhé.",
+  "vi": "Có; chuyển hết 635",
   "en": ""
  },
  {
-  "vi": "Lần sau bà bay, bà vẫn tìm cô tiếp viên này.",
+  "vi": "Bảo đảm khoản vay không tự đồng nghĩa bán tài sản.",
   "en": ""
  },
  {
-  "vi": "Em sẽ giữ khoang khách như chị giữ: nhỏ nhẹ mà chắc chắn.",
+  "vi": "Ký cược 244 ban đầu 6.000.000đ, đã được trả lại 2.000.000đ. Còn quyền đòi theo đề?",
   "en": ""
  },
  {
-  "vi": "Người giữ hồ sơ",
+  "vi": "6−2=4 triệu đồng.",
   "en": ""
  },
  {
-  "vi": "Chìa khóa tủ hồ sơ nhân sự",
+  "vi": "Phụ lục II – TK 244,344; Phụ lục IV – thuyết minh tài sản bảo đảm",
   "en": ""
  },
  {
-  "vi": "Tủ sắt màu xám ở phòng nhân sự Cánh Diều. Chị Huyền giao lại cho bạn.",
+  "vi": "8. Đầu tư và tổn thất đầu tư",
   "en": ""
  },
  {
-  "vi": "Chị Huyền",
+  "vi": "Phân loại mục đích 121",
   "en": ""
  },
  {
-  "vi": "Trưởng phòng Hành chính – Nhân sự",
+  "vi": "Tính kết quả bán và tổn thất",
   "en": ""
  },
  {
-  "vi": "Giám đốc Cánh Diều",
+  "vi": "TK 121 phản ánh chứng khoán nắm giữ với mục đích kinh doanh theo hướng dẫn. Giá ghi nhận cần xét chi phí giao dịch và bản chất công cụ, không chỉ số chuyển tiền cho môi giới. Theo dõi từng loại, số lượng và giá trị; mục đích giữ đến đáo hạn hoặc nắm quyền kiểm soát có hệ tài khoản khác.",
   "en": ""
  },
  {
-  "vi": "Tổ trưởng xưởng may",
+  "vi": "Khi bán, tách giá trị sổ và chênh lệch tài chính theo hướng dẫn. Cuối kỳ xem dự phòng tổn thất 2291 với căn cứ thích hợp; giá thị trường tăng không tự cho phép ghi một khoản lãi chưa thực hiện vào 515 trong mô hình giá gốc. Chi phí thuế của khoản dự phòng cần xét pháp luật thuế riêng.",
   "en": ""
  },
  {
-  "vi": "Thợ may lâu năm",
+  "vi": "Chứng khoán giá sổ 8.000.000đ bán thu 9.000.000đ, không phí: lãi 1.000.000đ.",
   "en": ""
  },
  {
-  "vi": "Tủ hồ sơ màu xám",
-  "en": ""
- },
- {
-  "vi": "Ngày đầu ở phòng nhân sự Cánh Diều.",
-  "en": ""
- },
- {
-  "vi": "Bốn mươi người, bốn mươi bộ hồ sơ. Mỗi tờ giấy ở đây là chuyện cơm áo của một nhà đấy em.",
-  "en": ""
- },
- {
-  "vi": "Sai một ngày công là người ta thiếu tiền đong gạo.",
-  "en": ""
- },
- {
-  "vi": "Dạ, em soát từng ô, chỗ nào chưa chắc em hỏi chị.",
-  "en": ""
- },
- {
-  "vi": "Linh quên quẹt thẻ",
-  "en": ""
- },
- {
-  "vi": "Có người đứng chờ trước cửa phòng nhân sự.",
-  "en": ""
- },
- {
-  "vi": "Tuần này em quên quẹt thẻ ba lần, bảng công ghi em thiếu giờ. Em đi gặp khách thật mà!",
-  "en": ""
- },
- {
-  "vi": "Bị trừ lương thì tháng này em hết tiền trọ.",
-  "en": ""
- },
- {
-  "vi": "Mình xem lịch gặp khách với tin nhắn của Linh nhé.",
-  "en": ""
- },
- {
-  "vi": "Đối chiếu lịch gặp khách, làm giấy xác nhận công cho Linh",
-  "en": ""
- },
- {
-  "vi": "Có giấy xác nhận rồi! Từ mai em đặt báo thức quẹt thẻ.",
-  "en": ""
- },
- {
-  "vi": "Chỉ Linh viết đơn giải trình gửi chị Huyền",
-  "en": ""
- },
- {
-  "vi": "Đơn viết rõ ràng thế này thì chị duyệt ngay.",
-  "en": ""
- },
- {
-  "vi": "Xưởng thiếu người",
-  "en": ""
- },
- {
-  "vi": "Chú Lâm sang phòng nhân sự, tay còn cầm thước dây.",
-  "en": ""
- },
- {
-  "vi": "Đơn balo cho trường học dồn về, tổ chú thiếu ba thợ. Tuyển gấp giùm chú!",
-  "en": ""
- },
- {
-  "vi": "Dạ, chiều nay cháu đăng tin, mai lọc hồ sơ, ngày kia mời thử tay nghề.",
-  "en": ""
- },
- {
-  "vi": "Nhanh vậy thì chú mời cả phòng ly chè.",
-  "en": ""
- },
- {
-  "vi": "Cháu của giám đốc",
-  "en": ""
- },
- {
-  "vi": "Anh Quân ghé bàn bạn, tay cầm một bộ hồ sơ.",
-  "en": ""
- },
- {
-  "vi": "Cháu anh nộp vào vị trí kế toán kho. Khỏi phỏng vấn, làm hợp đồng luôn cho anh.",
-  "en": ""
- },
- {
-  "vi": "Người nhà cả, tin được.",
-  "en": ""
- },
- {
-  "vi": "Dạ, hồ sơ của bạn ấy còn thiếu bằng kế toán. Em xin xếp bạn phỏng vấn như mọi người ạ.",
-  "en": ""
- },
- {
-  "vi": "Xếp lịch phỏng vấn, nói rõ quy trình công bằng cho mọi người",
-  "en": ""
- },
- {
-  "vi": "Ừ… quy trình anh ký mà anh lại phá thì kỳ. Cứ phỏng vấn đi.",
-  "en": ""
- },
- {
-  "vi": "Báo chị Huyền để chị nói chuyện với giám đốc",
-  "en": ""
- },
- {
-  "vi": "Em làm đúng. Chuyện này để chị nói, em yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Bảng công không sai một ô",
-  "en": ""
- },
- {
-  "vi": "Cuối năm, cả công ty họp ở xưởng.",
-  "en": ""
- },
- {
-  "vi": "Năm nay không ai khiếu nại lương, không ai bị trừ oan một ngày công.",
-  "en": ""
- },
- {
-  "vi": "Hồi con tôi nằm viện, phòng nhân sự xếp ca cho tôi. Tôi nhớ mãi.",
-  "en": ""
- },
- {
-  "vi": "Từ tháng sau, em giữ chìa khóa tủ hồ sơ nhé. Chị tin em.",
-  "en": ""
- },
- {
-  "vi": "Dạ, em sẽ giữ cẩn thận từng tờ.",
-  "en": ""
- },
- {
-  "vi": "Cuốn sổ lịch bìa đỏ",
-  "en": ""
- },
- {
-  "vi": "Sổ lịch của Anh Quân. Trang nào cũng có nét chữ của bạn.",
-  "en": ""
- },
- {
-  "vi": "Chị Khuê",
-  "en": ""
- },
- {
-  "vi": "Trợ lý cũ, nay ở phòng kinh doanh",
-  "en": ""
- },
- {
-  "vi": "Ông Lực",
-  "en": ""
- },
- {
-  "vi": "Chủ xưởng vải Lực Thành",
-  "en": ""
- },
- {
-  "vi": "Chiếc bàn trước cửa phòng giám đốc",
-  "en": ""
- },
- {
-  "vi": "Ngày đầu ngồi bàn thư ký.",
-  "en": ""
- },
- {
-  "vi": "Bàn này chị ngồi năm năm. Sếp quyết nhanh, đổi ý còn nhanh hơn, em nhớ ghi bút chì.",
-  "en": ""
- },
- {
-  "vi": "Lịch của anh là của em. Anh chỉ cần biết mấy giờ đi đâu.",
-  "en": ""
- },
- {
-  "vi": "Dạ, em ghi hết vào sổ, có gì đổi em báo anh liền.",
-  "en": ""
- },
- {
-  "vi": "Quầy lễ tân có tiếng to tiếng nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Có ông khách quát em vì không cho gặp giám đốc. Em run quá, không dám nghe máy nữa.",
-  "en": ""
- },
- {
-  "vi": "Chị Khuê chuyển phòng rồi, em không biết hỏi ai.",
-  "en": ""
- },
- {
-  "vi": "Không sao, mình cùng soạn mấy câu trả lời khách khó nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn giúp Nhi",
-  "en": ""
- },
- {
-  "vi": "Ngồi cạnh Nhi nghe máy một buổi, viết sẵn mấy câu trả lời",
-  "en": ""
- },
- {
-  "vi": "Có tờ giấy này em đọc theo được rồi. Hết run luôn!",
-  "en": ""
- },
- {
-  "vi": "Hẹn chị Khuê ghé dạy Nhi giờ nghỉ trưa",
-  "en": ""
- },
- {
-  "vi": "Chị dạy Nhi mẹo cũ của chị rồi. Hai đứa giỏi lắm.",
-  "en": ""
- },
- {
-  "vi": "Ông Lực đòi gặp",
-  "en": ""
- },
- {
-  "vi": "Ông Lực tới mà không hẹn trước.",
-  "en": ""
- },
- {
-  "vi": "Tôi chờ tiền vải ba tuần rồi! Hôm nay không gặp được giám đốc thì tôi ngồi đây luôn.",
-  "en": ""
- },
- {
-  "vi": "Dạ, cháu mời bác ly trà. Anh Quân họp tới 10 giờ, cháu xếp bác gặp lúc 10 giờ 15 được không ạ?",
-  "en": ""
- },
- {
-  "vi": "Ờ… có giờ hẹn rõ ràng vậy thì tôi chờ.",
-  "en": ""
- },
- {
-  "vi": "Tờ báo giá trên bàn sếp",
-  "en": ""
- },
- {
-  "vi": "Ông Lực hạ giọng hỏi bạn trong phòng chờ.",
-  "en": ""
- },
- {
-  "vi": "Báo giá của xưởng bên kia nằm trên bàn giám đốc đúng không? Cháu chụp giùm bác một tấm.",
-  "en": ""
- },
- {
-  "vi": "Bác giảm giá cho Cánh Diều mà. Bác cháu mình với nhau, ai biết đâu.",
-  "en": ""
- },
- {
-  "vi": "Dạ, giấy tờ trên bàn giám đốc cháu không được đưa ai xem ạ.",
-  "en": ""
- },
- {
-  "vi": "Từ chối nhẹ nhàng, mời ông gửi báo giá mới để công ty so công bằng",
-  "en": ""
- },
- {
-  "vi": "Cô cậu này kín miệng thật. Thôi, tôi về làm báo giá cho tử tế.",
-  "en": ""
- },
- {
-  "vi": "Báo Anh Quân chuyện Ông Lực hỏi",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn em. Anh cất báo giá vào tủ, rồi nói chuyện thẳng với ông ấy.",
-  "en": ""
- },
- {
-  "vi": "Hội nghị khách hàng",
-  "en": ""
- },
- {
-  "vi": "Hội trường tầng 3, một trăm khách mời.",
-  "en": ""
- },
- {
-  "vi": "Một trăm khách, không ai lạc chỗ ngồi, không ai phải chờ. Em lo hết đấy à?",
-  "en": ""
- },
- {
-  "vi": "Cả quầy lễ tân làm theo bảng phân công của chị đó ạ.",
-  "en": ""
- },
- {
-  "vi": "Từ tháng sau em làm trợ lý giám đốc. Cuốn sổ lịch này giao em giữ.",
-  "en": ""
- },
- {
-  "vi": "Dạ, em sẽ giữ lịch của anh cẩn thận từng phút.",
-  "en": ""
- },
- {
-  "vi": "Sao lưu trước, sửa sau",
-  "en": ""
- },
- {
-  "vi": "Chìa khóa phòng máy chủ",
-  "en": ""
- },
- {
-  "vi": "Phòng máy nhỏ cạnh kho Cánh Diều. Anh Long dán tên bạn lên cửa.",
-  "en": ""
- },
- {
-  "vi": "Trưởng nhóm IT",
-  "en": ""
- },
- {
-  "vi": "Cô Hằng",
-  "en": ""
- },
- {
-  "vi": "Ba mươi cái máy, một cái tua vít",
-  "en": ""
- },
- {
-  "vi": "Ngày đầu ở bàn IT.",
-  "en": ""
- },
- {
-  "vi": "Ba mươi máy tính, hai máy in, một cục wifi hay dỗi. Đây là cả vương quốc của mình.",
-  "en": ""
- },
- {
-  "vi": "Luật đầu tiên: sao lưu trước, sửa sau.",
-  "en": ""
- },
- {
-  "vi": "Dạ, em ghi to lên giấy dán màn hình luôn.",
-  "en": ""
- },
- {
-  "vi": "Máy in tem của xưởng",
-  "en": ""
- },
- {
-  "vi": "Chú Lâm bê nguyên cái máy in sang bàn bạn.",
-  "en": ""
- },
- {
-  "vi": "Con máy in tem này kẹt giấy từ sáng, xưởng không in được tem balo. Cứu chú!",
-  "en": ""
- },
- {
-  "vi": "Chú lỡ lấy dao rọc giấy khều ra, giờ nó kêu rè rè.",
-  "en": ""
- },
- {
-  "vi": "Chú để cháu xem. Lần sau chú gọi cháu trước khi khều nha.",
-  "en": ""
- },
- {
-  "vi": "Sửa xong rồi, bạn làm gì thêm?",
-  "en": ""
- },
- {
-  "vi": "Dán tờ hướng dẫn gỡ giấy kẹt ngay cạnh máy",
-  "en": ""
- },
- {
-  "vi": "Có tờ hướng dẫn này, thằng Dũng tự gỡ được luôn. Giỏi!",
+  "vi": "Chứng khoán khác giá sổ 5.000.000đ, giá đánh giá 4.200.000đ: tổn thất cần xem 800.000đ.",
   "en": ""
  }
 ]

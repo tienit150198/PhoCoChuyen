@@ -5,7 +5,10 @@
  *            and the way into a manager shift from step 3;
  *   manager  the board: tap a job, tap a teammate; check what comes back (✅ / ↩️); settle a small crisis;
  *            close the shift. Every step is a server command (pm_*); the board here only remembers which job
- *            is picked (ui.pmPick). */
+ *            is picked (ui.pmPick).
+ *   office   🏢 Phòng điều hành (game/promotion_office.py, from the executive step of a long ladder): the day's figures, then
+ *            three tabs: 📥 việc cần quyết, 🗓️ điều phối (tap a slot, tap a person), 👥 nhân sự (tap a person, pick a decision).
+ *            Shown in the 'manager' sheet while ui.pmOffice is set. */
 import {icon,escapeHTML as esc} from '../icons.js';
 
 const KIND={khach:['🗣️','Khách'],tay:['🔧','Tay nghề'],so:['📋','Giấy tờ'],gap:['⚡','Việc gấp']};
@@ -15,16 +18,29 @@ const cmd=(label,command,payload={},style='',disabled=false)=>`<button type="but
 const act=(label,action,data={},style='',disabled=false)=>`<button type="button" class="btn ${style}" data-action="${action}"${Object.entries(data).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')}${disabled?' disabled':''}>${label}</button>`;
 const bar=(a,b)=>`<div class="bar pm-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${b}" aria-valuenow="${a}"><i style="width:${b?Math.min(100,Math.round(100*a/b)):0}%"></i></div>`;
 const room=env=>env.api.state.careers[env.api.state.current];
+const GOLD='#d9b45a',NAVY='#1f2d4d';
+const starPts=(cx,cy,r)=>Array.from({length:10},(_,i)=>{const a=Math.PI/5*i-Math.PI/2,rr=i%2?r*.45:r;return `${(cx+rr*Math.cos(a)).toFixed(1)},${(cy+rr*Math.sin(a)).toFixed(1)}`;}).join(' ');
+/** A pilot's shoulder board (F#193): g gold stripes, s stars, w a gold wreath around the stars. */
+export function insignia(x,w=96){
+  if(!x)return '';
+  const bars=Array.from({length:x.g},(_,i)=>`<rect x="${84-i*8}" y="7" width="5" height="22" rx="1" fill="${GOLD}"/>`).join('');
+  const stars=Array.from({length:x.s},(_,i)=>`<polygon points="${starPts(26+i*12,18,5.5)}" fill="${GOLD}"/>`).join('');
+  const wreath=x.w?`<path d="M18 27 Q30 35 52 27" fill="none" stroke="${GOLD}" stroke-width="1.6"/><path d="M18 9 Q16 18 18 27 M52 9 Q54 18 52 27" fill="none" stroke="${GOLD}" stroke-width="1.2" stroke-dasharray="2 2"/>`:'';
+  return `<svg class="pm-ins" viewBox="0 0 100 36" width="${w}" height="${Math.round(w*.36)}" role="img" aria-label="${esc(x.label||'')}"><rect x="1" y="3" width="97" height="30" rx="7" fill="${NAVY}"/><circle cx="9" cy="18" r="3.6" fill="${GOLD}"/>${wreath}${stars}${bars}</svg>`;
+}
+const badge=p=>p.insignia?`<span class="pm-badge pm-badge-ins">${insignia(p.insignia,112)}<small>${esc(p.insignia.label)}</small></span>`:`<span class="pm-badge" aria-hidden="true">${p.badge||'🎖️'}</span>`;
 const place=env=>env.api.content.catalogue?.find(x=>x.id===env.api.state.current)?.short||'';
 
 /** The steps behind "Xem thêm": what each step gives. */
 function more(p){
-  const emp=p.track==='emp';
+  const emp=p.track==='emp',pcts=(p.pcts||[]).map(x=>x+'%').join(' → ');
   const rows=(p.log||[]).map(x=>`<li>✓ Ngày ${x.d}: bậc ${x.to}</li>`).join('');
-  return `<details class="pm-more"><summary>Xem thêm</summary><ul class="pm-rules">
+  const ladder=p.ladder?`<ol class="pm-path">${p.ladder.map((t,i)=>`<li class="${i<p.rank?'on':''}">${p.insignias?insignia(p.insignias[i],46):''}<span>${esc(t)}</span></li>`).join('')}</ol>`:'';
+  return `<details class="pm-more"><summary>Xem thêm</summary>${ladder}<ul class="pm-rules">
     <li>Ngày tốt: ca thường xong từ 2 việc, đánh giá trong ngày từ ★3.5 nếu có. Nghề văn phòng theo kết quả “ngày chắc tay”; ca quản lý đạt chất lượng từ 60%.</li>
-    <li>${emp?'Mỗi bậc: tăng lương 8% → 16% → 25% → 35%.':'Mỗi bậc: khách quen boa thêm 3% → 6% → 9% → 12%.'}</li>
+    <li>${emp?'Mỗi bậc: tăng lương ':'Mỗi bậc: khách quen boa thêm '}${pcts}.</li>
     <li>Bậc 3: mở 🧑‍💼 Ca quản lý${p.track==='own'?' (nhân viên + phụ việc thời vụ)':''}.</li>
+    ${p.office_from?`<li>Bậc ${p.office_from} (${esc(p.office_title)}): mở 🏢 phòng điều hành: điều phối, quản lý nhân sự, xử lý việc khó.</li>`:''}
     <li>Không bao giờ bị giáng chức. Ngày chưa tốt không cộng ngày tốt và vẫn tính vào tỷ lệ ngày làm.</li>${rows}</ul></details>`;
 }
 
@@ -50,16 +66,85 @@ export function promoView(env){
     :'Công việc ở quầy vẫn như trước. Từ bậc 3, bạn có thêm ca quản lý để giao việc cho đội và kiểm tra kết quả.';
   const benefit=p.track==='emp'?`Thăng chức tăng lương${p.pct?` · hiện tại +${p.pct}%`:''}.`:`Thăng tiến tăng tiền boa từ khách quen${p.pct?` · hiện tại +${p.pct}%`:''}.`;
   let main;
+  const of=p.office,todo=of?.inbox?.length||0;
+  const office=of?act(`🏢 ${esc(of.name)}${todo?` · ${todo} việc cần quyết`:''}`,'pmOffice',{},`${c.open&&of.live&&!sh?'primary':''} big full`):'';
   if(c.open&&sh)main=act('🧑‍💼 Bảng quản lý','pmBoard',{},'primary big full');
   else if(p.mgr&&!c.open)main=act(`🧑‍💼 Mở ca quản lý · ${p.team} người`,'pmStart',{},'primary big full');
   else main=act('Về quầy','close',{},'primary big full');
   const step=`<span class="pm-step">${Array.from({length:p.top},(_,i)=>`<i class="${i<p.rank?'on':''}"></i>`).join('')}</span>`;
-  return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body"><article class="pm-card pm-ladder"><span class="pm-badge" aria-hidden="true">🎖️</span><h3 class="pm-title">${esc(p.title)}</h3>${step}${n?bar(n.good,n.need):''}<p class="pm-line">${line}</p><p class="small">💰 ${benefit}</p><p class="small muted">${work}</p>${lock}${main}${more(p)}</article></div>`;
+  if(office&&c.open&&of.live&&!sh)main=office+act('Về quầy','close',{},'ghost full');
+  else if(office)main=office+main;
+  return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body"><article class="pm-card pm-ladder">${badge(p)}<h3 class="pm-title">${esc(p.title)}</h3>${step}${n?bar(n.good,n.need):''}<p class="pm-line">${line}</p><p class="small">💰 ${benefit}</p><p class="small muted">${work}</p>${lock}${main}${more(p)}</article></div>`;
+}
+
+/* ------------------------------------------------------------------ 🏢 Phòng điều hành */
+const FACE=n=>n>=75?'😊':n>=55?'🙂':n>=35?'😐':n>=20?'😟':'😣';
+const pctBar=(n,cls='')=>`<span class="of-meter ${cls}" aria-hidden="true"><i style="width:${Math.max(0,Math.min(100,n))}%"></i></span>`;
+function officeKpi(of){
+  const k=of.kpi,l=of.labels,over=k.cost>k.budget;
+  const tile=(v,label,cls='')=>`<span class="${cls}"><b>${v}</b><small>${esc(label)}</small></span>`;
+  return `<div class="of-kpi">${tile(k.ontime+'%','⏱️ '+l[0],k.ontime<60?'bad':'')}${tile(k.compl,'📣 '+l[1],k.compl>6?'bad':'')}${tile(FACE(k.morale)+' '+k.morale,l[2],k.morale<45?'bad':'')}${tile(Math.round(100*k.cost/k.budget)+'%','💰 '+l[3],over?'bad':'')}</div>`;
+}
+function officeInbox(of){
+  if(!of.inbox.length)return `<p class="of-empty">✅ Không còn việc nào chờ quyết hôm nay.</p>`;
+  return of.inbox.map(x=>`<article class="pm-card of-ask"><p class="pm-eyebrow">${x.emoji} ${esc(x.title)}</p><p class="pm-q">${esc(x.text)}</p><div class="pm-opts">${x.options.map(o=>cmd(esc(o.label),'pm_of_inbox',{item:x.i,option:o.id},'pm-opt')).join('')}</div></article>`).join('')
+    +`<p class="small muted">Để đó tới cuối ngày thì phương án tệ nhất sẽ xảy ra.</p>`;
+}
+const BAR={off:'🚫 đình chỉ',rest:'😴 phải nghỉ',lv:'🎓 chưa đủ bậc'};
+function why(of,slot,m){
+  const b=slot.bar?.[m.i];if(b)return BAR[b]||'🔒';
+  if(of.slots.some(x=>x.who===m.i&&x.i!==slot.i))return '📌 đã có việc';
+  return '';
+}
+function officePlan(of,ui){
+  const pick=Number.isInteger(ui.pmOfSlot)?ui.pmOfSlot:null;
+  const rows=of.slots.map(s=>{
+    const who=s.who!=null?of.staff[s.who]:null,open=pick===s.i;
+    const tag=who?`<span class="of-who">${FACE(who.mood)} ${esc(who.n)}</span>`:`<span class="of-who none">${open?'👇 Chọn người':'Chưa xếp'}</span>`;
+    let list='';
+    if(open){
+      const cands=of.staff.filter(m=>m.r===s.role).map(m=>{const w=why(of,s,m);return {m,w};}).sort((a,b)=>(a.w?1:0)-(b.w?1:0)||b.m.sk-a.m.sk);
+      list=`<div class="of-cands">${cands.map(({m,w})=>`<button type="button" class="of-cand" data-action="pmOfMate" data-slot="${s.i}" data-i="${m.i}"${w?' disabled':''}><b>${esc(m.n)}</b><small>${esc(m.t)} · tay nghề ${m.sk}${m.iss?' · ⚠️':''}</small><span>${w||FACE(m.mood)}</span></button>`).join('')}
+        ${who?cmd('✕ Bỏ xếp','pm_of_plan',{slot:s.i,mate:null},'small ghost'):''}</div>`;
+    }
+    return `<li class="of-slot${open?' open':''}${who?' set':''}"><button type="button" class="of-slot-btn" data-action="pmOfSlot" data-i="${s.i}" aria-expanded="${open}"><span class="of-slot-t"><b>${esc(s.t)}</b><small>${esc(s.sub)}${s.need?` · cần từ ${esc(s.need)}`:''}</small></span>${tag}</button>${list}</li>`;
+  }).join('');
+  return `<ul class="of-slots">${rows}</ul><details class="pm-more"><summary>Xem thêm</summary><ul class="pm-rules"><li>Người làm ${of.duty_max} ngày liền phải nghỉ một ngày (quy định). Ai được nghỉ thì tinh thần lên.</li><li>Tay nghề cao, tinh thần tốt: dễ đúng giờ. Đang có chuyện chưa xử lý (⚠️) thì dễ trễ.</li><li>Ô bỏ trống: trợ lý xếp tạm lúc khép ngày, kém hơn và không có thưởng điều hành. Không ai làm được thì ${esc(of.unit)} đó bị hủy.</li></ul></details>`;
+}
+function officeStaff(of,ui){
+  const open=Number.isInteger(ui.pmOfWho)?ui.pmOfWho:null;
+  return `<p class="of-left">🗳️ Còn <b>${of.left}</b> lượt quyết nhân sự hôm nay · mỗi người một quyết định/ngày</p><ul class="of-staff">${of.staff.map(m=>{
+    const tags=[m.iss?`<i class="bad">${esc(m.iss)}</i>`:'',m.mk?`<i>${esc(m.mk)}</i>`:'',m.off?'<i class="bad">🚫 Đình chỉ</i>':'',m.rest?'<i>😴 Phải nghỉ</i>':'',m.acted?'<i>✓ Đã quyết hôm nay</i>':''].join('');
+    let body='';
+    if(open===m.i){
+      const off=(a)=>m.acted||!of.left||(a==='promote'&&m.top)||(a==='demote'&&m.low)||(a==='raise'&&m.pay>=7)||(a==='cut'&&m.pay<=1);
+      body=`<div class="of-person"><p class="small">${m.hint?`📝 ${esc(m.hint)}`:'🔒 Chưa rõ tính cách: nói chuyện riêng để hiểu.'}</p>
+        <p class="of-line"><span>Tay nghề</span>${pctBar(m.sk)}<b>${m.sk}</b></p><p class="of-line"><span>Tinh thần</span>${pctBar(m.mood,m.mood<35?'low':'')}<b>${m.mood}</b></p><p class="small muted">Bậc lương ${m.pay}/7${m.duty?` · làm ${m.duty} ngày liền`:''}</p>
+        <div class="of-acts">${of.acts.map(a=>cmd(`${a.icon} ${esc(a.label)}`,'pm_of_hr',{mate:m.i,act:a.id},'small',off(a.id))).join('')}</div></div>`;
+    }
+    return `<li class="of-row${open===m.i?' open':''}"><button type="button" class="of-row-btn" data-action="pmOfWho" data-i="${m.i}" aria-expanded="${open===m.i}"><span class="of-face" aria-hidden="true">${FACE(m.mood)}</span><span class="of-name"><b>${esc(m.n)}</b><small>${esc(m.t)}</small></span><span class="of-tags">${tags}</span></button>${body}</li>`;
+  }).join('')}</ul><details class="pm-more"><summary>Xem thêm</summary><ul class="pm-rules"><li>Mỗi người có tính cách riêng: cùng một quyết định, người này cảm ơn, người kia tự ái.</li><li>Có lý do (đang có lỗi, đã nhắc từ trước, làm tốt thật) thì quyết định có tác dụng. Không có lý do thì người đó buồn và cả phòng để ý.</li><li>Mệt không phải là lỗi: cho nghỉ, đừng phạt.</li><li>Thăng chức, tăng lương làm quỹ lương tăng. Bị dồn quá thì người ta nghỉ việc.</li></ul></details>`;
+}
+export function officeView(env){
+  const c=room(env),p=c.promo,of=p?.office,ui=env.ui;
+  if(!of)return head('🏢 Phòng điều hành')+`<div class="sheet-body"><p class="muted">Phòng điều hành mở từ bậc lãnh đạo.</p></div>`;
+  const eyebrow=esc(place(env)).toUpperCase();
+  if(of.wait||!of.live)return head(`🏢 ${esc(of.name)}`,'',eyebrow)+`<div class="sheet-body">${of.kpi?officeKpi(of):''}<p class="of-empty">${of.wait?'Phòng mở từ ca sau. Mở ca là có việc ngay.':'Phòng điều hành làm việc trong ca. Mở ca để điều phối và quyết việc.'}</p>${act('Về quầy','close',{},'primary big full')}</div>`;
+  const tabs=[['inbox',`📥 Việc${of.inbox.length?` (${of.inbox.length})`:''}`],['plan','🗓️ Điều phối'],['staff','👥 Nhân sự']];
+  const tab=tabs.some(t=>t[0]===ui.pmOfTab)?ui.pmOfTab:(of.inbox.length?'inbox':of.slots.some(s=>s.who==null)?'plan':'staff');
+  const empty=of.slots.filter(s=>s.who==null).length;
+  const line=of.inbox.length?`${of.inbox.length} việc chờ quyết`:empty?`${empty} ${of.unit} chưa xếp người`:'Bảng hôm nay đã xếp đủ';
+  const bar=`<div class="of-tabs" role="tablist">${tabs.map(([id,label])=>`<button type="button" role="tab" class="of-tab${tab===id?' on':''}" aria-selected="${tab===id}" data-action="pmOfTab" data-tab="${id}">${label}</button>`).join('')}</div>`;
+  const body=tab==='inbox'?officeInbox(of):tab==='plan'?officePlan(of,ui):officeStaff(of,ui);
+  const log=of.log?.length?`<details class="pm-more"><summary>Nhật ký</summary><ul class="pm-rules">${of.log.slice().reverse().map(x=>`<li>${esc(x)}</li>`).join('')}</ul></details>`:'';
+  const foot=`<footer class="sheet-foot"><p>🗳️ ${of.left} lượt quyết · thưởng tối đa ${of.cap} xu</p>${act('Xong','close',{},'primary')}</footer>`;
+  return head(`🏢 ${esc(of.name)}`,line,eyebrow)+`<div class="sheet-body of-board">${officeKpi(of)}${bar}<div class="of-body" role="tabpanel">${body}</div>${log}</div>`+foot;
 }
 
 /** The manager's board. */
 export function managerView(env){
   const c=room(env),p=c.promo,sh=p?.shift,ui=env.ui;
+  if(ui.pmOffice&&p?.office)return officeView(env);
   if(!sh)return head('🧑‍💼 Ca quản lý')+`<div class="sheet-body"><p class="muted">Chưa có ca quản lý nào đang mở.</p></div>`;
   const eyebrow=esc(place(env)).toUpperCase();
   if(sh.closed){
@@ -96,6 +181,7 @@ export function promoSummary(p){
   const bits=[];
   if(p.manager)bits.push(`🧑‍💼 Ca quản lý: ${p.manager.good}/${p.manager.size} việc tốt · +${p.manager.bonus} xu`);
   if(p.tip)bits.push(`🎖️ Khách quen boa thêm +${p.tip} xu`);
+  if(p.office){bits.push(...(p.office.lines||[]).map(esc));if(p.office.bonus)bits.push(`🏢 Thưởng điều hành +${p.office.bonus} xu`);}
   if(p.line)bits.push(esc(p.line));
   else if(p.next){
     bits.push(`🎖️ ${p.good?'Ngày tốt!':'Hôm nay chưa đạt ngày tốt.'} ${p.next.good}/${p.next.need} → ${esc(p.next.title)}`);
@@ -112,8 +198,13 @@ export function promoSummary(p){
 export async function promoAction(action,data,el,env){
   const {ui,cmd:send,openSheet,toast,renderSheet}=env;
   if(action==='promo'){openSheet('promo');return true;}
-  if(action==='pmBoard'){ui.pmPick=null;openSheet('manager');return true;}
-  if(action==='pmStart'){const r=await send('start_day',{manager:true});if(r){ui.pmPick=null;ui.task=null;openSheet('manager');}return true;}
+  if(action==='pmBoard'){ui.pmPick=null;ui.pmOffice=false;openSheet('manager');return true;}
+  if(action==='pmStart'){const r=await send('start_day',{manager:true});if(r){ui.pmPick=null;ui.pmOffice=false;ui.task=null;openSheet('manager');}return true;}
+  if(action==='pmOffice'){ui.pmOffice=true;ui.pmOfSlot=null;ui.pmOfWho=null;ui.pmOfTab=null;openSheet('manager');return true;}
+  if(action==='pmOfTab'){ui.pmOfTab=data.tab;ui.pmOfSlot=null;ui.pmOfWho=null;renderSheet();return true;}
+  if(action==='pmOfSlot'){const i=Number(data.i);ui.pmOfSlot=ui.pmOfSlot===i?null:i;ui.pmOfTab='plan';renderSheet();return true;}
+  if(action==='pmOfWho'){const i=Number(data.i);ui.pmOfWho=ui.pmOfWho===i?null:i;ui.pmOfTab='staff';renderSheet();return true;}
+  if(action==='pmOfMate'){const slot=Number(data.slot);if(await send('pm_of_plan',{slot,mate:Number(data.i)}))ui.pmOfSlot=null;renderSheet();return true;}
   if(action==='pmPick'){const i=Number(data.i);ui.pmPick=ui.pmPick===i?null:i;renderSheet();return true;}
   if(action==='pmMate'){
     if(!Number.isInteger(ui.pmPick)){toast('Chạm một việc trước nhé.','hint');return true;}

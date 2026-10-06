@@ -4,7 +4,8 @@ line fits a phone at a glance. Everything is fictional.
 """
 from __future__ import annotations
 
-# Employee careers: the four titles above the hired one (step 1 → 4).
+# Employee careers: the titles above the hired one (step 1 → 4; a longer ladder, promotion.TOP_BY_CAREER, goes on
+# past step 4: pilot to 7, teacher to 5).
 EMP_TITLES = {
     'corp_accounting': ('Kế toán viên chính', 'Kế toán phụ trách phần hành', 'Phó phòng kế toán', 'Kế toán trưởng'),
     'tax_payroll': ('Chuyên viên lương bậc 2', 'Trưởng nhóm lương', 'Phó phòng thuế – lương', 'Trưởng phòng thuế – lương'),
@@ -14,14 +15,18 @@ EMP_TITLES = {
     'it_helpdesk': ('KTV bậc 2', 'Trưởng ca hỗ trợ', 'Trưởng nhóm hạ tầng', 'Trưởng phòng CNTT'),
     'pharmacy': ('Dược sĩ đứng quầy chính', 'Phụ trách ca', 'Phó quản lý nhà thuốc', 'Dược sĩ quản lý'),
     'customer_care': ('Chuyên viên CSKH', 'Trưởng ca', 'Giám sát CSKH', 'Trưởng phòng CSKH'),
-    'teacher': ('GV giỏi cấp trường', 'Tổ phó chuyên môn', 'Tổ trưởng chuyên môn', 'Phó hiệu trưởng'),
+    'teacher': ('GV giỏi cấp trường', 'Tổ phó chuyên môn', 'Tổ trưởng chuyên môn', 'Phó hiệu trưởng', 'Hiệu trưởng'),
     'tour_guide': ('HDV chính', 'Trưởng đoàn', 'Điều hành tour', 'Trưởng phòng hướng dẫn'),
     'repair': ('Thợ chính', 'Thợ cả', 'Tổ trưởng xưởng', 'Quản đốc xưởng'),
     'delivery': ('Shipper tin cậy', 'Trưởng nhóm khu vực', 'Điều phối viên', 'Quản lý bưu cục'),
     'pet_care': ('Thợ chăm chính', 'Thợ cả', 'Trưởng ca', 'Quản lý tiệm'),
     'salon': ('Thợ chính', 'Thợ cả', 'Stylist trưởng', 'Quản lý salon'),
-    'pilot': ('Cơ phó cao cấp', 'Cơ trưởng', 'Cơ trưởng huấn luyện', 'Trưởng đội bay'),
+    'pilot': ('Cơ phó cao cấp', 'Cơ trưởng', 'Cơ trưởng Huấn luyện', 'Trưởng đội bay',
+              'Phó Giám đốc Khối khai thác bay', 'Giám đốc Khối khai thác bay', 'Phó Tổng Giám đốc'),
     'flight_attendant': ('TV hạng thương gia', 'Tiếp viên phó', 'Tiếp viên trưởng', 'Trưởng ban tiếp viên'),
+    'oil': ('Kỹ thuật viên bậc 2', 'Trưởng nhóm vận hành', 'Trưởng ca giàn', 'Quản đốc giàn'),
+    'railway': ('Gác chắn chính', 'Trưởng ca gác chắn', 'Đội phó cung đường', 'Cung trưởng cung đường'),
+    'nurse': ('Điều dưỡng chính', 'Trưởng ca điều dưỡng', 'Điều dưỡng trưởng khoa', 'Trưởng phòng Điều dưỡng'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
@@ -37,9 +42,29 @@ OWN_TITLES = {
 }
 # Home careers paid by the household (giúp việc theo giờ, nấu cơm gia đình, bảo mẫu): a homemaker's standing, not a shop's.
 OWN_TITLES['giupviec'] = OWN_TITLES['naucom'] = OWN_TITLES['babysitter'] = OWN_TITLES['homemaker']
+# The ward library: a public servant's standing, from the desk to running the library and the ward's records.
+OWN_TITLES['library'] = ('Cán bộ thư viện vững tay', 'Thủ thư có tiếng', 'Phó phụ trách thư viện', 'Phụ trách Thư viện – Lưu trữ')
 CHU = {'male': 'Ông chủ', 'female': 'Bà chủ', None: 'Chủ tiệm'}
 ONG = {'male': 'Ông chủ', 'female': 'Bà chủ', None: 'Chủ'}
 BASE_EMP = 'Nhân viên'      # an employee's title before step 1 is the posting's own title
+BASE_BY_POSTING = {'pl-fo': 'Cơ phó cấp thấp'}   # ...unless the posting has a rank name of its own (F#193)
+
+# The rank's insignia. Pilot (F#193): g gold stripes, s stars, w a gold wreath, by step 0..7.
+INSIGNIA = {
+    'pilot': (dict(g=1, s=0, w=False), dict(g=2, s=0, w=False), dict(g=3, s=0, w=False), dict(g=4, s=0, w=False),
+              dict(g=4, s=1, w=False), dict(g=4, s=2, w=False), dict(g=4, s=3, w=False), dict(g=4, s=3, w=True)),
+}
+# Other careers: one emoji by step (0..top); every other career keeps 🎖️.
+BADGE = {'teacher': ('🍎', '🏅', '📒', '📚', '🗝️', '🏫')}
+
+
+def insignia_label(x: dict) -> str:
+    bits = [f'{x["g"]} gạch']
+    if x['s']:
+        bits.append(f'{x["s"]} sao')
+    if x['w']:
+        bits.append('cành tùng vàng')
+    return ' · '.join(bits)
 BASE_OWN = 'Chủ mới'        # an owner before step 1
 
 # Question banks of the review, by career group. score: 2 best · 1 ok · 0 not now.
@@ -47,9 +72,11 @@ GROUP = {
     'office': ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk',
                'accounting', 'customer_care'),
     'air': ('pilot', 'flight_attendant'),
+    'rig': ('oil',),
+    'rail': ('railway',),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
-                'homemaker', 'giupviec', 'naucom', 'babysitter', 'pagoda',
-                'mother_baby'),
+                'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
+                'mother_baby', 'nurse'),
 }   # every other career: 'trade'
 
 
@@ -91,6 +118,40 @@ QUESTIONS = {
         _q('a6', 'Nghe tin đồn về một đồng nghiệp.', ('Không lan truyền, hỏi thẳng nếu cần', 2), ('Kể cho cả tổ', 0), ('Im lặng nhưng tránh mặt', 1)),
     ],
 }
+QUESTIONS['rig'] = [
+    _q('r1', 'Giám sát giục bỏ bước đo khí cho kịp tàu dịch vụ.', ('Dừng việc, đo khí rồi mới làm, báo giờ xong', 2), ('Đo nhanh một điểm cho có', 1), ('Làm theo cho kịp tàu', 0)),
+    _q('r2', 'Thợ nhà thầu đưa checklist giàn giáo đã ký sẵn.', ('Đi kiểm từng mục cùng họ rồi mới ký', 2), ('Kiểm vài mục chính', 1), ('Ký luôn cho nhanh', 0)),
+    _q('r3', 'Bạn suýt làm rơi cờ lê từ sàn trên, không ai thấy.', ('Tự báo suýt sự cố, đề xuất dây cột dụng cụ', 2), ('Xin lỗi người dưới, hứa cẩn thận', 1), ('Im lặng cho qua', 0)),
+    _q('r4', 'Đồng hồ không về 0 sau khi xả áp.', ('Dừng, báo trưởng ca, cô lập thêm một lớp', 2), ('Chờ thêm mười phút', 1), ('Nới bích từ từ cho xì hết', 0)),
+    _q('r5', 'Người ca sau sắp lên, còn vài việc dở.', ('Ghi đủ mọi việc dở, kể cả lỗi của mình', 2), ('Chỉ ghi việc lớn', 1), ('Dặn miệng cho nhanh', 0)),
+    _q('r6', 'Lính mới say sóng, nhờ bạn làm thay rồi giấu trưởng ca.', ('Đưa bạn ấy xuống y tế, báo trưởng ca xếp lại việc', 2), ('Làm thay lần này thôi', 1), ('Bảo cố mà làm', 0)),
+]
+QUESTIONS['rail'] = [
+    _q('r1', 'Người dân xin mở chắn sớm “vì tàu còn xa”.', ('Giữ chắn, nói rõ còn mấy phút', 2), ('Mở nhanh cho một người', 0), ('Lờ đi không trả lời', 1)),
+    _q('r2', 'Đồng nghiệp nhờ ký sổ giao ca khi chưa thử thiết bị.', ('Từ chối, cùng thử rồi mới ký', 2), ('Ký giúp lần này', 0), ('Ký nhưng ghi chú nhỏ', 1)),
+    _q('r3', 'Đi tuần thấy ray nứt, mười phút nữa có tàu.', ('Phòng vệ hai đầu, điện khẩn cho ga', 2), ('Ghi phiếu báo hỏng', 0), ('Gọi tổ thợ hỏi ý kiến', 1)),
+    _q('r4', 'Cung trưởng bảo ghi tàu chậm thành đúng giờ.', ('Ghi đúng, kèm lý do chậm', 2), ('Sửa cho đẹp báo cáo', 0), ('Ghi đúng nhưng không nói gì', 1)),
+    _q('r5', 'Ca đêm thứ ba liền, bạn buồn ngủ díp mắt.', ('Báo đội trưởng, xin người thay hoặc nghỉ bù', 2), ('Chợp mắt giữa hai chuyến', 0), ('Uống thêm cà phê cố gác', 1)),
+    _q('r6', 'Tàu qua mà không thấy đèn đuôi toa cuối.', ('Báo ngay trực ban ga', 2), ('Ghi sổ, cuối ca báo', 1), ('Cho qua, chắc đèn hỏng', 0)),
+]
+# Steps above 4 (the executive steps): the board's own questions.
+EXEC_GROUP = {'pilot': 'exec_air', 'teacher': 'exec_school'}
+QUESTIONS['exec_air'] = [
+    _q('x1', 'Phòng thương mại muốn cắt giờ nghỉ tổ bay để thêm chuyến dịp lễ.', ('Giữ đúng giờ nghỉ, thuê thêm chuyến hoặc đổi lịch', 2), ('Cắt nhẹ, ai mệt thì báo', 0), ('Hỏi tổ bay ai tình nguyện', 1)),
+    _q('x2', 'Một cơ trưởng giỏi nhất đội bị khách khiếu nại thái độ.', ('Xem lại sự việc, nghe hai phía rồi mới kết luận', 2), ('Bỏ qua vì anh ấy bay giỏi', 0), ('Bắt xin lỗi khách ngay', 1)),
+    _q('x3', 'Quỹ lương quý này vượt kế hoạch.', ('Xem lại lịch bay và giờ làm thêm, không đụng dầu dự phòng', 2), ('Cắt phụ cấp bay đêm của cả đội', 0), ('Xin thêm ngân sách, chưa đổi gì', 1)),
+    _q('x4', 'Phi công nộp báo cáo tự nguyện về một lỗi suýt gây sự cố.', ('Cảm ơn, không phạt, đưa thành bài học chung', 2), ('Kỷ luật cho cả đội sợ', 0), ('Cất báo cáo, không nói ai', 0)),
+    _q('x5', 'Hai trưởng phòng tranh nhau một suất học lái tàu mới.', ('Đưa tiêu chí rõ ràng, chấm theo kết quả', 2), ('Chọn người thân với mình hơn', 0), ('Để hai bên tự thỏa thuận', 1)),
+    _q('x6', 'Đối tác gửi “quà cảm ơn” mong được ưu tiên giờ bay đẹp.', ('Trả lại, ghi nhận công khai', 2), ('Nhận rồi tính sau', 0), ('Nhận, chia cho phòng điều phái', 0)),
+]
+QUESTIONS['exec_school'] = [
+    _q('y1', 'Phụ huynh nhờ “nâng điểm” để con vào lớp chọn, kèm phong bì.', ('Từ chối, hướng dẫn phúc khảo đúng quy trình', 2), ('Nhận rồi tính', 0), ('Bảo giáo viên tự xử', 0)),
+    _q('y2', 'Một giáo viên giỏi bị phụ huynh phản ánh nặng lời với học sinh.', ('Gặp riêng, nghe hai phía, cùng tìm cách sửa', 2), ('Bỏ qua vì cô ấy dạy giỏi', 0), ('Phê bình trước hội đồng ngay', 1)),
+    _q('y3', 'Kinh phí sửa phòng học thiếu.', ('Lập kế hoạch công khai, xin hỗ trợ đúng quy định', 2), ('Thu thêm tiền phụ huynh bắt buộc', 0), ('Hoãn đến năm sau', 1)),
+    _q('y4', 'Giáo viên trẻ xin nghỉ đúng tuần thi vì con ốm.', ('Duyệt, sắp xếp người dạy thay', 2), ('Không duyệt, tuần thi quan trọng hơn', 0), ('Duyệt nhưng trừ thi đua', 1)),
+    _q('y5', 'Đoàn kiểm tra báo đến sáng mai.', ('Nhờ tổ trưởng rà hồ sơ trong giờ làm', 2), ('Bắt cả trường thức đêm làm lại hồ sơ', 0), ('Kệ, có sao nói vậy', 1)),
+    _q('y6', 'Hai tổ chuyên môn tranh nhau phòng thực hành.', ('Xếp lịch luân phiên, công khai', 2), ('Ưu tiên tổ mình thân hơn', 0), ('Để hai tổ tự chia', 1)),
+]
 QUESTION_INDEX = {q['id']: q for rows in QUESTIONS.values() for q in rows}
 
 # The pay ask after the questions (employees only). extra: raise points on top of the step's,

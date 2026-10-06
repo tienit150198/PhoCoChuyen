@@ -48,7 +48,6 @@ from . import wedding_live as wl   # 🎁 the admin's gift for the weddings (jou
 from . import needs as nd   # 🍚 No bụng, 😴 Tỉnh táo (game/needs.py)
 from . import chua as cg    # 🛕 Đi chùa (game/chua.py)
 from . import relax as rx   # 🏊 Thư giãn ở nhà: hồ bơi, bồn tắm (game/relax.py)
-from . import leisure as ls   # private, free pixel fishing/boat/community-pool rounds
 from . import fridge as fr   # 🧊 Tủ lạnh ở nhà: cất đồ ăn, đói thì ăn (game/fridge.py)
 from . import x3_week as x3   # 🔥 Nghề x3 trong tuần (game/x3_week.py)
 from . import accounting_jobs as aj   # 💼 Việc làm kế toán: exam gate, entry check, ×3/×5 (game/accounting_jobs.py)
@@ -79,7 +78,7 @@ CH_UNLOCKS = {
     1: ('milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist', 'mother_baby', 'restaurant'),
     2: ('pet_care', 'salon', 'repair', 'farm', 'homestay', 'homemaker', 'nail', 'pagoda', 'photobooth', 'giupviec', 'naucom', 'babysitter'),
     3: ('clothing', 'pet_shop', 'tra_da', 'fruit', 'garbage', 'drain', 'ice_cream', 'pho', 'com'),
-    4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting', 'pilot', 'flight_attendant'),
+    4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting', 'pilot', 'flight_attendant', 'library', 'oil', 'railway', 'nurse'),
     5: ('corp_accounting', 'tax_payroll', 'hr_admin', 'secretary', 'it_helpdesk'),
     6: ('group_accounting',),
 }
@@ -140,7 +139,9 @@ CHAPTERS = [
          intro=[_line('co_lua', 'Mấy chỗ này cần người cẩn thận, nói năng rõ ràng. Cô tin cháu làm được.'),
                 _line('anh_khoa', 'Lớp học Mầm Nắng đang tuyển người. Phải nộp hồ sơ, phỏng vấn đàng hoàng đó.'),
                 _line('anh_khoa', 'Mà hồ sơ giờ ghi được một dòng rất thật: có kinh nghiệm ở một nghề khác trong phố.'),
-                _line('chu_tu', 'Thằng Mẫn nhà bên làm thợ máy ở sân bay. Nó bảo Hãng bay Cánh Cò đang tuyển cơ phó với tiếp viên đó.')],
+                _line('chu_tu', 'Thằng Mẫn nhà bên làm thợ máy ở sân bay. Nó bảo Hãng bay Cánh Cò đang tuyển cơ phó với tiếp viên đó.'),
+                _line('ba_sau', 'Đường ngang Bến Mây đầu phố Ray đang thiếu người gác chắn. Chú Sáu Cờ gác ở đó gần ba chục năm, đang tìm người cẩn thận để kèm.'),
+                _line('ba_sau', 'Tuần trước bà nằm viện Lá Sen, mấy đứa điều dưỡng chăm bà khéo lắm. Khoa Nội đang tuyển người đó con.')],
          outro=[_line('co_lua', 'Giờ đi đâu trong phố cũng có người gửi lời chào cháu.'),
                 _line('anh_khoa', 'Công ty mình với bên dịch vụ thuế đang tuyển. Kinh nghiệm ở phố ghi vào CV được hết, thử không?')],
          goals=[dict(id='places', goal=5, text='Làm việc ở 5 nơi khác nhau'),
@@ -202,6 +203,7 @@ SKILL_WEIGHTS = {
     'hr_admin': dict(communication=2, careful=1, teamwork=1),
     'secretary': dict(communication=2, careful=1, calm=1),
     'it_helpdesk': dict(tech=2, calm=1, careful=1),
+    'oil': dict(careful=2, calm=1, teamwork=1),
 }
 SKILL_STEPS = (0, 6, 18, 40, 75, 120, 180)
 
@@ -254,6 +256,7 @@ TITLES = [
     _t('c_hr_admin', 'career', '🗂️', 'Người giữ hồ sơ nhân sự', 'Đạt cấp 3 ở phòng nhân sự Cánh Diều.', lambda x: x['lv'].get('hr_admin', 1) >= 3),
     _t('c_secretary', 'career', '📅', 'Thư ký chu đáo', 'Đạt cấp 3 ở bàn thư ký giám đốc Cánh Diều.', lambda x: x['lv'].get('secretary', 1) >= 3),
     _t('c_it_helpdesk', 'career', '🖥️', 'Cứu tinh máy tính', 'Đạt cấp 3 ở bàn IT Cánh Diều.', lambda x: x['lv'].get('it_helpdesk', 1) >= 3),
+    _t('c_oil', 'career', '🛢️', 'Người giữ ổ khóa đỏ', 'Đạt cấp 3 trên giàn Hải Âu.', lambda x: x['lv'].get('oil', 1) >= 3),
     # Skills at level 3.
     _t('k_careful', 'skill', '🔍', 'Mắt tinh', 'Kỹ năng cẩn thận, tỉ mỉ đạt mức 3.', lambda x: x['sk'].get('careful', 0) >= 3),
     _t('k_communication', 'skill', '💬', 'Nói dễ hiểu', 'Kỹ năng giao tiếp đạt mức 3.', lambda x: x['sk'].get('communication', 0) >= 3),
@@ -742,7 +745,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
     if name == 'jr_profile':
         need(set(p) <= {'name', 'gender'} and p, 'Thông tin nhân vật không hợp lệ.')
         if 'name' in p:
-            s['name'] = e.clean_text(p['name'], 24)
+            from .accounts import character_name   # moderation #13: the display-name rules (profanity too)
+            s['name'] = character_name(p['name'], s.get('name'))
         if 'gender' in p:
             need(p['gender'] in ('male', 'female'), 'Chọn Nam hoặc Nữ nhé.')
             old, j['gender'] = j['gender'], p['gender']
@@ -835,8 +839,6 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(cg.action(s, name, p))
     elif name.startswith('jr_relax_'):
         result.update(rx.action(s, name, p))
-    elif name.startswith('jr_leisure_'):
-        result.update(ls.action(s, name, p))
     elif name.startswith('jr_fridge_'):
         result.update(fr.action(s, name, p))
     elif name.startswith('jr_rui_'):
@@ -925,7 +927,7 @@ def public(s: dict) -> dict:
         clean_days=j['clean_days'], history=list(reversed(j['history'][-30:])), news=tree_copy(j['news']),
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
-        bank=bk.public(s), home=hs.public(s), household=hh.public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
+        bank=bk.public(s), home=hs.public(s), household=hh.public(s), outings=outings_.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
         garage=gr.public(s), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
         **({'quay': qy.public(s)} if qy.visible(s) else {}))   # 🏪 only once a save reaches it (state size)
 
@@ -952,7 +954,7 @@ def content() -> dict:
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
-        garage=gr.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content())
+        garage=gr.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content())
 
 
 def validate(s: dict) -> None:
@@ -1020,7 +1022,6 @@ def validate(s: dict) -> None:
     promotion.validate(s)   # 🎖️ journey['promo'] (optional)
 
     rx.validate(s)   # 🏊 journey['relax'] (optional)
-    ls.validate(s)   # private pixel leisure rounds (optional)
     fr.validate(s)   # 🧊 journey['fridge'] (optional)
     ct.validate(s)
     bk.validate(s)

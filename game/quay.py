@@ -52,11 +52,11 @@ TRADES = {
 }
 TRADE_IDS = tuple(TRADES)
 ITEMS = {
-    'camera': dict(id='camera', emoji='📹', name='Camera quầy', price=dict(xe=70, sap=140, kiot=250), line='Giảm đúng 50% xác suất trộm; vẫn có thể xảy ra'),
+    'camera': dict(id='camera', emoji='📹', name='Camera quầy', price=dict(xe=70, sap=140, kiot=250), line='Giảm 50% khả năng bị trộm (vẫn có thể xảy ra)'),
     'bang': dict(id='bang', emoji='🪧', name='Bảng hiệu đèn', price=dict(xe=150, sap=600, kiot=2000), line='+8% khách'),
     'tu': dict(id='tu', emoji='🧊', name='Tủ mát', price=dict(xe=200, sap=700, kiot=2500), line='Ít hư hàng, +4% khách'),
-    'ket': dict(id='ket', emoji='🔐', name='Két sắt', price=dict(xe=250, sap=700, kiot=1500), line='Ít trộm, không mất cả két'),
-    'alarm': dict(id='alarm', emoji='🔔', name='Chuông chống trộm', price=dict(xe=100, sap=300, kiot=900), line='Giảm thêm 25% xác suất trộm'),
+    'ket': dict(id='ket', emoji='🔐', name='Két sắt', price=dict(xe=250, sap=700, kiot=1500), line='Giảm 20% khả năng bị trộm; trộm lấy tối đa nửa két'),
+    'alarm': dict(id='alarm', emoji='🔔', name='Chuông chống trộm', price=dict(xe=100, sap=300, kiot=900), line='Giảm thêm 25% khả năng bị trộm'),
     'surge': dict(id='surge', emoji='🔌', name='Bộ chống chập điện', price=dict(xe=120, sap=400, kiot=1100), line='Giảm 50% chi phí sửa nguồn điện'),
     'hygiene': dict(id='hygiene', emoji='🧼', name='Tủ vệ sinh', price=dict(xe=90, sap=280, kiot=800), line='Giảm 50% chi phí khắc phục kiểm tra cửa tiệm'),
 }
@@ -706,6 +706,13 @@ def _stall_view(s: dict, st: dict) -> dict:
     from .quay_economy import public as economy_public
     out['economy'] = economy_public(st)
     out['economy']['receipts']=[r for r in (get(s) or {}).get('receipts',[]) if r['stall']==st['id']]
+    from .quay_economy import theft_risk
+    from .shop_events import theft_probability, GAP as EVENT_GAP
+    if 'business' in st:   # running counters: one owner event every EVENT_GAP dishes sold; this share of them is a theft
+        plan = st['business'].get('protection', {}).get('level', 'none')
+        out['theft_risk'] = dict(pct=round(100 * theft_probability(st['items'], plan), 1), per='event', every=EVENT_GAP)
+    else:
+        out['theft_risk'] = dict(pct=theft_risk(s, st), per='day')
     if len(st['staff']) < P['slots']:
         out['cands'] = [{k: c[k] for k in ('id', 'name', 'bio', 'ask', 'g')} for c in candidates(s, st)]
     return out

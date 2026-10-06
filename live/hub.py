@@ -25,17 +25,6 @@ except ImportError:  # pragma: no cover - the service cannot run without it; tes
     _ws_broadcast = None
 
 
-def _broadcast(connections, data, *, text=False):
-    """Standard websockets.broadcast selects text frames from str, not a text keyword.
-
-    Keep one serialization per audience and convert UTF-8 once before broadcasting.
-    This works with the locally installed websocket API as well as the pinned runtime.
-    """
-    if text and isinstance(data, (bytes, bytearray)):
-        data = data.decode('utf-8')
-    return _ws_broadcast(connections, data)
-
-
 class Player:
     def __init__(self, ident):
         self.pid, self.sid = ident.pid, ident.sid
@@ -136,7 +125,7 @@ class Hub:
         self.by_ip: dict = {}
         self.sent = 0           # frames written (stats)
         self.cut = 0            # slow clients cut off
-        self.write = _broadcast
+        self.write = _ws_broadcast
 
     # ---- sockets ----------------------------------------------------------------------------------
     def add(self, conn: Conn) -> None:

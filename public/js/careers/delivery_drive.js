@@ -1,5 +1,5 @@
-/** 🛵 Tự lái: the delivery career's ride, shown in a cozy isometric neighbourhood by default.
- * The rider's-seat view remains selectable in the stage. Loaded by careers/delivery.js only while a leg is to be
+/** 🛵 Tự lái: the delivery career's ride, seen from the rider's seat (owner, 03/10: "tự điều khiển xe đi và ở góc
+ * nhìn thứ nhất… thông tin trải ra thì dễ chơi và vui hơn"). Loaded by careers/delivery.js only while a leg is to be
  * ridden in Tự lái mode.
  *
  * The neighbourhood is the route map's 7×5 grid of junctions (content nodes x 0–6, y 0–4), one map block ("ô phố")
@@ -13,8 +13,7 @@
  * always. Traffic-light crossings use server-issued tokens and receive server-priced receipts. Stopping at an ordinary house says
  * "Không phải nhà này"; nothing is sent.
  *
- * Both views use the same 2D canvas and physics. delivery_isometric.js caches the ground and building sprites.
- * The rider's-seat view uses flat ground and box houses projected from the rider's eye (a tiny software 3D
+ * Drawn with the 2D canvas, no library: flat ground and box houses projected from the rider's eye (a tiny software 3D
  * of quads clipped at the near plane), painted far to near; people, scooters, lamps and signs are billboards; the
  * handlebars, mirrors and the speedometer are one cached bitmap. Frames are measured: a phone that cannot keep up
  * first draws fewer pixels, then opts.slow() switches the career to "Đi nhanh". */
@@ -27,7 +26,6 @@ import {signalState} from '../v4/traffic.js';
 import {stageFullscreen} from './delivery_fullscreen.js';
 import {drawStreetPerson,drawStreetTree,drawStreetScooter} from './delivery_sprites.js';
 import {drawHouseFacade,drawLandmarkFacade} from './delivery_architecture.js';
-import {createIsometricRenderer,needsDrivingFrames} from './delivery_isometric.js';
 export {B,onRoad,gateOf,waypoint} from './delivery_navigation.js';
 const HW=5,SW=3,FRONT=HW+SW;       // half the road, the pavement, the house fronts from the street's middle
 const EYE=1.35,NEAR=.35,FAR=190;
@@ -157,21 +155,21 @@ function landmarkBoxes(L){
 }
 
 /* ---------------------------------------------------------------- the stage */
-const S={el:null,cv:null,c:null,mini:null,mc:null,goal:null,say:null,slot:null,world:null,nodesKey:'',opts:null,view:'isometric',iso:null,idle:0,
+const S={el:null,cv:null,c:null,mini:null,mc:null,goal:null,say:null,slot:null,world:null,nodesKey:'',opts:null,
   at:null,x:0,y:0,a:0,v:0,steer:0,roll:0,keys:{},btn:{},joy:{steer:0,drive:0},raf:0,last:0,t:0,w:0,h:0,dpr:1,bars:null,barsKey:'',
   pal:null,palKey:'',still:0,stopDone:false,sending:false,sayT:0,shake:0,lastRed:0,lastBump:0,inBox:'',
   npcs:[],peds:[],rain:[],frames:[],cost:[],perf:{n:0,sum:0,bad:0,skip:40},visible:true,hinted:false,miniT:0,goalT:0,fail:false};
 globalThis.__dlDrive={
   stats:()=>{const f=[...S.frames].sort((a,b)=>a-b),n=f.length;const d=[...S.cost].sort((a,b)=>a-b),m=d.length;return {n,avg:n?f.reduce((s,v)=>s+v,0)/n:0,p50:n?f[n>>1]:0,p95:n?f[Math.min(n-1,Math.floor(n*.95))]:0,draw:m?d.reduce((s,v)=>s+v,0)/m:0,draw95:m?d[Math.min(m-1,Math.floor(m*.95))]:0,dpr:S.dpr,w:S.w,h:S.h};},
   state:()=>{const T=S.opts&&S.world?.marks[S.opts.target];return {x:S.x,y:S.y,a:S.a,v:S.v,at:S.at,target:S.opts?.target||null,sending:S.sending,
-    gate:T?{x:T.gate.x,y:T.gate.y,gy:T.gate.gy}:null,wp:T?waypoint(S.x,S.y,T.gate):null,running:!!(S.raf||S.idle),view:S.view,B,HW};},
+    gate:T?{x:T.gate.x,y:T.gate.y,gy:T.gate.gy}:null,wp:T?waypoint(S.x,S.y,T.gate):null,running:!!S.raf,B,HW};},
   reset:()=>{S.frames=[];S.cost=[];},
   look:o=>{S.dbg=o||null;if(S.opts&&o)Object.assign(S.opts,o);S.pal=null;},   // checks only: {minute, weather}
 };
 
 const ARROW='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3 4 13h5v8h6v-8h5z" fill="currentColor"/></svg>';
 function build(){
-  const el=document.createElement('div');el.className='dd-stage dd-isometric';
+  const el=document.createElement('div');el.className='dd-stage';
   el.innerHTML=`<canvas class="dd-cv" tabindex="0" role="img" aria-label="${ESC(tr('Xe máy: lái tới nhà có người vẫy tay'))}"></canvas>
     <div class="dd-goal" aria-live="polite"><i class="dd-arrow" aria-hidden="true">${ARROW}</i><span><b></b><small></small><span class="dd-nav-detail"></span><progress class="dd-parking" max="1" value="0" hidden aria-label="${ESC(tr('Tiến độ dừng xe'))}"></progress></span></div>
     <button type="button" class="dd-map-toggle" aria-label="${ESC(tr('Mở bản đồ'))}" aria-haspopup="dialog" aria-expanded="false"><canvas class="dd-mini" aria-hidden="true"></canvas><span>${ESC(tr('Bản đồ'))}</span></button>
@@ -199,26 +197,24 @@ function build(){
   S.el=el;S.cv=el.querySelector('.dd-cv');S.mini=el.querySelector('.dd-mini');S.goal=el.querySelector('.dd-goal');S.say=el.querySelector('.dd-say');
   S.c=S.cv.getContext('2d',{alpha:false});S.mc=S.mini.getContext('2d');
   if(!S.c)throw new Error('no 2d canvas');
-  S.wake=wake;
   const fullButton=el.querySelector('.dd-full-toggle');
   S.full=stageFullscreen(el,fullButton,{reset:()=>{clearInput();S.v=0;},resize:size,text:tr});
   fullButton.addEventListener('click',()=>S.full.toggle());
   const stick=el.querySelector('.dd-stick'),knob=stick.querySelector('.dd-stick-knob');
   S.resetControls=[];
   S.resetStick=holdPointer(stick,{enabled:()=>!S.overlay,start:()=>{
-    S.joy={steer:0,drive:0};stick.classList.add('on');stick.focus({preventScroll:true});S.wake?.();
+    S.joy={steer:0,drive:0};stick.classList.add('on');stick.focus({preventScroll:true});
   },move:(e,origin)=>{
     const radius=stick.getBoundingClientRect().width*.3,dx=e.clientX-origin.x,dy=e.clientY-origin.y;
     const scale=Math.min(1,radius/(Math.hypot(dx,dy)||1));
     S.joy=joystickAxes(dx/radius,dy/radius);
-    S.wake?.();
     knob.style.transform=`translate(${dx*scale}px,${dy*scale}px)`;
   },end:()=>{S.joy={steer:0,drive:0};stick.classList.remove('on');knob.style.transform='';}});
   // Pedals: held while the finger is on them (each its own pointer, so steer + gas together works).
   for(const b of el.querySelectorAll('[data-dd]')){
     const k=b.dataset.dd;
     S.resetControls.push(holdPointer(b,{enabled:()=>!S.overlay,
-      start:()=>{S.btn[k]=true;b.classList.add('on');S.wake?.();},end:()=>{S.btn[k]=false;b.classList.remove('on');}}));
+      start:()=>{S.btn[k]=true;b.classList.add('on');},end:()=>{S.btn[k]=false;b.classList.remove('on');}}));
   }
   for(const name of ['map','help']){
     el.querySelector('.dd-'+name+'-toggle').addEventListener('click',()=>panel(name));
@@ -272,7 +268,7 @@ function key(e){
   const dlg=e.target?.closest?.('dialog');if(dlg&&!dlg.contains(S.el))return;   // a question on top of the sheet
   if(e.ctrlKey||e.metaKey||e.altKey)return;
   if(e.code==='Space'&&e.target?.closest?.('button:not([data-dd])'))return;
-  e.preventDefault();S.keys[k]=e.type==='keydown';S.wake?.();
+  e.preventDefault();S.keys[k]=e.type==='keydown';
 }
 function panel(name){
   const previous=document.activeElement;
@@ -284,7 +280,7 @@ function panel(name){
   }
   for(const child of S.el.children)if(!child.classList.contains('dd-map-panel')&&!child.classList.contains('dd-help-panel'))child.inert=Boolean(name);
   if(name){S.panelReturn=previous;if(name==='map')expandedMap();S.el.querySelector('.dd-'+name+'-close').focus();}
-  else {S.last=performance.now();S.perf.skip=30;(S.panelReturn?.isConnected?S.panelReturn:S.cv).focus();wake();}
+  else {S.last=performance.now();S.perf.skip=30;(S.panelReturn?.isConnected?S.panelReturn:S.cv).focus();}
 }
 const live=()=>!!(S.el?.isConnected&&S.el.closest('dialog[open],#sheet[open]')&&!document.hidden);
 
@@ -306,7 +302,7 @@ export function mount(slot,opts){
 /** The player chose Tự lái again after a fallback: try once more at full size. */
 export function again(){S.fail=false;S.perf={n:0,sum:0,bad:0,skip:40,level:0};if(S.el)size();}
 /** The work sheet moved on (no leg to ride): the frames stop. */
-export function park(){if(S.full?.active)S.full.exit();if(S.overlay)panel(null);if(S.raf){cancelAnimationFrame(S.raf);S.raf=0;}if(S.idle){clearTimeout(S.idle);S.idle=0;}clearInput();S.v=0;}
+export function park(){if(S.full?.active)S.full.exit();if(S.overlay)panel(null);if(S.raf){cancelAnimationFrame(S.raf);S.raf=0;}clearInput();S.v=0;}
 
 /** Start of a leg: the scooter at the door of the stop the courier is at, facing the way to go. */
 function place(at,target){
@@ -331,9 +327,9 @@ function size(){
   S.cv.width=Math.round(w*dpr);S.cv.height=Math.round(h*dpr);
   const mw=Math.round(clamp(w*.24,78,120)),mh=Math.round(mw*.74);
   S.mini.style.width=mw+'px';S.mini.style.height=mh+'px';S.mini.width=Math.round(mw*Math.min(2,devicePixelRatio||1));S.mini.height=Math.round(mh*Math.min(2,devicePixelRatio||1));
-  S.barsKey='';if(S.overlay==='map')expandedMap();wake();
+  S.barsKey='';if(S.overlay==='map')expandedMap();
 }
-function wake(){if(S.idle){clearTimeout(S.idle);S.idle=0;}if(!S.raf&&S.el?.isConnected){S.last=performance.now();S.raf=requestAnimationFrame(frame);}}
+function wake(){if(!S.raf&&S.el?.isConnected){S.last=performance.now();S.raf=requestAnimationFrame(frame);}}
 function say(text,ms=2600){
   if(!S.say)return;S.say.textContent=text;S.say.hidden=false;S.sayT=performance.now()+ms;
 }
@@ -567,14 +563,12 @@ function frame(now){
   if(!S.el?.isConnected||!S.opts){return;}
   const dt=Math.min(.05,Math.max(0,(now-S.last)/1000)),ms=now-S.last;S.last=now;
   if(!live()){park();return;}
-  if(S.overlay){if(S.view==='firstperson')S.raf=requestAnimationFrame(frame);return;}
-  const moving=needsDrivingFrames(S);
+  if(S.overlay){S.raf=requestAnimationFrame(frame);return;}
   S.t+=dt;
-  ride(dt);if(S.view==='firstperson'||moving)moveTraffic(dt);
-  if(S.visible&&S.w){const t0=performance.now();draw(now);S.cost.push(performance.now()-t0);if(S.cost.length>600)S.cost.shift();if(S.view==='firstperson'||moving)measure(ms);}
+  ride(dt);moveTraffic(dt);
+  if(S.visible&&S.w){const t0=performance.now();draw(now);S.cost.push(performance.now()-t0);if(S.cost.length>600)S.cost.shift();measure(ms);}
   if(S.sayT&&now>S.sayT){S.sayT=0;S.say.hidden=true;}
-  if(S.view==='firstperson'||needsDrivingFrames(S))S.raf=requestAnimationFrame(frame);
-  else S.idle=setTimeout(()=>{S.idle=0;wake();},1000);
+  S.raf=requestAnimationFrame(frame);
 }
 /** Frame times; a phone that keeps missing them draws fewer pixels, then switches to "Đi nhanh". */
 function measure(ms){
@@ -595,10 +589,6 @@ function measure(ms){
 function draw(now){
   const c=S.c,w=S.w,h=S.h,pal=palette(),o=S.opts,W=S.world;
   c.setTransform(S.dpr,0,0,S.dpr,0,0);
-  if(S.view==='isometric'){
-    if(!S.iso)S.iso=createIsometricRenderer({onAsset:()=>{if(live()&&!S.overlay)wake();}});
-    S.iso.draw(c,S,W,o,signalClock());goal(o,W);mini(o,W);return;
-  }
   // Camera: the rider's eye, a slight lean into the turn and a bob with speed.
   const calm=still(),lean=calm?0:-S.steer*.035*Math.min(1,Math.abs(S.v)/7);
   S.roll+=(lean-S.roll)*.15;

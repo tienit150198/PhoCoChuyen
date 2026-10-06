@@ -331,7 +331,7 @@ class EveryStockedCareer(unittest.TestCase):
                 j = Journey(cid)
                 level = kit.level(j.c)
                 it = min((i for i in inventory.catalogue(cid) if i.get('unlock', 1) <= level),
-                         key=lambda i: kit.stock(j.c, i['id']))
+                         key=lambda i: (kit.stock(j.c, i['id']), i.get('cost', 0)))   # the emptiest, then the cheapest (a new shop has little cash)
                 stock = kit.stock(j.c, it['id'])
                 qty = min(4, inventory.capacity(cid) - stock)
                 self.assertGreater(qty, 0)

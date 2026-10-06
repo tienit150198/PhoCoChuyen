@@ -145,14 +145,15 @@ LOOK_IDS = {
     'shade': ('mau_nau', 'mau_den', 'mau_mat_ong', 'mau_hong', 'mau_xanh_khoi', 'mau_bach_kim'),
     'skin': ('da_sang', 'da_hong', 'da_trung', 'da_ngam'),
     'top': ('ao_quen', 'ao_thun_kem', 'ao_thun_xanh', 'ao_so_mi', 'ao_len', 'ao_hoodie', 'ao_dai', 'ao_chi_may', 'ao_hoa', 'ao_vest',
-            'ao_cuoi', 'vest_cuoi', 'dam_cong_chua', 'dam_du_tiec', 'dam_yem'),
-    'bottom': ('quan_kem', 'quan_xam', 'quan_jean', 'quan_short', 'vay_xoe', 'vay_dai'),
-    'shoes': ('giay_nau', 'dep_lao', 'giay_trang', 'giay_do', 'bot_den'),
-    'acc': ('pk_khong', 'kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo'),
+            'ao_cuoi', 'vest_cuoi', 'dam_cong_chua', 'dam_du_tiec', 'dam_yem', 'dam_maxi', 'vay_babydoll', 'ao_blazer',
+            'ao_cardigan', 'ao_polo'),
+    'bottom': ('quan_kem', 'quan_xam', 'quan_jean', 'quan_short', 'vay_xoe', 'vay_dai', 'vay_chu_a'),
+    'shoes': ('giay_nau', 'dep_lao', 'giay_trang', 'giay_do', 'bot_den', 'sandal_nau'),
+    'acc': ('pk_khong', 'kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo', 'tui_xach', 'bong_tai', 'khan_lua'),
 }
 # Bảng màu (1.3.1 accessories, then clothes and shoes): look['tint'] = {worn item id: colour id}
 # (game/wardrobe.py TINTABLE, CLOTHES, TINT_SLOTS and COLORS). Hair keeps its own shades.
-TINTABLE = ('kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo')
+TINTABLE = ('kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo', 'tui_xach', 'bong_tai', 'khan_lua')
 TINT_SLOTS = ('top', 'bottom', 'shoes', 'acc')
 PAINTABLE = frozenset(TINTABLE + LOOK_IDS['top'] + LOOK_IDS['bottom'] + LOOK_IDS['shoes'])
 TINT_MAX = 8      # entries a client may send (it sends at most one per slot in TINT_SLOTS)
@@ -178,7 +179,7 @@ TITLES = {
     'c_customer_care': '🎧 Người lắng nghe', 'c_pharmacy': '💊 Người đọc nhãn kỹ', 'c_tour_guide': '🧭 Người kể chuyện đường xa',
     'c_teacher': '🍎 Người dạy tận tâm', 'c_accounting': '📒 Người giữ sổ gọn', 'c_corp_accounting': '🧮 Kế toán vững tay',
     'c_tax_payroll': '🧾 Người tính lương chuẩn', 'c_group_accounting': '🏢 Kế toán hợp nhất',
-    'c_hr_admin': '🗂️ Người giữ hồ sơ nhân sự', 'c_secretary': '📅 Thư ký chu đáo', 'c_it_helpdesk': '🖥️ Cứu tinh máy tính',
+    'c_hr_admin': '🗂️ Người giữ hồ sơ nhân sự', 'c_secretary': '📅 Thư ký chu đáo', 'c_it_helpdesk': '🖥️ Cứu tinh máy tính', 'c_oil': '🛢️ Người giữ ổ khóa đỏ',
     'k_careful': '🔍 Mắt tinh', 'k_communication': '💬 Nói dễ hiểu', 'k_patience': '🌱 Kiên nhẫn như đất', 'k_numbers': '🔢 Đầu óc con số',
     'k_teamwork': '🫶 Đồng đội tốt', 'k_creative': '🎨 Bàn tay khéo', 'k_tech': '💻 Rành máy móc', 'k_calm': '🧘 Bình tĩnh giờ cao điểm',
     'k_learning': '📚 Ham học hỏi',
@@ -196,7 +197,10 @@ CERTS = {
     'cert:work_safety': '🦺 Chứng chỉ An toàn lao động', 'cert:grooming': '✂️ Chứng chỉ Chăm sóc tóc & thú cưng',
     'cert:customer_service': '🎧 Chứng chỉ Chăm sóc khách hàng', 'cert:teaching': '🍎 Chứng chỉ Nghiệp vụ sư phạm',
     'cert:accounting': '🧮 Chứng chỉ Kế toán cơ bản', 'cert:air_safety': '✈️ Chứng chỉ An toàn bay cơ bản',
-    'cert:office_admin': '🗂️ Chứng chỉ Hành chính văn phòng', 'cert:ice_cream_craft': '🍨 Chứng chỉ làm kem',
+    'cert:office_admin': '🗂️ Chứng chỉ Hành chính văn phòng', 'cert:offshore_safety': '🛢️ Chứng chỉ An toàn cơ bản ngoài khơi', 'cert:ice_cream_craft': '🍨 Chứng chỉ làm kem',
+    'cert:archive_craft': '🗂️ Chứng chỉ nghiệp vụ lưu trữ',
+    'cert:rail_safety': '🚦 Chứng chỉ An toàn đường ngang',
+    'cert:patient_safety': '🏥 Chứng chỉ An toàn người bệnh',
 }
 
 EMOTES = {'wave': '👋', 'heart': '❤️', 'laugh': '😂', 'wow': '😮', 'pray': '🙏', 'dance': '💃'}   # 💃: a wedding's stage (live/wedding.py)
