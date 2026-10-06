@@ -1,3 +1,10 @@
+# Chưa phát hành — Nghề mới: Thợ dầu khí
+
+- Nghề mới 🛢️ Thợ dầu khí (chương 4, cạnh phi công): kỹ thuật viên vận hành trên giàn Hải Âu của Dầu khí Sóng Bạc, việc làm thuê lương đi biển cao. Đợt 14 ngày: ngày bay trực thăng ra giàn, bốn ngày ca 12 tiếng, ngày bàn giao về bờ; bão tới thì ở lại thêm trên giàn hoặc chờ ở bờ.
+- Ngày bay: soạn túi (không bật lửa, bình xịt, dao, rượu, thuốc lá điện tử, tối đa 15 kg), mặc đồ bơi giữ nhiệt, áo phao, bình thở, chụp tai, trả lời câu thoát hiểm trực thăng, sương mù thì ngồi chờ. Lên giàn: gắn thẻ bảng đếm người, nhận xuồng cứu sinh theo biển cửa phòng, nhớ ba tiếng còi.
+- Mỗi ca: họp an toàn (đồ bảo hộ, thử khí mẫu máy đo, mối nguy), bảo dưỡng có giấy phép (đúng loại giấy phép, đối chiếu việc cẩu, khóa và treo thẻ từng điểm, xả áp, kiểm về không, đo khí, người canh lửa/canh bồn), đi tuần đọc đồng hồ, báo động đi ngược gió về đúng xuồng. Có lúc van lọt, khí rò, thiếu ôxy, cẩu trên đầu, cầu dao ghi nhầm: ✋ Dừng việc luôn đúng, dừng mà không có gì sai cũng không bị trừ; báo suýt sự cố được cảm ơn.
+- Ngày về bờ: bàn giao thật cho ca sau, rồi cả nhà nhờ tiền: hỏi rõ, gửi số mình chọn hoặc không gửi, mặc cả với người nhà; có khoản cần thật, có khoản là trò lừa.
+- 42 chuyện oái oăm (sếp ép bỏ bước đo khí, nhà thầu ký khống checklist, bạn cùng phòng ngáy, chê cơm nhà ăn, Má gọi lúc mất sóng, em đòi điện thoại mới, anh họ rủ góp tiền ảo, ở lại thêm ca, quấy rối và bắt nạt…), 15 chuyện bất ngờ theo ngày đi biển, 6 tình huống; chứng chỉ An toàn cơ bản ngoài khơi, thang thăng tiến 4 bậc, truyện nghề, hướng dẫn, cảnh giàn khoan và tòa nhà ở khu Sân bay.
 # Chưa phát hành — WP1 Nhân viên tiệm & nhập hàng
 
 - Nhân viên bán theo cả danh mục hàng của tiệm (Mẹ & Bé, tạp hóa, thú cưng, trái cây, hoa, trà đá, kem, cơm, phở, mì cay, cà phê, salon, nail, sửa chữa…), chỉ món còn hàng, ưu tiên món còn nhiều; hết thỏ bông vẫn bán món khác.

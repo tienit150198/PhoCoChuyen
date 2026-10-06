@@ -10,7 +10,7 @@ const scratch={};
 // Careers whose stylesheet builds on a shared kit. The kit is its own <link> (loaded in parallel, placed
 // before the career's sheet) instead of an @import inside it, which cost a second round trip.
 export const CSS_KIT={cafe_bakery:'food_kit',florist:'food_kit',restaurant:'food_kit',tax_payroll:'office_kit',group_accounting:'office_kit',corp_accounting:'office_kit',
-  fruit:'street_kit',garbage:'street_kit',drain:'street_kit',homemaker:'street_kit',ice_cream:'street_kit',com:'street_kit',nail:'street_kit',pagoda:'street_kit',pho:'street_kit',photobooth:'street_kit',giupviec:'street_kit',naucom:'street_kit',babysitter:'street_kit',pilot:'air_kit',flight_attendant:'air_kit',
+  fruit:'street_kit',garbage:'street_kit',drain:'street_kit',homemaker:'street_kit',ice_cream:'street_kit',com:'street_kit',nail:'street_kit',pagoda:'street_kit',pho:'street_kit',photobooth:'street_kit',giupviec:'street_kit',naucom:'street_kit',babysitter:'street_kit',pilot:'air_kit',flight_attendant:'air_kit',oil:['street_kit','air_kit'],
   hr_admin:'office_kit',secretary:'office_kit',it_helpdesk:'office_kit'};
 
 // A failed import() stays failed for the life of the page (the browser keeps it in its module map): the next try of
@@ -24,7 +24,7 @@ export async function loadCareerModules(ids,waitCss=false){
     try{
       const mod=modules[id]=(await (failed[id]?import(retryUrl(id)):import(`../careers/${id}.js`))).default;
       // Optional scoped stylesheet: public/css/careers/<id>.css (+ its kit, see CSS_KIT)
-      const sheets=mod?.css?[CSS_KIT[id],id].filter(Boolean):[];
+      const sheets=mod?.css?[...[].concat(CSS_KIT[id]||[]),id]:[];   // a kit may be a list (oil: street_kit + air_kit)
       // boot.js preloads the last opened workplace on the next visit, before bootstrap and app.js.
       try{localStorage.setItem('mnl.warm',JSON.stringify([`/js/careers/${id}.js`,...sheets.map(n=>`/css/careers/${n}.css`)]));}catch{/* storage blocked */}
       const ready=sheets.filter(n=>!document.querySelector(`link[data-career-css="${n}"]`)).map(n=>{

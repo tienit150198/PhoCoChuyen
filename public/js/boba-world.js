@@ -55,7 +55,7 @@ function copyPen(from,to){for(const k of PEN)if(to[k]!==from[k])to[k]=from[k];to
 const DECOR_FOOT={plant:[-14,-6,14,2],lamp:[-18,-5,18,5],seat:[-25,-2,25,9]};
 // Outfit per career for the male player look; the female look keeps the apron.
 const OUTFIT={pharmacy:'coat',pet_care:'coat',salon:'coat',accounting:'shirt',corp_accounting:'shirt',tax_payroll:'shirt',group_accounting:'shirt',hr_admin:'shirt',secretary:'shirt',it_helpdesk:'shirt',customer_care:'shirt',teacher:'shirt',
-  tour_guide:'vest',homestay:'vest',delivery:'vest',repair:'overalls',farm:'overalls'};
+  tour_guide:'vest',homestay:'vest',delivery:'vest',repair:'overalls',farm:'overalls',oil:'overalls'};
 
 export class BobaWorld extends World {
  isPortrait(){return !this.previewRendering&&this.width<=620;}

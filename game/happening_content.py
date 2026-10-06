@@ -587,6 +587,23 @@ HAPPENINGS = [
     H('tablet_drop', 'den', '📟', 'Máy tính bảng tài liệu bay rơi xuống sân đỗ',
       'Gió sân đỗ thổi tung tập giấy, bạn chụp vội thì máy tính bảng tài liệu bay tuột tay, nứt màn hình.',
       ('pilot',), 'drop', 'self', 'table', 'Đền một phần máy tính bảng cho hãng', dict(comp=(25, 60)), min_day=4),
+    # ================================================================ 🛢️ Giàn Hải Âu (oil)
+    H('heli_wallet', 'trom', '👛', 'Mất ví ở phòng chờ cảng trực thăng',
+      'Bạn để túi xách lên băng ghế phòng chờ để đi cân hành lý. Quay lại, ngăn ngoài túi mở toang, ví đã biến mất.',
+      ('oil',), 'pick', 'pickpocket', 'door', 'Mất ví ở cảng trực thăng', dict(wallet=(30, 80)), ['shout', 'call', 'camera', 'let'],
+      weight=2, min_day=3),
+    H('shore_phone', 'trom', '📱', 'Giật điện thoại ngày về bờ',
+      'Vừa ra cổng cảng trực thăng, bạn đứng ven đường gọi Má. Một chiếc xe máy lướt qua giật phắt điện thoại.',
+      ('oil',), 'snatch', 'thief', 'door', 'Mất điện thoại cá nhân', dict(wallet=(60, 140)), THEFT_SOLO, min_day=6),
+    H('gauge_drop', 'den', '🧭', 'Làm rơi đồng hồ áp mẫu của giàn',
+      'Bạn kẹp đồng hồ áp mẫu dưới nách để ghi sổ tuần tra. Đồng hồ tuột xuống sàn lưới, vỡ mặt kính.',
+      ('oil',), 'drop', 'self', 'table', 'Đền một phần đồng hồ áp mẫu', dict(comp=(15, 40)), min_day=3),
+    H('radio_drop', 'den', '📻', 'Bộ đàm rơi xuống biển',
+      'Gió giật mạnh lúc bạn cúi qua lan can chỉ đường cho tàu dịch vụ. Bộ đàm chưa cột dây tuột khỏi thắt lưng, rơi tõm xuống biển.',
+      ('oil',), 'drop', 'self', 'till', 'Đền một phần bộ đàm cho giàn', dict(comp=(20, 50)), min_day=4),
+    H('mug_crack', 'den', '☕', 'Làm vỡ ly sứ của cô Sáu',
+      'Giàn rung nhẹ vì sóng lừng đúng lúc bạn đặt ly cà phê xuống. Chiếc ly sứ vẽ hoa sen cô Sáu mang từ nhà rơi xuống sàn, vỡ đôi.',
+      ('oil',), 'drop', 'self', 'table', 'Đền ly sứ cho cô Sáu', dict(comp=(5, 15)), min_day=2),
 ]
 INDEX = {x['id']: x for x in HAPPENINGS}
 
