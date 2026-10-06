@@ -10,6 +10,7 @@ html[data-theme="dem"] .career-job.sk.cap{--sk-accent:#7fb0de;--sk-accent-2:#c99
 .career-job.sk.cap .cap-big{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--cap-soft);font-size:24px}
 .career-job.sk.cap .card .row{display:flex;gap:10px;align-items:flex-start}
 .career-job.sk.cap .card h4 small{font-weight:400}
+.career-job.sk.cap .card .tag,.career-job.sk.cap .cap-deal,.career-job.sk.cap .cap-log-done{white-space:normal;line-height:1.35;max-width:100%;display:inline-block}
 .career-job.sk.cap .cap-learn{margin:8px 0 0;padding:6px 10px;border-radius:var(--sk-rs);background:var(--cap-soft);font-size:13px}
 .career-job.sk.cap .cap-ground{margin:10px 0;padding:12px;border-radius:var(--sk-r);border:2px solid var(--cap-red);background:var(--sk-surface)}
 .career-job.sk.cap .cap-ground h3{margin:0 0 4px;font-size:16px}

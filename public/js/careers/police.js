@@ -9,7 +9,7 @@
  * The server decides everything; hints show the next step, never which way a decision should go. */
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
+import {data,cc,act,pane,introCard,deskCard,dayBar,askCard,bottom,kitActions} from './street_kit.js';
 import {oddCard,restCard,record,ACTIONS as oddActions} from './air_kit.js';
 
 const ODD_CFG={odd:'cap_odd',rest:'cap_rest',kinds:{charm:'Lời mời khó từ chối',harass:'Quấy rối',demand:'Yêu cầu oái oăm',corner:'Làm tắt',bargain:'Mặc cả với phường'},
@@ -23,7 +23,7 @@ const seenHas=(t,k)=>(t.seen||[]).includes(k);
 /* ------------------------------------------------------------ shared pieces */
 function learnNote(x){
   const l=data(x).learn;if(!l?.on)return '';
-  return `<p class="cap-learn">👮 Anh Định đứng cạnh kèm bạn: việc ${Math.min(l.n+1,l.of)}/${l.of}. Sai gì anh nhắc trước.</p>`;
+  return `<p class="cap-learn">👮 Anh Định đứng cạnh kèm bạn: việc ${Math.min(l.n+1,l.of)}/${l.of}. Sai gì anh nhắc trước.${l.point?' Anh chỉ vào một mục trong sổ: “Chuyện này có người đang cần mình ngay.”':''}</p>`;
 }
 function groundCard(x){
   const cd=data(x).odd?.conduct||{};if(!cd.ground)return '';
@@ -34,6 +34,13 @@ function wardStep(x){
   if(o.ev)return {ok:null,label:`Trả lời: ${o.ev.title}`,go:{sel:'.air-odd',label:'💬 Trả lời'},pulse:''};
   if(o.conduct?.ground)return {ok:null,label:'Tạm dừng nhiệm vụ: tan ca',go:{sel:'.cap-ground',label:'⚖️ Tan ca'},pulse:''};
   return null;
+}
+const waitBar=t=>`<div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div>`;
+/** Who is in front of you: the resident at the desk, or the two neighbours of a dispute (not the colleague who sent them). */
+function caseCard(t,x){
+  const n=t.needs||{};
+  if(t.kind==='desk')return `<article class="card sk-ticket cap-who"><div class="row"><span class="cap-big" aria-hidden="true">${x.esc(n.emoji)}</span><div class="grow"><h3>${x.esc(n.who)}</h3><p class="small muted">${x.esc(n.role)}</p><p class="small">${x.esc(String(t.opening||'').split('): ').slice(1).join('): '))}</p>${waitBar(t)}</div></div></article>`;
+  return `<article class="card sk-ticket cap-who"><div class="row"><span class="cap-big" aria-hidden="true">${x.esc(n.emoji)}</span><div class="grow"><h3>${x.esc(n.title)}</h3><p class="small">${x.esc(t.opening)}</p>${waitBar(t)}</div></div></article>`;
 }
 const said=(e,who,text)=>`<p class="cap-said"><span aria-hidden="true">${e}</span><span><b>${who}</b> ${text}</span></p>`;
 
@@ -49,7 +56,7 @@ function briefPanel(t,x){
 function briefSteps(t,x){
   const es=t.needs?.entries||[],next=es.find(e=>!e.text),first=x.ui.first?.[t.id];
   return [{ok:!next||null,label:'Đọc từng mục sổ trực ban',note:`${es.filter(e=>e.text).length}/${es.length}`,go:next?{cmd:'cap_read',payload:{task:t.id,entry:next.id},label:`📖 Đọc: ${x.esc(next.name)}`}:null},
-    {ok:first?true:null,label:'Chọn việc làm trước',go:{sel:'.cap-first',label:'🚶 Chọn việc làm trước'},pulse:''}];
+    {ok:first?true:null,label:'Chọn việc làm trước',go:{sel:'.cap-first',label:'🚶 Chọn việc làm trước'},pulse:data(x).learn?.point?`.cap-pick[data-v="${data(x).learn.point}"]`:''}];
 }
 
 /* ------------------------------------------------------------ the residence desk */
@@ -63,7 +70,7 @@ function deskPanel(t,x){
   const rows=(n.docs||[]).map(k=>{const [e,label]=docs[k]||['📄',k];const txt=(n.checks||{})[k];
     return txt!=null?`<li class="seen ${n.ok?.[k]?'ok':'bad'}"><b>${x.esc(e)} ${x.esc(label)}</b><span>${x.esc(txt)}</span></li>`
       :`<li>${x.cmd(`${x.esc(e)} Xem ${x.esc(label.toLowerCase())}`,'cap_doc',{task:t.id,doc:k},'ghost cap-check',!!(pr&&!pr.answered))}</li>`;}).join('');
-  out+=`<section class="card cap-docs"><h4>🗂️ Hồ sơ khai báo tạm trú</h4><p class="small muted">${x.esc(n.who||'')} · ${x.esc(n.role||'')}</p><ul class="cap-checklist">${rows}</ul></section>`;
+  out+=`<section class="card cap-docs"><h4>🗂️ Hồ sơ khai báo tạm trú</h4><ul class="cap-checklist">${rows}</ul></section>`;
   const back=(n.docs||[]).map(k=>opt(x,`📄 Thiếu, sai: ${x.esc((docs[k]||['',k])[1].toLowerCase())}`,(cc(x).back_line||{})[k]||'','cap_back',{task:t.id,doc:k})).join('');
   const locked=pr&&!pr.answered;
   out+=`<section class="card cap-decide"><h4>⚖️ Quyết định</h4>${locked?'<p class="small muted">Trả lời người khai trước đã.</p>':`<div class="sk-opts">${opt(x,'🗂️ Nhận hồ sơ','đủ giấy, hẹn giờ trả','cap_accept',pay(t),'cap-accept')}</div>${pane(x,`back-${t.id}`,'📄 Hướng dẫn bổ sung…',`<div class="sk-opts">${back}</div>`,false,'cap-back')}`}</section>`;
@@ -258,7 +265,7 @@ export default {
     if(t.kind!=='brief'&&!t.known)main=askCard(x,t,ASK_LABEL[t.kind]||'👋 Chào hỏi');
     else{
       const body=(PANELS[t.kind]||(()=>''))(t,x);
-      main=['desk','dispute'].includes(t.kind)?`${person(x,t,`<p class="small muted">${x.esc(t.opening)}</p>`)}${body}`:body;
+      main=['desk','dispute'].includes(t.kind)?`${caseCard(t,x)}${body}`:body;
       side=stepRows(x,g.steps,t.kind==='brief'?'Giao ban':'Các bước');
     }
     return `<div class="career-job sk cap">${hint}${head}${learnNote(x)}${dayBar(x)}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;

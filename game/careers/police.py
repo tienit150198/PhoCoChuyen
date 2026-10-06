@@ -94,6 +94,11 @@ def _rot(rows: tuple, day: int, slot: int, opened: int, salt: str) -> str:
     return pool[kit.rng(ID, salt, day, slot).randrange(len(pool))]
 
 
+def _low(s: str) -> str:
+    """Only the first letter lowered (“Cổng trường Tiểu học Mây” → “cổng trường Tiểu học Mây”): names keep their capitals."""
+    return s[:1].lower() + s[1:] if s else s
+
+
 def _opened(day: int, simple: int, total: int) -> int:
     return simple if day <= 1 else simple + 2 if day == 2 else total
 
@@ -221,25 +226,25 @@ def make_task(day: int, slot: int, serial: int) -> dict:
     if kind == 'desk':
         x = DESKS[case]
         docs = ['form', 'id', 'host'] + (['guard'] if x['minor'] else [])
-        return kit.base_task(ID, day, slot, serial, HANG, f'Bàn cư trú: {x["who"]}', f'{x["emoji"]} {x["who"]} ({x["role"].lower()}): {x["line"]}',
+        return kit.base_task(ID, day, slot, serial, HANG, f'Bàn cư trú: {x["who"]}', f'{x["emoji"]} {x["who"]} ({_low(x["role"])}): {x["line"]}',
                              kind='desk', needs=dict(who=x['who'], role=x['role'], emoji=x['emoji'], docs=docs, press=x['press']), _v=dict(case=case), **c)
     if kind == 'lost':
         x = LOSTS[case]
-        return kit.base_task(ID, day, slot, serial, x['npc'], f'Đồ thất lạc: {x["item"].lower()}',
-                             f'{x["finder"]} mang tới một {x["item"].lower()} nhặt được ({x["found"].lower()}).',
+        return kit.base_task(ID, day, slot, serial, x['npc'], f'Đồ thất lạc: {_low(x["item"])}',
+                             f'{x["finder"]} mang tới một {_low(x["item"])} nhặt được ({_low(x["found"])}).',
                              kind='lost', needs=dict(item=x['item'], emoji=x['emoji'], finder=x['finder'], found=x['found']), _v=dict(case=case), **c)
     if kind == 'dispute':
         x = DISPUTES[case]
         side = lambda s: dict(name=x[s]['name'], emoji=x[s]['emoji'], say=x[s]['say'])
-        return kit.base_task(ID, day, slot, serial, x['npc'], f'Hòa giải: {x["title"].lower()}',
+        return kit.base_task(ID, day, slot, serial, x['npc'], f'Hòa giải: {_low(x["title"])}',
                              f'{x["a"]["name"]} và {x["b"]["name"]} cùng lên phường, chưa ngồi đã to tiếng.',
                              kind='dispute', needs=dict(title=x['title'], emoji=x['emoji'], a=side('a'), b=side('b'),
                                                         terms=[dict(id=tm['id'], label=tm['label'], options=list(tm['options'])) for tm in x['terms']]),
                              _v=dict(case=case), **c)
     if kind == 'child':
         x = CHILDREN[case]
-        return kit.base_task(ID, day, slot, serial, x['npc'], f'Trẻ lạc ở {x["place"].lower()}',
-                             f'{x["emoji"]} Một bé {x["age"]} đứng khóc một mình: {x["found"].lower()}.',
+        return kit.base_task(ID, day, slot, serial, x['npc'], f'Trẻ lạc ở {_low(x["place"])}',
+                             f'{x["emoji"]} Một bé {x["age"]} đứng khóc một mình: {_low(x["found"])}.',
                              kind='child', needs=dict(kid=x['kid'], emoji=x['emoji'], age=x['age'], found=x['found'], place=x['place']), _v=dict(case=case), **c)
     if kind == 'patrol':
         p = PATROLS[case]
@@ -252,7 +257,7 @@ def make_task(day: int, slot: int, serial: int) -> dict:
     if kind == 'talk':
         x = TALKS[case]
         return kit.base_task(ID, day, slot, serial, x['npc'], f'Nói chuyện chống lừa đảo: {x["where"]}',
-                             f'{x["where"]}: {x["audience"].lower()} chờ nghe phường nói chuyện chống lừa đảo.',
+                             f'{x["where"]}: {_low(x["audience"])} chờ nghe phường nói chuyện chống lừa đảo.',
                              kind='talk', needs=dict(where=x['where'], audience=x['audience']), _v=dict(case=case), **c)
     q = _calls(day, slot, case)
     return kit.base_task(ID, day, slot, serial, HANG, 'Điện thoại trực ban', '☎️ Ba cuộc gọi tới cùng lúc. Chị Hằng: “Em xếp giúp chị, ai đi trước.”',
@@ -436,8 +441,8 @@ def _first(s, c, d, p):
     t['result'] = 'brief'
     kit.start_work(t)
     ok = not cq.slips(t)
-    _finish(s, c, d, t, 0, f'Giao ban, làm trước: {BRIEF[first]["name"].lower()}.', job=False)
-    return dict(message=f'📋 Giao ban xong. Việc đầu tiên: {BRIEF[first]["name"].lower()}.' + (' Anh Định gật đầu: “Đúng việc cần làm trước.”' if ok else ''),
+    _finish(s, c, d, t, 0, f'Giao ban, làm trước: {_low(BRIEF[first]["name"])}.', job=False)
+    return dict(message=f'📋 Giao ban xong. Việc đầu tiên: {_low(BRIEF[first]["name"])}.' + (' Anh Định gật đầu: “Đúng việc cần làm trước.”' if ok else ''),
                 celebrate=ok)
 
 
@@ -515,7 +520,7 @@ def _accept(s, c, d, p):
         cq.slip(t, 'wrong_person', 3, 'Nhận hồ sơ bằng giấy tờ của người khác.', 'nhận giấy tờ không đúng người', safety=True)
     elif issue:
         t['mistakes'] += 1
-        cq.slip(t, 'accept_bad', 2, f'Hồ sơ còn thiếu ({DOCS[issue][1].lower()}) mà vẫn nhận, chị Hằng phải gọi người ta lên lại.', 'nhận hồ sơ chưa đủ')
+        cq.slip(t, 'accept_bad', 2, f'Hồ sơ còn thiếu ({_low(DOCS[issue][1])}) mà vẫn nhận, chị Hằng phải gọi người ta lên lại.', 'nhận hồ sơ chưa đủ')
     if unseen and not any(r['code'] == 'rush' for r in cq.slips(t)):
         t['mistakes'] += 1
         cq.slip(t, 'skim', 1, 'Nhận hồ sơ mà không xem hết giấy tờ.', 'chưa xem đủ giấy tờ')
@@ -553,7 +558,7 @@ def _back(s, c, d, p):
     who = t['needs']['who']
     tr = folk.traits(t['id'], 'warm' if t['needs']['press'] is None else 'bossy')
     reply = '“Dạ, chiều em mang lên đủ.”' if tr['mood'] >= 45 else '“Trời, lại phải đi thêm một chuyến…” Nhưng vẫn ghi lại giấy cần mang.'
-    _fact(d, t, f'Bàn cư trú: hướng dẫn {who} bổ sung {DOCS[doc][1].lower()}.', key=False,
+    _fact(d, t, f'Bàn cư trú: hướng dẫn {who} bổ sung {_low(DOCS[doc][1])}.', key=False,
           lie=f'Bàn cư trú: đã nhận đủ hồ sơ của {who}.' if issue else None)
     msg = _finish(s, c, d, t, BONUS, f'Hướng dẫn {who} bổ sung hồ sơ.')
     return dict(message=f'📄 {BACK_LINE[doc]}. {who}: {reply} {msg}'.strip(), celebrate=not cq.slips(t))
@@ -567,7 +572,7 @@ def _count(s, c, d, p):
     kit.start_work(t)
     x = _case_of(t)
     tr = x['truth']
-    return dict(message=f'🧾 Kiểm đếm cùng {x["finder"].lower()}: {tr["color"]}; bên trong: {tr["inside"]}. Hai bên ký biên bản tiếp nhận. '
+    return dict(message=f'🧾 Kiểm đếm cùng {_low(x["finder"])}: {tr["color"]}; bên trong: {tr["inside"]}. Hai bên ký biên bản tiếp nhận. '
                         f'Một lúc sau, {x["who"]} tới xin nhận lại.')
 
 
@@ -609,9 +614,9 @@ def _give(s, c, d, p):
     if x['genuine']:
         _bump(d, 'helped')
         d['stats']['returned'] = min(10 ** 7, d['stats']['returned'] + 1)
-    _fact(d, t, f'Đồ thất lạc: trả {x["item"].lower()} cho {x["who"]}, có ký nhận.' + ('' if x['genuine'] else ' Người nhận không phải chủ, đã báo cáo.'),
-          key=not x['genuine'], lie=f'Đồ thất lạc: {x["item"].lower()} đã trả đúng chủ, đối chiếu đủ.' if cq.slips(t) else None)
-    msg = _finish(s, c, d, t, BONUS, f'Trả lại {x["item"].lower()}.')
+    _fact(d, t, f'Đồ thất lạc: trả {_low(x["item"])} cho {x["who"]}, có ký nhận.' + ('' if x['genuine'] else ' Người nhận không phải chủ, đã báo cáo.'),
+          key=not x['genuine'], lie=f'Đồ thất lạc: {_low(x["item"])} đã trả đúng chủ, đối chiếu đủ.' if cq.slips(t) else None)
+    msg = _finish(s, c, d, t, BONUS, f'Trả lại {_low(x["item"])}.')
     head = (f'👛 {x["who"]} ký nhận, cảm ơn rối rít.' if x['genuine'] else
             f'👛 {x["who"]} ký nhận rồi đi vội. Chiều đó chủ thật lên hỏi… 📋 Anh Định lập báo cáo, đi tìm lại đồ.')
     return dict(message=f'{head} {msg}'.strip(), celebrate=not cq.slips(t), correct=not cq.safety(t))
@@ -633,10 +638,10 @@ def _keep(s, c, d, p):
         cq.slip(t, 'blind', 1, 'Không hỏi câu nào đã từ chối.', 'từ chối khi chưa hỏi')
     t['choice'] = 'keep'
     t['result'] = 'kept'
-    _fact(d, t, f'Đồ thất lạc: chưa trả {x["item"].lower()}, người tới nhận ' + ('chưa chứng minh được là chủ.' if not x['genuine'] else 'được hẹn mang thêm giấy tờ.'),
+    _fact(d, t, f'Đồ thất lạc: chưa trả {_low(x["item"])}, người tới nhận ' + ('chưa chứng minh được là chủ.' if not x['genuine'] else 'được hẹn mang thêm giấy tờ.'),
           key=not x['genuine'])
-    msg = _finish(s, c, d, t, BONUS, f'Giữ lại {x["item"].lower()} chờ chủ thật.')
-    head = (f'🔒 Bạn cất {x["item"].lower()} vào tủ: “Anh mang thêm giấy tờ, chứng minh được thì phường trả.” {x["who"]} lủi đi mất.'
+    msg = _finish(s, c, d, t, BONUS, f'Giữ lại {_low(x["item"])} chờ chủ thật.')
+    head = (f'🔒 Bạn cất {_low(x["item"])} vào tủ: “Anh mang thêm giấy tờ, chứng minh được thì phường trả.” {x["who"]} lủi đi mất.'
             if not x['genuine'] else f'🔒 {x["who"]} ngơ ngác: “Tôi trả lời đúng hết mà?” Hẹn mai lên lại.')
     return dict(message=f'{head} {msg}'.strip(), celebrate=not cq.slips(t))
 
@@ -688,7 +693,7 @@ def _offer(s, c, d, p):
     kit.start_work(t)
     a, b = accepts(t, 'a', terms), accepts(t, 'b', terms)
     t['offers'].append(dict(terms=terms, a=a, b=b))
-    said = ', '.join(f'{tm["label"].lower()}: {tm["options"][terms[tm["id"]]].lower()}' for tm in x['terms'])
+    said = ', '.join(f'{_low(tm["label"])}: {_low(tm["options"][terms[tm["id"]]])}' for tm in x['terms'])
     lines = [f'{x[k]["name"]}: “Được, tôi chịu.”' if ok else f'{x[k]["name"]}: {x[k]["no"]}' for k, ok in (('a', a), ('b', b))]
     tail = ''
     if a and b:
@@ -722,8 +727,8 @@ def _sign(s, c, d, p):
     t['result'] = 'agreed'
     _bump(d, 'helped')
     d['stats']['deals'] = min(10 ** 7, d['stats']['deals'] + 1)
-    _fact(d, t, f'Hòa giải {x["title"].lower()}: hai bên ký biên bản ({said}).'[:160], key=True)
-    msg = _finish(s, c, d, t, BONUS, f'Hòa giải thành: {x["title"].lower()}.')
+    _fact(d, t, f'Hòa giải {_low(x["title"])}: hai bên ký biên bản ({said}).'[:160], key=True)
+    msg = _finish(s, c, d, t, BONUS, f'Hòa giải thành: {_low(x["title"])}.')
     return dict(message=f'🤝 {x["a"]["name"]} và {x["b"]["name"]} ký biên bản hòa giải: {said}. {msg}'.strip(), celebrate=not cq.slips(t))
 
 
@@ -736,9 +741,9 @@ def _refer(s, c, d, p):
     cq.slip(t, 'nodeal', 1, 'Lên phường hòa giải mà chưa xong, phải hẹn buổi khác.', 'chưa hòa giải được')
     t['choice'] = 'refer'
     t['result'] = 'referred'
-    _fact(d, t, f'Hòa giải {x["title"].lower()}: chưa thành, chuyển tổ hòa giải, hẹn buổi sau.', key=True,
-          lie=f'Hòa giải {x["title"].lower()}: hai bên đã ký biên bản.')
-    msg = _finish(s, c, d, t, BONUS, f'Chuyển tổ hòa giải: {x["title"].lower()}.')
+    _fact(d, t, f'Hòa giải {_low(x["title"])}: chưa thành, chuyển tổ hòa giải, hẹn buổi sau.', key=True,
+          lie=f'Hòa giải {_low(x["title"])}: hai bên đã ký biên bản.')
+    msg = _finish(s, c, d, t, BONUS, f'Chuyển tổ hòa giải: {_low(x["title"])}.')
     return dict(message=f'📅 Chuyển tổ hòa giải cơ sở, hẹn hai nhà buổi sau. {msg}'.strip())
 
 
@@ -749,7 +754,7 @@ def _calm(s, c, d, p):
     _see(t, 'calm')
     kit.start_work(t)
     x = _case_of(t)
-    return dict(message=f'🧸 Bạn ngồi xuống ngang tầm mắt {x["kid"].lower()}, đưa ly nước, nói nhỏ: “Chú/cô ở đây với con, mình đứng chỗ này chờ mẹ nha.” Bé nín dần.')
+    return dict(message=f'🧸 Bạn ngồi xuống ngang tầm mắt {_low(x["kid"])}, đưa ly nước, nói nhỏ: “Chú/cô ở đây với con, mình đứng chỗ này chờ mẹ nha.” Bé nín dần.')
 
 
 def _not_calm(d: dict, t: dict) -> dict | None:
@@ -799,7 +804,7 @@ def _announce(s, c, d, p):
     _see(t, f'a:{how}')
     kit.start_work(t)
     x = _case_of(t)
-    lines = {'loa': f'📢 Loa {x["place"].lower()} đọc: “Một bé {x["age"]}, {x["asks"]["wear"].lower()} Người nhà mời tới điểm tìm trẻ lạc.”',
+    lines = {'loa': f'📢 Loa {_low(x["place"])} đọc: “Một bé {x["age"]}, {_low(x["asks"]["wear"])} Người nhà mời tới điểm tìm trẻ lạc.”',
              'call': '📞 Gọi số trên thẻ: chuông đổ, đầu dây vội vã “Tôi tới ngay!”' if x['genuine'] else
                      '📞 Gọi số trên thẻ, mẹ bé nghe máy: “Hôm nay ông ngoại đón, chị giữ cháu giúp tôi, ông sắp tới.”',
              'post': '📲 Ảnh bé lên nhóm khu phố, ba trăm lượt chia sẻ trong mười phút, kèm cả tên trường.'}
@@ -847,9 +852,9 @@ def _handover(s, c, d, p):
     if x['genuine']:
         _bump(d, 'helped')
         d['stats']['kids'] = min(10 ** 7, d['stats']['kids'] + 1)
-    _fact(d, t, f'Trẻ lạc: {x["kid"]} ({x["place"].lower()}) đã giao cho {x["who"]}.' + ('' if x['genuine'] else ' Bố mẹ không nhờ người này, đã báo cáo.'),
+    _fact(d, t, f'Trẻ lạc: {x["kid"]} ({_low(x["place"])}) đã giao cho {x["who"]}.' + ('' if x['genuine'] else ' Bố mẹ không nhờ người này, đã báo cáo.'),
           key=True, lie=f'Trẻ lạc: {x["kid"]} đã giao cho người nhà, xác minh đủ.' if cq.slips(t) else None)
-    msg = _finish(s, c, d, t, BONUS, f'Giao {x["kid"].lower()} cho người nhà.')
+    msg = _finish(s, c, d, t, BONUS, f'Giao {_low(x["kid"])} cho người nhà.')
     head = (f'🧒 {x["kid"]} về với {x["who"]}. Cả hai cảm ơn rối rít.' if x['genuine'] else
             f'🧒 {x["who"]} dắt bé đi. Mười phút sau ông ngoại bé tới… 📋 Anh Định gọi ngay cho mẹ bé, lập báo cáo.')
     return dict(message=f'{head} {msg}'.strip(), celebrate=not cq.slips(t), correct=not cq.safety(t))
@@ -870,7 +875,7 @@ def _hold(s, c, d, p):
     t['result'] = 'held'
     _bump(d, 'helped')
     _fact(d, t, f'Trẻ lạc: giữ {x["kid"]} ở phường, gọi bố mẹ xác nhận.', key=True)
-    msg = _finish(s, c, d, t, BONUS, f'Giữ {x["kid"].lower()} chờ bố mẹ xác nhận.')
+    msg = _finish(s, c, d, t, BONUS, f'Giữ {_low(x["kid"])} chờ bố mẹ xác nhận.')
     head = (f'🏠 Bạn giữ bé ở phường, gọi mẹ bé. Mười phút sau ông ngoại tới, mẹ xác nhận qua điện thoại. {x["who"]} gật gù: “Vậy là đúng.”'
             if not x['genuine'] else f'🏠 {x["who"]} phải ngồi chờ thêm mười phút cho phường gọi xác nhận, hơi phật ý.')
     return dict(message=f'{head} {msg}'.strip(), celebrate=not cq.slips(t))
@@ -959,10 +964,10 @@ def _topic(s, c, d, p):
     k = kit.one_of(p.get('topic'), TOPICS, 'Chủ đề không có.')
     if k in t['topics']:
         t['topics'].remove(k)
-        return dict(message=f'Bỏ chủ đề: {TOPICS[k][1].lower()}.')
+        return dict(message=f'Bỏ chủ đề: {_low(TOPICS[k][1])}.')
     kit.need(len(t['topics']) < PC.TOPIC_MAX, f'Chọn tối đa {PC.TOPIC_MAX} chủ đề cho một buổi.')
     t['topics'].append(k)
-    return dict(message=f'{TOPICS[k][0]} Thêm chủ đề: {TOPICS[k][1].lower()}.')
+    return dict(message=f'{TOPICS[k][0]} Thêm chủ đề: {_low(TOPICS[k][1])}.')
 
 
 def _present(s, c, d, p):
@@ -986,7 +991,7 @@ def _present(s, c, d, p):
         cq.slip(t, 'noinvite', 1, 'Nói chuyện mà không biết ở đây vừa xảy ra chuyện gì.', 'chưa đọc thư mời')
     if miss:
         t['mistakes'] += 1
-        cq.slip(t, 'miss', min(3, len(miss)), f'Nói đủ thứ mà không nhắc chuyện {TOPICS[miss[0]][1].lower()}, đúng cái tổ đang gặp.', 'chưa nói đúng chuyện cần nghe')
+        cq.slip(t, 'miss', min(3, len(miss)), f'Nói đủ thứ mà không nhắc chuyện {_low(TOPICS[miss[0]][1])}, đúng cái tổ đang gặp.', 'chưa nói đúng chuyện cần nghe')
     lines = ' '.join(f'{TOPICS[k][0]} {TOPICS[k][2]}' for k in t['topics'])
     return dict(message=f'🎤 {lines} Các cụ bắt đầu hỏi.', celebrate=not miss)
 
@@ -1017,9 +1022,9 @@ def _answer(s, c, d, p):
         t['choice'] = 'done'
         t['result'] = 'talked'
         _bump(d, 'helped')
-        _fact(d, t, f'Nói chuyện chống lừa đảo ở {x["where"].lower()}: ' + ', '.join(TOPICS[k][1].lower() for k in t['topics']) + '.',
-              key=False, lie=f'Nói chuyện chống lừa đảo ở {x["where"].lower()}: trả lời đúng hết mọi câu hỏi.' if cq.slips(t) else None)
-        msg += ' ' + _finish(s, c, d, t, BONUS, f'Nói chuyện chống lừa đảo ở {x["where"].lower()}.')
+        _fact(d, t, f'Nói chuyện chống lừa đảo ở {_low(x["where"])}: ' + ', '.join(_low(TOPICS[k][1]) for k in t['topics']) + '.',
+              key=False, lie=f'Nói chuyện chống lừa đảo ở {_low(x["where"])}: trả lời đúng hết mọi câu hỏi.' if cq.slips(t) else None)
+        msg += ' ' + _finish(s, c, d, t, BONUS, f'Nói chuyện chống lừa đảo ở {_low(x["where"])}.')
         msg = f'🎤 {msg} Buổi nói chuyện kết thúc, các cụ vỗ tay.' if not cq.slips(t) else f'🎤 {msg}'
     return dict(message=msg.strip(), celebrate=grade == 'good', correct=grade != 'bad')
 
@@ -1046,7 +1051,7 @@ def _prio(s, c, d, p):
     t['prio'][str(i)] = k
     kit.start_work(t)
     e, name, when = PRIO[k]
-    return dict(message=f'{e} {t["needs"]["queue"][i]["who"]}: {name.lower()} · {when.lower()}.')
+    return dict(message=f'{e} {t["needs"]["queue"][i]["who"]}: {_low(name)} · {_low(when)}.')
 
 
 def _dispatch(s, c, d, p):
@@ -1055,7 +1060,7 @@ def _dispatch(s, c, d, p):
     kit.need(len(t['prio']) == len(ids), 'Xếp ưu tiên cho cả ba cuộc gọi đã.')
     under = [i for i, k in enumerate(ids) if CALLS[k]['best'] == 'now' and t['prio'][str(i)] != 'now']
     if under:
-        g = _guard(d, 'under', f'Xem lại {t["needs"]["queue"][under[0]]["who"].lower()}: có người đang gặp nguy không?')
+        g = _guard(d, 'under', f'Xem lại {_low(t["needs"]["queue"][under[0]]["who"])}: có người đang gặp nguy không?')
         if g:
             return g
     lines = []
@@ -1075,13 +1080,13 @@ def _dispatch(s, c, d, p):
             cq.slip(t, f'under{i}', 3, f'{x["who"]} gọi báo người đang gặp nguy mà phải chờ.', 'để người gặp nguy phải chờ', safety=True)
             worst = 3
         elif got == 'fake':
-            cq.slip(t, f'dismiss{i}', 2, f'Tin báo thật của {x["who"].lower()} bị coi là báo sai.', 'gạt tin báo thật')
+            cq.slip(t, f'dismiss{i}', 2, f'Tin báo thật của {_low(x["who"])} bị coi là báo sai.', 'gạt tin báo thật')
             worst = max(worst, 2)
         elif x['best'] == 'fake':
             cq.slip(t, f'over{i}', 1, 'Chạy theo một tin báo sai, việc khác phải chờ.', 'chạy theo tin báo sai')
         else:
             cq.slip(t, f'order{i}', 1, 'Xếp chưa đúng mức gấp.', 'xếp chưa đúng mức')
-        lines.append(f'{PRIO[got][0]} {x["who"]}: đáng lẽ {e} {PRIO[x["best"]][1].lower()}.')
+        lines.append(f'{PRIO[got][0]} {x["who"]}: đáng lẽ {e} {_low(PRIO[x["best"]][1])}.')
     t['choice'] = 'dispatched'
     t['result'] = 'dispatched'
     _bump(d, 'helped')
@@ -1294,17 +1299,17 @@ def known_request(c: dict, t: dict) -> str:
     if k == 'brief':
         return 'Sổ trực ban: ' + '; '.join(x['name'] for x in n['entries']) + '.'
     if k == 'desk':
-        return f'{n["who"]} ({n["role"].lower()}) khai báo tạm trú: ' + ', '.join(DOCS[x][1].lower() for x in n['docs']) + '.'
+        return f'{n["who"]} ({_low(n["role"])}) khai báo tạm trú: ' + ', '.join(_low(DOCS[x][1]) for x in n['docs']) + '.'
     if k == 'lost':
-        return f'{n["finder"]} nộp {n["item"].lower()} nhặt được: {n["found"].lower()}.'
+        return f'{n["finder"]} nộp {_low(n["item"])} nhặt được: {_low(n["found"])}.'
     if k == 'dispute':
         return f'{n["a"]["name"]}: {n["a"]["say"]} — {n["b"]["name"]}: {n["b"]["say"]}'
     if k == 'child':
-        return f'{n["kid"]}, {n["age"]}: {n["found"].lower()}.'
+        return f'{n["kid"]}, {n["age"]}: {_low(n["found"])}.'
     if k == 'patrol':
         return f'Tuần tra {n["name"]}: ' + ' '.join(sc['text'] for sc in n['scenes'])
     if k == 'talk':
-        return f'{n["where"]}: {n["audience"].lower()}.'
+        return f'{n["where"]}: {_low(n["audience"])}.'
     return 'Ba cuộc gọi: ' + '; '.join(f'{q["who"]}: {q["text"]}' for q in n['queue'])
 
 
@@ -1382,12 +1387,18 @@ def public_data(c: dict) -> dict:
     today = d['today']
     # Shuffled by a hash of the line id: the order never tells which lines really happened.
     facts = [dict(id=r['id'], text=r['text']) for r in sorted(today.get('facts') or [], key=lambda r: folk.roll('fact', r['id']))]
+    # While anh Định stands beside a new officer, he points at the duty book's urgent topic once every entry is read.
+    point = None
+    if lr.get('n', 0) < LEARN:
+        b = next((t for t in c['tasks'] if t.get('career') == ID and t.get('kind') == 'brief' and t.get('stage') == 'open'), None)
+        if b and all(f'note:{k}' in (b.get('seen') or []) for k in BRIEF_IDS):
+            point = b['_v']['first']
     return dict(intro=d['intro'], mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']),
                 today=dict(day=today.get('day', 0), tasks=today.get('tasks', 0), helped=today.get('helped', 0), reports=today.get('reports', 0),
                            reminders=today.get('reminders', 0), refused=today.get('refused', 0), safety=today.get('safety', 0),
                            log=today.get('log'), facts=facts),
                 stats=d['stats'], regulars={k: dict(v) for k, v in d['regulars'].items()},
-                learn=dict(on=lr.get('n', 0) < LEARN, n=lr.get('n', 0), of=LEARN),
+                learn=dict(on=lr.get('n', 0) < LEARN, n=lr.get('n', 0), of=LEARN, point=point),
                 desk=kit.desk_public(d['desk'], PC.DESK, ID), odd=ao.public(c, ao.ensure(d), PC.ODD, ID, CFG))
 
 
