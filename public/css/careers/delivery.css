@@ -422,3 +422,7 @@ html[data-clean] :is(.dd-full-toggle,.dd-help-toggle)::before{font:700 18px/1 sy
 html[data-clean] .dd-full-toggle::before{content:'⛶'}
 html[data-clean] .dd-full-toggle[aria-pressed="true"]::before{content:'↙'}
 html[data-clean] .dd-help-toggle::before{content:'?'}
+/* Clean layout (wave 5): the other open orders as one tappable line each (delivery.js orderRow). */
+.dl-orows{display:grid;gap:var(--sp-1);margin-top:var(--sp-2)}
+.dl-orows .dl-orow{justify-content:flex-start;text-align:left;min-height:44px;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dl-orow i{font-style:normal}

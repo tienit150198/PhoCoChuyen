@@ -513,9 +513,25 @@ function board(x,active,folded=false){
   const mine=clean()&&active?rows.find(t=>t.id===active&&!t.known):null;
   if(mine){
     const others=rows.filter(t=>t!==mine);
-    return `<section class="dl-board dl-board-one">${boardCards(x,[mine],active,false)}${others.length?pane(x,`board-more-${active}`,`<span aria-label="${others.length} đơn khác trên app">📱 +${others.length}</span>`,boardCards(x,others,active)):''}</section>`;
+    // The other open orders stay in sight (never folded: which one to take first depends on where they go and by
+    // when): one tappable line each, from→to, ⏰ the deadline, and the COD/fragile/cold tags once they are known.
+    return `<section class="dl-board dl-board-one">${boardCards(x,[mine],active,false)}${others.length?`<div class="dl-orows">${others.map(t=>orderRow(x,t)).join('')}</div>`:''}</section>`;
   }
   return `<section class="dl-board"><h4 class="section-title">📱 Đơn trên app (${rows.length})</h4>${boardCards(x,rows,active)}</section>`;
+}
+/** One other open order as a single tappable line (clean layout, beside the order being read): what, from → to
+ * (the stops' icons and the destination's short name), ⏰ its deadline, and 💵 COD / ⚠️ fragile / ❄️ cold once the
+ * order is accepted (a new order's needs are the server's to tell after ✋ Nhận đơn). The customer's words show when
+ * it is opened (task_select). The full sentence is the row's aria-label. */
+function orderRow(x,t){
+  const st=stage(t),n=t.needs||{},p=t.preview||{},neu=st==='new';
+  const from=neu?p.pickup:n.pickup,to=neu?p.dest:destOf(t),a=nodeOf(x,from),b=nodeOf(x,to);
+  const due=neu?(p.due!=null?hm(p.due):p.within?`${Number(p.within)}′`:''):t.due!=null?hm(t.due):'';
+  const tags=neu?[]:[n.cod?[`💵 ${n.cod}`,`thu hộ ${n.cod} xu`]:null,n.fragile?['⚠️','dễ vỡ']:null,n.cold?['❄️','giữ lạnh']:null].filter(Boolean);
+  const where=neu?'đơn mới':st==='bag'?'trên xe':'chờ lấy';
+  const say=`${neu?'':`${n.item}, `}${a.name} → ${b.name}${due?`, hạn ${due}`:''}${tags.length?', '+tags.map(([,w])=>w).join(', '):''} (${where})`;
+  const label=`<span class="dl-orow-in" aria-label="${x.esc(say)}"><span aria-hidden="true">${x.esc(neu?p.emoji||'📦':n.emoji||'📦')}${neu?'🆕':st==='bag'?'🛵':''} ${x.esc(a.emoji)}→${x.esc(b.emoji)}</span> ${x.esc(shortName(x,to))}${due?` <b>⏰ ${x.esc(due)}</b>`:''}${tags.map(([ic])=>` <i>${x.esc(ic)}</i>`).join('')}</span>`;
+  return x.cmd(label,'task_select',{task:t.id},'ghost small dl-orow');
 }
 /** A new order's deadline before ✋ Nhận đơn (its clock may already run): the time, or on day 1 how long after accept. */
 function dueLine(x,p){

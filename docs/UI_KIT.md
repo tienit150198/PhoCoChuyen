@@ -260,8 +260,8 @@ sheet) and the shared bar. Shared helpers added to `air_kit.js`: `crewDay` (the 
 
 Wave 2 does not edit `street_kit.js`/`.css`, `ui-kit.js`, `guide.js`, `app.css`, `compact.css` or the i18n catalogues.
 
-Wave 5, done (ui-wave5), first work screen on a 390 × 844 phone: delivery 128 → 26 (cap 30: the customer's ask stays
-whole), pharmacy 90 → 24, teacher 87 → 24, accounting 83 → 22, tour guide 82 → 23, clothing 60 → 25, grocery 43 → 18,
+Wave 5, done (ui-wave5), first work screen on a 390 × 844 phone: delivery 128 → 30 (cap 30: the customer's ask stays
+whole; the other open orders stay as one line each: from→to, ⏰ deadline, 💵 COD ⚠️ fragile ❄️ cold), pharmacy 90 → 24, teacher 87 → 24, accounting 83 → 22, tour guide 82 → 23, clothing 60 → 25, grocery 43 → 18,
 homestay 41 → 18, repair 40 → 24, salon 37 → 26 (cap 30: the title is the customer's demand), pet care 34 → 18,
 mother & baby 32 → 21, farm 26 → 16. `app.js header` shortens the title for clothing, grocery and pet care only (a repair
 or salon title is the symptom or the demand: never cut); delivery and farm shorten their own (`shortHead`).

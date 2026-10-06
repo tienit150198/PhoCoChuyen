@@ -2,8 +2,8 @@
 
 ## Giao diện gọn: đợt 5
 
-- Đợt cuối: 13 màn làm việc và các trang đời sống còn nhiều chữ. Màn đầu trên điện thoại (390 px) còn 16–26 chữ: giao
-  hàng 128 → 26, nhà thuốc 90 → 24, giáo viên 87 → 24, kế toán 83 → 22, hướng dẫn viên 82 → 23, shop quần áo 60 → 25,
+- Đợt cuối: 13 màn làm việc và các trang đời sống còn nhiều chữ. Màn đầu trên điện thoại (390 px) còn 16–30 chữ: giao
+  hàng 128 → 30 (các đơn khác vẫn hiện, mỗi đơn một dòng: đi → đến, ⏰ hạn, 💵 ⚠️ ❄️), nhà thuốc 90 → 24, giáo viên 87 → 24, kế toán 83 → 22, hướng dẫn viên 82 → 23, shop quần áo 60 → 25,
   tạp hóa 43 → 18, homestay 41 → 18, sửa đồ 40 → 24, salon 37 → 26, chăm thú cưng 34 → 18, mẹ & bé 32 → 21, nông trại
   26 → 16. Trang đời sống tối đa 30 chữ: nhà 115 → 29, bản đồ khu phố 51 → 29, hội chợ 66 → 25, ngân hàng (đã mở tài
   khoản) 144 → 27; quầy, tủ đồ, đi chơi, phòng hát, màn chính vốn đã gọn, giữ nguyên.
