@@ -1,5 +1,345 @@
 [
  {
+  "vi": "Máy cất kỹ trong túi. Đi đường yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đổi mã bảo mật và khóa phiên lạ. Chặn được vụ hack này, tài khoản không mất xu.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra xe",
+  "en": ""
+ },
+ {
+  "vi": "Thợ xem nhà",
+  "en": ""
+ },
+ {
+  "vi": "Khám sức khỏe",
+  "en": ""
+ },
+ {
+  "vi": "Thợ siết lại vài con ốc, xe êm ru.",
+  "en": ""
+ },
+ {
+  "vi": "Thợ xử lý sớm, không sao nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Bác sĩ dặn ăn ngủ đúng giờ. Khỏe rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Xe gửi trong bãi, yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện này đã xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một loại bảo hiểm nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không có gì thay đổi.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có gì để bảo hiểm.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa bật được.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn thứ cần sửa nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã sửa xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "nhà",
+  "en": ""
+ },
+ {
+  "vi": "Sửa nhà",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác bảo hiểm không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn còn mệt",
+  "en": ""
+ },
+ {
+  "vi": "Uống thuốc mà người vẫn chưa đỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Người hơi mệt",
+  "en": ""
+ },
+ {
+  "vi": "Dạo này ăn ngủ thất thường.",
+  "en": ""
+ },
+ {
+  "vi": "Coi chừng móc túi",
+  "en": ""
+ },
+ {
+  "vi": "Chợ dạo này có nhóm móc túi.",
+  "en": ""
+ },
+ {
+  "vi": "Coi chừng trộm",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm thấy người lạ dòm ngó.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập ngân hàng bất thường",
+  "en": ""
+ },
+ {
+  "vi": "Có phiên đăng nhập lạ. Khóa ngay miễn phí để tránh mất xu trong tài khoản thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Phường dẹp lòng đường",
+  "en": ""
+ },
+ {
+  "vi": "Đỗ xe dưới đường dễ bị phạt.",
+  "en": ""
+ },
+ {
+  "vi": "Bị giật điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "Đang xem bản đồ thì bị giật mất máy.",
+  "en": ""
+ },
+ {
+  "vi": "Chen chợ đông, về nhà mới thấy ví nhẹ hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Cửa bị cạy, tiền mặt để nhà mất một phần.",
+  "en": ""
+ },
+ {
+  "vi": "Kẻ gian đã chuyển mất một phần xu trong tài khoản thanh toán. Tiết kiệm và quỹ chung không bị trừ.",
+  "en": ""
+ },
+ {
+  "vi": "Lần đầu, chú công an chỉ nhắc nhở.",
+  "en": ""
+ },
+ {
+  "vi": "Đỗ xe dưới lòng đường, bị dán giấy phạt.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hiểm trong bản lưu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thiết bị cần bảo dưỡng",
+  "en": ""
+ },
+ {
+  "vi": "Thiết bị làm việc phát tiếng lạ. Chủ tiệm chọn cách bảo dưỡng trước ca tiếp theo.",
+  "en": ""
+ },
+ {
+  "vi": "Thuê thợ bảo dưỡng thiết bị",
+  "en": ""
+ },
+ {
+  "vi": "Thiết bị được kiểm tra, khách yên tâm với chất lượng phục vụ.",
+  "en": ""
+ },
+ {
+  "vi": "Tạm cất thiết bị, dùng phương án thủ công",
+  "en": ""
+ },
+ {
+  "vi": "Bạn dùng dụng cụ dự phòng; khách phải chờ lâu hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên liệu cần thay mới",
+  "en": ""
+ },
+ {
+  "vi": "Một mẻ nguyên liệu mẫu không còn đạt chất lượng. Bạn loại bỏ mẻ đó và cân nhắc bổ sung cho buổi bán.",
+  "en": ""
+ },
+ {
+  "vi": "Bổ sung mẻ nguyên liệu tươi",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm có nguyên liệu tươi để giữ chất lượng; khoản bổ sung được ghi chi phí.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ mẻ lỗi và thu gọn thực đơn",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chỉ phục vụ món còn nguyên liệu đạt chuẩn; khách có ít lựa chọn hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Buổi hướng dẫn phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Có buổi thực hành kiểm hàng và phục vụ khách dành cho đội ngũ cửa tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Chi cho buổi hướng dẫn thực hành",
+  "en": ""
+ },
+ {
+  "vi": "Đội ngũ luyện cách kiểm hàng và giao tiếp; chất lượng phục vụ giúp tăng uy tín.",
+  "en": ""
+ },
+ {
+  "vi": "Tự ôn lại quy trình trong tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cùng mọi người ôn quy trình hiện có, không phát sinh chi phí.",
+  "en": ""
+ },
+ {
+  "vi": "Quảng bá tiệm trong khu phố",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm sinh hoạt khu phố mời tiệm giới thiệu dịch vụ trong bảng tin chung.",
+  "en": ""
+ },
+ {
+  "vi": "In tờ giới thiệu và mẫu trưng bày",
+  "en": ""
+ },
+ {
+  "vi": "Người trong khu biết rõ dịch vụ của tiệm; khoản quảng bá được ghi sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp tục giới thiệu trực tiếp tại tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn giữ ngân sách và tiếp tục giới thiệu với khách ghé tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Khách lén lấy đồ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thấy một người giấu món hàng rồi đi qua quầy thanh toán. Giữ khoảng cách an toàn; không đuổi theo ngoài đường.",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ hỗ trợ, giữ chứng cứ và báo sự việc",
+  "en": ""
+ },
+ {
+  "vi": "Bạn giữ an toàn, bàn giao chứng cứ. Ghi nhận phần hao hụt nhỏ chưa thu hồi.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi nhận hao hụt và siết việc kiểm hàng",
+  "en": ""
+ },
+ {
+  "vi": "Bạn kiểm lại quầy và ghi nhận thiệt hại thực tế, không quy lỗi cho người khác.",
+  "en": ""
+ },
+ {
+  "vi": "Khách ăn xong định bỏ đi",
+  "en": ""
+ },
+ {
+  "vi": "Một bàn đã dùng món nhưng rời đi khi hóa đơn còn chưa thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc hóa đơn bình tĩnh, nhờ đồng nghiệp hỗ trợ",
+  "en": ""
+ },
+ {
+  "vi": "Khách quay lại thanh toán. Bạn giữ được không khí bình tĩnh.",
+  "en": ""
+ },
+ {
+  "vi": "Không đuổi theo; ghi khoản thất thoát",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ghi phần thất thoát và nhắc nhân viên kiểm hóa đơn trước khi khách rời bàn.",
+  "en": ""
+ },
+ {
+  "vi": "Người nổi tiếng xin đồ miễn phí",
+  "en": ""
+ },
+ {
+  "vi": "Một người làm nội dung đề nghị nhận hàng miễn phí để đổi lấy một bài đăng, chưa có thỏa thuận cụ thể.",
+  "en": ""
+ },
+ {
+  "vi": "Tặng một mẫu nhỏ, ghi rõ đây là quà tài trợ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tặng mẫu theo ngân sách quảng bá, không hứa mua đánh giá tốt.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch sự giữ chính sách giá chung",
+  "en": ""
+ },
+ {
+  "vi": "Bạn giải thích chính sách; mọi khách đều được phục vụ với cùng mức giá.",
+  "en": ""
+ },
+ {
+  "vi": "Em nhỏ bị lạc trước cửa",
+  "en": ""
+ },
+ {
+  "vi": "Một em nhỏ đứng khóc và không thấy người đi cùng. Em vẫn ở ngay trước cửa tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Ở cạnh em, nhờ bảo vệ tìm người thân",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ở nơi dễ quan sát, cùng bảo vệ xác minh người thân trước khi bàn giao em.",
+  "en": ""
+ },
+ {
   "vi": "Chuẩn bị nước và nhờ nhân viên hỗ trợ",
   "en": ""
  },
@@ -1457,346 +1797,6 @@
  },
  {
   "vi": "nhóc",
-  "en": ""
- },
- {
-  "vi": "Úc",
-  "en": ""
- },
- {
-  "vi": "Chị Emma",
-  "en": ""
- },
- {
-  "vi": "Chị Yuki",
-  "en": ""
- },
- {
-  "vi": "Bà Claire",
-  "en": ""
- },
- {
-  "vi": "Pháp",
-  "en": ""
- },
- {
-  "vi": "Chị Sofia",
-  "en": ""
- },
- {
-  "vi": "Tây Ban Nha",
-  "en": ""
- },
- {
-  "vi": "Ông Robert",
-  "en": ""
- },
- {
-  "vi": "Em làm khéo ghê!",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn em nha, làm kỹ quá.",
-  "en": ""
- },
- {
-  "vi": "Chút tiền cà phê cho em nhé.",
-  "en": ""
- },
- {
-  "vi": "Làm chu đáo vậy thì phải cảm ơn chứ.",
-  "en": ""
- },
- {
-  "vi": "Giữ lấy mua ly nước nha em.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay gặp được người làm có tâm, vui ghê.",
-  "en": ""
- },
- {
-  "vi": "Em cầm lấy, làm vậy là xứng đáng lắm.",
-  "en": ""
- },
- {
-  "vi": "Ừm… em cầm giúp nhé.",
-  "en": ""
- },
- {
-  "vi": "Cái này… cho em. Cảm ơn nha.",
-  "en": ""
- },
- {
-  "vi": "Không nhiều đâu… em nhận nhé.",
-  "en": ""
- },
- {
-  "vi": "Làm tốt lắm… cảm ơn em.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn… lần sau lại nhờ em.",
-  "en": ""
- },
- {
-  "vi": "Trời ơi ưng quá, cầm lấy nè!",
-  "en": ""
- },
- {
-  "vi": "Vui ghê, hôm nay gặp đúng người khéo tay!",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn em nhiều nhiều nha, mai ghé nữa!",
-  "en": ""
- },
- {
-  "vi": "Nè nè, tip cho người dễ thương!",
-  "en": ""
- },
- {
-  "vi": "Làm đẹp vậy thì phải thưởng chứ!",
-  "en": ""
- },
- {
-  "vi": "Hí hí, lần sau lại nhờ em nha!",
-  "en": ""
- },
- {
-  "vi": "Có chút đỉnh thôi, con nhận đi.",
-  "en": ""
- },
- {
-  "vi": "Giỏi quá, cháu cất đi mà mua bánh.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn em, mình chạy đi họp đây!",
-  "en": ""
- },
- {
-  "vi": "Nhanh gọn quá, giữ lấy nhé, mình trễ giờ rồi!",
-  "en": ""
- },
- {
-  "vi": "Cầm lấy nha, mình đi đây, cảm ơn nhiều!",
-  "en": ""
- },
- {
-  "vi": "Làm lẹ mà chuẩn, đúng thứ mình cần. Cảm ơn nha!",
-  "en": ""
- },
- {
-  "vi": "Deadline dí mà được việc thế này là mừng. Tip nhé!",
-  "en": ""
- },
- {
-  "vi": "Xịn xò quá, tip nè!",
-  "en": ""
- },
- {
-  "vi": "Đỉnh thiệt sự, nhận tip đi bạn ơi ✨",
-  "en": ""
- },
- {
-  "vi": "Mê ghê, lần sau ghé tiếp nha!",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn bạn nha, mười điểm không có nhưng!",
-  "en": ""
- },
- {
-  "vi": "Ưng xỉu, gửi bạn chút tip nè 🫶",
-  "en": ""
- },
- {
-  "vi": "Chill ghê, cảm ơn bạn nhiều!",
-  "en": ""
- },
- {
-  "vi": "Thank you so much! Cảm ơn nhiều!",
-  "en": ""
- },
- {
-  "vi": "Wonderful! Cảm ơn nha!",
-  "en": ""
- },
- {
-  "vi": "Best day in Vietnam! Cảm ơn!",
-  "en": ""
- },
- {
-  "vi": "Xin cảm ơn! Thank you, thank you!",
-  "en": ""
- },
- {
-  "vi": "Tóc lên form đẹp ghê!",
-  "en": ""
- },
- {
-  "vi": "Màu này lên ảnh chắc xinh lắm.",
-  "en": ""
- },
- {
-  "vi": "Gội đầu êm quá, suýt ngủ quên luôn.",
-  "en": ""
- },
- {
-  "vi": "Cắt đúng kiểu mình muốn luôn!",
-  "en": ""
- },
- {
-  "vi": "Tóc nhẹ hẳn cả đầu.",
-  "en": ""
- },
- {
-  "vi": "Tô mì hôm nay chuẩn vị!",
-  "en": ""
- },
- {
-  "vi": "Nước dùng đậm đà, ăn sạch tô luôn.",
-  "en": ""
- },
- {
-  "vi": "Món ra nóng hổi, ưng ghê.",
-  "en": ""
- },
- {
-  "vi": "Ăn xong muốn gọi thêm tô nữa.",
-  "en": ""
- },
- {
-  "vi": "Bánh còn ấm, thơm lừng.",
-  "en": ""
- },
- {
-  "vi": "Cà phê đậm vừa đúng khẩu vị.",
-  "en": ""
- },
- {
-  "vi": "Chữ trên bánh viết đẹp quá!",
-  "en": ""
- },
- {
-  "vi": "Bánh su kem ngon như hồi xưa.",
-  "en": ""
- },
- {
-  "vi": "Ly trà sữa chuẩn vị luôn!",
-  "en": ""
- },
- {
-  "vi": "Đường đá vừa y chang đã dặn.",
-  "en": ""
- },
- {
-  "vi": "Trân châu dẻo ngon quá trời.",
-  "en": ""
- },
- {
-  "vi": "Nắp dán đẹp ghê.",
-  "en": ""
- },
- {
-  "vi": "Bó hoa này chắc người ta mê lắm.",
-  "en": ""
- },
- {
-  "vi": "Gói hoa khéo quá, không nỡ mở.",
-  "en": ""
- },
- {
-  "vi": "Hoa tươi rói, cảm ơn nhiều.",
-  "en": ""
- },
- {
-  "vi": "Thiệp viết đúng ý luôn.",
-  "en": ""
- },
- {
-  "vi": "Tính tiền nhanh gọn, cảm ơn nha.",
-  "en": ""
- },
- {
-  "vi": "Xếp đồ vào túi gọn ghê.",
-  "en": ""
- },
- {
-  "vi": "Nhớ cả món quen, dễ thương quá.",
-  "en": ""
- },
- {
-  "vi": "Mua ở đây yên tâm ghê.",
-  "en": ""
- },
- {
-  "vi": "Hàng tới nguyên vẹn, cảm ơn nha!",
-  "en": ""
- },
- {
-  "vi": "Giao đúng giờ luôn, mát ruột.",
-  "en": ""
- },
- {
-  "vi": "Trời nắng vậy mà vẫn tới kịp.",
-  "en": ""
- },
- {
-  "vi": "Hộp đồ ăn còn nóng hổi nè.",
-  "en": ""
- },
- {
-  "vi": "Phòng thơm tho sạch sẽ quá.",
-  "en": ""
- },
- {
-  "vi": "Ngủ ngon như ở nhà.",
-  "en": ""
- },
- {
-  "vi": "Chỉ chỗ ăn sáng ngon ghê.",
-  "en": ""
- },
- {
-  "vi": "Ly trà chào khách ấm lòng lắm.",
-  "en": ""
- },
- {
-  "vi": "Bé cưng thơm phức luôn!",
-  "en": ""
- },
- {
-  "vi": "Móng tỉa gọn mà bé không sợ.",
-  "en": ""
- },
- {
-  "vi": "Bé quấn quá, chưa chịu về.",
-  "en": ""
- },
- {
-  "vi": "Lông mượt như nhung.",
-  "en": ""
- },
- {
-  "vi": "Máy chạy êm re như mới.",
-  "en": ""
- },
- {
-  "vi": "Sửa nhanh mà giải thích dễ hiểu.",
-  "en": ""
- },
- {
-  "vi": "Không bắt thay đồ lung tung, quý ghê.",
-  "en": ""
- },
- {
-  "vi": "Tưởng phải bỏ rồi, ai dè sống lại.",
-  "en": ""
- },
- {
-  "vi": "Rau tươi xanh mướt!",
   "en": ""
  }
 ]

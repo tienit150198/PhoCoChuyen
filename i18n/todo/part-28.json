@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Sách tra cứu thì đọc tại chỗ được luôn, đặt trước làm gì.",
+  "en": ""
+ },
+ {
+  "vi": "Sách đang có người mượn, đọc tại chỗ sao được.",
+  "en": ""
+ },
+ {
   "vi": "Sách có trên kệ, thẻ còn hạn mà không cho mượn.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "🙈 Để kệ",
-  "en": ""
- },
- {
-  "vi": "Tài liệu mở: ai cũng được đọc, sao",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ cá nhân: chỉ chính chủ, người thân có giấy tờ, người được ủy quyền",
   "en": ""
  }
 ]

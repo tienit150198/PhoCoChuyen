@@ -1,5 +1,329 @@
 [
  {
+  "vi": "Trừ lương ngay",
+  "en": ""
+ },
+ {
+  "vi": "Cho qua, không nói gì",
+  "en": ""
+ },
+ {
+  "vi": "Quán bên cạnh hạ giá.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ chất lượng, chăm khách quen",
+  "en": ""
+ },
+ {
+  "vi": "Hạ giá thấp hơn nữa",
+  "en": ""
+ },
+ {
+  "vi": "Nói xấu quán bên",
+  "en": ""
+ },
+ {
+  "vi": "Trời mưa, khách vắng.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi khách quen, nhận giao tận nơi",
+  "en": ""
+ },
+ {
+  "vi": "Về sớm nghỉ ngơi",
+  "en": ""
+ },
+ {
+  "vi": "Tăng giá bù lỗ",
+  "en": ""
+ },
+ {
+  "vi": "Dụng cụ kêu lạ giữa ca.",
+  "en": ""
+ },
+ {
+  "vi": "Tắt máy, kiểm tra rồi làm tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Ghi lại, cuối ca xem",
+  "en": ""
+ },
+ {
+  "vi": "Làm tiếp cho kịp",
+  "en": ""
+ },
+ {
+  "vi": "Hành khách không chịu thắt dây an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Giải thích nhẹ nhàng, nhờ tổ trưởng nếu cần",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc to trước cả khoang",
+  "en": ""
+ },
+ {
+  "vi": "Chuyến bay trễ, khách bực.",
+  "en": ""
+ },
+ {
+  "vi": "Báo rõ lý do và giờ mới",
+  "en": ""
+ },
+ {
+  "vi": "Hứa một giờ bay chưa chắc",
+  "en": ""
+ },
+ {
+  "vi": "Xin lỗi chung chung",
+  "en": ""
+ },
+ {
+  "vi": "Đồng nghiệp mệt trước giờ bay.",
+  "en": ""
+ },
+ {
+  "vi": "Báo tổ trưởng, đổi ca nếu cần",
+  "en": ""
+ },
+ {
+  "vi": "Kệ, ai cũng mệt",
+  "en": ""
+ },
+ {
+  "vi": "Làm đỡ phần của bạn ấy",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách kiểm còn sót một bước.",
+  "en": ""
+ },
+ {
+  "vi": "Dừng, làm đủ rồi mới ký",
+  "en": ""
+ },
+ {
+  "vi": "Ký trước, kiểm sau",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi người bên cạnh",
+  "en": ""
+ },
+ {
+  "vi": "Khách xin đổi chỗ giữa chuyến.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm chỗ trống, đổi nếu an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối ngay",
+  "en": ""
+ },
+ {
+  "vi": "Để khách tự đổi",
+  "en": ""
+ },
+ {
+  "vi": "Nghe tin đồn về một đồng nghiệp.",
+  "en": ""
+ },
+ {
+  "vi": "Không lan truyền, hỏi thẳng nếu cần",
+  "en": ""
+ },
+ {
+  "vi": "Kể cho cả tổ",
+  "en": ""
+ },
+ {
+  "vi": "Im lặng nhưng tránh mặt",
+  "en": ""
+ },
+ {
+  "vi": "Người dân xin mở chắn sớm “vì tàu còn xa”.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ chắn, nói rõ còn mấy phút",
+  "en": ""
+ },
+ {
+  "vi": "Mở nhanh cho một người",
+  "en": ""
+ },
+ {
+  "vi": "Lờ đi không trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Đồng nghiệp nhờ ký sổ giao ca khi chưa thử thiết bị.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, cùng thử rồi mới ký",
+  "en": ""
+ },
+ {
+  "vi": "Ký giúp lần này",
+  "en": ""
+ },
+ {
+  "vi": "Ký nhưng ghi chú nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Đi tuần thấy ray nứt, mười phút nữa có tàu.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng vệ hai đầu, điện khẩn cho ga",
+  "en": ""
+ },
+ {
+  "vi": "Gọi tổ thợ hỏi ý kiến",
+  "en": ""
+ },
+ {
+  "vi": "Cung trưởng bảo ghi tàu chậm thành đúng giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi đúng, kèm lý do chậm",
+  "en": ""
+ },
+ {
+  "vi": "Sửa cho đẹp báo cáo",
+  "en": ""
+ },
+ {
+  "vi": "Ghi đúng nhưng không nói gì",
+  "en": ""
+ },
+ {
+  "vi": "Ca đêm thứ ba liền, bạn buồn ngủ díp mắt.",
+  "en": ""
+ },
+ {
+  "vi": "Báo đội trưởng, xin người thay hoặc nghỉ bù",
+  "en": ""
+ },
+ {
+  "vi": "Chợp mắt giữa hai chuyến",
+  "en": ""
+ },
+ {
+  "vi": "Uống thêm cà phê cố gác",
+  "en": ""
+ },
+ {
+  "vi": "Tàu qua mà không thấy đèn đuôi toa cuối.",
+  "en": ""
+ },
+ {
+  "vi": "Cho qua, chắc đèn hỏng",
+  "en": ""
+ },
+ {
+  "vi": "Đêm bão thấy pháo hiệu đỏ, xuồng của trạm nằm ngay dưới bến.",
+  "en": ""
+ },
+ {
+  "vi": "Sếp bảo ghi “đèn sáng bình thường” cho đêm đèn tắt hai mươi phút.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi đúng giờ tắt, nguyên nhân, cách xử lý",
+  "en": ""
+ },
+ {
+  "vi": "Ghi theo lời sếp",
+  "en": ""
+ },
+ {
+  "vi": "Không ghi gì",
+  "en": ""
+ },
+ {
+  "vi": "Khách không có giấy đòi lên phòng đèn chụp ảnh, dúi tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, mời chụp ở sân trạm, không nhận tiền",
+  "en": ""
+ },
+ {
+  "vi": "Đuổi về không nói gì",
+  "en": ""
+ },
+ {
+  "vi": "Đếm chớp thấy chu kỳ 19 giây, danh mục đèn ghi 15 giây.",
+  "en": ""
+ },
+ {
+  "vi": "Báo đài phát thông báo hàng hải, báo xí nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Chắc đồng hồ sai, kệ",
+  "en": ""
+ },
+ {
+  "vi": "Tàu tiếp tế bơm thiếu dầu, thuyền trưởng đòi ký đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Ký đúng số đo được, ghi rõ phần thiếu",
+  "en": ""
+ },
+ {
+  "vi": "Ký đủ cho êm chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Không ký gì cả",
+  "en": ""
+ },
+ {
+  "vi": "Áp kế tụt nhanh mà gió mới cấp 4.",
+  "en": ""
+ },
+ {
+  "vi": "Báo đài, phát cảnh báo cho tàu thuyền",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ, giờ sau xem lại",
+  "en": ""
+ },
+ {
+  "vi": "Giám đốc nhờ đẩy cuộc gọi của người quen lên mức khẩn cấp.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ mức theo nguy hiểm tính mạng, giải thích rõ",
+  "en": ""
+ },
+ {
+  "vi": "Đẩy lên cho xong",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chị trưởng ca rồi tính",
+  "en": ""
+ },
+ {
+  "vi": "Ba cuộc gọi đùa liền, cuộc thứ tư giọng nhỏ báo có khói.",
+  "en": ""
+ },
+ {
   "vi": "Hỏi kỹ, lắng nghe, gọi lại rồi mới quyết",
   "en": ""
  },
@@ -1136,6 +1460,22 @@
   "en": ""
  },
  {
+  "vi": ", đang 🥱 mệt",
+  "en": ""
+ },
+ {
+  "vi": "làm",
+  "en": ""
+ },
+ {
+  "vi": "chưa tính: hôm nay bạn chưa tự xếp việc nào ở 🗓️ Điều phối",
+  "en": ""
+ },
+ {
+  "vi": "✓ tính 1 ngày điều hành tốt",
+  "en": ""
+ },
+ {
   "vi": "Lời đồn nhà có ma trong game khiến người mua và khách thuê e ngại.",
   "en": ""
  },
@@ -1457,346 +1797,6 @@
  },
  {
   "vi": "Nhập hàng vào kho",
-  "en": ""
- },
- {
-  "vi": "Nhân viên đang bán",
-  "en": ""
- },
- {
-  "vi": "Quầy tạm dừng",
-  "en": ""
- },
- {
-  "vi": "Chủ tự phục vụ hoặc thuê nhân viên",
-  "en": ""
- },
- {
-  "vi": "Hết hàng trong menu đang bán",
-  "en": ""
- },
- {
-  "vi": "Hết vốn trả lương và chi phí",
-  "en": ""
- },
- {
-  "vi": "Trộm lấy tiền trong két",
-  "en": ""
- },
- {
-  "vi": "Cướp tiền bán hàng",
-  "en": ""
- },
- {
-  "vi": "Hàng không đạt vệ sinh: tiêu hủy, tạm dừng",
-  "en": ""
- },
- {
-  "vi": "Thiếu chứng từ: xử lý vi phạm",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra đạt: không phạt",
-  "en": ""
- },
- {
-  "vi": "Bị đòi tiền bảo kê: giữ bằng chứng và báo công an",
-  "en": ""
- },
- {
-  "vi": "Thuê chỗ, vật tư, an ninh, thuế (mức xu trong game)",
-  "en": ""
- },
- {
-  "vi": "Chọn việc chuẩn bị hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "kiểm hàng và vệ sinh",
-  "en": ""
- },
- {
-  "vi": "lưu chứng từ",
-  "en": ""
- },
- {
-  "vi": "bảo vệ quầy",
-  "en": ""
- },
- {
-  "vi": "Đã cập nhật chuẩn bị cho quầy.",
-  "en": ""
- },
- {
-  "vi": "Chọn cách xử lý hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Không có vụ bảo kê đang chờ xử lý.",
-  "en": ""
- },
- {
-  "vi": "Lưu bằng chứng, báo công an về bảo kê",
-  "en": ""
- },
- {
-  "vi": "Từ chối đưa tiền bảo kê",
-  "en": ""
- },
- {
-  "vi": "Đã báo công an và giữ bằng chứng. Không mất xu.",
-  "en": ""
- },
- {
-  "vi": "Đã từ chối. Không mất xu.",
-  "en": ""
- },
- {
-  "vi": "Két chưa đủ chỗ nhận tiền ca. Thu két rồi thử lại.",
-  "en": ""
- },
- {
-  "vi": "sau thuế",
-  "en": ""
- },
- {
-  "vi": "· sau thuế",
-  "en": ""
- },
- {
-  "vi": "Khách bảo thiếu món",
-  "en": ""
- },
- {
-  "vi": "Chị khách quay lại: “Túi thiếu một món nè em.”",
-  "en": ""
- },
- {
-  "vi": "Làm bù ngay",
-  "en": ""
- },
- {
-  "vi": "Chị cười: “Lần sau chị ghé tiếp.”",
-  "en": ""
- },
- {
-  "vi": "Xem lại hóa đơn",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn đủ món, chị để quên trên xe. Hai bên cười xòa.",
-  "en": ""
- },
- {
-  "vi": "Thiếu thật. Bạn làm bù, chị vui.",
-  "en": ""
- },
- {
-  "vi": "Nói là đã đủ",
-  "en": ""
- },
- {
-  "vi": "Chị phụng phịu bỏ đi.",
-  "en": ""
- },
- {
-  "vi": "Bom hàng",
-  "en": ""
- },
- {
-  "vi": "Đơn trả khi nhận: khách không nghe máy, không nhận hàng.",
-  "en": ""
- },
- {
-  "vi": "Mang về bán lại",
-  "en": ""
- },
- {
-  "vi": "Bán lại cho khách đi ngang, lỗ chút phí.",
-  "en": ""
- },
- {
-  "vi": "Nhắn khách hẹn giờ khác",
-  "en": ""
- },
- {
-  "vi": "Khách xin lỗi, hẹn chiều nhận.",
-  "en": ""
- },
- {
-  "vi": "Khách im lặng. Lỗ tiền hàng.",
-  "en": ""
- },
- {
-  "vi": "Báo app, bỏ qua",
-  "en": ""
- },
- {
-  "vi": "App ghi nhận: khách này lần sau phải trả trước.",
-  "en": ""
- },
- {
-  "vi": "Ảnh chuyển khoản lạ",
-  "en": ""
- },
- {
-  "vi": "Khách đưa ảnh đã chuyển khoản, mà app ngân hàng chưa báo tiền vào.",
-  "en": ""
- },
- {
-  "vi": "Mở app kiểm tra",
-  "en": ""
- },
- {
-  "vi": "Chưa có tiền. Khách lúng túng rồi trả tiền mặt.",
-  "en": ""
- },
- {
-  "vi": "Tin khách, đưa hàng",
-  "en": ""
- },
- {
-  "vi": "Ảnh giả rồi. Mất một phần, rút kinh nghiệm.",
-  "en": ""
- },
- {
-  "vi": "Nhờ trả tiền mặt",
-  "en": ""
- },
- {
-  "vi": "Khách trả tiền mặt, hơi phật ý.",
-  "en": ""
- },
- {
-  "vi": "Mưa to, khách đụt mưa",
-  "en": ""
- },
- {
-  "vi": "Mưa ào xuống, cả chục người đứng trú trước quầy.",
-  "en": ""
- },
- {
-  "vi": "Làm nhanh, mời mua",
-  "en": ""
- },
- {
-  "vi": "Bán thêm được cả mớ!",
-  "en": ""
- },
- {
-  "vi": "Mời trú, tặng ly trà nóng",
-  "en": ""
- },
- {
-  "vi": "Ai cũng nhớ cái quầy dễ thương.",
-  "en": ""
- },
- {
-  "vi": "Kéo bạt che cho rộng",
-  "en": ""
- },
- {
-  "vi": "Bạt rộng, khách đứng thoải mái, mua luôn.",
-  "en": ""
- },
- {
-  "vi": "Hết nguyên liệu giữa giờ đông",
-  "en": ""
- },
- {
-  "vi": "Món bán chạy nhất hết sạch, khách vẫn xếp hàng.",
-  "en": ""
- },
- {
-  "vi": "Chạy chợ mua gấp",
-  "en": ""
- },
- {
-  "vi": "Kịp mua về, không mất khách nào.",
-  "en": ""
- },
- {
-  "vi": "Gợi ý món khác",
-  "en": ""
- },
- {
-  "vi": "Đa số khách đổi món vui vẻ.",
-  "en": ""
- },
- {
-  "vi": "Treo bảng “tạm hết”",
-  "en": ""
- },
- {
-  "vi": "Vài khách tiếc, hẹn mai quay lại.",
-  "en": ""
- },
- {
-  "vi": "Quầy mới mở sát bên",
-  "en": ""
- },
- {
-  "vi": "Quầy bên cạnh dán bảng “giảm 20%”.",
-  "en": ""
- },
- {
-  "vi": "Giữ giá, chăm khách",
-  "en": ""
- },
- {
-  "vi": "Khách quen vẫn ghé vì bạn cười tươi.",
-  "en": ""
- },
- {
-  "vi": "Giảm giá theo",
-  "en": ""
- },
- {
-  "vi": "Đông hơn chút nhưng lời mỏng.",
-  "en": ""
- },
- {
-  "vi": "Tặng kèm món nhỏ",
-  "en": ""
- },
- {
-  "vi": "Khách thích quà nhỏ, khen quầy.",
-  "en": ""
- },
- {
-  "vi": "Đoàn kiểm tra vệ sinh",
-  "en": ""
- },
- {
-  "vi": "Hai cán bộ ghé xem quầy có sạch sẽ, an toàn không.",
-  "en": ""
- },
- {
-  "vi": "Mời xem tự nhiên",
-  "en": ""
- },
- {
-  "vi": "Tủ mát sạch tinh. Được khen!",
-  "en": ""
- },
- {
-  "vi": "Đạt! Đoàn dặn giữ sạch như vầy.",
-  "en": ""
- },
- {
-  "vi": "Nhắc nhở nhỏ: mua thêm hộp đậy đồ.",
-  "en": ""
- },
- {
-  "vi": "Xin 5 phút lau dọn",
-  "en": ""
- },
- {
-  "vi": "Lau xong mời xem. Đạt!",
-  "en": ""
- },
- {
-  "vi": "Xin hẹn hôm khác",
   "en": ""
  }
 ]

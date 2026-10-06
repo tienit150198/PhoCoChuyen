@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Hồ sơ tạm trú thiếu ý kiến chủ nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận luôn, mai bổ sung",
+  "en": ""
+ },
+ {
   "vi": "Hướng dẫn xin ý kiến chủ nhà rồi nộp lại",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Hoàn tiền thẻ chung",
-  "en": ""
- },
- {
-  "vi": "Loại giao dịch không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Số tiền không hợp lệ.",
   "en": ""
  }
 ]

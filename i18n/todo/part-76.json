@@ -1,5 +1,313 @@
 [
  {
+  "vi": "Càng đọc càng đau. Tắt máy lúc 2 giờ sáng.",
+  "en": ""
+ },
+ {
+  "vi": "23 giờ 40: “Cô ơi mai con tôi mặc áo gì?”",
+  "en": ""
+ },
+ {
+  "vi": "23 giờ 52: “Cô đọc mà không trả lời à?”",
+  "en": ""
+ },
+ {
+  "vi": "00 giờ 10: gọi thẳng.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng mai nhắn nhóm giờ liên lạc",
+  "en": ""
+ },
+ {
+  "vi": "Cả lớp đồng ý. Tối nay đỡ hơn nhiều.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe máy cho xong",
+  "en": ""
+ },
+ {
+  "vi": "Hết buồn ngủ luôn.",
+  "en": ""
+ },
+ {
+  "vi": "Bị nói xấu vì không nhận quà",
+  "en": ""
+ },
+ {
+  "vi": "Bạn trả lại phong bì của một phụ huynh.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm sau nhóm phụ huynh xì xào: “Cô chê ít”.",
+  "en": ""
+ },
+ {
+  "vi": "Cô hiệu trưởng gọi hỏi.",
+  "en": ""
+ },
+ {
+  "vi": "Kể thật với cô hiệu trưởng",
+  "en": ""
+ },
+ {
+  "vi": "Cô vỗ vai: “Em làm đúng.”",
+  "en": ""
+ },
+ {
+  "vi": "Không giải thích gì",
+  "en": ""
+ },
+ {
+  "vi": "Tin đồn tự tắt, nhưng mất mấy hôm.",
+  "en": ""
+ },
+ {
+  "vi": "Bị so với cô lớp bên",
+  "en": ""
+ },
+ {
+  "vi": "“Cô lớp bên dạy hay hơn, sao cô không học hỏi?”",
+  "en": ""
+ },
+ {
+  "vi": "Phụ huynh nói ngay trước mặt học sinh.",
+  "en": ""
+ },
+ {
+  "vi": "Bé con của chị ấy cúi gằm mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn gặp riêng sau giờ học",
+  "en": ""
+ },
+ {
+  "vi": "Nói chuyện tử tế thì ai cũng dịu lại.",
+  "en": ""
+ },
+ {
+  "vi": "Rủ cô lớp bên trao đổi giáo án",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hiền vui vẻ chia sẻ. Hai cô thân nhau hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Khách quát tháo giữa quầy",
+  "en": ""
+ },
+ {
+  "vi": "Khách đập tay xuống quầy.",
+  "en": ""
+ },
+ {
+  "vi": "“Làm ăn kiểu gì vậy hả?”",
+  "en": ""
+ },
+ {
+  "vi": "Cả hàng người quay lại nhìn bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Hạ giọng, xin lỗi, xử lý nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Khách nguôi dần, lúc về còn gật đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Nói lại cho ra lẽ",
+  "en": ""
+ },
+ {
+  "vi": "Hai bên to tiếng. Ai cũng mệt.",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ người khác trực, ra sau hít thở",
+  "en": ""
+ },
+ {
+  "vi": "Năm phút ngoài hiên, tim đập chậm lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đánh giá 1 sao bịa đặt",
+  "en": ""
+ },
+ {
+  "vi": "Một tài khoản lạ chấm 1 sao.",
+  "en": ""
+ },
+ {
+  "vi": "“Nhân viên thái độ, đồ bẩn.” Hôm đó họ không hề tới.",
+  "en": ""
+ },
+ {
+  "vi": "Đã có người thả “haha”.",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời lịch sự, kèm giờ mở cửa hôm đó",
+  "en": ""
+ },
+ {
+  "vi": "Khách quen vào bênh. Đánh giá giả bị gỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc đi đọc lại mà tức",
+  "en": ""
+ },
+ {
+  "vi": "Mất ngủ vì một người không quen.",
+  "en": ""
+ },
+ {
+  "vi": "Khách quỵt tiền còn chửi",
+  "en": ""
+ },
+ {
+  "vi": "Khách ăn xong, bảo “dở vậy mà cũng tính tiền”.",
+  "en": ""
+ },
+ {
+  "vi": "Rồi bỏ đi, không trả.",
+  "en": ""
+ },
+ {
+  "vi": "Còn ngoái lại chửi thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Cho qua, coi như xui",
+  "en": ""
+ },
+ {
+  "vi": "Tiếc tiền, nhưng giữ được bình yên.",
+  "en": ""
+ },
+ {
+  "vi": "Kể lên nhóm chủ quán khu phố",
+  "en": ""
+ },
+ {
+  "vi": "Mọi người nhắn cảm thông, dặn nhau để ý.",
+  "en": ""
+ },
+ {
+  "vi": "Khách bom hàng, chửi shipper",
+  "en": ""
+ },
+ {
+  "vi": "Giao tới nơi, khách bảo “không đặt”.",
+  "en": ""
+ },
+ {
+  "vi": "Rồi mắng: “Giao chậm như rùa”.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền xăng đi đứt.",
+  "en": ""
+ },
+ {
+  "vi": "Báo tổng đài, chụp ảnh làm chứng",
+  "en": ""
+ },
+ {
+  "vi": "Tổng đài ghi nhận, khách bị đánh dấu.",
+  "en": ""
+ },
+ {
+  "vi": "Ghé vỉa hè ngồi uống chai nước",
+  "en": ""
+ },
+ {
+  "vi": "Nắng gắt. Nhưng ngồi chút cũng đỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc gọi 40 phút toàn chửi",
+  "en": ""
+ },
+ {
+  "vi": "Khách gọi tới, chưa nói gì đã chửi.",
+  "en": ""
+ },
+ {
+  "vi": "Bốn mươi phút. Bạn không được cúp máy.",
+  "en": ""
+ },
+ {
+  "vi": "Cúp xong, tay vẫn còn run.",
+  "en": ""
+ },
+ {
+  "vi": "Xin trưởng ca nghỉ 10 phút",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng ca gật đầu, còn đưa ly trà gừng.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận cuộc gọi kế tiếp luôn",
+  "en": ""
+ },
+ {
+  "vi": "Giọng bạn hơi run suốt buổi chiều.",
+  "en": ""
+ },
+ {
+  "vi": "Khách tour làm mình làm mẩy",
+  "en": ""
+ },
+ {
+  "vi": "Khách đòi đổi phòng, đổi món, đổi cả lịch trình.",
+  "en": ""
+ },
+ {
+  "vi": "Không vừa ý là dọa “đánh giá cho biết tay”.",
+  "en": ""
+ },
+ {
+  "vi": "Cả đoàn phải chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẹ nhàng nhưng giữ đúng lịch",
+  "en": ""
+ },
+ {
+  "vi": "Cả đoàn vỗ tay khi xe lăn bánh đúng giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Chiều hết cho yên",
+  "en": ""
+ },
+ {
+  "vi": "Khách vẫn chê. Bạn thì kiệt sức.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ thú cưng mắng xối xả",
+  "en": ""
+ },
+ {
+  "vi": "Bé cún về nhà hắt hơi hai cái.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nó gọi tới mắng như tát nước.",
+  "en": ""
+ },
+ {
   "vi": "Hồ sơ ghi rõ bé bị từ trước.",
   "en": ""
  },
@@ -1489,314 +1797,6 @@
  },
  {
   "vi": "Con ơi, bà nấu nồi chè đậu đen, qua ăn với bà.",
-  "en": ""
- },
- {
-  "vi": "Chuyện gì rồi cũng qua. Ăn cho ngọt miệng cái đã.",
-  "en": ""
- },
- {
-  "vi": "Qua nhà Bà Sáu ăn chè",
-  "en": ""
- },
- {
-  "vi": "Chén chè mát lạnh, bà ngồi quạt cho. Nghe bà kể chuyện ngày xưa mà nhẹ cả lòng.",
-  "en": ""
- },
- {
-  "vi": "Ê, nhìn mặt là biết hôm nay tệ rồi.",
-  "en": ""
- },
- {
-  "vi": "Ra đầu hẻm làm vài cốc bia hơi, anh bao!",
-  "en": ""
- },
- {
-  "vi": "Đi bia hơi với Anh Khoa",
-  "en": ""
- },
- {
-  "vi": "Hai anh em ngồi vỉa hè, nói đủ thứ chuyện trên trời dưới đất. Anh Khoa giành trả tiền.",
-  "en": ""
- },
- {
-  "vi": "Nghe chuyện rồi. Tối nay cả nhóm đi karaoke nha!",
-  "en": ""
- },
- {
-  "vi": "Chia tiền phòng thôi, không ai được từ chối.",
-  "en": ""
- },
- {
-  "vi": "Đi karaoke với cả nhóm",
-  "en": ""
- },
- {
-  "vi": "Hát tới khàn giọng. Có đứa hát “Nơi này có anh” lệch tông cả bài, cười muốn xỉu.",
-  "en": ""
- },
- {
-  "vi": "Bà nấu nồi cháo gà, để phần cháu một tô.",
-  "en": ""
- },
- {
-  "vi": "Ăn nóng rồi đi ngủ sớm, nghe chưa.",
-  "en": ""
- },
- {
-  "vi": "Xuống ăn cháo với Bà Tám",
-  "en": ""
- },
- {
-  "vi": "Tô cháo nóng, thêm hành phi. Ăn xong người ấm hẳn lên.",
-  "en": ""
- },
- {
-  "vi": "Cô gói cho ít trái cây với bịch bánh.",
-  "en": ""
- },
- {
-  "vi": "Làm ăn thì ai cũng có ngày xui con ạ.",
-  "en": ""
- },
- {
-  "vi": "Nhận quà của Cô Ba",
-  "en": ""
- },
- {
-  "vi": "Bịch bánh còn ấm. Cô Ba dặn mai ghé tiệm ngồi chơi.",
-  "en": ""
- },
- {
-  "vi": "Anh ơi, em vẽ tặng anh nè!",
-  "en": ""
- },
- {
-  "vi": "Chị ơi, em vẽ tặng chị nè!",
-  "en": ""
- },
- {
-  "vi": "Em vẽ tặng nè!",
-  "en": ""
- },
- {
-  "vi": "Tranh có mặt trời to đùng, ghi “CỐ LÊN”.",
-  "en": ""
- },
- {
-  "vi": "Nhận tranh của Bé Tí",
-  "en": ""
- },
- {
-  "vi": "Bạn dán tranh lên tường gác. Nhìn là muốn cười.",
-  "en": ""
- },
- {
-  "vi": "Ghé tiệm chú uống ấm trà.",
-  "en": ""
- },
- {
-  "vi": "Đồ hư thì sửa, lòng buồn thì ngồi đây một lát.",
-  "en": ""
- },
- {
-  "vi": "Ngồi trà với Chú Tư",
-  "en": ""
- },
- {
-  "vi": "Chú Tư vừa sửa quạt vừa kể chuyện nghề. Tiếng tua vít đều đều mà dễ chịu lạ.",
-  "en": ""
- },
- {
-  "vi": "Để cô đi cùng cháu lên phường trình báo.",
-  "en": ""
- },
- {
-  "vi": "Bị lừa không phải lỗi của mình. Lỗi là của kẻ lừa.",
-  "en": ""
- },
- {
-  "vi": "Đi cùng Cô Lụa lên phường",
-  "en": ""
- },
- {
-  "vi": "Có cô Lụa bên cạnh, bạn kể rành mạch hơn. Cán bộ hứa theo dõi vụ việc.",
-  "en": ""
- },
- {
-  "vi": "Không nói nhiều, cuối tuần đi biển!",
-  "en": ""
- },
- {
-  "vi": "Xe đã thuê, chỉ việc xách balo lên.",
-  "en": ""
- },
- {
-  "vi": "Đi biển với nhóm bạn",
-  "en": ""
- },
- {
-  "vi": "Gió biển, cát, ốc nướng. Hét một tiếng thật to ngoài bãi, xong thấy mình ổn hơn.",
-  "en": ""
- },
- {
-  "vi": "Tối nay đi ăn phở, tụi tao bao.",
-  "en": ""
- },
- {
-  "vi": "Ai buồn thì được thêm trứng.",
-  "en": ""
- },
- {
-  "vi": "Đi ăn phở với nhóm bạn",
-  "en": ""
- },
- {
-  "vi": "Tô phở nghi ngút, ba đứa tranh nhau kể chuyện dở hơi. Cười tới chảy nước mắt.",
-  "en": ""
- },
- {
-  "vi": "Có phim hài mới chiếu, đi không?",
-  "en": ""
- },
- {
-  "vi": "Bắp nước chia đôi nha.",
-  "en": ""
- },
- {
-  "vi": "Đi xem phim với nhóm bạn",
-  "en": ""
- },
- {
-  "vi": "Phim dở tệ nhưng cả rạp cười. Về tới nhà vẫn còn cười.",
-  "en": ""
- },
- {
-  "vi": "Miệng người ta, mình đâu có khâu lại được.",
-  "en": ""
- },
- {
-  "vi": "Kệ người ta con. Sống thật là được.",
-  "en": ""
- },
- {
-  "vi": "Ngồi nghe Bà Sáu khuyên",
-  "en": ""
- },
- {
-  "vi": "Bà Sáu nắm tay bạn một lúc lâu. Tự nhiên thấy chuyện kia nhỏ xíu.",
-  "en": ""
- },
- {
-  "vi": "Cô sống ở hẻm này ba chục năm, tin đồn nào rồi cũng tắt.",
-  "en": ""
- },
- {
-  "vi": "Người tử tế thì cả hẻm biết. Cháu cứ làm việc của cháu.",
-  "en": ""
- },
- {
-  "vi": "Nghe Cô Lụa nói chuyện",
-  "en": ""
- },
- {
-  "vi": "Cô Lụa rót ly trà, kể mấy tin đồn hồi xưa giờ ai cũng quên. Bạn bật cười.",
-  "en": ""
- },
- {
-  "vi": "Hồi anh mới dọn tới cũng bị đồn là “trốn nợ”.",
-  "en": ""
- },
- {
-  "vi": "Kệ đi. Tối rảnh đi ăn ốc với anh.",
-  "en": ""
- },
- {
-  "vi": "Đi ăn ốc với Anh Khoa",
-  "en": ""
- },
- {
-  "vi": "Ốc len xào dừa, Anh Khoa kể vụ “trốn nợ” năm xưa. Cười rũ rượi.",
-  "en": ""
- },
- {
-  "vi": "Người ta nói gì kệ người ta, bà biết cháu mà.",
-  "en": ""
- },
- {
-  "vi": "Ăn miếng bánh bò rồi ngủ một giấc.",
-  "en": ""
- },
- {
-  "vi": "Ăn bánh bò với Bà Tám",
-  "en": ""
- },
- {
-  "vi": "Bà Tám bảo: “Bà ở đây, không ai bắt nạt cháu được.” Ấm lòng.",
-  "en": ""
- },
- {
-  "vi": "Người ta nói ra nói vào, mình làm ăn đàng hoàng là được.",
-  "en": ""
- },
- {
-  "vi": "Tối nay ghé cô ăn cơm, có canh chua.",
-  "en": ""
- },
- {
-  "vi": "Ăn cơm tối với Cô Ba",
-  "en": ""
- },
- {
-  "vi": "Bữa cơm có canh chua, cá kho. Cô Ba không nhắc chuyện kia câu nào.",
-  "en": ""
- },
- {
-  "vi": "Chiếc điện thoại cũ",
-  "en": ""
- },
- {
-  "vi": "Anh Khoa đưa chiếc điện thoại cũ còn xài tốt: “Xài tạm nha em.”",
-  "en": ""
- },
- {
-  "vi": "Bao gạo 10 ký",
-  "en": ""
- },
- {
-  "vi": "Bà Tám với Cô Ba khiêng lên bao gạo: “Đỡ được mấy bữa cơm.”",
-  "en": ""
- },
- {
-  "vi": "Bó hoa và tấm thiệp",
-  "en": ""
- },
- {
-  "vi": "Tấm thiệp ký tên cả hẻm: “Có tụi mình ở đây.”",
-  "en": ""
- },
- {
-  "vi": "Giỏ đồ ăn",
-  "en": ""
- },
- {
-  "vi": "Giỏ trứng, rau, mì gói, cả hộp bánh của Bé Tí.",
-  "en": ""
- },
- {
-  "vi": "Karaoke với bạn",
-  "en": ""
- },
- {
-  "vi": "Hát tới khàn giọng. Ra về thấy nhẹ tênh.",
-  "en": ""
- },
- {
-  "vi": "Trà sữa + dạo shop",
-  "en": ""
- },
- {
-  "vi": "Ly trà sữa full topping, cái áo mới. Vui vui.",
   "en": ""
  }
 ]

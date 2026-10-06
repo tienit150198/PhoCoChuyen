@@ -1,5 +1,313 @@
 [
  {
+  "vi": "Hoa nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Lượn sóng",
+  "en": ""
+ },
+ {
+  "vi": "Gấu bông tự may",
+  "en": ""
+ },
+ {
+  "vi": "Chậu gốm nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Vòng tay hạt",
+  "en": ""
+ },
+ {
+  "vi": "Thiệp thủ công",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin buổi đi chơi không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Vào hành trình để đi chơi bằng ví cá nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang giữ kiểu tóc này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn thanh toán đã chọn chưa đủ cho cả kiểu tóc và phí dịch vụ.",
+  "en": ""
+ },
+ {
+  "vi": "Ghé salon",
+  "en": ""
+ },
+ {
+  "vi": "Ghé salon ·",
+  "en": ""
+ },
+ {
+  "vi": "Đã làm tóc xong. Kiểu tóc mới theo bạn về nhà và ra phố!",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang giữ bộ móng này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Ghé tiệm nail · sơn và vẽ móng",
+  "en": ""
+ },
+ {
+  "vi": "Bộ móng mới đã lưu trong góc đi chơi của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Mẫu thủ công này đã có trên kệ kỷ niệm của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ đã đủ 24 món. Những món đã làm vẫn được giữ ở đây.",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng DIY",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng DIY ·",
+  "en": ""
+ },
+ {
+  "vi": "Đã làm xong và cất món thủ công lên kệ kỷ niệm!",
+  "en": ""
+ },
+ {
+  "vi": "Kỷ niệm đi chơi không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "(?<!\\w)(ủng hộ|shop|quán|tiệm|dịch vụ|giá|khuyến mãi|5 sao|năm sao|quay lại mua|voucher|hoàn tiền|chủ quán|khách hàng|cửa hàng|mới mở|khai trương|đáng tiền|phục vụ)(?!\\w)",
+  "en": ""
+ },
+ {
+  "vi": "sư cô",
+  "en": ""
+ },
+ {
+  "vi": "việc quét dọn, hương đèn",
+  "en": ""
+ },
+ {
+  "vi": "chuyện nhang đèn, an toàn",
+  "en": ""
+ },
+ {
+  "vi": "chuyện sổ công đức",
+  "en": ""
+ },
+ {
+  "vi": "cách nhắc nhở, chỉ dẫn",
+  "en": ""
+ },
+ {
+  "vi": "chuyện phải chờ",
+  "en": ""
+ },
+ {
+  "vi": "thời khóa sáng",
+  "en": ""
+ },
+ {
+  "vi": "lời thầy dặn",
+  "en": ""
+ },
+ {
+  "vi": "cách trả lời",
+  "en": ""
+ },
+ {
+  "vi": "buổi ghé chùa",
+  "en": ""
+ },
+ {
+  "vi": "A Di Đà Phật, ghé chùa một buổi mà lòng nhẹ hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng nay lên chùa thấy bình an lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Chùa Gió Lành vẫn hiền như mọi khi.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi hiên chùa nghe gió sông, quên hết chuyện ngoài kia.",
+  "en": ""
+ },
+ {
+  "vi": "Chùa yên và sạch, chỉ có chút xíu cần để ý.",
+  "en": ""
+ },
+ {
+  "vi": "Ghé chùa thấy dễ chịu, còn một chuyện nhỏ thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Buổi lễ nhẹ nhàng, chỉ một điểm nhỏ chưa trọn.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay lên chùa có chỗ chưa được yên lòng.",
+  "en": ""
+ },
+ {
+  "vi": "Chùa vẫn đẹp, nhưng hôm nay có vài chuyện chưa ổn.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay lên chùa mà về hơi buồn.",
+  "en": ""
+ },
+ {
+  "vi": "Mong chùa để ý hơn, hôm nay nhiều chỗ chưa ổn.",
+  "en": ""
+ },
+ {
+  "vi": "Lên chùa mà về không yên lòng chút nào.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay ở chùa có chuyện làm tôi buồn thật sự.",
+  "en": ""
+ },
+ {
+  "vi": "Chùa chill ghê, ngồi nghe chuông mà muốn ở lại cả buổi 🪷",
+  "en": ""
+ },
+ {
+  "vi": "Lên chùa sống chậm một bữa, thương ghê 🙏",
+  "en": ""
+ },
+ {
+  "vi": "Chùa xinh, yên, chỉ có một xíu thôi nè.",
+  "en": ""
+ },
+ {
+  "vi": "Hơi buồn xíu nha.",
+  "en": ""
+ },
+ {
+  "vi": "Yên. Sạch. Mát.",
+  "en": ""
+ },
+ {
+  "vi": "Bình an.",
+  "en": ""
+ },
+ {
+  "vi": "Yên. Có chút chưa ổn.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa yên lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Buồn.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi đi chùa khắp nơi rồi, chùa này giữ nếp tốt.",
+  "en": ""
+ },
+ {
+  "vi": "Hồi xưa tôi lên chùa này với ông bà, nếp chùa vẫn y như cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Nếp chùa giữ tốt, tôi chỉ nhắc một chút thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi nói thật để chùa sửa.",
+  "en": ""
+ },
+ {
+  "vi": "Tính tôi khó, mà hôm nay hết chỗ chê.",
+  "en": ""
+ },
+ {
+  "vi": "Được, nhưng tôi vẫn phải nói một câu.",
+  "en": ""
+ },
+ {
+  "vi": "Nói thật thì hôm nay chưa ổn.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi để ý từng góc: bàn Phật, lư hương, sổ công đức. Đều gọn.",
+  "en": ""
+ },
+ {
+  "vi": "Gần trọn, còn một chỗ tôi để ý.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi để ý thấy mấy chỗ chưa ổn.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi đi lễ mấy chục năm, nói để thầy trẻ biết.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi rành nếp chùa, hôm nay chưa đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi rành nếp chùa, hôm nay sai nhiều.",
+  "en": ""
+ },
+ {
+  "vi": "Được. Mà chưa trọn.",
+  "en": ""
+ },
+ {
+  "vi": "Buồn thật.",
+  "en": ""
+ },
+ {
+  "vi": "Sân chùa sạch lá, hương đèn gọn gàng.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn Phật hoa tươi, trái cây bày ngay ngắn.",
+  "en": ""
+ },
+ {
+  "vi": "Việc gì cũng làm cẩn thận, nhìn là thấy yên.",
+  "en": ""
+ },
+ {
+  "vi": "Nhang đèn để xa rèm, người già trẻ nhỏ đều được để ý.",
+  "en": ""
+ },
+ {
+  "vi": "Lối đi khô ráo, bậc thềm có người đỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Hòm công đức có hai người cùng đếm, ghi sổ rõ ràng.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện công đức ở chùa minh bạch, ai cũng yên tâm.",
+  "en": ""
+ },
+ {
   "vi": "Được chỉ dẫn nhẹ nhàng, không ai bị ngượng.",
   "en": ""
  },
@@ -740,6 +1048,14 @@
   "en": ""
  },
  {
+  "vi": "tốt nhất",
+  "en": ""
+ },
+ {
+  "vi": "chưa ưng",
+  "en": ""
+ },
+ {
   "vi": "Chưa có buổi xét lên chức nào.",
   "en": ""
  },
@@ -1244,6 +1560,14 @@
   "en": ""
  },
  {
+  "vi": "1 sao lớn · cánh chim vàng",
+  "en": ""
+ },
+ {
+  "vi": "1 sao lớn",
+  "en": ""
+ },
+ {
   "vi": "cành tùng vàng",
   "en": ""
  },
@@ -1473,330 +1797,6 @@
  },
  {
   "vi": "Hỏi han, chỉ cách làm đúng",
-  "en": ""
- },
- {
-  "vi": "Trừ lương ngay",
-  "en": ""
- },
- {
-  "vi": "Cho qua, không nói gì",
-  "en": ""
- },
- {
-  "vi": "Quán bên cạnh hạ giá.",
-  "en": ""
- },
- {
-  "vi": "Giữ chất lượng, chăm khách quen",
-  "en": ""
- },
- {
-  "vi": "Hạ giá thấp hơn nữa",
-  "en": ""
- },
- {
-  "vi": "Nói xấu quán bên",
-  "en": ""
- },
- {
-  "vi": "Trời mưa, khách vắng.",
-  "en": ""
- },
- {
-  "vi": "Gọi khách quen, nhận giao tận nơi",
-  "en": ""
- },
- {
-  "vi": "Về sớm nghỉ ngơi",
-  "en": ""
- },
- {
-  "vi": "Tăng giá bù lỗ",
-  "en": ""
- },
- {
-  "vi": "Dụng cụ kêu lạ giữa ca.",
-  "en": ""
- },
- {
-  "vi": "Tắt máy, kiểm tra rồi làm tiếp",
-  "en": ""
- },
- {
-  "vi": "Ghi lại, cuối ca xem",
-  "en": ""
- },
- {
-  "vi": "Làm tiếp cho kịp",
-  "en": ""
- },
- {
-  "vi": "Hành khách không chịu thắt dây an toàn.",
-  "en": ""
- },
- {
-  "vi": "Giải thích nhẹ nhàng, nhờ tổ trưởng nếu cần",
-  "en": ""
- },
- {
-  "vi": "Nhắc to trước cả khoang",
-  "en": ""
- },
- {
-  "vi": "Chuyến bay trễ, khách bực.",
-  "en": ""
- },
- {
-  "vi": "Báo rõ lý do và giờ mới",
-  "en": ""
- },
- {
-  "vi": "Hứa một giờ bay chưa chắc",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi chung chung",
-  "en": ""
- },
- {
-  "vi": "Đồng nghiệp mệt trước giờ bay.",
-  "en": ""
- },
- {
-  "vi": "Báo tổ trưởng, đổi ca nếu cần",
-  "en": ""
- },
- {
-  "vi": "Kệ, ai cũng mệt",
-  "en": ""
- },
- {
-  "vi": "Làm đỡ phần của bạn ấy",
-  "en": ""
- },
- {
-  "vi": "Danh sách kiểm còn sót một bước.",
-  "en": ""
- },
- {
-  "vi": "Dừng, làm đủ rồi mới ký",
-  "en": ""
- },
- {
-  "vi": "Ký trước, kiểm sau",
-  "en": ""
- },
- {
-  "vi": "Hỏi người bên cạnh",
-  "en": ""
- },
- {
-  "vi": "Khách xin đổi chỗ giữa chuyến.",
-  "en": ""
- },
- {
-  "vi": "Kiểm chỗ trống, đổi nếu an toàn",
-  "en": ""
- },
- {
-  "vi": "Từ chối ngay",
-  "en": ""
- },
- {
-  "vi": "Để khách tự đổi",
-  "en": ""
- },
- {
-  "vi": "Nghe tin đồn về một đồng nghiệp.",
-  "en": ""
- },
- {
-  "vi": "Không lan truyền, hỏi thẳng nếu cần",
-  "en": ""
- },
- {
-  "vi": "Kể cho cả tổ",
-  "en": ""
- },
- {
-  "vi": "Im lặng nhưng tránh mặt",
-  "en": ""
- },
- {
-  "vi": "Người dân xin mở chắn sớm “vì tàu còn xa”.",
-  "en": ""
- },
- {
-  "vi": "Giữ chắn, nói rõ còn mấy phút",
-  "en": ""
- },
- {
-  "vi": "Mở nhanh cho một người",
-  "en": ""
- },
- {
-  "vi": "Lờ đi không trả lời",
-  "en": ""
- },
- {
-  "vi": "Đồng nghiệp nhờ ký sổ giao ca khi chưa thử thiết bị.",
-  "en": ""
- },
- {
-  "vi": "Từ chối, cùng thử rồi mới ký",
-  "en": ""
- },
- {
-  "vi": "Ký giúp lần này",
-  "en": ""
- },
- {
-  "vi": "Ký nhưng ghi chú nhỏ",
-  "en": ""
- },
- {
-  "vi": "Đi tuần thấy ray nứt, mười phút nữa có tàu.",
-  "en": ""
- },
- {
-  "vi": "Phòng vệ hai đầu, điện khẩn cho ga",
-  "en": ""
- },
- {
-  "vi": "Gọi tổ thợ hỏi ý kiến",
-  "en": ""
- },
- {
-  "vi": "Cung trưởng bảo ghi tàu chậm thành đúng giờ.",
-  "en": ""
- },
- {
-  "vi": "Ghi đúng, kèm lý do chậm",
-  "en": ""
- },
- {
-  "vi": "Sửa cho đẹp báo cáo",
-  "en": ""
- },
- {
-  "vi": "Ghi đúng nhưng không nói gì",
-  "en": ""
- },
- {
-  "vi": "Ca đêm thứ ba liền, bạn buồn ngủ díp mắt.",
-  "en": ""
- },
- {
-  "vi": "Báo đội trưởng, xin người thay hoặc nghỉ bù",
-  "en": ""
- },
- {
-  "vi": "Chợp mắt giữa hai chuyến",
-  "en": ""
- },
- {
-  "vi": "Uống thêm cà phê cố gác",
-  "en": ""
- },
- {
-  "vi": "Tàu qua mà không thấy đèn đuôi toa cuối.",
-  "en": ""
- },
- {
-  "vi": "Cho qua, chắc đèn hỏng",
-  "en": ""
- },
- {
-  "vi": "Đêm bão thấy pháo hiệu đỏ, xuồng của trạm nằm ngay dưới bến.",
-  "en": ""
- },
- {
-  "vi": "Sếp bảo ghi “đèn sáng bình thường” cho đêm đèn tắt hai mươi phút.",
-  "en": ""
- },
- {
-  "vi": "Ghi đúng giờ tắt, nguyên nhân, cách xử lý",
-  "en": ""
- },
- {
-  "vi": "Ghi theo lời sếp",
-  "en": ""
- },
- {
-  "vi": "Không ghi gì",
-  "en": ""
- },
- {
-  "vi": "Khách không có giấy đòi lên phòng đèn chụp ảnh, dúi tiền.",
-  "en": ""
- },
- {
-  "vi": "Từ chối, mời chụp ở sân trạm, không nhận tiền",
-  "en": ""
- },
- {
-  "vi": "Đuổi về không nói gì",
-  "en": ""
- },
- {
-  "vi": "Đếm chớp thấy chu kỳ 19 giây, danh mục đèn ghi 15 giây.",
-  "en": ""
- },
- {
-  "vi": "Báo đài phát thông báo hàng hải, báo xí nghiệp",
-  "en": ""
- },
- {
-  "vi": "Chắc đồng hồ sai, kệ",
-  "en": ""
- },
- {
-  "vi": "Tàu tiếp tế bơm thiếu dầu, thuyền trưởng đòi ký đủ.",
-  "en": ""
- },
- {
-  "vi": "Ký đúng số đo được, ghi rõ phần thiếu",
-  "en": ""
- },
- {
-  "vi": "Ký đủ cho êm chuyện",
-  "en": ""
- },
- {
-  "vi": "Không ký gì cả",
-  "en": ""
- },
- {
-  "vi": "Áp kế tụt nhanh mà gió mới cấp 4.",
-  "en": ""
- },
- {
-  "vi": "Báo đài, phát cảnh báo cho tàu thuyền",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ, giờ sau xem lại",
-  "en": ""
- },
- {
-  "vi": "Giám đốc nhờ đẩy cuộc gọi của người quen lên mức khẩn cấp.",
-  "en": ""
- },
- {
-  "vi": "Giữ mức theo nguy hiểm tính mạng, giải thích rõ",
-  "en": ""
- },
- {
-  "vi": "Đẩy lên cho xong",
-  "en": ""
- },
- {
-  "vi": "Hỏi chị trưởng ca rồi tính",
-  "en": ""
- },
- {
-  "vi": "Ba cuộc gọi đùa liền, cuộc thứ tư giọng nhỏ báo có khói.",
   "en": ""
  }
 ]

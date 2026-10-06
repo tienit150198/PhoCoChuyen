@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Mời người bệnh tự nói họ tên và ngày sinh, đối chiếu vòng tay và phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Xem số giường",
+  "en": ""
+ },
+ {
   "vi": "Hai thông tin: họ tên và ngày sinh, đối chiếu vòng tay.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Không nhận quà của dân.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ tạm trú thiếu ý kiến chủ nhà.",
-  "en": ""
- },
- {
-  "vi": "Nhận luôn, mai bổ sung",
   "en": ""
  }
 ]

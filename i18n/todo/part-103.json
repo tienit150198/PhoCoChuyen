@@ -1,5 +1,1017 @@
 [
  {
+  "vi": "🔔 Đang bật thông báo",
+  "en": ""
+ },
+ {
+  "vi": "🔔 Bật",
+  "en": ""
+ },
+ {
+  "vi": "🔕 Tắt 8 giờ",
+  "en": ""
+ },
+ {
+  "vi": "🔕 Tắt",
+  "en": ""
+ },
+ {
+  "vi": "Tắt: không báo về máy, không tính vào số tin chưa đọc. Tin vẫn tới như thường.",
+  "en": ""
+ },
+ {
+  "vi": "Thả cảm xúc",
+  "en": ""
+ },
+ {
+  "vi": "Xóa thật?",
+  "en": ""
+ },
+ {
+  "vi": "Xóa ở phía tôi",
+  "en": ""
+ },
+ {
+  "vi": "↩ Trả lời",
+  "en": ""
+ },
+ {
+  "vi": "tin nhắn",
+  "en": ""
+ },
+ {
+  "vi": "📌 Bỏ ghim",
+  "en": ""
+ },
+ {
+  "vi": "📌 Ghim tin này",
+  "en": ""
+ },
+ {
+  "vi": "Thu hồi thật?",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi lời mời",
+  "en": ""
+ },
+ {
+  "vi": "Kết bạn",
+  "en": ""
+ },
+ {
+  "vi": "Đang kết nối…",
+  "en": ""
+ },
+ {
+  "vi": "Tên nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có bạn để mời.",
+  "en": ""
+ },
+ {
+  "vi": "Thêm vào nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Lập nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chưa chặn ai.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ chặn",
+  "en": ""
+ },
+ {
+  "vi": "Mời ra thật?",
+  "en": ""
+ },
+ {
+  "vi": "Mời ra",
+  "en": ""
+ },
+ {
+  "vi": "Thêm bạn",
+  "en": ""
+ },
+ {
+  "vi": "Rời thật?",
+  "en": ""
+ },
+ {
+  "vi": "Rời nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Không tải được tin nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lời chào đầu tiên 👋",
+  "en": ""
+ },
+ {
+  "vi": "Đang vào phố…",
+  "en": ""
+ },
+ {
+  "vi": "người đang xem",
+  "en": ""
+ },
+ {
+  "vi": "Phố đang yên. Mở lời trước nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Bạn:",
+  "en": ""
+ },
+ {
+  "vi": "Đã tắt thông báo",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cuộc trò chuyện để xóa",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ xóa ở phía bạn, người kia vẫn còn tin nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn bạn bè",
+  "en": ""
+ },
+ {
+  "vi": "Đổi gương mặt, áo theo Tủ đồ",
+  "en": ""
+ },
+ {
+  "vi": "Hiện online",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có bạn bè.",
+  "en": ""
+ },
+ {
+  "vi": "Có tài khoản để kết bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm bạn",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn tin",
+  "en": ""
+ },
+ {
+  "vi": "Đang tìm hiểu 💕",
+  "en": ""
+ },
+ {
+  "vi": "Mất kết nối. Đang thử lại…",
+  "en": ""
+ },
+ {
+  "vi": "Tạo tài khoản để chat.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt tên nhân vật để nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn không còn là bạn bè.",
+  "en": ""
+ },
+ {
+  "vi": "Tin đang ghim",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ ghim",
+  "en": ""
+ },
+ {
+  "vi": "🛟 Giữ an toàn nha",
+  "en": ""
+ },
+ {
+  "vi": "Mình hiểu rồi",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn cả phố…",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn tin…",
+  "en": ""
+ },
+ {
+  "vi": "Lư hương",
+  "en": ""
+ },
+ {
+  "vi": "Gác chuông",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sen",
+  "en": ""
+ },
+ {
+  "vi": "Rào lời nguyện",
+  "en": ""
+ },
+ {
+  "vi": "Chổi tre",
+  "en": ""
+ },
+ {
+  "vi": "Bàn cơm chay",
+  "en": ""
+ },
+ {
+  "vi": "Chiếu lễ",
+  "en": ""
+ },
+ {
+  "vi": "Mõ",
+  "en": ""
+ },
+ {
+  "vi": "🌳 Cây bồ đề",
+  "en": ""
+ },
+ {
+  "vi": "🔔 Chuông gia trì",
+  "en": ""
+ },
+ {
+  "vi": "🕯️ Bàn thờ",
+  "en": ""
+ },
+ {
+  "vi": "📋 Thời khóa",
+  "en": ""
+ },
+ {
+  "vi": "📋 Thực đơn",
+  "en": ""
+ },
+ {
+  "vi": "Lư hương lớn giữa sân. Khách thắp hương ở đây, trong điện chỉ một nén.",
+  "en": ""
+ },
+ {
+  "vi": "Gác chuông có quả chuông đồng cả làng cùng đúc. Chuông thỉnh chậm, đều, chờ tiếng ngân tắt hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sen nhỏ, mấy con cá đỏ lượn chậm. Ngồi đây gió sông mát lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng rào tre buộc đầy giấy đỏ. Bạn chọn một lời nguyện để viết.",
+  "en": ""
+ },
+ {
+  "vi": "Mấy cây chổi tre dựng ở giá. Lá bàng rụng đầy sân.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn dài, bà Nhạn đang múc canh nấm.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn quỳ trên chiếu trước điện Phật. Tự chọn khấn cho ai, mong điều gì.",
+  "en": ""
+ },
+ {
+  "vi": "Thầy giữ chuông gia trì, bạn giữ mõ. Gõ đúng lúc vòng sáng khép lại.",
+  "en": ""
+ },
+ {
+  "vi": "🪔 Thắp hương",
+  "en": ""
+ },
+ {
+  "vi": "🔔 Đứng nghe chuông",
+  "en": ""
+ },
+ {
+  "vi": "🍃 Ngồi xuống",
+  "en": ""
+ },
+ {
+  "vi": "🧹 Cầm chổi quét",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Ngồi vào bàn",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Chắp tay khấn",
+  "en": ""
+ },
+ {
+  "vi": "📿 Bắt đầu tụng",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ơi, con cá đỏ to nhất tên là Mập đó. Con đặt tên đấy!",
+  "en": ""
+ },
+ {
+  "vi": "Bà con dặn đi trong chùa phải đi chậm, nói nhỏ. Con đang tập.",
+  "en": ""
+ },
+ {
+  "vi": "Sao hoa sen mọc dưới bùn mà vẫn thơm vậy ta?",
+  "en": ""
+ },
+ {
+  "vi": "Chiều nào chị cũng ra đây ngồi một lúc. Không cần nói gì cả.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe chuông xong, tự nhiên thấy nhẹ người.",
+  "en": ""
+ },
+ {
+  "vi": "Cứ ngồi đi, ghế còn rộng mà.",
+  "en": ""
+ },
+ {
+  "vi": "Rằm nào ông cũng lên. Chân yếu rồi, nhưng lên được là vui.",
+  "en": ""
+ },
+ {
+  "vi": "Hồi xưa ông chở đò cho cả xóm qua sông đi chùa đó.",
+  "en": ""
+ },
+ {
+  "vi": "Thắp hương thì một nén thôi con, thành tâm là được.",
+  "en": ""
+ },
+ {
+  "vi": "Bữa nay không phải rằm, bà chỉ nhặt rau thôi. Rằm với mùng một ghé ăn cơm chay nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Bếp chùa không dùng hành tỏi, con biết chưa?",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi xuống ăn đi con, canh nấm còn nóng!",
+  "en": ""
+ },
+ {
+  "vi": "Ăn chậm thôi. Ăn xong nhớ để chén vô thau giùm bà nha.",
+  "en": ""
+ },
+ {
+  "vi": "Nam mô A Di Đà Phật.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng nay xin lòng yên như mặt hồ.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nói ra, xin là lời hiền.",
+  "en": ""
+ },
+ {
+  "vi": "Việc tay làm, xin là việc lành.",
+  "en": ""
+ },
+ {
+  "vi": "Thương người gần, nhớ người xa.",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng chùa",
+  "en": ""
+ },
+ {
+  "vi": "Ra về",
+  "en": ""
+ },
+ {
+  "vi": "Khu trong chùa",
+  "en": ""
+ },
+ {
+  "vi": "Ở đây có",
+  "en": ""
+ },
+ {
+  "vi": "Âm thanh đang tắt trong Cài đặt",
+  "en": ""
+ },
+ {
+  "vi": "Tắt tiếng chùa",
+  "en": ""
+ },
+ {
+  "vi": "Bật tiếng chùa",
+  "en": ""
+ },
+ {
+  "vi": "chùa có cơm chay",
+  "en": ""
+ },
+ {
+  "vi": "tinh thần +1…+4 theo nhịp mõ",
+  "en": ""
+ },
+ {
+  "vi": "vẫn tụng cùng thầy được, chỉ không tính thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay không phải rằm hay mùng 1, bàn ăn còn trống.",
+  "en": ""
+ },
+ {
+  "vi": "Khấn cho ai?",
+  "en": ""
+ },
+ {
+  "vi": "Mong điều gì?",
+  "en": ""
+ },
+ {
+  "vi": "chọn người trước",
+  "en": ""
+ },
+ {
+  "vi": "Con cầu mong",
+  "en": ""
+ },
+ {
+  "vi": "Thưa thầy, con nghe thêm",
+  "en": ""
+ },
+ {
+  "vi": "📿 Xin tụng kinh cùng thầy",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Chắp tay chào thầy",
+  "en": ""
+ },
+ {
+  "vi": "Nói chuyện thêm",
+  "en": ""
+ },
+ {
+  "vi": "Chào",
+  "en": ""
+ },
+ {
+  "vi": "Thầy gật đầu: “Đi đường bình an nhé con.”",
+  "en": ""
+ },
+ {
+  "vi": "Gõ mõ khi vòng sáng khép lại",
+  "en": ""
+ },
+ {
+  "vi": "Gõ mõ",
+  "en": ""
+ },
+ {
+  "vi": "Thầy thỉnh chuông…",
+  "en": ""
+ },
+ {
+  "vi": "Tụng thêm lần nữa",
+  "en": ""
+ },
+ {
+  "vi": "chùa: draw",
+  "en": ""
+ },
+ {
+  "vi": "Vào chùa",
+  "en": ""
+ },
+ {
+  "vi": "Đi dạo sân chùa, vào chánh điện khấn, tụng kinh cùng thầy",
+  "en": ""
+ },
+ {
+  "vi": "Làm nhanh, không cần vào chùa",
+  "en": ""
+ },
+ {
+  "vi": "🗒️ Hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Không thích",
+  "en": ""
+ },
+ {
+  "vi": "🙂 Người lạ",
+  "en": ""
+ },
+ {
+  "vi": "💌 Gửi lời chúc",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Cảm ơn",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và quà",
+  "en": ""
+ },
+ {
+  "vi": "Chưa rõ sở thích",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay đã hỏi thăm",
+  "en": ""
+ },
+ {
+  "vi": "Túi quà",
+  "en": ""
+ },
+ {
+  "vi": "🎒 Túi quà",
+  "en": ""
+ },
+ {
+  "vi": "Quà người quen tặng. Tặng lại ai đó, hoặc tự thưởng cho mình.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Trò chuyện lần đầu trong ngày: +1 tới +3. Nói nặng lời: −3.",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Tặng quà (mỗi người một món mỗi ngày): đúng món họ thích +6, món thường +3, món họ không ưa −2.",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Cảm ơn khi được tặng: +2. Để quá hai ngày không cảm ơn: −1.",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Được mời mà tới dự: +5, gửi lời chúc: +1, im lặng: −3.",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Phục vụ khách quen: 5★ +2, 3★ −1, 2★ −3, 1★ −5. Thối thiếu tiền: −3.",
+  "en": ""
+ },
+ {
+  "vi": "🍃 Lâu không gặp (hơn 14 ngày) thì nhạt dần, rất chậm.",
+  "en": ""
+ },
+ {
+  "vi": "💛 Càng thân, người ta càng hay hỏi thăm, tặng quà, báo tin trước, dễ bỏ qua lỗi nhỏ, hay bo thêm và tới dự ngày vui của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có khách quen",
+  "en": ""
+ },
+ {
+  "vi": "Làm việc cho ai đó vài lần là họ nhớ mặt bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm người quen",
+  "en": ""
+ },
+ {
+  "vi": "Điểm thân quen tính thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "🏘️ Hàng xóm",
+  "en": ""
+ },
+ {
+  "vi": "🛍️ Khách quen",
+  "en": ""
+ },
+ {
+  "vi": "Trong túi ×",
+  "en": ""
+ },
+ {
+  "vi": "xu · của tiệm mình",
+  "en": ""
+ },
+ {
+  "vi": "Không hợp với trẻ nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn quà",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Chọn một món quà",
+  "en": ""
+ },
+ {
+  "vi": "Mở một nơi làm việc để có tiền mua quà. Quà trong túi thì tặng được ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Thân như người nhà rồi.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Trò chuyện",
+  "en": ""
+ },
+ {
+  "vi": "💬 Nhắn hỏi thăm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có kỷ niệm nào. Hỏi thăm một câu là bắt đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Sở thích",
+  "en": ""
+ },
+ {
+  "vi": "💡 Sở thích",
+  "en": ""
+ },
+ {
+  "vi": "🗓️ Gần đây",
+  "en": ""
+ },
+ {
+  "vi": "Tất cả người quen",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Tặng quà",
+  "en": ""
+ },
+ {
+  "vi": "💬 Hôm nay đã hỏi thăm rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa biết gì. Thân hơn hoặc tặng thử một món là biết.",
+  "en": ""
+ },
+ {
+  "vi": "👥 Người quen",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có dữ liệu người quen.",
+  "en": ""
+ },
+ {
+  "vi": "Càng thân, người ta càng thương mình.",
+  "en": ""
+ },
+ {
+  "vi": "Càng thân, hàng xóm càng hay hỏi thăm, tặng quà và tới dự ngày vui của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở sổ sinh hoạt…",
+  "en": ""
+ },
+ {
+  "vi": "Ghé hiệu sách, tham gia câu lạc bộ cùng các nhân vật trong phố hoặc dành một buổi cho gia đình. Mỗi nơi lưu một buổi mỗi ngày sống; chỉ thanh toán khi bạn xác nhận. Kỷ niệm gần nhất được giữ ở cuối trang.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ kỷ niệm trong phố",
+  "en": ""
+ },
+ {
+  "vi": "xu / buổi",
+  "en": ""
+ },
+ {
+  "vi": "Tham gia miễn phí",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã lưu buổi hôm nay. Ngày sống mới có câu chuyện tiếp theo.",
+  "en": ""
+ },
+ {
+  "vi": "Mở YouTube để chọn beat ↗",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có kỷ niệm. Chọn một hoạt động ở trên để bắt đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận hợp đồng, vào nghề Giao hàng giao đơn thật rồi trở lại nhận thưởng. Phí giao đơn và tiền COD vẫn nằm trong sổ nghề; ở đây chỉ tính thưởng hợp đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tất 3 hợp đồng mở tuyến nhanh, 10 hợp đồng mở đối tác chuỗi. Mỗi lần theo một hợp đồng; không hết hạn khi bạn nghỉ chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ nghề hợp đồng",
+  "en": ""
+ },
+ {
+  "vi": "📦 Vào nghề Giao hàng",
+  "en": ""
+ },
+ {
+  "vi": "Mở nghề Giao hàng trong hành trình để nhận hợp đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Sai sót hoặc giao trễ giảm thưởng; từ chối/giao thất bại không tính tiến độ. Đồ nghề hỗ trợ giảm khấu trừ.",
+  "en": ""
+ },
+ {
+  "vi": "giao thành công",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thưởng",
+  "en": ""
+ },
+ {
+  "vi": "Hủy hợp đồng",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng đang có",
+  "en": ""
+ },
+ {
+  "vi": "Nhận hợp đồng",
+  "en": ""
+ },
+ {
+  "vi": "Đã có",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng hoàn tất sẽ được ghi ở đây.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy hợp đồng?",
+  "en": ""
+ },
+ {
+  "vi": "Không phạt thêm, nhưng chi phí chuẩn bị không hoàn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Chừa khe nhỏ để nhồi bông",
+  "en": ""
+ },
+ {
+  "vi": "Hai lớp vải đặt chồng · cắt cùng một mẫu",
+  "en": ""
+ },
+ {
+  "vi": "Món thủ công tự tay làm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn gấu do mình may",
+  "en": ""
+ },
+ {
+  "vi": "Chiếc túi do mình may",
+  "en": ""
+ },
+ {
+  "vi": "Chiếc chậu do mình nặn",
+  "en": ""
+ },
+ {
+  "vi": "Vòng tay do mình xâu",
+  "en": ""
+ },
+ {
+  "vi": "Tấm thiệp do mình làm",
+  "en": ""
+ },
+ {
+  "vi": "Đo vải",
+  "en": ""
+ },
+ {
+  "vi": "Cắt mẫu",
+  "en": ""
+ },
+ {
+  "vi": "May viền",
+  "en": ""
+ },
+ {
+  "vi": "Nhồi bông",
+  "en": ""
+ },
+ {
+  "vi": "Tạo dáng",
+  "en": ""
+ },
+ {
+  "vi": "Phủ men",
+  "en": ""
+ },
+ {
+  "vi": "Luồn dây",
+  "en": ""
+ },
+ {
+  "vi": "Xâu hạt",
+  "en": ""
+ },
+ {
+  "vi": "Gấp thiệp",
+  "en": ""
+ },
+ {
+  "vi": "Thước dây",
+  "en": ""
+ },
+ {
+  "vi": "Kéo cắt vải",
+  "en": ""
+ },
+ {
+  "vi": "Kim & chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Bông mềm",
+  "en": ""
+ },
+ {
+  "vi": "Hai quai túi",
+  "en": ""
+ },
+ {
+  "vi": "Góc trang trí",
+  "en": ""
+ },
+ {
+  "vi": "Bàn tay nặn",
+  "en": ""
+ },
+ {
+  "vi": "Cọ phủ men",
+  "en": ""
+ },
+ {
+  "vi": "Sợi dây",
+  "en": ""
+ },
+ {
+  "vi": "Hạt gỗ",
+  "en": ""
+ },
+ {
+  "vi": "Nếp gấp",
+  "en": ""
+ },
+ {
+  "vi": "Kéo hai đầu thước: ngang 32 cm, dọc 36 cm.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ kéo ở chấm sáng, đi theo nét đứt quanh tấm vải.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ kim ở chấm sáng, may dọc hai bên và đáy túi.",
+  "en": ""
+ },
+ {
+  "vi": "Kéo từng quai từ khay vào vị trí sáng trên miệng túi.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm lên sản phẩm để in dấu của riêng bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa tay theo đường sáng để tạo thành và đáy chậu.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa cọ theo từng hàng để phủ men lên chậu.",
+  "en": ""
+ },
+ {
+  "vi": "Kéo sợi dây theo đường sáng để chuẩn bị xâu hạt.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn hạt trong khay, rồi chạm vào một vị trí trên dây.",
+  "en": ""
+ },
+ {
+  "vi": "Miết dọc đường giữa để gấp tấm thiệp.",
+  "en": ""
+ },
+ {
+  "vi": "Mắt trái",
+  "en": ""
+ },
+ {
+  "vi": "Mắt phải",
+  "en": ""
+ },
+ {
+  "vi": "Mũi",
+  "en": ""
+ },
+ {
+  "vi": "Kệ kỷ niệm đã đầy",
+  "en": ""
+ },
+ {
+  "vi": "Kệ đã đủ 24 món. Những món bạn đã làm vẫn được giữ trên kệ.",
+  "en": ""
+ },
+ {
+  "vi": "Các bước thủ công",
+  "en": ""
+ },
+ {
+  "vi": "Bàn thủ công tương tác",
+  "en": ""
+ },
+ {
+  "vi": "XƯỞNG NHỎ · TỰ TAY LÀM",
+  "en": ""
+ },
+ {
+  "vi": "class=\"cw-close\" aria-label=\"Cất bản nháp và đóng xưởng\"",
+  "en": ""
+ },
+ {
+  "vi": "Làm lại bước này",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp theo →",
+  "en": ""
+ },
+ {
+  "vi": "Kéo đầu thước đo vải: ngang 24 cm, dọc 30 cm.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ kéo ở chấm sáng, cắt hai lớp vải theo dáng bạn gấu.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ kim theo đường sáng, chừa một khe nhỏ để nhồi bông.",
+  "en": ""
+ },
+ {
+  "vi": "Kéo bông mềm vào bốn vùng để bạn gấu đầy đặn dần.",
+  "en": ""
+ },
+ {
+  "vi": "Gắn mắt, mũi, nơ và in một dấu lên bụng bạn gấu.",
+  "en": ""
+ },
+ {
+  "vi": "Dấu ấn của bạn đã sẵn sàng. Thêm dấu hoặc cất lên kệ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đẹp rồi! Mình sang bước tiếp theo nhé.",
+  "en": ""
+ },
+ {
   "vi": "Không cần vội, bạn có thể làm lại bất cứ lúc nào.",
   "en": ""
  },
@@ -785,1018 +1797,6 @@
  },
  {
   "vi": "Phóng to giấy chứng nhận",
-  "en": ""
- },
- {
-  "vi": "Kéo để xem các góc · chạm lần nữa để thu nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Chạm vào giấy để phóng to.",
-  "en": ""
- },
- {
-  "vi": "📸 Chụp ảnh lưu niệm",
-  "en": ""
- },
- {
-  "vi": "Chưa có chứng chỉ này.",
-  "en": ""
- },
- {
-  "vi": "Chưa chụp được ảnh, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã tải ảnh lưu niệm về máy.",
-  "en": ""
- },
- {
-  "vi": "Đã tải giấy chứng nhận về máy.",
-  "en": ""
- },
- {
-  "vi": "Chưa tạo được ảnh, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Ảnh này đã ở trong Kỷ niệm rồi.",
-  "en": ""
- },
- {
-  "vi": "Ảnh hơi lớn để lưu vào Kỷ niệm: bấm Tải ảnh để giữ trên máy nhé.",
-  "en": ""
- },
- {
-  "vi": "Mạng chập chờn, chưa chắc phong bì đã tới. Bấm gửi lại: nếu đã tới rồi sẽ không bị trừ thêm tiền.",
-  "en": ""
- },
- {
-  "vi": "Da trắng hồng",
-  "en": ""
- },
- {
-  "vi": "Da ngà",
-  "en": ""
- },
- {
-  "vi": "Da trung bình",
-  "en": ""
- },
- {
-  "vi": "Da nâu",
-  "en": ""
- },
- {
-  "vi": "Da nâu đậm",
-  "en": ""
- },
- {
-  "vi": "Da nâu sẫm",
-  "en": ""
- },
- {
-  "vi": "Mặt tròn",
-  "en": ""
- },
- {
-  "vi": "Mặt trái xoan",
-  "en": ""
- },
- {
-  "vi": "Mặt vuông",
-  "en": ""
- },
- {
-  "vi": "Cằm nhọn",
-  "en": ""
- },
- {
-  "vi": "Nhóc tì",
-  "en": ""
- },
- {
-  "vi": "Tuổi teen",
-  "en": ""
- },
- {
-  "vi": "Người lớn",
-  "en": ""
- },
- {
-  "vi": "Tóc ngắn",
-  "en": ""
- },
- {
-  "vi": "Đầu đinh",
-  "en": ""
- },
- {
-  "vi": "Đầu hói",
-  "en": ""
- },
- {
-  "vi": "Tóc rẽ ngôi",
-  "en": ""
- },
- {
-  "vi": "Tóc dựng",
-  "en": ""
- },
- {
-  "vi": "Tóc xoăn",
-  "en": ""
- },
- {
-  "vi": "Tóc xù",
-  "en": ""
- },
- {
-  "vi": "Tóc bob",
-  "en": ""
- },
- {
-  "vi": "Tóc dài",
-  "en": ""
- },
- {
-  "vi": "Búi cao",
-  "en": ""
- },
- {
-  "vi": "Đuôi ngựa",
-  "en": ""
- },
- {
-  "vi": "Hai bím",
-  "en": ""
- },
- {
-  "vi": "Mái bằng",
-  "en": ""
- },
- {
-  "vi": "Tóc lượn sóng",
-  "en": ""
- },
- {
-  "vi": "Tết lệch",
-  "en": ""
- },
- {
-  "vi": "Búi củ tỏi",
-  "en": ""
- },
- {
-  "vi": "Búi đôi",
-  "en": ""
- },
- {
-  "vi": "Búi thấp",
-  "en": ""
- },
- {
-  "vi": "Tóc đen",
-  "en": ""
- },
- {
-  "vi": "Tóc nâu",
-  "en": ""
- },
- {
-  "vi": "Tóc mật ong",
-  "en": ""
- },
- {
-  "vi": "Tóc vàng",
-  "en": ""
- },
- {
-  "vi": "Tóc đỏ",
-  "en": ""
- },
- {
-  "vi": "Tóc hồng",
-  "en": ""
- },
- {
-  "vi": "Tóc xanh khói",
-  "en": ""
- },
- {
-  "vi": "Tóc tím",
-  "en": ""
- },
- {
-  "vi": "Tóc bạch kim",
-  "en": ""
- },
- {
-  "vi": "Tóc muối tiêu",
-  "en": ""
- },
- {
-  "vi": "Tóc bạc trắng",
-  "en": ""
- },
- {
-  "vi": "Cười hiền",
-  "en": ""
- },
- {
-  "vi": "Cười toe",
-  "en": ""
- },
- {
-  "vi": "Dịu dàng",
-  "en": ""
- },
- {
-  "vi": "Bẽn lẽn",
-  "en": ""
- },
- {
-  "vi": "Không kính",
-  "en": ""
- },
- {
-  "vi": "Gọng tròn",
-  "en": ""
- },
- {
-  "vi": "Gọng vuông",
-  "en": ""
- },
- {
-  "vi": "Mắt mèo",
-  "en": ""
- },
- {
-  "vi": "Không đội",
-  "en": ""
- },
- {
-  "vi": "Khăn hijab",
-  "en": ""
- },
- {
-  "vi": "Khăn buộc",
-  "en": ""
- },
- {
-  "vi": "Mũ lưỡi trai",
-  "en": ""
- },
- {
-  "vi": "Mũ tai bèo",
-  "en": ""
- },
- {
-  "vi": "Băng đô",
-  "en": ""
- },
- {
-  "vi": "Hoa cài",
-  "en": ""
- },
- {
-  "vi": "Khăn đóng",
-  "en": ""
- },
- {
-  "vi": "Không râu",
-  "en": ""
- },
- {
-  "vi": "Lún phún",
-  "en": ""
- },
- {
-  "vi": "Ria mép",
-  "en": ""
- },
- {
-  "vi": "Râu dê",
-  "en": ""
- },
- {
-  "vi": "Quai nón",
-  "en": ""
- },
- {
-  "vi": "Không thêm",
-  "en": ""
- },
- {
-  "vi": "Bông tai",
-  "en": ""
- },
- {
-  "vi": "Nốt ruồi",
-  "en": ""
- },
- {
-  "vi": "Băng cá nhân",
-  "en": ""
- },
- {
-  "vi": "Nền kem",
-  "en": ""
- },
- {
-  "vi": "Nền hồng",
-  "en": ""
- },
- {
-  "vi": "Nền đào",
-  "en": ""
- },
- {
-  "vi": "Nền vàng",
-  "en": ""
- },
- {
-  "vi": "Nền bạc hà",
-  "en": ""
- },
- {
-  "vi": "Nền trời",
-  "en": ""
- },
- {
-  "vi": "Nền oải hương",
-  "en": ""
- },
- {
-  "vi": "Nền xám",
-  "en": ""
- },
- {
-  "vi": "Nền đêm",
-  "en": ""
- },
- {
-  "vi": "Nền lá non",
-  "en": ""
- },
- {
-  "vi": "Chị Mai chụp ảnh",
-  "en": ""
- },
- {
-  "vi": "Vô đây chụp tấm hình kỷ niệm đi nè! Một mình, rủ bạn, hay chụp chung với người lạ cũng vui!",
-  "en": ""
- },
- {
-  "vi": "Khung nào cũng đẹp hết, chọn đi rồi tạo dáng nha!",
-  "en": ""
- },
- {
-  "vi": "Bốn kiểu một lượt, in ra một dải xinh xắn mang về!",
-  "en": ""
- },
- {
-  "vi": "Chờ chút nha, để chị kêu thêm người vô chụp chung.",
-  "en": ""
- },
- {
-  "vi": "Hội đông lắm, chắc có người ghé liền à.",
-  "en": ""
- },
- {
-  "vi": "Đông vui quá! Chọn dáng đi rồi sẵn sàng nha.",
-  "en": ""
- },
- {
-  "vi": "Ai cũng sẵn sàng là chụp liền!",
-  "en": ""
- },
- {
-  "vi": "Cười lên nào!",
-  "en": ""
- },
- {
-  "vi": "Tạo dáng đi, sắp chụp rồi!",
-  "en": ""
- },
- {
-  "vi": "Đẹp lắm, giữ nguyên nha!",
-  "en": ""
- },
- {
-  "vi": "Xinh xỉu! Lưu ảnh về máy liền nha.",
-  "en": ""
- },
- {
-  "vi": "Dải ảnh đẹp quá trời, chụp thêm lượt nữa không?",
-  "en": ""
- },
- {
-  "vi": "Hội chợ Phố Có Chuyện",
-  "en": ""
- },
- {
-  "vi": "Vui hết nấc",
-  "en": ""
- },
- {
-  "vi": "Vui hết nấc!",
-  "en": ""
- },
- {
-  "vi": "Bạn thân mãi đỉnh",
-  "en": ""
- },
- {
-  "vi": "Không chữ",
-  "en": ""
- },
- {
-  "vi": "chụp ảnh: live",
-  "en": ""
- },
- {
-  "vi": "Chưa gửi được lời mời.",
-  "en": ""
- },
- {
-  "vi": "Chưa có ai ghé chụp chung. Lát thử lại, hoặc chụp một mình nha.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã vào buồng chụp ở một thẻ khác.",
-  "en": ""
- },
- {
-  "vi": "Chủ phòng đã mời bạn ra khỏi phòng.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã rời phòng chụp.",
-  "en": ""
- },
- {
-  "vi": "Phòng chụp đã đóng vì lâu không ai chụp.",
-  "en": ""
- },
- {
-  "vi": "Chưa làm được, thử lại nha.",
-  "en": ""
- },
- {
-  "vi": "Mất kết nối, đang nối lại phòng…",
-  "en": ""
- },
- {
-  "vi": "Mất kết nối, phòng chụp đã đóng. Vé chưa dùng vẫn giữ cho lượt sau.",
-  "en": ""
- },
- {
-  "vi": "Mã phòng có 4 ký tự, gồm chữ và số nha.",
-  "en": ""
- },
- {
-  "vi": "chụp ảnh: look",
-  "en": ""
- },
- {
-  "vi": "Khách đi hội",
-  "en": ""
- },
- {
-  "vi": "Sẵn sàng…",
-  "en": ""
- },
- {
-  "vi": "Tạo dáng!",
-  "en": ""
- },
- {
-  "vi": "Cười lên!",
-  "en": ""
- },
- {
-  "vi": "chụp ảnh: strip",
-  "en": ""
- },
- {
-  "vi": "Ảnh hội chợ",
-  "en": ""
- },
- {
-  "vi": "Đã lưu ảnh về máy. Trên iPhone: nhấn giữ ảnh để lưu.",
-  "en": ""
- },
- {
-  "vi": "📸 CHỤP ẢNH",
-  "en": ""
- },
- {
-  "vi": "Buồng chụp: các nhân vật trước phông",
-  "en": ""
- },
- {
-  "vi": "Chưa nối được buồng chung. Kiểm tra mạng rồi bấm Thử lại nha, chụp một mình vẫn được.",
-  "en": ""
- },
- {
-  "vi": "Đang nối buồng chung…",
-  "en": ""
- },
- {
-  "vi": "Chụp một mình thì vô liền được nha.",
-  "en": ""
- },
- {
-  "vi": "Cách chụp",
-  "en": ""
- },
- {
-  "vi": "Có mã phòng của bạn bè?",
-  "en": ""
- },
- {
-  "vi": "Một mình",
-  "en": ""
- },
- {
-  "vi": "Chụp riêng nhân vật của bạn",
-  "en": ""
- },
- {
-  "vi": "Ghép với một người đang ở hội chợ",
-  "en": ""
- },
- {
-  "vi": "Bạn bè · tạo phòng",
-  "en": ""
- },
- {
-  "vi": "Nhận mã phòng gửi cho bạn bè, tối đa 4 người",
-  "en": ""
- },
- {
-  "vi": "Đang vào…",
-  "en": ""
- },
- {
-  "vi": "Vào phòng",
-  "en": ""
- },
- {
-  "vi": "(bạn đang có sẵn một vé chưa dùng)",
-  "en": ""
- },
- {
-  "vi": "Đang chờ người lạ ghé buồng…",
-  "en": ""
- },
- {
-  "vi": "giây. Có người là vô chụp liền.",
-  "en": ""
- },
- {
-  "vi": "Thôi, không chờ nữa",
-  "en": ""
- },
- {
-  "vi": "Mời bạn bè chụp ảnh",
-  "en": ""
- },
- {
-  "vi": "Chọn bạn để gửi mã phòng qua tin nhắn riêng.",
-  "en": ""
- },
- {
-  "vi": "Gửi lời mời",
-  "en": ""
- },
- {
-  "vi": "Chưa có bạn bè để mời.",
-  "en": ""
- },
- {
-  "vi": "📸 Mời bạn chụp ảnh ở hội chợ! Mã phòng: {code}. Mở Hội chợ → Chụp ảnh → nhập mã để vào cùng nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa nhận được xác nhận lời mời. Kiểm tra tin nhắn trước khi gửi lại.",
-  "en": ""
- },
- {
-  "vi": "Dáng",
-  "en": ""
- },
- {
-  "vi": "Phông nền",
-  "en": ""
- },
- {
-  "vi": "Mã phòng",
-  "en": ""
- },
- {
-  "vi": "📋 Chép mã",
-  "en": ""
- },
- {
-  "vi": "👫 Mời bạn bè",
-  "en": ""
- },
- {
-  "vi": "👑 chủ phòng",
-  "en": ""
- },
- {
-  "vi": "đang quay lại…",
-  "en": ""
- },
- {
-  "vi": "đang chọn dáng",
-  "en": ""
- },
- {
-  "vi": "Khung ảnh: chủ phòng chọn",
-  "en": ""
- },
- {
-  "vi": "Phông nền: chủ phòng chọn",
-  "en": ""
- },
- {
-  "vi": "📸 Đang chụp… nhìn vô máy nha!",
-  "en": ""
- },
- {
-  "vi": "4 kiểu",
-  "en": ""
- },
- {
-  "vi": "đã có vé",
-  "en": ""
- },
- {
-  "vi": "Đang trả vé…",
-  "en": ""
- },
- {
-  "vi": "📸 Chụp!",
-  "en": ""
- },
- {
-  "vi": "✋ Sẵn sàng (đã có vé)",
-  "en": ""
- },
- {
-  "vi": "✋ Sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "Đang chụp, chờ lượt sau nha.",
-  "en": ""
- },
- {
-  "vi": "Mọi người sẵn sàng rồi!",
-  "en": ""
- },
- {
-  "vi": "Chờ chủ phòng bấm chụp…",
-  "en": ""
- },
- {
-  "vi": "Chờ mọi người sẵn sàng…",
-  "en": ""
- },
- {
-  "vi": "Chọn dáng rồi bấm sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "Tuỳ chỉnh ảnh",
-  "en": ""
- },
- {
-  "vi": "‹ Đổi cách chụp",
-  "en": ""
- },
- {
-  "vi": "Rời phòng",
-  "en": ""
- },
- {
-  "vi": "Loại dáng",
-  "en": ""
- },
- {
-  "vi": "Một người",
-  "en": ""
- },
- {
-  "vi": "Cả nhóm",
-  "en": ""
- },
- {
-  "vi": "đổi giữa các kiểu",
-  "en": ""
- },
- {
-  "vi": "chọn là thấy liền trong buồng",
-  "en": ""
- },
- {
-  "vi": "Chọn là cả phòng cùng dáng",
-  "en": ""
- },
- {
-  "vi": "Biểu cảm hợp với mọi dáng",
-  "en": ""
- },
- {
-  "vi": "Đang in ảnh…",
-  "en": ""
- },
- {
-  "vi": "Dải ảnh hội chợ",
-  "en": ""
- },
- {
-  "vi": "Sửa sticker",
-  "en": ""
- },
- {
-  "vi": "↩ Hoàn tác",
-  "en": ""
- },
- {
-  "vi": "⬆️ Lên trên",
-  "en": ""
- },
- {
-  "vi": "🗑 Xoá",
-  "en": ""
- },
- {
-  "vi": "🧹 Xoá hết",
-  "en": ""
- },
- {
-  "vi": "Loại sticker",
-  "en": ""
- },
- {
-  "vi": "Đã đủ số sticker tối đa",
-  "en": ""
- },
- {
-  "vi": "Chạm để dán · kéo để dời · ↻ xoay, đổi cỡ",
-  "en": ""
- },
- {
-  "vi": "Màu ảnh",
-  "en": ""
- },
- {
-  "vi": "Chữ",
-  "en": ""
- },
- {
-  "vi": "📸 Chụp lượt nữa",
-  "en": ""
- },
- {
-  "vi": "Bộ lọc, sticker và trang trí chỉ đổi trên ảnh của bạn. Ảnh không lưu lên máy chủ: lưu về máy để giữ nha.",
-  "en": ""
- },
- {
-  "vi": "⬇️ Lưu ảnh",
-  "en": ""
- },
- {
-  "vi": "‹ Về buồng chụp",
-  "en": ""
- },
- {
-  "vi": "hội chợ: look",
-  "en": ""
- },
- {
-  "vi": "Anh Sáu phóng dao",
-  "en": ""
- },
- {
-  "vi": "Phóng dao đây bà con! Cắm đủ dao vô bia là qua màn!",
-  "en": ""
- },
- {
-  "vi": "Bia gỗ quay vòng vòng, canh chỗ trống mà phóng nha!",
-  "en": ""
- },
- {
-  "vi": "Dao chạm dao là thua hết đó, phóng cho khéo!",
-  "en": ""
- },
- {
-  "vi": "Bia quay rồi, phóng đi!",
-  "en": ""
- },
- {
-  "vi": "Canh chỗ trống rồi chạm một cái là dao bay!",
-  "en": ""
- },
- {
-  "vi": "Từ từ mà phóng, đừng ham nhanh nha!",
-  "en": ""
- },
- {
-  "vi": "Qua màn rồi! Dừng nhận thưởng hay chơi tiếp?",
-  "en": ""
- },
- {
-  "vi": "Tay chắc ghê! Liều thêm màn nữa không?",
-  "en": ""
- },
- {
-  "vi": "Đẹp! Thưởng đang chờ nè, tính sao?",
-  "en": ""
- },
- {
-  "vi": "Màn sau x2 nè! Qua được là thưởng tăng gấp đôi!",
-  "en": ""
- },
- {
-  "vi": "Ối, màn sau x2! Cơ hội hiếm à nha!",
-  "en": ""
- },
- {
-  "vi": "Dao chạm dao rồi! Tiếc ghê, lượt sau gỡ nha.",
-  "en": ""
- },
- {
-  "vi": "Ui, cấn dao mất rồi! Làm lại lượt mới nha.",
-  "en": ""
- },
- {
-  "vi": "Suýt nữa thôi! Bia quay gắt quá.",
-  "en": ""
- },
- {
-  "vi": "Để lâu quá bia ngừng quay rồi, lượt này coi như thua nha.",
-  "en": ""
- },
- {
-  "vi": "Biết dừng đúng lúc, khôn ghê! Thưởng đây.",
-  "en": ""
- },
- {
-  "vi": "Thưởng đây, đếm kỹ nha!",
-  "en": ""
- },
- {
-  "vi": "Phá đảo cả mười màn! Trời ơi, tay thần đây rồi!",
-  "en": ""
- },
- {
-  "vi": "Qua màn được",
-  "en": ""
- },
- {
-  "vi": "Ví không đủ xu",
-  "en": ""
- },
- {
-  "vi": "Tiền đặt",
-  "en": ""
- },
- {
-  "vi": "title=\"Ví không đủ xu\"",
-  "en": ""
- },
- {
-  "vi": "Anh Sáu đang dựng bia…",
-  "en": ""
- },
- {
-  "vi": "🗡️ Vào chơi",
-  "en": ""
- },
- {
-  "vi": "chọn mức đặt nhỏ hơn nha.",
-  "en": ""
- },
- {
-  "vi": "Qua ngày rồi, thưởng màn trước không chơi tiếp được nữa.",
-  "en": ""
- },
- {
-  "vi": "Dừng bây giờ nhận",
-  "en": ""
- },
- {
-  "vi": ", thua mất hết.",
-  "en": ""
- },
- {
-  "vi": "🔥 Màn sau x2",
-  "en": ""
- },
- {
-  "vi": "Đang đếm tiền…",
-  "en": ""
- },
- {
-  "vi": "Đang dựng bia…",
-  "en": ""
- },
- {
-  "vi": "Hội chợ đã tàn: chỉ còn nhận thưởng thôi.",
-  "en": ""
- },
- {
-  "vi": "Hết giờ, bia ngừng quay",
-  "en": ""
- },
- {
-  "vi": "🏆 Phá đảo!",
-  "en": ""
- },
- {
-  "vi": "Hoàn thành màn đang dở nhé; màn sau canh chỗ trống để phóng!",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra lại kết quả",
-  "en": ""
- },
- {
-  "vi": "Đang tính…",
-  "en": ""
- },
- {
-  "vi": "🗡️ Phóng!",
-  "en": ""
- },
- {
-  "vi": "🔥 Hôm nay bạn đang thắng đậm ở hội chợ nên bia quay gắt hơn.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã chơi",
-  "en": ""
- },
- {
-  "vi": "lượt, dừng nhận thưởng",
-  "en": ""
- },
- {
-  "vi": "lượt, xa nhất màn",
-  "en": ""
- },
- {
-  "vi": "Bia gỗ đang quay. Chạm vào bia để phóng dao.",
-  "en": ""
- },
- {
-  "vi": "Lâu lâu có màn 🔥 x2: qua màn đó, phần thưởng tăng thêm của màn được nhân đôi.",
-  "en": ""
- },
- {
-  "vi": "Màn cũ đang chơi dở: phóng đủ dao để hoàn thành. Từ màn tiếp theo, dao chạm dao mới thua; cắm đủ dao là qua màn.",
-  "en": ""
- },
- {
-  "vi": "Chạm vào bia (hoặc bấm “Phóng!”) để phóng dao từ dưới lên. Dao cắm vô gỗ là được, chạm trúng dao khác là thua cả lượt. Cắm đủ số dao là qua màn: dừng để nhận thưởng, hoặc chơi tiếp màn khó hơn, thưởng cao hơn.",
-  "en": ""
- },
- {
-  "vi": "Đã hết giờ phóng. Đang kiểm tra kết quả…",
-  "en": ""
- },
- {
-  "vi": "Chưa nhận được kết quả. Bấm kiểm tra lại để tiếp tục nha.",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối được. Giữ nguyên lượt này và kiểm tra lại nhé.",
-  "en": ""
- },
- {
-  "vi": "bảy",
-  "en": ""
- },
- {
-  "vi": "tám",
-  "en": ""
- },
- {
-  "vi": "chín",
-  "en": ""
- },
- {
-  "vi": "mười",
-  "en": ""
- },
- {
-  "vi": "mươi",
   "en": ""
  }
 ]

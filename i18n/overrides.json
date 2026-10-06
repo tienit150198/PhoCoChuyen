@@ -1,5 +1,10 @@
 {
   "strings": {
+  "Sửa lỗi: tiệm hoa trên điện thoại chọn hoa được, giúp việc, chùa, giáo viên, giao hàng, tiệm quần áo": "Fixes: picking flowers at the florist on phones, housekeeping, pagoda, teacher, delivery, clothes shop",
+  "Thêm 45 món mới cho avatar: tóc, váy đầm, áo quần, giày, phụ kiện": "45 new avatar items: hair, dresses, clothes, shoes, accessories",
+  "Cửa hàng điện thoại cạnh Gara: mua máy, khoe trên tay, khung selfie": "A phone shop next to the Garage: buy one, show it off in hand, selfie frames",
+  "Bầu cua lăn xúc xắc ngẫu nhiên thật": "Bầu cua now rolls truly random dice",
+  "Thăng tiến rõ ràng hơn, cấp hàm Phó Tổng Giám đốc mới": "Clearer promotions, a new Deputy CEO insignia",
   "Giao diện quen thuộc đã trở lại: bản đồ phố và từng tiệm như trước": "The familiar look is back: the town map and every shop as before",
   "🏢 Ngày điều hành tốt: trong ca, tự xếp ít nhất 1 việc ở 🗓️ Điều phối, rồi khép ngày với điểm điều hành từ 60/100.": "🏢 Good office day: during the shift, assign at least 1 slot yourself in 🗓️ Rostering, then close the day with an office score of 60/100 or more.",
   "Điểm = ½ tỷ lệ đúng giờ + 0,3 × tinh thần + 20, trừ 6 mỗi phàn nàn và 2 mỗi % vượt quỹ lương. Việc bỏ trống, việc cần quyết để tới cuối ngày đều thêm phàn nàn.": "Score = ½ on-time rate + 0.3 × morale + 20, minus 6 per complaint and 2 per % over the salary budget. Empty slots and decisions left until the end of the day add complaints.",

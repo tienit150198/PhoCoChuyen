@@ -1,5 +1,257 @@
 [
  {
+  "vi": "➕ Còn dưới 4 việc mà muốn làm thêm: bấm [[Nhận thêm việc]]. Việc nhận giữa ngày có hạn 2 tiếng rưỡi sau đó.",
+  "en": ""
+ },
+ {
+  "vi": "🔰 Hồ sơ đầu tiên có chị Hạnh kèm từng bước, không tính điểm soát. Nút gợi ý làm giúp luôn (như “✍️ Điền theo chứng từ”); từ hồ sơ thứ hai bạn tự chọn.",
+  "en": ""
+ },
+ {
+  "vi": "📅 Lịch 5 ngày tới gọn trong chip 📅 ở hàng giờ; chạm để mở.",
+  "en": ""
+ },
+ {
+  "vi": "🕵️ Ngày kiểm toán: anh Khải soát dấu cuối ngày. Khay sạch +10 xu và +3 tin tưởng; mỗi bộ sai −10 xu và −3 tin tưởng, tính tối đa 3 bộ.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Ngày sếp vắng: xin gợi ý chờ 15 phút, và có bộ “sếp OK qua điện thoại” phải trình lại.",
+  "en": ""
+ },
+ {
+  "vi": "🐢 Ngày mạng chậm: mở tài liệu mất gấp đôi. Ngày thực tập sinh Na nộp bản nháp nhiều lỗi.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Ngày hàng về dồn dập: khay dày thêm một bộ.",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Ngày thứ 5 mỗi tháng là ngày khóa sổ: hạn sớm hơn 30 phút, khay dày hơn. Tăng ca được 18 xu và +3 tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "✉️ Có người nhờ lùi ngày hóa đơn, ghi bữa tối riêng vào chi phí, hay gửi phong bì “cảm ơn”.",
+  "en": ""
+ },
+ {
+  "vi": "📱 Tin nhắn “giám đốc” bảo chuyển tiền gấp: gọi số cũ của sếp, cần phiếu đủ hai chữ ký.",
+  "en": ""
+ },
+ {
+  "vi": "Chốt khay",
+  "en": ""
+ },
+ {
+  "vi": "Ghi bút toán",
+  "en": ""
+ },
+ {
+  "vi": "Bộ tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Chốt thứ tự",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận số liệu",
+  "en": ""
+ },
+ {
+  "vi": "Xin gợi ý",
+  "en": ""
+ },
+ {
+  "vi": "Đăng ký tăng ca",
+  "en": ""
+ },
+ {
+  "vi": "Ở lại tăng ca",
+  "en": ""
+ },
+ {
+  "vi": "Nghỉ giải lao 15 phút",
+  "en": ""
+ },
+ {
+  "vi": "Giúp",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ đỡ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn soát bảng lương, làm phiếu lương, khai thuế và nộp hồ sơ đúng hạn cho khách, dưới mắt chị Hồng.",
+  "en": ""
+ },
+ {
+  "vi": "Việc đầu mỗi ngày. Chạm ô sai của từng người, bấm [[Xong dòng]], rồi [[Chuyển lương]] trước hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Ghép giờ tăng ca, tính lương gộp, bảo hiểm, thuế, thực nhận. Gửi phiếu riêng cho từng người.",
+  "en": ""
+ },
+ {
+  "vi": "File chuyển khoản",
+  "en": ""
+ },
+ {
+  "vi": "Tìm dòng sai trong file chuyển lương, cộng tổng, rồi chọn cách duyệt đủ hai người.",
+  "en": ""
+ },
+ {
+  "vi": "“Sao lương em ít hơn?”",
+  "en": ""
+ },
+ {
+  "vi": "Tìm nguyên nhân, tính số chênh, rồi trả lời riêng cho người hỏi, không đăng nhóm chung.",
+  "en": ""
+ },
+ {
+  "vi": "Tờ khai thuế GTGT",
+  "en": ""
+ },
+ {
+  "vi": "Cho quán Mộc Miên: loại hóa đơn không hợp lệ, tính thuế đầu ra, đầu vào, số phải nộp và hạn nộp.",
+  "en": ""
+ },
+ {
+  "vi": "Ghép hồ sơ với hạn, dời hạn trùng Tết, tính tiền chậm nộp 0,03% mỗi ngày, xếp thứ tự nộp.",
+  "en": ""
+ },
+ {
+  "vi": "Quyết toán thuế TNCN cuối năm",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đường quyết toán, giấy tờ cần có, rồi tính số thuế còn nộp hoặc được hoàn.",
+  "en": ""
+ },
+ {
+  "vi": "📥 Tab [[Hộp thư]]: bấm [[Nhận bảng lương nháp]] hoặc [[Nhận hồ sơ & đọc yêu cầu]].",
+  "en": ""
+ },
+ {
+  "vi": "📑 Mở [[Quy định]] xem hệ số tăng ca, mức sàn bảo hiểm, ngày chốt người phụ thuộc. Mỗi quy định là một dòng, chạm để đọc.",
+  "en": ""
+ },
+ {
+  "vi": "👆 Bảng lương: chạm vào ô sai để đánh dấu, tối đa 3 ô mỗi dòng. So từng ô với giấy tờ.",
+  "en": ""
+ },
+ {
+  "vi": "📄 Giấy tờ gốc chỉ hiện dòng của người đang soát; bấm “Xem cả … dòng” để xem hết.",
+  "en": ""
+ },
+ {
+  "vi": "✅ Bấm [[Xong dòng]], rồi [[Người tiếp theo]]. Đủ người thì bấm [[Chuyển lương]].",
+  "en": ""
+ },
+ {
+  "vi": "🧮 Hồ sơ: làm từng bước rồi bấm [[Kiểm tra]]. Cần tính thì mở dòng 🧮 Máy tính bàn; tới bước tính số nó tự mở.",
+  "en": ""
+ },
+ {
+  "vi": "💡 Bảng lương: bí dòng nào thì bấm [[Gợi ý]] (5 phút). Hồ sơ: trả lời sai mất thêm 15 phút, rồi gợi ý tự hiện ra.",
+  "en": ""
+ },
+ {
+  "vi": "📤 Xong mọi bước thì bấm [[Nộp / bàn giao hồ sơ]].",
+  "en": ""
+ },
+ {
+  "vi": "📨 Thẻ lịch nộp: bấm [[Nộp]] trước hạn cho tờ khai thuế, hồ sơ bảo hiểm, báo cáo hóa đơn. Nộp đúng hạn +1 tin tưởng. Thẻ gập gọn trong Hộp thư tới khi tới hạn; chạm để mở.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Chị Hồng soát từng ô lương: ngày công, tăng ca, bảo hiểm, người phụ thuộc, tạm ứng, tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "👻 Tìm được người “ma”, dòng trùng, người đã nghỉ, số tài khoản lấy từ tin nhắn chat.",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Không trả dư cho ai, cũng không trả thiếu cho ai. Bắt đúng lỗi được thêm tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Phiếu lương và câu trả lời về lương luôn gửi riêng từng người.",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Chuyển lương trước hạn. Hồ sơ không sai bước được đủ thưởng, mỗi lần sai trừ 4 xu (thử việc 2 xu).",
+  "en": ""
+ },
+ {
+  "vi": "Sót lỗi làm công ty trả dư (người ma, trùng dòng, tính thừa)",
+  "en": ""
+ },
+ {
+  "vi": "Bị phạt tiền và trừ 3 tin tưởng mỗi lỗi. Chị Hồng càu nhàu, bớt thưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Sót lỗi làm công nhân bị trả thiếu",
+  "en": ""
+ },
+ {
+  "vi": "Sáng hôm sau người đó gửi khiếu nại vào hộp thư. Bỏ mặc tới cuối ngày mất 2 tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời khiếu nại: [[Bảo là phần mềm tính, không sửa]]",
+  "en": ""
+ },
+ {
+  "vi": "Mất 4 tin tưởng, công đoàn vào cuộc. [[Hẹn cộng vào kỳ sau]] mất 1. Tốt nhất [[Xin lỗi, chi bù ngay hôm nay]]: +2 tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Đánh dấu nhầm ô đúng",
+  "en": ""
+ },
+ {
+  "vi": "Đánh dấu thừa cũng bị trừ tin tưởng, tối đa 3 điểm mỗi bảng.",
+  "en": ""
+ },
+ {
+  "vi": "Bớt 8 xu thưởng (thử việc 4 xu), mất 3 tin tưởng; bảng lương trễ mất thêm 2. Tờ khai trễ: 3 xu mỗi ngày, tới ngày 5 sếp nộp thay, −3 tin tưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi nặng khi soát lương",
+  "en": ""
+ },
+ {
+  "vi": "Bị báo lên app và mất thêm 2 tin tưởng với sếp.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Phải được tuyển trước: bấm [[Ứng tuyển]], nộp CV thật, thư xin việc, trả lời phỏng vấn.",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Có thư mời thì bấm [[Ký hợp đồng thử việc]]. Minh Bạch trả 60–85 xu/ngày, thử việc 3 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Lương ngày vào ví khi khép ca, nếu hôm đó xong ít nhất một việc. Thử việc nhận 85%.",
+  "en": ""
+ },
+ {
+  "vi": "🕗 Làm 08:00–17:30. Từ 16:30 có thể bấm [[Đăng ký tăng ca]], hết giờ là [[Ở lại tăng ca]], tới 20:00 (+12 xu, mai vào muộn 30 phút).",
+  "en": ""
+ },
+ {
+  "vi": "📆 Mỗi 5 ngày là một kỳ: tờ khai thuế TNCN hạn ngày 2, BHXH hạn ngày 3 (chuyển xong một bảng lương trước), báo cáo hóa đơn hạn ngày 4.",
+  "en": ""
+ },
+ {
   "vi": "📈 Bảng lương dài dần: 3 người ngày đầu, 6 người từ ngày 7. Lỗi mới mở dần tới ngày 4: người đã nghỉ, mức sàn bảo hiểm, người phụ thuộc…",
   "en": ""
  },
@@ -1349,326 +1601,6 @@
  },
  {
   "vi": "Nâng chắn mà chưa hỏi ga",
-  "en": ""
- },
- {
-  "vi": "Lỗi nhỏ; nếu còn tàu thứ hai thì là lỗi an toàn.",
-  "en": ""
- },
- {
-  "vi": "Thấy hỏng mà báo sai nơi",
-  "en": ""
- },
- {
-  "vi": "Chỗ nguy hiểm không gọi ga là lỗi an toàn. Báo dư cho chắc thì không sao.",
-  "en": ""
- },
- {
-  "vi": "🕠 Nhận ca 5:30 ở chòi gác Bến Mây; ngày ca chiều tối thì tàu qua tới khuya.",
-  "en": ""
- },
- {
-  "vi": "💼 Là việc làm thuê: nộp hồ sơ [[Ứng tuyển]] ở Xí nghiệp Đường sắt Sông Mây, có lương ngày và thưởng từng chuyến gác đúng quy trình.",
-  "en": ""
- },
- {
-  "vi": "🎓 Chứng chỉ An toàn đường ngang giúp dễ được nhận hơn.",
-  "en": ""
- },
- {
-  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, ca chiều tối, mưa lớn, cao điểm lễ, nắng gắt.",
-  "en": ""
- },
- {
-  "vi": "🛵 Người đòi qua chắn: xe ôm, đám tang, xe hoa, xe cứu thương, người dúi tiền, TikToker, chú Hớn say…",
-  "en": ""
- },
- {
-  "vi": "🐄 Bò, vịt, chó, tụi nhỏ, khách chụp ảnh trên ray; cung trưởng kiểm tra đột xuất; bà Bông kêu còi tàu.",
-  "en": ""
- },
- {
-  "vi": "KÝ NHẬN CA",
-  "en": ""
- },
- {
-  "vi": "Nghe ga gọi bộ đàm",
-  "en": ""
- },
- {
-  "vi": "KÝ SỔ TUẦN ĐƯỜNG",
-  "en": ""
- },
- {
-  "vi": "Nhìn đường ngang",
-  "en": ""
- },
- {
-  "vi": "Bật chuông đèn",
-  "en": ""
- },
- {
-  "vi": "Hạ chắn",
-  "en": ""
- },
- {
-  "vi": "Đứng chờ tàu",
-  "en": ""
- },
- {
-  "vi": "Nhìn hết đoàn tàu",
-  "en": ""
- },
- {
-  "vi": "Nâng chắn, tắt chuông",
-  "en": ""
- },
- {
-  "vi": "GHI SỔ, KÝ TÊN",
-  "en": ""
- },
- {
-  "vi": "Người gác hải đăng",
-  "en": ""
- },
- {
-  "vi": "Bạn giữ đèn biển Hòn Gió trên một hòn đảo đá cho Xí nghiệp Bảo đảm hàng hải Vịnh Ngọc, cùng chú Bảy Đèn. Mỗi ngày: ca sáng, quan trắc, việc trên biển hoặc khách ra đảo, rồi thắp đèn lúc chạng vạng.",
-  "en": ""
- },
- {
-  "vi": "Ca sáng",
-  "en": ""
- },
- {
-  "vi": "Tắt đèn đúng giờ, thử từng thiết bị, tắt mô-tơ rồi lau kính, ghi sổ dầu, báo đúng nơi, rồi [[KÝ SỔ TRỰC]].",
-  "en": ""
- },
- {
-  "vi": "Quan trắc, báo đài",
-  "en": ""
- },
- {
-  "vi": "Đọc gió, mặt biển, tầm nhìn, áp kế; [[Báo đài số liệu]]. Gió từ cấp 6 hoặc áp giảm nhanh thì [[Phát cảnh báo trên kênh 16]].",
-  "en": ""
- },
- {
-  "vi": "Canh biển",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. [[Nhìn kỹ qua ống nhòm]], gọi tàu, ném phao, báo đài đúng mức và phương vị, canh giữ mục tiêu.",
-  "en": ""
- },
- {
-  "vi": "Khách ra đảo",
-  "en": ""
- },
- {
-  "vi": "Bấm [[Xem giấy tờ]], trả lời theo nội quy trạm. Người gặp nạn luôn được trú tạm, không ai vào phòng đèn.",
-  "en": ""
- },
- {
-  "vi": "Tàu tiếp tế",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3, mỗi bảy ngày. Đo bồn trước và sau, kiểm từng món, rồi [[KÝ PHIẾU GIAO HÀNG]] đúng số lít đo được.",
-  "en": ""
- },
- {
-  "vi": "Thắp đèn",
-  "en": ""
- },
- {
-  "vi": "Thắp trước giờ lặn 15 phút, [[Bấm giờ đếm chớp]] so với danh mục đèn, sương mù thì chạy còi, rồi [[GHI SỔ TRỰC TỐI]].",
-  "en": ""
- },
- {
-  "vi": "💡 Chọn giờ tắt, thắp đèn theo giờ mặt trời trong lịch: tắt sau giờ mọc 15 phút, thắp trước giờ lặn 15 phút.",
-  "en": ""
- },
- {
-  "vi": "🧰 Thử đủ sáu thiết bị. Lau kính thì chọn tắt mô-tơ, treo biển trước.",
-  "en": ""
- },
- {
-  "vi": "⛽ Thước đo bồn ghi bao nhiêu thì ghi sổ dầu bấy nhiêu.",
-  "en": ""
- },
- {
-  "vi": "📻 Báo đài: MAYDAY RELAY khi tính mạng bị đe dọa, PAN-PAN khi cần giúp, báo biên phòng khi có vi phạm.",
-  "en": ""
- },
- {
-  "vi": "🛟 Người dưới nước gần bến: ném phao có dây. Không tự lấy xuồng, không nhảy xuống.",
-  "en": ""
- },
- {
-  "vi": "🪪 Khách: [[Xem giấy tờ]] trước, rồi tự chọn cách trả lời. Họ có thể nài thêm một lần.",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ trực ghi đúng những gì đã xảy ra.",
-  "en": ""
- },
- {
-  "vi": "💡 Đèn sáng đúng giờ, đúng đặc tính.",
-  "en": ""
- },
- {
-  "vi": "📻 Báo đài đúng mức, đúng phương vị, đủ số người.",
-  "en": ""
- },
- {
-  "vi": "✋ Giữ nội quy mà vẫn tử tế với khách.",
-  "en": ""
- },
- {
-  "vi": "⛽ Ký đúng số dầu đo được, dù thuyền trưởng nài ký đủ.",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ trực, sổ dầu đúng sự thật.",
-  "en": ""
- },
- {
-  "vi": "Tự lấy xuồng ra cứu, nhảy xuống bơi",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn: thành người thứ hai cần cứu. Không có thưởng ca.",
-  "en": ""
- },
- {
-  "vi": "Báo đài thấp hơn mức nguy hiểm, hoặc không báo",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn: cứu nạn đi chậm. Báo cao hơn mức cần chỉ là lỗi nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Cho khách lên phòng đèn, tắt đèn chiều khách, nhận tiền",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn, hồ sơ bị ghi điểm vi phạm, không có tiền nào cả.",
-  "en": ""
- },
- {
-  "vi": "Từ chối người đang gặp nạn vì không có giấy",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn. Người gặp nạn luôn được trú tạm và báo đài.",
-  "en": ""
- },
- {
-  "vi": "Đèn sai đặc tính, còi hỏng mà không báo đài",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn: tàu có thể nhận nhầm đèn. Cảnh báo dư khi biển êm thì không sao.",
-  "en": ""
- },
- {
-  "vi": "🕔 Dậy từ 5:00 tắt đèn; 7:00 quan trắc; chạng vạng thắp đèn, đêm có chuyện thì canh tới khuya.",
-  "en": ""
- },
- {
-  "vi": "💼 Là việc làm thuê: nộp hồ sơ [[Ứng tuyển]] ở Xí nghiệp Bảo đảm hàng hải Vịnh Ngọc, có lương ngày và thưởng từng việc làm đúng quy trình.",
-  "en": ""
- },
- {
-  "vi": "🎓 Chứng chỉ Gác đèn biển giúp dễ được nhận hơn.",
-  "en": ""
- },
- {
-  "vi": "🐈‍⬛ Nhớ nhà quá thì mệt: [[Chơi với Mun]], [[Tưới vườn rau]], [[Gọi về nhà]] mỗi ngày một lần.",
-  "en": ""
- },
- {
-  "vi": "🌤️ Mỗi ngày một kiểu biển: êm, gió mùa, sương mù, áp thấp, mùa du lịch.",
-  "en": ""
- },
- {
-  "vi": "🤳 Khách đòi lên đỉnh tháp sống ảo, cặp đôi đòi cầu hôn lúc nửa đêm, kênh ma đòi tắt đèn, nhà văn xin ở một tuần…",
-  "en": ""
- },
- {
-  "vi": "🎣 Ông Sáu Ghe xin quay đèn về phía lưới, chú Tư Lực đòi ký đủ dầu, anh Khôi đòi sơn tháp màu hồng, má giục về xem mặt.",
-  "en": ""
- },
- {
-  "vi": "KÝ SỔ TRỰC",
-  "en": ""
- },
- {
-  "vi": "Báo đài số liệu",
-  "en": ""
- },
- {
-  "vi": "Phát cảnh báo trên kênh 16",
-  "en": ""
- },
- {
-  "vi": "Nhìn kỹ qua ống nhòm",
-  "en": ""
- },
- {
-  "vi": "KÝ PHIẾU GIAO HÀNG",
-  "en": ""
- },
- {
-  "vi": "Bấm giờ đếm chớp",
-  "en": ""
- },
- {
-  "vi": "GHI SỔ TRỰC TỐI",
-  "en": ""
- },
- {
-  "vi": "Chơi với Mun",
-  "en": ""
- },
- {
-  "vi": "Tưới vườn rau",
-  "en": ""
- },
- {
-  "vi": "Gọi về nhà",
-  "en": ""
- },
- {
-  "vi": "Nhân viên trực tổng đài cứu hộ",
-  "en": ""
- },
- {
-  "vi": "Bạn trực đường dây cứu hộ của phường: cháy, ngập, tai nạn, kẹt thang máy, thú cưng mắc kẹt, cấp cứu. Hỏi đúng kịch bản, gửi đúng đội, không bỏ ai một mình. Chị Thảo kèm ba cuộc đầu.",
-  "en": ""
- },
- {
-  "vi": "[[Gọi bộ đàm]] từng đội, đánh dấu đội tạm ngưng (hoặc không đội nào), rồi [[KÝ NHẬN CA]].",
-  "en": ""
- },
- {
-  "vi": "[[Nhấc máy]], hỏi [[Địa chỉ ở đâu ạ?]] trước, rồi chuyện gì, mấy người, nguy hiểm gì, số gọi lại.",
-  "en": ""
- },
- {
-  "vi": "Người gọi không biết mình ở đâu",
-  "en": ""
- },
- {
-  "vi": "Mở [[Tìm chỗ người gọi]]: hỏi mốc nhìn thấy, gửi tin định vị, hoặc nhờ người đi đường đọc địa chỉ.",
-  "en": ""
- },
- {
-  "vi": "Người gọi đang hoảng",
-  "en": ""
- },
- {
-  "vi": "Hỏi gì cũng không nghe: mở [[Trấn an người gọi]]. Mỗi người hợp một cách; đừng quát.",
   "en": ""
  }
 ]

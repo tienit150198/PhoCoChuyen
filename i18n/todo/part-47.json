@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Đã xem kỹ rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện này đã xử lý rồi.",
+  "en": ""
+ },
+ {
   "vi": "Khoan. Nhắc trước, biên bản sau; nguy hiểm thì làm cho an toàn trước đã. Xem kỹ rồi chọn lại nhé.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "“Con tên Bin.” (Tên ở nhà.)",
-  "en": ""
- },
- {
-  "vi": "“Mẹ con tên… Mẹ.”",
-  "en": ""
- },
- {
-  "vi": "“Mẹ đi mua cá, con đi coi con rùa.”",
   "en": ""
  }
 ]

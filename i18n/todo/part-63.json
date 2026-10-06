@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Loại giao dịch không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Số tiền không hợp lệ.",
+  "en": ""
+ },
+ {
   "vi": "Mã giao dịch không hợp lệ.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "🗡️ Phóng dao hội chợ",
-  "en": ""
- },
- {
-  "vi": "ván",
-  "en": ""
- },
- {
-  "vi": "ván thắng",
   "en": ""
  }
 ]

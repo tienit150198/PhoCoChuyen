@@ -1,5 +1,241 @@
 [
  {
+  "vi": "📉 Ví âm là đang nợ tiền phòng: câu chuyện tạm dừng tới khi trả xong.",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Có tài khoản ngân hàng còn tiền: sáng hôm sau tài khoản tự bù phần ví đang âm (tắt được trong Ngân hàng).",
+  "en": ""
+ },
+ {
+  "vi": "Thu tiền và thối tiền",
+  "en": ""
+ },
+ {
+  "vi": "💵 Khách đưa tờ tiền. Bạn tự chọn tờ để thối, đủ từng xu.",
+  "en": ""
+ },
+ {
+  "vi": "🧮 Tiền thối = tiền khách đưa − tiền hàng. Đếm lại trước khi bấm giao.",
+  "en": ""
+ },
+ {
+  "vi": "😠 Thối thiếu: khách kỹ tính đếm ngay và đòi thêm. Khách khác về nhà mới thấy: review 2★, có khi báo lên app.",
+  "en": ""
+ },
+ {
+  "vi": "💸 Thối dư: khách thật thà trả lại. Khách khác giữ luôn, tiệm mất đúng số đó.",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Thối đúng: đôi khi khách nói “khỏi thối, giữ tiền lẻ đi”. Tiền đó thành tiền bo.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền bo",
+  "en": ""
+ },
+ {
+  "vi": "🍀 Làm tốt thì thỉnh thoảng khách bo thêm tiền hoặc một món quà nhỏ. Hên xui.",
+  "en": ""
+ },
+ {
+  "vi": "💇 Salon, tour, chăm thú cưng, homestay hay được bo. Quầy bán hàng thỉnh thoảng. Kế toán hiếm, thường là quà.",
+  "en": ""
+ },
+ {
+  "vi": "🎀 Nhà thuốc, lớp học, chăm sóc khách hàng, văn phòng: thỉnh thoảng có quà cảm ơn, không bao giờ bo tiền.",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Việc 5★ dễ được bo nhất, 4★ chỉ bằng một nửa, 3★ rất hiếm, 1–2★ không bao giờ.",
+  "en": ""
+ },
+ {
+  "vi": "😤 Khách càu nhàu hay đang bực thì hiếm bo. Khách đòi giảm, đòi hoàn, bỏ về, từ chối, hoặc có lỗi an toàn: không bo.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Tiền bo thường khoảng 5–15% hóa đơn. Hiếm hoi có khách bo đậm, khoảng nửa hóa đơn, tối đa 100 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Thối đúng tiền, đôi khi khách nói “khỏi thối, giữ tiền lẻ đi”: số lẻ đó thành tiền bo.",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Ngày hội, ngày lương, mùa cưới khách rộng tay hơn. Khách thân với bạn cũng hay bo hơn.",
+  "en": ""
+ },
+ {
+  "vi": "👛 Tiệm của bạn: bo vào quỹ tiệm. Làm thuê: bo về ví. Có nhân viên trong ca: bo chia cho cả đội.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Mỗi lần được bo có thông báo nhỏ; bản tổng kết ngày có mục “Tip hôm nay”.",
+  "en": ""
+ },
+ {
+  "vi": "🌱 Việc đầu tiên ở mỗi nơi không có bo.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tiệm và hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "📒 [[Sổ tiệm]] → [[Thu chi]]: mọi khoản thu, chi và hóa đơn của nơi đó.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Khép ca sinh hóa đơn: lương người phụ, điện nước. Tiền mặt bằng tính theo kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "💳 Bấm [[Thanh toán]] để trả từng hóa đơn trước hạn.",
+  "en": ""
+ },
+ {
+  "vi": "📊 Bản tổng kết cuối ngày có thẻ “✓ Lãi/lỗ hôm nay: +N xu”; chạm vào để xem chi tiết thu chi.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Sổ tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Thuế và tiền phạt",
+  "en": ""
+ },
+ {
+  "vi": "🏛️ Cứ 7 ngày là một kỳ: thuế 4% doanh thu và tiền mặt bằng thành hóa đơn.",
+  "en": ""
+ },
+ {
+  "vi": "👮 Tiền phạt đến từ chuyện đời: kiểm tra, vi phạm, công an phường.",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Mỗi vụ có vài cách xử lý. Cách đúng luật, trung thực thường nhẹ nhất về lâu dài.",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Bỏ dở việc giữa chừng để đi nơi khác cũng bị phạt.",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng: nộp, rút và tiết kiệm",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Mở [[Ngân hàng]], bấm [[Mở tài khoản miễn phí]]. Chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "⬇️ Nộp: gõ số xu, bấm [[Nộp tiền]]. Tiền đi từ ví vào tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "⬆️ Rút: gõ số xu, chọn cây ATM, bấm [[Rút tiền]]. Cây ATM Ngân hàng Phố miễn phí, cây ATM khác ngân hàng mất 1 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🐷 Tab Tiết kiệm: không kỳ hạn lãi 3%/năm, rút lúc nào cũng được. Có kỳ hạn từ 7 ngày tới 3 năm, lãi 6–8,8%/năm, gửi càng lâu lãi càng cao.",
+  "en": ""
+ },
+ {
+  "vi": "🗓️ Trong game, 1 tháng là 5 ngày sống, 1 năm là 60 ngày sống. Kỳ hạn 12 tháng là 60 ngày sống.",
+  "en": ""
+ },
+ {
+  "vi": "📅 Sổ kỳ hạn gửi ít nhất 20 xu, tối đa 5 sổ. Đáo hạn thì gốc và lãi về tài khoản, hoặc chọn tự tái tục để gửi tiếp. [[Tất toán sớm]] chỉ được lãi không kỳ hạn.",
+  "en": ""
+ },
+ {
+  "vi": "🛟 “Tự động bù ví khi ví âm” bật sẵn: ví âm thì sáng hôm sau tài khoản tự trả phần đang nợ. Bỏ dấu chọn để tắt.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Tin nhắn và cuộc gọi của ngân hàng hiện trong tab Tổng quan.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Ngân hàng",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển khoản cho bạn bè",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Mở [[Ngân hàng]] → [[Chuyển khoản cho bạn bè]]: chọn bạn, gõ số xu, lời nhắn rồi bấm [[Tiếp tục]] để xem lại và gửi.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Không giới hạn số lần, tổng xu gửi hoặc nhận mỗi ngày. Chỉ chuyển số xu bạn đang có; không mất phí.",
+  "en": ""
+ },
+ {
+  "vi": "💳 Tiền đi từ tài khoản ngân hàng hoặc tiền mặt. Bạn ấy nhận ngay, hoặc khi vào game.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Chuyển khoản",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ tín dụng: quẹt trước, trả sau",
+  "en": ""
+ },
+ {
+  "vi": "💳 Tab Thẻ, bấm [[Nộp hồ sơ mở thẻ]]. Cần điểm tín dụng từ 580 và thu nhập đều: ít nhất 3 ngày có lương hoặc tiền lời rút về ví trong 14 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🛍️ Thẻ dùng để trả học phí, đi cửa sau, mua nhẫn và lo cưới. Chọn cách trả mặc định ở mục “Khi mua sắm cá nhân”.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Cứ 7 ngày sống có một sao kê. Hạn trả là 3 ngày sau sao kê.",
+  "en": ""
+ },
+ {
+  "vi": "✅ [[Trả hết sao kê]] trước hạn thì không mất lãi. [[Trả tối thiểu]] (10% sao kê, ít nhất 10 xu) thì phần còn lại chịu lãi 0,5%/ngày.",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Trễ hạn: phạt 8 xu, trừ điểm tín dụng, thẻ tạm khóa tới khi trả phần quá hạn.",
+  "en": ""
+ },
+ {
+  "vi": "🤖 Chọn “Tự động trả toàn bộ sao kê” hoặc “Tự động trả tối thiểu” rồi bấm [[Lưu cách tự động trả]] để khỏi quên.",
+  "en": ""
+ },
+ {
+  "vi": "🏧 [[Ứng tiền mặt]]: phí 4% (ít nhất 3 xu), lãi tính ngay, tối đa 50% hạn mức. Chỉ dùng khi thật cần.",
+  "en": ""
+ },
+ {
+  "vi": "Vay tiền và điểm tín dụng",
+  "en": ""
+ },
+ {
+  "vi": "💸 Vay tiêu dùng: tiền vào tài khoản của bạn, lãi 4% mỗi kỳ 7 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Vay mở rộng tiệm: tiền vào thẳng quỹ một tiệm bạn làm chủ, lãi 3,5% mỗi kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "📆 Vay 50–5.000 xu, kỳ hạn 14, 21 hoặc 28 ngày, tối đa 2 khoản cùng lúc. Xem lịch trả rồi bấm [[Xem lại & ký hợp đồng]].",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Tới ngày trả góp, ngân hàng tự trích từ tài khoản (thiếu thì lấy thêm tiền mặt). Trễ hạn phạt 5% kỳ đó, ít nhất 3 xu.",
+  "en": ""
+ },
+ {
   "vi": "⚠️ Trễ hạn (thẻ hay khoản vay) 3 lần là bị ghi nợ xấu 30 ngày: không mở thẻ, không vay mới, thẻ tạm ngưng.",
   "en": ""
  },
@@ -976,6 +1212,34 @@
   "en": ""
  },
  {
+  "vi": "Lên đời điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "📱 [[Cửa hàng điện thoại]] ở Phố dịch vụ trên bản đồ phố (Chỉ đường → 📱 Điện thoại), hoặc Thêm → Ngân hàng & nhà.",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Máy cũ anh Khoa cho vẫn xài được. Mua máy đầu tiên thì [[Thu cũ đổi mới]], bớt 20 xu.",
+  "en": ""
+ },
+ {
+  "vi": "✨ Máy xịn hơn mở thêm trò vui: Chỉ đường nhớ 3 nơi vừa đi, khung selfie, vỏ máy khoe trên hồ sơ. Không máy nào làm ra tiền.",
+  "en": ""
+ },
+ {
+  "vi": "🙌 Máy đang dùng hiện trên tay nhân vật, trên hồ sơ và thẻ của bạn ở Phố nghề.",
+  "en": ""
+ },
+ {
+  "vi": "💸 Trả đủ một lần, không phí tháng. Bán lại được 65% giá đã trả.",
+  "en": ""
+ },
+ {
+  "vi": "Mở cửa hàng điện thoại",
+  "en": ""
+ },
+ {
   "vi": "Chụp ảnh ở hội chợ",
   "en": ""
  },
@@ -1177,210 +1441,6 @@
  },
  {
   "vi": "🖼️ Album giữ 6 ảnh gần nhất; tải ảnh về máy nếu muốn giữ lâu.",
-  "en": ""
- },
- {
-  "vi": "🏅 Nhận kỷ niệm của một câu chuyện trong Sổ tay thì kỷ vật hiện trong album.",
-  "en": ""
- },
- {
-  "vi": "👥 Độ thân với từng người xem ở [[Người quen]] (mục Thân thiết với hàng xóm).",
-  "en": ""
- },
- {
-  "vi": "Mở Kỷ niệm",
-  "en": ""
- },
- {
-  "vi": "Phố nghề: ghé quán nhau",
-  "en": ""
- },
- {
-  "vi": "🪪 Tạo hồ sơ với tên hiển thị, biểu tượng; chọn có hiện quán cho mọi người hay không.",
-  "en": ""
- },
- {
-  "vi": "🏪 Tab Phố: tìm quán người khác, bấm [[Ghé quán]], theo dõi quán mình thích.",
-  "en": ""
- },
- {
-  "vi": "⭐ Đã ghé thì được chấm sao quán đó, mỗi ngày một lần; chủ quán trả lời một lần.",
-  "en": ""
- },
- {
-  "vi": "🎁 Tặng sticker kèm 0, 10 hoặc 20 xu: tối đa 5 món mỗi ngày, mỗi người một món.",
-  "en": ""
- },
- {
-  "vi": "🎯 Cả phố cùng góp sức cho mục tiêu phục vụ khách mỗi tuần.",
-  "en": ""
- },
- {
-  "vi": "🔞 Phố nghề dành cho người từ 13 tuổi.",
-  "en": ""
- },
- {
-  "vi": "Mở Phố nghề",
-  "en": ""
- },
- {
-  "vi": "Chợ, bảng tin, an toàn",
-  "en": ""
- },
- {
-  "vi": "🧺 Chợ: đăng bán nguyên liệu trong kho, tối đa 5 món cùng lúc.",
-  "en": ""
- },
- {
-  "vi": "🛒 Mua ở chợ: hàng về kho nghề đó, xu trừ ở ví nghề đó; người bán nhận xu lần tới vào game.",
-  "en": ""
- },
- {
-  "vi": "📝 Bảng tin: Mẹo nghề, Chuyện nghề, Hỏi nhanh, Cần mua/bán; tối đa 10 bài mỗi ngày.",
-  "en": ""
- },
- {
-  "vi": "🚫 Không đăng đường link, e-mail, số điện thoại hay số tài khoản.",
-  "en": ""
- },
- {
-  "vi": "🚩 Nội dung xấu thì [[Báo cáo]]; bị nhiều người báo cáo sẽ tự ẩn. Ai làm phiền thì [[Chặn]].",
-  "en": ""
- },
- {
-  "vi": "📬 Hộp thư báo ai ghé, ai chấm sao, tặng quà hay mua hàng của bạn.",
-  "en": ""
- },
- {
-  "vi": "Bảng xếp hạng",
-  "en": ""
- },
- {
-  "vi": "🏆 [[Trải nghiệm]]: bảng [[Tất cả]] cho cả phố và một bảng cho từng nơi làm. [[Danh hiệu]]: xếp theo số danh hiệu đã có. [[Chứng chỉ]]: xếp theo số chứng chỉ đã có. [[Tài phú]]: ai giàu nhất phố.",
-  "en": ""
- },
- {
-  "vi": "🏅 Danh hiệu tuần: top 1, top 2–3 và top 4–10 của bảng Tất cả, Danh hiệu, Chứng chỉ, Tài phú, và top 1 mỗi nơi làm giữ một danh hiệu riêng, hiện cạnh tên. Cập nhật mỗi ngày, chốt tuần lúc 0:00 thứ Hai.",
-  "en": ""
- },
- {
-  "vi": "🌟 Bảng cả phố: XP mọi nơi làm, cộng 80 cho mỗi nơi đã phục vụ khách. Bằng điểm thì ai thạo nhiều nghề hơn, rồi làm nhiều ngày hơn đứng trước.",
-  "en": ""
- },
- {
-  "vi": "🏪 Bảng từng nơi: XP ở nơi đó. Bằng điểm thì ai làm nhiều ngày hơn, rồi được nhiều sao hơn đứng trước.",
-  "en": ""
- },
- {
-  "vi": "📜 Top chứng chỉ: bằng số chứng chỉ thì ai có tổng điểm thi cao hơn, rồi ai có sớm hơn đứng trước.",
-  "en": ""
- },
- {
-  "vi": "💰 Top tài phú: tài sản ròng như ở Tiền của bạn (ví, quỹ nơi làm, ngân hàng, nhà theo giá thị trường, trừ hết nợ). Chỉ tính người chơi theo câu chuyện.",
-  "en": ""
- },
- {
-  "vi": "➕ Tài phú còn cộng sổ tiết kiệm Mây, Mây Coin và vàng theo giá vốn, xe theo giá bán lại, quầy riêng theo giá sang nhượng, và trừ vay nóng hội chợ. Không tính Quỹ chung.",
-  "en": ""
- },
- {
-  "vi": "👀 Mỗi bảng hiện 50 người đầu, chỉ có tên, điểm, cấp, số ngày làm và sao. Ô của bạn cho biết hạng của bạn, kể cả khi đang ẩn tên.",
-  "en": ""
- },
- {
-  "vi": "👤 Tài khoản hiện tên hiển thị sẵn. Khách chỉ hiện khi tự bật và đã đặt tên nhân vật khác “Mây”, kèm nhãn khách.",
-  "en": ""
- },
- {
-  "vi": "🙈 Bật tắt ở Cài đặt → Dữ liệu → [[Hiện tên tôi trên bảng xếp hạng]], hoặc bấm [[Ẩn tên tôi]] trên bảng. Không ai thấy tên đăng nhập của bạn.",
-  "en": ""
- },
- {
-  "vi": "Mở Xếp hạng",
-  "en": ""
- },
- {
-  "vi": "Bạn bè & hôn nhân",
-  "en": ""
- },
- {
-  "vi": "Kết hôn từ A tới Z",
-  "en": ""
- },
- {
-  "vi": "🔐 Bước 1: tạo tài khoản. Kết hôn là chuyện giữa hai người chơi thật, nên khách chưa có tài khoản mở [[Hôn nhân]] sẽ thấy nút [[Tạo tài khoản]].",
-  "en": ""
- },
- {
-  "vi": "👥 Bước 2: kết bạn với người ấy bằng đúng tên đăng nhập hoặc mã PCC-…, chờ họ [[Chấp nhận]]. Chỉ bạn bè mới cầu hôn được nhau. Xem mục “Bạn bè giữa người chơi”.",
-  "en": ""
- },
- {
-  "vi": "💛 Bước 3 (nên làm): thân với hàng xóm. Người càng thân càng hay tới dự và mừng dày, đỡ tiền tiệc. Xem mục “Thân thiết với hàng xóm”.",
-  "en": ""
- },
- {
-  "vi": "💰 Bước 4: để dành tiền trong ví. Nhẫn 50–900 xu; lúc chốt kế hoạch cưới mỗi người đặt cọc phần mình trong 30% tổng tiệc. Rút tiền lời từ nơi làm về ví trước.",
-  "en": ""
- },
- {
-  "vi": "💎 Bước 5: mua nhẫn ở tab [[Tiệm nhẫn]] của mục [[Hôn nhân]], chọn màu rồi bấm [[Mua]]. Xem mục “Tiệm nhẫn: mua và đổi màu nhẫn”.",
-  "en": ""
- },
- {
-  "vi": "💌 Bước 6: tab [[Cầu hôn]], chọn người bạn, chiếc nhẫn, một lời soạn sẵn rồi bấm [[Gửi lời cầu hôn]]. Người ấy bấm [[Đồng ý]] là đính hôn. Xem “Cầu hôn và trả lời”.",
-  "en": ""
- },
- {
-  "vi": "📋 Bước 7: một người lập [[Kế hoạch cưới]] (nơi, số bàn, thực đơn, ngày, tỉ lệ góp) rồi gửi; người kia bấm [[Xác nhận & đặt cọc]]. Xem “Đám cưới từng bước”.",
-  "en": ""
- },
- {
-  "vi": "🎊 Bước 8: sau 2–10 ngày sống, đám cưới tự diễn ra kể cả khi một người vắng. Khách mừng, trả nốt tiệc, hai bạn thành vợ chồng. Xem “Ngày cưới: khách và tiền mừng”.",
-  "en": ""
- },
- {
-  "vi": "🏡 Bước 9: sống chung với [[Quỹ chung]], thẻ chung, [[Tương tác]] mỗi ngày và sổ nợ. Xem “Quỹ chung & thẻ chung”, “Đời vợ chồng” và “Ly hôn và hủy hôn ước”.",
-  "en": ""
- },
- {
-  "vi": "Mở Hôn nhân",
-  "en": ""
- },
- {
-  "vi": "Bạn bè giữa người chơi",
-  "en": ""
- },
- {
-  "vi": "🔐 Bạn bè là người chơi thật nên cần tài khoản. Khách chưa có tài khoản mở [[Bạn bè]] sẽ thấy nút [[Tạo tài khoản]].",
-  "en": ""
- },
- {
-  "vi": "🔎 Ở “Tìm bạn”, gõ đúng tên đăng nhập của người ấy rồi bấm [[Tìm]]. Không tìm gần đúng, không có danh sách để lướt; chữ hoa hay thường đều được.",
-  "en": ""
- },
- {
-  "vi": "🪪 Có mã người chơi dạng PCC-XXXXXX thì gõ mã vào cùng ô đó. Mã của bạn ở cuối mục Bạn bè, bấm [[Chép mã]] để gửi cho người quen.",
-  "en": ""
- },
- {
-  "vi": "📨 Bấm [[Kết bạn]] để gửi lời mời. Người kia chọn [[Chấp nhận]], [[Từ chối]] hoặc [[Chặn]]. Nếu họ đã mời bạn trước, nút thành [[Chấp nhận kết bạn]] và hai bạn thành bạn ngay.",
-  "en": ""
- },
- {
-  "vi": "⏳ Lời mời bạn gửi nằm ở “Đang chờ trả lời”, đổi ý thì bấm [[Rút lại]]. Có lời mời mới, nút [[Bạn bè]] trên thanh bên hiện số.",
-  "en": ""
- },
- {
-  "vi": "🔢 Mỗi ngày tìm tối đa 100 lần (20 lần mỗi phút) và gửi 10 lời mời; cùng lúc chờ tối đa 20 lời mời; danh sách giữ tối đa 200 bạn.",
-  "en": ""
- },
- {
-  "vi": "💍 Thẻ bạn bè ghi tên hiển thị, nghề chính, cấp và tình trạng: Độc thân, Đã đính hôn, Đã kết hôn. Bạn đang độc thân thì có nút [[Cầu hôn]] ngay trên thẻ.",
-  "en": ""
- },
- {
-  "vi": "🚫 [[Hủy kết bạn]] xóa cả hai khỏi danh sách của nhau. [[Chặn]] thì người đó không tìm, không mời, không cầu hôn bạn được nữa. Người thương của mình thì không hủy hay chặn được.",
   "en": ""
  }
 ]

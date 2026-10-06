@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Túi chưa có nước.",
+  "en": ""
+ },
+ {
+  "vi": "Túi buộc rồi.",
+  "en": ""
+ },
+ {
   "vi": "🎀 Xoắn miệng túi, buộc hai vòng thun, xếp vào hộp cạnh bánh.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Cả bốn em đều mười sáu tuổi, mặc đồng phục có tên trường.",
-  "en": ""
- },
- {
-  "vi": "Đã hỏi chưa",
-  "en": ""
- },
- {
-  "vi": "Chưa ai hỏi các em hay bố mẹ các em có đồng ý không.",
   "en": ""
  }
 ]

@@ -1,5 +1,325 @@
 [
  {
+  "vi": "Lỗi nhỏ; nếu còn tàu thứ hai thì là lỗi an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Thấy hỏng mà báo sai nơi",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ nguy hiểm không gọi ga là lỗi an toàn. Báo dư cho chắc thì không sao.",
+  "en": ""
+ },
+ {
+  "vi": "🕠 Nhận ca 5:30 ở chòi gác Bến Mây; ngày ca chiều tối thì tàu qua tới khuya.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Là việc làm thuê: nộp hồ sơ [[Ứng tuyển]] ở Xí nghiệp Đường sắt Sông Mây, có lương ngày và thưởng từng chuyến gác đúng quy trình.",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Chứng chỉ An toàn đường ngang giúp dễ được nhận hơn.",
+  "en": ""
+ },
+ {
+  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, ca chiều tối, mưa lớn, cao điểm lễ, nắng gắt.",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Người đòi qua chắn: xe ôm, đám tang, xe hoa, xe cứu thương, người dúi tiền, TikToker, chú Hớn say…",
+  "en": ""
+ },
+ {
+  "vi": "🐄 Bò, vịt, chó, tụi nhỏ, khách chụp ảnh trên ray; cung trưởng kiểm tra đột xuất; bà Bông kêu còi tàu.",
+  "en": ""
+ },
+ {
+  "vi": "KÝ NHẬN CA",
+  "en": ""
+ },
+ {
+  "vi": "Nghe ga gọi bộ đàm",
+  "en": ""
+ },
+ {
+  "vi": "KÝ SỔ TUẦN ĐƯỜNG",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn đường ngang",
+  "en": ""
+ },
+ {
+  "vi": "Bật chuông đèn",
+  "en": ""
+ },
+ {
+  "vi": "Hạ chắn",
+  "en": ""
+ },
+ {
+  "vi": "Đứng chờ tàu",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn hết đoàn tàu",
+  "en": ""
+ },
+ {
+  "vi": "Nâng chắn, tắt chuông",
+  "en": ""
+ },
+ {
+  "vi": "GHI SỔ, KÝ TÊN",
+  "en": ""
+ },
+ {
+  "vi": "Người gác hải đăng",
+  "en": ""
+ },
+ {
+  "vi": "Bạn giữ đèn biển Hòn Gió trên một hòn đảo đá cho Xí nghiệp Bảo đảm hàng hải Vịnh Ngọc, cùng chú Bảy Đèn. Mỗi ngày: ca sáng, quan trắc, việc trên biển hoặc khách ra đảo, rồi thắp đèn lúc chạng vạng.",
+  "en": ""
+ },
+ {
+  "vi": "Ca sáng",
+  "en": ""
+ },
+ {
+  "vi": "Tắt đèn đúng giờ, thử từng thiết bị, tắt mô-tơ rồi lau kính, ghi sổ dầu, báo đúng nơi, rồi [[KÝ SỔ TRỰC]].",
+  "en": ""
+ },
+ {
+  "vi": "Quan trắc, báo đài",
+  "en": ""
+ },
+ {
+  "vi": "Đọc gió, mặt biển, tầm nhìn, áp kế; [[Báo đài số liệu]]. Gió từ cấp 6 hoặc áp giảm nhanh thì [[Phát cảnh báo trên kênh 16]].",
+  "en": ""
+ },
+ {
+  "vi": "Canh biển",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 2. [[Nhìn kỹ qua ống nhòm]], gọi tàu, ném phao, báo đài đúng mức và phương vị, canh giữ mục tiêu.",
+  "en": ""
+ },
+ {
+  "vi": "Khách ra đảo",
+  "en": ""
+ },
+ {
+  "vi": "Bấm [[Xem giấy tờ]], trả lời theo nội quy trạm. Người gặp nạn luôn được trú tạm, không ai vào phòng đèn.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu tiếp tế",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3, mỗi bảy ngày. Đo bồn trước và sau, kiểm từng món, rồi [[KÝ PHIẾU GIAO HÀNG]] đúng số lít đo được.",
+  "en": ""
+ },
+ {
+  "vi": "Thắp đèn",
+  "en": ""
+ },
+ {
+  "vi": "Thắp trước giờ lặn 15 phút, [[Bấm giờ đếm chớp]] so với danh mục đèn, sương mù thì chạy còi, rồi [[GHI SỔ TRỰC TỐI]].",
+  "en": ""
+ },
+ {
+  "vi": "💡 Chọn giờ tắt, thắp đèn theo giờ mặt trời trong lịch: tắt sau giờ mọc 15 phút, thắp trước giờ lặn 15 phút.",
+  "en": ""
+ },
+ {
+  "vi": "🧰 Thử đủ sáu thiết bị. Lau kính thì chọn tắt mô-tơ, treo biển trước.",
+  "en": ""
+ },
+ {
+  "vi": "⛽ Thước đo bồn ghi bao nhiêu thì ghi sổ dầu bấy nhiêu.",
+  "en": ""
+ },
+ {
+  "vi": "📻 Báo đài: MAYDAY RELAY khi tính mạng bị đe dọa, PAN-PAN khi cần giúp, báo biên phòng khi có vi phạm.",
+  "en": ""
+ },
+ {
+  "vi": "🛟 Người dưới nước gần bến: ném phao có dây. Không tự lấy xuồng, không nhảy xuống.",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Khách: [[Xem giấy tờ]] trước, rồi tự chọn cách trả lời. Họ có thể nài thêm một lần.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ trực ghi đúng những gì đã xảy ra.",
+  "en": ""
+ },
+ {
+  "vi": "💡 Đèn sáng đúng giờ, đúng đặc tính.",
+  "en": ""
+ },
+ {
+  "vi": "📻 Báo đài đúng mức, đúng phương vị, đủ số người.",
+  "en": ""
+ },
+ {
+  "vi": "✋ Giữ nội quy mà vẫn tử tế với khách.",
+  "en": ""
+ },
+ {
+  "vi": "⛽ Ký đúng số dầu đo được, dù thuyền trưởng nài ký đủ.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ trực, sổ dầu đúng sự thật.",
+  "en": ""
+ },
+ {
+  "vi": "Tự lấy xuồng ra cứu, nhảy xuống bơi",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: thành người thứ hai cần cứu. Không có thưởng ca.",
+  "en": ""
+ },
+ {
+  "vi": "Báo đài thấp hơn mức nguy hiểm, hoặc không báo",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: cứu nạn đi chậm. Báo cao hơn mức cần chỉ là lỗi nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Cho khách lên phòng đèn, tắt đèn chiều khách, nhận tiền",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn, hồ sơ bị ghi điểm vi phạm, không có tiền nào cả.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối người đang gặp nạn vì không có giấy",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn. Người gặp nạn luôn được trú tạm và báo đài.",
+  "en": ""
+ },
+ {
+  "vi": "Đèn sai đặc tính, còi hỏng mà không báo đài",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: tàu có thể nhận nhầm đèn. Cảnh báo dư khi biển êm thì không sao.",
+  "en": ""
+ },
+ {
+  "vi": "🕔 Dậy từ 5:00 tắt đèn; 7:00 quan trắc; chạng vạng thắp đèn, đêm có chuyện thì canh tới khuya.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Là việc làm thuê: nộp hồ sơ [[Ứng tuyển]] ở Xí nghiệp Bảo đảm hàng hải Vịnh Ngọc, có lương ngày và thưởng từng việc làm đúng quy trình.",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Chứng chỉ Gác đèn biển giúp dễ được nhận hơn.",
+  "en": ""
+ },
+ {
+  "vi": "🐈‍⬛ Nhớ nhà quá thì mệt: [[Chơi với Mun]], [[Tưới vườn rau]], [[Gọi về nhà]] mỗi ngày một lần.",
+  "en": ""
+ },
+ {
+  "vi": "🌤️ Mỗi ngày một kiểu biển: êm, gió mùa, sương mù, áp thấp, mùa du lịch.",
+  "en": ""
+ },
+ {
+  "vi": "🤳 Khách đòi lên đỉnh tháp sống ảo, cặp đôi đòi cầu hôn lúc nửa đêm, kênh ma đòi tắt đèn, nhà văn xin ở một tuần…",
+  "en": ""
+ },
+ {
+  "vi": "🎣 Ông Sáu Ghe xin quay đèn về phía lưới, chú Tư Lực đòi ký đủ dầu, anh Khôi đòi sơn tháp màu hồng, má giục về xem mặt.",
+  "en": ""
+ },
+ {
+  "vi": "KÝ SỔ TRỰC",
+  "en": ""
+ },
+ {
+  "vi": "Báo đài số liệu",
+  "en": ""
+ },
+ {
+  "vi": "Phát cảnh báo trên kênh 16",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn kỹ qua ống nhòm",
+  "en": ""
+ },
+ {
+  "vi": "KÝ PHIẾU GIAO HÀNG",
+  "en": ""
+ },
+ {
+  "vi": "Bấm giờ đếm chớp",
+  "en": ""
+ },
+ {
+  "vi": "GHI SỔ TRỰC TỐI",
+  "en": ""
+ },
+ {
+  "vi": "Chơi với Mun",
+  "en": ""
+ },
+ {
+  "vi": "Tưới vườn rau",
+  "en": ""
+ },
+ {
+  "vi": "Gọi về nhà",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên trực tổng đài cứu hộ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn trực đường dây cứu hộ của phường: cháy, ngập, tai nạn, kẹt thang máy, thú cưng mắc kẹt, cấp cứu. Hỏi đúng kịch bản, gửi đúng đội, không bỏ ai một mình. Chị Thảo kèm ba cuộc đầu.",
+  "en": ""
+ },
+ {
+  "vi": "[[Gọi bộ đàm]] từng đội, đánh dấu đội tạm ngưng (hoặc không đội nào), rồi [[KÝ NHẬN CA]].",
+  "en": ""
+ },
+ {
+  "vi": "[[Nhấc máy]], hỏi [[Địa chỉ ở đâu ạ?]] trước, rồi chuyện gì, mấy người, nguy hiểm gì, số gọi lại.",
+  "en": ""
+ },
+ {
+  "vi": "Người gọi không biết mình ở đâu",
+  "en": ""
+ },
+ {
+  "vi": "Mở [[Tìm chỗ người gọi]]: hỏi mốc nhìn thấy, gửi tin định vị, hoặc nhờ người đi đường đọc địa chỉ.",
+  "en": ""
+ },
+ {
+  "vi": "Người gọi đang hoảng",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi gì cũng không nghe: mở [[Trấn an người gọi]]. Mỗi người hợp một cách; đừng quát.",
+  "en": ""
+ },
+ {
   "vi": "Cuộc gọi nghi ngờ",
   "en": ""
  },
@@ -1293,242 +1613,6 @@
  },
  {
   "vi": "🏃 Chỉ khi bỏ đi lúc đang làm dở mới bị phạt một lần, hộp xác nhận ghi rõ số tiền trước khi đi.",
-  "en": ""
- },
- {
-  "vi": "📉 Ví âm là đang nợ tiền phòng: câu chuyện tạm dừng tới khi trả xong.",
-  "en": ""
- },
- {
-  "vi": "🏦 Có tài khoản ngân hàng còn tiền: sáng hôm sau tài khoản tự bù phần ví đang âm (tắt được trong Ngân hàng).",
-  "en": ""
- },
- {
-  "vi": "Thu tiền và thối tiền",
-  "en": ""
- },
- {
-  "vi": "💵 Khách đưa tờ tiền. Bạn tự chọn tờ để thối, đủ từng xu.",
-  "en": ""
- },
- {
-  "vi": "🧮 Tiền thối = tiền khách đưa − tiền hàng. Đếm lại trước khi bấm giao.",
-  "en": ""
- },
- {
-  "vi": "😠 Thối thiếu: khách kỹ tính đếm ngay và đòi thêm. Khách khác về nhà mới thấy: review 2★, có khi báo lên app.",
-  "en": ""
- },
- {
-  "vi": "💸 Thối dư: khách thật thà trả lại. Khách khác giữ luôn, tiệm mất đúng số đó.",
-  "en": ""
- },
- {
-  "vi": "🙏 Thối đúng: đôi khi khách nói “khỏi thối, giữ tiền lẻ đi”. Tiền đó thành tiền bo.",
-  "en": ""
- },
- {
-  "vi": "Tiền bo",
-  "en": ""
- },
- {
-  "vi": "🍀 Làm tốt thì thỉnh thoảng khách bo thêm tiền hoặc một món quà nhỏ. Hên xui.",
-  "en": ""
- },
- {
-  "vi": "💇 Salon, tour, chăm thú cưng, homestay hay được bo. Quầy bán hàng thỉnh thoảng. Kế toán hiếm, thường là quà.",
-  "en": ""
- },
- {
-  "vi": "🎀 Nhà thuốc, lớp học, chăm sóc khách hàng, văn phòng: thỉnh thoảng có quà cảm ơn, không bao giờ bo tiền.",
-  "en": ""
- },
- {
-  "vi": "⭐ Việc 5★ dễ được bo nhất, 4★ chỉ bằng một nửa, 3★ rất hiếm, 1–2★ không bao giờ.",
-  "en": ""
- },
- {
-  "vi": "😤 Khách càu nhàu hay đang bực thì hiếm bo. Khách đòi giảm, đòi hoàn, bỏ về, từ chối, hoặc có lỗi an toàn: không bo.",
-  "en": ""
- },
- {
-  "vi": "💵 Tiền bo thường khoảng 5–15% hóa đơn. Hiếm hoi có khách bo đậm, khoảng nửa hóa đơn, tối đa 100 xu.",
-  "en": ""
- },
- {
-  "vi": "🙏 Thối đúng tiền, đôi khi khách nói “khỏi thối, giữ tiền lẻ đi”: số lẻ đó thành tiền bo.",
-  "en": ""
- },
- {
-  "vi": "🎉 Ngày hội, ngày lương, mùa cưới khách rộng tay hơn. Khách thân với bạn cũng hay bo hơn.",
-  "en": ""
- },
- {
-  "vi": "👛 Tiệm của bạn: bo vào quỹ tiệm. Làm thuê: bo về ví. Có nhân viên trong ca: bo chia cho cả đội.",
-  "en": ""
- },
- {
-  "vi": "📋 Mỗi lần được bo có thông báo nhỏ; bản tổng kết ngày có mục “Tip hôm nay”.",
-  "en": ""
- },
- {
-  "vi": "🌱 Việc đầu tiên ở mỗi nơi không có bo.",
-  "en": ""
- },
- {
-  "vi": "Sổ tiệm và hóa đơn",
-  "en": ""
- },
- {
-  "vi": "📒 [[Sổ tiệm]] → [[Thu chi]]: mọi khoản thu, chi và hóa đơn của nơi đó.",
-  "en": ""
- },
- {
-  "vi": "🧾 Khép ca sinh hóa đơn: lương người phụ, điện nước. Tiền mặt bằng tính theo kỳ.",
-  "en": ""
- },
- {
-  "vi": "💳 Bấm [[Thanh toán]] để trả từng hóa đơn trước hạn.",
-  "en": ""
- },
- {
-  "vi": "📊 Bản tổng kết cuối ngày có thẻ “✓ Lãi/lỗ hôm nay: +N xu”; chạm vào để xem chi tiết thu chi.",
-  "en": ""
- },
- {
-  "vi": "Mở Sổ tiệm",
-  "en": ""
- },
- {
-  "vi": "Thuế và tiền phạt",
-  "en": ""
- },
- {
-  "vi": "🏛️ Cứ 7 ngày là một kỳ: thuế 4% doanh thu và tiền mặt bằng thành hóa đơn.",
-  "en": ""
- },
- {
-  "vi": "👮 Tiền phạt đến từ chuyện đời: kiểm tra, vi phạm, công an phường.",
-  "en": ""
- },
- {
-  "vi": "⚖️ Mỗi vụ có vài cách xử lý. Cách đúng luật, trung thực thường nhẹ nhất về lâu dài.",
-  "en": ""
- },
- {
-  "vi": "🚪 Bỏ dở việc giữa chừng để đi nơi khác cũng bị phạt.",
-  "en": ""
- },
- {
-  "vi": "Ngân hàng: nộp, rút và tiết kiệm",
-  "en": ""
- },
- {
-  "vi": "🏦 Mở [[Ngân hàng]], bấm [[Mở tài khoản miễn phí]]. Chỉ có trong hành trình.",
-  "en": ""
- },
- {
-  "vi": "⬇️ Nộp: gõ số xu, bấm [[Nộp tiền]]. Tiền đi từ ví vào tài khoản.",
-  "en": ""
- },
- {
-  "vi": "⬆️ Rút: gõ số xu, chọn cây ATM, bấm [[Rút tiền]]. Cây ATM Ngân hàng Phố miễn phí, cây ATM khác ngân hàng mất 1 xu.",
-  "en": ""
- },
- {
-  "vi": "🐷 Tab Tiết kiệm: không kỳ hạn lãi 3%/năm, rút lúc nào cũng được. Có kỳ hạn từ 7 ngày tới 3 năm, lãi 6–8,8%/năm, gửi càng lâu lãi càng cao.",
-  "en": ""
- },
- {
-  "vi": "🗓️ Trong game, 1 tháng là 5 ngày sống, 1 năm là 60 ngày sống. Kỳ hạn 12 tháng là 60 ngày sống.",
-  "en": ""
- },
- {
-  "vi": "📅 Sổ kỳ hạn gửi ít nhất 20 xu, tối đa 5 sổ. Đáo hạn thì gốc và lãi về tài khoản, hoặc chọn tự tái tục để gửi tiếp. [[Tất toán sớm]] chỉ được lãi không kỳ hạn.",
-  "en": ""
- },
- {
-  "vi": "🛟 “Tự động bù ví khi ví âm” bật sẵn: ví âm thì sáng hôm sau tài khoản tự trả phần đang nợ. Bỏ dấu chọn để tắt.",
-  "en": ""
- },
- {
-  "vi": "💬 Tin nhắn và cuộc gọi của ngân hàng hiện trong tab Tổng quan.",
-  "en": ""
- },
- {
-  "vi": "Mở Ngân hàng",
-  "en": ""
- },
- {
-  "vi": "Chuyển khoản cho bạn bè",
-  "en": ""
- },
- {
-  "vi": "🏦 Mở [[Ngân hàng]] → [[Chuyển khoản cho bạn bè]]: chọn bạn, gõ số xu, lời nhắn rồi bấm [[Tiếp tục]] để xem lại và gửi.",
-  "en": ""
- },
- {
-  "vi": "💰 Không giới hạn số lần, tổng xu gửi hoặc nhận mỗi ngày. Chỉ chuyển số xu bạn đang có; không mất phí.",
-  "en": ""
- },
- {
-  "vi": "💳 Tiền đi từ tài khoản ngân hàng hoặc tiền mặt. Bạn ấy nhận ngay, hoặc khi vào game.",
-  "en": ""
- },
- {
-  "vi": "Mở Chuyển khoản",
-  "en": ""
- },
- {
-  "vi": "Thẻ tín dụng: quẹt trước, trả sau",
-  "en": ""
- },
- {
-  "vi": "💳 Tab Thẻ, bấm [[Nộp hồ sơ mở thẻ]]. Cần điểm tín dụng từ 580 và thu nhập đều: ít nhất 3 ngày có lương hoặc tiền lời rút về ví trong 14 ngày.",
-  "en": ""
- },
- {
-  "vi": "🛍️ Thẻ dùng để trả học phí, đi cửa sau, mua nhẫn và lo cưới. Chọn cách trả mặc định ở mục “Khi mua sắm cá nhân”.",
-  "en": ""
- },
- {
-  "vi": "🧾 Cứ 7 ngày sống có một sao kê. Hạn trả là 3 ngày sau sao kê.",
-  "en": ""
- },
- {
-  "vi": "✅ [[Trả hết sao kê]] trước hạn thì không mất lãi. [[Trả tối thiểu]] (10% sao kê, ít nhất 10 xu) thì phần còn lại chịu lãi 0,5%/ngày.",
-  "en": ""
- },
- {
-  "vi": "⏰ Trễ hạn: phạt 8 xu, trừ điểm tín dụng, thẻ tạm khóa tới khi trả phần quá hạn.",
-  "en": ""
- },
- {
-  "vi": "🤖 Chọn “Tự động trả toàn bộ sao kê” hoặc “Tự động trả tối thiểu” rồi bấm [[Lưu cách tự động trả]] để khỏi quên.",
-  "en": ""
- },
- {
-  "vi": "🏧 [[Ứng tiền mặt]]: phí 4% (ít nhất 3 xu), lãi tính ngay, tối đa 50% hạn mức. Chỉ dùng khi thật cần.",
-  "en": ""
- },
- {
-  "vi": "Vay tiền và điểm tín dụng",
-  "en": ""
- },
- {
-  "vi": "💸 Vay tiêu dùng: tiền vào tài khoản của bạn, lãi 4% mỗi kỳ 7 ngày.",
-  "en": ""
- },
- {
-  "vi": "🏪 Vay mở rộng tiệm: tiền vào thẳng quỹ một tiệm bạn làm chủ, lãi 3,5% mỗi kỳ.",
-  "en": ""
- },
- {
-  "vi": "📆 Vay 50–5.000 xu, kỳ hạn 14, 21 hoặc 28 ngày, tối đa 2 khoản cùng lúc. Xem lịch trả rồi bấm [[Xem lại & ký hợp đồng]].",
-  "en": ""
- },
- {
-  "vi": "🔁 Tới ngày trả góp, ngân hàng tự trích từ tài khoản (thiếu thì lấy thêm tiền mặt). Trễ hạn phạt 5% kỳ đó, ít nhất 3 xu.",
   "en": ""
  }
 ]

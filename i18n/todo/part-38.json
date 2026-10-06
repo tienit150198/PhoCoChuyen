@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Thao tác không có ở khoa Nội.",
+  "en": ""
+ },
+ {
+  "vi": "Việc này không thuộc khoa Nội.",
+  "en": ""
+ },
+ {
   "vi": "Tới giường chào và hỏi chuyện người bệnh trước đã.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Máy truyền dịch kêu bíp bíp: chai dịch đã hết, trong dây còn một đoạn.",
-  "en": ""
- },
- {
-  "vi": "🔒 Khóa dây truyền, xem chỗ kim, báo theo y lệnh",
-  "en": ""
- },
- {
-  "vi": "Bạn khóa dây, chỗ kim sạch, ghi giờ hết dịch. Bác sĩ Khang dặn ngưng truyền theo y lệnh.",
   "en": ""
  }
 ]

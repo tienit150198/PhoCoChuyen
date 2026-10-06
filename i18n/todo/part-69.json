@@ -1,5 +1,265 @@
 [
  {
+  "vi": "Từ ngày 2. Trạm hứa gửi bù thiệp mà quên. Đánh dấu dòng lịch sử, rồi [[Gửi bù / gửi lại]].",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3. Thư “đã giao” gửi nhầm, kiện còn ở kho: đánh dấu rồi [[Giải thích & hướng dẫn]].",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn vào tài khoản mới",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3. Vừa đổi mật khẩu trên máy lạ, xin đổi tài khoản qua chat: [[Tạm khóa & gọi xác minh]].",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3. Bài nói sai số ngày: [[Trả lời công khai, mời nhắn riêng]]. Không đăng chi tiết đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc gọi dọa dẫm",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 4. Lời dọa tới tận kho là chuyện an toàn: đánh dấu rồi [[Chuyển chị Mai]].",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện anh Phúc",
+  "en": ""
+ },
+ {
+  "vi": "Ngày 2, 5, 8, 12. Số nhắn khác hồ sơ: [[Gọi số đã đăng ký]] trước khi [[Đổi địa chỉ theo yêu cầu]].",
+  "en": ""
+ },
+ {
+  "vi": "Vụ theo dõi nhiều ngày",
+  "en": ""
+ },
+ {
+  "vi": "Sáu bước, đánh số trên vé: xác minh, mở đủ chứng cứ, chọn phương án khớp dòng 📌 Căn cứ, gửi đầu mối, kiểm kết quả, đóng vụ (+65 xu).",
+  "en": ""
+ },
+ {
+  "vi": "Gọi khách cập nhật",
+  "en": ""
+ },
+ {
+  "vi": "Vụ mở qua đêm: sáng hôm sau gọi khách trước 12:00, chọn [[Báo tình trạng thật của đơn]].",
+  "en": ""
+ },
+ {
+  "vi": "💬 Mục [[Trả lời đầu tiên]]: chọn câu trả lời ân cần, đúng việc. Làm trước khi hết giờ.",
+  "en": ""
+ },
+ {
+  "vi": "📥 Bấm [[Mở hồ sơ đơn]] để xem tin nhắn, đơn hàng, ảnh và lịch sử liên hệ.",
+  "en": ""
+ },
+ {
+  "vi": "📖 Mở [[Sổ quy định hôm nay]]: hạn đổi trả, khu giao chậm, luật MỚI.",
+  "en": ""
+ },
+ {
+  "vi": "👆 Chạm dòng có vấn đề, chọn quy định nó trái. Dòng khóa 🔒 phải kiểm trước.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Bấm bước kiểm như [[Gọi số đã đăng ký]]; phải chờ thì [[Chờ một nhịp]].",
+  "en": ""
+ },
+ {
+  "vi": "🖋️ Chọn một con dấu, rồi bấm [[Đóng dấu]]. Đóng rồi là không sửa được.",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Vụ nhiều ngày: [[Xác minh mã đơn]], mở đủ chứng cứ, đọc dòng 📌 Căn cứ rồi chọn phương án khớp nó (“đổi đúng mã” → [[Đổi đúng món]]). Chọn lệch thì trạm chỉ lại dòng đó.",
+  "en": ""
+ },
+ {
+  "vi": "✅ Bấm [[Gửi việc cho đầu mối]], có kết quả thì [[Kiểm kết quả]], rồi [[Hoàn tất & đóng vụ]].",
+  "en": ""
+ },
+ {
+  "vi": "💬 Câu trả lời đầu phải là câu tốt nhất; câu cụt hay câu đòi khách kể lại làm mất “Chuẩn”.",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Từ ngày 3 mỗi tin có hạn phản hồi, xem đồng hồ trên vé. Trễ hạn thì điểm tốc độ còn 2.",
+  "en": ""
+ },
+ {
+  "vi": "✔ Chỉ ra hết chỗ sai, không đánh dấu nhầm, làm đủ bước kiểm cần có.",
+  "en": ""
+ },
+ {
+  "vi": "🎯 Chọn con dấu tốt nhất: “Chuẩn” đủ thù lao, “Đạt” 60%, “Chưa đúng” không có gì.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Khi gọi khách: báo tình trạng thật, xin lỗi khi họ phải chờ. Đừng hứa chắc chắn hay nói nặng lời.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối khi hàng giao sai rõ ràng, khi đơn chưa đối soát, hoặc sau khi trạm lỡ hẹn",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi nặng: không thù lao, review 2★, khách có thể báo cáo lên app.",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tiền theo ảnh cũ hay vào tài khoản lạ, đăng chi tiết đơn của khách lên mạng",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi nặng: không thù lao, 2★, bị báo cáo. Đăng chi tiết đơn còn làm bài chê lan thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Ẩn bài chê thay vì trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Bài chê lan gấp đôi. Mức ồn cao làm khách hôm sau dễ sốt ruột hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tay khoản giữ tạm, đổi hàng quá hạn, hoàn tiền vì bị dọa",
+  "en": ""
+ },
+ {
+  "vi": "Không thù lao, review khoảng 3–4★, cộng điểm rủi ro.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi thông tin đơn khi chưa gọi số đã đăng ký",
+  "en": ""
+ },
+ {
+  "vi": "Tính là sai dù đúng người; cộng điểm rủi ro, từ phiếu thứ ba trong ngày bị trừ tới 20 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời trễ hạn, quên gọi cập nhật trước 12:00",
+  "en": ""
+ },
+ {
+  "vi": "Kiên nhẫn tụt, khách căng hơn, ghi thêm một lỗi. Trễ vé công khai làm bài chê lan.",
+  "en": ""
+ },
+ {
+  "vi": "Dồn điểm rủi ro tới ngày chị Mai xem báo cáo (mỗi 6 ngày)",
+  "en": ""
+ },
+ {
+  "vi": "Biên bản, trừ tới 60 xu. Không sai sót nào thì được thưởng 25 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Đầu ca mở dock [[Theo dõi]]: đọc bàn giao ca trước, bấm [[Đã đọc bàn giao]].",
+  "en": ""
+ },
+ {
+  "vi": "📋 Mục “Vụ đang mở”: bấm [[Mở vụ]] cho vụ có kết quả trong đêm để kiểm và đóng.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Vụ đang chờ kho hay bên vận chuyển: gọi khách cập nhật trước 12:00.",
+  "en": ""
+ },
+ {
+  "vi": "📰 Đọc bản tin: hạn đổi trả đổi giữa 7 và 5 ngày, Mây Express chậm ở một khu.",
+  "en": ""
+ },
+ {
+  "vi": "☎️ Người xưng công an đòi đọc địa chỉ khách: từ chối, hướng dẫn gửi văn bản chính thức.",
+  "en": ""
+ },
+ {
+  "vi": "😠 Khách gọi lần thứ năm, dọa đợi lúc tan ca: báo trưởng ca và an ninh, đừng chửi lại.",
+  "en": ""
+ },
+ {
+  "vi": "🛍️ Ngày giảm giá hàng đợi đông; từ ngày 5 phải xử lý theo thứ tự, không ưu tiên người quen.",
+  "en": ""
+ },
+ {
+  "vi": "🗯️ Đồng nghiệp đổ lỗi, ví bị móc, laptop bị lấy: bình tĩnh đưa email và nhật ký làm bằng chứng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn soát phiếu phòng khám, lấy đúng hộp, đúng lô rồi giao; việc ngoài phạm vi thì chuyển cô Thu.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu gọn gàng",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu đủ, dấu đúng mẫu, khay đúng tên và số lượng: đóng dấu [[Giao đúng phiếu]].",
+  "en": ""
+ },
+ {
+  "vi": "Hàng thông thường, không phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Siro, viên gừng, men lá không cần phiếu. Soát khay rồi [[Giao đúng phiếu]], đừng từ chối.",
+  "en": ""
+ },
+ {
+  "vi": "Khoa lấy nhầm hộp tên gần giống. Đánh dấu dòng tên, rồi [[Đổi cho đúng rồi giao]].",
+  "en": ""
+ },
+ {
+  "vi": "Khách xin lấy dư",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu ghi 1 hộp mà khay có 3. Đánh dấu số hộp, rồi [[Đổi cho đúng rồi giao]].",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc nhóm K không phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Khách dúi tiền xin một hộp. Đánh dấu dòng “Phiếu”, đóng dấu [[Từ chối, giải thích rõ]].",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu hết hạn",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 2. Hạn phiếu đã qua: đánh dấu dòng “Hạn phiếu”, rồi [[Từ chối, giải thích rõ]].",
+  "en": ""
+ },
+ {
+  "vi": "Lô đang thu hồi",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 2. So số lô trên khay với danh sách thu hồi, rồi [[Đổi cho đúng rồi giao]] sang lô khác.",
+  "en": ""
+ },
+ {
+  "vi": "Con dấu lạ",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3. So dấu với bản tin hôm nay, bấm [[Gọi phòng khám xác minh]], rồi [[Chuyển cô Thu]].",
+  "en": ""
+ },
+ {
+  "vi": "Sai hàm lượng",
+  "en": ""
+ },
+ {
   "vi": "Từ ngày 3. Phiếu ghi 250, kệ chỉ còn 500. Đánh dấu dòng tên rồi [[Chuyển cô Thu]].",
   "en": ""
  },
@@ -1261,258 +1521,6 @@
  },
  {
   "vi": "🔋 Sức bền: về đúng giờ +15 mỗi đêm, tăng ca −25. Dưới 35 là kiệt sức: việc gì cũng chậm hơn, không được tăng ca.",
-  "en": ""
- },
- {
-  "vi": "➕ Còn dưới 4 việc mà muốn làm thêm: bấm [[Nhận thêm việc]]. Việc nhận giữa ngày có hạn 2 tiếng rưỡi sau đó.",
-  "en": ""
- },
- {
-  "vi": "🔰 Hồ sơ đầu tiên có chị Hạnh kèm từng bước, không tính điểm soát. Nút gợi ý làm giúp luôn (như “✍️ Điền theo chứng từ”); từ hồ sơ thứ hai bạn tự chọn.",
-  "en": ""
- },
- {
-  "vi": "📅 Lịch 5 ngày tới gọn trong chip 📅 ở hàng giờ; chạm để mở.",
-  "en": ""
- },
- {
-  "vi": "🕵️ Ngày kiểm toán: anh Khải soát dấu cuối ngày. Khay sạch +10 xu và +3 tin tưởng; mỗi bộ sai −10 xu và −3 tin tưởng, tính tối đa 3 bộ.",
-  "en": ""
- },
- {
-  "vi": "📞 Ngày sếp vắng: xin gợi ý chờ 15 phút, và có bộ “sếp OK qua điện thoại” phải trình lại.",
-  "en": ""
- },
- {
-  "vi": "🐢 Ngày mạng chậm: mở tài liệu mất gấp đôi. Ngày thực tập sinh Na nộp bản nháp nhiều lỗi.",
-  "en": ""
- },
- {
-  "vi": "📦 Ngày hàng về dồn dập: khay dày thêm một bộ.",
-  "en": ""
- },
- {
-  "vi": "🔥 Ngày thứ 5 mỗi tháng là ngày khóa sổ: hạn sớm hơn 30 phút, khay dày hơn. Tăng ca được 18 xu và +3 tin tưởng.",
-  "en": ""
- },
- {
-  "vi": "✉️ Có người nhờ lùi ngày hóa đơn, ghi bữa tối riêng vào chi phí, hay gửi phong bì “cảm ơn”.",
-  "en": ""
- },
- {
-  "vi": "📱 Tin nhắn “giám đốc” bảo chuyển tiền gấp: gọi số cũ của sếp, cần phiếu đủ hai chữ ký.",
-  "en": ""
- },
- {
-  "vi": "Chốt khay",
-  "en": ""
- },
- {
-  "vi": "Ghi bút toán",
-  "en": ""
- },
- {
-  "vi": "Bộ tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Chốt thứ tự",
-  "en": ""
- },
- {
-  "vi": "Xác nhận số liệu",
-  "en": ""
- },
- {
-  "vi": "Xin gợi ý",
-  "en": ""
- },
- {
-  "vi": "Đăng ký tăng ca",
-  "en": ""
- },
- {
-  "vi": "Ở lại tăng ca",
-  "en": ""
- },
- {
-  "vi": "Nghỉ giải lao 15 phút",
-  "en": ""
- },
- {
-  "vi": "Giúp",
-  "en": ""
- },
- {
-  "vi": "Nhờ đỡ",
-  "en": ""
- },
- {
-  "vi": "Bạn soát bảng lương, làm phiếu lương, khai thuế và nộp hồ sơ đúng hạn cho khách, dưới mắt chị Hồng.",
-  "en": ""
- },
- {
-  "vi": "Việc đầu mỗi ngày. Chạm ô sai của từng người, bấm [[Xong dòng]], rồi [[Chuyển lương]] trước hạn.",
-  "en": ""
- },
- {
-  "vi": "Ghép giờ tăng ca, tính lương gộp, bảo hiểm, thuế, thực nhận. Gửi phiếu riêng cho từng người.",
-  "en": ""
- },
- {
-  "vi": "File chuyển khoản",
-  "en": ""
- },
- {
-  "vi": "Tìm dòng sai trong file chuyển lương, cộng tổng, rồi chọn cách duyệt đủ hai người.",
-  "en": ""
- },
- {
-  "vi": "“Sao lương em ít hơn?”",
-  "en": ""
- },
- {
-  "vi": "Tìm nguyên nhân, tính số chênh, rồi trả lời riêng cho người hỏi, không đăng nhóm chung.",
-  "en": ""
- },
- {
-  "vi": "Tờ khai thuế GTGT",
-  "en": ""
- },
- {
-  "vi": "Cho quán Mộc Miên: loại hóa đơn không hợp lệ, tính thuế đầu ra, đầu vào, số phải nộp và hạn nộp.",
-  "en": ""
- },
- {
-  "vi": "Ghép hồ sơ với hạn, dời hạn trùng Tết, tính tiền chậm nộp 0,03% mỗi ngày, xếp thứ tự nộp.",
-  "en": ""
- },
- {
-  "vi": "Quyết toán thuế TNCN cuối năm",
-  "en": ""
- },
- {
-  "vi": "Chọn đường quyết toán, giấy tờ cần có, rồi tính số thuế còn nộp hoặc được hoàn.",
-  "en": ""
- },
- {
-  "vi": "📥 Tab [[Hộp thư]]: bấm [[Nhận bảng lương nháp]] hoặc [[Nhận hồ sơ & đọc yêu cầu]].",
-  "en": ""
- },
- {
-  "vi": "📑 Mở [[Quy định]] xem hệ số tăng ca, mức sàn bảo hiểm, ngày chốt người phụ thuộc. Mỗi quy định là một dòng, chạm để đọc.",
-  "en": ""
- },
- {
-  "vi": "👆 Bảng lương: chạm vào ô sai để đánh dấu, tối đa 3 ô mỗi dòng. So từng ô với giấy tờ.",
-  "en": ""
- },
- {
-  "vi": "📄 Giấy tờ gốc chỉ hiện dòng của người đang soát; bấm “Xem cả … dòng” để xem hết.",
-  "en": ""
- },
- {
-  "vi": "✅ Bấm [[Xong dòng]], rồi [[Người tiếp theo]]. Đủ người thì bấm [[Chuyển lương]].",
-  "en": ""
- },
- {
-  "vi": "🧮 Hồ sơ: làm từng bước rồi bấm [[Kiểm tra]]. Cần tính thì mở dòng 🧮 Máy tính bàn; tới bước tính số nó tự mở.",
-  "en": ""
- },
- {
-  "vi": "💡 Bảng lương: bí dòng nào thì bấm [[Gợi ý]] (5 phút). Hồ sơ: trả lời sai mất thêm 15 phút, rồi gợi ý tự hiện ra.",
-  "en": ""
- },
- {
-  "vi": "📤 Xong mọi bước thì bấm [[Nộp / bàn giao hồ sơ]].",
-  "en": ""
- },
- {
-  "vi": "📨 Thẻ lịch nộp: bấm [[Nộp]] trước hạn cho tờ khai thuế, hồ sơ bảo hiểm, báo cáo hóa đơn. Nộp đúng hạn +1 tin tưởng. Thẻ gập gọn trong Hộp thư tới khi tới hạn; chạm để mở.",
-  "en": ""
- },
- {
-  "vi": "🔍 Chị Hồng soát từng ô lương: ngày công, tăng ca, bảo hiểm, người phụ thuộc, tạm ứng, tài khoản.",
-  "en": ""
- },
- {
-  "vi": "👻 Tìm được người “ma”, dòng trùng, người đã nghỉ, số tài khoản lấy từ tin nhắn chat.",
-  "en": ""
- },
- {
-  "vi": "⚖️ Không trả dư cho ai, cũng không trả thiếu cho ai. Bắt đúng lỗi được thêm tin tưởng.",
-  "en": ""
- },
- {
-  "vi": "🔒 Phiếu lương và câu trả lời về lương luôn gửi riêng từng người.",
-  "en": ""
- },
- {
-  "vi": "⏰ Chuyển lương trước hạn. Hồ sơ không sai bước được đủ thưởng, mỗi lần sai trừ 4 xu (thử việc 2 xu).",
-  "en": ""
- },
- {
-  "vi": "Sót lỗi làm công ty trả dư (người ma, trùng dòng, tính thừa)",
-  "en": ""
- },
- {
-  "vi": "Bị phạt tiền và trừ 3 tin tưởng mỗi lỗi. Chị Hồng càu nhàu, bớt thưởng.",
-  "en": ""
- },
- {
-  "vi": "Sót lỗi làm công nhân bị trả thiếu",
-  "en": ""
- },
- {
-  "vi": "Sáng hôm sau người đó gửi khiếu nại vào hộp thư. Bỏ mặc tới cuối ngày mất 2 tin tưởng.",
-  "en": ""
- },
- {
-  "vi": "Trả lời khiếu nại: [[Bảo là phần mềm tính, không sửa]]",
-  "en": ""
- },
- {
-  "vi": "Mất 4 tin tưởng, công đoàn vào cuộc. [[Hẹn cộng vào kỳ sau]] mất 1. Tốt nhất [[Xin lỗi, chi bù ngay hôm nay]]: +2 tin tưởng.",
-  "en": ""
- },
- {
-  "vi": "Đánh dấu nhầm ô đúng",
-  "en": ""
- },
- {
-  "vi": "Đánh dấu thừa cũng bị trừ tin tưởng, tối đa 3 điểm mỗi bảng.",
-  "en": ""
- },
- {
-  "vi": "Bớt 8 xu thưởng (thử việc 4 xu), mất 3 tin tưởng; bảng lương trễ mất thêm 2. Tờ khai trễ: 3 xu mỗi ngày, tới ngày 5 sếp nộp thay, −3 tin tưởng.",
-  "en": ""
- },
- {
-  "vi": "Lỗi nặng khi soát lương",
-  "en": ""
- },
- {
-  "vi": "Bị báo lên app và mất thêm 2 tin tưởng với sếp.",
-  "en": ""
- },
- {
-  "vi": "💼 Phải được tuyển trước: bấm [[Ứng tuyển]], nộp CV thật, thư xin việc, trả lời phỏng vấn.",
-  "en": ""
- },
- {
-  "vi": "🤝 Có thư mời thì bấm [[Ký hợp đồng thử việc]]. Minh Bạch trả 60–85 xu/ngày, thử việc 3 ngày.",
-  "en": ""
- },
- {
-  "vi": "💰 Lương ngày vào ví khi khép ca, nếu hôm đó xong ít nhất một việc. Thử việc nhận 85%.",
-  "en": ""
- },
- {
-  "vi": "🕗 Làm 08:00–17:30. Từ 16:30 có thể bấm [[Đăng ký tăng ca]], hết giờ là [[Ở lại tăng ca]], tới 20:00 (+12 xu, mai vào muộn 30 phút).",
-  "en": ""
- },
- {
-  "vi": "📆 Mỗi 5 ngày là một kỳ: tờ khai thuế TNCN hạn ngày 2, BHXH hạn ngày 3 (chuyển xong một bảng lương trước), báo cáo hóa đơn hạn ngày 4.",
   "en": ""
  }
 ]

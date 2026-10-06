@@ -1,3 +1,7 @@
+# v1.9.3 — 2026-10-06: sửa lỗi + cập nhật thêm
+
+Có gì mới (chủ game: "sửa lỗi, cập nhật thêm"): sửa lỗi tiệm hoa/giúp việc/chùa/giáo viên/giao hàng/tiệm quần áo; 45 món avatar; cửa hàng điện thoại; bầu cua xúc xắc thật; thăng tiến rõ ràng hơn. Các mục "Chưa phát hành" bên dưới là nội dung của bản này.
+
 # Chưa phát hành — Bầu cua xúc xắc thật
 
 - 🎲 Chủ game 06/10 ("ra cua nhiều quá, bị cheat"): bầu cua lăn ba xúc xắc ngẫu nhiên thật, mỗi mặt 1/6, không quyết thắng thua trước và không còn "thua 4 ván thì ván sau chắc thắng" (trước đây xúc xắc chọn theo mặt đặt nên ai đặt cua thì cua ra nhiều). Lâu dài đặt một mặt lỗ khoảng 4,6% (bão vẫn 10:1). Chiếu trong, lô tô, vé cào, ném vòng giữ như cũ. Không đổi bản lưu.
