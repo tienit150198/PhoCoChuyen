@@ -31,7 +31,7 @@ const few=(list,n=3)=>list.slice(0,n).join(' · ')+(list.length>n?` · +${list.l
  * expire tomorrow, crates at the door, orders on the way. [] when the career keeps no stock room. */
 export function stockLines(x){
   const room=x?.room,inv=room?.inventory;if(!inv?.stock)return [];
-  const cid=x.state?.current,byId=Object.fromEntries((x.content?.inventory?.items?.[cid]||[]).map(i=>[i.id,i]));
+  const cid=x.state?.current||x.state?.focus,byId=Object.fromEntries((x.content?.inventory?.items?.[cid]||[]).map(i=>[i.id,i]));
   const name=i=>`${esc(i.emoji||'📦')} ${esc(shortName(i.name))}`;
   const low=lowItems(room,x.content,cid),out=low.filter(i=>i.have<=0),thin=low.filter(i=>i.have>0);
   // Lots that expire today are thrown out at closing, so what is left in expiring_soon goes tomorrow.

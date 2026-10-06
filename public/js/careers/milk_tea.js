@@ -881,7 +881,7 @@ export default {
       }
       const settle=()=>{if(quick)x.ui.mtLocal=(x.ui.mtLocal||[]).filter(p=>p!==quick);};
       try{
-        const r=await x.api.command(data.op,payload)||{};
+        const r=await x.api.command(data.op,payload,"milk_tea")||{};   // the career named: a new account has no `current` yet
         settle();
         x.ui.flash=data.op==='ask'?'':r.message||'';
         if(r.celebrate)sfx.success();else if(!quick)sfx.click();

@@ -10,7 +10,7 @@ import {lowItems,crates,shortName} from '../v4/restock.js';
  * the way. Names and numbers sit in their own nodes, so the English page can translate each. */
 export function stockLines(x){
   const room=x.room,inv=room?.inventory;if(!inv)return [];
-  const low=lowItems(room,x.content,x.state?.current),out=low.filter(i=>i.have<=0),few=low.filter(i=>i.have>0);
+  const low=lowItems(room,x.content,x.state?.current||x.state?.focus),out=low.filter(i=>i.have<=0),few=low.filter(i=>i.have>0);
   const item=(i,n)=>`<span class="pk-it"><span aria-hidden="true">${x.esc(i.emoji)}</span> ${x.esc(shortName(i.name))}${n?` <b>${i.have}</b>`:''}</span>`;
   const list=(rows,n)=>rows.slice(0,3).map(i=>item(i,n)).join(' · ')+(rows.length>3?` · +${rows.length-3}`:'');
   const {ready,coming}=crates(inv);

@@ -46,6 +46,11 @@
 - 💬 Nút Chat hiện ngay sau khung hình đầu: nút xám "đang kết nối…" (chạm thì báo đang kết nối và thử lại liền), sáng lên khi máy chủ chat chào. Kết nối chat khởi động ngay lúc rảnh đầu tiên sau khung hình đầu thay vì cuối hàng chờ (~6 giây). Chưa kết nối được lần nào thì thử lại sau 3, 8, 20 giây rồi mới giãn ra 1–10 phút (trước đây chờ 60 giây, nên ai mở game đúng lúc dịch vụ chat khởi động lại thì không thấy chat cả phút).
 - 🔄 Màn hình tải không còn kẹt: app.js (hoặc một file của nó) tải hỏng, hay một file có phiên bản bị 404 lúc đang cập nhật, thì tự tải lại một lần (chống cache). Hỏng lần nữa trong 2 phút hoặc mất mạng thì hiện nút "Tải lại" kèm phiên bản và mã lỗi. Sau 25 giây vẫn chưa xong thì gợi ý "Tải lại". Stylesheet hỏng được thử lại một lần.
 - 📊 Lỗi tải trang ghi kèm phiên bản và mã HTTP (screen `loading:v1.9.2-<build>:404`, beacon rời trang `p: v<phiên bản>`).
+# Chưa phát hành — WP-3 lệnh nghề + giáo viên
+
+- Người chơi mới: chạm đầu tiên ở tiệm trà sữa (Ủ trà…) bị từ chối "Chọn một nghề trước nhé." (14 phiên ngày 06/10). Màn hình vẽ theo nơi đang mở (`focus`) nhưng lệnh gửi theo `current`, còn trống ở tài khoản mới. Trà sữa và Mẹ & bé giờ ghi rõ nghề; `api.command` (và lời AI phản hồi, đánh giá) mặc định theo `current`, không có thì `focus`, như app.js. Bộ kế hoạch nhập hàng / ngày mai đọc kho cũng vậy. Test mới: tests/command_career.mjs (kiểm cả mọi nghề không gọi `api.command` thiếu nghề).
+- Giáo viên (góp ý #211, iPhone 390×797 "các lựa chọn cứ xếp chồng lên nhau"): trên điện thoại, 3 ô giáo án nằm ngay trên thẻ hoạt động thay vì trong thanh dưới (thanh bị ép 42%, các ô xếp thành cột, chữ và nút chồng lên nhau, cao 145 px → 57 px). Huy hiệu thứ tự nằm trong thẻ, không đè thẻ bên cạnh; cuộn tới nút chừa chỗ cho thanh dưới.
+- Giáo viên: chạm bị dội (409 revision_conflict ở lesson_next / lesson_call / lesson_answer / cl_parent, 15 phiên). Lời AI viết lại câu học sinh / phụ huynh ghi vào save ngoài hàng lệnh; giờ nó xếp hàng: các chạm sau chờ nó xong, tối đa 4 giây (VOICE_WAIT), rồi đi tiếp. Không có khóa lưu mới, không đổi máy chủ.
 
 # v1.9.2 — 2026-10-06: giao diện cũ trở lại
 
