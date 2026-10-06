@@ -1,5 +1,75 @@
 [
  {
+  "vi": "♻️ Cô Tám trả $1 xu tiền ve chai sạch.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📝 Nhắc $1 nhà phân loại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🌙 Còn $1 túi, món trên xe lúc tan ca: chị Hạnh phải đẩy ra điểm tập kết giúp, không có tiền ve chai.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⏰ $1 ngõ thu gom trễ giờ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sắp hết $1: mở kho mua thêm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sắp hết $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Hạnh dặn: $1, kiểm xe đẩy rồi vào ca. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Hạnh dặn: $1, kiểm xe đẩy rồi vào ca.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Hạnh dặn: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 phản ánh: “$2” $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: $2 nhà, $3 túi rác. $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 dặn thêm: “$2 $3 lau kỹ giúp nhé.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧺 Cô Mai: “$1”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chai $1 còn đầy.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Hết $1 trong kho. Nhập thêm ở Kho nhé.",
   "en": "",
   "pattern": true
@@ -2176,76 +2246,6 @@
  },
  {
   "vi": "$1 lúc $2, giường $3 · $4.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ra viện: giường $1 · $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "“$1” chưa được xếp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "“$1” trùng chỗ đã có người đặt: $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "“$1” có $2 người mà $3 chỉ $4 chỗ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "“$1” cần $2 mà $3 không có.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 bận lúc $2 ($3) mà vẫn xếp “$4”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 không thể cùng lúc ở “$2” và “$3” ($4).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "“$1” phải vào “$2”: $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "“$1” vốn đúng mà bị đổi thành “$2”. $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "“$1” vốn đúng, không cần sửa. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "sửa thành “$1” vẫn chưa đúng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "“$1” $2: đúng là “$3”. $4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "“$1” → đúng là “$2”. $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: chưa xếp",
   "en": "",
   "pattern": true
  }

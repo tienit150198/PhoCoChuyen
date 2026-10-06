@@ -1,5 +1,75 @@
 [
  {
+  "vi": "Bạn chưa có $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xác nhận mua $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã trả $1 cho $2 màu $3.$4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 giờ màu $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", biển tên “$1”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giờ bạn đi $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiền xăng $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "😊 Tinh thần +$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xác nhận bán $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã bán $1, nhận $2 xu vào ví.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👥 Chỉ gửi cho bạn bè đã kết bạn đủ $1 phút.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📅 Tài khoản đã chơi game đủ $1 ngày (đời thực) và nhân vật đủ $2 ngày sống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 đã về nhà. Ghé góc gia đình để chăm sóc nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã đổi tên thành $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 đã thay $2.",
   "en": "",
   "pattern": true

@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Số liệu đang được tính, thử lại sau ít phút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không tải được CSV.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng dữ liệu",
+  "en": ""
+ },
+ {
   "vi": "Môi trường",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Dỗ bé tới khi bé ổn",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn cách dỗ",
-  "en": ""
- },
- {
-  "vi": "💛 BÉ ỔN RỒI",
-  "en": ""
- },
- {
-  "vi": "dỗ bé thêm",
   "en": ""
  }
 ]

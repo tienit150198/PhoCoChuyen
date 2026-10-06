@@ -1,5 +1,75 @@
 [
  {
+  "vi": "Bạn bớt luôn $1 xu. $2 hớn hở — chị Vy đứng trong nhìn ra, hơi nhíu mày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Còn $2 xu. $3 đưa $4 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đang chờ bạn trả lời chuyện bớt giá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giá treo vừa hết $1 $2. Bill được mở lại, chọn lại giùm khách nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 để đồ lại trên quầy, không mua nữa: “$2”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 để đồ lại, không lấy nữa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đã phục vụ $1: “$2”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thất thoát ở quầy: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gửi Bà Tư $1 xu tiền công.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã thu $1 xu · +$2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Về nhà mặc thử mới thấy $1, phải quay lại tiệm đổi size.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "lấy sai size ($1 thay vì $2)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đi $1 mà bộ này lạc quẻ, tới nơi mới thấy không hợp dịp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mà mặc màu $2, người ta nhìn mình quá trời.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "chọn màu $1 kiêng kỵ",
   "en": "",
   "pattern": true
@@ -2176,76 +2246,6 @@
  },
  {
   "vi": "🔴 Tách $1 món nguy hại ra hộp đỏ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "♻️ Cô Tám trả $1 xu tiền ve chai sạch.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📝 Nhắc $1 nhà phân loại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🌙 Còn $1 túi, món trên xe lúc tan ca: chị Hạnh phải đẩy ra điểm tập kết giúp, không có tiền ve chai.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⏰ $1 ngõ thu gom trễ giờ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sắp hết $1: mở kho mua thêm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sắp hết $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Hạnh dặn: $1, kiểm xe đẩy rồi vào ca. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Hạnh dặn: $1, kiểm xe đẩy rồi vào ca.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chị Hạnh dặn: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 phản ánh: “$2” $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: $2 nhà, $3 túi rác. $4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 dặn thêm: “$2 $3 lau kỹ giúp nhé.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧺 Cô Mai: “$1”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chai $1 còn đầy.",
   "en": "",
   "pattern": true
  }

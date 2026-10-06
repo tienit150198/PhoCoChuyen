@@ -1,5 +1,10 @@
 [
  {
+  "vi": "🚚 $1/$2 đơn đang về",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "📦 Mở thùng đã tới ($1) · đủ $2 đơn",
   "en": "",
   "pattern": true

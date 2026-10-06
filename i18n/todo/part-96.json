@@ -1,5 +1,75 @@
 [
  {
+  "vi": "Ra viện: giường $1 · $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "“$1” chưa được xếp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "“$1” trùng chỗ đã có người đặt: $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "“$1” có $2 người mà $3 chỉ $4 chỗ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "“$1” cần $2 mà $3 không có.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 bận lúc $2 ($3) mà vẫn xếp “$4”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 không thể cùng lúc ở “$2” và “$3” ($4).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "“$1” phải vào “$2”: $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "“$1” vốn đúng mà bị đổi thành “$2”. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "“$1” vốn đúng, không cần sửa. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "sửa thành “$1” vẫn chưa đúng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "“$1” $2: đúng là “$3”. $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "“$1” → đúng là “$2”. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: chưa xếp",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Ô “$1” ghi “$2”, đúng là “$3”. $4",
   "en": "",
   "pattern": true
@@ -2176,76 +2246,6 @@
  },
  {
   "vi": "Soát thư mời: $1 $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mời $1 $2 — $3, $4.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hẹn $1, ngày $2, Phòng họp lớn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bàn đơn $1 $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lịch tháng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1, ngày $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "THÔNG BÁO NGHỈ LỄ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "lễ $1 từ ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thứ Hai, ngày $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Soát thông báo nghỉ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghỉ lễ $1: $2 ngày, từ $3 đến hết $4.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Soát thư trả lời khiếu nại $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 · đơn $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 lúc $2 phòng kinh doanh đã đặt trước.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 lúc $2 có lớp đào tạo an toàn lao động.",
   "en": "",
   "pattern": true
  }

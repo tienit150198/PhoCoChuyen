@@ -2040,6 +2040,11 @@
   "pattern": true
  },
  {
+  "vi": "Bé Bi mới tập chơi. Ông Hai rất khó, gần như không ai thắng nổi, thắng được $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Mỗi ngày kiếm từ ô ăn quan tối đa $1.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "kinh hụt $1 lần 🙈",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mua 1 đến $1 tờ dò. Cô Bảy hô số nào thì số đó sáng lên trên tờ của bạn, bạn tự chạm để đánh dấu, không ai đánh dấu giùm.",
   "en": "",
   "pattern": true
  }

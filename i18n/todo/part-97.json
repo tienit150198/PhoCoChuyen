@@ -1,5 +1,75 @@
 [
  {
+  "vi": "Mời $1 $2 — $3, $4.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hẹn $1, ngày $2, Phòng họp lớn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn đơn $1 $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lịch tháng $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1, ngày $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "THÔNG BÁO NGHỈ LỄ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "lễ $1 từ ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thứ Hai, ngày $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Soát thông báo nghỉ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nghỉ lễ $1: $2 ngày, từ $3 đến hết $4.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Soát thư trả lời khiếu nại $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 · đơn $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lúc $2 phòng kinh doanh đã đặt trước.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lúc $2 có lớp đào tạo an toàn lao động.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Xếp lịch làm việc của sếp ($1 việc)",
   "en": "",
   "pattern": true
@@ -1910,7 +1980,7 @@
   "pattern": true
  },
  {
-  "vi": "Bày bàn ô ăn quan với $1. Bạn đi trước nha!",
+  "vi": "Bày bàn ô ăn quan với $1.",
   "en": "",
   "pattern": true
  },
@@ -2176,76 +2246,6 @@
  },
  {
   "vi": "Ví cần $1 xu tiền xăng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn chưa có $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xác nhận mua $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1 cho $2 màu $3.$4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 giờ màu $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", biển tên “$1”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giờ bạn đi $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền xăng $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😊 Tinh thần +$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xác nhận bán $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã bán $1, nhận $2 xu vào ví.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👥 Chỉ gửi cho bạn bè đã kết bạn đủ $1 phút.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📅 Tài khoản đã chơi game đủ $1 ngày (đời thực) và nhân vật đủ $2 ngày sống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 đã về nhà. Ghé góc gia đình để chăm sóc nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã đổi tên thành $1.",
   "en": "",
   "pattern": true
  }
