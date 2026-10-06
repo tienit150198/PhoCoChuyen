@@ -83,7 +83,7 @@ html[data-game="isometric"] :is(.leisure-place, .pixel-place) {
 html[data-game="isometric"] :is(.leisure-place, .pixel-place)::backdrop {background:#30231870;backdrop-filter:none;}
 html[data-game="isometric"] :is(.leisure-place, .pixel-place) header {
   display: flex;align-items: center;gap: 12px;position: absolute;z-index: 1;
-  top: max(18px, env(safe-area-inset-top));left: max(20px, env(safe-area-inset-left));
+  top: max(18px, var(--safe-t));left: max(20px, var(--safe-l));
   padding: 6px 15px 6px 6px;border: 1px solid var(--iso-seam);border-radius: 20px;
   background: var(--iso-paper-top);color: var(--iso-ink);box-shadow: var(--iso-lift);
 }
@@ -101,7 +101,7 @@ html[data-game="isometric"] :is(.leisure-place, .pixel-place) canvas {
 html[data-game="isometric"] .pixel-place-controls {display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:12px;}
 html[data-game="isometric"] :is(.leisure-place, .pixel-place) :is(button, [data-stick]) {min-height:44px;font-family:inherit;}
 html[data-game="isometric"] :is(.leisure-place, .pixel-place) [data-stick] {
-  position:absolute;left:max(24px,env(safe-area-inset-left));bottom:max(28px,env(safe-area-inset-bottom));
+  position:absolute;left:max(24px,var(--safe-l));bottom:max(28px,var(--safe-b));
   width:100px;height:100px;border-radius:50%;touch-action:none;pointer-events:auto;
   border:1px solid var(--iso-seam) !important;background:radial-gradient(circle at 35% 28%,var(--iso-paper-top),var(--iso-paper-inset)) !important;
   box-shadow:inset 0 0 0 6px var(--iso-paper),var(--iso-lift);
@@ -111,7 +111,7 @@ html[data-game="isometric"] :is(.leisure-place, .pixel-place) [data-knob] {
   border:1px solid var(--iso-seam);background:var(--iso-leaf) !important;box-shadow:inset 0 2px 0 #ffffff30,0 2px 5px #35261824;
 }
 html[data-game="isometric"] :is(.leisure-place, .pixel-place) [data-play] {
-  position:absolute;right:max(24px,env(safe-area-inset-right));bottom:max(28px,env(safe-area-inset-bottom));
+  position:absolute;right:max(24px,var(--safe-r));bottom:max(28px,var(--safe-b));
   width:156px;min-height:76px;pointer-events:auto;font-size:17px;line-height:1.4;padding:12px 16px;
   border:1px solid var(--iso-leaf) !important;border-radius:22px !important;color:var(--iso-paper-top) !important;
   background:var(--iso-leaf) !important;font-weight:700;box-shadow:var(--iso-lift);
@@ -125,15 +125,15 @@ html[data-game="isometric"] .place-scene :is(.place-help, .place-record, .place-
   position:absolute;z-index:1;margin:0;padding:8px 12px;color:var(--iso-ink);background:var(--iso-paper-top);
   border:1px solid var(--iso-seam-soft);border-radius:14px;box-shadow:var(--iso-lift);pointer-events:none;box-sizing:border-box;
 }
-html[data-game="isometric"] .place-scene .place-help {left:20px;top:max(88px,calc(env(safe-area-inset-top) + 70px));font-size:12px;}
-html[data-game="isometric"] .place-scene .place-record {right:20px;top:max(24px,env(safe-area-inset-top));font-size:13px;}
-html[data-game="isometric"] .place-scene .place-status {left:50%;top:max(130px,calc(env(safe-area-inset-top) + 115px));transform:translateX(-50%);width:max-content;max-width:min(650px,calc(100% - 40px));text-align:center;font-size:14px;line-height:1.5;}
+html[data-game="isometric"] .place-scene .place-help {left:20px;top:max(88px,calc(var(--safe-t) + 70px));font-size:12px;}
+html[data-game="isometric"] .place-scene .place-record {right:20px;top:max(24px,var(--safe-t));font-size:13px;}
+html[data-game="isometric"] .place-scene .place-status {left:50%;top:max(130px,calc(var(--safe-t) + 115px));transform:translateX(-50%);width:max-content;max-width:min(650px,calc(100% - 40px));text-align:center;font-size:14px;line-height:1.5;}
 @media (max-width:560px) {
   html[data-game="isometric"] :is(.leisure-place, .pixel-place) header h2 {font-size:16px !important;}
-  html[data-game="isometric"] .place-scene header {left:12px;top:max(12px,env(safe-area-inset-top));}
+  html[data-game="isometric"] .place-scene header {left:12px;top:max(12px,var(--safe-t));}
   html[data-game="isometric"] .place-scene .place-help {display:none;}
-  html[data-game="isometric"] .place-scene .place-record {right:12px;top:max(82px,calc(env(safe-area-inset-top) + 70px));font-size:12px;}
-  html[data-game="isometric"] .place-scene .place-status {top:max(126px,calc(env(safe-area-inset-top) + 112px));max-width:calc(100% - 24px);font-size:13px;}
+  html[data-game="isometric"] .place-scene .place-record {right:12px;top:max(82px,calc(var(--safe-t) + 70px));font-size:12px;}
+  html[data-game="isometric"] .place-scene .place-status {top:max(126px,calc(var(--safe-t) + 112px));max-width:calc(100% - 24px);font-size:13px;}
   html[data-game="isometric"] .place-scene [data-stick] {left:16px;width:94px;height:94px;}
   html[data-game="isometric"] .place-scene [data-play] {right:16px;width:116px;min-height:76px;padding:12px;font-size:15px;}
 }
