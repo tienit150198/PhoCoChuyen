@@ -140,6 +140,30 @@ class ContinuousBusiness(unittest.TestCase):
         view['expenses']['wages'] += 100
         self.assertEqual(s, before)
 
+    def test_income_estimate_matches_a_real_day_and_is_read_only(self):
+        """#19: the stall card's 'lãi 1 ngày' is what 24 h of settle() really books (stock and money to spare)."""
+        from game import quay_business as b
+        s, st = fixture('sap')
+        b.settle(s, now=1000)
+        bz = st['business']
+        for d in b.qs.menu(st)['on']:
+            bz['stock'][d] = 5000
+        st['fund'] = 10**6
+        bz['signature'] = ''
+        b._schedule(st, bz['cursor'])
+        snap = copy.deepcopy(s)
+        inc = b.public(st)['income']
+        self.assertEqual(s, snap)
+        v0 = b.public(st)
+        b.settle(s, now=bz['cursor'] // 1000 + 86400)
+        v1 = b.public(st)
+        goods = sum(b.unit_cost(st, d) * (5000 - bz['stock'][d]) for d in b.qs.menu(st)['on'])   # the shelf was free here
+        self.assertAlmostEqual(inc['day']['sold'], v1['sold'] - v0['sold'], delta=0.02 * inc['day']['sold'] + 2)
+        self.assertAlmostEqual(inc['day']['net'], v1['net'] - v0['net'] - goods, delta=0.02 * abs(inc['day']['net']) + 20)
+        self.assertGreater(inc['hour']['sold'], 0)
+        st['staff'] = []
+        self.assertIsNone(b.public(st)['income'])
+
     def test_manual_customers_continue_past_six_and_save_stays_bounded(self):
         from tests.test_quay import opened, ST, act
         from tests.test_quay_self import serve_well

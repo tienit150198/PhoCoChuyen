@@ -242,7 +242,14 @@ function head(){
 const won=()=>{const m=F().money?.total;return typeof m==='number'?m:null;};
 function strip(){
   const f=F(),m=won(),e=f.earn||{},got=(f.today_xu?Object.values(f.today_xu).reduce((a,n)=>a+(Number(n)||0),0):(e.oaq?.today||0)+(e.ring?.today||0))-xsHold();   // every stall's xu this day (today_xu, 1.4.14+)
-  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold()-xsHold())}</b></span><span>💰 Hôm nay ${got<0?'lỗ':'kiếm'} <b>${xu(Math.abs(got))}</b></span><button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 Bảng vàng${m===null?'':` · ${m<0?'lỗ':'lời'} <b>${xu(Math.abs(m))}</b>`}</button></div>`;
+  return `<div class="fh-strip" role="status"><span>👛 <b>${xu((f.wallet||0)-ltHold()-xsHold())}</b></span><span>💰 Hôm nay ${got<0?'lỗ':'kiếm'} <b>${xu(Math.abs(got))}</b></span>${winLoss(f)}<button type="button" class="fh-pts" data-fh="tab" data-tab="board" data-fh-key="pts">🏆 Bảng vàng${m===null?'':` · ${m<0?'lỗ':'lời'} <b>${xu(Math.abs(m))}</b>`}</button></div>`;
+}
+/** #18: today's trò that came out ahead and behind (today_xu, one Sổ ví row per trò), so a losing streak is visible. */
+function winLoss(f){
+  const x=f.today_xu;if(!x)return '';
+  let up=0,down=0;
+  for(const [g,v] of Object.entries(x)){const n=(Number(v)||0)-(g==='xs'?xsHold():0);if(n>0)up+=n;else down-=n;}
+  return up||down?`<span class="fh-wl" title="Cộng theo từng trò hôm nay">📊 Trò lời <b class="up">+${xu(up)}</b> · trò lỗ <b class="down">−${xu(down)}</b></span>`:'';
 }
 /** Inside a stall: the way back to the gate. */
 function nav(){

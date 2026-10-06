@@ -1,3 +1,10 @@
+# Chưa phát hành — Thu nhập mỗi giờ, mỗi ngày (WP-D)
+
+- 💰 Sổ tiệm → Đội (#19): khung "Lãi ước tính của đội" ghi lãi mỗi giờ (và số đơn/giờ) và mỗi ngày 24 giờ nếu đủ hàng, đủ quỹ, đã gồm thưởng 40%; kèm số đơn quỹ nghề còn trả được. Tính từ nhịp đơn (`rate_per_hour`) và lãi đơn tiếp theo máy chủ đã có.
+- 🏪 Quầy của bạn: thẻ quầy có nhân viên ghi "Lãi 1 giờ" theo chợ lúc này và "Lãi 1 ngày (24 giờ)", đã trừ hàng, lương, điện, thuế và cộng thưởng nhân viên bán, cùng hàng còn đủ bán bao lâu. Máy chủ tính từ đúng nhịp khách, lịch chợ, giá và chi phí mà sổ quầy dùng (một ngày mô phỏng lệch dưới 1%).
+- 🎪 Hội chợ (#18, chỉ con số): dải trên cùng thêm "📊 Trò lời +X · trò lỗ −Y" hôm nay, cộng theo từng trò. Không đổi tỷ lệ, không đổi Ông Hai.
+- Chỉ hiển thị: không đổi kinh tế, không thêm khóa lưu.
+
 # Chưa phát hành — Thăng tiến rõ ràng, cấp hàm Phó Tổng Giám đốc (WP-C)
 
 - 🏢 "Ngày điều hành tốt" (F#206): Thăng tiến ghi tiến độ "Ngày điều hành tốt: 2/5" kèm thanh và điều kiện (tự xếp ít nhất 1 việc ở 🗓️ Điều phối, cuối ngày điểm điều hành từ 60/100). Phòng điều hành có mục 🎯 "Hôm nay tính ngày tốt?" (đã tự xếp chưa, còn việc cần quyết, ô trống, quỹ lương). Tổng kết ngày ghi điểm và cách tính ("📊 Điểm điều hành 72/100 (đúng giờ 40 + tinh thần 22 + 20 − phàn nàn 12) → ✓ tính 1 ngày điều hành tốt", hoặc lý do chưa tính) và tiến độ n/5. Nhật ký phòng ghi điểm từng ngày. "Xem thêm" giải thích công thức. Thẻ cấp hàm phi công ghi thêm n/5.

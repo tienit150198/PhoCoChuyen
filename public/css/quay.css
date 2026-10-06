@@ -182,3 +182,5 @@
 .qy-locked{display:block;color:var(--warn,var(--bad));margin-top:2px}
 .qy-runcost{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.qy-runcost p{margin:0 0 4px}.qy-runcost p:last-child{margin:0}.qy-runcost small{color:var(--muted)}
 .qy-risk{margin:0}
+/* #19 (1.9.2): the staffed counter's profit an hour and a day (quay_business.income) */
+.qy-income{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}.qy-income>div{display:grid;gap:3px;min-width:0}.qy-income small{font-size:.72rem;color:var(--muted)}.qy-income strong{font-size:1.08rem;font-variant-numeric:tabular-nums;color:var(--good,var(--ink));white-space:nowrap}.qy-income strong.loss{color:var(--bad)}.qy-income p{grid-column:1/-1;margin:0;font-size:.74rem;color:var(--ink-2);line-height:1.5}
