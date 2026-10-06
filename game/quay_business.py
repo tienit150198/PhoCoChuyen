@@ -399,6 +399,36 @@ def action(s, st, name, p):
     return dict(message=f'Đã nhập {sum(items.values())} món, hết {cost} xu.')
 
 
+def income(st, at):
+    """Read-only (#19, "how xem được thu nhập 1h"): what the staffed counter makes at its current setup, worked out from
+    the same arrival intervals, market calendar, prices, costs, tax and staff bonus settle() uses. `hour` is the hour at
+    the market of now; `day` is one full market cycle (24 h) if the stock and the money last. Nothing is written."""
+    if not st['staff'] or not isinstance(st.get('business'), dict):
+        return None
+    iv = _intervals(st)
+    if not iv:
+        return None
+    rates = _rates(st)
+    online = qs.ONLINE_FEE if st.get('online') else 0
+
+    def run(ms, work):   # work: the market's demand over that time, in percent-milliseconds
+        sold = {d: work / (100 * n) for d, n in iv.items()}
+        revenue = sum(q * qs.price(st, d) for d, q in sold.items())
+        costs = sum(q * unit_cost(st, d) for d, q in sold.items()) + sum(rates.values()) * ms / DEN \
+            + revenue / 3 * online / 100
+        margin = revenue - costs
+        tax = max(0, margin) * market.INCOME_TAX_PERCENT / 100
+        bonus = max(0, margin - tax) * STAFF_BONUS_PERCENT / 100
+        return dict(sold=round(sum(sold.values()), 1), revenue=round(revenue), costs=round(costs + tax),
+                    bonus=round(bonus), net=round(margin - tax + bonus))
+    hour_ms = 3600 * 1000
+    now = market.snapshot(at)
+    hour = run(hour_ms, now['demand_factor'] * 100 * hour_ms)
+    day = run(market._CYCLE_MS, market._CYCLE_WORK)
+    stock = sum(st['business']['stock'].get(d, 0) for d in iv)
+    return dict(hour=hour, day=day, market=now['label'], stock_hours=round(stock / hour['sold'], 1) if hour['sold'] else None)
+
+
 def public(st):
     from .player_service_tasks import public_visits,visit_due
     b = st.get('business')
@@ -433,7 +463,8 @@ def public(st):
         profit_bonus=b.get('profit_boost', {}).get('total', 0),
         net=b['revenue'] + b.get('profit_boost', {}).get('total', 0) - sum(b['expenses'].values()) - b.get('unpaid_fines', 0),
         unpaid_fines=b.get('unpaid_fines', 0), expenses=dict(b['expenses']), recent=[dict(x) for x in b['recent']],
-        next_at=next_at / 1000 if code == 'running' else None, server_now=b['cursor'] / 1000)
+        next_at=next_at / 1000 if code == 'running' else None, server_now=b['cursor'] / 1000,
+        income=income(st, b['cursor']))
 
 
 def validate(st, need, integer):

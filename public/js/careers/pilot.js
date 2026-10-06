@@ -279,7 +279,7 @@ function rankCard(x){
   const p=x.room?.promo;if(!p||!p.insignia)return '';
   const of=p.office,n=of?.inbox?.length||0;
   const office=of?`<button type="button" class="btn small ${of.live?'primary':''}" data-action="pmOffice">🏢 ${x.esc(of.name)}${n?` · ${n}`:''}</button>`:'';
-  return `<article class="card pl-rank"><button type="button" class="pl-rank-btn" data-action="promo" aria-label="Thăng tiến: ${x.esc(p.title)}">${insignia(p.insignia,84)}<span><b>${x.esc(p.title)}</b><small>${x.esc(p.insignia.label)}${p.next?` · ${p.next.good}/${p.next.need} ngày tốt`:''}</small></span></button>${office}</article>`;
+  return `<article class="card pl-rank"><button type="button" class="pl-rank-btn" data-action="promo" aria-label="Thăng tiến: ${x.esc(p.title)}">${insignia(p.insignia,84)}<span><b>${x.esc(p.title)}</b><small>${x.esc(p.insignia.label)}${p.next?` · ${p.next.good}/${p.next.need} ngày tốt`:''}${(r=>r?` · 🏢 ${r.got}/${r.need} ngày điều hành tốt`:'')(p.next?.requirements?.find(r=>r.id==='office'&&r.need))}</small></span></button>${office}</article>`;
 }
 const done=t=>['completed','cancelled','referred'].includes(t.status);
 const pct=(a,b)=>b?`${Math.round(100*a/b)}%`:'—';

@@ -76,6 +76,7 @@ FX = {
 MARK_LABEL = ('', 'Đã nhắc nhở', 'Đã cảnh cáo', 'Đã kiểm điểm')
 QUIT_AT = 8           # mood at or below which a person hands in their notice
 DUTY_MAX = 3          # days in a row; then a day of rest (the legal limit)
+GOOD_SCORE = 60   # a day's office score that counts as a good office day (the step's 'office' requirement)
 PAY_MAX = 7
 STAFF_MAX = 12
 LOG_MAX = 6
@@ -582,7 +583,7 @@ def close(career: str, off: dict, rank: int, seed: int, day: int) -> dict:
     k['ontime'] = _clamp(.6 * k['ontime'] + .4 * today)
     k['compl'] = min(999, round(k['compl'] * .6) + compl)
     k['days'] = min(10**6, k['days'] + 1)
-    if worked and score >= 60:
+    if worked and score >= GOOD_SCORE:
         k['good'] = min(10**6, k['good'] + 1)
     busy = {w for w in plan if w is not None}
     for i, st in enumerate(off['staff']):
@@ -612,8 +613,26 @@ def close(career: str, off: dict, rank: int, seed: int, day: int) -> dict:
             + (f' · quỹ lương vượt {over}%' if over else ''))
     if not worked:
         head += ' · trợ lý xếp tạm, không có thưởng'
-    _log(off, f'Ngày {day}: {today}% · {compl} phàn nàn' + (f' · +{bonus} xu' if bonus else ''))
-    return dict(lines=[head] + lines[:2], bonus=bonus, score=score, ontime=today, compl=compl, worked=worked)
+    good = worked and score >= GOOD_SCORE
+    _log(off, f'Ngày {day}: {today}% · {compl} phàn nàn · điểm {score}' + (' ✓' if good else '') + (f' · +{bonus} xu' if bonus else ''))
+    return dict(lines=[head, score_line(o, score, today, morale, compl, over, worked)] + lines[:2], bonus=bonus, score=score,
+                ontime=today, compl=compl, worked=worked, good=good)
+
+
+def score_line(o: dict, score: int, today: int, morale: int, compl: int, over: int, worked: bool) -> str:
+    """The close's score, part by part (F#206: how an office day counts), and whether it counted."""
+    parts = f'{o["kpi"][0].lower()} {round(.5 * today)} + tinh thần {round(.3 * morale)} + 20'
+    if compl:
+        parts += f' − phàn nàn {6 * compl}'
+    if over:
+        parts += f' − vượt quỹ {2 * over}'
+    if not worked:
+        verdict = 'chưa tính: hôm nay bạn chưa tự xếp việc nào ở 🗓️ Điều phối'
+    elif score >= GOOD_SCORE:
+        verdict = '✓ tính 1 ngày điều hành tốt'
+    else:
+        verdict = f'chưa tính: cần từ {GOOD_SCORE} điểm'
+    return f'📊 Điểm điều hành {score}/100 ({parts}) → {verdict}.'
 
 
 # ------------------------------------------------------------------------------------- the client's view
@@ -657,7 +676,8 @@ def public(career: str, off: dict, rank: int, c: dict, seed: int) -> dict:
                                          need=o['roles'][s['role']]['ladder'][s['need']] if s['need'] else None, who=off['plan'][i],
                                          bar=_bar(off, s))
                                     for i, s in enumerate(slots)],
-                inbox=inbox, log=off['log'][-4:], cap=o['cap'][lvl], duty_max=DUTY_MAX)
+                inbox=inbox, log=off['log'][-4:], cap=o['cap'][lvl], duty_max=DUTY_MAX,
+                me=bool(off['me']) and live, good_score=GOOD_SCORE)
 
 
 # ------------------------------------------------------------------------------------- validation

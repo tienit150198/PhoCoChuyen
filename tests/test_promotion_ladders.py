@@ -179,7 +179,9 @@ class Ladders(unittest.TestCase):
         self.assertEqual([x['to'] for x in rec['hi']['log']], [5, 6, 7])
         self.assertIsNone(pm.public(j.state, j.c, 'pilot')['next'])
         self.assertEqual(pm.public(j.state, j.c, 'pilot')['title'], 'Phó Tổng Giám đốc')
-        self.assertTrue(pm.public(j.state, j.c, 'pilot')['insignia']['w'])
+        top = pm.public(j.state, j.c, 'pilot')['insignia']
+        self.assertTrue(top['big'] and top['wing'])   # F#207: one big star on a wing
+        self.assertEqual(top['label'], '1 sao lớn · cánh chim vàng')
 
     def test_office_days_gate_the_director_step(self):
         j = at('pilot', 5)
@@ -191,6 +193,25 @@ class Ladders(unittest.TestCase):
             day(j)   # flying only: the office ran itself (the assistant), no good office day
         self.assertIsNone(due(j))
         self.assertEqual(office_state(j)['kpi']['good'], 0)
+        # F#206: the close says the score, part by part, why it did not count, and the progress n/need
+        r = day(j)
+        lines = r['summary']['promo']['office']['lines']
+        self.assertIn('📊 Điểm điều hành', lines[1])
+        self.assertIn('chưa tự xếp', lines[1])
+        self.assertIn('🏢 Ngày điều hành tốt: 0/5', lines[2])
+        req = next(x for x in pm.public(j.state, j.c, 'pilot')['next']['requirements'] if x['id'] == 'office')
+        self.assertEqual((req['got'], req['need'], req['label']), (0, 5, '🏢 Ngày điều hành tốt: 0/5'))
+
+    def test_a_planned_good_office_day_is_counted_and_said(self):
+        j = at('pilot', 5)
+        r = office_day(j)
+        o = r['summary']['promo']['office']
+        got = office_state(j)['kpi']['good']
+        self.assertEqual(got, 1 if o['good'] else 0)
+        self.assertIn('✓ tính 1 ngày điều hành tốt' if o['good'] else 'cần từ 60', o['lines'][1])
+        self.assertIn(f'🏢 Ngày điều hành tốt: {got}/5', o['lines'][2])
+        self.assertIn(f'điểm {o["score"]}', office_state(j)['log'][-1])
+        validate_state(j.state)
 
     def test_quitting_restarts_but_keeps_the_log(self):
         j = at('pilot', 4)

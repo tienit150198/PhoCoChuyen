@@ -104,3 +104,18 @@
 .of-meter.low i{background:var(--warn)}
 .of-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 .of-acts .btn{min-height:44px;justify-content:flex-start;text-align:left;white-space:normal;line-height:1.15}
+/* F#206 / #11 (1.9.2): the office-day rule, today's check and the last review's answers */
+.pm-ladder .pm-rules,.pm-last{align-self:stretch;text-align:left}
+.pm-hint{display:block;color:var(--muted);font-size:.8rem;line-height:1.35}
+.pm-rules .pm-bar{height:8px;margin:4px 0 2px}
+.pm-rules li.bad{color:var(--bad,var(--ink))}
+.pm-last{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border-radius:12px;background:var(--surface-2)}
+.pm-last p{margin:0}
+.of-today{padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);font-size:.86rem}
+.of-today>summary{display:flex;align-items:center;gap:10px;cursor:pointer;min-height:32px}
+.of-today>summary>span{flex:1;min-width:60px}
+.of-today>summary .pm-bar{height:8px}
+.of-today ul{list-style:none;margin:6px 0 4px;padding:0;display:grid;gap:3px}
+.of-today li{color:var(--muted)}
+.of-today li.on{color:var(--good,var(--ink))}
+.of-today p{margin:4px 0 0}
