@@ -243,7 +243,9 @@ Each wave owns its screens and their files; no other wave edits them.
 |---|---|---|---|
 | Foundation + 1 (shipped 1.9.7) | `rel-1.9.7` | drain, com, lighthouse, railway, tra_da, babysitter, pho, pagoda, rescue, giupviec | shared kit files; those 10 careers |
 | **2: uniformed** (audit plan W2, `air_kit`; lighthouse, railway and rescue went out in wave 1) | `ui-wave2` | **police, nurse, lifeguard, oil, pilot, flight_attendant** | `careers/air_kit.js` + `.css`, `pilot_tutor.js`, `pilot_fly.js`; `public/js/careers/<id>.js` + `public/css/careers/<id>.css` and `game/careers/<id>.py` of those 6 |
-| 3 | `ui-wave3` | the rest: not any screen above | not any file above |
+| 3 (shipped 1.9.8) | `ui-wave3` | the six office desks, customer_care, pet_shop | `office_kit`, `office_work`, `desks.css`; those 8 careers |
+| **4: shops + street kit B** (from rel-1.9.8) | `ui-wave4` | **milk_tea, cafe_bakery, restaurant, florist** (the food-kit counters) and **ice_cream, homemaker, garbage, fruit, nail, naucom, photobooth, library** (the street-kit careers not done in wave 1/2) | `careers/food_kit.js` + `.css` (`actionBar`/bar CSS only: delivery, pet_care, grocery, salon, clothing, pet_shop import its other helpers, which stay as they are); `public/js/careers/<id>.js` + `public/css/careers/<id>.css` of those 12; their server files `game/boba.py` (milk tea), `game/careers/<id>.py` of the other 11, `homemaker_content.py`, `library_content.py` |
+| 5 (in parallel) | `ui-wave5` | everything else (delivery, pet_care, grocery, salon, clothing, repair, homestay, mother_baby, farm, teacher, tour_guide, desks, life screens…): not any screen above | not any file above. Shared and not edited by wave 4: `street_kit.js`/`.css`, `asm_kit.js`, `stage_fold.js`, `till.js`, `tomorrow_kit.js`, `plan_kit.js`, `ui-kit.js`, `guide.js`, `app.css`, `compact.css`, i18n |
 
 Wave 2, done (ui-wave2): police 84 → 23 visible words, nurse 78 → 19, lifeguard 67 → 25, oil 42 → 22, pilot 135 → 30
 (cap 30: the opening at the cockpit door stays whole), flight attendant 172 → 25, on a 390 × 844 phone. The pilot and
