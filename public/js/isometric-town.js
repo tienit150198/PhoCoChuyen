@@ -68,7 +68,9 @@ export function createTownPresence(envGetter,options={}){
       // #isoHUD so shell rerenders cannot replace its live status announcement.
       if(!statusNode.parentNode)(doc.getElementById('stage')||doc.getElementById('world')?.parentNode||doc.body)?.append(statusNode);
     }
-    if(statusNode){statusNode.hidden=!inTown;statusNode.dataset.connected=room?'true':'false';
+    // A server without the shared town (LIVE_TOWN off, no live service) says nothing: there is nothing to wait for.
+    const unavailable=!room&&(!env()?.api?.live?.url||socket.state==='off'||socket.state==='open'&&!socket.flags?.town);
+    if(statusNode){statusNode.hidden=!inTown||unavailable;statusNode.dataset.connected=room?'true':'false';
       if(text!==lastStatus){statusNode.textContent=text;lastStatus=text;}}
   }
   function clear(){room=null;me=null;joining=null;joinedPoint=null;lastPoint=null;joinedActivity=null;lastActivity=null;pendingActivityClear=false;peers.clear();draw();status();}

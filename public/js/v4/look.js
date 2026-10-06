@@ -145,13 +145,32 @@ export function accBust(a,k){
   }
   return '';
 }
+/* 🏝️ Giao diện 2.5D: portraits carry a data-cozy-portrait marker that isometric/portraits.js swaps for the illustrated
+ * chibi. Only with 2.5D on (iso-boot.js calls cozyPortraits(true)): the classic UI's markup stays exactly as it was.
+ * The atlas is not imported here (it imports this module). */
+let cozyOn=false;
+const labelHTML=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+export function cozyPortraits(on){cozyOn=Boolean(on);}
+function cozyMark(Lk,gender,mode){
+  if(!cozyOn)return '';
+  const g=gender==='female'||gender==='male'?gender:'none',look=defaultLook(g);
+  for(const slot of SLOTS)if(typeof Lk?.[slot]==='string'&&Object.hasOwn(ART[slot],Lk[slot]))look[slot]=Lk[slot];
+  if(typeof Lk?.uniform==='boolean')look.uniform=Lk.uniform;
+  // A complete dress conceals the stored trousers: the marker describes the visible outfit.
+  const dress=mode==='figure'&&ART.top[look.top]?.dress;
+  if(dress)look.bottom=DEFAULTS.none.bottom;
+  const tint={};
+  for(const slot of TINT_SLOTS){const id=look[slot],colour=Lk?.tint?.[id];if(!(dress&&slot==='bottom')&&typeof colour==='string'&&Object.hasOwn(ACC_COLORS,colour))tint[id]=colour;}
+  if(Object.keys(tint).length)look.tint=tint;
+  return ` data-cozy-portrait="${encodeURIComponent(JSON.stringify({v:1,mode,gender:g,look}))}"`;
+}
 /** Warm little portrait (80×80 viewBox), drawn inline. `look` null: the gender's default look. */
 export function portrait(look,gender,size=56,label){
   const Lk=look||defaultLook(gender),hair=hairColour(Lk),sk=art(Lk,'skin'),top=art(Lk,'top'),ak=accPaint(Lk);
   const f=gender==='female',m=gender==='male';
   label??=f?'Nhân vật nữ':m?'Nhân vật nam':'Nhân vật của bạn';
   const eyes=Lk.acc==='kinh_ram'?'':`<ellipse cx="33" cy="40" rx="2.8" ry="3.4" fill="#4b3936"/><ellipse cx="47" cy="40" rx="2.8" ry="3.4" fill="#4b3936"/><circle cx="32.3" cy="38.8" r="1" fill="#fff"/><circle cx="46.3" cy="38.8" r="1" fill="#fff"/>`;
-  return `<svg class="jr-av" width="${size}" height="${size}" viewBox="0 0 80 80" role="img" aria-label="${label}"><rect width="80" height="80" rx="26" fill="#f4e4cf"/>`+
+  return `<svg class="jr-av" width="${size}" height="${size}" viewBox="0 0 80 80" role="img" aria-label="${cozyOn?labelHTML(label):label}"${cozyMark(Lk,gender,'face')}><rect width="80" height="80" rx="26" fill="#f4e4cf"/>`+
     hairBack(Lk.hair,hair)+`<path d="M12 80c2-23 54-23 56 0" fill="${topColour(Lk,gender)}"/>`+topDetail(top)+(Lk.acc==='tui_cheo'?accBust('tui_cheo',ak):'')+
     `<rect x="34" y="50" width="12" height="12" rx="5" fill="${sk.neck}"/><ellipse cx="40" cy="38" rx="19" ry="21" fill="${sk.c}"/>${hairFront(Lk.hair,hair)}`+eyes+
     `<ellipse cx="28" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><ellipse cx="52" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><path d="M36 48q4 4 8 0" fill="none" stroke="#a46e5e" stroke-width="1.8" stroke-linecap="round"/>`+
@@ -289,5 +308,6 @@ export function paintPlayer(c,F,K=SVG,arms=null){
 /** Full-body SVG of a look (the wardrobe mirror and the item tiles). */
 export function figureSVG(Lk,gender,{w=120,h=170,label='',box='-50 -146 100 154'}={}){
   const out=[];paintPlayer(out,figureOf(Lk,gender),SVG);
-  return `<svg class="wd-fig" width="${w}" height="${h}" viewBox="${box}" ${label?`role="img" aria-label="${label}"`:'aria-hidden="true"'} focusable="false">${out.join('')}</svg>`;
+  const marker=box==='-50 -146 100 154'?cozyMark(Lk,gender,'figure'):'';
+  return `<svg class="wd-fig" width="${w}" height="${h}" viewBox="${box}" ${label?`role="img" aria-label="${cozyOn?labelHTML(label):label}"`:'aria-hidden="true"'} focusable="false"${marker}>${out.join('')}</svg>`;
 }

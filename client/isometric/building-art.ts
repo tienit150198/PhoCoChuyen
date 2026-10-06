@@ -8,6 +8,11 @@ export const BUILDING_ART:Record<string,string>={
   florist:'florist',salon:'salon',nail:'salon',pet_care:'pet',pet_shop:'pet',teacher:'school',pagoda:'pagoda',
   delivery:'garage',garbage:'garage',drain:'garage',repair:'garage',garage:'garage',
   homestay:'home',homemaker:'home',giupviec:'home',babysitter:'home',photobooth:'office',pilot:'airport',flight_attendant:'airport',
+  // 1.8 careers: the closest family until each gets its own sprite (public/icons/cozy-v3/<kind>.webp + NEW_BUILDING_ART).
+  library:'school',nurse:'pharmacy',oil:'garage',railway:'airport',
+  // Careers on the way (lighthouse, rescue call centre, pool lifeguard, police): their door shows as soon as the
+  // catalogue lists them as playable; give them their own art here when it exists.
+  lighthouse:'airport',rescue:'office',lifeguard:'market',police:'office',
 };
 export const NEW_BUILDING_ART=['florist','salon','office','pet','school','pagoda','airport','market'];
 /** Keep a shop name to at most two lines; automatic word wrap made long signs tiny. */

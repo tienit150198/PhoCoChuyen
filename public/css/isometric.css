@@ -722,3 +722,9 @@ html[data-game="isometric"] .town-presence-status[data-connected="true"] {color:
   html[data-game="isometric"] .iso-movement[data-mode="work"] {bottom:calc(232px + env(safe-area-inset-bottom,0px));width:80px;}
   html[data-game="isometric"] .iso-movement[data-mode="work"] .iso-stick-base {width:80px;height:80px;}
 }
+
+/* app.js isoStart: shown over the stage while the Phaser bundle arrives (first visit or a cold cache). */
+.iso-loading {position:absolute;left:50%;top:45%;z-index:22;transform:translate(-50%,-50%);padding:8px 16px;border-radius:14px;background:#fff9edee;color:#66462f;font:600 14px/20px var(--font,"Be Vietnam Pro",system-ui,sans-serif);box-shadow:0 3px 12px #543b241a;pointer-events:none;animation:iso-loading-pulse 1.4s ease-in-out infinite;}
+@keyframes iso-loading-pulse {50% {opacity:.6;}}
+@media (prefers-reduced-motion: reduce) {.iso-loading {animation:none;}}
+html[data-game="isometric"] #world {background:#ede3ce;}

@@ -73,6 +73,12 @@ def content_hash(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()[:HASH_LEN]
 
 
+def ui25d_default() -> str:
+    """UI25D_DEFAULT: the UI a device that never chose gets, "1" the 2.5D town (the default), "0" the classic UI.
+    Players switch in Cài đặt → Giao diện; their choice stays on their device (localStorage mnl.ui25d)."""
+    return "0" if (os.environ.get("UI25D_DEFAULT") or "1").strip() in ("0", "false", "off", "no") else "1"
+
+
 def csp_hash(text: str) -> str:
     return "'sha256-" + base64.b64encode(hashlib.sha256(text.encode()).digest()).decode() + "'"
 
@@ -198,6 +204,8 @@ class WebAssets:
             raise ValueError("boot.js must not contain </script>")
         head = [*observability.head_tags(), f'<script type="importmap">{importmap}</script>',
                 f'<meta name="mnl-version" content="{version}">']
+        # 🏝️ Giao diện 2.5D for a device that never chose (public/js/app.js UI25D): UI25D_DEFAULT=0 serves the classic UI.
+        head.append(f'<meta name="mnl-ui25d" content="{ui25d_default()}">')
         if content:
             head.append(f'<meta name="mnl-content" content="/api/content?v={content}">')
         head.append(f"<script>{boot_src}</script>")

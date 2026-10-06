@@ -36,6 +36,7 @@ from .limits import LRU, Keyed
 from .protocol import Core, Dispatcher
 from .street import StreetFeature
 from .wedding import WeddingFeature
+from .town import TownFeature
 
 try:
     import websockets
@@ -45,7 +46,7 @@ except ImportError:  # pragma: no cover
     websockets = None
 
 # Phase 2 adds live.street.StreetFeature, phase 3 live.dating.DatingFeature (one line each).
-FEATURES = [ChatFeature, StreetFeature, DatingFeature, WeddingFeature, FairFeature, BoothFeature, HomeFeature, WorkVisitsFeature, MarketFeature]
+FEATURES = [ChatFeature, StreetFeature, DatingFeature, WeddingFeature, FairFeature, BoothFeature, HomeFeature, WorkVisitsFeature, MarketFeature, TownFeature]
 HELLO_SECS = 10.0
 NOTIFY_CHANNEL = 'mnl_live'
 

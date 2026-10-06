@@ -2,6 +2,11 @@ import './phaser25d-wired.mjs';  // skipped while the 2.5D client is not wired (
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readdirSync,readFileSync} from 'node:fs';
+// The 2.5D switch keeps the classic UI's icons.js as it is (its illustrated career icons of f3ada34 would change the
+// classic UI too): the 2.5D HUD draws illustrated icons through isometric/ui-icons.js. Runs once icons.js has them.
+if(!readFileSync(new URL('../public/js/icons.js',import.meta.url),'utf8').includes('careerIconNames')){
+  console.log('illustrated-icons: skipped: icons.js keeps the classic icons (illustrated career icons not ported with the 2.5D switch)');process.exit(0);
+}
 // Dynamic, after the guard: 1.8.0's icons.js has no careerIconNames, and a static import would fail to link.
 const {icon,itemArt,portrait,hasIcon,careerIconNames}=await import('../public/js/icons.js');
 const {uiIcon}=await import('../public/js/isometric/ui-icons.js');

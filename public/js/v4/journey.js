@@ -31,7 +31,10 @@ const TW=lazy(()=>import('./town-walk.js'),{css:['/css/town.css']});
  * the layout choice (localStorage). ui.homeMode: the other one opened for now ("📋 Danh sách" on the town, "🗺️ Bản đồ
  * phố" on the list or the menu); the "Hành trình" entry clears it. A browser without canvas keeps the list. */
 const HOME_KEY='mnl.home';
-export const homePref=()=>{try{return localStorage.getItem(HOME_KEY)==='list'?'list':'town';}catch{return 'town';}};
+let homeDefault='town';
+/** 🏝️ Giao diện 2.5D (iso-boot.js): the island is the map, so the home sheet opens as the list unless this device chose the map. */
+export function homeListFirst(){homeDefault='list';}
+export const homePref=()=>{try{const v=localStorage.getItem(HOME_KEY);return v==='list'||v==='town'?v:homeDefault;}catch{return homeDefault;}};
 export function setHomePref(v){try{localStorage.setItem(HOME_KEY,v==='list'?'list':'town');}catch{/* storage blocked */}}
 let canvasOK=null;
 export function townOK(){

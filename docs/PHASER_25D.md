@@ -91,3 +91,31 @@ The whole 2.5D client as it last stood is the tree of `b307563` (origin/main on 
      plus `town-art-polish` (sharp).
    * `tests/isometric-hud-layout.cjs` and `tests/isometric-renderer-browser.cjs` are `playwright-cli run-code`
      snippets, run by hand against a page with the 2.5D client on.
+
+## Wired back behind a switch (branch `ui25d`)
+
+The 2.5D client is wired again, lazily and behind a per-device switch. The classic UI is unchanged for a device that
+has it off.
+
+* **Switch.** `public/js/app.js` `UI25D`: `?ui=classic|25d` (also stored), else `localStorage mnl.ui25d` (`'1'`/`'0'`,
+  set in Cài đặt → Giao diện → "Giao diện 2.5D" / "Giao diện cổ điển", the page reloads), else the server default
+  `<meta name="mnl-ui25d">` from `UI25D_DEFAULT` (`game/webassets.py`, default `1`). A browser without canvas/
+  ResizeObserver, or a tab whose Phaser bundle failed to load (`sessionStorage mnl.ui25dFail`), gets the classic UI.
+* **Loading.** Off: nothing 2.5D is imported (app.js's static graph is the classic one; `iso-boot.js` is a dynamic
+  import). On: `public/js/iso-boot.js` (HUD shell, joystick, town presence, portraits, `isometric.css`,
+  `cozy-reference.css`) starts with the state fetch and is awaited at most 2.5 s for the first frame;
+  `isometric/phaser-world.js` is imported after the first frame. Until then `world` is a stand-in (`isoWorld()` in
+  app.js) that keeps `update`/`paused`/`fx`/mode and forwards later calls, so `v4/sounds.js`'s `world.say` wrapper
+  keeps working after the swap (`adopt`).
+* **Hooks.** As in the table above, adapted: `career:`/`outing:` taps, `leisurePlace`, `home`→`isoTown`, the `iso*`
+  actions, `world.setMode('work')` in `selectCareer`, the town-first boot (a brand-new player still picks a look and
+  a name first), the `#sheet` cancel in the town. `v4/look.js` markers only after `cozyPortraits(true)`;
+  `v4/journey.js` opens the home sheet as the list in 2.5D (`homeListFirst`) unless the device chose the map.
+  Server: `content.py` `playable`, the five `journey.py` leisure lines, `LIVE_TOWN` + `TownFeature` (off by default).
+* **New careers.** `library`→school, `nurse`→pharmacy, `oil`→garage, `railway`→airport art in `building-art.ts` and
+  the same literal in the built `phaser-world.js` (patched in place: no rebuild needed for a mapping change); entries
+  for `lighthouse`, `rescue`, `lifeguard`, `police` are ready for when they become playable.
+* **Not ported** (they would change the classic UI too): the 2.5D-era chat sheet restyle (`v4/chat.js`, `chat.css`),
+  the illustrated icons in `icons.js` and the career icon renames, the isometric delivery ride (`delivery_drive.js`).
+  `tests/illustrated-icons.mjs` and `tests/delivery_isometric.mjs` skip with that reason. `live/hub.py` keeps the
+  standard `broadcast(..., text=True)` (websockets 17.1 supports it), so `test_text_broadcast…` stays skipped.

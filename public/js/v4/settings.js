@@ -50,7 +50,9 @@ export function settingsView(env){
     </section>`:''}`;
   if(tab==='look'){
     const pref=layoutPref(),mode=document.documentElement.dataset.layout;
-    body=`<section class="settings-block"><h3>${icon('palette',18)} Phong cách</h3><div class="theme-grid">${THEMES.map(([id,name,desc,sw])=>`<button type="button" class="theme-card ${s.uiTheme===id?'active':''}" data-action="v4Setting" data-key="uiTheme" data-value="${id}" aria-pressed="${s.uiTheme===id}"><span class="swatches">${sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><b>${name}</b><small>${desc}</small></button>`).join('')}</div></section>
+    body=`<section class="settings-block ui25d-block"><h3><span aria-hidden="true">🏝️</span> Giao diện 2.5D</h3><p class="small muted">Phố 2.5D: đi dạo khắp đảo, gõ cửa từng nghề. Máy yếu hoặc quen kiểu cũ thì chọn Giao diện cổ điển. Chỉ áp dụng trên máy này, đổi lúc nào cũng được.</p>
+      ${segment('ui25d',[['25d','🏝️ Phố 2.5D'],['classic','🏠 Giao diện cổ điển']],globalThis.__mnlUI25D?'25d':'classic','ui25d')}</section>
+    <section class="settings-block"><h3>${icon('palette',18)} Phong cách</h3><div class="theme-grid">${THEMES.map(([id,name,desc,sw])=>`<button type="button" class="theme-card ${s.uiTheme===id?'active':''}" data-action="v4Setting" data-key="uiTheme" data-value="${id}" aria-pressed="${s.uiTheme===id}"><span class="swatches">${sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><b>${name}</b><small>${desc}</small></button>`).join('')}</div></section>
     ${townOK()?`<section class="settings-block"><h3><span aria-hidden="true">🗺️</span> Màn hình chính</h3>${segment('home',[['town','🗺️ Bản đồ phố'],['list','📋 Danh sách']],homePref(),'home')}</section>`:''}
     <section class="settings-block"><h3>${icon('layout',18)} Bố cục màn hình</h3><p class="small muted">Đang dùng: <b>${{phone:'Điện thoại',tablet:'Máy tính bảng',desktop:'Máy tính'}[mode]||mode}</b></p>
       <div class="layout-grid">${LAYOUTS.map(([id,name,desc])=>`<button type="button" class="layout-card ${pref===id?'active':''}" data-action="v4Layout" data-value="${id}" aria-pressed="${pref===id}"><span class="layout-thumb ${id}"><i></i><i></i><i></i></span><b>${name}</b><small>${desc}</small></button>`).join('')}</div></section>`;
@@ -87,6 +89,13 @@ export function settingsView(env){
 export async function settingsAction(action,data,el,env){
   const {api,ui,cmd,renderSheet,toast,confirmAction}=env;
   if(await accountAction(action,data,el,env))return true;
+  if(action==='v4Setting'&&data.kind==='ui25d'){   // 🏝️ this device only (app.js UI25D): the page reloads into the chosen UI
+    const on=data.value==='25d';if(on===Boolean(globalThis.__mnlUI25D))return true;
+    let saved=false;try{localStorage.setItem('mnl.ui25d',on?'1':'0');sessionStorage.removeItem('mnl.ui25dFail');saved=true;}catch{/* storage blocked: the link says it */}
+    toast(on?'Đang mở Phố 2.5D…':'Đang về giao diện cổ điển…');
+    setTimeout(()=>{if(saved)location.reload();else location.replace('/?ui='+(on?'25d':'classic'));},300);
+    return true;
+  }
   if(action==='v4Setting'&&data.kind==='home'){setHomePref(data.value);env.ui.homeMode=null;renderSheet();return true;}   // 🗺️ this device only, like the layout
   switch(action){
     case'v4SetTab':ui.setTab=data.tab;renderSheet(false);return true;

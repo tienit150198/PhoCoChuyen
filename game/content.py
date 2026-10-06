@@ -213,6 +213,7 @@ def public_content() -> dict:
     catalogue=copy.deepcopy(CATALOG)
     for c in catalogue:
         c.update(CAREER_META.get(c["id"], {}))
+        c['playable'] = c['id'] in CAREERS   # 🏝️ the 2.5D town draws a door only for a career one can play
         if c["id"] in PLUGINS:  # its work needs the shift open (engine: "Mở ca trước…"): greyed out while closed
             sp=PLUGINS[c["id"]].SPEC;c["shift_gate"]=dict(prefix=sp["prefix"],free=list(sp.get("free_actions",())))
     return dict(version="0.9.5",experiences=extra.public_content(),inventory=inventory.content(),employment=employment.content(CAREERS),

@@ -54,7 +54,8 @@ async function startGame({marker='',current=null,open=false,summary=false,social
   const L={tut:lazy(['tutorialBoot']),inc:lazy(['incidentBoot']),chat:lazy(['aiNoticeBoot']),happen:lazy(['happenBoot']),
     people:lazy([]),social:lazy(['startSocialPoll','invalidate']),tips:lazy(['tipsBoot']),live:lazy(['liveBoot'])};
   const node={hidden:true};
-  const context={api:game,ui,L,CAREER_MODULES:[],career:()=>current,careerAssets:async()=>{},setLanguage:async()=>{},
+  // The classic UI (app.js UI25D off): the 2.5D boot has its own browser checks (docs/PHASER_25D.md).
+  const context={UI25D:false,ISO:null,api:game,ui,L,CAREER_MODULES:[],career:()=>current,careerAssets:async()=>{},setLanguage:async()=>{},
     shell:{boot:noop},journeyBoot:noop,boardBoot:noop,startTicker:noop,$:selector=>selector==='#sheet'?sheet:node,
     world:{resize:noop},renderMain:noop,accountBoot,env:()=>environment,ensureCareerUI:noop,performance:{mark:noop},
     console,localStorage,location,history,CustomEvent,URL,URLSearchParams,sound:{prepare:noop},needsJob:()=>false,

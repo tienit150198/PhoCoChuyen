@@ -1,3 +1,13 @@
+# Chưa phát hành — Giao diện 2.5D (ui25d)
+
+- 🏝️ Phố 2.5D lên game: đảo isometric (Phaser) với cửa tiệm của cả 45 nghề, đi bộ bằng cần điều khiển, phím W A S D / mũi tên hoặc chạm đường; chạm cửa tiệm là vào làm, nút "Ra đảo" để quay lại. Thanh trên (tên, ví, quỹ, cài đặt), thẻ việc tiếp theo, Sổ việc, Người quen, Thư giãn (câu cá, chèo thuyền, bơi: miễn phí, không tiền thưởng), Trò chuyện, góc nhìn (phóng to, thu nhỏ, toàn đảo) và thanh dưới Phố · Công việc · Nhân vật · Túi đồ · Thêm.
+- Mở game là thấy phố trước; người chơi mới vẫn chọn ngoại hình và tên trước. Ảnh nhân vật trong các bảng dùng hình chibi giống trên đảo.
+- Nghề mới của 1.8 có nhà trên đảo: thư viện (dáng trường học), điều dưỡng (dáng nhà thuốc), dầu khí (dáng gara), đường sắt (dáng nhà ga sân bay). Chừa sẵn chỗ cho hải đăng, tổng đài cứu hộ, cứu hộ bể bơi, công an.
+- Bật mặc định cho mọi người. Cài đặt → Giao diện → "Giao diện 2.5D": chọn "🏠 Giao diện cổ điển" là về ngay giao diện cũ (tải lại trang, chỉ trên máy đó). Link `/?ui=classic` hoặc `/?ui=25d` cũng đổi được.
+- Máy chủ: `UI25D_DEFAULT=0` cho máy chưa chọn dùng giao diện cổ điển (mặc định `1`). Hiện người chơi khác trên đảo: `LIVE_TOWN=1` cho dịch vụ live (mặc định tắt).
+- Nhẹ cho người dùng giao diện cổ điển: không tải gì của 2.5D. Bật 2.5D: phần khung (~60 KB) tới cùng khung hình đầu, Phaser (~360 KB gzip) tải sau khi game đã hiện; tải lỗi thì tab đó tự về giao diện cổ điển.
+- Bản lưu: thêm khóa tùy chọn `journey.leisure` (chỉ có khi đã chơi câu cá / chèo thuyền / bơi); bản lưu cũ không có vẫn đọc bình thường, bản cũ đọc bản lưu mới cũng không lỗi. Không đổi tiền, không thêm bảng.
+
 # v1.8.0 — 2026-10-06
 
 Có gì mới (chủ game duyệt): "Cập nhật toàn bộ UI UX", "Thêm Top tài phú trên Bảng xếp hạng".

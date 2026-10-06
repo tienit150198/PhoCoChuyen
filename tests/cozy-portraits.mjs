@@ -1,7 +1,14 @@
 import './phaser25d-wired.mjs';  // skipped while the 2.5D client is not wired (docs/PHASER_25D.md)
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {ART,defaultLook,portrait,figureSVG} from '../public/js/v4/look.js';
+import {ART,defaultLook,portrait,figureSVG,cozyPortraits} from '../public/js/v4/look.js';
+
+test('the classic UI keeps its portrait markup: no marker until the 2.5D client turns them on',()=>{
+  const look={...defaultLook('female'),hair:'toc_bui_doi'};
+  assert.doesNotMatch(portrait(look,'female',42,'Mây'),/data-cozy-portrait/);
+  assert.doesNotMatch(figureSVG(look,'female'),/data-cozy-portrait/);
+  cozyPortraits(true);   // what public/js/iso-boot.js does
+});
 
 const marker=svg=>svg.match(/data-cozy-portrait="([^"]+)"/)?.[1];
 test('portrait markers safely carry saved wardrobe and keep cropped item tiles native',()=>{

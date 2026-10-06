@@ -107,7 +107,34 @@ function shortWork(html){
 }
 const closedBar=()=>notice(`<b>Ca đang nghỉ</b> · mở ca để làm tiếp. ${button(icon('sun',14)+' Mở ca','startHere',{},'primary small')}`,'amber','sun');
 const ui={opsTab:'staff',staffId:null,lessonSequence:[],tourRoute:[],activityCard:null,view:null,tab:'',task:null,npc:null,jobTab:'shelf',journalTab:'quests',libraryQuery:'',docs:new Set(),transactions:new Set(),drafts:{},ai:{},suggestions:{},busy:false,paused:false};
-const world=new BobaWorld($('#world'),interact);
+/* 🏝️ Giao diện 2.5D, per device (Cài đặt, mnl.ui25d, ?ui=), else the server's default (mnl-ui25d meta). Off: nothing
+ * of it loads. On: iso-boot.js comes with the state, Phaser after the first frame; until then `world` is a stand-in
+ * that keeps what it is told and forwards calls at call time (v4/sounds.js wraps world.say). docs/PHASER_25D.md */
+const UI25D=(()=>{
+  const q=new URLSearchParams(location.search).get('ui'),pick=q==='classic'?'0':q==='25d'?'1':null;let v=pick;
+  try{if(sessionStorage.getItem('mnl.ui25dFail')==='1'&&!pick)return false;if(pick)localStorage.setItem('mnl.ui25d',pick);v=localStorage.getItem('mnl.ui25d')||v;}catch{/* storage blocked */}
+  if(v!=='0'&&v!=='1')v=document.querySelector('meta[name="mnl-ui25d"]')?.content==='0'?'0':'1';
+  try{return v==='1'&&typeof ResizeObserver==='function'&&!!document.createElement('canvas').getContext('2d');}catch{return false;}
+})();
+globalThis.__mnlUI25D=UI25D;
+const ISO=UI25D?lazy(()=>import('./iso-boot.js'),{css:['/css/isometric.css','/css/cozy-reference.css']}):null;
+ISO?.get().catch(e=>console.warn('2.5D:',e));
+function isoWorld(){
+  let real=null,last=null;const own=new Map(),fwd=new Map(),kept={};
+  const stub={mode:'town',paused:false,reduced:false,marks:{},update(s,c){last=[s,c];},say(){},celebrate(){},pet(){},resize(){},go(_,done){done?.();},snapshot(){return '';},
+    setMode(m){if(m!==stub.mode){stub.mode=m;document.dispatchEvent(new CustomEvent('mnl:iso-mode',{bubbles:true,detail:{mode:m}}));}}};
+  const at=()=>real||stub,adopt=w=>{real=w;for(const k in kept)try{w[k]=kept[k];}catch{/* read-only */}if(stub.mode!=='town')w.setMode?.(stub.mode);if(last)w.update(...last);};
+  return new Proxy({},{
+    get(_,k){if(k==='adopt')return adopt;if(k==='adopted')return !!real;if(own.has(k))return own.get(k);const v=at()[k];if(typeof v!=='function')return v;
+      if(!fwd.has(k))fwd.set(k,(...a)=>typeof at()[k]==='function'?at()[k](...a):undefined);return fwd.get(k);},
+    set(_,k,v){if(typeof v==='function')own.set(k,v);else{kept[k]=v;try{at()[k]=v;}catch{/* read-only */}}return true;},
+    has(_,k){return own.has(k)||k in at();},
+  });
+}
+const world=UI25D?isoWorld():new BobaWorld($('#world'),interact);
+/** 2.5D: the town first, except for a brand-new player who picks a look and a name first. */
+const isoTownFirst=()=>{const J=api.state?.journey;return Boolean(J&&!(J.story&&!J.intro&&!J.gender));};
+const isoUp=()=>Boolean(ISO?.m?.booted());
 soundsBoot({api,world,sound});  // character voices, detail sounds, bank speaker
 api.addEventListener('result',e=>{if(e.detail?.result?.card_swipe)import('./v4/bank.js').then(m=>m.swipeSound(api)).catch(()=>{});});  // 🏦 quẹt thẻ: ting ting
 dayclockBoot();  // giờ trong ngày: HUD clock, closing prompt, the scene's light
@@ -535,7 +562,7 @@ function renderMain(){
   $('#ambientCaption').textContent='';$('#saveState').classList.toggle('offline',!api.connected);
   setHTML($('#saveState'),api.connected?`<i class="saved-dot"></i>Đã lưu`:`<i class="saved-dot"></i>Mất kết nối <button type="button" class="linkish" data-action="reconnect">Thử lại</button>`);
   hudFeedback(c);stepHint(c);
-  sound.configure(api.state.settings);world.update(api.state,api.content);
+  sound.configure(api.state.settings);world.update(api.state,api.content);if(isoUp())ISO.m.updateIsometricShell(env());
 }
 document.addEventListener('close',()=>{if(mainDeferred)renderMain();},true);
 /* Toasts (and the update pill) sit just under the open sheet's sticky header: never over its title and buttons,
@@ -617,7 +644,7 @@ function renderSheet(preserve=true){
   if(!preserve||fresh||box._html===undefined)box.innerHTML=html;else if(changed)morph(box,html);
   box._html=html;
   tickNow(env());document.dispatchEvent(new Event('sheetrender'));
-  applyGuide(dialog);watchHead(dialog);
+  applyGuide(dialog);watchHead(dialog);if(isoUp())ISO.m.updateIsometricShell(env());
   if(preserve){const now=folds(),keys=foldKeys(now);now.forEach((el,i)=>{const want=openedDetails.has(keys[i])?openedDetails.get(keys[i]):(el._mk??el.open);if(el.open!==want)el.open=want;el._mk=undefined;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});if(dialog.scrollTop!==scroll)dialog.scrollTop=scroll;sheetScroll.restore(dialog);if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);el?.focus({preventScroll:true});try{el?.setSelectionRange(selection,selection);}catch{/* not a text input */}}}
   if(!preserve)dialog.scrollTop=0;
   if(ui.view==='chat'){$('#messages')?.scrollTo(0,$('#messages').scrollHeight);}
@@ -1213,7 +1240,7 @@ function inputPrompt(title,value,maxLength=100){
 }
 function finishConfirm(value){const choice=$('#confirmPay');if(value&&choice)value=choice.value;$('#confirmDialog').close();confirmResolve?.(value);confirmResolve=null;document.body.append($('#toasts'));}
 $('#confirmDialog').addEventListener('cancel',e=>{e.preventDefault();finishConfirm(false);});
-$('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.current)closeSheet();});
+$('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.current||UI25D&&world.mode==='town'&&isoTownFirst())closeSheet();});
 /* Phone bottom sheets show a grab handle: dragging the sheet head down now really closes the sheet (it
  * used to do nothing). Only transform moves while dragging; past 90 px or a quick flick it slides away and
  * closes through the same 'cancel' path as Escape (so sheets that may not close yet stay put). */
@@ -1264,7 +1291,7 @@ async function selectCareer(id){
   ui.task=null;ui.docs.clear();ui.transactions.clear();ui.ai={};ui.phFilter='';ui.jobTab='shelf';
   await careerAssets(id);  // its workbench, stylesheet and scene first: the new place never renders half-styled
   const r=await switchCareer(id);if(!r){closeSheet();setPaused(false);return;}if(r.hired)toast(r.message,'good');
-  closeSheet();world.say(greeting());setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
+  if(UI25D)world.setMode?.('work');closeSheet();world.say(greeting());setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
   abandonAfter(r);
 }
 /** A brand-new player's first workplace (v4/onboard.js quickOpen): day 1 opens at once, straight into the first
@@ -1286,6 +1313,8 @@ async function openJob(id,tab){
   if(select){const r=await cmd('task_select',{task:target},{quiet:true});if(!r&&ui.view==='job'&&ui.task===target){ui.task=room().active_task||null;renderSheet(false);}}
 }
 function interact(id){sound.unlock();sound.click();if(ui.paused)return;
+  if(UI25D&&id.startsWith('career:')){handleAction('choose',{career:id.slice(7)});return;}  // 🏝️ a door in the 2.5D town
+  if(UI25D&&id.startsWith('outing:')){void handleAction('leisurePlace',{kind:id.slice(7)}).catch(error=>toast(error.message,true));return;}
   {const alt=careerUI(career())?.spots?.[id];if(alt){openSheet(alt);return;}}  // a career's own place for a scene spot (air crew: no Sổ tiệm)
   if(id.startsWith('staff:')){ui.staffId=id.slice(6);openSheet('operations',{opsTab:'staff'});return;}
   if(id.startsWith('ops:')){openSheet('operations',{opsTab:id.slice(4)});return;}
@@ -1300,6 +1329,11 @@ function interact(id){sound.unlock();sound.click();if(ui.paused)return;
 }
 async function talk(text){if(!ui.npc||!text.trim())return;const id=ui.npc;const r=await (await L.chat.get()).aiTalk(env(),id,text);if(!r)return;ui.suggestions[id]=r.suggestions||[];world.say(r.reply,id);renderSheet();}
 async function handleAction(action,data,el){
+  if(UI25D){  // 🏝️ 2.5D: Câu cá / Chèo thuyền / Bơi, "Phố" is the town itself, the HUD's iso* actions
+    if(action==='leisurePlace'){if(['fishing','boat','pool'].includes(data.kind))await (await ISO.get()).openLeisure(data.kind,env());return;}
+    if(action==='home'&&isoUp()&&isoTownFirst())action='isoTown';
+    if(action.startsWith('iso')&&await (await ISO.get()).isometricAction(action,data,el,env()))return;
+  }
   switch(action){
     case'close':closeSheet();break;
     case'confirmNo':finishConfirm(false);break;
@@ -1611,7 +1645,12 @@ try{
   await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
   import('./v4/home-guests.js').then(m=>m.homeGuestsBoot(env())).catch(e=>console.warn('homeGuests:',e));
   import('./v4/workplace-visit.js').then(m=>m.workVisitsBoot(env())).catch(e=>console.warn('workVisits:',e));
+  if(ISO){await Promise.race([ISO.get().catch(()=>{}),new Promise(done=>setTimeout(done,2500))]);ISO.m?.bootShell(env);}  // 2.5D HUD, if in time
   shell.boot(env());journeyBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
+  // 2.5D code that fails to load: this tab reloads with the classic UI (mnl.ui25dFail, this session only; the player's
+  // choice stays). Storage blocked (a reload would loop): the classic world takes the stand-in's place.
+  const isoFail=e=>{console.warn('2.5D:',e);try{sessionStorage.setItem('mnl.ui25dFail','1');location.reload();return;}catch{/* storage blocked */}if(!world.adopted)world.adopt(new BobaWorld($('#world'),interact));};
+  if(ISO)ISO.get().then(m=>m.start({env,world,interact,renderMain,fail:isoFail})).catch(isoFail);
   const oauthReturned=accountBoot(env());
   ensureCareerUI();  // its workbench failed to come above (the game opens anyway): ask again in the background
   try{performance.mark('mnl-first-frame');}catch{/* no User Timing */}   // "time to first game frame" (telemetry.js load beacon)
@@ -1642,6 +1681,7 @@ try{
   if(!oauthReturned){
     const deep=new URLSearchParams(location.search);
     if(deep.get('social')){history.replaceState(null,'','/');openSocial(deep.get('social'));}
+    else if(UI25D){if(!isoTownFirst())openSheet('home');}   // 🏝️ 2.5D: the town first
     else if(!api.state.current)openSheet('home');else{if(!room().open)openSheet(room().shift_summary?'summary':'prepare');}
   }
   // Callback feedback gets the first screen. Start automatic cards only after the player closes it;

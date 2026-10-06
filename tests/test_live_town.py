@@ -33,11 +33,11 @@ class Geometry(unittest.TestCase):
         self.assertIsInstance(written[0], str, 'the standard API chooses text frames for strings')
         self.assertEqual(json.loads(written[0])['name'], 'Mây')
 
-    @unittest.skip('the town grid grows with the career count: with the careers of 1.8.0, (6, 51) is inside it. '
-                   'Re-check the bounds when the 2.5D town is wired back (docs/PHASER_25D.md)')
     def test_grid_bounds_roads_and_nonfinite_values(self):
+        # The grid grows with the career count (live.town.town_geometry): test just past its far edge.
+        from live.town import BOUNDS
         self.assertEqual(clean_point(6.12345, 49.5), (6.123, 49.5))
-        for x, y in ((-1, 6), (44, 6), (6, 51), (2, 2), (True, 6), (float('nan'), 6), (6, float('inf'))):
+        for x, y in ((-1, 6), (44, 6), (6, BOUNDS[3] + 1), (2, 2), (True, 6), (float('nan'), 6), (6, float('inf'))):
             with self.subTest(x=x, y=y), self.assertRaises(LiveError):
                 clean_point(x, y)
 

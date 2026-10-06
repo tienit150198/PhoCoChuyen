@@ -8,7 +8,7 @@ const api={state:{settings:{},seq:0},content:{}};
 const element={classList:{toggle(){}},textContent:''};
 const context=vm.createContext({api,mainDeferred:false,document:{body:element,querySelector:()=>covered?{open:true}:null,addEventListener(type,fn,capture){assert.equal(type,'close');assert.equal(capture,true);onClose=fn;}},$:()=>element,room:()=>({life:{},day:75}),meta:()=>({}),shell:{career(){},mark(){return '';}},setHTML(){domUpdates++;},hudHTML(){},railHTML(){},esc:x=>x,careerSwitchButton(){},taskCards(){},dockHTML(){},layout:()=> 'phone',hudFeedback(){},stepHint(){},sound:{configure(){}},world:{update(state){worldUpdates++;latest=state.seq;}}});
 // The shared workspace may also host a separate renderer integration.
-context.env=()=>({api});context.updateIsometricShell=()=>{};
+context.env=()=>({api});context.updateIsometricShell=()=>{};context.ISO=null;context.isoUp=()=>false;   // the classic UI (app.js UI25D off)
 vm.runInContext(src.slice(a,b),context);
 for(let i=1;i<=50;i++){api.state={...api.state,seq:i};vm.runInContext('renderMain()',context);}
 assert.equal(worldUpdates,0,'confirmed fair states must not repeatedly rebuild/repaint the obscured workplace');
