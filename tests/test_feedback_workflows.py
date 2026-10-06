@@ -109,10 +109,13 @@ class ClothingStockSize(unittest.TestCase):
             self.j.act('inv_order', item='tee', qty=4, size='XXL', supplier='partner', confirm=True)
         self.assertEqual(self.j.state, before)
         self.j.act('inv_cart', op='add', item='tee', qty=4, size='XL', supplier='partner')
-        before = copy.deepcopy(self.j.state)
-        with self.assertRaises(GameError):
-            self.j.act('inv_cart', op='add', item='tee', qty=2, size='S', supplier='partner')
-        self.assertEqual(self.j.state, before)
+        # Since WP1 (feedback #198) one merged order may hold several sizes of the same item: a second size is its
+        # own line, the first keeps its quantity.
+        self.j.act('inv_cart', op='add', item='tee', qty=2, size='S', supplier='partner')
+        lines = [(l['item'], l.get('size'), l['qty']) for l in inventory._draft(self.j.c['ext']['inv'], 'partner')]
+        self.assertIn(('tee', 'XL', 4), lines)
+        self.assertIn(('tee', 'S', 2), lines)
+        validate_state(self.j.state)
 
     def test_unselected_size_keeps_automatic_distribution(self):
         self.j.act('inv_order', item='tee', qty=8, supplier='partner', confirm=True)
