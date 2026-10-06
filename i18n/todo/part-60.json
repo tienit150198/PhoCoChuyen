@@ -1,5 +1,1497 @@
 [
  {
+  "vi": "Quán đã có ô to rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Quán đã có biển rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Quán mất một cái ghế.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Tuấn xe đá ghé, nhưng quỹ quán không đủ tiền lấy đá.",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Xe trật tự tới đúng lúc quán đang dọn về: không bị nhắc nhở.",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Không bán thuốc lá cho trẻ con. Bà Lựu khen phải.",
+  "en": ""
+ },
+ {
+  "vi": "khớp từng dòng",
+  "en": ""
+ },
+ {
+  "vi": "✅ Dẹp gọn kịp lúc khi trật tự đô thị đi qua.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng mai không đặt đá.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ bày quán",
+  "en": ""
+ },
+ {
+  "vi": "gọn, đúng chỗ",
+  "en": ""
+ },
+ {
+  "vi": "chỗ bày chưa hợp",
+  "en": ""
+ },
+ {
+  "vi": "chè, đá, ô đủ cả",
+  "en": ""
+ },
+ {
+  "vi": "Sổ sách rõ ràng",
+  "en": ""
+ },
+ {
+  "vi": "từng dòng có ngày, có món",
+  "en": ""
+ },
+ {
+  "vi": "có dòng ghi lố",
+  "en": ""
+ },
+ {
+  "vi": "Cách nói chuyện",
+  "en": ""
+ },
+ {
+  "vi": "đủ cốc, đúng món",
+  "en": ""
+ },
+ {
+  "vi": "Chè ngon",
+  "en": ""
+ },
+ {
+  "vi": "chè đậm vừa",
+  "en": ""
+ },
+ {
+  "vi": "chè nhạt hoặc để lâu",
+  "en": ""
+ },
+ {
+  "vi": "Cốc sạch, đá mát",
+  "en": ""
+ },
+ {
+  "vi": "cốc sạch, đá mát",
+  "en": ""
+ },
+ {
+  "vi": "cốc chưa sạch hoặc thiếu đá",
+  "en": ""
+ },
+ {
+  "vi": "Có trách nhiệm",
+  "en": ""
+ },
+ {
+  "vi": "không bán thuốc cho trẻ em",
+  "en": ""
+ },
+ {
+  "vi": "chưa nói rõ với cháu",
+  "en": ""
+ },
+ {
+  "vi": ", dựng ô",
+  "en": ""
+ },
+ {
+  "vi": ", đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng.",
+  "en": ""
+ },
+ {
+  "vi": "· Khách là trẻ con.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chỗ → bày ghế → dựng ô → đặt thùng đá → pha ấm chè → đập đá → Mở hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ cho chú → có dòng thắc mắc thì cùng xem sổ (ghi lố thì sửa) → thu tiền, thối đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi món → rót đủ cốc, lấy đồ ăn vặt → đưa trà → ghi đúng số tiền vào sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Trẻ con mua thuốc lá: từ chối khéo, bán phần còn lại, thối tiền đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi món → rót đúng cốc (trà đá cần đá) → lấy đồ ăn vặt → đưa trà → thu tiền, thối đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thay chậu nước rửa cốc.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lau bàn, quét lá bàng quanh quán.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đập thêm một cây đá vào thùng.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đậy kín thùng đá, kê lại chỗ râm.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu quán trà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản việc quán trà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Trạng thái việc quán trà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Khay trà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Cốc trà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ ăn vặt sai.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn sổ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Tổng sổ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Dòng thắc mắc sai.",
+  "en": ""
+ },
+ {
+  "vi": "Dòng sổ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Quán trà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Cốc sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện quán sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đợt dẹp vỉa hè sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ dẹp vỉa hè sai.",
+  "en": ""
+ },
+ {
+  "vi": "Kết quả dẹp vỉa hè sai.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch sử dẹp vỉa hè sai.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu quán sai.",
+  "en": ""
+ },
+ {
+  "vi": "Trà đá vỉa hè",
+  "en": ""
+ },
+ {
+  "vi": "Trà đá gốc bàng",
+  "en": ""
+ },
+ {
+  "vi": "Cốc trà đá, cái ghế nhựa, chuyện cả phố.",
+  "en": ""
+ },
+ {
+  "vi": "Nắng nhẹ dưới tán bàng",
+  "en": ""
+ },
+ {
+  "vi": "Quán trà",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng, pha bình chè, đập đá, rót trà, thu tiền lẻ. Nhớ ghi sổ cho chú xe ôm và canh xe trật tự đô thị nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Một cốc trà đá, trăm câu chuyện phố",
+  "en": ""
+ },
+ {
+  "vi": "18 · TRÀ ĐÁ GỐC BÀNG",
+  "en": ""
+ },
+ {
+  "vi": "Cháu nội bà Lựu, rửa cốc nhanh thoăn thoắt.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn xe ôm của chú Tường, đập đá khỏe.",
+  "en": ""
+ },
+ {
+  "vi": "Sinh viên làm thêm, cốc nào cũng tráng hai lần.",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ giờ xe đá, thùng đá lúc nào cũng đầy.",
+  "en": ""
+ },
+ {
+  "vi": "Rửa cốc",
+  "en": ""
+ },
+ {
+  "vi": "Đập đá",
+  "en": ""
+ },
+ {
+  "vi": "Quán trà gọn gàng",
+  "en": ""
+ },
+ {
+  "vi": "Hộp thiếc",
+  "en": ""
+ },
+ {
+  "vi": "Thùng đá",
+  "en": ""
+ },
+ {
+  "vi": "Lọ thủy tinh",
+  "en": ""
+ },
+ {
+  "vi": "Cốc bẩn",
+  "en": ""
+ },
+ {
+  "vi": "Chậu rửa",
+  "en": ""
+ },
+ {
+  "vi": "Bày ghế, dựng ô",
+  "en": ""
+ },
+ {
+  "vi": "Pha bình chè",
+  "en": ""
+ },
+ {
+  "vi": "Đập đá, rót trà",
+  "en": ""
+ },
+ {
+  "vi": "Chè của bà Lựu",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu bảo chè ngon phải là chè Thái, sao kỹ, tráng ấm bằng nước sôi.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn pha thử ba ấm: ít chè, vừa chè, nhiều chè. Ông Khang nếm từng cốc.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Khang chọn ấm vừa chè: “Thế này mới là trà đá gốc bàng.”",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sổ của chú Tường",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường uống ghi sổ đã hai mươi năm, sổ cũ nát cả gáy.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chép sang cuốn sổ mới, ghi rõ từng ngày, từng món.",
+  "en": ""
+ },
+ {
+  "vi": "Đến hẹn chú trả đủ, còn khen: “Sổ này đọc sướng mắt!”",
+  "en": ""
+ },
+ {
+  "vi": "Sấu non về chợ, Linh hỏi quán có sấu dầm không.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu dạy bạn dầm sấu với đường, gừng, ớt.",
+  "en": ""
+ },
+ {
+  "vi": "Cốc sấu đá đầu mùa, cả nhóm của Linh xuýt xoa.",
+  "en": ""
+ },
+ {
+  "vi": "Chè đậm, đá mát, ngồi gốc bàng gió thổi mát rượi.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền lẻ thối đúng từng xu, nhanh gọn.",
+  "en": ""
+ },
+ {
+  "vi": "Cốc sạch bong, uống yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi một cốc mà nghe được cả chuyện phố, vui!",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng → pha chè → đập đá → rót trà → đưa trà → thu tiền, thối đúng. Chú xe ôm: ghi đúng số vào sổ, đến hẹn thu. Xe trật tự tới: dẹp ghế, gấp ô thật nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ An toàn lao động",
+  "en": ""
+ },
+ {
+  "vi": "An toàn lao động",
+  "en": ""
+ },
+ {
+  "vi": "Trung tâm dạy nghề phường (lớp giả lập)",
+  "en": ""
+ },
+ {
+  "vi": "An toàn điện khi sửa đồ, an toàn đường sá khi giao hàng, giữ đồ và tiền của khách cho đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Máy điện: rút điện trước khi mở. Quạt còn tụ giữ điện, phải xả tụ bằng điện trở. Nồi cơm chờ mâm nhiệt nguội. Điện thoại, laptop tắt nguồn và ngắt cáp pin.",
+  "en": ""
+ },
+ {
+  "vi": "Dây nguồn chảy nhựa, có mùi khét: báo khách ngưng dùng, thay dây đúng loại, đo cách điện trước khi giao. Băng keo không cứu được dây đã chảy.",
+  "en": ""
+ },
+ {
+  "vi": "Đo trước, thay sau. Báo giá rõ trước khi sửa; sửa tốn gần bằng mua mới thì nói thật để khách chọn.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ của khách là của khách: không mở ảnh, tin nhắn. Phiếu nhận ghi tình trạng máy (vết nứt, trầy) và phụ kiện đi kèm.",
+  "en": ""
+ },
+ {
+  "vi": "Xe giao hàng chở tối đa 20 kg. Hàng dễ vỡ lót xốp hơi, đồ lạnh có túi giữ lạnh, trời mưa bọc túi chống nước.",
+  "en": ""
+ },
+ {
+  "vi": "Đường ngập, mưa to: tấp vào chỗ an toàn, báo điều phối và khách giờ giao mới. Không đơn nào đáng để liều.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền thu hộ (COD): đếm trước mặt khách, thối đủ tới từng xu, ghi phiếu. Túi tiền quá 250 xu thì về bưu cục nộp trước.",
+  "en": ""
+ },
+ {
+  "vi": "Thư bảo đảm giao tận tay người nhận, không gửi bảo vệ. Địa chỉ thiếu: gọi, nhắn khách, hỏi quy định giữ hàng, báo điều phối.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa xe đạp: bước an toàn trước khi tháo bánh?",
+  "en": ""
+ },
+ {
+  "vi": "Dựng nghiêng vào tường",
+  "en": ""
+ },
+ {
+  "vi": "Đặt nằm dưới sàn",
+  "en": ""
+ },
+ {
+  "vi": "Xe không dựng giá dễ đổ, xước thêm một vệt mới.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn thu hộ 327 xu, khách đưa tờ 500 xu. Bạn thối bao nhiêu?",
+  "en": ""
+ },
+ {
+  "vi": "170 xu cho chẵn",
+  "en": ""
+ },
+ {
+  "vi": "500 − 327 = 173 xu, đếm trước mặt khách.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn có hũ sữa chua. Bạn mang theo gì?",
+  "en": ""
+ },
+ {
+  "vi": "Không cần gì thêm",
+  "en": ""
+ },
+ {
+  "vi": "Xốp hơi",
+  "en": ""
+ },
+ {
+  "vi": "Đồ lạnh cần túi giữ lạnh cho tới tay khách.",
+  "en": ""
+ },
+ {
+  "vi": "Máy nào phải xả tụ trước khi mở?",
+  "en": ""
+ },
+ {
+  "vi": "Tụ khởi động của quạt vẫn giữ điện sau khi rút phích.",
+  "en": ""
+ },
+ {
+  "vi": "Khách mang tới cái quạt đứng không quay. Trước khi mở hộp tụ, bạn làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Rút điện rồi xả tụ bằng điện trở",
+  "en": ""
+ },
+ {
+  "vi": "Cắm điện nghe thử mô-tơ rồi mở luôn",
+  "en": ""
+ },
+ {
+  "vi": "Mở nhanh vì quạt nhỏ, điện yếu",
+  "en": ""
+ },
+ {
+  "vi": "Tụ quạt còn giữ điện sau khi rút phích; phải xả tụ trước khi chạm vào.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi cơm điện khách vừa mang tới còn ấm tay. Bạn mở thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Lật đáy ngay cho kịp",
+  "en": ""
+ },
+ {
+  "vi": "Rút điện, chờ mâm nhiệt nguội rồi mới lật đáy",
+  "en": ""
+ },
+ {
+  "vi": "Đeo găng vải, mở khi còn cắm điện",
+  "en": ""
+ },
+ {
+  "vi": "Mâm nhiệt còn nóng gây bỏng; nồi phải rút điện và nguội hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Thay pin điện thoại: bước an toàn đầu tiên?",
+  "en": ""
+ },
+ {
+  "vi": "Cắm sạc cho máy khỏi sập nguồn",
+  "en": ""
+ },
+ {
+  "vi": "Tách màn khi máy còn mở để xem cảm ứng",
+  "en": ""
+ },
+ {
+  "vi": "Tắt nguồn và ngắt cáp pin trước khi tách màn",
+  "en": ""
+ },
+ {
+  "vi": "Còn nguồn mà tách màn dễ tóe lửa ở cáp pin.",
+  "en": ""
+ },
+ {
+  "vi": "Dây nguồn nồi cơm chảy nhựa, có mùi khét.",
+  "en": ""
+ },
+ {
+  "vi": "Quấn băng keo thật kín",
+  "en": ""
+ },
+ {
+  "vi": "Trả máy, dặn khách dùng tạm",
+  "en": ""
+ },
+ {
+  "vi": "Dây đã chảy nhựa quấn băng keo vẫn có thể chập cháy.",
+  "en": ""
+ },
+ {
+  "vi": "Thay mô-tơ quạt tốn gần bằng mua quạt mới. Bạn làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Cứ sửa rồi báo giá sau",
+  "en": ""
+ },
+ {
+  "vi": "Nói là không sửa được",
+  "en": ""
+ },
+ {
+  "vi": "Khách có quyền chọn khi biết đủ thông tin.",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại khách gửi thay màn hình không cài khóa.",
+  "en": ""
+ },
+ {
+  "vi": "Mở thư viện ảnh để thử cảm ứng",
+  "en": ""
+ },
+ {
+  "vi": "Cài lại máy cho sạch lỗi",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ làm phần màn hình, không mở ảnh, tin nhắn; ghi tình trạng máy vào phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu của khách là riêng tư; cài lại máy làm khách mất hết ảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận máy sửa, bạn ghi gì vào phiếu nhận?",
+  "en": ""
+ },
+ {
+  "vi": "Tình trạng máy (vết nứt, trầy) và phụ kiện đi kèm",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ tên và số điện thoại khách",
+  "en": ""
+ },
+ {
+  "vi": "Không cần phiếu, nhớ trong đầu là được",
+  "en": ""
+ },
+ {
+  "vi": "Ghi rõ lúc nhận để khi trả máy không ai phải cãi nhau về vết trầy hay cục sạc.",
+  "en": ""
+ },
+ {
+  "vi": "Xe giao hàng của bưu cục chở tối đa bao nhiêu?",
+  "en": ""
+ },
+ {
+  "vi": "35 kg nếu buộc chặt",
+  "en": ""
+ },
+ {
+  "vi": "Không giới hạn nếu chạy chậm",
+  "en": ""
+ },
+ {
+  "vi": "Quá tải làm xe khó phanh, dễ đổ.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn là một bình thủy tinh. Bạn đóng gói thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Để chung thùng cho gọn",
+  "en": ""
+ },
+ {
+  "vi": "Lót xốp hơi, chằng riêng",
+  "en": ""
+ },
+ {
+  "vi": "Cầm tay trong lúc chạy xe",
+  "en": ""
+ },
+ {
+  "vi": "Hàng dễ vỡ không lót sẽ vỡ trên đường, khách từ chối nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Đường phía trước ngập nửa bánh xe, đơn sắp trễ hẹn.",
+  "en": ""
+ },
+ {
+  "vi": "Người về an toàn là đơn quan trọng nhất; báo sớm để khách biết mà chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn thu hộ 186 xu, khách đưa tờ 200 xu. Bạn thối bao nhiêu?",
+  "en": ""
+ },
+ {
+  "vi": "14 xu, đếm trước mặt khách",
+  "en": ""
+ },
+ {
+  "vi": "10 xu cho chẵn",
+  "en": ""
+ },
+ {
+  "vi": "200 − 186 = 14. Thối thiếu là mất uy tín của cả bưu cục.",
+  "en": ""
+ },
+ {
+  "vi": "Túi tiền thu hộ đã hơn 250 xu, còn một đơn COD nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận tiếp, tối nộp một lần",
+  "en": ""
+ },
+ {
+  "vi": "Về bưu cục nộp tiền trước rồi mới nhận thêm",
+  "en": ""
+ },
+ {
+  "vi": "Gửi tiền nhờ quán quen giữ giùm",
+  "en": ""
+ },
+ {
+  "vi": "Cầm nhiều tiền mặt trên đường là rủi ro; bưu cục có mức giới hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Thư bảo đảm, người nhận đi vắng, bảo vệ chung cư đề nghị nhận giùm.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi bảo vệ, chụp ảnh làm bằng",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ vào hộp thư",
+  "en": ""
+ },
+ {
+  "vi": "Không gửi bảo vệ; hẹn giao lại, báo điều phối",
+  "en": ""
+ },
+ {
+  "vi": "Thư bảo đảm phải giao tận tay người nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn tin, gọi lại, hỏi bảo vệ quy định giữ hàng, báo điều phối",
+  "en": ""
+ },
+ {
+  "vi": "Để hàng ở sảnh dễ mất, người giao phải đền.",
+  "en": ""
+ },
+ {
+  "vi": "Trời mưa dầm, đường trơn, còn ba đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Chạy nhanh cho xong trước khi mưa to",
+  "en": ""
+ },
+ {
+  "vi": "Chạy chậm, giữ khoảng cách, bọc hàng bằng túi chống nước",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ túi chống nước cho nhẹ xe",
+  "en": ""
+ },
+ {
+  "vi": "Mưa làm đường trơn; hàng ướt là khách phàn nàn.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ Chăm sóc tóc & thú cưng",
+  "en": ""
+ },
+ {
+  "vi": "Chăm sóc tóc & thú cưng",
+  "en": ""
+ },
+ {
+  "vi": "Hội nghề chăm sóc khu phố (lớp giả lập)",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi trước làm sau, hóa chất an toàn ở salon, tắm sấy và đọc tín hiệu của chó mèo.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi trước, làm sau: lịch sử tóc (nhuộm, uốn, duỗi gần đây); với thú cưng là sổ tiêm, dị ứng, da lông.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có kết quả thử dị ứng thì thử thuốc sau tai trước, hẹn nhuộm từ ngày sau. Da đầu trầy, viêm: hôm đó không thoa hóa chất.",
+  "en": ""
+ },
+ {
+  "vi": "Oxy: cùng tông hoặc tối hơn 10 vol; nâng 1–2 tông 20 vol; nâng 3 tông 30 vol; 40 vol không bao giờ thoa sát da đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc nhuộm không nâng được màu nhuộm cũ, muốn sáng hơn phải tẩy. Tóc nhuộm hộp: thử một lọn trước khi tẩy. Canh giờ thuốc, quá giờ là tóc khô cháy.",
+  "en": ""
+ },
+ {
+  "vi": "Giữa hai khách: thay khăn, khử khuẩn lược kéo, quét tóc rồi mới mời ngồi.",
+  "en": ""
+ },
+ {
+  "vi": "Tắm chó mèo: nước 36–39 °C. Giống mặt ngắn (Pug, Ba Tư mặt tịt) chỉ sấy nấc mát. Bé sợ thì dừng, quấn khăn, cho nghỉ; không ép.",
+  "en": ""
+ },
+ {
+  "vi": "Móng đen: cắt từng chút ở đầu móng, để sẵn bột cầm máu. Thấy cục u hay bé bỏ ăn: báo chủ, khuyên đi thú y; không tự chẩn đoán, không tự cho thuốc.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận lưu trú: sổ tiêm phải còn hạn tới ngày chủ đón; trên 39,2 °C là sốt, chưa nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Tóc bạc từ một nửa trở lên: bát màu cần gì?",
+  "en": ""
+ },
+ {
+  "vi": "Toàn tuýp ánh tro",
+  "en": ""
+ },
+ {
+  "vi": "Ít nhất một nửa là tuýp nền tự nhiên (x.0)",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ dùng toner",
+  "en": ""
+ },
+ {
+  "vi": "Tóc bạc nhiều cần nền tự nhiên để phủ đều.",
+  "en": ""
+ },
+ {
+  "vi": "Nhuộm, tẩy làm trên tóc thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Tóc khô chưa gội; xả thuốc xong mới gội",
+  "en": ""
+ },
+ {
+  "vi": "Gội sạch rồi nhuộm khi tóc còn ướt",
+  "en": ""
+ },
+ {
+  "vi": "Xả nước trước khi thoa",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc thoa trên tóc khô; gội sau khi xả thuốc.",
+  "en": ""
+ },
+ {
+  "vi": "Bé chó liếm mép, ngáp, đuôi kẹp trên bàn tắm nghĩa là gì?",
+  "en": ""
+ },
+ {
+  "vi": "Bé đang vui",
+  "en": ""
+ },
+ {
+  "vi": "Bé buồn ngủ",
+  "en": ""
+ },
+ {
+  "vi": "Bé đang lo: dỗ hoặc cho nghỉ rồi mới làm tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Đó là tín hiệu căng thẳng; đọc tín hiệu trước mỗi bước.",
+  "en": ""
+ },
+ {
+  "vi": "Bé nhảy khỏi bàn, chạy quanh tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Đóng cửa, ngồi thấp, gọi nhỏ hoặc dụ bằng bánh nếu chủ cho",
+  "en": ""
+ },
+ {
+  "vi": "Đuổi theo chụp lại",
+  "en": ""
+ },
+ {
+  "vi": "Hét lớn cho bé đứng lại",
+  "en": ""
+ },
+ {
+  "vi": "Đuổi hay chụp làm bé hoảng thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Khách muốn nhuộm, salon chưa có kết quả thử dị ứng của khách.",
+  "en": ""
+ },
+ {
+  "vi": "Nhuộm luôn vì khách nói chưa từng bị dị ứng",
+  "en": ""
+ },
+ {
+  "vi": "Thử thuốc sau tai trước, hẹn nhuộm từ ngày sau",
+  "en": ""
+ },
+ {
+  "vi": "Nhuộm một nửa đầu để thử",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có kết quả thử dị ứng thì chưa thoa thuốc nhuộm.",
+  "en": ""
+ },
+ {
+  "vi": "Da đầu khách có vết trầy, hơi đỏ. Khách vẫn muốn tẩy hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Không thoa hóa chất hôm đó, hẹn lại khi da lành",
+  "en": ""
+ },
+ {
+  "vi": "Tẩy nhanh cho đỡ rát",
+  "en": ""
+ },
+ {
+  "vi": "Bôi kem dưỡng rồi tẩy",
+  "en": ""
+ },
+ {
+  "vi": "Hóa chất trên da đầu trầy, viêm gây bỏng rát.",
+  "en": ""
+ },
+ {
+  "vi": "Nhuộm cùng tông hoặc tối hơn màu tóc tự nhiên: dùng oxy nào?",
+  "en": ""
+ },
+ {
+  "vi": "Không cần nâng tông thì dùng oxy nhẹ nhất.",
+  "en": ""
+ },
+ {
+  "vi": "Oxy 40 vol (12%) được dùng thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Không bao giờ thoa sát da đầu",
+  "en": ""
+ },
+ {
+  "vi": "Dùng cho mọi ca nhuộm cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Thoa sát chân tóc cho lên màu đều",
+  "en": ""
+ },
+ {
+  "vi": "Oxy mạnh sát da đầu gây bỏng.",
+  "en": ""
+ },
+ {
+  "vi": "Tóc đang nhuộm nâu, khách muốn sáng hơn hai tông. Cách đúng?",
+  "en": ""
+ },
+ {
+  "vi": "Nhuộm đè màu sáng hơn",
+  "en": ""
+ },
+ {
+  "vi": "Phải tẩy, vì thuốc nhuộm không nâng được màu nhuộm cũ",
+  "en": ""
+ },
+ {
+  "vi": "Trộn thuốc nhuộm với oxy 40 vol",
+  "en": ""
+ },
+ {
+  "vi": "Màu nhuộm cũ chỉ đi ra khi tẩy.",
+  "en": ""
+ },
+ {
+  "vi": "Tóc khách từng nhuộm hộp ở nhà. Trước khi tẩy?",
+  "en": ""
+ },
+ {
+  "vi": "Pha bột tẩy đặc hơn",
+  "en": ""
+ },
+ {
+  "vi": "Tẩy cả đầu luôn",
+  "en": ""
+ },
+ {
+  "vi": "Thử một lọn trước",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc nhuộm hộp có thể phản ứng với bột tẩy; thử lọn cho biết trước.",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc màu đã đủ giờ nhà sản xuất ghi, thợ màu đang bận.",
+  "en": ""
+ },
+ {
+  "vi": "Chờ thợ màu rảnh rồi tính",
+  "en": ""
+ },
+ {
+  "vi": "Dùng lại khăn nếu còn khô",
+  "en": ""
+ },
+ {
+  "vi": "Sạch sẽ là lời chào đầu tiên của tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Nước tắm cho chó mèo nên ở khoảng nào?",
+  "en": ""
+ },
+ {
+  "vi": "Nước lạnh cho bé tỉnh",
+  "en": ""
+ },
+ {
+  "vi": "Càng nóng càng sạch",
+  "en": ""
+ },
+ {
+  "vi": "Nước ấm vừa thân nhiệt, không làm bé giật mình.",
+  "en": ""
+ },
+ {
+  "vi": "Sấy cho một bé Pug mặt ngắn.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ sấy nấc mát, để xa mặt",
+  "en": ""
+ },
+ {
+  "vi": "Sấy nấc nóng cho mau khô",
+  "en": ""
+ },
+ {
+  "vi": "Chĩa máy thẳng vào mặt cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Hơi ấm phả vào mặt làm giống mặt ngắn khó thở.",
+  "en": ""
+ },
+ {
+  "vi": "Con mèo sợ máy sấy, gồng người và rít lên.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ chặt để sấy cho xong",
+  "en": ""
+ },
+ {
+  "vi": "Tắt máy, cho bé nghỉ, quấn khăn, sấy nhẹ để xa",
+  "en": ""
+ },
+ {
+  "vi": "Đeo rọ mõm cho bé",
+  "en": ""
+ },
+ {
+  "vi": "Không ép một bé đang hoảng; rọ mõm không bao giờ dùng cho mèo.",
+  "en": ""
+ },
+ {
+  "vi": "Cắt sát cho lâu mọc",
+  "en": ""
+ },
+ {
+  "vi": "Cắt từng chút đầu móng, soi mặt cắt, để sẵn bột cầm máu",
+  "en": ""
+ },
+ {
+  "vi": "Cắt sâu chạm lòng móng làm bé đau, chảy máu.",
+  "en": ""
+ },
+ {
+  "vi": "Báo chủ khi trả bé, khuyên đi bác sĩ thú y; không tự chẩn đoán",
+  "en": ""
+ },
+ {
+  "vi": "Nói với chủ là u lành, không sao",
+  "en": ""
+ },
+ {
+  "vi": "Im lặng cho chủ khỏi lo",
+  "en": ""
+ },
+ {
+  "vi": "Người chăm sóc không phải bác sĩ thú y; báo sớm để chủ đưa bé đi khám.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận bé lưu trú, nhiệt kế đo 39,6 °C.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận, cho bé nằm chỗ mát",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nhận, mời chủ đưa bé đi khám vì bé đang sốt",
+  "en": ""
+ },
+ {
+  "vi": "Nhận và cho uống thuốc hạ sốt",
+  "en": ""
+ },
+ {
+  "vi": "Trên 39,2 °C là sốt; không nhận lưu trú, không tự cho thuốc.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tiêm của bé còn hạn tới hôm nay, chủ gửi bé ba ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận vì hôm nay còn hạn",
+  "en": ""
+ },
+ {
+  "vi": "Nhận rồi nhắc chủ đi tiêm sau",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nhận: sổ tiêm phải còn hạn tới ngày chủ đón bé",
+  "en": ""
+ },
+ {
+  "vi": "Bé ở cùng các bé khác suốt thời gian lưu trú.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ Chăm sóc khách hàng",
+  "en": ""
+ },
+ {
+  "vi": "Trạm Lắng Nghe phối hợp phường (lớp giả lập)",
+  "en": ""
+ },
+ {
+  "vi": "Lắng nghe, hẹn điều mình giữ được, biết mình được làm tới đâu và giữ kín thông tin của khách.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc lịch sử trước khi nghe máy; tóm tắt điều đã biết để khách không phải kể lại từ đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Xác minh mã yêu cầu của chủ đơn trước khi nói chi tiết. Đọc đủ nguồn (đơn, kho, vận chuyển) rồi mới đề nghị phương án.",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn một mốc mình giữ được và gọi lại đúng hẹn. Vụ đang chờ thì gọi cập nhật trong ngày, trước buổi trưa.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ hứa điều nơi mình làm được (hoàn phí ship, mã bù). Khách đòi ngoài quyền: nói rõ, chuyển người có quyền kèm bản tóm tắt.",
+  "en": ""
+ },
+ {
+  "vi": "Khách giận: xin lỗi vì khách phải chờ, đừng bảo “bình tĩnh lại”. Bị xúc phạm: nhắc nhẹ ranh giới, không cãi lại.",
+  "en": ""
+ },
+ {
+  "vi": "Biết mình được làm tới đâu: ở quầy thuốc không tự đưa liều, không tự chọn thuốc cho trẻ. Không biết thì nói thật và hỏi người biết.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin của khách là riêng tư: không kể ai mua gì, ở đâu, gọi về chuyện gì.",
+  "en": ""
+ },
+ {
+  "vi": "Dẫn đoàn: đếm người trước khi đi và sau mỗi điểm dừng; mưa to thì vào chỗ có mái che, đừng đứng dưới gốc cây.",
+  "en": ""
+ },
+ {
+  "vi": "Khi nào nên chuyển khách cho quản lý?",
+  "en": ""
+ },
+ {
+  "vi": "Ngay khi khách hơi to tiếng",
+  "en": ""
+ },
+ {
+  "vi": "Khi khách cần điều ngoài quyền của mình, kèm bản tóm tắt",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển kèm tóm tắt để khách không phải kể lại.",
+  "en": ""
+ },
+ {
+  "vi": "Khách nói giọng địa phương khó nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Xin phép nhắc lại ý chính để chắc mình hiểu đúng",
+  "en": ""
+ },
+ {
+  "vi": "Đoán ý rồi làm",
+  "en": ""
+ },
+ {
+  "vi": "Bảo khách nói giọng khác",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc lại ý chính giúp cả hai hiểu đúng mà không làm khách ngại.",
+  "en": ""
+ },
+ {
+  "vi": "Động viên bác đi tiếp cho kịp lịch",
+  "en": ""
+ },
+ {
+  "vi": "Đưa vào chỗ mát, cho nghỉ, uống nước; không đỡ thì gọi 115",
+  "en": ""
+ },
+ {
+  "vi": "Hộp thuốc hết hạn từ hôm qua, khách nói “không sao đâu”.",
+  "en": ""
+ },
+ {
+  "vi": "Không giao; đổi hộp còn hạn",
+  "en": ""
+ },
+ {
+  "vi": "Giao vì khách đồng ý",
+  "en": ""
+ },
+ {
+  "vi": "Giao và ghi vào sổ",
+  "en": ""
+ },
+ {
+  "vi": "Khách gọi lần thứ ba về cùng một đơn. Câu đầu tiên của bạn?",
+  "en": ""
+ },
+ {
+  "vi": "Đọc lịch sử trước, tóm tắt điều đã biết để khách khỏi kể lại",
+  "en": ""
+ },
+ {
+  "vi": "Khách gọi lần thứ ba cần nghe là mình đã nắm chuyện.",
+  "en": ""
+ },
+ {
+  "vi": "Một người gọi hỏi tình trạng đơn “của chị tôi”. Bạn làm gì trước?",
+  "en": ""
+ },
+ {
+  "vi": "Xác minh mã yêu cầu của chủ đơn rồi mới nói chi tiết",
+  "en": ""
+ },
+ {
+  "vi": "Đọc hết thông tin đơn cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Cúp máy vì không phải chủ đơn",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ nói chi tiết đơn khi đã xác minh đúng người.",
+  "en": ""
+ },
+ {
+  "vi": "Khách nói đơn báo “đã giao” nhưng chưa nhận được. Trước khi đề nghị phương án?",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tiền ngay cho khách vui",
+  "en": ""
+ },
+ {
+  "vi": "Bảo khách tự hỏi bên vận chuyển",
+  "en": ""
+ },
+ {
+  "vi": "Đọc đủ nguồn: lịch sử đơn, xác nhận của kho, đối soát vận chuyển",
+  "en": ""
+ },
+ {
+  "vi": "Phương án đúng cần dữ kiện từ đủ các bên.",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn một mốc mình giữ được và gọi lại đúng hẹn",
+  "en": ""
+ },
+ {
+  "vi": "Hứa điều ngoài tầm tay là nợ khách thêm một lần giận.",
+  "en": ""
+ },
+ {
+  "vi": "Một vụ đang chờ kho trả lời từ hôm qua. Hôm nay bạn nên?",
+  "en": ""
+ },
+ {
+  "vi": "Chờ có kết quả rồi mới gọi",
+  "en": ""
+ },
+ {
+  "vi": "Gọi khách cập nhật trước buổi trưa, kể cả khi chưa có tin mới",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn “đang xử lý” rồi thôi",
+  "en": ""
+ },
+ {
+  "vi": "Khách đang chờ cần biết vụ của mình vẫn có người theo.",
+  "en": ""
+ },
+ {
+  "vi": "Khách quát: “Năm ngày rồi hàng chưa tới!” Câu mở đầu nào tốt nhất?",
+  "en": ""
+ },
+ {
+  "vi": "Xin lỗi vì khách phải chờ, xác nhận mã đơn, nói mình kiểm ngay",
+  "en": ""
+ },
+ {
+  "vi": "Khách đòi bồi thường gấp đôi tiền hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Nói rõ điều nơi mình làm được, không hứa ngoài quyền, hẹn mốc cập nhật",
+  "en": ""
+ },
+ {
+  "vi": "Đồng ý cho xong chuyện",
+  "en": ""
+ },
+ {
+  "vi": "“Không có chuyện đó.” rồi thôi",
+  "en": ""
+ },
+ {
+  "vi": "Hứa ngoài quyền thì nơi làm phải gánh, lần sau khách lại đòi.",
+  "en": ""
+ },
+ {
+  "vi": "Khách bắt đầu xúc phạm bạn qua điện thoại.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ giọng bình tĩnh, nhắc nhẹ ranh giới, đề nghị nói tiếp khi khách sẵn sàng",
+  "en": ""
+ },
+ {
+  "vi": "Im lặng chịu đựng tới hết cuộc gọi",
+  "en": ""
+ },
+ {
+  "vi": "Không đáp trả xúc phạm, nhưng cũng không phải chịu đựng mãi.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đòi gặp quản lý ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Nói rõ việc mình làm được ngay; khách vẫn muốn thì chuyển kèm bản tóm tắt",
+  "en": ""
+ },
+ {
+  "vi": "Quản lý có tóm tắt thì khách khỏi kể lại từ đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Ở quầy thuốc, khách hỏi “uống mấy viên cho mau khỏi?”, phiếu không ghi liều.",
+  "en": ""
+ },
+ {
+  "vi": "Không tự đưa liều; mời người phụ trách hoặc hỏi lại nơi kê phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Nói theo kinh nghiệm nhà mình",
+  "en": ""
+ },
+ {
+  "vi": "Liều dùng là việc của người có chuyên môn.",
+  "en": ""
+ },
+ {
+  "vi": "Một người gọi tới hỏi địa chỉ giao hàng của một khách quen để “gửi quà bất ngờ”.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc địa chỉ vì người đó biết tên khách",
+  "en": ""
+ },
+ {
+  "vi": "Không cung cấp; địa chỉ của khách là thông tin riêng",
+  "en": ""
+ },
+ {
+  "vi": "Cho số điện thoại khách để họ tự hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Địa chỉ, số điện thoại của khách là thông tin riêng tư.",
+  "en": ""
+ },
+ {
+  "vi": "Khách hỏi một chuyện bạn không biết chắc.",
+  "en": ""
+ },
+ {
+  "vi": "Nói thật là chưa rõ, hỏi người biết hoặc hẹn tìm hiểu rồi báo lại",
+  "en": ""
+ },
+ {
+  "vi": "Bịa một câu cho xong",
+  "en": ""
+ },
+ {
+  "vi": "Người đáng tin là người không bịa.",
+  "en": ""
+ },
+ {
+  "vi": "Khi dẫn đoàn, lúc nào phải đếm đủ người?",
+  "en": ""
+ },
+ {
+  "vi": "Đang dẫn đoàn thì mưa to.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa đoàn tới chỗ có mái che gần nhất, đổi lộ trình, báo điều phối",
+  "en": ""
+ },
+ {
+  "vi": "Hết ca, một vụ của bạn vẫn chưa xong.",
+  "en": ""
+ },
+ {
+  "vi": "Để mai tính, không ghi gì",
+  "en": ""
+ },
+ {
+  "vi": "Đóng vụ cho gọn danh sách",
+  "en": ""
+ },
+ {
+  "vi": "Ghi bàn giao: đã làm gì, đang chờ ai, đã hẹn khách mốc nào",
+  "en": ""
+ },
+ {
+  "vi": "Ca sau đọc bàn giao là tiếp được, khách không phải kể lại.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng chỉ Nghiệp vụ sư phạm",
+  "en": ""
+ },
+ {
+  "vi": "Nghiệp vụ sư phạm",
+  "en": ""
+ },
+ {
+  "vi": "Trường Tiểu học Mầm Nắng (lớp giả lập)",
+  "en": ""
+ },
+ {
+  "vi": "Dạy một lớp có nhiều nhịp học, nhận xét cho đúng, làm việc với phụ huynh và giữ lớp an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Cùng một mục tiêu, nhiều cách: hình ảnh, làm thử, kể chuyện; chia nhóm để bạn nhanh giúp bạn chậm.",
+  "en": ""
+ },
+ {
+  "vi": "Tiết học vừa thời gian: khởi động ngắn, phần chính, luyện tập, rồi phiếu ra lớp để biết ai đã hiểu.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận xét cụ thể vào việc làm được và bước tiếp theo; không so sánh bạn này với bạn kia trước lớp.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ huynh nhắn khuya: trả lời ngắn, hẹn trao đổi trong giờ hành chính, chuẩn bị sổ lớp. Không bỏ mặc, không tranh cãi.",
+  "en": ""
+ },
+ {
+  "vi": "Sự kiện lớp: hỏi mong muốn của lớp, kiểm tra dị ứng thức ăn, công khai quỹ lớp; không ép phụ huynh đóng thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Trẻ buồn kéo dài hay bị trêu chọc: quan sát, nói chuyện riêng, báo phụ huynh và nhà trường khi cần.",
+  "en": ""
+ },
+ {
+  "vi": "Ra khỏi lớp: điểm danh trước khi đi và sau khi về. Làm sai thì nhận, sửa và nói rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Mục tiêu tiết học nên viết thế nào?",
+  "en": ""
+ },
+ {
   "vi": "“Con hiểu bài.”",
   "en": ""
  },
@@ -305,1498 +1797,6 @@
  },
  {
   "vi": "Biết lớp trước thì tiết dạy thay mới trọn.",
-  "en": ""
- },
- {
-  "vi": "Bạn lỡ chấm sai điểm một bài.",
-  "en": ""
- },
- {
-  "vi": "Nhận lỗi, sửa điểm, nói rõ với học sinh và phụ huynh",
-  "en": ""
- },
- {
-  "vi": "Giữ nguyên cho đỡ rắc rối",
-  "en": ""
- },
- {
-  "vi": "Sửa lặng lẽ, không nói ai",
-  "en": ""
- },
- {
-  "vi": "Nhận và sửa lỗi cũng là dạy các con.",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ Kế toán cơ bản",
-  "en": ""
- },
- {
-  "vi": "Hội Kế toán khu phố (lớp giả lập)",
-  "en": ""
- },
- {
-  "vi": "Chứng từ, khấu hao, khóa sổ, lương và bảo hiểm, thuế GTGT, hợp nhất. Mọi số tính bằng xu, theo luật chơi đơn giản của game.",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn mua vào: đối chiếu ba chiều — hóa đơn, phiếu nhập kho, sổ nhà cung cấp — khớp mới chấp nhận.",
-  "en": ""
- },
- {
-  "vi": "Khấu hao đường thẳng: mức tháng = nguyên giá ÷ (số năm × 12). Tài sản đưa vào dùng trong tháng thì trích từ tháng sau; khấu hao hết thì thôi trích.",
-  "en": ""
- },
- {
-  "vi": "Khóa sổ theo thứ tự: ghi đủ (trích trước, khấu hao) → thuế → kết chuyển doanh thu, chi phí → lãi/lỗ.",
-  "en": ""
- },
- {
-  "vi": "Bảo hiểm phần người lao động tính trên lương đóng bảo hiểm trong hợp đồng: BHXH 8%, BHYT 1,5%, BHTN 1%.",
-  "en": ""
- },
- {
-  "vi": "Tăng ca: ngày thường 150%, Chủ nhật 200%, ngày lễ 300%. Thực lĩnh = tổng thu nhập − bảo hiểm − thuế.",
-  "en": ""
- },
- {
-  "vi": "Thuế GTGT phải nộp = đầu ra − đầu vào hợp lệ. Hóa đơn từ 200 xu trở lên trả tiền mặt thì không được khấu trừ.",
-  "en": ""
- },
- {
-  "vi": "Phiếu lương gửi riêng từng người. Sổ lệch sao kê: đối chiếu từng dòng, có chứng từ mới điều chỉnh.",
-  "en": ""
- },
- {
-  "vi": "Hợp nhất: loại trừ doanh thu và công nợ nội bộ giữa các công ty trong tập đoàn; sở hữu 70% thì cổ đông không kiểm soát là 30%.",
-  "en": ""
- },
- {
-  "vi": "Chứng từ nào cho biết hàng đã thực sự vào kho?",
-  "en": ""
- },
- {
-  "vi": "Email chào hàng",
-  "en": ""
- },
- {
-  "vi": "Phiếu nhập kho ghi số thực nhận.",
-  "en": ""
- },
- {
-  "vi": "Thực lĩnh bằng gì?",
-  "en": ""
- },
- {
-  "vi": "Tổng thu nhập − bảo hiểm − thuế",
-  "en": ""
- },
- {
-  "vi": "Lương cơ bản + tăng ca",
-  "en": ""
- },
- {
-  "vi": "Tổng thu nhập − thuế",
-  "en": ""
- },
- {
-  "vi": "Bảo hiểm và thuế đều trừ vào tổng thu nhập.",
-  "en": ""
- },
- {
-  "vi": "Hạn nộp thuế rơi vào ngày nghỉ lễ.",
-  "en": ""
- },
- {
-  "vi": "Nộp trước kỳ nghỉ, trễ thì phạt",
-  "en": ""
- },
- {
-  "vi": "Bỏ qua kỳ đó",
-  "en": ""
- },
- {
-  "vi": "Lùi sang ngày làm việc đầu tiên sau kỳ nghỉ",
-  "en": ""
- },
- {
-  "vi": "Luật chơi của game theo đúng quy định lùi hạn.",
-  "en": ""
- },
- {
-  "vi": "Kiểm quỹ tiền mặt thấy thiếu 20 xu.",
-  "en": ""
- },
- {
-  "vi": "Ghi biên bản, tìm nguyên nhân, báo kế toán trưởng",
-  "en": ""
- },
- {
-  "vi": "Bù tiền túi cho khớp, không nói",
-  "en": ""
- },
- {
-  "vi": "Sửa sổ cho khớp",
-  "en": ""
- },
- {
-  "vi": "Chênh lệch phải có biên bản và nguyên nhân.",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn mua vào ghi 100 cái, phiếu nhập kho ghi 90 cái.",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ 100 cho khớp hóa đơn",
-  "en": ""
- },
- {
-  "vi": "Chưa chấp nhận: gửi lại nhà cung cấp điều chỉnh theo số thực nhận",
-  "en": ""
- },
- {
-  "vi": "Ghi 95 cho công bằng",
-  "en": ""
- },
- {
-  "vi": "Đối chiếu ba chiều: chỉ trả tiền cho hàng đã thực nhận.",
-  "en": ""
- },
- {
-  "vi": "Máy nguyên giá 1.200 xu, dùng 5 năm, khấu hao đường thẳng. Mức khấu hao tháng?",
-  "en": ""
- },
- {
-  "vi": "1.200 ÷ (5 × 12) = 20 xu mỗi tháng.",
-  "en": ""
- },
- {
-  "vi": "Tài sản đưa vào dùng ngày 15 tháng 3. Bắt đầu trích khấu hao từ khi nào?",
-  "en": ""
- },
- {
-  "vi": "Ngày 15 tháng 3",
-  "en": ""
- },
- {
-  "vi": "Đầu năm sau",
-  "en": ""
- },
- {
-  "vi": "Đưa vào dùng trong tháng thì trích từ tháng sau.",
-  "en": ""
- },
- {
-  "vi": "Tài sản đã khấu hao hết (hao mòn lũy kế bằng nguyên giá) nhưng vẫn còn dùng.",
-  "en": ""
- },
- {
-  "vi": "Thôi trích khấu hao",
-  "en": ""
- },
- {
-  "vi": "Trích tiếp như cũ",
-  "en": ""
- },
- {
-  "vi": "Trích gấp đôi cho chắc",
-  "en": ""
- },
- {
-  "vi": "Giá trị còn lại đã bằng 0 thì không trích nữa.",
-  "en": ""
- },
- {
-  "vi": "Thứ tự khóa sổ cuối tháng nào đúng?",
-  "en": ""
- },
- {
-  "vi": "Kết chuyển trước, bổ sung chi phí sau",
-  "en": ""
- },
- {
-  "vi": "Trích trước, khấu hao → thuế → kết chuyển → lãi/lỗ",
-  "en": ""
- },
- {
-  "vi": "Tính lãi/lỗ trước cho biết kết quả",
-  "en": ""
- },
- {
-  "vi": "Ghi nhận đủ chi phí rồi mới kết chuyển, nếu không lãi/lỗ sẽ sai.",
-  "en": ""
- },
- {
-  "vi": "Lương đóng bảo hiểm 5.000 xu. Phần BHXH người lao động đóng?",
-  "en": ""
- },
- {
-  "vi": "BHXH phần người lao động 8%: 5.000 × 8% = 400 xu.",
-  "en": ""
- },
- {
-  "vi": "Bảo hiểm của người lao động tính trên khoản nào?",
-  "en": ""
- },
- {
-  "vi": "Lương đóng bảo hiểm ghi trong hợp đồng",
-  "en": ""
- },
- {
-  "vi": "Tổng thu nhập tháng, kể cả tăng ca",
-  "en": ""
- },
- {
-  "vi": "Lương thực lĩnh",
-  "en": ""
- },
- {
-  "vi": "Không tính trên tổng thu nhập.",
-  "en": ""
- },
- {
-  "vi": "Lương giờ 30 xu, tăng ca 2 giờ vào Chủ nhật. Tiền tăng ca?",
-  "en": ""
- },
- {
-  "vi": "Chủ nhật 200%: 30 × 2 × 200% = 120 xu.",
-  "en": ""
- },
- {
-  "vi": "Tăng ca vào ngày lễ tính hệ số bao nhiêu?",
-  "en": ""
- },
- {
-  "vi": "Ngày thường 150%, Chủ nhật 200%, ngày lễ 300%.",
-  "en": ""
- },
- {
-  "vi": "Thuế GTGT đầu ra 900 xu, đầu vào hợp lệ 600 xu. Phải nộp bao nhiêu?",
-  "en": ""
- },
- {
-  "vi": "Phải nộp = đầu ra − đầu vào hợp lệ = 300 xu.",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn mua vào 250 xu trả bằng tiền mặt. Thuế GTGT đầu vào của hóa đơn này?",
-  "en": ""
- },
- {
-  "vi": "Khấu trừ bình thường",
-  "en": ""
- },
- {
-  "vi": "Không được khấu trừ vì từ 200 xu trở lên mà trả tiền mặt",
-  "en": ""
- },
- {
-  "vi": "Khấu trừ một nửa",
-  "en": ""
- },
- {
-  "vi": "Luật chơi: hóa đơn từ 200 xu trả tiền mặt không được khấu trừ.",
-  "en": ""
- },
- {
-  "vi": "Gửi phiếu lương cho nhân viên thế nào?",
-  "en": ""
- },
- {
-  "vi": "Dán bảng lương chung lên nhóm chat",
-  "en": ""
- },
- {
-  "vi": "Đọc to trong buổi họp",
-  "en": ""
- },
- {
-  "vi": "Gửi riêng từng người",
-  "en": ""
- },
- {
-  "vi": "Lương của mỗi người là thông tin riêng.",
-  "en": ""
- },
- {
-  "vi": "Số dư sổ tiền gửi khác sao kê ngân hàng 50 xu.",
-  "en": ""
- },
- {
-  "vi": "Đối chiếu từng dòng tìm khoản chênh, có chứng từ mới điều chỉnh",
-  "en": ""
- },
- {
-  "vi": "Sửa sổ cho khớp sao kê luôn",
-  "en": ""
- },
- {
-  "vi": "Bỏ qua vì số nhỏ",
-  "en": ""
- },
- {
-  "vi": "Mỗi dòng điều chỉnh phải có chứng từ.",
-  "en": ""
- },
- {
-  "vi": "Bảng cân đối thử không cân: tổng Nợ lệch tổng Có 90 xu.",
-  "en": ""
- },
- {
-  "vi": "Thêm một dòng 90 xu cho cân",
-  "en": ""
- },
- {
-  "vi": "Gửi luôn, tháng sau tính",
-  "en": ""
- },
- {
-  "vi": "Soát lại từng bút toán, để ý số bị đảo chữ số (khoản lệch chia hết cho 9)",
-  "en": ""
- },
- {
-  "vi": "Đảo chữ số (54 thành 45) luôn tạo khoản lệch chia hết cho 9.",
-  "en": ""
- },
- {
-  "vi": "Công ty mẹ sở hữu 70% một công ty con. Khi hợp nhất, phần của cổ đông không kiểm soát là?",
-  "en": ""
- },
- {
-  "vi": "0% vì công ty mẹ kiểm soát",
-  "en": ""
- },
- {
-  "vi": "Công ty con này bán hàng cho công ty con khác trong cùng tập đoàn.",
-  "en": ""
- },
- {
-  "vi": "Loại trừ doanh thu và công nợ nội bộ khi lập báo cáo hợp nhất",
-  "en": ""
- },
- {
-  "vi": "Cộng dồn như doanh thu bình thường",
-  "en": ""
- },
- {
-  "vi": "Chỉ ghi ở công ty mua",
-  "en": ""
- },
- {
-  "vi": "Trong tập đoàn, bán cho nhau không tạo ra doanh thu với bên ngoài.",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ An toàn bay cơ bản",
-  "en": ""
- },
- {
-  "vi": "An toàn bay",
-  "en": ""
- },
- {
-  "vi": "Trung tâm huấn luyện Cánh Cò (lớp giả lập)",
-  "en": ""
- },
- {
-  "vi": "Dầu đủ, tàu kiểm kỹ, checklist đúng thứ tự, khoang khách an toàn và nói thật với khách khi chậm chuyến.",
-  "en": ""
- },
- {
-  "vi": "Dầu cho một chặng = dầu chặng + dầu bay đi sân bay dự bị + 30 phút dự phòng. Dự báo giông lúc tới: mang thêm 20 phút dầu chờ.",
-  "en": ""
- },
- {
-  "vi": "Tàu kín khách thì không đổ đầy bình: quá trọng lượng cất cánh. Dầu dự phòng không bao giờ được bớt.",
-  "en": ""
- },
- {
-  "vi": "Đi một vòng quanh tàu trước mỗi chặng. Vỏ che ống pitot, chốt cửa khoang hàng: tự xử lý. Lốp mòn, rò dầu: gọi thợ máy.",
-  "en": ""
- },
- {
-  "vi": "Checklist đọc theo thẻ, từng dòng một, không nhảy cóc. Thấy đồng đội quên dòng nào thì nói ngay.",
-  "en": ""
- },
- {
-  "vi": "Tiếp cận chưa ổn định, hoặc tới độ cao quyết định chưa thấy đường băng: bay lại. Bay lại không bao giờ là thất bại.",
-  "en": ""
- },
- {
-  "vi": "Chậm chuyến: nói rõ vì sao, chậm bao lâu, xin lỗi và hẹn báo lại. Không nói “sắp bay rồi” khi chưa chắc.",
-  "en": ""
- },
- {
-  "vi": "Hàng ghế cạnh cửa thoát hiểm chỉ dành cho người lớn đi lại được, mở được cửa. Pin sạc dự phòng mang theo người, không gửi khoang hàng.",
-  "en": ""
- },
- {
-  "vi": "Khách ốm: hỏi han, dùng đúng đồ trong túi sơ cứu, không đưa thuốc của mình; khách nặng thì tìm bác sĩ trên chuyến và báo cơ trưởng.",
-  "en": ""
- },
- {
-  "vi": "Dầu chặng 600 kg, đi sân bay dự bị 300 kg, dự phòng 30 phút 350 kg, trời đẹp. Nạp bao nhiêu?",
-  "en": ""
- },
- {
-  "vi": "Đầy bình cho chắc",
-  "en": ""
- },
- {
-  "vi": "Cổng 1.000 ft: tốc độ 132 kt, chuẩn 110–120 kt.",
-  "en": ""
- },
- {
-  "vi": "Tiếp tục, xuống thấp sẽ giảm",
-  "en": ""
- },
- {
-  "vi": "Hạ cánh rồi phanh gấp",
-  "en": ""
- },
- {
-  "vi": "Chưa ổn định thì bay lại.",
-  "en": ""
- },
- {
-  "vi": "Đèn thắt dây bật giữa lúc đang đẩy xe phục vụ.",
-  "en": ""
- },
- {
-  "vi": "Phục vụ nốt hàng này",
-  "en": ""
- },
- {
-  "vi": "Khóa phanh xe, cất bình nóng, về ghế thắt dây",
-  "en": ""
- },
- {
-  "vi": "Đẩy xe về bếp thật nhanh",
-  "en": ""
- },
- {
-  "vi": "Xe khóa phanh không trôi, bình nóng cất đi không làm bỏng ai.",
-  "en": ""
- },
- {
-  "vi": "Em bé ba tuổi xin uống trà nóng giống bố.",
-  "en": ""
- },
- {
-  "vi": "Rót ít thôi",
-  "en": ""
- },
- {
-  "vi": "Mời bé nước cam hoặc nước lọc",
-  "en": ""
- },
- {
-  "vi": "Đưa cho bố cầm hộ",
-  "en": ""
- },
- {
-  "vi": "Trẻ nhỏ không uống đồ nóng trên tàu.",
-  "en": ""
- },
- {
-  "vi": "Dự báo giông ở sân bay đến đúng giờ tới. Dầu cần thêm gì?",
-  "en": ""
- },
- {
-  "vi": "Không cần thêm",
-  "en": ""
- },
- {
-  "vi": "Thêm 20 phút dầu chờ",
-  "en": ""
- },
- {
-  "vi": "Bớt dầu dự bị cho nhẹ",
-  "en": ""
- },
- {
-  "vi": "Có dầu chờ thì tới nơi mới bay chờ được.",
-  "en": ""
- },
- {
-  "vi": "Tàu kín 68 khách, chặng ngắn. Đổ đầy bình được không?",
-  "en": ""
- },
- {
-  "vi": "Được, dư còn hơn thiếu",
-  "en": ""
- },
- {
-  "vi": "Không, quá trọng lượng cất cánh",
-  "en": ""
- },
- {
-  "vi": "Được nếu bay chậm",
-  "en": ""
- },
- {
-  "vi": "Đầy bình với tàu kín khách là quá tải.",
-  "en": ""
- },
- {
-  "vi": "Đi quanh tàu thấy vỏ che ống pitot còn cắm.",
-  "en": ""
- },
- {
-  "vi": "Tháo ra, cất vào túi đồ nghề",
-  "en": ""
- },
- {
-  "vi": "Để nguyên, gió sẽ thổi bay",
-  "en": ""
- },
- {
-  "vi": "Báo hủy chuyến",
-  "en": ""
- },
- {
-  "vi": "Còn vỏ che thì đồng hồ tốc độ bị mù.",
-  "en": ""
- },
- {
-  "vi": "Bay nốt chặng này",
-  "en": ""
- },
- {
-  "vi": "Gọi thợ máy thay lốp, báo khách chậm chuyến",
-  "en": ""
- },
- {
-  "vi": "Tự bơm thêm hơi",
-  "en": ""
- },
- {
-  "vi": "Đang làm checklist, bạn lỡ bật đèn chống va trước khi đóng cửa khoang.",
-  "en": ""
- },
- {
-  "vi": "Kệ, miễn cuối cùng đủ",
-  "en": ""
- },
- {
-  "vi": "Dừng lại, làm lại đúng dòng đang đọc",
-  "en": ""
- },
- {
-  "vi": "Bỏ qua dòng cửa khoang",
-  "en": ""
- },
- {
-  "vi": "Checklist đi từng dòng theo thẻ.",
-  "en": ""
- },
- {
-  "vi": "Tới độ cao quyết định 200 ft vẫn chưa thấy đường băng.",
-  "en": ""
- },
- {
-  "vi": "Xuống thêm chút nữa xem",
-  "en": ""
- },
- {
-  "vi": "Hạ cánh theo đồng hồ",
-  "en": ""
- },
- {
-  "vi": "Chưa thấy đường băng ở độ cao quyết định: bay lại.",
-  "en": ""
- },
- {
-  "vi": "Giông đang ở trên sân bay đến, tàu không mang dầu chờ.",
-  "en": ""
- },
- {
-  "vi": "Bay đi sân bay dự bị",
-  "en": ""
- },
- {
-  "vi": "Bay vòng chờ 20 phút",
-  "en": ""
- },
- {
-  "vi": "Cố hạ cánh",
-  "en": ""
- },
- {
-  "vi": "Không có dầu chờ thì đi sân bay dự bị.",
-  "en": ""
- },
- {
-  "vi": "Chuyến bay chậm 30 phút vì thợ máy kiểm tra lại tàu. Thông báo thế nào?",
-  "en": ""
- },
- {
-  "vi": "“Vì lý do khách quan…”",
-  "en": ""
- },
- {
-  "vi": "Nói rõ lý do, chậm bao lâu, xin lỗi và hẹn báo lại",
-  "en": ""
- },
- {
-  "vi": "“Sắp cất cánh rồi ạ.”",
-  "en": ""
- },
- {
-  "vi": "Nói thật, nói rõ thì khách mới yên tâm chờ.",
-  "en": ""
- },
- {
-  "vi": "Cụ ông chống gậy có vé hàng 17 cạnh cửa thoát hiểm.",
-  "en": ""
- },
- {
-  "vi": "Để cụ ngồi vì đã mua vé",
-  "en": ""
- },
- {
-  "vi": "Giải thích, mời cụ sang ghế khác rộng chân",
-  "en": ""
- },
- {
-  "vi": "Người ngồi cạnh cửa thoát hiểm phải mở được cửa.",
-  "en": ""
- },
- {
-  "vi": "Khách muốn gửi vali có pin sạc dự phòng xuống khoang hàng.",
-  "en": ""
- },
- {
-  "vi": "Gửi luôn",
-  "en": ""
- },
- {
-  "vi": "Lấy pin ra cho khách mang theo người rồi mới gửi",
-  "en": ""
- },
- {
-  "vi": "Bỏ pin vào thùng rác",
-  "en": ""
- },
- {
-  "vi": "Pin sạc dự phòng dễ cháy, phải ở trong khoang khách.",
-  "en": ""
- },
- {
-  "vi": "Hàng 9 có khách dị ứng đậu phộng. Khách bên cạnh xin một gói đậu phộng.",
-  "en": ""
- },
- {
-  "vi": "Đưa, vì người khác xin",
-  "en": ""
- },
- {
-  "vi": "Mời bánh bông lan thay, không phát đậu phộng cả hàng",
-  "en": ""
- },
- {
-  "vi": "Đưa nhưng dặn ăn nhỏ nhẹ",
-  "en": ""
- },
- {
-  "vi": "Bụi đậu phộng cũng đủ làm người dị ứng khó thở.",
-  "en": ""
- },
- {
-  "vi": "Khách đau ngực, vã mồ hôi giữa chuyến bay.",
-  "en": ""
- },
- {
-  "vi": "Đưa thuốc của mình cho khách uống",
-  "en": ""
- },
- {
-  "vi": "Cho thở dưỡng khí, tìm bác sĩ trên chuyến, báo cơ trưởng",
-  "en": ""
- },
- {
-  "vi": "Chờ xem có đỡ không",
-  "en": ""
- },
- {
-  "vi": "Không đưa thuốc của mình; báo cơ trưởng để quyết định chuyển hướng.",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ An toàn đường ngang",
-  "en": ""
- },
- {
-  "vi": "An toàn đường ngang",
-  "en": ""
- },
- {
-  "vi": "Trung tâm huấn luyện Xí nghiệp Đường sắt Sông Mây (lớp giả lập)",
-  "en": ""
- },
- {
-  "vi": "Nhận lệnh và nhắc lại, đóng chắn đúng lúc, không mở chắn cho ai, nhìn hết đoàn tàu, tuần đường và báo đúng kênh. Luật chơi đơn giản của game.",
-  "en": ""
- },
- {
-  "vi": "Ga báo tàu: nhắc lại đủ số hiệu tàu, giờ rời ga trước, giờ qua đường ngang. Không rõ thì hỏi lại ngay, không “rõ” cho qua.",
-  "en": ""
- },
- {
-  "vi": "Nhìn hai phía đường ngang trước khi đóng. Người, xe, gia súc trên ray: dẹp trước. Không dẹp kịp thì báo ga dừng tàu, cờ đỏ về phía tàu tới.",
-  "en": ""
- },
- {
-  "vi": "Chuông đèn bật trước, cần chắn hạ sau. Hạ khi tàu còn khoảng ba phút: sớm quá dân sốt ruột chui chắn, muộn quá là nguy hiểm.",
-  "en": ""
- },
- {
-  "vi": "Chắn đã hạ thì không nâng cho bất kỳ ai, kể cả xe cứu thương, đám tang, người dúi tiền. Nói rõ còn mấy phút, mời chờ sau vạch.",
-  "en": ""
- },
- {
-  "vi": "Đứng cờ xanh (đêm: đèn trắng) báo đường thông chỉ khi trên ray không còn ai. Có vật cản: cờ đỏ, đèn đỏ.",
-  "en": ""
- },
- {
-  "vi": "Nhìn hết đoàn tàu: khói ở bầu trục, cửa toa mở, xích quệt lửa, không có đèn đuôi toa cuối: báo ga ngay.",
-  "en": ""
- },
- {
-  "vi": "Trước khi nâng chắn, hỏi ga còn tàu nào không. Tàu chậm mà ga xác nhận tàu còn đứng ở ga trước thì được mở tạm.",
-  "en": ""
- },
- {
-  "vi": "Tuần đường: bu lông lỏng tự siết, ghi sổ; tà vẹt nứt ghi phiếu báo hỏng; ray nứt, đá trôi, ray cong: cắm cờ phòng vệ hai đầu và điện khẩn cho ga.",
-  "en": ""
- },
- {
-  "vi": "Ga báo tàu còn tám phút. Bạn làm gì trước?",
-  "en": ""
- },
- {
-  "vi": "Hạ chắn ngay",
-  "en": ""
- },
- {
-  "vi": "Nhắc lại lệnh, nhìn đường ngang, dẹp người trên ray",
-  "en": ""
- },
- {
-  "vi": "Chờ thấy tàu rồi tính",
-  "en": ""
- },
- {
-  "vi": "Nhắc lại lệnh, nhìn và dẹp đường ngang trước; còn khoảng ba phút thì đóng.",
-  "en": ""
- },
- {
-  "vi": "Chắn đã hạ, xe cứu thương xin qua, tàu còn hai phút.",
-  "en": ""
- },
- {
-  "vi": "Nâng chắn cho xe ưu tiên",
-  "en": ""
- },
- {
-  "vi": "Giữ chắn, nói rõ còn hai phút",
-  "en": ""
- },
- {
-  "vi": "Bảo xe đi đường khác rồi bỏ đi",
-  "en": ""
- },
- {
-  "vi": "Tàu không phanh kịp; hai phút chờ là an toàn cho cả xe cứu thương.",
-  "en": ""
- },
- {
-  "vi": "Tàu qua, bạn không thấy đèn đuôi toa cuối.",
-  "en": ""
- },
- {
-  "vi": "Báo ngay trực ban ga",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ cuối ca",
-  "en": ""
- },
- {
-  "vi": "Không có đèn đuôi có thể là đứt toa.",
-  "en": ""
- },
- {
-  "vi": "Đi tuần thấy bu lông mối nối lỏng.",
-  "en": ""
- },
- {
-  "vi": "Tự siết lại, ghi sổ tuần đường",
-  "en": ""
- },
- {
-  "vi": "Để tổ thợ tự thấy",
-  "en": ""
- },
- {
-  "vi": "Việc nhỏ trong tầm tay thì tự xử lý và ghi sổ.",
-  "en": ""
- },
- {
-  "vi": "Bộ đàm rè, bạn chỉ nghe được nửa lệnh báo tàu.",
-  "en": ""
- },
- {
-  "vi": "Trả lời “rõ” rồi đoán theo bảng giờ",
-  "en": ""
- },
- {
-  "vi": "Xin ga nhắc lại, rồi đọc lại đủ số hiệu và giờ",
-  "en": ""
- },
- {
-  "vi": "Chờ thấy tàu",
-  "en": ""
- },
- {
-  "vi": "Không rõ thì hỏi lại ngay.",
-  "en": ""
- },
- {
-  "vi": "Thứ tự đúng khi đóng đường ngang?",
-  "en": ""
- },
- {
-  "vi": "Hạ chắn rồi bật chuông",
-  "en": ""
- },
- {
-  "vi": "Bật chuông đèn rồi mới hạ chắn",
-  "en": ""
- },
- {
-  "vi": "Bật cùng lúc",
-  "en": ""
- },
- {
-  "vi": "Chuông đèn báo trước để người đi đường dừng lại.",
-  "en": ""
- },
- {
-  "vi": "Khi nào hạ chắn?",
-  "en": ""
- },
- {
-  "vi": "Ngay khi ga báo, dù tàu còn hai mươi phút",
-  "en": ""
- },
- {
-  "vi": "Khi tàu còn khoảng ba phút",
-  "en": ""
- },
- {
-  "vi": "Khi thấy đèn tàu",
-  "en": ""
- },
- {
-  "vi": "Sớm quá người ta chui chắn, muộn quá thì nguy hiểm.",
-  "en": ""
- },
- {
-  "vi": "Chắn đã hạ, người dúi tiền xin nâng cho xe qua.",
-  "en": ""
- },
- {
-  "vi": "Nâng nhanh hai giây",
-  "en": ""
- },
- {
-  "vi": "Từ chối, giữ chắn, ghi biển số báo công an",
-  "en": ""
- },
- {
-  "vi": "Nhận tiền rồi không nâng",
-  "en": ""
- },
- {
-  "vi": "Chắn đã hạ thì không nâng cho ai.",
-  "en": ""
- },
- {
-  "vi": "Ga báo tàu còn hai phút, con bò đứng lì giữa ray.",
-  "en": ""
- },
- {
-  "vi": "Báo ga dừng tàu, cờ đỏ về phía tàu tới",
-  "en": ""
- },
- {
-  "vi": "Hạ chắn kệ con bò",
-  "en": ""
- },
- {
-  "vi": "Cầm cờ xanh cho tàu chạy chậm",
-  "en": ""
- },
- {
-  "vi": "Không dẹp kịp thì dừng tàu.",
-  "en": ""
- },
- {
-  "vi": "Khi nào giơ cờ xanh báo đường thông?",
-  "en": ""
- },
- {
-  "vi": "Khi chắn đã hạ và trên ray không còn ai",
-  "en": ""
- },
- {
-  "vi": "Khi tàu tới gần",
-  "en": ""
- },
- {
-  "vi": "Bất cứ lúc nào chắn đã hạ",
-  "en": ""
- },
- {
-  "vi": "Cờ xanh là lời bảo đảm đường ngang thông.",
-  "en": ""
- },
- {
-  "vi": "Tàu hàng vừa qua không có đèn đuôi.",
-  "en": ""
- },
- {
-  "vi": "Nâng chắn, ghi sổ",
-  "en": ""
- },
- {
-  "vi": "Gọi lái tàu bằng điện thoại riêng",
-  "en": ""
- },
- {
-  "vi": "Tàu vừa qua hết. Trước khi nâng chắn bạn làm gì?",
-  "en": ""
- },
- {
-  "vi": "Nâng ngay cho xe đỡ dồn",
-  "en": ""
- },
- {
-  "vi": "Hỏi ga còn tàu nào không",
-  "en": ""
- },
- {
-  "vi": "Nhìn một bên rồi nâng",
-  "en": ""
- },
- {
-  "vi": "Có thể còn tàu chạy ngược chiều trên đường bên kia.",
-  "en": ""
- },
- {
-  "vi": "Chắn đã hạ, ga báo tàu chậm thêm hai mươi phút.",
-  "en": ""
- },
- {
-  "vi": "Tự nâng chắn cho xe qua",
-  "en": ""
- },
- {
-  "vi": "Hỏi ga: tàu còn đứng ở ga trước không, ga xác nhận thì mở tạm",
-  "en": ""
- },
- {
-  "vi": "Bỏ chòi đi uống nước",
-  "en": ""
- },
- {
-  "vi": "Chỉ mở tạm khi ga xác nhận tàu còn đứng.",
-  "en": ""
- },
- {
-  "vi": "Đi tuần thấy đá ba-lát trôi, ray treo hẫng.",
-  "en": ""
- },
- {
-  "vi": "Ghi phiếu báo hỏng",
-  "en": ""
- },
- {
-  "vi": "Tự xúc đá chèn rồi đi tiếp",
-  "en": ""
- },
- {
-  "vi": "Chỗ nguy hiểm: phòng vệ và báo khẩn.",
-  "en": ""
- },
- {
-  "vi": "Đi tuần thấy một thanh tà vẹt nứt chân.",
-  "en": ""
- },
- {
-  "vi": "Điện khẩn, dừng hết tàu",
-  "en": ""
- },
- {
-  "vi": "Không gấp thì báo bằng phiếu cho tổ thợ.",
-  "en": ""
- },
- {
-  "vi": "Đồng nghiệp nhờ ký sổ giao ca “thiết bị bình thường” khi chưa thử.",
-  "en": ""
- },
- {
-  "vi": "Ký giúp",
-  "en": ""
- },
- {
-  "vi": "Từ chối, thử từng thiết bị rồi mới ký",
-  "en": ""
- },
- {
-  "vi": "Ký nhưng ghi “chưa thử”",
-  "en": ""
- },
- {
-  "vi": "Ký là nhận trách nhiệm.",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ Hành chính văn phòng",
-  "en": ""
- },
- {
-  "vi": "Hành chính văn phòng",
-  "en": ""
- },
- {
-  "vi": "Lọc hồ sơ công bằng, chấm công, hợp đồng lao động, lời nhắn và lịch họp, thư lừa đảo, an toàn máy tính. Luật chơi đơn giản của game.",
-  "en": ""
- },
- {
-  "vi": "Lọc hồ sơ chỉ theo yêu cầu công việc: kinh nghiệm, kỹ năng, bằng cấp. Không loại vì giới tính, hôn nhân, tuổi hay quê quán.",
-  "en": ""
- },
- {
-  "vi": "CV và tra cứu BHXH lệch nhau, hoặc thiếu bản sao bằng bắt buộc: xếp “Cần xác minh”, chưa mời ngay. Người quen giới thiệu vẫn xét như mọi người.",
-  "en": ""
- },
- {
-  "vi": "Chấm công: vào 08:00, trễ tới 08:05 vẫn đủ công. Nghỉ chỉ tính có phép khi đơn đã duyệt; đi công tác có lịch vẫn tính công.",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng lao động: thử việc tối đa 60 ngày, lương thử việc ít nhất 85%; hợp đồng từ 1 tháng phải đóng bảo hiểm; không ký thay người lao động.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn điện thoại: ghi đủ họ tên, lấy số sau cùng người gọi đọc lại, giờ ghi theo 24 giờ (2 giờ rưỡi chiều là 14:30).",
-  "en": ""
- },
- {
-  "vi": "Thư lạ đòi chuyển tiền gấp hay báo đổi số tài khoản: gọi lại bằng số đã biết để xác minh, không làm theo thư.",
-  "en": ""
- },
- {
-  "vi": "Xếp lịch họp: không trùng người, phòng đủ chỗ và đủ thiết bị, tránh giờ người ta bận, vòng sau xếp sau vòng trước.",
-  "en": ""
- },
- {
-  "vi": "Máy tính: sao lưu trước khi sửa; không ai được hỏi mã OTP hay mật khẩu; nghỉ việc thì khóa quyền ngay hôm đó; nghi nhiễm mã độc thì rút mạng trước.",
-  "en": ""
- },
- {
-  "vi": "Ứng viên đủ mọi yêu cầu nhưng email là “heocon.2k1@gmail.com”.",
-  "en": ""
- },
- {
-  "vi": "Loại vì email trẻ con",
-  "en": ""
- },
- {
-  "vi": "Email ngộ nghĩnh không phải lý do để loại người đủ điều kiện.",
-  "en": ""
- },
- {
-  "vi": "Bảng công ghi 08:04 – 17:10.",
-  "en": ""
- },
- {
-  "vi": "Đủ công",
-  "en": ""
- },
- {
-  "vi": "Thiếu giờ ra",
-  "en": ""
- },
- {
-  "vi": "Trễ tới 08:05 vẫn đủ công.",
-  "en": ""
- },
- {
-  "vi": "Khách đọc số: “0903 412… à nhầm, 0903 421 785.” Ghi số nào?",
-  "en": ""
- },
- {
-  "vi": "Số đọc đầu tiên",
-  "en": ""
- },
- {
-  "vi": "Ghi cả hai cho chắc",
-  "en": ""
- },
- {
-  "vi": "Lấy số sau cùng người gọi đọc lại.",
-  "en": ""
- },
- {
-  "vi": "Người tự xưng giám đốc gọi xin mã OTP để “kiểm tra tài khoản”.",
-  "en": ""
- },
- {
-  "vi": "Đọc mã cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Không đọc, báo trưởng nhóm IT",
-  "en": ""
- },
- {
-  "vi": "Gửi qua tin nhắn",
-  "en": ""
- },
- {
-  "vi": "Không ai được hỏi mã OTP, kể cả sếp.",
-  "en": ""
- },
- {
-  "vi": "Anh Quân dặn: “Mới cưới, chắc sắp sinh con. Loại đi em.” Hồ sơ đủ mọi yêu cầu.",
-  "en": ""
- },
- {
-  "vi": "Loại theo lời giám đốc",
-  "en": ""
- },
- {
-  "vi": "Mời phỏng vấn như mọi người",
-  "en": ""
- },
- {
-  "vi": "Không loại vì hôn nhân hay giới tính; chỉ xét yêu cầu công việc.",
-  "en": ""
- },
- {
-  "vi": "CV ghi 3 năm kinh nghiệm, tra cứu BHXH chỉ có 7 tháng.",
-  "en": ""
- },
- {
-  "vi": "Cần xác minh chỗ làm cũ",
-  "en": ""
- },
- {
-  "vi": "Lệch giữa CV và BHXH thì xác minh trước.",
-  "en": ""
- },
- {
-  "vi": "Cháu giám đốc nộp hồ sơ, thiếu bằng bắt buộc.",
-  "en": ""
- },
- {
-  "vi": "Nhận thẳng vì người nhà",
-  "en": ""
- },
- {
-  "vi": "Xét như mọi người: chưa đủ điều kiện",
-  "en": ""
- },
- {
-  "vi": "Làm bằng giả cho kịp",
-  "en": ""
- },
- {
-  "vi": "Bảng công trống ngày thứ Ba; đơn nghỉ phép của người đó còn “chưa duyệt”.",
-  "en": ""
- },
- {
-  "vi": "Đơn chưa duyệt thì chưa tính là nghỉ có phép.",
-  "en": ""
- },
- {
-  "vi": "Bảng công trống, nhưng lịch công tác ghi người đó đi giao hàng mẫu hôm đó.",
-  "en": ""
- },
- {
-  "vi": "Đi công tác: vẫn tính công",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng nháp ghi thử việc 90 ngày, hưởng 70% lương.",
-  "en": ""
- },
- {
-  "vi": "Để nguyên, người lao động đồng ý rồi",
-  "en": ""
- },
- {
-  "vi": "Sửa: tối đa 60 ngày, ít nhất 85% lương",
-  "en": ""
- },
- {
-  "vi": "Bỏ hẳn điều thử việc",
-  "en": ""
- },
- {
-  "vi": "Thử việc không quá 60 ngày, lương thử việc ít nhất 85%.",
-  "en": ""
- },
- {
-  "vi": "Bên B chưa ký mà sếp giục lưu hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Lưu bản chưa ký",
-  "en": ""
- },
- {
-  "vi": "Không ký thay người lao động.",
-  "en": ""
- },
- {
-  "vi": "Khách hẹn “gọi lại sau ba giờ chiều”. Ghi giờ nào?",
-  "en": ""
- },
- {
-  "vi": "Giờ ghi theo 24 giờ: ba giờ chiều là 15:00.",
-  "en": ""
- },
- {
-  "vi": "Email “nhà cung cấp” báo đổi số tài khoản, nhờ chuyển gấp tiền hàng hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Chuyển vào số mới",
-  "en": ""
- },
- {
-  "vi": "Gọi lại số điện thoại đã biết của nhà cung cấp để xác minh",
-  "en": ""
- },
- {
-  "vi": "Đổi tài khoản qua email là chiêu lừa quen thuộc; xác minh bằng số đã biết.",
-  "en": ""
- },
- {
-  "vi": "Buổi phỏng vấn nhóm 7 người. Phòng họp nhỏ có 3 chỗ, phòng lớn 8 chỗ.",
-  "en": ""
- },
- {
-  "vi": "Phòng họp nhỏ, kê thêm ghế",
-  "en": ""
- },
- {
-  "vi": "Chia hai phòng",
-  "en": ""
- },
- {
-  "vi": "Phòng phải đủ chỗ cho cả nhóm.",
-  "en": ""
- },
- {
-  "vi": "Máy Cô Hằng chậm, cần cài lại. Việc đầu tiên?",
-  "en": ""
- },
- {
-  "vi": "Cài lại ngay cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Sao lưu dữ liệu trước",
-  "en": ""
- },
- {
-  "vi": "Xóa bớt file cho nhẹ",
-  "en": ""
- },
- {
-  "vi": "Sao lưu trước, sửa sau.",
-  "en": ""
- },
- {
-  "vi": "Một nhân viên nghỉ việc hôm nay. Tài khoản email và phần mềm của người đó?",
-  "en": ""
- },
- {
-  "vi": "Để nguyên một tháng",
-  "en": ""
- },
- {
-  "vi": "Khóa quyền ngay hôm nay, chuyển dữ liệu cho người nhận việc",
-  "en": ""
- },
- {
-  "vi": "Đưa mật khẩu cho đồng nghiệp",
-  "en": ""
- },
- {
-  "vi": "Nghỉ việc thì khóa quyền ngay hôm đó.",
-  "en": ""
- },
- {
-  "vi": "Màn hình hiện thông báo đòi tiền chuộc, file đổi đuôi lạ.",
-  "en": ""
- },
- {
-  "vi": "Trả tiền cho xong",
-  "en": ""
- },
- {
-  "vi": "Rút mạng máy đó, báo trưởng nhóm IT",
-  "en": ""
- },
- {
-  "vi": "Tắt cảnh báo rồi làm tiếp",
-  "en": ""
- },
- {
-  "vi": "Rút mạng trước để mã độc không lây sang máy khác.",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ An toàn người bệnh",
-  "en": ""
- },
- {
-  "vi": "An toàn người bệnh",
-  "en": ""
- },
- {
-  "vi": "Phòng Điều dưỡng, Bệnh viện phường Lá Sen (lớp giả lập)",
-  "en": ""
- },
- {
-  "vi": "Nhận diện người bệnh, sát khuẩn tay, đối chiếu y lệnh, báo bất thường, quyền từ chối của người bệnh. Không có câu nào hỏi liều thuốc: việc đó của bác sĩ.",
-  "en": ""
- },
- {
-  "vi": "Nhận diện người bệnh bằng hai thông tin: mời người bệnh tự nói họ tên và ngày sinh, đối chiếu vòng tay và phiếu. Không dùng số giường, không hỏi kiểu “có phải bác … không”.",
-  "en": ""
- },
- {
-  "vi": "Sát khuẩn tay trước và sau khi chạm người bệnh. Đeo găng không thay được việc sát khuẩn tay.",
-  "en": ""
- },
- {
-  "vi": "Trước khi cho thuốc: đúng người, đúng thuốc trên phiếu y lệnh, nhãn khay khớp y lệnh, xem vòng dị ứng so với nhóm thuốc. Có gì không khớp: giữ lại, báo bác sĩ.",
-  "en": ""
- },
- {
-  "vi": "Y lệnh có dòng dặn (đo đường huyết trước, nhịn ăn chờ thủ thuật) thì làm đúng dòng dặn. Không tự thêm, bớt, đổi thuốc; thuốc trong túi mình không bao giờ đưa người bệnh.",
-  "en": ""
- },
- {
-  "vi": "Đo dấu hiệu sinh tồn rồi ghi đúng số đo thật. Chỉ số ngoài thẻ báo động thì báo bác sĩ ngay, nói rõ chỉ số nào. Số đo lạ so với người bệnh (kẹp ngón lỏng, tay lạnh) thì đo lại.",
-  "en": ""
- },
- {
-  "vi": "Người bệnh có quyền từ chối: hỏi vì sao, giải thích, vẫn không đồng ý thì giữ lại, báo bác sĩ, ghi hồ sơ. Không ép, không dọa.",
-  "en": ""
- },
- {
-  "vi": "Trước thủ thuật: giấy cam đoan có bác sĩ giải thích và người bệnh ký, nhịn ăn đúng giờ, ghi dị ứng, tháo trang sức. Ăn rồi hoặc đổi ý thì không chuyển đi.",
-  "en": ""
- },
- {
-  "vi": "Không nhận phong bì, quà của người bệnh. Không kể bệnh của người này cho người khác. Không quay, đăng hình người bệnh. Ghi sổ giao ca đúng điều đã xảy ra.",
-  "en": ""
- },
- {
-  "vi": "Bạn sắp cho thuốc ở giường 3. Cách xác định người bệnh nào đúng?",
-  "en": ""
- },
- {
-  "vi": "Hỏi “Bà là bà Tư phải không ạ?”",
-  "en": ""
- },
- {
-  "vi": "Mời bà tự nói họ tên, ngày sinh, đối chiếu vòng tay",
-  "en": ""
- },
- {
-  "vi": "Nhìn số giường",
-  "en": ""
- },
- {
-  "vi": "Hai thông tin do người bệnh tự nói, đối chiếu vòng tay.",
-  "en": ""
- },
- {
-  "vi": "Vòng dị ứng ghi “nhóm P”, phiếu y lệnh ghi kháng sinh nhóm P.",
-  "en": ""
- },
- {
-  "vi": "Cho theo y lệnh",
-  "en": ""
- },
- {
-  "vi": "Giữ lại, báo bác sĩ",
-  "en": ""
- },
- {
-  "vi": "Cho một nửa",
-  "en": ""
- },
- {
-  "vi": "Trùng nhóm dị ứng: giữ lại và báo bác sĩ.",
-  "en": ""
- },
- {
-  "vi": "Máy kẹp ngón báo SpO2 84%, người bệnh nói chuyện bình thường, tay lạnh, kẹp lỏng.",
-  "en": ""
- },
- {
-  "vi": "Chỉnh kẹp, xoa ấm tay, đo lại ngón khác",
-  "en": ""
- },
- {
-  "vi": "Ghi 84% rồi đi",
-  "en": ""
- },
- {
-  "vi": "Tắt máy cho đỡ kêu",
-  "en": ""
- },
- {
-  "vi": "Số đo lạ so với người bệnh thì đo lại cho chắc.",
-  "en": ""
- },
- {
-  "vi": "Người nhà dúi phong bì “cảm ơn”.",
-  "en": ""
- },
- {
-  "vi": "Nhận cho người nhà vui",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn, không nhận, mời viết vào sổ góp ý",
-  "en": ""
- },
- {
-  "vi": "Nhận rồi bỏ quỹ khoa",
-  "en": ""
- },
- {
-  "vi": "Không nhận phong bì.",
-  "en": ""
- },
- {
-  "vi": "Hai người bệnh trùng tên trong khoa. Trước khi cho thuốc, bạn làm gì?",
-  "en": ""
- },
- {
-  "vi": "Gọi tên to, ai dạ thì đưa",
   "en": ""
  }
 ]

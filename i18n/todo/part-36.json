@@ -1,5 +1,1505 @@
 [
  {
+  "vi": "Năn nỉ cho xong",
+  "en": ""
+ },
+ {
+  "vi": "Pháo hiệu đỏ giữa biển động",
+  "en": ""
+ },
+ {
+  "vi": "Một đốm đỏ vọt lên trời rồi rơi chậm xuống phía đông nam. Rồi thêm một đốm nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu cá trôi dạt, chết máy",
+  "en": ""
+ },
+ {
+  "vi": "Một tàu cá nhỏ trôi ngang, không thấy khói máy, có người đứng vẫy áo.",
+  "en": ""
+ },
+ {
+  "vi": "Người rơi xuống nước gần bến",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng hét từ phía bến: một chiếc kayak lật úp, có người chới với cách bờ chừng ba chục mét.",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ thách nhau bơi ra đảo",
+  "en": ""
+ },
+ {
+  "vi": "Mấy cái đầu đen nhấp nhô giữa con nước, từ phía làng chài bơi về hướng đảo.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu cá lao về phía bãi đá ngầm",
+  "en": ""
+ },
+ {
+  "vi": "Đèn hành trình xanh đỏ của một tàu cá đang đi thẳng vào bãi đá ngầm hòn Mõ.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu cá cố ra khơi khi có cảnh báo",
+  "en": ""
+ },
+ {
+  "vi": "Đài vừa phát tin áp thấp. Một tàu cá vẫn nổ máy rời bến Cửa Lở, mũi hướng ra khơi.",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng nổ trầm dưới nước",
+  "en": ""
+ },
+ {
+  "vi": "Một tiếng “ục” trầm đục vang lên từ phía bãi đá. Cá chết trắng nổi lên mặt nước.",
+  "en": ""
+ },
+ {
+  "vi": "📻 Gọi ba lần trên kênh 16: không ai trả lời. Đèn hành trình vẫn lừ lừ tiến về bãi đá.",
+  "en": ""
+ },
+ {
+  "vi": "📻 Ông Sáu Ghe im một lúc lâu: “Thôi được… quay về.” Tàu chậm lại rồi vòng mũi về âu Cửa Lở.",
+  "en": ""
+ },
+ {
+  "vi": "📻 Ông Sáu Ghe: “Bản tin năm nào chả dọa! Cá đang lên, mất con nước này là mất cả tháng!”",
+  "en": ""
+ },
+ {
+  "vi": "📻 Ông Sáu Ghe: “Tui đi biển bốn chục năm, cần gì cậu dạy!” Rồi tắt bộ đàm. Tàu vẫn hướng ra khơi.",
+  "en": ""
+ },
+ {
+  "vi": "📻 Bên kia tắt bộ đàm. Tàu nổ máy chạy về phía bờ.",
+  "en": ""
+ },
+ {
+  "vi": "📻 Một giọng khàn: “Ê trạm, nhắm mắt cho qua đi. Mai anh mang ra chục ký mực, coi như bồi dưỡng.”",
+  "en": ""
+ },
+ {
+  "vi": "📻 “Mày báo thử coi, ở đảo một mình đó nghe.” Rồi tắt máy.",
+  "en": ""
+ },
+ {
+  "vi": "Cho tham quan theo nội quy, mình đi kèm (không vào phòng đèn)",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ cho đứng ở sân trạm, bến đá chụp ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối lịch sự, nói rõ nội quy trạm",
+  "en": ""
+ },
+ {
+  "vi": "Cho trú tạm trong nhà trạm, báo đài",
+  "en": ""
+ },
+ {
+  "vi": "Báo đồn biên phòng qua đài",
+  "en": ""
+ },
+ {
+  "vi": "Chiều theo cho xong",
+  "en": ""
+ },
+ {
+  "vi": "Cô Thắm · đoàn khách tàu Biển Ngọc",
+  "en": ""
+ },
+ {
+  "vi": "Đưa tám vị khách lên tham quan sân trạm và chân tháp",
+  "en": ""
+ },
+ {
+  "vi": "“Chào em, đoàn chị tám người, có giấy của xí nghiệp đây. Cho khách chụp ở chân tháp với nghe kể chuyện đèn nhé!”",
+  "en": ""
+ },
+ {
+  "vi": "“Khách chị trả tiền tour rồi, em nhanh nhanh giùm chị nha.”",
+  "en": ""
+ },
+ {
+  "vi": "Giấy giới thiệu của xí nghiệp: đoàn 8 người, tham quan ban ngày, có chữ ký và dấu đỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn để khách tự leo lên phòng đèn. Một ông khách sờ vào kính đèn để lại cả bàn tay mồ hôi muối.",
+  "en": ""
+ },
+ {
+  "vi": "Thầy Lâm · đoàn học sinh THCS Cửa Lở",
+  "en": ""
+ },
+ {
+  "vi": "Mười bốn em học sinh đi trải nghiệm “một ngày làm người gác đèn”",
+  "en": ""
+ },
+ {
+  "vi": "“Trường có công văn với xí nghiệp rồi. Các em mê đèn biển lắm, cho các em lên đỉnh tháp một lượt luôn nha!”",
+  "en": ""
+ },
+ {
+  "vi": "“Đi một lượt cho nhanh em ơi, tàu đón lúc ba giờ.”",
+  "en": ""
+ },
+ {
+  "vi": "Công văn của xí nghiệp: đồng ý cho đoàn học sinh tham quan ban ngày, chia nhóm không quá 10 em, có người của trạm đi kèm.",
+  "en": ""
+ },
+ {
+  "vi": "Mười bốn đứa nhỏ ùa lên cầu thang xoắn cùng lúc. Một em trượt chân ở bậc thứ chín, may thầy Lâm đỡ kịp.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm bạn trẻ đi cano thuê",
+  "en": ""
+ },
+ {
+  "vi": "Lên đỉnh tháp chụp “ảnh sống ảo” lúc hoàng hôn",
+  "en": ""
+ },
+ {
+  "vi": "“Anh ơi cho tụi em lên đỉnh chụp năm phút thôi, ánh hoàng hôn trên này đỉnh nóc kịch trần luôn á!”",
+  "en": ""
+ },
+ {
+  "vi": "“Anh khó vậy, tụi em đi cả tiếng cano mới ra tới đây đó!”",
+  "en": ""
+ },
+ {
+  "vi": "Không ai có giấy tờ gì. Chủ cano bảo: “Tôi chỉ chở thôi, khách muốn đi đâu thì đi.”",
+  "en": ""
+ },
+ {
+  "vi": "Sáu người leo lên ban công phòng đèn, một bạn ngồi vắt vẻo lên lan can để chụp. Gió giật một cái, cả nhóm tái mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Cặp đôi muốn cầu hôn trên đỉnh tháp",
+  "en": ""
+ },
+ {
+  "vi": "Lên ban công phòng đèn lúc nửa đêm để cầu hôn dưới ánh đèn quét",
+  "en": ""
+ },
+ {
+  "vi": "“Anh ơi em đã lên kế hoạch cả năm rồi! Nửa đêm, ánh đèn quét qua, em quỳ xuống… Cho em mượn đỉnh tháp mười phút thôi!”",
+  "en": ""
+ },
+ {
+  "vi": "“Em trả anh năm chục xu tiền “bồi dưỡng”, coi như anh góp phần vào hạnh phúc của tụi em nha!”",
+  "en": ""
+ },
+ {
+  "vi": "Không có giấy tờ, thuê ghe ra đảo lúc chiều tối. Ghe hẹn hai giờ sáng mới quay lại đón.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cho hai người lên phòng đèn lúc nửa đêm. Cô gái đứng chắn ngay trước kính đèn để chụp, đèn tối một góc suốt mười phút.",
+  "en": ""
+ },
+ {
+  "vi": "Livestream “một đêm trong phòng đèn hải đăng”",
+  "en": ""
+ },
+ {
+  "vi": "“Hi anh gác đèn! Em đang live nè, cả nhà ơi đây là anh gác đèn cute nhất miền Trung! Anh cho em vào phòng đèn live xíu nha 🥺”",
+  "en": ""
+ },
+ {
+  "vi": "“Anh không cho thì em quay cảnh anh từ chối, cả nhà phán xét nha 🙃”",
+  "en": ""
+ },
+ {
+  "vi": "Không có giấy của xí nghiệp. Vy đưa một “thư mời hợp tác” tự in, logo mờ tịt.",
+  "en": ""
+ },
+ {
+  "vi": "Vy live ngay trong phòng đèn, cầm điện thoại sát kính quét. Clip lên xu hướng, kèm cảnh bạn dắt người lạ vào khu vực cấm.",
+  "en": ""
+ },
+ {
+  "vi": "Kênh YouTube “Đêm Rợn Người”",
+  "en": ""
+ },
+ {
+  "vi": "Quay phim ma lúc nửa đêm, xin tắt đèn mười phút “cho có không khí”",
+  "en": ""
+ },
+ {
+  "vi": "“Đảo này đồn có hồn người gác đèn cũ lắm anh. Anh tắt đèn mười phút thôi, tụi em quay cảnh “đèn tự tắt”, view triệu luôn!”",
+  "en": ""
+ },
+ {
+  "vi": "“Mười phút thôi mà, giờ này làm gì có tàu nào!”",
+  "en": ""
+ },
+ {
+  "vi": "Bốn người, máy quay hồng ngoại, không giấy tờ. Ghe chở họ đã về bờ, hẹn sáng mai đón.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tắt đèn mười phút. Đúng lúc đó một tàu hàng đi ngang tìm mốc hòn Gió mà không thấy, phải gọi đài hỏi.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Đức · nhà văn",
+  "en": ""
+ },
+ {
+  "vi": "Ở lại trên đảo một tuần “để sống thử đời người gác đèn”",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi có giấy của xí nghiệp đây. Tôi chỉ xin một góc nhà kho, một tuần thôi, tự nấu ăn, không phiền ai.”",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi viết về các anh mà. Người đọc cần thấy sự thật cô đơn của nghề này…”",
+  "en": ""
+ },
+ {
+  "vi": "Giấy của xí nghiệp ghi rõ: “tham quan, phỏng vấn trong ngày”. Không có dòng nào cho ở lại.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Đức ở lại. Đêm thứ hai anh lên phòng đèn “tìm cảm hứng” lúc ba giờ sáng, quên đóng cửa ban công trong gió.",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn chèo kayak lạc đường",
+  "en": ""
+ },
+ {
+  "vi": "Xin trú nhờ: trời sắp tối, gió lên, thuyền thủng",
+  "en": ""
+ },
+ {
+  "vi": "“Anh ơi cho tụi em vào nhờ với… thuyền thủng, điện thoại ướt hết, tụi em lạnh quá…”",
+  "en": ""
+ },
+ {
+  "vi": "“Tụi em không có giấy tờ gì hết, anh đừng đuổi tụi em…”",
+  "en": ""
+ },
+ {
+  "vi": "Hai người ướt sũng, môi tím tái, không áo phao. Gió đang lên cấp 5, trời sắp tối.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cho hai người vào nhà trạm, nhưng không báo đài. Đêm đó cả nhà hai bạn báo mất tích, tàu cứu nạn ra tìm cả đêm.",
+  "en": ""
+ },
+ {
+  "vi": "Ngư dân bị thương ở tay",
+  "en": ""
+ },
+ {
+  "vi": "Ghé đảo xin sơ cứu: tay rách vì dây lưới, máu thấm đỏ khăn",
+  "en": ""
+ },
+ {
+  "vi": "“Chú ơi cho cháu ghé băng tạm cái tay, chảy máu hoài không cầm…”",
+  "en": ""
+ },
+ {
+  "vi": "“Tụi cháu đi tàu cá, không có giấy gì đâu chú…”",
+  "en": ""
+ },
+ {
+  "vi": "Vết rách dài ở bàn tay, quấn khăn bẩn. Tàu cá CL-6610-TS neo sát bến.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn băng tạm cho anh ta rồi để tàu đi luôn, không báo đài. Hai ngày sau vết thương nhiễm trùng, tàu phải quay vào bờ gấp.",
+  "en": ""
+ },
+ {
+  "vi": "Anh thợ flycam",
+  "en": ""
+ },
+ {
+  "vi": "Bay flycam vòng quanh đèn lúc đèn đang quét “cho ảnh có vệt sáng”",
+  "en": ""
+ },
+ {
+  "vi": "“Anh cho em bay một vòng quanh đỉnh tháp lúc đèn quét thôi, em bay giỏi lắm, chưa rơi lần nào!”",
+  "en": ""
+ },
+ {
+  "vi": "“Em quay xong gửi anh làm ảnh đại diện luôn!”",
+  "en": ""
+ },
+ {
+  "vi": "Không giấy phép bay, không giấy của xí nghiệp. Máy bay là loại lớn, cánh quạt to bằng bàn tay.",
+  "en": ""
+ },
+ {
+  "vi": "Chiếc flycam quệt vào lan can phòng đèn rồi rơi, mảnh cánh quạt cứa một vệt dài trên kính bảo vệ.",
+  "en": ""
+ },
+ {
+  "vi": "Cháu của anh Khôi",
+  "en": ""
+ },
+ {
+  "vi": "Dẫn bạn bè lên đỉnh tháp “nhậu ngắm trăng”",
+  "en": ""
+ },
+ {
+  "vi": "“Chú Khôi bảo em cứ ra, nói tên chú là được. Tụi em mang bia với mực, lên đỉnh tháp ngồi tí thôi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Gọi chú Khôi đi, chú nói là anh phải nghe à!”",
+  "en": ""
+ },
+ {
+  "vi": "Không có giấy tờ. Gọi đài nhờ hỏi thì xí nghiệp nói anh Khôi không ký giấy nào.",
+  "en": ""
+ },
+ {
+  "vi": "Năm thanh niên ngồi nhậu trên ban công phòng đèn. Một lon bia lăn xuống, vỡ kính bảo vệ.",
+  "en": ""
+ },
+ {
+  "vi": "Ông cụ làng chài",
+  "en": ""
+ },
+ {
+  "vi": "Thắp hương miếu Bà trên mỏm đá cạnh trạm, như mọi rằm",
+  "en": ""
+ },
+ {
+  "vi": "“Rằm nào ông cũng ra thắp hương miếu Bà, cầu cho tụi nhỏ đi biển bình an. Cháu cho ông đi nhờ lối sân trạm nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "“Ông đi chậm thôi mà, không đụng gì của trạm đâu.”",
+  "en": ""
+ },
+ {
+  "vi": "Miếu Bà nằm ngoài rào trạm, lối đi phải qua sân. Ông cụ chống gậy, đi một mình.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chỉ tay cho ông tự đi. Ông trượt chân ở bậc đá rêu, may chỉ trầy đầu gối.",
+  "en": ""
+ },
+ {
+  "vi": "Phóng viên báo tỉnh",
+  "en": ""
+ },
+ {
+  "vi": "Phỏng vấn và quay phim phòng đèn cho phóng sự “Người giữ lửa”",
+  "en": ""
+ },
+ {
+  "vi": "“Chị có thẻ nhà báo đây. Phóng sự về các bạn mà, cho chị vào phòng đèn quay vài cảnh nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "“Chị làm phóng sự tích cực mà, em ngại gì?”",
+  "en": ""
+ },
+ {
+  "vi": "Có thẻ nhà báo, nhưng không có giấy của xí nghiệp cho vào khu vực đèn.",
+  "en": ""
+ },
+ {
+  "vi": "Chị phóng viên quay trong phòng đèn. Phóng sự lên sóng kèm cảnh cửa phòng đèn mở toang, xí nghiệp gọi hỏi ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Người lạ xin gửi hàng ở nhà kho trạm",
+  "en": ""
+ },
+ {
+  "vi": "Gửi mấy thùng hàng kín trong kho trạm “vài hôm”, trả trước một trăm xu",
+  "en": ""
+ },
+ {
+  "vi": "“Anh cho em gửi mấy thùng này trong kho trạm vài hôm, có người tới lấy. Một trăm xu, em đưa trước luôn.”",
+  "en": ""
+ },
+ {
+  "vi": "“Hai trăm. Hàng hợp pháp mà, anh khỏi hỏi.”",
+  "en": ""
+ },
+ {
+  "vi": "Thùng dán kín, không giấy tờ, không ghi gì. Ghe của họ tắt đèn hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nhận tiền, cho gửi hàng. Tuần sau biên phòng ra đảo kiểm tra, mấy thùng hàng lậu nằm ngay trong kho trạm.",
+  "en": ""
+ },
+ {
+  "vi": "Người tự xưng “đoàn kiểm tra”",
+  "en": ""
+ },
+ {
+  "vi": "Xin chìa khóa phòng đèn và sổ trực để “kiểm tra đột xuất”",
+  "en": ""
+ },
+ {
+  "vi": "“Đoàn kiểm tra của trên. Cậu đưa chìa khóa phòng đèn với sổ trực đây, không cần báo ai.”",
+  "en": ""
+ },
+ {
+  "vi": "“Cậu không hợp tác là tôi ghi biên bản cậu cản trở công vụ!”",
+  "en": ""
+ },
+ {
+  "vi": "Không có quyết định kiểm tra, không thẻ ngành. Gọi đài hỏi thì xí nghiệp không cử đoàn nào.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đưa chìa khóa. Hai người lục tung tủ, mang đi cuốn sổ trực và hai bình ắc quy dự phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn chụp ảnh cưới",
+  "en": ""
+ },
+ {
+  "vi": "Chụp ảnh cưới trên ban công phòng đèn",
+  "en": ""
+ },
+ {
+  "vi": "“Anh ơi cô dâu chú rể muốn có ảnh trên ban công đèn, váy bay trong gió đẹp xỉu. Tụi em xin mười phút thôi!”",
+  "en": ""
+ },
+ {
+  "vi": "“Ảnh cưới cả đời có một lần mà anh…”",
+  "en": ""
+ },
+ {
+  "vi": "Thợ ảnh có giấy phép kinh doanh của studio, không có giấy của xí nghiệp.",
+  "en": ""
+ },
+ {
+  "vi": "Cô dâu đứng trên ban công, gió giật lật váy che cả kính đèn. Thợ ảnh suýt rơi máy xuống chân tháp.",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ chèo thúng ra đảo “thám hiểm”",
+  "en": ""
+ },
+ {
+  "vi": "Ở lại chơi đến tối, “ngủ lại đảo cho ngầu”",
+  "en": ""
+ },
+ {
+  "vi": "“Tụi con chèo thúng ra đây nè chú! Cho tụi con ở lại tới tối coi đèn bật nha!”",
+  "en": ""
+ },
+ {
+  "vi": "“Thúng tụi con chèo về được mà, chú đừng gọi ba mẹ tụi con…”",
+  "en": ""
+ },
+ {
+  "vi": "Ba đứa nhỏ chừng mười tuổi, một cái thúng chai, không áo phao. Trời sắp chiều, gió trở hướng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn để tụi nhỏ tự chèo thúng về lúc chiều. Gió trở, cái thúng xoay vòng giữa luồng, phải nhờ tàu cá kéo vào.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn từ chối người đang gặp nạn. Trời tối dần, gió lên, họ ngồi co ro ở bến đá.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn dẫn người không có giấy của xí nghiệp vào tháp. Nội quy trạm là để giữ đèn.",
+  "en": ""
+ },
+ {
+  "vi": "Người ta có giấy của xí nghiệp đàng hoàng mà bạn đuổi về. Xí nghiệp nhận ngay một cuộc gọi phàn nàn.",
+  "en": ""
+ },
+ {
+  "vi": "Gạo 25 kg",
+  "en": ""
+ },
+ {
+  "vi": "Nước ngọt 20 bình",
+  "en": ""
+ },
+ {
+  "vi": "Bình gas nấu ăn",
+  "en": ""
+ },
+ {
+  "vi": "Rau củ tươi",
+  "en": ""
+ },
+ {
+  "vi": "Thịt cá đông lạnh",
+  "en": ""
+ },
+ {
+  "vi": "Bóng đèn dự phòng, nhớt máy",
+  "en": ""
+ },
+ {
+  "vi": "Đủ, còn tốt.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu so với phiếu giao hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏng: dập nát, bốc mùi, không dùng được.",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ “hàng riêng” của chú Tư Lực",
+  "en": ""
+ },
+ {
+  "vi": "Xoài chín, cà phê phin, cá khô, hạt cho mèo Mun, mấy tờ báo tuần",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tư Lực chìa phiếu: “Dầu hai trăm lít đủ nghen. Ký đi cho chú còn chạy kịp con nước.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tư Lực: “Ký đủ hai trăm đi, thiếu chút đỉnh chuyến sau chú bù. Ai mà kiểm.”",
+  "en": ""
+ },
+ {
+  "vi": "Má: “Con ăn uống gì chưa? Mà nè, bao giờ dẫn bạn gái/bạn trai về cho má coi mặt?”",
+  "en": ""
+ },
+ {
+  "vi": "Dì Ba: “Con bé nhà ông Tư mới đi du học về đó, dì gửi số cho con nha. Ở đảo hoài sao lấy vợ lấy chồng?”",
+  "en": ""
+ },
+ {
+  "vi": "Ba: “Đèn đóm gì, về quê mở tiệm tạp hóa với ba cho rồi.” Rồi ba im lặng một lúc: “Giữ sức khỏe nha con.”",
+  "en": ""
+ },
+ {
+  "vi": "Em gái: “Anh/chị ơi Tết này có về không? Mẹ để phần bánh tét trong tủ lạnh từ giờ rồi đó 😭”",
+  "en": ""
+ },
+ {
+  "vi": "Bà ngoại: “Ngoài đó có ma không con? Bà gửi theo tàu cái bùa bình an nghen.”",
+  "en": ""
+ },
+ {
+  "vi": "Má: “Thằng con nhà hàng xóm cưới vợ rồi đó. Con thì cưới… cái đèn hả?”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Út: “Ở ngoài đó tiền lương có dư không? Cô mượn chút sửa nhà, Tết trả.”",
+  "en": ""
+ },
+ {
+  "vi": "Mèo Mun cọ đầu vào chân bạn, kêu rừ rừ như cái mô-tơ đèn.",
+  "en": ""
+ },
+ {
+  "vi": "Mun tha về một con cá chuồn còn giãy, đặt trước cửa như khoe chiến lợi phẩm.",
+  "en": ""
+ },
+ {
+  "vi": "Mun nằm phơi bụng trên bậc đá, nheo mắt nhìn đàn hải âu.",
+  "en": ""
+ },
+ {
+  "vi": "Mun nhảy lên bàn trực, ngồi đè lên cuốn sổ đúng chỗ bạn đang ghi.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tưới mấy thùng xốp rau muống, hành lá với hai gốc ớt chen giữa khe đá.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chắn lại tấm lưới che gió cho luống rau, nhổ vài cọng cỏ biển.",
+  "en": ""
+ },
+ {
+  "vi": "Mấy đọt rau muống mới nhú, xanh mướt giữa nền đá xám.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cắt được một rổ rau muống, nấu canh với con cá chuồn Mun bắt. Bữa tối ngon nhất tuần.",
+  "en": ""
+ },
+ {
+  "vi": "Giới thiệu nghề: người gác hải đăng",
+  "en": ""
+ },
+ {
+  "vi": "Sáng: tắt đèn đúng giờ, kiểm từng thiết bị, lau kính, ghi sổ dầu",
+  "en": ""
+ },
+ {
+  "vi": "Quan trắc gió, sóng, tầm nhìn, áp suất; báo đài duyên hải",
+  "en": ""
+ },
+ {
+  "vi": "Chiều: thắp đèn đúng giờ, đếm chớp so với danh mục đèn",
+  "en": ""
+ },
+ {
+  "vi": "Canh biển: tàu gặp nạn thì báo đài đúng mức, không tự ra khơi",
+  "en": ""
+ },
+ {
+  "vi": "Khách ra đảo: xem giấy tờ, đi kèm, không ai vào phòng đèn",
+  "en": ""
+ },
+ {
+  "vi": "Ngày tàu tiếp tế: đo dầu, kiểm hàng, ký đúng số thật",
+  "en": ""
+ },
+ {
+  "vi": "Nuôi mèo Mun, chăm vườn rau trên đá, gọi điện về nhà cho đỡ nhớ",
+  "en": ""
+ },
+ {
+  "vi": "Khách đòi lên đỉnh tháp sống ảo",
+  "en": ""
+ },
+ {
+  "vi": "Cặp đôi đòi cầu hôn trên ban công lúc nửa đêm",
+  "en": ""
+ },
+ {
+  "vi": "Kênh ma đòi tắt đèn “cho có không khí”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Sáu Ghe: “quay đèn về phía lưới giùm”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi: kiểm tra qua bộ đàm, đòi đủ thứ trời ơi",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tư Lực: dầu thiếu mà đòi ký đủ",
+  "en": ""
+ },
+ {
+  "vi": "Má gọi: “Bao giờ lấy vợ lấy chồng?”",
+  "en": ""
+ },
+ {
+  "vi": "Đèn sáng đúng giờ, đúng đặc tính",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trực, sổ dầu ghi đúng sự thật",
+  "en": ""
+ },
+ {
+  "vi": "Báo đài rõ ràng, đúng mức khẩn cấp",
+  "en": ""
+ },
+ {
+  "vi": "Cứu người bằng phao, bằng bộ đàm, không liều mạng",
+  "en": ""
+ },
+ {
+  "vi": "Không ai vào phòng đèn trái nội quy",
+  "en": ""
+ },
+ {
+  "vi": "Người gặp nạn luôn được trú tạm",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy: “Đèn tắt một đêm là có người không về nhà được. Nhớ vậy là đủ.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy kể năm bão lớn, chú quay tay mô-tơ suốt đêm cho đèn khỏi đứng.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy đưa bạn cái giẻ lau kính bằng da hươu cũ: “Giữ lấy. Kính sạch thì đèn mới xa.”",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hải Yến: “Báo rõ thế là chị chép một lần là xong.”",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hải Yến bảo cả đài khen bản tin của trạm Hòn Gió gọn, đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hải Yến gửi theo tàu tiếp tế một hộp bánh in: “Cho người giữ đèn Hòn Gió.”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Sáu Ghe càu nhàu nhưng gật đầu: “Ờ, trạm nói cũng phải.”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Sáu Ghe gọi lên trạm hỏi bản tin trước khi xuất bến.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Sáu Ghe gửi lên đảo một con cá thu to: “Cảm ơn mấy lần cậu gọi tui.”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Thắm: “Đi theo em, khách nghe kể chuyện đèn mê luôn.”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Thắm in thêm dòng “tôn trọng nội quy trạm đèn” vào tờ rơi tour.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Thắm mang ra một xấp thiệp khách du lịch viết tặng trạm Hòn Gió.",
+  "en": ""
+ },
+ {
+  "vi": "😮‍💨 Mệt rồi: thưởng ca chỉ còn một nửa. Xin nghỉ bù ở nhà trạm.",
+  "en": ""
+ },
+ {
+  "vi": "🏝️ Nhớ nhà quá: gọi điện về nhà, chơi với Mun, chăm vườn rau cho đỡ trống trải.",
+  "en": ""
+ },
+ {
+  "vi": "Mất điện giữa đêm",
+  "en": ""
+ },
+ {
+  "vi": "Đèn trong nhà trạm phụt tắt. Trên đỉnh tháp, đèn biển chớp một cái rồi tối hẳn. Ắc quy báo lỗi.",
+  "en": ""
+ },
+ {
+  "vi": "Chạy máy phát dự phòng, kiểm đèn sáng lại đúng đặc tính, gọi đài báo đèn tắt mấy phút",
+  "en": ""
+ },
+ {
+  "vi": "Máy phát nổ giòn, đèn sáng lại sau bốn phút. Đài ghi nhận, phát tin cho tàu thuyền gần đó.",
+  "en": ""
+ },
+ {
+  "vi": "Chờ xem ắc quy có tự lên lại không",
+  "en": ""
+ },
+ {
+  "vi": "Đèn biển tắt mà trạm ngồi chờ, không báo đài.",
+  "en": ""
+ },
+ {
+  "vi": "Hai mươi phút đèn tắt. Một tàu hàng gọi đài hỏi “đèn Hòn Gió đâu rồi?”.",
+  "en": ""
+ },
+ {
+  "vi": "Chạy máy phát, đèn sáng lại thì thôi, khỏi báo cho đỡ rầy",
+  "en": ""
+ },
+ {
+  "vi": "Đỡ bị hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Đèn sáng lại. Sáng mai đài hỏi sao đêm qua có tàu thấy đèn tắt mà trạm không báo.",
+  "en": ""
+ },
+ {
+  "vi": "Chim đâm vào kính đèn",
+  "en": ""
+ },
+ {
+  "vi": "Một con chim biển lao vào kính phòng đèn trong gió, rơi xuống ban công, cánh còn đập yếu ớt.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm kính có nứt không, lau sạch, đặt chim vào hộp giấy nơi kín gió",
+  "en": ""
+ },
+ {
+  "vi": "Kính chỉ trầy nhẹ. Sáng hôm sau con chim vỗ cánh bay đi, Mun nhìn theo tiếc rẻ.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ, chim trời mà",
+  "en": ""
+ },
+ {
+  "vi": "Vết máu với lông chim dính trên kính, đêm đó tia sáng mờ một góc.",
+  "en": ""
+ },
+ {
+  "vi": "Để mèo Mun “xử lý”",
+  "en": ""
+ },
+ {
+  "vi": "Để mèo vờn chim bị thương ngay ban công đèn. Hơi kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "Mun lôi con chim chạy vòng ban công, lông bay tứ tung, dính cả vào khe kính.",
+  "en": ""
+ },
+ {
+  "vi": "Giông sét kéo tới",
+  "en": ""
+ },
+ {
+  "vi": "Mây đen kéo sát đỉnh tháp, sét đánh ngoài khơi liên tục. Đèn vẫn chạy, cửa ban công đang mở.",
+  "en": ""
+ },
+ {
+  "vi": "Đóng cửa ban công, xuống khỏi tháp, theo dõi đèn qua bảng điều khiển dưới nhà",
+  "en": ""
+ },
+ {
+  "vi": "Sét đánh trúng cột thu lôi lúc bạn đã xuống nhà. Đèn vẫn quét đều.",
+  "en": ""
+ },
+ {
+  "vi": "Đứng trên ban công quay video sét cho đẹp",
+  "en": ""
+ },
+ {
+  "vi": "Đứng trên đỉnh tháp lúc giông sét để quay clip.",
+  "en": ""
+ },
+ {
+  "vi": "Một tiếng nổ chát chúa ngay trên đầu. Bạn ù tai cả buổi, điện thoại rơi vỡ màn.",
+  "en": ""
+ },
+ {
+  "vi": "Rút điện cả đèn biển cho chắc",
+  "en": ""
+ },
+ {
+  "vi": "Đèn tắt",
+  "en": ""
+ },
+ {
+  "vi": "Tự tắt đèn biển giữa giông.",
+  "en": ""
+ },
+ {
+  "vi": "Đèn tắt giữa lúc tàu thuyền chạy giông tìm đường vào bờ. Đài gọi hỏi dồn dập.",
+  "en": ""
+ },
+ {
+  "vi": "Mèo Mun mất tích",
+  "en": ""
+ },
+ {
+  "vi": "Cả buổi không thấy Mun đâu. Gió đang lên, mỏm đá phía bắc sóng đánh trắng xóa.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm quanh nhà trạm, kho, bể nước; không ra mỏm đá khi sóng lớn",
+  "en": ""
+ },
+ {
+  "vi": "Mun nằm khoanh tròn trong thùng giẻ ở kho máy phát, ngủ ngon lành.",
+  "en": ""
+ },
+ {
+  "vi": "Leo ra mỏm đá phía bắc tìm",
+  "en": ""
+ },
+ {
+  "vi": "Sóng lớn",
+  "en": ""
+ },
+ {
+  "vi": "Ra mỏm đá lúc sóng lớn tìm mèo, suýt bị sóng cuốn.",
+  "en": ""
+ },
+ {
+  "vi": "Một con sóng chồm qua mỏm đá, bạn ướt sũng, trầy cả hai tay. Mun thì ở trong kho.",
+  "en": ""
+ },
+ {
+  "vi": "Mèo đói tự về",
+  "en": ""
+ },
+ {
+  "vi": "Tối Mun về, kêu meo meo đòi ăn như chưa có gì.",
+  "en": ""
+ },
+ {
+  "vi": "Bể nước ngọt cạn đáy",
+  "en": ""
+ },
+ {
+  "vi": "Bể nước mưa chỉ còn một gang tay. Tàu tiếp tế còn mấy ngày nữa mới ra.",
+  "en": ""
+ },
+ {
+  "vi": "Chia khẩu phần nước, hứng nước mưa, gọi đài nhắn xí nghiệp gửi nước sớm",
+  "en": ""
+ },
+ {
+  "vi": "Xí nghiệp nhờ tàu cá tiện đường mang ra mười bình nước. Đêm đó còn có mưa rào.",
+  "en": ""
+ },
+ {
+  "vi": "Nấu nước biển uống tạm",
+  "en": ""
+ },
+ {
+  "vi": "Nấu nước biển để uống, ngộ độc muối cả ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Nước mặn chát, uống vào khát thêm. Bạn mệt lả cả buổi chiều.",
+  "en": ""
+ },
+ {
+  "vi": "Mua lại nước của tàu cá đi ngang, giá cắt cổ",
+  "en": ""
+ },
+ {
+  "vi": "Mất 15 xu",
+  "en": ""
+ },
+ {
+  "vi": "Ông chủ tàu cá bán mười lăm xu năm bình nước. Đắt, nhưng có nước.",
+  "en": ""
+ },
+ {
+  "vi": "Cá heo mắc cạn",
+  "en": ""
+ },
+ {
+  "vi": "Một con cá heo nhỏ mắc cạn ở bãi đá lúc triều rút, thở phì phò, da khô dần.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ ướt da bằng khăn và nước biển, gọi đài báo cơ quan thủy sản, không kéo đuôi",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tưới nước suốt hai tiếng. Triều lên, con cá heo trườn ra, quẫy một vòng rồi lặn mất.",
+  "en": ""
+ },
+ {
+  "vi": "Nắm đuôi kéo ra nước cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Kéo đuôi cá heo, nó bị thương.",
+  "en": ""
+ },
+ {
+  "vi": "Con cá heo giãy mạnh, trầy một vệt dài trên bụng.",
+  "en": ""
+ },
+ {
+  "vi": "Quay clip đăng mạng trước đã",
+  "en": ""
+ },
+ {
+  "vi": "Clip được vài trăm lượt thích. Con cá heo khô da thêm nửa tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "Thùng phuy lạ trôi dạt vào bãi",
+  "en": ""
+ },
+ {
+  "vi": "Một thùng phuy gỉ sét dạt vào bãi đá, nắp còn kín, có mùi hắc, vỏ in chữ nước ngoài.",
+  "en": ""
+ },
+ {
+  "vi": "Không mở, không lại gần, rào lối, gọi đài báo xí nghiệp và biên phòng",
+  "en": ""
+ },
+ {
+  "vi": "Đội xử lý môi trường ra đảo lấy thùng phuy: hóa chất công nghiệp. Họ khen trạm không đụng vào.",
+  "en": ""
+ },
+ {
+  "vi": "Cạy nắp xem bên trong có gì",
+  "en": ""
+ },
+ {
+  "vi": "Tự cạy nắp thùng hóa chất trôi dạt.",
+  "en": ""
+ },
+ {
+  "vi": "Hơi hắc xộc lên làm bạn chóng mặt, ho sặc sụa cả buổi.",
+  "en": ""
+ },
+ {
+  "vi": "Đẩy nó ra biển lại cho xong",
+  "en": ""
+ },
+ {
+  "vi": "Đẩy thùng hóa chất ra biển cho trôi đi chỗ khác.",
+  "en": ""
+ },
+ {
+  "vi": "Thùng phuy trôi đi, ba hôm sau dạt vào bãi tắm Cửa Lở.",
+  "en": ""
+ },
+ {
+  "vi": "Vật lạ hình quả đạn",
+  "en": ""
+ },
+ {
+  "vi": "Đào luống rau mới, xẻng chạm vào một vật kim loại gỉ hình quả đạn, dài chừng gang tay.",
+  "en": ""
+ },
+ {
+  "vi": "Dừng tay, cắm cờ đánh dấu, tránh xa, gọi đài báo biên phòng",
+  "en": ""
+ },
+ {
+  "vi": "Công binh ra đảo xử lý: đạn cối còn từ thời chiến. Họ dặn ai thấy cũng làm như bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Đào lên xem cho rõ",
+  "en": ""
+ },
+ {
+  "vi": "Tự đào vật nghi là bom đạn.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy chạy ra quát giữ tay bạn lại. Mặt chú tái mét.",
+  "en": ""
+ },
+ {
+  "vi": "Để dành bán phế liệu",
+  "en": ""
+ },
+ {
+  "vi": "Định bán bom đạn làm phế liệu.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy nghe xong lắc đầu, tự gọi đài báo biên phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi kiểm tra đột xuất",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi gọi bộ đàm: “Đọc tôi nghe sổ dầu ba ngày qua. Hôm kia đốt bao nhiêu lít máy phát?”",
+  "en": ""
+ },
+ {
+  "vi": "Đọc đúng từng dòng, nói rõ chỗ hôm kia ghi thiếu giờ chạy máy",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi im một lúc: “Thật thà là được. Bổ sung ngay.” Rồi ghi nhận kiểm tra đạt.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc số tròn cho đẹp",
+  "en": ""
+ },
+ {
+  "vi": "Sửa miệng",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ dầu “cho tròn”, số không khớp bồn.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi cộng lại: thiếu mười hai lít không ai giải thích được.",
+  "en": ""
+ },
+ {
+  "vi": "Giả vờ bộ đàm rè, hẹn gọi lại",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra mà giả vờ mất sóng.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi gọi lại bằng điện thoại vệ tinh. Không khí căng hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Đau răng giữa đêm",
+  "en": ""
+ },
+ {
+  "vi": "Răng hàm đau nhức từ chiều, má sưng nhẹ. Bác sĩ gần nhất ở đất liền, cách mười hai hải lý.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi đài xin nối máy tư vấn y tế từ xa, làm theo hướng dẫn, ghi sổ trực",
+  "en": ""
+ },
+ {
+  "vi": "Bác sĩ trực dặn súc nước muối ấm, theo dõi sưng sốt, tàu tiếp tế gần nhất thì vào bờ khám.",
+  "en": ""
+ },
+ {
+  "vi": "Lục tủ thuốc uống đại thứ gì có chữ “giảm đau”",
+  "en": ""
+ },
+ {
+  "vi": "Uống thuốc lung tung không hỏi ai.",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc hết hạn từ năm ngoái. Đau thì vẫn đau, bụng còn cồn cào thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Ráng chịu, không nói ai",
+  "en": ""
+ },
+ {
+  "vi": "Cả đêm không ngủ, sáng ra mắt thâm quầng.",
+  "en": ""
+ },
+ {
+  "vi": "Mùi dầu trong nhà máy phát",
+  "en": ""
+ },
+ {
+  "vi": "Mở cửa nhà máy phát, mùi dầu nồng nặc. Dưới chân bồn có một vũng dầu loang.",
+  "en": ""
+ },
+ {
+  "vi": "Mở cửa thông gió, không bật lửa hay công tắc, thấm dầu bằng cát, ghi sổ, báo xí nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Khớp ống dưới đáy bồn bị nứt. Xí nghiệp gửi ống mới theo chuyến tàu gần nhất.",
+  "en": ""
+ },
+ {
+  "vi": "Bật đèn, châm thuốc cho tỉnh rồi tìm chỗ rò",
+  "en": ""
+ },
+ {
+  "vi": "Hút thuốc trong nhà máy phát đang rò dầu.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy giật điếu thuốc khỏi miệng bạn, đẩy bạn ra ngoài. Không ai nói câu nào.",
+  "en": ""
+ },
+ {
+  "vi": "Lau sạch vũng dầu là xong",
+  "en": ""
+ },
+ {
+  "vi": "Hôm sau vũng dầu lại loang đúng chỗ cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Hải âu làm tổ trên tấm pin",
+  "en": ""
+ },
+ {
+  "vi": "Một cặp hải âu tha rác làm tổ ngay trên dàn pin mặt trời. Đồng hồ sạc tụt rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn tổ khi chưa có trứng, giăng dây ruy băng xua chim, lau pin",
+  "en": ""
+ },
+ {
+  "vi": "Cặp hải âu chuyển sang làm tổ trên mỏm đá phía nam. Pin sạc lại đầy.",
+  "en": ""
+ },
+ {
+  "vi": "Ném đá đuổi cho bõ tức",
+  "en": ""
+ },
+ {
+  "vi": "Ném đá vào chim, trúng cả tấm pin.",
+  "en": ""
+ },
+ {
+  "vi": "Một hòn đá trượt, nứt góc tấm pin. Cặp hải âu bay đi rồi lại về.",
+  "en": ""
+ },
+ {
+  "vi": "Để đó, chạy máy phát sạc bù",
+  "en": ""
+ },
+ {
+  "vi": "Tốn dầu",
+  "en": ""
+ },
+ {
+  "vi": "Dầu máy phát hụt nhanh hơn thường lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Ánh đèn lạ ngoài bãi đá",
+  "en": ""
+ },
+ {
+  "vi": "Nửa đêm có ánh đèn chập chờn ngoài bãi đá phía tây. Dân làng chài vẫn đồn là “ma đèn”.",
+  "en": ""
+ },
+ {
+  "vi": "Dùng ống nhòm xem kỹ từ trạm, ghi phương vị, hỏi đài có tàu nào quanh đó không",
+  "en": ""
+ },
+ {
+  "vi": "Là một thuyền thúng câu mực thắp đèn bình. Đài xác nhận, bạn ghi vào sổ trực, ngủ ngon.",
+  "en": ""
+ },
+ {
+  "vi": "Cầm đèn pin một mình ra bãi đá xem",
+  "en": ""
+ },
+ {
+  "vi": "Một mình ra bãi đá lúc nửa đêm sương mù.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn trượt chân trên đá rêu, đèn pin rơi xuống khe. Mò mẫm mãi mới về được.",
+  "en": ""
+ },
+ {
+  "vi": "Thắp nhang khấn vái cho yên",
+  "en": ""
+ },
+ {
+  "vi": "Ánh đèn vẫn chập chờn tới sáng. Bạn thức trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Phao đánh dấu luồng trôi khỏi vị trí",
+  "en": ""
+ },
+ {
+  "vi": "Qua ống nhòm, phao số 3 đánh dấu luồng vào Cửa Lở không còn ở chỗ cũ, trôi lệch về phía bãi đá.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi phương vị, gọi đài để phát thông báo hàng hải, báo xí nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Đài phát SÉCURITÉ cho tàu thuyền. Tàu công tác của xí nghiệp ra kéo phao về chỗ cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Để chuyến tàu tiếp tế báo luôn",
+  "en": ""
+ },
+ {
+  "vi": "Phao luồng trôi mà trạm để mấy ngày mới báo.",
+  "en": ""
+ },
+ {
+  "vi": "Một tàu cá chạy theo phao lệch, suýt cạn trên bãi đá.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn ông Sáu Ghe báo cho dân làng",
+  "en": ""
+ },
+ {
+  "vi": "Dân làng biết, nhưng tàu lạ thì không ai báo. Đài hỏi sao không gọi.",
+  "en": ""
+ },
+ {
+  "vi": "Ghe lạ cập bến lúc khuya",
+  "en": ""
+ },
+ {
+  "vi": "Một chiếc ghe tắt đèn cập bến lúc khuya. Hai người lom khom đi về phía dàn pin mặt trời.",
+  "en": ""
+ },
+ {
+  "vi": "Bật đèn pha sân trạm, lên tiếng từ trong nhà, gọi đài báo biên phòng",
+  "en": ""
+ },
+ {
+  "vi": "Hai người giật mình chạy xuống ghe. Biên phòng chặn được ghe ở cửa luồng.",
+  "en": ""
+ },
+ {
+  "vi": "Cầm gậy ra đuổi một mình",
+  "en": ""
+ },
+ {
+  "vi": "Cầm gậy một mình ra đuổi người lạ giữa đêm.",
+  "en": ""
+ },
+ {
+  "vi": "Họ bỏ chạy, nhưng bạn trượt chân trên bậc đá, đầu gối tím bầm.",
+  "en": ""
+ },
+ {
+  "vi": "Tắt đèn trốn trong nhà",
+  "en": ""
+ },
+ {
+  "vi": "Sáng ra mất hai tấm pin. Xí nghiệp trừ mười xu tiền trách nhiệm vì không báo.",
+  "en": ""
+ },
+ {
+  "vi": "Tết trên đảo",
+  "en": ""
+ },
+ {
+  "vi": "Ba mươi Tết. Trên đảo chỉ có bạn, chú Bảy và Mun. Bộ đàm rộn tiếng các trạm chúc nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Gói bánh với chú Bảy, gọi chúc Tết đài và các trạm, vẫn trực đèn đủ giờ",
+  "en": ""
+ },
+ {
+  "vi": "Đêm giao thừa, cả vịnh vang tiếng còi tàu chúc Tết. Đèn Hòn Gió quét đều qua năm mới.",
+  "en": ""
+ },
+ {
+  "vi": "Nhậu một bữa cho quên nhớ nhà",
+  "en": ""
+ },
+ {
+  "vi": "Say sưa đêm giao thừa, quên giờ kiểm đèn.",
+  "en": ""
+ },
+ {
+  "vi": "Gần sáng đèn báo lỗi bộ đổi bóng, bạn ngủ say không nghe. Chú Bảy lên sửa một mình.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi một mình xem ảnh nhà",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ nhà quay quắt. Chú Bảy gõ cửa đưa chén trà nóng.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu câu mực rọi đèn vào đảo",
+  "en": ""
+ },
+ {
+  "vi": "Mấy tàu câu mực neo sát đảo, bật dàn đèn trắng chói lóa. Từ xa, ánh đèn biển lẫn hẳn vào đám đèn câu.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi kênh 16 nhờ các tàu dời ra xa luồng, báo đài lưu ý tàu qua lại",
+  "en": ""
+ },
+ {
+  "vi": "Các tàu câu mực dời ra ngoài hai hải lý. Đèn Hòn Gió lại rõ trên nền trời đêm.",
+  "en": ""
+ },
+ {
+  "vi": "Ra bến quát cho họ đi",
+  "en": ""
+ },
+ {
+  "vi": "Ra bến quát tháo ngư dân.",
+  "en": ""
+ },
+ {
+  "vi": "Họ không nghe thấy gì, chỉ thấy bạn vung tay.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ, biển rộng mà",
+  "en": ""
+ },
+ {
+  "vi": "Để đèn biển lẫn vào đèn câu mực.",
+  "en": ""
+ },
+ {
+  "vi": "Một tàu hàng nhận nhầm đèn, chạy lệch luồng mười phút.",
+  "en": ""
+ },
+ {
+  "vi": "Em đang trực đèn.",
+  "en": ""
+ },
+ {
+  "vi": "Nội quy trạm không cho người ngoài ở lại, không hẹn hò khi trực.",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn, chúc bạn đi biển bình an.",
+  "en": ""
+ },
+ {
+  "vi": "Quấy rối người đang trực là vi phạm.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi đang trực đèn.",
+  "en": ""
+ },
+ {
+  "vi": "Nội quy trạm đèn không cho phép.",
+  "en": ""
+ },
+ {
+  "vi": "Có cách khác nè…",
+  "en": ""
+ },
+ {
+  "vi": "Vượt thời gian trực quy định rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Cho em xin văn bản phân công.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện cứ lấp lửng không dứt. Ở bến Cửa Lở bắt đầu có người xì xào.",
+  "en": ""
+ },
+ {
+  "vi": "Giọng ngọt trên kênh 16",
+  "en": ""
+ },
+ {
+  "vi": "Bé Thủy · con gái chủ vựa cá Cửa Lở",
+  "en": ""
+ },
+ {
+  "vi": "“Anh gác đèn ơi, đêm nào em cũng nghe giọng anh trên kênh 16. Tối nay anh mở đèn pha sân trạm nháy ba cái cho em biết anh nhớ em nha 😘”",
+  "en": ""
+ },
+ {
+  "vi": "“Nháy ba cái thôi mà, có ai biết đâu.”",
+  "en": ""
+ },
+ {
+  "vi": "“Anh không nháy là em buồn, mai em chèo thúng ra tận đảo đó nha.”",
+  "en": ""
+ },
+ {
+  "vi": "Đèn trạm là tín hiệu hàng hải, không phải để nhắn tin.",
+  "en": ""
+ },
+ {
   "vi": "Muốn nói chuyện thì gọi điện ban ngày nhé, đừng dùng kênh 16.",
   "en": ""
  },
@@ -297,1506 +1797,6 @@
  },
  {
   "vi": "Cười trừ.",
-  "en": ""
- },
- {
-  "vi": "Thôi bỏ qua.",
-  "en": ""
- },
- {
-  "vi": "Ừ cho xong.",
-  "en": ""
- },
- {
-  "vi": "Bộ đàm im một lúc. Anh Khôi chuyển sang hỏi sổ dầu, giọng nghiêm hẳn.",
-  "en": ""
- },
- {
-  "vi": "Bạn báo công đoàn xí nghiệp, kèm giờ và kênh. Anh Khôi bị kỷ luật khiển trách, phải xin lỗi bằng văn bản.",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi cười cho qua. Chẳng ai ghi lại, nên tuần sau lại thế. Không phải lỗi của bạn; báo là quyền của bạn.",
-  "en": ""
- },
- {
-  "vi": "Bạn ậm ừ cho xong. Anh Khôi được đà nhắn tin riêng liên tục. Không phải lỗi của bạn; cứ báo, xí nghiệp có quy trình bảo vệ.",
-  "en": ""
- },
- {
-  "vi": "Fan của Vy Vlog kéo vào trang cá nhân",
-  "en": ""
- },
- {
-  "vi": "Đám fan ẩn danh",
-  "en": ""
- },
- {
-  "vi": "Sau clip “anh gác đèn từ chối Vy”, hàng trăm tài khoản lạ nhắn tin chửi bới, đăng cả ảnh nhà má bạn.",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn mới: “Biết nhà mày rồi đó.”",
-  "en": ""
- },
- {
-  "vi": "Có người gọi điện vào số của trạm, cười rồi cúp máy.",
-  "en": ""
- },
- {
-  "vi": "Khóa trang, chụp màn hình lại.",
-  "en": ""
- },
- {
-  "vi": "Không trả lời ai cả.",
-  "en": ""
- },
- {
-  "vi": "Báo công an mạng, nhờ xí nghiệp lên tiếng.",
-  "en": ""
- },
- {
-  "vi": "Tôi chỉ làm đúng nội quy.",
-  "en": ""
- },
- {
-  "vi": "Đăng clip cà khịa lại.",
-  "en": ""
- },
- {
-  "vi": "Kệ, vài bữa hết.",
-  "en": ""
- },
- {
-  "vi": "Đăng bài xin lỗi Vy cho yên.",
-  "en": ""
- },
- {
-  "vi": "Bạn khóa trang, chụp lại hết. Vài hôm sau đám fan cũng chán.",
-  "en": ""
- },
- {
-  "vi": "Bạn báo công an và xí nghiệp. Xí nghiệp đăng thông báo bảo vệ nhân viên làm đúng nội quy; Vy gỡ clip, xin lỗi công khai.",
-  "en": ""
- },
- {
-  "vi": "Đám fan chửi thêm mấy hôm. Không phải lỗi của bạn: báo công an và xí nghiệp là quyền của bạn.",
-  "en": ""
- },
- {
-  "vi": "Bạn xin lỗi vì một việc mình làm đúng. Đám fan càng hăng. Không phải lỗi của bạn; lần sau cứ báo.",
-  "en": ""
- },
- {
-  "vi": "“Quay đèn về phía lưới giùm”",
-  "en": ""
- },
- {
-  "vi": "Ông Sáu Ghe · chủ tàu cá",
-  "en": ""
- },
- {
-  "vi": "“Cậu quay cái đèn rọi về hướng đông bắc giùm tui, cá mực thấy sáng là lên đầy lưới. Có một đêm thôi!”",
-  "en": ""
- },
- {
-  "vi": "“Đèn của nhà nước, rọi chút có mất gì đâu.”",
-  "en": ""
- },
- {
-  "vi": "“Hồi xưa ông trạm trưởng cũ còn cho mà!”",
-  "en": ""
- },
- {
-  "vi": "Đèn quay đều theo danh mục đèn, tàu cả vịnh dựa vào nó.",
-  "en": ""
- },
- {
-  "vi": "Ông dùng đèn câu trên tàu, đúng luật mà cá vẫn lên.",
-  "en": ""
- },
- {
-  "vi": "Ông Sáu Ghe càu nhàu: “Ờ, thì thôi.” Rồi gọi hỏi bản tin gió đêm nay.",
-  "en": ""
- },
- {
-  "vi": "Bạn hứa “để xem”. Ông Sáu kể khắp bến là trạm sắp rọi đèn cho ông. Xí nghiệp gọi hỏi ngay chiều đó.",
-  "en": ""
- },
- {
-  "vi": "Không chiều tui, nhưng nói có lý, còn chỉ cách.",
-  "en": ""
- },
- {
-  "vi": "Hứa rồi để đó. Nói cho vui à?",
-  "en": ""
- },
- {
-  "vi": "“Tắt còi đi, cá sợ chạy hết”",
-  "en": ""
- },
- {
-  "vi": "Tổ lưới chụp Cửa Lở",
-  "en": ""
- },
- {
-  "vi": "“Đêm sương cậu kéo còi ầm ầm, cá chạy hết! Tắt còi giùm tụi tui một đêm thôi!”",
-  "en": ""
- },
- {
-  "vi": "“Tụi tui biết đường về, cần gì còi!”",
-  "en": ""
- },
- {
-  "vi": "“Không tắt là tụi tui làm đơn lên xã đó!”",
-  "en": ""
- },
- {
-  "vi": "Sương mù là còi phải chạy, tàu lạ không biết đảo ở đâu.",
-  "en": ""
- },
- {
-  "vi": "Các anh thả lưới cách đảo hai hải lý, tiếng còi nhỏ hẳn.",
-  "en": ""
- },
- {
-  "vi": "Tổ lưới chụp lầm bầm rồi dời ra xa hơn. Đêm đó còi vẫn kêu đều.",
-  "en": ""
- },
- {
-  "vi": "Bạn tắt còi. Ba giờ sáng, một tàu hàng lạ suýt mắc cạn ở hòn Mõ trong sương.",
-  "en": ""
- },
- {
-  "vi": "“Bật đèn ban ngày cho em chụp”",
-  "en": ""
- },
- {
-  "vi": "Đoàn khách tàu du lịch",
-  "en": ""
- },
- {
-  "vi": "“Anh ơi bật cái đèn lên cho tụi em chụp ảnh đèn sáng đi, ban ngày nhìn không ra gì hết!”",
-  "en": ""
- },
- {
-  "vi": "“Năm phút thôi, có tốn bao nhiêu điện đâu.”",
-  "en": ""
- },
- {
-  "vi": "“Tụi em trả tiền tour rồi mà anh!”",
-  "en": ""
- },
- {
-  "vi": "Đèn chỉ bật theo giờ, bật bậy tàu ngoài khơi tưởng tín hiệu.",
-  "en": ""
- },
- {
-  "vi": "Chiều nay tàu Biển Ngọc có tour hoàng hôn, xem đèn thắp thật luôn.",
-  "en": ""
- },
- {
-  "vi": "Đoàn khách tiếc rẻ nhưng chụp tấm hình cái tháp trắng dưới nắng. Cô Thắm ghi luôn tour hoàng hôn.",
-  "en": ""
- },
- {
-  "vi": "Bạn bật đèn giữa trưa. Đài gọi hỏi sao đèn Hòn Gió sáng lúc mười hai giờ.",
-  "en": ""
- },
- {
-  "vi": "“Về quê xem mặt đi con!”",
-  "en": ""
- },
- {
-  "vi": "Má bạn",
-  "en": ""
- },
- {
-  "vi": "“Má hẹn nhà bác Tư rồi, chủ nhật này con về xem mặt con gái/con trai bác. Đèn đóm gì một hôm, nhờ ông trạm trưởng trực giùm!”",
-  "en": ""
- },
- {
-  "vi": "“Con ở đảo hoài, ai mà chịu lấy?”",
-  "en": ""
- },
- {
-  "vi": "“Má già rồi, má muốn bồng cháu…”",
-  "en": ""
- },
- {
-  "vi": "Ca trực có lịch, con không bỏ trạm được má ơi.",
-  "en": ""
- },
- {
-  "vi": "Đợt nghỉ phép tháng sau con về, má hẹn lại giùm con nha.",
-  "en": ""
- },
- {
-  "vi": "Má thở dài: “Ừ, tháng sau về đó nha.” Rồi gửi theo tàu một hũ mắm.",
-  "en": ""
- },
- {
-  "vi": "Bạn bỏ trạm về quê một ngày. Chú Bảy trực một mình ba mươi sáu tiếng, ngã ở cầu thang tháp.",
-  "en": ""
- },
- {
-  "vi": "Cô Út hỏi mượn tiền",
-  "en": ""
- },
- {
-  "vi": "“Con ở đảo đâu có tiêu gì, lương dư nhiều lắm phải không? Cho cô mượn hai trăm sửa nhà, Tết cô trả.”",
-  "en": ""
- },
- {
-  "vi": "“Cô nuôi con hồi nhỏ mà…”",
-  "en": ""
- },
- {
-  "vi": "“Không cho mượn thì nói luôn đi!”",
-  "en": ""
- },
- {
-  "vi": "Lương con còn lo cho má với tiền học em, con không dư nhiều vậy.",
-  "en": ""
- },
- {
-  "vi": "Con gửi cô ít tiền mua vật liệu, còn lại cô hỏi thêm mấy anh chị nha.",
-  "en": ""
- },
- {
-  "vi": "Cô Út im một lúc rồi bảo: “Ừ, thôi cô hỏi chỗ khác.”",
-  "en": ""
- },
- {
-  "vi": "Bạn chuyển hai trăm. Tết năm đó cô Út không nhắc gì tới chuyện trả.",
-  "en": ""
- },
- {
-  "vi": "“Sơn tháp màu hồng cho clip quảng bá”",
-  "en": ""
- },
- {
-  "vi": "“Tỉnh làm clip du lịch. Cậu sơn giùm cái ban công màu hồng pastel cho lên hình đẹp. Tự mua sơn, về xí nghiệp thanh toán sau.”",
-  "en": ""
- },
- {
-  "vi": "“Có cái ban công thôi mà, làm trong một buổi.”",
-  "en": ""
- },
- {
-  "vi": "“Lãnh đạo tỉnh thích màu hồng, cậu hiểu chưa?”",
-  "en": ""
- },
- {
-  "vi": "Màu tháp là dấu hiệu nhận biết ban ngày trong danh mục đèn, không tự đổi được.",
-  "en": ""
- },
- {
-  "vi": "Em gửi anh ảnh tháp lúc hoàng hôn, lên clip đẹp mà đúng màu.",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi im một lúc: “Ừ… gửi ảnh hoàng hôn đi.” Clip du lịch dùng ảnh của bạn.",
-  "en": ""
- },
- {
-  "vi": "Bạn sơn hồng ban công. Tháng sau Cục hàng hải gửi công văn hỏi vì sao dấu hiệu ban ngày của đèn Hòn Gió bị đổi.",
-  "en": ""
- },
- {
-  "vi": "“Đếm hải âu báo cáo hằng ngày”",
-  "en": ""
- },
- {
-  "vi": "“Xí nghiệp có đề tài môi trường. Từ mai cậu đếm hải âu trên đảo, sáng trưa chiều, gửi báo cáo kèm ảnh từng con.”",
-  "en": ""
- },
- {
-  "vi": "“Có đếm thôi mà, cậu rảnh mà.”",
-  "en": ""
- },
- {
-  "vi": "“Không làm thì cuối năm khỏi thi đua.”",
-  "en": ""
- },
- {
-  "vi": "Em ưu tiên quan trắc và đèn trước, việc thêm cần văn bản giao.",
-  "en": ""
- },
- {
-  "vi": "Em đếm một lần buổi sáng, ghi chung vào sổ quan trắc nhé.",
-  "en": ""
- },
- {
-  "vi": "Đề tài cần số liệu gì ạ?",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi lầm bầm: “Ừ, một lần sáng là được.” Sổ quan trắc có thêm cột “hải âu”.",
-  "en": ""
- },
- {
-  "vi": "Bạn đếm hải âu cả ngày, trễ giờ quan trắc trưa. Đài gọi hỏi bản tin ba lần.",
-  "en": ""
- },
- {
-  "vi": "“Báo cáo thời tiết mỗi nửa tiếng”",
-  "en": ""
- },
- {
-  "vi": "“Mùa bão rồi. Từ giờ cậu gọi tôi báo thời tiết mỗi nửa tiếng, cả đêm, gọi số riêng của tôi.”",
-  "en": ""
- },
- {
-  "vi": "“Gọi có mấy giây thôi mà.”",
-  "en": ""
- },
- {
-  "vi": "“Tôi là sếp, tôi cần biết.”",
-  "en": ""
- },
- {
-  "vi": "Quan trắc theo giờ quy định gửi đài, đài phát cho mọi người.",
-  "en": ""
- },
- {
-  "vi": "Có gì bất thường em gọi anh ngay, còn lại anh nghe bản tin của đài nhé.",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi hừ một tiếng: “Bất thường thì gọi ngay đấy.” Rồi cúp máy.",
-  "en": ""
- },
- {
-  "vi": "Bạn gọi anh Khôi suốt đêm. Gần sáng gục trên bàn trực, quên ghi giờ quan trắc năm giờ.",
-  "en": ""
- },
- {
-  "vi": "Nhà văn xin ở lại thêm",
-  "en": ""
- },
- {
-  "vi": "“Cho tôi ở thêm năm ngày thôi. Tôi cần cảm nhận cái cô đơn thật sự của đêm thứ bảy trên đảo…”",
-  "en": ""
- },
- {
-  "vi": "“Tôi ngủ nhà kho cũng được, tự nấu ăn.”",
-  "en": ""
- },
- {
-  "vi": "“Tác phẩm này sẽ làm người ta hiểu nghề của các anh hơn mà.”",
-  "en": ""
- },
- {
-  "vi": "Giấy của xí nghiệp chỉ cho tham quan trong ngày.",
-  "en": ""
- },
- {
-  "vi": "Anh xin xí nghiệp giấy ở lại, hoặc em kể anh nghe qua điện thoại mỗi tối.",
-  "en": ""
- },
- {
-  "vi": "Anh Đức gật đầu, xuống tàu chiều. Tối đó anh gọi điện hỏi chuyện đèn tới khuya.",
-  "en": ""
- },
- {
-  "vi": "Bạn cho anh Đức ở lại. Đêm thứ ba anh lên phòng đèn hút thuốc “tìm cảm hứng”.",
-  "en": ""
- },
- {
-  "vi": "Kênh ma xin tắt đèn mười phút",
-  "en": ""
- },
- {
-  "vi": "“Anh tắt đèn mười phút thôi, tụi em quay cảnh “đèn tự tắt”, sau đó bật lại liền! View triệu đó anh!”",
-  "en": ""
- },
- {
-  "vi": "“Giờ này làm gì có tàu nào, anh lo xa quá!”",
-  "en": ""
- },
- {
-  "vi": "“Tụi em chia anh nửa tiền quảng cáo!”",
-  "en": ""
- },
- {
-  "vi": "Đèn biển không được tắt dù một phút.",
-  "en": ""
- },
- {
-  "vi": "Các bạn quay cảnh đèn quét trong sương, rợn hơn nhiều.",
-  "en": ""
- },
- {
-  "vi": "Nhóm làm phim quay cảnh đèn quét trong sương. Clip “ánh sáng ma quái” vẫn hút view.",
-  "en": ""
- },
- {
-  "vi": "Bạn tắt đèn. Đúng mười phút đó một tàu hàng gọi đài hỏi đèn Hòn Gió đâu rồi.",
-  "en": ""
- },
- {
-  "vi": "Làng xin làm lễ trên mỏm đá lúc nửa đêm",
-  "en": ""
- },
- {
-  "vi": "Ông trưởng thôn Cửa Lở",
-  "en": ""
- },
- {
-  "vi": "“Rằm này làng làm lễ cầu ngư trên mỏm đá cạnh trạm. Cậu mở cổng trạm cho bà con đi qua, tắt đèn pha sân cho linh thiêng.”",
-  "en": ""
- },
- {
-  "vi": "“Xã đồng ý miệng rồi.”",
-  "en": ""
- },
- {
-  "vi": "“Cả làng có một đêm, cậu khó gì thế.”",
-  "en": ""
- },
- {
-  "vi": "Nửa đêm đông người qua sân trạm trên đá là không an toàn.",
-  "en": ""
- },
- {
-  "vi": "Làng làm lễ lúc chiều, có giấy của xí nghiệp, em mở lối và đi kèm.",
-  "en": ""
- },
- {
-  "vi": "Ông trưởng thôn gật gù dời lễ sang buổi chiều. Bà con còn để lại cho trạm mâm xôi gà.",
-  "en": ""
- },
- {
-  "vi": "Bạn mở cổng lúc nửa đêm. Một cụ bà trượt chân trên đá rêu, phải gọi ghe đưa vào bờ gấp.",
-  "en": ""
- },
- {
-  "vi": "Gửi cá trong tủ đông của trạm",
-  "en": ""
- },
- {
-  "vi": "“Cho tui gửi hai thùng cá trong tủ đông của trạm vài hôm, máy tàu tui hư. Chạy máy phát thêm chút có sao!”",
-  "en": ""
- },
- {
-  "vi": "“Dầu của nhà nước mà, có mất của cậu đâu.”",
-  "en": ""
- },
- {
-  "vi": "“Cá ươn hết là tui lỗ cả tháng.”",
-  "en": ""
- },
- {
-  "vi": "Dầu máy phát là dầu giữ đèn, sổ dầu phải khớp.",
-  "en": ""
- },
- {
-  "vi": "Ông nhờ tàu tiếp tế chở cá vào bờ, em gọi chú Tư Lực giùm.",
-  "en": ""
- },
- {
-  "vi": "Ông Sáu Ghe gọi chú Tư Lực chở cá vào bờ. Mất ít tiền xăng nhưng cá còn tươi.",
-  "en": ""
- },
- {
-  "vi": "Bạn cho gửi cá, chạy máy phát thêm bốn tiếng mỗi ngày. Cuối tuần sổ dầu hụt ba mươi lít.",
-  "en": ""
- },
- {
-  "vi": "Đặt tượng Phật trên đỉnh tháp",
-  "en": ""
- },
- {
-  "vi": "Bà Hai · hội thiện nguyện",
-  "en": ""
- },
- {
-  "vi": "“Hội tụi bà cúng một pho tượng nhỏ, muốn đặt trên ban công đỉnh tháp cho tàu thuyền nhìn thấy mà bình an.”",
-  "en": ""
- },
- {
-  "vi": "“Có linh thiêng lắm con, đặt đi cho cả vịnh nhờ.”",
-  "en": ""
- },
- {
-  "vi": "“Con không đặt là con mang tội đó.”",
-  "en": ""
- },
- {
-  "vi": "Ban công đèn không được đặt vật che ánh sáng.",
-  "en": ""
- },
- {
-  "vi": "Mình đặt tượng ở miếu Bà cạnh trạm, ai đi biển cũng ghé được.",
-  "en": ""
- },
- {
-  "vi": "Bà Hai gật đầu, đặt tượng ở miếu Bà. Từ đó ngày rằm miếu đông hơn.",
-  "en": ""
- },
- {
-  "vi": "Bạn đặt tượng trên ban công. Một vệt tối chạy qua tia sáng mỗi vòng quét.",
-  "en": ""
- },
- {
-  "vi": "Xin quá giang tàu tiếp tế",
-  "en": ""
- },
- {
-  "vi": "Anh Hùng · thợ lặn tự do",
-  "en": ""
- },
- {
-  "vi": "“Cho anh quá giang tàu tiếp tế ra mấy bãi đá ngầm lặn bắt tôm hùm, rồi ghé đảo ngủ nhờ một đêm.”",
-  "en": ""
- },
- {
-  "vi": "“Đi chung một chuyến, tốn gì đâu.”",
-  "en": ""
- },
- {
-  "vi": "“Anh biếu trạm hai con tôm hùm.”",
-  "en": ""
- },
- {
-  "vi": "Tàu tiếp tế không chở khách, trạm không cho ngủ nhờ.",
-  "en": ""
- },
- {
-  "vi": "Anh thuê ghe ở bến Cửa Lở, có người đi kèm cho an toàn.",
-  "en": ""
- },
- {
-  "vi": "Anh Hùng gật gù thuê ghe ở bến. Chú Tư Lực thở phào.",
-  "en": ""
- },
- {
-  "vi": "Bạn xin chú Tư Lực cho anh Hùng đi nhờ. Anh lặn quá giờ, cả tàu chờ hai tiếng giữa sóng.",
-  "en": ""
- },
- {
-  "vi": "“Ký đủ hai trăm lít đi”",
-  "en": ""
- },
- {
-  "vi": "Chú Tư Lực · thuyền trưởng tàu tiếp tế",
-  "en": ""
- },
- {
-  "vi": "“Bồn thiếu có chút đỉnh, ký đủ hai trăm lít cho chú. Chuyến sau chú bù, ai mà kiểm.”",
-  "en": ""
- },
- {
-  "vi": "“Xí nghiệp có ai đo đâu con.”",
-  "en": ""
- },
- {
-  "vi": "“Con làm khó chú, chuyến sau chú chở rau héo cho coi.”",
-  "en": ""
- },
- {
-  "vi": "Ký đúng số đo được.",
-  "en": ""
- },
- {
-  "vi": "Ghi đúng số đo, thêm ghi chú “còn thiếu, chuyến sau bù”.",
-  "en": ""
- },
- {
-  "vi": "Chú Tư Lực lầm bầm, ghi thêm dòng “giao thiếu, chuyến sau bù”. Hai bên cùng ký.",
-  "en": ""
- },
- {
-  "vi": "Bạn ký đủ hai trăm lít. Cuối tháng sổ dầu của trạm hụt, người ký là bạn.",
-  "en": ""
- },
- {
-  "vi": "“Mưa vầy khỏi lên quan trắc”",
-  "en": ""
- },
- {
-  "vi": "Anh Lâm · người trực ca phụ",
-  "en": ""
- },
- {
-  "vi": "“Mưa to thế này lên đài quan trắc làm gì, ướt hết. Báo đài số liệu như hôm qua, có ai kiểm đâu.”",
-  "en": ""
- },
- {
-  "vi": "“Gió cũng vậy vậy thôi mà.”",
-  "en": ""
- },
- {
-  "vi": "“Em đi một mình thì đi, anh không đi.”",
-  "en": ""
- },
- {
-  "vi": "Anh Lâm càu nhàu, mặc áo mưa lên cùng. Áp kế tụt bốn hPa, khác hẳn hôm qua.",
-  "en": ""
- },
- {
-  "vi": "Bạn báo số liệu cũ. Chiều đó gió giật cấp 7, đài phát cảnh báo trễ hai tiếng.",
-  "en": ""
- },
- {
-  "vi": "“Ghi đèn sáng bình thường”",
-  "en": ""
- },
- {
-  "vi": "“Đêm qua đèn tắt hai mươi phút thì ghi “bình thường” nhé. Ghi ra là lên tới Cục, rắc rối lắm.”",
-  "en": ""
- },
- {
-  "vi": "“Có hai mươi phút, tàu nào thấy đâu.”",
-  "en": ""
- },
- {
-  "vi": "“Anh nói thế mà em không nghe à?”",
-  "en": ""
- },
- {
-  "vi": "Em ghi đúng giờ tắt, ghi rõ nguyên nhân và cách đã xử lý.",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi im một lúc: “Ừ. Ghi nguyên nhân vào.” Báo cáo lên Cục có đủ lý do, không ai bị kỷ luật.",
-  "en": ""
- },
- {
-  "vi": "Bạn ghi “bình thường”. Tháng sau một tàu hàng gửi phản ánh đèn tắt đúng đêm đó. Sổ trực vênh.",
-  "en": ""
- },
- {
-  "vi": "“Lau kính khỏi tắt mô-tơ”",
-  "en": ""
- },
- {
-  "vi": "Anh Tấn · thợ máy xí nghiệp",
-  "en": ""
- },
- {
-  "vi": "“Lau kính thì cứ để mô-tơ quay, tắt đi bật lại mất công. Né né cái là được.”",
-  "en": ""
- },
- {
-  "vi": "“Anh làm hai chục năm có sao đâu.”",
-  "en": ""
- },
- {
-  "vi": "“Tắt mô-tơ thì phải ghi sổ, rườm rà.”",
-  "en": ""
- },
- {
-  "vi": "Anh Tấn chép miệng, tắt mô-tơ, treo biển “Đang lau kính, cấm bật”. Lau xong mới bật lại.",
-  "en": ""
- },
- {
-  "vi": "Bạn lau khi mô-tơ đang quay. Bệ đèn xoay kẹp vạt áo, suýt kéo tay bạn vào khe.",
-  "en": ""
- },
- {
-  "vi": "“Chạy máy phát đóng cửa cho đỡ ồn”",
-  "en": ""
- },
- {
-  "vi": "“Đóng cửa nhà máy phát lại cho đỡ ồn, khói nó tự thoát ra ống mà.”",
-  "en": ""
- },
- {
-  "vi": "“Ồn quá anh không ngủ được.”",
-  "en": ""
- },
- {
-  "vi": "“Có sao đâu, mấy năm nay vẫn vậy.”",
-  "en": ""
- },
- {
-  "vi": "Anh Lâm lầm bầm, đeo nút tai đi ngủ. Cửa nhà máy phát mở thông gió như quy định.",
-  "en": ""
- },
- {
-  "vi": "Bạn đóng cửa. Nửa đêm anh Lâm vào kiểm máy, chóng mặt buồn nôn vì khói, phải dìu ra ngoài.",
-  "en": ""
- },
- {
-  "vi": "“Phao cứu sinh hết hạn kệ đi”",
-  "en": ""
- },
- {
-  "vi": "“Phao cứu sinh ở bến hết hạn kiểm định từ năm ngoái. Ghi “đạt” đi, xin phao mới lâu lắm.”",
-  "en": ""
- },
- {
-  "vi": "“Phao vẫn nổi mà.”",
-  "en": ""
- },
- {
-  "vi": "“Ghi hết hạn là xí nghiệp hỏi tới.”",
-  "en": ""
- },
- {
-  "vi": "Anh Lâm thở dài, ghi phiếu xin phao mới. Chuyến tàu sau có hai chiếc phao mới tinh.",
-  "en": ""
- },
- {
-  "vi": "Bạn ghi “đạt”. Tháng sau ném phao cứu người, dây phao mục đứt ngay khúc giữa.",
-  "en": ""
- },
- {
-  "vi": "Em họ xin lên phòng đèn chơi",
-  "en": ""
- },
- {
-  "vi": "Thằng Bin · em họ bạn",
-  "en": ""
- },
- {
-  "vi": "“Anh ơi cho em lên phòng đèn quay TikTok, em không đụng gì đâu! Em ra tận đây mà!”",
-  "en": ""
- },
- {
-  "vi": "“Em quay có mười giây thôi.”",
-  "en": ""
- },
- {
-  "vi": "“Mẹ em bảo anh chiều em mà.”",
-  "en": ""
- },
- {
-  "vi": "Phòng đèn không phải chỗ chơi.",
-  "en": ""
- },
- {
-  "vi": "Người ngoài không được vào phòng đèn.",
-  "en": ""
- },
- {
-  "vi": "Em quay ở sân trạm, anh kể chuyện đèn cho nghe.",
-  "en": ""
- },
- {
-  "vi": "Thằng Bin phụng phịu quay ở sân trạm. Clip “anh tui gác đèn” được cả lớp thả tim.",
-  "en": ""
- },
- {
-  "vi": "Bạn cho lên. Thằng Bin táy máy chạm tay vào kính đèn, để lại năm dấu tay mỡ.",
-  "en": ""
- },
- {
-  "vi": "Ở đảo thêm ba tuần",
-  "en": ""
- },
- {
-  "vi": "“Người thay ca bị ốm. Cậu ở đảo thêm ba tuần nữa nhé, cuối năm xét thưởng.”",
-  "en": ""
- },
- {
-  "vi": "“Cả xí nghiệp đang khó, cậu chịu khó chút.”",
-  "en": ""
- },
- {
-  "vi": "“Không nhận thì khó xét thưởng đó.”",
-  "en": ""
- },
- {
-  "vi": "tuần",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi hậm hực nhưng đành tìm người thay: luật giờ nghỉ đứng về phía bạn.",
-  "en": ""
- },
- {
-  "vi": "Trực xuyên Tết",
-  "en": ""
- },
- {
-  "vi": "Trưởng phòng kỹ thuật",
-  "en": ""
- },
- {
-  "vi": "“Tết này cậu trực liền năm ngày nhé, người khác về quê hết rồi.”",
-  "en": ""
- },
- {
-  "vi": "“Tết nào chả thế, ráng đi em.”",
-  "en": ""
- },
- {
-  "vi": "“Có ai được nghỉ đâu.”",
-  "en": ""
- },
- {
-  "vi": "ngày trực",
-  "en": ""
- },
- {
-  "vi": "Trực thay chú Bảy",
-  "en": ""
- },
- {
-  "vi": "“Chú về đất liền khám mắt hai hôm. Con trực thay chú hai ca đêm nhé?”",
-  "en": ""
- },
- {
-  "vi": "“Mắt chú mờ lắm rồi con.”",
-  "en": ""
- },
- {
-  "vi": "“Chú nhờ mỗi con thôi.”",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy cười buồn: “Thôi để chú nhờ xí nghiệp cử người.”",
-  "en": ""
- },
- {
-  "vi": "Sơn lại tháp cuối tuần",
-  "en": ""
- },
- {
-  "vi": "“Tháp tróc sơn rồi. Cậu tranh thủ bốn ngày nghỉ sơn lại giùm, xí nghiệp trả công thêm.”",
-  "en": ""
- },
- {
-  "vi": "“Sơn thôi mà, có gì khó.”",
-  "en": ""
- },
- {
-  "vi": "“Ai cũng phải gánh thêm việc.”",
-  "en": ""
- },
- {
-  "vi": "ngày nghỉ",
-  "en": ""
- },
- {
-  "vi": "Má xin gửi lương về sớm",
-  "en": ""
- },
- {
-  "vi": "“Nhà mình đang cần tiền sửa mái. Con gửi về trước ba tháng lương được không con?”",
-  "en": ""
- },
- {
-  "vi": "“Má biết con cực, mà nhà đang khó.”",
-  "en": ""
- },
- {
-  "vi": "“Mái dột rồi con ơi.”",
-  "en": ""
- },
- {
-  "vi": "tháng lương",
-  "en": ""
- },
- {
-  "vi": "Má nghe con giải thích, thở dài: “Ừ, gửi được bao nhiêu thì gửi.”",
-  "en": ""
- },
- {
-  "vi": "Má buồn, cúp máy ngang. Tối đó má nhắn: “Thôi, má tự lo.”",
-  "en": ""
- },
- {
-  "vi": "Cầu hôn trên đỉnh tháp lúc nửa đêm",
-  "en": ""
- },
- {
-  "vi": "Mười một giờ đêm. Một cặp đôi gõ cửa trạm, chàng trai chìa hộp nhẫn: “Anh cho em lên ban công đèn mười phút thôi, cả đời có một lần!”",
-  "en": ""
- },
- {
-  "vi": "Bạn là chàng trai: bạn lên kế hoạch cả năm, ghe đã về bờ, cô ấy đang đứng sau lưng.",
-  "en": ""
- },
- {
-  "vi": "Nội quy trạm",
-  "en": ""
- },
- {
-  "vi": "Người ngoài không vào phòng đèn, không lên tháp ban đêm.",
-  "en": ""
- },
- {
-  "vi": "Đứng trên ban công lúc đèn quét là che mất tia sáng, lại dễ trượt ngã vì sương.",
-  "en": ""
- },
- {
-  "vi": "Chuyến ghe",
-  "en": ""
- },
- {
-  "vi": "Chàng trai",
-  "en": ""
- },
- {
-  "vi": "Ghe hẹn hai giờ sáng mới quay lại đón.",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng, mời hai bạn ra sân trạm, đứng đúng chỗ ánh đèn quét qua đầu, cho ngồi nhà trạm chờ ghe",
-  "en": ""
- },
- {
-  "vi": "Anh gác đèn không cho lên tháp nhưng chỉ chỗ đẹp nhất sân trạm. Cô ấy nói đồng ý!",
-  "en": ""
- },
- {
-  "vi": "Dưới vệt sáng quét qua đầu, cô gái gật đầu. Hai bạn ngồi nhà trạm uống trà chờ ghe.",
-  "en": ""
- },
- {
-  "vi": "Không lên được đỉnh tháp, mà ảnh sân trạm còn đẹp hơn.",
-  "en": ""
- },
- {
-  "vi": "Mình giữ đèn, nhưng không phải để làm người ta buồn.",
-  "en": ""
- },
- {
-  "vi": "Cho lên mười phút, mình đứng canh",
-  "en": ""
- },
- {
-  "vi": "Cho người lạ lên ban công đèn lúc nửa đêm, cô gái suýt trượt chân vì sương.",
-  "en": ""
- },
- {
-  "vi": "Cô gái trượt chân trên sàn ban công ướt sương, may chàng trai đỡ kịp.",
-  "en": ""
- },
- {
-  "vi": "Lỡ có chuyện thì ai chịu?",
-  "en": ""
- },
- {
-  "vi": "Cô gái",
-  "en": ""
- },
- {
-  "vi": "Em sợ muốn khóc, quên cả nhận nhẫn.",
-  "en": ""
- },
- {
-  "vi": "“Không là không”, đóng cửa",
-  "en": ""
- },
- {
-  "vi": "Đúng nội quy, nhưng để hai bạn đứng ngoài bến lạnh tới hai giờ sáng.",
-  "en": ""
- },
- {
-  "vi": "Hai bạn ngồi co ro ở bến đá chờ ghe.",
-  "en": ""
- },
- {
-  "vi": "Ít ra cũng chúc tụi em một câu.",
-  "en": ""
- },
- {
-  "vi": "Giữ nội quy bằng tay, nói chuyện bằng lòng.",
-  "en": ""
- },
- {
-  "vi": "Nội quy giữ đèn và giữ người; từ chối được mà vẫn tử tế.",
-  "en": ""
- },
- {
-  "vi": "Ông Sáu Ghe gọi kênh 16: “Cậu quay đèn rọi về đông bắc giùm tui một đêm, mực đang lên!”",
-  "en": ""
- },
- {
-  "vi": "Bạn là ông Sáu: cả tháng biển động, tàu nằm bờ, nợ tiền dầu chưa trả.",
-  "en": ""
- },
- {
-  "vi": "Danh mục đèn",
-  "en": ""
- },
- {
-  "vi": "Sổ tay trạm",
-  "en": ""
- },
- {
-  "vi": "Đèn Hòn Gió: chớp nhóm 3 trắng, 15 giây, quay đều. Tàu cả vịnh nhận đèn bằng đặc tính này.",
-  "en": ""
- },
- {
-  "vi": "Đèn câu",
-  "en": ""
- },
- {
-  "vi": "Tàu ông có dàn đèn câu mực riêng.",
-  "en": ""
- },
- {
-  "vi": "Bản tin",
-  "en": ""
- },
- {
-  "vi": "Đài",
-  "en": ""
- },
- {
-  "vi": "Đêm nay biển êm, gió cấp 3.",
-  "en": ""
- },
- {
-  "vi": "Giải thích đèn quay đều theo danh mục, gợi ý dùng đèn câu, đọc bản tin đêm nay cho ông",
-  "en": ""
- },
- {
-  "vi": "Cậu gác đèn không chiều, mà nói có lý, còn đọc bản tin cho tui.",
-  "en": ""
- },
- {
-  "vi": "Ông Sáu bật dàn đèn câu, mực vẫn lên. Gần sáng ông gọi cảm ơn bản tin.",
-  "en": ""
- },
- {
-  "vi": "Đèn câu tui có sẵn, quên mất.",
-  "en": ""
- },
- {
-  "vi": "Thuyền trưởng tàu hàng",
-  "en": ""
- },
- {
-  "vi": "Đêm đó tôi nhận ra Hòn Gió từ hai mươi hải lý. Cảm ơn.",
-  "en": ""
- },
- {
-  "vi": "Dừng mô-tơ, rọi về đông bắc một tiếng",
-  "en": ""
- },
- {
-  "vi": "Đèn đứng yên một tiếng, tàu hàng gọi đài hỏi đèn gì lạ.",
-  "en": ""
- },
- {
-  "vi": "Một tàu hàng nhận nhầm đèn, lệch luồng. Đài gọi trạm hỏi dồn dập.",
-  "en": ""
- },
- {
-  "vi": "Đèn sai đặc tính là tàu nhận nhầm đèn.",
-  "en": ""
- },
- {
-  "vi": "Một tiếng đó có thể là một con tàu.",
-  "en": ""
- },
- {
-  "vi": "Tắt bộ đàm, không trả lời",
-  "en": ""
- },
- {
-  "vi": "Không chiều, nhưng gọi mà không trả lời, mất lòng bà con.",
-  "en": ""
- },
- {
-  "vi": "Ông Sáu kể khắp bến là trạm “làm quan”.",
-  "en": ""
- },
- {
-  "vi": "Gọi mà không thèm trả lời.",
-  "en": ""
- },
- {
-  "vi": "Kênh 16 thì phải trực nghe, em ạ.",
-  "en": ""
- },
- {
-  "vi": "Đèn biển là của mọi con tàu; từ chối kèm lý do và một cách khác.",
-  "en": ""
- },
- {
-  "vi": "Pháo hiệu đỏ giữa đêm bão",
-  "en": ""
- },
- {
-  "vi": "Gió cấp 7. Một pháo hiệu đỏ vọt lên phía đông nam. Xuồng của trạm nằm ngay dưới bến.",
-  "en": ""
- },
- {
-  "vi": "Pháo hiệu đỏ",
-  "en": ""
- },
- {
-  "vi": "Pháo hiệu đỏ là tín hiệu cấp cứu: có người gặp nguy hiểm tính mạng.",
-  "en": ""
- },
- {
-  "vi": "Xuồng của trạm",
-  "en": ""
- },
- {
-  "vi": "Xuồng nhỏ chỉ dùng ven bờ lúc biển êm.",
-  "en": ""
- },
- {
-  "vi": "Báo đài",
-  "en": ""
- },
- {
-  "vi": "Thấy tín hiệu cấp cứu: báo đài MAYDAY RELAY, phương vị, khoảng cách, số người; canh giữ mục tiêu.",
-  "en": ""
- },
- {
-  "vi": "Báo đài MAYDAY RELAY, đọc phương vị, khoảng cách, số người, rồi canh giữ mục tiêu suốt đêm",
-  "en": ""
- },
- {
-  "vi": "Trạm Hòn Gió báo rõ, canh sát mục tiêu. Tàu cứu nạn tìm thấy tàu cá trong bốn mươi phút.",
-  "en": ""
- },
- {
-  "vi": "Tàu cứu nạn theo phương vị của bạn, vớt được sáu ngư dân.",
-  "en": ""
- },
- {
-  "vi": "Phương vị, khoảng cách, số người: đủ, đài điều tàu được ngay.",
-  "en": ""
- },
- {
-  "vi": "Ngư dân được cứu",
-  "en": ""
- },
- {
-  "vi": "Thấy đèn pha trạm rọi theo, tụi tui biết có người đang canh.",
-  "en": ""
- },
- {
-  "vi": "Lấy xuồng của trạm ra cứu cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Một mình ra khơi bằng xuồng giữa bão, thành người thứ hai cần cứu.",
-  "en": ""
- },
- {
-  "vi": "Xuồng lật ngay cửa bến. Chú Bảy phải ném phao kéo bạn vào.",
-  "en": ""
- },
- {
-  "vi": "Cứu người mà mất thêm người thì cứu ai?",
-  "en": ""
- },
- {
-  "vi": "Đài mất mười phút vì trạm không ai trực máy.",
-  "en": ""
- },
- {
-  "vi": "Chờ xem có pháo hiệu thứ hai cho chắc",
-  "en": ""
- },
- {
-  "vi": "Thấy pháo hiệu đỏ mà chờ thêm mới báo.",
-  "en": ""
- },
- {
-  "vi": "Mười lăm phút sau mới báo đài. Tàu cứu nạn tìm mãi mới thấy.",
-  "en": ""
- },
- {
-  "vi": "Ngoài đó từng phút là từng người.",
-  "en": ""
- },
- {
-  "vi": "Thấy tín hiệu cấp cứu: báo đài ngay, đúng mức khẩn cấp, đủ thông tin, canh giữ mục tiêu; không tự ra khơi.",
-  "en": ""
- },
- {
-  "vi": "Chú Tư Lực đòi ký đủ hai trăm lít",
-  "en": ""
- },
- {
-  "vi": "Đo bồn trước và sau khi bơm: chỉ vào 170 lít. Chú Tư Lực chìa phiếu ghi 200: “Ký đi con, chuyến sau chú bù.”",
-  "en": ""
- },
- {
-  "vi": "Thước đo bồn",
-  "en": ""
- },
- {
-  "vi": "Bạn đo",
-  "en": ""
- },
- {
-  "vi": "Trước bơm 412 lít, sau bơm 582 lít: vào 170 lít.",
-  "en": ""
- },
- {
-  "vi": "Sổ dầu",
-  "en": ""
- },
- {
-  "vi": "Sổ dầu ghi đúng số đo, người ký chịu trách nhiệm.",
-  "en": ""
- },
- {
-  "vi": "Chú Tư Lực từng dọa chở rau héo nếu bị làm khó.",
-  "en": ""
- },
- {
-  "vi": "Ký đúng 170 lít, ghi chú “giao thiếu 30 lít”, mời chú Tư cùng ký",
-  "en": ""
- },
- {
-  "vi": "Cậu gác đèn ký đúng số, có ghi chú rõ ràng. Không ai phải giấu gì.",
-  "en": ""
- },
- {
-  "vi": "Chú Tư Lực càu nhàu nhưng ký. Chuyến sau chú chở đủ, còn bù thêm can nhớt.",
-  "en": ""
- },
- {
-  "vi": "Thằng này cứng. Mà ký đúng thì chú cũng đỡ bị hỏi.",
-  "en": ""
- },
- {
-  "vi": "Sổ dầu khớp bồn từng lít. Kiểm là thấy.",
-  "en": ""
- },
- {
-  "vi": "Ký đủ 200 cho êm chuyện",
-  "en": ""
- },
- {
-  "vi": "Ký nhận 200 lít mà bồn chỉ vào 170.",
-  "en": ""
- },
- {
-  "vi": "Cuối tháng sổ dầu hụt 30 lít, người ký là bạn.",
-  "en": ""
- },
- {
-  "vi": "Ba mươi lít đi đâu, cậu giải trình đi.",
-  "en": ""
- },
- {
-  "vi": "Chữ ký của mình là lời của mình.",
-  "en": ""
- },
- {
-  "vi": "Không ký gì cả, đuổi tàu đi",
-  "en": ""
- },
- {
-  "vi": "Không ký sai, nhưng cũng không có giấy tờ gì, trạm thiếu dầu tới chuyến sau.",
-  "en": ""
- },
- {
-  "vi": "Tàu đi, bồn có thêm 170 lít mà không giấy nào ghi lại.",
-  "en": ""
- },
- {
-  "vi": "Không ký thì thôi, chú về báo xí nghiệp.",
-  "en": ""
- },
- {
-  "vi": "Có giao mà không có phiếu, khó cho cả hai.",
-  "en": ""
- },
- {
-  "vi": "Ký đúng số đo được, ghi rõ phần thiếu; chữ ký là trách nhiệm.",
-  "en": ""
- },
- {
-  "vi": "Nhà văn xin ở lại một tuần",
-  "en": ""
- },
- {
-  "vi": "Anh Đức có giấy tham quan trong ngày. Chiều rồi, anh xin: “Cho tôi ở lại một tuần thôi, tôi cần sống thử.”",
-  "en": ""
- },
- {
-  "vi": "Giấy của xí nghiệp",
-  "en": ""
- },
- {
-  "vi": "Giấy ghi: tham quan, phỏng vấn trong ngày.",
-  "en": ""
- },
- {
-  "vi": "Chuyến tàu",
-  "en": ""
- },
- {
-  "vi": "Tàu Biển Ngọc còn chuyến năm giờ chiều.",
-  "en": ""
- },
- {
-  "vi": "Không cho ở lại qua đêm, trừ người gặp nạn.",
-  "en": ""
- },
- {
-  "vi": "Dẫn anh Đức đi hết trạm, kể chuyện nghề tới chiều, tiễn lên tàu năm giờ, hẹn gọi điện kể thêm",
-  "en": ""
- },
- {
-  "vi": "Cậu gác đèn kể chuyện cả buổi, tiễn tôi lên tàu, tối còn gọi điện kể tiếp. Đủ cho cả cuốn sách.",
-  "en": ""
- },
- {
-  "vi": "Anh Đức về bờ với cả xấp ghi chép. Cuốn sách sau này có cả chuyện mèo Mun.",
-  "en": ""
- },
- {
-  "vi": "Tôi tưởng phải ở mới hiểu. Hóa ra phải nghe mới hiểu.",
-  "en": ""
- },
- {
-  "vi": "Khách thương thì kể cho đủ, rồi tiễn cho đúng giờ.",
-  "en": ""
- },
- {
-  "vi": "Cho ở lại, nhà kho còn chỗ",
-  "en": ""
- },
- {
-  "vi": "Cho người ngoài ở lại đảo trái nội quy.",
-  "en": ""
- },
- {
-  "vi": "Đêm thứ hai anh Đức lên phòng đèn hút thuốc, để mở cửa ban công.",
-  "en": ""
- },
- {
-  "vi": "Ai cho phép?",
-  "en": ""
- },
- {
-  "vi": "Tôi không biết phòng đèn cấm lửa.",
-  "en": ""
- },
- {
-  "vi": "Hết giờ thăm, mời anh xuống tàu ngay",
-  "en": ""
- },
- {
-  "vi": "Đúng giờ, nhưng chưa kể được gì đã mời về.",
-  "en": ""
- },
- {
-  "vi": "Anh Đức xuống tàu, cuốn sổ ghi chép còn trống trơn.",
-  "en": ""
- },
- {
-  "vi": "Tôi đi cả buổi mà chưa nghe được câu chuyện nào.",
-  "en": ""
- },
- {
-  "vi": "Tàu còn chờ được nửa tiếng mà.",
-  "en": ""
- },
- {
-  "vi": "Giấy cho tham quan trong ngày thì đón cho chu đáo và tiễn đúng giờ; không ai ở lại trái nội quy.",
-  "en": ""
- },
- {
-  "vi": "Tàu cá bỏ ngoài tai cảnh báo",
-  "en": ""
- },
- {
-  "vi": "Đài vừa phát tin áp thấp. Tàu ông Sáu Ghe vẫn nổ máy rời bến, mũi hướng ra khơi.",
-  "en": ""
- },
- {
-  "vi": "Bạn là ông Sáu: cá đang lên, nợ dầu chưa trả, bản tin năm nào chả dọa.",
-  "en": ""
- },
- {
-  "vi": "Áp thấp cách bờ 150 km, gió giật cấp 8, sóng cao 3–4 mét đêm nay.",
-  "en": ""
- },
- {
-  "vi": "Lệnh cấm",
-  "en": ""
- },
- {
-  "vi": "Đồn biên phòng",
-  "en": ""
- },
- {
-  "vi": "Có lệnh cấm tàu thuyền ra khơi từ trưa nay.",
-  "en": ""
- },
- {
-  "vi": "Bến Cửa Lở",
-  "en": ""
- },
- {
-  "vi": "Con trai ông Sáu mười sáu tuổi đi theo tàu chuyến này.",
-  "en": ""
- },
- {
-  "vi": "Gọi kênh 16 đọc bản tin, khuyên vào âu tránh trú; ông không nghe thì báo đồn biên phòng qua đài",
-  "en": ""
- },
- {
-  "vi": "Cậu gọi tui hai lần, rồi báo biên phòng. Lúc đó tui giận, giờ thì cảm ơn.",
-  "en": ""
- },
- {
-  "vi": "Tàu biên phòng chặn ở cửa luồng. Đêm đó gió giật cấp 8, cả bến bình an.",
-  "en": ""
- },
- {
-  "vi": "Tui giận cả tuần. Rồi nghe tin tàu bên Hòn Đỏ mất tích, tui không giận nữa.",
-  "en": ""
- },
- {
-  "vi": "Con trai ông Sáu",
-  "en": ""
- },
- {
-  "vi": "Con sợ lắm mà không dám nói với ba.",
-  "en": ""
- },
- {
-  "vi": "Ông Sáu đi biển bốn chục năm, ông tự biết",
-  "en": ""
- },
- {
-  "vi": "Thấy tàu ra khơi lúc có lệnh cấm mà không gọi, không báo.",
-  "en": ""
- },
- {
-  "vi": "Nửa đêm tàu ông Sáu chết máy giữa sóng, đài phải điều tàu cứu nạn.",
-  "en": ""
- },
- {
-  "vi": "Trạm thấy mà không báo, đài biết thì đã muộn.",
-  "en": ""
- },
- {
-  "vi": "Vợ ông Sáu",
-  "en": ""
- },
- {
-  "vi": "Cả đêm tôi đứng ở bến.",
-  "en": ""
- },
- {
-  "vi": "Gọi năn nỉ ông về, ông không nghe thì thôi",
-  "en": ""
- },
- {
-  "vi": "Có gọi, nhưng không báo biên phòng khi tàu vẫn đi.",
-  "en": ""
- },
- {
-  "vi": "Tàu ông Sáu ra tới hòn Đá Bia thì sóng đánh vỡ cabin, phải quay về trong đêm.",
-  "en": ""
- },
- {
-  "vi": "Cậu gọi mà tui không nghe. Lẽ ra cậu phải báo luôn.",
-  "en": ""
- },
- {
-  "vi": "Cảnh báo không xong thì báo người có quyền ngăn.",
   "en": ""
  }
 ]

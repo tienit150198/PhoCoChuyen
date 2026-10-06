@@ -6,6 +6,7 @@ import {suppressMediaGesture} from './v4/media-gestures.js';
 for(const event of ['contextmenu','dragstart','dblclick'])document.addEventListener(event,suppressMediaGesture);
 import {BobaWorld} from './boba-world.js';
 import {wordsFor,kindOf} from './scenes/index.js';
+import {termsSource,T} from './v4/terms.js';
 // Scene kinds load on demand: the current career's before the first frame, another career's before switching
 // to it (careerAssets below), so no career flashes the storefront and startup isn't waiting on all of them.
 import {nextStep,lifeNav,guestRibbon,experienceView,extendedJob,experienceSummary,teachTour} from './experience-ui.js';
@@ -125,6 +126,7 @@ function moneyScope(d){
   if(d.matches('.bk-sheet'))return {fund:null,account:true,...(d.dataset.joint!=null&&d.dataset.joint!==''?{joint:Number(d.dataset.joint)}:{})};
   return d.matches('.mr-sheet')?{fund:null}:null;
 }
+termsSource(()=>api.content?.catalogue);  // each career's words for the shared screens (v4/terms.js)
 moneyBoot({api,scope:moneyScope,till:cid=>wordsFor(cid).till,phone:()=>document.documentElement.dataset.layout==='phone'});
 // Before a workplace is chosen the server picks one that is open (state.focus) and sends its full view.
 const career=()=>api.state?.current||api.state?.focus||'mother_baby';
@@ -272,7 +274,7 @@ function navItems(c){
   const items=[['home','grid','Đổi nghề'],['prepare','coffee','Chuẩn bị'],['feedback','star','Đánh giá',lowOpen(c)],['phone','phone','Chuyện phố',feedUnread(c)?'dot':0],['situation','flag','Tình huống',openSituation(c)?'dot':0],['incident','shield','Chuyện đời',L.inc.m?.incidentBadge(c)||0]];
   items.splice(4,0,['nhom','chat','Nhóm phố',boardUnread(api)],['social','globe','Phố nghề',api.social?.unread||0]);  // Nhóm Cư Dân Phố (v4/board.js), Phố nghề (v4/social.js)
   if(c.job?.required)items.push(['jobapp','briefcase','Việc làm',needsJob()?'dot':0]);
-  items.push(['operations','store','Sổ tiệm',c.ops?.alerts?.length?'dot':0]);
+  items.push(['operations','store',wordsFor(career()).books,c.ops?.alerts?.length?'dot':0]);
   if(!EXT.includes(career()))items.push(['journal','book','Sổ tay']);
   items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['jrTown','compass','Bản đồ phố'],['rank','award','Xếp hạng']);  // 🗺️ Bản đồ phố: the walkable town (v4/town-walk.js; the old Khu phố map is its 🎏 Quảng trường); Bảng xếp hạng (v4/leaderboard.js)
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
@@ -1143,7 +1145,7 @@ function summaryView(){
   if(s.incidents&&L.inc.use())notes.push(L.inc.m.incidentSummary(s.incidents));
   if(s.happen&&L.happen.use())notes.push(L.happen.m.happenSummary(s.happen));
   if(s.abandon)notes.push(abandonSummary(s.abandon));
-  if(s.promo&&L.promo.use())notes.push(L.promo.m.promoSummary(s.promo));  // 🎖️ a good day, the review booked, the manager shift
+  if(s.promo&&L.promo.use())notes.push(L.promo.m.promoSummary(s.promo,career()));  // 🎖️ a good day, the review booked, the manager shift
   if(s.life)notes.push(lifeSummary(s.life));
   if(s.experiences?.tip_day?.count&&L.tips.use())notes.push(L.tips.m.tipSummary(s.experiences.tip_day));
   const jr=s.journey;
@@ -1154,7 +1156,7 @@ function summaryView(){
   if(rv.open||(rv.count&&rv.weakest&&rv.average<4.5))notes.push(notice(pagoda?`${rv.count&&rv.weakest&&rv.average<4.5?`Khách thập phương nhắc nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` ${rv.open} cảm nhận chờ hồi đáp.`:''}<br>${button('Xem cảm nhận','feedback',{filter:rv.open?'open':'all'},'small')}`:`${rv.count&&rv.weakest&&rv.average<4.5?`Khách góp ý nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` ${rv.open} đánh giá chờ trả lời.`:''}<br>${button('Xem đánh giá','feedback',{filter:rv.open?'open':'all'},'small')}`,'amber','star'));
   if(ops?.unpaid)notes.push(notice(`<b>${esc(wordsFor(career()).books)}: còn ${fmt(ops.unpaid)} xu cần trả</b><p class="ck-chips">${ops.wages?`<span class="ck-delta flat">Lương ${fmt(ops.wages)}</span>`:''}${ops.utilities?`<span class="ck-delta flat">điện nước ${fmt(ops.utilities)}</span>`:''}${ops.rent_accrued?`<span class="ck-delta flat">thuê ${fmt(ops.rent_accrued)} xu</span>`:''}${ops.period?'<span class="ck-delta warn">vừa kết kỳ thuế</span>':''}</p>${button('Mở sổ thu chi','finance',{},'small')}`,'','mail'));
   // 🧾 A tax period closed today (operations.py on_close): the calculation, not just a bill (players asked "5k xu thuế ở đâu ra?").
-  if(ops?.period){const p=ops.period;notes.push(notice(`<b>🧾 Kết kỳ thuế ngày ${fmt(p.start)}–${fmt(p.end)}</b><p>Doanh thu cả kỳ ${fmt(p.revenue)} xu × ${fmt(p.rate)}% = <b>${fmt(p.tax)} xu thuế</b> (làm tròn lên). Mặt bằng cả kỳ ${fmt(p.rent)} xu. Hai khoản nằm trong ${esc(wordsFor(career()).books)} → Thu chi, hạn đóng ngày ${fmt(p.end+2)}.</p>${button('Mở sổ thu chi','finance',{},'small')}`,'amber','mail'));}
+  if(ops?.period){const p=ops.period;notes.push(notice(`<b>🧾 Kết kỳ thuế ngày ${fmt(p.start)}–${fmt(p.end)}</b><p>${esc(T(career(),'revenue'))} cả kỳ ${fmt(p.revenue)} xu × ${fmt(p.rate)}% = <b>${fmt(p.tax)} xu thuế</b> (làm tròn lên). Mặt bằng cả kỳ ${fmt(p.rent)} xu. Hai khoản nằm trong ${esc(wordsFor(career()).books)} → Thu chi, hạn đóng ngày ${fmt(p.end+2)}.</p>${button('Mở sổ thu chi','finance',{},'small')}`,'amber','mail'));}
   // Hired staff (operations.py on_close): what each one did today, or why not (no shift, paused by an open incident),
   // and what their finished jobs earned the shop (staff_bonus, one cash-book row; absent from older servers).
   const team=ops?.staff||[],held=team.some(t=>t.paused);

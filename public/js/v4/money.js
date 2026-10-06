@@ -13,6 +13,7 @@
  * whose couple has a joint fund, {joint:N} (Quỹ chung): a house is paid from all of them.
  * The pure helpers below (no DOM) are unit-tested by tests/money_chip.mjs. */
 import {asset} from '../assets.js';
+import {T} from './terms.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -44,10 +45,10 @@ export function shortXu(n,phone=false){
 
 /** What players call the workplace's money: the place's own word when it is a fund ("Quỹ lớp",
  * "Quỹ bộ phận"…), otherwise "Quỹ tiệm" (never "Ví …", which is the player's own wallet). */
-export function fundLabel(till){
+export function fundLabel(till,career){
   const t=String(till||'').trim();
   if(/^Quỹ\s+\S/.test(t)||t==='Túi tiền lẻ')return t;
-  return 'Quỹ tiệm';
+  return T(career,'fund');   // "Quỹ tiệm" for a shop; "Quỹ chùa", "Quỹ nghề" elsewhere (game/career_voice.py)
 }
 
 /** The balances a scope shows, from the game state: {wallet, fund, fundName} (+ account, joint when the
@@ -59,7 +60,7 @@ export function balances(state,scope,till=''){
   const story=j&&j.story!==false;
   const wallet=story&&Number.isFinite(Number(j.wallet))?Number(j.wallet):null;
   const fund=c&&Number.isFinite(Number(c.money))?Number(c.money):null;
-  const out={wallet,fund,fundName:fundLabel(till)};
+  const out={wallet,fund,fundName:fundLabel(till,scope.fund)};
   if(scope.account||j?.bank?.pref==='account')out.account=story&&j.bank?.open&&Number.isFinite(Number(j.bank.balance))?Number(j.bank.balance):null;
   if(scope.joint!=null)out.joint=story&&Number.isFinite(Number(scope.joint))?Number(scope.joint):null;
   if(wallet==null&&fund==null&&out.account==null&&out.joint==null)return null;

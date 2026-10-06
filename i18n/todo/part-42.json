@@ -1,5 +1,1505 @@
 [
  {
+  "vi": "Thức ăn hamster",
+  "en": ""
+ },
+ {
+  "vi": "Cát vệ sinh mèo",
+  "en": ""
+ },
+ {
+  "vi": "Đồ dùng",
+  "en": ""
+ },
+ {
+  "vi": "Dây dắt",
+  "en": ""
+ },
+ {
+  "vi": "Vòng cổ có thẻ tên",
+  "en": ""
+ },
+ {
+  "vi": "Đồ chơi gặm",
+  "en": ""
+ },
+ {
+  "vi": "Mùn lót chuồng",
+  "en": ""
+ },
+ {
+  "vi": "Lồng hamster có bánh xe",
+  "en": ""
+ },
+ {
+  "vi": "Bể & lồng",
+  "en": ""
+ },
+ {
+  "vi": "Lồng chim",
+  "en": ""
+ },
+ {
+  "vi": "Bể kính 10 lít",
+  "en": ""
+ },
+ {
+  "vi": "bể",
+  "en": ""
+ },
+ {
+  "vi": "Bể kính 30 lít",
+  "en": ""
+ },
+ {
+  "vi": "Bể kính 60 lít",
+  "en": ""
+ },
+ {
+  "vi": "Lọc thác mini",
+  "en": ""
+ },
+ {
+  "vi": "Sưởi bể 25 W",
+  "en": ""
+ },
+ {
+  "vi": "Dung dịch khử clo",
+  "en": ""
+ },
+ {
+  "vi": "Chó dưới 12 tháng · có gà",
+  "en": ""
+ },
+ {
+  "vi": "Chó trưởng thành dưới 20 kg · có gà",
+  "en": ""
+ },
+ {
+  "vi": "Chó trưởng thành từ 20 kg · vị bò",
+  "en": ""
+ },
+ {
+  "vi": "Chó trưởng thành dưới 20 kg · không gà",
+  "en": ""
+ },
+ {
+  "vi": "Mèo dưới 12 tháng · có gà",
+  "en": ""
+ },
+ {
+  "vi": "Mèo 1–7 tuổi · vị cá",
+  "en": ""
+ },
+ {
+  "vi": "Mèo từ 7 tuổi · có gà",
+  "en": ""
+ },
+ {
+  "vi": "Mèo 1–7 tuổi · không cá",
+  "en": ""
+ },
+ {
+  "vi": "Cá nhiệt đới: betta, bảy màu, tứ vân",
+  "en": ""
+ },
+ {
+  "vi": "Cá vàng (nước mát)",
+  "en": ""
+ },
+ {
+  "vi": "Chim: yến phụng, vẹt nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Hamster: hạt, rau củ sấy",
+  "en": ""
+ },
+ {
+  "vi": "thịt bò",
+  "en": ""
+ },
+ {
+  "vi": "thịt cừu",
+  "en": ""
+ },
+ {
+  "vi": "gà tây",
+  "en": ""
+ },
+ {
+  "vi": "hạt ngũ cốc",
+  "en": ""
+ },
+ {
+  "vi": "Cá nhiệt đới",
+  "en": ""
+ },
+ {
+  "vi": "Cá vàng",
+  "en": ""
+ },
+ {
+  "vi": "Con non (dưới 12 tháng)",
+  "en": ""
+ },
+ {
+  "vi": "Cá bảy màu",
+  "en": ""
+ },
+ {
+  "vi": "Hiền, thích bơi đàn, nước ấm",
+  "en": ""
+ },
+ {
+  "vi": "Cá betta",
+  "en": ""
+ },
+ {
+  "vi": "Đuôi dài, thích ở một mình, nước ấm",
+  "en": ""
+ },
+ {
+  "vi": "Cá tứ vân",
+  "en": ""
+ },
+ {
+  "vi": "Lanh lẹ, hay rỉa vây cá đuôi dài",
+  "en": ""
+ },
+ {
+  "vi": "Ưa nước mát 20–25°C, ăn nhiều",
+  "en": ""
+ },
+ {
+  "vi": "Cần lồng có bánh xe, mùn lót",
+  "en": ""
+ },
+ {
+  "vi": "Vẹt yến phụng",
+  "en": ""
+ },
+ {
+  "vi": "Cần lồng rộng, hạt kê, có bạn càng vui",
+  "en": ""
+ },
+ {
+  "vi": "Chó ta 6 tuổi, hiền, đã triệt sản, thích nằm hiên.",
+  "en": ""
+ },
+ {
+  "vi": "Mèo con 3 tháng, lông trắng, hơi nhát.",
+  "en": ""
+ },
+ {
+  "vi": "Mướp Con",
+  "en": ""
+ },
+ {
+  "vi": "Mèo con 4 tháng, lông mướp, lém lỉnh, đã tiêm mũi 1.",
+  "en": ""
+ },
+ {
+  "vi": "Đậu",
+  "en": ""
+ },
+ {
+  "vi": "Cún con 2 tháng, lông đốm nâu trắng, ham ăn.",
+  "en": ""
+ },
+ {
+  "vi": "Mèo con 3 tháng, đen tuyền, mắt vàng, mê ngủ trong hộp giấy.",
+  "en": ""
+ },
+ {
+  "vi": "Mèo con 5 tháng, tam thể, hay đòi bế.",
+  "en": ""
+ },
+ {
+  "vi": "Đa sắc",
+  "en": ""
+ },
+ {
+  "vi": "Trắng đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Đuôi lửa",
+  "en": ""
+ },
+ {
+  "vi": "Da báo",
+  "en": ""
+ },
+ {
+  "vi": "Xanh ánh kim",
+  "en": ""
+ },
+ {
+  "vi": "Rắn hổ mang",
+  "en": ""
+ },
+ {
+  "vi": "Sọc vằn",
+  "en": ""
+ },
+ {
+  "vi": "Xanh rêu",
+  "en": ""
+ },
+ {
+  "vi": "Vàng kem",
+  "en": ""
+ },
+ {
+  "vi": "Tam thể",
+  "en": ""
+ },
+ {
+  "vi": "Xanh ngọc san hô",
+  "en": ""
+ },
+ {
+  "vi": "Hồng pastel",
+  "en": ""
+ },
+ {
+  "vi": "Vàng nắng",
+  "en": ""
+ },
+ {
+  "vi": "Xanh lá rừng",
+  "en": ""
+ },
+ {
+  "vi": "Tím lavender",
+  "en": ""
+ },
+ {
+  "vi": "Gỗ mộc",
+  "en": ""
+ },
+ {
+  "vi": "Theo màu sơn",
+  "en": ""
+ },
+ {
+  "vi": "Đỏ san hô",
+  "en": ""
+ },
+ {
+  "vi": "Nâu gỗ",
+  "en": ""
+ },
+ {
+  "vi": "Đen than",
+  "en": ""
+ },
+ {
+  "vi": "Phí nhận nuôi (tiêm, triệt sản)",
+  "en": ""
+ },
+ {
+  "vi": "Công chăm thú",
+  "en": ""
+ },
+ {
+  "vi": "Phí ship xe máy",
+  "en": ""
+ },
+ {
+  "vi": "Phí ship xe tải nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Bể bảy màu",
+  "en": ""
+ },
+ {
+  "vi": "Dãy hũ betta",
+  "en": ""
+ },
+ {
+  "vi": "Bể tứ vân",
+  "en": ""
+ },
+ {
+  "vi": "Bể cá vàng",
+  "en": ""
+ },
+ {
+  "vi": "Chuồng hamster",
+  "en": ""
+ },
+ {
+  "vi": "Lồng yến phụng",
+  "en": ""
+ },
+ {
+  "vi": "Một nhúm nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Một chén vừa",
+  "en": ""
+ },
+ {
+  "vi": "Đổ thật nhiều",
+  "en": ""
+ },
+ {
+  "vi": "Thay 1/3 nước / lau góc bẩn",
+  "en": ""
+ },
+ {
+  "vi": "Thay sạch toàn bộ",
+  "en": ""
+ },
+ {
+  "vi": "Bé mấy tuổi?",
+  "en": ""
+ },
+ {
+  "vi": "Bé nặng bao nhiêu?",
+  "en": ""
+ },
+ {
+  "vi": "Bé có dị ứng gì không?",
+  "en": ""
+ },
+ {
+  "vi": "Bé đang ăn gì?",
+  "en": ""
+ },
+ {
+  "vi": "Ai sẽ chăm bé?",
+  "en": ""
+ },
+ {
+  "vi": "Người lớn trong nhà đồng ý chưa?",
+  "en": ""
+ },
+ {
+  "vi": "Nhà ở thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi ngày ở nhà bao lâu?",
+  "en": ""
+ },
+ {
+  "vi": "Nhà đang nuôi con gì?",
+  "en": ""
+ },
+ {
+  "vi": "Có ai dị ứng lông?",
+  "en": ""
+ },
+ {
+  "vi": "Xem hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "Xem seal bao bì",
+  "en": ""
+ },
+ {
+  "vi": "Dò mã lô",
+  "en": ""
+ },
+ {
+  "vi": "Xem món có lỗi không",
+  "en": ""
+ },
+ {
+  "vi": "Bé trông thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Lạc ở đâu?",
+  "en": ""
+ },
+ {
+  "vi": "Lạc lúc nào?",
+  "en": ""
+ },
+ {
+  "vi": "Số liên lạc?",
+  "en": ""
+ },
+ {
+  "vi": "Bé hay trốn đâu?",
+  "en": ""
+ },
+ {
+  "vi": "Có dấu riêng nào không?",
+  "en": ""
+ },
+ {
+  "vi": "Gọi xác nhận địa chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi giờ nhận hàng",
+  "en": ""
+ },
+ {
+  "vi": "Đồng ý giao bé",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn quay lại sau",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối nhẹ nhàng, gợi ý cách khác",
+  "en": ""
+ },
+ {
+  "vi": "Giao sổ tiêm, dặn lịch mũi tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn nhóm Chân Nhỏ ghé thăm sau 2 tuần",
+  "en": ""
+ },
+ {
+  "vi": "Cam kết: không nuôi được thì trả về nhóm, không bán cho ai",
+  "en": ""
+ },
+ {
+  "vi": "Ngâm túi cá 15 phút cho quen nhiệt rồi mới thả",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi tuần thay 1/3 nước, nhớ khử clo",
+  "en": ""
+ },
+ {
+  "vi": "Cho ăn một nhúm, cá ăn hết trong 2 phút",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi tuần thay sạch toàn bộ nước cho trong",
+  "en": ""
+ },
+ {
+  "vi": "Cho ăn thật nhiều cho cá mau lớn",
+  "en": ""
+ },
+ {
+  "vi": "Để bể chỗ nắng cho cá khỏe",
+  "en": ""
+ },
+ {
+  "vi": "Đổi món mới",
+  "en": ""
+ },
+ {
+  "vi": "Không nhận, giải thích quy định",
+  "en": ""
+ },
+ {
+  "vi": "Đổi trả trong 7 ngày: có hóa đơn của tiệm, bao còn nguyên seal. Hàng lỗi thì đổi mới. Hàng tiệm bán sai hoặc quá hạn thì hoàn tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh rõ mặt",
+  "en": ""
+ },
+ {
+  "vi": "Đặc điểm dễ thấy",
+  "en": ""
+ },
+ {
+  "vi": "Nơi lạc",
+  "en": ""
+ },
+ {
+  "vi": "Giờ lạc",
+  "en": ""
+ },
+ {
+  "vi": "Số điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "Dấu riêng",
+  "en": ""
+ },
+ {
+  "vi": "Địa chỉ nhà",
+  "en": ""
+ },
+ {
+  "vi": "Số tiền thưởng",
+  "en": ""
+ },
+ {
+  "vi": "Xe máy · tối đa 20 kg, không chở bể kính lớn",
+  "en": ""
+ },
+ {
+  "vi": "Xe tải nhỏ · hàng nặng, bể kính",
+  "en": ""
+ },
+ {
+  "vi": "Tư vấn thức ăn",
+  "en": ""
+ },
+ {
+  "vi": "Setup bể cá",
+  "en": ""
+ },
+ {
+  "vi": "Bán thú & nhận nuôi",
+  "en": ""
+ },
+ {
+  "vi": "Chăm thú trong tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Đổi trả hàng",
+  "en": ""
+ },
+ {
+  "vi": "Bảng tìm thú lạc",
+  "en": ""
+ },
+ {
+  "vi": "Giao hàng nặng",
+  "en": ""
+ },
+ {
+  "vi": "Cháu gái chú Út, sinh viên thú y năm ba",
+  "en": ""
+ },
+ {
+  "vi": "Trông tiệm sau giờ học, muốn tiệm bán có tâm: thú khỏe, khách hiểu, không bán bừa.",
+  "en": ""
+ },
+ {
+  "vi": "Ba mươi năm buôn bán, quen “khách hỏi gì bán nấy”, thương thú mà ngại đổi nếp.",
+  "en": ""
+ },
+ {
+  "vi": "Dân chơi cá cảnh trong hẻm",
+  "en": ""
+ },
+ {
+  "vi": "Chiều nào cũng ghé ngó bể, soi từng cái vây.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm nuôi năm con mèo",
+  "en": ""
+ },
+ {
+  "vi": "Trả giá từng xu, rất mê rổ giảm giá, nhưng mèo ốm là chạy qua đầu tiên.",
+  "en": ""
+ },
+ {
+  "vi": "Đập heo đất để dành cả năm, mơ nuôi một bé hamster.",
+  "en": ""
+ },
+ {
+  "vi": "Uyên",
+  "en": ""
+ },
+ {
+  "vi": "Phòng trọ nhỏ, chủ trọ khó, muốn có góc xanh cho đỡ nhớ nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Tình nguyện viên nhóm cứu hộ Chân Nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Yên xe lúc nào cũng có một lồng mèo con.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ bé corgi Tofu",
+  "en": ""
+ },
+ {
+  "vi": "Đọc kỹ từng dòng trên bao hạt. Tofu dị ứng thịt gà.",
+  "en": ""
+ },
+ {
+  "vi": "Bao hạt cho bé Mun",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai xách cái giỏ nhựa vào, đặt cạnh quầy: “Con mèo mới lượm về đó. Bán bà bao hạt nào rẻ mà tốt!”",
+  "en": ""
+ },
+ {
+  "vi": "Một bao hạt cho con mèo mới lượm, rẻ mà tốt.",
+  "en": ""
+ },
+ {
+  "vi": "Chừng năm tháng thôi, răng sữa mới thay xong.",
+  "en": ""
+ },
+ {
+  "vi": "Hai ký rưỡi, nhẹ hều.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thấy nó dị ứng gì, cái gì cũng đòi ăn.",
+  "en": ""
+ },
+ {
+  "vi": "Bà cho ăn cơm trộn cá, nó ăn được ít lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Hạt cho Tofu",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân bế bé corgi Tofu vào, tay cầm tờ giấy của bác sĩ: “Tofu hết hạt rồi. Em tư vấn giúp anh loại nào hợp nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Một túi hạt hợp với Tofu, corgi nhà anh.",
+  "en": ""
+ },
+ {
+  "vi": "Tofu ba tuổi rồi em.",
+  "en": ""
+ },
+ {
+  "vi": "Mười hai ký, hơi tròn.",
+  "en": ""
+ },
+ {
+  "vi": "Đang ăn hạt vị bò, nhưng tiệm hết loại đó.",
+  "en": ""
+ },
+ {
+  "vi": "Hạt cho con Mập",
+  "en": ""
+ },
+ {
+  "vi": "Chú Út chống nạnh trước kệ: “Con Mập của tiệm hết hạt. Lấy bao vị cá như xưa nay, nó mê cá lắm.”",
+  "en": ""
+ },
+ {
+  "vi": "Một bao hạt cho con Mập, mèo của tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Nó sáu tuổi rồi, về tiệm từ hồi còn bé xíu.",
+  "en": ""
+ },
+ {
+  "vi": "Sáu ký, ăn như tằm ăn rỗi.",
+  "en": ""
+ },
+ {
+  "vi": "Ờ… con Nhã nói con Mập ăn cá là gãi trụi lông cổ, bác sĩ dặn kiêng cá. Chú thì thấy nó vẫn thèm.",
+  "en": ""
+ },
+ {
+  "vi": "Hạt vị cá, trộn thêm đầu cá chiên.",
+  "en": ""
+ },
+ {
+  "vi": "Hạt cho bà Mướp",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai ôm theo rổ giảm giá của tiệm: “Bà lấy thêm hai lon pate trong rổ này, rẻ! Với một bao hạt cho con Mướp.”",
+  "en": ""
+ },
+ {
+  "vi": "Một bao hạt cho con Mướp, với hai lon pate lấy trong rổ giảm giá.",
+  "en": ""
+ },
+ {
+  "vi": "Mười ba tuổi, già hơn cả cái tiệm này.",
+  "en": ""
+ },
+ {
+  "vi": "Ba ký rưỡi, dạo này hơi gầy.",
+  "en": ""
+ },
+ {
+  "vi": "Nó không dị ứng gì, chỉ kén ăn.",
+  "en": ""
+ },
+ {
+  "vi": "Hạt mèo thường, nhai không nổi mấy hạt to.",
+  "en": ""
+ },
+ {
+  "vi": "In trên đáy lon: HSD đã qua 3 ngày. Lon hơi phồng.",
+  "en": ""
+ },
+ {
+  "vi": "Cám cho cá betta",
+  "en": ""
+ },
+ {
+  "vi": "Uyên ghé sau giờ học: “Em mua cám cho con betta nha. Cá vàng hay cá gì em cũng không rành lắm.”",
+  "en": ""
+ },
+ {
+  "vi": "Mực Xanh",
+  "en": ""
+ },
+ {
+  "vi": "Một hộp cám cho con betta trong phòng trọ.",
+  "en": ""
+ },
+ {
+  "vi": "Em nuôi được hai tuần rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Bé xíu, dài bằng ngón tay.",
+  "en": ""
+ },
+ {
+  "vi": "Cá mà dị ứng hả chị?",
+  "en": ""
+ },
+ {
+  "vi": "Em cho ăn cơm nguội, bạn cùng phòng bảo không được.",
+  "en": ""
+ },
+ {
+  "vi": "Hạt cho cún Đậu",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khánh dựng xe trước cửa: “Nhóm mới đón bé Đậu hai tháng tuổi. Anh lấy hai túi hạt với ba lon pate trong rổ này nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Hai túi hạt cho cún Đậu hai tháng tuổi, thêm ba lon pate trong rổ giảm giá.",
+  "en": ""
+ },
+ {
+  "vi": "Hai tháng, mới cai sữa.",
+  "en": ""
+ },
+ {
+  "vi": "Hai ký, lớn tới đâu ăn tới đó.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thấy bé dị ứng gì.",
+  "en": ""
+ },
+ {
+  "vi": "Đang ăn cháo gan với hạt ngâm mềm.",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn ghi HSD tuần trước, ai đó dán đè giá mới lên.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ ăn cho Bánh Bao",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bin chạy vào, tay nắm chặt mấy tờ tiền: “Bánh Bao nhà con hết đồ ăn rồi! Con mua gói hạt nha!”",
+  "en": ""
+ },
+ {
+  "vi": "Một gói đồ ăn cho hamster Bánh Bao.",
+  "en": ""
+ },
+ {
+  "vi": "Bánh Bao về nhà con được mấy tuần rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Tròn vo, cầm nặng tay lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ con dặn không cho ăn sô-cô-la.",
+  "en": ""
+ },
+ {
+  "vi": "Hạt với cà rốt mẹ cắt nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Hạt cho chó Vàng",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu dắt Vàng vào tới quầy: “Vàng về nhà chú rồi. Bao hạt nào hợp với nó, cháu chọn giùm.”",
+  "en": ""
+ },
+ {
+  "vi": "Một bao hạt cho con Vàng.",
+  "en": ""
+ },
+ {
+  "vi": "Sáu tuổi, nhóm Chân Nhỏ ghi trong sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Hai mươi bốn ký, chó ta mà to con.",
+  "en": ""
+ },
+ {
+  "vi": "Không dị ứng gì, ăn gì cũng ngon.",
+  "en": ""
+ },
+ {
+  "vi": "Cơm với thịt luộc, thím nhà chú nấu.",
+  "en": ""
+ },
+ {
+  "vi": "Hạt cho con Bông",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai đứng gãi đầu: “Con Bông nhà bà ngứa quá, bác sĩ Cỏ May nói kiêng cá. Bán bà bao hạt nào đây?”",
+  "en": ""
+ },
+ {
+  "vi": "Một bao hạt cho con Bông đang bị ngứa.",
+  "en": ""
+ },
+ {
+  "vi": "Bốn tuổi.",
+  "en": ""
+ },
+ {
+  "vi": "Bốn ký.",
+  "en": ""
+ },
+ {
+  "vi": "Bác sĩ nói nó dị ứng cá, ăn cá vô là gãi.",
+  "en": ""
+ },
+ {
+  "vi": "Hạt vị cá, rẻ nhất tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Góc xanh cho phòng trọ",
+  "en": ""
+ },
+ {
+  "vi": "Uyên đứng ngắm dãy hũ betta thật lâu: “Phòng trọ em nhỏ lắm. Em muốn nuôi một con betta màu xanh dương, bể để trên bàn học được không chị?”",
+  "en": ""
+ },
+ {
+  "vi": "Bàn học trong phòng trọ 12 m²",
+  "en": ""
+ },
+ {
+  "vi": "Một con betta xanh dương và một bể nhỏ để trên bàn học.",
+  "en": ""
+ },
+ {
+  "vi": "Bể cộng đồng của chú Sáu",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu vỗ vào cái bể 60 lít: “Chú muốn mười con bảy màu, sáu con tứ vân, thêm một con betta đuôi dài cho đẹp. Làm bể này luôn!”",
+  "en": ""
+ },
+ {
+  "vi": "Phòng khách nhà chú Sáu, chỗ mát",
+  "en": ""
+ },
+ {
+  "vi": "Bể 60 lít: mười bảy màu, sáu tứ vân, một betta đuôi dài.",
+  "en": ""
+ },
+ {
+  "vi": "Ba con cá vàng",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bin dí mũi vào bể cá vàng: “Con muốn ba con cá vàng trắng đỏ trong cái bể nhỏ xíu kia! Để trên bàn học của con.”",
+  "en": ""
+ },
+ {
+  "vi": "Bàn học của Bin, mẹ Thảo đồng ý rồi",
+  "en": ""
+ },
+ {
+  "vi": "Ba con cá vàng trắng đỏ và một cái bể để bàn.",
+  "en": ""
+ },
+ {
+  "vi": "Bể cho bàn làm việc",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân chìa điện thoại: “Anh muốn bể để văn phòng: sáu con bảy màu với hai con cá vàng cho đủ màu. Setup giúp anh.”",
+  "en": ""
+ },
+ {
+  "vi": "Góc bàn làm việc, có máy lạnh",
+  "en": ""
+ },
+ {
+  "vi": "Sáu con bảy màu với hai con cá vàng trong một bể.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai chỉ vào hai hũ betta: “Bà lấy hai con này, thả chung một bể cho tụi nó có bạn. Bể nhỏ thôi nghe, bà không có chỗ.”",
+  "en": ""
+ },
+ {
+  "vi": "Bệ cửa sổ nhà bà Hai",
+  "en": ""
+ },
+ {
+  "vi": "Hai con betta chung một bể nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Đàn bảy màu nho nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Uyên quay lại, mắt sáng rỡ: “Chủ trọ cho em nuôi cá rồi! Em muốn năm con bảy màu rắn hổ mang, loại hiếm hiếm đó chị.”",
+  "en": ""
+ },
+ {
+  "vi": "Kệ sách phòng trọ",
+  "en": ""
+ },
+ {
+  "vi": "Năm con bảy màu rắn hổ mang trong một bể nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Bin muốn nuôi hamster",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bin đặt con heo đất lên quầy: “Con muốn mua một bé hamster! Con đập heo rồi nè, đủ tiền luôn!”",
+  "en": ""
+ },
+ {
+  "vi": "Một bé hamster.",
+  "en": ""
+ },
+ {
+  "vi": "Con tự nuôi! Con lớp 4 rồi mà.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ con… chưa biết. Con định làm mẹ bất ngờ!",
+  "en": ""
+ },
+ {
+  "vi": "Nhà con ở chung cư tầng năm.",
+  "en": ""
+ },
+ {
+  "vi": "Con đi học cả ngày, tối về chơi với nó.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà có con mèo Bơ của chị con, nó hay rình con chim sẻ ngoài ban công.",
+  "en": ""
+ },
+ {
+  "vi": "Không ai dị ứng hết á.",
+  "en": ""
+ },
+ {
+  "vi": "Bin quay lại với mẹ",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bin kéo tay một cô vào tiệm: “Mẹ con nè! Mẹ đồng ý rồi!” Chị Thảo cười: “Hôm qua tiệm dặn về hỏi mẹ, cô cảm ơn nha.” Bin chỉ vào lồng: “Con lấy bé màu xám!”",
+  "en": ""
+ },
+ {
+  "vi": "Một bé hamster màu xám, lần này có mẹ đi cùng.",
+  "en": ""
+ },
+ {
+  "vi": "Bin chăm, cô để mắt tới, dọn chuồng cuối tuần hai mẹ con làm.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thảo gật đầu: “Cô đồng ý. Cô sẽ để mắt tới.”",
+  "en": ""
+ },
+ {
+  "vi": "Chung cư tầng năm, để chuồng trong phòng Bin.",
+  "en": ""
+ },
+ {
+  "vi": "Tối nào cũng có người ở nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Con mèo Bơ theo chị hai của Bin về quê rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Uyên muốn nhận nuôi mèo",
+  "en": ""
+ },
+ {
+  "vi": "Uyên ngồi thụp xuống trước góc nhận nuôi: “Bé Sữa dễ thương quá… Em nhận nuôi bé được không chị?”",
+  "en": ""
+ },
+ {
+  "vi": "Nhận nuôi mèo con Sữa ở góc nhận nuôi.",
+  "en": ""
+ },
+ {
+  "vi": "Em tự chăm.",
+  "en": ""
+ },
+ {
+  "vi": "Em hai mươi tuổi rồi chị.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng trọ 12 m², hợp đồng ghi rõ không nuôi chó mèo, chủ trọ khó lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Em học với làm thêm, tối mới về.",
+  "en": ""
+ },
+ {
+  "vi": "Em có con betta thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Vẹt tặng mẹ",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân chỉ lồng yến phụng: “Anh lấy một con tặng mẹ anh làm quà bất ngờ. Mẹ anh ở một mình, có con chim cho vui.”",
+  "en": ""
+ },
+ {
+  "vi": "Một con yến phụng làm quà bất ngờ cho mẹ.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ anh chăm, mà mẹ chưa biết đâu, bất ngờ mà.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ anh bảy mươi tuổi rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà mẹ ở dưới quê, có hiên rộng.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ ở nhà suốt.",
+  "en": ""
+ },
+ {
+  "vi": "Không nuôi con gì.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ anh hay hen suyễn, sợ lông với bụi lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cho con Xanh",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu xách cái lồng có con Xanh: “Nó ở một mình buồn, cứ gọi Sáu ơi hoài. Bán chú một con yến phụng xanh dương làm bạn với nó.”",
+  "en": ""
+ },
+ {
+  "vi": "Một con yến phụng xanh dương làm bạn với con Xanh.",
+  "en": ""
+ },
+ {
+  "vi": "Chú chăm, sáng nào cũng thay nước, thay hạt.",
+  "en": ""
+ },
+ {
+  "vi": "Thím nhà chú mê chim lắm, còn giục chú đi mua.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà có hiên rộng, lồng treo chỗ mát, không có mèo.",
+  "en": ""
+ },
+ {
+  "vi": "Chú nghỉ hưu, ở nhà cả ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Con Xanh, yến phụng hai tuổi, khỏe re.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu nhận nuôi Vàng",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khánh dắt Vàng vào, chú Sáu đứng chờ sẵn: “Chú để ý con Vàng cả tuần nay rồi. Cho chú rước nó về nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhận nuôi chó Vàng ở góc nhận nuôi.",
+  "en": ""
+ },
+ {
+  "vi": "Chú với thím. Thím còn mê chó hơn chú.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà chỉ có hai ông bà già.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà có sân sau, rào kín ba phía.",
+  "en": ""
+ },
+ {
+  "vi": "Ba bể cá thôi, không nuôi chó mèo.",
+  "en": ""
+ },
+ {
+  "vi": "Thêm bạn cho Tofu",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân nhìn bé Đậu: “Tofu ở nhà một mình buồn quá. Anh nhận thêm bé này cho có bạn nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhận nuôi cún Đậu cho Tofu có bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Anh chăm.",
+  "en": ""
+ },
+ {
+  "vi": "Anh ở một mình.",
+  "en": ""
+ },
+ {
+  "vi": "Căn hộ 40 m² tầng mười hai.",
+  "en": ""
+ },
+ {
+  "vi": "Anh đi làm từ tám giờ sáng tới tám giờ tối, cuối tuần hay đi công tác.",
+  "en": ""
+ },
+ {
+  "vi": "Tofu hay ghen, có chó lạ vào nhà là sủa suốt.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai nhận nuôi Mướp Con",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai bế Mướp Con lên, giọng dịu hẳn: “Con này giống con Mướp của bà hồi nhỏ. Cho bà rước về.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhận nuôi mèo con Mướp Con.",
+  "en": ""
+ },
+ {
+  "vi": "Bà chăm, năm con mèo bà chăm được thì thêm một con cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà có bà với thằng cháu.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà phố, ban công có lưới.",
+  "en": ""
+ },
+ {
+  "vi": "Bà ở nhà suốt ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Năm con mèo, đứa nào cũng tiêm đủ, triệt sản hết rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Buổi sáng ở dãy bể",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu đã đứng trước dãy bể từ sớm: “Cho ăn, dọn chuồng đi cháu. Chú đứng đây coi cho vui.”",
+  "en": ""
+ },
+ {
+  "vi": "Cho ăn, dọn dẹp và xem sức khỏe các bé trong tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Có bé trông lạ lắm",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu gõ nhẹ vào kính: “Cháu coi lại bể bảy màu giùm chú. Mà sao hôm nay hũ betta lạnh ngắt vậy?”",
+  "en": ""
+ },
+ {
+  "vi": "Cho ăn, dọn bể, đo nhiệt và soi kỹ từng bể.",
+  "en": ""
+ },
+ {
+  "vi": "Một con bảy màu có đốm trắng li ti trên vây, cứ cọ mình vào đá.",
+  "en": ""
+ },
+ {
+  "vi": "Chuồng hamster im ắng",
+  "en": ""
+ },
+ {
+  "vi": "Chú Út đứng khoanh tay: “Mấy con chuột cảnh sáng nay im re. Cho ăn đi, xong chú coi.”",
+  "en": ""
+ },
+ {
+  "vi": "Cho ăn, dọn chuồng và xem sức khỏe các bé.",
+  "en": ""
+ },
+ {
+  "vi": "Một bé hamster lờ đờ, lông xù, đuôi ướt, không chịu ăn.",
+  "en": ""
+ },
+ {
+  "vi": "Góc nhận nuôi buổi sáng",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khánh ghé sớm mang theo túi cát: “Anh qua coi mấy bé ở góc nhận nuôi. Em cho cả tiệm ăn giúp anh nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Cho ăn, dọn chuồng, đo nhiệt, xem các bé ở góc nhận nuôi.",
+  "en": ""
+ },
+ {
+  "vi": "Mèo con Sữa hắt hơi liên tục, mắt kèm nhèm.",
+  "en": ""
+ },
+ {
+  "vi": "Một buổi sáng yên ả",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu kéo ghế ngồi trước bể cá vàng: “Hôm nay trời mát. Cho ăn, thay nước đi cháu.”",
+  "en": ""
+ },
+ {
+  "vi": "Đêm qua cúp điện",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu thò đầu vào: “Tối qua cúp điện cả khu. Coi mấy cái sưởi với lọc có chạy lại chưa cháu.”",
+  "en": ""
+ },
+ {
+  "vi": "Cho ăn, dọn bể, đo nhiệt từng bể.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi bao hạt mua nhầm",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân đặt túi hạt lên quầy: “Hôm trước anh mua vội, về mới thấy vị gà. Tofu không ăn được. Đổi giúp anh nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Trả lại một túi hạt vị gà mua nhầm.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn của tiệm, mua ba hôm trước.",
+  "en": ""
+ },
+ {
+  "vi": "Seal còn nguyên, chưa mở.",
+  "en": ""
+ },
+ {
+  "vi": "Mã lô trùng lô tiệm nhập tuần này.",
+  "en": ""
+ },
+ {
+  "vi": "Còn hạn gần một tháng.",
+  "en": ""
+ },
+ {
+  "vi": "Túi nguyên vẹn, không rách.",
+  "en": ""
+ },
+ {
+  "vi": "Bao hạt ăn dở",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai đặt bao hạt vơi một nửa lên quầy: “Mèo nhà bà không thích. Trả lại tiền cho bà!”",
+  "en": ""
+ },
+ {
+  "vi": "Trả lại bao hạt đã ăn một nửa vì mèo không thích.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn của tiệm, mua mười hai hôm trước.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xé seal, bao còn chừng một nửa.",
+  "en": ""
+ },
+ {
+  "vi": "Mã lô của tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Còn hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Hạt bình thường, không mốc, không lạ.",
+  "en": ""
+ },
+ {
+  "vi": "Dây dắt bung khóa",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khánh chìa sợi dây dắt: “Mua hôm kia, mới dắt bé Đậu hai lần thì khóa bung. May mà bé không chạy ra đường.”",
+  "en": ""
+ },
+ {
+  "vi": "Đổi sợi dây dắt bị bung khóa.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn của tiệm, mua hai hôm trước.",
+  "en": ""
+ },
+ {
+  "vi": "Dây đã dùng, bao bì còn giữ lại.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng nhập từ nhà phân phối của tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Không có hạn dùng.",
+  "en": ""
+ },
+ {
+  "vi": "Lò xo trong khóa gãy, bấm không giữ lại được: lỗi của nhà sản xuất.",
+  "en": ""
+ },
+ {
+  "vi": "Hộp cám quá hạn",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu đặt hộp cám lên quầy, gõ gõ ngón tay: “Hộp này mua ở đây hôm qua. Cháu coi cái hạn dùm chú.”",
+  "en": ""
+ },
+ {
+  "vi": "Trả hộp cám cá mua hôm qua.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn của tiệm, mua hôm qua.",
+  "en": ""
+ },
+ {
+  "vi": "Mới mở một lần.",
+  "en": ""
+ },
+ {
+  "vi": "Lô cũ trong kho của chú Út, nhập từ năm ngoái.",
+  "en": ""
+ },
+ {
+  "vi": "Quá hạn hai tháng. Tiệm đã bán hàng quá hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Cám vón cục, có mùi ẩm.",
+  "en": ""
+ },
+ {
+  "vi": "Bao hạt mua ngoài chợ",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai đặt bao hạt còn nguyên lên quầy: “Bà mua dư, trả lại lấy tiền đi. Giá tiệm con bán đó.”",
+  "en": ""
+ },
+ {
+  "vi": "Trả lại một bao hạt còn nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "Bà không có hóa đơn: “Mất rồi!”",
+  "en": ""
+ },
+ {
+  "vi": "Seal còn nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "Mã lô không phải lô tiệm nhập, tem dán của một sạp ngoài chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Không lỗi gì.",
+  "en": ""
+ },
+ {
+  "vi": "Mun đi lạc",
+  "en": ""
+ },
+ {
+  "vi": "Bà Hai chạy vào, tóc rối bù: “Con Mun mất tích từ tối qua! Tiệm có bảng tìm thú lạc, dán giùm bà tờ tìm mèo!”",
+  "en": ""
+ },
+ {
+  "vi": "Viết và dán tờ tìm mèo Mun.",
+  "en": ""
+ },
+ {
+  "vi": "Mèo mướp xám năm tháng, đeo vòng cổ đỏ có chuông.",
+  "en": ""
+ },
+ {
+  "vi": "Cửa sau nhà bà, sát bãi xe chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Tối qua chừng chín giờ.",
+  "en": ""
+ },
+ {
   "vi": "Số của bà đây, con ghi vô.",
   "en": ""
  },
@@ -297,1506 +1797,6 @@
  },
  {
   "vi": "Chú Sáu dắt Vàng đi ngang tiệm, đuôi vẫy tít. Thím nhà chú may cho nó cái nệm.",
-  "en": ""
- },
- {
-  "vi": "Nhóm Chân Nhỏ dán ảnh bé vừa về nhà mới lên bảng. Góc nhận nuôi có thêm một trái tim.",
-  "en": ""
- },
- {
-  "vi": "Tư vấn thức ăn đúng loài, đúng tuổi, đúng cỡ, tránh đồ bé dị ứng",
-  "en": ""
- },
- {
-  "vi": "Setup bể cá: bể đủ lít, có lọc, khử clo, cá hợp nhau",
-  "en": ""
- },
- {
-  "vi": "Bán thú và nhận nuôi: hỏi kỹ rồi mới giao",
-  "en": ""
- },
- {
-  "vi": "Chăm thú trong tiệm: cho ăn, thay nước, đo nhiệt, cách ly bé ốm",
-  "en": ""
- },
- {
-  "vi": "Đổi trả theo quy định của tiệm",
-  "en": ""
- },
- {
-  "vi": "Bảng tìm thú lạc cho cả xóm",
-  "en": ""
- },
- {
-  "vi": "Giao hàng nặng qua shipper",
-  "en": ""
- },
- {
-  "vi": "Quét từng món, tính tiền, thối tiền",
-  "en": ""
- },
- {
-  "vi": "Bể quá đông, betta bị thả chung với cá rỉa vây",
-  "en": ""
- },
- {
-  "vi": "Trẻ con đi mua thú một mình",
-  "en": ""
- },
- {
-  "vi": "Bé ốm lẫn trong bể chung",
-  "en": ""
- },
- {
-  "vi": "Rổ giảm giá có lon đã quá hạn",
-  "en": ""
- },
- {
-  "vi": "Khách trả bao hạt ăn dở “vì chó không thích”",
-  "en": ""
- },
- {
-  "vi": "Người lạ báo “nhặt được thú”, đòi chuyển tiền trước",
-  "en": ""
- },
- {
-  "vi": "Hỏi đủ rồi mới chọn",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn đúng từng món, thối đủ tiền",
-  "en": ""
- },
- {
-  "vi": "Thú khỏe là trên hết: chưa hợp thì chưa giao",
-  "en": ""
- },
- {
-  "vi": "Chào khách, nghe khách nói trước đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Việc này không cần bước đó.",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn đã chốt. Bấm “Quét lại” nếu cần sửa trước khi thu tiền.",
-  "en": ""
- },
- {
-  "vi": "Trại cá Bến Mây giao cá, chim, hamster",
-  "en": ""
- },
- {
-  "vi": "Trại Bến Mây giao thêm:",
-  "en": ""
- },
- {
-  "vi": "Vòng chăm thú hôm nay chưa xong, các bé đói bụng chờ tới mai.",
-  "en": ""
- },
- {
-  "vi": "Nhã dặn: thú khỏe là trên hết. Ngày mai soi kỹ từng bể nhé.",
-  "en": ""
- },
- {
-  "vi": "Nhã cười: “Có gì chưa rõ cứ hỏi chị nha!”",
-  "en": ""
- },
- {
-  "vi": "Chọn một màu chữ cho biển hiệu nhé.",
-  "en": ""
- },
- {
-  "vi": "Thao tác không có ở tiệm thú cưng.",
-  "en": ""
- },
- {
-  "vi": "Chọn một màu sơn trong bảng nhé.",
-  "en": ""
- },
- {
-  "vi": "Tiệm đang sơn màu này rồi.",
-  "en": ""
- },
- {
-  "vi": "Con này không có màu để chọn.",
-  "en": ""
- },
- {
-  "vi": "Màu này tiệm không có.",
-  "en": ""
- },
- {
-  "vi": "con nào vớt được thì đưa",
-  "en": ""
- },
- {
-  "vi": "sai màu khách dặn",
-  "en": ""
- },
- {
-  "vi": "Câu hỏi này không hợp với việc đang làm.",
-  "en": ""
- },
- {
-  "vi": "Đã hỏi điều này rồi.",
-  "en": ""
- },
- {
-  "vi": "Món này tiệm không bán.",
-  "en": ""
- },
- {
-  "vi": "Chọn cỡ bể hoặc bỏ bể bằng nút trên từng bể nhé.",
-  "en": ""
- },
- {
-  "vi": "Chỉ nhận nuôi qua góc nhận nuôi.",
-  "en": ""
- },
- {
-  "vi": "Bán cá, chim, hamster ở phần setup bể hoặc bán thú nhé.",
-  "en": ""
- },
- {
-  "vi": "Hỏi kỹ rồi quyết định có giao bé hay không trước đã.",
-  "en": ""
- },
- {
-  "vi": "Mấy lon khách tự lấy trong rổ: kiểm hạn rồi đổi lon mới, hoặc bỏ ra hẳn.",
-  "en": ""
- },
- {
-  "vi": "Chọn một loại thức ăn trên kệ nhé.",
-  "en": ""
- },
- {
-  "vi": "Khách không lấy gì trong rổ giảm giá.",
-  "en": ""
- },
- {
-  "vi": "Đã xem hạn rồi.",
-  "en": ""
- },
- {
-  "vi": "Không có lon nào cần đổi.",
-  "en": ""
- },
- {
-  "vi": "Lon quá hạn trong rổ giảm giá",
-  "en": ""
- },
- {
-  "vi": "Chọn một cỡ bể nhé.",
-  "en": ""
- },
- {
-  "vi": "Hoàn tất đơn này trước khi setup thêm bể nhé.",
-  "en": ""
- },
- {
-  "vi": "Bớt cá ở bể này rồi thêm sang bể khác trước khi bỏ bể nhé.",
-  "en": ""
- },
- {
-  "vi": "Chọn lời dặn trong danh sách nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã dặn khách:",
-  "en": ""
- },
- {
-  "vi": "Chưa dặn gì.",
-  "en": ""
- },
- {
-  "vi": "Mã này không có trong máy tính tiền.",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn quá dài rồi.",
-  "en": ""
- },
- {
-  "vi": "Dòng này chưa có trên hóa đơn.",
-  "en": ""
- },
- {
-  "vi": "Trên quầy chưa có món nào.",
-  "en": ""
- },
- {
-  "vi": "Chọn một loại thức ăn cho bé trước đã.",
-  "en": ""
- },
- {
-  "vi": "Chọn cỡ bể trước đã.",
-  "en": ""
- },
- {
-  "vi": "Chọn cá cho bể trước đã.",
-  "en": ""
- },
- {
-  "vi": "Chọn cỡ bể cho từng nhóm cá trước đã.",
-  "en": ""
- },
- {
-  "vi": "Chỉ tính tiền khi đã đồng ý giao bé.",
-  "en": ""
- },
- {
-  "vi": "Đặt bé lên quầy trước đã (một bé thôi).",
-  "en": ""
- },
- {
-  "vi": "Làm giấy nhận nuôi với nhóm Chân Nhỏ trước đã.",
-  "en": ""
- },
- {
-  "vi": "Quét từng món trên quầy vào hóa đơn trước đã.",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn chưa chốt.",
-  "en": ""
- },
- {
-  "vi": "Tiền đã đưa qua lại rồi, không quét lại được nữa.",
-  "en": ""
- },
- {
-  "vi": "Đã ghi tiền thu hộ rồi.",
-  "en": ""
- },
- {
-  "vi": "Chốt hóa đơn trước khi nhận tiền nhé.",
-  "en": ""
- },
- {
-  "vi": "Mấy hôm sau,",
-  "en": ""
- },
- {
-  "vi": "Xong việc.",
-  "en": ""
- },
- {
-  "vi": "trọn vẹn.",
-  "en": ""
- },
- {
-  "vi": "còn sai sót.",
-  "en": ""
- },
- {
-  "vi": "Khách mang trả, hàng đã mở",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn tính sai, tôi phải dò lại mới ra.",
-  "en": ""
- },
- {
-  "vi": "tính tiền sai, khách phải nhắc",
-  "en": ""
- },
- {
-  "vi": "sai cỡ chó",
-  "en": ""
- },
- {
-  "vi": "sai số lượng",
-  "en": ""
- },
- {
-  "vi": "bán lon pate quá hạn",
-  "en": ""
- },
- {
-  "vi": "Hai con betta thả chung, sáng ra con nào cũng rách vây.",
-  "en": ""
- },
- {
-  "vi": "thả hai betta chung bể",
-  "en": ""
- },
- {
-  "vi": "Betta đuôi dài thả chung cá tứ vân, mấy hôm đuôi bị rỉa tả tơi.",
-  "en": ""
- },
- {
-  "vi": "betta chung cá rỉa vây",
-  "en": ""
- },
- {
-  "vi": "Cá vàng ưa nước mát lại thả chung cá nhiệt đới, bể nào cũng có con bệnh.",
-  "en": ""
- },
- {
-  "vi": "cá vàng chung cá nhiệt đới",
-  "en": ""
- },
- {
-  "vi": "Bể không có lọc, ba hôm nước đục ngầu, cá thở hổn hển.",
-  "en": ""
- },
- {
-  "vi": "bể thiếu lọc",
-  "en": ""
- },
- {
-  "vi": "Về đổ nước máy vào bể, cá lờ đờ cả buổi. Không ai dặn khử clo.",
-  "en": ""
- },
- {
-  "vi": "không có dung dịch khử clo",
-  "en": ""
- },
- {
-  "vi": "Tôi muốn nuôi con đó nhất mà tiệm lại không bán.",
-  "en": ""
- },
- {
-  "vi": "bỏ mất con cá khách muốn nhất",
-  "en": ""
- },
- {
-  "vi": "Tiệm dặn sai cách chăm, làm theo mà cá yếu hẳn.",
-  "en": ""
- },
- {
-  "vi": "dặn sai cách chăm cá",
-  "en": ""
- },
- {
-  "vi": "Không ai dặn cách thả cá với thay nước, tôi phải lên mạng hỏi.",
-  "en": ""
- },
- {
-  "vi": "không dặn cách thả cá, thay nước",
-  "en": ""
- },
- {
-  "vi": "Tiệm giao bé mà không hỏi han gì. Mấy hôm sau phải mang trả lại.",
-  "en": ""
- },
- {
-  "vi": "giao thú cho người chưa sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "Nhà có chỗ, có người ở nhà cả ngày mà tiệm không cho nhận.",
-  "en": ""
- },
- {
-  "vi": "từ chối người đủ điều kiện",
-  "en": ""
- },
- {
-  "vi": "thiếu đồ dùng cho bé",
-  "en": ""
- },
- {
-  "vi": "Giấy nhận nuôi làm vội, về mới biết chưa có lịch tiêm tiếp theo.",
-  "en": ""
- },
- {
-  "vi": "giấy nhận nuôi thiếu mục",
-  "en": ""
- },
- {
-  "vi": "Mấy hôm sau mẹ Bin mang lồng trả lại: nhà chưa ai đồng ý, con mèo Bơ rình chuồng suốt đêm.",
-  "en": ""
- },
- {
-  "vi": "Chủ trọ phát hiện có mèo, bắt Uyên mang trả bé trong ngày. Bé Sữa về lại góc nhận nuôi, sợ người hơn trước.",
-  "en": ""
- },
- {
-  "vi": "Mẹ anh Quân lên cơn hen vì lông chim, con vẹt phải gửi lại tiệm.",
-  "en": ""
- },
- {
-  "vi": "Đậu ở nhà một mình mười hai tiếng, Tofu gầm gừ suốt. Hàng xóm báo tổ dân phố vì chó sủa cả ngày.",
-  "en": ""
- },
- {
-  "vi": "Hàng giao tới thiếu món, dư món, không đúng như tôi đặt.",
-  "en": ""
- },
- {
-  "vi": "đóng sai đơn",
-  "en": ""
- },
- {
-  "vi": "Shipper chạy lòng vòng cả tiếng vì sai địa chỉ, tôi đứng chờ ngoài hẻm.",
-  "en": ""
- },
- {
-  "vi": "không xác nhận địa chỉ",
-  "en": ""
- },
- {
-  "vi": "Bể kính chở xe máy, tới nơi nứt một đường. Tiệm phải giao lại cái khác.",
-  "en": ""
- },
- {
-  "vi": "chở bể kính lớn bằng xe máy",
-  "en": ""
- },
- {
-  "vi": "xe máy chở quá nặng",
-  "en": ""
- },
- {
-  "vi": "Có mấy món nhẹ mà gọi xe tải, phí ship đắt gấp ba.",
-  "en": ""
- },
- {
-  "vi": "gọi xe tải cho đơn nhẹ",
-  "en": ""
- },
- {
-  "vi": "Đã quyết định rồi.",
-  "en": ""
- },
- {
-  "vi": "Chọn: giao bé, hẹn quay lại, hoặc từ chối.",
-  "en": ""
- },
- {
-  "vi": "Khách gật đầu, hẹn hôm khác quay lại.",
-  "en": ""
- },
- {
-  "vi": "Bin xụ mặt, rồi gật đầu: “Mai con dẫn mẹ tới!”",
-  "en": ""
- },
- {
-  "vi": "Uyên ngồi ngắm bé Sữa thêm chút nữa: “Em xin ảnh bé nha. Mai em ghé coi bể cá.”",
-  "en": ""
- },
- {
-  "vi": "Anh Quân gãi đầu: “Ừ ha, mẹ anh bị hen. Để anh hỏi mẹ đã.”",
-  "en": ""
- },
- {
-  "vi": "Anh Quân thở dài: “Em nói đúng, Tofu ở nhà một mình đã buồn rồi. Anh sẽ về sớm hơn.”",
-  "en": ""
- },
- {
-  "vi": "Chỉ làm giấy khi đã đồng ý giao bé nhận nuôi.",
-  "en": ""
- },
- {
-  "vi": "Chọn các mục trong giấy nhận nuôi nhé.",
-  "en": ""
- },
- {
-  "vi": "Đánh dấu ít nhất một mục.",
-  "en": ""
- },
- {
-  "vi": "Chuồng, bể này không có trong vòng chăm hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Chọn khẩu phần nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã cho ăn rồi.",
-  "en": ""
- },
- {
-  "vi": "Chọn cách dọn nhé.",
-  "en": ""
- },
- {
-  "vi": "Chỉ đo nhiệt độ nước ở bể cá.",
-  "en": ""
- },
- {
-  "vi": "Chỉ bể cá mới có sưởi.",
-  "en": ""
- },
- {
-  "vi": "Đã chỉnh sưởi rồi.",
-  "en": ""
- },
- {
-  "vi": "Đã soi kỹ rồi.",
-  "en": ""
- },
- {
-  "vi": "Bơi lội, ăn uống bình thường.",
-  "en": ""
- },
- {
-  "vi": "Lanh lợi, mắt sáng, lông mượt.",
-  "en": ""
- },
- {
-  "vi": "Đã cách ly rồi.",
-  "en": ""
- },
- {
-  "vi": "bể cách ly",
-  "en": ""
- },
- {
-  "vi": "lồng cách ly",
-  "en": ""
- },
- {
-  "vi": "Chưa làm việc nào trong vòng chăm.",
-  "en": ""
- },
- {
-  "vi": "bỏ đói",
-  "en": ""
- },
- {
-  "vi": "Đổ cám cả nắm, thức ăn thừa làm nước đục ngầu.",
-  "en": ""
- },
- {
-  "vi": "cho cá ăn quá nhiều",
-  "en": ""
- },
- {
-  "vi": "Khẩu phần không đúng, bé ăn không đủ no.",
-  "en": ""
- },
- {
-  "vi": "để chuồng, bể bẩn",
-  "en": ""
- },
- {
-  "vi": "Thay sạch trơn nước một lần, cá sốc nước nằm im dưới đáy.",
-  "en": ""
- },
- {
-  "vi": "thay toàn bộ nước bể cá",
-  "en": ""
- },
- {
-  "vi": "Chuồng chỉ lau qua loa, lót cũ vẫn ẩm.",
-  "en": ""
- },
- {
-  "vi": "dọn chuồng qua loa",
-  "en": ""
- },
- {
-  "vi": "để nước lạnh, không chỉnh sưởi",
-  "en": ""
- },
- {
-  "vi": "Bể cá vàng bị bật sưởi, nước ấm quá cá thở gấp.",
-  "en": ""
- },
- {
-  "vi": "bật sưởi cho bể cá vàng",
-  "en": ""
- },
- {
-  "vi": "không cách ly bé ốm",
-  "en": ""
- },
- {
-  "vi": "Tách nhầm bé đang khỏe ra khỏi đàn, bé hoảng cả buổi.",
-  "en": ""
- },
- {
-  "vi": "cách ly nhầm bé khỏe",
-  "en": ""
- },
- {
-  "vi": "Chọn: hoàn tiền, đổi món mới, hoặc không nhận.",
-  "en": ""
- },
- {
-  "vi": "Món còn nguyên seal, xếp lại lên kệ.",
-  "en": ""
- },
- {
-  "vi": "Hàng đổi trả không bán lại được",
-  "en": ""
- },
- {
-  "vi": "Có hóa đơn, lỗi rõ ràng mà tiệm nhất quyết không đổi.",
-  "en": ""
- },
- {
-  "vi": "từ chối đổi trả đúng quy định",
-  "en": ""
- },
- {
-  "vi": "Bạn hoàn tiền, ghi sổ đổi trả.",
-  "en": ""
- },
- {
-  "vi": "Bạn đổi món mới, ghi sổ đổi trả.",
-  "en": ""
- },
- {
-  "vi": "Bạn chỉ tấm bảng quy định đổi trả, giải thích nhẹ nhàng.",
-  "en": ""
- },
- {
-  "vi": "Tờ tìm thú đã dán lên bảng rồi.",
-  "en": ""
- },
- {
-  "vi": "Chọn các dòng trên tờ tìm thú nhé.",
-  "en": ""
- },
- {
-  "vi": "Tờ tìm thú cần ít nhất một dòng.",
-  "en": ""
- },
- {
-  "vi": "Tờ tìm thú gồm:",
-  "en": ""
- },
- {
-  "vi": "Viết tờ tìm thú trước đã.",
-  "en": ""
- },
- {
-  "vi": "Đã dán rồi.",
-  "en": ""
- },
- {
-  "vi": "Dán tờ tìm thú lên bảng trước đã.",
-  "en": ""
- },
- {
-  "vi": "Không có cuộc gọi này.",
-  "en": ""
- },
- {
-  "vi": "Chọn: hỏi dấu riêng, báo chủ đi gặp, hoặc cảm ơn rồi thôi.",
-  "en": ""
- },
- {
-  "vi": "Cuộc gọi này đã xử lý xong.",
-  "en": ""
- },
- {
-  "vi": "Bạn cảm ơn rồi gác máy.",
-  "en": ""
- },
- {
-  "vi": "Còn cuộc gọi chưa trả lời.",
-  "en": ""
- },
- {
-  "vi": "Tờ tìm thú không có số điện thoại, ai thấy cũng không biết gọi ai.",
-  "en": ""
- },
- {
-  "vi": "tờ tìm thú thiếu số điện thoại",
-  "en": ""
- },
- {
-  "vi": "Tờ tìm thú thiếu thông tin, người ta hỏi đi hỏi lại.",
-  "en": ""
- },
- {
-  "vi": "tờ tìm thú thiếu thông tin",
-  "en": ""
- },
- {
-  "vi": "Dán cả địa chỉ nhà tôi lên bảng, người lạ cứ lảng vảng trước cổng.",
-  "en": ""
- },
- {
-  "vi": "công khai địa chỉ nhà",
-  "en": ""
- },
- {
-  "vi": "Ghi rõ tiền thưởng, điện thoại réo suốt toàn người hỏi tiền.",
-  "en": ""
- },
- {
-  "vi": "ghi số tiền thưởng",
-  "en": ""
- },
- {
-  "vi": "Dấu riêng của bé in hết lên giấy, kẻ gian đọc theo mà lừa.",
-  "en": ""
- },
- {
-  "vi": "công khai dấu riêng",
-  "en": ""
- },
- {
-  "vi": "Tiệm bảo tôi liên lạc với người ta, tôi chuyển tiền rồi bị chặn số.",
-  "en": ""
- },
- {
-  "vi": "để chủ nuôi bị lừa chuyển tiền",
-  "en": ""
- },
- {
-  "vi": "bỏ qua tin báo thật",
-  "en": ""
- },
- {
-  "vi": "Chạy tới nơi mới biết không phải bé nhà mình, mất cả buổi.",
-  "en": ""
- },
- {
-  "vi": "báo nhầm bé khác",
-  "en": ""
- },
- {
-  "vi": "Đã ghi tiền thu hộ, không đổi shipper được nữa.",
-  "en": ""
- },
- {
-  "vi": "Chọn xe máy hoặc xe tải nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Chốt hóa đơn trước đã.",
-  "en": ""
- },
- {
-  "vi": "Chọn shipper trước đã.",
-  "en": ""
- },
- {
-  "vi": "Chốt hóa đơn, chọn shipper và ghi tiền thu hộ trước đã.",
-  "en": ""
- },
- {
-  "vi": "Tư vấn đúng bé",
-  "en": ""
- },
- {
-  "vi": "Bể đúng cách",
-  "en": ""
- },
- {
-  "vi": "Hỏi han, giao đúng người",
-  "en": ""
- },
- {
-  "vi": "Chăm thú chu đáo",
-  "en": ""
- },
- {
-  "vi": "Đổi trả rõ ràng",
-  "en": ""
- },
- {
-  "vi": "Tờ tìm thú",
-  "en": ""
- },
- {
-  "vi": "Giao đúng hàng",
-  "en": ""
- },
- {
-  "vi": "đúng loại, đúng tuổi, hỏi kỹ dị ứng",
-  "en": ""
- },
- {
-  "vi": "bể đủ nước, cá hợp nhau",
-  "en": ""
- },
- {
-  "vi": "hỏi kỹ trước khi giao",
-  "en": ""
- },
- {
-  "vi": "ăn đủ, sạch sẽ, để ý bé ốm",
-  "en": ""
- },
- {
-  "vi": "nói rõ quy định",
-  "en": ""
- },
- {
-  "vi": "tờ tìm thú rõ ràng, lọc tin kỹ",
-  "en": ""
- },
- {
-  "vi": "đúng địa chỉ, đúng xe",
-  "en": ""
- },
- {
-  "vi": "tính sai tiền",
-  "en": ""
- },
- {
-  "vi": "tính đúng từng món",
-  "en": ""
- },
- {
-  "vi": "Hỏi han",
-  "en": ""
- },
- {
-  "vi": "không hỏi gì",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu tiệm thú cưng không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Danh sách trong việc không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Giỏ hàng không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Việc không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Bảng giá của việc không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Màu thú trong việc không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Kết quả việc không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Bàn làm việc không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Danh sách bể không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Bể không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Mỗi nhóm cá chỉ có một bể.",
-  "en": ""
- },
- {
-  "vi": "Cá và đồ dùng trong các bể không khớp hóa đơn.",
-  "en": ""
- },
- {
-  "vi": "Quyết định không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Sổ cho ăn không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Sổ dọn dẹp không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Quyết định đổi trả không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Sổ cuộc gọi không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Shipper không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Đàn thú trong tiệm không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chuồng trại không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Sổ nhận nuôi không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Sổ thú quen không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Sổ trong ngày không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Màu sơn của tiệm không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Màu chữ biển hiệu không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Hỏi tuổi, cân nặng, dị ứng → đọc nhãn bao: đúng loài, đúng tuổi, đúng cỡ, tránh đồ bé dị ứng → món khách tự lấy trong rổ thì xem hạn → quét từng món, chốt, thối tiền.",
-  "en": ""
- },
- {
-  "vi": "Chọn bể đủ lít (bảy màu 2 L, tứ vân 4 L, betta 5 L, cá vàng 10 L mỗi con) → bấm Thêm bể riêng để tách cá: betta ở một mình, cá vàng không chung cá nhiệt đới → chọn cá, lọc và khử clo cho từng bể; xem cảnh báo trước khi tính tiền → dặn cách thả cá, thay nước.",
-  "en": ""
- },
- {
-  "vi": "Hỏi ai chăm, người lớn đồng ý chưa, nhà ở, thời gian, thú đang nuôi, dị ứng → chưa hợp thì hẹn lại hoặc từ chối nhẹ nhàng → hợp thì giao bé kèm đủ đồ, nhận nuôi thì làm đủ giấy.",
-  "en": ""
- },
- {
-  "vi": "Cho ăn đúng khẩu phần (cá một nhúm, chuồng một chén) → bể cá thay 1/3 nước, chuồng thay lót → đo nhiệt, lạnh thì bật sưởi (cá vàng không cần) → soi từng bể, bé ốm thì cách ly.",
-  "en": ""
- },
- {
-  "vi": "Xem hóa đơn, seal, mã lô, hạn, lỗi rồi mới quyết.",
-  "en": ""
- },
- {
-  "vi": "Hỏi đặc điểm, nơi lạc, giờ lạc, số điện thoại, dấu riêng → tờ tìm thú giữ kín dấu riêng và địa chỉ nhà → dán bảng → người gọi tới thì hỏi dấu riêng, ai đòi chuyển tiền trước là lừa.",
-  "en": ""
- },
- {
-  "vi": "Gọi xác nhận địa chỉ → đóng đúng đơn → quét, chốt hóa đơn → xe máy tối đa 20 kg và không chở bể kính lớn → thu hộ = hóa đơn + phí ship.",
-  "en": ""
- },
- {
-  "vi": "Chó con giá rẻ trên xe tải",
-  "en": ""
- },
- {
-  "vi": "Một người đậu xe tải trước tiệm, mở thùng: mười mấy con chó con chen chúc. “Bán sỉ cho tiệm, giá rẻ như cho!” Chú Út có vẻ xiêu lòng.",
-  "en": ""
- },
- {
-  "vi": "Bạn là chú Út: ba mươi năm trước tiệm nào cũng lấy chó con như vậy mà bán.",
-  "en": ""
- },
- {
-  "vi": "Hỏi người bán",
-  "en": ""
- },
- {
-  "vi": "Không có sổ tiêm, không biết mẹ các bé ở đâu. “Giấy tờ làm chi cho mệt.”",
-  "en": ""
- },
- {
-  "vi": "Nhã xem qua",
-  "en": ""
- },
- {
-  "vi": "Nhã (sinh viên thú y)",
-  "en": ""
- },
- {
-  "vi": "Vài bé tiêu chảy, mắt kèm nhèm. Chó con chưa tiêm mà nhốt chung dễ lây bệnh nặng.",
-  "en": ""
- },
- {
-  "vi": "Nếp mới của tiệm",
-  "en": ""
- },
- {
-  "vi": "Bảng ở góc nhận nuôi",
-  "en": ""
- },
- {
-  "vi": "Chó mèo chỉ về nhà mới qua góc nhận nuôi của nhóm Chân Nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Từ chối, gọi nhóm Chân Nhỏ và thú y phường tới xem các bé",
-  "en": ""
- },
- {
-  "vi": "Tiệm không nhận chó con trôi nổi mà còn gọi người cứu mấy bé. Nể thật.",
-  "en": ""
- },
- {
-  "vi": "Nhóm Chân Nhỏ nhận chữa bốn bé yếu nhất. Người bán lái xe đi, chú Út lặng thinh một lúc rồi gật đầu.",
-  "en": ""
- },
- {
-  "vi": "Hồi xưa chú bán vậy hoài. Giờ nhìn mấy đứa nhỏ run run mới thấy tội.",
-  "en": ""
- },
- {
-  "vi": "Mấy bé này mà vào tiệm là cả góc nhận nuôi lây bệnh.",
-  "en": ""
- },
- {
-  "vi": "Bán rẻ thì có lời, nhưng khách mua về một bé ốm thì mất cả lòng tin.",
-  "en": ""
- },
- {
-  "vi": "Lấy vài con cho vui lòng chú Út",
-  "en": ""
- },
- {
-  "vi": "Mua chó con ở tiệm, về hai hôm là ốm, phải chạy thú y hết mấy trăm.",
-  "en": ""
- },
- {
-  "vi": "Hai bé bệnh nặng, cả góc nhận nuôi phải khử trùng. Tiệm bỏ tiền chữa.",
-  "en": ""
- },
- {
-  "vi": "Tôi tưởng tiệm quen thì yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Đây đúng là điều cháu sợ nhất.",
-  "en": ""
- },
- {
-  "vi": "Từ chối cho xong, không báo ai",
-  "en": ""
- },
- {
-  "vi": "Tiệm không bán chó mèo trôi nổi. Được.",
-  "en": ""
- },
- {
-  "vi": "Người bán lái xe sang tiệm khác. Mấy bé chó con không ai biết đi đâu.",
-  "en": ""
- },
- {
-  "vi": "Thôi không lấy là được rồi.",
-  "en": ""
- },
- {
-  "vi": "Giá mà em gọi anh một tiếng.",
-  "en": ""
- },
- {
-  "vi": "Tiệm có tâm không nhận thú trôi nổi, và nếu được thì giúp các bé tới chỗ có người chăm.",
-  "en": ""
- },
- {
-  "vi": "Vẹt bắt ngoài rừng",
-  "en": ""
- },
- {
-  "vi": "Một anh bịt khẩu trang đưa lồng vẹt xanh lạ mắt: “Hàng hiếm, bắt ngoài rừng, tiệm lấy về bán giá cao.” Chú Sáu đứng cạnh, mắt sáng rỡ.",
-  "en": ""
- },
- {
-  "vi": "Tờ hướng dẫn của thú y phường",
-  "en": ""
- },
- {
-  "vi": "Chim hoang dã bắt ngoài tự nhiên không được mua bán. Tiệm chỉ bán chim nuôi sinh sản có nguồn gốc.",
-  "en": ""
- },
- {
-  "vi": "Nhã xem",
-  "en": ""
- },
- {
-  "vi": "Lông xơ xác, chân có vết dây buộc, sợ người.",
-  "en": ""
- },
- {
-  "vi": "Nguồn chim của tiệm",
-  "en": ""
- },
- {
-  "vi": "Sổ nhập hàng",
-  "en": ""
- },
- {
-  "vi": "Yến phụng của tiệm nhập từ trại Bến Mây, có giấy nguồn gốc.",
-  "en": ""
- },
- {
-  "vi": "Không mua, báo kiểm lâm và thú y phường",
-  "en": ""
- },
- {
-  "vi": "Tiệm từ chối mua chim rừng, còn báo người có trách nhiệm. Đáng tin.",
-  "en": ""
- },
- {
-  "vi": "Kiểm lâm tới nhận con vẹt về trạm cứu hộ. Chú Sáu tiếc hùi hụi nhưng khen tiệm làm đúng.",
-  "en": ""
- },
- {
-  "vi": "Đẹp thì đẹp thật, mà bắt ngoài rừng thì thôi.",
-  "en": ""
- },
- {
-  "vi": "Cán bộ kiểm lâm",
-  "en": ""
- },
- {
-  "vi": "Nhờ tiệm báo sớm, con chim còn cơ hội về rừng.",
-  "en": ""
- },
- {
-  "vi": "Mua lại bán cho chú Sáu, lời to",
-  "en": ""
- },
- {
-  "vi": "Tiệm bán chim rừng không giấy tờ. Bị phạt là đáng.",
-  "en": ""
- },
- {
-  "vi": "Đoàn kiểm tra phát hiện, tịch thu con vẹt và lập biên bản cả tiệm lẫn chú Sáu.",
-  "en": ""
- },
- {
-  "vi": "Tôi mang tiếng lây.",
-  "en": ""
- },
- {
-  "vi": "Một lần ham lời, cả năm gây dựng đổ sông.",
-  "en": ""
- },
- {
-  "vi": "Không mua, đuổi đi cho xong",
-  "en": ""
- },
- {
-  "vi": "Tiệm không bán chim rừng.",
-  "en": ""
- },
- {
-  "vi": "Người bán đi mất. Con vẹt chắc lại bị bán ở đâu đó.",
-  "en": ""
- },
- {
-  "vi": "Không mua là phải.",
-  "en": ""
- },
- {
-  "vi": "Lần sau mình gọi kiểm lâm luôn.",
-  "en": ""
- },
- {
-  "vi": "Chỉ bán thú có nguồn gốc. Gặp thú hoang dã bị buôn bán thì báo người có trách nhiệm.",
-  "en": ""
- },
- {
-  "vi": "“Bán rẻ cho tôi lon sắp hết hạn”",
-  "en": ""
- },
- {
-  "vi": "Bà Hai lục rổ giảm giá của chú Út: “Mấy lon này sắp hết hạn, bán bà nửa giá đi!” Trong rổ lẫn vài lon đã quá hạn.",
-  "en": ""
- },
- {
-  "vi": "Đáy lon",
-  "en": ""
- },
- {
-  "vi": "Ba lon còn hạn 5 ngày, hai lon đã quá hạn tuần trước, một lon phồng.",
-  "en": ""
- },
- {
-  "vi": "Nhã dán ở quầy",
-  "en": ""
- },
- {
-  "vi": "Hàng cận hạn được giảm giá và dán nhãn rõ. Hàng quá hạn thì hủy, không bán.",
-  "en": ""
- },
- {
-  "vi": "Lọc rổ: bán rẻ ba lon còn hạn, dán nhãn ngày, hủy mấy lon quá hạn",
-  "en": ""
- },
- {
-  "vi": "Mua được pate rẻ mà còn hạn rõ ràng. Tiệm thật thà.",
-  "en": ""
- },
- {
-  "vi": "Bà Hai mua ba lon, còn khen “con nhỏ này kỹ”. Rổ giảm giá từ nay có nhãn ngày.",
-  "en": ""
- },
- {
-  "vi": "Rẻ mà yên tâm, vậy mới là mua bán.",
-  "en": ""
- },
- {
-  "vi": "Ờ, cái rổ đó của chú bày lâu rồi.",
-  "en": ""
- },
- {
-  "vi": "Bán hết rổ nửa giá cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Mua pate rổ giảm giá, về mèo ói cả đêm. Lon đã quá hạn!",
-  "en": ""
- },
- {
-  "vi": "Hai con mèo nhà bà Hai ói mửa, phải qua phòng khám. Bà kể khắp xóm.",
-  "en": ""
- },
- {
-  "vi": "Tham rẻ mà khổ mấy con mèo.",
-  "en": ""
- },
- {
-  "vi": "Đó là lý do phải xem hạn từng lon.",
-  "en": ""
- },
- {
-  "vi": "Không bán gì trong rổ hết",
-  "en": ""
- },
- {
-  "vi": "Muốn mua đồ giảm giá mà tiệm không bán.",
-  "en": ""
- },
- {
-  "vi": "Ba lon còn hạn cũng thành hàng hủy.",
-  "en": ""
- },
- {
-  "vi": "Còn hạn mà không bán là sao?",
-  "en": ""
- },
- {
-  "vi": "Uổng quá.",
-  "en": ""
- },
- {
-  "vi": "Hàng cận hạn bán rẻ và ghi rõ ngày; hàng quá hạn thì hủy.",
-  "en": ""
- },
- {
-  "vi": "Bể cá bị cúp điện qua đêm",
-  "en": ""
- },
- {
-  "vi": "Sáng ra cả khu mất điện từ nửa đêm. Lọc và sưởi tắt hết, bể bảy màu nước lạnh, vài con nằm im dưới đáy. Chú Sáu đứng ngoài cửa kính.",
-  "en": ""
- },
- {
-  "vi": "Sơ cứu bể",
-  "en": ""
- },
- {
-  "vi": "Sổ tay của Nhã",
-  "en": ""
- },
- {
-  "vi": "Mất điện: sục khí bằng máy chạy pin, thay 1/4 nước cùng nhiệt, đừng cho ăn cho tới khi lọc chạy lại.",
-  "en": ""
- },
- {
-  "vi": "Máy phát điện",
-  "en": ""
- },
- {
-  "vi": "Nhà chú Sáu có bình sục khí chạy pin, cho mượn được.",
-  "en": ""
- },
- {
-  "vi": "Mượn bình sục khí của chú Sáu, thay ít nước cùng nhiệt, tạm ngưng cho ăn",
-  "en": ""
- },
- {
-  "vi": "Tiệm cứu được gần hết đàn cá sau đêm mất điện. Chuyên nghiệp.",
-  "en": ""
- },
- {
-  "vi": "Tới trưa có điện lại, chỉ mất một con cá. Chú Sáu tự hào như vừa cứu cả biển.",
-  "en": ""
- },
- {
-  "vi": "Chơi cá mấy chục năm, gặp tiệm biết việc là chú mê.",
-  "en": ""
- },
- {
-  "vi": "Sơ cứu đúng thì cá chịu được lâu hơn mình nghĩ.",
-  "en": ""
- },
- {
-  "vi": "Cho ăn thật nhiều cho cá khỏe lại",
-  "en": ""
- },
- {
-  "vi": "Bể cá của tiệm chết gần nửa sau đêm mất điện.",
-  "en": ""
- },
- {
-  "vi": "Thức ăn thừa làm nước càng đục, thêm mấy con nữa không qua khỏi.",
-  "en": ""
- },
- {
-  "vi": "Nước đã thiếu khí mà còn đổ cám vô.",
-  "en": ""
- },
- {
-  "vi": "Lỗ cả bể cá.",
-  "en": ""
- },
- {
-  "vi": "Chờ có điện rồi tính",
-  "en": ""
- },
- {
-  "vi": "Cá trong tiệm hôm nay trông yếu quá.",
-  "en": ""
- },
- {
-  "vi": "Điện có lại lúc trưa, mất vài con cá.",
-  "en": ""
- },
- {
-  "vi": "Chờ thì cũng qua, nhưng mất mấy con.",
-  "en": ""
- },
- {
-  "vi": "Lần sau mình chuẩn bị sẵn máy sục pin.",
-  "en": ""
- },
- {
-  "vi": "Sự cố điện ở tiệm cá: giữ oxy trước, thay ít nước cùng nhiệt, ngưng cho ăn.",
-  "en": ""
- },
- {
-  "vi": "Ngày hội nhận nuôi đầu tiên",
-  "en": ""
- },
- {
-  "vi": "Nhóm Chân Nhỏ muốn làm ngày hội nhận nuôi ngay trước tiệm. Chú Út lo mất chỗ bán hàng, anh Khánh nhìn bạn chờ câu trả lời.",
-  "en": ""
- },
- {
-  "vi": "Mặt tiền",
-  "en": ""
- },
- {
-  "vi": "Đo thử",
-  "en": ""
- },
- {
-  "vi": "Dẹp rổ giảm giá và kệ cát là đủ chỗ cho sáu lồng.",
-  "en": ""
- },
- {
-  "vi": "Cách làm của nhóm",
-  "en": ""
- },
- {
-  "vi": "Ai muốn nhận phải qua phỏng vấn, ký giấy, nhóm ghé thăm sau hai tuần.",
-  "en": ""
- },
- {
-  "vi": "Bà Hai hứa trông lồng mèo giúp buổi sáng.",
-  "en": ""
- },
- {
-  "vi": "Làm ngày hội, dẹp rổ giảm giá, nhờ bà Hai phụ, phỏng vấn kỹ từng người",
-  "en": ""
- },
- {
-  "vi": "Ngày hội nhận nuôi trước tiệm vui quá! Hỏi han kỹ mà không làm khó.",
-  "en": ""
- },
- {
-  "vi": "Bốn bé có nhà mới. Tiệm bán thêm được đồ dùng cho các gia đình mới. Chú Út đứng cười suốt buổi.",
-  "en": ""
- },
- {
-  "vi": "Lần đầu nhóm làm ở tiệm mà đông vậy.",
-  "en": ""
- },
- {
-  "vi": "Bán ít chỗ mà được tiếng thơm.",
-  "en": ""
- },
- {
-  "vi": "Trông mèo thì bà rành nhất xóm.",
-  "en": ""
- },
- {
-  "vi": "Làm ngày hội nhưng giao nhanh cho ai muốn nhận, khỏi phỏng vấn",
-  "en": ""
- },
- {
-  "vi": "Nghe nói có bé nhận nuôi ở tiệm bị trả lại sau ba hôm.",
-  "en": ""
- },
- {
-  "vi": "Hai bé bị trả lại trong tuần. Nhóm Chân Nhỏ buồn, lần sau muốn làm chỗ khác.",
-  "en": ""
- },
- {
-  "vi": "Nhận nuôi là cả một đời của bé, không vội được.",
-  "en": ""
- },
- {
-  "vi": "Mình làm hỏng tấm lòng của nhóm.",
-  "en": ""
- },
- {
-  "vi": "Thôi, tiệm chật lắm",
-  "en": ""
- },
- {
-  "vi": "Tiệm từ chối cho nhóm cứu hộ làm ngày hội.",
-  "en": ""
- },
- {
-  "vi": "Nhóm làm ở công viên, ít người ghé hơn.",
-  "en": ""
- },
- {
-  "vi": "Không sao, lần sau nha.",
-  "en": ""
- },
- {
-  "vi": "Cũng tiếc.",
-  "en": ""
- },
- {
-  "vi": "Nhận nuôi là cam kết lâu dài: làm vui nhưng vẫn hỏi kỹ, ký giấy, theo dõi sau.",
-  "en": ""
- },
- {
-  "vi": "Shop thú cưng",
-  "en": ""
- },
- {
-  "vi": "Bán cho đúng bé, giao cho đúng người.",
-  "en": ""
- },
- {
-  "vi": "Nắng nhẹ 28°C",
-  "en": ""
- },
- {
-  "vi": "Việc ở tiệm",
-  "en": ""
- },
- {
-  "vi": "Quầy & dãy bể",
-  "en": ""
- },
- {
-  "vi": "Nhã vẫy tay: “Hỏi kỹ rồi hãy bán nha. Thú khỏe là trên hết!”",
-  "en": ""
- },
- {
-  "vi": "Tiếng lọc bể róc rách, vẹt yến phụng líu lo trước cửa",
   "en": ""
  }
 ]

@@ -497,7 +497,8 @@ def _move(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         need(not esc, 'Gỡ rối chuyện đang chờ trước đã.')
         res = _close(s, c, career, rec, sh)
         own = track(career) == 'own'
-        line = f'+{res["bonus"]} xu ' + ('doanh thu đội' if own else 'thưởng quản lý')
+        from . import career_voice
+        line = f'+{res["bonus"]} xu ' + (career_voice.term(career, 'income') + ' đội' if own else 'thưởng quản lý')
         return dict(message=f'🧑‍💼 Chốt ca: {res["good"]}/{res["size"]} việc tốt · {line}.', celebrate=res['quality'] >= GOOD_Q,
                     manager=res)
     need(sh['n'] < MAX_MOVES, 'Ca đã dài lắm rồi. Chốt ca thôi!')
@@ -600,7 +601,8 @@ def _promote(s: dict, c: dict, career: str, rec: dict, extra: int) -> dict:
         base = int(c['job']['salary'])
         line = f'🎉 Bạn lên {name}! Từ mai lương {base} → {round(base * (100 + pct) / 100)} xu/ngày.'
     else:
-        line = f'🎉 Bạn thành {name}! Khách quen boa thêm {pct}% doanh thu.'
+        from . import career_voice
+        line = career_voice.promotion_line(career, name, pct)   # a shop: "Khách quen boa thêm X% doanh thu."
     if now == MGR_FROM:
         line += ' Mở khóa 🧑‍💼 Ca quản lý.'
     if OF.available(career, now) and not OF.available(career, now - 1):
@@ -789,7 +791,8 @@ def on_close(s: dict, c: dict, career: str, summary: dict) -> dict | None:
         st = OWN_STEPS[rec['rank']]
         tip = min(st['cap'], _day_sales(c) * st['pct'] // 100)
         if tip > 0:
-            _core().money(s, c, tip, f'🎖️ Khách quen boa thêm · {title(s, c, career, rec["rank"])}', f'pm-tip-{c["day"]}', category='tip')
+            from . import career_voice
+            _core().money(s, c, tip, f'🎖️ {career_voice.term(career, "tip")} · {title(s, c, career, rec["rank"])}', f'pm-tip-{c["day"]}', category='tip')
             out['tip'] = tip
     rec['worked'] = min(10**6, rec['worked'] + 1)
     if good:
