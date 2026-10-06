@@ -47,6 +47,14 @@ WEEK_GOAL = 1500
 GIFT_COINS = (0, 10, 20)
 LISTING_DAYS = 3
 BANNED = ('địt', 'đjt', 'đụ', 'lồn', 'cặc', 'buồi', 'đéo', 'vcl', 'vkl', 'đĩ', 'fuck', 'shit', 'bitch', 'cunt', 'dick', 'đm', 'dmm', 'clgt', 'óc chó', 'ngu như')
+# Paid 5★ (chat C#23174 "đánh giá tiệm t 5* t trả mỗi người 300"): player reviews are weighed, never deleted. Only each
+# reviewer's newest review of a shop counts; an account younger than REVIEW_MIN_DAYS when it wrote the review does not
+# count; nor does a review written within PAID_WINDOW of a bank transfer or a gift with xu from the shop's owner to the
+# reviewer. Every review still shows, marked "không tính điểm".
+REVIEW_MIN_DAYS = 3
+PAID_WINDOW = 86400
+REVIEW_WHY = {'older': 'Đã có đánh giá mới hơn của người này', 'new_account': 'Tài khoản mới (dưới 3 ngày)',
+              'paid': 'Có chuyển xu hoặc quà từ chủ quán trong 24 giờ'}
 
 
 
@@ -417,13 +425,15 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
                 if fresh:
                     notify(store, db, t['pid'], 'visit', f'{me["name"]} vừa ghé thăm quán của bạn 👀', mine)
                 db.commit()  # the reads below must not run under the write lock
-            reviews = _rows(db, '''SELECT r.*, p.name AS author, p.avatar AS avatar FROM previews r JOIN profiles p ON p.pid=r.from_pid
-                                   WHERE r.to_pid=? AND r.hidden=0 ORDER BY r.id DESC LIMIT 30''', (t['pid'],))
+            reviews = _rows(db, '''SELECT r.*, p.name AS author, p.avatar AS avatar, p.sid AS rsid FROM previews r JOIN profiles p ON p.pid=r.from_pid
+                                   WHERE r.to_pid=? AND r.hidden=0 ORDER BY r.id DESC LIMIT 100''', (t['pid'],))
             listings = _rows(db, "SELECT * FROM market WHERE seller=? AND status='active' AND hidden=0 ORDER BY id DESC LIMIT 10", (t['pid'],))
             visits = _count(db, 'SELECT COUNT(*) FROM visits WHERE to_pid=?', (t['pid'],))
-            stars = [r['stars'] for r in reviews]
+            rating = weigh_reviews(db, t['sid'], reviews)   # paid 5★: weighed, never deleted
+            reviews = reviews[:30]
             reviewed = bool(db.execute('SELECT 1 FROM previews WHERE from_pid=? AND to_pid=? AND day=?', (mine, t['pid'], today())).fetchone())
-            return dict(profile=_public_profile(t, mine, db, ranks), visits=visits, rating=round(sum(stars) / len(stars), 1) if stars else None,
+            return dict(profile=_public_profile(t, mine, db, ranks), visits=visits, rating=rating,
+                        counted=sum(1 for r in reviews if r.get('counted')),
                         reviews=[_review(r, mine) for r in reviews], listings=[_listing(db, m, mine) for m in listings],
                         can_review=t['pid'] != mine and bool(me['name']) and not reviewed,
                         can_gift=t['pid'] != mine and bool(me['name']))
@@ -466,8 +476,61 @@ def get(store, token: str, state: dict, route: str, q: dict) -> dict:
 
 
 def _review(r: dict, me: str) -> dict:
-    return dict(id=r['id'], author=r['author'], avatar=r['avatar'], from_pid=r['from_pid'], career=r['career'], stars=r['stars'],
-                text=r['text'], reply=r['reply'], at=int(r['at']), mine=r['from_pid'] == me, owner=r['to_pid'] == me)
+    out = dict(id=r['id'], author=r['author'], avatar=r['avatar'], from_pid=r['from_pid'], career=r['career'], stars=r['stars'],
+               text=r['text'], reply=r['reply'], at=int(r['at']), mine=r['from_pid'] == me, owner=r['to_pid'] == me)
+    if r.get('counted') is False:
+        out['counted'] = False
+        if out['mine'] or out['owner']:   # why stays between the two of them (a transfer is private)
+            out['why'] = REVIEW_WHY.get(r.get('why'), '')
+    return out
+
+
+def _epoch(text) -> float | None:
+    try:
+        return datetime.datetime.strptime(str(text), '%Y-%m-%d %H:%M:%S').replace(tzinfo=datetime.timezone.utc).timestamp()
+    except (TypeError, ValueError):
+        return None
+
+
+def weigh_reviews(db, owner_sid: str | None, rows: list[dict]) -> float | None:
+    """Mark each review row (keys: rsid = the reviewer's save id, at, stars) with counted / why, newest first, and
+    return the average of the counted ones (None: none counts). Reads only rows of these reviewers: their account
+    or profile age, and transfers/gifts from the owner to them."""
+    sids = sorted({r['rsid'] for r in rows if r.get('rsid')})
+    born, paid = {}, {}
+    if sids:
+        marks = ','.join('?' * len(sids))
+        for x in db.execute(f'SELECT sid, created_at FROM accounts WHERE sid IN ({marks})', sids).fetchall():
+            t = _epoch(x['created_at'])
+            if t:
+                born[x['sid']] = t
+        for x in db.execute(f'SELECT sid, created FROM profiles WHERE sid IN ({marks})', sids).fetchall():
+            if x['created'] is not None:
+                born[x['sid']] = min(born.get(x['sid'], float(x['created'])), float(x['created']))
+        if owner_sid:
+            for x in db.execute(f"SELECT receiver, at FROM bank_xfers WHERE sender=? AND status<>'back' AND receiver IN ({marks})",
+                                [owner_sid, *sids]).fetchall():
+                paid.setdefault(x['receiver'], []).append(float(x['at']))
+            pids = {pid_of(s): s for s in sids}
+            for x in db.execute(f"SELECT to_pid, at FROM gifts WHERE from_pid=? AND coins>0 AND to_pid IN ({','.join('?' * len(pids))})",
+                                [pid_of(owner_sid), *pids]).fetchall():
+                paid.setdefault(pids[x['to_pid']], []).append(float(x['at']))
+    seen, stars = set(), []
+    for r in sorted(rows, key=lambda r: -float(r['at'])):
+        sid, at = r.get('rsid'), float(r['at'])
+        if sid in seen:
+            why = 'older'
+        elif sid is None or at - born.get(sid, at) < REVIEW_MIN_DAYS * 86400:
+            why = 'new_account'
+        elif any(abs(at - t) <= PAID_WINDOW for t in paid.get(sid, ())):
+            why = 'paid'
+        else:
+            why = None
+        seen.add(sid)
+        r['counted'], r['why'] = why is None, why
+        if why is None:
+            stars.append(int(r['stars']))
+    return round(sum(stars) / len(stars), 1) if stars else None
 
 
 def _listing(db, m: dict, me: str) -> dict:
@@ -494,7 +557,8 @@ def post(store, token: str, state: dict, route: str, d: dict) -> dict:
     if route == 'profile':
         name = clean(d.get('name'), 24, 2, 'Tên hiển thị')
         need(re.fullmatch(r"[\w .'\-]+", name) and not name.isdigit(), 'Tên chỉ gồm chữ, số và khoảng trắng.')
-        need('•' not in name, 'Chọn một cái tên thân thiện hơn nhé.')
+        from .accounts import offensive_name   # moderation #13: unaccented and run-together spellings too
+        need('•' not in name and not offensive_name(name), 'Chọn một cái tên thân thiện hơn nhé.', 'bad_name')
         bio = clean(d.get('bio', ''), 140, 0, 'Giới thiệu')
         avatar = d.get('avatar', '🌸')
         need(avatar in STICKERS + ('🧑‍🍳', '👩‍🏫', '🧑‍💼', '🧑‍🌾', '🐱', '🐶'), 'Ảnh đại diện không hợp lệ.')

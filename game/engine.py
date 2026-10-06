@@ -551,7 +551,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         return s,dict(message=hired or "Chào mừng tới "+CAREER_META[career]["place"]+".",hired=bool(hired),**({"abandon":left} if left else {}))
     if action=="settings":
         for k,v in p.items():
-            if k=="name":s["name"]=clean_text(v,24)
+            if k=="name":from .accounts import character_name;s["name"]=character_name(v,s.get("name"))  # moderation #13: display-name rules
             elif k=="mode":pass  # Old clients may still send it: each day's pace is the luck of the day now.
             elif k in SETTING_CHOICES:
                 need(v in SETTING_CHOICES[k],"Thiết lập không hợp lệ.");s["settings"][k]=v

@@ -353,15 +353,25 @@ def _settle_for(store, sid, order_id=None):
     return sum(_settle_one(store, row) for row in rows)
 
 
-def _rating(db, place):
-    row = db.execute('SELECT COUNT(*) AS n,COALESCE(AVG(stars),0) AS average FROM work_service_reviews WHERE place=?', (place,)).fetchone()
-    return dict(count=int(row['n']), average=round(float(row['average']), 2))
+def _weighed(db, place, owner):
+    """The place's service reviews, newest first, each marked counted / why (social.weigh_reviews: paid 5★ —
+    only each customer's newest review, accounts older than 3 days, none within 24 h of xu from the owner)."""
+    rows = _rows(db, 'SELECT order_id, customer, stars, created_at FROM work_service_reviews WHERE place=? ORDER BY created_at DESC LIMIT 200', (place,))
+    for r in rows:
+        r['rsid'], r['at'] = r['customer'], r['created_at']
+    return rows, social.weigh_reviews(db, owner, rows)
+
+
+def _rating(db, place, owner=None):
+    rows, average = _weighed(db, place, owner)
+    counted = sum(1 for r in rows if r['counted'])
+    return dict(count=counted, average=round(float(average or 0), 2), total=len(rows))
 
 
 def _place_view(db, row, sid):
     data = _data(row)
     return dict(id=row['id'], kind=row['kind'], target=row['target'], visibility=row['visibility'],
-                mine=row['owner'] == sid, rating=_rating(db, row['id']), **data)
+                mine=row['owner'] == sid, rating=_rating(db, row['id'], row['owner']), **data)
 
 
 def _order_view(db, row, sid):
@@ -433,9 +443,11 @@ def get(store, token, state, sub, query):
             row = _row(db, 'SELECT * FROM work_visit_places WHERE id=?', (query.get('place'),))
             need(row and _accessible(db, row, sid), 'Không tìm thấy chỗ làm này.', 'not_found', 404)
             reviews = []
+            counted = {r['order_id']: r['counted'] for r in _weighed(db, row['id'], row['owner'])[0]}
             for review in _rows(db, 'SELECT r.*,o.data AS order_data FROM work_service_reviews r JOIN work_service_orders o ON o.id=r.order_id WHERE r.place=? ORDER BY r.created_at DESC LIMIT 30', (row['id'],)):
                 if not _blocked(db, sid, review['customer']):
-                    reviews.append(dict(order=review['order_id'], stars=review['stars'], tags=json.loads(review['tags']), comment=review['comment'], reply=review['reply'], served_by='staff' if json.loads(review['order_data']).get('offer', {}).get('staffed') else 'owner', buyer=_person(db, review['customer'])))
+                    reviews.append(dict(order=review['order_id'], stars=review['stars'], tags=json.loads(review['tags']), comment=review['comment'], reply=review['reply'], served_by='staff' if json.loads(review['order_data']).get('offer', {}).get('staffed') else 'owner', buyer=_person(db, review['customer']),
+                                        counted=counted.get(review['order_id'], True)))
             orders = _rows(db, 'SELECT * FROM work_service_orders WHERE place=? AND (customer=? OR provider=?) ORDER BY created_at DESC LIMIT 30', (row['id'], sid, sid))
             return dict(place=_place_view(db, row, sid), reviews=reviews, orders=[_order_view(db, o, sid) for o in orders])
         if sub == 'orders':

@@ -741,7 +741,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
     if name == 'jr_profile':
         need(set(p) <= {'name', 'gender'} and p, 'Thông tin nhân vật không hợp lệ.')
         if 'name' in p:
-            s['name'] = e.clean_text(p['name'], 24)
+            from .accounts import character_name   # moderation #13: the display-name rules (profanity too)
+            s['name'] = character_name(p['name'], s.get('name'))
         if 'gender' in p:
             need(p['gender'] in ('male', 'female'), 'Chọn Nam hoặc Nữ nhé.')
             old, j['gender'] = j['gender'], p['gender']

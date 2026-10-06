@@ -21,7 +21,7 @@ Frames (client → server; replies in brackets)
   history {ch, before?}                     [history {ch, msgs, more}]
   read {ch, id}                             [read {ch, id} to my other tabs]
   del {id}                                  [deleted {ch, id} to everyone who sees it]
-  report {id, reason}  block {pid}  unblock {pid}
+  report {id, reason}  block {pid}  unblock {pid}       reason 'minor': 🛟 "An toàn / trẻ vị thành niên" (admin queue first)
   prefs {online: bool}                      [prefs {online}]
   group_new {title, pids}  group_add {ch, pids}  group_kick {ch, pid}  group_leave {ch}  members {ch}
   pin {id}  unpin {}                        [pinned {ch:'town', pin} to everyone on Cả phố]   admins only
@@ -98,7 +98,7 @@ from .push import maybe_push
 CH_DM = re.compile(r'dm:([0-9a-f]{16}):([0-9a-f]{16})')
 CH_GROUP = re.compile(r'g:[0-9a-f]{10}')
 PID = re.compile(r'[0-9a-f]{16}')
-REASONS = ('spam', 'rude', 'private', 'scam', 'other')
+REASONS = ('spam', 'rude', 'private', 'scam', 'other', 'minor')   # minor: 🛟 an toàn / trẻ vị thành niên (moderation #14)
 HIDE_AFTER = 3            # distinct reports that hide a message until an admin decides
 PAGE = 30                 # messages per load: the first one and each "Xem cũ hơn" (owner, 01/10)
 RESUME = 50               # messages sent after a reconnect, per open chat
@@ -121,6 +121,7 @@ RECALL_SECS = 86400       # 🗑️ a message can be taken back (Thu hồi) for 
 CLEAR_MAX = 20            # 🗑️ chats emptied by one `clear`
 BLOCKS_LISTED = 50        # 🚫 people listed under "Đã chặn"
 DEL_POLL = 60             # 🗑️ seconds between two looks for the tables of "xóa ở phía tôi" while they are missing
+SLOW_TOWN = 'town'        # 🐢 chat_slow row that slows Cả phố for everyone (game/live_chat.py; SCHEMA_VERSION 24)
 
 
 def dm_id(a: str, b: str) -> str:
@@ -179,6 +180,8 @@ class ChatFeature(Feature):
         self._del_at = 0.0              # next look for them while they are missing
         self.reply_epoch = 0            # invalidates quote SELECTs already in flight
         self.names = LRU(20000)         # pid -> current account display; '' means keep a guest/system snapshot
+        self.slow_town = (0.0, 0.0)     # 🐢 (seconds per message, until) set by an admin for Cả phố; (0, 0) = cfg.town_every
+        self._slow_off = 0.0            # 🐢 chat_slow missing (an older game server) until then
 
     # ---- extension: other features' channels -------------------------------------------------------------
     def route(self, prefix: str, audience, can_read) -> None:
@@ -203,6 +206,41 @@ class ChatFeature(Feature):
         await self.sync_pin(announce=False)
         self._pin_at = time.time() + PIN_POLL   # just read: the next look in 30 s
         await self.check_del()
+        await self.load_slow_town()
+
+    # ---- 🐢 slow mode (moderation #14: admin tools, never a ban) -------------------------------------------------
+    async def _slow_row(self, pid: str) -> tuple:
+        """(every, until) of a chat_slow row; (0, 0) when none, expired, or the table is not there yet (an older
+        game server: this service rolls out first and simply runs without slow mode)."""
+        if self._slow_off > time.time():
+            return 0.0, 0.0
+        try:
+            r = await self.db.fetchrow('SELECT every, until FROM chat_slow WHERE pid=?', (pid,))
+        except DbError:
+            self._slow_off = time.time() + DEL_POLL   # look for the table again in a minute, not at every hello
+            return 0.0, 0.0
+        if not r or float(r['until']) <= time.time():
+            return 0.0, 0.0
+        return float(r['every']), float(r['until'])
+
+    async def load_slow_town(self) -> None:
+        self.slow_town = await self._slow_row(SLOW_TOWN)
+
+    async def load_slow(self, p) -> None:
+        p.ext['slow'] = await self._slow_row(p.pid)
+
+    def town_every_for(self, p) -> float:
+        """Seconds between two of p's Cả phố messages: the owner's default, or longer when an admin slowed Cả phố or
+        this player down (until the time they chose)."""
+        t = time.time()
+        every = self.cfg.town_every
+        town, until = self.slow_town
+        if until > t:
+            every = max(every, town)
+        mine, until = p.ext.get('slow') or (0.0, 0.0)
+        if until > t:
+            every = max(every, mine)
+        return every
 
     async def check_del(self) -> bool:
         """🗑️ Are the tables of "xóa ở phía tôi" there (a game server of SCHEMA_VERSION 13 has started)? Sets
@@ -405,6 +443,8 @@ class ChatFeature(Feature):
             await self.load_hidden(p)
             p.fc = (await self.faces_of([p.pid])).get(p.pid) or None
             p.loaded = True
+        if 'slow' not in p.ext:   # 🐢 slowed down by an admin? (one primary-key lookup per player)
+            await self.load_slow(p)
         if self.del_ok and 'hides' not in p.ext:   # 🗑️ ever deleted a message on their side? (else no lookups per page)
             p.ext['hides'] = bool(await self.db.fetchval('SELECT 1 FROM chat_hides WHERE pid=? LIMIT 1', (p.pid,)))
         await self.fit_face(p)   # the profile emoji may have changed since (read again at every connect)
@@ -426,7 +466,7 @@ class ChatFeature(Feature):
                 if last.get('reply'):
                     last['reply'] = dict(id=last['reply']['id'], unavailable=True)
         return dict(me=self.me(p), friends=self.friend_list(p), chans=chans,
-                    limits=dict(town_every=self.cfg.town_every, town_len=self.cfg.town_len, text_len=self.cfg.text_len, group_max=self.cfg.group_max,
+                    limits=dict(town_every=self.town_every_for(p), town_len=self.cfg.town_len, text_len=self.cfg.text_len, group_max=self.cfg.group_max,
                                 admin_len=self.cfg.admin_len))
 
     def me(self, p) -> dict:
@@ -550,7 +590,7 @@ class ChatFeature(Feature):
             self.hub.send_many(conns, projected[player.pid][0])
 
     # ---- storing a message (also for phase 2/3 channels) -----------------------------------------------------
-    async def store_message(self, p, ch: str, text, limit: int, lines: int = 4, admin: bool = False, reply_to=None) -> dict:
+    async def store_message(self, p, ch: str, text, limit: int, lines: int = 4, admin: bool = False, reply_to=None, known=None) -> dict:
         """Check, filter and insert one message by player p in channel ch; returns its `msg` frame.
         Repeated content is allowed. Raises LiveError: text (empty/too long), name, muted.
         admin=True (an admin on Cả phố): no mute or masking; the row/frame are marked adm=1."""
@@ -572,7 +612,7 @@ class ChatFeature(Feature):
                                        **({'reply_to': reply_to} if reply_to else {})))
         if p.muted_until > t:
             raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
-        masked = filters.mask(clean)
+        masked = filters.mask(clean, known)   # known: @names that stay (Cả phố)
         raw = clean if masked != clean else None   # 🔎 what was typed, for the admin screen only (never sent to players)
         row = await self.db.fetchrow(
             'INSERT INTO chat_messages(channel, pid, name, av, text, at, raw, reply_to) SELECT ?, ?, ?, ?, ?, ?, ?, ? '
@@ -729,14 +769,16 @@ class ChatFeature(Feature):
                 raise LiveError('name', 'Đặt tên nhân vật trước khi nhắn nhé.')
             if why == 'muted':
                 raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
+            every = self.town_every_for(p)
             if admin:   # 📌 admins post freely: no slow mode, longer, links kept (owner, 01/10)
                 frame = await self.store_message(p, 'town', f.get('text'), self.cfg.admin_len, self.cfg.admin_lines, admin=True, reply_to=reply_to)
             else:
                 if wait > 0:
-                    raise LiveError('slow', f'Cả phố: {self.cfg.town_every:g} giây một tin.', wait=round(wait, 1))
-                p.town_next = t + self.cfg.town_every          # before the await: a second tab cannot slip in
+                    raise LiveError('slow', f'Cả phố: {every:g} giây một tin.', wait=round(wait, 1))
+                p.town_next = t + every          # before the await: a second tab cannot slip in
                 try:
-                    frame = await self.store_message(p, 'town', f.get('text'), self.cfg.town_len, 3, reply_to=reply_to)
+                    frame = await self.store_message(p, 'town', f.get('text'), self.cfg.town_len, 3, reply_to=reply_to,
+                                                     known=self.town_names())
                 except BaseException:
                     p.town_next = 0.0
                     raise
@@ -744,7 +786,7 @@ class ChatFeature(Feature):
             n = len({c.player.pid for c in self.town.conns})
             await self.deliver_message(c, dict(frame, n=n), sender=p, skip=conn)   # n: people on Cả phố now
             mine = (await chat_reply.project(self, p, [frame]))[0]
-            self.hub.send(conn, dict(mine, cid=cid, wait=0 if admin else self.cfg.town_every, n=n))
+            self.hub.send(conn, dict(mine, cid=cid, wait=0 if admin else every, n=n, **self.safety(p, f.get('text'))))
             return None
         if c.kind == 'dm':
             other = next((x for x in c.members if x != p.pid), None)
@@ -752,10 +794,23 @@ class ChatFeature(Feature):
                 raise LiveError('not_friend', 'Hai bạn không còn là bạn bè, không nhắn riêng được nữa.')
         frame = await self.store_message(p, c.id, f.get('text'), self.cfg.text_len, 12, reply_to=reply_to)
         await self.deliver_message(c, frame, sender=p, skip=conn)
-        mine = (await chat_reply.project(self, p, [frame]))[0]
+        mine = dict((await chat_reply.project(self, p, [frame]))[0], **self.safety(p, f.get('text')))
         self.hub.send(conn, dict(mine, cid=cid, to=f.get('to')) if f.get('to') else dict(mine, cid=cid))
         self.push_offline(c, p, frame)
         return None
+
+    def safety(self, p, text) -> dict:
+        """🛟 {'safety': 1} on the sender's own copy when the message talks about meeting up, where someone lives or
+        contact details (live/filters.py safety_cue): the client shows a one-time friendly notice. Nothing else
+        happens: the message goes out as usual, nobody is reported or muted."""
+        if self.is_admin(p) or not filters.safety_cue(text if isinstance(text, str) else ''):
+            return {}
+        return {'safety': 1}
+
+    def town_names(self) -> set:
+        """Who may be @-mentioned on Cả phố (chat C#20991): players there now and the authors of its recent lines."""
+        names = [c.player.name for c in self.town.conns] + [m.get('name') for m in self.town.buffer]
+        return filters.mention_keys(names)
 
     def push_offline(self, c: Chan, p, frame: dict) -> None:
         """🔔 A web push to the members of a DM or group with no socket, unless the chat is quiet for them; one per chat
@@ -1411,6 +1466,13 @@ class ChatFeature(Feature):
             if p:
                 p.muted_until = float(e.get('until') or 0)
                 self.hub.send_many([c for c in p.conns if c.ready], dict(t='muted', until=round(p.muted_until, 1)))
+        elif op == 'slow' and isinstance(e.get('pid'), str):   # 🐢 an admin slowed a player (or 'town': everyone) down
+            if e['pid'] == SLOW_TOWN:
+                await self.load_slow_town()
+            else:
+                p = self.hub.players.get(e['pid'])
+                if p:
+                    await self.load_slow(p)
 
     async def reconcile(self) -> None:
         """The LISTEN connection came back: admin events may have been missed while it was down."""
@@ -1420,6 +1482,10 @@ class ChatFeature(Feature):
             for r in rows:
                 await self.gone('town', int(r['id']), hidden=True)
         await self.sync_pin()
+        await self.load_slow_town()
+        for p in list(self.hub.players.values()):
+            if 'slow' in p.ext:
+                await self.load_slow(p)
         pids = list(self.hub.players)
         for i in range(0, len(pids), 500):
             part = pids[i:i + 500]

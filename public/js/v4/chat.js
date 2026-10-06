@@ -17,7 +17,10 @@
  * message (or a right click) opens the emoji bar AND its action row: "Xóa ở phía tôi" (any message, a recalled one too:
  * gone from my screens only) and, on mine, "Thu hồi" for 24 h (for everyone); both ask "…thật?" first. Tin nhắn: "Chọn"
  * (or holding a row) ticks chats, "Xóa" empties them for me only (a DM leaves the list until someone writes again).
- * 🚫 Tin nhắn → "Đã chặn" (welcome.flags.blocks; feedback #93): who I blocked, "Bỏ chặn" each. */
+ * 🚫 Tin nhắn → "Đã chặn" (welcome.flags.blocks; feedback #93): who I blocked, "Bỏ chặn" each.
+ * 🛟 Safety (moderation #14): my own message back with `safety` (live/filters.py safety_cue: hẹn gặp, địa chỉ, số điện
+ * thoại, zalo/fb/ig…) opens a friendly notice once per device (SAFETY_KEY); the report reasons have "An toàn / trẻ vị
+ * thành niên" (reason 'minor': first in the admin queue). Nothing is blocked by it. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
@@ -31,7 +34,10 @@ const S={dlg:null,env:null,tab:'town',thread:null,view:null,bodyHTML:null,thread
   sel:null,blocks:null,unblocking:null,reply:null,composeEpoch:0,failed:new Map()};   // 🗑️ chats ticked in "Chọn" (a Set, null = not choosing); 🚫 the blocked list
 const TABS=[['town','Cả phố'],['inbox','Tin nhắn'],['friends','Bạn bè']];
 const friendRequests=new Map();   // message id -> pending/sent; only an explicit player's tap starts a request
-const REASONS=[['spam','Spam'],['rude','Thô tục'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
+const REASONS=[['minor','🛟 An toàn / trẻ vị thành niên'],['spam','Spam'],['rude','Thô tục'],['scam','Lừa đảo'],['private','Lộ thông tin'],['other','Khác']];
+const SAFETY_KEY='pcc.chat.safety.v1';   // 🛟 the notice was read on this device
+const SAFETY_TEXT='Nhắc nhẹ nè 💛 Ở phố mình chơi vui là chính, nhưng đừng gửi địa chỉ nhà, trường, số điện thoại hay nick Zalo/FB/IG/TikTok cho người mới quen, và đừng hẹn gặp người lạ ngoài đời nha. Bạn dưới 18 tuổi thì càng cần cẩn thận hơn. Ai làm bạn thấy không ổn: chạm vào tin nhắn → Báo cáo → “An toàn / trẻ vị thành niên”, hoặc kể với người lớn bạn tin tưởng.';
+const safetySeen=()=>{try{return localStorage.getItem(SAFETY_KEY)==='1';}catch{return false;}};
 const rid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
 const me=()=>live.me?.pid;
 const dmId=pid=>{const [a,b]=[me(),pid].sort();return `dm:${a}:${b}`;};
@@ -57,6 +63,7 @@ function dialog(){
   d.className='sheet v4-sheet medium chat-sheet';d.setAttribute('aria-label','Chat');
   d.innerHTML=`<div class="ch-root"><header class="ch-head"></header><div class="ch-net" hidden>${icon('refresh',14)} Đang kết nối lại…</div>
     <div class="ch-pinbar" hidden></div><div class="ch-body"></div><div class="ch-flash" role="status" aria-live="polite" hidden></div>
+    <div class="ch-safety" role="status" aria-live="polite" hidden></div>
     <form class="ch-compose" hidden><div class="ch-reply-compose" hidden></div><textarea rows="1" enterkeyhint="send" autocomplete="off" aria-label="Tin nhắn" placeholder="Nhắn gì đó…"></textarea>
     <button type="submit" class="ch-send" aria-label="Gửi">${icon('send',20)}</button><small class="ch-count" hidden></small></form>
     <p class="ch-ro" hidden></p></div>`;
@@ -228,6 +235,7 @@ function bind(){
   });
   live.on('msg',f=>{
     const mine=f.cid&&S.pending.has(f.cid);if(mine)S.pending.delete(f.cid);
+    if(f.safety&&f.pid===me()&&!safetySeen())S.safety=true;   // 🛟 once per device
     if(f.ch==='town'){
       if(f.n)S.town.n=f.n;
       if(!S.town.msgs.some(m=>m.id===f.id)){S.town.msgs.push(f);S.town.msgs.sort(byK);if(S.town.msgs.length>400)S.town.msgs.splice(0,S.town.msgs.length-400);}
@@ -302,7 +310,7 @@ function bind(){
     if(!f.on){clearTimeout(S.syncT);S.syncT=setTimeout(()=>live.send({t:'sync'}),1500);}   // unblocked: friends and chats come back (one sync for several)
     if(S.dlg?.open){flash(f.on?'Đã chặn. Hai bạn không thấy tin của nhau nữa.':'Đã bỏ chặn.');render();}
   });
-  live.on('reported',()=>{if(S.dlg?.open){flash('Đã báo cáo. Cảm ơn bạn!');render();}});
+  live.on('reported',()=>{if(S.dlg?.open){flash(S.safeReport?'Đã báo cáo an toàn. Ban quản lý sẽ xem trước tiên. Cảm ơn bạn nhiều 💛':'Đã báo cáo. Cảm ơn bạn!');S.safeReport=false;render();}});
   live.on('hid',f=>{dropMsg(f.ch,f.id);if(S.dlg?.open)render();});            // 🗑️ deleted on my side (maybe in another tab)
   live.on('reply_hidden',f=>{redactReplies({pid:f.pid});if(S.dlg?.open)render();});
   live.on('cleared',f=>{dropCleared(f.chs);if(S.dlg?.open)render();});
@@ -377,7 +385,9 @@ function onAct(act,d,el){
     case'pinOpen':S.pinOpen=!S.pinOpen;renderPin();return;
     case'react':live.send({t:'react',id:Number(d.id),e:d.e});S.reactFor=null;break;   // the server toggles: the same one again takes it back
     case'report':S.report=Number(d.id);break;
+    case'safetyOk':S.safety=false;try{localStorage.setItem(SAFETY_KEY,'1');}catch{}break;
     case'reason':live.send({t:'report',id:Number(d.id),reason:d.reason});S.act=null;S.report=null;
+      if(d.reason==='minor')S.safeReport=true;   // the thanks says the admins look at it first
       dropMsg(composeChannel(),Number(d.id));break;   // gone for me at once
     case'block':if(S.confirm!=='block:'+d.pid){S.confirm='block:'+d.pid;break;}live.send({t:'block',pid:d.pid});S.confirm=null;S.act=null;break;
     case'groupNew':S.view='group';S.pick.clear();S.gtitle='';break;
@@ -638,6 +648,9 @@ function render(bottom=false,keepFromBottom=false){
   if(keepFromBottom)b.scrollTop=b.scrollHeight-b.clientHeight-fromBottom;
   else if(bottom||atBottom)b.scrollTop=b.scrollHeight;
   const f=d.querySelector('.ch-flash');f.hidden=!S.flash;f.textContent=S.flash;
+  const sf=d.querySelector('.ch-safety');sf.hidden=!S.safety;
+  if(S.safety&&!sf.firstChild)sf.innerHTML=`<p><b>🛟 Giữ an toàn nha</b> ${esc(SAFETY_TEXT)}</p><button type="button" class="btn primary small" data-ch-act="safetyOk">Mình hiểu rồi</button>`;
+  else if(!S.safety)sf.textContent='';
   const c=compose(),form=d.querySelector('.ch-compose'),ro=d.querySelector('.ch-ro'),ta=form.querySelector('textarea');
   form.hidden=!c||Boolean(c.ro);ro.hidden=!c?.ro;ro.textContent=c?.ro||'';
   if(c?.act==='account'){const b=document.createElement('button');b.type='button';b.className='btn primary small';b.dataset.chAct='account';b.textContent='Tạo tài khoản';ro.append(' ',b);}

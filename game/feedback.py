@@ -14,8 +14,10 @@ some reviews are careless or fake (twists): off-topic 1★, wrong shop, never
 visited, a rival's plant, stars tapped by mistake, demands, rumours. Twists are
 rolled once from the task id, stored in the record and may move the stars away
 from the facts; the true grade stays in `fair`. The owner can reply, ignore,
-or report: a report removes only the fakes the server knows about, and a wrong
-report angers the reviewer. A rude reply gets screenshotted: more 1★ follow.
+or report: every review can be reported (góp ý #196, 06/10). Fakes, wrong shops,
+off-topic 1★, off-topic gripes and pile-ons leave the average (kept, marked); a real
+experience stays, at no star cost and with no pile-on. A rude reply gets screenshotted:
+more 1★ follow (a pile-on never starts another one).
 """
 from __future__ import annotations
 from copy import deepcopy
@@ -271,7 +273,7 @@ VOICE = {
 # Careless or fake reviews. `stranger`: the author is not the person served.
 # `reportable`: the platform (or the class board) removes it when reported.
 TWISTS = {
-    'offtopic': dict(group='customer', persona='troll', stranger=True, reportable=False, clues=['Không nói gì về dịch vụ đã dùng']),
+    'offtopic': dict(group='customer', persona='troll', stranger=True, reportable=True, clues=['Không nói gì về dịch vụ đã dùng']),
     'no_visit': dict(group='customer', persona='troll', stranger=True, reportable=True, clues=['Tự nhận chưa dùng dịch vụ']),
     'wrong_shop': dict(group='customer', persona='troll', stranger=True, reportable=True, clues=['Có vẻ đánh giá nhầm quán']),
     'competitor': dict(group='customer', persona='rude', stranger=True, reportable=True, clues=['Tài khoản mới, đây là đánh giá đầu tiên', 'Nhắc tới một tiệm khác']),
@@ -279,12 +281,16 @@ TWISTS = {
     'flip_high': dict(group='customer', persona=None, stranger=False, reportable=False, clues=['Lời chê mà chấm 5★']),
     'bocphot': dict(group='customer', persona='drama', stranger=False, reportable=False, clues=['Dọa bóc phốt, đòi đền']),
     'demand': dict(group='customer', persona='entitled', stranger=False, reportable=False, clues=['Đòi hỏi ngoài dịch vụ']),
-    'offtopic_p': dict(group='parent', persona='parent_rude', stranger=False, reportable=False, clues=['Không nói gì về buổi học']),
+    'offtopic_p': dict(group='parent', persona='parent_rude', stranger=False, reportable=True, clues=['Không nói gì về buổi học']),
     'wrong_class': dict(group='parent', persona='parent_worried', stranger=True, reportable=True, clues=['Có vẻ nhắn nhầm lớp']),
     'rumor': dict(group='parent', persona='parent_knowitall', stranger=False, reportable=False, clues=['Nghe kể lại, không trực tiếp']),
-    'pile_on': dict(group='any', persona=None, stranger=True, reportable=False, clues=['Kéo tới từ câu trả lời gắt của bạn']),
+    'pile_on': dict(group='any', persona=None, stranger=True, reportable=True, clues=['Kéo tới từ câu trả lời gắt của bạn']),
 }
-TWIST_WEIGHTS = {'customer': (('offtopic', 3), ('no_visit', 2), ('wrong_shop', 2), ('competitor', 2), ('flip_low', 2), ('flip_high', 2), ('bocphot', 2), ('demand', 2)),
+# Góp ý #196/#168 (06/10): every review can be reported. These kinds are removed from the average when reported
+# (the record stays, marked `report: 'accepted'`), whatever an older save stored in twist['reportable'].
+REMOVABLE = ('offtopic', 'offtopic_p', 'pile_on', 'no_visit', 'wrong_shop', 'competitor', 'wrong_class')
+# Chat C#23729 / F#188: "nhầm quán" reviews were too frequent (weight 2 → 1).
+TWIST_WEIGHTS = {'customer': (('offtopic', 3), ('no_visit', 2), ('wrong_shop', 1),('competitor', 2), ('flip_low', 2), ('flip_high', 2), ('bocphot', 2), ('demand', 2)),
                  'parent': (('offtopic_p', 3), ('wrong_class', 2), ('flip_low', 2), ('rumor', 2))}
 TWIST_TEXT = {
     'offtopic': ['Không có chỗ đậu ô tô, phải gửi xe tận đầu hẻm. 1 sao.', 'Đường vào đang đào, bụi mù mịt. Một sao cho nhớ.',
@@ -367,8 +373,34 @@ BLAME = ('khong phai loi', 'tai anh', 'tai chi', 'tai ban', 'khach sai', 'bia', 
 RUDE_WORDS = ('ngu', 'cút', 'điên', 'im đi', 'vô học', 'rác', 'chó', 'đồ điên', 'mất dạy', 'xéo', 'láo', 'khùng', 'hãm', 'đm', 'vcl', 'vl', 'óc chó', 'ngu ngốc', 'dở hơi')
 RUDE = ('di cho khac', 'khoi ghe', 'khong tiep', 'khong thich thi', 'loai khach', 'lam nhu dung roi', 'biet gi ma', 'lo chuyen cua', 'chuyen lop khac',
         'kem hieu biet', 'nha que', 'ke ban', 'thich thi di', 'khong can khach', 'hang dau buoi')
+# A report the platform does not accept (góp ý #196): the reviewer noticed, but keeps the same stars.
+REPORT_KEEP = {
+    'customer': ['Báo cáo tôi à? Tôi kể đúng trải nghiệm thật mà. Thôi, để nguyên vậy.', 'Nền tảng giữ bài tôi rồi nhé. Lần sau đọc kỹ rồi hẵng báo cáo.',
+                 'Ủa, góp ý thật mà cũng bị báo cáo? Hơi buồn đó nha.'],
+    'parent': ['Cô/thầy báo cáo tin nhắn của phụ huynh à? Tôi góp ý thật lòng mà.', 'Tôi góp ý thật mà bị báo cáo, tôi hơi buồn.'],
+    'pagoda': ['Tôi kể thật lòng mà bị báo cáo, hơi buồn.', 'Cảm nhận thật mà bị báo cáo. Thôi, tôi để đó.'],
+}
 OFFERS = {'none': 0, 'gift': 10, 'refund': 20}
-REPORTS_PER_DAY = 2
+REPORTS_PER_DAY = 3
+
+
+def _plain_review(post: dict) -> bool:
+    """A review a shift event wrote straight on the feed (no thread): reportable, never removed."""
+    return post.get('kind') == 'review' and bool(post.get('stars')) and not post.get('feedback') and post.get('npc') != 'player'
+
+
+def reports_today(c: dict) -> int:
+    return sum(1 for f in c['feed'] if (f.get('feedback') or {}).get('report_day') == c['day'] or f.get('reported') == c['day'])
+
+
+def removable(post: dict) -> bool:
+    """Would the platform take this review out of the average when reported? Fakes, wrong shops, off-topic 1★
+    and pile-ons always (whatever an older save stored), and a gripe that took a star for something off-topic."""
+    fb = post.get('feedback') or {}
+    if _kind(fb) in REMOVABLE or (fb.get('twist') or {}).get('reportable'):
+        return True
+    g = fb.get('gripe')
+    return bool(isinstance(g, dict) and not g.get('positive') and g.get('dropped') and (fb.get('unfair') or {}).get('gripe'))
 
 
 def _has(text: str, words) -> bool:
@@ -533,8 +565,12 @@ def pick_twist(career: str, group: str, fair: int, seed: int) -> str:
 
 
 def _stranger(career: str, served: str, seed: int) -> str:
+    """Another customer of the same trade (chat C#23729: names from other trades made reviews look like they were
+    about another shop); only a trade with nobody else falls back to the whole street."""
     from .content import NPCS
-    pool = [n['id'] for n in NPCS if not n['id'].startswith(career + '_npc_') and n['id'] != served]
+    pool = [n['id'] for n in NPCS if n['id'].startswith(career + '_npc_') and n['id'] != served]
+    if not pool:
+        pool = [n['id'] for n in NPCS if n['id'] != served]
     return pool[seed % len(pool)] if pool else served
 
 
@@ -822,6 +858,21 @@ AMENDS_KEEP = {'customer': ['Cảm ơn lời xin lỗi và phần bù. Mình nh�
                           'Cảm ơn cô/thầy đã bù cho con. Tôi giữ nhận xét, mong buổi sau tốt hơn ạ.']}
 
 
+# Chat C#15809 (Yuika): "hoàn 20 xu rồi mà 1★ vẫn y nguyên". For these reviews no offer can ever move the stars, so
+# the game says so before any xu leaves the wallet (fb_reply refuses the offer; the thread view shows the note).
+OFFER_USELESS = {'wrong_shop': 'khách đánh giá nhầm chỗ', 'wrong_class': 'phụ huynh nhắn nhầm lớp', 'no_visit': 'khách chưa từng dùng dịch vụ',
+                 'competitor': 'đây có vẻ là tài khoản cài cắm', 'flip_high': 'khách đã chấm 5★ rồi', 'fan': 'khách đã hài lòng sẵn rồi'}
+
+
+def offer_note(fb: dict) -> str | None:
+    """Why bù đắp cannot change this review (None: it may help)."""
+    why = OFFER_USELESS.get(_kind(fb))
+    if not why:
+        return None
+    tail = ' Báo cáo đánh giá để nền tảng gỡ thì hơn.' if _kind(fb) in REMOVABLE else ''
+    return f'Bù xu không đổi được đánh giá này: {why}. Trả lời không kèm bù là đủ.{tail}'
+
+
 def amends(post: dict, decision: dict, tone: str, reply: str) -> dict:
     """The reviewer's answer once something real was given (this round or before): a fair, seeded chance to
     edit the stars up when they would have kept them; otherwise they say they saw it."""
@@ -856,9 +907,12 @@ def attach(post: dict, review: dict) -> None:
 
 
 def _pile_on(s: dict, c: dict, career: str, post: dict, count: int, why: str) -> int:
-    """Strangers pile on with 1★ after a rude reply or an ignored threat."""
+    """Strangers pile on with 1★ after a rude reply or an ignored threat. A pile-on never starts another one, and a
+    report never starts one (góp ý #196: "báo cáo xong còn bị kéo bầy")."""
     from . import engine as e
     fb = post['feedback']
+    if why == 'report' or _kind(fb) == 'pile_on':
+        return 0
     parent = PERSONAS[fb['persona']]['group'] == 'parent'
     pool = [k for k in e.NPC_INDEX if k.startswith(career + '_npc_') and k != post['npc']] or [k for k in e.NPC_INDEX if k != post['npc']]
     texts = PILE_ON['phot' if why == 'phot' else ('report_parent' if parent else 'report') if why == 'report' else 'parent' if parent else 'customer']
@@ -875,7 +929,7 @@ def _pile_on(s: dict, c: dict, career: str, post: dict, count: int, why: str) ->
                              criteria=[dict(key='attitude', label=label, score=1, note=PILE_NOTE[why])],
                              cap=5, fair=1, stars_original=1, unfair=None, thread=[], status='open', rounds=0, pending=None, voice='scripted',
                              task=fb.get('task', ''), title=fb.get('title', ''), value=0, stranger=True,
-                             twist=dict(kind='pile_on', reportable=False),
+                             twist=dict(kind='pile_on', reportable=True),
                              clues=[PILE_CLUE[why]])
         e.metric(c, 'reviews_viral')
         made += 1
@@ -926,6 +980,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
         if tone != 'free' and tone != 'harsh' and classify(reply)['rude']:
             tone = 'harsh'                      # the words win over the label
         if offer != 'none':
+            note = offer_note(fb)
+            need(not note, (note or '') + ' Chưa trừ xu nào.', 'offer_useless')
             need(not any(x.get('offer', 'none') != 'none' for x in fb['thread'] if x['role'] == 'owner'), 'Mỗi review chỉ bù đắp một lần.')
             e.money(s, c, -OFFERS[offer], (_pv.OFFER_LEDGER if _pv.on(career) else 'Bù đắp cho khách: ') + (post['author'] or 'khách'), post['id'], category='compensation')
         row = dict(role='owner', text=reply, day=c['day'], offer=offer)
@@ -947,7 +1003,7 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
         e.metric(c, 'replies')
         e.metric(c, 'review_replies')
         out = dict(message=('Đã gửi lời hồi đáp. ' if _pv.on(career) else 'Đã gửi phản hồi. ') + (post['author'] or 'Khách') + ' đang đọc…', awaiting=post['id'])
-        if (tone == 'harsh' or classify(reply)['rude']) and not fb.get('viral'):
+        if (tone == 'harsh' or classify(reply)['rude']) and not fb.get('viral') and _kind(fb) != 'pile_on':
             # Screenshots travel fast: once per review, strangers pile on.
             fb['viral'] = True
             n = 1 + (1 if fb['persona'] in ('drama', 'rude', 'parent_rude', 'knowitall') else 0) + _hash('viral', post['id']) % 2
@@ -972,49 +1028,53 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
             return dict(message=_pv.fill(_pv.PHOT_MSG, author=post['author'], n=n) if pg else f'{post["author"]} đăng bài bóc phốt: thêm {n} đánh giá 1★.', viral=n)
         return dict(message=_pv.IGNORED if _pv.on(career) else 'Đã bỏ qua. Đánh giá vẫn giữ nguyên.')
     if name == 'fb_report':
-        post = _post(c, p.get('post'))
+        post = next((f for f in c['feed'] if f['id'] == p.get('post')), None)
+        need(post and (post.get('feedback') or _plain_review(post)), 'Không thấy phản hồi này.')
+        need(reports_today(c) < REPORTS_PER_DAY, f'Hôm nay bạn đã báo cáo {REPORTS_PER_DAY} lần. Để mai nhé.')
+        if not post.get('feedback'):
+            # A review written by a shift event (no thread): it is tied to something that really happened, so the
+            # platform keeps it. Nothing else changes: no star, no angry reviewer.
+            need(post.get('stars') and not post.get('reported'), 'Đánh giá này đã được báo cáo.')
+            post['reported'] = c['day']             # the day of the (kept) report; `report` is consequences.py's flag
+            e.metric(c, 'reviews_reported')
+            return dict(message='Nền tảng giữ đánh giá này: nó gắn với chuyện có thật trong ca. Sao giữ nguyên, không ai phật ý.',
+                        report='rejected')
         fb = post['feedback']
         need(not fb.get('police'), 'Đã lưu đánh giá này trong hồ sơ trình báo.')
         need(post.get('stars') and not fb.get('report'), 'Đánh giá này đã được báo cáo.')
         need(fb['status'] != 'awaiting', 'Chờ khách trả lời trước.')
-        today = sum(1 for f in c['feed'] if (f.get('feedback') or {}).get('report_day') == c['day'])
-        need(today < REPORTS_PER_DAY, 'Hôm nay bạn đã báo cáo hai lần. Để mai nhé.')
         parent = PERSONAS[fb['persona']]['group'] == 'parent'
         fb['report_day'] = c['day']
         e.metric(c, 'reviews_reported')
-        if (fb.get('twist') or {}).get('reportable'):
+        if removable(post):
+            # Removed from the average, never deleted: the review stays in the list, struck through (`removed_stars`).
             fb['report'] = 'accepted'
             fb['removed_stars'] = post['stars']
             post['stars'] = None
             fb['status'] = 'closed'
+            fb['pending'] = None
             e.metric(c, 'reviews_removed')
             return dict(message='Ban đại diện lớp đã gỡ tin nhắn này khỏi nhóm.' if parent else _pv.REPORT_OK if _pv.on(career)
                         else 'Nền tảng đã gỡ đánh giá này. Điểm trung bình không còn tính nó.', report='accepted')
-        # A wrong report: the reviewer finds out.
+        # A real experience: the platform keeps it. Góp ý #196: no star is lost and nobody piles on; the reviewer
+        # only says they noticed, and the conversation closes.
         fb['report'] = 'rejected'
         seed = _hash('report', post['id'])
-        rows = _pv.REPORT_ANGRY if _pv.on(career) else REPORT_ANGRY['parent' if parent else 'customer']
-        new = max(1, post['stars'] - 1)
+        pg = _pv.on(career)
+        rows = REPORT_KEEP['pagoda' if pg else 'parent' if parent else 'customer']
         fb['thread'].append(dict(role='customer', text=teacher_title(s, rows[seed % len(rows)]), day=c['day'],
-                                 decision='revise_down' if new < post['stars'] else 'keep', stars=new, mode='scripted'))
+                                 decision='keep', stars=post['stars'], mode='scripted'))
         fb['thread'] = ar.last(fb['thread'], 8, 'review.thread', c)
-        extra = 0
-        if new == post['stars']:
-            # Already at 1★: the story spreads instead.
-            extra = _pile_on(s, c, career, post, 1, 'report')
-        post['stars'] = new
         fb['status'] = 'closed'
         if post['npc'] in e.NPC_INDEX and not fb.get('stranger'):
-            c['relationships'][post['npc']] = max(0, c['relationships'].get(post['npc'], 0) - 6)
-        pg = _pv.on(career)
+            c['relationships'][post['npc']] = max(0, c['relationships'].get(post['npc'], 0) - 3)
+        who = post['author'] or ('Phụ huynh' if parent else 'Khách')
         if parent:
-            msg = f'Nhà trường không gỡ: đó là góp ý thật. {post["author"]} biết chuyện và bực hơn.'
+            msg = f'Nhà trường không gỡ: đó là góp ý thật. Đánh giá giữ nguyên, {who} hơi phật ý.'
         elif pg:
-            msg = _pv.fill(_pv.REPORT_NO, author=post['author'])
+            msg = f'Không gỡ được: khách có lên chùa thật. Cảm nhận giữ nguyên, {who} hơi buồn.'
         else:
-            msg = f'Báo cáo bị từ chối: đánh giá có trải nghiệm thật. {post["author"]} biết chuyện và bực hơn.'
-        if extra:
-            msg += _pv.fill(_pv.REPORT_EXTRA, n=extra) if pg else f' Thêm {extra} đánh giá 1★ vì chuyện này.'
+            msg = f'Báo cáo không được duyệt: đây là trải nghiệm thật. Sao giữ nguyên, {who} hơi phật ý.'
         return dict(message=msg, report='rejected')
     if name == 'fb_resolve':
         need(internal, 'Thao tác chỉ dành cho máy chủ.', 'forbidden')
@@ -1098,6 +1158,8 @@ def tick(s: dict, c: dict) -> list[str]:
 
 def validate_post(post: dict) -> None:
     from .engine import need, integer, clean_text
+    if 'reported' in post:                      # a kept report of a plain event review (fb_report)
+        integer(post['reported'], 1, 100000)
     fb = post.get('feedback')
     if fb is None:
         return
@@ -1150,6 +1212,9 @@ def validate_post(post: dict) -> None:
 def public_post(post: dict, career: str | None = None) -> dict:
     fb = post.get('feedback')
     if not fb:
+        if _plain_review(post):
+            # Every review can be reported (góp ý #196); a plain event review is kept, at no cost.
+            return dict(post, can_report=not post.get('reported'))
         return post
     v = dict(post)
     f = dict(fb)
@@ -1168,6 +1233,9 @@ def public_post(post: dict, career: str | None = None) -> dict:
     f['removed'] = fb.get('report') == 'accepted'
     f['can_report'] = bool(post.get('stars')) and not fb.get('report') and fb['status'] != 'awaiting' and not fb.get('own') and not fb.get('police')
     f['can_police'] = can_police(post)
+    note = offer_note(fb)
+    if note and fb['status'] == 'open':
+        f['offer_note'] = note                  # bù xu would change nothing here: said before any xu is taken
     f['can_ignore'] = fb['status'] == 'open' and not fb['thread']
     f.pop('style', None)
     f.pop('aspects', None)
