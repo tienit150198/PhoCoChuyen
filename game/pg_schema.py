@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 23  # 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 24  # 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -374,6 +374,12 @@ CREATE TABLE IF NOT EXISTS chat_hides (pid {T} NOT NULL, msg bigint NOT NULL, at
 CREATE TABLE IF NOT EXISTS chat_clears (
   channel {T} NOT NULL, pid {T} NOT NULL, upto bigint NOT NULL, at double precision NOT NULL, PRIMARY KEY (channel, pid)
 );
+-- 🐢 Slow mode set by an admin (game/live_chat.py, read by live/chat.py; SCHEMA_VERSION 24): one player may post on
+-- Cả phố once per `every` seconds until `until`; the row with pid 'town' slows Cả phố for everyone. Never a ban.
+CREATE TABLE IF NOT EXISTS chat_slow (
+  pid {T} PRIMARY KEY, every double precision NOT NULL, until double precision NOT NULL, by_admin {T} NOT NULL DEFAULT '',
+  at double precision NOT NULL
+);
 -- Rewards the live service grants (phase 3 dates, phase 2 lucky envelopes); the game server applies them on load.
 CREATE TABLE IF NOT EXISTS live_effects (
   id {T} PRIMARY KEY, sid {T} NOT NULL, kind {T} NOT NULL, amount bigint NOT NULL DEFAULT 0, data {T} NOT NULL DEFAULT '{{}}',
@@ -704,6 +710,7 @@ TABLES = [
     dict(name='chat_faces', identity=None),
     dict(name='chat_hides', identity=None),
     dict(name='chat_clears', identity=None),
+    dict(name='chat_slow', identity=None),
     dict(name='live_effects', identity=None),
     dict(name='quay_jobs', identity=None),
     dict(name='quay_funding', identity=None),

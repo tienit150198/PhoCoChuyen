@@ -1,3 +1,11 @@
+# Chưa phát hành — WP2 Đánh giá, kiểm duyệt & an toàn
+
+- Đánh giá NPC: mọi đánh giá đều báo cáo được. Đánh giá lạc đề, nhầm quán, chưa ghé, cài cắm, chê chuyện ngoài lề và "hùa theo" bị gỡ khỏi điểm trung bình (vẫn giữ, có đánh dấu). Báo cáo không được duyệt giữ nguyên sao, không kéo thêm 1★; hùa theo không bao giờ kéo hùa theo.
+- Khách lạ viết đánh giá là khách cùng nghề; đánh giá "nhầm quán" ít hơn. Bù xu cho đánh giá không thể đổi (nhầm quán, chưa ghé…) được cảnh báo trước, không trừ xu; khung trả lời ghi "khách trả lời sau ~2 lượt làm".
+- Đánh giá giữa người chơi (Phố nghề, dịch vụ chỗ làm): chỉ tính đánh giá mới nhất của mỗi người, tài khoản từ 3 ngày tuổi, không tính đánh giá trong 24 giờ quanh lúc chủ quán chuyển xu/tặng quà xu. Không xóa đánh giá nào.
+- Tên hiển thị: đổi tên ở Cài đặt và Hành trình dùng chung bộ lọc tên tài khoản, chặn thêm cách viết không dấu/viết liền (concac, dcm…). Quản trị có danh sách tên vi phạm và nút "Đổi tên an toàn"; không tự đổi tên ai.
+- Chat: nhắc nhở an toàn thân thiện (một lần) khi tin nhắn có hẹn gặp, địa chỉ, số điện thoại, zalo/fb/ig/tiktok; lý do báo cáo "An toàn / trẻ vị thành niên" lên đầu hàng chờ quản trị; khóa chat theo phút và chế độ chậm cho từng người hoặc cả Cả phố; @tên người chơi đang có trong Cả phố không bị che. Không tự cấm ai.
+
 # 1.7.15 — 2026-10-05
 
 - Coin/vàng chung thị trường theo giờ thực: 10 phút một phiên, 1 giờ một ngày thị trường; giữ tài sản và giá vốn khi chuyển đổi.

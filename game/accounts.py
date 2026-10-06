@@ -75,14 +75,67 @@ def clean_password(value, confirm=None, field: str = 'Mật khẩu') -> str:
     return value
 
 
+# Names shown in chat, Phố nghề and the leaderboards (moderation C#4513, C#23842: "concac", "con cặc lớn", "Sục cháy
+# chim"). social.BANNED only masks whole words WITH their tone marks, so unaccented and run-together spellings passed.
+# Three lists, all checked on a folded copy (lower case; "c.ặ.c" → "cặc"):
+#  * NAME_MARKED: whole words as typed with tone marks (sục ≠ súc, cặc ≠ các);
+#  * NAME_PLAIN: whole words typed with no tone mark at all (a plain "cac", "dcm"; "Các" with its mark is fine);
+#  * NAME_JOINED: run-together spellings, matched inside the name with marks and spaces removed ("concac", "dcmm").
+NAME_MARKED = ('cặc', 'cặk', 'kặc', 'lồn', 'buồi', 'địt', 'đjt', 'đụ', 'đéo', 'đĩ', 'sục', 'đcm', 'đm', 'đmm', 'đkm', 'chịch', 'nứng')
+NAME_PLAIN = ('cac', 'cak', 'kac', 'kak', 'buoi', 'dit', 'djt', 'deo', 'dcm', 'dcmm', 'dkm', 'dm', 'dmm', 'dmmm', 'cmm', 'clm',
+              'vcl', 'vkl', 'clgt', 'loz', 'lozz', 'suc', 'chich')
+NAME_JOINED = ('concac', 'concak', 'conkac', 'conkak', 'cacto', 'caclon', 'lonto', 'lonme', 'lonmay', 'dcmm', 'ditme', 'ditcon',
+               'dume', 'dumay', 'occho', 'succac', 'succhim', 'sucbuoi', 'succhay', 'buoito', 'chichnhau',
+               'fuck', 'pussy', 'dick', 'bitch', 'porn', 'nigga', 'nigger', 'cunt')
+_LEET = str.maketrans({'4': 'a', '@': 'a', '0': 'o', '1': 'i', '3': 'e', '$': 's'})
+
+
+def _unmark(text: str) -> str:
+    import unicodedata
+    text = unicodedata.normalize('NFD', text.lower()).replace('đ', 'd')
+    return ''.join(ch for ch in text if unicodedata.category(ch) != 'Mn')
+
+
+def offensive_name(name) -> bool:
+    """True for a display name with a vulgar word, accented, unaccented or run together (never renames anything)."""
+    import unicodedata
+    if not isinstance(name, str):
+        return False
+    marked = unicodedata.normalize('NFC', name.lower())
+    words = [re.sub(r'[^\w]', '', w) for w in re.split(r'\s+', marked)]
+    words = [w for w in words if w]
+    for w in words:
+        plain = _unmark(w)
+        if w in NAME_MARKED or (w == plain and plain.translate(_LEET) in NAME_PLAIN):
+            return True
+    joined = _unmark(''.join(words)).replace('_', '')
+    for variant in {joined, joined.translate(_LEET), re.sub(r'(.)\1+', r'\1', joined)}:
+        if any(x in variant for x in NAME_JOINED):
+            return True
+    return False
+
+
 def clean_display(value) -> str:
     try:
         name = social.clean(value, 24, 1, 'Tên hiển thị')
     except social.SocialError as e:
         raise AccountError(e.message, 'bad_display') from None
     need(name and re.fullmatch(r"[\w .'\-]+", name) and not name.isdigit(), 'Tên hiển thị chỉ gồm chữ, số và khoảng trắng.', 'bad_display')
-    need('•' not in name, 'Chọn một cái tên thân thiện hơn nhé.', 'bad_display')
+    need('•' not in name and not offensive_name(name), 'Chọn một cái tên thân thiện hơn nhé.', 'bad_display')
     return name
+
+
+def character_name(value, current: str | None = None) -> str:
+    """Every rename of the character (Cài đặt, Hành trình) goes through the account display-name rules: the name
+    becomes accounts.display, the chat name (moderation #13). An unchanged name is kept as it is, so an older name
+    never blocks saving the other settings."""
+    from .engine import GameError
+    if isinstance(value, str) and current is not None and value.strip() == current:
+        return current
+    try:
+        return clean_display(value)
+    except AccountError as e:
+        raise GameError(e.message, 'bad_display') from None
 
 
 def has_progress(state: dict) -> bool:
@@ -287,3 +340,59 @@ def change_password(store, token: str, d: dict) -> dict:
         db.execute('DELETE FROM tiktok_flows WHERE source_token IN (SELECT token FROM logins WHERE sid=? AND token<>?)', (sid, store_digest(token)))
         db.execute('DELETE FROM logins WHERE sid=? AND token<>?', (sid, store_digest(token)))
     return dict(message='Đã đổi mật khẩu. Các máy khác sẽ cần đăng nhập lại.')
+
+
+# ---------------------------------------------------------------- moderation #13: names already in use
+NAMES_LISTED = 200
+
+
+def safe_name(uid: int) -> str:
+    return f'Cư dân {int(uid)}'
+
+
+def offending_names(db, limit: int = NAMES_LISTED) -> list[dict]:
+    """Accounts whose chat name (accounts.display), Phố nghề name or character name (leaderboard_players, kept from
+    the save by every command) fails offensive_name: listed for the admin, never renamed by themselves."""
+    rows = db.execute('SELECT a.uid, a.username, a.display, a.sid, p.name AS pname, lp.name AS gname FROM accounts a '
+                      'LEFT JOIN profiles p ON p.sid=a.sid LEFT JOIN leaderboard_players lp ON lp.sid=a.sid ORDER BY a.uid DESC').fetchall()
+    out = []
+    for r in rows:
+        bad = [k for k in ('display', 'pname', 'gname') if r[k] and offensive_name(r[k])]
+        if bad:
+            out.append(dict(uid=int(r['uid']), username=r['username'], display=r['display'], profile=r['pname'], character=r['gname'],
+                            pid=social.pid_of(r['sid']), bad=bad, safe=safe_name(r['uid'])))
+            if len(out) >= limit:
+                break
+    return out
+
+
+def rename_safe(store, uid, admin: str = '') -> dict:
+    """One click in the admin: every offending name of this account becomes "Cư dân <uid>" (the save's character
+    name through an internal `settings` command, so the save, accounts.display, the leaderboard and the chat follow;
+    the Phố nghề name when it offends too). Nothing is deleted; names that do not offend are left as they are."""
+    import hashlib as _h
+    import json as _json
+    need(type(uid) is int and uid > 0, 'Tài khoản không hợp lệ.', 'bad_uid')
+    with store.connect() as db:
+        r = db.execute('SELECT a.uid, a.sid, a.display, p.pid, p.name AS pname, lp.name AS gname FROM accounts a LEFT JOIN profiles p ON p.sid=a.sid '
+                       'LEFT JOIN leaderboard_players lp ON lp.sid=a.sid WHERE a.uid=?', (uid,)).fetchone()
+    need(r, 'Không thấy tài khoản này.', 'not_found', 404)
+    need(any(r[k] and offensive_name(r[k]) for k in ('display', 'pname', 'gname')), 'Tên này không nằm trong danh sách cần đổi.', 'not_offensive')
+    new, sid = safe_name(uid), r['sid']
+    payload = dict(name=new)
+    rid = 'admin-rename-' + secrets.token_hex(8)
+    fingerprint = _h.sha256(_json.dumps([None, 'settings', payload], sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+    try:
+        store._command_locked(sid, rid, None, None, 'settings', payload, True, fingerprint)
+    except Exception as e:   # noqa: BLE001 - a save that cannot load: the account and profile names still change below
+        if getattr(e, 'code', '') != 'session_missing':
+            raise
+    with store.connect() as db:
+        db.execute('UPDATE accounts SET display=?,updated_at=CURRENT_TIMESTAMP WHERE uid=? AND display IS DISTINCT FROM ?', (new, uid, new))
+        db.execute('UPDATE leaderboard_players SET name=? WHERE sid=? AND name IS DISTINCT FROM ?', (new, sid, new))
+        if r['pname'] and offensive_name(r['pname']):
+            taken = db.execute('SELECT 1 FROM profiles WHERE name_key=? AND sid<>?', (social._fold(new), sid)).fetchone()
+            db.execute('UPDATE profiles SET name=?,name_key=? WHERE sid=?', (None, None, sid) if taken else (new, social._fold(new), sid))
+        from .live_chat import notify
+        notify(db, dict(op='name', sid=sid))
+    return dict(ok=True, uid=uid, name=new, by=admin[:40])

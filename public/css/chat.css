@@ -35,6 +35,11 @@ html[data-layout="phone"] .ch-head{padding-top:14px}
 .ch-body[data-view="town"],.ch-body[data-view="thread"]{display:flex;flex-direction:column}
 .ch-body[data-view="town"]>:first-child,.ch-body[data-view="thread"]>:first-child{margin-top:auto}
 .ch-flash{margin:0 12px 6px;padding:7px 12px;border-radius:12px;background:var(--surface-2);color:var(--ink-2);font-size:.85rem;text-align:center}
+/* 🛟 the one-time safety notice (moderation #14) */
+.ch-safety{margin:0 12px 8px;padding:10px 12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--accent,#e08a3c) 45%,transparent);background:var(--surface-2);color:var(--ink);font-size:.86rem;line-height:1.45;display:grid;gap:8px}
+.ch-safety[hidden]{display:none}
+.ch-safety p{margin:0}
+.ch-safety .btn{justify-self:end}
 
 /* avatars and the green dot */
 .ch-av{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--surface-2);font-size:17px;line-height:1}

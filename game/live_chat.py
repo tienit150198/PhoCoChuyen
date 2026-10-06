@@ -28,6 +28,12 @@ filtered by kind (Cả phố / nhắn riêng / nhóm), chat, player, and words (
 at most WINDOW ids back from its cursor (the primary key), so a search never scans the whole table; "Tải cũ hơn"
 moves the window. Since 1.2.2 a message the filter masked keeps what was typed in `raw` (admins only: the live
 service never sends it to players); older messages only have the masked text.
+
+🛟 Safety (moderation #14, 06/10): a report with reason 'minor' ("An toàn / trẻ vị thành niên") puts the message at the
+top of the queue, highlighted (`safety`), until an admin decides; one report is enough to list it, nothing is hidden
+or banned by itself. Tools, never an automatic ban: mute for N minutes (MUTE_MINUTES), 🐢 slow mode for one player or
+for all of Cả phố (`chat_slow`, SCHEMA_VERSION 24: one message per `every` seconds until `until`), and the list of
+account names that fail the name filter (game/accounts.py offending_names) with a one-click rename to "Cư dân <uid>".
 """
 from __future__ import annotations
 
@@ -38,9 +44,14 @@ import time
 
 NOTIFY_CHANNEL = 'mnl_live'
 MUTE_HOURS = (1, 24, 168)
+MUTE_MINUTES = (10, 30, 60, 180, 1440, 10080)   # 🔇 "khóa N phút" (moderation #14); hours above still accepted
+SLOW_SECONDS = (30, 60, 120, 300)              # 🐢 one Cả phố message per N seconds…
+SLOW_MINUTES = (30, 60, 180, 1440)             # …for this long
+SLOW_TOWN = 'town'                             # the chat_slow row for everyone on Cả phố
 QUEUE_MAX = 50
 CONTEXT = 3                 # messages shown before and after a reported one
-REASONS = ('spam', 'rude', 'private', 'scam', 'other')
+REASONS = ('spam', 'rude', 'private', 'scam', 'other', 'minor')   # minor: 🛟 an toàn / trẻ vị thành niên
+SAFETY = 'minor'
 PAGE = 200                  # messages per page of the "Tin nhắn" tab
 WINDOW = 20000              # ids looked at per search request at most (one primary-key range)
 KINDS = ('all', 'town', 'dm', 'group')
@@ -106,10 +117,17 @@ def view(store) -> dict:
     reasons), the active mutes, and the last messages of Cả phố."""
     t = now()
     with store.connect() as db:
-        rows = db.execute('SELECT * FROM chat_messages WHERE reports > 0 AND reviewed_at IS NULL ORDER BY id DESC LIMIT ?',
-                          (QUEUE_MAX,)).fetchall()
+        # 🛟 safety reports first (all of them that wait), then the newest other reports.
+        safe_ids = [int(x['id']) for x in db.execute(
+            "SELECT m.id FROM chat_messages m WHERE m.reports > 0 AND m.reviewed_at IS NULL AND EXISTS (SELECT 1 FROM reports r "
+            "WHERE r.kind='chat' AND r.reason=? AND r.target=CAST(m.id AS text)) ORDER BY m.id DESC LIMIT ?", (SAFETY, QUEUE_MAX)).fetchall()]
+        rows = [db.execute('SELECT * FROM chat_messages WHERE id=?', (i,)).fetchone() for i in safe_ids]
+        rows += [r for r in db.execute('SELECT * FROM chat_messages WHERE reports > 0 AND reviewed_at IS NULL ORDER BY id DESC LIMIT ?',
+                                       (QUEUE_MAX,)).fetchall() if int(r['id']) not in safe_ids]
         items = []
         for r in rows:
+            if r is None:
+                continue
             m = _msg(r)
             reasons = {}
             for x in db.execute("SELECT reason, COUNT(*) AS n FROM reports WHERE kind='chat' AND target=? GROUP BY reason",
@@ -119,7 +137,7 @@ def view(store) -> dict:
                                 (m['ch'], m['id'], CONTEXT)).fetchall()
             after = db.execute('SELECT * FROM chat_messages WHERE channel=? AND id>? ORDER BY id LIMIT ?',
                                (m['ch'], m['id'], CONTEXT)).fetchall()
-            m.update(reasons=reasons, context=[_msg(x) for x in reversed(before)] + [_msg(x) for x in after])
+            m.update(reasons=reasons, context=[_msg(x) for x in reversed(before)] + [_msg(x) for x in after], safety=SAFETY in reasons)
             items.append(m)
         mutes = [dict(pid=r['pid'], until=float(r['until']), by=r['by_admin'], reason=r['reason'], at=float(r['at']),
                       name=_last_name(db, r['pid']))
@@ -127,8 +145,15 @@ def view(store) -> dict:
         town = [_msg(r) for r in db.execute("SELECT * FROM chat_messages WHERE channel='town' ORDER BY id DESC LIMIT 40").fetchall()]
         pending = db.execute('SELECT COUNT(*) FROM chat_messages WHERE reports > 0 AND reviewed_at IS NULL').fetchone()[0]
         auto = db.execute('SELECT COUNT(*) FROM chat_messages WHERE reports > 0 AND hidden = 1').fetchone()[0]
-    return dict(items=items, mutes=mutes, town=town, counts=dict(pending=int(pending), auto_hidden=int(auto)),
-                mute_hours=list(MUTE_HOURS), now=t)
+        slows = [dict(pid=r['pid'], every=float(r['every']), until=float(r['until']), by=r['by_admin'], at=float(r['at']),
+                      name='Cả phố' if r['pid'] == SLOW_TOWN else _last_name(db, r['pid']))
+                 for r in db.execute('SELECT * FROM chat_slow WHERE until > ? ORDER BY until DESC LIMIT 100', (t,)).fetchall()]
+        from .accounts import offending_names
+        names = offending_names(db)
+    return dict(items=items, mutes=mutes, town=town, slows=slows, names=names,
+                counts=dict(pending=int(pending), auto_hidden=int(auto), safety=len(safe_ids), names=len(names)),
+                mute_hours=list(MUTE_HOURS), mute_minutes=list(MUTE_MINUTES), slow_seconds=list(SLOW_SECONDS),
+                slow_minutes=list(SLOW_MINUTES), now=t)
 
 
 def _like(term: str) -> str:
@@ -201,10 +226,39 @@ def _last_name(db, pid: str) -> str:
     return r['name'] if r else ''
 
 
+def _pid_ok(pid) -> bool:
+    return isinstance(pid, str) and len(pid) == 16 and all(c in '0123456789abcdef' for c in pid)
+
+
 def act(store, admin: str, data: dict) -> dict:
-    """POST /api/admin/chat: {op: hide|keep, id} or {op: mute, pid, hours, reason?} or {op: unmute, pid}."""
+    """POST /api/admin/chat: {op: hide|keep, id} or {op: mute, pid, hours | minutes, reason?} or {op: unmute, pid}
+    or 🐢 {op: slow, pid | 'town', seconds, minutes} / {op: unslow, pid | 'town'} or {op: rename, uid} (names list)."""
     op = data.get('op')
     t = now()
+    if op == 'rename':
+        from .accounts import rename_safe, AccountError
+        try:
+            return rename_safe(store, data.get('uid'), admin)
+        except AccountError as e:
+            raise ChatAdminError(e.message, e.code, e.status) from None
+    if op in ('slow', 'unslow'):
+        pid = data.get('pid')
+        need(pid == SLOW_TOWN or _pid_ok(pid), 'Người chơi không hợp lệ.')
+        if op == 'slow':
+            every, minutes = data.get('seconds'), data.get('minutes')
+            need(every in SLOW_SECONDS, 'Chọn 30, 60, 120 hoặc 300 giây một tin.')
+            need(minutes in SLOW_MINUTES, 'Chọn thời hạn 30 phút, 1 giờ, 3 giờ hoặc 24 giờ.')
+            until = t + minutes * 60
+        else:
+            every, until = 0, t
+
+        def run(db):
+            db.execute('INSERT INTO chat_slow(pid, every, until, by_admin, at) VALUES(?,?,?,?,?) '
+                       'ON CONFLICT(pid) DO UPDATE SET every=excluded.every, until=excluded.until, by_admin=excluded.by_admin, '
+                       'at=excluded.at', (pid, float(every), until, admin[:40], t))
+            notify(db, dict(op='slow', pid=pid))
+        store.transaction(run)
+        return dict(ok=True, pid=pid, every=every, until=until if op == 'slow' else 0)
     if op in ('hide', 'keep'):
         mid = data.get('id')
         need(type(mid) is int and mid > 0, 'Tin nhắn không hợp lệ.')
@@ -221,12 +275,16 @@ def act(store, admin: str, data: dict) -> dict:
         return dict(ok=True, item=store.transaction(run))
     if op in ('mute', 'unmute'):
         pid = data.get('pid')
-        need(isinstance(pid, str) and len(pid) == 16 and all(c in '0123456789abcdef' for c in pid), 'Người chơi không hợp lệ.')
+        need(_pid_ok(pid), 'Người chơi không hợp lệ.')
         if op == 'mute':
-            hours = data.get('hours')
-            need(hours in MUTE_HOURS, 'Chỉ khóa 1 giờ, 24 giờ hoặc 7 ngày.')
+            hours, minutes = data.get('hours'), data.get('minutes')
+            if minutes is not None:
+                need(minutes in MUTE_MINUTES, 'Chỉ khóa 10 phút, 30 phút, 1 giờ, 3 giờ, 24 giờ hoặc 7 ngày.')
+            else:
+                need(hours in MUTE_HOURS, 'Chỉ khóa 1 giờ, 24 giờ hoặc 7 ngày.')
+                minutes = hours * 60
             reason = str(data.get('reason') or '')[:120]
-            until = t + hours * 3600
+            until = t + minutes * 60
 
             def run(db):
                 db.execute('INSERT INTO chat_mutes(pid, until, by_admin, reason, at) VALUES(?,?,?,?,?) '
@@ -258,4 +316,5 @@ def forget(store, token: str) -> None:
         db.execute('DELETE FROM chat_faces WHERE pid=?', (pid,))
         db.execute('DELETE FROM chat_hides WHERE pid=?', (pid,))    # 🗑️ what they deleted on their side
         db.execute('DELETE FROM chat_clears WHERE pid=?', (pid,))
+        db.execute('DELETE FROM chat_slow WHERE pid=?', (pid,))   # 🐢 their slow mode
         notify(db, dict(op='face', pid=pid))   # 🙂 the live service forgets the face it keeps in memory
