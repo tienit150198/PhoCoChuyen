@@ -1,5 +1,35 @@
 [
  {
+  "vi": "Ô “$1” ghi “$2”, đúng là “$3”. $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Không được “$1”: $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thiếu bước “$1”: $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thiếu: $1. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "“$1” phải sau “$2”: $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sai thứ tự: “$1” trước rồi mới “$2”. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Cách tốt hơn: $1.",
   "en": "",
   "pattern": true
@@ -2216,36 +2246,6 @@
  },
  {
   "vi": "$1 lúc $2 có lớp đào tạo an toàn lao động.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xếp lịch làm việc của sếp ($1 việc)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xếp $1 cuộc họp vào phòng và giờ: không trùng người, đủ chỗ, đúng thiết bị, tránh giờ người ta bận.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Rồi rồi, trả nè. Đòi gì đòi dai thế không biết.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 móc ví đếm đủ: “Xin lỗi nha, quên mất tiêu.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Có nhiêu đây thôi, cầm tạm đi, phần còn lại tính sau.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 dúi mấy tờ: “Đang kẹt, trả dần nha, đừng có hối.”",
   "en": "",
   "pattern": true
  }

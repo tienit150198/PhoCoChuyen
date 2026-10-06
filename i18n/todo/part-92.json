@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Quà nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Kèm 1 buổi",
+  "en": ""
+ },
+ {
   "vi": "Mời trà",
   "en": ""
  },
@@ -1903,16 +1911,6 @@
  },
  {
   "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1$2Được phép khen đểu, mỉa mai nhẹ, chấm sao kiểu hờn dỗi, lạc đề một chút.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1",
   "en": "",
   "pattern": true
  }

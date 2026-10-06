@@ -1,5 +1,13 @@
 [
  {
+  "vi": "📞 Gọi chú Mẫn kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "Thông báo trễ chuyến cho khách",
+  "en": ""
+ },
+ {
   "vi": "📢 Chọn câu thông báo",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Quy định bàn thư ký",
-  "en": ""
- },
- {
-  "vi": "📅 Bàn thư ký hôm nay",
-  "en": ""
- },
- {
-  "vi": "🙏 Nhắc khách đưa thêm",
   "en": ""
  }
 ]

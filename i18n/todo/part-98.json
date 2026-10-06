@@ -1,5 +1,35 @@
 [
  {
+  "vi": "$1 đã thay $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 thuê $2, $3 xu/tháng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: Ngày mai (Ngày $2) đến hạn trả góp nhà kỳ $3/$4$5, $6 xu. Tài khoản và ví hiện chưa đủ, quý khách nhớ nộp thêm nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả góp nhà kỳ $1/$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏠 Đã trích $1 xu trả kỳ $2 khoản $3 đang trễ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: Kỳ trả góp nhà $2/$3$4 ($5 xu) chưa trích được vì tài khoản và ví chưa đủ. Quý khách có $6 ngày ân hạn, ngân hàng thử lại mỗi sáng, chưa tính phí.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "trả góp nhà kỳ $1$2",
   "en": "",
   "pattern": true

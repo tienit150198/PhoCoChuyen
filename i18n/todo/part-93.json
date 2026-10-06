@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Tối đa $1 câu, dưới $2 ký tự. Viết bằng $3. Chỉ trả về nội dung review, không kèm giải thích.",
   "en": "",
   "pattern": true
@@ -2106,36 +2116,6 @@
  },
  {
   "vi": "$1 mà mặc màu $2, người ta nhìn mình quá trời.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "chọn màu $1 kiêng kỵ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Màu $1 hơi lệch với dịp $2, nhưng thôi cũng tạm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "màu $1 chưa hợp dịp",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mà thiếu $2, tiếc ghê.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiệm bỏ thêm $1 vào bộ đi $2, chẳng biết mặc lúc nào.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thêm $1 không hợp dịp",
   "en": "",
   "pattern": true
  }

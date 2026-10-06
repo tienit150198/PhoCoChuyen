@@ -1,5 +1,35 @@
 [
  {
+  "vi": "chọn màu $1 kiêng kỵ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Màu $1 hơi lệch với dịp $2, nhưng thôi cũng tạm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "màu $1 chưa hợp dịp",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mà thiếu $2, tiếc ghê.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiệm bỏ thêm $1 vào bộ đi $2, chẳng biết mặc lúc nào.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thêm $1 không hợp dịp",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bạn cho $1 mặc thử, ghim kim ở mắt cá: cần cắt lên $2 cm.",
   "en": "",
   "pattern": true
@@ -2216,36 +2246,6 @@
  },
  {
   "vi": "Chai $1 còn đầy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hết $1 trong kho. Nhập thêm ở Kho nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Châm đầy chai $2: đủ $3 lần lau.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chai cũ còn $1 lần thì đổ chung.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chai $1 sắp cạn mà không châm, tới nhà khách thì hết.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Sang $2: còn $3 chỗ cần dọn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Cầm $2.",
   "en": "",
   "pattern": true
  }
