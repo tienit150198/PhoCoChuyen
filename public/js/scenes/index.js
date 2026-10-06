@@ -29,6 +29,7 @@ export const KIND_OF={
   nurse:'ward',
   lighthouse:'lighthouse',
   rescue:'dispatch',
+  lifeguard:'pool',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
 
@@ -224,6 +225,14 @@ const CAREER_WORDS={
     none_waiting:'Chưa có cuộc gọi nào đang chờ',next_btn:'Cuộc gọi tiếp theo',rail_in:'Trong phòng trực',books:'Sổ nhật ký',
     end_title:'Giao ca hôm nay?',end_text:'Lương ngày vào quỹ lương. Cuộc gọi chưa xong được giao lại cho ca sau.',
     people_sub:'Những người bạn gặp ở tổng đài cứu hộ.',feed_sub:'Lời nhắn và nhận xét của người gọi, của đội.'},
+  lifeguard:{shelf:'Bảng nội quy',evidence:'Sổ nước & que thử',workbench:'Bàn trực cứu hộ',counter:'Máy AED & điện thoại khẩn',warehouse:'Giá phao & sào cứu hộ',
+    finance:'Bàn sổ trực',property:'Ghế trực cao',security:'An ninh hồ bơi',ledger:'SỔ TRỰC',store:'KHO PHAO',till:'Quỹ lương',
+    door_open:'Tan ca',door_closed:'Mở hồ',open_sign:'ĐANG MỞ HỒ',closed_sign:'HỒ ĐÃ ĐÓNG',pet:'Mướp ngồi ngoài hàng rào',
+    cat_line:'Mrrr… Mướp sợ nước lắm, ngồi ngoài hàng rào ngó thôi.',idle_line:'Mặt hồ đang lấp lánh.',open_hint:'Thử nước, kiểm phao rồi mở cổng nhé.',
+    free_eyebrow:'Hồ đang yên',free_title:'Xong việc rồi!',free_more:'Nhận thêm một việc hoặc tan ca hôm nay.',more_btn:'Nhận thêm một việc',
+    none_waiting:'Chưa có việc nào đang chờ',next_btn:'Việc tiếp theo',rail_in:'Ở hồ bơi',books:'Sổ trực',
+    end_title:'Tan ca hôm nay?',end_text:'Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho ca sau.',
+    people_sub:'Những người bạn gặp ở Hồ bơi Sóng Xanh.',feed_sub:'Lời nhắn và nhận xét của khách bơi, phụ huynh.'},
 };
 export const wordsFor=career=>({...BASE,...KIND_WORDS[kindOf(career)],...CAREER_WORDS[career]});
 

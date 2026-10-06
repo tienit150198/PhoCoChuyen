@@ -17,6 +17,15 @@
 - Trong lúc chờ: đọc thẻ hướng dẫn an toàn (có thẻ nghe hợp lý mà nguy hiểm: dội nước vào chảo dầu, đi thang máy khi cháy, tháo mũ bảo hiểm), giữ máy với người gọi một mình. Mùa mưa nhiều đường dây réo cùng lúc: nghe nhanh, xếp ưu tiên. Không bao giờ có hướng dẫn cho uống thuốc.
 - 42 chuyện oái oăm quanh tổng đài (sếp ép KPI, đồng nghiệp rủ cúp máy khỏi hỏi, tắt ghi âm, sửa giờ nhật ký, fan cuồng giọng tổng đài, họ hàng xin ưu tiên…), 14 chuyện bất ngờ ở phòng trực, 6 tình huống, truyện nghề “Chiếc tai nghe của chị Thảo”, sổ nhật ký cuối ca, cảnh phòng trực và tòa nhà ở Phố dịch vụ.
 
+# Chưa phát hành — Nghề mới: Nhân viên cứu hộ hồ bơi
+
+- 🛟 Nghề mới **Nhân viên cứu hộ hồ bơi** ở Hồ bơi Sóng Xanh (chương 4 “Được tin cậy”): ứng tuyển, phỏng vấn, thử việc; lương ngày cộng thưởng nhỏ cho mỗi việc làm đúng. Anh Hải kèm ba việc đầu, nhắc trước mỗi lỗi một lần.
+- Mở hồ: kiểm từng món (độ trong của nước, que thử Clo & pH so “Bảng mẫu Sóng Xanh”, nắp hút đáy, phao ống, phao tròn & sào, hộp sơ cứu, biển độ sâu, điện thoại khẩn), tự gõ số vào sổ nước, tự sửa hoặc báo đúng người; chưa an toàn thì hoãn mở. Cứu hộ không tự đổ hóa chất.
+- Canh hồ có hẹn giờ: quét đủ năm khu trong một phút, thổi còi đúng luật (chạy trên bờ, nhảy cắm đầu chỗ cạn, chai thủy tinh, trẻ không người lớn, nhào lộn, quay lén, giả vờ kêu cứu, dìm đầu…). Người đuối nước thật thì im lặng: báo động, gọi hỗ trợ, với hoặc ném trước, xuống nước luôn mang phao ống, xem thở rồi sơ cứu; không bao giờ dốc ngược.
+- Soát người ở cổng (say bia, vết thương hở, đau mắt đỏ, không mũ bơi…), lớp bơi trẻ em (bơi thử rồi mới phát vòng tay, bé Bon nói dối biết bơi), sơ cứu không dùng thuốc, dông chiều (lên bờ, trú sảnh có mái, đếm người, ba mươi phút sau tiếng sấm cuối mới mở lại dù sếp giục).
+- Hơn năm mươi người oái oăm quanh hồ: ông Tư không chịu đội mũ bơi, cô Hằng nhảy aerobic ở làn nhanh, Kha nhào lộn quay TikTok, phụ huynh dán mắt điện thoại, đại gia đòi làn riêng, khách tán tỉnh xin dạy riêng, quản lý không cho đóng hồ vì doanh thu… Bạn tự chọn giọng, lời nói và báo ai; chiều theo không bao giờ có thưởng. Cuối ca tự ghi sổ trực từ những gì thật sự xảy ra.
+- Chứng chỉ Cứu hộ hồ bơi giúp dễ được nhận; thang thăng tiến Cứu hộ chính → Quản lý an toàn hồ bơi.
+
 # v1.8.0 — 2026-10-06
 
 Có gì mới (chủ game duyệt): "Cập nhật toàn bộ UI UX", "Thêm Top tài phú trên Bảng xếp hạng".

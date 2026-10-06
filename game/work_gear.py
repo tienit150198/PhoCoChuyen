@@ -25,6 +25,7 @@ NAMES = {
  'nurse':'Xe tiêm và bộ máy đo cầm tay',
  'lighthouse':'Ống nhòm và bộ đàm VHF',
  'rescue':'Tai nghe, bộ đàm và màn hình điều phối',
+ 'lifeguard':'Phao ống, sào cứu hộ và máy AED',
 }
 RATES=(100,115,135,160)
 PRICES=(0,90,220,480)

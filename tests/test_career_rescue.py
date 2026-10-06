@@ -180,7 +180,8 @@ class Content(unittest.TestCase):
         from game import certificates as ct
         self.assertEqual(ct.group_of('rescue'), 'emergency_call')
         from game.careers import ORDER
-        self.assertEqual(ORDER[-1], 'rescue')
+        # Added after nurse; in 1.8.1 the new careers follow in merge order (lighthouse, rescue, lifeguard, …).
+        self.assertIn('rescue', ORDER[ORDER.index('nurse') + 1:])
 
     def test_many_awkward_people(self):
         ids = [x['id'] for x in RC.ODD]

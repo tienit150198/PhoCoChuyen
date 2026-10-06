@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Sạch sẽ",
+  "en": ""
+ },
+ {
+  "vi": "chỗ nào cũng sạch",
+  "en": ""
+ },
+ {
+  "vi": "Giữ đồ, nhớ lời dặn",
+  "en": ""
+ },
+ {
+  "vi": "đồ đạc nguyên vẹn, đúng lời dặn",
+  "en": ""
+ },
+ {
+  "vi": "chưa cẩn thận với đồ đạc",
+  "en": ""
+ },
+ {
+  "vi": "Đúng khăn, đúng chai",
+  "en": ""
+ },
+ {
+  "vi": "đúng dụng cụ, không hỏng đồ",
+  "en": ""
+ },
+ {
+  "vi": "dùng sai khăn, sai chai",
+  "en": ""
+ },
+ {
+  "vi": "Gọn gàng",
+  "en": ""
+ },
+ {
+  "vi": "Cô Mai dặn: giặt khăn hôm qua, châm các chai sắp cạn rồi lên đường.",
+  "en": ""
+ },
+ {
+  "vi": "Giặt khăn → châm chai sắp cạn → Lên đường.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe khách dặn → chọn phòng → cầm đúng dụng cụ, đúng chai → lau từ trên cao xuống, khô trước ướt sau → nhấc đồ dễ vỡ ra rồi đặt lại, cất đồ quý vào khay → mời khách kiểm nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Đã giặt khăn, phơi khô, xếp ba màu.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xách xô, cây lau lên tận cửa nhà khách.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu tổ giúp việc sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản việc dọn nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Trạng thái việc dọn nhà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng đang dọn sai.",
+  "en": ""
+ },
+ {
+  "vi": "Độ bẩn sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ đạc trong nhà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ khách dặn sai.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm nhà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Xe đồ nghề sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chai trên xe sai.",
+  "en": ""
+ },
+ {
+  "vi": "Dụng cụ trên tay sai.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu tổ giúp việc sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giúp việc theo giờ",
+  "en": ""
+ },
+ {
+  "vi": "Tổ giúp việc Nhà Thơm",
+  "en": ""
+ },
+ {
+  "vi": "Trên cao trước, khô trước ướt sau.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng nắng nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "Nhà khách hẹn",
+  "en": ""
+ },
+ {
+  "vi": "Xe đồ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Giặt khăn, châm chai rồi lên đường. Tới nhà khách thì nghe dặn, dọn từ trên cao xuống, khô trước ướt sau nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà ai cũng sạch thơm",
+  "en": ""
+ },
+ {
+  "vi": "25 · TỔ GIÚP VIỆC NHÀ THƠM",
+  "en": ""
+ },
+ {
+  "vi": "Cháu cô Mai, giặt khăn vắt kiệt, gấp ba màu thẳng tắp.",
+  "en": ""
+ },
+ {
+  "vi": "Khỏe như vâm, xách xô nước lên tầng bảy không thở dốc.",
+  "en": ""
+ },
+ {
+  "vi": "Pha nước lau đúng liều, chai nào cũng dán nhãn.",
+  "en": ""
+ },
+ {
+  "vi": "Thuộc đường từng ngõ, nhớ cả mã cổng chung cư.",
+  "en": ""
+ },
+ {
+  "vi": "Giặt khăn, pha nước",
+  "en": ""
+ },
+ {
+  "vi": "Xách đồ, đưa xe",
+  "en": ""
+ },
+ {
+  "vi": "Xe đồ nghề gọn gàng",
+  "en": ""
+ },
+ {
+  "vi": "Khăn xanh",
+  "en": ""
+ },
+ {
   "vi": "Kính, gương",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "tính đúng, thối đúng từng khách",
-  "en": ""
- },
- {
-  "vi": "đã tính tiền",
-  "en": ""
- },
- {
-  "vi": "Đánh giá của khách sai.",
-  "en": ""
- },
- {
-  "vi": "Chưa tính tiền mà đã có tiền trên quầy.",
-  "en": ""
- },
- {
-  "vi": "Ghi nhận khách sai.",
-  "en": ""
- },
- {
-  "vi": "Soạn đủ hàng rồi giao trước khi đóng ca.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay khách không ghé lấy giỏ",
-  "en": ""
- },
- {
-  "vi": "Giỏ đủ rồi: khách ghé lấy lúc đóng ca",
-  "en": ""
- },
- {
-  "vi": "Giỏ đủ món rồi: khách ghé lấy lúc đóng ca.",
-  "en": ""
- },
- {
-  "vi": "Mở ca trước",
-  "en": ""
- },
- {
-  "vi": "Khách đầu hàng: có bia thì kiểm tuổi trước → quét từng món trong giỏ → Tính tiền → đếm tiền thối vào khay → Thối & giao. Đừng bỏ hàng chờ đi làm việc khác quá lâu.",
-  "en": ""
- },
- {
-  "vi": "Họp chốt số lúc nửa đêm",
-  "en": ""
- },
- {
-  "vi": "Anh Kiên nhắn: “Mai 23:00 mình họp chốt số nhé, bên mình mới đầu giờ chiều. Cả nhóm vào đủ giúp anh.”",
-  "en": ""
- },
- {
-  "vi": "Bạn là giám đốc tài chính ở múi giờ khác: giờ làm việc của bạn là nửa đêm của người ta.",
-  "en": ""
- },
- {
-  "vi": "Quy định làm ngoài giờ",
-  "en": ""
- },
- {
-  "vi": "Sổ tay tập đoàn",
-  "en": ""
- },
- {
-  "vi": "Họp ngoài giờ phải báo trước và được nghỉ bù; ưu tiên khung giờ hai nơi cùng làm việc.",
-  "en": ""
- },
- {
-  "vi": "Lịch hai múi giờ",
-  "en": ""
- },
- {
-  "vi": "Lịch nhóm",
-  "en": ""
- },
- {
-  "vi": "07:30–09:00 sáng ở đây là cuối giờ làm ở Nami.",
-  "en": ""
- },
- {
-  "vi": "Chỉ còn hai dòng chênh lệch nội bộ cần chốt; gửi file trước thì 20 phút là xong.",
-  "en": ""
- },
- {
-  "vi": "Đề xuất họp 07:30 sáng, gửi trước file hai dòng chênh lệch để hai bên chuẩn bị",
-  "en": ""
- },
- {
-  "vi": "Sớm với các bạn, muộn với tôi, nhưng 20 phút là xong. Hợp lý.",
-  "en": ""
- },
- {
-  "vi": "Cuộc họp chốt số trong 20 phút; không ai phải thức tới nửa đêm.",
-  "en": ""
- },
- {
-  "vi": "Tôi quen bắt người ta theo giờ mình, lần này thấy cách khác hay hơn.",
-  "en": ""
- },
- {
-  "vi": "Không phải thức khuya, sáng ra em làm tỉnh hơn hẳn.",
-  "en": ""
- },
- {
-  "vi": "Chuẩn bị trước thì họp ngắn.",
-  "en": ""
- },
- {
-  "vi": "Bắt cả nhóm thức tới nửa đêm cho kịp",
-  "en": ""
- },
- {
-  "vi": "Họp xong ai cũng ngáp, hai dòng chênh lệch vẫn chưa chốt.",
-  "en": ""
- },
- {
-  "vi": "Sáng hôm sau Linh ghi sai thêm một bút toán vì mệt.",
-  "en": ""
- },
- {
-  "vi": "Em ngồi tới 1 giờ sáng mà đầu óc trống rỗng.",
-  "en": ""
- },
- {
-  "vi": "Họp đêm không nghỉ bù, lần sau ai còn muốn vào.",
-  "en": ""
- },
- {
-  "vi": "Một mình bạn thức họp, không báo ai",
-  "en": ""
- },
- {
-  "vi": "Bạn chịu được, nhưng số của Linh bạn không trả lời hết.",
-  "en": ""
- },
- {
-  "vi": "Chốt được một dòng, dòng kia phải hẹn lại.",
-  "en": ""
- },
- {
-  "vi": "Thiếu người nắm số thì khó chốt.",
-  "en": ""
- },
- {
-  "vi": "Gánh một mình không phải lúc nào cũng tốt.",
-  "en": ""
- },
- {
-  "vi": "Làm việc lệch múi giờ: tìm giờ hai nơi cùng làm, gửi tài liệu trước, đừng để cả nhóm thức đêm vì thiếu chuẩn bị.",
-  "en": ""
- },
- {
-  "vi": "Chủ tịch muốn khoe lợi nhuận lên mạng",
-  "en": ""
- },
- {
-  "vi": "Ông Đại gọi: “Gửi tôi ảnh bảng lợi nhuận hợp nhất, tôi đăng lên trang cá nhân cho anh em vui. Quý này đẹp quá!”",
-  "en": ""
- },
- {
-  "vi": "Bạn là chủ tịch, tự hào về một quý làm ăn tốt và muốn chia vui.",
-  "en": ""
- },
- {
-  "vi": "Quy định công bố thông tin",
-  "en": ""
- },
- {
-  "vi": "Phòng pháp chế",
-  "en": ""
- },
- {
-  "vi": "Số chưa kiểm toán, chưa công bố thì không đưa ra ngoài; khi công bố thì công bố cùng lúc cho mọi người.",
   "en": ""
  }
 ]

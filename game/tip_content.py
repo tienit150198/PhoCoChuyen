@@ -68,6 +68,8 @@ NORMS = {
     'lighthouse': dict(rate=.05, cash=0, lo=0, hi=0, bill=12),
     # 📞 Tổng đài cứu hộ: nobody tips the hotline; a thank-you letter or a child's drawing now and then
     'rescue': dict(rate=.05, cash=0, lo=0, hi=0, bill=10),
+    # 🛟 Hồ bơi Sóng Xanh: nobody tips the lifeguard; a thank-you, a snack from a parent now and then
+    'lifeguard': dict(rate=.06, cash=0, lo=0, hi=0, bill=10),
 }
 DEFAULT_NORM = dict(rate=.15, cash=.70, lo=2, hi=10, bill=40)
 OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
@@ -243,6 +245,7 @@ CAREER_LINES = {
     'nurse': ('Hỏi tên, ngày sinh kỹ lưỡng, yên tâm ghê.', 'Giải thích từng bước, cả nhà bớt lo.', 'Báo bác sĩ kịp lúc, cảm ơn nhiều.'),
     'lighthouse': ('Đèn Hòn Gió sáng đúng giờ, tàu về yên tâm.', 'Trạm báo đài rõ ràng, cảm ơn nhiều.'),
     'rescue': ('Cô tổng đài giữ máy với tôi tới lúc xe tới.', 'Hỏi địa chỉ trước, xe tới đúng cửa.', 'Dặn từng bước, tôi làm theo được liền.'),
+    'lifeguard': ('Cứu hộ mắt không rời hồ, gửi con yên tâm.', 'Thổi còi đúng lúc mà nói dễ nghe.', 'Có sấm là cho lên bờ liền, chuyên nghiệp.'),
 }
 
 # Thank-you gifts that carry no money: (emoji, what).
@@ -295,6 +298,7 @@ GIFTS = {
     'nurse': (('💌', 'lá thư cảm ơn viết tay'), ('📝', 'vài dòng khen trong sổ góp ý của khoa'), ('🎨', 'bức tranh cháu người bệnh vẽ tặng khoa')),
     'lighthouse': (('🐟', 'con cá thu ông Sáu Ghe gửi ra đảo'), ('🥭', 'túi xoài cô Thắm mang theo tàu'), ('💌', 'tấm thiệp khách du lịch viết tặng trạm')),
     'rescue': (('💌', 'lá thư cảm ơn gửi hộp thư trung tâm'), ('🎨', 'bức tranh “cô tổng đài” bé Na vẽ'), ('🍊', 'túi quýt người được cứu gửi cả ca')),
+    'lifeguard': (('🍧', 'ly chè đậu xanh phụ huynh mang tới'), ('🎨', 'bức tranh cá heo bé Bon vẽ'), ('💌', 'tấm thiệp cảm ơn dán ở ghế trực')),
 }
 DEFAULT_GIFTS = (('💌', 'tấm thiệp cảm ơn'), ('🍊', 'mấy trái quýt'))
 

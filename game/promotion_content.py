@@ -29,6 +29,7 @@ EMP_TITLES = {
     'nurse': ('Điều dưỡng chính', 'Trưởng ca điều dưỡng', 'Điều dưỡng trưởng khoa', 'Trưởng phòng Điều dưỡng'),
     'lighthouse': ('Người gác đèn chính', 'Trưởng ca trạm đèn', 'Trạm trưởng đèn Hòn Gió', 'Trưởng đội đèn biển Vịnh Ngọc'),
     'rescue': ('Điều phối viên chính', 'Trưởng ca tổng đài', 'Phó giám đốc Trung tâm điều phối', 'Giám đốc Trung tâm điều phối'),
+    'lifeguard': ('Cứu hộ chính', 'Trưởng ca cứu hộ', 'Đội trưởng cứu hộ', 'Quản lý an toàn hồ bơi'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
@@ -77,6 +78,7 @@ GROUP = {
     'rig': ('oil',),
     'rail': ('railway',),
     'sea': ('lighthouse',),
+    'pool': ('lifeguard',),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
                 'mother_baby', 'nurse'),
@@ -153,6 +155,14 @@ QUESTIONS['call'] = [
     _q('c4', 'Đồng nghiệp tắt ghi âm “cho thoải mái”.', ('Nhắc bật lại, ghi âm là bảo vệ cả hai bên', 2), ('Tắt theo cho vui', 0), ('Kệ, không phải máy mình', 1)),
     _q('c5', 'Cuối tháng giám đốc bảo sửa giờ nhấc máy cho đẹp KPI.', ('Giữ số thật, kèm lý do và đề xuất', 2), ('Sửa cho đẹp', 0), ('Không sửa nhưng im lặng', 1)),
     _q('c6', 'Bạn trực ca thứ ba liền, nghe nhầm số nhà một lần.', ('Báo trưởng ca, xin người thay để nghỉ', 2), ('Uống thêm cà phê cố trực', 1), ('Giấu đi, chắc không sao', 0)),
+]
+QUESTIONS['pool'] = [
+    _q('p1', 'Quản lý bảo đừng đóng hồ khi đã nghe sấm vì sợ mất vé.', ('Cho lên bờ ngay, đề nghị phát vé bơi bù', 2), ('Chờ mưa xuống rồi đóng', 0), ('Chỉ cho khu sâu lên bờ', 1)),
+    _q('p2', 'Đồng nghiệp ngồi ghế trực lướt điện thoại vì “hồ vắng”.', ('Nhắc thẳng, đổi ghế cho bạn nghỉ mắt', 2), ('Kệ, hồ vắng thật', 0), ('Méc quản lý, không nói gì với bạn', 1)),
+    _q('p3', 'Một bé nói biết bơi, đòi ra khu sâu.', ('Cho bơi thử ở làn sát thành rồi mới quyết', 2), ('Tin lời bé', 0), ('Cấm hẳn, không cần thử', 1)),
+    _q('p4', 'Sáng ra que thử báo clo dưới bảng mẫu, khách đứng chờ ngoài cổng.', ('Hoãn mở, báo kỹ thuật, nói rõ giờ mở với khách', 2), ('Mở trước, chiều xử lý', 0), ('Tự đổ thêm hóa chất cho nhanh', 0)),
+    _q('p5', 'Bạn mới trong nhóm xuống cứu người mà quên phao ống.', ('Cảm ơn bạn đã nhanh, rồi tập lại cùng nhau với phao', 2), ('Mắng trước cả hồ', 0), ('Bỏ qua, cứu được là được', 1)),
+    _q('p6', 'Ngày hè đông gấp đôi, nhóm chỉ có hai người trực.', ('Giới hạn vé theo lượt, xin thêm người, đóng bớt khu', 2), ('Cố trông hết', 0), ('Đóng cửa sớm không báo', 1)),
 ]
 # Steps above 4 (the executive steps): the board's own questions.
 EXEC_GROUP = {'pilot': 'exec_air', 'teacher': 'exec_school'}

@@ -1732,6 +1732,43 @@ ARCS = {
                 ('binh', 'Bàn trực có em ngồi, đội anh yên tâm chạy.'),
                 ('me', 'Em sẽ hỏi đủ như chị dạy, kể cả cuộc gọi thứ mười của ông Ba.')]),
         ]),
+    # ------------------------------------------------------------ 🛟 Hồ bơi Sóng Xanh (chương 4)
+    'lifeguard': dict(
+        title='Cái còi của anh Hải', emoji='🛟',
+        keepsake=dict(emoji='📯', name='Cái còi đồng của anh Hải', desc='Chiếc còi đồng mòn vẹt chỗ ngậm, mười lăm năm trên ghế cao Sóng Xanh. Giờ nó đeo trên cổ bạn.'),
+        cast={'hai': _p('Anh Hải', '🛟', 'Trưởng nhóm cứu hộ', 'lifeguard_npc_01'),
+              'phuong': _p('Chị Phượng', '💼', 'Quản lý Hồ bơi Sóng Xanh', 'lifeguard_npc_02'),
+              'tu': _p('Ông Tư', '👴', 'Khách bơi sáng', 'lifeguard_npc_03'),
+              'bon': _p('Bé Bon', '🧒', 'Học viên lớp bơi', 'lifeguard_npc_05')},
+        beats=[
+            _b('Người chìm không kêu', '🫥', 'Buổi đầu trên ghế cao, anh Hải ngồi bên cạnh.', [
+                ('hai', 'Em nhìn khu cạn kìa. Đứa nào la to nhất?'),
+                ('me', 'Bé áo vàng, té nước ầm ầm.'),
+                ('hai', 'Đứa đó đang chơi. Người chìm thật thì im re, đầu ngửa ra sau, không vẫy được. Nhớ kỹ nghen.')]),
+            _b('Mũ bơi màu cam', '🧢', 'Ông Tư lại xuống nước đầu trần, mũ nhét túi quần.', [
+                ('tu', 'Mười năm bơi ở đây có ai bắt đội mũ đâu!'),
+                ('me', 'Ông bơi giỏi nhất hồ, mà tóc rụng kẹt lưới lọc thì cả hồ chịu.'),
+                ('hai', 'Ông Tư cứng đầu lắm. Mềm mỏng mà không lùi thì ông mới nghe.')],
+               _c('Làm sao cho ông Tư chịu đội mũ?',
+                  _o('a', 'Tặng ông cái mũ màu cam “cho dễ thấy”', [('tu', 'Cam như trái quýt… mà thôi, đội cho mấy đứa nhỏ khỏi bắt chước.')], rel='tu'),
+                  _o('b', 'Nhờ anh Hải nói với ông, người quen mười năm', [('hai', 'Để anh. Ông Tư nghe anh từ hồi anh còn tập bơi.')], rel='hai'))),
+            _b('Sấm phía sông', '⛈️', 'Chiều đông khách, sấm rền phía sông. Chị Phượng đứng ở cổng.', [
+                ('phuong', 'Mưa chưa xuống mà, đóng là mất cả trăm vé đó em.'),
+                ('me', 'Sét không chờ mưa đâu chị. Em cho lên bờ.'),
+                ('phuong', 'Vậy… vé bù thì sao?')],
+               _c('Bạn nói gì với chị Phượng?',
+                  _o('a', 'Đề nghị in vé bơi bù cho khách, chờ ở sảnh có nước uống', [('phuong', 'Ừ, vé bù thì khách chịu. Mười phút sau sét đánh cột đèn bãi xe, chị không nói gì nữa.')], rel='phuong'),
+                  _o('b', 'Nhờ anh Hải cùng ra cổng nói với khách', [('hai', 'Có hai người đứng cổng, khách bớt cãi hẳn. Em làm đúng.')], rel='hai'))),
+            _b('Vòng tay xanh', '🟢', 'Cuối hè, bé Bon đứng ở làn sát thành, môi mím chặt.', [
+                ('bon', 'Lần này con bơi thật nha chú, không nói xạo nữa.'),
+                ('me', 'Chú đứng ngay mép hồ. Bơi tới thành là được.'),
+                ('bon', 'Hai mươi lăm mét! Con bơi được thật rồi!')]),
+            _b('Cái còi đồng', '📯', 'Anh Hải chuyển lên trung tâm dạy lớp cứu hộ cho cả phường.', [
+                ('hai', 'Còi này anh đeo mười lăm năm. Một tiếng là nhắc, ba tiếng là gọi người, một hồi dài là có chuyện.'),
+                ('hai', 'Còi để người ta nghe, chứ không phải để người ta sợ.'),
+                ('tu', 'Mũ cam vẫn còn đây nè. Cậu ngồi ghế thì tui yên tâm bơi.'),
+                ('me', 'Em sẽ ngồi ghế như anh: mắt không rời mặt nước.')]),
+        ]),
     # ------------------------------------------------------------ Công ty CP Cánh Diều (chương 5)
     'hr_admin': dict(
         title='Người giữ hồ sơ', emoji='🗂️',

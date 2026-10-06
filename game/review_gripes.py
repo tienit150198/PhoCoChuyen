@@ -24,7 +24,7 @@ GROUP = {'milk_tea': 'shop', 'cafe_bakery': 'shop', 'restaurant': 'shop', 'groce
          'customer_care': 'support', 'tour_guide': 'tour', 'homestay': 'stay', 'teacher': 'teacher',
          'delivery': 'delivery', 'farm': 'farm', 'clothing': 'shop', 'tra_da': 'shop',
          'fruit': 'shop', 'garbage': 'delivery', 'drain': 'shop', 'homemaker': 'stay', 'ice_cream': 'shop', 'pho': 'shop', 'com': 'shop', 'nail': 'shop', 'pagoda': 'pagoda', 'photobooth': 'shop', 'giupviec': 'stay', 'naucom': 'stay', 'babysitter': 'stay', 'library': 'support', 'pilot': 'air', 'flight_attendant': 'air', 'railway': 'rail',
-         'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office', 'nurse': 'office', 'lighthouse': 'sea', 'rescue': 'office'}
+         'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office', 'nurse': 'office', 'lighthouse': 'sea', 'rescue': 'office', 'lifeguard': 'stay'}
 CUST = ('shop', 'office', 'support', 'tour', 'stay', 'delivery', 'farm')
 # 'pagoda' has no gripe of its own: its visitors never write the shops' ones (game/pagoda_voice.py).
 LABEL = 'Chuyện ngoài lề'

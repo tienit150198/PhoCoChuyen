@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Biết lỗi là được rồi con.",
+  "en": ""
+ },
+ {
+  "vi": "Khách ăn chay thì muỗng, chén riêng, không mỡ hành.",
+  "en": ""
+ },
+ {
+  "vi": "Gạt hành mỡ ra rồi đưa lại",
+  "en": ""
+ },
+ {
+  "vi": "Gạt hành ra thì mỡ vẫn thấm vô cơm. Không được.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Sương cầm hộp cơm, đứng lặng một lúc rồi về.",
+  "en": ""
+ },
+ {
+  "vi": "Mỡ thấm rồi đâu gạt ra được.",
+  "en": ""
+ },
+ {
+  "vi": "Ăn chay là kiêng cả mỡ chứ.",
+  "en": ""
+ },
+ {
+  "vi": "“Mỡ hành có chút xíu, không sao đâu bà”",
+  "en": ""
+ },
+ {
+  "vi": "Đã dặn ăn chay mà còn bảo không sao. Không ghé nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Sương trả lại hộp cơm, không nói thêm câu nào.",
+  "en": ""
+ },
+ {
+  "vi": "Ăn chay là lòng thành, đâu phải chuyện chút xíu.",
+  "en": ""
+ },
+ {
+  "vi": "Mất một người khách ruột vì một muỗng mỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Khách ăn chay: không mỡ hành (phi bằng mỡ heo), nước tương thay nước mắm, không canh tôm. Sai thì làm lại hộp mới.",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa cơm ít quá",
+  "en": ""
+ },
+ {
+  "vi": "Anh Mạnh gõ muỗng vào dĩa: “Anh kêu thêm cơm mà dĩa này có hai vá. Quán bớt cơm hả em?”",
+  "en": ""
+ },
+ {
+  "vi": "Cái vá",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa thêm cơm là ba vá; dĩa này mới xới hai vá.",
+  "en": ""
+ },
+ {
+  "vi": "Thêm cơm cộng một xu, anh Mạnh đã trả đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi cơm tấm còn đầy, cơm mới chín, dẻo thơm.",
+  "en": ""
+ },
+ {
+  "vi": "Xin lỗi, xới thêm vá cơm, không tính tiền",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu cơm mà quán xới bù liền, cười tươi. Ăn no về làm tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Mạnh cười khà khà: “Vậy mới được chớ!”",
+  "en": ""
+ },
+ {
+  "vi": "Làm hồ mà thiếu cơm là chiều xỉu.",
+  "en": ""
+ },
+ {
+  "vi": "Khách kêu thêm cơm là ba vá, nhớ nghe con.",
+  "en": ""
+ },
+ {
+  "vi": "Trả lại một xu tiền thêm cơm",
+  "en": ""
+ },
+ {
+  "vi": "Trả lại tiền thì được, nhưng bụng vẫn đói.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Mạnh cầm đồng xu, nhìn dĩa cơm vơi.",
+  "en": ""
+ },
+ {
+  "vi": "Anh cần cơm chứ đâu cần một xu.",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa của em cũng hơi ít á.",
+  "en": ""
+ },
+ {
+  "vi": "“Vá nhà em to, hai vá là nhiều rồi”",
+  "en": ""
+ },
+ {
+  "vi": "Kêu thêm cơm mà xới hai vá còn cãi. Quán kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Mạnh ăn hết, trả tiền, không nói gì. Mấy hôm sau không thấy anh ra quán.",
+  "en": ""
+ },
+ {
+  "vi": "Ăn ở đây cả năm mà giờ bị cãi.",
+  "en": ""
+ },
+ {
+  "vi": "Có vá cơm mà mất khách ruột.",
+  "en": ""
+ },
+ {
+  "vi": "Ít cơm một vá, dĩa thường hai vá, thêm cơm ba vá. Thiếu thì xới bù, đừng để khách phải nói.",
+  "en": ""
+ },
+ {
+  "vi": "không hành mỡ",
+  "en": ""
+ },
+ {
+  "vi": "rưới nước mắm",
+  "en": ""
+ },
+ {
+  "vi": "nước mắm để riêng",
+  "en": ""
+ },
+ {
+  "vi": "nước tương",
+  "en": ""
+ },
+ {
+  "vi": "không nước mắm",
+  "en": ""
+ },
+ {
+  "vi": "có canh",
+  "en": ""
+ },
+ {
+  "vi": "Mưa dầm: khách mua mang về nhiều, nhớ đủ hộp.",
+  "en": ""
+ },
+ {
+  "vi": "Chợ phiên: nướng sẵn vài miếng sườn trên vỉ.",
+  "en": ""
+ },
+ {
   "vi": "Ngày rằm: bày thêm khay tàu hũ, rau muống cho khách ăn chay.",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "Nắp hố ga nhấc lên: bùn đen gần miệng, mùi trứng thối xộc lên.",
-  "en": ""
- },
- {
-  "vi": "Đổ nước vào hố: nước đứng im.",
-  "en": ""
- },
- {
-  "vi": "Hố ga ngập sau mưa",
-  "en": ""
- },
- {
-  "vi": "Mưa lớn quá, hố ga trước chợ ngập tới bắp chân, xe máy chết máy hàng loạt!",
-  "en": ""
- },
- {
-  "vi": "Ông Lộc: “Nước từ ba ngõ dồn về đây.”",
-  "en": ""
- },
- {
-  "vi": "Miệng hố ga đầy túi ni-lông và lá.",
-  "en": ""
- },
- {
-  "vi": "Nước không rút.",
-  "en": ""
- },
- {
-  "vi": "Nửa đêm bồn cầu trào",
-  "en": ""
- },
- {
-  "vi": "Mười một giờ đêm, bồn cầu trào ra cả phòng, cứu em với!",
-  "en": ""
- },
- {
-  "vi": "Hùng: “Bạn cùng phòng thả băng vệ sinh xuống bồn.”",
-  "en": ""
- },
- {
-  "vi": "Nước bẩn tràn ra sàn.",
-  "en": ""
- },
- {
-  "vi": "Không dám giật nước nữa.",
-  "en": ""
- },
- {
-  "vi": "Bếp quán bún đứng nước",
-  "en": ""
- },
- {
-  "vi": "Bốn giờ sáng, nồi nước lèo sắp xong mà bồn rửa ngập, không rửa được gì!",
-  "en": ""
- },
- {
-  "vi": "Chị Hồng: “Hôm qua đổ nguyên chảo mỡ hành xuống bồn.”",
-  "en": ""
- },
- {
-  "vi": "Mỡ đông trắng xóa ở miệng ống.",
-  "en": ""
- },
- {
-  "vi": "Không rút.",
-  "en": ""
- },
- {
-  "vi": "Chị Hồng gọi lại",
-  "en": ""
- },
- {
-  "vi": "Hôm kia thông bằng dây lò xo xong, giờ bồn rửa lại tắc y như cũ!",
-  "en": ""
- },
- {
-  "vi": "Sổ của chú Hai ghi: hôm đó chỉ thông tạm bằng dây lò xo, chưa phun rửa mỡ.",
-  "en": ""
- },
- {
-  "vi": "Anh Phong gọi bảo hành",
-  "en": ""
- },
- {
-  "vi": "Tuần trước thợ tiệm thông bồn cầu phòng 3 rồi, giờ tắc lại. Bảo hành đi!",
-  "en": ""
- },
- {
-  "vi": "Bồn cầu phòng 3 tắc vì khách trọ mới thả cả cuộn giấy ướt sáng nay.",
-  "en": ""
- },
- {
-  "vi": "Chị Hồng: “Bếp đứng nước là chị đứng tim luôn á.”",
-  "en": ""
- },
- {
-  "vi": "Chị Hồng lắp thêm hố tách mỡ theo lời dặn.",
-  "en": ""
- },
- {
-  "vi": "Chị Hồng mời cả tiệm tô bún bò đặc biệt.",
-  "en": ""
- },
- {
-  "vi": "Bà Ngọc: “Nhà này ông bà để lại, ống gang to như cột đình.”",
-  "en": ""
- },
- {
-  "vi": "Bà Ngọc kể ngày xưa phố ngập tới đầu gối.",
-  "en": ""
- },
- {
-  "vi": "Bà Ngọc bảo chỉ tin thợ nói thật như tiệm mình.",
-  "en": ""
- },
- {
-  "vi": "Anh Phong: “Làm nhanh giúp anh, khách trọ kêu quá.”",
-  "en": ""
- },
- {
-  "vi": "Anh Phong dán giấy “Không thả giấy ướt” ở mọi phòng.",
-  "en": ""
- },
- {
-  "vi": "Anh Phong giới thiệu tiệm cho cả hội chủ nhà trọ.",
-  "en": ""
- },
- {
-  "vi": "Chị Mai: “Bé Bin nhà chị nghịch lắm.”",
-  "en": ""
- },
- {
-  "vi": "Bé Bin vẫy tay chào “chú thợ thông cống” mỗi lần gặp.",
-  "en": ""
- },
- {
-  "vi": "Chị Mai gửi hộp bánh bé tự nặn.",
-  "en": ""
- },
- {
-  "vi": "Ông Lộc: “Hố ga sạch thì mưa không sợ.”",
-  "en": ""
- },
- {
-  "vi": "Ông Lộc xin phường lịch nạo vét hố ga hằng quý.",
-  "en": ""
- },
- {
-  "vi": "Ông Lộc khen tổ thợ trong buổi họp tổ dân phố.",
-  "en": ""
- },
- {
-  "vi": "Hùng: “Em ở trọ năm đầu, chưa biết gì hết.”",
-  "en": ""
- },
- {
-  "vi": "Hùng học được cách tự dùng pít-tông.",
-  "en": ""
- },
- {
-  "vi": "Hùng rủ bạn cùng phòng đọc giấy dặn dò của thợ.",
-  "en": ""
- },
- {
-  "vi": "Cô Diệp: “Tiệm tóc mà, tóc rụng như rơm.”",
-  "en": ""
- },
- {
-  "vi": "Cô Diệp thay lưới chặn tóc inox.",
-  "en": ""
- },
- {
-  "vi": "Cô Diệp giảm giá gội đầu cho cả tiệm thợ.",
   "en": ""
  }
 ]

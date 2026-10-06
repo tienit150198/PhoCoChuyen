@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Tiền khách đưa không khớp bill.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu sửa đồ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Số đo bị sửa.",
+  "en": ""
+ },
+ {
+  "vi": "Số cm sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ may sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ gửi may sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng thử sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu đổi trả sai.",
+  "en": ""
+ },
+ {
+  "vi": "Size đổi sai.",
+  "en": ""
+ },
+ {
+  "vi": "Tờ sale sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giá gốc sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giá tem sai.",
+  "en": ""
+ },
+ {
+  "vi": "Gói hàng sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu giao sai.",
+  "en": ""
+ },
+ {
+  "vi": "Gói dán khi chưa có phiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Ma-nơ-canh sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giá treo sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giá treo sai size.",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách đổi size sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi size sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đợt sale sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giới thiệu nghề sai.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm Áo Chỉ Mây",
+  "en": ""
+ },
+ {
+  "vi": "Chị Vy mở lại tiệm may cũ của mẹ — Bà Tư — thành tiệm áo xinh xắn đầu hẻm. Bà Tư vẫn ngồi máy may ở gian bên. Chị cần thêm một người đứng tiệm: là bạn đó!",
+  "en": ""
+ },
+ {
+  "vi": "Tìm đúng size, đúng màu theo lời khách tả",
+  "en": ""
+ },
+ {
+  "vi": "Phối đồ đi cưới, phỏng vấn, đi biển, du xuân",
+  "en": ""
+ },
+ {
+  "vi": "Trông phòng thử: đưa thẻ số, đếm đồ vào ra",
+  "en": ""
+ },
+ {
+  "vi": "Sửa đồ: lai quần, bóp eo, hoặc gửi Bà Tư",
+  "en": ""
+ },
+ {
+  "vi": "Đổi trả đúng chính sách",
+  "en": ""
+ },
+ {
+  "vi": "Gói đơn Zalo/Facebook cho shipper",
+  "en": ""
+ },
+ {
+  "vi": "Hấp đồ, thay bộ cho ma-nơ-canh",
+  "en": ""
+ },
+ {
+  "vi": "Tính tiền, thối tiền cho đúng",
+  "en": ""
+ },
+ {
+  "vi": "Đồ “biến mất” trong phòng thử",
+  "en": ""
+ },
+ {
+  "vi": "Khách mặc rồi mới đem trả",
+  "en": ""
+ },
+ {
+  "vi": "Mùa sale: tem giá phải tính cho đúng",
+  "en": ""
+ },
+ {
+  "vi": "Dì Sáu trả giá, khách đếm lại tiền thối",
+  "en": ""
+ },
+ {
+  "vi": "Lấy sai size: khách quay lại đổi",
+  "en": ""
+ },
+ {
+  "vi": "Vừa size ngay lần đầu, đúng màu khách dặn",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đồ hợp dịp, có điểm nhấn",
+  "en": ""
+ },
+ {
+  "vi": "Thối tiền đúng, bill rõ từng dòng",
+  "en": ""
+ },
+ {
+  "vi": "Nhẹ nhàng cả khi phải từ chối",
+  "en": ""
+ },
+ {
+  "vi": "Chiếc váy “chưa mặc lần nào”",
+  "en": ""
+ },
+ {
+  "vi": "Chị Kiều đặt chiếc váy lên quầy: “Chị chưa mặc đâu, trả lại lấy tiền nha.” Cổ váy thoang thoảng mùi nước hoa.",
+  "en": ""
+ },
+ {
   "vi": "Bạn là chị Kiều: tiệc tối qua xong rồi, váy chỉ mặc có một lần thôi mà…",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "Bà Sương nhận hộp mới, dặn: “Lần sau nhớ giùm bà nghe con.”",
-  "en": ""
- },
- {
-  "vi": "Biết lỗi là được rồi con.",
-  "en": ""
- },
- {
-  "vi": "Khách ăn chay thì muỗng, chén riêng, không mỡ hành.",
-  "en": ""
- },
- {
-  "vi": "Gạt hành mỡ ra rồi đưa lại",
-  "en": ""
- },
- {
-  "vi": "Gạt hành ra thì mỡ vẫn thấm vô cơm. Không được.",
-  "en": ""
- },
- {
-  "vi": "Bà Sương cầm hộp cơm, đứng lặng một lúc rồi về.",
-  "en": ""
- },
- {
-  "vi": "Mỡ thấm rồi đâu gạt ra được.",
-  "en": ""
- },
- {
-  "vi": "Ăn chay là kiêng cả mỡ chứ.",
-  "en": ""
- },
- {
-  "vi": "“Mỡ hành có chút xíu, không sao đâu bà”",
-  "en": ""
- },
- {
-  "vi": "Đã dặn ăn chay mà còn bảo không sao. Không ghé nữa.",
-  "en": ""
- },
- {
-  "vi": "Bà Sương trả lại hộp cơm, không nói thêm câu nào.",
-  "en": ""
- },
- {
-  "vi": "Ăn chay là lòng thành, đâu phải chuyện chút xíu.",
-  "en": ""
- },
- {
-  "vi": "Mất một người khách ruột vì một muỗng mỡ.",
-  "en": ""
- },
- {
-  "vi": "Khách ăn chay: không mỡ hành (phi bằng mỡ heo), nước tương thay nước mắm, không canh tôm. Sai thì làm lại hộp mới.",
-  "en": ""
- },
- {
-  "vi": "Dĩa cơm ít quá",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh gõ muỗng vào dĩa: “Anh kêu thêm cơm mà dĩa này có hai vá. Quán bớt cơm hả em?”",
-  "en": ""
- },
- {
-  "vi": "Cái vá",
-  "en": ""
- },
- {
-  "vi": "Dĩa thêm cơm là ba vá; dĩa này mới xới hai vá.",
-  "en": ""
- },
- {
-  "vi": "Thêm cơm cộng một xu, anh Mạnh đã trả đủ.",
-  "en": ""
- },
- {
-  "vi": "Nồi cơm tấm còn đầy, cơm mới chín, dẻo thơm.",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi, xới thêm vá cơm, không tính tiền",
-  "en": ""
- },
- {
-  "vi": "Thiếu cơm mà quán xới bù liền, cười tươi. Ăn no về làm tiếp.",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh cười khà khà: “Vậy mới được chớ!”",
-  "en": ""
- },
- {
-  "vi": "Làm hồ mà thiếu cơm là chiều xỉu.",
-  "en": ""
- },
- {
-  "vi": "Khách kêu thêm cơm là ba vá, nhớ nghe con.",
-  "en": ""
- },
- {
-  "vi": "Trả lại một xu tiền thêm cơm",
-  "en": ""
- },
- {
-  "vi": "Trả lại tiền thì được, nhưng bụng vẫn đói.",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh cầm đồng xu, nhìn dĩa cơm vơi.",
-  "en": ""
- },
- {
-  "vi": "Anh cần cơm chứ đâu cần một xu.",
-  "en": ""
- },
- {
-  "vi": "Dĩa của em cũng hơi ít á.",
-  "en": ""
- },
- {
-  "vi": "“Vá nhà em to, hai vá là nhiều rồi”",
-  "en": ""
- },
- {
-  "vi": "Kêu thêm cơm mà xới hai vá còn cãi. Quán kỳ.",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh ăn hết, trả tiền, không nói gì. Mấy hôm sau không thấy anh ra quán.",
-  "en": ""
- },
- {
-  "vi": "Ăn ở đây cả năm mà giờ bị cãi.",
-  "en": ""
- },
- {
-  "vi": "Có vá cơm mà mất khách ruột.",
-  "en": ""
- },
- {
-  "vi": "Ít cơm một vá, dĩa thường hai vá, thêm cơm ba vá. Thiếu thì xới bù, đừng để khách phải nói.",
-  "en": ""
- },
- {
-  "vi": "không hành mỡ",
-  "en": ""
- },
- {
-  "vi": "rưới nước mắm",
-  "en": ""
- },
- {
-  "vi": "nước mắm để riêng",
-  "en": ""
- },
- {
-  "vi": "nước tương",
-  "en": ""
- },
- {
-  "vi": "không nước mắm",
-  "en": ""
- },
- {
-  "vi": "có canh",
-  "en": ""
- },
- {
-  "vi": "Mưa dầm: khách mua mang về nhiều, nhớ đủ hộp.",
-  "en": ""
- },
- {
-  "vi": "Chợ phiên: nướng sẵn vài miếng sườn trên vỉ.",
   "en": ""
  }
 ]

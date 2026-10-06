@@ -73,6 +73,7 @@ ORDERS = {
     'railway': ('Việc riêng: trực gác thay một ca ngắn', 18, 4, {}),
     'lighthouse': ('Việc riêng: trực đèn thay một ca ngắn', 18, 4, {}),
     'rescue': ('Việc riêng: trực tổng đài thay một ca ngắn', 18, 4, {}),
+    'lifeguard': ('Việc riêng: trực cứu hộ cho một lớp bơi', 18, 4, {}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',

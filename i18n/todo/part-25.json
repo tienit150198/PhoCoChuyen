@@ -1,5 +1,177 @@
 [
  {
+  "vi": "đã tính tiền",
+  "en": ""
+ },
+ {
+  "vi": "Đánh giá của khách sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tính tiền mà đã có tiền trên quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi nhận khách sai.",
+  "en": ""
+ },
+ {
+  "vi": "Soạn đủ hàng rồi giao trước khi đóng ca.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay khách không ghé lấy giỏ",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ đủ rồi: khách ghé lấy lúc đóng ca",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ đủ món rồi: khách ghé lấy lúc đóng ca.",
+  "en": ""
+ },
+ {
+  "vi": "Mở ca trước",
+  "en": ""
+ },
+ {
+  "vi": "Khách đầu hàng: có bia thì kiểm tuổi trước → quét từng món trong giỏ → Tính tiền → đếm tiền thối vào khay → Thối & giao. Đừng bỏ hàng chờ đi làm việc khác quá lâu.",
+  "en": ""
+ },
+ {
+  "vi": "Họp chốt số lúc nửa đêm",
+  "en": ""
+ },
+ {
+  "vi": "Anh Kiên nhắn: “Mai 23:00 mình họp chốt số nhé, bên mình mới đầu giờ chiều. Cả nhóm vào đủ giúp anh.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là giám đốc tài chính ở múi giờ khác: giờ làm việc của bạn là nửa đêm của người ta.",
+  "en": ""
+ },
+ {
+  "vi": "Quy định làm ngoài giờ",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tay tập đoàn",
+  "en": ""
+ },
+ {
+  "vi": "Họp ngoài giờ phải báo trước và được nghỉ bù; ưu tiên khung giờ hai nơi cùng làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch hai múi giờ",
+  "en": ""
+ },
+ {
+  "vi": "Lịch nhóm",
+  "en": ""
+ },
+ {
+  "vi": "07:30–09:00 sáng ở đây là cuối giờ làm ở Nami.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ còn hai dòng chênh lệch nội bộ cần chốt; gửi file trước thì 20 phút là xong.",
+  "en": ""
+ },
+ {
+  "vi": "Đề xuất họp 07:30 sáng, gửi trước file hai dòng chênh lệch để hai bên chuẩn bị",
+  "en": ""
+ },
+ {
+  "vi": "Sớm với các bạn, muộn với tôi, nhưng 20 phút là xong. Hợp lý.",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc họp chốt số trong 20 phút; không ai phải thức tới nửa đêm.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi quen bắt người ta theo giờ mình, lần này thấy cách khác hay hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Không phải thức khuya, sáng ra em làm tỉnh hơn hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Chuẩn bị trước thì họp ngắn.",
+  "en": ""
+ },
+ {
+  "vi": "Bắt cả nhóm thức tới nửa đêm cho kịp",
+  "en": ""
+ },
+ {
+  "vi": "Họp xong ai cũng ngáp, hai dòng chênh lệch vẫn chưa chốt.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng hôm sau Linh ghi sai thêm một bút toán vì mệt.",
+  "en": ""
+ },
+ {
+  "vi": "Em ngồi tới 1 giờ sáng mà đầu óc trống rỗng.",
+  "en": ""
+ },
+ {
+  "vi": "Họp đêm không nghỉ bù, lần sau ai còn muốn vào.",
+  "en": ""
+ },
+ {
+  "vi": "Một mình bạn thức họp, không báo ai",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chịu được, nhưng số của Linh bạn không trả lời hết.",
+  "en": ""
+ },
+ {
+  "vi": "Chốt được một dòng, dòng kia phải hẹn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu người nắm số thì khó chốt.",
+  "en": ""
+ },
+ {
+  "vi": "Gánh một mình không phải lúc nào cũng tốt.",
+  "en": ""
+ },
+ {
+  "vi": "Làm việc lệch múi giờ: tìm giờ hai nơi cùng làm, gửi tài liệu trước, đừng để cả nhóm thức đêm vì thiếu chuẩn bị.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tịch muốn khoe lợi nhuận lên mạng",
+  "en": ""
+ },
+ {
+  "vi": "Ông Đại gọi: “Gửi tôi ảnh bảng lợi nhuận hợp nhất, tôi đăng lên trang cá nhân cho anh em vui. Quý này đẹp quá!”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là chủ tịch, tự hào về một quý làm ăn tốt và muốn chia vui.",
+  "en": ""
+ },
+ {
+  "vi": "Quy định công bố thông tin",
+  "en": ""
+ },
+ {
+  "vi": "Phòng pháp chế",
+  "en": ""
+ },
+ {
+  "vi": "Số chưa kiểm toán, chưa công bố thì không đưa ra ngoài; khi công bố thì công bố cùng lúc cho mọi người.",
+  "en": ""
+ },
+ {
   "vi": "Hỏi chị Thảo",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "Chương trình đào tạo",
-  "en": ""
- },
- {
-  "vi": "Công ty có ngân sách cho 5 thợ học vận hành máy, ưu tiên người lâu năm.",
-  "en": ""
- },
- {
-  "vi": "Tin đồn trong xưởng",
-  "en": ""
- },
- {
-  "vi": "Có người bảo mua máy để cắt giảm một nửa tổ.",
-  "en": ""
- },
- {
-  "vi": "Nói rõ kế hoạch, mời anh Dũng đăng ký lớp vận hành máy đầu tiên",
-  "en": ""
- },
- {
-  "vi": "Tưởng mất việc, ai dè được đi học máy mới. Tôi yên tâm rồi.",
-  "en": ""
- },
- {
-  "vi": "Dũng thành người đứng máy giỏi nhất, còn kèm thợ trẻ.",
-  "en": ""
- },
- {
-  "vi": "Già rồi vẫn học được, mà còn được ưu tiên.",
-  "en": ""
- },
- {
-  "vi": "Tổ yên ổn, không ai bỏ đi.",
-  "en": ""
- },
- {
-  "vi": "“Chưa biết đâu anh, cứ làm đi”",
-  "en": ""
- },
- {
-  "vi": "Hỏi mà không ai nói rõ, lo vẫn hoàn lo.",
-  "en": ""
- },
- {
-  "vi": "Hai thợ giỏi xin nghỉ trước vì tin đồn.",
-  "en": ""
- },
- {
-  "vi": "Không biết thì sợ.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận tin đồn cho anh chuẩn bị tinh thần",
-  "en": ""
- },
- {
-  "vi": "Phòng nhân sự cũng bảo sẽ cắt người. Thôi tôi đi tìm chỗ khác.",
-  "en": ""
- },
- {
-  "vi": "Tin sai lan khắp xưởng; năng suất tụt hẳn cả tháng.",
-  "en": ""
- },
- {
-  "vi": "Ai nói với thợ là cắt người thế?",
-  "en": ""
- },
- {
-  "vi": "Tin đồn chỉ dập được bằng thông tin rõ và một con đường cụ thể cho người đang lo.",
-  "en": ""
- },
- {
-  "vi": "Bị mắng trước cả phòng",
-  "en": ""
- },
- {
-  "vi": "Linh chạy vào phòng nhân sự, mắt đỏ hoe: “Anh Quân quát em trước cả phòng vì báo giá sai. Em muốn nghỉ luôn.”",
-  "en": ""
- },
- {
-  "vi": "Bạn là nhân viên trẻ, lỗi thì có nhưng bị mắng giữa mọi người thấy nhục.",
-  "en": ""
- },
- {
-  "vi": "Báo giá bị sai",
-  "en": ""
- },
- {
-  "vi": "Linh gõ nhầm đơn giá, khách phát hiện trước khi ký.",
-  "en": ""
- },
- {
-  "vi": "Góp ý công việc làm riêng, tôn trọng; không xúc phạm trước đông người.",
-  "en": ""
- },
- {
-  "vi": "Thành tích của Linh",
-  "en": ""
- },
- {
-  "vi": "Báo cáo doanh số",
-  "en": ""
- },
- {
-  "vi": "Ba tháng liền vượt chỉ tiêu.",
-  "en": ""
- },
- {
-  "vi": "Lắng nghe Linh, cùng lập bảng tự kiểm báo giá; gặp riêng anh Quân góp ý cách nhắc nhở theo quy chế",
-  "en": ""
- },
- {
-  "vi": "Em vẫn sai thật, nhưng giờ em có checklist, sếp cũng nhẹ giọng hơn rồi 😅",
-  "en": ""
- },
- {
-  "vi": "Linh ở lại, báo giá không sai nữa; anh Quân bắt đầu góp ý riêng.",
-  "en": ""
- },
- {
-  "vi": "Được nghe, được chỉ cách sửa.",
-  "en": ""
- },
- {
-  "vi": "Anh nóng quá. Lần sau anh nói riêng.",
-  "en": ""
- },
- {
-  "vi": "An ủi Linh rồi thôi",
-  "en": ""
- },
- {
-  "vi": "Được an ủi nhưng mai lại thế thì sao.",
-  "en": ""
- },
- {
-  "vi": "Linh đỡ buồn; tháng sau lại bị quát lần nữa.",
-  "en": ""
- },
- {
-  "vi": "Không ai sửa gì cả.",
-  "en": ""
- },
- {
-  "vi": "Bảo Linh: “Em sai thì bị mắng là đúng rồi”",
-  "en": ""
- },
- {
-  "vi": "Đến nhân sự cũng không bênh. Em nộp đơn rồi.",
-  "en": ""
- },
- {
-  "vi": "Linh nghỉ việc, mang theo ba khách hàng lớn.",
-  "en": ""
- },
- {
-  "vi": "Mình mất một người giỏi vì một câu nói.",
-  "en": ""
- },
- {
-  "vi": "Lỗi công việc thì sửa bằng cách làm; cách góp ý thì cũng cần được sửa.",
-  "en": ""
- },
- {
-  "vi": "Chuyên viên nhân sự chính thức",
-  "en": ""
- },
- {
-  "vi": "Phụ trách tuyển dụng",
-  "en": ""
- },
- {
-  "vi": "Được đề cử phó phòng nhân sự",
   "en": ""
  }
 ]
