@@ -5553,8 +5553,8 @@ GROUPS = [{'id': 'start',
                          'trước.',
                          '💰 Top tài phú: tài sản ròng như ở Tiền của bạn (ví, quỹ nơi làm, ngân hàng, nhà theo giá thị '
                          'trường, trừ hết nợ). Chỉ tính người chơi theo câu chuyện.',
-                         '➕ Tài phú còn cộng sổ tiết kiệm Mây, xe theo giá bán lại, quầy riêng theo giá sang nhượng, và '
-                         'trừ vay nóng hội chợ. Chưa tính Mây Coin, vàng và Quỹ chung.',
+                         '➕ Tài phú còn cộng sổ tiết kiệm Mây, Mây Coin và vàng theo giá vốn, xe theo giá bán lại, quầy '
+                         'riêng theo giá sang nhượng, và trừ vay nóng hội chợ. Không tính Quỹ chung.',
                          '👀 Mỗi bảng hiện 50 người đầu, chỉ có tên, điểm, cấp, số ngày làm và sao. Ô của bạn cho biết '
                          'hạng của bạn, kể cả khi đang ẩn tên.',
                          '👤 Tài khoản hiện tên hiển thị sẵn. Khách chỉ hiện khi tự bật và đã đặt tên nhân vật khác '

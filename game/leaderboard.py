@@ -19,9 +19,10 @@ Boards
 * ``wealth`` - 💰 Top tài phú (owner 05/10: "thêm top tài phú cho toàn server").
   Score = net worth in xu (game/wealth.py): what the "Tiền của bạn" sheet shows
   (wallet, workplace funds, bank, homes at market value, minus every debt), plus
-  the Mây savings book, vehicles at buy-back price and Quầy riêng at their sang
-  nhượng price, minus what those counters owe and the fair's Vay nóng. Not Mây
-  Coin or gold (real-time prices), not the couple's Quỹ chung. Story mode only;
+  the Mây savings book, Mây Coin and gold at their cost basis (giá vốn, never a
+  live price), vehicles at buy-back price and Quầy riêng at their sang nhượng
+  price, minus what those counters owe and the fair's Vay nóng. Not the couple's
+  Quỹ chung. Story mode only;
   0 or less: no row. Ties: more total assets, then who reached that amount
   first, then a fixed order.
 

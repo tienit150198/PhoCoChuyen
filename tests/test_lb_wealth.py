@@ -1,7 +1,7 @@
 """💰 Top tài phú (game/wealth.py, game/leaderboard.py `wealth`, game/lb_titles.py): net worth computed from the
 save agrees with what "Tiền của bạn" (public/js/v4/wealth.js pockets()) shows for the same save, plus the money the
-save holds beyond the sheet (Mây savings, vehicles, Quầy riêng, the fair's Vay nóng) and never Mây Coin, gold or the
-Quỹ chung; the board's rows, order and privacy, its weekly titles, and the leaderboard write that sends only the rows
+save holds beyond the sheet (Mây savings, Mây Coin and gold at their cost basis, vehicles, Quầy riêng, the fair's Vay
+nóng) and never a live coin/gold price or the Quỹ chung; the board's rows, order and privacy, its weekly titles, and the leaderboard write that sends only the rows
 that moved."""
 import copy
 import datetime as dt
@@ -98,7 +98,7 @@ def one_home():
 
 def owner_of_everything():
     """1.5–1.7 money through the real commands: a Quầy riêng with staff, a motorbike, the Mây savings book, then a
-    fair loan still owed (journey.fair_cash, as fair_borrow leaves it) and some Mây Coin and gold (never counted)."""
+    fair loan still owed (journey.fair_cash, as fair_borrow leaves it). No Mây Coin or gold yet."""
     s = tq.opened('sap', wallet=30000)
     fund(s, 'milk_tea', 400)
     s, _ = act(s, 'jr_garage_buy', id='xe_dap', confirm=True)
@@ -181,10 +181,10 @@ class Formula(unittest.TestCase):
 
     def test_extras_hand_computed(self):
         """Mây savings, vehicles at buy-back, a Quầy riêng at its sang nhượng price less what it owes, the fair's
-        Vay nóng; Mây Coin and gold never."""
+        Vay nóng; Mây Coin and gold at what was paid for them (giá vốn)."""
         s = fund(story(wallet=1000), 'grocery', 0)
         j = s['journey']
-        j['invest'] = dict(saving=dict(balance=700, pending=999), coin=dict(units=10**9))      # pending: milli-xu
+        j['invest'] = dict(saving=dict(balance=700, pending=999), coin=dict(units=10**9, basis=900))   # pending: milli-xu
         j['garage'] = dict(v=1, cars={'xe_dap': dict(c='do', n='', d=1, p=120), 'xe_may': dict(c='do', n='', d=1, p=3000)})
         j['quay'] = dict(v=1, stalls=[dict(id='q1', place='xe', items=['surge'], till=50, fund=200, due=30,
                                            business=dict(v=1, unpaid_fines=5))])
@@ -195,20 +195,63 @@ class Formula(unittest.TestCase):
         self.assertEqual((gr.sell_price(120), gr.sell_price(3000)), (80, 2100))
         stall = 800 * 50 // 100 + 120 * 30 // 100 + 50 + 200
         self.assertEqual(stall - 30 - 5, qy.sell_back(j['quay']['stalls'][0]), 'the counter is worth its sang nhượng price')
-        self.assertEqual(wl.extras(s), (700 + cars + stall, 30 + 5 + 120 + 40))
+        self.assertEqual(wl.extras(s), (700 + 900 + 10**6 + cars + stall, 30 + 5 + 120 + 40))
         self.assertEqual(wl.sheet(s), (1000, 1000, 0), 'the sheet itself never lists them')
         net, assets, debt = wl.worth(s)
-        self.assertEqual((assets, debt), (1000 + 700 + cars + stall, 195))
+        self.assertEqual((assets, debt), (1000 + 700 + 900 + 10**6 + cars + stall, 195))
         self.assertEqual(net, assets - debt)
 
-    def test_coin_gold_and_couple_fund_left_out(self):
+    def test_coin_gold_at_cost_and_couple_fund_left_out(self):
+        """Mây Coin (journey.invest.coin.basis) and gold (journey.vang.cost) count at what was paid while some is held,
+        whatever the market says; the Quỹ chung never."""
         s = owner_of_everything()
         base = wl.worth(s)
         j = s['journey']
-        j['invest']['coin']['units'] += 10**7
-        j['vang'] = dict(v=1, phan=900, cost=500000)
-        s['marriage'] = dict(spouse=dict(status='married', name='Gió'))   # the Quỹ chung lives outside the save
+        j['invest']['coin']['basis'] = 4321            # no units held: a stray basis is not money
+        j['vang'] = dict(v=1, phan=0, cost=777)
         self.assertEqual(wl.worth(s), base)
+        j['invest']['coin'].update(units=10**7, basis=4321)
+        j['vang'] = dict(v=1, phan=900, cost=500000)
+        want = (base[0] + 4321 + 500000, base[1] + 4321 + 500000, base[2])
+        self.assertEqual(wl.worth(s), want)
+        j['invest']['coin']['units'] *= 3              # more coins for the same xu (a redenomination): same cost
+        j['invest']['price'] = 9_999_999
+        self.assertEqual(wl.worth(s), want, 'never a market price')
+        j['invest']['coin']['basis'] = -50              # junk: never a debt
+        j['vang']['cost'] = 'x'
+        self.assertEqual(wl.worth(s), (base[0], base[1], base[2]))
+        j['invest']['coin']['basis'], j['vang']['cost'] = 4321, 500000
+        s['marriage'] = dict(spouse=dict(status='married', name='Gió'))   # the Quỹ chung lives outside the save
+        self.assertEqual(wl.worth(s), want)
+
+    def test_coin_and_gold_through_real_commands(self):
+        """Buying Mây Coin or gold moves xu between pockets (net worth stays: the cost basis is what left the wallet
+        or the bank); a sale moves it by exactly the realised profit or loss, at whatever the market pays."""
+        from game import realtime_market as rm
+        s = owner_of_everything()
+        net = wl.worth(s)[0]
+        s1, _ = act(s, 'iv_buy', amount=2000)
+        self.assertGreater(s1['journey']['invest']['coin']['units'], 0)
+        self.assertEqual(s1['journey']['invest']['coin']['basis'], 2000)
+        self.assertEqual(wl.worth(s1)[0], net, 'bought at cost: the fee is in the basis')
+        s2, _ = act(s1, 'jr_vang_buy', phan=25)
+        cost = s2['journey']['vang']['cost']
+        self.assertGreater(cost, 0)
+        self.assertEqual(wl.worth(s2)[0], net, 'gold at what it cost, the spread included')
+        q = rm.quote('coin')
+        up = q['price'] * 2
+        with mock.patch.object(rm, 'quote', return_value=dict(q, price=up, history=[*q['history'][:-1], up])):   # the market doubles
+            self.assertEqual(wl.worth(s2)[0], net, 'no live price')
+            wallet = s2['journey']['wallet']
+            s3, _ = act(s2, 'iv_sell', all=True)
+        got = s3['journey']['wallet'] - wallet
+        self.assertEqual((s3['journey']['invest']['coin']['units'], s3['journey']['invest']['coin']['basis']), (0, 0))
+        self.assertEqual(wl.worth(s3)[0], net + got - 2000, 'a sale: the realised profit')
+        wallet = s3['journey']['wallet']
+        s4, _ = act(s3, 'jr_vang_sell', all=True)
+        got = s4['journey']['wallet'] - wallet
+        self.assertEqual((s4['journey']['vang']['phan'], s4['journey']['vang']['cost']), (0, 0))
+        self.assertEqual(wl.worth(s4)[0], wl.worth(s3)[0] + got - cost, 'a gold sale: the realised profit or loss')
 
     def test_real_commands(self):
         """Through the game's own commands: a vehicle loses 30 % of its price the moment it is bought, the Mây
@@ -430,8 +473,9 @@ class Wired(unittest.TestCase):
         js = (ROOT / 'public/js/v4/leaderboard.js').read_text(encoding='utf-8')
         self.assertIn("tab('wealth','Tài phú','💰')", js)
         self.assertIn("const OWN=['certs','titles','wealth']", js)
-        self.assertIn('Tài sản ròng · chưa tính coin, vàng, Quỹ chung', js)
-        self.assertIn('Chưa tính Mây Coin, vàng (giá đổi từng phút) và Quỹ chung.', js)
+        self.assertIn('Tài sản ròng · coin/vàng tính theo giá vốn · không tính Quỹ chung', js)
+        self.assertIn('Mây Coin và vàng theo giá vốn, trừ mọi nợ kể cả vay nóng hội chợ. Không tính Quỹ chung.', js)
+        self.assertNotIn('Chưa tính Mây Coin', js)
         self.assertIn("tabs.length>4?'five':'four'", js)
         css = (ROOT / 'public/css/leaderboard.css').read_text(encoding='utf-8')
         self.assertIn('html[data-layout="phone"] .lb-kinds.five>button:nth-child(n+4){grid-column:span 3}', css)

@@ -1,6 +1,6 @@
 /** Bảng xếp hạng: "Top trải nghiệm" (overall + one board per workplace), "Top danh hiệu", "Top chứng chỉ" and
- * 💰 "Top tài phú" (net worth: "Tiền của bạn" plus Mây savings, vehicles and Quầy riêng, minus the fair's Vay nóng;
- * not Mây Coin, gold or the couple's Quỹ chung, game/wealth.py), each with its weekly titles (🏅 Danh hiệu tuần, game/lb_titles.py: who holds them, refreshed daily).
+ * 💰 "Top tài phú" (net worth: "Tiền của bạn" plus Mây savings, Mây Coin and gold at cost,
+ * vehicles and Quầy riêng, minus the fair's Vay nóng; not the couple's Quỹ chung, game/wealth.py), each with its weekly titles (🏅 Danh hiệu tuần, game/lb_titles.py: who holds them, refreshed daily).
  * Every number comes from GET /api/leaderboard (game/leaderboard.py), computed from the saves on
  * the server. Names are display names only, always escaped. The privacy switch
  * "Hiện tên tôi trên bảng xếp hạng" posts to /api/leaderboard/visibility; it lives here and in
@@ -49,7 +49,7 @@ const placeOf=(api,id)=>{const m=metaOf(api,id);return m.place||m.short||id;};
 const careerIds=api=>api.content.catalogue.map(m=>m.id).filter(id=>api.state.careers?.[id]);
 
 function rule(api,board){
-  if(board==='wealth')return 'Tài sản ròng như ở “Tiền của bạn”, cộng tiết kiệm Mây, xe và quầy riêng theo giá bán lại, trừ mọi nợ kể cả vay nóng hội chợ. Chưa tính Mây Coin, vàng (giá đổi từng phút) và Quỹ chung. Bằng nhau: ai nhiều tài sản hơn, rồi ai đạt trước.';
+  if(board==='wealth')return 'Tài sản ròng như ở “Tiền của bạn”, cộng tiết kiệm Mây, xe và quầy riêng theo giá bán lại, Mây Coin và vàng theo giá vốn, trừ mọi nợ kể cả vay nóng hội chợ. Không tính Quỹ chung. Bằng nhau: ai nhiều tài sản hơn, rồi ai đạt trước.';
   if(board==='titles')return 'Xếp theo số danh hiệu trò chơi đã có, rồi danh hiệu bí mật, rồi ai có sớm hơn.';
   if(board==='certs')return 'Xếp theo số chứng chỉ đã có, rồi tổng điểm thi cao nhất, rồi ai có sớm hơn.';
   if(board==='all')return 'Điểm là XP trưởng thành: XP ở mọi nơi làm, cộng 80 cho mỗi nơi đã phục vụ khách. Bằng điểm thì ai thạo nhiều nghề hơn, rồi làm nhiều ngày hơn đứng trước.';
@@ -57,7 +57,7 @@ function rule(api,board){
 }
 /** The small line under a name: the one or two numbers that break ties. */
 function statsLine(board,r){
-  if(board==='wealth')return 'Tài sản ròng · chưa tính coin, vàng, Quỹ chung';
+  if(board==='wealth')return 'Tài sản ròng · coin/vàng tính theo giá vốn · không tính Quỹ chung';
   if(board==='titles')return [r.secret?`${fmt(r.secret)} bí mật`:'',r.day?`mới nhất Ngày ${fmt(r.day)}`:''].filter(Boolean).join(' · ');
   if(board==='certs')return [`${fmt(r.best)} điểm thi`,r.day?`có từ Ngày ${fmt(r.day)}`:''].filter(Boolean).join(' · ');
   if(board==='all')return [`Trưởng thành cấp ${fmt(r.level)}`,`${fmt(r.mastered)} nghề thạo`,`${fmt(r.days)} ngày`].join(' · ');

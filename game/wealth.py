@@ -19,10 +19,14 @@ Two parts, both read from the save itself (never the database, never a live pric
          + Σ what is left on every home loan                 Σ home loan rows (amount − paid)
 
 2. What the sheet does not list (1.5–1.7) but the save holds as plain numbers, valued the way the game itself would
-   pay them out today — `extras()`:
+   pay them out today, or at what was paid for them — `extras()`:
 
   assets + 🐷 Mây savings book                               journey.invest.saving.balance (the milli-xu interest
                                                              not credited yet is left out)
+         + 🪙 Mây Coin at its cost basis (giá vốn)           journey.invest.coin.basis while .units > 0 (xu paid,
+                                                             fee included; a sale takes its share off)
+         + 💰 gold at its cost basis (giá vốn)               journey.vang.cost while .phan > 0 (xu paid, the shop's
+                                                             spread included; a sale takes its share off)
          + 🚗 every vehicle at the garage's buy-back price   garage.sell_price(p), journey.garage.cars[*].p
          + 🏪 every Quầy riêng at its sang nhượng price      quay.sell_back() without its floor: place price ×
                                                              SELL_PCT + upgrades × UPGRADE_BACK + till + fund,
@@ -32,10 +36,12 @@ Two parts, both read from the save itself (never the database, never a live pric
 
   net    = assets − debt (sheet + extras)
 
-Left out, and said so on the board's rule line:
-* 🪙 Mây Coin and 💰 gold (journey.invest.coin, journey.vang): their price is the shared real-time market
-  (game/realtime_market.py, a new quote every ten minutes); valuing them would be a live market lookup on every save
-  write and a row that is stale minutes later. The coin price stored in the save is only the last quote it saw.
+Mây Coin and gold are counted at cost, never at a market price (lead 06/10): the price is the shared real-time
+market (game/realtime_market.py, a new quote every ten minutes); valuing them at it would be a live market lookup on
+every save write and a row that is stale minutes later. At cost, buying moves xu between pockets (net worth stays)
+and only a sale moves it, by the realised profit or loss. Said so on the board's rule line.
+
+Left out (the rule line names the Quỹ chung):
 * The couple's 💞 Quỹ chung: it lives outside the save (marriage tables) and belongs to two people.
 * Money in flight outside the save: a bank transfer not received yet (bank_xfers rows), a hired player's escrowed
   wage (quay_jobs), a rental's prepaid days (rentals rows), a 🎲 scam stake (lost by design).
@@ -118,11 +124,18 @@ def _sheet(state, j) -> tuple[int, int]:
 
 
 def _extras(j) -> tuple[int, int]:
-    """(assets, debt) the sheet does not list: Mây savings, vehicles, Quầy riêng, Vay nóng hội chợ."""
+    """(assets, debt) the sheet does not list: Mây savings, Mây Coin and gold at cost, vehicles, Quầy riêng,
+    Vay nóng hội chợ."""
     assets = debt = 0
     iv = j.get('invest')
     if type(iv) is dict:
         assets += max(0, _n(_d(iv.get('saving')).get('balance')))
+        coin = _d(iv.get('coin'))
+        if _n(coin.get('units')) > 0:
+            assets += max(0, _n(coin.get('basis')))
+    gold = _d(j.get('vang'))
+    if _n(gold.get('phan')) > 0:
+        assets += max(0, _n(gold.get('cost')))
     cars = _d(_d(j.get('garage')).get('cars'))
     if cars:
         from .garage import sell_price
