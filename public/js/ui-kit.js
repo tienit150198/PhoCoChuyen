@@ -87,6 +87,7 @@ export function whyTap(el){
     slot=el.nextElementSibling?.classList.contains('ui-why-line')?el.nextElementSibling:null;
     if(!slot){slot=document.createElement('div');slot.className='ui-why-line';el.after(slot);}
   }
+  slot.querySelector('.ui-bar-note')?.remove();slot.classList.remove('has-note');   // the reason supersedes a passing note
   if(!slot._ui)slot._ui=slot.innerHTML;
   slot.innerHTML=line;slot.classList.add('is-why');
   clearTimeout(slot._t);
@@ -105,22 +106,41 @@ export function headChip(icon,text,target,{label='',tone=''}={}){
 /* The "?" sheet: rules, formulas and intros live here, never on the work screen. Content is kept by key at render
  * time (pure strings); the dialog is built once on first use. */
 const HELP=new Map();
-/** sections: [{title, body (HTML), open?}] or an HTML string. Returns the "?" button. */
-export function helpBtn(key,title,sections,{label='?',cls=''}={}){
+/** sections: [{title, body (HTML), open?}] or an HTML string. Returns the "?" button.
+ * tips: also list, at the top, the explanations this screen folded away (every `.ui-tip` in the same sheet). */
+export function helpBtn(key,title,sections,{label='?',cls='',tips=false}={}){
   HELP.set(String(key),{title,sections});
-  return `<button type="button" class="icon-btn ui-q${cls?' '+e(cls):''}" data-ui-help="${e(key)}" aria-label="${e('Giải thích: '+title)}">${e(label)}</button>`;
+  return `<button type="button" class="icon-btn ui-q${cls?' '+e(cls):''}" data-ui-help="${e(key)}"${tips?' data-ui-tips':''} aria-label="${e('Giải thích: '+title)}">${e(label)}</button>`;
+}
+/** An explanation (a rule, a tile's description, a long hint): shown inline on the classic layout; on the clean
+ * layout it is hidden from the work screen and listed in the "?" sheet (helpBtn {tips:true}). `title` names what
+ * it explains ("Pít-tông cao su"). Pass HTML-safe text. */
+export function tip(text,title='',tag='small'){
+  if(!text)return '';
+  return `<${tag} class="ui-tip"${title?` data-tip="${e(title)}"`:''}>${text}</${tag}>`;
+}
+function tipsOf(root){
+  const seen=new Set(),rows=[];
+  for(const t of root?.querySelectorAll('.ui-tip')||[]){
+    const text=t.textContent.replace(/\s+/g,' ').trim(),name=t.dataset.tip||'';
+    const k=name+'|'+text;if(!text||seen.has(k))continue;seen.add(k);
+    rows.push(`<li>${name?`<b>${e(name)}</b>: `:''}${e(text)}</li>`);
+  }
+  return rows.length?{title:'Trên màn này',body:`<ul>${rows.join('')}</ul>`,open:true}:null;
 }
 /** The same content as a full section list (for a page that has room for it, e.g. the guide hub). */
 export function helpBody(sections){
   const list=typeof sections==='string'?[{title:'',body:sections,open:true}]:sections||[];
   return list.map((s,i)=>s.title?`<details class="ui-help-sec"${s.open||i===0?' open':''}><summary>${e(s.title)}</summary><div>${s.body}</div></details>`:`<div class="ui-help-sec">${s.body}</div>`).join('');
 }
-function openHelp(key){
+function openHelp(key,btn){
   const h=HELP.get(String(key));if(!h)return false;
+  const extra=btn?.hasAttribute('data-ui-tips')?tipsOf(btn.closest('dialog')):null;
+  const sections=extra?[extra,...(typeof h.sections==='string'?[{title:'',body:h.sections}]:h.sections||[]).map(x=>({...x,open:false}))]:h.sections;
   let d=document.getElementById('uiHelp');
   if(!d){d=document.createElement('dialog');d.id='uiHelp';d.className='ui-help';document.body.append(d);
     d.addEventListener('click',ev=>{if(ev.target===d||ev.target.closest('[data-ui-help-x]'))d.close();});}
-  d.innerHTML=`<header class="ui-help-head"><h2>${e(h.title)}</h2><button type="button" class="icon-btn" data-ui-help-x aria-label="Đóng">✕</button></header><div class="ui-help-body">${helpBody(h.sections)}</div>`;
+  d.innerHTML=`<header class="ui-help-head"><h2>${e(h.title)}</h2><button type="button" class="icon-btn" data-ui-help-x aria-label="Đóng">✕</button></header><div class="ui-help-body">${helpBody(sections)}</div>`;
   if(!d.open)d.showModal();
   return true;
 }
@@ -159,7 +179,7 @@ const visibleWords=root=>{
   const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
   for(let t;(t=tw.nextNode());){
     const s=t.textContent.trim();if(!s)continue;
-    const p=t.parentElement;if(!p||p.closest('.sr-only,[hidden],details:not([open])>:not(summary),script,style,.gd-dup'))continue;
+    const p=t.parentElement;if(!p||p.closest('.sr-only,[hidden],details:not([open])>:not(summary),script,style,.gd-dup,.ui-bar-note'))continue;
     const rg=document.createRange();rg.selectNodeContents(t);
     const r=[...rg.getClientRects()].find(r=>r.width>=1&&r.height>=1&&r.bottom>0&&r.top<vh&&r.right>0&&r.left<vw);if(!r)continue;
     if(p.checkVisibility&&!p.checkVisibility({opacityProperty:true,visibilityProperty:true}))continue;
@@ -173,7 +193,8 @@ export function wordBudget(dialog){
   if(!dialog?.open||typeof document==='undefined')return null;
   const kind=dialog.querySelector('.sk-intro')?'intro':dialog.querySelector('.career-job')?'work':'life';
   const words=visibleWords(dialog);
-  const toasts=[...document.querySelectorAll('#toasts>.toast')].map(t=>(t.innerText.match(/\S+/g)||[]).filter(k=>/\p{L}/u.test(k)).length);
+  // A note is transient: it is not part of the screen's words, it has its own cap (8).
+  const toasts=[...document.querySelectorAll('#toasts>.toast'),...dialog.querySelectorAll('.ui-bar-note:not(.open)')].filter(t=>t.getClientRects().length).map(t=>(t.innerText.match(/\S+/g)||[]).filter(k=>/\p{L}/u.test(k)).length);
   const out={words,kind,cap:WORD_CAPS[kind],toast:Math.max(0,...toasts),over:words>WORD_CAPS[kind]||toasts.some(n=>n>WORD_CAPS.toast)};
   dialog.dataset.words=String(words);
   return out;
@@ -198,7 +219,7 @@ if(typeof document!=='undefined'&&!globalThis.__uiKit){
     const why=t.closest('[aria-disabled="true"][data-why]');
     if(why){ev.preventDefault();ev.stopImmediatePropagation();whyTap(why);return;}
     const q=t.closest('[data-ui-help]');
-    if(q){ev.preventDefault();ev.stopImmediatePropagation();openHelp(q.dataset.uiHelp);return;}
+    if(q){ev.preventDefault();ev.stopImmediatePropagation();openHelp(q.dataset.uiHelp,q);return;}
     const chip=t.closest('[data-ui-pop]');
     if(chip){ev.preventDefault();ev.stopImmediatePropagation();togglePop(chip);return;}
     // A tap outside an open popover card closes it.

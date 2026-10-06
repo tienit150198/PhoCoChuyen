@@ -1977,6 +1977,14 @@ html.large-text .req-row{font-size:var(--fs-3)}
 .btn.ui-why-fix{flex:none;min-height:44px;padding:var(--sp-1) var(--sp-3);font-size:var(--fs-2)}
 .ui-bar-next.is-why{animation:mnl-toast-in .18s var(--ease)}
 .ui-why-line{display:flex;align-items:center;gap:var(--sp-2);margin:var(--sp-1) 0;padding:var(--sp-1) var(--sp-2);border-radius:var(--radius-sm);background:var(--warn-soft)}
+/* A passing note (toast) in the bar's left slot, never over the work (guide.js barNote; clean layout). */
+html[data-clean] dialog#sheet[data-ui-note] .toasts{display:none}
+.ui-bar-next.has-note>:not(.ui-bar-note){display:none}
+.ui-bar-note{display:flex;align-items:center;flex:1 1 auto;min-width:0;min-height:44px;padding:var(--sp-1) var(--sp-3);border-radius:var(--radius-sm);background:var(--inverse);color:var(--on-inverse);font-size:var(--fs-2);font-weight:600;line-height:var(--lh);cursor:pointer;animation:mnl-toast-in .2s var(--ease)}
+.ui-bar-note>span{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
+.ui-bar-note.open>span{-webkit-line-clamp:6;line-clamp:6}
+.ui-bar-note.error{background:var(--bad);color:var(--on-bad)}
+.ui-bar-note.good{background:var(--good);color:var(--surface)}
 /* Header chips (a pinned card's digest; phones with the clean layout only). */
 html:not([data-clean]) [data-ui-head]{display:none}
 .ui-chips{display:flex;align-items:center;gap:var(--sp-1);flex:0 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none;order:1}
@@ -1996,6 +2004,8 @@ html[data-clean] .asm-pin.stuck{box-shadow:none}
 /* One main button per screen, and it is the bar's: other filled buttons on a work screen read as secondary. */
 html[data-clean] dialog.sheet:has(.ui-bar .btn.primary) .sheet-body .btn.primary:not(.ui-bar *):not(.sk-intro-go){background:var(--surface);border-color:var(--career,var(--accent));color:var(--career-text,var(--accent-text));box-shadow:0 1px 0 var(--line-strong)}
 html[data-clean] .ui-pop{position:fixed!important;top:calc(var(--hd-t,0px) + var(--hd-h,56px) + var(--sp-1))!important;left:max(var(--sp-2),var(--safe-l));right:max(var(--sp-2),var(--safe-r));z-index:30;max-height:min(60vh,calc(var(--vvh,100dvh) - var(--hd-h,56px) - 96px));overflow-y:auto;overscroll-behavior:contain;margin:0;box-shadow:var(--shadow-lg)}
+/* Explanations (ui-kit tip): inline on the classic layout, in the "?" sheet on the clean one. */
+html[data-clean] .ui-tip{display:none!important}
 /* The "?" button and its sheet: rules, formulas and intros, folded. */
 .icon-btn.ui-q{width:44px;height:44px;min-width:44px;border-radius:50%;border:1.5px solid var(--line-strong);color:var(--accent-text);font-size:var(--fs-3);font-weight:800}
 dialog.ui-help{width:min(520px,calc(100vw - 2 * var(--sp-3)));max-height:min(80vh,calc(var(--vvh,100dvh) - 48px));margin:auto;padding:0;border:0;border-radius:var(--radius-lg);background:var(--surface);color:var(--ink);box-shadow:var(--shadow-lg);overflow:hidden;display:none;flex-direction:column}

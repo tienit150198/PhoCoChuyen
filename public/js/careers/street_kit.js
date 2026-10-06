@@ -3,7 +3,8 @@
  * line, the day bar and the sticky next-step bar. Layout lives in public/css/careers/street_kit.css;
  * each career draws its own stations and keeps its own look in public/css/careers/<id>.css. */
 import {barParts} from '../v4/guide.js';
-import {actBar,helpBtn,whyAttrs} from '../ui-kit.js';
+import {actBar,helpBtn,whyAttrs,clean,tip} from '../ui-kit.js';
+export {tip};
 
 export const DONE=['completed','cancelled','referred'];
 export const data=x=>x.room.data||{};
@@ -78,12 +79,16 @@ export function deskCard(x,cmd,where='Chuyện giữa ca'){
   return '';
 }
 
-/** The day's weather/mood line (tap for the hint) and the "?" that reopens the intro. */
+/** The day's weather/mood line (tap for the hint) and the "?". Classic layout: "?" reopens the intro card. Clean
+ * layout: "?" opens the help sheet with what this screen folded away (ui-kit tip), the day's hint and the intro. */
 export function dayBar(x,tail=''){
-  const m=data(x).mod||{};
+  const m=data(x).mod||{},i=cc(x).intro;
   const sum=`<span class="sk-sky" aria-hidden="true">${x.esc(m.emoji||'🌤️')}</span><b>${x.esc(m.label||'')}${tail}</b>`;
-  return `<div class="sk-day">${m.hint?pane(x,`day-${x.room.day}`,sum,`<small>${x.esc(m.hint)}</small>`,false,'grow'):`<div class="grow sk-day-line">${sum}</div>`}
-    ${act(x,'❔','intro',{},'ghost small sk-help',' aria-label="Giới thiệu nghề"')}</div>`;
+  const q=clean()&&i?helpBtn(`day-${x.state?.current||''}`,`${m.emoji||'❔'} ${String(i.title||'').replace(/^Giới thiệu nghề:?\s*/,'')}`,
+    [...(m.hint?[{title:`${m.emoji||''} ${m.label||'Hôm nay'}`,body:`<p>${x.esc(m.hint)}</p>`}]:[]),...introHelp(x,i)],{tips:true,cls:'sk-help'})
+    :act(x,'❔','intro',{},'ghost small sk-help',' aria-label="Giới thiệu nghề"');
+  const line=clean()?`<div class="grow sk-day-line">${sum}</div>`:m.hint?pane(x,`day-${x.room.day}`,sum,`<small>${x.esc(m.hint)}</small>`,false,'grow'):`<div class="grow sk-day-line">${sum}</div>`;
+  return `<div class="sk-day">${line}${q}</div>`;
 }
 
 /** The customer on the card: portrait, name, one line and the patience bar. */

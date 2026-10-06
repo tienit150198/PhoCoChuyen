@@ -38,7 +38,7 @@ COUNT = r"""async () => {
   const d = [...document.querySelectorAll('dialog[open]')].pop();
   const kit = await import('/js/ui-kit.js');
   const b = d ? kit.wordBudget(d) : null;
-  const toasts = [...document.querySelectorAll('#toasts>.toast:not(.open):not(.leaving)')].map(t => (t.innerText.match(/\S+/g) || []).filter(k => /\p{L}/u.test(k)).length);
+  const toasts = [...document.querySelectorAll('#toasts>.toast:not(.open):not(.leaving), .ui-bar-note:not(.open)')].filter(t => t.getClientRects().length).map(t => (t.innerText.match(/\S+/g) || []).filter(k => /\p{L}/u.test(k)).length);
   return {words: b ? b.words : 0, kind: b ? b.kind : 'none', toasts};
 }"""
 

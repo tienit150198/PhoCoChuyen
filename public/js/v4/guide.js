@@ -23,6 +23,7 @@
 import {escapeHTML as esc} from '../icons.js';
 import {syncBar} from './action-bar.js';
 import {whyAttrs,placeChips,clean,actBar} from '../ui-kit.js';
+import {toastHead} from '../toast-lines.js';
 
 /** The next step: the first one not done yet that can be done from here (wrong ones count
  * as not done); a step with no way to do it (sold out, waiting) only counts when nothing else is left. */
@@ -338,9 +339,36 @@ function barOf(dialog){
 /** Toasts over a work screen with a pinned button bar: one calm line right above the bar, as wide as the bar,
  * instead of under the header where the customer and the order are (guide.css #sheet[data-gd-bar]). Measured
  * after each render and whenever a toast arrives. */
+/** Clean layout: a note over a work screen with the shared bar is shown IN the bar's left slot for its few
+ * seconds (≤ 8 words; a tap shows the rest, a second tap closes it), never over the work: the floating box is
+ * hidden meanwhile (app.css 27e, [data-ui-note]). Placed again after every render (the bar is redrawn). */
+function barNote(dialog){
+  const box=document.getElementById('toasts');
+  const bar=clean()&&dialog.open?[...dialog.querySelectorAll('.ui-bar')].find(b=>b.getClientRects().length&&!b.closest('details:not([open])')):null;
+  const live=bar&&box&&box.parentElement===dialog?[...box.querySelectorAll(':scope>.toast:not(.leaving)')].pop():null;
+  const cur=dialog.querySelector('.ui-bar-note');
+  if(cur&&(!live||cur.closest('.ui-bar')!==bar||cur.dataset.msg!==live.dataset.msg)){
+    const slot=cur.parentElement;cur.remove();slot.classList.remove('has-note');if(slot.classList.contains('ui-bar-tmp'))slot.remove();
+  }
+  if(dialog.hasAttribute('data-ui-note')!==!!live)dialog.toggleAttribute('data-ui-note',!!live);
+  if(!live||dialog.querySelector('.ui-bar-note'))return;
+  let slot=bar.querySelector(':scope>.ui-bar-next');
+  if(!slot){slot=document.createElement('div');slot.className='ui-bar-next ui-bar-tmp';const m=bar.querySelector(':scope>.ui-bar-main');if(m)m.before(slot);else bar.append(slot);}
+  const msg=live.dataset.msg||live.textContent||'',{head,more}=toastHead(msg,{max:8});
+  const n=document.createElement('div');n.className=`ui-bar-note${live.classList.contains('error')?' error':live.classList.contains('good')?' good':''}`;
+  n.dataset.msg=msg;n.setAttribute('role','status');n.title=more?msg:'Bấm để tắt';
+  const tx=document.createElement('span');tx.textContent=head;n.append(tx);
+  n.addEventListener('click',()=>{
+    if(more&&!n.classList.contains('open')){n.classList.add('open');tx.textContent=msg;return;}
+    live.remove();barNote(dialog);
+  });
+  slot.prepend(n);slot.classList.add('has-note');
+}
+
 function placeToasts(dialog){
   if(!dialog||dialog.id!=='sheet')return;
   watchToasts(dialog);
+  barNote(dialog);
   const bar=dialog.open?barOf(dialog):null,r=bar?.getBoundingClientRect();
   syncBar(dialog,r?.height?bar:null);   // the shared phone bar (v4/action-bar.js, css/compact.css)
   if(!r||!r.height){if(dialog.hasAttribute('data-gd-bar'))dialog.removeAttribute('data-gd-bar');return;}
@@ -364,7 +392,7 @@ let toastWatch=null,sizeWatch=null;
 function watchToasts(dialog){
   const box=document.getElementById('toasts');
   if(box&&!toastWatch&&typeof MutationObserver==='function'){
-    toastWatch=new MutationObserver(()=>{const d=box.parentElement;if(d?.id==='sheet'&&box.children.length)placeToasts(d);});
+    toastWatch=new MutationObserver(()=>{const d=box.parentElement;if(d?.id==='sheet'&&(box.children.length||d.hasAttribute('data-ui-note')))placeToasts(d);});
     toastWatch.observe(box,{childList:true});
   }
   const content=dialog.querySelector('#sheetContent');
