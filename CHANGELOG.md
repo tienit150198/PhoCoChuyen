@@ -1,3 +1,12 @@
+# Chưa phát hành — Nghề làm công không đóng thuế tiệm (salary-notax)
+
+## Nghề làm công không đóng thuế tiệm
+
+- Chủ game 06/10: nghề làm công, ăn lương (không phải tiệm) không còn đóng thuế 4% và tiền mặt bằng trên tiền công của mình. Áp dụng cho 18 nghề: thầy chùa, giáo viên, điều dưỡng, công an phường, tổng đài cứu hộ, cứu hộ hồ bơi, thư viện, gác chắn đường sắt, gác hải đăng, phi công, tiếp viên, thợ dầu khí, kế toán công ty, kế toán tập đoàn, hành chính – nhân sự, thư ký, IT helpdesk, CSKH. Tiệm, sạp, quán và dịch vụ thu phí của khách (kế toán dịch vụ, thuế & tiền lương, thợ, giúp việc…) giữ nguyên luật cũ.
+- Từ ca khép tiếp theo: không cộng tiền thuê mỗi ngày, cuối kỳ 7 ca không ra phong bì thuế và mặt bằng, không có thông báo "Kết kỳ thuế". Phần đã tích trong kỳ đang mở cũng không bị thu. Khoản thuế và mặt bằng đã ra (đã trả hay chưa trả), các kỳ đã kết và sổ giao dịch cũ giữ nguyên: không hoàn, không truy thu. Điện nước, lương nhân viên vẫn như cũ.
+- Sổ thu chi của các nghề này ẩn "Phong bì cuối kỳ" (doanh thu kỳ, thuế dự kiến, tiền thuê tích lũy); thẻ Mặt bằng không ghi tiền thuê; tổng kết ngày không còn dòng "thuê … xu".
+- Đo bằng cách chơi cẩn thận 14 ngày ở mặt bằng mặc định: điều dưỡng, công an, cứu hộ, cứu hộ hồ bơi, gác chắn, hải đăng được thêm khoảng 7,6 xu mỗi ngày (6 xu thuê + ~1,6 xu thuế), thợ dầu khí 7,9 xu; mặt bằng lớn hơn thì được thêm 11 hoặc 18 xu thuê mỗi ngày. Không thêm trường mới trong bản lưu; bản 1.9.4 vẫn đọc được bản lưu mới.
+
 # v1.9.4 — 2026-10-06
 
 - 🏪 Nhân viên tiệm (nơi làm việc) bán nhanh gấp 1,6 lần ngày đầu (góp ý người chơi; lịch sử bản 1.7.8–1.9.3 cho thấy tốc độ chưa từng bị giảm, tiệm thấy chậm chủ yếu do hết hàng).

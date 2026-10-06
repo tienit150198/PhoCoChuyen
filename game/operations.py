@@ -30,6 +30,26 @@ PROPERTIES = [
     dict(id='garden', name='Tiệm sân vườn', daily_rent=18, setup=140, staff_cap=4, stock_cap=24, icon='plant', description='Một đội nhỏ, nhiều chỗ chứa và sân ngồi nghỉ.'),
 ]
 PROPERTY_INDEX = {x['id']: x for x in PROPERTIES}
+# Owner 06/10: salaried, non-shop careers. They are paid by an employer or an institution (a ward, a hospital, a
+# school, an airline, a company department, a pagoda's allowance), not by the people they serve, and they rent no
+# premises of their own. Their pay is not shop revenue: from now on a day's close accrues no premises rent and a
+# 7-day period bills neither the 4% tax nor the rent. Bills and periods already written stay exactly as they are
+# (no refund, no back-charge); an open period's earlier accrual is simply never billed. No save key is involved,
+# so a save made under this rule reads under any earlier release. Commercial careers (shops, stalls, service
+# firms that charge fees: accounting, tax_payroll; tradesmen and domestic help paid by the household) are unchanged.
+SALARIED = frozenset((
+    'pagoda', 'teacher',
+    'nurse', 'police', 'rescue', 'lifeguard', 'library', 'railway', 'lighthouse',
+    'pilot', 'flight_attendant', 'oil',
+    'corp_accounting', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk', 'customer_care',
+))
+
+
+def salaried(career) -> bool:
+    """True when the career's pay is a wage, not shop revenue: no period tax and no premises rent."""
+    return career in SALARIED
+
+
 SECURITY_ITEMS = [
     dict(id='bell', name='Chuông cửa nhỏ', price=25, protection=1, icon='sun', description='Có tín hiệu khi khách tới, thêm một điểm phòng ngừa.'),
     dict(id='camera', name='Camera góc quầy', price=70, protection=2, icon='camera', description='Giảm đúng 50% xác suất trộm trong tình huống chủ tiệm; vẫn có thể xảy ra. Mở nguồn ghi hình cho vụ việc sau khi lắp.'),
@@ -294,21 +314,26 @@ def on_close(s:dict,c:dict,career:str) -> dict:
         from . import wealth_pricing
         premium=wealth_pricing.cost(RULES['insurance_daily'],o.get('insurance_quote',{}).get('wealth',0))
         bill(c,f'insurance-{day}','insurance','Phí bảo vệ tài sản',premium,day+1,f'day-{day}')
-    f['period_days']+=1;f['period_rent']+=PROPERTY_INDEX[o['property']['tier']]['daily_rent']
+    # A salaried career (SALARIED) accrues no rent, and its pay never stays in the taxable period revenue: the
+    # counters are emptied at every close, so no period of it is ever billed or written to the period history.
+    exempt=salaried(career);rent=0 if exempt else PROPERTY_INDEX[o['property']['tier']]['daily_rent']
+    f['period_days']+=1;f['period_rent']+=rent
+    if exempt:f['period_revenue']=0;f['period_rent']=0
     period=None
     if f['period_days']>=RULES['period_days']:
-        tax=math.ceil(f['period_revenue']*RULES['tax_percent']/100)
         pid=f"period-{f['period_start']}-{day}"
-        bill(c,'rent-'+pid,'rent',f"Mặt bằng · kỳ {f['period_start']}–{day}",f['period_rent'],day+2,pid)
-        bill(c,'tax-'+pid,'tax',f'Thuế {RULES["tax_percent"]}% · kỳ kết ngày {day}',tax,day+2,pid)
-        period=dict(id=pid,start=f['period_start'],end=day,revenue=f['period_revenue'],tax=tax,rent=f['period_rent'],rate=RULES['tax_percent'])
-        f['history'].insert(0,period);f['history']=ar.first(f['history'], 60, 'finance.periods', c)
+        if not exempt:
+            tax=math.ceil(f['period_revenue']*RULES['tax_percent']/100)
+            bill(c,'rent-'+pid,'rent',f"Mặt bằng · kỳ {f['period_start']}–{day}",f['period_rent'],day+2,pid)
+            bill(c,'tax-'+pid,'tax',f'Thuế {RULES["tax_percent"]}% · kỳ kết ngày {day}',tax,day+2,pid)
+            period=dict(id=pid,start=f['period_start'],end=day,revenue=f['period_revenue'],tax=tax,rent=f['period_rent'],rate=RULES['tax_percent'])
+            f['history'].insert(0,period);f['history']=ar.first(f['history'], 60, 'finance.periods', c)
         f.update(period_start=day+1,period_days=0,period_revenue=0,period_rent=0,period_tax_adjustments=0)
         o['security']['period_rewards']=0;o['security']['period_claims']=0
-        eng.log(s,c,'period',f'Kết kỳ {period["start"]}–{day}: doanh thu {period["revenue"]} xu × {RULES["tax_percent"]}% = thuế {tax} xu (làm tròn lên), thuê {period["rent"]} xu; hạn đóng ngày {day+2}.',ref=pid)
+        if period:eng.log(s,c,'period',f'Kết kỳ {period["start"]}–{day}: doanh thu {period["revenue"]} xu × {RULES["tax_percent"]}% = thuế {tax} xu (làm tròn lên), thuê {period["rent"]} xu; hạn đóng ngày {day+2}.',ref=pid)
     f['last_closed']=day
     o['attendance']={k:v for k,v in o['attendance'].items() if int(k)>=day-14}
-    return dict(wages=sum(b['amount'] for b in invoices),utilities=utility,rent_accrued=PROPERTY_INDEX[o['property']['tier']]['daily_rent'],
+    return dict(wages=sum(b['amount'] for b in invoices),utilities=utility,rent_accrued=rent,
                 period=period,unpaid=sum(b['amount'] for b in f['bills'] if b['status']=='unpaid'),staff=team,staff_bonus=staff_bonus)
 
 
@@ -714,7 +739,7 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
     return result
 
 
-def public_operations(c:dict) -> dict:
+def public_operations(c:dict,career:str|None=None) -> dict:
     # Called on public_state's private save: what is only read is shared, what is written below is copied.
     raw=c['ops'];o=dict(raw)
     from . import wealth_pricing
@@ -740,6 +765,8 @@ def public_operations(c:dict) -> dict:
     due=[b for b in f['bills'] if b['status']=='unpaid']
     f['unpaid_total']=sum(b['amount'] for b in due);f['due_total']=sum(b['amount'] for b in due if b['due']<=c['day'])
     f['estimate_tax']=math.ceil(f['period_revenue']*RULES['tax_percent']/100)
+    # A salaried career pays no period tax or rent: the books show neither (its pay of the day is not taxable).
+    if salaried(career):f.update(tax_exempt=True,period_revenue=0,period_rent=0,estimate_tax=0)
     f['wallet_check']=f['opening_balance']+sum(x['amount'] for x in f['ledger'])==c['money']
     f['current_wages']=sum(x['wage']+x.get('raise_amount',0) for x in o['attendance'].get(str(c['day']),{}).values())
     f['days_to_period']=RULES['period_days']-f['period_days']
