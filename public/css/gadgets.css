@@ -1,0 +1,92 @@
+/* ==========================================================================
+   📱 Cửa hàng điện thoại (public/js/v4/gadgets.js), on top of bank.css + house.css. Theme tokens only,
+   except the shells: a phone keeps its own colour (--gd-shell) in every theme, like a real one.
+   Phone first (390px): one column, 44px targets.
+   ========================================================================== */
+
+.gd-logo{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;border-radius:12px;background:#7fb7d9;font-size:1.5rem}
+
+/* A phone drawn in CSS: the shell, the screen, the camera. */
+.gd-phone{position:relative;flex:none;display:inline-block;width:34px;height:58px;border-radius:9px;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--gd-shell,#888) 70%,#fff),var(--gd-shell,#888) 45%,color-mix(in srgb,var(--gd-shell,#888) 75%,#000));
+  box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.18),0 2px 4px rgba(0,0,0,.16)}
+.gd-screen{position:absolute;inset:4px 3px 5px;border-radius:6px;background:linear-gradient(165deg,#d8eef8 0%,#8db6e3 52%,#f4c7d8 100%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.gd-screen::after{content:"";position:absolute;left:16%;right:16%;top:58%;height:18%;border-radius:4px;background:rgba(255,255,255,.55)}
+.gd-cam{position:absolute;top:6px;left:50%;width:5px;height:5px;border-radius:50%;background:#1d1f24;transform:translateX(-50%)}
+.gd-phone.fold{width:52px}
+.gd-phone.fold::after{content:"";position:absolute;top:3px;bottom:3px;left:50%;width:2px;transform:translateX(-50%);background:rgba(0,0,0,.18);border-radius:2px}
+.gd-phone.t5{background:linear-gradient(120deg,#f8e9a1,#d4af37 30%,#a87b1f 55%,#f3d77a 80%,#c9962c);background-size:220% 100%}
+.gd-phone.t5 .gd-screen{background:linear-gradient(165deg,#2b2117,#5a4520 60%,#d4af37)}
+.gd-phone.t5 .gd-screen::after{background:rgba(255,236,170,.55)}
+@media (prefers-reduced-motion:no-preference){.gd-phone.t5{animation:gd-shine 4s ease-in-out infinite}}
+@keyframes gd-shine{0%,100%{background-position:0 0}50%{background-position:100% 0}}
+.gd-phone.big{width:72px;height:124px;border-radius:18px}
+.gd-phone.big .gd-screen{inset:8px 6px 10px;border-radius:12px}
+.gd-phone.big .gd-cam{top:12px;width:8px;height:8px}
+.gd-phone.big.fold{width:112px}
+
+/* Gear: its emoji on a tile in its colour. The old phone: a plain grey tile. */
+.gd-tile,.gd-old{flex:none;display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;font-size:1.8rem;line-height:1;
+  background:radial-gradient(circle at 30% 25%,rgba(255,255,255,.6),transparent 55%),var(--gd-shell,#d9d4c7);
+  box-shadow:inset 0 -4px 0 rgba(0,0,0,.12),inset 0 0 0 1px rgba(0,0,0,.08)}
+.gd-tile>span{filter:drop-shadow(0 2px 1px rgba(0,0,0,.25))}
+.gd-old{--gd-shell:#cfc8bb}
+.gd-tile.big,.gd-old.big{width:96px;height:96px;border-radius:26px;font-size:3.2rem}
+.hs-home-top>.gd-phone{margin:0 11px}
+.hs-home-top>.gd-phone.fold{margin:0 2px}
+.gd-preview{display:grid;place-items:center;padding:14px 0 10px}
+
+.gd-tabs>button,.gd-frames>button{white-space:nowrap}
+
+/* The phone in use */
+.gd-hand{border-top:4px solid var(--gd-shell,var(--line))}
+.gd-hand-top{display:flex;gap:16px;align-items:center;min-width:0}
+.gd-hand-top .grow{min-width:0;flex:1}
+.gd-hand-top small{display:block;font-size:.8rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.gd-hand-top h3{margin:2px 0 0}
+.gd-hand-top p{margin:6px 0 0}
+.gd-oldcard{border-top-color:#cfc8bb}
+.gd-hand .bk-actions{margin-top:12px;align-items:center}
+.gd-row-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px}
+.gd-sell{display:flex;align-items:center;gap:10px;margin-left:auto}
+.gd-sell small{color:var(--muted)}
+.hs-price small{display:block}
+
+/* Perks list on the buy page */
+.gd-perks{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+.gd-perks li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:var(--radius-sm,10px);background:var(--surface-2,rgba(0,0,0,.04));color:var(--muted)}
+.gd-perks li>span:first-child{flex:none;width:18px;font-weight:800;text-align:center}
+.gd-perks li b{display:block;font-size:.95rem}
+.gd-perks li small{display:block;font-size:.85rem}
+.gd-perks li.on{color:var(--ink);background:color-mix(in srgb,var(--good) 12%,var(--surface))}
+.gd-perks li.on>span:first-child{color:var(--good)}
+.gd-trade{margin-top:12px;padding:10px 12px;border-radius:var(--radius-sm,10px);background:color-mix(in srgb,var(--good) 10%,var(--surface))}
+.gd-trade b,.gd-trade small{display:block}
+.gd-trade small{color:var(--muted)}
+
+/* 📸 Selfie */
+.gd-frames{margin-bottom:12px;overflow-x:auto}
+.gd-selfie{margin:0 auto;max-width:320px;padding:14px 14px 10px;border-radius:14px;background:#fffaf0;box-shadow:0 6px 18px rgba(60,40,20,.18);color:#5a3d2b}
+.gd-shot{position:relative;display:flex;justify-content:center;align-items:flex-end;height:250px;border-radius:12px;overflow:hidden;
+  background:linear-gradient(180deg,#ffe3c9,var(--gd-shell,#9d86c9))}
+.gd-fig{display:block;width:150px}
+.gd-fig svg{display:block;width:100%;height:auto}
+.gd-fig.flip{transform:scaleX(-1)}
+.f-duo .gd-fig{width:128px}
+.gd-selfie figcaption{padding:10px 0 2px;text-align:center;font-weight:700;font-size:1rem;overflow-wrap:anywhere}
+.gd-sticker{position:absolute;font-size:1.9rem;line-height:1;filter:drop-shadow(0 2px 2px rgba(0,0,0,.2))}
+.gd-sticker.s0{left:12px;top:12px;transform:rotate(-12deg)}
+.gd-sticker.s1{right:12px;top:16px;transform:rotate(10deg)}
+.gd-sticker.s2{right:16px;bottom:14px}
+.gd-selfie.f-pro{background:#23272e;color:#f3f0e8}
+.gd-selfie.f-pro .gd-shot{background:linear-gradient(180deg,#3b4252,#5c6b7f)}
+.gd-selfie.f-pro figcaption{font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem}
+.gd-selfie.f-gold{background:linear-gradient(135deg,#f6e27a,#c9962c 50%,#f3d77a);color:#4a3410}
+.gd-selfie.f-gold .gd-shot::before{content:"✦  ✧  ✦  ✧  ✦";position:absolute;top:8px;left:0;right:0;text-align:center;color:#fff7d1;letter-spacing:.2em}
+.gd-selfie-card .bk-actions{margin-top:14px}
+
+@media (max-width:479px){.gd-sheet .gd-logo{display:none}}
+@media (min-width:720px){
+  .gd-selfie{max-width:360px}
+  .gd-shot{height:290px}
+}

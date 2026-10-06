@@ -28,6 +28,7 @@ Two parts, both read from the save itself (never the database, never a live pric
          + 💰 gold at its cost basis (giá vốn)               journey.vang.cost while .phan > 0 (xu paid, the shop's
                                                              spread included; a sale takes its share off)
          + 🚗 every vehicle at the garage's buy-back price   garage.sell_price(p), journey.garage.cars[*].p
+         + 📱 every phone and gadget at the shop's buy-back   gadgets.sell_price(p), journey.gadgets.own[*].p
          + 🏪 every Quầy riêng at its sang nhượng price      quay.sell_back() without its floor: place price ×
                                                              SELL_PCT + upgrades × UPGRADE_BACK + till + fund,
                                                              journey.quay.stalls[*]
@@ -140,6 +141,10 @@ def _extras(j) -> tuple[int, int]:
     if cars:
         from .garage import sell_price
         assets += sum(sell_price(max(0, _n(c.get('p')))) for c in cars.values() if type(c) is dict)
+    gear = _d(_d(j.get('gadgets')).get('own'))
+    if gear:
+        from .gadgets import sell_price as gear_price
+        assets += sum(gear_price(max(0, _n(c.get('p')))) for c in gear.values() if type(c) is dict)
     stalls = _l(_d(j.get('quay')).get('stalls'))
     if stalls:
         from .quay import ITEMS, PLACES, SELL_PCT, UPGRADE_BACK

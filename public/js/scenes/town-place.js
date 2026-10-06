@@ -22,14 +22,14 @@ import {t as tr} from '../v4/i18n.js';
 export const ROWS=[
   [{id:'chua',name:'Chùa',emoji:'🛕',items:['pagoda']},{id:'ngoai_o',name:'Ngoại ô',emoji:'🌾',items:['farm','homestay','teacher','railway','lighthouse']},{id:'san_bay',name:'Sân bay',emoji:'✈️',items:['tour_guide','pilot','flight_attendant','oil']}],
   [{id:'van_phong',name:'Khu văn phòng',emoji:'🏢',items:['lm:bank','library','accounting','customer_care','corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk']}],
-  [{id:'dich_vu',name:'Phố dịch vụ',emoji:'💇',items:['salon','nail','photobooth','pet_care','repair','pharmacy','nurse','police','rescue','clothing','pet_shop','lm:garage']}],
+  [{id:'dich_vu',name:'Phố dịch vụ',emoji:'💇',items:['salon','nail','photobooth','pet_care','repair','pharmacy','nurse','police','rescue','clothing','pet_shop','lm:garage','lm:gadgets']}],
   [{id:'pho_cho',name:'Phố chợ',emoji:'🛒',items:['florist','cafe_bakery','grocery','milk_tea','mother_baby','restaurant','delivery','pho','com']}],
   [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk','lifeguard']}],
   [{id:'hem',name:'Hẻm nhà',emoji:'🏠',items:['lm:house','homemaker','giupviec','naucom','babysitter','lm:quay','lm:square']}],
 ];
 /** Landmarks: what they open (an existing data-action) and their sign. */
 export const LANDMARKS={
-  bank:{emoji:'🏦',name:'Ngân hàng',action:'bank'},garage:{emoji:'🚗',name:'Gara',action:'garage'},
+  bank:{emoji:'🏦',name:'Ngân hàng',action:'bank'},garage:{emoji:'🚗',name:'Gara',action:'garage'},gadgets:{emoji:'📱',name:'Điện thoại',action:'gadgets'},
   fair:{emoji:'🏮',name:'Cổng hội chợ',action:'fair'},board:{emoji:'📋',name:'Nhóm phố',action:'nhom'},
   walk:{emoji:'🚶',name:'Đi dạo',action:'liveWalk'},house:{emoji:'🏠',name:'Nhà mình',action:'house'},
   quay:{emoji:'🏪',name:'Quầy của bạn',action:'quay'},square:{emoji:'🎏',name:'Quảng trường',action:'town'},

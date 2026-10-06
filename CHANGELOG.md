@@ -1,3 +1,12 @@
+# Chưa phát hành — gadgets-classic (F#205: điện thoại & đồ công nghệ, giao diện quen thuộc)
+
+- 📱 Cửa hàng điện thoại Mây Mobile ở Phố dịch vụ trên bản đồ phố (cạnh Gara; Chỉ đường → 📱 Điện thoại), hoặc Thêm → Ngân hàng & nhà. Năm hạng máy: Mây Lite 5 150 xu, Sao Mai S12 600, Mây Pro 16 2.400, Sen Gập Fold 3 6.000, Kim Long Vàng 24K 24.000. Đồ công nghệ: tai nghe Sóc Pods 120, đồng hồ Mây Watch 450, máy tính bảng Mây Tab 1.200, máy chơi game Rồng Con 1.600, máy ảnh Cò Trắng X 3.200. Thương hiệu đều là tên tự đặt.
+- Trả đủ một lần như mua xe (ví trước, thiếu thì lấy tài khoản; ví nợ thì không mua được), không vay, không phí ngày hay phí tháng. Bán lại 65% giá đã trả, vào ví. Tiền đi qua sổ ví và sổ tài khoản như cũ, không sinh xu.
+- 🔁 Máy cũ anh Khoa cho: mua điện thoại đầu tiên thì “Thu cũ đổi mới”, bớt 20 xu, một lần (bỏ chọn nếu muốn giữ máy cũ).
+- Khoe: nhân vật cầm máy đang dùng (bản đồ phố, ảnh selfie), huy hiệu máy cạnh “Thay đồ” ở Hành trình, thẻ Phố nghề có máy và 3 món đồ đắt nhất. Mỗi hạng máy thêm một món vui, cộng dồn, không món nào làm ra tiền: Chỉ đường nhớ 3 nơi vừa đi, khung selfie (lưu ảnh về máy), viền màu vỏ máy quanh huy hiệu trên hồ sơ, khung ảnh đôi, viền vàng.
+- Hướng dẫn: mục “Lên đời điện thoại”. Tài phú tính điện thoại và đồ công nghệ theo giá bán lại.
+- Bản lưu: thêm khóa tùy chọn `journey.gadgets` (chỉ có từ lần mua đầu). Bản 1.9.2 đọc, giữ nguyên và lưu lại bản lưu có khóa này; bản lưu cũ vẫn đọc bình thường. Thẻ người chơi (Phố nghề) có thêm `phone`, bản cũ bỏ qua. Không đổi bảng, không đổi dịch vụ live.
+
 # v1.9.2 — 2026-10-06: giao diện cũ trở lại
 
 - 🎨 Theo chủ game: giao diện cổ điển (bản đồ phố 2D, cảnh từng tiệm, như 1.8.1) là giao diện mặc định. Máy chủ giữ nguyên 1.9.1 (quầy có nhân viên +50%, sửa tip kế toán ngày 1, dữ liệu Thư giãn trên đảo vẫn được giữ). Đảo 2.5D sẽ quay lại dưới dạng tuỳ chọn ở bản sau.

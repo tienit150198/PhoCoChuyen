@@ -183,7 +183,7 @@ export const SVG={
 export const FRONT={short:'M-31 -80C-35 -118 24 -124 32 -84Q26 -95 12 -99Q-4 -92 -18 -97Q-26 -92 -31 -80Z',
   soft:'M-30 -88C-33 -119 19 -120 31 -90Q19 -93 7 -105Q5 -88 -12 -84Q-17 -91 -16 -101Q-21 -89 -30 -88Z'};
 /** Resolved colours and shapes of the player's look (from the state, or a look + gender). */
-export const figure=state=>figureOf(lookOf(state),state?.journey?.gender);
+export const figure=state=>{const L=lookOf(state),h=state?.journey?.gadgets?.hand?.color;if(typeof h==='string'&&/^#[0-9a-f]{6}$/i.test(h))L.held=h;return figureOf(L,state?.journey?.gender);};   // 📱 held: the phone in use (game/gadgets.py); never in lookOf (live frames refuse unknown keys)
 export function figureOf(Lk,g){
   const top=art(Lk,'top');
   // The default shade keeps the two browns the scene always used.
@@ -277,6 +277,7 @@ export function paintPlayer(c,F,K=SVG,arms=null){
   paintLegs(c,F,0,K);paintHairBack(c,F,K);
   K.R(c,-23,-52,46,36,F.topC||F.classic,15);if(!arms?.l)K.E(c,-25,-36,8,14,sk.hand);if(!arms?.r)K.E(c,25,-36,8,14,sk.hand);
   paintTop(c,F,K);
+  if(!arms?.r&&/^#[0-9a-f]{6}$/i.test(F.L?.held||'')){K.R(c,19,-47,12,19,F.L.held,3,'#3b2a22',1.5);K.R(c,21.5,-44,7,12,'#bfe0f2',2);K.E(c,25,-33,6,5,sk.hand);}   // 📱 the phone in use, in the right hand
   K.E(c,0,-84,33,35,F.hair);K.E(c,-29,-71,5,8,sk.ear);K.E(c,29,-71,5,8,sk.ear);K.E(c,0,-77,29,28,sk.face);
   K.path(c,F.short?FRONT.short:FRONT.soft,F.hair);
   K.E(c,-20,-67,7,4,male?'#efb3a466':'#efa7a0');K.E(c,20,-67,7,4,male?'#efb3a466':'#efa7a0');

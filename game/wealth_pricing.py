@@ -15,7 +15,7 @@ MAX_EVENT_COST = 10**9
 
 
 def total(s):
-    from . import housing, garage, invest, vang, journey
+    from . import housing, garage, gadgets, invest, vang, journey
     j = s.get('journey') or {}
     bank = j.get('bank') or {}
     wealth = max(0, j.get('wallet', 0))
@@ -35,6 +35,7 @@ def total(s):
         seen.add(house.get('id'))
         wealth += housing.value_of(house, j.get('life_day', 1), j.get('property_market_basis', {}).get(house.get('id'), 10000))
     wealth += sum(garage.sell_price(car['p']) for car in (j.get('garage') or {}).get('cars', {}).values())
+    wealth += sum(gadgets.sell_price(x['p']) for x in (j.get('gadgets') or {}).get('own', {}).values())
     wealth += sum(max(0, st.get('fund', 0)) + max(0, st.get('till', 0))
                   for st in (j.get('quay') or {}).get('stalls', []))
     wealth += sum(max(0, c.get('money', 0)) for cid, c in s.get('careers', {}).items()
