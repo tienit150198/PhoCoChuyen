@@ -115,16 +115,14 @@ def _activity(c):
                 progress=dict(done=sum(t.get('status') == 'completed' for t in tasks), total=len(tasks)))
 
 
-def sync(db, sid, state, now=None):
-    """Update sanitized discovery snapshots inside the owner's save transaction."""
+def places(state):
+    """[(kind, target, snapshot without its owner)] of a save's places: the save's part of sync(),
+    no database. The storage layer computes it before it takes the save's row lock (Store._store),
+    so the commit holds the lock only for the database part. Snapshots are written with sorted
+    keys (_json), so the owner added afterwards gives the same text."""
     from .content import CAREER_META
     from . import quay, quay_self
-    if not db.execute('SELECT 1 FROM accounts WHERE sid=?', (sid,)).fetchone():
-        return
-    at = time.time() if now is None else now
-    mr.ensure_person_db(db, sid)
-    person = _person(db, sid)
-    places = []
+    out = []
     bridge = _bridge()
     for career, c in state.get('careers', {}).items():
         if career not in CAREER_META or not c.get('started'):
@@ -132,8 +130,8 @@ def sync(db, sid, state, now=None):
         meta = CAREER_META[career]
         source = bridge.offers(state, career) if state.get('current') == career else getattr(bridge, 'staff_offers', lambda s,c: [])(state, career)
         offers = [v for o in source if (v := _offer_view(o)) is not None][:8]
-        places.append(('career', career, dict(name=str(meta.get('short') or meta.get('name') or career)[:100],
-            owner=person, activity=_activity(c), theme=str(c.get('theme', ''))[:80],
+        out.append(('career', career, dict(name=str(meta.get('short') or meta.get('name') or career)[:100],
+            activity=_activity(c), theme=str(c.get('theme', ''))[:80],
             decor=[str(k)[:80] for k in c.get('decor', {})][:24],
             staffed=any(e.get('status') == 'hired' for e in c.get('ops', {}).get('staff', [])),
             offers=offers, available=bool(offers), status='open' if offers else 'waiting',
@@ -145,18 +143,29 @@ def sync(db, sid, state, now=None):
         ready = bool(inventory) and getattr(bridge, 'can_accept_visit', lambda st: True)(st)
         offers = [dict(offer_id=d, dish=d, price=board['p'][d], staffed=bool(st.get('staff')), label=quay_self.DISH[st['trade']][d]['name'], career=st['trade'])
                   for d in board['on'] if inventory.get(d, 0) > 0] if not paused and ready else []
-        places.append(('quay', st['id'], dict(name=st['name'], owner=person, career=st['trade'], offers=offers,
+        out.append(('quay', st['id'], dict(name=st['name'], career=st['trade'], offers=offers,
             activity=dict(label='Nhân viên đang phục vụ' if st.get('staff') else 'Chủ quầy phục vụ', status='waiting' if paused else 'working'),
             staffed=bool(st.get('staff')), available=bool(offers), status='closed' if paused else 'open' if offers else 'waiting',
             reason='Quầy đang tạm dừng.' if paused else '' if offers else 'Nhân viên cần đủ quỹ để nhận thêm đơn.' if inventory and not ready else 'Quầy cần nhập thêm hàng.')))
+    return out
+
+
+def sync(db, sid, state, now=None, projected=None):
+    """Update sanitized discovery snapshots inside the owner's save transaction.
+    `projected`: places(state), computed by the caller before it took the save's lock."""
+    if not db.execute('SELECT 1 FROM accounts WHERE sid=?', (sid,)).fetchone():
+        return
+    at = time.time() if now is None else now
+    mr.ensure_person_db(db, sid)
+    person = _person(db, sid)
     existing = _rows(db, 'SELECT * FROM work_visit_places WHERE owner=?', (sid,))
     previous = {(row['kind'], row['target']): row['data'] for row in existing}
     ids = set()
     changed = []
-    for kind, target, data in places:
+    for kind, target, data in (places(state) if projected is None else projected):
         pid = _place_id(sid, kind, target)
         ids.add(pid)
-        encoded = _json(data)
+        encoded = _json(dict(data, owner=person))
         if previous.get((kind, target)) != encoded:
             changed.append((pid, sid, kind, target, encoded, at))
     if changed:
@@ -174,7 +183,7 @@ def sync(db, sid, state, now=None):
             db.execute("UPDATE work_visit_places SET visibility='closed',data=?,updated_at=? WHERE id=?", (_json(data), at, old['id']))
 
 
-def command_commit(db, sid, before, after, career, action, result, now=None):
+def command_commit(db, sid, before, after, career, action, result, now=None, projected=None):
     """DB-only hook, called in the same commit as an actual authoritative action."""
     at = time.time() if now is None else now
     action = str(action or '')
@@ -203,7 +212,7 @@ def command_commit(db, sid, before, after, career, action, result, now=None):
             else:
                 data['end_status'] = 'cancelled'
                 db.execute("UPDATE work_service_orders SET status='refund_pending',data=?,updated_at=? WHERE id=? AND status='accepted'", (_json(data), at, order['id']))
-    sync(db, sid, after, now=at)
+    sync(db, sid, after, now=at, projected=projected)
 
 
 def _actor(store, token):

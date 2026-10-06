@@ -42,8 +42,10 @@ _STD_STRICT = json.JSONEncoder(ensure_ascii=False, allow_nan=False, separators=S
 def loads(text):
     """json.loads of a str or bytes (see the module doc)."""
     if orjson is not None:
+        # a bytes subclass (db.Utf8Text): orjson takes only exact bytes, a memoryview avoids a copy
+        view = memoryview(text) if type(text) is not bytes and isinstance(text, bytes) else text
         try:
-            return orjson.loads(text)
+            return orjson.loads(view)
         except orjson.JSONDecodeError:
             pass  # let json.loads decide: it accepts a few things orjson refuses, and raises the usual error
     return json.loads(text)

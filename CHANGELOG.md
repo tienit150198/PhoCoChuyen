@@ -1,3 +1,12 @@
+# Chưa phát hành — WP7 Phase-0 performance
+
+- Lệnh nhanh hơn với bản lưu lớn: nghề chỉ đổi phần tiền/sổ thu chi do nhân viên chạy đơn thì chỉ kiểm tra lại phần đã đổi (sổ thu chi: chỉ các dòng mới); bản lưu ghi ra giữ nguyên từng byte.
+- Ảnh chụp chỗ làm cho bạn bè ghé (work visits) được tính trước khi khóa bản lưu; khóa giữ ngắn hơn.
+- Bản lưu đi thẳng dạng UTF-8 từ lúc đọc tới lúc ghi PostgreSQL, không giải mã/mã hóa lại 1–7 MB mỗi lệnh.
+- Cưới hỏi, chuyển khoản, quỹ đôi, thuê quầy, ghé chỗ làm: chỉ kiểm tra lại các nghề bị thay đổi thay vì cả 41 nghề.
+- Kiểm tra toàn bộ định kỳ mỗi 200 lệnh (VALIDATE_FULL_EVERY, trước 50); mã BUILD chỉ đổi khi mã di trú/kiểm tra bản lưu có thể đổi (lên số phiên bản, hướng dẫn, quan sát hệ thống không còn ép kiểm tra lại mọi bản lưu).
+- Thêm scripts/bench_command.py đo từng pha của một lệnh trên bản lưu tổng hợp 225 KB / 1.4 MB / 3 MB.
+
 # 1.7.15 — 2026-10-05
 
 - Coin/vàng chung thị trường theo giờ thực: 10 phút một phiên, 1 giờ một ngày thị trường; giữ tài sản và giá vốn khi chuyển đổi.

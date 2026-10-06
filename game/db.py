@@ -54,7 +54,7 @@ import weakref
 try:
     import psycopg
     from psycopg import pq
-    from psycopg.adapt import Loader
+    from psycopg.adapt import Dumper, Loader
     from psycopg.conninfo import conninfo_to_dict
 except ImportError as exc:  # pragma: no cover - deployment dependency guard
     raise SystemExit('[db] PostgreSQL requires psycopg; install the project dependencies') from exc
@@ -241,6 +241,30 @@ class _NumericLoader(Loader):
             return float(s)
 
 
+class Utf8Text(bytes):
+    """Text already encoded as UTF-8 (a save, game/storage.py serialize_bytes): bound as a `text`
+    parameter as it is. A str would be encoded again by psycopg: for a 1-7 MB save that is a
+    full copy, and a str with one emoji holds four bytes per character."""
+    __slots__ = ()
+
+
+class _Utf8TextDumper(Dumper):
+    oid = psycopg.postgres.types['text'].oid
+
+    def dump(self, obj):
+        enc = self.connection.info.encoding if self.connection is not None else 'utf-8'
+        return obj if enc == 'utf-8' else bytes(obj).decode('utf-8').encode(enc)
+
+
+psycopg.adapters.register_dumper(Utf8Text, _Utf8TextDumper)  # every connection: a type of our own only
+
+
+class _TextBytesLoader(Loader):
+    """text -> bytes (the UTF-8 the server sent), for execute(..., text_bytes=True)."""
+    def load(self, data):
+        return bytes(data)
+
+
 IDLE = pq.TransactionStatus.IDLE
 INERROR = pq.TransactionStatus.INERROR
 INTRANS = pq.TransactionStatus.INTRANS
@@ -334,10 +358,12 @@ class PgConnection:
             self._pool.give(self.raw)
 
     # ---- statements
-    def execute(self, sql: str, params=()):
-        """PostgreSQL SQL using ? placeholders (see translate)."""
+    def execute(self, sql: str, params=(), *, text_bytes: bool = False):
+        """PostgreSQL SQL using ? placeholders (see translate). `text_bytes`: text columns come
+        back as the UTF-8 bytes the server sent (a save's text, not decoded; client encoding
+        UTF8 only, else they are decoded as usual and then encoded as UTF-8)."""
         q, kind = translate(sql, bool(params))
-        return self._run(q, kind, params)
+        return self._run(q, kind, params, text_bytes)
 
     def pg(self, sql: str, params=()):
         """Native PostgreSQL SQL (%s / %(name)s placeholders), same transaction rules."""
@@ -346,7 +372,7 @@ class PgConnection:
         kind = _KINDS.get(m.group(1).upper(), 'select') if m else 'select'
         return self._run(sql, kind, params)
 
-    def _run(self, q: str, kind: str, params):
+    def _run(self, q: str, kind: str, params, text_bytes: bool = False):
         if kind == 'begin':
             self.begin()
             return Cursor()
@@ -362,8 +388,13 @@ class PgConnection:
         def run():
             cur = self.raw.cursor()
             try:
+                utf8 = text_bytes and self.raw.info.encoding == 'utf-8'
+                if utf8:
+                    cur.adapters.register_loader('text', _TextBytesLoader)
                 cur.execute(q, params if params else None)
                 rows = cur.fetchall() if cur.description is not None else ()
+                if text_bytes and not utf8 and rows:  # another client encoding: decoded by psycopg, back to UTF-8
+                    rows = [type(r)(v.encode('utf-8') if isinstance(v, str) else v for v in r) for r in rows]
                 return Cursor(rows, cur.rowcount, cur.description)
             finally:
                 cur.close()

@@ -111,22 +111,14 @@ def default_settings() -> dict:
 from .jsoncopy import tree_copy,_SCALARS  # noqa: F401 (re-exported)
 
 def _build_id() -> str:
-    """Fingerprint of this game code (every game/*.py and the career list). The storage
-    layer stamps it on a save (state["check"]["build"]) once the save has been migrated
-    and fully validated by this code; a stamped save skips migrate_state, and commands
-    on it only re-validate what they changed (see Store._compute). Any code change, so
-    any deploy, gives a new build: every save is migrated and fully validated again."""
-    h=hashlib.sha256(",".join(CAREERS).encode())
-    root=os.path.dirname(os.path.abspath(__file__))
-    try:
-        for folder,dirs,files in os.walk(root):
-            dirs[:]=sorted(d for d in dirs if d!="__pycache__")
-            for name in sorted(f for f in files if f.endswith(".py")):
-                with open(os.path.join(folder,name),"rb") as fh:
-                    h.update(os.path.relpath(os.path.join(folder,name),root).encode()+b"\0"+fh.read()+b"\0")
-    except OSError:
-        return "unknown-"+secrets.token_hex(8)  # never matches: always the full migrate + validation
-    return h.hexdigest()[:20]
+    """Fingerprint of the code that migrates and validates saves (game/build_id.py: every game
+    module engine can import, the career list and SAVE_EPOCH). The storage layer stamps it on
+    a save (state["check"]["build"]) once the save has been migrated and fully validated by
+    this code; a stamped save skips migrate_state, and commands on it only re-validate what
+    they changed (see Store._compute). A deploy that changes any of that code gives a new
+    build: every save is migrated and fully validated again."""
+    from .build_id import build_id
+    return build_id(CAREERS)
 
 BUILD=_build_id()
 
@@ -1308,7 +1300,7 @@ then runs validate_career on every career the command changed (see Store._comput
     need(s.get("current") in CAREERS or s.get("current") is None,"Nghề trong bản lưu không hợp lệ.")
     clean_text(s.get("name"),24);integer(s.get("seq"),0,10**9)
     jr.validate(s)
-    if not _SCOPED.get():accounting_school_.validate(s)  # scoped: only as_* commands change it (they validate it themselves)
+    if _SCOPED.get() is not True:accounting_school_.validate(s)  # scoped commands: only as_* commands change it (they validate it themselves)
     iv.validate(s)
     bd.validate(s)
     doi.validate(s)
@@ -1331,21 +1323,38 @@ then runs validate_career on every career the command changed (see Store._comput
     _finite(s)  # no NaN/Infinity anywhere
 
 
+def scoped_validation(s:dict) -> None:
+    """validate_state of everything outside the careers, the accounting school's block included,
+    for a writer outside apply_action on a save stamped by this build (marriage._mutate): it
+    then validates each career it changed (storage.serialize_bytes(known=...)); the others are
+    byte for byte records that passed."""
+    token=_SCOPED.set("outside_careers")
+    try:validate_state(s)
+    finally:_SCOPED.reset(token)
+
+
 def _feed_author(value) -> bool:
     # Large histories must not rebuild and linearly scan the entire NPC catalogue
     # for every post/comment. Keep malformed JSON values on the GameError path.
     return isinstance(value,str) and (value=="player" or value in NPC_INDEX)
 
 
-def validate_career(c:dict,cid:str,finite:bool=True) -> None:
+def validate_career(c:dict,cid:str,finite:bool=True,same:frozenset=frozenset()) -> None:
     """Every check of one career record. It reads only that record and the fixed
-    content, so a record equal to one that passed with this build still passes."""
+    content, so a record equal to one that passed with this build still passes.
+
+    `same` (game/settle_scope.py): keys of c, and "ops.<key>" of c["ops"], whose value is
+    byte for byte (JSON) the value of the stored record that passed these checks with this
+    build. A group of checks that reads only such values passes again and is skipped: the
+    per-task regeneration, the long lists (reviews, chats, journal, memories, album, ...) and
+    the cash book's rows. Everything else runs, in the same order, so a record that fails
+    fails with the same message. Empty (the default): every check runs."""
     from . import consequences as cq
     from . import classroom
     need(isinstance(c,dict),"Tiến trình nghề không hợp lệ.")
     player_services.validate_staff(c,cid)
     template_keys,ext_keys=_template_keys(cid)
-    ops.validate(c,cid)
+    ops.validate(c,cid,same)
     life.validate(c,cid)
     ext=c.get("ext");need(isinstance(ext,dict) and ext_keys<=set(ext),"Bản lưu thiếu dữ liệu v0.4.")
     integer(ext.get("seq"),0,10**9);need(isinstance(ext.get("data"),dict),"Dữ liệu nghề không hợp lệ.")
@@ -1372,7 +1381,7 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
     need(all(l in LOT_INDEX for l in c["held_lots"]),"Lô tạm giữ không hợp lệ.")
     need(len(c["tasks"])<=80,"Quá nhiều công việc trong bản lưu.")
     taskids=[]
-    for t in c["tasks"]:
+    for t in (() if "tasks" in same else c["tasks"]):  # same tasks: the regeneration below passes again
         player_services.validate(t)
         if "patience" in t:integer(t["patience"],25,100)
         need(isinstance(t,dict) and t.get("career")==cid and t.get("npc") in NPC_INDEX,"Công việc không hợp lệ.")
@@ -1456,6 +1465,7 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
             integer(t.get("ready_turn"),0,10**9)
             for key in ("identity","confirmed","handed_over"):need(type(t.get(key)) is bool,"Trạng thái xử lý thiếu.")
             need(t.get("proposal") in (None,"reship","trace","exchange","refund","guide"),"Phương án đề nghị không hợp lệ.")
+    if "tasks" in same:taskids=[t["id"] for t in c["tasks"]]
     need(len(taskids)==len(set(taskids)),"Công việc bị trùng mã.")
     need(c["active_task"] is None or c["active_task"] in taskids,"Công việc đang chọn không tồn tại.")
     for k in c["stock"]:need(available(c,k)>=0,"Hàng đã giữ nhiều hơn tồn kho.")
@@ -1464,12 +1474,12 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
         need(e.get("stage") in ("noticed","investigating","proposed","executing","resolved"),"Bước sự kiện sai.")
         need(e.get("chosen") in (None,"a","b") and isinstance(e.get("read"),list) and type(e.get("practice")) is bool,"Dữ liệu sự kiện thiếu.")
         integer(e.get("step"),0,2)
-    for f in c["feed"]:
+    for f in (() if "feed" in same else c["feed"]):
         need(isinstance(f,dict) and _feed_author(f.get("npc")) and isinstance(f.get("comments"),list),"Bài đăng không hợp lệ.")
         clean_text(f.get("text"),3000);clean_text(f.get("id"),100)
         need(f.get("stars") in (None,1,2,3,4,5),"Số sao không hợp lệ.")
         fbk.validate_post(f)
-    for npc,chat in c["chats"].items():
+    for npc,chat in (() if "chats" in same else c["chats"].items()):
         need(npc in NPC_INDEX and isinstance(chat,list) and len(chat)<=40,"Chat bản lưu không hợp lệ.")
         for row in chat:need(row.get("role") in ("user","npc"),"Vai chat không hợp lệ.");clean_text(row.get("text"),2000)
     need(isinstance(c["relationships"],dict) and isinstance(c["decor"],dict),"Dữ liệu quan hệ/trang trí không hợp lệ.")
@@ -1478,31 +1488,39 @@ def validate_career(c:dict,cid:str,finite:bool=True) -> None:
     for item,position in c["decor"].items():
         need(item in c["upgrades"] and UPGRADE_INDEX[item]["kind"]=="decor" and isinstance(position,dict),"Món trang trí chưa sở hữu.")
         need(position.get("spot") in ("window","corner","front","center","wall"),"Vị trí trang trí không hợp lệ.")
-    for shipment in c["shipments"]:
+    for shipment in (() if "shipments" in same else c["shipments"]):
         need(isinstance(shipment,dict) and shipment.get("item") in expected_items,"Kiện hàng sai mã.")
         clean_text(shipment.get("id"),100);integer(shipment.get("qty"),1,6);integer(shipment.get("actual"),1,6);integer(shipment.get("cost"),0,10000)
         if "at" not in shipment:integer(shipment.get("ready"),0,10**9)
         need(shipment.get("status") in ("in_transit","received"),"Trạng thái kiện sai.")
-    for pending in c["pending"]:
+    for pending in (() if "pending" in same else c["pending"]):
         need(isinstance(pending,dict) and pending.get("kind") in ("return_note","event_followup","comment"),"Thông báo chờ không hợp lệ.")
         integer(pending.get("day"),1,999999);integer(pending.get("turn"),0,10**9);clean_text(pending.get("ref"),200);clean_text(pending.get("text"),3000)
         need(pending.get("npc") in NPC_INDEX,"Thông báo thiếu nhân vật.")
-    for memory in c["memories"]:
+    for memory in (() if "memories" in same else c["memories"]):
         need(isinstance(memory,dict) and memory.get("npc") in NPC_INDEX,"Ký ức sai nhân vật.")
         clean_text(memory.get("text"),3000);clean_text(memory.get("source"),200)
-    for row in c["journal"]:
+    for row in (() if "journal" in same else c["journal"]):
         for key in ("id","kind","text"):clean_text(row.get(key),4000)
         integer(row.get("day"),1,999999);integer(row.get("turn"),0,10**9)
-    for post in c["feed"]:
+    for post in (() if "feed" in same else c["feed"]):
         for key in ("author","source","kind"):clean_text(post.get(key),200)
         integer(post.get("day"),1,999999);need(type(post.get("liked")) is bool,"Trạng thái bài đăng thiếu.")
         for comment in post["comments"]:
             clean_text(comment.get("author"),100);clean_text(comment.get("text"),3000);integer(comment.get("day"),1,999999)
             need(_feed_author(comment.get("npc")),"Người bình luận không hợp lệ.")
     need(len(c["album"])<=6,"Album quá lớn.")
-    for photo in c["album"]:
+    for photo in (() if "album" in same else c["album"]):
         need(isinstance(photo.get("image"),str) and len(photo["image"])<=450000 and photo["image"].startswith(("data:image/webp;base64,","data:image/png;base64,","data:image/jpeg;base64,")),"Ảnh lưu không hợp lệ.")
-    if finite:_finite(c)  # no NaN/Infinity
+    nullfree=getattr(same,"nullfree",None)
+    if finite and nullfree:  # values whose JSON has no null cannot hold NaN/Infinity (orjson writes them as null)
+        for k,value in c.items():
+            if k in nullfree or type(value) in _LEAVES:continue
+            if k=="ops" and type(value) is dict:  # its values are pieces too ("ops.<key>")
+                for x,y in value.items():
+                    if "ops."+x not in nullfree and type(y) not in _LEAVES:_finite(y)
+            else:_finite(value)
+    elif finite:_finite(c)  # no NaN/Infinity
 
 
 # =====================================================================================
