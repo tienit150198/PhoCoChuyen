@@ -12,7 +12,7 @@ import {termsSource,T} from './v4/terms.js';
 import {nextStep,lifeNav,guestRibbon,experienceView,extendedJob,experienceSummary,teachTour} from './experience-ui.js';
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
 import {fillToast,toastHead} from './toast-lines.js';
-import {reqList,fold,clean as uiClean,few} from './ui-kit.js';
+import {reqList,fold,clean as uiClean,few,actBar,tip as uiTip,helpBtn} from './ui-kit.js';
 import {olderRows,olderButton,loadOlder,syncOlder} from './archive.js';
 import {Sound} from './audio.js';
 import {soundsBoot} from './v4/sounds.js';
@@ -199,7 +199,7 @@ function openSheet(view,data={}){$('#sheet').resetGesture?.();if(view!=='job'&&v
 /** "?" of a work screen before the tutorial module has loaded (same markup as tutorial/guide.js helpButton;
  * a tap loads it: TUT_OPEN). Every career's work screen carries it, in the header, next to "Đóng". */
 const helpQ=cid=>`<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(cid||'')}" data-tab="work" aria-label="Hướng dẫn nghề này">?</button>`;
-function header(title,subtitle='',eyebrow='MỘT NGÀY LÀM NGHỀ',extra=''){const kit=[].concat(CSS_KIT[career()]||[]),short=ui.view==='job'&&uiClean()&&(kit.includes('street_kit')||career()==='tra_da')?esc(few(plainText(title),4)):'';return `<header class="sheet-head"><div class="grow"><span class="eyebrow">${eyebrow}</span><h2 title="${esc(plainText(title))}"${short?` aria-label="${esc(plainText(title))}"`:''}>${short||title}</h2>${subtitle?`<p>${subtitle}</p>`:''}</div>${extra}${ui.view==='job'?(L.tut.m?.guideHelp(career())||helpQ(career())):''}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;}
+function header(title,subtitle='',eyebrow='MỘT NGÀY LÀM NGHỀ',extra=''){const kit=[].concat(CSS_KIT[career()]||[]),short=ui.view==='job'&&uiClean()&&(kit.includes('street_kit')||kit.includes('office_kit')||['tra_da','pet_shop','customer_care','accounting','pharmacy'].includes(career()))?esc(few(plainText(title),4)):'';return `<header class="sheet-head"><div class="grow"><span class="eyebrow">${eyebrow}</span><h2 title="${esc(plainText(title))}"${short?` aria-label="${esc(plainText(title))}"`:''}>${short||title}</h2>${subtitle?`<p>${subtitle}</p>`:''}</div>${extra}${ui.view==='job'?(L.tut.m?.guideHelp(career())||helpQ(career())):''}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;}
 function footer(left='',right=''){return `<footer class="sheet-foot"><p>${left}</p><div class="row wrap">${right}</div></footer>`;}
 /** ⋯ in a work sheet's header: the rarely used ways out ("Để lát nữa", "Xem các việc khác") that used to take a
  * whole footer row under the career's action bar. data-auto: every re-render shuts it again. */
@@ -691,7 +691,7 @@ const dwState=(label,tone='')=>`<span class="dw-state${tone?' '+tone:''}">${labe
 function dwWho(t,sub){
   const n=npc(t.npc),p=room().life?.mode==='calm'?100:pct(t.patience??100);
   return `<header class="dw-who">${portrait(n,48)}<div class="dw-who-name"><strong>${esc(n.display_name)}</strong><small>${sub}</small>`+
-    `<div class="dw-pat${p<50?' low':p<75?' mid':''}" role="meter" aria-label="Kiên nhẫn" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}"><i><b style="width:${p}%"></b></i><small>Kiên nhẫn ${p}%</small></div></div>`+
+    `<div class="dw-pat${p<50?' low':p<75?' mid':''}" role="meter" aria-label="Kiên nhẫn" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}"><i><b style="width:${p}%"></b></i><small>${uiClean()?'':'Kiên nhẫn '}${p}%</small></div></div>`+
     `<button type="button" class="btn ghost icon-btn dw-talk" data-action="chat" data-npc="${esc(t.npc)}" data-task="${esc(t.id)}" aria-label="Trò chuyện với ${esc(n.display_name)}">${icon('chat',20)}</button></header>`+
     `<p class="dw-quote">${esc(t.opening)}</p>`;
 }
@@ -850,34 +850,42 @@ function supportSteps(t){
 }
 function supportJob(t){
   const step=csStep(t),read=t.evidence.filter(e=>e.text!=null).length,sol=solutions.find(x=>x[0]===t.proposal);
-  const channel=CS_CHANNELS[[...String(t.id)].reduce((a,ch)=>a+ch.charCodeAt(0),0)%CS_CHANNELS.length];
-  const tracker=`<ol class="dw-steps" aria-label="Tiến trình vụ">${CS_STEPS.map((s,i)=>`<li class="${i<step?'done':i===step?'now':''}"${i===step?' aria-current="step"':''}><span class="dw-dot" aria-hidden="true">${i<step?'✓':i+1}</span><span class="dw-step-label">${s}</span></li>`).join('')}</ol>`;  // (the current step is the lit one in the tracker; the "Bước x/6" line under it repeated it)
+  const channel=CS_CHANNELS[[...String(t.id)].reduce((a,ch)=>a+ch.charCodeAt(0),0)%CS_CHANNELS.length],cl=uiClean();
+  const tracker=`<ol class="dw-steps" aria-label="Tiến trình vụ">${CS_STEPS.map((s,i)=>`<li class="${i<step?'done':i===step?'now':''}"${i===step?' aria-current="step"':''}${cl?` aria-label="${s}" title="${s}"`:''}><span class="dw-dot" aria-hidden="true">${i<step?'✓':i+1}</span>${cl?'':`<span class="dw-step-label">${s}</span>`}</li>`).join('')}</ol>`;  // (the current step is the lit one in the tracker; the "Bước x/6" line under it repeated it)
   const canPropose=t.identity&&read===t.evidence.length&&['new','understood','proposed'].includes(t.status);
   const choices=`<div class="dw-choices" role="group" aria-label="Phương án">${solutions.map(([id,l,i,h])=>`<button type="button" class="dw-choice${t.proposal===id?' selected':''}" data-command="cs_propose" data-payload="${esc(JSON.stringify({task:t.id,solution:id}))}" aria-pressed="${t.proposal===id}"${canPropose?'':' disabled'}>${icon(i,22)}<span><b>${l}</b><small>${h}</small></span></button>`).join('')}</div>`;
   // The eyebrow names the lit part of the tracker (its labels are hidden on a phone); one line says what to do there.
-  const now=(title,text,action,extra='')=>`<section class="dw-now" aria-label="Việc bây giờ"><span class="dw-eyebrow">Bước ${step+1}/${CS_STEPS.length} · ${CS_STEPS[step]}</span><h3>${title}</h3>${text?`<p>${text}</p>`:''}${extra}${action}</section>`;
+  // Clean layout (docs/UI_KIT.md): the lit tracker names the step; the card keeps its title (the explanation goes to the
+  // "?"), and a single action button moves to the shared bar at the bottom (one main button). Choices stay in the card.
+  let main='';
+  // `keep`: the text is a fact (a promised time, the call-before-noon rule), not an explanation: it stays in sight.
+  // `card`: the title itself says something the bar does not (the plan picked); otherwise a card whose only action
+  // moved to the bar goes (its title just repeats the button).
+  const now=(title,text,action,extra='',{keep=false,card=false}={})=>{
+    if(cl&&/^\s*<button\b/.test(action)&&(action.match(/<button\b/g)||[]).length===1){main=action.replace(/\sfull(?=[\s"])/,'');action='';if(!extra&&!keep&&!card)return text?uiTip(text,title,'p'):'';}
+    return `<section class="dw-now" aria-label="Việc bây giờ">${cl?'':`<span class="dw-eyebrow">Bước ${step+1}/${CS_STEPS.length} · ${CS_STEPS[step]}</span>`}<h3>${title}</h3>${text?(cl&&!keep?uiTip(text,title,'p'):`<p>${text}</p>`):''}${extra}${action}</section>`;};
   const key=t.evidence.find(e=>e.id===t.basis&&e.text!=null);  // 📌 the source line that names the fix (server sends it once every source is read)
   let card;
   const waitNow=t.ready_at==null||sameDay(t.ready_at);
-  if(t.status==='handed_over')card=now('Chờ chị Mai phản hồi',t.eta?`Chị Mai hẹn phản hồi ${esc(t.eta.toLowerCase())}.`:'',commandButton('⏳ Chờ thêm 20 phút','advance',{},'primary full'));
+  if(t.status==='handed_over')card=now('Chờ chị Mai phản hồi',t.eta?`Chị Mai hẹn phản hồi ${esc(t.eta.toLowerCase())}.`:'',commandButton('⏳ Chờ thêm 20 phút','advance',{},'primary full'),'',{keep:true});
   else if(step===0)card=now('Xác minh người yêu cầu','Khớp mã đơn khách đưa thì mới được xem hồ sơ.',commandButton('🔐 Xác minh mã đơn','cs_identity',{task:t.id},'primary full',!room().open));
   else if(step===1){const e=t.evidence.find(e=>e.text==null);card=now(`Mở chứng cứ · ${read}/${t.evidence.length}`,'Đọc đủ các nguồn: một dòng trong đó chỉ cách xử lý.',commandButton(icon('folder',16)+' Mở: '+esc(e.title),'cs_evidence',{task:t.id,evidence:e.id},'primary full'));}
   else if(step===2)card=now('Chọn phương án khớp căn cứ','',choices,key?`<blockquote class="dw-basis"><b>📌 ${esc(key.title)}</b>“${esc(key.text)}”</blockquote>`:'');
-  else if(t.status==='proposed')card=now(`Phương án: ${sol?.[1]||''}`,'Mới là đề xuất: gửi việc thì đầu mối mới làm.',button('Gửi việc cho đầu mối '+icon('arrow',15),'executeCS',{},'primary full'));
-  else if(t.status==='executing')card=now(`Đang chờ ${esc(t.wait_label||'đầu mối')}: ${sol?.[1]||''}`,`Dự kiến có kết quả: <b>${esc(t.eta||'')}</b>.${waitNow?'':' Vụ mở qua đêm: mỗi sáng gọi cập nhật cho khách trước 12:00.'}`,waitNow?commandButton('⏳ Chờ thêm 20 phút','advance',{},'primary full'):button('Xem các việc khác','queue',{},'primary full'));
+  else if(t.status==='proposed')card=now(`Phương án: ${sol?.[1]||''}`,'Mới là đề xuất: gửi việc thì đầu mối mới làm.',button('Gửi việc cho đầu mối '+icon('arrow',15),'executeCS',{},'primary full'),'',{card:true});
+  else if(t.status==='executing')card=now(`Đang chờ ${esc(t.wait_label||'đầu mối')}: ${sol?.[1]||''}`,`Dự kiến có kết quả: <b>${esc(t.eta||'')}</b>.${waitNow?'':' Vụ mở qua đêm: mỗi sáng gọi cập nhật cho khách trước 12:00.'}`,waitNow?commandButton('⏳ Chờ thêm 20 phút','advance',{},'primary full'):button('Xem các việc khác','queue',{},'primary full'),'',{keep:true});
   else if(step===4)card=now('Kết quả đã về','Đầu mối báo xong: kiểm với khách trước khi đóng.',commandButton(icon('search',16)+' Kiểm kết quả','cs_confirm',{task:t.id},'primary full'));
   else card=now('Kết quả đã kiểm chứng','Khách đã xác nhận: đóng vụ, nhận 65 xu.',button(icon('check',16)+' Hoàn tất & đóng vụ','closeCS',{},'primary full'));
   const change=t.status==='proposed'?`<section class="dw-sec dw-change" aria-label="Đổi phương án"><h3>Đổi phương án?</h3>${choices}</section>`:'';
-  const handover=t.identity&&t.status==='understood'&&!t.handed_over?`<section class="dw-alt"><p class="dw-hint">Chưa chắc hướng xử lý? Bàn giao cho chị Mai kèm nguồn đã đọc${t.inspected.length<2?' (cần đọc ít nhất 2 nguồn)':''}.</p>${commandButton('Bàn giao cùng chị Mai','cs_handover',{task:t.id},'ghost',t.inspected.length<2)}</section>`:'';
-  const evidence=`<section class="dw-sec" aria-label="Chứng cứ"><div class="dw-sec-head"><h3>Chứng cứ</h3><span class="dw-count${read===t.evidence.length?' ok':''}">${read}/${t.evidence.length}</span></div><ul class="dw-evlist">${t.evidence.map(e=>{const open=e.text!=null;
-    return `<li class="dw-ev${open?' done':''}${key===e?' key':''}"><span class="dw-mark" role="img" aria-label="${open?'Đã mở':'Chưa mở'}">${open?'✓':''}</span><div><b>${esc(e.title)}${key===e?' <em class="dw-key">📌 Căn cứ</em>':''}</b>${open?`<p>${esc(e.text)}</p>`:t.identity?'':'<small>Xác minh để mở</small>'}</div>${!open&&t.identity?commandButton('Mở','cs_evidence',{task:t.id,evidence:e.id},'ghost'):''}</li>`;}).join('')}</ul></section>`;
-  const notes=`${room().upgrades.includes('workbench')?notice('Bàn kiểm hai bước: so yêu cầu của khách với chứng cứ đóng gói/giao nhận, không coi một trạng thái đơn lẻ là kết luận.','blue','search'):''}`;
-  const log=t.timeline.length?fold(`Nhật ký vụ · ${t.timeline.length} dòng`,`<ol class="dw-log">${t.timeline.map(line=>`<li>${esc(line)}</li>`).join('')}</ol>`):'';
-  const sub=`${channel}${t.value?` · đơn ${fmt(t.value)} xu`:''}${t.days_open?` · ngày thứ ${t.days_open+1}`:''}`;
+  const handover=t.identity&&t.status==='understood'&&!t.handed_over?`<section class="dw-alt">${(h=>cl?uiTip(h,'Bàn giao cùng chị Mai','p'):`<p class="dw-hint">${h}</p>`)(`Chưa chắc hướng xử lý? Bàn giao cho chị Mai kèm nguồn đã đọc${t.inspected.length<2?' (cần đọc ít nhất 2 nguồn)':''}.`)}${commandButton('Bàn giao cùng chị Mai','cs_handover',{task:t.id},'ghost',t.inspected.length<2)}</section>`:'';
+  const evidence=`<section class="dw-sec" aria-label="Chứng cứ"><div class="dw-sec-head"><h3>Chứng cứ</h3><span class="dw-count${read===t.evidence.length?' ok':''}">${read}/${t.evidence.length}</span></div>${cl&&!t.identity?'':`<ul class="dw-evlist">${t.evidence.map(e=>{const open=e.text!=null;
+    return `<li class="dw-ev${open?' done':''}${key===e?' key':''}"><span class="dw-mark" role="img" aria-label="${open?'Đã mở':'Chưa mở'}">${open?'✓':''}</span><div><b>${esc(e.title)}${key===e?' <em class="dw-key">📌 Căn cứ</em>':''}</b>${open?`<p>${esc(e.text)}</p>`:t.identity||cl?'':'<small>Xác minh để mở</small>'}</div>${!open&&t.identity?commandButton('Mở','cs_evidence',{task:t.id,evidence:e.id},'ghost'):''}</li>`;}).join('')}</ul>`}</section>`;
+  const notes=`${room().upgrades.includes('workbench')&&!cl?notice('Bàn kiểm hai bước: so yêu cầu của khách với chứng cứ đóng gói/giao nhận, không coi một trạng thái đơn lẻ là kết luận.','blue','search'):''}`;
+  const log=t.timeline.length?fold(cl?`📒 ${t.timeline.length}`:`Nhật ký vụ · ${t.timeline.length} dòng`,`<ol class="dw-log">${t.timeline.map(line=>`<li>${esc(line)}</li>`).join('')}</ol>`):'';
+  const sub=cl?`${channel.split(' ')[0]}${t.value?` · ${fmt(t.value)} xu`:''}${t.days_open?` · 📅 ${t.days_open+1}`:''}`:`${channel}${t.value?` · đơn ${fmt(t.value)} xu`:''}${t.days_open?` · ngày thứ ${t.days_open+1}`:''}`;
   const timers=[t.sla_label?dwState(`⏳ Phản hồi đầu: còn ${esc(t.sla_label)}`,'amber'):'',t.sla==='late'?dwState('Trễ hạn phản hồi đầu','danger'):'',t.upd_label?dwState(`📞 Gọi cập nhật: ${esc(t.upd_label)}`,t.upd?.done?'green':t.upd?.late?'danger':'amber'):''].join('');
   const seen=careData()?.people?.find(p=>p.npc===t.npc),past=seen?.last?.filter(x=>!x.title||x.title!==t.title||x.day!==t.day)||[];
   const history=seen&&past.length?`<section class="cb-history" aria-label="Thẻ khách"><h3>🗂️ ${esc(seen.name)} đã gọi ${seen.n} lần</h3><ul class="cb-past">${past.slice().reverse().map(x=>`<li>Ngày ${x.day}: ${esc(x.title)} · ${esc(x.note)}${x.stars?` · ${x.stars}★`:''}</li>`).join('')}</ul></section>`:'';
-  return `<div class="career-job dw dw-cs">${nextHint({room:room()},supportSteps(t),{cta:false})}${dwWho(t,sub)}${timers?`<div class="cs-timers">${timers}</div>`:''}${tracker}<div class="dw-cs-grid"><div class="dw-cs-work">${card}${change}${handover}${csCallPanel(t)}</div><div class="dw-cs-facts">${history}${evidence}${notes}${log}</div></div></div>`;  // the follow-up board: dock "Theo dõi"
+  return `<div class="career-job dw dw-cs">${nextHint({room:room()},supportSteps(t),{cta:false})}${dwWho(t,sub)}${timers?`<div class="cs-timers">${timers}</div>`:''}${cl?`<div class="cs-track">${tracker}${helpBtn('cs-desk','🎧 Bàn chăm sóc khách',[{title:'Sáu bước của một vụ',body:`<ol>${CS_STEPS.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`},{title:'Phương án',body:`<ul>${solutions.map(([,l,,h])=>`<li><b>${esc(l)}</b>: ${esc(h)}</li>`).join('')}</ul>`}],{tips:true,cls:'cs-q'})}</div>`:tracker}<div class="dw-cs-grid"><div class="dw-cs-work">${card}${change}${handover}${csCallPanel(t)}</div><div class="dw-cs-facts">${history}${evidence}${notes}${log}</div></div>${main?actBar({main,cls:'cs-bar'}):''}</div>`;  // the follow-up board: dock "Theo dõi"
 }
 function chatView(){
   const id=ui.npc||activeTask()?.npc||api.content.npcs.find(n=>n.career_id===career()).id,n=npc(id),c=room();ui.npc=id;
@@ -1077,10 +1085,11 @@ function csCallPanel(t){
   const pending=wait?`<div class="bubble user pending"><div>${esc(csCallPending.text)}</div></div><div class="bubble npc typing" role="status" aria-label="${esc(n.display_name)} đang trả lời…"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>`:'';
   const tone={vui:'green',binh:'blue',lo:'amber',buc:'danger'}[t.tone]||'';
   const chips=(t.picks||[]).map(p=>`<button type="button" class="btn ghost small" data-cs-pick="${esc(p.id)}" data-task="${esc(t.id)}"${wait||!left||!room().open?' disabled':''}>${esc(p.label)}</button>`).join('');
-  return `<section class="dw-sec cs-call" aria-label="Cuộc gọi với ${esc(n.display_name)}"><div class="dw-sec-head"><h3>📞 Gọi ${esc(n.display_name)}</h3>${dwState('Khách '+esc(t.tone_label||''),tone)}</div>`+
-    `${lines||pending?`<div class="chat-messages cs-call-log" role="log" aria-live="polite"><div class="cs-call-rows">${lines}${pending}</div></div>`:'<p class="dw-hint">Báo tình trạng thật, xin lỗi khi khách phải chờ, hỏi thêm khi cần. Lời nói không tự hoàn tiền hay đổi phương án.</p>'}`+
+  const folded=uiClean()&&!lines&&!pending;   // clean layout: a call not started yet is one line ("📞 Gọi Lan · Khách lo lắng ›")
+  return `<section class="dw-sec cs-call" aria-label="Cuộc gọi với ${esc(n.display_name)}">${folded?'<details class="cs-call-fold"><summary class="dw-sec-head">':'<div class="dw-sec-head">'}<h3>📞 Gọi ${esc(n.display_name)}</h3>${dwState('Khách '+esc(t.tone_label||''),tone)}${folded?'</summary>':'</div>'}`+
+    `${lines||pending?`<div class="chat-messages cs-call-log" role="log" aria-live="polite"><div class="cs-call-rows">${lines}${pending}</div></div>`:uiClean()?uiTip('Báo tình trạng thật, xin lỗi khi khách phải chờ, hỏi thêm khi cần. Lời nói không tự hoàn tiền hay đổi phương án.','📞 Cuộc gọi','p'):'<p class="dw-hint">Báo tình trạng thật, xin lỗi khi khách phải chờ, hỏi thêm khi cần. Lời nói không tự hoàn tiền hay đổi phương án.</p>'}`+
     `<div class="quick-replies">${chips}</div><form class="chat-form cs-call-form" data-cs-call="${esc(t.id)}"><textarea id="cs-say-${esc(t.id)}" name="say" data-preserve rows="1" maxlength="200" required placeholder="Nói với ${esc(n.display_name)}…" aria-label="Lời nói với ${esc(n.display_name)}"></textarea><button type="submit" class="btn primary" aria-label="Nói"${wait||!left||!room().open?' disabled':''}>${icon('send',17)}<span>Nói</span></button></form>`+
-    `<p class="cs-call-meta">${aiVoices()?`${icon('sparkle',13)} Khách trả lời bằng AI · đừng gõ thông tin thật`:'Khách trả lời theo kịch bản'} · còn ${left} lượt nói hôm nay</p></section>`;
+    `<p class="cs-call-meta">${aiVoices()?`${icon('sparkle',13)} Khách trả lời bằng AI · đừng gõ thông tin thật · còn ${left} lượt nói hôm nay`:uiClean()?`<span aria-label="Còn ${left} lượt nói hôm nay">💬 ${left}</span>`:`Khách trả lời theo kịch bản · còn ${left} lượt nói hôm nay`}</p>${folded?'</details>':''}</section>`;
 }
 async function csCallSend(task,body){
   if(csCallPending||ui.busy)return;

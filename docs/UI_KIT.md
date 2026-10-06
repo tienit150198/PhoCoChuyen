@@ -67,9 +67,11 @@ Migrated so far:
 - `food_kit.actionBar`
 - the florist (`fl-bar`), restaurant (`rs-bar`), repair (`rp-bar`) and clothing (`ao-bar`) bars
 - teacher and tour guide (`teach-tour.js bar`)
+- the office desks (`office_kit.js bar`, hook `ok-bar`: the six Cánh Diều / Mây Tre Xanh / Sông Hồng / Minh Bạch desks),
+  the pet shop (`ps-bar`, via `stepBar`) and the support desk (`cs-bar`, customer_care) — wave 3
 
-Not yet migrated (they keep their own bar with the phone rules in compact.css): `dw-bar`, `ok-bar`, `dl-bar`,
-`tv-bar`, `fa-bar`, `mb-ctabar`, `pl-bar`, `td-bar`, `hs-bar`, `ps-bar`, `gr-billbar`, `sl-bar`, `pc-bar`,
+Not yet migrated (they keep their own bar with the phone rules in compact.css): `dw-bar`, `dl-bar`,
+`tv-bar`, `fa-bar`, `mb-ctabar`, `pl-bar`, `td-bar`, `hs-bar`, `gr-billbar`, `sl-bar`, `pc-bar`,
 milk tea's `fk-bar` and cafe's `cb-dock`.
 
 ## Disabled with a reason
@@ -104,6 +106,9 @@ Rules for the server side:
 - `can` is a view field. It is never saved.
 
 Done so far: giúp việc `can.gv_wipe` (tool, product, empty bottle) and the florist's `can.fl_deliver`.
+Wave 3: every office desk's `room.data.office.can.work` (game/careers/office.py `need_open`: after 17:30 the work is
+dimmed with the refusal's own words and a fix that points at the overtime button; `office_kit.shutWork` draws it), and
+the payroll row's `can.tp_flag` (tax_payroll: a full row's other cells say "tối đa 3 ô").
 
 ## Header chip for a pinned card: `headChip(icon, text, selector)`
 
@@ -184,6 +189,23 @@ desktop keeps its text.
 
 Measure with the audit harness or `scripts/check_word_caps.py --careers <id>`. When a screen passes, add it to
 `WORK_DONE`.
+
+## Office desks (wave 3)
+
+The six office careers (`office_kit.js`) and the three hands-on desks (`office_work.js`) share these:
+
+- `bar(x, t, next, g, always, {top})`: the shared bar. Pass the `guideOf` result `g` (not `g.cta`): its pointer or
+  its reason fills the left slot. Choices that belong to the bar (the stamps, the reasons for a gap) go in `top`, a
+  full-width row above; it hides on the other tabs of a phone, like the main button.
+- `envelope(x, t, {empty, extra})`: the 📂 tab before the dossier is received. Clean layout: who asks and their words
+  (a long ask shows its first sentence; the rest and the brief go to "?"), so the first screen is the job, not the inbox.
+- `note(text, title)`: an explanation line (a formula 📐, a rule of thumb, a cost): as before on the classic layout,
+  listed in "?" on the clean one. `deskHelp(x, …)`: that "?", at the end of the status row.
+- The status row is icons and numbers (🕗 08:00 · trust bar · 🔋 · ⏰ 10:30 · 📅 5); tabs keep only the open tab's word.
+
+What stays on the desks' screens, whatever the count: the ask, every paper's data, the ledger lines' cues (the
+buyer's own number "Nhập theo HĐ-45", "xuất kho 29/03", "lập 16:00", "Bán cho <outsider>", NM × rate), the tray rules
+("Sếp dặn"), the timesheet's work-hour rule, the step's prompt, the support options' "Khi …" lines and the 📌 basis.
 
 ## The switch: `html[data-clean]`
 

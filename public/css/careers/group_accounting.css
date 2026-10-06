@@ -185,3 +185,8 @@
 @container sheet (max-width:559px){
   .career-job.ga .ok-bar .ok-bar-btns>.btn:not(.gd-cta){flex:1 1 calc(50% - 4px);min-width:0;min-height:44px}
 }
+
+/* The bar's choices (the reasons for a gap, the tags of a single line): one row that scrolls sideways on a phone, so
+   the bar stays low (UI wave 3: header + bar ≤ ~20% of the screen). */
+html[data-layout="phone"] .career-job.ga>.ui-bar>.ui-bar-top{flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+html[data-layout="phone"] .career-job.ga>.ui-bar>.ui-bar-top>.btn{flex:0 0 auto;white-space:nowrap}

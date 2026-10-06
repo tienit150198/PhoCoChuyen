@@ -10,8 +10,9 @@
  * The server keeps the clock and the score: every move is a command. Only the open card, the word being
  * fixed, the meeting being placed and the step list being built live in x.ui. */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,openTasks,mateCards,trackFold,careSummary,foldToggle,
-  goto,gotoAction,guideOf,summaryCard} from './office_kit.js';
+  goto,gotoAction,guideOf,summaryCard,note,envelope,deskHelp,shutWork} from './office_kit.js';
 import {pending,stepLine} from '../v4/guide.js';
+import {clean,whyAttrs} from '../ui-kit.js';
 
 const DONE=['completed','cancelled','referred'];
 const u=(x,t)=>x.ui[t.id]??={card:null,seg:null,item:null,order:null};
@@ -50,7 +51,7 @@ function papersView(t,x){
     const key=`owp-${t.id}-${p.id}`,open=x.ui.okFold?.[key]??i===0;
     return fold(`${x.esc(p.emoji||'📄')} ${x.esc(p.title)}`,`<ul class="ow-lines">${(p.lines||[]).map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul>`,open,'ow-paper',key);
   }).join('');
-  return `<section class="ow-papers"><h3 class="ok-h">🗃️ Giấy tờ kèm theo <small>${ps.length} tờ · chạm để mở</small></h3>${items}</section>`;
+  return `<section class="ow-papers"><h3 class="ok-h">🗃️ ${clean()?`<small>${ps.length}</small>`:`Giấy tờ kèm theo <small>${ps.length} tờ · chạm để mở</small>`}</h3>${items}</section>`;
 }
 
 function twistBanner(t,x){
@@ -64,8 +65,8 @@ function hintBox(t,x,c){
   if(t.filed)return '';
   const tips=(t.tips||[]).map(s=>`<li>💡 ${x.esc(s)}</li>`).join(''),left=Number(t.hints_left)||0,hs=x.cc.helpers||[c.boss];
   const who=hs[(Number(x.room.day)||0)%hs.length];
-  const btn=x.cmd(left?`💡 Hỏi ${x.esc(who)} · còn ${left} lần`:'💡 Hết lượt hỏi',c.p+'hint',{task:t.id},'ghost small',!left);
-  return `<section class="ow-help">${tips?`<ul class="ow-tips">${tips}</ul>`:''}<div class="ow-help-row">${btn}<small>Mỗi lần hỏi mất 10 phút và bớt ${Number(x.cc.hint_cut)||3} xu thưởng.</small></div></section>`;
+  const btn=x.cmd(clean()?`💡 Hỏi · ${left}`:left?`💡 Hỏi ${x.esc(who)} · còn ${left} lần`:'💡 Hết lượt hỏi',c.p+'hint',{task:t.id},'ghost small',!left).replace('<button ',`<button aria-label="${x.esc(`Hỏi ${who} · còn ${left} lần`)}" `);
+  return `<section class="ow-help">${tips?`<ul class="ow-tips">${tips}</ul>`:''}<div class="ow-help-row">${btn}${note(`Mỗi lần hỏi mất 10 phút và bớt ${Number(x.cc.hint_cut)||3} xu thưởng.`,'💡 Hỏi','','small')}</div></section>`;
 }
 
 function resultView(t,x){
@@ -87,12 +88,12 @@ function sortDoc(t,x){
   const lines=(cur.lines||[]).map(l=>`<li>${x.esc(l)}</li>`).join('');
   const btns=bins.map(b=>{const on=ans[cur.id]===b.id;
     return `<button type="button" class="btn ow-bin${on?' on':''}" data-action="car:put" data-task="${x.esc(t.id)}" data-item="${x.esc(cur.id)}" data-bin="${on?'':x.esc(b.id)}" aria-pressed="${on}"><span aria-hidden="true">${x.esc(b.emoji)}</span> ${x.esc(b.label)}${on?' ✓':''}</button>`;}).join('');
-  return `<section class="ow-sort"><h3 class="ok-h">🗂️ Xếp vào khay <small>${done}/${items.length} thẻ đã xếp</small></h3>
+  return `<section class="ow-sort"><h3 class="ok-h">🗂️ ${clean()?'':'Xếp vào khay '}<small>${done}/${items.length}${clean()?'':' thẻ đã xếp'}</small></h3>
     <nav class="ow-chips" aria-label="Các thẻ">${chips}</nav>
     <article class="ow-card${cur.id===tw?' tw':''}" data-step-card="${x.esc(t.id)}:${x.esc(cur.id)}"><header><b>${x.esc(cur.title)}</b>${cur.sub?`<small>${x.esc(cur.sub)}</small>`:''}${cur.id===tw?'<span class="ok-tag warn">Vừa đổi</span>':''}</header>
       ${lines?`<ul class="ow-lines">${lines}</ul>`:''}${cur.note?`<p class="ow-note">${x.esc(cur.note)}</p>`:''}
       <div class="ow-bins" role="group" aria-label="Xếp thẻ này vào khay">${btns}</div></article>
-    <div class="ow-counts">${counts}</div></section>`;
+    ${clean()?'':`<div class="ow-counts">${counts}</div>`}</section>`;
 }
 
 /* ---------------------------------------------------------------- mark: tap a word or a cell, pick the right one */
@@ -122,9 +123,9 @@ function markDoc(t,x){
     return html+(has&&sel?picker(sel):'');
   }).join('');
   const fixed=Object.keys(ans).length;
-  return `<section class="ow-mark"><h3 class="ok-h">🔍 Soát từng chỗ <small>${fixed?`đã sửa ${fixed} chỗ`:'chạm vào chỗ sai để sửa'}</small></h3>
+  return `<section class="ow-mark"><h3 class="ok-h">🔍 ${clean()?`<small>${fixed?`✓ ${fixed}`:''}</small>`:`Soát từng chỗ <small>${fixed?`đã sửa ${fixed} chỗ`:'chạm vào chỗ sai để sửa'}</small>`}</h3>
     <article class="ow-doc${w.opts?' ow-doc-table':''}">${blocks}</article>
-    ${w.opts?`<p class="ok-note">Chạm một ô, chọn lý do nếu ô đó sai. Ô đúng thì để nguyên.</p>`:`<p class="ok-note">Chữ gạch chân chấm là chỗ chạm được. Chỗ đúng thì để nguyên.</p>`}</section>`;
+    ${note(w.opts?'Chạm một ô, chọn lý do nếu ô đó sai. Ô đúng thì để nguyên.':'Chữ gạch chân chấm là chỗ chạm được. Chỗ đúng thì để nguyên.','🔍 Soát')}</section>`;
 }
 
 /* ---------------------------------------------------------------- slots: rooms × hours */
@@ -149,10 +150,10 @@ function slotsDoc(t,x){
   }).join('')}</tr>`).join('');
   const rl=rules.map(r=>`<li class="${r.new?'new':''}">${r.new?'<em class="ok-newtag">MỚI</em> ':''}${x.esc(r.kind==='busy'?`${r.who}: ${r.text} lúc ${r.rows.map(rowL).join(', ')}`:r.text)}</li>`).join('');
   const off=sel&&ans[sel.id]?`<p class="ow-unplace">${x.button(`↩️ Gỡ “${x.esc(cut(sel.title,30))}” khỏi lịch`,'car:unplace',{task:t.id,item:sel.id},'ghost small')}</p>`:'';
-  return `<section class="ow-slots"><h3 class="ok-h">🗓️ Bảng lịch <small>${Object.keys(ans).length}/${items.length} đã xếp</small></h3>
+  return `<section class="ow-slots"><h3 class="ok-h">🗓️ ${clean()?'':'Bảng lịch '}<small>${Object.keys(ans).length}/${items.length}${clean()?'':' đã xếp'}</small></h3>
     ${rl?`<ul class="ow-rules" aria-label="Điều cần nhớ khi xếp">${rl}</ul>`:''}
     <div class="ow-items" role="group" aria-label="Việc cần xếp">${chips}</div>
-    ${sel?`<p class="ow-pickhint" data-step-card="${x.esc(t.id)}:${x.esc(sel.id)}">👆 Đang xếp: <b>${x.esc(sel.title)}</b> — chạm một ô trống trên bảng.</p>`:''}
+    ${sel?`<p class="ow-pickhint" data-step-card="${x.esc(t.id)}:${x.esc(sel.id)}">👆 ${clean()?'':'Đang xếp: '}<b>${x.esc(sel.title)}</b>${clean()?'':' — chạm một ô trống trên bảng.'}</p>`:''}
     <div class="ow-scroll" tabindex="0" aria-label="Bảng phòng và giờ"><table class="ow-grid"><thead><tr><th scope="col">Giờ</th>${head}</tr></thead><tbody>${body}</tbody></table></div>${off}</section>`;
 }
 
@@ -196,7 +197,7 @@ function fieldsDoc(t,x){
       :`<input class="input" id="${id}" data-preserve type="text" autocomplete="off" maxlength="80" value="${x.esc(v)}"${f.kind==='digits'?' inputmode="numeric"':f.kind==='time'?' inputmode="numeric" placeholder="vd 14:30" data-ow-fmt="time"':f.kind==='date'?' inputmode="numeric" placeholder="vd 05/03/2027" data-ow-fmt="date"':''}>`
         +(f.kind==='date'?`<span class="ow-cal" title="Chọn trên lịch">📅<input type="date" class="ow-cal-in" data-ow-cal="${id}" aria-label="Chọn ngày trên lịch" value="${x.esc(isoOf(v))}"></span>`:'');
     return `<label class="ow-field${f.id===tw?' tw':''}${f.kind==='date'?' date':''}" for="${id}"><span>${x.esc(f.label)}${f.id===tw?' <span class="ok-tag warn">Vừa đổi</span>':''}</span>${f.kind==='date'?`<span class="ow-datebox">${input}</span>`:input}</label>`;};
-  return `<section class="ow-fields"><h3 class="ok-h">📝 Ghi lại cho đủ <small>${(w.fields||[]).length} ô</small></h3>
+  return `<section class="ow-fields">${clean()?'':`<h3 class="ok-h">📝 Ghi lại cho đủ <small>${(w.fields||[]).length} ô</small></h3>`}
     ${script?`<ol class="ow-script" aria-label="Lời người ta nói">${script}</ol>`:''}
     <form class="ow-form" data-step-card="${x.esc(t.id)}:form" onsubmit="return false">${(w.fields||[]).map(box).join('')}</form></section>`;
 }
@@ -208,9 +209,10 @@ function seqDoc(t,x){
   const li=order.map((id,i)=>`<li class="${id===tw?'tw':''}"><span class="ow-no">${i+1}</span><span class="grow">${x.esc(lab(id))}</span>
     ${x.button('↑','car:up',{task:t.id,i},'ghost small ow-mv',i===0)}${x.button('↓','car:down',{task:t.id,i},'ghost small ow-mv',i===order.length-1)}${x.button('✕','car:del',{task:t.id,i},'ghost small ow-mv')}</li>`).join('');
   const rest=pool.filter(p=>!order.includes(p.id)).map(p=>`<button type="button" class="ow-choice${p.id===tw?' tw':''}" data-action="car:add" data-task="${x.esc(t.id)}" data-step="${x.esc(p.id)}">＋ ${x.esc(p.label)}${p.id===tw?' <span class="ok-tag warn">Vừa đổi</span>':''}</button>`).join('');
-  return `<section class="ow-seq"><h3 class="ok-h">🧭 Các bước sẽ làm <small>${order.length} bước</small></h3>
-    <ol class="ow-order" data-step-card="${x.esc(t.id)}:order">${li||'<li class="ow-empty">Chạm các bước bên dưới theo thứ tự sẽ làm. Bước có hại thì bỏ qua.</li>'}</ol>
-    ${rest?`<h4 class="ok-h2">Có thể làm</h4><div class="ow-choices ow-pool">${rest}</div>`:''}</section>`;
+  const empty='Chạm các bước bên dưới theo thứ tự sẽ làm. Bước có hại thì bỏ qua.';
+  return `<section class="ow-seq"><h3 class="ok-h">🧭 ${clean()?'':'Các bước sẽ làm '}<small>${order.length}${clean()?'':' bước'}</small></h3>
+    <ol class="ow-order" data-step-card="${x.esc(t.id)}:order">${li||(clean()?`<li class="ow-empty">👇 ${note(empty,'🧭 Các bước','','span')}</li>`:`<li class="ow-empty">${empty}</li>`)}</ol>
+    ${rest?`${clean()?'':'<h4 class="ok-h2">Có thể làm</h4>'}<div class="ow-choices ow-pool">${rest}</div>`:''}</section>`;
 }
 
 /* ---------------------------------------------------------------- case: look into it, then answer */
@@ -221,10 +223,13 @@ function caseDoc(t,x,c){
     :`<li class="ow-fact">${x.cmd(`🔍 ${x.esc(f.title)} <small>· ${cost} phút</small>`,c.p+'read',{task:t.id,fact:f.id},'ow-ask')}</li>`).join('');
   const title=id=>(w.facts||[]).find(f=>f.id===id)?.title||id;
   const opts=(w.options||[]).map(o=>{const miss=(o.requires||[]).filter(r=>!read.has(r));
-    return `<li>${x.confirmCmd(x.esc(o.label),c.p+'reply',{task:t.id,option:o.id},'Trả lời theo cách này? Chọn rồi không đổi được.','ow-answer',!!miss.length)}${miss.length?`<small class="ow-need">Cần tìm hiểu trước: ${x.esc(miss.map(title).join(', ').toLowerCase())}</small>`:''}</li>`;}).join('');
-  return `<section class="ow-case"><h3 class="ok-h">🔎 Tìm hiểu <small>${read.size}/${(w.facts||[]).length} chuyện</small></h3>
+    // Not read up yet: dimmed but tappable; a tap says what to look into and offers it (never a mute grey button).
+    const need=`Cần tìm hiểu trước: ${miss.map(title).join(', ').toLowerCase()}`,why=miss.length?whyAttrs({why:need,fix:{cmd:c.p+'read',payload:{task:t.id,fact:miss[0]},label:`🔍 ${title(miss[0])}`}}):'';
+    const btn=x.confirmCmd(x.esc(o.label),c.p+'reply',{task:t.id,option:o.id},'Trả lời theo cách này? Chọn rồi không đổi được.',`ow-answer${why?' is-why':''}`);
+    return `<li>${why?btn.replace('<button ',`<button${why} `):btn}${miss.length&&!clean()?`<small class="ow-need">${x.esc(need)}</small>`:''}</li>`;}).join('');
+  return `<section class="ow-case"><h3 class="ok-h">🔎 ${clean()?'':'Tìm hiểu '}<small>${read.size}/${(w.facts||[]).length}${clean()?'':' chuyện'}</small></h3>
     <ul class="ow-facts">${facts}</ul>
-    <h3 class="ok-h">💬 Trả lời thế nào?</h3><ul class="ow-answers" data-step-card="${x.esc(t.id)}:answer">${opts}</ul></section>`;
+    <h3 class="ok-h">💬${clean()?'':' Trả lời thế nào?'}</h3><ul class="ow-answers" data-step-card="${x.esc(t.id)}:answer">${opts}</ul></section>`;
 }
 
 const VIEW={sort:sortDoc,mark:markDoc,slots:slotsDoc,fields:fieldsDoc,seq:seqDoc,case:caseDoc};
@@ -251,10 +256,11 @@ function liveReady(root){
 function guideFor(t,x,c){
   const ev=x.room.data?.desk?.ev;
   if(ev)return {steps:[{ok:null,label:ev.title,go:goto(x,t,'.ow-event','👇 Quyết chuyện này trước')}],final:null};
-  if(!t.known)return {steps:[{ok:null,label:'Nhận hồ sơ, đọc yêu cầu',go:{cmd:'ask',payload:{task:t.id},label:'📥 Nhận hồ sơ & đọc yêu cầu'}}],final:null};
+  if(!t.known)return {steps:[{ok:null,label:'Nhận hồ sơ, đọc yêu cầu',go:{cmd:'ask',payload:{task:t.id},label:clean()?'📥 Nhận việc':'📥 Nhận hồ sơ & đọc yêu cầu'}}],final:null};
   if(t.filed)return {steps:[],final:null};
   const w=W(t),ans=t.ans||{},kind=w.type,ask=`Nộp cho ${c.boss}? Nộp rồi không sửa được nữa.`;
-  const file={label:'📤 Nộp hồ sơ',go:{cmd:c.p+'file',payload:{task:t.id},confirm:ask},ready:!t.ready};
+  // t.ready: the server's own "what is missing" (its refusal for the file command): the finish dims with that reason.
+  const file={label:'📤 Nộp hồ sơ',go:{cmd:c.p+'file',payload:{task:t.id},confirm:ask},ready:!t.ready,...(t.ready&&kind!=='seq'?{can:{why:t.ready}}:{})};
   const steps=[];
   if(kind==='sort'){
     const left=(w.items||[]).filter(i=>!(i.id in ans));
@@ -299,7 +305,10 @@ function lastFiled(x){
 /** A career module for one Cánh Diều desk. c = {id, p (command prefix), boss, cls, title (rules pane), sum (summary title)}. */
 export function officeWork(c){
   bindFormat();
-  const strip=(x,t)=>statusStrip(x,t,{boss:c.boss,op:c.p+'overtime'});
+  const help=x=>deskHelp(x,{key:`ow-${c.id}`,title:c.sum||'Bàn làm việc',boss:c.boss});
+  const strip=(x,t)=>statusStrip(x,t,{boss:c.boss,op:c.p+'overtime',help:help(x)});
+  // Office shut: the work is dimmed with the reason (office.can.work) instead of being refused by the server.
+  const SHUT={prefix:c.p,acts:['put','mark','place','unplace','hand'],free:op=>op===c.p+'desk'};
   const care=(x,t)=>({people:mateCards(x,{prefix:c.p,t}),track:trackFold(x,{prefix:c.p,career:c.id})});
   const rules=x=>rulesList(x,x.room.data?.today?.rules||[],c.title);
   const send=async(x,cmd,payload)=>x.send(c.p+cmd,payload);
@@ -318,11 +327,13 @@ export function officeWork(c){
       const gd=guideFor(t,x,c),g=guideOf(x,t,gd.steps,gd.final);
       const ev=deskCard(x,c);
       if(!t.known)return desk(x,t,{cls:`ow ${c.cls}`,tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules:rules(x),
-        doc:`${ev}<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>Hồ sơ còn trong phong bì.</span></p>`},bar:bar(x,t,'',g.cta,true)});
-      const view=VIEW[W(t).type];
+        doc:`${ev}${envelope(x,t)}`},bar:bar(x,t,'',g,true)});
+      const view=VIEW[W(t).type],work=html=>shutWork(x,html,SHUT);
       const doc=`${ev}${twistBanner(t,x)}${t.filed?resultView(t,x):view?view(t,x,c):''}${hintBox(t,x,c)}${papersView(t,x)}`;
-      const nx=t.filed?'Đã nộp hồ sơ.':readyLine(t,x);
-      return desk(x,t,{cls:`ow ${c.cls}`,tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules:rules(x),doc},bar:bar(x,t,x.esc(nx),g.cta)});
+      // Clean layout: while a step is left its pointer says what to do; the server's "what is missing" waits for the finish.
+      const nx=t.filed?'Đã nộp hồ sơ.':clean()&&pending(gd.steps)?'':readyLine(t,x);
+      // The bar's left slot: the guide's pointer or its reason when it has one, else what the server says is missing.
+      return desk(x,t,{cls:`ow ${c.cls}`,tabs,strip:strip(x,t),hint:g.hint,panes:{inbox,rules:rules(x),doc:work(doc)},bar:work(bar(x,t,g.next?'':x.esc(nx),g))});
     },
     idle(x){
       const d=x.room.data||{};if(!d.office)return '';

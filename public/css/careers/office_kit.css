@@ -152,7 +152,7 @@ html[data-layout="phone"] .career-job.ok{--ok-foot:68px}
 .career-job.ok .ok-fold-body{display:grid;gap:10px;padding:0 12px 12px;min-width:0}
 
 /* ---------------------------------------------------------------- sticky action bar */
-.career-job.ok>.ok-bar{position:sticky;bottom:calc(var(--ok-foot,0px) + 6px);z-index:4;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:2px;padding:10px 12px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--line-strong);box-shadow:var(--shadow-lg)}
+.career-job.ok>.ok-bar:not(.ui-bar){position:sticky;bottom:calc(var(--ok-foot,0px) + 6px);z-index:4;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin-top:2px;padding:10px 12px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--line-strong);box-shadow:var(--shadow-lg)}
 .career-job.ok .ok-next{flex:1 1 160px;min-width:0;margin:0;font-size:.933rem;font-weight:700;line-height:1.4}
 .career-job.ok .ok-bar-btns{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;flex:1 1 auto;min-width:0}
 .career-job.ok .ok-bar-btns>.btn{min-height:48px;flex:1 1 auto;white-space:normal}
@@ -452,3 +452,39 @@ html[data-layout="phone"] .career-job.ok[data-ok-tab="doc"]:not(.ok-idle) .ok-ca
 .ok-sum-more>summary::after{content:"▸";flex:none;margin-left:auto;color:var(--muted);font-weight:400}
 .ok-sum-more[open]>summary::after{content:"▾"}
 .ok-sum-more>summary~*{margin-top:6px}
+
+/* ---------------------------------------------------------------- the shared bar + the clean layout (UI wave 3, docs/UI_KIT.md)
+   The bar is ui-kit actBar (.ui-bar, app.css 27e): the next step left, the one main button right. On a phone the other
+   tabs swap the main button for "📂 Về hồ sơ"; a wide sheet shows the document beside them, so it never does. */
+.career-job.ok>.ui-bar.ok-bar{bottom:var(--ok-foot,0px)}
+.career-job.ok>.ui-bar .ok-bar-btns{display:flex;flex:1 1 auto;gap:var(--sp-2);min-width:0}
+.career-job.ok>.ui-bar .ok-bar-btns>.btn{flex:1 1 auto;min-width:0;white-space:normal}
+.career-job.ok>.ui-bar .ok-next{flex:1 1 auto;font-size:var(--fs-2);line-height:var(--lh);overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+.career-job.ok>.ui-bar .ok-back{display:none}
+.career-job.ok:not([data-ok-tab="doc"])>.ui-bar:not(.always) .ok-main{display:none}
+.career-job.ok:not([data-ok-tab="doc"])>.ui-bar:not(.always) .ok-back{display:flex}
+.career-job.ok[data-ok-tab="doc"]>.ui-bar.bare>.ui-bar-main{display:none}
+.career-job.ok:not([data-ok-tab="doc"])>.ui-bar:not(.always)>.ui-bar-top{display:none}
+.career-job.ok>.ui-bar>.ui-bar-top{display:flex;flex-wrap:wrap;gap:var(--sp-2)}
+.career-job.ok>.ui-bar>.ui-bar-top>.btn{flex:1 1 auto;min-height:44px}
+@container sheet (min-width:720px){
+  .career-job.ok:not([data-ok-tab="doc"])>.ui-bar:not(.always) .ok-main{display:flex}
+  .career-job.ok:not([data-ok-tab="doc"])>.ui-bar:not(.always) .ok-back{display:none}
+  .career-job.ok>.ui-bar.bare>.ui-bar-main{display:none}
+  .career-job.ok:not([data-ok-tab="doc"])>.ui-bar:not(.always)>.ui-bar-top{display:flex}
+}
+/* Clean layout: tabs show their icon (and badge); the open tab keeps its word. A sender's role, the "· from" of a one-line
+   message and the "Đang mở" tag go (the words stay for screen readers). */
+html[data-clean] .career-job.ok .ok-tab{min-height:48px}
+html[data-clean] .career-job.ok .ok-tab[aria-selected="false"] .ok-tab-label,
+html[data-clean] .career-job.ok .ok-who>small,
+html[data-clean] .career-job.ok .ok-line-subj>small{display:none}
+html[data-clean] .career-job.ok .ok-line-subj{-webkit-line-clamp:1}
+html[data-clean] .career-job.ok .ok-strip{column-gap:var(--sp-2)}
+html[data-clean] .career-job.ok .ok-trust{min-width:72px;flex:1 1 72px;display:flex;align-items:center;gap:var(--sp-1)}
+html[data-clean] .career-job.ok .ok-trust>.ok-meter{flex:1 1 auto}
+html[data-clean] .career-job.ok .ok-strip>.ok-help{margin-left:auto}
+/* The dossier still in its envelope (clean layout): who asks and their words, first. */
+.career-job.ok .ok-env{display:grid;gap:var(--sp-2);padding:var(--sp-3);border-radius:var(--radius);background:var(--surface);border:1px solid var(--line)}
+.career-job.ok .ok-env-head{display:flex;align-items:center;gap:var(--sp-2)}
+.career-job.ok .ok-env .ok-quote{margin:0}

@@ -346,3 +346,12 @@ p.wh-bad,.card p.wh-bad{margin:0;color:var(--bad)}
 .wh .inventory-row .wh-pick input,html[data-layout="phone"] .wh .inventory-row .inv-row-act .wh-pick input{width:20px;height:20px;min-height:0;margin:0;padding:0}
 .wh-merge{display:grid;gap:4px;margin:10px 0 4px}
 .wh-merge .btn{min-height:44px;justify-self:start}
+
+/* ---- Support desk, clean layout (UI wave 3): the tracker row carries the "?" (what the screen folded away, the six
+   steps, when each fix fits); the one action button sits in the shared bar (.ui-bar.cs-bar, app.css 27e). */
+.career-job.dw .cs-track{display:flex;align-items:center;gap:var(--sp-2);min-width:0}
+.career-job.dw .cs-track>.dw-steps{flex:1 1 auto;min-width:0}
+.career-job.dw .cs-call-fold>summary{cursor:pointer;list-style:none;min-height:44px}
+.career-job.dw .cs-call-fold>summary::-webkit-details-marker{display:none}
+.career-job.dw .cs-call-fold>summary::after{content:"▾";margin-left:auto;color:var(--muted)}
+.career-job.dw .cs-call-fold[open]>summary::after{content:"▴"}
