@@ -1,5 +1,6 @@
 """Shared finishes are one room choice, with personal purchases and atomic save receipts."""
 import concurrent.futures
+import contextvars
 import threading
 import uuid
 from unittest.mock import patch
@@ -140,18 +141,25 @@ class SharedHomeFinishes(shared.SharedDecor):
                        value=hs.value_of(home, a['journey']['life_day']))
         found = threading.Event()
         bond = mr._bond
+        # Store.command runs on its own worker pool (game/storage.py), not on the caller's
+        # thread: mark the painting command by a context variable, which it carries over.
+        painter = contextvars.ContextVar('painter', default=False)
 
         def observed_bond(*args, **kwargs):
             result = bond(*args, **kwargs)
-            if threading.current_thread().name.startswith('paint'):
+            if painter.get():
                 found.set()
             return result
+
+        def paint():
+            painter.set(True)
+            return self.command(self.b, 'hoa_nhi', confirm=True)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=1, thread_name_prefix='paint') as pool:
             with self.store.connect() as db, patch.object(mr, '_bond', observed_bond):
                 db.begin()
                 db.execute('SELECT revision FROM sessions WHERE sid=? FOR UPDATE', (self.sid(self.a),))
-                painting = pool.submit(self.command, self.b, 'hoa_nhi', confirm=True)
+                painting = pool.submit(paint)
                 self.assertTrue(found.wait(5))  # looked up couple before the seller committed
                 db.execute('UPDATE sessions SET state=?,revision=revision+1 WHERE sid=?',
                            (serialize(moved, None, True), self.sid(self.a)))
