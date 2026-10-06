@@ -708,6 +708,134 @@
   "en": ""
  },
  {
+  "vi": "🎤 Phòng hát",
+  "en": ""
+ },
+ {
+  "vi": "🎤 Tặng xu ca sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Bài hát YouTube",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đoán qua lời hoặc qua emoji nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Gợi ý chưa hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ dùng emoji thôi nha 🙂",
+  "en": ""
+ },
+ {
+  "vi": "Từ 2 tới 12 emoji nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Che ít nhất một chữ bằng ___ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Để lại vài chữ làm gợi ý nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Video này không cho phát ngoài YouTube.",
+  "en": ""
+ },
+ {
+  "vi": "Video không còn trên YouTube.",
+  "en": ""
+ },
+ {
+  "vi": "Bài này đã bị tắt trong Phòng hát.",
+  "en": ""
+ },
+ {
+  "vi": "Link YouTube chưa đúng. Dán link bài hát nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đang kiểm tra nhiều bài quá, thử lại sau ít phút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "YouTube chưa trả lời, thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tạo tài khoản để hát cùng mọi người nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mã lượt không hợp lệ. Tải lại trang nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang bị tạm khóa chat, chưa xếp bài được.",
+  "en": ""
+ },
+ {
+  "vi": "Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng hát thu phí trong hành trình. Hôm nay bạn đã hát lượt miễn phí rồi.",
+  "en": ""
+ },
+ {
+  "vi": "bài",
+  "en": ""
+ },
+ {
+  "vi": "Bài này không còn trên sân khấu.",
+  "en": ""
+ },
+ {
+  "vi": "Không tự tặng mình được nha 😄",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang bị tạm khóa chat.",
+  "en": ""
+ },
+ {
+  "vi": "Ca sĩ chưa có tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "Không tặng được cho người này.",
+  "en": ""
+ },
+ {
+  "vi": "Tặng xu chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Ca sĩ đã nhận đủ xu hôm nay rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng hát",
+  "en": ""
+ },
+ {
+  "vi": "Mã bài không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mục không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng không hợp lệ.",
+  "en": ""
+ },
+ {
   "vi": "Trùm cuối của phố",
   "en": ""
  },
@@ -1669,134 +1797,6 @@
  },
  {
   "vi": "Nhận hết, không nói gì",
-  "en": ""
- },
- {
-  "vi": "Tuần này coi như không có tối nào cho mình.",
-  "en": ""
- },
- {
-  "vi": "Tổ trưởng giao thêm việc không tên",
-  "en": ""
- },
- {
-  "vi": "Tổ trưởng giao thêm: sổ sách, trang trí lớp, dự giờ.",
-  "en": ""
- },
- {
-  "vi": "“Giáo viên trẻ phải xung phong chứ em.”",
-  "en": ""
- },
- {
-  "vi": "Giáo án tuần sau vẫn chưa soạn.",
-  "en": ""
- },
- {
-  "vi": "Ghi rõ việc nào kịp, việc nào xin lùi",
-  "en": ""
- },
- {
-  "vi": "Tổ trưởng gật gù, bớt cho bạn hai việc.",
-  "en": ""
- },
- {
-  "vi": "Thức tới 1 giờ làm cho xong",
-  "en": ""
- },
- {
-  "vi": "Xong hết. Sáng ra mắt thâm quầng.",
-  "en": ""
- },
- {
-  "vi": "Chủ mặt bằng dọa tăng giá",
-  "en": ""
- },
- {
-  "vi": "Chủ mặt bằng ghé tiệm, nói lớn trước mặt khách.",
-  "en": ""
- },
- {
-  "vi": "“Tháng sau tăng giá, không chịu thì dọn.”",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng còn nửa năm.",
-  "en": ""
- },
- {
-  "vi": "Đưa hợp đồng ra, nói chuyện nhỏ nhẹ",
-  "en": ""
- },
- {
-  "vi": "Ông ấy đọc lại, lầm bầm “để tính sau”.",
-  "en": ""
- },
- {
-  "vi": "Cả đêm tính toán lo lắng",
-  "en": ""
- },
- {
-  "vi": "Máy tính bấm tới khuya, càng bấm càng rối.",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh làm ầm trong nhóm lớp",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn dài 30 dòng trong nhóm Zalo lớp.",
-  "en": ""
- },
- {
-  "vi": "“Cô dạy kiểu gì mà con tôi bị điểm 6?”",
-  "en": ""
- },
- {
-  "vi": "Mấy chục phụ huynh đã xem.",
-  "en": ""
- },
- {
-  "vi": "Gọi riêng, mời lên trường nói chuyện",
-  "en": ""
- },
- {
-  "vi": "Gặp nhau rồi mới vỡ lẽ: bé làm bài vội. Phụ huynh xin lỗi nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Trả lời công khai trong nhóm",
-  "en": ""
- },
- {
-  "vi": "Nhóm càng lúc càng ồn. Bạn mệt lả.",
-  "en": ""
- },
- {
-  "vi": "Nhờ ban giám hiệu hỗ trợ",
-  "en": ""
- },
- {
-  "vi": "Cô hiệu phó nhắn nhóm một câu. Mọi thứ lắng xuống.",
-  "en": ""
- },
- {
-  "vi": "Bị dọa “lên Sở”",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh đứng chắn cửa lớp.",
-  "en": ""
- },
- {
-  "vi": "“Tôi sẽ viết đơn lên Sở!”",
-  "en": ""
- },
- {
-  "vi": "Chỉ vì bé bị nhắc không làm bài tập.",
-  "en": ""
- },
- {
-  "vi": "Mời vào phòng, pha trà, nghe cho hết",
   "en": ""
  }
 ]

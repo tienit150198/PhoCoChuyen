@@ -1,5 +1,85 @@
 [
  {
+  "vi": "Hạ cánh $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chờ bản tin · Thưởng dự kiến $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛬 Đã hạ cánh ở $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lịch hôm nay: $1 chặng · $2 còn lại",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Đài: $1, cho phép cất cánh.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⏩ Xuống dần về $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⛈️ Tới $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🌧️ Bản tin $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Đài: $1 ở $2. Cài đặt tiếp cận nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⏩ Bay đi $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛬 Tiếp cận $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧑‍✈️ Em cầm lái nhé. Giữ 2 trắng 2 đỏ, $1 knot.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📻 Đài: gió ngang $1 knot.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧑‍✈️ Một nghìn, chưa ổn định: $1. Bay lại?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧑‍✈️ Hai trăm, $1. Bay lại?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧑‍✈️ Gió ngang $1 knot, quá giới hạn!",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "📦 $1 thùng hàng đã tới, chờ mở",
   "en": "",
   "pattern": true
@@ -2166,86 +2246,6 @@
  },
  {
   "vi": "Phố Có Chuyện, Ngày sống thứ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ảnh lưu niệm: $1 nhận $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã chép mã $1, gửi cho bạn bè nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mã phòng là $1, đọc cho bạn bè nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mỗi lượt chụp 4 kiểu, in thành một dải ảnh có khung. Mỗi người tự trả $1$2. Ảnh chỉ nằm trên máy của bạn, không lưu lên đâu cả.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Còn $1 chỗ: gửi mã cho bạn bè",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "cần $1 để chụp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Màn $1/",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "qua hết $1 màn ăn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Qua màn $1!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💰 Nhận $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ". Chơi tiếp màn $1: qua màn được",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Qua màn $1, phần thưởng tăng thêm được nhân đôi",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💰 Dừng, nhận $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗡️ Chơi tiếp màn $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dao chạm dao! Thua ở màn $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mất $1 thưởng và $2 tiền đặt",
   "en": "",
   "pattern": true
  }

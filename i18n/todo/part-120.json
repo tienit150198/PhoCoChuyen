@@ -1,5 +1,80 @@
 [
  {
+  "vi": "Tỉnh táo $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ví đang nợ $1 xu. Trả nợ trước nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đi quán $1 lần để mở",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xem $1 phim để mở",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Công đức $1 lần để mở",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1, gọi món khác hoặc lát nữa nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏷️ Đủ $1 dấu: nhận nhãn dán $2!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thẻ tích điểm $1/$2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Xem “$2” ($3 xu). Giữ cuống vé làm kỷ niệm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xác nhận công đức $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🙏 Đã công đức $1. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xác nhận mua $1 7 ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2: đã trả $3, còn $4 ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang dùng $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ủa $1, nay quán chill ghê á, nhạc hợp gu $2 luôn ✨",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Hé lô $1, $2 ghé nạp năng lượng nè, sáng giờ chạy deadline muốn xỉu 🥲",
   "en": "",
   "pattern": true
@@ -2171,81 +2246,6 @@
  },
  {
   "vi": "(đã xem các tin sau #$1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "tin bị báo cáo chờ xử lý · $1 đang tự ẩn · $2 người bị khóa chat",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛟 $1 báo cáo an toàn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chờ xử lý ($1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang khóa ($1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🐢 Chậm ($1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tên cần đổi ($1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang chậm: 1 tin mỗi $1 giây đến $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "1 tin/$1 giây · đến",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khóa chat $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ngữ cảnh ($1 tin)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã khóa chat $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã đổi tên thành “$1”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "tài khoản$1 · $2 quà gần nhất",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "bắt đầu bằng “$1”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Không có tài khoản nào bắt đầu bằng “$1”.",
   "en": "",
   "pattern": true
  }

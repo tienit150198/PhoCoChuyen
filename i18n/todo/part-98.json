@@ -1,5 +1,261 @@
 [
  {
+  "vi": "Tiệm đang sơn màu này.",
+  "en": ""
+ },
+ {
+  "vi": "Màu này tiệm đã mua, sơn lại không mất tiền.",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đang dùng màu này",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Sơn màu",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Sơn lại tiệm",
+  "en": ""
+ },
+ {
+  "vi": "✒️ Màu chữ biển hiệu",
+  "en": ""
+ },
+ {
+  "vi": "🐾 Vào tiệm thôi!",
+  "en": ""
+ },
+ {
+  "vi": "Xem thêm: công việc, người bạn gặp, khi nào được khen",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Sơn lại tiệm\"",
+  "en": ""
+ },
+ {
+  "vi": "👂 Nghe khách nói",
+  "en": ""
+ },
+ {
+  "vi": "❓ Hỏi han",
+  "en": ""
+ },
+ {
+  "vi": "Phí ship",
+  "en": ""
+ },
+ {
+  "vi": "↺ Quét lại",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Chốt hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "📟 Máy tính tiền",
+  "en": ""
+ },
+ {
+  "vi": "quét từng món trên quầy",
+  "en": ""
+ },
+ {
+  "vi": "không có trên quầy",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Khách lấy trong rổ giảm giá",
+  "en": ""
+ },
+ {
+  "vi": "📅 Xem hạn từng lon",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã xử lý mấy lon trong rổ",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Đổi lon mới trên kệ",
+  "en": ""
+ },
+ {
+  "vi": "✋ Bỏ ra khỏi quầy",
+  "en": ""
+ },
+ {
+  "vi": "❓ Hỏi về bé",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Kệ thức ăn",
+  "en": ""
+ },
+ {
+  "vi": "đọc nhãn: loài · tuổi · cỡ · vị",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi tuổi, cân nặng, dị ứng của bé",
+  "en": ""
+ },
+ {
+  "vi": "Chọn bao hạt hợp với bé",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Đọc nhãn, chọn bao hạt",
+  "en": ""
+ },
+ {
+  "vi": "Xem hạn mấy lon khách lấy trong rổ",
+  "en": ""
+ },
+ {
+  "vi": "📅 Xem hạn mấy lon trong rổ",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý mấy lon trong rổ",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Đổi lon mới hoặc bỏ ra",
+  "en": ""
+ },
+ {
+  "vi": "Bể",
+  "en": ""
+ },
+ {
+  "vi": "Nước cá cần",
+  "en": ""
+ },
+ {
+  "vi": "Bớt cá trước khi bỏ bể.",
+  "en": ""
+ },
+ {
+  "vi": "· ✓ bể này",
+  "en": ""
+ },
+ {
+  "vi": "🫙 Chọn & chia bể",
+  "en": ""
+ },
+ {
+  "vi": "Betta ở riêng; cá vàng tách cá nhiệt đới. Mỗi bể chọn cá và đồ dùng riêng bên dưới.",
+  "en": ""
+ },
+ {
+  "vi": "Thêm bể riêng",
+  "en": ""
+ },
+ {
+  "vi": "🐟 Cá trong từng bể",
+  "en": ""
+ },
+ {
+  "vi": "Muốn chuyển cá: bấm − ở bể cũ, rồi + ở bể mới.",
+  "en": ""
+ },
+ {
+  "vi": "🌀 Đồ cho từng bể",
+  "en": ""
+ },
+ {
+  "vi": "bể · chọn lọc, sưởi, khử clo riêng",
+  "en": ""
+ },
+ {
+  "vi": "🗒️ Dặn khách",
+  "en": ""
+ },
+ {
+  "vi": "lời dặn",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đủ dung tích cho từng bể",
+  "en": ""
+ },
+ {
+  "vi": "🫙 Chọn cỡ bể",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cá thả bể (cá hợp nhau)",
+  "en": ""
+ },
+ {
+  "vi": "🐟 Chọn cá thả bể",
+  "en": ""
+ },
+ {
+  "vi": "Đồ cho từng bể: lọc, sưởi, khử clo",
+  "en": ""
+ },
+ {
+  "vi": "🌀 Chọn đồ cho bể",
+  "en": ""
+ },
+ {
+  "vi": "Dặn khách cách thả cá, thay nước, cho ăn",
+  "en": ""
+ },
+ {
+  "vi": "🗒️ Dặn khách cách chăm",
+  "en": ""
+ },
+ {
+  "vi": "🤔 Quyết định",
+  "en": ""
+ },
+ {
+  "vi": "Chưa hợp thì hẹn lại hoặc từ chối nhẹ nhàng. Thú khỏe là trên hết.",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn khách quay lại sau? Việc này sẽ khép lại.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối nhẹ nhàng và gợi ý cách khác? Việc này sẽ khép lại.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Giấy nhận nuôi",
+  "en": ""
+ },
+ {
+  "vi": "📝 Giấy nhận nuôi với nhóm Chân Nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Ký lại giấy",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Ký giấy nhận nuôi",
+  "en": ""
+ },
+ {
+  "vi": "🤲 Giao bé",
+  "en": ""
+ },
+ {
+  "vi": "Vớt bé màu nào?",
+  "en": ""
+ },
+ {
+  "vi": "❓ Hỏi người muốn nuôi",
+  "en": ""
+ },
+ {
   "vi": "🎒 Đồ dùng mang về",
   "en": ""
  },
@@ -1541,262 +1797,6 @@
  },
  {
   "vi": "📖 Học",
-  "en": ""
- },
- {
-  "vi": "🟣 Gợi ý",
-  "en": ""
- },
- {
-  "vi": "Thử bước này",
-  "en": ""
- },
- {
-  "vi": "Học lại hướng dẫn",
-  "en": ""
- },
- {
-  "vi": "Tắt hướng dẫn",
-  "en": ""
- },
- {
-  "vi": "← → nghiêng · ↑ ↓ mũi (↓ kéo lên) · W/S ga · G bay lại",
-  "en": ""
- },
- {
-  "vi": "Cần lái: kéo để lái",
-  "en": ""
- },
- {
-  "vi": "Cần ga",
-  "en": ""
- },
- {
-  "vi": "🛫 Cất cánh",
-  "en": ""
- },
- {
-  "vi": "Cánh Cò",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Đẩy ga lên hết nhé em.",
-  "en": ""
- },
- {
-  "vi": "Đẩy cần ga lên hết, giữ vạch giữa. Chị hô thì kéo lên.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Tám mươi.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Cất mũi! Kéo nhẹ về phía mình.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Chưa đủ tốc độ, chờ chút.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Giữ vạch giữa!",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Kéo lên… đó, chị đỡ tay.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Đẩy cần ga lên nào.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Rời đất rồi. Thu càng!",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Cất cánh đẹp! Lái tự động nhé.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Lái tự động. Em nghỉ tay chút.",
-  "en": ""
- },
- {
-  "vi": "⏩ Lái tự động · lên 12.000 ft",
-  "en": ""
- },
- {
-  "vi": "✈️ Trên đường bay",
-  "en": ""
- },
- {
-  "vi": "📻 Đài: giông đang ở trên sân bay.",
-  "en": ""
- },
- {
-  "vi": "📻 Đài: sương còn dày, dưới mức tối thiểu.",
-  "en": ""
- },
- {
-  "vi": "⏩ Bay chờ 20 phút",
-  "en": ""
- },
- {
-  "vi": "⛈️ Vòng tránh giông",
-  "en": ""
- },
- {
-  "vi": "📻 Radar: mây giông ngay trên đường bay. Vòng tránh nhé!",
-  "en": ""
- },
- {
-  "vi": "Nghiêng cánh để vòng qua đám mây giông, qua rồi thì về hướng cũ.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Rung quá! Ra khỏi mây ngay!",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Đẹp! Qua rồi, về hướng cũ nhé.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Tàu đang nhanh quá, giảm ga ngay!",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Mình đang cao, xuống dốc hơn chút.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Xuống gấp quá, kéo nhẹ lên!",
-  "en": ""
- },
- {
-  "vi": "2 trắng 2 đỏ là đúng dốc. Chị hô thì ghìm mũi cho êm.",
-  "en": ""
- },
- {
-  "vi": "nhanh quá",
-  "en": ""
- },
- {
-  "vi": "chậm quá",
-  "en": ""
- },
- {
-  "vi": "cao quá",
-  "en": ""
- },
- {
-  "vi": "thấp quá",
-  "en": ""
- },
- {
-  "vi": "xuống gấp quá",
-  "en": ""
- },
- {
-  "vi": "lệch tim đường băng",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Một nghìn. Ổn định.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Chưa ổn định mà vẫn xuống… chị ghi lại nhé.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Năm trăm.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Hai trăm. Thấy đường băng. Hạ cánh!",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Hai trăm… chưa thấy đường băng!",
-  "en": ""
- },
- {
-  "vi": "🔊 Năm mươi.",
-  "en": ""
- },
- {
-  "vi": "🔊 Ba mươi.",
-  "en": ""
- },
- {
-  "vi": "🔊 Mười.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Thu ga, ghìm mũi!",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Hết đường băng rồi, bay lại!",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Mình bay lại cho chắc.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Thấp quá! Chị cầm lái, bay lại.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Êm quá!",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Hơi mạnh tay rồi.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Hơi xa chút.",
-  "en": ""
- },
- {
-  "vi": "🅿️ Lăn vào bến…",
-  "en": ""
- },
- {
-  "vi": "🅿️ Lăn vào bến",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Dầu chỉ đủ hạ cánh lần này. Mình xuống thôi.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Bay lại! Ga hết, ngóc mũi.",
-  "en": ""
- },
- {
-  "vi": "Máy hơi chậm: chuyển sang Bay nhanh.",
-  "en": ""
- },
- {
-  "vi": "CẦN GA",
-  "en": ""
- },
- {
-  "vi": "GIÓ",
-  "en": ""
- },
- {
-  "vi": "GIÓ nhẹ",
-  "en": ""
- },
- {
-  "vi": "LÁI TỰ ĐỘNG",
   "en": ""
  }
 ]

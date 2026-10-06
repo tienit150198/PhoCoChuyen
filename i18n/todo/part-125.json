@@ -1,5 +1,105 @@
 [
  {
+  "vi": "/ $1 phút hoạt động, lấy từ két/vốn quầy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "phần nguyên liệu · $1 từ két/vốn quầy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mở $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "+ $1 vốn quầy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giữ $1 để trả lương ca này. Nếu hủy hoặc hết hạn, tiền hoàn về nguồn đã chọn. Quỹ chung đã đóng thì hoàn về ví người chi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cho $1 nghỉ?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lắp $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sang nhượng $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "NGÀY SỐNG $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "quầy · két $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Làm $1 việc ở một nghề bán hàng (trà sữa, tạp hóa, hoa…) rồi quay lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💼 Làm thêm$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Làm $1: xong $2 việc rồi khép ca.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ca làm ở tiệm $1 của chính bạn: hàng nhập dùng quỹ nghề của bạn, nên quỹ đó hết thì nhập hàng không được. Vốn quầy chủ góp ở lại quầy của chủ, không chuyển sang bạn. Xong ca: bạn nhận $2 lương, quầy chủ nhận phần doanh thu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quầy cần người $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhận một ca, làm một ngày đúng nghề đó. Xong $1 việc rồi khép ca là lương vào ví. Bỏ ca lúc nào cũng được, không mất gì.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã gửi lời mời. Chờ $1 mở 🏪 Quầy của bạn → 💼 Làm thêm để nhận",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "xong ca: +$1 vào két",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "chờ $1 giờ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quầy này đăng tối đa $1 ca cùng lúc (bằng số chỗ đứng) và đã đủ. Muốn đổi từ “Ai cũng được” sang mời riêng, hủy một ca đang chờ rồi chọn tên bạn và gửi lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🙋 Thuê người chơi $1",
   "en": "",
   "pattern": true
@@ -661,6 +761,41 @@
  },
  {
   "vi": "Vừa nhận thêm $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gọi · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Làm · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mua vé · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Công đức · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thẻ tích điểm $1/",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📜 Bảng tuần · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn: $1 xu",
   "en": "",
   "pattern": true
  },

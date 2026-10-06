@@ -1,3 +1,7 @@
+# v1.9.6 — 2026-10-07
+
+Gồm "Thêm chỗ tiêu xu" (spend-1, bảng donations + chat_style, schema 25) và "Phòng hát Mây" (karaoke-p1, schema 26, TẮT mặc định: LIVE_KARAOKE). CSP mở cho YouTube embed. Có gì mới chỉ nói phần tiêu xu; karaoke thông báo khi bật.
+
 # v1.9.5 — 2026-10-06/07
 
 Gồm các mục "Chưa phát hành" bên dưới: nông trại mới (farm-plus), mỗi nghề một cách nói (voice-w1), nghề làm công không đóng thuế tiệm (salary-notax).

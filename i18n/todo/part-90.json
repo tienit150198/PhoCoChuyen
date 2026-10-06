@@ -1,5 +1,409 @@
 [
  {
+  "vi": "Chân váy jean",
+  "en": ""
+ },
+ {
+  "vi": "Chân váy xếp ly dài hồng",
+  "en": ""
+ },
+ {
+  "vi": "Chân váy xếp ly dài",
+  "en": ""
+ },
+ {
+  "vi": "Sneaker chunky trắng",
+  "en": ""
+ },
+ {
+  "vi": "Giày Mary Jane đen",
+  "en": ""
+ },
+ {
+  "vi": "Giày Mary Jane",
+  "en": ""
+ },
+ {
+  "vi": "Bốt cổ ngắn nâu",
+  "en": ""
+ },
+ {
+  "vi": "Bốt cổ ngắn",
+  "en": ""
+ },
+ {
+  "vi": "Dép quai ngang",
+  "en": ""
+ },
+ {
+  "vi": "Kính mát mắt mèo",
+  "en": ""
+ },
+ {
+  "vi": "Mũ bucket",
+  "en": ""
+ },
+ {
+  "vi": "Mũ lưỡi trai",
+  "en": ""
+ },
+ {
+  "vi": "Vòng cổ mặt trăng",
+  "en": ""
+ },
+ {
+  "vi": "Vòng cổ",
+  "en": ""
+ },
+ {
+  "vi": "Kẹp tóc càng cua",
+  "en": ""
+ },
+ {
+  "vi": "Kính cận gọng vuông",
+  "en": ""
+ },
+ {
+  "vi": "Nơ lụa to hồng",
+  "en": ""
+ },
+ {
+  "vi": "Nơ lụa to",
+  "en": ""
+ },
+ {
+  "vi": "Khuyên tai tròn vàng",
+  "en": ""
+ },
+ {
+  "vi": "Khuyên tai tròn",
+  "en": ""
+ },
+ {
+  "vi": "Khăn bandana đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Khăn bandana",
+  "en": ""
+ },
+ {
+  "vi": "Balo mini vàng",
+  "en": ""
+ },
+ {
+  "vi": "Mở khóa màu",
+  "en": ""
+ },
+ {
+  "vi": "Vàng gold",
+  "en": ""
+ },
+ {
+  "vi": "Trắng kem",
+  "en": ""
+ },
+ {
+  "vi": "Đồ mới trong tủ (bản lưu) không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Tủ đồ trong bản lưu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Màu phụ kiện trong bản lưu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng màu trong bản lưu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin màu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Màu này không có trong bảng màu.",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đồ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Món đồ này không có trong tủ.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang mặc đúng bộ này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thay đồ xong. Trông bạn tươi tắn hẳn!",
+  "en": ""
+ },
+ {
+  "vi": "Màu gốc lúc nào cũng miễn phí.",
+  "en": ""
+ },
+ {
+  "vi": "Món này không đổi màu được.",
+  "en": ""
+ },
+ {
+  "vi": "Đeo luôn rồi nè!",
+  "en": ""
+ },
+ {
+  "vi": "Mặc luôn rồi nè!",
+  "en": ""
+ },
+ {
+  "vi": "Đã cất vào tủ.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác tủ đồ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn bạc khắc tên",
+  "en": ""
+ },
+ {
+  "vi": "Bạc 925, khắc tên hai đứa ở mặt trong.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn vàng tây 18K",
+  "en": ""
+ },
+ {
+  "vi": "Vàng 18K trơn, đeo hằng ngày không lo trầy.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn vàng ta 24K (1 chỉ)",
+  "en": ""
+ },
+ {
+  "vi": "Một chỉ vàng 9999, sau này để dành cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn vàng đính ruby",
+  "en": ""
+ },
+ {
+  "vi": "Viên ruby đỏ như pháo cưới, ổ vàng 18K.",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn kim cương 5 ly",
+  "en": ""
+ },
+ {
+  "vi": "Kim cương 5 ly có giấy kiểm định, lấp lánh dưới đèn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạc",
+  "en": ""
+ },
+ {
+  "vi": "Vàng hồng",
+  "en": ""
+ },
+ {
+  "vi": "Kim cương trắng",
+  "en": ""
+ },
+ {
+  "vi": "Ruby đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Ngọc lục bảo",
+  "en": ""
+ },
+ {
+  "vi": "Thạch anh tím",
+  "en": ""
+ },
+ {
+  "vi": "Đá hồng",
+  "en": ""
+ },
+ {
+  "vi": "Mình đi qua bao nhiêu con hẻm, chỉ muốn về chung một nhà với bạn. Bạn đồng ý nhé?",
+  "en": ""
+ },
+ {
+  "vi": "Từ ly trà đầu tiên ở phố, mình đã biết là bạn rồi. Mình cưới nhau nha?",
+  "en": ""
+ },
+ {
+  "vi": "Mai mốt mình cùng mở một tiệm nhỏ, tối nào cũng cùng nhau khép ca. Bạn chịu không?",
+  "en": ""
+ },
+ {
+  "vi": "Không cần pháo hoa, chỉ cần mỗi ngày sống ở phố đều có bạn. Bạn nhận chiếc nhẫn này nhé?",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tám bảo cưới sớm cho bà có dịp nấu nồi canh chua thật to. Mình cũng nghĩ vậy. Còn bạn?",
+  "en": ""
+ },
+ {
+  "vi": "Cả phố biết mình thương bạn rồi, giờ chỉ còn chờ bạn gật đầu thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Rạp cưới tại nhà",
+  "en": ""
+ },
+ {
+  "vi": "Dựng rạp trước ngõ, thuê bàn ghế, bát đĩa; đội nấu cỗ lo cơm nước. Hàng xóm đến đông.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà hàng Hoa Sen",
+  "en": ""
+ },
+ {
+  "vi": "Phí sảnh đã gồm âm thanh, ánh sáng cơ bản và phục vụ bàn.",
+  "en": ""
+ },
+ {
+  "vi": "Trung tâm tiệc cưới Sen Vàng",
+  "en": ""
+ },
+ {
+  "vi": "Sảnh lớn, đèn chùm, màn LED và lối đi hoa. Khách thường mừng nhiều hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Bình dân",
+  "en": ""
+ },
+ {
+  "vi": "Gỏi ngó sen tôm thịt",
+  "en": ""
+ },
+ {
+  "vi": "Gà luộc lá chanh",
+  "en": ""
+ },
+ {
+  "vi": "Nem rán",
+  "en": ""
+ },
+ {
+  "vi": "Xôi gấc",
+  "en": ""
+ },
+ {
+  "vi": "Canh măng móng giò",
+  "en": ""
+ },
+ {
+  "vi": "Rau cải xào tỏi",
+  "en": ""
+ },
+ {
+  "vi": "Bia và nước ngọt",
+  "en": ""
+ },
+ {
+  "vi": "Tiêu chuẩn",
+  "en": ""
+ },
+ {
+  "vi": "Súp cua gà xé",
+  "en": ""
+ },
+ {
+  "vi": "Gà hấp lá chanh",
+  "en": ""
+ },
+ {
+  "vi": "Tôm hấp nước dừa",
+  "en": ""
+ },
+ {
+  "vi": "Bò lúc lắc",
+  "en": ""
+ },
+ {
+  "vi": "Lẩu Thái hải sản",
+  "en": ""
+ },
+ {
+  "vi": "Chè hạt sen long nhãn",
+  "en": ""
+ },
+ {
+  "vi": "Sang trọng",
+  "en": ""
+ },
+ {
+  "vi": "Súp bào ngư hải sâm",
+  "en": ""
+ },
+ {
+  "vi": "Salad cá hồi",
+  "en": ""
+ },
+ {
+  "vi": "Tôm hùm nướng bơ tỏi",
+  "en": ""
+ },
+ {
+  "vi": "Bò Úc sốt tiêu đen",
+  "en": ""
+ },
+ {
+  "vi": "Cá tầm hấp xì dầu",
+  "en": ""
+ },
+ {
+  "vi": "Lẩu cua biển",
+  "en": ""
+ },
+ {
+  "vi": "Bánh kem và trái cây",
+  "en": ""
+ },
+ {
+  "vi": "Rượu vang và bia",
+  "en": ""
+ },
+ {
+  "vi": "Lễ dạm ngõ",
+  "en": ""
+ },
+ {
+  "vi": "Nhà trai sang thưa chuyện: trầu cau, ấm chè, bánh kẹo.",
+  "en": ""
+ },
+ {
+  "vi": "Lễ ăn hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Tráp trầu cau, bánh cốm, chè sen, mứt, rượu, lợn quay; đội bê tráp mặc áo dài.",
+  "en": ""
+ },
+ {
+  "vi": "Lễ gia tiên",
+  "en": ""
+ },
+ {
+  "vi": "Thắp hương trước bàn thờ hai họ, trao nhẫn, rước dâu.",
+  "en": ""
+ },
+ {
   "vi": "Lễ thành hôn (lễ đường)",
   "en": ""
  },
@@ -405,6 +809,18 @@
  },
  {
   "vi": "Ảnh này đã lưu hoặc hết hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Đi quán, spa, Rạp Mây: tiêu xu cho vui, no bụng, tỉnh táo",
+  "en": ""
+ },
+ {
+  "vi": "Công đức Chùa Gió Lành, có bảng công đức tuần",
+  "en": ""
+ },
+ {
+  "vi": "Màu tên, khung hồ sơ, danh hiệu 7 ngày",
   "en": ""
  },
  {
@@ -1277,182 +1693,6 @@
  },
  {
   "vi": "Đi dạo khu phố: Bờ hồ, Chợ đêm, Công viên, Phố đi bộ. Gặp người thật, ngồi bàn tám chuyện, nhặt lì xì.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới: Bán trái cây ở sạp Dì Tư: lựa trái chín, cân đúng từng lạng, trả giá khéo.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới: Thu gom rác ca tối: phân loại đúng ngăn, tách đồ nguy hại, giữ ngõ sạch.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới: Thông ống cống với chú Hai: tìm đúng chỗ tắc, báo giá trước khi làm.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới: Phi công và Tiếp viên hàng không của Hãng bay Cánh Cò, bay chặng ngắn ra đảo.",
-  "en": ""
- },
- {
-  "vi": "Mua nhà: thêm biệt thự và 4 loại căn hộ (studio, 1 phòng ngủ, 2 phòng ngủ, penthouse).",
-  "en": ""
- },
- {
-  "vi": "Bấm vào tiền trên cùng để xem hết: ví, quỹ từng nơi làm, ngân hàng, nhà.",
-  "en": ""
- },
- {
-  "vi": "Nâng cấp hạ tầng đã xong! Game đã chạy trên máy chủ mới, mạnh và nhanh hơn.",
-  "en": ""
- },
- {
-  "vi": "Tiền, nhà, đồ và tiến độ của bạn vẫn giữ nguyên. Chúc mọi người chơi vui, enjoy nhé!",
-  "en": ""
- },
- {
-  "vi": "Ai mà bảo lag nữa là buồn luôn đó.",
-  "en": ""
- },
- {
-  "vi": "Bảo trì ngắn từ 21:00 đến 21:10 tối nay (30/09) để chuyển sang máy chủ mới.",
-  "en": ""
- },
- {
-  "vi": "Trong lúc đó game có thể tạm dừng hoặc cần tải lại trang. Tiền, nhà, đồ và tiến độ giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "Từ 20:00 - 0:00 hôm nay hệ thống sẽ thực hiện nâng cấp hạ tầng.",
-  "en": ""
- },
- {
-  "vi": "Người chơi vẫn có thể chơi bình thường nhưng sẽ ảnh hưởng một chút về trải nghiệm, xin vui lòng thông cảm.",
-  "en": ""
- },
- {
-  "vi": "Đã sửa lỗi “Dữ kiện gốc của nhiệm vụ không hợp lệ”: rút tiền, mở ngày mới và làm việc lại bình thường.",
-  "en": ""
- },
- {
-  "vi": "Đơn shop quần áo làm dở từ trước vẫn giữ nguyên, bạn làm tiếp được.",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi vì sự bất tiện. Cảm ơn mọi người đã báo lỗi!",
-  "en": ""
- },
- {
-  "vi": "Trà sữa: phiếu order ghim trên đầu, làm xong phần nào tích phần đó, chỉ một nút bước tiếp.",
-  "en": ""
- },
- {
-  "vi": "Shop quần áo, sửa đồ, thú cưng: thẻ “Khách cần” ghim sẵn, món khách cần xếp lên trước.",
-  "en": ""
- },
- {
-  "vi": "Game phản hồi nhanh hơn, nhất là giờ đông người.",
-  "en": ""
- },
- {
-  "vi": "Nhật ký, sổ tiền, bảng tin cũ vẫn còn đủ: bấm “Xem cũ hơn” để xem lại.",
-  "en": ""
- },
- {
-  "vi": "Mua nhà: trả trước 30%, còn lại vay trả góp. Có nhà là hết tiền phòng.",
-  "en": ""
- },
- {
-  "vi": "Vợ chồng góp quỹ chung mua nhà, rồi về ở chung.",
-  "en": ""
- },
- {
-  "vi": "Tiết kiệm có kỳ hạn tới 3 năm, lãi theo năm, tới hạn tự gửi tiếp.",
-  "en": ""
- },
- {
-  "vi": "Tủ đồ: đổi tóc, áo quần, giày, phụ kiện. Làm ở Tiệm Áo Chỉ Mây được giảm 20%.",
-  "en": ""
- },
- {
-  "vi": "Khách kiên nhẫn hơn một chút.",
-  "en": ""
- },
- {
-  "vi": "Tiền đền nhẹ hơn.",
-  "en": ""
- },
- {
-  "vi": "Nhập hàng, mua sắm, gửi rút tiền: Ví và Quỹ tiệm luôn hiện ở góc trên, thiếu bao nhiêu ghi rõ.",
-  "en": ""
- },
- {
-  "vi": "Hàng giao thiếu: bấm “Khiếu nại phần thiếu” ngay trong Kho để được hoàn tiền.",
-  "en": ""
- },
- {
-  "vi": "Sửa đồ, pet care, shop quần áo: lời dặn và đồ khách đưa kèm hiện ngay chỗ chọn.",
-  "en": ""
- },
- {
-  "vi": "Người trong phố có chính kiến hơn: khen có gai, chê có lý.",
-  "en": ""
- },
- {
-  "vi": "Màn hình yên hơn: thông báo từng dòng, Đánh giá, Tổng kết ngày và Sổ tiệm gọn gàng.",
-  "en": ""
- },
- {
-  "vi": "Máy chủ cập nhật không làm mất thao tác, nhẹ hơn khi đông người chơi.",
-  "en": ""
- },
- {
-  "vi": "Bộ chia khay và máy in nhãn",
-  "en": ""
- },
- {
-  "vi": "Máy quét lô và khay kiểm phiếu",
-  "en": ""
- },
- {
-  "vi": "Bộ máy quét chứng từ",
-  "en": ""
- },
- {
-  "vi": "Bàn phím và bộ tra cứu hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Bộ học liệu và máy in bài",
-  "en": ""
- },
- {
-  "vi": "Bộ đàm và bộ soạn tuyến",
-  "en": ""
- },
- {
-  "vi": "Bộ định lượng và linh kiện quầy pha",
-  "en": ""
- },
- {
-  "vi": "Bộ bếp và giỏ trụng cải tiến",
-  "en": ""
- },
- {
-  "vi": "Bộ bơm máy pha và quạt lò",
-  "en": ""
- },
- {
-  "vi": "Bộ kéo và giá xử lý hoa",
-  "en": ""
- },
- {
-  "vi": "Máy quét hàng và bộ chia kệ",
-  "en": ""
- },
- {
-  "vi": "Bộ dụng cụ và máy chẩn đoán",
   "en": ""
  }
 ]

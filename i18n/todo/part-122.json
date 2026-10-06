@@ -1,5 +1,85 @@
 [
  {
+  "vi": "✅ Xong món $1, đặt sang bàn chờ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chờ thêm $1 giây, đủ nước là tự nhấc ra.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chờ thêm $1 giây, mút chìm là tự cắm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay$1 · $2 khách",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "hạng $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cân chỉ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bỏ ra $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "xu/ký$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥤 $1/$2–$3 trái chín kỹ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cân ra $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xin ghi nợ · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khách cầm túi đi · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nhét $1 $2 $3 vào túi riêng, lững thững bước đi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "mất $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trái $1 mang lại",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lệch $1 gam",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "lệch $1 gam",
   "en": "",
   "pattern": true
@@ -2166,86 +2246,6 @@
  },
  {
   "vi": "🏢 $1/$2 ngày điều hành tốt",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hạ cánh $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chờ bản tin · Thưởng dự kiến $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛬 Đã hạ cánh ở $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lịch hôm nay: $1 chặng · $2 còn lại",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Đài: $1, cho phép cất cánh.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⏩ Xuống dần về $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⛈️ Tới $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🌧️ Bản tin $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Đài: $1 ở $2. Cài đặt tiếp cận nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⏩ Bay đi $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛬 Tiếp cận $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧑‍✈️ Em cầm lái nhé. Giữ 2 trắng 2 đỏ, $1 knot.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📻 Đài: gió ngang $1 knot.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧑‍✈️ Một nghìn, chưa ổn định: $1. Bay lại?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧑‍✈️ Hai trăm, $1. Bay lại?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧑‍✈️ Gió ngang $1 knot, quá giới hạn!",
   "en": "",
   "pattern": true
  }

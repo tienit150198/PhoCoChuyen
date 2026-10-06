@@ -1,5 +1,261 @@
 [
  {
+  "vi": "🏷️ Biên mục",
+  "en": ""
+ },
+ {
+  "vi": "🤫 Phòng đọc",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Lưu trữ",
+  "en": ""
+ },
+ {
+  "vi": "nhờ việc",
+  "en": ""
+ },
+ {
+  "vi": "chiều người ta",
+  "en": ""
+ },
+ {
+  "vi": "cách khác hợp nội quy",
+  "en": ""
+ },
+ {
+  "vi": "có người dỗi",
+  "en": ""
+ },
+ {
+  "vi": "👩‍🏫 Nhờ cô Nguyệt",
+  "en": ""
+ },
+ {
+  "vi": "mất thêm thời gian",
+  "en": ""
+ },
+ {
+  "vi": "🌡️ Xem ẩm kế kho",
+  "en": ""
+ },
+ {
+  "vi": "💧 Máy hút ẩm: đang chạy",
+  "en": ""
+ },
+ {
+  "vi": "💧 Bật máy hút ẩm",
+  "en": ""
+ },
+ {
+  "vi": "🪤 Soi bẫy côn trùng",
+  "en": ""
+ },
+ {
+  "vi": "🗄️ Kho lưu trữ",
+  "en": ""
+ },
+ {
+  "vi": "🪤 Bẫy côn trùng",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Phòng đọc",
+  "en": ""
+ },
+ {
+  "vi": "🔑 Mở phòng đọc",
+  "en": ""
+ },
+ {
+  "vi": "📋 Dựng bảng nội quy",
+  "en": ""
+ },
+ {
+  "vi": "Kho quá ẩm: bật máy hút ẩm",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách xử lý bẫy",
+  "en": ""
+ },
+ {
+  "vi": "🪤 Chọn cách xử lý",
+  "en": ""
+ },
+ {
+  "vi": "Còn trên kệ",
+  "en": ""
+ },
+ {
+  "vi": "Sách tra cứu: chỉ đọc tại chỗ",
+  "en": ""
+ },
+ {
+  "vi": "Đang có người mượn",
+  "en": ""
+ },
+ {
+  "vi": "🔎 Tra máy",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ còn hạn",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ hết hạn",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ bạn đọc",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Kiểm thẻ",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã gia hạn thẻ",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã thu nợ cũ",
+  "en": ""
+ },
+ {
+  "vi": "Thu nợ phí cũ",
+  "en": ""
+ },
+ {
+  "vi": "💵 Thu nợ",
+  "en": ""
+ },
+ {
+  "vi": "📗 Cho mượn, đóng dấu hạn trả",
+  "en": ""
+ },
+ {
+  "vi": "🔖 Quyết ở quầy",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Hoặc giúp cách khác",
+  "en": ""
+ },
+ {
+  "vi": "Tra máy: ký hiệu, còn sách không",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm thẻ bạn đọc",
+  "en": ""
+ },
+ {
+  "vi": "Cho mượn hoặc giúp cách khác",
+  "en": ""
+ },
+ {
+  "vi": "Tình trạng sách",
+  "en": ""
+ },
+ {
+  "vi": "📖 Kiểm sách",
+  "en": ""
+ },
+ {
+  "vi": "Dấu hạn trả",
+  "en": ""
+ },
+ {
+  "vi": "📅 Xem dấu hạn",
+  "en": ""
+ },
+ {
+  "vi": "💬 Hỏi lý do",
+  "en": ""
+ },
+ {
+  "vi": "Làm mất: giá bìa",
+  "en": ""
+ },
+ {
+  "vi": "Hỏng sách",
+  "en": ""
+ },
+ {
+  "vi": "Không có phí",
+  "en": ""
+ },
+ {
+  "vi": "📒 Ghi sổ nợ",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Đã miễn",
+  "en": ""
+ },
+ {
+  "vi": "Không phí",
+  "en": ""
+ },
+ {
+  "vi": "🙂 Nói nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "📋 Nói theo nội quy",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Bạn đọc trả",
+  "en": ""
+ },
+ {
+  "vi": "Phí bạn đề xuất",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Báo phí",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Miễn phí",
+  "en": ""
+ },
+ {
+  "vi": "💰 Phí theo nội quy",
+  "en": ""
+ },
+ {
+  "vi": "🛠️ Sửa sách",
+  "en": ""
+ },
+ {
+  "vi": "Xem dấu hạn trả",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi lý do trả trễ",
+  "en": ""
+ },
+ {
+  "vi": "Tính phí theo nội quy",
+  "en": ""
+ },
+ {
+  "vi": "💰 Đề xuất phí",
+  "en": ""
+ },
+ {
+  "vi": "Sửa sách",
+  "en": ""
+ },
+ {
+  "vi": "🛠️ Chọn cách sửa",
+  "en": ""
+ },
+ {
   "vi": "nhẹ nhàng, mỏng",
   "en": ""
  },
@@ -1541,262 +1797,6 @@
  },
  {
   "vi": "Tắt món không muốn bán: khách mới sẽ không gọi, quầy cũng không cần nhập. Ly khách đã gọi vẫn pha như cũ. Luôn giữ ít nhất một loại trà nền.",
-  "en": ""
- },
- {
-  "vi": "món ngừng bán",
-  "en": ""
- },
- {
-  "vi": "Đổi giá trà nền trước khi mở cửa.",
-  "en": ""
- },
- {
-  "vi": "Có quà để nhận",
-  "en": ""
- },
- {
-  "vi": "Đổi tên quán",
-  "en": ""
- },
- {
-  "vi": "🌙 Khép ca · đủ khách hôm nay",
-  "en": ""
- },
- {
-  "vi": "🌙 Khép ca · hết giờ đón khách",
-  "en": ""
- },
- {
-  "vi": "Đang có đủ khách: làm nốt ly đang chờ nhé.",
-  "en": ""
- },
- {
-  "vi": "🗑️ Bỏ cuối ca",
-  "en": ""
- },
- {
-  "vi": "trà & trân châu: mai ủ, nấu vừa đủ",
-  "en": ""
- },
- {
-  "vi": "🥤 Ly còn",
-  "en": ""
- },
- {
-  "vi": "· sắp hết",
-  "en": ""
- },
- {
-  "vi": "🚚 Đang giao",
-  "en": ""
- },
- {
-  "vi": "Mở cửa tiệm trước.",
-  "en": ""
- },
- {
-  "vi": "· khách chọn",
-  "en": ""
- },
- {
-  "vi": "Đơn của khách",
-  "en": ""
- },
- {
-  "vi": "Còn bước",
-  "en": ""
- },
- {
-  "vi": "mở cửa tiệm",
-  "en": ""
- },
- {
-  "vi": "Mở cửa tiệm trước",
-  "en": ""
- },
- {
-  "vi": "Để riêng món bạn bè đã mua trước",
-  "en": ""
- },
- {
-  "vi": "chào đời",
-  "en": ""
- },
- {
-  "vi": "đầy tháng",
-  "en": ""
- },
- {
-  "vi": "thôi nôi",
-  "en": ""
- },
- {
-  "vi": "giật mình",
-  "en": ""
- },
- {
-  "vi": "Tắm cho bé",
-  "en": ""
- },
- {
-  "vi": "bú bình",
-  "en": ""
- },
- {
-  "vi": "nhìn, nghe",
-  "en": ""
- },
- {
-  "vi": "Chân tay",
-  "en": ""
- },
- {
-  "vi": "⏳ Chờ thùng",
-  "en": ""
- },
- {
-  "vi": "🚚 Đủ 8 kiện đang giao · nhận bớt ở Kho",
-  "en": ""
- },
- {
-  "vi": "Xem xong chuyện ở tiệm",
-  "en": ""
- },
- {
-  "vi": "Rút hộp sữa quá hạn khỏi kệ",
-  "en": ""
- },
- {
-  "vi": "↩︎ Để lại",
-  "en": ""
- },
- {
-  "vi": "🥫 Rút",
-  "en": ""
- },
- {
-  "vi": "Xử lý chuyện ở tiệm",
-  "en": ""
- },
- {
-  "vi": "Chọn cách xử lý chuyện ở tiệm",
-  "en": ""
- },
- {
-  "vi": "🏪 Mở cửa tiệm",
-  "en": ""
- },
- {
-  "vi": "💬 Hỏi nhu cầu khách",
-  "en": ""
- },
- {
-  "vi": "Xem tem trên món",
-  "en": ""
- },
- {
-  "vi": "Hỏi bố mẹ đủ 3 câu",
-  "en": ""
- },
- {
-  "vi": "Chọn đồ đúng điều bố mẹ lo (tối đa 4 loại, 6 món)",
-  "en": ""
- },
- {
-  "vi": "Khách chỉ cần 1 món",
-  "en": ""
- },
- {
-  "vi": "(khách không hỏi)",
-  "en": ""
- },
- {
-  "vi": "Giỏ vượt ngân sách khách dặn",
-  "en": ""
- },
- {
-  "vi": "💌 Chọn thiệp đúng dịp",
-  "en": ""
- },
- {
-  "vi": "Kiểm đơn trước khi trao",
-  "en": ""
- },
- {
-  "vi": "kiểm đơn trước",
-  "en": ""
- },
- {
-  "vi": "⚖️ Chốt cách đổi trả",
-  "en": ""
- },
- {
-  "vi": "Màu",
-  "en": ""
- },
- {
-  "vi": "💅 Sổ tiệm hôm nay",
-  "en": ""
- },
- {
-  "vi": "chưa chín…",
-  "en": ""
- },
- {
-  "vi": "CHÍN TỚI — TẮT BẾP!",
-  "en": ""
- },
- {
-  "vi": "hơi quá lửa…",
-  "en": ""
- },
- {
-  "vi": "👂 Nghe chủ nhà dặn",
-  "en": ""
- },
- {
-  "vi": "🍽️ Nấu thêm",
-  "en": ""
- },
- {
-  "vi": "📝 Thực đơn hôm nay",
-  "en": ""
- },
- {
-  "vi": "Dự tính",
-  "en": ""
- },
- {
-  "vi": "thực đơn chưa có",
-  "en": ""
- },
- {
-  "vi": "👆 Xem lại thực đơn",
-  "en": ""
- },
- {
-  "vi": "Quá tiền chợ",
-  "en": ""
- },
- {
-  "vi": "👆 Đổi món rẻ hơn",
-  "en": ""
- },
- {
-  "vi": "✓ tươi",
-  "en": ""
- },
- {
-  "vi": "✗ không tươi",
-  "en": ""
- },
- {
-  "vi": "Mua mấy phần",
-  "en": ""
- },
- {
-  "vi": "🔄 Đổi",
   "en": ""
  }
 ]

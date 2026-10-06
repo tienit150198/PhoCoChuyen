@@ -1,5 +1,261 @@
 [
  {
+  "vi": "💵 ĐƯA TIỀN THỐI",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Nói thật: quán hết món này",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa đang làm phải bỏ. Nói thật với khách là quán hết món?",
+  "en": ""
+ },
+ {
+  "vi": "🍚 ĐƯA CƠM",
+  "en": ""
+ },
+ {
+  "vi": "làm dĩa cơm trước đã",
+  "en": ""
+ },
+ {
+  "vi": "＋ Bày",
+  "en": ""
+ },
+ {
+  "vi": "🍱 Tủ kính",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Nồi hết cơm",
+  "en": ""
+ },
+ {
+  "vi": "Nấu cơm, mở quán",
+  "en": ""
+ },
+ {
+  "vi": "Xới cơm cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Việc mở quán",
+  "en": ""
+ },
+ {
+  "vi": "Cơm của khách",
+  "en": ""
+ },
+ {
+  "vi": "chín rồi",
+  "en": ""
+ },
+ {
+  "vi": "vá cơm",
+  "en": ""
+ },
+ {
+  "vi": "📦 Sắp hết",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Mở Kho",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa, hộp đã bán",
+  "en": ""
+ },
+ {
+  "vi": "Vá cơm xới dư",
+  "en": ""
+ },
+ {
+  "vi": "Đồ bỏ cuối ngày",
+  "en": ""
+ },
+ {
+  "vi": "Nhập gạo, sườn, trứng, đồ kho, hộp…",
+  "en": ""
+ },
+ {
+  "vi": "Số lượng THỰC GIAO (Biên bản giao nhận) × Đơn giá chưa thuế (Đơn đặt hàng).",
+  "en": ""
+ },
+ {
+  "vi": "Tiền hàng chưa thuế × 10%.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền hàng chưa thuế + Thuế GTGT.",
+  "en": ""
+ },
+ {
+  "vi": "Số dư cuối kỳ theo Sổ tiền gửi, cộng tiền vào / trừ tiền ra của các khoản cần ghi bổ sung.",
+  "en": ""
+ },
+ {
+  "vi": "Cộng cột “Còn phải thu” của mọi hóa đơn chưa thu đủ (Sổ chi tiết công nợ 131).",
+  "en": ""
+ },
+ {
+  "vi": "Bảng kiểm đếm: mỗi dòng mệnh giá × số tờ, rồi cộng lại.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ quỹ: tồn quỹ đầu ngày + các phiếu thu − các phiếu chi.",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên giá ÷ (số năm × 12), theo Sổ tài sản cố định. Mới dùng trong tháng hoặc đã khấu hao hết thì ghi 0.",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên giá − hao mòn lũy kế − khấu hao tháng này (Sổ tài sản cố định).",
+  "en": ""
+ },
+ {
+  "vi": "Thực đếm (Biên bản kiểm kê) − Tồn theo sổ (Thẻ kho). Thiếu ghi số âm, khớp ghi 0.",
+  "en": ""
+ },
+ {
+  "vi": "Số lượng thiếu (bước trước) × Đơn giá vốn trên Thẻ kho.",
+  "en": ""
+ },
+ {
+  "vi": "Thuế đầu ra (TK 3331) − thuế đầu vào được khấu trừ (TK 133), trên bảng số dư.",
+  "en": ""
+ },
+ {
+  "vi": "Tổng cột Dư Nợ và tổng cột Dư Có của bảng cân đối thử: lấy tổng lớn trừ tổng nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Số dư TK 511 trên Sổ cái.",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu thuần − Giá vốn (TK 632).",
+  "en": ""
+ },
+ {
+  "vi": "Lợi nhuận gộp − chi phí bán hàng (641) − chi phí quản lý (642), theo số đã sửa.",
+  "en": ""
+ },
+ {
+  "vi": "bảng hàng hóa",
+  "en": ""
+ },
+ {
+  "vi": "giấy kẹp kèm",
+  "en": ""
+ },
+ {
+  "vi": "chỗ sai",
+  "en": ""
+ },
+ {
+  "vi": "hồ sơ hoàn tất",
+  "en": ""
+ },
+ {
+  "vi": "chứng từ đã đóng dấu",
+  "en": ""
+ },
+ {
+  "vi": "Chưa hiểu số đã ghi. Ghi số nguyên, vd 1.500.000, -200 hoặc 6+4.",
+  "en": ""
+ },
+ {
+  "vi": "ví dụ: 6+4, -200, 1.500.000",
+  "en": ""
+ },
+ {
+  "vi": "Khu phố Mây Chiều",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang ở",
+  "en": ""
+ },
+ {
+  "vi": "Tuyến đã chốt",
+  "en": ""
+ },
+ {
+  "vi": "Tuyến nháp",
+  "en": ""
+ },
+ {
+  "vi": "Điểm lấy hàng",
+  "en": ""
+ },
+ {
+  "vi": "Điểm giao hàng",
+  "en": ""
+ },
+ {
+  "vi": "Khu dân cư",
+  "en": ""
+ },
+ {
+  "vi": "Khu dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "Khu nhà vườn",
+  "en": ""
+ },
+ {
+  "vi": "Thứ tự điểm dừng",
+  "en": ""
+ },
+ {
+  "vi": "🗺️ Lộ trình · bản đồ & điểm dừng",
+  "en": ""
+ },
+ {
+  "vi": "Khách đếm lại thấy thối thiếu: thối thêm cho đủ rồi đưa lại.",
+  "en": ""
+ },
+ {
+  "vi": "Lập biên bản hàng hỏng? Bạn đền một phần giá trị hàng, bảo hiểm trả phần còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Hẹn giao trước",
+  "en": ""
+ },
+ {
+  "vi": "· đã quá giờ hẹn",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Chạy tới",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Cây xăng mất điện — chờ 5 phút",
+  "en": ""
+ },
+ {
+  "vi": "⛽ Đổ đầy bình",
+  "en": ""
+ },
+ {
+  "vi": "⛽ Sắp hết xăng: lên lộ trình tới cây xăng",
+  "en": ""
+ },
+ {
+  "vi": "🍾 Mua xăng chai",
+  "en": ""
+ },
+ {
+  "vi": "⛽ Không đủ xăng tới đây",
+  "en": ""
+ },
+ {
   "vi": "📱 Máy hơi chậm: đã chuyển sang ⏩ Đi nhanh. Bấm 🛵 Tự lái để thử lại.",
   "en": ""
  },
@@ -1541,262 +1797,6 @@
  },
  {
   "vi": "Bọc nylon",
-  "en": ""
- },
- {
-  "vi": "🏷️ Bảng giá",
-  "en": ""
- },
- {
-  "vi": "🏷️ Giá từng loại hoa: đổi trong Bảng giá trước khi mở ca. Giá hoa tính vào giá trị bó, khách vẫn trả đúng giá đơn đã báo.",
-  "en": ""
- },
- {
-  "vi": "💬 Khách kể thêm",
-  "en": ""
- },
- {
-  "vi": "Giá trị hoa so với ngân sách (nên từ 70%)",
-  "en": ""
- },
- {
-  "vi": "Đúng tông",
-  "en": ""
- },
- {
-  "vi": "Cắm mút: không cần ngâm xô.",
-  "en": ""
- },
- {
-  "vi": "băng rôn",
-  "en": ""
- },
- {
-  "vi": "📋 In đúng chữ khách dặn",
-  "en": ""
- },
- {
-  "vi": "thiệp",
-  "en": ""
- },
- {
-  "vi": "✨ Dùng lời này",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng sinh nhật! Tuổi mới thật khỏe mạnh, bình an và nhiều niềm vui nhé.",
-  "en": ""
- },
- {
-  "vi": "Thành kính chia buồn cùng gia đình. Cầu mong người đã khuất được yên nghỉ.",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng khai trương! Chúc tiệm hồng phát, đắt khách, vạn sự thành công.",
-  "en": ""
- },
- {
-  "vi": "Thành thật xin lỗi. Mong em tha thứ, thương em nhiều lắm.",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng ngày Phụ nữ Việt Nam 20/10! Cảm ơn vì tất cả yêu thương.",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng ngày 8/3! Luôn xinh đẹp và hạnh phúc nhé.",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng tốt nghiệp! Tự hào về bạn, chặng đường mới thật thành công nhé.",
-  "en": ""
- },
- {
-  "vi": "Làm vợ anh nhé? Anh muốn mãi mãi bên nhau, trọn đời yêu em.",
-  "en": ""
- },
- {
-  "vi": "🙌 Nhấc hoa khỏi xô để sửa",
-  "en": ""
- },
- {
-  "vi": "Gỡ giấy và ruy băng (bỏ vật liệu cũ) để sửa bó?",
-  "en": ""
- },
- {
-  "vi": "✂️ Gỡ giấy & ruy băng để sửa",
-  "en": ""
- },
- {
-  "vi": "↩️ Tháo bó ra để sửa",
-  "en": ""
- },
- {
-  "vi": "Bỏ toàn bộ hoa và vật liệu đang dùng, làm lại từ đầu?",
-  "en": ""
- },
- {
-  "vi": "Chọn hoa đúng phiếu",
-  "en": ""
- },
- {
-  "vi": "độc với mèo",
-  "en": ""
- },
- {
-  "vi": "dễ bị hiểu sai ý",
-  "en": ""
- },
- {
-  "vi": "lệch tông màu",
-  "en": ""
- },
- {
-  "vi": "Bỏ ra",
-  "en": ""
- },
- {
-  "vi": "bó còn thưa so với ngân sách",
-  "en": ""
- },
- {
-  "vi": "✨ Lấy đúng hoa",
-  "en": ""
- },
- {
-  "vi": "🧊 Chọn hoa trong tủ mát",
-  "en": ""
- },
- {
-  "vi": "Chọn giờ giao",
-  "en": ""
- },
- {
-  "vi": "🕒 Chọn khung giờ giao",
-  "en": ""
- },
- {
-  "vi": "Chuyện bất ngờ: chọn cách xử lý",
-  "en": ""
- },
- {
-  "vi": "⚡ Chọn cách xử lý chuyện bất ngờ",
-  "en": ""
- },
- {
-  "vi": "💬 Hỏi khách",
-  "en": ""
- },
- {
-  "vi": "Thả hoa vào xô nước",
-  "en": ""
- },
- {
-  "vi": "cả hai xô đang bận",
-  "en": ""
- },
- {
-  "vi": "🪣 Sang đơn đang ngâm để nhấc hoa ra",
-  "en": ""
- },
- {
-  "vi": "🪣 Thả hoa vào xô nước",
-  "en": ""
- },
- {
-  "vi": "Chọn kiểu",
-  "en": ""
- },
- {
-  "vi": "Sai kiểu cắm: bỏ bó và làm lại từ đầu?",
-  "en": ""
- },
- {
-  "vi": "🗑️ Bỏ bó, làm lại đúng kiểu",
-  "en": ""
- },
- {
-  "vi": "Viết thiệp đúng dịp",
-  "en": ""
- },
- {
-  "vi": "✍️ Viết lại thiệp bằng lời gợi ý",
-  "en": ""
- },
- {
-  "vi": "✍️ Viết thiệp (lời gợi ý hợp dịp)",
-  "en": ""
- },
- {
-  "vi": "Chờ đủ nước rồi nhấc ra & bó",
-  "en": ""
- },
- {
-  "vi": "🙌 Nhấc hoa ra & bó",
-  "en": ""
- },
- {
-  "vi": "Chờ hoa hút đủ nước rồi nhấc ra",
-  "en": ""
- },
- {
-  "vi": "🙌 Nhấc hoa ra (đủ nước)",
-  "en": ""
- },
- {
-  "vi": "Chờ mút tự chìm rồi cắm",
-  "en": ""
- },
- {
-  "vi": "giấy gói",
-  "en": ""
- },
- {
-  "vi": "ruy băng",
-  "en": ""
- },
- {
-  "vi": "In băng rôn đúng chữ",
-  "en": ""
- },
- {
-  "vi": "🖨️ In băng rôn đúng chữ khách dặn",
-  "en": ""
- },
- {
-  "vi": "khách sẽ chê: bỏ ra, thay cành tươi",
-  "en": ""
- },
- {
-  "vi": "cắm, gói xong món này",
-  "en": ""
- },
- {
-  "vi": "Khách sẽ xem kỹ hoa, thiệp và màu sắc.",
-  "en": ""
- },
- {
-  "vi": "xử lý chuyện bất ngờ trước",
-  "en": ""
- },
- {
-  "vi": "cắm, gói xong bó hoa",
-  "en": ""
- },
- {
-  "vi": "chọn khung giờ giao",
-  "en": ""
- },
- {
-  "vi": "Đang làm…",
-  "en": ""
- },
- {
-  "vi": "⏳ Đang làm…",
-  "en": ""
- },
- {
-  "vi": "Làm đơn tiếp theo",
   "en": ""
  }
 ]

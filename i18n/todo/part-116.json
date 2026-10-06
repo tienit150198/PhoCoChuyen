@@ -1,5 +1,185 @@
 [
  {
+  "vi": "Chuyến $1: một trải nghiệm tệ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Con thích tổ bay chuyến $1 nhất luôn!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bản tin chuyến $1 $2 → $3: $4 $5. $6 $7 khách. Dầu chặng $8, đi dự bị $9 $10, dự phòng 30 phút $11.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚖️ Hội đồng kỷ luật: hạ xuống $1, tạm dừng nhiệm vụ hôm nay, không có thưởng tới khi hồ sơ sạch lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn cư trú: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đồ thất lạc: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mang tới một $2 nhặt được ($3).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hòa giải: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 và $2 cùng lên phường, chưa ngồi đã to tiếng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trẻ lạc ở $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Một bé $2 đứng khóc một mình: $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tuần tra: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Một vòng tuần tra $2: ba chuyện cần để mắt.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nói chuyện chống lừa đảo: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: $2 chờ nghe phường nói chuyện chống lừa đảo.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✋ Anh Định kéo tay bạn lại: “$1”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giao ban, làm trước: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📋 Giao ban xong. Việc đầu tiên: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn cư trú: $1 kẹp phong bì trong hồ sơ, đã trả lại, ghi sổ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 chưa đúng kìa. Hướng dẫn bổ sung, đừng nhận vội.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ còn thiếu ($1) mà vẫn nhận, chị Hằng phải gọi người ta lên lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn cư trú: nhận hồ sơ tạm trú của $1 (còn thiếu giấy, phải gọi lại).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn cư trú: nhận hồ sơ tạm trú của $1, đủ giấy tờ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn cư trú: hồ sơ của $1 đã đối chiếu đủ từng giấy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhận hồ sơ tạm trú của $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🗂️ Nhận hồ sơ, hẹn trả giấy chiều nay. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn cư trú: hướng dẫn $1 bổ sung $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn cư trú: đã nhận đủ hồ sơ của $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hướng dẫn $1 bổ sung hồ sơ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 Kiểm đếm cùng $1: $2; bên trong: $3. Hai bên ký biên bản tiếp nhận. Một lúc sau, $4 tới xin nhận lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 được trả cho người không phải chủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đồ thất lạc: trả $1 cho $2, có ký nhận.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đồ thất lạc: $1 đã trả đúng chủ, đối chiếu đủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả lại $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👛 $1 ký nhận, cảm ơn rối rít.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👛 $1 ký nhận rồi đi vội. Chiều đó chủ thật lên hỏi… 📋 Anh Định lập báo cáo, đi tìm lại đồ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đồ thất lạc: chưa trả $1, người tới nhận chưa chứng minh được là chủ.",
   "en": "",
   "pattern": true
@@ -2066,186 +2246,6 @@
  },
  {
   "vi": "Bà bán sấu để lại $1 phần sấu dầm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà bán sấu ghé để lại $1 phần sấu dầm ($2 xu).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🥤 Rót $1 cốc, bán $2 món ăn vặt.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧊 Đá tan mất $1 phần trong thùng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍵 $1 lượt khách chê chè nhạt.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ghi thiếu $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ghi lố $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Bà Lựu dò sổ tối nay: $1 dòng mới, $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Sổ chú Tường đang nợ $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚨 Bị phạt $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", mất $1 ghế.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚰 Đổ bỏ $1 cốc chè thừa, úp bình.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧽 Rửa nốt $1 cốc, úp gọn vào khay.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sáng mai anh Tuấn xe đá thả $1 cây đá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng. $5",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "· $1 người ngồi",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 gọi: $2$3 · $4.$5 $6",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã rửa $1 cốc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đang học $1. Thi xong hoặc bỏ khóa đó trước nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đã đạt điểm tối đa ở $1 rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví chưa đủ $1 xu học phí. Tự học thì miễn phí, chỉ chậm hơn một ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã quẹt thẻ $1 xu học phí lớp cấp tốc",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã đóng $1 xu học phí lớp cấp tốc",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1 xu học phí từ tài khoản thanh toán",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1. Đọc lướt bài học rồi vào thi luôn nhé: được mở sách, câu nào phân vân thì bấm 💡 Gợi ý.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1. Bài thi mở $2; trong lúc chờ, đọc bài và làm thử vài câu nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã bỏ khóa $1. Học phí đã đóng không được hoàn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bài thi mở $1. Làm một ngày ở đâu đó rồi quay lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: đúng $2/$3 câu ($4 điểm).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Điểm cao nhất của bạn: $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Cần $2/$3 câu. Xem lời giải rồi thi lại: lớp ôn $4 xu (thi lại ngay hôm nay) hoặc tự học miễn phí (thi $5).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 “Con cầu mong $2 $3.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 $3 thân quen.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đánh giá $1★ sau khi được phục vụ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 mời bạn: $3.",
   "en": "",
   "pattern": true
  }

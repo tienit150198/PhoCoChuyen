@@ -1,5 +1,141 @@
 [
  {
+  "vi": "Lễ phép khi giao",
+  "en": ""
+ },
+ {
+  "vi": "shipper cộc lốc",
+  "en": ""
+ },
+ {
+  "vi": "shipper đưa hàng không nói câu nào",
+  "en": ""
+ },
+ {
+  "vi": "gọi xuống lấy hàng mà giọng như ra lệnh",
+  "en": ""
+ },
+ {
+  "vi": "shipper ném gói hàng qua cổng",
+  "en": ""
+ },
+ {
+  "vi": "shipper chào hỏi lễ phép, đưa hàng bằng hai tay",
+  "en": ""
+ },
+ {
+  "vi": "shipper dễ thương, còn dặn cẩn thận hàng dễ vỡ",
+  "en": ""
+ },
+ {
+  "vi": "shipper cảm ơn rối rít, ai nhận cũng vui",
+  "en": ""
+ },
+ {
+  "vi": "Cộc lốc.",
+  "en": ""
+ },
+ {
+  "vi": "Lễ phép.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi điện báo",
+  "en": ""
+ },
+ {
+  "vi": "tới nơi không gọi, đứng ngoài cổng bấm còi",
+  "en": ""
+ },
+ {
+  "vi": "gọi liên tục lúc tôi đang họp",
+  "en": ""
+ },
+ {
+  "vi": "nhắn tin cụt lủn \"xuống lấy hàng\"",
+  "en": ""
+ },
+ {
+  "vi": "gọi trước mười phút, báo sắp tới",
+  "en": ""
+ },
+ {
+  "vi": "nhắn tin báo trước, không làm phiền",
+  "en": ""
+ },
+ {
+  "vi": "không nghe máy thì nhắn tin, chờ thêm chút",
+  "en": ""
+ },
+ {
+  "vi": "Không gọi.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi trước.",
+  "en": ""
+ },
+ {
+  "vi": "Mũ, áo shipper",
+  "en": ""
+ },
+ {
+  "vi": "shipper luộm thuộm",
+  "en": ""
+ },
+ {
+  "vi": "áo đồng phục nhăn nhúm, lấm tấm bùn",
+  "en": ""
+ },
+ {
+  "vi": "shipper đội mũ bảo hiểm mà không cài quai",
+  "en": ""
+ },
+ {
+  "vi": "shipper mặc áo gọn gàng, đội mũ đàng hoàng",
+  "en": ""
+ },
+ {
+  "vi": "áo mưa trùm kín thùng hàng, chu đáo",
+  "en": ""
+ },
+ {
+  "vi": "hàng móp",
+  "en": ""
+ },
+ {
+  "vi": "hộp giao tới hơi móp một góc",
+  "en": ""
+ },
+ {
+  "vi": "túi hàng ướt lem nhem vì mưa",
+  "en": ""
+ },
+ {
+  "vi": "đồ uống sóng sánh, tràn ra túi",
+  "en": ""
+ },
+ {
+  "vi": "hàng bọc kỹ, tới tay còn nguyên",
+  "en": ""
+ },
+ {
+  "vi": "trời mưa mà hàng được bọc ni lông khô ráo",
+  "en": ""
+ },
+ {
+  "vi": "đồ uống giao tới còn lạnh, không đổ giọt nào",
+  "en": ""
+ },
+ {
+  "vi": "Móp.",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên vẹn.",
+  "en": ""
+ },
+ {
   "vi": "Nhãn hàng",
   "en": ""
  },
@@ -1661,142 +1797,6 @@
  },
  {
   "vi": "không có ghi nhận nào về chuyện này hôm đó; phần việc chính làm đúng",
-  "en": ""
- },
- {
-  "vi": "Bạn trừ một sao vì một góc cụ thể (unfair_claim.claim) theo cảm nhận riêng; không có ghi nhận nào xác nhận chuyện đó, phần việc chính làm tốt. Nếu chủ quán/giáo viên trả lời lịch sự, đưa sự thật hoặc cách họ kiểm tra (lịch dọn, quy trình), bạn chấp nhận và trả lại sao; nếu bị cãi hoặc mỉa, bạn giữ ý kiến, xéo xắt nhưng không tục.",
-  "en": ""
- },
- {
-  "vi": "b[ée]o (ú|phì|ị|như)",
-  "en": ""
- },
- {
-  "vi": "mập(?! mờ)",
-  "en": ""
- },
- {
-  "vi": "l[ùu]n (tịt|xủn|như)",
-  "en": ""
- },
- {
-  "vi": "xấu (xí|trai|gái|người)",
-  "en": ""
- },
- {
-  "vi": "mặt (xấu|mụn|rỗ)",
-  "en": ""
- },
- {
-  "vi": "răng hô",
-  "en": ""
- },
- {
-  "vi": "đen nhẻm",
-  "en": ""
- },
- {
-  "vi": "gầy (nhom|trơ)",
-  "en": ""
- },
- {
-  "vi": "bụng (bự|phệ)",
-  "en": ""
- },
- {
-  "vi": "vòng (một|ba)",
-  "en": ""
- },
- {
-  "vi": "dáng người",
-  "en": ""
- },
- {
-  "vi": "gợi cảm",
-  "en": ""
- },
- {
-  "vi": "hở hang",
-  "en": ""
- },
- {
-  "vi": "già (khú|chát|háp)",
-  "en": ""
- },
- {
-  "vi": "gái già",
-  "en": ""
- },
- {
-  "vi": "bà già",
-  "en": ""
- },
- {
-  "vi": "ông già",
-  "en": ""
- },
- {
-  "vi": "nhà quê",
-  "en": ""
- },
- {
-  "vi": "quê mùa",
-  "en": ""
- },
- {
-  "vi": "bắc kỳ",
-  "en": ""
- },
- {
-  "vi": "nam kỳ",
-  "en": ""
- },
- {
-  "vi": "trung kỳ",
-  "en": ""
- },
- {
-  "vi": "dân tỉnh lẻ",
-  "en": ""
- },
- {
-  "vi": "đồ mọi",
-  "en": ""
- },
- {
-  "vi": "mọi rợ",
-  "en": ""
- },
- {
-  "vi": "theo đạo",
-  "en": ""
- },
- {
-  "vi": "công giáo",
-  "en": ""
- },
- {
-  "vi": "phật tử",
-  "en": ""
- },
- {
-  "vi": "thiểu năng",
-  "en": ""
- },
- {
-  "vi": "tàn tật",
-  "en": ""
- },
- {
-  "vi": "pê đê",
-  "en": ""
- },
- {
-  "vi": "bóng lộ",
-  "en": ""
- },
- {
-  "vi": "đồng tính",
   "en": ""
  }
 ]

@@ -1,5 +1,141 @@
 [
  {
+  "vi": "Hai người, một mâm cơm",
+  "en": ""
+ },
+ {
+  "vi": "Bánh bao nóng",
+  "en": ""
+ },
+ {
+  "vi": "Bánh bao",
+  "en": ""
+ },
+ {
+  "vi": "Gói xôi mặn",
+  "en": ""
+ },
+ {
+  "vi": "Xôi mặn",
+  "en": ""
+ },
+ {
+  "vi": "Tô phở bò",
+  "en": ""
+ },
+ {
+  "vi": "Ly cà phê sữa đá",
+  "en": ""
+ },
+ {
+  "vi": "Ngủ sớm",
+  "en": ""
+ },
+ {
+  "vi": "Tắm, nghe nhạc",
+  "en": ""
+ },
+ {
+  "vi": "Xem một tập phim",
+  "en": ""
+ },
+ {
+  "vi": "Lướt điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "No nê",
+  "en": ""
+ },
+ {
+  "vi": "Vừa bụng",
+  "en": ""
+ },
+ {
+  "vi": "Hơi đói",
+  "en": ""
+ },
+ {
+  "vi": "Đói lả",
+  "en": ""
+ },
+ {
+  "vi": "Tỉnh như sáo",
+  "en": ""
+ },
+ {
+  "vi": "Hơi mỏi",
+  "en": ""
+ },
+ {
+  "vi": "Buồn ngủ rũ rượi",
+  "en": ""
+ },
+ {
+  "vi": "Bụng réo ùng ục rồi… Tay chân hơi rã rời.",
+  "en": ""
+ },
+ {
+  "vi": "Mắt díp lại rồi… Tay chậm hẳn đi.",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ ăn uống đàng hoàng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tối nay ngủ sớm chút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "· tay nghề nội trợ",
+  "en": ""
+ },
+ {
+  "vi": "Dọn dẹp rồi ngủ",
+  "en": ""
+ },
+ {
+  "vi": "☕ Ăn sáng xong",
+  "en": ""
+ },
+ {
+  "vi": ", ngủ đủ giấc",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay dễ mỏi, nhớ nghỉ tay chút.",
+  "en": ""
+ },
+ {
+  "vi": "Ăn uống và giấc ngủ chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một món cho bữa trưa nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ăn trưa rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay ăn trưa rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tới giờ ăn trưa. Từ 11:30 trên đồng hồ nơi làm nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Bạn nhịn, làm tiếp. Chiều nay chắc bụng réo đó.",
+  "en": ""
+ },
+ {
+  "vi": "Tối rồi, chọn bữa tối nhé.",
+  "en": ""
+ },
+ {
   "vi": "Bụng no rồi, ăn nữa là căng bụng đó.",
   "en": ""
  },
@@ -1661,142 +1797,6 @@
  },
  {
   "vi": "Báo sếp sớm, xin thêm giờ",
-  "en": ""
- },
- {
-  "vi": "Nộp đại cho kịp",
-  "en": ""
- },
- {
-  "vi": "Thức khuya tự sửa, không báo",
-  "en": ""
- },
- {
-  "vi": "Bạn mới vào nhóm làm sai nhiều.",
-  "en": ""
- },
- {
-  "vi": "Kèm cặp, chỉ từng bước",
-  "en": ""
- },
- {
-  "vi": "Làm thay cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Báo sếp đổi người",
-  "en": ""
- },
- {
-  "vi": "Khách gọi tới bực vì chờ lâu.",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi, hẹn giờ trả lời rõ",
-  "en": ""
- },
- {
-  "vi": "Chuyển máy cho người khác",
-  "en": ""
- },
- {
-  "vi": "Bảo khách chờ tiếp",
-  "en": ""
- },
- {
-  "vi": "Sếp giao hai việc gấp cùng lúc.",
-  "en": ""
- },
- {
-  "vi": "Hỏi sếp việc nào trước",
-  "en": ""
- },
- {
-  "vi": "Làm cả hai cho xong",
-  "en": ""
- },
- {
-  "vi": "Chọn việc mình quen",
-  "en": ""
- },
- {
-  "vi": "Bạn thấy lỗi của chính mình tuần trước.",
-  "en": ""
- },
- {
-  "vi": "Báo ngay và sửa",
-  "en": ""
- },
- {
-  "vi": "Sửa lặng lẽ",
-  "en": ""
- },
- {
-  "vi": "Kệ, chưa ai thấy",
-  "en": ""
- },
- {
-  "vi": "Khách quen xin bớt giá quá nhiều.",
-  "en": ""
- },
- {
-  "vi": "Giữ giá, tặng thêm chút dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Bớt luôn cho vui",
-  "en": ""
- },
- {
-  "vi": "Từ chối cộc lốc",
-  "en": ""
- },
- {
-  "vi": "Khách phàn nàn to trước mặt người khác.",
-  "en": ""
- },
- {
-  "vi": "Mời ra chỗ riêng, nghe hết",
-  "en": ""
- },
- {
-  "vi": "Cãi lại cho rõ",
-  "en": ""
- },
- {
-  "vi": "Đồng nghiệp đến trễ lần thứ ba.",
-  "en": ""
- },
- {
-  "vi": "Nói riêng, hỏi lý do",
-  "en": ""
- },
- {
-  "vi": "Nhắc trước mọi người",
-  "en": ""
- },
- {
-  "vi": "Làm thay, không nói gì",
-  "en": ""
- },
- {
-  "vi": "Một bước làm tắt có thể hại khách.",
-  "en": ""
- },
- {
-  "vi": "Dừng lại, làm đủ quy trình",
-  "en": ""
- },
- {
-  "vi": "Hỏi ý khách",
-  "en": ""
- },
- {
-  "vi": "Khách để quên đồ quý ở quầy.",
-  "en": ""
- },
- {
-  "vi": "Cất kỹ, ghi sổ, gọi khách",
   "en": ""
  }
 ]

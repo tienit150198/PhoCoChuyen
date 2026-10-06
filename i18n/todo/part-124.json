@@ -1,5 +1,85 @@
 [
  {
+  "vi": "Ảnh lưu niệm: $1 nhận $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã chép mã $1, gửi cho bạn bè nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mã phòng là $1, đọc cho bạn bè nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mỗi lượt chụp 4 kiểu, in thành một dải ảnh có khung. Mỗi người tự trả $1$2. Ảnh chỉ nằm trên máy của bạn, không lưu lên đâu cả.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Còn $1 chỗ: gửi mã cho bạn bè",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "cần $1 để chụp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Màn $1/",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "qua hết $1 màn ăn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Qua màn $1!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💰 Nhận $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ". Chơi tiếp màn $1: qua màn được",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Qua màn $1, phần thưởng tăng thêm được nhân đôi",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💰 Dừng, nhận $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🗡️ Chơi tiếp màn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dao chạm dao! Thua ở màn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mất $1 thưởng và $2 tiền đặt",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Mất $1 tiền đặt",
   "en": "",
   "pattern": true
@@ -1415,6 +1495,36 @@
   "pattern": true
  },
  {
+  "vi": "🎉 Bạn đoán đúng! +$1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bắt đầu sau $1s",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xếp hàng · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "👎 Bỏ bài $1/",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã xếp hàng · −$1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💰 Đã tặng $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Điểm là XP ở $1. Bằng điểm thì ai làm nhiều ngày hơn, rồi được nhiều sao hơn đứng trước.",
   "en": "",
   "pattern": true
@@ -1900,11 +2010,6 @@
   "pattern": true
  },
  {
-  "vi": "No bụng $1",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "Sáng mai tỉnh táo $1",
   "en": "",
   "pattern": true
@@ -1916,11 +2021,6 @@
  },
  {
   "vi": "Sáng mai tỉnh táo $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví còn $1 xu.",
   "en": "",
   "pattern": true
  },
@@ -2146,106 +2246,6 @@
  },
  {
   "vi": "/ $1 NGÃ TƯ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "/ $1 phút hoạt động, lấy từ két/vốn quầy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "phần nguyên liệu · $1 từ két/vốn quầy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mở $1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "+ $1 vốn quầy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giữ $1 để trả lương ca này. Nếu hủy hoặc hết hạn, tiền hoàn về nguồn đã chọn. Quỹ chung đã đóng thì hoàn về ví người chi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cho $1 nghỉ?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lắp $1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sang nhượng $1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "NGÀY SỐNG $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "quầy · két $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Làm $1 việc ở một nghề bán hàng (trà sữa, tạp hóa, hoa…) rồi quay lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💼 Làm thêm$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Làm $1: xong $2 việc rồi khép ca.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ca làm ở tiệm $1 của chính bạn: hàng nhập dùng quỹ nghề của bạn, nên quỹ đó hết thì nhập hàng không được. Vốn quầy chủ góp ở lại quầy của chủ, không chuyển sang bạn. Xong ca: bạn nhận $2 lương, quầy chủ nhận phần doanh thu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quầy cần người $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhận một ca, làm một ngày đúng nghề đó. Xong $1 việc rồi khép ca là lương vào ví. Bỏ ca lúc nào cũng được, không mất gì.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã gửi lời mời. Chờ $1 mở 🏪 Quầy của bạn → 💼 Làm thêm để nhận",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "xong ca: +$1 vào két",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "chờ $1 giờ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quầy này đăng tối đa $1 ca cùng lúc (bằng số chỗ đứng) và đã đủ. Muốn đổi từ “Ai cũng được” sang mời riêng, hủy một ca đang chờ rồi chọn tên bạn và gửi lại.",
   "en": "",
   "pattern": true
  }

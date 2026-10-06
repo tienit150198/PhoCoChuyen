@@ -1,5 +1,261 @@
 [
  {
+  "vi": "🏷️ Bảng giá",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Giá từng loại hoa: đổi trong Bảng giá trước khi mở ca. Giá hoa tính vào giá trị bó, khách vẫn trả đúng giá đơn đã báo.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Khách kể thêm",
+  "en": ""
+ },
+ {
+  "vi": "Giá trị hoa so với ngân sách (nên từ 70%)",
+  "en": ""
+ },
+ {
+  "vi": "Đúng tông",
+  "en": ""
+ },
+ {
+  "vi": "Cắm mút: không cần ngâm xô.",
+  "en": ""
+ },
+ {
+  "vi": "băng rôn",
+  "en": ""
+ },
+ {
+  "vi": "📋 In đúng chữ khách dặn",
+  "en": ""
+ },
+ {
+  "vi": "thiệp",
+  "en": ""
+ },
+ {
+  "vi": "✨ Dùng lời này",
+  "en": ""
+ },
+ {
+  "vi": "Chúc mừng sinh nhật! Tuổi mới thật khỏe mạnh, bình an và nhiều niềm vui nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Thành kính chia buồn cùng gia đình. Cầu mong người đã khuất được yên nghỉ.",
+  "en": ""
+ },
+ {
+  "vi": "Chúc mừng khai trương! Chúc tiệm hồng phát, đắt khách, vạn sự thành công.",
+  "en": ""
+ },
+ {
+  "vi": "Thành thật xin lỗi. Mong em tha thứ, thương em nhiều lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Chúc mừng ngày Phụ nữ Việt Nam 20/10! Cảm ơn vì tất cả yêu thương.",
+  "en": ""
+ },
+ {
+  "vi": "Chúc mừng ngày 8/3! Luôn xinh đẹp và hạnh phúc nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chúc mừng tốt nghiệp! Tự hào về bạn, chặng đường mới thật thành công nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Làm vợ anh nhé? Anh muốn mãi mãi bên nhau, trọn đời yêu em.",
+  "en": ""
+ },
+ {
+  "vi": "🙌 Nhấc hoa khỏi xô để sửa",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ giấy và ruy băng (bỏ vật liệu cũ) để sửa bó?",
+  "en": ""
+ },
+ {
+  "vi": "✂️ Gỡ giấy & ruy băng để sửa",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Tháo bó ra để sửa",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ toàn bộ hoa và vật liệu đang dùng, làm lại từ đầu?",
+  "en": ""
+ },
+ {
+  "vi": "Chọn hoa đúng phiếu",
+  "en": ""
+ },
+ {
+  "vi": "độc với mèo",
+  "en": ""
+ },
+ {
+  "vi": "dễ bị hiểu sai ý",
+  "en": ""
+ },
+ {
+  "vi": "lệch tông màu",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ ra",
+  "en": ""
+ },
+ {
+  "vi": "bó còn thưa so với ngân sách",
+  "en": ""
+ },
+ {
+  "vi": "✨ Lấy đúng hoa",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Chọn hoa trong tủ mát",
+  "en": ""
+ },
+ {
+  "vi": "Chọn giờ giao",
+  "en": ""
+ },
+ {
+  "vi": "🕒 Chọn khung giờ giao",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện bất ngờ: chọn cách xử lý",
+  "en": ""
+ },
+ {
+  "vi": "⚡ Chọn cách xử lý chuyện bất ngờ",
+  "en": ""
+ },
+ {
+  "vi": "💬 Hỏi khách",
+  "en": ""
+ },
+ {
+  "vi": "Thả hoa vào xô nước",
+  "en": ""
+ },
+ {
+  "vi": "cả hai xô đang bận",
+  "en": ""
+ },
+ {
+  "vi": "🪣 Sang đơn đang ngâm để nhấc hoa ra",
+  "en": ""
+ },
+ {
+  "vi": "🪣 Thả hoa vào xô nước",
+  "en": ""
+ },
+ {
+  "vi": "Chọn kiểu",
+  "en": ""
+ },
+ {
+  "vi": "Sai kiểu cắm: bỏ bó và làm lại từ đầu?",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ Bỏ bó, làm lại đúng kiểu",
+  "en": ""
+ },
+ {
+  "vi": "Viết thiệp đúng dịp",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Viết lại thiệp bằng lời gợi ý",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Viết thiệp (lời gợi ý hợp dịp)",
+  "en": ""
+ },
+ {
+  "vi": "Chờ đủ nước rồi nhấc ra & bó",
+  "en": ""
+ },
+ {
+  "vi": "🙌 Nhấc hoa ra & bó",
+  "en": ""
+ },
+ {
+  "vi": "Chờ hoa hút đủ nước rồi nhấc ra",
+  "en": ""
+ },
+ {
+  "vi": "🙌 Nhấc hoa ra (đủ nước)",
+  "en": ""
+ },
+ {
+  "vi": "Chờ mút tự chìm rồi cắm",
+  "en": ""
+ },
+ {
+  "vi": "giấy gói",
+  "en": ""
+ },
+ {
+  "vi": "ruy băng",
+  "en": ""
+ },
+ {
+  "vi": "In băng rôn đúng chữ",
+  "en": ""
+ },
+ {
+  "vi": "🖨️ In băng rôn đúng chữ khách dặn",
+  "en": ""
+ },
+ {
+  "vi": "khách sẽ chê: bỏ ra, thay cành tươi",
+  "en": ""
+ },
+ {
+  "vi": "cắm, gói xong món này",
+  "en": ""
+ },
+ {
+  "vi": "Khách sẽ xem kỹ hoa, thiệp và màu sắc.",
+  "en": ""
+ },
+ {
+  "vi": "xử lý chuyện bất ngờ trước",
+  "en": ""
+ },
+ {
+  "vi": "cắm, gói xong bó hoa",
+  "en": ""
+ },
+ {
+  "vi": "chọn khung giờ giao",
+  "en": ""
+ },
+ {
+  "vi": "Đang làm…",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Đang làm…",
+  "en": ""
+ },
+ {
+  "vi": "Làm đơn tiếp theo",
+  "en": ""
+ },
+ {
   "vi": "👉 Làm đơn tiếp theo",
   "en": ""
  },
@@ -1541,262 +1797,6 @@
  },
  {
   "vi": "🔖 Quầy mượn trả",
-  "en": ""
- },
- {
-  "vi": "🏷️ Biên mục",
-  "en": ""
- },
- {
-  "vi": "🤫 Phòng đọc",
-  "en": ""
- },
- {
-  "vi": "🗂️ Lưu trữ",
-  "en": ""
- },
- {
-  "vi": "nhờ việc",
-  "en": ""
- },
- {
-  "vi": "chiều người ta",
-  "en": ""
- },
- {
-  "vi": "cách khác hợp nội quy",
-  "en": ""
- },
- {
-  "vi": "có người dỗi",
-  "en": ""
- },
- {
-  "vi": "👩‍🏫 Nhờ cô Nguyệt",
-  "en": ""
- },
- {
-  "vi": "mất thêm thời gian",
-  "en": ""
- },
- {
-  "vi": "🌡️ Xem ẩm kế kho",
-  "en": ""
- },
- {
-  "vi": "💧 Máy hút ẩm: đang chạy",
-  "en": ""
- },
- {
-  "vi": "💧 Bật máy hút ẩm",
-  "en": ""
- },
- {
-  "vi": "🪤 Soi bẫy côn trùng",
-  "en": ""
- },
- {
-  "vi": "🗄️ Kho lưu trữ",
-  "en": ""
- },
- {
-  "vi": "🪤 Bẫy côn trùng",
-  "en": ""
- },
- {
-  "vi": "🚪 Phòng đọc",
-  "en": ""
- },
- {
-  "vi": "🔑 Mở phòng đọc",
-  "en": ""
- },
- {
-  "vi": "📋 Dựng bảng nội quy",
-  "en": ""
- },
- {
-  "vi": "Kho quá ẩm: bật máy hút ẩm",
-  "en": ""
- },
- {
-  "vi": "Chọn cách xử lý bẫy",
-  "en": ""
- },
- {
-  "vi": "🪤 Chọn cách xử lý",
-  "en": ""
- },
- {
-  "vi": "Còn trên kệ",
-  "en": ""
- },
- {
-  "vi": "Sách tra cứu: chỉ đọc tại chỗ",
-  "en": ""
- },
- {
-  "vi": "Đang có người mượn",
-  "en": ""
- },
- {
-  "vi": "🔎 Tra máy",
-  "en": ""
- },
- {
-  "vi": "Thẻ còn hạn",
-  "en": ""
- },
- {
-  "vi": "Thẻ hết hạn",
-  "en": ""
- },
- {
-  "vi": "Thẻ bạn đọc",
-  "en": ""
- },
- {
-  "vi": "🪪 Kiểm thẻ",
-  "en": ""
- },
- {
-  "vi": "✓ Đã gia hạn thẻ",
-  "en": ""
- },
- {
-  "vi": "✓ Đã thu nợ cũ",
-  "en": ""
- },
- {
-  "vi": "Thu nợ phí cũ",
-  "en": ""
- },
- {
-  "vi": "💵 Thu nợ",
-  "en": ""
- },
- {
-  "vi": "📗 Cho mượn, đóng dấu hạn trả",
-  "en": ""
- },
- {
-  "vi": "🔖 Quyết ở quầy",
-  "en": ""
- },
- {
-  "vi": "🙏 Hoặc giúp cách khác",
-  "en": ""
- },
- {
-  "vi": "Tra máy: ký hiệu, còn sách không",
-  "en": ""
- },
- {
-  "vi": "Kiểm thẻ bạn đọc",
-  "en": ""
- },
- {
-  "vi": "Cho mượn hoặc giúp cách khác",
-  "en": ""
- },
- {
-  "vi": "Tình trạng sách",
-  "en": ""
- },
- {
-  "vi": "📖 Kiểm sách",
-  "en": ""
- },
- {
-  "vi": "Dấu hạn trả",
-  "en": ""
- },
- {
-  "vi": "📅 Xem dấu hạn",
-  "en": ""
- },
- {
-  "vi": "💬 Hỏi lý do",
-  "en": ""
- },
- {
-  "vi": "Làm mất: giá bìa",
-  "en": ""
- },
- {
-  "vi": "Hỏng sách",
-  "en": ""
- },
- {
-  "vi": "Không có phí",
-  "en": ""
- },
- {
-  "vi": "📒 Ghi sổ nợ",
-  "en": ""
- },
- {
-  "vi": "🤝 Đã miễn",
-  "en": ""
- },
- {
-  "vi": "Không phí",
-  "en": ""
- },
- {
-  "vi": "🙂 Nói nhẹ",
-  "en": ""
- },
- {
-  "vi": "📋 Nói theo nội quy",
-  "en": ""
- },
- {
-  "vi": "🗣️ Bạn đọc trả",
-  "en": ""
- },
- {
-  "vi": "Phí bạn đề xuất",
-  "en": ""
- },
- {
-  "vi": "🧾 Báo phí",
-  "en": ""
- },
- {
-  "vi": "🤝 Miễn phí",
-  "en": ""
- },
- {
-  "vi": "💰 Phí theo nội quy",
-  "en": ""
- },
- {
-  "vi": "🛠️ Sửa sách",
-  "en": ""
- },
- {
-  "vi": "Xem dấu hạn trả",
-  "en": ""
- },
- {
-  "vi": "Hỏi lý do trả trễ",
-  "en": ""
- },
- {
-  "vi": "Tính phí theo nội quy",
-  "en": ""
- },
- {
-  "vi": "💰 Đề xuất phí",
-  "en": ""
- },
- {
-  "vi": "Sửa sách",
-  "en": ""
- },
- {
-  "vi": "🛠️ Chọn cách sửa",
   "en": ""
  }
 ]

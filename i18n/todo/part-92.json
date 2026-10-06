@@ -1,5 +1,257 @@
 [
  {
+  "vi": "Định nghĩa",
+  "en": ""
+ },
+ {
+  "vi": "Thô lỗ",
+  "en": ""
+ },
+ {
+  "vi": "Phòng hát: báo cáo, cấm bài, đóng phòng",
+  "en": ""
+ },
+ {
+  "vi": "⏭ Bỏ bài",
+  "en": ""
+ },
+ {
+  "vi": "🧩 Dừng đố",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Đóng 10 phút",
+  "en": ""
+ },
+ {
+  "vi": "Không có báo cáo nào chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ cấm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa cấm bài nào.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng công khai",
+  "en": ""
+ },
+ {
+  "vi": "Mời ra: 1 giờ mọi phòng. Khóa chat: dùng chung với tab Chat.",
+  "en": ""
+ },
+ {
+  "vi": "Bài bị cấm",
+  "en": ""
+ },
+ {
+  "vi": "· đã cấm",
+  "en": ""
+ },
+ {
+  "vi": "🚫 Cấm bài",
+  "en": ""
+ },
+ {
+  "vi": "🔇 Khóa 1 giờ",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Mời ra",
+  "en": ""
+ },
+ {
+  "vi": "Chắc chắn?",
+  "en": ""
+ },
+ {
+  "vi": "Đã xong.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa được.",
+  "en": ""
+ },
+ {
+  "vi": "Tổng quan đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Tặng xu",
+  "en": ""
+ },
+ {
+  "vi": "Hệ thống",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo số liệu",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển sang giao diện sáng",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển sang giao diện tối",
+  "en": ""
+ },
+ {
+  "vi": "Giao diện sáng",
+  "en": ""
+ },
+ {
+  "vi": "Giao diện tối",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản này không còn quyền vận hành.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên đăng nhập đã hết. Đăng nhập lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập tên đăng nhập và mật khẩu.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên vừa được làm mới. Bấm đăng nhập lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không đăng nhập được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đăng xuất.",
+  "en": ""
+ },
+ {
+  "vi": "Làm mới hơi dồn dập. Chờ một chút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang bận, thử lại sau.",
+  "en": ""
+ },
+ {
+  "vi": "Không tải được phần này.",
+  "en": ""
+ },
+ {
+  "vi": "Trang vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Trình duyệt này đang có tiến trình chơi chưa gắn tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập sẽ thay nó bằng tiến trình của tài khoản vận hành. Bấm “Vẫn đăng nhập” nếu bạn đồng ý.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Dùng tài khoản game có quyền vận hành.",
+  "en": ""
+ },
+ {
+  "vi": "← Về trang game",
+  "en": ""
+ },
+ {
+  "vi": "Đang kiểm tra…",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn đăng nhập",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, không đăng nhập",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản này không có quyền vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang đăng nhập với",
+  "en": ""
+ },
+ {
+  "vi": ". Đăng xuất rồi đăng nhập bằng tài khoản vận hành nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng xuất ở đây cũng đăng xuất khỏi game trên trình duyệt này.",
+  "en": ""
+ },
+ {
+  "vi": "Không kết nối được máy chủ.",
+  "en": ""
+ },
+ {
+  "vi": "Mục vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Người vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Mở trang game",
+  "en": ""
+ },
+ {
+  "vi": "Vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Đóng menu",
+  "en": ""
+ },
+ {
+  "vi": "Mở menu",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở trang vận hành…",
+  "en": ""
+ },
+ {
+  "vi": "Hộp thư góp ý của người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Tự làm mới mỗi 60 giây",
+  "en": ""
+ },
+ {
+  "vi": "Tự làm mới",
+  "en": ""
+ },
+ {
+  "vi": "Làm mới",
+  "en": ""
+ },
+ {
+  "vi": "Đang tính số liệu…",
+  "en": ""
+ },
+ {
+  "vi": "Người chơi rời đi ở đâu, lúc nào",
+  "en": ""
+ },
+ {
   "vi": "Kỳ tính",
   "en": ""
  },
@@ -920,6 +1172,10 @@
   "en": ""
  },
  {
+  "vi": "Đi chơi",
+  "en": ""
+ },
+ {
   "vi": "Quầy của bạn",
   "en": ""
  },
@@ -1541,262 +1797,6 @@
  },
  {
   "vi": "hợp lý ≤",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Bớt\"",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Thêm\"",
-  "en": ""
- },
- {
-  "vi": "Giọng",
-  "en": ""
- },
- {
-  "vi": "💬 Nói",
-  "en": ""
- },
- {
-  "vi": "Chọn giọng và ý muốn nói",
-  "en": ""
- },
- {
-  "vi": "📝 Hôm nay đã xin nghỉ rồi.",
-  "en": ""
- },
- {
-  "vi": "Gửi điều phái",
-  "en": ""
- },
- {
-  "vi": "· đang mệt",
-  "en": ""
- },
- {
-  "vi": "📝 Gửi đơn",
-  "en": ""
- },
- {
-  "vi": "Mai lên phòng an toàn trình bày. Hôm nay tan ca sớm.",
-  "en": ""
- },
- {
-  "vi": "Bị cách chức, tạm đình chỉ bay hôm nay",
-  "en": ""
- },
- {
-  "vi": "Tạm đình chỉ bay hôm nay",
-  "en": ""
- },
- {
-  "vi": "💬 Trả lời",
-  "en": ""
- },
- {
-  "vi": "Tạm đình chỉ bay: tan ca",
-  "en": ""
- },
- {
-  "vi": "Khách cần",
-  "en": ""
- },
- {
-  "vi": "đã đúng",
-  "en": ""
- },
- {
-  "vi": "Mở phiếu khách",
-  "en": ""
- },
- {
-  "vi": "Thu gọn phiếu khách",
-  "en": ""
- },
- {
-  "vi": "Xong hết, giao cho khách thôi!",
-  "en": ""
- },
- {
-  "vi": "Bớt 1",
-  "en": ""
- },
- {
-  "vi": "Thêm 1",
-  "en": ""
- },
- {
-  "vi": "Bữa phụ",
-  "en": ""
- },
- {
-  "vi": "Bữa trưa",
-  "en": ""
- },
- {
-  "vi": "📝 Giấy dặn chưa đọc",
-  "en": ""
- },
- {
-  "vi": "✅ Không dị ứng",
-  "en": ""
- },
- {
-  "vi": "📺 Không màn hình",
-  "en": ""
- },
- {
-  "vi": "Lịch trong ngày",
-  "en": ""
- },
- {
-  "vi": "Tính bé",
-  "en": ""
- },
- {
-  "vi": "Bé chưa chịu làm quen. Thử cách chào khác hợp tính bé.",
-  "en": ""
- },
- {
-  "vi": "🎒 Trong túi",
-  "en": ""
- },
- {
-  "vi": "chạm món còn thiếu để hỏi",
-  "en": ""
- },
- {
-  "vi": "🙂 Chào bé",
-  "en": ""
- },
- {
-  "vi": "cứng, hạt nhỏ",
-  "en": ""
- },
- {
-  "vi": "🍽️ Bàn bếp",
-  "en": ""
- },
- {
-  "vi": "🥣 Đĩa của bé",
-  "en": ""
- },
- {
-  "vi": "Chạm món trên bàn bếp để lấy ra đĩa.",
-  "en": ""
- },
- {
-  "vi": "✓ Đã rửa tay bé",
-  "en": ""
- },
- {
-  "vi": "🧼 Rửa tay cho bé",
-  "en": ""
- },
- {
-  "vi": "✓ Bé ngồi ghế",
-  "en": ""
- },
- {
-  "vi": "🪑 Cho bé ngồi ghế ăn",
-  "en": ""
- },
- {
-  "vi": "mảnh nhỏ",
-  "en": ""
- },
- {
-  "vi": "màn hình",
-  "en": ""
- },
- {
-  "vi": "✓ Đã dọn đồ chơi",
-  "en": ""
- },
- {
-  "vi": "🧺 Cùng bé dọn đồ chơi",
-  "en": ""
- },
- {
-  "vi": "🧸 Kệ đồ chơi",
-  "en": ""
- },
- {
-  "vi": "Ngồi ngang tầm bé: chạm vào chỗ dễ nguy hiểm.",
-  "en": ""
- },
- {
-  "vi": "🤲 Vỗ nhẹ",
-  "en": ""
- },
- {
-  "vi": "😴 Phòng ngủ",
-  "en": ""
- },
- {
-  "vi": "bé ngủ say",
-  "en": ""
- },
- {
-  "vi": "Tắt đèn, đưa đúng đồ ôm, bé nằm yên rồi mới vỗ.",
-  "en": ""
- },
- {
-  "vi": "khách quen +",
-  "en": ""
- },
- {
-  "vi": "chăm kỹ +",
-  "en": ""
- },
- {
-  "vi": "📝 Nhật ký trong ngày",
-  "en": ""
- },
- {
-  "vi": "chỉ ghi chuyện có thật",
-  "en": ""
- },
- {
-  "vi": "🧼 Rửa tay",
-  "en": ""
- },
- {
-  "vi": "📝 Đọc giấy dặn",
-  "en": ""
- },
- {
-  "vi": "Chào bé hợp tính",
-  "en": ""
- },
- {
-  "vi": "Chào bé",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn cách chào bé",
-  "en": ""
- },
- {
-  "vi": "🎒 Mở túi đồ",
-  "en": ""
- },
- {
-  "vi": "Hỏi món còn thiếu",
-  "en": ""
- },
- {
-  "vi": "👉 Hỏi món còn thiếu",
-  "en": ""
- },
- {
-  "vi": "👶 NHẬN BÉ",
-  "en": ""
- },
- {
-  "vi": "🪑 Cho bé ngồi ghế",
   "en": ""
  }
 ]

@@ -1,5 +1,80 @@
 [
  {
+  "vi": "tin bị báo cáo chờ xử lý · $1 đang tự ẩn · $2 người bị khóa chat",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛟 $1 báo cáo an toàn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chờ xử lý ($1)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang khóa ($1)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🐢 Chậm ($1)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tên cần đổi ($1)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang chậm: 1 tin mỗi $1 giây đến $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "1 tin/$1 giây · đến",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khóa chat $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ngữ cảnh ($1 tin)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã khóa chat $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã đổi tên thành “$1”.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "tài khoản$1 · $2 quà gần nhất",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "bắt đầu bằng “$1”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Không có tài khoản nào bắt đầu bằng “$1”.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "và $1 quà cũ hơn",
   "en": "",
   "pattern": true
@@ -271,6 +346,11 @@
  },
  {
   "vi": "lượt mở ($1)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "mục bị báo cáo · $1 bài bị cấm",
   "en": "",
   "pattern": true
  },
@@ -2166,86 +2246,6 @@
  },
  {
   "vi": "🎀 Thắt ruy băng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✅ Xong món $1, đặt sang bàn chờ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chờ thêm $1 giây, đủ nước là tự nhấc ra.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chờ thêm $1 giây, mút chìm là tự cắm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay$1 · $2 khách",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "hạng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cân chỉ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bỏ ra $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "xu/ký$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🥤 $1/$2–$3 trái chín kỹ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cân ra $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xin ghi nợ · $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khách cầm túi đi · $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "nhét $1 $2 $3 vào túi riêng, lững thững bước đi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "mất $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trái $1 mang lại",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lệch $1 gam",
   "en": "",
   "pattern": true
  }

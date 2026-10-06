@@ -1,5 +1,261 @@
 [
  {
+  "vi": "🎓 Học sinh −10%",
+  "en": ""
+ },
+ {
+  "vi": "🥢 Vớt mì đúng lúc (tự canh)",
+  "en": ""
+ },
+ {
+  "vi": "🥢 Vớt mì ngay!",
+  "en": ""
+ },
+ {
+  "vi": "🥢 Vớt mì ngay (hơi mềm rồi)",
+  "en": ""
+ },
+ {
+  "vi": "🥢 Vớt mì (nát rồi)",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ Đổ tô, làm lại",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Hết tô sạch: rửa tô trước",
+  "en": ""
+ },
+ {
+  "vi": "🥡 Lấy hộp mang về",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Lấy tô",
+  "en": ""
+ },
+ {
+  "vi": "hai rổ đang bận",
+  "en": ""
+ },
+ {
+  "vi": "hơi mềm, vẫn ăn được",
+  "en": ""
+ },
+ {
+  "vi": "Chan nước dùng theo hình",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nước dùng hợp khách",
+  "en": ""
+ },
+ {
+  "vi": "khách dị ứng hải sản",
+  "en": ""
+ },
+ {
+  "vi": "👉 Thêm topping theo hình",
+  "en": ""
+ },
+ {
+  "vi": "topping theo hình",
+  "en": ""
+ },
+ {
+  "vi": "🌶️ Bơm 1 lượt ớt",
+  "en": ""
+ },
+ {
+  "vi": "📦 Đậy nắp hộp",
+  "en": ""
+ },
+ {
+  "vi": "Khách sẽ nếm và soi lại tô.",
+  "en": ""
+ },
+ {
+  "vi": "tô cần có mì và nước dùng",
+  "en": ""
+ },
+ {
+  "vi": "Chờ khách nhận món",
+  "en": ""
+ },
+ {
+  "vi": "🥶 1 tô = 2 phần nồi",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Ngày hội: cộng cả tô theo giá trên rồi nhân 1,1 (làm tròn) mới ra giá bán.",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Hôm nay giảm 10% cho học sinh trên mọi đơn còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Tô đã đủ · giao cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Mì chín tới là tự vớt, chờ chút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "· khử khuẩn, kho",
+  "en": ""
+ },
+ {
+  "vi": "(dưới 3★ trả nửa)",
+  "en": ""
+ },
+ {
+  "vi": "📅 Hẹn lần tới",
+  "en": ""
+ },
+ {
+  "vi": "📜 Quy tắc pha màu",
+  "en": ""
+ },
+ {
+  "vi": "tro, lạnh",
+  "en": ""
+ },
+ {
+  "vi": "vàng, ấm",
+  "en": ""
+ },
+ {
+  "vi": "đỏ, ấm đậm",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Bảng màu",
+  "en": ""
+ },
+ {
+  "vi": "Mã tuýp: số trước dấu chấm là level (1 đen → 10 bạch kim), số sau là ánh: .0 tự nhiên · .1 tro lạnh · .3 vàng ấm · .6 đỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Level tóc",
+  "en": ""
+ },
+ {
+  "vi": "Tuýp nhuộm trong tủ",
+  "en": ""
+ },
+ {
+  "vi": "Pha hai tuýp",
+  "en": ""
+ },
+ {
+  "vi": "Level bát = trung bình theo số phần: 1 phần 3.0 + 1 phần 7.3 ra level 5; 2 phần 3.0 + 1 phần 6.1 ra level 4.",
+  "en": ""
+ },
+ {
+  "vi": "Ánh tro kéo màu lạnh đi, ánh vàng hay đỏ kéo màu ấm lên; tuýp .0 giữ màu tự nhiên.",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc nhuộm không làm sáng màu nhuộm cũ: muốn sáng hơn thì tẩy trước, rồi toner khử ánh còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Lời dặn của khách",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi khách rộng tay một kiểu: hỏi chuyện, xem tính khách rồi chọn cách nói.",
+  "en": ""
+ },
+ {
+  "vi": "💡 Giải thích giá, gợi ý dời bớt dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "Bớt quá 20% báo giá — tiệm không cho.",
+  "en": ""
+ },
+ {
+  "vi": "Bớt hơi nhiều: tiệm chịu phần lỗ này.",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Nói thật: hôm nay chưa làm vừa túi tiền",
+  "en": ""
+ },
+ {
+  "vi": "Khách sẽ về, không làm gì hôm nay. Chắc chưa?",
+  "en": ""
+ },
+ {
+  "vi": "khách dời lần sau",
+  "en": ""
+ },
+ {
+  "vi": "tro lạnh",
+  "en": ""
+ },
+ {
+  "vi": "hơi lạnh",
+  "en": ""
+ },
+ {
+  "vi": "hơi ấm",
+  "en": ""
+ },
+ {
+  "vi": "ấm đậm",
+  "en": ""
+ },
+ {
+  "vi": "📸 Ảnh có filter — soi ảnh gốc rồi hãy so",
+  "en": ""
+ },
+ {
+  "vi": "Khách không cần bát nhuộm",
+  "en": ""
+ },
+ {
+  "vi": "✓ Khớp màu khách cần",
+  "en": ""
+ },
+ {
+  "vi": "≠ Thiếu nền tự nhiên — thêm tuýp x.0",
+  "en": ""
+ },
+ {
+  "vi": "ấm quá — thêm tuýp tro",
+  "en": ""
+ },
+ {
+  "vi": "lạnh quá — thêm tuýp ánh vàng, đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Xem chân tóc để biết cần oxy mấy vol",
+  "en": ""
+ },
+ {
+  "vi": "và có tóc bạc không",
+  "en": ""
+ },
+ {
+  "vi": "Oxy 40 vol không bao giờ thoa sát da đầu",
+  "en": ""
+ },
+ {
+  "vi": "— cần một nửa",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xem thân tóc — ánh thật có thể lệch",
+  "en": ""
+ },
+ {
   "vi": "Thân tóc ánh cam: bát ấm thêm một bậc (đã tính)",
   "en": ""
  },
@@ -1541,262 +1797,6 @@
  },
  {
   "vi": "CHƯA MỞ",
-  "en": ""
- },
- {
-  "vi": "Bảng điều khiển",
-  "en": ""
- },
- {
-  "vi": "Chị Vân cười: “Khoang khách ổn chứ em? Có gì báo chị liền nhé.”",
-  "en": ""
- },
- {
-  "vi": "Ghế cơ trưởng còn trống. Chị Vân đang uống cà phê ở phòng tổ bay.",
-  "en": ""
- },
- {
-  "vi": "“Đọc từng dòng nhé, không vội. Checklist là bạn của mình.”",
-  "en": ""
- },
- {
-  "vi": "“Mắt trên đồng hồ, tai nghe đài. Giữ độ cao này.”",
-  "en": ""
- },
- {
-  "vi": "“Ổn định ở cổng đầu chưa? Chưa ổn thì bay lại, không xấu hổ gì cả.”",
-  "en": ""
- },
- {
-  "vi": "“Bản tin xong thì mình ra vòng quanh tàu nhé.”",
-  "en": ""
- },
- {
-  "vi": "ĐC 2",
-  "en": ""
- },
- {
-  "vi": "ĐC 1",
-  "en": ""
- },
- {
-  "vi": "Xe đẩy suất ăn",
-  "en": ""
- },
- {
-  "vi": "Bếp tàu",
-  "en": ""
- },
- {
-  "vi": "Đèn gọi tiếp viên",
-  "en": ""
- },
- {
-  "vi": "Đèn gọi sáng ở hàng 5: có người xin thêm chăn.",
-  "en": ""
- },
- {
-  "vi": "Khách gọi tiếp viên. Chị Thu đi tới liền.",
-  "en": ""
- },
- {
-  "vi": "BẾP TÀU",
-  "en": ""
- },
- {
-  "vi": "〰️ Thắt dây an toàn!",
-  "en": ""
- },
- {
-  "vi": "Cà phê phin pha sẵn. Một ngụm rồi đọc bản tin.",
-  "en": ""
- },
- {
-  "vi": "Sảnh ga",
-  "en": ""
- },
- {
-  "vi": "Cổng ra tàu",
-  "en": ""
- },
- {
-  "vi": "Sân đỗ",
-  "en": ""
- },
- {
-  "vi": "· việc đang ở đây",
-  "en": ""
- },
- {
-  "vi": "BỈM · SỮA",
-  "en": ""
- },
- {
-  "vi": "KHO MÂY NHỎ",
-  "en": ""
- },
- {
-  "vi": "BỈM S",
-  "en": ""
- },
- {
-  "vi": "BỈM M",
-  "en": ""
- },
- {
-  "vi": "BỈM L",
-  "en": ""
- },
- {
-  "vi": "BỈM XL",
-  "en": ""
- },
- {
-  "vi": "Kho bỉm & sữa",
-  "en": ""
- },
- {
-  "vi": "Bàn đóng gói",
-  "en": ""
- },
- {
-  "vi": "Sữa lon mới về, nhớ xem hạn dùng nha!",
-  "en": ""
- },
- {
-  "vi": "Bỉm size M sắp hết rồi đó.",
-  "en": ""
- },
- {
-  "vi": "Có mẹ bầu gọi hỏi váy bầu nè.",
-  "en": ""
- },
- {
-  "vi": "Gian hàng",
-  "en": ""
- },
- {
-  "vi": "GẠO",
-  "en": ""
- },
- {
-  "vi": "NGÀY",
-  "en": ""
- },
- {
-  "vi": "TÁCH TÁCH",
-  "en": ""
- },
- {
-  "vi": "GIẤY IN",
-  "en": ""
- },
- {
-  "vi": "ĐẠO CỤ",
-  "en": ""
- },
- {
-  "vi": "KHUNG MẪU",
-  "en": ""
- },
- {
-  "vi": "CHỤP 4 Ô",
-  "en": ""
- },
- {
-  "vi": "in liền tay",
-  "en": ""
- },
- {
-  "vi": "mai mời ghé",
-  "en": ""
- },
- {
-  "vi": "Tiệm ảnh Tách Tách",
-  "en": ""
- },
- {
-  "vi": "TIỆM MAY BÀ TƯ",
-  "en": ""
- },
- {
-  "vi": "MAY ĐO · SỬA ĐỒ",
-  "en": ""
- },
- {
-  "vi": "THỬ",
-  "en": ""
- },
- {
-  "vi": "Bàn may",
-  "en": ""
- },
- {
-  "vi": "Phòng thử & kho",
-  "en": ""
- },
- {
-  "vi": "PHÒNG THỬ ĐỒ",
-  "en": ""
- },
- {
-  "vi": "PHÒNG 1",
-  "en": ""
- },
- {
-  "vi": "Phòng thử 1",
-  "en": ""
- },
- {
-  "vi": "PHÒNG 2",
-  "en": ""
- },
- {
-  "vi": "Phòng thử 2",
-  "en": ""
- },
- {
-  "vi": "ÁO S",
-  "en": ""
- },
- {
-  "vi": "ÁO M",
-  "en": ""
- },
- {
-  "vi": "QUẦN",
-  "en": ""
- },
- {
-  "vi": "VÁY",
-  "en": ""
- },
- {
-  "vi": "Kho đồ",
-  "en": ""
- },
- {
-  "vi": "Sào đồ mới về",
-  "en": ""
- },
- {
-  "vi": "Có ai đang thử đồ. Chỉ thấy đôi dép dưới rèm.",
-  "en": ""
- },
- {
-  "vi": "Rèm phòng thử in hoa nhỏ, Bà Tư tự tay may.",
-  "en": ""
- },
- {
-  "vi": "Chị ơi có size M không?",
-  "en": ""
- },
- {
-  "vi": "Lô áo mới về, ủi giùm em vài cái!",
-  "en": ""
- },
- {
-  "vi": "Phòng 2 có khách đang thử nha.",
   "en": ""
  }
 ]

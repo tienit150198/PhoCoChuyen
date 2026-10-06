@@ -1,5 +1,141 @@
 [
  {
+  "vi": "Bạn trừ một sao vì một góc cụ thể (unfair_claim.claim) theo cảm nhận riêng; không có ghi nhận nào xác nhận chuyện đó, phần việc chính làm tốt. Nếu chủ quán/giáo viên trả lời lịch sự, đưa sự thật hoặc cách họ kiểm tra (lịch dọn, quy trình), bạn chấp nhận và trả lại sao; nếu bị cãi hoặc mỉa, bạn giữ ý kiến, xéo xắt nhưng không tục.",
+  "en": ""
+ },
+ {
+  "vi": "b[ée]o (ú|phì|ị|như)",
+  "en": ""
+ },
+ {
+  "vi": "mập(?! mờ)",
+  "en": ""
+ },
+ {
+  "vi": "l[ùu]n (tịt|xủn|như)",
+  "en": ""
+ },
+ {
+  "vi": "xấu (xí|trai|gái|người)",
+  "en": ""
+ },
+ {
+  "vi": "mặt (xấu|mụn|rỗ)",
+  "en": ""
+ },
+ {
+  "vi": "răng hô",
+  "en": ""
+ },
+ {
+  "vi": "đen nhẻm",
+  "en": ""
+ },
+ {
+  "vi": "gầy (nhom|trơ)",
+  "en": ""
+ },
+ {
+  "vi": "bụng (bự|phệ)",
+  "en": ""
+ },
+ {
+  "vi": "vòng (một|ba)",
+  "en": ""
+ },
+ {
+  "vi": "dáng người",
+  "en": ""
+ },
+ {
+  "vi": "gợi cảm",
+  "en": ""
+ },
+ {
+  "vi": "hở hang",
+  "en": ""
+ },
+ {
+  "vi": "già (khú|chát|háp)",
+  "en": ""
+ },
+ {
+  "vi": "gái già",
+  "en": ""
+ },
+ {
+  "vi": "bà già",
+  "en": ""
+ },
+ {
+  "vi": "ông già",
+  "en": ""
+ },
+ {
+  "vi": "nhà quê",
+  "en": ""
+ },
+ {
+  "vi": "quê mùa",
+  "en": ""
+ },
+ {
+  "vi": "bắc kỳ",
+  "en": ""
+ },
+ {
+  "vi": "nam kỳ",
+  "en": ""
+ },
+ {
+  "vi": "trung kỳ",
+  "en": ""
+ },
+ {
+  "vi": "dân tỉnh lẻ",
+  "en": ""
+ },
+ {
+  "vi": "đồ mọi",
+  "en": ""
+ },
+ {
+  "vi": "mọi rợ",
+  "en": ""
+ },
+ {
+  "vi": "theo đạo",
+  "en": ""
+ },
+ {
+  "vi": "công giáo",
+  "en": ""
+ },
+ {
+  "vi": "phật tử",
+  "en": ""
+ },
+ {
+  "vi": "thiểu năng",
+  "en": ""
+ },
+ {
+  "vi": "tàn tật",
+  "en": ""
+ },
+ {
+  "vi": "pê đê",
+  "en": ""
+ },
+ {
+  "vi": "bóng lộ",
+  "en": ""
+ },
+ {
+  "vi": "đồng tính",
+  "en": ""
+ },
+ {
   "vi": "khuyết tật",
   "en": ""
  },
@@ -1661,142 +1797,6 @@
  },
  {
   "vi": "Nhà mất Ấm cúng tới khi sửa",
-  "en": ""
- },
- {
-  "vi": "Đi khám",
-  "en": ""
- },
- {
-  "vi": "Mua thuốc",
-  "en": ""
- },
- {
-  "vi": "Có khi không đỡ",
-  "en": ""
- },
- {
-  "vi": "Nằm nghỉ",
-  "en": ""
- },
- {
-  "vi": "Khóa phiên lạ & báo công an",
-  "en": ""
- },
- {
-  "vi": "Có khi tìm lại được một nửa",
-  "en": ""
- },
- {
-  "vi": "Thôi, rút kinh nghiệm",
-  "en": ""
- },
- {
-  "vi": "Mua máy mới",
-  "en": ""
- },
- {
-  "vi": "Xài máy cũ",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn anh",
-  "en": ""
- },
- {
-  "vi": "Xin bỏ qua",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ cũ đang chờ nhận tiền. Rút bớt tiền nếu tài khoản đầy; vụ hack này vẫn được giữ để trình báo sau.",
-  "en": ""
- },
- {
-  "vi": "Khám bệnh, mua thuốc theo đơn",
-  "en": ""
- },
- {
-  "vi": "Bác sĩ khám kỹ, uống thuốc vài hôm là khỏe.",
-  "en": ""
- },
- {
-  "vi": "Mua thuốc ở nhà thuốc",
-  "en": ""
- },
- {
-  "vi": "Uống thuốc rồi, nghỉ ngơi thêm nhé.",
-  "en": ""
- },
- {
-  "vi": "Thuốc đỡ hẳn, mai đi làm lại được.",
-  "en": ""
- },
- {
-  "vi": "Nằm nghỉ một hôm, người cũng đỡ dần.",
-  "en": ""
- },
- {
-  "vi": "Đã trình báo. Có tin công an sẽ báo bạn.",
-  "en": ""
- },
- {
-  "vi": "Lần sau cất tiền vào ngân hàng cho chắc nhé.",
-  "en": ""
- },
- {
-  "vi": "Mua điện thoại mới",
-  "en": ""
- },
- {
-  "vi": "Máy mới, nhớ cài lại danh bạ nhé.",
-  "en": ""
- },
- {
-  "vi": "Máy cũ hơi chậm, nhưng vẫn gọi được.",
-  "en": ""
- },
- {
-  "vi": "Chú công an bỏ qua lần này. May quá!",
-  "en": ""
- },
- {
-  "vi": "Nộp phạt đỗ xe (lần này không bỏ qua)",
-  "en": ""
- },
- {
-  "vi": "Không được bỏ qua, phạt nặng hơn chút.",
-  "en": ""
- },
- {
-  "vi": "Nộp phạt đỗ xe",
-  "en": ""
- },
- {
-  "vi": "Đã nộp phạt. Lần sau gửi xe vào bãi nhé.",
-  "en": ""
- },
- {
-  "vi": "Lần sau nhớ gửi xe vào bãi nhé.",
-  "en": ""
- },
- {
-  "vi": "Đổi mã bảo mật & khóa phiên lạ",
-  "en": ""
- },
- {
-  "vi": "Cất máy, đi đường cẩn thận",
-  "en": ""
- },
- {
-  "vi": "Gửi tiền mặt vào ngân hàng",
-  "en": ""
- },
- {
-  "vi": "Chưa có tài khoản ngân hàng",
-  "en": ""
- },
- {
-  "vi": "Ghé tiệm kiểm tra",
   "en": ""
  }
 ]

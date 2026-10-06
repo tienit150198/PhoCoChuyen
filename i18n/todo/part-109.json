@@ -1,5 +1,393 @@
 [
  {
+  "vi": "✨ Dùng màu này",
+  "en": ""
+ },
+ {
+  "vi": "🎨 CHỌN MÀU",
+  "en": ""
+ },
+ {
+  "vi": "Màu gốc miễn phí. Mở một màu một lần là dùng được cho mọi món đồ.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có nguồn tiền này.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền lương / ví",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển khoản từ tài khoản ngân hàng",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ chung vợ chồng",
+  "en": ""
+ },
+ {
+  "vi": "Dây đèn",
+  "en": ""
+ },
+ {
+  "vi": "Hoa đào",
+  "en": ""
+ },
+ {
+  "vi": "Lồng đèn",
+  "en": ""
+ },
+ {
+  "vi": "Pháo hoa",
+  "en": ""
+ },
+ {
+  "vi": "Mặt cười",
+  "en": ""
+ },
+ {
+  "vi": "Dịu",
+  "en": ""
+ },
+ {
+  "vi": "Trong trẻo",
+  "en": ""
+ },
+ {
+  "vi": "Mát",
+  "en": ""
+ },
+ {
+  "vi": "An khang thịnh vượng",
+  "en": ""
+ },
+ {
+  "vi": "Rước đèn tháng Tám",
+  "en": ""
+ },
+ {
+  "vi": "Thơm ngát đầm sen",
+  "en": ""
+ },
+ {
+  "vi": "Đèn lồng phố Hội",
+  "en": ""
+ },
+ {
+  "vi": "Cute hết nấc",
+  "en": ""
+ },
+ {
+  "vi": "Trăm năm hạnh phúc",
+  "en": ""
+ },
+ {
+  "vi": "Chúc mừng tân cử nhân",
+  "en": ""
+ },
+ {
+  "vi": "Nắng, gió và sóng",
+  "en": ""
+ },
+ {
+  "vi": "Chiều mưa phố mình",
+  "en": ""
+ },
+ {
+  "vi": "Tuổi mới thật vui",
+  "en": ""
+ },
+ {
+  "vi": "Pháo hoa rực trời",
+  "en": ""
+ },
+ {
+  "vi": "Tuổi học trò",
+  "en": ""
+ },
+ {
+  "vi": "Mùa an lành",
+  "en": ""
+ },
+ {
+  "vi": "Hội chợ đêm",
+  "en": ""
+ },
+ {
+  "vi": "Đèn giăng rực rỡ",
+  "en": ""
+ },
+ {
+  "vi": "Tết rộn ràng",
+  "en": ""
+ },
+ {
+  "vi": "Xuân sang phát tài",
+  "en": ""
+ },
+ {
+  "vi": "Pastel ngọt",
+  "en": ""
+ },
+ {
+  "vi": "Ngọt như kẹo bông",
+  "en": ""
+ },
+ {
+  "vi": "Cuộn phim",
+  "en": ""
+ },
+ {
+  "vi": "PHIM MÀU 400",
+  "en": ""
+ },
+ {
+  "vi": "Dán sticker",
+  "en": ""
+ },
+ {
+  "vi": "Cute xỉu luôn",
+  "en": ""
+ },
+ {
+  "vi": "Phố cổ đêm",
+  "en": ""
+ },
+ {
+  "vi": "Đèn lồng soi bóng",
+  "en": ""
+ },
+ {
+  "vi": "Việc gấp",
+  "en": ""
+ },
+ {
+  "vi": "🏢 Ngày điều hành tốt: trong ca, tự xếp ít nhất 1 việc ở 🗓️ Điều phối, rồi khép ngày với điểm điều hành từ 60/100.",
+  "en": ""
+ },
+ {
+  "vi": "Điểm = ½ tỷ lệ đúng giờ + 0,3 × tinh thần + 20, trừ 6 mỗi phàn nàn và 2 mỗi % vượt quỹ lương. Việc bỏ trống, việc cần quyết để tới cuối ngày đều thêm phàn nàn.",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Xoay ca: ai đã làm 2 ngày liền thì sáng hôm sau dễ 🥱 mệt (1 phần 2), và hôm đó làm dễ trễ hơn hẳn. Đừng để ai làm ngày thứ 3 liền, cho nghỉ 1 ngày là hết mệt.",
+  "en": ""
+ },
+ {
+  "vi": "Số ngày điều hành tốt đếm lại từ 0 sau mỗi lần lên bậc.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày tốt: ca thường xong từ 2 việc, đánh giá trong ngày từ ★3.5 nếu có. Nghề văn phòng theo kết quả “ngày chắc tay”; ca quản lý đạt chất lượng từ 60%.",
+  "en": ""
+ },
+ {
+  "vi": "Không bao giờ bị giáng chức. Ngày chưa tốt không cộng ngày tốt và vẫn tính vào tỷ lệ ngày làm.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi bậc: tăng lương",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi bậc",
+  "en": ""
+ },
+ {
+  "vi": "(nhân viên + phụ việc thời vụ)",
+  "en": ""
+ },
+ {
+  "vi": "🏢 Phòng sếp",
+  "en": ""
+ },
+ {
+  "vi": "🏮 Hội buôn phố",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi câu có cách tốt nhất, cách tạm được và cách sếp chưa ưng (0 điểm). Có câu 0 điểm là hẹn xét lại sau 3 ngày làm. Chọn cách đúng quy trình, có trách nhiệm nhất.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Lương mới:",
+  "en": ""
+ },
+ {
+  "vi": "Xin hợp lý, xin cao: được thêm khi cả hai câu đều trả lời tốt nhất. “Xin cao” mà có câu mới tạm được thì sếp hẹn 3 ngày làm nữa. Chưa chắc thì chọn “Xin hợp lý”.",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Chỉ đếm ngày có làm việc. Làm thêm",
+  "en": ""
+ },
+ {
+  "vi": "ngày là sếp hẹn xét lại ở đầu ca kế tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "💡 Lần xét trước chưa qua: có câu bị chấm 0 điểm, hoặc chọn “Xin cao” khi chưa trả lời tốt nhất cả hai câu. Lần sau chọn cách đúng quy trình nhất rồi “Xin hợp lý”.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Lần xét vừa rồi",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ được khi cả hai câu đều tốt nhất. Lần sau chọn “Xin hợp lý”.",
+  "en": ""
+ },
+ {
+  "vi": "🎖️ Thăng tiến",
+  "en": ""
+ },
+ {
+  "vi": "Có việc làm rồi mới tính chuyện lên chức nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bậc cao nhất rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Ngày tốt khi: tự xếp ít nhất 1 việc ở 🗓️ Điều phối và cuối ngày điểm điều hành từ 60/100.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể mở ca quản lý: giao việc cho đội, kiểm tra kết quả và xử lý chuyện trong ca. Mỗi ngày vẫn có thể chọn tự làm ở quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Công việc ở quầy vẫn như trước. Từ bậc 3, bạn có thêm ca quản lý để giao việc cho đội và kiểm tra kết quả.",
+  "en": ""
+ },
+ {
+  "vi": "việc cần quyết",
+  "en": ""
+ },
+ {
+  "vi": "✅ Không còn việc nào chờ quyết hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Để đó tới cuối ngày thì phương án tệ nhất sẽ xảy ra.",
+  "en": ""
+ },
+ {
+  "vi": "🚫 đình chỉ",
+  "en": ""
+ },
+ {
+  "vi": "😴 phải nghỉ",
+  "en": ""
+ },
+ {
+  "vi": "🎓 chưa đủ bậc",
+  "en": ""
+ },
+ {
+  "vi": "📌 đã có việc",
+  "en": ""
+ },
+ {
+  "vi": "👇 Chọn người",
+  "en": ""
+ },
+ {
+  "vi": "✕ Bỏ xếp",
+  "en": ""
+ },
+ {
+  "vi": "Tay nghề cao, tinh thần tốt: dễ đúng giờ. Đang có chuyện chưa xử lý (⚠️) thì dễ trễ.",
+  "en": ""
+ },
+ {
+  "vi": "🗳️ Còn",
+  "en": ""
+ },
+ {
+  "vi": "lượt quyết nhân sự hôm nay · mỗi người một quyết định/ngày",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi người có tính cách riêng: cùng một quyết định, người này cảm ơn, người kia tự ái.",
+  "en": ""
+ },
+ {
+  "vi": "Có lý do (đang có lỗi, đã nhắc từ trước, làm tốt thật) thì quyết định có tác dụng. Không có lý do thì người đó buồn và cả phòng để ý.",
+  "en": ""
+ },
+ {
+  "vi": "Mệt không phải là lỗi: cho nghỉ, đừng phạt.",
+  "en": ""
+ },
+ {
+  "vi": "Thăng chức, tăng lương làm quỹ lương tăng. Bị dồn quá thì người ta nghỉ việc.",
+  "en": ""
+ },
+ {
+  "vi": "🚫 Đình chỉ",
+  "en": ""
+ },
+ {
+  "vi": "😴 Phải nghỉ",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã quyết hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Chưa rõ tính cách: nói chuyện riêng để hiểu.",
+  "en": ""
+ },
+ {
+  "vi": "Tự xếp ít nhất 1 việc ở 🗓️ Điều phối",
+  "en": ""
+ },
+ {
+  "vi": "Đã quyết hết 📥 việc",
+  "en": ""
+ },
+ {
+  "vi": "chưa xếp người",
+  "en": ""
+ },
+ {
+  "vi": "Đã xếp đủ người",
+  "en": ""
+ },
+ {
+  "vi": "Xoay ca: không ai làm ngày thứ 3 liền",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ lương đang vượt (trừ 2 điểm mỗi %)",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ lương trong mức",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay tính ngày tốt?",
+  "en": ""
+ },
+ {
+  "vi": "🏢 Phòng điều hành",
+  "en": ""
+ },
+ {
+  "vi": "Phòng mở từ ca sau. Mở ca là có việc ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng điều hành làm việc trong ca. Mở ca để điều phối và quyết việc.",
+  "en": ""
+ },
+ {
   "vi": "🗓️ Điều phối",
   "en": ""
  },
@@ -1409,394 +1797,6 @@
  },
  {
   "vi": "📸 Chụp phòng",
-  "en": ""
- },
- {
-  "vi": "Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.",
-  "en": ""
- },
- {
-  "vi": "Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.",
-  "en": ""
- },
- {
-  "vi": "Bạn đang ghé chơi theo lời mời.",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Cuộn sang trái\"",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Cuộn sang phải\"",
-  "en": ""
- },
- {
-  "vi": "Các phòng",
-  "en": ""
- },
- {
-  "vi": "Món này không hợp chỗ ở này.",
-  "en": ""
- },
- {
-  "vi": "Chạm hoặc kéo vào phòng: lên bàn, kệ, giường hay sàn đều được.",
-  "en": ""
- },
- {
-  "vi": "Chạm chỗ muốn dời tới.",
-  "en": ""
- },
- {
-  "vi": "Chạm hoặc kéo vào chỗ muốn đặt.",
-  "en": ""
- },
- {
-  "vi": "Trong túi · ấm cúng +",
-  "en": ""
- },
- {
-  "vi": "Đang dời",
-  "en": ""
- },
- {
-  "vi": "🎒 Mua cất túi",
-  "en": ""
- },
- {
-  "vi": "⇋ Lật",
-  "en": ""
- },
- {
-  "vi": "Lật ngược",
-  "en": ""
- },
- {
-  "vi": "🎨 Màu",
-  "en": ""
- },
- {
-  "vi": "↻ Xoay hướng",
-  "en": ""
- },
- {
-  "vi": "Mặt sau",
-  "en": ""
- },
- {
-  "vi": "Mặt trước",
-  "en": ""
- },
- {
-  "vi": "⬆ Lên",
-  "en": ""
- },
- {
-  "vi": "Đưa lên trên",
-  "en": ""
- },
- {
-  "vi": "⬇ Xuống",
-  "en": ""
- },
- {
-  "vi": "Đưa xuống dưới",
-  "en": ""
- },
- {
-  "vi": "🚪 Đổi phòng",
-  "en": ""
- },
- {
-  "vi": "Sang phòng khác",
-  "en": ""
- },
- {
-  "vi": "🎒 Cất túi",
-  "en": ""
- },
- {
-  "vi": "Thu hồi vào túi",
-  "en": ""
- },
- {
-  "vi": "💰 Bán",
-  "en": ""
- },
- {
-  "vi": "Ấm cúng +",
-  "en": ""
- },
- {
-  "vi": "Không hợp chỗ này",
-  "en": ""
- },
- {
-  "vi": "Túi đồ trống. Ghé cửa hàng chọn món đầu tiên nhé!",
-  "en": ""
- },
- {
-  "vi": "🛒 Cửa hàng",
-  "en": ""
- },
- {
-  "vi": "Đồ đạc",
-  "en": ""
- },
- {
-  "vi": "Tài khoản + ví",
-  "en": ""
- },
- {
-  "vi": "🎒 Túi",
-  "en": ""
- },
- {
-  "vi": "🎨 Tường & sàn",
-  "en": ""
- },
- {
-  "vi": "Giấy dán tường",
-  "en": ""
- },
- {
-  "vi": "Ga giường",
-  "en": ""
- },
- {
-  "vi": "Chỗ này giữ nguyên như vậy là đẹp rồi.",
-  "en": ""
- },
- {
-  "vi": "Mỗi loại đồ tính điểm một lần, món trùng không cộng thêm.",
-  "en": ""
- },
- {
-  "vi": "Bày đủ một bộ góc trong cùng một phòng được cộng thêm.",
-  "en": ""
- },
- {
-  "vi": "Từ 24 điểm, bé mèo Bơ dọn tới ở cùng Mochi.",
-  "en": ""
- },
- {
-  "vi": "Điểm tính thế nào?",
-  "en": ""
- },
- {
-  "vi": "✓ Hôm nay rồi",
-  "en": ""
- },
- {
-  "vi": "😊 Tinh thần +",
-  "en": ""
- },
- {
-  "vi": "Miễn phí, mỗi ngày một lần.",
-  "en": ""
- },
- {
-  "vi": "🏖️ Thư giãn bên hồ",
-  "en": ""
- },
- {
-  "vi": "🛁 Thư giãn trong nhà tắm",
-  "en": ""
- },
- {
-  "vi": "ghé chơi hôm nay",
-  "en": ""
- },
- {
-  "vi": "💞 Nhà chung: bày trí thoải mái, chuyện sửa nhà để người đứng tên lo.",
-  "en": ""
- },
- {
-  "vi": "🧾 Chỗ ở thuê: chỉ bày đồ trang trí, không sửa nhà được.",
-  "en": ""
- },
- {
-  "vi": "Dọn đi đâu, đồ đạc cũng tự gói vào túi đồ. Mua một lần, mang theo cả hành trình.",
-  "en": ""
- },
- {
-  "vi": "Ảnh chụp phòng",
-  "en": ""
- },
- {
-  "vi": "⬇️ Tải ảnh về",
-  "en": ""
- },
- {
-  "vi": "💾 Lưu vào album",
-  "en": ""
- },
- {
-  "vi": "Album giữ sáu ảnh gần nhất của nghề đang làm.",
-  "en": ""
- },
- {
-  "vi": "Tình trạng nhà",
-  "en": ""
- },
- {
-  "vi": "Đã chi cho nhà",
-  "en": ""
- },
- {
-  "vi": "Nhà sạch đẹp.",
-  "en": ""
- },
- {
-  "vi": "🛠️ Sửa hết",
-  "en": ""
- },
- {
-  "vi": "Đã nâng cấp hết",
-  "en": ""
- },
- {
-  "vi": "Nhập số xu nguyên dương.",
-  "en": ""
- },
- {
-  "vi": "Dễ tìm khách",
-  "en": ""
- },
- {
-  "vi": "Khó tìm khách hơn",
-  "en": ""
- },
- {
-  "vi": "Giá quá cao: NPC chưa thuê",
-  "en": ""
- },
- {
-  "vi": "Ảnh hưởng đang giảm dần.",
-  "en": ""
- },
- {
-  "vi": "Đang tải chợ thuê nhà…",
-  "en": ""
- },
- {
-  "vi": "NHÀ BẠN ĐANG THUÊ",
-  "en": ""
- },
- {
-  "vi": "Lấy lại nhà NPC",
-  "en": ""
- },
- {
-  "vi": "Gỡ tin",
-  "en": ""
- },
- {
-  "vi": "Gỡ tin NPC",
-  "en": ""
- },
- {
-  "vi": "Tìm khách NPC",
-  "en": ""
- },
- {
-  "vi": "Đăng cho người chơi",
-  "en": ""
- },
- {
-  "vi": "Xem & thuê",
-  "en": ""
- },
- {
-  "vi": "Nhà của bạn cho thuê",
-  "en": ""
- },
- {
-  "vi": "Thuê nhà người chơi",
-  "en": ""
- },
- {
-  "vi": "Mua thêm một căn, để trống để đăng cho thuê.",
-  "en": ""
- },
- {
-  "vi": "Chưa có tin phù hợp. Bạn có thể quay lại sau.",
-  "en": ""
- },
- {
-  "vi": "Xem thêm nhà",
-  "en": ""
- },
- {
-  "vi": "Làm mới chợ nhà",
-  "en": ""
- },
- {
-  "vi": "📦 Nhập hàng",
-  "en": ""
- },
- {
-  "vi": "Kệ hết",
-  "en": ""
- },
- {
-  "vi": "Kệ sắp hết",
-  "en": ""
- },
- {
-  "vi": "Đi xe",
-  "en": ""
- },
- {
-  "vi": "🚶 Đi bộ",
-  "en": ""
- },
- {
-  "vi": "Chưa làm được",
-  "en": ""
- },
- {
-  "vi": "Chuyện đời ai cũng có lúc gặp.",
-  "en": ""
- },
- {
-  "vi": "Bảo hiểm hiện tại không bồi thường vụ hack tài khoản.",
-  "en": ""
- },
- {
-  "vi": "Có bảo hiểm thì trả ít hơn.",
-  "en": ""
- },
- {
-  "vi": "Không bao giờ bị nợ vì chuyện này.",
-  "en": ""
- },
- {
-  "vi": "Sắp xảy ra",
-  "en": ""
- },
- {
-  "vi": "Phòng trước thì chuyện không xảy ra.",
-  "en": ""
- },
- {
-  "vi": "Ngân hàng tránh mất tiền mặt do móc túi; tài khoản vẫn có rủi ro bị hack.",
-  "en": ""
- },
- {
-  "vi": "Khóa phiên lạ khi được cảnh báo để chặn vụ hack, không tốn xu.",
-  "en": ""
- },
- {
-  "vi": "Bình yên",
-  "en": ""
- },
- {
-  "vi": "Không có chuyện gì cả.",
-  "en": ""
- },
- {
-  "vi": "Công ty đóng",
   "en": ""
  }
 ]

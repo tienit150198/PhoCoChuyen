@@ -1,5 +1,261 @@
 [
  {
+  "vi": "🟣 Gợi ý",
+  "en": ""
+ },
+ {
+  "vi": "Thử bước này",
+  "en": ""
+ },
+ {
+  "vi": "Học lại hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "Tắt hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "← → nghiêng · ↑ ↓ mũi (↓ kéo lên) · W/S ga · G bay lại",
+  "en": ""
+ },
+ {
+  "vi": "Cần lái: kéo để lái",
+  "en": ""
+ },
+ {
+  "vi": "Cần ga",
+  "en": ""
+ },
+ {
+  "vi": "🛫 Cất cánh",
+  "en": ""
+ },
+ {
+  "vi": "Cánh Cò",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Đẩy ga lên hết nhé em.",
+  "en": ""
+ },
+ {
+  "vi": "Đẩy cần ga lên hết, giữ vạch giữa. Chị hô thì kéo lên.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Tám mươi.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Cất mũi! Kéo nhẹ về phía mình.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Chưa đủ tốc độ, chờ chút.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Giữ vạch giữa!",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Kéo lên… đó, chị đỡ tay.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Đẩy cần ga lên nào.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Rời đất rồi. Thu càng!",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Cất cánh đẹp! Lái tự động nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Lái tự động. Em nghỉ tay chút.",
+  "en": ""
+ },
+ {
+  "vi": "⏩ Lái tự động · lên 12.000 ft",
+  "en": ""
+ },
+ {
+  "vi": "✈️ Trên đường bay",
+  "en": ""
+ },
+ {
+  "vi": "📻 Đài: giông đang ở trên sân bay.",
+  "en": ""
+ },
+ {
+  "vi": "📻 Đài: sương còn dày, dưới mức tối thiểu.",
+  "en": ""
+ },
+ {
+  "vi": "⏩ Bay chờ 20 phút",
+  "en": ""
+ },
+ {
+  "vi": "⛈️ Vòng tránh giông",
+  "en": ""
+ },
+ {
+  "vi": "📻 Radar: mây giông ngay trên đường bay. Vòng tránh nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Nghiêng cánh để vòng qua đám mây giông, qua rồi thì về hướng cũ.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Rung quá! Ra khỏi mây ngay!",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Đẹp! Qua rồi, về hướng cũ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Tàu đang nhanh quá, giảm ga ngay!",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Mình đang cao, xuống dốc hơn chút.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Xuống gấp quá, kéo nhẹ lên!",
+  "en": ""
+ },
+ {
+  "vi": "2 trắng 2 đỏ là đúng dốc. Chị hô thì ghìm mũi cho êm.",
+  "en": ""
+ },
+ {
+  "vi": "nhanh quá",
+  "en": ""
+ },
+ {
+  "vi": "chậm quá",
+  "en": ""
+ },
+ {
+  "vi": "cao quá",
+  "en": ""
+ },
+ {
+  "vi": "thấp quá",
+  "en": ""
+ },
+ {
+  "vi": "xuống gấp quá",
+  "en": ""
+ },
+ {
+  "vi": "lệch tim đường băng",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Một nghìn. Ổn định.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Chưa ổn định mà vẫn xuống… chị ghi lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Năm trăm.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Hai trăm. Thấy đường băng. Hạ cánh!",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Hai trăm… chưa thấy đường băng!",
+  "en": ""
+ },
+ {
+  "vi": "🔊 Năm mươi.",
+  "en": ""
+ },
+ {
+  "vi": "🔊 Ba mươi.",
+  "en": ""
+ },
+ {
+  "vi": "🔊 Mười.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Thu ga, ghìm mũi!",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Hết đường băng rồi, bay lại!",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Mình bay lại cho chắc.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Thấp quá! Chị cầm lái, bay lại.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Êm quá!",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Hơi mạnh tay rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Hơi xa chút.",
+  "en": ""
+ },
+ {
+  "vi": "🅿️ Lăn vào bến…",
+  "en": ""
+ },
+ {
+  "vi": "🅿️ Lăn vào bến",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Dầu chỉ đủ hạ cánh lần này. Mình xuống thôi.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍✈️ Bay lại! Ga hết, ngóc mũi.",
+  "en": ""
+ },
+ {
+  "vi": "Máy hơi chậm: chuyển sang Bay nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "CẦN GA",
+  "en": ""
+ },
+ {
+  "vi": "GIÓ",
+  "en": ""
+ },
+ {
+  "vi": "GIÓ nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "LÁI TỰ ĐỘNG",
+  "en": ""
+ },
+ {
   "vi": "BẠN CẦM LÁI",
   "en": ""
  },
@@ -1541,262 +1797,6 @@
  },
  {
   "vi": "📒 Sổ chưa có món này: hỏi lại.",
-  "en": ""
- },
- {
-  "vi": "🎓 Học sinh −10%",
-  "en": ""
- },
- {
-  "vi": "🥢 Vớt mì đúng lúc (tự canh)",
-  "en": ""
- },
- {
-  "vi": "🥢 Vớt mì ngay!",
-  "en": ""
- },
- {
-  "vi": "🥢 Vớt mì ngay (hơi mềm rồi)",
-  "en": ""
- },
- {
-  "vi": "🥢 Vớt mì (nát rồi)",
-  "en": ""
- },
- {
-  "vi": "🗑️ Đổ tô, làm lại",
-  "en": ""
- },
- {
-  "vi": "🧽 Hết tô sạch: rửa tô trước",
-  "en": ""
- },
- {
-  "vi": "🥡 Lấy hộp mang về",
-  "en": ""
- },
- {
-  "vi": "🥣 Lấy tô",
-  "en": ""
- },
- {
-  "vi": "hai rổ đang bận",
-  "en": ""
- },
- {
-  "vi": "hơi mềm, vẫn ăn được",
-  "en": ""
- },
- {
-  "vi": "Chan nước dùng theo hình",
-  "en": ""
- },
- {
-  "vi": "Chọn nước dùng hợp khách",
-  "en": ""
- },
- {
-  "vi": "khách dị ứng hải sản",
-  "en": ""
- },
- {
-  "vi": "👉 Thêm topping theo hình",
-  "en": ""
- },
- {
-  "vi": "topping theo hình",
-  "en": ""
- },
- {
-  "vi": "🌶️ Bơm 1 lượt ớt",
-  "en": ""
- },
- {
-  "vi": "📦 Đậy nắp hộp",
-  "en": ""
- },
- {
-  "vi": "Khách sẽ nếm và soi lại tô.",
-  "en": ""
- },
- {
-  "vi": "tô cần có mì và nước dùng",
-  "en": ""
- },
- {
-  "vi": "Chờ khách nhận món",
-  "en": ""
- },
- {
-  "vi": "🥶 1 tô = 2 phần nồi",
-  "en": ""
- },
- {
-  "vi": "🎉 Ngày hội: cộng cả tô theo giá trên rồi nhân 1,1 (làm tròn) mới ra giá bán.",
-  "en": ""
- },
- {
-  "vi": "🎓 Hôm nay giảm 10% cho học sinh trên mọi đơn còn lại.",
-  "en": ""
- },
- {
-  "vi": "Tô đã đủ · giao cho khách",
-  "en": ""
- },
- {
-  "vi": "Mì chín tới là tự vớt, chờ chút nhé.",
-  "en": ""
- },
- {
-  "vi": "· khử khuẩn, kho",
-  "en": ""
- },
- {
-  "vi": "(dưới 3★ trả nửa)",
-  "en": ""
- },
- {
-  "vi": "📅 Hẹn lần tới",
-  "en": ""
- },
- {
-  "vi": "📜 Quy tắc pha màu",
-  "en": ""
- },
- {
-  "vi": "tro, lạnh",
-  "en": ""
- },
- {
-  "vi": "vàng, ấm",
-  "en": ""
- },
- {
-  "vi": "đỏ, ấm đậm",
-  "en": ""
- },
- {
-  "vi": "🎨 Bảng màu",
-  "en": ""
- },
- {
-  "vi": "Mã tuýp: số trước dấu chấm là level (1 đen → 10 bạch kim), số sau là ánh: .0 tự nhiên · .1 tro lạnh · .3 vàng ấm · .6 đỏ.",
-  "en": ""
- },
- {
-  "vi": "Level tóc",
-  "en": ""
- },
- {
-  "vi": "Tuýp nhuộm trong tủ",
-  "en": ""
- },
- {
-  "vi": "Pha hai tuýp",
-  "en": ""
- },
- {
-  "vi": "Level bát = trung bình theo số phần: 1 phần 3.0 + 1 phần 7.3 ra level 5; 2 phần 3.0 + 1 phần 6.1 ra level 4.",
-  "en": ""
- },
- {
-  "vi": "Ánh tro kéo màu lạnh đi, ánh vàng hay đỏ kéo màu ấm lên; tuýp .0 giữ màu tự nhiên.",
-  "en": ""
- },
- {
-  "vi": "Thuốc nhuộm không làm sáng màu nhuộm cũ: muốn sáng hơn thì tẩy trước, rồi toner khử ánh còn lại.",
-  "en": ""
- },
- {
-  "vi": "💬 Lời dặn của khách",
-  "en": ""
- },
- {
-  "vi": "Mỗi khách rộng tay một kiểu: hỏi chuyện, xem tính khách rồi chọn cách nói.",
-  "en": ""
- },
- {
-  "vi": "💡 Giải thích giá, gợi ý dời bớt dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Bớt quá 20% báo giá — tiệm không cho.",
-  "en": ""
- },
- {
-  "vi": "Bớt hơi nhiều: tiệm chịu phần lỗ này.",
-  "en": ""
- },
- {
-  "vi": "🙅 Nói thật: hôm nay chưa làm vừa túi tiền",
-  "en": ""
- },
- {
-  "vi": "Khách sẽ về, không làm gì hôm nay. Chắc chưa?",
-  "en": ""
- },
- {
-  "vi": "khách dời lần sau",
-  "en": ""
- },
- {
-  "vi": "tro lạnh",
-  "en": ""
- },
- {
-  "vi": "hơi lạnh",
-  "en": ""
- },
- {
-  "vi": "hơi ấm",
-  "en": ""
- },
- {
-  "vi": "ấm đậm",
-  "en": ""
- },
- {
-  "vi": "📸 Ảnh có filter — soi ảnh gốc rồi hãy so",
-  "en": ""
- },
- {
-  "vi": "Khách không cần bát nhuộm",
-  "en": ""
- },
- {
-  "vi": "✓ Khớp màu khách cần",
-  "en": ""
- },
- {
-  "vi": "≠ Thiếu nền tự nhiên — thêm tuýp x.0",
-  "en": ""
- },
- {
-  "vi": "ấm quá — thêm tuýp tro",
-  "en": ""
- },
- {
-  "vi": "lạnh quá — thêm tuýp ánh vàng, đỏ",
-  "en": ""
- },
- {
-  "vi": "Xem chân tóc để biết cần oxy mấy vol",
-  "en": ""
- },
- {
-  "vi": "và có tóc bạc không",
-  "en": ""
- },
- {
-  "vi": "Oxy 40 vol không bao giờ thoa sát da đầu",
-  "en": ""
- },
- {
-  "vi": "— cần một nửa",
-  "en": ""
- },
- {
-  "vi": "Chưa xem thân tóc — ánh thật có thể lệch",
   "en": ""
  }
 ]
