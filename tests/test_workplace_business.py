@@ -48,8 +48,8 @@ class WorkplaceBusinessTests(unittest.TestCase):
         snap=copy.deepcopy(s);self.assertFalse(wb.settle(s,now));self.assertEqual(s,snap)
         self.assertEqual(c['money'],c['ops']['finance']['opening_balance']+sum(x['amount'] for x in c['ops']['finance']['ledger']))
 
-    def test_all_41_careers_have_real_independent_orders_and_keep_manual_work(self):
-        self.assertEqual(len(new_state()['careers']),41)
+    def test_all_42_careers_have_real_independent_orders_and_keep_manual_work(self):
+        self.assertEqual(len(new_state()['careers']),42)
         for career in new_state()['careers']:
             with self.subTest(career=career):
                 s,c,e=self.sample(career);tasks=copy.deepcopy(c['tasks'])
