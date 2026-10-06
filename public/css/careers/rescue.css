@@ -1,0 +1,138 @@
+/* Tổng đài Cứu hộ phường Mây — scoped styles (.career-job.cu), over the street kit (street_kit.css).
+   Its own look: rescue orange-red and a night-console navy, the priority colours of the "Bảng ưu tiên Mây", the unit
+   board as chips, and the encounter card of the air crew (air_kit.js oddCard) restyled for the call centre (its rules
+   are copied here: the centre loads the street kit, not the air kit). Surfaces follow the theme tokens (dark mode:
+   data-theme=dem). */
+.career-job.cu{--sk-accent:#c4532f;--sk-accent-2:#e9a07f;--cu-soft:#fbe9e2;--cu-red:#c63b32;--cu-amber:#d18a26;--cu-yellow:#e2b93b;--cu-green:#4f9a5a;
+  --air-sky:#c4532f;--air-navy:#2c3e57;--air-mono:ui-monospace,"SF Mono",Menlo,monospace;--dd-red:var(--cu-red);--dd-amber:var(--cu-amber)}
+html[data-theme="dem"] .career-job.cu{--sk-accent:#f08b62;--sk-accent-2:#a8573a;--cu-soft:#3a2620;--air-sky:#f08b62;--air-navy:#5d7aa3}
+
+.career-job.cu .cu-learn{margin:8px 0 0;padding:6px 10px;border-radius:var(--sk-rs);background:var(--cu-soft);font-size:13px}
+.career-job.cu .cu-ground{margin:10px 0;padding:12px;border-radius:var(--sk-r);border:2px solid var(--cu-red);background:var(--sk-surface)}
+.career-job.cu .cu-ground h3{margin:0 0 4px;font-size:16px}
+
+/* ---------- the board */
+.career-job.cu .cu-notes{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.cu .cu-notes li.read p{margin:0;padding:8px 10px;border-radius:var(--sk-rs);background:var(--sk-surface-2);font-size:14px;line-height:1.4}
+.career-job.cu .cu-radio{width:100%;min-height:52px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;white-space:normal}
+.career-job.cu .cu-radio small{color:var(--sk-muted);font-weight:400}
+.career-job.cu .cu-downs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.career-job.cu .cu-down{min-height:48px;white-space:normal;text-align:left;font-size:14px}
+.career-job.cu .cu-down.on{background:var(--air-navy);border-color:var(--air-navy);color:#fff}
+.career-job.cu .cu-board{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:6px 0 10px}
+.career-job.cu .cu-unit{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:8px;align-items:center;min-height:52px;padding:6px 10px;
+  border-radius:var(--sk-rs);border:1px solid var(--sk-line);background:var(--sk-surface);color:var(--sk-ink);font:inherit;text-align:left;white-space:normal}
+.career-job.cu .cu-unit .cu-unit-e{grid-row:1 / span 2;font-size:22px}
+.career-job.cu .cu-unit b{font-size:13px;line-height:1.25}
+.career-job.cu .cu-unit small{font-size:12px;color:var(--sk-muted)}
+.career-job.cu .cu-unit.st-away{border-style:dashed}
+.career-job.cu .cu-unit.st-down{background:color-mix(in srgb,var(--cu-red) 10%,var(--sk-surface))}
+.career-job.cu button.cu-unit{cursor:pointer}
+.career-job.cu .cu-unit.on{border:2px solid var(--air-navy);background:color-mix(in srgb,var(--air-navy) 14%,var(--sk-surface))}
+
+/* ---------- a call */
+.career-job.cu .cu-caller{border-left:6px solid var(--sk-accent)}
+.career-job.cu .cu-av{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;background:var(--cu-soft);font-size:24px;margin-right:8px}
+.career-job.cu .cu-caller h3{margin:0;font-size:16px;line-height:1.3}
+.career-job.cu .cu-open{margin:4px 0 0;font-size:15px;line-height:1.45}
+.career-job.cu .cu-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.career-job.cu .cu-addr{margin:8px 0 0;padding:6px 8px;border-radius:8px;background:var(--sk-surface-2);font-size:14px;line-height:1.4}
+.career-job.cu .cu-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.cu .cu-list li.seen{padding:6px 10px;border-radius:var(--sk-rs);background:var(--sk-surface-2)}
+.career-job.cu .cu-list li.seen small{display:block;color:var(--sk-muted);font-size:12px}
+.career-job.cu .cu-list li.seen p{margin:2px 0 0;font-size:14px;line-height:1.4}
+.career-job.cu .cu-q{width:100%;min-height:44px;justify-content:flex-start;text-align:left;white-space:normal}
+.career-job.cu .cu-calm,.career-job.cu .cu-find,.career-job.cu .cu-check{margin-top:8px}
+.career-job.cu .cu-decide .sk-pane{margin-top:6px}
+.career-job.cu .cu-prios{display:grid;gap:6px;margin:4px 0 8px}
+.career-job.cu .cu-prio{min-height:48px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;white-space:normal;font-weight:800}
+.career-job.cu .cu-prio small{font-weight:400;color:var(--sk-muted);font-size:12px}
+.career-job.cu .cu-prio.on.p-p1{background:var(--cu-red);border-color:var(--cu-red);color:#fff}
+.career-job.cu .cu-prio.on.p-p2{background:var(--cu-amber);border-color:var(--cu-amber);color:#fff}
+.career-job.cu .cu-prio.on.p-p3{background:var(--cu-yellow);border-color:#b8952b;color:#2f2a24}
+.career-job.cu .cu-prio.on small{color:inherit}
+.career-job.cu .cu-tos{display:grid;gap:6px;margin:4px 0 8px}
+.career-job.cu .cu-to{min-height:44px;text-align:left;white-space:normal;font-size:14px;justify-content:flex-start}
+.career-job.cu .cu-tones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:4px 0 10px}
+.career-job.cu .cu-tone{min-height:44px;white-space:normal;font-size:13px;padding:4px}
+.career-job.cu .cu-to.on,.career-job.cu .cu-tone.on{background:var(--air-navy);border-color:var(--air-navy);color:#fff}
+.career-job.cu .cu-go{min-height:48px;margin-top:4px}
+.career-job.cu .cu-done{display:inline-block;margin:10px 0 0;white-space:normal}
+.career-job.cu .cu-told{white-space:normal;text-align:left}
+.career-job.cu .cu-instr .sk-opts{gap:6px}
+
+/* ---------- the rain-season queue */
+.career-job.cu .cu-queue{display:grid;gap:10px;margin-top:10px}
+.career-job.cu .cu-line{border-left:6px solid var(--sk-line)}
+.career-job.cu .cu-line.p-p1{border-left-color:var(--cu-red)}
+.career-job.cu .cu-line.p-p2{border-left-color:var(--cu-amber)}
+.career-job.cu .cu-line.p-p3{border-left-color:var(--cu-yellow)}
+.career-job.cu .cu-line.p-p4{border-left-color:var(--sk-muted)}
+.career-job.cu .cu-line p{margin:2px 0 0}
+.career-job.cu .cu-qs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.career-job.cu .cu-qs .btn{min-height:44px}
+.career-job.cu .cu-heard{margin:0;padding:6px 8px;border-radius:8px;background:var(--sk-surface-2);font-size:14px;line-height:1.4;flex:1 1 100%}
+.career-job.cu .cu-pcs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.career-job.cu .cu-pc{min-height:44px;padding:4px 2px;font-size:12px;white-space:normal;line-height:1.2}
+.career-job.cu .cu-pc.on.p-p1{background:var(--cu-red);border-color:var(--cu-red);color:#fff}
+.career-job.cu .cu-pc.on.p-p2{background:var(--cu-amber);border-color:var(--cu-amber);color:#fff}
+.career-job.cu .cu-pc.on.p-p3{background:var(--cu-yellow);border-color:#b8952b;color:#2f2a24}
+.career-job.cu .cu-pc.on.p-p4{background:var(--air-navy);border-color:var(--air-navy);color:#fff}
+.career-job.cu .cu-scale{margin:0;padding:0 0 0 18px;display:grid;gap:4px;font-size:14px}
+
+/* ---------- the end of the shift */
+.career-job.cu .cu-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.career-job.cu .cu-tiles div{display:flex;flex-direction:column;align-items:center;padding:6px 2px;border-radius:var(--sk-rs);background:var(--sk-surface-2);text-align:center}
+.career-job.cu .cu-tiles b{font-size:20px}
+.career-job.cu .cu-tiles small{font-size:11px;color:var(--sk-muted);line-height:1.2}
+.career-job.cu .cu-loglines{display:grid;gap:6px;margin:6px 0 10px}
+.career-job.cu .cu-logline{display:flex;gap:8px;align-items:flex-start;min-height:44px;padding:8px 10px;border-radius:var(--sk-rs);border:1px solid var(--sk-line);background:var(--sk-surface);color:var(--sk-ink);font:inherit;font-size:14px;line-height:1.4;text-align:left;cursor:pointer;white-space:normal}
+.career-job.cu .cu-logline.on{border-color:var(--sk-accent);background:var(--cu-soft)}
+.career-job.cu .cu-report-done{display:inline-block;margin:10px 0}
+
+/* ---------- the encounter card (copied from air_kit.css, scoped to the call centre) */
+.career-job.cu .air-odd{margin:10px 0;padding:12px;border-radius:16px;background:var(--sk-surface);border:2px solid var(--air-sky);box-shadow:var(--sk-shadow);color:var(--sk-ink)}
+.career-job.cu .air-odd.kind-harass,.career-job.cu .air-odd.kind-charm{border-color:var(--dd-red)}
+.career-job.cu .air-odd.kind-bargain{border-color:var(--dd-amber)}
+.career-job.cu .air-odd-head{display:flex;align-items:center;gap:10px}
+.career-job.cu .air-odd-head small{display:block;color:var(--sk-muted);font-size:.75rem;line-height:1.3}
+.career-job.cu .air-odd-head h3{margin:2px 0 0;font-size:1.02rem;line-height:1.3}
+.career-job.cu .air-odd-av{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;background:var(--sk-surface-2);font-size:22px}
+.career-job.cu .air-round{flex:none;font-family:var(--air-mono);font-size:.75rem;padding:2px 8px;border-radius:999px;background:var(--sk-surface-2)}
+.career-job.cu .air-odd-line{margin:10px 0 4px;padding:10px 12px;border-radius:4px 14px 14px 14px;background:var(--sk-surface-2);line-height:1.45}
+.career-job.cu .air-odd-me{margin:8px 0 0 auto;max-width:85%;padding:6px 10px;border-radius:14px 4px 14px 14px;background:color-mix(in srgb,var(--air-sky) 16%,var(--sk-surface));font-size:.86rem;text-align:right}
+.career-job.cu .air-odd-cue{margin:0 0 4px;font-size:.8rem;color:var(--sk-muted)}
+.career-job.cu .air-odd-row{display:grid;grid-template-columns:3.4em minmax(0,1fr);gap:6px;align-items:start;margin-top:8px}
+.career-job.cu .air-odd-row>small{padding-top:10px;color:var(--sk-muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+.career-job.cu .air-segs,.career-job.cu .air-words{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.cu .air-seg,.career-job.cu .air-word{min-height:44px;padding:6px 12px;border-radius:999px;border:1px solid var(--sk-line);background:var(--sk-surface);color:var(--sk-ink);font:inherit;font-size:.86rem;line-height:1.25;cursor:pointer;text-align:left}
+.career-job.cu .air-seg.on,.career-job.cu .air-word.on{background:var(--air-navy);border-color:var(--air-navy);color:#fff}
+.career-job.cu .air-word.give{border-style:dashed}
+.career-job.cu .air-word.give.on{background:var(--dd-red);border-color:var(--dd-red)}
+.career-job.cu .air-stepper{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.career-job.cu .air-stepper .air-seg{min-width:44px;text-align:center;font-weight:800}
+.career-job.cu .air-stepper b{font-family:var(--air-mono);font-size:.9rem}
+.career-job.cu .air-limit{color:var(--sk-muted);font-size:.75rem}
+.career-job.cu .air-odd-go{margin-top:12px}
+.career-job.cu .air-odd-go .btn{width:100%}
+.career-job.cu .air-odd-last{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:8px 10px;border-radius:12px;border:1px solid var(--sk-line);background:var(--sk-surface);color:var(--sk-ink)}
+.career-job.cu .air-odd-last p{margin:0;flex:1;font-size:.88rem;line-height:1.4}
+.career-job.cu .air-odd-last.good{border-color:var(--sk-good)}
+.career-job.cu .air-odd-last.bad{border-color:var(--sk-bad)}
+.career-job.cu .air-x{min-width:44px;min-height:44px}
+.career-job.cu .air-record{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.cu .air-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--sk-surface-2);font-size:.82rem;font-weight:700}
+.career-job.cu .air-chip.lv-warn,.career-job.cu .air-chip.air-tired.bad{background:color-mix(in srgb,var(--dd-amber) 20%,var(--sk-surface))}
+.career-job.cu .air-chip.lv-ground,.career-job.cu .air-chip.lv-demote{background:color-mix(in srgb,var(--dd-red) 22%,var(--sk-surface))}
+.career-job.cu .air-bar{display:inline-flex;gap:2px}
+.career-job.cu .air-bar i{display:block;width:6px;height:10px;border-radius:2px;background:var(--sk-line)}
+.career-job.cu .air-bar i.on{background:var(--dd-amber)}
+.career-job.cu .air-rest{margin-top:8px;padding:8px 10px;border-radius:12px;border:1px solid var(--sk-line);background:var(--sk-surface)}
+.career-job.cu .air-rest summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+.career-job.cu .air-rest .air-rest-send{width:100%;margin-top:10px}
+.career-job.cu .air-rest-done{margin:8px 0 0}
+
+@media (max-width:420px){
+  .career-job.cu .cu-tiles b{font-size:18px}
+  .career-job.cu .cu-unit b{font-size:12px}
+}

@@ -32,9 +32,9 @@ const TW=lazy(()=>import('./town-walk.js'),{css:['/css/town.css']});
  * phố" on the list or the menu); the "Hành trình" entry clears it. A browser without canvas keeps the list. */
 const HOME_KEY='mnl.home';
 let homeDefault='town';
-/** 🏝️ Giao diện 2.5D (iso-boot.js): the island is the map, so the home sheet opens as the list unless this device chose the map. */
+/** 🏝️ The island is the map, so the home sheet opens as the list unless this device chose the map. */
 export function homeListFirst(){homeDefault='list';}
-/** 🏝️ 2.5D: after the intro a new player lands on the island (iso-guide.js landNewPlayer), no job is picked here. */
+/** 🏝️ After the intro a new player lands on the island (iso-guide.js landNewPlayer), no job is picked here. */
 let isoLand=null;
 export function onIsoLand(fn){isoLand=fn;}
 export const homePref=()=>{try{const v=localStorage.getItem(HOME_KEY);return v==='list'||v==='town'?v:homeDefault;}catch{return homeDefault;}};
@@ -59,7 +59,7 @@ function townPage(env){
 
 export const EMOJI={restaurant:'🍜',cafe_bakery:'🥐',grocery:'🛒',repair:'🔧',homestay:'🏡',corp_accounting:'🧮',tax_payroll:'🧾',group_accounting:'🏢',hr_admin:'🗂️',secretary:'📅',it_helpdesk:'🖥️',
   mother_baby:'🎁',pharmacy:'💊',accounting:'📒',customer_care:'🎧',teacher:'🍎',tour_guide:'🧭',milk_tea:'🧋',florist:'💐',salon:'💇',
-  pet_care:'🐾',farm:'🌾',delivery:'🛵',clothing:'👕',pet_shop:'🐠',tra_da:'🧊',ice_cream:'🍨',com:'🍚',nail:'💅',pagoda:'🛕',pho:'🍜',photobooth:'📸',giupviec:'🧹',naucom:'🍲',babysitter:'👶',library:'📚',oil:'🛢️',railway:'🚦',nurse:'🏥'};
+  pet_care:'🐾',farm:'🌾',delivery:'🛵',clothing:'👕',pet_shop:'🐠',tra_da:'🧊',ice_cream:'🍨',com:'🍚',nail:'💅',pagoda:'🛕',pho:'🍜',photobooth:'📸',giupviec:'🧹',naucom:'🍲',babysitter:'👶',library:'📚',oil:'🛢️',railway:'🚦',nurse:'🏥',lighthouse:'🗼',rescue:'📞',lifeguard:'🛟',police:'👮'};
 const CATS={food:'Ăn uống',shop:'Buôn bán',service:'Dịch vụ',office:'Văn phòng',outdoor:'Ngoài trời'};
 const LEGACY_CAT={mother_baby:'shop',pharmacy:'shop',accounting:'office',customer_care:'office',teacher:'service',tour_guide:'outdoor',milk_tea:'food'};
 // The workplaces counted by game/journey.py OFFICE, rather than every office-category career.

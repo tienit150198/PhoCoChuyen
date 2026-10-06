@@ -1,5 +1,733 @@
 [
  {
+  "vi": "Đổ xút vào ống gang cũ, mấy hôm sau ống rò nước ra tường.",
+  "en": ""
+ },
+ {
+  "vi": "hóa chất làm hỏng ống cũ",
+  "en": ""
+ },
+ {
+  "vi": "🧪 Đổ bột thông cống, nước sôi sùng sục… rút được, nhưng chỉ tạm thời.",
+  "en": ""
+ },
+ {
+  "vi": "🧪 Đổ bột thông cống, chờ mãi vẫn không rút. Bột không làm gì được thứ đang chặn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thay rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Hết ống xi-phông. Mở kho nhập thêm nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🔧 Tháo ống xi-phông nứt, lắp ống mới, siết gioăng. Hết rỉ nước.",
+  "en": ""
+ },
+ {
+  "vi": "🔧 Thay ống xi-phông mới… mà nước vẫn không rút. Chỗ tắc nằm chỗ khác.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thông được, xả nước thử cũng vậy thôi.",
+  "en": ""
+ },
+ {
+  "vi": "💧 Xả nước thử: rút được nhưng còn hơi chậm. Nên nói rõ với khách đây là thông tạm.",
+  "en": ""
+ },
+ {
+  "vi": "💧 Xả nước thử: rút ào ào, không còn tiếng ọc ọc.",
+  "en": ""
+ },
+ {
+  "vi": "Làm xong việc chính đã.",
+  "en": ""
+ },
+ {
+  "vi": "Đã dọn rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Lau sạch nền, gom bùn rác vào bao buộc kín, rửa dụng cụ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã dặn rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ ống sạch, thấy chậm thì gọi sớm.",
+  "en": ""
+ },
+ {
+  "vi": "Nói rõ: đây mới là thông tạm, vài hôm có thể tắc lại, nên làm tận gốc.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thông được rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thông được thì chưa thu tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Đã tính tiền rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xả nước thử đã thu tiền, thợ đi rồi mới thấy còn chậm.",
+  "en": ""
+ },
+ {
+  "vi": "chưa xả nước thử",
+  "en": ""
+ },
+ {
+  "vi": "Thông xong để bùn đất bẩn hết sàn nhà.",
+  "en": ""
+ },
+ {
+  "vi": "chưa dọn chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Thông tạm mà không nói, hai hôm sau tắc lại y nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "thông tạm không nói rõ",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi thợ thông tạm hôm trước mà giờ lại thu tiền.",
+  "en": ""
+ },
+ {
+  "vi": "không bảo hành lỗi của mình",
+  "en": ""
+ },
+ {
+  "vi": "báo giá theo bệnh đoán sai",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hành, không lấy tiền.",
+  "en": ""
+ },
+ {
+  "vi": "“Ơ sao chọc mãi chưa xong? Thợ gì chậm như rùa, tính giờ công à?”",
+  "en": ""
+ },
+ {
+  "vi": "“Cẩn thận cái gạch nhà tôi! Nứt một viên là đền nha, gạch nhập đó.”",
+  "en": ""
+ },
+ {
+  "vi": "“Ông thợ hôm trước đổ gói bột là xong, bày vẽ lắm thế, làm màu à?”",
+  "en": ""
+ },
+ {
+  "vi": "“Để tôi quay clip làm bằng chứng. Làm ẩu là tôi đăng nhóm cư dân liền.”",
+  "en": ""
+ },
+ {
+  "vi": "“Tiện tay thông luôn cái lavabo trên lầu nha, có tí xíu, tính tiền gì.”",
+  "en": ""
+ },
+ {
+  "vi": "“Xong thì sửa giùm cái vòi rỉ luôn, thợ nước thợ cống cũng như nhau thôi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Hút luôn hố ga trước nhà bà bên cạnh nha, bà ấy nhờ, tiền thì tính sau.”",
+  "en": ""
+ },
+ {
+  "vi": "“Thông luôn bồn cầu tầng ba đi, nhanh nha, chiều nhà có khách.”",
+  "en": ""
+ },
+ {
+  "vi": "“Chết, hết tiền mặt rồi, mai chuyển khoản nha. Tin nhau tí đi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Ví để ở cơ quan rồi, ghi nợ đi, thiếu gì mà sợ.”",
+  "en": ""
+ },
+ {
+  "vi": "“App ngân hàng đang lỗi, hẹn cuối tuần nha, bùng đâu mà lo.”",
+  "en": ""
+ },
+ {
+  "vi": "“Đang kẹt, tuần sau vợ về đưa. Ai quỵt đâu mà nhìn dữ vậy.”",
+  "en": ""
+ },
+ {
+  "vi": "🗯️ Chủ nhà đứng sau lưng lèm bèm",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Khách nhờ “tiện tay”",
+  "en": ""
+ },
+ {
+  "vi": "💸 Khách không có tiền mặt",
+  "en": ""
+ },
+ {
+  "vi": "Khách đang nói chuyện với bạn: trả lời trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Giá hơi chặt đấy nhé, tôi biết giá thị trường mà.",
+  "en": ""
+ },
+ {
+  "vi": "giá cao hơn thường",
+  "en": ""
+ },
+ {
+  "vi": "Không có ai lèm bèm.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Mới nói có mấy câu mà thợ bỏ ngang, nước vẫn ngập.",
+  "en": ""
+ },
+ {
+  "vi": "bỏ dở việc",
+  "en": ""
+ },
+ {
+  "vi": "Bạn xin phép không làm nữa: chửi bới như vậy thì tiền nào cũng không làm. Chú Hai nghe xong gật đầu: “Đúng.”",
+  "en": ""
+ },
+ {
+  "vi": "Thợ đứng cãi tay đôi với chủ nhà giữa nhà tắm.",
+  "en": ""
+ },
+ {
+  "vi": "to tiếng với chủ nhà",
+  "en": ""
+ },
+ {
+  "vi": "Nhà mình mà bị mời ra ngoài, khó chịu ghê.",
+  "en": ""
+ },
+ {
+  "vi": "mời chủ nhà ra ngoài",
+  "en": ""
+ },
+ {
+  "vi": "Khách không nhờ gì thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ có tí việc cũng không giúp, keo vl.",
+  "en": ""
+ },
+ {
+  "vi": "từ chối việc nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Khách có tiền mặt mà.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nợ đầy rồi: đòi bớt nợ cũ đã.",
+  "en": ""
+ },
+ {
+  "vi": "Không có ai quay lại.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách giải quyết.",
+  "en": ""
+ },
+ {
+  "vi": "Chặt chém rồi còn cãi lý. Cả ngõ né thợ này ra.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn không trả. Tối đó nhóm cư dân phường Mây có bài đăng dài về “thợ chặt chém”.",
+  "en": ""
+ },
+ {
+  "vi": "Khách quay lại đòi tiền chênh",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Chú Hai dò sổ: báo giá đúng bảng giá. Tốt!",
+  "en": ""
+ },
+ {
+  "vi": "Sáng mai đọc sổ hẹn rồi hẵng xếp đồ lên xe.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ nghề hợp việc",
+  "en": ""
+ },
+ {
+  "vi": "mang đủ đồ",
+  "en": ""
+ },
+ {
+  "vi": "thiếu đồ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hộ",
+  "en": ""
+ },
+ {
+  "vi": "chưa làm được thì không lấy tiền",
+  "en": ""
+ },
+ {
+  "vi": "Thông được ống",
+  "en": ""
+ },
+ {
+  "vi": "hẹn thợ khác tới",
+  "en": ""
+ },
+ {
+  "vi": "Thông tận gốc",
+  "en": ""
+ },
+ {
+  "vi": "đúng bệnh, đúng đồ nghề",
+  "en": ""
+ },
+ {
+  "vi": "chưa đúng bệnh hoặc thông tạm",
+  "en": ""
+ },
+ {
+  "vi": "Báo giá thật",
+  "en": ""
+ },
+ {
+  "vi": "đúng bảng giá, nói rõ",
+  "en": ""
+ },
+ {
+  "vi": "giá chưa thật",
+  "en": ""
+ },
+ {
+  "vi": "đủ bảo hộ",
+  "en": ""
+ },
+ {
+  "vi": "Xả thử, dọn sạch",
+  "en": ""
+ },
+ {
+  "vi": "để bẩn hoặc chưa thử",
+  "en": ""
+ },
+ {
+  "vi": "Sổ hẹn hôm nay:",
+  "en": ""
+ },
+ {
+  "vi": "· Ống gang cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ hẹn → xếp tối đa 5 món đồ nghề lên xe → đeo găng tay → Lên đường.",
+  "en": ""
+ },
+ {
+  "vi": "Rào chắn → đo khí → thông gió → người canh → báo giá → múc bùn → xả thử, dọn sạch.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi, nhìn, xả nước thử (chưa chắc thì soi camera) → ghi nguyên nhân → báo giá → thông bằng đúng đồ nghề → xả thử → dọn → dặn khách → thu tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đứng canh trên miệng hố ga, cầm dây an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã rửa sạch dây lò xo, lau máy phun.",
+  "en": ""
+ },
+ {
+  "vi": "Đã chở bùn rác ra điểm tập kết.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu tiệm thông cống sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản việc thông cống không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Trạng thái việc thông cống sai.",
+  "en": ""
+ },
+ {
+  "vi": "Việc thông cống sai.",
+  "en": ""
+ },
+ {
+  "vi": "Mức báo giá sai.",
+  "en": ""
+ },
+ {
+  "vi": "Kết quả thông cống sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện của khách không khớp.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện của khách sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giá tự báo sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ trên xe sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ bảo hộ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ thông tạm sai.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu tiệm sai.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ khách quay lại sai.",
+  "en": ""
+ },
+ {
+  "vi": "Thông ống cống",
+  "en": ""
+ },
+ {
+  "vi": "Thông cống chú Hai",
+  "en": ""
+ },
+ {
+  "vi": "Đúng bệnh, đúng đồ nghề, đúng giá.",
+  "en": ""
+ },
+ {
+  "vi": "Nắng, nước cống rút ào ào",
+  "en": ""
+ },
+ {
+  "vi": "Việc gọi",
+  "en": ""
+ },
+ {
+  "vi": "Hộp đồ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ hẹn, xếp đồ nghề lên xe. Tới nơi thì hỏi, nhìn, xả nước thử, báo giá rồi mới làm nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi đường ống một căn bệnh",
+  "en": ""
+ },
+ {
+  "vi": "21 · THÔNG CỐNG CHÚ HAI",
+  "en": ""
+ },
+ {
+  "vi": "Cẩn thận, đứng canh miệng hố ga không rời mắt.",
+  "en": ""
+ },
+ {
+  "vi": "Khỏe, xách hai xô bùn một lúc.",
+  "en": ""
+ },
+ {
+  "vi": "Học an toàn lao động, luôn mang máy đo khí.",
+  "en": ""
+ },
+ {
+  "vi": "Thuộc hết ngõ ngách, chạy về tiệm nhanh như chớp.",
+  "en": ""
+ },
+ {
+  "vi": "Canh an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Chở đồ",
+  "en": ""
+ },
+ {
+  "vi": "Pít-tông",
+  "en": ""
+ },
+ {
+  "vi": "Bồn cầu tắc gần",
+  "en": ""
+ },
+ {
+  "vi": "Dây lò xo",
+  "en": ""
+ },
+ {
+  "vi": "Tóc trong thoát sàn",
+  "en": ""
+ },
+ {
+  "vi": "Máy phun",
+  "en": ""
+ },
+ {
+  "vi": "Mỡ đông",
+  "en": ""
+ },
+ {
+  "vi": "Hố ga",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ hẹn, xếp đồ",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi, nhìn, xả nước thử",
+  "en": ""
+ },
+ {
+  "vi": "Báo giá, thông đúng đồ",
+  "en": ""
+ },
+ {
+  "vi": "Xả thử, dọn sạch, dặn khách",
+  "en": ""
+ },
+ {
+  "vi": "Cuộn dây lò xo đã theo chú Hai hai mươi năm, mòn bóng ở chỗ tay cầm.",
+  "en": ""
+ },
+ {
+  "vi": "Chú dạy bạn nghe tiếng nước: ọc ọc là thiếu hơi, ì ạch là tắc xa.",
+  "en": ""
+ },
+ {
+  "vi": "Lần đầu bạn tự đoán đúng bệnh, chú Hai tặng lại cuộn dây cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Trời sắp mưa, hố ga đầu ngõ đầy bùn đen.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Hai bắt cả tổ đo khí, bật quạt, đứng canh rồi mới cho xuống.",
+  "en": ""
+ },
+ {
+  "vi": "Cơn mưa tới, nước rút ào ào. Ông Lộc đứng dưới ô, giơ ngón cái.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng giá dán trong hộp đồ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Trong nắp hộp đồ nghề dán tờ bảng giá viết tay, chữ đã mờ.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Hai bảo: “Giá nào việc nấy, không đổi theo mặt khách.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chép lại tờ bảng giá mới, dán cạnh tờ cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Đoán bệnh trúng phóc, thông một phát ăn ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Báo giá rõ ràng, làm xong đúng giá.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn sạch sẽ như chưa từng tắc.",
+  "en": ""
+ },
+ {
+  "vi": "Dặn dò kỹ, cả tháng không tắc lại.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng: đọc sổ hẹn, xếp đồ nghề lên xe. Mỗi việc: hỏi, nhìn, xả thử (hoặc soi camera) → ghi nguyên nhân → báo giá → thông đúng đồ nghề → xả thử → dọn → dặn khách → thu tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Luống trống: gieo cây rồi mới bón thúc.",
+  "en": ""
+ },
+ {
+  "vi": "Cây đã tới lứa, bón thúc giờ chỉ phí tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Trời mưa: phun phân bón lá lúc này nước cuốn trôi hết. Đợi hôm khô ráo.",
+  "en": ""
+ },
+ {
+  "vi": "Đất khô héo: tưới trước rồi mới bón thúc, kẻo cháy lá.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận mua và phun phân bón lá thúc.",
+  "en": ""
+ },
+ {
+  "vi": "Chăm đủ thì hôm nay tới lứa.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ bón thúc sai.",
+  "en": ""
+ },
+ {
+  "vi": "Thu hoạch luống chín (vùng xanh) → hàng vào kho mát → xếp đúng loại, đủ số vào thùng → nhãn trung thực (chỉ dán hữu cơ khi lô không dùng hóa chất) → giao. Giữa các đơn: tưới theo dự báo, nhổ cỏ, thăm sâu (sâu nặng lan sang luống bên qua đêm), bón compost khi đất bạc màu, cần rau sớm thì phun phân bón lá thúc (rút tới 70% thời gian lớn, tốn xu và đất màu), đổi nhóm cây khi gieo lại, cho gà ăn, dọn chuồng, nhặt trứng. Hàng dư sắp hết hạn: bán sỉ ở tab 📈 Chợ, chọn lúc được giá.",
+  "en": ""
+ },
+ {
+  "vi": "Mười lăm năm bay, nói nhỏ mà cả khoang nghe rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Hành khách đi công tác",
+  "en": ""
+ },
+ {
+  "vi": "Vali to, muốn để ngay trên đầu ghế mình.",
+  "en": ""
+ },
+ {
+  "vi": "Mang túi xoài ra đảo cho cháu, sợ nhất là rung lắc.",
+  "en": ""
+ },
+ {
+  "vi": "Bị tiểu đường, hay quên ăn sáng.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ bế bé Bơ mười tháng",
+  "en": ""
+ },
+ {
+  "vi": "Bé hay khóc lúc máy bay hạ độ cao.",
+  "en": ""
+ },
+ {
+  "vi": "Khách quen tuyến Rạch Giá",
+  "en": ""
+ },
+ {
+  "vi": "Đi biển cả đời, vậy mà sợ độ cao.",
+  "en": ""
+ },
+ {
+  "vi": "Cơ trưởng",
+  "en": ""
+ },
+ {
+  "vi": "Quyết mọi chuyện an toàn của chuyến bay.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm bạn đi phượt",
+  "en": ""
+ },
+ {
+  "vi": "Thích chụp ảnh, hay đứng dậy khi đèn thắt dây còn sáng.",
+  "en": ""
+ },
+ {
+  "vi": "Nước suối",
+  "en": ""
+ },
+ {
+  "vi": "Trà nóng",
+  "en": ""
+ },
+ {
+  "vi": "Cà phê sữa",
+  "en": ""
+ },
+ {
+  "vi": "Nước cam",
+  "en": ""
+ },
+ {
+  "vi": "Bánh mì pa-tê",
+  "en": ""
+ },
+ {
+  "vi": "Bánh mì chay",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ chỗ ngồi",
+  "en": ""
+ },
+ {
+  "vi": "Gửi khoang hàng",
+  "en": ""
+ },
+ {
+  "vi": "Đổi chỗ ngồi",
+  "en": ""
+ },
+ {
+  "vi": "Pin sạc mang theo người",
+  "en": ""
+ },
+ {
+  "vi": "Cô giáo trẻ",
+  "en": ""
+ },
+ {
+  "vi": "Anh thợ xây",
+  "en": ""
+ },
+ {
+  "vi": "Chú đi câu",
+  "en": ""
+ },
+ {
   "vi": "Chị Mai bế bé Bơ",
   "en": ""
  },
@@ -1069,734 +1797,6 @@
  },
  {
   "vi": "Bé Bơ khóc cả chuyến",
-  "en": ""
- },
- {
-  "vi": "Bé Bơ khóc ngằn ngặt. Khách hàng sau bắt đầu thở dài, chị Mai luống cuống xin lỗi mọi người.",
-  "en": ""
- },
- {
-  "vi": "Mang nước ấm cho bé, chỉ chị Mai chỗ thay tã, nói với khách xung quanh vài lời",
-  "en": ""
- },
- {
-  "vi": "Đỡ cho cả hai phía",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên giúp tôi dỗ bé, còn nói đỡ với khách xung quanh. Tôi đỡ ngại hẳn.",
-  "en": ""
- },
- {
-  "vi": "Bé Bơ nín dần. Ông khách hàng sau còn làm mặt hề cho bé cười.",
-  "en": ""
- },
- {
-  "vi": "Nhắc chị Mai dỗ bé cho khách khác nghỉ",
-  "en": ""
- },
- {
-  "vi": "Giữ yên khoang",
-  "en": ""
- },
- {
-  "vi": "Tôi đã cố hết sức, tiếp viên còn nhắc tôi làm phiền người khác.",
-  "en": ""
- },
- {
-  "vi": "Chị Mai rơm rớm nước mắt, bé càng khóc to.",
-  "en": ""
- },
- {
-  "vi": "Bị quay phim đăng lên mạng",
-  "en": ""
- },
- {
-  "vi": "Lúc bạn nhắc một khách tắt đèn đọc sách, Vy giơ điện thoại quay. Tối đó đoạn video lên mạng với dòng “tiếp viên thái độ”.",
-  "en": ""
- },
- {
-  "vi": "Bạn là Vy: thấy cảnh ấy, tưởng tiếp viên đang làm khó khách.",
-  "en": ""
- },
- {
-  "vi": "Đoạn video",
-  "en": ""
- },
- {
-  "vi": "Mạng xã hội",
-  "en": ""
- },
- {
-  "vi": "Video chỉ có tám giây, không có tiếng, cắt mất đoạn khách cãi trước.",
-  "en": ""
- },
- {
-  "vi": "Quy định của hãng",
-  "en": ""
- },
- {
-  "vi": "Sổ tay tiếp viên",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên không tự trả lời trên mạng. Báo trưởng khoang và phòng truyền thông.",
-  "en": ""
- },
- {
-  "vi": "Người chứng kiến",
-  "en": ""
- },
- {
-  "vi": "Chị Thu đứng cạnh và nghe hết từ đầu.",
-  "en": ""
- },
- {
-  "vi": "Báo chị Thu và phòng truyền thông, kể đầu đuôi, không tự trả lời trên mạng",
-  "en": ""
- },
- {
-  "vi": "Hãng đăng giải thích đầy đủ. Hóa ra tiếp viên chỉ nhắc nhẹ nhàng thôi. Tôi xin lỗi vì đã vội đăng.",
-  "en": ""
- },
- {
-  "vi": "Phòng truyền thông đăng lời giải thích kèm lời kể của chị Thu. Vy tự gỡ video và nhắn xin lỗi.",
-  "en": ""
- },
- {
-  "vi": "Tôi chỉ quay được một đoạn, đã vội nghĩ xấu.",
-  "en": ""
- },
- {
-  "vi": "Em im lặng đúng lúc, rồi báo đúng người.",
-  "en": ""
- },
- {
-  "vi": "Tự vào bình luận giải thích cho rõ",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên vào cãi tay đôi với khách trên mạng. Chuyện càng to.",
-  "en": ""
- },
- {
-  "vi": "Bình luận của bạn bị chụp lại, chuyện thành “tiếp viên cãi khách”.",
-  "en": ""
- },
- {
-  "vi": "Phòng truyền thông",
-  "en": ""
- },
- {
-  "vi": "Một bình luận nóng làm hỏng cả tuần dập lửa.",
-  "en": ""
- },
- {
-  "vi": "Tôi đã định gỡ, nhưng giờ thì phải cãi cho bằng được.",
-  "en": ""
- },
- {
-  "vi": "Kệ, rồi người ta cũng quên",
-  "en": ""
- },
- {
-  "vi": "Không ai giải thích gì, nhiều người vẫn tin tiếp viên thái độ.",
-  "en": ""
- },
- {
-  "vi": "Video lặng dần, nhưng vài khách quen nhìn bạn khác đi.",
-  "en": ""
- },
- {
-  "vi": "Lẽ ra em nên báo để hãng lên tiếng đúng cách.",
-  "en": ""
- },
- {
-  "vi": "Bà không tin cô tiếp viên như thế.",
-  "en": ""
- },
- {
-  "vi": "Bị quay phim oan thì giữ bình tĩnh, kể đầu đuôi cho đúng người; đừng cãi tay đôi trên mạng.",
-  "en": ""
- },
- {
-  "vi": "Đồng nghiệp đi bay khi đang sốt",
-  "en": ""
- },
- {
-  "vi": "Linh, tiếp viên mới, mặt đỏ bừng, ho khan. Linh nói nhỏ: “Chị đừng báo ai, em sợ bị trừ ngày công.”",
-  "en": ""
- },
- {
-  "vi": "Bạn là Linh: mới vào nghề, sợ bị nghĩ là lười.",
-  "en": ""
- },
- {
-  "vi": "Tình trạng của Linh",
-  "en": ""
- },
- {
-  "vi": "Linh sốt 38,5 độ, ho liên tục.",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên ốm được nghỉ, không bị trừ điểm. Có tiếp viên dự bị trực ở sân bay.",
-  "en": ""
- },
- {
-  "vi": "Chuyến bay",
-  "en": ""
- },
- {
-  "vi": "Chuyến này kín khách, có mấy cụ già và em bé.",
-  "en": ""
- },
- {
-  "vi": "Nói với Linh quy định cho nghỉ ốm, cùng Linh báo chị Thu gọi người dự bị",
-  "en": ""
- },
- {
-  "vi": "Chị đi cùng em báo trưởng khoang, em không bị trách gì. Về ngủ một giấc là đỡ.",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên dự bị lên thay trong hai mươi phút. Linh về nghỉ, hai hôm sau đi bay lại.",
-  "en": ""
- },
- {
-  "vi": "Em cứ tưởng nghỉ ốm là bị đánh giá kém.",
-  "en": ""
- },
- {
-  "vi": "Người ốm mà gắng thì cả khoang chịu.",
-  "en": ""
- },
- {
-  "vi": "Làm đỡ phần việc của Linh, để Linh ngồi nghỉ ở cuối khoang",
-  "en": ""
- },
- {
-  "vi": "Chị làm giúp em cả chuyến, em thương chị lắm. Nhưng em ho suốt, khách hàng cuối nhìn em ngại.",
-  "en": ""
- },
- {
-  "vi": "Chuyến bay xong, nhưng khoang thiếu một người, ai cũng mệt.",
-  "en": ""
- },
- {
-  "vi": "Em vẫn thấy có lỗi với cả tổ.",
-  "en": ""
- },
- {
-  "vi": "Khách hàng cuối",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên ho cả chuyến, tôi hơi lo.",
-  "en": ""
- },
- {
-  "vi": "Không nói gì, chuyện của Linh",
-  "en": ""
- },
- {
-  "vi": "Tôi ngất ở khu bếp giữa chuyến bay. Giá mà có ai bảo tôi về nghỉ.",
-  "en": ""
- },
- {
-  "vi": "Giữa chuyến Linh choáng, phải ngồi thở dưỡng khí. Cả khoang thiếu người phục vụ.",
-  "en": ""
- },
- {
-  "vi": "Lẽ ra chị phải biết sớm hơn.",
-  "en": ""
- },
- {
-  "vi": "Em sợ bị trừ công, giờ lại làm phiền cả tổ.",
-  "en": ""
- },
- {
-  "vi": "Đồng đội ốm thì nói với nhau quy định cho nghỉ, và báo trưởng khoang; gắng quá là rủi ro cho cả chuyến.",
-  "en": ""
- },
- {
-  "vi": "Chiếc ví bỏ quên dưới ghế",
-  "en": ""
- },
- {
-  "vi": "Khách xuống hết, bạn nhặt được chiếc ví dày cộm dưới ghế 12A, trong có giấy tờ của chú Hải và một xấp tiền.",
-  "en": ""
- },
- {
-  "vi": "Bạn là chú Hải: về tới nhà mới biết mất ví.",
-  "en": ""
- },
- {
-  "vi": "Đồ khách để quên giao trưởng khoang, lập biên bản có hai người ký, chuyển quầy đồ thất lạc.",
-  "en": ""
- },
- {
-  "vi": "Bạn đếm cùng chị Thu",
-  "en": ""
- },
- {
-  "vi": "Có căn cước của chú Hải, 1.200 xu và tấm ảnh cũ chụp một con tàu cá.",
-  "en": ""
- },
- {
-  "vi": "Chú Hải gọi tới",
-  "en": ""
- },
- {
-  "vi": "Quầy thủ tục",
-  "en": ""
- },
- {
-  "vi": "Chú Hải đang ở quầy thủ tục, hỏi có ai thấy ví không.",
-  "en": ""
- },
- {
-  "vi": "Đếm cùng chị Thu, lập biên bản, trao lại chú Hải ở quầy có chữ ký",
-  "en": ""
- },
- {
-  "vi": "Ví về đủ từng xu, cả tấm ảnh con tàu của bố tôi. Hãng làm việc đàng hoàng quá.",
-  "en": ""
- },
- {
-  "vi": "Chú Hải cầm ví, mở ra xem tấm ảnh trước cả tiền.",
-  "en": ""
- },
- {
-  "vi": "Tiền thì kiếm lại được, tấm ảnh thì không.",
-  "en": ""
- },
- {
-  "vi": "Có biên bản thì không ai nghi ai.",
-  "en": ""
- },
- {
-  "vi": "Chạy ra quầy đưa tận tay chú Hải luôn cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Nhận lại ví nhanh lắm, cảm ơn cô. Mà hình như không ai đếm lại với tôi.",
-  "en": ""
- },
- {
-  "vi": "Chú Hải nhận ví, nhưng không có biên bản; nếu thiếu gì cũng không ai nói được.",
-  "en": ""
- },
- {
-  "vi": "Nhanh là quý, nhưng giá có tờ giấy thì chắc hơn.",
-  "en": ""
- },
- {
-  "vi": "Tốt bụng, nhưng quy trình để bảo vệ cả em.",
-  "en": ""
- },
- {
-  "vi": "Rút bớt ít tiền, chắc chú không nhớ",
-  "en": ""
- },
- {
-  "vi": "Ví về thiếu tiền. Tôi nhớ rõ từng tờ.",
-  "en": ""
- },
- {
-  "vi": "Chú Hải đếm lại ngay ở quầy. Hãng mở điều tra, bạn phải bồi hoàn và bị kỷ luật.",
-  "en": ""
- },
- {
-  "vi": "Tôi không tiếc tiền, tôi tiếc lòng tin.",
-  "en": ""
- },
- {
-  "vi": "Chị không bao giờ nghĩ em làm vậy.",
-  "en": ""
- },
- {
-  "vi": "Đồ của khách để quên: đếm có người chứng kiến, ghi biên bản, trao đúng người.",
-  "en": ""
- },
- {
-  "vi": "Khách đòi ngồi hàng thoát hiểm",
-  "en": ""
- },
- {
-  "vi": "Anh Kiệt đổi được vé hàng 17 cạnh cửa thoát hiểm. Tay trái anh bó bột tới khuỷu. “Anh trả thêm tiền chỗ này rồi đấy!”",
-  "en": ""
- },
- {
-  "vi": "Bạn là anh Kiệt: trả thêm tiền để ngồi rộng chân, giờ bị mời đổi chỗ.",
-  "en": ""
- },
- {
-  "vi": "Hàng thoát hiểm",
-  "en": ""
- },
- {
-  "vi": "Người ngồi cạnh cửa thoát hiểm phải mở được cửa nặng mười lăm ký khi cần.",
-  "en": ""
- },
- {
-  "vi": "Tay của anh Kiệt",
-  "en": ""
- },
- {
-  "vi": "Nhìn thấy",
-  "en": ""
- },
- {
-  "vi": "Tay trái bó bột, không cầm nắm được.",
-  "en": ""
- },
- {
-  "vi": "Ghế còn trống",
-  "en": ""
- },
- {
-  "vi": "Sơ đồ khoang",
-  "en": ""
- },
- {
-  "vi": "Còn ghế 4C lối đi, cũng rộng chân, gần cửa trước.",
-  "en": ""
- },
- {
-  "vi": "Giải thích vì sao, mời anh ghế 4C rộng chân, báo mặt đất hoàn phần tiền chênh",
-  "en": ""
- },
- {
-  "vi": "Cô tiếp viên nói có lý, lại tìm cho tôi chỗ rộng chân. Tiền chênh cũng được hoàn.",
-  "en": ""
- },
- {
-  "vi": "Anh Kiệt ngồi 4C, duỗi chân. Hàng 17 có một cậu thanh niên khỏe mạnh ngồi.",
-  "en": ""
- },
- {
-  "vi": "Tôi chỉ cần chỗ rộng, đâu cần đúng hàng đó.",
-  "en": ""
- },
- {
-  "vi": "Giữ quy định mà khách vẫn vui, vậy là khéo.",
-  "en": ""
- },
- {
-  "vi": "“Quy định không cho, anh đổi chỗ đi.”",
-  "en": ""
- },
- {
-  "vi": "Bắt đổi chỗ mà không giải thích, tiền tôi trả thêm thì sao?",
-  "en": ""
- },
- {
-  "vi": "Anh Kiệt đổi chỗ, nhưng gửi phàn nàn về tiền chỗ ngồi.",
-  "en": ""
- },
- {
-  "vi": "Tôi không cãi quy định, tôi cần người nói cho ra lẽ.",
-  "en": ""
- },
- {
-  "vi": "Lỗi của chúng tôi khi bán chỗ đó. Lẽ ra phải hoàn tiền.",
-  "en": ""
- },
- {
-  "vi": "Cho anh ngồi, chắc không có chuyện gì đâu",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên để người bó bột ngồi hàng thoát hiểm. Có chuyện thì ai mở cửa?",
-  "en": ""
- },
- {
-  "vi": "Chị Thu đi kiểm khoang, phải tự mời anh Kiệt đổi chỗ ngay trước giờ cất cánh.",
-  "en": ""
- },
- {
-  "vi": "Hàng thoát hiểm là hàng của cả khoang.",
-  "en": ""
- },
- {
-  "vi": "Khách hàng 16",
-  "en": ""
- },
- {
-  "vi": "Tôi ngồi ngay sau, nghĩ tới mà rùng mình.",
-  "en": ""
- },
- {
-  "vi": "Hàng thoát hiểm dành cho người mở được cửa; giữ quy định và tìm cho khách một chỗ khác vừa ý.",
-  "en": ""
- },
- {
-  "vi": "Nhấc giúp vali nặng",
-  "en": ""
- },
- {
-  "vi": "Ông Tư chỉ chiếc vali nặng trịch: “Cháu nhấc lên hộc giúp ông, lưng ông đau.” Vali chừng hai mươi lăm ký.",
-  "en": ""
- },
- {
-  "vi": "Bạn là ông Tư: lưng đau, không nhấc nổi vali.",
-  "en": ""
- },
- {
-  "vi": "Cái vali",
-  "en": ""
- },
- {
-  "vi": "Nhấc thử",
-  "en": ""
- },
- {
-  "vi": "Nặng khoảng hai mươi lăm ký, quá mức hành lý xách tay bảy ký.",
-  "en": ""
- },
- {
-  "vi": "An toàn cho tiếp viên",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên không một mình nhấc đồ quá nặng lên cao; vali quá khổ gửi khoang hàng.",
-  "en": ""
- },
- {
-  "vi": "Khoang hàng",
-  "en": ""
- },
- {
-  "vi": "Nhân viên mặt đất",
-  "en": ""
- },
- {
-  "vi": "Vẫn kịp gửi vali xuống khoang hàng, miễn phí cho hành lý quá khổ ở cửa tàu.",
-  "en": ""
- },
- {
-  "vi": "Gửi vali xuống khoang hàng miễn phí, dặn ông lấy ở băng chuyền",
-  "en": ""
- },
- {
-  "vi": "Cô tiếp viên cho gửi vali ở cửa tàu, không mất đồng nào. Ông nhẹ cả người.",
-  "en": ""
- },
- {
-  "vi": "Vali xuống khoang hàng, ông Tư ngồi thoải mái cả chuyến.",
-  "en": ""
- },
- {
-  "vi": "Ông cứ ngại làm phiền người ta.",
-  "en": ""
- },
- {
-  "vi": "Lưng em còn phải bay mấy chục năm nữa.",
-  "en": ""
- },
- {
-  "vi": "Gọi thêm một đồng nghiệp, hai người cùng nhấc",
-  "en": ""
- },
- {
-  "vi": "Hai cô nhấc giúp, vất vả quá. Hộc hành lý chật cứng.",
-  "en": ""
- },
- {
-  "vi": "Vali lên hộc, nhưng chiếm chỗ của ba khách khác.",
-  "en": ""
- },
- {
-  "vi": "Nặng thật, may mà có hai người.",
-  "en": ""
- },
- {
-  "vi": "Khách hàng 7",
-  "en": ""
- },
- {
-  "vi": "Tôi không còn chỗ để túi.",
-  "en": ""
- },
- {
-  "vi": "Tự nhấc một mình cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Cô tiếp viên nhấc giúp tôi, mà tôi thấy cô nhăn mặt ôm lưng.",
-  "en": ""
- },
- {
-  "vi": "Bạn đau lưng suốt ba ngày, phải nghỉ bay.",
-  "en": ""
- },
- {
-  "vi": "Ông áy náy quá.",
-  "en": ""
- },
- {
-  "vi": "Giúp khách không có nghĩa là liều cái lưng của mình.",
-  "en": ""
- },
- {
-  "vi": "Giúp khách đúng cách: vali quá nặng gửi khoang hàng, đừng một mình nhấc đồ nặng lên cao.",
-  "en": ""
- },
- {
-  "vi": "Em bé",
-  "en": ""
- },
- {
-  "vi": "Khách đang ngủ",
-  "en": ""
- },
- {
-  "vi": "Khách đang ngủ say, gối đầu vào cửa sổ.",
-  "en": ""
- },
- {
-  "vi": "Chị Thu đưa bạn áo phao mẫu: “Làm mẫu theo đúng thẻ nhé. Xong đi dọc lối kiểm tra khoang.”",
-  "en": ""
- },
- {
-  "vi": "Đẩy xe phục vụ",
-  "en": ""
- },
- {
-  "vi": "Báo chị Thu",
-  "en": ""
- },
- {
-  "vi": "Báo phòng an toàn",
-  "en": ""
- },
- {
-  "vi": "Nhờ công đoàn",
-  "en": ""
- },
- {
-  "vi": "Phòng điều hành",
-  "en": ""
- },
- {
-  "vi": "tiếp viên dự bị",
-  "en": ""
- },
- {
-  "vi": "tiếp viên",
-  "en": ""
- },
- {
-  "vi": "Vào ca thôi! Chị Thu đang chờ ở cửa tàu.",
-  "en": ""
- },
- {
-  "vi": "Đèn thắt dây đang sáng! Cất xe, về ghế trước đã.",
-  "en": ""
- },
- {
-  "vi": "Có chuyện trong khoang, quyết xong rồi làm tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Có người đang chờ bạn trả lời, xong rồi làm tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn đang tạm đình chỉ bay hết hôm nay. Tan ca, mai lên phòng an toàn trình bày.",
-  "en": ""
- },
- {
-  "vi": "Thao tác không có trong khoang khách.",
-  "en": ""
- },
- {
-  "vi": "Việc này không thuộc khoang khách.",
-  "en": ""
- },
- {
-  "vi": "Hỏi chuyện khách trước đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Nhận phiếu suất ăn đặc biệt trước đã.",
-  "en": ""
- },
- {
-  "vi": "Việc này đã xong.",
-  "en": ""
- },
- {
-  "vi": "Khách đã lên đủ. Đóng cửa khoang thôi.",
-  "en": ""
- },
- {
-  "vi": "Chọn cách giúp khách.",
-  "en": ""
- },
- {
-  "vi": "Vali có pin sạc dự phòng mà vẫn gửi xuống khoang hàng.",
-  "en": ""
- },
- {
-  "vi": "gửi pin sạc xuống khoang hàng",
-  "en": ""
- },
- {
-  "vi": "✋ Chị Thu kéo vali lại: “Pin sạc dự phòng phải mang theo người, không được gửi khoang hàng. Dễ cháy lắm!”",
-  "en": ""
- },
- {
-  "vi": "xếp sai người vào hàng thoát hiểm",
-  "en": ""
- },
- {
-  "vi": "Vali to nhét mãi không vừa hộc, lối đi tắc cả chục người.",
-  "en": ""
- },
- {
-  "vi": "để vali quá khổ lên hộc",
-  "en": ""
- },
- {
-  "vi": "🧳 Vali không vừa hộc, nhét mãi không đóng được. Lối đi bắt đầu tắc.",
-  "en": ""
- },
- {
-  "vi": "Ghế của khách bị người khác ngồi mà tiếp viên không xử lý.",
-  "en": ""
- },
- {
-  "vi": "không xếp khách về đúng ghế",
-  "en": ""
- },
- {
-  "vi": "Khách chỉ hỏi chỗ ngồi mà tiếp viên làm rối cả lên.",
-  "en": ""
- },
- {
-  "vi": "làm phiền khách không cần thiết",
-  "en": ""
- },
- {
-  "vi": "✅ Khách lên đủ. Đóng cửa khoang nhé.",
-  "en": ""
- },
- {
-  "vi": "🚪 Đóng cửa khoang. Chị Thu gật đầu: “Gọn gàng.”",
-  "en": ""
- },
- {
-  "vi": "Đã làm mẫu xong.",
-  "en": ""
- },
- {
-  "vi": "Phần này không có trong thẻ hướng dẫn.",
-  "en": ""
- },
- {
-  "vi": "Làm mẫu an toàn lộn thứ tự, khách nhìn không hiểu.",
   "en": ""
  }
 ]

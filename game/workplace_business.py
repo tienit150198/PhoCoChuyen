@@ -71,6 +71,10 @@ ORDERS = {
     'secretary': ('Việc riêng: chuẩn bị lịch và hồ sơ cuộc họp', 16, 3, {}),
     'it_helpdesk': ('Yêu cầu riêng: kiểm tra và hỗ trợ thiết bị', 20, 4, {}),
     'railway': ('Việc riêng: trực gác thay một ca ngắn', 18, 4, {}),
+    'lighthouse': ('Việc riêng: trực đèn thay một ca ngắn', 18, 4, {}),
+    'rescue': ('Việc riêng: trực tổng đài thay một ca ngắn', 18, 4, {}),
+    'lifeguard': ('Việc riêng: trực cứu hộ cho một lớp bơi', 18, 4, {}),
+    'police': ('Việc riêng: hỗ trợ tiếp dân một buổi', 16, 3, {}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',

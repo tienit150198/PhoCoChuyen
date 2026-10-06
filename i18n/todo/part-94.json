@@ -1,2252 +1,1802 @@
 [
  {
-  "vi": "Bạn bớt luôn $1 xu. $2 hớn hở — chị Vy đứng trong nhìn ra, hơi nhíu mày.",
-  "en": "",
-  "pattern": true
+  "vi": "➖ Bớt",
+  "en": ""
  },
  {
-  "vi": "$1 Còn $2 xu. $3 đưa $4 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "kiểm phòng trước",
+  "en": ""
  },
  {
-  "vi": "$1 đang chờ bạn trả lời chuyện bớt giá.",
-  "en": "",
-  "pattern": true
+  "vi": "Hỏi dị ứng, ăn kiêng trước khi nấu",
+  "en": ""
  },
  {
-  "vi": "Giá treo vừa hết $1 $2. Bill được mở lại, chọn lại giùm khách nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Trứng hỏng hoặc dư: dọn khay làm lại",
+  "en": ""
  },
  {
-  "vi": "$1 để đồ lại trên quầy, không mua nữa: “$2”.",
-  "en": "",
-  "pattern": true
+  "vi": "Nhấc trứng ra khỏi chảo",
+  "en": ""
  },
  {
-  "vi": "$1 để đồ lại, không lấy nữa.",
-  "en": "",
-  "pattern": true
+  "vi": "Khách ăn và đánh giá đúng những gì trên khay.",
+  "en": ""
  },
  {
-  "vi": "Bạn đã phục vụ $1: “$2”.",
-  "en": "",
-  "pattern": true
+  "vi": "làm khay trước",
+  "en": ""
  },
  {
-  "vi": "Thất thoát ở quầy: $1",
-  "en": "",
-  "pattern": true
+  "vi": "Không còn phòng hợp những đêm này",
+  "en": ""
  },
  {
-  "vi": "Gửi Bà Tư $1 xu tiền công.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Chạm tên phòng trên lịch để chọn",
+  "en": ""
  },
  {
-  "vi": "Đã thu $1 xu · +$2 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "Lịch giữ phòng đã thay đổi",
+  "en": ""
  },
  {
-  "vi": "Về nhà mặc thử mới thấy $1, phải quay lại tiệm đổi size.",
-  "en": "",
-  "pattern": true
+  "vi": "↺ Bỏ giữ, chọn lại phòng",
+  "en": ""
  },
  {
-  "vi": "lấy sai size ($1 thay vì $2)",
-  "en": "",
-  "pattern": true
+  "vi": "Khách chê giá: báo mức thấp hơn",
+  "en": ""
  },
  {
-  "vi": "Đi $1 mà bộ này lạc quẻ, tới nơi mới thấy không hợp dịp.",
-  "en": "",
-  "pattern": true
+  "vi": "Tin xác nhận kèm nội quy sẽ gửi cho khách.",
+  "en": ""
  },
  {
-  "vi": "$1 mà mặc màu $2, người ta nhìn mình quá trời.",
-  "en": "",
-  "pattern": true
+  "vi": "lịch thay đổi, chọn lại phòng",
+  "en": ""
  },
  {
-  "vi": "chọn màu $1 kiêng kỵ",
-  "en": "",
-  "pattern": true
+  "vi": "giữ phòng trước",
+  "en": ""
  },
  {
-  "vi": "Màu $1 hơi lệch với dịp $2, nhưng thôi cũng tạm.",
-  "en": "",
-  "pattern": true
+  "vi": "Hỏi khách cho chắc",
+  "en": ""
  },
  {
-  "vi": "màu $1 chưa hợp dịp",
-  "en": "",
-  "pattern": true
+  "vi": "vướng điều khách cần tránh",
+  "en": ""
  },
  {
-  "vi": "$1 mà thiếu $2, tiếc ghê.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Chọn nơi hợp khách (thẻ xanh, không thẻ đỏ)",
+  "en": ""
  },
  {
-  "vi": "Tiệm bỏ thêm $1 vào bộ đi $2, chẳng biết mặc lúc nào.",
-  "en": "",
-  "pattern": true
+  "vi": "Khách sẽ đi đúng những nơi bạn gợi ý.",
+  "en": ""
  },
  {
-  "vi": "thêm $1 không hợp dịp",
-  "en": "",
-  "pattern": true
+  "vi": "👉 So câu trả lời với sổ rồi quyết định",
+  "en": ""
  },
  {
-  "vi": "Bạn cho $1 mặc thử, ghim kim ở mắt cá: cần cắt lên $2 cm.",
-  "en": "",
-  "pattern": true
+  "vi": "📞 Quyết định giao đồ",
+  "en": ""
  },
  {
-  "vi": "Bạn quấn thước dây quanh eo, ghim hai bên hông: cần bóp vào $1 cm.",
-  "en": "",
-  "pattern": true
+  "vi": "Nhấc trứng khỏi chảo",
+  "en": ""
  },
  {
-  "vi": "Bạn phấn một đường $1 cm rồi ngồi vào máy may. Đạp máy, dừng đúng vạch nha!",
-  "en": "",
-  "pattern": true
+  "vi": "Quyết chuyện ở quầy",
+  "en": ""
  },
  {
-  "vi": "Bạn mang đồ sang gian bên cho Bà Tư. Bà đeo kính lên: “Để đó, chút xíu là xong.” (công $1 xu)",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Chọn cách xử lý chuyện ở quầy",
+  "en": ""
  },
  {
-  "vi": "Bà Tư còn đang may, chờ thêm chút nha (khoảng $1 nhịp).",
-  "en": "",
-  "pattern": true
+  "vi": "(khách tới tối nay)",
+  "en": ""
  },
  {
-  "vi": "cắt lố $1 cm",
-  "en": "",
-  "pattern": true
+  "vi": "để khăn ở cửa (biển đừng làm phiền)",
+  "en": ""
  },
  {
-  "vi": "sửa thiếu $1 cm",
-  "en": "",
-  "pattern": true
+  "vi": "sưởi đêm lạnh",
+  "en": ""
  },
  {
-  "vi": "$1 đã có thẻ rồi.",
-  "en": "",
-  "pattern": true
+  "vi": "phòng hết mùi ẩm",
+  "en": ""
  },
  {
-  "vi": "Bạn đưa $1 thẻ số $2 món. $3 kéo rèm bước vào.",
-  "en": "",
-  "pattern": true
+  "vi": "🗓️ Lịch",
+  "en": ""
  },
  {
-  "vi": "$1 ra rồi.",
-  "en": "",
-  "pattern": true
+  "vi": "📖 Sổ",
+  "en": ""
  },
  {
-  "vi": "$1 bước ra, trả $2 món rồi đi luôn.$3",
-  "en": "",
-  "pattern": true
+  "vi": "Khu trong nhà",
+  "en": ""
  },
  {
-  "vi": "$1 trả lại đủ $2/$3 món, cảm ơn rồi đi. Mời người kế tiếp.",
-  "en": "",
-  "pattern": true
+  "vi": "🛏️ Tối mai nhận phòng:",
+  "en": ""
  },
  {
-  "vi": "$1 trả lại $2 món, thẻ ghi $3. Thiếu $4 món! Kiểm phòng thử hoặc hỏi khéo khách.",
-  "en": "",
-  "pattern": true
+  "vi": "🧹 Phòng cần dọn:",
+  "en": ""
  },
  {
-  "vi": "Trên móc trong phòng còn treo một chiếc $1 — $2 quên thôi. Treo lại lên giá.",
-  "en": "",
-  "pattern": true
+  "vi": "🏡 Sổ nhà hôm nay",
+  "en": ""
  },
  {
-  "vi": "Bạn nói nhỏ: “Chị ơi hình như còn một món chưa trả…” $1 đỏ mặt, lấy chiếc $2 mặc bên trong ra: “À… chị quên.”",
-  "en": "",
-  "pattern": true
+  "vi": "Quy định phòng nhân sự",
+  "en": ""
  },
  {
-  "vi": "$1 đỏ mặt, dốc cả túi xách ra: “Chị không lấy gì hết!” rồi bỏ đi. Mấy khách đang chờ nhìn nhau.",
-  "en": "",
-  "pattern": true
+  "vi": "🗂️ Phòng nhân sự hôm nay",
+  "en": ""
  },
  {
-  "vi": "Bạn để $1 đi.",
-  "en": "",
-  "pattern": true
+  "vi": "Quy định bàn IT",
+  "en": ""
  },
  {
-  "vi": "Mất một $1 ở phòng thử.",
-  "en": "",
-  "pattern": true
+  "vi": "🖥️ Bàn IT hôm nay",
+  "en": ""
  },
  {
-  "vi": "Giá treo hết size $1. Hoàn tiền hoặc hẹn khách khi hàng về.",
-  "en": "",
-  "pattern": true
+  "vi": "👂 Nghe bạn đọc nói",
+  "en": ""
  },
  {
-  "vi": "Hóa đơn ngày $1 ngày trước, giá $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "🔖 Quầy mượn trả",
+  "en": ""
  },
  {
-  "vi": "Bạn $1: $2.",
-  "en": "",
-  "pattern": true
+  "vi": "🏷️ Biên mục",
+  "en": ""
  },
  {
-  "vi": "Hoàn tiền đổi trả: $1",
-  "en": "",
-  "pattern": true
+  "vi": "🤫 Phòng đọc",
+  "en": ""
  },
  {
-  "vi": "Hoàn lại $1 xu cho $2.",
-  "en": "",
-  "pattern": true
+  "vi": "🗂️ Lưu trữ",
+  "en": ""
  },
  {
-  "vi": "Đổi cho $1 $2 size $3.",
-  "en": "",
-  "pattern": true
+  "vi": "nhờ việc",
+  "en": ""
  },
  {
-  "vi": "Nhận lại đồ đã mặc của $1 — lỗ nguyên món.",
-  "en": "",
-  "pattern": true
+  "vi": "chiều người ta",
+  "en": ""
  },
  {
-  "vi": "Nhận đổi trả trái chính sách cho $1.",
-  "en": "",
-  "pattern": true
+  "vi": "cách khác hợp nội quy",
+  "en": ""
  },
  {
-  "vi": "Bạn xử lý đổi trả cho $1: “$2”.",
-  "en": "",
-  "pattern": true
+  "vi": "có người dỗi",
+  "en": ""
  },
  {
-  "vi": "tem sale thấp, lỗ $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "👩‍🏫 Nhờ cô Nguyệt",
+  "en": ""
  },
  {
-  "vi": "Khách phàn nàn: bảng ghi giảm $1% mà tem tính chưa tới.",
-  "en": "",
-  "pattern": true
+  "vi": "mất thêm thời gian",
+  "en": ""
  },
  {
-  "vi": "Tối cộng sổ: tem thấp làm tiệm hụt $1 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "🌡️ Xem ẩm kế kho",
+  "en": ""
  },
  {
-  "vi": "Giá treo hết $1 $2.",
-  "en": "",
-  "pattern": true
+  "vi": "💧 Máy hút ẩm: đang chạy",
+  "en": ""
  },
  {
-  "vi": "Gấp $1 $2 màu $3 bỏ vào túi zip.",
-  "en": "",
-  "pattern": true
+  "vi": "💧 Bật máy hút ẩm",
+  "en": ""
  },
  {
-  "vi": "In phiếu giao: $1 · $2 ·",
-  "en": "",
-  "pattern": true
+  "vi": "🪤 Soi bẫy côn trùng",
+  "en": ""
  },
  {
-  "vi": "thu hộ $1 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "🗄️ Kho lưu trữ",
+  "en": ""
  },
  {
-  "vi": "Giá treo vừa hết $1 $2.",
-  "en": "",
-  "pattern": true
+  "vi": "🪤 Bẫy côn trùng",
+  "en": ""
  },
  {
-  "vi": "Đặt $1 size $2 màu $3 mà nhận $4 màu $5, phải gửi trả lại.",
-  "en": "",
-  "pattern": true
+  "vi": "🚪 Phòng đọc",
+  "en": ""
  },
  {
-  "vi": "Mở gói ra thiếu $1, nhắn tiệm mãi mới trả lời.",
-  "en": "",
-  "pattern": true
+  "vi": "🔑 Mở phòng đọc",
+  "en": ""
  },
  {
-  "vi": "Bạn gửi đơn online cho $1.",
-  "en": "",
-  "pattern": true
+  "vi": "📋 Dựng bảng nội quy",
+  "en": ""
  },
  {
-  "vi": "Shipper chạy đi rồi! $1 $2 xu · trừ ship $3 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "Kho quá ẩm: bật máy hút ẩm",
+  "en": ""
  },
  {
-  "vi": "Gửi sai phải chịu thêm $1 xu phí ship hai chiều.",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn cách xử lý bẫy",
+  "en": ""
  },
  {
-  "vi": "Kho hết $1.",
-  "en": "",
-  "pattern": true
+  "vi": "🪤 Chọn cách xử lý",
+  "en": ""
  },
  {
-  "vi": "Mặc cho ma-nơ-canh: $1 $2 màu $3. Nhớ hấp cho phẳng.",
-  "en": "",
-  "pattern": true
+  "vi": "Còn trên kệ",
+  "en": ""
  },
  {
-  "vi": "$1 món chưa hấp",
-  "en": "",
-  "pattern": true
+  "vi": "Sách tra cứu: chỉ đọc tại chỗ",
+  "en": ""
  },
  {
-  "vi": "Giá treo hết size $1. Nhập thêm hoặc hoàn tiền cho khách.",
-  "en": "",
-  "pattern": true
+  "vi": "Đang có người mượn",
+  "en": ""
  },
  {
-  "vi": "Đổi cho $1 size $2. $3: “Lần này chắc vừa rồi ha.”",
-  "en": "",
-  "pattern": true
+  "vi": "🔎 Tra máy",
+  "en": ""
  },
  {
-  "vi": "Hoàn tiền đổi size cho $1",
-  "en": "",
-  "pattern": true
+  "vi": "Thẻ còn hạn",
+  "en": ""
  },
  {
-  "vi": "Hoàn $1 xu cho $2.",
-  "en": "",
-  "pattern": true
+  "vi": "Thẻ hết hạn",
+  "en": ""
  },
  {
-  "vi": "$1 Món cũ còn tem, treo lại lên giá.",
-  "en": "",
-  "pattern": true
+  "vi": "Thẻ bạn đọc",
+  "en": ""
  },
  {
-  "vi": "Quay lại đổi size $1 mà chờ tới tối cũng không ai lo. Thôi khỏi.",
-  "en": "",
-  "pattern": true
+  "vi": "🪪 Kiểm thẻ",
+  "en": ""
  },
  {
-  "vi": "😞 $1 chờ đổi size mà không ai lo, để lại 1★.",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Đã gia hạn thẻ",
+  "en": ""
  },
  {
-  "vi": "Khách ghé vì ma-nơ-canh: $1",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Đã thu nợ cũ",
+  "en": ""
  },
  {
-  "vi": "🧍‍♀️ $1 khách đi ngang thấy ma-nơ-canh xinh quá, ghé mua phụ kiện.",
-  "en": "",
-  "pattern": true
+  "vi": "Thu nợ phí cũ",
+  "en": ""
  },
  {
-  "vi": "🪡 Tiệm: $1. Phục vụ thêm $2 khách nữa là chị Vy sửa sang: $3.",
-  "en": "",
-  "pattern": true
+  "vi": "💵 Thu nợ",
+  "en": ""
  },
  {
-  "vi": "🪡 Tiệm: $1.",
-  "en": "",
-  "pattern": true
+  "vi": "📗 Cho mượn, đóng dấu hạn trả",
+  "en": ""
  },
  {
-  "vi": "📅 Ngày mai: $1 $2.",
-  "en": "",
-  "pattern": true
+  "vi": "🔖 Quyết ở quầy",
+  "en": ""
  },
  {
-  "vi": "Doanh thu quầy hôm nay $1 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "🙏 Hoặc giúp cách khác",
+  "en": ""
  },
  {
-  "vi": "Đã gấp giúp $1 $2 bỏ vào gói. Bạn vẫn in phiếu và kiểm lại.",
-  "en": "",
-  "pattern": true
+  "vi": "Tra máy: ký hiệu, còn sách không",
+  "en": ""
  },
  {
-  "vi": "Đã đếm và đưa thẻ số $1 món cho $2.",
-  "en": "",
-  "pattern": true
+  "vi": "Kiểm thẻ bạn đọc",
+  "en": ""
  },
  {
-  "vi": "$1 khách quay lại đổi size",
-  "en": "",
-  "pattern": true
+  "vi": "Cho mượn hoặc giúp cách khác",
+  "en": ""
  },
  {
-  "vi": "Hết size: $1$2",
-  "en": "",
-  "pattern": true
+  "vi": "Tình trạng sách",
+  "en": ""
  },
  {
-  "vi": "Hết size: $1",
-  "en": "",
-  "pattern": true
+  "vi": "📖 Kiểm sách",
+  "en": ""
  },
  {
-  "vi": "Nồi $1 còn cơm, bán hết rồi hẵng nấu nồi mới.",
-  "en": "",
-  "pattern": true
+  "vi": "Dấu hạn trả",
+  "en": ""
  },
  {
-  "vi": "🍚 Vo gạo hai nước, đổ nước $1, bấm nút nồi $2. Chừng $3 giây nữa cơm chín.",
-  "en": "",
-  "pattern": true
+  "vi": "📅 Xem dấu hạn",
+  "en": ""
  },
  {
-  "vi": "🥄 Chấm đầu đũa nếm thử: nước mắm $1",
-  "en": "",
-  "pattern": true
+  "vi": "💬 Hỏi lý do",
+  "en": ""
  },
  {
-  "vi": "Nếm lại: $1 Lỡ tay rồi, chỉnh lại cho vừa.",
-  "en": "",
-  "pattern": true
+  "vi": "Làm mất: giá bìa",
+  "en": ""
  },
  {
-  "vi": "Nếm lại: $1",
-  "en": "",
-  "pattern": true
+  "vi": "Hỏng sách",
+  "en": ""
  },
  {
-  "vi": "Nếm lại: vẫn $1",
-  "en": "",
-  "pattern": true
+  "vi": "Không có phí",
+  "en": ""
  },
  {
-  "vi": "🫙 $1, khuấy đều. $2",
-  "en": "",
-  "pattern": true
+  "vi": "📒 Ghi sổ nợ",
+  "en": ""
  },
  {
-  "vi": "Khay $1 còn đầy, bán bớt rồi bày thêm.",
-  "en": "",
-  "pattern": true
+  "vi": "🤝 Đã miễn",
+  "en": ""
  },
  {
-  "vi": "Kho hết $1. Nhập thêm ở kho nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Không phí",
+  "en": ""
  },
  {
-  "vi": "$1 Bày khay $2 lên tủ kính: $3 phần.",
-  "en": "",
-  "pattern": true
+  "vi": "🙂 Nói nhẹ",
+  "en": ""
  },
  {
-  "vi": "Nước mắm còn $1",
-  "en": "",
-  "pattern": true
+  "vi": "📋 Nói theo nội quy",
+  "en": ""
  },
  {
-  "vi": "🍚 Mở quán! $1",
-  "en": "",
-  "pattern": true
+  "vi": "🗣️ Bạn đọc trả",
+  "en": ""
  },
  {
-  "vi": "Khay giữ ấm chỉ để được $1 miếng, bán bớt đã.",
-  "en": "",
-  "pattern": true
+  "vi": "Phí bạn đề xuất",
+  "en": ""
  },
  {
-  "vi": "Kho còn $1 miếng sườn ướp. Nhập thêm ở kho nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "🧾 Báo phí",
+  "en": ""
  },
  {
-  "vi": "🍖 Đặt $1 miếng sườn lên vỉ, mỡ chảy xèo xèo. Canh lửa rồi trở mặt nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "🤝 Miễn phí",
+  "en": ""
  },
  {
-  "vi": "🔄 Trở mặt sườn sau $1 giây: $2.",
-  "en": "",
-  "pattern": true
+  "vi": "💰 Phí theo nội quy",
+  "en": ""
  },
  {
-  "vi": "Chưa trở mặt: một mặt nướng $1 giây, mặt kia còn sống.",
-  "en": "",
-  "pattern": true
+  "vi": "🛠️ Sửa sách",
+  "en": ""
  },
  {
-  "vi": "Hai mặt $1 và $2 giây.",
-  "en": "",
-  "pattern": true
+  "vi": "Xem dấu hạn trả",
+  "en": ""
  },
  {
-  "vi": "🍖 Gắp $1 miếng sườn ra khay giữ ấm: $2. $3",
-  "en": "",
-  "pattern": true
+  "vi": "Hỏi lý do trả trễ",
+  "en": ""
  },
  {
-  "vi": "Miếng sườn $1",
-  "en": "",
-  "pattern": true
+  "vi": "Tính phí theo nội quy",
+  "en": ""
  },
  {
-  "vi": "🗑️ Bỏ miếng sườn $1.",
-  "en": "",
-  "pattern": true
+  "vi": "💰 Đề xuất phí",
+  "en": ""
  },
  {
-  "vi": "$1 Lấy $2.",
-  "en": "",
-  "pattern": true
+  "vi": "Sửa sách",
+  "en": ""
  },
  {
-  "vi": "Nồi $1 hết cơm. Nấu nồi mới nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "🛠️ Chọn cách sửa",
+  "en": ""
  },
  {
-  "vi": "Nồi $1 chưa chín, chờ chừng $2 giây nữa.",
-  "en": "",
-  "pattern": true
+  "vi": "nhẹ nhàng, mỏng",
+  "en": ""
  },
  {
-  "vi": "⚠️ Cơm $1.",
-  "en": "",
-  "pattern": true
+  "vi": "sâu, dày",
+  "en": ""
  },
  {
-  "vi": "$1 Xới một vá $2: dĩa có $3 vá ($4).$5",
-  "en": "",
-  "pattern": true
+  "vi": "💡 Hỏi gu trước đã",
+  "en": ""
  },
  {
-  "vi": "⚠️ Miếng này $1.",
-  "en": "",
-  "pattern": true
+  "vi": "📚 Bốn cuốn trên xe gợi ý",
+  "en": ""
  },
  {
-  "vi": "Khay $1 hết rồi. Bày thêm khay từ kho nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "💬 Hỏi cuốn gần nhất thích",
+  "en": ""
  },
  {
-  "vi": "$1 Gắp $2 lên $3.$4",
-  "en": "",
-  "pattern": true
+  "vi": "💬 Hỏi đang muốn đọc gì",
+  "en": ""
  },
  {
-  "vi": "🍳 Đập trứng vào chảo mỡ nóng, $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn cuốn hợp gu",
+  "en": ""
  },
  {
-  "vi": "🫙 Múc nước mắm ra $1",
-  "en": "",
-  "pattern": true
+  "vi": "📚 Chọn một cuốn",
+  "en": ""
  },
  {
-  "vi": "🫘 Lấy nước tương $1",
-  "en": "",
-  "pattern": true
+  "vi": "🗑️ Để riêng",
+  "en": ""
  },
  {
-  "vi": "🥣 Múc $1",
-  "en": "",
-  "pattern": true
+  "vi": "↩️ Giữ lại cuốn này",
+  "en": ""
  },
  {
-  "vi": "Tôi gọi $1 mà dĩa không đúng món.",
-  "en": "",
-  "pattern": true
+  "vi": "Ký hiệu tác giả",
+  "en": ""
  },
  {
-  "vi": "Nước mắm $1",
-  "en": "",
-  "pattern": true
+  "vi": "🗑️ Sách hỏng? Để riêng chờ thanh lý",
+  "en": ""
  },
  {
-  "vi": "🍚 Đưa $1 $2 cho $3 · $4 xu. Khách đưa $5 xu: thối lại cho đúng.",
-  "en": "",
-  "pattern": true
+  "vi": "📇 Bảng phân lớp · mẹo xếp giá",
+  "en": ""
  },
  {
-  "vi": "Nói thật với $1: quán hết món khách gọi, hẹn bữa sau.",
-  "en": "",
-  "pattern": true
+  "vi": "🏷️ Xe sách chờ biên mục",
+  "en": ""
  },
  {
-  "vi": "Thối dư cho khách: $1",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Êm rồi",
+  "en": ""
  },
  {
-  "vi": "🍚 Bán $1 dĩa, hộp cho $2 khách, xới $3 vá cơm.",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Lầm bầm rồi thôi",
+  "en": ""
  },
  {
-  "vi": "$1 vá cơm",
-  "en": "",
-  "pattern": true
+  "vi": "⚠️ Cãi lại: nói thêm một lần",
+  "en": ""
  },
  {
-  "vi": "🗑️ Đồ nấu không để qua đêm: bỏ $1$2. Mai bày khay vừa đủ bán nghe con.",
-  "en": "",
-  "pattern": true
+  "vi": "Độ yên tĩnh",
+  "en": ""
  },
  {
-  "vi": "🍖 Có $1 lần sườn chưa chín tới tay khách. Dì Bảy dặn: mỗi mặt đủ tám giây trở lên mới trở.",
-  "en": "",
-  "pattern": true
+  "vi": "👩‍🏫 Tập huấn nghiệp vụ lưu trữ",
+  "en": ""
  },
  {
-  "vi": "🍚 Xới dư $1 vá so với lời khách gọi.",
-  "en": "",
-  "pattern": true
+  "vi": "Cô Nguyệt: “Trước khi cầm chìa khóa kho, trả lời giúp cô mấy câu.”",
+  "en": ""
  },
  {
-  "vi": "Dì Bảy dặn: nồi cơm tấm đổ nước lưng đốt ngón tay, nồi cơm trắng một đốt; nếm chén nước mắm, mặn thì thêm nước, lạt thì thêm mắm; nhóm bếp than; bày khay lên tủ kính rồi mở quán. $1",
-  "en": "",
-  "pattern": true
+  "vi": "✅ Nộp bài tập huấn",
+  "en": ""
  },
  {
-  "vi": "Khay có $1 bộ chứng từ — soi từng bộ rồi đóng dấu.",
-  "en": "",
-  "pattern": true
+  "vi": "Giấy tờ mang theo",
+  "en": ""
  },
  {
-  "vi": "Hồ sơ có $1 chứng từ — làm lần lượt từng bước.",
-  "en": "",
-  "pattern": true
+  "vi": "Không mang giấy tờ gì",
+  "en": ""
  },
  {
-  "vi": "🚦 Phạt đèn đỏ $1 xu: còn $2 xu trong Hóa đơn của nghề. Trả khi quỹ nghề đủ tiền; biên nhận chỉ ghi một lần.",
-  "en": "",
-  "pattern": true
+  "vi": "🪪 Xem giấy tờ",
+  "en": ""
  },
  {
-  "vi": "🚦 Vượt đèn đỏ: phạt $1 xu từ quỹ nghề. Biên nhận đã vào sổ thu chi.",
-  "en": "",
-  "pattern": true
+  "vi": "Phiếu yêu cầu",
+  "en": ""
  },
  {
-  "vi": "Túi COD thiếu $1 xu so với bảng kê — bạn tự bù từ ví.",
-  "en": "",
-  "pattern": true
+  "vi": "Đã điền, ký tên",
+  "en": ""
  },
  {
-  "vi": "Đền luôn $1 xu cho êm chuyện",
-  "en": "",
-  "pattern": true
+  "vi": "📝 Đưa phiếu yêu cầu",
+  "en": ""
  },
  {
-  "vi": "$1 🔔 Có khách cũ quay lại đòi tiền chênh lệch.",
-  "en": "",
-  "pattern": true
+  "vi": "Mục lục",
+  "en": ""
  },
  {
-  "vi": "Cất $1 lại tiệm.",
-  "en": "",
-  "pattern": true
+  "vi": "📇 Tra mục lục",
+  "en": ""
  },
  {
-  "vi": "Xe chỉ chở được $1 món. Bỏ bớt một món đã.",
-  "en": "",
-  "pattern": true
+  "vi": "Mục đích",
+  "en": ""
  },
  {
-  "vi": "$1 Buộc $2 lên xe ($3/$4).",
-  "en": "",
-  "pattern": true
+  "vi": "⚖️ Quyết",
+  "en": ""
  },
  {
-  "vi": "Tháo $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Xem giấy tờ và tra mục lục trước khi quyết.",
+  "en": ""
  },
  {
-  "vi": "Sổ hẹn có việc mà xe thiếu $1.",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Găng tay vải",
+  "en": ""
  },
  {
-  "vi": "🛵 Lên đường! $1",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Khẩu trang",
+  "en": ""
  },
  {
-  "vi": "Xe đầy $1 món: chọn món để lại tiệm.",
-  "en": "",
-  "pattern": true
+  "vi": "🧤 Găng tay vải",
+  "en": ""
  },
  {
-  "vi": "🛵 Chạy về tiệm lấy $1. Khách phải chờ thêm một lúc.",
-  "en": "",
-  "pattern": true
+  "vi": "😷 Khẩu trang",
+  "en": ""
  },
  {
-  "vi": "📝 Ghi sổ: nghi $1.",
-  "en": "",
-  "pattern": true
+  "vi": "🔍 Không thấy hồ sơ",
+  "en": ""
  },
  {
-  "vi": "Báo giá $1 xu, gấp mấy lần chỗ khác. Thôi, tôi gọi thợ khác.",
-  "en": "",
-  "pattern": true
+  "vi": "🖨️ Cấp cho người xin",
+  "en": ""
  },
  {
-  "vi": "$1 lắc đầu trước giá $2 xu, gọi thợ khác. $3",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Đã ghi sổ khai thác",
+  "en": ""
  },
  {
-  "vi": "🧾 Báo lại giá: $1 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "📒 Ghi sổ khai thác",
+  "en": ""
  },
  {
-  "vi": "🧾 Báo giá: $1 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "📦 Vào kho",
+  "en": ""
  },
  {
-  "vi": "$1 gật đầu: “Được, làm đi em.”",
-  "en": "",
-  "pattern": true
+  "vi": "Tập huấn nghiệp vụ lưu trữ",
+  "en": ""
  },
  {
-  "vi": "$1 nhăn mặt nhưng gật đầu.",
-  "en": "",
-  "pattern": true
+  "vi": "👩‍🏫 Làm bài tập huấn",
+  "en": ""
  },
  {
-  "vi": "$1 mừng ra mặt.",
-  "en": "",
-  "pattern": true
+  "vi": "Quyết cách xử lý",
+  "en": ""
  },
  {
-  "vi": "$1: “Vậy mới là bảo hành chứ!”",
-  "en": "",
-  "pattern": true
+  "vi": "Đeo găng tay vải",
+  "en": ""
  },
  {
-  "vi": "Đã nói rõ phụ phí gọi đêm. $1 gật đầu.",
-  "en": "",
-  "pattern": true
+  "vi": "Đeo khẩu trang",
+  "en": ""
  },
  {
-  "vi": "$1 để ở tiệm. Về lấy đã.",
-  "en": "",
-  "pattern": true
+  "vi": "Lấy đúng hộp hồ sơ",
+  "en": ""
  },
  {
-  "vi": "$1 $2 Nước rút ào ào.",
-  "en": "",
-  "pattern": true
+  "vi": "🔍 Tìm hồ sơ",
+  "en": ""
  },
  {
-  "vi": "$1 Khoét được một lỗ, nước rút được… nhưng hơi chậm. Chưa sạch tận gốc.",
-  "en": "",
-  "pattern": true
+  "vi": "📦 Chọn hộp",
+  "en": ""
  },
  {
-  "vi": "$1 Loay hoay mãi không ăn thua. Chưa đúng bệnh: kiểm tra lại xem.",
-  "en": "",
-  "pattern": true
+  "vi": "Cấp bản sao",
+  "en": ""
  },
  {
-  "vi": "Nói rõ: đây mới là thông tạm, vài hôm có thể tắc lại, nên làm tận gốc. $1",
-  "en": "",
-  "pattern": true
+  "vi": "📚 MỞ CỬA THƯ VIỆN",
+  "en": ""
  },
  {
-  "vi": "🗣️ Dặn $1: $2",
-  "en": "",
-  "pattern": true
+  "vi": "mở phòng đọc",
+  "en": ""
  },
  {
-  "vi": "Nói thật với $1: hôm nay chưa xử lý được, không lấy tiền, hẹn chú Hai tới xem. $2",
-  "en": "",
-  "pattern": true
+  "vi": "🏷️ DÁN NHÃN, XẾP LÊN KỆ",
+  "en": ""
  },
  {
-  "vi": "Báo giá việc $1, mà hóa ra chỉ là $2.",
-  "en": "",
-  "pattern": true
+  "vi": "biên mục đủ các cuốn",
+  "en": ""
  },
  {
-  "vi": "Hỏi hàng xóm mới biết việc này giá $1 xu, bị lấy $2.",
-  "en": "",
-  "pattern": true
+  "vi": "🤫 XONG VÒNG PHÒNG ĐỌC",
+  "en": ""
  },
  {
-  "vi": "Bảo hành, không lấy tiền. $1",
-  "en": "",
-  "pattern": true
+  "vi": "xử lý hết chuyện trong phòng",
+  "en": ""
  },
  {
-  "vi": "Phường chuyển khoản $1 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "🗂️ BÀN GIAO HỒ SƠ",
+  "en": ""
  },
  {
-  "vi": "💵 Tính tiền: $1 xu như đã báo. $2 đưa $3 xu: thối lại cho đúng.",
-  "en": "",
-  "pattern": true
+  "vi": "📚 CẤT SÁCH LÊN KỆ",
+  "en": ""
  },
  {
-  "vi": "Nghe bạn giải thích đâu ra đấy, $1 gật gù: “Ừ thì làm đi.”",
-  "en": "",
-  "pattern": true
+  "vi": "kiểm sách, tính phí",
+  "en": ""
  },
  {
-  "vi": "$1 lầm bầm “thợ bây giờ cãi hay ghê” rồi đứng xa ra một chút.",
-  "en": "",
-  "pattern": true
+  "vi": "Quyết chuyện bất ngờ",
+  "en": ""
  },
  {
-  "vi": "$1 gân cổ: “Cãi hả? Làm không xong thì cút mẹ mày đi, tao gọi thợ khác!”",
-  "en": "",
-  "pattern": true
+  "vi": "📚 Vào việc thôi!",
+  "en": ""
  },
  {
-  "vi": "$1 ra phòng khách ngồi xem ti vi. Bạn làm nhanh hẳn.",
-  "en": "",
-  "pattern": true
+  "vi": "Có người nhờ việc",
+  "en": ""
  },
  {
-  "vi": "$1 bỏ ra ngoài, đóng cửa hơi mạnh.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Trả lời người nhờ",
+  "en": ""
  },
  {
-  "vi": "$1: “Nhà tôi mà tôi không được đứng hả? Láo vl!”",
-  "en": "",
-  "pattern": true
+  "vi": "Nghe bạn đọc nói",
+  "en": ""
  },
  {
-  "vi": "“$1 xu á? Ăn cướp à! $2 xu thôi, không thì thôi.”",
-  "en": "",
-  "pattern": true
+  "vi": "📊 Hôm nay",
+  "en": ""
  },
  {
-  "vi": "“Bớt đi, $1 xu làm luôn.”",
-  "en": "",
-  "pattern": true
+  "vi": "Nhận trả",
+  "en": ""
  },
  {
-  "vi": "Hét giá $1 xu, chặt chém trắng trợn. Gọi thợ khác cho lành.",
-  "en": "",
-  "pattern": true
+  "vi": "Phí đã thu",
+  "en": ""
  },
  {
-  "vi": "$1 xua tay trước giá $2 xu: “Thôi, cảm ơn, tôi gọi người khác.” $3",
-  "en": "",
-  "pattern": true
+  "vi": "Xem ẩm kế, soi bẫy, mở phòng đọc",
+  "en": ""
  },
  {
-  "vi": "$1 mừng ra mặt: “Rẻ vậy, làm liền đi em!”",
-  "en": "",
-  "pattern": true
+  "vi": "Làm theo nội quy",
+  "en": ""
  },
  {
-  "vi": "$1 gật: “Ừ, làm đi.”",
-  "en": "",
-  "pattern": true
+  "vi": "Chuyện ở thư viện",
+  "en": ""
  },
  {
-  "vi": "🧾 Báo giá: $1 xu. $2",
-  "en": "",
-  "pattern": true
+  "vi": "Buổi sáng",
+  "en": ""
  },
  {
-  "vi": "Việc này người ta lấy $1 xu, thợ hét $2. Chặt chém vừa thôi.",
-  "en": "",
-  "pattern": true
+  "vi": "Biên mục (cuốn)",
+  "en": ""
  },
  {
-  "vi": "Nghe đồn thợ thông cống lấy $1 xu một việc $2 xu. Cả ngõ cẩn thận nha.",
-  "en": "",
-  "pattern": true
+  "vi": "Lượt hồ sơ",
+  "en": ""
  },
  {
-  "vi": "😮‍💨 Bạn nhịn, làm tiếp. $1 lèm bèm thêm một lúc rồi cũng chán. Bấm làm tiếp nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Phí đã thu (xu)",
+  "en": ""
  },
  {
-  "vi": "Bạn thu đồ nghề đi về. $1 đứng chống nạnh giữa nhà tắm ngập nước.",
-  "en": "",
-  "pattern": true
+  "vi": "Miễn giảm (xu)",
+  "en": ""
  },
  {
-  "vi": "🗯️ $1 Bấm làm tiếp nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Thu quá nội quy (xu)",
+  "en": ""
  },
  {
-  "vi": "🤲 Làm luôn cho vui lòng khách. $1: “Đấy, thợ phải thế chứ!” Bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Nhãn gáy, băng giấy, găng tay…",
+  "en": ""
  },
  {
-  "vi": "🙅 $1: “Có tí mà cũng không làm, keo vl!” Bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Mặc cả với hồ",
+  "en": ""
  },
  {
-  "vi": "🙅 Nói rõ việc khác tính riêng. $1 nhún vai. Bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Gửi anh Hải",
+  "en": ""
  },
  {
-  "vi": "🧾 $1: “$2 xu cho có tí việc? $3 xu thôi.”",
-  "en": "",
-  "pattern": true
+  "vi": "Mai lên trung tâm trình bày. Hôm nay tan ca sớm.",
+  "en": ""
  },
  {
-  "vi": "🧾 $1: “Thôi khỏi, để tôi tự làm.” Bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Bị hạ bậc, tạm đình chỉ trực hôm nay",
+  "en": ""
  },
  {
-  "vi": "🧾 $1 gật: thêm $2 xu cho việc phụ. Làm xong bấm tính tiền nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Tạm đình chỉ trực ghế hôm nay",
+  "en": ""
  },
  {
-  "vi": "🏧 Bạn đợi $1 chạy ra cây ATM đầu ngõ. $2",
-  "en": "",
-  "pattern": true
+  "vi": "Tạm đình chỉ trực: tan ca",
+  "en": ""
  },
  {
-  "vi": "📒 Ghi nợ cho $1",
-  "en": "",
-  "pattern": true
+  "vi": "Báo cho ai",
+  "en": ""
  },
  {
-  "vi": "$1, còn nợ $2 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "📏 Bảng mẫu Sóng Xanh",
+  "en": ""
  },
  {
-  "vi": "$1: “Có $2 xu thôi à.”",
-  "en": "",
-  "pattern": true
+  "vi": "Luật của trò chơi: ngoài bảng mẫu là chưa mở hồ, báo kỹ thuật.",
+  "en": ""
  },
  {
-  "vi": "$1 quay lại cùng ông Lộc: “Hỏi ra việc đó rẻ hơn $2 xu, trả lại đi!”",
-  "en": "",
-  "pattern": true
+  "vi": "🧪 Danh sách mở hồ",
+  "en": ""
  },
  {
-  "vi": "Trả lại tiền chênh cho $1",
-  "en": "",
-  "pattern": true
+  "vi": "🚪 Mở cổng?",
+  "en": ""
  },
  {
-  "vi": "Bạn trả lại $1 xu, xin lỗi. $2 dịu giọng: “Biết sai mà sửa thì còn gọi lại.”",
-  "en": "",
-  "pattern": true
+  "vi": "🔓 Mở cổng đón khách",
+  "en": ""
  },
  {
-  "vi": "Trả bớt tiền chênh cho $1",
-  "en": "",
-  "pattern": true
+  "vi": "mọi thứ đã an toàn",
+  "en": ""
  },
  {
-  "vi": "$1 cầm $2 xu: “Thôi được, lần sau nói giá cho thật.”",
-  "en": "",
-  "pattern": true
+  "vi": "⏳ Hoãn mở, chờ kỹ thuật xử lý",
+  "en": ""
  },
  {
-  "vi": "Chặt chém xong trả lại có $1 xu, coi như bố thí à?",
-  "en": "",
-  "pattern": true
+  "vi": "khách chờ ngoài cổng",
+  "en": ""
  },
  {
-  "vi": "$1 ném lại câu “bố thí à?” rồi bỏ đi kể khắp ngõ.",
-  "en": "",
-  "pattern": true
+  "vi": "Que thử",
+  "en": ""
  },
  {
-  "vi": "$1 nghe giải thích một hồi, lẩm bẩm “thôi kệ” rồi về.",
-  "en": "",
-  "pattern": true
+  "vi": "📒 Sổ nước hôm nay",
+  "en": ""
  },
  {
-  "vi": "$1: “Giải thích cái gì, chặt chém thì nhận đi!” Ông Lộc lắc đầu.",
-  "en": "",
-  "pattern": true
+  "vi": "📒 Ghi sổ nước",
+  "en": ""
  },
  {
-  "vi": "Thợ thông cống chặt chém $1 rồi không chịu trả lại. Ai gọi thì cẩn thận.",
-  "en": "",
-  "pattern": true
+  "vi": "Gõ đúng số trên que thử.",
+  "en": ""
  },
  {
-  "vi": "🛵 Làm $1 việc: $2 thông tận gốc",
-  "en": "",
-  "pattern": true
+  "vi": "Kiểm từng món",
+  "en": ""
  },
  {
-  "vi": ", $1 thông tạm.",
-  "en": "",
-  "pattern": true
+  "vi": "Ghi số que thử vào sổ nước",
+  "en": ""
  },
  {
-  "vi": "🔁 Chạy về tiệm lấy đồ $1 lần.",
-  "en": "",
-  "pattern": true
+  "vi": "Báo lại",
+  "en": ""
  },
  {
-  "vi": "🧾 Chú Hai dò sổ: hôm nay nói thách khách $1 xu. “Tiền đó không giữ được khách đâu con.”",
-  "en": "",
-  "pattern": true
+  "vi": "📣 Chọn người cần báo",
+  "en": ""
  },
  {
-  "vi": "💵 Thu $1 xu tiền công.",
-  "en": "",
-  "pattern": true
+  "vi": "Mở cổng hay hoãn",
+  "en": ""
  },
  {
-  "vi": "Sổ hẹn hôm nay: $1. $2",
-  "en": "",
-  "pattern": true
+  "vi": "🚪 Quyết mở cổng",
+  "en": ""
  },
  {
-  "vi": "Sổ hẹn hôm nay: $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Đã quét đủ năm khu",
+  "en": ""
  },
  {
-  "vi": "Sổ hẹn hôm nay: $1",
-  "en": "",
-  "pattern": true
+  "vi": "⏱️ Vòng quét",
+  "en": ""
  },
  {
-  "vi": "Vụ này đã thúc đủ $1%, không rút thêm được nữa.",
-  "en": "",
-  "pattern": true
+  "vi": "👀 Vòng quét",
+  "en": ""
  },
  {
-  "vi": "Phân thúc pha theo liều $1%.",
-  "en": "",
-  "pattern": true
+  "vi": "👀 BẮT ĐẦU VÒNG QUÉT",
+  "en": ""
  },
  {
-  "vi": "Vụ này chỉ còn thúc thêm được $1% (tối đa $2% mỗi vụ).",
-  "en": "",
-  "pattern": true
+  "vi": "chạm để nhìn",
+  "en": ""
  },
  {
-  "vi": "Cần $1 xu để mua phân bón thúc.",
-  "en": "",
-  "pattern": true
+  "vi": "đã nhìn",
+  "en": ""
  },
  {
-  "vi": "Mua phân bón lá thúc cho $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chạm một khu đã nhìn để thổi còi hoặc báo động.",
+  "en": ""
  },
  {
-  "vi": "Phun phân bón lá đạm cá thúc cây (hữu cơ): thời gian lớn còn $1%.",
-  "en": "",
-  "pattern": true
+  "vi": "📣 Đã nhắc",
+  "en": ""
  },
  {
-  "vi": "Phun phân bón lá thúc luống $1 (−$2 xu): thời gian lớn còn $3%, đã thúc $4/$5%. Đất màu $6 → $7.",
-  "en": "",
-  "pattern": true
+  "vi": "📣 Thổi còi nhắc…",
+  "en": ""
  },
  {
-  "vi": "Đã giao hàng · +$1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Báo động nhầm khu này rồi.",
+  "en": ""
  },
  {
-  "vi": "$1 $2 loại B × $3",
-  "en": "",
-  "pattern": true
+  "vi": "🚨 Còi dài: có người đang chìm!",
+  "en": ""
  },
  {
-  "vi": "($1) × $2% nhãn hữu cơ",
-  "en": "",
-  "pattern": true
+  "vi": "Ổn thì để yên, quét tiếp.",
+  "en": ""
  },
  {
-  "vi": "Cô ơi, ghế $1 của bà ở đâu?",
-  "en": "",
-  "pattern": true
+  "vi": "📣 Đã gọi hỗ trợ",
+  "en": ""
  },
  {
-  "vi": "Ghế $1. Chú đi tuyến này hoài mà vẫn quên chỗ.",
-  "en": "",
-  "pattern": true
+  "vi": "🤐 Tự làm một mình",
+  "en": ""
  },
  {
-  "vi": "Chào em, chị ngồi $1 nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "📣 Ba hồi còi: anh Hải trông hồ, gọi 115",
+  "en": ""
  },
  {
-  "vi": "Vali này anh để trên đầu ghế $1 được mà, nhét chút là vừa.",
-  "en": "",
-  "pattern": true
+  "vi": "🤐 Tự làm, khỏi phiền ai",
+  "en": ""
  },
  {
-  "vi": "Thùng đồ nghề hơi to, em cho anh để lên hộc nhé. Ghế $1.",
-  "en": "",
-  "pattern": true
+  "vi": "🩺 Gọi to, vỗ vai, nhìn ngực mười giây",
+  "en": ""
  },
  {
-  "vi": "Vali của em gửi khoang hàng nha. Trong đó có hai cục sạc dự phòng thôi. Ghế $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Có người gặp nạn",
+  "en": ""
  },
  {
-  "vi": "Gửi giúp chú cái thùng này, có cục pin sạc cho cái đèn câu. Chú ngồi $1.",
-  "en": "",
-  "pattern": true
+  "vi": "1. Gọi hỗ trợ",
+  "en": ""
  },
  {
-  "vi": "Vé chị ghế $1, hàng đầu rộng chân cho bé nằm.",
-  "en": "",
-  "pattern": true
+  "vi": "2. Đưa người vào bờ",
+  "en": ""
  },
  {
-  "vi": "Ghế $1 đây, hàng cạnh cửa cho ông duỗi chân.",
-  "en": "",
-  "pattern": true
+  "vi": "3. Xem tỉnh, thở",
+  "en": ""
  },
  {
-  "vi": "Con ngồi $1 ạ! Bố mẹ con ngồi đằng sau.",
-  "en": "",
-  "pattern": true
+  "vi": "4. Sơ cứu",
+  "en": ""
  },
  {
-  "vi": "Em ơi, có người ngồi ghế $1 của chị rồi.",
-  "en": "",
-  "pattern": true
+  "vi": "Bắt đầu vòng quét",
+  "en": ""
  },
  {
-  "vi": "Ghế $1 của chú có cậu nào ngồi mất rồi, cháu xem giúp.",
-  "en": "",
-  "pattern": true
+  "vi": "👀 Bắt đầu vòng quét",
+  "en": ""
  },
  {
-  "vi": "“Con muốn uống $1 giống bố!”",
-  "en": "",
-  "pattern": true
+  "vi": "Nhìn đủ năm khu",
+  "en": ""
  },
  {
-  "vi": "“Cho chị phần ăn với ly $1 nhé.”",
-  "en": "",
-  "pattern": true
+  "vi": "Nhắc ai vi phạm, báo động nếu có người chìm",
+  "en": ""
  },
  {
-  "vi": "“Cho tôi $1 với bánh bông lan. Tôi dị ứng đậu phộng đấy.”",
-  "en": "",
-  "pattern": true
+  "vi": "📣 Xem lại từng khu",
+  "en": ""
  },
  {
-  "vi": "“Cho tôi $1",
-  "en": "",
-  "pattern": true
+  "vi": "Gọi hỗ trợ",
+  "en": ""
  },
  {
-  "vi": "với $1.”",
-  "en": "",
-  "pattern": true
+  "vi": "📣 Gọi hỗ trợ",
+  "en": ""
  },
  {
-  "vi": "Đón khách chuyến $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đưa người vào bờ",
+  "en": ""
  },
  {
-  "vi": "Chị Thu mở cửa tàu: “Chuyến $1 đi $2, khách lên rồi đấy em. Xem kỹ thẻ lên tàu nhé.”",
-  "en": "",
-  "pattern": true
+  "vi": "🛟 Chọn cách cứu",
+  "en": ""
  },
  {
-  "vi": "Chị Thu đẩy xe ra: “Em lo hàng $1 tới $2. Phiếu suất ăn đặc biệt đây.”",
-  "en": "",
-  "pattern": true
+  "vi": "Xem tỉnh, thở",
+  "en": ""
  },
  {
-  "vi": "$1 🔔 $2 $3: trả lời giúp nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "🩺 Xem tỉnh, thở",
+  "en": ""
  },
  {
-  "vi": "$1 được ngồi hàng thoát hiểm dù không mở nổi cửa.",
-  "en": "",
-  "pattern": true
+  "vi": "❤️ Chọn cách sơ cứu",
+  "en": ""
  },
  {
-  "vi": "✋ Chị Thu: “Ghế $1 cạnh cửa thoát hiểm. $2 không mở được cửa nặng: mời sang ghế khác nhé.”",
-  "en": "",
-  "pattern": true
+  "vi": "Cho vào thế nào",
+  "en": ""
  },
  {
-  "vi": "🎫 $1 vẫn đứng giữa lối: ghế $2 đang có người ngồi nhầm. Mời người ngồi nhầm về đúng ghế đi.",
-  "en": "",
-  "pattern": true
+  "vi": "Đúng ra",
+  "en": ""
  },
  {
-  "vi": "🙂 $1 ngơ ngác: “Chị chỉ hỏi ghế $2 thôi mà.”",
-  "en": "",
-  "pattern": true
+  "vi": "👀 Nhìn",
+  "en": ""
  },
  {
-  "vi": "👉 “Mời $1 ghế $2, $3.”",
-  "en": "",
-  "pattern": true
+  "vi": "👂 Hỏi",
+  "en": ""
  },
  {
-  "vi": "🏷️ Dán thẻ gửi khoang hàng cho vali của $1, trả lại cuống thẻ.",
-  "en": "",
-  "pattern": true
+  "vi": "📋 Xem sổ đón phụ huynh",
+  "en": ""
  },
  {
-  "vi": "🔁 Mời $1 sang ghế lối đi phía trên, giải thích hàng cạnh cửa thoát hiểm cần người mở được cửa.",
-  "en": "",
-  "pattern": true
+  "vi": "📞 Mẹ đã quay lại",
+  "en": ""
  },
  {
-  "vi": "🔁 Xem lại thẻ: người ngồi nhầm về đúng ghế của mình. $1 ngồi ghế $2.",
-  "en": "",
-  "pattern": true
+  "vi": "📞 Gọi số trong sổ đón",
+  "en": ""
  },
  {
-  "vi": "🔋 Lấy pin sạc ra để $1 mang theo người, rồi mới gửi vali xuống khoang hàng.",
-  "en": "",
-  "pattern": true
+  "vi": "🏊 Bơi thử ở làn sát thành",
+  "en": ""
  },
  {
-  "vi": "Còn $1 khách ở cửa.",
-  "en": "",
-  "pattern": true
+  "vi": "📚 Giáo án hôm nay",
+  "en": ""
  },
  {
-  "vi": "Đón $1 khách chuyến $2.",
-  "en": "",
-  "pattern": true
+  "vi": "🔢 Đã điểm danh lúc lên bờ",
+  "en": ""
  },
  {
-  "vi": "✋ Chị Thu đọc tới phần “$1”. Làm mẫu theo đúng thẻ nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "🔢 Điểm danh lúc lên bờ",
+  "en": ""
  },
  {
-  "vi": "🚶 Đi dọc lối hàng $1 tới $2: thấy $3 chỗ chưa sẵn sàng.",
-  "en": "",
-  "pattern": true
+  "vi": "Xem sổ đón",
+  "en": ""
  },
  {
-  "vi": "Khách ghế $1 đã sẵn sàng rồi.",
-  "en": "",
-  "pattern": true
+  "vi": "📋 Xem sổ đón",
+  "en": ""
  },
  {
-  "vi": "$1 Ghế $2: $3",
-  "en": "",
-  "pattern": true
+  "vi": "Bơi thử từng bé",
+  "en": ""
  },
  {
-  "vi": "Khách ghế $1 chưa thắt dây mà khoang đã báo sẵn sàng cất cánh.",
-  "en": "",
-  "pattern": true
+  "vi": "Phát vòng tay",
+  "en": ""
  },
  {
-  "vi": "Túi ở lối đi ghế $1 lúc cất cánh, ai cũng có thể vấp.",
-  "en": "",
-  "pattern": true
+  "vi": "🟢 Phát vòng tay",
+  "en": ""
  },
  {
-  "vi": "Ghế $1: $2 lúc cất cánh.",
-  "en": "",
-  "pattern": true
+  "vi": "Dạy theo giáo án",
+  "en": ""
  },
  {
-  "vi": "📞 “Buồng lái, khoang khách sẵn sàng.”$1",
-  "en": "",
-  "pattern": true
+  "vi": "📚 Dạy theo giáo án",
+  "en": ""
  },
  {
-  "vi": "⚠️ Còn sót $1 ghế chưa sẵn sàng, chị Thu phải chạy lại xử lý.",
-  "en": "",
-  "pattern": true
+  "vi": "🔢 Điểm danh",
+  "en": ""
  },
  {
-  "vi": "Làm mẫu an toàn và kiểm tra khoang chuyến $1.",
-  "en": "",
-  "pattern": true
+  "vi": "👂 Hỏi chuyện gì xảy ra",
+  "en": ""
  },
  {
-  "vi": "😪 Khách ghế $1 giật mình tỉnh giấc, xua tay: “Để tôi ngủ…”",
-  "en": "",
-  "pattern": true
+  "vi": "🧤 Đã đeo găng",
+  "en": ""
  },
  {
-  "vi": "Phát đậu phộng ở hàng $1 dù có khách dị ứng đậu phộng.",
-  "en": "",
-  "pattern": true
+  "vi": "👂 Hỏi chuyện",
+  "en": ""
  },
  {
-  "vi": "✋ Chị Thu giữ tay bạn lại: “Hàng $1 có khách dị ứng đậu phộng! Mời bánh bông lan thay nhé.”",
-  "en": "",
-  "pattern": true
+  "vi": "🧤 Đeo găng",
+  "en": ""
  },
  {
-  "vi": "Ghế $1 đã có $2 rồi.",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn cách sơ cứu",
+  "en": ""
  },
  {
-  "vi": "Khách ghế $1 đặt suất chay mà suýt nhận bánh mì pa-tê.",
-  "en": "",
-  "pattern": true
+  "vi": "🩹 Chọn cách sơ cứu",
+  "en": ""
  },
  {
-  "vi": "🥬 Khách ghế $1 xua tay: “Chị đặt suất chay mà em!” Kiểm lại phiếu suất ăn đặc biệt nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "🕒 Giờ:",
+  "en": ""
  },
  {
-  "vi": "Mang nhầm món cho ghế $1.",
-  "en": "",
-  "pattern": true
+  "vi": "· ⚡ Sấm cuối:",
+  "en": ""
  },
  {
-  "vi": "🙅 Ghế $1: “Tôi không gọi $2.”",
-  "en": "",
-  "pattern": true
+  "vi": "· chưa nghe sấm",
+  "en": ""
  },
  {
-  "vi": "$1 Mời $2 ghế $3 $4.",
-  "en": "",
-  "pattern": true
+  "vi": "📏 Nội quy dông sét",
+  "en": ""
  },
  {
-  "vi": "Khách ghế $1 đang chờ đồ uống.",
-  "en": "",
-  "pattern": true
+  "vi": "📻 Nghe bản tin thời tiết",
+  "en": ""
  },
  {
-  "vi": "😴 Để khách ghế $1 ngủ, dán mẩu giấy “Bấm chuông khi cần nhé”.",
-  "en": "",
-  "pattern": true
+  "vi": "🔢 Đếm người",
+  "en": ""
  },
  {
-  "vi": "Hàng $1 bị bỏ sót: ghế $2 chưa có đồ.",
-  "en": "",
-  "pattern": true
+  "vi": "⏱️ Chờ, xem trời",
+  "en": ""
  },
  {
-  "vi": "🛒 Đẩy xe lên hàng $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Đã lên bờ",
+  "en": ""
  },
  {
-  "vi": "Phục vụ $1 khách hàng $2–$3.",
-  "en": "",
-  "pattern": true
+  "vi": "📣 Cho tất cả lên bờ, trú ở…",
+  "en": ""
  },
  {
-  "vi": "$1 $2: xong. Còn $3 việc!",
-  "en": "",
-  "pattern": true
+  "vi": "Có người hỏi",
+  "en": ""
  },
  {
-  "vi": "〰️ Tàu rung mạnh khi chưa kịp $1. Tàu êm lại rồi, xử lý xong thì phục vụ tiếp.",
-  "en": "",
-  "pattern": true
+  "vi": "⛈️ Dông chiều",
+  "en": ""
  },
  {
-  "vi": "Giữ bình tĩnh với khách: $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Có sấm: cho lên bờ, vào nơi trú",
+  "en": ""
  },
  {
-  "vi": "Khách $1, mà tiếp viên chưa $2.",
-  "en": "",
-  "pattern": true
+  "vi": "📣 Cho lên bờ",
+  "en": ""
  },
  {
-  "vi": "Khách $1, mà thiếu $2.",
-  "en": "",
-  "pattern": true
+  "vi": "Đếm người",
+  "en": ""
  },
  {
-  "vi": "thiếu bước: $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chờ đủ rồi mở lại",
+  "en": ""
  },
  {
-  "vi": "Chăm sóc khách: $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Đã ghi sổ trực.",
+  "en": ""
  },
  {
-  "vi": "Thưởng $1 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "Đã ghi sổ trực (còn thiếu).",
+  "en": ""
  },
  {
-  "vi": "🧳 Đón $1 khách ở cửa, mời $2 món trên xe đẩy.",
-  "en": "",
-  "pattern": true
+  "vi": "Sổ trực có dòng ghi khống.",
+  "en": ""
  },
  {
-  "vi": "🦺 Chỉnh $1 ghế chưa sẵn sàng trước giờ cất cánh.",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn những gì thật sự đã xảy ra, đủ để ca sau nắm.",
+  "en": ""
  },
  {
-  "vi": "🩺 Chăm sóc $1 khách không khỏe.",
-  "en": "",
-  "pattern": true
+  "vi": "📒 Ghi vào sổ trực",
+  "en": ""
  },
  {
-  "vi": "Việc chuyến $1 em làm đâu ra đấy.",
-  "en": "",
-  "pattern": true
+  "vi": "✅ KẾT THÚC VÒNG QUÉT",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1 chị không phải nhắc gì.",
-  "en": "",
-  "pattern": true
+  "vi": "đưa người vào bờ, sơ cứu",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1 ổn, còn một chỗ em để ý thêm.",
-  "en": "",
-  "pattern": true
+  "vi": "🎫 XONG LƯỢT CỔNG",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1 chị phải chạy lại mấy chỗ.",
-  "en": "",
-  "pattern": true
+  "vi": "quyết cho cả ba người",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1 mình phải ngồi rút kinh nghiệm.",
-  "en": "",
-  "pattern": true
+  "vi": "🏫 TAN LỚP",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1: gọn, đúng, không phàn nàn.",
-  "en": "",
-  "pattern": true
+  "vi": "phát vòng tay cho cả ba bé",
+  "en": ""
  },
  {
-  "vi": "Tiếp viên chuyến $1 làm việc có lý.",
-  "en": "",
-  "pattern": true
+  "vi": "🔓 MỞ LẠI HỒ",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1: tạm được.",
-  "en": "",
-  "pattern": true
+  "vi": "Quyết chuyện ở hồ",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1: không như mong đợi.",
-  "en": "",
-  "pattern": true
+  "vi": "🛟 Vào ca thôi!",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1: dịch vụ trên tàu tệ.",
-  "en": "",
-  "pattern": true
+  "vi": "Tới chỗ đó",
+  "en": ""
  },
  {
-  "vi": "Cô tiếp viên dễ thương quá, bà đi $1 vui ghê.",
-  "en": "",
-  "pattern": true
+  "vi": "👋 Tới xem",
+  "en": ""
  },
  {
-  "vi": "Tiếp viên chu đáo, ông đi $1 thoải mái.",
-  "en": "",
-  "pattern": true
+  "vi": "🪜 Lên ghế cao",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1 tử tế, ông ghi nhận.",
-  "en": "",
-  "pattern": true
+  "vi": "🎫 Ra cổng",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1 ông chưa hài lòng.",
-  "en": "",
-  "pattern": true
+  "vi": "🏫 Ra khu cạn đón lớp",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1 ông không chấp nhận được.",
-  "en": "",
-  "pattern": true
+  "vi": "🩹 Mang hộp sơ cứu tới",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1 bé Bơ ngủ ngon, mẹ cũng nhẹ người.",
-  "en": "",
-  "pattern": true
+  "vi": "🌩️ Nhìn trời",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1 êm, tiếp viên chu đáo.",
-  "en": "",
-  "pattern": true
+  "vi": "Chuyện ở hồ",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1 chưa được như mọi lần.",
-  "en": "",
-  "pattern": true
+  "vi": "Mở hồ",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1 lần này tệ.",
-  "en": "",
-  "pattern": true
+  "vi": "lần thổi còi",
+  "en": ""
  },
  {
-  "vi": "Bay $1 mà vui như đi picnic 🥰",
-  "en": "",
-  "pattern": true
+  "vi": "người được cứu",
+  "en": ""
  },
  {
-  "vi": "Chuyến $1 đi $2: $3 khách đang chờ ở cửa. Xem thẻ lên tàu và hành lý từng người.",
-  "en": "",
-  "pattern": true
+  "vi": "người soát ở cổng",
+  "en": ""
  },
  {
-  "vi": "suất chay ghế $1",
-  "en": "",
-  "pattern": true
+  "vi": "🛟 Ca hôm nay",
+  "en": ""
  },
  {
-  "vi": "dị ứng đậu phộng ghế $1 (cả hàng $2 không phát đậu phộng)",
-  "en": "",
-  "pattern": true
+  "vi": "📁 Hồ sơ của bạn",
+  "en": ""
  },
  {
-  "vi": "Phiếu suất ăn đặc biệt: $1. Hàng $2 tới $3.",
-  "en": "",
-  "pattern": true
+  "vi": "Điền đủ hai ô rồi ghi sổ nhé.",
+  "en": ""
  },
  {
-  "vi": "Tủ chỉ còn $1 cành $2.",
-  "en": "",
-  "pattern": true
+  "vi": "Mặc cả với xí nghiệp",
+  "en": ""
  },
  {
-  "vi": "Lấy $1 cành $2$3.",
-  "en": "",
-  "pattern": true
+  "vi": "⚠️ hỏng",
+  "en": ""
  },
  {
-  "vi": "Trên bàn chỉ có $1 cành $2.",
-  "en": "",
-  "pattern": true
+  "vi": "✓ ổn",
+  "en": ""
  },
  {
-  "vi": "Đã cắm lại $1 cành $2 vào xô chờ.",
-  "en": "",
-  "pattern": true
+  "vi": "(lúc đèn còn quay)",
+  "en": ""
  },
  {
-  "vi": "$1 cành $2 đã cắt gốc nên không dùng lại được, ghi hao hụt.",
-  "en": "",
-  "pattern": true
+  "vi": "🔒 Tắt mô-tơ, treo biển rồi lau",
+  "en": ""
  },
  {
-  "vi": "$1 cành cắm lại vào xô chờ.",
-  "en": "",
-  "pattern": true
+  "vi": "🧽 Lau luôn khi đèn còn quay",
+  "en": ""
  },
  {
-  "vi": "Đã cắm và giao “$1” · +$2 xu ($3 − cọc $4",
-  "en": "",
-  "pattern": true
+  "vi": "📏 Thước đo bồn:",
+  "en": ""
  },
  {
-  "vi": "− bớt $1",
-  "en": "",
-  "pattern": true
+  "vi": "lít",
+  "en": ""
  },
  {
-  "vi": "$1 lạng",
-  "en": "",
-  "pattern": true
+  "vi": "Ghi sổ dầu",
+  "en": ""
  },
  {
-  "vi": "$1 ký",
-  "en": "",
-  "pattern": true
+  "vi": "⛽ Ghi sổ dầu",
+  "en": ""
  },
  {
-  "vi": "$1 🔔 Có chuyện ở sạp!",
-  "en": "",
-  "pattern": true
+  "vi": "Báo ở đâu?",
+  "en": ""
  },
  {
-  "vi": "⚖️ Đặt quả cân 1 ký: kim chỉ $1. Cân lệch $2 gam, chỉnh kim lại đã.",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn một hoặc nhiều.",
+  "en": ""
  },
  {
-  "vi": "Rổ $1 không có trái dập.",
-  "en": "",
-  "pattern": true
+  "vi": "Không tự sửa được: báo đúng nơi để thợ ra đảo.",
+  "en": ""
  },
  {
-  "vi": "🧺 Lựa ra $1 $2 $3 dập, để riêng. Rổ sạch rồi.",
-  "en": "",
-  "pattern": true
+  "vi": "🧰 Thử thiết bị",
+  "en": ""
  },
  {
-  "vi": "☀️ Mở hàng! $1",
-  "en": "",
-  "pattern": true
+  "vi": "⛽ Sổ dầu",
+  "en": ""
  },
  {
-  "vi": "Hết $1 $2. Chọn rổ khác hoặc nói thật với khách.",
-  "en": "",
-  "pattern": true
+  "vi": "💡 Tắt đèn",
+  "en": ""
  },
  {
-  "vi": "$1 Bỏ một $2 $3 ($4, ~$5 gam) vào rổ.$6",
-  "en": "",
-  "pattern": true
+  "vi": "📻 Đã báo đài",
+  "en": ""
  },
  {
-  "vi": "🧺 Lấy trái $1 dập ra, bỏ riêng.",
-  "en": "",
-  "pattern": true
+  "vi": "📢 Đã phát cảnh báo",
+  "en": ""
  },
  {
-  "vi": "↩️ Để lại một $1 $2 vào rổ.",
-  "en": "",
-  "pattern": true
+  "vi": "📢 Phát cảnh báo trên kênh 16",
+  "en": ""
  },
  {
-  "vi": "Tôi mua $1 mà không thấy trong túi.",
-  "en": "",
-  "pattern": true
+  "vi": "📻 Báo đài",
+  "en": ""
  },
  {
-  "vi": "Tôi lấy $1 $2 $3, sao ra $4?",
-  "en": "",
-  "pattern": true
+  "vi": "Cấp gió",
+  "en": ""
  },
  {
-  "vi": "$1 bóc ra thấy trái dập, thâm một góc.",
-  "en": "",
-  "pattern": true
+  "vi": "📏 Bảng cấp gió (m/s)",
+  "en": ""
  },
  {
-  "vi": "Cân lại ở cân đối chứng thiếu $1 gam. Cân rổ không trừ bì, hay cân lệch?",
-  "en": "",
-  "pattern": true
+  "vi": "Mặt biển",
+  "en": ""
  },
  {
-  "vi": "Anh Lâm gom từ $1 tới $2 trái chín kỹ.",
-  "en": "",
-  "pattern": true
+  "vi": "📻 Báo đài số liệu",
+  "en": ""
  },
  {
-  "vi": "$1: “Nhiều quá, tôi lấy $2 thôi. Bớt ra một trái đi.”",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn đủ bốn số liệu",
+  "en": ""
  },
  {
-  "vi": "Tôi mua $1 mà cân có $2.",
-  "en": "",
-  "pattern": true
+  "vi": "😮‍💨 Mắt díp lại rồi.",
+  "en": ""
  },
  {
-  "vi": "⚖️ Cân: $1 · $2 xu. $3: $4 “$5 xu thôi!”",
-  "en": "",
-  "pattern": true
+  "vi": "🚰 Rửa mặt, pha trà cho tỉnh",
+  "en": ""
  },
  {
-  "vi": "⚖️ Cân: $1 · $2 xu. $3: “$4 xu thôi! $5”",
-  "en": "",
-  "pattern": true
+  "vi": "⏱️ Đếm được:",
+  "en": ""
  },
  {
-  "vi": "⚖️ Cân: $1 · $2 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "⏱️ Bấm giờ đếm chớp",
+  "en": ""
  },
  {
-  "vi": "$1 Khách đưa $2 xu: thối lại cho đúng.",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Đã báo đài đèn sai đặc tính",
+  "en": ""
  },
  {
-  "vi": "Thôi con bớt, lấy $1 xu cho tròn nha.",
-  "en": "",
-  "pattern": true
+  "vi": "📻 Báo đài: đèn sai đặc tính",
+  "en": ""
  },
  {
-  "vi": "Dạ, $1 xu cũng được.",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Đã báo đài còi hỏng",
+  "en": ""
  },
  {
-  "vi": "Nói thật với $1: sạp chưa có trái đúng ý, hẹn hôm sau.",
-  "en": "",
-  "pattern": true
+  "vi": "📻 Báo đài: còi sương mù hỏng",
+  "en": ""
  },
  {
-  "vi": "Hết $1 tốt để đổi. Hoàn tiền cho khách nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "📯 Còi đang chạy",
+  "en": ""
  },
  {
-  "vi": "Đổi cho $1 trái $2 khác.",
-  "en": "",
-  "pattern": true
+  "vi": "📯 Chạy còi sương mù",
+  "en": ""
  },
  {
-  "vi": "Hoàn tiền trái hư: $1",
-  "en": "",
-  "pattern": true
+  "vi": "📒 Sổ trực buổi tối",
+  "en": ""
  },
  {
-  "vi": "Rao xả $1 trái chín kỹ, héo",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn đúng những gì đã xảy ra tối nay.",
+  "en": ""
  },
  {
-  "vi": "📣 “Xả hàng đây, trái chín ngọt bán rẻ!” Bán được $1 trái, thu $2 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "· 🌫️ sương mù",
+  "en": ""
  },
  {
-  "vi": "Có trái bị úng trong rổ $1: lựa ra kẻo lây.",
-  "en": "",
-  "pattern": true
+  "vi": "✍️ GHI SỔ TRỰC TỐI",
+  "en": ""
  },
  {
-  "vi": "“Sạp đầu chợ bán $1 xu/ký thôi, ở đây cắt cổ vậy?”",
-  "en": "",
-  "pattern": true
+  "vi": "💡 Thắp đèn",
+  "en": ""
  },
  {
-  "vi": "“Trên mạng có $1 xu/ký, giao tận nhà. Bán đắt vl.”",
-  "en": "",
-  "pattern": true
+  "vi": "🔭 Nhìn kỹ qua ống nhòm",
+  "en": ""
  },
  {
-  "vi": "“Hôm qua mua có $1 xu/ký, nay lên giá hả? Ăn cướp à?”",
-  "en": "",
-  "pattern": true
+  "vi": "📻 Gọi tàu trên kênh 16",
+  "en": ""
  },
  {
-  "vi": "“Siêu thị còn rẻ hơn, $1 xu/ký. Bớt đi không tôi đi chỗ khác.”",
-  "en": "",
-  "pattern": true
+  "vi": "Nói gì (1–2 ý)",
+  "en": ""
  },
  {
-  "vi": "🤝 $1: “$2 xu vẫn đắt. $3 xu, chốt không?”",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn điều muốn nói",
+  "en": ""
  },
  {
-  "vi": "$1 đặt túi xuống: “Thôi, đi chỗ khác.” $2",
-  "en": "",
-  "pattern": true
+  "vi": "Phương vị",
+  "en": ""
  },
  {
-  "vi": "$1 cười tươi: “Vậy mới được chứ!”",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn mức báo, phương vị",
+  "en": ""
  },
  {
-  "vi": "🙅 Không bán chịu. $1 lục túi: “Ơ còn tiền nè, thôi trả luôn.”",
-  "en": "",
-  "pattern": true
+  "vi": ", số người",
+  "en": ""
  },
  {
-  "vi": "🙅 Không bán chịu. $1 đặt túi xuống: “Keo vl, đi chỗ khác.”",
-  "en": "",
-  "pattern": true
+  "vi": "Liều mạng…",
+  "en": ""
  },
  {
-  "vi": "✋ Bạn giữ túi lại. $1 quay ra xe lấy ví, lát sau trở lại.",
-  "en": "",
-  "pattern": true
+  "vi": "Một mình ra khơi, nhảy xuống bơi là thành người thứ hai cần cứu.",
+  "en": ""
  },
  {
-  "vi": "✋ Bạn giữ túi lại. $1: “Nghi người ta ăn quỵt à? Không mua nữa!”",
-  "en": "",
-  "pattern": true
+  "vi": "📻 Báo đài duyên hải",
+  "en": ""
  },
  {
-  "vi": "✋ Bạn giữ túi lại. $1 lầm bầm rồi móc tiền ra.",
-  "en": "",
-  "pattern": true
+  "vi": "Chiều theo…",
+  "en": ""
  },
  {
-  "vi": "🙂 Bạn để khách cầm đi. Mười phút sau $1 quay lại thật.",
-  "en": "",
-  "pattern": true
+  "vi": "Không ai vào phòng đèn, không ai ở lại trái nội quy.",
+  "en": ""
  },
  {
-  "vi": "🏃 Bạn để khách cầm đi. $1 đi mất hút, mất trắng túi trái ($2 xu tiền vốn).",
-  "en": "",
-  "pattern": true
+  "vi": "🏃 Có người đang leo cầu thang tháp!",
+  "en": ""
  },
  {
-  "vi": "👮 Bảo vệ chợ chặn lại ở cổng. $1 đỏ mặt quay lại trả tiền.",
-  "en": "",
-  "pattern": true
+  "vi": "🧗 Chạy lên chặn, mời xuống, khóa cửa tháp",
+  "en": ""
  },
  {
-  "vi": "👮 Bảo vệ chợ chặn lại. $1 giơ cái ví: “Lấy ví thật mà, làm gì dữ vậy!”",
-  "en": "",
-  "pattern": true
+  "vi": "· 🌙 ban đêm",
+  "en": ""
  },
  {
-  "vi": "$1 lựa lựa rồi nhét $2 $3 $4 vào túi riêng, lững thững bước đi.",
-  "en": "",
-  "pattern": true
+  "vi": "trước khi bơm",
+  "en": ""
  },
  {
-  "vi": "Bạn nhắc khéo: “Chị ơi, quên tính tiền kìa.” $1 đỏ mặt trả $2 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "sau khi bơm",
+  "en": ""
  },
  {
-  "vi": "Bạn nhắc khéo. $1: “Quên cái gì? Nói vậy là vu khống đó nha!” rồi đi thẳng.",
-  "en": "",
-  "pattern": true
+  "vi": "✍️ Đã ghi thiếu/hỏng",
+  "en": ""
  },
  {
-  "vi": "Bạn đòi $1 xu. Người xung quanh xì xào “bắt đền cắt cổ”, $2 được thể cãi lấy cãi để rồi bỏ đi.",
-  "en": "",
-  "pattern": true
+  "vi": "✍️ Ghi thiếu/hỏng",
+  "en": ""
  },
  {
-  "vi": "Bạn giữ lại, đòi $1 xu. $2 lí nhí xin lỗi, trả đủ.",
-  "en": "",
-  "pattern": true
+  "vi": "🔍 Kiểm",
+  "en": ""
  },
  {
-  "vi": "$1: “Làm như ghê lắm!” rồi giằng túi chạy mất.",
-  "en": "",
-  "pattern": true
+  "vi": "🧺 Chú Tư Lực mang giỏ về.",
+  "en": ""
  },
  {
-  "vi": "Bảo vệ chợ chặn ở cổng. $1 trả $2 xu, bị ghi tên vào sổ.",
-  "en": "",
-  "pattern": true
+  "vi": "🧺 Không mua giỏ.",
+  "en": ""
  },
  {
-  "vi": "Bảo vệ tới thì $1 đã lẫn vào dòng người. Khách chờ ở sạp mặt dài ra.",
-  "en": "",
-  "pattern": true
+  "vi": "chú hét",
+  "en": ""
  },
  {
-  "vi": "Bạn làm ngơ. Sạp bên cạnh lắc đầu: “Thế mai nó lại tới.” Mất $1 $2 $3.",
-  "en": "",
-  "pattern": true
+  "vi": "· trả lại:",
+  "en": ""
  },
  {
-  "vi": "$1 trả tiền trái lấy lén",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn trả",
+  "en": ""
  },
  {
-  "vi": "🧺 Bán $1 trái cho $2 khách.",
-  "en": "",
-  "pattern": true
+  "vi": "🧺 Trả giá",
+  "en": ""
  },
  {
-  "vi": "📣 Rao xả $1 trái, thu $2 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "Thôi, không mua",
+  "en": ""
  },
  {
-  "vi": "🪰 Trái dập để trong rổ làm hư thêm $1 trái.",
-  "en": "",
-  "pattern": true
+  "vi": "📦 Hàng theo phiếu",
+  "en": ""
  },
  {
-  "vi": "⚖️ Dì Tư dò lại: hôm nay khách bị cân thiếu $1, thiệt $2 xu. Mai trừ bì, chỉnh cân kỹ nghe con.",
-  "en": "",
-  "pattern": true
+  "vi": "Ký nhận số lít",
+  "en": ""
  },
  {
-  "vi": "Mai trong rổ: $1 trái chín, $2 trái còn xanh. Trái về hôm nay mai vẫn còn xanh.",
-  "en": "",
-  "pattern": true
+  "vi": "✍️ KÝ PHIẾU GIAO HÀNG",
+  "en": ""
  },
  {
-  "vi": "Dì Tư dặn: $1thử cân với quả cân 1 ký (lệch thì chỉnh), lựa trái dập ra rồi mở hàng. $2",
-  "en": "",
-  "pattern": true
+  "vi": "Giỏ hàng riêng",
+  "en": ""
  },
  {
-  "vi": "Dì Tư dặn: $1thử cân với quả cân 1 ký (lệch thì chỉnh), lựa trái dập ra rồi mở hàng.",
-  "en": "",
-  "pattern": true
+  "vi": "Gửi xí nghiệp",
+  "en": ""
  },
  {
-  "vi": "Dì Tư dặn: $1",
-  "en": "",
-  "pattern": true
+  "vi": "🛌 Xin nghỉ bù",
+  "en": ""
  },
  {
-  "vi": "$1 mang $2 hôm qua lại. $3 Xem trái rồi giải quyết cho đúng lẽ.",
-  "en": "",
-  "pattern": true
+  "vi": "⛴️ Hôm nay có tàu tiếp tế",
+  "en": ""
  },
  {
-  "vi": "$1 gom trái chín kỹ (xoài, chuối, bơ), từ $2 tới $3 trái, giá xả. $4",
-  "en": "",
-  "pattern": true
+  "vi": "🏝️ Đời sống trên đảo",
+  "en": ""
  },
  {
-  "vi": "Đã lựa $1 trái $2 dập ra.",
-  "en": "",
-  "pattern": true
+  "vi": "🐈‍⬛ Mun đang ngủ",
+  "en": ""
  },
  {
-  "vi": "Thu gom trước $1. Túi nào trông lạ thì mở ra xem.",
-  "en": "",
-  "pattern": true
+  "vi": "🐈‍⬛ Chơi với Mun",
+  "en": ""
  },
  {
-  "vi": "Chị Hạnh: “$1 đổ rác tới $2. Mình đẩy xe vào nha em.”",
-  "en": "",
-  "pattern": true
+  "vi": "🪴 Đã tưới",
+  "en": ""
  },
  {
-  "vi": "$1 🔔 Có chuyện ở ngõ!",
-  "en": "",
-  "pattern": true
+  "vi": "🪴 Tưới vườn rau",
+  "en": ""
  },
  {
-  "vi": "$1 đã dùng rồi, tháo ra là bỏ.",
-  "en": "",
-  "pattern": true
+  "vi": "📞 Đã gọi",
+  "en": ""
  },
  {
-  "vi": "Đã cởi $1.",
-  "en": "",
-  "pattern": true
+  "vi": "📞 Gọi về nhà",
+  "en": ""
  },
  {
-  "vi": "Hết $1 rồi. Mở kho mua thêm nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "⚖️ Tạm đình chỉ trực hôm nay",
+  "en": ""
  },
  {
-  "vi": "Thiếu $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Đèn vẫn phải sáng: chú Bảy trực thay. Mai lên trình bày qua bộ đàm.",
+  "en": ""
  },
  {
-  "vi": "🦺 Vào ca! $1",
-  "en": "",
-  "pattern": true
+  "vi": "Làm ca sáng, ký sổ trực trước",
+  "en": ""
  },
  {
-  "vi": "🛒 Vào $1 lúc $2, trễ giờ thu gom. Mấy túi rác bị mèo bới tung ra đường: quét dọn đã.",
-  "en": "",
-  "pattern": true
+  "vi": "Tắt đèn đúng giờ",
+  "en": ""
  },
  {
-  "vi": "🛒 Đẩy xe vào $1 lúc $2. Nhà đầu tiên: $3.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Chọn giờ tắt đèn",
+  "en": ""
  },
  {
-  "vi": "… và ⚠️ $1 $2 gói hờ trong giấy báo",
-  "en": "",
-  "pattern": true
+  "vi": "Thử từng thiết bị",
+  "en": ""
  },
  {
-  "vi": "👀 Mở $1: $2.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Thử thiết bị",
+  "en": ""
  },
  {
-  "vi": "🩸 Tay trần nhặt $1, bị đâm vào tay! Rửa, sát trùng, ra trạm y tế kiểm tra.",
-  "en": "",
-  "pattern": true
+  "vi": "Lau kính đèn (an toàn)",
+  "en": ""
  },
  {
-  "vi": "🔴 Tách $1 bỏ vào hộp đỏ, đậy nắp.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Lau kính",
+  "en": ""
  },
  {
-  "vi": "Ngăn $1 đầy rồi: đẩy xe ra điểm tập kết đổ đã.",
-  "en": "",
-  "pattern": true
+  "vi": "Ghi sổ dầu đúng số đo",
+  "en": ""
  },
  {
-  "vi": "🩸 Túi trông bình thường mà có $1 giấu bên trong, đâm $2! Xử lý vết thương đã.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Sổ dầu",
+  "en": ""
  },
  {
-  "vi": "🩸 Mảnh kính đâm xuyên túi, đứt tay! Túi đã vào ngăn $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Tự xử lý chỗ hỏng",
+  "en": ""
  },
  {
-  "vi": "📝 Dán tờ nhắc phân loại ở $1, nói nhẹ nhàng với chủ nhà.",
-  "en": "",
-  "pattern": true
+  "vi": "🔧 Xử lý",
+  "en": ""
  },
  {
-  "vi": "🛒 Đẩy xe tới $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Báo đúng nơi (ảnh hưởng đèn, còi thì báo đài)",
+  "en": ""
  },
  {
-  "vi": "🗑️ $1 Khoảng $2 bao, xe không chở hết một chuyến.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Chọn nơi báo",
+  "en": ""
  },
  {
-  "vi": "Bỏ sót $1 túi rác trước cửa, để qua đêm bốc mùi.",
-  "en": "",
-  "pattern": true
+  "vi": "Đọc đủ bốn thứ",
+  "en": ""
  },
  {
-  "vi": "$1 túi bỏ nhầm ngăn, phân loại xong lại trộn.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Quan trắc",
+  "en": ""
  },
  {
-  "vi": "Để $1 lẫn trong túi lên xe ép, dễ cháy nổ, rò độc.",
-  "en": "",
-  "pattern": true
+  "vi": "Báo đài bốn số liệu",
+  "en": ""
  },
  {
-  "vi": "Xe rác tới muộn, qua $1 mới thấy.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Báo đài",
+  "en": ""
  },
  {
-  "vi": "Gom $1/$2 túi ở $3.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Xem có cần cảnh báo",
+  "en": ""
  },
  {
-  "vi": "Nhắc $1 nhà phân loại lại.",
-  "en": "",
-  "pattern": true
+  "vi": "Thắp đèn trước giờ lặn 15 phút",
+  "en": ""
  },
  {
-  "vi": "✅ Xong ngõ! $1",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Chọn giờ thắp đèn",
+  "en": ""
  },
  {
-  "vi": "$1 túi hữu cơ lên xe ủ phân",
-  "en": "",
-  "pattern": true
+  "vi": "Đếm chớp so với danh mục đèn",
+  "en": ""
  },
  {
-  "vi": "$1 túi còn lại lên xe ép",
-  "en": "",
-  "pattern": true
+  "vi": "⏱️ Đếm chớp",
+  "en": ""
  },
  {
-  "vi": "$1 túi tái chế cho cô Tám",
-  "en": "",
-  "pattern": true
+  "vi": "Sương mù: chạy còi",
+  "en": ""
  },
  {
-  "vi": "$1 món nguy hại giao điểm thu gom riêng",
-  "en": "",
-  "pattern": true
+  "vi": "📯 Chạy còi",
+  "en": ""
  },
  {
-  "vi": "Cô Tám mua ve chai: $1 túi tái chế sạch",
-  "en": "",
-  "pattern": true
+  "vi": "Ghi sổ trực đúng sự thật",
+  "en": ""
  },
  {
-  "vi": "Cô Tám trả $1 xu tiền ve chai.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Chọn dòng ghi sổ",
+  "en": ""
  },
  {
-  "vi": "Cô Tám lắc đầu với $1 túi tái chế lẫn đồ ăn: “Bẩn vậy không bán được.”",
-  "en": "",
-  "pattern": true
+  "vi": "🔭 Nhìn kỹ",
+  "en": ""
  },
  {
-  "vi": "🚛 Đổ xe ở điểm tập kết: $1.$2",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Gọi tàu",
+  "en": ""
  },
  {
-  "vi": "Tìm hiểu thêm đã: $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Báo đài đúng mức, đúng phương vị (nếu cần)",
+  "en": ""
  },
  {
-  "vi": "Tìm hiểu thêm đã: $1",
-  "en": "",
-  "pattern": true
+  "vi": "Ném phao, kéo còi, canh giữ mục tiêu: tùy chuyện",
+  "en": ""
  },
  {
-  "vi": "😤 Chủ nhà $1 ra chặn xe: $2",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Việc ngoài bến",
+  "en": ""
  },
  {
-  "vi": "🏥 Ra trạm y tế: rửa vết thương, tiêm phòng ($1 xu). Chị Hạnh gom nốt giúp.",
-  "en": "",
-  "pattern": true
+  "vi": "Trả lời theo nội quy trạm",
+  "en": ""
  },
  {
-  "vi": "🛒🛒 Đi hai chuyến, gom sạch $1 bao. Mỏi nhừ tay, ngõ sạch bong. Bấm “Xong ngõ”.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Trả lời",
+  "en": ""
  },
  {
-  "vi": "🛻 Gọi xe ba gác ($1 xu) chở $2 bao ra điểm tập kết. Bấm “Xong ngõ”.",
-  "en": "",
-  "pattern": true
+  "vi": "Có người leo lên tháp: đưa xuống",
+  "en": ""
  },
  {
-  "vi": "💥 Nhồi cho bằng hết, nắp xe bung bản lề, rác rơi dọc ngõ. Sửa xe mất $1 xu. Bấm “Xong ngõ”.",
-  "en": "",
-  "pattern": true
+  "vi": "🧗 Chặn lại",
+  "en": ""
  },
  {
-  "vi": "😤 $1: “Giảng đạo à? Cút mẹ mày đi!” Hàng xóm ló đầu ra xem.",
-  "en": "",
-  "pattern": true
+  "vi": "Đo bồn trước và sau khi bơm",
+  "en": ""
  },
  {
-  "vi": "🗣️ Bạn giải thích nhẹ nhàng. $1: “Ờ… để mai tao phân loại lại.”",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Đo bồn",
+  "en": ""
  },
  {
-  "vi": "🗣️ Bạn giải thích. $1 lầm bầm rồi đóng cửa đánh rầm.",
-  "en": "",
-  "pattern": true
+  "vi": "Kiểm từng món, ghi món thiếu, hỏng",
+  "en": ""
  },
  {
-  "vi": "🏷️ Dán phiếu “Chưa phân loại, chưa thu”. $1 gãi đầu: “Ừ thì lần sau tao phân loại.”",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Kiểm hàng",
+  "en": ""
  },
  {
-  "vi": "🏷️ Dán phiếu “Chưa phân loại, chưa thu”. $1: “Không lấy thì tao vứt ra đầu ngõ, xem ai dọn!”",
-  "en": "",
-  "pattern": true
+  "vi": "Ký đúng số lít đo được",
+  "en": ""
  },
  {
-  "vi": "📞 Gọi bác Tâm tổ trưởng. Bác ra nói mấy câu, $1 im re, hứa phân loại.",
-  "en": "",
-  "pattern": true
+  "vi": "👉 Ký phiếu",
+  "en": ""
  },
  {
-  "vi": "🤷 Lấy luôn cho xong. $1 đắc thắng: “Thấy chưa, lấy được mà!”",
-  "en": "",
-  "pattern": true
+  "vi": "✍️ KÝ SỔ TRỰC",
+  "en": ""
  },
  {
-  "vi": "🏷️ Dán phiếu không thu túi của $1… mà túi này phân loại đúng mà?",
-  "en": "",
-  "pattern": true
+  "vi": "📒 GHI SỔ QUAN TRẮC",
+  "en": ""
  },
  {
-  "vi": "🏷️ Dán phiếu “Chưa phân loại, chưa thu”. $1 ra xem, gãi đầu: “Mai phân loại lại.”",
-  "en": "",
-  "pattern": true
+  "vi": "📒 GHI SỔ TRỰC",
+  "en": ""
  },
  {
-  "vi": "🏷️ Dán phiếu “Chưa phân loại, chưa thu”. $1 gào theo: “Không lấy thì tao đổ ra đường!”",
-  "en": "",
-  "pattern": true
+  "vi": "📒 GHI SỔ KHÁCH",
+  "en": ""
  },
  {
-  "vi": "$1 đếm đủ $2 xu, nhận biên lai.",
-  "en": "",
-  "pattern": true
+  "vi": "Quyết chuyện trên đảo",
+  "en": ""
  },
  {
-  "vi": "$1: “Đắt thế, $2 xu thôi.”",
-  "en": "",
-  "pattern": true
+  "vi": "🗼 Vào ca thôi!",
+  "en": ""
  },
  {
-  "vi": "$1 đóng sầm cửa: “Không đóng! Kiện đi!”",
-  "en": "",
-  "pattern": true
+  "vi": "🔭 Nhìn ra biển",
+  "en": ""
  },
  {
-  "vi": "🤝 Miễn phí tháng này cho $1. Chị Hạnh gật đầu.",
-  "en": "",
-  "pattern": true
+  "vi": "⛴️ Ra bến đón tàu",
+  "en": ""
  },
  {
-  "vi": "Hôm nay đã gõ cửa $1 rồi. Mai hẵng thu tiếp.",
-  "en": "",
-  "pattern": true
+  "vi": "🚤 Ra bến đón khách",
+  "en": ""
  },
  {
-  "vi": "Phí vệ sinh: $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chuyện trên đảo",
+  "en": ""
  },
  {
-  "vi": "Tụi nó cười khẩy bỏ đi.$1",
-  "en": "",
-  "pattern": true
+  "vi": "Quan trắc",
+  "en": ""
  },
  {
-  "vi": "Mất $1 xu sửa xe.",
-  "en": "",
-  "pattern": true
+  "vi": "🗼 Ca trực hôm nay",
+  "en": ""
  },
  {
-  "vi": "“Mày là cái thá gì mà dạy đời?” Tụi nó đạp thêm phát nữa. Mất $1 xu sửa xe.",
-  "en": "",
-  "pattern": true
+  "vi": "👥 Người phụ kiếm thêm xu khi khép ca; bạn vẫn tự pha từng ly.",
+  "en": ""
  },
  {
-  "vi": "Bạn lặng lẽ làm tiếp, mặc kệ tụi nó.$1",
-  "en": "",
-  "pattern": true
+  "vi": "Xem việc đội đang làm",
+  "en": ""
  },
  {
-  "vi": "🛒 Gom $1 túi rác",
-  "en": "",
-  "pattern": true
+  "vi": "· không còn topping khác để mời đổi",
+  "en": ""
  },
  {
-  "vi": ", $1 túi nhầm ngăn.",
-  "en": "",
-  "pattern": true
+  "vi": "chưa ủ thêm được",
+  "en": ""
  },
  {
-  "vi": "🔴 Tách $1 món nguy hại ra hộp đỏ.",
-  "en": "",
-  "pattern": true
+  "vi": "Ủ +5",
+  "en": ""
  }
 ]

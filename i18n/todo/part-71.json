@@ -1,1802 +1,1534 @@
 [
  {
-  "vi": "Chọn số vàng muốn mua nhé.",
+  "vi": "Cuộc gọi nghi ngờ",
   "en": ""
  },
  {
-  "vi": "Ví đang nợ. Trả nợ xong rồi hãy mua vàng nhé.",
+  "vi": "Giọng cười, im lặng, con nít, gọi lại nhiều lần: [[Kiểm tra cuộc gọi]] (nghe, hỏi kỹ, gọi lại) rồi mới quyết.",
   "en": ""
  },
  {
-  "vi": "Mua vàng",
+  "vi": "Quyết",
   "en": ""
  },
  {
-  "vi": "Bạn chưa có vàng để bán.",
+  "vi": "Chọn mức ưu tiên và đội rồi [[GỬI ĐỘI]]; không ai cần xe thì chọn nơi, giọng nói rồi [[CHUYỂN ĐÚNG NƠI]].",
   "en": ""
  },
  {
-  "vi": "Chọn số vàng muốn bán nhé.",
+  "vi": "Trong lúc chờ đội",
   "en": ""
  },
  {
-  "vi": "Bán vàng",
+  "vi": "Đọc thẻ hướng dẫn an toàn hợp với chuyện đó, rồi [[Giữ máy tới khi đội tới]] hoặc [[Kết thúc cuộc gọi]].",
   "en": ""
  },
  {
-  "vi": "Thao tác tiệm vàng không hợp lệ.",
+  "vi": "Từ ngày 2, nhiều nhất là mùa mưa. [[Nghe máy]] từng đường dây, xếp mức ưu tiên, rồi [[NHẤC THEO THỨ TỰ]].",
   "en": ""
  },
  {
-  "vi": "Vàng trong bản lưu không hợp lệ.",
+  "vi": "📍 Địa chỉ trước tiên: rớt máy vẫn gửi xe được.",
   "en": ""
  },
  {
-  "vi": "vui hơn thường lệ, dễ cười, dễ bỏ qua",
+  "vi": "❓ Rồi chuyện gì, mấy người, nguy hiểm gì (lửa, khói, gas, điện, nước), số gọi lại.",
   "en": ""
  },
  {
-  "vi": "vừa được khen",
+  "vi": "🚨 Có chỗ và biết chuyện gì là gửi xe ngay, hỏi tiếp sau.",
   "en": ""
  },
  {
-  "vi": "trời hôm nay mát",
+  "vi": "🎯 Ưu tiên theo nguy hiểm tính mạng, không theo người gọi là ai. Gửi đủ đội, không thừa.",
   "en": ""
  },
  {
-  "vi": "sáng nay ăn được tô bún ngon",
+  "vi": "🔎 Không cho là gọi đùa khi chưa kiểm tra.",
   "en": ""
  },
  {
-  "vi": "con cháu mới gọi điện hỏi thăm",
+  "vi": "☎️ Người gọi một mình, đang sợ: giữ máy tới khi đội tới.",
   "en": ""
  },
  {
-  "vi": "hơi mệt, câu ngắn hơn một chút, đôi khi ngáp hay than nhẹ",
+  "vi": "📒 Cuối ca: [[Ghi vào sổ nhật ký]] những gì thật sự đã xảy ra.",
   "en": ""
  },
  {
-  "vi": "tối qua thức khuya",
+  "vi": "📍 Có địa chỉ trước khi làm gì khác.",
   "en": ""
  },
  {
-  "vi": "trực ca sớm",
+  "vi": "🚒 Đúng mức ưu tiên, đúng đội, không gửi thừa.",
   "en": ""
  },
  {
-  "vi": "kẹt xe cả buổi",
+  "vi": "🗣️ Hướng dẫn an toàn đúng, đủ.",
   "en": ""
  },
  {
-  "vi": "mất ngủ vì hàng xóm hát karaoke",
+  "vi": "☎️ Không bỏ người gọi một mình.",
   "en": ""
  },
  {
-  "vi": "bực",
+  "vi": "🙂 Từ chối dứt khoát mà lịch sự.",
   "en": ""
  },
  {
-  "vi": "đang bực chuyện riêng (không phải tại người chơi), dễ gắt nhẹ một câu rồi thôi",
+  "vi": "Đọc thẻ hướng dẫn nguy hiểm (dội nước vào chảo dầu, đi thang máy khi cháy, tháo mũ bảo hiểm)",
   "en": ""
  },
  {
-  "vi": "bị giành chỗ đậu xe",
+  "vi": "Lỗi an toàn: đánh giá 1★, mất thưởng cuộc đó, chị Thảo lập báo cáo sự cố.",
   "en": ""
  },
  {
-  "vi": "cúp nước cả sáng",
+  "vi": "Không gửi ai cho cuộc gọi thật, xếp ca nguy hiểm xuống thấp, gửi thiếu đội",
   "en": ""
  },
  {
-  "vi": "bị giao hàng trễ",
+  "vi": "Lỗi an toàn, mất thưởng cuộc đó.",
   "en": ""
  },
  {
-  "vi": "mưa làm ướt đồ phơi",
+  "vi": "Gửi xe cho cuộc gọi đùa, con mèo, “người quan trọng”",
   "en": ""
  },
  {
-  "vi": "hơi buồn, trầm hơn, dễ tâm sự một chút",
+  "vi": "Đội bị giữ chân: cuộc thật kế tiếp phải chờ đội phường bên.",
   "en": ""
  },
  {
-  "vi": "nhớ nhà",
+  "vi": "Không đánh dấu đội tạm ngưng lúc nhận ca",
   "en": ""
  },
  {
-  "vi": "con mèo đi lạc chưa về",
+  "vi": "Gọi đội đó không ai trả lời, mất mấy phút mượn đội phường bên.",
   "en": ""
  },
  {
-  "vi": "bạn thân chuyển đi xa",
+  "vi": "Quát người gọi, gắt khi từ chối, cúp máy với người đang sợ",
   "en": ""
  },
  {
-  "vi": "trời âm u cả ngày",
+  "vi": "Lỗi nhỏ đến rõ, bớt sao.",
   "en": ""
  },
  {
-  "vi": "hào hứng",
+  "vi": "Nhận quà, kể chuyện người gọi lên sóng, sửa giờ trong nhật ký",
   "en": ""
  },
  {
-  "vi": "đang hào hứng, nói nhanh, muốn kể chuyện vui",
+  "vi": "🕖 Ca ngày 7:00–19:00; giờ tan tầm và mưa chiều đường dây réo nhiều nhất.",
   "en": ""
  },
  {
-  "vi": "sắp được đi chơi xa",
+  "vi": "💼 Là việc làm thuê: [[Ứng tuyển]] ở Tổng đài Cứu hộ phường Mây. Có lương ngày và thưởng nhỏ cho từng cuộc làm đúng.",
   "en": ""
  },
  {
-  "vi": "đội bóng ruột vừa thắng",
+  "vi": "🎓 Chứng chỉ Tiếp nhận cuộc gọi khẩn cấp giúp dễ được nhận hơn.",
   "en": ""
  },
  {
-  "vi": "mới học được món mới",
+  "vi": "☎️ Ngoài đời ở Việt Nam: 114 cháy và cứu nạn, 115 cấp cứu, 113 công an, 112 tìm kiếm cứu nạn.",
   "en": ""
  },
  {
-  "vi": "vừa mua được đồ ưng ý",
+  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, mùa mưa bão, anh Khải soi KPI, nắng nóng, trực thay ca tối.",
   "en": ""
  },
  {
-  "vi": "thương người, quan tâm thật lòng, dễ mến",
+  "vi": "👴 Ông Ba gọi mười lần, bé Na nghịch máy, DJ Long xin “một câu”, mèo kẹt trên cây từ ba giờ sáng.",
   "en": ""
  },
  {
-  "vi": "hỏi han chuyện ăn uống, sức khỏe",
+  "vi": "👔 “Người quan trọng” đòi ưu tiên, khách say đòi taxi, karaoke hàng xóm, gọi nhầm đặt phở.",
   "en": ""
  },
  {
-  "vi": "khen cụ thể một điều nhỏ",
+  "vi": "📊 Sếp ép KPI, đồng nghiệp rủ cúp máy khỏi hỏi, tắt ghi âm: nói rõ, báo đúng người.",
   "en": ""
  },
  {
-  "vi": "hay rủ rê ăn uống, ghé chơi",
+  "vi": "Gọi bộ đàm",
   "en": ""
  },
  {
-  "vi": "Ăn gì chưa đó?",
+  "vi": "Nhấc máy",
   "en": ""
  },
  {
-  "vi": "Thương ghê.",
+  "vi": "Tìm chỗ người gọi",
   "en": ""
  },
  {
-  "vi": "Có gì cứ nói nha.",
+  "vi": "Trấn an người gọi",
   "en": ""
  },
  {
-  "vi": "ít (🥰, 💛)",
+  "vi": "Kiểm tra cuộc gọi",
   "en": ""
  },
  {
-  "vi": "món ăn đầu hẻm",
+  "vi": "GỬI ĐỘI",
   "en": ""
  },
  {
-  "vi": "sức khỏe của người chơi",
+  "vi": "CHUYỂN ĐÚNG NƠI",
   "en": ""
  },
  {
-  "vi": "vui ra mặt, khen lại, rủ lần sau ghé chơi",
+  "vi": "Giữ máy tới khi đội tới",
   "en": ""
  },
  {
-  "vi": "buồn nhẹ, không cãi, nhắc khéo là nghe vậy hơi buồn",
+  "vi": "Kết thúc cuộc gọi",
   "en": ""
  },
  {
-  "vi": "an ủi ngay, hỏi có chuyện gì, rủ đi ăn chè cho khuây khỏa",
+  "vi": "NHẤC THEO THỨ TỰ",
   "en": ""
  },
  {
-  "vi": "Trời nắng dữ ha, uống miếng nước đi rồi làm tiếp, đừng ráng quá nha.",
+  "vi": "Ghi vào sổ nhật ký",
   "en": ""
  },
  {
-  "vi": "Ăn gì chưa đó? Đầu hẻm có xe bánh mì mới, nóng giòn lắm, chiều ghé thử nha.",
+  "vi": "Bạn ngồi ghế cao ở hồ bơi phường: kiểm hồ trước khi mở, quét đủ năm khu, thổi còi đúng luật, xuống cứu khi cần và đóng hồ khi có sấm. Anh Hải kèm ba việc đầu.",
   "en": ""
  },
  {
-  "vi": "Có gì khó cứ nói, không giúp được nhiều thì cũng ngồi nghe được mà.",
+  "vi": "Kiểm từng món trong danh sách, [[Ghi sổ nước]] đúng số que thử, món hỏng thì tự xử lý hoặc báo đúng người. An toàn thì [[Mở cổng đón khách]], chưa thì [[Hoãn mở, chờ kỹ thuật xử lý]].",
   "en": ""
  },
  {
-  "vi": "{Ban} ăn gì chưa đó? Chiều nay đầu hẻm có xe bánh mì nóng giòn lắm nha.",
+  "vi": "[[BẮT ĐẦU VÒNG QUÉT]], chạm đủ năm khu trong một phút. Chạm khu đã nhìn để [[Thổi còi nhắc…]] hoặc báo động, rồi [[KẾT THÚC VÒNG QUÉT]].",
   "en": ""
  },
  {
-  "vi": "Lạnh lùng kiệm lời",
+  "vi": "Cứu người",
   "en": ""
  },
  {
-  "vi": "giữ khoảng cách, không thích tán gẫu, nhưng không ác ý",
+  "vi": "Người đuối nước im lặng, dựng đứng, không tiến lên được: [[Còi dài: có người đang chìm!]], gọi hỗ trợ, với hoặc ném trước, xuống nước thì mang phao ống, xem thở rồi sơ cứu.",
   "en": ""
  },
  {
-  "vi": "trả lời cụt, một hai chữ",
+  "vi": "Soát người ở cổng",
   "en": ""
  },
  {
-  "vi": "hầu như không hỏi lại",
+  "vi": "Nhìn, hỏi từng người rồi chọn: mời vào, vào sau khi sửa, chỉ khu cạn có người lớn, hay hôm nay không xuống nước. Xong bấm [[XONG LƯỢT CỔNG]].",
   "en": ""
  },
  {
-  "vi": "im lặng là chính",
+  "vi": "Lớp bơi trẻ em",
   "en": ""
  },
  {
-  "vi": "Vậy thôi.",
+  "vi": "[[Xem sổ đón phụ huynh]], cho từng bé [[Bơi thử ở làn sát thành]], phát vòng tay theo bài bơi thử, dạy theo giáo án, [[Điểm danh lúc lên bờ]], rồi [[TAN LỚP]].",
   "en": ""
  },
  {
-  "vi": "Tùy.",
+  "vi": "[[Hỏi chuyện gì xảy ra]], [[Đeo găng tay]] trước khi chạm, chọn cách sơ cứu an toàn. Không đưa thuốc của mình.",
   "en": ""
  },
  {
-  "vi": "chỉ việc đang làm",
+  "vi": "Có sấm là cho tất cả lên bờ vào sảnh có mái, đếm người, [[Chờ, xem trời]]. Ba mươi phút sau tiếng sấm cuối mới [[MỞ LẠI HỒ]].",
   "en": ""
  },
  {
-  "vi": "gật đầu, một chữ \"cảm ơn\" là hết",
+  "vi": "🧪 Mở hồ: kiểm đủ tám món, ghi số que thử vào sổ nước, ngoài bảng mẫu thì chưa mở.",
   "en": ""
  },
  {
-  "vi": "im lặng, hoặc \"Tùy.\"",
+  "vi": "👀 Lên ghế: quét đủ năm khu trong một phút. Té nước, la hét mà đứng vững là đang chơi.",
   "en": ""
  },
  {
-  "vi": "một câu vụng về kiểu \"Nghỉ chút đi.\"",
+  "vi": "🫥 Người đuối nước thường im lặng: người dựng đứng, đầu ngửa ra sau, miệng ngang mặt nước.",
   "en": ""
  },
  {
-  "vi": "Được. Làm đi.",
+  "vi": "🪝 Với từ bờ được thì với, ném được thì ném; xuống nước luôn mang phao ống.",
   "en": ""
  },
  {
-  "vi": "Không cần hỏi nhiều.",
+  "vi": "🩺 Lên bờ: gọi to, vỗ vai, nhìn ngực mười giây. Không thở: 115, máy AED. Không bao giờ dốc ngược.",
   "en": ""
  },
  {
-  "vi": "Mệt thì nghỉ. Vậy thôi.",
+  "vi": "⛈️ Nghe sấm: tất cả lên bờ, đếm người, ba mươi phút sau tiếng sấm cuối mới mở lại.",
   "en": ""
  },
  {
-  "vi": "Ờ. Làm việc đi.",
+  "vi": "📒 Cuối ca: [[Ghi vào sổ trực]] những gì thật sự đã xảy ra.",
   "en": ""
  },
  {
-  "vi": "Không có gì để nói.",
+  "vi": "👀 Mắt không rời mặt nước, quét đủ năm khu.",
   "en": ""
  },
  {
-  "vi": "Ừ, chào.",
+  "vi": "🛟 Phao ống luôn trong tay; với, ném trước khi xuống.",
   "en": ""
  },
  {
-  "vi": "Trong nóng ngoài lạnh",
+  "vi": "🚫 Không dốc ngược người đuối nước; không đưa thuốc của mình.",
   "en": ""
  },
  {
-  "vi": "ngoài miệng cằn cằn, chê bai, nhưng thật ra rất quan tâm; bị nói trúng thì chối",
+  "vi": "⛈️ Sấm là lên bờ, chờ đủ ba mươi phút, sếp giục cũng vậy.",
   "en": ""
  },
  {
-  "vi": "chê trước rồi lén giúp",
+  "vi": "🏫 Bơi thử rồi mới phát vòng tay, không tin miệng.",
   "en": ""
  },
  {
-  "vi": "giả vờ không để ý nhưng nhớ hết",
+  "vi": "Không thấy người đang chìm, mở hồ khi nắp hút đáy bung hay nước đục",
   "en": ""
  },
  {
-  "vi": "Đừng hiểu lầm nha.",
+  "vi": "Lỗi an toàn: đánh giá 1★, mất thưởng, anh Hải lập biên bản.",
   "en": ""
  },
  {
-  "vi": "Tiện tay thôi.",
+  "vi": "Dốc ngược người đuối nước, đỡ người bất tỉnh ngồi dậy, cho người say xuống nước",
   "en": ""
  },
  {
-  "vi": "Ai thèm lo.",
+  "vi": "Nhảy xuống tay không, không gọi hỗ trợ",
   "en": ""
  },
  {
-  "vi": "ít (😤)",
+  "vi": "Lỗi rõ: bớt sao, bớt thưởng.",
   "en": ""
  },
  {
-  "vi": "lén nhắc người chơi ăn uống, nghỉ ngơi",
+  "vi": "Thổi còi nhầm người, quét chậm quá một phút",
   "en": ""
  },
  {
-  "vi": "giả vờ không quan tâm chuyện người chơi",
+  "vi": "Lỗi nhỏ, bớt sao.",
   "en": ""
  },
  {
-  "vi": "đỏ mặt, chối, \"ờ… cũng được\"",
+  "vi": "Mở lại hồ khi chưa đủ ba mươi phút sau tiếng sấm cuối",
   "en": ""
  },
  {
-  "vi": "gắt lại một câu rồi dỗi",
+  "vi": "Lỗi an toàn; chiều theo sếp còn bị ghi điểm vi phạm.",
   "en": ""
  },
  {
-  "vi": "nói cộc nhưng đưa đồ ăn hoặc một lời khuyên, kiểu \"đừng có mà khóc ở đây\"",
+  "vi": "Nhận quà giữ làn riêng, ghi sổ trực khống",
   "en": ""
  },
  {
-  "vi": "Tiện đường mua dư ly trà đá thôi, uống đi, đừng hiểu lầm.",
+  "vi": "🕕 Hồ mở 6:00 tới 20:00; trưa nắng gắt đông trẻ con, chiều dễ có dông.",
   "en": ""
  },
  {
-  "vi": "Làm vậy cũng tạm. Tạm thôi đấy, đừng có vênh.",
+  "vi": "💼 Là việc làm thuê: [[Ứng tuyển]] ở Hồ bơi Sóng Xanh. Có lương ngày và thưởng nhỏ cho từng việc làm đúng.",
   "en": ""
  },
  {
-  "vi": "Mệt thì nghỉ đi, gục ra đấy ai dọn.",
+  "vi": "🎓 Chứng chỉ Cứu hộ hồ bơi giúp dễ được nhận hơn.",
   "en": ""
  },
  {
-  "vi": "Hừ, đứng đó làm gì, ăn gì chưa? …Hỏi vậy thôi, đừng hiểu lầm.",
+  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, nắng gắt cuối tuần, chiều có dông, khai giảng lớp bơi hè, đoàn kiểm tra.",
   "en": ""
  },
  {
-  "vi": "Ờ, tới rồi hả. Tưởng quên đường.",
+  "vi": "🧢 Ông Tư không đội mũ, cô Hằng nhảy aerobic ở làn nhanh, Kha nhào lộn quay TikTok, phụ huynh dán mắt vào điện thoại, bé Bon nói dối biết bơi.",
   "en": ""
  },
  {
-  "vi": "Hừ, chào.",
+  "vi": "👑 Đại gia đòi làn riêng, khách tán tỉnh xin dạy riêng, sếp không cho đóng hồ khi có sấm: nói rõ, báo đúng người.",
   "en": ""
  },
  {
-  "vi": "biết hết chuyện cả hẻm, kể không ngừng, không ác ý nhưng hay thêm mắm dặm muối",
+  "vi": "Ghi sổ nước",
   "en": ""
  },
  {
-  "vi": "mở đầu bằng \"nghe nói…\", \"để kể nghe nè\"",
+  "vi": "Mở cổng đón khách",
   "en": ""
  },
  {
-  "vi": "lan man từ chuyện này sang chuyện khác",
+  "vi": "Hoãn mở, chờ kỹ thuật xử lý",
   "en": ""
  },
  {
-  "vi": "hạ giọng thì thầm như bí mật quốc gia",
+  "vi": "BẮT ĐẦU VÒNG QUÉT",
   "en": ""
  },
  {
-  "vi": "Nè, nghe chưa?",
+  "vi": "Thổi còi nhắc…",
   "en": ""
  },
  {
-  "vi": "Nói nhỏ thôi nha…",
+  "vi": "KẾT THÚC VÒNG QUÉT",
   "en": ""
  },
  {
-  "vi": "Ai đời…",
+  "vi": "Còi dài: có người đang chìm!",
   "en": ""
  },
  {
-  "vi": "vừa (🤭, 👀)",
+  "vi": "XONG LƯỢT CỔNG",
   "en": ""
  },
  {
-  "vi": "chuyện nhà hàng xóm",
+  "vi": "Xem sổ đón phụ huynh",
   "en": ""
  },
  {
-  "vi": "ai cưới ai",
+  "vi": "Bơi thử ở làn sát thành",
   "en": ""
  },
  {
-  "vi": "giá rau ngoài chợ",
+  "vi": "Điểm danh lúc lên bờ",
   "en": ""
  },
  {
-  "vi": "tin đồn trong hẻm",
+  "vi": "TAN LỚP",
   "en": ""
  },
  {
-  "vi": "kể thêm một chuyện nữa như phần thưởng",
+  "vi": "Hỏi chuyện gì xảy ra",
   "en": ""
  },
  {
-  "vi": "ơ hay một câu rồi đi kể với người khác là người chơi khó chịu",
+  "vi": "Đeo găng tay",
   "en": ""
  },
  {
-  "vi": "hỏi dồn chuyện gì, ai làm gì, rồi an ủi kiểu \"hẻm này ai chả có lúc vậy\"",
+  "vi": "Chờ, xem trời",
   "en": ""
  },
  {
-  "vi": "Nói nhỏ thôi nha… bà bán xôi với ông sửa xe dạo này hay đứng nói chuyện riêng lắm á.",
+  "vi": "MỞ LẠI HỒ",
   "en": ""
  },
  {
-  "vi": "Trời ơi hôm qua cả hẻm cúp điện, ai cũng ra đầu ngõ ngồi, vui như hội luôn!",
+  "vi": "Ghi vào sổ trực",
   "en": ""
  },
  {
-  "vi": "Ai đời con chó nhà ông Sáu tha luôn chiếc dép của bà Tư, hai nhà giận nhau tới giờ.",
+  "vi": "Bạn là cán bộ khu vực ở Công an phường Mây: làm giấy tờ, giữ đồ thất lạc, hòa giải, tìm trẻ lạc, đi tuần, nhận tin báo. Ai cũng như ai, không nhận gì của ai. Anh Định kèm ba việc đầu.",
   "en": ""
  },
  {
-  "vi": "Nè, nghe chưa? Nhà cuối hẻm mới sơn cửa màu hồng chóe, chắc sắp có đám cưới á.",
+  "vi": "Đọc từng mục sổ trực ban ([[Đọc mục này]]), chọn chuyện có người đang cần mình ngay, bấm [[GIAO BAN XONG]].",
   "en": ""
  },
  {
-  "vi": "Trời ơi, hôm qua con chó nhà ông Sáu tha mất chiếc dép của bà Tư, cả hẻm được bữa cười.",
+  "vi": "Có phong bì, “người quen”, người hối thì trả lời trước. Xem từng giấy; đủ thì [[Nhận hồ sơ]], thiếu thì [[Hướng dẫn bổ sung…]] đúng giấy.",
   "en": ""
  },
  {
-  "vi": "ngồi trước cửa cả ngày, để ý ai ra ai vào giờ nào, rồi suy diễn úp mở",
+  "vi": "[[Kiểm đếm cùng người nhặt, ký biên bản]]; hỏi người tới nhận ít nhất hai câu; khớp thì [[Trả lại, ký nhận]], không khớp thì [[Chưa trả]].",
   "en": ""
  },
  {
-  "vi": "nói giờ giấc bằng chữ mơ hồ (khuya lơ khuya lắc, gà gáy, tờ mờ sáng), không bao giờ nói con số",
+  "vi": "Hòa giải",
   "en": ""
  },
  {
-  "vi": "úp mở, bóng gió, không bao giờ nói thẳng hay nói chuyện thô",
+  "vi": "Từ ngày 2. [[Nghe riêng]] từng bên, chọn từng điều khoản, [[Đề xuất với hai bên]]. Hai bên gật đầu thì [[KÝ BIÊN BẢN HÒA GIẢI]].",
   "en": ""
  },
  {
-  "vi": "{Toi} thấy hết nha.",
+  "vi": "Trẻ lạc",
   "en": ""
  },
  {
-  "vi": "Về khuya dữ ha…",
+  "vi": "Từ ngày 2. [[Ngồi xuống dỗ bé, đứng yên một chỗ]], hỏi bé, [[Xem balo, thẻ tên]], đọc loa hoặc gọi số trên thẻ; xác minh người đón hai cách.",
   "en": ""
  },
  {
-  "vi": "Làm gì mà giờ giấc lạ vậy?",
+  "vi": "Tuần tra",
   "en": ""
  },
  {
-  "vi": "ít (👀)",
+  "vi": "Chợ, cổng trường, hội chợ, đám cưới: [[Xem kỹ, hỏi chuyện]] rồi chọn cách xử lý; xong ba chuyện bấm [[XONG VÒNG TUẦN TRA]].",
   "en": ""
  },
  {
-  "vi": "ai đi đâu giờ nào",
+  "vi": "Nói chuyện chống lừa đảo",
   "en": ""
  },
  {
-  "vi": "xe lạ đậu đầu hẻm",
+  "vi": "Từ ngày 3. [[Đọc thư mời]], chọn tối đa ba chủ đề đúng chuyện tổ đang gặp, [[TRÌNH BÀY]], rồi trả lời câu hỏi của các cụ.",
   "en": ""
  },
  {
-  "vi": "đèn nhà ai sáng khuya",
+  "vi": "Từ ngày 2. Ba cuộc gọi cùng lúc: [[Gọi lại hỏi rõ]], xếp mức ưu tiên cho từng cuộc, rồi [[ĐIỀU ĐỘNG]].",
   "en": ""
  },
  {
-  "vi": "người chơi đi làm về trễ",
+  "vi": "📋 Đọc hết sổ trực ban; ai đang gặp nguy thì làm trước.",
   "en": ""
  },
  {
-  "vi": "thân thiện hơn nhưng vẫn dò hỏi thêm một câu",
+  "vi": "✉️ Có ai đưa phong bì, quà: trả lại, nói rõ, ghi sổ. Không bao giờ nhận.",
   "en": ""
  },
  {
-  "vi": "cười nhếch \"có tật giật mình ha\" rồi để ý kỹ hơn",
+  "vi": "🎫 Ai cũng lấy số, chờ đúng lượt; ưu tiên người già, người khuyết tật, không ưu tiên “người quen”.",
   "en": ""
  },
  {
-  "vi": "dò hỏi \"chắc tại về khuya nên mệt\", khuyên về sớm cho khỏe",
+  "vi": "👂 Hòa giải: nghe riêng cả hai bên trước, rồi mới đề xuất. Không dọa phạt.",
   "en": ""
  },
  {
-  "vi": "Làm nghề gì mà giờ giấc lạ vậy ta, hay làm thêm ca bên phố đêm?",
+  "vi": "🪪 Đồ thất lạc, trẻ lạc: xác minh kỹ rồi mới giao. Không đăng ảnh trẻ lên mạng.",
   "en": ""
  },
  {
-  "vi": "A, tới rồi. {Toi} ngồi đây nãy giờ thấy hết á.",
+  "vi": "🚶 Tuần tra: lần đầu chuyện nhỏ thì nhắc; tái phạm, nguy hiểm thì lập biên bản; nguy hiểm trước mắt thì xử lý ngay.",
   "en": ""
  },
  {
-  "vi": "Phán xét xã hội",
+  "vi": "📒 Cuối ca: [[Ghi vào sổ trực ban]] những gì thật sự đã xảy ra.",
   "en": ""
  },
  {
-  "vi": "hay nhận xét đạo đức, \"giới trẻ bây giờ…\", tự cho mình mẫu mực nhưng chính mình làm khác",
+  "vi": "⚖️ Ai cũng như ai, đúng lượt, đúng thủ tục.",
   "en": ""
  },
  {
-  "vi": "so ngày xưa với bây giờ",
+  "vi": "🚫 Không nhận phong bì, quà, “phở miễn phí”.",
   "en": ""
  },
  {
-  "vi": "phán về quần áo, điện thoại, tóc tai",
+  "vi": "👂 Hai bên đều được nghe trước khi đề xuất.",
   "en": ""
  },
  {
-  "vi": "tự mâu thuẫn: vừa chê lướt điện thoại vừa lướt",
+  "vi": "🪪 Đồ về đúng chủ, bé về đúng người nhà.",
   "en": ""
  },
  {
-  "vi": "Giới trẻ bây giờ…",
+  "vi": "🚨 Người đang gặp nguy được đi trước.",
   "en": ""
  },
  {
-  "vi": "Thời tôi á…",
+  "vi": "Nhận phong bì, ngồi vào chiếu bạc, nhận quà “lấy hên”",
   "en": ""
  },
  {
-  "vi": "Sống phải biết điều.",
+  "vi": "Lỗi nặng: 1★, mất thưởng, hồ sơ bị ghi điểm vi phạm; nhiều lần thì tạm dừng nhiệm vụ, hạ bậc.",
   "en": ""
  },
  {
-  "vi": "đạo đức",
+  "vi": "Trả đồ cho người không phải chủ, giao bé cho người bố mẹ không nhờ",
   "en": ""
  },
  {
-  "vi": "cách ăn mặc",
+  "vi": "Lỗi an toàn: 1★, mất thưởng, anh Định lập báo cáo.",
   "en": ""
  },
  {
-  "vi": "chuyện nhà người khác",
+  "vi": "Để người đang gặp nguy chờ, bỏ qua nguy hiểm khi đi tuần",
   "en": ""
  },
  {
-  "vi": "gật gù \"được, còn biết lễ phép\"",
+  "vi": "Lập biên bản chuyện nhỏ lần đầu, dọa phạt khi hòa giải, đăng ảnh trẻ lạc",
   "en": ""
  },
  {
-  "vi": "lên lớp một tràng về lễ nghĩa",
+  "vi": "Lỗi rõ, bớt sao.",
   "en": ""
  },
  {
-  "vi": "kể \"hồi xưa khổ hơn nhiều\" rồi khuyên chịu khó",
+  "vi": "Ghi sổ trực ban điều chưa xảy ra cho đủ chỉ tiêu",
   "en": ""
  },
  {
-  "vi": "Giới trẻ bây giờ cứ cắm mặt vào điện thoại, chẳng chào ai. Mà khoan, để tôi trả lời tin nhắn nhóm cái đã.",
+  "vi": "Ghi khống: hồ sơ bị trừ điểm.",
   "en": ""
  },
  {
-  "vi": "Thời tôi đi làm có ai than mệt đâu, giờ tụi nhỏ động tí là xin nghỉ.",
+  "vi": "🕢 Ca ngày 7:30–17:30; giờ tan học đứng cổng trường.",
   "en": ""
  },
  {
-  "vi": "Ăn mặc thì phải cho đứng đắn, tôi nói thế thôi chứ tôi không soi đâu nhé.",
+  "vi": "💼 Là việc làm thuê: [[Ứng tuyển]] ở Công an phường Mây. Có lương ngày và thưởng nhỏ cho từng việc làm đúng.",
   "en": ""
  },
  {
-  "vi": "Người ta sống phải biết điều, như tôi đây này, chưa nói xấu ai bao giờ. À mà cái nhà cuối hẻm ấy…",
+  "vi": "🎓 Chứng chỉ Tiếp dân & hòa giải giúp dễ được nhận hơn.",
   "en": ""
  },
  {
-  "vi": "Đấy, giờ mới thấy mặt.",
+  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, chợ phiên, tuần khai giảng, mùa cưới mùa hội, đoàn kiểm tra hồ sơ, mưa bão.",
   "en": ""
  },
  {
-  "vi": "Chào. Hôm nay ăn mặc tươm tất đấy.",
+  "vi": "✉️ Phong bì “cà phê”, cháu “sếp quận”, karaoke nửa đêm, “người khả nghi” đầu hẻm, TikToker quay cả bàn tiếp dân.",
   "en": ""
  },
  {
-  "vi": "Anh hùng bàn phím",
+  "vi": "🍺 Chú say quậy bàn tiếp dân, bà Năm mang chè ngồi kể chuyện cả tiếng, tin báo sai, sếp đòi đủ chỉ tiêu biên bản.",
   "en": ""
  },
  {
-  "vi": "nói gì cũng như đang bình luận trên mạng, hùng hổ, dẫn \"trên group\", phán chắc nịch dù không biết",
+  "vi": "Đọc mục này",
   "en": ""
  },
  {
-  "vi": "dùng từ mạng: real, check var, bóc, toxic, hóng",
+  "vi": "Hướng dẫn bổ sung…",
   "en": ""
  },
  {
-  "vi": "phán dứt khoát",
+  "vi": "Kiểm đếm cùng người nhặt, ký biên bản",
   "en": ""
  },
  {
-  "vi": "hay dọa chụp màn hình cho vui",
+  "vi": "Trả lại, ký nhận",
   "en": ""
  },
  {
-  "vi": "Nói thẳng nha.",
+  "vi": "Chưa trả",
   "en": ""
  },
  {
-  "vi": "Mình đọc trên group rồi.",
+  "vi": "Nghe riêng",
   "en": ""
  },
  {
-  "vi": "Check var đi.",
+  "vi": "Đề xuất với hai bên",
   "en": ""
  },
  {
-  "vi": "vừa (🤡, 🔥)",
+  "vi": "KÝ BIÊN BẢN HÒA GIẢI",
   "en": ""
  },
  {
-  "vi": "drama mạng xã hội",
+  "vi": "Ngồi xuống dỗ bé, đứng yên một chỗ",
   "en": ""
  },
  {
-  "vi": "review quán",
+  "vi": "Xem balo, thẻ tên",
   "en": ""
  },
  {
-  "vi": "tranh cãi online",
+  "vi": "Xem kỹ, hỏi chuyện",
   "en": ""
  },
  {
-  "vi": "\"okela, tôn trọng\"",
+  "vi": "XONG VÒNG TUẦN TRA",
   "en": ""
  },
  {
-  "vi": "\"cay à?\", dọa chụp màn hình",
+  "vi": "Đọc thư mời",
   "en": ""
  },
  {
-  "vi": "khuyên đừng đọc bình luận, \"toxic lắm\"",
+  "vi": "TRÌNH BÀY",
   "en": ""
  },
  {
-  "vi": "Nói thẳng nha, quán mà không có trang mạng là mất khách, mình đọc group thấy vậy.",
+  "vi": "Gọi lại hỏi rõ",
   "en": ""
  },
  {
-  "vi": "Chuyện đó mình check var rồi, sai là sai, khỏi cãi.",
+  "vi": "ĐIỀU ĐỘNG",
   "en": ""
  },
  {
-  "vi": "Ủa cay à? Mình chỉ nói sự thật thôi, ai tự ái thì chịu.",
+  "vi": "Ghi vào sổ trực ban",
   "en": ""
  },
  {
-  "vi": "Mạng người ta toxic lắm, đừng đọc bình luận, nghe mình.",
+  "vi": "🏘️ Bạn là một người trẻ vừa dọn tới căn gác nhà Bà Tám, trong một con hẻm nhỏ.",
   "en": ""
  },
  {
-  "vi": "Trên group đang bóc một quán ở phố bên, hóng muốn xỉu 🔥",
+  "vi": "👤 Lần đầu vào game: chọn Nam hoặc Nữ và đặt tên. Hàng xóm gọi bạn theo đó.",
   "en": ""
  },
  {
-  "vi": "Nói thẳng nha, quán phải có trang mạng, mình đọc group thấy vậy.",
+  "vi": "✏️ Đổi tên sau: [[Cài đặt]] → [[Cách chơi]] → [[Hồ sơ]].",
   "en": ""
  },
  {
-  "vi": "Ờ, có mặt. Hóng gì chưa?",
+  "vi": "🧭 Chỉ có một nhân vật, sống một đời, làm nhiều nghề khác nhau.",
   "en": ""
  },
  {
-  "vi": "Chào nha, nay có drama gì hông?",
+  "vi": "Việc làm đầu tiên",
   "en": ""
  },
  {
-  "vi": "Hài hước lầy lội",
+  "vi": "🏪 Chương 1 mở sẵn 7 chỗ: trà sữa, tạp hoá, giao hàng, bánh & cà phê, tiệm hoa, mẹ & bé, quán mì.",
   "en": ""
  },
  {
-  "vi": "cái gì cũng đùa được, chơi chữ, tự trào",
+  "vi": "👆 Mở [[Hành trình]]: dạo phố, tới chỗ đang sáng rồi bấm [[Vào làm]]. Thích kiểu cũ thì bấm [[Danh sách]].",
   "en": ""
  },
  {
-  "vi": "chơi chữ, nói quá",
+  "vi": "⚠️ Đang làm dở mà bỏ đi chỗ khác là bị phạt và mất điểm tin cậy. Làm xong việc đang cầm rồi hãy đi.",
   "en": ""
  },
  {
-  "vi": "bẻ lái bất ngờ",
+  "vi": "🌱 Ngày đầu dễ: cứ bấm vào chỗ đang sáng lên là làm được.",
   "en": ""
  },
  {
-  "vi": "cười \"há há\" giữa câu",
+  "vi": "Mở Hành trình",
   "en": ""
  },
  {
-  "vi": "Nói chơi thôi chứ…",
+  "vi": "Màn hình chính",
   "en": ""
  },
  {
-  "vi": "Đùa đó, mà thật.",
+  "vi": "🖼️ Giữa màn hình là cảnh tiệm. Chạm sàn để đi, chạm người hoặc đồ vật để làm.",
   "en": ""
  },
  {
-  "vi": "Há há.",
+  "vi": "🃏 Thẻ việc ở dưới chỉ ghi một dòng: việc cần làm ngay bây giờ.",
   "en": ""
  },
  {
-  "vi": "vừa (😂, 🤣)",
+  "vi": "▶️ Bấm [[Làm tiếp]] để mở màn hình làm việc.",
   "en": ""
  },
  {
-  "vi": "chuyện hài vặt",
+  "vi": "🔔 Chuông có số: những chuyện cần để ý (hàng sắp hết, hóa đơn, khách chờ).",
   "en": ""
  },
  {
-  "vi": "tự trào về bản thân",
+  "vi": "⌨️ Trên máy tính: WASD hoặc phím mũi tên để đi, E để dùng đồ gần nhất.",
   "en": ""
  },
  {
-  "vi": "đùa lại dễ thương",
+  "vi": "Bước tiếp theo",
   "en": ""
  },
  {
-  "vi": "lấy câu đùa để xuống thang, \"ối giời căng thế\"",
+  "vi": "🔘 Nút to ở cuối màn hình làm việc luôn làm bước kế tiếp, hoặc nói rõ còn thiếu gì. Chỗ cần bấm sẽ sáng lên.",
   "en": ""
  },
  {
-  "vi": "kể một chuyện cười cho vui rồi nghiêm túc một câu",
+  "vi": "📌 Khi nút ở cuối chưa làm được bước đó, đầu màn hình hiện dòng “Bước tiếp theo”: chạm vào là làm luôn.",
   "en": ""
  },
  {
-  "vi": "Trời nóng tới mức cục đá trong ly cũng xin nghỉ phép.",
+  "vi": "✅ Danh sách việc: ✓ là xong, ✗ là sai cần sửa, ○ là chưa làm. Chạm dòng có → để nhảy tới.",
   "en": ""
  },
  {
-  "vi": "{Toi} định ăn kiêng mà xe xôi đầu hẻm cứ gọi tên, bất lịch sự ghê, nên phải ghé.",
+  "vi": "⋯ Nút ⋯ ở góc trên thẻ việc có [[Để lát nữa]] (cất việc này lại) và [[Xem các việc khác]].",
   "en": ""
  },
  {
-  "vi": "Trời nóng tới mức cục đá trong ly cũng xin nghỉ phép luôn, há há.",
+  "vi": "✅ Xong một việc: còn việc chờ thì bấm [[Công việc tiếp theo]]; hết việc thì [[Khép ca hôm nay]] hoặc nhận thêm.",
   "en": ""
  },
  {
-  "vi": "Ơ, người nổi tiếng của hẻm tới kìa!",
+  "vi": "✨ Việc đầu tiên ở mỗi chỗ: nút cần bấm sẽ sáng nhấp nháy.",
   "en": ""
  },
  {
-  "vi": "Khó tính cằn nhằn",
+  "vi": "❓ Nút ? ở góc trên mở hướng dẫn của đúng nghề đang làm.",
   "en": ""
  },
  {
-  "vi": "cái gì cũng chê một chút, than giá cả, than tụi trẻ; không ác, chỉ quen cằn nhằn",
+  "vi": "Giờ trong ngày",
   "en": ""
  },
  {
-  "vi": "mở đầu bằng \"Lại…\", \"Sao mà…\"",
+  "vi": "🕘 Cạnh số ngày ở trên cùng là đồng hồ của nơi làm: giờ, buổi (Sáng, Trưa, Chiều, Tối, Đêm) và một vạch nhỏ cho biết ca đã đi được bao nhiêu.",
   "en": ""
  },
  {
-  "vi": "so với hồi trước",
+  "vi": "⏱️ Mỗi thao tác làm việc tốn khoảng 20 phút giờ tiệm (tiệm sửa đồ 10 phút). Làm xong một bước sẽ hiện số phút vừa trôi, như “+20 phút”.",
   "en": ""
  },
  {
-  "vi": "chê chi tiết nhỏ",
+  "vi": "🏪 Mỗi nơi có giờ mở và đóng cửa riêng: tạp hoá 06:30–21:30, quán mì 10:00–22:00, giao hàng ca tối 17:00–23:00. Chạm số ngày để xem giờ của nơi đang làm.",
   "en": ""
  },
  {
-  "vi": "Lại thế nữa.",
+  "vi": "💼 Văn phòng 08:00–17:30, xin tăng ca thì tới 20:00. Tiệm trà sữa 08:00–20:00, ngày đông bán nốt tới muộn nhất 23:00.",
   "en": ""
  },
  {
-  "vi": "Làm ăn gì mà…",
+  "vi": "⚽ Có ngày đóng cửa muộn hơn: quán trà đá hôm có trận bóng bán tới 22:00.",
   "en": ""
  },
  {
-  "vi": "Nói mãi.",
+  "vi": "☕ Chưa mở ca thì đồng hồ chỉ giờ chuẩn bị, sớm hơn giờ mở cửa 30 phút.",
   "en": ""
  },
  {
-  "vi": "giá cả chợ",
+  "vi": "🌇 Cảnh tiệm đổi theo giờ: sáng dịu, trưa nắng, chiều vàng, tối lên đèn, đêm tối hẳn.",
   "en": ""
  },
  {
-  "vi": "tiếng ồn",
+  "vi": "🚚 Hàng nhập về theo đồng hồ này: “15–30 phút”, “chiều nay”, “sáng mai trước giờ mở”.",
   "en": ""
  },
  {
-  "vi": "rác trong hẻm",
+  "vi": "🎲 Mỗi ngày có một nhịp hên xui: thư thả (2 việc), đời thường (3 việc) hoặc ngày hội khu phố (4 việc).",
   "en": ""
  },
  {
-  "vi": "thời tiết khó chịu",
+  "vi": "Giờ đóng cửa",
   "en": ""
  },
  {
-  "vi": "\"ừ, được cái lễ phép\"",
+  "vi": "⏰ Còn 60 phút và còn 30 phút có lời nhắc; đồng hồ đổi sang vàng rồi cam.",
   "en": ""
  },
  {
-  "vi": "cằn nhằn gấp đôi",
+  "vi": "🔔 Tới giờ đóng cửa đồng hồ chuyển đỏ và không đón thêm khách mới.",
   "en": ""
  },
  {
-  "vi": "\"than làm gì, làm tiếp đi\" nhưng giọng dịu hơn một chút",
+  "vi": "🧑‍🍳 Khách đã vào quán vẫn được làm nốt, không tốn thêm gì. Đồng hồ ghi “Quá giờ đóng cửa … · làm nốt rồi khép ca”.",
   "en": ""
  },
  {
-  "vi": "Lại mưa. Phơi đồ từ sáng giờ ướt nhẹp hết.",
+  "vi": "🧋 Tiệm trà sữa khác một chút: ngày đông vẫn bán nốt khách đang đợi, muộn nhất 23:00.",
   "en": ""
  },
  {
-  "vi": "Rau chợ giờ đắt như vàng, ăn miếng rau muống cũng phải nghĩ.",
+  "vi": "🌙 Bấm [[Khép ca hôm nay]] lúc nào cũng được: việc dở giữ lại, khách hẹn quay lại khi mở cửa sáng mai. Khép ca đàng hoàng không bị tính là bỏ dở việc.",
   "en": ""
  },
  {
-  "vi": "Làm thì làm cho kỹ, đừng để tôi phải nói lần hai.",
+  "vi": "🌅 Bản tổng kết ghi bạn khép ca lúc mấy giờ (sớm, đúng giờ hay quá giờ) và giờ mở cửa hôm sau.",
   "en": ""
  },
  {
-  "vi": "Cái xe ai dựng chắn lối thế kia, nói mãi không nghe.",
+  "vi": "Mở ca và khép ca",
   "en": ""
  },
  {
-  "vi": "Rau chợ giờ đắt như vàng. Nói mãi.",
+  "vi": "☀️ Đầu ngày bấm [[Chuẩn bị ngày mới]] để mở ca.",
   "en": ""
  },
  {
-  "vi": "Cái xe ai dựng chắn lối thế kia, lại thế nữa.",
+  "vi": "➕ Hết việc có thể nhận thêm việc, hoặc bấm [[Khép ca hôm nay]].",
   "en": ""
  },
  {
-  "vi": "Ừ, đến rồi đấy à.",
+  "vi": "🧾 Khép ca: lương người phụ, điện nước, tiền thuê ghi vào sổ tiệm để trả sau.",
   "en": ""
  },
  {
-  "vi": "chuyện gì cũng rành, giảng giải dù không ai hỏi",
+  "vi": "🏠 Mỗi lần khép ca là qua một ngày sống: ví trả tiền phòng và cơm nước.",
   "en": ""
  },
  {
-  "vi": "mở đầu bằng \"thật ra là…\", \"ít ai biết là…\"",
+  "vi": "📋 Xem lại bản tổng kết ngày ở biểu tượng bảng kẹp trên thẻ việc.",
   "en": ""
  },
  {
-  "vi": "dẫn \"khoa học chứng minh\" một cách chung chung",
+  "vi": "💰 Trong bản tổng kết, thẻ “✓ Lãi/lỗ hôm nay” (làm công ăn lương: “✓ Kết quả ngày làm”) gập gọn; chạm để xem chi tiết.",
   "en": ""
  },
  {
-  "vi": "sửa lưng người khác",
+  "vi": "Các mục dễ bị bỏ sót",
   "en": ""
  },
  {
-  "vi": "Thật ra là…",
+  "vi": "📱 Trên điện thoại, nút [[Thêm]] mở các mục còn lại. Mục có dấu › mở một nhóm nhỏ.",
   "en": ""
  },
  {
-  "vi": "Để tôi giải thích.",
+  "vi": "💼 Việc: [[Hành trình]], [[Chuẩn bị]], [[Sổ tiệm]], [[Đánh giá]], [[Việc làm]] (nơi làm thuê).",
   "en": ""
  },
  {
-  "vi": "Ít ai biết là…",
+  "vi": "🏘️ [[Khu phố]]: [[Nhóm phố]], [[Chuyện phố]], [[Phố nghề]], [[Bản đồ phố]], [[Xếp hạng]].",
   "en": ""
  },
  {
-  "vi": "mẹo vặt",
+  "vi": "👥 [[Quan hệ]]: [[Người quen]], [[Bạn bè]] (người chơi thật), [[Hôn nhân]].",
   "en": ""
  },
  {
-  "vi": "khoa học vỉa hè",
+  "vi": "💰 [[Ngân hàng & nhà]]: [[Tiền của bạn]], [[Ngân hàng]], [[Nhà của bạn]].",
   "en": ""
  },
  {
-  "vi": "lịch sử con phố",
+  "vi": "🚩 [[Chuyện của bạn]]: [[Tình huống]], [[Chuyện đời]]. Chấm đỏ là có chuyện chờ bạn quyết.",
   "en": ""
  },
  {
-  "vi": "cách làm nghề của người chơi",
+  "vi": "🎒 [[Của mình]]: [[Tủ đồ]], [[Kỷ niệm]], [[Hộ chiếu]], [[Trò nhỏ]], [[Sổ tay]].",
   "en": ""
  },
  {
-  "vi": "giảng thêm một mẹo nữa như món quà",
+  "vi": "Bản đồ phố: đi tới chỗ làm",
   "en": ""
  },
  {
-  "vi": "\"thế là chưa hiểu vấn đề rồi\"",
+  "vi": "🗺️ Bấm [[Hành trình]] trong menu là ra bản đồ phố. Chạm đường để đi, chạm một tiệm để đi tới cửa.",
   "en": ""
  },
  {
-  "vi": "phân tích nguyên nhân, đưa giải pháp từng bước (nói bằng chữ)",
+  "vi": "🚪 Tới cửa hiện một thẻ nhỏ: bấm [[Vào làm]] (hoặc Vào tiếp) là vào làm ở đó. Muốn đổi nghề thì cứ đi sang tiệm khác.",
   "en": ""
  },
  {
-  "vi": "Thật ra là trà pha nước sôi quá thì đắng, ít ai biết đâu, để tôi giải thích.",
+  "vi": "🔒 Tiệm có ổ khóa là chưa mở: chạm vào để xem chương nào mở. ⏸ Tiệm bạn đã tạm đóng thì bấm [[Mở lại]].",
   "en": ""
  },
  {
-  "vi": "Hẻm này hồi trước là con kênh đấy, tôi đọc tài liệu rồi.",
+  "vi": "📋 Thích kiểu cũ thì bấm [[Danh sách]] ở góc trên. Cài đặt → Màn hình chính chọn mở bản đồ hay danh sách.",
   "en": ""
  },
  {
-  "vi": "Muốn đỡ mệt thì phải ngủ trước nửa đêm, khoa học chứng minh cả rồi.",
+  "vi": "Mở Bản đồ phố",
   "en": ""
  },
  {
-  "vi": "Thật ra là trà pha nước sôi quá thì đắng, ít ai biết đâu nhé.",
+  "vi": "Chuẩn bị, nhiệm vụ và bảng giá",
   "en": ""
  },
  {
-  "vi": "ngại ngùng, sợ làm phiền, nói nhỏ, hay xin lỗi",
+  "vi": "🧺 Bấm [[Chuẩn bị]] (hoặc [[Chuẩn bị ngày mới]] khi chưa mở ca): xem thời tiết, nhịp của ngày và việc cần lo trước giờ mở cửa.",
   "en": ""
  },
  {
-  "vi": "ngập ngừng \"dạ…\", \"à… ừm…\"",
+  "vi": "🎲 Nhịp ngày là hên xui: thư thả (2 việc đầu ca, khách không mất kiên nhẫn), đời thường (3 việc) hoặc Ngày hội khu phố (4 việc).",
   "en": ""
  },
  {
-  "vi": "câu bỏ lửng",
+  "vi": "🌞 Nhiệm vụ hôm nay: xong 2 việc +20 xu, xong 1 trò nhỏ +12 xu, trò chuyện với 2 người +8 xu. Mỗi mục thêm 10 XP.",
   "en": ""
  },
  {
-  "vi": "xin lỗi cả khi không có lỗi",
+  "vi": "🎁 Đủ số thì bấm [[Nhận quà]] ở mục đó. Tiền vào quỹ nơi đang làm. Sang ngày mới nhiệm vụ làm lại từ đầu.",
   "en": ""
  },
  {
-  "vi": "Dạ… xin lỗi…",
+  "vi": "🔥 Làm liền 3 việc không lỗi được thưởng thêm 8 xu, mỗi ngày một lần.",
   "en": ""
  },
  {
-  "vi": "Nếu không phiền…",
+  "vi": "🌟 Thẻ cấp cho biết cấp của nơi này, mỗi cấp cần 90 XP. Bấm [[Đổi tên]] để treo biển tên mới cho tiệm.",
   "en": ""
  },
  {
-  "vi": "À… thôi không có gì.",
+  "vi": "🏷️ [[Bảng giá]]: tiệm trà sữa và tiệm mẹ & bé đổi được giá từ 75% tới 125% giá gốc, chỉ trước khi mở ca, rồi bấm [[Lưu giá]]. Nơi khác chỉ để xem.",
   "en": ""
  },
  {
-  "vi": "ít (🙈)",
+  "vi": "☀️ Xong xuôi thì bấm [[Mở cửa ngày]] để bắt đầu ca.",
   "en": ""
  },
  {
-  "vi": "sở thích nhỏ: vẽ, đọc truyện, con mèo",
+  "vi": "Mở Chuẩn bị",
   "en": ""
  },
  {
-  "vi": "vui nhưng ngại, cảm ơn rối rít",
+  "vi": "Chương và nơi làm mới",
   "en": ""
  },
  {
-  "vi": "im bặt, xin lỗi dù không lỗi",
+  "vi": "📚 Hành trình có 6 chương. Mỗi chương có vài mục tiêu, đọc từ việc bạn đã làm thật.",
   "en": ""
  },
  {
-  "vi": "nhỏ nhẹ \"mình… cũng từng vậy\", đưa viên kẹo",
+  "vi": "🔓 Xong chương 1 mở tiệm thú cưng, salon, tiệm sửa đồ, nông trại, homestay.",
   "en": ""
  },
  {
-  "vi": "À… ừm… hôm nay trời đẹp ha… dạ, vậy thôi ạ.",
+  "vi": "🔓 Xong chương 2 mở shop quần áo, shop thú cưng, trà đá vỉa hè.",
   "en": ""
  },
  {
-  "vi": "À… chào…",
+  "vi": "🔓 Xong chương 3 mở nhà thuốc, chăm sóc khách hàng, hướng dẫn viên, giáo viên, kế toán.",
   "en": ""
  },
  {
-  "vi": "cái gì cũng phóng đại thành bi kịch hay kỳ tích",
+  "vi": "💼 Xong chương 4 mở văn phòng: kế toán doanh nghiệp, thuế & tiền lương. Xong chương 5 mở kế toán tập đoàn.",
   "en": ""
  },
  {
-  "vi": "\"trời ơi\", \"không thể tin nổi\", \"sốc\"",
+  "vi": "🎯 Mục tiêu ví dụ: làm ở 2 nơi, hoàn thành 10 việc, rút tiền lời về ví một lần, giữ ví không nợ vài ngày liền.",
   "en": ""
  },
  {
-  "vi": "kể chuyện như phim",
+  "vi": "⏸️ Ví đang âm thì câu chuyện tạm dừng: trả hết nợ tiền phòng là đi tiếp được.",
   "en": ""
  },
  {
-  "vi": "cảm xúc lên xuống thất thường",
+  "vi": "Trưởng thành và danh hiệu",
   "en": ""
  },
  {
-  "vi": "Trời ơi tin nổi không?",
+  "vi": "🌱 Cấp trưởng thành (tối đa 30) cộng từ kinh nghiệm mọi nơi, cộng thêm mỗi nơi bạn đã phục vụ khách.",
   "en": ""
  },
  {
-  "vi": "Sốc thật sự!",
+  "vi": "🧠 Kỹ năng lớn dần theo việc: cẩn thận, giao tiếp, kiên nhẫn, con số, làm nhóm, sáng tạo…",
   "en": ""
  },
  {
-  "vi": "Đời mình khổ quá mà.",
+  "vi": "🏅 Danh hiệu mở khi đạt mốc: câu chuyện, hành trình, nghề, kỹ năng. Có danh hiệu ẩn.",
   "en": ""
  },
  {
-  "vi": "nhiều (😱, 😭, 💔)",
+  "vi": "🎖️ Đeo cùng lúc tối đa 3 danh hiệu và chứng chỉ: cái đầu hiện tên, các cái sau hiện biểu tượng cạnh tên bạn. Chạm lần nữa để cất.",
   "en": ""
  },
  {
-  "vi": "chuyện tình cảm",
+  "vi": "Xem danh hiệu",
   "en": ""
  },
  {
-  "vi": "bị ai đối xử bất công",
+  "vi": "🧩 Mở [[Trò nhỏ]]: mỗi nơi làm có 4 trò ngắn theo đúng nghề đó, chơi lúc nào cũng được.",
   "en": ""
  },
  {
-  "vi": "sự cố nhỏ hóa thảm họa",
+  "vi": "🧺 Xếp đúng góc: bấm một thẻ rồi bấm ngăn hợp với nó. Trên máy tính kéo thả cũng được.",
   "en": ""
  },
  {
-  "vi": "xúc động quá mức, \"cảm động muốn khóc\"",
+  "vi": "🃏 Ghép đôi nhãn: mỗi lượt lật hai thẻ để tìm cặp giống nhau. Khác nhau thì nhớ vị trí rồi lật thẻ khác.",
   "en": ""
  },
  {
-  "vi": "\"tổn thương sâu sắc\", dọa kể cho cả phố nghe",
+  "vi": "🔢 Xếp nhịp công việc: chọn các bước theo đúng thứ tự, lỡ tay thì [[Hoàn tác]], đủ bước thì bấm [[Kiểm nhịp công việc]]. Sai nhịp thì xếp lại.",
   "en": ""
  },
  {
-  "vi": "khóc theo rồi kể chuyện mình còn thảm hơn",
+  "vi": "🔗 Nối hai nửa: đọc dấu hiệu, bấm một thẻ rồi bấm nhãn đi với nó.",
   "en": ""
  },
  {
-  "vi": "Thực dụng tính toán",
+  "vi": "⭐ Mỗi trò bắt đầu 100 điểm, mỗi lần thử chưa khớp trừ 8, thấp nhất 30. Thử sai không mất xu. Điểm cao nhất lưu ở Kỷ lục riêng.",
   "en": ""
  },
  {
-  "vi": "cái gì cũng quy ra lợi hại, tiết kiệm, không vòng vo",
+  "vi": "🎁 [[Chơi ngay]]: xong mỗi trò lần đầu trong ngày được 12 xu vào quỹ nơi đó, 10 XP và một thiệp vào Hộ chiếu.",
   "en": ""
  },
  {
-  "vi": "hỏi \"được gì\", so đắt rẻ",
+  "vi": "🎯 [[Luyện không thưởng]]: chơi thử thoải mái, không có quà.",
   "en": ""
  },
  {
-  "vi": "mặc cả",
+  "vi": "🗺️ Các điểm trong Khu phố cũng mở thẳng từng trò. Xong 1 trò nhỏ còn tính vào Nhiệm vụ hôm nay.",
   "en": ""
  },
  {
-  "vi": "khuyên cách tiết kiệm",
+  "vi": "Mở Trò nhỏ",
   "en": ""
  },
  {
-  "vi": "Nói chung là có lời không?",
+  "vi": "Hộ chiếu nghề",
   "en": ""
  },
  {
-  "vi": "Tiết kiệm được đồng nào hay đồng đó.",
+  "vi": "🌟 Mở [[Hộ chiếu]]: sổ riêng của từng nơi làm, gồm chuyện nhỏ, huy hiệu và hộp thiệp kỷ niệm.",
   "en": ""
  },
  {
-  "vi": "Tính kỹ chưa?",
+  "vi": "💌 Mỗi nơi có 3 chuyện nhỏ, mở sau 2, 4 và 6 việc đã xong. Mỗi chuyện có 3 nhịp: đọc rồi chọn cách đáp.",
   "en": ""
  },
  {
-  "vi": "giá cả",
+  "vi": "⏳ Sau nhịp đầu, bấm [[Làm tiếp một công việc]], xong thêm một việc rồi quay lại kể tiếp.",
   "en": ""
  },
  {
-  "vi": "cách tiết kiệm",
+  "vi": "🎉 Khép một chuyện được 25 xu vào quỹ nơi đó và một thiệp 💌. Người trong chuyện cũng nhớ bạn.",
   "en": ""
  },
  {
-  "vi": "làm ăn",
+  "vi": "🏅 12 huy hiệu theo mốc: việc đầu tiên, 8 và 20 việc, 1 và 8 trò nhỏ, 3 việc không lỗi, 3 lần trả lời review…",
   "en": ""
  },
  {
-  "vi": "\"được, hợp tác lâu dài\"",
+  "vi": "🏅 …trang trí lần đầu, khép một chuyện, 7 ngày làm, một ngày hội, ghé 4 điểm trong Khu phố.",
   "en": ""
  },
  {
-  "vi": "\"thôi, đỡ tốn thời gian\"",
+  "vi": "✅ Đủ mốc thì bấm [[Nhận]] trên huy hiệu: +15 XP và một thiệp.",
   "en": ""
  },
  {
-  "vi": "\"buồn cũng không ra tiền, tính bước tiếp theo đi\"",
+  "vi": "🎟️ Thiệp còn tự đến khi xong việc đầu tiên, xong trò nhỏ, ghé một điểm trong Khu phố hay mở góc ngày hội.",
   "en": ""
  },
  {
-  "vi": "Mua ở chợ sớm rẻ hơn, chiều người ta ép giá đấy, tính kỹ chưa?",
+  "vi": "Mở Hộ chiếu",
   "en": ""
  },
  {
-  "vi": "Làm vậy tốn công mà có lời không, nói chung là phải tính.",
+  "vi": "Khu phố và Ngày hội",
   "en": ""
  },
  {
-  "vi": "Buồn thì buồn, nhưng mai vẫn phải mở cửa, lo khoản trước mắt đã.",
+  "vi": "🗺️ Mở [[Khu phố]]: bản đồ nhỏ có 5 điểm. Chạm một điểm để ghé; lần đầu ghé mỗi điểm được một thiệp vào Hộ chiếu.",
   "en": ""
  },
  {
-  "vi": "Mua ở chợ sớm rẻ hơn, chiều người ta ép giá đấy.",
+  "vi": "📚 Thư viện góc phố mở trò xếp bước. Vườn nghỉ nhỏ mở trò lật thẻ.",
   "en": ""
  },
  {
-  "vi": "Tiết kiệm được đồng nào hay đồng đó, tính kỹ chưa?",
+  "vi": "🎨 Xưởng đồ xinh mở trò nối nhãn và lối sang trang trí góc của bạn. Chợ cuối phố mở trò xếp món và lời nhắn khu phố.",
   "en": ""
  },
  {
-  "vi": "Chào. Nay làm ăn được không?",
+  "vi": "🎏 Quảng trường Mây là nơi nhận lời mời ngày hội của khu phố.",
   "en": ""
  },
  {
-  "vi": "Hay khoe sống ảo",
+  "vi": "🎉 Hôm nào là Ngày hội khu phố (hên xui), xong 3 việc và 1 trò nhỏ trong ca rồi bấm [[Mở góc ngày hội]]: +30 xu vào quỹ và một thiệp.",
   "en": ""
  },
  {
-  "vi": "sống cho story, khoe đồ, khoe check-in",
+  "vi": "🧭 Ghé đủ 4 điểm là đủ mốc huy hiệu Dấu chân khu phố.",
   "en": ""
  },
  {
-  "vi": "\"để mình chụp cái đã\"",
+  "vi": "Mở Khu phố",
   "en": ""
  },
  {
-  "vi": "nhắc tới lượt thích, bộ lọc, góc sống ảo (không nói con số)",
+  "vi": "📓 Mở [[Sổ tay]] của nơi đang làm. Tiệm trà sữa, lớp học và nghề hướng dẫn viên không có Sổ tay: xem Hộ chiếu.",
   "en": ""
  },
  {
-  "vi": "khoe đồ mới",
+  "vi": "📜 [[Nhật ký]]: mọi chuyện ở nơi này theo từng ngày, như tiền vào ra, việc đã xong, chuyện bất ngờ.",
   "en": ""
  },
  {
-  "vi": "Chụp cái đã!",
+  "vi": "💭 [[Ký ức]]: những kỷ niệm chung với từng người quen ở nơi này.",
   "en": ""
  },
  {
-  "vi": "Lên story liền.",
+  "vi": "📖 [[Câu chuyện]] (tiệm mẹ & bé, nhà thuốc, kế toán, chăm sóc khách hàng): 3 tuyến chuyện, mỗi tuyến vài bước đếm theo việc bạn làm thật.",
   "en": ""
  },
  {
-  "vi": "Góc này sống ảo xịn.",
+  "vi": "🎁 Đủ các bước thì bấm [[Nhận kỷ niệm]]: +75 xu vào quỹ, kỷ vật hiện trong [[Kỷ niệm]].",
   "en": ""
  },
  {
-  "vi": "nhiều (📸, ✨, 💅)",
+  "vi": "🎯 [[24 tình huống]] (cũng ở 4 nơi đó): tìm một tình huống rồi bấm [[Thử tình huống]] để diễn tập, không mất tiền, sao hay quan hệ.",
   "en": ""
  },
  {
-  "vi": "quán mới",
+  "vi": "📚 Mỗi nơi làm có một truyện riêng 5 đoạn với vài nhân vật quen: bạn học sinh ôn thi, mùa mưa bão ở nông trại…",
   "en": ""
  },
  {
-  "vi": "đồ mới",
+  "vi": "✨ Thẻ Truyện nghề ghi điều kiện cho đoạn tiếp: số việc, ngày làm và thời gian chờ ở đúng nơi đó. Mục đã đủ được đánh dấu.",
   "en": ""
  },
  {
-  "vi": "góc chụp ảnh",
+  "vi": "▶️ Truyện hiện như một cảnh: bấm [[Tiếp]] để đọc từng câu, hoặc [[Xem hết]] để hiện cả đoạn.",
   "en": ""
  },
  {
-  "vi": "lượt thích",
+  "vi": "🅰️ Có đoạn cho chọn A hoặc B. Với Linh và chiếc radio ở tiệm sửa đồ, người quen nhắc lại lựa chọn của bạn; kỷ vật cũng lưu dấu chuyện đó.",
   "en": ""
  },
  {
-  "vi": "hứa tag người chơi lên story",
+  "vi": "📖 Thẻ truyện tóm tắt chuyện đã qua. Mở các đoạn đã đọc để xem lại tóm tắt và lựa chọn của mình.",
   "en": ""
  },
  {
-  "vi": "\"hủy theo dõi nha\"",
+  "vi": "💤 Chưa muốn đọc thì đóng lại. Đoạn đó chờ ở thẻ Truyện nghề trong [[Hành trình]], ghi “Có chuyện mới”.",
   "en": ""
  },
  {
-  "vi": "\"đi cà phê chụp hình là hết buồn liền\"",
+  "vi": "🎁 Đoạn cuối bấm [[Khép lại câu chuyện]] để nhận kỷ vật của truyện.",
   "en": ""
  },
  {
-  "vi": "Góc này mà có thêm chậu cây xanh là sống ảo đỉnh nóc.",
+  "vi": "Rút tiền về ví thế nào?",
   "en": ""
  },
  {
-  "vi": "Góc này mà thêm chậu cây xanh là sống ảo đỉnh nóc luôn 📸",
+  "vi": "👛 Tiền khách trả nằm trong quỹ của từng nơi làm (quỹ tiệm), không phải trong ví. Muốn tiêu thì rút tiền lời từ quỹ về ví.",
   "en": ""
  },
  {
-  "vi": "Mê tử vi tâm linh",
+  "vi": "1️⃣ Mở [[Hành trình]], bấm ô [[Ví của bạn]]. (Hoặc chạm số ngày, chọn ô Ví của bạn.)",
   "en": ""
  },
  {
-  "vi": "cái gì cũng coi ngày, xem tuổi, cung hoàng đạo, phong thủy",
+  "vi": "2️⃣ Ở mục “Quỹ các nơi làm việc”, chạm tên nơi muốn rút để mở ra.",
   "en": ""
  },
  {
-  "vi": "\"hôm nay ngày xấu\", \"mệnh gì\"",
+  "vi": "3️⃣ Gõ số xu vào ô “Rút về ví”, hoặc bấm [[Tối đa]]. Rồi bấm [[Rút]]: tiền vào ví ngay.",
   "en": ""
  },
  {
-  "vi": "khuyên đặt cây phong thủy",
+  "vi": "🔒 Quỹ luôn phải giữ lại 80 xu và đủ tiền các hóa đơn chưa trả. Rút được tối đa = quỹ − 80 − hóa đơn chưa trả.",
   "en": ""
  },
  {
-  "vi": "giải mã giấc mơ",
+  "vi": "🧮 Ví dụ: quỹ 200 xu, hóa đơn chưa trả 30 xu. Rút được tối đa 200 − 80 − 30 = 90 xu.",
   "en": ""
  },
  {
-  "vi": "Tuổi gì đấy?",
+  "vi": "⛔ Báo “Quỹ cần giữ 80 xu và đủ tiền hóa đơn chưa trả, nên chưa rút được”: quỹ còn mỏng. Làm thêm việc ở nơi đó rồi quay lại rút.",
   "en": ""
  },
  {
-  "vi": "Hôm nay kỵ màu đen.",
+  "vi": "⚠️ Báo “Chỉ rút được tối đa … xu”: số bạn gõ lớn hơn mức cho phép. Bấm [[Tối đa]] để điền đúng số.",
   "en": ""
  },
  {
-  "vi": "Phong thủy chỗ này hơi động.",
+  "vi": "✏️ Báo “Nhập số xu là số nguyên dương”: gõ số nguyên từ 1 trở lên, không có dấu chấm hay phẩy.",
   "en": ""
  },
  {
-  "vi": "ít (🔮)",
+  "vi": "⬇️ Chiều ngược lại: gõ số vào ô “Góp vốn” rồi bấm [[Góp]] để đưa tiền từ ví vào quỹ, khi tiệm thiếu tiền nhập hàng.",
   "en": ""
  },
  {
-  "vi": "tử vi",
+  "vi": "💼 Nơi làm thuê (nhà thuốc, lớp học, văn phòng…) không cần rút: lương và tiền bo về thẳng ví khi khép ca.",
   "en": ""
  },
  {
-  "vi": "cung hoàng đạo",
+  "vi": "🏦 Tiền trong tài khoản ngân hàng: mở [[Ngân hàng]], gõ số xu, bấm [[Rút tiền]]. Chọn cây ATM khác ngân hàng thì mất phí 1 xu.",
   "en": ""
  },
  {
-  "vi": "phong thủy quán",
+  "vi": "💞 Đã cưới: mở [[Hôn nhân]], tab Quỹ chung, gõ số rồi bấm [[Rút ra]]. Rút và chi theo số dư quỹ chung, không có hạn mức mỗi ngày.",
   "en": ""
  },
  {
-  "vi": "giấc mơ",
+  "vi": "📉 Ví âm là đang nợ tiền phòng và câu chuyện tạm dừng. Rút tiền lời về ví là trả được ngay.",
   "en": ""
  },
  {
-  "vi": "\"hợp tuổi đấy, làm ăn sẽ phát\"",
+  "vi": "Ví, quỹ tiệm, tài khoản: khác nhau thế nào?",
   "en": ""
  },
  {
-  "vi": "\"sao xấu chiếu rồi, tránh xa\"",
+  "vi": "👛 Ví (tiền mặt): tiền riêng của bạn, bắt đầu 60 xu. Trả tiền phòng, cơm nước, học phí, chuyện đời, mua sắm.",
   "en": ""
  },
  {
-  "vi": "\"chắc đang qua hạn nhỏ, qua rằm là ổn\"",
+  "vi": "🏪 Quỹ tiệm: tiền của từng nơi làm. Khách trả, nhập hàng, lương người phụ, hóa đơn, tiền phạt của tiệm đều đi qua đây.",
   "en": ""
  },
  {
-  "vi": "Quầy này nên đặt chậu kim tiền bên trái, phong thủy nó hút lộc.",
+  "vi": "🏦 Tài khoản ngân hàng: chỗ cất tiền, gửi tiết kiệm, trả thẻ và trả góp. Cần mở tài khoản trước.",
   "en": ""
  },
  {
-  "vi": "Chắc tại sao xấu chiếu, qua rằm là mọi chuyện êm thôi.",
+  "vi": "💞 Quỹ chung vợ chồng: tiền hai người cùng góp sau khi cưới, cả hai cùng thấy mọi khoản.",
   "en": ""
  },
  {
-  "vi": "Hôm nay ngày hoàng đạo đấy, làm gì cũng thuận nhé.",
+  "vi": "🚫 Mỗi khoản trừ đúng chỗ của nó: nhập hàng trừ quỹ tiệm, tiền phòng trừ ví. Tiền nằm chỗ này muốn dùng cho chỗ kia thì rút hoặc góp trước.",
   "en": ""
  },
  {
-  "vi": "Chào. Nay sao tốt chiếu, vui lên.",
+  "vi": "🔁 Quỹ → ví: [[Rút]]. Ví → quỹ: [[Góp]]. Ví → tài khoản: [[Nộp tiền]]. Tài khoản → ví: [[Rút tiền]].",
   "en": ""
  },
  {
-  "vi": "Phụ huynh bỉm sữa hay so sánh con",
+  "vi": "🧾 Sổ ví ghi từng khoản vào ra của ví; [[Sổ tiệm]] → [[Thu chi]] ghi quỹ của từng nơi.",
   "en": ""
  },
  {
-  "vi": "con là trung tâm vũ trụ, hay so con mình với con người ta",
+  "vi": "💰 Lúc nhập hàng, mua sắm, gửi rút tiền: ngay dưới tiêu đề trang luôn có dòng “Ví … · Quỹ tiệm …”. Không đủ tiền thì bảng xác nhận ghi rõ còn thiếu bao nhiêu.",
   "en": ""
  },
  {
-  "vi": "câu nào cũng lái về con",
+  "vi": "Lương khi đi làm thuê",
   "en": ""
  },
  {
-  "vi": "\"con nhà tôi thì…\"",
+  "vi": "🏢 Giáo viên, hướng dẫn viên, nhà thuốc, văn phòng… là làm thuê: phải xin việc trước.",
   "en": ""
  },
  {
-  "vi": "khoe con giỏi sớm",
+  "vi": "💵 Lương tính theo ngày: khép ca một ngày có làm xong ít nhất một việc là lương về thẳng ví.",
   "en": ""
  },
  {
-  "vi": "hỏi mẹo nuôi con",
+  "vi": "📝 Thử việc nhận 85% lương. Làm tốt thì ký hợp đồng chính thức, nhận đủ.",
   "en": ""
  },
  {
-  "vi": "Con nhà tôi ấy mà…",
+  "vi": "🙅 Ngày không làm xong việc nào thì không có lương hôm đó.",
   "en": ""
  },
  {
-  "vi": "Bé nhà mình đó…",
+  "vi": "🎁 Tiền bo khi làm thuê là của bạn: cũng về thẳng ví.",
   "en": ""
  },
  {
-  "vi": "Con nhà người ta…",
+  "vi": "📒 Xem lại trong sổ ví: dòng “Lương ngày … · tên nơi làm”.",
   "en": ""
  },
  {
-  "vi": "vừa (👶, 🥰)",
+  "vi": "Chi phí sống",
   "en": ""
  },
  {
-  "vi": "con ăn gì",
+  "vi": "🍚 Mỗi lần khép ca là qua một ngày sống: ví trả tiền phòng và cơm nước 10–20 xu, tăng dần theo chương.",
   "en": ""
  },
  {
-  "vi": "con học gì",
+  "vi": "💡 Nơi bạn không làm hôm đó không tốn đồng nào: quỹ, hàng và người làm cứ để nguyên chờ bạn quay lại.",
   "en": ""
  },
  {
-  "vi": "sữa, bỉm",
+  "vi": "🏃 Chỉ khi bỏ đi lúc đang làm dở mới bị phạt một lần, hộp xác nhận ghi rõ số tiền trước khi đi.",
   "en": ""
  },
  {
-  "vi": "lớp năng khiếu",
+  "vi": "📉 Ví âm là đang nợ tiền phòng: câu chuyện tạm dừng tới khi trả xong.",
   "en": ""
  },
  {
-  "vi": "kể thêm chuyện con",
+  "vi": "🏦 Có tài khoản ngân hàng còn tiền: sáng hôm sau tài khoản tự bù phần ví đang âm (tắt được trong Ngân hàng).",
   "en": ""
  },
  {
-  "vi": "\"may mà con tôi không nghe thấy\"",
+  "vi": "Thu tiền và thối tiền",
   "en": ""
  },
  {
-  "vi": "\"làm mẹ còn mệt hơn nhiều, nhưng vẫn phải cười\", khuyên ngủ sớm",
+  "vi": "💵 Khách đưa tờ tiền. Bạn tự chọn tờ để thối, đủ từng xu.",
   "en": ""
  },
  {
-  "vi": "Bé nhà mình mới tí tuổi đã biết đọc bảng hiệu rồi, con nhà cuối hẻm giờ vẫn còn bi bô.",
+  "vi": "🧮 Tiền thối = tiền khách đưa − tiền hàng. Đếm lại trước khi bấm giao.",
   "en": ""
  },
  {
-  "vi": "Con nhà tôi ấy mà, ăn gì cũng phải đúng bữa, tôi canh từng chút.",
+  "vi": "😠 Thối thiếu: khách kỹ tính đếm ngay và đòi thêm. Khách khác về nhà mới thấy: review 2★, có khi báo lên app.",
   "en": ""
  },
  {
-  "vi": "Hôm nay bé đi học vẽ, cô khen mãi, tôi nói thật chứ không khoe đâu.",
+  "vi": "💸 Thối dư: khách thật thà trả lại. Khách khác giữ luôn, tiệm mất đúng số đó.",
   "en": ""
  },
  {
-  "vi": "Dân bia hơi triết lý",
+  "vi": "🙏 Thối đúng: đôi khi khách nói “khỏi thối, giữ tiền lẻ đi”. Tiền đó thành tiền bo.",
   "en": ""
  },
  {
-  "vi": "chiều nào cũng ngồi quán vỉa hè, nói chuyện đời, triết lý bình dân",
+  "vi": "Tiền bo",
   "en": ""
  },
  {
-  "vi": "\"đời mà…\", \"chú nói cháu nghe\"",
+  "vi": "🍀 Làm tốt thì thỉnh thoảng khách bo thêm tiền hoặc một món quà nhỏ. Hên xui.",
   "en": ""
  },
  {
-  "vi": "ví von bằng chuyện nhậu, bóng đá",
+  "vi": "💇 Salon, tour, chăm thú cưng, homestay hay được bo. Quầy bán hàng thỉnh thoảng. Kế toán hiếm, thường là quà.",
   "en": ""
  },
  {
-  "vi": "kết câu bằng một câu triết lý",
+  "vi": "🎀 Nhà thuốc, lớp học, chăm sóc khách hàng, văn phòng: thỉnh thoảng có quà cảm ơn, không bao giờ bo tiền.",
   "en": ""
  },
  {
-  "vi": "Đời là thế!",
+  "vi": "⭐ Việc 5★ dễ được bo nhất, 4★ chỉ bằng một nửa, 3★ rất hiếm, 1–2★ không bao giờ.",
   "en": ""
  },
  {
-  "vi": "Nói cho mà nghe…",
+  "vi": "😤 Khách càu nhàu hay đang bực thì hiếm bo. Khách đòi giảm, đòi hoàn, bỏ về, từ chối, hoặc có lỗi an toàn: không bo.",
   "en": ""
  },
  {
-  "vi": "Uống cho đời nó nhẹ.",
+  "vi": "💵 Tiền bo thường khoảng 5–15% hóa đơn. Hiếm hoi có khách bo đậm, khoảng nửa hóa đơn, tối đa 100 xu.",
   "en": ""
  },
  {
-  "vi": "thế sự",
+  "vi": "🙏 Thối đúng tiền, đôi khi khách nói “khỏi thối, giữ tiền lẻ đi”: số lẻ đó thành tiền bo.",
   "en": ""
  },
  {
-  "vi": "bóng đá",
+  "vi": "🎉 Ngày hội, ngày lương, mùa cưới khách rộng tay hơn. Khách thân với bạn cũng hay bo hơn.",
   "en": ""
  },
  {
-  "vi": "chuyện đời",
+  "vi": "👛 Tiệm của bạn: bo vào quỹ tiệm. Làm thuê: bo về ví. Có nhân viên trong ca: bo chia cho cả đội.",
   "en": ""
  },
  {
-  "vi": "thời trẻ",
+  "vi": "📋 Mỗi lần được bo có thông báo nhỏ; bản tổng kết ngày có mục “Tip hôm nay”.",
   "en": ""
  },
  {
-  "vi": "\"được, có chí\"",
+  "vi": "🌱 Việc đầu tiên ở mỗi nơi không có bo.",
   "en": ""
  },
  {
-  "vi": "cười khà khà, \"trẻ người non dạ\"",
+  "vi": "Sổ tiệm và hóa đơn",
   "en": ""
  },
  {
-  "vi": "\"đời có lúc lên lúc xuống\", khuyên nhẹ nhàng",
+  "vi": "📒 [[Sổ tiệm]] → [[Thu chi]]: mọi khoản thu, chi và hóa đơn của nơi đó.",
   "en": ""
  },
  {
-  "vi": "Đời như cốc bia hơi ấy, bọt thì nhiều mà men thì ít, phải biết thưởng thức.",
+  "vi": "🧾 Khép ca sinh hóa đơn: lương người phụ, điện nước. Tiền mặt bằng tính theo kỳ.",
   "en": ""
  },
  {
-  "vi": "Nói cho mà nghe, làm ăn như đá bóng, thua trận này thì đá trận sau.",
+  "vi": "💳 Bấm [[Thanh toán]] để trả từng hóa đơn trước hạn.",
   "en": ""
  },
  {
-  "vi": "Làm ăn như đá bóng, thua trận này thì đá trận sau. Đời là thế!",
+  "vi": "📊 Bản tổng kết cuối ngày có thẻ “✓ Lãi/lỗ hôm nay: +N xu”; chạm vào để xem chi tiết thu chi.",
   "en": ""
  },
  {
-  "vi": "giọng Bắc, hay \"nhá\", \"cơ\"",
+  "vi": "Mở Sổ tiệm",
   "en": ""
  },
  {
-  "vi": "Lạc quan tếu",
+  "vi": "Thuế và tiền phạt",
   "en": ""
  },
  {
-  "vi": "chuyện gì cũng nhìn mặt sáng, hơi quá đà, vô tư",
+  "vi": "🏛️ Cứ 7 ngày là một kỳ: thuế 4% doanh thu và tiền mặt bằng thành hóa đơn.",
   "en": ""
  },
  {
-  "vi": "\"không sao đâu!\"",
+  "vi": "👮 Tiền phạt đến từ chuyện đời: kiểm tra, vi phạm, công an phường.",
   "en": ""
  },
  {
-  "vi": "biến chuyện xui thành may",
+  "vi": "⚖️ Mỗi vụ có vài cách xử lý. Cách đúng luật, trung thực thường nhẹ nhất về lâu dài.",
   "en": ""
  },
  {
-  "vi": "cười nhiều",
+  "vi": "🚪 Bỏ dở việc giữa chừng để đi nơi khác cũng bị phạt.",
   "en": ""
  },
  {
-  "vi": "Không sao đâu!",
+  "vi": "Ngân hàng: nộp, rút và tiết kiệm",
   "en": ""
  },
  {
-  "vi": "Xui quá hóa hên!",
+  "vi": "🏦 Mở [[Ngân hàng]], bấm [[Mở tài khoản miễn phí]]. Chỉ có trong hành trình.",
   "en": ""
  },
  {
-  "vi": "Mai sẽ khác!",
+  "vi": "⬇️ Nộp: gõ số xu, bấm [[Nộp tiền]]. Tiền đi từ ví vào tài khoản.",
   "en": ""
  },
  {
-  "vi": "vừa (🌈, 😄)",
+  "vi": "⬆️ Rút: gõ số xu, chọn cây ATM, bấm [[Rút tiền]]. Cây ATM Ngân hàng Phố miễn phí, cây ATM khác ngân hàng mất 1 xu.",
   "en": ""
  },
  {
-  "vi": "chuyện vui",
+  "vi": "🐷 Tab Tiết kiệm: không kỳ hạn lãi 3%/năm, rút lúc nào cũng được. Có kỳ hạn từ 7 ngày tới 3 năm, lãi 6–8,8%/năm, gửi càng lâu lãi càng cao.",
   "en": ""
  },
  {
-  "vi": "kế hoạch đi chơi",
+  "vi": "🗓️ Trong game, 1 tháng là 5 ngày sống, 1 năm là 60 ngày sống. Kỳ hạn 12 tháng là 60 ngày sống.",
   "en": ""
  },
  {
-  "vi": "đồ ăn ngon",
+  "vi": "📅 Sổ kỳ hạn gửi ít nhất 20 xu, tối đa 5 sổ. Đáo hạn thì gốc và lãi về tài khoản, hoặc chọn tự tái tục để gửi tiếp. [[Tất toán sớm]] chỉ được lãi không kỳ hạn.",
   "en": ""
  },
  {
-  "vi": "vui gấp đôi",
+  "vi": "🛟 “Tự động bù ví khi ví âm” bật sẵn: ví âm thì sáng hôm sau tài khoản tự trả phần đang nợ. Bỏ dấu chọn để tắt.",
   "en": ""
  },
  {
-  "vi": "\"thôi đừng nóng, cười cái coi\"",
+  "vi": "💬 Tin nhắn và cuộc gọi của ngân hàng hiện trong tab Tổng quan.",
   "en": ""
  },
  {
-  "vi": "\"mưa xong là cầu vồng\", rủ đi ăn",
+  "vi": "Mở Ngân hàng",
   "en": ""
  },
  {
-  "vi": "Mưa hả? Tuyệt, khỏi tưới cây luôn!",
+  "vi": "Chuyển khoản cho bạn bè",
   "en": ""
  },
  {
-  "vi": "Làm hỏng thì làm lại, coi như tập thêm một lần, lời quá còn gì!",
+  "vi": "🏦 Mở [[Ngân hàng]] → [[Chuyển khoản cho bạn bè]]: chọn bạn, gõ số xu, lời nhắn rồi bấm [[Tiếp tục]] để xem lại và gửi.",
   "en": ""
  },
  {
-  "vi": "Hôm nay xui hả, vậy là hết xui rồi, mai chỉ còn hên thôi 😄",
+  "vi": "💰 Không giới hạn số lần, tổng xu gửi hoặc nhận mỗi ngày. Chỉ chuyển số xu bạn đang có; không mất phí.",
   "en": ""
  },
  {
-  "vi": "Mưa hả? Tuyệt, khỏi tưới cây luôn! 🌈",
+  "vi": "💳 Tiền đi từ tài khoản ngân hàng hoặc tiền mặt. Bạn ấy nhận ngay, hoặc khi vào game.",
   "en": ""
  },
  {
-  "vi": "Hôm nay xui hả? Vậy là hết xui rồi, mai chỉ còn hên thôi 😄",
+  "vi": "Mở Chuyển khoản",
   "en": ""
  },
  {
-  "vi": "Hay than thở",
+  "vi": "Thẻ tín dụng: quẹt trước, trả sau",
   "en": ""
  },
  {
-  "vi": "đời mệt mỏi, cái gì cũng than, nhưng vẫn làm",
+  "vi": "💳 Tab Thẻ, bấm [[Nộp hồ sơ mở thẻ]]. Cần điểm tín dụng từ 580 và thu nhập đều: ít nhất 3 ngày có lương hoặc tiền lời rút về ví trong 14 ngày.",
   "en": ""
  },
  {
-  "vi": "thở dài \"haizz…\"",
+  "vi": "🛍️ Thẻ dùng để trả học phí, đi cửa sau, mua nhẫn và lo cưới. Chọn cách trả mặc định ở mục “Khi mua sắm cá nhân”.",
   "en": ""
  },
  {
-  "vi": "kể khổ",
+  "vi": "🧾 Cứ 7 ngày sống có một sao kê. Hạn trả là 3 ngày sau sao kê.",
   "en": ""
  },
  {
-  "vi": "than giá cả, than đau lưng",
+  "vi": "✅ [[Trả hết sao kê]] trước hạn thì không mất lãi. [[Trả tối thiểu]] (10% sao kê, ít nhất 10 xu) thì phần còn lại chịu lãi 0,5%/ngày.",
   "en": ""
  },
  {
-  "vi": "Mệt quá trời.",
+  "vi": "⏰ Trễ hạn: phạt 8 xu, trừ điểm tín dụng, thẻ tạm khóa tới khi trả phần quá hạn.",
   "en": ""
  },
  {
-  "vi": "ít (😮‍💨)",
+  "vi": "🤖 Chọn “Tự động trả toàn bộ sao kê” hoặc “Tự động trả tối thiểu” rồi bấm [[Lưu cách tự động trả]] để khỏi quên.",
   "en": ""
  },
  {
-  "vi": "tiền điện",
+  "vi": "🏧 [[Ứng tiền mặt]]: phí 4% (ít nhất 3 xu), lãi tính ngay, tối đa 50% hạn mức. Chỉ dùng khi thật cần.",
   "en": ""
  },
  {
-  "vi": "kẹt xe",
+  "vi": "Vay tiền và điểm tín dụng",
   "en": ""
  },
  {
-  "vi": "ngủ không đủ",
+  "vi": "💸 Vay tiêu dùng: tiền vào tài khoản của bạn, lãi 4% mỗi kỳ 7 ngày.",
   "en": ""
  },
  {
-  "vi": "\"được có người hỏi thăm là quý rồi\"",
+  "vi": "🏪 Vay mở rộng tiệm: tiền vào thẳng quỹ một tiệm bạn làm chủ, lãi 3,5% mỗi kỳ.",
   "en": ""
  },
  {
-  "vi": "Tiền điện tháng này lên nữa rồi, mở cái quạt cũng thấy xót.",
+  "vi": "📆 Vay 50–5.000 xu, kỳ hạn 14, 21 hoặc 28 ngày, tối đa 2 khoản cùng lúc. Xem lịch trả rồi bấm [[Xem lại & ký hợp đồng]].",
   "en": ""
  },
  {
-  "vi": "Mệt quá trời, mà thôi, than hoài cũng phải làm.",
-  "en": ""
- },
- {
-  "vi": "Haizz… sáng giờ kẹt xe muốn xỉu, lưng thì mỏi.",
-  "en": ""
- },
- {
-  "vi": "Tiền điện lại lên nữa rồi, mở cái quạt cũng thấy xót, haizz.",
-  "en": ""
- },
- {
-  "vi": "nghi ngờ mọi thứ, sợ bị lừa, hỏi lại nhiều lần",
-  "en": ""
- },
- {
-  "vi": "\"chắc không?\", \"ai nói?\"",
-  "en": ""
- },
- {
-  "vi": "đòi bằng chứng",
-  "en": ""
- },
- {
-  "vi": "nhìn trước ngó sau",
-  "en": ""
- },
- {
-  "vi": "Chắc chưa?",
-  "en": ""
- },
- {
-  "vi": "Có gì mờ ám không đó?",
-  "en": ""
- },
- {
-  "vi": "Đừng có lừa tôi nha.",
-  "en": ""
- },
- {
-  "vi": "lừa đảo qua mạng",
-  "en": ""
- },
- {
-  "vi": "hàng giả",
-  "en": ""
- },
- {
-  "vi": "người lạ trong hẻm",
-  "en": ""
- },
- {
-  "vi": "\"hừm, để xem thật lòng không\"",
-  "en": ""
- },
- {
-  "vi": "\"biết ngay mà\"",
-  "en": ""
- },
- {
-  "vi": "\"có ai bắt nạt không, nói tôi nghe\", dặn cẩn thận",
-  "en": ""
- },
- {
-  "vi": "Chắc chưa đó? Hôm trước có đứa cũng nói vậy rồi giao sai hết.",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn trúng thưởng hả? Lừa đấy, đừng bấm vào.",
-  "en": ""
- },
- {
-  "vi": "Tự dưng tốt vậy, có gì mờ ám không đó?",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn trúng thưởng thì đừng bấm nhé, lừa đấy.",
-  "en": ""
- },
- {
-  "vi": "Ngây thơ",
-  "en": ""
- },
- {
-  "vi": "tin người, tò mò, hỏi ngây ngô, dễ thương",
-  "en": ""
- },
- {
-  "vi": "hỏi \"tại sao\"",
-  "en": ""
- },
- {
-  "vi": "hiểu theo nghĩa đen",
-  "en": ""
- },
- {
-  "vi": "vui vì chuyện nhỏ",
-  "en": ""
- },
- {
-  "vi": "Ủa vậy hả?",
-  "en": ""
- },
- {
-  "vi": "Thật hả?",
-  "en": ""
- },
- {
-  "vi": "Hay quá!",
-  "en": ""
- },
- {
-  "vi": "ít (🐣)",
-  "en": ""
- },
- {
-  "vi": "những điều mới lạ",
-  "en": ""
- },
- {
-  "vi": "con vật",
-  "en": ""
- },
- {
-  "vi": "vui như được quà",
-  "en": ""
- },
- {
-  "vi": "ngơ ngác, không hiểu sao bị mắng",
-  "en": ""
- },
- {
-  "vi": "Ủa, trà sữa có trà thật hả? {Toi} tưởng chỉ có sữa với trân châu thôi!",
-  "en": ""
- },
- {
-  "vi": "Ủa, sao mây hôm nay giống con mèo quá vậy? Hay ghê!",
-  "en": ""
- },
- {
-  "vi": "Cụ già hoài niệm",
-  "en": ""
- },
- {
-  "vi": "nhớ ngày xưa, kể chuyện cũ chậm rãi, hiền hậu",
-  "en": ""
- },
- {
-  "vi": "\"hồi đó…\", \"ngày xưa ấy mà…\"",
-  "en": ""
- },
- {
-  "vi": "đôi khi kể lại chuyện đã kể",
-  "en": ""
- },
- {
-  "vi": "Hồi đó…",
-  "en": ""
- },
- {
-  "vi": "Ngày xưa ấy mà…",
-  "en": ""
- },
- {
-  "vi": "Bây giờ khác quá.",
-  "en": ""
- },
- {
-  "vi": "phố cũ",
-  "en": ""
- },
- {
-  "vi": "cây me đầu hẻm",
-  "en": ""
- },
- {
-  "vi": "chợ ngày xưa",
-  "en": ""
- },
- {
-  "vi": "con cháu",
-  "en": ""
- },
- {
-  "vi": "\"ngoan quá, giống cháu mình\"",
-  "en": ""
- },
- {
-  "vi": "buồn, \"thời nay khác thật\"",
-  "en": ""
- },
- {
-  "vi": "kể chuyện ngày xưa khổ mà vượt qua, dặn giữ sức",
-  "en": ""
- },
- {
-  "vi": "Hồi đó hẻm này còn cây me to lắm, chiều nào cũng ngồi dưới gốc nghe radio.",
-  "en": ""
- },
- {
-  "vi": "Ngày xưa đi chợ phải xếp hàng từ tờ mờ sáng, giờ bấm điện thoại là có, lạ thật.",
-  "en": ""
- },
- {
-  "vi": "Làm giống hệt thằng cháu hồi mới ra đời, cứ cặm cụi vậy thôi.",
-  "en": ""
- },
- {
-  "vi": "trẻ, nhanh, hài, dùng từ lóng và teencode",
-  "en": ""
- },
- {
-  "vi": "viết tắt kiểu ko, j, dc, r, z",
-  "en": ""
- },
- {
-  "vi": "từ lóng: xỉu ngang, slay, flex, red flag, chằm zn",
-  "en": ""
- },
- {
-  "vi": "chêm vài chữ tiếng Anh",
-  "en": ""
- },
- {
-  "vi": "xỉu ngang",
-  "en": ""
- },
- {
-  "vi": "chằm zn",
-  "en": ""
- },
- {
-  "vi": "nhiều (😭, ✨, 🫶)",
-  "en": ""
- },
- {
-  "vi": "trend mạng",
-  "en": ""
- },
- {
-  "vi": "\"iu ghê 🫶\"",
-  "en": ""
- },
- {
-  "vi": "\"ủa alo?\", \"red flag nha\"",
-  "en": ""
- },
- {
-  "vi": "\"ôm cái nè 🫂\", rủ đi trà sữa",
-  "en": ""
- },
- {
-  "vi": "Ủa alo, hôm nay trời nóng xỉu ngang luôn á 🫠",
-  "en": ""
- },
- {
-  "vi": "Ly này slay thiệt sự, mười điểm khum có nhưng ✨",
-  "en": ""
- },
- {
-  "vi": "{Ban} buồn hả, ôm cái nè 🫂 tối đi trà sữa hông?",
-  "en": ""
- },
- {
-  "vi": "Ủa alo, nay trời nóng xỉu ngang luôn á 🫠",
-  "en": ""
- },
- {
-  "vi": "Chằm zn luôn á, ko có j để nói hết 🥲",
+  "vi": "🔁 Tới ngày trả góp, ngân hàng tự trích từ tài khoản (thiếu thì lấy thêm tiền mặt). Trễ hạn phạt 5% kỳ đó, ít nhất 3 xu.",
   "en": ""
  }
 ]

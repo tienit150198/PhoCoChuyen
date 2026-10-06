@@ -62,6 +62,10 @@ HOURS = {
     'oil': (6 * 60, 18 * 60),          # a 12-hour shift on the rig, 06:00 to 18:00
     'railway': (5 * 60 + 30, 21 * 60 + 30),   # nhận ca at 05:30; the day's last train is through by 21:00
     'nurse': (7 * 60, 19 * 60),         # the ward's day shift: handover at 7:00 and 19:00
+    'lighthouse': (5 * 60, 22 * 60),    # up before sunrise to put the light out; the evening log is written by ten
+    'rescue': (7 * 60, 19 * 60),        # the hotline's day shift: handover at 7:00 and 19:00
+    'lifeguard': (6 * 60, 20 * 60),     # the pool opens at 6:00 (ông Tư first in) and closes at 20:00
+    'police': (7 * 60 + 30, 17 * 60 + 30),   # Công an phường Mây: the briefing at 7:30, off at 17:30
 }
 EARLY = 30  # goods due after closing wait at the door this many minutes before the next opening
 # How much later than its window a late delivery comes (minutes), by supplier kind; a

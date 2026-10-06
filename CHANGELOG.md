@@ -1,12 +1,49 @@
-# Chưa phát hành — Giao diện 2.5D (ui25d)
+# v1.9.0 — Chưa phát hành: Phố 2.5D
 
-- 🏝️ Phố 2.5D lên game: đảo isometric (Phaser) với cửa tiệm của cả 45 nghề, đi bộ bằng cần điều khiển, phím W A S D / mũi tên hoặc chạm đường; chạm cửa tiệm là vào làm, nút "Ra đảo" để quay lại. Thanh trên (tên, ví, quỹ, cài đặt), thẻ việc tiếp theo, Sổ việc, Người quen, Thư giãn (câu cá, chèo thuyền, bơi: miễn phí, không tiền thưởng), Trò chuyện, góc nhìn (phóng to, thu nhỏ, toàn đảo) và thanh dưới Phố · Công việc · Nhân vật · Túi đồ · Thêm.
-- Mở game là thấy phố trước; người chơi mới vẫn chọn ngoại hình và tên trước. Ảnh nhân vật trong các bảng dùng hình chibi giống trên đảo.
-- Nghề mới của 1.8 có nhà trên đảo: thư viện (dáng trường học), điều dưỡng (dáng nhà thuốc), dầu khí (dáng gara), đường sắt (dáng nhà ga sân bay). Chừa sẵn chỗ cho hải đăng, tổng đài cứu hộ, cứu hộ bể bơi, công an.
-- Bật mặc định cho mọi người. Cài đặt → Giao diện → "Giao diện 2.5D": chọn "🏠 Giao diện cổ điển" là về ngay giao diện cũ (tải lại trang, chỉ trên máy đó). Link `/?ui=classic` hoặc `/?ui=25d` cũng đổi được.
-- Máy chủ: `UI25D_DEFAULT=0` cho máy chưa chọn dùng giao diện cổ điển (mặc định `1`). Hiện người chơi khác trên đảo: `LIVE_TOWN=1` cho dịch vụ live (mặc định tắt).
-- Nhẹ cho người dùng giao diện cổ điển: không tải gì của 2.5D. Bật 2.5D: phần khung (~60 KB) tới cùng khung hình đầu, Phaser (~360 KB gzip) tải sau khi game đã hiện; tải lỗi thì tab đó tự về giao diện cổ điển.
-- Bản lưu: thêm khóa tùy chọn `journey.leisure` (chỉ có khi đã chơi câu cá / chèo thuyền / bơi); bản lưu cũ không có vẫn đọc bình thường, bản cũ đọc bản lưu mới cũng không lỗi. Không đổi tiền, không thêm bảng.
+- 🏝️ Cả game là đảo 2.5D (Phaser): mọi lần mở game đều đứng giữa phố; người chơi mới chọn ngoại hình, đặt tên rồi ra thẳng đảo. Đi tự do mọi hướng bằng cần điều khiển, phím W A S D / mũi tên hoặc chạm đường; chạm cửa tiệm là vào làm, "Ra đảo" để quay lại (đứng ngay trước cửa tiệm vừa làm). Đảo nhớ chỗ bạn đứng trên máy này.
+- 🧭 Chỉ đường: chọn nơi muốn tới (mọi nghề, Nhà, Ngân hàng, Bảng xếp hạng, Phố nghề, Hội chợ, Lịch cưới, Quầy, Nhóm phố, Đi dạo, Hẹn hò, Hôn nhân, câu cá, chèo thuyền, bơi) hoặc gõ tìm; nhân vật tự đi theo đường vẽ sẵn, chạm đất hay di chuyển là dừng, tới nơi là mở luôn. Các nơi không phải tiệm có biển chỉ đường trên đảo.
+- Cửa tiệm cho mọi nghề, kể cả thư viện, điều dưỡng, dầu khí, đường sắt, hải đăng, tổng đài cứu hộ, cứu hộ bể bơi, công an.
+- Thanh trên (tên, ví, quỹ, cài đặt), thẻ việc tiếp theo, Sổ việc, Người quen, Thư giãn (câu cá, chèo thuyền, bơi: miễn phí, không tiền thưởng), Trò chuyện, góc nhìn và thanh dưới Phố · Công việc · Nhân vật · Túi đồ · Thêm. Điện thoại dọc và ngang: không nút nào đè nút nào, tránh tai thỏ; thông báo hiện ở khoảng trống phía trên cần điều khiển.
+- Bỏ giao diện cũ (cảnh vẽ 2D của từng tiệm, bản đồ phố 2D): tải nhẹ hơn. Phần Phaser (~360 KB gzip) tải song song với khung hình đầu và chạy ngay sau; mạng chập chờn thì tự thử lại, rồi có nút "Thử lại".
+- Hiện người chơi khác trên đảo: `LIVE_TOWN=1` cho dịch vụ live (mặc định tắt).
+- Bản lưu: thêm khóa tùy chọn `journey.leisure` (chỉ có khi đã chơi câu cá / chèo thuyền / bơi); bản lưu cũ vẫn đọc bình thường, bản 1.8 đọc bản lưu mới cũng không lỗi. Không đổi tiền, không thêm bảng.
+
+# v1.8.1 — 2026-10-06
+
+## Nghề mới: Người gác hải đăng
+
+- 🗼 Nghề mới ở chương 4 (Được tin cậy): giữ đèn biển Hòn Gió trên một hòn đảo đá cho Xí nghiệp Bảo đảm hàng hải Vịnh Ngọc, cùng chú Bảy Đèn và mèo Mun. Việc làm thuê: ứng tuyển, có lương ngày và thưởng mỗi việc làm đúng quy trình. Chứng chỉ Gác đèn biển giúp dễ được nhận.
+- Ca sáng: tắt đèn đúng giờ theo giờ mặt trời mọc, thử sáu thiết bị, tắt mô-tơ rồi mới lau kính, ghi sổ dầu đúng số đo; hỏng thì tự xử lý hoặc báo đúng nơi (sổ trực, phiếu báo hỏng, báo đài khi ảnh hưởng tín hiệu đèn, còi).
+- Quan trắc 7 giờ: đọc máy đo gió, mặt biển, các mốc tầm xa, áp kế; báo đài bốn số liệu; gió từ cấp 6 hoặc áp giảm nhanh thì phát cảnh báo cho tàu thuyền. Chạng vạng: thắp đèn đúng giờ, đếm chớp so với danh mục đèn, sương mù chạy còi, đèn sai thì báo đài, ghi sổ đúng sự thật.
+- Canh biển: pháo hiệu đỏ giữa bão, tàu chết máy trôi dạt, người rơi xuống nước, tụi nhỏ thách nhau bơi ra đảo, tàu lao về bãi đá ngầm, tàu cố ra khơi khi có lệnh cấm, đánh cá bằng chất nổ. Nhìn kỹ, gọi tàu, ném phao, báo đài đúng mức (MAYDAY RELAY, PAN-PAN, biên phòng) và đúng phương vị, canh giữ mục tiêu. Không bao giờ tự lấy xuồng ra khơi; thuyền trưởng nghe hay không là tùy tính họ.
+- Khách ra đảo (17 kiểu): đoàn có giấy, khách sống ảo đòi lên đỉnh tháp, cặp đôi đòi cầu hôn lúc nửa đêm, Vy Vlog livestream, kênh ma đòi tắt đèn, nhà văn xin ở một tuần, kayak lạc lúc chiều tối… Xem giấy tờ rồi tự chọn cách trả lời; khách nài thêm, có người lẻn lên cầu thang tháp. Người gặp nạn luôn được trú tạm.
+- Tàu tiếp tế mỗi bảy ngày: đo bồn trước và sau, kiểm từng món, ghi món thiếu hỏng, ký đúng số lít dù chú Tư Lực nài ký đủ 200; trả giá giỏ đồ tươi của chú bằng tiền túi.
+- Đời sống trên đảo: nhớ nhà tăng dần, đồ tươi hết giữa hai chuyến tàu; chơi với Mun, tưới vườn rau trên đá, gọi điện về nhà (má hỏi bao giờ lấy vợ lấy chồng). 35 chuyện oái oăm (ông Sáu Ghe xin quay đèn về phía lưới, anh Khôi đòi sơn tháp màu hồng, đếm hải âu, ký khống dầu, ở đảo thêm ba tuần, quấy rối trên kênh 16…), 17 chuyện bất ngờ, 6 tình huống, truyện nghề “Cái giẻ da của chú Bảy”, thang thăng tiến 4 bậc, cảnh đảo và tòa nhà ở Ngoại ô.
+
+## Nghề mới: Nhân viên trực tổng đài cứu hộ
+
+- 📞 Tổng đài Cứu hộ phường Mây (mở ở chương 4 “Được tin cậy”, việc làm thuê): trực đường dây cháy, ngập, tai nạn, kẹt thang máy, thú cưng mắc kẹt, cấp cứu cùng chị Thảo. Chứng chỉ Tiếp nhận cuộc gọi khẩn cấp giúp dễ được nhận; thang thăng tiến 4 bậc.
+- Nhận ca: gọi bộ đàm sáu đội, đánh dấu đội tạm ngưng trên bảng đội; quên đánh dấu thì lát gọi đội đó không ai trả lời.
+- Mỗi cuộc gọi: hỏi địa chỉ trước, rồi chuyện gì, mấy người, nguy hiểm gì, số gọi lại; người gọi không biết chỗ thì hỏi mốc, gửi định vị, nhờ người đi đường; người đang hoảng thì trấn an (mỗi người hợp một cách, quát là hỏng). Cuộc nghi ngờ (giọng cười, im lặng, bé con, ông Ba gọi lần thứ mười) phải nghe, hỏi kỹ, gọi lại rồi mới quyết: có cuộc thật, có cuộc đùa, do tính ẩn của người gọi.
+- Tự chọn mức ưu tiên và đội để gửi, hoặc chuyển đúng nơi với giọng mình chọn (nhẹ, dứt khoát, gắt): khách say đòi taxi, mèo kẹt trên cây từ ba giờ sáng, karaoke, DJ xin “một câu”, “người quan trọng” đòi ưu tiên, gọi nhầm đặt phở… Gửi xe cho chuyện không khẩn thì đội bị giữ chân, ca thật sau phải chờ phường bên.
+- Trong lúc chờ: đọc thẻ hướng dẫn an toàn (có thẻ nghe hợp lý mà nguy hiểm: dội nước vào chảo dầu, đi thang máy khi cháy, tháo mũ bảo hiểm), giữ máy với người gọi một mình. Mùa mưa nhiều đường dây réo cùng lúc: nghe nhanh, xếp ưu tiên. Không bao giờ có hướng dẫn cho uống thuốc.
+- 42 chuyện oái oăm quanh tổng đài (sếp ép KPI, đồng nghiệp rủ cúp máy khỏi hỏi, tắt ghi âm, sửa giờ nhật ký, fan cuồng giọng tổng đài, họ hàng xin ưu tiên…), 14 chuyện bất ngờ ở phòng trực, 6 tình huống, truyện nghề “Chiếc tai nghe của chị Thảo”, sổ nhật ký cuối ca, cảnh phòng trực và tòa nhà ở Phố dịch vụ.
+
+## Nghề mới: Nhân viên cứu hộ hồ bơi
+
+- 🛟 Nghề mới **Nhân viên cứu hộ hồ bơi** ở Hồ bơi Sóng Xanh (chương 4 “Được tin cậy”): ứng tuyển, phỏng vấn, thử việc; lương ngày cộng thưởng nhỏ cho mỗi việc làm đúng. Anh Hải kèm ba việc đầu, nhắc trước mỗi lỗi một lần.
+- Mở hồ: kiểm từng món (độ trong của nước, que thử Clo & pH so “Bảng mẫu Sóng Xanh”, nắp hút đáy, phao ống, phao tròn & sào, hộp sơ cứu, biển độ sâu, điện thoại khẩn), tự gõ số vào sổ nước, tự sửa hoặc báo đúng người; chưa an toàn thì hoãn mở. Cứu hộ không tự đổ hóa chất.
+- Canh hồ có hẹn giờ: quét đủ năm khu trong một phút, thổi còi đúng luật (chạy trên bờ, nhảy cắm đầu chỗ cạn, chai thủy tinh, trẻ không người lớn, nhào lộn, quay lén, giả vờ kêu cứu, dìm đầu…). Người đuối nước thật thì im lặng: báo động, gọi hỗ trợ, với hoặc ném trước, xuống nước luôn mang phao ống, xem thở rồi sơ cứu; không bao giờ dốc ngược.
+- Soát người ở cổng (say bia, vết thương hở, đau mắt đỏ, không mũ bơi…), lớp bơi trẻ em (bơi thử rồi mới phát vòng tay, bé Bon nói dối biết bơi), sơ cứu không dùng thuốc, dông chiều (lên bờ, trú sảnh có mái, đếm người, ba mươi phút sau tiếng sấm cuối mới mở lại dù sếp giục).
+- Hơn năm mươi người oái oăm quanh hồ: ông Tư không chịu đội mũ bơi, cô Hằng nhảy aerobic ở làn nhanh, Kha nhào lộn quay TikTok, phụ huynh dán mắt điện thoại, đại gia đòi làn riêng, khách tán tỉnh xin dạy riêng, quản lý không cho đóng hồ vì doanh thu… Bạn tự chọn giọng, lời nói và báo ai; chiều theo không bao giờ có thưởng. Cuối ca tự ghi sổ trực từ những gì thật sự xảy ra.
+- Chứng chỉ Cứu hộ hồ bơi giúp dễ được nhận; thang thăng tiến Cứu hộ chính → Quản lý an toàn hồ bơi.
+
+## Nghề mới: Công an phường
+
+- 👮 Nghề mới **Công an phường** ở Công an phường Mây (chương 4 “Được tin cậy”, mở cùng điều dưỡng, gác chắn): ứng tuyển, phỏng vấn, thử việc; lương ngày cộng thưởng nhỏ cho mỗi việc làm đúng. Nghề người chơi xin, giữ nhẹ nhàng: giúp dân, không có vũ khí hay chiến thuật, không trích luật thật.
+- Một ca gồm: giao ban (đọc sổ trực ban, chọn việc gấp làm trước), bàn cư trú (xem từng giấy, nhận hoặc chỉ đúng giấy cần bổ sung), đồ thất lạc (kiểm đếm cùng người nhặt, hỏi kỹ người tới nhận; có người nhận vơ), hòa giải hàng xóm (karaoke, xe đậu chắn cửa, tường nứt, con chó Lu, cây xoài: nghe từng bên rồi tự đề xuất, hai bên tự quyết theo tính), trẻ lạc (dỗ bé, không đăng ảnh, xác minh người đón), tuần tra chợ, cổng trường, hội chợ, đám cưới (nhắc trước, biên bản sau, nguy hiểm thì xử lý ngay), nói chuyện chống lừa đảo cho các cụ, điện thoại trực ban (ai gặp nguy đi trước, gọi lại trước khi coi là tin báo sai).
+- Hơn bốn mươi người “oái oăm”: phong bì “cà phê”, cháu “sếp quận”, karaoke nửa đêm, cô Thoa ngày nào cũng có “người khả nghi”, Kha livestream cả bàn tiếp dân, chú say quậy, bà Năm mang chè ngồi kể chuyện cả tiếng, tố bừa nhà bên, sếp đòi đủ chỉ tiêu biên bản… Bạn tự chọn giọng, lời nói và báo ai; nhận phong bì hay chiều theo không bao giờ có thưởng.
+- Cuối ca tự ghi sổ trực ban từ những gì thật sự đã xảy ra (dòng “lập thêm biên bản” cho đủ chỉ tiêu là ghi khống). Anh Định kèm ba việc đầu; Chứng chỉ Tiếp dân & hòa giải giúp dễ được nhận; thang thăng tiến Cán bộ khu vực chính thức → Phó trưởng Công an phường; truyện nghề “Cuốn sổ hẻm của anh Định”.
 
 # v1.8.0 — 2026-10-06
 

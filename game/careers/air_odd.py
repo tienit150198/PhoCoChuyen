@@ -22,10 +22,11 @@ legitimate and the company backs it; not reporting only means the harasser may c
 beyond the rules pays overtime but tires the crew (fatigue): tired crew earn half the flight bonus, and asking
 for rest days is the player's own move from the crew room.
 
-Other careers reuse the engine (oil keeps the air crew's words; railway and nurse word it their own way). Besides
-crew, company, union, office, demoted and title, a career's cfg may carry, each optional (the air crew's line
-otherwise): labels {kind: {word id: label}}, levels {level id: label}, harass_note, ground_line, demote_line
-('{demoted}' is filled in), tired_line and rest_ok. The air kit's oddCard/restCard read cfg.kinds and cfg.rest_to.
+Other careers reuse the engine (oil keeps the air crew's words; railway, nurse, lighthouse, rescue, lifeguard and
+police word it their own way). Besides crew, company, union, office, demoted and title, a career's cfg may carry,
+each optional (the air crew's line otherwise): labels {kind: {word id: label}}, levels {level id: label},
+harass_note, ground_line, demote_line ('{demoted}' is filled in), tired_line and rest_ok.
+The air kit's oddCard/restCard read cfg.kinds and cfg.rest_to.
 """
 from __future__ import annotations
 
@@ -388,7 +389,8 @@ def _conduct(c: dict, odd: dict, delta: int, cfg: dict) -> str:
     if after >= DEMOTE_AT and not cd['demoted']:
         cd['demoted'] = True
         cd['ground'] = c['day']
-        # A career outside the airline (railway, nurse) words these in its own cfg; '{demoted}' is filled in.
+        # A career outside the airline (railway, nurse, lighthouse, rescue, lifeguard, police) words these in its own cfg;
+        # '{demoted}' is filled in.
         # The air crew (pilot, flight_attendant, oil) keep the lines they had.
         line = cfg.get('demote_line') or '⚖️ Hội đồng kỷ luật: cách chức xuống {demoted}, tạm đình chỉ bay hôm nay, thưởng chuyến về 0 tới khi hồ sơ sạch lại.'
         return line.format(demoted=cfg['demoted'])

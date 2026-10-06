@@ -1,5 +1,733 @@
 [
  {
+  "vi": "Rải thuốc chuột khắp kho",
+  "en": ""
+ },
+ {
+  "vi": "Chuột chết trong khe kệ, cả kho bốc mùi một tuần.",
+  "en": ""
+ },
+ {
+  "vi": "Đóng cửa kho lại, kệ nó",
+  "en": ""
+ },
+ {
+  "vi": "Tuần sau thêm hai hộp bị gặm.",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sách quý không thấy đâu",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm kệ quý hiếm, cuốn “Địa chí phường Mây” bản in 1938 không có chỗ. Sổ mượn không ghi ai mượn.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm các kệ lân cận, xem sổ đọc tại chỗ, báo cô Nguyệt",
+  "en": ""
+ },
+ {
+  "vi": "Thấy cuốn sách kẹp nhầm giữa kệ báo cũ. Bạn đặt lại, ghi sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Đổ cho bạn đọc hôm qua, nhắn hỏi khắp nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm phụ huynh xôn xao. Sau mới thấy sách kẹp nhầm kệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thư viện chưa tìm đã nghi bạn đọc ăn cắp sách.",
+  "en": ""
+ },
+ {
+  "vi": "Lờ đi, chắc ai đó cất",
+  "en": ""
+ },
+ {
+  "vi": "Cuối tháng kiểm kê ghi “thất lạc chưa rõ lý do”.",
+  "en": ""
+ },
+ {
+  "vi": "Loa phường ngay cửa sổ",
+  "en": ""
+ },
+ {
+  "vi": "Loa phường ngay cửa sổ phòng đọc phát thông báo tiêm phòng chó mèo, ba lần liền. Ông Thạc: “Tắt cái loa đi!”",
+  "en": ""
+ },
+ {
+  "vi": "Đóng cửa sổ, bật quạt, xin ông thông cảm năm phút",
+  "en": ""
+ },
+ {
+  "vi": "Năm phút sau loa tắt. Ông Thạc lẩm bẩm nhưng đọc tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi văn phòng phường xin dời loa đi chỗ khác",
+  "en": ""
+ },
+ {
+  "vi": "Văn phòng ghi nhận, hẹn họp bàn. Hôm nay vẫn ồn.",
+  "en": ""
+ },
+ {
+  "vi": "Hùa với ông: “Loa gì mà ồn như chợ!”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thạc đi rêu rao khắp phường là thư viện chê loa phường.",
+  "en": ""
+ },
+ {
+  "vi": "Thùng trả sách ngoài giờ",
+  "en": ""
+ },
+ {
+  "vi": "Sáng mở thùng trả sách ngoài giờ: năm cuốn sách, một hộp sữa uống dở đổ lênh láng, một mảnh giấy “em xin lỗi” của Đạt.",
+  "en": ""
+ },
+ {
+  "vi": "Lau sách bằng giấy thấm, hong chỗ mát, ghi nhận ngày trả",
+  "en": ""
+ },
+ {
+  "vi": "Bốn cuốn khô ráo, một cuốn phồng nhẹ. Bạn ghi phiếu tình trạng.",
+  "en": ""
+ },
+ {
+  "vi": "Xếp thẳng lên kệ cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Hai hôm sau sách dính sữa bốc mùi, kiến kéo lên kệ.",
+  "en": ""
+ },
+ {
+  "vi": "Phạt Đạt gấp đôi cho nhớ",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ Đạt lên thư viện hỏi quy định nào phạt gấp đôi.",
+  "en": ""
+ },
+ {
+  "vi": "Phạt trẻ con không theo nội quy nào cả.",
+  "en": ""
+ },
+ {
+  "vi": "Máy hút ẩm kêu lạ",
+  "en": ""
+ },
+ {
+  "vi": "Máy hút ẩm kho kêu lục cục, đèn báo đầy nước nhấp nháy từ đêm qua. Ẩm kế chỉ 68%.",
+  "en": ""
+ },
+ {
+  "vi": "Đổ nước, lau lưới lọc, bật lại, báo sửa nếu còn kêu",
+  "en": ""
+ },
+ {
+  "vi": "Máy chạy êm. Trưa ẩm kế còn 58%.",
+  "en": ""
+ },
+ {
+  "vi": "Tắt máy cho đỡ ồn",
+  "en": ""
+ },
+ {
+  "vi": "Chiều ẩm kế lên 74%, giấy trong kho hơi mềm.",
+  "en": ""
+ },
+ {
+  "vi": "Bật quạt thổi vào kho thay máy",
+  "en": ""
+ },
+ {
+  "vi": "Quạt chỉ đẩy hơi ẩm đi vòng vòng.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tư tặng kệ gỗ",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thạc dẫn chú Tư sửa đồ lên: “Kệ gỗ nhà tôi thừa, tặng thư viện để sách quý.” Kệ đẹp nhưng gỗ còn ẩm, có lỗ mọt.",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn, nhận kệ để sảnh trưng báo, sách quý giữ kệ sắt",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thạc vui, kệ gỗ thành góc báo xinh. Sách quý an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận, xếp ngay sách quý lên",
+  "en": ""
+ },
+ {
+  "vi": "Mọt từ kệ lan sang hai cuốn sách in năm 1960.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối thẳng: “Kệ mọt ai dùng”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thạc tự ái, ba hôm không lên thư viện.",
+  "en": ""
+ },
+ {
+  "vi": "Học sinh khóc vì điểm kém",
+  "en": ""
+ },
+ {
+  "vi": "Đạt ngồi góc phòng đọc, gục mặt khóc thút thít. Tờ bài kiểm tra toán 3 điểm nằm dưới cuốn truyện tranh.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi xuống hỏi nhỏ, gợi ý cuốn Toán vui, hẹn cùng đọc",
+  "en": ""
+ },
+ {
+  "vi": "Đạt lau nước mắt, mượn cuốn Toán vui lớp năm. Hôm sau ghé khoe làm được hai bài.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa hộp giấy, để em yên",
+  "en": ""
+ },
+ {
+  "vi": "Đạt ngồi thêm một lúc rồi về.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc “phòng đọc phải im lặng”",
+  "en": ""
+ },
+ {
+  "vi": "Đạt xách cặp về luôn, mấy hôm không thấy lên.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ mượn sách của người khác",
+  "en": ""
+ },
+ {
+  "vi": "Một người đàn ông nói là bố của Vy, xin xem Vy đã mượn những sách gì tháng này: “Tôi là bố nó, tôi có quyền biết!”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là người bố: lo con dạo này buồn, muốn biết con đọc gì.",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ thư viện",
+  "en": ""
+ },
+ {
+  "vi": "Vy hai mươi hai tuổi, thẻ đứng tên Vy.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng nội quy quầy",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin mượn sách của bạn đọc chỉ cung cấp cho chính bạn đọc.",
+  "en": ""
+ },
+ {
+  "vi": "Người bố",
+  "en": ""
+ },
+ {
+  "vi": "Nói chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Ông lo con căng thẳng mùa thi, nói giọng run run.",
+  "en": ""
+ },
+ {
+  "vi": "Không đưa sổ, thông cảm, khuyên ông nói chuyện với con",
+  "en": ""
+ },
+ {
+  "vi": "Cán bộ thư viện giữ kín chuyện riêng của tôi mà vẫn nói chuyện tử tế với bố tôi.",
+  "en": ""
+ },
+ {
+  "vi": "Ông bố ngồi lặng một lúc, rồi nhắn rủ Vy đi ăn tối.",
+  "en": ""
+ },
+ {
+  "vi": "May quá, chuyện mình đọc gì là của mình.",
+  "en": ""
+ },
+ {
+  "vi": "Ừ, hỏi thẳng con vẫn hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Cho ông xem, bố mẹ mà",
+  "en": ""
+ },
+ {
+  "vi": "Thư viện đưa lịch sử mượn sách của tôi cho người khác xem. Không thể chấp nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Vy biết chuyện, khóa thẻ thư viện, không lên nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Mình hai mươi hai tuổi rồi mà.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ mượn là chuyện riêng, ai cũng vậy.",
+  "en": ""
+ },
+ {
+  "vi": "Không đưa sổ nhưng kể sơ “dạo này em ấy đọc sách tâm lý”",
+  "en": ""
+ },
+ {
+  "vi": "Không đưa sổ mà lại kể miệng, cũng như nhau thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Ông bố về nhà hỏi dồn Vy về “sách tâm lý”.",
+  "en": ""
+ },
+ {
+  "vi": "Ai kể với bố vậy trời.",
+  "en": ""
+ },
+ {
+  "vi": "Biết thêm một chút, lo thêm một chút.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ mượn sách là thông tin riêng của bạn đọc: chỉ nói với chính bạn đọc, kể cả khi người hỏi là người thân.",
+  "en": ""
+ },
+ {
+  "vi": "Photo nguyên cuốn giáo trình",
+  "en": ""
+ },
+ {
+  "vi": "Vy ôm giáo trình mới: “Photo hết giùm em, sinh viên nghèo, mua thì hai trăm xu, cả lớp đang chờ em gửi.”",
+  "en": ""
+ },
+ {
+  "vi": "Bản quyền",
+  "en": ""
+ },
+ {
+  "vi": "Nội quy dịch vụ photo",
+  "en": ""
+ },
+ {
+  "vi": "Thư viện chỉ sao chụp một phần nhỏ (một chương, dưới một phần mười cuốn) để học tập.",
+  "en": ""
+ },
+ {
+  "vi": "Bản điện tử",
+  "en": ""
+ },
+ {
+  "vi": "Máy tra cứu",
+  "en": ""
+ },
+ {
+  "vi": "Thư viện có tài khoản đọc bản điện tử của giáo trình này, đọc tại chỗ.",
+  "en": ""
+ },
+ {
+  "vi": "Cả lớp",
+  "en": ""
+ },
+ {
+  "vi": "Vy định chia bản photo cho bốn mươi bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Photo một chương đang cần, chỉ cách đọc bản điện tử",
+  "en": ""
+ },
+ {
+  "vi": "Không photo hết được nhưng chị chỉ em đọc bản điện tử, đỡ hẳn tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Vy đọc bản điện tử tại phòng máy, nhắn cả lớp lên thư viện đọc.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa ra có bản điện tử, ai biết đâu.",
+  "en": ""
+ },
+ {
+  "vi": "Tác giả giáo trình",
+  "en": ""
+ },
+ {
+  "vi": "Sách mình viết được đọc đúng cách, vui.",
+  "en": ""
+ },
+ {
+  "vi": "Photo cả cuốn cho sinh viên",
+  "en": ""
+ },
+ {
+  "vi": "Photo được cả cuốn, mà nghe nói thư viện bị nhắc vì vi phạm bản quyền.",
+  "en": ""
+ },
+ {
+  "vi": "Bản photo lan ra cả khoa. Nhà xuất bản gửi thư nhắc thư viện.",
+  "en": ""
+ },
+ {
+  "vi": "Thư viện mà làm lậu sách thì ai giữ sách.",
+  "en": ""
+ },
+ {
+  "vi": "Rẻ thì rẻ, mà áy náy.",
+  "en": ""
+ },
+ {
+  "vi": "Không photo thì thôi, mà nói câu cộc lốc.",
+  "en": ""
+ },
+ {
+  "vi": "Vy về tự mua bản photo lậu ngoài tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Biết vậy ra tiệm luôn.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối đúng, nhưng phải chỉ đường khác.",
+  "en": ""
+ },
+ {
+  "vi": "Sao chụp để học chỉ một phần nhỏ của cuốn sách; nói rõ lý do và chỉ cách khác hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "“Đưa lên đây, nhanh!”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Bính gọi xuống: “Mang ngay hồ sơ quy hoạch lên phòng họp, đoàn khách đang chờ. Phiếu với sổ để sau!”",
+  "en": ""
+ },
+ {
+  "vi": "Sổ khai thác",
+  "en": ""
+ },
+ {
+  "vi": "Quy định kho",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ ra khỏi kho phải ghi sổ, người nhận ký phiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ, ký phiếu chỉ mất một phút.",
+  "en": ""
+ },
+ {
+  "vi": "Năm ngoái một hồ sơ mang lên họp “để sau ký” rồi thất lạc ba tháng.",
+  "en": ""
+ },
+ {
+  "vi": "Mang lên ngay, kèm phiếu, xin ông ký một chữ",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh mà vẫn đúng quy định. Tôi ký mất có mười giây.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ lên kịp. Họp xong, ông Bính tự mang trả, sổ ghi đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Đúng là có phiếu thì khỏi ai hỏi ai.",
+  "en": ""
+ },
+ {
+  "vi": "Lãnh đạo cũng phải ký, vậy mới giữ được hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Mang lên luôn, sổ để sau",
+  "en": ""
+ },
+ {
+  "vi": "Mang hồ sơ lên mà không ai ký, giờ không biết đang ở bàn ai.",
+  "en": ""
+ },
+ {
+  "vi": "Họp xong hồ sơ nằm lẫn trong chồng giấy phòng họp, ba hôm sau mới tìm thấy.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi tưởng cô ấy mang về rồi.",
+  "en": ""
+ },
+ {
+  "vi": "“Để sau” là lúc hồ sơ đi lạc.",
+  "en": ""
+ },
+ {
+  "vi": "Bắt ông xuống tận kho làm đủ thủ tục",
+  "en": ""
+ },
+ {
+  "vi": "Đúng quy định nhưng cứng quá, đoàn khách chờ mười lăm phút.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Bính xuống ký, mặt không vui. Đoàn khách chờ lâu.",
+  "en": ""
+ },
+ {
+  "vi": "Mang phiếu lên cho tôi ký có phải nhanh không.",
+  "en": ""
+ },
+ {
+  "vi": "Phường làm việc chậm quá.",
+  "en": ""
+ },
+ {
+  "vi": "Việc gấp vẫn ghi sổ, ký phiếu; mang phiếu tới tận nơi là vừa nhanh vừa đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sách cũ quý hiếm",
+  "en": ""
+ },
+ {
+  "vi": "Trong thùng sách tặng có cuốn Truyện Kiều in năm 1960. Một ông khách lạ đứng xem, ngỏ ý mua lại 200 xu “cho thư viện có tiền”.",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sách",
+  "en": ""
+ },
+ {
+  "vi": "Trang bản quyền",
+  "en": ""
+ },
+ {
+  "vi": "Bản in năm 1960, còn nguyên, ít nơi còn giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Người tặng",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tặng sách",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thạc tặng, ghi “để bà con cùng đọc”.",
+  "en": ""
+ },
+ {
+  "vi": "Sách tặng là tài sản của thư viện, không bán cho cá nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ lại, đưa vào kệ sách quý, đọc tại chỗ",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sách của tôi được giữ đúng ý: để bà con cùng đọc.",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn sách lên kệ quý. Ông Thạc ngày nào cũng ghé nhìn một cái.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi tặng là để người ta đọc, không phải để bán.",
+  "en": ""
+ },
+ {
+  "vi": "Sách gì mà cũ hơn cả ông nội em.",
+  "en": ""
+ },
+ {
+  "vi": "Bán lấy tiền mua sách mới",
+  "en": ""
+ },
+ {
+  "vi": "Sách tôi tặng mà thư viện đem bán cho người lạ!",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thạc biết chuyện, giận cả tháng.",
+  "en": ""
+ },
+ {
+  "vi": "Biết vậy tôi giữ ở nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Sách tặng không phải để mình mang đi bán.",
+  "en": ""
+ },
+ {
+  "vi": "Sách cũ quá, loại khỏi kho",
+  "en": ""
+ },
+ {
+  "vi": "Sách quý vậy mà định bỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Nguyệt nhặt lại từ thùng thanh lý, lắc đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Cũ không phải là hỏng.",
+  "en": ""
+ },
+ {
+  "vi": "Bản in năm 1960 là tư liệu đó.",
+  "en": ""
+ },
+ {
+  "vi": "Sách cũ chưa chắc là sách hỏng: sách quý giữ lại cho bạn đọc, không bán cho cá nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền phạt của cậu bé",
+  "en": ""
+ },
+ {
+  "vi": "Đạt trả sách trễ mười hai ngày. Theo nội quy phải nộp 12 xu, mà em chỉ có 3 xu, mắt đỏ hoe.",
+  "en": ""
+ },
+ {
+  "vi": "Em ở nhà trông em gái hai tuần vì mẹ nằm viện, có giấy ra viện của mẹ.",
+  "en": ""
+ },
+ {
+  "vi": "Trả trễ vì ốm đau, thiên tai, có giấy tờ: cán bộ được miễn phí trễ hạn, ghi rõ lý do.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm sách",
+  "en": ""
+ },
+ {
+  "vi": "Sách còn nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "Miễn phí trễ hạn, ghi lý do vào sổ",
+  "en": ""
+ },
+ {
+  "vi": "Cô hiểu chuyện nhà em, còn dặn em mượn tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Đạt cười toe, mượn thêm cuốn Toán vui. Sổ ghi rõ lý do miễn.",
+  "en": ""
+ },
+ {
+  "vi": "Em tưởng bị phạt hết tiền ăn sáng.",
+  "en": ""
+ },
+ {
+  "vi": "Kế toán phường",
+  "en": ""
+ },
+ {
+  "vi": "Có lý do, có ghi sổ, vậy là đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Phạt đủ 12 xu, ghi nợ phần thiếu",
+  "en": ""
+ },
+ {
+  "vi": "Đúng nội quy nhưng nhà em đang khó mà.",
+  "en": ""
+ },
+ {
+  "vi": "Đạt nộp 3 xu, nợ 9 xu, mấy hôm không dám lên thư viện.",
+  "en": ""
+ },
+ {
+  "vi": "Em không dám mượn nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Nội quy có chỗ cho lý do chính đáng.",
+  "en": ""
+ },
+ {
+  "vi": "Lờ đi, không ghi gì cả",
+  "en": ""
+ },
+ {
+  "vi": "Không phạt thì tốt, mà sổ không ghi gì.",
+  "en": ""
+ },
+ {
+  "vi": "Cuối tháng sổ phí lệch, kế toán phường hỏi, không ai nhớ vì sao.",
+  "en": ""
+ },
+ {
+  "vi": "Miễn được, nhưng phải ghi.",
+  "en": ""
+ },
+ {
+  "vi": "Ơ, vậy là được à?",
+  "en": ""
+ },
+ {
+  "vi": "Miễn phí khi có lý do chính đáng là đúng, nhưng phải ghi rõ lý do vào sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Phụ huynh đòi gỡ sách",
+  "en": ""
+ },
+ {
+  "vi": "Chị Loan cầm cuốn truyện thiếu nhi về tình bạn của hai bạn nhỏ: “Truyện có cảnh hai bạn cãi nhau với bố mẹ, gỡ ngay, dạy hư con tôi!”",
+  "en": ""
+ },
+ {
+  "vi": "Bìa sau",
+  "en": ""
+ },
+ {
+  "vi": "Sách ghi độ tuổi 9 – 12, được nhiều trường giới thiệu.",
+  "en": ""
+ },
+ {
+  "vi": "Tiêu chí chọn sách",
+  "en": ""
+ },
+ {
   "vi": "Sổ tay thư viện",
   "en": ""
  },
@@ -148,1655 +876,927 @@
   "en": ""
  },
  {
-  "vi": "Vũ",
+  "vi": "🛟 Gọi anh Hải",
   "en": ""
  },
  {
-  "vi": "Món mặn",
+  "vi": "💼 Báo quản lý hồ",
   "en": ""
  },
  {
-  "vi": "Món xào",
+  "vi": "Ban giám đốc Trung tâm",
   "en": ""
  },
  {
-  "vi": "Sạp thịt cá cô Ba",
+  "vi": "cứu hộ tập sự",
   "en": ""
  },
  {
-  "vi": "sạp thịt cá",
+  "vi": "cứu hộ viên",
   "en": ""
  },
  {
-  "vi": "Sạp rau chị Tám",
+  "vi": "Mình đang trực ghế.",
   "en": ""
  },
  {
-  "vi": "sạp rau",
+  "vi": "Hồ không cho nhân viên hẹn hò, nhận quà của khách.",
   "en": ""
  },
  {
-  "vi": "Chị Tám",
+  "vi": "Cảm ơn, chúc bạn bơi vui.",
   "en": ""
  },
  {
-  "vi": "Cá lóc",
+  "vi": "⚖️ Ban giám đốc Trung tâm: tạm đình chỉ trực ghế hết hôm nay, mai lên trình bày.",
   "en": ""
  },
  {
-  "vi": "Cá basa cắt khúc",
+  "vi": "🛡️ Báo là đúng: trung tâm có quy trình bảo vệ nhân viên và khách.",
   "en": ""
  },
  {
-  "vi": "Cá diêu hồng",
+  "vi": "😮‍💨 Mệt rồi: thưởng việc chỉ còn một nửa. Xin nghỉ bù ở phòng trực.",
   "en": ""
  },
  {
-  "vi": "Thịt heo bằm",
+  "vi": "Ghế của bạn đã có người ngồi thay; bạn thấy nhẹ cả người.",
   "en": ""
  },
  {
-  "vi": "Thịt ba rọi",
+  "vi": "Tạm đình chỉ trực",
   "en": ""
  },
  {
-  "vi": "Thịt gà",
+  "vi": "Khách bơi",
   "en": ""
  },
  {
-  "vi": "Thịt bò",
+  "vi": "Mở hồ buổi sáng",
   "en": ""
  },
  {
-  "vi": "Mực ống",
+  "vi": "Anh Hải: “Sáu giờ mở cổng. Thử từng món một, món nào hỏng thì sửa hoặc báo, chưa an toàn thì chưa mở nhé.”",
   "en": ""
  },
  {
-  "vi": "Cà chua, thơm, bạc hà",
+  "vi": "Soát người ở cổng xuống hồ",
   "en": ""
  },
  {
-  "vi": "Rau ngót",
+  "vi": "Chị Phượng: “Cổng đông rồi em, ra soát giúp chị. Ai xuống nước được thì cho vào, ai chưa được thì nói khéo.”",
   "en": ""
  },
  {
-  "vi": "Khổ qua",
+  "vi": "Canh hồ: một vòng quét",
   "en": ""
  },
  {
-  "vi": "Hành tây",
+  "vi": "Lên ghế cao, quàng dây phao ống, còi trên môi. Quét đủ năm khu, mắt không rời mặt nước.",
   "en": ""
  },
  {
-  "vi": "Bí xanh",
+  "vi": "Lớp bơi trẻ em ở khu cạn",
   "en": ""
  },
  {
-  "vi": "Su su, cà rốt",
+  "vi": "Ba bé mặc đồ bơi xếp hàng ở bậc khu cạn. Anh Hải dặn: “Bơi thử từng đứa rồi mới phát vòng tay.”",
   "en": ""
  },
  {
-  "vi": "Bắp cải",
+  "vi": "Có người cần sơ cứu ở bờ hồ. Mang hộp sơ cứu tới.",
   "en": ""
  },
  {
-  "vi": "Dưa leo, rau sống",
+  "vi": "Dông chiều",
   "en": ""
  },
  {
-  "vi": "🧂 mặn",
+  "vi": "Vào ca thôi! Anh Hải đang chờ ở ghế trực.",
   "en": ""
  },
  {
-  "vi": "🥓 nhiều mỡ",
+  "vi": "Có chuyện ở hồ, quyết xong rồi làm tiếp nhé.",
   "en": ""
  },
  {
-  "vi": "🍳 chiên",
+  "vi": "Bạn đang bị tạm đình chỉ trực ghế hết hôm nay. Tan ca, mai lên trung tâm trình bày.",
   "en": ""
  },
  {
-  "vi": "🪨 cứng",
+  "vi": "Thao tác không có ở hồ bơi.",
   "en": ""
  },
  {
-  "vi": "🐟 nhiều xương",
+  "vi": "Việc này không thuộc hồ bơi.",
   "en": ""
  },
  {
-  "vi": "🥄 mềm",
+  "vi": "Tới chỗ đó xem chuyện gì trước đã.",
   "en": ""
  },
  {
-  "vi": "Canh chua cá lóc",
+  "vi": "Món này không có trong danh sách mở hồ.",
   "en": ""
  },
  {
-  "vi": "Canh bí đỏ thịt bằm",
+  "vi": "Đã kiểm món này rồi.",
   "en": ""
  },
  {
-  "vi": "Canh rau ngót thịt bằm",
+  "vi": "Thử que trước rồi mới ghi sổ nước.",
   "en": ""
  },
  {
-  "vi": "Canh khổ qua nhồi thịt",
+  "vi": "Sổ nước hôm nay đã ghi rồi.",
   "en": ""
  },
  {
-  "vi": "Gà chiên nước mắm",
+  "vi": "Ghi đủ hai ô Clo và pH.",
   "en": ""
  },
  {
-  "vi": "Đậu hũ nhồi thịt sốt cà",
+  "vi": "Số ghi chưa khớp que thử. Nhìn lại que rồi ghi đúng số nhé.",
   "en": ""
  },
  {
-  "vi": "Cá diêu hồng hấp gừng",
+  "vi": "Sổ nước ghi số khác que thử thật.",
   "en": ""
  },
  {
-  "vi": "Tôm rim mặn ngọt",
+  "vi": "ghi sổ nước sai số",
   "en": ""
  },
  {
-  "vi": "Trứng hấp thịt bằm",
+  "vi": "📒 Đã ghi sổ nước. (Số ghi không khớp que thử.)",
   "en": ""
  },
  {
-  "vi": "Bò xào hành tây",
+  "vi": "Có số ngoài bảng mẫu: chưa mở hồ, báo anh Tâm.",
   "en": ""
  },
  {
-  "vi": "Mực xào sả ớt",
+  "vi": "Cả hai đều trong bảng mẫu.",
   "en": ""
  },
  {
-  "vi": "Gà xào sả ớt",
+  "vi": "Kiểm món đó trước đã.",
   "en": ""
  },
  {
-  "vi": "Bí xanh xào tỏi",
+  "vi": "Món này không có gì để tự sửa.",
   "en": ""
  },
  {
-  "vi": "Su su, cà rốt xào",
+  "vi": "Chọn nơi báo.",
   "en": ""
  },
  {
-  "vi": "Rau muống luộc",
+  "vi": "Món này ổn, không có gì phải báo.",
   "en": ""
  },
  {
-  "vi": "Cải ngọt luộc",
+  "vi": "Đã báo chuyện này rồi.",
   "en": ""
  },
  {
-  "vi": "Bắp cải luộc",
+  "vi": "Chuyện này ai xử lý được? Ghi sổ thôi thì ca sau mới biết.",
   "en": ""
  },
  {
-  "vi": "Cháo thịt bằm",
+  "vi": "Chuyện nhỏ mình xử lý được thì ghi sổ trực là đủ, khỏi làm phiền cả trung tâm.",
   "en": ""
  },
  {
-  "vi": "Chè đậu xanh",
+  "vi": "Báo không đúng người xử lý, chuyện cần làm ngay phải chờ.",
   "en": ""
  },
  {
-  "vi": "chiên",
+  "vi": "báo chưa đúng kênh",
   "en": ""
  },
  {
-  "vi": "xào",
+  "vi": "Mở hồ hay hoãn?",
   "en": ""
  },
  {
-  "vi": "luộc",
+  "vi": "Mọi thứ đã ổn rồi mà, mở cổng cho khách vào thôi.",
   "en": ""
  },
  {
-  "vi": "hấp",
+  "vi": "Ghi số que thử vào sổ nước trước đã.",
   "en": ""
  },
  {
-  "vi": "ăn sống",
+  "vi": "chưa kiểm đủ trước khi mở",
   "en": ""
  },
  {
-  "vi": "chưa chín tới",
+  "vi": "mở hồ khi chưa an toàn",
   "en": ""
  },
  {
-  "vi": "chín tới, thơm",
+  "vi": "chưa xử lý đồ cứu hộ",
   "en": ""
  },
  {
-  "vi": "hơi quá lửa",
+  "vi": "Có chuyện mà không ghi lại, không báo ai: ca sau không biết.",
   "en": ""
  },
  {
-  "vi": "cháy, khét",
+  "vi": "không báo lại",
   "en": ""
  },
  {
-  "vi": "Cắt vừa ăn",
+  "vi": "Mọi thứ ổn mà hoãn mở, khách đứng nắng ngoài cổng.",
   "en": ""
  },
  {
-  "vi": "Cắt nhỏ, thái mỏng",
+  "vi": "hoãn mở không cần thiết",
   "en": ""
  },
  {
-  "vi": "Nêm nhạt",
+  "vi": "Thử que mà không ghi sổ nước.",
   "en": ""
  },
  {
-  "vi": "Nêm vừa",
+  "vi": "chưa ghi sổ nước",
   "en": ""
  },
  {
-  "vi": "Nêm đậm",
+  "vi": "⏳ Hoãn mở hồ, khách đứng chờ ngoài cổng.",
   "en": ""
  },
  {
-  "vi": "Lửa nhỏ",
+  "vi": "🔓 Mở cổng đón khách. Ông Tư là người đầu tiên, khăn vắt vai.",
   "en": ""
  },
  {
-  "vi": "Lửa vừa",
+  "vi": "Mở hồ: kiểm đủ,",
   "en": ""
  },
  {
-  "vi": "Lửa lớn",
+  "vi": "hoãn tới khi kỹ thuật xử lý xong.",
   "en": ""
  },
  {
-  "vi": "Có bé nhỏ",
+  "vi": "mở đúng giờ.",
   "en": ""
  },
  {
-  "vi": "Bé không ăn cay, sợ xương cá. Đồ ăn cắt nhỏ cho bé.",
+  "vi": "Mở hồ: chưa kiểm đủ các món.",
   "en": ""
  },
  {
-  "vi": "Có người già",
+  "vi": "Mở hồ: kiểm đủ từng món, mọi thứ an toàn.",
   "en": ""
  },
  {
-  "vi": "Ông ăn mềm, nhạt muối: tránh món mặn, món dai, món cứng. Cắt nhỏ, cơm nấu mềm.",
+  "vi": "Mở hồ buổi sáng.",
   "en": ""
  },
  {
-  "vi": "Có người ăn kiêng",
+  "vi": "Hoãn mở hồ chờ kỹ thuật.",
   "en": ""
  },
  {
-  "vi": "Anh Khoa đang giảm cân: không món chiên, không món nhiều mỡ.",
+  "vi": "📋 Anh Hải lập biên bản, đóng cổng lại kiểm tra từ đầu.",
   "en": ""
  },
  {
-  "vi": "Nhà đông người",
+  "vi": "Vòng quét đang chạy rồi.",
   "en": ""
  },
  {
-  "vi": "Nhà đông miệng ăn: mua đủ phần cho cả nhà, tiền chợ tính từng đồng.",
+  "vi": "Bắt đầu vòng quét trước đã.",
   "en": ""
  },
  {
-  "vi": "Cả nhà mê canh chua",
+  "vi": "Khu này không có ở hồ.",
   "en": ""
  },
  {
-  "vi": "Anh Khoa thích có một món cay",
+  "vi": "Đã nhìn khu này rồi.",
   "en": ""
  },
  {
-  "vi": "Nhà ăn đậm đà",
+  "vi": "Một vòng quét mà lâu quá, có khu không ai nhìn cả phút.",
   "en": ""
  },
  {
-  "vi": "Nhà ăn thanh, nhạt",
+  "vi": "quét chậm",
   "en": ""
  },
  {
-  "vi": "Hai mươi năm nấu cỗ, giờ nhận lời tìm người nấu cơm cho các nhà quen trong phường.",
+  "vi": "⏱️ Vòng quét quá một phút.",
   "en": ""
  },
  {
-  "vi": "Mẹ bé Bin, nhân viên ngân hàng",
+  "vi": "Chọn điều cần nhắc.",
   "en": ""
  },
  {
-  "vi": "Hai vợ chồng đi làm tới tối, bé Bin năm tuổi ăn gì cũng phải cắt nhỏ, không cay.",
+  "vi": "Nhìn khu đó trước đã.",
   "en": ""
  },
  {
-  "vi": "Thầy giáo về hưu, tám mươi hai tuổi",
+  "vi": "Đã thổi còi khu này rồi.",
   "en": ""
  },
  {
-  "vi": "Răng yếu, huyết áp cao: ăn mềm, nhạt muối. Bà Toàn thì nhớ từng món ông ăn được.",
+  "vi": "Người đó không vi phạm gì đâu: nhìn kỹ lại, họ đang chìm!",
   "en": ""
  },
  {
-  "vi": "Lập trình viên đang giảm cân",
+  "vi": "Người đang chìm mà cứu hộ tưởng họ nghịch, chỉ thổi còi nhắc.",
   "en": ""
  },
  {
-  "vi": "Chạy bộ mỗi sáng, đếm từng muỗng dầu. Không chiên, không mỡ, nhưng mê đồ cay.",
+  "vi": "không nhận ra người đuối nước",
   "en": ""
  },
  {
-  "vi": "Bán tạp hóa, nhà bảy miệng ăn",
+  "vi": "📣 Tuýt! Người đó không phản ứng gì, đầu vẫn ngửa ra sau, miệng ngang mặt nước…",
   "en": ""
  },
  {
-  "vi": "Con cháu ở chung một nhà, ăn đậm đà, tiền chợ tính từng đồng.",
+  "vi": "Ở đó có ai làm sai đâu. Ồn ào, té nước mà đứng vững là đang chơi thôi.",
   "en": ""
  },
  {
-  "vi": "Nhà chị Mai",
+  "vi": "Đang bơi đàng hoàng mà bị thổi còi nhắc.",
   "en": ""
  },
  {
-  "vi": "Bé Bin đi học về là đòi ăn liền.",
+  "vi": "thổi còi nhầm",
   "en": ""
  },
  {
-  "vi": "Nhà ông Toàn",
+  "vi": "Nhắc cho đúng chuyện người ta đang làm thì họ mới nghe.",
   "en": ""
  },
  {
-  "vi": "Bà Toàn dặn: ông vừa đi tái khám huyết áp về.",
+  "vi": "Bị thổi còi nhắc một chuyện mình không làm.",
   "en": ""
  },
  {
-  "vi": "Nhà anh Khoa",
+  "vi": "nhắc sai luật",
   "en": ""
  },
  {
-  "vi": "Anh Khoa với chị Vy ăn tối sau giờ chạy bộ.",
+  "vi": "Đang cứu người rồi.",
   "en": ""
  },
  {
-  "vi": "Nhà cô Lệ",
+  "vi": "Bình tĩnh nhìn lại từng khu đã.",
   "en": ""
  },
  {
-  "vi": "Mấy đứa cháu đi học về là đói meo.",
+  "vi": "Khoan! Người đó đứng được, đang cười. Người đuối nước thật thì im lặng, không vẫy được.",
   "en": ""
  },
  {
-  "vi": "Chợ phường đông vừa, đồ tươi đủ cả.",
+  "vi": "Còi báo động vang lên mà không ai gặp nạn, cả hồ hoảng hồn.",
   "en": ""
  },
  {
-  "vi": "Mưa sáng, chợ vắng: rau đắt hơn một xu mỗi phần.",
+  "vi": "báo động nhầm",
   "en": ""
  },
  {
-  "vi": "Nhà có khách tới chơi: thêm hai người ăn, tiền chợ cũng nhiều hơn.",
+  "vi": "🚨 Bạn thổi còi dài, nhảy khỏi ghế… người đó đứng dậy, nước chỉ tới ngực, ngơ ngác nhìn bạn.",
   "en": ""
  },
  {
-  "vi": "Cuối tháng",
+  "vi": "Người chìm cả phút rưỡi mới có còi báo động.",
   "en": ""
  },
  {
-  "vi": "Cuối tháng, tiền chợ eo hẹp: chọn món vừa túi tiền.",
+  "vi": "báo động chậm",
   "en": ""
  },
  {
-  "vi": "“Ngon quá, cả nhà ăn sạch nồi!”",
+  "vi": "Chưa có ai cần cứu.",
   "en": ""
  },
  {
-  "vi": "“Cơm nhà đúng nghĩa luôn đó.”",
+  "vi": "Gọi hỗ trợ hay tự làm?",
   "en": ""
  },
  {
-  "vi": "“Lần sau để ý giúp chị chút nhé.”",
+  "vi": "Ba hồi còi gọi anh! Một mình vừa cứu vừa trông cả hồ là không được.",
   "en": ""
  },
  {
-  "vi": "“Cũng được, mà chưa được như lần trước.”",
+  "vi": "Cứu hộ xuống cứu người, cả hồ không ai trông, không ai gọi 115.",
   "en": ""
  },
  {
-  "vi": "“Hôm nay chị bớt chút công nhé, sai thế là phải chịu.”",
+  "vi": "không gọi hỗ trợ",
   "en": ""
  },
  {
-  "vi": "“Chị trừ một ít, coi như nhắc em.”",
+  "vi": "🤐 Bạn tự làm một mình. Ghế trực trống, cả hồ vẫn bơi như không có chuyện gì.",
   "en": ""
  },
  {
-  "vi": "“Bữa này chị chỉ tính nửa công thôi.”",
+  "vi": "Lễ tân gọi 115, anh Hải mang máy AED và hộp sơ cứu chạy tới.",
   "en": ""
  },
  {
-  "vi": "Bé Bin ăn xế",
+  "vi": "Đã đưa người vào bờ rồi.",
   "en": ""
  },
  {
-  "vi": "Bé Bin ngủ trưa dậy đòi ăn. Em hấp giúp chị chén trứng thịt bằm, cắt nhỏ cho bé nha.",
+  "vi": "Chọn cách cứu.",
   "en": ""
  },
  {
-  "vi": "Trứng, thịt bằm trong tủ lạnh.",
+  "vi": "Cách đó vừa không được, thử cách khác.",
   "en": ""
  },
  {
-  "vi": "Chè cho cả nhà",
+  "vi": "Xa quá hoặc người không còn tự bám được. Phải xuống nước cùng phao ống thôi.",
   "en": ""
  },
  {
-  "vi": "Tối nay cả nhà xem phim, em nấu giúp chị nồi chè đậu xanh, ngọt vừa thôi.",
+  "vi": "Sào không tới được giữa làn đâu. Ném phao hoặc xuống cùng phao ống.",
   "en": ""
  },
  {
-  "vi": "Đậu xanh ngâm sẵn từ sáng.",
+  "vi": "Mất mấy chục giây với cách không tới được người đang chìm.",
   "en": ""
  },
  {
-  "vi": "Cháo cho ông",
+  "vi": "chọn cách cứu không tới",
   "en": ""
  },
  {
-  "vi": "Ông ăn cơm không quen, con nấu giúp bà nồi cháo thịt bằm thật nhừ, nhạt muối nghe.",
+  "vi": "Không bao giờ xuống tay không! Người đuối nước ôm ghì là chìm cả hai. Quàng phao ống vào.",
   "en": ""
  },
  {
-  "vi": "Gạo, thịt bằm có sẵn trong bếp.",
+  "vi": "Cứu hộ nhảy xuống tay không, bị người đuối nước ôm ghì chìm cả hai.",
   "en": ""
  },
  {
-  "vi": "Chè đậu xanh cho bà",
+  "vi": "xuống nước không mang phao",
   "en": ""
  },
  {
-  "vi": "Bà thèm chén chè đậu xanh, con nấu ít đường thôi nghe, bà kiêng ngọt.",
+  "vi": "Với được từ bờ mà vẫn rời ghế nhảy xuống, mất thêm thời gian.",
   "en": ""
  },
  {
-  "vi": "Đậu xanh trong hũ trên kệ.",
+  "vi": "chưa chọn cách an toàn nhất",
   "en": ""
  },
  {
-  "vi": "Thêm đĩa rau xào",
+  "vi": "🪝 Bạn nằm thấp trên bờ, chìa sào. Bàn tay bé xíu chụp lấy đầu sào, bạn kéo vào thành.",
   "en": ""
  },
  {
-  "vi": "Bạn anh ghé ăn ké, em xào thêm đĩa bí xanh nha, ít dầu thôi.",
+  "vi": "⭕ Phao tròn bay qua người, rơi ngay tầm tay. Họ ôm chặt, bạn kéo dây vào thành.",
   "en": ""
  },
  {
-  "vi": "Bí xanh còn trong tủ lạnh.",
+  "vi": "🛟 Bạn bước dài xuống nước, mắt không rời người, đưa phao ống tới. Kéo vào thành, anh Hải đỡ lên bờ.",
   "en": ""
  },
  {
-  "vi": "Rau luộc ăn tối",
+  "vi": "🏊 Bạn nhảy xuống tay không. Người đuối nước ôm ghì lấy cổ bạn, cả hai chìm một nhịp; anh Hải ném phao xuống kịp.",
   "en": ""
  },
  {
-  "vi": "Tối anh chỉ ăn rau, em luộc giúp anh đĩa rau muống nha.",
+  "vi": "Đưa người lên bờ trước đã.",
   "en": ""
  },
  {
-  "vi": "Rau muống còn một bó.",
+  "vi": "Đã xem rồi.",
   "en": ""
  },
  {
-  "vi": "Thêm đĩa rau cho cháu",
+  "vi": "Đã sơ cứu rồi.",
   "en": ""
  },
  {
-  "vi": "Mấy đứa cháu ăn hết rau rồi, con luộc thêm đĩa nữa nghe, nêm đậm chút.",
+  "vi": "Chọn cách sơ cứu.",
   "en": ""
  },
  {
-  "vi": "Rau muống mua dư hôm qua.",
+  "vi": "Gọi to, vỗ vai, nhìn ngực mười giây xem có thở không đã rồi mới quyết.",
   "en": ""
  },
  {
-  "vi": "Nồi cháo cho đứa út",
+  "vi": "Khoan! Làm vậy là nguy cho người ta. Nhìn lại: họ có tỉnh, có thở không?",
   "en": ""
  },
  {
-  "vi": "Thằng út hơi sốt, con nấu giúp cô nồi cháo thịt bằm, băm nhỏ nghe.",
+  "vi": "Chưa xem tỉnh hay thở mà đã quyết cách sơ cứu.",
   "en": ""
  },
  {
-  "vi": "Gạo, thịt bằm có sẵn.",
+  "vi": "chưa đánh giá trước khi sơ cứu",
   "en": ""
  },
  {
-  "vi": "Chị Mai: “Bé Bin hỏi hoài: mai cô nấu cơm có tới nữa không mẹ?”",
+  "vi": "sơ cứu sai, nguy hiểm",
   "en": ""
  },
  {
-  "vi": "Chị Mai được lên trưởng phòng, nhắn cảm ơn vì tối nào cũng có cơm nóng.",
+  "vi": "sơ cứu chưa đúng",
   "en": ""
  },
  {
-  "vi": "Bé Bin vẽ tặng bức tranh cả nhà ngồi quanh mâm cơm, có cả bạn đeo tạp dề.",
+  "vi": "Đưa người vào bờ trước đã.",
   "en": ""
  },
  {
-  "vi": "Chị Mai giới thiệu bạn cho mấy nhà trong chung cư.",
+  "vi": "Sơ cứu, theo dõi người vừa cứu lên đã.",
   "en": ""
  },
  {
-  "vi": "Ông Toàn: “Cá hấp mềm, ông ăn được hết chén cơm.”",
+  "vi": "Còn khu chưa nhìn tới. Quét đủ năm khu rồi mới kết thúc vòng.",
   "en": ""
  },
  {
-  "vi": "Bà Toàn khoe huyết áp ông tháng này ổn hơn hẳn.",
+  "vi": "Nhìn lại: có người không bơi, không kêu, người dựng đứng hoặc nằm im. Đó là người đang chìm!",
   "en": ""
  },
  {
-  "vi": "Ông Toàn chép tặng bạn một bài thơ về bữa cơm nhà.",
+  "vi": "Còn người đang làm sai nội quy mà chưa ai nhắc.",
   "en": ""
  },
  {
-  "vi": "Anh Khoa: “Ăn kiêng mà vẫn thấy ngon, lạ ghê.”",
+  "vi": "bỏ sót khu",
   "en": ""
  },
  {
-  "vi": "Anh Khoa xuống được ba ký, rủ bạn chạy bộ cuối tuần.",
+  "vi": "Có người chìm lặng lẽ mà cứu hộ không thấy. Anh Hải từ phòng trực chạy ra kéo lên.",
   "en": ""
  },
  {
-  "vi": "Anh Khoa với chị Vy mời bạn dự đám cưới nhỏ ở quê.",
+  "vi": "bỏ sót người đuối nước",
   "en": ""
  },
  {
-  "vi": "Cô Lệ: “Tiền chợ dư ra, cô để dành mua sữa cho mấy đứa nhỏ.”",
+  "vi": "bỏ qua người vi phạm nội quy",
   "en": ""
  },
  {
-  "vi": "Cô Lệ dúi cho bạn bịch khô cá nhà làm.",
+  "vi": "Cứu người mà không gọi ai, cả hồ không người trông.",
   "en": ""
  },
  {
-  "vi": "Cô Lệ nói cả xóm ai cần người nấu cơm cũng chỉ tới bạn.",
+  "vi": "có anh Hải hỗ trợ",
   "en": ""
  },
  {
-  "vi": "Giới thiệu nghề: nấu cơm gia đình",
+  "vi": "Vòng quét: CÓ NGƯỜI CHÌM, anh Hải phát hiện và kéo lên.",
   "en": ""
  },
  {
-  "vi": "Cô Hạnh giới thiệu bạn tới nấu cơm cho các nhà quen trong phường. Mỗi ngày một nhà: nghe dặn, lên thực đơn, đi chợ vừa túi tiền, về nấu cho kịp bữa rồi tính sổ chợ rõ ràng.",
+  "vi": "Vòng quét đủ năm khu, không có gì bất thường.",
   "en": ""
  },
  {
-  "vi": "Lên thực đơn: một canh, một mặn, một xào, một rau",
+  "vi": "Canh hồ, một vòng quét.",
   "en": ""
  },
  {
-  "vi": "Nhớ người trong nhà: bé nhỏ, ông bà, người ăn kiêng",
+  "vi": "Canh hồ và cứu người.",
   "en": ""
  },
  {
-  "vi": "Đi chợ: xem kỹ đồ tươi, mua đủ phần, xin hóa đơn",
+  "vi": "📋 Anh Hải lập biên bản sự cố, cả nhóm họp rút kinh nghiệm.",
   "en": ""
  },
  {
-  "vi": "Rửa, cắt, nêm, canh lửa từng món",
+  "vi": "✅ Hết vòng quét. Mặt hồ yên.",
   "en": ""
  },
  {
-  "vi": "Món lâu bắc trước, các món lên mâm cùng lúc",
+  "vi": "⚠️ Hết vòng quét.",
   "en": ""
  },
  {
-  "vi": "Ghi sổ chợ, gửi lại tiền thừa",
+  "vi": "Hỏi hay nhìn?",
   "en": ""
  },
  {
-  "vi": "Chị Mai: bé Bin năm tuổi",
+  "vi": "Chọn cách cho vào.",
   "en": ""
  },
  {
-  "vi": "Ông Toàn: ăn mềm, nhạt muối",
+  "vi": "Quyết cho cả ba người đã.",
   "en": ""
  },
  {
-  "vi": "Anh Khoa: ăn kiêng mà mê cay",
+  "vi": "Cho vào hay không mà chẳng nhìn, chẳng hỏi.",
   "en": ""
  },
  {
-  "vi": "Cô Lệ: nhà bảy người, tiền chợ eo hẹp",
+  "vi": "quyết khi chưa hỏi, chưa nhìn",
   "en": ""
  },
  {
-  "vi": "Mưa sáng, nhà có khách, cuối tháng",
+  "vi": "Cho xuống nước khi chưa đủ điều kiện.",
   "en": ""
  },
  {
-  "vi": "Thực đơn hợp cả nhà",
+  "vi": "cho xuống nước khi chưa đủ điều kiện",
   "en": ""
  },
  {
-  "vi": "Đồ tươi, đủ ăn",
+  "vi": "Đủ điều kiện mà bị chặn ở cổng, đòi hoàn vé.",
   "en": ""
  },
  {
-  "vi": "Chín tới, vừa miệng",
+  "vi": "chặn người đủ điều kiện",
   "en": ""
  },
  {
-  "vi": "Món nào lên mâm cũng nóng",
+  "vi": "Cổng: soát đúng hết.",
   "en": ""
  },
  {
-  "vi": "Sổ chợ rõ từng xu",
+  "vi": "Soát người ở cổng xuống hồ.",
   "en": ""
  },
  {
-  "vi": "Chủ nhà gọi điện dặn thêm",
+  "vi": "Đã xem sổ đón rồi.",
   "en": ""
  },
  {
-  "vi": "Điện thoại rung: “Em ơi, bữa nay bé Bin hơi ho, nhớ đừng cho đá vào nước nha, rau luộc chín kỹ giúp chị.”",
+  "vi": "mẹ ký sổ rồi đi chợ, có ghi số điện thoại",
   "en": ""
  },
  {
-  "vi": "Ghi lại lời dặn, dán lên cửa tủ lạnh",
+  "vi": "phụ huynh ký sổ, ngồi ở khu chờ",
   "en": ""
  },
  {
-  "vi": "Tờ giấy dán ngay cửa tủ lạnh, nấu tới đâu nhìn tới đó.",
+  "vi": "📋 Sổ đón:",
   "en": ""
  },
  {
-  "vi": "Dạ, em nhớ rồi",
+  "vi": "Bé không có trong lớp.",
   "en": ""
  },
  {
-  "vi": "Chị Mai cúp máy. Hy vọng là nhớ thật.",
+  "vi": "Xem sổ đón trước đã.",
   "en": ""
  },
  {
-  "vi": "Bình ga sắp hết",
+  "vi": "Phụ huynh của bé đang ở khu chờ rồi.",
   "en": ""
  },
  {
-  "vi": "Lửa bếp ga cứ phập phù, nghiêng bình nghe nhẹ tênh. Bình này chắc chỉ còn đủ một món.",
+  "vi": "Bé đã bơi thử rồi.",
   "en": ""
  },
  {
-  "vi": "Gọi đại lý đổi bình ngay, ứng tiền rồi xin hóa đơn",
+  "vi": "Chọn màu vòng tay.",
   "en": ""
  },
  {
-  "vi": "Chủ nhà trả lại sau",
+  "vi": "Nội dung này không có trong giáo án.",
   "en": ""
  },
  {
-  "vi": "Mười lăm phút sau có bình mới. Hóa đơn kẹp vào sổ chợ, chủ nhà gửi lại tiền đủ.",
+  "vi": "Đã dạy phần này rồi.",
   "en": ""
  },
  {
-  "vi": "Cứ nấu, hết thì tính",
+  "vi": "Đã đếm rồi.",
   "en": ""
  },
  {
-  "vi": "Đang kho dở thì tắt lửa, phải chạy đi đổi bình, cả nhà chờ cơm hơi lâu.",
+  "vi": "Cho mọi người lên bờ trước rồi mới đếm.",
   "en": ""
  },
  {
-  "vi": "Con mèo nhà rình cá",
+  "vi": "🔢 Đếm đủ người: dưới nước không còn ai, phòng thay đồ cũng trống.",
   "en": ""
  },
  {
-  "vi": "Con mèo mướp của nhà ngồi chễm chệ trên ghế, mắt dán vào rổ cá vừa mua về.",
+  "vi": "Phát vòng tay cho cả ba bé đã.",
   "en": ""
  },
  {
-  "vi": "Đậy lồng bàn, cất cá vào tủ lạnh",
+  "vi": "Còn bé chưa bơi thử. Bơi thử rồi mới phát vòng.",
   "en": ""
  },
  {
-  "vi": "Mèo ngáp một cái rồi bỏ đi tìm chỗ nằm.",
+  "vi": "Lên bờ là điểm danh, đếm đủ đầu đã.",
   "en": ""
  },
  {
-  "vi": "Xua mèo ra sân",
+  "vi": "phát vòng cao hơn khả năng",
   "en": ""
  },
  {
-  "vi": "Mèo ra sân được một lúc rồi lại lẻn vào.",
+  "vi": "phát vòng thấp hơn khả năng",
   "en": ""
  },
  {
-  "vi": "Cho mèo miếng cá cho xong",
+  "vi": "Phát vòng tay mà không cho bơi thử.",
   "en": ""
  },
  {
-  "vi": "Người nấu cơm cho mèo ăn cá của nhà, không hỏi một câu.",
+  "vi": "chưa bơi thử",
   "en": ""
  },
  {
-  "vi": "Mèo ăn xong còn đòi thêm. Chủ nhà nhìn rổ cá vơi đi, không nói gì.",
+  "vi": "dạy thiếu giáo án",
   "en": ""
  },
  {
-  "vi": "Hàng xóm sang hỏi mượn",
+  "vi": "Tan lớp mà không điểm danh, không ai chắc đủ bé đã lên bờ.",
   "en": ""
  },
  {
-  "vi": "Bà hàng xóm ló đầu qua cửa: “Con ơi, cho bà mượn cái nồi áp suất của nhà một bữa nghe.”",
+  "vi": "không điểm danh",
   "en": ""
  },
  {
-  "vi": "Dạ để con nhắn hỏi chủ nhà đã",
+  "vi": "Bé học bơi mà phụ huynh không có ở hồ.",
   "en": ""
  },
  {
-  "vi": "Chủ nhà nhắn lại: “Cho bà mượn đi em.” Bà hàng xóm cảm ơn rối rít.",
+  "vi": "phụ huynh không có mặt",
   "en": ""
  },
  {
-  "vi": "Đưa luôn cho bà",
+  "vi": "Lớp bơi: bơi thử đủ, vòng tay đúng, điểm danh đủ.",
   "en": ""
  },
  {
-  "vi": "Người nấu cơm tự cho hàng xóm mượn đồ, không hỏi chủ nhà.",
+  "vi": "Dạy lớp bơi trẻ em.",
   "en": ""
  },
  {
-  "vi": "Tối chủ nhà tìm nồi áp suất không thấy, hơi phật ý.",
+  "vi": "Đã đeo găng rồi.",
   "en": ""
  },
  {
-  "vi": "Dạ con không dám",
+  "vi": "🧤 Đeo găng tay sạch từ hộp sơ cứu.",
   "en": ""
  },
  {
-  "vi": "Bà hàng xóm gật gù rồi về.",
+  "vi": "Khoan đã, làm vậy có thể làm người ta nguy hơn. Nghĩ lại nhé.",
   "en": ""
  },
  {
-  "vi": "Mưa ướt hết giỏ chợ",
+  "vi": "Đeo găng trước khi chạm vào vết thương, máu nhé.",
   "en": ""
  },
  {
-  "vi": "Mưa xối xả lúc ra chợ, giỏ đi chợ với tờ danh sách món ướt sũng.",
+  "vi": "Sơ cứu chạm máu, vết thương mà không đeo găng.",
   "en": ""
  },
  {
-  "vi": "Mượn túi nilon bọc giỏ, chép lại danh sách",
+  "vi": "chưa đeo găng",
   "en": ""
  },
  {
-  "vi": "Giỏ khô ráo, danh sách rõ ràng, đi chợ không sót món nào.",
+  "vi": "Được việc nhưng chưa chu đáo.",
   "en": ""
  },
  {
-  "vi": "Cứ đi, về rồi tính",
+  "vi": "sơ cứu chưa trọn",
   "en": ""
  },
  {
-  "vi": "Về tới nhà, mấy bó rau dập nát vì nước mưa.",
+  "vi": "sơ cứu làm người ta gặp nguy",
   "en": ""
  },
  {
-  "vi": "Khách tới sớm hơn hẹn",
+  "vi": "Đã nghe bản tin rồi.",
   "en": ""
  },
  {
-  "vi": "Khách của nhà tới sớm cả tiếng, ngồi chờ ở phòng khách. Chủ nhà nhắn: “Em pha giúp ấm trà mời khách nha.”",
+  "vi": "📻 Bản tin trên loa phường: chiều nay có dông, có thể kèm lốc và sét. Nghe sấm là vào nơi trú kiên cố.",
   "en": ""
  },
  {
-  "vi": "Pha ấm trà, bưng đĩa trái cây ra mời",
+  "vi": "Mọi người đã lên bờ rồi.",
   "en": ""
  },
  {
-  "vi": "Khách vui vẻ ngồi chờ, khen nhà có người nấu cơm chu đáo.",
+  "vi": "Chọn chỗ trú.",
   "en": ""
  },
  {
-  "vi": "Nấu xong rồi pha",
+  "vi": "Mái bạt, dù che nắng, gốc cây không che được sét. Vào sảnh có mái bê tông.",
   "en": ""
  },
  {
-  "vi": "Khách ngồi bấm điện thoại, chủ nhà hơi ngại.",
+  "vi": "Trú dông dưới gốc cây giữa sân, sét đánh trúng cây bàng góc sân bên kia.",
   "en": ""
  },
  {
-  "vi": "Canh hơi mặn với ông",
+  "vi": "trú dưới gốc cây",
   "en": ""
  },
  {
-  "vi": "Bà Toàn múc thử chén canh, nhăn mặt: “Con ơi, canh này ông ăn không được đâu, mặn quá, ông đang uống thuốc huyết áp.”",
+  "vi": "🌳 Cả hồ dồn dưới gốc bàng. Một tia sét đánh xuống cây bên kia sân, cả đám hét toáng, chạy vào sảnh.",
   "en": ""
  },
  {
-  "vi": "Bạn là bà Toàn, ngày nào cũng canh từng bữa ăn cho ông.",
+  "vi": "Trú dông dưới mái bạt sát mép hồ, gió thổi bạt tung.",
   "en": ""
  },
  {
-  "vi": "Nêm nếm",
+  "vi": "chỗ trú không an toàn",
   "en": ""
  },
  {
-  "vi": "Nồi canh nêm vừa theo khẩu vị người trẻ, chưa nêm nhạt cho ông.",
+  "vi": "⛱️ Mọi người chen dưới mái bạt. Gió giật làm một cây dù bay ngang mặt hồ.",
   "en": ""
  },
  {
-  "vi": "Bà Toàn",
+  "vi": "📣 Ba hồi còi: mời tất cả lên bờ, vào sảnh nhà thay đồ. Anh Hải đứng cửa sảnh, chị Phượng phát khăn.",
   "en": ""
  },
  {
-  "vi": "Ông huyết áp cao, bác sĩ dặn ăn nhạt muối.",
+  "vi": "Trời đã quang. Quyết mở lại hồ thôi.",
   "en": ""
  },
  {
-  "vi": "Nồi canh",
+  "vi": "Có sấm rồi! Cho tất cả lên bờ, vào sảnh ngay, đừng chờ mưa.",
   "en": ""
  },
  {
-  "vi": "Trong nồi còn nhiều nước dùng, bí còn sống, thêm nước được.",
+  "vi": "Sấm rền mà khách vẫn ở dưới nước.",
   "en": ""
  },
  {
-  "vi": "Xin lỗi bà, múc riêng cho ông, thêm nước nấu lại cho nhạt",
+  "vi": "chưa cho lên bờ khi có sấm",
   "en": ""
  },
  {
-  "vi": "Canh hơi mặn nhưng người nấu sửa ngay, nấu riêng cho ông. Chu đáo.",
+  "vi": "Lên bờ hết chưa? Đếm lại người, nhìn cả phòng thay đồ.",
   "en": ""
  },
  {
-  "vi": "Ông Toàn ăn hết chén canh, gật gù: “Vừa rồi đó.”",
+  "vi": "Có người còn ở dưới nước lúc sấm sét mà không ai biết.",
   "en": ""
  },
  {
-  "vi": "Biết lỗi, sửa liền là được.",
+  "vi": "không đếm người",
   "en": ""
  },
  {
-  "vi": "Nhà có người già thì nêm nhạt trước, ai ăn đậm thì chấm thêm.",
+  "vi": "(Có người hỏi: trả lời hay không là tùy bạn.)",
   "en": ""
  },
  {
-  "vi": "Dặn ông ăn ít canh thôi",
+  "vi": "Không ai đang hỏi gì.",
   "en": ""
  },
  {
-  "vi": "Bảo ông ăn ít canh thì ông ăn gì.",
+  "vi": "Chọn câu trả lời.",
   "en": ""
  },
  {
-  "vi": "Ông Toàn ăn cơm với rau luộc, chén canh để nguyên.",
+  "vi": "Dông chưa tới: chờ, xem trời đã.",
   "en": ""
  },
  {
-  "vi": "Thèm chén canh nóng mà không dám ăn.",
+  "vi": "Có sấm rồi mà! Cho lên bờ trước đã.",
   "en": ""
  },
  {
-  "vi": "Nấu cho ông mà ông không ăn được.",
+  "vi": "Mới tạnh đã cho xuống nước, mười phút sau lại có sấm.",
   "en": ""
  },
  {
-  "vi": "“Con nêm có chút xíu à bà”",
+  "vi": "mở lại khi chưa đủ ba mươi phút",
   "en": ""
  },
  {
-  "vi": "Ông đang uống thuốc huyết áp mà còn cãi là có chút xíu.",
+  "vi": "Lên bờ mà không đếm người, không ai chắc hồ đã trống.",
   "en": ""
  },
  {
-  "vi": "Bà Toàn lặng lẽ đổ chén canh, nấu gói mì cho ông.",
+  "vi": "Dông: đóng hồ đúng lúc, chờ đủ ba mươi phút mới mở.",
   "en": ""
  },
  {
-  "vi": "Sức khỏe của ông đâu phải chuyện chút xíu.",
+  "vi": "Đóng hồ vì dông, mở lại an toàn.",
   "en": ""
  },
  {
-  "vi": "Mất một nhà quen vì một muỗng muối.",
+  "vi": "🔓 Mở lại hồ.",
   "en": ""
  },
  {
-  "vi": "Nhà có người già, huyết áp cao: nêm nhạt từ đầu, ai ăn đậm thì chấm thêm nước mắm.",
+  "vi": "Trời quang, khách xuống nước, ông Tư đội mũ cam dẫn đầu.",
   "en": ""
  },
  {
-  "vi": "Sổ chợ lệch hai xu",
-  "en": ""
- },
- {
-  "vi": "Cô Lệ cộng lại sổ chợ, gõ bút xuống bàn: “Tiền đưa ba mươi lăm, hóa đơn ba mươi mốt, sao trả lại cô có hai xu?”",
-  "en": ""
- },
- {
-  "vi": "Sạp rau không có hóa đơn, bạn ghi tay theo trí nhớ.",
-  "en": ""
- },
- {
-  "vi": "Túi tiền",
-  "en": ""
- },
- {
-  "vi": "Giỏ chợ",
-  "en": ""
- },
- {
-  "vi": "Trong túi áo còn hai xu lẻ chưa bỏ vào ví tiền chợ.",
-  "en": ""
- },
- {
-  "vi": "Giá rau",
-  "en": ""
- },
- {
-  "vi": "Chị Tám bán rau xác nhận: bó rau muống hai xu chứ không phải bốn.",
-  "en": ""
- },
- {
-  "vi": "Lục lại túi, gửi đủ hai xu, nhờ chị Tám nhắn giá cho cô",
-  "en": ""
- },
- {
-  "vi": "Sổ chợ lệch chút xíu nhưng người nấu kiểm lại đàng hoàng, gửi đủ từng xu.",
-  "en": ""
- },
- {
-  "vi": "Cô Lệ cười: “Vậy mới yên tâm giao tiền chợ chớ.”",
-  "en": ""
- },
- {
-  "vi": "Tiền chợ là tiền cả nhà, phải rõ.",
-  "en": ""
- },
- {
-  "vi": "Sạp nào cũng xin hóa đơn thì khỏi lo.",
-  "en": ""
- },
- {
-  "vi": "Bù hai xu tiền túi cho xong",
-  "en": ""
- },
- {
-  "vi": "Bù tiền thì được, nhưng sổ vẫn không rõ đi đâu.",
-  "en": ""
- },
- {
-  "vi": "Cô Lệ cầm hai xu, vẫn còn nhíu mày.",
-  "en": ""
- },
- {
-  "vi": "Cô cần biết tiền đi đâu, đâu cần con bù.",
-  "en": ""
- },
- {
-  "vi": "Lần sau ghé sạp chị ghi hóa đơn cho.",
-  "en": ""
- },
- {
-  "vi": "“Con nhớ là đúng mà cô”",
-  "en": ""
- },
- {
-  "vi": "Tiền chợ lệch mà còn nói nhớ đúng. Không giao tiền nữa.",
-  "en": ""
- },
- {
-  "vi": "Cô Lệ cất sổ, mấy hôm sau nhờ người khác đi chợ.",
-  "en": ""
- },
- {
-  "vi": "Tiền lệch mà không chịu xem lại.",
-  "en": ""
- },
- {
-  "vi": "Mất lòng tin vì hai xu thì tiếc lắm.",
-  "en": ""
- },
- {
-  "vi": "Sạp nào cũng xin hóa đơn, tiền thừa để riêng một túi. Lệch thì kiểm lại trước mặt chủ nhà.",
-  "en": ""
- },
- {
-  "vi": "Bé Bin không chịu ăn rau",
-  "en": ""
- },
- {
-  "vi": "Bé Bin đẩy chén rau ra: “Con hông ăn rau đâu, rau dai nhách à!” Chị Mai nhìn bạn, cười trừ.",
-  "en": ""
- },
- {
-  "vi": "Đĩa rau",
-  "en": ""
- },
- {
-  "vi": "Mâm cơm",
-  "en": ""
- },
- {
-  "vi": "Rau cắt khúc dài, bé năm tuổi khó nhai.",
-  "en": ""
- },
- {
-  "vi": "Bé thích ăn rau chan nước canh, cắt nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Rau còn trong rổ, cắt nhỏ chan canh được.",
-  "en": ""
- },
- {
-  "vi": "Cắt nhỏ chén rau, chan chút nước canh cho bé",
-  "en": ""
- },
- {
-  "vi": "Bé nhà tôi không chịu ăn rau mà người nấu dỗ được, cắt nhỏ chan canh. Khéo quá.",
-  "en": ""
- },
- {
-  "vi": "Bé Bin ăn hết chén, còn xin thêm.",
-  "en": ""
- },
- {
-  "vi": "Bé chịu ăn rau là mừng rồi.",
-  "en": ""
- },
- {
-  "vi": "Rau mềm, ngon!",
-  "en": ""
- },
- {
-  "vi": "Hứa cho bé kẹo nếu ăn hết",
-  "en": ""
- },
- {
-  "vi": "Dỗ bằng kẹo thì bé ăn, mà mẹ không thích lắm.",
-  "en": ""
- },
- {
-  "vi": "Bé Bin ăn vội mấy cọng rồi chìa tay xin kẹo.",
-  "en": ""
- },
- {
-  "vi": "Chị đang tập cho bé bớt ăn kẹo.",
-  "en": ""
- },
- {
-  "vi": "“Ăn đi, rau tốt cho con mà”",
-  "en": ""
- },
- {
-  "vi": "Ép bé ăn, bé khóc cả bữa.",
-  "en": ""
- },
- {
-  "vi": "Bé Bin mếu máo, chị Mai phải bế ra dỗ.",
-  "en": ""
- },
- {
-  "vi": "Con hông thích!",
-  "en": ""
- },
- {
-  "vi": "Bé năm tuổi, phải dỗ chứ đừng ép.",
-  "en": ""
- },
- {
-  "vi": "Nhà có bé nhỏ: cắt nhỏ, nấu mềm, không cay. Bé không chịu ăn thì dỗ, đừng ép.",
-  "en": ""
- },
- {
-  "vi": "Vào việc thôi! Cô Hạnh vừa nhắn địa chỉ nhà hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Thao tác không có trong việc nấu cơm nhà.",
-  "en": ""
- },
- {
-  "vi": "Việc này không thuộc việc nấu cơm nhà.",
-  "en": ""
- },
- {
-  "vi": "Nghe chủ nhà dặn đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Lên thực đơn xong đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Việc này làm ở chợ.",
-  "en": ""
- },
- {
-  "vi": "Việc này làm trong bếp.",
-  "en": ""
- },
- {
-  "vi": "Dọn cơm xong mới tính sổ chợ.",
-  "en": ""
- },
- {
-  "vi": "Bữa này xong rồi.",
-  "en": ""
- },
- {
-  "vi": "Chưa tới bước này.",
-  "en": ""
- },
- {
-  "vi": "Chọn món cho nhóm nào?",
-  "en": ""
- },
- {
-  "vi": "Món này không có trong nhóm.",
-  "en": ""
- },
- {
-  "vi": "món không hợp người trong nhà",
-  "en": ""
- },
- {
-  "vi": "quên khẩu vị nhà",
-  "en": ""
- },
- {
-  "vi": "Mắt trong, mang đỏ tươi, ấn vào thịt đàn hồi.",
-  "en": ""
- },
- {
-  "vi": "Mắt đục, mang thâm, ấn vào thịt lõm không lên.",
-  "en": ""
- },
- {
-  "vi": "Thịt hồng tươi, mỡ trắng, sờ khô ráo.",
-  "en": ""
- },
- {
-  "vi": "Thịt tái màu, sờ nhớt tay, hơi có mùi.",
-  "en": ""
- },
- {
-  "vi": "Lá xanh mướt, cuống giòn, bẻ nghe tách.",
-  "en": ""
- },
- {
-  "vi": "Lá úa vàng, cuống dập, héo rũ.",
-  "en": ""
- },
- {
-  "vi": "Vỏ trứng nhám, lắc nhẹ không nghe óc ách.",
-  "en": ""
- },
- {
-  "vi": "Lắc nhẹ nghe óc ách, vỏ bóng láng.",
-  "en": ""
- },
- {
-  "vi": "Đậu trắng mịn, thơm mùi đậu nành.",
-  "en": ""
- },
- {
-  "vi": "Đậu ngả vàng, sờ nhớt, hơi chua.",
-  "en": ""
- },
- {
-  "vi": "Món này không có trong danh sách đi chợ.",
-  "en": ""
- },
- {
-  "vi": "Mua rồi. Trả lại trước rồi hẵng đổi.",
-  "en": ""
- },
- {
-  "vi": "Người bán đã lựa cho phần ngon nhất rồi.",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn cũ không tính món này: xin ghi lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Món này chưa mua.",
-  "en": ""
- },
- {
-  "vi": "Đã xin bớt ở sạp này rồi, trả lại thì ngại lắm.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay không mua gì ở sạp này.",
-  "en": ""
- },
- {
-  "vi": "Mua ít quá, xin bớt người ta cười cho.",
-  "en": ""
- },
- {
-  "vi": "Xin bớt một lần thôi, người ta còn buôn bán.",
-  "en": ""
- },
- {
-  "vi": "Chưa mua gì ở sạp này.",
-  "en": ""
- },
- {
-  "vi": "Đã có hóa đơn rồi.",
-  "en": ""
- },
- {
-  "vi": "Món này không có trong bữa nay.",
-  "en": ""
- },
- {
-  "vi": "Dọn bữa chính xong đã rồi nấu thêm nhé.",
-  "en": ""
- },
- {
-  "vi": "Nồi cơm đang nấu rồi.",
-  "en": ""
- },
- {
-  "vi": "Rửa sạch rồi.",
-  "en": ""
- },
- {
-  "vi": ", để ráo.",
-  "en": ""
- },
- {
-  "vi": ", ngâm nước muối loãng.",
-  "en": ""
- },
- {
-  "vi": "Cắt thế nào?",
-  "en": ""
- },
- {
-  "vi": "Món đang trên bếp rồi.",
-  "en": ""
- },
- {
-  "vi": ", bày ra đĩa.",
-  "en": ""
- },
- {
-  "vi": "Nêm thế nào?",
-  "en": ""
- },
- {
-  "vi": "Món ăn sống, chấm nước mắm là được.",
-  "en": ""
- },
- {
-  "vi": "Món đã tắt bếp rồi.",
-  "en": ""
- },
- {
-  "vi": "Lửa nhỏ, vừa hay lớn?",
-  "en": ""
- },
- {
-  "vi": "Món này ăn sống, không cần bắc bếp.",
-  "en": ""
- },
- {
-  "vi": "Sơ chế, cắt xong đã rồi hẵng bắc lên bếp.",
-  "en": ""
- },
- {
-  "vi": "Món này nấu rồi.",
-  "en": ""
- },
- {
-  "vi": "Món này chưa bắc lên bếp.",
-  "en": ""
- },
- {
-  "vi": "Món ăn sống, không cần hâm.",
-  "en": ""
- },
- {
-  "vi": "Món này chưa nấu xong.",
-  "en": ""
- },
- {
-  "vi": "Món còn nóng mà.",
-  "en": ""
- },
- {
-  "vi": "chưa rửa sạch",
-  "en": ""
- },
- {
-  "vi": "đồ ăn chưa chín",
-  "en": ""
- },
- {
-  "vi": "quá lửa",
-  "en": ""
- },
- {
-  "vi": "nấu cháy",
-  "en": ""
- },
- {
-  "vi": "sai lửa",
-  "en": ""
- },
- {
-  "vi": "quên nêm",
-  "en": ""
- },
- {
-  "vi": "nêm sai khẩu vị",
-  "en": ""
- },
- {
-  "vi": "đồ ăn nguội",
-  "en": ""
- },
- {
-  "vi": "cắt chưa nhỏ",
-  "en": ""
- },
- {
-  "vi": "Chưa nấu cơm.",
-  "en": ""
- },
- {
-  "vi": "Bày chén đũa đã nhé.",
-  "en": ""
- },
- {
-  "vi": "mua đồ không tươi",
-  "en": ""
- },
- {
-  "vi": "Đồ ăn ít quá, cả nhà gắp hai lượt là hết.",
-  "en": ""
- },
- {
-  "vi": "mua thiếu phần",
-  "en": ""
- },
- {
-  "vi": "nhão",
-  "en": ""
- },
- {
-  "vi": "nấu cơm sai nước",
-  "en": ""
- },
- {
-  "vi": "Thiếu chén đũa, có người phải ngồi chờ.",
-  "en": ""
- },
- {
-  "vi": "Bày dư chén đũa, nhà có bấy nhiêu người.",
-  "en": ""
- },
- {
-  "vi": "bày sai số chén",
-  "en": ""
- },
- {
-  "vi": "Chén nước mắm chấm chưa vừa.",
-  "en": ""
- },
- {
-  "vi": "Cả nhà quây quần, gắp lia lịa.",
-  "en": ""
- },
- {
-  "vi": "Cả nhà ngồi vào mâm, có người nhíu mày.",
-  "en": ""
- },
- {
-  "vi": "Sạp này không mua gì.",
-  "en": ""
- },
- {
-  "vi": "Đã ghi vào sổ rồi.",
-  "en": ""
- },
- {
-  "vi": "thiếu hóa đơn",
-  "en": ""
- },
- {
-  "vi": "ngon, vừa miệng",
-  "en": ""
- },
- {
-  "vi": "nhớ người trong nhà",
-  "en": ""
- },
- {
-  "vi": "quên lời dặn",
-  "en": ""
- },
- {
-  "vi": "Thực đơn hợp nhà",
-  "en": ""
- },
- {
-  "vi": "hợp cả nhà",
-  "en": ""
- },
- {
-  "vi": "chưa hợp người trong nhà",
-  "en": ""
- },
- {
-  "vi": "tươi ngon, đủ phần",
-  "en": ""
- },
- {
-  "vi": "chợ chưa khéo",
-  "en": ""
- },
- {
-  "vi": "Lên mâm nóng hổi",
-  "en": ""
- },
- {
-  "vi": "món nào cũng nóng",
-  "en": ""
- },
- {
-  "vi": "có món nguội",
-  "en": ""
- },
- {
-  "vi": "Sổ chợ rõ ràng",
-  "en": ""
- },
- {
-  "vi": "rõ từng xu",
-  "en": ""
- },
- {
-  "vi": "Rửa → cắt → bắc bếp đúng lửa, nêm theo nhà → tắt bếp khi chín tới → mang ra.",
-  "en": ""
- },
- {
-  "vi": "Nghe dặn → chọn một canh, một mặn, một xào, một rau hợp cả nhà → đi chợ: xem kỹ, mua đủ phần, xin hóa đơn → nấu cơm, bày chén, nếm nước mắm → món lâu bắc trước → dọn cơm → ghi sổ, gửi tiền thừa.",
-  "en": ""
- },
- {
-  "vi": "Đã nhặt rau, gọt củ, rửa rổ rá sẵn sàng.",
-  "en": ""
- },
- {
-  "vi": "Đã rửa chén bát, lau bếp sạch sẽ.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu nấu cơm nhà sai.",
-  "en": ""
- },
- {
-  "vi": "Món trong bếp sai.",
-  "en": ""
- },
- {
-  "vi": "Phiên bản việc nấu cơm nhà không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Trạng thái việc nấu cơm nhà sai.",
-  "en": ""
- },
- {
-  "vi": "Thực đơn sai.",
-  "en": ""
- },
- {
-  "vi": "Giỏ chợ sai.",
-  "en": ""
- },
- {
-  "vi": "Giỏ chợ không khớp thực đơn.",
-  "en": ""
- },
- {
-  "vi": "Tiền chợ sai.",
-  "en": ""
- },
- {
-  "vi": "Ví tiền chợ sai.",
-  "en": ""
- },
- {
-  "vi": "Món trong bếp không khớp thực đơn.",
-  "en": ""
- },
- {
-  "vi": "Mâm cơm sai.",
-  "en": ""
- },
- {
-  "vi": "Sổ chợ sai.",
-  "en": ""
- },
- {
-  "vi": "Chuyện nhà khách sai.",
-  "en": ""
- },
- {
-  "vi": "Sổ nhà quen sai.",
-  "en": ""
- },
- {
-  "vi": "Số liệu nấu cơm nhà sai.",
-  "en": ""
- },
- {
-  "vi": "Nấu cơm gia đình",
-  "en": ""
- },
- {
-  "vi": "Bếp nhà khách quen",
-  "en": ""
- },
- {
-  "vi": "Đi chợ vừa túi tiền, cơm nhà nóng hổi.",
-  "en": ""
- },
- {
-  "vi": "Sáng mát, chợ phường đông vui",
-  "en": ""
- },
- {
-  "vi": "Bữa cơm nhà",
-  "en": ""
- },
- {
-  "vi": "Bếp nhà khách",
-  "en": ""
- },
- {
-  "vi": "Nghe chủ nhà dặn, lên thực đơn hợp cả nhà, đi chợ vừa túi tiền rồi nấu cho kịp bữa. Món lâu chín bắc trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Bữa cơm nhà người ta, nấu như cho nhà mình",
-  "en": ""
- },
- {
-  "vi": "27 · BẾP NHÀ KHÁCH QUEN",
-  "en": ""
- },
- {
-  "vi": "Nhặt rau, gọt củ nhanh thoăn thoắt.",
-  "en": ""
- },
- {
-  "vi": "Rửa chén lau bếp sạch bong, gọn gàng.",
-  "en": ""
- },
- {
-  "vi": "Từng phụ bếp đám cỗ, thái hành đều tăm tắp.",
-  "en": ""
- },
- {
-  "vi": "Khỏe, chịu khó, nhà nào qua tay cũng sạch.",
-  "en": ""
- },
- {
-  "vi": "Phụ sơ chế",
-  "en": ""
- },
- {
-  "vi": "Rửa chén, lau bếp",
-  "en": ""
- },
- {
-  "vi": "Giỏ đi chợ",
-  "en": ""
- },
- {
-  "vi": "Một nồi",
-  "en": ""
- },
- {
-  "vi": "Một đĩa",
-  "en": ""
- },
- {
-  "vi": "Lên thực đơn hợp nhà",
-  "en": ""
- },
- {
-  "vi": "Đi chợ vừa tiền",
-  "en": ""
- },
- {
-  "vi": "Món lâu bắc trước",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ chợ rõ ràng",
-  "en": ""
- },
- {
-  "vi": "Cuốn sổ chợ",
-  "en": ""
- },
- {
-  "vi": "Cô Hạnh tặng bạn cuốn sổ chợ bìa xanh ngày đầu đi làm.",
-  "en": ""
- },
- {
-  "vi": "Cô dặn: “Sạp nào cũng xin hóa đơn, tiền thừa để riêng một túi.”",
+  "vi": "Mười phút sau sấm lại rền, cả hồ phải lên bờ lần nữa.",
   "en": ""
  }
 ]

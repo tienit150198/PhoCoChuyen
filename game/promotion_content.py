@@ -27,6 +27,10 @@ EMP_TITLES = {
     'oil': ('Kỹ thuật viên bậc 2', 'Trưởng nhóm vận hành', 'Trưởng ca giàn', 'Quản đốc giàn'),
     'railway': ('Gác chắn chính', 'Trưởng ca gác chắn', 'Đội phó cung đường', 'Cung trưởng cung đường'),
     'nurse': ('Điều dưỡng chính', 'Trưởng ca điều dưỡng', 'Điều dưỡng trưởng khoa', 'Trưởng phòng Điều dưỡng'),
+    'lighthouse': ('Người gác đèn chính', 'Trưởng ca trạm đèn', 'Trạm trưởng đèn Hòn Gió', 'Trưởng đội đèn biển Vịnh Ngọc'),
+    'rescue': ('Điều phối viên chính', 'Trưởng ca tổng đài', 'Phó giám đốc Trung tâm điều phối', 'Giám đốc Trung tâm điều phối'),
+    'lifeguard': ('Cứu hộ chính', 'Trưởng ca cứu hộ', 'Đội trưởng cứu hộ', 'Quản lý an toàn hồ bơi'),
+    'police': ('Cán bộ khu vực chính thức', 'Tổ phó cảnh sát khu vực', 'Tổ trưởng cảnh sát khu vực', 'Phó trưởng Công an phường'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
@@ -74,9 +78,12 @@ GROUP = {
     'air': ('pilot', 'flight_attendant'),
     'rig': ('oil',),
     'rail': ('railway',),
+    'sea': ('lighthouse',),
+    'pool': ('lifeguard',),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
-                'mother_baby', 'nurse'),
+                'mother_baby', 'nurse', 'police'),
+    'call': ('rescue',),
 }   # every other career: 'trade'
 
 
@@ -133,6 +140,30 @@ QUESTIONS['rail'] = [
     _q('r4', 'Cung trưởng bảo ghi tàu chậm thành đúng giờ.', ('Ghi đúng, kèm lý do chậm', 2), ('Sửa cho đẹp báo cáo', 0), ('Ghi đúng nhưng không nói gì', 1)),
     _q('r5', 'Ca đêm thứ ba liền, bạn buồn ngủ díp mắt.', ('Báo đội trưởng, xin người thay hoặc nghỉ bù', 2), ('Chợp mắt giữa hai chuyến', 0), ('Uống thêm cà phê cố gác', 1)),
     _q('r6', 'Tàu qua mà không thấy đèn đuôi toa cuối.', ('Báo ngay trực ban ga', 2), ('Ghi sổ, cuối ca báo', 1), ('Cho qua, chắc đèn hỏng', 0)),
+]
+QUESTIONS['sea'] = [
+    _q('l1', 'Đêm bão thấy pháo hiệu đỏ, xuồng của trạm nằm ngay dưới bến.', ('Báo đài MAYDAY RELAY, đủ vị trí, canh giữ mục tiêu', 2), ('Lấy xuồng ra cứu cho kịp', 0), ('Chờ pháo hiệu thứ hai cho chắc', 1)),
+    _q('l2', 'Sếp bảo ghi “đèn sáng bình thường” cho đêm đèn tắt hai mươi phút.', ('Ghi đúng giờ tắt, nguyên nhân, cách xử lý', 2), ('Ghi theo lời sếp', 0), ('Không ghi gì', 1)),
+    _q('l3', 'Khách không có giấy đòi lên phòng đèn chụp ảnh, dúi tiền.', ('Từ chối, mời chụp ở sân trạm, không nhận tiền', 2), ('Cho lên năm phút, mình đi kèm', 0), ('Đuổi về không nói gì', 1)),
+    _q('l4', 'Đếm chớp thấy chu kỳ 19 giây, danh mục đèn ghi 15 giây.', ('Báo đài phát thông báo hàng hải, báo xí nghiệp', 2), ('Ghi sổ, mai báo', 1), ('Chắc đồng hồ sai, kệ', 0)),
+    _q('l5', 'Tàu tiếp tế bơm thiếu dầu, thuyền trưởng đòi ký đủ.', ('Ký đúng số đo được, ghi rõ phần thiếu', 2), ('Ký đủ cho êm chuyện', 0), ('Không ký gì cả', 1)),
+    _q('l6', 'Áp kế tụt nhanh mà gió mới cấp 4.', ('Báo đài, phát cảnh báo cho tàu thuyền', 2), ('Chờ gió lên rồi báo', 0), ('Ghi sổ, giờ sau xem lại', 1)),
+]
+QUESTIONS['call'] = [
+    _q('c1', 'Giám đốc nhờ đẩy cuộc gọi của người quen lên mức khẩn cấp.', ('Giữ mức theo nguy hiểm tính mạng, giải thích rõ', 2), ('Đẩy lên cho xong', 0), ('Hỏi chị trưởng ca rồi tính', 1)),
+    _q('c2', 'Ba cuộc gọi đùa liền, cuộc thứ tư giọng nhỏ báo có khói.', ('Hỏi kỹ, lắng nghe, gọi lại rồi mới quyết', 2), ('Cúp máy, chắc lại đùa', 0), ('Gửi xe luôn khỏi hỏi', 1)),
+    _q('c3', 'Người gọi khóc nấc, không nói được địa chỉ.', ('Trấn an, giao một việc nhỏ, hỏi mốc, gửi định vị', 2), ('Bảo họ bình tĩnh rồi gọi lại', 0), ('Chờ họ tự nói', 1)),
+    _q('c4', 'Đồng nghiệp tắt ghi âm “cho thoải mái”.', ('Nhắc bật lại, ghi âm là bảo vệ cả hai bên', 2), ('Tắt theo cho vui', 0), ('Kệ, không phải máy mình', 1)),
+    _q('c5', 'Cuối tháng giám đốc bảo sửa giờ nhấc máy cho đẹp KPI.', ('Giữ số thật, kèm lý do và đề xuất', 2), ('Sửa cho đẹp', 0), ('Không sửa nhưng im lặng', 1)),
+    _q('c6', 'Bạn trực ca thứ ba liền, nghe nhầm số nhà một lần.', ('Báo trưởng ca, xin người thay để nghỉ', 2), ('Uống thêm cà phê cố trực', 1), ('Giấu đi, chắc không sao', 0)),
+]
+QUESTIONS['pool'] = [
+    _q('p1', 'Quản lý bảo đừng đóng hồ khi đã nghe sấm vì sợ mất vé.', ('Cho lên bờ ngay, đề nghị phát vé bơi bù', 2), ('Chờ mưa xuống rồi đóng', 0), ('Chỉ cho khu sâu lên bờ', 1)),
+    _q('p2', 'Đồng nghiệp ngồi ghế trực lướt điện thoại vì “hồ vắng”.', ('Nhắc thẳng, đổi ghế cho bạn nghỉ mắt', 2), ('Kệ, hồ vắng thật', 0), ('Méc quản lý, không nói gì với bạn', 1)),
+    _q('p3', 'Một bé nói biết bơi, đòi ra khu sâu.', ('Cho bơi thử ở làn sát thành rồi mới quyết', 2), ('Tin lời bé', 0), ('Cấm hẳn, không cần thử', 1)),
+    _q('p4', 'Sáng ra que thử báo clo dưới bảng mẫu, khách đứng chờ ngoài cổng.', ('Hoãn mở, báo kỹ thuật, nói rõ giờ mở với khách', 2), ('Mở trước, chiều xử lý', 0), ('Tự đổ thêm hóa chất cho nhanh', 0)),
+    _q('p5', 'Bạn mới trong nhóm xuống cứu người mà quên phao ống.', ('Cảm ơn bạn đã nhanh, rồi tập lại cùng nhau với phao', 2), ('Mắng trước cả hồ', 0), ('Bỏ qua, cứu được là được', 1)),
+    _q('p6', 'Ngày hè đông gấp đôi, nhóm chỉ có hai người trực.', ('Giới hạn vé theo lượt, xin thêm người, đóng bớt khu', 2), ('Cố trông hết', 0), ('Đóng cửa sớm không báo', 1)),
 ]
 # Steps above 4 (the executive steps): the board's own questions.
 EXEC_GROUP = {'pilot': 'exec_air', 'teacher': 'exec_school'}

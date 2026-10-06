@@ -1,0 +1,137 @@
+/* Hồ bơi Sóng Xanh — scoped styles (.career-job.hb), over the street kit (street_kit.css).
+   Its own look: pool blue and lane-rope white, the red of the rescue tube, the scan's clock bar, the wristband
+   colours; the encounter card of the air crew (air_kit.js oddCard) restyled for the pool (its rules are copied
+   below: the pool loads the street kit, not the air kit). Surfaces follow the theme tokens (dark mode: data-theme=dem). */
+.career-job.hb{--sk-accent:#1f8fc4;--sk-accent-2:#7cc7ea;--hb-soft:#e2f3fb;--hb-red:#d6453a;--hb-amber:#c98a2b;
+  --air-sky:#1f8fc4;--air-navy:#17608a;--air-mono:ui-monospace,"SF Mono",Menlo,monospace}
+html[data-theme="dem"] .career-job.hb{--sk-accent:#6cc4ee;--sk-accent-2:#2f7ea5;--hb-soft:#1b3140;--air-sky:#6cc4ee;--air-navy:#2f7ea5}
+
+.career-job.hb .hb-learn{margin:8px 0 0;padding:6px 10px;border-radius:var(--sk-rs);background:var(--hb-soft);font-size:13px}
+.career-job.hb .hb-ground{margin:10px 0;padding:12px;border-radius:var(--sk-r);border:2px solid var(--hb-red);background:var(--sk-surface)}
+.career-job.hb .hb-ground h3{margin:0 0 4px;font-size:16px}
+.career-job.hb .hb-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.career-job.hb .hb-row .btn{min-height:44px}
+.career-job.hb .hb-q{margin:6px 0 0;padding:6px 8px;border-radius:8px;background:var(--sk-surface-2);font-size:14px;line-height:1.4}
+.career-job.hb .hb-av{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:50%;background:var(--hb-soft);font-size:24px;margin-right:8px}
+
+/* ---------- opening the pool */
+.career-job.hb .hb-checklist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.hb .hb-checklist li.seen{padding:8px 10px;border-radius:var(--sk-rs);background:var(--sk-surface-2);font-size:14px;line-height:1.4}
+.career-job.hb .hb-checklist li.fault{border-left:5px solid var(--hb-red)}
+.career-job.hb .hb-check{width:100%;min-height:44px;justify-content:flex-start;text-align:left;white-space:normal}
+.career-job.hb .hb-chans{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:6px;margin-top:8px}
+.career-job.hb .hb-chans .btn,.career-job.hb .hb-fix{min-height:44px;white-space:normal;text-align:left}
+.career-job.hb .hb-card{margin:0;padding:0 0 0 18px;display:grid;gap:4px;font-size:14px}
+.career-job.hb .hb-strip{display:flex;align-items:center;gap:8px;margin:6px 0}
+.career-job.hb .hb-strip b{font-family:var(--air-mono);font-size:15px}
+.career-job.hb .hb-pad{display:inline-block;width:22px;height:30px;border-radius:4px;border:1px solid var(--sk-line)}
+.career-job.hb .hb-pad.cl{background:color-mix(in srgb,#f2d64b calc(var(--v) * 100%),#fffbe6)}
+.career-job.hb .hb-pad.ph{background:color-mix(in srgb,#b1468f calc(var(--v) * 100%),#f6c08f)}
+.career-job.hb .hb-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.career-job.hb .hb-field{display:grid;gap:4px;font-size:14px}
+.career-job.hb .hb-field input{min-height:44px;padding:6px 8px;border-radius:var(--sk-rs);border:1px solid var(--sk-line);background:var(--sk-surface);color:var(--sk-ink);font:inherit;font-family:var(--air-mono);font-size:16px}
+.career-job.hb .hb-log .btn.full{margin-top:10px;min-height:48px}
+
+/* ---------- the scan */
+.career-job.hb .hb-start p{margin:4px 0 10px;font-size:14px;line-height:1.45}
+.career-job.hb .hb-go{min-height:56px}
+.career-job.hb .hb-clock{position:relative;display:flex;align-items:center;gap:8px;margin:8px 0;padding:8px 10px;min-height:40px;border-radius:999px;overflow:hidden;
+  background:var(--hb-soft);border:1px solid var(--sk-line);font-size:14px}
+.career-job.hb .hb-clock i{position:absolute;inset:0 auto 0 0;width:0;background:color-mix(in srgb,var(--sk-accent) 28%,transparent);transition:width .2s linear}
+.career-job.hb .hb-clock b,.career-job.hb .hb-clock small{position:relative}
+.career-job.hb .hb-clock small{margin-left:auto;font-family:var(--air-mono)}
+.career-job.hb .hb-clock.late i{background:color-mix(in srgb,var(--hb-red) 30%,transparent)}
+.career-job.hb .hb-clock.done i{width:100%;background:color-mix(in srgb,#4f9a5a 22%,transparent)}
+.career-job.hb .hb-zones{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
+.career-job.hb .hb-zone{min-height:84px;text-align:center}
+.career-job.hb .hb-zone.seen{background:var(--hb-soft)}
+.career-job.hb .hb-zone.on{border-color:var(--sk-accent);box-shadow:inset 0 0 0 2px var(--sk-accent)}
+.career-job.hb .hb-zonecard{border-left:6px solid var(--sk-accent)}
+.career-job.hb .hb-zonecard p{margin:4px 0;line-height:1.45}
+.career-job.hb .hb-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.career-job.hb .hb-rule{min-height:44px;white-space:normal;text-align:left;justify-content:flex-start}
+.career-job.hb .hb-alarm{min-height:52px;margin-top:10px;font-weight:800}
+.career-job.hb .hb-tip{margin:8px 0}
+.career-job.hb .hb-rescue h4{margin:10px 0 6px;font-size:14px}
+.career-job.hb .hb-assess{margin:0;padding:8px 10px;border-radius:var(--sk-rs);background:var(--sk-surface-2);font-size:14px;line-height:1.45}
+
+/* ---------- the gate and the class */
+.career-job.hb .hb-queue,.career-job.hb .hb-kids{display:grid;gap:10px;margin-top:10px}
+.career-job.hb .hb-person.got,.career-job.hb .hb-kid{border-left:6px solid var(--sk-accent)}
+.career-job.hb .hb-qs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.career-job.hb .hb-qs .btn{min-height:44px}
+.career-job.hb .hb-verdicts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:6px}
+.career-job.hb .hb-verdict,.career-job.hb .hb-band{min-height:44px;padding:6px;font-size:13px;line-height:1.25;white-space:normal}
+.career-job.hb .hb-verdict.on,.career-job.hb .hb-band.on{background:var(--air-navy);border-color:var(--air-navy);color:#fff}
+.career-job.hb .hb-bands{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
+.career-job.hb .hb-band.b-xanh.on{background:#3f8f52;border-color:#3f8f52}
+.career-job.hb .hb-band.b-vang.on{background:#e6c13b;border-color:#c9a524;color:#2f2a24}
+.career-job.hb .hb-band.b-do.on{background:var(--hb-red);border-color:var(--hb-red)}
+.career-job.hb .hb-topics{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.hb .hb-topic{min-height:44px;white-space:normal;text-align:left}
+
+/* ---------- thunder */
+.career-job.hb .hb-timeline{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.hb .hb-timeline li{display:grid;grid-template-columns:3.2em minmax(0,1fr);gap:6px;padding:6px 8px;border-radius:8px;background:var(--sk-surface-2);font-size:14px;line-height:1.4}
+.career-job.hb .hb-timeline li.th{border-left:5px solid var(--hb-amber)}
+.career-job.hb .hb-at{font-family:var(--air-mono);font-weight:700}
+.career-job.hb .hb-now{margin:10px 0 4px;font-size:14px}
+.career-job.hb .hb-wait{min-height:44px}
+
+/* ---------- the end of the shift */
+.career-job.hb .hb-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.career-job.hb .hb-tiles div{display:flex;flex-direction:column;align-items:center;padding:6px 2px;border-radius:var(--sk-rs);background:var(--sk-surface-2);text-align:center}
+.career-job.hb .hb-tiles b{font-size:20px}
+.career-job.hb .hb-tiles small{font-size:11px;color:var(--sk-muted);line-height:1.2}
+.career-job.hb .hb-lines{display:grid;gap:6px;margin:6px 0 10px}
+.career-job.hb .hb-line{display:flex;gap:8px;align-items:flex-start;justify-content:flex-start;min-height:44px;padding:8px 10px;border-radius:var(--sk-rs);border:1px solid var(--sk-line);background:var(--sk-surface);color:var(--sk-ink);font:inherit;font-size:14px;line-height:1.4;text-align:left;cursor:pointer}
+.career-job.hb .hb-line.on{border-color:var(--sk-accent);background:var(--hb-soft)}
+.career-job.hb .hb-report-done{display:inline-block;margin:10px 0}
+
+/* ---------- the encounter card (copied from air_kit.css, scoped to the pool) */
+.career-job.hb .air-odd{margin:10px 0;padding:12px;border-radius:16px;background:var(--sk-surface);border:2px solid var(--air-sky);box-shadow:var(--sk-shadow);color:var(--sk-ink)}
+.career-job.hb .air-odd.kind-harass,.career-job.hb .air-odd.kind-charm{border-color:var(--hb-red)}
+.career-job.hb .air-odd.kind-bargain{border-color:var(--hb-amber)}
+.career-job.hb .air-odd-head{display:flex;align-items:center;gap:10px}
+.career-job.hb .air-odd-head small{display:block;color:var(--sk-muted);font-size:.75rem;line-height:1.3}
+.career-job.hb .air-odd-head h3{margin:2px 0 0;font-size:1.02rem;line-height:1.3}
+.career-job.hb .air-odd-av{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;background:var(--sk-surface-2);font-size:22px}
+.career-job.hb .air-round{flex:none;font-family:var(--air-mono);font-size:.75rem;padding:2px 8px;border-radius:999px;background:var(--sk-surface-2)}
+.career-job.hb .air-odd-line{margin:10px 0 4px;padding:10px 12px;border-radius:4px 14px 14px 14px;background:var(--sk-surface-2);line-height:1.45}
+.career-job.hb .air-odd-me{margin:8px 0 0 auto;max-width:85%;padding:6px 10px;border-radius:14px 4px 14px 14px;background:color-mix(in srgb,var(--air-sky) 16%,var(--sk-surface));font-size:.86rem;text-align:right}
+.career-job.hb .air-odd-cue{margin:0 0 4px;font-size:.8rem;color:var(--sk-muted)}
+.career-job.hb .air-odd-row{display:grid;grid-template-columns:3.4em minmax(0,1fr);gap:6px;align-items:start;margin-top:8px}
+.career-job.hb .air-odd-row>small{padding-top:10px;color:var(--sk-muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.04em}
+.career-job.hb .air-segs,.career-job.hb .air-words{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.hb .air-seg,.career-job.hb .air-word{min-height:44px;padding:6px 12px;border-radius:999px;border:1px solid var(--sk-line);background:var(--sk-surface);color:var(--sk-ink);font:inherit;font-size:.86rem;line-height:1.25;cursor:pointer;text-align:left}
+.career-job.hb .air-seg.on,.career-job.hb .air-word.on{background:var(--air-navy);border-color:var(--air-navy);color:#fff}
+.career-job.hb .air-word.give{border-style:dashed}
+.career-job.hb .air-word.give.on{background:var(--hb-red);border-color:var(--hb-red)}
+.career-job.hb .air-stepper{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.career-job.hb .air-stepper .air-seg{min-width:44px;text-align:center;font-weight:800}
+.career-job.hb .air-stepper b{font-family:var(--air-mono);font-size:.9rem}
+.career-job.hb .air-limit{color:var(--sk-muted);font-size:.75rem}
+.career-job.hb .air-odd-go{margin-top:12px}
+.career-job.hb .air-odd-go .btn{width:100%}
+.career-job.hb .air-odd-last{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:8px 10px;border-radius:12px;border:1px solid var(--sk-line);background:var(--sk-surface);color:var(--sk-ink)}
+.career-job.hb .air-odd-last p{margin:0;flex:1;font-size:.88rem;line-height:1.4}
+.career-job.hb .air-odd-last.good{border-color:var(--sk-good)}
+.career-job.hb .air-odd-last.bad{border-color:var(--sk-bad)}
+.career-job.hb .air-x{min-width:44px;min-height:44px}
+.career-job.hb .air-record{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.hb .air-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:var(--sk-surface-2);font-size:.82rem;font-weight:700}
+.career-job.hb .air-chip.lv-warn,.career-job.hb .air-chip.air-tired.bad{background:color-mix(in srgb,var(--hb-amber) 20%,var(--sk-surface))}
+.career-job.hb .air-chip.lv-ground,.career-job.hb .air-chip.lv-demote{background:color-mix(in srgb,var(--hb-red) 22%,var(--sk-surface))}
+.career-job.hb .air-bar{display:inline-flex;gap:2px}
+.career-job.hb .air-bar i{display:block;width:6px;height:10px;border-radius:2px;background:var(--sk-line)}
+.career-job.hb .air-bar i.on{background:var(--hb-amber)}
+.career-job.hb .air-rest{margin-top:8px;padding:8px 10px;border-radius:12px;border:1px solid var(--sk-line);background:var(--sk-surface)}
+.career-job.hb .air-rest summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
+.career-job.hb .air-rest .air-rest-send{width:100%;margin-top:10px}
+.career-job.hb .air-rest-done{margin:8px 0 0}
+
+@media (max-width:420px){
+  .career-job.hb .hb-tiles b{font-size:18px}
+  .career-job.hb .hb-zones{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .career-job.hb .hb-zone b{font-size:13px}
+}

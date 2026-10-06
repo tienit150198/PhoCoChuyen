@@ -1,5 +1,733 @@
 [
  {
+  "vi": "Sách có trên kệ, thẻ còn hạn mà không cho mượn.",
+  "en": ""
+ },
+ {
+  "vi": "từ chối vô cớ",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ hết hạn thì gia hạn hai phút là xong, sao lại từ chối.",
+  "en": ""
+ },
+ {
+  "vi": "không gia hạn thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Mượn đủ ba cuốn rồi: trả bớt một cuốn hoặc đọc tại chỗ.",
+  "en": ""
+ },
+ {
+  "vi": "đúng hạn",
+  "en": ""
+ },
+ {
+  "vi": "“Đúng hạn mà, trả liền đó.”",
+  "en": ""
+ },
+ {
+  "vi": "thu phí quá nội quy",
+  "en": ""
+ },
+ {
+  "vi": "Miễn giảm phí không có lý do chính đáng, kế toán phường nhắc.",
+  "en": ""
+ },
+ {
+  "vi": "miễn giảm không lý do",
+  "en": ""
+ },
+ {
+  "vi": "Miễn phí mà không hỏi lý do, sổ không ghi gì.",
+  "en": ""
+ },
+ {
+  "vi": "miễn không ghi lý do",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm sách và xem dấu hạn trả trước khi tính phí.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản phí này xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Tính phí sai nội quy, bị bạn đọc chỉ ra ngay ở quầy.",
+  "en": ""
+ },
+ {
+  "vi": "tính phí sai",
+  "en": ""
+ },
+ {
+  "vi": "Cô Nguyệt gật đầu: lý do chính đáng.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nợ phí đầy rồi: đòi bớt nợ cũ đã.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm sách trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Sách không cần sửa.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xử lý rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Cách sửa không có.",
+  "en": ""
+ },
+ {
+  "vi": "Hết băng giấy sửa sách. Mở kho mua thêm nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Băng keo trong vài tháng là ố vàng, dính chặt trang, càng hỏng thêm.",
+  "en": ""
+ },
+ {
+  "vi": "dùng băng keo thường",
+  "en": ""
+ },
+ {
+  "vi": "Sấy nóng, phơi nắng làm giấy cong vênh, giòn gãy.",
+  "en": ""
+ },
+ {
+  "vi": "sấy nóng sách ướt",
+  "en": ""
+ },
+ {
+  "vi": "Sửa không đúng kiểu hỏng của sách.",
+  "en": ""
+ },
+ {
+  "vi": "sửa chưa đúng cách",
+  "en": ""
+ },
+ {
+  "vi": "Hừm, không ổn lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm sách và xem dấu hạn trả trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Tính phí xong rồi mới cất sách.",
+  "en": ""
+ },
+ {
+  "vi": "Sách hỏng mà đưa thẳng lên kệ, người sau mượn lại càng hỏng.",
+  "en": ""
+ },
+ {
+  "vi": "chưa sửa sách",
+  "en": ""
+ },
+ {
+  "vi": "Câu hỏi không có.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn này không có trên xe gợi ý.",
+  "en": ""
+ },
+ {
+  "vi": "gợi ý sai gu",
+  "en": ""
+ },
+ {
+  "vi": "nặng quá",
+  "en": ""
+ },
+ {
+  "vi": "nhẹ quá",
+  "en": ""
+ },
+ {
+  "vi": "gợi ý chưa vừa",
+  "en": ""
+ },
+ {
+  "vi": "hơi nặng đầu",
+  "en": ""
+ },
+ {
+  "vi": "hơi nhẹ quá",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn này không có trên xe sách.",
+  "en": ""
+ },
+ {
+  "vi": "Lớp không có.",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn này đang để riêng loại bỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Ký hiệu không có.",
+  "en": ""
+ },
+ {
+  "vi": "Lý do không có.",
+  "en": ""
+ },
+ {
+  "vi": "Còn cuốn chưa xếp lớp hoặc chưa ghi ký hiệu tác giả.",
+  "en": ""
+ },
+ {
+  "vi": "xếp nhầm lớp",
+  "en": ""
+ },
+ {
+  "vi": "sai ký hiệu tác giả",
+  "en": ""
+ },
+ {
+  "vi": "Sách mốc, sách lậu lên kệ chung.",
+  "en": ""
+ },
+ {
+  "vi": "Sách hỏng, lỗi thời, in lậu lẫn lên kệ.",
+  "en": ""
+ },
+ {
+  "vi": "không lọc sách hỏng",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ cả sách quý in năm 1960.",
+  "en": ""
+ },
+ {
+  "vi": "Loại nhầm sách còn tốt.",
+  "en": ""
+ },
+ {
+  "vi": "loại nhầm sách tốt",
+  "en": ""
+ },
+ {
+  "vi": "Sách lên kệ mà chưa có nhãn gáy.",
+  "en": ""
+ },
+ {
+  "vi": "thiếu nhãn gáy",
+  "en": ""
+ },
+ {
+  "vi": "Không có ai như vậy trong phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện này xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nói chắc chắn mà từ tốn. Người kia lẩm bẩm rồi cũng làm theo.",
+  "en": ""
+ },
+ {
+  "vi": "Người kia vẫn càu nhàu, cô Nguyệt phải ra nói thêm một câu mới xong.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ghé tận nơi nhắc nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chỉ lên bảng nội quy",
+  "en": ""
+ },
+ {
+  "vi": "Bạn mời ra khỏi phòng",
+  "en": ""
+ },
+ {
+  "vi": "Còn chuyện trong phòng chưa xong.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng đọc yên trở lại, chỉ còn tiếng lật trang.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng đọc tạm yên, vẫn còn vài tiếng xì xào.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng đọc vẫn ồn, mấy người đọc bỏ về sớm.",
+  "en": ""
+ },
+ {
+  "vi": "Đã tập huấn nghiệp vụ lưu trữ rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời đủ các câu đã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "👩‍🏫 Cô Nguyệt trao chùm chìa khóa kho: “Đúng hết. Hồ sơ của dân là của dân, mình chỉ giữ hộ.”",
+  "en": ""
+ },
+ {
+  "vi": "Việc này không có.",
+  "en": ""
+ },
+ {
+  "vi": "Làm rồi.",
+  "en": ""
+ },
+ {
+  "vi": "không mang giấy tờ gì",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tập huấn nghiệp vụ lưu trữ: làm bài tập huấn của cô Nguyệt trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã quyết rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm giấy tờ và tra mục lục trước khi quyết.",
+  "en": ""
+ },
+ {
+  "vi": "Lãnh đạo phường ký duyệt phiếu. Vào kho lấy hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Đủ điều kiện. Vào kho lấy hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chỉ rõ còn thiếu giấy gì, nộp ở đâu, hẹn quay lại.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn giải thích từ tốn vì sao không được, chỉ nơi làm đúng thủ tục.",
+  "en": ""
+ },
+ {
+  "vi": "Lãnh đạo phường: “Tài liệu này không cần tôi duyệt.” Mất thêm một lúc chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Cấp hồ sơ khi còn thiếu giấy tờ.",
+  "en": ""
+ },
+ {
+  "vi": "Cấp hồ sơ hạn chế mà không có lãnh đạo duyệt.",
+  "en": ""
+ },
+ {
+  "vi": "Cấp hồ sơ cá nhân của người khác cho người không có quyền.",
+  "en": ""
+ },
+ {
+  "vi": "cấp sai quy định",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đồng ý cấp. Vào kho lấy hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Việc không đúng thủ tục mà đẩy lên lãnh đạo, mất thời gian cả hai bên.",
+  "en": ""
+ },
+ {
+  "vi": "đẩy việc lên lãnh đạo",
+  "en": ""
+ },
+ {
+  "vi": "Lãnh đạo phường trả phiếu về: “Việc này không duyệt được.”",
+  "en": ""
+ },
+ {
+  "vi": "Bắt bổ sung giấy tờ vô lý, đi lại mất công.",
+  "en": ""
+ },
+ {
+  "vi": "Hướng dẫn giấy tờ cho việc không đúng thủ tục, người ta mất công.",
+  "en": ""
+ },
+ {
+  "vi": "hướng dẫn chưa đúng",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đưa danh sách giấy tờ cần bổ sung.",
+  "en": ""
+ },
+ {
+  "vi": "Đủ điều kiện mà bị từ chối.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối mà không chỉ đường làm đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn từ chối.",
+  "en": ""
+ },
+ {
+  "vi": "Quyết cấp hồ sơ trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Đeo rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Hết găng tay vải. Mở kho mua thêm nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🧤 Đeo găng tay vải sạch.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lấy được hồ sơ rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Cầm hồ sơ cũ bằng tay trần, mồ hôi tay làm ố giấy.",
+  "en": ""
+ },
+ {
+  "vi": "không đeo găng tay",
+  "en": ""
+ },
+ {
+  "vi": "Mở hộp hồ sơ bụi mà không đeo khẩu trang, ho cả buổi.",
+  "en": ""
+ },
+ {
+  "vi": "không đeo khẩu trang",
+  "en": ""
+ },
+ {
+  "vi": "📦 Mở đúng hộp mục lục ghi… mà không thấy hồ sơ đâu! Đừng vội kết luận mất.",
+  "en": ""
+ },
+ {
+  "vi": "Giấy giòn, mép đã mủn: cầm thật nhẹ tay.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm các hộp kế bên",
+  "en": ""
+ },
+ {
+  "vi": "Xem sổ giao nhận hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Lập biên bản thất lạc, báo lãnh đạo",
+  "en": ""
+ },
+ {
+  "vi": "Không cần tìm thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Cách tìm không có.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm chỗ đó rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tìm kỹ đã lập biên bản mất hồ sơ, sau mới thấy nằm ngay hộp bên.",
+  "en": ""
+ },
+ {
+  "vi": "báo mất khi chưa tìm kỹ",
+  "en": ""
+ },
+ {
+  "vi": "Lập biên bản thất lạc, hẹn người dân khi có kết quả.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Hồ sơ kẹp nhầm trong hộp kế bên! Bạn đặt lại đúng chỗ, ghi chú vào mục lục.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Hộp kế bên không có. Xem sổ giao nhận thử.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Sổ giao nhận ghi: phòng địa chính mượn từ tuần trước, chưa trả. Gọi điện, họ mang trả ngay.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Sổ giao nhận không ghi ai mượn. Tìm các hộp kế bên thử.",
+  "en": ""
+ },
+ {
+  "vi": "Sao chụp, đóng dấu sao y bản lưu trữ",
+  "en": ""
+ },
+ {
+  "vi": "Đưa bản gốc cho mang đi",
+  "en": ""
+ },
+ {
+  "vi": "Lấy được hồ sơ đã.",
+  "en": ""
+ },
+ {
+  "vi": "Cách cấp không có.",
+  "en": ""
+ },
+ {
+  "vi": "📜 Bản gốc cho ủy ban mượn theo phiếu đã duyệt, hẹn trả trong ngày. Nhớ ghi sổ, người nhận ký.",
+  "en": ""
+ },
+ {
+  "vi": "Bản gốc lưu trữ mang ra khỏi kho, không ai biết bao giờ về.",
+  "en": ""
+ },
+ {
+  "vi": "đưa bản gốc ra ngoài",
+  "en": ""
+ },
+ {
+  "vi": "Ủy ban đã duyệt mượn bản gốc mà chỉ đưa bản sao, phải chạy xuống lấy lại.",
+  "en": ""
+ },
+ {
+  "vi": "chưa đúng phiếu duyệt",
+  "en": ""
+ },
+ {
+  "vi": "🖨️ Sao chụp rõ nét, đóng dấu “sao y bản lưu trữ”",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi sổ rồi.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Ghi sổ khai thác: ngày, hồ sơ, mục đích; người nhận ký tên.",
+  "en": ""
+ },
+ {
+  "vi": "Sao chụp hồ sơ trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ ra vào không ghi sổ khai thác.",
+  "en": ""
+ },
+ {
+  "vi": "không ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Cấp hồ sơ mà không có phiếu yêu cầu.",
+  "en": ""
+ },
+ {
+  "vi": "thiếu phiếu yêu cầu",
+  "en": ""
+ },
+ {
+  "vi": "Sáng mai nhớ xem ẩm kế kho và soi bẫy trước khi mở phòng đọc.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ kho tốt",
+  "en": ""
+ },
+ {
+  "vi": "Mở cửa đủ bước",
+  "en": ""
+ },
+ {
+  "vi": "Đúng nội quy",
+  "en": ""
+ },
+ {
+  "vi": "Phí công bằng",
+  "en": ""
+ },
+ {
+  "vi": "Mềm mỏng",
+  "en": ""
+ },
+ {
+  "vi": "Phân loại đúng",
+  "en": ""
+ },
+ {
+  "vi": "Lọc sách hỏng",
+  "en": ""
+ },
+ {
+  "vi": "Phòng đọc yên",
+  "en": ""
+ },
+ {
+  "vi": "Đúng thủ tục",
+  "en": ""
+ },
+ {
+  "vi": "Giữ kín hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Giữ gìn bản gốc",
+  "en": ""
+ },
+ {
+  "vi": "kho, sách, bản gốc được giữ gìn",
+  "en": ""
+ },
+ {
+  "vi": "đủ bước buổi sáng",
+  "en": ""
+ },
+ {
+  "vi": "làm đúng nội quy",
+  "en": ""
+ },
+ {
+  "vi": "phí đúng nội quy",
+  "en": ""
+ },
+ {
+  "vi": "nói năng mềm mỏng",
+  "en": ""
+ },
+ {
+  "vi": "lớp, ký hiệu đúng",
+  "en": ""
+ },
+ {
+  "vi": "lọc đúng sách hỏng",
+  "en": ""
+ },
+ {
+  "vi": "phòng đọc yên",
+  "en": ""
+ },
+ {
+  "vi": "không để chuyện nguy hiểm",
+  "en": ""
+ },
+ {
+  "vi": "đúng thủ tục lưu trữ",
+  "en": ""
+ },
+ {
+  "vi": "không lộ hồ sơ của ai",
+  "en": ""
+ },
+ {
+  "vi": "Buổi sáng: xem ẩm kế kho, soi bẫy, mở phòng đọc, dựng bảng nội quy.",
+  "en": ""
+ },
+ {
+  "vi": "muốn mượn",
+  "en": ""
+ },
+ {
+  "vi": "sách tặng",
+  "en": ""
+ },
+ {
+  "vi": "sách mới",
+  "en": ""
+ },
+ {
+  "vi": "Phòng đọc:",
+  "en": ""
+ },
+ {
+  "vi": "“Đúng hạn mà.”",
+  "en": ""
+ },
+ {
+  "vi": "Trả trễ vì ốm đau nằm viện, thiên tai (có giấy tờ, lời xác nhận): được miễn phí trễ hạn, ghi rõ lý do.",
+  "en": ""
+ },
+ {
+  "vi": "Xem ẩm kế (trên 60% thì bật máy hút ẩm) → soi bẫy, xử lý đúng → mở phòng đọc → dựng bảng nội quy → Mở cửa.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi cuốn: chọn lớp, chọn ký hiệu tác giả (3 chữ đầu của tên) hoặc để riêng sách hỏng → Xếp lên kệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi chuyện trong phòng: chọn cách nhắc hợp với chuyện đó; ai cãi lại thì nói thêm một lần → Xong vòng phòng đọc.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm giấy tờ → phiếu yêu cầu → tra mục lục → quyết → găng tay, khẩu trang → lấy đúng hộp → sao y → ghi sổ → bàn giao.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm sách → xem dấu hạn → hỏi lý do nếu trễ → tự đề xuất phí (1 xu/ngày, tối đa 15, cộng phí hỏng) → sửa sách → cất lên kệ.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi cuốn gần nhất thích và đang muốn đọc gì → chọn cuốn hợp cả hai.",
+  "en": ""
+ },
+ {
+  "vi": "Tra máy → kiểm thẻ → cho mượn, hoặc gia hạn thẻ, thu nợ cũ, mời đọc tại chỗ, đặt trước.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xếp lại kệ trả sách theo ký hiệu, lau bụi một dãy kệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đi một vòng phòng đọc, nhắc nhỏ mấy bàn nói chuyện.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu thư viện sai.",
+  "en": ""
+ },
+ {
+  "vi": "Việc thư viện không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện bạn đọc sai.",
+  "en": ""
+ },
+ {
   "vi": "Việc thư viện sai.",
   "en": ""
  },
@@ -1069,734 +1797,6 @@
  },
  {
   "vi": "Hồ sơ cá nhân: chỉ chính chủ, người thân có giấy tờ, người được ủy quyền",
-  "en": ""
- },
- {
-  "vi": "Hạn chế: phải có lãnh đạo phường ký duyệt",
-  "en": ""
- },
- {
-  "vi": "✅ Cấp bản sao",
-  "en": ""
- },
- {
-  "vi": "📝 Hướng dẫn bổ sung giấy tờ",
-  "en": ""
- },
- {
-  "vi": "✍️ Trình lãnh đạo duyệt",
-  "en": ""
- },
- {
-  "vi": "🙅 Từ chối, giải thích lý do",
-  "en": ""
- },
- {
-  "vi": "Căn cước công dân",
-  "en": ""
- },
- {
-  "vi": "Phiếu yêu cầu khai thác (đã điền)",
-  "en": ""
- },
- {
-  "vi": "Giấy ủy quyền có chứng thực",
-  "en": ""
- },
- {
-  "vi": "Giấy ủy quyền viết tay (chưa chứng thực)",
-  "en": ""
- },
- {
-  "vi": "Giấy giới thiệu của trường",
-  "en": ""
- },
- {
-  "vi": "Giấy chứng tử của bố",
-  "en": ""
- },
- {
-  "vi": "Giấy tờ chứng minh là con",
-  "en": ""
- },
- {
-  "vi": "Công văn của phòng ban",
-  "en": ""
- },
- {
-  "vi": "Bà Xuân xin bản sao giấy phép xây nhà",
-  "en": ""
- },
- {
-  "vi": "“Bà cần bản sao giấy phép xây nhà năm 1996 để làm sổ đỏ, của chính nhà bà.”",
-  "en": ""
- },
- {
-  "vi": "Giấy phép xây dựng nhà bà Xuân, 1996",
-  "en": ""
- },
- {
-  "vi": "Làm sổ đỏ nhà mình",
-  "en": ""
- },
- {
-  "vi": "Anh Tuấn tìm biên bản họp tổ dân phố",
-  "en": ""
- },
- {
-  "vi": "“Tôi cần biên bản họp tổ dân phố những năm 1976 – 1980 cho luận án.”",
-  "en": ""
- },
- {
-  "vi": "Biên bản họp tổ dân phố số 3, 1976 – 1980",
-  "en": ""
- },
- {
-  "vi": "Nghiên cứu luận án",
-  "en": ""
- },
- {
-  "vi": "Ông Thạc xin bản sao giấy khen",
-  "en": ""
- },
- {
-  "vi": "“Năm 1985 tôi được phường khen “gương mẫu”, cho tôi xin bản sao treo nhà.”",
-  "en": ""
- },
- {
-  "vi": "Quyết định khen thưởng năm 1985",
-  "en": ""
- },
- {
-  "vi": "Kỷ niệm của chính mình",
-  "en": ""
- },
- {
-  "vi": "Đạt xin bản đồ phường xưa",
-  "en": ""
- },
- {
-  "vi": "“Cô giao bài tập lịch sử phường mình, cho em xem bản đồ phường hồi xưa với.”",
-  "en": ""
- },
- {
-  "vi": "Bản đồ phường Mây năm 1960",
-  "en": ""
- },
- {
-  "vi": "Bài tập lịch sử",
-  "en": ""
- },
- {
-  "vi": "Chị Loan xin hồ sơ đất nhà hàng xóm",
-  "en": ""
- },
- {
-  "vi": "“Cho chị xem hồ sơ đất nhà bên cạnh, nó xây lấn sang nhà chị, chị cần bằng chứng.”",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ đất nhà số 14 ngõ 7",
-  "en": ""
- },
- {
-  "vi": "Tranh chấp với hàng xóm",
-  "en": ""
- },
- {
-  "vi": "Bà Xuân làm thủ tục thừa kế",
-  "en": ""
- },
- {
-  "vi": "“Bố tôi mất rồi, tôi cần sổ hộ khẩu cũ của bố để làm thừa kế.”",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ hộ khẩu cũ của ông Năm",
-  "en": ""
- },
- {
-  "vi": "Làm thủ tục thừa kế",
-  "en": ""
- },
- {
-  "vi": "Bà Xuân quên giấy tờ",
-  "en": ""
- },
- {
-  "vi": "“Tôi xin hồ sơ hộ khẩu cũ của bố để làm thừa kế. Giấy chứng tử để quên ở nhà rồi.”",
-  "en": ""
- },
- {
-  "vi": "Anh Tuấn cần lý lịch cán bộ cũ",
-  "en": ""
- },
- {
-  "vi": "“Cho tôi chép lý lịch các cán bộ phường thập niên 90, tôi viết sách về họ.”",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ lý lịch cán bộ phường 1990 – 1999",
-  "en": ""
- },
- {
-  "vi": "Viết sách",
-  "en": ""
- },
- {
-  "vi": "Ông Bính cần hồ sơ dự án ngõ 7",
-  "en": ""
- },
- {
-  "vi": "“Mang hồ sơ dự án chỉnh trang ngõ 7 lên phòng họp ngay, tôi đang họp dân.”",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ dự án chỉnh trang ngõ 7, 2019",
-  "en": ""
- },
- {
-  "vi": "Họp dân",
-  "en": ""
- },
- {
-  "vi": "Vy xin danh sách chủ nhà",
-  "en": ""
- },
- {
-  "vi": "“Công ty em làm môi giới, cho em xin danh sách chủ nhà cả phường kèm số điện thoại.”",
-  "en": ""
- },
- {
-  "vi": "Sổ đăng ký nhà đất toàn phường",
-  "en": ""
- },
- {
-  "vi": "Tìm khách mua bán nhà",
-  "en": ""
- },
- {
-  "vi": "Chị Loan nhờ luật sư xin hồ sơ",
-  "en": ""
- },
- {
-  "vi": "“Luật sư của chị lấy hồ sơ nhà chị giùm, chị viết giấy ủy quyền tay rồi nè.”",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ nhà chị Loan",
-  "en": ""
- },
- {
-  "vi": "Làm hợp đồng mua bán",
-  "en": ""
- },
- {
-  "vi": "Anh Tuấn không thấy hồ sơ",
-  "en": ""
- },
- {
-  "vi": "“Mục lục ghi hồ sơ ở hộp 12 mà mở ra không thấy! Mất rồi hay sao?”",
-  "en": ""
- },
- {
-  "vi": "Sổ đăng ký chợ Mây năm 1975",
-  "en": ""
- },
- {
-  "vi": "Ông Bính mượn bản gốc",
-  "en": ""
- },
- {
-  "vi": "“Cho mượn bản gốc hồ sơ quy hoạch, mang ra Ủy ban họp, chiều trả.”",
-  "en": ""
- },
- {
-  "vi": "Bản gốc hồ sơ quy hoạch phường 2015",
-  "en": ""
- },
- {
-  "vi": "Họp ở Ủy ban",
-  "en": ""
- },
- {
-  "vi": "Ông Thạc tìm hồ sơ cũ",
-  "en": ""
- },
- {
-  "vi": "“Hồ sơ nhà tôi năm 2002 đâu? Hôm trước còn thấy trong mục lục mà giờ không có.”",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ cấp số nhà ông Thạc, 2002",
-  "en": ""
- },
- {
-  "vi": "Làm lại số nhà",
-  "en": ""
- },
- {
-  "vi": "Phông UBND phường Mây",
-  "en": ""
- },
- {
-  "vi": "Người dân xin bản sao hồ sơ của chính mình, có căn cước. Cấp được không?",
-  "en": ""
- },
- {
-  "vi": "Được, ghi phiếu yêu cầu rồi cấp bản sao",
-  "en": ""
- },
- {
-  "vi": "Không, phải xin lãnh đạo",
-  "en": ""
- },
- {
-  "vi": "Đưa luôn bản gốc",
-  "en": ""
- },
- {
-  "vi": "Ai đó xin xem hồ sơ cá nhân của người khác, không có giấy ủy quyền.",
-  "en": ""
- },
- {
-  "vi": "Cho xem nhanh thôi",
-  "en": ""
- },
- {
-  "vi": "Từ chối, giải thích cần giấy tờ hợp lệ",
-  "en": ""
- },
- {
-  "vi": "Cho chụp một trang",
-  "en": ""
- },
- {
-  "vi": "Bản gốc trong kho có được mang ra khỏi thư viện không?",
-  "en": ""
- },
- {
-  "vi": "Được nếu người quen",
-  "en": ""
- },
- {
-  "vi": "Không: chỉ cấp bản sao, bản gốc ở lại kho",
-  "en": ""
- },
- {
-  "vi": "Được trong một buổi",
-  "en": ""
- },
- {
-  "vi": "Mở hộp hồ sơ cũ bụi bặm thì cần gì?",
-  "en": ""
- },
- {
-  "vi": "Găng tay vải và khẩu trang",
-  "en": ""
- },
- {
-  "vi": "Không cần gì",
-  "en": ""
- },
- {
-  "vi": "Khăn ướt lau trang giấy",
-  "en": ""
- },
- {
-  "vi": "Mục lục ghi hồ sơ ở hộp 12 mà không thấy. Làm gì trước?",
-  "en": ""
- },
- {
-  "vi": "Lập biên bản mất ngay",
-  "en": ""
- },
- {
-  "vi": "Tìm các hộp kế bên, xem sổ giao nhận",
-  "en": ""
- },
- {
-  "vi": "Bảo người ta về",
-  "en": ""
- },
- {
-  "vi": "Bẫy sạch, không thấy dấu vết gì.",
-  "en": ""
- },
- {
-  "vi": "Dưới kệ sách cũ có bụi gỗ vàng li ti, vài trang thủng lỗ nhỏ: mọt sách!",
-  "en": ""
- },
- {
-  "vi": "Bẫy dính có ba con gián, góc bàn ăn của nhân viên còn vụn bánh.",
-  "en": ""
- },
- {
-  "vi": "Có phân chuột sau tủ hồ sơ, một bìa hộp bị gặm nham nhở.",
-  "en": ""
- },
- {
-  "vi": "Cách ly sách bị mọt vào túi kín, báo dịch vụ khử trùng",
-  "en": ""
- },
- {
-  "vi": "Dọn đồ ăn, đặt bẫy, bịt lỗ, báo tổ vệ sinh",
-  "en": ""
- },
- {
-  "vi": "Xịt thuốc diệt côn trùng thẳng lên kệ sách",
-  "en": ""
- },
- {
-  "vi": "Để đó, mai tính",
-  "en": ""
- },
- {
-  "vi": "Bạn đọc đều đều: mượn trả, biên mục, một vòng phòng đọc.",
-  "en": ""
- },
- {
-  "vi": "Sinh viên kín phòng đọc từ sáng: giữ chỗ, ăn vặt, ngủ gục, sạc pin.",
-  "en": ""
- },
- {
-  "vi": "Trời nồm ẩm",
-  "en": ""
- },
- {
-  "vi": "Độ ẩm kho dễ vượt 60%: nhớ bật máy hút ẩm, soi mọt, mốc.",
-  "en": ""
- },
- {
-  "vi": "Trẻ con đông, giờ kể chuyện, phụ huynh nhờ đủ thứ.",
-  "en": ""
- },
- {
-  "vi": "Tuần chỉnh lý hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Phường cần nhiều hồ sơ: phiếu yêu cầu, mục lục, găng tay.",
-  "en": ""
- },
- {
-  "vi": "Giới thiệu nghề: cán bộ thư viện – lưu trữ",
-  "en": ""
- },
- {
-  "vi": "Thư viện nhỏ trên tầng hai nhà văn hóa phường Mây, sau lưng là kho lưu trữ hồ sơ của phường. Cô Nguyệt giữ sách, giữ hồ sơ ba mươi năm; bạn về phụ cô.",
-  "en": ""
- },
- {
-  "vi": "Sáng: xem ẩm kế kho, soi bẫy mọt, mở phòng đọc",
-  "en": ""
- },
- {
-  "vi": "Quầy: tra ký hiệu, kiểm thẻ, cho mượn, nhận trả",
-  "en": ""
- },
- {
-  "vi": "Tự đề xuất tiền phạt trả trễ, miễn khi có lý do chính đáng",
-  "en": ""
- },
- {
-  "vi": "Biên mục: xếp lớp, ghi ký hiệu tác giả, lọc sách hỏng",
-  "en": ""
- },
- {
-  "vi": "Phòng đọc: nhắc ồn ào, ăn uống, điện thoại, người ngủ gục",
-  "en": ""
- },
- {
-  "vi": "Kho lưu trữ: kiểm giấy tờ, mức tiếp cận, tìm đúng hộp",
-  "en": ""
- },
- {
-  "vi": "Găng tay vải, khẩu trang khi mở hộp cũ; bản gốc không rời kho",
-  "en": ""
- },
- {
-  "vi": "Gợi ý sách theo sở thích, từ chối khéo việc sai",
-  "en": ""
- },
- {
-  "vi": "Ông Thạc: cụ hưu khó tính, ghế của ông",
-  "en": ""
- },
- {
-  "vi": "Vy: sinh viên ôn thi, trà sữa, ngủ gục",
-  "en": ""
- },
- {
-  "vi": "Chị Loan: phụ huynh muốn “ưu tiên”",
-  "en": ""
- },
- {
-  "vi": "Anh Tuấn: nghiên cứu sinh cần “ngay”",
-  "en": ""
- },
- {
-  "vi": "Ông Bính: Phó Chủ tịch, “đưa lên đây”",
-  "en": ""
- },
- {
-  "vi": "Bà Xuân: làm giấy tờ lần đầu",
-  "en": ""
- },
- {
-  "vi": "Đạt: mượn truyện tranh, trả trễ",
-  "en": ""
- },
- {
-  "vi": "Mọt, chuột, trời nồm và đủ thứ nhờ vả",
-  "en": ""
- },
- {
-  "vi": "Đúng nội quy, không làm khó vô cớ",
-  "en": ""
- },
- {
-  "vi": "Phí phạt công bằng, có lý do khi miễn",
-  "en": ""
- },
- {
-  "vi": "Giữ kín hồ sơ, sổ mượn của người khác",
-  "en": ""
- },
- {
-  "vi": "Phân loại đúng, ký hiệu đúng",
-  "en": ""
- },
- {
-  "vi": "Phòng đọc yên mà không ai bị bẽ mặt",
-  "en": ""
- },
- {
-  "vi": "Giữ gìn bản gốc, sách cũ",
-  "en": ""
- },
- {
-  "vi": "Ông Thạc: “Ghế gần cửa sổ là ghế của tôi, ba mươi năm rồi.”",
-  "en": ""
- },
- {
-  "vi": "Ông Thạc mang tặng thư viện chồng báo Tết xưa ông giữ.",
-  "en": ""
- },
- {
-  "vi": "Ông Thạc dặn cả xóm: “Lên thư viện thì đi nhẹ nói khẽ nghe chưa.”",
-  "en": ""
- },
- {
-  "vi": "Vy: “Chị ơi cho em ngồi tới tối, thi xong em khao trà sữa.”",
-  "en": ""
- },
- {
-  "vi": "Vy thi đậu, ghé khoe bảng điểm.",
-  "en": ""
- },
- {
-  "vi": "Vy về làm cộng tác viên giờ kể chuyện.",
-  "en": ""
- },
- {
-  "vi": "Chị Loan: “Con chị đọc sách là ngoan hẳn.”",
-  "en": ""
- },
- {
-  "vi": "Chị Loan đăng ký làm thẻ cho cả nhà.",
-  "en": ""
- },
- {
-  "vi": "Chị Loan rủ cả nhóm phụ huynh đi giờ kể chuyện.",
-  "en": ""
- },
- {
-  "vi": "Anh Tuấn: “Tài liệu phường mình quý lắm, phải giữ cẩn thận.”",
-  "en": ""
- },
- {
-  "vi": "Anh Tuấn ghi tên thư viện phường trong lời cảm ơn luận án.",
-  "en": ""
- },
- {
-  "vi": "Anh Tuấn tặng thư viện cuốn sách đầu tay về phố Mây.",
-  "en": ""
- },
- {
-  "vi": "Ông Bính: “Làm nhanh nhưng làm đúng, tôi hiểu.”",
-  "en": ""
- },
- {
-  "vi": "Ông Bính duyệt kinh phí mua máy hút ẩm mới cho kho.",
-  "en": ""
- },
- {
-  "vi": "Ông Bính khen thư viện trong buổi giao ban phường.",
-  "en": ""
- },
- {
-  "vi": "Bà Xuân: “Giấy tờ khó quá cháu ơi.”",
-  "en": ""
- },
- {
-  "vi": "Bà Xuân làm xong sổ đỏ, mang biếu túi ổi.",
-  "en": ""
- },
- {
-  "vi": "Bà Xuân dẫn hàng xóm tới nhờ chỉ cách làm giấy tờ.",
-  "en": ""
- },
- {
-  "vi": "Đạt: “Em hứa lần này trả đúng hạn!”",
-  "en": ""
- },
- {
-  "vi": "Đạt trả đúng hạn ba lần liền, khoe được cô khen.",
-  "en": ""
- },
- {
-  "vi": "Đạt rủ cả lớp đăng ký thẻ thư viện.",
-  "en": ""
- },
- {
-  "vi": "Chiều theo luôn",
-  "en": ""
- },
- {
-  "vi": "Từ chối lịch sự",
-  "en": ""
- },
- {
-  "vi": "“Gia hạn giùm chị qua điện thoại tới tháng sau nha, chị đi Đà Lạt, tính gì kỹ vậy em.”",
-  "en": ""
- },
- {
-  "vi": "Gia hạn một lần 14 ngày theo nội quy, nhắn ngày trả",
-  "en": ""
- },
- {
-  "vi": "Cho người ta giữ sách cả tháng, người chờ đọc thì sao.",
-  "en": ""
- },
- {
-  "vi": "Chị Loan nhận tin nhắn ngày trả mới, thả tim.",
-  "en": ""
- },
- {
-  "vi": "“Cho chị mượn mười cuốn một lần, nhà chị ba đứa đọc chung, đi lại mệt lắm.”",
-  "en": ""
- },
- {
-  "vi": "Mỗi thẻ ba cuốn: làm thêm thẻ cho hai bé",
-  "en": ""
- },
- {
-  "vi": "Một người ôm mười cuốn, kệ thiếu nhi trống trơn.",
-  "en": ""
- },
- {
-  "vi": "“Giữ cuốn đó cho tôi tới thứ bảy, cấm cho đứa nào mượn, nghe chưa!”",
-  "en": ""
- },
- {
-  "vi": "Ghi phiếu đặt trước, giữ đúng ba ngày",
-  "en": ""
- },
- {
-  "vi": "Sách để dành riêng cho người quen cả tuần.",
-  "en": ""
- },
- {
-  "vi": "“Cho em mang cuốn bách khoa về một đêm thôi, mai em trả liền, hứa luôn á!”",
-  "en": ""
- },
- {
-  "vi": "Đọc tại phòng tra cứu, photo vài trang cần",
-  "en": ""
- },
- {
-  "vi": "Sách tra cứu mang về nhà, sáng sau người khác cần tra không có.",
-  "en": ""
- },
- {
-  "vi": "Một bà mẹ",
-  "en": ""
- },
- {
-  "vi": "“Cho cô xem con trai cô đang mượn sách gì. Dạo này nó lạ lắm, cô lo.”",
-  "en": ""
- },
- {
-  "vi": "Khuyên cô hỏi chuyện con, sổ mượn là chuyện riêng của bạn đọc",
-  "en": ""
- },
- {
-  "vi": "Thư viện đưa sổ mượn sách của người ta cho người khác xem.",
-  "en": ""
- },
- {
-  "vi": "Một bạn đọc",
-  "en": ""
- },
- {
-  "vi": "“Chị chuyển khoản vào số riêng của em cho nhanh, khỏi biên lai lằng nhằng.”",
-  "en": ""
- },
- {
-  "vi": "Nộp tại quầy, lấy biên lai của thư viện",
-  "en": ""
- },
- {
-  "vi": "Tiền phí nộp vào tài khoản riêng của cán bộ, không biên lai.",
-  "en": ""
- },
- {
-  "vi": "Một anh khách",
-  "en": ""
- },
- {
-  "vi": "“Anh mượn bằng thẻ của vợ anh nha, thẻ anh hết hạn rồi, có gì đâu.”",
-  "en": ""
- },
- {
-  "vi": "Gia hạn thẻ của anh, hai phút là xong",
-  "en": ""
- },
- {
-  "vi": "Mượn bằng thẻ người khác, mất sách không biết ai chịu.",
-  "en": ""
- },
- {
-  "vi": "“Gợi ý sách đọc hè cho con chị đi, nhanh nha, chị đậu xe dưới lòng đường.”",
-  "en": ""
- },
- {
-  "vi": "Đưa danh sách sách hè in sẵn, chọn nhanh ba cuốn",
-  "en": ""
- },
- {
-  "vi": "Lấy đại ba cuốn đưa chị",
-  "en": ""
- },
- {
-  "vi": "“Tìm giùm tôi cuốn bìa xanh xanh. Tên quên rồi. Nội dung về… ờ… cuộc đời.”",
-  "en": ""
- },
- {
-  "vi": "Hỏi thêm vài câu, tra theo chủ đề",
-  "en": ""
- },
- {
-  "vi": "Lôi đại một cuốn bìa xanh",
-  "en": ""
- },
- {
-  "vi": "Hỏi ra là cuốn hồi ký ông đọc dở năm ngoái. Ông Thạc gật gù: “Được, nhớ dai đấy.”",
-  "en": ""
- },
- {
-  "vi": "Một ông khách",
   "en": ""
  }
 ]

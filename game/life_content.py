@@ -20,7 +20,7 @@ from .incident_content import ALL, EMPLOYEE, RETAIL
 
 EMPLOYED = ('pharmacy', 'customer_care', 'teacher', 'tour_guide', 'repair', 'delivery', 'pet_care', 'salon',
             'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'homemaker', 'naucom', 'babysitter', 'library', 'pilot', 'flight_attendant', 'oil',
-            'hr_admin', 'secretary', 'it_helpdesk', 'giupviec', 'railway', 'nurse')
+            'hr_admin', 'secretary', 'it_helpdesk', 'giupviec', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police')
 OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain', 'ice_cream', 'nail', 'pho', 'com', 'photobooth', 'giupviec', 'library')
 CALLING = ('pagoda',)      # a monk: no boss, no shop, no rent; the pagoda is not a place for a karaoke night
@@ -106,6 +106,10 @@ WORK = {
     'oil': ('Chú Toàn với ca trực giàn Hải Âu', '🛢️'),
     'railway': ('Chú Sáu với ca gác Bến Mây', '🚦'),
     'nurse': ('Chị Hoa với các bạn khoa Nội', '🏥'),
+    'lighthouse': ('Chú Bảy với trạm đèn Hòn Gió', '🗼'),
+    'rescue': ('Chị Thảo với ca trực tổng đài', '📞'),
+    'lifeguard': ('Anh Hải với nhóm cứu hộ Sóng Xanh', '🛟'),
+    'police': ('Anh Định với tổ khu vực phường Mây', '👮'),
 }
 
 
@@ -574,6 +578,50 @@ HARD = [
         C('talk', 'Gọi cho chú Sáu kể lại', 'Chú Sáu nghe hết rồi bảo: “Con làm đúng. Ngủ đi, mai còn gác.”', spirit=6, default=True),
         C('walk', 'Đi bộ một vòng bờ sông cho bình tâm', 'Gió sông mát rượi, lòng nhẹ dần.', spirit=5)],
       careers=('railway',), hit=-14, mild=True),
+    # ================================================================ 🗼 Đèn biển Hòn Gió (lighthouse)
+    H('hd_lonely', 'xui', '🏝️', 'Nhớ nhà trên đảo', [
+        'Ba tuần liền trên đảo, tàu tiếp tế lỡ chuyến vì biển động.',
+        'Mì gói hết, rau vườn chưa kịp lên, sóng điện thoại chập chờn.',
+        'Đêm nằm nghe sóng vỗ, nhớ cơm má nấu tới cay mắt.'], [
+        C('call', 'Leo lên mỏm đá bắt sóng, gọi video về nhà', 'Má cười, em gái khoe điểm thi. Nghe tiếng nhà là thấy đủ.', spirit=6, default=True),
+        C('mun', 'Ôm mèo Mun ngồi đếm sao với chú Bảy', 'Chú Bảy kể chuyện ba mươi năm trên đảo. Mun ngủ quên trong lòng.', spirit=5)],
+      careers=('lighthouse',), hit=-13, mild=True),
+    H('hd_stormnight', 'xui', '⛈️', 'Đêm bão thức trắng', [
+        'Gió giật cấp 8 suốt đêm, mưa quất vào kính phòng đèn như ai ném sỏi.',
+        'Bạn canh bộ đàm tới sáng, nghe tàu này gọi tàu kia.',
+        'Trời hửng thì mắt đã cay xè, đầu ong ong.'], [
+        C('sleep', 'Kéo rèm, ngủ một mạch tới trưa, chú Bảy trực thay', 'Dậy thì biển đã lặng, nắng vàng rực.', spirit=5, default=True),
+        C('tea', 'Pha ấm trà nóng ngồi ngắm biển sau bão', 'Biển xanh trong vắt như chưa có gì xảy ra.', spirit=6)],
+      careers=('lighthouse',), hit=-12, mild=True),
+    H('hd_clip', 'khach', '📱', 'Bị quay clip “gác đèn khó tính”', [
+        'Chiều nay từ chối một nhóm khách đòi lên phòng đèn.',
+        'Tối mở điện thoại: clip “anh gác đèn làm giá” có mấy nghìn lượt xem.',
+        'Đoạn bạn mời họ chụp ảnh ở sân trạm thì bị cắt mất.'], [
+        C('ignore', 'Tắt điện thoại, kể với chú Bảy rồi đi ngủ sớm', 'Chú Bảy cười: “Mình giữ đèn cho tàu về, clip thì kệ clip.”', spirit=5, default=True),
+        C('read', 'Ngồi đọc hết bình luận', 'Có người chửi, nhưng nhiều người bênh: “Nội quy là nội quy mà.”', spirit=2)],
+      careers=('lighthouse',), hit=-13, mild=True),
+    # ================================================================ 🛟 Hồ bơi Sóng Xanh (lifeguard)
+    H('hb_clip', 'khach', '📱', 'Bị quay clip “cứu hộ hách dịch”', [
+        'Chiều nay thổi còi không cho một anh say xuống hồ.',
+        'Tối về mở điện thoại: clip “cứu hộ hách dịch” đã có mấy nghìn lượt xem.',
+        'Đoạn anh ta loạng choạng ở mép hồ thì bị cắt mất.'], [
+        C('ignore', 'Tắt điện thoại, kể với anh Hải rồi đi ngủ sớm', 'Anh Hải cười: “Mình giữ người ta khỏi chìm, clip thì kệ clip.”', spirit=5, default=True),
+        C('read', 'Ngồi đọc hết bình luận', 'Có người chửi, nhưng cũng nhiều người bênh: “Say mà xuống hồ là chết đó.”', spirit=2)],
+      careers=('lifeguard',), hit=-13, mild=True),
+    H('hb_sun', 'xui', '🥵', 'Phơi nắng cả ngày trên ghế cao', [
+        'Nắng 38 độ, ghế trực không có dù.',
+        'Về tới hẻm, mặt với hai tay đỏ rát, đầu ong ong.',
+        'Tắm nước mát mà da vẫn nóng ran.'], [
+        C('rest', 'Uống nước, đắp khăn mát, ngủ sớm', 'Sáng dậy người nhẹ hẳn.', spirit=5, default=True),
+        C('che', 'Ra đầu hẻm làm ly chè đậu xanh', 'Ly chè mát lạnh, ngọt cả lòng.', spirit=6, money=-5)],
+      careers=('lifeguard',), hit=-12, mild=True),
+    H('hb_scare', 'xui', '😨', 'Thót tim vì bé trượt qua dây phao', [
+        'Bé trượt qua dây phao ra chỗ sâu, chỉ còn chóp mũi nhô lên.',
+        'Bạn kéo bé vào kịp, bé ho sặc sụa rồi khóc òa.',
+        'Tối về tay vẫn còn run.'], [
+        C('talk', 'Gọi cho anh Hải kể lại', 'Anh Hải nghe hết rồi bảo: “Em thấy kịp là giỏi rồi. Ngủ đi, mai còn trực.”', spirit=6, default=True),
+        C('walk', 'Đi bộ một vòng bờ sông cho bình tâm', 'Gió sông mát rượi, lòng nhẹ dần.', spirit=5)],
+      careers=('lifeguard',), hit=-14, mild=True),
 ]
 
 # ---------------------------------------------------------------- neighbours come round

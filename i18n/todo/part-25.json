@@ -1,5 +1,733 @@
 [
  {
+  "vi": "Khách đòi bớt tiền vì “dọn nhanh quá”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Diệu nhìn đồng hồ: “Hẹn hai tiếng mà con xong sớm hai mươi phút. Cô trả bớt nhé?”",
+  "en": ""
+ },
+ {
+  "vi": "Mọi phòng trong lịch đã sạch, cô Diệu vừa vuốt găng kiểm xong.",
+  "en": ""
+ },
+ {
+  "vi": "Giá của tổ",
+  "en": ""
+ },
+ {
+  "vi": "Tổ tính theo việc trong lịch hẹn, xong sớm thì tiền công vẫn vậy.",
+  "en": ""
+ },
+ {
+  "vi": "Còn thời gian",
+  "en": ""
+ },
+ {
+  "vi": "Còn hai mươi phút trước lịch nhà sau.",
+  "en": ""
+ },
+ {
+  "vi": "Lễ phép nói giá theo việc; xin làm thêm một việc nhỏ trong hai mươi phút",
+  "en": ""
+ },
+ {
+  "vi": "Con bé nói chuyện lễ phép, còn lau giúp cô cái cửa sổ. Cô trả đủ, vui vẻ.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn lau thêm hai ô cửa sổ. Cô Diệu gật gù trả đủ tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh mà kỹ thì cô chịu.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ giá, giữ cả lòng khách.",
+  "en": ""
+ },
+ {
+  "vi": "Thôi cô bớt bao nhiêu cũng được",
+  "en": ""
+ },
+ {
+  "vi": "Dọn sạch, nhưng hình như cô làm khó con bé.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Diệu bớt một ít. Tối cô Mai bảo lần sau cứ nói giá của tổ.",
+  "en": ""
+ },
+ {
+  "vi": "Cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Làm nhanh mà lại thiệt.",
+  "en": ""
+ },
+ {
+  "vi": "“Cô không trả đủ thì lần sau đừng gọi tổ”",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi một câu mà nói năng xấc xược.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Diệu gọi cho cô Mai đổi người.",
+  "en": ""
+ },
+ {
+  "vi": "Thời nay ăn nói thế à.",
+  "en": ""
+ },
+ {
+  "vi": "Nói giá cho rõ, đừng nói nặng.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền công tính theo việc. Xong sớm thì lễ phép nói rõ, có thể xin làm thêm một việc nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Mấy đồng lẻ khỏi thối, cháu giữ uống nước nghen!",
+  "en": ""
+ },
+ {
+  "vi": "Thôi mấy đồng lẻ em giữ uống nước nha.",
+  "en": ""
+ },
+ {
+  "vi": "Dạ khỏi thối ạ, giữ uống nước nha!",
+  "en": ""
+ },
+ {
+  "vi": "Mấy đồng lẻ bà cho cháu uống nước.",
+  "en": ""
+ },
+ {
+  "vi": "Khỏi thối, em giữ uống nước nha.",
+  "en": ""
+ },
+ {
+  "vi": "Khỏi thối khỏi thối, em giữ uống nước, chị đi đây!",
+  "en": ""
+ },
+ {
+  "vi": "Khỏi thối, giữ uống nước nha.",
+  "en": ""
+ },
+ {
+  "vi": "Đã tính tiền khách này rồi: thối tiền rồi giao hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ cao điểm chỉ bán hàng đóng gói, không cân ký.",
+  "en": ""
+ },
+ {
+  "vi": "Món này chưa có trên máy tính tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm “Tính tiền” trước: khách đưa tiền rồi mới thối.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ vừa thay đổi — nhìn lại giỏ của khách rồi tính tiền nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Máy tính tiền đang trống. Quét hàng trong giỏ trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "— vừa đủ, không cần thối.",
+  "en": ""
+ },
+ {
+  "vi": "bấm dư tiền, khách phải soi ra",
+  "en": ""
+ },
+ {
+  "vi": "bấm dư tiền, khách phải tự soi",
+  "en": ""
+ },
+ {
+  "vi": "quét sót món, khách mang về chưa tính tiền",
+  "en": ""
+ },
+ {
+  "vi": "tính nhanh, thối đúng",
+  "en": ""
+ },
+ {
+  "vi": "chờ tiền thối tới lúc đóng cửa",
+  "en": ""
+ },
+ {
+  "vi": "có lúc bấm sai tiền hàng",
+  "en": ""
+ },
+ {
+  "vi": "Tính tiền & thối tiền",
+  "en": ""
+ },
+ {
+  "vi": "tính đúng, thối đúng từng khách",
+  "en": ""
+ },
+ {
+  "vi": "đã tính tiền",
+  "en": ""
+ },
+ {
+  "vi": "Đánh giá của khách sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tính tiền mà đã có tiền trên quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi nhận khách sai.",
+  "en": ""
+ },
+ {
+  "vi": "Soạn đủ hàng rồi giao trước khi đóng ca.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay khách không ghé lấy giỏ",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ đủ rồi: khách ghé lấy lúc đóng ca",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ đủ món rồi: khách ghé lấy lúc đóng ca.",
+  "en": ""
+ },
+ {
+  "vi": "Mở ca trước",
+  "en": ""
+ },
+ {
+  "vi": "Khách đầu hàng: có bia thì kiểm tuổi trước → quét từng món trong giỏ → Tính tiền → đếm tiền thối vào khay → Thối & giao. Đừng bỏ hàng chờ đi làm việc khác quá lâu.",
+  "en": ""
+ },
+ {
+  "vi": "Họp chốt số lúc nửa đêm",
+  "en": ""
+ },
+ {
+  "vi": "Anh Kiên nhắn: “Mai 23:00 mình họp chốt số nhé, bên mình mới đầu giờ chiều. Cả nhóm vào đủ giúp anh.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là giám đốc tài chính ở múi giờ khác: giờ làm việc của bạn là nửa đêm của người ta.",
+  "en": ""
+ },
+ {
+  "vi": "Quy định làm ngoài giờ",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tay tập đoàn",
+  "en": ""
+ },
+ {
+  "vi": "Họp ngoài giờ phải báo trước và được nghỉ bù; ưu tiên khung giờ hai nơi cùng làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch hai múi giờ",
+  "en": ""
+ },
+ {
+  "vi": "Lịch nhóm",
+  "en": ""
+ },
+ {
+  "vi": "07:30–09:00 sáng ở đây là cuối giờ làm ở Nami.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ còn hai dòng chênh lệch nội bộ cần chốt; gửi file trước thì 20 phút là xong.",
+  "en": ""
+ },
+ {
+  "vi": "Đề xuất họp 07:30 sáng, gửi trước file hai dòng chênh lệch để hai bên chuẩn bị",
+  "en": ""
+ },
+ {
+  "vi": "Sớm với các bạn, muộn với tôi, nhưng 20 phút là xong. Hợp lý.",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc họp chốt số trong 20 phút; không ai phải thức tới nửa đêm.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi quen bắt người ta theo giờ mình, lần này thấy cách khác hay hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Không phải thức khuya, sáng ra em làm tỉnh hơn hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Chuẩn bị trước thì họp ngắn.",
+  "en": ""
+ },
+ {
+  "vi": "Bắt cả nhóm thức tới nửa đêm cho kịp",
+  "en": ""
+ },
+ {
+  "vi": "Họp xong ai cũng ngáp, hai dòng chênh lệch vẫn chưa chốt.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng hôm sau Linh ghi sai thêm một bút toán vì mệt.",
+  "en": ""
+ },
+ {
+  "vi": "Em ngồi tới 1 giờ sáng mà đầu óc trống rỗng.",
+  "en": ""
+ },
+ {
+  "vi": "Họp đêm không nghỉ bù, lần sau ai còn muốn vào.",
+  "en": ""
+ },
+ {
+  "vi": "Một mình bạn thức họp, không báo ai",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chịu được, nhưng số của Linh bạn không trả lời hết.",
+  "en": ""
+ },
+ {
+  "vi": "Chốt được một dòng, dòng kia phải hẹn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu người nắm số thì khó chốt.",
+  "en": ""
+ },
+ {
+  "vi": "Gánh một mình không phải lúc nào cũng tốt.",
+  "en": ""
+ },
+ {
+  "vi": "Làm việc lệch múi giờ: tìm giờ hai nơi cùng làm, gửi tài liệu trước, đừng để cả nhóm thức đêm vì thiếu chuẩn bị.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tịch muốn khoe lợi nhuận lên mạng",
+  "en": ""
+ },
+ {
+  "vi": "Ông Đại gọi: “Gửi tôi ảnh bảng lợi nhuận hợp nhất, tôi đăng lên trang cá nhân cho anh em vui. Quý này đẹp quá!”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là chủ tịch, tự hào về một quý làm ăn tốt và muốn chia vui.",
+  "en": ""
+ },
+ {
+  "vi": "Quy định công bố thông tin",
+  "en": ""
+ },
+ {
+  "vi": "Phòng pháp chế",
+  "en": ""
+ },
+ {
+  "vi": "Số chưa kiểm toán, chưa công bố thì không đưa ra ngoài; khi công bố thì công bố cùng lúc cho mọi người.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chị Thảo",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm toán Sao Mai",
+  "en": ""
+ },
+ {
+  "vi": "Còn hai bút toán điều chỉnh đang chờ, lợi nhuận có thể giảm.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch công bố",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch quý",
+  "en": ""
+ },
+ {
+  "vi": "Ba ngày nữa tập đoàn công bố báo cáo chính thức.",
+  "en": ""
+ },
+ {
+  "vi": "Xin ông chờ ba ngày, đăng cùng báo cáo đã kiểm toán; gửi trước ông bản tóm tắt nội bộ ghi rõ “chưa công bố”",
+  "en": ""
+ },
+ {
+  "vi": "Ba ngày thôi mà, đăng số chính thức vẫn hãnh diện hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo công bố đúng hẹn, lợi nhuận giảm nhẹ sau điều chỉnh; may là chưa ai đăng số cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng số sai rồi phải sửa thì mất mặt hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Số chưa kiểm toán mà ra ngoài là chúng tôi phải ghi chú.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ đúng ngày công bố là giữ uy tín tập đoàn.",
+  "en": ""
+ },
+ {
+  "vi": "Chụp bảng gửi luôn cho ông vui",
+  "en": ""
+ },
+ {
+  "vi": "Số đăng lên rồi phải đính chính, ngân hàng gọi hỏi liên tục.",
+  "en": ""
+ },
+ {
+  "vi": "Lợi nhuận sau điều chỉnh thấp hơn số đã đăng; tập đoàn phải đính chính công khai.",
+  "en": ""
+ },
+ {
+  "vi": "Một tấm ảnh mà mất cả tuần giải thích.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin lộ trước kỳ công bố là điểm tôi phải báo cáo.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối thẳng: “Không gửi được ạ”",
+  "en": ""
+ },
+ {
+  "vi": "Đúng là không gửi được, nhưng nói một câu cụt lủn với tôi thì…",
+  "en": ""
+ },
+ {
+  "vi": "Ông Đại không đăng, nhưng phật ý mấy hôm.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi hỏi thì giải thích cho tôi một câu.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ được thông tin, lần sau nói khéo hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Số chưa kiểm toán, chưa công bố thì chưa ra ngoài — kể cả để chia vui; nói rõ lý do và hẹn ngày đăng số chính thức.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn tính dư, mình phải chỉ ra mới được sửa.",
+  "en": ""
+ },
+ {
+  "vi": "Khách trả tiền mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Khách chuyển khoản.",
+  "en": ""
+ },
+ {
+  "vi": "tính dư, về nhà mới thấy",
+  "en": ""
+ },
+ {
+  "vi": "Tiền thối",
+  "en": ""
+ },
+ {
+  "vi": "Nói nhẹ nhưng soát kỹ; ghét nhất hồ sơ thiếu chữ ký.",
+  "en": ""
+ },
+ {
+  "vi": "Giám đốc Công ty Cánh Diều",
+  "en": ""
+ },
+ {
+  "vi": "Quyết nhanh, đổi ý còn nhanh hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh nhảu, hay quên quẹt thẻ chấm công.",
+  "en": ""
+ },
+ {
+  "vi": "Tổ trưởng xưởng may balo",
+  "en": ""
+ },
+ {
+  "vi": "Thương thợ, ghét giấy tờ, nóng như lò hơi.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ tin giấy có dấu đỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Ít nói, tay nghề giỏi nhất tổ.",
+  "en": ""
+ },
+ {
+  "vi": "làm kho",
+  "en": ""
+ },
+ {
+  "vi": "Excel cơ bản",
+  "en": ""
+ },
+ {
+  "vi": "kiểm đếm hàng",
+  "en": ""
+ },
+ {
+  "vi": "xếp pallet",
+  "en": ""
+ },
+ {
+  "vi": "Thợ may mẫu",
+  "en": ""
+ },
+ {
+  "vi": "may mẫu",
+  "en": ""
+ },
+ {
+  "vi": "máy may công nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "đọc rập",
+  "en": ""
+ },
+ {
+  "vi": "may khóa kéo",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên bán hàng online",
+  "en": ""
+ },
+ {
+  "vi": "bán hàng online",
+  "en": ""
+ },
+ {
+  "vi": "chụp ảnh sản phẩm",
+  "en": ""
+ },
+ {
+  "vi": "trả lời tin nhắn khách",
+  "en": ""
+ },
+ {
+  "vi": "lái xe tải",
+  "en": ""
+ },
+ {
+  "vi": "thuộc đường nội thành",
+  "en": ""
+ },
+ {
+  "vi": "bốc xếp hàng",
+  "en": ""
+ },
+ {
+  "vi": "giao nhận chứng từ",
+  "en": ""
+ },
+ {
+  "vi": "bằng lái xe hạng C",
+  "en": ""
+ },
+ {
+  "vi": "Kế toán kho",
+  "en": ""
+ },
+ {
+  "vi": "kế toán",
+  "en": ""
+ },
+ {
+  "vi": "phần mềm kế toán",
+  "en": ""
+ },
+ {
+  "vi": "Excel nâng cao",
+  "en": ""
+ },
+ {
+  "vi": "đối chiếu công nợ",
+  "en": ""
+ },
+ {
+  "vi": "bằng cao đẳng kế toán",
+  "en": ""
+ },
+ {
+  "vi": "tiếng Anh giao tiếp",
+  "en": ""
+ },
+ {
+  "vi": "nấu ăn",
+  "en": ""
+ },
+ {
+  "vi": "đàn guitar",
+  "en": ""
+ },
+ {
+  "vi": "cờ tướng",
+  "en": ""
+ },
+ {
+  "vi": "chạy bộ",
+  "en": ""
+ },
+ {
+  "vi": "trồng cây",
+  "en": ""
+ },
+ {
+  "vi": "Mời phỏng vấn",
+  "en": ""
+ },
+ {
+  "vi": "Không mời",
+  "en": ""
+ },
+ {
+  "vi": "“Mới cưới, chắc sắp sinh con. Loại đi em.” — Anh Quân",
+  "en": ""
+ },
+ {
+  "vi": "“Quê xa thế, làm vài tháng lại về quê thôi.” — Linh",
+  "en": ""
+ },
+ {
+  "vi": "“Lớn tuổi rồi, khó bảo lắm.” — Chú Lâm",
+  "en": ""
+ },
+ {
+  "vi": "“Con gái chân yếu tay mềm, làm sao bê nổi.” — Chú Lâm",
+  "en": ""
+ },
+ {
+  "vi": "Tốt nghiệp THPT",
+  "en": ""
+ },
+ {
+  "vi": "Trung cấp nghề",
+  "en": ""
+ },
+ {
+  "vi": "Cao đẳng",
+  "en": ""
+ },
+ {
+  "vi": "Đủ kinh nghiệm, kỹ năng và bằng cấp theo yêu cầu.",
+  "en": ""
+ },
+ {
+  "vi": "Bằng là yêu cầu bắt buộc mà chưa có bản sao — xin bổ sung rồi mới mời.",
+  "en": ""
+ },
+ {
+  "vi": "Lương mong muốn cao hơn khung chỉ cần thương lượng; đủ điều kiện thì vẫn mời.",
+  "en": ""
+ },
+ {
+  "vi": "“Email gì mà trẻ con thế, loại cho nhanh.” — Linh",
+  "en": ""
+ },
+ {
+  "vi": "Địa chỉ email ngộ nghĩnh không phải lý do để loại người đủ điều kiện.",
+  "en": ""
+ },
+ {
+  "vi": "Không loại vì giới tính, hôn nhân, quê quán hay tuổi tác — chỉ xét yêu cầu công việc.",
+  "en": ""
+ },
+ {
+  "vi": "“Cháu anh đấy, cho vào thẳng nhé.” — Anh Quân",
+  "en": ""
+ },
+ {
+  "vi": "Người quen giới thiệu vẫn phỏng vấn như mọi người; hồ sơ đủ điều kiện.",
+  "en": ""
+ },
+ {
+  "vi": "Kinh nghiệm: chưa đi làm",
+  "en": ""
+ },
+ {
+  "vi": "Đã có sổ BHXH bổ sung, đủ kinh nghiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng viên đã rút hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên tắc lọc hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ xét yêu cầu công việc: không loại vì giới tính, hôn nhân, tuổi, quê quán.",
+  "en": ""
+ },
+ {
+  "vi": "CV và tra cứu BHXH lệch nhau, hoặc thiếu bản sao bằng bắt buộc → Cần xác minh.",
+  "en": ""
+ },
+ {
+  "vi": "Người quen giới thiệu vẫn xét như mọi người.",
+  "en": ""
+ },
+ {
+  "vi": "thứ Hai",
+  "en": ""
+ },
+ {
+  "vi": "thứ Ba",
+  "en": ""
+ },
+ {
+  "vi": "thứ Tư",
+  "en": ""
+ },
+ {
+  "vi": "thứ Năm",
+  "en": ""
+ },
+ {
   "vi": "thứ Sáu",
   "en": ""
  },
@@ -1069,734 +1797,6 @@
  },
  {
   "vi": "Gọi IT, trong lúc chờ in nốt ở máy tầng 2",
-  "en": ""
- },
- {
-  "vi": "Kịp giờ ký; IT gỡ được mẩu giấy kẹt sâu trong máy.",
-  "en": ""
- },
- {
-  "vi": "Tự giật mạnh tờ giấy ra",
-  "en": ""
- },
- {
-  "vi": "Rách trục cuốn giấy, sửa mất 10 xu.",
-  "en": ""
- },
- {
-  "vi": "Ngồi chờ máy “tự hết”",
-  "en": ""
- },
- {
-  "vi": "Máy không tự hết.",
-  "en": ""
- },
- {
-  "vi": "Sinh nhật bất ngờ trong 30 phút",
-  "en": ""
- },
- {
-  "vi": "Anh Quân: “Hôm nay sinh nhật cô Hằng! Em lo cái bánh, 3 giờ cả phòng hát chúc mừng nhé.” Bây giờ là 2 giờ 30.",
-  "en": ""
- },
- {
-  "vi": "Đặt bánh nhỏ tiệm gần, gom chữ ký cả phòng vào tấm thiệp",
-  "en": ""
- },
- {
-  "vi": "−15 xu, mất 15 phút",
-  "en": ""
- },
- {
-  "vi": "Cô Hằng bất ngờ đến rưng rưng; lần đầu thấy cô cười to giữa giờ làm.",
-  "en": ""
- },
- {
-  "vi": "Đặt bánh ba tầng cho hoành tráng",
-  "en": ""
- },
- {
-  "vi": "Bánh tới lúc 4 giờ rưỡi, cô Hằng đã về.",
-  "en": ""
- },
- {
-  "vi": "Hứa rồi quên mất",
-  "en": ""
- },
- {
-  "vi": "3 giờ cả phòng đứng nhìn nhau.",
-  "en": ""
- },
- {
-  "vi": "Ứng viên giỏi nhưng đang mang thai",
-  "en": ""
- },
- {
-  "vi": "Anh Quân lật hồ sơ: “Bạn này giỏi đấy, nhưng ghi chú là đang mang thai bốn tháng. Thôi loại đi em, tuyển vào lại nghỉ sinh.”",
-  "en": ""
- },
- {
-  "vi": "Bạn là giám đốc công ty nhỏ, lo mùa tựu trường đơn hàng dồn dập mà thiếu người.",
-  "en": ""
- },
- {
-  "vi": "Quy định tuyển dụng",
-  "en": ""
- },
- {
-  "vi": "Không được từ chối tuyển dụng vì lý do mang thai, giới tính hay hôn nhân.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ ứng viên",
-  "en": ""
- },
- {
-  "vi": "Năm năm thiết kế túi xách, từng làm mẫu cho hai thương hiệu lớn.",
-  "en": ""
- },
- {
-  "vi": "Kế hoạch mùa tựu trường",
-  "en": ""
- },
- {
-  "vi": "Cao điểm là tháng 7–8; ứng viên dự sinh tháng 12.",
-  "en": ""
- },
- {
-  "vi": "Mời phỏng vấn như mọi người, trình anh Quân lịch cao điểm và kế hoạch người hỗ trợ khi chị nghỉ sinh",
-  "en": ""
- },
- {
-  "vi": "Được phỏng vấn công bằng, em vào làm kịp mùa cao điểm. Cảm ơn phòng nhân sự 🌷",
-  "en": ""
- },
- {
-  "vi": "Chị ấy vào làm, mẫu balo mới kịp mùa tựu trường; nghỉ sinh có người hỗ trợ sắp sẵn.",
-  "en": ""
- },
- {
-  "vi": "Ứng viên",
-  "en": ""
- },
- {
-  "vi": "Mình chỉ mong được xét bằng năng lực.",
-  "en": ""
- },
- {
-  "vi": "Hóa ra lịch cao điểm vẫn ổn, anh lo xa quá.",
-  "en": ""
- },
- {
-  "vi": "Loại hồ sơ theo ý giám đốc",
-  "en": ""
- },
- {
-  "vi": "Bị loại chỉ vì đang có em bé. Buồn ghê.",
-  "en": ""
- },
- {
-  "vi": "Ứng viên biết lý do thật, đăng lên mạng; công ty bị hỏi thăm vì phân biệt đối xử.",
-  "en": ""
- },
- {
-  "vi": "Người ta không nói thẳng, nhưng mình biết.",
-  "en": ""
- },
- {
-  "vi": "Đây là chuyện phòng nhân sự phải can ngăn.",
-  "en": ""
- },
- {
-  "vi": "Hẹn ứng viên “sau sinh quay lại”",
-  "en": ""
- },
- {
-  "vi": "Hẹn sau sinh… nghe lịch sự mà vẫn là loại mình.",
-  "en": ""
- },
- {
-  "vi": "Ứng viên nhận việc chỗ khác; công ty thiếu người thiết kế cả mùa.",
-  "en": ""
- },
- {
-  "vi": "Mẫu mới chậm, khách hỏi mãi.",
-  "en": ""
- },
- {
-  "vi": "Tuyển dụng xét năng lực; lo lắng của sếp thì giải bằng kế hoạch, không bằng loại người.",
-  "en": ""
- },
- {
-  "vi": "Thợ lâu năm sợ mất việc vì máy mới",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng đứng ngập ngừng: “Nghe nói xưởng mua máy may tự động. Thế… mấy người già như tôi có bị cho nghỉ không cô?”",
-  "en": ""
- },
- {
-  "vi": "Bạn là thợ may 15 năm, tay nghề giỏi nhưng không rành máy tính.",
-  "en": ""
- },
- {
-  "vi": "Kế hoạch đầu tư",
-  "en": ""
- },
- {
-  "vi": "Máy mới làm đường may thẳng; mẫu khó vẫn cần thợ tay nghề cao.",
-  "en": ""
- },
- {
-  "vi": "Chương trình đào tạo",
-  "en": ""
- },
- {
-  "vi": "Công ty có ngân sách cho 5 thợ học vận hành máy, ưu tiên người lâu năm.",
-  "en": ""
- },
- {
-  "vi": "Tin đồn trong xưởng",
-  "en": ""
- },
- {
-  "vi": "Có người bảo mua máy để cắt giảm một nửa tổ.",
-  "en": ""
- },
- {
-  "vi": "Nói rõ kế hoạch, mời anh Dũng đăng ký lớp vận hành máy đầu tiên",
-  "en": ""
- },
- {
-  "vi": "Tưởng mất việc, ai dè được đi học máy mới. Tôi yên tâm rồi.",
-  "en": ""
- },
- {
-  "vi": "Dũng thành người đứng máy giỏi nhất, còn kèm thợ trẻ.",
-  "en": ""
- },
- {
-  "vi": "Già rồi vẫn học được, mà còn được ưu tiên.",
-  "en": ""
- },
- {
-  "vi": "Tổ yên ổn, không ai bỏ đi.",
-  "en": ""
- },
- {
-  "vi": "“Chưa biết đâu anh, cứ làm đi”",
-  "en": ""
- },
- {
-  "vi": "Hỏi mà không ai nói rõ, lo vẫn hoàn lo.",
-  "en": ""
- },
- {
-  "vi": "Hai thợ giỏi xin nghỉ trước vì tin đồn.",
-  "en": ""
- },
- {
-  "vi": "Không biết thì sợ.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận tin đồn cho anh chuẩn bị tinh thần",
-  "en": ""
- },
- {
-  "vi": "Phòng nhân sự cũng bảo sẽ cắt người. Thôi tôi đi tìm chỗ khác.",
-  "en": ""
- },
- {
-  "vi": "Tin sai lan khắp xưởng; năng suất tụt hẳn cả tháng.",
-  "en": ""
- },
- {
-  "vi": "Ai nói với thợ là cắt người thế?",
-  "en": ""
- },
- {
-  "vi": "Tin đồn chỉ dập được bằng thông tin rõ và một con đường cụ thể cho người đang lo.",
-  "en": ""
- },
- {
-  "vi": "Bị mắng trước cả phòng",
-  "en": ""
- },
- {
-  "vi": "Linh chạy vào phòng nhân sự, mắt đỏ hoe: “Anh Quân quát em trước cả phòng vì báo giá sai. Em muốn nghỉ luôn.”",
-  "en": ""
- },
- {
-  "vi": "Bạn là nhân viên trẻ, lỗi thì có nhưng bị mắng giữa mọi người thấy nhục.",
-  "en": ""
- },
- {
-  "vi": "Báo giá bị sai",
-  "en": ""
- },
- {
-  "vi": "Linh gõ nhầm đơn giá, khách phát hiện trước khi ký.",
-  "en": ""
- },
- {
-  "vi": "Góp ý công việc làm riêng, tôn trọng; không xúc phạm trước đông người.",
-  "en": ""
- },
- {
-  "vi": "Thành tích của Linh",
-  "en": ""
- },
- {
-  "vi": "Báo cáo doanh số",
-  "en": ""
- },
- {
-  "vi": "Ba tháng liền vượt chỉ tiêu.",
-  "en": ""
- },
- {
-  "vi": "Lắng nghe Linh, cùng lập bảng tự kiểm báo giá; gặp riêng anh Quân góp ý cách nhắc nhở theo quy chế",
-  "en": ""
- },
- {
-  "vi": "Em vẫn sai thật, nhưng giờ em có checklist, sếp cũng nhẹ giọng hơn rồi 😅",
-  "en": ""
- },
- {
-  "vi": "Linh ở lại, báo giá không sai nữa; anh Quân bắt đầu góp ý riêng.",
-  "en": ""
- },
- {
-  "vi": "Được nghe, được chỉ cách sửa.",
-  "en": ""
- },
- {
-  "vi": "Anh nóng quá. Lần sau anh nói riêng.",
-  "en": ""
- },
- {
-  "vi": "An ủi Linh rồi thôi",
-  "en": ""
- },
- {
-  "vi": "Được an ủi nhưng mai lại thế thì sao.",
-  "en": ""
- },
- {
-  "vi": "Linh đỡ buồn; tháng sau lại bị quát lần nữa.",
-  "en": ""
- },
- {
-  "vi": "Không ai sửa gì cả.",
-  "en": ""
- },
- {
-  "vi": "Bảo Linh: “Em sai thì bị mắng là đúng rồi”",
-  "en": ""
- },
- {
-  "vi": "Đến nhân sự cũng không bênh. Em nộp đơn rồi.",
-  "en": ""
- },
- {
-  "vi": "Linh nghỉ việc, mang theo ba khách hàng lớn.",
-  "en": ""
- },
- {
-  "vi": "Mình mất một người giỏi vì một câu nói.",
-  "en": ""
- },
- {
-  "vi": "Lỗi công việc thì sửa bằng cách làm; cách góp ý thì cũng cần được sửa.",
-  "en": ""
- },
- {
-  "vi": "Chuyên viên nhân sự chính thức",
-  "en": ""
- },
- {
-  "vi": "Phụ trách tuyển dụng",
-  "en": ""
- },
- {
-  "vi": "Được đề cử phó phòng nhân sự",
-  "en": ""
- },
- {
-  "vi": "Ba ngày hồ sơ gọn gàng, không sót chữ ký nào. Chị ký chính thức cho em nhé.",
-  "en": ""
- },
- {
-  "vi": "Từ nay em phụ trách tuyển dụng. Ứng viên nào cũng phải được đối xử công bằng như em vẫn làm.",
-  "en": ""
- },
- {
-  "vi": "Chị đã đề cử em làm phó phòng. Có em, chị đi phép cũng yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Vân",
-  "en": ""
- },
- {
-  "vi": "Chuyên viên tuyển dụng mới",
-  "en": ""
- },
- {
-  "vi": "Em gọi điện mời phỏng vấn mà run quá, chị nghe em tập một lượt được không?",
-  "en": ""
- },
- {
-  "vi": "Đơn nghỉ phép nửa ngày thì chấm công thế nào hả chị?",
-  "en": ""
- },
- {
-  "vi": "Vân ghi vội vào sổ: “Hiểu rồi ạ! Cảm ơn chị.”",
-  "en": ""
- },
- {
-  "vi": "Vân gật đầu: “Dạ, em hỏi chị Huyền vậy.”",
-  "en": ""
- },
- {
-  "vi": "Vân soát giúp một lượt —",
-  "en": ""
- },
- {
-  "vi": "Thợ mới hỏi mãi về bảo hiểm, cháu giải thích giúp chú mấy câu?",
-  "en": ""
- },
- {
-  "vi": "Bảng phân ca tổ chú rối quá, cháu xếp lại giùm chú nhé?",
-  "en": ""
- },
- {
-  "vi": "Chú Lâm cười khà: “Cần thợ thử tay nghề lúc nào cứ gọi chú.”",
-  "en": ""
- },
- {
-  "vi": "Chú Lâm: “Ừ, để chú tự mò.”",
-  "en": ""
- },
- {
-  "vi": "Chú Lâm mang bảng công ký sẵn lên tận nơi —",
-  "en": ""
- },
- {
-  "vi": "Có ứng viên đến sớm 1 tiếng, chị ra tiếp giúp em được không?",
-  "en": ""
- },
- {
-  "vi": "Sổ khách ra vào em ghi sai mấy dòng, chị chỉ em sửa cho đúng?",
-  "en": ""
- },
- {
-  "vi": "Nhi để lên bàn hộp sữa chua: “Em cảm ơn chị!”",
-  "en": ""
- },
- {
-  "vi": "Nhi: “Dạ không sao, em tự lo được.”",
-  "en": ""
- },
- {
-  "vi": "Nhi chuyển giúp hồ sơ giữa các phòng —",
-  "en": ""
- },
- {
-  "vi": "Lọc hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Soát hợp đồng",
-  "en": ""
- },
- {
-  "vi": "Lịch phỏng vấn",
-  "en": ""
- },
- {
-  "vi": "Chuyện nhân sự",
-  "en": ""
- },
- {
-  "vi": "Cô Kim (thanh tra lao động)",
-  "en": ""
- },
- {
-  "vi": "Đọc yêu cầu vị trí → chạm từng hồ sơ, chọn khay. So CV với BHXH và thông tin bổ sung mới nhất; bỏ qua lời thiên vị về giới tính, quê quán.",
-  "en": ""
- },
- {
-  "vi": "Đối chiếu từng ô với giờ làm và tờ đơn từ, kể cả đơn vừa duyệt bổ sung. Bấm “Mở ô vừa cập nhật” để xem đúng người và ngày; ô đúng thì để nguyên.",
-  "en": ""
- },
- {
-  "vi": "So từng chỗ trong hợp đồng với thư mời nhận việc, CCCD và quy định: chạm chỗ sai, chọn cách viết đúng.",
-  "en": ""
- },
- {
-  "vi": "Chọn một buổi phỏng vấn → chạm ô phòng/giờ. Xem bảng quy định: ai bận, phòng nào đã có người đặt.",
-  "en": ""
- },
- {
-  "vi": "Tìm hiểu từng chuyện trước, rồi chọn cách trả lời vừa đúng quy định vừa có lối ra.",
-  "en": ""
- },
- {
-  "vi": "📞 Bổ sung mới:",
-  "en": ""
- },
- {
-  "vi": "Công ty CP Cánh Diều",
-  "en": ""
- },
- {
-  "vi": "Chuyên viên hành chính – nhân sự",
-  "en": ""
- },
- {
-  "vi": "Có trưởng phòng kèm",
-  "en": ""
- },
- {
-  "vi": "Gặp đủ kiểu người",
-  "en": ""
- },
- {
-  "vi": "Giờ giấc ổn định",
-  "en": ""
- },
- {
-  "vi": "Công ty làm balo, cặp sách 80 người; giám đốc quyết nhanh, đổi ý cũng nhanh.",
-  "en": ""
- },
- {
-  "vi": "Văn phòng tuyển dụng Cầu Nối",
-  "en": ""
- },
- {
-  "vi": "Trợ lý tuyển dụng",
-  "en": ""
- },
- {
-  "vi": "Gọi điện nhiều",
-  "en": ""
- },
- {
-  "vi": "Thưởng theo hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Văn phòng nhỏ tuyển người cho xưởng và cửa hàng quanh khu.",
-  "en": ""
- },
- {
-  "vi": "Sếp ghi bên lề CV: “Mới cưới, loại.” Ứng viên đủ mọi yêu cầu. Bạn làm gì?",
-  "en": ""
- },
- {
-  "vi": "Vẫn mời phỏng vấn, nói riêng với sếp quy định không phân biệt đối xử",
-  "en": ""
- },
- {
-  "vi": "Công bằng mà vẫn khéo.",
-  "en": ""
- },
- {
-  "vi": "Loại theo ý sếp",
-  "en": ""
- },
- {
-  "vi": "Phân biệt đối xử là lỗi rất nặng của người làm nhân sự.",
-  "en": ""
- },
- {
-  "vi": "Lặng lẽ mời mà không nói gì với sếp",
-  "en": ""
- },
- {
-  "vi": "Đúng hướng nhưng né trao đổi.",
-  "en": ""
- },
- {
-  "vi": "Đồng nghiệp hỏi lương của người khác. Bạn trả lời sao?",
-  "en": ""
- },
- {
-  "vi": "Không nói; chỉ thang lương công khai và cách đề nghị xét lương",
-  "en": ""
- },
- {
-  "vi": "Bảo mật mà vẫn giúp được.",
-  "en": ""
- },
- {
-  "vi": "Nói nhỏ thôi, chỗ thân quen",
-  "en": ""
- },
- {
-  "vi": "Lộ lương là mất lòng tin cả công ty.",
-  "en": ""
- },
- {
-  "vi": "“Bí mật” rồi thôi",
-  "en": ""
- },
- {
-  "vi": "Đúng nhưng cộc.",
-  "en": ""
- },
- {
-  "vi": "Hành chính – Nhân sự",
-  "en": ""
- },
- {
-  "vi": "Công bằng từ tờ CV đến tờ hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Nắng nhẹ, quạt trần quay đều",
-  "en": ""
- },
- {
-  "vi": "Bàn nhân sự",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ ứng tuyển, bảng chấm công và hợp đồng hôm nay đã xếp trên bàn. Soát kỹ, công bằng với từng người nhé.",
-  "en": ""
- },
- {
-  "vi": "Mỗi tờ giấy là một con người",
-  "en": ""
- },
- {
-  "vi": "22 · CÁNH DIỀU · NHÂN SỰ",
-  "en": ""
- },
- {
-  "vi": "Mới vào, gọi điện còn run nhưng rất chịu khó.",
-  "en": ""
- },
- {
-  "vi": "Lễ tân kiêm văn thư, nhớ mặt từng khách.",
-  "en": ""
- },
- {
-  "vi": "Thuộc lòng nội quy, soát một lần là ra lỗi.",
-  "en": ""
- },
- {
-  "vi": "Chuyên viên tuyển dụng",
-  "en": ""
- },
- {
-  "vi": "Hành chính – văn thư",
-  "en": ""
- },
- {
-  "vi": "Bàn nhân sự ngăn nắp",
-  "en": ""
- },
- {
-  "vi": "CV ứng tuyển",
-  "en": ""
- },
- {
-  "vi": "Tuyển dụng",
-  "en": ""
- },
- {
-  "vi": "Tiền lương",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng lao động",
-  "en": ""
- },
- {
-  "vi": "Xếp lịch phỏng vấn",
-  "en": ""
- },
- {
-  "vi": "Chốt công",
-  "en": ""
- },
- {
-  "vi": "Bạn thợ may đầu tiên",
-  "en": ""
- },
- {
-  "vi": "Một cô gái quê Nghệ An nộp hồ sơ, CV viết tay, email ngộ nghĩnh.",
-  "en": ""
- },
- {
-  "vi": "Bạn mời cô thử tay nghề dù Linh bảo “email trẻ con quá”.",
-  "en": ""
- },
- {
-  "vi": "Ba tháng sau, cô may mẫu balo bán chạy nhất mùa tựu trường.",
-  "en": ""
- },
- {
-  "vi": "Tờ đơn nghỉ phép",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng nghỉ không phép ba hôm, chú Lâm đòi đuổi.",
-  "en": ""
- },
- {
-  "vi": "Bạn hỏi ra chuyện con anh nằm viện, chỉ anh làm đơn nghỉ phép năm.",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng quay lại làm, tặng cả phòng nhân sự chùm chôm chôm nhà trồng.",
-  "en": ""
- },
- {
-  "vi": "Lịch phỏng vấn kín mít",
-  "en": ""
- },
- {
-  "vi": "Mùa tuyển dụng, một ngày 9 buổi phỏng vấn, 3 phòng họp.",
-  "en": ""
- },
- {
-  "vi": "Bạn xếp lại từng ô, tránh giờ giám đốc đi ngân hàng.",
-  "en": ""
- },
- {
-  "vi": "Không ứng viên nào phải chờ quá 10 phút.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ rõ ràng, hỏi là có câu trả lời.",
-  "en": ""
- },
- {
-  "vi": "Được đối xử công bằng.",
-  "en": ""
- },
- {
-  "vi": "Chuyện riêng được giữ kín.",
-  "en": ""
- },
- {
-  "vi": "Lịch hẹn đúng giờ.",
-  "en": ""
- },
- {
-  "vi": "Mỗi hồ sơ là một việc thật: lọc CV vào khay, soát bảng chấm công từng ô, soát hợp đồng, xếp lịch phỏng vấn, trao đổi chuyện khó. Đọc giấy tờ bên cạnh, rồi nộp trước giờ hạn. Thỉnh thoảng sếp đổi ý giữa chừng — đọc kỹ tin báo rồi sửa lại. Lương ngày trả khi khép ca.",
-  "en": ""
- },
- {
-  "vi": "Ly giấy",
-  "en": ""
- },
- {
-  "vi": "Hũ topping",
   "en": ""
  }
 ]

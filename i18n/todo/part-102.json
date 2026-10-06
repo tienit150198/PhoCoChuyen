@@ -1,2252 +1,1802 @@
 [
  {
-  "vi": "✕ Bỏ $1 ra khỏi bill",
-  "en": "",
-  "pattern": true
+  "vi": "Tự sướng",
+  "en": ""
  },
  {
-  "vi": "/$1 · kệ hết",
-  "en": "",
-  "pattern": true
+  "vi": "Xoay vòng",
+  "en": ""
  },
  {
-  "vi": "quét dư $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chạy bộ",
+  "en": ""
  },
  {
-  "vi": "✕ Xóa $1 (quét dư) để quét lại",
-  "en": "",
-  "pattern": true
+  "vi": "Ngồi xổm",
+  "en": ""
  },
  {
-  "vi": "Cân $1",
-  "en": "",
-  "pattern": true
+  "vi": "Mặt bông hoa",
+  "en": ""
  },
  {
-  "vi": "✕ Xóa dòng cân $1 để cân lại",
-  "en": "",
-  "pattern": true
+  "vi": "Giơ biển",
+  "en": ""
  },
  {
-  "vi": "⚖️ Đặt $1 lên cân",
-  "en": "",
-  "pattern": true
+  "vi": "Ăn kem",
+  "en": ""
  },
  {
-  "vi": "⚖️ Bấm mã $1 trên cân",
-  "en": "",
-  "pattern": true
+  "vi": "Chào kiểu lính",
+  "en": ""
  },
  {
-  "vi": "✕ Xóa $1 khỏi bill",
-  "en": "",
-  "pattern": true
+  "vi": "Máy bay",
+  "en": ""
  },
  {
-  "vi": "Thối đúng $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Ú òa",
+  "en": ""
  },
  {
-  "vi": "đang đặt $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Ôm tim",
+  "en": ""
  },
  {
-  "vi": "➕ Đặt $1 xu vào khay thối",
-  "en": "",
-  "pattern": true
+  "vi": "Vỗ tay",
+  "en": ""
  },
  {
-  "vi": "nhận $1/$2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Khoác vai",
+  "en": ""
  },
  {
-  "vi": "khách cần $1, kệ chỉ còn $2",
-  "en": "",
-  "pattern": true
+  "vi": "Đập tay",
+  "en": ""
  },
  {
-  "vi": "Khách đếm lại: thối thiếu $1 xu. Đặt thêm vào khay rồi đưa lại.",
-  "en": "",
-  "pattern": true
+  "vi": "Chỉ nhau",
+  "en": ""
  },
  {
-  "vi": "+$1 xu tiền lẻ",
-  "en": "",
-  "pattern": true
+  "vi": "Tựa lưng",
+  "en": ""
  },
  {
-  "vi": "Thối tiền cho $1",
-  "en": "",
-  "pattern": true
+  "vi": "Tựa vai",
+  "en": ""
  },
  {
-  "vi": "Đã thu $1 · $2 khách xong$3.",
-  "en": "",
-  "pattern": true
+  "vi": "Cùng nhảy",
+  "en": ""
  },
  {
-  "vi": "⚡ thiếu $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Chụm đầu",
+  "en": ""
  },
  {
-  "vi": "Nhập hỏa tốc $1 $2 $3 · khoảng $4 xu? Hỏa tốc 15–30 phút, nhớ mở thùng đếm ở Kho & giá.",
-  "en": "",
-  "pattern": true
+  "vi": "Nắm tay",
+  "en": ""
  },
  {
-  "vi": "Báo giá sỉ · giá gốc $1",
-  "en": "",
-  "pattern": true
+  "vi": "Ôm nhau",
+  "en": ""
  },
  {
-  "vi": "Đã báo mức bớt sâu nhất: chờ $1 trả lời.",
-  "en": "",
-  "pattern": true
+  "vi": "Tàu hỏa",
+  "en": ""
  },
  {
-  "vi": "Khách chỉ nghe báo giá tối đa 2 lần. Bớt $1% thì khách trả lời ngay.",
-  "en": "",
-  "pattern": true
+  "vi": "Xoa đầu",
+  "en": ""
  },
  {
-  "vi": "🤝 Hỏi $1 chốt giá $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Cụng ly",
+  "en": ""
  },
  {
-  "vi": "🔍 Đọc hạn $1",
-  "en": "",
-  "pattern": true
+  "vi": "Theo dáng",
+  "en": ""
  },
  {
-  "vi": "🗑️ Rút $1 (hết hạn)",
-  "en": "",
-  "pattern": true
+  "vi": "Cười híp mắt",
+  "en": ""
  },
  {
-  "vi": "🏷️ Dán tem −$1% cho $2",
-  "en": "",
-  "pattern": true
+  "vi": "Cười tít",
+  "en": ""
  },
  {
-  "vi": "✕ Xóa $1 khỏi máy tính tiền",
-  "en": "",
-  "pattern": true
+  "vi": "Mắt lấp lánh",
+  "en": ""
  },
  {
-  "vi": "Nhập hỏa tốc $1 $2 $3 · khoảng $4 xu?",
-  "en": "",
-  "pattern": true
+  "vi": "Mắt tim",
+  "en": ""
  },
  {
-  "vi": "thiếu $1 · hàng đang về",
-  "en": "",
-  "pattern": true
+  "vi": "Phồng má",
+  "en": ""
  },
  {
-  "vi": "thiếu $1 · quỹ thiếu $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Lè lưỡi",
+  "en": ""
  },
  {
-  "vi": "Soạn hàng và giao, thu nốt $1 xu?",
-  "en": "",
-  "pattern": true
+  "vi": "Khóc nhè",
+  "en": ""
  },
  {
-  "vi": "📦 Nhập $1 · thiếu $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Ngủ gật",
+  "en": ""
  },
  {
-  "vi": "🛒 +$1 vào đơn",
-  "en": "",
-  "pattern": true
+  "vi": "Giận dỗi",
+  "en": ""
  },
  {
-  "vi": "🛒 $1 trong đơn",
-  "en": "",
-  "pattern": true
+  "vi": "Đỏ mặt",
+  "en": ""
  },
  {
-  "vi": "📦 $1 món còn đủ hàng · xem giá & nhập thêm",
-  "en": "",
-  "pattern": true
+  "vi": "Hoảng hốt",
+  "en": ""
  },
  {
-  "vi": "🔗 Còn $1 dòng",
-  "en": "",
-  "pattern": true
+  "vi": "Ngơ ngác",
+  "en": ""
  },
  {
-  "vi": "Chờ gói báo cáo về lúc $1 — hoặc gọi giục",
-  "en": "",
-  "pattern": true
+  "vi": "Chu môi",
+  "en": ""
  },
  {
-  "vi": "👆 Chọn $1",
-  "en": "",
-  "pattern": true
+  "vi": "XINH QUÁ",
+  "en": ""
  },
  {
-  "vi": "Còn $1 dòng: ghép hai dòng cùng chứng từ, dòng lẻ chọn lý do",
-  "en": "",
-  "pattern": true
+  "vi": "chụp ảnh: đồ",
+  "en": ""
  },
  {
-  "vi": "lý do “$1”",
-  "en": "",
-  "pattern": true
+  "vi": "VUI QUÁ!",
+  "en": ""
  },
  {
-  "vi": "Ghép $1 với dòng cùng chứng từ bên kia",
-  "en": "",
-  "pattern": true
+  "vi": "chụp ảnh: dáng",
+  "en": ""
  },
  {
-  "vi": "Chọn $1 (sổ bên bán)",
-  "en": "",
-  "pattern": true
+  "vi": "Vui ghê",
+  "en": ""
  },
  {
-  "vi": "Chọn $1 (sổ bên mua) — cùng chứng từ",
-  "en": "",
-  "pattern": true
+  "vi": "Đỉnh!",
+  "en": ""
  },
  {
-  "vi": "Ghép $1 ↔",
-  "en": "",
-  "pattern": true
+  "vi": "Yêu lắm",
+  "en": ""
  },
  {
-  "vi": "Lệch $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Ố là la",
+  "en": ""
  },
  {
-  "vi": "👉 Xếp $1",
-  "en": "",
-  "pattern": true
+  "vi": "VÉ HỘI CHỢ",
+  "en": ""
  },
  {
-  "vi": "đang giữ cho $1 từ ngày $2",
-  "en": "",
-  "pattern": true
+  "vi": "Biểu cảm",
+  "en": ""
  },
  {
-  "vi": "có đơn $1 chờ đồng bộ từ ngày $2",
-  "en": "",
-  "pattern": true
+  "vi": "Tim & lấp lánh",
+  "en": ""
  },
  {
-  "vi": "📥 $1 đơn chờ$2",
-  "en": "",
-  "pattern": true
+  "vi": "Đồ ăn hội chợ",
+  "en": ""
  },
  {
-  "vi": "⚠️ $1 trùng",
-  "en": "",
-  "pattern": true
+  "vi": "Chữ xinh",
+  "en": ""
  },
  {
-  "vi": "🛏️ có khách · 📌 đã đặt · ⏳ đang giữ phòng · 🗝️ cô chú phòng số 3 · 📥 đơn OTA chưa đồng bộ · 🔧 bảo trì · 🪜 phải leo cầu thang$1",
-  "en": "",
-  "pattern": true
+  "vi": "Nhãn dán",
+  "en": ""
  },
  {
-  "vi": "🪟 $1–$2 giây$3",
-  "en": "",
-  "pattern": true
+  "vi": "Cười híp",
+  "en": ""
  },
  {
-  "vi": "Hết phòng trống $1 đêm cho $2 người.",
-  "en": "",
-  "pattern": true
+  "vi": "Ngại đỏ mặt",
+  "en": ""
  },
  {
-  "vi": "＋ Thêm dòng ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "Ngủ khò khò",
+  "en": ""
  },
  {
-  "vi": "👕 $1 túi",
-  "en": "",
-  "pattern": true
+  "vi": "Kính râm ngầu",
+  "en": ""
  },
  {
-  "vi": "Khách đã chỉ ra hóa đơn sai $1 lần.",
-  "en": "",
-  "pattern": true
+  "vi": "Tim đỏ",
+  "en": ""
  },
  {
-  "vi": "Lịch giữ phòng đã thay đổi. $1 Bỏ giữ và chọn lại phòng trước khi nhận cọc.",
-  "en": "",
-  "pattern": true
+  "vi": "Tim hồng",
+  "en": ""
  },
  {
-  "vi": "Hỏi thêm cho chắc · $1/",
-  "en": "",
-  "pattern": true
+  "vi": "Tim đôi",
+  "en": ""
  },
  {
-  "vi": "Khớp mã $1 trên app",
-  "en": "",
-  "pattern": true
+  "vi": "Nơ hồng",
+  "en": ""
  },
  {
-  "vi": "🔎 Chọn dòng $1 · $2 · hôm nay",
-  "en": "",
-  "pattern": true
+  "vi": "Kẹo bông",
+  "en": ""
  },
  {
-  "vi": "Dư $1 người: phụ thu hay chỉ nhận đúng số đặt",
-  "en": "",
-  "pattern": true
+  "vi": "Cá viên chiên",
+  "en": ""
  },
  {
-  "vi": "➕ Phụ thu $1 xu/người/đêm (còn phòng rộng)",
-  "en": "",
-  "pattern": true
+  "vi": "Bắp rang bơ",
+  "en": ""
  },
  {
-  "vi": "Không còn phòng nào dọn kịp hay sắp trả? Xin lỗi $1, chuyển sang Nhà Gỗ Cô Ba?",
-  "en": "",
-  "pattern": true
+  "vi": "Kẹo hồ lô",
+  "en": ""
  },
  {
-  "vi": "mới đủ $1/$2 chỗ, chọn thêm (tối đa 2)",
-  "en": "",
-  "pattern": true
+  "vi": "Đèn ông sao",
+  "en": ""
  },
  {
-  "vi": "Giao phòng sạch, đủ $1 chỗ",
-  "en": "",
-  "pattern": true
+  "vi": "Đèn cá chép",
+  "en": ""
  },
  {
-  "vi": "↺ Bỏ chọn $1, chọn phòng khác",
-  "en": "",
-  "pattern": true
+  "vi": "Bánh trung thu",
+  "en": ""
  },
  {
-  "vi": "Trả $1 khách để quên",
-  "en": "",
-  "pattern": true
+  "vi": "Trăng rằm",
+  "en": ""
  },
  {
-  "vi": "🎒 Trả $1 cho khách",
-  "en": "",
-  "pattern": true
+  "vi": "Thỏ ngọc",
+  "en": ""
  },
  {
-  "vi": "🧾 In hóa đơn, thu $1 · thối $2",
-  "en": "",
-  "pattern": true
+  "vi": "Đầu lân",
+  "en": ""
  },
  {
-  "vi": "🧾 In hóa đơn & thu $1",
-  "en": "",
-  "pattern": true
+  "vi": "Băng keo hồng",
+  "en": ""
  },
  {
-  "vi": "Thu $1 xu, đưa khách $2 xu tiền thối. Khách sẽ đọc từng dòng.",
-  "en": "",
-  "pattern": true
+  "vi": "Băng keo xanh",
+  "en": ""
  },
  {
-  "vi": "Thu $1 xu, khách sẽ đọc từng dòng.",
-  "en": "",
-  "pattern": true
+  "vi": "Góc ảnh nơ",
+  "en": ""
  },
  {
-  "vi": "🥄 Nhấc trứng ra lúc $1 ($2–$3 giây)",
-  "en": "",
-  "pattern": true
+  "vi": "Vé hội chợ",
+  "en": ""
  },
  {
-  "vi": "🍳 Đập 1 trứng vào chảo ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "Khung thoại",
+  "en": ""
  },
  {
-  "vi": "trứng $1",
-  "en": "",
-  "pattern": true
+  "vi": "Khung ảnh",
+  "en": ""
  },
  {
-  "vi": "➕ Thêm 1 $1",
-  "en": "",
-  "pattern": true
+  "vi": "Huy hiệu 2026",
+  "en": ""
  },
  {
-  "vi": "Giữ phòng trống mọi đêm, đủ $1 chỗ",
-  "en": "",
-  "pattern": true
+  "vi": "lương",
+  "en": ""
  },
  {
-  "vi": "📌 Giữ $1 trên lịch",
-  "en": "",
-  "pattern": true
+  "vi": "thuê chỗ",
+  "en": ""
  },
  {
-  "vi": "↺ Bỏ chọn $1 (đã có khách), chọn phòng khác",
-  "en": "",
-  "pattern": true
+  "vi": "điện",
+  "en": ""
  },
  {
-  "vi": "Đã giữ $1",
-  "en": "",
-  "pattern": true
+  "vi": "môi trường",
+  "en": ""
  },
  {
-  "vi": "Báo $1",
-  "en": "",
-  "pattern": true
+  "vi": "bảo vệ",
+  "en": ""
  },
  {
-  "vi": "✕ Bỏ $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đã trả cho thời gian mở quầy:",
+  "en": ""
  },
  {
-  "vi": "Chọn $1 nơi hợp khách",
-  "en": "",
-  "pattern": true
+  "vi": "Lương, thuê chỗ, điện, phí môi trường và bảo vệ tính theo thời gian quầy mở và làm việc, kể cả lúc chưa có khách. Vắng khách thì bấm 🔴 Đóng quầy để ngừng tính.",
+  "en": ""
  },
  {
-  "vi": "Đã chọn $1 nơi",
-  "en": "",
-  "pattern": true
+  "vi": "đang dừng",
+  "en": ""
  },
  {
-  "vi": "chọn ít nhất $1 nơi",
-  "en": "",
-  "pattern": true
+  "vi": "mỗi ngày bán",
+  "en": ""
  },
  {
-  "vi": "Đồng bộ đơn $1 của $2",
-  "en": "",
-  "pattern": true
+  "vi": "🕵️ Rủi ro trộm:",
+  "en": ""
  },
  {
-  "vi": "mới đủ $1/$2 chỗ",
-  "en": "",
-  "pattern": true
+  "vi": ". Camera −50%, chuông −25%, két sắt −20% và trộm lấy tối đa nửa két, bảo vệ cơ bản −20%, tăng cường −40%.",
+  "en": ""
  },
  {
-  "vi": "📥 Đồng bộ đơn $1 vào $2",
-  "en": "",
-  "pattern": true
+  "vi": "Đơn đã nhận vẫn được phục vụ. Thời gian đóng không tạo đơn bán bù.",
+  "en": ""
  },
  {
-  "vi": "🔁 Xếp $1 vào $2",
-  "en": "",
-  "pattern": true
+  "vi": "🟢 Mở quầy",
+  "en": ""
  },
  {
-  "vi": "📥 Đơn $1 trùng phòng: chạm phòng trống đủ $2 chỗ",
-  "en": "",
-  "pattern": true
+  "vi": "🔴 Đóng quầy",
+  "en": ""
  },
  {
-  "vi": "🚪 Để khăn ở cửa $1",
-  "en": "",
-  "pattern": true
+  "vi": "Quầy đang đóng, không nhận khách mới.",
+  "en": ""
  },
  {
-  "vi": "🧺 Vào dọn $1",
-  "en": "",
-  "pattern": true
+  "vi": "Quầy đang mở nhận khách khi đủ hàng và vốn.",
+  "en": ""
  },
  {
-  "vi": "🪵 Nhóm lò củi $1",
-  "en": "",
-  "pattern": true
+  "vi": "Gói bảo vệ giảm khả năng bị trộm khi quầy hoạt động: cơ bản −20%, tăng cường −40%. Phí theo tổng tài sản của bạn, gồm tiền, nhà, xe và đầu tư; báo giá giữ trong ngày game. Chi phí lấy từ vốn/két và ghi trong sổ.",
+  "en": ""
  },
  {
-  "vi": "🔥 Máy sưởi gas $1",
-  "en": "",
-  "pattern": true
+  "vi": "Bảo vệ quầy",
+  "en": ""
  },
  {
-  "vi": "🗺️ Gợi ý nơi đi cho khách $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đang sử dụng",
+  "en": ""
  },
  {
-  "vi": "⏳ Chờ $1 giây cho $2…",
-  "en": "",
-  "pattern": true
+  "vi": "Đổi nghề hoặc nơi làm việc",
+  "en": ""
  },
  {
-  "vi": "🗓️ Lịch phòng, buồng phòng, vườn & sổ$1",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn nghề khác; tiến trình từng nghề vẫn được lưu",
+  "en": ""
  },
  {
-  "vi": "/$1 chỗ",
-  "en": "",
-  "pattern": true
+  "vi": "Đang học · thi từ Ngày",
+  "en": ""
  },
  {
-  "vi": "Đã bỏ chọn $1$2.",
-  "en": "",
-  "pattern": true
+  "vi": "Học rồi thi lấy chứng chỉ nghề",
+  "en": ""
  },
  {
-  "vi": "Tối đa 2 phòng: bỏ $1, chọn $2$3.",
-  "en": "",
-  "pattern": true
+  "vi": "Vào thi",
+  "en": ""
  },
  {
-  "vi": "hết $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chứng chỉ đã có",
+  "en": ""
  },
  {
-  "vi": "Kho giấy giữ $1–$2%",
-  "en": "",
-  "pattern": true
+  "vi": "xem giấy chứng nhận",
+  "en": ""
  },
  {
-  "vi": "hẹn trả ngày $1",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Đang đeo · chạm để cất",
+  "en": ""
  },
  {
-  "vi": "Đang mượn đủ $1 cuốn",
-  "en": "",
-  "pattern": true
+  "vi": "Học và thi ở 🎓 Thi chứng chỉ",
+  "en": ""
  },
  {
-  "vi": "Còn nợ $1 xu phí cũ",
-  "en": "",
-  "pattern": true
+  "vi": "Chưa thi",
+  "en": ""
  },
  {
-  "vi": "🪪 Gia hạn thẻ ($1 xu)",
-  "en": "",
-  "pattern": true
+  "vi": "Chứng chỉ nghề",
+  "en": ""
  },
  {
-  "vi": "Trễ hạn: $1 ngày × $2 xu$3",
-  "en": "",
-  "pattern": true
+  "vi": "Lớp cấp tốc",
+  "en": ""
  },
  {
-  "vi": "(tối đa $1)",
-  "en": "",
-  "pattern": true
+  "vi": "Tự học",
+  "en": ""
  },
  {
-  "vi": "✓ Đã thu $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Nhớ lại bài học:",
+  "en": ""
  },
  {
-  "vi": "📚 Trả “$1”",
-  "en": "",
-  "pattern": true
+  "vi": "💡 Gợi ý (miễn phí)",
+  "en": ""
  },
  {
-  "vi": "📒 Còn $1 người nợ phí · $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Bài thi",
+  "en": ""
  },
  {
-  "vi": "📚 Hôm nay · $1 việc",
-  "en": "",
-  "pattern": true
+  "vi": "là đạt · phân vân cứ bấm 💡, không trừ điểm.",
+  "en": ""
  },
  {
-  "vi": "chưa $1 thêm được",
-  "en": "",
-  "pattern": true
+  "vi": "disabled aria-label=\"Đáp án đã loại\"",
+  "en": ""
  },
  {
-  "vi": "Kho đầy $1/",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Đúng.",
+  "en": ""
  },
  {
-  "vi": "Đang chờ $1/$2 đơn",
-  "en": "",
-  "pattern": true
+  "vi": "✗ Chưa đúng.",
+  "en": ""
  },
  {
-  "vi": "Chồng ly đầy $1/",
-  "en": "",
-  "pattern": true
+  "vi": "Câu làm thử không tính điểm và khác đề thi thật.",
+  "en": ""
  },
  {
-  "vi": "Chồng ly chỉ còn chỗ $1 ly",
-  "en": "",
-  "pattern": true
+  "vi": "· sau khi khép ca hôm nay",
+  "en": ""
  },
  {
-  "vi": "Kho chỉ còn chỗ $1 phần",
-  "en": "",
-  "pattern": true
+  "vi": "Khóa đang học",
+  "en": ""
  },
  {
-  "vi": "🚫 $1 món ngừng bán",
-  "en": "",
-  "pattern": true
+  "vi": "✏️ Làm thử trước (không tính điểm)",
+  "en": ""
  },
  {
-  "vi": "đã hết. Chưa $1 thêm được",
-  "en": "",
-  "pattern": true
+  "vi": "Bỏ khóa học",
+  "en": ""
  },
  {
-  "vi": "đã hết. $1 $2 phần, $3 xu$4",
-  "en": "",
-  "pattern": true
+  "vi": "🎓 Xem giấy chứng nhận",
+  "en": ""
  },
  {
-  "vi": "đã hết. Gọi hỏa tốc 5 phần, $1 xu, tới trong 15–30 phút",
-  "en": "",
-  "pattern": true
+  "vi": "Chưa đạt",
+  "en": ""
  },
  {
-  "vi": "🥤 Chồng ly$1",
-  "en": "",
-  "pattern": true
+  "vi": "câu sai",
+  "en": ""
  },
  {
-  "vi": "🫖 Trà nền$1",
-  "en": "",
-  "pattern": true
+  "vi": "Đang học khóa này (ở trên).",
+  "en": ""
  },
  {
-  "vi": "🧊 Đá$1 · 🍯 Đường$2",
-  "en": "",
-  "pattern": true
+  "vi": "Đang học một khóa khác. Thi xong hoặc bỏ khóa đó rồi đăng ký tiếp nhé.",
+  "en": ""
  },
  {
-  "vi": "Hết ly $1. Chưa gọi hỏa tốc được",
-  "en": "",
-  "pattern": true
+  "vi": "Điểm tối đa rồi. Giỏi quá!",
+  "en": ""
  },
  {
-  "vi": "Ly size $1, còn $2 ly$3",
-  "en": "",
-  "pattern": true
+  "vi": "Lớp ôn",
+  "en": ""
  },
  {
-  "vi": "Nắp đẹp +1 xu: ép rồi nhả tay khi kim vào vùng xanh ($1–$2 giây)",
-  "en": "",
-  "pattern": true
+  "vi": "Học xong thi ngay hôm nay",
+  "en": ""
  },
  {
-  "vi": "thêm $1 · $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "📖 Tự học · miễn phí",
+  "en": ""
  },
  {
-  "vi": "🙏 Hết $1: mời khách đổi",
-  "en": "",
-  "pattern": true
+  "vi": "Thi từ Ngày",
+  "en": ""
  },
  {
-  "vi": "📦 Hết $1: chờ hàng về",
-  "en": "",
-  "pattern": true
+  "vi": "(ngày mai)",
+  "en": ""
  },
  {
-  "vi": "⚡ Hết $1: gọi hỏa tốc",
-  "en": "",
-  "pattern": true
+  "vi": "Dùng cho",
+  "en": ""
  },
  {
-  "vi": "Lấy ly $1",
-  "en": "",
-  "pattern": true
+  "vi": "🎓 Thi chứng chỉ",
+  "en": ""
  },
  {
-  "vi": "🙏 Hết ly $1: mời khách đổi cỡ",
-  "en": "",
-  "pattern": true
+  "vi": "lớp ôn",
+  "en": ""
  },
  {
-  "vi": "Bỏ $1 (khách không gọi)",
-  "en": "",
-  "pattern": true
+  "vi": "lớp cấp tốc",
+  "en": ""
  },
  {
-  "vi": "Còn $1 bước",
-  "en": "",
-  "pattern": true
+  "vi": "Học xong vào thi luôn hôm nay.",
+  "en": ""
  },
  {
-  "vi": "🚚 Đặt · $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Chưa mở được giấy chứng nhận, thử lại nhé.",
+  "en": ""
  },
  {
-  "vi": "🚚 Đặt $1 thùng · $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Bỏ khóa học?",
+  "en": ""
  },
  {
-  "vi": "🚚 Đặt $1 phần · $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Học phí đã đóng không được hoàn. Muốn thi thì đăng ký lại từ đầu.",
+  "en": ""
  },
  {
-  "vi": "Tổng $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Bỏ khóa",
+  "en": ""
  },
  {
-  "vi": "Quỹ còn $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Nhắc nhẹ nè 💛 Ở phố mình chơi vui là chính, nhưng đừng gửi địa chỉ nhà, trường, số điện thoại hay nick Zalo/FB/IG/TikTok cho người mới quen, và đừng hẹn gặp người lạ ngoài đời nha. Bạn dưới 18 tuổi thì càng cần cẩn thận hơn. Ai làm bạn thấy không ổn: chạm vào tin nhắn → Báo cáo → “An toàn / trẻ vị thành niên”, hoặc kể với người lớn bạn tin tưởng.",
+  "en": ""
  },
  {
-  "vi": "🚫 Ngừng bán · không cần $1",
-  "en": "",
-  "pattern": true
+  "vi": "Nhắn gì đó…",
+  "en": ""
  },
  {
-  "vi": "📒 Ngày $1 bán $2 ly",
-  "en": "",
-  "pattern": true
+  "vi": "Đang kết nối lại…",
+  "en": ""
  },
  {
-  "vi": "🗑️ Bỏ cuối ca $1 phần",
-  "en": "",
-  "pattern": true
+  "vi": "Tạo tài khoản để thả cảm xúc nhé.",
+  "en": ""
  },
  {
-  "vi": "👥 Hôm nay còn $1 khách",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn đang bị tạm khóa chat.",
+  "en": ""
  },
  {
-  "vi": "🔒 $1 món mở ở tay nghề cấp $2",
-  "en": "",
-  "pattern": true
+  "vi": "Tin nhắn không còn khả dụng",
+  "en": ""
  },
  {
-  "vi": "🕑 Đóng cửa · mở lại $1",
-  "en": "",
-  "pattern": true
+  "vi": "Hủy trả lời",
+  "en": ""
  },
  {
-  "vi": "Quỹ mỏng: bán ly từ hàng còn trong kho để có thêm xu, tắt bớt món ở 🏷️ Giá bán$1.",
-  "en": "",
-  "pattern": true
+  "vi": "Đang trả lời",
+  "en": ""
  },
  {
-  "vi": "/$1 đơn$2",
-  "en": "",
-  "pattern": true
+  "vi": "Đã gửi lời mời kết bạn.",
+  "en": ""
  },
  {
-  "vi": "🧾 Món đang bán$1",
-  "en": "",
-  "pattern": true
+  "vi": "Đã ghim lên đầu Cả phố.",
+  "en": ""
  },
  {
-  "vi": "Giá $1, từ $2 đến $3 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Đã bỏ ghim.",
+  "en": ""
  },
  {
-  "vi": "Nhiệm vụ $1/",
-  "en": "",
-  "pattern": true
+  "vi": "Đã tắt thông báo của cuộc trò chuyện này.",
+  "en": ""
  },
  {
-  "vi": "⭐ Cấp $1 · $2 ly",
-  "en": "",
-  "pattern": true
+  "vi": "Đã bật thông báo.",
+  "en": ""
  },
  {
-  "vi": "Mời $1 lên quầy",
-  "en": "",
-  "pattern": true
+  "vi": "Không gửi được.",
+  "en": ""
  },
  {
-  "vi": "🧋 Quầy trà hôm nay · $1 ly · $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Đã chặn. Hai bạn không thấy tin của nhau nữa.",
+  "en": ""
  },
  {
-  "vi": "👶 $1 tháng. Chưa hợp tuổi → “💬 Gợi ý thay”.",
-  "en": "",
-  "pattern": true
+  "vi": "Đã báo cáo an toàn. Ban quản lý sẽ xem trước tiên. Cảm ơn bạn nhiều 💛",
+  "en": ""
  },
  {
-  "vi": "🎯 Khách cần $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đã báo cáo. Cảm ơn bạn!",
+  "en": ""
  },
  {
-  "vi": "Đọc 🏷️ nhãn hộp: bé sơ sinh dùng món ghi 0+ hoặc từ 0 tháng. Nhãn đã hợp thì giữ món $1 chọn, chỉ đổi khi nhãn chưa hợp.",
-  "en": "",
-  "pattern": true
+  "vi": "Chưa kết nối được. Thử lại nhé.",
+  "en": ""
  },
  {
-  "vi": "“Hộp ghi ‘$1’ mà bạn, bé sơ sinh dùng được rồi. Mình giữ món này nhé.”",
-  "en": "",
-  "pattern": true
+  "vi": "Đã xóa ở phía bạn.",
+  "en": ""
  },
  {
-  "vi": "Giao hộp từ ngày $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đã xóa cuộc trò chuyện ở phía bạn.",
+  "en": ""
  },
  {
-  "vi": "📦 Nhận thùng $1 ($2)",
-  "en": "",
-  "pattern": true
+  "vi": "Đang online",
+  "en": ""
  },
  {
-  "vi": "⏸ Giữ đơn, thùng $1 về$2",
-  "en": "",
-  "pattern": true
+  "vi": "Nhóm mới",
+  "en": ""
  },
  {
-  "vi": "Kệ hết $1. Gọi hỏa tốc $2 món, khoảng $3 xu?",
-  "en": "",
-  "pattern": true
+  "vi": "Đã chặn",
+  "en": ""
  },
  {
-  "vi": "⚡ Nhập gấp $1",
-  "en": "",
-  "pattern": true
+  "vi": "Ghé chỗ làm",
+  "en": ""
  },
  {
-  "vi": "🧺 Lấy $1",
-  "en": "",
-  "pattern": true
+  "vi": "Thành viên",
+  "en": ""
  },
  {
-  "vi": "Bỏ $1: nhãn “$2” chưa hợp bé",
-  "en": "",
-  "pattern": true
+  "vi": "Chặn thật?",
+  "en": ""
  },
  {
-  "vi": "✕ Bỏ $1 khỏi giỏ",
-  "en": "",
-  "pattern": true
+  "vi": "Góc hẹn hò",
+  "en": ""
  },
  {
-  "vi": "1 món cho $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đang ghim",
+  "en": ""
  },
  {
-  "vi": "Đọc nhãn tuổi trên hộp $1 (bé $2 tháng)",
-  "en": "",
-  "pattern": true
+  "vi": "Tin nhắn đã thu hồi",
+  "en": ""
  },
  {
-  "vi": "💬 Gợi ý $1: hợp bé $2 tháng",
-  "en": "",
-  "pattern": true
+  "vi": "đang chờ ở góc hẹn hò",
+  "en": ""
  },
  {
-  "vi": "− Bớt $1",
-  "en": "",
-  "pattern": true
+  "vi": "(bạn)",
+  "en": ""
  },
  {
-  "vi": "Chọn 1 món hợp dịp$1",
-  "en": "",
-  "pattern": true
+  "vi": "Ghé góc hẹn hò",
+  "en": ""
  },
  {
-  "vi": "(bé $1)",
-  "en": "",
-  "pattern": true
+  "vi": "🔕 Đang tắt thông báo",
+  "en": ""
  },
  {
-  "vi": "− Bớt 1 $1",
-  "en": "",
-  "pattern": true
+  "vi": "🔔 Đang bật thông báo",
+  "en": ""
  },
  {
-  "vi": "🎀 Gói quà giấy $1",
-  "en": "",
-  "pattern": true
+  "vi": "🔔 Bật",
+  "en": ""
  },
  {
-  "vi": "👥 $1 người",
-  "en": "",
-  "pattern": true
+  "vi": "🔕 Tắt 8 giờ",
+  "en": ""
  },
  {
-  "vi": "/$1 xu · mỗi phần đủ hai người",
-  "en": "",
-  "pattern": true
+  "vi": "🔕 Tắt",
+  "en": ""
  },
  {
-  "vi": "👆 Đổi $1",
-  "en": "",
-  "pattern": true
+  "vi": "Tắt: không báo về máy, không tính vào số tin chưa đọc. Tin vẫn tới như thường.",
+  "en": ""
  },
  {
-  "vi": "🛒 $1 phần · $2 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Thả cảm xúc",
+  "en": ""
  },
  {
-  "vi": "🙏 bớt $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Xóa thật?",
+  "en": ""
  },
  {
-  "vi": "🛒 Mua $1 phần $2",
-  "en": "",
-  "pattern": true
+  "vi": "Xóa ở phía tôi",
+  "en": ""
  },
  {
-  "vi": "chín tới trong $1–$2 giây",
-  "en": "",
-  "pattern": true
+  "vi": "↩ Trả lời",
+  "en": ""
  },
  {
-  "vi": "Đã bày $1 bộ chén đũa",
-  "en": "",
-  "pattern": true
+  "vi": "tin nhắn",
+  "en": ""
  },
  {
-  "vi": "/$1 bếp đang nấu · $2/$3 món xong",
-  "en": "",
-  "pattern": true
+  "vi": "📌 Bỏ ghim",
+  "en": ""
  },
  {
-  "vi": "Tắt bếp $1",
-  "en": "",
-  "pattern": true
+  "vi": "📌 Ghim tin này",
+  "en": ""
  },
  {
-  "vi": "🍚 Đổ nước $1",
-  "en": "",
-  "pattern": true
+  "vi": "Thu hồi thật?",
+  "en": ""
  },
  {
-  "vi": "🥢 Bày $1 bộ chén đũa",
-  "en": "",
-  "pattern": true
+  "vi": "Đã gửi lời mời",
+  "en": ""
  },
  {
-  "vi": "món $1",
-  "en": "",
-  "pattern": true
+  "vi": "Kết bạn",
+  "en": ""
  },
  {
-  "vi": "Tiền chợ $1 xu · tiêu $2 xu ·",
-  "en": "",
-  "pattern": true
+  "vi": "Đang kết nối…",
+  "en": ""
  },
  {
-  "vi": "gửi lại $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Tên nhóm",
+  "en": ""
  },
  {
-  "vi": "Ghi sổ $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chưa có bạn để mời.",
+  "en": ""
  },
  {
-  "vi": "🍲 Bữa cơm $1 xong rồi$2. Gửi lại $3 xu tiền chợ.",
-  "en": "",
-  "pattern": true
+  "vi": "Thêm vào nhóm",
+  "en": ""
  },
  {
-  "vi": "thêm $1 món",
-  "en": "",
-  "pattern": true
+  "vi": "Lập nhóm",
+  "en": ""
  },
  {
-  "vi": "Đã nấu $1 bữa cho nhà này.",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn chưa chặn ai.",
+  "en": ""
  },
  {
-  "vi": "♨️ $1 món nguội: món lâu chín bắc trước.",
-  "en": "",
-  "pattern": true
+  "vi": "Bỏ chặn",
+  "en": ""
  },
  {
-  "vi": "❓ “$1 phải không ạ?”",
-  "en": "",
-  "pattern": true
+  "vi": "Mời ra thật?",
+  "en": ""
  },
  {
-  "vi": "👩‍⚕️ Chị Hoa đứng cạnh kèm bạn: việc $1/$2. Sai gì chị nhắc trước.",
-  "en": "",
-  "pattern": true
+  "vi": "Mời ra",
+  "en": ""
  },
  {
-  "vi": "📋 Đọc giường $1",
-  "en": "",
-  "pattern": true
+  "vi": "Thêm bạn",
+  "en": ""
  },
  {
-  "vi": "Đo $1",
-  "en": "",
-  "pattern": true
+  "vi": "Rời thật?",
+  "en": ""
  },
  {
-  "vi": "giường $1",
-  "en": "",
-  "pattern": true
+  "vi": "Rời nhóm",
+  "en": ""
  },
  {
-  "vi": "✋ $1, báo bác sĩ",
-  "en": "",
-  "pattern": true
+  "vi": "Không tải được tin nhắn.",
+  "en": ""
  },
  {
-  "vi": "📒 Viết sổ giao ca · $1 dòng",
-  "en": "",
-  "pattern": true
+  "vi": "Gửi lời chào đầu tiên 👋",
+  "en": ""
  },
  {
-  "vi": "Lịch $1 ngày tới",
-  "en": "",
-  "pattern": true
+  "vi": "Đang vào phố…",
+  "en": ""
  },
  {
-  "vi": "📅 $1 ngày$2",
-  "en": "",
-  "pattern": true
+  "vi": "người đang xem",
+  "en": ""
  },
  {
-  "vi": "người$1",
-  "en": "",
-  "pattern": true
+  "vi": "Phố đang yên. Mở lời trước nhé!",
+  "en": ""
  },
  {
-  "vi": "😮‍💨 Sức bền $1/100: mai làm chậm hơn, không tăng ca được",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn:",
+  "en": ""
  },
  {
-  "vi": "📂 Xem $1 hồ sơ dở",
-  "en": "",
-  "pattern": true
+  "vi": "Đã tắt thông báo",
+  "en": ""
  },
  {
-  "vi": "🌇 Văn phòng đóng cửa lúc $1 — việc dở được giữ nguyên.",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn cuộc trò chuyện để xóa",
+  "en": ""
  },
  {
-  "vi": "hoặc $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chỉ xóa ở phía bạn, người kia vẫn còn tin nhắn.",
+  "en": ""
  },
  {
-  "vi": "Mở “$1”",
-  "en": "",
-  "pattern": true
+  "vi": "Nhắn bạn bè",
+  "en": ""
  },
  {
-  "vi": "📂 Mở “$1”",
-  "en": "",
-  "pattern": true
+  "vi": "Đổi gương mặt, áo theo Tủ đồ",
+  "en": ""
  },
  {
-  "vi": "Cách này tốn $1 xu. Đồng ý?",
-  "en": "",
-  "pattern": true
+  "vi": "Hiện online",
+  "en": ""
  },
  {
-  "vi": "💡 Hỏi $1 · còn $2 lần",
-  "en": "",
-  "pattern": true
+  "vi": "Chưa có bạn bè.",
+  "en": ""
  },
  {
-  "vi": "Mỗi lần hỏi mất 10 phút và bớt $1 xu thưởng.",
-  "en": "",
-  "pattern": true
+  "vi": "Có tài khoản để kết bạn.",
+  "en": ""
  },
  {
-  "vi": "📤 $1 · $2/$3 đúng$4",
-  "en": "",
-  "pattern": true
+  "vi": "Tìm bạn",
+  "en": ""
  },
  {
-  "vi": "/$1 thẻ đã xếp",
-  "en": "",
-  "pattern": true
+  "vi": "Nhắn tin",
+  "en": ""
  },
  {
-  "vi": "(đã sửa từ “$1”)",
-  "en": "",
-  "pattern": true
+  "vi": "Đang tìm hiểu 💕",
+  "en": ""
  },
  {
-  "vi": "đã sửa $1 chỗ",
-  "en": "",
-  "pattern": true
+  "vi": "Mất kết nối. Đang thử lại…",
+  "en": ""
  },
  {
-  "vi": "Xếp “$1” vào $2 lúc $3",
-  "en": "",
-  "pattern": true
+  "vi": "Tạo tài khoản để chat.",
+  "en": ""
  },
  {
-  "vi": "lúc $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đặt tên nhân vật để nhắn.",
+  "en": ""
  },
  {
-  "vi": "↩️ Gỡ “$1” khỏi lịch",
-  "en": "",
-  "pattern": true
+  "vi": "Hai bạn không còn là bạn bè.",
+  "en": ""
  },
  {
-  "vi": "/$1 đã xếp",
-  "en": "",
-  "pattern": true
+  "vi": "Tin đang ghim",
+  "en": ""
  },
  {
-  "vi": "/$1 chuyện",
-  "en": "",
-  "pattern": true
+  "vi": "Bỏ ghim",
+  "en": ""
  },
  {
-  "vi": "Nộp cho $1? Nộp rồi không sửa được nữa.",
-  "en": "",
-  "pattern": true
+  "vi": "🛟 Giữ an toàn nha",
+  "en": ""
  },
  {
-  "vi": "Xếp thẻ “$1”",
-  "en": "",
-  "pattern": true
+  "vi": "Mình hiểu rồi",
+  "en": ""
  },
  {
-  "vi": "Xếp “$1”",
-  "en": "",
-  "pattern": true
+  "vi": "Nhắn cả phố…",
+  "en": ""
  },
  {
-  "vi": "🎁 Thưởng tới $1",
-  "en": "",
-  "pattern": true
+  "vi": "Nhắn tin…",
+  "en": ""
  },
  {
-  "vi": "($1 hồ sơ không sai chỗ nào)",
-  "en": "",
-  "pattern": true
+  "vi": "Lư hương",
+  "en": ""
  },
  {
-  "vi": "Gửi cho $1? Nộp rồi không sửa được nữa.",
-  "en": "",
-  "pattern": true
+  "vi": "Gác chuông",
+  "en": ""
  },
  {
-  "vi": "Làm theo $1 bước này? Chốt rồi không sửa được nữa.",
-  "en": "",
-  "pattern": true
+  "vi": "Hồ sen",
+  "en": ""
  },
  {
-  "vi": "đã kiểm $1/",
-  "en": "",
-  "pattern": true
+  "vi": "Rào lời nguyện",
+  "en": ""
  },
  {
-  "vi": "⚠️ $1 điều lưu ý",
-  "en": "",
-  "pattern": true
+  "vi": "Chổi tre",
+  "en": ""
  },
  {
-  "vi": "đã chải$1",
-  "en": "",
-  "pattern": true
+  "vi": "Bàn cơm chay",
+  "en": ""
  },
  {
-  "vi": "chuẩn $1–$2°C",
-  "en": "",
-  "pattern": true
+  "vi": "Chiếu lễ",
+  "en": ""
  },
  {
-  "vi": "°C · xả $1 giây · khô $2%",
-  "en": "",
-  "pattern": true
+  "vi": "Mõ",
+  "en": ""
  },
  {
-  "vi": "🏃 Bé đã nhảy khỏi bàn $1 lần.",
-  "en": "",
-  "pattern": true
+  "vi": "🌳 Cây bồ đề",
+  "en": ""
  },
  {
-  "vi": "💓 Stress $1: bé đang hoảng.",
-  "en": "",
-  "pattern": true
+  "vi": "🔔 Chuông gia trì",
+  "en": ""
  },
  {
-  "vi": "đã ghi $1 ý",
-  "en": "",
-  "pattern": true
+  "vi": "🕯️ Bàn thờ",
+  "en": ""
  },
  {
-  "vi": "đang chọn $1 ý",
-  "en": "",
-  "pattern": true
+  "vi": "📋 Thời khóa",
+  "en": ""
  },
  {
-  "vi": "⚠️ đã thấy $1 điều cần báo",
-  "en": "",
-  "pattern": true
+  "vi": "📋 Thực đơn",
+  "en": ""
  },
  {
-  "vi": "→ chia $1 bữa ≈",
-  "en": "",
-  "pattern": true
+  "vi": "Lư hương lớn giữa sân. Khách thắp hương ở đây, trong điện chỉ một nén.",
+  "en": ""
  },
  {
-  "vi": "đã hỏi $1/",
-  "en": "",
-  "pattern": true
+  "vi": "Gác chuông có quả chuông đồng cả làng cùng đúc. Chuông thỉnh chậm, đều, chờ tiếng ngân tắt hẳn.",
+  "en": ""
  },
  {
-  "vi": "⏳ Đang xả… còn $1 giây",
-  "en": "",
-  "pattern": true
+  "vi": "Hồ sen nhỏ, mấy con cá đỏ lượn chậm. Ngồi đây gió sông mát lắm.",
+  "en": ""
  },
  {
-  "vi": "⏳ Đang sấy… khô $1%",
-  "en": "",
-  "pattern": true
+  "vi": "Hàng rào tre buộc đầy giấy đỏ. Bạn chọn một lời nguyện để viết.",
+  "en": ""
  },
  {
-  "vi": "💬 Báo chủ: kể các bước$1",
-  "en": "",
-  "pattern": true
+  "vi": "Mấy cây chổi tre dựng ở giá. Lá bàng rụng đầy sân.",
+  "en": ""
  },
  {
-  "vi": "Xả đủ $1 giây rồi khóa vòi",
-  "en": "",
-  "pattern": true
+  "vi": "Bàn dài, bà Nhạn đang múc canh nấm.",
+  "en": ""
  },
  {
-  "vi": "đang $1°C",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn quỳ trên chiếu trước điện Phật. Tự chọn khấn cho ai, mong điều gì.",
+  "en": ""
  },
  {
-  "vi": "🌡️ Pha nước $1°C",
-  "en": "",
-  "pattern": true
+  "vi": "Thầy giữ chuông gia trì, bạn giữ mõ. Gõ đúng lúc vòng sáng khép lại.",
+  "en": ""
  },
  {
-  "vi": "🌡️ Chỉnh nước $1–$2°C",
-  "en": "",
-  "pattern": true
+  "vi": "🪔 Thắp hương",
+  "en": ""
  },
  {
-  "vi": "Xả sạch bọt ($1 giây)",
-  "en": "",
-  "pattern": true
+  "vi": "🔔 Đứng nghe chuông",
+  "en": ""
  },
  {
-  "vi": "💨 Bật máy sấy nấc $1",
-  "en": "",
-  "pattern": true
+  "vi": "🍃 Ngồi xuống",
+  "en": ""
  },
  {
-  "vi": "✂️ Tỉa đầu móng$1",
-  "en": "",
-  "pattern": true
+  "vi": "🧹 Cầm chổi quét",
+  "en": ""
  },
  {
-  "vi": "Từ chối nhận bé? Tiệm sẽ giới thiệu $1 khi cần.",
-  "en": "",
-  "pattern": true
+  "vi": "🍚 Ngồi vào bàn",
+  "en": ""
  },
  {
-  "vi": "📐 Điền theo bảng: $1 bữa × $2 g",
-  "en": "",
-  "pattern": true
+  "vi": "🙏 Chắp tay khấn",
+  "en": ""
  },
  {
-  "vi": "🥣 Cân $1 g & cho ăn",
-  "en": "",
-  "pattern": true
+  "vi": "📿 Bắt đầu tụng",
+  "en": ""
  },
  {
-  "vi": "📐 Cân theo bảng: $1 g",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn ơi, con cá đỏ to nhất tên là Mập đó. Con đặt tên đấy!",
+  "en": ""
  },
  {
-  "vi": "Màu $1",
-  "en": "",
-  "pattern": true
+  "vi": "Bà con dặn đi trong chùa phải đi chậm, nói nhỏ. Con đang tập.",
+  "en": ""
  },
  {
-  "vi": "hiếm +$1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Sao hoa sen mọc dưới bùn mà vẫn thơm vậy ta?",
+  "en": ""
  },
  {
-  "vi": "Tiệm đã tới “$1”, màu này miễn phí.",
-  "en": "",
-  "pattern": true
+  "vi": "Chiều nào chị cũng ra đây ngồi một lúc. Không cần nói gì cả.",
+  "en": ""
  },
  {
-  "vi": "Trả $1 xu từ quỹ tiệm$2.",
-  "en": "",
-  "pattern": true
+  "vi": "Nghe chuông xong, tự nhiên thấy nhẹ người.",
+  "en": ""
  },
  {
-  "vi": "hoặc chờ tiệm tới “$1” là miễn phí",
-  "en": "",
-  "pattern": true
+  "vi": "Cứ ngồi đi, ghế còn rộng mà.",
+  "en": ""
  },
  {
-  "vi": "Quỹ còn $1 xu, chưa đủ.",
-  "en": "",
-  "pattern": true
+  "vi": "Rằm nào ông cũng lên. Chân yếu rồi, nhưng lên được là vui.",
+  "en": ""
  },
  {
-  "vi": "🧾 $1 đơn",
-  "en": "",
-  "pattern": true
+  "vi": "Hồi xưa ông chở đò cho cả xóm qua sông đi chùa đó.",
+  "en": ""
  },
  {
-  "vi": "💚 $1 trọn vẹn",
-  "en": "",
-  "pattern": true
+  "vi": "Thắp hương thì một nén thôi con, thành tâm là được.",
+  "en": ""
  },
  {
-  "vi": "🎁 $1 xu cảm ơn",
-  "en": "",
-  "pattern": true
+  "vi": "Bữa nay không phải rằm, bà chỉ nhặt rau thôi. Rằm với mùng một ghé ăn cơm chay nhé!",
+  "en": ""
  },
  {
-  "vi": "💸 hụt $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Bếp chùa không dùng hành tỏi, con biết chưa?",
+  "en": ""
  },
  {
-  "vi": "lông $1",
-  "en": "",
-  "pattern": true
+  "vi": "Ngồi xuống ăn đi con, canh nấm còn nóng!",
+  "en": ""
  },
  {
-  "vi": "phí nhận nuôi $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Ăn chậm thôi. Ăn xong nhớ để chén vô thau giùm bà nha.",
+  "en": ""
  },
  {
-  "vi": "xu · tiệm còn $1",
-  "en": "",
-  "pattern": true
+  "vi": "Nam mô A Di Đà Phật.",
+  "en": ""
  },
  {
-  "vi": "Quét $1",
-  "en": "",
-  "pattern": true
+  "vi": "Sáng nay xin lòng yên như mặt hồ.",
+  "en": ""
  },
  {
-  "vi": "quầy $1 · $2 xu/",
-  "en": "",
-  "pattern": true
+  "vi": "Lời nói ra, xin là lời hiền.",
+  "en": ""
  },
  {
-  "vi": "Cộng hóa đơn$1",
-  "en": "",
-  "pattern": true
+  "vi": "Việc tay làm, xin là việc lành.",
+  "en": ""
  },
  {
-  "vi": "đã chốt $1",
-  "en": "",
-  "pattern": true
+  "vi": "Thương người gần, nhớ người xa.",
+  "en": ""
  },
  {
-  "vi": "đã quét $1 món",
-  "en": "",
-  "pattern": true
+  "vi": "Tiếng chùa",
+  "en": ""
  },
  {
-  "vi": "Quét $1 ($2/$3)",
-  "en": "",
-  "pattern": true
+  "vi": "Ra về",
+  "en": ""
  },
  {
-  "vi": "📟 Quét $1 ($2/$3)",
-  "en": "",
-  "pattern": true
+  "vi": "Khu trong chùa",
+  "en": ""
  },
  {
-  "vi": "− Bớt một $1",
-  "en": "",
-  "pattern": true
+  "vi": "Ở đây có",
+  "en": ""
  },
  {
-  "vi": "− Bỏ $1 khỏi hóa đơn",
-  "en": "",
-  "pattern": true
+  "vi": "Âm thanh đang tắt trong Cài đặt",
+  "en": ""
  },
  {
-  "vi": "🧾 Chốt hóa đơn · $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Tắt tiếng chùa",
+  "en": ""
  },
  {
-  "vi": "xu · còn $1",
-  "en": "",
-  "pattern": true
+  "vi": "Bật tiếng chùa",
+  "en": ""
  },
  {
-  "vi": "đã hỏi $1/4",
-  "en": "",
-  "pattern": true
+  "vi": "chùa có cơm chay",
+  "en": ""
  },
  {
-  "vi": "Bỏ bể $1",
-  "en": "",
-  "pattern": true
+  "vi": "tinh thần +1…+4 theo nhịp mõ",
+  "en": ""
  },
  {
-  "vi": "+ Bể $1 lít",
-  "en": "",
-  "pattern": true
+  "vi": "vẫn tụng cùng thầy được, chỉ không tính thêm.",
+  "en": ""
  },
  {
-  "vi": "Bớt $1 ở bể $2",
-  "en": "",
-  "pattern": true
+  "vi": "Hôm nay không phải rằm hay mùng 1, bàn ăn còn trống.",
+  "en": ""
  },
  {
-  "vi": "Thêm $1 vào bể $2",
-  "en": "",
-  "pattern": true
+  "vi": "Khấn cho ai?",
+  "en": ""
  },
  {
-  "vi": "Bể $1: $2/$3 L",
-  "en": "",
-  "pattern": true
+  "vi": "Mong điều gì?",
+  "en": ""
  },
  {
-  "vi": "đã ký $1 mục",
-  "en": "",
-  "pattern": true
+  "vi": "chọn người trước",
+  "en": ""
  },
  {
-  "vi": "✓ $1 đã trên quầy",
-  "en": "",
-  "pattern": true
+  "vi": "Con cầu mong",
+  "en": ""
  },
  {
-  "vi": "Đặt $1 lên quầy",
-  "en": "",
-  "pattern": true
+  "vi": "Thưa thầy, con nghe thêm",
+  "en": ""
  },
  {
-  "vi": "đã trên quầy$1",
-  "en": "",
-  "pattern": true
+  "vi": "📿 Xin tụng kinh cùng thầy",
+  "en": ""
  },
  {
-  "vi": "🧽 Dọn $1",
-  "en": "",
-  "pattern": true
+  "vi": "🙏 Chắp tay chào thầy",
+  "en": ""
  },
  {
-  "vi": "🌡️ Nước $1°C",
-  "en": "",
-  "pattern": true
+  "vi": "Nói chuyện thêm",
+  "en": ""
  },
  {
-  "vi": "Chuyển bé ở $1 sang $2 cách ly?",
-  "en": "",
-  "pattern": true
+  "vi": "Chào",
+  "en": ""
  },
  {
-  "vi": "🍽️ Cho $1 ăn",
-  "en": "",
-  "pattern": true
+  "vi": "Thầy gật đầu: “Đi đường bình an nhé con.”",
+  "en": ""
  },
  {
-  "vi": "🌡️ Đo nhiệt $1",
-  "en": "",
-  "pattern": true
+  "vi": "Gõ mõ khi vòng sáng khép lại",
+  "en": ""
  },
  {
-  "vi": "nước $1°C",
-  "en": "",
-  "pattern": true
+  "vi": "Gõ mõ",
+  "en": ""
  },
  {
-  "vi": "🌡️ Xem lại $1",
-  "en": "",
-  "pattern": true
+  "vi": "Thầy thỉnh chuông…",
+  "en": ""
  },
  {
-  "vi": "đã xem $1/",
-  "en": "",
-  "pattern": true
+  "vi": "Tụng thêm lần nữa",
+  "en": ""
  },
  {
-  "vi": "đơn $1 $2 · $3 kg/món · kho còn $4",
-  "en": "",
-  "pattern": true
+  "vi": "chùa: draw",
+  "en": ""
  },
  {
-  "vi": "✓ Đã ghi thu hộ $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Vào chùa",
+  "en": ""
  },
  {
-  "vi": "📦 Đóng hàng · nặng $1 kg",
-  "en": "",
-  "pattern": true
+  "vi": "Đi dạo sân chùa, vào chánh điện khấn, tụng kinh cùng thầy",
+  "en": ""
  },
  {
-  "vi": "nặng $1 kg",
-  "en": "",
-  "pattern": true
+  "vi": "Làm nhanh, không cần vào chùa",
+  "en": ""
  },
  {
-  "vi": "xe máy tối đa $1 kg",
-  "en": "",
-  "pattern": true
+  "vi": "🗒️ Hôm nay",
+  "en": ""
  },
  {
-  "vi": "💵 $1 trả tiền mặt",
-  "en": "",
-  "pattern": true
+  "vi": "Không thích",
+  "en": ""
  },
  {
-  "vi": "🥄 Hớt bọt$1",
-  "en": "",
-  "pattern": true
+  "vi": "🙂 Người lạ",
+  "en": ""
  },
  {
-  "vi": "($1 mẻ xương)",
-  "en": "",
-  "pattern": true
+  "vi": "💌 Gửi lời chúc",
+  "en": ""
  },
  {
-  "vi": "Nồi còn $1%",
-  "en": "",
-  "pattern": true
+  "vi": "🙏 Cảm ơn",
+  "en": ""
  },
  {
-  "vi": "🥖 $1 quẩy",
-  "en": "",
-  "pattern": true
+  "vi": "Lời nhắn và quà",
+  "en": ""
  },
  {
-  "vi": "🍜 $1 lượt",
-  "en": "",
-  "pattern": true
+  "vi": "Chưa rõ sở thích",
+  "en": ""
  },
  {
-  "vi": "còn $1 bộ",
-  "en": "",
-  "pattern": true
+  "vi": "Hôm nay đã hỏi thăm",
+  "en": ""
  },
  {
-  "vi": "đã $1 lượt",
-  "en": "",
-  "pattern": true
+  "vi": "Túi quà",
+  "en": ""
  },
  {
-  "vi": "nắm · $1–$2 lượt",
-  "en": "",
-  "pattern": true
+  "vi": "🎒 Túi quà",
+  "en": ""
  },
  {
-  "vi": "🧅 Rắc hành$1",
-  "en": "",
-  "pattern": true
+  "vi": "Quà người quen tặng. Tặng lại ai đó, hoặc tự thưởng cho mình.",
+  "en": ""
  },
  {
-  "vi": "🥚 Đập trứng$1",
-  "en": "",
-  "pattern": true
+  "vi": "💬 Trò chuyện lần đầu trong ngày: +1 tới +3. Nói nặng lời: −3.",
+  "en": ""
  },
  {
-  "vi": "Mực nước trong $1",
-  "en": "",
-  "pattern": true
+  "vi": "🎁 Tặng quà (mỗi người một món mỗi ngày): đúng món họ thích +6, món thường +3, món họ không ưa −2.",
+  "en": ""
  },
  {
-  "vi": "🥖 Thêm quẩy$1",
-  "en": "",
-  "pattern": true
+  "vi": "🙏 Cảm ơn khi được tặng: +2. Để quá hai ngày không cảm ơn: −1.",
+  "en": ""
  },
  {
-  "vi": "🌿 Đĩa rau, giá$1",
-  "en": "",
-  "pattern": true
+  "vi": "🎉 Được mời mà tới dự: +5, gửi lời chúc: +1, im lặng: −3.",
+  "en": ""
  },
  {
-  "vi": "🤢 $1 nắm bánh hôm qua chua, nhớt tay.",
-  "en": "",
-  "pattern": true
+  "vi": "⭐ Phục vụ khách quen: 5★ +2, 3★ −1, 2★ −3, 1★ −5. Thối thiếu tiền: −3.",
+  "en": ""
  },
  {
-  "vi": "còn $1 muôi bọt",
-  "en": "",
-  "pattern": true
+  "vi": "🍃 Lâu không gặp (hơn 14 ngày) thì nhạt dần, rất chậm.",
+  "en": ""
  },
  {
-  "vi": "🧑‍🍳 Học nghề với bác Lâm · khách $1/",
-  "en": "",
-  "pattern": true
+  "vi": "💛 Càng thân, người ta càng hay hỏi thăm, tặng quà, báo tin trước, dễ bỏ qua lỗi nhỏ, hay bo thêm và tới dự ngày vui của bạn.",
+  "en": ""
  },
  {
-  "vi": "Bánh tơi ($1 lượt)",
-  "en": "",
-  "pattern": true
+  "vi": "Chưa có khách quen",
+  "en": ""
  },
  {
-  "vi": "Thiếu $1: chan rồi mới xếp",
-  "en": "",
-  "pattern": true
+  "vi": "Làm việc cho ai đó vài lần là họ nhớ mặt bạn.",
+  "en": ""
  },
  {
-  "vi": "Xếp $1",
-  "en": "",
-  "pattern": true
+  "vi": "Nhóm người quen",
+  "en": ""
  },
  {
-  "vi": "đang $1% · cần $2–$3%",
-  "en": "",
-  "pattern": true
+  "vi": "Điểm thân quen tính thế nào?",
+  "en": ""
  },
  {
-  "vi": "Nước $1%",
-  "en": "",
-  "pattern": true
+  "vi": "🏘️ Hàng xóm",
+  "en": ""
  },
  {
-  "vi": "% · cần $1–$2%",
-  "en": "",
-  "pattern": true
+  "vi": "🛍️ Khách quen",
+  "en": ""
  },
  {
-  "vi": "🍜 $1 nắm bánh · 🥖 $2 quẩy · 🌿 $3 đĩa rau · 🥚 $4 trứng · 🦴 $5 mẻ xương · 🥡 $6 hộp",
-  "en": "",
-  "pattern": true
+  "vi": "Trong túi ×",
+  "en": ""
  },
  {
-  "vi": "🍲 Nồi nhỏ không mì chính còn $1%",
-  "en": "",
-  "pattern": true
+  "vi": "xu · của tiệm mình",
+  "en": ""
  },
  {
-  "vi": "Tấm $1",
-  "en": "",
-  "pattern": true
+  "vi": "Không hợp với trẻ nhỏ",
+  "en": ""
  },
  {
-  "vi": "xu · giấy còn $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn quà",
+  "en": ""
  },
  {
-  "vi": "/$1 kiểu",
-  "en": "",
-  "pattern": true
+  "vi": "🎁 Chọn một món quà",
+  "en": ""
  },
  {
-  "vi": "tấm $1",
-  "en": "",
-  "pattern": true
+  "vi": "Mở một nơi làm việc để có tiền mua quà. Quà trong túi thì tặng được ngay.",
+  "en": ""
  },
  {
-  "vi": "/$1 tấm",
-  "en": "",
-  "pattern": true
+  "vi": "Thân như người nhà rồi.",
+  "en": ""
  },
  {
-  "vi": "tấm · $1: giấy còn $2",
-  "en": "",
-  "pattern": true
+  "vi": "💬 Trò chuyện",
+  "en": ""
  },
  {
-  "vi": "Chọn đủ $1 tấm ở ③ trước khi in.",
-  "en": "",
-  "pattern": true
+  "vi": "💬 Nhắn hỏi thăm",
+  "en": ""
  },
  {
-  "vi": "/$1 tấm.",
-  "en": "",
-  "pattern": true
+  "vi": "Chưa có kỷ niệm nào. Hỏi thăm một câu là bắt đầu.",
+  "en": ""
  },
  {
-  "vi": "(kho còn $1)",
-  "en": "",
-  "pattern": true
+  "vi": "Sở thích",
+  "en": ""
  },
  {
-  "vi": "còn $1 tấm",
-  "en": "",
-  "pattern": true
+  "vi": "💡 Sở thích",
+  "en": ""
  },
  {
-  "vi": "📷 Học nghề · khách $1/$2 ·",
-  "en": "",
-  "pattern": true
+  "vi": "🗓️ Gần đây",
+  "en": ""
  },
  {
-  "vi": "📷 Học nghề với chị Lam · khách $1/",
-  "en": "",
-  "pattern": true
+  "vi": "Tất cả người quen",
+  "en": ""
  },
  {
-  "vi": "Gói $1",
-  "en": "",
-  "pattern": true
+  "vi": "🎁 Tặng quà",
+  "en": ""
  },
  {
-  "vi": "Đưa khách $1",
-  "en": "",
-  "pattern": true
+  "vi": "💬 Hôm nay đã hỏi thăm rồi.",
+  "en": ""
  },
  {
-  "vi": "Khách không dặn $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chưa biết gì. Thân hơn hoặc tặng thử một món là biết.",
+  "en": ""
  },
  {
-  "vi": "↩️ Cất $1",
-  "en": "",
-  "pattern": true
+  "vi": "👥 Người quen",
+  "en": ""
  },
  {
-  "vi": "Chụp $1 tấm đẹp",
-  "en": "",
-  "pattern": true
+  "vi": "Chưa có dữ liệu người quen.",
+  "en": ""
  },
  {
-  "vi": "Khách chọn tấm $1",
-  "en": "",
-  "pattern": true
+  "vi": "Càng thân, người ta càng thương mình.",
+  "en": ""
  },
  {
-  "vi": "Chọn đúng tấm $1",
-  "en": "",
-  "pattern": true
+  "vi": "Càng thân, hàng xóm càng hay hỏi thăm, tặng quà và tới dự ngày vui của bạn.",
+  "en": ""
  },
  {
-  "vi": "↩️ Bỏ tấm $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đang mở sổ sinh hoạt…",
+  "en": ""
  },
  {
-  "vi": "☑️ Chọn tấm $1",
-  "en": "",
-  "pattern": true
+  "vi": "Ghé hiệu sách, tham gia câu lạc bộ cùng các nhân vật trong phố hoặc dành một buổi cho gia đình. Mỗi nơi lưu một buổi mỗi ngày sống; chỉ thanh toán khi bạn xác nhận. Kỷ niệm gần nhất được giữ ở cuối trang.",
+  "en": ""
  },
  {
-  "vi": "Dán $1",
-  "en": "",
-  "pattern": true
+  "vi": "Sổ kỷ niệm trong phố",
+  "en": ""
  },
  {
-  "vi": "↩️ Gỡ $1",
-  "en": "",
-  "pattern": true
+  "vi": "xu / buổi",
+  "en": ""
  },
  {
-  "vi": "👉 Sang mục $1",
-  "en": "",
-  "pattern": true
+  "vi": "Tham gia miễn phí",
+  "en": ""
  },
  {
-  "vi": "🖨️ mực còn $1 tấm",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Đã lưu buổi hôm nay. Ngày sống mới có câu chuyện tiếp theo.",
+  "en": ""
  },
  {
-  "vi": "📸 Tiệm ảnh hôm nay · $1 lượt khách · $2 tấm in",
-  "en": "",
-  "pattern": true
+  "vi": "Mở YouTube để chọn beat ↗",
+  "en": ""
  },
  {
-  "vi": "✈️ Lịch hôm nay: $1 chặng · $2 đã bay · $3 còn lại",
-  "en": "",
-  "pattern": true
+  "vi": "Chưa có kỷ niệm. Chọn một hoạt động ở trên để bắt đầu.",
+  "en": ""
  },
  {
-  "vi": "Thưởng dự kiến $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Nhận hợp đồng, vào nghề Giao hàng giao đơn thật rồi trở lại nhận thưởng. Phí giao đơn và tiền COD vẫn nằm trong sổ nghề; ở đây chỉ tính thưởng hợp đồng.",
+  "en": ""
  },
  {
-  "vi": "Thời tiết ở $1",
-  "en": "",
-  "pattern": true
+  "vi": "Hoàn tất 3 hợp đồng mở tuyến nhanh, 10 hợp đồng mở đối tác chuỗi. Mỗi lần theo một hợp đồng; không hết hạn khi bạn nghỉ chơi.",
+  "en": ""
  },
  {
-  "vi": "Chặng $1 →",
-  "en": "",
-  "pattern": true
+  "vi": "Đồ nghề hợp đồng",
+  "en": ""
  },
  {
-  "vi": "Bay đi dự bị $1",
-  "en": "",
-  "pattern": true
+  "vi": "📦 Vào nghề Giao hàng",
+  "en": ""
  },
  {
-  "vi": "⛈️ Dự báo giông lúc tới: thêm dầu chờ 20 phút ($1).",
-  "en": "",
-  "pattern": true
+  "vi": "Mở nghề Giao hàng trong hành trình để nhận hợp đồng.",
+  "en": ""
  },
  {
-  "vi": "🌫️ Sương ở $1",
-  "en": "",
-  "pattern": true
+  "vi": "Sai sót hoặc giao trễ giảm thưởng; từ chối/giao thất bại không tính tiến độ. Đồ nghề hỗ trợ giảm khấu trừ.",
+  "en": ""
  },
  {
-  "vi": "Dầu đã nạp $1.",
-  "en": "",
-  "pattern": true
+  "vi": "giao thành công",
+  "en": ""
  },
  {
-  "vi": "↪️ Bay đi sân bay dự bị $1",
-  "en": "",
-  "pattern": true
+  "vi": "Nhận thưởng",
+  "en": ""
  },
  {
-  "vi": "lần tiếp cận $1",
-  "en": "",
-  "pattern": true
+  "vi": "Hủy hợp đồng",
+  "en": ""
  },
  {
-  "vi": "Tới $1 · số liệu phải nằm trong giới hạn mới được xuống tiếp.",
-  "en": "",
-  "pattern": true
+  "vi": "Hợp đồng đang có",
+  "en": ""
  },
  {
-  "vi": "Bản tin sân bay $1",
-  "en": "",
-  "pattern": true
+  "vi": "Nhận hợp đồng",
+  "en": ""
  },
  {
-  "vi": "↪️ Đi $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đã có",
+  "en": ""
  },
  {
-  "vi": "Kiểm $1",
-  "en": "",
-  "pattern": true
+  "vi": "Hợp đồng hoàn tất sẽ được ghi ở đây.",
+  "en": ""
  },
  {
-  "vi": "/$1 ngày tốt",
-  "en": "",
-  "pattern": true
+  "vi": "Hủy hợp đồng?",
+  "en": ""
  },
  {
-  "vi": "Hạ cánh $1",
-  "en": "",
-  "pattern": true
+  "vi": "Không phạt thêm, nhưng chi phí chuẩn bị không hoàn lại.",
+  "en": ""
  },
  {
-  "vi": "Chờ bản tin · Thưởng dự kiến $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Chừa khe nhỏ để nhồi bông",
+  "en": ""
  },
  {
-  "vi": "🛬 Đã hạ cánh ở $1",
-  "en": "",
-  "pattern": true
+  "vi": "Hai lớp vải đặt chồng · cắt cùng một mẫu",
+  "en": ""
  },
  {
-  "vi": "Lịch hôm nay: $1 chặng · $2 còn lại",
-  "en": "",
-  "pattern": true
+  "vi": "Món thủ công tự tay làm",
+  "en": ""
  },
  {
-  "vi": "📻 Đài: $1, cho phép cất cánh.",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn gấu do mình may",
+  "en": ""
  },
  {
-  "vi": "⏩ Xuống dần về $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chiếc túi do mình may",
+  "en": ""
  },
  {
-  "vi": "⛈️ Tới $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chiếc chậu do mình nặn",
+  "en": ""
  },
  {
-  "vi": "🌧️ Bản tin $1",
-  "en": "",
-  "pattern": true
+  "vi": "Vòng tay do mình xâu",
+  "en": ""
  },
  {
-  "vi": "📻 Đài: $1 ở $2. Cài đặt tiếp cận nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Tấm thiệp do mình làm",
+  "en": ""
  },
  {
-  "vi": "⏩ Bay đi $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đo vải",
+  "en": ""
  },
  {
-  "vi": "🛬 Tiếp cận $1",
-  "en": "",
-  "pattern": true
+  "vi": "Cắt mẫu",
+  "en": ""
  },
  {
-  "vi": "🧑‍✈️ Em cầm lái nhé. Giữ 2 trắng 2 đỏ, $1 knot.",
-  "en": "",
-  "pattern": true
+  "vi": "May viền",
+  "en": ""
  },
  {
-  "vi": "📻 Đài: gió ngang $1 knot.",
-  "en": "",
-  "pattern": true
+  "vi": "Nhồi bông",
+  "en": ""
  },
  {
-  "vi": "🧑‍✈️ Một nghìn, chưa ổn định: $1. Bay lại?",
-  "en": "",
-  "pattern": true
+  "vi": "Tạo dáng",
+  "en": ""
  },
  {
-  "vi": "🧑‍✈️ Hai trăm, $1. Bay lại?",
-  "en": "",
-  "pattern": true
+  "vi": "Phủ men",
+  "en": ""
  },
  {
-  "vi": "🧑‍✈️ Gió ngang $1 knot, quá giới hạn!",
-  "en": "",
-  "pattern": true
+  "vi": "Luồn dây",
+  "en": ""
  },
  {
-  "vi": "📦 $1 thùng hàng đã tới, chờ mở",
-  "en": "",
-  "pattern": true
+  "vi": "Xâu hạt",
+  "en": ""
  },
  {
-  "vi": "🚚 Đang về $1 đơn hàng",
-  "en": "",
-  "pattern": true
+  "vi": "Gấp thiệp",
+  "en": ""
  },
  {
-  "vi": "⏱️ Tàu còn $1 phút",
-  "en": "",
-  "pattern": true
+  "vi": "Thước dây",
+  "en": ""
  },
  {
-  "vi": "Chỉ bảng giờ: tàu còn $1 phút",
-  "en": "",
-  "pattern": true
+  "vi": "Kéo cắt vải",
+  "en": ""
  },
  {
-  "vi": "còn $1 người đang tới",
-  "en": "",
-  "pattern": true
+  "vi": "Kim & chỉ",
+  "en": ""
  },
  {
-  "vi": "🔩 Tuần đường $1",
-  "en": "",
-  "pattern": true
+  "vi": "Bông mềm",
+  "en": ""
  },
  {
-  "vi": "😮‍💨 Mệt $1/6",
-  "en": "",
-  "pattern": true
+  "vi": "Hai quai túi",
+  "en": ""
  },
  {
-  "vi": "chậm $1′",
-  "en": "",
-  "pattern": true
+  "vi": "Góc trang trí",
+  "en": ""
  },
  {
-  "vi": "Dẹp $1 người/vật trên ray (không kịp thì báo dừng tàu)",
-  "en": "",
-  "pattern": true
+  "vi": "Bàn tay nặn",
+  "en": ""
  },
  {
-  "vi": "Hạ chắn khi tàu còn khoảng $1 phút",
-  "en": "",
-  "pattern": true
+  "vi": "Cọ phủ men",
+  "en": ""
  },
  {
-  "vi": "còn $1′",
-  "en": "",
-  "pattern": true
+  "vi": "Sợi dây",
+  "en": ""
  },
  {
-  "vi": "🚶 Tới $1",
-  "en": "",
-  "pattern": true
+  "vi": "Hạt gỗ",
+  "en": ""
  },
  {
-  "vi": "Tối đa $1",
-  "en": "",
-  "pattern": true
+  "vi": "Nếp gấp",
+  "en": ""
  },
  {
-  "vi": "Lấy gấp: còn $1 nhịp",
-  "en": "",
-  "pattern": true
+  "vi": "Kéo hai đầu thước: ngang 32 cm, dọc 36 cm.",
+  "en": ""
  },
  {
-  "vi": "🎒 Khách đưa kèm $1 món:",
-  "en": "",
-  "pattern": true
+  "vi": "Giữ kéo ở chấm sáng, đi theo nét đứt quanh tấm vải.",
+  "en": ""
  },
  {
-  "vi": "📋 Số đo đã ghi ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "Giữ kim ở chấm sáng, may dọc hai bên và đáy túi.",
+  "en": ""
  },
  {
-  "vi": "Hết $1 trên kệ · hoặc báo giá lại loại khác",
-  "en": "",
-  "pattern": true
+  "vi": "Kéo từng quai từ khay vào vị trí sáng trên miệng túi.",
+  "en": ""
  },
  {
-  "vi": "Bỏ chọn “$1”: máy không có",
-  "en": "",
-  "pattern": true
+  "vi": "Chạm lên sản phẩm để in dấu của riêng bạn.",
+  "en": ""
  },
  {
-  "vi": "Bỏ chọn “$1”: khách không đưa",
-  "en": "",
-  "pattern": true
+  "vi": "Đưa tay theo đường sáng để tạo thành và đáy chậu.",
+  "en": ""
  },
  {
-  "vi": "🎒 Nhận đủ $1 món khách đưa",
-  "en": "",
-  "pattern": true
+  "vi": "Đưa cọ theo từng hàng để phủ men lên chậu.",
+  "en": ""
  },
  {
-  "vi": "còn $1 khả nghi",
-  "en": "",
-  "pattern": true
+  "vi": "Kéo sợi dây theo đường sáng để chuẩn bị xâu hạt.",
+  "en": ""
  },
  {
-  "vi": "Hết $1: đặt riêng",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn hạt trong khay, rồi chạm vào một vị trí trên dây.",
+  "en": ""
  },
  {
-  "vi": "Cắm thử $1",
-  "en": "",
-  "pattern": true
+  "vi": "Miết dọc đường giữa để gấp tấm thiệp.",
+  "en": ""
  },
  {
-  "vi": "🧪 Cắm thử $1",
-  "en": "",
-  "pattern": true
+  "vi": "Mắt trái",
+  "en": ""
  },
  {
-  "vi": "về $1: hẹn khách để máy lại tiệm",
-  "en": "",
-  "pattern": true
+  "vi": "Mắt phải",
+  "en": ""
  },
  {
-  "vi": "🗄️ Hẹn khách $1 tới lấy",
-  "en": "",
-  "pattern": true
+  "vi": "Mũi",
+  "en": ""
  },
  {
-  "vi": "Chờ $1 về $2",
-  "en": "",
-  "pattern": true
+  "vi": "Kệ kỷ niệm đã đầy",
+  "en": ""
  },
  {
-  "vi": "🛡️ Ghi bảo hành $1",
-  "en": "",
-  "pattern": true
+  "vi": "Kệ đã đủ 24 món. Những món bạn đã làm vẫn được giữ trên kệ.",
+  "en": ""
  },
  {
-  "vi": "📨 Khách: “$1”",
-  "en": "",
-  "pattern": true
+  "vi": "Các bước thủ công",
+  "en": ""
  },
  {
-  "vi": "📋 Việc ở bước này ($1/$2)",
-  "en": "",
-  "pattern": true
+  "vi": "Bàn thủ công tương tác",
+  "en": ""
  },
  {
-  "vi": "học sinh −10% → $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "XƯỞNG NHỎ · TỰ TAY LÀM",
+  "en": ""
  },
  {
-  "vi": "🪑 $1 bàn trống",
-  "en": "",
-  "pattern": true
+  "vi": "class=\"cw-close\" aria-label=\"Cất bản nháp và đóng xưởng\"",
+  "en": ""
  },
  {
-  "vi": "tô $1/",
-  "en": "",
-  "pattern": true
+  "vi": "Làm lại bước này",
+  "en": ""
  },
  {
-  "vi": "⏳ Đang canh mì · còn $1 giây",
-  "en": "",
-  "pattern": true
+  "vi": "Tiếp theo →",
+  "en": ""
  },
  {
-  "vi": "⏳ Mì đang luộc · còn $1 giây",
-  "en": "",
-  "pattern": true
+  "vi": "Kéo đầu thước đo vải: ngang 24 cm, dọc 30 cm.",
+  "en": ""
  },
  {
-  "vi": "Đổ phần nước dùng $1 để quá hạn? Phần mới hơn vẫn giữ lại.",
-  "en": "",
-  "pattern": true
+  "vi": "Giữ kéo ở chấm sáng, cắt hai lớp vải theo dáng bạn gấu.",
+  "en": ""
  },
  {
-  "vi": "🗑️ Đổ phần $1 quá hạn",
-  "en": "",
-  "pattern": true
+  "vi": "Giữ kim theo đường sáng, chừa một khe nhỏ để nhồi bông.",
+  "en": ""
  },
  {
-  "vi": "🔥 Đun lại nồi $1",
-  "en": "",
-  "pattern": true
+  "vi": "Kéo bông mềm vào bốn vùng để bạn gấu đầy đặn dần.",
+  "en": ""
  },
  {
-  "vi": "🔥 Nấu thêm nồi $1",
-  "en": "",
-  "pattern": true
+  "vi": "Gắn mắt, mũi, nơ và in một dấu lên bụng bạn gấu.",
+  "en": ""
  },
  {
-  "vi": "Thả vắt mì $1/$2 vào rổ luộc",
-  "en": "",
-  "pattern": true
+  "vi": "Dấu ấn của bạn đã sẵn sàng. Thêm dấu hoặc cất lên kệ nhé.",
+  "en": ""
  },
  {
-  "vi": "🍜 Thả mì$1",
-  "en": "",
-  "pattern": true
+  "vi": "Đẹp rồi! Mình sang bước tiếp theo nhé.",
+  "en": ""
  },
  {
-  "vi": "(vắt $1/$2)",
-  "en": "",
-  "pattern": true
+  "vi": "Không cần vội, bạn có thể làm lại bất cứ lúc nào.",
+  "en": ""
  },
  {
-  "vi": "Chan nước dùng $1",
-  "en": "",
-  "pattern": true
+  "vi": "phải →",
+  "en": ""
  },
  {
-  "vi": "Bỏ $1: khách không ăn",
-  "en": "",
-  "pattern": true
+  "vi": "trái ←",
+  "en": ""
  },
  {
-  "vi": "Quá ngân sách $1 xu ($2 xu)",
-  "en": "",
-  "pattern": true
+  "vi": "xuống ↓",
+  "en": ""
  },
  {
-  "vi": "dư $1 phần",
-  "en": "",
-  "pattern": true
+  "vi": "lên ↑",
+  "en": ""
  },
  {
-  "vi": "🔄 Hết $1: mời khách đổi sang $2",
-  "en": "",
-  "pattern": true
+  "vi": "Đang cất thành phẩm…",
+  "en": ""
  },
  {
-  "vi": "Cay quá: $1 lượt, khách cần $2",
-  "en": "",
-  "pattern": true
+  "vi": "✓ Bản nháp đã giữ trên máy này",
+  "en": ""
  },
  {
-  "vi": "Bơm ớt đến cấp $1",
-  "en": "",
-  "pattern": true
+  "vi": "Bản nháp chỉ giữ khi cửa sổ này còn mở",
+  "en": ""
  },
  {
-  "vi": "🌶️ Bơm ớt đến cấp $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chơi thử · bản nháp giữ trong lần mở này",
+  "en": ""
  },
  {
-  "vi": "Đặt tô $1 lên khay, làm tô $2",
-  "en": "",
-  "pattern": true
+  "vi": "Đang lưu…",
+  "en": ""
  },
  {
-  "vi": "✅ Xong tô $1, đặt lên khay",
-  "en": "",
-  "pattern": true
+  "vi": "Dọc",
+  "en": ""
  },
  {
-  "vi": "còn tô $1",
-  "en": "",
-  "pattern": true
+  "vi": "dọc",
+  "en": ""
  },
  {
-  "vi": "＋ $1 phần",
-  "en": "",
-  "pattern": true
+  "vi": "☁ Cầm bông mềm",
+  "en": ""
  },
  {
-  "vi": "⏱️ còn $1 khách · 1 hộp = 🍜1 · 🌶️$2 · 🍲$3 (nồi còn $4)",
-  "en": "",
-  "pattern": true
+  "vi": "Cầm một hạt",
+  "en": ""
  },
  {
-  "vi": "Mì chưa chín: chờ thanh vào vùng xanh (còn $1 giây).",
-  "en": "",
-  "pattern": true
+  "vi": "Gắn vào chỗ sáng",
+  "en": ""
  },
  {
-  "vi": "🧼 Dụng cụ sạch $1/$2 bộ",
-  "en": "",
-  "pattern": true
+  "vi": "In chính giữa",
+  "en": ""
  },
  {
-  "vi": "Khách quay lại, nhớ làm trong $1 ngày",
-  "en": "",
-  "pattern": true
+  "vi": "In góc trái",
+  "en": ""
  },
  {
-  "vi": "level $1 · ánh $2",
-  "en": "",
-  "pattern": true
+  "vi": "In góc phải",
+  "en": ""
  },
  {
-  "vi": "🙂 Khách đồng ý nâng ngân sách lên $1.",
-  "en": "",
-  "pattern": true
+  "vi": "↶ Bỏ dấu cuối",
+  "en": ""
  },
  {
-  "vi": "🏷️ Đã hứa bớt $1 khi thanh toán.",
-  "en": "",
-  "pattern": true
+  "vi": "Giữ và kéo trên đường sáng",
+  "en": ""
  },
  {
-  "vi": "💡 Khách đồng ý dời $1 sang lần sau — bỏ ra rồi chốt lại.",
-  "en": "",
-  "pattern": true
+  "vi": "Dùng phím mũi tên",
+  "en": ""
  },
  {
-  "vi": "💬 Báo giá $1 — khách chỉ mang $2",
-  "en": "",
-  "pattern": true
+  "vi": "Bàn phím: chọn “Dùng phím mũi tên”, rồi dùng ↑ ↓ ← → để đưa dụng cụ theo đường.",
+  "en": ""
  },
  {
-  "vi": "🏷️ Bớt $1 cho vừa",
-  "en": "",
-  "pattern": true
+  "vi": "Có thể dùng hai thanh thước bên dưới; Tab để chọn, phím mũi tên để chỉnh từng cm.",
+  "en": ""
  }
 ]

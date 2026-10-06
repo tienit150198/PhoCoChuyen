@@ -24,7 +24,7 @@ GROUP = {'milk_tea': 'shop', 'cafe_bakery': 'shop', 'restaurant': 'shop', 'groce
          'customer_care': 'support', 'tour_guide': 'tour', 'homestay': 'stay', 'teacher': 'teacher',
          'delivery': 'delivery', 'farm': 'farm', 'clothing': 'shop', 'tra_da': 'shop',
          'fruit': 'shop', 'garbage': 'delivery', 'drain': 'shop', 'homemaker': 'stay', 'ice_cream': 'shop', 'pho': 'shop', 'com': 'shop', 'nail': 'shop', 'pagoda': 'pagoda', 'photobooth': 'shop', 'giupviec': 'stay', 'naucom': 'stay', 'babysitter': 'stay', 'library': 'support', 'pilot': 'air', 'flight_attendant': 'air', 'railway': 'rail',
-         'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office', 'nurse': 'office'}
+         'hr_admin': 'office', 'secretary': 'office', 'it_helpdesk': 'office', 'nurse': 'office', 'lighthouse': 'sea', 'rescue': 'office', 'lifeguard': 'stay', 'police': 'office'}
 CUST = ('shop', 'office', 'support', 'tour', 'stay', 'delivery', 'farm')
 # 'pagoda' has no gripe of its own: its visitors never write the shops' ones (game/pagoda_voice.py).
 LABEL = 'Chuyện ngoài lề'
@@ -134,6 +134,12 @@ GRIPES = dict((
     _G('horn', ('rail',), 'còi tàu rúc to', 'Còi.', ['còi tàu rúc ngay lúc tôi đang nghe điện thoại']),
     _G('train_wave', ('rail',), 'lái tàu vẫy tay', '', ['lái tàu vẫy tay chào, tụi nhỏ nhà tôi thích mê'], None, True),
     _G('sunrise', ('air',), 'bay lúc bình minh', '', ['bay đúng lúc bình minh, mặt trời đỏ au ngay cánh tàu'], None, True),
+    # ---- 🗼 boats and visitors around đèn biển Hòn Gió
+    _G('seasick', ('sea',), 'say sóng trên đường ra đảo', 'Say sóng.', ['ra tới đảo thì tôi đã say sóng ói hai lần']),
+    _G('stairs', ('sea',), 'cầu thang đá trơn', 'Trơn.', ['bậc đá lên trạm rêu trơn, tôi phải bò lên']),
+    _G('gulls', ('sea',), 'hải âu kêu inh ỏi', 'Ồn.', ['đàn hải âu kêu inh ỏi, nói gì cũng không nghe']),
+    _G('wind_hair', ('sea',), 'gió thổi rối tóc', 'Gió.', ['gió trên đảo thổi rối tung mái tóc mới làm']),
+    _G('cat_mun', ('sea',), 'mèo Mun ra đón', '', ['con mèo đen của trạm ra tận bến đón, dễ thương hết sức'], None, True),
 ))
 
 PRAISE = {

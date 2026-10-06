@@ -1,1802 +1,1802 @@
 [
  {
-  "vi": "Chỉ lấy trái chín kỹ (xoài, chuối, bơ), giá xả. Không có thì nói thật.",
+  "vi": "“Thì ngay số nhà tôi vừa đọc đó.”",
   "en": ""
  },
  {
-  "vi": "Khách mang trái lại",
+  "vi": "📲 Định vị về khớp địa chỉ người gọi vừa đọc.",
   "en": ""
  },
  {
-  "vi": "Bấm [[Xem trái]]: trái dập từ sạp thì đổi hoặc hoàn tiền; khách để chưa tới độ thì giải thích nhẹ nhàng.",
+  "vi": "🙋 “Không có ai đi ngang… mà địa chỉ tôi đọc rồi đó.”",
   "en": ""
  },
  {
-  "vi": "Rao xả cuối ngày",
+  "vi": "Cách trấn an không có.",
   "en": ""
  },
  {
-  "vi": "Trái chín kỹ, héo chỉ còn bán được hôm nay: [[Rao xả]] một lần mỗi ngày, bán rẻ 40% cho người qua chợ.",
+  "vi": "Đã nói câu này rồi.",
   "en": ""
  },
  {
-  "vi": "Tự ra giá",
+  "vi": "Quát người đang hoảng thì họ càng hoảng. Thử cho họ một việc nhỏ, hoặc thở cùng họ.",
   "en": ""
  },
  {
-  "vi": "Khách trả giá thì gõ số vào ô [[Hoặc tự ra giá]] rồi [[Chốt giá này]]. Khách tự quyết: ưng, trả giá khác, hay bỏ đi.",
+  "vi": "Tổng đài quát người gọi đang hoảng.",
   "en": ""
  },
  {
-  "vi": "Xin ghi nợ, cầm túi đi luôn",
+  "vi": "quát người đang hoảng",
   "en": ""
  },
  {
-  "vi": "Ghi nợ, cho trả trước một phần, hay [[Không bán chịu]]. Khách cầm túi đi: giữ lại, tin khách, hay gọi bảo vệ chợ.",
+  "vi": "😭 Người gọi khóc to hơn: “Sao chị la tôi!”",
   "en": ""
  },
  {
-  "vi": "Đòi nợ",
+  "vi": "↩️ Gọi lại: người gọi nghe máy ngay, vẫn đang ở đó.",
   "en": ""
  },
  {
-  "vi": "Mở [[Sổ nợ]], chọn đòi bao nhiêu rồi [[Nhắc nhẹ]], [[Nói thẳng]] hay [[Nhờ người nhà]]. Mỗi ngày đòi một lần; không đòi được thì [[Xóa nợ]].",
+  "vi": "👂 Tiếng nền khớp với lời người gọi kể.",
   "en": ""
  },
  {
-  "vi": "Kẻ chôm trái, clip “bán đắt”",
+  "vi": "🔎 Người gọi kể thêm chi tiết, khớp với những gì đã nói.",
   "en": ""
  },
  {
-  "vi": "Chôm trái: nhắc khéo, giữ lại đòi tiền (đòi quá tay là bị xì xào), gọi bảo vệ, hay làm ngơ. Bị quay clip: mời cân lại, bổ trái mời nếm.",
+  "vi": "Chọn mức ưu tiên trên bảng.",
   "en": ""
  },
  {
-  "vi": "👂 Bấm [[Hỏi khách mua gì]]: xem loại trái, bao nhiêu ký hay mấy trái, ăn liền hay để dành.",
+  "vi": "Chọn đội cần gửi.",
   "en": ""
  },
  {
-  "vi": "⚖️ Rổ còn nằm trên cân: bấm [[Trừ bì rổ]] trước khi bỏ trái, không thì khách trả tiền cả cái rổ.",
+  "vi": "Chọn ít nhất một đội để gửi.",
   "en": ""
  },
  {
-  "vi": "🥭 Chạm ô đúng độ chín trong hàng của trái đó. Mỗi chạm là một trái; trái nhầm thì chạm nó trong rổ để bỏ ra.",
+  "vi": "Chưa có địa chỉ chắc chắn: xe không biết đi đâu. Hỏi địa chỉ, hỏi mốc hoặc gửi định vị trước.",
   "en": ""
  },
  {
-  "vi": "🧮 Mua theo ký: bỏ tới khi đủ ký. Thừa hẳn một trái là khách bảo bớt ra.",
+  "vi": "Chưa biết chuyện gì mà đã chọn đội? Hỏi “chuyện gì đang xảy ra” đã em.",
   "en": ""
  },
  {
-  "vi": "💵 Bấm [[CÂN · TÍNH TIỀN]], trả giá nếu khách hỏi, rồi đặt tiền thối vào khay và [[ĐƯA TIỀN THỐI]].",
+  "vi": "Giọng này có gì lạ không? Lắng nghe, hỏi kỹ hoặc gọi lại trước khi quyết.",
   "en": ""
  },
  {
-  "vi": "🙏 Không có trái đúng ý: bấm nút nói thật, không bán trái sai độ chín.",
+  "vi": "Có ai đang gặp nguy hiểm tính mạng không? Đường dây khẩn gửi xe cho chuyện nguy hiểm thôi.",
   "en": ""
  },
  {
-  "vi": "🥭 Đúng độ chín: ăn liền thì vừa chín, để dành thì còn xanh, xay sinh tố thì chín kỹ cũng được.",
+  "vi": "Nghe lại lời người gọi: còn đội nào cần tới nữa không?",
   "en": ""
  },
  {
-  "vi": "⚖️ Cân đủ: thử cân mỗi sáng, trừ bì rổ. Bà Hai mang cân riêng, cân lại là biết ngay.",
+  "vi": "Nguy hiểm tính mạng tới đâu? Xem lại bảng ưu tiên.",
   "en": ""
  },
  {
-  "vi": "🧺 Không bán trái dập: lựa ra từ sáng.",
+  "vi": "Anh Bình: “Nhận, xuất phát!”",
   "en": ""
  },
  {
-  "vi": "🤝 Trả giá vui vẻ: khách hỏi bớt mà giữ giá cứng thì bị chê.",
+  "vi": "Bác sĩ Vy: “Xe chạy rồi, em giữ người gọi giúp chị.”",
   "en": ""
  },
  {
-  "vi": "💵 Thối đúng từng xu.",
+  "vi": "Bộ đàm: “Nhận, đang tới.”",
   "en": ""
  },
  {
-  "vi": "Quên trừ bì rổ hoặc cân lệch không chỉnh",
+  "vi": "gọi đội đang tạm ngưng",
   "en": ""
  },
  {
-  "vi": "Khách trả tiền cho trái không có. Khách mang cân riêng bắt được là lỗi rõ; tối dì Tư dò cân, nói khách thiệt bao nhiêu.",
+  "vi": "đội bị giữ chân vì gửi thừa",
   "en": ""
  },
  {
-  "vi": "Bán trái sai độ chín",
+  "vi": "Chọn nơi chuyển tới.",
   "en": ""
  },
  {
-  "vi": "Lỗi nhỏ (mâm ngũ quả: lỗi rõ). Trái xanh cứng, trái nhũn, trái héo đều bị chê.",
+  "vi": "Chưa kiểm tra mà đã cho là gọi đùa? Lắng nghe, hỏi kỹ hoặc gọi lại trước khi quyết.",
   "en": ""
  },
  {
-  "vi": "Không lựa trái dập",
+  "vi": "Người gọi đang gặp nguy hiểm thật đó. Nghe lại: có cần gửi đội không?",
   "en": ""
  },
  {
-  "vi": "Trái dập có thể lẫn vào túi khách (lỗi rõ); tối đó trái dập làm hư thêm trái lành.",
+  "vi": "Từ chối cũng giữ giọng lịch sự em. Dứt khoát mà không gắt.",
   "en": ""
  },
  {
-  "vi": "Cân thiếu hoặc bỏ thừa",
+  "vi": "Tổng đài trả lời cộc lốc, gắt gỏng.",
   "en": ""
  },
  {
-  "vi": "Thiếu dưới 90% là lỗi nhỏ. Thừa hẳn một trái thì khách bảo bớt ra trước khi cân.",
+  "vi": "gắt với người gọi",
   "en": ""
  },
  {
-  "vi": "Giữ giá khi khách chỉ muốn bớt chút",
+  "vi": "“Thái độ gì vậy! Tôi khiếu nại đó!”",
   "en": ""
  },
  {
-  "vi": "Khách vẫn mua nhưng chê cứng giá (lỗi nhỏ).",
+  "vi": "“Gắt với ai đó? Tôi gọi lại hoài cho coi!”",
   "en": ""
  },
  {
-  "vi": "Đổ lỗi hay cãi khách mang trái lại",
+  "vi": "Nói nhẹ quá, người gọi cứ nằn nì, đường dây bị giữ lâu.",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ, khách giận; chưa xem trái đã phán cũng là lỗi nhỏ.",
+  "vi": "để người gọi nằn nì giữ máy",
   "en": ""
  },
  {
-  "vi": "Cho khách lạ cầm túi đi, hẹn quay lại trả",
+  "vi": "“Thôi mà, giúp tôi chút đi!”",
   "en": ""
  },
  {
-  "vi": "Người thật thà quay lại trả; người không thì đi luôn, mất trắng tiền vốn.",
+  "vi": "“…dạ… em xin lỗi.” (cúp máy)",
   "en": ""
  },
  {
-  "vi": "Cãi tay đôi với người quay clip",
+  "vi": "“Dạ… con đi gọi ông…”",
   "en": ""
  },
  {
-  "vi": "Mất uy tín trong chợ, bị chê trên mạng.",
+  "vi": "“Ờ, có người hỏi han là vui rồi.”",
   "en": ""
  },
  {
-  "vi": "🧺 Trái nhập ở [[Kho trái cây]]: hàng về còn xanh, xoài, bơ để hai ngày mới chín, chuối một ngày.",
+  "vi": "“Ờ… ờ… để anh gọi taxi.”",
   "en": ""
  },
  {
-  "vi": "📅 Mỗi lô có độ chín theo ngày: còn xanh → vừa chín → chín kỹ. Cam, thanh long, nho, bưởi: tươi rồi héo.",
+  "vi": "“Vậy để tôi gọi số đó.”",
   "en": ""
  },
  {
-  "vi": "🗑️ Ngày cuối của lô là bỏ lúc dọn sạp, trừ khi đã rao xả.",
+  "vi": "“Okela, Long gọi phòng truyền thông.”",
   "en": ""
  },
  {
-  "vi": "👥 Nhân viên: Hiếu, Ngân lựa trái dập; Lành, Phát rao hàng.",
+  "vi": "“Ờ, để tôi gọi điện lực.”",
   "en": ""
  },
  {
-  "vi": "🌤️ Mỗi ngày một kiểu: nắng gắt (trái mau dập), mưa dầm (căng bạt), rằm và mùng một (mâm ngũ quả), cuối tuần (trả giá nhiều).",
+  "vi": "“Sáng mai hả… thôi cũng được.”",
   "en": ""
  },
  {
-  "vi": "🌧️ Mưa ập xuống: căng bạt, kê rổ cao; để nguyên thì trái úng, phải lựa lại.",
+  "vi": "“Ờ, vậy tôi đi khám.”",
   "en": ""
  },
  {
-  "vi": "🧾 Ban quản lý chợ thu phí: đóng đúng, lấy biên lai. Dúi thêm tiền không biên lai chẳng được gì.",
+  "vi": "“À… vậy hả, để tôi gọi đúng chỗ.”",
   "en": ""
  },
  {
-  "vi": "🏷️ Xe hàng dán nhãn giả mời lấy: bán trái gì nói trái đó.",
+  "vi": "Thẻ hướng dẫn không dành cho cuộc gọi này.",
   "en": ""
  },
  {
-  "vi": "💵 Từ ngày 2 thỉnh thoảng khách đưa thiếu tiền: bấm [[Đếm lại tiền khách đưa]] rồi chọn cách xử lý.",
+  "vi": "Đã đọc thẻ này rồi.",
   "en": ""
  },
  {
-  "vi": "Đặt quả cân 1 ký",
+  "vi": "hướng dẫn nguy hiểm",
   "en": ""
  },
  {
-  "vi": "Chỉnh kim về đúng",
+  "vi": "Chọn giữ máy hay kết thúc cuộc gọi.",
   "en": ""
  },
  {
-  "vi": "Lựa ra",
+  "vi": "Chưa xin số gọi lại. Lỡ đội lạc đường thì gọi ai?",
   "en": ""
  },
  {
-  "vi": "Trừ bì rổ",
+  "vi": "Người gọi đang một mình, đang sợ. Giữ máy với họ tới khi đội tới.",
   "en": ""
  },
  {
-  "vi": "CÂN · TÍNH TIỀN",
+  "vi": "Quyết mà chưa hỏi chuyện gì đang xảy ra.",
   "en": ""
  },
  {
-  "vi": "Bớt một nửa",
+  "vi": "quyết khi chưa hỏi chuyện gì",
   "en": ""
  },
  {
-  "vi": "Xem trái",
+  "vi": "Không xin số gọi lại; rớt máy là mất liên lạc.",
   "en": ""
  },
  {
-  "vi": "Rao xả",
+  "vi": "thiếu số gọi lại",
   "en": ""
  },
  {
-  "vi": "Hỏi khách mua gì",
+  "vi": "Không hỏi mấy người, ai bị thương.",
   "en": ""
  },
  {
-  "vi": "Kho trái cây",
+  "vi": "không hỏi số người",
   "en": ""
  },
  {
-  "vi": "Hoặc tự ra giá",
+  "vi": "Không hỏi lửa, gas, điện, nước: đội tới không biết trước nguy hiểm.",
   "en": ""
  },
  {
-  "vi": "Chốt giá này",
+  "vi": "không hỏi nguy hiểm",
   "en": ""
  },
  {
-  "vi": "Không bán chịu",
+  "vi": "Ca nguy hiểm tính mạng mà xếp mức thấp, xe chạy không còi.",
   "en": ""
  },
  {
-  "vi": "Nhờ người nhà",
+  "vi": "xếp ưu tiên thấp hơn mức nguy hiểm",
   "en": ""
  },
  {
-  "vi": "Xóa nợ",
+  "vi": "Xếp mức cao hơn cần thiết, xe hú còi chạy ẩu qua phố.",
   "en": ""
  },
  {
-  "vi": "Bạn đẩy xe rác ba ngăn cùng chị Hạnh mỗi tối: đồ bảo hộ, đi từng ngõ đúng giờ, bỏ túi đúng ngăn, tách đồ nguy hại, nhắc nhà chưa phân loại.",
+  "vi": "xếp ưu tiên cao quá",
   "en": ""
  },
  {
-  "vi": "Đeo găng tay, khẩu trang, mặc áo phản quang (trời mưa thêm ủng), [[Kiểm xe đẩy]], rồi [[VÀO CA]]. Găng tay, khẩu trang dùng một ca là bỏ.",
+  "vi": "gửi thiếu đội",
   "en": ""
  },
  {
-  "vi": "Gom một ngõ",
+  "vi": "gửi thừa đội",
   "en": ""
  },
  {
-  "vi": "Bấm [[Đẩy xe vào ngõ]] trước giờ thu gom. Mỗi nhà: nhìn túi, túi trông lạ thì [[Mở túi]], rồi chọn ngăn cho từng túi.",
+  "vi": "thiếu hướng dẫn an toàn",
   "en": ""
  },
  {
-  "vi": "Đồ nguy hại",
+  "vi": "Người gọi một mình đang sợ, tổng đài cúp máy.",
   "en": ""
  },
  {
-  "vi": "Pin, bóng đèn tuýp, vỏ bình xịt, kim tiêm: mở túi, bấm [[Tách ra]] bỏ hộp đỏ. Kim tiêm, bóng đèn phải đeo găng.",
+  "vi": "bỏ người gọi một mình",
   "en": ""
  },
  {
-  "vi": "Bấm [[Bọc]] gói mảnh kính vào bao dày rồi mới cho vào ngăn còn lại.",
+  "vi": "Gửi xe cho chuyện không khẩn: đội bị giữ chân, ca thật phải chờ.",
   "en": ""
  },
  {
-  "vi": "Nhắc phân loại",
+  "vi": "gửi xe cho cuộc không khẩn",
   "en": ""
  },
  {
-  "vi": "Nhà nào để túi sai màu: [[Nhắc nhà này phân loại]], nói nhẹ nhàng. Nhắc nhầm nhà làm đúng thì bị phàn nàn.",
+  "vi": "Xe chạy tới nơi không có chuyện gì.",
   "en": ""
  },
  {
-  "vi": "Ngăn đầy thì [[Ra điểm tập kết đổ xe]]: cô Tám mua túi tái chế sạch, túi lẫn đồ ăn thì không.",
+  "vi": "gửi xe cho cuộc gọi giả",
   "en": ""
  },
  {
-  "vi": "Cư dân phản ánh",
+  "vi": "Gửi xe mà không kiểm tra cuộc gọi nghi ngờ.",
   "en": ""
  },
  {
-  "vi": "Xem từng chuyện cho rõ rồi mới trả lời. Cách tốt nhất thường cần xem đủ hai điều.",
+  "vi": "không kiểm tra cuộc gọi",
   "en": ""
  },
  {
-  "vi": "Túi chưa phân loại",
+  "vi": "Giữ máy với cuộc không khẩn, đường dây khác réo không ai nghe.",
   "en": ""
  },
  {
-  "vi": "Mở túi xem rồi bấm [[Chưa phân loại: dán phiếu, không thu]]. Dán nhầm nhà đã phân loại đúng là bị phàn nàn.",
+  "vi": "giữ máy không cần thiết",
   "en": ""
  },
  {
-  "vi": "Thu phí vệ sinh",
+  "vi": "Cuộc gọi thật mà tổng đài không gửi ai.",
   "en": ""
  },
  {
-  "vi": "Trong ca, mở [[Thu phí vệ sinh]]: gõ số tiền rồi [[Thu, nói nhẹ]] hoặc [[Nhắc quy định]]. Nhà khó khăn thì [[Miễn tháng này]].",
+  "vi": "bỏ sót cuộc gọi thật",
   "en": ""
  },
  {
-  "vi": "Dao lam, kim tiêm giấu trong túi",
+  "vi": "Cho là gọi đùa mà không kiểm tra gì.",
   "en": ""
  },
  {
-  "vi": "Túi trông bình thường vẫn có thể giấu đồ sắc: mở ra xem mới thấy. Bị kim tiêm đâm thì phải ra trạm y tế.",
+  "vi": "đoán mò, không kiểm tra",
   "en": ""
  },
  {
-  "vi": "Rác đổ trộm, nhà không chịu phân loại",
+  "vi": "Chuyển người gọi tới nơi không giúp được họ.",
   "en": ""
  },
  {
-  "vi": "Đống rác: đi hai chuyến, gọi xe ba gác, báo phường, hay nhồi (dễ bung nắp xe). Chủ nhà chặn xe: giải thích, dán phiếu, lấy luôn, hay gọi tổ trưởng.",
+  "vi": "chuyển chưa đúng nơi",
   "en": ""
  },
  {
-  "vi": "👂 Nghe chị Hạnh dặn: tên ngõ, số nhà, giờ thu gom.",
+  "vi": "quên dặn an toàn",
   "en": ""
  },
  {
-  "vi": "🛒 [[Đẩy xe vào ngõ]]. Trễ giờ thì rác bị mèo bới: [[Quét dọn]] trước đã.",
+  "vi": "🚨 Đội tới nơi.",
   "en": ""
  },
  {
-  "vi": "👀 Túi trông lạ (kêu lọc cọc, rỉ nước, có cạnh sắc…) thì mở ra xem.",
+  "vi": "🚨 Đội tới nơi, nhưng có chuyện không hay.",
   "en": ""
  },
  {
-  "vi": "🟢 Túi một loại vào đúng ngăn đó. Túi lẫn đồ ăn với đồ tái chế, hay lẫn đủ thứ, vào ngăn còn lại.",
+  "vi": "Bạn giữ máy tới lúc nghe tiếng còi xe đầu hẻm: “Họ tới rồi! Cảm ơn chị!”",
   "en": ""
  },
  {
-  "vi": "🛒 Hết túi ở nhà này thì tới nhà sau; nhà cuối xong thì [[XONG NGÕ]].",
+  "vi": "🚒 Đội tới nơi: không có chuyện gì. Anh Bình gọi về: “Đi không rồi em.”",
   "en": ""
  },
  {
-  "vi": "🧤 Đủ đồ bảo hộ: tay trần nhặt kim tiêm, mảnh kính là bị thương.",
+  "vi": "📵 Không ai được gửi tới. Lát sau người gọi phải gọi lại lần nữa.",
   "en": ""
  },
  {
-  "vi": "🟢 Đúng ngăn, không trộn lẫn; không để lọt pin, kim tiêm lên xe ép.",
+  "vi": "✅ Đường dây trống lại cho cuộc gọi kế.",
   "en": ""
  },
  {
-  "vi": "⏰ Vào ngõ đúng giờ thu gom.",
+  "vi": "Đã nghe máy này rồi.",
   "en": ""
  },
  {
-  "vi": "📝 Nhắc đúng nhà chưa phân loại (được thêm điểm kinh nghiệm).",
+  "vi": "Mức ưu tiên không có trên bảng.",
   "en": ""
  },
  {
-  "vi": "🧹 Không bỏ sót túi nào.",
+  "vi": "Xếp ưu tiên cho đủ các đường dây đã.",
   "en": ""
  },
  {
-  "vi": "Nhặt kim tiêm, bóng đèn vỡ bằng tay trần",
+  "vi": "Xếp ưu tiên mà chưa nghe máy.",
   "en": ""
  },
  {
-  "vi": "Bị thương, lỗi nặng; kim tiêm là lỗi an toàn.",
+  "vi": "xếp khi chưa nghe",
   "en": ""
  },
  {
-  "vi": "Để lọt đồ nguy hại lên xe",
+  "vi": "xếp ca nguy hiểm xuống sau",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ: pin, bình xịt dễ cháy nổ trong xe ép.",
+  "vi": "Ca không gấp được nhấc trước, ca khác phải chờ.",
   "en": ""
  },
  {
-  "vi": "Bỏ nhầm ngăn",
+  "vi": "Xếp ưu tiên nhiều đường dây.",
   "en": ""
  },
  {
-  "vi": "Một túi là lỗi nhỏ, nhiều túi là lỗi rõ; túi tái chế bẩn cô Tám không mua.",
+  "vi": "Hôm nay đã ghi sổ nhật ký rồi.",
   "en": ""
  },
  {
-  "vi": "Bỏ sót túi",
+  "vi": "Chưa có gì để ghi sổ. Nhận cuộc gọi trước đã.",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ, hôm sau cư dân phản ánh.",
+  "vi": "Chọn ít nhất một dòng ghi vào sổ nhật ký.",
   "en": ""
  },
  {
-  "vi": "Thiếu áo phản quang, găng tay khi vào ca",
+  "vi": "📒 Sổ nhật ký rõ ràng, thật, đủ các cuộc cần theo dõi. Ca sau đọc một lượt là nắm hết.",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ ngay từ đầu ca.",
+  "vi": "📒 Chưa ghi sổ nhật ký: ca sau phải nghe lại băng từng cuộc.",
   "en": ""
  },
  {
-  "vi": "Còn rác trên xe lúc tan ca",
+  "vi": "📒 Sổ nhật ký rõ ràng, thật, đủ.",
   "en": ""
  },
  {
-  "vi": "Chị Hạnh đổ giúp, không có tiền ve chai.",
+  "vi": "🏠 Tháo tai nghe, tai còn ù ù. Về tới hẻm, mùi cơm nhà ai thơm phức.",
   "en": ""
  },
  {
-  "vi": "Bị kim tiêm đâm mà chỉ băng tạm",
+  "vi": "Mai nhận ca lúc 7:00, gọi bộ đàm từng đội trước khi ký.",
   "en": ""
  },
  {
-  "vi": "Lỗi nặng: kim tiêm phải đi khám, tiêm phòng.",
+  "vi": "Gọi đủ các đội",
   "en": ""
  },
  {
-  "vi": "🧤 Găng tay, khẩu trang, bao bọc mảnh vỡ mua ở [[Kho đồ bảo hộ]].",
+  "vi": "gọi đủ bộ đàm",
   "en": ""
  },
  {
-  "vi": "🛒 Xe có ba ngăn: hữu cơ 8 túi, tái chế 8 túi, còn lại 10 túi; hộp đỏ 8 món.",
+  "vi": "gọi sót đội",
   "en": ""
  },
  {
-  "vi": "💵 Tổ trả tiền theo từng ngõ; cô Tám trả tiền ve chai cho túi tái chế sạch.",
+  "vi": "Bảng đội đúng",
   "en": ""
  },
  {
-  "vi": "👥 Nhân viên: Tuyết, Liên quét dọn; Dũng, Quang đẩy xe.",
+  "vi": "đánh dấu đúng đội tạm ngưng",
   "en": ""
  },
  {
-  "vi": "🌙 Tối thường, mưa (mang ủng), oi nồng (đeo khẩu trang kín), ngõ có đám cưới (nhiều chai lon).",
+  "vi": "bảng đội sai",
   "en": ""
  },
  {
-  "vi": "🏍️ Xe máy lao vào ngõ tối: kéo xe sát tường. Có áo phản quang thì người lái thấy từ xa.",
+  "vi": "Xếp ưu tiên đúng",
   "en": ""
  },
  {
-  "vi": "💍 Nhặt được đồ quý trong rác: báo chị Hạnh, tìm đúng chủ.",
+  "vi": "ca khẩn nhấc trước",
   "en": ""
  },
  {
-  "vi": "🍻 Quán nhậu dúi tiền nhờ lấy rác chưa phân loại: từ chối, chỉ cách đăng ký thu gom.",
+  "vi": "Nghe trước khi xếp",
   "en": ""
  },
  {
-  "vi": "🛵 Đám quậy phá lúc nửa đêm: nói chuyện, chụp ảnh, gọi công an phường, hay lờ đi. Có lửa thì phải dập.",
+  "vi": "nghe từng máy",
   "en": ""
  },
  {
-  "vi": "🚛 Điểm tập kết tràn: xếp gọn, rắc vôi, gọi chú Sáu hay đứng đợi; bỏ về là bị báo lên phường.",
+  "vi": "Hỏi đủ kịch bản",
   "en": ""
  },
  {
-  "vi": "VÀO CA",
+  "vi": "địa chỉ, chuyện gì, mấy người, nguy hiểm, số gọi lại",
   "en": ""
  },
  {
-  "vi": "Đẩy xe vào ngõ",
+  "vi": "hỏi thiếu",
   "en": ""
  },
  {
-  "vi": "Tách ra",
+  "vi": "Ưu tiên và đội đúng",
   "en": ""
  },
  {
-  "vi": "Bọc",
+  "vi": "đúng mức, đúng đội",
   "en": ""
  },
  {
-  "vi": "Nhắc nhà này phân loại",
+  "vi": "dặn đúng, đủ",
   "en": ""
  },
  {
-  "vi": "Ra điểm tập kết đổ xe",
+  "vi": "dặn thiếu hoặc sai",
   "en": ""
  },
  {
-  "vi": "XONG NGÕ",
+  "vi": "Giọng nói, giữ máy",
   "en": ""
  },
  {
-  "vi": "Kho đồ bảo hộ",
+  "vi": "bình tĩnh, lịch sự",
   "en": ""
  },
  {
-  "vi": "Chưa phân loại: dán phiếu, không thu",
+  "vi": "Bảng đội:",
   "en": ""
  },
  {
-  "vi": "Thu, nói nhẹ",
+  "vi": "Gọi bộ đàm từng đội → đánh dấu đội tạm ngưng → ký nhận ca.",
   "en": ""
  },
  {
-  "vi": "Nhắc quy định",
+  "vi": "Nhấc máy → địa chỉ trước (mốc, định vị nếu cần) → chuyện gì → trấn an nếu hoảng → nghi ngờ thì kiểm tra → gửi đúng đội đúng mức, hoặc chuyển đúng nơi → đọc hướng dẫn an toàn → giữ máy nếu người gọi một mình.",
   "en": ""
  },
  {
-  "vi": "Miễn tháng này",
+  "vi": "Nghe nhanh từng máy → xếp mức ưu tiên theo nguy hiểm, không theo tiếng la → nhấc theo thứ tự.",
   "en": ""
  },
  {
-  "vi": "Bạn theo chú Hai đi thông cống: xếp đồ nghề lên xe, tìm đúng bệnh, báo giá thật trước khi làm, thông bằng đúng đồ nghề, an toàn ở hố ga.",
+  "vi": "Đã trực bộ đàm, báo giờ xe tới nơi cho từng ca.",
   "en": ""
  },
  {
-  "vi": "Xếp đồ nghề",
+  "vi": "Đã sắp nhật ký cuộc gọi theo giờ, đánh dấu những cuộc cần gọi lại.",
   "en": ""
  },
  {
-  "vi": "Đọc sổ hẹn, chọn tối đa 5 món lên xe, đeo găng tay rồi [[LÊN ĐƯỜNG]]. Thiếu đồ thì phải [[Về tiệm lấy đồ nghề khác]], khách chờ.",
+  "vi": "Dữ liệu tổng đài sai.",
   "en": ""
  },
  {
-  "vi": "Tìm bệnh",
+  "vi": "Việc ở tổng đài sai.",
   "en": ""
  },
  {
-  "vi": "[[Hỏi thêm]], mở nắp soi đèn, [[Xả nước thử]] (hoặc [[Soi camera]] nếu mang theo), rồi chọn nguyên nhân.",
+  "vi": "Câu hỏi kịch bản sai.",
   "en": ""
  },
  {
-  "vi": "Báo [[Theo bảng giá]] của nguyên nhân đã chọn, trước khi làm. Đổi nguyên nhân thì báo lại giá.",
+  "vi": "Đội gửi sai.",
   "en": ""
  },
  {
-  "vi": "Thông",
+  "vi": "Nơi chuyển sai.",
   "en": ""
  },
  {
-  "vi": "Tóc: dây lò xo. Mỡ đông: máy phun (đeo kính). Giấy ướt: máy lò xo điện hoặc pít-tông. Đồ rơi, tổ chim: móc gắp. Rễ cây: máy lò xo điện. Ống nứt: [[Thay ống xi-phông]].",
+  "vi": "Giọng nói sai.",
   "en": ""
  },
  {
-  "vi": "Rào chắn, đo khí, bật quạt, có người canh; mang ủng, khẩu trang, gầu múc bùn. Phường chuyển khoản.",
+  "vi": "Hướng dẫn sai.",
   "en": ""
  },
  {
-  "vi": "Gọi đêm",
+  "vi": "Giữ máy sai.",
   "en": ""
  },
  {
-  "vi": "Từ ngày 3: giá theo bảng đã gồm phụ phí đêm, nói rõ trước.",
+  "vi": "Chuyện người gọi sai.",
   "en": ""
  },
  {
-  "vi": "Gọi lại bảo hành",
+  "vi": "Số liệu tổng đài sai.",
   "en": ""
  },
  {
-  "vi": "Lỗi thông tạm hôm trước của tiệm thì bảo hành, không lấy tiền. Tắc mới thì tính như việc mới.",
+  "vi": "Sổ nhật ký sai.",
   "en": ""
  },
  {
-  "vi": "Tự báo giá",
+  "vi": "Bảng đội sai.",
   "en": ""
  },
  {
-  "vi": "Mở [[Tự báo giá]], gõ số rồi [[Báo giá này]]. Giá thật thì khách gật; hét giá thì khách trả giá lại hoặc gọi thợ khác.",
+  "vi": "Tổng đài cứu hộ",
   "en": ""
  },
  {
-  "vi": "Chủ nhà đứng lèm bèm",
+  "vi": "Tổng đài Cứu hộ phường Mây",
   "en": ""
  },
  {
-  "vi": "Nhịn làm tiếp, đáp lại, mời ra ngoài chờ, hay từ chối làm tiếp. Mỗi người phản ứng một kiểu.",
+  "vi": "Địa chỉ trước, gửi đúng đội, không bỏ ai một mình.",
   "en": ""
  },
  {
-  "vi": "Nhờ “tiện tay”, hết tiền mặt",
+  "vi": "Trời trong, đường dây yên ả",
   "en": ""
  },
  {
-  "vi": "Làm luôn, báo giá việc phụ, hay nói việc khác tính riêng. Khách hết tiền: đợi đi rút, ghi nợ, hay xin trả trước; nợ nằm trong [[Sổ nợ]].",
+  "vi": "Cuộc gọi trong ca",
   "en": ""
  },
  {
-  "vi": "👂 Bấm [[Nghe khách kể]].",
+  "vi": "Bàn trực tổng đài",
   "en": ""
  },
  {
-  "vi": "🔍 Tìm hai manh mối trở lên, rồi chọn nguyên nhân.",
+  "vi": "Nhận ca lúc 7:00. Gọi bộ đàm từng đội, đánh dấu đội tạm ngưng. Mỗi cuộc gọi: địa chỉ trước, gửi đúng đội, dặn an toàn.",
   "en": ""
  },
  {
-  "vi": "🧾 Báo giá theo bảng giá.",
+  "vi": "Mỗi hồi chuông là một người đang cần mình",
   "en": ""
  },
  {
-  "vi": "🧤 Đeo găng tay (máy phun: thêm kính), chọn đồ nghề để thông.",
+  "vi": "29 · TỔNG ĐÀI CỨU HỘ",
   "en": ""
  },
  {
-  "vi": "💧 [[Xả nước thử]], [[Dọn sạch chỗ làm]], [[Dặn khách]], rồi [[TÍNH TIỀN]] và thối đúng.",
+  "vi": "Trực bộ đàm lâu năm, nghe tiếng còi là biết xe nào.",
   "en": ""
  },
  {
-  "vi": "🔍 Đúng bệnh, đúng đồ nghề: thử sai là mất thời gian.",
+  "vi": "Bạn thực tập ghi nhật ký nhanh, không sót giờ nào.",
   "en": ""
  },
  {
-  "vi": "🧾 Báo giá thật: nói thách thì khách bỏ đi hoặc biết ra là bị chê.",
+  "vi": "Nói chuyện với đội rõ ràng, gọn từng chữ.",
   "en": ""
  },
  {
-  "vi": "🦺 An toàn: găng tay, kính khi phun, đủ bước ở hố ga.",
+  "vi": "Thuộc lòng bản đồ phường, hẻm nào cũng biết.",
   "en": ""
  },
  {
-  "vi": "💧 Xả thử, dọn sạch, dặn khách giữ ống thông.",
+  "vi": "Trực bộ đàm",
   "en": ""
  },
  {
-  "vi": "🧪 Không đổ hóa chất vào ống gang cũ.",
+  "vi": "Thư ký nhật ký",
   "en": ""
  },
  {
-  "vi": "Xuống hố ga không đo khí, không thông gió",
+  "vi": "Nhận ca lúc 7:00. Chị Thảo đang chờ ở bảng đội.",
   "en": ""
  },
  {
-  "vi": "Lỗi an toàn: choáng váng, 1★.",
+  "vi": "Đèn một đường dây nữa nháy đỏ.",
   "en": ""
  },
  {
-  "vi": "Nói thách",
+  "vi": "Một ca ở tổng đài cứu hộ",
   "en": ""
  },
  {
-  "vi": "Nhiều khách bỏ đi ngay; khách nhận thì sau biết giá thật, lỗi rõ.",
+  "vi": "Địa chỉ",
   "en": ""
  },
  {
-  "vi": "Thông tạm mà không nói",
+  "vi": "Hỏi trước tiên",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ: vài hôm sau tắc lại.",
+  "vi": "Người đang hoảng",
   "en": ""
  },
  {
-  "vi": "Đổ bột thông cống thiếu găng, kính",
+  "vi": "Trấn an, giao một việc nhỏ",
   "en": ""
  },
  {
-  "vi": "Lỗi an toàn; ống gang cũ còn bị hỏng.",
+  "vi": "Nghe, hỏi kỹ, gọi lại",
   "en": ""
  },
  {
-  "vi": "Chưa xả thử, chưa dọn",
+  "vi": "Chảo dầu cháy",
   "en": ""
  },
  {
-  "vi": "Mỗi thứ là một lỗi nhỏ.",
+  "vi": "Không dội nước",
   "en": ""
  },
  {
-  "vi": "Thu tiền việc bảo hành lỗi của tiệm",
+  "vi": "Rà bảng đội",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ, khách mất lòng tin.",
+  "vi": "Gửi đúng đội",
   "en": ""
  },
  {
-  "vi": "Chặt chém: tự báo giá cao hơn hẳn bảng giá",
+  "vi": "Dặn an toàn, ghi sổ",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ, uy tín trong phố giảm, ông Lộc đăng bài; có khách quay lại đòi tiền chênh.",
+  "vi": "Chiếc tai nghe cũ của chị Thảo",
   "en": ""
  },
  {
-  "vi": "Cãi tay đôi với chủ nhà",
+  "vi": "Chị Thảo giữ chiếc tai nghe đầu tiên của trung tâm, dây quấn băng keo đen.",
   "en": ""
  },
  {
-  "vi": "Người nóng tính nổi đóa: lỗi rõ.",
+  "vi": "Bạn trực thêm một ca; chị chỉ cách nghe tiếng nền để đoán người gọi đứng đâu.",
   "en": ""
  },
  {
-  "vi": "🧰 Xe chở 5 món trong 8: pít-tông, dây lò xo tay, máy lò xo điện, máy phun áp lực, camera, móc gắp, gầu múc bùn, máy đo khí.",
+  "vi": "Chị Thảo dặn: “Tai mình phải nghe được cả cái người ta không nói.”",
   "en": ""
  },
  {
-  "vi": "📦 Ống xi-phông, bột thông cống, găng tay mua ở [[Kho vật tư]].",
+  "vi": "Bức tranh của bé Na",
   "en": ""
  },
  {
-  "vi": "👥 Nhân viên: Tâm, Vy canh an toàn hố ga; Lực, Sơn chở đồ.",
+  "vi": "Bé Na gửi tổng đài bức tranh vẽ cô tổng đài đeo tai nghe.",
   "en": ""
  },
  {
-  "vi": "⛈️ Mưa lớn: hố ga dễ tràn, cả ngõ cùng gọi; ưu tiên nhà người già, trẻ nhỏ.",
+  "vi": "Bạn trực thêm một ca, dán bức tranh cạnh màn hình.",
   "en": ""
  },
  {
-  "vi": "📞 Thợ dạo báo giá trên trời: nói thật bảng giá của tiệm.",
+  "vi": "Ông Ba gọi tới chỉ để hỏi: “Cô thấy tranh con Na vẽ chưa?”",
   "en": ""
  },
  {
-  "vi": "🐀 Chuột chui ra từ cống: bình tĩnh đuổi ra, đậy lưới chắn.",
+  "vi": "Cuốn sổ nhật ký đêm bão",
   "en": ""
  },
  {
-  "vi": "💵 Khách nhờ ghi hóa đơn khống: từ chối.",
+  "vi": "Trong tủ trực có cuốn sổ nhật ký đêm bão mười năm trước, chữ chị Thảo nắn nót.",
   "en": ""
  },
  {
-  "vi": "🔁 Khách bị chặt chém quay lại: trả lại tiền chênh, trả bớt, giải thích, hay không trả. Trả ít quá là bị chê.",
+  "vi": "Bạn trực thêm một ca, ghi sổ thật kỹ.",
   "en": ""
  },
  {
-  "vi": "LÊN ĐƯỜNG",
+  "vi": "Chị Thảo đọc xong, gập sổ: “Ca sau sẽ yên tâm.”",
   "en": ""
  },
  {
-  "vi": "Về tiệm lấy đồ nghề khác",
+  "vi": "Hỏi địa chỉ trước tiên, nghe là yên tâm.",
   "en": ""
  },
  {
-  "vi": "Theo bảng giá",
+  "vi": "Giọng bình tĩnh ghê, nghe là bớt run.",
   "en": ""
  },
  {
-  "vi": "Thay ống xi-phông",
+  "vi": "Giữ máy với tôi tới lúc xe tới, cảm ơn nhiều.",
   "en": ""
  },
  {
-  "vi": "Nghe khách kể",
+  "vi": "Dặn từng bước rõ ràng, làm theo được liền.",
   "en": ""
  },
  {
-  "vi": "Dọn sạch chỗ làm",
+  "vi": "Nhận ca: gọi bộ đàm, đánh dấu đội tạm ngưng → nhấc máy → địa chỉ trước → chuyện gì, mấy người, nguy hiểm gì, số gọi lại → người hoảng thì trấn an → cuộc nghi ngờ thì nghe, hỏi kỹ, gọi lại → gửi đúng đội, đúng mức, hoặc chuyển đúng nơi → đọc hướng dẫn an toàn → giữ máy với người một mình → cuối ca ghi sổ nhật ký thật.",
   "en": ""
  },
  {
-  "vi": "Dặn khách",
+  "vi": "Tổng đài Cứu hộ phường Mây · Trung tâm điều phối",
   "en": ""
  },
  {
-  "vi": "Báo giá này",
+  "vi": "Điều phối viên tổng đài cứu hộ",
   "en": ""
  },
  {
-  "vi": "Bạn giúp việc nhà cho chị Thảo: đi chợ, nấu theo khẩu vị từng người, giặt giũ, lau dọn, trông bé Su, chăm bà Lành, giữ sổ chợ khớp từng xu.",
+  "vi": "Chị Thảo kèm ba cuộc gọi đầu",
   "en": ""
  },
  {
-  "vi": "Nhớ danh sách rồi [[Ra chợ]]. Chọn rau tươi, cá mắt trong; [[Mua giá này]] hay [[Trả giá]]; về [[Ghi sổ chợ, trả tiền thừa]] đúng số đã tiêu.",
+  "vi": "Có tai nghe và ghế tốt",
   "en": ""
  },
  {
-  "vi": "Xem [[Sổ tay nhà]]: bé Su dị ứng tôm, bà ăn nhạt, Cốm ăn cháo. Nấu sai món dị ứng là lỗi an toàn.",
+  "vi": "Sáu đội, một bảng ưu tiên, một nguyên tắc: hỏi địa chỉ trước, không bỏ ai một mình. Ở đây không ai được chặn số của ai.",
   "en": ""
  },
  {
-  "vi": "Lục túi quần trước khi giặt. Tách đồ trắng, đồ màu, đồ len; váy lụa giặt tay, phơi trong bóng râm.",
+  "vi": "Tổng đài Cứu hộ phường Mây · Bàn tiếp nhận",
   "en": ""
  },
  {
-  "vi": "Đồ sống ngăn dưới, đồ chín ngăn trên, đồ cũ ra trước. Cây vàng lá thì xem đất trước khi tưới.",
+  "vi": "Nhân viên tiếp nhận cuộc gọi (bán thời gian)",
   "en": ""
  },
  {
-  "vi": "Mất điện, nồi cơm khê, tắc bồn, khách đến bất ngờ, chảo dầu bắt lửa, rò ga: chọn cách xử lý an toàn trước.",
+  "vi": "Ngồi cạnh chị Thảo",
   "en": ""
  },
  {
-  "vi": "Có hôm chị Thảo khất tiền công: nhận ghi nợ hay xin nhẹ nhàng. Nợ nằm trong [[Sổ nợ]].",
+  "vi": "Bàn tiếp nhận nghe máy trước, hỏi kịch bản, chuyển cho điều phối viên. Nhiều cuộc gọi nhầm, gọi đùa, gọi để tâm sự.",
   "en": ""
  },
  {
-  "vi": "Bạn đứng xe cơm của dì Bảy ở đầu chợ: nấu hai nồi cơm đúng nước, nếm chén nước mắm cho vừa, nướng sườn chín vàng, xới đủ vá, gắp đúng món, nhớ lời dặn ăn chay, thối đúng tiền.",
+  "vi": "Người gọi hét: “Cháy! Cháy! Tới liền đi!” Câu đầu tiên bạn hỏi là gì?",
   "en": ""
  },
  {
-  "vi": "Dọn quán đầu ngày",
+  "vi": "“Địa chỉ ở đâu ạ?” rồi mới hỏi chuyện gì",
   "en": ""
  },
  {
-  "vi": "Nồi cơm tấm đổ nước [[Lưng đốt ngón tay]], nồi cơm trắng [[Một đốt ngón tay]]. [[Nếm nước mắm]], [[Nhóm bếp than]], bày khay lên tủ kính rồi [[MỞ QUÁN]].",
+  "vi": "Chị Thảo gật đầu: có địa chỉ là gửi xe được ngay.",
   "en": ""
  },
  {
-  "vi": "Chén nước mắm",
+  "vi": "“Cháy cái gì, cháy to không?”",
   "en": ""
  },
  {
-  "vi": "Mặn thì [[Thêm nước sôi để nguội]], lạt thì [[Thêm nước mắm nhĩ]], ngọt quá thì [[Vắt thêm chanh]], chua quá thì [[Thêm đường]]. Chén đã vừa mà thêm nữa là hỏng.",
+  "vi": "Cần hỏi, nhưng lỡ rớt máy thì không biết gửi xe đi đâu.",
   "en": ""
  },
  {
-  "vi": "Nướng sườn",
+  "vi": "“Bình tĩnh đi!”",
   "en": ""
  },
  {
-  "vi": "Đặt 1 tới 4 miếng lên vỉ. Mỗi mặt 8–16 giây (thanh xanh): [[Trở mặt]] một lần rồi [[Gắp ra khay]]. Sớm quá là còn hồng (lỗi an toàn), lâu quá là xém rồi khét.",
+  "vi": "Quát người đang hoảng không giúp ai bình tĩnh.",
   "en": ""
  },
  {
-  "vi": "Mỗi dĩa cơm",
+  "vi": "Một giọng con nít cười khúc khích báo cháy nhà. Bạn làm gì?",
   "en": ""
  },
  {
-  "vi": "[[Lấy dĩa]] cho khách ngồi ăn, [[Lấy hộp]] cho khách mang về. Xới đúng nồi: ít cơm một vá, dĩa thường hai vá, thêm cơm ba vá. Gắp món khách gọi từ tủ kính, khay giữ ấm, chảo trứng.",
+  "vi": "Lắng nghe tiếng nền, hỏi chi tiết, gọi lại số máy rồi mới quyết",
   "en": ""
  },
  {
-  "vi": "Mỡ hành, nước mắm, canh",
+  "vi": "Mỗi cuộc gọi là một cuộc mới: kiểm tra trước khi quyết.",
   "en": ""
  },
  {
-  "vi": "[[Mỡ hành]] cho dĩa cơm (trừ khách dặn không hành). Hộp mang về: [[Nước mắm để riêng]], đừng rưới vô hộp. Khách gọi canh thì múc [[Chén canh]].",
+  "vi": "Cúp máy, chắc gọi đùa",
   "en": ""
  },
  {
-  "vi": "Mỡ hành phi bằng mỡ heo, canh nấu tôm khô: khách ăn chay thì không mỡ hành, không canh, chỉ [[Nước tương]].",
+  "vi": "Có bé gọi vì bà té thật mà sợ quá nên cười.",
   "en": ""
  },
  {
-  "vi": "Đơn cơm văn phòng",
+  "vi": "Gửi xe luôn cho chắc",
   "en": ""
  },
  {
-  "vi": "Từ ngày 3, cứ ba ngày chị Ngân đặt bốn hộp cho cả phòng, có một hộp chay. Làm từng hộp cho đúng lời dặn.",
+  "vi": "An toàn hơn cúp máy, nhưng cần địa chỉ và kiểm tra để xe không đi không.",
   "en": ""
  },
  {
-  "vi": "👂 Bấm [[Hỏi khách gọi gì]]: xem cơm tấm hay cơm trắng, mấy vá, món nào, lời dặn.",
+  "vi": "Người gọi khóc nấc, nói không thành câu. Bạn làm gì?",
   "en": ""
  },
  {
-  "vi": "🍽️ [[Lấy dĩa]] hoặc [[Lấy hộp]], xới cơm từng vá từ đúng nồi.",
+  "vi": "Xưng tên mình, thở chậm cùng họ, giao một việc nhỏ an toàn",
   "en": ""
  },
  {
-  "vi": "🍱 Gắp món từ tủ kính; sườn lấy miếng vàng đều trên khay giữ ấm; trứng ốp la từ chảo.",
+  "vi": "Một việc nhỏ giúp người ta lấy lại nhịp.",
   "en": ""
  },
  {
-  "vi": "🌿 Mỡ hành, nước mắm, canh đúng như khách dặn, rồi bấm [[ĐƯA CƠM]].",
+  "vi": "Chờ họ tự bình tĩnh",
   "en": ""
  },
  {
-  "vi": "🍚 Cơm dẻo, đủ vá: anh Mạnh liếc dĩa là biết thiếu.",
+  "vi": "Thời gian trôi mà chưa có địa chỉ.",
   "en": ""
  },
  {
-  "vi": "🍖 Sườn vàng đều, giữa không còn hồng.",
+  "vi": "Nói to: “Nói nhanh lên!”",
   "en": ""
  },
  {
-  "vi": "🫙 Nước mắm vừa miệng: sáng nào cũng nếm.",
+  "vi": "Càng quát càng hoảng.",
   "en": ""
  },
  {
-  "vi": "📿 Nhớ người ăn chay: không mỡ hành, nước tương.",
+  "vi": "Một người tự xưng “quan trọng” đòi xe công an dẫn đường vì kẹt xe.",
   "en": ""
  },
  {
-  "vi": "🥡 Hộp mang về nước mắm để riêng.",
+  "vi": "Lịch sự giải thích đường dây chỉ dành cho nguy hiểm tính mạng, chỉ đúng chỗ cần gọi",
   "en": ""
  },
  {
-  "vi": "Bán miếng sườn còn hồng",
+  "vi": "Dứt khoát mà không gắt: đường dây trống cho người cần.",
   "en": ""
  },
  {
-  "vi": "Lỗi an toàn: khách không ăn, chấm 1 sao, mai có thể có đoàn kiểm tra.",
+  "vi": "Gửi xe cho yên chuyện",
   "en": ""
  },
  {
-  "vi": "Mỡ hành, nước mắm cho khách ăn chay",
+  "vi": "Xe đi dẫn đường thì ca thật phải chờ.",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ: khách đã dặn mà quán quên. Làm lại hộp mới, không gạt ra.",
+  "vi": "Cúp máy không nói gì",
   "en": ""
  },
  {
-  "vi": "Đổ nước nồi cơm sai",
+  "vi": "Đường dây trống, nhưng người gọi sẽ gọi lại cả chục lần.",
   "en": ""
  },
  {
-  "vi": "Cả nồi nhão hoặc sượng, dĩa nào xới từ nồi đó cũng bị chê. Nồi hết mới nấu được nồi mới.",
+  "vi": "Mười lăm năm đeo tai nghe, nghe tiếng thở là đoán được người gọi đang ở đâu. Câu cửa miệng: “Địa chỉ trước, chuyện gì sau, gửi xe sớm, hỏi tiếp sau.”",
   "en": ""
  },
  {
-  "vi": "Xới thiếu cơm",
+  "vi": "Đội trưởng đội chữa cháy và cứu nạn phường",
   "en": ""
  },
  {
-  "vi": "Khách gọi thêm cơm mà xới hai vá là bị nhắc; với anh Mạnh là lỗi rõ.",
+  "vi": "Ít nói, bộ đàm lúc nào cũng kẹp ở vai. Ghét nhất là địa chỉ “gần gần chợ”.",
   "en": ""
  },
  {
-  "vi": "Rưới nước mắm vào hộp mang về",
+  "vi": "Bác sĩ xe cấp cứu trạm phường",
   "en": ""
  },
  {
-  "vi": "Về tới nơi cơm nhão. Hộp nào cũng để nước mắm riêng.",
+  "vi": "Hiền, nói nhanh, dặn tổng đài: “Người gọi làm đúng một việc nhỏ là cứu được cả ca.”",
   "en": ""
  },
  {
-  "vi": "Bày khay quá nhiều",
+  "vi": "Cụ ông sống một mình ở hẻm 9",
   "en": ""
  },
  {
-  "vi": "Đồ nấu không để qua đêm: tối dư bao nhiêu là bỏ bấy nhiêu.",
+  "vi": "Ngày nào cũng gọi tổng đài, cúp máy rồi gọi lại cả chục lần. Hôm nào không gọi, chị Thảo lại lo.",
   "en": ""
  },
  {
-  "vi": "🌾 Gạo, sườn ướp, trứng, đồ kho, hộp giấy nhập ở [[Kho quán cơm]]. Sườn và đồ kho để được hai ngày, rau một ngày.",
+  "vi": "Giám đốc Trung tâm điều phối",
   "en": ""
  },
  {
-  "vi": "🍱 Mỗi phần hàng trong kho bày ra được một khay (6–8 phần). Bày vừa đủ bán, hết thì bày thêm giữa ngày.",
+  "vi": "Mê biểu đồ, câu cửa miệng: “Nhấc máy dưới mười giây, KPI là danh dự!”",
   "en": ""
  },
  {
-  "vi": "👥 Nhân viên: Tí, Tâm quạt than canh bếp; Hồng, Lan rửa chén dọn bàn.",
+  "vi": "MC chương trình “Mây FM giờ cao điểm”",
   "en": ""
  },
  {
-  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, mưa dầm (nhiều hộp mang về), chợ phiên (khách cơm tấm nối đuôi), ngày rằm (khách ăn chay).",
+  "vi": "Gọi đường dây khẩn để xin “một câu cho thính giả”, nói câu nào cũng có chữ “vibe”.",
   "en": ""
  },
  {
-  "vi": "🪰 Ruồi bu tủ kính, khói bếp bay vào nhà bên, cô bán vé số xin chén cơm, phường kiểm tra an toàn thực phẩm.",
+  "vi": "Tổ trưởng tổ dân phố số 4",
   "en": ""
  },
  {
-  "vi": "Nhóm bếp than",
+  "vi": "Báo đủ thứ: karaoke, chó sủa, cống nghẹt, cây đổ. Có hôm báo đúng chuyện lớn.",
   "en": ""
  },
  {
-  "vi": "MỞ QUÁN",
+  "vi": "Cháu nội ông Ba, bảy tuổi",
   "en": ""
  },
  {
-  "vi": "Trở mặt",
+  "vi": "Mê bấm điện thoại của ông. Từng gọi tổng đài hỏi “cô ơi cô ăn cơm chưa”.",
   "en": ""
  },
  {
-  "vi": "Gắp ra khay",
+  "vi": "Địa chỉ ở đâu ạ?",
   "en": ""
  },
  {
-  "vi": "Lấy dĩa",
+  "vi": "Chuyện gì đang xảy ra?",
   "en": ""
  },
  {
-  "vi": "Lấy hộp",
+  "vi": "Mấy người, có ai bị thương không?",
   "en": ""
  },
  {
-  "vi": "Chén canh",
+  "vi": "Có lửa, khói, gas, điện, nước dâng không?",
   "en": ""
  },
  {
-  "vi": "ĐƯA CƠM",
+  "vi": "Cho xin số gọi lại",
   "en": ""
  },
  {
-  "vi": "Kho quán cơm",
+  "vi": "Nhìn quanh thấy gì: biển hiệu, trường, chùa?",
   "en": ""
  },
  {
-  "vi": "Bạn đứng bếp quán phở của bác Lâm dưới gốc cây si: giữ nồi nước lăn tăn, trong và vừa miệng, trụng bánh tơi, xếp thịt đúng lời khách, chan nước dừng muôi đúng vạch, bưng ra nóng hổi, thối đúng tiền.",
+  "vi": "Gửi tin nhắn định vị, nhờ bấm vào link",
   "en": ""
  },
  {
-  "vi": "Mở quán đầu ngày",
+  "vi": "Nhờ người đi đường đọc số nhà, tên đường",
   "en": ""
  },
  {
-  "vi": "Nồi xương ủ lửa từ đêm. [[Vặn lửa lăn tăn]], [[Hớt bọt]] cho sạch, [[Nếm nước dùng]] rồi [[Nêm nước mắm]] hoặc [[Châm nước sôi]]. [[Ngửi rổ bánh phở]], chua thì [[Bỏ bánh chua]]. Xong bấm [[MỞ QUÁN]].",
+  "vi": "Lắng nghe tiếng động phía sau",
   "en": ""
  },
  {
-  "vi": "Lửa lăn tăn giữ 97 °C: tái chín hồng, nước trong. Lửa lớn nóng nhanh nhưng bọt nổi, sôi lâu là nước đục cả ngày. Lửa ủ không đủ nóng để chín tái.",
+  "vi": "Hỏi chi tiết: tầng mấy, màu khói, ai đang ở đó",
   "en": ""
  },
  {
-  "vi": "Trụng bánh",
+  "vi": "Gọi lại số máy vừa gọi",
   "en": ""
  },
  {
-  "vi": "Lấy tô, bấm [[Nhúng rổ bánh]] ba hoặc bốn lượt. Một hai lượt bánh còn dính chùm; năm lượt trở lên là nát.",
+  "vi": "Thở chậm cùng tôi nào: hít vào… thở ra…",
   "en": ""
  },
  {
-  "vi": "Xếp thịt, hành, trứng",
+  "vi": "Hỏi tên, xưng tên mình: “Tôi ở đây với anh chị”",
   "en": ""
  },
  {
-  "vi": "Xếp thịt lên mặt bánh trước khi chan. Khách dặn tái riêng thì bấm [[Tái để riêng]]. [[Rắc hành]] theo lời dặn. Trứng trần thì [[Đập trứng]] trước khi chan.",
+  "vi": "Giao một việc nhỏ, an toàn: “Mở loa ngoài, đứng yên chỗ đó”",
   "en": ""
  },
  {
-  "vi": "Chan nước, dừng muôi",
+  "vi": "“BÌNH TĨNH ĐI! Nói nhanh lên!”",
   "en": ""
  },
  {
-  "vi": "Chọn nồi: nước trong, nước béo hay nồi nhỏ không mì chính. Bấm [[Chan nước dùng]], nước dâng trong tô; bấm [[Dừng muôi]] khi nước tới vạch xanh khách dặn.",
+  "vi": "Đội chữa cháy và cứu nạn",
   "en": ""
  },
  {
-  "vi": "Mang về",
+  "vi": "Xe cấp cứu",
   "en": ""
  },
  {
-  "vi": "Lấy hộp mang về: tái để riêng, chan túi nước tới vạch rồi [[Buộc túi nước]]. Tổ thợ của anh Tuấn đặt bốn suất một lúc.",
+  "vi": "Xuồng cứu hộ",
   "en": ""
  },
  {
-  "vi": "Nồi sắp cạn",
+  "vi": "Thợ cứu hộ thang máy",
   "en": ""
  },
  {
-  "vi": "Bấm [[Châm nồi]]: thêm nước và một mẻ xương. Nồi tụt nhiệt, nổi bọt, nhạt đi: chờ lăn tăn lại, hớt bọt, nếm lại rồi chan.",
+  "vi": "Tổ cứu hộ nhỏ (động vật, mở khóa)",
   "en": ""
  },
  {
-  "vi": "Học nghề với bác Lâm",
+  "vi": "Khẩn cấp",
   "en": ""
  },
  {
-  "vi": "Ba khách đầu bác Lâm đứng cạnh bếp: lỡ sai chỗ nào bác nhắc một lần trước khi bưng ra. Xong ba khách là bạn tự đứng bếp.",
+  "vi": "Nguy hiểm tính mạng: gửi ngay, còi đèn",
   "en": ""
  },
  {
-  "vi": "👂 Bấm [[Hỏi khách gọi gì]]: xem tô, thịt, lời dặn (ít nước, không hành, nước béo, không mì chính).",
+  "vi": "Khẩn",
   "en": ""
  },
  {
-  "vi": "🍜 Lấy tô, [[Nhúng rổ bánh]] ba bốn lượt, xếp thịt, [[Rắc hành]].",
+  "vi": "Gửi ngay đội đang rảnh",
   "en": ""
  },
  {
-  "vi": "🫗 Chọn nồi, [[Chan nước dùng]], [[Dừng muôi]] đúng vạch.",
+  "vi": "Không gấp",
   "en": ""
  },
  {
-  "vi": "🥖 Thêm quẩy, đĩa rau nếu khách gọi, rồi [[BƯNG PHỞ RA]] khi còn nóng hổi.",
+  "vi": "Xếp lượt, đội tới khi rảnh",
   "en": ""
  },
  {
-  "vi": "🍲 Nước trong, nóng, vừa miệng: lửa lăn tăn, hớt bọt, nếm trước khi bán.",
+  "vi": "Không điều xe",
   "en": ""
  },
  {
-  "vi": "🍜 Bánh tơi mềm: ba bốn lượt nhúng.",
+  "vi": "Hướng dẫn hoặc chuyển đúng nơi",
   "en": ""
  },
  {
-  "vi": "🫗 Nước đúng mức khách dặn, không tràn mép tô.",
+  "vi": "Nhắc nhở gọi giả, ghi số vào sổ",
   "en": ""
  },
  {
-  "vi": "🧅 Nhớ lời dặn: không hành, nhiều hành, nước béo, không mì chính, tái để riêng.",
+  "vi": "Nhờ gọi người lớn nghe máy, dặn không bấm số khẩn",
   "en": ""
  },
  {
-  "vi": "⏱️ Bưng ra khi phở còn nóng hổi; trời gió mùa phở nguội nhanh hơn.",
+  "vi": "Hỏi han ngắn, chỉ số đường dây hỗ trợ người cao tuổi",
   "en": ""
  },
  {
-  "vi": "Bán bánh phở chua từ hôm qua",
+  "vi": "Đọc số tổng đài taxi, dặn đừng tự chạy xe",
   "en": ""
  },
  {
-  "vi": "Lỗi an toàn thực phẩm: khách không nhận, chấm 1 sao. Sáng nào cũng ngửi bánh, chua thì bỏ.",
+  "vi": "Chuyển đường dây không khẩn của công an phường",
   "en": ""
  },
  {
-  "vi": "Chan nước chưa sôi",
+  "vi": "Mời liên hệ phòng truyền thông trung tâm",
   "en": ""
  },
  {
-  "vi": "Tái còn đỏ au, khách trả tô. Châm nồi xong phải chờ lăn tăn lại.",
+  "vi": "Chuyển điện lực, cấp nước phường",
   "en": ""
  },
  {
-  "vi": "Để lửa lớn sôi sùng sục",
+  "vi": "Hẹn tổ cứu hộ nhỏ ghé sáng mai",
   "en": ""
  },
  {
-  "vi": "Bọt nổi, nước đục ngầu, khách sành ăn chê ngay.",
+  "vi": "Chỉ cách đi khám, số phòng khám phường",
   "en": ""
  },
  {
-  "vi": "Múc nồi lớn cho khách dặn không mì chính",
+  "vi": "Giải thích đường dây này chỉ cho chuyện nguy hiểm, chỉ đúng chỗ cần gọi",
   "en": ""
  },
  {
-  "vi": "Khách nếm là biết. Khách dặn không mì chính thì múc nồi nhỏ.",
+  "vi": "Dứt khoát, lịch sự",
   "en": ""
  },
  {
-  "vi": "Chan quá vạch hoặc tràn tô",
+  "vi": "Tắt bếp, đậy kín nắp vung nếu làm được an toàn, rồi ra ngoài",
   "en": ""
  },
  {
-  "vi": "Nhiều hơn lời dặn là lỗi nhỏ; tràn mép tô thì bưng bỏng tay khách.",
+  "vi": "Ra khỏi nhà ngay, không quay lại lấy đồ",
   "en": ""
  },
  {
-  "vi": "Đập trứng sau khi chan",
+  "vi": "Lấy khăn ướt che mũi, cúi thấp người",
   "en": ""
  },
  {
-  "vi": "Lòng đỏ sống nằm trơ trên mặt tô. Trứng trần phải vào trước nước sôi.",
+  "vi": "Đóng cửa, chèn khăn ướt khe cửa, ra ban công vẫy đèn",
   "en": ""
  },
  {
-  "vi": "Quên buộc túi nước mang về",
+  "vi": "Chỉ đi thang bộ, không đi thang máy",
   "en": ""
  },
  {
-  "vi": "Nước đổ lênh láng túi xách của khách.",
+  "vi": "Khóa van gas, không bật tắt công tắc điện, mở cửa, ra ngoài",
   "en": ""
  },
  {
-  "vi": "🍜 Bánh phở, thịt bò, xương ống, quẩy, rau, trứng, hộp mang về nhập ở [[Kho quán phở]]. Bánh phở để được hai ngày.",
+  "vi": "Không di chuyển người bị nạn, giữ yên đầu cổ",
   "en": ""
  },
  {
-  "vi": "🌅 Bánh còn qua đêm thì sáng mai có thể chua: ngửi trước khi trụng.",
+  "vi": "Không tháo mũ bảo hiểm của người bị nạn",
   "en": ""
  },
  {
-  "vi": "👥 Nhân viên: Tí, Hưng canh nồi hớt bọt; Mai, Thảo dọn bàn rót trà.",
+  "vi": "Ép chặt chỗ chảy máu bằng vải sạch",
   "en": ""
  },
  {
-  "vi": "🌤️ Mỗi ngày một kiểu: gió mùa (phở nguội nhanh, nồi mất nhiệt), mưa sáng, cuối tuần, chợ sớm.",
+  "vi": "Bật đèn cảnh báo, đứng vào lề, nhờ người cảnh báo xe sau",
   "en": ""
  },
  {
-  "vi": "🔥 Bình gas hết giữa ca: thay bình, kiểm van rồi mới bật lửa.",
+  "vi": "Đặt người nằm ngửa, ép tim giữa ngực, mạnh và đều, đếm theo nhịp tổng đài",
   "en": ""
  },
  {
-  "vi": "😭 Bé bị nước dùng đổ vào tay: xả nước mát, không bôi kem đánh răng.",
+  "vi": "Mở cổng, bật đèn, nhờ người ra đầu hẻm đón xe",
   "en": ""
  },
  {
-  "vi": "🥩 Người mời mua thịt bò rẻ không giấy tờ: không lấy.",
+  "vi": "Bấm chuông trong thang, ngồi yên, không cạy cửa",
   "en": ""
  },
  {
-  "vi": "Vặn lửa lăn tăn",
+  "vi": "Ngắt cầu dao, lên chỗ cao nhất, mang đèn pin, áo phao nếu có",
   "en": ""
  },
  {
-  "vi": "Hớt bọt",
+  "vi": "Tránh xa dây điện đứt và vũng nước quanh đó",
   "en": ""
  },
  {
-  "vi": "Nếm nước dùng",
+  "vi": "Ném phao, can nhựa, sợi dây cho người dưới nước; không nhảy xuống",
   "en": ""
  },
  {
-  "vi": "Nêm nước mắm",
+  "vi": "Tránh xa chỗ xô xát, không can, không quay phim",
   "en": ""
  },
  {
-  "vi": "Châm nước sôi",
+  "vi": "Đừng trèo, đừng xuống hố; giữ trẻ con tránh xa",
   "en": ""
  },
  {
-  "vi": "Ngửi rổ bánh phở",
+  "vi": "Đứng ngoài cửa nói chuyện cho bé yên, không đập kính chỗ bé đứng",
   "en": ""
  },
  {
-  "vi": "Bỏ bánh chua",
+  "vi": "Đưa vào bóng râm, nới áo, cho nằm nghiêng nếu nôn",
   "en": ""
  },
  {
-  "vi": "Nhúng rổ bánh",
+  "vi": "Đừng tự chạy xe, nhờ người nhà tới đón",
   "en": ""
  },
  {
-  "vi": "Tái để riêng",
+  "vi": "Dội nước vào chảo dầu cho tắt",
   "en": ""
  },
  {
-  "vi": "Rắc hành",
+  "vi": "Quay vào lấy giấy tờ, tiền bạc",
   "en": ""
  },
  {
-  "vi": "Đập trứng",
+  "vi": "Chạy xuyên qua hành lang đầy khói",
   "en": ""
  },
  {
-  "vi": "Dừng muôi",
+  "vi": "Đi thang máy xuống cho nhanh",
   "en": ""
  },
  {
-  "vi": "Buộc túi nước",
+  "vi": "Bật đèn lên xem chỗ rò gas",
   "en": ""
  },
  {
-  "vi": "Châm nồi",
+  "vi": "Đỡ người bị nạn dậy, chở đi viện bằng xe máy",
   "en": ""
  },
  {
-  "vi": "BƯNG PHỞ RA",
+  "vi": "Đỡ người té ngồi dậy, dìu ra ghế",
   "en": ""
  },
  {
-  "vi": "Kho quán phở",
+  "vi": "Tháo mũ bảo hiểm cho người bị nạn dễ thở",
   "en": ""
  },
  {
-  "vi": "Tiệm ảnh photobooth",
+  "vi": "Lấy thuốc có sẵn trong nhà cho uống tạm",
   "en": ""
  },
  {
-  "vi": "Tiệm ảnh Tách Tách của chị Lam",
+  "vi": "Tự cạy cửa thang máy trèo ra",
   "en": ""
  },
  {
-  "vi": "Bạn đứng tiệm photobooth của chị Lam cạnh chợ đêm: hỏi kỹ khách muốn gì, bố trí buồng chụp, bấm máy đúng lúc cả nhóm mở mắt, cho khách chọn ảnh, trang trí, in, cắt, giao và thối đúng tiền.",
+  "vi": "Lội qua chỗ nước chảy cho nhanh",
   "en": ""
  },
  {
-  "vi": "[[Lau ống kính]], [[Chụp thử phông trống]] để máy in báo mực. Mực sắp hết thì [[Thay cuộn mực mới]]. Rồi [[MỞ TIỆM]].",
+  "vi": "Nhảy xuống kênh kéo người lên",
   "en": ""
  },
  {
-  "vi": "Bấm [[Hỏi khách muốn chụp gì]]: gói (dải 4 ô, 2 dải, khung lớn), khung chủ đề, phông, đạo cụ, đèn, sticker, ngày, màu.",
+  "vi": "Trèo lên cây, xuống hố bắt cho nhanh",
   "en": ""
  },
  {
-  "vi": "Bố trí buồng chụp",
+  "vi": "Kéo cành cây ra khỏi dây điện",
   "en": ""
  },
  {
-  "vi": "Ở thẻ ① Bố trí: chọn gói, khung, phông nền, ánh đèn và đạo cụ đúng lời khách dặn.",
+  "vi": "Lại gần quay clip làm bằng chứng",
   "en": ""
  },
  {
-  "vi": "Bấm máy đúng lúc",
+  "vi": "Đập kính cửa sổ ngay chỗ bé đứng",
   "en": ""
  },
  {
-  "vi": "[[Bắt đầu đếm 3-2-1]], đợi cả nhóm vào dáng rồi [[BẤM MÁY]] khi kim vào vùng xanh. Sớm quá thì nhòe, trễ quá thì có người chớp mắt.",
+  "vi": "Đứng giữa đường cãi tiếp cho ra lẽ",
   "en": ""
  },
  {
-  "vi": "Cho khách chọn ảnh",
+  "vi": "Ráng chạy chậm chậm về nhà",
   "en": ""
  },
  {
-  "vi": "Đủ ảnh thì [[Cho khách xem ảnh]], khách chỉ tấm nào thì chọn tấm đó. Không đủ ảnh đẹp thì [[Xóa, chụp lượt mới]].",
+  "vi": "Nước gặp dầu sôi nổ bùng, lửa phụt lên tủ bếp.",
   "en": ""
  },
  {
-  "vi": "Trang trí và in",
+  "vi": "Người gọi quay vào lấy giấy tờ, bị khói chặn lối ra.",
   "en": ""
  },
  {
-  "vi": "Dán sticker, đóng ngày, chọn màu như khách dặn, xem bản xem trước rồi [[In ảnh]]. Sửa sau khi in thì phải [[In lại]], tờ cũ bỏ đi.",
+  "vi": "Người gọi lao vào hành lang, sặc khói, ngã ở chân cầu thang.",
   "en": ""
  },
  {
-  "vi": "Cắt và giao",
+  "vi": "Thang máy mất điện giữa hai tầng, khói lùa vào khe cửa.",
   "en": ""
  },
  {
-  "vi": "[[Cắt, bỏ bao kiếng]] (khung lớn thì [[Lồng vào khung gỗ]]), rồi [[ĐƯA ẢNH]] và [[ĐƯA TIỀN THỐI]].",
+  "vi": "Công tắc đánh tia lửa ngay chỗ đầy gas.",
   "en": ""
  },
  {
-  "vi": "👂 [[Hỏi khách muốn chụp gì]], đọc kỹ phiếu đơn.",
+  "vi": "Người bị nạn bị đỡ dậy, đầu ngật sang một bên.",
   "en": ""
  },
  {
-  "vi": "🎀 Chọn gói, khung chủ đề, phông, đèn, đạo cụ.",
+  "vi": "Bà cụ được dìu dậy, kêu đau thét lên ở hông.",
   "en": ""
  },
  {
-  "vi": "📸 [[Bắt đầu đếm 3-2-1]], [[BẤM MÁY]] lúc cả nhóm đứng yên, mở mắt.",
+  "vi": "Mũ bị giật ra, cổ người bị nạn xoay lệch.",
   "en": ""
  },
  {
-  "vi": "🖥️ [[Cho khách xem ảnh]], chọn đúng những tấm khách chỉ.",
+  "vi": "Người nhà cho uống viên thuốc không rõ là gì; bác sĩ tới không biết đã dùng gì.",
   "en": ""
  },
  {
-  "vi": "✨ Sticker, ngày, màu đúng lời dặn rồi [[In ảnh]].",
+  "vi": "Cửa thang bật ra giữa hai tầng, một người suýt trượt xuống hố thang.",
   "en": ""
  },
  {
-  "vi": "✂️ [[Cắt, bỏ bao kiếng]], [[ĐƯA ẢNH]], đặt tiền thối vào khay rồi [[ĐƯA TIỀN THỐI]].",
+  "vi": "Dòng nước cuốn mất dép, người lội suýt bị kéo đi.",
   "en": ""
  },
  {
-  "vi": "🖼️ Đúng gói, đúng khung, đúng phông, đúng đạo cụ, đúng đèn.",
+  "vi": "Người đi đường nhảy xuống, giờ có hai người dưới nước.",
   "en": ""
  },
  {
-  "vi": "📸 Ảnh nào cũng đứng yên, mở mắt, ống kính sạch.",
+  "vi": "Người gọi trèo lên, cành gãy, ngã trầy cả lưng.",
   "en": ""
  },
  {
-  "vi": "🖥️ Khách được tự chọn ảnh mình thích.",
+  "vi": "Người gọi chạm cành cây ướt, bị điện giật bật ra.",
   "en": ""
  },
  {
-  "vi": "✨ Sticker, ngày tháng, màu ảnh đúng lời dặn.",
+  "vi": "Người gọi lại gần quay, bị ném vỏ chai trúng vai.",
   "en": ""
  },
  {
-  "vi": "⏱️ Gọn: không bắt khách chờ lâu.",
+  "vi": "Kính vỡ văng vào chỗ bé đứng.",
   "en": ""
  },
  {
-  "vi": "Bấm máy trước khi cả nhóm vào dáng",
+  "vi": "Một chiếc xe tải phanh gấp ngay sát hai người.",
   "en": ""
  },
  {
-  "vi": "Ảnh nhòe. Khách thấy ngay khi chọn ảnh.",
+  "vi": "Anh ta lên xe, loạng choạng ngay đầu hẻm.",
   "en": ""
  },
  {
-  "vi": "Bấm trễ, giữ dáng quá lâu",
+  "vi": "“Alo! Alo! Chảo dầu cháy bùng lên rồi! Cứu với!”",
   "en": ""
  },
  {
-  "vi": "Có người chớp mắt. Khách khó tính soi từng đôi mắt, chấm sao thấp.",
+  "vi": "“Số 7 hẻm 12 đường Lý Mây, nhà mặt đất, cửa sắt xanh!”",
   "en": ""
  },
  {
-  "vi": "In mà không cho khách chọn ảnh",
+  "vi": "“Chiên cá, dầu bốc lửa cao gần tới tủ bếp!”",
   "en": ""
  },
  {
-  "vi": "Khách bực: tấm mình thích không có trong dải.",
+  "vi": "“Có tôi với đứa con nhỏ. Chưa ai bị phỏng.”",
   "en": ""
  },
  {
-  "vi": "Sai khung, sai phông, thiếu đạo cụ",
+  "vi": "“Bình gas nằm ngay dưới bếp!”",
   "en": ""
  },
  {
-  "vi": "Khách chê không giống lời dặn, có khi đòi bớt tiền.",
+  "vi": "“Số này nè, máy tôi luôn.”",
   "en": ""
  },
  {
-  "vi": "Ống kính bẩn, mưa hơi nước không lau",
+  "vi": "Khói đầy hành lang chung cư",
   "en": ""
  },
  {
-  "vi": "Ảnh nào cũng mờ.",
+  "vi": "“Hành lang tầng tôi khói đen kịt! Không ra được!”",
   "en": ""
  },
  {
-  "vi": "Sửa sau khi đã in",
+  "vi": "“Chung cư Mây Xanh, block B, phòng 604, tầng 6.”",
   "en": ""
  },
  {
-  "vi": "Phải in lại, tờ cũ bỏ đi, tiệm chịu tiền giấy và mực.",
+  "vi": "“Khói từ dưới tầng 4 bốc lên, hành lang không thấy gì hết.”",
   "en": ""
  },
  {
-  "vi": "Hết giấy mà vẫn nhận đơn",
+  "vi": "“Tôi, vợ tôi với mẹ tôi 80 tuổi. Mẹ tôi đi chậm.”",
   "en": ""
  },
  {
-  "vi": "Nói thật: [[Nói thật: tiệm hết giấy, khung]], hẹn khách hôm sau.",
+  "vi": "“Cửa phòng còn mát, khói đang lùa vô khe cửa.”",
   "en": ""
  },
  {
-  "vi": "📦 Giấy in dải, giấy in đôi, giấy khung lớn, khung gỗ, bao kiếng, cuộn mực nhập ở [[Kho tiệm ảnh]].",
+  "vi": "“Số này, tôi giữ máy.”",
   "en": ""
  },
  {
-  "vi": "🖨️ Một cuộn mực in được 24 tờ: chụp thử buổi sáng để biết còn bao nhiêu.",
+  "vi": "Mùi gas nồng trong bếp",
   "en": ""
  },
  {
-  "vi": "👀 Bé nhỏ giữ dáng rất ngắn, ông bà cười chậm: canh nhịp từng nhóm.",
+  "vi": "“Cô ơi, nhà tôi mùi gas nồng lắm, nhức đầu luôn…”",
   "en": ""
  },
  {
-  "vi": "🌤️ Mỗi ngày một kiểu: cuối tuần đông, mưa (ống kính đọng hơi nước), lễ hội, mùa tan trường mặc đồng phục.",
+  "vi": "“Số 21 đường Cây Me, nhà ống hai tầng, cổng nâu.”",
   "en": ""
  },
  {
-  "vi": "🎓 Học nghề ba khách đầu: chị Lam đứng cạnh, chặn một lỗi trước khi in.",
+  "vi": "“Đi chợ về mở cửa là nghe mùi gas, bình hình như xì.”",
   "en": ""
  },
  {
-  "vi": "🖨️ Kẹt giấy trong máy in, điện thoại bỏ quên trong buồng, người lạ xin ảnh của khách, bé nghịch đèn vòng.",
+  "vi": "“Có tôi với ông xã, chưa ai ngất.”",
   "en": ""
  },
  {
-  "vi": "Lau ống kính",
+  "vi": "“Bếp gas tắt rồi, nhưng mùi nồng lắm. Tủ lạnh đang chạy.”",
   "en": ""
  },
  {
-  "vi": "Chụp thử phông trống",
+  "vi": "“Số này nè.”",
   "en": ""
  },
  {
-  "vi": "Thay cuộn mực mới",
+  "vi": "Tai nạn xe máy, người nằm bất động",
   "en": ""
  },
  {
-  "vi": "Hỏi khách muốn chụp gì",
+  "vi": "“Có người té xe nằm giữa đường, không nhúc nhích!”",
   "en": ""
  },
  {
-  "vi": "Bắt đầu đếm 3-2-1",
+  "vi": "“Ở… ở đoạn dốc cầu Mây đó, tôi không biết số nhà.”",
   "en": ""
  },
  {
-  "vi": "BẤM MÁY",
+  "vi": "“Xe máy tông vô dải phân cách, anh ấy văng ra nằm im.”",
   "en": ""
  },
  {
-  "vi": "Cho khách xem ảnh",
+  "vi": "“Một người. Còn thở, chảy máu ở chân nhiều lắm.”",
   "en": ""
  },
  {
-  "vi": "Xóa, chụp lượt mới",
+  "vi": "“Xe cộ chạy sát lắm, trời tối.”",
   "en": ""
  },
  {
-  "vi": "In ảnh",
+  "vi": "“Số tôi, tôi là người đi đường.”",
   "en": ""
  },
  {
-  "vi": "In lại",
+  "vi": "“Bên trái có cây xăng Mây Xanh, đối diện tiệm sửa xe Tám Lùn.”",
   "en": ""
  },
  {
-  "vi": "Cắt, bỏ bao kiếng",
+  "vi": "Va quẹt nhẹ, hai bên cãi nhau",
   "en": ""
  },
  {
-  "vi": "Lồng vào khung gỗ",
+  "vi": "“Xe tôi bị quẹt nè, thằng kia còn chửi tôi! Cho công an tới!”",
   "en": ""
  },
  {
-  "vi": "ĐƯA ẢNH",
+  "vi": "“Ngã tư Lý Mây với Cây Me, ngay đèn đỏ.”",
   "en": ""
  },
  {
-  "vi": "Nói thật: tiệm hết giấy, khung",
+  "vi": "“Ô tô quẹt xe máy tôi, trầy cái yếm. Hai bên cãi nhau.”",
   "en": ""
  },
  {
-  "vi": "Kho tiệm ảnh",
+  "vi": "“Không ai bị gì, tôi trầy chút xíu ở tay.”",
   "en": ""
  },
  {
-  "vi": "Tổ giúp việc Nhà Thơm của cô Mai",
+  "vi": "“Hai xe đứng giữa ngã tư, kẹt xe rồi.”",
   "en": ""
  },
  {
-  "vi": "Bạn đẩy xe đồ nghề tới từng nhà khách: nghe khách dặn, dọn từng phòng bằng đúng khăn, đúng chai, từ trên cao xuống, khô trước ướt sau, giữ đồ của khách, rồi mời khách đi một vòng kiểm nhà.",
+  "vi": "“Số tôi luôn.”",
   "en": ""
  },
  {
-  "vi": "Soạn xe đầu ngày",
+  "vi": "Kẹt thang máy, bà bầu chóng mặt",
   "en": ""
  },
  {
-  "vi": "[[Giặt khăn]] hôm qua, [[Châm đầy]] chai nào sắp cạn (một chai lau được 12 lượt), rồi [[LÊN ĐƯỜNG]].",
+  "vi": "“Thang máy kẹt giữa hai tầng hai mươi phút rồi! Có chị bầu sắp xỉu!”",
   "en": ""
  },
  {
-  "vi": "Tới nhà, bấm [[Bấm chuông, nghe khách dặn]]: dọn phòng nào, chỗ nào để nguyên, nhà có mèo hay có bé.",
+  "vi": "“Tòa văn phòng Mây Tower, số 5 đại lộ Mây, thang số 2.”",
   "en": ""
  },
  {
-  "vi": "Dọn từng phòng",
+  "vi": "“Thang dừng giữa tầng 7 với 8, đèn chớp chớp.”",
   "en": ""
  },
  {
-  "vi": "Chọn phòng, cầm đúng dụng cụ và đúng chai trên xe, chạm vào từng chỗ để lau. Mỗi lần chạm là một lượt.",
+  "vi": "“Năm người. Một chị bầu tháng thứ tám, mặt tái, kêu chóng mặt.”",
   "en": ""
  },
  {
-  "vi": "Phủi quạt trần, nóc tủ trước; rồi bàn kệ; rồi quét, hút sàn; lau ướt sau cùng.",
+  "vi": "“Nóng lắm, quạt trong thang tắt rồi.”",
   "en": ""
  },
  {
-  "vi": "Giữ đồ của khách",
+  "vi": "“Số này nè, sóng yếu lắm.”",
   "en": ""
  },
  {
-  "vi": "Đồ dễ vỡ nhấc ra trước khi lau rồi đặt lại; nhẫn, đồng hồ cất vào khay; mèo bế sang phòng khác.",
+  "vi": "Kẹt thang máy, khách bực vì trễ họp",
   "en": ""
  },
  {
-  "vi": "Kiểm nhà, nhận tiền công",
+  "vi": "“Thang máy kẹt! Tôi là giám đốc, mười phút nữa tôi họp với đối tác. Cho người tới NGAY!”",
   "en": ""
  },
  {
-  "vi": "Xong hết thì [[MỜI KHÁCH KIỂM NHÀ]]. Khách đi một vòng, chuyển khoản tiền công; khách ưng thì thành khách quen.",
+  "vi": "“Tòa Mây Tower, thang số 1, tầng 3.”",
   "en": ""
  },
  {
-  "vi": "🧺 [[Giặt khăn]], [[Châm đầy]] chai sắp cạn, [[LÊN ĐƯỜNG]].",
+  "vi": "“Thang đứng im, cửa không mở.”",
   "en": ""
  },
  {
-  "vi": "🔔 [[Bấm chuông, nghe khách dặn]], đọc kỹ lời dặn.",
+  "vi": "“Có tôi với cô thư ký. Không ai sao cả, chỉ nóng.”",
   "en": ""
  },
  {
-  "vi": "🚪 Chọn phòng, nhấc đồ dễ vỡ ra, cất đồ quý vào khay.",
+  "vi": "“Không có gì, đèn vẫn sáng.”",
   "en": ""
  },
  {
-  "vi": "🧽 Cầm đúng dụng cụ, đúng chai; lau từ trên cao xuống, khô trước ướt sau.",
+  "vi": "“Số tôi, nhớ gọi lại báo giờ tới.”",
   "en": ""
  },
  {
-  "vi": "🏺 Đặt đồ dễ vỡ lại chỗ cũ rồi [[MỜI KHÁCH KIỂM NHÀ]].",
+  "vi": "“Tôi là khách VIP của tòa nhà này đó!”",
   "en": ""
  },
  {
-  "vi": "✨ Phòng nào, chỗ nào cũng sạch.",
+  "vi": "“Gửi xe cứu hỏa tới phá cửa luôn đi, tôi trả tiền!”",
   "en": ""
  },
  {
-  "vi": "🟦 Khăn xanh cho kính, khăn vàng cho bàn bếp, khăn đỏ chỉ cho bồn cầu.",
+  "vi": "Ông ngã gục, không thở bình thường",
   "en": ""
  },
  {
-  "vi": "🏺 Đồ dễ vỡ nguyên vẹn, đúng chỗ cũ; đồ quý cất vào khay.",
+  "vi": "“Ba tôi ngã xuống rồi! Gọi không trả lời! Cứu ba tôi với!”",
   "en": ""
  },
  {
-  "vi": "📝 Nhớ lời dặn: chỗ để nguyên, nhà có mèo, có bé thì sàn lau nước sạch.",
+  "vi": "“Số 3 hẻm 40 Cây Me, căn có giàn bông giấy.”",
   "en": ""
  },
  {
-  "vi": "⏱️ Làm có thứ tự, không phải lau đi lau lại.",
+  "vi": "“Đang ngồi xem ti vi thì gục xuống, môi tím, gọi không trả lời.”",
   "en": ""
  },
  {
-  "vi": "Lau sàn trước rồi mới phủi quạt trần",
+  "vi": "“Ba tôi 68 tuổi. Có tôi với em tôi.”",
   "en": ""
  },
  {
-  "vi": "Bụi rơi xuống sàn vừa lau, phải lau lại, khách chờ lâu.",
+  "vi": "“Không có gì hết, ba tôi thở khò khè rồi ngưng.”",
   "en": ""
  },
  {
-  "vi": "Lau ướt khi sàn còn bụi tóc",
+  "vi": "“Số này, đừng cúp máy!”",
   "en": ""
  },
  {
-  "vi": "Bụi bết thành vệt, lượt lau đó coi như bỏ.",
+  "vi": "Bà cụ té trong nhà tắm",
   "en": ""
  },
  {
-  "vi": "Dùng khăn đỏ lau chỗ khác",
+  "vi": "“Mẹ tôi té trong nhà tắm, kêu đau quá, không đứng dậy được.”",
   "en": ""
  },
  {
-  "vi": "Mang bẩn bồn cầu đi khắp nhà, khách chấm sao thấp.",
+  "vi": "“Số 15 đường Bàng, nhà có cây bàng trước cửa.”",
   "en": ""
  },
  {
-  "vi": "Xịt tẩy dầu mỡ lên mặt gỗ",
+  "vi": "“Bà trượt chân té ngồi, đau hông bên trái, chân bị xoay lệch.”",
   "en": ""
  },
  {
-  "vi": "Gỗ bạc màu một mảng, khách bực.",
+  "vi": "“Mẹ tôi 79 tuổi, vẫn tỉnh, nói chuyện được.”",
   "en": ""
  },
  {
-  "vi": "Lau mà không nhấc bình gốm ra",
+  "vi": "“Sàn còn ướt, nước nóng đang mở.”",
   "en": ""
  },
  {
-  "vi": "Bình chao đảo hoặc vỡ, phải đền tiền.",
+  "vi": "“Số tôi đây.”",
   "en": ""
  },
  {
-  "vi": "Động vào chỗ khách dặn để nguyên",
+  "vi": "Nước dâng, cả nhà trên gác",
   "en": ""
  },
  {
-  "vi": "Khách mất lòng tin, có khi đòi bớt tiền.",
+  "vi": "“Nước lên nhanh quá, cả nhà chạy lên gác rồi! Ông nội tôi không đi được!”",
   "en": ""
  },
  {
-  "vi": "Mời khách kiểm khi còn chỗ bẩn",
+  "vi": "“Xóm Bờ Kênh… cái hẻm sát kênh Mây.”",
   "en": ""
  },
  {
-  "vi": "Khách chỉ từng chỗ, trả ít đi, không thành khách quen.",
+  "vi": "“Mưa từ chiều, nước kênh tràn vô nhà, giờ ngang ngực rồi.”",
   "en": ""
  },
  {
-  "vi": "📦 Chai lau kính, tẩy rửa dịu, tẩy dầu mỡ, tẩy bồn cầu, can nước lau sàn nhập ở [[Kho tổ giúp việc]].",
+  "vi": "“Năm người, ông nội 85 tuổi phải cõng.”",
   "en": ""
  },
  {
-  "vi": "🧺 Khăn dùng xong tối nào cũng bẩn: sáng nào cũng giặt.",
+  "vi": "“Ổ điện dưới nhà ngập rồi, nước chảy xiết ngoài hẻm.”",
   "en": ""
  },
  {
-  "vi": "🌧️ Mưa dầm sàn lấm bùn, trời nồm gương đọng nước: châm đầy chai trước khi đi.",
+  "vi": "“Số này, pin còn 15%.”",
   "en": ""
  },
  {
-  "vi": "🌤️ Mỗi ngày một kiểu: cuối tuần, mưa dầm, trời nồm, hanh khô nhiều bụi, mùa tổng vệ sinh.",
+  "vi": "“Nhà thứ ba từ đầu cầu khỉ, mái tôn xanh, có cây dừa nghiêng.”",
   "en": ""
  },
  {
-  "vi": "🎓 Hai nhà đầu tiên cô Mai đi cùng, chặn mỗi kiểu lỗi một lần trước khi xảy ra.",
+  "vi": "Cây đổ đè dây điện tóe lửa",
   "en": ""
  },
  {
-  "vi": "💵 Tiền rơi dưới gầm sofa, hàng xóm nhờ dọn riêng, thang máy hỏng, khách gọi video kiểm tra.",
+  "vi": "“Cô ơi cây me đầu hẻm đổ rồi, dây điện tóe lửa xẹt xẹt!”",
   "en": ""
  },
  {
-  "vi": "⭐ Khách ưng nhà sạch thì lần sau thêm tiền công, kể bạn nghe chuyện nhà họ.",
+  "vi": "“Đầu hẻm 9 đường Cây Me, chỗ quán nước.”",
   "en": ""
  },
  {
-  "vi": "Giặt khăn",
+  "vi": "“Gió quật đổ cây me, dây điện đứt nằm trên vũng nước.”",
   "en": ""
  },
  {
-  "vi": "Châm đầy",
+  "vi": "“Chưa ai bị gì, mà con nít hay chạy ra coi.”",
   "en": ""
  },
  {
-  "vi": "Bấm chuông, nghe khách dặn",
+  "vi": "“Dây còn xẹt lửa, vũng nước lan ra giữa hẻm.”",
   "en": ""
  },
  {
-  "vi": "MỜI KHÁCH KIỂM NHÀ",
+  "vi": "“Số cô Hạnh tổ 4 nè.”",
   "en": ""
  },
  {
-  "vi": "Kho tổ giúp việc",
+  "vi": "Bé hai tuổi bị khóa trong nhà, bếp đang bật",
   "en": ""
  },
  {
-  "vi": "Cô Hạnh giới thiệu bạn tới nấu cơm cho các nhà quen trong phường. Mỗi ngày một nhà: nghe dặn, lên thực đơn, đi chợ vừa túi tiền, nấu cho kịp bữa rồi ghi sổ chợ rõ ràng.",
+  "vi": "“Con tôi hai tuổi ở trong nhà, cửa sập khóa rồi! Bếp đang nấu cháo!”",
   "en": ""
  },
  {
-  "vi": "Nghe chủ nhà dặn",
+  "vi": "“Số 2 hẻm 18 đường Bàng, tầng trệt.”",
   "en": ""
  },
  {
-  "vi": "Bấm [[Nghe chủ nhà dặn]]: mấy người ăn, tiền chợ bao nhiêu, nhà có bé nhỏ, người già hay người ăn kiêng, nhà thích ăn gì.",
+  "vi": "“Tôi ra lấy đồ, gió đóng sầm cửa, chìa trong nhà. Bé đang khóc sát cửa.”",
   "en": ""
  },
  {
-  "vi": "Lên thực đơn",
+  "vi": "“Bé hai tuổi, ở trong một mình.”",
   "en": ""
  },
  {
-  "vi": "Chọn một canh, một món mặn, một món xào, một rau. Xem nhãn món (cay, mặn, chiên, dai…) cho hợp người trong nhà, dự tính không quá tiền chợ, rồi [[CHỐT THỰC ĐƠN]].",
+  "vi": "“Bếp gas đang nấu cháo, nhỏ lửa.”",
   "en": ""
  },
  {
-  "vi": "[[Xem]] từng món: cá mắt đục, thịt nhớt tay, rau úa là không tươi, bấm [[Đổi]]. Mua đủ phần (mỗi phần đủ hai người), [[Xin bớt]] nếu muốn, sạp nào cũng [[Xin hóa đơn]], rồi [[VỀ NHÀ NẤU]].",
+  "vi": "“Số này, tôi đứng ngay cửa.”",
   "en": ""
  },
  {
-  "vi": "Nấu từng món",
+  "vi": "Cún rơi xuống hố ga",
   "en": ""
  },
  {
-  "vi": "Nồi cơm đổ nước đúng vạch, bày chén đũa, [[Nếm nước mắm]]. Mỗi món [[Rửa sạch]], cắt, nêm, chọn lửa, rồi [[Tắt bếp]] khi kim vào vùng xanh.",
+  "vi": "“Có con cún rơi xuống hố ga, kêu ăng ẳng cả tiếng rồi.”",
   "en": ""
  },
  {
-  "vi": "Dọn cơm",
+  "vi": "“Trước cổng trường Mầm Nắng, đường Bàng.”",
   "en": ""
  },
  {
-  "vi": "Hai bếp thôi: món lâu chín bắc trước, món nhanh để sau. Món nguội thì [[Hâm nóng]]. Đủ món, cơm chín thì [[DỌN CƠM]].",
+  "vi": "“Nắp hố ga bị lệch, cún chui xuống không lên được.”",
   "en": ""
  },
  {
-  "vi": "Ghi sổ chợ",
+  "vi": "“Không ai bị gì. Mấy đứa nhỏ đang bu lại coi.”",
   "en": ""
  },
  {
-  "vi": "Sạp có hóa đơn thì [[Kẹp hóa đơn]], không có thì [[Ghi tay]]. Rồi [[GỬI TIỀN THỪA]] cho chủ nhà.",
+  "vi": "“Hố sâu, dưới có nước.”",
   "en": ""
  },
  {
-  "vi": "Nấu thêm một món",
+  "vi": "“Số cô Hạnh nè.”",
   "en": ""
  },
  {
-  "vi": "Từ chiều, chủ nhà nhờ nấu thêm cháo, chè, trứng hấp… từ đồ có sẵn. Nấu xong bấm [[MANG RA]].",
+  "vi": "Học sinh ngất ở sân trường",
   "en": ""
  },
  {
-  "vi": "👂 [[Nghe chủ nhà dặn]]: mấy người, tiền chợ, ai kiêng gì.",
+  "vi": "“Có em học sinh ngất ngoài sân lúc chào cờ!”",
   "en": ""
  },
  {
-  "vi": "📝 Một canh, một mặn, một xào, một rau hợp cả nhà, trong tiền chợ.",
+  "vi": "“Trường tiểu học Mây, số 10 đường Bàng, sân trước.”",
   "en": ""
  },
  {
-  "vi": "🛒 [[Xem]] kỹ đồ tươi, mua đủ phần, [[Xin hóa đơn]] từng sạp.",
+  "vi": "“Đứng nắng lâu, em ngã xuống. Giờ mở mắt rồi mà lơ mơ.”",
   "en": ""
  },
  {
-  "vi": "🍚 Bắc nồi cơm, bày chén đũa, [[Nếm nước mắm]].",
+  "vi": "“Một em lớp năm.”",
   "en": ""
  },
  {
-  "vi": "🔥 Rửa, cắt, nêm, chọn lửa; món lâu chín bắc trước; [[Tắt bếp]] đúng lúc.",
+  "vi": "“Nắng gắt, sân bê tông nóng.”",
   "en": ""
  },
  {
-  "vi": "📒 [[DỌN CƠM]], ghi sổ chợ, [[GỬI TIỀN THỪA]].",
+  "vi": "“Số cô giáo chủ nhiệm.”",
   "en": ""
  },
  {
-  "vi": "🥗 Thực đơn hợp cả nhà: bé không ăn cay, ông ăn mềm nhạt, người ăn kiêng không chiên.",
+  "vi": "Đánh nhau trước quán nhậu, có dao",
   "en": ""
  },
  {
-  "vi": "🐟 Đồ tươi, mua đủ phần cho mọi người.",
+  "vi": "“Hai nhóm đánh nhau trước quán nhậu, có thằng cầm dao!”",
   "en": ""
  },
  {
-  "vi": "🍲 Món nào cũng chín tới, nêm vừa khẩu vị nhà.",
+  "vi": "“Quán nhậu Ba Khía, số 30 đường Lý Mây.”",
   "en": ""
  },
  {
-  "vi": "♨️ Món nào lên mâm cũng nóng.",
+  "vi": "“Cãi nhau tiền bia, giờ xông vô đánh, có dao.”",
   "en": ""
  },
  {
-  "vi": "📒 Sổ chợ có hóa đơn, tiền thừa gửi lại đủ.",
+  "vi": "“Chục người. Một anh chảy máu tay.”",
   "en": ""
  },
  {
-  "vi": "Món cay cho bé, món mặn, dai cho ông, món chiên cho người ăn kiêng",
+  "vi": "“Có dao, chai bia bể.”",
   "en": ""
  },
  {
-  "vi": "Chủ nhà phật ý, có khi bớt tiền công.",
+  "vi": "“Số tôi, tôi đứng bên kia đường.”",
   "en": ""
  },
  {
-  "vi": "Mua cá, thịt không tươi",
+  "vi": "Người rơi xuống kênh",
   "en": ""
  },
  {
-  "vi": "Ngửi là biết. Cả nhà lo ăn vào đau bụng.",
+  "vi": "“Có người rơi xuống kênh! Đang chới với!”",
   "en": ""
  },
  {
-  "vi": "Tắt bếp sớm, thịt cá còn sống",
+  "vi": "“Cầu khỉ kênh Mây, phía chợ.”",
   "en": ""
  },
  {
-  "vi": "Lỗi nặng: đồ ăn chưa chín, chủ nhà trả nửa công.",
+  "vi": "“Chị đó đạp xe trượt xuống kênh, đang chới với.”",
   "en": ""
  },
  {
-  "vi": "Bắc món nhanh trước, món lâu sau",
+  "vi": "“Một người, không biết bơi.”",
   "en": ""
  }
 ]

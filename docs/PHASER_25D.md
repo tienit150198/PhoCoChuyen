@@ -92,30 +92,34 @@ The whole 2.5D client as it last stood is the tree of `b307563` (origin/main on 
    * `tests/isometric-hud-layout.cjs` and `tests/isometric-renderer-browser.cjs` are `playwright-cli run-code`
      snippets, run by hand against a page with the 2.5D client on.
 
-## Wired back behind a switch (branch `ui25d`)
+## Wired back, 2.5D only (branch `ui25d`, release 1.9.0)
 
-The 2.5D client is wired again, lazily and behind a per-device switch. The classic UI is unchanged for a device that
-has it off.
+Since 1.9.0 the 2.5D island is the game's only world (owner, 06/10). The classic UI is archived in branch
+`classic-ui` (7c9c358).
 
-* **Switch.** `public/js/app.js` `UI25D`: `?ui=classic|25d` (also stored), else `localStorage mnl.ui25d` (`'1'`/`'0'`,
-  set in Cài đặt → Giao diện → "Giao diện 2.5D" / "Giao diện cổ điển", the page reloads), else the server default
-  `<meta name="mnl-ui25d">` from `UI25D_DEFAULT` (`game/webassets.py`, default `1`). A browser without canvas/
-  ResizeObserver, or a tab whose Phaser bundle failed to load (`sessionStorage mnl.ui25dFail`), gets the classic UI.
-* **Loading.** Off: nothing 2.5D is imported (app.js's static graph is the classic one; `iso-boot.js` is a dynamic
-  import). On: `public/js/iso-boot.js` (HUD shell, joystick, town presence, portraits, `isometric.css`,
-  `cozy-reference.css`) starts with the state fetch and is awaited at most 2.5 s for the first frame;
-  `isometric/phaser-world.js` is imported after the first frame. Until then `world` is a stand-in (`isoWorld()` in
-  app.js) that keeps `update`/`paused`/`fx`/mode and forwards later calls, so `v4/sounds.js`'s `world.say` wrapper
-  keeps working after the swap (`adopt`).
-* **Hooks.** As in the table above, adapted: `career:`/`outing:` taps, `leisurePlace`, `home`→`isoTown`, the `iso*`
-  actions, `world.setMode('work')` in `selectCareer`, the town-first boot (a brand-new player still picks a look and
-  a name first), the `#sheet` cancel in the town. `v4/look.js` markers only after `cozyPortraits(true)`;
-  `v4/journey.js` opens the home sheet as the list in 2.5D (`homeListFirst`) unless the device chose the map.
-  Server: `content.py` `playable`, the five `journey.py` leisure lines, `LIVE_TOWN` + `TownFeature` (off by default).
-* **New careers.** `library`→school, `nurse`→pharmacy, `oil`→garage, `railway`→airport art in `building-art.ts` and
-  the same literal in the built `phaser-world.js` (patched in place: no rebuild needed for a mapping change); entries
-  for `lighthouse`, `rescue`, `lifeguard`, `police` are ready for when they become playable.
-* **Not ported** (they would change the classic UI too): the 2.5D-era chat sheet restyle (`v4/chat.js`, `chat.css`),
-  the illustrated icons in `icons.js` and the career icon renames, the isometric delivery ride (`delivery_drive.js`).
-  `tests/illustrated-icons.mjs` and `tests/delivery_isometric.mjs` skip with that reason. `live/hub.py` keeps the
-  standard `broadcast(..., text=True)` (websockets 17.1 supports it), so `test_text_broadcast…` stays skipped.
+* **Loading.** `public/js/app.js` imports `iso-boot.js` statically (HUD shell, joystick, town presence, portraits,
+  🧭 `iso-guide.js`); `index.html` preloads `isometric.css` and `cozy-reference.css` like the other stylesheets.
+  `boot.js` starts fetching `isometric/phaser-world.js` at low priority (modulepreload) while the first frame loads;
+  `iso-boot.js start()` imports it right after the first frame. Until then `world` is a stand-in (`isoWorld()` in
+  app.js) that keeps `update`/`paused`/`fx`/mode and forwards later calls at call time, so `v4/sounds.js`'s
+  `world.say` wrapper keeps working (`adopt`). A failed load retries 3 times, then shows "Thử lại".
+* **Not loaded any more:** `boba-world.js`, `world.js` and the per-career canvas scenes (`scenes/<kind>.js`;
+  `careerAssets` and `career_warm` skip them). The files stay on disk for `scripts/check_nav.mjs`,
+  `scripts/browser_*.py` and the scene tests; walk/fair/wedding/quay scenes that import `scenes/kit.js` are untouched.
+  The old 2D Khu phố map (`v4/town-walk.js`) has no entry (`townOK()` returns false, no "Bản đồ phố" item).
+* **Hooks.** `career:`/`outing:`/`place:` taps, `leisurePlace`, `home`→`isoTown`, the `iso*` actions (incl.
+  `isoGuide`, `isoGo`), `world.setMode('work')` in `selectCareer`, island-first boot (a brand-new player meets the
+  intro, then lands on the island: `v4/journey.js onIsoLand`), the `#sheet` cancel on the island. `v4/look.js`
+  portrait markers after `cozyPortraits(true)`. Server: `content.py` `playable`, the five `journey.py` leisure lines,
+  `LIVE_TOWN` + `TownFeature` (off by default).
+* **🧭 Chỉ đường** (`iso-guide.js`): places that are sheets get signposts on road crossings (hotspots `place:<id>`);
+  the sheet lists places, Thư giãn and every workplace with a search box; a pick draws the route and walks
+  (`world.go`); a tap, the joystick or a key stops it; arrival opens the place. The island remembers the spot on this
+  device (`localStorage mnl.isoSpot`); back from work at that workplace's door.
+* **Careers.** `building-art.ts` (and the same literal in the built bundle, patched in place): `library`→school,
+  `nurse`→pharmacy, `oil`→garage, `railway`→airport, `lighthouse`→airport, `rescue`/`police`→office,
+  `lifeguard`→market. `model.ts townOrder` (also patched into the bundle as `__townOrder`): police and rescue next
+  to nurse, lifeguard on the block beside the pool, lighthouse last (southern edge). The order changes nothing in
+  `live/town.py` (its geometry depends on the count only). Own sprites are a later art task.
+* **Not ported:** the 2.5D-era chat restyle, the illustrated icons in `icons.js`, the isometric delivery ride
+  (`delivery_drive.js`); their tests skip with that reason. `live/hub.py` keeps `broadcast(..., text=True)`.

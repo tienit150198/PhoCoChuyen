@@ -1657,6 +1657,118 @@ ARCS = {
                 ('khang', 'Khoa Nội có người giữ sổ giao ca kỹ như chị rồi, anh yên tâm.'),
                 ('me', 'Em sẽ giữ sổ như chị: thật, đủ, ca sau đọc là hiểu.')]),
         ]),
+    # ------------------------------------------------------------ 🗼 Đèn biển Hòn Gió (chương 4)
+    'lighthouse': dict(
+        title='Cái giẻ da của chú Bảy', emoji='🗼',
+        keepsake=dict(emoji='🧽', name='Miếng giẻ da lau kính của chú Bảy', desc='Mềm như lụa, đã lau kính đèn Hòn Gió ba mươi năm. Chú Bảy bảo kính sạch thì đèn mới xa.'),
+        cast={'bay': _p('Chú Bảy Đèn', '💡', 'Trạm trưởng đèn biển Hòn Gió', 'lighthouse_npc_01'),
+              'yen': _p('Chị Hải Yến', '📻', 'Trực ban Đài Duyên hải Vịnh Ngọc', 'lighthouse_npc_02'),
+              'sau': _p('Ông Sáu Ghe', '🎣', 'Chủ tàu cá bến Cửa Lở', 'lighthouse_npc_04'),
+              'tham': _p('Cô Thắm', '🚤', 'Hướng dẫn viên tàu Biển Ngọc', 'lighthouse_npc_08')},
+        beats=[
+            _b('Ngọn tháp trắng', '🗼', 'Chú Bảy dắt bạn leo một trăm lẻ tám bậc cầu thang xoắn lên phòng đèn.', [
+                ('bay', 'Đèn này mà tắt một đêm là có người không về nhà được. Nhớ vậy là đủ.'),
+                ('bay', 'Thắp đúng giờ, đếm chớp cho đúng, lau kính cho sạch. Ba việc đó, ngày nào cũng vậy.'),
+                ('me', 'Dạ. Ba việc đó, ngày nào cũng vậy.')]),
+            _b('Giọng trên kênh 16', '📻', 'Bảy giờ sáng, bộ đàm rè rè, giọng chị Hải Yến sang sảng.', [
+                ('yen', 'Trạm mới hả? Báo số liệu cho gọn: gió cấp mấy, biển ra sao, tầm nhìn, áp suất. Đừng “chắc khoảng khoảng” nghe em.'),
+                ('me', 'Dạ: gió cấp 3, sóng nhỏ, tầm nhìn trên mười cây số, áp suất đứng.'),
+                ('yen', 'Được. Trạm Hòn Gió có người báo rõ rồi.')],
+                _c('Chị Hải Yến hỏi có muốn học thêm cách đọc mây',
+                   _o('a', 'Xin chị gửi tài liệu đọc mây, tối em học', [('yen', 'Ham học đấy. Chị chụp gửi theo tàu tiếp tế.')], rel='yen'),
+                   _o('b', 'Hỏi chú Bảy chỉ cho trên đảo', [('bay', 'Mây đen phía đông chiều nay là có giông. Nhìn đi, rồi nhớ.')], rel='bay'))),
+            _b('Quay đèn về phía lưới', '🎣', 'Nửa đêm, ông Sáu Ghe gọi kênh 16 lần thứ ba trong tuần.', [
+                ('sau', 'Cậu quay đèn về đông bắc giùm tui một đêm thôi. Mực đang lên!'),
+                ('me', 'Đèn quay đều thì tàu cả vịnh mới nhận ra Hòn Gió, ông ạ. Ông dùng đèn câu trên tàu nhé, cháu đọc bản tin gió cho ông.'),
+                ('sau', 'Ờ… thì thôi. Đọc bản tin đi, cậu.')],
+                _c('Ông Sáu xin cái bản tin gió mỗi tối',
+                   _o('a', 'Hứa tối nào cũng gọi đọc bản tin cho tàu ông', [('sau', 'Có người đọc bản tin cho nghe, đi biển yên bụng hẳn.')], rel='sau'),
+                   _o('b', 'Chỉ ông dò kênh bản tin của đài', [('yen', 'Đài phát mỗi tối tám giờ. Em chỉ đúng rồi đó.')], rel='yen'))),
+            _b('Mèo Mun và đoàn khách', '🐈‍⬛', 'Tàu Biển Ngọc cập bến, mèo Mun chạy ra đón trước cả bạn.', [
+                ('tham', 'Khách mê con mèo của trạm lắm. Mà em giữ nội quy kỹ ghê, không ai đòi lên phòng đèn nữa.'),
+                ('me', 'Chụp ở sân trạm cũng đẹp mà chị. Phòng đèn để đèn làm việc.'),
+                ('tham', 'Chị in luôn câu đó vào tờ rơi tour.')]),
+            _b('Miếng giẻ da', '🧽', 'Sáng sau đêm bão, chú Bảy đưa bạn miếng giẻ da cũ mềm như lụa.', [
+                ('bay', 'Năm bão lớn, chú quay tay mô-tơ suốt đêm cho đèn khỏi đứng. Tay chú tê tới ba ngày.'),
+                ('bay', 'Giờ chú giao cái này cho con. Kính sạch thì đèn mới xa.'),
+                ('yen', 'Cả tháng trạm Hòn Gió không trễ một giờ quan trắc. Đài khen đó.'),
+                ('sau', 'Mùa bão này tàu tui về đủ. Cảm ơn cái đèn, cảm ơn cậu.'),
+                ('me', 'Con sẽ giữ, và giữ đèn như chú dạy.')]),
+        ]),
+    # ------------------------------------------------------------ 📞 Tổng đài Cứu hộ phường Mây (chương 4)
+    'rescue': dict(
+        title='Chiếc tai nghe của chị Thảo', emoji='🎧',
+        keepsake=dict(emoji='🎧', name='Chiếc tai nghe quấn băng keo đen', desc='Chiếc tai nghe đầu tiên của tổng đài, chị Thảo đeo mười lăm năm. Giờ nó treo ở bàn trực của bạn.'),
+        cast={'thao': _p('Chị Thảo', '🎧', 'Trưởng ca tổng đài', 'rescue_npc_01'),
+              'binh': _p('Anh Bình', '🚒', 'Đội trưởng đội chữa cháy và cứu nạn', 'rescue_npc_02'),
+              'vy': _p('Bác sĩ Vy', '🚑', 'Bác sĩ xe cấp cứu', 'rescue_npc_03'),
+              'ba': _p('Ông Ba', '👴', 'Cụ ông hay gọi tổng đài', 'rescue_npc_04')},
+        beats=[
+            _b('Địa chỉ trước', '📍', 'Cuộc gọi đầu tiên, chị Thảo ngồi cạnh nghe kèm.', [
+                ('thao', 'Người ta la “cháy” thì em hỏi gì trước?'),
+                ('me', 'Dạ… cháy cái gì ạ?'),
+                ('thao', 'Địa chỉ trước. Rớt máy giữa chừng mà có địa chỉ thì xe vẫn chạy được.')]),
+            _b('Ông Ba gọi lần thứ mười', '👴', 'Đèn đường dây sáng: lại là số của ông Ba.', [
+                ('ba', 'Tui đau… đau lòng chớ đau gì. Cô nói chuyện với tui chút đi.'),
+                ('me', 'Ông ơi, con vẫn phải hỏi ông có đau ngực thật không đã.'),
+                ('thao', 'Đúng rồi. Gọi mười lần thì cũng hỏi đủ mười lần.')],
+               _c('Làm sao cho ông Ba bớt gọi tổng đài?',
+                  _o('a', 'Báo tổ dân phố cử người ghé nói chuyện với ông mỗi chiều', [('ba', 'Chiều nào cũng có đứa ghé uống trà. Tui bớt gọi rồi đó.')], rel='ba'),
+                  _o('b', 'Chỉ ông số đường dây hỗ trợ người cao tuổi của phường', [('thao', 'Số đó có người trực tâm sự. Đường dây khẩn trống hơn hẳn.')], rel='thao'))),
+            _b('Giữ máy', '☎️', 'Một bà mẹ gọi: con trai bà ngã gục, không thở bình thường.', [
+                ('vy', 'Em giữ máy với chị ấy, đếm nhịp ép tim giúp chị. Xe còn bốn phút.'),
+                ('me', 'Chị ơi, đặt tay giữa ngực, ép mạnh, em đếm cùng chị nè.'),
+                ('vy', 'Tới rồi. Em đếm đều lắm, chị ấy làm theo được hết.')],
+               _c('Sau cuộc gọi đó, bạn làm gì?',
+                  _o('a', 'Xin chị Thảo nghỉ năm phút, uống ly nước rồi trực tiếp', [('thao', 'Nghỉ đúng lúc là biết giữ mình. Ca này còn dài.')], rel='thao'),
+                  _o('b', 'Kể lại cho bác sĩ Vy, hỏi xem mình đếm vậy có đúng không', [('vy', 'Đúng nhịp. Lần sau em nhắc người ta thay tay khi mỏi nhé.')], rel='vy'))),
+            _b('Xe không trả lời', '📻', 'Đêm mưa, xuồng cứu hộ không trả lời bộ đàm.', [
+                ('binh', 'Xuồng hư bugi từ chiều, sổ giao ca có ghi mà.'),
+                ('me', 'Em đã đánh dấu trên bảng đội rồi anh, em mượn xuồng phường bên ngay.'),
+                ('binh', 'Vậy là kịp. Bảng đội đúng thì đêm mưa cũng không rối.')]),
+            _b('Chiếc tai nghe cũ', '🎧', 'Chị Thảo lên làm phó giám đốc, bàn giao ca trực.', [
+                ('thao', 'Chiếc tai nghe này nghe được cả tiếng người ta không nói ra.'),
+                ('thao', 'Địa chỉ trước, gửi đúng đội, không bỏ ai một mình. Thế thôi.'),
+                ('binh', 'Bàn trực có em ngồi, đội anh yên tâm chạy.'),
+                ('me', 'Em sẽ hỏi đủ như chị dạy, kể cả cuộc gọi thứ mười của ông Ba.')]),
+        ]),
+    # ------------------------------------------------------------ 🛟 Hồ bơi Sóng Xanh (chương 4)
+    'lifeguard': dict(
+        title='Cái còi của anh Hải', emoji='🛟',
+        keepsake=dict(emoji='📯', name='Cái còi đồng của anh Hải', desc='Chiếc còi đồng mòn vẹt chỗ ngậm, mười lăm năm trên ghế cao Sóng Xanh. Giờ nó đeo trên cổ bạn.'),
+        cast={'hai': _p('Anh Hải', '🛟', 'Trưởng nhóm cứu hộ', 'lifeguard_npc_01'),
+              'phuong': _p('Chị Phượng', '💼', 'Quản lý Hồ bơi Sóng Xanh', 'lifeguard_npc_02'),
+              'tu': _p('Ông Tư', '👴', 'Khách bơi sáng', 'lifeguard_npc_03'),
+              'bon': _p('Bé Bon', '🧒', 'Học viên lớp bơi', 'lifeguard_npc_05')},
+        beats=[
+            _b('Người chìm không kêu', '🫥', 'Buổi đầu trên ghế cao, anh Hải ngồi bên cạnh.', [
+                ('hai', 'Em nhìn khu cạn kìa. Đứa nào la to nhất?'),
+                ('me', 'Bé áo vàng, té nước ầm ầm.'),
+                ('hai', 'Đứa đó đang chơi. Người chìm thật thì im re, đầu ngửa ra sau, không vẫy được. Nhớ kỹ nghen.')]),
+            _b('Mũ bơi màu cam', '🧢', 'Ông Tư lại xuống nước đầu trần, mũ nhét túi quần.', [
+                ('tu', 'Mười năm bơi ở đây có ai bắt đội mũ đâu!'),
+                ('me', 'Ông bơi giỏi nhất hồ, mà tóc rụng kẹt lưới lọc thì cả hồ chịu.'),
+                ('hai', 'Ông Tư cứng đầu lắm. Mềm mỏng mà không lùi thì ông mới nghe.')],
+               _c('Làm sao cho ông Tư chịu đội mũ?',
+                  _o('a', 'Tặng ông cái mũ màu cam “cho dễ thấy”', [('tu', 'Cam như trái quýt… mà thôi, đội cho mấy đứa nhỏ khỏi bắt chước.')], rel='tu'),
+                  _o('b', 'Nhờ anh Hải nói với ông, người quen mười năm', [('hai', 'Để anh. Ông Tư nghe anh từ hồi anh còn tập bơi.')], rel='hai'))),
+            _b('Sấm phía sông', '⛈️', 'Chiều đông khách, sấm rền phía sông. Chị Phượng đứng ở cổng.', [
+                ('phuong', 'Mưa chưa xuống mà, đóng là mất cả trăm vé đó em.'),
+                ('me', 'Sét không chờ mưa đâu chị. Em cho lên bờ.'),
+                ('phuong', 'Vậy… vé bù thì sao?')],
+               _c('Bạn nói gì với chị Phượng?',
+                  _o('a', 'Đề nghị in vé bơi bù cho khách, chờ ở sảnh có nước uống', [('phuong', 'Ừ, vé bù thì khách chịu. Mười phút sau sét đánh cột đèn bãi xe, chị không nói gì nữa.')], rel='phuong'),
+                  _o('b', 'Nhờ anh Hải cùng ra cổng nói với khách', [('hai', 'Có hai người đứng cổng, khách bớt cãi hẳn. Em làm đúng.')], rel='hai'))),
+            _b('Vòng tay xanh', '🟢', 'Cuối hè, bé Bon đứng ở làn sát thành, môi mím chặt.', [
+                ('bon', 'Lần này con bơi thật nha chú, không nói xạo nữa.'),
+                ('me', 'Chú đứng ngay mép hồ. Bơi tới thành là được.'),
+                ('bon', 'Hai mươi lăm mét! Con bơi được thật rồi!')]),
+            _b('Cái còi đồng', '📯', 'Anh Hải chuyển lên trung tâm dạy lớp cứu hộ cho cả phường.', [
+                ('hai', 'Còi này anh đeo mười lăm năm. Một tiếng là nhắc, ba tiếng là gọi người, một hồi dài là có chuyện.'),
+                ('hai', 'Còi để người ta nghe, chứ không phải để người ta sợ.'),
+                ('tu', 'Mũ cam vẫn còn đây nè. Cậu ngồi ghế thì tui yên tâm bơi.'),
+                ('me', 'Em sẽ ngồi ghế như anh: mắt không rời mặt nước.')]),
+        ]),
     # ------------------------------------------------------------ Công ty CP Cánh Diều (chương 5)
     'hr_admin': dict(
         title='Người giữ hồ sơ', emoji='🗂️',
@@ -1772,6 +1884,45 @@ ARCS = {
                 ('nhi', 'Sáng nay cả công ty mở máy lên là chạy, như chưa có gì xảy ra luôn ạ.'),
                 ('quan', 'Bộ lưu điện em đề xuất hồi tháng trước cứu cả công ty đấy.'),
                 ('long', 'Chìa khóa phòng máy chủ, từ giờ em giữ một chiếc.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
+    # ------------------------------------------------------------ Công an phường Mây (chương 4)
+    'police': dict(
+        title='Cuốn sổ hẻm của anh Định', emoji='📓',
+        keepsake=dict(emoji='📓', name='Cuốn sổ hẻm của anh Định', desc='Cuốn sổ bìa xanh ghi tên từng nhà, từng cụ già sống một mình trong bảy tổ dân phố. Giờ nó nằm trong túi áo bạn.'),
+        cast={'dinh': _p('Anh Định', '👮', 'Tổ trưởng cảnh sát khu vực', 'police_npc_01'),
+              'nam': _p('Bà Năm', '👵', 'Người dân tổ 3', 'police_npc_03'),
+              'thoa': _p('Cô Thoa', '👀', 'Người dân tổ 5', 'police_npc_04'),
+              'vuong': _p('Anh Vượng', '📊', 'Phó trưởng Công an phường', 'police_npc_07')},
+        beats=[
+            _b('Ai cũng như ai', '🎫', 'Buổi sáng đầu tiên ở bàn tiếp dân.', [
+                ('dinh', 'Ở bàn này, ai lên cũng lấy số. Cụ già, người khuyết tật, bà bầu thì mời lên trước. Còn “người quen” thì không có.'),
+                ('me', 'Kể cả cháu của sếp ạ?'),
+                ('dinh', 'Kể cả cháu của anh.')]),
+            _b('Cô Thoa gọi lần thứ năm', '👀', 'Điện thoại trực ban reo, lại là cô Thoa.', [
+                ('thoa', 'Cái cậu xăm tay lại đứng đầu hẻm! Lần này cô chắc chắn nó rình nhà ai đó.'),
+                ('me', 'Cô ơi, cậu ấy là cậu Tín thuê trọ hẻm 7, khai báo tạm trú tuần trước rồi.'),
+                ('thoa', 'Ờ… vậy hả. Mà nhà cô năm ngoái mất xe, cô sợ lắm con.')],
+                _c('Làm sao cho cô Thoa bớt sợ?',
+                   _o('a', 'Rủ cô Thoa đi một vòng hẻm, giới thiệu cô với mấy nhà mới tới', [('thoa', 'Thằng Tín nó chào cô ngọt xớt. Thôi, cô yên tâm rồi.')], rel='thoa'),
+                   _o('b', 'Chỉ cô lắp khóa xe, đèn cảm ứng trước cửa', [('thoa', 'Đèn sáng cái là cô ngủ ngon. Cảm ơn con.')], rel='thoa'))),
+            _b('Cuộc gọi lúc 8 giờ 20', '📞', 'Bà Năm gọi tới, giọng run run.', [
+                ('nam', 'Có cán bộ gọi bảo bà mang sổ tiết kiệm ra ngân hàng, dặn không được nói với ai…'),
+                ('me', 'Bà đứng yên đó, đừng chuyển gì hết. Cán bộ thật không bao giờ gọi điện bắt chuyển tiền. Con tới liền.'),
+                ('nam', 'Bà đang ở quầy ngân hàng nè. Con tới nhanh nghe con.')],
+                _c('Tới nơi, bạn làm gì tiếp?',
+                   _o('a', 'Ngồi với bà, nhờ ngân hàng khóa giao dịch lạ, rồi chở bà về', [('nam', 'Con tới kịp. Không thì tiền dưỡng già của bà đi hết rồi.')], rel='nam'),
+                   _o('b', 'Hẹn cả tổ 3 một buổi nói chuyện chống lừa đảo ngay tuần này', [('nam', 'Bà rủ hết hội người cao tuổi lên nghe. Ai cũng phải biết.')], rel='nam'))),
+            _b('Bảng thành tích', '📊', 'Anh Vượng treo bảng đếm biên bản ở phòng giao ban.', [
+                ('vuong', 'Tổ khu vực tháng này ít biên bản nhất phường. Mấy đứa đi tuần mà không thấy vi phạm à?'),
+                ('me', 'Dạ, tụi em nhắc nhở nhiều. Lần đầu chuyện nhỏ thì nhắc, người ta sửa liền, khỏi biên bản.'),
+                ('dinh', 'Anh Vượng, chợ Mây tháng này không ai lấn lối thoát hiểm nữa. Con số đó không nằm trên bảng.')],
+                days=6, served=14, gap=1),
+            _b('Cuốn sổ hẻm', '📓', 'Anh Định lên Ban chỉ huy, bàn giao khu vực lại cho bạn.', [
+                ('dinh', 'Mười lăm năm, anh ghi vào sổ này tên từng nhà, từng cụ ở một mình, từng đứa nhỏ hay đi lạc.'),
+                ('dinh', 'Cái phường này yên không phải nhờ biên bản. Nhờ người ta tin mình, gặp chuyện là gọi mình trước.'),
+                ('nam', 'Bà lưu số con đầu danh bạ rồi đó nghen.'),
+                ('me', 'Em sẽ giữ sổ như anh: ai cũng như ai, không nhận của ai cái gì, gặp chuyện thì có mặt.')],
                 days=9, served=22, gap=2, level=4),
         ]),
 }

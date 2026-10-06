@@ -208,9 +208,20 @@ export function findRoute(nav:Navigation,start:Point,end:Point): Point[] {
   const raw:Point[]=[end];for(let key=goal;key!==-1;key=parents.get(key)??-1)raw.push(point(key));raw.reverse();
   const smooth:Point[]=[];let from=start,i=0;while(i<raw.length){let j=raw.length-1;while(j>i&&!lineClear(nav,from,raw[j]))j--;smooth.push(raw[j]);from=raw[j];i=j+1;}return smooth;
 }
+/** 1.8.1's careers where they belong: police and rescue next to nurse (the service street), lifeguard on the block
+ * beside the pool (slot 8), lighthouse last (the southern edge, by the sea). Only the order changes: live/town.py's
+ * geometry depends on the count alone. */
+export function townOrder<T extends {id:string}>(list:T[]):T[]{
+  const q=[...list],take=(id:string)=>{const i=q.findIndex(c=>c.id===id);return i<0?null:q.splice(i,1)[0];};
+  const lighthouse=take('lighthouse'),lifeguard=take('lifeguard'),near=[take('police'),take('rescue')].filter((c):c is T=>Boolean(c)),nurse=q.findIndex(c=>c.id==='nurse');
+  if(near.length)q.splice(nurse<0?q.length:nurse+1,0,...near);
+  if(lifeguard)q.splice(Math.min(7,q.length),0,lifeguard);
+  if(lighthouse)q.push(lighthouse);
+  return q;
+}
 export function townBuildings(catalogue:Career[]): Building[] {
   // Three familiar doors form the first block; remaining careers retain catalogue order.
-  const first=['grocery','homemaker','cafe_bakery'];const ordered=catalogue.filter(c=>c.playable!==false).sort((a,b)=>{const ai=first.indexOf(a.id),bi=first.indexOf(b.id);return (ai<0?99:ai)-(bi<0?99:bi);});
+  const first=['grocery','homemaker','cafe_bakery'];const ordered=townOrder(catalogue.filter(c=>c.playable!==false).sort((a,b)=>{const ai=first.indexOf(a.id),bi=first.indexOf(b.id);return (ai<0?99:ai)-(bi<0?99:bi);}));
   const slots=[0,1,6,2,3,4,5,...Array.from({length:Math.max(0,ordered.length-7)},(_,i)=>i+8)];
   return ordered.map((meta,i)=>{const j=slots[i],col=j%6,row=Math.floor(j/6),[dx,dy]=townLayout.setbacks[(j+row)%townLayout.setbacks.length],x=col*7+1+dx,y=row*7+1+dy;return {id:meta.id,meta,at:{x:x+1.8,y:y+3.2},door:{x:x+2.2,y:row*7+6.1+dy},footprint:{x0:x,y0:y,x1:x+4.2,y1:y+4.2},variant:(meta.id==='grocery'||meta.category==='shop'?'grocery':['cafe_bakery','milk_tea','restaurant','pho','com','tra_da','ice_cream'].includes(meta.id)?'cafe':'home') as Building['variant'],district:row,slot:j};});
 }
