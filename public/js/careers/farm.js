@@ -5,6 +5,7 @@ import {reqList} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine,goAttrs,bareLabel} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
+import {plusTab,plusSub,plusBadge,plusStep,plusTick,plusActions} from './farm_plus.js';
 const ID='farm';
 const STAGE={empty:'Luống trống',sprout:'Mới nhú',young:'Đang lớn',almost:'Sắp tới lứa',ripe:'Đúng lứa · thu được',over:'Quá lứa · xơ',rotten:'Hỏng · dọn luống'};
 const ART={sprout:'🌱',young:'🌿'};
@@ -81,7 +82,7 @@ function tabs(x){
   const tab=x.ui.tab||'field',d=data(x);
   const ripe=d.plots.filter(p=>p.stage==='ripe').length,pl=d.pledge;
   const b=(id,label,sub,badge='')=>carBtn(x,`<span>${label}</span><small>${sub}</small>${badge}`,'tab',{tab:id},`fa-tab ${tab===id?'primary':'ghost'}`,` role="tab" aria-selected="${tab===id}"`);
-  return `<div class="fa-tabs" role="tablist" aria-label="Khu làm việc">${b('field','🌱 Vườn',ripe?`${ripe} luống chín`:'6 luống',ripe?`<b class="fa-badge">${ripe}</b>`:'')}${b('coop','🐔 Chuồng',`${d.coop?.nest||0} trứng · ${d.coop?.hens||0} mái`)}${b('cold','❄️ Kho mát',`${d.cold_units||0}/${x.cc.cold_cap}`)}${b('market','📈 Chợ',pl?`HTX ${pl.done}/${pl.qty}`:`bán sỉ`,pl&&pl.done<pl.qty?'<b class="fa-badge">!</b>':'')}</div>`;
+  return `<div class="fa-tabs" role="tablist" aria-label="Khu làm việc">${b('field','🌱 Vườn',ripe?`${ripe} luống chín`:'6 luống',ripe?`<b class="fa-badge">${ripe}</b>`:'')}${b('coop','🐔 Chuồng',`${d.coop?.nest||0} trứng · ${d.coop?.hens||0} mái`)}${b('cold','❄️ Kho mát',`${d.cold_units||0}/${x.cc.cold_cap}`)}${b('market','📈 Chợ',pl?`HTX ${pl.done}/${pl.qty}`:`bán sỉ`,pl&&pl.done<pl.qty?'<b class="fa-badge">!</b>':'')}${b('plus','🌟 Trại',plusSub(x),plusBadge(x))}</div>`;
 }
 
 /* ------------------------------------------------------------ field */
@@ -177,6 +178,7 @@ function fieldTab(x){
   // the diary and the meter legend.
   return `<div class="fa-plots" role="group" aria-label="Sáu luống rau">${d.plots.map(p=>plotCard(p,x)).join('')}</div>
     <div class="fa-fieldtop">${careFold(x)}${x.cmd(d.nopump?'🚱 Van tưới mất nước':'🚿 Mở van tưới cả vườn','fa_water',{plot:'all'},'small ghost fa-valve',d.nopump||!d.plots.some(p=>p.crop))}</div>
+    <div class="fa-allrow">${x.cmd('🌾 Nhổ cỏ cả vườn','fa_weed',{plot:'all'},'small ghost',!d.plots.some(p=>p.weeds))}${x.cmd('🔍 Thăm cả vườn','fa_scout',{plot:'all'},'small ghost',!d.plots.some(p=>p.crop))}</div>
     ${plotPanel(sel,x)}
     <details class="fa-diary space-top"><summary>📓 Nhật ký canh tác (QR truy xuất)</summary><ul>${diary.map(r=>`<li><b>Ngày ${r.day} · ${x.esc(r.plot)}</b> ${x.esc(r.text)}</li>`).join('')||'<li class="muted">Chưa có ghi chép.</li>'}</ul></details>
     <div class="fa-legend small muted"><span><i class="lg young"></i>non</span><span><i class="lg ripe"></i>đúng lứa</span><span><i class="lg over"></i>quá lứa</span><span><i class="lg water"></i>độ ẩm (vạch = lý tưởng)</span><span><i class="lg soil"></i>đất màu</span></div>`;
@@ -367,10 +369,15 @@ function idleSteps(x){
   // An empty bed with seeds in the store: open it so the seed choice is right there.
   const empty=(d.plots||[]).find(p=>!p.crop),seeds=(x.cc.crops||[]).some(c=>c.unlock<=(x.room.level||1)&&(st[c.seed]||0)>0);
   if(empty&&seeds)rows.push({ok:null,label:`Gieo luống trống ${empty.id}`,go:x.ui.plot===empty.id&&(x.ui.tab||'field')==='field'?{sel:'.fa-seeds',label:`🌱 Chọn hạt gieo luống ${x.esc(empty.id)}`}:{act:'car:open',data:{plot:empty.id},label:`🌱 Gieo luống trống ${x.esc(empty.id)}`}});
+  // Two weedy beds or more: one walk down the rows clears them all.
+  const weedy=(d.plots||[]).filter(p=>p.weeds>=2);
+  if(weedy.length>=2)rows.push({ok:null,label:`Nhổ cỏ ${weedy.map(p=>p.id).join(', ')}`,go:{cmd:'fa_weed',payload:{plot:'all'},label:`🌾 Nhổ cỏ cả vườn (${weedy.length} luống)`}});
   for(const p of planted){
     if(p.moisture<m.low&&!valve)rows.push({ok:null,label:`Tưới luống ${p.id}`,go:{cmd:'fa_water',payload:{plot:p.id},label:`💧 Tưới luống ${x.esc(p.id)} (${p.moisture}%)`}});
-    else if(p.weeds>=2)rows.push({ok:null,label:`Nhổ cỏ luống ${p.id}`,go:{cmd:'fa_weed',payload:{plot:p.id},label:`🌾 Nhổ cỏ luống ${x.esc(p.id)}`}});
+    else if(p.weeds>=2&&weedy.length<2)rows.push({ok:null,label:`Nhổ cỏ luống ${p.id}`,go:{cmd:'fa_weed',payload:{plot:p.id},label:`🌾 Nhổ cỏ luống ${x.esc(p.id)}`}});
   }
+  const plus=plusStep(x,walking(x));
+  if(plus)rows.push(plus);
   return rows;
 }
 
@@ -444,7 +451,7 @@ function placeActs(at,t,x,g){
     more('🐔 Xem đàn gà','coop');
   }else if(at==='pack')more(t?'❄️ Kho mát & thùng hàng':'❄️ Kho mát','pack');
   else if(at==='truck')more('📈 Bán sỉ cho anh Tuấn','market');
-  else if(at==='shed')add('📦 Kho vật tư',{act:'inventory'});
+  else if(at==='shed'){add('📦 Kho vật tư',{act:'inventory'});more('🌟 Trang trại','plus');}
   else if(at==='board')more('🌤️ Xem dự báo','sky');
   else if(at==='bike'&&t?.known&&(t.crate||[]).length){const f=walkFinal(t,x,g);if(f?.go)add(f.label,f.go);}
   return out;
@@ -470,6 +477,7 @@ function drawer(t,x,g){
   else if(what==='pack'){title='❄️ Kho mát';body=coldTab(t,x)+(t?crateSide(t,x,g):'');}
   else if(what==='market'){title='📈 Chợ đầu mối';body=marketTab(x);}
   else if(what==='sky'){title='🌤️ Thời tiết';const was=x.ui.wxOpen;x.ui.wxOpen=true;body=weatherBar(x);x.ui.wxOpen=was;}
+  else if(what==='plus'){title='🌟 Trang trại';body=plusTab(x);}
   else if(what==='order'&&t){title='🧾 Đơn hàng';const was=x.ui.orderOpen;x.ui.orderOpen=true;body=orderTicket(t,x);x.ui.orderOpen=was;}
   if(!body)return '';
   return `<section class="fv-drawer" role="dialog" aria-label="${x.esc(plainTitle(title))}"><div class="fv-drawer-head"><b>${title}</b>${carBtn(x,'✕','fvmore',{more:''},'ghost small fv-x',' aria-label="Đóng"')}</div>${body}</section>`;
@@ -504,7 +512,7 @@ function walkView(t,x,g,idle=false){
 }
 /* What the engine tells the workbench. */
 const HOOKS={
-  near(x,id){x.ui.fvNear=id||null;if(/^P[1-6]$/.test(id||''))x.ui.plot=id;if(x.ui.fvMore&&!['order','sky'].includes(x.ui.fvMore))x.ui.fvMore=null;x.render();},
+  near(x,id){x.ui.fvNear=id||null;if(/^P[1-6]$/.test(id||''))x.ui.plot=id;if(x.ui.fvMore&&!['order','sky','plus'].includes(x.ui.fvMore))x.ui.fvMore=null;x.render();},
   ride(x,info){x.ui.fvRide=info||null;x.ui.fvMore=null;x.render();},
   deliver:(x,task)=>x.send('fa_deliver',{task,confirm:true}),
   slow(x){setPref({mode:'tap'});x.toast('Máy hơi chậm nên vườn chuyển sang Bấm nhanh. Muốn đi lại thì chạm 🚶 Tự đi.');x.render();},
@@ -528,7 +536,7 @@ export default {
     if(data(x).desk?.ev)return `<div class="career-job fa">${hint}${deskCard(x)}${weatherBar(x)}${bottomBar(t,x,g)}</div>`;
     if(walking(x))return walkView(t,x,g);
     const tab=x.ui.tab||'field';
-    const main=tab==='coop'?coopTab(x):tab==='cold'?coldTab(t,x):tab==='market'?marketTab(x):fieldTab(x);
+    const main=tab==='coop'?coopTab(x):tab==='cold'?coldTab(t,x):tab==='market'?marketTab(x):tab==='plus'?plusTab(x):fieldTab(x);
     // The order first; the weather and the farm's tabs below it. The bar keeps the next step in reach.
     return `<div class="career-job fa">${hint}${x.ui.fvOff?'':modeSeg(x,false)}${deskCard(x)}${orderTicket(t,x)}${weatherBar(x)}${tabs(x)}
       <div class="workbench"><section class="wb-main">${main}</section><aside class="wb-side">${crateSide(t,x,g)}</aside></div>${bottomBar(t,x,g)}</div>`;
@@ -539,7 +547,7 @@ export default {
     if(data(x).desk?.ev)return `<div class="career-job fa">${hint}${deskCard(x)}${weatherBar(x)}${bar}</div>`;
     if(walking(x))return walkView(null,x,{steps},true);
     const tab=x.ui.tab||'field';
-    const main=tab==='coop'?coopTab(x):tab==='cold'?coldTab(null,x):tab==='market'?marketTab(x):fieldTab(x);
+    const main=tab==='coop'?coopTab(x):tab==='cold'?coldTab(null,x):tab==='market'?marketTab(x):tab==='plus'?plusTab(x):fieldTab(x);
     return `<div class="career-job fa">${hint}${x.ui.fvOff?'':modeSeg(x,false)}${weatherBar(x)}${deskCard(x)}${tabs(x)}
       <div class="workbench single"><section class="wb-main">${main}</section></div>${bar}</div>`;
   },
@@ -547,6 +555,7 @@ export default {
   // 🚶 Tự đi: the stage goes into #fvHost (again after a render that replaced the host) and keeps drawing.
   tick(root,x){
     keepBarAboveFooter(root);
+    plusTick(root,x);
     const host=root.querySelector(':scope>#fvHost');
     if(!host)return;
     walkLoad().then(m=>{
@@ -575,7 +584,8 @@ export default {
       more:[sum.market_income?`🌱 Nông trại hôm nay · +${sum.market_income} xu chợ`:'🌱 Nông trại hôm nay',figures(x,rows,lines.filter(l=>!night.includes(l)))]});
   },
   actions:{
-    async tab(data,el,x){x.ui.tab=['field','coop','cold','market'].includes(data.tab)?data.tab:'field';x.render();},
+    async tab(data,el,x){x.ui.tab=['field','coop','cold','market','plus'].includes(data.tab)?data.tab:'field';x.render();},
+    ...plusActions,
     async plot(data,el,x){x.ui.plot=x.ui.plot===data.plot?null:data.plot;x.render();},
     // A next step that works a bed: show the field with that bed open (never toggles it shut).
     async open(data,el,x){if(!/^P[1-6]$/.test(data.plot||''))return;x.ui.tab='field';x.ui.plot=data.plot;x.render();},

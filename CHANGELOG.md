@@ -1,3 +1,17 @@
+# Chưa phát hành
+
+## Nông trại mới
+
+- Chủ game 06/10 ("nông trại nữa, chán lắm, nâng lên đi"). Số liệu 01–06/10: 57% lượt bấm ở nông trại là việc vặt (tưới 10.370, nhổ cỏ 4.920, thăm sâu 4.214, khơi rãnh 2.529), mỗi ngày chơi chỉ giao trung vị 4 đơn; 27% người chơi rời đi trong ngày chưa giao được đơn nào, chỉ 16% quay lại ngày thứ hai.
+- 🌟 Tab mới **Trại** (`game/careers/farm_plus.py`, `public/js/careers/farm_plus.js`), gồm 4 mục:
+  - 🌱 Vườn: ô đất lớn theo giờ thật của máy chủ, kể cả khi đi vắng. Có ớt, lúa, dưa hấu, bí ngô, thanh long, dâu tây (cần nhà kính), xoài, cà phê, chín sau 6 phút tới 2 giờ. Mỗi vụ có việc chăm riêng: cắm cọc, dẫn nước, lót rơm, bấm ngọn, thắp đèn, che lưới, bao trái, tỉa cành. Thêm việc theo thời tiết hôm đó (khát nước, giông) và sâu. Mỗi việc một chạm khi tới lúc. Bỏ lỡ thì hụt sản lượng, xuống loại B; để quá lứa cũng xuống loại B.
+  - 🐄 Chuồng: vịt (trứng vịt), bò sữa (sữa), heo (nuôi 4 cữ rồi bán).
+  - 🧾 Bán: bán ở chợ (bán dồn thì giá tụt, chợ tự hồi theo giờ) hoặc giao đơn đặc sản cho tiệm trà sữa, lò bánh, quán chè, quán cơm tấm, quán cà phê, sạp trái cây, quán chay (đòi VietGAP), anh Tuấn. Khách nào cũng có yêu cầu riêng: chỉ lấy loại A, có hạn giờ… Có khách đòi bớt giá; giữ giá thì có người vẫn mua, có người bỏ đi, tùy tính khách (ẩn).
+  - 🛠️ Nâng cấp (tiêu xu): khai hoang ô 3–6 (80/150/250/400), tưới nhỏ giọt 180 (6 luống rau cũ cũng tự giữ ẩm), máy cày mini 260 (gieo, chăm, thu cả vườn một chạm), chuồng trại 220, nhà kính 350, VietGAP 450 (cần 15 lần thu loại A; giá bán +20%).
+- Cấp trang trại 1–10, danh hiệu 🏅 Nông dân giỏi ở cấp 5. Thêm kỷ lục, trái vàng hiếm (25 xu), bí khổng lồ 20–60 kg (có giải), Hội mùa vào ngày cuối mỗi mùa (giá +25%).
+- Bớt việc vặt ở 6 luống: thêm nút 🌾 Nhổ cỏ cả vườn và 🔍 Thăm cả vườn (một nhịp). Gợi ý giữa các đơn chỉ thẳng nút nhổ cỏ cả vườn khi có từ 2 luống nhiều cỏ.
+- Thu nhập (bot chăm mỗi phút, đo bằng chính máy chủ): vườn mới (2 ô) +50 xu/giờ, trại giữa (4 ô, chuồng) +90/giờ, đủ nâng cấp +240/giờ. Nông trại hiện thu khoảng 170 xu mỗi ngày chơi (trà sữa ~420, tiệm hoa ~770). Riêng nâng cấp tốn tổng cộng 2.340 xu. Test chặn trần: dưới 80 xu/giờ khi mới mở, dưới 300 xu/giờ khi đủ nâng cấp.
+- Bản lưu: khóa mới, tùy chọn: `careers.farm.ext.farm_plus`. Bản lưu cũ không có khóa này vẫn chạy như trước. Không đổi đơn hàng, luống rau, kho mát. Đã thử: 1.9.3 nhận, chơi tiếp và giữ nguyên bản lưu do bản này ghi. Không có DDL. Không thêm "Có gì mới".
 # v1.9.3 — 2026-10-06: sửa lỗi + cập nhật thêm
 
 ## Chat: lọc từ nặng bằng dấu *
