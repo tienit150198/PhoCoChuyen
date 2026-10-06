@@ -182,6 +182,8 @@ ARC_INDEX = {x['id']: x for x in ARC}
 
 INTRO = dict(
     title='Giới thiệu nghề: phi công tàu cánh quạt',
+    # The short card's three rows (street_kit.js introCard): ≤ 5 words each; the lists below are in its "?".
+    short=[('📋', 'Bản tin, tính dầu'), ('🚶', 'Đi một vòng quanh tàu'), ('✅', 'Checklist rồi cất cánh')],
     lead='Bạn là cơ phó của Hãng bay Cánh Cò, bay chặng ngắn ra đảo và về miền Tây cùng cơ trưởng Vân. Sáng đi từ đầu hẻm, tối về kịp cơm.',
     work=[('📋', 'Đọc bản tin thời tiết, tính dầu cho chặng bay'),
           ('🚶', 'Đi một vòng quanh tàu: bánh, động cơ, cánh, cửa khoang hàng'),

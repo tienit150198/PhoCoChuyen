@@ -255,6 +255,8 @@ ARC_INDEX = {x['id']: x for x in ARC}
 
 INTRO = dict(
     title='Giới thiệu nghề: tiếp viên hàng không',
+    # The short card's three rows (street_kit.js introCard): ≤ 5 words each; the lists below are in its "?".
+    short=[('🚪', 'Đón khách ở cửa'), ('🦺', 'Làm mẫu an toàn'), ('🛒', 'Đẩy xe phục vụ')],
     lead='Bạn là tiếp viên của Hãng bay Cánh Cò, cùng chị Thu lo khoang khách 68 chỗ trên những chặng bay ngắn ra đảo. Sáng đi từ hẻm, tối về kịp cơm.',
     work=[('🚪', 'Đón khách ở cửa: chỉ chỗ, hành lý, pin sạc, hàng ghế thoát hiểm'),
           ('🦺', 'Làm mẫu hướng dẫn an toàn, đi dọc lối kiểm tra khoang'),

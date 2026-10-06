@@ -77,7 +77,7 @@ function boardPanel(t,x){
   const face=p.npc?x.portrait(x.npc(p.npc),52):`<span class="tv-face" aria-hidden="true">${WHO_EMOJI(p.who)}</span>`;
   const acts=(c.door||[]).map(a=>tile(x,'fa_door',{task:t.id,act:a.id},`<span class="tv-tile-emoji" aria-hidden="true">${x.esc(a.emoji)}</span><b>${x.esc(a.name)}</b>`,'tv-door-act','',` data-act="${x.esc(a.id)}"`)).join('');
   return `<article class="card tv-door"><div class="tv-dots">${dots}</div><div class="row tv-pax">${face}<div class="grow"><h3>${x.esc(p.who)}</h3><p class="tv-say">“${x.esc(p.say.replace(/^“|”$/g,''))}”</p></div></div>
-    <div class="tv-pass"><span>🎫 Thẻ lên tàu</span><b>${x.esc(p.seat)}</b>${p.exit?'<span class="tv-exit">🚪 Hàng thoát hiểm</span>':''}<span class="tv-bag">${p.bag==='case'?'🧳 Vali lớn':'🎒 Túi nhỏ'}</span></div>
+    <div class="tv-pass"><span>🎫 Thẻ lên tàu</span><b>${x.esc(p.seat)}</b>${p.exit?`<span class="tv-exit">🚪 Hàng thoát hiểm${clean()?': người lớn':''}</span>`:''}<span class="tv-bag">${p.bag==='case'?'🧳 Vali lớn':'🎒 Túi nhỏ'}</span></div>
     <div class="tv-tiles tv-door-acts">${acts}</div></article>`;
 }
 
@@ -117,7 +117,8 @@ function servicePanel(t,x){
     const face=s.kind==='sleep'?'😴':s.kind==='kid'?'👶':'🙂';
     return `<button type="button" class="tv-seat ${done?'done':'todo'} ${sel===id?'sel':''}" data-action="car:pick" data-task="${x.esc(t.id)}" data-seat="${x.esc(id)}" aria-label="Ghế ${id}"><small>${id.slice(-1)}</small><span aria-hidden="true">${done?'✓':face}</span></button>`;};
   const s=seats[sel];
-  const who=s?`<div class="tv-order"><b>Ghế ${x.esc(s.seat)}</b> · ${x.esc(s.who)}<p class="tv-say">${x.esc(s.say)}</p>${(s.given||[]).length?`<p class="small">Đã mời: ${s.given.map(i=>x.esc(item(x,i).emoji)).join(' ')}</p>`:''}
+  // Clean layout: the rule that decides a child's drink sits on the child's order (the full rules are in "?").
+  const who=s?`<div class="tv-order"><b>Ghế ${x.esc(s.seat)}</b> · ${x.esc(s.who)}${clean()&&s.kind==='kid'?' · ♨️ không đồ nóng':''}<p class="tv-say">${x.esc(s.say)}</p>${(s.given||[]).length?`<p class="small">Đã mời: ${s.given.map(i=>x.esc(item(x,i).emoji)).join(' ')}</p>`:''}
     ${s.kind==='sleep'&&!s.skipped?x.cmd('😴 Để khách ngủ','fa_skip',{task:t.id,seat:s.seat},'small tv-skip'):''}</div>`:'<p class="small muted">Hàng này đã xong.</p>';
   const can=(t.can?.fa_give||{})[sel]||{};
   const cart=[...(c.drinks||[]),...(c.snacks||[])].map(i=>tile(x,'fa_give',{task:t.id,seat:sel||'',item:i.id},`<span class="tv-tile-emoji" aria-hidden="true">${x.esc(i.emoji)}</span><b>${x.esc(i.name)}</b>`,'tv-cart-item',!s||s.skipped||s.kind==='sleep',` data-item="${x.esc(i.id)}"${whyAttrs(can[i.id])}`)).join('');
