@@ -422,3 +422,9 @@
   .career-job.fa .fp-pane{font-size:12px;gap:2px;padding:4px 2px}
   .career-job.fa .fp-soil{height:70px}
 }
+/* 🚶 Tự đi: the 🌟 Trại chip on the scene, under the view switches (pointer events on: .fv-top passes them through). */
+.career-job.fa .fv-plus{position:absolute;top:58px;left:8px;z-index:2;min-height:40px;padding:4px 14px;border:0;border-radius:99px;background:rgb(255 253 246 / 92%);color:#2f3322;font-size:14px;font-weight:800;box-shadow:0 2px 8px rgb(0 0 0 / 15%);pointer-events:auto}
+.career-job.fa .fv-plus .fa-badge{position:absolute;top:-6px;right:-6px}
+.career-job.fa .fv-plus.hot{animation:fp-glow 1.6s ease-in-out infinite}
+@keyframes fp-glow{0%,100%{box-shadow:0 2px 8px rgb(0 0 0 / 15%),0 0 0 0 rgb(255 205 60 / 0%)}50%{box-shadow:0 2px 8px rgb(0 0 0 / 15%),0 0 0 6px rgb(255 205 60 / 55%)}}
+@media (prefers-reduced-motion:reduce){.career-job.fa .fv-plus.hot{animation:none;box-shadow:0 0 0 3px rgb(255 205 60 / 70%)}}

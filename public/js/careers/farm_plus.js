@@ -38,13 +38,18 @@ function nextChange(x){
   const f=t.filter(v=>v>now);
   return f.length?Math.min(...f):null;
 }
-let timer=null;
-/** After each render: tick the countdowns every second; re-render once something changes on its own. */
+let timer=null,later=null;
+/** After each render: tick the countdowns every second; re-render once something changes on its own (also off the
+ *  🌟 pane, so the tab's and the walk chip's badge light up when a crop ripens or the ducks have laid). */
 export function plusTick(root,x){
-  clearInterval(timer);timer=null;
+  clearInterval(timer);timer=null;clearTimeout(later);later=null;
   const els=()=>root.querySelectorAll('.fp-cd');
-  if(!P(x).open||!els().length)return;
+  if(!P(x).open)return;
   const at=nextChange(x);
+  if(!els().length){
+    if(at)later=setTimeout(()=>{later=null;if(root.isConnected)x.render();},Math.min(2**31-1,Math.max(1000,(at-x.now())*1000+300)));
+    return;
+  }
   timer=setInterval(()=>{
     if(!root.isConnected){clearInterval(timer);timer=null;return;}
     const now=x.now();
@@ -58,7 +63,7 @@ const PANES=[['garden','🌱','Vườn'],['pens','🐄','Chuồng'],['sell','�
 function head(x){
   const g=P(x),span=g.next?Math.max(1,g.next-g.floor):1,pct=g.next?Math.min(100,(g.xp-g.floor)/span*100):100;
   const chips=[g.festival?`<span class="fp-chip fest">🎉 Hội mùa · giá +${(C(x).fest_pct||125)-100}%</span>`:'',(g.ups||[]).includes('gap')?'<span class="fp-chip gap">🏅 VietGAP</span>':''].join('');
-  return `<div class="fp-head"><div class="fp-lv"><b>Cấp ${g.level}</b><span>${x.esc(g.title||'')}</span></div>
+  return `<div class="fp-head"><div class="fp-lv"><b>Trại cấp ${g.level}</b><span>${x.esc(g.title||'')}</span></div>
     <div class="fp-xp" role="img" aria-label="Điểm nông ${g.xp}${g.next?'/'+g.next:''}"><i style="width:${pct.toFixed(1)}%"></i></div>
     <small class="fp-xpn">${g.xp}${g.next?'/'+g.next:''}</small>${chips}</div>`;
 }
@@ -82,7 +87,7 @@ function plotCard(p,x){
   const needs=q.stage==='ripe'||q.stage==='over'?'':q.due.map(k=>`<button type="button" class="btn fp-need" data-command="fa_v_care" data-payload="${x.esc(JSON.stringify({plot:p.i,need:k}))}" aria-label="${x.esc(care(x,k).label)}" title="${x.esc(care(x,k).label)}">${care(x,k).icon}</button>`).join('');
   const missed=(p.needs||[]).filter(([k])=>!(p.done||[]).includes(k)).length;
   let foot;
-  if(q.stage==='ripe'||q.stage==='over')foot=x.cmd(`🧺 Thu${q.stage==='over'?' (quá lứa)':''}`,'fa_v_harvest',{plot:p.i},`small ${q.stage==='over'?'ghost':'primary'} fp-cut`);
+  if(q.stage==='ripe'||q.stage==='over')foot=x.cmd(`🧺 Thu hoạch`,'fa_v_harvest',{plot:p.i},`small ${q.stage==='over'?'ghost':'primary'} fp-cut`);
   else foot=`<small class="fp-time">⏱ ${cd(p.ripe_at,x)}</small>`;
   const done=q.stage==='ripe'||q.stage==='over';
   const label=done?(q.stage==='over'?'Quá lứa · loại B':missed?'Chín · loại B':'Chín · loại A'):q.due.length?q.due.map(k=>care(x,k).label).join(' · '):c.name;
@@ -98,7 +103,7 @@ function seedPicker(x){
   const tiles=(g.crops||[]).map(v=>{const c=crop(x,v.id),poor=money<c.seed*(all?empties:1);const cmd=all?['fa_v_all',{what:'plant',crop:c.id}]:['fa_v_plant',{plot:i,crop:c.id}];
     return `<button type="button" class="tile fp-seed ${v.why?'locked':''}" data-command="${cmd[0]}" data-payload="${x.esc(JSON.stringify(cmd[1]))}"${v.why||poor?' disabled':''}><span class="tile-emoji">${c.emoji}</span><b>${x.esc(c.name)}</b><small>${v.why?'🔒 '+x.esc(v.why):`⏱ ${clock(v.dur)} · ${c.seed} xu`}</small><small class="fp-seed-x">${c.qty} ${x.esc(c.unit)} × ${c.price} xu</small></button>`;}).join('');
   const many=(g.ups||[]).includes('tractor')&&(g.plots||[]).filter(q=>!q.crop).length>1;
-  return `<div class="fp-pick card"><div class="row spread"><b>🌱 Gieo ô ${i+1}</b>${many?`<button type="button" class="btn small ${x.ui.fpAll?'primary':'ghost'}" data-action="car:fpAll" aria-pressed="${!!x.ui.fpAll}">🚜 Cả vườn</button>`:''}</div><div class="tile-grid fp-seeds">${tiles}</div></div>`;
+  return `<div class="fp-pick card"><div class="row spread"><b>🌱 Chọn hạt</b>${many?`<button type="button" class="btn small ${x.ui.fpAll?'primary':'ghost'}" data-action="car:fpAll" aria-pressed="${!!x.ui.fpAll}">🚜 Cả vườn</button>`:''}</div><div class="tile-grid fp-seeds">${tiles}</div></div>`;
 }
 function garden(x){
   const g=P(x),plots=(g.plots||[]).map(p=>plotCard(p,x)).join('');
@@ -123,7 +128,7 @@ function pens(x){
         else if(v.fed&&!ready){state=`${v.n}/${a.feeds} cữ · no, ăn tiếp sau ${cd(v.ready_at,x)}`;btn='';}
         else{state=`${v.n}/${a.feeds} cữ · đói rồi`;btn=x.cmd(`🌾 Cho ăn · ${a.feed} xu`,'fa_v_feed',{animal:a.id},'small',money<a.feed);}
       }else if(!v.fed){state='Đói rồi';btn=x.cmd(`🌾 Cho ăn · ${a.feed} xu`,'fa_v_feed',{animal:a.id},'small',money<a.feed);}
-      else if(!ready){state=`${prod(x,a.product).emoji} sau ${cd(v.ready_at,x)}`;btn='';}
+      else if(!ready){state=`${prod(x,a.product).emoji} ⏱ ${cd(v.ready_at,x)}`;btn='';}
       else{state='Xong rồi!';btn=x.cmd(`🧺 Thu ${a.qty} ${prod(x,a.product).unit}`,'fa_v_collect',{animal:a.id},'small primary');}
     }
     return `<div class="fp-pen ${v?'own':''}"><span class="fp-pen-art ${v&&v.fed?'busy':''}" aria-hidden="true">${a.emoji}</span><div class="grow"><b>${x.esc(a.name)}</b><small>${state}</small></div>${btn}</div>`;
@@ -141,7 +146,7 @@ function sell(x){
     const items=Object.entries(o.items).map(([k,q])=>{const p=prod(x,k),s=(g.store||[]).find(r=>r.id===k),have=s?(b.grade==='A'?s.a:s.a+s.b):0;return `<span class="fa-chip ${have>=q?'ok':''}">${p.emoji} ${Math.min(have,q)}/${q}</span>`;}).join('');
     const tags=[b.grade==='A'?'<span class="tag blue">Loại A</span>':'<span class="tag amber">A/B</span>',b.gap?'<span class="tag green">🏅 VietGAP</span>':''].join('');
     const act=o.asked?`${x.cmd(`🤝 Bớt · ${Math.floor(o.pay*(C(x).haggle_pct||85)/100)} xu`,'fa_v_deliver',{order:o.id,deal:'yes'},'small')}${x.cmd('✋ Giữ giá','fa_v_deliver',{order:o.id,deal:'no'},'small ghost')}`
-      :`${x.cmd('🚚 Giao','fa_v_deliver',{order:o.id},'small primary',!!o.why)}${x.cmd('✕','fa_v_skip',{order:o.id},'small ghost fp-x')}`;
+      :`${x.cmd('🚚 Giao hàng','fa_v_deliver',{order:o.id},'small primary',!!o.why)}${x.cmd('✕','fa_v_skip',{order:o.id},'small ghost fp-x')}`;
     return `<article class="fp-order${o.asked?' haggle':''}"><div class="row spread"><b>${b.emoji} ${x.esc(b.name)}</b><b class="price">${o.pay} xu</b></div>
       <p class="fp-line">${x.esc(o.asked?'“Bớt chút nha em?”':o.line)}</p><div class="row wrap fp-items">${items}${tags}<small class="muted">⏱ ${cd(o.until,x)}</small></div>
       ${o.why&&!o.asked?`<small class="fp-why">${x.esc(o.why)}</small>`:''}<div class="row wrap">${act}</div></article>`;}).join('');
@@ -167,16 +172,29 @@ export function plusTab(x){
   const body=pane==='pens'?pens(x):pane==='sell'?sell(x):pane==='up'?upgrades(x):garden(x);
   return `<section class="fp">${head(x)}${paneBar(x)}<div class="fp-body">${body}</div></section>`;
 }
+/** How many things wait for you: plots ripe or asking for care, pens ready to collect (or a grown pig). */
+export function plusCount(x){
+  const g=P(x);if(!g.open)return 0;
+  const now=x.now();
+  const plots=(g.plots||[]).map(p=>live(p,x)).filter(p=>p.crop&&(p.stage==='ripe'||p.stage==='over'||p.due.length)).length;
+  const pens=Object.values(g.pens||{}).filter(v=>v.fed&&v.ready_at<=now).length;
+  return plots+pens;
+}
 /** The 🌟 tab's small line. */
 export function plusSub(x){
   const g=P(x);if(!g.open)return 'MỚI';
-  const n=(g.plots||[]).map(p=>live(p,x)).filter(p=>p.crop&&(p.stage==='ripe'||p.due.length)).length;
-  return n?`${n} ô cần bạn`:`cấp ${g.level}`;
+  const n=plusCount(x);
+  return n?`${n} việc chờ`:`cấp ${g.level}`;
 }
 export function plusBadge(x){
-  const g=P(x);if(!g.open)return '<b class="fa-badge new">!</b>';
-  const n=(g.plots||[]).map(p=>live(p,x)).filter(p=>p.crop&&(p.stage==='ripe'||p.due.length)).length;
+  if(!P(x).open)return '<b class="fa-badge new">!</b>';
+  const n=plusCount(x);
   return n?`<b class="fa-badge">${n}</b>`:'';
+}
+/** 🚶 Tự đi: the 🌟 chip on the scene (under the view switches); it glows while something waits or before the first visit. */
+export function plusChip(x,btn){
+  const hot=!P(x).open||plusCount(x)>0;
+  return btn(`🌟 Trại${plusBadge(x)}`,'fvmore',{more:'plus'},`fv-plus${hot?' hot':''}`,' aria-label="Trang trại"');
 }
 /** A between-orders hint row when the garden waits for you (lowest priority). */
 export function plusStep(x,walk){

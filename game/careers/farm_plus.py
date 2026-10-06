@@ -74,7 +74,7 @@ IN_SEASON = dict(spring=('lua', 'dau'), summer=('dua', 'xoai', 'tl'), autumn=('b
 ANIMALS = [
     dict(id='duck', name='Đàn vịt', emoji='🦆', cost=40, barn=False, feed=2, mins=20, product='trung_vit', qty=6, food='lúa lép'),
     dict(id='cow', name='Bò sữa', emoji='🐄', cost=150, barn=True, feed=4, mins=30, product='sua', qty=4, food='cỏ voi'),
-    dict(id='pig', name='Heo', emoji='🐖', cost=30, barn=True, feed=3, mins=15, feeds=4, sell=80, food='cám gạo'),
+    dict(id='pig', name='Heo thịt', emoji='🐖', cost=30, barn=True, feed=3, mins=15, feeds=4, sell=80, food='cám gạo'),
 ]
 ANIMAL = {x['id']: x for x in ANIMALS}
 PRODUCTS = {**{x['id']: dict(name=x['name'], emoji=x['emoji'], unit=x['unit'], price=x['price']) for x in CROPS},

@@ -5,7 +5,7 @@ import {reqList} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine,goAttrs,bareLabel} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
-import {plusTab,plusSub,plusBadge,plusStep,plusTick,plusActions} from './farm_plus.js';
+import {plusTab,plusSub,plusBadge,plusChip,plusStep,plusTick,plusActions} from './farm_plus.js';
 const ID='farm';
 const STAGE={empty:'Luống trống',sprout:'Mới nhú',young:'Đang lớn',almost:'Sắp tới lứa',ripe:'Đúng lứa · thu được',over:'Quá lứa · xơ',rotten:'Hỏng · dọn luống'};
 const ART={sprout:'🌱',young:'🌿'};
@@ -506,7 +506,7 @@ function walkView(t,x,g,idle=false){
     const labels=at==='pack'&&t&&labelStep(t,x,g)?labelTiles(t,x,'fa-bar-labels'):'';
     acts=`${placeLine(at,x)}${seeds}${labels}${own.length?`<div class="fv-btns">${own.map(o=>`<button type="button" class="btn small fv-btn ${o.cls}"${goAttrs(o)}>${o.label}</button>`).join('')}</div>`:''}${cta}`;
   }
-  const top=ride?'':`<div class="fv-top">${camSeg(x)}${modeSeg(x,true)}</div>`;
+  const top=ride?'':`<div class="fv-top">${camSeg(x)}${modeSeg(x,true)}</div>${plusChip(x,(...a)=>carBtn(x,...a))}`;
   return `<div class="career-job fa fa-walk"${idle?' data-idle-open':''}><div class="fv-host" id="fvHost"><i hidden></i></div>${hint}${top}${ride?'':drawer(t,x,g)}
     ${deskCard(x)}<div class="fa-bar fv-acts">${orderChip(t,x)}${acts}</div></div>`;
 }
