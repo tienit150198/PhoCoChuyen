@@ -1,3 +1,9 @@
+# Chưa phát hành — oaq-hai (Ông Hai 10.000 xu)
+
+- 🪨 Ô ăn quan: thắng Ông Hai được 10.000 xu (trước 500). Bé Bi giữ nguyên (50 xu, cách chơi cũ).
+- Ông Hai đi trước và mạnh hơn hẳn: tìm kiếm alpha-beta có bảng chuyển vị, ưu tiên nước ăn, nước "sát thủ", đào sâu dần đến khoảng 8 lượt, giải chính xác khi gần hết quân. Ngân sách tính bằng số nước mô phỏng (20.000), không theo đồng hồ; không cố ý đi nước kém.
+- Bản lưu không đổi khóa; bản 1.7.15 cũ vẫn đọc được ván thắng 10.000 xu và ván Ông Hai đã đi trước.
+
 # v1.8.0 — 2026-10-06
 
 Có gì mới (chủ game duyệt): "Cập nhật toàn bộ UI UX", "Thêm Top tài phú trên Bảng xếp hạng".
