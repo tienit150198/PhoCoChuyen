@@ -69,7 +69,7 @@ export function inventoryHTML(state,content,opts={}){
     return `<ul class="hs-inv-list">${wearList(state,C).sort((a,b)=>(b.worn-a.worn)||CLOTHES.indexOf(a.it.slot)-CLOTHES.indexOf(b.it.slot)).map(({it,worn,bought})=>{
       const c=tint[it.id]||acc[it.id];
       const bits=[slots.get(it.slot)||it.slot,worn?'đang mặc':'trong tủ đồ',bought&&it.price?`giá ${xu(it.price)}`:'có sẵn',c&&c!=='goc'?`màu ${colorName(c)}`:''].filter(Boolean);
-      return `<li class="hs-inv-row"><span class="hs-inv-pic" aria-hidden="true">${it.slot==='acc'?'💍':it.slot==='shoes'?'👟':it.slot==='bottom'?'👖':'👕'}</span><span class="hs-inv-txt"><b>${esc(it.name)}${worn?' <i class="hs-inv-tag">Đang mặc</i>':''}</b><small>${esc(bits.join(' · '))}</small></span></li>`;}).join('')}</ul>`
+      return `<li class="hs-inv-row"><span class="hs-inv-pic" aria-hidden="true">${it.slot==='acc'?'🧢':it.slot==='shoes'?'👟':it.slot==='bottom'?'👖':'👕'}</span><span class="hs-inv-txt"><b>${esc(it.name)}${worn?' <i class="hs-inv-tag">Đang mặc</i>':''}</b><small>${esc(bits.join(' · '))}</small></span></li>`;}).join('')}</ul>`
       +`<div class="bk-actions">${btn('👗 Mở tủ đồ','wardrobe',{},'ghost small')}</div>`;};
   const cars=()=>{const G=C.garage||{},V=new Map((G.vehicles||[]).map(v=>[v.id,v])),paint=new Map((G.paints||[]).map(p=>[p.id,p])),ride=J.garage?.ride;
     return `<ul class="hs-inv-list">${(J.garage?.cars||[]).map(c=>{const v=V.get(c.id);if(!v)return '';const p=paint.get(c.color);
