@@ -173,7 +173,9 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
 .career-job.fl .fl-empty>span{font-size:42px}
 
 /* Preview stage (drawn objects keep their own colours) */
-.career-job.fl .fl-stage{position:relative;min-height:210px;border-radius:var(--fl-r);background:radial-gradient(circle at 50% 30%,var(--fl-surface) 0,var(--fl-surface-2) 75%);border:1px solid var(--fl-line);overflow:hidden}
+/* Its own stacking context: the bow, banner and cellophane (z 60–80) stay inside the picture instead of painting
+   over the pinned order card and the sheet header (#204). */
+.career-job.fl .fl-stage{position:relative;isolation:isolate;min-height:210px;border-radius:var(--fl-r);background:radial-gradient(circle at 50% 30%,var(--fl-surface) 0,var(--fl-surface-2) 75%);border:1px solid var(--fl-line);overflow:hidden}
 .career-job.fl .fl-stage.loose,.career-job.fl .fl-stage.fl-bucket{min-height:150px;padding:10px}
 .career-job.fl .fl-stage.loose>p{margin:0 0 6px;text-align:center}
 .career-job.fl .fl-loose{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;font-size:22px;position:relative;z-index:2}
@@ -372,3 +374,7 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
 .career-job.fl button.asm-pin-head{padding:7px 0;margin:-7px 0}
 /* The work-area tabs in the order ticket (Chọn hoa · Cắm & gói · Thiệp) are 44 px tap targets. */
 .career-job.fl .asm-tab{min-height:44px}
+/* 🏷️ Bảng giá between orders: one line on what the flower prices change, and the way there (#14). */
+.career-job.fl .fl-price-note{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:10px 0 0;padding:8px 12px;border-radius:var(--fl-r);border:1px dashed var(--fl-line);background:var(--fl-surface);font-size:.833rem;line-height:1.4;color:var(--ink-2)}
+.career-job.fl .fl-price-note>span{flex:1 1 14em;min-width:0}
+.career-job.fl .fl-price-note>.btn{min-height:44px}

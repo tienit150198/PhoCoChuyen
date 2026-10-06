@@ -305,6 +305,12 @@ function regularCard(t,x){
   if(!r||!r.notes.length)return '';
   return fold(`⭐ Khách quen · ${r.visits} lần ghé · ${r.notes.length} ghi chú`,`<ul class="fl-prefs">${r.notes.map(n=>`<li>${x.esc(n)}</li>`).join('')}</ul>`);
 }
+/** 🏷️ Bảng giá (chat #14 "tiệm hoa không có chỗ thay đổi giá bán"): the price list exists but no screen of the shop led
+ * to it. Its flower prices are what the stems are worth against the order's budget; the customer pays the quoted price. */
+const priceLink=x=>x.button('🏷️ Bảng giá','prices',{},'ghost small');
+function priceNote(x){
+  return `<p class="fl-price-note"><span>🏷️ Giá từng loại hoa: đổi trong Bảng giá trước khi mở ca. Giá hoa tính vào giá trị bó, khách vẫn trả đúng giá đơn đã báo.</span>${priceLink(x)}</p>`;
+}
 /** Between orders: what is in the cooler, oldest first, and how open it is. */
 function coolerStrip(x){
   const d=data(x),cooler=d.cooler||{};
@@ -716,7 +722,7 @@ export default {
     // (no guest waiting: the host's own button — new guest or close the day — leads).
     const steps=d.day?.open_event?[{ok:null,label:'Chuyện bất ngờ: chọn cách xử lý',go:{sel:'.fk-event .fk-choice:not([disabled])'}}]
       :open.length?[{ok:null,label:'Làm đơn tiếp theo',go:{act:'nextJob',label:'👉 Làm đơn tiếp theo'}}]:[];
-    const html=idlePanel(x,d.day,'fl_event',extras(x)+careBoard(x)+coolerStrip(x)+bookFold(x),null,'fl');
+    const html=idlePanel(x,d.day,'fl_event',extras(x)+careBoard(x)+coolerStrip(x)+priceNote(x)+bookFold(x),null,'fl');
     return html.replace(/^(<div[^>]*>)/,`$1${nextHint(x,steps,{cta:false})}`);
   },
   job(t,x){
@@ -752,7 +758,7 @@ export default {
       ${plated(t)?'':cardPreview(t,x)+valueMeter(t,x)}
       ${S.length?`<div class="fk-wide-only"><p class="fl-brief-cap">Các bước làm</p>${checklist(x,S,'Các bước làm')}</div>`:''}
       ${S.length?`<details class="fl-check fl-narrow-only"${ui.flCheck?' open':''}><summary data-action="car:check">📋 Các bước làm · ${done}/${S.length} xong</summary>${checklist(x,S,'Các bước làm')}</details>`:''}</div>`;
-    const tools=`<p class="row wrap fl-tools">${dump} ${x.button('📦 Kho & nhập hoa','inventory',{},'ghost small')}</p>`;
+    const tools=`<p class="row wrap fl-tools">${dump} ${x.button('📦 Kho & nhập hoa','inventory',{},'ghost small')} ${priceLink(x)}</p>`;
     // One bottom button (phone and wide): it does the next step, or the hand-off once nothing is left.
     // Right above it, what is on the bench now, so the result of each tap shows next to the button.
     const n=pending(S),heads=w.stems.slice(0,14).map(s=>glyph(x,s.i)).join('')+(w.stems.length>14?`<small>+${w.stems.length-14}</small>`:'');
@@ -849,5 +855,5 @@ export default {
     const night=rest.length?`<article class="card space-top fl-night"><h4>🌙 Qua đêm ở tiệm</h4><ul>${rest.map(l=>`<li>${x.esc(l)}</li>`).join('')}</ul></article>`:'';
     return shopSummary(data,x,{emoji:'💐',lines:mai.map(l=>x.esc(l)),extra:night});
   },
-  dock:[['inventory','box','Kho','Nhập & đếm hoa']],
+  dock:[['inventory','box','Kho','Nhập & đếm hoa'],['prices','book','Bảng giá','Giá từng loại hoa']],
 };

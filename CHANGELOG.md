@@ -1,8 +1,13 @@
+# Chưa phát hành — Tiệm hoa trên điện thoại + Bảng giá (WP-B)
+
+- Góp ý #204 và chat: trên điện thoại dọc (từ 1.8.0), ở tiệm hoa thẻ "Khách cần" dính trên đầu che kệ hoa, chữ bên cột xem trước đè lên ô hoa, chạm không chọn được loại hoa. Giờ thẻ mở thì cuộn theo trang (thu gọn còn một dòng thì vẫn ghim), cột xem trước nằm đúng chỗ, nơ/băng rôn/giấy bóng không vẽ đè lên thẻ nữa. Sửa chung cho mọi nghề dùng thẻ này: sửa đồ, tiệm quần áo, quán mì. Điện thoại ngang và máy tính giữ như cũ.
+- Tiệm hoa: nút 🏷️ Bảng giá ở bàn làm việc, ở thanh nghề và một dòng giữa hai đơn: giá từng loại hoa đổi trước khi mở ca, tính vào giá trị bó; khách vẫn trả đúng giá đơn đã báo.
+- Chỉ đổi giao diện (CSS/JS): không đổi bản lưu, tiền hay máy chủ. Không có "Có gì mới".
+
 # v1.9.2 — 2026-10-06: giao diện cũ trở lại
 
 - 🎨 Theo chủ game: giao diện cổ điển (bản đồ phố 2D, cảnh từng tiệm, như 1.8.1) là giao diện mặc định. Máy chủ giữ nguyên 1.9.1 (quầy có nhân viên +50%, sửa tip kế toán ngày 1, dữ liệu Thư giãn trên đảo vẫn được giữ). Đảo 2.5D sẽ quay lại dưới dạng tuỳ chọn ở bản sau.
 - Có gì mới: thay mục 1.9.0 (đảo 2.5D) bằng 1.9.2: giao diện quen thuộc, quầy +50%.
-
 # v1.9.1 — 2026-10-06 (hotfix)
 
 - Người chơi mới thi đạt kế toán ngày 1 rồi làm Kế toán doanh nghiệp / tập đoàn: nộp việc đầu tiên bị từ chối "Kết quả tip của công việc sai." (lời chào việc đầu thành tip 0 xu ở nghề không có tip tiền). Giờ là một món quà. Không có "Có gì mới".

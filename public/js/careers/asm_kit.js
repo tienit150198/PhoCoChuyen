@@ -66,7 +66,9 @@ export function stepper(x,{n,minus,plus,label}){
 /** Stuck = sitting at its sticky offset (it then covers the gap under the header). */
 function stuck(dlg){
   const p=dlg.querySelector('.asm-pin'),hd=dlg.querySelector('.sheet-head');if(!p||!hd)return;
-  const top=parseFloat(getComputedStyle(p).top)||0;
+  // Open on a portrait phone the card scrolls with the work (calm.css): scrolled past, it is not "stuck".
+  const cs=getComputedStyle(p);if(cs.position!=='sticky'){p.classList.remove('stuck');return;}
+  const top=parseFloat(cs.top)||0;
   p.classList.toggle('stuck',p.getBoundingClientRect().top<=hd.getBoundingClientRect().top+top+1);
 }
 const setVar=(el,k,v)=>{if(el.dataset[k]!==v){el.dataset[k]=v;el.style.setProperty('--'+k.replace(/[A-Z]/g,c=>'-'+c.toLowerCase()),v);}};

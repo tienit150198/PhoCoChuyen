@@ -156,6 +156,12 @@
 /* asm_kit.js (florist, repair, noodle shop, clothes shop): the request pinned under the sheet header with a live ✓ per
    requirement, the "Bước tiếp" line in the bottom bar, − n + steppers and "Khách cần" badges. */
 .asm-pin{position:sticky;top:var(--asm-top,0px);z-index:5;display:grid;gap:6px;margin:8px 0 10px;padding:8px 10px;border-radius:var(--ck-radius);background:var(--surface);border:1.5px solid var(--accent);box-shadow:0 6px 14px -8px rgb(0 0 0 / 22%);min-width:0}
+/* Portrait phone (feedback #204, "đè chữ, không chọn được loại hoa"): open, the card is 180–260 px of chips and tabs,
+   so it scrolls with the work like the other secondary panels (compact.css A5); folded to one line (tap its header)
+   it stays pinned. The side column under it is not sticky there, so it drops the offset meant for a pinned card
+   (florist.css, repair.css: top = header + card), which slid the preview down over the parts. */
+html[data-layout="phone"][data-orientation="portrait"] .asm-pin:not(.folded){position:relative;top:auto}
+html[data-layout="phone"][data-orientation="portrait"] .career-job .asm-pin~.workbench .wb-side{top:auto}
 .asm-pin-head{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;margin:0;min-width:0;font-size:.9rem;line-height:1.3}
 .asm-pin-head>b{flex:none;color:var(--accent-text)}
 .asm-pin-sub{flex:1 1 8em;min-width:0;color:var(--ink-2);font-size:.833rem;font-weight:600;overflow-wrap:anywhere}
