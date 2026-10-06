@@ -1657,6 +1657,43 @@ ARCS = {
                 ('khang', 'Khoa Nội có người giữ sổ giao ca kỹ như chị rồi, anh yên tâm.'),
                 ('me', 'Em sẽ giữ sổ như chị: thật, đủ, ca sau đọc là hiểu.')]),
         ]),
+    # ------------------------------------------------------------ 📞 Tổng đài Cứu hộ phường Mây (chương 4)
+    'rescue': dict(
+        title='Chiếc tai nghe của chị Thảo', emoji='🎧',
+        keepsake=dict(emoji='🎧', name='Chiếc tai nghe quấn băng keo đen', desc='Chiếc tai nghe đầu tiên của tổng đài, chị Thảo đeo mười lăm năm. Giờ nó treo ở bàn trực của bạn.'),
+        cast={'thao': _p('Chị Thảo', '🎧', 'Trưởng ca tổng đài', 'rescue_npc_01'),
+              'binh': _p('Anh Bình', '🚒', 'Đội trưởng đội chữa cháy và cứu nạn', 'rescue_npc_02'),
+              'vy': _p('Bác sĩ Vy', '🚑', 'Bác sĩ xe cấp cứu', 'rescue_npc_03'),
+              'ba': _p('Ông Ba', '👴', 'Cụ ông hay gọi tổng đài', 'rescue_npc_04')},
+        beats=[
+            _b('Địa chỉ trước', '📍', 'Cuộc gọi đầu tiên, chị Thảo ngồi cạnh nghe kèm.', [
+                ('thao', 'Người ta la “cháy” thì em hỏi gì trước?'),
+                ('me', 'Dạ… cháy cái gì ạ?'),
+                ('thao', 'Địa chỉ trước. Rớt máy giữa chừng mà có địa chỉ thì xe vẫn chạy được.')]),
+            _b('Ông Ba gọi lần thứ mười', '👴', 'Đèn đường dây sáng: lại là số của ông Ba.', [
+                ('ba', 'Tui đau… đau lòng chớ đau gì. Cô nói chuyện với tui chút đi.'),
+                ('me', 'Ông ơi, con vẫn phải hỏi ông có đau ngực thật không đã.'),
+                ('thao', 'Đúng rồi. Gọi mười lần thì cũng hỏi đủ mười lần.')],
+               _c('Làm sao cho ông Ba bớt gọi tổng đài?',
+                  _o('a', 'Báo tổ dân phố cử người ghé nói chuyện với ông mỗi chiều', [('ba', 'Chiều nào cũng có đứa ghé uống trà. Tui bớt gọi rồi đó.')], rel='ba'),
+                  _o('b', 'Chỉ ông số đường dây hỗ trợ người cao tuổi của phường', [('thao', 'Số đó có người trực tâm sự. Đường dây khẩn trống hơn hẳn.')], rel='thao'))),
+            _b('Giữ máy', '☎️', 'Một bà mẹ gọi: con trai bà ngã gục, không thở bình thường.', [
+                ('vy', 'Em giữ máy với chị ấy, đếm nhịp ép tim giúp chị. Xe còn bốn phút.'),
+                ('me', 'Chị ơi, đặt tay giữa ngực, ép mạnh, em đếm cùng chị nè.'),
+                ('vy', 'Tới rồi. Em đếm đều lắm, chị ấy làm theo được hết.')],
+               _c('Sau cuộc gọi đó, bạn làm gì?',
+                  _o('a', 'Xin chị Thảo nghỉ năm phút, uống ly nước rồi trực tiếp', [('thao', 'Nghỉ đúng lúc là biết giữ mình. Ca này còn dài.')], rel='thao'),
+                  _o('b', 'Kể lại cho bác sĩ Vy, hỏi xem mình đếm vậy có đúng không', [('vy', 'Đúng nhịp. Lần sau em nhắc người ta thay tay khi mỏi nhé.')], rel='vy'))),
+            _b('Xe không trả lời', '📻', 'Đêm mưa, xuồng cứu hộ không trả lời bộ đàm.', [
+                ('binh', 'Xuồng hư bugi từ chiều, sổ giao ca có ghi mà.'),
+                ('me', 'Em đã đánh dấu trên bảng đội rồi anh, em mượn xuồng phường bên ngay.'),
+                ('binh', 'Vậy là kịp. Bảng đội đúng thì đêm mưa cũng không rối.')]),
+            _b('Chiếc tai nghe cũ', '🎧', 'Chị Thảo lên làm phó giám đốc, bàn giao ca trực.', [
+                ('thao', 'Chiếc tai nghe này nghe được cả tiếng người ta không nói ra.'),
+                ('thao', 'Địa chỉ trước, gửi đúng đội, không bỏ ai một mình. Thế thôi.'),
+                ('binh', 'Bàn trực có em ngồi, đội anh yên tâm chạy.'),
+                ('me', 'Em sẽ hỏi đủ như chị dạy, kể cả cuộc gọi thứ mười của ông Ba.')]),
+        ]),
     # ------------------------------------------------------------ Công ty CP Cánh Diều (chương 5)
     'hr_admin': dict(
         title='Người giữ hồ sơ', emoji='🗂️',

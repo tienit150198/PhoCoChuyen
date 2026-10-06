@@ -64,6 +64,8 @@ NORMS = {
     'railway': dict(rate=.05, cash=0, lo=0, hi=0, bill=12),
     # 🏥 Bệnh viện Lá Sen: never money (no envelopes on the ward); a letter or a drawing now and then
     'nurse': dict(rate=.06, cash=0, lo=0, hi=0, bill=10),
+    # 📞 Tổng đài cứu hộ: nobody tips the hotline; a thank-you letter or a child's drawing now and then
+    'rescue': dict(rate=.05, cash=0, lo=0, hi=0, bill=10),
 }
 DEFAULT_NORM = dict(rate=.15, cash=.70, lo=2, hi=10, bill=40)
 OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
@@ -237,6 +239,7 @@ CAREER_LINES = {
     'oil': ('Khóa đủ, đo khí đủ, cả ca yên tâm.', 'Dừng việc đúng lúc, cảm ơn em.'),
     'railway': ('Chờ có ba phút mà yên tâm cả nhà.', 'Gác chắn nói rõ ràng, chờ cũng không bực.'),
     'nurse': ('Hỏi tên, ngày sinh kỹ lưỡng, yên tâm ghê.', 'Giải thích từng bước, cả nhà bớt lo.', 'Báo bác sĩ kịp lúc, cảm ơn nhiều.'),
+    'rescue': ('Cô tổng đài giữ máy với tôi tới lúc xe tới.', 'Hỏi địa chỉ trước, xe tới đúng cửa.', 'Dặn từng bước, tôi làm theo được liền.'),
 }
 
 # Thank-you gifts that carry no money: (emoji, what).
@@ -287,6 +290,7 @@ GIFTS = {
     'oil': (('🍮', 'hũ bánh flan cô Sáu để phần'), ('🫙', 'hộp mắm ruốc Má gửi lên giàn'), ('💌', 'tấm thiệp cả ca ký tên')),
     'railway': (('🍵', 'ấm chè xanh bà Bông pha'), ('🍙', 'gói xôi nóng của cô bán xôi'), ('💌', 'tấm thiệp tụi nhỏ vẽ con tàu')),
     'nurse': (('💌', 'lá thư cảm ơn viết tay'), ('📝', 'vài dòng khen trong sổ góp ý của khoa'), ('🎨', 'bức tranh cháu người bệnh vẽ tặng khoa')),
+    'rescue': (('💌', 'lá thư cảm ơn gửi hộp thư trung tâm'), ('🎨', 'bức tranh “cô tổng đài” bé Na vẽ'), ('🍊', 'túi quýt người được cứu gửi cả ca')),
 }
 DEFAULT_GIFTS = (('💌', 'tấm thiệp cảm ơn'), ('🍊', 'mấy trái quýt'))
 
