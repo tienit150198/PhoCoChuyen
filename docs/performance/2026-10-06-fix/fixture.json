@@ -1,0 +1,9 @@
+{
+  "players": 1000,
+  "heavy_players": 100,
+  "small_bytes": 162017,
+  "large_bytes": 4701855,
+  "careers": 41,
+  "python": "3.12.15",
+  "build": "e57b5c451f133ca9206f"
+}

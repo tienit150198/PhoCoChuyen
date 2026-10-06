@@ -1,0 +1,10 @@
+Final snapshot: baseline f3ada34 plus game/storage.py, game/state_delta.py, server.py, game/retention.py and four new regression modules.
+Image config ID: sha256:df2ac666b636562cb566e2d8cd37573ef0f1511bd0db9fe7f8cb6dce38a8b100
+Command: python -m unittest tests.test_command_admission tests.test_state_delta_memory tests.test_storage tests.test_state_delta tests.test_http tests.test_http_admission tests.test_business_storage tests.test_serialize_memory tests.test_command_metrics tests.test_ledger_batch tests.test_retention.ActionTests tests.test_retention_concurrency -q
+Isolated TEST_DATABASE_URL schema, Linux Docker, 4 CPU quota / 4 GiB.
+Ran 98 tests in 69.410s
+OK (skipped=1)
+Node-dependent test skipped in Linux image; host Node delta tests passed separately before this final SQL-only change.
+Retention-only baseline: deterministic DeadlockDetected SQLSTATE 40P01 reproduced.
+Retention-only patched: 7 tests passed in 10.866 seconds.
+No further load test was run after the final retention SQL correction, per user stop request.

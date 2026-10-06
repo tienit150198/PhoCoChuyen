@@ -1,0 +1,199 @@
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "en_US.utf8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default max_connections ... 100
+selecting default shared_buffers ... 128MB
+selecting default time zone ... UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+
+Success. You can now start the database server using:
+
+    pg_ctl -D /var/lib/postgresql/data -l logfile start
+
+waiting for server to start....2026-10-05 23:01:30.662 UTC [41] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-10-05 23:01:30.677 UTC [41] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-10-05 23:01:30.686 UTC [44] LOG:  database system was shut down at 2026-10-05 23:01:30 UTC
+2026-10-05 23:01:30.691 UTC [41] LOG:  database system is ready to accept connections
+ done
+server started
+CREATE DATABASE
+
+
+/usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+
+waiting for server to shut down....2026-10-05 23:01:31.530 UTC [41] LOG:  received fast shutdown request
+2026-10-05 23:01:31.531 UTC [41] LOG:  aborting any active transactions
+2026-10-05 23:01:31.532 UTC [41] LOG:  background worker "logical replication launcher" (PID 47) exited with exit code 1
+2026-10-05 23:01:31.532 UTC [42] LOG:  shutting down
+2026-10-05 23:01:31.533 UTC [42] LOG:  checkpoint starting: shutdown immediate
+2026-10-05 23:01:31.611 UTC [42] LOG:  checkpoint complete: wrote 926 buffers (2.8%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.014 s, sync=0.061 s, total=0.079 s; sync files=301, longest=0.010 s, average=0.001 s; distance=4283 kB, estimate=4283 kB; lsn=0/1925DA0, redo lsn=0/1925DA0
+2026-10-05 23:01:31.616 UTC [41] LOG:  database system is shut down
+ done
+server stopped
+
+PostgreSQL init process complete; ready for start up.
+
+sh: locale: not found
+2026-10-05 23:01:29.983 UTC [35] WARNING:  no usable system locales were found
+initdb: warning: enabling "trust" authentication for local connections
+initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+2026-10-05 23:01:31.646 UTC [1] LOG:  starting PostgreSQL 16.15 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+2026-10-05 23:01:31.647 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2026-10-05 23:01:31.658 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+2026-10-05 23:01:31.660 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-10-05 23:01:31.663 UTC [57] LOG:  database system was shut down at 2026-10-05 23:01:31 UTC
+2026-10-05 23:01:31.666 UTC [1] LOG:  database system is ready to accept connections
+2026-10-05 23:03:45.419 UTC [55] LOG:  checkpoint starting: wal
+2026-10-05 23:04:45.318 UTC [55] LOG:  checkpoint complete: wrote 8830 buffers (26.9%); 0 WAL file(s) added, 0 removed, 33 recycled; write=59.507 s, sync=0.231 s, total=59.899 s; sync files=602, longest=0.073 s, average=0.001 s; distance=531315 kB, estimate=531315 kB; lsn=0/3FD8EDB0, redo lsn=0/22002B70
+2026-10-05 23:04:51.665 UTC [55] LOG:  checkpoint starting: wal
+2026-10-05 23:05:33.513 UTC [212] ERROR:  deadlock detected
+2026-10-05 23:05:33.513 UTC [212] DETAIL:  Process 212 waits for ShareLock on transaction 31470; blocked by process 206.
+	Process 206 waits for ShareLock on transaction 31466; blocked by process 212.
+	Process 212: INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+	Process 206: INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+2026-10-05 23:05:33.513 UTC [212] HINT:  See server log for query details.
+2026-10-05 23:05:33.513 UTC [212] CONTEXT:  while inserting index tuple (3,46) in relation "stat_actions"
+2026-10-05 23:05:33.513 UTC [212] STATEMENT:  INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+2026-10-05 23:05:34.514 UTC [174] ERROR:  deadlock detected
+2026-10-05 23:05:34.514 UTC [174] DETAIL:  Process 174 waits for ShareLock on transaction 31470; blocked by process 206.
+	Process 206 waits for ShareLock on transaction 31469; blocked by process 83.
+	Process 83 waits for ShareLock on transaction 31453; blocked by process 174.
+	Process 174: INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+	Process 206: INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+	Process 83: INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+2026-10-05 23:05:34.514 UTC [174] HINT:  See server log for query details.
+2026-10-05 23:05:34.514 UTC [174] CONTEXT:  while inserting index tuple (3,53) in relation "stat_actions"
+2026-10-05 23:05:34.514 UTC [174] STATEMENT:  INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+2026-10-05 23:05:34.515 UTC [206] ERROR:  deadlock detected
+2026-10-05 23:05:34.515 UTC [206] DETAIL:  Process 206 waits for ShareLock on transaction 31469; blocked by process 83.
+	Process 83 waits for ShareLock on transaction 31470; blocked by process 206.
+	Process 206: INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+	Process 83: INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+2026-10-05 23:05:34.515 UTC [206] HINT:  See server log for query details.
+2026-10-05 23:05:34.515 UTC [206] CONTEXT:  while inserting index tuple (10,65) in relation "stat_actions"
+2026-10-05 23:05:34.515 UTC [206] STATEMENT:  INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+2026-10-05 23:05:35.516 UTC [83] ERROR:  deadlock detected
+2026-10-05 23:05:35.516 UTC [83] DETAIL:  Process 83 waits for ShareLock on transaction 31737; blocked by process 128.
+	Process 128 waits for ShareLock on transaction 31469; blocked by process 83.
+	Process 83: INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+	Process 128: INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+2026-10-05 23:05:35.516 UTC [83] HINT:  See server log for query details.
+2026-10-05 23:05:35.516 UTC [83] CONTEXT:  while inserting index tuple (8,126) in relation "stat_actions"
+2026-10-05 23:05:35.516 UTC [83] STATEMENT:  INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+2026-10-05 23:05:50.890 UTC [55] LOG:  checkpoint complete: wrote 10246 buffers (31.3%); 0 WAL file(s) added, 0 removed, 33 recycled; write=59.019 s, sync=0.113 s, total=59.226 s; sync files=38, longest=0.077 s, average=0.003 s; distance=540669 kB, estimate=540669 kB; lsn=0/60C4B6B8, redo lsn=0/43002220
+2026-10-05 23:05:57.406 UTC [55] LOG:  checkpoint starting: wal
+2026-10-05 23:06:56.400 UTC [55] LOG:  checkpoint complete: wrote 15699 buffers (47.9%); 0 WAL file(s) added, 0 removed, 33 recycled; write=58.686 s, sync=0.113 s, total=58.995 s; sync files=42, longest=0.081 s, average=0.003 s; distance=540681 kB, estimate=540681 kB; lsn=0/81CA84D8, redo lsn=0/64004920
+2026-10-05 23:07:02.807 UTC [55] LOG:  checkpoint starting: wal
+2026-10-05 23:08:02.728 UTC [55] LOG:  checkpoint complete: wrote 15727 buffers (48.0%); 0 WAL file(s) added, 0 removed, 33 recycled; write=59.696 s, sync=0.113 s, total=59.921 s; sync files=40, longest=0.074 s, average=0.003 s; distance=540796 kB, estimate=540796 kB; lsn=0/A2C9E528, redo lsn=0/85023A80
+2026-10-05 23:08:09.744 UTC [55] LOG:  checkpoint starting: wal
+2026-10-05 23:09:08.256 UTC [55] LOG:  checkpoint complete: wrote 17146 buffers (52.3%); 0 WAL file(s) added, 0 removed, 33 recycled; write=58.302 s, sync=0.068 s, total=58.513 s; sync files=40, longest=0.051 s, average=0.002 s; distance=540597 kB, estimate=540776 kB; lsn=0/C3C6DD78, redo lsn=0/A6011260
+2026-10-05 23:09:14.736 UTC [55] LOG:  checkpoint starting: wal
+2026-10-05 23:10:13.198 UTC [55] LOG:  checkpoint complete: wrote 12689 buffers (38.7%); 0 WAL file(s) added, 0 removed, 33 recycled; write=58.223 s, sync=0.098 s, total=58.463 s; sync files=39, longest=0.065 s, average=0.003 s; distance=540647 kB, estimate=540763 kB; lsn=0/E4CD7B30, redo lsn=0/C700B018
+2026-10-05 23:10:19.575 UTC [55] LOG:  checkpoint starting: wal
+2026-10-05 23:11:18.780 UTC [55] LOG:  checkpoint complete: wrote 15690 buffers (47.9%); 0 WAL file(s) added, 0 removed, 33 recycled; write=58.940 s, sync=0.141 s, total=59.205 s; sync files=39, longest=0.095 s, average=0.004 s; distance=540838 kB, estimate=540838 kB; lsn=1/5C33168, redo lsn=0/E8034A58
+2026-10-05 23:11:25.059 UTC [55] LOG:  checkpoint starting: wal
+2026-10-05 23:11:36.281 UTC [264] ERROR:  deadlock detected
+2026-10-05 23:11:36.281 UTC [264] DETAIL:  Process 264 waits for ShareLock on transaction 99444; blocked by process 382.
+	Process 382 waits for ShareLock on transaction 99445; blocked by process 264.
+	Process 264: INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+	Process 382: INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+2026-10-05 23:11:36.281 UTC [264] HINT:  See server log for query details.
+2026-10-05 23:11:36.281 UTC [264] CONTEXT:  while inserting index tuple (3,6) in relation "stat_actions"
+2026-10-05 23:11:36.281 UTC [264] STATEMENT:  INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
+	SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
+	FROM unnest($1::text[], $2::text[], $3::text[], $4::text[], $5::bigint[], $6::bigint[], $7::text[]) AS u(day, sid, career, action, n, errors, err)
+	WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+	ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
+	  err = COALESCE(EXCLUDED.err, a.err)
+2026-10-05 23:12:24.972 UTC [55] LOG:  checkpoint complete: wrote 11810 buffers (36.0%); 0 WAL file(s) added, 0 removed, 33 recycled; write=59.204 s, sync=0.596 s, total=59.913 s; sync files=41, longest=0.575 s, average=0.015 s; distance=540489 kB, estimate=540803 kB; lsn=1/26D91588, redo lsn=1/9006FF8
+2026-10-05 23:12:30.506 UTC [55] LOG:  checkpoint starting: wal
+2026-10-05 23:13:29.764 UTC [55] LOG:  checkpoint complete: wrote 3190 buffers (9.7%); 0 WAL file(s) added, 0 removed, 33 recycled; write=59.010 s, sync=0.157 s, total=59.258 s; sync files=41, longest=0.129 s, average=0.004 s; distance=541783 kB, estimate=541783 kB; lsn=1/47E2F7A0, redo lsn=1/2A11CCE8
+2026-10-05 23:13:36.010 UTC [55] LOG:  checkpoint starting: wal

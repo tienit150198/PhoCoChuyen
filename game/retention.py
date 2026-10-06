@@ -491,10 +491,13 @@ def flush_all() -> int:
     return n
 
 
+# The existence check may reorder even Python-sorted inputs. Order the final
+# conflict keys in SQL so concurrent worker flushes acquire row locks consistently.
 _UPSERT_PG = """INSERT INTO stat_actions AS a (day, sid, career, action, n, errors, err)
 SELECT u.day, left(u.sid, 16), u.career, u.action, u.n, u.errors, u.err
 FROM unnest(%s::text[], %s::text[], %s::text[], %s::text[], %s::bigint[], %s::bigint[], %s::text[]) AS u(day, sid, career, action, n, errors, err)
 WHERE EXISTS (SELECT 1 FROM sessions s WHERE s.sid = u.sid)
+ORDER BY u.day COLLATE "C", left(u.sid, 16) COLLATE "C", u.career COLLATE "C", u.action COLLATE "C"
 ON CONFLICT (day, sid, career, action) DO UPDATE SET n = a.n + EXCLUDED.n, errors = a.errors + EXCLUDED.errors,
   err = COALESCE(EXCLUDED.err, a.err)"""
 

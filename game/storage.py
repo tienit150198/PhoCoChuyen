@@ -15,10 +15,13 @@ commands are serialized. Connections come from game.db.PgPool.
 """
 from __future__ import annotations
 import hashlib
+import contextvars
+from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import secrets
 import sys
+import threading
 import time
 from pathlib import Path
 from .engine import GameError,new_state,apply_action,public_state,validate_state,validate_career,migrate_state,needs_migration,tree_copy,stamped,BUILD
@@ -40,6 +43,33 @@ OPTIMISTIC_TRIES=4     # then fall back to computing under the write lock
 # A command on a save stamped with this build (engine.BUILD) re-validates only what it
 # changed (see Store._compute and serialize); every FULL_EVERY-th revision validates all.
 FULL_EVERY=max(1,int(os.environ.get("VALIDATE_FULL_EVERY","50") or 50))
+# HTTP keep-alive connections have their own thread budget. Only a few commands
+# should hold parsed + serialized saves at once, before waiting for the PG pool.
+# Share this budget across Store instances in one process, never across workers.
+try:COMMAND_CONCURRENCY=max(1,min(64,int(os.environ.get("COMMAND_CONCURRENCY","4") or 4)))
+except ValueError:COMMAND_CONCURRENCY=4
+_COMMAND_GATE=threading.BoundedSemaphore(COMMAND_CONCURRENCY)
+_COMMAND_POOL=ThreadPoolExecutor(max_workers=COMMAND_CONCURRENCY,thread_name_prefix="save-command")
+_COMMAND_LOCAL=threading.local()
+
+
+def _reset_command_gate():
+    global _COMMAND_GATE,_COMMAND_POOL,_COMMAND_LOCAL
+    _COMMAND_GATE=threading.BoundedSemaphore(COMMAND_CONCURRENCY)
+    # No executor thread/lock from the parent may be reused after fork.
+    _COMMAND_POOL=ThreadPoolExecutor(max_workers=COMMAND_CONCURRENCY,thread_name_prefix="save-command")
+    _COMMAND_LOCAL=threading.local()
+
+
+def _run_admitted(store,args):
+    _COMMAND_LOCAL.active=True
+    try:return store._admitted_command(*args)
+    finally:_COMMAND_LOCAL.active=False
+
+
+if hasattr(os,"register_at_fork"):
+    os.register_at_fork(after_in_child=_reset_command_gate)
+
 # A save that was created but never played can be stored as this marker instead of a
 # ~90 KB fresh state; it becomes a real state at its first command (parse_state).
 # Reading the marker is always supported; WRITING it needs LAZY_SAVES=1, to be turned
@@ -351,6 +381,15 @@ class Store:
         """Apply one action atomically. `internal` commands come from the server
         itself (AI reviewer answers); they skip the revision guard because the
         reducer checks their own preconditions."""
+        args=(token,request_id,expected,career,action,payload,internal)
+        if getattr(_COMMAND_LOCAL,"active",False):
+            return self._admitted_command(*args)  # nested internal work owns a slot already
+        with _COMMAND_GATE:
+            # Reuse allocation arenas as well as limiting active saves. A semaphore
+            # alone lets every keep-alive thread retain its own large JSON buffers.
+            return _COMMAND_POOL.submit(contextvars.copy_context().run,_run_admitted,self,args).result()
+
+    def _admitted_command(self,token,request_id,expected,career,action,payload,internal):
         if not isinstance(request_id,str) or not 8<=len(request_id)<=100 or "\x00" in request_id:raise GameError("Mã thao tác không hợp lệ.")
         if not (internal and expected is None) and type(expected) is not int:raise GameError("Thiếu phiên bản tiến trình.")
         if not isinstance(action,str) or not isinstance(payload,dict):raise GameError("Thao tác không hợp lệ.")

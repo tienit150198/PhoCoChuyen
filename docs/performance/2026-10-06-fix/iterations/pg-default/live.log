@@ -1,0 +1,3 @@
+[live] listening on 0.0.0.0:8770 (flags {'chat': True, 'street': False, 'dating': False, 'wedding': False, 'fair': False, 'home': False, 'visits': False, 'town': True, 'chatdel': True, 'blocks': True, 'market': True}, db pg, pid 7)
+[live] stats {"conns":1000,"players":1000,"rooms":35,"sent":3509572,"cut":0}
+[live] stats {"conns":1000,"players":1000,"rooms":35,"sent":7240968,"cut":0}

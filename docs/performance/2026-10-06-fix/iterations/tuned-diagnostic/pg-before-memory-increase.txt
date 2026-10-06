@@ -1,0 +1,60 @@
+1335775232
+low 0
+high 0
+max 35154
+oom 0
+oom_kill 0
+oom_group_kill 0
+anon 139644928
+file 1114996736
+kernel 74960896
+kernel_stack 901120
+pagetables 31682560
+sec_pagetables 0
+percpu 12720
+sock 692224
+vmalloc 24576
+shmem 285143040
+file_mapped 285265920
+file_dirty 41467904
+file_writeback 0
+swapcached 962560
+anon_thp 0
+file_thp 0
+shmem_thp 0
+inactive_anon 130056192
+active_anon 295395328
+inactive_file 541085696
+active_file 288768000
+unevictable 0
+slab_reclaimable 36170680
+slab_unreclaimable 4601040
+slab 40771720
+workingset_refault_anon 595
+workingset_refault_file 289835
+workingset_activate_anon 391
+workingset_activate_file 284087
+workingset_restore_anon 33
+workingset_restore_file 4321
+workingset_nodereclaim 0
+pgscan 1240916
+pgsteal 1171808
+pgscan_kswapd 0
+pgscan_direct 1240916
+pgscan_khugepaged 0
+pgsteal_kswapd 0
+pgsteal_direct 1171808
+pgsteal_khugepaged 0
+pgfault 91606270
+pgmajfault 655
+pgrefill 439058
+pgactivate 549497
+pgdeactivate 438927
+pglazyfree 0
+pglazyfreed 0
+thp_fault_alloc 0
+thp_collapse_alloc 0
+some avg10=0.00 avg60=0.00 avg300=0.00 total=469143
+full avg10=0.00 avg60=0.00 avg300=0.00 total=414006
+some avg10=3.58 avg60=5.98 avg300=4.62 total=26669397
+full avg10=3.31 avg60=5.34 avg300=4.15 total=24208975

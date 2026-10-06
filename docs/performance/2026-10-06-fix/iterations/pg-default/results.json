@@ -1,0 +1,200 @@
+{
+  "name": "final-soak-200",
+  "config": {
+    "users": 1000,
+    "movers": 1000,
+    "duration": 600,
+    "period": 5.0,
+    "chat_rate": 3,
+    "ramp": 40,
+    "profile": "mixed",
+    "name": "final-soak-200",
+    "procs": 4
+  },
+  "start": 1791242632.8958013,
+  "end": 1791243292.9273949,
+  "stats": {
+    "bootstrap_status_200": 1000,
+    "opened": 1000,
+    "moves_sent": 1976494,
+    "ws_frames": 7485545,
+    "ws_bytes": 4614567262,
+    "move_deliveries": 58894527,
+    "commands_started": 119995,
+    "chat_deliveries": 1799750,
+    "http_status_200": 119995,
+    "http_response_bytes": 117865645,
+    "commands_ok": 119995,
+    "commands_ok_in_window": 119990,
+    "chat_sent": 1800,
+    "command_slots_missed": 5
+  },
+  "errors": {
+    "ws:town_mv:slow": 59
+  },
+  "latency_ms": {
+    "connect": {
+      "n": 1000,
+      "p50": 11.87,
+      "p95": 34.85,
+      "p99": 44.88,
+      "max": 113.85
+    },
+    "move": {
+      "n": 14790871,
+      "p50": 59.2,
+      "p95": 105.43,
+      "p99": 132.95,
+      "max": 574.4
+    },
+    "move_peer": {
+      "n": 12814540,
+      "p50": 59.2,
+      "p95": 105.43,
+      "p99": 132.95,
+      "max": 574.4
+    },
+    "chat": {
+      "n": 1799750,
+      "p50": 15.24,
+      "p95": 178.64,
+      "p99": 613.24,
+      "max": 1194.95
+    },
+    "generator_loop_lag": {
+      "n": 23349,
+      "p50": 0.74,
+      "p95": 7.21,
+      "p99": 40.28,
+      "max": 464.31
+    },
+    "command_all": {
+      "n": 119995,
+      "p50": 30.11,
+      "p95": 846.13,
+      "p99": 1521.35,
+      "max": 6049.93
+    },
+    "command_small": {
+      "n": 107996,
+      "p50": 25.92,
+      "p95": 822.36,
+      "p99": 1492.77,
+      "max": 6049.93
+    },
+    "server_command": {
+      "n": 119995,
+      "p50": 26.0,
+      "p95": 870.0,
+      "p99": 1924.0,
+      "max": 9080.0
+    },
+    "outside_handler": {
+      "n": 119995,
+      "p50": 3.1,
+      "p95": 30.36,
+      "p99": 71.07,
+      "max": 472.0
+    },
+    "command_heavy": {
+      "n": 11999,
+      "p50": 103.41,
+      "p95": 1053.95,
+      "p99": 1755.97,
+      "max": 5369.03
+    }
+  },
+  "rooms": {
+    "count": 34,
+    "max": 30
+  },
+  "generator": {
+    "cpu_seconds": 740.96,
+    "rss_bytes": 1584496640
+  },
+  "command_rps": 199.98,
+  "ws_mbps": 61.528,
+  "health_midpoint": {
+    "ok": true,
+    "up": 62,
+    "flags": {
+      "chat": true,
+      "street": false,
+      "dating": false,
+      "wedding": false,
+      "fair": false,
+      "home": false,
+      "visits": false,
+      "town": true,
+      "chatdel": true,
+      "blocks": true,
+      "market": true
+    },
+    "conns": 1000,
+    "players": 1000,
+    "rooms": 35,
+    "sent": 386070,
+    "cut": 0
+  },
+  "close_command_connections": false,
+  "measured_seconds": 600.0020671770035,
+  "known_hashes_per_user": {
+    "n": 1000,
+    "p50": 136,
+    "p95": 217,
+    "p99": 217,
+    "max": 217
+  },
+  "resources": {
+    "api": {
+      "quota_cores": 6,
+      "average_cores": 3.732,
+      "peak_1s_cores": 5.963,
+      "peak_memory_mib": 3881.4,
+      "throttled_periods": 87,
+      "periods": 5994,
+      "processes": 9,
+      "end_memory_mib": 3391.5,
+      "memory_events_including_drain": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "measurement_monotonic_seconds": 599.3672811150027
+    },
+    "live": {
+      "quota_cores": 1,
+      "average_cores": 0.414,
+      "peak_1s_cores": 0.553,
+      "peak_memory_mib": 98.2,
+      "throttled_periods": 1,
+      "periods": 5986,
+      "processes": 1,
+      "end_memory_mib": 97.4,
+      "memory_events_including_drain": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "measurement_monotonic_seconds": 598.6275351549848
+    }
+  },
+  "corrections": [
+    "CPU statistics independently recalculated from monotonic sample intervals; load-original.json retains generator output."
+  ],
+  "source": {
+    "baseline": "f3ada34",
+    "fixture_build": "e57b5c451f133ca9206f",
+    "sha256": {
+      "game/storage.py": "d0f26be17f95ac531bd697cec29823ea9f67648dc553c8b88efc25234984eec9",
+      "game/state_delta.py": "0c959a497574890792a2813dac51cac0dac4bb275fd2441c27dcdb3b48bfd3dd",
+      "server.py": "a498510c6a1b05b47c87d88c1f45bf6eb7ce49984ef09e8c22be21fb537b178e"
+    }
+  },
+  "limits": {
+    "vm_vcpu": 8,
+    "server_quota_cores": 9,
+    "api_memory_gib": 6,
+    "pg_memory_mib": 1536,
+    "live_memory_mib": 768,
+    "generator_cpu_quota": 2,
+    "generator_memory_gib": 4,
+    "physical_phone": false,
+    "tls": false,
+    "per_room": 30,
+    "all_career_actions": false
+  },
+  "database_end": "1000 | 159 | 160 | 119995"
+}

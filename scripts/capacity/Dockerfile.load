@@ -1,0 +1,4 @@
+ARG SERVER_IMAGE=mnl-capacity:local
+FROM ${SERVER_IMAGE}
+RUN pip install --no-cache-dir aiohttp
+WORKDIR /result

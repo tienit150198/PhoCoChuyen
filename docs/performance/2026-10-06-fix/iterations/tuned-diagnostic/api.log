@@ -1,0 +1,890 @@
+  Bản tĩnh theo mã băm: 469 tệp mới trong /tmp/cas
+
+  PHỐ CÓ CHUYỆN · v1.7.15
+  Chơi tại: http://127.0.0.1:8765
+  Lưu tại: PostgreSQL
+  AI phản hồi: tắt (lời thoại có sẵn) · Web push: bật · 8 tiến trình
+  Nhấn Ctrl+C để dừng.
+
+/app/server.py:1432: DeprecationWarning: This process (pid=7) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid=os.fork()
+[leaderboard] backfill: 1000 saves
+[lb_titles] weekly titles refreshed for 2026-10-06
+[pg-pool] pid=7 last 60s: opened 1, closed 1, checkouts 12, waited 0, timed out 0; open 0/8, idle 0, keep 3
+[pg-pool] pid=9 last 60s: opened 7, closed 4, checkouts 2705, waited 0, timed out 0; open 3/8, idle 3, keep 3
+[pg-pool] pid=20 last 60s: opened 12, closed 4, checkouts 2517, waited 0, timed out 0; open 8/8, idle 7, keep 3
+[pg-pool] pid=16 last 60s: opened 8, closed 5, checkouts 2945, waited 0, timed out 0; open 3/8, idle 3, keep 3
+[pg-pool] pid=21 last 60s: opened 8, closed 4, checkouts 2850, waited 0, timed out 0; open 4/8, idle 4, keep 3
+[pg-pool] pid=22 last 60s: opened 8, closed 4, checkouts 2878, waited 0, timed out 0; open 4/8, idle 4, keep 3
+[pg-pool] pid=14 last 60s: opened 9, closed 5, checkouts 2992, waited 0, timed out 0; open 4/8, idle 3, keep 3
+[pg-pool] pid=23 last 60s: opened 8, closed 4, checkouts 2631, waited 0, timed out 0; open 4/8, idle 3, keep 3
+[pg-pool] pid=24 last 60s: opened 7, closed 3, checkouts 2679, waited 0, timed out 0; open 4/8, idle 4, keep 3
+[pg-pool] pid=9 last 60s: opened 5, closed 2, checkouts 4359, waited 0, timed out 0; open 6/8, idle 6, keep 3
+[pg-pool] pid=20 last 60s: opened 7, closed 9, checkouts 4709, waited 0, timed out 0; open 6/8, idle 5, keep 3
+[pg-pool] pid=16 last 60s: opened 3, closed 2, checkouts 4549, waited 0, timed out 0; open 4/8, idle 4, keep 3
+[pg-pool] pid=21 last 60s: opened 3, closed 3, checkouts 4533, waited 0, timed out 0; open 4/8, idle 4, keep 3
+[pg-pool] pid=14 last 60s: opened 4, closed 3, checkouts 4533, waited 0, timed out 0; open 5/8, idle 5, keep 3
+[pg-pool] pid=22 last 60s: opened 2, closed 2, checkouts 4366, waited 0, timed out 0; open 4/8, idle 3, keep 3
+[pg-pool] pid=23 last 60s: opened 6, closed 6, checkouts 4547, waited 0, timed out 0; open 4/8, idle 3, keep 3
+[pg-pool] pid=24 last 60s: opened 2, closed 3, checkouts 4482, waited 0, timed out 0; open 3/8, idle 3, keep 3
+[slow-write] 1448ms to write 4592KB + 0 archive rows pid=21
+[slow-cmd] 1518ms feed_like milk_tea save=4592KB read=18 compute=48 store=1451 view=1 pid=21
+[slow-write] 1443ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1433ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1388ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1404ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1373ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1254ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1441ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1275ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1355ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1357ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1208ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1417ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1337ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1377ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1282ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 1417ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1399ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1450ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1371ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1352ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1438ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1204ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1256ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1374ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1420ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1391ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 1308ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1341ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1363ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1246ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 1446ms to write 4592KB + 0 archive rows pid=14
+[slow-cmd] 1513ms feed_like milk_tea save=4592KB read=24 compute=40 store=1448 view=3 pid=14
+[slow-write] 759ms to write 165KB + 0 archive rows pid=16
+[slow-write] 764ms to write 165KB + 0 archive rows pid=16
+[slow-write] 792ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 771ms to write 165KB + 0 archive rows pid=21
+[slow-write] 751ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 752ms to write 165KB + 0 archive rows pid=24
+[slow-write] 776ms to write 165KB + 0 archive rows pid=22
+[slow-write] 767ms to write 165KB + 0 archive rows pid=14
+[slow-write] 750ms to write 165KB + 0 archive rows pid=23
+[slow-write] 788ms to write 165KB + 0 archive rows pid=9
+[pg-pool] pid=16 last 60s: opened 5, closed 4, checkouts 4665, waited 0, timed out 0; open 5/8, idle 1, keep 3
+[pg-pool] pid=22 last 60s: opened 2, closed 1, checkouts 4158, waited 0, timed out 0; open 5/8, idle 5, keep 3
+[pg-pool] pid=21 last 60s: opened 2, closed 1, checkouts 4654, waited 0, timed out 0; open 5/8, idle 5, keep 3
+[pg-pool] pid=14 last 60s: opened 2, closed 1, checkouts 4458, waited 0, timed out 0; open 6/8, idle 6, keep 3
+[pg-pool] pid=23 last 60s: opened 2, closed 0, checkouts 4591, waited 0, timed out 0; open 6/8, idle 4, keep 3
+[pg-pool] pid=24 last 60s: opened 4, closed 2, checkouts 4588, waited 0, timed out 0; open 5/8, idle 1, keep 3
+[pg-pool] pid=20 last 60s: opened 4, closed 3, checkouts 4433, waited 0, timed out 0; open 7/8, idle 5, keep 3
+[slow-write] 1053ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 1019ms to write 165KB + 0 archive rows pid=14
+[slow-write] 917ms to write 165KB + 0 archive rows pid=22
+[slow-write] 919ms to write 165KB + 0 archive rows pid=9
+[slow-write] 789ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1043ms to write 165KB + 0 archive rows pid=16
+[slow-write] 988ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1020ms to write 165KB + 0 archive rows pid=20
+[slow-write] 973ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1000ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 1013ms to write 165KB + 0 archive rows pid=14
+[slow-write] 813ms to write 165KB + 0 archive rows pid=9
+[slow-write] 960ms to write 165KB + 0 archive rows pid=21
+[slow-write] 840ms to write 165KB + 0 archive rows pid=23
+[slow-write] 818ms to write 165KB + 0 archive rows pid=20
+[slow-write] 934ms to write 165KB + 0 archive rows pid=9
+[slow-write] 965ms to write 165KB + 0 archive rows pid=16
+[slow-write] 964ms to write 4592KB + 0 archive rows pid=24
+[slow-write] 885ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1028ms to write 165KB + 0 archive rows pid=14
+[slow-write] 919ms to write 165KB + 0 archive rows pid=22
+[slow-write] 958ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1008ms to write 165KB + 0 archive rows pid=14
+[slow-write] 833ms to write 165KB + 0 archive rows pid=20
+[slow-write] 946ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1052ms to write 165KB + 0 archive rows pid=23
+[slow-write] 852ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1044ms to write 165KB + 0 archive rows pid=24
+[slow-write] 925ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 1065ms to write 165KB + 0 archive rows pid=24
+[slow-write] 864ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1045ms to write 165KB + 0 archive rows pid=24
+[pg-pool] pid=9 last 60s: opened 5, closed 4, checkouts 4299, waited 0, timed out 0; open 6/8, idle 2, keep 3
+[pg-pool] pid=16 last 60s: opened 2, closed 2, checkouts 4495, waited 0, timed out 0; open 5/8, idle 1, keep 3
+[pg-pool] pid=22 last 60s: opened 3, closed 2, checkouts 4627, waited 0, timed out 0; open 6/8, idle 2, keep 3
+[pg-pool] pid=14 last 60s: opened 1, closed 1, checkouts 4417, waited 0, timed out 0; open 6/8, idle 2, keep 3
+[pg-pool] pid=21 last 60s: opened 4, closed 4, checkouts 4619, waited 0, timed out 0; open 5/8, idle 1, keep 3
+[pg-pool] pid=23 last 60s: opened 3, closed 3, checkouts 4428, waited 0, timed out 0; open 6/8, idle 2, keep 3
+[pg-pool] pid=24 last 60s: opened 5, closed 4, checkouts 4541, waited 0, timed out 0; open 6/8, idle 2, keep 3
+[pg-pool] pid=20 last 60s: opened 2, closed 3, checkouts 4398, waited 0, timed out 0; open 6/8, idle 2, keep 3
+[slow-write] 1412ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1377ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 1144ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1322ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1303ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1413ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1412ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1401ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1282ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1238ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1248ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1209ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1323ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1359ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1408ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1281ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1172ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1414ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1232ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1175ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1444ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 1319ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1369ms to write 165KB + 0 archive rows pid=22
+[slow-cmd] 1506ms feed_like milk_tea save=4592KB read=19 compute=40 store=1445 view=2 pid=20
+[slow-write] 1232ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1311ms to write 4592KB + 0 archive rows pid=16
+[slow-write] 1414ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1356ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1176ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1266ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1339ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1165ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1434ms to write 165KB + 0 archive rows pid=20
+[slow-write] 785ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1053ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 944ms to write 165KB + 0 archive rows pid=23
+[slow-write] 974ms to write 165KB + 0 archive rows pid=24
+[slow-write] 941ms to write 165KB + 0 archive rows pid=20
+[slow-write] 989ms to write 165KB + 0 archive rows pid=21
+[slow-write] 993ms to write 165KB + 0 archive rows pid=21
+[slow-write] 958ms to write 165KB + 0 archive rows pid=22
+[slow-write] 945ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 982ms to write 165KB + 0 archive rows pid=16
+[slow-write] 924ms to write 165KB + 0 archive rows pid=23
+[slow-write] 918ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 1010ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1014ms to write 165KB + 0 archive rows pid=24
+[slow-write] 978ms to write 165KB + 0 archive rows pid=24
+[slow-write] 960ms to write 165KB + 0 archive rows pid=24
+[slow-write] 969ms to write 165KB + 0 archive rows pid=16
+[slow-write] 905ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 965ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 964ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1076ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1019ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1049ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 1015ms to write 165KB + 0 archive rows pid=9
+[slow-write] 923ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 1005ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1029ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1005ms to write 4592KB + 0 archive rows pid=16
+[slow-write] 959ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1027ms to write 165KB + 0 archive rows pid=14
+[slow-write] 975ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1074ms to write 165KB + 0 archive rows pid=20
+[slow-write] 769ms to write 165KB + 0 archive rows pid=20
+[slow-write] 793ms to write 4592KB + 0 archive rows pid=16
+[slow-write] 771ms to write 165KB + 0 archive rows pid=20
+[slow-write] 779ms to write 165KB + 0 archive rows pid=9
+[slow-write] 787ms to write 165KB + 0 archive rows pid=22
+[slow-write] 778ms to write 165KB + 0 archive rows pid=16
+[slow-write] 905ms to write 165KB + 0 archive rows pid=20
+[slow-write] 884ms to write 165KB + 0 archive rows pid=23
+[slow-write] 862ms to write 165KB + 0 archive rows pid=22
+[slow-write] 871ms to write 165KB + 0 archive rows pid=24
+[slow-write] 786ms to write 165KB + 0 archive rows pid=9
+[slow-write] 858ms to write 165KB + 0 archive rows pid=20
+[slow-write] 850ms to write 165KB + 0 archive rows pid=23
+[slow-write] 873ms to write 165KB + 0 archive rows pid=23
+[slow-write] 843ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 907ms to write 165KB + 0 archive rows pid=22
+[slow-write] 780ms to write 165KB + 0 archive rows pid=9
+[slow-write] 802ms to write 165KB + 0 archive rows pid=20
+[slow-write] 751ms to write 165KB + 0 archive rows pid=21
+[slow-write] 860ms to write 165KB + 0 archive rows pid=23
+[slow-write] 888ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 804ms to write 165KB + 0 archive rows pid=9
+[slow-write] 850ms to write 165KB + 0 archive rows pid=24
+[slow-write] 764ms to write 165KB + 0 archive rows pid=21
+[slow-write] 917ms to write 165KB + 0 archive rows pid=16
+[slow-write] 870ms to write 165KB + 0 archive rows pid=24
+[slow-write] 908ms to write 165KB + 0 archive rows pid=14
+[slow-write] 838ms to write 165KB + 0 archive rows pid=24
+[slow-write] 912ms to write 165KB + 0 archive rows pid=21
+[slow-write] 778ms to write 165KB + 0 archive rows pid=14
+[slow-write] 887ms to write 165KB + 0 archive rows pid=20
+[slow-write] 895ms to write 165KB + 0 archive rows pid=22
+[slow-write] 861ms to write 165KB + 0 archive rows pid=14
+[slow-write] 902ms to write 165KB + 0 archive rows pid=9
+[slow-write] 888ms to write 4592KB + 0 archive rows pid=24
+[slow-write] 912ms to write 165KB + 0 archive rows pid=20
+[slow-write] 853ms to write 165KB + 0 archive rows pid=16
+[slow-write] 845ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 883ms to write 165KB + 0 archive rows pid=22
+[slow-write] 822ms to write 165KB + 0 archive rows pid=16
+[slow-write] 911ms to write 165KB + 0 archive rows pid=23
+[slow-write] 830ms to write 165KB + 0 archive rows pid=20
+[slow-write] 870ms to write 165KB + 0 archive rows pid=9
+[slow-write] 876ms to write 165KB + 0 archive rows pid=9
+[slow-write] 910ms to write 165KB + 0 archive rows pid=23
+[slow-write] 831ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 868ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 785ms to write 165KB + 0 archive rows pid=22
+[slow-write] 892ms to write 165KB + 0 archive rows pid=20
+[slow-write] 897ms to write 165KB + 0 archive rows pid=23
+[slow-write] 882ms to write 165KB + 0 archive rows pid=16
+[slow-write] 959ms to write 165KB + 0 archive rows pid=24
+[slow-write] 864ms to write 165KB + 0 archive rows pid=9
+[slow-write] 885ms to write 165KB + 0 archive rows pid=24
+[slow-write] 881ms to write 4592KB + 0 archive rows pid=16
+[slow-write] 962ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 881ms to write 165KB + 0 archive rows pid=24
+[slow-write] 843ms to write 165KB + 0 archive rows pid=21
+[slow-write] 866ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 902ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1156ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1030ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1113ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 1127ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1165ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1077ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1122ms to write 165KB + 0 archive rows pid=16
+[slow-write] 991ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1020ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1051ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1071ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1113ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1154ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1063ms to write 4592KB + 0 archive rows pid=24
+[slow-write] 1131ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1116ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1036ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1160ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1157ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1121ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1177ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1098ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1157ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1183ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 1103ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 1104ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1121ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1085ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1142ms to write 165KB + 0 archive rows pid=9
+[pg-pool] pid=9 last 60s: opened 3, closed 2, checkouts 4535, waited 0, timed out 0; open 7/8, idle 3, keep 3
+[pg-pool] pid=16 last 60s: opened 6, closed 4, checkouts 4540, waited 0, timed out 0; open 7/8, idle 6, keep 3
+[pg-pool] pid=22 last 60s: opened 3, closed 2, checkouts 4527, waited 0, timed out 0; open 7/8, idle 7, keep 3
+[pg-pool] pid=21 last 60s: opened 4, closed 2, checkouts 4341, waited 0, timed out 0; open 7/8, idle 7, keep 3
+[pg-pool] pid=14 last 60s: opened 4, closed 3, checkouts 4454, waited 0, timed out 0; open 7/8, idle 5, keep 3
+[pg-pool] pid=24 last 60s: opened 5, closed 3, checkouts 4523, waited 3, timed out 0; open 8/8, idle 5, keep 3
+[pg-pool] pid=23 last 60s: opened 5, closed 3, checkouts 4621, waited 0, timed out 0; open 8/8, idle 6, keep 3
+[pg-pool] pid=20 last 60s: opened 3, closed 2, checkouts 4763, waited 0, timed out 0; open 7/8, idle 7, keep 3
+[slow-write] 762ms to write 165KB + 0 archive rows pid=23
+[slow-write] 762ms to write 165KB + 0 archive rows pid=21
+[slow-write] 756ms to write 165KB + 0 archive rows pid=22
+[slow-write] 768ms to write 165KB + 0 archive rows pid=21
+[slow-write] 761ms to write 165KB + 0 archive rows pid=21
+[slow-write] 773ms to write 165KB + 0 archive rows pid=22
+[slow-write] 821ms to write 165KB + 0 archive rows pid=20 (+2 slow lines dropped)
+[slow-write] 751ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 832ms to write 165KB + 0 archive rows pid=9
+[slow-write] 770ms to write 165KB + 0 archive rows pid=14
+[slow-write] 755ms to write 165KB + 0 archive rows pid=16
+[slow-write] 811ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 770ms to write 165KB + 0 archive rows pid=16
+[slow-write] 772ms to write 165KB + 0 archive rows pid=14
+[slow-write] 793ms to write 165KB + 0 archive rows pid=20
+[slow-write] 774ms to write 165KB + 0 archive rows pid=14
+[slow-write] 778ms to write 165KB + 0 archive rows pid=22
+[slow-write] 772ms to write 165KB + 0 archive rows pid=21
+[slow-write] 825ms to write 165KB + 0 archive rows pid=21
+[pg-pool] pid=9 last 60s: opened 4, closed 5, checkouts 4351, waited 0, timed out 0; open 6/8, idle 5, keep 3
+[pg-pool] pid=22 last 60s: opened 3, closed 4, checkouts 4390, waited 0, timed out 0; open 6/8, idle 4, keep 3
+[pg-pool] pid=16 last 60s: opened 4, closed 5, checkouts 4718, waited 0, timed out 0; open 6/8, idle 2, keep 3
+[pg-pool] pid=21 last 60s: opened 3, closed 4, checkouts 4417, waited 0, timed out 0; open 6/8, idle 1, keep 3
+[pg-pool] pid=24 last 60s: opened 1, closed 2, checkouts 4549, waited 0, timed out 0; open 7/8, idle 5, keep 3
+[pg-pool] pid=14 last 60s: opened 3, closed 3, checkouts 4382, waited 0, timed out 0; open 7/8, idle 1, keep 3
+[pg-pool] pid=20 last 60s: opened 2, closed 3, checkouts 4801, waited 0, timed out 0; open 6/8, idle 6, keep 3
+[pg-pool] pid=23 last 60s: opened 1, closed 3, checkouts 4430, waited 0, timed out 0; open 6/8, idle 3, keep 3
+[slow-write] 811ms to write 165KB + 0 archive rows pid=21
+[slow-write] 788ms to write 165KB + 0 archive rows pid=24
+[slow-write] 777ms to write 165KB + 0 archive rows pid=9
+[slow-write] 801ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 768ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 791ms to write 165KB + 0 archive rows pid=16
+[slow-write] 802ms to write 165KB + 0 archive rows pid=21
+[slow-write] 760ms to write 165KB + 0 archive rows pid=16
+[slow-write] 771ms to write 165KB + 0 archive rows pid=9
+[slow-write] 816ms to write 165KB + 0 archive rows pid=21
+[slow-write] 793ms to write 165KB + 0 archive rows pid=16
+[slow-write] 794ms to write 165KB + 0 archive rows pid=24
+[slow-write] 794ms to write 165KB + 0 archive rows pid=9
+[slow-write] 755ms to write 165KB + 0 archive rows pid=16
+[slow-write] 804ms to write 165KB + 0 archive rows pid=14
+[slow-write] 796ms to write 165KB + 0 archive rows pid=21
+[slow-write] 805ms to write 4592KB + 0 archive rows pid=24
+[slow-write] 806ms to write 165KB + 0 archive rows pid=14
+[slow-write] 809ms to write 165KB + 0 archive rows pid=14
+[slow-write] 799ms to write 165KB + 0 archive rows pid=24
+[slow-write] 822ms to write 165KB + 0 archive rows pid=23
+[slow-write] 833ms to write 165KB + 0 archive rows pid=22
+[slow-write] 962ms to write 165KB + 0 archive rows pid=20
+[slow-write] 988ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1000ms to write 165KB + 0 archive rows pid=24
+[slow-write] 987ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1003ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1002ms to write 165KB + 0 archive rows pid=21
+[slow-write] 900ms to write 4592KB + 0 archive rows pid=16
+[slow-write] 931ms to write 165KB + 0 archive rows pid=14
+[slow-write] 917ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 1015ms to write 165KB + 0 archive rows pid=14
+[slow-write] 982ms to write 165KB + 0 archive rows pid=22
+[slow-write] 960ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1009ms to write 165KB + 0 archive rows pid=9
+[slow-write] 969ms to write 165KB + 0 archive rows pid=24
+[slow-write] 998ms to write 165KB + 0 archive rows pid=16
+[slow-write] 953ms to write 165KB + 0 archive rows pid=20
+[slow-write] 986ms to write 165KB + 0 archive rows pid=22
+[slow-write] 995ms to write 165KB + 0 archive rows pid=20
+[slow-write] 971ms to write 165KB + 0 archive rows pid=21
+[slow-write] 997ms to write 165KB + 0 archive rows pid=21
+[slow-write] 976ms to write 165KB + 0 archive rows pid=24
+[slow-write] 938ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1001ms to write 165KB + 0 archive rows pid=9
+[slow-write] 942ms to write 165KB + 0 archive rows pid=14
+[slow-write] 923ms to write 165KB + 0 archive rows pid=23
+[slow-write] 897ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 922ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 990ms to write 165KB + 0 archive rows pid=9
+[slow-write] 951ms to write 165KB + 0 archive rows pid=16
+[slow-write] 978ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1008ms to write 165KB + 0 archive rows pid=24
+[slow-write] 891ms to write 165KB + 0 archive rows pid=14
+[slow-write] 879ms to write 165KB + 0 archive rows pid=16
+[slow-write] 878ms to write 165KB + 0 archive rows pid=9
+[slow-write] 908ms to write 165KB + 0 archive rows pid=23
+[slow-write] 851ms to write 165KB + 0 archive rows pid=21
+[slow-write] 850ms to write 165KB + 0 archive rows pid=22
+[slow-write] 923ms to write 165KB + 0 archive rows pid=20
+[slow-write] 787ms to write 4592KB + 0 archive rows pid=24
+[slow-write] 785ms to write 165KB + 0 archive rows pid=16
+[slow-write] 768ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 863ms to write 165KB + 0 archive rows pid=14
+[slow-write] 848ms to write 165KB + 0 archive rows pid=21
+[slow-write] 854ms to write 165KB + 0 archive rows pid=22
+[slow-write] 897ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 858ms to write 165KB + 0 archive rows pid=22
+[slow-write] 861ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 880ms to write 165KB + 0 archive rows pid=14
+[slow-write] 920ms to write 165KB + 0 archive rows pid=9
+[slow-write] 862ms to write 165KB + 0 archive rows pid=9
+[slow-write] 888ms to write 165KB + 0 archive rows pid=16
+[slow-write] 887ms to write 165KB + 0 archive rows pid=23
+[slow-write] 828ms to write 165KB + 0 archive rows pid=21
+[slow-write] 844ms to write 165KB + 0 archive rows pid=16
+[slow-write] 807ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 764ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 878ms to write 165KB + 0 archive rows pid=24
+[slow-write] 885ms to write 165KB + 0 archive rows pid=22
+[slow-write] 841ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 956ms to write 165KB + 0 archive rows pid=20
+[slow-write] 789ms to write 165KB + 0 archive rows pid=24
+[slow-write] 797ms to write 165KB + 0 archive rows pid=23
+[slow-write] 800ms to write 165KB + 0 archive rows pid=14
+[slow-write] 836ms to write 165KB + 0 archive rows pid=24
+[slow-write] 785ms to write 165KB + 0 archive rows pid=16
+[slow-write] 794ms to write 165KB + 0 archive rows pid=20
+[slow-write] 817ms to write 165KB + 0 archive rows pid=9
+[slow-write] 756ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 768ms to write 165KB + 0 archive rows pid=14
+[slow-write] 776ms to write 165KB + 0 archive rows pid=16
+[slow-write] 768ms to write 165KB + 0 archive rows pid=20
+[slow-write] 799ms to write 165KB + 0 archive rows pid=24
+[slow-write] 803ms to write 165KB + 0 archive rows pid=22
+[slow-write] 848ms to write 165KB + 0 archive rows pid=20
+[slow-write] 761ms to write 165KB + 0 archive rows pid=16
+[slow-write] 772ms to write 165KB + 0 archive rows pid=9
+[slow-write] 793ms to write 165KB + 0 archive rows pid=20
+[slow-write] 811ms to write 165KB + 0 archive rows pid=21
+[slow-write] 766ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 767ms to write 165KB + 0 archive rows pid=9
+[slow-write] 838ms to write 165KB + 0 archive rows pid=16
+[slow-write] 832ms to write 165KB + 0 archive rows pid=24
+[slow-write] 782ms to write 165KB + 0 archive rows pid=21
+[slow-write] 765ms to write 165KB + 0 archive rows pid=22
+[slow-write] 837ms to write 165KB + 0 archive rows pid=14
+[slow-write] 890ms to write 165KB + 0 archive rows pid=23
+[slow-write] 840ms to write 165KB + 0 archive rows pid=14
+[slow-write] 850ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1793ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1768ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1744ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1690ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1727ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1737ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1743ms to write 165KB + 0 archive rows pid=23
+[slow-cmd] 1894ms feed_like milk_tea save=165KB read=31 compute=13 store=1849 view=1 pid=14
+[slow-cmd] 1784ms feed_like milk_tea save=165KB read=1 compute=12 store=1769 view=1 pid=16
+[slow-cmd] 1806ms feed_like milk_tea save=165KB read=8 compute=6 store=1791 view=1 pid=9
+[slow-cmd] 1698ms feed_like milk_tea save=165KB read=1 compute=4 store=1692 view=1 pid=22
+[slow-cmd] 1834ms feed_like milk_tea save=165KB read=2 compute=39 store=1792 view=1 pid=20
+[slow-write] 1685ms to write 4592KB + 0 archive rows pid=16
+[slow-write] 1731ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1735ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1699ms to write 4592KB + 0 archive rows pid=22
+[slow-cmd] 1759ms feed_like milk_tea save=165KB read=2 compute=5 store=1750 view=3 pid=23
+[slow-cmd] 1759ms feed_like milk_tea save=4592KB read=34 compute=39 store=1686 view=1 pid=16
+[slow-cmd] 1770ms feed_like milk_tea save=165KB read=24 compute=5 store=1739 view=1 pid=14
+[slow-write] 1683ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 1743ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1714ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1459ms to write 165KB + 0 archive rows pid=24
+[slow-cmd] 1838ms feed_like milk_tea save=4592KB read=77 compute=76 store=1684 view=2 pid=20
+[slow-write] 1733ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1739ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1759ms to write 165KB + 0 archive rows pid=21
+[slow-cmd] 1750ms feed_like milk_tea save=165KB read=8 compute=5 store=1729 view=8 pid=21
+[slow-cmd] 1792ms feed_like milk_tea save=165KB read=5 compute=17 store=1768 view=2 pid=14
+[slow-write] 1797ms to write 165KB + 0 archive rows pid=22
+[slow-cmd] 1810ms feed_like milk_tea save=165KB read=25 compute=45 store=1738 view=2 pid=9
+[slow-write] 1762ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1741ms to write 4592KB + 0 archive rows pid=14
+[slow-cmd] 1825ms feed_like milk_tea save=165KB read=5 compute=5 store=1813 view=2 pid=22
+[slow-cmd] 1735ms feed_like milk_tea save=165KB read=2 compute=8 store=1723 view=2 pid=24
+[slow-cmd] 1774ms feed_like milk_tea save=165KB read=1 compute=4 store=1767 view=1 pid=21
+[slow-cmd] 1884ms feed_like milk_tea save=4592KB read=37 compute=102 store=1743 view=2 pid=14
+[slow-cmd] 1766ms feed_like milk_tea save=165KB read=1 compute=3 store=1760 view=2 pid=21
+[slow-write] 1743ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1747ms to write 4592KB + 0 archive rows pid=20
+[slow-cmd] 1817ms feed_like milk_tea save=4592KB read=54 compute=51 store=1700 view=12 pid=22
+[slow-write] 1728ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 1713ms to write 165KB + 0 archive rows pid=24
+[slow-cmd] 1935ms feed_like milk_tea save=4592KB read=31 compute=131 store=1771 view=2 pid=20
+[slow-write] 1637ms to write 4592KB + 0 archive rows pid=16
+[slow-cmd] 1851ms feed_like milk_tea save=4592KB read=57 compute=64 store=1729 view=2 pid=9
+[slow-cmd] 1722ms feed_like milk_tea save=165KB read=1 compute=6 store=1714 view=2 pid=24
+[slow-cmd] 1684ms feed_like milk_tea save=4592KB read=17 compute=28 store=1637 view=2 pid=16
+[slow-cmd] 1759ms feed_like milk_tea save=165KB read=1 compute=6 store=1745 view=7 pid=21
+[slow-write] 1747ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1679ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1733ms to write 165KB + 0 archive rows pid=23
+[slow-cmd] 1814ms feed_like milk_tea save=165KB read=11 compute=3 store=1797 view=2 pid=22
+[slow-cmd] 1687ms feed_like milk_tea save=165KB read=1 compute=5 store=1680 view=1 pid=16
+[slow-cmd] 1742ms feed_like milk_tea save=165KB read=1 compute=5 store=1734 view=1 pid=23
+[slow-cmd] 1758ms feed_like milk_tea save=165KB read=1 compute=4 store=1734 view=20 pid=23
+[slow-write] 1761ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1685ms to write 4592KB + 0 archive rows pid=20
+[slow-cmd] 1770ms feed_like milk_tea save=165KB read=2 compute=4 store=1762 view=2 pid=23
+[slow-write] 1806ms to write 165KB + 0 archive rows pid=9
+[slow-cmd] 1868ms feed_like milk_tea save=4592KB read=105 compute=73 store=1688 view=2 pid=20
+[slow-cmd] 1876ms feed_like milk_tea save=165KB read=16 compute=22 store=1836 view=2 pid=9
+[slow-write] 802ms to write 165KB + 0 archive rows pid=14
+[slow-write] 795ms to write 165KB + 0 archive rows pid=22
+[slow-write] 775ms to write 165KB + 0 archive rows pid=20
+[slow-write] 811ms to write 165KB + 0 archive rows pid=14
+[slow-write] 758ms to write 165KB + 0 archive rows pid=20
+[slow-write] 753ms to write 165KB + 0 archive rows pid=20
+[slow-write] 767ms to write 165KB + 0 archive rows pid=20
+[slow-write] 786ms to write 165KB + 0 archive rows pid=22
+[slow-write] 766ms to write 165KB + 0 archive rows pid=14
+[slow-write] 807ms to write 165KB + 0 archive rows pid=21
+[slow-write] 803ms to write 165KB + 0 archive rows pid=14
+[slow-write] 751ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 823ms to write 165KB + 0 archive rows pid=22
+[slow-write] 796ms to write 165KB + 0 archive rows pid=9
+[slow-write] 777ms to write 165KB + 0 archive rows pid=16
+[pg-pool] pid=9 last 60s: opened 4, closed 3, checkouts 4579, waited 0, timed out 0; open 7/8, idle 6, keep 3
+[pg-pool] pid=22 last 60s: opened 5, closed 4, checkouts 4395, waited 1, timed out 0; open 7/8, idle 6, keep 3
+[pg-pool] pid=24 last 60s: opened 1, closed 2, checkouts 4494, waited 0, timed out 0; open 6/8, idle 6, keep 3
+[pg-pool] pid=14 last 60s: opened 3, closed 4, checkouts 4555, waited 0, timed out 0; open 6/8, idle 6, keep 3
+[pg-pool] pid=16 last 60s: opened 3, closed 2, checkouts 4528, waited 0, timed out 0; open 7/8, idle 6, keep 3
+[pg-pool] pid=21 last 60s: opened 2, closed 2, checkouts 4700, waited 0, timed out 0; open 6/8, idle 6, keep 3
+[pg-pool] pid=23 last 60s: opened 1, closed 1, checkouts 4509, waited 0, timed out 0; open 6/8, idle 5, keep 3
+[pg-pool] pid=20 last 60s: opened 2, closed 2, checkouts 4363, waited 0, timed out 0; open 6/8, idle 6, keep 3
+[slow-write] 1116ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1075ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1133ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1059ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 1078ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1062ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1150ms to write 4592KB + 0 archive rows pid=16
+[slow-write] 1054ms to write 165KB + 0 archive rows pid=14
+[slow-write] 884ms to write 165KB + 0 archive rows pid=20
+[slow-write] 862ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 1120ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1076ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1065ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1118ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1093ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 1098ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1018ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 1117ms to write 165KB + 0 archive rows pid=9
+[slow-write] 909ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1084ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1011ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1120ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1107ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1071ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1074ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1067ms to write 165KB + 0 archive rows pid=16
+[slow-write] 789ms to write 165KB + 0 archive rows pid=16
+[slow-write] 786ms to write 165KB + 0 archive rows pid=9
+[slow-write] 819ms to write 165KB + 0 archive rows pid=9
+[slow-write] 756ms to write 165KB + 0 archive rows pid=16
+[slow-write] 795ms to write 165KB + 0 archive rows pid=16
+[slow-write] 792ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 832ms to write 165KB + 0 archive rows pid=9
+[slow-write] 793ms to write 165KB + 0 archive rows pid=24 (+12 slow lines dropped)
+[slow-write] 799ms to write 165KB + 0 archive rows pid=14 (+2 slow lines dropped)
+[slow-write] 817ms to write 4592KB + 0 archive rows pid=9 (+3 slow lines dropped)
+[slow-write] 766ms to write 4592KB + 0 archive rows pid=21 (+5 slow lines dropped)
+[slow-write] 809ms to write 165KB + 0 archive rows pid=20 (+1 slow lines dropped)
+[slow-write] 797ms to write 165KB + 0 archive rows pid=14
+[slow-write] 778ms to write 165KB + 0 archive rows pid=14
+[slow-write] 789ms to write 165KB + 0 archive rows pid=14
+[slow-write] 772ms to write 165KB + 0 archive rows pid=16 (+4 slow lines dropped)
+[slow-write] 774ms to write 165KB + 0 archive rows pid=22 (+6 slow lines dropped)
+[slow-write] 768ms to write 165KB + 0 archive rows pid=22
+[slow-write] 787ms to write 165KB + 0 archive rows pid=9
+[slow-write] 805ms to write 165KB + 0 archive rows pid=9
+[pg-pool] pid=9 last 60s: opened 4, closed 3, checkouts 4325, waited 12, timed out 0; open 8/8, idle 5, keep 3
+[pg-pool] pid=14 last 60s: opened 4, closed 2, checkouts 4487, waited 1, timed out 0; open 8/8, idle 4, keep 3
+[pg-pool] pid=24 last 60s: opened 6, closed 4, checkouts 4512, waited 7, timed out 0; open 8/8, idle 6, keep 3
+[pg-pool] pid=22 last 60s: opened 5, closed 4, checkouts 4454, waited 5, timed out 0; open 8/8, idle 4, keep 3
+[pg-pool] pid=16 last 60s: opened 4, closed 3, checkouts 4474, waited 6, timed out 0; open 8/8, idle 5, keep 3
+[pg-pool] pid=21 last 60s: opened 6, closed 4, checkouts 4679, waited 2, timed out 0; open 8/8, idle 4, keep 3
+[pg-pool] pid=20 last 60s: opened 8, closed 6, checkouts 4611, waited 5, timed out 0; open 8/8, idle 5, keep 3
+[pg-pool] pid=23 last 60s: opened 3, closed 2, checkouts 4455, waited 0, timed out 0; open 7/8, idle 6, keep 3
+[slow-write] 1205ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1279ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1291ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1209ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1263ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1257ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1335ms to write 4592KB + 0 archive rows pid=23 (+4 slow lines dropped)
+[slow-write] 1214ms to write 4592KB + 0 archive rows pid=21
+[slow-cmd] 1512ms feed_like milk_tea save=4592KB read=55 compute=119 store=1336 view=2 pid=23
+[slow-write] 1288ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1156ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 1292ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 1256ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1230ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1268ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1251ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1296ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1243ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1276ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1184ms to write 4592KB + 0 archive rows pid=24
+[slow-write] 1305ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1256ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1248ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1285ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1329ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1211ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1234ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 1232ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1034ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1038ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 1251ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 1255ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1259ms to write 165KB + 0 archive rows pid=23
+[slow-write] 3313ms to write 165KB + 0 archive rows pid=22
+[slow-write] 3299ms to write 165KB + 0 archive rows pid=24
+[slow-cmd] 3341ms feed_like milk_tea save=165KB read=14 compute=3 store=3322 view=1 pid=22
+[slow-cmd] 3328ms feed_like milk_tea save=165KB read=9 compute=12 store=3306 view=1 pid=24
+[slow-write] 3328ms to write 165KB + 0 archive rows pid=22
+[slow-write] 3305ms to write 165KB + 0 archive rows pid=14
+[slow-write] 3331ms to write 165KB + 0 archive rows pid=16
+[slow-write] 3329ms to write 165KB + 0 archive rows pid=24
+[slow-write] 3303ms to write 165KB + 0 archive rows pid=23
+[slow-write] 3203ms to write 165KB + 0 archive rows pid=20
+[slow-write] 3301ms to write 165KB + 0 archive rows pid=9
+[slow-cmd] 3357ms feed_like milk_tea save=165KB read=1 compute=12 store=3342 view=1 pid=24
+[slow-cmd] 3351ms feed_like milk_tea save=165KB read=1 compute=17 store=3332 view=1 pid=22
+[slow-cmd] 3348ms feed_like milk_tea save=165KB read=3 compute=10 store=3334 view=1 pid=16
+[slow-cmd] 3363ms feed_like milk_tea save=165KB read=2 compute=29 store=3331 view=1 pid=23
+[slow-cmd] 3210ms feed_like milk_tea save=165KB read=1 compute=3 store=3204 view=1 pid=20
+[slow-cmd] 3364ms feed_like milk_tea save=165KB read=32 compute=23 store=3308 view=2 pid=14
+[slow-cmd] 3355ms feed_like milk_tea save=165KB read=7 compute=39 store=3307 view=2 pid=9
+[slow-write] 3339ms to write 165KB + 0 archive rows pid=24
+[slow-write] 3319ms to write 165KB + 0 archive rows pid=23
+[slow-write] 3338ms to write 165KB + 0 archive rows pid=16
+[slow-write] 3332ms to write 165KB + 0 archive rows pid=16
+[slow-write] 3245ms to write 165KB + 0 archive rows pid=20
+[slow-write] 3201ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 3282ms to write 165KB + 0 archive rows pid=9
+[slow-write] 3337ms to write 165KB + 0 archive rows pid=22
+[slow-cmd] 3364ms feed_like milk_tea save=165KB read=13 compute=9 store=3341 view=1 pid=24
+[slow-cmd] 3358ms feed_like milk_tea save=165KB read=8 compute=29 store=3320 view=1 pid=23
+[slow-cmd] 3337ms feed_like milk_tea save=165KB read=14 compute=36 store=3286 view=1 pid=9
+[slow-write] 3310ms to write 165KB + 0 archive rows pid=14
+[slow-cmd] 3282ms feed_like milk_tea save=4592KB read=46 compute=32 store=3202 view=3 pid=21
+[slow-write] 3332ms to write 165KB + 0 archive rows pid=9
+[slow-cmd] 3367ms feed_like milk_tea save=165KB read=2 compute=4 store=3356 view=4 pid=22
+[slow-cmd] 3262ms feed_like milk_tea save=165KB read=8 compute=4 store=3246 view=5 pid=20
+[slow-cmd] 3382ms feed_like milk_tea save=165KB read=5 compute=5 store=3367 view=5 pid=16
+[slow-cmd] 3380ms feed_like milk_tea save=165KB read=11 compute=24 store=3343 view=2 pid=9
+[slow-write] 3290ms to write 165KB + 0 archive rows pid=9
+[slow-write] 3205ms to write 165KB + 0 archive rows pid=20
+[slow-write] 3278ms to write 165KB + 0 archive rows pid=22
+[slow-write] 3337ms to write 165KB + 0 archive rows pid=16
+[slow-cmd] 3374ms feed_like milk_tea save=165KB read=20 compute=9 store=3338 view=7 pid=14
+[slow-cmd] 3390ms feed_like milk_tea save=165KB read=19 compute=22 store=3347 view=2 pid=16
+[slow-write] 3358ms to write 165KB + 0 archive rows pid=24
+[slow-write] 3314ms to write 165KB + 0 archive rows pid=14
+[slow-cmd] 3365ms feed_like milk_tea save=165KB read=22 compute=33 store=3308 view=3 pid=9
+[slow-cmd] 3385ms feed_like milk_tea save=165KB read=1 compute=11 store=3372 view=2 pid=24
+[slow-write] 3346ms to write 165KB + 0 archive rows pid=23
+[slow-write] 3353ms to write 165KB + 0 archive rows pid=21
+[slow-write] 3264ms to write 4592KB + 0 archive rows pid=20
+[slow-cmd] 3370ms feed_like milk_tea save=165KB read=2 compute=14 store=3352 view=2 pid=23
+[slow-cmd] 3391ms feed_like milk_tea save=165KB read=20 compute=10 store=3360 view=2 pid=21
+[slow-cmd] 3361ms feed_like milk_tea save=4592KB read=37 compute=49 store=3273 view=2 pid=20
+[slow-cmd] 3323ms feed_like milk_tea save=165KB read=1 compute=8 store=3304 view=10 pid=22
+[slow-cmd] 3348ms feed_like milk_tea save=165KB read=18 compute=11 store=3318 view=2 pid=14
+[slow-write] 3271ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 3395ms to write 4592KB + 0 archive rows pid=14
+[slow-cmd] 3389ms feed_like milk_tea save=4592KB read=43 compute=60 store=3284 view=2 pid=21
+[slow-cmd] 3407ms feed_like milk_tea save=165KB read=28 compute=21 store=3344 view=14 pid=16
+[slow-cmd] 3464ms feed_like milk_tea save=4592KB read=19 compute=33 store=3410 view=2 pid=14
+[slow-write] 3375ms to write 165KB + 0 archive rows pid=23
+[slow-write] 3370ms to write 165KB + 0 archive rows pid=21
+[slow-cmd] 3245ms feed_like milk_tea save=165KB read=2 compute=3 store=3206 view=34 pid=20
+[slow-cmd] 3438ms feed_like milk_tea save=165KB read=2 compute=24 store=3398 view=14 pid=23
+[slow-cmd] 3420ms feed_like milk_tea save=165KB read=1 compute=22 store=3378 view=19 pid=21
+[slow-write] 778ms to write 165KB + 0 archive rows pid=14
+[slow-write] 757ms to write 165KB + 0 archive rows pid=24
+[slow-write] 808ms to write 165KB + 0 archive rows pid=21
+[slow-write] 761ms to write 165KB + 0 archive rows pid=24
+[slow-write] 778ms to write 165KB + 0 archive rows pid=16
+[slow-write] 779ms to write 165KB + 0 archive rows pid=20
+[slow-write] 817ms to write 165KB + 0 archive rows pid=21
+[slow-write] 756ms to write 165KB + 0 archive rows pid=24
+[slow-write] 822ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 819ms to write 165KB + 0 archive rows pid=16
+[slow-write] 779ms to write 4592KB + 0 archive rows pid=16
+[slow-write] 752ms to write 165KB + 0 archive rows pid=23
+[slow-write] 829ms to write 165KB + 0 archive rows pid=20
+[slow-write] 849ms to write 165KB + 0 archive rows pid=16
+[slow-write] 803ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 794ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 823ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 796ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 785ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 843ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 825ms to write 165KB + 0 archive rows pid=9
+[slow-write] 757ms to write 165KB + 0 archive rows pid=20
+[slow-write] 769ms to write 165KB + 0 archive rows pid=9
+[slow-write] 751ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 807ms to write 165KB + 0 archive rows pid=20
+[slow-write] 807ms to write 165KB + 0 archive rows pid=20
+[slow-write] 774ms to write 165KB + 0 archive rows pid=16
+[slow-write] 751ms to write 165KB + 0 archive rows pid=16
+[slow-write] 754ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 762ms to write 165KB + 0 archive rows pid=22
+[slow-write] 785ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 826ms to write 165KB + 0 archive rows pid=22
+[slow-write] 889ms to write 165KB + 0 archive rows pid=16
+[slow-write] 895ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 896ms to write 165KB + 0 archive rows pid=20
+[slow-write] 849ms to write 4592KB + 0 archive rows pid=24
+[slow-write] 831ms to write 165KB + 0 archive rows pid=22
+[slow-write] 832ms to write 165KB + 0 archive rows pid=22
+[slow-write] 876ms to write 165KB + 0 archive rows pid=24
+[slow-write] 878ms to write 165KB + 0 archive rows pid=24
+[slow-write] 847ms to write 4592KB + 0 archive rows pid=24
+[slow-write] 1042ms to write 165KB + 0 archive rows pid=21
+[retention] flush: DeadlockDetected: deadlock detected DETAIL: Process 346 waits for ShareLock on transaction 100124; blocked by process 332. Process 332 waits for ShareLock on transaction 100089; blocked by process 346. HINT: See server
+[slow-write] 1752ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1756ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1770ms to write 165KB + 0 archive rows pid=21
+[slow-cmd] 1780ms feed_like milk_tea save=165KB read=2 compute=5 store=1772 view=1 pid=21
+[slow-cmd] 1779ms feed_like milk_tea save=165KB read=10 compute=6 store=1762 view=2 pid=24
+[slow-write] 1756ms to write 165KB + 0 archive rows pid=24
+[slow-cmd] 1796ms feed_like milk_tea save=165KB read=6 compute=28 store=1761 view=1 pid=24
+[slow-write] 1768ms to write 165KB + 0 archive rows pid=24
+[slow-cmd] 1793ms feed_like milk_tea save=165KB read=17 compute=5 store=1768 view=2 pid=23
+[slow-write] 1759ms to write 165KB + 0 archive rows pid=23
+[slow-cmd] 1772ms feed_like milk_tea save=165KB read=6 compute=6 store=1760 view=1 pid=23
+[slow-write] 1762ms to write 165KB + 0 archive rows pid=23
+[slow-cmd] 1797ms feed_like milk_tea save=165KB read=9 compute=21 store=1765 view=2 pid=23
+[pg-pool] pid=14 last 60s: opened 1, closed 2, checkouts 3473, waited 1, timed out 0; open 7/8, idle 4, keep 3
+[pg-pool] pid=22 last 60s: opened 2, closed 2, checkouts 3327, waited 0, timed out 0; open 8/8, idle 5, keep 3
+[pg-pool] pid=9 last 60s: opened 0, closed 1, checkouts 3526, waited 4, timed out 0; open 7/8, idle 3, keep 3
+[pg-pool] pid=16 last 60s: opened 2, closed 2, checkouts 3513, waited 3, timed out 0; open 8/8, idle 5, keep 3
+[pg-pool] pid=21 last 60s: opened 1, closed 1, checkouts 3405, waited 5, timed out 0; open 8/8, idle 5, keep 3
+[pg-pool] pid=24 last 60s: opened 2, closed 2, checkouts 3456, waited 0, timed out 0; open 8/8, idle 5, keep 3
+[pg-pool] pid=20 last 60s: opened 2, closed 3, checkouts 3463, waited 4, timed out 0; open 7/8, idle 6, keep 3
+[pg-pool] pid=23 last 60s: opened 2, closed 2, checkouts 3508, waited 3, timed out 0; open 7/8, idle 3, keep 3
+[slow-write] 1272ms to write 165KB + 0 archive rows pid=14 (+11 slow lines dropped)
+[slow-write] 1266ms to write 165KB + 0 archive rows pid=21 (+5 slow lines dropped)
+[slow-write] 1266ms to write 165KB + 0 archive rows pid=24 (+3 slow lines dropped)
+[slow-write] 1281ms to write 165KB + 0 archive rows pid=22 (+9 slow lines dropped)
+[slow-write] 1287ms to write 4592KB + 0 archive rows pid=20 (+10 slow lines dropped)
+[slow-write] 1278ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1277ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1245ms to write 165KB + 0 archive rows pid=9 (+10 slow lines dropped)
+[slow-write] 1166ms to write 165KB + 0 archive rows pid=23 (+2 slow lines dropped)
+[slow-write] 1269ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1068ms to write 165KB + 0 archive rows pid=16 (+9 slow lines dropped)
+[slow-write] 1208ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 1182ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1090ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1112ms to write 4592KB + 0 archive rows pid=24
+[slow-write] 1226ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1101ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1264ms to write 165KB + 0 archive rows pid=20
+[slow-write] 1292ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1271ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1167ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 1055ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1227ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1244ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1247ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1148ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1289ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1175ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1203ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1159ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1128ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1293ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 956ms to write 165KB + 0 archive rows pid=20
+[slow-lock] waited 764ms for this save's row lock (connection 0ms) pid=22
+[slow-lock] waited 1281ms for this save's row lock (connection 0ms) pid=22
+[slow-lock] waited 2325ms for this save's row lock (connection 0ms) pid=14
+[slow-write] 2762ms to write 165KB + 0 archive rows pid=23
+[slow-write] 2756ms to write 165KB + 0 archive rows pid=16
+[slow-cmd] 2790ms feed_like milk_tea save=165KB read=10 compute=22 store=2757 view=2 pid=16
+[slow-cmd] 2788ms feed_like milk_tea save=165KB read=7 compute=5 store=2771 view=5 pid=23
+[slow-write] 2786ms to write 165KB + 0 archive rows pid=24
+[slow-write] 2766ms to write 165KB + 0 archive rows pid=23
+[slow-cmd] 2800ms feed_like milk_tea save=165KB read=1 compute=9 store=2788 view=2 pid=24
+[slow-cmd] 2791ms feed_like milk_tea save=165KB read=11 compute=7 store=2771 view=2 pid=23
+[slow-write] 2798ms to write 165KB + 0 archive rows pid=21
+[slow-cmd] 2833ms feed_like milk_tea save=165KB read=1 compute=18 store=2812 view=2 pid=21
+[slow-write] 2759ms to write 165KB + 0 archive rows pid=21
+[slow-write] 2801ms to write 165KB + 0 archive rows pid=24
+[slow-cmd] 2836ms feed_like milk_tea save=165KB read=1 compute=26 store=2807 view=2 pid=24
+[slow-cmd] 2792ms feed_like milk_tea save=165KB read=8 compute=10 store=2768 view=6 pid=21
+[slow-write] 1992ms to write 165KB + 0 archive rows pid=22
+[slow-write] 2869ms to write 165KB + 0 archive rows pid=16
+[slow-write] 998ms to write 165KB + 0 archive rows pid=24
+[slow-cmd] 2872ms feed_like milk_tea save=165KB read=3 compute=111 store=2756 view=2 pid=22
+[slow-write] 2895ms to write 165KB + 0 archive rows pid=21
+[slow-cmd] 2859ms feed_like milk_tea save=165KB read=1856 compute=3 store=999 view=2 pid=24
+[slow-write] 2864ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1584ms to write 165KB + 0 archive rows pid=22
+[slow-cmd] 2914ms feed_like milk_tea save=165KB read=28 compute=53 store=2831 view=2 pid=14
+[slow-cmd] 2926ms feed_like milk_tea save=165KB read=3 compute=47 store=2874 view=2 pid=9
+[slow-write] 2868ms to write 165KB + 0 archive rows pid=23
+[slow-cmd] 2902ms feed_like milk_tea save=165KB read=18 compute=6 store=2873 view=5 pid=16
+[slow-write] 2869ms to write 165KB + 0 archive rows pid=16
+[slow-write] 2767ms to write 165KB + 0 archive rows pid=22
+[slow-cmd] 2888ms feed_like milk_tea save=165KB read=2 compute=19 store=2865 view=1 pid=22
+[slow-write] 2883ms to write 4592KB + 0 archive rows pid=14
+[slow-cmd] 2926ms feed_like milk_tea save=165KB read=1 compute=13 store=2910 view=2 pid=21
+[slow-cmd] 2898ms feed_like milk_tea save=165KB read=6 compute=16 store=2875 view=1 pid=16
+[slow-write] 2873ms to write 165KB + 0 archive rows pid=23
+[slow-cmd] 2903ms feed_like milk_tea save=165KB read=3 compute=20 store=2879 view=1 pid=22
+[slow-cmd] 3149ms feed_like milk_tea save=4592KB read=75 compute=181 store=2892 view=2 pid=14
+[slow-cmd] 2928ms feed_like milk_tea save=165KB read=3 compute=46 store=2877 view=1 pid=23
+[slow-cmd] 2904ms feed_like milk_tea save=165KB read=12 compute=17 store=2873 view=2 pid=23
+[slow-write] 2889ms to write 4592KB + 0 archive rows pid=20
+[slow-cmd] 3098ms feed_like milk_tea save=4592KB read=45 compute=155 store=2897 view=2 pid=20
+[slow-cmd] 2811ms feed_like milk_tea save=165KB read=2478 compute=4 store=302 view=26 pid=20
+[slow-write] 2893ms to write 165KB + 0 archive rows pid=20
+[slow-write] 2897ms to write 165KB + 0 archive rows pid=14
+[slow-cmd] 2891ms feed_like milk_tea save=165KB read=2655 compute=3 store=231 view=2 pid=24
+[slow-cmd] 2923ms feed_like milk_tea save=165KB read=1 compute=16 store=2904 view=2 pid=20
+[slow-cmd] 2928ms feed_like milk_tea save=165KB read=18 compute=4 store=2903 view=2 pid=14
+[slow-cmd] 2015ms feed_like milk_tea save=165KB read=1685 compute=5 store=323 view=2 pid=20
+[slow-write] 2919ms to write 4592KB + 0 archive rows pid=14
+[slow-cmd] 2909ms feed_like milk_tea save=4592KB read=2580 compute=34 store=293 view=2 pid=16
+[slow-write] 2941ms to write 4592KB + 0 archive rows pid=22
+[slow-cmd] 3168ms feed_like milk_tea save=4592KB read=112 compute=100 store=2954 view=2 pid=14
+[slow-cmd] 3161ms feed_like milk_tea save=4592KB read=60 compute=137 store=2962 view=2 pid=22
+[slow-cmd] 2912ms feed_like milk_tea save=165KB read=2716 compute=4 store=190 view=2 pid=9
+[slow-write] 2878ms to write 4592KB + 0 archive rows pid=9
+[slow-cmd] 3054ms feed_like milk_tea save=4592KB read=42 compute=87 store=2923 view=2 pid=9
+[slow-cmd] 2979ms feed_like milk_tea save=4592KB read=2713 compute=35 store=229 view=2 pid=21
+[slow-cmd] 3002ms feed_like milk_tea save=4592KB read=2702 compute=51 store=247 view=2 pid=9
+[slow-write] 1125ms to write 165KB + 0 archive rows pid=9
+[slow-write] 1169ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1112ms to write 165KB + 0 archive rows pid=22
+[slow-write] 972ms to write 4592KB + 0 archive rows pid=16
+[slow-write] 1122ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1004ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 1137ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 1039ms to write 165KB + 0 archive rows pid=9
+[slow-write] 855ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 1078ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1051ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 1161ms to write 165KB + 0 archive rows pid=21
+[slow-write] 935ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 905ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 1157ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1164ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1134ms to write 165KB + 0 archive rows pid=24
+[slow-write] 1113ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1163ms to write 4592KB + 0 archive rows pid=16
+[slow-write] 1145ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1060ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 1098ms to write 165KB + 0 archive rows pid=22
+[slow-write] 1165ms to write 4592KB + 0 archive rows pid=22
+[slow-write] 1129ms to write 165KB + 0 archive rows pid=21
+[slow-write] 1065ms to write 165KB + 0 archive rows pid=23
+[slow-write] 1084ms to write 165KB + 0 archive rows pid=14
+[slow-write] 1060ms to write 165KB + 0 archive rows pid=16
+[slow-write] 1080ms to write 165KB + 0 archive rows pid=23
+[slow-write] 843ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 1031ms to write 4592KB + 0 archive rows pid=9
+[slow-write] 1023ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 1121ms to write 165KB + 0 archive rows pid=24
+[pg-pool] pid=14 last 60s: opened 4, closed 4, checkouts 3986, waited 33, timed out 0; open 7/8, idle 3, keep 3
+[pg-pool] pid=16 last 60s: opened 4, closed 5, checkouts 3895, waited 38, timed out 0; open 7/8, idle 3, keep 3
+[pg-pool] pid=22 last 60s: opened 3, closed 3, checkouts 4033, waited 18, timed out 0; open 8/8, idle 4, keep 3
+[pg-pool] pid=21 last 60s: opened 4, closed 4, checkouts 4106, waited 34, timed out 0; open 8/8, idle 4, keep 3
+[pg-pool] pid=24 last 60s: opened 3, closed 3, checkouts 3990, waited 45, timed out 0; open 8/8, idle 6, keep 3
+[pg-pool] pid=9 last 60s: opened 4, closed 3, checkouts 4080, waited 40, timed out 0; open 8/8, idle 5, keep 3
+[pg-pool] pid=20 last 60s: opened 5, closed 4, checkouts 3786, waited 65, timed out 0; open 8/8, idle 4, keep 3
+[pg-pool] pid=23 last 60s: opened 4, closed 3, checkouts 4095, waited 36, timed out 0; open 8/8, idle 6, keep 3
+[slow-write] 2917ms to write 165KB + 0 archive rows pid=21
+[slow-write] 2869ms to write 165KB + 0 archive rows pid=9
+[slow-cmd] 2891ms feed_like milk_tea save=165KB read=1 compute=18 store=2870 view=2 pid=9
+[slow-cmd] 2958ms feed_like milk_tea save=165KB read=10 compute=26 store=2920 view=2 pid=21
+[slow-write] 2834ms to write 165KB + 0 archive rows pid=9
+[slow-write] 2909ms to write 4592KB + 0 archive rows pid=20
+[slow-write] 2829ms to write 165KB + 0 archive rows pid=21
+[slow-write] 2755ms to write 4592KB + 0 archive rows pid=23
+[slow-write] 2701ms to write 4592KB + 0 archive rows pid=24
+[slow-cmd] 2848ms feed_like milk_tea save=165KB read=4 compute=5 store=2837 view=2 pid=9
+[slow-write] 2887ms to write 165KB + 0 archive rows pid=9
+[slow-cmd] 2869ms feed_like milk_tea save=165KB read=7 compute=29 store=2831 view=2 pid=21
+[slow-write] 2858ms to write 165KB + 0 archive rows pid=22
+[slow-write] 2833ms to write 4592KB + 0 archive rows pid=21
+[slow-write] 2692ms to write 4592KB + 0 archive rows pid=14
+[slow-cmd] 3060ms feed_like milk_tea save=4592KB read=61 compute=228 store=2767 view=3 pid=23
+[slow-write] 2906ms to write 165KB + 0 archive rows pid=23
+[slow-cmd] 3166ms feed_like milk_tea save=4592KB read=46 compute=199 store=2916 view=5 pid=20
+[slow-write] 2759ms to write 165KB + 0 archive rows pid=16
+[slow-cmd] 2889ms feed_like milk_tea save=4592KB read=124 compute=58 store=2702 view=5 pid=24
+[slow-cmd] 3053ms feed_like milk_tea save=165KB read=67 compute=34 store=2950 view=2 pid=23
+[slow-cmd] 2844ms feed_like milk_tea save=165KB read=46 compute=20 store=2777 view=2 pid=16
+[slow-write] 2781ms to write 165KB + 0 archive rows pid=16
+[slow-write] 2707ms to write 4592KB + 0 archive rows pid=16
+[slow-cmd] 2910ms feed_like milk_tea save=165KB read=2 compute=7 store=2892 view=8 pid=9
+[slow-cmd] 2899ms feed_like milk_tea save=165KB read=2 compute=31 store=2859 view=7 pid=22
+[slow-cmd] 2986ms feed_like milk_tea save=4592KB read=48 compute=228 store=2708 view=2 pid=16
+[slow-write] 2786ms to write 165KB + 0 archive rows pid=20
+[slow-write] 2703ms to write 4592KB + 0 archive rows pid=14
+[slow-write] 2843ms to write 165KB + 0 archive rows pid=24
+[slow-write] 2774ms to write 4592KB + 0 archive rows pid=24
+[slow-write] 2774ms to write 165KB + 0 archive rows pid=24
+[slow-cmd] 2797ms feed_like milk_tea save=165KB read=4 compute=5 store=2787 view=2 pid=20
+[slow-cmd] 2861ms feed_like milk_tea save=4592KB read=58 compute=99 store=2694 view=10 pid=14
+[slow-cmd] 2855ms feed_like milk_tea save=4592KB read=71 compute=73 store=2709 view=2 pid=14
+[slow-write] 2870ms to write 165KB + 0 archive rows pid=20
+[pg-pool] pid=24 last 60s: opened 1, closed 6, checkouts 1496, waited 0, timed out 0; open 3/8, idle 3, keep 3
+[pg-pool] pid=20 last 60s: opened 2, closed 7, checkouts 1579, waited 0, timed out 0; open 3/8, idle 3, keep 3
+[pg-pool] pid=23 last 60s: opened 1, closed 6, checkouts 1584, waited 0, timed out 0; open 3/8, idle 3, keep 3
