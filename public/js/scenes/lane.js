@@ -9,7 +9,10 @@
  *            behind cones, a coil of drain snake and the price list;
  *   ice_cream cô Hiền's ice-cream corner at the primary-school gate under a flame
  *            tree: the chest freezer with its glass lid, cones and coconuts, topping
- *            jars, the digital scale and the little stools.
+ *            jars, the digital scale and the little stools;
+ *   railway  the crossing at Bến Mây: the keeper's cabin in barrier stripes, the track
+ *            across the road, the arm (down while a train is due), the warning lights
+ *            (blinking red while the bell rings), the flags and the train board.
  * The footprints are the sidewalk scene's (the same walkable street plan), so the
  * props below stand where that plan keeps the floor clear. */
 import {R,E,L,T,P,fit,streetBoard} from './kit.js';
@@ -107,6 +110,28 @@ function manhole(c,x0,x1,fy,open){const cx=(x0+x1)/2;E(c,cx,fy-6,(x1-x0)/2+8,9,o
   for(const dx of [-(x1-x0)/2-16,(x1-x0)/2+16]){P(c,[[cx+dx-9,fy],[cx+dx,fy-30],[cx+dx+9,fy]],'#f28c28');R(c,cx+dx-8,fy-18,16,5,'#fff',2);}}
 function coil(c,x0,x1,fy){const cx=(x0+x1)/2;for(let i=0;i<4;i++){c.beginPath();c.ellipse(cx,fy-18,22-i*4,12-i*2,0,0,Math.PI*2);c.strokeStyle='#8a97a3';c.lineWidth=3;c.stroke();}L(c,cx+20,fy-18,x1,fy-4,'#8a97a3',3);}
 
+/* ------------------------------------------------------------ railway: the crossing at Bến Mây */
+const liveTrain=w=>(w.c?.tasks||[]).find(t=>t.kind==='train'&&!['completed','cancelled','referred'].includes(t.status)&&t.id===w.c?.active_task)||null;
+/** The keeper's cabin: a small hut in barrier stripes with a window and the station's radio aerial. */
+function cabin(c,x,base,wd,port){const top=base-(port?150:170);R(c,x,top+30,wd,base-top-30,'#f4ece0',6,'#b8a58e',2);
+  P(c,[[x-12,top+34],[x+wd/2,top-4],[x+wd+12,top+34]],'#a23b2c');for(let i=0;i<5;i++)R(c,x+i*wd/5,top+34,wd/10,10,i%2?'#fff':'#d6382b');
+  R(c,x+wd*.18,top+62,wd*.36,40,'#cfe7ea',4,'#8f7f72',2);R(c,x+wd*.62,top+60,wd*.24,base-top-60,'#7a5a3c',4);
+  L(c,x+wd-10,top+6,x+wd-10,top-40,'#5f6670',3);E(c,x+wd-10,top-42,4,4,'#d6382b');
+  R(c,x+wd*.1,top+40,wd*.8,16,'#fff4dc',4,'#c9a06a',1.5);T(c,'CHÒI GÁC BẾN MÂY',x+wd/2,top+48,port?10:11,'#a23b2c',800);}
+/** The track crossing the pavement and the road, sleepers and two rails. */
+function track(c,f,x,wd){const top=f.base-6,bottom=f.y+f.h;R(c,x,top,wd,bottom-top,'#b9ad99',0);
+  for(let y=top+6;y<bottom;y+=16)R(c,x-6,y,wd+12,7,'#8b6b4a',2);L(c,x+wd*.25,top,x+wd*.25,bottom,'#5f6670',5);L(c,x+wd*.75,top,x+wd*.75,bottom,'#5f6670',5);}
+function barrier(c,w,x0,x1,fy,port){const t=liveTrain(w),down=t?.arm==='down',W=x1-x0;
+  R(c,x0+6,fy-58,16,58,'#f4ece0',3,'#8f7f72',1.5);E(c,x0+14,fy-62,9,9,'#5f6670');
+  const len=W+(port?40:60),ang=down?0:-1.15;c.save();c.translate(x0+14,fy-48);c.rotate(ang);
+  for(let i=0;i<8;i++)R(c,i*len/8,-5,len/8,10,i%2?'#ffffff':'#d6382b',i===0||i===7?4:0);c.restore();
+  const label=w.words().counter;T(c,label,(x0+x1)/2,fy+14,fit(c,label,W,port?13:11),'#5a3f2c',800);}
+function signal(c,w,x0,x1,fy){const t=liveTrain(w),on=t&&t.bell!=null&&!t.passed,cx=(x0+x1)/2;L(c,cx,fy,cx,fy-86,'#5f6670',4);
+  R(c,cx-24,fy-92,48,20,'#2b2b2b',8);E(c,cx-12,fy-82,7,7,on?'#ff3b2b':'#5a2a25');E(c,cx+12,fy-82,7,7,on?'#5a2a25':'#5a2a25');
+  P(c,[[cx-26,fy-64],[cx+26,fy-44],[cx+26,fy-52],[cx-26,fy-72]],'#fff');P(c,[[cx-26,fy-44],[cx+26,fy-64],[cx+26,fy-72],[cx-26,fy-52]],'#fff');
+  L(c,cx-26,fy-68,cx+26,fy-48,'#d6382b',2);L(c,cx-26,fy-48,cx+26,fy-68,'#d6382b',2);}
+function flagRack(c,x0,x1,fy){R(c,x0+8,fy-10,x1-x0-16,10,WOOD,3,WOOD_D,1);for(const [dx,col] of [[.3,'#d6382b'],[.6,'#2f8f5b']]){const x=x0+(x1-x0)*dx;L(c,x,fy-10,x,fy-56,'#6b4a3a',3);P(c,[[x,fy-56],[x+22,fy-48],[x,fy-40]],col);}}
+
 /* ------------------------------------------------------------ rooms */
 function room(w,p,port){const c=w.ctx,f=port?F.port:F.land,car=w.career;
   if(port){E(c,350,862,320,22,'#cba88d22');R(c,f.x-7,f.y-5,f.w+14,f.h+12,'#c9a27e',33);}
@@ -115,10 +140,11 @@ function room(w,p,port){const c=w.ctx,f=port?F.port:F.land,car=w.career;
   sky(c,w,f);
   const lit=dusk(w);
   if(port){pole(c,40,f.base,200);pole(c,664,f.base,214);wires(c,40,664,200,214,30);tube(c,24,250,150,f.base,'#f3dfb0',lit);tube(c,470,236,210,f.base,'#f2d2c4',lit);
-    if(car==='fruit')marketGate(c,190,f.base,260,true);else if(car==='ice_cream')schoolGate(c,190,f.base,260,true);else tube(c,190,226,260,f.base,'#d6e8d8',lit);}
+    if(car==='fruit')marketGate(c,190,f.base,260,true);else if(car==='ice_cream')schoolGate(c,190,f.base,260,true);else if(car==='railway')cabin(c,200,f.base,240,true);else tube(c,190,226,260,f.base,'#d6e8d8',lit);}
   else{pole(c,96,f.base,170);pole(c,1108,f.base,186);wires(c,96,1108,170,186,40);tube(c,78,226,230,f.base,'#f3dfb0',lit);tube(c,650,216,240,f.base,'#f2d2c4',lit);tube(c,900,240,230,f.base,'#d6e8d8',lit);
-    if(car==='fruit')marketGate(c,330,f.base,300,false);else if(car==='ice_cream')schoolGate(c,330,f.base,300,false);else tube(c,330,206,300,f.base,'#efe3cf',lit);}
+    if(car==='fruit')marketGate(c,330,f.base,300,false);else if(car==='ice_cream')schoolGate(c,330,f.base,300,false);else if(car==='railway')cabin(c,350,f.base,260,false);else tube(c,330,206,300,f.base,'#efe3cf',lit);}
   pavement(c,f);
+  if(car==='railway')track(c,f,port?520:760,port?90:110);
   if(car==='garbage')lamp(c,port?600:470,f.base+10,f.base-(port?230:250));
   streetBoard(c,p,port?30:1013,port?282:322,port?1.6:1);
   c.restore();
@@ -153,6 +179,13 @@ function props(w){const c=w.ctx,port=w.isPortrait(),b=w.plan().blocks,out=[],car
     out.push([ev[3],()=>{R(c,ev[0]-6,ev[3]-60,ev[2]-ev[0]+12,40,'#fffaf0',4,'#8f6746',2);T(c,'PHÂN LOẠI',mid(ev),ev[3]-46,9,'#2f8f5b',800);T(c,'🟢🟡⚫',mid(ev),ev[3]-30,10,'#000',400);L(c,mid(ev),ev[3]-20,mid(ev),ev[3],WOOD_D,3);}]);
     out.push([fi[3],()=>redBox(c,fi[0],fi[2],fi[3])]);
     out.push([dr[3],()=>priceSign(c,mid(dr),dr[3],port,['ĐỔ RÁC 18:00–19:30','đúng giờ, đúng túi'])]);
+  }else if(car==='railway'){
+    out.push([wh[3],()=>{R(c,wh[0]+6,wh[3]-46,wh[2]-wh[0]-12,44,'#c9cdd2',5,'#7d858c',2);T(c,'TỦ DỤNG CỤ',mid(wh),wh[3]-54,9,'#5a3f2c',800);}]);
+    out.push([wb[3],()=>flagRack(c,wb[0],wb[2],wb[3])]);
+    out.push([co[3],()=>barrier(c,w,co[0],co[2],co[3],port)]);
+    out.push([ev[3],()=>signal(c,w,ev[0],ev[2],ev[3])]);
+    out.push([fi[3],()=>{R(c,fi[0]+6,fi[3]-58,fi[2]-fi[0]-12,50,'#1f2a2e',4,'#5f6670',2);for(let i=0;i<3;i++)L(c,fi[0]+14,fi[3]-44+i*11,fi[2]-14,fi[3]-44+i*11,'#f6d36b',2);T(c,'GIỜ TÀU',mid(fi),fi[3]-64,9,'#a23b2c',800);}]);
+    out.push([dr[3],()=>priceSign(c,mid(dr),dr[3],port,w.c?.open?['DỪNG LẠI KHI CÓ TÀU','chuông kêu, đèn đỏ: không qua']:[w.words().closed_sign,'nhận ca lúc 5:30'])]);
   }else{
     out.push([wh[3],()=>{R(c,wh[0]+6,wh[3]-40,wh[2]-wh[0]-12,38,'#f2c230',5,'#b8921d',2);for(let i=0;i<3;i++)L(c,wh[0]+14,wh[3]-30+i*9,wh[2]-14,wh[3]-30+i*9,'#b8921d',1.5);T(c,'ĐỒ NGHỀ',mid(wh),wh[3]-48,9,'#5a3f2c',800);}]);
     out.push([wb[3],()=>coil(c,wb[0],wb[2],wb[3])]);

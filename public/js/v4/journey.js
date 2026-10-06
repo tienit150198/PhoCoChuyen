@@ -54,7 +54,7 @@ function townPage(env){
 
 export const EMOJI={restaurant:'🍜',cafe_bakery:'🥐',grocery:'🛒',repair:'🔧',homestay:'🏡',corp_accounting:'🧮',tax_payroll:'🧾',group_accounting:'🏢',hr_admin:'🗂️',secretary:'📅',it_helpdesk:'🖥️',
   mother_baby:'🎁',pharmacy:'💊',accounting:'📒',customer_care:'🎧',teacher:'🍎',tour_guide:'🧭',milk_tea:'🧋',florist:'💐',salon:'💇',
-  pet_care:'🐾',farm:'🌾',delivery:'🛵',clothing:'👕',pet_shop:'🐠',tra_da:'🧊',ice_cream:'🍨',com:'🍚',nail:'💅',pagoda:'🛕',pho:'🍜',photobooth:'📸',giupviec:'🧹',naucom:'🍲',babysitter:'👶'};
+  pet_care:'🐾',farm:'🌾',delivery:'🛵',clothing:'👕',pet_shop:'🐠',tra_da:'🧊',ice_cream:'🍨',com:'🍚',nail:'💅',pagoda:'🛕',pho:'🍜',photobooth:'📸',giupviec:'🧹',naucom:'🍲',babysitter:'👶',railway:'🚦'};
 const CATS={food:'Ăn uống',shop:'Buôn bán',service:'Dịch vụ',office:'Văn phòng',outdoor:'Ngoài trời'};
 const LEGACY_CAT={mother_baby:'shop',pharmacy:'shop',accounting:'office',customer_care:'office',teacher:'service',tour_guide:'outdoor',milk_tea:'food'};
 // The workplaces counted by game/journey.py OFFICE, rather than every office-category career.
