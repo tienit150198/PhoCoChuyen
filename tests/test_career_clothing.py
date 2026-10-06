@@ -60,17 +60,23 @@ def bill_and_pay(j, tid):
 
 
 def good_outfit(t):
-    """A correct outfit for the task (right sizes, right colours, the needed accessory)."""
+    """A correct outfit for the task (right sizes, right colours, the needed accessory, the customer's wish)."""
     n = t['needs']
     occ = n['occasion']
     top, waist = n['top'], n['waist']
     one = top if top in ('S', 'M', 'L') else 'L'
-    return {
+    wish = (t.get('wish') or {}).get('kind')
+    out = {
         'wedding': [('dress', one, 'xanh mint'), ('belt', 'F', 'nâu')],
-        'interview': [('shirt', top, 'trắng'), ('jeans', waist, 'xanh đậm'), ('belt', 'F', 'đen')],
+        'interview': [('shirt', top, 'trắng'), ('trousers' if wish == 'no_jeans' else 'jeans', waist, 'đen' if wish == 'no_jeans' else 'xanh đậm'),
+                      ('belt', 'F', 'đen')],
         'beach': [('dress', one, 'hoa nhí'), ('hat', 'F', 'cói')],
         'tet': [('aodai', one, 'đỏ'), ('hat', 'F', 'cói')],
     }[occ]
+    if wish == 'shoes':
+        foot = t['wish']['foot']
+        out.append(('sandal' if foot in A.SIZES['sandal'] else 'sneaker', foot, 'nâu' if foot in A.SIZES['sandal'] else 'trắng'))
+    return out
 
 
 def solve(j, tid):
@@ -81,14 +87,15 @@ def solve(j, tid):
         t = j.get(tid)
     k = t['kind']
     if k == 'fit':
-        for ln in t['needs']['lines']:
-            j.act('ao_pick', task=tid, item=ln['item'], size=ln['_size'], colour=ln['colour'])
+        for ln in A._wanted_lines(t):
+            if A._free(j.c, ln['item'], ln['_size'], t) > 0:
+                j.act('ao_pick', task=tid, item=ln['item'], size=ln['_size'], colour=ln['colour'])
         return bill_and_pay(j, tid)
     if k == 'outfit':
         pieces = good_outfit(t)
         total = sum(A._price(j.c, i) for i, _, _ in pieces)
-        if total > t['needs']['budget']:
-            pieces = pieces[:-1] if t['needs']['occasion'] != 'beach' else pieces
+        if total > A._budget(t):
+            pieces = [x for x in pieces if x[0] != 'belt'] if t['needs']['occasion'] != 'beach' else pieces
         for item, size, colour in pieces:
             j.act('ao_pick', task=tid, item=item, size=size, colour=colour)
         return bill_and_pay(j, tid)
@@ -204,7 +211,11 @@ class ClothingBasicsTests(unittest.TestCase):
         j = Journey('clothing')
         g = j.c['ext']['data']['grid']
         for it in A.ITEMS:
-            self.assertEqual(sum(g[it['id']].values()), kit.stock(j.c, it['id']))
+            if it['id'] in A.LEGACY:
+                self.assertEqual(sum(g[it['id']].values()), kit.stock(j.c, it['id']))
+            else:   # 1.7.16 goods start empty and get a row only once stocked (a 1.7.15 build still loads the save)
+                self.assertNotIn(it['id'], g)
+                self.assertEqual(kit.stock(j.c, it['id']), 0)
         self.assertGreater(g['tee']['M'], g['tee']['XL'])
 
     def test_a_full_first_week(self):
@@ -217,7 +228,7 @@ class ClothingBasicsTests(unittest.TestCase):
                     open_ = [j.task]
                 t = open_[0]
                 for it in A.ITEMS:        # the player keeps the racks full (restock is tested below)
-                    if min(j.c['ext']['data']['grid'][it['id']].values()) < 2 and kit.stock(j.c, it['id']) < A.CAPACITY - 8:
+                    if min(j.c['ext']['data']['grid'].get(it['id'], {'F': 0}).values()) < 2 and kit.stock(j.c, it['id']) < A.CAPACITY - 8:
                         kit.add_lot(j.c, it['id'], 8, it['cost'], 999, 'test')
                 A._sync(j.c)
                 solve(j, t['id'])
@@ -500,6 +511,12 @@ class ClothingOutfitTests(unittest.TestCase):
             j.act('ao_pick', task=t['id'], item=item, size='F' if item != 'aodai' else 'M', colour=A.COLOURS[item][0])
         j.act('ao_pick', task=t['id'], item='shirt', size='M', colour='trắng')
         j.act('ao_pick', task=t['id'], item='jeans', size='29', colour='đen')
+        r = j.act('ao_bill', task=t['id'])
+        self.assertTrue(r.get('refused'))
+        # 1.7.16 (góp ý #199): the first frown opens a talk, no mistake yet…
+        self.assertEqual(slip_codes(j.get(t['id'])), [])
+        self.assertEqual(j.get(t['id'])['talk']['state'], 'open')
+        # …ignoring it and billing the same pile again is the slip.
         r = j.act('ao_bill', task=t['id'])
         self.assertTrue(r.get('refused'))
         self.assertIn('over_budget', slip_codes(j.get(t['id'])))

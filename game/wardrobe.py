@@ -103,6 +103,12 @@ ITEMS = [
     _i('dam_cong_chua', 'top', 'Đầm công chúa tầng mây', 160),
     _i('dam_du_tiec', 'top', 'Đầm dạ tiệc đuôi cá', 180),
     _i('dam_yem', 'top', 'Đầm yếm dạo phố', 120),
+    # 1.7.16 (góp ý #191): the new goods of Tiệm Áo Chỉ Mây, for the player too.
+    _i('dam_maxi', 'top', 'Đầm maxi vàng nghệ', 150, plain='Đầm maxi'),
+    _i('vay_babydoll', 'top', 'Váy babydoll hồng', 110, plain='Váy babydoll'),
+    _i('ao_blazer', 'top', 'Áo blazer đen', 120, plain='Áo blazer'),
+    _i('ao_cardigan', 'top', 'Áo cardigan kem', 85, plain='Áo cardigan'),
+    _i('ao_polo', 'top', 'Áo polo xanh than', 60, plain='Áo polo'),
     # Quần · váy
     _i('quan_kem', 'bottom', 'Quần lửng kem', plain='Quần lửng'),
     _i('quan_xam', 'bottom', 'Quần tây xám', plain='Quần tây'),
@@ -110,12 +116,14 @@ ITEMS = [
     _i('quan_short', 'bottom', 'Quần short kaki', 40),
     _i('vay_xoe', 'bottom', 'Chân váy xòe', 70),
     _i('vay_dai', 'bottom', 'Váy dài hoa nhí', 100),
+    _i('vay_chu_a', 'bottom', 'Chân váy chữ A đen', 70, plain='Chân váy chữ A'),
     # Giày dép
     _i('giay_nau', 'shoes', 'Giày nâu', plain='Giày da'),
     _i('dep_lao', 'shoes', 'Dép lào xanh', plain='Dép lào'),
     _i('giay_trang', 'shoes', 'Giày thể thao trắng', 45, plain='Giày thể thao'),
     _i('giay_do', 'shoes', 'Giày búp bê đỏ', 55, plain='Giày búp bê'),
     _i('bot_den', 'shoes', 'Bốt đen', 85, plain='Bốt'),
+    _i('sandal_nau', 'shoes', 'Sandal quai mảnh nâu', 50, plain='Sandal quai mảnh'),
     # Phụ kiện (một món)
     _i('pk_khong', 'acc', 'Không đeo gì'),
     _i('kinh_tron', 'acc', 'Kính gọng tròn', 40),
@@ -124,6 +132,9 @@ ITEMS = [
     _i('mu_len', 'acc', 'Mũ len', 50),
     _i('no_toc', 'acc', 'Nơ cài tóc', 30),
     _i('tui_cheo', 'acc', 'Túi đeo chéo', 60),
+    _i('tui_xach', 'acc', 'Túi xách tay', 80),
+    _i('bong_tai', 'acc', 'Bông tai ngọc trai', 45),
+    _i('khan_lua', 'acc', 'Khăn lụa', 50),
 ]
 INDEX = {x['id']: x for x in ITEMS}
 BUYABLE = frozenset(x['id'] for x in ITEMS if x['price'] > 0)

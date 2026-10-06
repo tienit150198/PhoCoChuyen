@@ -27,12 +27,15 @@ export const ART={
     ao_cuoi:{c:'#c8453c',d:'aodai',x:'#f2c86a',long:1},vest_cuoi:{c:'#3e4a5c',d:'suit',x:'#c8453c',bow:1},
     dam_cong_chua:{c:'#c3a4df',d:'princess',dress:'princess',x:'#eee0fa',tx:'l'},
     dam_du_tiec:{c:'#395c81',d:'gala',dress:'gala',x:'#d9bd77'},
-    dam_yem:{c:'#c68468',d:'pinafore',dress:'pinafore',x:'#8f533e',tx:'d'}},
-  bottom:{quan_kem:{c:'#f0d3b8'},quan_xam:{c:'#6f6a78'},quan_jean:{c:'#5b7ea6'},quan_short:{c:'#c9a978',short:1},vay_xoe:{c:'#e39ab0',skirt:'flare'},vay_dai:{c:'#9fb7d8',skirt:'long'}},
-  shoes:{giay_nau:{c:'#785c51'},dep_lao:{c:'#5b8fc0',flat:1},giay_trang:{c:'#f4f1ea',line:'#cfc8bb'},giay_do:{c:'#c9514a'},bot_den:{c:'#3d3533',tall:1}},
+    dam_yem:{c:'#c68468',d:'pinafore',dress:'pinafore',x:'#8f533e',tx:'d'},
+    dam_maxi:{c:'#e7a72a',d:'gala',dress:'gala',x:'#fff3d6'},vay_babydoll:{c:'#f2c1cf',d:'princess',dress:'princess',x:'#fff5f8',tx:'d'},
+    ao_blazer:{c:'#2f3340',d:'suit',x:'#c9b48a'},ao_cardigan:{c:'#efe1c3',d:'knit',x:'#cdb98f',tx:'d'},ao_polo:{c:'#2f4f7a',d:'collar',x:'#e9e4d8',tx:'l'}},
+  bottom:{quan_kem:{c:'#f0d3b8'},quan_xam:{c:'#6f6a78'},quan_jean:{c:'#5b7ea6'},quan_short:{c:'#c9a978',short:1},vay_xoe:{c:'#e39ab0',skirt:'flare'},vay_dai:{c:'#9fb7d8',skirt:'long'},vay_chu_a:{c:'#2d2a2e',skirt:'flare'}},
+  shoes:{giay_nau:{c:'#785c51'},dep_lao:{c:'#5b8fc0',flat:1},giay_trang:{c:'#f4f1ea',line:'#cfc8bb'},giay_do:{c:'#c9514a'},bot_den:{c:'#3d3533',tall:1},sandal_nau:{c:'#8a5a3b',flat:1}},
   // Each accessory's own colours ("Màu gốc"): c main, d the darker part (frame, band, knot, strap), l the light part.
   acc:{pk_khong:{},kinh_tron:{c:'#6b4f3f',d:'#6b4f3f'},kinh_ram:{c:'#3a3230',d:'#3a3230'},non_la:{c:'#ecd394',d:'#c9a95e',line:'#d6b86f',brim:'#d9bb72'},
-    mu_len:{c:'#d8736a',d:'#b95a52',l:'#f3e6d6'},no_toc:{c:'#e0708a',d:'#c85873'},tui_cheo:{c:'#b07a4f',d:'#8a5a3c',l:'#d9a878'}},
+    mu_len:{c:'#d8736a',d:'#b95a52',l:'#f3e6d6'},no_toc:{c:'#e0708a',d:'#c85873'},tui_cheo:{c:'#b07a4f',d:'#8a5a3c',l:'#d9a878'},
+    tui_xach:{c:'#3a3436',d:'#221e1f',l:'#d4af37'},bong_tai:{c:'#f3eee4',d:'#c8bead',l:'#ffffff'},khan_lua:{c:'#8e2437',d:'#5f1724',l:'#e7a7b2'}},
 };
 /* Bảng màu (1.3.1 accessories, góp ý #70; then clothes, shoes and furniture): look.tint = {item id: colour id};
  * ids, names and prices in game/wardrobe.py COLORS. c main, d darker, l lighter. Furniture: v4/deco-art.js tint.
@@ -136,6 +139,9 @@ export function accBust(a,k){
     case'mu_len':return `<path d="M18 31Q18 6 40 6Q62 6 62 31Z" fill="${k.c}"/><rect x="16.5" y="25" width="47" height="8.5" rx="4.2" fill="${k.d}"/><circle cx="40" cy="5" r="5" fill="${k.l}"/>`;
     case'no_toc':return `<path d="M55 19l-8-5v10zM55 19l8-5v10z" fill="${k.c}"/><circle cx="55" cy="19" r="2.4" fill="${k.d}"/>`;
     case'tui_cheo':return `<path d="M22 63L58 79" stroke="${k.d}" stroke-width="3" stroke-linecap="round"/><rect x="55" y="70" width="17" height="12" rx="3" fill="${k.c}"/><rect x="58" y="72" width="11" height="3" rx="1.5" fill="${k.l}"/>`;
+    case'tui_xach':return `<path d="M58 70q6-8 12 0" fill="none" stroke="${k.d}" stroke-width="2.2"/><rect x="55" y="69" width="18" height="12" rx="3" fill="${k.c}"/><rect x="62" y="72" width="4" height="3" rx="1" fill="${k.l}"/>`;
+    case'bong_tai':return `<g fill="${k.c}" stroke="${k.d}" stroke-width=".6"><circle cx="21.5" cy="48" r="2.4"/><circle cx="58.5" cy="48" r="2.4"/></g>`;
+    case'khan_lua':return `<path d="M29 57Q40 65 51 57L52 62Q40 71 28 62Z" fill="${k.c}"/><path d="M43 63l5 11-7-3z" fill="${k.d}"/><path d="M33 61q7 4 14 0" fill="none" stroke="${k.l}" stroke-width="1"/>`;
   }
   return '';
 }
@@ -257,6 +263,9 @@ export function paintAcc(c,F,K=CANVAS){
     case'mu_len':K.R(c,-31,-128,62,34,k.c,16);K.R(c,-33,-104,66,11,k.d,5);K.E(c,0,-129,7,7,k.l);break;
     case'no_toc':K.P(c,[[22,-108],[11,-115],[11,-101]],k.c);K.P(c,[[22,-108],[33,-115],[33,-101]],k.c);K.E(c,22,-108,3,3,k.d);break;
     case'tui_cheo':K.L(c,-18,-50,15,-25,k.d,3);K.R(c,9,-31,17,13,k.c,4);K.R(c,12,-29,11,3,k.l,1.5);break;
+    case'tui_xach':K.stroke(c,'M22 -32Q28 -42 34 -32',k.d,2.4);K.R(c,19,-33,18,14,k.c,4);K.R(c,26,-29,4,3,k.l,1);break;
+    case'bong_tai':K.E(c,-29,-61,2.8,2.8,k.c);K.E(c,29,-61,2.8,2.8,k.c);break;
+    case'khan_lua':K.P(c,[[-15,-53],[15,-53],[11,-46],[-11,-46]],k.c);K.P(c,[[4,-47],[11,-35],[1,-39]],k.d);K.L(c,-9,-50,9,-50,k.l,1);break;
   }
 }
 /** The whole player as BobaWorld draws it, with the work layer off (the wardrobe mirror). `arms` (optional, the fair's
