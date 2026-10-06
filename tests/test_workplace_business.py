@@ -383,4 +383,61 @@ class StaffCatalogueTests(unittest.TestCase):
         self.assertIn('không đủ bù lương', wb.public(c)['reason_text'])
 
 
+class MergedStockOrder(unittest.TestCase):
+    """F#194: the mother & baby stock room orders several items in one supplier order."""
+
+    def journey(self, money=5000):
+        from tests.helpers import Journey
+        j = Journey()
+        j.c['ops']['finance']['opening_balance'] += money - j.c['money']; j.c['money'] = money
+        return j
+
+    def test_one_payment_one_van_one_row_per_line(self):
+        from game.engine import public_state, validate_state, stock_vans
+        j = self.journey()
+        money = j.c['money']
+        r = j.act('order_stock', lines=[dict(item='cat_bag', qty=2), dict(item='bunny', qty=3), dict(item='bear', qty=1)], supplier='express')
+        rows = j.c['shipments'][-3:]
+        self.assertEqual([(x['item'], x['qty']) for x in rows], [('cat_bag', 2), ('bunny', 3), ('bear', 1)])
+        self.assertEqual(len({(x['placed'], x['lo'], x['hi'], x['at'], x['supplier']) for x in rows}), 1)
+        self.assertEqual(stock_vans(j.c), 1)
+        self.assertEqual(money - j.c['money'], sum(x['cost'] for x in rows))
+        self.assertEqual(len([x for x in j.c['ops']['finance']['ledger'] if x['ref'] == rows[0]['id']]), 1)
+        self.assertIn('gộp 3 mã', r['message'])
+        validate_state(j.state)
+        for _ in range(8):
+            if all(x['ready_now'] for x in public_state(j.state)['careers']['mother_baby']['shipments']): break
+            j.act('advance')
+        for x in rows:
+            j.act('receive_stock', shipment=x['id'], count=x['qty'])
+        self.assertEqual(j.c['stock']['bunny'], 6 + 3)
+        validate_state(j.state)
+
+    def test_bad_lines_change_nothing(self):
+        for lines in ([], [dict(item='bunny', qty=1)] * 2, [dict(item='nope', qty=1)], [dict(item='bunny', qty=7)],
+                      [dict(item='bunny', qty=6), dict(item='bear', qty=0)], 'bunny', [dict(item=f'x{i}', qty=1) for i in range(13)]):
+            with self.subTest(lines=lines):
+                j = self.journey(); before = copy.deepcopy(j.state)
+                with self.assertRaises(GameError): j.act('order_stock', lines=lines)
+                self.assertEqual(j.state, before)
+
+    def test_vans_cap_counts_merged_orders_once(self):
+        from game.engine import STOCK_VANS, stock_vans
+        j = self.journey(money=50000)
+        from game.content import PRODUCTS
+        ids = [p['id'] for p in PRODUCTS][:STOCK_VANS + 3]
+        j.act('order_stock', lines=[dict(item=i, qty=1) for i in ids[:4]])
+        for i in ids[4:4 + STOCK_VANS - 1]:
+            j.act('order_stock', item=i, qty=1)
+        self.assertEqual(stock_vans(j.c), STOCK_VANS)
+        with self.assertRaises(GameError): j.act('order_stock', item=ids[-1], qty=1)
+
+    def test_single_item_order_is_unchanged(self):
+        j = self.journey()
+        r = j.act('order_stock', item='cat_bag', qty=2, supplier='express')
+        self.assertTrue(r['message'].startswith('Đã đặt 2 × '))
+        self.assertNotIn('một chuyến', r['message'])
+        self.assertEqual(j.c['shipments'][-1]['item'], 'cat_bag')
+
+
 if __name__=='__main__':unittest.main()

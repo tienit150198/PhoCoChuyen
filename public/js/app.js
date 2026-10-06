@@ -925,12 +925,14 @@ function warehouseView(){
   const body=tab==='lots'?phLotBook():tab==='regulars'?phRegulars():stockDesk(cap);
   return header(ph?'Kho & sổ quầy':'Kho nhỏ sau tiệm',esc(c.stock_desk?.clock?.label||''),'KHO HÀNG · SỨC CHỨA '+cap+' / MÃ')+`<div class="sheet-body wh">${tabs}${body}</div>`+footer('',c.open?commandButton('⏳ Chờ thêm 20 phút','advance',{},'ghost small'):'');
 }
-const SHIP_CAP=8;
+const SHIP_CAP=8,MERGE_CAP=12;
+/** Deliveries on the way (game/engine.py stock_vans): the lines of one merged order share a van. */
+const stockVans=c=>new Set(c.shipments.filter(s=>s.status==='in_transit').map(s=>s.placed!=null?`${s.supplier}|${s.placed}|${s.lo}|${s.hi}`:s.id)).size;
 function stockDesk(cap){
   const c=room(),id=career(),mb=id==='mother_baby',desk=c.stock_desk||{},care=mb?null:careData(),list=mb?api.content.products:api.content.lots.filter(l=>l.status==='available');
   const waiting=c.shipments.filter(s=>s.status!=='received'),arrived=waiting.filter(s=>s.ready_now),onWay=k=>waiting.filter(s=>s.item===k).reduce((n,s)=>n+s.qty,0),low=list.filter(p=>c.stock[p.id]+onWay(p.id)<=2);
-  // order_stock takes at most SHIP_CAP parcels on the way (game/engine.py): past that, receive one first.
-  const vansFull=c.shipments.filter(s=>s.status==='in_transit').length>=SHIP_CAP;
+  // order_stock takes at most SHIP_CAP deliveries on the way (game/engine.py): past that, receive one first.
+  const vansFull=stockVans(c)>=SHIP_CAP,picks=ui.whPick?.[id]||{};
   const sups=desk.suppliers||[],picked=ui.whSup?.[id],supId=sups.some(s=>s.id===picked)?picked:(desk.default||sups[0]?.id),sup=sups.find(s=>s.id===supId);
   const next=waiting.filter(s=>!s.ready_now).sort((a,b)=>(a.left_min??0)-(b.left_min??0))[0];
   const chip=(n,label,kind)=>n?`<span class="inv-chip ${kind}"><b>${n}</b> ${label}</span>`:'';
@@ -944,8 +946,30 @@ function stockDesk(cap){
     const qty=Math.min(Math.max(1,max),state?Math.min(4,Math.max(1,max)):1),can=!!(max&&c.open&&!vansFull),cost=Math.max(1,Math.ceil(p.cost*qty*(sup?.factor??1)));
     const lots=care?.batches?.filter(b=>b.lot===p.id)||[],first=lots.find(b=>!b.flag),flagged=lots.filter(b=>b.flag).reduce((n,b)=>n+b.qty,0);
     return `<div class="inventory-row inv-row ${state}">${itemArt(p.icon||'box',45,p.color)}<div class="grow"><h4>${esc(p.name)}${mb?'':` · ${esc(p.id)}`}</h4><small><b class="inv-big">${q}</b>/${cap} trên kệ${on?` · <span class="inv-flag info">+${on} đang giao</span>`:''}${held?` · đang giữ ${held}`:''} · ${fmt(p.cost)} xu/món</small>${!mb&&(first||flagged)?`<small class="block">${first?`HSD gần nhất: ngày ${first.exp}`:''}${flagged?` · <b class="wh-bad">${flagged} hộp cần rút</b>`:''}</small>`:''}<span class="inv-bar" aria-hidden="true"><i style="width:${Math.round(q/cap*100)}%"></i><i class="on" style="width:${Math.round(on/cap*100)}%"></i></span></div>`+
-      `<span class="inv-row-act">${whQty(p,max,qty)}<button type="button" class="btn small${state&&max&&!vansFull?' primary':''}" data-wh-order="${esc(p.id)}"${can?` data-cost="${p.cost}" data-factor="${sup?.factor??1}" data-money="${c.money}"`:''}${can&&cost<=c.money?'':' disabled'}>${!max?'Kệ đầy':vansFull?`Đủ ${SHIP_CAP} kiện`:!c.open?(mb?'Mở tiệm trước':'Mở quầy trước'):whLabel(qty,cost,c.money)}</button>${!mb?(c.held_lots.includes(p.id)?commandButton('Cô Thu kiểm lại','ph_release',{lot:p.id},'small primary'):commandButton('Tạm giữ','ph_quarantine',{lot:p.id},'small ghost')):''}</span></div>`;};
-  return strip+(waiting.length?`<h3>Kiện hàng</h3>${arrived.map(parcel).join('')}${waiting.filter(s=>!s.ready_now).map(parcel).join('')}<div class="divider"></div>`:'')+pick+`<h3>Hàng trên kệ</h3>${list.map(row).join('')}`;
+      `<span class="inv-row-act">${whQty(p,max,qty)}${can?`<label class="wh-pick"><input type="checkbox" data-wh-pick="${esc(p.id)}"${picks[p.id]?' checked':''}> Gộp</label>`:''}<button type="button" class="btn small${state&&max&&!vansFull?' primary':''}" data-wh-order="${esc(p.id)}"${can?` data-cost="${p.cost}" data-factor="${sup?.factor??1}" data-money="${c.money}"`:''}${can&&cost<=c.money?'':' disabled'}>${!max?'Kệ đầy':vansFull?`Đủ ${SHIP_CAP} kiện`:!c.open?(mb?'Mở tiệm trước':'Mở quầy trước'):whLabel(qty,cost,c.money)}</button>${!mb?(c.held_lots.includes(p.id)?commandButton('Cô Thu kiểm lại','ph_release',{lot:p.id},'small primary'):commandButton('Tạm giữ','ph_quarantine',{lot:p.id},'small ghost')):''}</span></div>`;};
+  // Đơn gộp (F#194): tick “Gộp” on several rows, then one order, one payment, one van (engine order_stock `lines`).
+  const n=list.filter(p=>picks[p.id]).length;
+  const merge=c.open?`<div class="wh-merge"><button type="button" class="btn small${n?' primary':''}" data-wh-merge="1"${n&&!vansFull?'':' disabled'}>🛒 Đặt đơn gộp · <span data-wh-merge-n>${n}</span> mã</button><small class="muted">Tick “Gộp” ở các mã cần nhập, chỉnh số rồi đặt một lần: một chuyến xe, trả một lần (tối đa ${MERGE_CAP} mã).</small></div>`:'';
+  return strip+(waiting.length?`<h3>Kiện hàng</h3>${arrived.map(parcel).join('')}${waiting.filter(s=>!s.ready_now).map(parcel).join('')}<div class="divider"></div>`:'')+pick+merge+`<h3>Hàng trên kệ</h3>${list.map(row).join('')}`;
+}
+/** A "Gộp" box was ticked: remember it and update the merged-order button without redrawing the rows. */
+function whPick(box){
+  const id=career(),picks=(ui.whPick??={})[id]??={};
+  if(box.checked)picks[box.dataset.whPick]=true;else delete picks[box.dataset.whPick];
+  const n=document.querySelectorAll('[data-wh-pick]:checked').length,b=document.querySelector('[data-wh-merge]');
+  if(b){b.querySelector('[data-wh-merge-n]').textContent=String(n);b.disabled=!n||stockVans(room())>=SHIP_CAP;b.classList.toggle('primary',!!n);}
+}
+async function whMerge(){
+  const c=room(),id=career(),desk=c.stock_desk||{},sups=desk.suppliers||[],picked=ui.whSup?.[id],supId=sups.some(s=>s.id===picked)?picked:(desk.default||sups[0]?.id),sup=sups.find(s=>s.id===supId)||{factor:1,name:'nhà cung cấp',quote:{}};
+  const items=[...document.querySelectorAll('[data-wh-pick]:checked')].map(b=>b.dataset.whPick);
+  if(!items.length){toast('Tick “Gộp” ở ít nhất một mã nhé.',true);return;}
+  if(items.length>MERGE_CAP){toast(`Một đơn gộp tối đa ${MERGE_CAP} mã.`,true);return;}
+  const lines=[];
+  for(const item of items){const qty=Number(document.getElementById('qty-'+item)?.value);if(!Number.isInteger(qty)||qty<1||qty>6){toast('Mỗi mã từ 1 đến 6 món.',true);return;}lines.push({item,qty});}
+  const cost=lines.reduce((n,l)=>n+Math.max(1,Math.ceil(product(l.item).cost*l.qty*sup.factor)),0);
+  const what=lines.map(l=>`${l.qty} × ${product(l.item).name}`).join(', ');
+  if(cost>c.money){toast(`Quỹ còn ${fmt(c.money)} xu, đơn gộp cần ${fmt(cost)} xu.`,true);return;}
+  if(await confirmAction(`Đặt đơn gộp ${lines.length} mã?`,`${what} từ ${sup.name}: trả ${fmt(cost)} xu một lần. Dự kiến nhận: ${sup.quote?.eta_label||sup.window||''}, cả đơn một chuyến. Hàng chỉ cộng kho sau khi bạn đếm nhận từng kiện.`,'Đặt đơn gộp')&&await cmd('order_stock',{lines,supplier:supId}))(ui.whPick??={})[id]={};
 }
 /** Quantity with − / + (44 px) around the number for a stock-desk row; disabled when the shelf is full. */
 const whQty=(p,max,qty)=>`<span class="wh-qty"><button type="button" class="btn ghost" data-wh-step="-1" aria-label="Bớt một"${max>1?'':' disabled'}>−</button><input class="input" type="number" id="qty-${p.id}" min="1" max="${Math.max(1,max)}" value="${qty}" inputmode="numeric" aria-label="Số nhập ${esc(p.name)}"${max?'':' disabled'}><button type="button" class="btn ghost" data-wh-step="1" aria-label="Thêm một"${max>1?'':' disabled'}>+</button></span>`;
@@ -1064,8 +1088,10 @@ async function csCallSend(task,body){
   }finally{csCallPending=null;renderSheet();}
 }
 document.addEventListener('click',async e=>{
-  const el=e.target.closest?.('[data-wh-tab],[data-wh-sup],[data-wh-order],[data-wh-open],[data-wh-step],[data-cs-pick]');if(!el||el.disabled||ui.busy)return;
-  if(el.dataset.whStep){const input=el.parentElement.querySelector('input');if(input){input.value=String(Math.max(1,Math.min(Number(input.max)||1,(Math.floor(Number(input.value))||1)+Number(el.dataset.whStep))));whBill(input);}}
+  const el=e.target.closest?.('[data-wh-tab],[data-wh-sup],[data-wh-order],[data-wh-open],[data-wh-step],[data-wh-pick],[data-wh-merge],[data-cs-pick]');if(!el||el.disabled||ui.busy)return;
+  if(el.dataset.whPick)whPick(el);
+  else if(el.dataset.whMerge)await whMerge();
+  else if(el.dataset.whStep){const input=el.parentElement.querySelector('input');if(input){input.value=String(Math.max(1,Math.min(Number(input.max)||1,(Math.floor(Number(input.value))||1)+Number(el.dataset.whStep))));whBill(input);}}
   else if(el.dataset.whTab){ui.whTab=el.dataset.whTab;renderSheet(false);}
   else if(el.dataset.whSup){(ui.whSup??={})[career()]=el.dataset.whSup;renderSheet();}
   else if(el.dataset.whOrder)await whOrder(el.dataset.whOrder);

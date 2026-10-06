@@ -821,28 +821,41 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         t["basket"]={};task_done(s,c,t,25,"Bạn đã chuyển yêu cầu cho cô Thu, không đoán ngoài phạm vi.","referred")
         result.update(message="Cô Thu đã tiếp nhận. Quầy vẫn làm việc bình thường.",celebrate=True)
     elif action=="order_stock":
+        # One item (`item`, `qty`) or a merged order (`lines`: [{item, qty}], F#194): one payment, one van,
+        # one shipment row per line with the same supplier promise, so saved shipments keep their shape.
         need(career in ("mother_baby","pharmacy"),"Nghề này không cần nhập hàng.")
-        item=p.get("item");qty=integer(p.get("qty"),1,6)
         catalogue=PRODUCT_INDEX if career=="mother_baby" else LOT_INDEX
-        need(item in catalogue,"Mã hàng không hợp lệ.")
-        if career=="pharmacy":need(LOT_INDEX[item]["status"]=="available","Chỉ đặt lô hợp lệ.")
+        raw=p.get("lines") if p.get("lines") is not None else [dict(item=p.get("item"),qty=p.get("qty"))]
+        need(isinstance(raw,list) and 1<=len(raw)<=STOCK_LINES,f"Một đơn gộp tối đa {STOCK_LINES} mã hàng.")
+        want={}
+        for w in raw:
+            need(isinstance(w,dict),"Danh sách hàng không hợp lệ.")
+            item=w.get("item");qty=integer(w.get("qty"),1,6)
+            need(item in catalogue,"Mã hàng không hợp lệ.")
+            need(item not in want,"Mỗi mã chỉ một dòng trong đơn gộp.")
+            if career=="pharmacy":need(LOT_INDEX[item]["status"]=="available","Chỉ đặt lô hợp lệ.")
+            want[item]=qty
         sup=_stock_supplier(career,p.get("supplier",STOCK_DEFAULT));need(sup,"Nhà cung cấp không tồn tại.")
         cap=max(ops.PROPERTY_INDEX[c["ops"]["property"]["tier"]]["stock_cap"],24 if "shelf" in c["upgrades"] else 12)
-        in_transit=sum(x["qty"] for x in c["shipments"] if x["item"]==item and x["status"]!="received")
-        need(c["stock"].get(item,0)+qty+in_transit<=cap,f"Kho mỗi mã chứa tối đa {cap}. Nhận đủ rồi bán bớt hoặc nâng kệ.")
-        need(sum(x["status"]=="in_transit" for x in c["shipments"])<8,"Đang có nhiều kiện chờ giao. Nhận bớt rồi đặt tiếp nhé.")
-        cost=max(1,math.ceil(catalogue[item]["cost"]*qty*sup["factor"]))
-        s["seq"]+=1;sid=f"shipment-{s['seq']}"
-        money(s,c,-cost,"Đặt nhập "+item+" · "+sup["name"],sid)
+        for item,qty in want.items():
+            in_transit=sum(x["qty"] for x in c["shipments"] if x["item"]==item and x["status"]!="received")
+            need(c["stock"].get(item,0)+qty+in_transit<=cap,f"Kho mỗi mã chứa tối đa {cap}"+(f" ({catalogue[item]['name']})" if len(want)>1 else "")+". Nhận đủ rồi bán bớt hoặc nâng kệ.")
+        need(stock_vans(c)<STOCK_VANS,"Đang có nhiều kiện chờ giao. Nhận bớt rồi đặt tiếp nhé.")
+        costs={item:max(1,math.ceil(catalogue[item]["cost"]*qty*sup["factor"])) for item,qty in want.items()}
+        ids=[f"shipment-{s['seq']+k+1}" for k in range(len(want))]
+        names=[catalogue[item]["name"] for item in want]
+        what=f'{want[next(iter(want))]} × {names[0]}' if len(want)==1 else f'gộp {len(want)} mã'
+        money(s,c,-sum(costs.values()),("Đặt nhập "+next(iter(want)) if len(want)==1 else f"Đặt nhập gộp {len(want)} mã")+" · "+sup["name"],ids[0])
+        s["seq"]+=len(want)
         clk=_clock(c,career)
-        when_=inv._schedule(sup,career,clk["abs"],f"{career}:{c['day']}:{sid}:{item}:{sup['id']}")
-        x=dict(id=sid,item=item,qty=qty,actual=qty,supplier=sup["id"],cost=cost,status="in_transit",day=c["day"],**when_)
-        c["shipments"].append(x)
+        when_=inv._schedule(sup,career,clk["abs"],f"{career}:{c['day']}:{ids[0]}:{next(iter(want))}:{sup['id']}")
+        for sid,(item,qty) in zip(ids,want.items()):
+            c["shipments"].append(dict(id=sid,item=item,qty=qty,actual=qty,supplier=sup["id"],cost=costs[item],status="in_transit",day=c["day"],**when_))
+        x=c["shipments"][-len(want)]
         eta=inv._eta(x,clk["abs"],c,career,clk)
         promise=eta["window"] if x["lo"]!=x["hi"] else eta["arrives_time"]
-        name=catalogue[item]["name"]
-        result.update(message=f'Đã đặt {qty} × {name} · {cost} xu. {sup["name"]} giao {eta["eta_label"][0].lower()+eta["eta_label"][1:]} ({promise}); kiện tới rồi mới đếm và nhập kho.',
-                      eta=dict(eta,shipment=sid))
+        result.update(message=f'Đã đặt {what} · {sum(costs.values())} xu. {sup["name"]} giao {eta["eta_label"][0].lower()+eta["eta_label"][1:]} ({promise}){" trong một chuyến" if len(want)>1 else ""}; kiện tới rồi mới đếm và nhập kho.',
+                      eta=dict(eta,shipment=ids[0],shipments=ids))
     elif action=="receive_stock":
         shipment=next((x for x in c["shipments"] if x["id"]==p.get("shipment")),None)
         need(shipment and shipment["status"]!="received","Kiện đã nhận hoặc không tồn tại.")
@@ -1596,6 +1609,13 @@ STOCK_SUPPLIERS={
     ],
 }
 STOCK_DEFAULT="partner"
+STOCK_LINES=12   # lines (one per item) in one merged order_stock
+STOCK_VANS=8     # deliveries on the way: the lines of one merged order share a van
+
+
+def stock_vans(c:dict)->int:
+    """Deliveries on the way. Lines of a merged order share placed time, arrival and supplier: one van."""
+    return len({(x.get("supplier"),x["placed"],x["at"]) if "at" in x else x["id"] for x in c["shipments"] if x["status"]=="in_transit"})
 
 
 def stock_suppliers(career:str)->list[dict]:

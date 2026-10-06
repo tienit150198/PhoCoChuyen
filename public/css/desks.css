@@ -341,3 +341,8 @@ p.wh-bad,.card p.wh-bad{margin:0;color:var(--bad)}
 .wh-qty{display:inline-grid;grid-template-columns:44px 52px 44px;align-items:center;gap:2px}
 .wh .wh-qty .btn{min-width:44px;min-height:44px;padding:0;font-size:1.1rem}
 .wh .inventory-row .wh-qty input,html[data-layout="phone"] .wh .inventory-row .inv-row-act .wh-qty input{width:52px;min-height:44px;text-align:center;padding-inline:4px}
+/* Đơn gộp (F#194): a "Gộp" tick per row and one merged-order button above the shelf. */
+.wh-pick{display:inline-flex;align-items:center;gap:5px;min-height:44px;padding:0 6px;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.wh .inventory-row .wh-pick input,html[data-layout="phone"] .wh .inventory-row .inv-row-act .wh-pick input{width:20px;height:20px;min-height:0;margin:0;padding:0}
+.wh-merge{display:grid;gap:4px;margin:10px 0 4px}
+.wh-merge .btn{min-height:44px;justify-self:start}
