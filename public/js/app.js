@@ -59,7 +59,7 @@ const L={
   promo:lazy(()=>import('./v4/promo.js'),{css:['/css/promo.css']}),  // 🎖️ Thăng tiến, 🧑‍💼 Ca quản lý (game/promotion.py)
 };
 const TUT_OPEN=new Set(['help','tutGuide','tutReplay']);  // tutorial actions whose buttons other modules render
-const PROMO_OPEN=new Set(['promo','pmBoard','pmStart','pmPick','pmMate']);  // 🎖️ v4/promo.js
+const PROMO_OPEN=new Set(['promo','pmBoard','pmStart','pmPick','pmMate','pmOffice']);  // 🎖️ v4/promo.js
 /** A sheet whose code is not in yet: its header (with the close button) and a skeleton. */
 const lazyView=(h,fn)=>h.use()?fn(h.m):header('')+`<div class="sheet-body">${skeleton()}</div>`;
 /** A sheet that reads the catalogue's `more` part (api.more(): job postings, the shop book, situations, story texts):

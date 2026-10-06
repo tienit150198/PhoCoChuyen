@@ -9,6 +9,7 @@
 import {nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import * as air from './air_kit.js';
+import {insignia} from '../v4/promo.js';
 const data=x=>x.room.data||{};
 const cc=x=>x.cc||{};
 const kg=n=>`${Number(n||0).toLocaleString('vi-VN')} kg`;
@@ -266,6 +267,20 @@ function logbook(x){
 }
 
 /* ------------------------------------------------------------ the airline shell (air_kit.js) */
+/* ------------------------------------------------------------ 🎖️ the rank (F#193: stripes and stars, game/promotion.py) */
+const RANK_CODE=['CƠ PHÓ','CƠ PHÓ CAO CẤP','CƠ TRƯỞNG','CƠ TRƯỞNG HL','TRƯỞNG ĐỘI BAY','PGĐ KHAI THÁC','GĐ KHAI THÁC','PHÓ TGĐ'];
+/** The airline shell's words for the rank held (the pass shows a short code, the sheets the full title and insignia). */
+function crew(x){
+  const p=x?.room?.promo;
+  if(!p||!Number.isInteger(p.rank)||p.rank<0)return AIR;
+  return {...AIR,role:RANK_CODE[p.rank]||AIR.role,role_line:`${p.title}${p.insignia?` · ${p.insignia.label}`:''}`};
+}
+function rankCard(x){
+  const p=x.room?.promo;if(!p||!p.insignia)return '';
+  const of=p.office,n=of?.inbox?.length||0;
+  const office=of?`<button type="button" class="btn small ${of.live?'primary':''}" data-action="pmOffice">🏢 ${x.esc(of.name)}${n?` · ${n}`:''}</button>`:'';
+  return `<article class="card pl-rank"><button type="button" class="pl-rank-btn" data-action="promo" aria-label="Thăng tiến: ${x.esc(p.title)}">${insignia(p.insignia,84)}<span><b>${x.esc(p.title)}</b><small>${x.esc(p.insignia.label)}${p.next?` · ${p.next.good}/${p.next.need} ngày tốt`:''}</small></span></button>${office}</article>`;
+}
 const done=t=>['completed','cancelled','referred'].includes(t.status);
 const pct=(a,b)=>b?`${Math.round(100*a/b)}%`:'—';
 const AIR={id:'pilot',airline:'Hãng bay Cánh Cò',role:'CƠ PHÓ',role_down:'CƠ PHÓ DỰ BỊ',odd:'pl_odd',rest:'pl_rest',role_line:'Cơ phó · bay cùng cơ trưởng Vân',back:'✈️ Về buồng lái',
@@ -300,7 +315,7 @@ export default {
     shown=t;
     if(flyPref()&&flyCan()&&t.known)flyMod();   // the cockpit's code on its way before the take-off
     const g=guide(t,x),hint=hintFor(g,x),d=data(x);
-    const top=`${dayLine(x)}${introCard(x,!!x.ui.intro)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
+    const top=`${dayLine(x)}${introCard(x,!!x.ui.intro)}${deskCard(x)}${air.oddCard(x,crew(x))}${air.groundCard(x)}`;
     if(d.desk?.ev||d.odd?.ev||(d.odd?.conduct?.ground&&['brief','walk','start'].includes(t.stage))||!d.intro||x.ui.intro)return `<div class="career-job pl">${hint}${top}${bottom(t,x,g)}</div>`;
     let main='';
     if(!t.known||t.stage==='brief')main=briefPanel(t,x);
@@ -317,20 +332,20 @@ export default {
     const d=data(x),steps=d.desk?.ev?[{ok:null,label:'Quyết chuyện ở sân bay',go:{sel:'.pl-desk-opts',label:'👉 Chọn cách xử lý'},pulse:''}]:air.oddStep(x)?[air.oddStep(x)]:!d.intro?[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'pl_intro',payload:{},label:'✈️ Vào ca bay'}}]:[];
     const hint=pending(steps)?.go?nextHint(x,steps,{}):'';
     const bar=pending(steps)?.go?`<div class="pl-bar">${stepCta(x,steps,{label:'',go:null,ready:false})}</div>`:'';
-    const top=`${introCard(x,!!x.ui.intro)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
+    const top=`${introCard(x,!!x.ui.intro)}${deskCard(x)}${air.oddCard(x,crew(x))}${air.groundCard(x)}`;
     if(d.desk?.ev||d.odd?.ev||!d.intro||x.ui.intro)return `<div class="career-job pl">${hint}${top}${bar}</div>`;
-    return `<div class="career-job pl">${hint}${top}${arcCard(x)}${dayLine(x)}${logbook(x)}${bar}</div>`;
+    return `<div class="career-job pl">${hint}${top}${arcCard(x)}${dayLine(x)}${rankCard(x)}${logbook(x)}${bar}</div>`;
   },
   tick(root,x){keepBarAboveFooter(root);try{flyTick(x);}catch(e){console.error(e);}},
   hudCard(c,t,x,o){
-    const card=air.hudCard(c,t,x,{...AIR,next:t=>this.next(t,x)},o),s=data(x).schedule;
+    const card=air.hudCard(c,t,x,{...crew(x),next:t=>this.next(t,x)},o),s=data(x).schedule;
     if(!c.open||!s)return card;
     const summary=`<div class="pl-flight-summary"><span>Lịch hôm nay: ${x.esc(s.total)} chặng · ${x.esc(s.remaining)} còn lại</span>${t?`<span>Thưởng dự kiến ${x.esc(t.expected_bonus??12)} xu</span>`:''}</div>`;
     return card.replace(/<\/article>$/,summary+'</article>');
   },
-  board(x){return `<div class="pl pl-board">${dayLine(x)}${air.board(x,AIR)}</div>`;},
-  page(view,x){return air.page(view,x,AIR);},
-  daySummary(s,x){return air.daySummary(s,x,AIR);},
+  board(x){return `<div class="pl pl-board">${dayLine(x)}${rankCard(x)}${air.board(x,crew(x))}</div>`;},
+  page(view,x){return air.page(view,x,crew(x));},
+  daySummary(s,x){return air.daySummary(s,x,crew(x));},
   nav(items){return air.nav(items,AIR);},
   spots:air.SPOTS,
   noDecor:true,  // no "Chăm chút không gian" on the workbench: a crew has no shop to decorate

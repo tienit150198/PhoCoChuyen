@@ -220,3 +220,11 @@
 /* Flight quotes remain readable in the narrow departures-board status column. */
 .pl-board .ab-row .ab-status{white-space:normal;overflow-wrap:anywhere}
 .pl-flight-summary{display:flex;flex-wrap:wrap;gap:2px 12px;padding:0 12px 9px;font-size:.75rem;line-height:1.4;color:var(--muted)}
+/* 🎖️ The rank card: shoulder board, title, the way into the 🏢 office (pilot.js rankCard) */
+.pl-rank{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px}
+.pl-rank-btn{display:flex;align-items:center;gap:10px;flex:1 1 200px;min-width:0;min-height:48px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.pl-rank-btn svg{flex:none}
+.pl-rank-btn span{display:flex;flex-direction:column;min-width:0}
+.pl-rank-btn b{font-size:.92rem;line-height:1.2}
+.pl-rank-btn small{font-size:.76rem;opacity:.75}
+.pl-rank .btn{flex:1 1 auto;min-height:44px}
