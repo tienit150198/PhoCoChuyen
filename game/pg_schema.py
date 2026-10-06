@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 24  # 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 25  # 25: ☕ chỗ tiêu xu (donations, chat_style: game/spend.py, live/styles.py); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -380,6 +380,22 @@ CREATE TABLE IF NOT EXISTS chat_slow (
   pid {T} PRIMARY KEY, every double precision NOT NULL, until double precision NOT NULL, by_admin {T} NOT NULL DEFAULT '',
   at double precision NOT NULL
 );
+-- 🙏 Công đức Chùa Gió Lành (game/spend.py; SCHEMA_VERSION 25): one row per donation, written in the save's own
+-- transaction (id '<pid>:<n>', idempotent). The weekly board reads it by week. A player who erases their data stays
+-- on the board as anonymous (sid '').
+CREATE TABLE IF NOT EXISTS donations (
+  id {T} PRIMARY KEY, sid {T} NOT NULL, week {T} NOT NULL, amount bigint NOT NULL CHECK(amount > 0),
+  wish {T} NOT NULL DEFAULT '', anon bigint NOT NULL DEFAULT 1, at double precision NOT NULL
+);
+CREATE INDEX IF NOT EXISTS donations_week ON donations(week, sid);
+-- 🎨 Màu tên, khung hồ sơ, danh hiệu tuần worn now (game/spend.py writes it with the save; live/styles.py reads it by
+-- pid and shows it as `st` beside the name). An expired item is ignored by its `_until` (unix seconds).
+CREATE TABLE IF NOT EXISTS chat_style (
+  pid {T} PRIMARY KEY, sid {T} NOT NULL, color {T} NOT NULL DEFAULT '', color_until double precision NOT NULL DEFAULT 0,
+  frame {T} NOT NULL DEFAULT '', frame_until double precision NOT NULL DEFAULT 0, title {T} NOT NULL DEFAULT '',
+  title_until double precision NOT NULL DEFAULT 0, at double precision NOT NULL
+);
+CREATE INDEX IF NOT EXISTS chat_style_sid ON chat_style(sid);
 -- Rewards the live service grants (phase 3 dates, phase 2 lucky envelopes); the game server applies them on load.
 CREATE TABLE IF NOT EXISTS live_effects (
   id {T} PRIMARY KEY, sid {T} NOT NULL, kind {T} NOT NULL, amount bigint NOT NULL DEFAULT 0, data {T} NOT NULL DEFAULT '{{}}',
@@ -711,6 +727,8 @@ TABLES = [
     dict(name='chat_hides', identity=None),
     dict(name='chat_clears', identity=None),
     dict(name='chat_slow', identity=None),
+    dict(name='donations', identity=None),
+    dict(name='chat_style', identity=None),
     dict(name='live_effects', identity=None),
     dict(name='quay_jobs', identity=None),
     dict(name='quay_funding', identity=None),

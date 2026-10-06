@@ -27,6 +27,9 @@ Moving (memory only, never the database)
   (the other is answered `walk_taken {by, name}`, also as `taken` in walk_room); `back {to}` sits behind the spouse
   riding here: the passenger's entry has `b` (the driver's pid) and every walk of the driver is theirs too (`mv`
   with `b`); a `mv` without `b` is them on foot again.
+* 🎨 A name colour, frame or title of the week (game/spend.py, read from `chat_style` by live/styles.py, never sent by a
+  client): a public entry and a `card` may carry `st` {c?, f?, t?}; the bought title also leads `ti` after the honours,
+  so an older client shows it as text. Optional: an older client ignores `st`, an older service sends none.
 
 Talking
 * `say {text}` goes through the chat's store_message (filters, mutes, duplicates, kept like all chat) in the
@@ -66,7 +69,7 @@ import re
 import secrets
 import time
 
-from . import coride, effects
+from . import coride, effects, styles
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
 from .street_data import (CERTS, COLOR_IDS, EMOTES, LOOK_DEFAULTS, LOOK_IDS, LOOK_SLOTS, PAINTABLE, PLACES, PUBLIC, TINT_MAX,
@@ -268,7 +271,7 @@ def clean_look(look, g) -> tuple[dict, str | None]:
 
 
 class Walker:
-    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill')
+    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st')
 
     def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None):
         self.pid, self.player = player.pid, player
@@ -277,6 +280,7 @@ class Walker:
         self.path, self.t0, self.seat = [list(at), list(at)], now, None
         self.ride = ride
         self.back = self.pill = None   # 🛵 the driver I sit behind / who sits behind me (pids, live/coride.py)
+        self.st = None                 # 🎨 name colour / frame / title of the week (live/styles.py), outside the look
 
     @property
     def speed(self) -> float:
@@ -292,6 +296,8 @@ class Walker:
             d['r'], d['v'] = self.ride, self.speed
         if self.back:
             d['b'], d['v'] = self.back, self.speed
+        if self.st:
+            d['st'] = self.st
         return d
 
 
@@ -337,14 +343,14 @@ class StreetFeature(Feature):
     def rooms(self) -> list:
         return [r for p in self.PREFIXES for r in self.hub.rooms_with_prefix(p)]
 
-    def title_of(self, player, title, titles=None) -> str | None:
+    def title_of(self, player, title, titles=None, st=None) -> str | None:
         """The name tag's title. An honour first: this week's race title (live/wedding.py), else the best weekly
-        leaderboard title held now (lb_weekly); then what the player wears (`titles`: up to WEAR_MAX title and
-        certificate ids, or the one `title` of an older client). The first shows by name, the others by emoji:
-        "👑 Trùm cuối của phố 🌱🎓"."""
+        leaderboard title held now (lb_weekly), else a 🎨 title of the week the player paid for (`st`, live/styles.py);
+        then what the player wears (`titles`: up to WEAR_MAX title and certificate ids, or the one `title` of an older
+        client). The first shows by name, the others by emoji: "👑 Trùm cuối của phố 🌱🎓"."""
         wed = self.app.by_name.get('wedding')
         won = wed.race_title(player.pid) if wed is not None and wed.enabled() else None
-        won = won or self.lb.get(player.sid)
+        won = won or self.lb.get(player.sid) or styles.title_text(st)
         ids = titles if isinstance(titles, list) and titles else [title]
         worn = []
         for x in ids[:WEAR_MAX]:
@@ -568,7 +574,8 @@ class StreetFeature(Feature):
         look, g = clean_look(f.get('look'), f.get('g'))
         p = conn.player
         await self.lb_fresh()
-        title = self.title_of(p, f.get('title'), f.get('titles'))
+        st = await styles.of_app(self.app).one(p.pid)   # 🎨 read from chat_style, never from the frame
+        title = self.title_of(p, f.get('title'), f.get('titles'), st)
         await self._ensure_loaded(p)
         r, by = await coride.check(self.db, self.hub, p, clean_ride(f.get('r')))   # no await from here on
         self._leave_player(p, 'other', keep=conn)
@@ -576,7 +583,9 @@ class StreetFeature(Feature):
         now = time.time()
         sx, sy = GEO[place].spots['spawn']
         at = GEO[place].clamp(sx + random.uniform(-150, 150), sy + random.uniform(-45, 45))
-        self._enter(room, conn, Walker(p, look, g, title, at, now, r))
+        w = Walker(p, look, g, title, at, now, r)
+        w.st = st or None
+        self._enter(room, conn, w)
         out = self._snapshot(room, p, now)
         if by:
             out['taken'] = coride.taken_frame('walk_taken', self.hub, by)
@@ -805,7 +814,7 @@ class StreetFeature(Feature):
             except DbError as e:
                 log('card code:', type(e).__name__)
         return dict(t='card', pid=w.pid, name=w.name, ti=w.title, lk=w.look, g=w.g, friend=friend, account=o.account,
-                    code=code, cafe=room.id.startswith(PREFIX) and not GEO[room.data['place']].private)
+                    code=code, cafe=room.id.startswith(PREFIX) and not GEO[room.data['place']].private, **({'st': w.st} if w.st else {}))
 
     @on('invite', rate=(4, 60))
     async def invite(self, conn, f):
@@ -854,6 +863,7 @@ class StreetFeature(Feature):
         for k, (p, conns, old) in enumerate(moving):
             sx, sy = g.spots['spawn']
             w = Walker(p, old.look, old.g, old.title, g.clamp(sx + (50 if k == 0 else -50), sy), now)   # seat 0 is on the right
+            w.st = old.st
             for c in conns:
                 self._enter(cafe, c, w)
             tb = cafe.data['tables'][0]

@@ -48,6 +48,7 @@ import {lookOf,figureOf,paintPlayer,CANVAS,portrait} from './look.js';
 import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
 import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scenes/stroll.js';
 import * as feast from './wedfeast.js';
+import {paint as stPaint,nameAttrs as stName} from './style-tag.js';   // 🎨 name colour / frame of the week (`st`, live/styles.py)
 import {choice,next as nextRide,canRide,label as rideLabel,wire,fromWire,drawRide,rider,steer,topOf,spouse as spouseOf,loadSpouse} from './ride.js';
 
 const W=WORLD.w,H=WORLD.h,AV=.5,LOG_MAX=40,BUBBLE_MS=6000,EMO_MS=2600,MOVE_GAP=260,PLACE_KEY='mnl.walk.place',WSOUND_KEY='mnl.wed.sound';
@@ -281,7 +282,7 @@ function bind(){
   });
 }
 function sample(at){if(typeof at!=='number')return;S.offs.push(at-Date.now()/1000);if(S.offs.length>12)S.offs.shift();S.off=Math.max(...S.offs);}
-function person(p){const q={pid:p.pid,name:p.name,ti:p.ti,lk:p.lk,g:p.g,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
+function person(p){const q={pid:p.pid,name:p.name,ti:p.ti,lk:p.lk,g:p.g,st:p.st&&typeof p.st==='object'?p.st:null,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
 /** 💑 Sitting behind someone (`b`: the driver's pid, optional, from a newer live service): their speed is the driver's. */
 function behind(q,e){const b=typeof e.b==='string'?e.b:null,v=Number(e.v);if(b)q.v=v>0&&v<2000?v:q.v;else if(q.b&&!q.r)q.v=undefined;q.b=b;}
 /** 🛵 A people entry's vehicle (r, v: optional, from a newer live service), the rider's motion. */
@@ -407,7 +408,7 @@ function tap(cx,cy){
   for(const s of spots.values()){const at=spotAt(s);if(at&&Math.hypot(x-at[0],y-at[1])<(s.r||40)){try{if(s.tap?.({x:at[0],y:at[1],place:S.room.place,room:S.room.room})!==false)return;}catch(e){console.warn('walk spot:',e);}}}
   let hit=null,hd=Infinity;
   for(const p of S.people.values()){if(p.pid===S.room.me)continue;const [px,py]=posAt(p.p,p.at,t,p.v);if(Math.abs(x-px)<(p.r?44:28)&&y>py-(p.r?96:72)&&y<py+8){const d=Math.hypot(x-px,y-(py-30));if(d<hd){hd=d;hit=p;}}}
-  if(hit){S.card={pid:hit.pid,name:hit.name,ti:hit.ti,lk:hit.lk,g:hit.g,said:hit.said,loading:true};live.send({t:'card',pid:hit.pid});paintOverlays();return;}
+  if(hit){S.card={pid:hit.pid,name:hit.name,ti:hit.ti,lk:hit.lk,g:hit.g,st:hit.st,said:hit.said,loading:true};live.send({t:'card',pid:hit.pid});paintOverlays();return;}
   const ti=(S.geo.tables||[]).findIndex(tb=>Math.hypot(x-tb.x,y-tb.y)<44);
   if(ti>=0&&S.wed&&!S.ended&&!S.wed.overflow){   // 💍 a wedding table: its mâm cỗ (and a seat when one is free)
     const tb=S.tables[ti];if(tb?.seats?.includes(null)&&!(me()?.s&&me().s[0]===ti))live.send({t:'sit',table:ti});else if(!(me()?.s&&me().s[0]===ti))go(x,y+40);
@@ -643,7 +644,7 @@ function paintOverlays(){
     }
     const more=c.more?(c.report?`<div class="wk-acts wrap">${REASONS.map(([k,l])=>`<button type="button" class="wk-pill" data-wk="reason" data-reason="${k}">${l}</button>`).join('')}</div>`
       :`<div class="wk-acts">${c.said?`<button type="button" class="wk-pill" data-wk="report">${icon('flag',14)} Báo cáo lời vừa nói</button>`:''}<button type="button" class="wk-pill warn" data-wk="block">Chặn</button></div>`):'';
-    cd.innerHTML=`<div class="wk-who">${portrait(c.lk,c.g,48,c.name)}<div class="grow"><b data-no-translate>${esc(c.name)}</b>${c.ti?`<small>${esc(c.ti)}</small>`:''}${c.friend?'<small class="wk-friend">Bạn bè</small>':''}</div>
+    cd.innerHTML=`<div class="wk-who">${portrait(c.lk,c.g,48,c.name)}<div class="grow"><b data-no-translate${stName(S.env?.api,c.st)}>${esc(c.name)}</b>${c.ti?`<small>${esc(c.ti)}</small>`:''}${c.friend?'<small class="wk-friend">Bạn bè</small>':''}</div>
       <button type="button" class="icon-btn" data-wk="cardClose" aria-label="Đóng">${icon('x',18)}</button></div>${c.said&&c.more&&c.report?`<p class="wk-said" data-no-translate>“${esc(c.said.text)}”</p>`:''}
       <div class="wk-acts">${acts.join('')}</div>${more}`;
     cd.hidden=false;
@@ -764,7 +765,7 @@ function draw(ts,t){
   for(const p of list){
     if(p.parked)continue;
     const top=p.on?sy(p.on.y-topOf(p.on.ride||{})*AV)-30:sy(p.y-(p.ride&&!p.s?topOf(p.ride):132)*AV)-4,wed=pids?.includes(p.pid)?(p.g==='female'?'f':p.g==='male'?'m':'x'):null;
-    tag(c,tagX.get(p.pid)??sx(p.x),top,p.name,p.ti,p.pid===myPid,dark,wed);
+    tag(c,tagX.get(p.pid)??sx(p.x),top,p.name,p.ti,p.pid===myPid,dark,wed,p.st);
     let above=top-(wed?(p.ti?36:24):p.ti?30:20);
     if(p.bub){const age=now-p.bub.t0;if(age>BUBBLE_MS)p.bub=null;else above=bubble(c,sx(p.x),above,p.bub.text,age>BUBBLE_MS-500?(BUBBLE_MS-age)/500:1,dark)-4;}
     if(p.emo){const age=now-p.emo.t0;if(age>EMO_MS)p.emo=null;else if(p.emo.cheers)cheers(c,sx(p.x),above,age);else{c.globalAlpha=Math.min(1,(EMO_MS-age)/600);c.font='26px serif';c.textAlign='center';c.textBaseline='bottom';c.fillText(p.emo.e,sx(p.x),above-age/90);c.globalAlpha=1;}}
@@ -814,7 +815,7 @@ function wedTagW(c,p){
 }
 /** A name tag above someone. wed: the bride ('f'), the groom ('m') or either ('x') at their wedding: a bigger gold and
  * rose pill with 👰/🤵, the same on light and dark (dark text on a light pill). */
-function tag(c,x,y,name,title,mine,dark,wed){
+function tag(c,x,y,name,title,mine,dark,wed,st=null){
   c.textAlign='center';c.textBaseline='bottom';
   if(wed){
     const label=`${wed==='f'?'👰':wed==='m'?'🤵':'💍'} ${name}`;
@@ -831,9 +832,12 @@ function tag(c,x,y,name,title,mine,dark,wed){
   }
   c.font='700 11.5px "Trebuchet MS",sans-serif';const nw=c.measureText(name).width;
   let tw=0;if(title){c.font='600 9.5px "Trebuchet MS",sans-serif';tw=c.measureText(title).width;}
-  const w=Math.max(nw,tw)+12,hgt=title?28:17;
+  const w=Math.max(nw,tw)+12,hgt=title?28:17,sp=st?stPaint(S.env?.api,st,dark):null;
   c.fillStyle=dark?'rgba(24,24,34,.78)':'rgba(255,253,248,.86)';c.beginPath();c.roundRect(x-w/2,y-hgt,w,hgt,8);c.fill();
-  c.font='700 11.5px "Trebuchet MS",sans-serif';c.fillStyle=mine?(dark?'#ff9b7d':'#b8432c'):(dark?'#f1ede6':'#4a3b35');c.fillText(name,x,y-(title?13:2.5));
+  if(sp?.ring){c.strokeStyle=sp.ring;c.lineWidth=2;c.stroke();}   // 🎨 a frame of the week: the pill's border
+  let fill=mine?(dark?'#ff9b7d':'#b8432c'):(dark?'#f1ede6':'#4a3b35');
+  if(sp?.grad){const g=c.createLinearGradient(x-nw/2,0,x+nw/2,0);g.addColorStop(0,sp.grad[0]);g.addColorStop(1,sp.grad[1]);fill=g;}else if(sp?.color)fill=sp.color;
+  c.font='700 11.5px "Trebuchet MS",sans-serif';c.fillStyle=fill;c.fillText(name,x,y-(title?13:2.5));
   if(title){c.font='600 9.5px "Trebuchet MS",sans-serif';c.fillStyle=dark?'#bdb6ad':'#8a7a70';c.fillText(title,x,y-2);}
 }
 /** 🍻 Cụng ly: two glasses swing in and clink over someone's head, "Dzô!". */

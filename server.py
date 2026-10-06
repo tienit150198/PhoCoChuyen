@@ -654,6 +654,11 @@ class Handler(BaseHTTPRequestHandler):
                 try:board,limit=leaderboard.parse_query({k:v[0] for k,v in parse_qs(split.query).items()})
                 except ValueError as e:self.error(400,str(e),"bad_request");return
                 self.json(200,leaderboard.view(self.server.store,board,limit,token));return
+            if route=="/api/congduc":  # 🙏 Bảng công đức tuần (game/spend.py board): account names or Ẩn danh, cached ~10 s
+                token=self.token()
+                if not self.server.rate_limit("congduc:"+(token or self.client_ip()),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                from game import spend
+                self.json(200,spend.board(self.server.store,token));return
             if route=="/api/news":  # the ticker (game/marriage.py): public lines, cached ~10 s; + my alerts
                 if not self.server.rate_limit("news:"+self.client_ip(),120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,marriage.news(self.server.store,(parse_qs(split.query).get("since") or ["0"])[0],self.token()));return

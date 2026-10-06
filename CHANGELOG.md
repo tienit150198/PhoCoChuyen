@@ -1,3 +1,15 @@
+# Chưa phát hành — Chỗ tiêu xu (spend-1)
+
+## Thêm chỗ tiêu xu
+
+- Chủ game 06/10 ("cho nhiều cái để mọi người tiêu tiền hơn"): người chơi trung bình kiếm ~262 xu/ngày sống, tiêu ~12. Thêm chỗ tiêu hằng ngày và chỗ khoe, không cái nào ra tiền hay giúp làm việc.
+- ☕ Đi quán (4 quán của phố, 8–35 xu): no bụng/tỉnh táo tăng, quán đầu ngày +1 tinh thần (món ≥28 xu +2), thẻ tích điểm 10 dấu đổi nhãn dán. Có lối sang quán người chơi (Phố nghề).
+- 💆 Spa Sen (25–40 xu): +2 tinh thần lần đầu mỗi ngày. 🎬 Rạp Mây: mỗi tuần một phim, 20 xu, +2 tinh thần, giữ cuống vé.
+- 🙏 Công đức Chùa Gió Lành: từ 5 xu, chọn lời cầu, ẩn danh hoặc ghi tên tài khoản. Bảng công đức tuần (khách luôn ẩn danh). Sư thầy cảm ơn mọi người như nhau.
+- 🎨 Phong cách 7 ngày (gia hạn tối đa 4 tuần): màu tên 120–400, khung hồ sơ 100–400, danh hiệu 60–400 (vài cái phải chơi mới mở). Hiện trong chat, khi đi dạo, trên hồ sơ Phố nghề.
+- Cửa trên Bản đồ phố (☕ Phố chợ, 💆🎨 Phố dịch vụ, 🎬 Phố hàng rong, 🙏 cạnh Chùa) và mục "Đi chơi", "Phong cách" trong menu.
+- Bản lưu: thêm `journey.spend` (tùy chọn); sổ ví dùng loại `life` có sẵn, bản 1.9.4 vẫn đọc được. CSDL: bảng mới `donations`, `chat_style` (SCHEMA_VERSION 25). Dịch vụ live đọc màu/khung/danh hiệu từ `chat_style`, gửi kèm trường `st` (ngoài `look`); bản live cũ bỏ qua.
+
 # v1.9.4 — 2026-10-06
 
 - 🏪 Nhân viên tiệm (nơi làm việc) bán nhanh gấp 1,6 lần ngày đầu (góp ý người chơi; lịch sử bản 1.7.8–1.9.3 cho thấy tốc độ chưa từng bị giảm, tiệm thấy chậm chủ yếu do hết hàng).

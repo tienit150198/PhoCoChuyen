@@ -615,6 +615,9 @@ class Store:
             if action:
                 from . import home_guests
                 home_guests.command_commit(db,sid,before,current,action)
+                if action.startswith('jr_spend_'):
+                    from . import spend
+                    spend.command_commit(db,sid,action,current)  # ☕ 🙏 the donation row, 🎨 the chat_style row
             if action == 'settings':
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,current)
@@ -669,6 +672,9 @@ class Store:
             db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=?",(serialized,revision,sid))
             from . import home_guests
             home_guests.command_commit(db,sid,before,raw,action)
+            if action.startswith('jr_spend_'):
+                from . import spend
+                spend.command_commit(db,sid,action,raw)  # ☕ 🙏 the donation row, 🎨 the chat_style row
             if action == 'settings':
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,raw)
@@ -701,6 +707,8 @@ class Store:
             forget(db,sid)
             from . import home_guests
             home_guests.forget(db,sid)
+            from . import spend
+            spend.forget(db,sid)  # 🎨 the style row; 🙏 donations stay on the board as anonymous
             db.execute("DELETE FROM archive WHERE sid=?",(sid,))
             db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
             lb.forget(db,[sid])
