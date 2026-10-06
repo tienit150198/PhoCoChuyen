@@ -1,2252 +1,1762 @@
 [
  {
-  "vi": "Số $1 khổ.",
-  "en": "",
-  "pattern": true
+  "vi": "Ông không ăn được, bà Toàn buồn.",
+  "en": ""
  },
  {
-  "vi": "than thêm \"đó, ai cũng vậy với $1\"",
-  "en": "",
-  "pattern": true
+  "vi": "Quên xin hóa đơn",
+  "en": ""
  },
  {
-  "vi": "than chung \"$1 cũng vậy nè\" rồi khuyên ngủ sớm",
-  "en": "",
-  "pattern": true
+  "vi": "Phải ghi tay theo trí nhớ, chủ nhà nhìn sổ không yên tâm.",
+  "en": ""
  },
  {
-  "vi": "Haizz… sáng giờ kẹt xe muốn xỉu, lưng thì mỏi, số $1 khổ.",
-  "en": "",
-  "pattern": true
+  "vi": "👛 Tiền chợ là tiền của nhà người ta: ví riêng của bạn không bị trừ.",
+  "en": ""
  },
  {
-  "vi": "Haizz, chào $1.",
-  "en": "",
-  "pattern": true
+  "vi": "🔥 Bếp nhà có hai bếp: canh, kho lâu chín; xào, luộc nhanh.",
+  "en": ""
  },
  {
-  "vi": "Hồi sáng có người lạ hỏi đường vào hẻm, $1 nghi lắm.",
-  "en": "",
-  "pattern": true
+  "vi": "🍚 Cơm cho người già đổ nước nhiều hơn một chút cho mềm.",
+  "en": ""
  },
  {
-  "vi": "Ai đó? À, $1. Chào.",
-  "en": "",
-  "pattern": true
+  "vi": "🌤️ Mỗi ngày một kiểu: mưa sáng (rau đắt hơn), nhà có khách (thêm người ăn), cuối tháng (tiền chợ eo hẹp).",
+  "en": ""
  },
  {
-  "vi": "an ủi vụng về \"để $1 cho viên kẹo\"",
-  "en": "",
-  "pattern": true
+  "vi": "👨‍👩‍👧‍👦 Bốn nhà quen: chị Mai có bé Bin, ông Toàn ăn mềm nhạt, anh Khoa ăn kiêng mê cay, cô Lệ nhà đông người.",
+  "en": ""
  },
  {
-  "vi": "Thật hả? Vậy là hôm nay $1 được học thêm một điều nữa rồi!",
-  "en": "",
-  "pattern": true
+  "vi": "📱 Chủ nhà gọi dặn thêm, bình ga sắp hết, con mèo rình cá, hàng xóm sang mượn đồ.",
+  "en": ""
  },
  {
-  "vi": "{Toi} tin $1 mà, $2 nói gì cũng đúng hết á.",
-  "en": "",
-  "pattern": true
+  "vi": "💵 Nhà nào mời bạn lại lần sau thì công trả thêm một chút.",
+  "en": ""
  },
  {
-  "vi": "Chào $1! Hôm nay có gì vui không?",
-  "en": "",
-  "pattern": true
+  "vi": "CHỐT THỰC ĐƠN",
+  "en": ""
  },
  {
-  "vi": "Hồi đó hẻm này còn cây me to lắm, chiều nào $1 cũng ngồi dưới gốc nghe radio.",
-  "en": "",
-  "pattern": true
+  "vi": "Đổi",
+  "en": ""
  },
  {
-  "vi": "À, $1 đấy à. Lại đây ngồi.",
-  "en": "",
-  "pattern": true
+  "vi": "Xin bớt",
+  "en": ""
  },
  {
-  "vi": "Deadline dí $1 chạy muốn xỉu, cứu $2 với 😭",
-  "en": "",
-  "pattern": true
+  "vi": "Xin hóa đơn",
+  "en": ""
  },
  {
-  "vi": "Deadline dí chạy muốn xỉu, cứu $1 với 😭",
-  "en": "",
-  "pattern": true
+  "vi": "VỀ NHÀ NẤU",
+  "en": ""
  },
  {
-  "vi": "Hé lô $1 ✨",
-  "en": "",
-  "pattern": true
+  "vi": "Rửa sạch",
+  "en": ""
  },
  {
-  "vi": "Ơ $1, nay slay dữ z 😳",
-  "en": "",
-  "pattern": true
+  "vi": "Tắt bếp",
+  "en": ""
  },
  {
-  "vi": "Sáng giờ ba cuộc họp, cà phê là thứ duy nhất giữ $1 tỉnh.",
-  "en": "",
-  "pattern": true
+  "vi": "Hâm nóng",
+  "en": ""
  },
  {
-  "vi": "Sáng giờ họp liên tục, cà phê là thứ duy nhất giữ $1 tỉnh ☕",
-  "en": "",
-  "pattern": true
+  "vi": "DỌN CƠM",
+  "en": ""
  },
  {
-  "vi": "Chào $1, cho xin năm phút không ai nhắc deadline.",
-  "en": "",
-  "pattern": true
+  "vi": "Kẹp hóa đơn",
+  "en": ""
  },
  {
-  "vi": "bình tĩnh, \"chắc hôm nay $1 mệt lắm\"",
-  "en": "",
-  "pattern": true
+  "vi": "GỬI TIỀN THỪA",
+  "en": ""
  },
  {
-  "vi": "Nghe có vẻ hôm nay nặng nề ha, kể $1 nghe chuyện gì đi.",
-  "en": "",
-  "pattern": true
+  "vi": "Bảo mẫu trông trẻ",
+  "en": ""
  },
  {
-  "vi": "Chắc hôm nay $1 mệt lắm mới nói vậy, không sao đâu.",
-  "en": "",
-  "pattern": true
+  "vi": "Tổ trông trẻ Mèo Con của cô Tâm",
+  "en": ""
  },
  {
-  "vi": "Hôm nay $1 thấy sao? Mệt thì cứ nói, $2 nghe.",
-  "en": "",
-  "pattern": true
+  "vi": "Mỗi ngày bạn trông một bé ở một nhà, theo lịch từ 7:30 tới 18:00: nhận bé, cho ăn, chơi, soát nhà, ru ngủ, dỗ bé, rồi bàn giao và kể thật với bố mẹ.",
+  "en": ""
  },
  {
-  "vi": "Chào $1. Hôm nay ổn không?",
-  "en": "",
-  "pattern": true
+  "vi": "Nhận bé",
+  "en": ""
  },
  {
-  "vi": "Nói thật nha, làm vậy là chậm, nhưng mà kỹ, $1 ưng cái kỹ.",
-  "en": "",
-  "pattern": true
+  "vi": "[[Rửa tay]], [[Đọc giấy dặn]] (dị ứng, giờ ngủ, đồ ôm, màn hình), chọn cách chào hợp tính bé, [[Mở túi đồ]], hỏi món còn thiếu rồi [[NHẬN BÉ]].",
+  "en": ""
  },
  {
-  "vi": "Nói thật nha, hôm nay $1 nhìn mệt đó, nghỉ chút đi.",
-  "en": "",
-  "pattern": true
+  "vi": "Bữa phụ, bữa trưa",
+  "en": ""
  },
  {
-  "vi": "Chào. Nói luôn nha, nay nhìn $1 tươi.",
-  "en": "",
-  "pattern": true
+  "vi": "Đủ nhóm món, tránh món bé dị ứng. Bé dưới 4 tuổi: không đồ cứng, [[Cắt nhỏ]]. Cháo canh [[Để nguội bớt]], cá [[Gỡ xương]]. [[Rửa tay cho bé]], [[Cho bé ngồi ghế ăn]], [[DỌN CHO BÉ ĂN]].",
+  "en": ""
  },
  {
-  "vi": "Dạ, hôm nay trời đẹp, chúc $1 một ngày thuận lợi ạ.",
-  "en": "",
-  "pattern": true
+  "vi": "Giờ chơi",
+  "en": ""
  },
  {
-  "vi": "Dạ, chào $1 ạ.",
-  "en": "",
-  "pattern": true
+  "vi": "Nhìn tâm trạng bé, chọn trò hợp tâm trạng và hợp tuổi. Chơi cùng bé, trả lời bé ân cần, [[Cùng bé dọn đồ chơi]], rồi [[CHƠI XONG]].",
+  "en": ""
  },
  {
-  "vi": "\"ngồi đây với $1 một chút nha\", đưa ly trà",
-  "en": "",
-  "pattern": true
+  "vi": "Soát nhà",
+  "en": ""
  },
  {
-  "vi": "Ừm… $1 để ý hôm nay $2 cắm hoa mới ở cửa sổ, đẹp lắm.",
-  "en": "",
-  "pattern": true
+  "vi": "Ngồi ngang tầm bé, chạm vào chỗ dễ nguy hiểm (ổ điện, cốc nóng, cầu thang, đồ nhỏ…) để xử lý, rồi [[CHO BÉ RA CHƠI]].",
+  "en": ""
  },
  {
-  "vi": "{Toi} đọc được một câu hay: đi chậm cũng là đi. Tặng $1 nè.",
-  "en": "",
-  "pattern": true
+  "vi": "Ngủ trưa",
+  "en": ""
  },
  {
-  "vi": "À… chào $1.",
-  "en": "",
-  "pattern": true
+  "vi": "[[Cho bé đi vệ sinh]], [[Kéo rèm, tắt đèn]], đưa đúng đồ ôm, [[Hát ru một bài]]. Bé thở ra chậm (vạch xanh) thì [[Vỗ nhẹ]], đủ ba lần là [[BÉ NGỦ RỒI]].",
+  "en": ""
  },
  {
-  "vi": "Ê cưng, bữa nay mở hàng sớm hông, cho $1 lấy hên cái nghen!",
-  "en": "",
-  "pattern": true
+  "vi": "Chuyện nhỏ",
+  "en": ""
  },
  {
-  "vi": "Hàng $1 mới về, tươi rói, bữa nào ghé coi nghen.",
-  "en": "",
-  "pattern": true
+  "vi": "Bé khóc, ngã trầy gối, ăn vạ: dỗ nhẹ nhàng tới khi bé ổn, sơ cứu đúng thứ tự, rồi [[BÉ ỔN RỒI]].",
+  "en": ""
  },
  {
-  "vi": "Ui $1 tới, lấy hên nè!",
-  "en": "",
-  "pattern": true
+  "vi": "Ghi vào nhật ký những dòng đúng sự thật, kể cả chuyện bé khóc, bé ngã, rồi [[BÀN GIAO BÉ]].",
+  "en": ""
  },
  {
-  "vi": "\"$1 có tâm hồn đấy\"",
-  "en": "",
-  "pattern": true
+  "vi": "📝 [[Rửa tay]], [[Đọc giấy dặn]], chào bé, kiểm túi, [[NHẬN BÉ]].",
+  "en": ""
  },
  {
-  "vi": "Ồ, $1 tới đúng lúc ánh nắng đẹp nhất.",
-  "en": "",
-  "pattern": true
+  "vi": "🍽️ Món hợp tuổi, tránh món bé dị ứng, sơ chế, [[DỌN CHO BÉ ĂN]].",
+  "en": ""
  },
  {
-  "vi": "dỗi giùm: \"ai làm $1 buồn, dỗi người đó luôn\"",
-  "en": "",
-  "pattern": true
+  "vi": "🧸 Trò hợp tâm trạng bé, chơi cùng bé, [[CHƠI XONG]].",
+  "en": ""
  },
  {
-  "vi": "Hôm qua ghé mà $1 hông chào, dỗi rồi đó 🥺",
-  "en": "",
-  "pattern": true
+  "vi": "😴 Đủ bước ru ngủ, [[Vỗ nhẹ]] lúc bé thở ra.",
+  "en": ""
  },
  {
-  "vi": "Ai làm $1 buồn? {Toi} dỗi người đó giùm luôn 😤",
-  "en": "",
-  "pattern": true
+  "vi": "👋 Nhật ký thật, [[BÀN GIAO BÉ]].",
+  "en": ""
  },
  {
-  "vi": "Hôm qua $1 hông chào $2, dỗi rồi đó 🥺",
-  "en": "",
-  "pattern": true
+  "vi": "🛡️ Bé an toàn cả ngày: không món dị ứng, không đồ dễ hóc, nhà không còn chỗ nguy hiểm.",
+  "en": ""
  },
  {
-  "vi": "Chuyện nhỏ, $1 quen người trong ngành cả.",
-  "en": "",
-  "pattern": true
+  "vi": "🍽️ Ăn đủ bữa, đúng tuổi.",
+  "en": ""
  },
  {
-  "vi": "Hôm nay $1 đi bộ cho khỏe thôi chứ xe mới thay đồ chơi đấy.",
-  "en": "",
-  "pattern": true
+  "vi": "😴 Ngủ đúng giờ, ngủ ngon.",
+  "en": ""
  },
  {
-  "vi": "À, $1. Hôm nay $2 tiện ghé thôi.",
-  "en": "",
-  "pattern": true
+  "vi": "😊 Bé chơi vui, được trả lời ân cần.",
+  "en": ""
  },
  {
-  "vi": "Dạ! Hôm qua $1 vẽ con mèo mà nó giống con heo, cả nhà cười quá trời.",
-  "en": "",
-  "pattern": true
+  "vi": "📝 Bàn giao trung thực.",
+  "en": ""
  },
  {
-  "vi": "Mẹ $1 nói ăn rau thì mau lớn, mà $2 thích kẹo hơn.",
-  "en": "",
-  "pattern": true
+  "vi": "Dọn món có thứ bé dị ứng",
+  "en": ""
  },
  {
-  "vi": "Dạ, chào $1 ạ!",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi an toàn: mất tiền chăm kỹ, bố mẹ bé mất lòng tin.",
+  "en": ""
  },
  {
-  "vi": "Hí hí, chào $1!",
-  "en": "",
-  "pattern": true
+  "vi": "Cho bé nhỏ ăn đồ cứng, miếng to, cháo nóng",
+  "en": ""
  },
  {
-  "vi": "Cứ bình tĩnh, mình nói chuyện thoải mái thôi. Kể thêm lần gần nhất $1 làm vậy nhé?",
-  "en": "",
-  "pattern": true
+  "vi": "Bé dễ hóc, phỏng miệng. Tiền công bị trừ.",
+  "en": ""
  },
  {
-  "vi": "Ý đó hay đấy. Nếu khách vẫn không hài lòng thì $1 làm gì tiếp?",
-  "en": "",
-  "pattern": true
+  "vi": "Đưa đồ chơi mảnh nhỏ cho bé dưới 4 tuổi",
+  "en": ""
  },
  {
-  "vi": "Cảm ơn $1 đã chia sẻ thật lòng.",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi an toàn: bé cho vào miệng là hóc.",
+  "en": ""
  },
  {
-  "vi": "Chào $1, mời ngồi.",
-  "en": "",
-  "pattern": true
+  "vi": "Cho xem màn hình khi giấy dặn không cho",
+  "en": ""
  },
  {
-  "vi": "Ghi nhận. Tình huống tiếp theo: $1 xử lý thế nào?",
-  "en": "",
-  "pattern": true
+  "vi": "Bố mẹ bé phàn nàn.",
+  "en": ""
  },
  {
-  "vi": "GIỌNG NHÂN VẬT: $1 $2: $3.",
-  "en": "",
-  "pattern": true
+  "vi": "Quát, dọa bé",
+  "en": ""
  },
  {
-  "vi": "Cách nói: $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Bé càng khóc, bố mẹ bé buồn lòng.",
+  "en": ""
  },
  {
-  "vi": "Cách nói: $1",
-  "en": "",
-  "pattern": true
+  "vi": "Giấu chuyện bé khóc, bé ngã",
+  "en": ""
  },
  {
-  "vi": "Câu cửa miệng (dùng khi hợp, đừng lần nào cũng dùng): $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Mất lòng tin: không có bồi dưỡng, gia đình ít gửi lại.",
+  "en": ""
  },
  {
-  "vi": "Tiểu từ quen miệng: $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Hết ngày chưa bàn giao",
+  "en": ""
  },
  {
-  "vi": "Tiểu từ quen miệng: $1",
-  "en": "",
-  "pattern": true
+  "vi": "Bố mẹ tự đón bé, chỉ gửi nửa ngày công.",
+  "en": ""
  },
  {
-  "vi": "Giọng vùng: $1.",
-  "en": "",
-  "pattern": true
+  "vi": "📝 Mở [[Giấy dặn của bố mẹ]] bất cứ lúc nào để xem lại dị ứng, giờ ngủ, đồ ôm.",
+  "en": ""
  },
  {
-  "vi": "Hay lái chuyện sang: $1.",
-  "en": "",
-  "pattern": true
+  "vi": "💵 Tiền công theo ngày, thêm tiền chăm kỹ, tiền khách quen và bồi dưỡng khi bé được chăm kỹ.",
+  "en": ""
  },
  {
-  "vi": "Hay lái chuyện sang: $1",
-  "en": "",
-  "pattern": true
+  "vi": "👪 Mỗi ngày một gia đình: bé Bin, bé Na, bé Sóc, bé Mít, bé Bông, mỗi bé một tính, một món dị ứng.",
+  "en": ""
  },
  {
-  "vi": "Khi người chơi tử tế: $1. Khi bị nói hỗn: $2. Khi người chơi buồn hay mệt: $3.",
-  "en": "",
-  "pattern": true
+  "vi": "🌧️ Ngày mưa sàn ướt, ngày bé sổ mũi chỉ uống nước ấm.",
+  "en": ""
  },
  {
-  "vi": "Tâm trạng hôm nay: $1 $2 ($3$4). Chỉ ảnh hưởng nhẹ tới giọng, đừng kể lể về nó trừ khi hợp.",
-  "en": "",
-  "pattern": true
+  "vi": "🎓 Hai ngày đầu cô Tâm gọi điện nhắc trước khi bạn lỡ tay.",
+  "en": ""
  },
  {
-  "vi": "Tâm trạng hôm nay: $1 $2 ($3",
-  "en": "",
-  "pattern": true
+  "vi": "🔔 Hàng xóm cho bánh, người lạ bấm chuông, trán bé hơi ấm: chọn cách xử lý.",
+  "en": ""
  },
  {
-  "vi": "; chuyện riêng: $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đọc giấy dặn",
+  "en": ""
  },
  {
-  "vi": "ĐỘ DÀI: $1 Tối đa $2 câu, dưới $3 ký tự.",
-  "en": "",
-  "pattern": true
+  "vi": "Mở túi đồ",
+  "en": ""
  },
  {
-  "vi": "nghe đâu $1 làm tới khuya lắc, chắc chạy thêm ca đêm ở đâu đó",
-  "en": "",
-  "pattern": true
+  "vi": "NHẬN BÉ",
+  "en": ""
  },
  {
-  "vi": "có người thấy đèn chỗ $1 sáng tới gần sáng, không biết làm gì",
-  "en": "",
-  "pattern": true
+  "vi": "Rửa tay cho bé",
+  "en": ""
  },
  {
-  "vi": "nghe đồn dạo này có khách chê $1 trên mạng, cả hẻm bàn tán",
-  "en": "",
-  "pattern": true
+  "vi": "Cho bé ngồi ghế ăn",
+  "en": ""
  },
  {
-  "vi": "người ta truyền tai nhau là chỗ $1 vừa bị bóc phốt, chẳng biết thật giả",
-  "en": "",
-  "pattern": true
+  "vi": "DỌN CHO BÉ ĂN",
+  "en": ""
  },
  {
-  "vi": "nghe nói $1 được khen trên mạng, có người còn bảo $2 sắp nổi tiếng",
-  "en": "",
-  "pattern": true
+  "vi": "Cùng bé dọn đồ chơi",
+  "en": ""
  },
  {
-  "vi": "người ta đồn $1 làm một lúc mấy nghề, chắc sắp mua nhà mặt phố",
-  "en": "",
-  "pattern": true
+  "vi": "CHƠI XONG",
+  "en": ""
  },
  {
-  "vi": "nghe nói phố sắp có hội to, ai cũng đồn chỗ $1 sẽ đông nghẹt",
-  "en": "",
-  "pattern": true
+  "vi": "CHO BÉ RA CHƠI",
+  "en": ""
  },
  {
-  "vi": "nghe đâu $1 sắp mở thêm chỗ mới ở đầu hẻm",
-  "en": "",
-  "pattern": true
+  "vi": "Vỗ nhẹ",
+  "en": ""
  },
  {
-  "vi": "có người đồn $1 là cháu của một đại gia nào đó, nên mới dám mở tiệm",
-  "en": "",
-  "pattern": true
+  "vi": "BÉ NGỦ RỒI",
+  "en": ""
  },
  {
-  "vi": "nghe nói có người hay ghé chỗ $1 chỉ để ngắm chủ quán",
-  "en": "",
-  "pattern": true
+  "vi": "BÉ ỔN RỒI",
+  "en": ""
  },
  {
-  "vi": "người ta bảo $1 nuôi một con mèo biết đếm tiền",
-  "en": "",
-  "pattern": true
+  "vi": "BÀN GIAO BÉ",
+  "en": ""
  },
  {
-  "vi": "có tin là $1 từng đi thi hát, giờ mới về mở tiệm",
-  "en": "",
-  "pattern": true
+  "vi": "Cán bộ thư viện – lưu trữ",
+  "en": ""
  },
  {
-  "vi": "nghe đồn $1 sắp dọn đi phố khác",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn phụ cô Nguyệt giữ sách và hồ sơ của phường: mở kho buổi sáng, quầy mượn trả, biên mục, phòng đọc và cửa sổ lưu trữ. Ai nhờ gì cũng nghe, nhưng làm theo nội quy.",
+  "en": ""
  },
  {
-  "vi": "hôm nay $1 làm rất nhiều việc, chắc về khuya",
-  "en": "",
-  "pattern": true
+  "vi": "Mở cửa buổi sáng",
+  "en": ""
  },
  {
-  "vi": "chỗ $1 vừa bị một đánh giá thấp trên mạng",
-  "en": "",
-  "pattern": true
+  "vi": "[[Xem ẩm kế kho]] (trên 60% thì [[Bật máy hút ẩm]]), [[Soi bẫy côn trùng]] rồi chọn cách xử lý, [[Mở phòng đọc]], [[Dựng bảng nội quy]], rồi [[MỞ CỬA THƯ VIỆN]].",
+  "en": ""
  },
  {
-  "vi": "chỗ $1 vừa được khen trên mạng",
-  "en": "",
-  "pattern": true
+  "vi": "Mượn sách",
+  "en": ""
  },
  {
-  "vi": "$1 chạy mấy nghề một lúc",
-  "en": "",
-  "pattern": true
+  "vi": "[[Tra máy]] xem ký hiệu, còn sách không; [[Kiểm thẻ]]. Sách tra cứu chỉ đọc tại chỗ, sách đang có người mượn thì đặt trước, thẻ hết hạn thì gia hạn.",
+  "en": ""
  },
  {
-  "vi": "chỗ $1 mới có đồ trang trí",
-  "en": "",
-  "pattern": true
+  "vi": "Nhận trả, tính phí",
+  "en": ""
  },
  {
-  "vi": "nếu hợp, an ủi $1 (trong hẻm đang có lời ra tiếng vào) và khuyên một điều thực tế:",
-  "en": "",
-  "pattern": true
+  "vi": "[[Kiểm sách]], [[Xem dấu hạn]], [[Hỏi lý do]]. Tự báo phí (1 xu/ngày, tối đa 15 xu, cộng phí hỏng), hoặc [[Ghi sổ nợ]], [[Miễn phí]] khi có lý do chính đáng. Sửa sách rồi [[CẤT SÁCH LÊN KỆ]].",
+  "en": ""
  },
  {
-  "vi": "Kể $1 nghe thôi nha,",
-  "en": "",
-  "pattern": true
+  "vi": "Gợi ý sách",
+  "en": ""
  },
  {
-  "vi": "Người ta xì xào gì kệ họ nha $1. Thử $2.",
-  "en": "",
-  "pattern": true
+  "vi": "[[Hỏi cuốn gần nhất thích]], [[Hỏi đang muốn đọc gì]], rồi chọn một trong bốn cuốn hợp cả hai.",
+  "en": ""
  },
  {
-  "vi": "Hẻm này ai chả từng bị đồn một lần. Cứ $1, rồi đâu sẽ vào đó.",
-  "en": "",
-  "pattern": true
+  "vi": "Biên mục",
+  "en": ""
  },
  {
-  "vi": "Đừng để bụng mấy lời ra tiếng vào. {Advice}, nghe $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Mỗi cuốn: chọn lớp, chọn ký hiệu tác giả (3 chữ đầu của tên), sách hỏng thì để riêng. Xong hết thì [[DÁN NHÃN, XẾP LÊN KỆ]].",
+  "en": ""
  },
  {
-  "vi": "$1 $2… mà $3",
-  "en": "",
-  "pattern": true
+  "vi": "Phòng đọc",
+  "en": ""
  },
  {
-  "vi": "$1 $2… mà",
-  "en": "",
-  "pattern": true
+  "vi": "Mỗi chuyện chọn một cách: nhắc nhỏ, chỉ nội quy, một cách hợp, mời ra hoặc để kệ. Ai cãi lại thì nói thêm một lần. Xong thì [[XONG VÒNG PHÒNG ĐỌC]].",
+  "en": ""
  },
  {
-  "vi": "$1 mở khi bạn đạt Trưởng thành cấp $2.",
-  "en": "",
-  "pattern": true
+  "vi": "Hồ sơ lưu trữ",
+  "en": ""
  },
  {
-  "vi": "$1 mở khi bạn có danh hiệu “$2”.",
-  "en": "",
-  "pattern": true
+  "vi": "Lần đầu làm bài tập huấn. Rồi [[Xem giấy tờ]], [[Đưa phiếu yêu cầu]], [[Tra mục lục]], quyết, đeo găng, lấy đúng hộp, cấp bản sao, [[Ghi sổ khai thác]], [[BÀN GIAO HỒ SƠ]].",
+  "en": ""
  },
  {
-  "vi": "$1 dành cho người đã về chung một nhà.",
-  "en": "",
-  "pattern": true
+  "vi": "🌡️ Sáng: ẩm kế, bẫy côn trùng, phòng đọc, bảng nội quy.",
+  "en": ""
  },
  {
-  "vi": "Bạn chưa có $1. Mua ở tủ đồ trước nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "🔖 Quầy: [[Tra máy]], [[Kiểm thẻ]], rồi cho mượn hoặc giúp cách khác.",
+  "en": ""
  },
  {
-  "vi": "Bạn đã có $1 rồi.",
-  "en": "",
-  "pattern": true
+  "vi": "💰 Trả sách: kiểm sách, xem dấu hạn, tính phí đúng nội quy.",
+  "en": ""
  },
  {
-  "vi": "$1 chỉ bán cho người làm ở $2. Vào làm ở đó một ngày là mua được.",
-  "en": "",
-  "pattern": true
+  "vi": "🏷️ Biên mục: lớp, ký hiệu tác giả, lọc sách hỏng.",
+  "en": ""
  },
  {
-  "vi": "Ví chưa đủ $1 xu để mua $2.",
-  "en": "",
-  "pattern": true
+  "vi": "🗂️ Lưu trữ: giấy tờ, phiếu, mục lục, đúng hộp, bản sao, ghi sổ.",
+  "en": ""
  },
  {
-  "vi": "Đã trả $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "📋 Làm đúng nội quy, không làm khó ai vô cớ.",
+  "en": ""
  },
  {
-  "vi": "(giá nhân viên $1)",
-  "en": "",
-  "pattern": true
+  "vi": "⚖️ Phí phạt đúng nội quy; miễn thì có lý do, có ghi sổ.",
+  "en": ""
  },
  {
-  "vi": "MC: “Xin mời hai họ nâng ly chúc mừng $1 và $2 trăm năm hạnh phúc!”",
-  "en": "",
-  "pattern": true
+  "vi": "🔒 Không lộ sổ mượn, hồ sơ của người khác.",
+  "en": ""
  },
  {
-  "vi": "$1: “Tụi mình quen nhau ở phố này, giờ đi ăn cưới nhau luôn. Chúc hai bạn hạnh phúc!”",
-  "en": "",
-  "pattern": true
+  "vi": "🏷️ Lớp và ký hiệu đúng, sách hỏng không lên kệ.",
+  "en": ""
  },
  {
-  "vi": "💍 $1 & $2 vừa tổ chức đám cưới $3 bàn tại $4!",
-  "en": "",
-  "pattern": true
+  "vi": "🧤 Bản gốc không rời kho, găng tay khi mở hộp cũ.",
+  "en": ""
  },
  {
-  "vi": "💞 $1 & $2 vừa đính hôn. Cả phố chờ ăn cưới!",
-  "en": "",
-  "pattern": true
+  "vi": "Cho xem hồ sơ, sổ mượn của người khác",
+  "en": ""
  },
  {
-  "vi": "💌 $1 & $2 sẽ cưới lúc $3 tại $4! Cả phố vào Khu phố › Lịch cưới để dự nha.",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi nặng: mất tiền phụ cấp, bạn đọc mất lòng tin.",
+  "en": ""
  },
  {
-  "vi": "Chọn giờ cách bây giờ ít nhất $1 phút để mọi người kịp tới nhé.",
-  "en": "",
-  "pattern": true
+  "vi": "Thu phí quá nội quy",
+  "en": ""
  },
  {
-  "vi": "💌 $1 & $2 mời cả phố dự tiệc cưới lúc $3! Vào Khu phố › Lịch cưới nha.",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn đọc biết luật chỉ thẳng lên bảng; ai không biết thì trả rồi về kể lại.",
+  "en": ""
  },
  {
-  "vi": "💌 $1 và $2 mời bạn dự tiệc cưới lúc $3. Mở Khu phố › Lịch cưới để vào dự nhé!",
-  "en": "",
-  "pattern": true
+  "vi": "Miễn phí không có lý do",
+  "en": ""
  },
  {
-  "vi": "$1 và $2 mời bạn dự tiệc cưới lúc $3 ngày $4 💍",
-  "en": "",
-  "pattern": true
+  "vi": "Kế toán phường nhắc, mất một sao.",
+  "en": ""
  },
  {
-  "vi": "💍 Cưới ngày $1",
-  "en": "",
-  "pattern": true
+  "vi": "Cho mượn sách tra cứu về nhà",
+  "en": ""
  },
  {
-  "vi": "Hôm nay bạn và $1 tròn $2 ngày cưới. Phố gửi hai bạn quà mừng và danh hiệu “$3”. Chúc hai bạn mãi vui như ngày đầu 💛",
-  "en": "",
-  "pattern": true
+  "vi": "Người sau cần tra không có sách.",
+  "en": ""
  },
  {
-  "vi": "Hôm nay $1 và $2 tròn $3 ngày cưới 🎉",
-  "en": "",
-  "pattern": true
+  "vi": "Xịt thuốc lên kệ, bỏ qua kho ẩm",
+  "en": ""
  },
  {
-  "vi": "Mỗi đám cưới mừng tối đa $1 xu thôi. Bạn đã mừng $2 xu rồi 💛",
-  "en": "",
-  "pattern": true
+  "vi": "Sách hỏng cả loạt, cô Nguyệt nhắc.",
+  "en": ""
  },
  {
-  "vi": "🧧 Phong bì mừng cưới $1 & $2",
-  "en": "",
-  "pattern": true
+  "vi": "Đưa bản gốc ra khỏi kho, không ghi sổ",
+  "en": ""
  },
  {
-  "vi": "Đã gửi phong bì $1 xu mừng $2 & $3 🧧",
-  "en": "",
-  "pattern": true
+  "vi": "Hồ sơ đi lạc, lỗi nặng.",
+  "en": ""
  },
  {
-  "vi": "/* GENERATED by `python -m game.whats_new` from game/whats_new.py: edit that file, not this one. * Release notes for the \"Có gì mới\" card (whatsnew.js), newest first. Loaded only after the game is up. */ export default $1;",
-  "en": "",
-  "pattern": true
+  "vi": "Chiều theo nhờ vả sai quy định",
+  "en": ""
  },
  {
-  "vi": "Không ghi được bản tĩnh theo mã băm vào $1 ($2); các URL ?v= sẽ về no-cache.",
-  "en": "",
-  "pattern": true
+  "vi": "Lần này êm, nhưng bị trừ sao và phụ cấp.",
+  "en": ""
  },
  {
-  "vi": "Bản tĩnh theo mã băm: $1 tệp mới trong $2",
-  "en": "",
-  "pattern": true
+  "vi": "📦 Kho vật tư: nhãn gáy sách (mỗi cuốn lên kệ một tờ), băng giấy sửa sách, găng tay vải.",
+  "en": ""
  },
  {
-  "vi": "PHỐ CÓ CHUYỆN · v$1 Chơi tại: $2 Lưu tại: $3 AI phản hồi: $4 · Web push: $5$6 Nhấn Ctrl+C để dừng.",
-  "en": "",
-  "pattern": true
+  "vi": "🎓 Chứng chỉ nghiệp vụ lưu trữ: phường trả thêm phụ cấp cho mỗi lượt hồ sơ.",
+  "en": ""
  },
  {
-  "vi": "PHỐ CÓ CHUYỆN · v$1 Chơi tại: $2 Lưu tại: $3 AI phản hồi: $4 · Web push: $5",
-  "en": "",
-  "pattern": true
+  "vi": "🙋 Hầu như việc nào cũng có người nhờ: gia hạn qua điện thoại, xem sổ mượn của con, photo nguyên cuốn, phong bì, xin số điện thoại…",
+  "en": ""
  },
  {
-  "vi": "· $1 tiến trình",
-  "en": "",
-  "pattern": true
+  "vi": "🌫️ Trời nồm thì kho dễ ẩm, mọt; mùa thi phòng đọc kín chỗ; nghỉ hè trẻ con đông.",
+  "en": ""
  },
  {
-  "vi": "Không thấy tin nào$1.",
-  "en": "",
-  "pattern": true
+  "vi": "🔔 Mưa dột kho, cúp điện, cả lớp kéo tới không báo, đoàn kiểm tra: chọn cách xử lý.",
+  "en": ""
  },
  {
-  "vi": "(đã xem các tin sau #$1)",
-  "en": "",
-  "pattern": true
+  "vi": "📒 Bạn đọc nợ phí thì ghi sổ nợ, đòi nhẹ nhàng hoặc xóa nợ.",
+  "en": ""
  },
  {
-  "vi": "tin bị báo cáo chờ xử lý · $1 đang tự ẩn · $2 người bị khóa chat",
-  "en": "",
-  "pattern": true
+  "vi": "Xem ẩm kế kho",
+  "en": ""
  },
  {
-  "vi": "Chờ xử lý ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "Bật máy hút ẩm",
+  "en": ""
  },
  {
-  "vi": "Đang khóa ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "Soi bẫy côn trùng",
+  "en": ""
  },
  {
-  "vi": "Khóa chat $1",
-  "en": "",
-  "pattern": true
+  "vi": "Mở phòng đọc",
+  "en": ""
  },
  {
-  "vi": "Ngữ cảnh ($1 tin)",
-  "en": "",
-  "pattern": true
+  "vi": "Dựng bảng nội quy",
+  "en": ""
  },
  {
-  "vi": "Đã khóa chat $1.",
-  "en": "",
-  "pattern": true
+  "vi": "MỞ CỬA THƯ VIỆN",
+  "en": ""
  },
  {
-  "vi": "Đã hiện hết $1 góp ý.",
-  "en": "",
-  "pattern": true
+  "vi": "Tra máy",
+  "en": ""
  },
  {
-  "vi": "gửi $1 ($2)",
-  "en": "",
-  "pattern": true
+  "vi": "Kiểm thẻ",
+  "en": ""
  },
  {
-  "vi": "cập nhật $1",
-  "en": "",
-  "pattern": true
+  "vi": "Xem dấu hạn",
+  "en": ""
  },
  {
-  "vi": "Đã đáp $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Hỏi lý do",
+  "en": ""
  },
  {
-  "vi": "Chào @$1!",
-  "en": "",
-  "pattern": true
+  "vi": "Ghi sổ nợ",
+  "en": ""
  },
  {
-  "vi": "chưa đọc · $1 đã xem · $2 xong",
-  "en": "",
-  "pattern": true
+  "vi": "Miễn phí",
+  "en": ""
  },
  {
-  "vi": "Cập nhật $1$2 · giờ Việt Nam",
-  "en": "",
-  "pattern": true
+  "vi": "CẤT SÁCH LÊN KỆ",
+  "en": ""
  },
  {
-  "vi": "(bản đệm $1 giây)",
-  "en": "",
-  "pattern": true
+  "vi": "Hỏi cuốn gần nhất thích",
+  "en": ""
  },
  {
-  "vi": "Cập nhật $1$2 · $3 ngày · giờ Việt Nam$4",
-  "en": "",
-  "pattern": true
+  "vi": "Hỏi đang muốn đọc gì",
+  "en": ""
  },
  {
-  "vi": "(bản tính nền, $1)",
-  "en": "",
-  "pattern": true
+  "vi": "DÁN NHÃN, XẾP LÊN KỆ",
+  "en": ""
  },
  {
-  "vi": "(đã đọc $1/$2)",
-  "en": "",
-  "pattern": true
+  "vi": "XONG VÒNG PHÒNG ĐỌC",
+  "en": ""
  },
  {
-  "vi": "Máy chủ đang đọc các lượt chơi lần đầu$1, chờ chút nhé…",
-  "en": "",
-  "pattern": true
+  "vi": "Xem giấy tờ",
+  "en": ""
  },
  {
-  "vi": "Ngày đầu · $1 khách",
-  "en": "",
-  "pattern": true
+  "vi": "Đưa phiếu yêu cầu",
+  "en": ""
  },
  {
-  "vi": "/$1 · trung vị $2",
-  "en": "",
-  "pattern": true
+  "vi": "Tra mục lục",
+  "en": ""
  },
  {
-  "vi": "ngày · $1 có dấu vết",
-  "en": "",
-  "pattern": true
+  "vi": "Ghi sổ khai thác",
+  "en": ""
  },
  {
-  "vi": "trung vị $1 sau khi mở",
-  "en": "",
-  "pattern": true
+  "vi": "BÀN GIAO HỒ SƠ",
+  "en": ""
  },
  {
-  "vi": "Các mốc khác ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn trả lời tin nhắn, soát đơn và chứng cứ, rồi chọn cách xử lý đúng và theo tới cùng.",
+  "en": ""
  },
  {
-  "vi": "Người mở game $1, % đã qua từng mốc tới giờ.",
-  "en": "",
-  "pattern": true
+  "vi": "Khách mới hỏi xem đơn ở đâu. Không có gì sai: đóng dấu [[Giải thích & hướng dẫn]].",
+  "en": ""
  },
  {
-  "vi": "Theo ngày bắt đầu ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "Ảnh và đơn lệch màu: đánh dấu dòng trong ảnh, rồi [[Đổi đúng món]].",
+  "en": ""
  },
  {
-  "vi": "Người có thao tác cuối cách đây $1–$2 ngày, theo lần rời trang cuối ($3 người có) và mốc cuối ($4 người mới được đo).",
-  "en": "",
-  "pattern": true
+  "vi": "Bấm [[Hỏi Ngọc bên giao nhận]], chờ 2 nhịp. Điểm giao lệch địa chỉ: [[Mở đối soát giao nhận]].",
+  "en": ""
  },
  {
-  "vi": ". Giữ chi tiết $1 ngày (thao tác, rời trang, lỗi); mốc và nguồn giữ lâu dài.",
-  "en": "",
-  "pattern": true
+  "vi": "Bị trừ tiền hai lần",
+  "en": ""
  },
  {
-  "vi": "Đo mốc từ $1 ($2).",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 2. Lần 2 là “giữ tạm”, tự hoàn sau 3 ngày: đánh dấu rồi [[Giải thích & hướng dẫn]].",
+  "en": ""
  },
  {
-  "vi": "Cập nhật $1$2 · tính trong $3 ms. Không chứa tên, mã phiên hay chữ người chơi gõ.",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 2. Xem hạn đổi trả trong sổ quy định. Quá hạn: [[Giải thích & hướng dẫn]], đừng đổi.",
+  "en": ""
  },
  {
-  "vi": "ngày chơi · cấp TB $1",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 2. Bấm [[Xem thông tin ảnh gốc]]. Chụp trước lúc nhận: [[Từ chối có căn cứ]]. Sau lúc nhận: [[Hoàn tiền]].",
+  "en": ""
  },
  {
-  "vi": "Hiện $1/$2 nghề.",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 2. Trạm hứa gửi bù thiệp mà quên. Đánh dấu dòng lịch sử, rồi [[Gửi bù / gửi lại]].",
+  "en": ""
  },
  {
-  "vi": "Số về cách chơi, kinh tế, đời sống lấy từ mẫu $1 lượt chơi có thao tác gần nhất (tối đa $2), cập nhật $3. Không chứa tên, mã phiên hay thông tin liên lạc.",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 3. Thư “đã giao” gửi nhầm, kiện còn ở kho: đánh dấu rồi [[Giải thích & hướng dẫn]].",
+  "en": ""
  },
  {
-  "vi": "/$1 ngày",
-  "en": "",
-  "pattern": true
+  "vi": "Hoàn vào tài khoản mới",
+  "en": ""
  },
  {
-  "vi": "h: $1 người",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 3. Vừa đổi mật khẩu trên máy lạ, xin đổi tài khoản qua chat: [[Tạm khóa & gọi xác minh]].",
+  "en": ""
  },
  {
-  "vi": "TB $1 ngày$2",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 3. Bài nói sai số ngày: [[Trả lời công khai, mời nhắn riêng]]. Không đăng chi tiết đơn.",
+  "en": ""
  },
  {
-  "vi": "Người chơi theo giờ, đông nhất lúc $1 giờ: $2 người",
-  "en": "",
-  "pattern": true
+  "vi": "Cuộc gọi dọa dẫm",
+  "en": ""
  },
  {
-  "vi": "đông nhất $1h",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 4. Lời dọa tới tận kho là chuyện an toàn: đánh dấu rồi [[Chuyển chị Mai]].",
+  "en": ""
  },
  {
-  "vi": "trung vị $1 · 7 ngày",
-  "en": "",
-  "pattern": true
+  "vi": "Chuyện anh Phúc",
+  "en": ""
  },
  {
-  "vi": "trung vị $1 · $2 lượt/người",
-  "en": "",
-  "pattern": true
+  "vi": "Ngày 2, 5, 8, 12. Số nhắn khác hồ sơ: [[Gọi số đã đăng ký]] trước khi [[Đổi địa chỉ theo yêu cầu]].",
+  "en": ""
  },
  {
-  "vi": "người · $1 giờ chơi",
-  "en": "",
-  "pattern": true
+  "vi": "Vụ theo dõi nhiều ngày",
+  "en": ""
  },
  {
-  "vi": "Ước tính (từ biên nhận$1): $2.",
-  "en": "",
-  "pattern": true
+  "vi": "Sáu bước, đánh số trên vé: xác minh, mở đủ chứng cứ, chọn phương án khớp dòng 📌 Căn cứ, gửi đầu mối, kiểm kết quả, đóng vụ (+65 xu).",
+  "en": ""
  },
  {
-  "vi": "thiếu phần cũ của $1 lượt chơi nhiều",
-  "en": "",
-  "pattern": true
+  "vi": "Gọi khách cập nhật",
+  "en": ""
  },
  {
-  "vi": "Đo từ $1$2.",
-  "en": "",
-  "pattern": true
+  "vi": "Vụ mở qua đêm: sáng hôm sau gọi khách trước 12:00, chọn [[Báo tình trạng thật của đơn]].",
+  "en": ""
  },
  {
-  "vi": "Một lượt: các thao tác cách nhau ≤ $1 phút, cộng $2 phút sau thao tác cuối.",
-  "en": "",
-  "pattern": true
+  "vi": "💬 Mục [[Trả lời đầu tiên]]: chọn câu trả lời ân cần, đúng việc. Làm trước khi hết giờ.",
+  "en": ""
  },
  {
-  "vi": "+ mẫu $1 ms",
-  "en": "",
-  "pattern": true
+  "vi": "📥 Bấm [[Mở hồ sơ đơn]] để xem tin nhắn, đơn hàng, ảnh và lịch sử liên hệ.",
+  "en": ""
  },
  {
-  "vi": "dùng bản $1 giây trước",
-  "en": "",
-  "pattern": true
+  "vi": "📖 Mở [[Sổ quy định hôm nay]]: hạn đổi trả, khu giao chậm, luật MỚI.",
+  "en": ""
  },
  {
-  "vi": "/ tối đa $1",
-  "en": "",
-  "pattern": true
+  "vi": "👆 Chạm dòng có vấn đề, chọn quy định nó trái. Dòng khóa 🔒 phải kiểm trước.",
+  "en": ""
  },
  {
-  "vi": "Lần tính “$1” lúc $2 bị lỗi:",
-  "en": "",
-  "pattern": true
+  "vi": "🔍 Bấm bước kiểm như [[Gọi số đã đăng ký]]; phải chờ thì [[Chờ một nhịp]].",
+  "en": ""
  },
  {
-  "vi": "Xem thêm ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "🖋️ Chọn một con dấu, rồi bấm [[Đóng dấu]]. Đóng rồi là không sửa được.",
+  "en": ""
  },
  {
-  "vi": "hôm nay $1, cao nhất $2, tổng $3",
-  "en": "",
-  "pattern": true
+  "vi": "🗂️ Vụ nhiều ngày: [[Xác minh mã đơn]], mở đủ chứng cứ, đọc dòng 📌 Căn cứ rồi chọn phương án khớp nó (“đổi đúng mã” → [[Đổi đúng món]]). Chọn lệch thì trạm chỉ lại dòng đó.",
+  "en": ""
  },
  {
-  "vi": "tổng $1 · cao nhất $2 · hôm nay $3",
-  "en": "",
-  "pattern": true
+  "vi": "✅ Bấm [[Gửi việc cho đầu mối]], có kết quả thì [[Kiểm kết quả]], rồi [[Hoàn tất & đóng vụ]].",
+  "en": ""
  },
  {
-  "vi": "Số theo ngày đếm từ $1; trước đó chỉ biết lần chơi cuối của mỗi lượt.",
-  "en": "",
-  "pattern": true
+  "vi": "💬 Câu trả lời đầu phải là câu tốt nhất; câu cụt hay câu đòi khách kể lại làm mất “Chuẩn”.",
+  "en": ""
  },
  {
-  "vi": "Giữ chân D1/D7: người bắt đầu chơi trong $1 ngày qua có quay lại đúng 1/7 ngày sau.",
-  "en": "",
-  "pattern": true
+  "vi": "⏰ Từ ngày 3 mỗi tin có hạn phản hồi, xem đồng hồ trên vé. Trễ hạn thì điểm tốc độ còn 2.",
+  "en": ""
  },
  {
-  "vi": "Mới trong $1 ngày",
-  "en": "",
-  "pattern": true
+  "vi": "✔ Chỉ ra hết chỗ sai, không đánh dấu nhầm, làm đủ bước kiểm cần có.",
+  "en": ""
  },
  {
-  "vi": "Đếm trong bộ nhớ từ $1; khởi động lại máy chủ thì về 0.",
-  "en": "",
-  "pattern": true
+  "vi": "🎯 Chọn con dấu tốt nhất: “Chuẩn” đủ thù lao, “Đạt” 60%, “Chưa đúng” không có gì.",
+  "en": ""
  },
  {
-  "vi": "“Đang chơi”: lượt chơi có thao tác trong 5 phút qua. Thao tác/phút và độ trễ p50/p90 tính trên $1 phút gần nhất$2.",
-  "en": "",
-  "pattern": true
+  "vi": "📞 Khi gọi khách: báo tình trạng thật, xin lỗi khi họ phải chờ. Đừng hứa chắc chắn hay nói nặng lời.",
+  "en": ""
  },
  {
-  "vi": "5 phút · 1 giờ $1 · 24 giờ $2",
-  "en": "",
-  "pattern": true
+  "vi": "Từ chối khi hàng giao sai rõ ràng, khi đơn chưa đối soát, hoặc sau khi trạm lỡ hẹn",
+  "en": ""
  },
  {
-  "vi": "lượt mở · $1 tài khoản",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi nặng: không thù lao, review 2★, khách có thể báo cáo lên app.",
+  "en": ""
  },
  {
-  "vi": "của $1 tiến trình",
-  "en": "",
-  "pattern": true
+  "vi": "Hoàn tiền theo ảnh cũ hay vào tài khoản lạ, đăng chi tiết đơn của khách lên mạng",
+  "en": ""
  },
  {
-  "vi": "Số liệu tổng quan tính lúc $1 ($2)",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi nặng: không thù lao, 2★, bị báo cáo. Đăng chi tiết đơn còn làm bài chê lan thêm.",
+  "en": ""
  },
  {
-  "vi": "($1), đang chờ lần tính mới.",
-  "en": "",
-  "pattern": true
+  "vi": "Ẩn bài chê thay vì trả lời",
+  "en": ""
  },
  {
-  "vi": "7 ngày $1 · 30 ngày $2",
-  "en": "",
-  "pattern": true
+  "vi": "Bài chê lan gấp đôi. Mức ồn cao làm khách hôm sau dễ sốt ruột hơn.",
+  "en": ""
  },
  {
-  "vi": "D7 $1 · nhóm $2 người",
-  "en": "",
-  "pattern": true
+  "vi": "Hoàn tay khoản giữ tạm, đổi hàng quá hạn, hoàn tiền vì bị dọa",
+  "en": ""
  },
  {
-  "vi": "tài khoản · $1 khách",
-  "en": "",
-  "pattern": true
+  "vi": "Không thù lao, review khoảng 3–4★, cộng điểm rủi ro.",
+  "en": ""
  },
  {
-  "vi": "đang mở $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đổi thông tin đơn khi chưa gọi số đã đăng ký",
+  "en": ""
  },
  {
-  "vi": "ngày $1 giờ",
-  "en": "",
-  "pattern": true
+  "vi": "Tính là sai dù đúng người; cộng điểm rủi ro, từ phiếu thứ ba trong ngày bị trừ tới 20 xu.",
+  "en": ""
  },
  {
-  "vi": "giờ $1 phút",
-  "en": "",
-  "pattern": true
+  "vi": "Trả lời trễ hạn, quên gọi cập nhật trước 12:00",
+  "en": ""
  },
  {
-  "vi": "thiếu $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Kiên nhẫn tụt, khách căng hơn, ghi thêm một lỗi. Trễ vé công khai làm bài chê lan.",
+  "en": ""
  },
  {
-  "vi": "Ngày $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Dồn điểm rủi ro tới ngày chị Mai xem báo cáo (mỗi 6 ngày)",
+  "en": ""
  },
  {
-  "vi": "mở $1",
-  "en": "",
-  "pattern": true
+  "vi": "Biên bản, trừ tới 60 xu. Không sai sót nào thì được thưởng 25 xu.",
+  "en": ""
  },
  {
-  "vi": "Đọc nhãn các lô $1",
-  "en": "",
-  "pattern": true
+  "vi": "🗂️ Đầu ca mở dock [[Theo dõi]]: đọc bàn giao ca trước, bấm [[Đã đọc bàn giao]].",
+  "en": ""
  },
  {
-  "vi": "👁️ Đọc nhãn lô $1",
-  "en": "",
-  "pattern": true
+  "vi": "📋 Mục “Vụ đang mở”: bấm [[Mở vụ]] cho vụ có kết quả trong đêm để kiểm và đóng.",
+  "en": ""
  },
  {
-  "vi": "Bỏ hộp $1 ra khỏi khay",
-  "en": "",
-  "pattern": true
+  "vi": "📞 Vụ đang chờ kho hay bên vận chuyển: gọi khách cập nhật trước 12:00.",
+  "en": ""
  },
  {
-  "vi": "➖ Bỏ một hộp $1",
-  "en": "",
-  "pattern": true
+  "vi": "📰 Đọc bản tin: hạn đổi trả đổi giữa 7 và 5 ngày, Mây Express chậm ở một khu.",
+  "en": ""
  },
  {
-  "vi": "Lấy đủ $1 hộp $2 từ lô hợp lệ",
-  "en": "",
-  "pattern": true
+  "vi": "☎️ Người xưng công an đòi đọc địa chỉ khách: từ chối, hướng dẫn gửi văn bản chính thức.",
+  "en": ""
  },
  {
-  "vi": "➕ Lấy 1 hộp lô $1",
-  "en": "",
-  "pattern": true
+  "vi": "😠 Khách gọi lần thứ năm, dọa đợi lúc tan ca: báo trưởng ca và an ninh, đừng chửi lại.",
+  "en": ""
  },
  {
-  "vi": "👁️ Mở gốc $1",
-  "en": "",
-  "pattern": true
+  "vi": "🛍️ Ngày giảm giá hàng đợi đông; từ ngày 5 phải xử lý theo thứ tự, không ưu tiên người quen.",
+  "en": ""
  },
  {
-  "vi": "Sửa $1 theo bản gốc",
-  "en": "",
-  "pattern": true
+  "vi": "🗯️ Đồng nghiệp đổ lỗi, ví bị móc, laptop bị lấy: bình tĩnh đưa email và nhật ký làm bằng chứng.",
+  "en": ""
  },
  {
-  "vi": "✏️ Sửa $1 theo gốc",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn soát phiếu phòng khám, lấy đúng hộp, đúng lô rồi giao; việc ngoài phạm vi thì chuyển cô Thu.",
+  "en": ""
  },
  {
-  "vi": "🗂️ Đánh dấu $1 là bản trùng",
-  "en": "",
-  "pattern": true
+  "vi": "Phiếu gọn gàng",
+  "en": ""
  },
  {
-  "vi": "Ghép các thẻ mã $1",
-  "en": "",
-  "pattern": true
+  "vi": "Phiếu đủ, dấu đúng mẫu, khay đúng tên và số lượng: đóng dấu [[Giao đúng phiếu]].",
+  "en": ""
  },
  {
-  "vi": "👉 Chọn các thẻ mã $1",
-  "en": "",
-  "pattern": true
+  "vi": "Hàng thông thường, không phiếu",
+  "en": ""
  },
  {
-  "vi": "Bạn xong việc lúc $1.",
-  "en": "",
-  "pattern": true
+  "vi": "Siro, viên gừng, men lá không cần phiếu. Soát khay rồi [[Giao đúng phiếu]], đừng từ chối.",
+  "en": ""
  },
  {
-  "vi": "🎁 Quà chào hàng xóm mới: +$1 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "Khoa lấy nhầm hộp tên gần giống. Đánh dấu dòng tên, rồi [[Đổi cho đúng rồi giao]].",
+  "en": ""
  },
  {
-  "vi": "còn $1 xu cần trả",
-  "en": "",
-  "pattern": true
+  "vi": "Khách xin lấy dư",
+  "en": ""
  },
  {
-  "vi": "Lương $1",
-  "en": "",
-  "pattern": true
+  "vi": "Phiếu ghi 1 hộp mà khay có 3. Đánh dấu số hộp, rồi [[Đổi cho đúng rồi giao]].",
+  "en": ""
  },
  {
-  "vi": "thuê $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Thuốc nhóm K không phiếu",
+  "en": ""
  },
  {
-  "vi": "BẢNG GIỜ BAY · NGÀY $1",
-  "en": "",
-  "pattern": true
+  "vi": "Khách dúi tiền xin một hộp. Đánh dấu dòng “Phiếu”, đóng dấu [[Từ chối, giải thích rõ]].",
+  "en": ""
  },
  {
-  "vi": "🪪 Vào phòng tổ bay · báo danh $1",
-  "en": "",
-  "pattern": true
+  "vi": "Phiếu hết hạn",
+  "en": ""
  },
  {
-  "vi": "Cửa $1",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 2. Hạn phiếu đã qua: đánh dấu dòng “Hạn phiếu”, rồi [[Từ chối, giải thích rõ]].",
+  "en": ""
  },
  {
-  "vi": "🪪 Báo danh · vào ca ngày $1",
-  "en": "",
-  "pattern": true
+  "vi": "Lô đang thu hồi",
+  "en": ""
  },
  {
-  "vi": "PHÒNG TỔ BAY · NGÀY $1",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 2. So số lô trên khay với danh sách thu hồi, rồi [[Đổi cho đúng rồi giao]] sang lô khác.",
+  "en": ""
  },
  {
-  "vi": "Ngày $1 · sổ bay",
-  "en": "",
-  "pattern": true
+  "vi": "Con dấu lạ",
+  "en": ""
  },
  {
-  "vi": "Độ mệt $1",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 3. So dấu với bản tin hôm nay, bấm [[Gọi phòng khám xác minh]], rồi [[Chuyển cô Thu]].",
+  "en": ""
  },
  {
-  "vi": "Bạn ($1)",
-  "en": "",
-  "pattern": true
+  "vi": "Sai hàm lượng",
+  "en": ""
  },
  {
-  "vi": "🛌 Xin nghỉ bù$1",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 3. Phiếu ghi 250, kệ chỉ còn 500. Đánh dấu dòng tên rồi [[Chuyển cô Thu]].",
+  "en": ""
  },
  {
-  "vi": "📦 Mở thùng $1 lên kệ",
-  "en": "",
-  "pattern": true
+  "vi": "Hàng lạnh, tủ mát chập chờn",
+  "en": ""
  },
  {
-  "vi": "📦 Nhập $1 · thiếu $2",
-  "en": "",
-  "pattern": true
+  "vi": "Bấm [[Xem nhật ký tủ mát]]. Có mốc trên 8°C thì [[Chuyển cô Thu]]; cả ngày 2–8°C thì giao.",
+  "en": ""
  },
  {
-  "vi": "↩️ Trả $1 về tủ",
-  "en": "",
-  "pattern": true
+  "vi": "Người nhận thay",
+  "en": ""
  },
  {
-  "vi": "⏹️ Dừng chiết ở vạch xanh$1",
-  "en": "",
-  "pattern": true
+  "vi": "Người đứng quầy trùng dòng “Nhận thay” thì giao. Khác tên thì đánh dấu rồi [[Chuyển cô Thu]].",
+  "en": ""
  },
  {
-  "vi": "⏹️ Tắt vòi ở vạch xanh$1",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 4. Có mã số thuế và tem sợi bạc 🧵 thì [[Nhận lô hàng]]. Tem phẳng, rẻ bất ngờ: [[Chuyển cô Thu]].",
+  "en": ""
  },
  {
-  "vi": "Rót $1 lạnh",
-  "en": "",
-  "pattern": true
+  "vi": "Mỗi 4 ngày. Chỉ ra dòng sổ thiếu số phiếu, mốc tủ mát bỏ trống, rồi [[Nhận thiếu sót, bổ sung ngay]].",
+  "en": ""
  },
  {
-  "vi": "🧽 Vệ sinh máy$1",
-  "en": "",
-  "pattern": true
+  "vi": "Chuyện bác Năm",
+  "en": ""
  },
  {
-  "vi": "🫙 Cho Bé Men ăn$1",
-  "en": "",
-  "pattern": true
+  "vi": "Ngày 2, 5, 9, 14. Dán nhãn chữ to; vỉ mất nhãn hay thuốc trùng thì [[Chuyển cô Thu]].",
+  "en": ""
  },
  {
-  "vi": "👉 Làm order khác$1",
-  "en": "",
-  "pattern": true
+  "vi": "Phiếu lấy hàng theo mã hộp",
+  "en": ""
  },
  {
-  "vi": "⏳ Chờ một nhịp$1",
-  "en": "",
-  "pattern": true
+  "vi": "Hỏi rõ phiếu, đọc nhãn từng lô, chỉ lấy lô “Hợp lệ”, tự kiểm khay rồi bàn giao.",
+  "en": ""
  },
  {
-  "vi": "＋ Đón khách mới$1",
-  "en": "",
-  "pattern": true
+  "vi": "Phiếu lặp lại của khách quen",
+  "en": ""
  },
  {
-  "vi": "🧤 Lấy $1 ra ở vạch xanh$2",
-  "en": "",
-  "pattern": true
+  "vi": "Tab [[Khách quen]]: bấm [[Gọi nhắc lấy thuốc]] đúng lịch, khách tới thì bấm [[Giao]] (+30 xu).",
+  "en": ""
  },
  {
-  "vi": "🔥 Cho khay $1 vào lò",
-  "en": "",
-  "pattern": true
+  "vi": "Tab [[Sổ lô]]: bấm [[Ghi nhiệt độ]] lượt sáng trước 12:00 và lượt chiều từ 14:00.",
+  "en": ""
  },
  {
-  "vi": "bột nở, còn $1 nhịp",
-  "en": "",
-  "pattern": true
+  "vi": "Rút hộp hỏng khỏi kệ",
+  "en": ""
  },
  {
-  "vi": "🔥 Nướng một mẻ $1",
-  "en": "",
-  "pattern": true
+  "vi": "Hộp quá hạn, thu hồi hay hỏng lạnh: bấm [[Rút khỏi kệ]]. Lô thu hồi được hoàn tiền.",
+  "en": ""
  },
  {
-  "vi": "Nhào một khay $1",
-  "en": "",
-  "pattern": true
+  "vi": "📥 Chạm khách, bấm [[Nhận giấy tờ]] để đặt phiếu và khay lên quầy.",
+  "en": ""
  },
  {
-  "vi": "🧤 Lấy cốt bánh ra ở vạch xanh$1",
-  "en": "",
-  "pattern": true
+  "vi": "📖 Mở [[Sổ quy định hôm nay]]: xem luật MỚI, mẫu dấu từng phòng khám, lô thu hồi.",
+  "en": ""
  },
  {
-  "vi": "(cấp $1)",
-  "en": "",
-  "pattern": true
+  "vi": "👆 Chạm dòng có vấn đề, chọn đúng quy định nó trái. ✔ là trúng, × là nhầm.",
+  "en": ""
  },
  {
-  "vi": "🔒 $1 món mở ở cấp $2",
-  "en": "",
-  "pattern": true
+  "vi": "🔍 Mục “Kiểm tra thêm”: bấm [[Gọi phòng khám xác minh]] hoặc [[Xem nhật ký tủ mát]] khi có.",
+  "en": ""
  },
  {
-  "vi": "☕ xay mịn $1 g",
-  "en": "",
-  "pattern": true
+  "vi": "⏳ Bước kiểm nào phải chờ thì bấm [[Chờ một nhịp]] hoặc làm việc khác.",
+  "en": ""
  },
  {
-  "vi": "🍦 Phủ kem$1",
-  "en": "",
-  "pattern": true
+  "vi": "🧰 Phiếu lấy hàng kiểu cũ: [[Hỏi rõ phiếu]], [[Đọc nhãn]] từng lô, [[Lấy 1]] hộp lô hợp lệ.",
+  "en": ""
  },
  {
-  "vi": "✅ Xong ly $1, đặt lên khay",
-  "en": "",
-  "pattern": true
+  "vi": "✅ Tích đủ ba ô tự kiểm, bấm [[Kiểm khay]] rồi [[Bàn giao phiếu]] (+40 xu).",
+  "en": ""
  },
  {
-  "vi": "áo $1",
-  "en": "",
-  "pattern": true
+  "vi": "🎯 Được “Chuẩn” (đủ 100% thù lao) khi chọn đúng con dấu tốt nhất.",
+  "en": ""
  },
  {
-  "vi": "quần $1",
-  "en": "",
-  "pattern": true
+  "vi": "✔ Phải chỉ ra hết mọi dòng sai, đúng quy định, trước khi đóng dấu.",
+  "en": ""
  },
  {
-  "vi": "size $1, còn $2",
-  "en": "",
-  "pattern": true
+  "vi": "❌ Không đánh dấu nhầm lần nào: mỗi lần nhầm khách mất 5% kiên nhẫn.",
+  "en": ""
  },
  {
-  "vi": "Treo lại $1",
-  "en": "",
-  "pattern": true
+  "vi": "🔍 Làm đủ các bước kiểm cần thiết, như xem nhật ký tủ mát trước khi giao hàng lạnh.",
+  "en": ""
  },
  {
-  "vi": "dòng$1 · tổng $2",
-  "en": "",
-  "pattern": true
+  "vi": "⏱️ Khách chấm cả thời gian chờ: kiên nhẫn từ 90% trở lên mới được 5 điểm.",
+  "en": ""
  },
  {
-  "vi": "bớt $1",
-  "en": "",
-  "pattern": true
+  "vi": "📰 Luật đổi theo ngày: mẫu dấu đổi mỗi 4 ngày, lô thu hồi đổi hằng ngày.",
+  "en": ""
  },
  {
-  "vi": "đòi bớt giá. Chị Vy dặn: khách quen bớt tối đa $1%.",
-  "en": "",
-  "pattern": true
+  "vi": "🎁 Khách vui thỉnh thoảng tặng quà cảm ơn, không bo tiền.",
+  "en": ""
  },
  {
-  "vi": "🤏 Bớt $1% (−$2)",
-  "en": "",
-  "pattern": true
+  "vi": "Giao thuốc sai: phiếu hết hạn, dấu lạ, không phiếu, lô thu hồi, tủ mát vượt nhiệt",
+  "en": ""
  },
  {
-  "vi": "💸 Bớt $1%",
-  "en": "",
-  "pattern": true
+  "vi": "Không thù lao, khách từ chối, 1★, báo cáo lên app. Hôm sau thanh tra dược tới làm việc.",
+  "en": ""
  },
  {
-  "vi": "🛍️ Giao đồ · thối $1",
-  "en": "",
-  "pattern": true
+  "vi": "Giao quá số lượng hoặc giao cho người không có tên trên phiếu",
+  "en": ""
  },
  {
-  "vi": "🛍️ Giao đồ · thu $1",
-  "en": "",
-  "pattern": true
+  "vi": "Không thù lao, review chỉ còn 2–3★, cô Thu gọi khách mang trả.",
+  "en": ""
  },
  {
-  "vi": "thối $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Từ chối phiếu hợp lệ, hoặc từ chối khi chỉ cần đổi hộp, đổi lô",
+  "en": ""
  },
  {
-  "vi": "↩︎ Treo lại size $1",
-  "en": "",
-  "pattern": true
+  "vi": "Không thù lao, khách về tay không, review khoảng 3★.",
+  "en": ""
  },
  {
-  "vi": "khách nói size $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chuyển cô Thu hay đổi hộp khi mọi thứ đã đúng",
+  "en": ""
  },
  {
-  "vi": "màu $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chỉ được “Đạt” hoặc “Chưa đúng”; khách chờ lâu, review tụt còn 4★.",
+  "en": ""
  },
  {
-  "vi": "đã lấy size $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đóng dấu khi chưa làm bước kiểm bắt buộc",
+  "en": ""
  },
  {
-  "vi": "👉 Lấy $1 màu $2",
-  "en": "",
-  "pattern": true
+  "vi": "Tính là sai, cộng điểm rủi ro. Từ phiếu nhắc thứ ba trong ngày bị trừ tới 20 xu.",
+  "en": ""
  },
  {
-  "vi": "Đúng size khách nói: áo $1, quần $2",
-  "en": "",
-  "pattern": true
+  "vi": "Dồn nhiều điểm rủi ro tới ngày kiểm tra (mỗi 4 ngày)",
+  "en": ""
  },
  {
-  "vi": "đang size $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đoàn lập biên bản, trừ tới 60 xu. Không sai sót nào thì được thưởng 25 xu.",
+  "en": ""
  },
  {
-  "vi": "đang $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Quên ghi nhiệt độ, để hộp quá hạn trên kệ, lỡ hẹn khách quen",
+  "en": ""
  },
  {
-  "vi": "Bà Tư còn may, làm việc khác chút ($1 nhịp)",
-  "en": "",
-  "pattern": true
+  "vi": "Cộng điểm rủi ro cho đợt kiểm tra. Khách quen lỡ đợt thì mua nơi khác, giảm tin cậy.",
+  "en": ""
  },
  {
-  "vi": "cần $1",
-  "en": "",
-  "pattern": true
+  "vi": "📦 Dock [[Kho hàng]]: chọn nhà cung cấp, nhập số hộp, bấm [[Đặt nhập]]. Chỉ đặt được lô hợp lệ.",
+  "en": ""
  },
  {
-  "vi": "Chọn số cm rồi ngồi vào máy. Công trọn $1 xu, nhưng lỡ tay là khách buồn.",
-  "en": "",
-  "pattern": true
+  "vi": "🚚 Thiện Tâm chạy 4 chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau khoảng 1 tiếng. Giá niêm yết.",
+  "en": ""
  },
  {
-  "vi": "Chắc tay, đẹp đường may. Chờ một lát, bà lấy $1% tiền công.",
-  "en": "",
-  "pattern": true
+  "vi": "🏬 Kho tổng Bình An: rẻ hơn (×0,85), đặt trước 13:00 thì chiều nay có, đặt sau thì xe đêm tới trước giờ mở cửa.",
+  "en": ""
  },
  {
-  "vi": "✂️ Phấn $1 cm & ngồi máy",
-  "en": "",
-  "pattern": true
+  "vi": "🔢 Kiện tới thì đếm đúng số hộp trong kiện, bấm [[Kiểm & nhập kho]].",
+  "en": ""
  },
  {
-  "vi": "Phấn $1 cm. Kim chạy dọc đường may — dừng máy khi kim nằm trong vạch xanh.",
-  "en": "",
-  "pattern": true
+  "vi": "🧊 Đầu ca ghi nhiệt độ lượt sáng trước 12:00; xem tab [[Sổ lô]] có hộp nào cần rút.",
+  "en": ""
  },
  {
-  "vi": "✓ Đã $1 xong$2. Tính tiền công cho khách.",
-  "en": "",
-  "pattern": true
+  "vi": "📞 Gọi nhắc khách quen từ hôm trước ngày hẹn, và để đủ hộp lô A trên kệ cho họ.",
+  "en": ""
  },
  {
-  "vi": "Công $1 xu.",
-  "en": "",
-  "pattern": true
+  "vi": "⏸️ Nghi một lô thì bấm [[Tạm giữ]]; muốn mở lại thì [[Cô Thu kiểm lại]].",
+  "en": ""
  },
  {
-  "vi": "Đếm đồ $1 cầm vào, đưa thẻ số",
-  "en": "",
-  "pattern": true
+  "vi": "🌡️ Từ ngày 3, tủ mát có thể vượt 8°C. Cửa hở: [[Đóng kín cửa, đo lại]]. Mất điện: [[Tủ dự phòng · gọi thợ]] (15 xu).",
+  "en": ""
  },
  {
-  "vi": "Lấy $1 size $2 màu $3",
-  "en": "",
-  "pattern": true
+  "vi": "📢 Cứ vài ngày có thông báo thu hồi một lô trên kệ. Rút ngay để nhà phân phối hoàn tiền.",
+  "en": ""
  },
  {
-  "vi": "👚 Lấy $1 size $2",
-  "en": "",
-  "pattern": true
+  "vi": "💊 Khách đòi kháng sinh không đơn có thể là thanh tra. Bán cho qua thì vài hôm sau bị phạt 80 xu.",
+  "en": ""
  },
  {
-  "vi": "Cầm $1 món",
-  "en": "",
-  "pattern": true
+  "vi": "🥼 Đoàn kiểm tra tới lúc cô Thu vắng; người run rẩy đòi thuốc an thần: bình tĩnh, bấm báo động kín.",
+  "en": ""
  },
  {
-  "vi": "Trả $1 món, thẻ ghi $2.",
-  "en": "",
-  "pattern": true
+  "vi": "🦹 Trộm lấy hộp đắt trên kệ, giấu hàng dưới xe đẩy; trẻ con, mèo làm đổ vỡ hàng.",
+  "en": ""
  },
  {
-  "vi": "(rèm $1)",
-  "en": "",
-  "pattern": true
+  "vi": "Gọi nhắc lấy thuốc",
+  "en": ""
  },
  {
-  "vi": "Mua $1 ngày trước · $2 xu · khách muốn",
-  "en": "",
-  "pattern": true
+  "vi": "Ghi nhiệt độ",
+  "en": ""
  },
  {
-  "vi": "🔁 Đổi sang size $1",
-  "en": "",
-  "pattern": true
+  "vi": "Hỏi rõ phiếu",
+  "en": ""
  },
  {
-  "vi": "Đổi cho khách sang size $1?",
-  "en": "",
-  "pattern": true
+  "vi": "Đóng kín cửa, đo lại",
+  "en": ""
  },
  {
-  "vi": "💵 Hoàn $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Tủ dự phòng · gọi thợ",
+  "en": ""
  },
  {
-  "vi": "Hoàn $1 xu cho khách?",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn chọn lộ trình hợp cả đoàn, dẫn đi từng điểm, kể chuyện, xử lý sự cố và đưa đủ người về Bến Mây.",
+  "en": ""
  },
  {
-  "vi": "Tem $1: giảm $2%",
-  "en": "",
-  "pattern": true
+  "vi": "Chuyến đi trong ngày",
+  "en": ""
  },
  {
-  "vi": "Giá gốc $1 xu · $2 × $3% = ?",
-  "en": "",
-  "pattern": true
+  "vi": "Chọn 3–5 điểm, gom đoàn ở Bến Mây, kể chuyện ở từng điểm rồi đếm đủ người về bến.",
+  "en": ""
  },
  {
-  "vi": "📦 Bỏ $1 size $2 vào gói",
-  "en": "",
-  "pattern": true
+  "vi": "Đoàn nhiều ngày",
+  "en": ""
  },
  {
-  "vi": "Thu hộ $1",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 3 có đoàn ở 2–3 ngày: chuyến đầu mỗi ngày là cùng những người đó. Sức khách mòn dần qua từng ngày.",
+  "en": ""
  },
  {
-  "vi": "📦 Gói hàng $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chăm khách ốm buổi sáng",
+  "en": ""
  },
  {
-  "vi": "Hấp phẳng $1",
-  "en": "",
-  "pattern": true
+  "vi": "Khách quá mệt có thể ốm sáng hôm sau. Quyết trước khi chốt lộ trình: nghỉ ở homestay hoặc đi khám.",
+  "en": ""
  },
  {
-  "vi": "♨️ Hấp $1",
-  "en": "",
-  "pattern": true
+  "vi": "Gọi bạn hàng",
+  "en": ""
  },
  {
-  "vi": "khách nói $1",
-  "en": "",
-  "pattern": true
+  "vi": "Ngày có đoàn nhiều ngày: [[Đặt cơm trưa]] trước giờ đi, [[Báo homestay]] mỗi tối, đặt đò ông Bảy.",
+  "en": ""
  },
  {
-  "vi": "Áo $1 · quần",
-  "en": "",
-  "pattern": true
+  "vi": "Giữ đồ nghề",
+  "en": ""
  },
  {
-  "vi": "đang $1",
-  "en": "",
-  "pattern": true
+  "vi": "Loa cài áo, túi sơ cứu, cờ dẫn đoàn. Xem ở mục [[Việc chăm hôm nay]] và lo trước khi đi.",
+  "en": ""
  },
  {
-  "vi": "Tránh màu $1",
-  "en": "",
-  "pattern": true
+  "vi": "Sổ tay điểm đến",
+  "en": ""
  },
  {
-  "vi": "Tối đa $1 xu · đang $2",
-  "en": "",
-  "pattern": true
+  "vi": "Kể hợp đoàn 4 lần ở một điểm mở chuyện ít ai biết (+2 nhịp), 10 lần mở góc ẩn (+4 nhịp).",
+  "en": ""
  },
  {
-  "vi": "lấy size $1 về mặc không vừa, cần size",
-  "en": "",
-  "pattern": true
+  "vi": "Trang đặt tour",
+  "en": ""
  },
  {
-  "vi": "🔁 Đổi size $1",
-  "en": "",
-  "pattern": true
+  "vi": "Từ 5 đánh giá, trung bình 4,5★ trở lên thì được đề xuất: thêm một đoàn mỗi sáng.",
+  "en": ""
  },
  {
-  "vi": "Giá treo hết size $1.",
-  "en": "",
-  "pattern": true
+  "vi": "🌅 Bấm [[Bắt đầu ngày]], mở [[Đoàn khách]] chọn một đoàn rồi [[Dẫn đoàn]].",
+  "en": ""
  },
  {
-  "vi": "Tiệm đang ở giai đoạn $1/",
-  "en": "",
-  "pattern": true
+  "vi": "🤒 Có người ốm: chọn [[nghỉ ở homestay, nhờ cô Hạnh trông]] hoặc [[ra trạm y tế khám trước giờ đi]].",
+  "en": ""
  },
  {
-  "vi": "Phục vụ thêm $1 khách →",
-  "en": "",
-  "pattern": true
+  "vi": "🗺️ Chạm 3–5 điểm theo thứ tự đi. Cần một chỗ nghỉ chân 🪑, đủ giờ và đủ quỹ vé, rồi [[Chốt lộ trình]].",
+  "en": ""
  },
  {
-  "vi": "🗂️ Bộ $1/",
-  "en": "",
-  "pattern": true
+  "vi": "📍 Ở điểm hẹn, xử lý người chưa tới rồi bấm [[Xuất phát]].",
+  "en": ""
  },
  {
-  "vi": "Sang bộ $1/",
-  "en": "",
-  "pattern": true
+  "vi": "🎙️ Mỗi điểm chọn cách kể: [[Chuyện xưa]], [[Trò vui]] hoặc [[Góc ảnh]], xem nút ghi mấy người thích.",
+  "en": ""
  },
  {
-  "vi": "Bộ $1/$2: soi giấy, khoanh chỗ sai rồi đóng dấu",
-  "en": "",
-  "pattern": true
+  "vi": "⚠️ Có “Chuyện trên đường” thì chọn cách xử lý trước khi đi tiếp.",
+  "en": ""
  },
  {
-  "vi": "Bộ $1: ô “$2” có vấn đề — khoanh lại",
-  "en": "",
-  "pattern": true
+  "vi": "👣 Bấm [[Đếm đoàn & đi tiếp]]. Ở điểm cuối bấm [[Đếm đoàn & về bến]].",
+  "en": ""
  },
  {
-  "vi": "⭕ Khoanh ô “$1”",
-  "en": "",
-  "pattern": true
+  "vi": "✅ Bấm [[Khép chuyến]] để nhận thù lao và tip của đoàn.",
+  "en": ""
  },
  {
-  "vi": "Bộ $1: đóng dấu $2",
-  "en": "",
-  "pattern": true
+  "vi": "😊 Mỗi người có một mong muốn. Lộ trình có điểm hợp càng nhiều người, nhịp đoàn khởi đầu càng cao.",
+  "en": ""
  },
  {
-  "vi": "🖋️ Đóng dấu $1",
-  "en": "",
-  "pattern": true
+  "vi": "⛰️ Đồi dốc làm người lớn tuổi mệt. Nắng gắt chỉ đi tối đa 2 điểm ngoài trời.",
+  "en": ""
  },
  {
-  "vi": "📅 Hôm nay$1",
-  "en": "",
-  "pattern": true
+  "vi": "🎙️ Cách kể được nhiều người thích và hợp điểm thì nhịp tăng. Kể nhạt từ 2 điểm trở lên, đoàn phàn nàn.",
+  "en": ""
  },
  {
-  "vi": "🗺️ Lộ trình · $1 điểm · tiếp theo $2",
-  "en": "",
-  "pattern": true
+  "vi": "⏱️ Về đúng giờ. Trễ mỗi 5 phút, nhịp đoàn tụt thêm.",
+  "en": ""
  },
  {
-  "vi": "− bớt $1 =",
-  "en": "",
-  "pattern": true
+  "vi": "💰 Thù lao 70 xu, cộng nửa số quỹ còn dư (tối đa 10). Nhịp từ 85% mỗi người tip 1 xu, từ 70% còn một nửa.",
+  "en": ""
  },
  {
-  "vi": "💵 Nộp tiền COD · $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "⭐ Đoàn nhiều ngày chấm theo nhịp trung bình: từ 85% là 5★. Bỏ ngày, giục người ốm, không báo homestay bị trừ sao.",
+  "en": ""
  },
  {
-  "vi": "🗺️ Lên lộ trình tới $1",
-  "en": "",
-  "pattern": true
+  "vi": "Bỏ khách trễ ở điểm hẹn, để khách lạc tự bắt taxi, nói bừa “no peanut”, cho bé đi vệ sinh một mình",
+  "en": ""
  },
  {
-  "vi": "Tới $1",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi an toàn: trưởng đoàn không trả tiền, 1★, báo cáo lên app. Hôm sau phường tới kiểm tra.",
+  "en": ""
  },
  {
-  "vi": "➕ Đếm thêm tờ $1 xu · $2/",
-  "en": "",
-  "pattern": true
+  "vi": "Giục hay bỏ lại người say nắng, ép khách đang ốm đi cả ngày",
+  "en": ""
  },
  {
-  "vi": "Đếm đủ $1 xu COD theo bảng kê",
-  "en": "",
-  "pattern": true
+  "vi": "Cũng là lỗi an toàn. Khách bị ép đi lúc ốm thì sáng mai vẫn còn ốm.",
+  "en": ""
  },
  {
-  "vi": "đang đếm $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Cho cả đoàn tản ra tìm người, chen qua đám rước, hô chạy dưới mưa trơn, làm ngơ người lạ bám sau",
+  "en": ""
  },
  {
-  "vi": "💵 Nộp $1 xu cho kế toán",
-  "en": "",
-  "pattern": true
+  "vi": "Đoàn đòi bớt hoặc hoàn tiền, mất hết tip, review tụt.",
+  "en": ""
  },
  {
-  "vi": "Chờ quán làm món (xong $1)",
-  "en": "",
-  "pattern": true
+  "vi": "Nhận phong bì, dẫn khách vào tiệm và giục mua",
+  "en": ""
  },
  {
-  "vi": "⏳ Chờ quán 5 phút · xong $1",
-  "en": "",
-  "pattern": true
+  "vi": "Được 15 xu hoa hồng nhưng mất lòng đoàn, bị trừ tiền chuyến, có bài chê trên phố.",
+  "en": ""
  },
  {
-  "vi": "Nặng $1, quá tải xe máy: từ chối nhận",
-  "en": "",
-  "pattern": true
+  "vi": "Để khách bị hét giá dừa, đổi lịch theo ý một người, làm ngơ đèn flash, dẫn khách quần đùi vào chùa",
+  "en": ""
  },
  {
-  "vi": "Dùng $1",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi nhỏ: đoàn càu nhàu, tip còn một nửa, review thường còn 4★.",
+  "en": ""
  },
  {
-  "vi": "📦 Hết $1: mở kho vật tư",
-  "en": "",
-  "pattern": true
+  "vi": "Về trễ giờ hẹn, lộ trình bỏ qua mong muốn của nhiều người",
+  "en": ""
  },
  {
-  "vi": "khách về lúc $1",
-  "en": "",
-  "pattern": true
+  "vi": "Đoàn phàn nàn trong đánh giá. Tiêu lố quỹ đoàn thì phải bù bằng tiền túi.",
+  "en": ""
  },
  {
-  "vi": "Về $1 nộp COD (túi đầy)",
-  "en": "",
-  "pattern": true
+  "vi": "💼 Phải được tuyển trước: mở [[Việc làm]], chọn Mây Lang Thang, bấm [[Ứng tuyển]].",
+  "en": ""
  },
  {
-  "vi": "➕ Thối thêm tờ $1 xu · $2/",
-  "en": "",
-  "pattern": true
+  "vi": "🪪 Qua [[Thi chứng chỉ]] 5 câu về điểm đến và an toàn, đúng 4 câu mới đạt. Trượt thì mai thi lại.",
+  "en": ""
  },
  {
-  "vi": "Thối lại $1 xu (khách đưa $2, hàng $3)",
-  "en": "",
-  "pattern": true
+  "vi": "📝 Rồi [[Nộp CV]], phỏng vấn với anh Hải và bấm [[Ký hợp đồng thử việc]].",
+  "en": ""
  },
  {
-  "vi": "Đếm tiền thối (khách đưa $1, hàng $2)",
-  "en": "",
-  "pattern": true
+  "vi": "🔋 Loa tốn 8% pin mỗi lần kể. Pin yếu thì [[Cắm sạc loa]] để sáng mai đầy.",
+  "en": ""
  },
  {
-  "vi": "Chờ khách về (hẹn $1)",
-  "en": "",
-  "pattern": true
+  "vi": "🩹 Túi sơ cứu thấp thì [[Bổ sung]]. Cờ bạc màu thì [[Khâu cờ]], không thì khách khó thấy, nhịp tụt.",
+  "en": ""
  },
  {
-  "vi": "⏳ Chờ khách 5 phút · hẹn $1",
-  "en": "",
-  "pattern": true
+  "vi": "🛶 Trời đẹp có thể [[Đặt đò mai]] cho đoàn nhiều ngày. Đò nghỉ khi mưa, gió; đặt mà không đi là ông Bảy giận.",
+  "en": ""
  },
  {
-  "vi": "🛵 Trên xe $1/",
-  "en": "",
-  "pattern": true
+  "vi": "🌦️ Xem dự báo ngày mai. Mưa đóng Lối Bờ Mây và Đồi, gió đóng Đồi. Khách mệt thì tránh dốc, đi dưới 100 phút.",
+  "en": ""
  },
  {
-  "vi": "Xếp $1 lên xe",
-  "en": "",
-  "pattern": true
+  "vi": "⏰ Trên đường: khách lạc, sạp hét giá, xe điện hết pin, đám rước lân, mưa rào, bé cần vệ sinh, dọa 1 sao…",
+  "en": ""
  },
  {
-  "vi": "Cất $1 lại tiệm",
-  "en": "",
-  "pattern": true
+  "vi": "🥜 Tom dị ứng đậu phộng: bấm [[Hỏi kỹ người bán thành phần]]. Người say nắng: [[Đưa vào bóng râm]] (lấy đồ trong túi sơ cứu).",
+  "en": ""
  },
  {
-  "vi": "Chốt $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "🎁 Phong bì hoa hồng: [[Cảm ơn và từ chối]], để khách tự chọn nơi mua. Đoàn khen bạn thật thà.",
+  "en": ""
  },
  {
-  "vi": "Đã báo $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "🪪 Thanh tra hỏi thẻ hướng dẫn viên: xuất trình và nhận lỗi. Nói mình chỉ là bạn đi cùng thì bị phạt nặng hơn.",
+  "en": ""
  },
  {
-  "vi": "“Hỏi ra rẻ hơn $1 xu, trả lại tiền chênh đi!”",
-  "en": "",
-  "pattern": true
+  "vi": "👜 Khách bị móc túi hay giật túi: giữ đoàn một chỗ, đưa khách tới chốt công an trình báo.",
+  "en": ""
  },
  {
-  "vi": "💵 Trả lại $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Đặt cơm trưa",
+  "en": ""
  },
  {
-  "vi": "Thiếu $1",
-  "en": "",
-  "pattern": true
+  "vi": "Báo homestay",
+  "en": ""
  },
  {
-  "vi": "🛵 Về tiệm lấy $1",
-  "en": "",
-  "pattern": true
+  "vi": "nghỉ ở homestay, nhờ cô Hạnh trông",
+  "en": ""
  },
  {
-  "vi": "Loại B tính $1% giá$2 · hàng giao dư không tính tiền.",
-  "en": "",
-  "pattern": true
+  "vi": "ra trạm y tế khám trước giờ đi",
+  "en": ""
  },
  {
-  "vi": "nhãn hữu cơ thật: ×$1%",
-  "en": "",
-  "pattern": true
+  "vi": "Đếm đoàn & đi tiếp",
+  "en": ""
  },
  {
-  "vi": "Giá sỉ loại A (xu) · bán thêm $1 → −10%",
-  "en": "",
-  "pattern": true
+  "vi": "Đếm đoàn & về bến",
+  "en": ""
  },
  {
-  "vi": "📦 Hết $1: mở Kho nhập thêm",
-  "en": "",
-  "pattern": true
+  "vi": "Cắm sạc loa",
+  "en": ""
  },
  {
-  "vi": "Thu hoạch $1 luống $2 vào kho mát?",
-  "en": "",
-  "pattern": true
+  "vi": "Khâu cờ",
+  "en": ""
  },
  {
-  "vi": "🧺 Thu hoạch $1 luống $2",
-  "en": "",
-  "pattern": true
+  "vi": "Đặt đò mai",
+  "en": ""
  },
  {
-  "vi": "📦 Xếp $1 $2 $3 loại $4 vào thùng",
-  "en": "",
-  "pattern": true
+  "vi": "Hỏi kỹ người bán thành phần",
+  "en": ""
  },
  {
-  "vi": "🧺 Nhặt $1 trứng trong ổ",
-  "en": "",
-  "pattern": true
+  "vi": "Đưa vào bóng râm",
+  "en": ""
  },
  {
-  "vi": "🌾 Nhổ cỏ luống $1 cho $2 mau lớn",
-  "en": "",
-  "pattern": true
+  "vi": "Cảm ơn và từ chối",
+  "en": ""
  },
  {
-  "vi": "🟫 Bón compost luống $1: chín kịp hôm nay",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn điểm danh, soạn tiết học hợp từng bạn nhỏ, dạy, chấm phiếu và giữ liên lạc với phụ huynh.",
+  "en": ""
  },
  {
-  "vi": "💧 Tưới luống $1 ($2%)",
-  "en": "",
-  "pattern": true
+  "vi": "Tiết học trên lớp",
+  "en": ""
  },
  {
-  "vi": "⏳ Chờ $1 luống $2 chín · $3/",
-  "en": "",
-  "pattern": true
+  "vi": "Mỗi ngày thường 3 tiết. Mỗi tiết đi 5 bước: điểm danh, soạn bài, dạy, chấm phiếu, khép tiết.",
+  "en": ""
  },
  {
-  "vi": "Lô $1 chưa hết cách ly thuốc",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn giơ tay hỏi bài",
+  "en": ""
  },
  {
-  "vi": "↩︎ Bỏ lô $1 ra khỏi thùng",
-  "en": "",
-  "pattern": true
+  "vi": "Tới hoạt động 2, một bạn giơ tay. Trả lời có “vì sao”. Bạn nhút nhát thì bấm [[Lại gần, nói nhỏ]] trước.",
+  "en": ""
  },
  {
-  "vi": "Lô $1 không hữu cơ",
-  "en": "",
-  "pattern": true
+  "vi": "Tiết chuyên đề trong Kế hoạch lớp",
+  "en": ""
  },
  {
-  "vi": "↩︎ Bỏ lô $1 (không hữu cơ)",
-  "en": "",
-  "pattern": true
+  "vi": "Toán đi chợ, thí nghiệm nổi chìm, thể dục ngày nóng… Đọc ghi chú rồi làm từng bước, bấm [[Kiểm tra]].",
+  "en": ""
  },
  {
-  "vi": "Nhặt $1 trứng",
-  "en": "",
-  "pattern": true
+  "vi": "Chấm bài và viết lời phê",
+  "en": ""
  },
  {
-  "vi": "Tưới $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chấm theo đáp án, không trừ điểm chữ xấu. Lời phê chỉ rõ chỗ sai và cách sửa, không so sánh.",
+  "en": ""
  },
  {
-  "vi": "🚿 Mở van tưới cả vườn ($1 luống khô)",
-  "en": "",
-  "pattern": true
+  "vi": "Gặp phụ huynh",
+  "en": ""
  },
  {
-  "vi": "🤝 Góp $1 $2 $3 cho HTX",
-  "en": "",
-  "pattern": true
+  "vi": "Gặp riêng, họp đầu kỳ (tháng 9, 1, 5) hoặc nhóm chat “nổ”. Khen trước, nghe hoàn cảnh, không kể con nhà khác.",
+  "en": ""
  },
  {
-  "vi": "Gieo luống trống $1",
-  "en": "",
-  "pattern": true
+  "vi": "Dạy thay đồng nghiệp",
+  "en": ""
  },
  {
-  "vi": "🌱 Chọn hạt gieo luống $1",
-  "en": "",
-  "pattern": true
+  "vi": "Làm đúng giấy nhắn của Cô Hạ. Người lạ xin đón học sinh thì giữ lại, nhờ văn phòng gọi mẹ xác nhận.",
+  "en": ""
  },
  {
-  "vi": "🌱 Gieo luống trống $1",
-  "en": "",
-  "pattern": true
+  "vi": "Sự kiện năm học",
+  "en": ""
  },
  {
-  "vi": "Tưới luống $1",
-  "en": "",
-  "pattern": true
+  "vi": "Trung thu, 20/11, hội khỏe, Tết, dã ngoại, diễn tập cháy, ngày đọc sách, tổng kết. Mỗi tháng có sinh nhật chung.",
+  "en": ""
  },
  {
-  "vi": "Nhổ cỏ luống $1",
-  "en": "",
-  "pattern": true
+  "vi": "Bài về nhà",
+  "en": ""
  },
  {
-  "vi": "🌾 Nhổ cỏ luống $1",
-  "en": "",
-  "pattern": true
+  "vi": "Mở [[Kế hoạch lớp]], tab [[📚 Bài về nhà]]. Dạy xong một tiết mới giao được, chọn [[Nhẹ · 3 câu]] hoặc [[Vừa · 6 câu]]. Hôm sau chấm vở.",
+  "en": ""
  },
  {
-  "vi": "✅ Xong phần làm mẫu. Đi dọc lối hàng $1–$2 kiểm tra.",
-  "en": "",
-  "pattern": true
+  "vi": "Nhắn tin phụ huynh",
+  "en": ""
  },
  {
-  "vi": "Ghế $1",
-  "en": "",
-  "pattern": true
+  "vi": "Mở [[Kế hoạch lớp]], tab [[💌 Phụ huynh]]. Chọn câu soạn sẵn hoặc gõ rồi bấm [[Gửi]]. Mỗi ngày nhắn một nhà một lần.",
+  "en": ""
  },
  {
-  "vi": "🛒 Hàng $1",
-  "en": "",
-  "pattern": true
+  "vi": "Xếp chỗ ngồi",
+  "en": ""
  },
  {
-  "vi": "Giúp $1 (ghế $2)",
-  "en": "",
-  "pattern": true
+  "vi": "Mở [[Kế hoạch lớp]], tab [[🪑 Chỗ ngồi]], bấm [[Đổi chỗ]] ngoài giờ dạy. Chỗ ngồi và bạn cùng bàn làm các bạn tiến bộ nhanh hoặc chậm hơn.",
+  "en": ""
  },
  {
-  "vi": "Ghế $1: khách đang ngủ",
-  "en": "",
-  "pattern": true
+  "vi": "🌅 Bấm [[Bắt đầu ngày]] (hoặc chạm cửa [[Vào lớp]]), rồi [[Vào tiết tiếp theo]] để bắt đầu tiết.",
+  "en": ""
  },
  {
-  "vi": "😴 Để khách ghế $1 ngủ",
-  "en": "",
-  "pattern": true
+  "vi": "📋 Bấm [[Có mặt]] cho các bạn đang ngồi. Bạn ốm có tin nhắn: [[Ghi vắng có phép]].",
+  "en": ""
  },
  {
-  "vi": "🛒 Đẩy xe lên hàng $1",
-  "en": "",
-  "pattern": true
+  "vi": "🚪 Đến muộn: [[Cho vào chỗ, hỏi riêng sau]]. Ghế trống: [[Báo văn phòng, nhắn phụ huynh ngay]].",
+  "en": ""
  },
  {
-  "vi": "Hàng $1",
-  "en": "",
-  "pattern": true
+  "vi": "📝 Chạm 3 thẻ hoạt động theo thứ tự, 25–35 phút, có hoạt động chính, rồi [[Chốt giáo án]].",
+  "en": ""
  },
  {
-  "vi": "/$1–$2 cành",
-  "en": "",
-  "pattern": true
+  "vi": "💬 Xử lý “Chuyện trong lớp”. Bạn cần giúp: chọn [[Vẽ hình mẫu cho xem]], [[Đưa đồ vật cho tự thử]]…",
+  "en": ""
  },
  {
-  "vi": "(lệch $1)",
-  "en": "",
-  "pattern": true
+  "vi": "🧩 …hoặc [[Kể ví dụ, cho nói lại]], [[Chia nhỏ từng bước]], đúng cách học của bạn ấy.",
+  "en": ""
  },
  {
-  "vi": "Cắm “$1” từ hàng trong tủ? Khách trả nốt $2 xu ($3 − cọc $4); hoa còn nụ hay sắp héo thì tiệm bớt 10 xu mỗi thứ. Tiệm dùng cành nở đẹp trước; khách đang chờ sẽ chờ thêm chút.",
-  "en": "",
-  "pattern": true
+  "vi": "▶️ Bấm [[Sang hoạt động]] tới hết, rồi [[Thu phiếu]].",
+  "en": ""
  },
  {
-  "vi": "🧊 Trong tủ mát · $1/$2 loại có hàng",
-  "en": "",
-  "pattern": true
+  "vi": "🎫 Phiếu đúng [[Khen cụ thể]], sai [[Gợi ý một bước]], giống hệt bạn bên [[Gặp riêng sau giờ]]. Xong bấm [[Khép tiết]].",
+  "en": ""
  },
  {
-  "vi": "👥 $1 khách chờ",
-  "en": "",
-  "pattern": true
+  "vi": "⭐ Giáo án 3 sao: mở đầu hợp không khí lớp, có đủ cách học của các bạn có mặt, kết bằng thẻ Kiểm tra.",
+  "en": ""
  },
  {
-  "vi": "⚠️ $1 sốt ruột",
-  "en": "",
-  "pattern": true
+  "vi": "🌡️ Lớp ồn thì mở nhẹ nhàng, lớp lờ đờ thì vận động, sắp kiểm tra thì trò chơi. Thiếu sao, nhịp lớp tụt.",
+  "en": ""
  },
  {
-  "vi": "−$1% kiên nhẫn mỗi câu",
-  "en": "",
-  "pattern": true
+  "vi": "💡 Bạn thiếu cách học hợp mình sẽ lạc bài. Giúp đúng cách thì bạn hiểu và tin bạn hơn.",
+  "en": ""
  },
  {
-  "vi": "chi tiết$1",
-  "en": "",
-  "pattern": true
+  "vi": "🎫 Chấm phiếu đúng loại. Thù lao: 45 xu, +5 mỗi sao, tới +10 theo số bạn hiểu, +5 nếu nhịp lớp từ 80%.",
+  "en": ""
  },
  {
-  "vi": "💬 $1 lời kể",
-  "en": "",
-  "pattern": true
+  "vi": "🌟 Không lỗi nào thì phụ huynh chấm 5★. Một lỗi nhỏ còn 4★, lỗi an toàn chỉ 1★.",
+  "en": ""
  },
  {
-  "vi": "Hoa $1% giá đơn",
-  "en": "",
-  "pattern": true
+  "vi": "📒 Ở Kế hoạch lớp: làm không sai bước nào là “Tuyệt vời”, đủ thưởng. Sai 1–2 lần còn 70%, nhiều hơn còn 40%.",
+  "en": ""
  },
  {
-  "vi": "món $1/",
-  "en": "",
-  "pattern": true
+  "vi": "Ghế trống mà bấm [[Ghi vắng rồi dạy tiếp]]",
+  "en": ""
  },
  {
-  "vi": "tủ còn $1, $2$3. Chạm để lấy 1 cành",
-  "en": "",
-  "pattern": true
+  "vi": "Lỗi an toàn: phụ huynh làm việc với trường, mất cả thù lao tiết, 1★, phản ánh lên nhà trường. Hôm sau phường tới kiểm tra.",
+  "en": ""
  },
  {
-  "vi": "＋ $1 cành",
-  "en": "",
-  "pattern": true
+  "vi": "Khen phiếu sai, gọi riêng bạn tự làm, bắt làm lại phiếu đúng, bỏ qua phiếu chép bài",
+  "en": ""
  },
  {
-  "vi": "✂️ Sơ chế $1 cành$2",
-  "en": "",
-  "pattern": true
+  "vi": "Phụ huynh phản ánh lên trường. Nhà trường trừ một phần thù lao tiết, sao tụt.",
+  "en": ""
  },
  {
-  "vi": "Gợi ý: “$1”",
-  "en": "",
-  "pattern": true
+  "vi": "Nêu tên bạn trước lớp, phạt cả bạn bị xô, cười theo khi bạn bị nhại giọng, đập ong, không cho bạn đau bụng ra ngoài",
+  "en": ""
  },
  {
-  "vi": "còn $1 giây",
-  "en": "",
-  "pattern": true
+  "vi": "Mất tin tưởng của bạn nhỏ, phụ huynh nhắn trách, nhà trường có thể trừ tiền.",
+  "en": ""
  },
  {
-  "vi": "cành (cần $1–$2)",
-  "en": "",
-  "pattern": true
+  "vi": "Ghi bạn ốm là có mặt, bắt bạn đến muộn [[Đứng ngoài năm phút cho nhớ]]",
+  "en": ""
  },
  {
-  "vi": "➖ Bỏ 1 cành $1",
-  "en": "",
-  "pattern": true
+  "vi": "Phụ huynh phàn nàn sau giờ học, review còn 4★ hoặc thấp hơn.",
+  "en": ""
  },
  {
-  "vi": "không hợp dịp $1",
-  "en": "",
-  "pattern": true
+  "vi": "Để bạn lạc bài không ai kèm, hoặc đổi cách giảng sai 2 lần với một bạn",
+  "en": ""
  },
  {
-  "vi": "thừa $1, cần đúng $2",
-  "en": "",
-  "pattern": true
+  "vi": "Phụ huynh kể con không theo kịp, bạn ấy làm sai phiếu cuối tiết.",
+  "en": ""
  },
  {
-  "vi": "Quá nhiều cành: tối đa $1",
-  "en": "",
-  "pattern": true
+  "vi": "Gạt câu hỏi (“chú ý vào”), hoặc bỏ mặc bạn giơ tay rồi sang hoạt động",
+  "en": ""
  },
  {
-  "vi": "thiếu $1 cành $2",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn hạ tay, buồn hơn và ít dám hỏi. Gạt đi còn tính là lỗi.",
+  "en": ""
  },
  {
-  "vi": "thêm $1 cành nữa",
-  "en": "",
-  "pattern": true
+  "vi": "Nhắn phụ huynh kể chuyện con nhà khác, đổ lỗi, so sánh; để tin nhắn chờ 2 ngày",
+  "en": ""
  },
  {
-  "vi": "🕒 Giao lúc $1",
-  "en": "",
-  "pattern": true
+  "vi": "Phụ huynh mất tin tưởng. Vở không chấm sau 3 ngày bị trả về, bạn nhỏ buồn.",
+  "en": ""
  },
  {
-  "vi": "✂️ Cắt xéo gốc & tuốt lá $1 cành",
-  "en": "",
-  "pattern": true
+  "vi": "💼 Phải được tuyển trước: mở [[Việc làm]], chọn trường, bấm [[Ứng tuyển]], [[Nộp CV]] đúng việc bạn đã làm.",
+  "en": ""
  },
  {
-  "vi": "✂️ Cắt xéo 45° $1 gốc",
-  "en": "",
-  "pattern": true
+  "vi": "📝 Viết thư, trả lời phỏng vấn, rồi bấm [[Ký hợp đồng thử việc]]. Lớp cộng đồng nhận nhanh nhất nhưng lương thấp.",
+  "en": ""
  },
  {
-  "vi": "🍃 Tuốt lá $1 cành",
-  "en": "",
-  "pattern": true
+  "vi": "💰 Lương theo ngày (35–90 xu tùy nơi) vào ví khi khép ca, nếu hôm đó dạy xong ít nhất một tiết. Thù lao từng tiết cộng riêng.",
+  "en": ""
  },
  {
-  "vi": "🪣 Ngâm hoa & chuẩn bị $1",
-  "en": "",
-  "pattern": true
+  "vi": "🧪 Thử việc nhận 85% lương. Hết thử việc mà đánh giá trung bình từ 3,5★ là ký chính thức, thấp hơn thì thử thêm 2 ngày.",
+  "en": ""
  },
  {
-  "vi": "Ngâm đủ $1 giây rồi nhấc ra",
-  "en": "",
-  "pattern": true
+  "vi": "🪑 Trước giờ dạy: bạn học bằng mắt ngồi gần bảng, bạn cần từng bước tránh cửa sổ.",
+  "en": ""
  },
  {
-  "vi": "🎁 Gói $1 & thắt nơ",
-  "en": "",
-  "pattern": true
+  "vi": "👫 Minh cạnh Vy hoặc Khoa thì tốt. Đừng xếp Bảo cạnh Vy hay Tú, Vy cạnh Linh.",
+  "en": ""
  },
  {
-  "vi": "🎁 Gói $1",
-  "en": "",
-  "pattern": true
+  "vi": "📚 Sau tiết giao bài về nhà. Mai và Linh dễ thức khuya với bài dài, nên giao nhẹ.",
+  "en": ""
  },
  {
-  "vi": "🎀 Thắt ruy băng $1",
-  "en": "",
-  "pattern": true
+  "vi": "📓 Chấm vở: đúng hết [[Khen cụ thể]], sai hai câu [[Chữa cùng con]], không nộp hay buồn ngủ [[Hỏi riêng vì sao]].",
+  "en": ""
  },
  {
-  "vi": "✅ Xong món $1, đặt sang bàn chờ",
-  "en": "",
-  "pattern": true
+  "vi": "💌 Mỗi phụ huynh cần nghe tin khoảng 4 ngày một lần. Nêu tên con, môn học và một việc cụ thể tối nay.",
+  "en": ""
  },
  {
-  "vi": "Chờ thêm $1 giây, đủ nước là tự nhấc ra.",
-  "en": "",
-  "pattern": true
+  "vi": "📈 Ngày 1–2 lớp có 5 bạn, một chuyện mỗi tiết. Từ ngày 3 có 6 bạn, hai chuyện, có thể gặp ghế trống, dự giờ, mái dột.",
+  "en": ""
  },
  {
-  "vi": "Chờ thêm $1 giây, mút chìm là tự cắm.",
-  "en": "",
-  "pattern": true
+  "vi": "🎓 Từ ngày 6 lớp có 7 bạn, ba chuyện mỗi tiết, hai bạn dễ lạc bài, và 6 thẻ hoạt động để chọn.",
+  "en": ""
  },
  {
-  "vi": "Cân chỉ $1",
-  "en": "",
-  "pattern": true
+  "vi": "➕ Dạy xong mà còn sức thì bấm [[Nhận thêm một tiết]].",
+  "en": ""
  },
  {
-  "vi": "Bỏ ra $1",
-  "en": "",
-  "pattern": true
+  "vi": "🐝 Trong tiết: điện thoại reo, ong bay vào, máy chiếu tắt, mái dột, ban giám hiệu dự giờ. Chọn cách giữ bài học và giữ các bạn.",
+  "en": ""
  },
  {
-  "vi": "xu/ký$1",
-  "en": "",
-  "pattern": true
+  "vi": "🚸 Người lạ tới đón học sinh: giữ bé lại, gọi bố mẹ xác minh. Giao cho người lạ là bị phạt và mất uy tín nặng.",
+  "en": ""
  },
  {
-  "vi": "🥤 $1/$2–$3 trái chín kỹ",
-  "en": "",
-  "pattern": true
+  "vi": "✉️ Phong bì xin điểm, phụ huynh rủ cà phê riêng, đòi bồi thường vì con ngã: trả lại, hẹn gặp ở trường cùng ban giám hiệu.",
+  "en": ""
  },
  {
-  "vi": "Cân ra $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "📵 Mất điện thoại trong lớp, hộp quỹ lớp bị cạy, bàn ghế bị phá: có khi bạn phải tự ứng tiền.",
+  "en": ""
  },
  {
-  "vi": "Xin ghi nợ · $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "🦺 Sau một lỗi an toàn, hôm sau phường tới lập biên bản. Nhận lỗi, làm lại thì phạt nhẹ; cãi thì phạt gấp đôi.",
+  "en": ""
  },
  {
-  "vi": "Khách cầm túi đi · $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Lại gần, nói nhỏ",
+  "en": ""
  },
  {
-  "vi": "nhét $1 $2 $3 vào túi riêng, lững thững bước đi.",
-  "en": "",
-  "pattern": true
+  "vi": "Chốt giáo án",
+  "en": ""
  },
  {
-  "vi": "mất $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Sang hoạt động",
+  "en": ""
  },
  {
-  "vi": "Trái $1 mang lại",
-  "en": "",
-  "pattern": true
+  "vi": "Thu phiếu",
+  "en": ""
  },
  {
-  "vi": "Lệch $1 gam",
-  "en": "",
-  "pattern": true
+  "vi": "🪑 Chỗ ngồi",
+  "en": ""
  },
  {
-  "vi": "lệch $1 gam",
-  "en": "",
-  "pattern": true
+  "vi": "Bạn soát sổ chi, sao kê và két tiền của các tiệm nhỏ, sửa có ghi chú và giữ sổ sạch.",
+  "en": ""
  },
  {
-  "vi": "Lựa $1 dập",
-  "en": "",
-  "pattern": true
+  "vi": "Mọi dòng có hóa đơn, phí ghi riêng đúng mức: đóng dấu [[Chốt sổ như đang có]].",
+  "en": ""
  },
  {
-  "vi": "🧺 Lựa $1 dập ra",
-  "en": "",
-  "pattern": true
+  "vi": "Một khoản ghi hai lần",
+  "en": ""
  },
  {
-  "vi": "Trái $1 bị dập",
-  "en": "",
-  "pattern": true
+  "vi": "Cùng số hóa đơn xuất hiện hai dòng. Đánh dấu dòng trùng, rồi [[Điều chỉnh có ghi chú rồi chốt]].",
+  "en": ""
  },
  {
-  "vi": "Gom $1–$2 trái chín kỹ",
-  "en": "",
-  "pattern": true
+  "vi": "Chữ số đi lạc",
+  "en": ""
  },
  {
-  "vi": "↩︎ Để lại trái $1",
-  "en": "",
-  "pattern": true
+  "vi": "So từng dòng sổ với hóa đơn gốc. Số lệch thì đánh dấu, rồi [[Điều chỉnh có ghi chú rồi chốt]].",
+  "en": ""
  },
  {
-  "vi": "📣 Rao xả $1 trái chín kỹ, héo",
-  "en": "",
-  "pattern": true
+  "vi": "Dòng sửa quạt chưa có hóa đơn. Đánh dấu “Có chứng từ”, đóng dấu [[Giữ lại, xin thêm chứng từ]].",
+  "en": ""
  },
  {
-  "vi": "🚛 Ra điểm tập kết đổ xe$1",
-  "en": "",
-  "pattern": true
+  "vi": "Sao kê lệch phí chuyển khoản",
+  "en": ""
  },
  {
-  "vi": "⏰ tới $1",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 2. Sao kê có phí chưa vào sổ. Xem mức phí trong bản tin, rồi điều chỉnh.",
+  "en": ""
  },
  {
-  "vi": "đã vào ngăn $1",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 2. Đếm từng tờ, chốt số. Khớp sổ quỹ: [[Chốt quỹ, ký sổ]]. Lệch: [[Lập biên bản lệch quỹ]].",
+  "en": ""
  },
  {
-  "vi": "📦 Hết $1: mở kho",
-  "en": "",
-  "pattern": true
+  "vi": "Hóa đơn nhà lạc vào sổ tiệm",
+  "en": ""
  },
  {
-  "vi": "Tách $1 ra hộp đỏ",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 2. Cước điện thoại nhà riêng không phải chi phí tiệm: đánh dấu rồi điều chỉnh.",
+  "en": ""
  },
  {
-  "vi": "🔴 Tách $1",
-  "en": "",
-  "pattern": true
+  "vi": "Tiền cọc ghi thành doanh thu",
+  "en": ""
  },
  {
-  "vi": "Ngăn $1 đầy",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 3. Cọc giữ chỗ tiệc cưới chưa là doanh thu: đánh dấu rồi điều chỉnh.",
+  "en": ""
  },
  {
-  "vi": "🛒 Tới $1",
-  "en": "",
-  "pattern": true
+  "vi": "Khoản chi sai kỳ",
+  "en": ""
  },
  {
-  "vi": "Bị $1 đâm",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 3. Tiền thuê kỳ sau ghi vào kỳ này: đánh dấu rồi điều chỉnh. Ngày cuối kỳ có thêm việc khóa sổ.",
+  "en": ""
  },
  {
-  "vi": "Đống rác đổ trộm · khoảng $1 bao",
-  "en": "",
-  "pattern": true
+  "vi": "Nhà cung cấp hỏi chuyển trùng",
+  "en": ""
  },
  {
-  "vi": "🤝 Chốt $1 xu",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 3. Sao kê trả HĐ 311 hai lần: [[Đề nghị trừ vào lần mua sau]]. Hai hóa đơn khác nhau: [[Gửi bảng đối chiếu cho họ]].",
+  "en": ""
  },
  {
-  "vi": "Miễn phí cho $1?",
-  "en": "",
-  "pattern": true
+  "vi": "Từ ngày 4. Luôn bấm [[Gọi số trong hồ sơ]] trước. Thư giả: [[Giữ lại, xin thêm chứng từ]]. Thật: [[Chuyển tiền theo thư]].",
+  "en": ""
  },
  {
-  "vi": "🧾 Thu phí vệ sinh · còn $1 hộ",
-  "en": "",
-  "pattern": true
+  "vi": "Mỗi 5 ngày. Tìm dòng sửa sổ không ghi lý do, rồi [[Nhận thiếu sót, bổ sung ngay]].",
+  "en": ""
  },
  {
-  "vi": "📦 Kệ còn $1",
-  "en": "",
-  "pattern": true
+  "vi": "Chuyện cô Hoa",
+  "en": ""
  },
  {
-  "vi": "📦 Quầy $1 hết hàng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏷️ $1 khuyến mãi khác",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✕ Bỏ $1 ra khỏi bill",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "/$1 · kệ hết",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "quét dư $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✕ Xóa $1 (quét dư) để quét lại",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cân $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✕ Xóa dòng cân $1 để cân lại",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚖️ Đặt $1 lên cân",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚖️ Bấm mã $1 trên cân",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✕ Xóa $1 khỏi bill",
-  "en": "",
-  "pattern": true
+  "vi": "Ngày 2, 4, 7, 11. Tách hóa đơn riêng; cô nhờ giấu đơn tiền mặt thì [[Ghi đủ, nói rõ với cô Hoa]].",
+  "en": ""
  }
 ]

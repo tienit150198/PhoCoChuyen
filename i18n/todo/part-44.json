@@ -1,1802 +1,1802 @@
 [
  {
-  "vi": "Xem trái khách mang lại",
+  "vi": "ngày thường",
   "en": ""
  },
  {
-  "vi": "Chọn cách giải quyết",
+  "vi": "ngày lễ",
   "en": ""
  },
  {
-  "vi": "👉 Chọn cách giải quyết",
+  "vi": "(làm tròn xuống)",
   "en": ""
  },
  {
-  "vi": "🤝 Trả lời khách",
+  "vi": "Không có giờ tăng ca đã duyệt.",
   "en": ""
  },
  {
-  "vi": "🙏 Nói thật: hết trái đúng ý",
+  "vi": "Không bao giờ tính trên tổng thu nhập.",
   "en": ""
  },
  {
-  "vi": "⚖️ CÂN · TÍNH TIỀN",
+  "vi": "Mỗi người chỉ được trả một dòng.",
   "en": ""
  },
  {
-  "vi": "bỏ trái vào rổ trước",
+  "vi": "Xóa cả dòng",
   "en": ""
  },
  {
-  "vi": "📣 Hôm nay đã rao xả.",
+  "vi": "Cả dòng này phải xóa — lỗi nằm ở ô Họ tên, không phải ô này.",
   "en": ""
  },
  {
-  "vi": "🧺 Trên sạp",
+  "vi": "Chạm vào từng ô của bảng vừa chuyển để xem cách tính.",
   "en": ""
  },
  {
-  "vi": "Dọn sạp, thử cân",
+  "vi": "Giữ lương oan ở những ô vốn đúng",
   "en": ""
  },
  {
-  "vi": "Chọn trái, cân cho khách",
+  "vi": ", chị phải soát lại từng dòng.",
   "en": ""
  },
  {
-  "vi": "Chuyện ở sạp",
+  "vi": "Thuế không âm.",
   "en": ""
  },
  {
-  "vi": "Việc dọn sạp",
+  "vi": "Lương 1 ngày = Lương giờ (Hợp đồng) × 8 giờ — không chia lương tháng cho 30.",
   "en": ""
  },
  {
-  "vi": "Nhập xoài, cam, bưởi…",
+  "vi": "Chỉ đếm dòng “Nghỉ việc riêng KHÔNG lương” trong Bảng chấm công; nghỉ phép năm vẫn có lương.",
   "en": ""
  },
  {
-  "vi": "(ngăn đầy)",
+  "vi": "Tính riêng từng dòng tăng ca: giờ × lương giờ × hệ số đã xếp ở bước 1 (150% là × 3 ÷ 2), rồi cộng các dòng.",
   "en": ""
  },
  {
-  "vi": "Ngõ",
+  "vi": "Cùng một số gốc: BHXH (8%) phải lớn nhất, rồi BHYT (1,5%), nhỏ nhất là BHTN (1%).",
   "en": ""
  },
  {
-  "vi": "🏷️ dán phiếu, chưa thu",
+  "vi": "Nhân xong thì bỏ phần lẻ (làm tròn xuống), không làm tròn lên.",
   "en": ""
  },
  {
-  "vi": "🔴 Tách ra",
+  "vi": "Thu nhập tính thuế không âm: trừ xong mà âm thì ghi 0.",
   "en": ""
  },
  {
-  "vi": "✓ hộp đỏ",
+  "vi": "Chỉ cộng cột “Thuế GTGT”, không cộng cột tiền hàng; đầu vào bỏ các tờ đã loại ở bước 1.",
   "en": ""
  },
  {
-  "vi": "✓ đã bọc",
+  "vi": "Đầu ra lớn hơn đầu vào thì số phải nộp là số dương.",
   "en": ""
  },
  {
-  "vi": "🧷 Bọc",
+  "vi": "Lấy Thuế đầu ra trừ Thuế đầu vào được khấu trừ — hai số đã khớp ở bước trước, đừng cộng lại từ hóa đơn.",
   "en": ""
  },
  {
-  "vi": "⚠️ trông lạ",
+  "vi": "Nhân số tiền thuế với 3, nhân tiếp số ngày trễ, rồi chia 10.000 và bỏ phần lẻ.",
   "en": ""
  },
  {
-  "vi": "trông bình thường",
+  "vi": "Tháng 8 thực lĩnh cao hơn, nên chênh lệch là số dương: lấy tháng 8 trừ tháng 9.",
   "en": ""
  },
  {
-  "vi": "👀 Mở túi",
+  "vi": "Dùng dòng “Thực lĩnh” cuối mỗi phiếu, không phải Tổng thu nhập.",
   "en": ""
  },
  {
-  "vi": "🏷️ Chưa phân loại: dán phiếu, không thu",
+  "vi": "Cộng từng dòng của Bảng lương ĐÃ DUYỆT bằng 🧮 Máy tính bàn; đừng lấy dòng tổng của file nháp.",
   "en": ""
  },
  {
-  "vi": "📝 Đã nhắc nhà này",
+  "vi": "Bảo hiểm bắt buộc",
   "en": ""
  },
  {
-  "vi": "📝 Nhắc nhà này phân loại",
+  "vi": "Công nhân xin ứng lương giữa tháng",
   "en": ""
  },
  {
-  "vi": "👂 Nghe cư dân kể",
+  "vi": "Em Diệu đứng ngập ngừng ở cửa: “Chị ơi, mẹ em nằm viện, em xin ứng trước 1.000 xu lương được không ạ?”",
   "en": ""
  },
  {
-  "vi": "👂 Nghe chị Hạnh dặn",
+  "vi": "Bạn là công nhân năm đầu, ngại hỏi nhưng không biết xoay đâu ra tiền.",
   "en": ""
  },
  {
-  "vi": "cần xem",
+  "vi": "Quy chế tạm ứng lương",
   "en": ""
  },
  {
-  "vi": "🔍 Tìm hiểu",
+  "vi": "Được ứng tối đa 50% lương đã làm trong tháng, có giấy đề nghị và tổ trưởng xác nhận.",
   "en": ""
  },
  {
-  "vi": "✓ đã mặc",
+  "vi": "Tháng này Diệu đã làm 12 ngày, khoảng 1.400 xu.",
   "en": ""
  },
  {
-  "vi": "mặc vào",
+  "vi": "Quỹ công đoàn",
   "en": ""
  },
  {
-  "vi": "✓ Xe đã kiểm",
+  "vi": "Công đoàn có khoản hỗ trợ ốm đau, không phải trả lại, chỉ cần giấy ra viện.",
   "en": ""
  },
  {
-  "vi": "🛒 Kiểm xe đẩy",
+  "vi": "Ứng 700 xu theo quy chế, nhờ chị Hoa xác nhận, chỉ thêm khoản hỗ trợ của công đoàn",
   "en": ""
  },
  {
-  "vi": "hết trong kho",
+  "vi": "Chị làm giấy nhanh, còn chỉ em quỹ công đoàn. Em đỡ lo nhiều lắm.",
   "en": ""
  },
  {
-  "vi": "Vào ca trước đã",
+  "vi": "Diệu nhận 700 xu trong ngày, thêm khoản hỗ trợ của công đoàn; cuối tháng lương trừ đúng phần đã ứng.",
   "en": ""
  },
  {
-  "vi": "🛒 Đẩy xe vào ngõ",
+  "vi": "Em cứ tưởng phải đi vay ngoài.",
   "en": ""
  },
  {
-  "vi": "Quét rác bị bới tung",
+  "vi": "Có quy chế rõ thì tôi ký ngay, không phải nể ai.",
   "en": ""
  },
  {
-  "vi": "🧹 Quét dọn",
+  "vi": "Ứng trong phần đã làm, sổ lương không lệch.",
   "en": ""
  },
  {
-  "vi": "Túi dán phiếu, chưa thu",
+  "vi": "Ứng luôn 1.000 xu cho em ấy đỡ khổ, giấy tờ tính sau",
   "en": ""
  },
  {
-  "vi": "Túi trông lạ: mở ra xem",
+  "vi": "Tiền thì nhận được, nhưng cuối tháng em gần như không còn lương.",
   "en": ""
  },
  {
-  "vi": "👀 Mở túi trông lạ",
+  "vi": "Ứng vượt quy chế, không có giấy; phiếu lương cuối tháng của Diệu gần như trống, chị Hồng phải giải trình.",
   "en": ""
  },
  {
-  "vi": "Bọc mảnh kính vỡ",
+  "vi": "Thương thì làm đúng quy chế, không thì ai cũng xin y vậy.",
   "en": ""
  },
  {
-  "vi": "🧷 Bọc mảnh kính",
+  "vi": "Tháng sau em lại thiếu.",
   "en": ""
  },
  {
-  "vi": "🚛 Ra điểm tập kết đổ xe",
+  "vi": "Bảo Diệu chờ đến ngày trả lương",
   "en": ""
  },
  {
-  "vi": "Bỏ túi vào đúng ngăn",
+  "vi": "Đúng là chưa tới ngày lương, nhưng em đang cần gấp mà.",
   "en": ""
  },
  {
-  "vi": "👉 Chọn ngăn cho túi",
+  "vi": "Diệu đi vay lãi ngoài để đóng viện phí.",
   "en": ""
  },
  {
-  "vi": "Tới nhà sau",
+  "vi": "Em không biết là có cách ứng hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Có chuyện ở ngõ",
+  "vi": "Quy chế có mà, sao không chỉ cho con bé.",
   "en": ""
  },
  {
-  "vi": "🛒 Vào việc thôi!",
+  "vi": "Ứng lương theo quy chế, trong phần đã làm, có giấy — và chỉ thêm những hỗ trợ người ta chưa biết.",
   "en": ""
  },
  {
-  "vi": "🦺 VÀO CA",
+  "vi": "Giám đốc đòi trừ lương vì làm hỏng máy",
   "en": ""
  },
  {
-  "vi": "Tìm hiểu cho rõ",
+  "vi": "Anh Phát đặt tờ giấy lên bàn: “Khôi làm cháy mô-tơ máy vắt sổ. Trừ thẳng 3.000 xu vào lương tháng này cho tôi.”",
   "en": ""
  },
  {
-  "vi": "Trả lời cư dân",
+  "vi": "Bạn là giám đốc, vừa mất một cái máy giữa mùa hàng gấp.",
   "en": ""
  },
  {
-  "vi": "💬 Chọn cách trả lời",
+  "vi": "Quy định bồi thường",
   "en": ""
  },
  {
-  "vi": "✅ XONG NGÕ",
+  "vi": "Nội quy lao động",
   "en": ""
  },
  {
-  "vi": "Túi trông bình thường mà có đồ sắc giấu bên trong.",
+  "vi": "Làm hỏng tài sản phải lập biên bản, nghe người lao động trình bày; mỗi tháng chỉ khấu trừ tối đa 30% lương thực nhận.",
   "en": ""
  },
  {
-  "vi": "🩹 Tự rửa, sát trùng, băng lại",
+  "vi": "Sổ bảo trì",
   "en": ""
  },
  {
-  "vi": "nhanh, đỡ tốn",
+  "vi": "Tổ bảo trì",
   "en": ""
  },
  {
-  "vi": "🏥 Ra trạm y tế",
+  "vi": "Máy đã báo kêu lạ từ tuần trước, phiếu sửa chưa ai duyệt.",
   "en": ""
  },
  {
-  "vi": "8 xu, khách chờ",
+  "vi": "Lương tháng của anh Khôi",
   "en": ""
  },
  {
-  "vi": "😬 Kệ, làm tiếp",
+  "vi": "Thực nhận khoảng 6.500 xu.",
   "en": ""
  },
  {
-  "vi": "🛒🛒 Đi hai chuyến",
+  "vi": "Đề nghị lập biên bản có anh Khôi, kèm sổ bảo trì; nếu phải bồi thường thì chia nhiều tháng, mỗi tháng không quá 30%",
   "en": ""
  },
  {
-  "vi": "mỏi, ngõ sau chờ",
+  "vi": "Có biên bản mới thấy lỗi không hẳn ở Khôi. Thôi, sửa quy trình duyệt phiếu bảo trì.",
   "en": ""
  },
  {
-  "vi": "🛻 Gọi xe ba gác",
+  "vi": "Biên bản ghi rõ máy đã báo hỏng từ trước; anh Khôi chỉ bị nhắc nhở, xưởng sửa lại cách duyệt phiếu bảo trì.",
   "en": ""
  },
  {
-  "vi": "📸 Chụp ảnh báo phường",
+  "vi": "Tôi được nói phần mình, thế là đủ.",
   "en": ""
  },
  {
-  "vi": "để lại qua đêm",
+  "vi": "Nóng lên thì muốn trừ, xem giấy rồi mới thấy mình sai một phần.",
   "en": ""
  },
  {
-  "vi": "🧱 Nhồi chặt cho hết",
+  "vi": "Trừ lương phải có căn cứ, không theo cơn giận.",
   "en": ""
  },
  {
-  "vi": "dễ bung xe",
+  "vi": "Trừ 3.000 xu ngay tháng này như sếp nói",
   "en": ""
  },
  {
-  "vi": "Chủ nhà ra chặn xe",
+  "vi": "Một phát mất gần nửa tháng lương, không ai hỏi tôi câu nào.",
   "en": ""
  },
  {
-  "vi": "🏷️ Dán phiếu, không thu túi chưa phân loại",
+  "vi": "Anh Khôi khiếu nại lên công đoàn; xưởng phải hoàn lại tiền và bị nhắc vì trừ lương sai quy định.",
   "en": ""
  },
  {
-  "vi": "đúng quy định, dễ bị chửi",
+  "vi": "Máy báo hỏng cả tuần mà không ai duyệt sửa.",
   "en": ""
  },
  {
-  "vi": "🤷 Lấy luôn cho xong",
+  "vi": "Cả chuyền ai cũng sợ, lỡ tay là mất lương.",
   "en": ""
  },
  {
-  "vi": "📞 Gọi bác Tâm tổ trưởng",
+  "vi": "Nói anh Phát để sang tháng sau tính",
   "en": ""
  },
  {
-  "vi": "🗣️ Nói chuyện đàng hoàng",
+  "vi": "Né được hôm nay, nhưng tôi vẫn chờ câu trả lời.",
   "en": ""
  },
  {
-  "vi": "📸 Chụp ảnh làm bằng chứng",
+  "vi": "Chuyện treo đó, anh Khôi thấp thỏm cả tháng.",
   "en": ""
  },
  {
-  "vi": "🚓 Gọi công an phường",
+  "vi": "Không ai nói gì, càng lo.",
   "en": ""
  },
  {
-  "vi": "🤐 Lờ đi",
+  "vi": "Kế toán mà cứ hẹn lần hẹn lữa.",
   "en": ""
  },
  {
-  "vi": "⏳ Đứng đợi xe ép",
+  "vi": "Trừ lương bồi thường cần biên bản, nghe người lao động trình bày, và mỗi tháng không quá 30% lương.",
   "en": ""
  },
  {
-  "vi": "🧹 Xếp gọn, quét, rắc vôi",
+  "vi": "Khay thối tiền không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "📞 Gọi chú Sáu",
+  "vi": "Thối thiếu tiền, tôi phải đếm lại ngay tại chỗ mới đòi đủ.",
   "en": ""
  },
  {
-  "vi": "🚶 Bỏ về",
+  "vi": "Tiền của khách này đã tính xong.",
   "en": ""
  },
  {
-  "vi": "✅ đã đóng",
+  "vi": "Khách đưa thiếu tiền: chọn cách xử lý trước đã.",
   "en": ""
  },
  {
-  "vi": "🚪 không đóng",
+  "vi": "Không có tiền thối cho khoản này.",
   "en": ""
  },
  {
-  "vi": "🤝 miễn",
+  "vi": "Tiền mặt của đơn sai.",
   "en": ""
  },
  {
-  "vi": "Hôm nay gõ cửa rồi, mai thu tiếp.",
+  "vi": "Kết quả thối tiền sai.",
   "en": ""
  },
  {
-  "vi": "🧾 Gõ cửa thu",
+  "vi": "Trà đá",
   "en": ""
  },
  {
-  "vi": "Thu bao nhiêu",
+  "vi": "Trà chanh",
   "en": ""
  },
  {
-  "vi": "🧾 Thu, nói nhẹ",
+  "vi": "Sấu dầm đá",
   "en": ""
  },
  {
-  "vi": "📜 Nhắc quy định",
+  "vi": "Chè Thái khô",
   "en": ""
  },
  {
-  "vi": "🤝 Miễn tháng này",
+  "vi": "Sấu dầm",
   "en": ""
  },
  {
-  "vi": "Đồ bảo hộ, kiểm xe",
+  "vi": "Lạc rang",
   "en": ""
  },
  {
-  "vi": "Nghe cư dân phản ánh",
+  "vi": "Kẹo lạc",
   "en": ""
  },
  {
-  "vi": "Gom rác từng nhà",
+  "vi": "Bánh quy",
   "en": ""
  },
  {
-  "vi": "Việc ở nhà này",
+  "vi": "Thuốc lá lẻ",
   "en": ""
  },
  {
-  "vi": "Găng tay, khẩu trang, bao",
+  "vi": "điếu",
   "en": ""
  },
  {
-  "vi": "Quy tắc",
+  "vi": "Gốc bàng đầu ngõ",
   "en": ""
  },
  {
-  "vi": "📦 Quầy hết hàng",
+  "vi": "Bóng mát, sát tường, không lấn lối đi.",
   "en": ""
  },
  {
-  "vi": "· nhập thêm rồi cân",
+  "vi": "Mái hiên tiệm may",
   "en": ""
  },
  {
-  "vi": "Giỏ này chưa khớp khuyến mãi nào.",
+  "vi": "Tiệm may đóng cửa cả tuần. Có mái che mưa, hơi chật.",
   "en": ""
  },
  {
-  "vi": "🪪 Kiểm tuổi khách",
+  "vi": "Sát mép lòng đường",
   "en": ""
  },
  {
-  "vi": "kệ hết",
+  "vi": "Rộng, đông người qua… nhưng là lấn ra đường.",
   "en": ""
  },
  {
-  "vi": "📷 Quét",
+  "vi": "Bán trà gốc bàng ba mươi năm, nhớ mặt cả phố.",
   "en": ""
  },
  {
-  "vi": "quầy hết",
+  "vi": "Mê bóng đá, uống ghi sổ, hẹn ngày trả.",
   "en": ""
  },
  {
-  "vi": "⚖️ Trừ bì cái rổ (tare)",
+  "vi": "Ông Khang",
   "en": ""
  },
  {
-  "vi": "🏷️ Áp khuyến mãi",
+  "vi": "Hưu trí, cao thủ cờ tướng",
   "en": ""
  },
  {
-  "vi": "Soi & sờ tiền khách đưa",
+  "vi": "Ngồi cả chiều với một cốc trà, chê chè nhạt.",
   "en": ""
  },
  {
-  "vi": "Tiền giả: nhờ khách đổi tờ khác",
+  "vi": "Ra hút điếu thuốc giữa giờ, đếm tiền thối kỹ.",
   "en": ""
  },
  {
-  "vi": "Không cần thối tiền",
+  "vi": "Tan học rủ bạn uống trà chanh, hay xin thêm đá.",
   "en": ""
  },
  {
-  "vi": "↩︎ Bớt tờ vừa đặt",
+  "vi": "Biết hết chuyện cả phố, kể không ngừng.",
   "en": ""
  },
  {
-  "vi": "Kiểm loa/app ngân hàng của tiệm",
+  "vi": "Anh Hùng",
   "en": ""
  },
  {
-  "vi": "chưa thấy tiền về, kiểm lại",
+  "vi": "Chạy đơn liên tục, uống vội một cốc rồi đi.",
   "en": ""
  },
  {
-  "vi": "🔄 Kiểm lại app ngân hàng",
+  "vi": "Cu Tủn",
   "en": ""
  },
  {
-  "vi": "Khách sẽ soi lại hóa đơn.",
+  "vi": "Cậu bé nhà bên",
   "en": ""
  },
  {
-  "vi": "quét hàng trước",
+  "vi": "Học lớp 5, hay bị người lớn sai đi mua hộ.",
   "en": ""
  },
  {
-  "vi": "🛒 2 · Kệ hàng (quét thêm từng món)",
+  "vi": "Nắng nhẹ, khách đều tay. Hợp để làm quen.",
   "en": ""
  },
  {
-  "vi": "Giỏ của khách",
+  "vi": "Nắng nóng gay gắt",
   "en": ""
  },
  {
-  "vi": "📷 Quét ×",
+  "vi": "Đá tan nhanh gấp đôi, ai cũng gọi trà đá. Canh thùng đá!",
   "en": ""
  },
  {
-  "vi": "✕ Xóa",
+  "vi": "Mưa bất chợt: dọn quán vào mái hiên. Khách hay gọi trà nóng.",
   "en": ""
  },
  {
-  "vi": "không bán cho khách dưới 18 tuổi",
+  "vi": "Trời dịu, đá tan chậm. Các ông ngồi đánh cờ lâu hơn.",
   "en": ""
  },
  {
-  "vi": "✓ Đã quét",
+  "vi": "Tối nay có trận",
   "en": ""
  },
  {
-  "vi": "MÁY TÍNH TIỀN",
+  "vi": "Cả phố ra xem bóng: một bàn đông gọi dồn dập.",
   "en": ""
  },
  {
-  "vi": "đang quét",
+  "vi": "Mùa sấu",
   "en": ""
  },
  {
-  "vi": "Chưa quét món nào.",
+  "vi": "Sấu non về chợ: sáng nay có sấu dầm, khách hỏi luôn.",
   "en": ""
  },
  {
-  "vi": "Khách vừa xong",
+  "vi": "Anh Hùng uống vội",
   "en": ""
  },
  {
-  "vi": "chờ lâu, bỏ về",
+  "vi": "Một cốc trà đá, nhanh giúp anh nhé, đơn đang chờ!",
   "en": ""
  },
  {
-  "vi": "kệ trống, về tay không",
+  "vi": "Anh Hùng đứng cạnh xe, mũ bảo hiểm còn chưa kịp cởi.",
   "en": ""
  },
  {
-  "vi": "🧾 TÍNH TIỀN",
+  "vi": "Ông Khang gọi trà nóng",
   "en": ""
  },
  {
-  "vi": "Khách sẽ nhìn màn hình máy tính tiền.",
+  "vi": "Cho ông cốc trà nóng. Pha đặc vào, nhạt là ông trả lại đấy!",
   "en": ""
  },
  {
-  "vi": "✅ THỐI TIỀN & GIAO HÀNG",
+  "vi": "Ông Khang bày bàn cờ, chắc ngồi đến chiều.",
   "en": ""
  },
  {
-  "vi": "✅ GIAO HÀNG",
+  "vi": "Linh tan học",
   "en": ""
  },
  {
-  "vi": "Khách có thể đếm lại tiền thối.",
+  "vi": "Chị ơi, cho em hai cốc trà chanh nhiều đá ạ!",
   "en": ""
  },
  {
-  "vi": "Giỏ của khách · quét từng món",
+  "vi": "Linh đi cùng bạn thân, cặp sách còn đeo trên vai.",
   "en": ""
  },
  {
-  "vi": "Khách đang ở quầy",
+  "vi": "Anh Đạt giờ giải lao",
   "en": ""
  },
  {
-  "vi": "Lần trước khách chê cao — còn 1 lần, lần này khách trả lời dứt khoát.",
+  "vi": "Cho anh cốc trà đá với hai điếu thuốc. Mười phút nữa anh phải lên họp.",
   "en": ""
  },
  {
-  "vi": "Kho còn thiếu hàng.",
+  "vi": "Anh Đạt hay đếm lại tiền thối ngay tại chỗ.",
   "en": ""
  },
  {
-  "vi": "thùng mới",
+  "vi": "Cô Hoa ngồi buôn chuyện",
   "en": ""
  },
  {
-  "vi": "Rút lô hết hạn khỏi kệ",
+  "vi": "Cho cô cốc trà đá với cái kẹo lạc. Ngồi đây cô kể cho nghe chuyện này hay lắm…",
   "en": ""
  },
  {
-  "vi": "↕️ Sắp theo hạn: cũ trước, mới sau",
+  "vi": "Cô Hoa vừa bán hết gánh xôi sáng.",
   "en": ""
  },
  {
-  "vi": "Xếp thùng mới lên kệ",
+  "vi": "Hai ông bạn cờ",
   "en": ""
  },
  {
-  "vi": "thứ tự mới chưa xếp",
+  "vi": "Hai trà đá, một gói lạc cho hai ông già nào!",
   "en": ""
  },
  {
-  "vi": "📐 Xếp thùng lên kệ",
+  "vi": "Ván cờ đang đến đoạn gay cấn.",
   "en": ""
  },
  {
-  "vi": "✅ Báo cô Ba đã xếp xong",
+  "vi": "Nhóm bạn của Linh",
   "en": ""
  },
  {
-  "vi": "Cô Ba sẽ đi một vòng kiểm hạn, tem và thứ tự kệ.",
+  "vi": "Ba cốc trà chanh, thêm một gói hướng dương chị nhé!",
   "en": ""
  },
  {
-  "vi": "Việc xếp kệ",
+  "vi": "Cả nhóm vừa thi xong, ồn như chợ vỡ.",
   "en": ""
  },
  {
-  "vi": "Kệ hết món khách cần: nhập hàng lên kệ",
+  "vi": "Anh Hùng uống một, mang một",
   "en": ""
  },
  {
-  "vi": "Hoặc xin lỗi, mời khách sau",
+  "vi": "Hai cốc trà đá với gói bánh quy, anh uống một cốc, cốc kia mang lên cho khách.",
   "en": ""
  },
  {
-  "vi": "Chọn giá sỉ để báo khách",
+  "vi": "Khách quen trên tầng năm hay nhờ anh Hùng mua trà.",
   "en": ""
  },
  {
-  "vi": "⚡ Nhập gấp",
+  "vi": "Anh Đạt dẫn đồng nghiệp",
   "en": ""
  },
  {
-  "vi": "Hàng chờ đã vãn",
+  "vi": "Ba trà đá, một trà nóng cho sếp anh, thêm một điếu nữa nhé.",
   "en": ""
  },
  {
-  "vi": "Xem sổ nợ rồi quyết: ghi sổ hay từ chối khéo",
+  "vi": "Cả phòng xuống giải lao cùng lúc.",
   "en": ""
  },
  {
-  "vi": "📦 Mở thùng & xếp lên kệ",
+  "vi": "Cô Hoa đãi bạn hàng",
   "en": ""
  },
  {
-  "vi": "không bán món này",
+  "vi": "Hai trà chanh cho cô với bà bán rau, thêm gói hướng dương.",
   "en": ""
  },
  {
-  "vi": "Không món nào sắp hết hay sắp hết hạn.",
+  "vi": "Bà bán rau vừa kể xong chuyện con dâu.",
   "en": ""
  },
  {
-  "vi": "· nhận bớt thùng rồi đặt tiếp",
+  "vi": "Ông Khang gọi thêm bánh",
   "en": ""
  },
  {
-  "vi": "Quy tắc kho",
+  "vi": "Cốc trà nóng nữa, với gói bánh quy. Thằng Tường nó lại thua ông rồi!",
   "en": ""
  },
  {
-  "vi": "Quét giỏ, tính tiền, thối đúng cho từng khách",
+  "vi": "Ông Khang cười khà khà, vuốt râu.",
   "en": ""
  },
  {
-  "vi": "👆 Chạm một dòng để bắt đầu",
+  "vi": "Cô Hoa trốn nắng",
   "en": ""
  },
  {
-  "vi": "dòng lẻ — chọn dòng rồi chọn lý do",
+  "vi": "Nóng chảy mỡ! Cho cô cốc trà đá nhiều đá vào!",
   "en": ""
  },
  {
-  "vi": "Bỏ chọn dòng thừa",
+  "vi": "Mồ hôi ướt đẫm lưng áo cô Hoa.",
   "en": ""
  },
  {
-  "vi": "Chọn nhầm dòng — bỏ chọn rồi làm lại",
+  "vi": "Anh Hùng giữa trưa nắng",
   "en": ""
  },
  {
-  "vi": "📜 Quy tắc",
+  "vi": "Hai trà đá liền một lúc, khát khô cả cổ!",
   "en": ""
  },
  {
-  "vi": "· 🌧️ mưa ẩm",
+  "vi": "Nắng hắt từ mặt đường lên như rang.",
   "en": ""
  },
  {
-  "vi": "🔒 Chỉ xem, không lưu.",
+  "vi": "Anh Hùng trú mưa",
   "en": ""
  },
  {
-  "vi": "Việc nhận phòng",
+  "vi": "Mưa to quá! Cho anh cốc trà nóng ngồi chờ tạnh.",
   "en": ""
  },
  {
-  "vi": "💧 tính từ chai thứ",
+  "vi": "Áo mưa của anh Hùng nhỏ nước tong tong.",
   "en": ""
  },
  {
-  "vi": "· 🕑 trả muộn",
+  "vi": "Anh Đạt trú mưa",
   "en": ""
  },
  {
-  "vi": "📱 Khách chuyển khoản khi nhận hóa đơn.",
+  "vi": "Mưa thế này chưa về được. Trà nóng và một điếu cho ấm người.",
   "en": ""
  },
  {
-  "vi": "Việc trả phòng",
+  "vi": "Đôi giày da của anh Đạt ướt sũng.",
   "en": ""
  },
  {
-  "vi": "s cháy",
+  "vi": "Ông Khang hóng gió",
   "en": ""
  },
  {
-  "vi": "Khay ăn sáng",
+  "vi": "Trời mát thế này đánh cờ đến tối. Hai trà nóng, gói lạc!",
   "en": ""
  },
  {
-  "vi": "⚠️ Một người dị ứng trứng: không thêm trứng.",
+  "vi": "Gió thổi lá bàng rơi lả tả xuống bàn cờ.",
   "en": ""
  },
  {
-  "vi": "👆 Chọn:",
+  "vi": "Linh hỏi sấu dầm",
   "en": ""
  },
  {
-  "vi": "Việc gợi ý",
+  "vi": "Chị ơi, sấu dầm có chưa ạ? Cho em hai cốc!",
   "en": ""
  },
  {
-  "vi": "🧮 Đếm khách ở quầy",
+  "vi": "Mùa sấu, cả lớp Linh mê sấu dầm.",
   "en": ""
  },
  {
-  "vi": "🙅 Chỉ nhận đúng số đã đặt (hết phòng rộng)",
+  "vi": "Ông Khang nhớ mùa sấu",
   "en": ""
  },
  {
-  "vi": "Hết phòng trống đủ đêm",
+  "vi": "Sấu về rồi à? Cho ông một cốc sấu đá, gói lạc nữa.",
   "en": ""
  },
  {
-  "vi": "🏡 Chuyển sang Nhà Gỗ Cô Ba",
+  "vi": "Ông bảo sấu làm ông nhớ phố cũ ngày xưa.",
   "en": ""
  },
  {
-  "vi": "phòng đã chọn chưa trống đủ đêm",
+  "vi": "Cô Hoa mời sấu",
   "en": ""
  },
  {
-  "vi": "👉 Chọn phòng sạch, trống đủ đêm",
+  "vi": "Hai sấu dầm, một trà đá! Cô đãi mấy đứa bán hàng.",
   "en": ""
  },
  {
-  "vi": "Lắp gas máy sưởi (đêm lạnh)",
+  "vi": "Cô Hoa hôm nay bán hết sớm.",
   "en": ""
  },
  {
-  "vi": "🔥 Lắp gas máy sưởi",
+  "vi": "Cu Tủn đi mua hộ bố",
   "en": ""
  },
  {
-  "vi": "gas máy sưởi",
+  "vi": "Cô ơi, bố cháu bảo mua ba điếu thuốc với một cái kẹo lạc ạ!",
   "en": ""
  },
  {
-  "vi": "giao phòng trước",
+  "vi": "Cu Tủn mới học lớp 5, tay nắm tờ tiền nhàu.",
   "en": ""
  },
  {
-  "vi": "➕ Thêm",
+  "vi": "Cu Tủn khát nước",
   "en": ""
  },
  {
-  "vi": "➖ Bớt",
+  "vi": "Cô ơi cho cháu cốc trà chanh… với hai điếu thuốc, chú xe ôm nhờ cháu mua ạ!",
   "en": ""
  },
  {
-  "vi": "kiểm phòng trước",
+  "vi": "Cu Tủn mồ hôi nhễ nhại sau giờ đá bóng.",
   "en": ""
  },
  {
-  "vi": "Hỏi dị ứng, ăn kiêng trước khi nấu",
+  "vi": "Chú Tường ghi sổ",
   "en": ""
  },
  {
-  "vi": "Trứng hỏng hoặc dư: dọn khay làm lại",
+  "vi": "Cốc trà đá với điếu thuốc, ghi sổ cho chú! Tối qua đội nhà đá hay chưa…",
   "en": ""
  },
  {
-  "vi": "Nhấc trứng ra khỏi chảo",
+  "vi": "Chú Tường mở miệng là nói chuyện bóng đá.",
   "en": ""
  },
  {
-  "vi": "Khách ăn và đánh giá đúng những gì trên khay.",
+  "vi": "Chú Tường với bạn xe ôm",
   "en": ""
  },
  {
-  "vi": "làm khay trước",
+  "vi": "Hai trà đá, một gói lạc, ghi sổ cả nhé cháu!",
   "en": ""
  },
  {
-  "vi": "Không còn phòng hợp những đêm này",
+  "vi": "Bạn xe ôm của chú vừa chạy cuốc về.",
   "en": ""
  },
  {
-  "vi": "👉 Chạm tên phòng trên lịch để chọn",
+  "vi": "Chú Tường thua cờ",
   "en": ""
  },
  {
-  "vi": "Khách chê giá: báo mức thấp hơn",
+  "vi": "Trà nóng cho chú, gói hướng dương, ghi sổ! Ông Khang lại chấp chú con xe rồi.",
   "en": ""
  },
  {
-  "vi": "Tin xác nhận kèm nội quy sẽ gửi cho khách.",
+  "vi": "Chú Tường vừa thua ông Khang một ván cờ.",
   "en": ""
  },
  {
-  "vi": "giữ phòng trước",
+  "vi": "Bàn xem bóng của chú Tường",
   "en": ""
  },
  {
-  "vi": "Hỏi khách cho chắc",
+  "vi": "Cả hội ra xem bóng! Năm trà đá, một trà chanh, hai gói hướng dương, một gói lạc. Hôm nay chú khao, trả tiền mặt!",
   "en": ""
  },
  {
-  "vi": "vướng điều khách cần tránh",
+  "vi": "Phải ra đủ trước khi hết hiệp một.",
   "en": ""
  },
  {
-  "vi": "👉 Chọn nơi hợp khách (thẻ xanh, không thẻ đỏ)",
+  "vi": "Chú Tường: “Cháu mới à? Chú chạy xe ôm đầu ngõ này hai mươi năm rồi. Có gì cứ gọi chú!”",
   "en": ""
  },
  {
-  "vi": "Khách sẽ đi đúng những nơi bạn gợi ý.",
+  "vi": "Chú Tường cá với ông Khang đội nhà thắng hai bàn. Thua thì khao cả quán trà.",
   "en": ""
  },
  {
-  "vi": "👉 So câu trả lời với sổ rồi quyết định",
+  "vi": "Chú Tường khoe con gái đỗ đại học, móc ví ra xem ảnh mãi.",
   "en": ""
  },
  {
-  "vi": "📞 Quyết định giao đồ",
+  "vi": "Chú Tường bảo giờ nhiều người đặt xe qua app, chú đang tập dùng điện thoại.",
   "en": ""
  },
  {
-  "vi": "Nhấc trứng khỏi chảo",
+  "vi": "Chú Tường nhận cuốc xe qua app đầu tiên, về kể cả buổi: “Nó chỉ đường tận nơi, hay phết!”",
   "en": ""
  },
  {
-  "vi": "Quyết chuyện ở quầy",
+  "vi": "Ông Khang: “Chè phải đậm thì mới tỉnh mà đánh cờ.”",
   "en": ""
  },
  {
-  "vi": "👉 Chọn cách xử lý chuyện ở quầy",
+  "vi": "Ông Khang dạy Linh thế cờ “pháo đầu”, con bé học nhanh ra phết.",
   "en": ""
  },
  {
-  "vi": "(khách tới tối nay)",
+  "vi": "Ông Khang kể hồi trẻ ông làm thợ in, tay lúc nào cũng đen mực.",
   "en": ""
  },
  {
-  "vi": "để khăn ở cửa (biển đừng làm phiền)",
+  "vi": "Ông Khang mang cho quán cái điếu cày cũ: “Để dành cho khách quen.”",
   "en": ""
  },
  {
-  "vi": "sưởi đêm lạnh",
+  "vi": "Ông Khang nhấp ngụm trà: “Chè cháu pha giờ ngon gần bằng bà Lựu rồi.”",
   "en": ""
  },
  {
-  "vi": "phòng hết mùi ẩm",
+  "vi": "Anh Đạt thở dài: “Sếp lại bắt làm báo cáo cuối tháng.”",
   "en": ""
  },
  {
-  "vi": "🗓️ Lịch",
+  "vi": "Anh Đạt bảo đang định bỏ thuốc, hôm nay chỉ mua đúng một điếu.",
   "en": ""
  },
  {
-  "vi": "📖 Sổ",
+  "vi": "Anh Đạt được lên trưởng nhóm, khao cả phòng trà đá.",
   "en": ""
  },
  {
-  "vi": "Khu trong nhà",
+  "vi": "Anh Đạt chuyển sang uống trà nóng, bảo đang cai thuốc tuần thứ hai.",
   "en": ""
  },
  {
-  "vi": "🗓️ Lịch phòng, buồng phòng, vườn & sổ",
+  "vi": "Anh Đạt khoe đã bỏ hẳn thuốc lá, giờ ra đây chỉ để ngồi cho vui.",
   "en": ""
  },
  {
-  "vi": "Quy định phòng nhân sự",
+  "vi": "Linh hỏi bà Lựu hè này quán có cần người phụ không.",
   "en": ""
  },
  {
-  "vi": "🗂️ Phòng nhân sự hôm nay",
+  "vi": "Linh đang ôn thi chuyên Văn, mang cả tập đề ra quán đọc.",
   "en": ""
  },
  {
-  "vi": "Quy định bàn IT",
+  "vi": "Linh thi xong môn Văn, bảo đề hỏi đúng bài em thích.",
   "en": ""
  },
  {
-  "vi": "🖥️ Bàn IT hôm nay",
+  "vi": "Linh đỗ trường chuyên, dẫn cả nhóm ra quán ăn mừng.",
   "en": ""
  },
  {
-  "vi": "· không còn topping khác để mời đổi",
+  "vi": "Linh viết bài văn về “quán trà đá gốc bàng”, được cô giáo đọc trước lớp.",
   "en": ""
  },
  {
-  "vi": "Ngừng bán",
+  "vi": "Cô Hoa: “Cháu bà Lựu đấy à? Trông sáng sủa đấy!”",
   "en": ""
  },
  {
-  "vi": "ngừng bán",
+  "vi": "Cô Hoa kể nhà số 9 sắp cưới con gái, cỗ những ba mươi mâm.",
   "en": ""
  },
  {
-  "vi": "Pha xong trà, đá, đường rồi mới dán nắp",
+  "vi": "Cô Hoa than giá gạo nếp tăng, nồi xôi phải bớt đỗ.",
   "en": ""
  },
  {
-  "vi": "Ly này sai rồi. Đổ ly và pha lại từ đầu?",
+  "vi": "Cô Hoa mang sang cho quán nắm xôi xéo còn nóng hổi.",
   "en": ""
  },
  {
-  "vi": "🗑️ Đổ ly, pha lại",
+  "vi": "Cô Hoa bảo cả phố khen quán trà giờ sạch sẽ hơn hẳn.",
   "en": ""
  },
  {
-  "vi": "⚙️ Dán nắp",
+  "vi": "Anh Hùng: “Uống vội cốc trà thôi em, app nó đếm từng phút.”",
   "en": ""
  },
  {
-  "vi": "máy dán nắp đang ngưng, chờ có điện",
+  "vi": "Anh Hùng bị khách bom hai đơn liền, ngồi thừ ra cả buổi.",
   "en": ""
  },
  {
-  "vi": "✅ Dán nắp",
+  "vi": "Anh Hùng được thưởng tài xế chăm chỉ, mua cho quán một gói chè ngon.",
   "en": ""
  },
  {
-  "vi": "Dán nắp",
+  "vi": "Anh Hùng kể vợ sắp sinh, đang chạy thêm ca tối.",
   "en": ""
  },
  {
-  "vi": "(không gọi)",
+  "vi": "Anh Hùng khoe ảnh con gái mới sinh: “Đặt tên là Trà My, nghe mát không?”",
   "en": ""
  },
  {
-  "vi": "(đang sai, chỉnh lại)",
+  "vi": "Cu Tủn khoe được điểm mười môn Toán.",
   "en": ""
  },
  {
-  "vi": "(sai, cần đổ ly làm lại)",
+  "vi": "Cu Tủn học được cách đếm tiền thối, đòi đứng quầy phụ.",
   "en": ""
  },
  {
-  "vi": "(đã đúng)",
+  "vi": "Cu Tủn bảo bố nó hứa bỏ thuốc lá rồi.",
   "en": ""
  },
  {
-  "vi": "(chưa làm)",
+  "vi": "Bà Lựu giao quán",
   "en": ""
  },
  {
-  "vi": "Món khách gọi",
+  "vi": "Bà Lựu đưa chùm chìa khóa tủ chè: “Bà đau lưng, cháu trông quán hộ bà mấy hôm nhé.”",
   "en": ""
  },
  {
-  "vi": "✓ Ly đã xong · giao cho tài xế",
+  "vi": "Bà dặn: “Chè phải đậm, cốc phải sạch, tiền phải đếm. Khách quen thì nhớ mặt.”",
   "en": ""
  },
  {
-  "vi": "✓ Ly đã xong · trao cho khách",
+  "vi": "Bà Lựu nếm chè",
   "en": ""
  },
  {
-  "vi": "Chọn cách xử lý chuyện ở quầy",
+  "vi": "Bà Lựu chống gậy ra, rót một cốc, nhấp một ngụm: “Được. Có tay rồi đấy.”",
   "en": ""
  },
  {
-  "vi": "👍 Làm tiếp",
+  "vi": "Bà sai cháu nội mang sang hai cái ghế nhựa đỏ: “Thêm chỗ cho khách.”",
   "en": ""
  },
  {
-  "vi": "Khách có thể trả ly.",
+  "vi": "Bàn cờ của ông Khang",
   "en": ""
  },
  {
-  "vi": "· ngừng bán",
+  "vi": "Ông Khang đặt bàn cờ tướng cũ lên bàn: “Để lại quán, ai rảnh thì đánh.”",
   "en": ""
  },
  {
-  "vi": "🚫 ngừng bán ·",
+  "vi": "Từ hôm đó chiều nào gốc bàng cũng có người đứng xem cờ.",
   "en": ""
  },
  {
-  "vi": "Trả tiền khi đặt. Mỗi nhà giao một kiểu: hỏa tốc 15–30 phút, xe bốn chuyến mỗi ngày, chợ chiều nay hoặc sáng mai, xưởng 1–2 ngày.",
+  "vi": "Chiếc ô mới",
   "en": ""
  },
  {
-  "vi": "disabled title=\"Quán cần bán ít nhất một loại trà nền\"",
+  "vi": "Chiếc ô cũ rách một mảng. Bà Lựu dúi tiền: “Mua cái ô to vào, nắng thế này đá tan hết.”",
   "en": ""
  },
  {
-  "vi": "Đang bán",
+  "vi": "Ô mới màu xanh lá, che kín cả bàn. Thùng đá tan chậm hẳn.",
   "en": ""
  },
  {
-  "vi": "Tắt món không muốn bán: khách mới sẽ không gọi, quầy cũng không cần nhập. Ly khách đã gọi vẫn pha như cũ. Luôn giữ ít nhất một loại trà nền.",
+  "vi": "Tấm biển “Trà đá bà Lựu”",
   "en": ""
  },
  {
-  "vi": "món ngừng bán",
+  "vi": "Linh vẽ tặng tấm biển: “Trà đá bà Lựu · Chè đậm, đá mát, có sổ ghi.”",
   "en": ""
  },
  {
-  "vi": "Đổi giá trà nền trước khi mở cửa.",
+  "vi": "Bà Lựu đứng ngắm mãi: “Giờ là quán của hai bà cháu rồi.”",
   "en": ""
  },
  {
-  "vi": "🌙 Khép ca · đủ khách hôm nay",
+  "vi": "Thêm 2 ghế nhựa",
   "en": ""
  },
  {
-  "vi": "🌙 Khép ca · hết giờ đón khách",
+  "vi": "Thêm chỗ ngồi cho nhóm đông.",
   "en": ""
  },
  {
-  "vi": "Nhập giá bằng số nhé.",
+  "vi": "Thêm 4 cốc thủy tinh",
   "en": ""
  },
  {
-  "vi": "· khách chọn",
+  "vi": "Đỡ phải rửa cốc liên tục.",
   "en": ""
  },
  {
-  "vi": "Đơn của khách",
+  "vi": "Ô to che nắng",
   "en": ""
  },
  {
-  "vi": "Còn bước",
+  "vi": "Che kín bàn: đá tan chậm, mưa nhỏ không ướt ghế.",
   "en": ""
  },
  {
-  "vi": "mở cửa tiệm",
+  "vi": "Biển hiệu của quán",
   "en": ""
  },
  {
-  "vi": "Mở cửa tiệm trước",
+  "vi": "Người qua đường nhận ra quán từ xa.",
   "en": ""
  },
  {
-  "vi": "Để riêng món bạn bè đã mua trước",
+  "vi": "Giới thiệu nghề: bán trà đá vỉa hè",
   "en": ""
  },
  {
-  "vi": "chào đời",
+  "vi": "Một chiếc bàn gỗ, bình chè, thùng đá và dăm cái ghế nhựa dưới gốc bàng. Bà Lựu bán ở đây ba mươi năm; mấy hôm nay bà đau lưng, nhờ bạn trông quán.",
   "en": ""
  },
  {
-  "vi": "đầy tháng",
+  "vi": "Dọn hàng: chọn chỗ, bày ghế, dựng ô, đặt thùng đá",
   "en": ""
  },
  {
-  "vi": "thôi nôi",
+  "vi": "Pha bình chè: đủ chè thì đậm, châm nước nhiều là nhạt",
   "en": ""
  },
  {
-  "vi": "giật mình",
+  "vi": "Đập đá, canh thùng đá: trời nóng đá tan rất nhanh",
   "en": ""
  },
  {
-  "vi": "Tắm cho bé",
+  "vi": "Rót trà đá, trà nóng, trà chanh, sấu dầm",
   "en": ""
  },
  {
-  "vi": "bú bình",
+  "vi": "Bán hướng dương, lạc, kẹo lạc, bánh quy, thuốc lẻ",
   "en": ""
  },
  {
-  "vi": "nhìn, nghe",
+  "vi": "Rửa cốc trong chậu, nước đục thì thay",
   "en": ""
  },
  {
-  "vi": "Chân tay",
+  "vi": "Ghi sổ cho chú xe ôm, đến hẹn thì thu",
   "en": ""
  },
  {
-  "vi": "⏳ Chờ thùng",
+  "vi": "Thu tiền lẻ, thối đúng từng xu",
   "en": ""
  },
  {
-  "vi": "Xem xong chuyện ở tiệm",
+  "vi": "Chú Tường xe ôm: bàn chuyện bóng đá, uống ghi sổ",
   "en": ""
  },
  {
-  "vi": "Rút hộp sữa quá hạn khỏi kệ",
+  "vi": "Ông Khang: ngồi cả chiều một cốc, chê chè nhạt",
   "en": ""
  },
  {
-  "vi": "↩︎ Để lại",
+  "vi": "Anh Đạt: ra hút thuốc giữa giờ, đếm tiền kỹ",
   "en": ""
  },
  {
-  "vi": "🥫 Rút",
+  "vi": "Linh và lũ bạn: trà chanh nhiều đá",
   "en": ""
  },
  {
-  "vi": "Xử lý chuyện ở tiệm",
+  "vi": "Cô Hoa: tin gì trong phố cô cũng biết",
   "en": ""
  },
  {
-  "vi": "Chọn cách xử lý chuyện ở tiệm",
+  "vi": "Anh Hùng shipper: uống vội rồi chạy",
   "en": ""
  },
  {
-  "vi": "💬 Hỏi nhu cầu khách",
+  "vi": "Trật tự đô thị: dẹp nhanh kẻo bị phạt, mất ghế",
   "en": ""
  },
  {
-  "vi": "Xem tem trên món",
+  "vi": "Mưa rào, nắng gắt, đêm bóng đá, khách quỵt, người say",
   "en": ""
  },
  {
-  "vi": "Hỏi bố mẹ đủ 3 câu",
+  "vi": "Rót đúng món, đủ số cốc",
   "en": ""
  },
  {
-  "vi": "Chọn đồ đúng điều bố mẹ lo (tối đa 4 loại, 6 món)",
+  "vi": "Chè đậm vừa, không để ôi",
   "en": ""
  },
  {
-  "vi": "Khách chỉ cần 1 món",
+  "vi": "Trà đá có đá, cốc sạch",
   "en": ""
  },
  {
-  "vi": "(khách không hỏi)",
+  "vi": "Thối đúng tiền, ghi sổ đúng số",
   "en": ""
  },
  {
-  "vi": "Giỏ vượt ngân sách khách dặn",
+  "vi": "Không bán thuốc lá cho trẻ con",
   "en": ""
  },
  {
-  "vi": "💌 Chọn thiệp đúng dịp",
+  "vi": "Bày quán gọn, không lấn lòng đường",
   "en": ""
  },
  {
-  "vi": "Kiểm đơn trước khi trao",
+  "vi": "Mưa rào ập tới",
   "en": ""
  },
  {
-  "vi": "kiểm đơn trước",
+  "vi": "Mây đen kéo sập xuống, mưa rào quất ngang vỉa hè. Khách ôm cốc chạy toán loạn, ghế nhựa ướt nhẹp.",
   "en": ""
  },
  {
-  "vi": "⚖️ Chốt cách đổi trả",
+  "vi": "Bê bàn, ghế, thùng đá vào mái hiên tiệm may",
   "en": ""
  },
  {
-  "vi": "việc làm được",
+  "vi": "Mất chút thời gian, quán vẫn bán tiếp",
   "en": ""
  },
  {
-  "vi": "👥 Đồng nghiệp",
+  "vi": "Cả quán dời vào mái hiên. Chật một chút nhưng khô ráo, khách ngồi lại uống trà nóng chờ tạnh.",
   "en": ""
  },
  {
-  "vi": "người nợ bạn",
+  "vi": "Căng tấm bạt che tạm",
   "en": ""
  },
  {
-  "vi": "quy định · chạm để đọc",
+  "vi": "Tốn 4 xu mua bạt",
   "en": ""
  },
  {
-  "vi": "👇 Chọn một đáp án",
+  "vi": "Tấm bạt xanh căng vội qua cành bàng. Dột một góc, nhưng tạm ổn.",
   "en": ""
  },
  {
-  "vi": "Chọn đáp án đang sáng",
+  "vi": "Mưa bóng mây thôi, cứ ngồi nguyên",
   "en": ""
  },
  {
-  "vi": "↕️ Xếp lại bằng ↑ ↓",
+  "vi": "Không tốn gì… nếu mưa tạnh nhanh",
   "en": ""
  },
  {
-  "vi": "✍️ Điền theo chứng từ",
+  "vi": "Mưa hắt ướt hết ghế mà quán cứ để nguyên. Cốc nào cũng lẫn nước mưa.",
   "en": ""
  },
  {
-  "vi": "📥 Bàn làm việc",
+  "vi": "Mưa không tạnh. Mấy cái cốc úp trên bàn lẫn nước mưa, phải rửa lại hết.",
   "en": ""
  },
  {
-  "vi": "thư · lịch & quy định",
+  "vi": "Xe đá đi ngang",
   "en": ""
  },
  {
-  "vi": "· chưa đủ tiền",
+  "vi": "Anh Tuấn xe đá bấm còi tin tin: “Nắng thế này đá tan nhanh lắm, lấy thêm cây không em?”",
   "en": ""
  },
  {
-  "vi": "Chuyện bất ngờ ở văn phòng",
+  "vi": "Lấy thêm 2 cây đá (10 xu)",
   "en": ""
  },
  {
-  "vi": "🗃️ Giấy tờ kèm theo",
+  "vi": "Đắt hơn giao buổi sáng, nhưng có ngay",
   "en": ""
  },
  {
-  "vi": "tờ · chạm để mở",
+  "vi": "Hai cây đá lạnh buốt được thả vào bao tải cạnh thùng.",
   "en": ""
  },
  {
-  "vi": "📞 Vừa đổi:",
+  "vi": "Lấy 1 cây thôi (5 xu)",
   "en": ""
  },
  {
-  "vi": "💡 Hết lượt hỏi",
+  "vi": "Dự phòng một ít",
   "en": ""
  },
  {
-  "vi": "Không sai chỗ nào. Gọn!",
+  "vi": "Thêm một cây đá dự phòng.",
   "en": ""
  },
  {
-  "vi": "Thẻ",
+  "vi": "Thôi, còn đủ",
   "en": ""
  },
  {
-  "vi": "· chưa xếp",
+  "vi": "Nhớ canh thùng đá",
   "en": ""
  },
  {
-  "vi": "Các thẻ",
+  "vi": "Xe đá đi mất hút cuối phố.",
   "en": ""
  },
  {
-  "vi": "Xếp thẻ này vào khay",
+  "vi": "Khách uống xong chuồn thẳng",
   "en": ""
  },
  {
-  "vi": "🗂️ Xếp vào khay",
+  "vi": "Hai thanh niên lạ mặt uống bốn cốc trà đá, cắn hết gói hướng dương rồi đứng dậy nổ máy phóng đi, không trả một đồng.",
   "en": ""
  },
  {
-  "vi": "Vừa đổi",
+  "vi": "Gọi với theo",
   "en": ""
  },
  {
-  "vi": "chạm để sửa",
+  "vi": "Một cậu quay xe lại, gãi đầu: “Em tưởng bạn em trả rồi.” Trả đủ 17 xu.",
   "en": ""
  },
  {
-  "vi": "— ô này đúng chưa?",
+  "vi": "Tiếng gọi chìm trong tiếng còi xe. Mất trắng 17 xu tiền trà và hướng dương.",
   "en": ""
  },
  {
-  "vi": "— sửa thành:",
+  "vi": "Nhờ chú Tường xe ôm đuổi theo",
   "en": ""
  },
  {
-  "vi": "(giữ nguyên)",
+  "vi": "Chú thuộc từng ngõ ngách",
   "en": ""
  },
  {
-  "vi": "Bảng cần soát",
+  "vi": "Chú Tường đuổi kịp ở ngã tư, hai cậu kia xin lỗi rối rít, gửi đủ 17 xu. Chú còn dặn: “Khách lạ thì thu tiền trước nhé.”",
   "en": ""
  },
  {
-  "vi": "🔍 Soát từng chỗ",
+  "vi": "Hai cậu kia vượt đèn đỏ, chú Tường đành quay về: “Thôi, của đi thay người.”",
   "en": ""
  },
  {
-  "vi": "chạm vào chỗ sai để sửa",
+  "vi": "Thôi, coi như làm phúc",
   "en": ""
  },
  {
-  "vi": "Chạm một ô, chọn lý do nếu ô đó sai. Ô đúng thì để nguyên.",
+  "vi": "Mất 17 xu tiền hàng",
   "en": ""
  },
  {
-  "vi": "Chữ gạch chân chấm là chỗ chạm được. Chỗ đúng thì để nguyên.",
+  "vi": "Bạn thở dài dọn bốn cái cốc. Cô Hoa lắc đầu: “Khách lạ thì thu tiền luôn cháu ạ.”",
   "en": ""
  },
  {
-  "vi": "Chưa xếp",
+  "vi": "Ông khách say lè nhè",
   "en": ""
  },
  {
-  "vi": "Việc cần xếp",
+  "vi": "Một ông mặt đỏ gay từ quán nhậu bên kia đường sang, đập bàn đòi “trà pha rượu”, lè nhè trêu cô Hoa.",
   "en": ""
  },
  {
-  "vi": "Bảng phòng và giờ",
+  "vi": "Mời cốc trà nóng đặc, gọi người nhà ra đón",
   "en": ""
  },
  {
-  "vi": "🗓️ Bảng lịch",
+  "vi": "Mềm mỏng, mất chút thời gian",
   "en": ""
  },
  {
-  "vi": "Giờ",
+  "vi": "Uống cốc trà nóng, ông ấy dịu hẳn. Vợ ông ra đón, cúi đầu xin lỗi cả quán.",
   "en": ""
  },
  {
-  "vi": "Điều cần nhớ khi xếp",
+  "vi": "Nói thẳng mời ông đi chỗ khác",
   "en": ""
  },
  {
-  "vi": "👆 Đang xếp:",
+  "vi": "Nhanh gọn, nhưng dễ to chuyện",
   "en": ""
  },
  {
-  "vi": "— chạm một ô trống trên bảng.",
+  "vi": "Ông ấy lầm bầm rồi loạng choạng đi về.",
   "en": ""
  },
  {
-  "vi": "📝 Ghi lại cho đủ",
+  "vi": "Ông ấy nổi khùng đá văng một cái ghế nhựa, gãy cả chân ghế rồi mới chịu đi.",
   "en": ""
  },
  {
-  "vi": "ô",
+  "vi": "Chiều khách, rót thêm cho ông ấy ngồi",
   "en": ""
  },
  {
-  "vi": "Lời người ta nói",
+  "vi": "Yên chuyện trước mắt",
   "en": ""
  },
  {
-  "vi": "🧭 Các bước sẽ làm",
+  "vi": "Quán để người say ngồi trêu phụ nữ cả buổi. Khó chịu!",
   "en": ""
  },
  {
-  "vi": "bước",
+  "vi": "Ông ấy ngồi lì cả tiếng, trêu hết người này đến người khác. Cô Hoa bỏ về giữa chừng.",
   "en": ""
  },
  {
-  "vi": "Chạm các bước bên dưới theo thứ tự sẽ làm. Bước có hại thì bỏ qua.",
+  "vi": "Trông hộ xe",
   "en": ""
  },
  {
-  "vi": "Có thể làm",
+  "vi": "Anh Hùng dựng xe sát bàn: “Trông hộ anh cái xe với thùng hàng nhé, anh chạy lên tầng năm giao đơn, năm phút thôi!”",
   "en": ""
  },
  {
-  "vi": "Trả lời theo cách này? Chọn rồi không đổi được.",
+  "vi": "Dắt xe vào sát gốc bàng rồi trông",
   "en": ""
  },
  {
-  "vi": "Cần tìm hiểu trước",
+  "vi": "Không vướng lối đi, dễ để mắt",
   "en": ""
  },
  {
-  "vi": "🔎 Tìm hiểu",
+  "vi": "Anh Hùng xuống, thấy xe gọn gàng dưới gốc cây: “Chu đáo quá!” Dúi cho 2 xu mua kẹo.",
   "en": ""
  },
  {
-  "vi": "💬 Trả lời thế nào?",
+  "vi": "Ừ, anh cứ đi",
   "en": ""
  },
  {
-  "vi": "👇 Quyết chuyện này trước",
+  "vi": "Xe đứng giữa lối đi",
   "en": ""
  },
  {
-  "vi": "👇 Chọn khay cho thẻ này",
+  "vi": "Năm phút sau anh Hùng xuống, cảm ơn rối rít, dúi 2 xu.",
   "en": ""
  },
  {
-  "vi": "Soát từng chỗ, sửa chỗ sai",
+  "vi": "Một bà cụ đi qua vướng xe suýt ngã. Bạn vội chạy ra đỡ, xin lỗi mãi.",
   "en": ""
  },
  {
-  "vi": "👇 Chạm chỗ sai để sửa",
+  "vi": "Em đang đông khách, anh thông cảm",
   "en": ""
  },
  {
-  "vi": "👇 Chạm một ô trống trên bảng",
+  "vi": "Anh Hùng gật đầu, dắt xe đi gửi chỗ khác.",
   "en": ""
  },
  {
-  "vi": "📤 Nộp lời nhắn",
+  "vi": "Trông hộ đứa bé",
   "en": ""
  },
  {
-  "vi": "Chọn các bước sẽ làm, theo thứ tự",
+  "vi": "Cô Hoa dắt thằng cháu năm tuổi sang: “Trông hộ cô nửa tiếng, cô chạy ra chợ lấy gạo nếp. Nó ngoan lắm!”",
   "en": ""
  },
  {
-  "vi": "👇 Chạm các bước theo thứ tự",
+  "vi": "Cho bé ngồi ghế trong cùng, bóc cho gói bánh quy",
   "en": ""
  },
  {
-  "vi": "📤 Chốt các bước",
+  "vi": "Mất một gói bánh",
   "en": ""
  },
  {
-  "vi": "Chọn cách trả lời",
+  "vi": "Bé ngồi ngoan ăn bánh, xem ông Khang đánh cờ. Cô Hoa về cảm ơn mãi.",
   "en": ""
  },
  {
-  "vi": "👇 Chọn cách trả lời",
+  "vi": "Vâng, cô cứ để đấy",
   "en": ""
  },
  {
-  "vi": "📞 Có thay đổi",
+  "vi": "Vừa bán vừa trông",
   "en": ""
  },
  {
-  "vi": "Làm hồ sơ rồi nộp",
+  "vi": "Bé chơi với con mèo nhà bên, không sao cả.",
   "en": ""
  },
  {
-  "vi": "Hồ sơ đã nộp",
+  "vi": "Đang rót trà thì bé chạy ra mép đường nhặt bóng. Bạn lao theo bế vào, tim đập thình thịch, khách chờ cả lượt.",
   "en": ""
  },
  {
-  "vi": "Chỗ sai trong ngày",
+  "vi": "Cô Hoa hơi phụng phịu nhưng hiểu, bế cháu đi chợ cùng.",
   "en": ""
  },
  {
-  "vi": "Chạm chọn ít nhất một bước trước nhé.",
+  "vi": "Cô Hoa có tin nóng",
   "en": ""
  },
  {
-  "vi": "📦 Nhập",
+  "vi": "Cô Hoa ghé sớm, hạ giọng: “Biết gì chưa? Siêu thị mini Mây Mart sắp mở ngay cạnh tạp hoá cô Ba. Khổ thân cô Ba…”",
   "en": ""
  },
  {
-  "vi": "📜 Nội quy tiệm",
+  "vi": "Rót cốc trà, nghe cô kể",
   "en": ""
  },
  {
-  "vi": "🏪 Tiệm: khử khuẩn, kho, nội quy",
+  "vi": "Cô Hoa kể một mạch. Bạn nghe, gật gù, không thêm bớt gì.",
   "en": ""
  },
  {
-  "vi": "· ✅ đã khử khuẩn",
+  "vi": "Rủ cả phố mua ủng hộ cô Ba",
   "en": ""
  },
  {
-  "vi": "· 🧽 chưa khử khuẩn hôm nay",
+  "vi": "Cô Hoa gật gù: “Ừ, mớ rau bó hành cũng nên mua chỗ quen.” Chiều ấy cô rủ cả hội chợ sang tạp hoá cô Ba.",
   "en": ""
  },
  {
-  "vi": "💊 có đơn thuốc",
+  "vi": "Kể lại cho từng khách nghe cho vui",
   "en": ""
  },
  {
-  "vi": "da nhạy cảm",
+  "vi": "Chuyện càng kể càng to",
   "en": ""
  },
  {
-  "vi": "✂️ chủ muốn móng thật ngắn",
+  "vi": "Ngồi uống trà mà toàn nghe chuyện nhà người khác, mệt.",
   "en": ""
  },
  {
-  "vi": "🚫 không bánh thưởng",
+  "vi": "Đến chiều, tin đồn đã thành “cô Ba sắp dẹp tiệm”. Cô Ba nghe được, buồn lắm.",
   "en": ""
  },
  {
-  "vi": "📋 Phiếu nhận bé & kiểm tra",
+  "vi": "Chuyện quán mì đầu phố",
   "en": ""
  },
  {
-  "vi": "· da nhạy cảm",
+  "vi": "Cô Hoa: “Quán mì cay Mây đầu phố vừa bị đoàn kiểm tra vệ sinh ghé. Sổ sách đủ cả nên người ta chỉ nhắc nhở thôi.”",
   "en": ""
  },
  {
-  "vi": "· da thường",
+  "vi": "Tự thay chậu nước rửa cốc của quán mình",
   "en": ""
  },
  {
-  "vi": "· 💊 có đơn bác sĩ",
+  "vi": "Mất một lượt",
   "en": ""
  },
  {
-  "vi": "✓ Ấm vừa",
+  "vi": "Bạn thay chậu nước mới, tráng lại mấy cái cốc. Bà Lựu gật gù: “Phải thế.”",
   "en": ""
  },
  {
-  "vi": "🥶 Lạnh",
+  "vi": "Nghe cho biết",
   "en": ""
  },
  {
-  "vi": "🥵 Hơi nóng",
+  "vi": "Cô Hoa kể xong lại sang chuyện nhà số 9.",
   "en": ""
  },
  {
-  "vi": "⛔ BỎNG!",
+  "vi": "Anh Hùng bị bom hàng",
   "en": ""
  },
  {
-  "vi": "⚫ Móng đen: chỉ tỉa đầu móng.",
+  "vi": "Anh Hùng ngồi thừ: “Hôm nay bên Giao nhanh Mây Chiều anh bị bom ba đơn thu hộ. Tiền ứng ra chưa biết đòi ai.”",
   "en": ""
  },
  {
-  "vi": "⚪ Móng trắng, thấy tủy.",
+  "vi": "Mời anh cốc trà, không lấy tiền",
   "en": ""
  },
  {
-  "vi": "⚫ Móng đen: chỉ tỉa đầu.",
+  "vi": "Mất 3 xu tiền trà",
   "en": ""
  },
  {
-  "vi": "Chủ muốn cắt thật ngắn.",
+  "vi": "Anh Hùng uống một hơi cạn cốc: “Có cốc trà mát là thấy đời dễ thở hơn.”",
   "en": ""
  },
  {
-  "vi": "💧 Sấy khô trước.",
+  "vi": "Nhắc anh gọi xác nhận khách trước khi chạy",
   "en": ""
  },
  {
-  "vi": "cắt ngắn",
+  "vi": "Anh Hùng gật gù: “Ừ, gọi trước mất một phút mà đỡ mất cả buổi.”",
   "en": ""
  },
  {
-  "vi": "tỉa đầu móng",
+  "vi": "Ừ, nghề nào chẳng có lúc xui",
   "en": ""
  },
  {
-  "vi": "· 🩹 rỉ máu",
+  "vi": "Anh Hùng cười méo xệch rồi lại lên xe.",
   "en": ""
  },
  {
-  "vi": "sấy khô trước",
+  "vi": "Rủ cá độ trận tối nay",
   "en": ""
  },
  {
-  "vi": "🔴 Tai đỏ, hôi: bỏ qua, báo chủ đi thú y.",
+  "vi": "Bàn bên rủ rê: “Đặt cửa đội nhà thắng đi, 20 ăn 40!” Chú Tường cũng đang hăng máu.",
   "en": ""
  },
  {
-  "vi": "đã lau tai",
+  "vi": "Cười trừ, không chơi",
   "en": ""
  },
  {
-  "vi": "bỏ qua lau tai",
+  "vi": "Bạn chỉ rót trà. Xem bóng cho vui là đủ.",
   "en": ""
  },
  {
-  "vi": "🩺 Lạ thì khuyên đi thú y, không tự đoán bệnh.",
+  "vi": "Khuyên chú Tường đừng chơi",
   "en": ""
  },
  {
-  "vi": "làm xong rồi báo",
+  "vi": "Chú Tường gãi đầu: “Ừ, tiền đấy để đóng học cho con.” Chú cất ví vào túi.",
   "en": ""
  },
  {
-  "vi": "Xem dáng đi",
+  "vi": "Đặt 20 xu cho vui",
   "en": ""
  },
  {
-  "vi": "đi khập khiễng",
+  "vi": "Cờ bạc là bác thằng bần",
   "en": ""
  },
  {
-  "vi": "📝 Kiểm trước khi nhận",
+  "vi": "Đội nhà thắng. Bạn được 20 xu, nhưng bà Lựu nghe chuyện thì lắc đầu mãi.",
   "en": ""
  },
  {
-  "vi": "Kiểm trước khi nhận",
+  "vi": "Đội nhà thua. Mất 20 xu, bằng tiền bán gần bảy cốc trà.",
   "en": ""
  },
  {
-  "vi": "🙏 Hoặc từ chối lịch sự",
+  "vi": "Tổ trưởng dân phố nhắc",
   "en": ""
  },
  {
-  "vi": "sổ tiêm, bệnh, hết chuồng",
+  "vi": "Bác tổ trưởng dân phố ghé: “Mấy hôm này phường ra quân dẹp vỉa hè đấy. Cháu kê ghế gọn vào, đừng lấn ra lòng đường nhé.”",
   "en": ""
  },
  {
-  "vi": "Chủ dặn: không bánh thưởng",
+  "vi": "Cảm ơn bác, kê ghế gọn sát gốc cây",
   "en": ""
  },
  {
-  "vi": "· bé không ăn",
+  "vi": "Bác tổ trưởng gật đầu, xin cốc trà đá rồi đi báo tiếp các nhà.",
   "en": ""
  },
  {
-  "vi": "đã dắt đi dạo",
+  "vi": "“Ai chẳng bày ra thế hả bác”",
   "en": ""
  },
  {
-  "vi": "Nhà gia đình:",
+  "vi": "Bác tổ trưởng lắc đầu: “Tùy cháu, bị phạt thì đừng kêu.”",
   "en": ""
  },
  {
-  "vi": "🚰 Khóa vòi · nước đã trong",
+  "vi": "Cu Tủn mua thuốc lá cho bố",
   "en": ""
  },
  {
-  "vi": "⏹️ Tắt máy sấy · khô rồi",
+  "vi": "Cu Tủn chìa tờ tiền: “Cô ơi, bố cháu bảo mua ba điếu thuốc.” Ông bố đứng tít đầu ngõ, vẫy vẫy.",
   "en": ""
  },
  {
-  "vi": "⏹️ Tắt máy sấy ngay!",
+  "vi": "Bạn là Cu Tủn, học lớp 5, bị bố sai ra quán mua thuốc lá.",
   "en": ""
  },
  {
-  "vi": "Chào bé khách quen, hỏi thăm lần trước",
+  "vi": "Tuổi của khách",
   "en": ""
  },
  {
-  "vi": "👋 Gọi tên bé, hỏi thăm",
+  "vi": "Cu Tủn mới mười tuổi. Luật không cho bán thuốc lá cho người dưới 18 tuổi.",
   "en": ""
  },
  {
-  "vi": ", khuyên đi thú y",
+  "vi": "Ông bố ở đầu ngõ",
   "en": ""
  },
  {
-  "vi": "📝 Ghi lời báo cho chủ",
+  "vi": "Nhìn ra đầu ngõ",
   "en": ""
  },
  {
-  "vi": "💬 Chọn ý báo lại cho chủ",
+  "vi": "Bố Cu Tủn đứng cách quán chừng hai chục bước chân, đang nói điện thoại.",
   "en": ""
  },
  {
-  "vi": "Báo lại cho chủ",
+  "vi": "Chuyện hằng ngày",
   "en": ""
  },
  {
-  "vi": "Sấy khô tới chân lông rồi tắt máy",
+  "vi": "Cô Hoa bảo: “Ông ấy sai thằng bé mua suốt, quán nào cũng bán cho.”",
   "en": ""
  },
  {
-  "vi": "Bé nhảy khỏi bàn: đưa bé về an toàn",
+  "vi": "Từ chối nhẹ nhàng, mời bố cháu ra tự mua",
   "en": ""
  },
  {
-  "vi": "🚪 Đóng cửa, ngồi thấp, gọi tên nhỏ nhẹ",
+  "vi": "Quán không bán thuốc cho con tôi, còn nói khéo. Tôi thấy ngượng, mà phục.",
   "en": ""
  },
  {
-  "vi": "Móng rỉ máu: rắc bột cầm máu",
+  "vi": "Bố Cu Tủn đi ra, gãi đầu: “Ừ, chú sai rồi.” Ông tự mua, còn hứa sẽ bớt hút.",
   "en": ""
  },
  {
-  "vi": "Bé hay nhảy khỏi bàn: đeo vòng giữ",
+  "vi": "Cháu cứ tưởng mua hộ thì không sao.",
   "en": ""
  },
  {
-  "vi": "Chải gỡ rối trước khi tắm",
+  "vi": "Bố Cu Tủn",
   "en": ""
  },
  {
-  "vi": "Chọn sữa tắm hợp với bé",
+  "vi": "Người ta từ chối con mình, mình mới giật mình nghĩ lại.",
   "en": ""
  },
  {
-  "vi": "🧴 Chọn sữa tắm hợp với bé",
+  "vi": "Bán cho trẻ con một điếu là mất cả cái tiếng ba mươi năm.",
   "en": ""
  },
  {
-  "vi": "🚿 Mở vòi xả thêm",
+  "vi": "“Không bán cho trẻ con!” rồi quay đi",
   "en": ""
  },
  {
-  "vi": "💨 Chọn nấc sấy",
+  "vi": "Đúng là không nên bán, nhưng quát thằng bé làm gì.",
   "en": ""
  },
  {
-  "vi": "Hỏi chủ đồng ý rọ mõm mềm",
+  "vi": "Cu Tủn mếu máo chạy về. Bố cháu phải tự ra mua, mặt hơi khó chịu.",
   "en": ""
  },
  {
-  "vi": "Đeo rọ mõm trước khi cầm chân bé",
+  "vi": "Cháu có làm gì sai đâu…",
   "en": ""
  },
  {
-  "vi": "Quấn khăn giữ bé trước khi cắt móng",
+  "vi": "Đúng luật, nhưng nói với trẻ con thì nhẹ nhàng thôi.",
   "en": ""
  },
  {
-  "vi": "🌯 Quấn khăn giữ bé",
+  "vi": "Bán luôn, bố nó sai mà",
   "en": ""
  },
  {
-  "vi": "(móng đen)",
+  "vi": "Quán bán thuốc lá cho trẻ con. Không chấp nhận được!",
   "en": ""
  },
  {
-  "vi": "✂️ Chọn cách cắt móng",
+  "vi": "Mẹ Cu Tủn biết chuyện, sang tận quán nói to cả phố nghe.",
   "en": ""
  },
  {
-  "vi": "bỏ qua",
+  "vi": "Mẹ Cu Tủn",
   "en": ""
  },
  {
-  "vi": "🙅 Bỏ qua lau tai · tai có vấn đề",
+  "vi": "Hôm nay mua hộ, mai nó hút thử thì sao?",
   "en": ""
  },
  {
-  "vi": "👂 Lau tai hay bỏ qua?",
+  "vi": "Vài xu mà mang tiếng cả đời.",
   "en": ""
  },
  {
-  "vi": "Bé đang hoảng: cho bé nghỉ đã",
+  "vi": "Người mua là trẻ con thì không bán thuốc lá, dù ai sai đi mua; từ chối cho khéo để người lớn tự nghĩ lại.",
   "en": ""
  },
  {
-  "vi": "Bé đang căng thẳng: dỗ bé đã",
+  "vi": "Chú Tường cãi sổ",
   "en": ""
  },
  {
-  "vi": "Còn:",
+  "vi": "Đến hẹn trả sổ, chú Tường lật trang: “Hôm ấy chú uống có một cốc, sao ghi những ba cốc?”",
   "en": ""
  },
  {
-  "vi": "Tắt vòi / máy sấy trước",
+  "vi": "Dòng trong sổ",
   "en": ""
  },
  {
-  "vi": "Sổ tiêm không đủ hạn: từ chối lịch sự",
+  "vi": "Dòng ghi: “2 trà đá, 1 gói lạc — 11 xu”, kèm ngày.",
   "en": ""
  },
  {
-  "vi": "Bé có dấu hiệu bệnh: từ chối, mời đi khám",
+  "vi": "Hôm đó ngồi cùng ai",
   "en": ""
  },
  {
-  "vi": "Hết chuồng phù hợp: từ chối lịch sự",
+  "vi": "Ông Khang nhớ hôm đó chú Tường khao bạn xe ôm một cốc.",
   "en": ""
  },
  {
-  "vi": "Kiểm bé trước khi nhận",
+  "vi": "Thói quen ghi sổ",
   "en": ""
  },
  {
-  "vi": "🙏 Chọn lý do từ chối",
+  "vi": "Bà Lựu dặn: ghi từng món, có ngày, có tên người ngồi cùng.",
   "en": ""
  },
  {
-  "vi": "Chọn chuồng hợp loài, hợp cân nặng",
+  "vi": "Cho chú xem dòng sổ, nhắc hôm ấy chú khao bạn",
   "en": ""
  },
  {
-  "vi": "Ghi kế hoạch ăn theo bảng",
+  "vi": "Sổ sách rõ ràng từng món, tôi nhớ nhầm thật. Quán làm ăn tử tế.",
   "en": ""
  },
  {
-  "vi": "🥣 Tính khẩu phần rồi bấm 💾 Ghi",
+  "vi": "Chú Tường vỗ trán: “À đúng rồi, khao thằng Bảy!” Chú trả đủ, còn cười xòa.",
   "en": ""
  },
  {
-  "vi": "Xem sổ tiêm, chọn chuồng và ghi kế hoạch ăn trước",
+  "vi": "Có sổ có ngày, chú cãi làm gì nữa.",
   "en": ""
  },
  {
-  "vi": "Xem bé trước khi cho ăn",
+  "vi": "Ghi sổ kỹ thì không ai mất lòng ai.",
   "en": ""
  },
  {
-  "vi": "Cho ăn đúng loại, đúng bảng",
+  "vi": "Thôi bỏ dòng đó cho chú",
   "en": ""
  },
  {
-  "vi": "🥣 Cân khẩu phần rồi cho ăn",
+  "vi": "Quán dễ tính, nhưng cứ thế thì lỗ mất.",
   "en": ""
  },
  {
-  "vi": "💊 Đọc nhãn, chọn liều",
+  "vi": "Chú Tường vui, quán mất 11 xu. Bà Lựu nghe chuyện chỉ thở dài.",
   "en": ""
  },
  {
-  "vi": "🦮 Dắt bé đi dạo",
+  "vi": "Được cái dễ tính!",
   "en": ""
  },
  {
-  "vi": "túi nhặt phân",
+  "vi": "Dễ tính một lần thì lần sau ai cũng cãi sổ.",
   "en": ""
  },
  {
-  "vi": "Cho bé ăn và uống thuốc trước",
+  "vi": "Cãi to: “Sổ ghi thế thì trả thế!”",
   "en": ""
  },
  {
-  "vi": "Cho bé ăn trước",
+  "vi": "Có mấy xu mà quát khách quen giữa phố.",
   "en": ""
  },
  {
-  "vi": "Hỏi nếp nhà của gia đình",
+  "vi": "Chú Tường trả tiền, mặt nặng như chì. Mấy hôm sau chú ngồi quán khác.",
   "en": ""
  },
  {
-  "vi": "🐾 Chọn bé hợp nếp nhà",
+  "vi": "Hai mươi năm uống trà ở đây mà bị quát.",
   "en": ""
  },
  {
-  "vi": "Hỏi nếp nhà rồi chọn một bé",
+  "vi": "Đúng mà nói to thì cũng thành sai.",
   "en": ""
  },
  {
-  "vi": "🔔 Ra quầy quyết giúp",
+  "vi": "Sổ ghi nợ phải có ngày, có món, có số; khi khách thắc mắc thì cùng xem sổ, nói nhỏ nhẹ.",
   "en": ""
  },
  {
-  "vi": "Nước còn đục bọt. Nút sáng lên khi xả đủ.",
+  "vi": "Trật tự đô thị ghé phố",
   "en": ""
  },
  {
-  "vi": "Chân lông còn ẩm. Nút sáng lên khi khô.",
+  "vi": "Xe trật tự đô thị dừng ở đầu phố, loa phát: “Đề nghị các hộ kinh doanh không lấn chiếm vỉa hè, lòng đường!”",
   "en": ""
  },
  {
-  "vi": "Phí nhận nuôi",
+  "vi": "Vạch sơn vỉa hè",
   "en": ""
  },
  {
-  "vi": "🎨 Khách dặn màu",
+  "vi": "Nhìn xuống chân",
   "en": ""
  },
  {
-  "vi": "Chọn màu khách dặn",
+  "vi": "Phường kẻ vạch: được bày trong 1,5 mét sát tường, chừa lối cho người đi bộ.",
   "en": ""
  },
  {
-  "vi": "🎨 Chọn",
+  "vi": "Ghế đang bày",
   "en": ""
  },
  {
-  "vi": "TIỆM THÚ NHỎ",
+  "vi": "Quán",
   "en": ""
  }
 ]

@@ -1,0 +1,1802 @@
+[
+ {
+  "vi": "Bếp giữ nhiệt và bộ trụng phở",
+  "en": ""
+ },
+ {
+  "vi": "Nồi cơm và bếp nướng cải tiến",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đèn và linh kiện máy ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Máy hút bụi và bộ lau nhà",
+  "en": ""
+ },
+ {
+  "vi": "Bộ nồi và bếp gia đình",
+  "en": ""
+ },
+ {
+  "vi": "Bộ chuẩn bị bữa và đồ chăm bé",
+  "en": ""
+ },
+ {
+  "vi": "Máy quét mã vạch và máy hút ẩm kho",
+  "en": ""
+ },
+ {
+  "vi": "Máy quét và bộ xử lý hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Bộ máy trạm và thiết bị văn phòng",
+  "en": ""
+ },
+ {
+  "vi": "Bộ chẩn đoán và linh kiện dự phòng",
+  "en": ""
+ },
+ {
+  "vi": "Bộ cờ đèn và tay quay cần chắn",
+  "en": ""
+ },
+ {
+  "vi": "Xe tiêm và bộ máy đo cầm tay",
+  "en": ""
+ },
+ {
+  "vi": "Giảm thời gian chạy tuyến và tăng tốc xe khi tự lái.",
+  "en": ""
+ },
+ {
+  "vi": "Tăng nhịp chiết cà phê, đánh sữa và lò nướng cho lượt bắt đầu mới.",
+  "en": ""
+ },
+ {
+  "vi": "Đang thực hiện yêu cầu",
+  "en": ""
+ },
+ {
+  "vi": "Đang đón và hỏi khách",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tiệm cần chuẩn bị một yêu cầu nghề nghiệp còn trống.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên đang phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Chủ quầy phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên cần đủ quỹ để nhận thêm đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy cần nhập thêm hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm này đã đóng.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập để ghé chỗ làm của bạn bè.",
+  "en": ""
+ },
+ {
+  "vi": "Người chơi đã rời",
+  "en": ""
+ },
+ {
+  "vi": "Thanh toán đơn đã phục vụ tại quầy đã đóng",
+  "en": ""
+ },
+ {
+  "vi": "Thanh toán đơn khách thật",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tiền đơn chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy chỗ làm này.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn danh sách chỗ làm.",
+  "en": ""
+ },
+ {
+  "vi": "Trang không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin đặt dịch vụ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu mã thao tác đặt đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi đơn gồm một dịch vụ.",
+  "en": ""
+ },
+ {
+  "vi": "Hãy ghé chỗ làm của người khác nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ này hiện chưa sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "Giá đã thay đổi. Xem lại giá trước khi đặt nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ khách thật dùng ví hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ tiền đơn chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm hiện không nhận đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin dịch vụ đã đổi. Xem giá mới trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang có nhiều đơn chờ. Hoàn thành hoặc hủy bớt nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm đang có nhiều khách chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã giữ tiền cho đơn; trạng thái phục vụ được cập nhật tại đây.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin nhận đơn không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn không còn chờ nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Không thể nhận đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ quầy cần trực tiếp nhận đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn đã được xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm không còn nhận khách này.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhận khách. Vào nghề để phục vụ yêu cầu thực tế nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin hủy đơn không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn đã bắt đầu phục vụ, không thể hủy ở đây.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn đã dừng và tiền đã hoàn về ví khách.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin nhận tiền không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đối soát các đơn đã phục vụ thực tế.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn ai được ghé chỗ làm.",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy chỗ làm của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cập nhật quyền ghé chỗ làm.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin đánh giá không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn từ 1 đến 5 sao.",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn đánh giá không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ đánh giá dịch vụ đã được phục vụ và thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Không thể gửi nội dung cho đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi đơn chỉ có một đánh giá xác thực.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đánh giá để trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã trả lời đánh giá này.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lưu đánh giá xác thực.",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi lời cảm ơn khách.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác chỗ làm không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: một món đồ em bé",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: xuất một hộp theo phiếu đã kiểm",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ riêng: phân loại và đối chiếu phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ riêng: xác minh và trả lời một yêu cầu",
+  "en": ""
+ },
+ {
+  "vi": "Buổi riêng: hỗ trợ một bài thực hành",
+  "en": ""
+ },
+ {
+  "vi": "Lượt riêng: hướng dẫn khách tại điểm tham quan",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: trà sữa size M không topping",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: mì kim chi mang về",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: gói một cành hồng",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: một túi gạo",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: chuẩn bị luống và gieo hạt thuê",
+  "en": ""
+ },
+ {
+  "vi": "Lượt riêng: thay ga và chuẩn bị phòng thuê",
+  "en": ""
+ },
+ {
+  "vi": "Lượt riêng: vệ sinh và chăm sóc thú cưng",
+  "en": ""
+ },
+ {
+  "vi": "Lượt riêng: gội và cắt tóc đơn giản",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ riêng: kiểm chứng từ doanh nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ riêng: rà soát bảng lương",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ riêng: đối chiếu nội bộ",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: áo thun đúng cỡ",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: thức ăn chó trưởng thành",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: trà nóng và bánh quy",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: một phần xoài",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: thu gom một bao rác",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: dọn và sắp xếp một phòng",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: hộp kem dừa mang về 1,2 kg",
+  "en": ""
+ },
+ {
+  "vi": "Lượt riêng: cắt dũa và sơn móng thường",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: chuẩn bị vật phẩm theo đặt hàng",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: phở chín mang về",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng: cơm trứng rau mang về",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: lau kính một phòng",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: chuẩn bị một phần ăn đặt trước",
+  "en": ""
+ },
+ {
+  "vi": "Lượt riêng: hỗ trợ một buổi trông trẻ",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: bao bìa, dán nhãn một chồng sách cho trường",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: hỗ trợ kiểm tra kế hoạch bay",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: chuẩn bị một lượt phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: chăm sóc người bệnh theo yêu cầu của khoa",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ riêng: kiểm và lưu hồ sơ nhân sự",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: chuẩn bị lịch và hồ sơ cuộc họp",
+  "en": ""
+ },
+ {
+  "vi": "Yêu cầu riêng: kiểm tra và hỗ trợ thiết bị",
+  "en": ""
+ },
+ {
+  "vi": "Việc riêng: trực gác thay một ca ngắn",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên đang xử lý đơn riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Nơi làm việc đã đóng ca.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã tạm dừng đơn của nhân viên.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có nhân viên trong ca.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên đang nghỉ hoặc chờ xử lý sự cố.",
+  "en": ""
+ },
+ {
+  "vi": "Hết nguyên liệu cho đơn riêng; nhập hàng để tiếp tục.",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ nơi làm việc không đủ trả lương và vật tư trước đơn tiếp theo.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ thu chi đã đạt giới hạn lưu trữ.",
+  "en": ""
+ },
+ {
+  "vi": "Lương đơn riêng",
+  "en": ""
+ },
+ {
+  "vi": "Vật tư đơn riêng",
+  "en": ""
+ },
+ {
+  "vi": "Thưởng 40% lợi nhuận",
+  "en": ""
+ },
+ {
+  "vi": "đơn riêng",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi đơn trả 1/4 lương ca, làm tròn lên; vật tư trừ quỹ nơi làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên đang phục vụ khách người chơi.",
+  "en": ""
+ },
+ {
+  "vi": "quần áo còn size bán được",
+  "en": ""
+ },
+ {
+  "vi": "cho đơn riêng; nhập hàng để đội làm tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu đơn riêng của nhân viên không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Không có phần dữ liệu này.",
+  "en": ""
+ },
+ {
+  "vi": "Chờ một chút rồi cập nhật giá nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tham số không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Khoảng ngày chỉ nhận 7, 30 hoặc 90.",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang bận, thử lại sau ít giây nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không có mục thống kê này.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ mục Giữ chân và Tổng quan đầu tư có bản CSV.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu đang được tính, thử lại sau ít giây nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không có phần báo cáo này.",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang bận, thử lại sau giây lát.",
+  "en": ""
+ },
+ {
+  "vi": "Thử quá nhiều lần. Chờ một phút rồi thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Từ từ thôi, hội chợ còn dài mà!",
+  "en": ""
+ },
+ {
+  "vi": "Từ từ thôi, bày trí chậm lại chút nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Không nhận từ website khác.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu nguồn gửi.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có phiên chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã dừng. Tiến trình đã được lưu.",
+  "en": ""
+ },
+ {
+  "vi": "Nhấn Ctrl+C để dừng.",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ phản hồi quá lâu. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mất kết nối máy chủ. Thử lại sau nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Thô tục",
+  "en": ""
+ },
+ {
+  "vi": "Lộ thông tin",
+  "en": ""
+ },
+ {
+  "vi": "🛟 An toàn / trẻ vị thành niên",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn riêng",
+  "en": ""
+ },
+ {
+  "vi": "10 phút",
+  "en": ""
+ },
+ {
+  "vi": "1 giờ",
+  "en": ""
+ },
+ {
+  "vi": "24 giờ",
+  "en": ""
+ },
+ {
+  "vi": "1 tin/phút · 1 giờ",
+  "en": ""
+ },
+ {
+  "vi": "1 tin/2 phút · 24 giờ",
+  "en": ""
+ },
+ {
+  "vi": "30 giây/tin · 1 giờ",
+  "en": ""
+ },
+ {
+  "vi": "1 phút/tin · 1 giờ",
+  "en": ""
+ },
+ {
+  "vi": "1 phút/tin · 3 giờ",
+  "en": ""
+ },
+ {
+  "vi": "tên chat",
+  "en": ""
+ },
+ {
+  "vi": "tên Phố nghề",
+  "en": ""
+ },
+ {
+  "vi": "tên nhân vật",
+  "en": ""
+ },
+ {
+  "vi": "Tìm chữ, tên hoặc mã người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Tìm tin nhắn",
+  "en": ""
+ },
+ {
+  "vi": "Tìm",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ lọc",
+  "en": ""
+ },
+ {
+  "vi": "Tin bị bộ lọc che (•••) có thêm dòng",
+  "en": ""
+ },
+ {
+  "vi": "Gốc",
+  "en": ""
+ },
+ {
+  "vi": ": chữ người chơi gõ, chỉ quản trị thấy. Tin trước bản 1.2.2 chỉ còn bản đã che.",
+  "en": ""
+ },
+ {
+  "vi": "Tải cũ hơn",
+  "en": ""
+ },
+ {
+  "vi": "đã xem đến tin #",
+  "en": ""
+ },
+ {
+  "vi": "· còn tin cũ hơn",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo, ẩn tin và khóa chat",
+  "en": ""
+ },
+ {
+  "vi": "Không có tin nào bị báo cáo. 👌",
+  "en": ""
+ },
+ {
+  "vi": "Mở khóa",
+  "en": ""
+ },
+ {
+  "vi": "bởi @",
+  "en": ""
+ },
+ {
+  "vi": "Không ai đang bị khóa chat.",
+  "en": ""
+ },
+ {
+  "vi": "Bình thường (mặc định của máy chủ).",
+  "en": ""
+ },
+ {
+  "vi": "Tắt chế độ chậm",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ chậm",
+  "en": ""
+ },
+ {
+  "vi": "Không ai đang bị cho chậm. Bấm 🐢 ở một tin nhắn để làm chậm người gửi.",
+  "en": ""
+ },
+ {
+  "vi": "Không có tên nào vi phạm bộ lọc tên. 👌",
+  "en": ""
+ },
+ {
+  "vi": "Không tự đổi tên ai. Bấm \"Đổi tên an toàn\" để đổi tên vi phạm thành tên gợi ý; tiến trình và tiền của người chơi giữ nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi tên an toàn →",
+  "en": ""
+ },
+ {
+  "vi": "Cho chậm",
+  "en": ""
+ },
+ {
+  "vi": "Đã ẩn",
+  "en": ""
+ },
+ {
+  "vi": "Tự ẩn",
+  "en": ""
+ },
+ {
+  "vi": "Xem tin của người này",
+  "en": ""
+ },
+ {
+  "vi": "Xem cả cuộc trò chuyện",
+  "en": ""
+ },
+ {
+  "vi": "📢 Quản trị",
+  "en": ""
+ },
+ {
+  "vi": "báo cáo",
+  "en": ""
+ },
+ {
+  "vi": "(đã thu hồi)",
+  "en": ""
+ },
+ {
+  "vi": "Hiện lại",
+  "en": ""
+ },
+ {
+  "vi": "Ẩn",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo an toàn / trẻ vị thành niên: xem kỹ ngữ cảnh (hẹn gặp, hỏi địa chỉ, tuổi, trường, số điện thoại…). Khóa chat hoặc cho chậm nếu cần; hệ thống không tự cấm ai.",
+  "en": ""
+ },
+ {
+  "vi": "Ẩn tin này",
+  "en": ""
+ },
+ {
+  "vi": "Giữ (không vi phạm)",
+  "en": ""
+ },
+ {
+  "vi": "Đã ẩn tin nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã giữ tin nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã bật chế độ chậm cho Cả phố.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cho người này chậm lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đã tắt chế độ chậm.",
+  "en": ""
+ },
+ {
+  "vi": "Đã mở khóa chat.",
+  "en": ""
+ },
+ {
+  "vi": "Chờ vào game",
+  "en": ""
+ },
+ {
+  "vi": "Đã vào ví",
+  "en": ""
+ },
+ {
+  "vi": "Đã xem thiệp",
+  "en": ""
+ },
+ {
+  "vi": "mới nhất",
+  "en": ""
+ },
+ {
+  "vi": "Tặng xu vào ví người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Tên đăng nhập (vd. be_na)",
+  "en": ""
+ },
+ {
+  "vi": "Tìm tài khoản theo tên đăng nhập",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ tìm",
+  "en": ""
+ },
+ {
+  "vi": "Tìm theo đầu tên đăng nhập; để trống: 50 tài khoản mới nhất. Xu vào 👛 Ví khi người chơi vào game lần tới (một lần, kèm thiệp “Quà từ Phố Có Chuyện”).",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có tài khoản nào.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tặng quà nào.",
+  "en": ""
+ },
+ {
+  "vi": "Quà đã tặng",
+  "en": ""
+ },
+ {
+  "vi": "50 gần nhất",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Tặng xu",
+  "en": ""
+ },
+ {
+  "vi": "bằng công cụ",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu.",
+  "en": ""
+ },
+ {
+  "vi": "Cần tiêu đề thiệp.",
+  "en": ""
+ },
+ {
+  "vi": "trên",
+  "en": ""
+ },
+ {
+  "vi": "xu: sẽ hỏi lại",
+  "en": ""
+ },
+ {
+  "vi": "Số xu",
+  "en": ""
+ },
+ {
+  "vi": "Tiêu đề thiệp",
+  "en": ""
+ },
+ {
+  "vi": "(để như mẫu hoặc sửa tùy ý)",
+  "en": ""
+ },
+ {
+  "vi": "Tặng",
+  "en": ""
+ },
+ {
+  "vi": "Sửa lại",
+  "en": ""
+ },
+ {
+  "vi": "Tôi chắc chắn tặng đúng",
+  "en": ""
+ },
+ {
+  "vi": "Chậm lại một chút rồi thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đang tải góp ý…",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách góp ý",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một góp ý để đọc và trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "đã đáp",
+  "en": ""
+ },
+ {
+  "vi": "tài khoản @",
+  "en": ""
+ },
+ {
+  "vi": "(người chơi thấy ngay dưới góp ý của họ)",
+  "en": ""
+ },
+ {
+  "vi": "Ngữ cảnh gửi kèm",
+  "en": ""
+ },
+ {
+  "vi": "Tổng quan",
+  "en": ""
+ },
+ {
+  "vi": "Tăng trưởng",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động",
+  "en": ""
+ },
+ {
+  "vi": "Giữ chân",
+  "en": ""
+ },
+ {
+  "vi": "Gắn bó",
+  "en": ""
+ },
+ {
+  "vi": "Kinh tế",
+  "en": ""
+ },
+ {
+  "vi": "Chất lượng",
+  "en": ""
+ },
+ {
+  "vi": "Hạ tầng",
+  "en": ""
+ },
+ {
+  "vi": "Cách tính",
+  "en": ""
+ },
+ {
+  "vi": "Giải thích:",
+  "en": ""
+ },
+ {
+  "vi": "chưa có số liệu",
+  "en": ""
+ },
+ {
+  "vi": "ít dữ liệu · n=",
+  "en": ""
+ },
+ {
+  "vi": "khoảng tin cậy 95%:",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay (chưa hết ngày)",
+  "en": ""
+ },
+ {
+  "vi": "đã qua",
+  "en": ""
+ },
+ {
+  "vi": "chưa đủ 30 ngày",
+  "en": ""
+ },
+ {
+  "vi": "người mới 30 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Chưa bật",
+  "en": ""
+ },
+ {
+  "vi": "Ra mắt (bản đầu)",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký ngày từ",
+  "en": ""
+ },
+ {
+  "vi": "Số ngày có số liệu",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đếm mới từ",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu lúc",
+  "en": ""
+ },
+ {
+  "vi": "Game mới có",
+  "en": ""
+ },
+ {
+  "vi": "ít dữ liệu",
+  "en": ""
+ },
+ {
+  "vi": "Về số liệu này",
+  "en": ""
+ },
+ {
+  "vi": "chưa từng thao tác (đã loại khỏi “đã chơi”)",
+  "en": ""
+ },
+ {
+  "vi": "người đã chơi",
+  "en": ""
+ },
+ {
+  "vi": "người chơi mới ÷ lượt mở mới",
+  "en": ""
+ },
+ {
+  "vi": "So với kỳ trước",
+  "en": ""
+ },
+ {
+  "vi": "so với 7 ngày trước",
+  "en": ""
+ },
+ {
+  "vi": "so với 30 ngày trước",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ ngày đã kết thúc. \"—\": kỳ trước chưa nằm trọn trong lịch sử số liệu.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ chơi trong tuần",
+  "en": ""
+ },
+ {
+  "vi": "Số người có thao tác trong từng giờ (giờ Việt Nam), trung bình theo thứ trong tuần, các ngày đã qua gần nhất (tối đa 28).",
+  "en": ""
+ },
+ {
+  "vi": "Tin cậy 95%",
+  "en": ""
+ },
+ {
+  "vi": "Ngày bắt đầu",
+  "en": ""
+ },
+ {
+  "vi": "Còn quay lại (k trở đi)",
+  "en": ""
+ },
+ {
+  "vi": "Tuần bắt đầu",
+  "en": ""
+ },
+ {
+  "vi": "tuần chưa hết",
+  "en": ""
+ },
+ {
+  "vi": "chưa đủ ngày",
+  "en": ""
+ },
+ {
+  "vi": "chưa đủ một tuần",
+  "en": ""
+ },
+ {
+  "vi": "Đường giữ chân",
+  "en": ""
+ },
+ {
+  "vi": "60 ngày bắt đầu gần nhất",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi người chơi mới được tính một lần, ở ngày bắt đầu; chỉ các ngày bắt đầu đã đủ k ngày. Khoảng tin cậy Wilson 95%: càng ít người càng rộng.",
+  "en": ""
+ },
+ {
+  "vi": "Từ đầu (số đông cứng)",
+  "en": ""
+ },
+ {
+  "vi": "Cùng cách tính trên mọi ngày bắt đầu từ khi có nhật ký, đọc từ số đã đông cứng mỗi ngày (không đổi khi bản lưu bị xoá).",
+  "en": ""
+ },
+ {
+  "vi": "Giữ chân cuốn",
+  "en": ""
+ },
+ {
+  "vi": "Số ngày hoạt động mỗi người",
+  "en": ""
+ },
+ {
+  "vi": "Số ngày",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm theo tuần bắt đầu",
+  "en": ""
+ },
+ {
+  "vi": "% người chơi mới của tuần (thứ Hai–Chủ nhật) còn hoạt động ở tuần thứ k sau đó. T0 = tuần bắt đầu. Ô nhạt: tuần chưa hết.",
+  "en": ""
+ },
+ {
+  "vi": "Tăng trưởng theo tuần",
+  "en": ""
+ },
+ {
+  "vi": "Tuần",
+  "en": ""
+ },
+ {
+  "vi": "Ở lại",
+  "en": ""
+ },
+ {
+  "vi": "Trở lại",
+  "en": ""
+ },
+ {
+  "vi": "Rời đi",
+  "en": ""
+ },
+ {
+  "vi": "Tỉ lệ rời",
+  "en": ""
+ },
+ {
+  "vi": "Chưa hết tuần đầu tiên có số liệu.",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động = mới + ở lại (cũng chơi tuần trước) + trở lại (nghỉ ≥ 1 tuần). Rời đi: chơi tuần trước, tuần này không. * tuần đầu: chưa có tuần trước để so.",
+  "en": ""
+ },
+ {
+  "vi": "người có bạn",
+  "en": ""
+ },
+ {
+  "vi": "ngày đã qua",
+  "en": ""
+ },
+ {
+  "vi": "Trung bình mỗi ngày: người dùng nhóm thao tác ÷ người hoạt động. Thao tác xã hội (bạn bè, chat, hẹn hò) ở mục bên cạnh.",
+  "en": ""
+ },
+ {
+  "vi": "Thành thạo",
+  "en": ""
+ },
+ {
+  "vi": "Ngày TB",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có.",
+  "en": ""
+ },
+ {
+  "vi": "Người có tên trên bảng xếp hạng của nghề; thành thạo = lên cấp 3 ở nghề đó.",
+  "en": ""
+ },
+ {
+  "vi": "người mở game",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác",
+  "en": ""
+ },
+ {
+  "vi": "Ví trung vị",
+  "en": ""
+ },
+ {
+  "vi": "Ví p90",
+  "en": ""
+ },
+ {
+  "vi": "Ví trung bình",
+  "en": ""
+ },
+ {
+  "vi": "Có đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Cỡ mẫu",
+  "en": ""
+ },
+ {
+  "vi": "Mẫu bản lưu chưa được tính (mở “Hệ thống” hoặc chờ lần tính nền).",
+  "en": ""
+ },
+ {
+  "vi": "mỗi người mỗi ngày",
+  "en": ""
+ },
+ {
+  "vi": "Xu theo nhóm thao tác",
+  "en": ""
+ },
+ {
+  "vi": "Tạo ra",
+  "en": ""
+ },
+ {
+  "vi": "Tiêu đi",
+  "en": ""
+ },
+ {
+  "vi": "Ròng",
+  "en": ""
+ },
+ {
+  "vi": "Đang thu thập (bắt đầu từ bản này).",
+  "en": ""
+ },
+ {
+  "vi": "Thay đổi số xu (ví + quỹ nơi làm + ngân hàng) sau mỗi thao tác. Tiền chuyển giữa ví, quỹ và ngân hàng không tính; vay được tính là xu vào, trả nợ là xu ra. Quà và quỹ chung giữa hai người chơi chưa được tính.",
+  "en": ""
+ },
+ {
+  "vi": "Ví người chơi (mẫu)",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn xu lớn nhất",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ tiêu xu lớn nhất",
+  "en": ""
+ },
+ {
+  "vi": "Phản hồi góp ý",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sau (trung vị)",
+  "en": ""
+ },
+ {
+  "vi": "Còn chờ",
+  "en": ""
+ },
+ {
+  "vi": "Tổng góp ý",
+  "en": ""
+ },
+ {
+  "vi": "mọi tiến trình",
+  "en": ""
+ },
+ {
+  "vi": "tiến trình này",
+  "en": ""
+ },
+ {
+  "vi": "Lượt gọi",
+  "en": ""
+ },
+ {
+  "vi": "Thành công",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi · bận",
+  "en": ""
+ },
+ {
+  "vi": "Bị lọc",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn người mới",
+  "en": ""
+ },
+ {
+  "vi": "Tỉ lệ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có người mới được ghi nguồn.",
+  "en": ""
+ },
+ {
+  "vi": "Hệ điều hành",
+  "en": ""
+ },
+ {
+  "vi": "Loại máy",
+  "en": ""
+ },
+ {
+  "vi": "Trình duyệt / ứng dụng",
+  "en": ""
+ },
+ {
+  "vi": "Ngôn ngữ trình duyệt",
+  "en": ""
+ },
+ {
+  "vi": "Lượt mở của bot",
+  "en": ""
+ },
+ {
+  "vi": "Bot (máy tìm kiếm, xem trước liên kết) cũng tạo bản lưu; chúng không bao giờ thành \"người chơi mới\" vì không thao tác.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đo (mẫu bản lưu chưa tính).",
+  "en": ""
+ },
+ {
+  "vi": "Tiến trình · CPU",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác / phút (lúc này)",
+  "en": ""
+ },
+ {
+  "vi": "sau nén",
+  "en": ""
+ },
+ {
+  "vi": "chưa nén",
+  "en": ""
+ },
+ {
+  "vi": "Bảng lớn nhất",
+  "en": ""
+ },
+ {
+  "vi": "Bảng",
+  "en": ""
+ },
+ {
+  "vi": "Số dòng",
+  "en": ""
+ },
+ {
+  "vi": "Số dòng đếm nền mỗi 2 phút; bảng lớn là số ước tính (≈).",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đọc/ghi bản lưu khi người chơi thao tác; số liệu vận hành tính nền theo mẫu, có giới hạn thời gian và tạm dừng khi máy bận, để không làm chậm người chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Phần của tổng quan đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ số",
+  "en": ""
+ },
+ {
+  "vi": "Định nghĩa · cách tính",
+  "en": ""
+ },
+ {
+  "vi": "Chưa bật (0)",
+  "en": ""
+ },
+ {
+  "vi": "đã kết thúc (đến hết hôm qua)",
+  "en": ""
+ },
+ {
+  "vi": "từ đầu nhật ký đến hết hôm qua",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo số liệu vận hành",
+  "en": ""
+ },
+ {
+  "vi": "(giờ Việt Nam, UTC+7)",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ",
+  "en": ""
+ },
+ {
+  "vi": "Ra mắt",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký theo ngày từ",
+  "en": ""
+ },
+ {
+  "vi": "1. Tổng quan",
+  "en": ""
+ },
+ {
+  "vi": "chưa bật — 0",
+  "en": ""
+ },
+ {
+  "vi": "2. Tăng trưởng",
+  "en": ""
+ },
+ {
+  "vi": "3. Hoạt động",
+  "en": ""
+ },
+ {
+  "vi": "4. Giữ chân",
+  "en": ""
+ },
+ {
+  "vi": "Khoảng tin cậy Wilson 95%.",
+  "en": ""
+ },
+ {
+  "vi": "Theo tuần",
+  "en": ""
+ },
+ {
+  "vi": "5. Gắn bó",
+  "en": ""
+ },
+ {
+  "vi": "Dùng tính năng (7 ngày, % người hoạt động mỗi ngày)",
+  "en": ""
+ },
+ {
+  "vi": "6. Kinh tế",
+  "en": ""
+ },
+ {
+  "vi": "7. Chất lượng & ổn định",
+  "en": ""
+ },
+ {
+  "vi": "8. Nguồn người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn (30 ngày)",
+  "en": ""
+ },
+ {
+  "vi": "9. Hạ tầng",
+  "en": ""
+ },
+ {
+  "vi": "Cơ sở dữ liệu",
+  "en": ""
+ },
+ {
+  "vi": "Dung lượng",
+  "en": ""
+ },
+ {
+  "vi": "Bản lưu (trung vị · p90)",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác/phút lúc xuất",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục: định nghĩa",
+  "en": ""
+ },
+ {
+  "vi": "Định nghĩa",
+  "en": ""
+ },
+ {
+  "vi": "Tổng quan đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Tặng xu",
+  "en": ""
+ },
+ {
+  "vi": "Hệ thống",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo số liệu",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển sang giao diện sáng",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển sang giao diện tối",
+  "en": ""
+ },
+ {
+  "vi": "Giao diện sáng",
+  "en": ""
+ },
+ {
+  "vi": "Giao diện tối",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản này không còn quyền vận hành.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên đăng nhập đã hết. Đăng nhập lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập tên đăng nhập và mật khẩu.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên vừa được làm mới. Bấm đăng nhập lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không đăng nhập được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đăng xuất.",
+  "en": ""
+ },
+ {
+  "vi": "Làm mới hơi dồn dập. Chờ một chút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang bận, thử lại sau.",
+  "en": ""
+ },
+ {
+  "vi": "Không tải được phần này.",
+  "en": ""
+ },
+ {
+  "vi": "Trang vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Trình duyệt này đang có tiến trình chơi chưa gắn tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập sẽ thay nó bằng tiến trình của tài khoản vận hành. Bấm “Vẫn đăng nhập” nếu bạn đồng ý.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng nhập vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Dùng tài khoản game có quyền vận hành.",
+  "en": ""
+ },
+ {
+  "vi": "← Về trang game",
+  "en": ""
+ },
+ {
+  "vi": "Đang kiểm tra…",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn đăng nhập",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, không đăng nhập",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản này không có quyền vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang đăng nhập với",
+  "en": ""
+ },
+ {
+  "vi": ". Đăng xuất rồi đăng nhập bằng tài khoản vận hành nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng xuất ở đây cũng đăng xuất khỏi game trên trình duyệt này.",
+  "en": ""
+ },
+ {
+  "vi": "Không kết nối được máy chủ.",
+  "en": ""
+ },
+ {
+  "vi": "Mục vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Người vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Mở trang game",
+  "en": ""
+ },
+ {
+  "vi": "Vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Đóng menu",
+  "en": ""
+ },
+ {
+  "vi": "Mở menu",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở trang vận hành…",
+  "en": ""
+ },
+ {
+  "vi": "Hộp thư góp ý của người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Tự làm mới mỗi 60 giây",
+  "en": ""
+ },
+ {
+  "vi": "Tự làm mới",
+  "en": ""
+ },
+ {
+  "vi": "Làm mới",
+  "en": ""
+ },
+ {
+  "vi": "Đang tính số liệu…",
+  "en": ""
+ },
+ {
+  "vi": "Người chơi rời đi ở đâu, lúc nào",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ tính",
+  "en": ""
+ },
+ {
+  "vi": "Mọi phần trong một tệp CSV",
+  "en": ""
+ },
+ {
+  "vi": "CSV của phần đang xem",
+  "en": ""
+ },
+ {
+  "vi": "In / Lưu PDF",
+  "en": ""
+ },
+ {
+  "vi": "Xuất báo cáo",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu cho nhà đầu tư, người mua hoặc nhận nhượng quyền",
+  "en": ""
+ },
+ {
+  "vi": "Khoảng thời gian",
+  "en": ""
+ },
+ {
+  "vi": "· tự làm mới mỗi phút",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang bận nên số liệu được tính ở chế độ nền, chờ chút nhé…",
+  "en": ""
+ },
+ {
+  "vi": "Đang hiện số liệu cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Nghề được chơi nhiều",
+  "en": ""
+ },
+ {
+  "vi": "Đời sống & Nhóm cư dân",
+  "en": ""
+ },
+ {
+  "vi": "Thời gian chơi",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang cộng số liệu các ngày trước, chờ chút nhé…",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang tính số liệu, chờ chút nhé…",
+  "en": ""
+ },
+ {
+  "vi": "Quay lại theo ngày bắt đầu",
+  "en": ""
+ },
+ {
+  "vi": "Phễu người mới",
+  "en": ""
+ },
+ {
+  "vi": "Trước và sau 0.9.16",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đang tính số liệu lần đầu (chạy nền, không ảnh hưởng người chơi), chờ chút nhé…",
+  "en": ""
+ },
+ {
+  "vi": "Người hoạt động mỗi ngày",
+  "en": ""
+ },
+ {
+  "vi": "Chờ một chút rồi thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu đang được tính, thử lại sau ít phút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không tải được CSV.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng dữ liệu",
+  "en": ""
+ },
+ {
+  "vi": "Môi trường",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu thống kê",
+  "en": ""
+ }
+]
