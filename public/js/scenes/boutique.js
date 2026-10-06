@@ -116,12 +116,31 @@ function cubbies(c,W,H,ts){E(c,0,2,W/2+8,7,SHADOW);R(c,-W/2,-H,W,H,WOOD_L,8,EDGE
   for(let r=0;r<rows;r++)for(let k=0;k<cols;k++){const x=-W/2+8+k*cw,y=top+r*ch;R(c,x+2,y+2,cw-4,ch-4,'#e8d3b8',3);
     for(let s=0;s<3;s++)R(c,x+6,y+ch-8-s*6-6,cw-12,6,HANG[(r*2+k+s*3)%HANG.length],2,'#00000018',.8);}}
 /** Garment rail with coloured hangers: the `shelf`. */
-function rail(c,p,W,stage){const hw=W/2;E(c,0,2,hw+8,7,SHADOW);for(const d of [-1,1]){L(c,d*hw,0,d*hw,-150,'#8a8f99',4);L(c,d*hw-10,0,d*hw+10,0,'#8a8f99',4);}
-  L(c,-hw-6,-150,hw+6,-150,'#9aa3b5',5);const n=Math.max(6,Math.floor(W/24));
-  for(let i=0;i<n;i++){const x=-hw+14+i*(W-28)/(n-1),col=HANG[i%HANG.length];at(c,x,-150,1,()=>(i%4===2?dress(c,col,.9):i%4===3?jeans(c,col,.9):shirt(c,col,.9)));}
-  // Low shelf of folded tees and shoe boxes.
-  R(c,-hw+6,-30,W-12,7,WOOD,2,EDGE,1);for(let i=0;i<4;i++)R(c,-hw+16+i*(W-32)/4,-44,(W-32)/4-8,14,HANG[(i*3+1)%HANG.length],3,'#00000018',1);
+function rail(c,p,W,stage,st){const hw=W/2;E(c,0,2,hw+8,7,SHADOW);for(const d of [-1,1]){L(c,d*hw,0,d*hw,-150,'#8a8f99',4);L(c,d*hw-10,0,d*hw+10,0,'#8a8f99',4);}
+  L(c,-hw-6,-150,hw+6,-150,'#9aa3b5',5);
+  R(c,-hw+6,-30,W-12,7,WOOD,2,EDGE,1);
+  if(!st){const n=Math.max(6,Math.floor(W/24));   // no stock sent (older server): the decorative rail
+    for(let i=0;i<n;i++){const x=-hw+14+i*(W-28)/(n-1),col=HANG[i%HANG.length];at(c,x,-150,1,()=>(i%4===2?dress(c,col,.9):i%4===3?jeans(c,col,.9):shirt(c,col,.9)));}
+    for(let i=0;i<4;i++)R(c,-hw+16+i*(W-32)/4,-44,(W-32)/4-8,14,HANG[(i*3+1)%HANG.length],3,'#00000018',1);}
+  else{
+    // F#218: what really hangs on the rack (data.grid). One hanger per kind in stock, a fuller hanger for more pieces;
+    // accessories and shoes sit folded on the low shelf, the pile grows with the count. Empty rack: bare hooks.
+    const h=st.hang,m=h.length,step=m>1?Math.min(26,(W-28)/(m-1)):0,x0=-step*(m-1)/2;
+    h.forEach((r,i)=>{const x=x0+i*step,fn=SHAPE[r.id]==='d'?dress:SHAPE[r.id]==='j'?jeans:shirt;
+      for(let l=(r.n>=10?2:r.n>=4?1:0);l>=0;l--)at(c,x+l*3,-150,1,()=>fn(c,r.col,.9));});
+    if(!m)for(let i=0;i<5;i++){const x=-hw+30+i*(W-60)/4;L(c,x,-150,x,-142,'#9aa3b5',1.5);L(c,x-9,-136,x,-142,'#9aa3b5',1.5);L(c,x,-142,x+9,-136,'#9aa3b5',1.5);}
+    const lo=st.low,cw=(W-32)/Math.max(4,lo.length);
+    lo.forEach((r,i)=>{for(let k=0;k<Math.min(4,Math.ceil(r.n/3));k++)R(c,-hw+16+i*cw,-30-(k+1)*5,cw-6,5,r.col,2,'#00000022',.8);});
+    const tag=String(st.total);R(c,-hw+4,-174,30,20,CREAM,4,VIOLET,1);T(c,tag,-hw+19,-164,fit(c,tag,24,10,800),VIOLET_D,800);}
   if(stage>=2){R(c,hw-44,-172,38,20,CREAM,4,VIOLET,1);T(c,'MỚI',hw-25,-162,10,VIOLET_D,800);}}
+/** Garment shape on the rail by item id: dress-like, trousers, else a top. Shelf items lie folded below. */
+const SHAPE={dress:'d',aodai:'d',pajama:'d',maxi:'d',babydoll:'d',set2:'d',skirt:'d',jeans:'j',trousers:'j',shorts:'j'};
+const SHELF=new Set(['hat','belt','socks','sneaker','sandal','bag','earrings','scarf']);
+/** The rack as the shop has it (w.c.data.grid: item → size → count, counted in only): null when not sent. */
+export function rack(w){const g=w.c?.data?.grid;if(!g||typeof g!=='object')return null;
+  const out=[];let k=0;
+  for(const [id,row] of Object.entries(g)){const n=Object.values(row||{}).reduce((s,v)=>s+Math.max(0,Number(v)||0),0);if(n>0)out.push({id,n,col:HANG[k%HANG.length]});k++;}
+  return {hang:out.filter(r=>!SHELF.has(r.id)),low:out.filter(r=>SHELF.has(r.id)),total:out.reduce((s,r)=>s+r.n,0)};}
 /** Bà Tư's cutting table with the old treadle sewing machine and a steamer: the `workbench`. */
 function cuttingTable(w,p,W,ts){const c=w.ctx,hw=W/2,top=-90;E(c,0,3,hw+14,8,SHADOW);
   for(const d of [-1,1])R(c,d*(hw-12)-5,top+12,10,-top-12,WOOD_D,3);
@@ -191,7 +210,7 @@ function portRoom(w,p){const c=w.ctx,items=w.c?.ops?.security?.items||[],open=!!
 /* ------------------------------------------------------------ Floor props */
 function landProps(w,p){const c=w.ctx,stage=look(w),out=[];
   out.push([502,()=>at(c,196,500,1,()=>cubbies(c,112,212,14))]);
-  out.push([502,()=>at(c,375,500,1,()=>rail(c,p,206,stage))]);
+  out.push([502,()=>at(c,375,500,1,()=>rail(c,p,206,stage,rack(w)))]);
   out.push([594,()=>at(c,570,594,1,()=>cuttingTable(w,p,300,13))]);
   out.push([594,()=>at(c,890,594,1,()=>counter(w,p,180,false))]);
   out.push([628,()=>at(c,195,628,1,()=>entrance(w,c,stage))]);
@@ -200,7 +219,7 @@ function landProps(w,p){const c=w.ctx,stage=look(w),out=[];
   return out;}
 function portProps(w,p){const c=w.ctx,stage=look(w),out=[];
   out.push([598,()=>at(c,98,598,1,()=>cubbies(c,104,226,16))]);
-  out.push([566,()=>at(c,253,566,.85,()=>rail(c,p,206,stage))]);
+  out.push([566,()=>at(c,253,566,.85,()=>rail(c,p,206,stage,rack(w)))]);
   out.push([700,()=>at(c,260,700,1,()=>cuttingTable(w,p,284,16))]);
   out.push([700,()=>at(c,525,700,1,()=>counter(w,p,170,true))]);
   out.push([818,()=>at(c,600,818,1,()=>ledgerDesk(w,p,16))]);

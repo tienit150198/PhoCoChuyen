@@ -5,7 +5,7 @@
 import {keepBarAboveFooter} from './food_kit.js';
 import {reqList,fold} from '../ui-kit.js';
 import {stepRows,nextHint,stepCta,finalGo,pending,stepLine} from '../v4/guide.js';
-import {restockButton} from '../v4/restock.js';
+import {restockButton,crates} from '../v4/restock.js';
 import {tomorrowCard} from './tomorrow_kit.js';
 import {cashPanel,changeStep,changePayload,tray,tillActions} from './till.js';
 import * as SF from './stage_fold.js';
@@ -507,7 +507,10 @@ function gridCard(x){
     return `<li class="ao-grow${out?' short':''}"><span class="ao-gname"><span aria-hidden="true">${x.esc(it.emoji)}</span>${x.esc(it.name)}<small>${total}/${cap}${on[it.id]?` · 🚚 +${on[it.id]}`:''}</small></span>
       <span class="ao-gsizes">${sizes(x,it.id).map(z=>`<span class="ao-gs${onRack(x,it.id,z)<=0?' out':onRack(x,it.id,z)<=1?' low':''}"><b>${x.esc(z==='F'?'F':z)}</b>${onRack(x,it.id,z)}</span>`).join('')}</span>
       ${out?restockButton(x.room,[{id:it.id,need:6}],{},'small ghost'):''}</li>`;}).join('');
-  return `<section class="card ao-grid"><h4>👚 Giá treo theo size</h4><ul>${rows}</ul><p class="small muted">Nhập hàng → chọn size đang thiếu, hoặc chọn “Tự chia size” để ưu tiên M, L… Đếm nhận xong mới lên giá.</p></section>`;
+  // F#218: bought goods only reach the rack (and the shop scene) once their crate is opened and counted in.
+  const ready=crates(inv).ready,pieces=ready.reduce((s,o)=>s+(Number(o.qty)||0),0);
+  const door=ready.length?`<p class="notice amber small ao-crates">📦 ${ready.length} thùng (đặt ${pieces} món) đã tới cửa, chưa lên giá: mở thùng, đếm nhận xong là treo lên ngay. ${restockButton(x.room,[...new Set(ready.map(o=>o.item))],{},'small')}</p>`:'';
+  return `<section class="card ao-grid"><h4>👚 Giá treo theo size</h4>${door}<ul>${rows}</ul><p class="small muted">Nhập hàng → chọn size đang thiếu, hoặc chọn “Tự chia size” để ưu tiên M, L… Đếm nhận xong mới lên giá.</p></section>`;
 }
 function bookCard(x){
   const rows=data(x).book_view||[];

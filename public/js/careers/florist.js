@@ -35,6 +35,8 @@ const topic=(x,id)=>find(cc(x).topics,id,{id,emoji:'❓',label:id});
 const slotName=(x,id)=>find(cc(x).slots,id,{name:id}).name;
 const item=(x,id)=>(x.content.inventory?.items?.florist||[]).find(i=>i.id===id)||{id,name:id,unit:''};
 const stock=(x,id)=>x.room.inventory?.stock?.[id]??0;
+/** 0 left of a supply (card, banner): why its buttons are off, and the restock tap next to it (fl_card / fl_banner refuse at 0). */
+const outOf=(x,id,what,task,need=4)=>stock(x,id)?'':`<p class="fl-out small"><span class="bad">Hết ${x.esc(what)}: nhập thêm mới ${id==='card'?'viết':'in'} được.</span> ${restockButton(x.room,[{id,need}],{task},'small ghost')}</p>`;
 const lvl=x=>x.room.level||1;
 const today=x=>x.room.day||1;
 const letters=s=>String(s||'').normalize('NFC').toLocaleLowerCase('vi').replace(/[^\p{L}\p{N}\s]/gu,' ').split(/\s+/).filter(Boolean).join(' ');
@@ -460,8 +462,8 @@ function designPanel(t,x){
   const ribbons=`<h4 class="section-title">${step++} · Ruy băng <span class="fl-swatch-n${stock(x,'ribbon')?'':' zero'}">${stock(x,'ribbon')}</span></h4><div class="fl-swatches">${(cc(x).ribbons||[]).map(r=>swatch(x,{cmd:'fl_ribbon',payload:{task:t.id,color:r.id},hex:r.hex,name:r.name,selected:w.ribbon===r.id,disabled:!w.arranged||!!w.ribbon||(w.base==='bouquet'&&!w.paper)||!stock(x,'ribbon')})).join('')}</div>
     ${x.cmd('✂️ Gỡ giấy & ruy băng','fl_unwrap',{task:t.id},'ghost small',!w.paper&&!w.ribbon)}`;
   const banner=w.base==='wreath'?`<h4 class="section-title">${step++} · Băng rôn chữ <span class="fl-swatch-n${stock(x,'banner')?'':' zero'}">${stock(x,'banner')}</span></h4>${w.banner?`<p class="fl-printed">🎗️ “${x.esc(w.banner)}”</p>`:''}
-    <div class="fl-write"><label class="field grow">Nội dung in<input id="fl-banner-text" class="input" maxlength="60" autocomplete="off" spellcheck="false" value="${x.esc(x.ui.bannerText||'')}" placeholder="Gõ đúng từng chữ, có dấu"></label>${x.button(w.banner?'🖨️ In lại':'🖨️ In & treo','car:banner',{task:t.id},'')}</div>
-    ${sp.banner&&letters(w.banner||'')!==letters(sp.banner)?`<p class="fl-suggest">${x.button('📋 In đúng chữ khách dặn','car:bannertpl',{task:t.id,text:sp.banner},'ghost small',!w.arranged)}</p>`:''}`:'';
+    <div class="fl-write"><label class="field grow">Nội dung in<input id="fl-banner-text" class="input" maxlength="60" autocomplete="off" spellcheck="false" value="${x.esc(x.ui.bannerText||'')}" placeholder="Gõ đúng từng chữ, có dấu"></label>${x.button(w.banner?'🖨️ In lại':'🖨️ In & treo','car:banner',{task:t.id},'',!stock(x,'banner'))}</div>${outOf(x,'banner','băng rôn',t.id,2)}
+    ${sp.banner&&letters(w.banner||'')!==letters(sp.banner)?`<p class="fl-suggest">${x.button('📋 In đúng chữ khách dặn','car:bannertpl',{task:t.id,text:sp.banner},'ghost small',!w.arranged||!stock(x,'banner'))}</p>`:''}`:'';
   const cover=rainy(x)&&deliver(t)?`<h4 class="section-title">${step++} · Chống mưa</h4><div class="row wrap">${x.cmd(w.cover?'✓ Đã bọc nylon':'🌂 Bọc nylon chống mưa','fl_cover',{task:t.id},w.cover?'ghost small':'',!!w.cover||!w.arranged||(w.base==='bouquet'&&!w.paper))}</div>`:'';
   return `<h4 class="section-title">1 · Kiểu cắm</h4><div class="tile-grid fl-grid">${bases}</div>${lockChip(lockedFm.map(f=>f.unlock),'fl-lock')}${foam}
     <h4 class="section-title">2 · Cắm / bó</h4>${arrange}${papers}${ribbons}${banner}${cover}`;
@@ -471,8 +473,8 @@ function cardPanel(t,x){
   const toneLine=w.card?`<p class="fl-tone ${tone||''}">${{fit:'✓ Lời thiệp hợp dịp.',plain:'○ Lời hơi chung chung — thêm một câu đúng dịp sẽ ấm hơn.',wrong:'✗ Lời thiệp không hợp dịp này!'}[tone]||''}</p>`:'';
   const card=`<h4 class="section-title">Thiệp viết tay <span class="fl-swatch-n${stock(x,'card')?'':' zero'}">${stock(x,'card')}</span></h4>
     <div class="fl-write"><label class="field grow">Lời nhắn<textarea id="fl-card-text" class="input" rows="3" maxlength="160" spellcheck="false" placeholder="Viết đúng dịp: ${x.esc(lower(occasion(x,n.occasion).name))}…">${x.esc(x.ui.cardText??w.card??'')}</textarea></label>
-    ${x.button(w.card?'✍️ Viết lại thiệp mới':'✍️ Viết thiệp','car:card',{task:t.id},'')}</div>${toneLine}
-    ${w.card&&tone==='fit'?'':`<p class="fl-suggest"><small>Gợi ý: “${x.esc(cardLine(t))}”</small>${x.button('✨ Dùng lời này','car:cardtpl',{task:t.id,text:cardLine(t)},'ghost small')}</p>`}`;
+    ${x.button(w.card?'✍️ Viết lại thiệp mới':'✍️ Viết thiệp','car:card',{task:t.id},'',!stock(x,'card'))}</div>${outOf(x,'card','thiệp',t.id,6)}${toneLine}
+    ${w.card&&tone==='fit'?'':`<p class="fl-suggest"><small>Gợi ý: “${x.esc(cardLine(t))}”</small>${x.button('✨ Dùng lời này','car:cardtpl',{task:t.id,text:cardLine(t)},'ghost small',!stock(x,'card'))}</p>`}`;
   let slots='';
   if(deliver(t)){
     slots=`<h4 class="section-title">Khung giờ giao</h4>${n.delivery?'':'<p class="notice amber small">🕒 Chưa hỏi khách giờ giao.</p>'}
@@ -629,7 +631,7 @@ function orderSteps(t,x){
   if(sp.card){
     const tone=t.card_tone,ok=w.card?(tone==='fit'?true:tone==='wrong'?false:null):null;
     push('card',{ok,label:'Viết thiệp đúng dịp',note:tone==='plain'?'lời hơi chung chung':tone==='wrong'?'lời không hợp dịp':'',tab:'card',
-      go:ok===true?null:{act:'car:cardtpl',data:{task,text:cardLine(t)},label:w.card?'✍️ Viết lại thiệp bằng lời gợi ý':'✍️ Viết thiệp (lời gợi ý hợp dịp)'}});
+      go:ok===true?null:!stock(x,'card')?restockFor(x,'card','thiệp'):{act:'car:cardtpl',data:{task,text:cardLine(t)},label:w.card?'✍️ Viết lại thiệp bằng lời gợi ý':'✍️ Viết thiệp (lời gợi ý hợp dịp)'}});
   }
   if(fm.soak){
     const min=soakMin(t,x);

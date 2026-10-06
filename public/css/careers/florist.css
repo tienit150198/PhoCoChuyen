@@ -326,6 +326,9 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
 .career-job.fl .fl-suggest{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:6px 0 0}
 .career-job.fl .fl-suggest small{flex:1 1 200px;min-width:0;font-style:italic;color:var(--ink-2,var(--muted));line-height:1.4}
 .career-job.fl .fl-suggest .btn{min-height:40px}
+.career-job.fl .fl-out{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:6px 0 0;line-height:1.4}
+.career-job.fl .fl-out .bad{flex:1 1 180px;min-width:0;font-weight:700}
+.career-job.fl .fl-out .btn{min-height:40px}
 /* UX phase 2: compact ticket; the brief, the day line and the cooler shelf fold to one line */
 .career-job.fl .fl-ticket.compact{gap:6px;padding:10px 12px}
 .career-job.fl .fl-ticket.compact .fl-note{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}

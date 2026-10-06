@@ -20,7 +20,7 @@
 import {t as tr} from '../v4/i18n.js';
 import {lightAt} from '../v4/dayclock.js';
 
-import {B,onRoad,gateOf,waypoint,roadRoute,navigation,mapTransform} from './delivery_navigation.js';
+import {B,onRoad,gateOf,waypoint,roadRoute,navigation,mapTransform,onLeg} from './delivery_navigation.js';
 import {joystickAxes,nextSpeed,nextSteer,motionSign,holdPointer} from './delivery_controls.js';
 import {signalState} from '../v4/traffic.js';
 import {stageFullscreen} from './delivery_fullscreen.js';
@@ -290,7 +290,7 @@ export function mount(slot,opts){
   try{if(!S.el)build();}catch(error){S.fail=true;console.warn('Tự lái: không vẽ được',error);opts.fail?.();return false;}
   if(S.dbg)Object.assign(opts,S.dbg);
   S.opts=opts;S.slot=slot;
-  if(S.lightTarget!==opts.target){S.lightTarget=opts.target;S.lightKey='';S.lightChallenge=null;S.lightPending=false;}
+  if(S.lightTarget!==opts.target||S.lightFrom!==opts.at){S.lightTarget=opts.target;S.lightFrom=opts.at;S.lightKey='';S.lightChallenge=null;S.lightPending=false;S.lightDenied=new Set();}
   const key=JSON.stringify(Object.entries(opts.nodes||{}).map(([k,n])=>[k,n.x,n.y]));
   if(key!==S.nodesKey){S.world=buildWorld(opts.nodes);S.nodesKey=key;S.at=null;}
   if(S.at!==opts.at){place(opts.at,opts.target);}
@@ -452,19 +452,24 @@ function signalAhead(travel=1){
  const axis=Math.abs(Math.cos(S.a))>Math.abs(Math.sin(S.a))?'x':'y',dir=((axis==='x'?Math.cos(S.a):Math.sin(S.a))>=0?1:-1)*travel;
  const pos=axis==='x'?S.x:S.y,line=Math.round((axis==='x'?S.y:S.x)/B),next=(dir>0?Math.ceil((pos+.01)/B):Math.floor((pos-.01)/B));
  const i=axis==='x'?next:line,j=axis==='y'?next:line,L=lightAtJunction(i,j),gap=Math.abs(next*B-pos),box=S.el.querySelector('.dd-signal');
- if(!L||gap>23){box.hidden=true;return;}
- const key=`${o.target}:${i},${j}:${axis}`;box.hidden=false;
+ // Off this leg's corridor the server refuses the checkpoint (dl_signal): scenery only, never ask, never hold.
+ const key=`${o.target}:${i},${j}:${axis}`;
+ if(!L||gap>23||!onLeg(o.nodes,o.at,o.target,i,j)||S.lightDenied?.has(key)){box.hidden=true;return;}
+ box.hidden=false;
  const state=signalState(signalClock(),L.off,axis);
  box.dataset.color=state.color;
  const label=tr(state.grace?'Vừa chuyển đỏ · giữ phanh':{red:'Đèn đỏ · giữ phanh',yellow:'Đèn vàng · giảm tốc',green:'Đèn xanh · đi tiếp'}[state.color]);
  const detail=`${Math.max(0,Math.round(gap-HW))} m · ${tr('Vượt đỏ: 12 xu')}`;
  for(const [selector,text] of [['b',label],['small',detail],['strong',state.left+'s']]){const item=box.querySelector(selector);if(item.textContent!==text)item.textContent=text;}
  if((key!==S.lightKey||(!S.lightChallenge&&S.t>=(S.lightRetry||0)))&&!S.lightPending){
-  S.lightPending=true;S.lightRetry=S.t+2;S.lightKey=key;S.lightChallenge=null;S.lightCrossed=false;
-  Promise.resolve(o.signal(i,j,axis)).then(r=>{S.lightPending=false;if(S.lightKey===key)S.lightChallenge=r?.traffic?.challenge||null;}).catch(()=>{S.lightPending=false;});
+  S.lightPending=true;S.lightRetry=S.t+2;S.lightKey=key;S.lightChallenge=null;S.lightCrossed=false;S.lightAsked=S.t;
+  // A refusal (or no answer) frees this junction: the rider must never be parked in front of it for good.
+  const deny=()=>{S.lightPending=false;if(S.lightKey===key&&!S.lightChallenge)S.lightDenied?.add(key);};
+  Promise.resolve(o.signal(i,j,axis)).then(r=>{S.lightPending=false;if(S.lightKey===key)S.lightChallenge=r?.traffic?.challenge||null;if(!S.lightChallenge)deny();}).catch(deny);
  }
- // A slow connection must not carry the rider through an unissued checkpoint.
- if(gap<HW+1.5&&(!S.lightChallenge||S.lightPending)){S.lightHold=true;S.v=0;S.btn.u=false;S.keys.u=false;}
+ // A slow connection must not carry the rider through an unissued checkpoint, but only for a few seconds.
+ if(gap<HW+1.5&&!S.lightChallenge&&S.lightPending&&S.t-(S.lightAsked||0)<4){S.lightHold=true;S.v=0;S.btn.u=false;S.keys.u=false;}
+ else if(gap<HW+1.5&&!S.lightChallenge&&S.lightPending)S.lightDenied?.add(key);
 }
 function bump(text){if(S.t-S.lastBump>1.4){S.lastBump=S.t;say(text,1600);}if(!still())S.shake=.25;}
 

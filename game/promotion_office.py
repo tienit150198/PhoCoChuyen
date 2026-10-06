@@ -76,6 +76,7 @@ FX = {
 MARK_LABEL = ('', 'Đã nhắc nhở', 'Đã cảnh cáo', 'Đã kiểm điểm')
 QUIT_AT = 8           # mood at or below which a person hands in their notice
 DUTY_MAX = 3          # days in a row; then a day of rest (the legal limit)
+TIRED_AT = 2          # days in a row already worked: 50% 🥱 at day_roll, −12 to each slot's chance in close (−15 more when 🥱)
 GOOD_SCORE = 60   # a day's office score that counts as a good office day (the step's 'office' requirement)
 PAY_MAX = 7
 STAFF_MAX = 12
@@ -320,7 +321,7 @@ def day_roll(career: str, off: dict, seed: int, day: int, rank: int) -> None:
         if st['iss'] or st['off']:
             continue
         r = _rng('of-iss', seed, career, day, st['id'])
-        if st['duty'] >= 2 and r.random() < .5:
+        if st['duty'] >= TIRED_AT and r.random() < .5:
             st['iss'] = 'tired'
             continue
         chance = .1 + (.15 if st['mood'] < 40 else 0) + (.12 if st['tr'] == 'lazy' else 0)
@@ -565,7 +566,7 @@ def close(career: str, off: dict, rank: int, seed: int, day: int) -> dict:
             continue
         st = off['staff'][who]
         chance = 40 + .45 * st['sk'] + .3 * (st['mood'] - 50) + 4 * st['lv'] - (15 if st['iss'] else 0) \
-            - (12 if st['duty'] >= 2 else 0) - (10 if si in auto else 0)
+            - (12 if st['duty'] >= TIRED_AT else 0) - (10 if si in auto else 0)
         r = _rng('of-run', seed, career, day, si, st['id'])
         if r.randrange(100) < _clamp(chance, 10, 97):
             ok += 1
@@ -586,6 +587,7 @@ def close(career: str, off: dict, rank: int, seed: int, day: int) -> dict:
     if worked and score >= GOOD_SCORE:
         k['good'] = min(10**6, k['good'] + 1)
     busy = {w for w in plan if w is not None}
+    rota = rota_line(career, off, plan)   # before today's duty is counted: the days that cost today
     for i, st in enumerate(off['staff']):
         if i in busy:
             st['duty'] = min(9, st['duty'] + 1)
@@ -615,8 +617,26 @@ def close(career: str, off: dict, rank: int, seed: int, day: int) -> dict:
         head += ' · trợ lý xếp tạm, không có thưởng'
     good = worked and score >= GOOD_SCORE
     _log(off, f'Ngày {day}: {today}% · {compl} phàn nàn · điểm {score}' + (' ✓' if good else '') + (f' · +{bonus} xu' if bonus else ''))
-    return dict(lines=[head, score_line(o, score, today, morale, compl, over, worked)] + lines[:2], bonus=bonus, score=score,
+    return dict(lines=[head, score_line(o, score, today, morale, compl, over, worked)] + ([rota] if rota else []) + lines[:2], bonus=bonus, score=score,
                 ontime=today, compl=compl, worked=worked, good=good)
+
+
+def rota_line(career: str, off: dict, plan: list) -> str:
+    """F#212: the hidden cost of not rotating. Who worked today after TIRED_AT+ days in a row, said in the day's summary."""
+    seen, rows = set(), []
+    for w in plan:
+        if w is None or w in seen:
+            continue
+        seen.add(w)
+        st = off['staff'][w]
+        if st['duty'] >= TIRED_AT:
+            rows.append(f'{st["n"]} ({st["duty"]} ngày liền' + (', đang 🥱 mệt' if st['iss'] == 'tired' else '') + ')')
+    if not rows:
+        return ''
+    verb = 'bay' if career == 'pilot' else 'làm'
+    more = f' và {len(rows) - 3} người nữa' if len(rows) > 3 else ''
+    return (f'🥱 Xoay ca: {", ".join(rows[:3])}{more} đã {verb} liền từ hôm trước nên dễ trễ hơn hẳn. '
+            f'Xếp người khác, cho nghỉ 1 ngày là hết mệt.')
 
 
 def score_line(o: dict, score: int, today: int, morale: int, compl: int, over: int, worked: bool) -> str:
@@ -676,7 +696,7 @@ def public(career: str, off: dict, rank: int, c: dict, seed: int) -> dict:
                                          need=o['roles'][s['role']]['ladder'][s['need']] if s['need'] else None, who=off['plan'][i],
                                          bar=_bar(off, s))
                                     for i, s in enumerate(slots)],
-                inbox=inbox, log=off['log'][-4:], cap=o['cap'][lvl], duty_max=DUTY_MAX,
+                inbox=inbox, log=off['log'][-4:], cap=o['cap'][lvl], duty_max=DUTY_MAX, tired_at=TIRED_AT,
                 me=bool(off['me']) and live, good_score=GOOD_SCORE)
 
 

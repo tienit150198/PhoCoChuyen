@@ -1,3 +1,11 @@
+# Chưa phát hành — Xe giao hàng, tiệm hoa hết hàng, kệ tiệm quần áo, xoay ca phi công (fix-misc)
+
+- 🛵 Giao hàng (#5): xe không còn đứng khựng trước ngã tư có đèn nằm ngoài chặng đang giao. Máy khách kiểm tra hành lang chặng giống máy chủ (đi vòng tối đa 1 ô) trước khi hỏi đèn: ngoài chặng thì đèn chỉ là cảnh, không hỏi, không giữ xe. Máy chủ từ chối hoặc mạng chậm quá 4 giây thì ngã tư đó được thả, xe không bao giờ bị giữ mãi.
+- 💐 Tiệm hoa (#9): hết thiệp hoặc hết băng rôn thì nút viết thiệp, in băng rôn và "Dùng lời này" tắt, kèm dòng "Hết thiệp: nhập thêm mới viết được." và nút 📦 nhập hàng ngay cạnh. Bước "Viết thiệp" trong gợi ý cũng dẫn sang nhập hàng khi hết.
+- 👗 Tiệm quần áo (F#218): cảnh tiệm vẽ giá treo theo hàng thật trên giá (mỗi mẫu còn hàng một móc, nhiều cái thì móc dày hơn; nón, thắt lưng, tất, giày, túi xếp ở kệ dưới, chồng cao theo số lượng; bảng nhỏ ghi tổng số cái). Hết sạch thì giá trống. Thẻ 👚 Giá treo báo khi có thùng hàng đã tới cửa mà chưa đếm nhận, kèm nút mở thùng.
+- ✈️ Phòng điều hành (F#212): nói rõ luật xoay ca. "Xem thêm" có dòng 🔁 Xoay ca; mỗi người có thẻ "🔁 N ngày liền" hoặc "🥱 2 ngày liền · nên nghỉ" (cả trong danh sách chọn người); mục 🎯 hôm nay có dòng xoay ca; tổng kết ngày ghi "🥱 Xoay ca: … đã bay liền từ hôm trước nên dễ trễ hơn hẳn". Luật không đổi.
+- Không thêm khóa lưu, không đổi tiền, không đổi cách sinh việc. Máy chủ gửi thêm `tired_at` ở phòng điều hành (chỉ hiển thị). Không có "Có gì mới".
+
 # Chưa phát hành — Tiệm hoa trên điện thoại + Bảng giá (WP-B)
 
 - Góp ý #204 và chat: trên điện thoại dọc (từ 1.8.0), ở tiệm hoa thẻ "Khách cần" dính trên đầu che kệ hoa, chữ bên cột xem trước đè lên ô hoa, chạm không chọn được loại hoa. Giờ thẻ mở thì cuộn theo trang (thu gọn còn một dòng thì vẫn ghim), cột xem trước nằm đúng chỗ, nơ/băng rôn/giấy bóng không vẽ đè lên thẻ nữa. Sửa chung cho mọi nghề dùng thẻ này: sửa đồ, tiệm quần áo, quán mì. Điện thoại ngang và máy tính giữ như cũ.

@@ -39,7 +39,10 @@ const badge=p=>p.insignia?`<span class="pm-badge pm-badge-ins">${insignia(p.insi
 const place=env=>env.api.content.catalogue?.find(x=>x.id===env.api.state.current)?.short||'';
 
 /** F#206: what a "ngày điều hành tốt" is (game/promotion_office.py close: score, GOOD_SCORE). */
-const OFFICE_RULE=`<li>🏢 Ngày điều hành tốt: trong ca, tự xếp ít nhất 1 việc ở 🗓️ Điều phối, rồi khép ngày với điểm điều hành từ 60/100.</li><li>Điểm = ½ tỷ lệ đúng giờ + 0,3 × tinh thần + 20, trừ 6 mỗi phàn nàn và 2 mỗi % vượt quỹ lương. Việc bỏ trống, việc cần quyết để tới cuối ngày đều thêm phàn nàn.</li><li>Số ngày điều hành tốt đếm lại từ 0 sau mỗi lần lên bậc.</li>`;
+const OFFICE_RULE=`<li>🏢 Ngày điều hành tốt: trong ca, tự xếp ít nhất 1 việc ở 🗓️ Điều phối, rồi khép ngày với điểm điều hành từ 60/100.</li><li>Điểm = ½ tỷ lệ đúng giờ + 0,3 × tinh thần + 20, trừ 6 mỗi phàn nàn và 2 mỗi % vượt quỹ lương. Việc bỏ trống, việc cần quyết để tới cuối ngày đều thêm phàn nàn.</li><li>🔁 Xoay ca: ai đã làm 2 ngày liền thì sáng hôm sau dễ 🥱 mệt (1 phần 2), và hôm đó làm dễ trễ hơn hẳn. Đừng để ai làm ngày thứ 3 liền, cho nghỉ 1 ngày là hết mệt.</li><li>Số ngày điều hành tốt đếm lại từ 0 sau mỗi lần lên bậc.</li>`;
+/** F#212: "đã làm N ngày liền" on a person (duty = days in a row worked before today; TIRED_AT costs). */
+const tiredAt=of=>of.tired_at||2;
+const rowTag=(of,m)=>!m.duty||m.rest?'':m.duty>=tiredAt(of)?`<i class="bad">🥱 ${m.duty} ngày liền · nên nghỉ</i>`:`<i>🔁 ${m.duty} ngày liền</i>`;
 /** The steps behind "Xem thêm": what each step gives. */
 function more(p){
   const emp=p.track==='emp',pcts=(p.pcts||[]).map(x=>x+'%').join(' → ');
@@ -123,7 +126,7 @@ function officePlan(of,ui){
     let list='';
     if(open){
       const cands=of.staff.filter(m=>m.r===s.role).map(m=>{const w=why(of,s,m);return {m,w};}).sort((a,b)=>(a.w?1:0)-(b.w?1:0)||b.m.sk-a.m.sk);
-      list=`<div class="of-cands">${cands.map(({m,w})=>`<button type="button" class="of-cand" data-action="pmOfMate" data-slot="${s.i}" data-i="${m.i}"${w?' disabled':''}><b>${esc(m.n)}</b><small>${esc(m.t)} · tay nghề ${m.sk}${m.iss?' · ⚠️':''}</small><span>${w||FACE(m.mood)}</span></button>`).join('')}
+      list=`<div class="of-cands">${cands.map(({m,w})=>`<button type="button" class="of-cand" data-action="pmOfMate" data-slot="${s.i}" data-i="${m.i}"${w?' disabled':''}><b>${esc(m.n)}</b><small>${esc(m.t)} · tay nghề ${m.sk}${m.iss?' · ⚠️':''}${m.duty&&!m.rest?` · ${m.duty>=tiredAt(of)?'🥱 ':''}${m.duty} ngày liền`:''}</small><span>${w||FACE(m.mood)}</span></button>`).join('')}
         ${who?cmd('✕ Bỏ xếp','pm_of_plan',{slot:s.i,mate:null},'small ghost'):''}</div>`;
     }
     return `<li class="of-slot${open?' open':''}${who?' set':''}"><button type="button" class="of-slot-btn" data-action="pmOfSlot" data-i="${s.i}" aria-expanded="${open}"><span class="of-slot-t"><b>${esc(s.t)}</b><small>${esc(s.sub)}${s.need?` · cần từ ${esc(s.need)}`:''}</small></span>${tag}</button>${list}</li>`;
@@ -133,7 +136,7 @@ function officePlan(of,ui){
 function officeStaff(of,ui){
   const open=Number.isInteger(ui.pmOfWho)?ui.pmOfWho:null;
   return `<p class="of-left">🗳️ Còn <b>${of.left}</b> lượt quyết nhân sự hôm nay · mỗi người một quyết định/ngày</p><ul class="of-staff">${of.staff.map(m=>{
-    const tags=[m.iss?`<i class="bad">${esc(m.iss)}</i>`:'',m.mk?`<i>${esc(m.mk)}</i>`:'',m.off?'<i class="bad">🚫 Đình chỉ</i>':'',m.rest?'<i>😴 Phải nghỉ</i>':'',m.acted?'<i>✓ Đã quyết hôm nay</i>':''].join('');
+    const tags=[m.iss?`<i class="bad">${esc(m.iss)}</i>`:'',m.mk?`<i>${esc(m.mk)}</i>`:'',m.off?'<i class="bad">🚫 Đình chỉ</i>':'',m.rest?'<i>😴 Phải nghỉ</i>':'',rowTag(of,m),m.acted?'<i>✓ Đã quyết hôm nay</i>':''].join('');
     let body='';
     if(open===m.i){
       const off=(a)=>m.acted||!of.left||(a==='promote'&&m.top)||(a==='demote'&&m.low)||(a==='raise'&&m.pay>=7)||(a==='cut'&&m.pay<=1);
@@ -148,10 +151,11 @@ function officeStaff(of,ui){
 function officeToday(of,p,empty){
   const r=p.next?.requirements?.find(x=>x.id==='office'&&x.need);
   const ok=(on,text)=>`<li class="${on?'on':''}">${on?'✓':'○'} ${text}</li>`;
-  const k=of.kpi,over=k.cost>k.budget;
+  const k=of.kpi,over=k.cost>k.budget,tired=new Set(of.slots.map(x=>x.who).filter(w=>w!=null&&(of.staff[w]?.duty||0)>=tiredAt(of))).size;
   const rows=[typeof of.me==='boolean'?ok(of.me,'Tự xếp ít nhất 1 việc ở 🗓️ Điều phối'):'',
     ok(!of.inbox.length,of.inbox.length?`Còn ${of.inbox.length} việc cần quyết (để tới cuối ngày là thêm phàn nàn)`:'Đã quyết hết 📥 việc'),
     ok(!empty,empty?`${empty} ${esc(of.unit)} chưa xếp người`:'Đã xếp đủ người'),
+    ok(!tired,tired?`${tired} người đã làm ${tiredAt(of)}+ ngày liền đang được xếp (dễ trễ): xoay ca`:'Xoay ca: không ai làm ngày thứ 3 liền'),
     ok(!over,over?'Quỹ lương đang vượt (trừ 2 điểm mỗi %)':'Quỹ lương trong mức')].join('');
   return `<details class="of-today"${of.me===false?' open':''}><summary><b>🎯 ${r?`Ngày điều hành tốt: ${r.got}/${r.need}`:'Hôm nay tính ngày tốt?'}</b><span>${r?bar(r.got,r.need):''}</span></summary><ul>${rows}</ul><p class="small muted">Cuối ngày, điểm điều hành từ ${of.good_score||60}/100 là tính 1 ngày tốt. Điểm và cách tính hiện ở tổng kết ngày.</p></details>`;
 }
