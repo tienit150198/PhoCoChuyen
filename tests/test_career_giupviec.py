@@ -225,6 +225,43 @@ class LiveFixes(Base):
         self.assertEqual(self.d['hand']['product'], 'kinh')
         validate_state(self.j.state)
 
+    def test_the_page_is_told_why_a_wipe_would_be_refused(self):
+        """can.gv_wipe (UI foundation) is the refusal gv_wipe would give, with a fix, before the tap."""
+        t = self.at(*find(has_spot('guong')))
+        self.j.act('ask', task=t['id'])
+        room = t['needs']['rooms'][0]['id']
+        self.j.act('gv_room', task=t['id'], room=room)
+        sid = t['needs']['rooms'][0]['spots'][0]['id']
+        view = lambda: GV.public_data(self.j.c)['can']['gv_wipe']   # noqa: E731
+        for hand, fix in ((dict(tool=None, product=None), 'sel'), (dict(tool=next(iter(GV.TOOLS)), product=None), 'sel')):
+            self.d['hand'].update(hand)
+            can = view()
+            self.assertIsInstance(can, dict)
+            self.assertIn(fix, can['fix'])
+            with self.assertRaises(GameError) as e:
+                self.j.act('gv_wipe', task=t['id'], spot=sid)
+            self.assertEqual(str(e.exception), can['why'])
+        self.hold(GV.SPOTS[sid]['tools'][0], GV.right_products(t['needs'], sid)[0])
+        self.assertIs(view(), True)
+        prod = next(p for p in GV.gc.BOTTLES if GV.PRODUCTS[p]['item'])
+        self.d['hand']['product'] = prod
+        self.d['cart']['bottles'][prod] = 0
+        can = view()
+        self.assertIn('cạn', can['why'])
+        self.assertEqual(can['fix']['cmd'], 'gv_fill')
+        self.assertEqual(json.loads(json.dumps(GV.public_data(self.j.c)))['can'], GV.public_data(self.j.c)['can'])
+
+    def test_check_records_instead_of_raising(self):
+        def rules(a, need=kit.need):
+            need(a > 0, 'Cần số dương.', fix=dict(cmd='x', label='Sửa'))
+            need(a < 10, 'Quá lớn.')
+        self.assertEqual(kit.check(rules, 1), True)
+        self.assertEqual(kit.check(rules, 0), dict(why='Cần số dương.', fix=dict(cmd='x', label='Sửa')))
+        self.assertEqual(kit.check(rules, 11), dict(why='Quá lớn.', fix=None))
+        with self.assertRaises(GameError):
+            rules(0)
+        self.assertIs(kit.check(lambda need: 1 / 0), True)   # a broken pre-check never breaks the view
+
     def drop_morning(self):
         """Leave mid-shift before setting out: the morning task is cancelled the way abandon does it."""
         from game import abandon

@@ -22,6 +22,9 @@ const spotsOf=(n,room)=>(n.rooms||[]).find(r=>r.id===room)?.spots||[];
 const left=(t,room)=>spotsOf(need(t),room).filter(s=>!(need(t).skip||[]).includes(key(room,s.id))&&Number(t.dirt?.[key(room,s.id)])>0).length;
 const itemsIn=(t,room)=>(need(t).items||[]).filter(i=>i.room===room);
 const ctl=(cmd,payload)=>`[data-command="${cmd}"][data-payload='${JSON.stringify(payload)}']`;
+/** The server's pre-check for a wipe (giupviec.py _hand_rules, the same rules gv_wipe refuses with): true or
+ * {why, fix}. undefined from an older server: handGap below guesses the same rules on the page. */
+const canWipe=x=>data(x).can?.gv_wipe;
 /** What still stops a wipe with what is in hand (the server refuses the same: giupviec.py _wipe), or '' when ready. */
 const bottleOf=(x,k)=>Number(data(x).cart?.bottles?.[k]||0);
 const emptyBottle=(x,k)=>!!(k&&PROD(x,k).item&&bottleOf(x,k)<=0);
@@ -57,12 +60,12 @@ function roomPanel(t,x){
   if(!room)return `<section class="card gv-pick"><p class="gv-lead">🚪 Chọn phòng để bắt đầu dọn.</p></section>`;
   const R=ROOM(x,room),spots=spotsOf(n,room),start=Object.fromEntries(spots.map(s=>[s.id,s.dirt]));
   const on=Object.fromEntries(itemsIn(t,room).filter(i=>t.items?.[i.id]==='on').map(i=>[i.spot,i]));
-  const levels=[...new Set(spots.map(s=>SPOT(x,s.id).lvl))].sort((a,b)=>a-b),gap=handGap(x);
+  const can=canWipe(x),levels=[...new Set(spots.map(s=>SPOT(x,s.id).lvl))].sort((a,b)=>a-b),gap=can===undefined?handGap(x):'';
   const groups=levels.map(l=>{const tiles=spots.filter(s=>SPOT(x,s.id).lvl===l).map(s=>{const sp=SPOT(x,s.id),k=key(room,s.id),v=Number(t.dirt?.[k]||0);
       const skip=(n.skip||[]).includes(k),item=on[s.id];
       const tagLine=skip?'<em class="gv-skip">🚫 Để nguyên</em>':item?`<em class="gv-on">${x.esc(CARE(x,item.id).emoji)} ${x.esc(CARE(x,item.id).name)}</em>`:s.focus?'<em class="gv-focus">🔍 Lau kỹ</em>':'';
       return tile(x,'gv_wipe',{task:t.id,spot:s.id},`<span class="tile-emoji">${x.esc(sp.emoji)}</span><b>${x.esc(sp.name)}</b><small>${x.esc(sp.mat||'')}</small>${skip?'':v?dots(v,start[s.id]):'<span class="gv-clean">✨ sạch</span>'}${tagLine}`,
-        `gv-spot ${v&&!skip?'':'clean'} ${skip?'skip':''} ${item?'has-item':''} lv${l}`,t.stage!=='work'||!!gap);}).join('');
+        `gv-spot ${v&&!skip?'':'clean'} ${skip?'skip':''} ${item?'has-item':''} lv${l}`,t.stage!=='work'||!!gap,can);}).join('');
     return `<div class="gv-level"><h4 class="section-title">${LV_EMOJI[l]||''} ${x.esc(LEVEL(x,l))}</h4><div class="tile-grid gv-spots">${tiles}</div></div>`;}).join('');
   const care=itemsIn(t,room).map(i=>{const c=CARE(x,i.id),st=t.items?.[i.id];
     if(st==='on')return x.cmd(`${x.esc(c.emoji)} ${x.esc(c.move||c.name)}`,'gv_move',{task:t.id,item:i.id},'small gv-move');

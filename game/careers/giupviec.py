@@ -319,6 +319,21 @@ def _need_out(d: dict) -> None:
     kit.need(d['cart']['out'], 'Chưa soạn xe: giặt khăn, châm chai rồi bấm “Lên đường” nhé.')
 
 
+def _hand_rules(c: dict, d: dict, need=kit.need, bottle: bool = True) -> None:
+    """What the hand must hold before a wipe. gv_wipe refuses with these (bottle=False there: an empty bottle is
+    checked later, after the spots the client said to leave alone); public_data sends them as can.gv_wipe, so the
+    page dims the surfaces and says why before the tap (06/10: ~900 refusals a day "Chọn chai/dụng cụ…")."""
+    h = d['hand']
+    need(h['tool'], 'Chọn dụng cụ trên xe trước đã.', fix=dict(sel='.gv-hand', label='✋ Cầm đồ'))
+    need(h['product'], 'Chọn chai (hoặc lau khô) trước đã.', fix=dict(sel='.gv-hand', label='🧴 Chọn chai'))
+    if bottle:
+        x = PRODUCTS[h['product']]
+        fill = (dict(cmd='gv_fill', payload=dict(product=h['product']), label='🧴 Châm')
+                if not x['item'] or kit.stock(c, x['item']) > 0 else dict(act='inventory', label='📦 Kho'))
+        need(not x['item'] or d['cart']['bottles'][h['product']] > 0,
+             f'Chai {_lower(x["name"])} cạn rồi. Châm ở xe đồ nghề nhé.', fix=fill)
+
+
 def _need_work(t: dict) -> None:
     kit.need(t['known'], 'Bấm chuông, nghe khách dặn đã nhé.')
     kit.need(t['stage'] == 'work', 'Nhà này dọn xong rồi.')
@@ -456,8 +471,7 @@ def _wipe(s, c, d, p):
     key = key_of(t['room'], sid)
     sp = SPOTS[sid]
     tool, prod = d['hand']['tool'], d['hand']['product']
-    kit.need(tool, 'Chọn dụng cụ trên xe trước đã.')
-    kit.need(prod, 'Chọn chai (hoặc lau khô) trước đã.')
+    _hand_rules(c, d, bottle=False)
     kit.start_work(t)
     who = _who(t)
     # the client said to leave it alone
@@ -813,6 +827,7 @@ def public_data(c: dict) -> dict:
                 mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']),
                 today=d['today'], stats=d['stats'], regulars={k: dict(v) for k, v in d['regulars'].items()},
                 desk=kit.desk_public(d['desk'], DESK, ID),
+                can=dict(gv_wipe=kit.check(_hand_rules, c, d)),
                 learn=dict(on=on, n=d['stats']['jobs'], of=APPRENTICE, title=LESSONS[n][0] if on else None, text=LESSONS[n][1] if on else None))
 
 
