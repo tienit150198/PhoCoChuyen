@@ -53,6 +53,14 @@ Chủ game (05/10): "thêm top tài phú nhé … thêm top tài phú cho toàn 
 - Tab trên điện thoại (390 px): 4 tab xếp 2 × 2, có 💍 Khách mời thì 5 tab xếp 3 + 2, đủ chữ.
 - Thẻ bạn bè (`game/friends.py`) chỉ lấy nghề chính từ bảng nơi làm (bảng danh hiệu, tài phú, hội chợ `fair…xu` không lọt vào).
 - Hướng dẫn › Bảng xếp hạng thêm dòng Top tài phú (`public/js/tutorial/guide-content.js` tạo lại). Chưa có bản tiếng Anh cho các dòng mới.
+# Chưa phát hành — WP6 Quầy, hội chợ, tiền & luồng
+
+- Quầy: camera, chuông, két sắt, bảo vệ giảm đúng khả năng bị trộm như nhãn ghi; két sắt giữ lại ít nhất nửa két. Thẻ quầy hiện "Rủi ro trộm" và chi phí mở quầy chạy trực tiếp.
+- Thuê bạn: lời mời có huy hiệu trong game, lời mời chưa nhận được hiện lý do; nói rõ hàng nhập dùng quỹ nghề của người làm thêm; ghi "chỗ đứng" thay cho số người.
+- "3 ngày tuổi": nói rõ tài khoản của ai, còn bao nhiêu giờ (đời thực), phiên khách có câu riêng; kết bạn từ chat báo lý do cụ thể.
+- Bỏ dở việc: máy chủ kiểm tra trước rồi mới hỏi "Vẫn đi", không lặp hộp thoại; "Xin nghỉ việc" chờ một nhịp mới bấm được "Đồng ý".
+- Bảng giá tiệm vẽ đủ món cho mọi nghề có bảng giá (quán cơm, phở, tạp hóa…). Kết kỳ thuế có thông báo kèm phép tính.
+- Hội chợ: khoảng 65% ván may rủi là thắng (thắng liền 4 ván thì nguội còn 55%); phóng dao màn mới nhẹ hơn, tính giờ theo lúc chạm; ném vòng rơi đúng gần chỗ ném; lô tô chưa đủ hàng chỉ nhắc, không phạt.
 
 # 1.7.15 — 2026-10-05
 

@@ -112,11 +112,11 @@ class BauCua(FairBase):
             s, r = self.act(s, 'fair_bc', bets={'cua': 1})
         self.assertEqual(public_state(s)['fair']['rules']['bc_open'], 5000)
 
-    def test_a_long_bau_cua_run_stays_at_50(self):
+    def test_a_long_bau_cua_run_keeps_its_rate(self):
         j, f = {}, dict(fh.initial(), date=fh.vn_date(OPEN))
         ps = [fh.luck_p(j, f, 'bc', OPEN + 5 * i) for i in range(40)]
-        self.assertEqual(ps[0], fh.WIN_P)
-        self.assertEqual(ps[-1], .50)
+        self.assertEqual(set(ps), {fh.LUCK_BASE})                     # 06/10: no repetition decay
+        self.assertGreaterEqual(min(ps), fh.WIN_P_LOW)
 
     def test_standard_payouts_and_the_bao_bonus(self):
         s = story(100)
@@ -574,8 +574,8 @@ class LotoShow(FairBase):
                 ev = gain / (N * n * 5)
                 expected = probability * fh.prize_of(mode, 5, n) / (n * 5) - 1
                 self.assertAlmostEqual(ev, expected, delta=.20, msg=(mode, n, ev))
-        for k in fh.LOTO_MODES:   # even the low end now favors timely, correctly marked Kinh claims
-            self.assertTrue(1.05 < fh.WIN_P_LOW * fh.LOTO_PAY[k] / 10 < 1.20, k)
+        for k in fh.LOTO_MODES:   # even the cooled-off floor favors timely, correctly marked Kinh claims
+            self.assertTrue(1.05 < fh.WIN_P_LOW * fh.LOTO_PAY[k] / 10 < 1.30, k)
         self.assertTrue(.88 < cl / 600 < 1.05, cl / 600)
         self.assertTrue(.8 < cot / 600 < 1.05, cot / 600)
 
@@ -602,13 +602,15 @@ class LotoShow(FairBase):
                     dict(card=0, at=k, marks=['1']), dict(card=0, at=k, marks=[rv['card'][0][0]] * 2)):
             with self.assertRaises(GameError, msg=bad):
                 self.act(s, 'fair_loto_kinh', **bad)
-        s, r = self.act(s, 'fair_loto_kinh', card=0, at=k, marks=[])
-        self.assertTrue(r['fair']['hut'])
+        w = s['journey']['wallet']
         partial = marks_for(rv, 0, k)
         full = [row for row in rv['cards'][0] if set(row) <= set(partial)]
-        s, r = self.act(s, 'fair_loto_kinh', card=0, at=k, marks=[n for n in partial if n not in full[0][:1]])
-        self.assertTrue(r['fair']['hut'])
-        self.assertEqual(s['journey']['fair']['loto']['fk'], 2)
+        # Every mark was called, only the rows are short: refused with the reason, no fine, no Kinh hụt counted (06/10).
+        for marks in ([], [n for n in partial if n not in full[0][:1]]):
+            with self.assertRaises(GameError) as ctx:
+                self.act(s, 'fair_loto_kinh', card=0, at=k, marks=marks)
+            self.assertEqual(ctx.exception.code, 'fair_loto_short')
+        self.assertEqual((s['journey']['wallet'], s['journey']['fair']['loto'].get('fk', 0)), (w, 0))
 
     def test_kinh_hut_a_small_funny_penalty_and_no_limit(self):
         s = story(200)
@@ -620,7 +622,7 @@ class LotoShow(FairBase):
         self.assertEqual((r['fair']['hut'], r['fair']['fine'], r['fair']['out']), (True, fh.KINH_FINE, False))
         self.assertEqual(s['journey']['wallet'], w - fh.KINH_FINE)
         for i in range(2, 8):                           # owner 03/10: "kinh hụt thoải mái", the cards stay in
-            s, r = self.act(s, 'fair_loto_kinh', card=0, at=k, marks=[])
+            s, r = self.act(s, 'fair_loto_kinh', card=0, at=k, marks=[uncalled])
             self.assertEqual((r['fair']['hut'], r['fair']['out'], r['fair']['fk']), (True, False, min(i, 3)))   # the stored count stays ≤ 3 (older servers' bound)
         self.assertEqual(s['journey']['fair']['loto']['stage'], 'play')
         self.assertEqual(s['journey']['wallet'], w - fh.KINH_FINE * 7)
@@ -635,7 +637,8 @@ class LotoShow(FairBase):
         s = story(2)
         s, _, rv = self.buy(s, tier='nho')
         self.assertEqual(s['journey']['wallet'], 0)
-        s, r = self.act(s, 'fair_loto_kinh', card=0, at=rv['mine'], marks=[])
+        uncalled = next(n for r_ in rv['cards'][0] for n in r_ if n not in rv['seq'][:rv['mine']])
+        s, r = self.act(s, 'fair_loto_kinh', card=0, at=rv['mine'], marks=[uncalled])
         self.assertEqual((r['fair']['hut'], r['fair']['fine']), (True, 0))
         self.assertEqual(s['journey']['wallet'], 0)
 
@@ -645,9 +648,11 @@ class LotoShow(FairBase):
         self.assertEqual(rv['need'], 2)
         pos = {n: i for i, n in enumerate(rv['seq'])}
         one = fh.done_at(rv['card'], pos, 1)
-        if one < rv['mine']:   # one row full, the second not yet: a Kinh hụt
-            s, r = self.act(s, 'fair_loto_kinh', card=0, at=one, marks=marks_for(rv, 0, one))
-            self.assertTrue(r['fair']['hut'])
+        if one < rv['mine']:   # one row full, the second not yet: refused with the reason, no fine (06/10)
+            w = s['journey']['wallet']
+            with self.assertRaises(GameError) as ctx:
+                self.act(s, 'fair_loto_kinh', card=0, at=one, marks=marks_for(rv, 0, one))
+            self.assertEqual((ctx.exception.code, s['journey']['wallet']), ('fair_loto_short', w))
         s, r = self.act(s, 'fair_loto_kinh', card=0, at=rv['mine'], marks=marks_for(rv, 0, rv['mine']))
         self.assertTrue(r['fair']['won'])
         self.assertIn('f_kinh2', s['journey']['titles'])
@@ -1147,7 +1152,7 @@ class Odds(FairBase):
             self.assertTrue(fh.WIN_P - .02 <= rate <= fh.WIN_P + .02, (bets, rate))
             nets = [fh.bc_back(bets,d)-sum(bets.values()) for d in fh.BC_OUTCOMES]
             positive = [n for n in nets if n>0]; other = [n for n in nets if n<=0]
-            expected = (.5*sum(positive)/len(positive)+.5*sum(other)/len(other))/sum(bets.values())
+            expected = (fh.WIN_P*sum(positive)/len(positive)+(1-fh.WIN_P)*sum(other)/len(other))/sum(bets.values())
             self.assertAlmostEqual(ev, expected, delta=.03)
 
     def test_xoc_dia(self):
@@ -1162,7 +1167,8 @@ class Odds(FairBase):
         ps = [fh.luck_p(j, f, 'xd', OPEN + i) for i in range(40)]
         self.assertEqual(ps[:fh.RUN_FREE], [base] * fh.RUN_FREE)
         self.assertAlmostEqual(ps[fh.RUN_FREE], base - fh.RUN_STEP)
-        self.assertEqual(ps[-1], fh.P_FLOOR)
+        self.assertEqual(ps[-1], base)                                   # 06/10: no decay in a long run
+        self.assertGreaterEqual(base, fh.P_FLOOR)
         self.assertEqual(fh.luck_p(j, f, 'bc', OPEN + 41), fh.chance_rate('bc', OPEN + 41))
         j['fair_run'] = dict(g='xd', n=30, at=int(OPEN))
         self.assertEqual(fh.luck_p(j, f, 'xd', OPEN + fh.RUN_GAP + 5), base)   # a break: a new run
@@ -1173,15 +1179,13 @@ class Odds(FairBase):
         with self.assertRaises(GameError):
             validate_state(s)
 
-    def test_the_lean_tapers_off(self):
+    def test_no_money_taper(self):
         self.assertEqual(fh.win_p(None, OPEN), fh.WIN_P)
         rate, _ = self.rounds(self.xd('chan', 10), net=fh.TAPER_FROM - 1)
         self.assertTrue(fh.WIN_P - .03 <= rate <= fh.WIN_P + .01, rate)
-        rate, _ = self.rounds(self.bc({'cua': 5}), net=(fh.TAPER_FROM + fh.TAPER_TO) // 2)
-        mid = (fh.WIN_P + fh.WIN_P_LOW) / 2
-        self.assertTrue(mid - .02 <= rate <= mid + .02, rate)
-        rate, _ = self.rounds(self.bc({'cua': 5}), net=fh.TAPER_TO - 1)
-        self.assertTrue(.48 <= rate <= .52, rate)
+        for net in ((fh.TAPER_FROM + fh.TAPER_TO) // 2, fh.TAPER_TO - 1, 10 ** 5):   # 06/10: the same rate at any net
+            rate, _ = self.rounds(self.bc({'cua': 5}), net=net, n=6000)
+            self.assertTrue(fh.WIN_P - .02 <= rate <= fh.WIN_P + .02, (net, rate))
 
     def test_the_rounds_played_show_what_they_paid(self):
         s = story(10 ** 5)
@@ -1204,7 +1208,7 @@ class Odds(FairBase):
         s = story(10 ** 6)
         s['journey']['fair'] = dict(fh.initial(), date=fh.vn_date(OPEN), net=fh.TAPER_TO + 3000, rounds=fh.ROUNDS_DAY,
                                     ed=fh.edition())
-        self.assertEqual(fh.win_p(s['journey']['fair'], OPEN), fh.WIN_P_LOW)   # far past the taper: stays at the low end
+        self.assertEqual(fh.win_p(s['journey']['fair'], OPEN), fh.WIN_P)   # far past the old taper: the same rate
         s, _ = self.act(s, 'fair_bc', bets={'cua': 1})
         s['journey']['fair']['net'] = -10 ** 5                             # a big losing day: still playable
         s, _ = self.act(s, 'fair_xd', side='chan', stake=50)
@@ -1510,8 +1514,8 @@ class Board(StoreBase):
         ed = fh.board()
         view = lb.view(self.store, ed, 20, a)
         self.assertEqual([r['name'] for r in view['rows']], ['Anh Ba', 'Chị Tư', 'Cô Năm'])
-        self.assertEqual([r['xu'] for r in view['rows']], [79, 39, 39])     # Four wins then one loss; wins pay 10 xu, losses cost 1.
-        self.assertEqual((view['me']['rank'], view['me']['xu']), (1, 79))
+        self.assertEqual([r['xu'] for r in view['rows']], [90, 50, 50])     # A .25 draw wins even cooled off (06/10: 55% floor); wins pay 10 xu.
+        self.assertEqual((view['me']['rank'], view['me']['xu']), (1, 90))
         old = lb.view(self.store, fh.edition(), 20, a)                       # an older client asks by the edition
         self.assertEqual((old['board'], old['rows'], bool(old['fair'])), (fh.edition(), view['rows'], True))
         self.assertFalse(view['fair']['settled'])

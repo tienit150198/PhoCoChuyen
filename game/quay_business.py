@@ -22,6 +22,7 @@ STOCK_MAX = 20000
 PRICE_MAX = 1000000
 LEGACY_EXPENSES = ('goods', 'wages', 'rent', 'power', 'online', 'tax', 'loss')
 EXPENSES = LEGACY_EXPENSES + ('income_tax', 'environment', 'protection')
+TIME_COSTS = ('wages', 'rent', 'power', 'environment', 'protection')   # billed by elapsed open time (_rates)
 
 
 def staff_wage(st, member):
@@ -408,10 +409,17 @@ def public(st):
         code='running'
         pending=[r['due_at'] for r in visitors if r['status']=='queued' and r['due_at'] is not None]
         next_at=round(min(pending)*1000) if pending else b['cursor']
-    return dict(v=1, status=code, reason=reasons[code], paused=b['paused'],
+    rates = _rates(st)
+    run = st.get('run')
+    manual = isinstance(run, dict) and run.get('continuous') and not run.get('x') and not b['paused']
+    # Time costs (wages, rent, power, environment, protection) accrue per real second while the
+    # counter is open and working, sales or not: the same rule as _charge in settle().
+    running = dict(per_period=sum(rates.values()), spent=sum(b['expenses'].get(k, 0) for k in TIME_COSTS),
+                   accruing=bool(code == 'running' or (not st['staff'] and manual and code != 'paused')))
+    return dict(v=1, status=code, reason=reasons[code], paused=b['paused'], running_cost=running,
         market=market.snapshot(b['cursor']), protection=dict(level=b.get('protection', {}).get('level', 'none'), options=[dict(level=k, **v) for k,v in plans.items()], **plans[b.get('protection', {}).get('level', 'none')], quote=dict(b.get('protection_quote', {}))),
         protection_plans=[dict(level=k, **v) for k,v in plans.items()],
-        rates=_rates(st), income_tax_percent=market.INCOME_TAX_PERCENT,
+        rates=rates, income_tax_percent=market.INCOME_TAX_PERCENT,
         visitor_orders=visitors,
         stock_total=sum(b['stock'].values()), stock=[dict(id=d, qty=b['stock'].get(d, 0), cost=unit_cost(st, d), price=qs.price(st, d)) for d in rows],
         period_seconds=PERIOD, wage=sum(staff_wage(st, e) for e in st['staff']), revenue=b['revenue'], sold=b['sold'],

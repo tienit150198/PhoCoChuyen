@@ -9,32 +9,40 @@ from tests.test_fair import FairBase, Dice, OPEN, story
 
 
 class EvenRates(unittest.TestCase):
-    def test_every_price_time_net_and_repeat_has_half_base_rate(self):
+    """Owner 06/10: about 65% of luck rounds are won, whatever the price, time, net or repetition."""
+    def test_every_price_time_net_and_repeat_has_the_same_base_rate(self):
         for game in fh.CHANCE_GAMES:
             j = {}
+            want = fh.XD_BASE if game == 'xd' else fh.LUCK_BASE
             for i in range(100):
-                for price in (2, 10, 50, 500):
-                    self.assertEqual(fh.chance_rate(game, OPEN + i*1800, price, 100000), .5)
-                    self.assertEqual(fh.luck_p(j, None, game, OPEN+i, stake=price), .5)
+                for price in (2, 10, 50, 500, 1000):
+                    self.assertEqual(fh.chance_rate(game, OPEN + i*1800, price, 100000), want)
+                    self.assertEqual(fh.luck_p(j, None, game, OPEN+i, stake=price), want)
 
     def test_bad_random_stream_cannot_produce_five_consecutive_losses(self):
-        self.assertTrue(hasattr(fh, '_draw_luck'))
-        for value in (.001, .999):
-            j = {}
-            with patch.object(fh, '_rng', Dice(draws=[value]*100)):
-                results = [fh._draw_luck(j, 'xs', .5) for _ in range(50)]
-            self.assertFalse(any(len(set(results[i:i+5])) == 1 for i in range(46)))
+        j = {}
+        with patch.object(fh, '_rng', Dice(draws=[.999]*100)):
+            results = [fh._draw_luck(j, 'xs', fh.LUCK_BASE) for _ in range(50)]
+        self.assertFalse(any(not any(results[i:i+5]) for i in range(46)))
 
-    def test_long_run_is_balanced_and_each_game_has_its_own_history(self):
-        self.assertTrue(hasattr(fh, '_draw_luck'))
+    def test_a_winning_streak_cools_to_the_floor_never_below(self):
+        j = {}
+        with patch.object(fh, '_rng', Dice(draws=[fh.WIN_P_LOW - .001]*20 + [fh.WIN_P_LOW + .001])):
+            results = [fh._draw_luck(j, 'bc', fh.LUCK_BASE) for _ in range(21)]
+        self.assertTrue(all(results[:20]))       # a draw under 55% still wins after any streak
+        self.assertFalse(results[20])            # the cooled-off rate is exactly the floor
+        self.assertEqual(j['fair_balance']['bc'], -1)
+
+    def test_long_run_is_65_and_each_game_has_its_own_history(self):
         j = {}
         with patch.object(fh, '_rng', random.Random(92026)):
-            results = [fh._draw_luck(j, 'bc', .5) for _ in range(100000)]
-        self.assertAlmostEqual(sum(results)/len(results), .5, delta=.005)
+            results = [fh._draw_luck(j, 'bc', fh.LUCK_BASE) for _ in range(100000)]
+        self.assertAlmostEqual(sum(results)/len(results), fh.WIN_P, delta=.005)
         self.assertNotIn('xs', j['fair_balance'])
+        self.assertTrue(all(-4 <= v <= 4 for v in j['fair_balance'].values()))   # the older validator's bound
         j = json.loads(json.dumps(j))
         with patch.object(fh, '_rng', Dice(draws=[.999])):
-            self.assertFalse(fh._draw_luck(j, 'xs', .5))
+            self.assertFalse(fh._draw_luck(j, 'xs', fh.LUCK_BASE))
 
 
 class EvenCommands(FairBase):

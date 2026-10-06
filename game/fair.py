@@ -1,9 +1,12 @@
 """Folk fair, played with in-game xu only. Current rules (owner 05/10):
 
-* Chance stalls use a 50% base rate for every stake, time slot and net profit.
-* Per-player, per-stall signed streaks prevent five equal draws in succession.
-  The symmetric win/loss guard preserves a 50% long-run balance; it is not ten
-  independent coin flips. Reloads, switching stalls and elapsed time do not reset it.
+* Owner 06/10 ("tăng lên 65% đi cho thoải mái"): every luck stall is won about 65% of the
+  time in practice, for every stake, time slot and net profit (WIN_P).
+* Per-player, per-stall signed streaks: four losses in a row and the next round is a win;
+  after four wins in a row the next rounds cool off to WIN_P_LOW (55%), never lower. The
+  neutral draw (LUCK_BASE, a little above 65%) makes the long-run rate WIN_P with both rules;
+  xóc đĩa's draw is higher again so its 1.76% raids still leave 65% won rounds. Reloads,
+  switching stalls and elapsed time do not reset the streaks.
 * Knife and o an quan remain skill games with unchanged opponents/collisions.
 * Normal back-corner raids remain 1.76%. Paid chance rounds can also trigger a
   70% enforcement check above 50,000 daily net xu, at most once per 30 minutes;
@@ -49,10 +52,13 @@ KIND = 'fair'                  # journey wallet history kind (journey.HISTORY_KI
 DAY_CAP = 150
 ROUNDS_DAY = 400
 # Same base chance for all paid/free luck stalls; the draw guard below is symmetric.
-WIN_P, WIN_P_LOW = .50, .50
-LOTO_WIN_P = .50
+WIN_P, WIN_P_LOW = .65, .55   # the long-run rate of won rounds, and the cool-off floor after a winning streak
+LOTO_WIN_P = WIN_P
+LUCK_BASE = .665               # the draw at a neutral streak: with the two streak rules the long run is WIN_P
+XD_BASE = .68                  # xóc đĩa: raids (RAID_PCT) come first, so its draw is higher for WIN_P won rounds
+STREAK = 4                     # losses in a row before a sure win; wins in a row before the cool-off
 # Keep legacy counters and published constants for saved/client compatibility.
-RUN_FREE, RUN_STEP, RUN_GAP, P_FLOOR = 10, 0, 180, .50
+RUN_FREE, RUN_STEP, RUN_GAP, P_FLOOR = 10, 0, 180, WIN_P_LOW
 RUN_GAMES = ('bc', 'xd', 'lt', 'dt')
 # Stalls newer than 1.4.17, whose validator takes only RUN_GAMES in 'fair_run': their run is journey['fair_run2'], the
 # same shape; there is one run at a time (a round of the other kind drops the other key), as if it were one key.
@@ -64,8 +70,8 @@ BC_GAP_MS = 4800                 # BC_OPEN_MS less a little network slack
 TAPER_FROM, TAPER_TO = 2000, 5000
 FEATURE_SECONDS = 30 * 60
 CHANCE_GAMES = ('lt', 'bc', 'xd', 'xs', 'ring')  # Knife and o an quan remain skill.
-FEATURE_RATES = (.50, .50)
-ORDINARY_RATES = (.50, .50)
+FEATURE_RATES = (WIN_P, WIN_P)
+ORDINARY_RATES = (WIN_P, WIN_P)
 STAKE_TIERS = dict(bc=(1, 2, 5, 10, 50, 100, 200, 500, 1000), xd=(10, 20, 30, 50, 100, 200, 500, 1000),
                    lt=(2, 5, 10, 50, 100, 200, 500, 1000), xs=scratch.TIERS)
 GAP_MS = 400                   # between two rounds of dice/coins (owner 03/10: nhanh lên; was 1200)
@@ -88,7 +94,7 @@ WEALTH_THRESHOLD, WEALTH_CHECK_GAP, WEALTH_RAID_P = 50000, 1800, .70
 LOTO_PRICE = 5
 LOTO_PRIZE = 11                # the older client's plain card: prize_of('thuong', LOTO_PRICE, 1) (was 23, a pot)
 LOTO_NPCS = 4
-# Loto uses the same 50% base chance as other luck stalls (legacy constants below
+# Loto uses the same base chance as other luck stalls (WIN_P, 06/10) (legacy constants below
 # like the other luck stalls), and a Kinh pays LOTO_PAY tenths of what the tờ cost, so that a player who always
 # calls in time comes out a little ahead, like at bầu cua (the pot of everyone's tờ paid ~4.6× a single tờ).
 LOTO_PAY = dict(thuong=22, nguoc=22, doi=22, dem=23)
@@ -440,13 +446,9 @@ def side_back(sb: dict | None, x: int) -> dict:
 
 
 def odds(net: int, hi: float | None = None, lo: float | None = None) -> float:
-    """How likely a luck round (bầu cua, xóc đĩa, phi tiêu) goes the player's way given today's luck net: WIN_P up to
-    TAPER_FROM, then straight down to WIN_P_LOW at TAPER_TO, and WIN_P_LOW from there on."""
-    hi = WIN_P if hi is None else hi
-    lo = min(hi, WIN_P_LOW if lo is None else lo)
-    if net <= TAPER_FROM:
-        return hi
-    return max(lo, hi - (hi - lo) * (net - TAPER_FROM) / (TAPER_TO - TAPER_FROM))
+    """The long-run share of luck rounds that go the player's way: WIN_P at any net (no money taper since 05/10; kept
+    for older callers). Winning streaks cool off in _draw_luck, never below WIN_P_LOW."""
+    return WIN_P if hi is None else hi
 
 
 def _run(j: dict, game: str, t: float) -> int:
@@ -469,8 +471,8 @@ def featured_game(t: float) -> str:
 
 
 def chance_rate(game: str, t: float, stake: int | None = None, net: int = 0) -> float:
-    """Same base probability at every stall, independent of money or repetition."""
-    return .50
+    """The neutral-streak draw of a stall, independent of money or repetition (WIN_P won rounds in the long run)."""
+    return XD_BASE if game == 'xd' else LUCK_BASE
 
 
 def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = None) -> float:
@@ -480,14 +482,15 @@ def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = 
 
 
 def _draw_luck(j: dict, game: str, probability: float) -> bool:
-    draw = _rng.random() < probability
-    # Previously purchased rounds keep their locked non-50% probability.
-    if probability != .50:
-        return draw
+    draw = _rng.random()
+    # Previously purchased rounds keep their locked probability (a ring round bought before this build).
+    if probability not in (LUCK_BASE, XD_BASE):
+        return draw < probability
     balance = j.setdefault('fair_balance', {})
     streak = balance.get(game, 0)
-    won = True if streak <= -4 else False if streak >= 4 else draw
-    balance[game] = max(0, streak) + 1 if won else min(0, streak) - 1
+    # Four losses in a row: a sure win. Four wins in a row or more: cooled off to WIN_P_LOW, never below.
+    won = True if streak <= -STREAK else draw < (WIN_P_LOW if streak >= STREAK else probability)
+    balance[game] = min(STREAK, max(0, streak) + 1) if won else max(-STREAK, min(0, streak) - 1)
     return won
 
 
@@ -609,8 +612,16 @@ def _kn(j: dict) -> dict:
 
 
 def _kn_sched(run: dict, j: dict | None = None) -> dict:
+    if _kn_soft(j or {}, run):
+        return knife.schedule(run['sd'], run['lv'], run['hot'], knife.SOFT_DIFFICULTY)
     rules = _kn_skill(j or {}, run) or _chance(j or {}, 'kn', run) or {}
     return knife.schedule(run['sd'], run['lv'], run['hot'], rules.get('difficulty', 100))
+
+
+def _kn_soft(j: dict, run: dict) -> bool:
+    """A level started on this build: the softer board (fair_knife.SOFT_*). journey['fair_kn_soft'] = {at, seed}."""
+    soft = j.get('fair_kn_soft')
+    return isinstance(soft, dict) and soft.get('at') == run['at'] and soft.get('seed') == run['sd']
 
 
 def _kn_skill(j: dict, run: dict) -> dict | None:
@@ -619,7 +630,9 @@ def _kn_skill(j: dict, run: dict) -> dict | None:
 
 
 def _set_kn_skill(j: dict, run: dict) -> None:
+    # fair_kn_skill keeps the value an older worker validates (rolling deploy); fair_kn_soft marks this level softer.
     j['fair_kn_skill'] = dict(at=run['at'], seed=run['sd'], difficulty=knife.SKILL_DIFFICULTY)
+    j['fair_kn_soft'] = dict(at=run['at'], seed=run['sd'])
     j.get('fair_chance', {}).pop('kn', None)
 
 
@@ -967,9 +980,12 @@ def apply(s: dict, name: str, p: dict) -> dict:
             result['message'] = 'Ván này tàn lâu rồi, mua tờ mới nha.'
         elif marks is None and not set(rv['card'][row]) <= set(rv['seq'][:at]):
             need(False, 'Hàng này chưa đủ số đâu, dò lại nha!', 'fair_loto_short')
+        elif marks is not None and set(marks) <= set(rv['seq'][:at]) and sum(set(r) <= set(marks) for r in rv['cards'][ci]) < rv['need']:
+            # Every mark was a called number, only the rows are short (Kinh đôi 2, Hũ 3): no fine, nothing changes.
+            need(False, f'Vòng này cần đủ {rv["need"]} hàng trên một tờ. Dò tiếp rồi kinh nha!', 'fair_loto_short')
         elif marks is not None and not (set(marks) <= set(rv['seq'][:at])
                                         and sum(set(r) <= set(marks) for r in rv['cards'][ci]) >= rv['need']):
-            # Kinh hụt: a mark that was never called, or the marks do not fill the vòng's pattern
+            # Kinh hụt: a mark that was never called
             # the cards stay in the round however many times (owner: "k giới hạn kinh hụt"); a tiny fine, wallet allowing
             lt['fk'] = min(3, lt.get('fk', 0) + 1)   # a counter only now; kept ≤ 3 so a 1.4.12 server (rolling release) still accepts the save
             ltd = _ltd(f)
@@ -1078,7 +1094,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
                 hits = [-1] * ring.RINGS
                 if _draw_luck(j, 'ring', chance['p'] / 1000):
                     n = 1 + _rng.randrange(ring.RINGS)
-                    hits[:n] = [_rng.randrange(ring.BOTTLES) for _ in range(n)]
+                    hits = ring.land(ring.params(r['rs']), p['taps'], n)
             else:
                 hits = ring.judge(ring.params(r['rs']), p['taps'])
             n = sum(h >= 0 for h in hits)
@@ -1174,7 +1190,7 @@ def public(s: dict) -> dict:
                            loto_price=LOTO_PRICE, loto_prize=LOTO_PRIZE, loto_npcs=LOTO_NPCS, faces=list(FACES),
                            oaq_prize=dict(OAQ_PRIZE), oaq_people={k: list(v) for k, v in OAQ_PEOPLE.items()}, quan=oaq.QUAN,
                            quan_non=oaq.QUAN_NON, ring_hit=RING_HIT, ring_all=RING_ALL, rings=ring.RINGS, ring_tol=ring.TOL,
-                           ring_day=RING_DAY, ring_left=RING_DAY, oaq_turn=1, xd_fine_div=FINE_DIV, nocap=1, ring_chance=True),
+                           ring_day=RING_DAY, ring_left=RING_DAY, oaq_turn=1, xd_fine_div=FINE_DIV, nocap=1, ring_chance=True, win_pct=round(WIN_P * 100), cool_pct=round(WIN_P_LOW * 100)),
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
                 ring=ring_view((f or {}).get('ring'), t, j),
                 loto=loto, stats={k: st.get(k, 0) for k in STATS},
@@ -1239,6 +1255,12 @@ def validate(j: dict) -> None:
         integer(rules['at'], 0, 10**14)
         integer(rules['seed'], 0, 2**31)
         integer(rules['difficulty'], 135, 135)
+    if 'fair_kn_soft' in j:
+        from .engine import need, integer
+        soft = j['fair_kn_soft']
+        need(isinstance(soft, dict) and set(soft) == {'at', 'seed'}, 'Dữ liệu phóng dao không hợp lệ.', 'invalid_save')
+        integer(soft['at'], 0, 10**14)
+        integer(soft['seed'], 0, 2**31)
     if 'fair_chance' in j:
         from .engine import need, integer
         c = j['fair_chance']

@@ -740,7 +740,7 @@ function countOff(env,id,count,what=''){
 export async function v4Action(action,data,el,env){
   const {api,ui,cmd,confirmAction,renderSheet,openSheet}=env;
   switch(action){
-    case'v4Cmd':{const payload=JSON.parse(data.payload||'{}');if(data.confirm&&!await confirmAction('Xác nhận',data.confirm,'Đồng ý',data.cost?{cost:Number(data.cost),pocket:data.pocket||'fund'}:null))return true;if(data.confirm)payload.confirm=true;await cmd(data.op,payload);return true;}
+    case'v4Cmd':{const payload=JSON.parse(data.payload||'{}');if(data.confirm&&!await confirmAction('Xác nhận',data.confirm,'Đồng ý',data.cost?{cost:Number(data.cost),pocket:data.pocket||'fund'}:null,data.op==='job_quit'?{arm:700}:null))return true;if(data.confirm)payload.confirm=true;await cmd(data.op,payload);return true;}
     case'v4Backdoor':{
       // 🚪 Honest about what it is: a fee to a helper, a normal probation, maybe some whispers on day one.
       const id=api.state.current,job=api.state.careers[id]?.job,J=api.state.journey;

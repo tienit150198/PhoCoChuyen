@@ -59,7 +59,7 @@ class KnifeSkill(FairBase):
         board = r['fair']['run']['board']
         self.assertFalse(r['fair']['run']['chance'])
         self.assertFalse(board.get('chance', False))
-        self.assertEqual(board['need'], 10)
+        self.assertEqual(board['need'], 9)   # 06/10: the softer 115% board (was 10 at 135%)
         self.assertTrue(board['pre'])
         self.assertEqual(s['journey']['fair_kn_skill']['difficulty'], 135)
         self.assertNotIn('kn', s['journey'].get('fair_chance', {}))
@@ -115,7 +115,7 @@ class KnifeSkill(FairBase):
         self.assertTrue(r['fair']['cleared'])
         s, r = self.act(s, 'fair_kn_next')
         self.assertFalse(r['fair']['run']['chance'])
-        self.assertEqual(r['fair']['run']['board']['need'], 10)
+        self.assertEqual(r['fair']['run']['board']['need'], 9)
         validate_state(s)
 
     def test_in_progress_chance_level_finishes_without_invented_collision_then_switches(self):

@@ -166,8 +166,25 @@ def request(store, sid: str, display: str, d: dict) -> dict:
         mr._notice(db, other, f'👋 {display} muốn kết bạn với bạn. Mở mục Bạn bè để trả lời nhé.')
         return 'sent', mr._display(db, other)
     what, name = store.transaction(run)
+    if what == 'missing' and isinstance(d.get('code'), str) and d['code'].strip():
+        mr.need(False, _code_miss(store, sid, d['code']), 'not_found', 404)
     mr.need(what != 'missing', NOT_FOUND, 'not_found', 404)
     return dict(message=f'Hai bạn đã là bạn bè: {name} cũng vừa mời bạn!' if what == 'accepted' else f'Đã gửi lời mời kết bạn tới {name}.', changed=False)
+
+
+def _code_miss(store, sid: str, raw: str) -> str:
+    """Why a request by player code (the chat's Kết bạn, a shared PCC-…) did not go out. The code was shown to
+    the player, so saying it is theirs or a guest's tells nothing new; a block keeps one neutral line."""
+    code = mr.clean_code(raw)
+    with store.connect() as db:
+        p = _row(db, 'SELECT sid FROM marriage_people WHERE code=?', (code,))
+        if not p:
+            return 'Không thấy mã người chơi này. Bạn ấy có thể đã đổi tài khoản hoặc rời phố.'
+        if p['sid'] == sid:
+            return 'Đây là mã của chính bạn.'
+        if not db.execute('SELECT 1 FROM accounts WHERE sid=?', (p['sid'],)).fetchone():
+            return 'Bạn ấy đang chơi bằng phiên khách (chưa có tài khoản) nên chưa kết bạn được. Nhắn bạn ấy tạo tài khoản nhé.'
+    return 'Không gửi được lời mời tới người này.'
 
 
 def _befriend(db, a: str, b: str, rid: int | None) -> None:

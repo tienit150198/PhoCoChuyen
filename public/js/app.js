@@ -184,6 +184,9 @@ async function cmd(action,payload={},options={}){
   try{const r=await api.command(action,payload,options.career||career());if(pm){pmWant=null;ui.pmPick=null;ui.task=null;setTimeout(()=>openSheet('manager'),0);}if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);if(r.quay)quayFlush();return r;}
   catch(error){if(error.quiet)return null;
     if(error.data?.code==='acct_check'&&!payload?.acct_check){acctCheck(options.career||career());return null;}   // 💼 kế toán: the entry check first (v4/accounting-school.js)
+    // A command aimed at another workplace while work is in progress here (engine: ab.check with no confirm): ask once
+    // with the real numbers, switch with the player's confirm, then send the command again. Never a silent loop.
+    if(error.data?.code==='abandon_confirm'&&action!=='select_career'&&!options.abandonRetry){const target=options.career||career();const sw=await switchCareer(target);if(!sw)return null;abandonAfter(sw);return cmd(action,payload,{...options,career:target,abandonRetry:true});}
     toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}  // quiet: a tap the save moved under twice (api.js), the screen already shows why
 }
 /** 💼 A certified accountant's shift opens with the knowledge check (game/accounting_jobs.py): state.accounting_school.jobs. */
@@ -293,7 +296,7 @@ function navItems(c){
   return result;
 }
 /** 🏪 A dot when a counter needs its owner: a thief, rent to pay, closed waiting, or a till to collect soon. */
-function quayBadge(){const q=api.state?.journey?.quay;return q?.shift||(q?.stalls||[]).some(st=>(st.case&&!st.case.rep)||st.due||st.closed||(st.left<=1&&st.till>0))?'dot':0;}
+function quayBadge(){const q=api.state?.journey?.quay;if(api.quayInvites>0)return api.quayInvites;return q?.shift||(q?.stalls||[]).some(st=>(st.case&&!st.case.rep)||st.due||st.closed||(st.left<=1&&st.till>0))?'dot':0;}   // 💼 a friend's shift invitation: its count
 /** 💼 A hired shift's day just closed (game/quay.py on_shift): settle it now (game/quay_hire.py flush; every load does too). */
 async function quayFlush(){try{const d=await api.post('/api/quay/flush',{});if(d?.state&&typeof d.revision==='number')api.accept({state:d.state,revision:d.revision});}catch{/* the next load settles it */}}
 const badgeHTML=b=>b==='dot'?'<i class="dot" aria-hidden="true"></i>':b?`<em class="badge">${b}</em>`:'';
@@ -1149,6 +1152,8 @@ function summaryView(){
   if(job?.salary)notes.push(notice(`<b>Lương hôm nay +${fmt(job.salary)} xu</b>${job.result==='official'?'<p>Hết thử việc: bạn đã được ký hợp đồng chính thức! 🎉</p>':job.result==='extended'?'<p>Thử việc được gia hạn thêm 2 ngày. Cố lên nhé!</p>':job.probation?'<p>Đang thử việc: nhận 85% lương.</p>':''}`,'success','briefcase'));
   if(rv.open||(rv.count&&rv.weakest&&rv.average<4.5))notes.push(notice(pagoda?`${rv.count&&rv.weakest&&rv.average<4.5?`Khách thập phương nhắc nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` ${rv.open} cảm nhận chờ hồi đáp.`:''}<br>${button('Xem cảm nhận','feedback',{filter:rv.open?'open':'all'},'small')}`:`${rv.count&&rv.weakest&&rv.average<4.5?`Khách góp ý nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` ${rv.open} đánh giá chờ trả lời.`:''}<br>${button('Xem đánh giá','feedback',{filter:rv.open?'open':'all'},'small')}`,'amber','star'));
   if(ops?.unpaid)notes.push(notice(`<b>${esc(wordsFor(career()).books)}: còn ${fmt(ops.unpaid)} xu cần trả</b><p class="ck-chips">${ops.wages?`<span class="ck-delta flat">Lương ${fmt(ops.wages)}</span>`:''}${ops.utilities?`<span class="ck-delta flat">điện nước ${fmt(ops.utilities)}</span>`:''}${ops.rent_accrued?`<span class="ck-delta flat">thuê ${fmt(ops.rent_accrued)} xu</span>`:''}${ops.period?'<span class="ck-delta warn">vừa kết kỳ thuế</span>':''}</p>${button('Mở sổ thu chi','finance',{},'small')}`,'','mail'));
+  // 🧾 A tax period closed today (operations.py on_close): the calculation, not just a bill (players asked "5k xu thuế ở đâu ra?").
+  if(ops?.period){const p=ops.period;notes.push(notice(`<b>🧾 Kết kỳ thuế ngày ${fmt(p.start)}–${fmt(p.end)}</b><p>Doanh thu cả kỳ ${fmt(p.revenue)} xu × ${fmt(p.rate)}% = <b>${fmt(p.tax)} xu thuế</b> (làm tròn lên). Mặt bằng cả kỳ ${fmt(p.rent)} xu. Hai khoản nằm trong ${esc(wordsFor(career()).books)} → Thu chi, hạn đóng ngày ${fmt(p.end+2)}.</p>${button('Mở sổ thu chi','finance',{},'small')}`,'amber','mail'));}
   // Hired staff (operations.py on_close): what each one did today, or why not (no shift, paused by an open incident),
   // and what their finished jobs earned the shop (staff_bonus, one cash-book row; absent from older servers).
   const team=ops?.staff||[],held=team.some(t=>t.paused);
@@ -1182,7 +1187,7 @@ function helpView(){const guides={teacher:['Soạn ba bước: ví dụ → th�
 let confirmResolve=null;
 /** `money` (optional): {cost, pocket:'wallet'|'fund'} of a payment, for the "còn thiếu" line; without it a
  * confirm that talks money still shows the balances of the sheet under it (v4/money.js confirmMoney). */
-function confirmAction(title,message,label='Xác nhận',money=null){
+function confirmAction(title,message,label='Xác nhận',money=null,opts=null){
   const under=[...document.querySelectorAll('dialog[open]')].filter(d=>d.id!=='confirmDialog').pop(),b=dialogBalances(under);
   // Not enough in the fund for an exact price: the server would refuse ("Chưa đủ xu"), so the button says so instead.
   const short=confirmShort(b,[title,message,label],money),yes=short?.sure?`<button type="button" class="btn primary" data-action="confirmYes" disabled>Thiếu ${fmt(short.miss)} xu</button>`:button(esc(label),'confirmYes',{},'primary');
@@ -1197,7 +1202,10 @@ function confirmAction(title,message,label='Xác nhận',money=null){
     const sync=()=>{const x=options.find(o=>o.id===select.value);yesButton.disabled=!x?.ok;yesButton.textContent=x?.ok?label:`Thiếu ${fmt(Math.max(0,cost-(x?.balance||0)))} xu`;choices.querySelector('#confirmPayHint').textContent=x?.ok?x.text:x?.why||'Chọn nguồn thanh toán.';};
     select.addEventListener('change',sync);sync();
   }
-  $('#confirmDialog').showModal();return new Promise(resolve=>{confirmResolve=resolve;});
+  $('#confirmDialog').showModal();
+  // A second tap of a double tap must not land on "Đồng ý" (Xin nghỉ việc): the button wakes up a moment later.
+  if(opts?.arm>0){const yesButton=$('#confirmContent').querySelector('[data-action="confirmYes"]');if(yesButton&&!yesButton.disabled){yesButton.disabled=true;setTimeout(()=>{if(yesButton.isConnected)yesButton.disabled=false;},opts.arm);}}
+  return new Promise(resolve=>{confirmResolve=resolve;});
 }
 function inputPrompt(title,value,maxLength=100){
   $('#confirmContent').innerHTML=`<span class="eyebrow">GÓC CỦA BẠN</span><h2>${esc(title)}</h2><textarea class="input" id="cozy-prompt" maxlength="${maxLength}" rows="3">${esc(value)}</textarea><div class="row space-top">${button('Để sau','confirmNo',{},'ghost')}${button('Lưu','confirmYes',{},'primary')}</div>`;
@@ -1233,11 +1241,29 @@ $('#sheet').addEventListener('close',()=>{document.body.append($('#toasts'));
 /** The career's how-to line in the scene's speech bubble, a few words of it (the bubble holds three short lines). */
 const greeting=()=>toastHead(String(i18nT(String(meta().greeting||'')))).head;
 async function start(){if(needsJob()){openSheet('jobapp');return;}const r=await cmd('start_day');if(r){ui.task=null;closeSheet();world.say(greeting());}}
+/** Bỏ dở việc: the server's own gates (locked place, certificate, profile) answer first, with no payload; only its
+ * "abandon_confirm" refusal opens the "Vẫn đi" dialog, built from a fresh state. Any other refusal refreshes the state
+ * too, so a stale preview can never bring the dialog back in a loop. Resolves the switch result or null. */
+async function switchCareer(id){
+  let r;
+  try{r=await api.command('select_career',{},id);}
+  catch(error){
+    if(error.quiet)return null;
+    if(error.data?.code!=='abandon_confirm'){await api.refresh().catch(()=>{});toast(error.status?error.message:'Mất kết nối. Việc đã xác nhận vẫn được giữ, thử lại sau một chút nhé.',true);sound.error();return null;}
+    await api.refresh().catch(()=>{});
+    const pass=await abandonGate(api,id);
+    if(!pass)return null;   // "Ở lại làm nốt"
+    if(!pass.confirm){toast('Việc đang làm vừa thay đổi. Bấm chuyển lần nữa để xem lại nhé.');return null;}   // never confirm unseen
+    try{r=await api.command('select_career',pass,id);}
+    catch(again){if(again.quiet)return null;await api.refresh().catch(()=>{});toast(again.status?again.message:'Mất kết nối. Thử lại sau một chút nhé.',true);sound.error();return null;}
+  }
+  sound.click();for(const note of new Set(r.effects||[]))toast(note);
+  return r;
+}
 async function selectCareer(id){
-  const pass=await abandonGate(api,id);if(!pass){closeSheet();setPaused(false);return;}  // bỏ dở việc: "Ở lại làm nốt" goes back to the counter
   ui.task=null;ui.docs.clear();ui.transactions.clear();ui.ai={};ui.phFilter='';ui.jobTab='shelf';
   await careerAssets(id);  // its workbench, stylesheet and scene first: the new place never renders half-styled
-  const r=await cmd('select_career',pass, {career:id,quiet:true});if(!r)return;if(r.hired)toast(r.message,'good');
+  const r=await switchCareer(id);if(!r){closeSheet();setPaused(false);return;}if(r.hired)toast(r.message,'good');
   closeSheet();world.say(greeting());setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
   abandonAfter(r);
 }

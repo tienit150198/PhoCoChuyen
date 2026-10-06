@@ -304,7 +304,7 @@ def on_close(s:dict,c:dict,career:str) -> dict:
         f['history'].insert(0,period);f['history']=ar.first(f['history'], 60, 'finance.periods', c)
         f.update(period_start=day+1,period_days=0,period_revenue=0,period_rent=0,period_tax_adjustments=0)
         o['security']['period_rewards']=0;o['security']['period_claims']=0
-        eng.log(s,c,'period',f'Kết kỳ: doanh thu {period["revenue"]} xu, thuế {tax} xu, thuê {period["rent"]} xu.',ref=pid)
+        eng.log(s,c,'period',f'Kết kỳ {period["start"]}–{day}: doanh thu {period["revenue"]} xu × {RULES["tax_percent"]}% = thuế {tax} xu (làm tròn lên), thuê {period["rent"]} xu; hạn đóng ngày {day+2}.',ref=pid)
     f['last_closed']=day
     o['attendance']={k:v for k,v in o['attendance'].items() if int(k)>=day-14}
     return dict(wages=sum(b['amount'] for b in invoices),utilities=utility,rent_accrued=PROPERTY_INDEX[o['property']['tier']]['daily_rent'],
