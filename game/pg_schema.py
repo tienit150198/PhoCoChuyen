@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 25  # 25: ☕ chỗ tiêu xu (donations, chat_style: game/spend.py, live/styles.py); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 26  # 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -470,6 +470,22 @@ CREATE TABLE IF NOT EXISTS wedding_race (week {T} PRIMARY KEY, settled double pr
 CREATE TABLE IF NOT EXISTS player_closeness (
   sid {T} NOT NULL, other {T} NOT NULL, points bigint NOT NULL DEFAULT 0, updated double precision NOT NULL, PRIMARY KEY (sid, other)
 );
+-- 🎤 Phòng hát (game/karaoke.py, live/karaoke.py; SCHEMA_VERSION 26): the oEmbed cache of each YouTube id (only the id,
+-- never a link; banned by an admin), the "lượt hát" tickets and tips (one row each, idempotent by id; a queue ticket is
+-- redeemed by the live service (used) and stamped when its song starts (played)), and the admin's reviews of reports.
+CREATE TABLE IF NOT EXISTS kara_songs (
+  vid {T} PRIMARY KEY, title {T} NOT NULL DEFAULT '', channel {T} NOT NULL DEFAULT '', ok bigint NOT NULL DEFAULT 0,
+  why {T} NOT NULL DEFAULT '', checked_at double precision NOT NULL DEFAULT 0, plays bigint NOT NULL DEFAULT 0,
+  banned bigint NOT NULL DEFAULT 0, banned_by {T}, banned_at double precision
+);
+CREATE TABLE IF NOT EXISTS kara_tickets (
+  id {T} PRIMARY KEY, sid {T} NOT NULL, kind {T} NOT NULL, amount bigint NOT NULL DEFAULT 0, got bigint NOT NULL DEFAULT 0,
+  ref {T}, to_sid {T}, vid {T}, room {T}, used bigint NOT NULL DEFAULT 0, played double precision,
+  day {T} NOT NULL, at double precision NOT NULL
+);
+CREATE TABLE IF NOT EXISTS kara_reviews (
+  target {T} PRIMARY KEY, verdict {T} NOT NULL, by_admin {T} NOT NULL DEFAULT '', at double precision NOT NULL
+);
 """
 
 INDEX_DDL = """
@@ -545,6 +561,9 @@ CREATE INDEX IF NOT EXISTS date_bonds_b ON date_bonds (b);
 CREATE INDEX IF NOT EXISTS wedding_parties_at ON wedding_parties (status, at);
 CREATE INDEX IF NOT EXISTS wedding_guests_week ON wedding_guests (week, ok);
 CREATE INDEX IF NOT EXISTS wedding_guests_sid ON wedding_guests (sid, day);
+CREATE INDEX IF NOT EXISTS kara_tickets_sid ON kara_tickets (sid, kind, day);
+CREATE INDEX IF NOT EXISTS kara_tickets_to ON kara_tickets (to_sid, kind, day) WHERE to_sid IS NOT NULL;
+CREATE INDEX IF NOT EXISTS reports_kind_at ON reports (kind, at);
 """
 
 # Store.delete, prune and prune_guests remove dependent rows before their save.
@@ -745,6 +764,9 @@ TABLES = [
     dict(name='wedding_photos', identity=None),
     dict(name='wedding_race', identity=None),
     dict(name='player_closeness', identity=None),
+    dict(name='kara_songs', identity=None),
+    dict(name='kara_tickets', identity=None),
+    dict(name='kara_reviews', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

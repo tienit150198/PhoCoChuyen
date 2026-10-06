@@ -68,7 +68,7 @@ BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
 LIVING = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}
 UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}   # the old idle fee per tier: no longer charged (upkeep() is 0)
 MODES = (('calm', .25), ('normal', .55), ('festival', .20))
-HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank', 'home', 'fair')
+HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank', 'home', 'fair', 'karaoke')   # 'karaoke': accepted from 1.9.5 (step 1); game/karaoke.py WRITE_KIND says when it is written
 NEWS_KINDS = ('chapter', 'titles')
 # 🏷️ Đang đeo: game titles and certificates worn at once (owner, 01/10: "danh hiệu trò chơi và chứng chỉ được chọn
 # nhiều 1 lúc"). Three fit one line of chips on a 390 px phone and keep a name tag short (the first one by name, the

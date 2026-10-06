@@ -1,3 +1,13 @@
+# Chưa phát hành — Phòng hát Mây (karaoke-p1)
+
+## Phòng hát Mây
+
+- 🎤 Chủ game 06/10: ba phòng hát công khai (Nhạc trẻ, Bolero · trữ tình, Nhạc quốc tế), tối đa 30 người mỗi phòng, đầy thì mở phòng phụ cùng chủ đề. Chị Ngân giữ mic. Vào từ Bản đồ phố (Phố hàng rong) hoặc Thêm › Khu phố › Phòng hát. Chỉ hiện khi dịch vụ live bật `LIVE_KARAOKE=1` (mặc định tắt).
+- Mọi người xem cùng một video YouTube ở cùng một giây (trình phát YouTube chính thức, youtube-nocookie, giữ nguyên quảng cáo và logo). Dán link → Kiểm tra (oEmbed, có bộ nhớ đệm) → Xếp hàng: 2 xu, bài đầu mỗi ngày miễn phí. Người xếp bài lên "sân khấu"; cả phòng thả emoji, giữ 🙌 cổ vũ, nhắn, tặng xu (5/10/20/50; ca sĩ nhận 80 %, 20 % đốt; gửi tối đa 200, nhận tối đa 500 xu/ngày). Hết bài: 10 giây vỗ tay. Bỏ phiếu bỏ bài. Chưa có giọng hát trực tiếp, không ghi âm.
+- 🧩 Đoán bài: chủ câu đố cho một câu hát ngắn (≤ 12 chữ, che vài chữ bằng ___) hoặc vài emoji, cả phòng gõ đoán (không dấu, sai chính tả nhẹ vẫn được). Người đầu tiên đúng nhận 5 xu (tối đa 25 xu/ngày mỗi người, 10 câu có thưởng/ngày mỗi chủ đố). Hết 60 giây hoặc có người đúng thì hiện đáp án, link thưởng của chủ đố được phát tiếp.
+- Kiểm duyệt: tên bài, lời nhắn, câu đoán qua bộ lọc chat (từ nặng thành *); báo cáo (🛟 trẻ vị thành niên lên đầu); khóa chat và chặn được tôn trọng; Ban quản lý bỏ bài, mời ra 1 giờ, đóng phòng, cấm bài, khóa chat (trong phòng và tab 🎤 Phòng hát của trang quản trị).
+- Kỹ thuật: CSP chỉ mở thêm khung YouTube, script iframe_api và ảnh i.ytimg.com; Permissions-Policy giữ micro tắt. Khung YouTube tự gửi Referer gốc trang (cả trang vẫn no-referrer; thiếu Referer YouTube báo lỗi 153). CSDL thêm `kara_songs`, `kara_tickets`, `kara_reviews` (SCHEMA_VERSION 26, sau 25 của spend-1). Sổ ví ghi loại `life` (bản 1.9.4 đọc được); loại `karaoke` đã được chấp nhận để bản sau dùng. Không thêm khóa bản lưu.
+
 # Chưa phát hành — Chỗ tiêu xu (spend-1)
 
 ## Thêm chỗ tiêu xu

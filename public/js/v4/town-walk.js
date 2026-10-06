@@ -25,7 +25,7 @@ const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contain
 const ME=.5;                  // the character (about 140 units tall) in town pixels
 const SPEED=270,MAX_WALK=2.4; // town pixels a second; no walk takes longer than MAX_WALK seconds
 const IDLE_MS=84,MAX_PX=7e6;  // the glow's frame gap; the cached town bitmap's pixel budget
-const LM_COLOR={bank:'#8d7b4c',garage:'#5a6f88',gadgets:'#6f8fb8',quan:'#9a6a43',spa:'#b07aa8',rap:'#6c4f8f',congduc:'#b8862f',style:'#c0607a',fair:'#c8423a',board:'#a8743f',walk:'#5f8f3e',house:'#d9573b',quay:'#e0892b',square:'#418d94'};
+const LM_COLOR={bank:'#8d7b4c',garage:'#5a6f88',gadgets:'#6f8fb8',quan:'#9a6a43',spa:'#b07aa8',rap:'#6c4f8f',congduc:'#b8862f',style:'#c0607a',fair:'#c8423a',board:'#a8743f',walk:'#5f8f3e',house:'#d9573b',quay:'#e0892b',square:'#418d94',karaoke:'#9b4f96'};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 
 const W={env:null,h:null,el:null,cv:null,c:null,where:null,whereText:'',card:null,pl:null,bg:null,bgKey:'',bs:1,k:1,cw:0,ch:0,dpr:1,
@@ -61,6 +61,7 @@ function landmarkOn(lm){
     case'quan':case'spa':case'rap':case'congduc':case'style':return !!(J.story&&J.spend);   // ☕ v4/spend.js
     case'fair':return !!s.fair?.show;
     case'walk':{const lv=W.env.live?.();return !!(lv?.flags?.street&&lv.welcomed);}
+    case'karaoke':{const lv=W.env.live?.();return !!(lv?.flags?.kara&&lv.welcomed);}   // 🎤 v4/karaoke.js
     case'house':return !!J.story;
     case'quay':return !!(J.story&&api.content.journey?.quay);
     case'square':return !!(s.current&&api.content.experiences?.town);
@@ -159,7 +160,7 @@ const visible=()=>!!W.el?.isConnected&&!!W.el.closest('dialog[open]');
  * differently. */
 function refresh(){
   const ids=careerIds(),cats=Object.fromEntries(ids.map(id=>[id,meta(id).category||'']));
-  W.pl=plan(ids,cats);
+  W.pl=plan(ids,cats,landmarkOn('karaoke')?[]:['lm:karaoke']);   // 🎤 not built while the live service has it off
   const st=stateFn();W.st=st;
   const choices=destinations(W.pl.items,st),rec=recentOn()?recent().map(k=>choices.find(c=>c.key===k)).filter(Boolean):[],key=JSON.stringify([choices,rec]),select=W.el.querySelector('.tw-route-picker select');
   if(key!==W.destinationKey){

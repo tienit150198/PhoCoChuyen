@@ -280,6 +280,7 @@ function navItems(c){
   {const lv=L.live.m?.live;if(lv?.flags.street&&lv.welcomed)items.push(['liveWalk','map','Đi dạo']);}  // 🚶 Đi dạo (v4/walk.js): only while the live service has it on
   {const date=L.live.m?.dateNav();if(date)items.push(date);}  // 💕 Góc hẹn hò (v4/dating.js): only while the live service has dates on
   {const lv=L.live.m?.live;if(lv?.flags.wedding&&lv.welcomed)items.push(['liveWed','heart','Lịch cưới']);}  // 💍 Lịch cưới (v4/wedding.js): live weddings, while on
+  {const lv=L.live.m?.live;if(lv?.flags.kara&&lv.welcomed)items.push(['liveKara','music','Phòng hát']);}  // 🎤 Phòng hát (v4/karaoke.js): only while the live service has it on (LIVE_KARAOKE)
   items.push(['friends','user','Bạn bè',api.friendAlerts||0],['marriage','heart','Hôn nhân',api.marriageAlerts||0]);  // Bạn bè + Hôn nhân (v4/marriage.js, own dialog; badges from v4/ticker.js)
   items.push(['money','bag','Tiền của bạn']);  // 💰 the money sheet (v4/wealth.js), also behind the HUD money chips
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
@@ -313,7 +314,7 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()));
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['fair','spend','liveWalk','liveWed','nhom','phone','social','jrTown','rank']],
+  ['pho','building','Khu phố',['fair','spend','liveWalk','liveWed','liveKara','nhom','phone','social','jrTown','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
@@ -1415,6 +1416,7 @@ async function handleAction(action,data,el){
       if(action==='liveWalk'){const w=await import('./v4/walk.js');L.live.m?.benchSpot(w.walk);await w.openWalk(env(),data);break;}  // 🚶 Đi dạo (v4/walk.js): its own dialog; 💕 its benches are the dating bench
       if(action==='liveDate'){(await viaLazy(L.live,el)).openDate(data);break;}  // 💕 Góc hẹn hò (v4/dating.js)
       if(action==='liveWed'){await (await import('./v4/wedding.js')).openWeddings(env());break;}  // 💍 Lịch cưới (v4/wedding.js): its own dialog
+      if(action==='liveKara'){await (await import('./v4/karaoke.js')).openKaraoke(env(),data);break;}  // 🎤 Phòng hát (v4/karaoke.js): its own dialog
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
