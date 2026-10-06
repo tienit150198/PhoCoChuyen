@@ -27,6 +27,7 @@ export const KIND_OF={
   oil:'rig',
   railway:'lane',
   nurse:'ward',
+  police:'station',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
 
@@ -206,6 +207,14 @@ const CAREER_WORDS={
     none_waiting:'Chưa có việc nào đang chờ',next_btn:'Việc tiếp theo',rail_in:'Trong khoa',books:'Sổ khoa',
     end_title:'Giao ca hôm nay?',end_text:'Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho ca sau.',
     people_sub:'Những người bạn gặp ở khoa Nội.',feed_sub:'Lời nhắn và nhận xét của người bệnh, người nhà.'},
+  police:{shelf:'Hồ sơ cư trú theo tổ',evidence:'Bảng tin phường',workbench:'Bàn tiếp dân',counter:'Máy số thứ tự & điện thoại trực ban',warehouse:'Tủ đồ thất lạc',
+    finance:'Sổ trực ban',property:'Hàng ghế chờ',security:'Trật tự khu phố',ledger:'SỔ TRỰC BAN',store:'TỦ ĐỒ THẤT LẠC',till:'Quỹ lương',
+    door_open:'Tan ca',door_closed:'Vào ca',open_sign:'ĐANG TIẾP DÂN',closed_sign:'ĐÃ TAN CA',pet:'Mướp nằm dưới hàng ghế chờ',
+    cat_line:'Mrrr… Mướp cũng muốn lấy số thứ tự.',idle_line:'Điện thoại trực ban sắp reo rồi.',open_hint:'Giao ban, đọc sổ trực ban rồi tiếp dân nhé.',
+    free_eyebrow:'Phường đang yên',free_title:'Xong việc rồi!',free_more:'Nhận thêm một việc hoặc tan ca hôm nay.',more_btn:'Nhận thêm một việc',
+    none_waiting:'Chưa có việc nào đang chờ',next_btn:'Việc tiếp theo',rail_in:'Trong trụ sở',books:'Sổ trực ban',
+    end_title:'Tan ca hôm nay?',end_text:'Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho ca sau.',
+    people_sub:'Những người bạn gặp ở phường Mây.',feed_sub:'Lời nhắn và nhận xét của người dân.'},
 };
 export const wordsFor=career=>({...BASE,...KIND_WORDS[kindOf(career)],...CAREER_WORDS[career]});
 

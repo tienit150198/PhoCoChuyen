@@ -19,7 +19,7 @@ let seed=Number(args[args.indexOf('--seed')+1])||20261003;
 const rand=()=>{seed=(seed*1103515245+12345)%2147483648;return seed/2147483648;};
 const ALL=['mother_baby','pharmacy','accounting','customer_care','restaurant','cafe_bakery','farm','grocery','pet_care','florist','salon','repair','homestay','teacher','tour_guide',
   'milk_tea','delivery','corp_accounting','tax_payroll','group_accounting','clothing','pet_shop','tra_da','fruit','garbage','drain','homemaker','ice_cream','nail','pagoda','pho','com',
-  'photobooth','giupviec','naucom','babysitter','library','pilot','flight_attendant','oil','hr_admin','secretary','it_helpdesk','railway','nurse'];
+  'photobooth','giupviec','naucom','babysitter','library','pilot','flight_attendant','oil','hr_admin','secretary','it_helpdesk','railway','nurse','police'];
 const SAVES={full:[ALL,{}],small:[['milk_tea','grocery','delivery','pho','farm'],{}],newcareer:[[...ALL,'banh_mi','sua_xe_dap'],{banh_mi:'food',sua_xe_dap:'service'}]};
 const problems=[];let paths=0;
 const along=(pl,path)=>{for(let i=1;i<path.length;i++){const [a,b]=[path[i-1],path[i]],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/3));
