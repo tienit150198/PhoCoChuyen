@@ -22,6 +22,7 @@ const BY_CAREER={
   accounting:'puzzle',corp_accounting:'puzzle',tax_payroll:'puzzle',group_accounting:'puzzle',
   hr_admin:'puzzle',secretary:'puzzle',it_helpdesk:'puzzle',
   oil:'urban',
+  lighthouse:'springs',
 };
 const MOOD={calm:'lullaby',bright:'urban'};
 const FADE=1.5;

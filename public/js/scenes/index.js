@@ -27,6 +27,7 @@ export const KIND_OF={
   oil:'rig',
   railway:'lane',
   nurse:'ward',
+  lighthouse:'lighthouse',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
 
@@ -80,6 +81,14 @@ const KIND_WORDS={
     people_sub:'Những người bạn gặp quanh gốc bàng.',feed_sub:'Lời nhắn và đánh giá quanh quán trà.'},
   lane:{cat_line:'Mrrr… ngoài phố nhiều chuyện hay ghê.',board:'Chuyện phố',security:'Trật tự khu phố',property:'Góc phố',
     open_sign:'ĐANG LÀM',closed_sign:'NGHỈ TAY',idle_line:'Việc mới sắp tới.',free_eyebrow:'Đang rảnh tay',free_title:'Hết việc rồi!'},
+  lighthouse:{cat_line:'Mrrr… Mun canh vườn rau giùm, ai cho Mun miếng cá chuồn đi.',till:'Quỹ lương',door_open:'Tan ca',door_closed:'Vào ca',
+    open_sign:'ĐANG TRỰC ĐÈN',closed_sign:'HẾT CA',shelf:'Vườn rau trên đá',workbench:'Vườn rau & mèo Mun',evidence:'Cột đo gió & áp kế',counter:'Bàn bộ đàm',warehouse:'Nhà máy phát',
+    finance:'Sổ lương',property:'Đảo Hòn Gió',security:'An toàn trên đảo',board:'Chuyện trên đảo',pet:'Chơi với mèo Mun',ledger:'SỔ TRỰC',store:'NHÀ MÁY PHÁT',
+    idle_line:'Đèn đang chờ giờ thắp.',open_hint:'Dậy tắt đèn, thử máy, lau kính rồi ký sổ trực nhé.',free_eyebrow:'Biển đang yên',free_title:'Hết việc rồi!',
+    free_more:'Canh biển thêm một lúc hoặc tan ca hôm nay.',more_btn:'Canh biển thêm',none_waiting:'Chưa có chuyện gì trên biển',next_btn:'Việc tiếp theo',
+    people_sub:'Những người bạn gặp quanh đèn Hòn Gió.',feed_sub:'Lời nhắn và nhận xét của tàu thuyền, khách ra đảo.',
+    confirm_title:'Xác nhận trước khi làm',rail_in:'Trên đảo',more_aria:'Thêm: sổ lương, khu phố',queue_btn:'Việc trong ca',books:'Sổ lương',
+    end_title:'Tan ca hôm nay?',end_text:'Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho chú Bảy.'},
   rig:{cat_line:'Mrrr… Mướp ở nhà chờ bạn về bờ, nhớ mua cá khô nha.',till:'Quỹ lương',door_open:'Tan ca',door_closed:'Vào ca',
     open_sign:'ĐANG VÀO CA',closed_sign:'HẾT CA',shelf:'Bảng thời tiết',evidence:'Đồng hồ & máy đo khí',counter:'Bàn cấp giấy phép',warehouse:'Tủ khóa & thẻ',
     finance:'Sổ lương',property:'Giàn Hải Âu',security:'An ninh giàn',board:'Chuyện trên giàn',pet:'Gọi video với Mướp',ledger:'BẢNG POB',store:'KHO GIÀN',

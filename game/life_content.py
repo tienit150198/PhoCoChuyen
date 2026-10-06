@@ -20,7 +20,7 @@ from .incident_content import ALL, EMPLOYEE, RETAIL
 
 EMPLOYED = ('pharmacy', 'customer_care', 'teacher', 'tour_guide', 'repair', 'delivery', 'pet_care', 'salon',
             'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'homemaker', 'naucom', 'babysitter', 'library', 'pilot', 'flight_attendant', 'oil',
-            'hr_admin', 'secretary', 'it_helpdesk', 'giupviec', 'railway', 'nurse')
+            'hr_admin', 'secretary', 'it_helpdesk', 'giupviec', 'railway', 'nurse', 'lighthouse')
 OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain', 'ice_cream', 'nail', 'pho', 'com', 'photobooth', 'giupviec', 'library')
 CALLING = ('pagoda',)      # a monk: no boss, no shop, no rent; the pagoda is not a place for a karaoke night
@@ -106,6 +106,7 @@ WORK = {
     'oil': ('Chú Toàn với ca trực giàn Hải Âu', '🛢️'),
     'railway': ('Chú Sáu với ca gác Bến Mây', '🚦'),
     'nurse': ('Chị Hoa với các bạn khoa Nội', '🏥'),
+    'lighthouse': ('Chú Bảy với trạm đèn Hòn Gió', '🗼'),
 }
 
 
@@ -574,6 +575,28 @@ HARD = [
         C('talk', 'Gọi cho chú Sáu kể lại', 'Chú Sáu nghe hết rồi bảo: “Con làm đúng. Ngủ đi, mai còn gác.”', spirit=6, default=True),
         C('walk', 'Đi bộ một vòng bờ sông cho bình tâm', 'Gió sông mát rượi, lòng nhẹ dần.', spirit=5)],
       careers=('railway',), hit=-14, mild=True),
+    # ================================================================ 🗼 Đèn biển Hòn Gió (lighthouse)
+    H('hd_lonely', 'xui', '🏝️', 'Nhớ nhà trên đảo', [
+        'Ba tuần liền trên đảo, tàu tiếp tế lỡ chuyến vì biển động.',
+        'Mì gói hết, rau vườn chưa kịp lên, sóng điện thoại chập chờn.',
+        'Đêm nằm nghe sóng vỗ, nhớ cơm má nấu tới cay mắt.'], [
+        C('call', 'Leo lên mỏm đá bắt sóng, gọi video về nhà', 'Má cười, em gái khoe điểm thi. Nghe tiếng nhà là thấy đủ.', spirit=6, default=True),
+        C('mun', 'Ôm mèo Mun ngồi đếm sao với chú Bảy', 'Chú Bảy kể chuyện ba mươi năm trên đảo. Mun ngủ quên trong lòng.', spirit=5)],
+      careers=('lighthouse',), hit=-13, mild=True),
+    H('hd_stormnight', 'xui', '⛈️', 'Đêm bão thức trắng', [
+        'Gió giật cấp 8 suốt đêm, mưa quất vào kính phòng đèn như ai ném sỏi.',
+        'Bạn canh bộ đàm tới sáng, nghe tàu này gọi tàu kia.',
+        'Trời hửng thì mắt đã cay xè, đầu ong ong.'], [
+        C('sleep', 'Kéo rèm, ngủ một mạch tới trưa, chú Bảy trực thay', 'Dậy thì biển đã lặng, nắng vàng rực.', spirit=5, default=True),
+        C('tea', 'Pha ấm trà nóng ngồi ngắm biển sau bão', 'Biển xanh trong vắt như chưa có gì xảy ra.', spirit=6)],
+      careers=('lighthouse',), hit=-12, mild=True),
+    H('hd_clip', 'khach', '📱', 'Bị quay clip “gác đèn khó tính”', [
+        'Chiều nay từ chối một nhóm khách đòi lên phòng đèn.',
+        'Tối mở điện thoại: clip “anh gác đèn làm giá” có mấy nghìn lượt xem.',
+        'Đoạn bạn mời họ chụp ảnh ở sân trạm thì bị cắt mất.'], [
+        C('ignore', 'Tắt điện thoại, kể với chú Bảy rồi đi ngủ sớm', 'Chú Bảy cười: “Mình giữ đèn cho tàu về, clip thì kệ clip.”', spirit=5, default=True),
+        C('read', 'Ngồi đọc hết bình luận', 'Có người chửi, nhưng nhiều người bênh: “Nội quy là nội quy mà.”', spirit=2)],
+      careers=('lighthouse',), hit=-13, mild=True),
 ]
 
 # ---------------------------------------------------------------- neighbours come round
