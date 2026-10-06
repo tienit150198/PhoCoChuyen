@@ -25,7 +25,7 @@ const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contain
 const ME=.5;                  // the character (about 140 units tall) in town pixels
 const SPEED=270,MAX_WALK=2.4; // town pixels a second; no walk takes longer than MAX_WALK seconds
 const IDLE_MS=84,MAX_PX=7e6;  // the glow's frame gap; the cached town bitmap's pixel budget
-const LM_COLOR={bank:'#8d7b4c',garage:'#5a6f88',fair:'#c8423a',board:'#a8743f',walk:'#5f8f3e',house:'#d9573b',quay:'#e0892b',square:'#418d94'};
+const LM_COLOR={bank:'#8d7b4c',garage:'#5a6f88',gadgets:'#6f8fb8',fair:'#c8423a',board:'#a8743f',walk:'#5f8f3e',house:'#d9573b',quay:'#e0892b',square:'#418d94'};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 
 const W={env:null,h:null,el:null,cv:null,c:null,where:null,whereText:'',card:null,pl:null,bg:null,bgKey:'',bs:1,k:1,cw:0,ch:0,dpr:1,
@@ -36,6 +36,11 @@ const W={env:null,h:null,el:null,cv:null,c:null,where:null,whereText:'',card:nul
 /* ------------------------------------------------------------ what the town shows */
 const S=()=>W.env.api.state;
 const meta=id=>W.env.api.content.catalogue.find(m=>m.id===id)||{id,short:id,place:id};
+/** 📱 Perk 'recent' of the phone in use (game/gadgets.py): the last 3 places picked in Chỉ đường, on top. This device only. */
+const RECENT_KEY='mnl.townRecent';
+const recentOn=()=>Boolean(S()?.journey?.gadgets?.perks?.includes?.('recent'));
+function recent(){try{const r=JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');return Array.isArray(r)?r.filter(x=>typeof x==='string').slice(0,3):[];}catch{return [];}}
+function remember(key){if(!recentOn())return;try{localStorage.setItem(RECENT_KEY,JSON.stringify([key,...recent().filter(x=>x!==key)].slice(0,3)));}catch{/* storage blocked */}W.destinationKey=null;}
 /** Only destinations this save can visit are offered by the route chooser. */
 export function destinations(items,state){
   return items.flatMap(it=>{const s=state(it);return s.off||s.lock?[]:[{key:it.key,label:`${s.emoji||'📍'} ${s.name}`}];});
@@ -52,6 +57,7 @@ function landmarkOn(lm){
   const s=S(),J=s.journey||{},api=W.env.api;
   switch(lm){
     case'garage':return !!(J.story&&J.garage);
+    case'gadgets':return !!(J.story&&J.gadgets);   // 📱 v4/gadgets.js
     case'fair':return !!s.fair?.show;
     case'walk':{const lv=W.env.live?.();return !!(lv?.flags?.street&&lv.welcomed);}
     case'house':return !!J.story;
@@ -116,7 +122,7 @@ function build(){
   W.el=el;W.cv=el.querySelector('canvas');W.c=W.cv.getContext('2d');W.where=el.querySelector('.tw-where');W.card=el.querySelector('.tw-card');
   W.btn=el.querySelector('.rd-toggle');W.btn.addEventListener('click',()=>{nextRide(S(),W.env.api.content);setRide();});
   el.querySelector('.tw-route-picker').addEventListener('submit',e=>{
-    e.preventDefault();const key=el.querySelector('.tw-route-picker select').value,it=W.pl.items.find(it=>it.key===key);
+    e.preventDefault();const key=el.querySelector('.tw-route-picker select').value,it=W.pl.items.find(it=>it.key===key);remember(key);
     if(it&&!W.st(it).off&&!W.st(it).lock)goItem(it,true);
   });
   for(const button of el.querySelectorAll('[data-tw-zoom]'))button.addEventListener('click',()=>{
@@ -154,10 +160,11 @@ function refresh(){
   const ids=careerIds(),cats=Object.fromEntries(ids.map(id=>[id,meta(id).category||'']));
   W.pl=plan(ids,cats);
   const st=stateFn();W.st=st;
-  const choices=destinations(W.pl.items,st),key=JSON.stringify(choices),select=W.el.querySelector('.tw-route-picker select');
+  const choices=destinations(W.pl.items,st),rec=recentOn()?recent().map(k=>choices.find(c=>c.key===k)).filter(Boolean):[],key=JSON.stringify([choices,rec]),select=W.el.querySelector('.tw-route-picker select');
   if(key!==W.destinationKey){
     const selected=select.value;W.destinationKey=key;
-    select.innerHTML=choices.map(it=>`<option value="${esc(it.key)}">${esc(tr(it.label))}</option>`).join('');
+    const opts=list=>list.map(it=>`<option value="${esc(it.key)}">${esc(tr(it.label))}</option>`).join('');
+    select.innerHTML=rec.length?`<optgroup label="📱 Vừa đi">${opts(rec)}</optgroup><optgroup label="${esc(tr('Tất cả'))}">${opts(choices)}</optgroup>`:opts(choices);
     if(choices.some(it=>it.key===selected))select.value=selected;
     select.disabled=!choices.length;W.el.querySelector('.tw-route-picker button').disabled=!choices.length;
   }
@@ -363,7 +370,7 @@ function backdrop(){
 }
 /** The player as one small bitmap, made again only when the look or the zoom changes. */
 function sprite(){
-  const sc=ME*W.k*W.dpr,look=lookOf(S()),key=JSON.stringify([look,S().journey?.gender,sc.toFixed(3)]);
+  const sc=ME*W.k*W.dpr,look=lookOf(S()),key=JSON.stringify([look,S().journey?.gender,sc.toFixed(3),S().journey?.gadgets?.hand?.color]);   // 📱 the phone in hand
   if(W.sprite&&W.spriteKey===key)return W.sprite;
   const cv=W.sprite||document.createElement('canvas'),w=Math.ceil(110*sc),h=Math.ceil(170*sc);cv.width=w;cv.height=h;
   const c=cv.getContext('2d');c.setTransform(sc,0,0,sc,w/2,h-12*sc);

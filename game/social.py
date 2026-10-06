@@ -172,6 +172,10 @@ def snapshot(state: dict) -> dict:
     ride = ride_view(state) if isinstance(j, dict) else None
     if ride:   # 🚗 the vehicle the player rides (game/garage.py), shown on the player's card
         out['ride'] = dict(emoji=ride['emoji'], name=ride['name'], color=ride['color'])
+    from .gadgets import show_view
+    phone = show_view(state) if isinstance(j, dict) else None
+    if phone:   # 📱 the phone in use and a few gadgets (game/gadgets.py): a new key, older clients ignore it
+        out['phone'] = phone
     return out, served
 
 

@@ -285,6 +285,7 @@ function navItems(c){
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
   if(api.state?.journey?.story)items.push(['house','home','Nhà của bạn',api.state.journey.home?.own?.loan?.overdue?'dot':0]);  // 🏠 Nhà của bạn (v4/house.js, own dialog)
   if(api.state?.journey?.story&&api.state.journey.garage)items.push(['garage','bike','Xe & phương tiện']);  // 🚗 (v4/garage.js, own dialog): only once the server has it
+  if(api.state?.journey?.story&&api.state.journey.gadgets)items.push(['gadgets','phone','Điện thoại & đồ công nghệ']);  // 📱 (v4/gadgets.js, own dialog): only once the server has it
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
@@ -313,7 +314,7 @@ const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREE
 const RAIL_GROUPS=[
   ['pho','building','Khu phố',['fair','liveWalk','liveWed','nhom','phone','social','jrTown','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
-  ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage','rui','quay']],
+  ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
   ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal','accountingSchool']],
 ];
@@ -1415,6 +1416,7 @@ async function handleAction(action,data,el){
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
       if(action==='garage'){await (await import('./v4/garage.js')).garageAction(action,data,el,env());break;}  // 🚗 Xe & phương tiện: lazy
+      if(action==='gadgets'){await (await import('./v4/gadgets.js')).gadgetsAction(action,data,el,env());break;}  // 📱 Cửa hàng điện thoại: lazy
       if(action==='vang'){ui.ivMarket='gold';await journeyAction('jrInvest',data,el,env());break;}
       if(action==='rui'){await (await import('./v4/rui.js')).ruiAction(action,data,el,env());break;}
       if(action==='homeGuests'){await (await import('./v4/home-guests.js')).openHomeGuests(env(),data);break;}

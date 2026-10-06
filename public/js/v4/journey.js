@@ -119,6 +119,8 @@ function wornChips(api,J){
 }
 const spouseChip=api=>{const sp=api.state.marriage?.spouse;return sp?`<button type="button" class="jr-title-chip" data-action="marriage" data-tab="family"><span aria-hidden="true">${sp.status==='married'?'💍':'💞'}</span> ${sp.status==='married'?'Đã kết hôn':'Đã đính hôn'} · ${esc(sp.name)}</button>`:'';};
 /* 🚗 The vehicle the player rides (game/garage.py), next to Thay đồ; it opens the garage (v4/garage.js). */
+/* 📱 The phone in use (game/gadgets.py), next to the vehicle; it opens the phone shop (v4/gadgets.js). */
+const phoneChip=api=>{const g=api.state.journey.gadgets,h=g?.hand,p=g?.perks||[],rim=p.includes('skin')&&/^#[0-9a-f]{6}$/i.test(h?.color||'')?(p.includes('gold')?'#d4af37':h.color):'';return h?.name?`<button type="button" class="jr-title-chip" data-action="gadgets"${rim?` style="box-shadow:inset 0 0 0 2px ${rim}"`:''}><span aria-hidden="true">${esc(h.emoji||'📱')}</span> ${esc(h.name)}</button>`:'';};
 const rideChip=api=>{const g=api.state.journey.garage,c=g?.ride&&g.cars?.find(x=>x.id===g.ride),it=c&&(api.content.journey?.garage?.vehicles||[]).find(v=>v.id===c.id);
   return it?`<button type="button" class="jr-title-chip" data-action="garage"><span aria-hidden="true">${it.emoji}</span> ${esc(it.name)}</button>`:'';};
 function meCard(env){
@@ -131,7 +133,7 @@ function meCard(env){
     <div class="jr-me-top"><button type="button" class="jr-avatar" data-action="jrView" data-view="profile" aria-label="Sửa tên và nhân vật">${avatar(J.gender,68,lookOf(api.state))}</button>
       <div class="jr-me-text"><h2>${esc(api.state.name)}</h2>${spouseChip(api)}
         ${J.story?wornChips(api,J):''}
-        <button type="button" class="jr-title-chip jr-wd-chip" data-action="jrWardrobe"><span aria-hidden="true">👗</span> Thay đồ</button>${rideChip(api)}
+        <button type="button" class="jr-title-chip jr-wd-chip" data-action="jrWardrobe"><span aria-hidden="true">👗</span> Thay đồ</button>${rideChip(api)}${phoneChip(api)}
         <div class="jr-level"><div class="jr-level-row"><b>Trưởng thành cấp ${mat.level}</b><small>${esc(mat.name)}</small></div><div class="jr-bar" role="progressbar" aria-label="Kinh nghiệm trưởng thành" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div></div></div></div>
     ${J.story?`<div class="jr-stats">${wallet}<div class="jr-stat"><small>Ngày sống</small><b>${fmt(J.life_day)}</b></div><button type="button" class="jr-stat" data-action="jrView" data-view="titles"><small>Danh hiệu</small><b>${J.titles.length}</b></button></div>`:''}
     ${certBadges(env)}
