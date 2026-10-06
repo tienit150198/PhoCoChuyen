@@ -79,11 +79,14 @@ export function inventoryHTML(state,content,opts={}){
   const food=()=>`<ul class="hs-inv-list">${(J.deco?.fridge?.foods||[]).filter(f=>f.n>0).map(f=>`<li class="hs-inv-row"><span class="hs-inv-pic" aria-hidden="true">${esc(f.emoji)}</span><span class="hs-inv-txt"><b>${esc(f.name)} <i class="hs-inv-n">×${f.n}</i></b><small>${esc([f.full?`no bụng +${f.full}`:'',f.wake?`tỉnh táo +${f.wake}`:'',`giá ${xu(f.price)}`].filter(Boolean).join(' · '))}</small></span></li>`).join('')}</ul>`;
   const skins=()=>{const S=new Map((CD.skins||[]).map(s=>[s.id,s]));
     return `<ul class="hs-inv-list">${(J.deco?.owned||[]).map(id=>S.get(id)).filter(Boolean).map(s=>`<li class="hs-inv-row"><span class="hs-inv-pic" aria-hidden="true">${s.part==='wall'?'🧱':'🟫'}</span><span class="hs-inv-txt"><b>${esc(s.name)}</b><small>${esc(`${s.part==='wall'?'giấy dán tường':'sàn nhà'} · dùng được cho mọi phòng · giá ${xu(s.price)}`)}</small></span></li>`).join('')}</ul>`;};
-  return `<section class="bk-card hs-inv" aria-labelledby="hs-inv-title"><h3 id="hs-inv-title">🧺 Đồ đạc của bạn · ${fmt(count.total)} món</h3>
-    <p class="bk-hint">Mọi thứ bạn đang có, chạm từng mục để xem tên và thông tin. Dọn nhà thì đồ đi theo bạn.</p>
+  // opts.compact (the clean layout, house.js): the card is one fold, "🧺 Đồ đạc của bạn · N món", its five folds inside.
+  if(opts.compact&&!open.has('all'))return `<section class="bk-card hs-inv" aria-labelledby="hs-inv-title"><details class="hs-inv-fold hs-inv-all" data-inv="all"><summary><b id="hs-inv-title" aria-label="Đồ đạc của bạn">🧺 Đồ đạc</b><small>${fmt(count.total)} món</small></summary></details></section>`;
+  const all=opts.compact?`<details class="hs-inv-fold hs-inv-all" data-inv="all" open><summary><b id="hs-inv-title">🧺 Đồ đạc của bạn</b><small>${fmt(count.total)} món</small></summary>`:'';
+  return `<section class="bk-card hs-inv" aria-labelledby="hs-inv-title">${all||`<h3 id="hs-inv-title">🧺 Đồ đạc của bạn · ${fmt(count.total)} món</h3>`}
+    ${opts.tip?opts.tip('Mọi thứ bạn đang có, chạm từng mục để xem tên và thông tin. Dọn nhà thì đồ đi theo bạn.','🧺 Đồ đạc của bạn'):'<p class="bk-hint">Mọi thứ bạn đang có, chạm từng mục để xem tên và thông tin. Dọn nhà thì đồ đi theo bạn.</p>'}
     ${fold('deco','🪴 Nội thất & đồ trang trí',count.deco,deco,'Chưa có món nào. Vào phòng, mở 🛒 Cửa hàng để mua món đầu tiên nhé.')}
     ${fold('wear','👗 Quần áo & phụ kiện',count.wear,wear,'Chưa có đồ nào.')}
     ${fold('cars','🚗 Xe & phương tiện',count.cars,cars,'Chưa có xe. Ghé Cửa hàng xe trong ga-ra nhé.')}
     ${fold('food','🧊 Đồ ăn trong tủ lạnh',count.food,food,'Tủ lạnh đang trống.')}
-    ${fold('skins','🎨 Giấy dán tường & sàn đã mua',count.skins,skins,'Chưa mua mẫu nào (mẫu miễn phí luôn dùng được).')}</section>`;
+    ${fold('skins','🎨 Giấy dán tường & sàn đã mua',count.skins,skins,'Chưa mua mẫu nào (mẫu miễn phí luôn dùng được).')}${all?'</details>':''}</section>`;
 }

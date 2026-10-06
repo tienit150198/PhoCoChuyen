@@ -10,6 +10,7 @@ import {rentalMarketView,rentalPrice,rentalDemandHint,rentalRetryable,propertyNe
 import {thumb} from './deco-art.js';
 import {inventoryHTML} from './home-items.js';
 import {morph} from './home-morph.js';
+import {clean,tip,helpBtn} from '../ui-kit.js';
 
 const S={dlg:null,env:null,view:'home',busy:false,flash:null,buy:{kind:'',down:0,months:36,joint:0,move_in:true},joint:null,family:null,couple:null,jointAt:0,listening:false};
 S.inv=new Set();   // 🧺 the folds of "Đồ đạc của bạn" open now (their rows are drawn only then)
@@ -277,8 +278,8 @@ function render(){
 function head(){
   const v=V();
   return `<header class="sheet-head bk-head hs-head">${S.view==='buy'?`<button class="icon-btn" type="button" data-hs="back" aria-label="Quay lại">${icon('back',21)}</button>`:'<span class="hs-logo" aria-hidden="true">🏠</span>'}
-    <div class="grow"><span class="eyebrow">AN CƯ · NGÀY SỐNG ${fmt(v.life_day)}</span><h2 id="hs-title">Nhà của bạn</h2><p>${v.place?.name?`Đang ở: ${esc(v.place.name)}`:'Thuê phòng, để dành, mua nhà'}</p></div>
-    <button class="icon-btn" type="button" data-hs="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
+    <div class="grow"><span class="eyebrow">AN CƯ · NGÀY SỐNG ${fmt(v.life_day)}</span><h2 id="hs-title">Nhà của bạn</h2>${clean()&&v.story?'':`<p>${v.place?.name?`Đang ở: ${esc(v.place.name)}`:'Thuê phòng, để dành, mua nhà'}</p>`}</div>
+    ${clean()&&v.story?helpBtn('house','🏠 Nhà của bạn',[{title:'Nhà của bạn',body:'<p>Thuê phòng, để dành, mua nhà. Mọi con số tính theo ngày sống.</p>'}],{tips:true}):''}<button class="icon-btn" type="button" data-hs="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
 }
 const flash=()=>`<p class="bk-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
 function page(){
@@ -331,20 +332,23 @@ function dormRoom(D){
 }
 function placeCard(v){
   const p=v.place||{},c=p.cost||{},bed=p.kind===DORM;
-  const costLine=`${['own','shared','lease'].includes(p.where_id)?'Điện nước':bed?'Tiền giường':'Tiền phòng'} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`;
+  const unit=['own','shared','lease'].includes(p.where_id)?'Điện nước':bed?'Tiền giường':'Tiền phòng';
+  const costLine=clean()?`<span aria-label="${esc(`${unit} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`)}">${['own','shared','lease'].includes(p.where_id)?'⚡':bed?'🛏️':'🏠'} ${fmt(c.rent)} · 🍚 ${fmt(c.meals)} xu/ngày</span>`:`${unit} ${xu(c.rent)} · cơm ${xu(c.meals)} mỗi ngày`;
   const who=p.where_id==='shared'?`<p class="hs-tag">💞 Nhà chung với ${esc(p.with)}</p>`:p.where_id==='own'?'<p class="hs-tag">🔑 Nhà đứng tên bạn</p>':bed?'<p class="hs-tag">👥 Ở ghép · giường dưới cạnh cửa sổ</p>':['rent','lease'].includes(p.where_id)?'<p class="hs-tag">🧾 Đang thuê</p>':'';
   let actions='';
-  const DC=J().deco,deco=DC?`<p class="hs-chips"><span>🪴 Ấm cúng ${DC.cozy.total} · ${esc(DC.cozy.level)}</span>${DC.bag.length?`<span>🎒 ${DC.bag.length} món trong túi</span>`:''}</p>`:'';
-  const setUp=DC?btn(bed?'🚪 Về góc giường':p.where_id==='shared'?'🚪 Vào nhà':'🚪 Vào phòng','inside',{},'primary'):'';   // 🚶 rentals, the attic, a shared home: walk in, decor inside (v4/home-walk.js)
+  const DC=J().deco,deco=DC&&!clean()?`<p class="hs-chips"><span${clean()?` title="${esc(DC.cozy.level)}"`:''}>🪴 Ấm cúng ${DC.cozy.total}${clean()?'':` · ${esc(DC.cozy.level)}`}</span>${DC.bag.length?`<span>🎒 ${DC.bag.length} món trong túi</span>`:''}</p>`:'';
+  const cozy=DC&&clean()?` <small class="hs-cozy" aria-label="${esc(`Ấm cúng ${DC.cozy.total}: ${DC.cozy.level}`)}">🪴 ${DC.cozy.total}</small>`:'';
+  const setUp=DC?btn((bed?'🚪 Về góc giường':p.where_id==='shared'?'🚪 Vào nhà':'🚪 Vào phòng')+cozy,'inside',{},'primary'):'';   // 🚶 rentals, the attic, a shared home: walk in, decor inside (v4/home-walk.js)
   if(p.where_id==='rent')actions=`${bed?dormRoom(p.dorm):''}${deco}<div class="bk-actions">${setUp}${btn(bed?'Trả giường, nhận lại cọc':'Trả phòng, nhận lại cọc','leave',{},'ghost')}</div>`;
   else if(p.where_id==='own'&&J().reno){const R=J().reno,worn=R.parts.filter(x=>x.worn).length;
     actions=`<p class="hs-chips"><span>🪴 Ấm cúng ${R.cozy}</span><span>🛠️ ${worn?`${worn} chỗ cần sửa`:'Nhà sạch đẹp'}</span></p><div class="bk-actions">${btn('🚪 Vào nhà','inside',{},'primary')}${worn?btn('🛠️ Sửa nhà','inside',{mode:'fix'},'ghost'):''}</div>`;}
   else if(DC)actions=`${deco}<div class="bk-actions">${setUp}</div>`;
   if(p.where_id==='lease')actions+=`<div class="bk-actions">${btn('Hợp đồng & gia hạn','rentals',{},'ghost')}</div>`;
   actions+=parked();
-  actions+=`<div class="bk-actions">${btn('🏡 Nhà & Gia đình','sharedFamily',{},'cream')}${btn('Mời bạn về nhà','homeGuests',{},'cream')}${btn('👶 Con chung','sharedFamily',{section:'children'},'cream')}</div>`;
+  actions+=clean()?`<div class="bk-actions hs-fam-row">${btn('🏡 Gia đình','sharedFamily',{},'cream',' aria-label="Nhà & Gia đình (cả mục Con chung)"')}${btn('👥 Mời bạn','homeGuests',{},'cream',' aria-label="Mời bạn về nhà"')}</div>`
+    :`<div class="bk-actions">${btn('🏡 Nhà & Gia đình','sharedFamily',{},'cream')}${btn('Mời bạn về nhà','homeGuests',{},'cream')}${btn('👶 Con chung','sharedFamily',{section:'children'},'cream')}</div>`;
   const comfort=p.comfort?`<p class="bk-hint"><span>😊 Tinh thần +${p.comfort} mỗi sáng</span>${v.own?.loan?.late?' <span>(tạm dừng khi trễ hạn trả góp)</span>':''}</p>`:'';
-  return `<section class="bk-card hs-place ${esc(p.where_id||'')}"${toneStyle(p.group)}><div class="hs-place-top"><span class="hs-emoji" aria-hidden="true">${p.emoji||'🏚️'}</span><div class="grow"><small>Nơi bạn đang ở</small><h3>${esc(p.name)}</h3><small>${esc(p.where||'')}</small></div></div>
+  return `<section class="bk-card hs-place ${esc(p.where_id||'')}"${toneStyle(p.group)}><div class="hs-place-top"><span class="hs-emoji" aria-hidden="true">${p.emoji||'🏚️'}</span><div class="grow">${clean()?'':'<small>Nơi bạn đang ở</small>'}<h3>${esc(p.name)}</h3>${clean()?tip(esc(p.where||''),esc(p.name||'')):`<small>${esc(p.where||'')}</small>`}</div></div>
     ${who}<p class="hs-cost">${costLine}</p>${comfort}${p.perk&&!bed?`<p class="bk-hint">${esc(p.perk)}</p>`:''}${actions}</section>`;
 }
 
@@ -439,8 +443,9 @@ function marketGroups(v){
   }).join('');
 }
 
-function savingsCard(v){
+function savingsCard(v,{bankNext=false}={}){
   const b=J().bank||{},R=b.rules;
+  if(!b.open&&bankNext&&clean())return '';
   if(!b.open)return `<section class="bk-card hs-save"><h3>🐷 Tiết kiệm mua nhà</h3><p class="bk-hint">Có tài khoản Ngân hàng Phố mới gửi tiết kiệm và vay mua nhà được.</p><div class="bk-actions">${btn('Mở Ngân hàng','bank',{tab:'home'},'primary')}</div></section>`;
   const pick=[15,60,180].filter(t=>R.term_rate[String(t)]);
   const rows=pick.map(t=>{const r=R.term_rate[String(t)],gain=Math.floor(1000*r*t/(10000*R.year_days));return `<tr><td>${esc(b.term_names[String(t)])}</td><td>${pct(r)}/năm</td><td>+${fmt(gain)} xu</td></tr>`;}).join('');
@@ -454,16 +459,19 @@ function homeView(v){
   const log=(v.log||[]).slice(0,8).map(r=>`<li><span>Ngày ${r.day} · ${esc(r.text)}</span>${r.amt?`<b class="${r.amt>0?'up':'down'}">${r.amt>0?'+':'−'}${fmt(Math.abs(r.amt))}</b>`:''}</li>`).join('');
   const more=PROPS(v).map(x=>propCard(v,x)+loanCard(v,x)).join('');
   const cap=Array.isArray(v.props)&&MINE(v).length?` Có thể có tới ${v.rules.owned_max} căn${canBuy(v).ok?'':`: ${esc(canBuy(v).why)}`}.`:'';
+  const next=nextStep(v);
   const bill=v.care?.month?`<p class="bk-hint hs-care">🧾 Phí bảo trì các căn của bạn khoảng ${xu(v.care.month)}/tháng, trừ cùng hóa đơn ${onDay(v.care.next)}: tiền mặt trước, thiếu thì lấy từ tài khoản, không bao giờ làm ví âm.</p>`:'';
-  return moneyStrip(v)+`<section class="bk-card"><h3>🏘️ Thuê & cho thuê</h3><p>Tự đặt giá, tìm khách NPC hoặc thuê nhà người chơi.</p>${btn('Mở chợ thuê nhà','rentals',{},'primary')}</section>`+familyCard()+nextStep(v)+placeCard(v)+inventoryCard()+sharedCard(v)+ownCard(v)+loanCard(v)+more+bill+
-    `<section class="bk-card hs-listing"><h3>Nhà đang rao</h3><p class="bk-hint">Trả trước ${v.rules.down_pct}% + phí, còn lại vay 3 năm.${cap}</p>${marketGroups(v)}</section>`+
-    savingsCard(v)+(log?`<section class="bk-card"><h3>Sổ nhà cửa</h3><ul class="bk-score-log">${log}</ul></section>`:'');
+  return moneyStrip(v)+(clean()?''
+      :`<section class="bk-card"><h3>🏘️ Thuê & cho thuê</h3><p>Tự đặt giá, tìm khách NPC hoặc thuê nhà người chơi.</p>${btn('Mở chợ thuê nhà','rentals',{},'primary')}</section>`)+familyCard()+next+placeCard(v)+inventoryCard()+sharedCard(v)+ownCard(v)+loanCard(v)+more+bill+
+    (clean()?`<details class="bk-card hs-listing hs-list-fold"><summary><b>🏷️ Nhà đang rao</b><small>${MK().length} nơi</small></summary>${btn('🏘️ Thuê & cho thuê','rentals',{},'cream full',' aria-label="Thuê & cho thuê: tự đặt giá, tìm khách NPC hoặc thuê nhà người chơi"')}<p class="bk-hint">Trả trước ${v.rules.down_pct}% + phí, còn lại vay 3 năm.${cap}</p>${marketGroups(v)}</details>`
+      :`<section class="bk-card hs-listing"><h3>Nhà đang rao</h3><p class="bk-hint">Trả trước ${v.rules.down_pct}% + phí, còn lại vay 3 năm.${cap}</p>${marketGroups(v)}</section>`)+
+    savingsCard(v,{bankNext:next.includes('data-hs="bank"')})+(log?`<section class="bk-card"><h3>Sổ nhà cửa</h3><ul class="bk-score-log">${log}</ul></section>`:'');
 }
 
 /** 🧺 Everything the player owns, down to the smallest piece (v4/home-items.js). */
 function inventoryCard(){
   const st=S.env?.api?.state,c=S.env?.api?.content;if(!st?.journey?.story)return '';
-  return inventoryHTML(st,c,{open:S.inv,thumb,btn});
+  return inventoryHTML(st,c,{open:S.inv,thumb,btn,tip:clean()?tip:null,compact:clean()});   // clean layout: the card's how-to line goes to "?"
 }
 
 function familyCard(){

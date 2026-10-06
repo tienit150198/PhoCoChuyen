@@ -11,6 +11,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {audioContext,wantAudio,duck} from '../audio.js';
 import {language} from './i18n.js';
+import {clean} from '../ui-kit.js';   // shorter lines on the clean layout (docs/UI_KIT.md, wave 5)
 import {words,callLine,MC,ACTS,CROWD,STICKERS,MODE_STICKER} from './fair-loto.js';
 import {setup as knifeSetup} from './fair-knife.js';
 import {setup as scratchSetup} from './fair-scratch.js';
@@ -234,7 +235,7 @@ function head(){
     <div class="fh-bunting" aria-hidden="true"></div>
     <div class="fh-lanterns" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     <div class="fh-headrow"><span class="fh-logo" aria-hidden="true">🏮</span>
-      <div class="grow"><span class="eyebrow">KHU PHỐ MỞ HỘI · <span data-fh-count="close">${esc(when)}</span></span><h2 id="fh-title">Hội chợ dân gian</h2></div>
+      <div class="grow"><span class="eyebrow">${clean()?'⏳':'KHU PHỐ MỞ HỘI ·'} <span data-fh-count="close">${esc(when)}</span></span><h2 id="fh-title">Hội chợ dân gian</h2></div>
       <button class="icon-btn fh-x" type="button" data-fh="close" aria-label="Đóng">${icon('x',21)}</button></div>
   </header>`;
 }
@@ -263,14 +264,16 @@ const xuLine=tab=>{const x=F().today_xu;if(!x||!GAMES[tab]||tab==='home'||tab===
   return `<p class="fh-luck-left">💰 Hôm nay kiếm ở ${esc(GAMES[tab][1])}: <b>${n>0?'+':n<0?'−':''}${xu(Math.abs(n))}</b></p>`;};
 const luckLine=()=>{const t=F().today||{};if(R().nocap)return '';return `<p class="fh-luck-left">🎟️ Thử vận hôm nay còn chơi được <b>${xu(t.left)}</b> <small>(thua tối đa ${xu(R().cap)} mỗi ngày)</small></p>`;};
 const flash=()=>`<p class="fh-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
-const note=()=>`<p class="fh-note">🎪 Trò chơi dân gian ở hội chợ, chơi bằng xu trong game. Không có tiền thật.</p>`;
+// The "no real money" line always shows; on the clean layout in its short form.
+const note=()=>`<p class="fh-note">🎪 ${clean()?'Chơi bằng xu trong game, không có tiền thật.':'Trò chơi dân gian ở hội chợ, chơi bằng xu trong game. Không có tiền thật.'}</p>`;
 function page(){
   const f=F();
   if(!f.show&&!f.over&&!f.soon)return head()+`<div class="sheet-body fh-body">${closedCard(true)}</div>`;
   if(!f.open&&S.tab!=='board')return head()+`<div class="sheet-body fh-body">${closedCard()}${S.env?.api?.state?.journey?.story?btn('🏆 Xem Bảng vàng hội chợ','tab',{tab:'board'},'cream full'):''}${note()}</div>`;
   const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().knife?kn().view():homeView(),xs:()=>F().scratch?xs().view():homeView(),pb:()=>F().photo?pb().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
-  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open?strip():''}${f.open?nav():''}${wealthRaidCard()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab):''}${body}${note()}</div>`;
+  const gifting=!!S.gift&&clean();   // the gift card is the whole screen until "Vào hội" (clean layout: nothing else behind it)
+  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open&&!gifting?strip():''}${f.open?nav():''}${wealthRaidCard()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab):''}${body}${gifting?'':note()}</div>`;
 }
 function wealthRaidCard(){
   const r=S.wealthRaid;if(!r)return '';
@@ -440,7 +443,10 @@ function ringView(){
 function stopRing(){cancelAnimationFrame(S.ring.raf);S.ring.raf=0;}
 function startRingLoop(){
   const v=F().ring;
-  if(!S.ring.round&&v&&!S.ring.result){S.ring={...S.ring,round:v,t0:performance.now(),taps:[],hits:[]};render();}   // a round from another visit: the swing starts again now
+  // A round from another visit: the swing starts again now. Never a round the server already closed (S.ring.dead: a
+  // throw refused "fair_ring_over", e.g. finished in another tab, while the state still lists it): that replayed it
+  // over and over, each throw refused (audit 06/10: 534 refusals in 3 days).
+  if(!S.ring.round&&v&&!S.ring.result&&v.id!==S.ring.dead){S.ring={...S.ring,round:v,t0:performance.now(),taps:[],hits:[]};render();}
   if(S.ring.raf||!S.ring.round||S.ring.result||S.ring.finishing)return;
   const loop=()=>{
     if(!S.ring.round||S.ring.result||S.ring.finishing||S.tab!=='ring'||!S.dlg?.open){S.ring.raf=0;return;}
@@ -490,7 +496,7 @@ async function finishRing(rd){
         fly.style.setProperty('--ring-from',trackPos(ringX(rd,t)));if(hit>=0)fly.style.setProperty('--ring-level',x.hits.slice(0,i).filter(h=>h===hit).length);layer.append(fly);setTimeout(()=>fly.remove(),reduce()?60:700);});
       sfx(x.n>=3?'win':x.n?'clink':'miss');
     }}
-  else{S.ring.round=null;S.ring.taps=[];S.ring.hits=[];}
+  else{if(S.err==='fair_ring_over'||S.err==='fair_ring_bad')S.ring.dead=rd.id;S.ring.round=null;S.ring.taps=[];S.ring.hits=[];}
   if(visible)render();
 }
 
@@ -1001,7 +1007,7 @@ function giftPop(){
   if(!S.gift)return '';
   return `<div class="fh-giftpop" role="dialog" aria-modal="true" aria-labelledby="fh-gift-h"><div class="fh-giftcard">
     <div class="fh-giftbox" aria-hidden="true">🎁</div><h3 id="fh-gift-h">Ban tổ chức tặng ${xu(S.gift)} làm vốn chơi hội!</h3>
-    <p>Đã bỏ vô ví của bạn. Chúc bà con chơi hội vui vẻ, ăn nhiều nha!</p>${btn('🏮 Vào hội','giftok',{},'primary big full',' data-fh-key="giftok"')}</div></div>`;
+    <p>${clean()?'Đã bỏ vô ví 👛':'Đã bỏ vô ví của bạn. Chúc bà con chơi hội vui vẻ, ăn nhiều nha!'}</p>${btn('🏮 Vào hội','giftok',{},'primary big full',' data-fh-key="giftok"')}</div></div>`;
 }
 function loanRow(){
   const c=C();if(!c)return '';

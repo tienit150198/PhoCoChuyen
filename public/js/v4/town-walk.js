@@ -101,7 +101,9 @@ export function townHTML(env,h){
   const x3=s.x3?.today?.length?`<button type="button" class="tw-chip tw-x3" data-action="x3Week" aria-label="${esc(`Hôm nay lời x${s.x3.x}`)}">🔥 x${esc(s.x3.x)}</button>`:'';
   const close=s.current?`<button type="button" class="icon-btn tw-close" data-action="close" aria-label="Đóng">${icon('x',20)}</button>`:'';
   const day=J.story?`<small>Ngày sống ${fmt(J.life_day)}</small>`:'';
-  const hint=g.fresh?`<p class="tw-hint" role="status"><span aria-hidden="true">👉</span> Đi tới một tiệm đang sáng để làm</p>`:'';
+  // Clean layout (docs/UI_KIT.md, wave 5): the same pointer in five words, under the goal card that already names the job.
+  const slim=typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
+  const hint=g.fresh?`<p class="tw-hint" role="status"><span aria-hidden="true">👉</span> ${slim?'Vào tiệm sáng đèn':'Đi tới một tiệm đang sáng để làm'}</p>`:'';
   const goals=J.story&&h.chapterCard?`<div class="tw-goals">${h.chapterCard(env,{compact:true})}</div>`:'';
   return `<div class="tw-home"><header class="tw-top home-top"><div class="tw-title"><h2>Khu phố</h2>${day}</div>${x3}
     <button type="button" class="tw-chip tw-list" data-action="jrList">📋 Danh sách</button>${close}</header>${goals}${hint}
