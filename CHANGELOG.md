@@ -1,3 +1,18 @@
+# Chưa phát hành — Giao diện gọn (ui-foundation)
+
+## Giao diện gọn hơn
+
+- Chủ game 06/10: "gọn hơn, clean hơn, ít chữ hơn, dễ chơi hơn". Đợt nền tảng, dùng chung cho mọi nghề (docs/UI_KIT.md).
+- Một thanh dưới chung (`.ui-bar`): bên trái là bước tiếp, bên phải là một nút chính. Đã chuyển 21 nghề phố (street kit), tiệm hoa, quán ăn, tiệm sửa, tiệm quần áo, giáo viên, hướng dẫn viên. Bỏ luật "42%" bóp chữ trên điện thoại và các bản vá `!important` của giáo viên/hướng dẫn viên.
+- Giới thiệu nghề (21 nghề phố): từ ~180 chữ còn ~22 chữ, gồm tên nghề, 3 dòng biểu tượng và nút "?" chứa phần giới thiệu đầy đủ.
+- Nút chưa bấm được thì mờ đi nhưng vẫn chạm được: chạm vào sẽ hiện một dòng lý do và nút sửa ngay trên thanh dưới, không gửi lệnh vào chỗ chắc bị từ chối. Máy chủ báo trước bằng đúng luật nó dùng để từ chối: giúp việc (lau khi chưa cầm dụng cụ/chai, chai cạn) và tiệm hoa (trao hoa khi chưa cắm/gói xong).
+- Phiếu khách (tiệm hoa, sửa đồ, quán ăn, quần áo) không còn ghim trên điện thoại; số "3/6 ✓" thành chip trên đầu, chạm để mở phiếu.
+- Thông báo nằm dưới thanh tiêu đề, không che tên màn hình nữa.
+- Nút "?" trên đầu và dòng gợi ý đủ 44 px.
+- Bảng cỡ chữ 4 bậc và bảng khoảng cách (`--fs-*`, `--sp-*`).
+- Có công tắc tắt: Cài đặt → Giao diện → "Giao diện gọn" (Tự động / Bật / Tắt), hoặc tắt cho mọi người bằng `MNL_CLEAN_UI=off` trên máy chủ.
+- Không đổi bản lưu, không thêm bảng, không đổi cách sinh việc.
+
 # v1.9.4 — 2026-10-06
 
 - 🏪 Nhân viên tiệm (nơi làm việc) bán nhanh gấp 1,6 lần ngày đầu (góp ý người chơi; lịch sử bản 1.7.8–1.9.3 cho thấy tốc độ chưa từng bị giảm, tiệm thấy chậm chủ yếu do hết hàng).
