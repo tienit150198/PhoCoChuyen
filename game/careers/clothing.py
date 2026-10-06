@@ -709,12 +709,13 @@ def staff_order(c: dict, served: int) -> tuple | None:
     Selection happens at completion. Accepted player orders keep their own fixed
     product and quote. The existing receipt count makes offline/polled runs equal.
     """
-    items=list(ITEM)
-    for offset in range(len(items)):
-        item=items[(served+offset)%len(items)]
-        if staff_size(c,item) is not None:
-            return ('Đơn riêng: '+ITEM[item]['name'],PRICES[item],2,{item:1})
-    return None
+    # Rotate over the goods on the rack only: skipping gaps in the full catalogue would hand every sale after an
+    # unstocked run (the 14 goods added in WP3 start at 0) to the next stocked item.
+    items=[item for item in ITEM if staff_size(c,item) is not None]
+    if not items:
+        return None
+    item=items[served%len(items)]
+    return ('Đơn riêng: '+ITEM[item]['name'],PRICES[item],2,{item:1})
 
 
 def _sell(c: dict, item: str, size: str) -> int:
