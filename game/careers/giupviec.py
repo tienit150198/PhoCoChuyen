@@ -275,7 +275,7 @@ def _catch(d: dict, t: dict, code: str) -> dict | None:
 
 # ================================================================ the actions
 FREE = ('gv_intro',)
-NO_TICK = ('gv_intro', 'gv_desk', 'gv_tool', 'gv_product', 'gv_fill', 'gv_wipe', 'gv_move', 'gv_back')
+NO_TICK = ('gv_intro', 'gv_desk', 'gv_cart', 'gv_tool', 'gv_product', 'gv_fill', 'gv_wipe', 'gv_move', 'gv_back')
 PHYSICAL = ('gv_check',)
 
 
@@ -376,6 +376,34 @@ def _open(s, c, d, p):
                 celebrate=ok)
 
 
+def _cart(s, c, d, p):
+    """🧺 Về soạn xe: back to today's morning cart when it never went out (live 06/10: a player who left
+    mid-shift had the setup task cancelled, and every flat refused “Chưa soạn xe” for the rest of the day).
+    Today's setup task is the one of slot 0, so it is reopened (or made again with the same id) rather than
+    added under a new slot: validate_state regenerates a task from its slot, and slot 0 is the setup."""
+    cart = d['cart']
+    kit.need(not cart['out'], 'Xe đã lên đường rồi.')
+    day = c['day']
+    tid = make_task(day, 0, 0)['id']
+    t = next((x for x in c['tasks'] if x['id'] == tid), None)
+    if t is not None and t['status'] == 'completed':
+        cart['out'] = True     # the cart was set out today already; nothing to do again
+        return dict(message='🛵 Xe soạn từ sáng rồi, lên đường tiếp nhé.')
+    if t is None:
+        t = make_task(day, 0, c['turn'])
+        c['tasks'].append(t)
+        on_task(s, c, t)
+    elif t['status'] in ('cancelled', 'referred'):
+        # Left behind by an abandoned shift: no pay, no review was given for it, so it simply opens again.
+        t['status'] = 'understood'
+        t.pop('completed_turn', None)
+        if t['id'] in c['completed_ids']:
+            c['completed_ids'].remove(t['id'])
+    t['deferred'] = False
+    c['active_task'] = t['id']
+    return dict(message='🧺 Về xe đồ nghề: giặt khăn, châm chai rồi bấm “Lên đường” nhé.')
+
+
 # ---------------------------------------------------------------- in a client's flat
 def _room(s, c, d, p):
     t = _task(c, p, ('job',))
@@ -398,8 +426,10 @@ def _tool(s, c, d, p):
 
 def _product(s, c, d, p):
     v = kit.one_of(p.get('product'), PRODUCTS, 'Trên xe không có chai này.')
-    d['hand']['product'] = v
     x = PRODUCTS[v]
+    # An empty bottle in hand only bounces every wipe (live 06/10: ~150 refusals “Chai … cạn rồi”).
+    kit.need(not x['item'] or d['cart']['bottles'][v] > 0, f'Chai {_lower(x["name"])} cạn rồi. Bấm “Châm” cạnh chai nhé.')
+    d['hand']['product'] = v
     return dict(message=f'{x["emoji"]} {"Không dùng gì, lau khô." if v == "kho" else "Dùng " + _lower(x["name"]) + "."}')
 
 
@@ -674,7 +704,7 @@ def _finish(s: dict, c: dict, d: dict, t: dict, reward: int, narrative: str) -> 
 
 
 ACTIONS = {
-    'gv_wash': _wash, 'gv_fill': _fill, 'gv_open': _open,
+    'gv_wash': _wash, 'gv_fill': _fill, 'gv_open': _open, 'gv_cart': _cart,
     'gv_room': _room, 'gv_tool': _tool, 'gv_product': _product, 'gv_wipe': _wipe, 'gv_move': _move, 'gv_back': _back,
     'gv_check': _check,
 }

@@ -1,3 +1,10 @@
+# Chưa phát hành — WP-2 Giúp việc + Chùa
+
+- 🧹 Giúp việc: chưa cầm dụng cụ, chưa chọn chai, hay chai đang cầm đã cạn thì các chỗ lau bị khoá, có dòng nhắc cần làm gì (trước đây bấm vào là bị từ chối, hơn 400 lần một ngày). Chai cạn không chọn được nữa; cạnh nó có nút “🧴 Châm” để châm ngay từ kho. Hướng dẫn học nghề cũng nhắc châm chai trước khi dùng.
+- 🧺 Giúp việc: nếu xe đồ nghề chưa soạn thì các tab phòng bị ẩn, thay bằng nút “🧺 Về soạn xe”. Nếu việc soạn xe buổi sáng đã bị huỷ (ví dụ do rời tiệm giữa ca), lệnh mới `gv_cart` mở lại việc đó (vẫn mã slot 0, không thêm khoá lưu), nên không còn bị kẹt cả ngày.
+- 🛕 Chùa: ở bước xếp thứ tự hiện “Đã xếp k/n”, nút “Xong” chỉ hiện khi đã xếp đủ n việc. Máy chủ nhận đúng khi đủ n việc: thiếu một việc cần làm vì đã xếp nhầm việc không nên làm thì bị tính là lỗi “Quên mất việc …” chứ không còn bị từ chối.
+- Không đổi tiền và không thêm bảng. Bản 1.9.2 đọc và chơi tiếp được bản lưu mới (đã kiểm validate_state).
+
 # v1.9.2 — 2026-10-06: giao diện cũ trở lại
 
 - 🎨 Theo chủ game: giao diện cổ điển (bản đồ phố 2D, cảnh từng tiệm, như 1.8.1) là giao diện mặc định. Máy chủ giữ nguyên 1.9.1 (quầy có nhân viên +50%, sửa tip kế toán ngày 1, dữ liệu Thư giãn trên đảo vẫn được giữ). Đảo 2.5D sẽ quay lại dưới dạng tuỳ chọn ở bản sau.

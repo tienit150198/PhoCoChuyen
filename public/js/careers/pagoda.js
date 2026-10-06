@@ -52,12 +52,15 @@ function sortStep(t,x,s){
     return `<li class="pg-sort ${on?'set':''}"><div class="pg-item"><span aria-hidden="true">${x.esc(i.emoji)}</span><div><b>${x.esc(i.name)}</b>${i.look?`<small>${x.esc(i.look)}</small>`:''}</div></div><div class="pg-bins">${chips}</div></li>`;}).join('');
   return `<ul class="pg-sorts">${rows}</ul><p class="small muted">Đã xếp ${Object.keys(got).length}/${s.items.length}.</p>`;
 }
+/** How many chores must go in the sequence (the server sends it; an older server: every chore). */
+const orderNeed=s=>Number.isInteger(s.need)?s.need:s.items.length;
 function orderStep(t,x,s){
   const got=t.work?.[s.id]||[],by=Object.fromEntries(s.items.map(i=>[i.id,i]));
   const seq=got.map((id,k)=>{const i=by[id];const last=k===got.length-1;
     return `<li><b>${k+1}</b><span aria-hidden="true">${x.esc(i.emoji)}</span><span class="grow">${x.esc(i.name)}</span>${last?x.cmd('↩︎','chua_seq',{task:t.id,item:id},'ghost small pg-undo',false):''}</li>`;}).join('');
   const left=s.items.filter(i=>!got.includes(i.id)).map(i=>tile(x,'chua_seq',{task:t.id,item:i.id},`<span class="tile-emoji">${x.esc(i.emoji)}</span><b>${x.esc(i.name)}</b>`,`pg-i-${i.id}`)).join('');
-  return `${got.length?`<ol class="pg-seq">${seq}</ol>`:'<p class="small muted">Chạm việc làm trước tiên.</p>'}${left?`<div class="tile-grid pg-left">${left}</div>`:''}`;
+  const n=orderNeed(s);
+  return `${got.length?`<ol class="pg-seq">${seq}</ol>`:'<p class="small muted">Chạm việc làm trước tiên.</p>'}${left?`<div class="tile-grid pg-left">${left}</div>`:''}<p class="small muted pg-count" aria-live="polite">Đã xếp ${got.length}/${n}${got.length<n?` · còn ${n-got.length} việc nữa mới xong`:''}.</p>`;
 }
 function chooseStep(t,x,s){
   const opts=s.options.map(o=>x.cmd(`<span class="sk-opt-label">${x.esc(o.label)}</span>${o.hint?`<small>${x.esc(o.hint)}</small>`:''}`,'chua_choose',{task:t.id,option:o.id},`sk-opt pg-o-${o.id}`)).join('');
@@ -89,7 +92,10 @@ function stepGuide(t,x){
     const tip=Array.isArray(s.tip)?s.tip.find(id=>!got.includes(id)):null,name=tip&&s.items.find(i=>i.id===tip)?.name;
     const steps=tip?[row(`Chạm: ${name}`,{sel:'.pg-left',label:'👉 Chạm việc tiếp theo'},`.pg-left .pg-i-${tip}`)]
       :got.length?[]:[row('Chạm việc làm trước tiên',{sel:'.pg-left',label:'👉 Chạm việc làm trước'},'')];
-    return {steps,final:{label:x.esc(s.go),go:{cmd:'chua_close',payload:{task:t.id}},ready:got.length>0,why:'xếp thứ tự các việc'}};}
+    // Ready only at k/n, exactly when the server takes the sequence (live 06/10: 68 refusals “Còn việc chưa xếp”).
+    const n=orderNeed(s),k=got.length;
+    if(!steps.length&&k<n)steps.push(row(`Xếp thêm ${n-k} việc (đã xếp ${k}/${n})`,{sel:'.pg-left',label:'👉 Chạm việc tiếp theo'},''));
+    return {steps,final:{label:x.esc(s.go),go:finalGo(steps,'chua_close',{task:t.id}),ready:k>=n,why:`xếp đủ ${n} việc (đã xếp ${k}/${n})`}};}
   if(s.type==='choose')return {steps:[row(s.title,{sel:'.pg-opts',label:'👉 Chọn cách làm'},typeof s.tip==='string'?`.pg-opts .pg-o-${s.tip}`:'')],final:null};
   if(s.type==='tally')return {steps:[row('Đếm từng tờ, ghi tổng vào sổ',{sel:'.pg-tally',label:'👉 Đếm tiền công đức'},'')],final:null};
   return {steps:[],final:null};
