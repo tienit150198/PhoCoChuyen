@@ -47,7 +47,9 @@ OPTIMISTIC_TRIES=4     # then fall back to computing under the write lock
 FULL_EVERY=max(1,int(os.environ.get("VALIDATE_FULL_EVERY","200") or 200))
 # A moved career is re-validated without the pieces it did not change (game/settle_scope.py).
 # SCOPED_CAREER_VALIDATION=0 validates every moved career in full again, as 1.7.15 did.
-SCOPED_CAREERS=os.environ.get("SCOPED_CAREER_VALIDATION","1").strip().lower() not in ("0","false","no","off")
+# Off by default since 06/10: on real saves (staging copy) it refused 26 of 72 commands with "Tham chiếu hồ sơ an ninh sai."
+# (a false alarm: the same commands pass with full validation). Turn it on with =1 once that is fixed.
+SCOPED_CAREERS=os.environ.get("SCOPED_CAREER_VALIDATION","0").strip().lower() in ("1","true","yes","on")
 # HTTP keep-alive connections have their own thread budget. Only a few commands
 # should hold parsed + serialized saves at once, before waiting for the PG pool.
 # Share this budget across Store instances in one process, never across workers.

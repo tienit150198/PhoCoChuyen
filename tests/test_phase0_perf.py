@@ -168,7 +168,13 @@ class ScopedCareerValidationTests(unittest.TestCase):
 
 
 class DifferentialTests(unittest.TestCase):
-    """The same commands with the old and the new paths: byte-identical everything."""
+    """The same commands with the old and the new paths: byte-identical everything. The scoped path is off by
+    default since 06/10 (SCOPED_CAREER_VALIDATION); these tests switch it on to keep it checked."""
+
+    def setUp(self):
+        p = mock.patch.object(storage, 'SCOPED_CAREERS', True)
+        p.start()
+        self.addCleanup(p.stop)
     PLAN = [('settings', None, {'musicVolume': 40}), ('select_career', 'accounting', {}), ('start_day', 'accounting', {}),
             ('more_work', 'accounting', {}), ('ask', 'accounting', {}), ('advance', 'accounting', {}),
             ('settings', None, {'sound': False}), ('business_sync', None, {}), ('advance', 'accounting', {}),
