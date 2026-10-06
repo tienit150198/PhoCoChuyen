@@ -238,6 +238,8 @@ html[data-layout="phone"][data-orientation="landscape"] :is(.sheet,.sheet.narrow
 html[data-layout="phone"][data-orientation="landscape"] .wv-dialog{box-sizing:border-box;width:100vw;max-width:100vw;max-height:100dvh;margin:0;padding:0 var(--safe-r) 0 var(--safe-l);border-radius:0}
 html[data-layout="phone"][data-orientation="landscape"] .sheet[open]{animation:mnl-pop-in .2s var(--ease)}
 html[data-layout="phone"][data-orientation="landscape"] .sheet-head,html[data-layout="phone"][data-orientation="landscape"] .sheet.cozy-job .sheet-head{min-height:44px;padding:0 8px 0 14px}
+/* A header that carries a button under its title (Quầy: "🛵 Sổ shipper") grows past 44 px: keep it off the top edge. */
+html[data-layout="phone"][data-orientation="landscape"] .sheet-head:has(>.grow>:is(.btn,button)){padding-top:4px;padding-bottom:4px}
 html[data-layout="phone"][data-orientation="landscape"] .tw-top::before,html[data-layout="phone"][data-orientation="landscape"] .home-top::before,html[data-layout="phone"][data-orientation="landscape"] .sheet-head::before,html[data-layout="phone"][data-orientation="landscape"] .preparation-topline::before{display:none}
 html[data-layout="phone"][data-orientation="landscape"] .sheet-head>.grow>p,html[data-layout="phone"][data-orientation="landscape"] .sheet-head>div:first-child>p{display:none}
 html[data-layout="phone"][data-orientation="landscape"] .preparation-topline{min-height:48px;padding-top:2px;padding-bottom:2px}
