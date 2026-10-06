@@ -1,5 +1,149 @@
 [
  {
+  "vi": "GIỜ",
+  "en": ""
+ },
+ {
+  "vi": "CHUYẾN",
+  "en": ""
+ },
+ {
+  "vi": "ĐẾN",
+  "en": ""
+ },
+ {
+  "vi": "CỬA",
+  "en": ""
+ },
+ {
+  "vi": "TÌNH TRẠNG",
+  "en": ""
+ },
+ {
+  "vi": "Vào phòng tổ bay",
+  "en": ""
+ },
+ {
+  "vi": "Sân bay Thành phố",
+  "en": ""
+ },
+ {
+  "vi": "Tan ca hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Tan ca hiện tại, rồi chọn Mở ca quản lý để giao việc cho tổ bay.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn Thăng tiến → Mở ca quản lý để giao việc cho tổ bay.",
+  "en": ""
+ },
+ {
+  "vi": "Từ bậc 3 · Cơ trưởng huấn luyện, mở Ca quản lý. Hoàn thành ngày bay tốt và trả lời buổi xét thăng chức.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍💼 Thăng tiến · Ca quản lý",
+  "en": ""
+ },
+ {
+  "vi": "🎖️ Xem lộ trình thăng tiến",
+  "en": ""
+ },
+ {
+  "vi": "Lịch bay hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Mục tiêu hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Có quà",
+  "en": ""
+ },
+ {
+  "vi": "Tổ bay hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "SỔ BAY",
+  "en": ""
+ },
+ {
+  "vi": "Gần đây",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có chuyến nào trong sổ.",
+  "en": ""
+ },
+ {
+  "vi": "😮‍💨 Bạn đang mệt: còn mệt thì thưởng chuyến chỉ được một nửa. Xin nghỉ bù ở phòng tổ bay.",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Đang bị cách chức: chưa có thưởng chuyến.",
+  "en": ""
+ },
+ {
+  "vi": "🌅 Ngày mai",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Vào phòng tổ bay",
+  "en": ""
+ },
+ {
+  "vi": "chưa có nhận xét",
+  "en": ""
+ },
+ {
+  "vi": "🛬 Tan ca lúc",
+  "en": ""
+ },
+ {
+  "vi": ". Về tới hẻm kịp cơm tối.",
+  "en": ""
+ },
+ {
+  "vi": "Các chuyến hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tổ bay",
+  "en": ""
+ },
+ {
+  "vi": "Tổ bay & khách quen",
+  "en": ""
+ },
+ {
+  "vi": "Đã báo",
+  "en": ""
+ },
+ {
+  "vi": "Chiều theo",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ ngỏ",
+  "en": ""
+ },
+ {
+  "vi": "Đã chốt",
+  "en": ""
+ },
+ {
+  "vi": "Đúng luật",
+  "en": ""
+ },
+ {
+  "vi": "Bị phạt",
+  "en": ""
+ },
+ {
   "vi": "Lời mời khó từ chối",
   "en": ""
  },
@@ -492,15 +636,19 @@
   "en": ""
  },
  {
+  "vi": "2×: chờ một nửa; 4×: chờ một phần tư khi chiết, đánh sữa và nướng. Thanh chạy nhanh tương ứng: tự bấm dừng ở vùng xanh. Mẻ đang trong lò giữ nhịp lúc cho vào.",
+  "en": ""
+ },
+ {
   "vi": "Nhịp pha và nướng",
   "en": ""
  },
  {
-  "vi": "⚡ Nhịp pha & nướng",
+  "vi": "rất nhanh",
   "en": ""
  },
  {
-  "vi": "2×: chờ một nửa; 4×: chờ một phần tư khi chiết, đánh sữa và nướng. Thanh chạy nhanh tương ứng: tự bấm dừng ở vùng xanh. Mẻ đang trong lò giữ nhịp lúc cho vào.",
+  "vi": "⚡ Nhịp pha & nướng",
   "en": ""
  },
  {
@@ -748,6 +896,14 @@
   "en": ""
  },
  {
+  "vi": "Việc chăm tiệm",
+  "en": ""
+ },
+ {
+  "vi": "xong hết",
+  "en": ""
+ },
+ {
   "vi": "hòa bột",
   "en": ""
  },
@@ -788,7 +944,75 @@
   "en": ""
  },
  {
+  "vi": "☕ Quầy cà phê & bánh",
+  "en": ""
+ },
+ {
+  "vi": "Một order",
+  "en": ""
+ },
+ {
+  "vi": "📝 Nhận order, đọc phiếu",
+  "en": ""
+ },
+ {
+  "vi": "☕ Pha, 🔥 nướng, 🥐 lấy bánh theo phiếu",
+  "en": ""
+ },
+ {
   "vi": "Gõ đúng chữ trên phiếu vào ô, rồi bấm “Viết lên bánh”.",
+  "en": ""
+ },
+ {
+  "vi": "Áo dài",
+  "en": ""
+ },
+ {
+  "vi": "Đồ bé",
+  "en": ""
+ },
+ {
+  "vi": "Thắt lưng",
+  "en": ""
+ },
+ {
+  "vi": "Tất",
+  "en": ""
+ },
+ {
+  "vi": "Set váy",
+  "en": ""
+ },
+ {
+  "vi": "Chân váy",
+  "en": ""
+ },
+ {
+  "vi": "Bông tai",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm áo",
+  "en": ""
+ },
+ {
+  "vi": "Công việc gồm…",
+  "en": ""
+ },
+ {
+  "vi": "Bạn sẽ gặp…",
+  "en": ""
+ },
+ {
+  "vi": "Được sao khi…",
+  "en": ""
+ },
+ {
+  "vi": "📐 Bảng size",
+  "en": ""
+ },
+ {
+  "vi": "📋 Chính sách đổi trả",
   "en": ""
  },
  {
@@ -828,11 +1052,19 @@
   "en": ""
  },
  {
+  "vi": ", khách cần",
+  "en": ""
+ },
+ {
   "vi": "Chạm một món để chọn màu.",
   "en": ""
  },
  {
   "vi": "Chạm một món để chọn màu và size.",
+  "en": ""
+ },
+ {
+  "vi": ", khách dặn",
   "en": ""
  },
  {
@@ -845,6 +1077,10 @@
  },
  {
   "vi": "1 · Màu",
+  "en": ""
+ },
+ {
+  "vi": ", chọn màu trước",
   "en": ""
  },
  {
@@ -944,6 +1180,10 @@
   "en": ""
  },
  {
+  "vi": "👉 Chọn size",
+  "en": ""
+ },
+ {
   "vi": "👉 Chọn size trên giá treo",
   "en": ""
  },
@@ -1036,6 +1276,14 @@
   "en": ""
  },
  {
+  "vi": "Mỗi khách rộng tay một kiểu — đọc tính khách mà chọn.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Trao đổi",
+  "en": ""
+ },
+ {
   "vi": "💡 Giải thích & gợi ý món rẻ hơn",
   "en": ""
  },
@@ -1125,6 +1373,14 @@
  },
  {
   "vi": "👵 Mang sang gian bên",
+  "en": ""
+ },
+ {
+  "vi": "Kim chạy dọc đường may — dừng máy khi kim nằm trong vạch xanh.",
+  "en": ""
+ },
+ {
+  "vi": "🧵 Máy may",
   "en": ""
  },
  {
@@ -1252,10 +1508,6 @@
   "en": ""
  },
  {
-  "vi": "📋 Chính sách đổi trả",
-  "en": ""
- },
- {
   "vi": "🙂 Nhẹ nhàng, chỉ bảng",
   "en": ""
  },
@@ -1276,7 +1528,11 @@
   "en": ""
  },
  {
-  "vi": "Làm tròn xuống. Tem thấp tiệm lỗ, tem cao khách phàn nàn.",
+  "vi": "Làm tròn xuống.",
+  "en": ""
+ },
+ {
+  "vi": "Tem thấp tiệm lỗ, tem cao khách phàn nàn.",
   "en": ""
  },
  {
@@ -1420,10 +1676,6 @@
   "en": ""
  },
  {
-  "vi": "Việc chăm tiệm",
-  "en": ""
- },
- {
   "vi": "👚 Giá treo theo size",
   "en": ""
  },
@@ -1460,11 +1712,15 @@
   "en": ""
  },
  {
-  "vi": "📝 Việc cần làm",
+  "vi": "Mở tin nhắn",
   "en": ""
  },
  {
-  "vi": "xong hết",
+  "vi": "Nghe chị Vy",
+  "en": ""
+ },
+ {
+  "vi": "📝 Việc cần làm",
   "en": ""
  },
  {
@@ -1541,262 +1797,6 @@
  },
  {
   "vi": "mặt thứ nhất",
-  "en": ""
- },
- {
-  "vi": "đã trở, mặt thứ hai",
-  "en": ""
- },
- {
-  "vi": "🔄 Trở mặt",
-  "en": ""
- },
- {
-  "vi": "🍖 Gắp ra khay",
-  "en": ""
- },
- {
-  "vi": "Đặt sườn lên vỉ",
-  "en": ""
- },
- {
-  "vi": "Hết sườn: nhập ở Kho",
-  "en": ""
- },
- {
-  "vi": "Khay giữ ấm đầy",
-  "en": ""
- },
- {
-  "vi": "Bỏ miếng sườn này?",
-  "en": ""
- },
- {
-  "vi": "🔥 Bếp than · vỉ sườn",
-  "en": ""
- },
- {
-  "vi": "Khay giữ ấm",
-  "en": ""
- },
- {
-  "vi": "Chưa có miếng nào.",
-  "en": ""
- },
- {
-  "vi": "hết cơm",
-  "en": ""
- },
- {
-  "vi": "dẻo thơm",
-  "en": ""
- },
- {
-  "vi": "Xe cơm",
-  "en": ""
- },
- {
-  "vi": "vừa miệng",
-  "en": ""
- },
- {
-  "vi": "chưa vừa",
-  "en": ""
- },
- {
-  "vi": "chưa nếm",
-  "en": ""
- },
- {
-  "vi": "khay trống",
-  "en": ""
- },
- {
-  "vi": "👂 Hỏi khách gọi gì",
-  "en": ""
- },
- {
-  "vi": "📿 Ăn chay",
-  "en": ""
- },
- {
-  "vi": "👀 Liếc dĩa kỹ",
-  "en": ""
- },
- {
-  "vi": "(lẫn hai nồi)",
-  "en": ""
- },
- {
-  "vi": "chưa xới cơm",
-  "en": ""
- },
- {
-  "vi": "🌿 mỡ hành",
-  "en": ""
- },
- {
-  "vi": "🗑️ Làm lại dĩa này",
-  "en": ""
- },
- {
-  "vi": "Bỏ dĩa đang làm, làm lại cái khác?",
-  "en": ""
- },
- {
-  "vi": "🍽️ Trên quầy",
-  "en": ""
- },
- {
-  "vi": "Xới cơm",
-  "en": ""
- },
- {
-  "vi": "Chan, rưới",
-  "en": ""
- },
- {
-  "vi": "Dĩa",
-  "en": ""
- },
- {
-  "vi": "🌿 Mỡ hành",
-  "en": ""
- },
- {
-  "vi": "🥣 Bịch canh",
-  "en": ""
- },
- {
-  "vi": "🥣 Chén canh",
-  "en": ""
- },
- {
-  "vi": "Không nước mắm",
-  "en": ""
- },
- {
-  "vi": ": đổ nước tới đâu?",
-  "en": ""
- },
- {
-  "vi": "🥄 Nếm nước mắm",
-  "en": ""
- },
- {
-  "vi": "chưa bày",
-  "en": ""
- },
- {
-  "vi": "Đổ nước mấy đốt ngón tay? Gạo tấm hút ít nước hơn gạo trắng.",
-  "en": ""
- },
- {
-  "vi": "Bày khay",
-  "en": ""
- },
- {
-  "vi": "💧 Mấy đốt? Tấm ít hơn",
-  "en": ""
- },
- {
-  "vi": "Đổ nước tới đâu (đốt ngón tay)? Gạo tấm hút ít nước hơn gạo trắng.",
-  "en": ""
- },
- {
-  "vi": "Hai nồi cơm",
-  "en": ""
- },
- {
-  "vi": "🥄 Nếm",
-  "en": ""
- },
- {
-  "vi": "Nếm chén nước mắm pha tối qua",
-  "en": ""
- },
- {
-  "vi": "✓ Than hồng",
-  "en": ""
- },
- {
-  "vi": "🔥 Nhóm",
-  "en": ""
- },
- {
-  "vi": "Đồ nấu không để qua đêm: bày vừa đủ bán.",
-  "en": ""
- },
- {
-  "vi": "Bày khay lên tủ kính",
-  "en": ""
- },
- {
-  "vi": "🍚 Hai nồi cơm",
-  "en": ""
- },
- {
-  "vi": "Gạo tấm hút ít nước hơn gạo trắng.",
-  "en": ""
- },
- {
-  "vi": "🫙 Chén nước mắm pha tối qua",
-  "en": ""
- },
- {
-  "vi": "🍱 Bày khay lên tủ kính",
-  "en": ""
- },
- {
-  "vi": "✓ Than hồng đều",
-  "en": ""
- },
- {
-  "vi": "Nếm chén nước mắm",
-  "en": ""
- },
- {
-  "vi": "Chỉnh nước mắm cho vừa",
-  "en": ""
- },
- {
-  "vi": "Chỉnh",
-  "en": ""
- },
- {
-  "vi": "khay · bày vừa đủ",
-  "en": ""
- },
- {
-  "vi": "trên khay hết miếng ngon",
-  "en": ""
- },
- {
-  "vi": "🍖 Đặt sườn lên vỉ",
-  "en": ""
- },
- {
-  "vi": "Hết sườn ướp",
-  "en": ""
- },
- {
-  "vi": "nhập ở Kho hoặc nói thật với khách",
-  "en": ""
- },
- {
-  "vi": "🧺 Nhập ở Kho",
-  "en": ""
- },
- {
-  "vi": "Chờ mặt dưới vàng rồi trở",
-  "en": ""
- },
- {
-  "vi": "Chờ mặt kia vàng rồi gắp",
-  "en": ""
- },
- {
-  "vi": "giây nữa",
   "en": ""
  }
 ]

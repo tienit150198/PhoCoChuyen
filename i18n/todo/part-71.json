@@ -1,5 +1,41 @@
 [
  {
+  "vi": "Xuất hóa đơn theo số hàng thực giao, không theo số đặt. Rồi ghi doanh thu và giá vốn.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm dòng lệch giữa sổ và sao kê. Xếp loại: cần ghi sổ, chênh thời điểm, ngân hàng sai. Tính số dư.",
+  "en": ""
+ },
+ {
+  "vi": "Xếp khoản nợ theo tuổi, cộng tổng khách nợ, chọn thư xác nhận và cách xử lý nợ quá 60 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Đếm tiền, tính số dư sổ. Thiếu thì treo 1381, thừa thì treo 3381. Đừng tự bù tiền cho khớp.",
+  "en": ""
+ },
+ {
+  "vi": "Tính chênh lệch từng món, ra giá trị, tìm nguyên nhân rồi ghi bút toán.",
+  "en": ""
+ },
+ {
+  "vi": "Tính khấu hao tháng. Tài sản mới mua hay đã khấu hao hết thì bằng 0. Ghi 641/642 đối ứng 214.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng cân đối thử",
+  "en": ""
+ },
+ {
+  "vi": "Tìm số chênh: chia hết cho 9 là đảo số, gấp đôi một số dư là ghi nhầm bên. Rồi lập kết quả.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày 5 của tháng: xếp thứ tự bước, trích trước 642/335, bù trừ thuế 3331/133, kết chuyển 911, lãi vào 421.",
+  "en": ""
+ },
+ {
   "vi": "📥 Tab [[Hộp thư]]: bấm [[Nhận khay chứng từ]] hoặc [[Nhận hồ sơ]]. Việc đầu hạn 10:30.",
   "en": ""
  },
@@ -1529,50 +1565,6 @@
  },
  {
   "vi": "🧭 Lộ trình: Thử việc → Thư ký chính thức → Thư ký riêng của giám đốc → Được đề cử trợ lý giám đốc.",
-  "en": ""
- },
- {
-  "vi": "✈️ Sếp sắp đi công tác: kế hoạch hay đổi phút chót.",
-  "en": ""
- },
- {
-  "vi": "🎩 Ngày đón khách lớn: thư từ, điện thoại dày hơn.",
-  "en": ""
- },
- {
-  "vi": "🔍 Chị Khuê soát việc cuối ngày: không lỗi nặng +10 xu, +3 tin tưởng; còn lỗi −10 xu, −3 tin tưởng.",
-  "en": ""
- },
- {
-  "vi": "🏛️ Ngày thứ 5 mỗi đợt là họp hội đồng quản trị: hạn sớm hơn 30 phút, tăng ca được 18 xu.",
-  "en": ""
- },
- {
-  "vi": "📲 Tin nhắn “sếp” xin mua thẻ cào, phòng họp bị chiếm, khách đến sớm một tiếng: chọn cách xử lý, có cách đúng nguyên tắc.",
-  "en": ""
- },
- {
-  "vi": "Nộp lời nhắn",
-  "en": ""
- },
- {
-  "vi": "Chốt các bước",
-  "en": ""
- },
- {
-  "vi": "IT văn phòng",
-  "en": ""
- },
- {
-  "vi": "Bạn trực bàn IT cùng Anh Long: phiếu hỗ trợ, máy hỏng, tủ mạng, quyền truy cập và những cuộc gọi đòi mã OTP.",
-  "en": ""
- },
- {
-  "vi": "Mỗi phiếu một thẻ: Khẩn — làm ngay, Trong ngày, Xếp lịch hay Không phải việc IT.",
-  "en": ""
- },
- {
-  "vi": "Chạm các bước sửa theo thứ tự. Sao lưu trước, sửa sau; bước có hại thì bỏ qua.",
   "en": ""
  }
 ]

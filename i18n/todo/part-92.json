@@ -1,5 +1,21 @@
 [
  {
+  "vi": "8. Nguồn người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn (30 ngày)",
+  "en": ""
+ },
+ {
+  "vi": "9. Hạ tầng",
+  "en": ""
+ },
+ {
+  "vi": "Cơ sở dữ liệu",
+  "en": ""
+ },
+ {
   "vi": "Dung lượng",
   "en": ""
  },
@@ -1272,6 +1288,46 @@
   "en": ""
  },
  {
+  "vi": "nói",
+  "en": ""
+ },
+ {
+  "vi": "Chọn mã trong bộ lọc, đọc nhãn: chỉ lô hợp lệ, không tạm giữ, mới được xuất. Màu hộp không cho biết lô có được xuất.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy đúng lượng, tự kiểm mã · số lượng · lô, rồi kiểm khay.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn giao; hoặc chuyển cô Thu khi phiếu ngoài phạm vi (liều dùng, triệu chứng, hộp thay thế).",
+  "en": ""
+ },
+ {
+  "vi": "Mở từng bản gốc, đọc mã tham chiếu (HD).",
+  "en": ""
+ },
+ {
+  "vi": "Bản sao cùng nguồn: loại trùng. Số lệch gốc: sửa theo bản gốc.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chứng từ và giao dịch cùng mã HD, tổng bằng nhau: ghép nhóm (nhiều-một hoặc một-nhiều).",
+  "en": ""
+ },
+ {
+  "vi": "Mọi thẻ đã ghép hoặc loại trùng: kiểm & bàn giao (thù lao 70 xu).",
+  "en": ""
+ },
+ {
+  "vi": "💊 Quầy thuốc",
+  "en": ""
+ },
+ {
+  "vi": "📒 Bàn đối chiếu",
+  "en": ""
+ },
+ {
   "vi": "Yêu cầu ngoài phiếu: chuyển cô Thu",
   "en": ""
  },
@@ -1313,6 +1369,62 @@
  },
  {
   "vi": "✓ Kiểm khay",
+  "en": ""
+ },
+ {
+  "vi": "☑️ Tự kiểm khay",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu lấy hàng: ngoài phạm vi",
+  "en": ""
+ },
+ {
+  "vi": "📋 Ngoài phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Yêu cầu nằm ngoài phiếu. Không lấy hộp thay thế: chuyển cô Thu.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Cần rút",
+  "en": ""
+ },
+ {
+  "vi": "Đọc",
+  "en": ""
+ },
+ {
+  "vi": "📦 Nhập",
+  "en": ""
+ },
+ {
+  "vi": "Lấy 1 hộp",
+  "en": ""
+ },
+ {
+  "vi": "Xem mã hộp",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã kiểm",
+  "en": ""
+ },
+ {
+  "vi": "Tự kiểm khay",
+  "en": ""
+ },
+ {
+  "vi": "↪️ Cô Thu",
+  "en": ""
+ },
+ {
+  "vi": "☑️ Đã so đủ 3",
   "en": ""
  },
  {
@@ -1361,6 +1473,38 @@
  },
  {
   "vi": "Sửa theo gốc trước",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn các thẻ mã",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn",
+  "en": ""
+ },
+ {
+  "vi": "Mở bản gốc",
+  "en": ""
+ },
+ {
+  "vi": "· hoàn",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Thiếu nguồn",
+  "en": ""
+ },
+ {
+  "vi": "Người gửi hẹn gửi lúc",
+  "en": ""
+ },
+ {
+  "vi": "Thù lao 70 xu. Bàn giao khi mọi chứng từ đã ghép hoặc loại trùng và mọi giao dịch đã có nguồn.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn kiểm",
   "en": ""
  },
  {
@@ -1653,150 +1797,6 @@
  },
  {
   "vi": "Bảng giờ bay",
-  "en": ""
- },
- {
-  "vi": "GIỜ",
-  "en": ""
- },
- {
-  "vi": "CHUYẾN",
-  "en": ""
- },
- {
-  "vi": "ĐẾN",
-  "en": ""
- },
- {
-  "vi": "CỬA",
-  "en": ""
- },
- {
-  "vi": "TÌNH TRẠNG",
-  "en": ""
- },
- {
-  "vi": "Vào phòng tổ bay",
-  "en": ""
- },
- {
-  "vi": "Sân bay Thành phố",
-  "en": ""
- },
- {
-  "vi": "Tan ca hôm nay",
-  "en": ""
- },
- {
-  "vi": "Tan ca hiện tại, rồi chọn Mở ca quản lý để giao việc cho tổ bay.",
-  "en": ""
- },
- {
-  "vi": "Chọn Thăng tiến → Mở ca quản lý để giao việc cho tổ bay.",
-  "en": ""
- },
- {
-  "vi": "Từ bậc 3 · Cơ trưởng huấn luyện, mở Ca quản lý. Hoàn thành ngày bay tốt và trả lời buổi xét thăng chức.",
-  "en": ""
- },
- {
-  "vi": "🧑‍💼 Thăng tiến · Ca quản lý",
-  "en": ""
- },
- {
-  "vi": "🎖️ Xem lộ trình thăng tiến",
-  "en": ""
- },
- {
-  "vi": "Lịch bay hôm nay",
-  "en": ""
- },
- {
-  "vi": "Mục tiêu hôm nay",
-  "en": ""
- },
- {
-  "vi": "🎁 Có quà",
-  "en": ""
- },
- {
-  "vi": "Tổ bay hôm nay",
-  "en": ""
- },
- {
-  "vi": "SỔ BAY",
-  "en": ""
- },
- {
-  "vi": "Gần đây",
-  "en": ""
- },
- {
-  "vi": "Chưa có chuyến nào trong sổ.",
-  "en": ""
- },
- {
-  "vi": "😮‍💨 Bạn đang mệt: còn mệt thì thưởng chuyến chỉ được một nửa. Xin nghỉ bù ở phòng tổ bay.",
-  "en": ""
- },
- {
-  "vi": "⚖️ Đang bị cách chức: chưa có thưởng chuyến.",
-  "en": ""
- },
- {
-  "vi": "🌅 Ngày mai",
-  "en": ""
- },
- {
-  "vi": "🪪 Vào phòng tổ bay",
-  "en": ""
- },
- {
-  "vi": "chưa có nhận xét",
-  "en": ""
- },
- {
-  "vi": "🛬 Tan ca lúc",
-  "en": ""
- },
- {
-  "vi": ". Về tới hẻm kịp cơm tối.",
-  "en": ""
- },
- {
-  "vi": "Các chuyến hôm nay",
-  "en": ""
- },
- {
-  "vi": "Phòng tổ bay",
-  "en": ""
- },
- {
-  "vi": "Tổ bay & khách quen",
-  "en": ""
- },
- {
-  "vi": "Đã báo",
-  "en": ""
- },
- {
-  "vi": "Chiều theo",
-  "en": ""
- },
- {
-  "vi": "Bỏ ngỏ",
-  "en": ""
- },
- {
-  "vi": "Đã chốt",
-  "en": ""
- },
- {
-  "vi": "Đúng luật",
-  "en": ""
- },
- {
-  "vi": "Bị phạt",
   "en": ""
  }
 ]

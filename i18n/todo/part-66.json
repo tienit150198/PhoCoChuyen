@@ -1,5 +1,73 @@
 [
  {
+  "vi": "Ủ trà, nấu trân châu, lau máy dán nắp, đặt siro và ly trước khi cạn.",
+  "en": ""
+ },
+ {
+  "vi": "👋 Bấm [[Mời khách tiếp theo]] hoặc chạm khách trong hàng chờ.",
+  "en": ""
+ },
+ {
+  "vi": "👂 Bấm [[Nghe gọi món]] để khách đọc món; phiếu hiện ra bên cạnh ly.",
+  "en": ""
+ },
+ {
+  "vi": "🥤 [[Lấy ly]] đúng cỡ M hoặc L ở Chồng ly.",
+  "en": ""
+ },
+ {
+  "vi": "🫖 Chạm ô trà nền trước, rồi siro và topping đúng phiếu (tối đa 3 topping).",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Chọn mức đá ([[Ít đá]], [[Đá vừa]]…) và mức đường 0–100%.",
+  "en": ""
+ },
+ {
+  "vi": "🔎 [[So phiếu]] giúp xem phần nào chưa đúng, không tính lỗi kiểm tra. Cần làm lại thì [[Đổ ly]]; đổ ly vẫn tính hao phí.",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Bấm [[Ép nắp]], rồi [[Nhả tay!]] khi kim vào vùng xanh. Vội thì [[Dán thường]].",
+  "en": ""
+ },
+ {
+  "vi": "🛎️ Bấm [[Giao món]] (đơn app: [[Giao tài xế]]) để trao ly và thu tiền.",
+  "en": ""
+ },
+ {
+  "vi": "📱 [[Kho & đặt hàng]] và [[Đánh giá]] nằm ở thanh dưới trong lúc pha; trạm chưa tới lượt gọn một dòng, bấm để mở.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Đúng trà nền, cỡ ly, siro và từng topping — sai một thứ là khách trả ly.",
+  "en": ""
+ },
+ {
+  "vi": "🍯 Đường đúng số % và 🧊 đá đúng mức khách dặn.",
+  "en": ""
+ },
+ {
+  "vi": "✨ Nhả tay trong vùng xanh để nắp căng đẹp: khách thưởng thêm 1 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🟤 Dùng trân châu còn dẻo, trà còn thơm; mẻ để lâu bị chê cứng, chát.",
+  "en": ""
+ },
+ {
+  "vi": "⏱️ Làm nhanh: khách không phải chờ lâu, đơn app kịp giờ tài xế.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Khách quen: bấm [[Như mọi khi hả?]] (+8 kiên nhẫn); ly chuẩn được thêm 2 xu.",
+  "en": ""
+ },
+ {
+  "vi": "💝 Quầy không phải thối tiền. Ly chuẩn, khách vui thì đôi khi được tip vài xu hoặc quà nhỏ; ly 1–2★ thì không.",
+  "en": ""
+ },
+ {
   "vi": "Sai trà nền, cỡ ly, siro hoặc topping",
   "en": ""
  },
@@ -1629,82 +1697,6 @@
  },
  {
   "vi": "👶 Món hợp tuổi bé: hộp ghi 3+ không bán cho bé nhỏ.",
-  "en": ""
- },
- {
-  "vi": "👛 Tổng tiền không vượt ngân sách khách dặn.",
-  "en": ""
- },
- {
-  "vi": "🎀 Gói đúng màu giấy khách chọn, thiệp đúng dịp, không quên gói.",
-  "en": ""
- },
- {
-  "vi": "↩️ Đổi trả công bằng, xem đủ tem và món hàng trước khi quyết.",
-  "en": ""
- },
- {
-  "vi": "📦 Gói định kỳ: đúng size, đúng loại sữa, còn hạn, trả lời tư vấn thật lòng.",
-  "en": ""
- },
- {
-  "vi": "💝 Trao gói định kỳ đúng, tư vấn thật lòng cho nhà từ “Thân thiết”: khách gửi 3 xu bồi dưỡng.",
-  "en": ""
- },
- {
-  "vi": "🍀 Đơn 4–5★ khác đôi khi được tip 3–10 xu hoặc quà nhỏ. Khách càu nhàu, đòi bớt tiền thì gần như không.",
-  "en": ""
- },
- {
-  "vi": "Bán món chưa hợp tuổi bé (hộp ghi 3+)",
-  "en": ""
- },
- {
-  "vi": "Lỗi an toàn: khách trả hàng, hoàn tiền, 1★, báo cáo lên app, hôm sau phường tới lập biên bản.",
-  "en": ""
- },
- {
-  "vi": "Giao sai món, thiếu số lượng",
-  "en": ""
- },
- {
-  "vi": "Khách đòi bớt tiền, hoàn một nửa hoặc bỏ về; review còn 2–3★.",
-  "en": ""
- },
- {
-  "vi": "Quên gói, sai thiệp, sai màu giấy, vượt ngân sách",
-  "en": ""
- },
- {
-  "vi": "Khách phàn nàn tại quầy, sao bị trừ theo mức lỗi, có thể bị bớt tiền.",
-  "en": ""
- },
- {
-  "vi": "Đổi trả không công bằng hoặc quyết khi chưa xem tem và món",
-  "en": ""
- },
- {
-  "vi": "Bị tính lỗi. Từ chối món lỗi từ xưởng thì khách phàn nàn; hoàn tiền sai thì tiệm mất tiền.",
-  "en": ""
- },
- {
-  "vi": "Gói định kỳ sai size, sai sữa, hoặc hộp sữa quá hạn/bị thu hồi",
-  "en": ""
- },
- {
-  "vi": "Sai size/sữa: lòng tin −1, review 3★. Hộp quá hạn: hoàn tiền, lòng tin −2, review 1★.",
-  "en": ""
- },
- {
-  "vi": "Bán thêm thứ bé chưa cần khi khách hỏi tư vấn",
-  "en": ""
- },
- {
-  "vi": "Được hoa hồng ngay, nhưng lòng tin −1 và hôm sau khách viết review 2★ tiếc tiền.",
-  "en": ""
- },
- {
-  "vi": "Để lỡ hẹn lấy gói, không kịp giao hộp quà mừng",
   "en": ""
  }
 ]

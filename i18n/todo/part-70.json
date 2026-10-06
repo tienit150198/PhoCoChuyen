@@ -1,5 +1,85 @@
 [
  {
+  "vi": "🔔 Hàng xóm cho bánh, người lạ bấm chuông, trán bé hơi ấm: chọn cách xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc giấy dặn",
+  "en": ""
+ },
+ {
+  "vi": "Mở túi đồ",
+  "en": ""
+ },
+ {
+  "vi": "NHẬN BÉ",
+  "en": ""
+ },
+ {
+  "vi": "Rửa tay cho bé",
+  "en": ""
+ },
+ {
+  "vi": "Cho bé ngồi ghế ăn",
+  "en": ""
+ },
+ {
+  "vi": "DỌN CHO BÉ ĂN",
+  "en": ""
+ },
+ {
+  "vi": "Cùng bé dọn đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "CHƠI XONG",
+  "en": ""
+ },
+ {
+  "vi": "CHO BÉ RA CHƠI",
+  "en": ""
+ },
+ {
+  "vi": "Vỗ nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "BÉ NGỦ RỒI",
+  "en": ""
+ },
+ {
+  "vi": "BÉ ỔN RỒI",
+  "en": ""
+ },
+ {
+  "vi": "BÀN GIAO BÉ",
+  "en": ""
+ },
+ {
+  "vi": "Cán bộ thư viện – lưu trữ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn phụ cô Nguyệt giữ sách và hồ sơ của phường: mở kho buổi sáng, quầy mượn trả, biên mục, phòng đọc và cửa sổ lưu trữ. Ai nhờ gì cũng nghe, nhưng làm theo nội quy.",
+  "en": ""
+ },
+ {
+  "vi": "Mở cửa buổi sáng",
+  "en": ""
+ },
+ {
+  "vi": "[[Xem ẩm kế kho]] (trên 60% thì [[Bật máy hút ẩm]]), [[Soi bẫy côn trùng]] rồi chọn cách xử lý, [[Mở phòng đọc]], [[Dựng bảng nội quy]], rồi [[MỞ CỬA THƯ VIỆN]].",
+  "en": ""
+ },
+ {
+  "vi": "Mượn sách",
+  "en": ""
+ },
+ {
+  "vi": "[[Tra máy]] xem ký hiệu, còn sách không; [[Kiểm thẻ]]. Sách tra cứu chỉ đọc tại chỗ, sách đang có người mượn thì đặt trước, thẻ hết hạn thì gia hạn.",
+  "en": ""
+ },
+ {
   "vi": "Nhận trả, tính phí",
   "en": ""
  },
@@ -1597,42 +1677,6 @@
  },
  {
   "vi": "So hóa đơn với đơn đặt hàng và phiếu nhập. Đánh dấu lỗi: MST, người mua, số lượng, thuế, tổng, chữ ký, trùng.",
-  "en": ""
- },
- {
-  "vi": "Xuất hóa đơn theo số hàng thực giao, không theo số đặt. Rồi ghi doanh thu và giá vốn.",
-  "en": ""
- },
- {
-  "vi": "Tìm dòng lệch giữa sổ và sao kê. Xếp loại: cần ghi sổ, chênh thời điểm, ngân hàng sai. Tính số dư.",
-  "en": ""
- },
- {
-  "vi": "Xếp khoản nợ theo tuổi, cộng tổng khách nợ, chọn thư xác nhận và cách xử lý nợ quá 60 ngày.",
-  "en": ""
- },
- {
-  "vi": "Đếm tiền, tính số dư sổ. Thiếu thì treo 1381, thừa thì treo 3381. Đừng tự bù tiền cho khớp.",
-  "en": ""
- },
- {
-  "vi": "Tính chênh lệch từng món, ra giá trị, tìm nguyên nhân rồi ghi bút toán.",
-  "en": ""
- },
- {
-  "vi": "Tính khấu hao tháng. Tài sản mới mua hay đã khấu hao hết thì bằng 0. Ghi 641/642 đối ứng 214.",
-  "en": ""
- },
- {
-  "vi": "Bảng cân đối thử",
-  "en": ""
- },
- {
-  "vi": "Tìm số chênh: chia hết cho 9 là đảo số, gấp đôi một số dư là ghi nhầm bên. Rồi lập kết quả.",
-  "en": ""
- },
- {
-  "vi": "Ngày 5 của tháng: xếp thứ tự bước, trích trước 642/335, bù trừ thuế 3331/133, kết chuyển 911, lãi vào 421.",
   "en": ""
  }
 ]

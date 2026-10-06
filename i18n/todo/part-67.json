@@ -1,5 +1,81 @@
 [
  {
+  "vi": "👛 Tổng tiền không vượt ngân sách khách dặn.",
+  "en": ""
+ },
+ {
+  "vi": "🎀 Gói đúng màu giấy khách chọn, thiệp đúng dịp, không quên gói.",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Đổi trả công bằng, xem đủ tem và món hàng trước khi quyết.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Gói định kỳ: đúng size, đúng loại sữa, còn hạn, trả lời tư vấn thật lòng.",
+  "en": ""
+ },
+ {
+  "vi": "💝 Trao gói định kỳ đúng, tư vấn thật lòng cho nhà từ “Thân thiết”: khách gửi 3 xu bồi dưỡng.",
+  "en": ""
+ },
+ {
+  "vi": "🍀 Đơn 4–5★ khác đôi khi được tip 3–10 xu hoặc quà nhỏ. Khách càu nhàu, đòi bớt tiền thì gần như không.",
+  "en": ""
+ },
+ {
+  "vi": "Bán món chưa hợp tuổi bé (hộp ghi 3+)",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: khách trả hàng, hoàn tiền, 1★, báo cáo lên app, hôm sau phường tới lập biên bản.",
+  "en": ""
+ },
+ {
+  "vi": "Giao sai món, thiếu số lượng",
+  "en": ""
+ },
+ {
+  "vi": "Khách đòi bớt tiền, hoàn một nửa hoặc bỏ về; review còn 2–3★.",
+  "en": ""
+ },
+ {
+  "vi": "Quên gói, sai thiệp, sai màu giấy, vượt ngân sách",
+  "en": ""
+ },
+ {
+  "vi": "Khách phàn nàn tại quầy, sao bị trừ theo mức lỗi, có thể bị bớt tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi trả không công bằng hoặc quyết khi chưa xem tem và món",
+  "en": ""
+ },
+ {
+  "vi": "Bị tính lỗi. Từ chối món lỗi từ xưởng thì khách phàn nàn; hoàn tiền sai thì tiệm mất tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Gói định kỳ sai size, sai sữa, hoặc hộp sữa quá hạn/bị thu hồi",
+  "en": ""
+ },
+ {
+  "vi": "Sai size/sữa: lòng tin −1, review 3★. Hộp quá hạn: hoàn tiền, lòng tin −2, review 1★.",
+  "en": ""
+ },
+ {
+  "vi": "Bán thêm thứ bé chưa cần khi khách hỏi tư vấn",
+  "en": ""
+ },
+ {
+  "vi": "Được hoa hồng ngay, nhưng lòng tin −1 và hôm sau khách viết review 2★ tiếc tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Để lỡ hẹn lấy gói, không kịp giao hộp quà mừng",
+  "en": ""
+ },
+ {
   "vi": "Gia đình mua chỗ khác, lòng tin −1. Hộp quà trễ tiệc: hoàn tiền bạn bè, lòng tin −2, review 1★.",
   "en": ""
  },
@@ -1525,110 +1601,6 @@
  },
  {
   "vi": "🌱 Trại giống Đồng Xanh: hạt cà chua, dưa leo, rau thơm rẻ nhất nhưng 1–2 ngày mới có.",
-  "en": ""
- },
- {
-  "vi": "🔓 Dưa leo mở ở cấp 2, rau thơm mở ở cấp 3.",
-  "en": ""
- },
- {
-  "vi": "🛍️ Luôn còn thùng carton, túi giấy và khay trứng. Thiếu bao bì là không giao được.",
-  "en": ""
- },
- {
-  "vi": "🟫 Luống trống: [[Bón lót compost]] trước khi gieo. Mỗi lần gieo tốn 1 gói hạt.",
-  "en": ""
- },
- {
-  "vi": "🧴 Phân bón lá thúc không cần nhập kho: mua ngay ở luống, liều sau đắt hơn liều trước. Trời mưa hay đất khô héo thì chưa phun được.",
-  "en": ""
- },
- {
-  "vi": "🗓️ Xem dự báo: mai nắng thì tưới trước khi khép ca, mai mưa thì khơi rãnh sẵn.",
-  "en": ""
- },
- {
-  "vi": "🚱 Trạm bơm cúp nước: van tưới cả vườn không chạy. Tưới từng luống hoặc gọi xe bồn.",
-  "en": ""
- },
- {
-  "vi": "⛈️ Giông, sâu khoang, nắng nóng, dê sổng, chồn vào chuồng: chọn cách xử lý xong mới làm tiếp.",
-  "en": ""
- },
- {
-  "vi": "📋 Đoàn kiểm tra hữu cơ: lô chưa hết cách ly bị phạt, tiêu hủy. Xin hoãn thì họ quay lại.",
-  "en": ""
- },
- {
-  "vi": "🤝 HTX nhờ góp hàng, thương lái hỏi mua sạch kho. Góp thiếu bị phạt 2 xu mỗi đơn vị.",
-  "en": ""
- },
- {
-  "vi": "🦹 Trộm gà, trộm giỏ rau, thương lái cân thiếu: báo công an, cân lại bằng cân của HTX.",
-  "en": ""
- },
- {
-  "vi": "Khơi rãnh",
-  "en": ""
- },
- {
-  "vi": "Phân bón lá thúc",
-  "en": ""
- },
- {
-  "vi": "Mở van tưới cả vườn",
-  "en": ""
- },
- {
-  "vi": "Neem sinh học",
-  "en": ""
- },
- {
-  "vi": "Thuốc hóa học",
-  "en": ""
- },
- {
-  "vi": "Nhổ bỏ, ủ phân",
-  "en": ""
- },
- {
-  "vi": "Nhận đơn hàng",
-  "en": ""
- },
- {
-  "vi": "THU HOẠCH",
-  "en": ""
- },
- {
-  "vi": "Nhặt trứng",
-  "en": ""
- },
- {
-  "vi": "Nhổ cỏ",
-  "en": ""
- },
- {
-  "vi": "Thăm sâu",
-  "en": ""
- },
- {
-  "vi": "Dọn chuồng",
-  "en": ""
- },
- {
-  "vi": "Bón lót compost",
-  "en": ""
- },
- {
-  "vi": "Bạn nhận khách, giữ lịch phòng, dọn phòng, làm bữa sáng và tính hóa đơn thật sòng phẳng.",
-  "en": ""
- },
- {
-  "vi": "Khớp mã đặt phòng, xem giấy tờ, đếm khách, giao phòng sạch rồi bấm [[Trao chìa khóa & thu tiền]].",
-  "en": ""
- },
- {
-  "vi": "Hỏi dị ứng, chiên trứng đúng độ chín, thêm bánh mì, sữa, cà phê rồi bấm [[Mang ra cho khách]].",
   "en": ""
  }
 ]

@@ -1,5 +1,33 @@
 [
  {
+  "vi": "nhận hồ sơ chưa đủ",
+  "en": ""
+ },
+ {
+  "vi": "Nhận hồ sơ mà không xem hết giấy tờ.",
+  "en": ""
+ },
+ {
+  "vi": "chưa xem đủ giấy tờ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn giấy cần bổ sung.",
+  "en": ""
+ },
+ {
+  "vi": "Giấy đó có sao đâu em. Xem lại từng tờ rồi hãy bắt người ta đi bổ sung.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ đủ mà bị bắt về bổ sung, mất thêm buổi làm.",
+  "en": ""
+ },
+ {
+  "vi": "bắt bổ sung khi không cần",
+  "en": ""
+ },
+ {
   "vi": "Về bổ sung một giấy chẳng thiếu, lên lại mới biết thiếu giấy khác.",
   "en": ""
  },
@@ -1769,34 +1797,6 @@
  },
  {
   "vi": "Cô Thoa kể: cô chỉ cần một lối rộng chừng một mét để 7 giờ dắt xe đi đón cháu. Đậu xe giờ nào cô không quan tâm.",
-  "en": ""
- },
- {
-  "vi": "“Không chừa lối thì tôi đón cháu bằng gì?”",
-  "en": ""
- },
- {
-  "vi": "Trước cửa cả hai nhà",
-  "en": ""
- },
- {
-  "vi": "Chỉ trước quán, chừa lối một mét",
-  "en": ""
- },
- {
-  "vi": "Gửi hết ra bãi đầu hẻm",
-  "en": ""
- },
- {
-  "vi": "Giờ cho đậu",
-  "en": ""
- },
- {
-  "vi": "Cả ngày",
-  "en": ""
- },
- {
-  "vi": "6:00–10:00 sáng",
   "en": ""
  }
 ]

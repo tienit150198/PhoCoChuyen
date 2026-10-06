@@ -1,5 +1,49 @@
 [
  {
+  "vi": "Đau bụng",
+  "en": ""
+ },
+ {
+  "vi": "Hôm qua ăn quán lạ, giờ bụng quặn từng cơn.",
+  "en": ""
+ },
+ {
+  "vi": "Đau lưng",
+  "en": ""
+ },
+ {
+  "vi": "Bê đồ nặng, sáng nay cúi không nổi.",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn chưa khỏi",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc không đỡ, người vẫn mệt rã rời.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hiểm tạm ngưng (chưa đủ tiền đóng phí)",
+  "en": ""
+ },
+ {
+  "vi": "Phí bảo hiểm tháng",
+  "en": ""
+ },
+ {
+  "vi": "Bị móc túi",
+  "en": ""
+ },
+ {
+  "vi": "Trộm vào nhà lấy tiền mặt",
+  "en": ""
+ },
+ {
   "vi": "Sửa ở tiệm",
   "en": ""
  },
@@ -1753,50 +1797,6 @@
  },
  {
   "vi": "dượng",
-  "en": ""
- },
- {
-  "vi": "cô|chú|bà|ông|anh|chị",
-  "en": ""
- },
- {
-  "vi": "(?<!\\w)(mấy (bà|ông|anh|chị|cô|chú)|bà con|ông bà|anh chị em|chị em|anh em)(?!\\w)",
-  "en": ""
- },
- {
-  "vi": "(?<!\\w)(?<!đánh )(?<!đặt )(?<!ném )(?<!thả )(bom (hàng|đơn)(?! loạt)|bom tấn|chém (gió|giá)|giết thời gian|chết đi được|chết cười|mệt chết)(?!\\w)",
-  "en": ""
- },
- {
-  "vi": "(tôi|mình|em|chị|anh) có thể (giúp|hỗ trợ) gì|rất (vui|hân hạnh|sẵn lòng) (được )?(hỗ trợ|phục vụ|giúp đỡ)|mình đang trao đổi về|bạn có thể hỏi|trợ lý (ảo|ai)|là một trợ lý|như một trợ lý|chúc bạn một ngày tốt lành|với tư cách (là )?(một )?(trợ lý|mô hình)",
-  "en": ""
- },
- {
-  "vi": "(?<!lông )(?<!chân )(?<!mặt )(?<!\\w)mày(?! mò)(?!\\w)|(?<!thanh )(?<!\\w)tao(?! nhã| đàn| ngộ| khang)(?!\\w)",
-  "en": ""
- },
- {
-  "vi": "(?<!\\w)(phèn|keo lỳ|cộng tươi|sẽ gầy|hút độc rắn|namkiki|parky|trôn việt nam|mlem (anh|chị|em|bạn|cô|chú)|chạy grab|app grab|grab ?(bike|food|car))(?!\\w)",
-  "en": ""
- },
- {
-  "vi": "chào hỏi",
-  "en": ""
- },
- {
-  "vi": "chuyện phiếm",
-  "en": ""
- },
- {
-  "vi": "đang có việc cần làm",
-  "en": ""
- },
- {
-  "vi": "mặc cả, chuyện giá",
-  "en": ""
- },
- {
-  "vi": "có chuyện làm sai",
   "en": ""
  }
 ]

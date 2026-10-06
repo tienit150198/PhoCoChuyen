@@ -1,5 +1,37 @@
 [
  {
+  "vi": "Đổ xăng đi làm nha",
+  "en": ""
+ },
+ {
+  "vi": "Thêm chút vốn làm ăn",
+  "en": ""
+ },
+ {
+  "vi": "Thương mình nhiều",
+  "en": ""
+ },
+ {
+  "vi": "Tháng này hụt tiền nhà",
+  "en": ""
+ },
+ {
+  "vi": "Cần vốn nhập hàng",
+  "en": ""
+ },
+ {
+  "vi": "Cho xin tiền ăn trưa",
+  "en": ""
+ },
+ {
+  "vi": "Việc gấp, về kể sau",
+  "en": ""
+ },
+ {
+  "vi": "Mình ơi, khoản hôm trước mình xoay được chưa?",
+  "en": ""
+ },
+ {
   "vi": "Không gấp đâu, khi nào tiện thì trả mình nha.",
   "en": ""
  },
@@ -1588,6 +1620,42 @@
   "en": ""
  },
  {
+  "vi": "➕ Lấy thêm",
+  "en": ""
+ },
+ {
+  "vi": "➖ Bỏ bớt",
+  "en": ""
+ },
+ {
+  "vi": "➖ Bỏ hộp sai mã",
+  "en": ""
+ },
+ {
+  "vi": "➖ Bỏ hộp",
+  "en": ""
+ },
+ {
+  "vi": "👁️ Đọc nhãn",
+  "en": ""
+ },
+ {
+  "vi": "👁️ Mở gốc",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Loại trùng",
+  "en": ""
+ },
+ {
+  "vi": "✏️ Sửa",
+  "en": ""
+ },
+ {
+  "vi": "theo gốc",
+  "en": ""
+ },
+ {
   "vi": "Đồng nghiệp nói nhỏ với nhau: “Nghe đâu vào bằng cửa sau đó…” Làm cho tốt rồi người ta sẽ quên thôi.",
   "en": ""
  },
@@ -1729,74 +1797,6 @@
  },
  {
   "vi": "Hôm nay bạn làm quản lý: giao việc cho đội nhé.",
-  "en": ""
- },
- {
-  "vi": "Danh sách hàng không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Mỗi mã chỉ một dòng trong đơn gộp.",
-  "en": ""
- },
- {
-  "vi": ". Nhận đủ rồi bán bớt hoặc nâng kệ.",
-  "en": ""
- },
- {
-  "vi": "trong một chuyến",
-  "en": ""
- },
- {
-  "vi": "Lắp bậc trước rồi nâng tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "đã lắp, áp dụng cho lượt làm tiếp theo.",
-  "en": ""
- },
- {
-  "vi": "Chỉ nhận ảnh PNG/WebP/JPEG chụp từ cảnh.",
-  "en": ""
- },
- {
-  "vi": "Thiết bị không thuộc nghề này.",
-  "en": ""
- },
- {
-  "vi": "Thiết bị thiếu bậc trước.",
-  "en": ""
- },
- {
-  "vi": "Rẻ nhất (×0,85). Đặt trước 13:00, hàng tới chiều nay; đặt sau, hàng tới sáng mai trước giờ mở cửa.",
-  "en": ""
- },
- {
-  "vi": "Giá niêm yết. Bốn chuyến mỗi ngày: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng.",
-  "en": ""
- },
- {
-  "vi": "Đắt nhất (×1,35) nhưng tới trong 15–30 phút.",
-  "en": ""
- },
- {
-  "vi": "Xe Thiện Tâm kẹt ở cầu Mây, bên em báo trễ chừng nửa tiếng tới một tiếng ạ.",
-  "en": ""
- },
- {
-  "vi": "Xe phân phối chạy bốn chuyến mỗi ngày: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng. Giá niêm yết.",
-  "en": ""
- },
- {
-  "vi": "Xe của kho tổng về trễ, hàng tới muộn hơn hẹn.",
-  "en": ""
- },
- {
-  "vi": "Rẻ hơn (×0,85). Đặt trước 13:00, xe kho giao chiều nay; đặt sau, xe đêm giao trước giờ mở cửa sáng mai.",
-  "en": ""
- },
- {
-  "vi": "kiện thiếu món",
   "en": ""
  }
 ]

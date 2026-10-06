@@ -1,5 +1,85 @@
 [
  {
+  "vi": "Đồ nguy hại",
+  "en": ""
+ },
+ {
+  "vi": "Pin, bóng đèn tuýp, vỏ bình xịt, kim tiêm: mở túi, bấm [[Tách ra]] bỏ hộp đỏ. Kim tiêm, bóng đèn phải đeo găng.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm [[Bọc]] gói mảnh kính vào bao dày rồi mới cho vào ngăn còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc phân loại",
+  "en": ""
+ },
+ {
+  "vi": "Nhà nào để túi sai màu: [[Nhắc nhà này phân loại]], nói nhẹ nhàng. Nhắc nhầm nhà làm đúng thì bị phàn nàn.",
+  "en": ""
+ },
+ {
+  "vi": "Ngăn đầy thì [[Ra điểm tập kết đổ xe]]: cô Tám mua túi tái chế sạch, túi lẫn đồ ăn thì không.",
+  "en": ""
+ },
+ {
+  "vi": "Cư dân phản ánh",
+  "en": ""
+ },
+ {
+  "vi": "Xem từng chuyện cho rõ rồi mới trả lời. Cách tốt nhất thường cần xem đủ hai điều.",
+  "en": ""
+ },
+ {
+  "vi": "Túi chưa phân loại",
+  "en": ""
+ },
+ {
+  "vi": "Mở túi xem rồi bấm [[Chưa phân loại: dán phiếu, không thu]]. Dán nhầm nhà đã phân loại đúng là bị phàn nàn.",
+  "en": ""
+ },
+ {
+  "vi": "Thu phí vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Trong ca, mở [[Thu phí vệ sinh]]: gõ số tiền rồi [[Thu, nói nhẹ]] hoặc [[Nhắc quy định]]. Nhà khó khăn thì [[Miễn tháng này]].",
+  "en": ""
+ },
+ {
+  "vi": "Dao lam, kim tiêm giấu trong túi",
+  "en": ""
+ },
+ {
+  "vi": "Túi trông bình thường vẫn có thể giấu đồ sắc: mở ra xem mới thấy. Bị kim tiêm đâm thì phải ra trạm y tế.",
+  "en": ""
+ },
+ {
+  "vi": "Rác đổ trộm, nhà không chịu phân loại",
+  "en": ""
+ },
+ {
+  "vi": "Đống rác: đi hai chuyến, gọi xe ba gác, báo phường, hay nhồi (dễ bung nắp xe). Chủ nhà chặn xe: giải thích, dán phiếu, lấy luôn, hay gọi tổ trưởng.",
+  "en": ""
+ },
+ {
+  "vi": "👂 Nghe chị Hạnh dặn: tên ngõ, số nhà, giờ thu gom.",
+  "en": ""
+ },
+ {
+  "vi": "🛒 [[Đẩy xe vào ngõ]]. Trễ giờ thì rác bị mèo bới: [[Quét dọn]] trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "👀 Túi trông lạ (kêu lọc cọc, rỉ nước, có cạnh sắc…) thì mở ra xem.",
+  "en": ""
+ },
+ {
+  "vi": "🟢 Túi một loại vào đúng ngăn đó. Túi lẫn đồ ăn với đồ tái chế, hay lẫn đủ thứ, vào ngăn còn lại.",
+  "en": ""
+ },
+ {
   "vi": "🛒 Hết túi ở nhà này thì tới nhà sau; nhà cuối xong thì [[XONG NGÕ]].",
   "en": ""
  },
@@ -1717,86 +1797,6 @@
  },
  {
   "vi": "🎓 Hai ngày đầu cô Tâm gọi điện nhắc trước khi bạn lỡ tay.",
-  "en": ""
- },
- {
-  "vi": "🔔 Hàng xóm cho bánh, người lạ bấm chuông, trán bé hơi ấm: chọn cách xử lý.",
-  "en": ""
- },
- {
-  "vi": "Đọc giấy dặn",
-  "en": ""
- },
- {
-  "vi": "Mở túi đồ",
-  "en": ""
- },
- {
-  "vi": "NHẬN BÉ",
-  "en": ""
- },
- {
-  "vi": "Rửa tay cho bé",
-  "en": ""
- },
- {
-  "vi": "Cho bé ngồi ghế ăn",
-  "en": ""
- },
- {
-  "vi": "DỌN CHO BÉ ĂN",
-  "en": ""
- },
- {
-  "vi": "Cùng bé dọn đồ chơi",
-  "en": ""
- },
- {
-  "vi": "CHƠI XONG",
-  "en": ""
- },
- {
-  "vi": "CHO BÉ RA CHƠI",
-  "en": ""
- },
- {
-  "vi": "Vỗ nhẹ",
-  "en": ""
- },
- {
-  "vi": "BÉ NGỦ RỒI",
-  "en": ""
- },
- {
-  "vi": "BÉ ỔN RỒI",
-  "en": ""
- },
- {
-  "vi": "BÀN GIAO BÉ",
-  "en": ""
- },
- {
-  "vi": "Cán bộ thư viện – lưu trữ",
-  "en": ""
- },
- {
-  "vi": "Bạn phụ cô Nguyệt giữ sách và hồ sơ của phường: mở kho buổi sáng, quầy mượn trả, biên mục, phòng đọc và cửa sổ lưu trữ. Ai nhờ gì cũng nghe, nhưng làm theo nội quy.",
-  "en": ""
- },
- {
-  "vi": "Mở cửa buổi sáng",
-  "en": ""
- },
- {
-  "vi": "[[Xem ẩm kế kho]] (trên 60% thì [[Bật máy hút ẩm]]), [[Soi bẫy côn trùng]] rồi chọn cách xử lý, [[Mở phòng đọc]], [[Dựng bảng nội quy]], rồi [[MỞ CỬA THƯ VIỆN]].",
-  "en": ""
- },
- {
-  "vi": "Mượn sách",
-  "en": ""
- },
- {
-  "vi": "[[Tra máy]] xem ký hiệu, còn sách không; [[Kiểm thẻ]]. Sách tra cứu chỉ đọc tại chỗ, sách đang có người mượn thì đặt trước, thẻ hết hạn thì gia hạn.",
   "en": ""
  }
 ]

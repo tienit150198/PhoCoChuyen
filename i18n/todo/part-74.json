@@ -1,5 +1,57 @@
 [
  {
+  "vi": "Mở cửa hàng điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "Chụp ảnh ở hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "🏮 Lúc hội chợ mở, vào [[Cổng hội chợ]] rồi tới [[Buồng chụp ảnh]].",
+  "en": ""
+ },
+ {
+  "vi": "📸 Chụp một mình, với bạn bè hoặc người lạ: 5 xu một lượt 4 kiểu, ai chụp nấy trả từ ví.",
+  "en": ""
+ },
+ {
+  "vi": "💾 Xong thì lưu dải ảnh về máy để khoe bạn bè.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Tự tay lái xe, lái máy bay, đi nông trại",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Giao hàng: chọn [[Tự lái]] để tự chạy xe tới nhà khách. Muốn nhanh thì chọn bấm nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "✈️ Phi công: chọn [[Tự bay]] để tự cất cánh, tránh mây giông, hạ cánh. Muốn nhanh thì [[Bay nhanh]].",
+  "en": ""
+ },
+ {
+  "vi": "🚜 Nông trại: [[Tự đi]] để đi quanh vườn, đổi [[Góc nhìn]] thứ nhất hay thứ ba. [[Bấm nhanh]] là kiểu cũ.",
+  "en": ""
+ },
+ {
+  "vi": "❓ Cách làm từng nghề có trong Hướng dẫn nghề (nút ? ở màn làm việc).",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm & phố",
+  "en": ""
+ },
+ {
+  "vi": "Thân thiết với hàng xóm",
+  "en": ""
+ },
+ {
   "vi": "📊 Mỗi hàng xóm và khách quen có điểm thân quen 0–100: Người lạ, Quen mặt (từ 20), Người quen (40), Thân thiết (60), Như người nhà (80).",
   "en": ""
  },
@@ -1153,50 +1205,6 @@
  },
  {
   "vi": "💬 Tên trong Chat và Bạn bè là tên hiển thị đặt lúc tạo tài khoản; trong game chưa đổi được.",
-  "en": ""
- },
- {
-  "vi": "Mở Nhân vật của bạn",
-  "en": ""
- },
- {
-  "vi": "Mua nhà ở đâu?",
-  "en": ""
- },
- {
-  "vi": "🏠 Mở [[Nhà của bạn]]: thẻ 🏠 trong [[Hành trình]], hoặc menu [[Ngân hàng & nhà]].",
-  "en": ""
- },
- {
-  "vi": "🔑 Chọn căn muốn mua: trả trước ít nhất 30% giá và 2% phí, phần còn lại vay Ngân hàng Phố (cần mở tài khoản).",
-  "en": ""
- },
- {
-  "vi": "🐷 Chưa đủ tiền thì gửi tiết kiệm trong [[Ngân hàng]] để dành dần.",
-  "en": ""
- },
- {
-  "vi": "Tìm tên, xem mã người chơi ở đâu?",
-  "en": ""
- },
- {
-  "vi": "💬 Chat [[Cả phố]] không có ô tìm tên.",
-  "en": ""
- },
- {
-  "vi": "🔎 Mở [[Bạn bè]] (menu [[Quan hệ]]), ô [[Tìm bạn]]: gõ đúng tên đăng nhập hoặc mã người chơi (PCC-…) của bạn ấy.",
-  "en": ""
- },
- {
-  "vi": "🪪 Mã của bạn ở cuối trang Bạn bè: bấm [[Chép mã]] để gửi cho bạn bè.",
-  "en": ""
- },
- {
-  "vi": "Chọn Nhịp pha & nướng 1×, 2× hoặc 4× ở đầu màn làm việc. 2× chờ một nửa, 4× chờ một phần tư khi chiết, đánh sữa và nướng.",
-  "en": ""
- },
- {
-  "vi": "Vẫn tự dừng ở vùng xanh; thanh cũng chạy nhanh tương ứng. Tắt máy pha/vòi hơi trước khi đổi nhịp; mẻ đang trong lò giữ nhịp lúc vào lò.",
   "en": ""
  }
 ]

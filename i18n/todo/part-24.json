@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Lúc buộc lại túi rác rách, bạn thấy một chiếc nhẫn vàng nhỏ lẫn trong vỏ trái cây.",
+  "en": ""
+ },
+ {
+  "vi": "Cất kỹ, báo chị Hạnh, hỏi nhà vừa đổ rác",
+  "en": ""
+ },
+ {
   "vi": "Bà cụ nhà số 5 khóc òa: nhẫn cưới của bà rơi lúc gọt trái cây. Cả ngõ khen tổ thu gom.",
   "en": ""
  },
@@ -1212,11 +1220,15 @@
   "en": ""
  },
  {
-  "vi": "Túi này đã dán phiếu không thu.",
+  "vi": "Quét gom rác vương vãi trước đã.",
   "en": ""
  },
  {
-  "vi": "Quét gom rác vương vãi trước đã.",
+  "vi": "🧹 Quét dọn",
+  "en": ""
+ },
+ {
+  "vi": "Túi này đã dán phiếu không thu.",
   "en": ""
  },
  {
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Chuyện của ngõ không khớp.",
-  "en": ""
- },
- {
-  "vi": "Chuyện của ngõ sai.",
-  "en": ""
- },
- {
-  "vi": "Túi từ chối thu sai.",
-  "en": ""
- },
- {
-  "vi": "Xe đẩy sai.",
   "en": ""
  }
 ]

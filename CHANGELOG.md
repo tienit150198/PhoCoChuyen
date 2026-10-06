@@ -1,3 +1,7 @@
+# v1.9.9 — 2026-10-07
+
+Gồm "Giao diện gọn: đợt 4" (quầy ăn uống + phố còn lại) và "đợt 5" (13 nghề cuối + màn đời sống: nhà, bản đồ, ngân hàng, hội chợ).
+
 # Chưa phát hành
 
 ## Giao diện gọn: đợt 4

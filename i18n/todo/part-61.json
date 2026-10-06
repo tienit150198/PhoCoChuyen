@@ -1,5 +1,37 @@
 [
  {
+  "vi": "Khách gọi lần thứ ba về cùng một đơn. Câu đầu tiên của bạn?",
+  "en": ""
+ },
+ {
+  "vi": "Đọc lịch sử trước, tóm tắt điều đã biết để khách khỏi kể lại",
+  "en": ""
+ },
+ {
+  "vi": "Khách gọi lần thứ ba cần nghe là mình đã nắm chuyện.",
+  "en": ""
+ },
+ {
+  "vi": "Một người gọi hỏi tình trạng đơn “của chị tôi”. Bạn làm gì trước?",
+  "en": ""
+ },
+ {
+  "vi": "Xác minh mã yêu cầu của chủ đơn rồi mới nói chi tiết",
+  "en": ""
+ },
+ {
+  "vi": "Đọc hết thông tin đơn cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Cúp máy vì không phải chủ đơn",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ nói chi tiết đơn khi đã xác minh đúng người.",
+  "en": ""
+ },
+ {
   "vi": "Khách nói đơn báo “đã giao” nhưng chưa nhận được. Trước khi đề nghị phương án?",
   "en": ""
  },
@@ -1765,38 +1797,6 @@
  },
  {
   "vi": "Đi công tác: vẫn tính công",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng nháp ghi thử việc 90 ngày, hưởng 70% lương.",
-  "en": ""
- },
- {
-  "vi": "Để nguyên, người lao động đồng ý rồi",
-  "en": ""
- },
- {
-  "vi": "Sửa: tối đa 60 ngày, ít nhất 85% lương",
-  "en": ""
- },
- {
-  "vi": "Bỏ hẳn điều thử việc",
-  "en": ""
- },
- {
-  "vi": "Thử việc không quá 60 ngày, lương thử việc ít nhất 85%.",
-  "en": ""
- },
- {
-  "vi": "Bên B chưa ký mà sếp giục lưu hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Lưu bản chưa ký",
-  "en": ""
- },
- {
-  "vi": "Không ký thay người lao động.",
   "en": ""
  }
 ]

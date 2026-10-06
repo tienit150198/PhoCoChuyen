@@ -1,5 +1,33 @@
 [
  {
+  "vi": "chỗ nguy hiểm được báo ngay",
+  "en": ""
+ },
+ {
+  "vi": "chỗ nguy hiểm chưa được báo",
+  "en": ""
+ },
+ {
+  "vi": "Đúng loại phiếu",
+  "en": ""
+ },
+ {
+  "vi": "ghi đúng phiếu",
+  "en": ""
+ },
+ {
+  "vi": "phiếu chưa đủ",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc lại lệnh",
+  "en": ""
+ },
+ {
+  "vi": "rõ từng chữ",
+  "en": ""
+ },
+ {
   "vi": "nhắc sai phải đọc lại",
   "en": ""
  },
@@ -1769,34 +1797,6 @@
  },
  {
   "vi": "Tin lan nhanh, mẹ bé tới. Có người nhắc: đừng đăng mặt trẻ con lung tung.",
-  "en": ""
- },
- {
-  "vi": "Điện thoại rơi trên ray",
-  "en": ""
- },
- {
-  "vi": "Anh Tài hét: “Điện thoại anh rơi trên ray kìa! Em nâng chắn cho anh chạy vào nhặt, nhanh lắm!” Tàu vừa báo còn bốn phút.",
-  "en": ""
- },
- {
-  "vi": "Giữ chắn, hứa nhặt giúp ngay khi tàu qua, ga đồng ý",
-  "en": ""
- },
- {
-  "vi": "Tàu qua, bạn nhặt chiếc điện thoại còn nguyên, chỉ xước cái ốp. Anh Tài cảm ơn rối rít.",
-  "en": ""
- },
- {
-  "vi": "Tự chạy vào nhặt cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Còn bốn phút",
-  "en": ""
- },
- {
-  "vi": "Gác chắn chạy vào đường ray lúc tàu sắp tới!",
   "en": ""
  }
 ]

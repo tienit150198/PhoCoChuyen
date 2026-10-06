@@ -1,5 +1,33 @@
 [
  {
+  "vi": "Cắm dây mạng cho máy trình chiếu",
+  "en": ""
+ },
+ {
+  "vi": "Máy chính dùng dây cho chắc.",
+  "en": ""
+ },
+ {
+  "vi": "Bật mạng khách riêng cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Khách không dùng mạng nội bộ.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi thử một cuộc họp online",
+  "en": ""
+ },
+ {
+  "vi": "Thử trước khi khách tới.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa khách mật khẩu wifi nội bộ",
+  "en": ""
+ },
+ {
   "vi": "Khách vào được mạng nội bộ, lộ dữ liệu.",
   "en": ""
  },
@@ -1769,34 +1797,6 @@
  },
  {
   "vi": "Bản gốc",
-  "en": ""
- },
- {
-  "vi": "Vào việc thôi! Cô Nguyệt đang chờ ở quầy.",
-  "en": ""
- },
- {
-  "vi": "Có chuyện bất ngờ ở thư viện, quyết xong rồi làm tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Thao tác không có ở thư viện.",
-  "en": ""
- },
- {
-  "vi": "Việc này không thuộc thư viện.",
-  "en": ""
- },
- {
-  "vi": "Nghe bạn đọc nói đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Đang có người nhờ việc: trả lời họ trước đã.",
-  "en": ""
- },
- {
-  "vi": "Không có ai đang nhờ việc.",
   "en": ""
  }
 ]

@@ -720,17 +720,27 @@
   "pattern": true
  },
  {
-  "vi": "👁️ Mở gốc $1",
+  "vi": "Phiếu: mã $1 $2, $3 hộp",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mã hộp khớp phiếu: phiếu $1, khay $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Số lượng đúng phiếu: phiếu $1, khay $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khay $1 trên $2 hộp",
   "en": "",
   "pattern": true
  },
  {
   "vi": "Sửa $1 theo bản gốc",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✏️ Sửa $1 theo gốc",
   "en": "",
   "pattern": true
  },
@@ -746,6 +756,36 @@
  },
  {
   "vi": "👉 Chọn các thẻ mã $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bản sao $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "gốc $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "số gốc $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chứng từ đã chọn: $1, tổng $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giao dịch đã chọn: $1, tổng $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã xử lý $1 trên $2 chứng từ",
   "en": "",
   "pattern": true
  },
@@ -1135,6 +1175,16 @@
   "pattern": true
  },
  {
+  "vi": "bé $1–$2 tuổi",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "cao $1–$2 cm, nặng $3–$4 kg",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "áo $1",
   "en": "",
   "pattern": true
@@ -1145,7 +1195,22 @@
   "pattern": true
  },
  {
-  "vi": "size $1, còn $2",
+  "vi": "còn $1, $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xem cả giá treo: $1 món khác",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "size $1, còn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💡 may ôm: +$1 size",
   "en": "",
   "pattern": true
  },
@@ -1250,7 +1315,7 @@
   "pattern": true
  },
  {
-  "vi": "(lố $1). Mỗi khách rộng tay một kiểu — đọc tính khách mà chọn.",
+  "vi": "(lố $1).",
   "en": "",
   "pattern": true
  },
@@ -1285,17 +1350,17 @@
   "pattern": true
  },
  {
-  "vi": "Chắc tay, đẹp đường may. Chờ một lát, bà lấy $1% tiền công.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "✂️ Phấn $1 cm & ngồi máy",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Phấn $1 cm. Kim chạy dọc đường may — dừng máy khi kim nằm trong vạch xanh.",
+  "vi": "Chắc tay, đẹp đường may. Chờ một lát, bà lấy $1% tiền công.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phấn $1 cm.",
   "en": "",
   "pattern": true
  },
@@ -1580,6 +1645,21 @@
   "pattern": true
  },
  {
+  "vi": "Xăng $1% · $2% mỗi ô phố",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tải $1/",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Túi COD $1/$2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "📅 Hôm nay$1",
   "en": "",
   "pattern": true
@@ -1590,7 +1670,52 @@
   "pattern": true
  },
  {
+  "vi": "ô · $1$2%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "~$1 · $2 ô · $3~$4%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🗺️ $1 điểm · →",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🗺️ Lộ trình · $1 điểm · tiếp theo $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ô$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đường chính tới $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "món mở ở cấp $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quán báo xong lúc $1, hẹn khách trước $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⏳ còn $1′",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cân thực tế $1$2. Vỏ thùng $3",
   "en": "",
   "pattern": true
  },
@@ -1600,7 +1725,67 @@
   "pattern": true
  },
  {
+  "vi": "trễ $1′",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏷️ Bớt $1: thu $2, túi COD hụt $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔔 ×$1, chưa ai mở",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khách đưa $1 xu, tiền hàng $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Túi đang có $1 xu tiền mặt",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "💵 Nộp tiền COD · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(xẹp <$1%)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛞 Thay ruột · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang ở $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thu hộ $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hẹn giao trước $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⏰ $1′ sau nhận",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giao trong $1 phút sau khi nhận",
   "en": "",
   "pattern": true
  },
@@ -1630,6 +1815,11 @@
   "pattern": true
  },
  {
+  "vi": "➕ Đếm tờ $1 · $2/",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "➕ Đếm thêm tờ $1 xu · $2/",
   "en": "",
   "pattern": true
@@ -1645,6 +1835,11 @@
   "pattern": true
  },
  {
+  "vi": "💵 Nộp $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "💵 Nộp $1 xu cho kế toán",
   "en": "",
   "pattern": true
@@ -1655,7 +1850,7 @@
   "pattern": true
  },
  {
-  "vi": "⏳ Chờ quán 5 phút · xong $1",
+  "vi": "⏳ Chờ quán 5$1 · xong $2",
   "en": "",
   "pattern": true
  },
@@ -1680,6 +1875,11 @@
   "pattern": true
  },
  {
+  "vi": "➕ Thối tờ $1 · $2/",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "➕ Thối thêm tờ $1 xu · $2/",
   "en": "",
   "pattern": true
@@ -1700,7 +1900,7 @@
   "pattern": true
  },
  {
-  "vi": "⏳ Chờ khách 5 phút · hẹn $1",
+  "vi": "⏳ Chờ khách 5$1 · hẹn $2",
   "en": "",
   "pattern": true
  },
@@ -1845,12 +2045,7 @@
   "pattern": true
  },
  {
-  "vi": "🌾 Nhổ cỏ luống $1 cho $2 mau lớn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🟫 Bón compost luống $1: chín kịp hôm nay",
+  "vi": "cho $1 mau lớn",
   "en": "",
   "pattern": true
  },
@@ -2051,201 +2246,6 @@
  },
  {
   "vi": "ô $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cách ly $1 nhịp",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chín sau $1 ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "còn $1 m",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚪 Hàng thoát hiểm$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✅ Xong phần làm mẫu. Đi dọc lối hàng $1–$2 kiểm tra.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ghế $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛒 Hàng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giúp $1 (ghế $2)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ghế $1: khách đang ngủ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😴 Để khách ghế $1 ngủ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛒 Đẩy xe lên hàng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hàng $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hết $1: nhập thêm mới $2 được.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "/$1–$2 cành",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(lệch $1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cắm “$1” từ hàng trong tủ? Khách trả nốt $2 xu ($3 − cọc $4); hoa còn nụ hay sắp héo thì tiệm bớt 10 xu mỗi thứ. Tiệm dùng cành nở đẹp trước; khách đang chờ sẽ chờ thêm chút.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧊 Trong tủ mát · $1/$2 loại có hàng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👥 $1 khách chờ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ $1 sốt ruột",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "−$1% kiên nhẫn mỗi câu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "chi tiết$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💬 $1 lời kể",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hoa $1% giá đơn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "món $1/",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "tủ còn $1, $2$3. Chạm để lấy 1 cành",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "＋ $1 cành",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✂️ Sơ chế $1 cành$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gợi ý: “$1”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "còn $1 giây",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "cành (cần $1–$2)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "➖ Bỏ 1 cành $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "không hợp dịp $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thừa $1, cần đúng $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quá nhiều cành: tối đa $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thiếu $1 cành $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thêm $1 cành nữa",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🕒 Giao lúc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✂️ Cắt xéo gốc & tuốt lá $1 cành",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✂️ Cắt xéo 45° $1 gốc",
   "en": "",
   "pattern": true
  }

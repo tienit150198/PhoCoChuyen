@@ -1,5 +1,261 @@
 [
  {
+  "vi": "đã trở, mặt thứ hai",
+  "en": ""
+ },
+ {
+  "vi": "🔄 Trở mặt",
+  "en": ""
+ },
+ {
+  "vi": "🍖 Gắp ra khay",
+  "en": ""
+ },
+ {
+  "vi": "Đặt sườn lên vỉ",
+  "en": ""
+ },
+ {
+  "vi": "Hết sườn: nhập ở Kho",
+  "en": ""
+ },
+ {
+  "vi": "Khay giữ ấm đầy",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ miếng sườn này?",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Bếp than · vỉ sườn",
+  "en": ""
+ },
+ {
+  "vi": "Khay giữ ấm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có miếng nào.",
+  "en": ""
+ },
+ {
+  "vi": "hết cơm",
+  "en": ""
+ },
+ {
+  "vi": "dẻo thơm",
+  "en": ""
+ },
+ {
+  "vi": "Xe cơm",
+  "en": ""
+ },
+ {
+  "vi": "vừa miệng",
+  "en": ""
+ },
+ {
+  "vi": "chưa vừa",
+  "en": ""
+ },
+ {
+  "vi": "chưa nếm",
+  "en": ""
+ },
+ {
+  "vi": "khay trống",
+  "en": ""
+ },
+ {
+  "vi": "👂 Hỏi khách gọi gì",
+  "en": ""
+ },
+ {
+  "vi": "📿 Ăn chay",
+  "en": ""
+ },
+ {
+  "vi": "👀 Liếc dĩa kỹ",
+  "en": ""
+ },
+ {
+  "vi": "(lẫn hai nồi)",
+  "en": ""
+ },
+ {
+  "vi": "chưa xới cơm",
+  "en": ""
+ },
+ {
+  "vi": "🌿 mỡ hành",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ Làm lại dĩa này",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ dĩa đang làm, làm lại cái khác?",
+  "en": ""
+ },
+ {
+  "vi": "🍽️ Trên quầy",
+  "en": ""
+ },
+ {
+  "vi": "Xới cơm",
+  "en": ""
+ },
+ {
+  "vi": "Chan, rưới",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa",
+  "en": ""
+ },
+ {
+  "vi": "🌿 Mỡ hành",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Bịch canh",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Chén canh",
+  "en": ""
+ },
+ {
+  "vi": "Không nước mắm",
+  "en": ""
+ },
+ {
+  "vi": ": đổ nước tới đâu?",
+  "en": ""
+ },
+ {
+  "vi": "🥄 Nếm nước mắm",
+  "en": ""
+ },
+ {
+  "vi": "chưa bày",
+  "en": ""
+ },
+ {
+  "vi": "Đổ nước mấy đốt ngón tay? Gạo tấm hút ít nước hơn gạo trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Bày khay",
+  "en": ""
+ },
+ {
+  "vi": "💧 Mấy đốt? Tấm ít hơn",
+  "en": ""
+ },
+ {
+  "vi": "Đổ nước tới đâu (đốt ngón tay)? Gạo tấm hút ít nước hơn gạo trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Hai nồi cơm",
+  "en": ""
+ },
+ {
+  "vi": "🥄 Nếm",
+  "en": ""
+ },
+ {
+  "vi": "Nếm chén nước mắm pha tối qua",
+  "en": ""
+ },
+ {
+  "vi": "✓ Than hồng",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Đồ nấu không để qua đêm: bày vừa đủ bán.",
+  "en": ""
+ },
+ {
+  "vi": "Bày khay lên tủ kính",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Hai nồi cơm",
+  "en": ""
+ },
+ {
+  "vi": "Gạo tấm hút ít nước hơn gạo trắng.",
+  "en": ""
+ },
+ {
+  "vi": "🫙 Chén nước mắm pha tối qua",
+  "en": ""
+ },
+ {
+  "vi": "🍱 Bày khay lên tủ kính",
+  "en": ""
+ },
+ {
+  "vi": "✓ Than hồng đều",
+  "en": ""
+ },
+ {
+  "vi": "Nếm chén nước mắm",
+  "en": ""
+ },
+ {
+  "vi": "Chỉnh nước mắm cho vừa",
+  "en": ""
+ },
+ {
+  "vi": "Chỉnh",
+  "en": ""
+ },
+ {
+  "vi": "khay · bày vừa đủ",
+  "en": ""
+ },
+ {
+  "vi": "trên khay hết miếng ngon",
+  "en": ""
+ },
+ {
+  "vi": "🍖 Đặt sườn lên vỉ",
+  "en": ""
+ },
+ {
+  "vi": "Hết sườn ướp",
+  "en": ""
+ },
+ {
+  "vi": "nhập ở Kho hoặc nói thật với khách",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Nhập ở Kho",
+  "en": ""
+ },
+ {
+  "vi": "Chờ mặt dưới vàng rồi trở",
+  "en": ""
+ },
+ {
+  "vi": "Chờ mặt kia vàng rồi gắp",
+  "en": ""
+ },
+ {
+  "vi": "giây nữa",
+  "en": ""
+ },
+ {
   "vi": "Trở mặt sườn",
   "en": ""
  },
@@ -296,6 +552,46 @@
   "en": ""
  },
  {
+  "vi": "Xốp",
+  "en": ""
+ },
+ {
+  "vi": "Đá gel",
+  "en": ""
+ },
+ {
+  "vi": "Lạnh",
+  "en": ""
+ },
+ {
+  "vi": "Giấy gốc",
+  "en": ""
+ },
+ {
+  "vi": "Gửi bảo vệ",
+  "en": ""
+ },
+ {
+  "vi": "Nước lèo",
+  "en": ""
+ },
+ {
+  "vi": "′/ô",
+  "en": ""
+ },
+ {
+  "vi": "Giờ",
+  "en": ""
+ },
+ {
+  "vi": "dặn",
+  "en": ""
+ },
+ {
+  "vi": "từng dặn",
+  "en": ""
+ },
+ {
   "vi": "Khu phố Mây Chiều",
   "en": ""
  },
@@ -336,7 +632,87 @@
   "en": ""
  },
  {
+  "vi": "xăng còn",
+  "en": ""
+ },
+ {
+  "vi": "xăng",
+  "en": ""
+ },
+ {
+  "vi": "ô ·",
+  "en": ""
+ },
+ {
+  "vi": "➕ Điểm sau",
+  "en": ""
+ },
+ {
+  "vi": "👆 Chọn điểm dừng",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Bỏ điểm cuối\"",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Xóa nháp\"",
+  "en": ""
+ },
+ {
+  "vi": "🗺️ Bản đồ",
+  "en": ""
+ },
+ {
   "vi": "🗺️ Lộ trình · bản đồ & điểm dừng",
+  "en": ""
+ },
+ {
+  "vi": "🛣️ Đường chính →",
+  "en": ""
+ },
+ {
+  "vi": "🛑 Má phanh mòn: không an toàn",
+  "en": ""
+ },
+ {
+  "vi": "lốp mòn ×2",
+  "en": ""
+ },
+ {
+  "vi": "ô",
+  "en": ""
+ },
+ {
+  "vi": "đã dùng",
+  "en": ""
+ },
+ {
+  "vi": ", khớp",
+  "en": ""
+ },
+ {
+  "vi": "hở mép keo",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ hở keo",
+  "en": ""
+ },
+ {
+  "vi": "Báo lệch cân lên app: shop trả phụ phí đúng quy định.",
+  "en": ""
+ },
+ {
+  "vi": "☐ Báo lệch cân",
+  "en": ""
+ },
+ {
+  "vi": "📦 Gói",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Đếm lại\"",
   "en": ""
  },
  {
@@ -345,6 +721,94 @@
  },
  {
   "vi": "Lập biên bản hàng hỏng? Bạn đền một phần giá trị hàng, bảo hiểm trả phần còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "🏃 về",
+  "en": ""
+ },
+ {
+  "vi": "🐕 Đã giữ chó",
+  "en": ""
+ },
+ {
+  "vi": "❌ Hàng hỏng, khách không nhận",
+  "en": ""
+ },
+ {
+  "vi": "❌ Khách đã hủy (chờ lâu)",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã gọi",
+  "en": ""
+ },
+ {
+  "vi": "💵 đưa",
+  "en": ""
+ },
+ {
+  "vi": "· hàng",
+  "en": ""
+ },
+ {
+  "vi": "Thối:",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Khách đòi thối thêm",
+  "en": ""
+ },
+ {
+  "vi": "📸 Gửi bảo vệ",
+  "en": ""
+ },
+ {
+  "vi": "📦 Gửi nhận hộ",
+  "en": ""
+ },
+ {
+  "vi": "📝 Báo thất bại",
+  "en": ""
+ },
+ {
+  "vi": "Đếm",
+  "en": ""
+ },
+ {
+  "vi": "Đang đếm",
+  "en": ""
+ },
+ {
+  "vi": "Nộp COD",
+  "en": ""
+ },
+ {
+  "vi": "🛞 Thay ruột",
+  "en": ""
+ },
+ {
+  "vi": "· vành móp",
+  "en": ""
+ },
+ {
+  "vi": "🍾 Xăng chai",
+  "en": ""
+ },
+ {
+  "vi": "khách hủy.",
+  "en": ""
+ },
+ {
+  "vi": "chờ lấy",
+  "en": ""
+ },
+ {
+  "vi": "⏰ trước",
+  "en": ""
+ },
+ {
+  "vi": "· quá giờ",
   "en": ""
  },
  {
@@ -437,6 +901,14 @@
  },
  {
   "vi": "khách đòi thối thêm",
+  "en": ""
+ },
+ {
+  "vi": "💵 giao luôn",
+  "en": ""
+ },
+ {
+  "vi": "✅ giao luôn",
   "en": ""
  },
  {
@@ -1184,6 +1656,18 @@
   "en": ""
  },
  {
+  "vi": "🌾 Nhổ cỏ luống",
+  "en": ""
+ },
+ {
+  "vi": "🟫 Bón compost luống",
+  "en": ""
+ },
+ {
+  "vi": ": chín kịp hôm nay",
+  "en": ""
+ },
+ {
   "vi": "chưa có luống nào trồng",
   "en": ""
  },
@@ -1313,490 +1797,6 @@
  },
  {
   "vi": "🌟 Trang trại",
-  "en": ""
- },
- {
-  "vi": "🌤️ Xem dự báo",
-  "en": ""
- },
- {
-  "vi": "🌱 chọn hạt để gieo",
-  "en": ""
- },
- {
-  "vi": "📞 đang gọi đặt hàng",
-  "en": ""
- },
- {
-  "vi": "🐔 Chuồng gà",
-  "en": ""
- },
- {
-  "vi": "📈 Chợ đầu mối",
-  "en": ""
- },
- {
-  "vi": "🌤️ Thời tiết",
-  "en": ""
- },
- {
-  "vi": "🧾 Đơn hàng",
-  "en": ""
- },
- {
-  "vi": "🚶 Tự đi",
-  "en": ""
- },
- {
-  "vi": "⏩ Bấm nhanh",
-  "en": ""
- },
- {
-  "vi": "Góc nhìn",
-  "en": ""
- },
- {
-  "vi": "👁️ Thứ nhất",
-  "en": ""
- },
- {
-  "vi": "Thứ ba",
-  "en": ""
- },
- {
-  "vi": "📯 Bóp còi",
-  "en": ""
- },
- {
-  "vi": "Máy hơi chậm nên vườn chuyển sang Bấm nhanh. Muốn đi lại thì chạm 🚶 Tự đi.",
-  "en": ""
- },
- {
-  "vi": "Mai trời",
-  "en": ""
- },
- {
-  "vi": "🧺 Luống chín:",
-  "en": ""
- },
- {
-  "vi": "🐔 Hôm nay gà chưa được ăn: mai đẻ ít",
-  "en": ""
- },
- {
-  "vi": "Bán sỉ ở chợ đầu mối (xu)",
-  "en": ""
- },
- {
-  "vi": "Tinh thần đàn gà",
-  "en": ""
- },
- {
-  "vi": "🌱 Nông trại hôm nay",
-  "en": ""
- },
- {
-  "vi": "Bán",
-  "en": ""
- },
- {
-  "vi": "Điểm nông",
-  "en": ""
- },
- {
-  "vi": "Quá lứa · loại B",
-  "en": ""
- },
- {
-  "vi": "Chín · loại B",
-  "en": ""
- },
- {
-  "vi": "Chín · loại A",
-  "en": ""
- },
- {
-  "vi": "🌱 Chọn hạt",
-  "en": ""
- },
- {
-  "vi": "🚜 Cả vườn",
-  "en": ""
- },
- {
-  "vi": "🚜 Thu cả vườn",
-  "en": ""
- },
- {
-  "vi": "🚜 Chăm cả vườn",
-  "en": ""
- },
- {
-  "vi": "☀️ Nắng gắt: cây khát",
-  "en": ""
- },
- {
-  "vi": "🌤️ Nắng: nhớ tưới",
-  "en": ""
- },
- {
-  "vi": "🍃 Gió: đất mau khô",
-  "en": ""
- },
- {
-  "vi": "🌧️ Mưa: coi chừng giông",
-  "en": ""
- },
- {
-  "vi": "⛅ Râm: dễ có mưa",
-  "en": ""
- },
- {
-  "vi": "· 💧 tưới nhỏ giọt",
-  "en": ""
- },
- {
-  "vi": "· 🏠 nhà kính",
-  "en": ""
- },
- {
-  "vi": "🔒 Cần chuồng trại",
-  "en": ""
- },
- {
-  "vi": "Heo đã lớn!",
-  "en": ""
- },
- {
-  "vi": "💰 Bán heo",
-  "en": ""
- },
- {
-  "vi": "Đói rồi",
-  "en": ""
- },
- {
-  "vi": "Xong rồi!",
-  "en": ""
- },
- {
-  "vi": "· chợ đủ hàng",
-  "en": ""
- },
- {
-  "vi": "Loại A",
-  "en": ""
- },
- {
-  "vi": "✋ Giữ giá",
-  "en": ""
- },
- {
-  "vi": "🚚 Giao hàng",
-  "en": ""
- },
- {
-  "vi": "“Bớt chút nha em?”",
-  "en": ""
- },
- {
-  "vi": "🧾 Đơn đặc sản",
-  "en": ""
- },
- {
-  "vi": "bán ở chợ",
-  "en": ""
- },
- {
-  "vi": "Chưa có đơn, thu hoạch thêm rồi quay lại nha.",
-  "en": ""
- },
- {
-  "vi": "✓ Đã có",
-  "en": ""
- },
- {
-  "vi": "Trang trại mới",
-  "en": ""
- },
- {
-  "vi": "⏱ Cây lớn theo giờ thật, cả lúc bạn đi vắng",
-  "en": ""
- },
- {
-  "vi": "🐛 Mỗi vụ một kiểu chăm",
-  "en": ""
- },
- {
-  "vi": "🦆 Vịt, bò sữa, heo",
-  "en": ""
- },
- {
-  "vi": "🧾 Khách đặt hàng khó tính",
-  "en": ""
- },
- {
-  "vi": "🛠️ Nhà kính, máy cày, VietGAP",
-  "en": ""
- },
- {
-  "vi": "🌟 Mở trang trại",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Trang trại\"",
-  "en": ""
- },
- {
-  "vi": "Mở trang trại mới",
-  "en": ""
- },
- {
-  "vi": "🌟 Xem trang trại mới",
-  "en": ""
- },
- {
-  "vi": "Nông trại: đi quanh vườn, tới gần một chỗ để làm việc",
-  "en": ""
- },
- {
-  "vi": "CHUỒNG GÀ",
-  "en": ""
- },
- {
-  "vi": "KHO MÁT",
-  "en": ""
- },
- {
-  "vi": "Đã bón lót · gieo được",
-  "en": ""
- },
- {
-  "vi": "Gieo được",
-  "en": ""
- },
- {
-  "vi": "Khát nước",
-  "en": ""
- },
- {
-  "vi": "Thu được!",
-  "en": ""
- },
- {
-  "vi": "Quá lứa",
-  "en": ""
- },
- {
-  "vi": "Chín hôm nay",
-  "en": ""
- },
- {
-  "vi": "Chín mai",
-  "en": ""
- },
- {
-  "vi": "Đi tới luống rau để chăm",
-  "en": ""
- },
- {
-  "vi": "Bíp bíp!",
-  "en": ""
- },
- {
-  "vi": "Đã giao hàng!",
-  "en": ""
- },
- {
-  "vi": "Chưa giao được, quay về trại",
-  "en": ""
- },
- {
-  "vi": "Đang giao hàng…",
-  "en": ""
- },
- {
-  "vi": "Chuyện trong khoang",
-  "en": ""
- },
- {
-  "vi": "Đèn thắt dây vừa sáng",
-  "en": ""
- },
- {
-  "vi": "Cất xe, về ghế ngay!",
-  "en": ""
- },
- {
-  "vi": "Chuyện nghề tiếp viên",
-  "en": ""
- },
- {
-  "vi": "Ghi nhớ",
-  "en": ""
- },
- {
-  "vi": "🚪 Đón khách",
-  "en": ""
- },
- {
-  "vi": "🦺 Hướng dẫn an toàn",
-  "en": ""
- },
- {
-  "vi": "🛒 Xe đẩy",
-  "en": ""
- },
- {
-  "vi": "🗣️ Khách khó chịu",
-  "en": ""
- },
- {
-  "vi": "🩺 Khách không khỏe",
-  "en": ""
- },
- {
-  "vi": "Khách đã lên đủ. Đóng cửa khoang.",
-  "en": ""
- },
- {
-  "vi": "🎫 Thẻ lên tàu",
-  "en": ""
- },
- {
-  "vi": ": người lớn",
-  "en": ""
- },
- {
-  "vi": "🧳 Vali lớn",
-  "en": ""
- },
- {
-  "vi": "🎒 Túi nhỏ",
-  "en": ""
- },
- {
-  "vi": "Chị Thu đọc:",
-  "en": ""
- },
- {
-  "vi": "Chị Thu đọc từng câu: giơ đúng món làm mẫu cho câu chị đang đọc.",
-  "en": ""
- },
- {
-  "vi": "Làm mẫu",
-  "en": ""
- },
- {
-  "vi": "Giơ đúng món làm mẫu cho câu chị đang đọc.",
-  "en": ""
- },
- {
-  "vi": "✅ Làm mẫu xong · 🚶 hàng",
-  "en": ""
- },
- {
-  "vi": "Ghế",
-  "en": ""
- },
- {
-  "vi": "Khoang trước cất cánh",
-  "en": ""
- },
- {
-  "vi": "🥬 Suất chay · ghế",
-  "en": ""
- },
- {
-  "vi": "🥜 Dị ứng đậu phộng · ghế",
-  "en": ""
- },
- {
-  "vi": ": cả hàng",
-  "en": ""
- },
- {
-  "vi": "không phát đậu phộng",
-  "en": ""
- },
- {
-  "vi": "Suất đặc biệt",
-  "en": ""
- },
- {
-  "vi": "Phiếu suất ăn đặc biệt",
-  "en": ""
- },
- {
-  "vi": "Không có suất đặc biệt.",
-  "en": ""
- },
- {
-  "vi": "· ♨️ không đồ nóng",
-  "en": ""
- },
- {
-  "vi": "Đã mời",
-  "en": ""
- },
- {
-  "vi": "😴 Để khách ngủ",
-  "en": ""
- },
- {
-  "vi": "Hàng này đã xong.",
-  "en": ""
- },
- {
-  "vi": "✓ đã làm",
-  "en": ""
- },
- {
-  "vi": "🧰 Túi sơ cứu",
-  "en": ""
- },
- {
-  "vi": "Cất xe, cất bình nóng, về ghế",
-  "en": ""
- },
- {
-  "vi": "〰️ Cất xe, về ghế!",
-  "en": ""
- },
- {
-  "vi": "Quyết chuyện trong khoang",
-  "en": ""
- },
- {
-  "vi": "🧣 Vào ca bay",
-  "en": ""
- },
- {
-  "vi": "📋 Nhận phiếu suất ăn",
-  "en": ""
- },
- {
-  "vi": "📋 Nhận phiếu suất ăn đặc biệt",
-  "en": ""
- },
- {
-  "vi": "🚪 Ra cửa",
-  "en": ""
- },
- {
-  "vi": "🚪 Ra cửa đón khách",
-  "en": ""
- },
- {
-  "vi": "👂 Hỏi chuyện khách",
-  "en": ""
- },
- {
-  "vi": "🚪 ĐÓNG CỬA KHOANG",
-  "en": ""
- },
- {
-  "vi": "👉 Đọc thẻ, chọn cách giúp",
   "en": ""
  }
 ]

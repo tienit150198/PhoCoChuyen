@@ -1,5 +1,49 @@
 [
  {
+  "vi": "Mở Nhân vật của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Mua nhà ở đâu?",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Mở [[Nhà của bạn]]: thẻ 🏠 trong [[Hành trình]], hoặc menu [[Ngân hàng & nhà]].",
+  "en": ""
+ },
+ {
+  "vi": "🔑 Chọn căn muốn mua: trả trước ít nhất 30% giá và 2% phí, phần còn lại vay Ngân hàng Phố (cần mở tài khoản).",
+  "en": ""
+ },
+ {
+  "vi": "🐷 Chưa đủ tiền thì gửi tiết kiệm trong [[Ngân hàng]] để dành dần.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm tên, xem mã người chơi ở đâu?",
+  "en": ""
+ },
+ {
+  "vi": "💬 Chat [[Cả phố]] không có ô tìm tên.",
+  "en": ""
+ },
+ {
+  "vi": "🔎 Mở [[Bạn bè]] (menu [[Quan hệ]]), ô [[Tìm bạn]]: gõ đúng tên đăng nhập hoặc mã người chơi (PCC-…) của bạn ấy.",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Mã của bạn ở cuối trang Bạn bè: bấm [[Chép mã]] để gửi cho bạn bè.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn Nhịp pha & nướng 1×, 2× hoặc 4× ở đầu màn làm việc. 2× chờ một nửa, 4× chờ một phần tư khi chiết, đánh sữa và nướng.",
+  "en": ""
+ },
+ {
+  "vi": "Vẫn tự dừng ở vùng xanh; thanh cũng chạy nhanh tương ứng. Tắt máy pha/vòi hơi trước khi đổi nhịp; mẻ đang trong lò giữ nhịp lúc vào lò.",
+  "en": ""
+ },
+ {
   "vi": "25–30 giây trên thanh là giây chiết, không phải số giây thực phải chờ.",
   "en": ""
  },
@@ -1753,50 +1797,6 @@
  },
  {
   "vi": "Bạn đang ở đây rồi.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận thuê phòng.",
-  "en": ""
- },
- {
-  "vi": "Bạn không thuê phòng nào.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận trả phòng.",
-  "en": ""
- },
- {
-  "vi": "Chọn căn nhà muốn mua nhé.",
-  "en": ""
- },
- {
-  "vi": "Chọn dọn về ở hay để trống nhé.",
-  "en": ""
- },
- {
-  "vi": "Số xu lấy từ quỹ chung không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Quỹ chung chỉ góp mua căn nhà cả hai cùng về ở.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận ký hợp đồng mua nhà.",
-  "en": ""
- },
- {
-  "vi": "Chọn thời hạn vay nhé.",
-  "en": ""
- },
- {
-  "vi": "Điều khoản vay vừa thay đổi. Xem lại lịch trả góp rồi ký nhé.",
-  "en": ""
- },
- {
-  "vi": ", trả đủ một lần",
   "en": ""
  }
 ]

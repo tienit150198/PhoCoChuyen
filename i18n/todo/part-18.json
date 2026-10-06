@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Trả lại tiền thì được, nhưng bụng vẫn đói.",
+  "en": ""
+ },
+ {
   "vi": "Anh Mạnh cầm đồng xu, nhìn dĩa cơm vơi.",
   "en": ""
  },
@@ -1100,15 +1104,15 @@
   "en": ""
  },
  {
+  "vi": "Ngã tư này ngoài chặng đang giao. Quay lại theo mũi tên nhé.",
+  "en": ""
+ },
+ {
   "vi": "Thông tin đèn giao thông sai.",
   "en": ""
  },
  {
   "vi": "Ngã tư không có đèn này.",
-  "en": ""
- },
- {
-  "vi": "Ngã tư này ngoài chặng đang giao. Quay lại theo mũi tên nhé.",
   "en": ""
  },
  {
@@ -1133,6 +1137,10 @@
  },
  {
   "vi": "🚦 Đã qua ngã tư đúng tín hiệu.",
+  "en": ""
+ },
+ {
+  "vi": "⛽ Ghé cây xăng",
   "en": ""
  },
  {
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Chị Hồng: “Bếp đứng nước là chị đứng tim luôn á.”",
-  "en": ""
- },
- {
-  "vi": "Chị Hồng lắp thêm hố tách mỡ theo lời dặn.",
-  "en": ""
- },
- {
-  "vi": "Chị Hồng mời cả tiệm tô bún bò đặc biệt.",
   "en": ""
  }
 ]

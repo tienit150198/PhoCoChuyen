@@ -1,5 +1,109 @@
 [
  {
+  "vi": "🔓 Dưa leo mở ở cấp 2, rau thơm mở ở cấp 3.",
+  "en": ""
+ },
+ {
+  "vi": "🛍️ Luôn còn thùng carton, túi giấy và khay trứng. Thiếu bao bì là không giao được.",
+  "en": ""
+ },
+ {
+  "vi": "🟫 Luống trống: [[Bón lót compost]] trước khi gieo. Mỗi lần gieo tốn 1 gói hạt.",
+  "en": ""
+ },
+ {
+  "vi": "🧴 Phân bón lá thúc không cần nhập kho: mua ngay ở luống, liều sau đắt hơn liều trước. Trời mưa hay đất khô héo thì chưa phun được.",
+  "en": ""
+ },
+ {
+  "vi": "🗓️ Xem dự báo: mai nắng thì tưới trước khi khép ca, mai mưa thì khơi rãnh sẵn.",
+  "en": ""
+ },
+ {
+  "vi": "🚱 Trạm bơm cúp nước: van tưới cả vườn không chạy. Tưới từng luống hoặc gọi xe bồn.",
+  "en": ""
+ },
+ {
+  "vi": "⛈️ Giông, sâu khoang, nắng nóng, dê sổng, chồn vào chuồng: chọn cách xử lý xong mới làm tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Đoàn kiểm tra hữu cơ: lô chưa hết cách ly bị phạt, tiêu hủy. Xin hoãn thì họ quay lại.",
+  "en": ""
+ },
+ {
+  "vi": "🤝 HTX nhờ góp hàng, thương lái hỏi mua sạch kho. Góp thiếu bị phạt 2 xu mỗi đơn vị.",
+  "en": ""
+ },
+ {
+  "vi": "🦹 Trộm gà, trộm giỏ rau, thương lái cân thiếu: báo công an, cân lại bằng cân của HTX.",
+  "en": ""
+ },
+ {
+  "vi": "Khơi rãnh",
+  "en": ""
+ },
+ {
+  "vi": "Phân bón lá thúc",
+  "en": ""
+ },
+ {
+  "vi": "Mở van tưới cả vườn",
+  "en": ""
+ },
+ {
+  "vi": "Neem sinh học",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc hóa học",
+  "en": ""
+ },
+ {
+  "vi": "Nhổ bỏ, ủ phân",
+  "en": ""
+ },
+ {
+  "vi": "Nhận đơn hàng",
+  "en": ""
+ },
+ {
+  "vi": "THU HOẠCH",
+  "en": ""
+ },
+ {
+  "vi": "Nhặt trứng",
+  "en": ""
+ },
+ {
+  "vi": "Nhổ cỏ",
+  "en": ""
+ },
+ {
+  "vi": "Thăm sâu",
+  "en": ""
+ },
+ {
+  "vi": "Dọn chuồng",
+  "en": ""
+ },
+ {
+  "vi": "Bón lót compost",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nhận khách, giữ lịch phòng, dọn phòng, làm bữa sáng và tính hóa đơn thật sòng phẳng.",
+  "en": ""
+ },
+ {
+  "vi": "Khớp mã đặt phòng, xem giấy tờ, đếm khách, giao phòng sạch rồi bấm [[Trao chìa khóa & thu tiền]].",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi dị ứng, chiên trứng đúng độ chín, thêm bánh mì, sữa, cà phê rồi bấm [[Mang ra cho khách]].",
+  "en": ""
+ },
+ {
   "vi": "Bấm [[Báo buồng phòng kiểm]], trả đồ khách để quên, chỉnh từng dòng hóa đơn rồi [[In hóa đơn]] và thu.",
   "en": ""
  },
@@ -1493,86 +1597,6 @@
  },
  {
   "vi": "Bấm [[Đẩy xe vào ngõ]] trước giờ thu gom. Mỗi nhà: nhìn túi, túi trông lạ thì [[Mở túi]], rồi chọn ngăn cho từng túi.",
-  "en": ""
- },
- {
-  "vi": "Đồ nguy hại",
-  "en": ""
- },
- {
-  "vi": "Pin, bóng đèn tuýp, vỏ bình xịt, kim tiêm: mở túi, bấm [[Tách ra]] bỏ hộp đỏ. Kim tiêm, bóng đèn phải đeo găng.",
-  "en": ""
- },
- {
-  "vi": "Bấm [[Bọc]] gói mảnh kính vào bao dày rồi mới cho vào ngăn còn lại.",
-  "en": ""
- },
- {
-  "vi": "Nhắc phân loại",
-  "en": ""
- },
- {
-  "vi": "Nhà nào để túi sai màu: [[Nhắc nhà này phân loại]], nói nhẹ nhàng. Nhắc nhầm nhà làm đúng thì bị phàn nàn.",
-  "en": ""
- },
- {
-  "vi": "Ngăn đầy thì [[Ra điểm tập kết đổ xe]]: cô Tám mua túi tái chế sạch, túi lẫn đồ ăn thì không.",
-  "en": ""
- },
- {
-  "vi": "Cư dân phản ánh",
-  "en": ""
- },
- {
-  "vi": "Xem từng chuyện cho rõ rồi mới trả lời. Cách tốt nhất thường cần xem đủ hai điều.",
-  "en": ""
- },
- {
-  "vi": "Túi chưa phân loại",
-  "en": ""
- },
- {
-  "vi": "Mở túi xem rồi bấm [[Chưa phân loại: dán phiếu, không thu]]. Dán nhầm nhà đã phân loại đúng là bị phàn nàn.",
-  "en": ""
- },
- {
-  "vi": "Thu phí vệ sinh",
-  "en": ""
- },
- {
-  "vi": "Trong ca, mở [[Thu phí vệ sinh]]: gõ số tiền rồi [[Thu, nói nhẹ]] hoặc [[Nhắc quy định]]. Nhà khó khăn thì [[Miễn tháng này]].",
-  "en": ""
- },
- {
-  "vi": "Dao lam, kim tiêm giấu trong túi",
-  "en": ""
- },
- {
-  "vi": "Túi trông bình thường vẫn có thể giấu đồ sắc: mở ra xem mới thấy. Bị kim tiêm đâm thì phải ra trạm y tế.",
-  "en": ""
- },
- {
-  "vi": "Rác đổ trộm, nhà không chịu phân loại",
-  "en": ""
- },
- {
-  "vi": "Đống rác: đi hai chuyến, gọi xe ba gác, báo phường, hay nhồi (dễ bung nắp xe). Chủ nhà chặn xe: giải thích, dán phiếu, lấy luôn, hay gọi tổ trưởng.",
-  "en": ""
- },
- {
-  "vi": "👂 Nghe chị Hạnh dặn: tên ngõ, số nhà, giờ thu gom.",
-  "en": ""
- },
- {
-  "vi": "🛒 [[Đẩy xe vào ngõ]]. Trễ giờ thì rác bị mèo bới: [[Quét dọn]] trước đã.",
-  "en": ""
- },
- {
-  "vi": "👀 Túi trông lạ (kêu lọc cọc, rỉ nước, có cạnh sắc…) thì mở ra xem.",
-  "en": ""
- },
- {
-  "vi": "🟢 Túi một loại vào đúng ngăn đó. Túi lẫn đồ ăn với đồ tái chế, hay lẫn đủ thứ, vào ngăn còn lại.",
   "en": ""
  }
 ]

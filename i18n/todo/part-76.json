@@ -1,5 +1,49 @@
 [
  {
+  "vi": "Xác nhận thuê phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn không thuê phòng nào.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận trả phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn căn nhà muốn mua nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn dọn về ở hay để trống nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Số xu lấy từ quỹ chung không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ chung chỉ góp mua căn nhà cả hai cùng về ở.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận ký hợp đồng mua nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn thời hạn vay nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Điều khoản vay vừa thay đổi. Xem lại lịch trả góp rồi ký nhé.",
+  "en": ""
+ },
+ {
+  "vi": ", trả đủ một lần",
+  "en": ""
+ },
+ {
   "vi": "Bạn không có nhà chung với người ấy để về.",
   "en": ""
  },
@@ -1753,50 +1797,6 @@
  },
  {
   "vi": "Bị quát qua điện thoại",
-  "en": ""
- },
- {
-  "vi": "Quản lý gọi lúc 9 giờ tối.",
-  "en": ""
- },
- {
-  "vi": "Giọng gắt: “Làm ăn kiểu gì vậy?”",
-  "en": ""
- },
- {
-  "vi": "Chuyện nhỏ xíu, mai sửa là xong.",
-  "en": ""
- },
- {
-  "vi": "Bình tĩnh: “Mai 8 giờ em sửa xong ạ”",
-  "en": ""
- },
- {
-  "vi": "Đầu dây bên kia dịu xuống. Bạn tắt máy, thở ra một hơi dài.",
-  "en": ""
- },
- {
-  "vi": "Tắt máy, khóc một trận",
-  "en": ""
- },
- {
-  "vi": "Khóc xong thấy nhẹ hơn, dù mắt sưng.",
-  "en": ""
- },
- {
-  "vi": "Tắt thông báo sau giờ làm",
-  "en": ""
- },
- {
-  "vi": "Tối nay yên tĩnh lạ.",
-  "en": ""
- },
- {
-  "vi": "Bị xếp ca xấu cả tuần",
-  "en": ""
- },
- {
-  "vi": "Lịch mới: bạn trực toàn ca tối, cả cuối tuần.",
   "en": ""
  }
 ]

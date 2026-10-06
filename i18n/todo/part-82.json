@@ -1,5 +1,49 @@
 [
  {
+  "vi": "Bạn đang đứng quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Mở lại quầy trước khi đứng bán.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập hàng vào kho trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🍳 Bạn đã đứng quầy. Khách đang tới, đơn sẽ hiện ngay tại đây.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🍳 Mở hàng! Khách đầu tiên tới rồi, người tiếp theo đang ghé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chưa mở hàng hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin ngã tư sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn giao không còn chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn này chưa tới.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn hướng đi ở ngã tư.",
+  "en": ""
+ },
+ {
+  "vi": "Xem tín hiệu trước khi qua ngã tư.",
+  "en": ""
+ },
+ {
   "vi": "Đã qua đủ ba ngã tư.",
   "en": ""
  },
@@ -1753,50 +1797,6 @@
  },
  {
   "vi": "giá hơi chát",
-  "en": ""
- },
- {
-  "vi": "giá nhỉnh hơn mặt bằng khu này",
-  "en": ""
- },
- {
-  "vi": "giá hơi chát so với chất lượng",
-  "en": ""
- },
- {
-  "vi": "giá hơi chát so với phần ăn",
-  "en": ""
- },
- {
-  "vi": "thêm topping là tính thêm, cộng lại hơi đau ví",
-  "en": ""
- },
- {
-  "vi": "cốc trà đá vỉa hè mà tính giá như quán máy lạnh",
-  "en": ""
- },
- {
-  "vi": "ly cà phê với miếng bánh mà gần bằng bữa trưa",
-  "en": ""
- },
- {
-  "vi": "giá mềm, sinh viên cũng ghé được",
-  "en": ""
- },
- {
-  "vi": "giá niêm yết rõ, không tính thêm gì bất ngờ",
-  "en": ""
- },
- {
-  "vi": "đáng đồng tiền, ăn no mà không đau ví",
-  "en": ""
- },
- {
-  "vi": "vài nghìn một cốc mà ngồi mát cả buổi",
-  "en": ""
- },
- {
-  "vi": "ly to, topping nhiều mà giá vẫn mềm",
   "en": ""
  }
 ]

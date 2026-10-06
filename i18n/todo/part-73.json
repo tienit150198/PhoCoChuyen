@@ -1,5 +1,29 @@
 [
  {
+  "vi": "🎯 [[24 tình huống]] (cũng ở 4 nơi đó): tìm một tình huống rồi bấm [[Thử tình huống]] để diễn tập, không mất tiền, sao hay quan hệ.",
+  "en": ""
+ },
+ {
+  "vi": "📚 Mỗi nơi làm có một truyện riêng 5 đoạn với vài nhân vật quen: bạn học sinh ôn thi, mùa mưa bão ở nông trại…",
+  "en": ""
+ },
+ {
+  "vi": "✨ Thẻ Truyện nghề ghi điều kiện cho đoạn tiếp: số việc, ngày làm và thời gian chờ ở đúng nơi đó. Mục đã đủ được đánh dấu.",
+  "en": ""
+ },
+ {
+  "vi": "▶️ Truyện hiện như một cảnh: bấm [[Tiếp]] để đọc từng câu, hoặc [[Xem hết]] để hiện cả đoạn.",
+  "en": ""
+ },
+ {
+  "vi": "🅰️ Có đoạn cho chọn A hoặc B. Với Linh và chiếc radio ở tiệm sửa đồ, người quen nhắc lại lựa chọn của bạn; kỷ vật cũng lưu dấu chuyện đó.",
+  "en": ""
+ },
+ {
+  "vi": "📖 Thẻ truyện tóm tắt chuyện đã qua. Mở các đoạn đã đọc để xem lại tóm tắt và lựa chọn của mình.",
+  "en": ""
+ },
+ {
   "vi": "💤 Chưa muốn đọc thì đóng lại. Đoạn đó chờ ở thẻ Truyện nghề trong [[Hành trình]], ghi “Có chuyện mới”.",
   "en": ""
  },
@@ -1381,58 +1405,6 @@
  },
  {
   "vi": "💸 Trả đủ một lần, không phí tháng. Bán lại được 65% giá đã trả.",
-  "en": ""
- },
- {
-  "vi": "Mở cửa hàng điện thoại",
-  "en": ""
- },
- {
-  "vi": "Chụp ảnh ở hội chợ",
-  "en": ""
- },
- {
-  "vi": "🏮 Lúc hội chợ mở, vào [[Cổng hội chợ]] rồi tới [[Buồng chụp ảnh]].",
-  "en": ""
- },
- {
-  "vi": "📸 Chụp một mình, với bạn bè hoặc người lạ: 5 xu một lượt 4 kiểu, ai chụp nấy trả từ ví.",
-  "en": ""
- },
- {
-  "vi": "💾 Xong thì lưu dải ảnh về máy để khoe bạn bè.",
-  "en": ""
- },
- {
-  "vi": "Mở Hội chợ",
-  "en": ""
- },
- {
-  "vi": "Tự tay lái xe, lái máy bay, đi nông trại",
-  "en": ""
- },
- {
-  "vi": "🛵 Giao hàng: chọn [[Tự lái]] để tự chạy xe tới nhà khách. Muốn nhanh thì chọn bấm nhanh.",
-  "en": ""
- },
- {
-  "vi": "✈️ Phi công: chọn [[Tự bay]] để tự cất cánh, tránh mây giông, hạ cánh. Muốn nhanh thì [[Bay nhanh]].",
-  "en": ""
- },
- {
-  "vi": "🚜 Nông trại: [[Tự đi]] để đi quanh vườn, đổi [[Góc nhìn]] thứ nhất hay thứ ba. [[Bấm nhanh]] là kiểu cũ.",
-  "en": ""
- },
- {
-  "vi": "❓ Cách làm từng nghề có trong Hướng dẫn nghề (nút ? ở màn làm việc).",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm & phố",
-  "en": ""
- },
- {
-  "vi": "Thân thiết với hàng xóm",
   "en": ""
  }
 ]
