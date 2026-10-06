@@ -95,7 +95,7 @@ def _who(t: dict) -> str:
 
 def _short(bed: str) -> str:
     b = BEDS[bed]
-    return f'G{b["bed"]} {PEOPLE[b["npc"]][0].lower()}'
+    return f'G{b["bed"]} {PEOPLE[b["npc"]][0]}'
 
 
 def _lower(s: str) -> str:
