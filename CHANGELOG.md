@@ -28,6 +28,21 @@
 - Góp ý người chơi 06/10 ("tăng tốc độ bán hàng của nhân viên tiệm", không phải quầy): soát lại mọi bản từ 1.7.8 (04/10, ngày đầu có đơn riêng) tới 1.9.3. Nhịp mỗi đơn chưa từng bị giảm (vẫn 80 phút-công ÷ tốc độ nhân viên); chỉ có uy tín tiệm (từ 1.7.12, 05/10 07:26) làm chậm tối đa 10% khi uy tín âm. Tiệm thường dừng vì hết hàng trên kệ chứ không phải vì đơn chậm.
 - Tiệm bán hàng (nghề có hàng/kho: Mẹ & Bé, tạp hóa, hoa, cà phê, quần áo, trà sữa, thuốc, salon…) giờ 50 phút-công một đơn thay vì 80: nhanh gấp 1,6 lần ngày đầu; uy tín −10 vẫn nhanh gấp ~1,45 lần. Tiệm 2 nhân viên tốc độ ~75: khoảng 190 đơn/giờ thay vì ~120. Nghề dịch vụ không dùng hàng (kế toán, giáo viên…) giữ 80. Vẫn chỉ bán món còn hàng và có lãi sau lương, vật tư; ô "mỗi giờ · đơn" trong Sổ tiệm tự cập nhật từ đơn kế tiếp. Không đổi bản lưu.
 
+# Chưa phát hành
+
+## Nông trại mới
+
+- Chủ game 06/10 ("nông trại nữa, chán lắm, nâng lên đi"). Số liệu 01–06/10: 57% lượt bấm ở nông trại là việc vặt (tưới 10.370, nhổ cỏ 4.920, thăm sâu 4.214, khơi rãnh 2.529), mỗi ngày chơi chỉ giao trung vị 4 đơn; 27% người chơi rời đi trong ngày chưa giao được đơn nào, chỉ 16% quay lại ngày thứ hai.
+- 🌟 Tab mới **Trại** (`game/careers/farm_plus.py`, `public/js/careers/farm_plus.js`), gồm 4 mục:
+  - 🌱 Vườn: ô đất lớn theo giờ thật của máy chủ, kể cả khi đi vắng. Có ớt, lúa, dưa hấu, bí ngô, thanh long, dâu tây (cần nhà kính), xoài, cà phê, chín sau 6 phút tới 2 giờ. Mỗi vụ có việc chăm riêng: cắm cọc, dẫn nước, lót rơm, bấm ngọn, thắp đèn, che lưới, bao trái, tỉa cành. Thêm việc theo thời tiết hôm đó (khát nước, giông) và sâu. Mỗi việc một chạm khi tới lúc. Bỏ lỡ thì hụt sản lượng, xuống loại B; để quá lứa cũng xuống loại B.
+  - 🐄 Chuồng: vịt (trứng vịt), bò sữa (sữa), heo (nuôi 4 cữ rồi bán).
+  - 🧾 Bán: bán ở chợ (bán dồn thì giá tụt, chợ tự hồi theo giờ) hoặc giao đơn đặc sản cho tiệm trà sữa, lò bánh, quán chè, quán cơm tấm, quán cà phê, sạp trái cây, quán chay (đòi VietGAP), anh Tuấn. Khách nào cũng có yêu cầu riêng: chỉ lấy loại A, có hạn giờ… Có khách đòi bớt giá; giữ giá thì có người vẫn mua, có người bỏ đi, tùy tính khách (ẩn).
+  - 🛠️ Nâng cấp (tiêu xu): khai hoang ô 3–6 (80/150/250/400), tưới nhỏ giọt 180 (6 luống rau cũ cũng tự giữ ẩm), máy cày mini 260 (gieo, chăm, thu cả vườn một chạm), chuồng trại 220, nhà kính 350, VietGAP 450 (cần 15 lần thu loại A; giá bán +20%).
+- Cấp trang trại 1–10, danh hiệu 🏅 Nông dân giỏi ở cấp 5. Thêm kỷ lục, trái vàng hiếm (25 xu), bí khổng lồ 20–60 kg (có giải), Hội mùa vào ngày cuối mỗi mùa (giá +25%).
+- Dễ thấy: ở chế độ 🚶 Tự đi có nút "🌟 Trại" trên cảnh, ngay dưới nút đổi góc nhìn; nút sáng lên và có số khi có ô chín, ô cần chăm hoặc chuồng đã xong (cả trước lần mở đầu). Tab 🌟 Trại cũng hiện số đó, tự cập nhật khi tới giờ. Thanh dưới vẫn một hàng. Có bản tiếng Anh cho chữ mới (`i18n/overrides.json`, `public/i18n/en.json`).
+- Bớt việc vặt ở 6 luống: thêm nút 🌾 Nhổ cỏ cả vườn và 🔍 Thăm cả vườn (một nhịp). Gợi ý giữa các đơn chỉ thẳng nút nhổ cỏ cả vườn khi có từ 2 luống nhiều cỏ.
+- Thu nhập (bot chăm mỗi phút, đo bằng chính máy chủ): vườn mới (2 ô) +50 xu/giờ, trại giữa (4 ô, chuồng) +90/giờ, đủ nâng cấp +240/giờ. Nông trại hiện thu khoảng 170 xu mỗi ngày chơi (trà sữa ~420, tiệm hoa ~770). Riêng nâng cấp tốn tổng cộng 2.340 xu. Test chặn trần: dưới 80 xu/giờ khi mới mở, dưới 300 xu/giờ khi đủ nâng cấp.
+- Bản lưu: khóa mới, tùy chọn: `careers.farm.ext.farm_plus`. Bản lưu cũ không có khóa này vẫn chạy như trước. Không đổi đơn hàng, luống rau, kho mát. Đã thử: 1.9.3 nhận, chơi tiếp và giữ nguyên bản lưu do bản này ghi. Không có DDL. Không thêm "Có gì mới".
 # v1.9.3 — 2026-10-06: sửa lỗi + cập nhật thêm
 
 ## Chat: lọc từ nặng bằng dấu *

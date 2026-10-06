@@ -66,6 +66,7 @@ from . import kit
 from .. import consequences as cq
 from .. import archive as ar
 from .. import compensation as cf
+from . import farm_plus as fp
 
 ID = 'farm'
 PLOT_IDS = ('P1', 'P2', 'P3', 'P4', 'P5', 'P6')
@@ -705,6 +706,8 @@ def on_start(s: dict, c: dict) -> None:
     if d['pledge'] is not None and d['pledge']['day'] != c['day']:
         d['pledge'] = None
     d['market'].update(day=c['day'], sold={}, income=0, start=c['turn'])
+    if fp.drip_beds(c, d):
+        kit.log(s, c, 'note', '💧 Tưới nhỏ giọt đã giữ ẩm các luống khô qua đêm.')
     kit.desk_start(s, c, ID, d['desk'], EVENTS, w['id'], festival=c['life'].get('mode') == 'festival')
     if d['desk']['ev'] is not None:
         _attach(c, d)
@@ -726,7 +729,10 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     if name == 'fa_decide':
         return _decide(s, c, p)
     kit.desk_block(d['desk'], 'Có chuyện bất ngờ ở trại — quyết xong rồi làm tiếp nhé.')
+    if name.startswith('fa_v_'):          # 🌟 Trang trại (farm_plus): wall-clock garden, pens, upgrades; no beat
+        return fp.handle(s, c, name, p)
     out = _handle(s, c, name, p)
+    fp.drip_beds(c, d)
     kit.desk_tick(s, c, ID, d['desk'], EVENTS, _weather(c['day'])['id'])
     _field_tick(s, c, d)
     if d['desk']['ev'] is None and name == 'fa_harvest':
@@ -865,6 +871,22 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
         kit.need(plot['moisture'] > MOIST_HIGH, 'Đất chưa úng, không cần khơi rãnh.')
         plot['moisture'] = _clamp(plot['moisture'] - DRAIN)
         return dict(message=f'Khơi rãnh thoát nước luống {plot["id"]}: độ ẩm còn {plot["moisture"]}%.')
+    if name == 'fa_weed' and p.get('plot') == 'all':      # one walk down the rows: every weedy bed
+        rows = [x for x in d['plots'] if x['weeds'] > 0]
+        kit.need(rows, 'Cả vườn sạch cỏ rồi.')
+        for x in rows:
+            x['weeds'] = 0
+        kit.metric(c, 'fa_weeded', len(rows))
+        return dict(message=f'Nhổ cỏ cả vườn: sạch {len(rows)} luống ({", ".join(x["id"] for x in rows)}).')
+    if name == 'fa_scout' and p.get('plot') == 'all':     # lật lá cả vườn một vòng
+        rows = [x for x in d['plots'] if x['crop']]
+        kit.need(rows, 'Vườn chưa có luống nào trồng.')
+        for x in rows:
+            x['seen'] = x['pests']
+            x['scouted'] = c['turn']
+        kit.metric(c, 'fa_scouted', len(rows))
+        bad = [x for x in rows if x['pests']]
+        return dict(message='Thăm cả vườn: ' + (', '.join(f'{x["id"]} sâu mức {x["pests"]}' for x in bad) + '. Xử lý luống mức 2 trở lên kẻo lan.' if bad else 'chưa thấy sâu luống nào.'))
     if name == 'fa_weed':
         plot = _plot_of(d, p.get('plot'))
         kit.need(plot['weeds'] > 0, 'Luống sạch cỏ rồi.')
@@ -1311,6 +1333,7 @@ def public_data(c: dict) -> dict:
     d['nopump'] = d['desk']['marks'].get('nopump') == day
     d['bees'] = _bees(c, d)
     d['desk'] = _desk_view(c)
+    d['plus'] = fp.view(c)
     return d
 
 
@@ -1485,6 +1508,7 @@ def validate_data(c: dict) -> None:
             kit.integer(x['day'], 1, 10**7)
             kit.integer(x['floor'], 0, 10**10)
             kit.need(kit.integer(x['pct'], THUC_STEP, THUC_MAX) % THUC_STEP == 0, 'Sổ bón thúc sai.')
+    fp.validate(c)      # 🌟 Trang trại (optional: saves before it have none)
 
 
 def _validate_v2(c: dict, d: dict) -> None:
@@ -1554,6 +1578,9 @@ def on_close(s: dict, c: dict) -> dict:
         lines.append(f'{nxt["emoji"]} Mai sang {nxt["name"].lower()}: {nxt["text"]}')
     if surprise:
         lines.append(f'⚡ {surprise}')
+    plus = fp.close_line(c)
+    if plus:
+        lines.append(plus)
     if night['spread']:
         lines.append(f'🐛 Đêm qua sâu bò sang {night["spread"]} luống bên cạnh luống đang có sâu nặng. Sáng mai thăm đồng (🔍) từng luống.')
     if night['low']:
@@ -1673,7 +1700,7 @@ def content() -> dict:
                 seasons=[dict(id=x['id'], name=x['name'], emoji=x['emoji'], text=x['text'], good=list(x['good']), bad=list(x['bad'])) for x in SEASONS],
                 season_days=SEASON_DAYS, wholesale=WHOLESALE, depth=DEPTH, slip=SLIP, pledge_fine=PLEDGE_FINE, bee_fine=BEE_FINE,
                 soil=dict(low=SOIL_LOW, add=SOIL_ADD, rest=SOIL_REST, rotate=SOIL_ROTATE), mood=dict(ok=MOOD_OK, low=35), families={'leafy': 'Rau lá', 'fruit': 'Cây trái'},
-                thuc=dict(step=THUC_STEP, max=THUC_MAX, cost=list(THUC_COST), soil=THUC_SOIL))
+                thuc=dict(step=THUC_STEP, max=THUC_MAX, cost=list(THUC_COST), soil=THUC_SOIL), plus=fp.content())
 
 
 SITUATIONS = [
@@ -2176,7 +2203,7 @@ SPEC = dict(
     tip=2,
     physical=('fa_harvest', 'fa_plant', 'fa_pack', 'fa_deliver'),
     free_actions=(),
-    no_tick=('fa_label', 'fa_unpack', 'fa_decide'),
+    no_tick=('fa_label', 'fa_unpack', 'fa_decide', *fp.ACTIONS),
     waste_items=('muong', 'lettuce', 'tomato', 'cucumber', 'herbs', 'egg'),
     activity=('🌱', 'Vườn rau Đồi Gió', [('Phân compost', 'Hữu cơ'), ('Phân NPK', 'Hóa học · ghi nhật ký'), ('Chế phẩm neem', 'Hữu cơ'), ('Thuốc trừ sâu', 'Hóa học · ghi nhật ký')],
               ['Gieo hạt, giữ ẩm', 'Nhổ cỏ, thăm sâu', 'Thu hoạch đúng độ chín', 'Phân loại, dán nhãn thật']),
