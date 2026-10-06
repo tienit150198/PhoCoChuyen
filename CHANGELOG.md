@@ -2,6 +2,12 @@
 
 Có gì mới (chủ game duyệt): "Cập nhật toàn bộ UI UX", "Thêm Top tài phú trên Bảng xếp hạng".
 
+## Ông Hai 10.000 xu (đã lên trước ở 1.7.16)
+
+- 🪨 Ô ăn quan: thắng Ông Hai được 10.000 xu (trước 500). Bé Bi giữ nguyên (50 xu, cách chơi cũ).
+- Ông Hai đi trước và mạnh hơn hẳn: tìm kiếm alpha-beta có bảng chuyển vị, ưu tiên nước ăn, nước "sát thủ", đào sâu dần đến khoảng 8 lượt, giải chính xác khi gần hết quân. Ngân sách tính bằng số nước mô phỏng (20.000), không theo đồng hồ; không cố ý đi nước kém.
+- Bản lưu không đổi khóa; bản 1.7.15 cũ vẫn đọc được ván thắng 10.000 xu và ván Ông Hai đã đi trước.
+
 ## Sửa: kiểm tra theo phần (tắt mặc định)
 
 - Kiểm tra rút gọn (SCOPED_CAREER_VALIDATION): tiệm có hồ sơ an ninh đang mở, khi sổ an ninh không đổi mà tiệm vẫn bị tính lương/sổ thu chi, không còn bị từ chối nhầm "Tham chiếu hồ sơ an ninh sai." (mã hồ sơ bỏ qua vẫn được đếm). Mặc định vẫn tắt; bật lên thì kết quả giống hệt kiểm tra đầy đủ.
@@ -38,6 +44,13 @@ Có gì mới (chủ game duyệt): "Cập nhật toàn bộ UI UX", "Thêm Top 
 - Chị Hoa kèm ba việc đầu, nhắc trước mỗi lỗi một lần. Người bệnh có quyền từ chối: hỏi, giải thích, báo bác sĩ; ép là lỗi. Không có liều thuốc nào trong game: bác sĩ quyết điều trị.
 - Hơn bốn mươi người “oái oăm” quanh khoa: phong bì, 500 xu đổi giường đẹp, đòi bác sĩ giỏi nhất, cả họ vào thăm, “thần y” mang thuốc nam, quay clip, khách say ca tối, đồng nghiệp rủ làm tắt, ép trực thêm ca, người nhà xin giấy nghỉ ốm giả… Bạn tự chọn giọng, lời nói và báo ai; chiều theo không bao giờ có thưởng.
 - Cuối ca tự viết sổ giao ca từ những gì thật sự đã xảy ra (ghi khống bị trừ điểm hồ sơ). Chứng chỉ An toàn người bệnh giúp dễ được nhận; thang thăng tiến Điều dưỡng chính → Trưởng phòng Điều dưỡng.
+
+## Kiểm tra giao diện trước phát hành (tiệc cưới, hội chợ, màn live)
+
+- Tiệc cưới khi xoay ngang: lễ đường lại hiện trọn cả sân (cô dâu chú rể, sân khấu, múa lân, pháo hoa), không bám theo khách đứng ở cổng hoa nữa; thanh trên cùng gọn một hàng, mâm cỗ một hàng 8 món, bảng chọn nhạc 4 bài một hàng.
+- Hội chợ xoay ngang: bản đồ hội chợ không lấn xuống thanh vuốt ở đáy màn hình.
+- Điện thoại hẹp (360 px): tiêu đề dài nhường chỗ cho số xu ở thanh trên (Bày trí phòng không còn cắt "860 xu").
+
 ## WP1 Nhân viên tiệm & nhập hàng
 
 - Nhân viên bán theo cả danh mục hàng của tiệm (Mẹ & Bé, tạp hóa, thú cưng, trái cây, hoa, trà đá, kem, cơm, phở, mì cay, cà phê, salon, nail, sửa chữa…), chỉ món còn hàng, ưu tiên món còn nhiều; hết thỏ bông vẫn bán món khác.
@@ -45,6 +58,7 @@ Có gì mới (chủ game duyệt): "Cập nhật toàn bộ UI UX", "Thêm Top 
 - Sổ tiệm hiện đơn tiếp theo: giá thu, lương, vật tư, giá vốn, lãi ước tính; tiền vào quỹ nghề; khi đội dừng thì nói rõ đang hết món gì hoặc giá không đủ bù lương.
 - Tiệm Mẹ & Bé đặt đơn gộp nhiều mã một lần (tối đa 12 mã, một chuyến xe, trả một lần).
 - Đơn gộp ở kho: tối đa 20 dòng, nhiều size của cùng một món trong một đơn, 12 đơn đang giao cùng lúc; báo rõ tiền nhập hàng trừ vào quỹ nghề.
+
 ## WP2 Đánh giá, kiểm duyệt & an toàn
 
 - Đánh giá NPC: mọi đánh giá đều báo cáo được. Đánh giá lạc đề, nhầm quán, chưa ghé, cài cắm, chê chuyện ngoài lề và "hùa theo" bị gỡ khỏi điểm trung bình (vẫn giữ, có đánh dấu). Báo cáo không được duyệt giữ nguyên sao, không kéo thêm 1★; hùa theo không bao giờ kéo hùa theo.

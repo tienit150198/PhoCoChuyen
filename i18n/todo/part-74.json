@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Máy hút và bộ đầu thông",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đồ dùng và xe dọn nhà",
+  "en": ""
+ },
+ {
+  "vi": "Bộ giữ lạnh và muỗng định lượng",
+  "en": ""
+ },
+ {
   "vi": "Bộ máy và khay dụng cụ nail",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Chờ một chút rồi thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Số liệu đang được tính, thử lại sau ít phút nhé.",
-  "en": ""
- },
- {
-  "vi": "Không tải được CSV.",
-  "en": ""
- },
- {
-  "vi": "Bảng dữ liệu",
   "en": ""
  }
 ]

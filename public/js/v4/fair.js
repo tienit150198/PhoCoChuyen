@@ -37,7 +37,7 @@ const RINGER={name:'Cô Tư ném vòng',emoji:'👩🏻',idle:['Ném vòng cổ 
   hit:['Trúng rồi! Tay ném chắc ghê!','Vô cổ chai luôn!','Đẹp! Thêm chai nữa nè!'],miss:['Hụt chút xíu!','Trật rồi, canh lại nha!','Ui, vòng nảy ra mất!']};
 const OPP={de:{start:['Chơi với em nha! Anh chị đi trước đi.','Em mới tập chơi, nương tay giùm em nha!'],think:['Để em đếm coi…','Ô này nè… hông, ô kia!','Em rải bên này nha!'],
     cap:['Hihi, em ăn được rồi!','Ăn rồi nha!'],lose:['Ui da, mất quân rồi.','Ăn của em nhiều quá trời!'],won:['Em thắng rồi! Chơi ván nữa hông?'],lost:['Anh chị giỏi quá! Chơi lại ván nữa nha!'],draw:['Huề rồi! Ván sau phân thắng thua nha!']},
-  kho:{start:['Ông chơi ô ăn quan từ hồi còn để chỏm. Mời cháu đi trước.','Bàn bày rồi, cháu đi trước đi.'],think:['Hừm… để ông tính.','Đi nước này coi sao.','Cháu coi kỹ nè.'],
+  kho:{start:['Ông chơi ô ăn quan từ hồi còn để chỏm. Ông đi trước nha.','Bàn bày rồi, ông đi trước, cháu coi kỹ.'],think:['Hừm… để ông tính.','Đi nước này coi sao.','Cháu coi kỹ nè.'],
     cap:['Quân này ông xin nha.','Ăn liên tiếp mới vui!'],lose:['Nước này cháu tính hay đó.','Khá lắm, khá lắm.'],won:['Ván này ông thắng, cháu tập thêm rồi ghé nha.'],lost:['Cháu cao tay thiệt! Ông chịu thua ván này.'],draw:['Huề! Ông cháu mình ngang tay.']}};
 
 /* ---- state ---- */
@@ -282,8 +282,8 @@ const meter=(e,label='Hôm nay đã kiếm')=>{if(e?.nocap)return '';e=e||{today
   return `<span class="fh-meter${e.today>=e.cap?' full':''}" aria-hidden="true"><i style="width:${pct}%"></i></span><small class="fh-meterlabel">${e.today>=e.cap?'Hôm nay đã kiếm đủ':label} <b>${fmt(e.today)}</b>/${xu(e.cap)}</small>`;};
 const homeView=()=>walkOn()?WALK.html():gateList();
 function gateList(){
-  const f=F(),r=R(),e=f.earn||{},o=f.oaq,m=won(),pr=r.oaq_prize||{de:50,kho:500};
-  const oaqLine=o?.stage==='play'?`<em class="fh-live">Đang chơi dở với ${esc(o.name)} · chơi tiếp</em>`:`Đấu với Bé Bi (thắng +${pr.de} xu) hoặc Ông Hai (thắng +${pr.kho} xu)`;
+  const f=F(),r=R(),e=f.earn||{},o=f.oaq,m=won(),pr=r.oaq_prize||{de:50,kho:10000};
+  const oaqLine=o?.stage==='play'?`<em class="fh-live">Đang chơi dở với ${esc(o.name)} · chơi tiếp</em>`:`Đấu với Bé Bi (thắng +${pr.de} xu) hoặc Ông Hai (thắng +${fmt(pr.kho)} xu)`;
   const luck=(id,ico,name,sub,warn='')=>`<button type="button" class="fh-luckgame" data-fh="tab" data-tab="${id}" data-fh-key="g-${id}"><span class="fh-lico" aria-hidden="true">${ico}</span><span class="grow"><b>${name}</b><small>${sub}</small></span>${warn}${f.loto?.stage==='play'&&id==='lt'||id==='dt'&&['play','choice'].includes(f.knife?.run?.stage)?'<i class="fh-dot" aria-label="đang chơi"></i>':''}</button>`;
   return `<section class="fh-gate" aria-label="Cổng hội">
     <div class="fh-sec"><h3>💰 Chơi kiếm xu</h3><span class="fh-tag good">Không cần đặt cược</span></div>
@@ -318,7 +318,7 @@ function oaqBoard(){
   return `<div class="fh-oaq" aria-label="Bàn ô ăn quan">${cell(0)}<div class="fh-orow opp">${ROW_OPP.map(cell).join('')}</div><div class="fh-orow me">${ROW_ME.map(cell).join('')}</div>${cell(6)}</div>`;
 }
 function oaqView(){
-  const f=F(),r=R(),o=f.oaq,e=(f.earn||{}).oaq,pr=r.oaq_prize||{de:50,kho:500},people=r.oaq_people||{de:['Bé Bi','👦'],kho:['Ông Hai','👴']};
+  const f=F(),r=R(),o=f.oaq,e=(f.earn||{}).oaq,pr=r.oaq_prize||{de:50,kho:10000},people=r.oaq_people||{de:['Bé Bi','👦'],kho:['Ông Hai','👴']};
   const how=`<details class="fh-how"${o?'':' open'}><summary>Cách chơi</summary><ul>
       <li>Mỗi bên 5 ô dân, mỗi ô 5 quân. Hai đầu là ô quan: mỗi quan ${r.quan||10} điểm, mỗi dân 1 điểm.</li>
       <li>Tới lượt: chọn một ô bên mình còn quân, chọn hướng, bốc hết rải mỗi ô một quân (rải qua cả ô quan).</li>
@@ -326,9 +326,10 @@ function oaqView(){
       <li>Kế tiếp là một ô trống rồi tới ô có quân: ăn hết ô đó. Lại một ô trống rồi ô có quân thì ăn tiếp. Hai ô trống liền nhau: hết lượt.</li>
       <li>Quan non: ô quan còn quan mà chưa đủ ${r.quan_non||5} dân thì chưa ăn được.</li>
       <li>Hàng mình hết quân thì lấy 5 dân đã ăn rải lại mỗi ô một quân; không đủ thì ván kết thúc.</li>
-      <li>Hết cả hai ô quan: mỗi bên thu dân còn trên hàng mình. Nhiều điểm hơn thì thắng.</li></ul></details>`;
+      <li>Hết cả hai ô quan: mỗi bên thu dân còn trên hàng mình. Nhiều điểm hơn thì thắng.</li>
+      <li>Bé Bi mới tập chơi. Ông Hai rất khó, gần như không ai thắng nổi, thắng được ${xu(pr.kho)}.</li></ul></details>`;
   if(!o||(o.stage!=='play'&&!S.oaq.showEnd)){
-    const opp=lv=>`<button type="button" class="fh-opp fh-opp-${lv}" data-fh="oaqstart" data-lv="${lv}" data-fh-key="opp-${lv}"${S.busy?' disabled':''}><span class="fh-npc" aria-hidden="true">${people[lv][1]}</span><b>${esc(people[lv][0])}</b><small>${S.busy&&S.oaq.starting===lv?'Đang bày bàn…':`${lv==='de'?'Dễ':'Khó'} · thắng <b>+${xu(pr[lv])}</b>`}</small></button>`;
+    const opp=lv=>`<button type="button" class="fh-opp fh-opp-${lv}" data-fh="oaqstart" data-lv="${lv}" data-fh-key="opp-${lv}"${S.busy?' disabled':''}><span class="fh-npc" aria-hidden="true">${people[lv][1]}</span><b>${esc(people[lv][0])}</b><small>${S.busy&&S.oaq.starting===lv?'Đang bày bàn…':`${lv==='de'?'Dễ':'Rất khó'} · thắng <b>+${xu(pr[lv])}</b>`}</small></button>`;
     return `<section class="fh-stall fh-oaqstall" aria-label="Ô ăn quan">
       <div class="fh-card fh-oaqintro"><h3>🪨 Ô ăn quan</h3><p>Chọn người chơi cùng. Thắng thì được xu, thua không mất gì.</p><div class="fh-opps">${opp('de')}${opp('kho')}</div>${meter(e)}</div>
       ${how}<p class="fh-rule">${e?.nocap?'Thắng bao nhiêu ván cũng được xu, không giới hạn.':`Mỗi ngày kiếm từ ô ăn quan tối đa ${xu(e?.cap||90)}.`}</p></section>`;
@@ -361,7 +362,10 @@ const wait=ms=>new Promise(ok=>setTimeout(ok,reduce()?Math.min(ms,60):ms));
 async function oaqStart(lv){
   if(S.busy)return;S.busy=true;S.oaq.starting=lv;S.flash=null;render();
   const r=await send('fair_oaq_start',{lv});S.busy=false;S.oaq.starting=null;
-  if(r?.fair){S.oaq={...S.oaq,sel:null,anim:null,end:null,showEnd:true,quit:false,say:pick((OPP[lv]||OPP.de).start)};}
+  if(r?.fair){S.oaq={...S.oaq,sel:null,anim:null,end:null,showEnd:true,quit:false,say:pick((OPP[lv]||OPP.de).start)};
+    const tr=r.fair.trace||[];   // Ông Hai opens (06/10): show his first move from the starting board
+    if(tr.length){const a=S.oaq.anim={b:[0,5,5,5,5,5,0,5,5,5,5,5],q:[1,1],cap:[0,0,0,0],hand:0,at:null,hl:null,flash:null,side:1};S.busy=true;render();
+      await playTrace(tr,lv);if(S.oaq.anim===a)S.oaq.anim=null;S.busy=false;}}
   render();
 }
 async function oaqMove(dir){

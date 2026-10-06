@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Mua 1 đến $1 tờ dò. Cô Bảy hô số nào thì số đó sáng lên trên tờ của bạn, bạn tự chạm để đánh dấu, không ai đánh dấu giùm.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đủ hình của vòng thì bấm “Kinh!”. Cô Bảy dò lại: đúng thì ôm hũ; kinh hụt (hàng chưa đủ) thì bỏ $1 vô hũ phạt$2.",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "Giá tham khảo $1/kỳ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚚 $1/$2 đơn đang về",
   "en": "",
   "pattern": true
  }

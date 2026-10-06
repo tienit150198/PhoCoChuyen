@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Phòng làm tóc",
+  "en": ""
+ },
+ {
+  "vi": "Phòng chăm sóc",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm sửa",
+  "en": ""
+ },
+ {
   "vi": "MAY ĐO",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Hủy thẻ tín dụng?",
-  "en": ""
- },
- {
-  "vi": "Thẻ không dùng được nữa. Muốn có thẻ mới phải nộp hồ sơ lại.",
-  "en": ""
- },
- {
-  "vi": "Hủy thẻ",
-  "en": ""
- },
- {
-  "vi": "Khoản vay",
   "en": ""
  }
 ]

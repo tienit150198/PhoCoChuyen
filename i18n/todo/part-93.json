@@ -1,5 +1,20 @@
 [
  {
+  "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1$2Được phép khen đểu, mỉa mai nhẹ, chấm sao kiểu hờn dỗi, lạc đề một chút. $3$4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1$2Được phép khen đểu, mỉa mai nhẹ, chấm sao kiểu hờn dỗi, lạc đề một chút. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1$2Được phép khen đểu, mỉa mai nhẹ, chấm sao kiểu hờn dỗi, lạc đề một chút.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1$2",
   "en": "",
   "pattern": true
@@ -2046,76 +2061,6 @@
  },
  {
   "vi": "Bạn bớt $1 xu “lấy hên”. $2 cười tít: “Vậy mới là khách quen chứ!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn bớt luôn $1 xu. $2 hớn hở — chị Vy đứng trong nhìn ra, hơi nhíu mày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Còn $2 xu. $3 đưa $4 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đang chờ bạn trả lời chuyện bớt giá.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giá treo vừa hết $1 $2. Bill được mở lại, chọn lại giùm khách nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 để đồ lại trên quầy, không mua nữa: “$2”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 để đồ lại, không lấy nữa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đã phục vụ $1: “$2”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thất thoát ở quầy: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gửi Bà Tư $1 xu tiền công.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã thu $1 xu · +$2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Về nhà mặc thử mới thấy $1, phải quay lại tiệm đổi size.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "lấy sai size ($1 thay vì $2)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đi $1 mà bộ này lạc quẻ, tới nơi mới thấy không hợp dịp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mà mặc màu $2, người ta nhìn mình quá trời.",
   "en": "",
   "pattern": true
  }

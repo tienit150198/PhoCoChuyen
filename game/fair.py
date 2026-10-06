@@ -116,8 +116,9 @@ COT_PAY_HALF = 17              # cột may mắn: stake × 17 / 2 back
 LOTO_OPT = ('mode', 'tier', 'n', 'sb', 'fk')   # newer round keys (absent in older saves: thuong, vua, 1 tờ)
 LTD_KEYS = ('r', 'w', 'fk', 'npc')            # today's lô tô: rounds, Kinh won, Kinh hụt, the neighbours' wins
 # 🪨 Ô ăn quan and 💍 Ném vòng: no stake, a little xu for playing well, capped a day per game
-OAQ_PRIZE = dict(de=50, kho=500)
+OAQ_PRIZE = dict(de=50, kho=10000)   # owner 06/10: Ông Hai pays 10.000 xu a won game (was 500)
 OAQ_PEOPLE = dict(de=('Bé Bi', '👦'), kho=('Ông Hai', '👴'))
+OAQ_FIRST = ('kho',)   # owner 06/10 "không ai thắng được": Ông Hai opens (the first move is a big edge), Bé Bi lets you
 OAQ_STAGES = ('play', 'won', 'lost', 'draw')
 RING_HIT, RING_ALL = 3, 8      # xu per bottle ringed, and the bonus for all five
 RING_DAY = 80                  # rounds a day at most
@@ -1026,8 +1027,16 @@ def apply(s: dict, name: str, p: dict) -> dict:
         _day(f, t)
         st['oaq'] += 1
         f['oaq'] = dict(lv=p['lv'], g=oaq.new_game(), at=int(t), stage='play')
-        result['fair'] = dict(game='oaq', started=True, view=oaq_view(f['oaq']))
-        result['message'] = f'Bày bàn ô ăn quan với {OAQ_PEOPLE[p["lv"]][0]}. Bạn đi trước nha!'
+        trace: list = []
+        if p['lv'] in OAQ_FIRST:   # he opens: the board comes back on the player's turn, as older builds expect
+            g = f['oaq']['g']
+            c, d = oaq.ai_move(g, p['lv'], _rng)
+            trace.append(['turn', 1, c, d])
+            oaq.play(g, 1, c, d, trace)
+            oaq.begin_turn(g, 0, trace)   # never the end after one move (each row still has dân)
+        result['fair'] = dict(game='oaq', started=True, view=oaq_view(f['oaq']), trace=trace)
+        result['message'] = (f'Bày bàn ô ăn quan với {OAQ_PEOPLE[p["lv"]][0]}. '
+                             + ('Ông đi trước rồi, tới cháu nha!' if p['lv'] in OAQ_FIRST else 'Bạn đi trước nha!'))
     elif name == 'fair_oaq_move':
         o = f['oaq']
         need(o and o['stage'] == 'play', 'Ván ô ăn quan này đã xong rồi.', 'fair_oaq_over')

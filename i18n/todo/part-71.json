@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Chọn số vàng muốn mua nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Ví đang nợ. Trả nợ xong rồi hãy mua vàng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mua vàng",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chưa có vàng để bán.",
+  "en": ""
+ },
+ {
   "vi": "Chọn số vàng muốn bán nhé.",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Chằm zn luôn á, ko có j để nói hết 🥲",
-  "en": ""
- },
- {
-  "vi": "Dân văn phòng mệt mỏi",
-  "en": ""
- },
- {
-  "vi": "cày deadline, cà phê thay nước, đếm từng ngày tới cuối tuần",
-  "en": ""
- },
- {
-  "vi": "than họp, sếp, email",
-  "en": ""
- },
- {
-  "vi": "dùng từ công sở: deadline, họp, báo cáo",
   "en": ""
  }
 ]

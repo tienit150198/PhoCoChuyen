@@ -1,5 +1,17 @@
 [
  {
+  "vi": "gửi lại 20 xu",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lại 20 xu",
+  "en": ""
+ },
+ {
+  "vi": "bênh chùa",
+  "en": ""
+ },
+ {
   "vi": "Quà nhỏ",
   "en": ""
  },
@@ -1896,21 +1908,6 @@
  },
  {
   "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1$2Được phép khen đểu, mỉa mai nhẹ, chấm sao kiểu hờn dỗi, lạc đề một chút. $3$4$5",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1$2Được phép khen đểu, mỉa mai nhẹ, chấm sao kiểu hờn dỗi, lạc đề một chút. $3$4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1$2Được phép khen đểu, mỉa mai nhẹ, chấm sao kiểu hờn dỗi, lạc đề một chút. $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giữ nguyên số sao, ý khen/chê và mọi sự thật trong dữ liệu; không thêm sự kiện, số liệu, tên riêng mới. $1$2Được phép khen đểu, mỉa mai nhẹ, chấm sao kiểu hờn dỗi, lạc đề một chút.",
   "en": "",
   "pattern": true
  }
