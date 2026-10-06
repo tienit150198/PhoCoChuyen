@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Bấm [[Báo buồng phòng kiểm]], trả đồ khách để quên, chỉnh từng dòng hóa đơn rồi [[In hóa đơn]] và thu.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn phòng trống đủ mọi đêm, [[Giữ phòng trên lịch]], [[Hỏi khách ngân sách]], chọn giá, rồi [[Nhận cọc]] 30% và [[gửi xác nhận]].",
+  "en": ""
+ },
+ {
   "vi": "Hỏi khách đi cùng ai, ngân sách, thời tiết… chọn 2–3 nơi hợp rồi bấm [[Gửi lịch trình cho khách]].",
   "en": ""
  },
@@ -1565,18 +1573,6 @@
  },
  {
   "vi": "🟢 Túi một loại vào đúng ngăn đó. Túi lẫn đồ ăn với đồ tái chế, hay lẫn đủ thứ, vào ngăn còn lại.",
-  "en": ""
- },
- {
-  "vi": "🛒 Hết túi ở nhà này thì tới nhà sau; nhà cuối xong thì [[XONG NGÕ]].",
-  "en": ""
- },
- {
-  "vi": "🧤 Đủ đồ bảo hộ: tay trần nhặt kim tiêm, mảnh kính là bị thương.",
-  "en": ""
- },
- {
-  "vi": "🟢 Đúng ngăn, không trộn lẫn; không để lọt pin, kim tiêm lên xe ép.",
   "en": ""
  }
 ]

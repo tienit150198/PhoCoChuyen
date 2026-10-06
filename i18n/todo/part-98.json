@@ -1,5 +1,305 @@
 [
  {
+  "vi": "Túi mềm lên trực thăng",
+  "en": ""
+ },
+ {
+  "vi": "Mối nguy hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Mối nguy của việc hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Mối nguy",
+  "en": ""
+ },
+ {
+  "vi": "Phụ cấp",
+  "en": ""
+ },
+ {
+  "vi": "Thức dậy",
+  "en": ""
+ },
+ {
+  "vi": "Thỉnh chuông sáng",
+  "en": ""
+ },
+ {
+  "vi": "Công phu sáng",
+  "en": ""
+ },
+ {
+  "vi": "Điểm tâm",
+  "en": ""
+ },
+ {
+  "vi": "Mở loa ra đường 4h",
+  "en": ""
+ },
+ {
+  "vi": "Lau khăn ẩm vắt kiệt",
+  "en": ""
+ },
+ {
+  "vi": "Bày lại như cũ",
+  "en": ""
+ },
+ {
+  "vi": "Khóa cửa hông",
+  "en": ""
+ },
+ {
+  "vi": "Ghế người già hàng đầu",
+  "en": ""
+ },
+ {
+  "vi": "Chụp người nhận đăng mạng",
+  "en": ""
+ },
+ {
+  "vi": "Dập bằng bình, khăn ướt",
+  "en": ""
+ },
+ {
+  "vi": "Dời đèn, lư sang bên",
+  "en": ""
+ },
+ {
+  "vi": "Đốt lá góc sân",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ phướn, kéo xuống đất",
+  "en": ""
+ },
+ {
+  "vi": "Xếp hàng, cụ già trước",
+  "en": ""
+ },
+ {
+  "vi": "Hô lùi ra xa",
+  "en": ""
+ },
+ {
+  "vi": "Phủi bụi trên xuống",
+  "en": ""
+ },
+ {
+  "vi": "Loa vừa đủ trong sân",
+  "en": ""
+ },
+ {
+  "vi": "Chừa lối đi, cửa hông",
+  "en": ""
+ },
+ {
+  "vi": "Nhặt rác",
+  "en": ""
+ },
+ {
+  "vi": "Mời nước, chỗ mát",
+  "en": ""
+ },
+ {
+  "vi": "Quét hiên ra cổng",
+  "en": ""
+ },
+ {
+  "vi": "Phát suất, hai tay",
+  "en": ""
+ },
+ {
+  "vi": "Rửa tay, khẩu trang",
+  "en": ""
+ },
+ {
+  "vi": "Đứng lên bàn thờ",
+  "en": ""
+ },
+ {
+  "vi": "Tưới cau, kiểng",
+  "en": ""
+ },
+ {
+  "vi": "Xá trước khi lau",
+  "en": ""
+ },
+ {
+  "vi": "Xem còn tàn lửa",
+  "en": ""
+ },
+ {
+  "vi": "📦 Nhập",
+  "en": ""
+ },
+ {
+  "vi": "📜 Nội quy tiệm",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Tiệm: khử khuẩn, kho, nội quy",
+  "en": ""
+ },
+ {
+  "vi": "· ✅ đã khử khuẩn",
+  "en": ""
+ },
+ {
+  "vi": "· 🧽 chưa khử khuẩn hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "💊 có đơn thuốc",
+  "en": ""
+ },
+ {
+  "vi": "da nhạy cảm",
+  "en": ""
+ },
+ {
+  "vi": "✂️ chủ muốn móng thật ngắn",
+  "en": ""
+ },
+ {
+  "vi": "🚫 không bánh thưởng",
+  "en": ""
+ },
+ {
+  "vi": "📋 Phiếu nhận bé & kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "· da nhạy cảm",
+  "en": ""
+ },
+ {
+  "vi": "· da thường",
+  "en": ""
+ },
+ {
+  "vi": "· 💊 có đơn bác sĩ",
+  "en": ""
+ },
+ {
+  "vi": "✓ Ấm vừa",
+  "en": ""
+ },
+ {
+  "vi": "🥶 Lạnh",
+  "en": ""
+ },
+ {
+  "vi": "🥵 Hơi nóng",
+  "en": ""
+ },
+ {
+  "vi": "⛔ BỎNG!",
+  "en": ""
+ },
+ {
+  "vi": "⚫ Móng đen: chỉ tỉa đầu móng.",
+  "en": ""
+ },
+ {
+  "vi": "⚪ Móng trắng, thấy tủy.",
+  "en": ""
+ },
+ {
+  "vi": "⚫ Móng đen: chỉ tỉa đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ muốn cắt thật ngắn.",
+  "en": ""
+ },
+ {
+  "vi": "💧 Sấy khô trước.",
+  "en": ""
+ },
+ {
+  "vi": "cắt ngắn",
+  "en": ""
+ },
+ {
+  "vi": "tỉa đầu móng",
+  "en": ""
+ },
+ {
+  "vi": "· 🩹 rỉ máu",
+  "en": ""
+ },
+ {
+  "vi": "sấy khô trước",
+  "en": ""
+ },
+ {
+  "vi": "🔴 Tai đỏ, hôi: bỏ qua, báo chủ đi thú y.",
+  "en": ""
+ },
+ {
+  "vi": "đã lau tai",
+  "en": ""
+ },
+ {
+  "vi": "bỏ qua lau tai",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ chọn điều đã quan sát hoặc thực sự xảy ra, không chọn hết. “Cắt móng bị chảy máu” chỉ khi có sự cố; “Dừng dịch vụ” chỉ khi bạn đã dừng. Chọn xong bấm Ghi lời báo trước khi trả bé.",
+  "en": ""
+ },
+ {
+  "vi": "🩺 Lạ thì khuyên đi thú y, không tự đoán bệnh.",
+  "en": ""
+ },
+ {
+  "vi": "làm xong rồi báo",
+  "en": ""
+ },
+ {
+  "vi": "Xem dáng đi",
+  "en": ""
+ },
+ {
+  "vi": "đi khập khiễng",
+  "en": ""
+ },
+ {
+  "vi": "📝 Kiểm trước khi nhận",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm trước khi nhận",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Hoặc từ chối lịch sự",
+  "en": ""
+ },
+ {
+  "vi": "sổ tiêm, bệnh, hết chuồng",
+  "en": ""
+ },
+ {
+  "vi": "Chủ dặn: không bánh thưởng",
+  "en": ""
+ },
+ {
+  "vi": "· bé không ăn",
+  "en": ""
+ },
+ {
+  "vi": "đã dắt đi dạo",
+  "en": ""
+ },
+ {
+  "vi": "Nhà gia đình:",
+  "en": ""
+ },
+ {
   "vi": "🚰 Khóa vòi · nước đã trong",
   "en": ""
  },
@@ -285,6 +585,22 @@
  },
  {
   "vi": "✒️ Màu chữ biển hiệu",
+  "en": ""
+ },
+ {
+  "vi": "Công việc gồm…",
+  "en": ""
+ },
+ {
+  "vi": "Bạn sẽ gặp…",
+  "en": ""
+ },
+ {
+  "vi": "Được khen khi…",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm thú cưng",
   "en": ""
  },
  {
@@ -1481,322 +1797,6 @@
  },
  {
   "vi": "✂️ Cắt rìa, bỏ bao kiếng",
-  "en": ""
- },
- {
-  "vi": "Máy in hết mực.",
-  "en": ""
- },
- {
-  "vi": "🖨️ Thay cuộn mực",
-  "en": ""
- },
- {
-  "vi": "🖨️ Máy in & bàn cắt",
-  "en": ""
- },
- {
-  "vi": "Ảnh chụp thử",
-  "en": ""
- },
- {
-  "vi": "📷 Máy ảnh",
-  "en": ""
- },
- {
-  "vi": "🖨️ Máy in",
-  "en": ""
- },
- {
-  "vi": "✓ Ống kính sạch",
-  "en": ""
- },
- {
-  "vi": "📸 Chụp thử phông trống",
-  "en": ""
- },
- {
-  "vi": "Máy in báo cuộn mực còn",
-  "en": ""
- },
- {
-  "vi": "Chụp thử một tấm để máy in báo mực còn bao nhiêu.",
-  "en": ""
- },
- {
-  "vi": "🖨️ Thay cuộn mực mới",
-  "en": ""
- },
- {
-  "vi": "Chụp thử một tấm",
-  "en": ""
- },
- {
-  "vi": "Cuộn mực sắp hết: thay cuộn mới",
-  "en": ""
- },
- {
-  "vi": "Chị đứng cạnh máy in: lỡ sai chỗ nào, chị nhắc trước khi in.",
-  "en": ""
- },
- {
-  "vi": "Mở tiệm xong mới chụp",
-  "en": ""
- },
- {
-  "vi": "Đạo cụ",
-  "en": ""
- },
- {
-  "vi": "Không đạo cụ",
-  "en": ""
- },
- {
-  "vi": "Ống kính mờ hơi nước",
-  "en": ""
- },
- {
-  "vi": "📸 Bấm máy lúc cả nhóm đứng yên, mở mắt",
-  "en": ""
- },
- {
-  "vi": "Cho khách xem, chọn ảnh",
-  "en": ""
- },
- {
-  "vi": "Đóng ngày tháng",
-  "en": ""
- },
- {
-  "vi": "In lại theo chỉnh mới",
-  "en": ""
- },
- {
-  "vi": "Lồng khung",
-  "en": ""
- },
- {
-  "vi": "✂️ Cắt, bỏ bao kiếng",
-  "en": ""
- },
- {
-  "vi": "📸 Vào việc thôi!",
-  "en": ""
- },
- {
-  "vi": "📸 MỞ TIỆM",
-  "en": ""
- },
- {
-  "vi": "🙏 Nói thật: tiệm hết giấy, khung",
-  "en": ""
- },
- {
-  "vi": "🖼️ ĐƯA ẢNH",
-  "en": ""
- },
- {
-  "vi": "in và cắt ảnh trước đã",
-  "en": ""
- },
- {
-  "vi": "🎞️ Tường khung mẫu",
-  "en": ""
- },
- {
-  "vi": "📷 Ống kính sạch",
-  "en": ""
- },
- {
-  "vi": "💧 Ống kính cần lau",
-  "en": ""
- },
- {
-  "vi": "Tiệm chưa mở",
-  "en": ""
- },
- {
-  "vi": "Lau ống kính, mở tiệm",
-  "en": ""
- },
- {
-  "vi": "Chụp ảnh cho khách",
-  "en": ""
- },
- {
-  "vi": "giấy dải",
-  "en": ""
- },
- {
-  "vi": "giấy tờ đôi",
-  "en": ""
- },
- {
-  "vi": "giấy ảnh lớn",
-  "en": ""
- },
- {
-  "vi": "khung gỗ",
-  "en": ""
- },
- {
-  "vi": "bao kiếng",
-  "en": ""
- },
- {
-  "vi": "cuộn mực",
-  "en": ""
- },
- {
-  "vi": "tấm: sáng mai thay cuộn mới",
-  "en": ""
- },
- {
-  "vi": "Lượt khách",
-  "en": ""
- },
- {
-  "vi": "Kiểu đã chụp",
-  "en": ""
- },
- {
-  "vi": "Bấm đúng lúc",
-  "en": ""
- },
- {
-  "vi": "Tấm đã in",
-  "en": ""
- },
- {
-  "vi": "Giấy in, khung gỗ, bao kiếng, cuộn mực…",
-  "en": ""
- },
- {
-  "vi": "Chưa mở được buồng lái",
-  "en": ""
- },
- {
-  "vi": "Cách bay",
-  "en": ""
- },
- {
-  "vi": "✈️ Tự bay",
-  "en": ""
- },
- {
-  "vi": "Vòng tàu",
-  "en": ""
- },
- {
-  "vi": "Hạ cánh",
-  "en": ""
- },
- {
-  "vi": "✈️ Vào ca bay",
-  "en": ""
- },
- {
-  "vi": "Chuyện ở sân bay",
-  "en": ""
- },
- {
-  "vi": "Chuyện nghề bay",
-  "en": ""
- },
- {
-  "vi": "Các bước chuyến bay",
-  "en": ""
- },
- {
-  "vi": "Thưởng đủ khi bay đúng quy trình; lỗi an toàn mất thưởng. Lương theo hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Dự phòng 30 phút",
-  "en": ""
- },
- {
-  "vi": "đầy bình",
-  "en": ""
- },
- {
-  "vi": "⛽ Nạp dầu",
-  "en": ""
- },
- {
-  "vi": "· 🧳 Kín khách: đừng đổ đầy bình.",
-  "en": ""
- },
- {
-  "vi": "🌫️ Lùi giờ cất cánh, chờ sương tan",
-  "en": ""
- },
- {
-  "vi": "Trễ 30 phút, chờ dưới đất",
-  "en": ""
- },
- {
-  "vi": "🛫 Giữ giờ cất cánh",
-  "en": ""
- },
- {
-  "vi": "Tới nơi mà sương chưa tan thì…",
-  "en": ""
- },
- {
-  "vi": "CÁNH CÒ",
-  "en": ""
- },
- {
-  "vi": "Phát hiện khi kiểm tàu",
-  "en": ""
- },
- {
-  "vi": "📞 Gọi chú Mẫn kiểm tra, ghi sổ kỹ thuật",
-  "en": ""
- },
- {
-  "vi": "Có thể trễ chuyến",
-  "en": ""
- },
- {
-  "vi": "⏩ Bỏ qua cho kịp giờ",
-  "en": ""
- },
- {
-  "vi": "🚶 Một vòng quanh tàu",
-  "en": ""
- },
- {
-  "vi": "📢 Thông báo cho khách",
-  "en": ""
- },
- {
-  "vi": "✅ Checklist trước khi nổ máy",
-  "en": ""
- },
- {
-  "vi": "Trên đường bay",
-  "en": ""
- },
- {
-  "vi": "Giông đang ở trên sân bay",
-  "en": ""
- },
- {
-  "vi": "Sương còn dày dưới mức tối thiểu",
-  "en": ""
- },
- {
-  "vi": "🔄 Bay chờ 20 phút",
-  "en": ""
- },
- {
-  "vi": "Đủ dầu chờ",
-  "en": ""
- },
- {
-  "vi": "Không có dầu chờ",
   "en": ""
  }
 ]

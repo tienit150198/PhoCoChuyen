@@ -1,5 +1,17 @@
 [
  {
+  "vi": "💤 Chưa muốn đọc thì đóng lại. Đoạn đó chờ ở thẻ Truyện nghề trong [[Hành trình]], ghi “Có chuyện mới”.",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Đoạn cuối bấm [[Khép lại câu chuyện]] để nhận kỷ vật của truyện.",
+  "en": ""
+ },
+ {
+  "vi": "Rút tiền về ví thế nào?",
+  "en": ""
+ },
+ {
   "vi": "👛 Tiền khách trả nằm trong quỹ của từng nơi làm (quỹ tiệm), không phải trong ví. Muốn tiêu thì rút tiền lời từ quỹ về ví.",
   "en": ""
  },
@@ -1421,14 +1433,6 @@
  },
  {
   "vi": "Thân thiết với hàng xóm",
-  "en": ""
- },
- {
-  "vi": "📊 Mỗi hàng xóm và khách quen có điểm thân quen 0–100: Người lạ, Quen mặt (từ 20), Người quen (40), Thân thiết (60), Như người nhà (80).",
-  "en": ""
- },
- {
-  "vi": "💬 Mở [[Người quen]], chọn một người rồi bấm [[Trò chuyện]] (khách ở nơi khác: [[Nhắn hỏi thăm]]). Lần đầu trong ngày +1 đến +3, nói nặng lời −3.",
   "en": ""
  }
 ]

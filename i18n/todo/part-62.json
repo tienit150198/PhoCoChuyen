@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Khách hẹn “gọi lại sau ba giờ chiều”. Ghi giờ nào?",
+  "en": ""
+ },
+ {
+  "vi": "Giờ ghi theo 24 giờ: ba giờ chiều là 15:00.",
+  "en": ""
+ },
+ {
+  "vi": "Email “nhà cung cấp” báo đổi số tài khoản, nhờ chuyển gấp tiền hàng hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển vào số mới",
+  "en": ""
+ },
+ {
   "vi": "Gọi lại số điện thoại đã biết của nhà cung cấp để xác minh",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Không ngăn được thì báo người có thẩm quyền.",
-  "en": ""
- },
- {
-  "vi": "Cặp đôi không giấy tờ xin lên ban công đèn lúc nửa đêm để cầu hôn.",
-  "en": ""
- },
- {
-  "vi": "Cho lên mười phút",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng, mời ra sân trạm, không cho lên tháp",
-  "en": ""
- },
- {
-  "vi": "Đóng cửa không nói gì",
   "en": ""
  }
 ]

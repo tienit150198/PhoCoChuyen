@@ -1,5 +1,425 @@
 [
  {
+  "vi": "💍 Gửi lời cầu hôn",
+  "en": ""
+ },
+ {
+  "vi": "Lời cầu hôn đã gửi",
+  "en": ""
+ },
+ {
+  "vi": "đang chờ trả lời",
+  "en": ""
+ },
+ {
+  "vi": "chưa nhận lời",
+  "en": ""
+ },
+ {
+  "vi": "đã nhận lời",
+  "en": ""
+ },
+ {
+  "vi": "Rút lại",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện cũ đã khép lại. Mỗi người đều có quyền bắt đầu lại.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận lời cầu hôn",
+  "en": ""
+ },
+ {
+  "vi": "Tắt đi thì không ai gửi được lời mới cho bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Lời cầu hôn gửi tới bạn",
+  "en": ""
+ },
+ {
+  "vi": "Độc thân",
+  "en": ""
+ },
+ {
+  "vi": "Chấp nhận kết bạn",
+  "en": ""
+ },
+ {
+  "vi": "➕ Kết bạn",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy người chơi này.",
+  "en": ""
+ },
+ {
+  "vi": "Tên đăng nhập của bạn ấy",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời kết bạn",
+  "en": ""
+ },
+ {
+  "vi": "muốn kết bạn",
+  "en": ""
+ },
+ {
+  "vi": "Chấp nhận",
+  "en": ""
+ },
+ {
+  "vi": "Mới vào phố",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Ghé chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Mời về nhà",
+  "en": ""
+ },
+ {
+  "vi": "💍 Cầu hôn",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có bạn bè nào. Xin tên đăng nhập của người quen ngoài đời rồi tìm ở trên nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đang chờ trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Cho phép tìm tôi bằng tên đăng nhập",
+  "en": ""
+ },
+ {
+  "vi": "Tắt đi thì chỉ ai có mã người chơi mới tìm được bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Mã người chơi của bạn:",
+  "en": ""
+ },
+ {
+  "vi": "Người khác chỉ thấy tên hiển thị",
+  "en": ""
+ },
+ {
+  "vi": "🏘️ Mọi người đang làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Chép mã",
+  "en": ""
+ },
+ {
+  "vi": "bàn · thực đơn",
+  "en": ""
+ },
+ {
+  "vi": "Tổng chi phí",
+  "en": ""
+ },
+ {
+  "vi": "Trả nốt ngày cưới",
+  "en": ""
+ },
+ {
+  "vi": "Khách dự kiến",
+  "en": ""
+ },
+ {
+  "vi": "Tiền mừng dự kiến",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn của hai bạn",
+  "en": ""
+ },
+ {
+  "vi": "Bạn &",
+  "en": ""
+ },
+ {
+  "vi": "Điểm hạnh phúc",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "ngày liền",
+  "en": ""
+ },
+ {
+  "vi": "Gửi một lời chào hôm nay nhé",
+  "en": ""
+ },
+ {
+  "vi": "Có lời nhờ đang chờ",
+  "en": ""
+ },
+ {
+  "vi": "Gửi, rút, giúp nhau",
+  "en": ""
+ },
+ {
+  "vi": "muốn bàn lại kế hoạch. Sửa rồi gửi lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch cưới",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nơi tổ chức, số bàn, thực đơn, nghi lễ và ai góp bao nhiêu. Tiền chỉ bị trừ khi cả hai cùng xác nhận.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Lên kế hoạch cưới",
+  "en": ""
+ },
+ {
+  "vi": "Sửa kế hoạch",
+  "en": ""
+ },
+ {
+  "vi": "Báo tin cưới cho cả phố (bảng tin chạy chữ)",
+  "en": ""
+ },
+ {
+  "vi": "Muốn bàn lại",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch đã chốt",
+  "en": ""
+ },
+ {
+  "vi": "Ngày cưới đã tới!",
+  "en": ""
+ },
+ {
+  "vi": "Gõ",
+  "en": ""
+ },
+ {
+  "vi": "để xác nhận",
+  "en": ""
+ },
+ {
+  "vi": "Ly hôn",
+  "en": ""
+ },
+ {
+  "vi": "Hủy hôn ước",
+  "en": ""
+ },
+ {
+  "vi": "Ly hôn thì hai bạn thôi là vợ chồng, nhãn “Đã về chung một nhà” được gỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy hôn ước thì kế hoạch cưới dừng lại, tiền cọc không hoàn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Nếu chia tay: quỹ chung chia đôi (lẻ 1 xu thuộc về người không đệ đơn); ai còn nợ thì trả từ phần của mình trước, phần nợ còn lại được xóa.",
+  "en": ""
+ },
+ {
+  "vi": "Có lời mời đang chờ bạn trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "Vào nhà, mời người ấy về ở và cùng chăm con.",
+  "en": ""
+ },
+ {
+  "vi": "Người thân quen đã đến",
+  "en": ""
+ },
+ {
+  "vi": "Khoảnh khắc",
+  "en": ""
+ },
+ {
+  "vi": "Thiệp kỷ niệm đám cưới",
+  "en": ""
+ },
+ {
+  "vi": "Khách tới dự",
+  "en": ""
+ },
+ {
+  "vi": "Tiền mừng",
+  "en": ""
+ },
+ {
+  "vi": "Màu mới",
+  "en": ""
+ },
+ {
+  "vi": "nhẫn của hai bạn",
+  "en": ""
+ },
+ {
+  "vi": "đang trao đi",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Đổi màu",
+  "en": ""
+ },
+ {
+  "vi": "Bán lại",
+  "en": ""
+ },
+ {
+  "vi": "Hộp nhẫn · tiệm kim hoàn",
+  "en": ""
+ },
+ {
+  "vi": "Đổi màu nhẫn hoặc bán nhẫn dư trong hộp để nhận lại 80% giá mua vào ví. Nhẫn đang cầu hôn và nhẫn của hai bạn không bán được.",
+  "en": ""
+ },
+ {
+  "vi": "Ví của bạn:",
+  "en": ""
+ },
+ {
+  "vi": "Chọn màu kim loại và màu đá, xem trước rồi mới mua. Nhẫn trả bằng ví riêng; người ấy từ chối thì nhẫn vẫn nằm trong hộp của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Không kèm lời nhắn",
+  "en": ""
+ },
+ {
+  "vi": "Gửi vào",
+  "en": ""
+ },
+ {
+  "vi": "Rút ra",
+  "en": ""
+ },
+ {
+  "vi": "Chia quỹ",
+  "en": ""
+ },
+ {
+  "vi": "· đang xử lý",
+  "en": ""
+ },
+ {
+  "vi": "Có ghi sổ nợ",
+  "en": ""
+ },
+ {
+  "vi": "Để lần sau",
+  "en": ""
+ },
+ {
+  "vi": "Kiểu gửi",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ chung của hai bạn",
+  "en": ""
+ },
+ {
+  "vi": "Lịch sử quỹ",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Tặng luôn",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Cho mượn",
+  "en": ""
+ },
+ {
+  "vi": "Mượn thôi, sẽ trả lại (ghi sổ nợ)",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhờ",
+  "en": ""
+ },
+ {
+  "vi": "Cho mượn thì khoản này vào sổ nợ, người ấy trả dần lúc nào cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền đi thẳng từ ví của bạn sang ví của người ấy.",
+  "en": ""
+ },
+ {
+  "vi": "Không nêu lý do",
+  "en": ""
+ },
+ {
+  "vi": "trợ giúp",
+  "en": ""
+ },
+ {
+  "vi": "Còn nợ",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả hết",
+  "en": ""
+ },
+ {
+  "vi": "Đã xóa nợ",
+  "en": ""
+ },
+ {
+  "vi": "Trừ khi chia quỹ",
+  "en": ""
+ },
+ {
+  "vi": "Xóa khi chia tay",
+  "en": ""
+ },
+ {
+  "vi": "nợ bạn",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã nhắc",
+  "en": ""
+ },
+ {
+  "vi": "Được nhắc",
+  "en": ""
+ },
+ {
+  "vi": "· đã xin khất",
+  "en": ""
+ },
+ {
+  "vi": "Câu đòi nợ",
+  "en": ""
+ },
+ {
+  "vi": "Đòi tiền",
+  "en": ""
+ },
+ {
+  "vi": "Vừa nhắc rồi, để người ấy thở chút nha.",
+  "en": ""
+ },
+ {
   "vi": "Trả bớt bao nhiêu",
   "en": ""
  },
@@ -345,10 +765,6 @@
  },
  {
   "vi": "Chưa mở khóa được. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "đã mở",
   "en": ""
  },
  {
@@ -1381,422 +1797,6 @@
  },
  {
   "vi": "Thuê chỗ",
-  "en": ""
- },
- {
-  "vi": "Vật tư & vệ sinh",
-  "en": ""
- },
- {
-  "vi": "Thuế GTGT (game)",
-  "en": ""
- },
- {
-  "vi": "Thuế thu nhập (game)",
-  "en": ""
- },
- {
-  "vi": "Thiệt hại / xử lý vi phạm",
-  "en": ""
- },
- {
-  "vi": "Lời sau mọi chi phí",
-  "en": ""
- },
- {
-  "vi": "Bán một ngày để có sổ thu chi.",
-  "en": ""
- },
- {
-  "vi": "Kiểm hàng & vệ sinh",
-  "en": ""
- },
- {
-  "vi": "Ngừng bán hàng hỏng; kiểm tra an toàn đạt khi bật.",
-  "en": ""
- },
- {
-  "vi": "Lưu chứng từ",
-  "en": ""
- },
- {
-  "vi": "Lưu hóa đơn, sổ hàng để đối chiếu khi kiểm tra.",
-  "en": ""
- },
- {
-  "vi": "/ ngày có bán: giảm 20% khả năng bị trộm và giảm thiệt hại trộm cướp.",
-  "en": ""
- },
- {
-  "vi": "Trộm két",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra vệ sinh",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra chứng từ",
-  "en": ""
- },
- {
-  "vi": "Bị đòi tiền bảo kê",
-  "en": ""
- },
- {
-  "vi": "đang chờ xử lý",
-  "en": ""
- },
- {
-  "vi": "đạt, không phạt",
-  "en": ""
- },
- {
-  "vi": "có vi phạm",
-  "en": ""
- },
- {
-  "vi": "đã khắc phục",
-  "en": ""
- },
- {
-  "vi": "đã lưu bằng chứng và báo công an",
-  "en": ""
- },
- {
-  "vi": "đã từ chối",
-  "en": ""
- },
- {
-  "vi": "Lưu bằng chứng & báo công an",
-  "en": ""
- },
- {
-  "vi": "Từ chối trả tiền",
-  "en": ""
- },
- {
-  "vi": "Bảng dưới dành cho ca thuê người chơi và kỳ cũ. Hoạt động liên tục ghi thuế thu nhập trên lãi dương, phí môi trường và bảo vệ riêng; xem chi phí và lãi hiện tại trong bảng vận hành của quầy.",
-  "en": ""
- },
- {
-  "vi": "Sổ ca thuê & kỳ trước",
-  "en": ""
- },
- {
-  "vi": "Sổ quầy & an toàn",
-  "en": ""
- },
- {
-  "vi": "Rất cẩn thận",
-  "en": ""
- },
- {
-  "vi": "phút hoạt động",
-  "en": ""
- },
- {
-  "vi": "Tự đặt lương. Trả cao thì vui, bán đắt hàng hơn. Dưới 60% mức xin là họ không nhận.",
-  "en": ""
- },
- {
-  "vi": "Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; giữ lại tiền lương để nhân viên tiếp tục làm.",
-  "en": ""
- },
- {
-  "vi": "Két + vốn hiện có",
-  "en": ""
- },
- {
-  "vi": "Nhập thêm",
-  "en": ""
- },
- {
-  "vi": "Nhập số lượng để xem tổng tiền",
-  "en": ""
- },
- {
-  "vi": "Nhập số lượng trước",
-  "en": ""
- },
- {
-  "vi": "Két và vốn chưa đủ",
-  "en": ""
- },
- {
-  "vi": "Xem tiệm",
-  "en": ""
- },
- {
-  "vi": "Ít: không lo ế. Nhiều: không lo hết hàng. Hàng tươi (hoa, bánh) ế thì hư.",
-  "en": ""
- },
- {
-  "vi": "Vốn quầy",
-  "en": ""
- },
- {
-  "vi": "Tiền hàng, lương, điện, phí online, thuê chỗ, vật tư, bảo vệ và thuế lấy từ két trước, thiếu mới lấy vốn quầy. Góp vốn dùng ví trước, thiếu mới lấy tài khoản ngân hàng; không dùng thẻ tín dụng. Xem từng khoản trong Sổ quầy & an toàn. Chi phí chưa trả hiện trên thẻ quầy và tạm dừng quầy; chủ chọn Đóng tiền để trả.",
-  "en": ""
- },
- {
-  "vi": "Muốn góp vốn bằng quỹ chung: rút từ quỹ chung về ví ở Ngân hàng, rồi Góp vào vốn quầy.",
-  "en": ""
- },
- {
-  "vi": "Góp vào",
-  "en": ""
- },
- {
-  "vi": "Két vào vốn",
-  "en": ""
- },
- {
-  "vi": "Bán gì?",
-  "en": ""
- },
- {
-  "vi": "Ở đâu?",
-  "en": ""
- },
- {
-  "vi": "Tên quầy",
-  "en": ""
- },
- {
-  "vi": "Chỗ to thì đông khách, nhiều người đứng, nhưng tiền thuê cao hơn.",
-  "en": ""
- },
- {
-  "vi": "Chọn món bán trước",
-  "en": ""
- },
- {
-  "vi": "Giá mềm: khách thích 😊",
-  "en": ""
- },
- {
-  "vi": "Hơi đắt: khách sẽ ít hơn",
-  "en": ""
- },
- {
-  "vi": "Giá vừa phải 👍",
-  "en": ""
- },
- {
-  "vi": "🧑‍🍳 Tiếp tục tự đứng quầy",
-  "en": ""
- },
- {
-  "vi": "🧑‍🍳 Tự đứng quầy",
-  "en": ""
- },
- {
-  "vi": "🏪 Vào xem tiệm",
-  "en": ""
- },
- {
-  "vi": "Đóng chi phí còn thiếu trước nhé",
-  "en": ""
- },
- {
-  "vi": "Mở quầy để bắt đầu nhận khách",
-  "en": ""
- },
- {
-  "vi": "Hàng còn đủ bán hơn 1 ngày.",
-  "en": ""
- },
- {
-  "vi": "Lãi 1 ngày (24 giờ)",
-  "en": ""
- },
- {
-  "vi": "nếu đủ hàng, đủ vốn",
-  "en": ""
- },
- {
-  "vi": "(khi quầy bán lại)",
-  "en": ""
- },
- {
-  "vi": "Chờ bạn tự đứng quầy",
-  "en": ""
- },
- {
-  "vi": "Đã hết nguyên liệu",
-  "en": ""
- },
- {
-  "vi": "Thiếu tiền vận hành",
-  "en": ""
- },
- {
-  "vi": "Đang cập nhật quầy",
-  "en": ""
- },
- {
-  "vi": "Két/vốn chưa đủ",
-  "en": ""
- },
- {
-  "vi": "Nguyên liệu còn",
-  "en": ""
- },
- {
-  "vi": "Lãi đã ghi sổ",
-  "en": ""
- },
- {
-  "vi": "Nhân viên tiếp tục bán khi bạn rời game, tới khi hết hàng hoặc hết tiền.",
-  "en": ""
- },
- {
-  "vi": "Quầy chỉ bán khi bạn tự phục vụ hoặc giao hàng.",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối được để cập nhật. Số liệu đang giữ là lần xác nhận gần nhất.",
-  "en": ""
- },
- {
-  "vi": "Vừa bán tại quầy",
-  "en": ""
- },
- {
-  "vi": "Điện",
-  "en": ""
- },
- {
-  "vi": "Online / giao hàng",
-  "en": ""
- },
- {
-  "vi": "Thuế kỳ cũ",
-  "en": ""
- },
- {
-  "vi": "Thuế thu nhập",
-  "en": ""
- },
- {
-  "vi": "Phí môi trường",
-  "en": ""
- },
- {
-  "vi": "Khách tại quầy",
-  "en": ""
- },
- {
-  "vi": "Chưa có lượt bán được ghi nhận. Sổ sẽ cập nhật khi nhân viên bán được hàng.",
-  "en": ""
- },
- {
-  "vi": "Phục vụ",
-  "en": ""
- },
- {
-  "vi": "Đơn khách đã được cập nhật",
-  "en": ""
- },
- {
-  "vi": "đang làm khách",
-  "en": ""
- },
- {
-  "vi": "Nhân viên đang thực hiện đơn này.",
-  "en": ""
- },
- {
-  "vi": "Chọn món vào khay",
-  "en": ""
- },
- {
-  "vi": "Chưa có món",
-  "en": ""
- },
- {
-  "vi": "Kiểm khay & bàn giao",
-  "en": ""
- },
- {
-  "vi": "Chọn món trước",
-  "en": ""
- },
- {
-  "vi": "✓ Đúng món · khách đã trả tiền, không cần thối lại.",
-  "en": ""
- },
- {
-  "vi": "😊 Giao món & cảm ơn",
-  "en": ""
- },
- {
-  "vi": "SAU QUẦY",
-  "en": ""
- },
- {
-  "vi": "Khách và số liệu từ sổ bán hàng",
-  "en": ""
- },
- {
-  "vi": "📦 Nhập thêm hàng",
-  "en": ""
- },
- {
-  "vi": "Giá bán (xu)",
-  "en": ""
- },
- {
-  "vi": "Chênh lệch sau nguyên liệu:",
-  "en": ""
- },
- {
-  "vi": "Tên món…",
-  "en": ""
- },
- {
-  "vi": "Tìm món",
-  "en": ""
- },
- {
-  "vi": "Chênh lệch trên chưa trừ lương, thuê chỗ, điện, thuế và phí giao hàng. Phản ứng giá là gợi ý; lượng bán và đánh giá thật được ghi trong sổ quầy.",
-  "en": ""
- },
- {
-  "vi": "Chọn tất cả",
-  "en": ""
- },
- {
-  "vi": "Không có món trùng từ tìm kiếm.",
-  "en": ""
- },
- {
-  "vi": "Lưu menu & giá",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra giá và chọn ít nhất một món",
-  "en": ""
- },
- {
-  "vi": "Chưa đổi gì",
-  "en": ""
- },
- {
-  "vi": "Hoàn tác",
-  "en": ""
- },
- {
-  "vi": "Tên trên bảng hiệu",
-  "en": ""
- },
- {
-  "vi": "Màu mái che",
-  "en": ""
- },
- {
-  "vi": "🪑 Bàn ghế",
   "en": ""
  }
 ]

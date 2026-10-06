@@ -1,5 +1,97 @@
 [
  {
+  "vi": "🙅 Chỉ nhận đúng số đã đặt (hết phòng rộng)",
+  "en": ""
+ },
+ {
+  "vi": "Hết phòng trống đủ đêm",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Chuyển sang Nhà Gỗ Cô Ba",
+  "en": ""
+ },
+ {
+  "vi": "phòng đã chọn chưa trống đủ đêm",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn phòng sạch, trống đủ đêm",
+  "en": ""
+ },
+ {
+  "vi": "Lắp gas máy sưởi (đêm lạnh)",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Lắp gas máy sưởi",
+  "en": ""
+ },
+ {
+  "vi": "gas máy sưởi",
+  "en": ""
+ },
+ {
+  "vi": "giao phòng trước",
+  "en": ""
+ },
+ {
+  "vi": "➕ Thêm",
+  "en": ""
+ },
+ {
+  "vi": "➖ Bớt",
+  "en": ""
+ },
+ {
+  "vi": "kiểm phòng trước",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi dị ứng, ăn kiêng trước khi nấu",
+  "en": ""
+ },
+ {
+  "vi": "Trứng hỏng hoặc dư: dọn khay làm lại",
+  "en": ""
+ },
+ {
+  "vi": "Nhấc trứng ra khỏi chảo",
+  "en": ""
+ },
+ {
+  "vi": "Khách ăn và đánh giá đúng những gì trên khay.",
+  "en": ""
+ },
+ {
+  "vi": "làm khay trước",
+  "en": ""
+ },
+ {
+  "vi": "Không còn phòng hợp những đêm này",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chạm tên phòng trên lịch để chọn",
+  "en": ""
+ },
+ {
+  "vi": "Lịch giữ phòng đã thay đổi",
+  "en": ""
+ },
+ {
+  "vi": "↺ Bỏ giữ, chọn lại phòng",
+  "en": ""
+ },
+ {
+  "vi": "Khách chê giá: báo mức thấp hơn",
+  "en": ""
+ },
+ {
+  "vi": "Tin xác nhận kèm nội quy sẽ gửi cho khách.",
+  "en": ""
+ },
+ {
   "vi": "lịch thay đổi, chọn lại phòng",
   "en": ""
  },
@@ -696,7 +788,59 @@
   "en": ""
  },
  {
+  "vi": "Nước",
+  "en": ""
+ },
+ {
+  "vi": "Que thử",
+  "en": ""
+ },
+ {
+  "vi": "Nắp hút",
+  "en": ""
+ },
+ {
+  "vi": "Phao ống",
+  "en": ""
+ },
+ {
+  "vi": "Phao tròn",
+  "en": ""
+ },
+ {
+  "vi": "Báo kỹ thuật",
+  "en": ""
+ },
+ {
+  "vi": "Gọi quản lý ngay",
+  "en": ""
+ },
+ {
   "vi": "Báo cho ai",
+  "en": ""
+ },
+ {
+  "vi": "Mở cổng?",
+  "en": ""
+ },
+ {
+  "vi": "🔓 Mở cổng đón khách",
+  "en": ""
+ },
+ {
+  "vi": "mọi thứ đã an toàn",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Hoãn mở, chờ kỹ thuật",
+  "en": ""
+ },
+ {
+  "vi": "khách chờ ngoài cổng",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách mở hồ",
   "en": ""
  },
  {
@@ -716,23 +860,7 @@
   "en": ""
  },
  {
-  "vi": "🔓 Mở cổng đón khách",
-  "en": ""
- },
- {
-  "vi": "mọi thứ đã an toàn",
-  "en": ""
- },
- {
   "vi": "⏳ Hoãn mở, chờ kỹ thuật xử lý",
-  "en": ""
- },
- {
-  "vi": "khách chờ ngoài cổng",
-  "en": ""
- },
- {
-  "vi": "Que thử",
   "en": ""
  },
  {
@@ -741,6 +869,14 @@
  },
  {
   "vi": "📒 Ghi sổ nước",
+  "en": ""
+ },
+ {
+  "vi": "Gõ đúng số trên que thử. Ngoài bảng mẫu (số trong ngoặc) là chưa mở hồ, báo kỹ thuật.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nước",
   "en": ""
  },
  {
@@ -797,6 +933,10 @@
  },
  {
   "vi": "Chạm một khu đã nhìn để thổi còi hoặc báo động.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng quét",
   "en": ""
  },
  {
@@ -1005,6 +1145,14 @@
  },
  {
   "vi": "🩹 Chọn cách sơ cứu",
+  "en": ""
+ },
+ {
+  "vi": "Giờ",
+  "en": ""
+ },
+ {
+  "vi": ", chưa nghe sấm",
   "en": ""
  },
  {
@@ -1649,154 +1797,6 @@
  },
  {
   "vi": "📯 Chạy còi",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ trực đúng sự thật",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn dòng ghi sổ",
-  "en": ""
- },
- {
-  "vi": "🔭 Nhìn kỹ",
-  "en": ""
- },
- {
-  "vi": "👉 Gọi tàu",
-  "en": ""
- },
- {
-  "vi": "Báo đài đúng mức, đúng phương vị (nếu cần)",
-  "en": ""
- },
- {
-  "vi": "Ném phao, kéo còi, canh giữ mục tiêu: tùy chuyện",
-  "en": ""
- },
- {
-  "vi": "👉 Việc ngoài bến",
-  "en": ""
- },
- {
-  "vi": "Trả lời theo nội quy trạm",
-  "en": ""
- },
- {
-  "vi": "👉 Trả lời",
-  "en": ""
- },
- {
-  "vi": "Có người leo lên tháp: đưa xuống",
-  "en": ""
- },
- {
-  "vi": "🧗 Chặn lại",
-  "en": ""
- },
- {
-  "vi": "Đo bồn trước và sau khi bơm",
-  "en": ""
- },
- {
-  "vi": "👉 Đo bồn",
-  "en": ""
- },
- {
-  "vi": "Kiểm từng món, ghi món thiếu, hỏng",
-  "en": ""
- },
- {
-  "vi": "👉 Kiểm hàng",
-  "en": ""
- },
- {
-  "vi": "Ký đúng số lít đo được",
-  "en": ""
- },
- {
-  "vi": "👉 Ký phiếu",
-  "en": ""
- },
- {
-  "vi": "✍️ KÝ SỔ TRỰC",
-  "en": ""
- },
- {
-  "vi": "📒 GHI SỔ QUAN TRẮC",
-  "en": ""
- },
- {
-  "vi": "📒 GHI SỔ TRỰC",
-  "en": ""
- },
- {
-  "vi": "📒 GHI SỔ KHÁCH",
-  "en": ""
- },
- {
-  "vi": "Quyết chuyện trên đảo",
-  "en": ""
- },
- {
-  "vi": "🗼 Vào ca thôi!",
-  "en": ""
- },
- {
-  "vi": "🔭 Nhìn ra biển",
-  "en": ""
- },
- {
-  "vi": "⛴️ Ra bến đón tàu",
-  "en": ""
- },
- {
-  "vi": "🚤 Ra bến đón khách",
-  "en": ""
- },
- {
-  "vi": "Chuyện trên đảo",
-  "en": ""
- },
- {
-  "vi": "Quan trắc",
-  "en": ""
- },
- {
-  "vi": "🗼 Ca trực hôm nay",
-  "en": ""
- },
- {
-  "vi": "👥 Người phụ kiếm thêm xu khi khép ca; bạn vẫn tự pha từng ly.",
-  "en": ""
- },
- {
-  "vi": "Xem việc đội đang làm",
-  "en": ""
- },
- {
-  "vi": "· không còn topping khác để mời đổi",
-  "en": ""
- },
- {
-  "vi": "chưa ủ thêm được",
-  "en": ""
- },
- {
-  "vi": "Ủ +5",
-  "en": ""
- },
- {
-  "vi": "Đánh +5",
-  "en": ""
- },
- {
-  "vi": "👛 Góp tiền từ ví vào quỹ",
-  "en": ""
- },
- {
-  "vi": "Ngừng bán",
   "en": ""
  }
 ]

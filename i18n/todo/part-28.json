@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Khách vào được mạng nội bộ, lộ dữ liệu.",
+  "en": ""
+ },
+ {
   "vi": "Tắt wifi cả tầng để “reset”",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Không có ai đang nhờ việc.",
-  "en": ""
- },
- {
-  "vi": "Bạn chiều theo.",
   "en": ""
  }
 ]

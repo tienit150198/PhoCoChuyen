@@ -1,5 +1,65 @@
 [
  {
+  "vi": "🚶 Đi dọc lối kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "📞 BÁO BUỒNG LÁI: SẴN SÀNG",
+  "en": ""
+ },
+ {
+  "vi": "(trẻ nhỏ không uống đồ nóng)",
+  "en": ""
+ },
+ {
+  "vi": "(suất chay)",
+  "en": ""
+ },
+ {
+  "vi": "(hàng dị ứng đậu phộng)",
+  "en": ""
+ },
+ {
+  "vi": "Đẩy xe lên hàng sau",
+  "en": ""
+ },
+ {
+  "vi": "🛒 THU LY, CẤT XE",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách nói với khách",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Chọn cách nói",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi han khách",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Hỏi khách trước",
+  "en": ""
+ },
+ {
+  "vi": "Chăm sóc bằng túi sơ cứu",
+  "en": ""
+ },
+ {
+  "vi": "🧰 Chọn đồ trong túi sơ cứu",
+  "en": ""
+ },
+ {
+  "vi": "✔️ XONG, THEO DÕI KHÁCH",
+  "en": ""
+ },
+ {
+  "vi": "chăm sóc khách trước",
+  "en": ""
+ },
+ {
   "vi": "📘 Sổ tiếp viên",
   "en": ""
  },
@@ -1596,6 +1656,30 @@
   "en": ""
  },
  {
+  "vi": "hai sổ khớp",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Chờ gói báo cáo",
+  "en": ""
+ },
+ {
+  "vi": "Chờ gói báo cáo về lúc",
+  "en": ""
+ },
+ {
+  "vi": "cùng",
+  "en": ""
+ },
+ {
+  "vi": "xu — vì sao?",
+  "en": ""
+ },
+ {
+  "vi": "dòng",
+  "en": ""
+ },
+ {
   "vi": "👆 Chạm một dòng để bắt đầu",
   "en": ""
  },
@@ -1612,7 +1696,15 @@
   "en": ""
  },
  {
+  "vi": "🏢 Bàn hợp nhất",
+  "en": ""
+ },
+ {
   "vi": "Mỗi lần ghép sai tốn thêm thời gian soát lại (người đang thử việc tốn ít hơn).",
+  "en": ""
+ },
+ {
+  "vi": "📥 Nhận hai sổ",
   "en": ""
  },
  {
@@ -1705,98 +1797,6 @@
  },
  {
   "vi": "🧮 Đếm khách ở quầy",
-  "en": ""
- },
- {
-  "vi": "🙅 Chỉ nhận đúng số đã đặt (hết phòng rộng)",
-  "en": ""
- },
- {
-  "vi": "Hết phòng trống đủ đêm",
-  "en": ""
- },
- {
-  "vi": "🏡 Chuyển sang Nhà Gỗ Cô Ba",
-  "en": ""
- },
- {
-  "vi": "phòng đã chọn chưa trống đủ đêm",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn phòng sạch, trống đủ đêm",
-  "en": ""
- },
- {
-  "vi": "Lắp gas máy sưởi (đêm lạnh)",
-  "en": ""
- },
- {
-  "vi": "🔥 Lắp gas máy sưởi",
-  "en": ""
- },
- {
-  "vi": "gas máy sưởi",
-  "en": ""
- },
- {
-  "vi": "giao phòng trước",
-  "en": ""
- },
- {
-  "vi": "➕ Thêm",
-  "en": ""
- },
- {
-  "vi": "➖ Bớt",
-  "en": ""
- },
- {
-  "vi": "kiểm phòng trước",
-  "en": ""
- },
- {
-  "vi": "Hỏi dị ứng, ăn kiêng trước khi nấu",
-  "en": ""
- },
- {
-  "vi": "Trứng hỏng hoặc dư: dọn khay làm lại",
-  "en": ""
- },
- {
-  "vi": "Nhấc trứng ra khỏi chảo",
-  "en": ""
- },
- {
-  "vi": "Khách ăn và đánh giá đúng những gì trên khay.",
-  "en": ""
- },
- {
-  "vi": "làm khay trước",
-  "en": ""
- },
- {
-  "vi": "Không còn phòng hợp những đêm này",
-  "en": ""
- },
- {
-  "vi": "👉 Chạm tên phòng trên lịch để chọn",
-  "en": ""
- },
- {
-  "vi": "Lịch giữ phòng đã thay đổi",
-  "en": ""
- },
- {
-  "vi": "↺ Bỏ giữ, chọn lại phòng",
-  "en": ""
- },
- {
-  "vi": "Khách chê giá: báo mức thấp hơn",
-  "en": ""
- },
- {
-  "vi": "Tin xác nhận kèm nội quy sẽ gửi cho khách.",
   "en": ""
  }
 ]

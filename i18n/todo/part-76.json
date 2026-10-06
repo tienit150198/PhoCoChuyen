@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Bạn không có nhà chung với người ấy để về.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang ở nhà chung rồi.",
+  "en": ""
+ },
+ {
   "vi": "Xác nhận dọn nhà.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Lịch mới: bạn trực toàn ca tối, cả cuối tuần.",
-  "en": ""
- },
- {
-  "vi": "Người mới vào thì được ca đẹp.",
-  "en": ""
- },
- {
-  "vi": "Hỏi thì bảo: “Em chịu khó, em trẻ mà.”",
   "en": ""
  }
 ]

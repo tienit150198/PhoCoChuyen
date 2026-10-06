@@ -1,5 +1,13 @@
 [
  {
+  "vi": "📊 Mỗi hàng xóm và khách quen có điểm thân quen 0–100: Người lạ, Quen mặt (từ 20), Người quen (40), Thân thiết (60), Như người nhà (80).",
+  "en": ""
+ },
+ {
+  "vi": "💬 Mở [[Người quen]], chọn một người rồi bấm [[Trò chuyện]] (khách ở nơi khác: [[Nhắn hỏi thăm]]). Lần đầu trong ngày +1 đến +3, nói nặng lời −3.",
+  "en": ""
+ },
+ {
   "vi": "🎁 [[Tặng quà]] mỗi người một món mỗi ngày: đúng món thích +6, món thường +3, món không ưa −2; quà từ 10 xu thêm +1. Tiền quà lấy từ quỹ nơi đang làm.",
   "en": ""
  },
@@ -1189,14 +1197,6 @@
  },
  {
   "vi": "Vẫn tự dừng ở vùng xanh; thanh cũng chạy nhanh tương ứng. Tắt máy pha/vòi hơi trước khi đổi nhịp; mẻ đang trong lò giữ nhịp lúc vào lò.",
-  "en": ""
- },
- {
-  "vi": "25–30 giây trên thanh là giây chiết, không phải số giây thực phải chờ.",
-  "en": ""
- },
- {
-  "vi": "👥 Nhân viên trong Sổ tiệm nhận và xử lý đơn riêng liên tục, cả lúc offline. Các ly bạn đang pha vẫn giữ nguyên để bạn tiếp tục khi muốn.",
   "en": ""
  }
 ]

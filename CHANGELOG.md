@@ -1,3 +1,7 @@
+# v1.9.8 — 2026-10-07
+
+Gồm "Giao diện gọn: đợt 2" (công an, điều dưỡng, cứu hộ bể bơi, dầu khí, phi công, tiếp viên) và "đợt 3" (6 bàn văn phòng, chăm sóc khách hàng, tiệm thú cưng).
+
 # Chưa phát hành
 
 ## Giao diện gọn: đợt 2

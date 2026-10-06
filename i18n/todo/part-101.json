@@ -1,5 +1,437 @@
 [
  {
+  "vi": "🔨 Đập 1 cây đá",
+  "en": ""
+ },
+ {
+  "vi": "🥛 Cốc & chậu",
+  "en": ""
+ },
+ {
+  "vi": "đục ngầu",
+  "en": ""
+ },
+ {
+  "vi": "hơi đục",
+  "en": ""
+ },
+ {
+  "vi": "còn trong",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Rửa cốc",
+  "en": ""
+ },
+ {
+  "vi": "🪣 Thay nước",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Ghế · ô",
+  "en": ""
+ },
+ {
+  "vi": "Đang dẹp",
+  "en": ""
+ },
+ {
+  "vi": "đang dựng",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Bày lại quán",
+  "en": ""
+ },
+ {
+  "vi": "Quầy trà",
+  "en": ""
+ },
+ {
+  "vi": "Gốc bàng",
+  "en": ""
+ },
+ {
+  "vi": "Mái hiên",
+  "en": ""
+ },
+ {
+  "vi": "Sát mép đường",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ lấn đường",
+  "en": ""
+ },
+ {
+  "vi": "🌳 Chọn chỗ bày quán",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Bày ghế",
+  "en": ""
+ },
+ {
+  "vi": "⛱️ Gấp ô",
+  "en": ""
+ },
+ {
+  "vi": "⛱️ Dựng ô",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Thùng đá đã đặt",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Đặt thùng đá chỗ râm",
+  "en": ""
+ },
+ {
+  "vi": "Đặt thùng đá chỗ râm",
+  "en": ""
+ },
+ {
+  "vi": "bà Lựu dặn chỗ khác",
+  "en": ""
+ },
+ {
+  "vi": "Bày ghế nhựa",
+  "en": ""
+ },
+ {
+  "vi": "Dựng ô che nắng",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Đặt thùng đá",
+  "en": ""
+ },
+ {
+  "vi": "Pha một bình chè đậm vừa",
+  "en": ""
+ },
+ {
+  "vi": "chè nhạt: pha lại",
+  "en": ""
+ },
+ {
+  "vi": "🍵 Pha bình chè (2 nắm)",
+  "en": ""
+ },
+ {
+  "vi": "Đập một cây đá vào thùng",
+  "en": ""
+ },
+ {
+  "vi": "🔨 Đập một cây đá",
+  "en": ""
+ },
+ {
+  "vi": "đá cây",
+  "en": ""
+ },
+ {
+  "vi": "trẻ con hỏi mua",
+  "en": ""
+ },
+ {
+  "vi": "💵 Tiền mặt",
+  "en": ""
+ },
+ {
+  "vi": "người ngồi",
+  "en": ""
+ },
+ {
+  "vi": "1 người",
+  "en": ""
+ },
+ {
+  "vi": "sấu",
+  "en": ""
+ },
+ {
+  "vi": "🥤 Rót trà",
+  "en": ""
+ },
+ {
+  "vi": "🌻 Đồ ăn vặt",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Đã từ chối bán thuốc",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Không bán thuốc lá cho trẻ con",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn:",
+  "en": ""
+ },
+ {
+  "vi": ". Ghi đúng số vào sổ, bà Lựu dò sổ mỗi tối.",
+  "en": ""
+ },
+ {
+  "vi": "Số tiền ghi sổ (xu)",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Ghi vào sổ",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng xong mới bán",
+  "en": ""
+ },
+ {
+  "vi": "Bày lại quán",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Bày lại ghế, dựng ô",
+  "en": ""
+ },
+ {
+  "vi": "🍵 Chè nhạt/ôi: pha bình mới",
+  "en": ""
+ },
+ {
+  "vi": "🍵 Hết chè: pha bình mới",
+  "en": ""
+ },
+ {
+  "vi": "🪣 Nước chậu đục: thay nước",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Hết cốc sạch: rửa cốc",
+  "en": ""
+ },
+ {
+  "vi": "🔨 Hết đá: đập thêm một cây",
+  "en": ""
+ },
+ {
+  "vi": "Trẻ con không được mua thuốc lá",
+  "en": ""
+ },
+ {
+  "vi": "↩︎ Cất lại thuốc lá",
+  "en": ""
+ },
+ {
+  "vi": "Nói khéo: không bán thuốc cho trẻ con",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Từ chối bán thuốc lá",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ của chú Tường",
+  "en": ""
+ },
+ {
+  "vi": "Chú hỏi hết bao nhiêu. Mở sổ, đọc từng dòng cho chú nghe.",
+  "en": ""
+ },
+ {
+  "vi": "xu. Tự tính lại theo giá quán rồi chọn:",
+  "en": ""
+ },
+ {
+  "vi": "📒 Cho chú xem dòng sổ",
+  "en": ""
+ },
+ {
+  "vi": "✏️ Ghi nhầm: sửa lại cho đúng",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Thôi, bỏ dòng này cho chú",
+  "en": ""
+ },
+ {
+  "vi": "😤 Cãi: sổ ghi thế thì trả thế",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Dẹp ghế, gấp ô trước khi xe tới",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Dẹp quán ngay!",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn cách xử lý chuyện ở quán",
+  "en": ""
+ },
+ {
+  "vi": "chọn chỗ, bày ghế, đặt thùng đá",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ cho chú Tường",
+  "en": ""
+ },
+ {
+  "vi": "📒 Mở sổ, đọc cho chú",
+  "en": ""
+ },
+ {
+  "vi": "Xem lại dòng chú hỏi",
+  "en": ""
+ },
+ {
+  "vi": "📒 Xem lại dòng chú hỏi",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Xong sổ",
+  "en": ""
+ },
+ {
+  "vi": "✍️ Điền số tiền vào sổ",
+  "en": ""
+ },
+ {
+  "vi": "✍️ GHI VÀO SỔ",
+  "en": ""
+ },
+ {
+  "vi": "🥤 ĐƯA TRÀ · GHI SỔ",
+  "en": ""
+ },
+ {
+  "vi": "🥤 ĐƯA TRÀ · TÍNH TIỀN",
+  "en": ""
+ },
+ {
+  "vi": "rót trà cho khách trước",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trắng, chưa ai nợ.",
+  "en": ""
+ },
+ {
+  "vi": "✓ Có rồi",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Dặn anh Tuấn xe đá (4 xu/cây, giao mỗi sáng)",
+  "en": ""
+ },
+ {
+  "vi": "cây/sáng",
+  "en": ""
+ },
+ {
+  "vi": "· có biển",
+  "en": ""
+ },
+ {
+  "vi": "Dẹp quán trước khi xe tới",
+  "en": ""
+ },
+ {
+  "vi": "Thay nước chậu rửa",
+  "en": ""
+ },
+ {
+  "vi": "🪣 Thay nước chậu",
+  "en": ""
+ },
+ {
+  "vi": "Rửa cốc bẩn",
+  "en": ""
+ },
+ {
+  "vi": "Đập thêm đá",
+  "en": ""
+ },
+ {
+  "vi": "Pha bình chè mới",
+  "en": ""
+ },
+ {
+  "vi": "🍵 Pha bình chè mới",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng, pha chè, đập đá",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ, thu tiền",
+  "en": ""
+ },
+ {
+  "vi": "Rót trà, đưa cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Việc dọn hàng",
+  "en": ""
+ },
+ {
+  "vi": "💵 Chú Tường trả tiền",
+  "en": ""
+ },
+ {
+  "vi": "Điền số tiền ghi sổ trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chè, chanh, hướng dương, thuốc lẻ",
+  "en": ""
+ },
+ {
+  "vi": "Đủ dấu rồi",
+  "en": ""
+ },
+ {
+  "vi": "Đã đánh dấu quy định này",
+  "en": ""
+ },
+ {
+  "vi": "Đủ dấu rồi: đóng dấu quyết định.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn câu trả lời đầu tiên cho khách",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Chờ kết quả một nhịp",
+  "en": ""
+ },
+ {
+  "vi": "Đếm két: chạm từng tờ rồi chốt số",
+  "en": ""
+ },
+ {
+  "vi": "Soát từng dòng: chạm dòng sai, chọn quy định nó trái",
+  "en": ""
+ },
+ {
+  "vi": "Quảng trường",
+  "en": ""
+ },
+ {
+  "vi": "Thư viện, chợ, vườn nghỉ…",
+  "en": ""
+ },
+ {
   "vi": "Mở cửa rồi làm xong việc trong ca",
   "en": ""
  },
@@ -1365,438 +1797,6 @@
  },
  {
   "vi": "Thêm: sổ bay, khu phố",
-  "en": ""
- },
- {
-  "vi": "Tan ca bay hôm nay?",
-  "en": ""
- },
- {
-  "vi": "Kệ hạt & pate",
-  "en": ""
- },
- {
-  "vi": "Mrrr… cá trong bể bơi qua bơi lại, ngó hoài không chán.",
-  "en": ""
- },
- {
-  "vi": "Khách sắp ghé mua hạt cho bé nhà.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp quanh tiệm thú nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá quanh tiệm thú nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Rổ trái cây",
-  "en": ""
- },
- {
-  "vi": "Rổ trái dập",
-  "en": ""
- },
- {
-  "vi": "Sạp & cân",
-  "en": ""
- },
- {
-  "vi": "TIỀN LẺ",
-  "en": ""
- },
- {
-  "vi": "THÙNG HÀNG",
-  "en": ""
- },
- {
-  "vi": "Dọn sạp về",
-  "en": ""
- },
- {
-  "vi": "Dọn sạp ra",
-  "en": ""
- },
- {
-  "vi": "Khách chợ sắp ghé mua trái.",
-  "en": ""
- },
- {
-  "vi": "Dựng dù, thử cân rồi bán nhé.",
-  "en": ""
- },
- {
-  "vi": "Sạp đang vắng",
-  "en": ""
- },
- {
-  "vi": "Mời thêm khách hoặc dọn sạp về.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp quanh sạp trái cây.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá quanh sạp trái cây.",
-  "en": ""
- },
- {
-  "vi": "Túi rác trước cửa",
-  "en": ""
- },
- {
-  "vi": "Bảng phân loại",
-  "en": ""
- },
- {
-  "vi": "Thùng tập kết",
-  "en": ""
- },
- {
-  "vi": "SỔ TUYẾN",
-  "en": ""
- },
- {
-  "vi": "Quỹ tổ",
-  "en": ""
- },
- {
-  "vi": "ĐANG THU GOM",
-  "en": ""
- },
- {
-  "vi": "ĐÃ TAN CA",
-  "en": ""
- },
- {
-  "vi": "Ngõ sau đang chờ xe rác.",
-  "en": ""
- },
- {
-  "vi": "Đồ bảo hộ, kiểm xe rồi vào ngõ nhé.",
-  "en": ""
- },
- {
-  "vi": "Xe đang nghỉ",
-  "en": ""
- },
- {
-  "vi": "Hết ngõ rồi!",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một ngõ hoặc tan ca.",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một ngõ",
-  "en": ""
- },
- {
-  "vi": "Chưa có ngõ nào đang chờ",
-  "en": ""
- },
- {
-  "vi": "Sang ngõ tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp trên tuyến thu gom.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và phản ánh của cư dân.",
-  "en": ""
- },
- {
-  "vi": "Xe máy & đồ nghề",
-  "en": ""
- },
- {
-  "vi": "SỔ HẸN",
-  "en": ""
- },
- {
-  "vi": "Quỹ tiền công",
-  "en": ""
- },
- {
-  "vi": "ĐANG NHẬN VIỆC",
-  "en": ""
- },
- {
-  "vi": "Điện thoại sắp reo.",
-  "en": ""
- },
- {
-  "vi": "Đọc sổ hẹn, xếp đồ nghề rồi đi nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa có ai gọi",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm việc hoặc nghỉ tay hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp khi đi thông cống.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá của khách.",
-  "en": ""
- },
- {
-  "vi": "Tủ lạnh nhà khách",
-  "en": ""
- },
- {
-  "vi": "Vào bếp",
-  "en": ""
- },
- {
-  "vi": "ĐANG NẤU CƠM",
-  "en": ""
- },
- {
-  "vi": "Nhà khách quen",
-  "en": ""
- },
- {
-  "vi": "Mrrr… cá kho thơm quá, cho mèo xin một miếng nhé?",
-  "en": ""
- },
- {
-  "vi": "Vuốt con mèo mướp của nhà",
-  "en": ""
- },
- {
-  "vi": "An toàn trong bếp",
-  "en": ""
- },
- {
-  "vi": "Cô Hạnh sắp nhắn địa chỉ nhà hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Nghe chủ nhà dặn rồi lên thực đơn nhé.",
-  "en": ""
- },
- {
-  "vi": "Bếp đã gọn",
-  "en": ""
- },
- {
-  "vi": "Xong bữa rồi!",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một món hoặc về nhà hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một món",
-  "en": ""
- },
- {
-  "vi": "Chưa có món nào đang chờ",
-  "en": ""
- },
- {
-  "vi": "Những nhà quen bạn nấu cơm cho.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và nhận xét của các nhà.",
-  "en": ""
- },
- {
-  "vi": "Bao gạo & trứng",
-  "en": ""
- },
- {
-  "vi": "Tủ kính cơm",
-  "en": ""
- },
- {
-  "vi": "Kho gạo",
-  "en": ""
- },
- {
-  "vi": "SỔ QUÁN",
-  "en": ""
- },
- {
-  "vi": "KHO GẠO",
-  "en": ""
- },
- {
-  "vi": "Dọn quán",
-  "en": ""
- },
- {
-  "vi": "Mở quán",
-  "en": ""
- },
- {
-  "vi": "ĐANG BÁN CƠM",
-  "en": ""
- },
- {
-  "vi": "Mrrr… miếng sườn cháy cạnh thơm quá, cho Mướp xin một miếng?",
-  "en": ""
- },
- {
-  "vi": "Khách đi chợ sắp ghé ăn cơm.",
-  "en": ""
- },
- {
-  "vi": "Nấu cơm, nếm nước mắm, nhóm bếp rồi mở quán nhé.",
-  "en": ""
- },
- {
-  "vi": "Quán đang vãn",
-  "en": ""
- },
- {
-  "vi": "Mời thêm khách hoặc dọn quán hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở quán cơm tấm Dì Bảy.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá quanh quán cơm.",
-  "en": ""
- },
- {
-  "vi": "Bàn ghế nhựa",
-  "en": ""
- },
- {
-  "vi": "Kho sau bếp",
-  "en": ""
- },
- {
-  "vi": "SỔ QUÁN PHỞ",
-  "en": ""
- },
- {
-  "vi": "KHO BẾP",
-  "en": ""
- },
- {
-  "vi": "Đóng quán",
-  "en": ""
- },
- {
-  "vi": "ĐANG BÁN PHỞ",
-  "en": ""
- },
- {
-  "vi": "HẾT PHỞ, MAI GHÉ NHÉ",
-  "en": ""
- },
- {
-  "vi": "Mrrr… cho Mướp xin miếng gân bò thôi mà.",
-  "en": ""
- },
- {
-  "vi": "Nồi nước đang lăn tăn, khách sắp ghé.",
-  "en": ""
- },
- {
-  "vi": "Vặn lửa, hớt bọt, nếm nước rồi mở quán nhé.",
-  "en": ""
- },
- {
-  "vi": "Bếp đang vãn",
-  "en": ""
- },
- {
-  "vi": "Mời thêm khách hoặc đóng quán hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở quán phở Cây Si.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá quanh quán phở.",
-  "en": ""
- },
- {
-  "vi": "Trong quán",
-  "en": ""
- },
- {
-  "vi": "Sổ quán",
-  "en": ""
- },
- {
-  "vi": "Khung mẫu",
-  "en": ""
- },
- {
-  "vi": "Quầy & máy in",
-  "en": ""
- },
- {
-  "vi": "Thùng giấy in",
-  "en": ""
- },
- {
-  "vi": "SỔ TIỆM ẢNH",
-  "en": ""
- },
- {
-  "vi": "THÙNG GIẤY",
-  "en": ""
- },
- {
-  "vi": "ĐANG CHỤP ẢNH",
-  "en": ""
- },
- {
-  "vi": "Mrrr… cho mèo đội bờm tai thỏ chụp một tấm đi.",
-  "en": ""
- },
- {
-  "vi": "Lau ống kính, chụp thử rồi mở tiệm nhé.",
-  "en": ""
- },
- {
-  "vi": "Buồng chụp đang trống",
-  "en": ""
- },
- {
-  "vi": "Mời thêm một nhóm khách",
-  "en": ""
- },
- {
-  "vi": "Mời nhóm khách tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở tiệm ảnh Tách Tách.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá quanh tiệm ảnh.",
-  "en": ""
- },
- {
-  "vi": "Chậu giặt khăn",
-  "en": ""
- },
- {
-  "vi": "Thùng chai",
   "en": ""
  }
 ]

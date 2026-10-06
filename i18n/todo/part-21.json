@@ -16,6 +16,18 @@
   "en": ""
  },
  {
+  "vi": "Đón khách ở cửa",
+  "en": ""
+ },
+ {
+  "vi": "Làm mẫu an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Đẩy xe phục vụ",
+  "en": ""
+ },
+ {
   "vi": "Bạn là tiếp viên của Hãng bay Cánh Cò, cùng chị Thu lo khoang khách 68 chỗ trên những chặng bay ngắn ra đảo. Sáng đi từ hẻm, tối về kịp cơm.",
   "en": ""
  },
@@ -816,10 +828,6 @@
   "en": ""
  },
  {
-  "vi": "Đẩy xe phục vụ",
-  "en": ""
- },
- {
   "vi": "Báo chị Thu",
   "en": ""
  },
@@ -1004,11 +1012,11 @@
   "en": ""
  },
  {
-  "vi": "Trên xe không có món này.",
+  "vi": "Ghế này đã để khách ngủ.",
   "en": ""
  },
  {
-  "vi": "Ghế này đã để khách ngủ.",
+  "vi": "Trên xe không có món này.",
   "en": ""
  },
  {
@@ -1716,10 +1724,6 @@
   "en": ""
  },
  {
-  "vi": "Làm mẫu an toàn",
-  "en": ""
- },
- {
   "vi": "Đẩy xe từng hàng",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Đón khách: đọc thẻ, vali to gửi khoang hàng, pin sạc theo người, hàng 1 và 17 cho người lớn đi lại được → làm mẫu an toàn đúng thứ tự, đi dọc lối chỉnh từng ghế → đẩy xe từng hàng, đúng suất đặc biệt → đèn thắt dây sáng: khóa phanh, cất bình nóng, về ghế.",
-  "en": ""
- },
- {
-  "vi": "Hãng bay Cánh Cò · Sân bay thành phố",
   "en": ""
  }
 ]

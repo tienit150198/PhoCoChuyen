@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Trở mặt sườn",
+  "en": ""
+ },
+ {
+  "vi": "Gắp sườn ra khay",
+  "en": ""
+ },
+ {
+  "vi": "Xới",
+  "en": ""
+ },
+ {
+  "vi": "· nồi chưa sẵn",
+  "en": ""
+ },
+ {
+  "vi": "Gắp miếng sườn vàng đều",
+  "en": ""
+ },
+ {
   "vi": "🍖 Gắp sườn",
   "en": ""
  },
@@ -160,6 +180,14 @@
   "en": ""
  },
  {
+  "vi": "đã mở",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn:",
+  "en": ""
+ },
+ {
   "vi": "Số lượng THỰC GIAO (Biên bản giao nhận) × Đơn giá chưa thuế (Đơn đặt hàng).",
   "en": ""
  },
@@ -224,6 +252,14 @@
   "en": ""
  },
  {
+  "vi": "Mở trước:",
+  "en": ""
+ },
+ {
+  "vi": "đã đóng dấu",
+  "en": ""
+ },
+ {
   "vi": "bảng hàng hóa",
   "en": ""
  },
@@ -233,6 +269,14 @@
  },
  {
   "vi": "chỗ sai",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Bàn kế toán",
+  "en": ""
+ },
+ {
+  "vi": "📥 Nhận khay",
   "en": ""
  },
  {
@@ -1572,22 +1616,6 @@
   "en": ""
  },
  {
-  "vi": "🧣 Vào ca bay",
-  "en": ""
- },
- {
-  "vi": "Công việc gồm…",
-  "en": ""
- },
- {
-  "vi": "Bạn sẽ gặp…",
-  "en": ""
- },
- {
-  "vi": "Được khen khi…",
-  "en": ""
- },
- {
   "vi": "Chuyện trong khoang",
   "en": ""
  },
@@ -1636,7 +1664,7 @@
   "en": ""
  },
  {
-  "vi": "🚪 Hàng thoát hiểm",
+  "vi": ": người lớn",
   "en": ""
  },
  {
@@ -1648,7 +1676,15 @@
   "en": ""
  },
  {
-  "vi": "🎙️ Chị Thu đọc:",
+  "vi": "Chị Thu đọc:",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thu đọc từng câu: giơ đúng món làm mẫu cho câu chị đang đọc.",
+  "en": ""
+ },
+ {
+  "vi": "Làm mẫu",
   "en": ""
  },
  {
@@ -1656,11 +1692,15 @@
   "en": ""
  },
  {
+  "vi": "✅ Làm mẫu xong · 🚶 hàng",
+  "en": ""
+ },
+ {
   "vi": "Ghế",
   "en": ""
  },
  {
-  "vi": "🚶 Khoang trước cất cánh",
+  "vi": "Khoang trước cất cánh",
   "en": ""
  },
  {
@@ -1680,11 +1720,19 @@
   "en": ""
  },
  {
-  "vi": "📋 Phiếu suất ăn đặc biệt",
+  "vi": "Suất đặc biệt",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu suất ăn đặc biệt",
   "en": ""
  },
  {
   "vi": "Không có suất đặc biệt.",
+  "en": ""
+ },
+ {
+  "vi": "· ♨️ không đồ nóng",
   "en": ""
  },
  {
@@ -1720,7 +1768,19 @@
   "en": ""
  },
  {
+  "vi": "🧣 Vào ca bay",
+  "en": ""
+ },
+ {
+  "vi": "📋 Nhận phiếu suất ăn",
+  "en": ""
+ },
+ {
   "vi": "📋 Nhận phiếu suất ăn đặc biệt",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Ra cửa",
   "en": ""
  },
  {
@@ -1737,66 +1797,6 @@
  },
  {
   "vi": "👉 Đọc thẻ, chọn cách giúp",
-  "en": ""
- },
- {
-  "vi": "🚶 Đi dọc lối kiểm tra",
-  "en": ""
- },
- {
-  "vi": "📞 BÁO BUỒNG LÁI: SẴN SÀNG",
-  "en": ""
- },
- {
-  "vi": "(trẻ nhỏ không uống đồ nóng)",
-  "en": ""
- },
- {
-  "vi": "(suất chay)",
-  "en": ""
- },
- {
-  "vi": "(hàng dị ứng đậu phộng)",
-  "en": ""
- },
- {
-  "vi": "Đẩy xe lên hàng sau",
-  "en": ""
- },
- {
-  "vi": "🛒 THU LY, CẤT XE",
-  "en": ""
- },
- {
-  "vi": "Chọn cách nói với khách",
-  "en": ""
- },
- {
-  "vi": "🗣️ Chọn cách nói",
-  "en": ""
- },
- {
-  "vi": "Hỏi han khách",
-  "en": ""
- },
- {
-  "vi": "🗣️ Hỏi khách trước",
-  "en": ""
- },
- {
-  "vi": "Chăm sóc bằng túi sơ cứu",
-  "en": ""
- },
- {
-  "vi": "🧰 Chọn đồ trong túi sơ cứu",
-  "en": ""
- },
- {
-  "vi": "✔️ XONG, THEO DÕI KHÁCH",
-  "en": ""
- },
- {
-  "vi": "chăm sóc khách trước",
   "en": ""
  }
 ]

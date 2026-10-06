@@ -1,5 +1,421 @@
 [
  {
+  "vi": "Vật tư & vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Thuế GTGT (game)",
+  "en": ""
+ },
+ {
+  "vi": "Thuế thu nhập (game)",
+  "en": ""
+ },
+ {
+  "vi": "Thiệt hại / xử lý vi phạm",
+  "en": ""
+ },
+ {
+  "vi": "Lời sau mọi chi phí",
+  "en": ""
+ },
+ {
+  "vi": "Bán một ngày để có sổ thu chi.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm hàng & vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Ngừng bán hàng hỏng; kiểm tra an toàn đạt khi bật.",
+  "en": ""
+ },
+ {
+  "vi": "Lưu chứng từ",
+  "en": ""
+ },
+ {
+  "vi": "Lưu hóa đơn, sổ hàng để đối chiếu khi kiểm tra.",
+  "en": ""
+ },
+ {
+  "vi": "/ ngày có bán: giảm 20% khả năng bị trộm và giảm thiệt hại trộm cướp.",
+  "en": ""
+ },
+ {
+  "vi": "Trộm két",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra chứng từ",
+  "en": ""
+ },
+ {
+  "vi": "Bị đòi tiền bảo kê",
+  "en": ""
+ },
+ {
+  "vi": "đang chờ xử lý",
+  "en": ""
+ },
+ {
+  "vi": "đạt, không phạt",
+  "en": ""
+ },
+ {
+  "vi": "có vi phạm",
+  "en": ""
+ },
+ {
+  "vi": "đã khắc phục",
+  "en": ""
+ },
+ {
+  "vi": "đã lưu bằng chứng và báo công an",
+  "en": ""
+ },
+ {
+  "vi": "đã từ chối",
+  "en": ""
+ },
+ {
+  "vi": "Lưu bằng chứng & báo công an",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối trả tiền",
+  "en": ""
+ },
+ {
+  "vi": "Bảng dưới dành cho ca thuê người chơi và kỳ cũ. Hoạt động liên tục ghi thuế thu nhập trên lãi dương, phí môi trường và bảo vệ riêng; xem chi phí và lãi hiện tại trong bảng vận hành của quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ ca thuê & kỳ trước",
+  "en": ""
+ },
+ {
+  "vi": "Sổ quầy & an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Rất cẩn thận",
+  "en": ""
+ },
+ {
+  "vi": "phút hoạt động",
+  "en": ""
+ },
+ {
+  "vi": "Tự đặt lương. Trả cao thì vui, bán đắt hàng hơn. Dưới 60% mức xin là họ không nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; giữ lại tiền lương để nhân viên tiếp tục làm.",
+  "en": ""
+ },
+ {
+  "vi": "Két + vốn hiện có",
+  "en": ""
+ },
+ {
+  "vi": "Nhập thêm",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số lượng để xem tổng tiền",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số lượng trước",
+  "en": ""
+ },
+ {
+  "vi": "Két và vốn chưa đủ",
+  "en": ""
+ },
+ {
+  "vi": "Xem tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Ít: không lo ế. Nhiều: không lo hết hàng. Hàng tươi (hoa, bánh) ế thì hư.",
+  "en": ""
+ },
+ {
+  "vi": "Vốn quầy",
+  "en": ""
+ },
+ {
+  "vi": "Tiền hàng, lương, điện, phí online, thuê chỗ, vật tư, bảo vệ và thuế lấy từ két trước, thiếu mới lấy vốn quầy. Góp vốn dùng ví trước, thiếu mới lấy tài khoản ngân hàng; không dùng thẻ tín dụng. Xem từng khoản trong Sổ quầy & an toàn. Chi phí chưa trả hiện trên thẻ quầy và tạm dừng quầy; chủ chọn Đóng tiền để trả.",
+  "en": ""
+ },
+ {
+  "vi": "Muốn góp vốn bằng quỹ chung: rút từ quỹ chung về ví ở Ngân hàng, rồi Góp vào vốn quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Góp vào",
+  "en": ""
+ },
+ {
+  "vi": "Két vào vốn",
+  "en": ""
+ },
+ {
+  "vi": "Bán gì?",
+  "en": ""
+ },
+ {
+  "vi": "Ở đâu?",
+  "en": ""
+ },
+ {
+  "vi": "Tên quầy",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ to thì đông khách, nhiều người đứng, nhưng tiền thuê cao hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món bán trước",
+  "en": ""
+ },
+ {
+  "vi": "Giá mềm: khách thích 😊",
+  "en": ""
+ },
+ {
+  "vi": "Hơi đắt: khách sẽ ít hơn",
+  "en": ""
+ },
+ {
+  "vi": "Giá vừa phải 👍",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🍳 Tiếp tục tự đứng quầy",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🍳 Tự đứng quầy",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Vào xem tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Đóng chi phí còn thiếu trước nhé",
+  "en": ""
+ },
+ {
+  "vi": "Mở quầy để bắt đầu nhận khách",
+  "en": ""
+ },
+ {
+  "vi": "Hàng còn đủ bán hơn 1 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Lãi 1 ngày (24 giờ)",
+  "en": ""
+ },
+ {
+  "vi": "nếu đủ hàng, đủ vốn",
+  "en": ""
+ },
+ {
+  "vi": "(khi quầy bán lại)",
+  "en": ""
+ },
+ {
+  "vi": "Chờ bạn tự đứng quầy",
+  "en": ""
+ },
+ {
+  "vi": "Đã hết nguyên liệu",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu tiền vận hành",
+  "en": ""
+ },
+ {
+  "vi": "Đang cập nhật quầy",
+  "en": ""
+ },
+ {
+  "vi": "Két/vốn chưa đủ",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên liệu còn",
+  "en": ""
+ },
+ {
+  "vi": "Lãi đã ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên tiếp tục bán khi bạn rời game, tới khi hết hàng hoặc hết tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy chỉ bán khi bạn tự phục vụ hoặc giao hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa kết nối được để cập nhật. Số liệu đang giữ là lần xác nhận gần nhất.",
+  "en": ""
+ },
+ {
+  "vi": "Vừa bán tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "Điện",
+  "en": ""
+ },
+ {
+  "vi": "Online / giao hàng",
+  "en": ""
+ },
+ {
+  "vi": "Thuế kỳ cũ",
+  "en": ""
+ },
+ {
+  "vi": "Thuế thu nhập",
+  "en": ""
+ },
+ {
+  "vi": "Phí môi trường",
+  "en": ""
+ },
+ {
+  "vi": "Khách tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có lượt bán được ghi nhận. Sổ sẽ cập nhật khi nhân viên bán được hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Đơn khách đã được cập nhật",
+  "en": ""
+ },
+ {
+  "vi": "đang làm khách",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên đang thực hiện đơn này.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món vào khay",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có món",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm khay & bàn giao",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món trước",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đúng món · khách đã trả tiền, không cần thối lại.",
+  "en": ""
+ },
+ {
+  "vi": "😊 Giao món & cảm ơn",
+  "en": ""
+ },
+ {
+  "vi": "SAU QUẦY",
+  "en": ""
+ },
+ {
+  "vi": "Khách và số liệu từ sổ bán hàng",
+  "en": ""
+ },
+ {
+  "vi": "📦 Nhập thêm hàng",
+  "en": ""
+ },
+ {
+  "vi": "Giá bán (xu)",
+  "en": ""
+ },
+ {
+  "vi": "Chênh lệch sau nguyên liệu:",
+  "en": ""
+ },
+ {
+  "vi": "Tên món…",
+  "en": ""
+ },
+ {
+  "vi": "Tìm món",
+  "en": ""
+ },
+ {
+  "vi": "Chênh lệch trên chưa trừ lương, thuê chỗ, điện, thuế và phí giao hàng. Phản ứng giá là gợi ý; lượng bán và đánh giá thật được ghi trong sổ quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tất cả",
+  "en": ""
+ },
+ {
+  "vi": "Không có món trùng từ tìm kiếm.",
+  "en": ""
+ },
+ {
+  "vi": "Lưu menu & giá",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra giá và chọn ít nhất một món",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đổi gì",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tác",
+  "en": ""
+ },
+ {
+  "vi": "Tên trên bảng hiệu",
+  "en": ""
+ },
+ {
+  "vi": "Màu mái che",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Bàn ghế",
+  "en": ""
+ },
+ {
   "vi": "một bộ · thêm khách ngồi lại",
   "en": ""
  },
@@ -1381,422 +1797,6 @@
  },
  {
   "vi": "Đặt ngay",
-  "en": ""
- },
- {
-  "vi": "Hết hàng hôm nay",
-  "en": ""
- },
- {
-  "vi": "Đơn nhỏ lại: giá bớt không còn.",
-  "en": ""
- },
- {
-  "vi": "💬 Xin bớt",
-  "en": ""
- },
- {
-  "vi": "Cả đơn đang hết hàng hôm nay.",
-  "en": ""
- },
- {
-  "vi": "🛒 Đơn gộp",
-  "en": ""
- },
- {
-  "vi": "Dự kiến:",
-  "en": ""
- },
- {
-  "vi": "· một chuyến",
-  "en": ""
- },
- {
-  "vi": "Bỏ đơn",
-  "en": ""
- },
- {
-  "vi": "Cần hồi đáp",
-  "en": ""
- },
- {
-  "vi": "lần khách thập phương sửa sao lên sau khi đọc lời chùa hồi đáp.",
-  "en": ""
- },
- {
-  "vi": "Hồi đáp",
-  "en": ""
- },
- {
-  "vi": "Báo cáo không được duyệt",
-  "en": ""
- },
- {
-  "vi": "Đã hồi đáp",
-  "en": ""
- },
- {
-  "vi": "Khách thập phương",
-  "en": ""
- },
- {
-  "vi": "Cảm nhận của khách thập phương",
-  "en": ""
- },
- {
-  "vi": "LỜI KHÁCH THẬP PHƯƠNG",
-  "en": ""
- },
- {
-  "vi": "Tất cả cảm nhận",
-  "en": ""
- },
- {
-  "vi": "Đã báo cáo: nền tảng giữ đánh giá này vì nó gắn với chuyện có thật trong ca. Sao giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "A Di Đà Phật, chùa xin lỗi vì còn thiếu sót. Thầy trụ trì đã nhắc lại cả chùa, lần sau sẽ cẩn thận hơn ạ.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn bác đã góp ý. Rằm tới mời bác ghé lễ, chùa sẽ đón tiếp chu đáo hơn ạ.",
-  "en": ""
- },
- {
-  "vi": "Không vừa ý thì đi chùa khác, ở đây không cần.",
-  "en": ""
- },
- {
-  "vi": "Lưu đánh giá và cuộc trao đổi làm bằng chứng, trình báo lời đe dọa đòi tiền trong game? Trao đổi trực tiếp sẽ khép; điểm đánh giá vẫn giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "🚓 Lưu bằng chứng & trình báo",
-  "en": ""
- },
- {
-  "vi": "Gửi lời hồi đáp",
-  "en": ""
- },
- {
-  "vi": "Nhận xét sau ca trên giàn, không cần trả lời.",
-  "en": ""
- },
- {
-  "vi": "Nhận xét sau chuyến bay, không cần trả lời.",
-  "en": ""
- },
- {
-  "vi": "Khách thập phương cảm nhận theo tiêu chí",
-  "en": ""
- },
- {
-  "vi": "chấm theo tiêu chí",
-  "en": ""
- },
- {
-  "vi": "Báo cáo tin nhắn này với ban đại diện lớp? Tin nhắn nhầm lớp, không liên quan tới buổi học hoặc hùa theo sẽ bị gỡ khỏi điểm. Nếu là góp ý thật, tin nhắn được giữ nguyên và không mất sao.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo cảm nhận này? Cảm nhận giả, nhầm chỗ, không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm. Nếu là cảm nhận thật, chùa giữ nguyên và không mất sao.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo nhận xét này? Nhận xét giả, nhầm chỗ, chưa từng tới, chê chuyện không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm trung bình. Nếu là chuyện có thật, nhận xét được giữ nguyên và không mất sao.",
-  "en": ""
- },
- {
-  "vi": "Báo cáo đánh giá này? Đánh giá giả, nhầm quán, chưa dùng dịch vụ, chê chuyện không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm trung bình. Nếu là trải nghiệm thật, đánh giá được giữ nguyên và không mất sao.",
-  "en": ""
- },
- {
-  "vi": "từ tốn",
-  "en": ""
- },
- {
-  "vi": "tự trào",
-  "en": ""
- },
- {
-  "vi": "đùa nhẹ",
-  "en": ""
- },
- {
-  "vi": "mời ghé lễ",
-  "en": ""
- },
- {
-  "vi": "kể nếp chùa",
-  "en": ""
- },
- {
-  "vi": "trẻ trung",
-  "en": ""
- },
- {
-  "vi": "mời chén trà 6 xu",
-  "en": ""
- },
- {
-  "vi": "biếu quà chay 10 xu",
-  "en": ""
- },
- {
-  "vi": "gửi lại 20 xu",
-  "en": ""
- },
- {
-  "vi": "Gửi lại 20 xu",
-  "en": ""
- },
- {
-  "vi": "bênh chùa",
-  "en": ""
- },
- {
-  "vi": "Quà nhỏ",
-  "en": ""
- },
- {
-  "vi": "Kèm 1 buổi",
-  "en": ""
- },
- {
-  "vi": "Mời trà",
-  "en": ""
- },
- {
-  "vi": "Tặng sách",
-  "en": ""
- },
- {
-  "vi": "Quà chay",
-  "en": ""
- },
- {
-  "vi": "👑 Bạn",
-  "en": ""
- },
- {
-  "vi": "🎓 Xem chứng chỉ của bạn",
-  "en": ""
- },
- {
-  "vi": "📚 Đi học lấy chứng chỉ",
-  "en": ""
- },
- {
-  "vi": "🚪 Chứng chỉ hành nghề phải thi thật: không có cửa sau cho bài thi này.",
-  "en": ""
- },
- {
-  "vi": "Người quen chỉ “lo giúp” được một lần ở mỗi nơi",
-  "en": ""
- },
- {
-  "vi": "Nhờ người quen “lo giúp”, vào làm ngay",
-  "en": ""
- },
- {
-  "vi": "Thử lại sau / Tìm việc khác",
-  "en": ""
- },
- {
-  "vi": "Làm gì tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Sếp hẹn gặp",
-  "en": ""
- },
- {
-  "vi": "Chọn 1–3 điểm mạnh",
-  "en": ""
- },
- {
-  "vi": "Chọn kinh nghiệm thật của bạn",
-  "en": ""
- },
- {
-  "vi": "Bạn có",
-  "en": ""
- },
- {
-  "vi": "Học và thi",
-  "en": ""
- },
- {
-  "vi": "là số trên phiếu: thùng có thể giao thiếu, chạm đếm từng món trong thùng.",
-  "en": ""
- },
- {
-  "vi": "Đếm lệch: còn món chưa chạm trong thùng, chạm hết rồi nhận.",
-  "en": ""
- },
- {
-  "vi": "🚪 Đi cửa sau?",
-  "en": ""
- },
- {
-  "vi": "Đếm số món trong thùng trước đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Đặt đơn gộp?",
-  "en": ""
- },
- {
-  "vi": "Đặt đơn",
-  "en": ""
- },
- {
-  "vi": "Phong bì mừng cưới",
-  "en": ""
- },
- {
-  "vi": "Mâm cỗ",
-  "en": ""
- },
- {
-  "vi": "Chọn nhạc",
-  "en": ""
- },
- {
-  "vi": "Dzô! 🍻",
-  "en": ""
- },
- {
-  "vi": "No căng bụng rồi 😋",
-  "en": ""
- },
- {
-  "vi": "Say rồi, nước ngọt thôi 🥤",
-  "en": ""
- },
- {
-  "vi": "Mát lạnh! 🥤",
-  "en": ""
- },
- {
-  "vi": "💐 Tới màn tung hoa rồi! Bấm “Tung hoa” nhé",
-  "en": ""
- },
- {
-  "vi": "💐 Sắp tung hoa cưới! Lại gần sân khấu nào",
-  "en": ""
- },
- {
-  "vi": "🎧 Đã đổi nhạc",
-  "en": ""
- },
- {
-  "vi": "☕ Đã rủ, chờ bạn ấy nhé…",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy bận rồi, lần sau nhé!",
-  "en": ""
- },
- {
-  "vi": "Bạn đang dạo ở một tab khác.",
-  "en": ""
- },
- {
-  "vi": "🎊 Lễ cưới bắt đầu!",
-  "en": ""
- },
- {
-  "vi": "Tạo tài khoản để nhận lộc cưới mỗi phút nhé!",
-  "en": ""
- },
- {
-  "vi": "Hôm nay bạn đã nhận lộc ở 2 đám cưới rồi. Vẫn được tính là khách nha 💛",
-  "en": ""
- },
- {
-  "vi": "✅ Đã ghi nhận bạn đi ăn cưới 💛",
-  "en": ""
- },
- {
-  "vi": "Đã báo cáo, cảm ơn bạn.",
-  "en": ""
- },
- {
-  "vi": "Có lỗi, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Tiệc đã tàn",
-  "en": ""
- },
- {
-  "vi": "📸 Đã lưu vào Kỷ niệm của cô dâu chú rể",
-  "en": ""
- },
- {
-  "vi": "Đã chặn. Hai bạn sẽ không thấy nhau nữa.",
-  "en": ""
- },
- {
-  "vi": "Tạo tài khoản để kết bạn nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn ấy chưa có tài khoản để kết bạn.",
-  "en": ""
- },
- {
-  "vi": "🚶 Đi dạo",
-  "en": ""
- },
- {
-  "vi": "💍 Đám cưới",
-  "en": ""
- },
- {
-  "vi": "Lộc cưới",
-  "en": ""
- },
- {
-  "vi": "Mừng phong bì cô dâu chú rể",
-  "en": ""
- },
- {
-  "vi": "Tắt nhạc cưới",
-  "en": ""
- },
- {
-  "vi": "Bật nhạc cưới",
-  "en": ""
- },
- {
-  "vi": "Chụp ảnh chung",
-  "en": ""
- },
- {
-  "vi": "Đám cưới",
-  "en": ""
- },
- {
-  "vi": "người ở đây",
-  "en": ""
- },
- {
-  "vi": "người đang dạo",
-  "en": ""
- },
- {
-  "vi": "📜 Lời chúc",
-  "en": ""
- },
- {
-  "vi": "Ví của bạn đang hết tiền.",
-  "en": ""
- },
- {
-  "vi": "Mừng cô dâu chú rể",
   "en": ""
  }
 ]

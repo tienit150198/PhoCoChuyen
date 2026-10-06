@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Đọc tem trên máy, ghi số seri, mã tài sản, người dùng, phòng ban và hạn bảo hành.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi ổ mạng một thẻ: xếp vào mạng nhân viên, kế toán, khách hay camera.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm ô sai trong bảng quyền: Cấp quyền, Thu hồi hay Giữ nguyên.",
+  "en": ""
+ },
+ {
   "vi": "Tìm hiểu trước, rồi chọn cách trả lời người xin mật khẩu, mã OTP, cài phần mềm lạ.",
   "en": ""
  },
@@ -1641,18 +1653,6 @@
  },
  {
   "vi": "📖 Thẻ truyện tóm tắt chuyện đã qua. Mở các đoạn đã đọc để xem lại tóm tắt và lựa chọn của mình.",
-  "en": ""
- },
- {
-  "vi": "💤 Chưa muốn đọc thì đóng lại. Đoạn đó chờ ở thẻ Truyện nghề trong [[Hành trình]], ghi “Có chuyện mới”.",
-  "en": ""
- },
- {
-  "vi": "🎁 Đoạn cuối bấm [[Khép lại câu chuyện]] để nhận kỷ vật của truyện.",
-  "en": ""
- },
- {
-  "vi": "Rút tiền về ví thế nào?",
   "en": ""
  }
 ]

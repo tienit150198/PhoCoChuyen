@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Chuông chống trộm",
+  "en": ""
+ },
+ {
+  "vi": "Giảm thêm 25% khả năng bị trộm",
+  "en": ""
+ },
+ {
   "vi": "Bộ chống chập điện",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Xem tín hiệu trước khi qua ngã tư.",
-  "en": ""
- },
- {
-  "vi": "Đã qua đủ ba ngã tư.",
-  "en": ""
- },
- {
-  "vi": "🚦 Vượt đèn đỏ · biên nhận",
   "en": ""
  }
 ]

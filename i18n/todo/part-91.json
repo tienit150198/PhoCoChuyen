@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Chat đã có! Nhắn riêng với bạn bè, hoặc lập nhóm chat tới 20 người.",
+  "en": ""
+ },
+ {
+  "vi": "Kênh Cả phố: trò chuyện với mọi người đang online, mỗi người 1 tin mỗi 10 giây.",
+  "en": ""
+ },
+ {
   "vi": "Chấm xanh cho biết bạn bè nào đang online. Muốn ẩn thì tắt trong Cài đặt.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Cơ sở dữ liệu",
-  "en": ""
- },
- {
-  "vi": "Dung lượng",
-  "en": ""
- },
- {
-  "vi": "Bản lưu (trung vị · p90)",
   "en": ""
  }
 ]

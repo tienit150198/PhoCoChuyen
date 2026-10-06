@@ -1,5 +1,425 @@
 [
  {
+  "vi": "Đèn chòi chập chờn; pin trong tủ",
+  "en": ""
+ },
+ {
+  "vi": "Chú Hớn ngủ bờ ray: dìu vô",
+  "en": ""
+ },
+ {
+  "vi": "Không tự sửa được: báo đúng nơi để thợ tới.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ tàu",
+  "en": ""
+ },
+ {
+  "vi": "Bảng giờ tàu hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Làm gì",
+  "en": ""
+ },
+ {
+  "vi": "Báo đâu",
+  "en": ""
+ },
+ {
+  "vi": "Gửi đội trưởng",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Tạm đình chỉ gác hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Chuyến tàu đang tới thì vẫn gác cho xong an toàn. Mai lên đội trình bày.",
+  "en": ""
+ },
+ {
+  "vi": "✓ đã qua",
+  "en": ""
+ },
+ {
+  "vi": "🕐 Bảng giờ tàu",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ca, ký sổ giao ca trước",
+  "en": ""
+ },
+ {
+  "vi": "📻 Chọn câu nhắc lại",
+  "en": ""
+ },
+ {
+  "vi": "Dẹp người, vật trên ray",
+  "en": ""
+ },
+ {
+  "vi": "👉 Dẹp khỏi ray",
+  "en": ""
+ },
+ {
+  "vi": "Báo ga đường đã thông",
+  "en": ""
+ },
+ {
+  "vi": "📻 Báo ga đường thông",
+  "en": ""
+ },
+ {
+  "vi": "đòi qua: bạn trả lời sao?",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn hai phía đường ngang",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn cách dẹp",
+  "en": ""
+ },
+ {
+  "vi": "Tàu chậm: hỏi ga tàu còn đứng ở Bến Gỗ không",
+  "en": ""
+ },
+ {
+  "vi": "👉 Hỏi ga",
+  "en": ""
+ },
+ {
+  "vi": "Ga xác nhận tàu còn đứng: được nâng chắn tạm",
+  "en": ""
+ },
+ {
+  "vi": "👉 Nâng chắn tạm",
+  "en": ""
+ },
+ {
+  "vi": "Bật chuông đèn trước khi hạ",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chuông đèn",
+  "en": ""
+ },
+ {
+  "vi": "👉 Hạ chắn",
+  "en": ""
+ },
+ {
+  "vi": "Giơ đèn trắng đón tàu",
+  "en": ""
+ },
+ {
+  "vi": "Giơ cờ xanh đón tàu",
+  "en": ""
+ },
+ {
+  "vi": "👉 Đứng cờ",
+  "en": ""
+ },
+ {
+  "vi": "Đứng chờ tàu qua",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chờ tàu",
+  "en": ""
+ },
+ {
+  "vi": "👁️ Nhìn đoàn tàu",
+  "en": ""
+ },
+ {
+  "vi": "Thấy bất thường thì báo ga ngay",
+  "en": ""
+ },
+ {
+  "vi": "👉 Báo ga",
+  "en": ""
+ },
+ {
+  "vi": "👉 Nâng chắn",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sổ nhật ký đúng sự thật",
+  "en": ""
+ },
+ {
+  "vi": "Báo đúng nơi (nguy hiểm thì gọi ga)",
+  "en": ""
+ },
+ {
+  "vi": "Đi tới từng điểm",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ nào có chuyện: xử lý, phòng vệ, ghi đúng phiếu",
+  "en": ""
+ },
+ {
+  "vi": "👉 Xem các điểm",
+  "en": ""
+ },
+ {
+  "vi": "Quyết chuyện ở đường ngang",
+  "en": ""
+ },
+ {
+  "vi": "🚦 Vào ca thôi!",
+  "en": ""
+ },
+ {
+  "vi": "✍️ KÝ NHẬN CA",
+  "en": ""
+ },
+ {
+  "vi": "Nhận sổ tuần đường",
+  "en": ""
+ },
+ {
+  "vi": "🔩 Nhận việc tuần đường",
+  "en": ""
+ },
+ {
+  "vi": "📒 KÝ SỔ TUẦN ĐƯỜNG",
+  "en": ""
+ },
+ {
+  "vi": "📻 Nghe ga gọi",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện ở đường ngang",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ca, thử thiết bị",
+  "en": ""
+ },
+ {
+  "vi": "Nghe ga gọi",
+  "en": ""
+ },
+ {
+  "vi": "Gác chuyến tàu",
+  "en": ""
+ },
+ {
+  "vi": "🚦 Đường ngang",
+  "en": ""
+ },
+ {
+  "vi": "🚦 Ca gác hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Không đưa",
+  "en": ""
+ },
+ {
+  "vi": "Không đưa kèm gì",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ hàng chính hãng",
+  "en": ""
+ },
+ {
+  "vi": "Đã trễ hẹn gấp",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu khách",
+  "en": ""
+ },
+ {
+  "vi": "✓ đã nhận",
+  "en": ""
+ },
+ {
+  "vi": "✗ khách không đưa",
+  "en": ""
+ },
+ {
+  "vi": "chạm để ghi nhận",
+  "en": ""
+ },
+ {
+  "vi": "khách không đưa",
+  "en": ""
+ },
+ {
+  "vi": "🎒 Khách không đưa kèm gì",
+  "en": ""
+ },
+ {
+  "vi": "· để trống phần phụ kiện.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Vết trên máy",
+  "en": ""
+ },
+ {
+  "vi": "(chưa được duyệt giá)",
+  "en": ""
+ },
+ {
+  "vi": "Sao chép dữ liệu",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Thu khi bàn giao",
+  "en": ""
+ },
+ {
+  "vi": "Tiền gấp nếu kịp giờ (khách tự gửi thêm)",
+  "en": ""
+ },
+ {
+  "vi": "Thay mũi hàn mới",
+  "en": ""
+ },
+ {
+  "vi": "Thay pin đồng hồ đo",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Thay mũi hàn",
+  "en": ""
+ },
+ {
+  "vi": "Ghi vết",
+  "en": ""
+ },
+ {
+  "vi": "Nhận kèm",
+  "en": ""
+ },
+ {
+  "vi": "Chạm đúng các vết thấy trên máy",
+  "en": ""
+ },
+ {
+  "vi": "👀 Xem máy, ghi các vết",
+  "en": ""
+ },
+ {
+  "vi": "Ghi đúng những món khách đưa kèm",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi khách có cho mở khóa / xem dữ liệu",
+  "en": ""
+ },
+ {
+  "vi": "🙋 Hỏi quyền xem dữ liệu",
+  "en": ""
+ },
+ {
+  "vi": "Đo kiểm để loại dần giả thuyết",
+  "en": ""
+ },
+ {
+  "vi": "🔎 Chọn một phép đo",
+  "en": ""
+ },
+ {
+  "vi": "Lắp máy lại để đo khi cấp điện",
+  "en": ""
+ },
+ {
+  "vi": "Hết phép đo: chốt lỗi khả nghi nhất",
+  "en": ""
+ },
+ {
+  "vi": "Đo kiểm, loại dần giả thuyết",
+  "en": ""
+ },
+ {
+  "vi": "📌 Chốt lỗi",
+  "en": ""
+ },
+ {
+  "vi": "💧 Soi tem báo nước",
+  "en": ""
+ },
+ {
+  "vi": "Khách không nghe báo giá nữa: làm phần đã duyệt hoặc trả máy",
+  "en": ""
+ },
+ {
+  "vi": "Khách chê: chọn loại linh kiện khác",
+  "en": ""
+ },
+ {
+  "vi": "Gửi báo giá cho khách duyệt",
+  "en": ""
+ },
+ {
+  "vi": "bảo hành",
+  "en": ""
+ },
+ {
+  "vi": "📦 Đặt riêng",
+  "en": ""
+ },
+ {
+  "vi": "🗄️ Hẹn ngày khách tới lấy",
+  "en": ""
+ },
+ {
+  "vi": ": không BH",
+  "en": ""
+ },
+ {
+  "vi": "🛡️ Chọn số ngày bảo hành",
+  "en": ""
+ },
+ {
+  "vi": "Quyết: mua, từ chối hay báo công an",
+  "en": ""
+ },
+ {
+  "vi": "Có chuyện ở quầy: chọn cách xử lý",
+  "en": ""
+ },
+ {
+  "vi": "Máy quay lại bảo hành: chọn cách xử lý",
+  "en": ""
+ },
+ {
+  "vi": "Khách gọi hỏi máy: trả lời điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "Trả máy, phụ kiện và phiếu bảo hành, thu tiền đúng báo giá?",
+  "en": ""
+ },
+ {
+  "vi": "sửa xong và chạy thử đạt trước",
+  "en": ""
+ },
+ {
+  "vi": "Việc ở bước này",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn khách",
+  "en": ""
+ },
+ {
+  "vi": "Trả máy",
+  "en": ""
+ },
+ {
   "vi": "Kệ máy chờ",
   "en": ""
  },
@@ -1200,6 +1620,10 @@
   "en": ""
  },
  {
+  "vi": "Giấy tờ khách gửi",
+  "en": ""
+ },
+ {
   "vi": "↩️ Bỏ chọn",
   "en": ""
  },
@@ -1209,6 +1633,14 @@
  },
  {
   "vi": "✍️ Điền theo giấy tờ",
+  "en": ""
+ },
+ {
+  "vi": "📥 Nhận bảng lương",
+  "en": ""
+ },
+ {
+  "vi": "🧮 Bàn thuế & lương",
   "en": ""
  },
  {
@@ -1365,438 +1797,6 @@
  },
  {
   "vi": "🧊 Thùng đá",
-  "en": ""
- },
- {
-  "vi": "🔨 Đập 1 cây đá",
-  "en": ""
- },
- {
-  "vi": "🥛 Cốc & chậu",
-  "en": ""
- },
- {
-  "vi": "đục ngầu",
-  "en": ""
- },
- {
-  "vi": "hơi đục",
-  "en": ""
- },
- {
-  "vi": "còn trong",
-  "en": ""
- },
- {
-  "vi": "🧽 Rửa cốc",
-  "en": ""
- },
- {
-  "vi": "🪣 Thay nước",
-  "en": ""
- },
- {
-  "vi": "🪑 Ghế · ô",
-  "en": ""
- },
- {
-  "vi": "Đang dẹp",
-  "en": ""
- },
- {
-  "vi": "đang dựng",
-  "en": ""
- },
- {
-  "vi": "🪑 Bày lại quán",
-  "en": ""
- },
- {
-  "vi": "Quầy trà",
-  "en": ""
- },
- {
-  "vi": "Gốc bàng",
-  "en": ""
- },
- {
-  "vi": "Mái hiên",
-  "en": ""
- },
- {
-  "vi": "Sát mép đường",
-  "en": ""
- },
- {
-  "vi": "⚠️ lấn đường",
-  "en": ""
- },
- {
-  "vi": "🌳 Chọn chỗ bày quán",
-  "en": ""
- },
- {
-  "vi": "🪑 Bày ghế",
-  "en": ""
- },
- {
-  "vi": "⛱️ Gấp ô",
-  "en": ""
- },
- {
-  "vi": "⛱️ Dựng ô",
-  "en": ""
- },
- {
-  "vi": "🧊 Thùng đá đã đặt",
-  "en": ""
- },
- {
-  "vi": "🧊 Đặt thùng đá chỗ râm",
-  "en": ""
- },
- {
-  "vi": "Đặt thùng đá chỗ râm",
-  "en": ""
- },
- {
-  "vi": "bà Lựu dặn chỗ khác",
-  "en": ""
- },
- {
-  "vi": "Bày ghế nhựa",
-  "en": ""
- },
- {
-  "vi": "Dựng ô che nắng",
-  "en": ""
- },
- {
-  "vi": "🧊 Đặt thùng đá",
-  "en": ""
- },
- {
-  "vi": "Pha một bình chè đậm vừa",
-  "en": ""
- },
- {
-  "vi": "chè nhạt: pha lại",
-  "en": ""
- },
- {
-  "vi": "🍵 Pha bình chè (2 nắm)",
-  "en": ""
- },
- {
-  "vi": "Đập một cây đá vào thùng",
-  "en": ""
- },
- {
-  "vi": "🔨 Đập một cây đá",
-  "en": ""
- },
- {
-  "vi": "đá cây",
-  "en": ""
- },
- {
-  "vi": "trẻ con hỏi mua",
-  "en": ""
- },
- {
-  "vi": "💵 Tiền mặt",
-  "en": ""
- },
- {
-  "vi": "người ngồi",
-  "en": ""
- },
- {
-  "vi": "1 người",
-  "en": ""
- },
- {
-  "vi": "sấu",
-  "en": ""
- },
- {
-  "vi": "🥤 Rót trà",
-  "en": ""
- },
- {
-  "vi": "🌻 Đồ ăn vặt",
-  "en": ""
- },
- {
-  "vi": "🙅 Đã từ chối bán thuốc",
-  "en": ""
- },
- {
-  "vi": "🙅 Không bán thuốc lá cho trẻ con",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn:",
-  "en": ""
- },
- {
-  "vi": ". Ghi đúng số vào sổ, bà Lựu dò sổ mỗi tối.",
-  "en": ""
- },
- {
-  "vi": "Số tiền ghi sổ (xu)",
-  "en": ""
- },
- {
-  "vi": "✍️ Ghi vào sổ",
-  "en": ""
- },
- {
-  "vi": "Dọn hàng xong mới bán",
-  "en": ""
- },
- {
-  "vi": "Bày lại quán",
-  "en": ""
- },
- {
-  "vi": "🪑 Bày lại ghế, dựng ô",
-  "en": ""
- },
- {
-  "vi": "🍵 Chè nhạt/ôi: pha bình mới",
-  "en": ""
- },
- {
-  "vi": "🍵 Hết chè: pha bình mới",
-  "en": ""
- },
- {
-  "vi": "🪣 Nước chậu đục: thay nước",
-  "en": ""
- },
- {
-  "vi": "🧽 Hết cốc sạch: rửa cốc",
-  "en": ""
- },
- {
-  "vi": "🔨 Hết đá: đập thêm một cây",
-  "en": ""
- },
- {
-  "vi": "Trẻ con không được mua thuốc lá",
-  "en": ""
- },
- {
-  "vi": "↩︎ Cất lại thuốc lá",
-  "en": ""
- },
- {
-  "vi": "Nói khéo: không bán thuốc cho trẻ con",
-  "en": ""
- },
- {
-  "vi": "🙅 Từ chối bán thuốc lá",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ của chú Tường",
-  "en": ""
- },
- {
-  "vi": "Chú hỏi hết bao nhiêu. Mở sổ, đọc từng dòng cho chú nghe.",
-  "en": ""
- },
- {
-  "vi": "xu. Tự tính lại theo giá quán rồi chọn:",
-  "en": ""
- },
- {
-  "vi": "📒 Cho chú xem dòng sổ",
-  "en": ""
- },
- {
-  "vi": "✏️ Ghi nhầm: sửa lại cho đúng",
-  "en": ""
- },
- {
-  "vi": "🤝 Thôi, bỏ dòng này cho chú",
-  "en": ""
- },
- {
-  "vi": "😤 Cãi: sổ ghi thế thì trả thế",
-  "en": ""
- },
- {
-  "vi": "Sổ trắng.",
-  "en": ""
- },
- {
-  "vi": "Dẹp ghế, gấp ô trước khi xe tới",
-  "en": ""
- },
- {
-  "vi": "🚨 Dẹp quán ngay!",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn cách xử lý chuyện ở quán",
-  "en": ""
- },
- {
-  "vi": "chọn chỗ, bày ghế, đặt thùng đá",
-  "en": ""
- },
- {
-  "vi": "Đọc sổ cho chú Tường",
-  "en": ""
- },
- {
-  "vi": "📒 Mở sổ, đọc cho chú",
-  "en": ""
- },
- {
-  "vi": "Xem lại dòng chú hỏi",
-  "en": ""
- },
- {
-  "vi": "📒 Xem lại dòng chú hỏi",
-  "en": ""
- },
- {
-  "vi": "🤝 Xong sổ",
-  "en": ""
- },
- {
-  "vi": "✍️ Điền số tiền vào sổ",
-  "en": ""
- },
- {
-  "vi": "✍️ GHI VÀO SỔ",
-  "en": ""
- },
- {
-  "vi": "🥤 ĐƯA TRÀ · GHI SỔ",
-  "en": ""
- },
- {
-  "vi": "🥤 ĐƯA TRÀ · TÍNH TIỀN",
-  "en": ""
- },
- {
-  "vi": "rót trà cho khách trước",
-  "en": ""
- },
- {
-  "vi": "Sổ trắng, chưa ai nợ.",
-  "en": ""
- },
- {
-  "vi": "✓ Có rồi",
-  "en": ""
- },
- {
-  "vi": "🧊 Dặn anh Tuấn xe đá (4 xu/cây, giao mỗi sáng)",
-  "en": ""
- },
- {
-  "vi": "cây/sáng",
-  "en": ""
- },
- {
-  "vi": "· có biển",
-  "en": ""
- },
- {
-  "vi": "Dẹp quán trước khi xe tới",
-  "en": ""
- },
- {
-  "vi": "Thay nước chậu rửa",
-  "en": ""
- },
- {
-  "vi": "🪣 Thay nước chậu",
-  "en": ""
- },
- {
-  "vi": "Rửa cốc bẩn",
-  "en": ""
- },
- {
-  "vi": "Đập thêm đá",
-  "en": ""
- },
- {
-  "vi": "Pha bình chè mới",
-  "en": ""
- },
- {
-  "vi": "🍵 Pha bình chè mới",
-  "en": ""
- },
- {
-  "vi": "Dọn hàng, pha chè, đập đá",
-  "en": ""
- },
- {
-  "vi": "Đọc sổ, thu tiền",
-  "en": ""
- },
- {
-  "vi": "Rót trà, đưa cho khách",
-  "en": ""
- },
- {
-  "vi": "Việc dọn hàng",
-  "en": ""
- },
- {
-  "vi": "💵 Chú Tường trả tiền",
-  "en": ""
- },
- {
-  "vi": "Điền số tiền ghi sổ trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Chè, chanh, hướng dương, thuốc lẻ",
-  "en": ""
- },
- {
-  "vi": "Đủ dấu rồi",
-  "en": ""
- },
- {
-  "vi": "Đã đánh dấu quy định này",
-  "en": ""
- },
- {
-  "vi": "Đủ dấu rồi: đóng dấu quyết định.",
-  "en": ""
- },
- {
-  "vi": "Chọn câu trả lời đầu tiên cho khách",
-  "en": ""
- },
- {
-  "vi": "⏳ Chờ kết quả một nhịp",
-  "en": ""
- },
- {
-  "vi": "Đếm két: chạm từng tờ rồi chốt số",
-  "en": ""
- },
- {
-  "vi": "Soát từng dòng: chạm dòng sai, chọn quy định nó trái",
-  "en": ""
- },
- {
-  "vi": "Quảng trường",
-  "en": ""
- },
- {
-  "vi": "Thư viện, chợ, vườn nghỉ…",
   "en": ""
  }
 ]

@@ -1,5 +1,13 @@
 [
  {
+  "vi": "📥 Tab [[Hộp thư]]: bấm [[Nhận khay chứng từ]] hoặc [[Nhận hồ sơ]]. Việc đầu hạn 10:30.",
+  "en": ""
+ },
+ {
+  "vi": "📑 Tab [[Quy định]]: xem hạn mức duyệt, nhà cung cấp bị chặn, thuế suất tháng này. Mỗi quy định là một dòng, chạm để đọc.",
+  "en": ""
+ },
+ {
   "vi": "⭕ Khay: chạm ô sai trên giấy để khoanh (1–3 ô), rồi bấm [[DUYỆT]], [[TRẢ LẠI]] hoặc [[TRÌNH SẾP]].",
   "en": ""
  },
@@ -908,10 +916,6 @@
   "en": ""
  },
  {
-  "vi": "Đón khách ở cửa",
-  "en": ""
- },
- {
   "vi": "Bấm [[Ra cửa đón khách]], đọc thẻ và hành lý từng người rồi chọn cách giúp. Đủ khách thì [[ĐÓNG CỬA KHOANG]].",
   "en": ""
  },
@@ -1569,18 +1573,6 @@
  },
  {
   "vi": "Chạm các bước sửa theo thứ tự. Sao lưu trước, sửa sau; bước có hại thì bỏ qua.",
-  "en": ""
- },
- {
-  "vi": "Đọc tem trên máy, ghi số seri, mã tài sản, người dùng, phòng ban và hạn bảo hành.",
-  "en": ""
- },
- {
-  "vi": "Mỗi ổ mạng một thẻ: xếp vào mạng nhân viên, kế toán, khách hay camera.",
-  "en": ""
- },
- {
-  "vi": "Chạm ô sai trong bảng quyền: Cấp quyền, Thu hồi hay Giữ nguyên.",
   "en": ""
  }
 ]

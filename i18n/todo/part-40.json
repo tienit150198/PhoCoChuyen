@@ -1,5 +1,9 @@
 [
  {
+  "vi": "số trên dưới 90 hoặc trên 180",
+  "en": ""
+ },
+ {
   "vi": "dưới 94",
   "en": ""
  },
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "SpO2 giường 6 đúng là hơi thấp. Bác sĩ cho thở oxy sớm.",
-  "en": ""
- },
- {
-  "vi": "Chị Thắm",
   "en": ""
  }
 ]
