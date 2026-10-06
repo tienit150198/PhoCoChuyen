@@ -201,3 +201,5 @@
 .career-job .td-intro-rows{margin:var(--sp-3) 0;gap:var(--sp-2)}
 .career-job .td-intro-rows li{align-items:center;min-height:44px;padding:var(--sp-1) var(--sp-3);border-radius:12px;background:var(--surface-2);font-size:var(--fs-3);font-weight:700}
 .career-job .td-intro-rows li>span{font-size:22px;width:28px}
+/* The bar already starts the job: no second "Vào việc thôi!" on the card. */
+.career-job:has(.td-bar [data-command="td_intro"]) .td-intro-go{display:none}
