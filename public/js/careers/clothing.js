@@ -4,7 +4,7 @@
  *  parcels, the mannequin, and a real till (./till.js). Intro card "Giới thiệu nghề" on first open. */
 import {keepBarAboveFooter} from './food_kit.js';
 import {reqList,fold} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,stepLine} from '../v4/guide.js';
+import {stepRows,nextHint,stepBar,finalGo,pending,stepLine} from '../v4/guide.js';
 import {restockButton,crates} from '../v4/restock.js';
 import {tomorrowCard} from './tomorrow_kit.js';
 import {cashPanel,changeStep,changePayload,tray,tillActions} from './till.js';
@@ -480,7 +480,7 @@ function hintFor(g,x){
   return nextHint(x,steps,{final:f});
 }
 // One next step: the bottom button names it (a second "Bước tiếp" line here read the order line, not the action).
-const bottomBar=(g,x)=>g.final?`<div class="ao-bar">${stepCta(x,g.steps,g.final)}</div>`:'';
+const bottomBar=(g,x)=>g.final?stepBar(x,g.steps,g.final,{cls:'ao-bar'}):'';
 
 /* ------------------------------------------------------------ between customers */
 function swapCards(x){

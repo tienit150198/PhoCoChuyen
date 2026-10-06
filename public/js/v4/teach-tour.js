@@ -10,7 +10,7 @@
 import {escapeHTML as esc,portrait} from '../icons.js';
 import {t as tr,language} from './i18n.js';
 import {keepBarAboveFooter} from '../careers/food_kit.js';
-import {reqList} from '../ui-kit.js';
+import {reqList,actBar} from '../ui-kit.js';
 import {GameAPI,aiQueued} from '../api.js';
 import {asset} from '../assets.js';
 import {nextHint,stepCta,finalGo,pending,firstTime} from './guide.js';
@@ -89,9 +89,10 @@ function meter(label,value){
 function hud(label,value,t,person){
   return `<div class="tt-hud">${meter(label,value)}<button type="button" class="tt-who" data-action="chat" data-npc="${esc(t.npc)}" data-task="${esc(t.id)}" aria-label="Trò chuyện với ${esc(person?.display_name||'')}">${portrait(person||{display_name:'?'},30)}<span aria-hidden="true">💬</span></button></div>`;
 }
-/** Sticky bottom bar: what to do next + the main button(s). `top` adds a row above (route totals). */
+/** Sticky bottom bar (the shared ui-kit actBar): what to do next on the left, the main button(s) on the right.
+ * `top` adds a full-width row above (route totals, the plan slots on a wide sheet). */
 function bar(next,buttons='',top=''){
-  return `<div class="tt-bar">${top}<div class="tt-bar-row"><p class="tt-next" aria-live="polite">${next}</p>${buttons?`<div class="tt-bar-btns">${buttons}</div>`:''}</div></div>`;
+  return actBar({top,next:next?`<p class="tt-next ui-note" aria-live="polite">${next}</p>`:'',main:buttons?`<div class="tt-bar-btns">${buttons}</div>`:'',cls:'tt-bar'});
 }
 function section(icon,title,body,aside='',cls=''){
   return `<section class="tt-sec ${cls}"><div class="tt-sec-head"><h3>${em(icon)} ${title}</h3>${aside?`<small>${aside}</small>`:''}</div>${body}</section>`;

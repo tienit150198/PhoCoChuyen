@@ -5,9 +5,9 @@
  * checks every rule (and keeps order details hidden until they are known). */
 import {reqList,fold,refTable} from '../ui-kit.js';
 import {dayStrip,flash,eventCard,keepBarAboveFooter,idlePanel,shopSummary,patience,openTasks} from './food_kit.js';
-import {nextHint,stepCta,finalGo,pending as nextOpen,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
+import {nextHint,stepBar,finalGo,pending as nextOpen,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
 import {restockFor} from '../v4/restock.js';
-import {reqPin,nextLine,pinTop,asmActions,finalStep} from './asm_kit.js';
+import {reqPin,pinTop,asmActions,finalStep} from './asm_kit.js';
 
 const BASE_SCALE=25; // seconds shown on the boiling bar
 const NOODLE={raw:'sống',perfect:'chín tới',soft:'hơi mềm',mushy:'nát'};
@@ -671,8 +671,8 @@ export default {
     </section>`;
     const g=taskGuide(t,x),final=g.final||{label:'🛎️ Giao món',go:{sel:'.rs-desk'},ready:false};
     // The bowl in hand rides with the button, so each tap's result shows right above it (no scrolling).
-    const now=`<div class="rs-bar-now">${nextLine(x,nextOpen(g.steps),'Tô đã đủ · giao cho khách')}<p><span aria-hidden="true">${b.container==='box'?'🥡':'🥣'}</span> ${x.esc(bowlStatus(t,x))}</p>${b.boiling?boilBar(b.boiling,x,t.id,d.boil_shift||0):''}</div>`;
-    const bar=`<div class="fk-bar rs-bar">${now}${stepCta(x,g.steps,final)}</div>`;
+    const now=`<div class="rs-bar-now"><p><span aria-hidden="true">${b.container==='box'?'🥡':'🥣'}</span> ${x.esc(bowlStatus(t,x))}</p>${b.boiling?boilBar(b.boiling,x,t.id,d.boil_shift||0):''}</div>`;
+    const bar=stepBar(x,g.steps,final,{cls:'fk-bar rs-bar',top:now});
     return `<div class="career-job rs food">${head}<div class="rs-work"><div class="rs-side">${ticket(t,x)}${extras(x)}</div>${pin(t,x,nextOpen(g.steps)||finalStep(final))}${desk}</div>${bar}</div>`;
   },
   tick(root,x){

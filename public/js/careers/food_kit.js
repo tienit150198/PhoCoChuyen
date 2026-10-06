@@ -3,6 +3,7 @@
  * result line, the sticky action bar and the end-of-day grade card.
  * Everything here only renders server state and sends commands. */
 import {planBox,dayFold} from './tomorrow_kit.js';
+import {actBar} from '../ui-kit.js';
 
 const DONE=['completed','cancelled','referred'];
 export const openTasks=x=>(x.room.tasks||[]).filter(t=>!DONE.includes(t.status));
@@ -82,7 +83,10 @@ export function sameAsButton(next,buttons){
  * button is kept for screen readers alone (owner 03/10: "chữ ít thôi", one thing said once). */
 export function actionBar(next,buttons){
   const cap=String(next).replace(/^\s*(\S)/,(m,c)=>m.replace(c,c.toUpperCase()));
-  return `<div class="fk-bar"><p class="fk-next${sameAsButton(cap,buttons)?' sr-only':''}" aria-live="polite">${cap}</p><div class="fk-bar-btns">${buttons}</div></div>`;
+  const same=sameAsButton(cap,buttons);
+  // The shared bar (ui-kit actBar): the line on the left, the buttons on the right; a line that only repeats the
+  // button is read out but not shown.
+  return actBar({next:same||!cap?'':`<p class="fk-next ui-note" aria-live="polite">${cap}</p>`,main:`${same&&cap?`<p class="fk-next sr-only" aria-live="polite">${cap}</p>`:''}${buttons}`,cls:'fk-bar'});
 }
 
 /** Keeps the sticky bar above the sheet's own footer (called from tick). The footer's height comes from a

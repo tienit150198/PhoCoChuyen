@@ -272,8 +272,8 @@ export default {
       side=stepRows(x,g.steps,'Món của khách');
     }
     const head=t.kind==='setup'?dayBar(x):`${learnCard(x)}${ticket(t,x)}${dayBar(x)}${t.known&&t.stage==='prep'?potBar(x):''}`;
-    const bar=bottom(x,g),mini=t.kind!=='setup'&&t.stage==='prep'?pourMini(t,x):'';
-    return `<div class="career-job sk ph">${hint}${top}${head}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${mini?bar.replace('<div class="sk-bar">',`<div class="sk-bar">${mini}`):bar}</div>`;
+    const mini=t.kind!=='setup'&&t.stage==='prep'?pourMini(t,x):'',bar=bottom(x,g,{top:mini});
+    return `<div class="career-job sk ph">${hint}${top}${head}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bar}</div>`;
   },
   idle(x){
     const d=data(x),top=`${introCard(x,'pho_intro','🍜')}${deskCard(x,'pho_desk','Chuyện ở quán')}`;
