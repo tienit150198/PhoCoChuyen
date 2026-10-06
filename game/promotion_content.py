@@ -53,16 +53,20 @@ ONG = {'male': 'Ông chủ', 'female': 'Bà chủ', None: 'Chủ'}
 BASE_EMP = 'Nhân viên'      # an employee's title before step 1 is the posting's own title
 BASE_BY_POSTING = {'pl-fo': 'Cơ phó cấp thấp'}   # ...unless the posting has a rank name of its own (F#193)
 
-# The rank's insignia. Pilot (F#193): g gold stripes, s stars, w a gold wreath, by step 0..7.
+# The rank's insignia. Pilot (F#193): g gold stripes, s stars, w a gold wreath, by step 0..7. Phó Tổng Giám đốc (F#207,
+# owner OK 06/10): no stripes, one big star (big) on a bird's wing (wing), aviation style. g/s/w stay for older clients.
 INSIGNIA = {
     'pilot': (dict(g=1, s=0, w=False), dict(g=2, s=0, w=False), dict(g=3, s=0, w=False), dict(g=4, s=0, w=False),
-              dict(g=4, s=1, w=False), dict(g=4, s=2, w=False), dict(g=4, s=3, w=False), dict(g=4, s=3, w=True)),
+              dict(g=4, s=1, w=False), dict(g=4, s=2, w=False), dict(g=4, s=3, w=False),
+              dict(g=0, s=1, w=False, big=True, wing=True)),
 }
 # Other careers: one emoji by step (0..top); every other career keeps 🎖️.
 BADGE = {'teacher': ('🍎', '🏅', '📒', '📚', '🗝️', '🏫')}
 
 
 def insignia_label(x: dict) -> str:
+    if x.get('big'):
+        return '1 sao lớn · cánh chim vàng' if x.get('wing') else '1 sao lớn'
     bits = [f'{x["g"]} gạch']
     if x['s']:
         bits.append(f'{x["s"]} sao')

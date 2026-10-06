@@ -235,6 +235,27 @@ class Review(unittest.TestCase):
         self.assertEqual(pm.record(j.state, 'delivery')['rank'], 0)
         with self.assertRaises(GameError):
             j.act('pm_ask', ask='base')
+        # #11: the reason and the next try are said, not left to guess
+        q = PC.QUESTION_INDEX[q1]
+        bad = next(o['label'] for o in q['options'] if o['score'] == 0)
+        self.assertIn(q['text'], r['message'])
+        self.assertIn(bad, r['message'])
+        self.assertIn(f'{pm.RETRY} ngày làm', r['message'])
+        self.assertEqual((r['review']['why'], r['review']['wait']), ('zero', pm.RETRY))
+        self.assertEqual([x['score'] for x in r['review']['rows']], [0, 2])
+
+    def test_high_ask_says_which_answer_was_short(self):
+        j = employee()
+        until_due(j)
+        q1, q2 = pm.record(j.state, 'delivery')['due']['qs']
+        ok = next(o['id'] for o in PC.QUESTION_INDEX[q1]['options'] if o['score'] == 1)
+        j.act('pm_answer', question=q1, option=ok)
+        j.act('pm_answer', question=q2, option=best(q2))
+        r = j.act('pm_ask', ask='high')
+        self.assertIn(PC.QUESTION_INDEX[q1]['text'], r['message'])
+        self.assertIn('Xin hợp lý', r['message'])
+        self.assertEqual(r['review']['why'], 'high')
+        validate_state(j.state)
 
     def test_answers_in_order_and_once(self):
         j = employee()

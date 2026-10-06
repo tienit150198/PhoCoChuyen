@@ -172,7 +172,7 @@ async def main():
                         await page.wait_for_selector('#sheet[open] .pm-review', timeout=10000)
                         await shot('2-review-q1')
                         for q in ('t1', 't2'):
-                            sel = f'#sheet .pm-review [data-command="pm_answer"][data-payload*=\'"{q}"\'][data-payload*=\'"option":"a"\']'
+                            sel = f'#sheet .pm-review [data-action="pmAnswer"][data-question="{q}"][data-option="a"]'
                             try:
                                 await page.wait_for_selector(sel, timeout=8000)
                             except Exception:
@@ -180,9 +180,9 @@ async def main():
                                 raise
                             await click(sel)
                             await page.wait_for_timeout(700)
-                        await page.wait_for_selector('#sheet .pm-review [data-command="pm_ask"]', timeout=5000)
+                        await page.wait_for_selector('#sheet .pm-review [data-action="pmAsk"]', timeout=5000)
                         await shot('3-review-ask')
-                        await click('#sheet .pm-review [data-command="pm_ask"].primary')
+                        await click('#sheet .pm-review [data-action="pmAsk"].primary')
                         await page.wait_for_selector('#sheet .pm-ladder', timeout=5000)
                     else:
                         await click('#taskHUD .pm-strip.mgr')

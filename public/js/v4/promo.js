@@ -23,14 +23,23 @@ const starPts=(cx,cy,r)=>Array.from({length:10},(_,i)=>{const a=Math.PI/5*i-Math
 /** A pilot's shoulder board (F#193): g gold stripes, s stars, w a gold wreath around the stars. */
 export function insignia(x,w=96){
   if(!x)return '';
+  if(x.big)return bigStar(x,w);
   const bars=Array.from({length:x.g},(_,i)=>`<rect x="${84-i*8}" y="7" width="5" height="22" rx="1" fill="${GOLD}"/>`).join('');
   const stars=Array.from({length:x.s},(_,i)=>`<polygon points="${starPts(26+i*12,18,5.5)}" fill="${GOLD}"/>`).join('');
   const wreath=x.w?`<path d="M18 27 Q30 35 52 27" fill="none" stroke="${GOLD}" stroke-width="1.6"/><path d="M18 9 Q16 18 18 27 M52 9 Q54 18 52 27" fill="none" stroke="${GOLD}" stroke-width="1.2" stroke-dasharray="2 2"/>`:'';
   return `<svg class="pm-ins" viewBox="0 0 100 36" width="${w}" height="${Math.round(w*.36)}" role="img" aria-label="${esc(x.label||'')}"><rect x="1" y="3" width="97" height="30" rx="7" fill="${NAVY}"/><circle cx="9" cy="18" r="3.6" fill="${GOLD}"/>${wreath}${stars}${bars}</svg>`;
 }
+/** Phó Tổng Giám đốc (F#207): one big star on a swept bird's wing, aviation style, on the same navy board. */
+function bigStar(x,w){
+  const wing=x.wing?`<path d="M69 14 C57 6 37 2.5 15 5 Q18.5 9.5 23 13 Q25 10.8 27.5 10.2 Q29.5 14.5 33.5 18 Q35.5 14.6 38 14 Q40.5 18.5 44.5 22 Q46.5 18 49 17.4 Q51.5 21 55.5 24 Q57.8 20.6 60.5 20.4 Q63.5 23.4 68.5 24 Z" fill="${GOLD}"/>`
+    +`<path d="M67 15.6 C56 9.6 41 7 25 7.6 M27.5 10.2 C38 10.2 50 12.6 62 17.6" fill="none" stroke="${NAVY}" stroke-width=".8" opacity=".55"/>`:'';
+  return `<svg class="pm-ins" viewBox="0 0 100 36" width="${w}" height="${Math.round(w*.36)}" role="img" aria-label="${esc(x.label||'')}"><rect x="1" y="3" width="97" height="30" rx="7" fill="${NAVY}"/><circle cx="9" cy="18" r="3.6" fill="${GOLD}"/>${wing}<polygon points="${starPts(79,18.5,12.5)}" fill="${GOLD}" stroke="${NAVY}" stroke-width=".8"/></svg>`;
+}
 const badge=p=>p.insignia?`<span class="pm-badge pm-badge-ins">${insignia(p.insignia,112)}<small>${esc(p.insignia.label)}</small></span>`:`<span class="pm-badge" aria-hidden="true">${p.badge||'🎖️'}</span>`;
 const place=env=>env.api.content.catalogue?.find(x=>x.id===env.api.state.current)?.short||'';
 
+/** F#206: what a "ngày điều hành tốt" is (game/promotion_office.py close: score, GOOD_SCORE). */
+const OFFICE_RULE=`<li>🏢 Ngày điều hành tốt: trong ca, tự xếp ít nhất 1 việc ở 🗓️ Điều phối, rồi khép ngày với điểm điều hành từ 60/100.</li><li>Điểm = ½ tỷ lệ đúng giờ + 0,3 × tinh thần + 20, trừ 6 mỗi phàn nàn và 2 mỗi % vượt quỹ lương. Việc bỏ trống, việc cần quyết để tới cuối ngày đều thêm phàn nàn.</li><li>Số ngày điều hành tốt đếm lại từ 0 sau mỗi lần lên bậc.</li>`;
 /** The steps behind "Xem thêm": what each step gives. */
 function more(p){
   const emp=p.track==='emp',pcts=(p.pcts||[]).map(x=>x+'%').join(' → ');
@@ -40,7 +49,7 @@ function more(p){
     <li>Ngày tốt: ca thường xong từ 2 việc, đánh giá trong ngày từ ★3.5 nếu có. Nghề văn phòng theo kết quả “ngày chắc tay”; ca quản lý đạt chất lượng từ 60%.</li>
     <li>${emp?'Mỗi bậc: tăng lương ':'Mỗi bậc: khách quen boa thêm '}${pcts}.</li>
     <li>Bậc 3: mở 🧑‍💼 Ca quản lý${p.track==='own'?' (nhân viên + phụ việc thời vụ)':''}.</li>
-    ${p.office_from?`<li>Bậc ${p.office_from} (${esc(p.office_title)}): mở 🏢 phòng điều hành: điều phối, quản lý nhân sự, xử lý việc khó.</li>`:''}
+    ${p.office_from?`<li>Bậc ${p.office_from} (${esc(p.office_title)}): mở 🏢 phòng điều hành: điều phối, quản lý nhân sự, xử lý việc khó.</li>${OFFICE_RULE}`:''}
     <li>Không bao giờ bị giáng chức. Ngày chưa tốt không cộng ngày tốt và vẫn tính vào tỷ lệ ngày làm.</li>${rows}</ul></details>`;
 }
 
@@ -48,20 +57,30 @@ function more(p){
 function review(p){
   const d=p.due,dots=`<span class="pm-dots">${Array.from({length:d.of},(_,i)=>`<i class="${i<d.n?'on':''}"></i>`).join('')}</span>`;
   const top=`<p class="pm-eyebrow">${d.who==='Phòng sếp'?'🏢 Phòng sếp':'🏮 Hội buôn phố'} ${dots}</p><h3 class="pm-title">Xét lên ${esc(d.title)}</h3>`;
-  if(d.q)return `<article class="pm-card pm-review">${top}<p class="pm-q">${esc(d.q.text)}</p><div class="pm-opts">${d.q.options.map(o=>cmd(esc(o.label),'pm_answer',{question:d.q.id,option:o.id},'pm-opt')).join('')}</div></article>`;
-  if(d.ask)return `<article class="pm-card pm-review">${top}<p class="pm-q">💰 Lương mới: <b>${d.pay[0]} → ${d.pay[1]} xu/ngày</b></p><div class="pm-opts">${d.ask.map((a,i)=>cmd(esc(a.label),'pm_ask',{ask:a.id},i===0?'primary':'pm-opt')).join('')}</div>
-    <details class="pm-more"><summary>?</summary><p class="small muted">Xin hợp lý, xin cao: được thêm khi trả lời thật tốt. Xin cao mà chưa tốt thì hẹn quý sau.</p></details></article>`;
+  if(d.q)return `<article class="pm-card pm-review">${top}<p class="pm-q">${esc(d.q.text)}</p><div class="pm-opts">${d.q.options.map(o=>act(esc(o.label),'pmAnswer',{question:d.q.id,option:o.id},'pm-opt')).join('')}</div>
+    <details class="pm-more"><summary>?</summary><p class="small muted">Mỗi câu có cách tốt nhất, cách tạm được và cách sếp chưa ưng (0 điểm). Có câu 0 điểm là hẹn xét lại sau 3 ngày làm. Chọn cách đúng quy trình, có trách nhiệm nhất.</p></details></article>`;
+  if(d.ask)return `<article class="pm-card pm-review">${top}<p class="pm-q">💰 Lương mới: <b>${d.pay[0]} → ${d.pay[1]} xu/ngày</b></p><div class="pm-opts">${d.ask.map((a,i)=>act(esc(a.label),'pmAsk',{ask:a.id},i===0?'primary':'pm-opt')).join('')}</div>
+    <details class="pm-more"><summary>?</summary><p class="small muted">Xin hợp lý, xin cao: được thêm khi cả hai câu đều trả lời tốt nhất. “Xin cao” mà có câu mới tạm được thì sếp hẹn 3 ngày làm nữa. Chưa chắc thì chọn “Xin hợp lý”.</p></details></article>`;
   return '';
 }
 
+/** #11: why the last review did not pass and when the next one is. The answers' scores come back with the
+ * command (game/promotion.py _later, `review`) and live in ui.pmLast for this session; after a reload only the rule. */
+function lastReview(env,wait){
+  const L=env.ui.pmLast?.career===env.api.state.current?env.ui.pmLast:null;
+  const when=`<p class="small">⏳ Chỉ đếm ngày có làm việc. Làm thêm <b>${wait}</b> ngày là sếp hẹn xét lại ở đầu ca kế tiếp.</p>`;
+  if(!L)return `<div class="pm-last">${when}<p class="small muted">💡 Lần xét trước chưa qua: có câu bị chấm 0 điểm, hoặc chọn “Xin cao” khi chưa trả lời tốt nhất cả hai câu. Lần sau chọn cách đúng quy trình nhất rồi “Xin hợp lý”.</p></div>`;
+  const mark=s=>s===2?'✅':s===1?'🟡':'❌';
+  return `<div class="pm-last"><p class="pm-eyebrow">📋 Lần xét vừa rồi</p><ul class="pm-rules">${L.rows.map(r=>`<li class="${r.score?'':'bad'}">${mark(r.score)} ${esc(r.q)}<small class="pm-hint">Bạn chọn “${esc(r.a)}” · ${esc(r.word)}</small></li>`).join('')}${L.why==='high'?`<li class="bad">❌ Xin cao<small class="pm-hint">Chỉ được khi cả hai câu đều tốt nhất. Lần sau chọn “Xin hợp lý”.</small></li>`:''}</ul>${when}</div>`;
+}
 export function promoView(env){
   const c=room(env),p=c.promo;
   if(!p)return head('🎖️ Thăng tiến')+`<div class="sheet-body"><p class="muted">Có việc làm rồi mới tính chuyện lên chức nhé.</p></div>`;
   if(p.due)return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body">${review(p)}</div>`;
   const n=p.next,sh=p.shift;
   const line=n?`${n.good}/${n.need} ngày tốt → ${esc(n.title)}`:'Bậc cao nhất rồi!';
-  const lock=n?.requirements?.length?`<ul class="pm-rules">${n.requirements.map(r=>`<li>${r.met?'✓':'🔒'} ${esc(r.label)}</li>`).join('')}</ul>`
-    :[n?.why,n?.wait?`Hẹn xét lại sau ${n.wait} ngày làm`:null].filter(Boolean).map(s=>`<p class="pm-lock">🔒 ${esc(s)}</p>`).join('');
+  const lock=(n?.requirements?.length?`<ul class="pm-rules">${n.requirements.map(r=>`<li>${r.met?'✓':'🔒'} ${esc(r.label)}${r.id==='office'&&r.need?`${bar(r.got,r.need)}<small class="pm-hint">Ngày tốt khi: tự xếp ít nhất 1 việc ở 🗓️ Điều phối và cuối ngày điểm điều hành từ 60/100.</small>`:''}</li>`).join('')}</ul>`
+    :[n?.why,n?.wait?`Hẹn xét lại sau ${n.wait} ngày làm`:null].filter(Boolean).map(s=>`<p class="pm-lock">🔒 ${esc(s)}</p>`).join(''))+(n?.wait?lastReview(env,n.wait):'');
   const work=p.rank>=3?'Bạn có thể mở ca quản lý: giao việc cho đội, kiểm tra kết quả và xử lý chuyện trong ca. Mỗi ngày vẫn có thể chọn tự làm ở quầy.'
     :'Công việc ở quầy vẫn như trước. Từ bậc 3, bạn có thêm ca quản lý để giao việc cho đội và kiểm tra kết quả.';
   const benefit=p.track==='emp'?`Thăng chức tăng lương${p.pct?` · hiện tại +${p.pct}%`:''}.`:`Thăng tiến tăng tiền boa từ khách quen${p.pct?` · hiện tại +${p.pct}%`:''}.`;
@@ -109,7 +128,7 @@ function officePlan(of,ui){
     }
     return `<li class="of-slot${open?' open':''}${who?' set':''}"><button type="button" class="of-slot-btn" data-action="pmOfSlot" data-i="${s.i}" aria-expanded="${open}"><span class="of-slot-t"><b>${esc(s.t)}</b><small>${esc(s.sub)}${s.need?` · cần từ ${esc(s.need)}`:''}</small></span>${tag}</button>${list}</li>`;
   }).join('');
-  return `<ul class="of-slots">${rows}</ul><details class="pm-more"><summary>Xem thêm</summary><ul class="pm-rules"><li>Người làm ${of.duty_max} ngày liền phải nghỉ một ngày (quy định). Ai được nghỉ thì tinh thần lên.</li><li>Tay nghề cao, tinh thần tốt: dễ đúng giờ. Đang có chuyện chưa xử lý (⚠️) thì dễ trễ.</li><li>Ô bỏ trống: trợ lý xếp tạm lúc khép ngày, kém hơn và không có thưởng điều hành. Không ai làm được thì ${esc(of.unit)} đó bị hủy.</li></ul></details>`;
+  return `<ul class="of-slots">${rows}</ul><details class="pm-more"><summary>Xem thêm</summary><ul class="pm-rules">${OFFICE_RULE}<li>Người làm ${of.duty_max} ngày liền phải nghỉ một ngày (quy định). Ai được nghỉ thì tinh thần lên.</li><li>Tay nghề cao, tinh thần tốt: dễ đúng giờ. Đang có chuyện chưa xử lý (⚠️) thì dễ trễ.</li><li>Ô bỏ trống: trợ lý xếp tạm lúc khép ngày, kém hơn và không có thưởng điều hành. Không ai làm được thì ${esc(of.unit)} đó bị hủy.</li></ul></details>`;
 }
 function officeStaff(of,ui){
   const open=Number.isInteger(ui.pmOfWho)?ui.pmOfWho:null;
@@ -125,6 +144,17 @@ function officeStaff(of,ui){
     return `<li class="of-row${open===m.i?' open':''}"><button type="button" class="of-row-btn" data-action="pmOfWho" data-i="${m.i}" aria-expanded="${open===m.i}"><span class="of-face" aria-hidden="true">${FACE(m.mood)}</span><span class="of-name"><b>${esc(m.n)}</b><small>${esc(m.t)}</small></span><span class="of-tags">${tags}</span></button>${body}</li>`;
   }).join('')}</ul><details class="pm-more"><summary>Xem thêm</summary><ul class="pm-rules"><li>Mỗi người có tính cách riêng: cùng một quyết định, người này cảm ơn, người kia tự ái.</li><li>Có lý do (đang có lỗi, đã nhắc từ trước, làm tốt thật) thì quyết định có tác dụng. Không có lý do thì người đó buồn và cả phòng để ý.</li><li>Mệt không phải là lỗi: cho nghỉ, đừng phạt.</li><li>Thăng chức, tăng lương làm quỹ lương tăng. Bị dồn quá thì người ta nghỉ việc.</li></ul></details>`;
 }
+/** F#206: does today count as a good office day? Progress n/need and what the close will score. */
+function officeToday(of,p,empty){
+  const r=p.next?.requirements?.find(x=>x.id==='office'&&x.need);
+  const ok=(on,text)=>`<li class="${on?'on':''}">${on?'✓':'○'} ${text}</li>`;
+  const k=of.kpi,over=k.cost>k.budget;
+  const rows=[typeof of.me==='boolean'?ok(of.me,'Tự xếp ít nhất 1 việc ở 🗓️ Điều phối'):'',
+    ok(!of.inbox.length,of.inbox.length?`Còn ${of.inbox.length} việc cần quyết (để tới cuối ngày là thêm phàn nàn)`:'Đã quyết hết 📥 việc'),
+    ok(!empty,empty?`${empty} ${esc(of.unit)} chưa xếp người`:'Đã xếp đủ người'),
+    ok(!over,over?'Quỹ lương đang vượt (trừ 2 điểm mỗi %)':'Quỹ lương trong mức')].join('');
+  return `<details class="of-today"${of.me===false?' open':''}><summary><b>🎯 ${r?`Ngày điều hành tốt: ${r.got}/${r.need}`:'Hôm nay tính ngày tốt?'}</b><span>${r?bar(r.got,r.need):''}</span></summary><ul>${rows}</ul><p class="small muted">Cuối ngày, điểm điều hành từ ${of.good_score||60}/100 là tính 1 ngày tốt. Điểm và cách tính hiện ở tổng kết ngày.</p></details>`;
+}
 export function officeView(env){
   const c=room(env),p=c.promo,of=p?.office,ui=env.ui;
   if(!of)return head('🏢 Phòng điều hành')+`<div class="sheet-body"><p class="muted">Phòng điều hành mở từ bậc lãnh đạo.</p></div>`;
@@ -138,7 +168,7 @@ export function officeView(env){
   const body=tab==='inbox'?officeInbox(of):tab==='plan'?officePlan(of,ui):officeStaff(of,ui);
   const log=of.log?.length?`<details class="pm-more"><summary>Nhật ký</summary><ul class="pm-rules">${of.log.slice().reverse().map(x=>`<li>${esc(x)}</li>`).join('')}</ul></details>`:'';
   const foot=`<footer class="sheet-foot"><p>🗳️ ${of.left} lượt quyết · thưởng tối đa ${of.cap} xu</p>${act('Xong','close',{},'primary')}</footer>`;
-  return head(`🏢 ${esc(of.name)}`,line,eyebrow)+`<div class="sheet-body of-board">${officeKpi(of)}${bar}<div class="of-body" role="tabpanel">${body}</div>${log}</div>`+foot;
+  return head(`🏢 ${esc(of.name)}`,line,eyebrow)+`<div class="sheet-body of-board">${officeKpi(of)}${officeToday(of,p,empty)}${bar}<div class="of-body" role="tabpanel">${body}</div>${log}</div>`+foot;
 }
 
 /** The manager's board. */
@@ -198,6 +228,11 @@ export function promoSummary(p){
 export async function promoAction(action,data,el,env){
   const {ui,cmd:send,openSheet,toast,renderSheet}=env;
   if(action==='promo'){openSheet('promo');return true;}
+  if(action==='pmAnswer'||action==='pmAsk'){   // the review: the generic command, plus the reason when it is put off (#11)
+    const r=await send(action==='pmAnswer'?'pm_answer':'pm_ask',action==='pmAnswer'?{question:data.question,option:data.option}:{ask:data.ask});
+    if(r?.later&&r.review)ui.pmLast={...r.review,career:env.api.state.current};else if(r?.celebrate)ui.pmLast=null;
+    renderSheet();return true;
+  }
   if(action==='pmBoard'){ui.pmPick=null;ui.pmOffice=false;openSheet('manager');return true;}
   if(action==='pmStart'){const r=await send('start_day',{manager:true});if(r){ui.pmPick=null;ui.pmOffice=false;ui.task=null;openSheet('manager');}return true;}
   if(action==='pmOffice'){ui.pmOffice=true;ui.pmOfSlot=null;ui.pmOfWho=null;ui.pmOfTab=null;openSheet('manager');return true;}
