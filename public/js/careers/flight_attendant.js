@@ -151,7 +151,7 @@ function guide(t,x){
   if(!d.intro)return {steps:[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'fa_intro',payload:{},label:'🧣 Vào ca bay'}}],final:null};
   const id=t.id;
   if(!t.known){
-    const label=t.kind==='service'?'📋 Nhận phiếu suất ăn đặc biệt':t.kind==='board'?'🚪 Ra cửa đón khách':'👂 Hỏi chuyện khách';
+    const label=t.kind==='service'?(clean()?'📋 Nhận phiếu suất ăn':'📋 Nhận phiếu suất ăn đặc biệt'):t.kind==='board'?(clean()?'🚪 Ra cửa':'🚪 Ra cửa đón khách'):'👂 Hỏi chuyện khách';
     return {steps:[{ok:null,label:lower(label.replace(/^\S+\s/,'')),go:{cmd:'ask',payload:{task:id},label}}],final:null};
   }
   const n=t.needs;

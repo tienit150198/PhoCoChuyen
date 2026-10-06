@@ -224,7 +224,7 @@ Each wave owns its screens and their files; no other wave edits them.
 | 3 | `ui-wave3` | the rest: not any screen above | not any file above |
 
 Wave 2, done (ui-wave2): police 84 → 23 visible words, nurse 78 → 19, lifeguard 67 → 25, oil 42 → 22, pilot 135 → 30
-(cap 30: the opening at the cockpit door stays whole), flight attendant 172 → 26, on a 390 × 844 phone. The pilot and
+(cap 30: the opening at the cockpit door stays whole), flight attendant 172 → 25, on a 390 × 844 phone. The pilot and
 the flight attendant now use the street kit's short intro (`introCard`, 27–28 words, was 135–172 inside the work
 sheet) and the shared bar. Shared helpers added to `air_kit.js`: `crewDay` (the crew's day line with "?") and
 `splitSay`.
