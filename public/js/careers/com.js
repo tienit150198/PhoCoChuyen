@@ -119,7 +119,7 @@ function platePanel(t,x){
   const plates=t.plates||[];if(!plates.length)return '';
   const pi=plates.length-1,p=plates[pi],box=p.v==='hop';
   const rice=['tam','trang'].map(r=>{const R=RICE(x,r),pot=data(x).pots?.[r]||{};
-    return x.cmd(`${x.esc(R.emoji)} Xới 1 vá ${x.esc(R.short)}`,'com_rice',{task:t.id,r,plate:pi},'',!pot.va||p.va>=Number(cc(x).va_max||4));}).join('');
+    return x.cmd(`${x.esc(R.emoji)} Xới 1 vá ${x.esc(R.short)}`,'com_rice',{task:t.id,r,plate:pi},'com-rice',!pot.va||p.va>=Number(cc(x).va_max||4));}).join('');
   const eggs=[['dao','Ốp la lòng đào'],['chin','Ốp la chín kỹ']].map(([h,l])=>x.cmd(`🍳 ${l}`,'com_egg',{task:t.id,how:h,plate:pi},'small ghost',!stock(x,'trung'))).join('');
   const mams=Object.entries(cc(x).mam||{}).map(([k,l])=>x.cmd(x.esc(l),'com_mam',{task:t.id,m:k,plate:pi},`small ${p.mam===k?'primary':'ghost'}`,false)).join('');
   return `<section class="card ct-make"><h4>${x.esc(VS(x,p.v).emoji)} ${box?'Hộp':'Dĩa'} đang làm · ${p.va} vá cơm</h4>
@@ -215,7 +215,8 @@ function guide(t,x){
   const out=(t.needs?.lines||[]).some(ln=>ln.it.some(k=>{const D=DISH(x,k);return D.src==='tray'?!Number(d.trays?.[k]?.n||0)&&!stock(x,k):D.src==='pan'?!stock(x,'trung'):goodPiece(x)<0&&!stock(x,'suon')&&!d.grill?.b;}));
   if(out)return {steps,final:{label:'🙏 Nói thật: quán hết món này',go:{cmd:'com_decline',payload:{task:t.id},confirm:(t.plates||[]).length?'Dĩa đang làm phải bỏ. Nói thật với khách là quán hết món?':''},ready:true}};
   const wait=pending(steps);   // a pot still cooking, a side still pink: the button waits with the reason
-  return {steps,final:{label:'🍚 ĐƯA CƠM',go:finalGo(steps,'com_serve',{task:t.id}),ready:!!(t.plates||[]).length&&!(wait&&!wait.go),why:'làm dĩa cơm trước đã'}};
+  return {steps,final:{label:'🍚 ĐƯA CƠM',go:finalGo(steps,'com_serve',{task:t.id}),ready:!!(t.plates||[]).length&&!(wait&&!wait.go),why:'làm dĩa cơm trước đã',
+    can:wait&&!wait.go?undefined:t.can?.com_serve}};   // the server's pre-check (com.py _plate_rules)
 }
 /** When the guide changes by itself (a pot done, a side ready to turn): the workbench redraws then. */
 function wakeAt(x){

@@ -86,7 +86,7 @@ function stepGuide(t,x){
   if(s.type==='pick')return {steps:[],final:{label:x.esc(s.go),go:{cmd:'chua_close',payload:{task:t.id}},ready:true}};
   if(s.type==='sort'){const got=t.work?.[s.id]||{},miss=s.items.find(i=>!got[i.id]);
     const steps=miss?[row(`Xếp chỗ cho ${miss.name}`,{sel:'.pg-sorts',label:`👉 Xếp ${x.esc(miss.name)}`},'')]:[];
-    return {steps,final:{label:x.esc(s.go),go:finalGo(steps,'chua_close',{task:t.id}),ready:!miss,why:'xếp hết mọi thứ'}};}
+    return {steps,final:{label:x.esc(s.go),go:finalGo(steps,'chua_close',{task:t.id}),ready:!miss,why:'xếp hết mọi thứ',can:t.can?.chua_close}};}
   if(s.type==='order'){const got=t.work?.[s.id]||[];
     // The first morning thầy Huệ Minh shows the order (s.tip): the next one glows.
     const tip=Array.isArray(s.tip)?s.tip.find(id=>!got.includes(id)):null,name=tip&&s.items.find(i=>i.id===tip)?.name;
@@ -95,7 +95,7 @@ function stepGuide(t,x){
     // Ready only at k/n, exactly when the server takes the sequence (live 06/10: 68 refusals “Còn việc chưa xếp”).
     const n=orderNeed(s),k=got.length;
     if(!steps.length&&k<n)steps.push(row(`Xếp thêm ${n-k} việc (đã xếp ${k}/${n})`,{sel:'.pg-left',label:'👉 Chạm việc tiếp theo'},''));
-    return {steps,final:{label:x.esc(s.go),go:finalGo(steps,'chua_close',{task:t.id}),ready:k>=n,why:`xếp đủ ${n} việc (đã xếp ${k}/${n})`}};}
+    return {steps,final:{label:x.esc(s.go),go:finalGo(steps,'chua_close',{task:t.id}),ready:k>=n,why:`xếp đủ ${n} việc (đã xếp ${k}/${n})`,can:t.can?.chua_close}};}
   if(s.type==='choose')return {steps:[row(s.title,{sel:'.pg-opts',label:'👉 Chọn cách làm'},typeof s.tip==='string'?`.pg-opts .pg-o-${s.tip}`:'')],final:null};
   if(s.type==='tally')return {steps:[row('Đếm từng tờ, ghi tổng vào sổ',{sel:'.pg-tally',label:'👉 Đếm tiền công đức'},'')],final:null};
   return {steps:[],final:null};

@@ -773,7 +773,7 @@ def _pick(s, c, d, p):
         t['pick'].remove(i)
         return dict(message=f'↩️ Bỏ chọn tấm {i + 1}.')
     k = _need_k(t)
-    kit.need(len(t['pick']) < k, f'Gói này in {k} tấm thôi. Bỏ chọn bớt rồi chọn tấm khác.')
+    _pick_rules(t)
     t['pick'].append(i)
     t['pick'].sort()
     return dict(message=f'☑️ Chọn tấm {i + 1} ({len(t["pick"])}/{k}).')
@@ -915,6 +915,23 @@ def _print(s, c, d, p):
     return dict(message=f'🖨️ Máy in rè rè… tấm ảnh {"in lại " if old else ""}trồi ra, màu lên dần. Giờ {how}.{low}')
 
 
+def _trim_rules(c: dict, pkg: str, need=kit.need) -> None:
+    """The frame and the sleeves a package takes. pb_trim refuses with these; public_data sends them per package
+    as can.pb_trim (live 06/10: 669 refusals “Hết khung gỗ rồi”)."""
+    x = PKGS[pkg]
+    shop = dict(act='inventory', label='📦 Kho')
+    if x['frame']:
+        need(kit.stock(c, x['frame']) > 0, 'Hết khung gỗ rồi. Nhập thêm ở Kho nhé.', fix=shop)
+    need(kit.stock(c, 'bao') >= x['sleeves'], 'Hết bao kiếng rồi. Nhập thêm ở Kho nhé.', fix=shop)
+
+
+def _pick_rules(t: dict, need=kit.need) -> None:
+    """One more shot for the package (a picked one can always be unpicked). pb_pick refuses with it; public_task
+    sends it as can.pb_pick (live 06/10: 445 refusals “Gói này in # tấm thôi”)."""
+    k = _need_k(t)
+    need(len(t['pick']) < k, f'Gói này in {k} tấm thôi. Bỏ chọn bớt rồi chọn tấm khác.')
+
+
 def _trim(s, c, d, p):
     t = _task(c, p, ('serve',))
     _need_prep(t)
@@ -922,9 +939,7 @@ def _trim(s, c, d, p):
     kit.need(pr, 'Chưa in ảnh.')
     kit.need(not t['trim'], 'Cắt xong rồi.')
     x = PKGS[pr['pkg']]
-    if x['frame']:
-        kit.need(kit.stock(c, x['frame']) > 0, 'Hết khung gỗ rồi. Nhập thêm ở Kho nhé.')
-    kit.need(kit.stock(c, 'bao') >= x['sleeves'], 'Hết bao kiếng rồi. Nhập thêm ở Kho nhé.')
+    _trim_rules(c, pr['pkg'])
     cost = 0
     if x['frame']:
         cost += kit.take(c, x['frame'], 1)
@@ -1139,6 +1154,7 @@ def public_task(t: dict) -> dict:
     elif v['kind'] == 'serve':
         lead, hold = hold_of(t, t['day'])
         v['beat'] = dict(count=COUNT, lead=lead, hold=hold, blink=BLINK_AFTER, recharge=RECHARGE)
+        v['can'] = dict(pb_pick=kit.check(_pick_rules, t))
     v['cash'] = till.public(t.get('cash'))
     return v
 
@@ -1157,6 +1173,7 @@ def public_data(c: dict) -> dict:
                 mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']),
                 today=d['today'], stats=d['stats'], regulars={k: dict(v) for k, v in d['regulars'].items()},
                 desk=kit.desk_public(d['desk'], DESK, ID),
+                can=dict(pb_trim={k: kit.check(_trim_rules, c, k) for k in PKGS}),
                 learn=dict(on=on, n=d['stats']['customers'], of=APPRENTICE, title=LESSONS[n][0] if on else None, text=LESSONS[n][1] if on else None))
 
 
