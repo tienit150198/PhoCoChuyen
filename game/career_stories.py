@@ -1388,6 +1388,44 @@ ARCS = {
                 ('le', 'Sổ chợ con ghi rõ ràng, cả xóm khen.'),
                 ('me', 'Con sẽ ghi tiếp, từng trang, từng nhà.')]),
         ]),
+    # ------------------------------------------------------------ 🚦 Gác chắn đường ngang Bến Mây
+    'railway': dict(
+        title='Cái còi đồng của chú Sáu', emoji='🚦',
+        keepsake=dict(emoji='📯', name='Cái còi đồng của chú Sáu', desc='Mòn bóng chỗ ngậm, đã theo chú Sáu hai mươi tám năm cầm cờ ở đường ngang Bến Mây.'),
+        cast={'sau': _p('Chú Sáu Cờ', '🚩', 'Gác chắn lâu năm', 'railway_npc_01'),
+              'nguyet': _p('Chị Nguyệt', '📻', 'Trực ban ga Bến Mây', 'railway_npc_02'),
+              'quy': _p('Anh Quý', '📋', 'Cung trưởng cung đường', 'railway_npc_03'),
+              'bong': _p('Bà Bông', '🍵', 'Hàng nước chè sát ray', 'railway_npc_04')},
+        beats=[
+            _b('Chòi gác sọc đỏ trắng', '🚧', 'Chú Sáu mở cửa chòi, đưa bạn cuốn sổ giao ca dày cộp.', [
+                ('sau', 'Nghề này là nghề chờ. Chờ tàu, chờ người, chờ cho đúng lúc.'),
+                ('sau', 'Ga gọi thì nhắc lại cho rõ. Chuông trước, chắn sau. Chắn hạ rồi thì ai năn nỉ cũng không mở.'),
+                ('me', 'Dạ. Con nhớ: chuông trước, chắn sau.')]),
+            _b('Giọng bộ đàm', '📻', 'Bộ đàm rè rè lúc sáng sớm, giọng chị Nguyệt sang sảng.', [
+                ('nguyet', 'Cậu mới hả? Nhắc lại lệnh cho rõ từng chữ nhé, chị ghét nhất ai “rõ rõ” cho qua.'),
+                ('me', 'Dạ, tàu SE, rời Bến Gỗ lúc bảy giờ ba mươi ba, qua đường ngang bảy giờ bốn mươi. Rõ.'),
+                ('nguyet', 'Được. Ca này chị yên tâm.')],
+                _c('Chị Nguyệt hỏi có muốn học thêm giờ tàu đêm',
+                   _o('a', 'Xin chị gửi bảng giờ tàu đêm để học thuộc', [('nguyet', 'Chịu khó đấy. Chị chụp gửi cậu ngay.')], rel='nguyet'),
+                   _o('b', 'Hẹn chị khi nào có ca đêm em học', [('nguyet', 'Ừ, tới đâu học tới đó cũng được.')], rel='nguyet'))),
+            _b('Chén chè và tiếng còi', '🍵', 'Bà Bông bưng chén chè ra tận chòi, mặt vẫn còn hằm hằm.', [
+                ('bong', 'Còi tàu sáng nào cũng rúc, cháu bà mất ngủ. Cháu nói với ga đi.'),
+                ('me', 'Còi là để người qua đường biết có tàu, bà ạ. Cháu ghi phiếu ý kiến của bà gửi xí nghiệp nhé.'),
+                ('bong', 'Ừ… thôi thì có người nghe là được. Uống chè đi, nguội bây giờ.')],
+                _c('Bà Bông muốn phơi ớt sát ray “có một hôm”',
+                   _o('a', 'Chỉ bà chỗ phơi trên mái hiên, cháu bê giúp', [('bong', 'Cháu này được, lễ phép mà cứng.')], rel='bong'),
+                   _o('b', 'Nhờ chú Sáu nói khéo với bà', [('sau', 'Để chú. Bà ấy thương con mà ngại nói thôi.')], rel='sau'))),
+            _b('Sổ nhật ký không vênh một phút', '📋', 'Anh Quý ngồi trong chòi, lật từng trang sổ, so với sổ ga.', [
+                ('quy', 'Tháng này có ba chuyến chậm. Cậu ghi đủ, có lý do.'),
+                ('quy', 'Nhiều người bảo tôi khó. Nhưng sổ mà sai một lần thì hết ai tin sổ.'),
+                ('me', 'Dạ, em ghi đúng những gì xảy ra thôi ạ.')]),
+            _b('Cái còi đồng', '📯', 'Chiều muộn, chú Sáu tháo cái còi đồng cũ khỏi cổ, đặt vào tay bạn.', [
+                ('sau', 'Năm chín mấy, cái còi này gọi được một xe bò ra khỏi ray kịp lúc.'),
+                ('sau', 'Giờ chú giao cho con. Gác cho cẩn thận nghe.'),
+                ('nguyet', 'Ca Bến Mây cả tháng không sơ suất lần nào. Cả ga khen đấy.'),
+                ('bong', 'Bà vẫn ghét còi tàu. Nhưng cái còi này thì bà thương.'),
+                ('me', 'Con sẽ giữ, và gác như chú dạy.')]),
+        ]),
     # ------------------------------------------------------------ 👶 Tổ trông trẻ Mèo Con
     'babysitter': dict(
         title='Con gấu bông nâu', emoji='🧸',

@@ -98,8 +98,8 @@ class StoryExperienceTest(unittest.TestCase):
             self.assertEqual(a['keepsake'], stories.ARCS[cid]['keepsake'])
             self.assertEqual(s, before)
             validate_state(s)
-        self.assertEqual(len(stories.ARCS), 43)   # + library (thư viện), oil (thợ dầu khí)
-        self.assertEqual(sum(len(a['beats']) for a in stories.ARCS.values()), 215)   # + library's and oil's five beats each
+        self.assertEqual(len(stories.ARCS), 44)   # + library (thư viện), oil (thợ dầu khí), railway (gác chắn đường sắt)
+        self.assertEqual(sum(len(a['beats']) for a in stories.ARCS.values()), 220)   # + library's, oil's and railway's five beats each
 
 
 if __name__ == '__main__':

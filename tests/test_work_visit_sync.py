@@ -35,10 +35,10 @@ class WorkVisitSync(Base):
         return [q for q in queries if 'work_visit_places' in q and
                 q.lstrip().upper().startswith(('INSERT', 'UPDATE', 'DELETE'))]
 
-    def test_unchanged_41_careers_read_places_once_without_writing(self):
+    def test_unchanged_44_careers_read_places_once_without_writing(self):
         self.sync()
         before = self.rows()
-        self.assertEqual(len(before), 41)
+        self.assertEqual(len(before), 44)   # 41 + library (thư viện), oil (thợ dầu khí), railway (gác chắn đường sắt)
         queries = self.sync(now=200)
         self.assertEqual(self.rows(), before)
         self.assertEqual(self.writes(queries), [])

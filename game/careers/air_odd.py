@@ -345,7 +345,7 @@ def _resolve(s: dict, c: dict, career: str, odd: dict, x: dict, out: dict, cfg: 
         if kind == 'harass' and how != 'report' and x.get('follow'):
             odd['marks'][x['follow']] = c['day']          # unreported, the same man may fly with you again
         if kind == 'harass' and how == 'report':
-            notes.append('🛡️ Báo là đúng: hãng có quy trình bảo vệ tổ bay.')
+            notes.append(cfg.get('harass_note', '🛡️ Báo là đúng: hãng có quy trình bảo vệ tổ bay.'))
     if out['sharp_boss']:
         odd['marks']['strained'] = c['day']
     if conduct:
@@ -383,15 +383,22 @@ def _conduct(c: dict, odd: dict, delta: int, cfg: dict) -> str:
     if after >= DEMOTE_AT and not cd['demoted']:
         cd['demoted'] = True
         cd['ground'] = c['day']
-        return f'⚖️ Hội đồng kỷ luật: cách chức xuống {cfg["demoted"]}, tạm đình chỉ bay hôm nay, thưởng chuyến về 0 tới khi hồ sơ sạch lại.'
+        # A career outside the airline (railway) words these in its own cfg; the air crew keep the lines they had.
+        line = cfg.get('demote_line', '⚖️ Hội đồng kỷ luật: cách chức xuống {demoted}, tạm đình chỉ bay hôm nay, thưởng chuyến về 0 tới khi hồ sơ sạch lại.')
+        return line.format(demoted=cfg['demoted'])
     if before < GROUND_AT <= after:
         cd['ground'] = c['day']
-        return '⚖️ Phòng an toàn: tạm đình chỉ bay hết hôm nay, mai lên trình bày.'
+        return cfg.get('ground_line', '⚖️ Phòng an toàn: tạm đình chỉ bay hết hôm nay, mai lên trình bày.')
     if before < 4 <= after:
         return '⚠️ Cảnh cáo bằng văn bản vào hồ sơ.'
     if before < 2 <= after:
         return '📝 Bị nhắc nhở, ghi vào hồ sơ.'
     return f'📝 Hồ sơ +{delta} điểm vi phạm.'
+
+
+def penalize(c: dict, odd: dict, delta: int, cfg: dict) -> str:
+    """Conduct points for something given in to outside an encounter (the railway's barrier lifted for someone)."""
+    return _conduct(c, odd, delta, cfg)
 
 
 def flown(odd: dict, clean: bool, cfg: dict) -> str:
