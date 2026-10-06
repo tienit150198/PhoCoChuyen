@@ -1,5 +1,101 @@
 [
  {
+  "vi": "bên trái đường tiếp cận",
+  "en": ""
+ },
+ {
+  "vi": "bên phải đường tiếp cận",
+  "en": ""
+ },
+ {
+  "vi": "Gạt mưa",
+  "en": ""
+ },
+ {
+  "vi": "Phanh tự động",
+  "en": ""
+ },
+ {
+  "vi": "Cộng tốc độ",
+  "en": ""
+ },
+ {
+  "vi": "Thấp",
+  "en": ""
+ },
+ {
+  "vi": "Né ô giông",
+  "en": ""
+ },
+ {
+  "vi": "⬅️ Trái",
+  "en": ""
+ },
+ {
+  "vi": "Phải ➡️",
+  "en": ""
+ },
+ {
+  "vi": "🛬 Tiếp cận",
+  "en": ""
+ },
+ {
+  "vi": "✅ Xác nhận cài đặt",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đủ các mục",
+  "en": ""
+ },
+ {
+  "vi": "Quyết chuyện ở sân bay",
+  "en": ""
+ },
+ {
+  "vi": "📋 Nhận bản tin bay",
+  "en": ""
+ },
+ {
+  "vi": "Nạp dầu cho chặng bay",
+  "en": ""
+ },
+ {
+  "vi": "⛽ Chọn lượng dầu",
+  "en": ""
+ },
+ {
+  "vi": "Quyết: chờ sương hay giữ giờ",
+  "en": ""
+ },
+ {
+  "vi": "🌫️ Chờ sương hay giữ giờ?",
+  "en": ""
+ },
+ {
+  "vi": "📞 Gọi chú Mẫn kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "Thông báo trễ chuyến cho khách",
+  "en": ""
+ },
+ {
+  "vi": "📢 Chọn câu thông báo",
+  "en": ""
+ },
+ {
+  "vi": "🛫 CẤT CÁNH",
+  "en": ""
+ },
+ {
+  "vi": "làm xong checklist",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định trên đường bay",
+  "en": ""
+ },
+ {
   "vi": "Thời tiết ở đích: chờ, dự bị hay hạ cánh",
   "en": ""
  },
@@ -1701,102 +1797,6 @@
  },
  {
   "vi": "Gọi bộ đàm từng đội",
-  "en": ""
- },
- {
-  "vi": "Đánh dấu đội tạm ngưng",
-  "en": ""
- },
- {
-  "vi": "😰 Người gọi đang hoảng",
-  "en": ""
- },
- {
-  "vi": "📵 Máy đã cúp",
-  "en": ""
- },
- {
-  "vi": "📍 Đã rõ chỗ",
-  "en": ""
- },
- {
-  "vi": "📍 Chưa rõ chỗ",
-  "en": ""
- },
- {
-  "vi": "📋 Kịch bản cuộc gọi",
-  "en": ""
- },
- {
-  "vi": "🌬️ Trấn an người gọi…",
-  "en": ""
- },
- {
-  "vi": "🗺️ Tìm chỗ người gọi…",
-  "en": ""
- },
- {
-  "vi": "🔎 Kiểm tra cuộc gọi…",
-  "en": ""
- },
- {
-  "vi": "Mức ưu tiên (Bảng ưu tiên Mây, luật của trò chơi):",
-  "en": ""
- },
- {
-  "vi": "Đội cần gửi:",
-  "en": ""
- },
- {
-  "vi": "🚨 GỬI ĐỘI",
-  "en": ""
- },
- {
-  "vi": "Không ai cần xe? Chuyển tới đâu:",
-  "en": ""
- },
- {
-  "vi": "Giọng nói:",
-  "en": ""
- },
- {
-  "vi": "↪️ CHUYỂN ĐÚNG NƠI",
-  "en": ""
- },
- {
-  "vi": "🚒 Gửi đội…",
-  "en": ""
- },
- {
-  "vi": "↪️ Không điều xe, chuyển đúng nơi…",
-  "en": ""
- },
- {
-  "vi": "🗣️ Hướng dẫn an toàn trong lúc chờ",
-  "en": ""
- },
- {
-  "vi": "Chọn điều người gọi nên làm. Có thẻ nghe thì hợp lý mà nguy hiểm.",
-  "en": ""
- },
- {
-  "vi": "☎️ Kết thúc",
-  "en": ""
- },
- {
-  "vi": "☎️ Giữ máy tới khi đội tới",
-  "en": ""
- },
- {
-  "vi": "nói chuyện, dặn thêm, nghe tiếng còi xe",
-  "en": ""
- },
- {
-  "vi": "📴 Kết thúc cuộc gọi",
-  "en": ""
- },
- {
-  "vi": "trả đường dây cho cuộc kế",
   "en": ""
  }
 ]

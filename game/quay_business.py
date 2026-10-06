@@ -23,6 +23,11 @@ PRICE_MAX = 1000000
 LEGACY_EXPENSES = ('goods', 'wages', 'rent', 'power', 'online', 'tax', 'loss')
 EXPENSES = LEGACY_EXPENSES + ('income_tax', 'environment', 'protection')
 TIME_COSTS = ('wages', 'rent', 'power', 'environment', 'protection')   # billed by elapsed open time (_rates)
+# Margin bonus, percent of the realized margin after costs and income tax.
+# Owner self-serve and player-visitor orders keep 40%. Staff-run sales (settle())
+# get 110%: the owner's take, margin x (1 + bonus), goes from 1.4x to 2.1x, i.e. x1.5.
+BONUS_PERCENT = 40
+STAFF_BONUS_PERCENT = 110
 
 
 def staff_wage(st, member):
@@ -206,8 +211,8 @@ def _profit_state(st):
         costs=st['business'].get('unpaid_fines', 0)))
 
 
-def reward_margin(st, revenue, costs):
-    """Credit 40% of realized margin after uncovered operating costs/losses.
+def reward_margin(st, revenue, costs, percent=BONUS_PERCENT):
+    """Credit `percent` of realized margin after uncovered operating costs/losses.
 
     Inventory is expensed here only when consumed. Funding and unsold stock
     never earn a bonus; fractional xu survive small orders and polling.
@@ -217,7 +222,7 @@ def reward_margin(st, revenue, costs):
     p['costs'] = max(0, -margin)
     if margin <= 0:
         return 0
-    bonus, p['carry'] = divmod(margin * 40 + p['carry'], 100)
+    bonus, p['carry'] = divmod(margin * percent + p['carry'], 100)
     bonus = min(bonus, qy.MONEY_MAX - st['till'])
     st['till'] += bonus
     p['total'] += bonus
@@ -261,7 +266,7 @@ def sale(st, items, at, *, channel='counter', stars=None, total=None, extra_fee=
         b['expenses']['loss'] += paid
         costs += paid
     costs += charge_income_tax(st, amount, costs)
-    bonus = reward_margin(st, amount, costs)
+    bonus = reward_margin(st, amount, costs, BONUS_PERCENT if employee is None else STAFF_BONUS_PERCENT)
     ratio = sum(qs.price(st, d) / qs.DISH[st['trade']][d]['base'] for d in items) / len(items)
     price_stars = 5 if ratio <= .9 else 4 if ratio < 1.15 else 3 if ratio < 1.5 else 2 if ratio < 2 else 1
     review = None
@@ -420,6 +425,7 @@ def public(st):
         market=market.snapshot(b['cursor']), protection=dict(level=b.get('protection', {}).get('level', 'none'), options=[dict(level=k, **v) for k,v in plans.items()], **plans[b.get('protection', {}).get('level', 'none')], quote=dict(b.get('protection_quote', {}))),
         protection_plans=[dict(level=k, **v) for k,v in plans.items()],
         rates=rates, income_tax_percent=market.INCOME_TAX_PERCENT,
+        bonus_percent=BONUS_PERCENT, staff_bonus_percent=STAFF_BONUS_PERCENT,
         visitor_orders=visitors,
         stock_total=sum(b['stock'].values()), stock=[dict(id=d, qty=b['stock'].get(d, 0), cost=unit_cost(st, d), price=qs.price(st, d)) for d in rows],
         period_seconds=PERIOD, wage=sum(staff_wage(st, e) for e in st['staff']), revenue=b['revenue'], sold=b['sold'],

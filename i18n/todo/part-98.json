@@ -1,5 +1,101 @@
 [
  {
+  "vi": "Đánh dấu đội tạm ngưng",
+  "en": ""
+ },
+ {
+  "vi": "😰 Người gọi đang hoảng",
+  "en": ""
+ },
+ {
+  "vi": "📵 Máy đã cúp",
+  "en": ""
+ },
+ {
+  "vi": "📍 Đã rõ chỗ",
+  "en": ""
+ },
+ {
+  "vi": "📍 Chưa rõ chỗ",
+  "en": ""
+ },
+ {
+  "vi": "📋 Kịch bản cuộc gọi",
+  "en": ""
+ },
+ {
+  "vi": "🌬️ Trấn an người gọi…",
+  "en": ""
+ },
+ {
+  "vi": "🗺️ Tìm chỗ người gọi…",
+  "en": ""
+ },
+ {
+  "vi": "🔎 Kiểm tra cuộc gọi…",
+  "en": ""
+ },
+ {
+  "vi": "Mức ưu tiên (Bảng ưu tiên Mây, luật của trò chơi):",
+  "en": ""
+ },
+ {
+  "vi": "Đội cần gửi:",
+  "en": ""
+ },
+ {
+  "vi": "🚨 GỬI ĐỘI",
+  "en": ""
+ },
+ {
+  "vi": "Không ai cần xe? Chuyển tới đâu:",
+  "en": ""
+ },
+ {
+  "vi": "Giọng nói:",
+  "en": ""
+ },
+ {
+  "vi": "↪️ CHUYỂN ĐÚNG NƠI",
+  "en": ""
+ },
+ {
+  "vi": "🚒 Gửi đội…",
+  "en": ""
+ },
+ {
+  "vi": "↪️ Không điều xe, chuyển đúng nơi…",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Hướng dẫn an toàn trong lúc chờ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn điều người gọi nên làm. Có thẻ nghe thì hợp lý mà nguy hiểm.",
+  "en": ""
+ },
+ {
+  "vi": "☎️ Kết thúc",
+  "en": ""
+ },
+ {
+  "vi": "☎️ Giữ máy tới khi đội tới",
+  "en": ""
+ },
+ {
+  "vi": "nói chuyện, dặn thêm, nghe tiếng còi xe",
+  "en": ""
+ },
+ {
+  "vi": "📴 Kết thúc cuộc gọi",
+  "en": ""
+ },
+ {
+  "vi": "trả đường dây cho cuộc kế",
+  "en": ""
+ },
+ {
   "vi": "🌬️ Trấn an",
   "en": ""
  },
@@ -1701,102 +1797,6 @@
  },
  {
   "vi": "trò nhỏ",
-  "en": ""
- },
- {
-  "vi": "Huy hiệu",
-  "en": ""
- },
- {
-  "vi": "🎟️ Chưa có thiệp.",
-  "en": ""
- },
- {
-  "vi": "Thống kê sử dụng",
-  "en": ""
- },
- {
-  "vi": "Cho phép Google thống kê lượt ghé, các bước chơi và tốc độ để cải thiện game?",
-  "en": ""
- },
- {
-  "vi": "Cho phép",
-  "en": ""
- },
- {
-  "vi": "Chuyện nhân viên",
-  "en": ""
- },
- {
-  "vi": "Bỏ dở việc",
-  "en": ""
- },
- {
-  "vi": "Tạm dừng: còn sự cố đang mở",
-  "en": ""
- },
- {
-  "vi": "Hôm nay không có ca (lịch ngày lẻ)",
-  "en": ""
- },
- {
-  "vi": "Hôm nay không có ca (lịch ngày chẵn)",
-  "en": ""
- },
- {
-  "vi": "Đang xử lý đơn riêng",
-  "en": ""
- },
- {
-  "vi": "Đang chuẩn bị vào việc",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng dùng nguyên liệu và quỹ nghề. Thiếu hàng hoặc tiền lương thì đội tạm dừng, không tự rút tiền cá nhân.",
-  "en": ""
- },
- {
-  "vi": "Đội làm việc cùng bạn",
-  "en": ""
- },
- {
-  "vi": "Nhân viên đồng thời xử lý đơn riêng, cả khi bạn offline, nếu ca còn mở và đủ hàng, quỹ trả lương. Mỗi đơn ghi doanh thu, vật tư và lương ngay vào sổ; khép ca không cộng lại tiền đơn đã ghi.",
-  "en": ""
- },
- {
-  "vi": "Muốn mở thêm cơ sở?",
-  "en": ""
- },
- {
-  "vi": "🏪 Quầy của bạn",
-  "en": ""
- },
- {
-  "vi": "có kho, vốn và nhân viên riêng.",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể tự tay pha từng ly và làm các bước của trò pha chế.",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể tự tay làm các bước của nghề.",
-  "en": ""
- },
- {
-  "vi": "xu lương / đơn riêng · trả từ quỹ nghề",
-  "en": ""
- },
- {
-  "vi": "Chọn người phụ bên dưới 👇",
-  "en": ""
- },
- {
-  "vi": "xu/đơn riêng",
-  "en": ""
- },
- {
-  "vi": "Mời về tiệm",
   "en": ""
  }
 ]

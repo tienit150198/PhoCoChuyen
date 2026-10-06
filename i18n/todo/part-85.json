@@ -1,5 +1,89 @@
 [
  {
+  "vi": "Chuẩn bị nước và nhờ nhân viên hỗ trợ",
+  "en": ""
+ },
+ {
+  "vi": "Em được trấn an; nhân viên và bảo vệ xác minh, đưa em về với người thân.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra chỗ đặt xe bán hàng",
+  "en": ""
+ },
+ {
+  "vi": "Cán bộ nhắc xe và bảng menu đang lấn lối đi. Biên bản cho phép khắc phục ngay hoặc nộp khoản phạt mô phỏng.",
+  "en": ""
+ },
+ {
+  "vi": "Thu gọn xe, dọn lối đi ngay",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thu gọn xe đúng vị trí, khắc phục trong thời hạn nhắc nhở; một vài khách phải chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận biên bản và nộp phạt qua kênh chính thức",
+  "en": ""
+ },
+ {
+  "vi": "Khoản phạt được ghi sổ; bạn cũng thu gọn xe để tiếp tục bán đúng vị trí.",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn kiểm tra cửa tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Đợt kiểm tra phát hiện nhãn lô hàng chưa đầy đủ. Bạn được yêu cầu khắc phục và lưu phiếu đối chiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Mua bộ nhãn, đối chiếu và bổ sung ngay",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn lô và phiếu được bổ sung; đoàn kiểm tra ghi nhận đã khắc phục.",
+  "en": ""
+ },
+ {
+  "vi": "Tự đối chiếu, tạm ngừng nhận khách mới",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tạm dừng để tự hoàn thiện nhãn và phiếu. Khách chờ lâu hơn nhưng hàng được kiểm đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh chuyển khoản chưa khớp",
+  "en": ""
+ },
+ {
+  "vi": "Khách đưa ảnh báo chuyển tiền nhưng sổ giao dịch chưa có khoản tương ứng.",
+  "en": ""
+ },
+ {
+  "vi": "Đối chiếu giao dịch rồi mới giao hàng",
+  "en": ""
+ },
+ {
+  "vi": "Khách dùng phương thức thanh toán khác sau khi cùng kiểm tra.",
+  "en": ""
+ },
+ {
+  "vi": "Tin ảnh và giao hàng ngay",
+  "en": ""
+ },
+ {
+  "vi": "Khoản chuyển không tới; bạn ghi khoản mất để đối chiếu, không ghi doanh thu khống.",
+  "en": ""
+ },
+ {
+  "vi": "Kiện hàng giao thiếu phụ kiện",
+  "en": ""
+ },
+ {
   "vi": "Nhà cung cấp báo thiếu phụ kiện trong kiện mới; phần thiếu chưa được nhập vào kho.",
   "en": ""
  },
@@ -1713,90 +1797,6 @@
  },
  {
   "vi": "Rau tươi xanh mướt!",
-  "en": ""
- },
- {
-  "vi": "Trứng gà còn ấm tay.",
-  "en": ""
- },
- {
-  "vi": "Cà chua chín đỏ đẹp quá.",
-  "en": ""
- },
- {
-  "vi": "Hái đúng độ chín luôn.",
-  "en": ""
- },
- {
-  "vi": "Chè đậm, đá mát, uống đã khát!",
-  "en": ""
- },
- {
-  "vi": "Cốc sạch bong, ngồi yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Pha chè có tay rồi đấy.",
-  "en": ""
- },
- {
-  "vi": "Ngồi gốc bàng gió mát, không muốn về.",
-  "en": ""
- },
- {
-  "vi": "Tìm đúng size, mặc vừa như đo.",
-  "en": ""
- },
- {
-  "vi": "Phối đồ khéo ghê, mặc lên sáng hẳn.",
-  "en": ""
- },
- {
-  "vi": "Cho thử thoải mái, không hối.",
-  "en": ""
- },
- {
-  "vi": "Tư vấn thật lòng, không nói quá.",
-  "en": ""
- },
- {
-  "vi": "Tư vấn thức ăn kỹ ghê, bé ăn ngon.",
-  "en": ""
- },
- {
-  "vi": "Bể cá lên đẹp, cá khỏe re.",
-  "en": ""
- },
- {
-  "vi": "Dặn dò kỹ, nuôi yên tâm hẳn.",
-  "en": ""
- },
- {
-  "vi": "Không bán bừa, quý tiệm ghê.",
-  "en": ""
- },
- {
-  "vi": "Trái ngọt lịm, cân đủ luôn.",
-  "en": ""
- },
- {
-  "vi": "Lựa trái giùm khéo ghê.",
-  "en": ""
- },
- {
-  "vi": "Cân nhanh, tính gọn.",
-  "en": ""
- },
- {
-  "vi": "Mua ở đây yên tâm, không sợ trái dập.",
-  "en": ""
- },
- {
-  "vi": "Ngõ sạch bong, cảm ơn tổ thu gom.",
-  "en": ""
- },
- {
-  "vi": "Tối nào cũng đúng giờ, quý lắm.",
   "en": ""
  }
 ]

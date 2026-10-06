@@ -1,5 +1,89 @@
 [
  {
+  "vi": "Tôi mà lại không biết chỗ ngon à? Nhưng thôi, thử ở đây cho biết.",
+  "en": ""
+ },
+ {
+  "vi": "Xe tôi mới thay đồ chơi, chẳng qua hôm nay đi bộ cho khỏe thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Hài mặt lạnh",
+  "en": ""
+ },
+ {
+  "vi": "nói chuyện tỉnh bơ mà câu nào cũng buồn cười, không bao giờ cười theo",
+  "en": ""
+ },
+ {
+  "vi": "câu ngắn, giọng đều đều",
+  "en": ""
+ },
+ {
+  "vi": "nói quá một cách nghiêm túc",
+  "en": ""
+ },
+ {
+  "vi": "kết bằng một câu tỉnh rụi",
+  "en": ""
+ },
+ {
+  "vi": "Tôi nghiêm túc.",
+  "en": ""
+ },
+ {
+  "vi": "Vậy đó.",
+  "en": ""
+ },
+ {
+  "vi": "chuyện đời thường nói quá lên",
+  "en": ""
+ },
+ {
+  "vi": "công việc",
+  "en": ""
+ },
+ {
+  "vi": "\"Tốt. Tôi suýt cười.\"",
+  "en": ""
+ },
+ {
+  "vi": "\"Ồ. Tôi ghi vào sổ thù.\" (nói đùa)",
+  "en": ""
+ },
+ {
+  "vi": "\"Buồn hả. Tôi cho mượn con mèo, nó buồn giỏi hơn.\"",
+  "en": ""
+ },
+ {
+  "vi": "Trời nóng quá, sáng nay tôi thấy con thằn lằn xin vào nhà ngồi quạt.",
+  "en": ""
+ },
+ {
+  "vi": "Tốt. Tôi suýt cười. Suýt thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi không ngủ trưa. Tôi chỉ nhắm mắt kiểm tra mí mắt còn hoạt động không.",
+  "en": ""
+ },
+ {
+  "vi": "Trời nóng quá, sáng nay có con thằn lằn xin vào nhà ngồi quạt.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi không ngủ trưa. Tôi chỉ kiểm tra mí mắt còn hoạt động không.",
+  "en": ""
+ },
+ {
+  "vi": "Chào. Tôi vui. Nhìn mặt không thấy nhưng vui.",
+  "en": ""
+ },
+ {
+  "vi": "Trẻ con hồn nhiên",
+  "en": ""
+ },
+ {
   "vi": "hồn nhiên, thật thà, lễ phép với người lớn",
   "en": ""
  },
@@ -1460,6 +1544,18 @@
   "en": ""
  },
  {
+  "vi": "Cả phố là đảo 2.5D: đi tự do, chạm cửa tiệm là vào làm",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ đường: chọn nơi muốn tới, nhân vật tự đi",
+  "en": ""
+ },
+ {
+  "vi": "Quầy có nhân viên bán lãi hơn 50%",
+  "en": ""
+ },
+ {
   "vi": "Cập nhật toàn bộ UI UX",
   "en": ""
  },
@@ -1701,102 +1797,6 @@
  },
  {
   "vi": "Nghề mới: Giúp việc theo giờ. Dọn từng phòng đúng khăn, đúng chai, từ trên xuống, giữ đồ quý cho khách, khách quen boa thêm.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới Nấu cơm gia đình: nghe chủ nhà dặn, đi chợ vừa tiền, nấu nóng hổi hợp cả nhà rồi ghi sổ chợ rõ ràng!",
-  "en": ""
- },
- {
-  "vi": "Nghề mới: Bảo mẫu trông trẻ! Mỗi ngày một gia đình: đọc giấy dặn, cho bé ăn, ru ngủ, dỗ bé, bàn giao thật lòng.",
-  "en": ""
- },
- {
-  "vi": "Mua bảo hiểm, sắm két sắt để yên tâm trước chuyện bất ngờ. 💰 Tiệm vàng Kim Phát mở cửa: mua vàng, chờ giá lên!",
-  "en": ""
- },
- {
-  "vi": "Màn hình gọn hơn, ít chữ hơn: thông báo ngắn, bấm vào để xem đủ; chi tiết gấp gọn trong “Xem thêm”.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới Bán phở ở quán phở Cây Si: chần bánh, chan nước dùng nóng, nêm vừa miệng từng khách.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới Bán cơm ở Cơm tấm Dì Bảy: lên dĩa sườn bì chả nóng hổi, đông khách giờ trưa.",
-  "en": ""
- },
- {
-  "vi": "Nghề mới Chụp photobooth ở Tiệm ảnh Tách Tách. Hội chợ cũng có photobooth: chụp một mình, với người lạ hay rủ bạn!",
-  "en": ""
- },
- {
-  "vi": "Bước vào tận nhà, phòng trọ hay ký túc xá. Có tủ lạnh cất đồ ăn, đói thì lấy ra ăn.",
-  "en": ""
- },
- {
-  "vi": "Đám cưới: gửi phong bì thoải mái, có mức 500 xu. Mạng chập chờn cũng không bao giờ bị trừ tiền hai lần.",
-  "en": ""
- },
- {
-  "vi": "Nông trại có phân bón lá thúc: luống rau lớn nhanh hơn.",
-  "en": ""
- },
- {
-  "vi": "Cuối ngày có mục Ngày mai để chuẩn bị trước; nhiều nghề dễ nhìn, dễ bấm hơn trên điện thoại.",
-  "en": ""
- },
- {
-  "vi": "🔥 Ngày x3: tổng kết cuối ngày giờ hiện rõ dòng thưởng x3 (thưởng vẫn luôn vào ví khi khép ngày).",
-  "en": ""
- },
- {
-  "vi": "Đánh giá chỉ ghi “Đã trả lời” khi bạn trả lời thật. Nhận xét sau chuyến bay thì không cần trả lời.",
-  "en": ""
- },
- {
-  "vi": "Sửa lỗi game đứng ở màn hình tải trên Cốc Cốc và trình duyệt có bật chặn quảng cáo.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên giờ kiếm thêm cho tiệm: mỗi việc làm xong +3 xu (vui vẻ +4), cộng khi khép ca. Sự cố nhân viên cũng hiếm hơn hẳn.",
-  "en": ""
- },
- {
-  "vi": "Menu “Tiền & nhà” đổi tên thành “Ngân hàng & nhà” cho dễ tìm.",
-  "en": ""
- },
- {
-  "vi": "Canh mức (máy may, tắm thú, ép nắp…): bấm dừng ở đâu kim dừng đúng ở đó, cả khi máy yếu hay mạng chậm.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên: thẻ ghi rõ hôm nay làm mấy việc, vì sao đang nghỉ; ai tạm dừng vì sự cố không bị tính lương.",
-  "en": ""
- },
- {
-  "vi": "Tiền của bạn: thêm nút “Vào Ngân hàng” để mở ngân hàng nhanh hơn.",
-  "en": ""
- },
- {
-  "vi": "Bạn quen qua hẹn hò: sửa nút Hủy kết bạn, Chặn, Cầu hôn không bấm được.",
-  "en": ""
- },
- {
-  "vi": "Nhà chung: vợ chồng ở cùng nhà giờ thấy cả đồ người kia bày trí. Món của ai người nấy dời.",
-  "en": ""
- },
- {
-  "vi": "Sổ tiệm: khi chưa cho nhân viên nghỉ được vì còn sự cố, game chỉ rõ từng bước để khép sự cố.",
-  "en": ""
- },
- {
-  "vi": "Học kế toán: sửa lỗi bản lưu báo “Đáp án đã lưu chưa được chấm đúng”, làm không học, làm việc hay thi tiếp được.",
-  "en": ""
- },
- {
-  "vi": "🔥 Nghề x3: thưởng giờ tính đủ cả lương trong ngày và phần lời bạn đã rút về ví giữa ca.",
   "en": ""
  }
 ]

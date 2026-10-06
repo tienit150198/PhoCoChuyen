@@ -1,5 +1,101 @@
 [
  {
+  "vi": "Tổng quan",
+  "en": ""
+ },
+ {
+  "vi": "Tăng trưởng",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động",
+  "en": ""
+ },
+ {
+  "vi": "Giữ chân",
+  "en": ""
+ },
+ {
+  "vi": "Gắn bó",
+  "en": ""
+ },
+ {
+  "vi": "Kinh tế",
+  "en": ""
+ },
+ {
+  "vi": "Chất lượng",
+  "en": ""
+ },
+ {
+  "vi": "Hạ tầng",
+  "en": ""
+ },
+ {
+  "vi": "Cách tính",
+  "en": ""
+ },
+ {
+  "vi": "Giải thích:",
+  "en": ""
+ },
+ {
+  "vi": "chưa có số liệu",
+  "en": ""
+ },
+ {
+  "vi": "ít dữ liệu · n=",
+  "en": ""
+ },
+ {
+  "vi": "khoảng tin cậy 95%:",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay (chưa hết ngày)",
+  "en": ""
+ },
+ {
+  "vi": "đã qua",
+  "en": ""
+ },
+ {
+  "vi": "chưa đủ 30 ngày",
+  "en": ""
+ },
+ {
+  "vi": "người mới 30 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Chưa bật",
+  "en": ""
+ },
+ {
+  "vi": "Ra mắt (bản đầu)",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký ngày từ",
+  "en": ""
+ },
+ {
+  "vi": "Số ngày có số liệu",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đếm mới từ",
+  "en": ""
+ },
+ {
+  "vi": "Số liệu lúc",
+  "en": ""
+ },
+ {
+  "vi": "Game mới có",
+  "en": ""
+ },
+ {
   "vi": "ít dữ liệu",
   "en": ""
  },
@@ -1544,10 +1640,6 @@
   "en": ""
  },
  {
-  "vi": "Bản đồ phố",
-  "en": ""
- },
- {
   "vi": "Xếp hạng",
   "en": ""
  },
@@ -1705,98 +1797,6 @@
  },
  {
   "vi": "Mở bản gốc từng chứng từ",
-  "en": ""
- },
- {
-  "vi": "Xin nguồn cho phiếu còn thiếu",
-  "en": ""
- },
- {
-  "vi": "📨 Xin nguồn bổ sung",
-  "en": ""
- },
- {
-  "vi": "trùng với một phiếu khác",
-  "en": ""
- },
- {
-  "vi": "🔗 Ghép nhóm",
-  "en": ""
- },
- {
-  "vi": "Mở cả hai bản gốc trước",
-  "en": ""
- },
- {
-  "vi": "Chỉ bản sao cùng nguồn mới loại trùng",
-  "en": ""
- },
- {
-  "vi": "Đọc đủ bản gốc trước",
-  "en": ""
- },
- {
-  "vi": "Thẻ thiếu nguồn chưa ghép được",
-  "en": ""
- },
- {
-  "vi": "Loại bản trùng trước",
-  "en": ""
- },
- {
-  "vi": "Sửa theo gốc trước",
-  "en": ""
- },
- {
-  "vi": "Khi kiện giao thiếu món",
-  "en": ""
- },
- {
-  "vi": "Khi kiện chậm, kẹt hay báo giao mà chưa tới",
-  "en": ""
- },
- {
-  "vi": "Khi khách nhận sai mã, sai màu",
-  "en": ""
- },
- {
-  "vi": "Khi hồ sơ có yêu cầu hoàn hợp lệ",
-  "en": ""
- },
- {
-  "vi": "Khi đơn không lỗi, khách cần cách làm",
-  "en": ""
- },
- {
-  "vi": "📂 Mở",
-  "en": ""
- },
- {
-  "vi": "Gửi việc cho đầu mối →",
-  "en": ""
- },
- {
-  "vi": "Chờ kết quả từ đầu mối",
-  "en": ""
- },
- {
-  "vi": "🔍 Kiểm kết quả",
-  "en": ""
- },
- {
-  "vi": "✓ Hoàn tất & đóng vụ",
-  "en": ""
- },
- {
-  "vi": "Khớp mã đơn khách đưa thì mới được xem hồ sơ.",
-  "en": ""
- },
- {
-  "vi": "Đọc đủ các nguồn: một dòng trong đó chỉ cách xử lý.",
-  "en": ""
- },
- {
-  "vi": "Chọn phương án khớp căn cứ",
   "en": ""
  }
 ]

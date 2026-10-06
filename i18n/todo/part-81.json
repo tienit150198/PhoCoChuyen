@@ -1,5 +1,89 @@
 [
  {
+  "vi": "Chỉ người thuê được thao tác hợp đồng này.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng không còn hiệu lực.",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả nhà. Tiền thuê trả trước của kỳ hiện tại không hoàn lại; đồ đạc vẫn thuộc về bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng đã hết hạn. Chọn tin mới để thuê nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không thể gia hạn với người này.",
+  "en": ""
+ },
+ {
+  "vi": "Tiến trình thuê nhà đã thay đổi.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã trả trước kỳ tiếp theo rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả trước và gia hạn thêm 5 ngày sống của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ tin và kết thúc hợp đồng thuê trước khi khôi phục hoặc đặt lại tiến trình.",
+  "en": ""
+ },
+ {
+  "vi": "Bản lưu không thể khôi phục hợp đồng thuê người chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Không thể lùi ngày sống trong hợp đồng thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng thuê đã hết hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Hãy dùng thao tác trả nhà để kết thúc hợp đồng thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng thuê không tồn tại trên máy chủ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà đang có hợp đồng thuê người chơi: chưa thể bán, dọn vào hay cho NPC thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Kết thúc hợp đồng thuê người chơi trước khi xóa dữ liệu.",
+  "en": ""
+ },
+ {
+  "vi": "UPDATE rentals SET status='cancelled',owner_name='Người chơi đã xóa' WHERE owner=? AND status='listing'",
+  "en": ""
+ },
+ {
+  "vi": "UPDATE rentals SET owner_name='Người chơi đã xóa' WHERE owner=?",
+  "en": ""
+ },
+ {
+  "vi": "UPDATE rentals SET tenant_name='Người chơi đã xóa' WHERE tenant=?",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu thuê nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng thuê không hợp lệ.",
+  "en": ""
+ },
+ {
   "vi": "Giá mua nhà không hợp lệ.",
   "en": ""
  },
@@ -1713,90 +1797,6 @@
  },
  {
   "vi": "hàng không tươi",
-  "en": ""
- },
- {
-  "vi": "hoa hơi héo mép cánh",
-  "en": ""
- },
- {
-  "vi": "lá hoa có vài chấm vàng",
-  "en": ""
- },
- {
-  "vi": "rau ở kệ hơi héo",
-  "en": ""
- },
- {
-  "vi": "trái cây có mấy quả dập",
-  "en": ""
- },
- {
-  "vi": "rau hơi héo lá ngoài",
-  "en": ""
- },
- {
-  "vi": "trứng có quả dính phân gà, nhìn hơi ngại",
-  "en": ""
- },
- {
-  "vi": "hoa tươi rói, cắm được cả tuần",
-  "en": ""
- },
- {
-  "vi": "nụ hoa chắc, nở đều",
-  "en": ""
- },
- {
-  "vi": "rau quả tươi, còn giọt nước",
-  "en": ""
- },
- {
-  "vi": "trái cây chín vừa, không dập",
-  "en": ""
- },
- {
-  "vi": "rau xanh mướt, trứng còn ấm",
-  "en": ""
- },
- {
-  "vi": "rau vừa hái, còn nguyên sương",
-  "en": ""
- },
- {
-  "vi": "Héo.",
-  "en": ""
- },
- {
-  "vi": "Tươi rói.",
-  "en": ""
- },
- {
-  "vi": "Dặn dò khi bán",
-  "en": ""
- },
- {
-  "vi": "đưa thuốc không dặn",
-  "en": ""
- },
- {
-  "vi": "đưa thuốc mà không dặn uống trước hay sau ăn",
-  "en": ""
- },
- {
-  "vi": "hỏi tác dụng phụ thì trả lời qua loa",
-  "en": ""
- },
- {
-  "vi": "hỏi sữa nào hợp với bé thì trả lời chung chung",
-  "en": ""
- },
- {
-  "vi": "hỏi cách cho bé ăn thì chỉ nói \"tùy anh chị\"",
-  "en": ""
- },
- {
-  "vi": "dặn kỹ cách uống, còn ghi lên vỏ hộp",
   "en": ""
  }
 ]

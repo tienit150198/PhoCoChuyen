@@ -1,5 +1,89 @@
 [
  {
+  "vi": "Đoàn ghi chú, hẹn lần sau.",
+  "en": ""
+ },
+ {
+  "vi": "Shipper tới trễ",
+  "en": ""
+ },
+ {
+  "vi": "Shipper nhắn: kẹt xe, trễ 20 phút.",
+  "en": ""
+ },
+ {
+  "vi": "Tự chạy đi giao",
+  "en": ""
+ },
+ {
+  "vi": "Khách nhận còn nóng, cho 5 sao.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn khách xin lỗi, tặng mã",
+  "en": ""
+ },
+ {
+  "vi": "Khách thông cảm, cảm ơn mã giảm.",
+  "en": ""
+ },
+ {
+  "vi": "Cứ chờ",
+  "en": ""
+ },
+ {
+  "vi": "Khách chờ lâu, hơi buồn.",
+  "en": ""
+ },
+ {
+  "vi": "Sai địa chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Khách ghi nhầm số nhà, shipper gọi hỏi.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi khách hỏi lại",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi lại xong, giao đúng chỗ.",
+  "en": ""
+ },
+ {
+  "vi": "Giao theo địa chỉ cũ",
+  "en": ""
+ },
+ {
+  "vi": "Giao nhầm nhà. Phải làm lại đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy đơn, hoàn tiền",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tiền gọn gàng.",
+  "en": ""
+ },
+ {
+  "vi": "Món ngoài menu",
+  "en": ""
+ },
+ {
+  "vi": "Khách hỏi: “Làm giúp mình món này được không?”",
+  "en": ""
+ },
+ {
+  "vi": "Làm thử cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Khách mê, hẹn quay lại.",
+  "en": ""
+ },
+ {
   "vi": "Không hợp vị, bạn không lấy tiền.",
   "en": ""
  },
@@ -1713,90 +1797,6 @@
  },
  {
   "vi": "Đã trả trước tiền thuê và dọn vào nhà.",
-  "en": ""
- },
- {
-  "vi": "Chỉ người thuê được thao tác hợp đồng này.",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng không còn hiệu lực.",
-  "en": ""
- },
- {
-  "vi": "Đã trả nhà. Tiền thuê trả trước của kỳ hiện tại không hoàn lại; đồ đạc vẫn thuộc về bạn.",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng đã hết hạn. Chọn tin mới để thuê nhé.",
-  "en": ""
- },
- {
-  "vi": "Không thể gia hạn với người này.",
-  "en": ""
- },
- {
-  "vi": "Tiến trình thuê nhà đã thay đổi.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã trả trước kỳ tiếp theo rồi.",
-  "en": ""
- },
- {
-  "vi": "Đã trả trước và gia hạn thêm 5 ngày sống của bạn.",
-  "en": ""
- },
- {
-  "vi": "Gỡ tin và kết thúc hợp đồng thuê trước khi khôi phục hoặc đặt lại tiến trình.",
-  "en": ""
- },
- {
-  "vi": "Bản lưu không thể khôi phục hợp đồng thuê người chơi.",
-  "en": ""
- },
- {
-  "vi": "Không thể lùi ngày sống trong hợp đồng thuê.",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng thuê đã hết hạn.",
-  "en": ""
- },
- {
-  "vi": "Hãy dùng thao tác trả nhà để kết thúc hợp đồng thuê.",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng thuê không tồn tại trên máy chủ.",
-  "en": ""
- },
- {
-  "vi": "Nhà đang có hợp đồng thuê người chơi: chưa thể bán, dọn vào hay cho NPC thuê.",
-  "en": ""
- },
- {
-  "vi": "Kết thúc hợp đồng thuê người chơi trước khi xóa dữ liệu.",
-  "en": ""
- },
- {
-  "vi": "UPDATE rentals SET status='cancelled',owner_name='Người chơi đã xóa' WHERE owner=? AND status='listing'",
-  "en": ""
- },
- {
-  "vi": "UPDATE rentals SET owner_name='Người chơi đã xóa' WHERE owner=?",
-  "en": ""
- },
- {
-  "vi": "UPDATE rentals SET tenant_name='Người chơi đã xóa' WHERE tenant=?",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu thuê nhà không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng thuê không hợp lệ.",
   "en": ""
  }
 ]

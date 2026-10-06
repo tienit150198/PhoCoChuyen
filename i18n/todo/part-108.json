@@ -1,5 +1,561 @@
 [
  {
+  "vi": "Tên món…",
+  "en": ""
+ },
+ {
+  "vi": "Tìm món",
+  "en": ""
+ },
+ {
+  "vi": "Chênh lệch trên chưa trừ lương, thuê chỗ, điện, thuế và phí giao hàng. Phản ứng giá là gợi ý; lượng bán và đánh giá thật được ghi trong sổ quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tất cả",
+  "en": ""
+ },
+ {
+  "vi": "Không có món trùng từ tìm kiếm.",
+  "en": ""
+ },
+ {
+  "vi": "Lưu menu & giá",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra giá và chọn ít nhất một món",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đổi gì",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tác",
+  "en": ""
+ },
+ {
+  "vi": "Tên trên bảng hiệu",
+  "en": ""
+ },
+ {
+  "vi": "Màu mái che",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Bàn ghế",
+  "en": ""
+ },
+ {
+  "vi": "một bộ · thêm khách ngồi lại",
+  "en": ""
+ },
+ {
+  "vi": "Hết rồi",
+  "en": ""
+ },
+ {
+  "vi": "Đủ chỗ rồi",
+  "en": ""
+ },
+ {
+  "vi": "Đang vào quầy của bạn…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa vào được quầy",
+  "en": ""
+ },
+ {
+  "vi": "Đang lấy menu và đơn khách. Bạn có thể tự bán ở đây khi muốn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể thử mở lại hoặc về quản lý quầy để kiểm tra hàng và chi phí.",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở quầy…",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🍳 Thử đứng quầy lại",
+  "en": ""
+ },
+ {
+  "vi": "Khách đã phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu đã bán",
+  "en": ""
+ },
+ {
+  "vi": "Khách chờ tới lượt",
+  "en": ""
+ },
+ {
+  "vi": "chờ",
+  "en": ""
+ },
+ {
+  "vi": "Rời quầy",
+  "en": ""
+ },
+ {
+  "vi": "Cần nhập thêm nguyên liệu",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã đứng quầy",
+  "en": ""
+ },
+ {
+  "vi": "Nhập thêm món trong menu để phục vụ khách.",
+  "en": ""
+ },
+ {
+  "vi": "📱 Xem đơn",
+  "en": ""
+ },
+ {
+  "vi": "Chạm món bên dưới để bỏ vào.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Tính tiền",
+  "en": ""
+ },
+ {
+  "vi": "· Khách đưa",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thối:",
+  "en": ""
+ },
+ {
+  "vi": "Khách đưa vừa đủ 👍",
+  "en": ""
+ },
+ {
+  "vi": "🤲 Trả tiền thối",
+  "en": ""
+ },
+ {
+  "vi": "🤲 Nhận tiền",
+  "en": ""
+ },
+ {
+  "vi": "Đưa món cho khách và…",
+  "en": ""
+ },
+ {
+  "vi": "😊 Cảm ơn, hẹn gặp lại!",
+  "en": ""
+ },
+ {
+  "vi": "😤 Đang giục lớn",
+  "en": ""
+ },
+ {
+  "vi": "😠 Sốt ruột",
+  "en": ""
+ },
+ {
+  "vi": "🙂 Dễ tính",
+  "en": ""
+ },
+ {
+  "vi": "😐 Khó tính",
+  "en": ""
+ },
+ {
+  "vi": "💵 Trả khi nhận",
+  "en": ""
+ },
+ {
+  "vi": "✅ Đã trả qua app",
+  "en": ""
+ },
+ {
+  "vi": "📦 Đóng gói",
+  "en": ""
+ },
+ {
+  "vi": "📱 Đơn online",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đơn. Đơn tới trong lúc bạn bán hàng.",
+  "en": ""
+ },
+ {
+  "vi": "← Về quầy",
+  "en": ""
+ },
+ {
+  "vi": "Túi hàng",
+  "en": ""
+ },
+ {
+  "vi": "Đồ ăn uống cần dụng cụ, trừ khi khách dặn không lấy. Có lời dặn thì dán ghi chú lên túi.",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Dán kín",
+  "en": ""
+ },
+ {
+  "vi": "📝 Dán ghi chú",
+  "en": ""
+ },
+ {
+  "vi": "Xong, đi giao",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ món vào túi trước",
+  "en": ""
+ },
+ {
+  "vi": "Giao bằng gì?",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Tự chạy đi giao",
+  "en": ""
+ },
+ {
+  "vi": "📦 Gọi shipper",
+  "en": ""
+ },
+ {
+  "vi": "Tới nơi rồi!",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Giao tận tay",
+  "en": ""
+ },
+ {
+  "vi": "Đóng ca rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Khách bạn phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Khách trong lượt này",
+  "en": ""
+ },
+ {
+  "vi": "Tiền đã vào két. Bạn có thể mở lượt phục vụ tiếp khi sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "Khách chấm",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đúng món trên phiếu của khách nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Giá phải là số nguyên dương, tối đa 1.000.000 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Mua bàn ghế?",
+  "en": ""
+ },
+ {
+  "vi": "Rời quầy?",
+  "en": ""
+ },
+ {
+  "vi": "Chốt những món bạn đã phục vụ. Nếu có nhân viên, họ tiếp tục vận hành theo hàng và vốn còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Như mới",
+  "en": ""
+ },
+ {
+  "vi": "Còn tốt",
+  "en": ""
+ },
+ {
+  "vi": "Xuống cấp",
+  "en": ""
+ },
+ {
+  "vi": "Phòng hơi trống… Mochi buồn ngủ quá.",
+  "en": ""
+ },
+ {
+  "vi": "Bắt đầu dễ thương rồi nè!",
+  "en": ""
+ },
+ {
+  "vi": "Ấm áp ghê, Mochi thích lắm!",
+  "en": ""
+ },
+ {
+  "vi": "Wow, phòng xinh quá trời!",
+  "en": ""
+ },
+ {
+  "vi": "Tổ ấm trong mơ! Mochi không muốn đi đâu hết.",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời vào nhà đã hết hiệu lực.",
+  "en": ""
+ },
+ {
+  "vi": "Trên đó hết chỗ rồi. Đặt chỗ khác nhé.",
+  "en": ""
+ },
+ {
+  "vi": "chỉ đặt lên bàn, kệ, giường hoặc sàn trống thôi.",
+  "en": ""
+ },
+ {
+  "vi": "chưa bày gì",
+  "en": ""
+ },
+ {
+  "vi": "Món này đang ở trên cùng rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Món này đang ở dưới cùng rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Cất hết đồ vào túi?",
+  "en": ""
+ },
+ {
+  "vi": "Mọi món đang bày ở chỗ này về túi đồ. Bấm Hoàn tác để bày lại như cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa lưu được ảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa cả nhà?",
+  "en": ""
+ },
+ {
+  "vi": "Làm",
+  "en": ""
+ },
+ {
+  "vi": "Máy chưa chụp được ảnh. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Về Nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "TRONG NHÀ",
+  "en": ""
+ },
+ {
+  "vi": "BÀY TRÍ PHÒNG",
+  "en": ""
+ },
+ {
+  "vi": "TRONG PHÒNG",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có chỗ để bày trí",
+  "en": ""
+ },
+ {
+  "vi": "Bày trí phòng có trong chế độ hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "🪴 Bày trí",
+  "en": ""
+ },
+ {
+  "vi": "Giữ một món rồi kéo đi đâu cũng được",
+  "en": ""
+ },
+ {
+  "vi": "Đồ nhỏ thả lên bàn, kệ, giường sẽ đứng trên đó. Chạm món đồ để lật, đổi phòng hoặc cất đi.",
+  "en": ""
+ },
+ {
+  "vi": "Hiểu rồi",
+  "en": ""
+ },
+ {
+  "vi": "← Bạn bè & nhà",
+  "en": ""
+ },
+ {
+  "vi": "🎒 Cất hết",
+  "en": ""
+ },
+ {
+  "vi": "✏️ Bày trí phòng",
+  "en": ""
+ },
+ {
+  "vi": "✏️ Bắt đầu bày trí",
+  "en": ""
+ },
+ {
+  "vi": "📸 Chụp phòng",
+  "en": ""
+ },
+ {
+  "vi": "Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang ghé chơi theo lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Cuộn sang trái\"",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Cuộn sang phải\"",
+  "en": ""
+ },
+ {
+  "vi": "Các phòng",
+  "en": ""
+ },
+ {
+  "vi": "Món này không hợp chỗ ở này.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm hoặc kéo vào phòng: lên bàn, kệ, giường hay sàn đều được.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm chỗ muốn dời tới.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm hoặc kéo vào chỗ muốn đặt.",
+  "en": ""
+ },
+ {
+  "vi": "Trong túi · ấm cúng +",
+  "en": ""
+ },
+ {
+  "vi": "Đang dời",
+  "en": ""
+ },
+ {
+  "vi": "🎒 Mua cất túi",
+  "en": ""
+ },
+ {
+  "vi": "⇋ Lật",
+  "en": ""
+ },
+ {
+  "vi": "Lật ngược",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Màu",
+  "en": ""
+ },
+ {
+  "vi": "↻ Xoay hướng",
+  "en": ""
+ },
+ {
+  "vi": "Mặt sau",
+  "en": ""
+ },
+ {
+  "vi": "Mặt trước",
+  "en": ""
+ },
+ {
+  "vi": "⬆ Lên",
+  "en": ""
+ },
+ {
+  "vi": "Đưa lên trên",
+  "en": ""
+ },
+ {
+  "vi": "⬇ Xuống",
+  "en": ""
+ },
+ {
+  "vi": "Đưa xuống dưới",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Đổi phòng",
+  "en": ""
+ },
+ {
+  "vi": "Sang phòng khác",
+  "en": ""
+ },
+ {
+  "vi": "🎒 Cất túi",
+  "en": ""
+ },
+ {
+  "vi": "Thu hồi vào túi",
+  "en": ""
+ },
+ {
+  "vi": "💰 Bán",
+  "en": ""
+ },
+ {
+  "vi": "Ấm cúng +",
+  "en": ""
+ },
+ {
+  "vi": "Không hợp chỗ này",
+  "en": ""
+ },
+ {
+  "vi": "Túi đồ trống. Ghé cửa hàng chọn món đầu tiên nhé!",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Cửa hàng",
+  "en": ""
+ },
+ {
+  "vi": "Đồ đạc",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản + ví",
+  "en": ""
+ },
+ {
   "vi": "🎒 Túi",
   "en": ""
  },
@@ -609,10 +1165,6 @@
  },
  {
   "vi": "Chọn điểm đến",
-  "en": ""
- },
- {
-  "vi": "Chỉ đường",
   "en": ""
  },
  {
@@ -1245,558 +1797,6 @@
  },
  {
   "vi": "🍺 Cụng ly bia",
-  "en": ""
- },
- {
-  "vi": "🥤 Nước ngọt",
-  "en": ""
- },
- {
-  "vi": ": no rồi",
-  "en": ""
- },
- {
-  "vi": "Chọn nhạc cho tiệc",
-  "en": ""
- },
- {
-  "vi": "Cả tiệc nghe cùng bài, cùng nhịp đèn · lúc rước dâu và múa lân vẫn giữ nhạc riêng",
-  "en": ""
- },
- {
-  "vi": "✓ Đang chọn",
-  "en": ""
- },
- {
-  "vi": "💃 Nhảy",
-  "en": ""
- },
- {
-  "vi": "Bạn đang xem từ ngoài cổng.",
-  "en": ""
- },
- {
-  "vi": "để vào dự và nhận lộc mỗi phút.",
-  "en": ""
- },
- {
-  "vi": "Đông quá! Bạn đứng ngoài cổng xem, vẫn được tính là khách 🎉",
-  "en": ""
- },
- {
-  "vi": "💍 Tiệc đã tàn",
-  "en": ""
- },
- {
-  "vi": "Rủ đi cà phê",
-  "en": ""
- },
- {
-  "vi": "Báo cáo lời vừa nói",
-  "en": ""
- },
- {
-  "vi": "rủ bạn đi cà phê ☕",
-  "en": ""
- },
- {
-  "vi": "Tùng tùng cắc! 🦁",
-  "en": ""
- },
- {
-  "vi": "💐 Bạn bắt được hoa cưới!",
-  "en": ""
- },
- {
-  "vi": "💐 Hoa rơi xuống sàn mất rồi 😆",
-  "en": ""
- },
- {
-  "vi": "💐 Bắt được hoa!",
-  "en": ""
- },
- {
-  "vi": "📸 Cười lên nào!",
-  "en": ""
- },
- {
-  "vi": "Dzô!",
-  "en": ""
- },
- {
-  "vi": "đặc biệt",
-  "en": ""
- },
- {
-  "vi": "Mở sau đám cưới",
-  "en": ""
- },
- {
-  "vi": "🎨 Chọn kính, nón, mũ, nơ hay túi để thử màu.",
-  "en": ""
- },
- {
-  "vi": "đang đeo",
-  "en": ""
- },
- {
-  "vi": "hợp với tóc",
-  "en": ""
- },
- {
-  "vi": "🎨 Thử màu",
-  "en": ""
- },
- {
-  "vi": "Màu gốc miễn phí. Mở một màu một lần là dùng được cho mọi món: quần áo, giày dép, phụ kiện và đồ trong nhà.",
-  "en": ""
- },
- {
-  "vi": "👇 Chạm một món để mặc thử.",
-  "en": ""
- },
- {
-  "vi": "✨ Mặc bộ này",
-  "en": ""
- },
- {
-  "vi": "Bỏ thử, mặc lại bộ cũ",
-  "en": ""
- },
- {
-  "vi": "Tủ đồ đang được sắp xếp, lát nữa quay lại nhé.",
-  "en": ""
- },
- {
-  "vi": "đang thử",
-  "en": ""
- },
- {
-  "vi": "Loại đồ",
-  "en": ""
- },
- {
-  "vi": "Mặc đồ làm việc khi vào ca",
-  "en": ""
- },
- {
-  "vi": "Tạp dề, áo blouse, yếm… theo nơi làm.",
-  "en": ""
- },
- {
-  "vi": "Nhân vật của bạn trong bộ đồ đang thử",
-  "en": ""
- },
- {
-  "vi": ". Xem tiền của bạn",
-  "en": ""
- },
- {
-  "vi": "Tổng nợ",
-  "en": ""
- },
- {
-  "vi": "đang nợ tiền phòng",
-  "en": ""
- },
- {
-  "vi": "Sổ ví",
-  "en": ""
- },
- {
-  "vi": "Vào Ngân hàng",
-  "en": ""
- },
- {
-  "vi": "Chưa mở tài khoản",
-  "en": ""
- },
- {
-  "vi": "Tiết kiệm không kỳ hạn",
-  "en": ""
- },
- {
-  "vi": "đáo hạn Ngày",
-  "en": ""
- },
- {
-  "vi": "còn nợ",
-  "en": ""
- },
- {
-  "vi": "dư nợ thẻ",
-  "en": ""
- },
- {
-  "vi": "Chưa rút được: quỹ giữ lại tiền dự phòng và hóa đơn.",
-  "en": ""
- },
- {
-  "vi": "đang ở đây",
-  "en": ""
- },
- {
-  "vi": "tạm đóng",
-  "en": ""
- },
- {
-  "vi": "làm thuê",
-  "en": ""
- },
- {
-  "vi": "Quỹ nơi làm việc",
-  "en": ""
- },
- {
-  "vi": "Rút, góp vốn",
-  "en": ""
- },
- {
-  "vi": "giá thị trường hôm nay",
-  "en": ""
- },
- {
-  "vi": "đang cho thuê",
-  "en": ""
- },
- {
-  "vi": "đang để trống",
-  "en": ""
- },
- {
-  "vi": "còn phải trả",
-  "en": ""
- },
- {
-  "vi": "💍 Lịch cưới",
-  "en": ""
- },
- {
-  "vi": "Sắp bắt đầu",
-  "en": ""
- },
- {
-  "vi": "Của bạn",
-  "en": ""
- },
- {
-  "vi": "Chưa có đám cưới nào sắp tới.",
-  "en": ""
- },
- {
-  "vi": "🏆 Khách mời của tuần",
-  "en": ""
- },
- {
-  "vi": "💍 Ảnh cưới",
-  "en": ""
- },
- {
-  "vi": "MC Thanh Tâm",
-  "en": ""
- },
- {
-  "vi": "Cu Tí",
-  "en": ""
- },
- {
-  "vi": "Bạn nhỏ",
-  "en": ""
- },
- {
-  "vi": "Kính mời quý khách vào chỗ, tiệc sắp bắt đầu rồi ạ! 💐",
-  "en": ""
- },
- {
-  "vi": "Cô chú anh chị cứ tự nhiên dùng trà bánh nha, còn ít phút nữa thôi!",
-  "en": ""
- },
- {
-  "vi": "Một phút nữa thôi! Ai chưa có chỗ thì nhanh chân nào 🏃",
-  "en": ""
- },
- {
-  "vi": "Kính thưa quý vị! Chào mừng đến lễ cưới của {a} và {b} 💍",
-  "en": ""
- },
- {
-  "vi": "Xin một tràng pháo tay thật lớn cho đôi uyên ương nào! 👏👏👏",
-  "en": ""
- },
- {
-  "vi": "Đoàn lân về chúc mừng hai họ rồi! Tùng tùng cắc! 🦁",
-  "en": ""
- },
- {
-  "vi": "Khai tiệc! Mời cả nhà nâng ly: Một, hai, ba… dzô! 🥂",
-  "en": ""
- },
- {
-  "vi": "Cỗ hôm nay có gà luộc, xôi gấc, nem rán, lẩu thái… cả nhà gắp thật nhiều vào nha!",
-  "en": ""
- },
- {
-  "vi": "Sàn nhảy mở rồi! Ai thích quẩy thì lên sân khấu cùng cô dâu chú rể nào 💃",
-  "en": ""
- },
- {
-  "vi": "Mời cô dâu chú rể cắt bánh cưới và rót tháp ly! 🎂",
-  "en": ""
- },
- {
-  "vi": "Đoàn lân lại tới kìa! Lì xì cho lân lấy hên nào! 🧧",
-  "en": ""
- },
- {
-  "vi": "Chúc {a} và {b} trăm năm hạnh phúc, đầu bạc răng long! 💕",
-  "en": ""
- },
- {
-  "vi": "Ai có tiết mục văn nghệ thì lên sân khấu luôn nha, micro sẵn rồi! 🎤",
-  "en": ""
- },
- {
-  "vi": "Lân múa thêm một vòng nữa nè, cả nhà vỗ tay nào! 👏",
-  "en": ""
- },
- {
-  "vi": "Màn tung hoa cưới đây! Các bạn độc thân lại gần sân khấu nào 💐",
-  "en": ""
- },
- {
-  "vi": "Tiệc sắp tàn rồi, cả nhà chụp chung tấm ảnh nào! 📸",
-  "en": ""
- },
- {
-  "vi": "Pháo hoa nè! Chúc hai bạn trăm năm hạnh phúc! 🎆",
-  "en": ""
- },
- {
-  "vi": "Chúc mọi người về nhà bình an. Hẹn gặp ở đám cưới sau nha! 👋",
-  "en": ""
- },
- {
-  "vi": "Chú rể",
-  "en": ""
- },
- {
-  "vi": "Cô dâu chú rể",
-  "en": ""
- },
- {
-  "vi": "cho nhạc chạy theo chương trình tiệc nha cả nhà! 🎶",
-  "en": ""
- },
- {
-  "vi": "chọn nhạc chậm rồi, mời cô dâu chú rể nhảy điệu đầu tiên nào 💞",
-  "en": ""
- },
- {
-  "vi": "nhạc mới",
-  "en": ""
- },
- {
-  "vi": "Chúc hai cháu trăm năm hạnh phúc, sớm có tin vui nha!",
-  "en": ""
- },
- {
-  "vi": "Cỗ hôm nay ngon ghê, nem rán giòn rụm luôn!",
-  "en": ""
- },
- {
-  "vi": "Hồi xưa bác cưới có năm mâm thôi, giờ linh đình quá!",
-  "en": ""
- },
- {
-  "vi": "Cô dâu chú rể đẹp đôi quá trời đất ơi!",
-  "en": ""
- },
- {
-  "vi": "Bao giờ có cháu bế đây hai đứa? 👶",
-  "en": ""
- },
- {
-  "vi": "Nhạc vui quá, bà đứng dậy nhảy một bài nè 💃",
-  "en": ""
- },
- {
-  "vi": "Thằng cu nhà tui cũng sắp cưới rồi đó, nhớ qua ăn cỗ nha!",
-  "en": ""
- },
- {
-  "vi": "Ai gắp giùm tui miếng gà với, xa quá với không tới 🍗",
-  "en": ""
- },
- {
-  "vi": "Đám cưới này đông vui nhất phố từ đầu năm tới giờ!",
-  "en": ""
- },
- {
-  "vi": "Lân múa đẹp quá, năm nay chắc làm ăn phát đạt!",
-  "en": ""
- },
- {
-  "vi": "Ăn từ từ thôi tụi nhỏ, cỗ còn nhiều lắm!",
-  "en": ""
- },
- {
-  "vi": "Một, hai, ba, dzô! Chúc mừng hai đứa nha! 🍻",
-  "en": ""
- },
- {
-  "vi": "Nhìn {a} với {b} là biết trời sinh một cặp rồi!",
-  "en": ""
- },
- {
-  "vi": "Canh măng này ai nấu mà ngọt nước dữ vậy!",
-  "en": ""
- },
- {
-  "vi": "Loa to quá, nhưng mà vui! Quẩy lên mọi người ơi 🔊",
-  "en": ""
- },
- {
-  "vi": "Xôi gấc đỏ au, ăn lấy may cả năm nha!",
-  "en": ""
- },
- {
-  "vi": "Bia thì ít thôi nha, còn chạy xe về đó 🛵",
-  "en": ""
- },
- {
-  "vi": "Đèn sân khấu đẹp ghê, như đi xem ca nhạc vậy!",
-  "en": ""
- },
- {
-  "vi": "Trúc xinh trúc mọc đầu đình, em xinh em đứng một mình cũng xinh 🎶",
-  "en": ""
- },
- {
-  "vi": "Tùng dinh dinh tùng tùng tùng dinh dinh! 🥁",
-  "en": ""
- },
- {
-  "vi": "Cô dâu xinh xỉu up xỉu down luôn á 😍",
-  "en": ""
- },
- {
-  "vi": "Chú rể hôm nay đẹp trai mười điểm không có nhưng 🤩",
-  "en": ""
- },
- {
-  "vi": "Đám cưới này đỉnh nóc kịch trần bay phấp phới 🚀",
-  "en": ""
- },
- {
-  "vi": "Mãi keo, mãi đỉnh nha cô dâu chú rể 💯",
-  "en": ""
- },
- {
-  "vi": "Chúc anh chị hạnh phúc như điện thoại sạc đầy 100% pin 🔋",
-  "en": ""
- },
- {
-  "vi": "Ủa có gà luộc không ạ? Em đang ăn kiêng… kiêng đói 🐔",
-  "en": ""
- },
- {
-  "vi": "Mlem mlem, cỗ ngon quá trời quá đất 😋",
-  "en": ""
- },
- {
-  "vi": "Ai ế thì giơ tay lên nào! 🙋 …ủa sao cả bàn giơ tay vậy",
-  "en": ""
- },
- {
-  "vi": "Con mèo mà trèo cây cau, hỏi thăm chú chuột đi đâu vắng nhà 🎶",
-  "en": ""
- },
- {
-  "vi": "Bống bống bang bang, lên ăn cơm vàng cơm bạc nhà ta 🎶",
-  "en": ""
- },
- {
-  "vi": "Đi đám cưới mà vui như đi concert vậy đó 🎤",
-  "en": ""
- },
- {
-  "vi": "Cô dâu chú rể visual quá, cho em xin vía với ✨",
-  "en": ""
- },
- {
-  "vi": "Real hay fake đây, đẹp đôi dữ vậy trời 👀",
-  "en": ""
- },
- {
-  "vi": "Tình yêu của anh chị là chân ái, còn em là… chân gà 🍗",
-  "en": ""
- },
- {
-  "vi": "Gì chứ ăn cỗ là em có mặt đầu tiên 🙋",
-  "en": ""
- },
- {
-  "vi": "Lân ơi lân, cho em lì xì với 🧧",
-  "en": ""
- },
- {
-  "vi": "Hôm nay em không ăn kiêng, hôm nay em ăn cỗ 🍤",
-  "en": ""
- },
- {
-  "vi": "Anh chị cưới nhau rồi thì nhớ chia kẹo cho tụi em nha 🍬",
-  "en": ""
- },
- {
-  "vi": "Lên sân khấu nhảy đi mọi người, em nhảy trước nè 💃",
-  "en": ""
- },
- {
-  "vi": "Có pháo hoa không ạ? Em muốn xem pháo hoa 🎆",
-  "en": ""
- },
- {
-  "vi": "Disco sôi động",
-  "en": ""
- },
- {
-  "vi": "Quẩy EDM",
-  "en": ""
- },
- {
-  "vi": "Remix bay phòng 140",
-  "en": ""
- },
- {
-  "vi": "Nhạc chậm cho cặp đôi",
-  "en": ""
- },
- {
-  "vi": "Theo chương trình",
-  "en": ""
- },
- {
-  "vi": "Tùng tùng cắc! Tùng dinh dinh! 🦁",
-  "en": ""
- },
- {
-  "vi": "Lân bắt được lì xì rồi! 🧧",
-  "en": ""
- },
- {
-  "vi": "Thử ngay",
-  "en": ""
- },
- {
-  "vi": "Ẩn các bản trước",
-  "en": ""
- },
- {
-  "vi": "Xem các bản trước",
-  "en": ""
- },
- {
-  "vi": "Có gì mới ở Phố Có Chuyện",
   "en": ""
  }
 ]

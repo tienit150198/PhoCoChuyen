@@ -1,5 +1,437 @@
 [
  {
+  "vi": "Huy hiệu",
+  "en": ""
+ },
+ {
+  "vi": "🎟️ Chưa có thiệp.",
+  "en": ""
+ },
+ {
+  "vi": "Đang dựng phố…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được phố.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch cưới · Nhà cưới",
+  "en": ""
+ },
+ {
+  "vi": "Bảng tin hàng xóm",
+  "en": ""
+ },
+ {
+  "vi": "Phố đi dạo",
+  "en": ""
+ },
+ {
+  "vi": "Gặp người chơi khác",
+  "en": ""
+ },
+ {
+  "vi": "Góc hẹn hò",
+  "en": ""
+ },
+ {
+  "vi": "Hôn nhân & gia đình",
+  "en": ""
+ },
+ {
+  "vi": "Ao câu cá",
+  "en": ""
+ },
+ {
+  "vi": "Bến thuyền",
+  "en": ""
+ },
+ {
+  "vi": "Hồ bơi · thể thao",
+  "en": ""
+ },
+ {
+  "vi": "Trong phố",
+  "en": ""
+ },
+ {
+  "vi": "Thư giãn, miễn phí",
+  "en": ""
+ },
+ {
+  "vi": "Thư giãn",
+  "en": ""
+ },
+ {
+  "vi": "Nơi bạn đang làm ·",
+  "en": ""
+ },
+ {
+  "vi": "🔒 chưa mở",
+  "en": ""
+ },
+ {
+  "vi": "Đi ›",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ đường",
+  "en": ""
+ },
+ {
+  "vi": "Tìm nơi: ngân hàng, phở, hội chợ…",
+  "en": ""
+ },
+ {
+  "vi": "Tìm nơi muốn tới",
+  "en": ""
+ },
+ {
+  "vi": "🧭 Chỉ đường",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nơi muốn tới: nhân vật tự đi theo đường. Chạm đất hoặc di chuyển để dừng.",
+  "en": ""
+ },
+ {
+  "vi": "Phố đang dựng, chờ một chút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nơi này chưa có trên đảo.",
+  "en": ""
+ },
+ {
+  "vi": "Chào mừng tới đảo! Tự đi tới tiệm có vòng sáng, hoặc bấm 🧭 Chỉ đường để nhân vật dẫn đường.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được cảnh hồ. Thử mở lại hoạt động khi kết nối ổn định.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải đủ hình câu cá. Mở lại cảnh để thử tải lại; hoạt động vẫn chơi được.",
+  "en": ""
+ },
+ {
+  "vi": "Di chuyển",
+  "en": ""
+ },
+ {
+  "vi": "Di chuyển nhân vật: kéo cần tròn, hoặc dùng phím mũi tên và W A S D.",
+  "en": ""
+ },
+ {
+  "vi": "Tạm nghỉ",
+  "en": ""
+ },
+ {
+  "vi": "Khách · Chỉ xem",
+  "en": ""
+ },
+ {
+  "vi": "Cả phố · Bạn bè",
+  "en": ""
+ },
+ {
+  "vi": "Chưa khả dụng",
+  "en": ""
+ },
+ {
+  "vi": "Đang kết nối",
+  "en": ""
+ },
+ {
+  "vi": "Không khả dụng",
+  "en": ""
+ },
+ {
+  "vi": "Chưa kết nối",
+  "en": ""
+ },
+ {
+  "vi": "Đảo Hoàng Sa",
+  "en": ""
+ },
+ {
+  "vi": "đang nợ",
+  "en": ""
+ },
+ {
+  "vi": ". Xem tiền của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay, thử làm nghề gì?",
+  "en": ""
+ },
+ {
+  "vi": "Ca làm đang nghỉ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã làm hết việc đang chờ",
+  "en": ""
+ },
+ {
+  "vi": "Xem tuyển dụng",
+  "en": ""
+ },
+ {
+  "vi": "Chuẩn bị ca",
+  "en": ""
+ },
+ {
+  "vi": "Mở sổ việc",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nghề hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Ca làm của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Túi đồ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn và tiền của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Lối tắt",
+  "en": ""
+ },
+ {
+  "vi": "Góc nhìn Đảo Hoàng Sa",
+  "en": ""
+ },
+ {
+  "vi": "Điều hướng chính",
+  "en": ""
+ },
+ {
+  "vi": "di chuyển · Chạm đường để đi",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Cài đặt\" title=\"Cài đặt\"",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Chỉ đường: chọn nơi muốn tới, nhân vật tự đi\" aria-haspopup=\"dialog\"",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Sổ việc đang chờ\"",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Người quen trong phố\"",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Hôm nay: giờ, tình trạng và chuyện cần để ý\"",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động ngoài trời",
+  "en": ""
+ },
+ {
+  "vi": "Ra ngoài chơi",
+  "en": ""
+ },
+ {
+  "vi": "Câu cá",
+  "en": ""
+ },
+ {
+  "vi": "Chèo thuyền",
+  "en": ""
+ },
+ {
+  "vi": "Bơi",
+  "en": ""
+ },
+ {
+  "vi": "mở địa điểm ngoài trời",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Điều chỉnh góc nhìn\" aria-expanded=\"",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Phóng to cảnh\" title=\"Phóng to\"",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Thu nhỏ cảnh\" title=\"Thu nhỏ\"",
+  "en": ""
+ },
+ {
+  "vi": "Về giữa",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Đưa góc nhìn về nhân vật\" title=\"Về giữa\"",
+  "en": ""
+ },
+ {
+  "vi": "Toàn đảo",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Xem toàn đảo\" title=\"Xem toàn đảo\"",
+  "en": ""
+ },
+ {
+  "vi": "tin chưa đọc",
+  "en": ""
+ },
+ {
+  "vi": "Ra Đảo Hoàng Sa",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một nghề trên đảo",
+  "en": ""
+ },
+ {
+  "vi": "Ra đảo",
+  "en": ""
+ },
+ {
+  "vi": "Đóng danh sách nghề, về Đảo Hoàng Sa",
+  "en": ""
+ },
+ {
+  "vi": "Khu phố đang mở ở tab khác",
+  "en": ""
+ },
+ {
+  "vi": "Chưa bật kết nối khu phố",
+  "en": ""
+ },
+ {
+  "vi": "Khu phố trực tuyến đang tắt",
+  "en": ""
+ },
+ {
+  "vi": "Đang vào khu phố…",
+  "en": ""
+ },
+ {
+  "vi": "Đang kết nối khu phố…",
+  "en": ""
+ },
+ {
+  "vi": "Khu phố mất kết nối",
+  "en": ""
+ },
+ {
+  "vi": "Khu phố trực tuyến không khả dụng",
+  "en": ""
+ },
+ {
+  "vi": "Khu phố chưa kết nối",
+  "en": ""
+ },
+ {
+  "vi": "Thống kê sử dụng",
+  "en": ""
+ },
+ {
+  "vi": "Cho phép Google thống kê lượt ghé, các bước chơi và tốc độ để cải thiện game?",
+  "en": ""
+ },
+ {
+  "vi": "Cho phép",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện nhân viên",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ dở việc",
+  "en": ""
+ },
+ {
+  "vi": "Tạm dừng: còn sự cố đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay không có ca (lịch ngày lẻ)",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay không có ca (lịch ngày chẵn)",
+  "en": ""
+ },
+ {
+  "vi": "Đang xử lý đơn riêng",
+  "en": ""
+ },
+ {
+  "vi": "Đang chuẩn bị vào việc",
+  "en": ""
+ },
+ {
+  "vi": "Đơn riêng dùng nguyên liệu và quỹ nghề. Thiếu hàng hoặc tiền lương thì đội tạm dừng, không tự rút tiền cá nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Đội làm việc cùng bạn",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên đồng thời xử lý đơn riêng, cả khi bạn offline, nếu ca còn mở và đủ hàng, quỹ trả lương. Mỗi đơn ghi doanh thu, vật tư và lương ngay vào sổ; khép ca không cộng lại tiền đơn đã ghi.",
+  "en": ""
+ },
+ {
+  "vi": "Muốn mở thêm cơ sở?",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Quầy của bạn",
+  "en": ""
+ },
+ {
+  "vi": "có kho, vốn và nhân viên riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể tự tay pha từng ly và làm các bước của trò pha chế.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể tự tay làm các bước của nghề.",
+  "en": ""
+ },
+ {
+  "vi": "xu lương / đơn riêng · trả từ quỹ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Chọn người phụ bên dưới 👇",
+  "en": ""
+ },
+ {
+  "vi": "xu/đơn riêng",
+  "en": ""
+ },
+ {
+  "vi": "Mời về tiệm",
+  "en": ""
+ },
+ {
   "vi": "Doanh thu nghề kỳ này",
   "en": ""
  },
@@ -25,6 +457,134 @@
  },
  {
   "vi": "Xử lý hồ sơ đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Bờ hồ câu cá",
+  "en": ""
+ },
+ {
+  "vi": "Bến chèo thuyền",
+  "en": ""
+ },
+ {
+  "vi": "Hồ bơi khu phố",
+  "en": ""
+ },
+ {
+  "vi": "Đi tới đầu cầu gỗ bằng cần tròn hoặc phím mũi tên / W A S D.",
+  "en": ""
+ },
+ {
+  "vi": "Mất kết nối. Thử lại để lưu cùng vòng chơi này.",
+  "en": ""
+ },
+ {
+  "vi": "bến",
+  "en": ""
+ },
+ {
+  "vi": "Cá nhả mồi rồi. Bấm thả cần để thử lại.",
+  "en": ""
+ },
+ {
+  "vi": "Cá cắn câu! Bấm Giật cần hoặc phím Space ngay!",
+  "en": ""
+ },
+ {
+  "vi": "Đã quay về bến. Bấm Lưu vòng để lưu thành tích.",
+  "en": ""
+ },
+ {
+  "vi": "Đi đến đầu cầu gỗ đang sáng trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nhận được vòng chơi. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thả mồi. Chờ phao rung rồi bấm Giật cần trong vạch sáng.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lên thuyền. Chèo qua từng vòng mốc rồi về bến.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xuống hồ. Bơi qua bốn mốc theo thứ tự rồi về thang.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lưu thành tích.",
+  "en": ""
+ },
+ {
+  "vi": "Quay về đầu cầu / thang hồ trước khi lên bờ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lên bờ. Có thể chơi thêm hoặc trở về khu phố.",
+  "en": ""
+ },
+ {
+  "vi": "Cảnh hồ chưa sẵn sàng. Thử mở lại hoạt động nhé.",
+  "en": ""
+ },
+ {
+  "vi": "di chuyển rồi tương tác",
+  "en": ""
+ },
+ {
+  "vi": "Trở về khu phố",
+  "en": ""
+ },
+ {
+  "vi": "Kéo cần tròn để di chuyển",
+  "en": ""
+ },
+ {
+  "vi": "Di chuyển: cần tròn · ↑ ↓ ← → / W A S D · Tương tác: Space",
+  "en": ""
+ },
+ {
+  "vi": "Thả cần",
+  "en": ""
+ },
+ {
+  "vi": "Lên thuyền",
+  "en": ""
+ },
+ {
+  "vi": "Xuống hồ",
+  "en": ""
+ },
+ {
+  "vi": "Chờ cá…",
+  "en": ""
+ },
+ {
+  "vi": "Giật cần!",
+  "en": ""
+ },
+ {
+  "vi": "Lưu vòng chèo",
+  "en": ""
+ },
+ {
+  "vi": "Lưu vòng bơi",
+  "en": ""
+ },
+ {
+  "vi": "Lên bờ",
+  "en": ""
+ },
+ {
+  "vi": "Bắt được cá!",
+  "en": ""
+ },
+ {
+  "vi": "Đang xác nhận…",
   "en": ""
  },
  {
@@ -1237,566 +1797,6 @@
  },
  {
   "vi": "Sạp & cân",
-  "en": ""
- },
- {
-  "vi": "TIỀN LẺ",
-  "en": ""
- },
- {
-  "vi": "THÙNG HÀNG",
-  "en": ""
- },
- {
-  "vi": "Dọn sạp về",
-  "en": ""
- },
- {
-  "vi": "Dọn sạp ra",
-  "en": ""
- },
- {
-  "vi": "Khách chợ sắp ghé mua trái.",
-  "en": ""
- },
- {
-  "vi": "Dựng dù, thử cân rồi bán nhé.",
-  "en": ""
- },
- {
-  "vi": "Sạp đang vắng",
-  "en": ""
- },
- {
-  "vi": "Mời thêm khách hoặc dọn sạp về.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp quanh sạp trái cây.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá quanh sạp trái cây.",
-  "en": ""
- },
- {
-  "vi": "Túi rác trước cửa",
-  "en": ""
- },
- {
-  "vi": "Bảng phân loại",
-  "en": ""
- },
- {
-  "vi": "Thùng tập kết",
-  "en": ""
- },
- {
-  "vi": "SỔ TUYẾN",
-  "en": ""
- },
- {
-  "vi": "Quỹ tổ",
-  "en": ""
- },
- {
-  "vi": "ĐANG THU GOM",
-  "en": ""
- },
- {
-  "vi": "ĐÃ TAN CA",
-  "en": ""
- },
- {
-  "vi": "Ngõ sau đang chờ xe rác.",
-  "en": ""
- },
- {
-  "vi": "Đồ bảo hộ, kiểm xe rồi vào ngõ nhé.",
-  "en": ""
- },
- {
-  "vi": "Xe đang nghỉ",
-  "en": ""
- },
- {
-  "vi": "Hết ngõ rồi!",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một ngõ hoặc tan ca.",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một ngõ",
-  "en": ""
- },
- {
-  "vi": "Chưa có ngõ nào đang chờ",
-  "en": ""
- },
- {
-  "vi": "Sang ngõ tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp trên tuyến thu gom.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và phản ánh của cư dân.",
-  "en": ""
- },
- {
-  "vi": "Xe máy & đồ nghề",
-  "en": ""
- },
- {
-  "vi": "SỔ HẸN",
-  "en": ""
- },
- {
-  "vi": "Quỹ tiệm",
-  "en": ""
- },
- {
-  "vi": "ĐANG NHẬN VIỆC",
-  "en": ""
- },
- {
-  "vi": "Điện thoại sắp reo.",
-  "en": ""
- },
- {
-  "vi": "Đọc sổ hẹn, xếp đồ nghề rồi đi nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa có ai gọi",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm việc hoặc nghỉ tay hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp khi đi thông cống.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá của khách.",
-  "en": ""
- },
- {
-  "vi": "Tủ lạnh nhà khách",
-  "en": ""
- },
- {
-  "vi": "Vào bếp",
-  "en": ""
- },
- {
-  "vi": "ĐANG NẤU CƠM",
-  "en": ""
- },
- {
-  "vi": "Nhà khách quen",
-  "en": ""
- },
- {
-  "vi": "Mrrr… cá kho thơm quá, cho mèo xin một miếng nhé?",
-  "en": ""
- },
- {
-  "vi": "Vuốt con mèo mướp của nhà",
-  "en": ""
- },
- {
-  "vi": "An toàn trong bếp",
-  "en": ""
- },
- {
-  "vi": "Cô Hạnh sắp nhắn địa chỉ nhà hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Nghe chủ nhà dặn rồi lên thực đơn nhé.",
-  "en": ""
- },
- {
-  "vi": "Bếp đã gọn",
-  "en": ""
- },
- {
-  "vi": "Xong bữa rồi!",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một món hoặc về nhà hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một món",
-  "en": ""
- },
- {
-  "vi": "Chưa có món nào đang chờ",
-  "en": ""
- },
- {
-  "vi": "Những nhà quen bạn nấu cơm cho.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và nhận xét của các nhà.",
-  "en": ""
- },
- {
-  "vi": "Bao gạo & trứng",
-  "en": ""
- },
- {
-  "vi": "Tủ kính cơm",
-  "en": ""
- },
- {
-  "vi": "Kho gạo",
-  "en": ""
- },
- {
-  "vi": "SỔ QUÁN",
-  "en": ""
- },
- {
-  "vi": "KHO GẠO",
-  "en": ""
- },
- {
-  "vi": "Dọn quán",
-  "en": ""
- },
- {
-  "vi": "Mở quán",
-  "en": ""
- },
- {
-  "vi": "ĐANG BÁN CƠM",
-  "en": ""
- },
- {
-  "vi": "Mrrr… miếng sườn cháy cạnh thơm quá, cho Mướp xin một miếng?",
-  "en": ""
- },
- {
-  "vi": "Khách đi chợ sắp ghé ăn cơm.",
-  "en": ""
- },
- {
-  "vi": "Nấu cơm, nếm nước mắm, nhóm bếp rồi mở quán nhé.",
-  "en": ""
- },
- {
-  "vi": "Quán đang vãn",
-  "en": ""
- },
- {
-  "vi": "Mời thêm khách hoặc dọn quán hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở quán cơm tấm Dì Bảy.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá quanh quán cơm.",
-  "en": ""
- },
- {
-  "vi": "Bàn ghế nhựa",
-  "en": ""
- },
- {
-  "vi": "Kho sau bếp",
-  "en": ""
- },
- {
-  "vi": "SỔ QUÁN PHỞ",
-  "en": ""
- },
- {
-  "vi": "KHO BẾP",
-  "en": ""
- },
- {
-  "vi": "Đóng quán",
-  "en": ""
- },
- {
-  "vi": "ĐANG BÁN PHỞ",
-  "en": ""
- },
- {
-  "vi": "HẾT PHỞ, MAI GHÉ NHÉ",
-  "en": ""
- },
- {
-  "vi": "Mrrr… cho Mướp xin miếng gân bò thôi mà.",
-  "en": ""
- },
- {
-  "vi": "Nồi nước đang lăn tăn, khách sắp ghé.",
-  "en": ""
- },
- {
-  "vi": "Vặn lửa, hớt bọt, nếm nước rồi mở quán nhé.",
-  "en": ""
- },
- {
-  "vi": "Bếp đang vãn",
-  "en": ""
- },
- {
-  "vi": "Mời thêm khách hoặc đóng quán hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở quán phở Cây Si.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá quanh quán phở.",
-  "en": ""
- },
- {
-  "vi": "Trong quán",
-  "en": ""
- },
- {
-  "vi": "Sổ quán",
-  "en": ""
- },
- {
-  "vi": "Khung mẫu",
-  "en": ""
- },
- {
-  "vi": "Quầy & máy in",
-  "en": ""
- },
- {
-  "vi": "Thùng giấy in",
-  "en": ""
- },
- {
-  "vi": "SỔ TIỆM ẢNH",
-  "en": ""
- },
- {
-  "vi": "THÙNG GIẤY",
-  "en": ""
- },
- {
-  "vi": "ĐANG CHỤP ẢNH",
-  "en": ""
- },
- {
-  "vi": "Mrrr… cho mèo đội bờm tai thỏ chụp một tấm đi.",
-  "en": ""
- },
- {
-  "vi": "Lau ống kính, chụp thử rồi mở tiệm nhé.",
-  "en": ""
- },
- {
-  "vi": "Buồng chụp đang trống",
-  "en": ""
- },
- {
-  "vi": "Mời thêm một nhóm khách",
-  "en": ""
- },
- {
-  "vi": "Mời nhóm khách tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở tiệm ảnh Tách Tách.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá quanh tiệm ảnh.",
-  "en": ""
- },
- {
-  "vi": "Chậu giặt khăn",
-  "en": ""
- },
- {
-  "vi": "Thùng chai",
-  "en": ""
- },
- {
-  "vi": "Ví tiền công",
-  "en": ""
- },
- {
-  "vi": "SỔ TỔ GIÚP VIỆC",
-  "en": ""
- },
- {
-  "vi": "THÙNG CHAI",
-  "en": ""
- },
- {
-  "vi": "Nghỉ hôm nay",
-  "en": ""
- },
- {
-  "vi": "Nhận lịch hẹn",
-  "en": ""
- },
- {
-  "vi": "ĐANG NHẬN DỌN",
-  "en": ""
- },
- {
-  "vi": "MAI GỌI NHÉ",
-  "en": ""
- },
- {
-  "vi": "Mrrr… nhà sạch thơm thế này, nằm đâu cũng sướng.",
-  "en": ""
- },
- {
-  "vi": "Lịch hẹn kế tiếp sắp tới giờ.",
-  "en": ""
- },
- {
-  "vi": "Giặt khăn, châm chai rồi lên đường nhé.",
-  "en": ""
- },
- {
-  "vi": "Xe đồ nghề đang rảnh",
-  "en": ""
- },
- {
-  "vi": "Xong lịch rồi!",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một nhà hoặc nghỉ hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Nhận thêm một nhà",
-  "en": ""
- },
- {
-  "vi": "Chưa có nhà nào đang chờ",
-  "en": ""
- },
- {
-  "vi": "Sang nhà tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Những khách quen của tổ Nhà Thơm.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá của khách nhà.",
-  "en": ""
- },
- {
-  "vi": "Ở tổ",
-  "en": ""
- },
- {
-  "vi": "Sổ tổ",
-  "en": ""
- },
- {
-  "vi": "Kệ đồ chơi",
-  "en": ""
- },
- {
-  "vi": "Bếp nhỏ của bé",
-  "en": ""
- },
- {
-  "vi": "Rương đồ chơi",
-  "en": ""
- },
- {
-  "vi": "Bàn vẽ của bé",
-  "en": ""
- },
- {
-  "vi": "SỔ TRÔNG BÉ",
-  "en": ""
- },
- {
-  "vi": "RƯƠNG ĐỒ",
-  "en": ""
- },
- {
-  "vi": "Vào trông bé",
-  "en": ""
- },
- {
-  "vi": "ĐANG TRÔNG BÉ",
-  "en": ""
- },
- {
-  "vi": "Cũi của bé",
-  "en": ""
- },
- {
-  "vi": "Mrrr… bé ngủ rồi, mèo đi nhẹ chân nhé.",
-  "en": ""
- },
- {
-  "vi": "Chơi với Mướp bên cửa sổ",
-  "en": ""
- },
- {
-  "vi": "An toàn cho bé",
-  "en": ""
- },
- {
-  "vi": "Bố mẹ bé sắp tới gửi bé.",
-  "en": ""
- },
- {
-  "vi": "Rửa tay, đọc giấy dặn rồi nhận bé nhé.",
-  "en": ""
- },
- {
-  "vi": "Bé đang chơi ngoan",
-  "en": ""
- },
- {
-  "vi": "Làm thêm một việc hoặc về nhà hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Làm thêm một việc",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở tổ trông trẻ Mèo Con.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và nhận xét của bố mẹ các bé.",
-  "en": ""
- },
- {
-  "vi": "Sổ trông bé",
-  "en": ""
- },
- {
-  "vi": "Kệ sách theo ký hiệu",
   "en": ""
  }
 ]

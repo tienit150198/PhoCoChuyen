@@ -1,5 +1,561 @@
 [
  {
+  "vi": "Ví của bạn:",
+  "en": ""
+ },
+ {
+  "vi": "Chọn màu kim loại và màu đá, xem trước rồi mới mua. Nhẫn trả bằng ví riêng; người ấy từ chối thì nhẫn vẫn nằm trong hộp của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Không kèm lời nhắn",
+  "en": ""
+ },
+ {
+  "vi": "Gửi vào",
+  "en": ""
+ },
+ {
+  "vi": "Rút ra",
+  "en": ""
+ },
+ {
+  "vi": "Chia quỹ",
+  "en": ""
+ },
+ {
+  "vi": "· đang xử lý",
+  "en": ""
+ },
+ {
+  "vi": "Có ghi sổ nợ",
+  "en": ""
+ },
+ {
+  "vi": "Để lần sau",
+  "en": ""
+ },
+ {
+  "vi": "Kiểu gửi",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ chung của hai bạn",
+  "en": ""
+ },
+ {
+  "vi": "Lịch sử quỹ",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Tặng luôn",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Cho mượn",
+  "en": ""
+ },
+ {
+  "vi": "Mượn thôi, sẽ trả lại (ghi sổ nợ)",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhờ",
+  "en": ""
+ },
+ {
+  "vi": "Cho mượn thì khoản này vào sổ nợ, người ấy trả dần lúc nào cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền đi thẳng từ ví của bạn sang ví của người ấy.",
+  "en": ""
+ },
+ {
+  "vi": "Không nêu lý do",
+  "en": ""
+ },
+ {
+  "vi": "trợ giúp",
+  "en": ""
+ },
+ {
+  "vi": "Còn nợ",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả hết",
+  "en": ""
+ },
+ {
+  "vi": "Đã xóa nợ",
+  "en": ""
+ },
+ {
+  "vi": "Trừ khi chia quỹ",
+  "en": ""
+ },
+ {
+  "vi": "Xóa khi chia tay",
+  "en": ""
+ },
+ {
+  "vi": "nợ bạn",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã nhắc",
+  "en": ""
+ },
+ {
+  "vi": "Được nhắc",
+  "en": ""
+ },
+ {
+  "vi": "· đã xin khất",
+  "en": ""
+ },
+ {
+  "vi": "Câu đòi nợ",
+  "en": ""
+ },
+ {
+  "vi": "Đòi tiền",
+  "en": ""
+ },
+ {
+  "vi": "Vừa nhắc rồi, để người ấy thở chút nha.",
+  "en": ""
+ },
+ {
+  "vi": "Trả bớt bao nhiêu",
+  "en": ""
+ },
+ {
+  "vi": "Trả bớt",
+  "en": ""
+ },
+ {
+  "vi": "Câu xin khất",
+  "en": ""
+ },
+ {
+  "vi": "Xin khất",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Sổ nợ",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Quà nhỏ từ túi quà",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một món…",
+  "en": ""
+ },
+ {
+  "vi": "Túi quà đang trống",
+  "en": ""
+ },
+ {
+  "vi": "Đã tặng hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Chuỗi ngày",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký hai bạn",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch đang chờ bạn xác nhận ở mục “Hai bạn”.",
+  "en": ""
+ },
+ {
+  "vi": "Xem kế hoạch",
+  "en": ""
+ },
+ {
+  "vi": "Đám cưới của hai bạn xem ở mục “Hai bạn”.",
+  "en": ""
+ },
+ {
+  "vi": "Xem đám cưới",
+  "en": ""
+ },
+ {
+  "vi": "/bàn",
+  "en": ""
+ },
+ {
+  "vi": "Số mâm tráp ăn hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Bạn 60%",
+  "en": ""
+ },
+ {
+  "vi": "Bạn 70%",
+  "en": ""
+ },
+ {
+  "vi": "Bạn 40%",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bao hết",
+  "en": ""
+ },
+ {
+  "vi": "Bớt một bàn",
+  "en": ""
+ },
+ {
+  "vi": "Số bàn",
+  "en": ""
+ },
+ {
+  "vi": "Thêm một bàn",
+  "en": ""
+ },
+ {
+  "vi": "Tỉ lệ góp",
+  "en": ""
+ },
+ {
+  "vi": "Chi phí dự tính",
+  "en": ""
+ },
+ {
+  "vi": "1 · Nơi tổ chức",
+  "en": ""
+ },
+ {
+  "vi": "2 · Số bàn",
+  "en": ""
+ },
+ {
+  "vi": "3 · Thực đơn",
+  "en": ""
+ },
+ {
+  "vi": "4 · Nghi lễ",
+  "en": ""
+ },
+ {
+  "vi": "5 · Dịch vụ thêm",
+  "en": ""
+ },
+ {
+  "vi": "6 · Ngày cưới & góp tiền",
+  "en": ""
+ },
+ {
+  "vi": "💍 Cả phố được mời dự tiệc lúc đó.",
+  "en": ""
+ },
+ {
+  "vi": "Ai góp bao nhiêu",
+  "en": ""
+ },
+ {
+  "vi": "Báo tin cưới cho cả phố (cần cả hai đồng ý)",
+  "en": ""
+ },
+ {
+  "vi": "Tự chọn: bạn góp",
+  "en": ""
+ },
+ {
+  "vi": "góp",
+  "en": ""
+ },
+ {
+  "vi": "Không chọn",
+  "en": ""
+ },
+ {
+  "vi": "Bảng dự trù",
+  "en": ""
+ },
+ {
+  "vi": "Trả nốt vào ngày cưới",
+  "en": ""
+ },
+ {
+  "vi": "Lời / lỗ dự kiến",
+  "en": ""
+ },
+ {
+  "vi": "Đang ước lượng khách và tiền mừng…",
+  "en": ""
+ },
+ {
+  "vi": "Trả trực tiếp từ tài khoản thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Trả bằng tiền mặt trong ví.",
+  "en": ""
+ },
+ {
+  "vi": "Quẹt thẻ tín dụng, trả khi có sao kê.",
+  "en": ""
+ },
+ {
+  "vi": "Ưu tiên quỹ chung; nếu không đủ, thử ví rồi thẻ tín dụng.",
+  "en": ""
+ },
+ {
+  "vi": "cho khoản này.",
+  "en": ""
+ },
+ {
+  "vi": "trên 100",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ bữa",
+  "en": ""
+ },
+ {
+  "vi": "Giờ ăn trưa",
+  "en": ""
+ },
+ {
+  "vi": "Trưa rồi, ăn gì đây?",
+  "en": ""
+ },
+ {
+  "vi": "Đói bụng rồi? Ăn thêm gì đó",
+  "en": ""
+ },
+ {
+  "vi": "Ăn thêm",
+  "en": ""
+ },
+ {
+  "vi": "Chúc ngủ ngon!",
+  "en": ""
+ },
+ {
+  "vi": "Bữa sáng có sẵn, không tốn thêm xu.",
+  "en": ""
+ },
+ {
+  "vi": "Ăn chưa xong",
+  "en": ""
+ },
+ {
+  "vi": "Như mọi khi",
+  "en": ""
+ },
+ {
+  "vi": "Bữa tối",
+  "en": ""
+ },
+ {
+  "vi": "Giờ đi ngủ",
+  "en": ""
+ },
+ {
+  "vi": "Tối nay ăn gì?",
+  "en": ""
+ },
+ {
+  "vi": "Cơm nhà đã tính trong tiền cơm nước mỗi ngày, nên không tốn thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Mấy giờ đi ngủ?",
+  "en": ""
+ },
+ {
+  "vi": "⭐ 1 khách nữa là lên cấp!",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng handmade",
+  "en": ""
+ },
+ {
+  "vi": "Sách, CLB & gia đình",
+  "en": ""
+ },
+ {
+  "vi": "Bản xem màu móng",
+  "en": ""
+ },
+ {
+  "vi": "Đang chuẩn bị góc đi chơi…",
+  "en": ""
+ },
+ {
+  "vi": "Chọn kiểu tóc và ngắm thử trong gương. Kiểu mới sẽ vào tủ đồ và theo nhân vật ra phố.",
+  "en": ""
+ },
+ {
+  "vi": "1. Chọn kiểu tóc",
+  "en": ""
+ },
+ {
+  "vi": ". Chọn màu",
+  "en": ""
+ },
+ {
+  "vi": ". Chọn họa tiết",
+  "en": ""
+ },
+ {
+  "vi": "Tự tay làm từng công đoạn trên bàn: đo, cắt, may hoặc xâu hạt. Có vạch hướng dẫn, làm lại được và không bị giục giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Thử màu và họa tiết trước khi sơn. Bộ móng được lưu để lần sau ghé lại vẫn thấy.",
+  "en": ""
+ },
+ {
+  "vi": "Gấu bông của riêng bạn",
+  "en": ""
+ },
+ {
+  "vi": "Đo · Cắt · May · Nhồi bông · Trang trí",
+  "en": ""
+ },
+ {
+  "vi": "1. Chọn món để làm",
+  "en": ""
+ },
+ {
+  "vi": "Mẫu này đã lưu rồi, không cần trả thêm.",
+  "en": ""
+ },
+ {
+  "vi": "🧵 Vào bàn làm",
+  "en": ""
+ },
+ {
+  "vi": "Làm tóc & giữ kiểu",
+  "en": ""
+ },
+ {
+  "vi": "Sơn & lưu bộ móng",
+  "en": ""
+ },
+ {
+  "vi": "Bộ móng đang giữ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có món thủ công. Thử phối một mẫu ở Xưởng DIY nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đi chơi",
+  "en": ""
+ },
+ {
+  "vi": "MỘT BUỔI CHO MÌNH",
+  "en": ""
+ },
+ {
+  "vi": "Đi chơi & làm đẹp",
+  "en": ""
+ },
+ {
+  "vi": "Sơn và vẽ móng",
+  "en": ""
+ },
+ {
+  "vi": "Chưa mở khóa được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "đã mở",
+  "en": ""
+ },
+ {
+  "vi": "Các màu",
+  "en": ""
+ },
+ {
+  "vi": "BẢNG MÀU",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Bảng màu của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Mở một màu một lần là dùng được ở mọi nơi: áo, quần, giày dép, phụ kiện và đồ đạc trong nhà, cả phòng trọ lẫn ký túc xá.",
+  "en": ""
+ },
+ {
+  "vi": "màu đã mở",
+  "en": ""
+ },
+ {
+  "vi": "✨ Màu gốc của mỗi món luôn miễn phí. Đổi qua lại giữa các màu đã mở không mất xu.",
+  "en": ""
+ },
+ {
+  "vi": "✨ Dùng màu này",
+  "en": ""
+ },
+ {
+  "vi": "🎨 CHỌN MÀU",
+  "en": ""
+ },
+ {
+  "vi": "Màu gốc miễn phí. Mở một màu một lần là dùng được cho mọi món đồ.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có nguồn tiền này.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền lương / ví",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển khoản từ tài khoản ngân hàng",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ chung vợ chồng",
+  "en": ""
+ },
+ {
+  "vi": "Dây đèn",
+  "en": ""
+ },
+ {
+  "vi": "Hoa đào",
+  "en": ""
+ },
+ {
+  "vi": "Lồng đèn",
+  "en": ""
+ },
+ {
+  "vi": "Pháo hoa",
+  "en": ""
+ },
+ {
+  "vi": "Mặt cười",
+  "en": ""
+ },
+ {
   "vi": "Dịu",
   "en": ""
  },
@@ -1241,562 +1797,6 @@
  },
  {
   "vi": "Chênh lệch sau nguyên liệu:",
-  "en": ""
- },
- {
-  "vi": "Tên món…",
-  "en": ""
- },
- {
-  "vi": "Tìm món",
-  "en": ""
- },
- {
-  "vi": "Chênh lệch trên chưa trừ lương, thuê chỗ, điện, thuế và phí giao hàng. Phản ứng giá là gợi ý; lượng bán và đánh giá thật được ghi trong sổ quầy.",
-  "en": ""
- },
- {
-  "vi": "Chọn tất cả",
-  "en": ""
- },
- {
-  "vi": "Không có món trùng từ tìm kiếm.",
-  "en": ""
- },
- {
-  "vi": "Lưu menu & giá",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra giá và chọn ít nhất một món",
-  "en": ""
- },
- {
-  "vi": "Chưa đổi gì",
-  "en": ""
- },
- {
-  "vi": "Hoàn tác",
-  "en": ""
- },
- {
-  "vi": "Tên trên bảng hiệu",
-  "en": ""
- },
- {
-  "vi": "Màu mái che",
-  "en": ""
- },
- {
-  "vi": "🪑 Bàn ghế",
-  "en": ""
- },
- {
-  "vi": "một bộ · thêm khách ngồi lại",
-  "en": ""
- },
- {
-  "vi": "Hết rồi",
-  "en": ""
- },
- {
-  "vi": "Đủ chỗ rồi",
-  "en": ""
- },
- {
-  "vi": "Đang vào quầy của bạn…",
-  "en": ""
- },
- {
-  "vi": "Chưa vào được quầy",
-  "en": ""
- },
- {
-  "vi": "Đang lấy menu và đơn khách. Bạn có thể tự bán ở đây khi muốn.",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể thử mở lại hoặc về quản lý quầy để kiểm tra hàng và chi phí.",
-  "en": ""
- },
- {
-  "vi": "Đang mở quầy…",
-  "en": ""
- },
- {
-  "vi": "🧑‍🍳 Thử đứng quầy lại",
-  "en": ""
- },
- {
-  "vi": "Khách đã phục vụ",
-  "en": ""
- },
- {
-  "vi": "Doanh thu đã bán",
-  "en": ""
- },
- {
-  "vi": "Khách chờ tới lượt",
-  "en": ""
- },
- {
-  "vi": "chờ",
-  "en": ""
- },
- {
-  "vi": "Rời quầy",
-  "en": ""
- },
- {
-  "vi": "Cần nhập thêm nguyên liệu",
-  "en": ""
- },
- {
-  "vi": "Bạn đã đứng quầy",
-  "en": ""
- },
- {
-  "vi": "Nhập thêm món trong menu để phục vụ khách.",
-  "en": ""
- },
- {
-  "vi": "📱 Xem đơn",
-  "en": ""
- },
- {
-  "vi": "Chạm món bên dưới để bỏ vào.",
-  "en": ""
- },
- {
-  "vi": "💵 Tính tiền",
-  "en": ""
- },
- {
-  "vi": "· Khách đưa",
-  "en": ""
- },
- {
-  "vi": "Bạn thối:",
-  "en": ""
- },
- {
-  "vi": "Khách đưa vừa đủ 👍",
-  "en": ""
- },
- {
-  "vi": "🤲 Trả tiền thối",
-  "en": ""
- },
- {
-  "vi": "🤲 Nhận tiền",
-  "en": ""
- },
- {
-  "vi": "Đưa món cho khách và…",
-  "en": ""
- },
- {
-  "vi": "😊 Cảm ơn, hẹn gặp lại!",
-  "en": ""
- },
- {
-  "vi": "😤 Đang giục lớn",
-  "en": ""
- },
- {
-  "vi": "😠 Sốt ruột",
-  "en": ""
- },
- {
-  "vi": "🙂 Dễ tính",
-  "en": ""
- },
- {
-  "vi": "😐 Khó tính",
-  "en": ""
- },
- {
-  "vi": "💵 Trả khi nhận",
-  "en": ""
- },
- {
-  "vi": "✅ Đã trả qua app",
-  "en": ""
- },
- {
-  "vi": "📦 Đóng gói",
-  "en": ""
- },
- {
-  "vi": "📱 Đơn online",
-  "en": ""
- },
- {
-  "vi": "Chưa có đơn. Đơn tới trong lúc bạn bán hàng.",
-  "en": ""
- },
- {
-  "vi": "← Về quầy",
-  "en": ""
- },
- {
-  "vi": "Túi hàng",
-  "en": ""
- },
- {
-  "vi": "Đồ ăn uống cần dụng cụ, trừ khi khách dặn không lấy. Có lời dặn thì dán ghi chú lên túi.",
-  "en": ""
- },
- {
-  "vi": "🔒 Dán kín",
-  "en": ""
- },
- {
-  "vi": "📝 Dán ghi chú",
-  "en": ""
- },
- {
-  "vi": "Xong, đi giao",
-  "en": ""
- },
- {
-  "vi": "Bỏ món vào túi trước",
-  "en": ""
- },
- {
-  "vi": "Giao bằng gì?",
-  "en": ""
- },
- {
-  "vi": "🛵 Tự chạy đi giao",
-  "en": ""
- },
- {
-  "vi": "📦 Gọi shipper",
-  "en": ""
- },
- {
-  "vi": "Tới nơi rồi!",
-  "en": ""
- },
- {
-  "vi": "🤝 Giao tận tay",
-  "en": ""
- },
- {
-  "vi": "Đóng ca rồi!",
-  "en": ""
- },
- {
-  "vi": "Khách bạn phục vụ",
-  "en": ""
- },
- {
-  "vi": "Khách trong lượt này",
-  "en": ""
- },
- {
-  "vi": "Tiền đã vào két. Bạn có thể mở lượt phục vụ tiếp khi sẵn sàng.",
-  "en": ""
- },
- {
-  "vi": "Khách chấm",
-  "en": ""
- },
- {
-  "vi": "Chọn đúng món trên phiếu của khách nhé.",
-  "en": ""
- },
- {
-  "vi": "Giá phải là số nguyên dương, tối đa 1.000.000 xu.",
-  "en": ""
- },
- {
-  "vi": "Mua bàn ghế?",
-  "en": ""
- },
- {
-  "vi": "Rời quầy?",
-  "en": ""
- },
- {
-  "vi": "Chốt những món bạn đã phục vụ. Nếu có nhân viên, họ tiếp tục vận hành theo hàng và vốn còn lại.",
-  "en": ""
- },
- {
-  "vi": "Như mới",
-  "en": ""
- },
- {
-  "vi": "Còn tốt",
-  "en": ""
- },
- {
-  "vi": "Xuống cấp",
-  "en": ""
- },
- {
-  "vi": "Phòng hơi trống… Mochi buồn ngủ quá.",
-  "en": ""
- },
- {
-  "vi": "Bắt đầu dễ thương rồi nè!",
-  "en": ""
- },
- {
-  "vi": "Ấm áp ghê, Mochi thích lắm!",
-  "en": ""
- },
- {
-  "vi": "Wow, phòng xinh quá trời!",
-  "en": ""
- },
- {
-  "vi": "Tổ ấm trong mơ! Mochi không muốn đi đâu hết.",
-  "en": ""
- },
- {
-  "vi": "Lời mời vào nhà đã hết hiệu lực.",
-  "en": ""
- },
- {
-  "vi": "Trên đó hết chỗ rồi. Đặt chỗ khác nhé.",
-  "en": ""
- },
- {
-  "vi": "chỉ đặt lên bàn, kệ, giường hoặc sàn trống thôi.",
-  "en": ""
- },
- {
-  "vi": "chưa bày gì",
-  "en": ""
- },
- {
-  "vi": "Món này đang ở trên cùng rồi.",
-  "en": ""
- },
- {
-  "vi": "Món này đang ở dưới cùng rồi.",
-  "en": ""
- },
- {
-  "vi": "Cất hết đồ vào túi?",
-  "en": ""
- },
- {
-  "vi": "Mọi món đang bày ở chỗ này về túi đồ. Bấm Hoàn tác để bày lại như cũ.",
-  "en": ""
- },
- {
-  "vi": "Chưa lưu được ảnh.",
-  "en": ""
- },
- {
-  "vi": "Sửa cả nhà?",
-  "en": ""
- },
- {
-  "vi": "Làm",
-  "en": ""
- },
- {
-  "vi": "Máy chưa chụp được ảnh. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Về Nhà của bạn",
-  "en": ""
- },
- {
-  "vi": "TRONG NHÀ",
-  "en": ""
- },
- {
-  "vi": "BÀY TRÍ PHÒNG",
-  "en": ""
- },
- {
-  "vi": "TRONG PHÒNG",
-  "en": ""
- },
- {
-  "vi": "Chưa có chỗ để bày trí",
-  "en": ""
- },
- {
-  "vi": "Bày trí phòng có trong chế độ hành trình.",
-  "en": ""
- },
- {
-  "vi": "🪴 Bày trí",
-  "en": ""
- },
- {
-  "vi": "Giữ một món rồi kéo đi đâu cũng được",
-  "en": ""
- },
- {
-  "vi": "Đồ nhỏ thả lên bàn, kệ, giường sẽ đứng trên đó. Chạm món đồ để lật, đổi phòng hoặc cất đi.",
-  "en": ""
- },
- {
-  "vi": "Hiểu rồi",
-  "en": ""
- },
- {
-  "vi": "← Bạn bè & nhà",
-  "en": ""
- },
- {
-  "vi": "🎒 Cất hết",
-  "en": ""
- },
- {
-  "vi": "✏️ Bày trí phòng",
-  "en": ""
- },
- {
-  "vi": "✏️ Bắt đầu bày trí",
-  "en": ""
- },
- {
-  "vi": "📸 Chụp phòng",
-  "en": ""
- },
- {
-  "vi": "Chạm sàn để đi lại, gặp bạn trong phòng và giao lưu.",
-  "en": ""
- },
- {
-  "vi": "Bạn ở chung tại đây, có thể vào khi chủ nhà vắng mặt.",
-  "en": ""
- },
- {
-  "vi": "Bạn đang ghé chơi theo lời mời.",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Cuộn sang trái\"",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Cuộn sang phải\"",
-  "en": ""
- },
- {
-  "vi": "Các phòng",
-  "en": ""
- },
- {
-  "vi": "Món này không hợp chỗ ở này.",
-  "en": ""
- },
- {
-  "vi": "Chạm hoặc kéo vào phòng: lên bàn, kệ, giường hay sàn đều được.",
-  "en": ""
- },
- {
-  "vi": "Chạm chỗ muốn dời tới.",
-  "en": ""
- },
- {
-  "vi": "Chạm hoặc kéo vào chỗ muốn đặt.",
-  "en": ""
- },
- {
-  "vi": "Trong túi · ấm cúng +",
-  "en": ""
- },
- {
-  "vi": "Đang dời",
-  "en": ""
- },
- {
-  "vi": "🎒 Mua cất túi",
-  "en": ""
- },
- {
-  "vi": "⇋ Lật",
-  "en": ""
- },
- {
-  "vi": "Lật ngược",
-  "en": ""
- },
- {
-  "vi": "🎨 Màu",
-  "en": ""
- },
- {
-  "vi": "↻ Xoay hướng",
-  "en": ""
- },
- {
-  "vi": "Mặt sau",
-  "en": ""
- },
- {
-  "vi": "Mặt trước",
-  "en": ""
- },
- {
-  "vi": "⬆ Lên",
-  "en": ""
- },
- {
-  "vi": "Đưa lên trên",
-  "en": ""
- },
- {
-  "vi": "⬇ Xuống",
-  "en": ""
- },
- {
-  "vi": "Đưa xuống dưới",
-  "en": ""
- },
- {
-  "vi": "🚪 Đổi phòng",
-  "en": ""
- },
- {
-  "vi": "Sang phòng khác",
-  "en": ""
- },
- {
-  "vi": "🎒 Cất túi",
-  "en": ""
- },
- {
-  "vi": "Thu hồi vào túi",
-  "en": ""
- },
- {
-  "vi": "💰 Bán",
-  "en": ""
- },
- {
-  "vi": "Ấm cúng +",
-  "en": ""
- },
- {
-  "vi": "Không hợp chỗ này",
-  "en": ""
- },
- {
-  "vi": "Túi đồ trống. Ghé cửa hàng chọn món đầu tiên nhé!",
-  "en": ""
- },
- {
-  "vi": "🛒 Cửa hàng",
-  "en": ""
- },
- {
-  "vi": "Đồ đạc",
-  "en": ""
- },
- {
-  "vi": "Tài khoản + ví",
   "en": ""
  }
 ]

@@ -1,5 +1,97 @@
 [
  {
+  "vi": "Thu hộ khi giao",
+  "en": ""
+ },
+ {
+  "vi": "Đã chuyển khoản",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi khách đi dịp gì",
+  "en": ""
+ },
+ {
+  "vi": "Xem đồ cần sửa",
+  "en": ""
+ },
+ {
+  "vi": "Ra trông phòng thử",
+  "en": ""
+ },
+ {
+  "vi": "Nghe khách đổi trả",
+  "en": ""
+ },
+ {
+  "vi": "Nghe chị Vy dặn",
+  "en": ""
+ },
+ {
+  "vi": "Mở tin nhắn đặt hàng",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Khách quay lại đổi size",
+  "en": ""
+ },
+ {
+  "vi": "ℹ️ Giới thiệu nghề",
+  "en": ""
+ },
+ {
+  "vi": "📋 Việc chăm tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Việc chăm tiệm",
+  "en": ""
+ },
+ {
+  "vi": "👚 Giá treo theo size",
+  "en": ""
+ },
+ {
+  "vi": "Nhập hàng → chọn size đang thiếu, hoặc chọn “Tự chia size” để ưu tiên M, L… Đếm nhận xong mới lên giá.",
+  "en": ""
+ },
+ {
+  "vi": "Bán vừa size cho khách quen, tiệm sẽ nhớ size của họ ở đây.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ size khách quen",
+  "en": ""
+ },
+ {
+  "vi": "🧍‍♀️ Ma-nơ-canh",
+  "en": ""
+ },
+ {
+  "vi": "đang hút khách",
+  "en": ""
+ },
+ {
+  "vi": "đã cũ, nên thay",
+  "en": ""
+ },
+ {
+  "vi": "Thối tiền và giao đồ",
+  "en": ""
+ },
+ {
+  "vi": "Làm tiếp việc đang dở",
+  "en": ""
+ },
+ {
+  "vi": "📝 Việc cần làm",
+  "en": ""
+ },
+ {
+  "vi": "xong hết",
+  "en": ""
+ },
+ {
   "vi": "📒 Khách quen",
   "en": ""
  },
@@ -972,6 +1064,10 @@
   "en": ""
  },
  {
+  "vi": "Xăng",
+  "en": ""
+ },
+ {
   "vi": "📒 Sổ hẹn hôm nay",
   "en": ""
  },
@@ -1701,102 +1797,6 @@
  },
  {
   "vi": "Bạn sẽ gặp…",
-  "en": ""
- },
- {
-  "vi": "Được khen khi…",
-  "en": ""
- },
- {
-  "vi": "Chuyện trong khoang",
-  "en": ""
- },
- {
-  "vi": "Đèn thắt dây vừa sáng",
-  "en": ""
- },
- {
-  "vi": "Cất xe, về ghế ngay!",
-  "en": ""
- },
- {
-  "vi": "Chuyện nghề tiếp viên",
-  "en": ""
- },
- {
-  "vi": "Ghi nhớ",
-  "en": ""
- },
- {
-  "vi": "🚪 Đón khách",
-  "en": ""
- },
- {
-  "vi": "🦺 Hướng dẫn an toàn",
-  "en": ""
- },
- {
-  "vi": "🛒 Xe đẩy",
-  "en": ""
- },
- {
-  "vi": "🗣️ Khách khó chịu",
-  "en": ""
- },
- {
-  "vi": "🩺 Khách không khỏe",
-  "en": ""
- },
- {
-  "vi": "Khách đã lên đủ. Đóng cửa khoang.",
-  "en": ""
- },
- {
-  "vi": "🎫 Thẻ lên tàu",
-  "en": ""
- },
- {
-  "vi": "🚪 Hàng thoát hiểm",
-  "en": ""
- },
- {
-  "vi": "🧳 Vali lớn",
-  "en": ""
- },
- {
-  "vi": "🎒 Túi nhỏ",
-  "en": ""
- },
- {
-  "vi": "🎙️ Chị Thu đọc:",
-  "en": ""
- },
- {
-  "vi": "Giơ đúng món làm mẫu cho câu chị đang đọc.",
-  "en": ""
- },
- {
-  "vi": "Ghế",
-  "en": ""
- },
- {
-  "vi": "🚶 Khoang trước cất cánh",
-  "en": ""
- },
- {
-  "vi": "🥬 Suất chay · ghế",
-  "en": ""
- },
- {
-  "vi": "🥜 Dị ứng đậu phộng · ghế",
-  "en": ""
- },
- {
-  "vi": ": cả hàng",
-  "en": ""
- },
- {
-  "vi": "không phát đậu phộng",
   "en": ""
  }
 ]

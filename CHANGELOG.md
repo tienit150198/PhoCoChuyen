@@ -1,4 +1,8 @@
-# v1.9.0 — Chưa phát hành: Phố 2.5D
+# v1.9.0 — 2026-10-06
+
+Có gì mới (chủ game duyệt): đảo 2.5D, Chỉ đường, quầy có nhân viên lãi hơn 50%.
+
+## Phố 2.5D
 
 - 🏝️ Cả game là đảo 2.5D (Phaser): mọi lần mở game đều đứng giữa phố; người chơi mới chọn ngoại hình, đặt tên rồi ra thẳng đảo. Đi tự do mọi hướng bằng cần điều khiển, phím W A S D / mũi tên hoặc chạm đường; chạm cửa tiệm là vào làm, "Ra đảo" để quay lại (đứng ngay trước cửa tiệm vừa làm). Đảo nhớ chỗ bạn đứng trên máy này.
 - 🧭 Chỉ đường: chọn nơi muốn tới (mọi nghề, Nhà, Ngân hàng, Bảng xếp hạng, Phố nghề, Hội chợ, Lịch cưới, Quầy, Nhóm phố, Đi dạo, Hẹn hò, Hôn nhân, câu cá, chèo thuyền, bơi) hoặc gõ tìm; nhân vật tự đi theo đường vẽ sẵn, chạm đất hay di chuyển là dừng, tới nơi là mở luôn. Các nơi không phải tiệm có biển chỉ đường trên đảo.
@@ -7,6 +11,11 @@
 - Bỏ giao diện cũ (cảnh vẽ 2D của từng tiệm, bản đồ phố 2D): tải nhẹ hơn. Phần Phaser (~360 KB gzip) tải song song với khung hình đầu và chạy ngay sau; mạng chập chờn thì tự thử lại, rồi có nút "Thử lại".
 - Hiện người chơi khác trên đảo: `LIVE_TOWN=1` cho dịch vụ live (mặc định tắt).
 - Bản lưu: thêm khóa tùy chọn `journey.leisure` (chỉ có khi đã chơi câu cá / chèo thuyền / bơi); bản lưu cũ vẫn đọc bình thường, bản 1.8 đọc bản lưu mới cũng không lỗi. Không đổi tiền, không thêm bảng.
+## Quầy: nhân viên bán lãi hơn 50%
+
+- 🧑‍🍳 Ở Quầy của bạn, mỗi đơn nhân viên bán giờ được thưởng 110% phần lãi sau chi phí và thuế (trước đây 40%). Cùng giá, cùng hàng, tiền bạn thực nhận mỗi ngày từ quầy có nhân viên tăng khoảng 50% ở cả Xe đẩy, Sạp chợ và Ki-ốt.
+- Đơn bạn tự đứng quầy, đơn online tự đóng gói và đơn khách là người chơi vẫn thưởng 40% như cũ. Quầy đang lỗ (ví dụ Ki-ốt chỉ một nhân viên) không có lãi nên không có thưởng: thuê đủ người hoặc chỉnh giá trước.
+- Chỉ áp dụng cho đơn bán từ lúc cập nhật; tiền đã ghi sổ giữ nguyên. Ghi chú trong thẻ quầy và mục Hướng dẫn “Quầy của bạn” ghi rõ hai mức thưởng.
 
 # v1.8.1 — 2026-10-06
 

@@ -1,5 +1,97 @@
 [
  {
+  "vi": "Xin nguồn cho phiếu còn thiếu",
+  "en": ""
+ },
+ {
+  "vi": "📨 Xin nguồn bổ sung",
+  "en": ""
+ },
+ {
+  "vi": "trùng với một phiếu khác",
+  "en": ""
+ },
+ {
+  "vi": "🔗 Ghép nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Mở cả hai bản gốc trước",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ bản sao cùng nguồn mới loại trùng",
+  "en": ""
+ },
+ {
+  "vi": "Đọc đủ bản gốc trước",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ thiếu nguồn chưa ghép được",
+  "en": ""
+ },
+ {
+  "vi": "Loại bản trùng trước",
+  "en": ""
+ },
+ {
+  "vi": "Sửa theo gốc trước",
+  "en": ""
+ },
+ {
+  "vi": "Khi kiện giao thiếu món",
+  "en": ""
+ },
+ {
+  "vi": "Khi kiện chậm, kẹt hay báo giao mà chưa tới",
+  "en": ""
+ },
+ {
+  "vi": "Khi khách nhận sai mã, sai màu",
+  "en": ""
+ },
+ {
+  "vi": "Khi hồ sơ có yêu cầu hoàn hợp lệ",
+  "en": ""
+ },
+ {
+  "vi": "Khi đơn không lỗi, khách cần cách làm",
+  "en": ""
+ },
+ {
+  "vi": "📂 Mở",
+  "en": ""
+ },
+ {
+  "vi": "Gửi việc cho đầu mối →",
+  "en": ""
+ },
+ {
+  "vi": "Chờ kết quả từ đầu mối",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Kiểm kết quả",
+  "en": ""
+ },
+ {
+  "vi": "✓ Hoàn tất & đóng vụ",
+  "en": ""
+ },
+ {
+  "vi": "Khớp mã đơn khách đưa thì mới được xem hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc đủ các nguồn: một dòng trong đó chỉ cách xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn phương án khớp căn cứ",
+  "en": ""
+ },
+ {
   "vi": "Mới là đề xuất: gửi việc thì đầu mối mới làm.",
   "en": ""
  },
@@ -1705,98 +1797,6 @@
  },
  {
   "vi": "món không đúng đơn",
-  "en": ""
- },
- {
-  "vi": "Thu hộ khi giao",
-  "en": ""
- },
- {
-  "vi": "Đã chuyển khoản",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách đi dịp gì",
-  "en": ""
- },
- {
-  "vi": "Xem đồ cần sửa",
-  "en": ""
- },
- {
-  "vi": "Ra trông phòng thử",
-  "en": ""
- },
- {
-  "vi": "Nghe khách đổi trả",
-  "en": ""
- },
- {
-  "vi": "Nghe chị Vy dặn",
-  "en": ""
- },
- {
-  "vi": "Mở tin nhắn đặt hàng",
-  "en": ""
- },
- {
-  "vi": "🔁 Khách quay lại đổi size",
-  "en": ""
- },
- {
-  "vi": "ℹ️ Giới thiệu nghề",
-  "en": ""
- },
- {
-  "vi": "📋 Việc chăm tiệm",
-  "en": ""
- },
- {
-  "vi": "Việc chăm tiệm",
-  "en": ""
- },
- {
-  "vi": "👚 Giá treo theo size",
-  "en": ""
- },
- {
-  "vi": "Nhập hàng → chọn size đang thiếu, hoặc chọn “Tự chia size” để ưu tiên M, L… Đếm nhận xong mới lên giá.",
-  "en": ""
- },
- {
-  "vi": "Bán vừa size cho khách quen, tiệm sẽ nhớ size của họ ở đây.",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ size khách quen",
-  "en": ""
- },
- {
-  "vi": "🧍‍♀️ Ma-nơ-canh",
-  "en": ""
- },
- {
-  "vi": "đang hút khách",
-  "en": ""
- },
- {
-  "vi": "đã cũ, nên thay",
-  "en": ""
- },
- {
-  "vi": "Thối tiền và giao đồ",
-  "en": ""
- },
- {
-  "vi": "Làm tiếp việc đang dở",
-  "en": ""
- },
- {
-  "vi": "📝 Việc cần làm",
-  "en": ""
- },
- {
-  "vi": "xong hết",
   "en": ""
  }
 ]
