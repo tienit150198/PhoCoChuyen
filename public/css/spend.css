@@ -1,0 +1,82 @@
+/* ==========================================================================
+   ☕ Chỗ tiêu xu (public/js/v4/spend.js): đi quán, spa, Rạp Mây, 🙏 công đức, 🎨 phong cách tuần.
+   Classic look, theme tokens only. Phone first (390px): one column, 44px targets, one main button in a sticky
+   bottom bar. Name colours / frames come from style-tag.js (st-nm, st-fr).
+   ========================================================================== */
+.sheet.sd-sheet{width:min(560px,calc(100vw - 32px))}
+.sd-root{display:flex;flex-direction:column;min-height:100%}
+.sd-head{align-items:center;padding:12px 14px 10px 16px}
+.sd-head h2{font-size:1.2rem;margin:0}
+.sd-logo{display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;background:var(--accent-soft);font-size:1.4rem}
+.sd-wallet{flex:none;font-weight:700;font-size:.9rem;color:var(--ink-2);padding:4px 10px;border-radius:999px;background:var(--surface-2)}
+.sd-tabs{display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
+.sd-tabs button{flex:1 1 0;min-height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);font-size:1.35rem;line-height:1;cursor:pointer}
+.sd-tabs button.on{background:var(--accent-soft);border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
+.sheet.sd-sheet .sd-body{flex:1 1 auto;padding:12px 14px 16px}
+.sd-empty{text-align:center;font-size:1.6rem;color:var(--muted);padding:28px 0}
+.sd-flash{margin:0 0 8px;min-height:0;font-size:.9rem;line-height:1.45;color:var(--ink-2)}
+.sd-flash:empty{display:none}
+.sd-flash.good{padding:8px 10px;border-radius:10px;background:var(--good-soft);color:var(--good)}
+.sd-flash.bad{padding:8px 10px;border-radius:10px;background:var(--bad-soft);color:var(--bad)}
+.sd-card{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:12px;margin:0 0 10px}
+.sd-card h3{margin:0 0 8px;font-size:1.05rem}
+.sd-card h4{margin:0 0 6px;font-size:.95rem}
+.sd-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.sd-chip{min-width:48px;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface-2);font-size:1.15rem;font-weight:700;color:var(--ink);cursor:pointer}
+.sd-chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
+.sd-amounts .sd-chip{font-size:.95rem}
+.sd-num input{width:96px;min-height:44px;border:1px solid var(--field-line);border-radius:999px;padding:0 12px;font:inherit;font-weight:700;background:var(--surface);color:var(--ink)}
+.sd-list{display:grid;gap:6px}
+.sd-item{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:6px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);color:var(--ink);text-align:left;cursor:pointer}
+.sd-item.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.sd-item b{flex:1 1 auto;min-width:0;font-size:.98rem}
+.sd-item em{flex:none;font-style:normal;font-weight:800;color:var(--accent-text)}
+.sd-ico{flex:none;font-size:1.5rem;line-height:1}
+.sd-fx{display:flex;gap:4px;flex-wrap:wrap}
+.sd-fx i{font-style:normal;font-size:.78rem;font-weight:700;padding:1px 6px;border-radius:999px;background:var(--surface);color:var(--ink-2);white-space:nowrap}
+.sd-stamps{display:flex;align-items:center;gap:4px;margin:0 0 10px}
+.sd-stamps i{width:14px;height:14px;border-radius:50%;border:1.5px dashed var(--line-strong)}
+.sd-stamps i.on{border:0;background:var(--accent)}
+.sd-sticker{margin-left:6px;font-size:.85rem;font-weight:700}
+.sd-link{display:block;margin:4px auto 0;min-height:44px;padding:0 14px;border:0;background:none;color:var(--accent-text);font-weight:700;text-decoration:underline;cursor:pointer}
+.sd-film{text-align:center}
+.sd-poster{display:grid;place-items:center;width:120px;height:160px;margin:4px auto 10px;border-radius:14px;font-size:3.6rem;
+  background:var(--inverse);background:linear-gradient(160deg,var(--inverse),color-mix(in srgb,var(--inverse) 70%,var(--accent)));box-shadow:var(--shadow-sm)}
+.sd-film .sd-fx{justify-content:center}
+.sd-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sd-select{flex:1 1 180px}
+.sd-select select{width:100%;min-height:44px;border:1px solid var(--field-line);border-radius:12px;padding:0 10px;font:inherit;background:var(--surface);color:var(--ink)}
+.sd-toggle{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 6px;font-weight:700;cursor:pointer}
+.sd-toggle input{width:20px;height:20px;accent-color:var(--accent)}
+.sd-board{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.sd-board li{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:10px;background:var(--surface-2)}
+.sd-board li.me{outline:2px solid var(--accent)}
+.sd-board li>span{flex:none;width:22px;font-weight:800;color:var(--muted)}
+.sd-board li b{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sd-board li em{font-style:normal;font-weight:800;color:var(--accent-text)}
+.sd-mine{margin:8px 0 0;font-weight:700;color:var(--ink-2)}
+.sd-preview{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px;margin:0 0 10px;border-radius:12px;background:var(--surface-2)}
+.sd-av{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--surface);font-size:1.4rem}
+.sd-pname{font-size:1.1rem;font-weight:800;color:var(--ink)}
+.sd-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
+.sd-title.sd-tiles,.sd-tiles.sd-title{grid-template-columns:repeat(auto-fill,minmax(148px,1fr))}
+.sd-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:72px;padding:8px 6px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);cursor:pointer}
+.sd-tile.on{border-color:var(--accent);background:var(--accent-soft)}
+.sd-tile.worn small{color:var(--good);font-weight:800}
+.sd-tile small{font-weight:700;color:var(--ink-2)}
+.sd-swatch{font-size:1.4rem;font-weight:900}
+.sd-ring{display:block;width:30px;height:30px;border-radius:50%;background:var(--surface-2)}
+.sd-tchip{font-size:.85rem;font-weight:700;text-align:center}
+.sd-bar{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:4px;padding:10px 14px calc(10px + var(--safe-b));border-top:1px solid var(--line);background:var(--surface)}
+.sd-main{width:100%;min-height:48px;font-size:1.02rem}
+.sd-why{text-align:center;color:var(--warn);font-weight:700;font-size:.85rem}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Landscape phones (844x390): a shorter head, the tabs in one line, the bar slim. */
+@media (max-height:480px){
+  .sd-head{padding:6px 12px}
+  .sd-logo{width:32px;height:32px;font-size:1.1rem}
+  .sd-tabs{padding:4px 12px}
+  .sd-tabs button{min-height:40px}
+  .sd-poster{width:84px;height:110px;font-size:2.6rem}
+  .sd-bar{padding:6px 12px calc(6px + var(--safe-b))}
+}

@@ -176,6 +176,11 @@ def snapshot(state: dict) -> dict:
     phone = show_view(state) if isinstance(j, dict) else None
     if phone:   # 📱 the phone in use and a few gadgets (game/gadgets.py): a new key, older clients ignore it
         out['phone'] = phone
+    from .spend import get as spend_block, style_now
+    st = style_now(state) if isinstance(j, dict) else {}
+    if st:   # 🎨 name colour, frame, title worn this week (game/spend.py): a new key, older clients ignore it
+        b = spend_block(state)
+        out['style'] = dict(st, u=min(b['own'][x] for x in st.values()))
     return out, served
 
 

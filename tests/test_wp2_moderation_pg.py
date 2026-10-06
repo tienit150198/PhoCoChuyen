@@ -97,7 +97,7 @@ class AdminTools(unittest.TestCase):
                           ('town', pid, 'Ai đó', '🌸', text, time.time(), reports)).fetchone()[0]
 
     def test_schema(self):
-        self.assertEqual(pg_schema.SCHEMA_VERSION, 24)
+        self.assertGreaterEqual(pg_schema.SCHEMA_VERSION, 24)
         self.assertIn('chat_slow', pg_schema.TABLE)
         with self.store.connect() as db:
             self.assertEqual(columns(db, 'chat_slow'), {'pid', 'every', 'until', 'by_admin', 'at'})

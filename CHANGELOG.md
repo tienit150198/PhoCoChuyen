@@ -10,6 +10,27 @@ Gồm các mục "Chưa phát hành" bên dưới: nông trại mới (farm-plus
 - Từ ca khép tiếp theo: không cộng tiền thuê mỗi ngày, cuối kỳ 7 ca không ra phong bì thuế và mặt bằng, không có thông báo "Kết kỳ thuế". Phần đã tích trong kỳ đang mở cũng không bị thu. Khoản thuế và mặt bằng đã ra (đã trả hay chưa trả), các kỳ đã kết và sổ giao dịch cũ giữ nguyên: không hoàn, không truy thu. Điện nước, lương nhân viên vẫn như cũ.
 - Sổ thu chi của các nghề này ẩn "Phong bì cuối kỳ" (doanh thu kỳ, thuế dự kiến, tiền thuê tích lũy); thẻ Mặt bằng không ghi tiền thuê; tổng kết ngày không còn dòng "thuê … xu".
 - Đo bằng cách chơi cẩn thận 14 ngày ở mặt bằng mặc định: điều dưỡng, công an, cứu hộ, cứu hộ hồ bơi, gác chắn, hải đăng được thêm khoảng 7,6 xu mỗi ngày (6 xu thuê + ~1,6 xu thuế), thợ dầu khí 7,9 xu; mặt bằng lớn hơn thì được thêm 11 hoặc 18 xu thuê mỗi ngày. Không thêm trường mới trong bản lưu; bản 1.9.4 vẫn đọc được bản lưu mới.
+# Chưa phát hành — Phòng hát Mây (karaoke-p1)
+
+## Phòng hát Mây
+
+- 🎤 Chủ game 06/10: ba phòng hát công khai (Nhạc trẻ, Bolero · trữ tình, Nhạc quốc tế), tối đa 30 người mỗi phòng, đầy thì mở phòng phụ cùng chủ đề. Chị Ngân giữ mic. Vào từ Bản đồ phố (Phố hàng rong) hoặc Thêm › Khu phố › Phòng hát. Chỉ hiện khi dịch vụ live bật `LIVE_KARAOKE=1` (mặc định tắt).
+- Mọi người xem cùng một video YouTube ở cùng một giây (trình phát YouTube chính thức, youtube-nocookie, giữ nguyên quảng cáo và logo). Dán link → Kiểm tra (oEmbed, có bộ nhớ đệm) → Xếp hàng: 2 xu, bài đầu mỗi ngày miễn phí. Người xếp bài lên "sân khấu"; cả phòng thả emoji, giữ 🙌 cổ vũ, nhắn, tặng xu (5/10/20/50; ca sĩ nhận 80 %, 20 % đốt; gửi tối đa 200, nhận tối đa 500 xu/ngày). Hết bài: 10 giây vỗ tay. Bỏ phiếu bỏ bài. Chưa có giọng hát trực tiếp, không ghi âm.
+- 🧩 Đoán bài: chủ câu đố cho một câu hát ngắn (≤ 12 chữ, che vài chữ bằng ___) hoặc vài emoji, cả phòng gõ đoán (không dấu, sai chính tả nhẹ vẫn được). Người đầu tiên đúng nhận 5 xu (tối đa 25 xu/ngày mỗi người, 10 câu có thưởng/ngày mỗi chủ đố). Hết 60 giây hoặc có người đúng thì hiện đáp án, link thưởng của chủ đố được phát tiếp.
+- Kiểm duyệt: tên bài, lời nhắn, câu đoán qua bộ lọc chat (từ nặng thành *); báo cáo (🛟 trẻ vị thành niên lên đầu); khóa chat và chặn được tôn trọng; Ban quản lý bỏ bài, mời ra 1 giờ, đóng phòng, cấm bài, khóa chat (trong phòng và tab 🎤 Phòng hát của trang quản trị).
+- Kỹ thuật: CSP chỉ mở thêm khung YouTube, script iframe_api và ảnh i.ytimg.com; Permissions-Policy giữ micro tắt. Khung YouTube tự gửi Referer gốc trang (cả trang vẫn no-referrer; thiếu Referer YouTube báo lỗi 153). CSDL thêm `kara_songs`, `kara_tickets`, `kara_reviews` (SCHEMA_VERSION 26, sau 25 của spend-1). Sổ ví ghi loại `life` (bản 1.9.4 đọc được); loại `karaoke` đã được chấp nhận để bản sau dùng. Không thêm khóa bản lưu.
+
+# Chưa phát hành — Chỗ tiêu xu (spend-1)
+
+## Thêm chỗ tiêu xu
+
+- Chủ game 06/10 ("cho nhiều cái để mọi người tiêu tiền hơn"): người chơi trung bình kiếm ~262 xu/ngày sống, tiêu ~12. Thêm chỗ tiêu hằng ngày và chỗ khoe, không cái nào ra tiền hay giúp làm việc.
+- ☕ Đi quán (4 quán của phố, 8–35 xu): no bụng/tỉnh táo tăng, quán đầu ngày +1 tinh thần (món ≥28 xu +2), thẻ tích điểm 10 dấu đổi nhãn dán. Có lối sang quán người chơi (Phố nghề).
+- 💆 Spa Sen (25–40 xu): +2 tinh thần lần đầu mỗi ngày. 🎬 Rạp Mây: mỗi tuần một phim, 20 xu, +2 tinh thần, giữ cuống vé.
+- 🙏 Công đức Chùa Gió Lành: từ 5 xu, chọn lời cầu, ẩn danh hoặc ghi tên tài khoản. Bảng công đức tuần (khách luôn ẩn danh). Sư thầy cảm ơn mọi người như nhau.
+- 🎨 Phong cách 7 ngày (gia hạn tối đa 4 tuần): màu tên 120–400, khung hồ sơ 100–400, danh hiệu 60–400 (vài cái phải chơi mới mở). Hiện trong chat, khi đi dạo, trên hồ sơ Phố nghề.
+- Cửa trên Bản đồ phố (☕ Phố chợ, 💆🎨 Phố dịch vụ, 🎬 Phố hàng rong, 🙏 cạnh Chùa) và mục "Đi chơi", "Phong cách" trong menu.
+- Bản lưu: thêm `journey.spend` (tùy chọn); sổ ví dùng loại `life` có sẵn, bản 1.9.4 vẫn đọc được. CSDL: bảng mới `donations`, `chat_style` (SCHEMA_VERSION 25). Dịch vụ live đọc màu/khung/danh hiệu từ `chat_style`, gửi kèm trường `st` (ngoài `look`); bản live cũ bỏ qua.
 
 # v1.9.4 — 2026-10-06
 

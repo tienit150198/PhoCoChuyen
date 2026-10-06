@@ -77,6 +77,7 @@ from game import rentals
 from game import bank_xfer  # 💸 Chuyển khoản bạn bè (game/bank_xfer.py)
 from game import wedding_live
 from game import live_chat
+from game import karaoke  # 🎤 Phòng hát (game/karaoke.py; the rooms: live/karaoke.py)
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
@@ -93,8 +94,12 @@ FULL=frozenset()  # json(known=FULL): the whole state, its parts named (game/sta
 try:API_GZIP_LEVEL=max(1,min(9,int(os.environ.get("API_GZIP_LEVEL") or 4)))
 except ValueError:API_GZIP_LEVEL=4
 COOKIE="mnl_session"
-CSP=("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
+# 🎤 Phòng hát (game/karaoke.py): the official YouTube IFrame player only: its iframe (youtube-nocookie.com, and
+# youtube.com that the API may use), the iframe_api loader and its widget script, and the queue's thumbnails. Nothing else.
+CSP=("default-src 'self'; script-src 'self' https://www.youtube.com https://s.ytimg.com; style-src 'self' 'unsafe-inline'; "
+     "img-src 'self' data: blob: https://i.ytimg.com; "
      "connect-src 'self'; font-src 'self'; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; "
+     "frame-src https://www.youtube-nocookie.com https://www.youtube.com; "
      "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'")
 STATIC_TYPES={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",
               ".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".webp":"image/webp",
@@ -106,7 +111,7 @@ env_flag=lambda k,d="0":os.environ.get(k,d).strip().lower() in ("1","true","yes"
 CAS_HASH=re.compile(r"[0-9a-f]{12}")
 STATIC_RECHECK=RECHECK  # seconds a resolved static route is trusted before its file is stat()ed again (STATIC_RECHECK_SECONDS, see game/webassets.py)
 # Budgets that must not multiply with WORKERS: AI spend, sign-in attempts, new saves, feedback.
-SHARED_LIMITS=("ai","acct-","newsession:","fb:","fb-day:","fb-ip:")
+SHARED_LIMITS=("ai","acct-","newsession:","fb:","fb-day:","fb-ip:","kara-song:","kara-oembed")
 
 def live_hint()->dict:
     """Where the page finds the live service (live/: chat, presence), sent in /api/bootstrap as `live.url`.
@@ -654,6 +659,11 @@ class Handler(BaseHTTPRequestHandler):
                 try:board,limit=leaderboard.parse_query({k:v[0] for k,v in parse_qs(split.query).items()})
                 except ValueError as e:self.error(400,str(e),"bad_request");return
                 self.json(200,leaderboard.view(self.server.store,board,limit,token));return
+            if route=="/api/congduc":  # 🙏 Bảng công đức tuần (game/spend.py board): account names or Ẩn danh, cached ~10 s
+                token=self.token()
+                if not self.server.rate_limit("congduc:"+(token or self.client_ip()),60):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                from game import spend
+                self.json(200,spend.board(self.server.store,token));return
             if route=="/api/news":  # the ticker (game/marriage.py): public lines, cached ~10 s; + my alerts
                 if not self.server.rate_limit("news:"+self.client_ip(),120):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.json(200,marriage.news(self.server.store,(parse_qs(split.query).get("since") or ["0"])[0],self.token()));return
@@ -731,6 +741,11 @@ class Handler(BaseHTTPRequestHandler):
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
                 self.require_admin(token)
                 self.json(200,live_chat.view(self.server.store));return
+            if route=="/api/admin/karaoke":  # 🎤 Phòng hát (game/karaoke.py): reports, banned songs; admin only
+                try:token,_,_,_=self.guarded(light=True)
+                except PermissionError as e:self.error(403,str(e),"forbidden");return
+                self.require_admin(token)
+                self.json(200,karaoke.admin_view(self.server.store));return
             if route=="/api/admin/chat/messages":  # 🔎 every chat, 200 a page, search, originals of masked text; admin only
                 try:token,_,_,_=self.guarded(light=True)
                 except PermissionError as e:self.error(403,str(e),"forbidden");return
@@ -792,6 +807,7 @@ class Handler(BaseHTTPRequestHandler):
             self.static(route,split.query)
         except pfb.FeedbackError as e:self.error(e.status,e.message,e.code)
         except live_chat.ChatAdminError as e:self.error(e.status,e.message,e.code)
+        except karaoke.KaraError as e:self.error(e.status,e.message,e.code)
         except social.SocialError as e:self.error(e.status,e.message,e.code)
         except marriage.MarriageError as e:self.error(e.status,e.message,e.code)
         except wedding_live.WeddingError as e:self.error(e.status,e.message,e.code)
@@ -887,6 +903,20 @@ class Handler(BaseHTTPRequestHandler):
                 if not self.server.rate_limit("chat-admin:"+token,120):self.error(429,"Chậm lại một chút nhé.");return
                 self.require_admin(token)
                 self.json(200,live_chat.act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
+            if route=="/api/admin/karaoke":  # 🎤 skip / kick / close / ban / mute / keep; the live service applies room acts at once
+                if not self.server.rate_limit("kara-admin:"+token,120):self.error(429,"Chậm lại một chút nhé.");return
+                self.require_admin(token)
+                self.json(200,karaoke.admin_act(self.server.store,(accounts.status(self.server.store,token) or {}).get("username") or "admin",data));return
+            if route.startswith("/api/karaoke/"):  # 🎤 Phòng hát: check a link (oEmbed, cached), a "lượt hát" ticket, a tip (game/karaoke.py)
+                what=route[len("/api/karaoke/"):]
+                if what=="song":
+                    if not self.server.rate_limit("kara-song:"+token,20,3600):self.error(429,"Kiểm tra nhiều bài quá, nghỉ chút nhé.","rate_limited");return
+                    self.json(200,karaoke.check_song(self.server.store,data.get("url"),lambda:self.server.rate_limit("kara-oembed",60,60)));return
+                if what not in ("queue","tip"):self.error(404,"Không có API này.");return
+                if not self.server.rate_limit("karapay:"+token,20):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                out=(karaoke.queue if what=="queue" else karaoke.tip)(self.server.store,token,data)
+                if out.pop("changed",False):state,revision,_=self.server.store.read(token);out.update(state=public_state(state),revision=revision)
+                self.json(200,out,known=FULL);return
             if route=="/api/admin/gift":  # 🎁 Tặng xu: queue a gift for one account (game/system_gift.py), paid at its next load; never touches a save
                 if not self.server.rate_limit("admin-gift:"+token,30):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 self.require_admin(token)
@@ -894,7 +924,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
                 rentals.prepare_delete(self.server.store,token)
-                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return
@@ -958,6 +988,7 @@ class Handler(BaseHTTPRequestHandler):
         except marriage.MarriageError as e:self.error(e.status,e.message,e.code)
         except wedding_live.WeddingError as e:self.error(e.status,e.message,e.code)
         except live_chat.ChatAdminError as e:self.error(e.status,e.message,e.code)
+        except karaoke.KaraError as e:self.error(e.status,e.message,e.code)
         except accounts.AccountError as e:self.error(e.status,e.message,e.code)
         except system_gift.GiftError as e:self.error(e.status,e.message,e.code)  # 🎁 /api/admin/gift: before ValueError (its base)
         except GameError as e:self.error(401 if e.code=="session_missing" else 400,e.message,e.code)
