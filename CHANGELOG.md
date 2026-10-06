@@ -4,6 +4,20 @@
 - Tiệm hoa: nút 🏷️ Bảng giá ở bàn làm việc, ở thanh nghề và một dòng giữa hai đơn: giá từng loại hoa đổi trước khi mở ca, tính vào giá trị bó; khách vẫn trả đúng giá đơn đã báo.
 - Chỉ đổi giao diện (CSS/JS): không đổi bản lưu, tiền hay máy chủ. Không có "Có gì mới".
 
+# Chưa phát hành — Thu nhập mỗi giờ, mỗi ngày (WP-D)
+
+- 💰 Sổ tiệm → Đội (#19): khung "Lãi ước tính của đội" ghi lãi mỗi giờ (và số đơn/giờ) và mỗi ngày 24 giờ nếu đủ hàng, đủ quỹ, đã gồm thưởng 40%; kèm số đơn quỹ nghề còn trả được. Tính từ nhịp đơn (`rate_per_hour`) và lãi đơn tiếp theo máy chủ đã có.
+- 🏪 Quầy của bạn: thẻ quầy có nhân viên ghi "Lãi 1 giờ" theo chợ lúc này và "Lãi 1 ngày (24 giờ)", đã trừ hàng, lương, điện, thuế và cộng thưởng nhân viên bán, cùng hàng còn đủ bán bao lâu. Máy chủ tính từ đúng nhịp khách, lịch chợ, giá và chi phí mà sổ quầy dùng (một ngày mô phỏng lệch dưới 1%).
+- 🎪 Hội chợ (#18, chỉ con số): dải trên cùng thêm "📊 Trò lời +X · trò lỗ −Y" hôm nay, cộng theo từng trò. Không đổi tỷ lệ, không đổi Ông Hai.
+- Chỉ hiển thị: không đổi kinh tế, không thêm khóa lưu.
+
+# Chưa phát hành — Thăng tiến rõ ràng, cấp hàm Phó Tổng Giám đốc (WP-C)
+
+- 🏢 "Ngày điều hành tốt" (F#206): Thăng tiến ghi tiến độ "Ngày điều hành tốt: 2/5" kèm thanh và điều kiện (tự xếp ít nhất 1 việc ở 🗓️ Điều phối, cuối ngày điểm điều hành từ 60/100). Phòng điều hành có mục 🎯 "Hôm nay tính ngày tốt?" (đã tự xếp chưa, còn việc cần quyết, ô trống, quỹ lương). Tổng kết ngày ghi điểm và cách tính ("📊 Điểm điều hành 72/100 (đúng giờ 40 + tinh thần 22 + 20 − phàn nàn 12) → ✓ tính 1 ngày điều hành tốt", hoặc lý do chưa tính) và tiến độ n/5. Nhật ký phòng ghi điểm từng ngày. "Xem thêm" giải thích công thức. Thẻ cấp hàm phi công ghi thêm n/5.
+- 🎖️ Phỏng vấn lên chức hụt không còn im lặng (#11): báo câu nào bị chấm 0 điểm và bạn đã chọn gì, hoặc "Xin cao" khi chưa có hai câu tốt nhất; ghi rõ hẹn xét lại sau 3 ngày làm. Thăng tiến hiện thẻ "📋 Lần xét vừa rồi" (từng câu: ✅ tốt nhất / 🟡 tạm được / ❌ chưa ưng) và cách đếm ngày tới lần xét sau. Nút "?" ở câu hỏi và phần xin lương nói rõ luật.
+- ✈️ Cấp hàm Phó Tổng Giám đốc (F#207, chủ game duyệt): một ngôi sao lớn trên cánh chim vàng, kiểu hàng không, thay cho 4 gạch + 3 sao + cành tùng. Nhãn: "1 sao lớn · cánh chim vàng".
+- Không thêm khóa lưu, không đổi tiền. Máy chủ gửi thêm vài trường chỉ để hiển thị (`review` khi hoãn xét, `office.score/good`, `me`, `good_score`, `got/need` ở yêu cầu phòng điều hành, cờ `big/wing` của cấp hàm); bản 1.9.1 bỏ qua chúng.
+
 # v1.9.2 — 2026-10-06: giao diện cũ trở lại
 
 - 🎨 Theo chủ game: giao diện cổ điển (bản đồ phố 2D, cảnh từng tiệm, như 1.8.1) là giao diện mặc định. Máy chủ giữ nguyên 1.9.1 (quầy có nhân viên +50%, sửa tip kế toán ngày 1, dữ liệu Thư giãn trên đảo vẫn được giữ). Đảo 2.5D sẽ quay lại dưới dạng tuỳ chọn ở bản sau.

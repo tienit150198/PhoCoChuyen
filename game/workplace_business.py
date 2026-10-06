@@ -414,6 +414,7 @@ def public(c,now=None):
                rate_per_hour=round(sum(3600/p['seconds'] for p in b['pending'].values()),1),
                wage_basis='Mỗi đơn trả 1/4 lương ca, làm tròn lên; vật tư trừ quỹ nơi làm việc.',fund=c['money'])
     _explain(c,b,out)
+    out['income']=_income(out)
     if staff_working(c):
         out.update(status='running',reason='working',reason_text='Nhân viên đang phục vụ khách người chơi.',visitor_working=True)
         times=[r['due_at'] for r in c.get('player_service_jobs',[]) if r['status']=='queued' and r['due_at'] is not None]
@@ -431,6 +432,17 @@ def _item_names(career):
         return {k:l['name']+' · '+k for k,l in LOT_INDEX.items()}
     from . import inventory as inv
     return {x['id']:x['name'] for x in inv.catalogue(career)}
+
+
+def _income(out):
+    """Read-only (#19): the team's income at its current pace, from rate_per_hour (orders an hour) and the next
+    order's typical margin plus the PROFIT_PERCENT bonus on a positive margin. `day` is 24 h if stock and fund last."""
+    n=out.get('next_order');rate=out.get('rate_per_hour') or 0
+    if not n or rate<=0 or out.get('reason')!='working':return None
+    per=n['margin']+(n['margin']*PROFIT_PERCENT/100 if n['margin']>0 else 0)
+    cash=n['wage']+n['materials']
+    return dict(orders_hour=rate,hour=round(rate*per),day=round(rate*per*24),revenue_hour=round(rate*n['revenue']*96/100),
+                fund_orders=out['fund']//cash if cash>0 else None)
 
 
 def _explain(c,b,out):

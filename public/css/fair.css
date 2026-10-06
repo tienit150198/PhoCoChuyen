@@ -730,3 +730,5 @@ html[data-theme="dem"] .fh-pb-code-chip b{background:#3a2a4f;color:#ffe9a8;borde
 .rd-co button:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
 @media (max-width:480px){.rd-co{right:6px;font-size:.78rem}}
 .fh-wstage .rd-co{top:auto;bottom:8px;right:8px}   /* the fair: under the stalls, never over their signs */
+/* #18 (1.9.2): today's win/loss by trò */
+.fh-wl{font-size:.82rem}.fh-strip .fh-wl b.up{color:var(--good,var(--ink))}.fh-strip .fh-wl b.down{color:var(--bad,var(--ink))}

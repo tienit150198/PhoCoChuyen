@@ -293,8 +293,19 @@ def _gates(s: dict, c: dict, career: str, rec: dict) -> list[dict]:
     if st.get('office'):
         off = rec.get('office')
         got = off['kpi']['good'] if isinstance(off, dict) else 0
-        rows.append(dict(id='office', met=got >= st['office'], label=f'🏢 {st["office"]} ngày điều hành tốt ({got} rồi)'))
+        rows.append(dict(id='office', met=got >= st['office'], got=min(got, st['office']), need=st['office'],
+                         label=f'🏢 Ngày điều hành tốt: {min(got, st["office"])}/{st["office"]}'))
     return rows
+
+
+def office_progress(career: str, rec: dict) -> tuple[int, int] | None:
+    """(good office days, needed) for the next step when it asks for office days (F#206), else None."""
+    n = _rank(rec) + 1
+    if track(career) != 'emp' or n > top(career) or not EMP_STEPS[n].get('office'):
+        return None
+    off = rec.get('office')
+    got = off['kpi']['good'] if isinstance(off, dict) else 0
+    return min(got, EMP_STEPS[n]['office']), EMP_STEPS[n]['office']
 
 
 def gate(s: dict, c: dict, career: str, rec: dict) -> str | None:
@@ -597,10 +608,27 @@ def _promote(s: dict, c: dict, career: str, rec: dict, extra: int) -> dict:
     return dict(message=line, celebrate=True, promoted=dict(to=now, title=name, pct=pct))
 
 
-def _later(rec: dict, line: str) -> dict:
+def _later(rec: dict, line: str, rows: list | None = None, why: str = 'zero') -> dict:
+    """A review that did not pass: say why (the answer the boss did not like, or the ask too high) and when it comes
+    again, so the player is never left guessing (Yuika 06/10). `review` is for the sheet; nothing new is saved."""
     _set_due(rec, None)
     rec['wait'] = RETRY
-    return dict(message=line, later=True)
+    line += f' Hẹn xét lại sau {RETRY} ngày làm nữa.'
+    return dict(message=line, later=True, review=dict(why=why, wait=RETRY, rows=rows or []))
+
+
+SCORE_WORD = {2: 'tốt nhất', 1: 'tạm được', 0: 'chưa ưng'}
+
+
+def _rows(due: dict) -> list[dict]:
+    """The review's answers with their score (shown only after it is over)."""
+    out = []
+    for qid in due['qs']:
+        q = PC.QUESTION_INDEX[qid]
+        o = next((x for x in q['options'] if x['id'] == due['ans'].get(qid)), None)
+        if o is not None:
+            out.append(dict(q=q['text'], a=o['label'], score=o['score'], word=SCORE_WORD[o['score']]))
+    return out
 
 
 def _review(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
@@ -622,7 +650,10 @@ def _review(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         scores = [_score(x, due['ans'][x]) for x in due['qs']]
         if min(scores) == 0:
             who = 'Sếp' if emp else 'Hội buôn phố'
-            return _later(rec, f'{who}: “Mình cần thêm thời gian. Hẹn bạn sau {RETRY} ngày làm nữa nhé.”')
+            rows = _rows(due)
+            bad = next(r for r in rows if r['score'] == 0)
+            return _later(rec, f'Chưa lên bậc lần này. {who} chưa ưng câu “{bad["q"]}”: bạn chọn “{bad["a"]}” (0 điểm). '
+                               f'Lần sau chọn cách đúng quy trình, có trách nhiệm nhất nhé.', rows)
         if not emp:
             return _promote(s, c, career, rec, 0)
         return dict(message='Giờ tới phần lương.', score=opt['score'], ask=True)
@@ -633,7 +664,10 @@ def _review(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
         need(ask, 'Mức xin lương không hợp lệ.')
         best = all(_score(x, due['ans'][x]) == 2 for x in due['qs'])
         if ask['id'] == 'high' and not best:
-            return _later(rec, f'Sếp: “Mức này để quý sau nhé.” Hẹn xét lại sau {RETRY} ngày làm.')
+            rows = _rows(due)
+            meh = next((r for r in rows if r['score'] < 2), rows[0])
+            return _later(rec, f'Chưa lên bậc lần này. Sếp: “Mức này để quý sau nhé.” “Xin cao” chỉ được khi cả hai câu đều '
+                               f'tốt nhất; câu “{meh["q"]}” mới tạm được. Lần sau chọn “Xin hợp lý” cho chắc.', rows, 'high')
         return _promote(s, c, career, rec, ask['extra'] if best else 0)
     raise e.GameError('Thao tác xét lên chức không hợp lệ.')
 
@@ -741,7 +775,12 @@ def on_close(s: dict, c: dict, career: str, summary: dict) -> dict | None:
     rec['shift'] = None
     office = _office_close(s, c, career)
     if office:
-        out['office'] = dict(lines=office['lines'], bonus=office['bonus'], ontime=office['ontime'], compl=office['compl'])
+        out['office'] = dict(lines=office['lines'], bonus=office['bonus'], ontime=office['ontime'], compl=office['compl'],
+                             score=office['score'], good=office['good'])
+        prog = office_progress(career, rec)
+        if prog:
+            out['office']['lines'] = (office['lines'][:2] + [f'🏢 Ngày điều hành tốt: {prog[0]}/{prog[1]} → {title(s, c, career, _rank(rec) + 1)}']
+                                      + office['lines'][2:])
     worked = c['day_completed'] >= 1 or bool(mgr and mgr['done'] >= 1)
     if not worked:
         return out or None

@@ -37,6 +37,19 @@ class WorkplaceBusinessTests(unittest.TestCase):
         self.assertEqual(s,other)
         before=copy.deepcopy(other);wb.settle(other,now+step*9);self.assertEqual(before,other)
 
+    def test_public_income_an_hour_and_a_day_is_read_only(self):
+        """#19: the Sổ tiệm card shows the team's profit an hour / a day; reading it moves nothing."""
+        s,c,e=self.sample();now=self.next(c)
+        snap=copy.deepcopy(s)
+        v=wb.public(c,now);self.assertEqual(s,snap)
+        i,n=v['income'],v['next_order']
+        per=n['margin']+(n['margin']*wb.PROFIT_PERCENT/100 if n['margin']>0 else 0)
+        self.assertEqual(i['orders_hour'],v['rate_per_hour'])
+        self.assertEqual((i['hour'],i['day']),(round(v['rate_per_hour']*per),round(v['rate_per_hour']*per*24)))
+        self.assertGreaterEqual(i['fund_orders'],0)
+        c['ops']['staff'][0]['on_shift']=False;wb.settle(s,now)
+        self.assertIsNone(wb.public(c,now)['income'])
+
     def test_legacy_anchor_and_poll_idempotence(self):
         s,c,e=self.sample()
         b=c['ops']['business'];self.assertEqual(b['served'],0)
