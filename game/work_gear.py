@@ -18,7 +18,7 @@ NAMES = {
  'pho':'Bếp giữ nhiệt và bộ trụng phở', 'com':'Nồi cơm và bếp nướng cải tiến',
  'photobooth':'Bộ đèn và linh kiện máy ảnh', 'giupviec':'Máy hút bụi và bộ lau nhà',
  'naucom':'Bộ nồi và bếp gia đình', 'babysitter':'Bộ chuẩn bị bữa và đồ chăm bé', 'library':'Máy quét mã vạch và máy hút ẩm kho',
- 'pilot':'Bộ thiết bị hỗ trợ mặt đất', 'flight_attendant':'Xe phục vụ và bộ chia suất',
+ 'pilot':'Bộ thiết bị hỗ trợ mặt đất', 'flight_attendant':'Xe phục vụ và bộ chia suất', 'oil':'Bộ khóa cô lập và máy đo khí',
  'hr_admin':'Máy quét và bộ xử lý hồ sơ', 'secretary':'Bộ máy trạm và thiết bị văn phòng',
  'it_helpdesk':'Bộ chẩn đoán và linh kiện dự phòng',
 }

@@ -1543,6 +1543,45 @@ ARCS = {
                 ('chin', 'Lần sau bà bay, bà vẫn tìm cô tiếp viên này.'),
                 ('me', 'Em sẽ giữ khoang khách như chị giữ: nhỏ nhẹ mà chắc chắn.')]),
         ]),
+    # ------------------------------------------------------------ 🛢️ Giàn Hải Âu, mỏ Sao Biển
+    'oil': dict(
+        title='Ổ khóa đỏ giữa biển', emoji='🛢️',
+        keepsake=dict(emoji='🔒', name='Ổ khóa đỏ khắc tên bạn', desc='Ổ khóa đầu tiên chị Hạnh phát cho bạn trên giàn Hải Âu. Chỉ một chìa, chìa luôn nằm trong túi áo bạn.'),
+        cast={'hanh': _p('Chị Hạnh', '🦺', 'Cán bộ an toàn của giàn', 'oil_npc_01'),
+              'toan': _p('Chú Toàn', '👷', 'Trưởng ca vận hành', 'oil_npc_02'),
+              'sau': _p('Cô Sáu', '🍲', 'Bếp trưởng nhà ăn giàn', 'oil_npc_03'),
+              'ma': _p('Má', '👵', 'Má ở quê', 'oil_npc_05'),
+              'gau': _p('Tuấn “Gấu”', '😴', 'Bạn cùng phòng', 'oil_npc_06')},
+        beats=[
+            _b('Ổ khóa mang tên mình', '🔒', 'Ngày đầu trên giàn, chị Hạnh gọi bạn lên phòng an toàn.', [
+                ('hanh', 'Ổ khóa này khắc tên em. Một ổ, một chìa, chìa nằm trong túi em.'),
+                ('hanh', 'Em làm ở đâu thì ổ khóa của em ở đó. Không ai được mở thay.'),
+                ('me', 'Dạ. Em sẽ không bao giờ cho ai mượn chìa.')]),
+            _b('Tiếng máy nén lúc nửa đêm', '🌀', 'Chú Toàn rủ bạn đi một vòng khu máy nén sau giờ cơm tối.', [
+                ('toan', 'Nghe kỹ coi. Máy khỏe thì kêu đều, như người ngủ ngon.'),
+                ('me', 'Còn cái tiếng lục cục bên trái là sao chú?'),
+                ('toan', 'Đó. Con nghe ra rồi đó. Mai mình mở phiếu kiểm tra.')],
+               _c('Báo cái tiếng lạ thế nào?',
+                  _o('a', 'Ghi vào sổ ca, báo phòng điều khiển ngay tối nay', [('toan', 'Thấy lạ là báo liền. Lỡ là chuyện nhỏ thì mình mừng.')], rel='toan'),
+                  _o('b', 'Hỏi chú Toàn cách mở phiếu kiểm tra, tự viết luôn', [('toan', 'Ừ, viết đi, chú ký. Người mới mà viết phiếu kỹ ghê.')], rel='toan'))),
+            _b('Hộp mắm của Má', '🫙', 'Tàu dịch vụ mang lên giàn một hộp quấn ba lớp băng keo, đề tên bạn.', [
+                ('sau', 'Hộp gì mà Má con quấn kỹ dữ vậy?'),
+                ('me', 'Mắm ruốc xào sả cô ơi. Má sợ nó đổ.'),
+                ('gau', 'Ê chia tao với, cả tháng nay ăn cơm giàn nhạt miệng quá.'),
+                ('ma', 'Con chia cho bạn bè ăn với nghe. Ở xa nhà, có bạn là quý.')],
+               _c('Chia hộp mắm thế nào?',
+                  _o('a', 'Nhờ cô Sáu xào thêm với sả, mời cả bàn ăn chung', [('sau', 'Bữa nay cả giàn ăn hết sạch nồi cơm.')], rel='sau'),
+                  _o('b', 'Chia Gấu một nửa, gọi video cho Má coi', [('ma', 'Má thấy con với bạn ăn ngon là má vui.')], rel='ma'))),
+            _b('Đêm bão', '🌀', 'Áp thấp mạnh lên thành bão, trực thăng không bay. Đợt đi biển dài thêm.', [
+                ('toan', 'Bão rồi. Mình ở lại thêm, giàn này chịu được, con đừng lo.'),
+                ('ma', 'Con ơi, tivi nói bão to lắm…'),
+                ('me', 'Con ở trong khu ở, đèn sáng, cơm nóng. Má ngủ ngon nghe.'),
+                ('gau', 'Tao không ngáy nữa đâu, tao thức canh bão với mày.')]),
+            _b('Chìa khóa thứ hai', '🗝️', 'Cuối đợt, chú Toàn đưa bạn một tấm thẻ trưởng nhóm.', [
+                ('toan', 'Từ đợt sau con kèm hai đứa mới. Dạy tụi nó khóa, xả, kiểm về không, đo khí.'),
+                ('hanh', 'Và dạy tụi nó dám dừng việc. Cái đó khó dạy nhất.'),
+                ('me', 'Em sẽ dạy như chị dạy em: không chắc thì dừng, dừng không ai trách.')]),
+        ]),
     # ------------------------------------------------------------ Công ty CP Cánh Diều (chương 5)
     'hr_admin': dict(
         title='Người giữ hồ sơ', emoji='🗂️',

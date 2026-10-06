@@ -78,7 +78,7 @@ CH_UNLOCKS = {
     1: ('milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist', 'mother_baby', 'restaurant'),
     2: ('pet_care', 'salon', 'repair', 'farm', 'homestay', 'homemaker', 'nail', 'pagoda', 'photobooth', 'giupviec', 'naucom', 'babysitter'),
     3: ('clothing', 'pet_shop', 'tra_da', 'fruit', 'garbage', 'drain', 'ice_cream', 'pho', 'com'),
-    4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting', 'pilot', 'flight_attendant', 'library'),
+    4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting', 'pilot', 'flight_attendant', 'library', 'oil'),
     5: ('corp_accounting', 'tax_payroll', 'hr_admin', 'secretary', 'it_helpdesk'),
     6: ('group_accounting',),
 }
@@ -201,6 +201,7 @@ SKILL_WEIGHTS = {
     'hr_admin': dict(communication=2, careful=1, teamwork=1),
     'secretary': dict(communication=2, careful=1, calm=1),
     'it_helpdesk': dict(tech=2, calm=1, careful=1),
+    'oil': dict(careful=2, calm=1, teamwork=1),
 }
 SKILL_STEPS = (0, 6, 18, 40, 75, 120, 180)
 
@@ -253,6 +254,7 @@ TITLES = [
     _t('c_hr_admin', 'career', '🗂️', 'Người giữ hồ sơ nhân sự', 'Đạt cấp 3 ở phòng nhân sự Cánh Diều.', lambda x: x['lv'].get('hr_admin', 1) >= 3),
     _t('c_secretary', 'career', '📅', 'Thư ký chu đáo', 'Đạt cấp 3 ở bàn thư ký giám đốc Cánh Diều.', lambda x: x['lv'].get('secretary', 1) >= 3),
     _t('c_it_helpdesk', 'career', '🖥️', 'Cứu tinh máy tính', 'Đạt cấp 3 ở bàn IT Cánh Diều.', lambda x: x['lv'].get('it_helpdesk', 1) >= 3),
+    _t('c_oil', 'career', '🛢️', 'Người giữ ổ khóa đỏ', 'Đạt cấp 3 trên giàn Hải Âu.', lambda x: x['lv'].get('oil', 1) >= 3),
     # Skills at level 3.
     _t('k_careful', 'skill', '🔍', 'Mắt tinh', 'Kỹ năng cẩn thận, tỉ mỉ đạt mức 3.', lambda x: x['sk'].get('careful', 0) >= 3),
     _t('k_communication', 'skill', '💬', 'Nói dễ hiểu', 'Kỹ năng giao tiếp đạt mức 3.', lambda x: x['sk'].get('communication', 0) >= 3),

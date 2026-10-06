@@ -59,6 +59,7 @@ HOURS = {
     'naucom': (6 * 60 + 30, 19 * 60),   # the market at dawn, the family's dinner on the table before going home
     'babysitter': (7 * 60 + 30, 18 * 60),   # the child is dropped off at 7:30 and picked up at 18:00
     'library': (7 * 60 + 30, 17 * 60 + 30),  # the ward library: 7:30 to 17:30
+    'oil': (6 * 60, 18 * 60),          # a 12-hour shift on the rig, 06:00 to 18:00
 }
 EARLY = 30  # goods due after closing wait at the door this many minutes before the next opening
 # How much later than its window a late delivery comes (minutes), by supplier kind; a

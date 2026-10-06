@@ -24,6 +24,7 @@ EMP_TITLES = {
     'pilot': ('Cơ phó cao cấp', 'Cơ trưởng', 'Cơ trưởng Huấn luyện', 'Trưởng đội bay',
               'Phó Giám đốc Khối khai thác bay', 'Giám đốc Khối khai thác bay', 'Phó Tổng Giám đốc'),
     'flight_attendant': ('TV hạng thương gia', 'Tiếp viên phó', 'Tiếp viên trưởng', 'Trưởng ban tiếp viên'),
+    'oil': ('Kỹ thuật viên bậc 2', 'Trưởng nhóm vận hành', 'Trưởng ca giàn', 'Quản đốc giàn'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
@@ -69,6 +70,7 @@ GROUP = {
     'office': ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk',
                'accounting', 'customer_care'),
     'air': ('pilot', 'flight_attendant'),
+    'rig': ('oil',),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
                 'mother_baby'),
@@ -113,6 +115,14 @@ QUESTIONS = {
         _q('a6', 'Nghe tin đồn về một đồng nghiệp.', ('Không lan truyền, hỏi thẳng nếu cần', 2), ('Kể cho cả tổ', 0), ('Im lặng nhưng tránh mặt', 1)),
     ],
 }
+QUESTIONS['rig'] = [
+    _q('r1', 'Giám sát giục bỏ bước đo khí cho kịp tàu dịch vụ.', ('Dừng việc, đo khí rồi mới làm, báo giờ xong', 2), ('Đo nhanh một điểm cho có', 1), ('Làm theo cho kịp tàu', 0)),
+    _q('r2', 'Thợ nhà thầu đưa checklist giàn giáo đã ký sẵn.', ('Đi kiểm từng mục cùng họ rồi mới ký', 2), ('Kiểm vài mục chính', 1), ('Ký luôn cho nhanh', 0)),
+    _q('r3', 'Bạn suýt làm rơi cờ lê từ sàn trên, không ai thấy.', ('Tự báo suýt sự cố, đề xuất dây cột dụng cụ', 2), ('Xin lỗi người dưới, hứa cẩn thận', 1), ('Im lặng cho qua', 0)),
+    _q('r4', 'Đồng hồ không về 0 sau khi xả áp.', ('Dừng, báo trưởng ca, cô lập thêm một lớp', 2), ('Chờ thêm mười phút', 1), ('Nới bích từ từ cho xì hết', 0)),
+    _q('r5', 'Người ca sau sắp lên, còn vài việc dở.', ('Ghi đủ mọi việc dở, kể cả lỗi của mình', 2), ('Chỉ ghi việc lớn', 1), ('Dặn miệng cho nhanh', 0)),
+    _q('r6', 'Lính mới say sóng, nhờ bạn làm thay rồi giấu trưởng ca.', ('Đưa bạn ấy xuống y tế, báo trưởng ca xếp lại việc', 2), ('Làm thay lần này thôi', 1), ('Bảo cố mà làm', 0)),
+]
 # Steps above 4 (the executive steps): the board's own questions.
 EXEC_GROUP = {'pilot': 'exec_air', 'teacher': 'exec_school'}
 QUESTIONS['exec_air'] = [

@@ -24,6 +24,7 @@ export const KIND_OF={
   babysitter:'nursery',
   library:'library',
   pilot:'airfield',flight_attendant:'airfield',
+  oil:'rig',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
 
@@ -77,6 +78,14 @@ const KIND_WORDS={
     people_sub:'Những người bạn gặp quanh gốc bàng.',feed_sub:'Lời nhắn và đánh giá quanh quán trà.'},
   lane:{cat_line:'Mrrr… ngoài phố nhiều chuyện hay ghê.',board:'Chuyện phố',security:'Trật tự khu phố',property:'Góc phố',
     open_sign:'ĐANG LÀM',closed_sign:'NGHỈ TAY',idle_line:'Việc mới sắp tới.',free_eyebrow:'Đang rảnh tay',free_title:'Hết việc rồi!'},
+  rig:{cat_line:'Mrrr… Mướp ở nhà chờ bạn về bờ, nhớ mua cá khô nha.',till:'Quỹ lương',door_open:'Tan ca',door_closed:'Vào ca',
+    open_sign:'ĐANG VÀO CA',closed_sign:'HẾT CA',shelf:'Bảng thời tiết',evidence:'Đồng hồ & máy đo khí',counter:'Bàn cấp giấy phép',warehouse:'Tủ khóa & thẻ',
+    finance:'Sổ lương',property:'Giàn Hải Âu',security:'An ninh giàn',board:'Chuyện trên giàn',pet:'Gọi video với Mướp',ledger:'BẢNG POB',store:'KHO GIÀN',
+    idle_line:'Việc tiếp theo sắp tới.',open_hint:'Vào ca: họp an toàn, rồi làm từng việc nhé.',free_eyebrow:'Đang nghỉ giữa ca',free_title:'Hết việc rồi!',
+    free_more:'Nhận thêm một việc hoặc tan ca hôm nay.',more_btn:'Nhận thêm một việc',none_waiting:'Chưa có việc nào đang chờ',next_btn:'Việc tiếp theo',
+    people_sub:'Những người bạn gặp trên giàn và ở nhà.',feed_sub:'Lời nhắn và nhận xét quanh giàn.',
+    confirm_title:'Xác nhận trước khi làm',rail_in:'Trên giàn',more_aria:'Thêm: sổ lương, khu phố',queue_btn:'Việc trong ca',books:'Sổ lương',
+    end_title:'Tan ca hôm nay?',end_text:'Lương ngày vào quỹ lương. Việc chưa xong được giữ lại cho mai.'},
   airfield:{cat_line:'Mrrr… Mướp nằm trên nóc xe hành lý, ngắm máy bay cất cánh.',till:'Quỹ lương',door_open:'Tan ca bay',door_closed:'Vào ca bay',
     open_sign:'ĐANG BAY',closed_sign:'HẸN CHUYẾN SAU',shelf:'Bảng thời tiết',evidence:'Bản tin & phiếu dầu',counter:'Quầy điều phái',warehouse:'Xe dầu',
     finance:'Sổ lương',property:'Sân đỗ Cánh Cò',security:'An ninh sân bay',ledger:'SỔ GIỜ BAY',store:'SÂN ĐỖ',

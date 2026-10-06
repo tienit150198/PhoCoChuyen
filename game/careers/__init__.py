@@ -27,6 +27,7 @@ ORDER = (
     'babysitter',                  # bảo mẫu: a day minding one family's child for cô Tâm's sitting service
     'library',                     # thư viện – lưu trữ: cô Nguyệt's ward library and the ward's records store
     'pilot', 'flight_attendant',
+    'oil',                         # thợ dầu khí: an offshore technician on giàn Hải Âu, 14-day hitches by helicopter
     'hr_admin', 'secretary', 'it_helpdesk',   # Công ty CP Cánh Diều: HR, the director's secretary, IT helpdesk
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.

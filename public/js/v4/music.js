@@ -21,6 +21,7 @@ const BY_CAREER={
   delivery:'urban',repair:'urban',
   accounting:'puzzle',corp_accounting:'puzzle',tax_payroll:'puzzle',group_accounting:'puzzle',
   hr_admin:'puzzle',secretary:'puzzle',it_helpdesk:'puzzle',
+  oil:'urban',
 };
 const MOOD={calm:'lullaby',bright:'urban'};
 const FADE=1.5;

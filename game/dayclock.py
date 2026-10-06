@@ -65,6 +65,7 @@ NOTES = {
     'naucom': 'Ra chợ từ sáng, 8 giờ cá tôm tươi nhất; cơm phải lên mâm trước giờ cả nhà về ăn.',
     'babysitter': 'Bố mẹ gửi bé lúc 7:30, đón lúc 18:00; giữa trưa là giờ ngủ của bé.',
     'library': 'Thư viện mở 7:30, đóng 17:30; sáng sớm ông Thạc đã chờ cửa, chiều học sinh tan trường ghé đông.',
+    'oil': 'Ca 12 tiếng trên giàn: 6:00 họp an toàn đầu ca, 18:00 giao ca. Ngày bay ra giàn và ngày về bờ theo đợt 14 ngày.',
     'homestay': 'Quầy lễ tân trực tới 22:00; khách tới muộn gọi chuông, sáng mai bàn giao.',
     'milk_tea': 'Ngày đông khách có thể bán quá giờ, muộn nhất 23:00.',
     'corp_accounting': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',

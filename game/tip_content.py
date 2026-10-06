@@ -58,6 +58,8 @@ NORMS = {
     # ✈️ Hãng bay Cánh Cò: nobody tips the crew; a thank-you now and then
     'pilot': dict(rate=.06, cash=0, lo=0, hi=0, bill=12),
     'flight_attendant': dict(rate=.07, cash=0, lo=0, hi=0, bill=8),
+    # 🛢️ giàn Hải Âu: nobody tips a technician; a thank-you from the crew or the family
+    'oil': dict(rate=.05, cash=0, lo=0, hi=0, bill=12),
 }
 DEFAULT_NORM = dict(rate=.15, cash=.70, lo=2, hi=10, bill=40)
 OFFICE = ('corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
@@ -228,6 +230,7 @@ CAREER_LINES = {
     'it_helpdesk': ('Máy chạy lại rồi, cứu một bàn thua trông thấy.', 'Giảng dễ hiểu, lần sau tự làm được.'),
     'pilot': ('Hạ cánh êm ru, cả khoang vỗ tay.', 'Thông báo rõ ràng, nghe là yên tâm.'),
     'flight_attendant': ('Tiếp viên chu đáo quá, cảm ơn nhiều.', 'Chuyến bay dễ chịu ghê.'),
+    'oil': ('Khóa đủ, đo khí đủ, cả ca yên tâm.', 'Dừng việc đúng lúc, cảm ơn em.'),
 }
 
 # Thank-you gifts that carry no money: (emoji, what).
@@ -275,6 +278,7 @@ GIFTS = {
     'it_helpdesk': (('☕', 'ly cà phê sữa đá'), ('🍪', 'hộp bánh quy'), ('💌', 'mẩu giấy “cảm ơn anh IT” dán trên màn hình')),
     'pilot': (('✏️', 'bức vẽ chiếc máy bay của một em nhỏ'), ('🥭', 'mấy trái xoài cát'), ('💌', 'tấm thiệp gửi tổ bay')),
     'flight_attendant': (('💌', 'mẩu giấy cảm ơn kẹp trong túi ghế'), ('🍬', 'gói kẹo dừa Bến Tre'), ('🥭', 'trái xoài chín')),
+    'oil': (('🍮', 'hũ bánh flan cô Sáu để phần'), ('🫙', 'hộp mắm ruốc Má gửi lên giàn'), ('💌', 'tấm thiệp cả ca ký tên')),
 }
 DEFAULT_GIFTS = (('💌', 'tấm thiệp cảm ơn'), ('🍊', 'mấy trái quýt'))
 

@@ -52,7 +52,7 @@ CAREER_NOUN = dict(
     mother_baby='mẹ & bé', restaurant='mì cay', pet_care='chăm thú cưng', salon='salon tóc', repair='sửa đồ',
     farm='nông trại', homestay='homestay', clothing='shop quần áo', pet_shop='shop thú cưng', tra_da='trà đá',
     fruit='trái cây', garbage='thu gom rác', drain='thông cống', homemaker='nội trợ', ice_cream='tiệm kem', pho='quán phở', com='quán cơm', nail='tiệm nail', pagoda='việc chùa', photobooth='tiệm ảnh', library='thư viện', giupviec='giúp việc', naucom='bếp nhà khách', babysitter='trông trẻ', customer_care='chăm sóc khách', pharmacy='nhà thuốc',
-    tour_guide='dẫn tour', teacher='bục giảng', accounting='sổ sách', pilot='buồng lái', flight_attendant='khoang khách',
+    tour_guide='dẫn tour', teacher='bục giảng', accounting='sổ sách', pilot='buồng lái', flight_attendant='khoang khách', oil='giàn khoan',
     corp_accounting='kế toán doanh nghiệp', tax_payroll='thuế & lương', group_accounting='kế toán tập đoàn',
     hr_admin='nhân sự', secretary='thư ký', it_helpdesk='IT văn phòng')
 # A workplace whose top 1 is not a "Trùm": nobody is the boss of a pagoda (game/pagoda_voice.py).

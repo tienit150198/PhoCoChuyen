@@ -43,7 +43,7 @@ export function markNoteSeen(env,id){
 export const GUIDE_BITS=['mother_baby','pharmacy','accounting','customer_care','teacher','tour_guide','milk_tea','restaurant',
   'cafe_bakery','florist','grocery','repair','farm','delivery','homestay','pet_care','salon','corp_accounting','tax_payroll',
   'group_accounting','clothing','pet_shop','tra_da','fruit','garbage','drain','pilot','flight_attendant','homemaker',
-  'hr_admin','secretary','it_helpdesk','ice_cream','nail','pagoda','pho','com','photobooth','giupviec','naucom','babysitter','library'];
+  'hr_admin','secretary','it_helpdesk','ice_cream','nail','pagoda','pho','com','photobooth','giupviec','naucom','babysitter','library','oil'];
 const B32='0123456789abcdefghijklmnopqrstuv',GD='gd-';
 /** The workplaces whose guide card was answered, from a set of note ids (every "gd-" id counts: two devices merge). */
 export function guidesFrom(seen){
