@@ -17,7 +17,7 @@ const stepText=step=>step?`${step.label}${step.note?` · ${step.note}`:''}`:'';
 /** chips: [{ok:true|false|null, icon, text, title?, act?, info?}]. `act` (data-* attributes) makes a chip a button.
  * key: the order's id; with it, tapping the header row folds the pin to one line ("Khách cần · 3/6 ✓ ·
  * Bước tiếp …", the pin is tall on a phone). A requirement turning ✗ opens it again. next: the guide step. */
-export function reqPin(x,{title='Khách cần',sub='',chips=[],tabs='',key='',next=null}){
+export function reqPin(x,{title='Khách cần',sub='',chips=[],tabs='',key='',next=null,chipped=false}){
   // `info` chips (a budget, a deadline) are facts to keep in mind, not something to tick: not counted.
   const need=chips.filter(c=>!c.info),done=need.filter(c=>c.ok===true).length,bad=need.filter(c=>c.ok===false).length;
   const folds=x.ui.asmFold||{};
@@ -39,7 +39,9 @@ export function reqPin(x,{title='Khách cần',sub='',chips=[],tabs='',key='',ne
     :`<p class="asm-pin-head">${inner}</p>`;
   // Clean layout (phones): the card scrolls with the work and this chip in the sheet header opens it (ui-kit headChip).
   const hchip=headChip('🧾',need.length?`${done}/${need.length}`:title,'.asm-pin',{label:`${title}: ${done}/${need.length} xong`,tone:bad?'bad':need.length&&done===need.length?'ok':''});
-  return `${hchip}<section class="asm-pin${folded?' folded':''}" aria-label="${x.esc(title)}">${head}
+  // chipped (opt-in, wave 5: clothing, when the ticket already says the same words): on the clean layout the card is
+  // shown only as the chip's popover (.ui-chipped); everyone else's pin is unchanged.
+  return `${hchip}<section class="asm-pin${folded?' folded':''}${chipped?' ui-chipped':''}" aria-label="${x.esc(title)}">${head}
     ${folded?'':`<ul class="asm-chips">${chips.map(chip).join('')}</ul>`}${tabs}</section>`;
 }
 

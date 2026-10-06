@@ -24,6 +24,8 @@ import {staffLifeCard} from '../staff-life-ui.js';
 import {ownerQueueHTML,ownerArrivalText,counterActivity,counterActivityHTML} from './quay-owner-queue.js';
 import {shopEventCard} from '../shop-events-ui.js';
 import {createQuaySync} from './quay-sync.js';
+// Clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded so the node tests can load this file.
+const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
 
 const PAGE_SIZE=12;
 const S={page:0,md:{},lk:{},run:null,anchor:'',anchorAt:0,dlg:null,env:null,view:'list',tab:'mine',pick:null,busy:false,flash:null,listening:false,open:{},help:{},wage:{},hire:null,loading:false,to:{}};
@@ -282,6 +284,9 @@ function render(){
 function toTop(){S.anchor='';S.hold=null;if(!S.dlg)return;const sp=S.dlg.querySelector('.qy-spacer');if(sp)sp.style.height='0px';S.dlg.scrollTop=0;}
 const helpBtn=key=>`<button type="button" class="qy-help" data-qy="help" data-key="${key}" aria-label="Giải thích" aria-expanded="${!!S.help[key]}">?</button>`;
 const helpText=(key,text)=>S.help[key]?`<p class="bk-hint qy-hint">${text}</p>`:'';
+/** An explanation paragraph (where the money goes, how an invite works): on the clean layout it folds behind the quầy's
+ * own "?" (one tap shows it in place); on the classic layout it shows as before. */
+const why=(key,text)=>clean()?`<p class="qy-why">${helpBtn(key)}</p>${helpText(key,text)}`:`<p class="bk-hint">${text}</p>`;
 function head(){
   const v=V(),n=v?.stalls?.length||0,till=(v?.stalls||[]).reduce((a,x)=>a+x.till,0);
   const back=S.view!=='list'?`<button class="icon-btn" type="button" data-qy="back" aria-label="Quay lại">${icon('back',21)}</button>`:'<span class="qy-logo" aria-hidden="true">🏪</span>';
@@ -321,7 +326,7 @@ function jobsView(){
   const mine=sh?`<section class="bk-card qy-shift"><div class="qy-top"><span class="qy-tile" aria-hidden="true">💼<i>${trade(sh.career).emoji}</i></span>
       <div class="grow"><h3>${esc(sh.name)}</h3><p class="qy-line">${esc(sh.who)} · ${xu(sh.wage)}</p></div></div>
     <p class="qy-line">Làm ${esc(trade(sh.career).name)}: xong ${R.tasks||2} việc rồi khép ca.</p>
-    <p class="bk-hint">Ca làm ở tiệm ${esc(trade(sh.career).name)} của chính bạn: hàng nhập dùng quỹ nghề của bạn, nên quỹ đó hết thì nhập hàng không được. Vốn quầy chủ góp ở lại quầy của chủ, không chuyển sang bạn. Xong ca: bạn nhận ${xu(sh.wage)} lương, quầy chủ nhận phần doanh thu.</p>
+    ${why('shift',`Ca làm ở tiệm ${esc(trade(sh.career).name)} của chính bạn: hàng nhập dùng quỹ nghề của bạn, nên quỹ đó hết thì nhập hàng không được. Vốn quầy chủ góp ở lại quầy của chủ, không chuyển sang bạn. Xong ca: bạn nhận ${xu(sh.wage)} lương, quầy chủ nhận phần doanh thu.`)}
     <div class="bk-actions">${btn('Vào làm','go',{career:sh.career},'primary')}${btn('Bỏ ca','quit',{},'ghost')}</div></section>`:'';
   const rows=(h.board||[]).map(b=>`<li class="qy-person"><div class="grow"><b>${b.emoji} ${esc(b.name)}</b>${b.invite?' <span class="qy-tag">Mời bạn</span>':''}<small>${esc(b.owner)} · ${xu(b.wage)}</small>${b.locked&&!h.lock?`<small class="qy-locked">🔒 ${esc(b.locked)}</small>`:''}</div>
       <div class="qy-person-act">${btn('Nhận ca','accept',{id:b.id},'small primary',sh?'Bạn đang có một ca':b.locked?'Chưa nhận được':'')}${b.invite?btn('Từ chối','decline',{id:b.id},'small ghost'):''}</div></li>`).join('');
@@ -346,7 +351,7 @@ function hirePart(st){
   const chips=[{code:'',name:'Ai cũng được'},...friends].map(f=>
     `<button type="button" class="qy-chip${to===f.code?' on':''}" data-qy="to" data-id="${st.id}" data-code="${esc(f.code)}"${f.eligible===false?' disabled':''}>${esc(f.name)}${f.eligible===false?` · chờ ${f.wait_hours} giờ`:''}</button>`).join('');
   const slots=place(st.place).slots||1,pending=(h.mine||[]).filter(x=>x.stall===st.id&&['open','taken'].includes(x.status)).length>=slots;
-  const form=h.lock?`<p class="bk-hint">${esc(h.lock)}</p>`:`<p class="bk-hint">Mời bạn bè: chọn tên bạn bên dưới rồi gửi lời mời. Bạn ấy vào Quầy của bạn → Quầy cần người để nhận ca. Kết bạn xong là mời được ngay.</p><div class="qy-chips">${chips}</div>
+  const form=h.lock?`<p class="bk-hint">${esc(h.lock)}</p>`:`${why('invite',`Mời bạn bè: chọn tên bạn bên dưới rồi gửi lời mời. Bạn ấy vào Quầy của bạn → Quầy cần người để nhận ca. Kết bạn xong là mời được ngay.`)}<div class="qy-chips">${chips}</div>
     ${!friends.length?'<p class="bk-hint">Chưa có bạn bè. Kết bạn trong mục Bạn bè rồi quay lại đây nhé.</p>':''}
     ${pending?`<p class="bk-hint">Quầy này đăng tối đa ${slots} ca cùng lúc (bằng số chỗ đứng) và đã đủ. Muốn đổi từ “Ai cũng được” sang mời riêng, hủy một ca đang chờ rồi chọn tên bạn và gửi lại.</p>`:''}
     <div class="qy-person"><div class="grow"><small>Lương một ca</small></div><div class="qy-person-act">${stepper(k,w,st.id,'',min,max)}${btn(to?'Gửi lời mời':'Đăng ca công khai','post',{id:st.id,wage:w},'small primary',st.closed?'Quầy đang đóng':pending?'Quầy đã đủ ca':to&&(!chosen||chosen.eligible===false)?'Bạn này hiện chưa nhận lời mời được':'')}</div></div>`;
@@ -402,7 +407,7 @@ function stallCard(st){
 function hiredReceipts(rows){
   if(!rows?.length)return '';
   const source={stall:'két/vốn quầy',cash:'ví',account:'tài khoản ngân hàng',joint:'quỹ chung'};
-  return `<details class="bk-card"><summary>💼 Biên nhận ca người chơi (${rows.length})</summary><p class="bk-hint">Lương đã giữ trước từ nguồn ghi trên biên nhận. Số vào két/ví chỉ trừ thuế; không trừ lương, hàng hay thuê chỗ lần nữa. Lãi ca tính cả khoản lương đã giữ. Biên nhận tách khỏi ngày tự bán và được tính vào thuế chung của chủ.</p><ul class="qy-list">${[...rows].reverse().map(r=>`<li><b>${esc(r.label)} · ngày ${r.d}</b><p>Doanh thu ${xu(r.rev)} · lương đã giữ ${xu(r.wage)} từ ${source[r.source]||''}</p><p>GTGT ${xu(r.vat)} · thu nhập ${xu(r.income)} · lãi ca ${xu(r.net)}</p><small>${r.pocket==='wallet'?'Vào ví':'Vào két'} ${xu(r.cash_net)} sau thuế</small></li>`).join('')}</ul></details>`;
+  return `<details class="bk-card"><summary>💼 Biên nhận ca người chơi (${rows.length})</summary>${why('receipts',`Lương đã giữ trước từ nguồn ghi trên biên nhận. Số vào két/ví chỉ trừ thuế; không trừ lương, hàng hay thuê chỗ lần nữa. Lãi ca tính cả khoản lương đã giữ. Biên nhận tách khỏi ngày tự bán và được tính vào thuế chung của chủ.`)}<ul class="qy-list">${[...rows].reverse().map(r=>`<li><b>${esc(r.label)} · ngày ${r.d}</b><p>Doanh thu ${xu(r.rev)} · lương đã giữ ${xu(r.wage)} từ ${source[r.source]||''}</p><p>GTGT ${xu(r.vat)} · thu nhập ${xu(r.income)} · lãi ca ${xu(r.net)}</p><small>${r.pocket==='wallet'?'Vào ví':'Vào két'} ${xu(r.cash_net)} sau thuế</small></li>`).join('')}</ul></details>`;
 }
 
 function economyPart(st){
@@ -414,7 +419,7 @@ function economyPart(st){
   const names={theft:'Trộm két',robbery:'Cướp tiền bán hàng',food_check:'Kiểm tra vệ sinh',police_check:'Kiểm tra chứng từ',extortion:'Bị đòi tiền bảo kê'};
   const states={open:'đang chờ xử lý',clear:'đạt, không phạt',violation:'có vi phạm',repaired:'đã khắc phục',reported:'đã lưu bằng chứng và báo công an',refused:'đã từ chối'};
   const risk=incident?`<p class="bk-alert">${names[incident.kind]||''}: ${states[incident.status]||''}${incident.loss?` · thiệt hại ${xu(incident.loss)}`:''}</p>${incident.kind==='extortion'&&incident.status==='open'?`<div class="bk-actions">${btn('Lưu bằng chứng & báo công an','incident',{id:st.id,choice:'report'},'small primary')}${btn('Từ chối trả tiền','incident',{id:st.id,choice:'refuse'},'small')}</div>`:''}`:'';
-  return `${st.business?'<p class="bk-hint">Bảng dưới dành cho ca thuê người chơi và kỳ cũ. Hoạt động liên tục ghi thuế thu nhập trên lãi dương, phí môi trường và bảo vệ riêng; xem chi phí và lãi hiện tại trong bảng vận hành của quầy.</p>':''}<h4>🧾 ${st.business?'Sổ ca thuê & kỳ trước':'Sổ quầy & an toàn'}</h4>${ledger}<p class="bk-hint">Mức xu trong game, không phải mức thuế ngoài đời: GTGT ${tax.vat_pct||2}% phần doanh thu vượt ${xu(tax.revenue_allowance||1000)}; thu nhập ${tax.income_pct||5}% phần lãi dương vượt ${xu(tax.profit_allowance||200)} mỗi ${tax.period||30} ngày sống. Cộng chung mọi quầy của chủ; lỗ được bù trong kỳ. Không có lệ phí môn bài.</p><p class="bk-hint">Vật tư và vệ sinh: ${e.supplies_pct}% doanh thu. Lời thay đổi theo khách và chi phí; một sự cố có thể làm cả ngày lỗ. Các khoản phí chỉ trừ ở quầy có bán.</p>${risk}${controls}${hiredReceipts(e.receipts)}`;
+  return `${st.business?why('table',`Bảng dưới dành cho ca thuê người chơi và kỳ cũ. Hoạt động liên tục ghi thuế thu nhập trên lãi dương, phí môi trường và bảo vệ riêng; xem chi phí và lãi hiện tại trong bảng vận hành của quầy.`):''}<h4>🧾 ${st.business?'Sổ ca thuê & kỳ trước':'Sổ quầy & an toàn'}</h4>${ledger}${why('tax',`Mức xu trong game, không phải mức thuế ngoài đời: GTGT ${tax.vat_pct||2}% phần doanh thu vượt ${xu(tax.revenue_allowance||1000)}; thu nhập ${tax.income_pct||5}% phần lãi dương vượt ${xu(tax.profit_allowance||200)} mỗi ${tax.period||30} ngày sống. Cộng chung mọi quầy của chủ; lỗ được bù trong kỳ. Không có lệ phí môn bài.`)}${why('supplies',`Vật tư và vệ sinh: ${e.supplies_pct}% doanh thu. Lời thay đổi theo khách và chi phí; một sự cố có thể làm cả ngày lỗ. Các khoản phí chỉ trừ ở quầy có bán.`)}${risk}${controls}${hiredReceipts(e.receipts)}`;
 }
 
 function stepper(key,value,id,extra,min=1,max=1e6){
@@ -434,7 +439,7 @@ function staffPart(st,P){
 function stockPart(st){
   const cat=CAT();
   if(st.business){const b=st.business,rows=b.stock||[],draft=S.stockDraft[st.id]||{},quote=restockQuote(draft,rows);
-    return `<div class="qy-part"><h4>Kho nguyên liệu · ${fmt(b.stock_total)} phần</h4><p class="bk-hint">Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; giữ lại tiền lương để nhân viên tiếp tục làm.</p><ul class="qy-list">${rows.map(row=>{const dish=dishOf(st,row.id);return `<li class="qy-stock-item" data-qk="stock:${st.id}:${row.id}"><span><b>${dish.emoji} ${esc(dish.name)}</b><small>Còn ${fmt(row.qty)} · ${xu(row.cost)} / phần</small></span><label><span>Nhập thêm</span><input type="number" inputmode="numeric" name="qy-stock" id="qy-stock-${st.id}-${row.id}" data-id="${st.id}" data-k="${row.id}" min="0" max="20000" step="1" value="${esc(draft[row.id]??'')}" placeholder="0"/></label></li>`;}).join('')}</ul><p class="qy-stock-quote">${quote?`${fmt(quote.count)} phần · tổng ${xu(quote.total)}`:'Nhập số lượng để xem tổng tiền'}<small>Két + vốn hiện có: ${xu(st.till+st.fund)}</small></p><div class="bk-actions">${btn(quote?`Nhập hàng · ${xu(quote.total)}`:'Nhập hàng','restock',{id:st.id},'primary',!quote?'Nhập số lượng trước':quote.total>st.till+st.fund?'Két và vốn chưa đủ':'')}${btn('Xem tiệm','visit',{id:st.id},'ghost')}</div></div>`;
+    return `<div class="qy-part"><h4>Kho nguyên liệu · ${fmt(b.stock_total)} phần</h4>${why('stock',`Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; giữ lại tiền lương để nhân viên tiếp tục làm.`)}<ul class="qy-list">${rows.map(row=>{const dish=dishOf(st,row.id);return `<li class="qy-stock-item" data-qk="stock:${st.id}:${row.id}"><span><b>${dish.emoji} ${esc(dish.name)}</b><small>Còn ${fmt(row.qty)} · ${xu(row.cost)} / phần</small></span><label><span>Nhập thêm</span><input type="number" inputmode="numeric" name="qy-stock" id="qy-stock-${st.id}-${row.id}" data-id="${st.id}" data-k="${row.id}" min="0" max="20000" step="1" value="${esc(draft[row.id]??'')}" placeholder="0"/></label></li>`;}).join('')}</ul><p class="qy-stock-quote">${quote?`${fmt(quote.count)} phần · tổng ${xu(quote.total)}`:'Nhập số lượng để xem tổng tiền'}<small>Két + vốn hiện có: ${xu(st.till+st.fund)}</small></p><div class="bk-actions">${btn(quote?`Nhập hàng · ${xu(quote.total)}`:'Nhập hàng','restock',{id:st.id},'primary',!quote?'Nhập số lượng trước':quote.total>st.till+st.fund?'Két và vốn chưa đủ':'')}${btn('Xem tiệm','visit',{id:st.id},'ghost')}</div></div>`;
   }
   return `<div class="qy-part"><p class="qy-line">Hôm nay ${cat.weather[st.today?.w]||''} · ${cat.pace[st.today?.pace]||''} · khoảng ${fmt(st.today?.n)} khách ${helpBtn('stock')}</p>
     ${helpText('stock','Ít: không lo ế. Nhiều: không lo hết hàng. Hàng tươi (hoa, bánh) ế thì hư.')}

@@ -4,9 +4,9 @@
  *  Care loop: today's care checklist, tomorrow's forecast, real shelf rotation,
  *  trust / lean days / repayment plans in the credit book, weekly regular lists. */
 import {keepBarAboveFooter} from './food_kit.js';
-import {reqList,fold} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,stepLine,goAttrs} from '../v4/guide.js';
-import {restockGo,restockBar,restockButton,shortOf,orderQuote,fullGo,vansLine} from '../v4/restock.js';
+import {reqList,fold,clean,tip,helpBtn,actBar} from '../ui-kit.js';
+import {stepRows,nextHint,stepCta,barParts,stepBar,finalGo,pending,stepLine,goAttrs} from '../v4/guide.js';
+import {restockGo,restockBar,restockButton,shortOf,orderQuote,fullGo,vansLine,shortName} from '../v4/restock.js';
 const ID='grocery';
 const catalogue=x=>x.content.inventory?.items?.[ID]||[];
 const item=(x,id)=>catalogue(x).find(i=>i.id===id)||{id,name:id,emoji:'•',unit:''};
@@ -74,11 +74,22 @@ const minor=t=>t.age!=null&&t.age<18;
 const dropped=(t,id)=>t.haggle&&t.haggle.state==='dropped'&&t.haggle.item===id;
 const rivalOf=x=>Object.fromEntries((x.room.data?.today_view?.rival||[]).map(r=>[r.item,r.theirs]));
 
+/* ------------------------------------------------------------ clean layout (docs/UI_KIT.md, wave 5) */
+/** The shop's "?" on the clean layout: today's mood and the explanations folded off this screen (ui-kit tip). */
+function helpQ(x){
+  const tv=x.room.data?.today_view;
+  return helpBtn('gr-help','🏪 Tạp hoá Cô Ba',tv?[{title:`${tv.mod.emoji} ${tv.mod.name}`,body:`<p>${x.esc(tv.mod.text)}</p>`,open:true}]:[],{tips:true,cls:'gr-helpq'});
+}
+
 /* ------------------------------------------------------------ today + surprises */
 function todayStrip(x,compact=false){
   const tv=x.room.data?.today_view;if(!tv)return '';
   const chips=(tv.rival||[]).map(r=>{const it=item(x,r.item),hi=r.ours>r.theirs;
     return `<span class="gr-flyer ${hi?'hi':'ok'}"><span aria-hidden="true">${it.emoji}</span><span>${x.esc(it.name)}</span><b>${x.fmt(r.theirs)}</b><small>${hi?`tiệm ${x.fmt(r.ours)}`:'tiệm ngang giá'}</small></span>`;}).join('');
+  // Clean layout: an ordinary day says nothing (its line is in "?"); another day keeps its name; the flyer stays.
+  if(clean()&&tv.mod.id==='normal'&&!chips)return '';
+  if(clean())return `<section class="gr-today compact" aria-label="Hôm nay ở tiệm">${tv.mod.id==='normal'?'':`<div class="gr-mood"><span class="gr-mood-emoji" aria-hidden="true">${tv.mod.emoji}</span><div><b>${x.esc(tv.mod.name)}</b>${tip(x.esc(tv.mod.text),tv.mod.name)}</div></div>`}
+    ${chips?`<div class="gr-flyers"><small class="gr-flyer-head">📣 Mây Mart${tv.calm?tip(' · khách quen hôm nay không so giá','📣 Tờ rơi','span'):''}</small>${chips}</div>`:''}</section>`;
   return `<section class="gr-today" aria-label="Hôm nay ở tiệm"><div class="gr-mood"><span class="gr-mood-emoji" aria-hidden="true">${tv.mod.emoji}</span><div><b>${x.esc(tv.mod.name)}</b>${compact||tv.mod.id==='normal'?'':`<small>${x.esc(tv.mod.text)}</small>`}</div></div>
     ${chips?`<div class="gr-flyers"><small class="gr-flyer-head">📣 Tờ rơi Mây Mart${tv.calm?' · khách quen hôm nay không so giá':''}</small>${chips}</div>`:''}</section>`;
 }
@@ -108,8 +119,8 @@ function ticket(t,x){
   const say=t.kind==='checkout'?(n.note||t.opening):t.kind==='bulk'?(n.note||t.opening):t.opening;
   return `<article class="card ticket gr-ticket"><div class="row">${x.portrait(w,44)}<div class="grow">
     <div class="row spread"><h3>${x.esc(w.display_name)}</h3>${tag}</div>
-    <p class="small"><b>${x.esc(t.title)}</b></p><p class="muted small">“${x.esc(say)}”</p>
-    ${t.kind==='rush'?'':`<div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div>`}</div></div></article>`;
+    ${clean()?'':`<p class="small"><b>${x.esc(t.title)}</b></p>`}<p class="muted small">“${x.esc(say)}”</p>
+    ${t.kind==='rush'?(clean()?`<div class="gr-q-row">${helpQ(x)}</div>`:''):`<div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small>${clean()?helpQ(x):''}</div>`}</div></div></article>`;
 }
 function alerts(x){
   const inv=x.room.inventory||{},exp=Object.values(inv.expiring||{}).filter(v=>v>0).length;
@@ -121,14 +132,21 @@ function tabs(x,idle=false){
   const owed=sum((d.ledger_view||[]).map(r=>r.balance)),n=alerts(x)+(d.rotation||[]).length;
   const due=(d.lists_view||[]).filter(l=>l.when==='today'&&l.items.some(i=>i.packed<i.qty)).length;
   const worry=(d.ledger_view||[]).some(r=>r.hard||r.risk||r.overdue);
-  const b=(label,id,aria)=>`<button type="button" role="tab" aria-selected="${tab===id}" class="btn small ${tab===id?'primary':'ghost'}" data-action="car:tab" data-tab="${id}"${aria?` aria-label="${x.esc(aria)}"`:''}>${label}</button>`;
+  // Clean layout: every tab keeps its icon and badge, only the open one its word (the word stays in aria-label).
+  const b=(label,id,aria)=>{const short=clean()&&tab!==id?label.replace(/^(\S+)\s+[^<]+/,'$1'):label;
+    return `<button type="button" role="tab" aria-selected="${tab===id}" class="btn small ${tab===id?'primary':'ghost'}" data-action="car:tab" data-tab="${id}"${aria||short!==label?` aria-label="${x.esc(aria||label.replace(/<[^>]*>/g,'').trim())}"`:''}>${short}</button>`;};
   return `<div class="gr-tabs ${idle?'three':''}" role="tablist">${idle?'':b('🛒 Quầy','counter')}${b(`🏷️ Kho${n?` <span class="gr-badge">${n}</span>`:''}`,'stock',n?`Kho & giá, ${n} việc cần xem`:'Kho & giá')}${b(`📒 Sổ nợ${worry?' <span class="gr-badge">!</span>':owed?` <span class="gr-badge soft">${x.fmt(owed)}</span>`:''}`,'ledger',`Sổ nợ, hàng xóm đang nợ ${owed} xu`)}${b(`🧺 Giỏ quen${due?` <span class="gr-badge">${due}</span>`:''}`,'lists',due?`Giỏ quen, ${due} giỏ cần soạn hôm nay`:'Giỏ quen')}</div>`;
 }
 const curTab=(x,idle)=>{const t=x.ui.tab||(idle?'stock':'counter');return idle&&t==='counter'?'stock':t;};
 /* House rules stay one tap away instead of a wall of text. */
 const rules=(x,list,title='Quy tắc')=>list?.length?`<details class="fold gd-rules"><summary>📜 ${x.esc(title)}</summary><ul class="small gr-policy">${list.map(v=>`<li>${x.esc(v)}</li>`).join('')}</ul></details>`:'';
+/** The shared bar (ui-kit actBar): the bill's total in the left slot, the one main button on the right. `cta` is the
+ * main button's markup or barParts' {next, main}; a pointer or a "hoặc …" link takes the left slot, the total then
+ * rides as the bar's top line. */
 function billbar(x,total,cta,note=''){
-  return `<div class="gr-billbar">${total!=null?`<div class="gr-billsum"><small>${x.esc(note||'Tổng bill')}</small><b>${x.money(total)}</b></div>`:''}${cta}</div>`;
+  const sum=total!=null?`<div class="gr-billsum"><small>${x.esc(note||'Tổng bill')}</small><b>${x.money(total)}</b></div>`:'';
+  const p=typeof cta==='string'?{next:'',main:cta}:cta||{};
+  return actBar({next:p.next||sum,main:p.main,top:p.next&&sum?sum:'',cls:'gr-billbar'});
 }
 
 /* ------------------------------------------------------------ checkout · basket */
@@ -146,7 +164,7 @@ function counterBasket(t,x){
     const inv=x.room.inventory||{stock:{}},avail=Math.max(0,(inv.stock?.[l.item]||0)-(x.room.data?.held?.[l.item]||0));
     const short=t.stage==='basket'&&!blocked&&!gone&&have<l.qty&&avail<l.qty-have;
     const want=Math.max(1,Math.min(l.qty-have,avail));
-    return `<div class="gr-line ${have>=l.qty?'done':''} ${blocked||gone?'blocked':''}"><span class="gr-emoji">${it.emoji}</span><div class="grow"><b>${x.esc(it.name)}</b><small>${l.qty} ${x.esc(it.unit)} · ${x.fmt(unitPrice(t,x,l.item))} xu${l.item==='beer'?' · 🔞 18+':''}${flyer}</small>${short?`<small class="gr-short">📦 Kệ còn ${avail}</small>`:''}</div>
+    return `<div class="gr-line ${have>=l.qty?'done':''} ${blocked||gone?'blocked':''}"><span class="gr-emoji">${it.emoji}</span><div class="grow"><b title="${x.esc(it.name)}">${x.esc(clean()?shortName(it.name):it.name)}</b><small>${l.qty} ${x.esc(it.unit)} · ${x.fmt(unitPrice(t,x,l.item))} xu${l.item==='beer'?' · 🔞 18+':''}${flyer}</small>${short?`<small class="gr-short">📦 Kệ còn ${avail}</small>`:''}</div>
       ${t.stage==='basket'&&!blocked&&!gone&&!(short&&!avail)?x.cmd(`Quét ×${want}`,'gr_scan',{task:t.id,item:l.item,qty:want},'small',have>=l.qty||!avail):''}${short&&!avail?restockButton(x.room,[{id:l.item,target:(inv.stock?.[l.item]||0)+l.qty-have}],{task:t.id},'small ghost'):''}${blocked?'<span class="tag danger">Không bán</span>':''}${gone?'<span class="tag danger">Khách bỏ</span>':''}</div>`;
   }).join('')}</div>`;
 }
@@ -195,6 +213,8 @@ function promoBoard(t,x){
   const row=p=>{const on=t.promos.includes(p.id),it=item(x,p.item),ok=discount(p,t.scanned[p.item]||0,unitPrice(t,x,p.item))>0;
     return `<div class="gr-promo ${on?'on':''}"><span>${it.emoji}</span><small class="grow">${x.esc(p.label)}</small>${on?'<span class="tag green">Đã áp</span>':x.cmd('Áp','gr_promo',{task:t.id,promo:p.id},'small ghost',t.stage!=='basket'||!ok)}</div>`;};
   const mine=x.cc.promos.filter(usable),rest=x.cc.promos.filter(p=>!usable(p));
+  if(clean())return `<div class="gr-promos">${mine.map(row).join('')}
+    ${rest.length?pane(x,`promo-${t.id}`,`<span aria-label="${rest.length} khuyến mãi${mine.length?' khác':''}, chưa khớp giỏ này">🏷️ +${rest.length}</span>`,rest.map(row).join(''),false,'gr-promo-more'):''}</div>`;
   return `<div class="gr-promos">${mine.map(row).join('')||'<p class="muted small">Giỏ này chưa khớp khuyến mãi nào.</p>'}
     ${rest.length?pane(x,`promo-${t.id}`,`🏷️ ${rest.length} khuyến mãi khác`,rest.map(row).join(''),false,'gr-promo-more'):''}</div>`;
 }
@@ -204,6 +224,8 @@ function receipt(t,x){
   for(const [i,w] of Object.entries(t.weighed)){const it=item(x,w.plu);rows.push(`<div class="gr-rline"><span>${it.emoji} ${x.esc(it.name)} ${x.fmt(w.grams)} g${w.tare?' (đã trừ bì)':''}</span><b>${x.fmt(weighedAmount(price(x,w.plu),w.grams))}</b>${t.stage==='basket'?`<button type="button" class="icon-btn gr-void" aria-label="Xóa dòng cân" data-command="gr_void" data-payload="${x.esc(JSON.stringify({task:t.id,line:Number(i)}))}">✕</button>`:''}</div>`);}
   for(const id of t.promos){const p=x.cc.promos.find(v=>v.id===id);if(p)rows.push(`<div class="gr-rline promo"><span>🏷️ ${x.esc(p.label)}</span><b>−${x.fmt(discount(p,t.scanned[p.item]||0,unitPrice(t,x,p.item)))}</b></div>`);}
   const total=t.total??cartTotal(t,x);
+  if(clean())return `<div class="gr-receipt" aria-label="Hóa đơn ${t.stage==='basket'?'đang tính':'đã chốt'}"><div class="gr-receipt-head" aria-hidden="true">🧾</div>
+    ${rows.join('')}</div>`;   // the total is the bar's
   return `<div class="gr-receipt" aria-label="Hóa đơn"><div class="gr-receipt-head">TẠP HOÁ CÔ BA<br><small>Hẻm 7 · Phường Mây · ${t.stage==='basket'?'đang tính':'đã chốt'}</small></div>
     ${rows.join('')||'<p class="muted small">Chưa có món nào.</p>'}
     <div class="gr-rtotal"><span>TỔNG</span><b>${x.money(total)}</b></div></div>`;
@@ -225,7 +247,7 @@ function checkoutSteps(t,x){
       if(have<q&&more<=0){later.push({ok:null,label:`${q} ${it.unit} ${it.name}`,note:have?`${have}/${q} · kệ hết`:'kệ hết',
         go:restockGo(x.room,[{id:k,target:(inv.stock?.[k]||0)+q-have}],{task:id})});continue;}
       rows.push({ok:have?have===q:null,label:`${q} ${it.unit} ${it.name}`,note:have>q?`quét dư ${have-q}`:have?`${have}/${q}`:'',
-        go:have>q?{...drop,label:`✕ Xóa ${x.esc(it.name)} (quét dư) để quét lại`}:more>0?{cmd:'gr_scan',payload:{task:id,item:k,qty:more},label:`📷 Quét ${more} ${x.esc(it.unit)} ${x.esc(it.name)}`}:null});
+        go:have>q?{...drop,label:`✕ Xóa ${x.esc(it.name)} (quét dư) để quét lại`}:more>0?{cmd:'gr_scan',payload:{task:id,item:k,qty:more},label:clean()?`📷 Quét ${more} ${x.esc(shortName(it.name))}`:`📷 Quét ${more} ${x.esc(it.unit)} ${x.esc(it.name)}`}:null});
     }
     t.needs.lines.forEach((l,i)=>{if(!l.weighed)return;
       const w=t.weighed[String(i)],it=item(x,l.item),right=!!w&&w.plu===l.item&&(!l.container||w.tare);
@@ -280,9 +302,9 @@ function transferPanel(t,x){
   const pay=t.pay,sc=pay.screen||{};
   const bank=pay.bank;
   return `<div class="gr-pay card"><div class="gr-phones">
-    <div class="gr-phone customer"><small>Điện thoại của khách</small><b class="gr-phone-ok">✔ ${x.esc(sc.status==='success'?'Chuyển tiền thành công':'Đang xử lý')}</b><span class="gr-phone-amt">${x.money(sc.amount||0)}</span><small>Tới: ${x.esc(sc.to||'')}</small><small>ND: ${x.esc(sc.memo||'')}</small></div>
-    <div class="gr-phone shop${pay.verified?'':' unchecked'}"><small>App ngân hàng của tiệm</small>${!pay.verified?'<span class="muted small">Chưa kiểm</span>':bank?`<b>+${x.money(bank)}</b><small>${bank>=t.total?'Khớp hóa đơn ✓':'Thiếu '+x.money(t.total-bank)}</small>`:'<span class="small">Chưa thấy tiền về…</span>'}</div></div>
-    <p class="muted small">Chỉ tin loa báo/app ngân hàng của tiệm.</p>
+    <div class="gr-phone customer"><small${clean()?' aria-label="Điện thoại của khách"':''}>${clean()?'📱 Khách':'Điện thoại của khách'}</small><b class="gr-phone-ok">✔ ${x.esc(sc.status==='success'?'Chuyển tiền thành công':'Đang xử lý')}</b><span class="gr-phone-amt">${x.money(sc.amount||0)}</span><small>Tới: ${x.esc(sc.to||'')}</small><small>ND: ${x.esc(sc.memo||'')}</small></div>
+    <div class="gr-phone shop${pay.verified?'':' unchecked'}"><small${clean()?' aria-label="App ngân hàng của tiệm"':''}>${clean()?'🏦 Tiệm':'App ngân hàng của tiệm'}</small>${!pay.verified?'<span class="muted small">Chưa kiểm</span>':bank?`<b>+${x.money(bank)}</b><small>${bank>=t.total?'Khớp hóa đơn ✓':'Thiếu '+x.money(t.total-bank)}</small>`:'<span class="small">Chưa thấy tiền về…</span>'}</div></div>
+    ${clean()?tip('Chỉ tin loa báo/app ngân hàng của tiệm.','📱 Chuyển khoản'):'<p class="muted small">Chỉ tin loa báo/app ngân hàng của tiệm.</p>'}
     <div class="row wrap">${x.cmd(pay.verified?'🔄 Kiểm lại app':'🔔 Kiểm loa/app ngân hàng','gr_verify',{task:t.id},'small ghost')}
     ${pay.verified&&bank>0&&bank<t.total&&!pay.fixed?x.cmd('🙏 Nhờ khách chuyển bù','gr_transfer_fix',{task:t.id},'small'):''}</div></div>`;
 }
@@ -314,15 +336,16 @@ function checkoutJob(t,x){
   if(t.stage==='done'){const r=t.result||{};return `<div class="workbench"><section class="wb-main"><div class="card"><h4>✅ Đã xong</h4><p>${x.esc(METHOD[r.method]?.[1]||'')} · ${x.money(r.total||0)}${r.loss?` · thất thoát ${x.money(r.loss)}`:''}</p></div></section><aside class="wb-side">${receipt(t,x)}</aside></div>`;}
   const basket=t.stage==='basket';
   const m=methodOf(t);
-  const main=basket?`${haggleCard(t,x)}<h4 class="section-title">1 · Giỏ hàng trên quầy</h4>${counterBasket(t,x)}${scalePanel(t,x)}
+  const cl=clean();
+  const main=basket?`${haggleCard(t,x)}${cl?'':'<h4 class="section-title">1 · Giỏ hàng trên quầy</h4>'}${counterBasket(t,x)}${scalePanel(t,x)}
       ${hasBeer(t)?`<div class="notice amber row spread"><span>🔞 Giỏ có bia: hỏi giấy tờ trước khi bán.</span>${x.cmd('🪪 Kiểm tuổi','gr_id',{task:t.id},'small',t.age!=null)}</div>`:''}
-      ${pane(x,`shelf-${t.id}`,'🛒 2 · Kệ hàng (quét thêm từng món)',shelfTiles(t,x),false,'gr-shelf-pane')}
-      <h4 class="section-title">3 · Bảng khuyến mãi tuần này</h4>${promoBoard(t,x)}`
-    :`<h4 class="section-title">Thanh toán · ${x.esc(METHOD[m][1])}</h4>${m==='cash'?cashPanel(t,x):m==='transfer'?transferPanel(t,x):creditPanel(t,x)}`;
+      ${pane(x,`shelf-${t.id}`,cl?'🛒 Kệ hàng':'🛒 2 · Kệ hàng (quét thêm từng món)',shelfTiles(t,x),false,'gr-shelf-pane')}
+      ${cl?'':'<h4 class="section-title">3 · Bảng khuyến mãi tuần này</h4>'}${promoBoard(t,x)}`
+    :`${clean()?'':`<h4 class="section-title">Thanh toán · ${x.esc(METHOD[m][1])}</h4>`}${m==='cash'?cashPanel(t,x):m==='transfer'?transferPanel(t,x):creditPanel(t,x)}`;
   const steps=checkoutSteps(t,x);
-  const side=`${receipt(t,x)}${steps.length?stepRows(x,steps,basket?'Giỏ của khách':'Thanh toán'):''}`;
+  const side=`${receipt(t,x)}${steps.length?stepRows(x,steps,basket?'Giỏ của khách':'Thanh toán',{chip:clean()}):''}`;
   const empty=!Object.keys(t.scanned).length&&!Object.keys(t.weighed).length;
-  const cta=stepCta(x,steps,basket?basketFinal(t,x,steps):payFinal(t,x,steps));
+  const cta=barParts(x,steps,basket?basketFinal(t,x,steps):payFinal(t,x,steps));
   return `<div class="workbench"><section class="wb-main">${main}</section><aside class="wb-side">${side}</aside></div>${billbar(x,t.total??cartTotal(t,x),cta,basket?'Đang tính':'Tổng bill')}`;
 }
 
@@ -401,11 +424,11 @@ function rushJob(t,x){
   const idNote=beer&&aged==null&&o.charged==null?`<div class="notice amber row spread"><span>🔞 Có bia: hỏi giấy tờ trước khi bán.</span>${x.cmd('🪪 Kiểm tuổi','gr_rush_id',{task:t.id},'small primary')}</div>`:'';
   const body=o.charged==null?`${idNote}<h4 class="section-title">Giỏ của khách · quét từng món</h4><div class="gr-basket">${rushLines(t,x)}</div>`
     :`<h4 class="section-title">Thối tiền cho ${x.esc(w.display_name)}</h4>${rushTray(t,x)}`;
-  const cta=stepCta(x,steps,rushFinal(t,x,steps));
+  const cta=barParts(x,steps,rushFinal(t,x,steps));
   const total=o.charged??rushTill(x,o);
   return `${head}<div class="workbench"><section class="wb-main"><article class="card gr-rush-now">${card}${body}</article>
     <p class="muted small">Đã thu ${x.money(r.cash)} · ${r.served} khách xong${r.left?` · ${r.left} khách bỏ về`:''}.</p>${rushLog(t,x)}</section>
-    <aside class="wb-side">${rushReceipt(t,x)}${steps.length?stepRows(x,steps,'Khách đang ở quầy'):''}</aside></div>${billbar(x,total,cta,o.charged==null?'Máy tính tiền':'Tổng bill')}`;
+    <aside class="wb-side">${rushReceipt(t,x)}${steps.length?stepRows(x,steps,'Khách đang ở quầy',{chip:clean()}):''}</aside></div>${billbar(x,total,cta,o.charged==null?'Máy tính tiền':'Tổng bill')}`;
 }
 
 /* ------------------------------------------------------------ bulk orders */
@@ -434,7 +457,8 @@ function bulkJob(t,x){
       ${short?x.confirmCmd('Giao phần đang có','gr_bulk_deliver',{task:t.id,partial:true},'Giao thiếu hàng: chỉ thu phần đã giao và khách sẽ không vui. Giao luôn?','ghost small'):''}`;
     cta=x.confirmCmd('🚚 SOẠN HÀNG & GIAO','gr_bulk_deliver',{task:t.id},`Soạn đủ hàng và giao, thu nốt ${x.fmt(b.price-b.deposit)} xu?`,'primary big grow',short);
   }
-  return `<div class="card gr-bulk"><div class="gr-basket">${rows}</div>${body}</div>${cta?billbar(x,b.price,cta,'Giá đã chốt'):''}`;
+  // Clean layout: before the price is agreed the bar still leads (the guide's next step), so the screen has its one main button.
+  return `<div class="card gr-bulk"><div class="gr-basket">${rows}</div>${body}</div>${cta?billbar(x,b.price,cta,'Giá đã chốt'):clean()&&pending(bulkSteps(t,x))?.go?stepBar(x,bulkSteps(t,x),null,{cls:'gr-billbar'}):''}`;
 }
 
 /* ------------------------------------------------------------ shelf */
@@ -488,8 +512,8 @@ function shelfJob(t,x){
     <h4 class="section-title">2 · Tem giá</h4><div class="gr-tag row"><div class="gr-pricetag"><small>${x.esc(it.name)}</small><b>${x.fmt(sh.tag)} xu</b><small>/${x.esc(it.unit)}</small></div>
     <div class="grow"><p class="small">Bảng giá hiện hành: <b>${x.money(p)}</b></p>${x.cmd('🖨️ In lại tem giá','gr_retag',{task:t.id},'small ghost',sh.retagged||sh.tag===p)}</div></div>
     ${rules(x,x.cc.policy)}`;
-  const cta=stepCta(x,steps,shelfFinal(t,x,steps));
-  return `<div class="workbench"><section class="wb-main">${main}</section><aside class="wb-side">${stepRows(x,steps,'Việc xếp kệ')}</aside></div>${billbar(x,null,cta)}`;
+  const cta=barParts(x,steps,shelfFinal(t,x,steps));
+  return `<div class="workbench"><section class="wb-main">${main}</section><aside class="wb-side">${stepRows(x,steps,'Việc xếp kệ',{chip:clean()})}</aside></div>${billbar(x,null,cta)}`;
 }
 
 /* ------------------------------------------------------------ next step for any task */
@@ -685,7 +709,7 @@ function careList(x,rows,label){
 function careCard(x){
   const rows=x.room.data?.care||[];
   const todo=rows.filter(r=>r.ok!==true).length,urgent=rows.some(r=>r.ok===false);
-  const summary=`📋 Việc chăm hôm nay · ${todo?`<b class="${urgent?'bad':''}">${todo} việc</b>`:'đã gọn'}`;
+  const summary=clean()?`<span aria-label="Việc chăm hôm nay: ${todo?`${todo} việc`:'đã gọn'}">📋 ${todo?`<b class="${urgent?'bad':''}">${todo}</b>`:'✓'}</span>`:`📋 Việc chăm hôm nay · ${todo?`<b class="${urgent?'bad':''}">${todo} việc</b>`:'đã gọn'}`;
   const body=rows.length?careList(x,rows,'Việc chăm hôm nay'):'<p class="small muted">Tiệm gọn gàng!</p>';
   return `<section class="gr-carebox">${foldBox(x,'care',summary,body,todo>0)}</section>`;
 }
@@ -701,7 +725,7 @@ function forecastBody(x,f){
 }
 function forecastCard(x){
   const f=x.room.data?.forecast;if(!f)return '';
-  const summary=`📅 Ngày mai: ${x.esc(f.mod.emoji)} ${x.esc(f.mod.name)}${f.short?` · <b class="warn">thiếu ${f.short} món</b>`:''}${f.lists.length?` · 🧺 ${f.lists.length}`:''}`;
+  const summary=clean()?`<span aria-label="Ngày mai: ${x.esc(f.mod.name)}${f.short?`, thiếu ${f.short} món`:''}">📅 ${x.esc(f.mod.emoji)}${f.short?` · <b class="warn">⚠ ${f.short}</b>`:''}${f.lists.length?` · 🧺 ${f.lists.length}`:''}</span>`:`📅 Ngày mai: ${x.esc(f.mod.emoji)} ${x.esc(f.mod.name)}${f.short?` · <b class="warn">thiếu ${f.short} món</b>`:''}${f.lists.length?` · 🧺 ${f.lists.length}`:''}`;
   return `<section class="gr-forecast">${foldBox(x,'forecast',summary,forecastBody(x,f))}</section>`;
 }
 function rotationNotes(x){
@@ -770,6 +794,9 @@ export default {
     if(x.room.data?.desk?.ev)return `<div class="career-job gr">${top}</div>`;
     if(!t.known){
       const label=t.kind==='shelf'?'📋 Nhận việc':t.kind==='rush'?'⏱️ Mở quầy cho hàng chờ':t.kind==='bulk'?'📦 Nghe đơn sỉ':'🛒 Mời khách đặt hàng lên quầy';
+      // Clean layout: who and their words (the header names the job), the ask as the bar's one main button.
+      if(clean())return `<div class="career-job gr">${top}<article class="card ticket"><div class="row">${x.portrait(w,56)}<div class="grow"><div class="row spread"><h3>${x.esc(w.display_name)}</h3>${helpQ(x)}</div><p>“${x.esc(t.opening)}”</p></div></div></article>${careCard(x)}${forecastCard(x)}${tabs(x)}${(x.ui.tab||'counter')!=='counter'?tabBody(x,()=>''):''}
+        ${stepBar(x,[{ok:null,label,go:{cmd:'ask',payload:{task:t.id},label:t.kind==='shelf'?'📋 Nhận việc':t.kind==='rush'?'⏱️ Mở quầy':t.kind==='bulk'?'📦 Nghe đơn sỉ':'🛒 Mời đặt hàng'}}],null,{cls:'gr-billbar'})}</div>`;
       return `<div class="career-job gr">${top}<article class="card ticket"><div class="row">${x.portrait(w,56)}<div class="grow"><h3>${x.esc(w.display_name)}</h3><p class="small"><b>${x.esc(t.title)}</b></p><p>“${x.esc(t.opening)}”</p></div></div>
         ${x.cmd(label,'ask',{task:t.id},'primary full gr-ask')}</article>${careCard(x)}${forecastCard(x)}${tabs(x)}${(x.ui.tab||'counter')!=='counter'?tabBody(x,()=>''):''}</div>`;
     }

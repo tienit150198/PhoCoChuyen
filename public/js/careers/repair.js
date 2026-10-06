@@ -2,13 +2,15 @@
  * Server decides every result (readings, quote reply, final test, used-part luck, money).
  * Local state here is only what the player is ticking before sending, and which step tab is open.
  * Phone first: one step panel at a time, one primary button per panel. */
-import {reqList,fold,actBar} from '../ui-kit.js';
+import {reqList,fold,actBar,clean,tip,helpBtn,withWhy} from '../ui-kit.js';
 import {stepRows,nextHint,stepBar,finalGo,pending,firstTime,highlight,stepLine} from '../v4/guide.js';
-import {restockFor,restockButton} from '../v4/restock.js';
+import {restockFor,restockButton,restockGo} from '../v4/restock.js';
 import {tomorrowCard} from './tomorrow_kit.js';
 import {reqPin,pinTop,asmActions,finalStep} from './asm_kit.js';
 const STEPS=['Nhận máy','Đo kiểm','Báo giá','Sửa','Bàn giao'];
 const MODE={live:'cấp điện',open:'mở máy',any:'đo ngoài'};
+/** Clean layout: a test's mode as an icon (the words stay in the tile's title / aria-label). */
+const MODE_ICON={live:'⚡',open:'🔓',any:'👀'};
 
 const items=x=>x.content.inventory?.items?.repair||[];
 const itemOf=(x,id)=>items(x).find(i=>i.id===id)||{id,name:id,emoji:'•',price:0};
@@ -64,8 +66,22 @@ const shelved=x=>openTasks(x).filter(t=>t.bench?.shelf);
 const lowerFirst=s=>s?s[0].toLowerCase()+s.slice(1):'';
 const pct=n=>`${Number(n)||0}%`;
 
+/* ---------- clean layout (docs/UI_KIT.md, wave 5) ---------- */
+/** The shop's "?" on the clean layout: today's theme and the explanations folded off this screen. */
+function helpQ(x){
+  const d=x.room.data?.today;
+  return helpBtn('rp-help','🔧 Tiệm sửa đồ',d?[{title:`${d.emoji} ${d.title}`,body:`<p>${x.esc(d.text)}</p>`,open:true}]:[],{tips:true,cls:'rp-helpq'});
+}
+/** The server's pre-check for “Sửa” (public_data can.rp_fix: task → fault → {why, fix}, only the refusals: a supply
+ * the repair uses up is out), the fix pointing at the stock room's next step for it. */
+function fixCan(x,t,f){
+  const c=x.room.data?.can?.rp_fix?.[t.id]?.[f];if(!c||c===true)return null;
+  const id=c.fix?.data?.items;return {why:c.why,fix:id?restockGo(x.room,[id],{task:t.id}):c.fix};
+}
+
 /* ---------- shared bits ---------- */
 function todayChip(x){const d=x.room.data?.today,k=care(x);if(!d)return '';
+  if(clean())return '';   // the day's theme is in the "?" (helpQ)
   const clock=k.clock&&k.open?`<span class="rp-clock" title="Giờ ở tiệm">🕙 ${x.esc(k.clock)}</span>`:'';
   return `<p class="rp-today">${clock}<span class="rp-today-title"><span aria-hidden="true">${x.esc(d.emoji)}</span> <b>${x.esc(d.title)}</b></span> <small>${x.esc(d.text)}</small></p>`;}
 
@@ -194,9 +210,9 @@ function ticket(t,x){
   if(cinfo)tags.push(`<span class="tag rp-case">${x.esc(cinfo.emoji)} ${x.esc(cinfo.label)}</span>`);
   if(left!=null)tags.push(`<span class="tag ${left>=0?(left<=4?'danger':'green'):'danger'} rp-rush">⏱️ ${left>=0?`còn ${left} nhịp · +${x.esc(x.money(n.rush.bonus))}`:'đã trễ hẹn gấp'}</span>`);
   // Compact: face, name and patience on one line; the complaint and the tags under it; notes fold.
-  return `<article class="card rp-ticket rp-tk"><div class="rp-tk-head">${x.portrait(who,32)}<h3>${x.esc(who.display_name)}</h3><div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${Number(t.patience)||0}%"></i></div><small>${Number(t.patience)||0}%</small></div></div><div>
+  return `<article class="card rp-ticket rp-tk"><div class="rp-tk-head">${x.portrait(who,32)}<h3>${x.esc(who.display_name)}</h3><div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${Number(t.patience)||0}%"></i></div><small>${Number(t.patience)||0}%</small></div>${clean()?helpQ(x):''}</div><div>
     <p class="rp-symptom">“${x.esc(n.symptom)}”</p><div class="row wrap rp-tags">${tags.join('')}</div>
-    <details class="rp-note"><summary>Lời dặn của khách</summary><p class="small">${x.esc(n.note)}</p>${n.request?`<p class="small"><b>Khách nhờ thêm:</b> “${x.esc(n.request)}”</p>`:''}${n.claim?`<p class="small"><b>Phiếu:</b> ${x.esc(n.claim.said)}</p>`:''}</details>
+    <details class="rp-note"><summary>${clean()?'💬 Lời dặn':'Lời dặn của khách'}</summary><p class="small">${x.esc(n.note)}</p>${n.request?`<p class="small"><b>Khách nhờ thêm:</b> “${x.esc(n.request)}”</p>`:''}${n.claim?`<p class="small"><b>Phiếu:</b> ${x.esc(n.claim.said)}</p>`:''}</details>
     ${regularCard(t,x)}
   </div></article>`;
 }
@@ -228,7 +244,7 @@ function device(t,x){
   const safe=(b.safe||[]).length>=dev.safety.length;
   const stamp=b.final==='pass'?'<b class="rp-stamp ok">ĐẠT</b>':b.final==='fail'?'<b class="rp-stamp bad">CHƯA ĐẠT</b>':'';
   return `<div class="rp-device ${b.opened?'opened':''}" aria-label="${x.esc(dev.name)} trên bàn thợ"><div class="rp-mat"><span class="rp-big" aria-hidden="true">${x.esc(dev.emoji)}</span>${marks}${stamp}</div>
-    <div class="row wrap rp-state"><span class="tag ${b.opened?'amber':''}">${b.opened?'🔓 đang mở':'🔒 đang đóng'}</span><span class="tag ${safe?'green':''}">${safe?'🔌✖ đã an toàn':'⚡ còn điện'}</span></div>
+    <div class="row wrap rp-state">${clean()?`<span class="tag ${b.opened?'amber':''}" title="${b.opened?'Đang mở':'Đang đóng'}" aria-label="${b.opened?'Máy đang mở':'Máy đang đóng'}">${b.opened?'🔓':'🔒'}</span><span class="tag ${safe?'green':''}" title="${safe?'Đã an toàn':'Còn điện'}" aria-label="${safe?'Đã an toàn':'Còn điện'}">${safe?'🔌✖':'⚡'}</span>`:`<span class="tag ${b.opened?'amber':''}">${b.opened?'🔓 đang mở':'🔒 đang đóng'}</span><span class="tag ${safe?'green':''}">${safe?'🔌✖ đã an toàn':'⚡ còn điện'}</span>`}</div>
     ${installed?`<div class="row wrap">${installed}</div>`:''}</div>`;
 }
 
@@ -246,12 +262,13 @@ function intakeView(t,x){
   // The marks stay a look-at-the-device check (the mat, right).
   const given=n.accessories||[],order=[...dev.accessories].sort((a,b)=>given.includes(b)-given.includes(a));
   const accTiles=order.map(a=>{const v=x.cc.accessories[a]||{emoji:'•',label:a},on=u.acc.includes(a),g=given.includes(a);
-    return `<div class="rp-acc${g?' given':''}">${g?'<span class="asm-need">Khách đưa</span>':''}${tile(x,{emoji:v.emoji,label:v.label,sub:on?(g?'✓ đã nhận':'✗ khách không đưa'):g?'chạm để ghi nhận':'khách không đưa',cls:on?'selected':'',attr:carAttr(x,'acc',{task:t.id,id:a})+` aria-pressed="${on}"`})}</div>`;}).join('');
-  const callout=given.length?`<div class="rp-given" role="note"><b>🎒 Khách đưa kèm ${given.length} món:</b> ${given.map(a=>`<span class="rp-given-item${u.acc.includes(a)?' ok':''}">${u.acc.includes(a)?'✓':'○'} ${x.esc(x.cc.accessories[a]?.emoji||'•')} ${x.esc(x.cc.accessories[a]?.label||a)}</span>`).join(' ')}</div>`
-    :'<div class="rp-given none" role="note"><b>🎒 Khách không đưa kèm gì</b> · để trống phần phụ kiện.</div>';
+    const sub=clean()?(on?(g?'✓':'✗'):''):on?(g?'✓ đã nhận':'✗ khách không đưa'):g?'chạm để ghi nhận':'khách không đưa';
+    return `<div class="rp-acc${g?' given':''}">${g?'<span class="asm-need">Khách đưa</span>':''}${tile(x,{emoji:v.emoji,label:v.label,sub,cls:on?'selected':'',attr:carAttr(x,'acc',{task:t.id,id:a})+` aria-pressed="${on}"`})}</div>`;}).join('');
+  const callout=given.length&&clean()?'':given.length?`<div class="rp-given" role="note"><b>🎒 Khách đưa kèm ${given.length} món:</b> ${given.map(a=>`<span class="rp-given-item${u.acc.includes(a)?' ok':''}">${u.acc.includes(a)?'✓':'○'} ${x.esc(x.cc.accessories[a]?.emoji||'•')} ${x.esc(x.cc.accessories[a]?.label||a)}</span>`).join(' ')}</div>`
+    :clean()?'<div class="rp-given none" role="note"><b>🎒 Khách không đưa kèm gì</b></div>':'<div class="rp-given none" role="note"><b>🎒 Khách không đưa kèm gì</b> · để trống phần phụ kiện.</div>';
   return `${callout}
     <div class="tile-grid rp-grid rp-accs">${accTiles}</div>
-    <h5 class="rp-sub">🔍 Vết trên máy</h5><p class="small muted">Nhìn máy trên thảm, chạm đúng những vết thật sự thấy.</p>
+    <h5 class="rp-sub">🔍 Vết trên máy</h5>${clean()?tip('Nhìn máy trên thảm, chạm đúng những vết thật sự thấy.','🔍 Vết trên máy'):'<p class="small muted">Nhìn máy trên thảm, chạm đúng những vết thật sự thấy.</p>'}
     <div class="tile-grid rp-grid rp-marks">${markTiles}</div>
     ${dd?`<button type="button" class="btn rp-consent ${u.consent?'on':''}" ${carAttr(x,'consent',{task:t.id})} aria-pressed="${u.consent}">${u.consent?'☑️':'⬜'} Đã hỏi khách có cho mở khóa / xem dữ liệu không</button>`:''}
     <div class="rp-cta"><button type="button" class="btn" ${carAttr(x,'intake',{task:t.id})} ${dd&&!u.consent?'disabled':''}>📝 Ghi phiếu nhận máy</button></div>`;
@@ -266,6 +283,7 @@ function shellBar(t,x,primary,folded=false){
   const open=b.opened?x.cmd(`🔩 ${x.esc(dev.close)}`,'rp_close',{task:t.id},'ghost small'):allSafe?x.cmd(`🔧 ${x.esc(dev.open)}`,'rp_open',{task:t.id},primary?'primary small':'small',b.final==='pass')
     :x.confirmCmd(`🔧 ${x.esc(dev.open)}`,'rp_open',{task:t.id},'Chưa làm đủ bước an toàn! Mở máy lúc này có thể bị giật, bỏng hoặc chập. Vẫn mở?','danger small',b.final==='pass');
   const body=`<div class="row wrap">${b.opened?'':chips}${open}</div>`;
+  if(folded&&clean())return `<details class="rp-shell rp-shell-fold"><summary aria-label="Vỏ máy: ${b.opened?'đang mở':'đang đóng'}, ${allSafe?'đã an toàn':'còn điện'}"><span class="rp-shell-label" aria-hidden="true">🧰</span> ${b.opened?'🔓':'🔒'} · ${allSafe?'🔌✖':'⚡'}</summary>${body}</details>`;
   if(folded)return `<details class="rp-shell rp-shell-fold"><summary><span class="rp-shell-label">Vỏ máy</span> ${b.opened?'🔓 đang mở':'🔒 đang đóng'} · ${allSafe?'🔌✖ đã an toàn':'⚡ còn điện'}</summary>${body}</details>`;
   return `<div class="rp-shell"><span class="rp-shell-label">Vỏ máy</span>${body}</div>`;
 }
@@ -277,14 +295,15 @@ function testsView(t,x){
   const b=t.bench,dev=t.needs.device,tests=x.cc.tests?.[dev]||[];
   const tiles=tests.map(ts=>{const done=b.tests.some(r=>r.id===ts.id);let why='';
     if(done)why='đã đo';else if(ts.mode==='live'&&b.opened)why='đang mở máy';else if(ts.mode==='open'&&!b.opened)why='cần mở máy';else if(ts.consent&&!b.data_ok)why='🔒 khách không cho';
-    return tile(x,{emoji:ts.emoji,label:ts.name,sub:why||MODE[ts.mode]+(ts.consent?' · cần đồng ý':''),cls:done?'selected':why?'locked':'',attr:cmdAttr(x,'rp_test',{task:t.id,test:ts.id}),off:!!why});}).join('');
+    const cl=clean(),mode=MODE[ts.mode]+(ts.consent?' · cần đồng ý':'');
+    return tile(x,{emoji:ts.emoji,label:ts.name,sub:why?(cl&&why==='đã đo'?'✓':why):cl?`${MODE_ICON[ts.mode]||''}${ts.consent?' 🔐':''}`:mode,cls:done?'selected':why?'locked':'',attr:cmdAttr(x,'rp_test',{task:t.id,test:ts.id})+(cl?` title="${x.esc(`${ts.name} · ${why||mode}`)}"`:''),off:!!why});}).join('');
   // Every reading stays one tap away; the newest also rides in the bottom bar.
-  const log=b.tests.length?`<details class="rp-readbox"><summary>📋 Số đo đã ghi (${b.tests.length})</summary><ol class="rp-readings">${b.tests.map(r=>{const ts=tests.find(v=>v.id===r.id)||{name:r.id,emoji:'•'};return `<li><span aria-hidden="true">${x.esc(ts.emoji)}</span><div><b>${x.esc(ts.name)}</b><small>${x.esc(r.reading)}</small></div></li>`;}).join('')}</ol></details>`:'<p class="muted small">Mỗi phép đo tốn một nhịp</p>';
+  const log=b.tests.length?`<details class="rp-readbox"><summary>📋 Số đo đã ghi (${b.tests.length})</summary><ol class="rp-readings">${b.tests.map(r=>{const ts=tests.find(v=>v.id===r.id)||{name:r.id,emoji:'•'};return `<li><span aria-hidden="true">${x.esc(ts.emoji)}</span><div><b>${x.esc(ts.name)}</b><small>${x.esc(r.reading)}</small></div></li>`;}).join('')}</ol></details>`:clean()?tip('Mỗi phép đo tốn một nhịp','🔎 Đo kiểm'):'<p class="muted small">Mỗi phép đo tốn một nhịp</p>';
   const hyp=(t.needs.hypotheses||[]).map(f=>{const fd=faultOf(x,dev,f),out=b.ruled_out.includes(f),chosen=b.diagnosis===f,fixed=f in b.fixed;
-    return `<li class="rp-hyp ${out?'out':''} ${chosen?'chosen':''}"><div class="grow"><b>${x.esc(fd.name)}</b><small>${fixed?'✓ đã xử lý':chosen?'📌 đang chốt':out?'✗ số đo đã loại':'? còn khả nghi'}</small></div>
+    return `<li class="rp-hyp ${out?'out':''} ${chosen?'chosen':''}"><div class="grow"><b>${x.esc(fd.name)}</b>${clean()?`<small aria-label="${fixed?'đã xử lý':chosen?'đang chốt':out?'số đo đã loại':'còn khả nghi'}">${fixed?'✓':chosen?'📌':out?'✗':'?'}</small>`:`<small>${fixed?'✓ đã xử lý':chosen?'📌 đang chốt':out?'✗ số đo đã loại':'? còn khả nghi'}</small>`}</div>
       ${chosen||fixed||b.final==='pass'?'':x.cmd('Chốt','rp_diagnose',{task:t.id,fault:f},out?'ghost small':'small')}</li>`;}).join('');
   const found=(b.found||[]).map(f=>`<li class="rp-hyp found"><div class="grow"><b>🔎 ${x.esc(faultOf(x,dev,f).name)}</b><small>${f in b.fixed?'✓ đã xử lý':'phát hiện khi mở máy — cần báo giá thêm'}</small></div></li>`).join('');
-  return `${toolWarn(x,'meter')}${shellBar(t,x,false,!shellNow(t,x))}<div class="tile-grid rp-grid rp-tests space-top">${tiles}</div>${log}<h5 class="rp-sub">Bảng giả thuyết</h5><ul class="rp-hyps">${hyp}${found}</ul>`;
+  return `${toolWarn(x,'meter')}${shellBar(t,x,false,!shellNow(t,x))}<div class="tile-grid rp-grid rp-tests space-top">${tiles}</div>${log}<h5 class="rp-sub">${clean()?'🧩 Giả thuyết':'Bảng giả thuyết'}</h5><ul class="rp-hyps">${hyp}${found}</ul>`;
 }
 
 /* ---------- 2 · quote (+ warranty book, water evidence) ---------- */
@@ -307,7 +326,7 @@ function quoteView(t,x){
   let pre='';
   if(cs==='warranty')pre+=claimPanel(t,x);
   const waterRead=b.tests.find(r=>r.id==='water_tag');
-  if(waterRead&&pending.includes('water')&&!b.shown)pre+=`<div class="notice amber small">Khách vẫn quả quyết máy chưa dính nước. ${x.cmd('📸 Cho khách xem tem báo nước','rp_show',{task:t.id},'primary small')}</div>`;
+  if(waterRead&&pending.includes('water')&&!b.shown)pre+=`<div class="notice amber small">Khách vẫn quả quyết máy chưa dính nước. ${withWhy(x.cmd('📸 Cho khách xem tem báo nước','rp_show',{task:t.id},'primary small'),t.can?.rp_show)}</div>`;
   else if(pending.includes('water')&&!b.shown)pre+=`<p class="notice amber small">Khách quả quyết chưa từng làm ướt máy. Có bằng chứng trong máy thì khách mới chịu nghe.</p>`;
   if(!pending.length)return `${pre}${last}<p class="small">${approved||'<span class="muted">Chốt lỗi để lập báo giá.</span>'}</p>`;
   const blocked=cs==='warranty'&&!b.claim;
@@ -323,7 +342,7 @@ function quoteView(t,x){
   const cover=cs==='warranty'&&b.claim==='cover';
   const spent=(b.quote?.rounds||0)>=(x.cc.quote_rounds||6);
   return `${pre}${last}${approved?`<p class="small">${approved}</p>`:''}${rows}
-    <p class="small muted">Đồ tháo máy rẻ nhưng hên xui — nhớ cắm thử trước khi lắp.</p>
+    ${clean()?tip('Đồ tháo máy rẻ nhưng hên xui — nhớ cắm thử trước khi lắp.','♻️ Đồ tháo máy'):'<p class="small muted">Đồ tháo máy rẻ nhưng hên xui — nhớ cắm thử trước khi lắp.</p>'}
     ${spent?`<p class="notice amber small">Khách đã nghe ${b.quote.rounds} lần báo giá, không muốn nghe thêm. Làm phần khách đã đồng ý, hoặc trả máy.</p>`:''}
     <div class="rp-cta rp-total"><span>Gửi khách: <b>${cover?'0 xu (bảo hành)':x.esc(x.money(total))}</b></span>
     <button type="button" class="btn ${spent?'ghost':'primary'}" ${carAttr(x,'quote',{task:t.id})} ${blocked||spent?'disabled':''}>📨 Gửi báo giá</button></div>`;
@@ -345,7 +364,8 @@ function fixView(t,x){
         order=x.confirmCmd(`<b>${x.esc(sv.emoji||'📦')} Hết trên kệ — đặt riêng · ${x.esc(x.money(cost))}</b><small>${x.esc(sv.name||'')} giao ${x.esc(care(x).sources?.[src]?.when||'')}</small>`,'rp_order',{task:t.id,fault:f},`Đặt riêng ${itemOf(x,item).name} cho máy này: ${cost} xu (gồm ${sv.ship||0} xu giao). ${sv.rule||''}`,'small rp-orderbtn',(x.room.money??0)<cost);}
       else if(lacking)order=`<div class="small muted rs-inline"><span>Hết ${x.esc(itemOf(x,item).name)} trên kệ · hoặc báo giá lại loại khác</span>${restockButton(x.room,[item],{task:t.id},'small')}</div>`;
       const test=used&&!tested?x.cmd(`🧪 Cắm thử ${x.esc(itemOf(x,item).name.toLowerCase())} (còn ${x.stock(item)})`,'rp_parttest',{task:t.id,fault:f},b.opened?'primary':'small',!x.stock(item)):'';
-      const fix=x.cmd(`🛠️ Sửa: ${x.esc(fd.name)} · ${x.esc(x.cc.grades[ap.grade]?.short||'')}${used&&tested?' ✓ đã thử':''}${waiting?' · chờ đồ':''}`,'rp_fix',{task:t.id,fault:f},b.opened&&(!used||tested)&&!waiting&&!lacking?'primary':'ghost',!b.opened||waiting||(lacking&&!mine));
+      const off=!b.opened||waiting||(lacking&&!mine),sup=off?null:fixCan(x,t,f);
+      const fix=withWhy(x.cmd(`🛠️ Sửa: ${x.esc(fd.name)} · ${x.esc(x.cc.grades[ap.grade]?.short||'')}${used&&tested?' ✓ đã thử':''}${waiting?' · chờ đồ':''}`,'rp_fix',{task:t.id,fault:f},b.opened&&(!used||tested)&&!waiting&&!lacking&&!sup?'primary':'ghost',off),sup);
       return `<div class="rp-fixrow">${order}${test}${fix}</div>`;
     }
     return x.confirmCmd(`⚠️ Sửa “${x.esc(fd.name)}” khi khách chưa duyệt`,'rp_fix',{task:t.id,fault:f,grade:gradeFor(x,t,f)},'Khách CHƯA đồng ý báo giá cho việc này. Sửa khi chưa được đồng ý là lỗi nghiêm trọng: khách sẽ rất bực và đòi bớt tiền. Vẫn làm?','danger small',!b.opened);}).join('');
@@ -483,7 +503,8 @@ function quoteSteps(t,x){
       s.push({ok:b.claim?true:null,label:'Quyết: bảo hành hay tính tiền',go:b.claim?null:{sel:'.rp-claim'},pulse:`.rp-claim-${guess}`});}
   }
   if(pend.includes('water')&&!b.shown){
-    if(b.tests.some(r=>r.id==='water_tag'))s.push({ok:null,label:'Cho khách xem tem báo nước',go:{cmd:'rp_show',payload:{task:id},label:'📸 Cho khách xem tem báo nước'}});
+    // The tag read white (can.rp_show refuses): nothing to show, the step is left out and the quote goes on.
+    if(b.tests.some(r=>r.id==='water_tag')){if(t.can?.rp_show===undefined||t.can.rp_show===true)s.push({ok:null,label:'Cho khách xem tem báo nước',go:{cmd:'rp_show',payload:{task:id},label:'📸 Cho khách xem tem báo nước'}});}
     else if(!b.opened)s.push(...openSteps(t,x));
     else s.push({ok:null,label:'Soi tem báo nước trong máy',go:{cmd:'rp_test',payload:{task:id,test:'water_tag'},label:'💧 Soi tem báo nước'}});
   }
@@ -517,7 +538,9 @@ function fixSteps(t,x){
     if(open.some(f=>(faultOf(x,dev,f).supplies||[]).includes('solder'))){const tip=toolStep(x,'tip');if(tip)s.push(tip);}
     for(const f of ready){const ap=b.approved[f],fd=faultOf(x,dev,f),item=fd.parts[ap.grade];
       if(ap.grade==='used'&&!(b.checked||[]).includes(f))s.push({ok:null,label:`Cắm thử ${itemOf(x,item).name.toLowerCase()}`,go:b.opened?{cmd:'rp_parttest',payload:{task:id,fault:f},label:`🧪 Cắm thử ${x.esc(itemOf(x,item).name.toLowerCase())}`}:null});
-      s.push({ok:null,label:`Sửa: ${fd.name}`,go:b.opened&&(!item||x.stock(item)||v.orders?.[f]?.arrived)?{cmd:'rp_fix',payload:{task:id,fault:f},label:`🛠️ Sửa: ${x.esc(fd.name)}`}:null});}
+      // A supply it uses up is out (can.rp_fix): the step is the stock room for it, not a tap that is refused.
+      const sup=fixCan(x,t,f),supId=sup&&x.room.data?.can?.rp_fix?.[t.id]?.[f]?.fix?.data?.items;
+      s.push({ok:null,label:`Sửa: ${fd.name}`,go:!b.opened?null:supId?restockFor(x,supId,itemOf(x,supId).name,{task:id}):(!item||x.stock(item)||v.orders?.[f]?.arrived)?{cmd:'rp_fix',payload:{task:id,fault:f},label:`🛠️ Sửa: ${x.esc(fd.name)}`}:null});}
   }
   if(wait){
     const it=itemOf(x,wait.item),d=v.eta_days||0,word=['hôm nay','mai','ngày kia'][d]||`${d} ngày nữa`;
@@ -554,7 +577,7 @@ function taskGuide(t,x){
   const pre=[];
   if((x.room.data?.comebacks||[]).length)pre.push({ok:null,label:'Máy quay lại bảo hành: chọn cách xử lý',go:{sel:'.rp-back'},pulse:'.rp-back .btn'});
   if(shelved(x).some(v=>tview(x,v).call))pre.push({ok:null,label:'Khách gọi hỏi máy: trả lời điện thoại',go:{sel:'.rp-call'},pulse:'.rp-call .btn'});
-  if(!t.known)return {steps:[...pre,{ok:null,label:'Hỏi khách kể bệnh của máy',go:{cmd:'ask',payload:{task:id},label:'📝 Hỏi khách kể bệnh của máy'}}]};
+  if(!t.known)return {steps:[...pre,{ok:null,label:'Hỏi khách kể bệnh của máy',go:{cmd:'ask',payload:{task:id},label:clean()?'📝 Hỏi bệnh máy':'📝 Hỏi khách kể bệnh của máy'}}]};
   if(caseOf(t)==='buyin')return {steps:[...pre,...buyinSteps(t,x)]};
   const at=stage(t,x),b=t.bench;
   // Opened before the readings settled: finish the diagnosis first, so one quote covers everything.
@@ -629,7 +652,7 @@ export default {
     const desk=deskCard(x),g=guideFor(t,x),hint=hintFor(g,x),cta=bar(g,x,t);
     if(!t.known){
       const who=x.npc(t.npc);
-      return `<div class="career-job rp" data-rp-key="${x.esc(t.id)}:ask">${hint}${desk}${alerts(x)}${todayChip(x)}<article class="card rp-ticket"><div class="row">${x.portrait(who,52)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>“${x.esc(t.opening)}”</p></div></div></article>${shelfFold(x)}${cta}</div>`;
+      return `<div class="career-job rp" data-rp-key="${x.esc(t.id)}:ask">${hint}${desk}${alerts(x)}${todayChip(x)}<article class="card rp-ticket"><div class="row">${x.portrait(who,52)}<div class="grow">${clean()?`<div class="row spread"><h3>${x.esc(who.display_name)}</h3>${helpQ(x)}</div>`:`<h3>${x.esc(who.display_name)}</h3>`}<p>“${x.esc(t.opening)}”</p></div></div></article>${shelfFold(x)}${cta}</div>`;
     }
     if(desk)return `<div class="career-job rp">${hint}${desk}${ticket(t,x)}</div>`;
     const top=alerts(x,true);
@@ -638,15 +661,15 @@ export default {
     const tab=u.tab!=null&&u.tab<=at?u.tab:at;
     const views=[intakeView,testsView,quoteView,fixView,finishView];
     const titles=['Phiếu nhận máy','Đo kiểm & giả thuyết','Báo giá cho khách','Mở máy & thay sửa','Chạy thử, bảo hành, bàn giao'];
-    const rows=tab===at&&g.steps.length>1?`<details class="rp-rowsbox"><summary>📋 Việc ở bước này (${g.steps.filter(s=>s.ok===true).length}/${g.steps.length})</summary>${stepRows(x,g.steps,'Việc ở bước này')}</details>`:'';
-    const panel=`<section class="rp-panel ${tab===at?'focus':''}" aria-live="polite"><h4 class="section-title">${tab+1} · ${x.esc(titles[tab])}${tab!==at?` <button type="button" class="btn ghost small" ${carAttr(x,'tab',{task:t.id,tab:at})}>Về bước đang làm</button>`:''}</h4>${views[tab](t,x)}${rows}</section>`;
+    const rows=tab===at&&g.steps.length>1&&clean()?stepRows(x,g.steps,'Việc ở bước này',{chip:true}):tab===at&&g.steps.length>1?`<details class="rp-rowsbox"><summary>📋 Việc ở bước này (${g.steps.filter(s=>s.ok===true).length}/${g.steps.length})</summary>${stepRows(x,g.steps,'Việc ở bước này')}</details>`:'';
+    const panel=`<section class="rp-panel ${tab===at?'focus':''}" aria-live="polite"><h4 class="section-title${clean()&&tab===at?' sr-only':''}">${clean()?x.esc(STEPS[tab]):`${tab+1} · ${x.esc(titles[tab])}`}${tab!==at?` <button type="button" class="btn ghost small" ${carAttr(x,'tab',{task:t.id,tab:at})}>Về bước đang làm</button>`:''}</h4>${views[tab](t,x)}${rows}</section>`;
     const banner=t.bench.shelf?shelfBanner(t,x):'';
     // Rarely used: promise a pick-up day, hand back unrepaired, the parts store, the shelf. One ⋯ line,
     // unless the next step is one of them.
     const sel=pending(g.steps)?.go?.sel||'',promise=promiseFold(t,x),ret=t.bench.intake?returnLink(t,x):'',shelf=shelfFold(x,t.id);
     const out=(sel.includes('rp-promise')?promise:'')+(sel.includes('rp-return')?ret:'');
     const tucked=[sel.includes('rp-promise')?'':promise,sel.includes('rp-return')?'':ret,`<p class="rp-foot">${x.button('📦 Kho & nhập linh kiện','inventory',{},'ghost small')}</p>`,shelf].filter(Boolean).join('');
-    const more=`<details class="rp-more"><summary>⋯ ${[promise&&!sel.includes('rp-promise')?'Hẹn khách':'',ret&&!sel.includes('rp-return')?'Trả máy':'','Kho linh kiện',shelf?'Kệ máy chờ':''].filter(Boolean).join(' · ')}</summary><div class="rp-more-body">${tucked}</div></details>`;
+    const more=clean()?`<details class="rp-more"><summary aria-label="Thêm: hẹn khách, trả máy, kho linh kiện, kệ máy chờ">⋯</summary><div class="rp-more-body">${tucked}</div></details>`:`<details class="rp-more"><summary>⋯ ${[promise&&!sel.includes('rp-promise')?'Hẹn khách':'',ret&&!sel.includes('rp-return')?'Trả máy':'','Kho linh kiện',shelf?'Kệ máy chờ':''].filter(Boolean).join(' · ')}</summary><div class="rp-more-body">${tucked}</div></details>`;
     return `<div class="career-job rp ${at?'rp-later':'rp-intake'}" data-rp-key="${x.esc(t.id)}:${at}:${tab}">${hint}${top}${lastDesk(x)}${banner}${ticket(t,x)}${pin(t,x,at,tab,pending(g.steps)||finalStep(g.final))}<div class="workbench"><div class="wb-main">${panel}${out}${more}</div>
       <aside class="wb-side">${device(t,x)}</aside></div>${cta}</div>`;
   },

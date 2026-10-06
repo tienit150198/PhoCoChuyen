@@ -948,10 +948,23 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     return out
 
 
+def _drive_rules(d: dict, target, need=kit.need) -> None:
+    """dl_signal / dl_cross: a ride needs a stop to ride to (not the one the scooter stands at)."""
+    need(isinstance(target,str) and target in NODES and target!=d['at'],'Chọn điểm đến trước khi lái.')
+
+
+def _corridor_rules(d: dict, target: str, i: int, j: int, need=kit.need) -> None:
+    """dl_signal: a checkpoint lies on this leg's route corridor (one block of detour allowed)."""
+    a,b=NODES[d['at']],NODES[target]
+    via=abs(a['x']-i)+abs(a['y']-j)+abs(b['x']-i)+abs(b['y']-j)
+    direct=abs(a['x']-b['x'])+abs(a['y']-b['y'])
+    need(via<=direct+2,'Ngã tư này ngoài chặng đang giao. Quay lại theo mũi tên nhé.')
+
+
 def _traffic(s,c,d,name,p):
     from .. import traffic
     target=p.get('target')
-    kit.need(isinstance(target,str) and target in NODES and target!=d['at'],'Chọn điểm đến trước khi lái.')
+    _drive_rules(d,target)
     scope=f"{c['day']}:{d['at']}:{target}"
     drive=d.get('drive')
     if name=='dl_signal':
@@ -959,10 +972,7 @@ def _traffic(s,c,d,name,p):
         i,j,axis=p.get('i'),p.get('j'),p.get('axis')
         kit.need(type(i) is int and type(j) is int and (i,j) in traffic.LIT and axis in ('x','y'),'Ngã tư không có đèn này.')
         # Checkpoints must lie on this leg's route corridor (allow one block of detour).
-        a,b=NODES[d['at']],NODES[target]
-        via=abs(a['x']-i)+abs(a['y']-j)+abs(b['x']-i)+abs(b['y']-j)
-        direct=abs(a['x']-b['x'])+abs(a['y']-b['y'])
-        kit.need(via<=direct+2,'Ngã tư này ngoài chặng đang giao. Quay lại theo mũi tên nhé.')
+        _corridor_rules(d,target,i,j)
         if not drive or drive['scope']!=scope:
             drive=d['drive']=dict(scope=scope,traffic=traffic.fresh())
         traffic.issue(drive['traffic'],f'{scope}:{i},{j}:{axis}',(i*7+j*3)%16,axis)
@@ -982,6 +992,46 @@ def _traffic(s,c,d,name,p):
     elif r['grace']:message='🚦 Đèn vừa chuyển đỏ: miễn phạt trong 1 giây đầu để kịp dừng an toàn.'
     else:message='🚦 Đã qua ngã tư đúng tín hiệu.'
     return dict(message=message,traffic=traffic.public(drive['traffic']),receipt=r)
+
+
+def _ride_rules(c: dict, d: dict, way, need=kit.need) -> None:
+    """dl_ride's refusals, in the command's order. A slipped chain is not a refusal (the ride ends in a surprise)."""
+    need(d['route'], 'Chưa có lộ trình. Chọn điểm dừng rồi bấm “Chốt lộ trình”.')
+    need(way in WAYS, 'Chọn đường chính hoặc hẻm tắt.')
+    nxt = d['route'][0]
+    need(way == 'main' or dist(d['at'], nxt) >= 2, 'Quãng này ngắn quá, không có hẻm tắt nào.')
+    brake = d['parts']['brake']
+    need(way == 'main' or brake >= PART_INFO['brake']['low'],
+         f'Má phanh mòn còn {brake}% — hẻm tắt dốc, cua gắt, chạy vậy không an toàn. '
+         'Đi đường chính, hoặc thay má phanh ở tiệm Chú Bảy.', 'brake')
+    if d['parts']['chain'] <= 0:
+        return
+    use = _leg(c, d['at'], nxt, d['clock'], way)['fuel']
+    gas = None
+    if d['at'] != 'gas' and nxt != 'gas' and d['fuel'] >= _leg(c, d['at'], 'gas', d['clock'])['fuel']:
+        gas = dict(cmd='dl_plan', payload=dict(route=['gas', *d['route']][:10]), label='⛽ Ghé cây xăng')
+    need(d['fuel'] >= use, f'Không đủ xăng tới {NODES[nxt]["name"]} (cần {use}%, còn {d["fuel"]}%). '
+         f'Ghé cây xăng hoặc mua xăng chai ven đường.', 'fuel', fix=gas)
+
+
+def _can(c: dict, d: dict) -> dict:
+    """View-only pre-checks (docs/UI_KIT.md "Disabled with a reason"), never saved:
+    - dl_signal: only the refusals, keyed by the stop ridden to (the stop the scooter stands at) or
+      "<stop>:<i>,<j>" (a lit junction off the planned next leg's corridor). The street view never asks for those.
+    - dl_ride: the planned next leg by the main road (True, or the fuel refusal with a fix to the petrol station)."""
+    from .. import traffic
+    sig = {}
+    for node in NODES:
+        r = kit.check(_drive_rules, d, node)
+        if r is not True:
+            sig[node] = r
+    nxt = d['route'][0] if d['route'] else None
+    if nxt in NODES and nxt != d['at']:
+        for i, j in sorted(traffic.LIT):
+            r = kit.check(_corridor_rules, d, nxt, i, j)
+            if r is not True:
+                sig[f'{nxt}:{i},{j}'] = r
+    return dict(dl_signal=sig, dl_ride=kit.check(_ride_rules, c, d, 'main') if d['route'] else True)
 
 
 def _mod_id(c: dict) -> str | None:
@@ -1005,23 +1055,15 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             msg += ' ⚠️ Xăng không đủ cho cả tuyến — nhớ ghé cây xăng.'
         return dict(message=msg)
     if name == 'dl_ride':
-        kit.need(d['route'], 'Chưa có lộ trình. Chọn điểm dừng rồi bấm “Chốt lộ trình”.')
         way = p.get('way', 'main')
-        kit.need(way in WAYS, 'Chọn đường chính hoặc hẻm tắt.')
+        _ride_rules(c, d, way)
         nxt = d['route'][0]
-        kit.need(way == 'main' or dist(d['at'], nxt) >= 2, 'Quãng này ngắn quá, không có hẻm tắt nào.')
-        brake = d['parts']['brake']
-        kit.need(way == 'main' or brake >= PART_INFO['brake']['low'],
-                 f'Má phanh mòn còn {brake}% — hẻm tắt dốc, cua gắt, chạy vậy không an toàn. '
-                 'Đi đường chính, hoặc thay má phanh ở tiệm Chú Bảy.', 'brake')
         if d['parts']['chain'] <= 0:
             d['stats']['chains'] += 1
             _fire(s, c, 'DE-CHAIN')
             return dict(message='⛓️ Sên tuột khỏi nhông, xe không chạy được — xử lý sên trước đã!')
         leg = _leg(c, d['at'], nxt, d['clock'], way)
         blocks, use = leg['blocks'], leg['fuel']
-        kit.need(d['fuel'] >= use, f'Không đủ xăng tới {NODES[nxt]["name"]} (cần {use}%, còn {d["fuel"]}%). '
-                 f'Ghé cây xăng hoặc mua xăng chai ven đường.', 'fuel')
         d['route'].pop(0)
         d['fuel'] -= use
         worn = _wear(c, d, leg, d['km'])
@@ -1510,6 +1552,7 @@ def public_task(t: dict) -> dict:
 def public_data(raw: dict) -> dict:
     from ..work_gear import factor
     d = _extend(tree_copy(raw['ext']['data']))
+    d['can'] = _can(raw, d)
     d['drive_factor'] = factor(raw)
     if d.get('drive'):
         from .. import traffic

@@ -553,3 +553,16 @@ dialog.sheet:has(.tt-bar){scroll-padding-bottom:150px}  /* a control scrolled in
 /* Tour guide: the route totals (⏱ phút · 🎟 xu · 😊 khách) are the bar's top row (.ui-bar-top, full width), the next
    step and the button share the row under it. */
 html[data-layout="phone"] dialog.sheet .tt-trip .tt-bar-stats span{padding:1px 6px;font-size:.8rem}
+/* Clean layout (UI wave 5, docs/UI_KIT.md): one number per period in the timetable, the meter's name as an icon, the
+   rules behind a "?" on the board, places and itinerary rows as icons and numbers. Only drawn when clean() is on. */
+.tt-periods-mini>li{flex:0 0 auto}
+.tt-toprow .tt-periods-mini .tt-period,.tt-periods-mini .tt-period{min-width:44px;align-items:center;justify-content:center;padding:4px 10px}
+.tt-periods-mini .tt-period b{font-size:var(--fs-3,1rem)}
+.tt-toprow .tt-periods-wrap:has(.tt-periods-mini){flex:0 1 auto}
+.tt-toprow:has(.tt-periods-mini) .tt-hud{margin-left:auto}
+html[data-clean] .tt-toprow .tt-meter>span,html[data-clean] .tt-trip-top .tt-meter>span{grid-column:auto;font-size:1rem}
+html[data-clean] .tt-toprow .tt-meter,html[data-clean] .tt-trip-top .tt-meter{grid-template-columns:auto 1fr auto;width:110px}
+.tt-board-foot .ui-q{min-width:44px;min-height:44px;margin-left:auto;color:#f7e6b5;border-color:#f7e6b544}
+.tt-trip-top .ui-q{min-width:44px;min-height:44px}
+.tt-roll{padding-top:0}
+.tt-quote-mini{margin:0;font-size:1.1rem}

@@ -1107,8 +1107,7 @@ def _counter(s, c, t, name, p):
         size = _size_arg(item, p.get('size'))
         colour = _colour_arg(item, p.get('colour'))
         kit.need(len(t['picks']) < MAX_PICKS, 'Quầy đầy rồi, bớt món ra trước nhé.')
-        free = _free(c, item, size, t) - sum(1 for x in t['picks'] if x['item'] == item and x['size'] == size)
-        kit.need(free > 0, f'Giá treo hết {ITEM[item]["name"].lower()} {_sz(size)}. Nhập thêm hoặc chọn size khác.')
+        _pick_rules(c, item, size, t)
         t['picks'].append(dict(item=item, size=size, colour=colour))
         t['tried'].append(None)
         return dict(message=f'Lấy ra quầy: {ITEM[item]["emoji"]} {ITEM[item]["name"]} {_sz(size)}, màu {colour} · {_price(c, item)} xu.')
@@ -1149,6 +1148,17 @@ def _counter(s, c, t, name, p):
         kit.confirm(p, 'Xác nhận giao đồ và tiền thối cho khách.')
         return _pay(s, c, t, p)
     raise kit.eng().GameError('Thao tác ở quầy tiệm áo không hợp lệ.')
+
+
+def _pick_rules(c: dict, item: str, size: str, t: dict | None = None, need=None) -> None:
+    """A size off the rack for this bill: one must be left once the open bills and parcels have theirs. Written once,
+    run twice (docs/UI_KIT.md "Disabled with a reason"): ao_pick refuses with it (the top clothing refusal 04–06/10,
+    “Giá treo hết quần jean size 29…”), public_data sends the sizes it would refuse as can.ao_pick, so the page dims
+    them with these words and points at the stock room. With t=None the counter's own picks are among the held ones,
+    so the count is the same."""
+    own = sum(1 for x in t['picks'] if x['item'] == item and x['size'] == size) if t else 0
+    (need or kit.need)(_free(c, item, size, t) - own > 0, f'Giá treo hết {ITEM[item]["name"].lower()} {_sz(size)}. Nhập thêm hoặc chọn size khác.',
+                       fix=dict(act='v4Restock', data=dict(items=item, task=''), label='📦 Nhập hàng'))
 
 
 def _smaller(item: str, size: str, right: str) -> bool:
@@ -2139,6 +2149,14 @@ def public_data(c: dict) -> dict:
             if h:
                 held[f'{it["id"]}:{s}'] = h
     d['held'] = held
+    # A view field, never saved: the sizes a pick would be refused for (see _pick_rules), "item:size" → {why, fix}.
+    picks = {}
+    for it in ITEMS:
+        for s in SIZES[it['id']]:
+            r = kit.check(_pick_rules, view, it['id'], s)
+            if r is not True:
+                picks[f'{it["id"]}:{s}'] = r
+    d['can'] = dict(ao_pick=picks)
     d['prices'] = {k: _price(c, k) for k in PRICES}
     sale = d.get('sale')
     d['sale_today'] = sale if isinstance(sale, dict) and sale.get('day') == c['day'] else None

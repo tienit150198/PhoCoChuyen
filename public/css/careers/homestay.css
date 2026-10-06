@@ -333,15 +333,16 @@
 .career-job.hs .wb-main :is(button,.hs-cal-wrap){scroll-margin:calc(var(--hs-head,0px) + 8px) 0 calc(var(--hs-barh,0px) + var(--fk-foot,0px) + 8px)}
 
 /* ---------- next-step bar (guide.js): the one button that does the next step rides at the bottom of the sheet */
-.career-job.hs .hs-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--hs-r);
+/* UI wave 5: the bar is the shared .ui-bar (app.css 27e lays it out); these old rules only apply to a bar drawn without it. */
+.career-job.hs .hs-bar:not(.ui-bar){position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--hs-r);
   background:var(--hs-s1);border:1px solid var(--hs-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
-.career-job.hs .hs-bar .btn{flex:1 1 auto;min-height:48px}
+.career-job.hs .hs-bar:not(.ui-bar) .btn{flex:1 1 auto;min-height:48px}
 .career-job.hs .hs-bar .btn:disabled{opacity:.7}
 .career-job.hs .hs-step-card{scroll-margin-top:calc(var(--hs-head,0px) + 8px)}
 /* Phones: a slimmer bar; on a short screen (landscape) it stays at the end of the steps, since the header's
    "Bước tiếp theo" does the same step and the work needs the height. */
-html[data-layout="phone"] .career-job.hs .hs-bar{padding:6px 8px;gap:6px}
-@media (max-height:520px){.career-job.hs .hs-bar{position:static}}
+html[data-layout="phone"] .career-job.hs .hs-bar:not(.ui-bar){padding:6px 8px;gap:6px}
+@media (max-height:520px){.career-job.hs .hs-bar:not(.ui-bar){position:static}}
 
 /* ---------- cash at the counter (public/js/careers/till.js) */
 .career-job.hs .till{display:grid;gap:8px}
@@ -409,3 +410,16 @@ html[data-layout="phone"] .career-job.hs .hs-bar{padding:6px 8px;gap:6px}
    "Đã chọn … · 1/2 chỗ" toasts go to the bottom edge again (over the next-step bar, which stays tappable:
    .toasts is pointer-events:none), never over the calendar. */
 html[data-layout="phone"] dialog.cozy-job:has(.hs-cal .hs-pick) .toasts{top:auto;bottom:calc(8px + var(--safe-b))}
+
+/* Clean layout (UI wave 5, docs/UI_KIT.md): the steps still ahead as their numbers, the icon buttons of the foot. */
+.career-job.hs .hs-later{display:flex;gap:6px;margin:4px 0 0;padding:0 4px}
+.career-job.hs .hs-later .hs-num{opacity:.55}
+.career-job.hs .hs-foot-mini{align-items:center}
+.career-job.hs .hs-foot-mini .btn{min-width:44px;min-height:44px;font-size:1.1rem}
+.career-job.hs .hs-foot-mini .ui-q{margin-left:auto}
+/* Clean layout: a side panel whose cards all folded into header chips (the receipt, the checklist) draws no empty box;
+   a chip's popover still opens from it. */
+html[data-clean] .career-job.hs .wb-side:not(:has(>:not(.ui-chipped))){padding:0;border:0;background:none;min-height:0}
+.career-job.hs .hs-donerow{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.career-job.hs .hs-done-btn{min-width:44px;min-height:44px;padding:0 6px;border:1px solid var(--hs-line);border-radius:12px;background:var(--hs-s1);color:inherit;font:inherit;cursor:pointer}
+.career-job.hs .hs-done-btn .hs-num{width:auto;padding:0 6px}

@@ -279,3 +279,19 @@
 /* Tap targets ≥ 44 px: the order slip's fold header, its tappable chips (asm_kit) and the size chart fold. */
 .career-job.ao button.asm-pin-head,.career-job.ao button.asm-chip{min-height:44px}
 .career-job.ao .fold>summary{min-height:44px;padding-top:11px;padding-bottom:11px}
+
+/* ---------- wave 5, clean layout (html[data-clean], docs/UI_KIT.md): fewer words on the work screen */
+.career-job.ao .ao-today.compact{padding:4px 4px 4px 12px;gap:8px}
+.career-job.ao .ao-today.compact p{display:flex;align-items:center;gap:6px}
+.career-job.ao .ao-kindq{display:inline-flex;align-items:center;gap:4px;margin-left:auto}
+.career-job.ao .ao-q{flex:none;min-width:44px;min-height:44px}
+.career-job.ao .ao-chip.out{opacity:.6;border-style:dashed}
+.career-job.ao .ao-chip.ao-more{align-items:center;justify-content:center;border-style:dashed;color:var(--ao-violet)}
+.career-job.ao .ao-size.clue{position:relative;min-height:64px;gap:1px}
+.career-job.ao .ao-size .ao-k{font-size:var(--fs-1);line-height:1.1;color:var(--ao-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.career-job.ao .ao-size .ao-left{position:absolute;top:2px;right:4px;font-style:normal;font-size:var(--fs-1);font-weight:800;color:var(--ao-violet);font-variant-numeric:tabular-nums}
+.career-job.ao .ao-size.out .ao-left{color:var(--ao-bad)}
+.career-job.ao .ao-size.is-why{opacity:.55}
+.career-job.ao .ao-sizes.wait{opacity:.7}
+.career-job.ao .ao-slim{margin:var(--sp-2) 0 var(--sp-1);color:var(--ao-violet)}
+.career-job.ao .ao-swatch{min-width:44px;justify-content:center}

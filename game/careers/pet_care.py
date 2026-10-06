@@ -1107,11 +1107,16 @@ def _add_stress(t: dict, base: int) -> None:
     g['peak'] = max(g['peak'], g['stress'])
 
 
-def _calm_enough(t: dict) -> None:
-    g = t['g']
+def _calm_enough(t: dict, need=None) -> None:
+    """Hands on the pet only while it is not panicking. Written once, run twice (docs/UI_KIT.md "Disabled with a
+    reason"): the grooming commands refuse with it (pc_nails' top refusal 04–06/10), public_task sends it as
+    can.pc_brush / pc_bath / pc_rinse / pc_dry / pc_nails / pc_ears, so those buttons are dimmed with the same words
+    (the pet's body language, never the hidden number) and a fix: the 5-minute break."""
+    g, need = t['g'], need or kit.need
+    fix = dict(cmd='pc_calm', payload=dict(task=t['id'], how='break'), label=f'{CALM_INDEX["break"]["emoji"]} {CALM_INDEX["break"]["name"]}')
     if t.get('gen'):
-        kit.need(g['stress'] < STRESS_STOP, f'Bé đang hoảng: {_mood_line(t)}. Dỗ dành, cho nghỉ, hoặc dừng dịch vụ.')
-    kit.need(g['stress'] < STRESS_STOP, f'Bé đang quá căng thẳng (stress {g["stress"]}). Dỗ dành, cho nghỉ, hoặc dừng dịch vụ.')
+        need(g['stress'] < STRESS_STOP, f'Bé đang hoảng: {_mood_line(t)}. Dỗ dành, cho nghỉ, hoặc dừng dịch vụ.', fix=fix)
+    need(g['stress'] < STRESS_STOP, f'Bé đang quá căng thẳng (stress {g["stress"]}). Dỗ dành, cho nghỉ, hoặc dừng dịch vụ.', fix=fix)
 
 
 def _no_timer(g: dict) -> None:
@@ -2450,6 +2455,9 @@ def public_task(t: dict) -> dict:
         v['g']['stress'] = None
         v['g']['peak'] = None
         v['cues'] = _cues(t)
+    if t['job'] == 'groom' and isinstance(t.get('g'), dict) and not t['g'].get('stopped'):
+        calm = kit.check(_calm_enough, t)   # a view field, never saved
+        v['can'] = {k: calm for k in ('pc_brush', 'pc_bath', 'pc_rinse', 'pc_dry', 'pc_nails', 'pc_ears')}
     return v
 
 

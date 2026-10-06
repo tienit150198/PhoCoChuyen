@@ -883,6 +883,25 @@ def _scope(b: dict) -> list[str]:
     return list(dict.fromkeys(rows))
 
 
+def _show_rules(t: dict, need=None) -> None:
+    """“Cho khách xem tem báo nước”. Written once, run twice (docs/UI_KIT.md "Disabled with a reason"): rp_show refuses
+    with it (a top repair refusal 04–06/10: the tag was white, “Tem báo nước còn trắng…”), public_task sends it as
+    can.rp_show. The reading on screen already says the tag is white, so the reason gives nothing away."""
+    need, b = need or kit.need, t['bench']
+    need(next((x for x in b['tests'] if x['id'] == 'water_tag'), None), 'Soi tem báo nước trong máy trước, rồi mới có cái để cho khách xem.')
+    need(t['_fault'] == 'water', 'Tem báo nước còn trắng — không có gì để cho khách xem.')
+    need(not b['shown'], 'Khách đã xem tem báo nước rồi.')
+
+
+def _supply_rules(c: dict, fd: dict, need=None) -> None:
+    """The supplies a repair uses up (dầu ăn, keo, thiếc…), one each, in the order rp_fix takes them, with the stock
+    room's own words (rp_fix's top refusal 04–06/10, “Hết Dầu ăn Hướng Dương…”). public_data sends it per open task
+    and fault as can.rp_fix, so “Sửa” is dimmed with the reason and a way to the stock room."""
+    for sup in fd['supplies']:
+        (need or kit.need)(kit.stock(c, sup) >= 1, f'Hết {ITEM_INDEX[sup]["name"]}. Mở Kho để nhập thêm nhé.',
+                           fix=dict(act='v4Restock', data=dict(items=sup, task=''), label='📦 Nhập hàng'))
+
+
 def _open_scope(b: dict) -> list[str]:
     return [f for f in _scope(b) if f not in b['fixed']]
 
@@ -1135,10 +1154,7 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
         b['opened'] = False
         return dict(message=f'{dev["close"]}.')
     if name == 'rp_show':
-        row = next((x for x in b['tests'] if x['id'] == 'water_tag'), None)
-        kit.need(row, 'Soi tem báo nước trong máy trước, rồi mới có cái để cho khách xem.')
-        kit.need(t['_fault'] == 'water', 'Tem báo nước còn trắng — không có gì để cho khách xem.')
-        kit.need(not b['shown'], 'Khách đã xem tem báo nước rồi.')
+        _show_rules(t)
         b['shown'] = True
         return dict(message='📸 Cho khách xem tem báo nước đỏ và muối gỉ trên main. Khách im một lúc rồi lí nhí: '
                             '“Hôm bữa… rớt vô xô nước một chút thật.”')
@@ -1333,6 +1349,7 @@ def _handle(s: dict, c: dict, d: dict, name: str, p: dict) -> dict:
             cost = kit.take(c, item, 1)
         else:
             cost = 0
+        _supply_rules(c, fd)
         for sup in fd['supplies']:
             cost += kit.take(c, sup, 1)
         cold = ''
@@ -1960,6 +1977,8 @@ def public_task(t: dict) -> dict:
     v['scope'] = _scope(b)
     v['open_scope'] = _open_scope(b)
     v['recommended'] = _recommended(t) if b['final'] == 'pass' else None
+    if 'water' in v['open_scope'] and 'water' not in b['approved'] and not b['shown']:
+        v['can'] = dict(rp_show=kit.check(_show_rules, t))   # a view field, never saved
     rush = t['needs'].get('rush') if t.get('gen') else None
     v['due_turn'] = t['created_turn'] + rush['steps'] if rush else None
     if t['status'] in DONE:
@@ -2271,6 +2290,17 @@ def public_data(c: dict) -> dict:
         x.update(covered=_back_covered(x), cost=cost, price=price, cause_text=CAUSES[x['cause']],
                  left=_fault_def(x['device'], x['fault'])['left'], who=PEOPLE[int(x['npc'].rsplit('_', 1)[1]) - 1][0])
     d['care'] = _care_view(c)
+    # A view field, never saved: the approved repairs whose supplies are out (see _supply_rules), task → fault → {why, fix}.
+    fixes = {}
+    for t in _open_tasks(c):
+        if not t.get('known') or not isinstance(t.get('bench'), dict):
+            continue
+        for f in _open_scope(t['bench']):
+            fd = _fault_def(t['needs']['device'], f)
+            r = kit.check(_supply_rules, c, fd) if fd else True
+            if r is not True:
+                fixes.setdefault(t['id'], {})[f] = r
+    d['can'] = dict(rp_fix=fixes)
     return d
 
 

@@ -214,10 +214,15 @@
   .career-job.fa .fa-lot-btns{width:100%}
 }
 
-/* ---------- next-step bar (guide.js): the crate at a glance and the one button that does the next step */
-.career-job.fa .fa-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:8px 12px 10px;border-radius:var(--fa-rs);
+/* ---------- next-step bar: the shared .ui-bar (ui-kit actBar, wave 5); .fa-bar is its hook. The rules below only
+   style an old-style bar, never the .ui-bar's layout. */
+.career-job.fa .fa-bar:not(.ui-bar){position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:8px 12px 10px;border-radius:var(--fa-rs);
   background:var(--fa-surface);border:1px solid var(--fa-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
-.career-job.fa .fa-bar .btn{width:100%;min-height:48px}
+.career-job.fa .fa-bar:not(.ui-bar) .btn{width:100%;min-height:48px}
+.career-job.fa .ui-bar.fa-bar .fv-btns .btn,.career-job.fa .ui-bar.fa-bar .fa-bar-labels .tile{width:100%}
+.career-job.fa .ui-bar.fa-bar .fv-chip{padding:0;border-bottom:0}
+.career-job.fa .ui-bar.fa-bar .ui-bar-top{display:grid;gap:6px}
+.career-job.fa .ui-bar.fa-bar .ui-bar-top:empty{display:none}
 .career-job.fa .fa-strip{display:flex;flex-wrap:wrap;gap:6px;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
 .career-job.fa .fa-strip span{padding:2px 8px;border-radius:99px;background:var(--fa-surface-2);color:var(--fa-muted)}
 .career-job.fa .fa-strip span.ok{color:var(--fa-ink);box-shadow:inset 0 0 0 1px var(--fa-line)}

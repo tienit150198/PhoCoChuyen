@@ -71,12 +71,13 @@ Migrated so far:
   `.pl-bar` (the colour count's progress bar) once the palette has been opened.
 - the office desks (`office_kit.js bar`, hook `ok-bar`: the six Cánh Diều / Mây Tre Xanh / Sông Hồng / Minh Bạch desks),
   the pet shop (`ps-bar`, via `stepBar`) and the support desk (`cs-bar`, customer_care) — wave 3
+- wave 5: the classic desks (`dw-bar`: pharmacy, accounting; `dk-bar`), mother & baby (`mb-ctabar`), delivery (`dl-bar`),
+  farm (`fa-bar`), homestay (`hs-bar`), grocery (`gr-billbar`), salon (`sl-bar`), pet care (`pc-bar`), clothing (`ao-bar`)
 
 - milk tea (`fk-bar mt-bar`: the mini cup and "Còn n bước" in the left slot) and cafe (`fk-bar cb-dock`: what is in hand in
   the left slot; the wide side column no longer repeats the button) — wave 4, via `barParts` + `actBar`.
 
-Not yet migrated (they keep their own bar with the phone rules in compact.css): `dw-bar`, `dl-bar`,
-`fa-bar`, `mb-ctabar`, `td-bar`, `hs-bar`, `gr-billbar`, `sl-bar`, `pc-bar`.
+Not yet migrated (they keep their own bar with the phone rules in compact.css): `td-bar`.
 
 ## Disabled with a reason
 
@@ -125,6 +126,11 @@ too is not offered again, 148) and `can.rs_touch[touch]` (the extra soup only on
 `can.nt_close` (every chore that belongs in the day, 110), garbage `can.rac_load` (sweep a late lane first; the fix is
 the sweep, 96), fruit `can.tc_weigh` (anh Lâm's min–max, 138), and `can.open` in nail / photobooth / ice cream
 `public_data` (a customer picked before "Mở tiệm"; the fix is `task_select` on the morning set-up, 90 + 119).
+Wave 5: the classic desks' guards live once in `game/desk_can.py` (engine runs them to refuse, the view runs them through
+`kit.check`): pharmacy `can.ph_check` (the tray against the slip), accounting `can.ac_match` / `can.ac_complete`;
+delivery `can.dl_signal` (a crossing off the leg, no destination yet) and `can.dl_ride`; homestay `can.hs_assign` (a room
+whose app booking still waits to sync, fix "📥 Đơn chờ") and `can.hs_pick` (the most places to suggest); clothing
+`can.ao_pick` (a size the rack is out of), salon `can.sl_mix`, repair `can.rp_show` / `can.rp_fix`, pet care `can.pc_*`.
 
 ## Header chip for a pinned card: `headChip(icon, text, selector)`
 
@@ -287,6 +293,8 @@ Each wave owns its screens and their files; no other wave edits them.
 | 3 (shipped 1.9.8) | `ui-wave3` | the six office desks, customer_care, pet_shop | `office_kit`, `office_work`, `desks.css`; those 8 careers |
 | **4: shops + street kit B** (from rel-1.9.8) | `ui-wave4` | **milk_tea, cafe_bakery, restaurant, florist** (the food-kit counters) and **ice_cream, homemaker, garbage, fruit, nail, naucom, photobooth, library** (the street-kit careers not done in wave 1/2) | `careers/food_kit.js` + `.css` (`actionBar`/bar CSS only: delivery, pet_care, grocery, salon, clothing, pet_shop import its other helpers, which stay as they are); `public/js/careers/<id>.js` + `public/css/careers/<id>.css` of those 12; their server files `game/boba.py` (milk tea), `game/careers/<id>.py` of the other 11, `homemaker_content.py`, `library_content.py` |
 | 5 (in parallel) | `ui-wave5` | everything else (delivery, pet_care, grocery, salon, clothing, repair, homestay, mother_baby, farm, teacher, tour_guide, desks, life screens…): not any screen above | not any file above. Shared and not edited by wave 4: `street_kit.js`/`.css`, `asm_kit.js`, `stage_fold.js`, `till.js`, `tomorrow_kit.js`, `plan_kit.js`, `ui-kit.js`, `guide.js`, `app.css`, `compact.css`, i18n |
+| 3 | `ui-wave3` | the rest: not any screen above | not any file above |
+| **5: the last screens** (from rel-1.9.8, in parallel with wave 4; wave 4's list wins on a clash) | `ui-wave5` | work: **mother_baby, pharmacy, accounting, teacher, tour_guide, grocery, repair, farm, delivery, homestay, pet_care, salon, clothing**; life (cap 30): **town map, house, bank, fair, wardrobe, stall (quầy), HUD, karaoke, spending (Đi chơi)** | `public/js/careers/<id>.js` + `public/css/careers/<id>.css` and `game/careers/<id>.py` of those careers (`game/desk_content.py` and the desk section of `app.js` for pharmacy/accounting; `v4/teach-tour.js`, `teach.css` for teacher/tour guide; `delivery_*.js`, `farm_walk.js`, `salon_mix.js`, `asm_kit.js`, `stage_fold.js`, `till.js`); life: `v4/house.js`, `bank.js`, `fair*.js` + `fair.css`, `wardrobe.js`, `quay*.js`, `town-walk.js`, `journey.js`, `karaoke.js`, `spend.js`. Not `food_kit.js`/`.css` (wave 4) |
 
 Wave 2, done (ui-wave2): police 84 → 23 visible words, nurse 78 → 19, lifeguard 67 → 25, oil 42 → 22, pilot 135 → 30
 (cap 30: the opening at the cockpit door stays whole), flight attendant 172 → 25, on a 390 × 844 phone. The pilot and
@@ -303,3 +311,34 @@ homemaker (the morning money: amount, bills and three answers) and fruit (what e
 the bruised fruit). Outside its own files wave 4 changed one line of `app.js` (the four counters join the ≤ 4-word header)
 and `ui-kit.js placeChips` (header chips survive a pass over unchanged markup); `food_kit` helpers changed only behind
 the opt-in `{tight}`.
+Wave 5, done (ui-wave5), first work screen on a 390 × 844 phone: delivery 128 → 30 (cap 30: the customer's ask stays
+whole; the other open orders stay as one line each: from→to, ⏰ deadline, 💵 COD ⚠️ fragile ❄️ cold), pharmacy 90 → 24, teacher 87 → 24, accounting 83 → 22, tour guide 82 → 23, clothing 60 → 25, grocery 43 → 18,
+homestay 41 → 18, repair 40 → 24, salon 37 → 26 (cap 30: the title is the customer's demand), pet care 34 → 18,
+mother & baby 32 → 21, farm 26 → 16. `app.js header` shortens the title for clothing, grocery and pet care only (a repair
+or salon title is the symptom or the demand: never cut); delivery and farm shorten their own (`shortHead`).
+Cap 30 also for pharmacy (deeper steps show each lot's state) and mother & baby (an occasion order's ask, day 2+).
+Accepted exceptions, not failures: the paperwork case screens of `desk.js` once the papers are taken (pharmacy ~70,
+accounting ~75 words: every line is document data the answer is checked against), and the farm's "⏩ Bấm nhanh" board
+(~97: six plot cards with their ripeness and keep-until day; the default "🚶 Tự đi" screen is 16), left for a redesign.
+
+## Life sheets (wave 5)
+
+Cap 30 visible words on a phone (`python scripts/check_word_caps.py --life`: a new story-mode player, the HUD and every
+sheet below, plus one step further where there is one). The same switch (`clean()`) gates every change; desktop and the
+classic layout keep their text.
+
+- **House** (`v4/house.js`, `home-items.js`): the place card is its name and `🏠 6 · 🍚 4 xu/ngày`, the cosy score rides
+  on "🚪 Vào phòng"; the inventory, the home listings (with the rental market's button inside) are one fold each; the
+  savings card is not drawn twice when the next-step line already says "open the bank". 115 → 29.
+- **Town map** (`journey.js chapterCard({compact})`, `town-walk.js`): the goal and its button, the count beside the
+  chapter, the "why this place" line left out; the new player's pointer in four words. 51 → 29.
+- **Fair** (`fair.js`): the gift card says "Đã bỏ vô ví 👛" and is the whole screen until "Vào hội"; "không có tiền thật"
+  always shows, in its short form. 66 → 25 (gift) / 28 (gate). The ring game never replays a round the server already
+  closed (`S.ring.dead`: the `fair_ring_over` loop, 534 refusals in 3 days).
+- **Bank** (`bank.js`): icon tabs with the open tab's word, `STK …` in the header, the default way to pay as one fold, the
+  amount's label as its placeholder, empty-state tile lines dropped, a good-news line fades after 6 s (text only, a typed
+  amount stays). With an account: 144 → 27.
+- **Quầy** (`quay.js why()`): the explanation paragraphs (a shift's money, invites, receipts, tax, supplies, stock) fold
+  behind the quầy's own "?" (44 px on the phone).
+- Already within the cap at 1.9.8 and unchanged: stall's first screen (24), wardrobe (25), spending (16), karaoke (15),
+  HUD (16–20).

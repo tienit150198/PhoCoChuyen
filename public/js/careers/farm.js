@@ -1,8 +1,8 @@
 /** Nông Trại Đồi Gió — six plots, a hen house, the cold room and the packing
  *  table. Field state is persistent and turn-based; everything is recomputed
  *  on the server, the client only shows it. */
-import {reqList} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine,goAttrs,bareLabel} from '../v4/guide.js';
+import {reqList,clean,actBar,few} from '../ui-kit.js';
+import {stepRows,nextHint,finalGo,pending,firstTime,stepLine,goAttrs,bareLabel,barParts,stepBar} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
 import {plusTab,plusSub,plusBadge,plusChip,plusStep,plusTick,plusActions} from './farm_plus.js';
@@ -291,8 +291,8 @@ function sourceStep(t,x,k,need){
     const boost=!today&&!p.compost&&(st.compost||0)>0&&p.growth+5+room+4>=th.ripe;
     if(!today&&!boost)continue;
     const tag=`${p.id}: ${p.growth}/${th.ripe}`;
-    if(p.weeds)return {plot:p.id,note:tag,go:{cmd:'fa_weed',payload:{plot:p.id},label:`🌾 Nhổ cỏ luống ${x.esc(p.id)} cho ${x.esc(c.name.toLowerCase())} mau lớn`}};
-    if(boost)return {plot:p.id,note:tag,go:{cmd:'fa_fertilize',payload:{plot:p.id,kind:'compost'},label:`🟫 Bón compost luống ${x.esc(p.id)}: chín kịp hôm nay`}};
+    if(p.weeds)return {plot:p.id,note:tag,go:{cmd:'fa_weed',payload:{plot:p.id},label:`🌾 Nhổ cỏ luống ${x.esc(p.id)}${clean()?'':` cho ${x.esc(c.name.toLowerCase())} mau lớn`}`}};
+    if(boost)return {plot:p.id,note:tag,go:{cmd:'fa_fertilize',payload:{plot:p.id,kind:'compost'},label:`🟫 Bón compost luống ${x.esc(p.id)}${clean()?'':': chín kịp hôm nay'}`}};
     if(p.moisture<m.low)return {plot:p.id,note:tag,go:{cmd:'fa_water',payload:{plot:p.id},label:`💧 Tưới luống ${x.esc(p.id)} (${p.moisture}%)`}};
     return {plot:p.id,go:{cmd:'advance',payload:{},label:`⏳ Chờ ${x.esc(c.name.toLowerCase())} luống ${x.esc(p.id)} chín · ${p.growth}/${th.ripe}`}};
   }
@@ -348,7 +348,8 @@ function bottomBar(t,x,g){
   const bed=(data(x).plots||[]).find(p=>p.id===pending(g.steps)?.plot),th=x.cc.thresholds,m=x.cc.moisture;
   const plot=bed?`<span class="fa-bed">${x.esc(bed.id)} ${bed.crop?produce(x,bed.crop).emoji:''} ${bed.growth}/${th.ripe} · 💧${bed.moisture}%${bed.moisture<m.low?'↓':''}${bed.weeds?` · 🌾${bed.weeds}`:''}</span>`:'';
   const strip=t.known?`<div class="fa-strip" aria-label="Thùng hàng">${Object.entries(t.needs.items).map(([k,q])=>{const h=packed(t,k);return `<span class="${h>=q?'ok':''}">${produce(x,k).emoji} ${h}/${q}</span>`;}).join('')}<span class="${t.label?'ok':''}">${t.label==='organic'?'🌿':'🏷️'} ${t.label?'✓':'—'}</span>${plot}</div>`:'';
-  return `<div class="fa-bar">${strip}${labelStep(t,x,g)?labelTiles(t,x,'fa-bar-labels'):''}${stepCta(x,g.steps,g.final)}</div>`;
+  const {next,main}=barParts(x,g.steps,g.final);
+  return actBar({top:`${strip}${labelStep(t,x,g)?labelTiles(t,x,'fa-bar-labels'):''}`,next,main,cls:'fa-bar'});
 }
 /* Between orders: the daily chores that cost tomorrow's harvest or eggs when forgotten. */
 function idleSteps(x){
@@ -410,11 +411,13 @@ function spotOf(go,x){
 function walkGo(go,x){
   const at=spotOf(go,x);
   if(!at)return go;
-  if(at!==x.ui.fvNear)return {act:'car:fvgo',data:{to:at},label:`📍 ${x.esc(bareLabel(go.label||''))}`};
+  if(at!==x.ui.fvNear)return {act:'car:fvgo',data:{to:at},label:clean()?`📍 ${x.esc(placeName(at))} · ${x.esc(verb(bareLabel(go.label||'')))}`:`📍 ${x.esc(bareLabel(go.label||''))}`};
   // At the empty bed the seeds are right under the stage.
   if(go.act==='car:open')return {sel:'.fa-seeds',label:`🌱 Chọn hạt gieo luống ${x.esc(at)}`};
   return go;
 }
+/** The first two words of an action ("Nhổ cỏ", "Thu hoạch", "Xếp 4 bó"): numbers ride free. */
+function verb(s){const out=[];let n=0;for(const w of String(s).split(/\s+/)){const word=/\p{L}/u.test(w);if(word&&n>=2)break;out.push(w);if(word)n++;}return out.join(' ');}
 const walkSteps=(steps,x)=>(steps||[]).map(s=>s&&s.ok!==true&&s.go?{...s,go:walkGo(s.go,x)}:s);
 /* The finish: walk to the scooter, then ride. A finish asked early keeps the workbench's question. */
 function walkFinal(t,x,g){
@@ -459,13 +462,17 @@ function placeActs(at,t,x,g){
 function placeLine(at,x){
   if(!at)return '';
   const p=/^P[1-6]$/.test(at)?data(x).plots.find(q=>q.id===at):null,c=p?.crop?produce(x,p.crop):null;
+  // Clean layout: a bed by its id, a growing crop by when it ripens (ripe, over or rotten keep their whole line).
+  if(clean())return `<p class="fv-at" aria-label="${x.esc(placeName(at))}"><b>📍 ${x.esc(p?p.id:placeName(at))}</b>${c?` · ${c.emoji} ${x.esc(c.name)} <small>${x.esc(['ripe','over','rotten'].includes(p.stage)||p.eta==null?when(p):`chín ${DAYS(p.eta)}`)}</small>`:p?' · <small>🌱 gieo hạt</small>':''}</p>`;
   return `<p class="fv-at"><b>📍 ${x.esc(placeName(at))}</b>${c?` · ${c.emoji} ${x.esc(c.name)} <small>${x.esc(when(p))}</small>`:p?' · <small>🌱 chọn hạt để gieo</small>':''}</p>`;
 }
 function orderChip(t,x){
   if(!t)return '';
   const who=x.npc(t.npc);
-  if(!t.known)return `<div class="fv-chip">${x.portrait(who,32)}<span class="fv-chip-who"><b>${x.esc(who.display_name)}</b><small>📞 đang gọi đặt hàng</small></span></div>`;
-  const items=Object.entries(t.needs.items).map(([k,q])=>{const h=packed(t,k);return `<span class="${h>=q?'ok':''}">${produce(x,k).emoji} ${h}/${q}</span>`;}).join('');
+  if(!t.known)return `<div class="fv-chip">${x.portrait(who,32)}<span class="fv-chip-who"><b>${x.esc(who.display_name)}</b><small>📞 ${clean()?'đang gọi':'đang gọi đặt hàng'}</small></span></div>`;
+  // Clean layout: what the order demands stays on the chip without opening it: loại A (a contract), 🌿 hữu cơ.
+  const need=clean()?`${t.needs.kind==='contract'?'<span title="Hợp đồng: chỉ loại A">A</span>':''}${t.needs.organic?'<span title="Bắt buộc hữu cơ + QR">🌿 hữu cơ</span>':''}`:'';
+  const items=Object.entries(t.needs.items).map(([k,q])=>{const h=packed(t,k);return `<span class="${h>=q?'ok':''}">${produce(x,k).emoji} ${h}/${q}</span>`;}).join('')+need;
   return `<button type="button" class="fv-chip" data-action="car:fvmore" data-more="order" aria-label="Đơn của ${x.esc(who.display_name)}">${x.portrait(who,32)}<span class="fv-chip-who"><b>${x.esc(who.display_name)}</b><span class="patience"><span class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></span></span></span>
     <span class="fa-strip">${items}<span class="${t.label?'ok':''}">${t.label==='organic'?'🌿':'🏷️'} ${t.label?'✓':'—'}</span></span><b class="price">${x.money(t.quoted_price||0)}</b></button>`;
 }
@@ -483,9 +490,10 @@ function drawer(t,x,g){
   return `<section class="fv-drawer" role="dialog" aria-label="${x.esc(plainTitle(title))}"><div class="fv-drawer-head"><b>${title}</b>${carBtn(x,'✕','fvmore',{more:''},'ghost small fv-x',' aria-label="Đóng"')}</div>${body}</section>`;
 }
 const plainTitle=s=>String(s).replace(/<[^>]*>/g,'');
-const seg=(x,label,items)=>`<div class="fv-seg" role="group" aria-label="${label}">${items.map(([text,action,dat,on])=>carBtn(x,text,action,dat,on?'on':'',` aria-pressed="${on}"`)).join('')}</div>`;
-const modeSeg=(x,walk)=>seg(x,'Cách chơi',[['🚶 Tự đi','fvmode',{mode:'walk'},walk],['⏩ Bấm nhanh','fvmode',{mode:'tap'},!walk]]);
-const camSeg=x=>seg(x,'Góc nhìn',[['👁️ Thứ nhất','fvcam',{cam:'fp'},x.ui.fvCam!=='tp'],['Thứ ba','fvcam',{cam:'tp'},x.ui.fvCam==='tp']]);
+const seg=(x,label,items)=>`<div class="fv-seg" role="group" aria-label="${label}">${items.map(([text,action,dat,on,name])=>carBtn(x,text,action,dat,on?'on':'',` aria-pressed="${on}"${name?` aria-label="${name}"`:''}`)).join('')}</div>`;
+const modeSeg=(x,walk)=>seg(x,'Cách chơi',[['🚶 Tự đi','fvmode',{mode:'walk'},walk],[clean()?'⏩ Nhanh':'⏩ Bấm nhanh','fvmode',{mode:'tap'},!walk,'Bấm nhanh']]);
+const camSeg=x=>clean()?seg(x,'Góc nhìn',[['👁️','fvcam',{cam:'fp'},x.ui.fvCam!=='tp','Góc nhìn thứ nhất'],['🎥','fvcam',{cam:'tp'},x.ui.fvCam==='tp','Góc nhìn thứ ba']])
+  :seg(x,'Góc nhìn',[['👁️ Thứ nhất','fvcam',{cam:'fp'},x.ui.fvCam!=='tp'],['Thứ ba','fvcam',{cam:'tp'},x.ui.fvCam==='tp']]);
 /** The walk view: the stage first (re-renders keep it), the order, the overlay switches, the place's buttons and
  * the next-step button under it. `t` null: between orders. */
 function walkView(t,x,g,idle=false){
@@ -497,18 +505,29 @@ function walkView(t,x,g,idle=false){
   const ride=x.ui.fvRide;
   const hint=ride?'':t?hintFor({steps,final},x):pending(steps)?.go?nextHint(x,steps,{}):'';
   let acts;
-  if(ride)acts=`<p class="fv-at"><b>🛵 ${x.esc(ride.place||'')}</b></p><button type="button" class="btn primary big grow gd-cta fv-honk" data-action="car:fvhonk" data-fd-wait=".fv-arrived">📯 Bóp còi</button>`;
+  if(ride)acts=actBar({next:`<p class="fv-at"><b>🛵 ${x.esc(ride.place||'')}</b></p>`,main:'<button type="button" class="btn primary big gd-cta fv-honk" data-action="car:fvhonk" data-fd-wait=".fv-arrived">📯 Bóp còi</button>',cls:'fa-bar fv-acts'});
   else{
-    const cta=t||pending(steps)?.go?stepCta(x,steps,final):'',ctaGo=pending(steps)?.go;
+    const parts=t||pending(steps)?.go?barParts(x,steps,final):{next:'',main:''},cta=parts.next+parts.main,ctaGo=pending(steps)?.go;
     const own=placeActs(at,t,x,g).filter(o=>!sameGo(o,ctaGo)&&!(o.act==='car:fvride'&&cta.includes('car:fvride')));
     const p=/^P[1-6]$/.test(at||'')?data(x).plots.find(q=>q.id===at):null;
     const seeds=p&&!p.crop?seedTiles(p,x,'fv-seeds'):'';
     const labels=at==='pack'&&t&&labelStep(t,x,g)?labelTiles(t,x,'fa-bar-labels'):'';
-    acts=`${placeLine(at,x)}${seeds}${labels}${own.length?`<div class="fv-btns">${own.map(o=>`<button type="button" class="btn small fv-btn ${o.cls}"${goAttrs(o)}>${o.label}</button>`).join('')}</div>`:''}${cta}`;
+    const top=`${placeLine(at,x)}${seeds}${labels}${own.length?`<div class="fv-btns">${own.map(o=>`<button type="button" class="btn small fv-btn ${o.cls}"${goAttrs(o)}>${o.label}</button>`).join('')}</div>`:''}`;
+    // The order chip is a full row of its own (who, what is packed, A / 🌿 hữu cơ, the price), right above the button.
+    acts=actBar({top:top+orderChip(t,x),next:parts.next,main:parts.main,cls:'fa-bar fv-acts'});
   }
   const top=ride?'':`<div class="fv-top">${camSeg(x)}${modeSeg(x,true)}</div>${plusChip(x,(...a)=>carBtn(x,...a))}`;
   return `<div class="career-job fa fa-walk"${idle?' data-idle-open':''}><div class="fv-host" id="fvHost"><i hidden></i></div>${hint}${top}${ride?'':drawer(t,x,g)}
-    ${deskCard(x)}<div class="fa-bar fv-acts">${orderChip(t,x)}${acts}</div></div>`;
+    ${deskCard(x)}${acts}</div>`;
+}
+/** Clean layout: the sheet header's order name in four words, as app.js header does for the street-kit and desk
+ * careers ("Xà lách hữu cơ cho quán chay" → "Xà lách hữu cơ"); what the order demands (A, 🌿 hữu cơ) is on the order
+ * chip. The full title stays in title= and aria-label. A local stand-in until app.js lists the farm. */
+function shortHead(root){
+  if(!clean())return;
+  const h=root.closest('dialog')?.querySelector('.sheet-head h2');if(!h)return;
+  const full=(h.getAttribute('title')||h.textContent||'').trim(),s=few(full,4,true);
+  if(s&&s!==full&&h.textContent!==s){h.textContent=s;h.setAttribute('aria-label',full);}
 }
 /* What the engine tells the workbench. */
 const HOOKS={
@@ -543,7 +562,7 @@ export default {
   },
   idle(x){
     const steps=idleSteps(x),todo=pending(steps)?.go;
-    const hint=todo?nextHint(x,steps,{}):'',bar=todo?`<div class="fa-bar">${stepCta(x,steps,{label:'',go:null,ready:false})}</div>`:'';
+    const hint=todo?nextHint(x,steps,{}):'',bar=todo?stepBar(x,steps,null,{cls:'fa-bar'}):'';
     if(data(x).desk?.ev)return `<div class="career-job fa">${hint}${deskCard(x)}${weatherBar(x)}${bar}</div>`;
     if(walking(x))return walkView(null,x,{steps},true);
     const tab=x.ui.tab||'field';
@@ -555,6 +574,7 @@ export default {
   // 🚶 Tự đi: the stage goes into #fvHost (again after a render that replaced the host) and keeps drawing.
   tick(root,x){
     keepBarAboveFooter(root);
+    shortHead(root);
     plusTick(root,x);
     const host=root.querySelector(':scope>#fvHost');
     if(!host)return;

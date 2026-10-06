@@ -12,6 +12,10 @@ warns in the console of a dev build). Fails when a migrated screen is over its c
 
 Other screens are listed with their counts but do not fail (--all shows every one).
 
+  --life: the life sheets instead (story-mode player, wave 5), each ≤ 30 (LIFE): HUD, town map, house, bank (before and
+  after opening an account), fair (gift card, then the gate), stall, wardrobe, spending. Karaoke needs the live service
+  and is measured by hand (15 words at 1.9.8).
+
   TEST_DATABASE_URL=postgresql://… python scripts/check_word_caps.py [--careers a,b] [--engine chromium|webkit]
                                                                     [--all] [--json FILE]
 Needs `pip install playwright` + the browser. Exit code 0 = within caps, 1 = over, 2 = could not run.
@@ -58,6 +62,105 @@ WORK_DONE += WAVE4
 # fruit's set-up (what each cover is for, the empty scale's reading, the bruised fruit).
 WORK_CAP.update(homemaker=30, fruit=30)
 DEFAULT += ('milk_tea', 'cafe_bakery')
+
+# Wave 5: the last career screens. 30 where the deciding cue needs the room: delivery's customer ask stays whole
+# (16 words: where, what, the awkward extra), the salon's title is the customer's demand ("Nâu lạnh đi làm, tỉa ngọn")
+# and is never cut. Repair's and the salon's titles are the symptom/demand, so app.js header never shortens them.
+WAVE5 = ('mother_baby', 'pharmacy', 'accounting', 'teacher', 'tour_guide', 'grocery', 'repair', 'farm', 'delivery',
+         'homestay', 'pet_care', 'salon', 'clothing')
+WORK_DONE += WAVE5
+WORK_CAP.update(delivery=30, salon=30, pharmacy=30, mother_baby=30)   # the lot states; an occasion order's ask (day 2+)
+DEFAULT += tuple(c for c in WAVE5 if c not in DEFAULT)
+
+# Life sheets (cap 30, docs/UI_KIT.md): [name, rail action, rail group]; HUD is the home screen with no sheet open.
+LIFE = (('HUD', '', ''), ('town', 'jrTown', 'pho'), ('house', 'house', 'tien'), ('bank', 'bank', 'tien'), ('fair', 'fair', 'pho'),
+        ('stall', 'quay', 'tien'), ('wardrobe', 'jrWardrobe', 'minh'), ('spend', 'spend', 'pho'))
+LIFE_CAP = 30
+# One step further on a life sheet: the fair's gift card closed, the bank's account opened (its confirm accepted).
+LIFE_DEEP = r"""()=>{const b=document.querySelector('dialog[open] [data-fh="giftok"]')||[...document.querySelectorAll('dialog[open] button')].find(b=>/Mở tài khoản miễn phí/.test(b.innerText));
+  if(!b)return false;b.click();return true;}"""
+LIFE_OK = r"""()=>{const b=[...document.querySelectorAll('button')].reverse().find(b=>/^(Mở tài khoản)$/.test(b.innerText.trim())&&b.offsetParent);b?.click();}"""
+HUB = r"""async ([action, group]) => {
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  document.querySelector('[data-action=v4Menu]')?.click(); await wait(250);
+  document.querySelector(`#rail .rail-group[data-group=${group}]`)?.click(); await wait(300);
+  const b = document.querySelector(`#rail .rail-sub[data-group=${group}] [data-action=${action}]`) || document.querySelector(`#rail [data-action=${action}]`);
+  if (!b) return false; b.click(); return true;}"""
+LIFE_COUNT = r"""async () => {
+  const d = [...document.querySelectorAll('dialog[open]')].pop();
+  const kit = await import('/js/ui-kit.js');
+  if (d) return kit.wordBudget(d).words;
+  const app = document.getElementById('app'), vh = innerHeight, vw = innerWidth; let n = 0;   // the HUD: no sheet
+  const tw = document.createTreeWalker(app, NodeFilter.SHOW_TEXT);
+  for (let t; (t = tw.nextNode());) { const s = t.textContent.trim(), p = t.parentElement; if (!s || !p || p.closest('[hidden],.sr-only')) continue;
+    const rg = document.createRange(); rg.selectNodeContents(t); if (![...rg.getClientRects()].some(r => r.width >= 1 && r.bottom > 0 && r.top < vh && r.right > 0 && r.left < vw)) continue;
+    if (p.checkVisibility && !p.checkVisibility({opacityProperty: true, visibilityProperty: true})) continue;
+    n += s.split(/\s+/).filter(k => /\p{L}/u.test(k)).length; }
+  return n;
+}"""
+
+
+async def run_life(args) -> int:
+    """The life sheets of a new story-mode player (wave 5): each ≤ LIFE_CAP visible words on a 390×844 phone."""
+    import datetime
+    import os
+    from playwright.async_api import async_playwright
+    vn = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=7)))
+    os.environ.setdefault('MNL_FAIR_START', (vn - datetime.timedelta(days=1)).date().isoformat())   # the fair is on
+    os.environ.setdefault('MNL_FAIR_DAYS', '7')
+    rows, over = [], []
+    with server(story=True) as base:
+        async with async_playwright() as pw:
+            browser = await getattr(pw, args.engine).launch()
+            ctx = await browser.new_context(viewport=dict(width=390, height=844), has_touch=True, is_mobile=args.engine != 'firefox')
+            await ctx.add_init_script("try{localStorage.setItem('mnl.tut.done','1');localStorage.setItem('mnl.ui25d','0');localStorage.setItem('mnl.wn.seen','9.9.9');localStorage.setItem('mnl.tut.tips','done');localStorage.setItem('mnl.clean','on')}catch(e){}")
+            page = await ctx.new_page()
+            page.set_default_timeout(15000)
+            await page.goto(base + '/')
+            await page.wait_for_selector('#app:not([hidden])', timeout=60000)
+            await page.click('[data-action=jrGender][data-gender=female]')
+            await page.fill('#jr-name', 'Mây')
+            await page.click('form[data-jr-form=start] button[type=submit]')
+            await settle(page, 2500)
+            for _ in range(6):
+                await page.keyboard.press('Escape')
+                await settle(page, 400)
+            for name, action, group in LIFE:
+                try:
+                    await page.evaluate("document.querySelectorAll('dialog[open]').forEach(d=>d.close());document.documentElement.classList.remove('menu-open')")
+                    await settle(page, 600)
+                    if action and not await page.evaluate(HUB, [action, group]):
+                        rows.append(dict(screen=name, error='no menu entry'))
+                        print(f'{name:10} ERROR no menu entry', flush=True)
+                        continue
+                    await settle(page, 2500)
+                    for state in ('', '+'):
+                        if state:
+                            if not await page.evaluate(LIFE_DEEP):
+                                break
+                            await page.wait_for_timeout(1200)
+                            await page.evaluate(LIFE_OK)
+                            await page.wait_for_timeout(7000 if name == 'bank' else 2000)   # the bank's good-news line fades after 6 s
+                        n = await page.evaluate(LIFE_COUNT)
+                        rows.append(dict(screen=name + state, life=n))
+                        if n > LIFE_CAP:
+                            over.append(f'{name + state} life: {n} words (cap {LIFE_CAP})')
+                        print(f'{name + state:10} life {n:>3}', flush=True)
+                except Exception as e:  # noqa: BLE001
+                    rows.append(dict(screen=name, error=str(e)[:160]))
+                    print(f'{name:10} ERROR {str(e)[:160]}', flush=True)
+            await browser.close()
+    if args.json:
+        Path(args.json).write_text(json.dumps(rows, ensure_ascii=False, indent=1))
+    if over:
+        print('\nOVER THE CAP:\n  ' + '\n  '.join(over))
+        return 1
+    errors = [r for r in rows if 'error' in r]
+    if errors and len(errors) == len(rows):
+        return 2
+    print(f'\nOK: {len(rows) - len(errors)} life screens within {LIFE_CAP} words.')
+    return 0
+
 
 COUNT = r"""async () => {
   const d = [...document.querySelectorAll('dialog[open]')].pop();
@@ -169,7 +272,9 @@ def main() -> None:
     ap.add_argument('--engine', default='chromium', choices=['chromium', 'webkit', 'firefox'])
     ap.add_argument('--all', action='store_true')
     ap.add_argument('--json', default='')
-    sys.exit(asyncio.run(run(ap.parse_args())))
+    ap.add_argument('--life', action='store_true', help='the life sheets (town, house, bank, fair…) instead of careers')
+    args = ap.parse_args()
+    sys.exit(asyncio.run(run_life(args) if args.life else run(args)))
 
 
 if __name__ == '__main__':
