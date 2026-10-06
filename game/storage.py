@@ -19,6 +19,7 @@ import contextvars
 from concurrent.futures import ThreadPoolExecutor
 import json
 import os
+import re
 import secrets
 import sys
 import threading
@@ -35,6 +36,7 @@ from .content import CAREERS
 from . import db as dbm
 from . import fastjson as fj
 from . import pg_schema
+from . import settle_scope
 
 SAVE_FORMATS=("mot-ngay-lam-nghe/save-v1","mot-ngay-lam-nghe/save-v2","mot-ngay-lam-nghe/save-v3","mot-ngay-lam-nghe/save-v4")
 BUSY_MS=12000          # a write that must happen waits this long for the lock
@@ -42,7 +44,10 @@ QUICK_MS=250           # best-effort writes (timestamps) give up after this inst
 OPTIMISTIC_TRIES=4     # then fall back to computing under the write lock
 # A command on a save stamped with this build (engine.BUILD) re-validates only what it
 # changed (see Store._compute and serialize); every FULL_EVERY-th revision validates all.
-FULL_EVERY=max(1,int(os.environ.get("VALIDATE_FULL_EVERY","50") or 50))
+FULL_EVERY=max(1,int(os.environ.get("VALIDATE_FULL_EVERY","200") or 200))
+# A moved career is re-validated without the pieces it did not change (game/settle_scope.py).
+# SCOPED_CAREER_VALIDATION=0 validates every moved career in full again, as 1.7.15 did.
+SCOPED_CAREERS=os.environ.get("SCOPED_CAREER_VALIDATION","1").strip().lower() not in ("0","false","no","off")
 # HTTP keep-alive connections have their own thread budget. Only a few commands
 # should hold parsed + serialized saves at once, before waiting for the PG pool.
 # Share this budget across Store instances in one process, never across workers.
@@ -180,6 +185,19 @@ def serialize(raw:dict,known:dict|None=None,full:bool=False)->str:
     command and is validated here (validate_career raises GameError); the others are
     byte for byte what already passed. `full`: raw passed validate_state in full.
     With either, the save is stamped (build + digests); otherwise the stamp is dropped."""
+    out=serialize_bytes(raw,known,full)
+    return out if type(out) is str else out.decode('utf-8')
+
+
+SaveText=dbm.Utf8Text  # a save's text as UTF-8 bytes, sent as a text parameter (game/db.py)
+_SURROGATE=re.compile(rb"\xed[\xa0-\xbf]")  # a lone surrogate, written by 'surrogatepass'
+
+
+def serialize_bytes(raw:dict,known:dict|None=None,full:bool=False,snap:dict|None=None)->SaveText|str:
+    """serialize(), as SaveText: the same text, UTF-8. `snap` (game/settle_scope.py): pieces of
+    careers before the command; a moved career is then validated with the pieces that did not
+    change skipped. A text with a lone surrogate (it cannot be stored: psycopg refuses to encode
+    it) comes back as the str serialize() always gave, so storing it fails exactly as before."""
     careers=raw.get("careers")
     if type(careers) is not dict or any(type(k) is not str for k in careers):
         raw.pop("check",None)
@@ -193,10 +211,13 @@ def serialize(raw:dict,known:dict|None=None,full:bool=False)->str:
     fast=fj.FAST and (full or known is not None)
     pieces=[];digests={}
     for cid,c in careers.items():
+        same=frozenset()
         if fast:
             out=fj.dumps_raw(c)
             d=hashlib.blake2b(out,digest_size=10).hexdigest()  # = _digest(the career's text)
             if known is None or known.get(cid)!=d:
+                before=snap.get(cid) if snap and known is not None else None
+                if before is not None:same=settle_scope.same(before,c)[0]  # what of the record did not change
                 try:exact=fj.canonical(out,c)
                 except ValueError:
                     validate_career(c,cid);raise  # NaN/Infinity
@@ -211,7 +232,9 @@ def serialize(raw:dict,known:dict|None=None,full:bool=False)->str:
                 validate_career(c,cid);raise  # NaN/Infinity: the same GameError as a full validation
             d=_digest(piece)
             piece=piece.encode()
-        if known is not None and known.get(cid)!=d:validate_career(c,cid)
+        if known is not None and known.get(cid)!=d:
+            if same:validate_career(c,cid,same=same)
+            else:validate_career(c,cid)
         pieces.extend((_dumps(cid).encode(),b":",piece,b","));digests[cid]=d
     if known is not None or full:raw["check"]=dict(build=BUILD,careers=digests)
     else:raw.pop("check",None)
@@ -224,7 +247,27 @@ def serialize(raw:dict,known:dict|None=None,full:bool=False)->str:
         body.append(b",")
     if len(body)>1:body.pop()
     body.append(b"}")
-    return b"".join(body).decode('utf-8','surrogatepass')
+    out=SaveText(b"".join(body))
+    if b"\xed" in out and _SURROGATE.search(out):return out.decode('utf-8','surrogatepass')
+    return out
+
+
+def _places(raw:dict):
+    """work_visits.places of a computed save (see Store._store); None if it fails, so the commit
+    computes it under the lock as before and fails, or not, exactly as before."""
+    from . import work_visits
+    try:return work_visits.places(raw)
+    except Exception:  # noqa: BLE001 - the commit hook raises it again, in its usual place
+        return None
+
+
+def _snapshot_row(r):
+    """The command's snapshot row (fetched with text_bytes: the save's text and the receipt stay
+    UTF-8 bytes, both parsed by fastjson) with the request hash as text again."""
+    if r is None:return None
+    rhash=r["rhash"]
+    return dict(revision=r["revision"],state=r["state"],rhash=rhash.decode() if isinstance(rhash,bytes) else rhash,rresult=r["rresult"],
+                acct=bool(r["acct"]) if "acct" in r.keys() else False)
 
 
 def _commit_before(raw:dict)->dict:
@@ -315,7 +358,7 @@ class Store:
     def parse_state(self,text:str,sid:str)->dict:
         """The stored save as a (private) dict. A never-played save (FRESH) is
         rebuilt the same way every time: the story seed comes from its sid."""
-        if text==FRESH:
+        if text==FRESH or text==b"":  # the text may come as UTF-8 bytes (Store._command)
             state=new_state()
             if self.story:enable_story(state,int(hashlib.sha256(("seed:"+sid).encode()).hexdigest()[:8],16)%2**31)
             return state
@@ -418,8 +461,9 @@ class Store:
             # 1. A consistent snapshot of the save and of this request's receipt, without any lock.
             with self.connect() as db:
                 sid,_=self._resolve(db,h)
-                row=db.execute("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult FROM sessions s "
-                               "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?",(request_id,sid)).fetchone()
+                row=_snapshot_row(db.execute("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult,"
+                               "EXISTS(SELECT 1 FROM accounts a WHERE a.sid=s.sid) AS acct FROM sessions s "
+                               "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?",(request_id,sid),text_bytes=True).fetchone())
             if not row:raise GameError("Phiên chơi không tồn tại.","session_missing")
             who[0]=sid
             if row["rhash"] is not None:return self._replay(sid,row,fingerprint)
@@ -433,9 +477,11 @@ class Store:
                 if self._moved(sid,request_id,row["revision"]):continue  # judged on a save that has moved on: look again
                 raise
             receipt=_receipt(result)
+            # The save's part of the work-visit snapshots (an account's places), before the lock.
+            projected=_places(raw) if row["acct"] else None
             # 3. Short compare-and-set under the write lock.
             t2=time.perf_counter()
-            if self._store(sid,row["revision"],serialized,request_id,fingerprint,receipt,cut,board,steps,action=action,career=career,result=result,after=raw,before=before_out[0]):
+            if self._store(sid,row["revision"],serialized,request_id,fingerprint,receipt,cut,board,steps,action=action,career=career,result=result,after=raw,before=before_out[0],projected=projected):
                 t3=time.perf_counter()
                 lb.remember(sid,row["revision"]+1,board[0],synced=bool(board[1]) or board[2] is not None)  # rows written, or unchanged from synced ones
                 if steps[0]:rt.emit_marks(sid,*steps)
@@ -468,10 +514,13 @@ class Store:
         marked=rt.marks(raw,ranked) if rt.ENABLED and action!="import_save" else None  # likewise
         x0=kpi.xu(raw) if action not in kpi.ECON_SKIP else None  # likewise: the xu held before (a few dict reads)
         with ar.collect() as box:
-            raw,result,full,known,extra=self._apply(raw,text,career,action,payload,internal,revision)
+            raw,result,full,known,extra,snap=self._apply(raw,text,career,action,payload,internal,revision)
         kpi.econ_mark(action,x0,kpi.xu(raw) if x0 is not None else None)
-        serialized=serialize(raw,known,full)
-        if len(serialized)>3*1024*1024 and len(serialized.encode())>14*1024*1024:raise GameError("Bản lưu quá lớn. Xóa bớt ảnh trong album trước khi nhập.")
+        serialized=serialize_bytes(raw,known,full,snap)
+        del snap
+        if type(serialized) is str:
+            if len(serialized)>3*1024*1024 and len(serialized.encode())>14*1024*1024:raise GameError("Bản lưu quá lớn. Xóa bớt ảnh trong album trước khi nhập.")
+        elif len(serialized)>14*1024*1024:raise GameError("Bản lưu quá lớn. Xóa bớt ảnh trong album trước khi nhập.")  # bytes: the same limit
         ranks=lb.summary(raw)
         steps=(rt.reached(marked,rt.marks(raw,ranks)),rt.life_day(raw)) if marked else ((),None)
         # An imported backup's own archive is older than anything its migration moved out.
@@ -508,6 +557,9 @@ class Store:
             checked=raw["check"].get("careers") if stamped(raw) and not needs_migration(raw) else None
             if type(checked) is not dict:checked=None
             known=checked if (revision+1)%FULL_EVERY else None
+            # The careers settlement may touch, cut into pieces before the reducer changes them:
+            # serialize then re-validates only the pieces a moved career changed (game/settle_scope.py).
+            snap=settle_scope.snapshot(raw,known,career) if known is not None and SCOPED_CAREERS else None
             # A periodic audit still starts from a save this build validated.
             # Keep intermediate checks scoped, then audit ALL final careers once
             # below, outside apply_action's scope, before serialization/commit.
@@ -516,12 +568,13 @@ class Store:
             if known is None:
                 if checked is not None:
                     validate_state(raw);full=True
-                    return raw,result,full,known,extra
+                    return raw,result,full,known,extra,None
                 # First command of this build on the save, a fresh save or the periodic check: stamp it
                 # only if it passes every check (the action itself may not have validated anything).
                 try:validate_state(raw);full=True
                 except GameError:pass
-        return raw,result,full,known,extra
+            return raw,result,full,known,extra,snap
+        return raw,result,full,known,extra,None
 
     def _moved(self,sid:str,request_id:str,revision:int)->bool:
         with self.connect() as db:
@@ -529,9 +582,10 @@ class Store:
             if not row:return False
             return row["revision"]!=revision or bool(db.execute("SELECT 1 FROM receipts WHERE sid=? AND request_id=?",(sid,request_id)).fetchone())
 
-    def _store(self,sid:str,revision:int,serialized:str,request_id:str,fingerprint:str,receipt:str,cut:list=(),board:tuple|None=None,steps:tuple=((),None),action:str='',career=None,result=None,after=None,before=None)->bool:
+    def _store(self,sid:str,revision:int,serialized:str,request_id:str,fingerprint:str,receipt:str,cut:list=(),board:tuple|None=None,steps:tuple=((),None),action:str='',career=None,result=None,after=None,before=None,projected=None)->bool:
         """Compare-and-set: write the new save, its archive rows, its leaderboard rows, its receipt and the
-        funnel steps it crossed (game/retention.py) only if the save is still at `revision`."""
+        funnel steps it crossed (game/retention.py) only if the save is still at `revision`.
+        `projected`: work_visits.places(after), computed before the lock (None: computed inside)."""
         tw=time.perf_counter()
         tx=time.perf_counter()
         db=None
@@ -552,7 +606,7 @@ class Store:
                 current=after if after is not None else self.parse_state(serialized,sid)
                 from . import rentals
                 rentals.command_commit(db,sid,before,current,action)
-                work_visits.command_commit(db,sid,before,current,career,action,result or {})
+                work_visits.command_commit(db,sid,before,current,career,action,result or {},projected=projected if after is not None else None)
             if db.execute("UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? AND revision=?",
                           (serialized,revision+1,sid,revision)).rowcount!=1:
                 db.rollback();return False
@@ -596,8 +650,8 @@ class Store:
         try:
             db=self.connect()
             db.begin();self._patient(db)
-            row=db.execute("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult FROM sessions s "
-                           "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?"+dbm.for_update(db,"s"),(request_id,sid)).fetchone()
+            row=_snapshot_row(db.execute("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult FROM sessions s "
+                           "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?"+dbm.for_update(db,"s"),(request_id,sid),text_bytes=True).fetchone())
             if not row:raise GameError("Phiên chơi không tồn tại.","session_missing")
             if row["rhash"] is not None:
                 db.rollback();return self._replay(sid,row,fingerprint)

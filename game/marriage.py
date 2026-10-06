@@ -258,37 +258,56 @@ def _mutate(store, fns: dict, db_ops=None) -> dict:
     fns: {sid: fn(state)} run on a fresh copy of each save (they may raise MarriageError);
     every save is fully validated, then all are written in ONE transaction under their
     revision guards, together with db_ops(db). A save that moved meanwhile raises _Retry
-    (nothing written); the caller decides whether to compute again."""
-    from .storage import serialize, _write_archive, _archive_rows
+    (nothing written); the caller decides whether to compute again.
+
+    A save stamped by this build (engine.stamped) is checked like a command (Store._apply):
+    everything outside the careers, then each career fn changed (storage.serialize_bytes);
+    the careers it did not change are byte for byte what passed. Every FULL_EVERY-th
+    revision, and any save not stamped by this build, is validated in full as before."""
+    from . import storage as st
+    from .engine import stamped, needs_migration, scoped_validation
     prepared = {}
     with store.connect() as db:
-        rows = {sid: db.execute('SELECT revision,state FROM sessions WHERE sid=?', (sid,)).fetchone() for sid in fns}
+        rows = {sid: db.execute('SELECT revision,state FROM sessions WHERE sid=?', (sid,), text_bytes=True).fetchone() for sid in fns}
     for sid, fn in fns.items():
         row = rows[sid]
         need(row, 'Không tìm thấy tiến trình của người chơi này.', 'session_missing', 404)
         with ar.collect() as box:
             state = store.parse_state(row['state'], sid)
+            original = _rental_view(state)  # what rentals.command_commit reads of the save before
             before = dict(state['careers']) if isinstance(state.get('careers'), dict) else {}
             state = migrate_state(state, owned=True)
+            checked = state['check'].get('careers') if stamped(state) and not needs_migration(state) else None
+            known = checked if type(checked) is dict and (row['revision'] + 1) % st.FULL_EVERY else None
+            snap = st.settle_scope.snapshot(state, known) if known is not None and st.SCOPED_CAREERS else None
             fn(state)
-            validate_state(state)
+            if known is None:
+                validate_state(state)
+            else:
+                scoped_validation(state)
             validate_save(state)
-        prepared[sid] = (row['revision'], serialize(state, None, True), _archive_rows(box, before, state, ''), state)
+        prepared[sid] = (row['revision'], st.serialize_bytes(state, known, known is None, snap), st._archive_rows(box, before, state, ''), state, original)
 
     def write(db):
         # Sorted: two couples' writes lock their saves in the same order (no PostgreSQL deadlock).
-        for sid, (rev, text, cut, _) in sorted(prepared.items()):
+        for sid, (rev, text, cut, _, _) in sorted(prepared.items()):
             if db.execute('UPDATE sessions SET state=?,revision=?,updated_at=CURRENT_TIMESTAMP WHERE sid=? AND revision=?',
                           (text, rev + 1, sid, rev)).rowcount != 1:
                 raise _Retry()
-            _write_archive(db, sid, cut)
+            st._write_archive(db, sid, cut)
         from . import rentals
-        for sid, (_, _, _, state) in sorted(prepared.items()):
-            original = store.parse_state(rows[sid]['state'], sid)
+        for sid, (_, _, _, state, original) in sorted(prepared.items()):
             rentals.command_commit(db, sid, original, state, 'shared_mutation')
         return db_ops(db) if db_ops else None
     out = store.transaction(write)
     return dict(db=out, states={sid: (p[3], p[0] + 1) for sid, p in prepared.items()})
+
+
+def _rental_view(state: dict) -> dict:
+    """The part of a save, as stored, that rentals.command_commit reads as `before`: the journey's
+    life_day (it used to parse the stored text a second time, inside the transaction)."""
+    j = state.get('journey')
+    return dict(journey=dict(life_day=j['life_day']) if 'life_day' in j else {}) if isinstance(j, dict) else dict(journey=j)
 
 
 def _mutate_retry(store, fns: dict, db_ops=None, tries: int = 5) -> dict:
