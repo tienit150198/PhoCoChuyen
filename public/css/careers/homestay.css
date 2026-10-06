@@ -209,6 +209,9 @@
 .career-job.hs .hs-ota-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px}
 .career-job.hs .hs-ota-row{display:grid;gap:4px;padding:10px;border-radius:var(--hs-rs);background:var(--hs-s2);border:1px solid var(--hs-line);border-left:4px solid var(--hs-good)}
 .career-job.hs .hs-ota-row.clash{border-left-color:var(--hs-bad)}
+.career-job.hs .hs-ota-how{margin:4px 0 6px;line-height:1.45}
+.career-job.hs .hs-ota-badge{display:inline-block;margin-left:4px;padding:1px 8px;border-radius:99px;background:color-mix(in srgb,var(--hs-info) 16%,transparent);color:var(--hs-info);font-size:.82em;font-weight:700;white-space:nowrap}
+.career-job.hs .hs-ota-badge.bad{background:color-mix(in srgb,var(--hs-bad) 16%,transparent);color:var(--hs-bad)}
 .career-job.hs .hs-ota-row small{color:var(--hs-muted)}
 .career-job.hs .hs-chips{display:flex;flex-wrap:wrap;gap:6px}
 .career-job.hs .hs-chip{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:6px 10px;font:inherit;font-size:.88em;color:var(--hs-ink);

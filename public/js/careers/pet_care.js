@@ -29,7 +29,7 @@ const lacks=(x,need)=>Object.entries(need).filter(([k,q])=>q>0&&x.stock(k)<q).ma
  * (an arrived crate is opened first, an order on the way shows when it comes). A guide step `go`. */
 function lackGo(x,short,task,count=false){
   const g=restockGo(x.room,short,{task}),s=short[0],name=x.esc(itemInfo(x,s.id).name.toLowerCase());
-  return {...g,label:g.full||g.coming?g.label:g.ready?`📦 Mở thùng ${name} lên kệ`:`📦 Nhập ${name}${count?` · thiếu ${s.need-s.have}`:''}`};
+  return {...g,lack:itemInfo(x,s.id).name,label:g.full||g.coming?g.label:g.ready?`📦 Mở thùng ${name} lên kệ`:`📦 Nhập ${name}${count?` · thiếu ${s.need-s.have}`:''}`};
 }
 // The bottom button keeps to one line ("📦 Nhập khăn tắm thú cưng"); the button at the step also says how many.
 const lackBtn=(x,short,task,style='small primary')=>{const g=lackGo(x,short,task,true);return x.button(g.label,g.act,g.data||{},style+' pc-lack');};
@@ -734,9 +734,26 @@ function runningTimers(t,x){
   return section('⏱️ Đang chạy',(t.g.rinse?rinseBox(t,x):'')+(t.g.dry?dryBox(t,x):''),'pc-running');
 }
 
+const ENDED=['completed','referred','cancelled'];
+/** 🏠 The home card (app.js taskCards). A pet waiting on stock (no towel for the dryer), a pet parked with ⋯ › Để lát
+ * nữa, or closing time: "Làm tiếp" alone read as stuck ("hết khăn không khép ca được"), although closing was never
+ * blocked. Then the card also offers Khép ca (unfinished work is kept for tomorrow). Otherwise the shared card. */
+function hudCard(c,t,x,{bell='',first='',note=''}={},next=()=>''){
+  if(!c?.open||!t)return '';
+  let lack=null;try{lack=pending(taskGuide(t,x).steps)?.go?.lack||null;}catch{/* no guide for this task yet */}
+  const parked=(c.tasks||[]).some(k=>k.deferred&&!ENDED.includes(k.status));
+  const late=!!note;   // closingNote: closing time, or no more customers today
+  if(!lack&&!parked&&!late)return '';
+  const why=lack?`<p class="dc-closing-line pc-hud-why" role="status">📦 <b>Hết ${x.esc(String(lack).toLowerCase())}</b> · nhập hàng rồi làm tiếp, hoặc khép ca: việc dở được giữ tới mai.</p>`
+    :!late?'<p class="dc-closing-line pc-hud-why" role="status">⏸️ <b>Có bé đang để lát nữa</b> · khép ca lúc nào cũng được, việc dở được giữ tới mai.</p>':'';
+  return `<article class="note-card calm-card task-card pc-hud">${note}${why}<button type="button" class="calm-what" data-action="job" data-task="${x.esc(t.id)}" title="${x.esc(t.title||'')}"><span class="npc-mini">${x.portrait(x.npc(t.npc),34)}</span><b>${next(t)}</b></button>${bell}${x.button('Khép ca','end',{},'ghost pc-hud-close')}${x.button('Làm tiếp '+x.icon('arrow',14),'job',{task:t.id},'primary'+first)}</article>`;
+}
+export const _test={hudCard};
+
 export default {
   id:'pet_care',
   css:true,
+  hudCard(c,t,x,o){return hudCard(c,t,x,o,t=>this.next(t,x));},
   next(t,x){
     try{const n=x&&pending(taskGuide(t,x).steps);if(n)return x.esc(stepLine(n));}catch{/* fall back to the fixed lines */}
     if(t.job==='groom'&&t.g){

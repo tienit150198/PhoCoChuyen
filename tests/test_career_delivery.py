@@ -115,7 +115,8 @@ class DeliveryTests(unittest.TestCase):
         j = Journey('delivery')
         view = public_state(j.state)['careers']['delivery']['tasks'][0]
         self.assertIsNone(view['needs'])
-        self.assertEqual(set(view['preview']), {'pickup', 'dest', 'kind', 'emoji'})
+        self.assertLessEqual({'pickup', 'dest', 'kind', 'emoji'}, set(view['preview']))
+        self.assertLessEqual(set(view['preview']), {'pickup', 'dest', 'kind', 'emoji', 'within'})
         dump = json.dumps(view, ensure_ascii=False)
         for secret in ('_w', '_seam', '_unit', '_away', '_missing', '_broken', '_value'):
             self.assertNotIn(secret, dump)
@@ -126,6 +127,42 @@ class DeliveryTests(unittest.TestCase):
         self.assertIsNotNone(view['needs'])
         self.assertNotIn('_away', json.dumps(view))
         self.assertIsNone(view['run']['unit'])
+
+    def test_new_order_shows_its_deadline_before_accept(self):
+        # "Trễ bị trừ sao mà không thấy giờ hẹn" (chat C#23665): from day 2 the clock runs from the moment an
+        # order appears, so its card shows the deadline before ✋ Nhận đơn. Day 1 starts the clock at accept.
+        seen = set()
+        for day in range(1, 40):
+            for slot in range(4):
+                try:
+                    j = Journey('delivery', slot=slot, day=day)
+                except Exception:
+                    continue
+                t = j.task
+                if t['known']:
+                    continue
+                n = t['needs']
+                span = n['window'] if n['kind'] == 'food' else n['by']
+                view = next(v for v in public_state(j.state)['careers']['delivery']['tasks'] if v['id'] == t['id'])
+                p = view['preview']
+                if not span:
+                    self.assertNotIn('due', p)
+                    self.assertNotIn('within', p)
+                    continue
+                if day == 1:
+                    self.assertEqual(p['within'], span)
+                    self.assertNotIn('due', p)
+                    seen.add('day1')
+                else:
+                    self.assertEqual(p['due'], t['run']['t0'] + span)
+                    self.assertNotIn('within', p)
+                    j.act('ask', task=t['id'])
+                    after = next(v for v in public_state(j.state)['careers']['delivery']['tasks'] if v['id'] == t['id'])
+                    self.assertEqual(after['due'], p['due'], 'the time shown is the time kept')
+                    seen.add('later')
+                if seen == {'day1', 'later'}:
+                    return
+        self.fail(f'found only {seen}')
 
     def test_actions_need_the_right_place(self):
         j, p1 = journey('P1')

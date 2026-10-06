@@ -35,6 +35,14 @@ assert.match(held,/data-op="hs_book"/);
 const stale=home(f.home_stale);
 assert.match(stale,/Lịch giữ phòng đã thay đổi/);
 assert.match(stale,/data-command="hs_release"/);
+// 📥 The OTA inbox on the folded board: a count, red when an order clashes; the inbox says how to fix a clash.
+assert.match(busy,/class="hs-ota-badge ">📥 1 đơn chờ</);
+assert.match(stale,/class="hs-ota-badge bad">📥 1 đơn chờ · ⚠️ 1 trùng</);
+assert.doesNotMatch(free,/hs-ota-badge/);
+const inbox=(()=>{const x=careerContext(env(f.home_stale));return homestay.idle(x);})();
+assert.match(inbox,/⚠️ Trùng/);assert.match(inbox,/class="small hs-ota-how"/);assert.match(inbox,/Nhờ Nhà Gỗ Cô Ba/);
+const calm=(()=>{const x=careerContext(env(f.home_busy));return homestay.idle(x);})();
+assert.doesNotMatch(calm,/hs-ota-how/,'no clash: no how-to line');
 
 const employee=env(structuredClone(f.police_before));
 employee.api.state.careers.milk_tea.promo={track:'emp',rank:1,top:4,pct:8,title:'Nhân viên',next:null};

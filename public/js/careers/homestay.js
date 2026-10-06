@@ -176,12 +176,21 @@ function annivHint(x,o){
   if(!(o.start<a.next+nights&&a.next<o.start+o.nights))return '';
   return `<p class="small hs-anniv-hint">🗝️ Đêm ${a.next}–${a.next+nights-1} ${x.esc(x.cc.anniv_name||'Cô Diệp & Chú Khang')} hay xin phòng số 3 — có thể xếp khách app sang phòng khác.</p>`;
 }
+const otaClashes=x=>pendingOrders(x).filter(o=>roomFree(x,o.room,o.start,o.nights,o.id)).length;
+/** 📥 with a count: orders waiting to sync (red when one clashes). On the folded board while a guest is served. */
+function otaBadge(x){
+  const n=pendingOrders(x).length;if(!n)return '';
+  const bad=otaClashes(x);
+  return ` <span class="hs-ota-badge ${bad?'bad':''}">📥 ${n} đơn chờ${bad?` · ⚠️ ${bad} trùng`:''}</span>`;
+}
 function otaPanel(x,open=false){
   const list=pendingOrders(x);
   if(!list.length)return '';
-  const clashes=list.filter(o=>roomFree(x,o.room,o.start,o.nights,o.id)).length;
+  const clashes=otaClashes(x);
+  // "Bị trùng phòng dù đã check lịch" (chat): the app sells a room before its calendar syncs; the fix is the player's.
+  const how=clashes?`<p class="small hs-ota-how">💡 App đặt phòng đồng bộ chậm nên có lúc bán trùng phòng đã có khách, kể cả khi lịch của bạn đúng. Dòng <b>⚠️ Trùng</b>: chạm một phòng trống đủ chỗ rồi bấm <b>🔁 Xếp vào…</b>; hết phòng mới <b>🏡 Nhờ Nhà Gỗ Cô Ba</b>. Dòng <b>Trống</b>: bấm <b>✅ Đồng bộ</b>.</p>`:'';
   return `<details class="hs-ota" ${open||clashes?'open':''}><summary>📥 Hộp đơn OTA · ${list.length} chờ đồng bộ${clashes?` · <b class="hs-bad">${clashes} trùng phòng</b>`:''}</summary>
-    ${waiting(x)}<ul class="hs-ota-list">${list.map(o=>otaRow(x,o)).join('')}</ul></details>`;
+    ${how}${waiting(x)}<ul class="hs-ota-list">${list.map(o=>otaRow(x,o)).join('')}</ul></details>`;
 }
 
 /* ---------------------------------------------------------------- calendar */
@@ -858,7 +867,7 @@ export default {
   job(t,x){
     const desk=deskCard(x),who=x.npc(t.npc),g=taskGuide(t,x),hint=hintFor(g,x);
     // The calendar and the rooms are shared state: folded under the task so the task comes first.
-    const more=`<section class="hs-board">${panel(x,'board','🗓️ Lịch phòng, buồng phòng, vườn & sổ',board(x,t),false,'hs-boardp')}${foot(x)}${rules(x)}</section>`;
+    const more=`<section class="hs-board">${panel(x,'board',`🗓️ Lịch phòng, buồng phòng, vườn & sổ${otaBadge(x)}`,board(x,t),false,'hs-boardp')}${foot(x)}${rules(x)}</section>`;
     if(!t.known){
       const pill=`<span class="tag blue">${JOB_ICON[t.job]||''} ${x.esc(x.cc.jobs?.[t.job]||t.job)}</span>`;
       const anon=t.job==='claim';

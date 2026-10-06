@@ -302,3 +302,7 @@
   .career-job.pc .pc-tools.row.wrap,.career-job.pc .pc-table .pc-tools.row.wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
   .career-job.pc .pc-table .pc-tools.row.wrap>.btn,.career-job.pc .pc-tools.row.wrap>.btn,.career-job.pc .pc-tools.row.wrap>.tag{width:100%;white-space:normal;padding:6px 8px;font-size:.86rem;line-height:1.2}
 }
+/* The home card when Khép ca joins Làm tiếp (pet_care.js hudCard): what is next on its own row, the two buttons below. */
+.calm-card.pc-hud{flex-wrap:wrap}
+.calm-card.pc-hud .calm-what{flex:1 1 100%}
+.calm-card.pc-hud>.btn.primary{flex:1 1 auto}

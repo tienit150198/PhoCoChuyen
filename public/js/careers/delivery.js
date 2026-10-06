@@ -408,11 +408,18 @@ function board(x,active,folded=false){
   }
   return `<section class="dl-board"><h4 class="section-title">📱 Đơn trên app (${rows.length})</h4>${boardCards(x,rows,active)}</section>`;
 }
+/** A new order's deadline before ✋ Nhận đơn (its clock may already run): the time, or on day 1 how long after accept. */
+function dueLine(x,p){
+  const now=Number(x.room.data?.clock)||0;
+  if(p.due!=null)return `<small class="dl-due${now>p.due?' bad-text':''}">⏰ Hẹn giao trước <b>${x.esc(hm(p.due))}</b>${now>p.due?' · đã quá giờ hẹn':''}</small>`;
+  if(p.within)return `<small class="dl-due">⏰ Giao trong ${Number(p.within)} phút sau khi nhận</small>`;
+  return '';
+}
 function boardCards(x,rows,active){
   return `${rows.map(t=>{
     const st=stage(t),n=t.needs,p=t.preview||{};
     const who=x.npc(t.npc);
-    if(st==='new')return `<article class="dl-card new ${t.id===active?'active':''}"><div class="row"><span class="dl-oemoji">${x.esc(p.emoji||'📦')}</span><div class="grow"><b>${x.esc(nodeOf(x,p.pickup).name)} → ${x.esc(nodeOf(x,p.dest).name)}</b><small>${x.esc(who.display_name)}: “${x.esc(t.opening)}”</small></div></div>${x.cmd('✋ Nhận đơn','ask',{task:t.id},'primary full')}</article>`;
+    if(st==='new')return `<article class="dl-card new ${t.id===active?'active':''}"><div class="row"><span class="dl-oemoji">${x.esc(p.emoji||'📦')}</span><div class="grow"><b>${x.esc(nodeOf(x,p.pickup).name)} → ${x.esc(nodeOf(x,p.dest).name)}</b><small>${x.esc(who.display_name)}: “${x.esc(t.opening)}”</small>${dueLine(x,p)}</div></div>${x.cmd('✋ Nhận đơn','ask',{task:t.id},'primary full')}</article>`;
     const label={pickup:`Chờ lấy · ${nodeOf(x,n.pickup).name}`,bag:`Trên xe → ${nodeOf(x,destOf(t)).name}`}[st]||'';
     return `<article class="dl-card ${st} ${t.id===active?'active':''}"><div class="row"><span class="dl-oemoji">${x.esc(n.emoji)}</span><div class="grow"><b>${x.esc(n.item)}</b><small>${x.esc(label)}${t.due!=null?` · hẹn ${x.esc(hm(t.due))}`:''}${n.cod?` · COD ${n.cod}`:''}</small></div>${t.id===active?'':x.cmd('Xem','task_select',{task:t.id},'ghost small')}</div></article>`;
   }).join('')||'<p class="muted small">Chưa có đơn.</p>'}`;

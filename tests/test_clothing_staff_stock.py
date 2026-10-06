@@ -19,9 +19,10 @@ class ClothingStaffStockTests(unittest.TestCase):
 
     def test_ten_receipts_sell_ten_different_products_exactly_once(self):
         s,c,e=self.sample();before={i:inventory.count(c,i) for i in a.ITEM}
-        for _ in range(len(a.ITEM)):wb.settle(s,self.next(c))
+        # The 1.7.16 goods start unstocked (a.LEGACY is what a new shop holds): the staff skip them.
+        for _ in range(len(a.LEGACY)):wb.settle(s,self.next(c))
         rows=c['ops']['business_clothing_receipts']
-        self.assertEqual([next(iter(r['items'])) for r in rows],list(a.ITEM))
+        self.assertEqual([next(iter(r['items'])) for r in rows],list(a.LEGACY))
         for r in rows:
             item=next(iter(r['items']))
             self.assertEqual(r['items'],{item:1});self.assertIn(a.ITEM[item]['name'],r['label'])
@@ -85,7 +86,7 @@ class ClothingStaffStockTests(unittest.TestCase):
         self.assertEqual(c['ops']['business']['reason'],'stock')
         for item in a.ITEM:
             self.assertEqual(inventory.count(c,item),0)
-            self.assertEqual(sum(c['ext']['data']['grid'][item].values()),0)
+            self.assertEqual(sum(c['ext']['data']['grid'].get(item,{}).values()),0)
         before=copy.deepcopy(s);wb.settle(s,2000200000);self.assertEqual(s,before)
         inventory.add_lot(c,'shirt',1,100,999,'market')
         wb.settle(s,2000200000);self.assertEqual(c['ops']['business']['served'],initial)

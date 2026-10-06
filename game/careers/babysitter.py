@@ -776,7 +776,8 @@ def _greet(s, c, d, p):
     k = kid(f, True)
     if ok:
         return dict(message=f'{GREETS[g][0]} {k} nhìn bạn một lúc, rồi cười, chìa tay ra.', correct=True)
-    return dict(message=f'{GREETS[g][0]} {k} nép sau lưng {_lower(PEOPLE[f["npc"]][0])}, chưa chịu theo bạn. Hãy thử cách chào khác hợp tính bé.', correct=False)
+    return dict(message=f'{GREETS[g][0]} {k} nép sau lưng {_lower(PEOPLE[f["npc"]][0])}, chưa chịu theo bạn. '
+                        f'{k} {TEMPERS[f["temper"]][1]}: thử cách chào khác hợp tính bé.', correct=False)
 
 
 def _bag(s, c, d, p):

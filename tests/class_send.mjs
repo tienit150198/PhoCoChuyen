@@ -48,6 +48,11 @@ assert.equal(TT.classWaiting(key),false);
 // The reaction's "typing…" stands where its scripted words are.
 const lines=[{who:'pupil',text:'Q',mode:'scripted'},{who:'teacher',text:'A',mode:'scripted'},{who:'pupil',text:'Dạ.',mode:'scripted'}];
 assert.match(TT.clBubbles(lines,key),/typing/);assert.doesNotMatch(TT.clBubbles(lines,key),/Dạ\./);
+// A slow model (up to 25 s) no longer keeps the class on "typing…": after VOICE_HOLD the scripted reaction shows.
+await sleep(TT.VOICE_HOLD+60);
+assert.match(TT.clBubbles(lines,key),/Dạ\./,'after VOICE_HOLD the scripted reaction shows while the AI wording is on its way');
+assert.doesNotMatch(TT.clBubbles(lines,key),/typing/);
+assert.doesNotMatch(chips(),/ disabled/,'the answers never wait for a reaction being reworded');
 // A tap landed meanwhile (revision 7): the older question voice answer (6) is not adopted over it.
 api.revision=7;api.accepted++;
 api.posts[0].done({state:{},revision:6,mode:'ai'});await voice;
