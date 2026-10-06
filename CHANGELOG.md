@@ -51,6 +51,12 @@
 - Người chơi mới: chạm đầu tiên ở tiệm trà sữa (Ủ trà…) bị từ chối "Chọn một nghề trước nhé." (14 phiên ngày 06/10). Màn hình vẽ theo nơi đang mở (`focus`) nhưng lệnh gửi theo `current`, còn trống ở tài khoản mới. Trà sữa và Mẹ & bé giờ ghi rõ nghề; `api.command` (và lời AI phản hồi, đánh giá) mặc định theo `current`, không có thì `focus`, như app.js. Bộ kế hoạch nhập hàng / ngày mai đọc kho cũng vậy. Test mới: tests/command_career.mjs (kiểm cả mọi nghề không gọi `api.command` thiếu nghề).
 - Giáo viên (góp ý #211, iPhone 390×797 "các lựa chọn cứ xếp chồng lên nhau"): trên điện thoại, 3 ô giáo án nằm ngay trên thẻ hoạt động thay vì trong thanh dưới (thanh bị ép 42%, các ô xếp thành cột, chữ và nút chồng lên nhau, cao 145 px → 57 px). Huy hiệu thứ tự nằm trong thẻ, không đè thẻ bên cạnh; cuộn tới nút chừa chỗ cho thanh dưới.
 - Giáo viên: chạm bị dội (409 revision_conflict ở lesson_next / lesson_call / lesson_answer / cl_parent, 15 phiên). Lời AI viết lại câu học sinh / phụ huynh ghi vào save ngoài hàng lệnh; giờ nó xếp hàng: các chạm sau chờ nó xong, tối đa 4 giây (VOICE_WAIT), rồi đi tiếp. Không có khóa lưu mới, không đổi máy chủ.
+# Chưa phát hành — WP-2 Giúp việc + Chùa
+
+- 🧹 Giúp việc: chưa cầm dụng cụ, chưa chọn chai, hay chai đang cầm đã cạn thì các chỗ lau bị khoá, có dòng nhắc cần làm gì (trước đây bấm vào là bị từ chối, hơn 400 lần một ngày). Chai cạn không chọn được nữa; cạnh nó có nút “🧴 Châm” để châm ngay từ kho. Hướng dẫn học nghề cũng nhắc châm chai trước khi dùng.
+- 🧺 Giúp việc: nếu xe đồ nghề chưa soạn thì các tab phòng bị ẩn, thay bằng nút “🧺 Về soạn xe”. Nếu việc soạn xe buổi sáng đã bị huỷ (ví dụ do rời tiệm giữa ca), lệnh mới `gv_cart` mở lại việc đó (vẫn mã slot 0, không thêm khoá lưu), nên không còn bị kẹt cả ngày.
+- 🛕 Chùa: ở bước xếp thứ tự hiện “Đã xếp k/n”, nút “Xong” chỉ hiện khi đã xếp đủ n việc. Máy chủ nhận đúng khi đủ n việc: thiếu một việc cần làm vì đã xếp nhầm việc không nên làm thì bị tính là lỗi “Quên mất việc …” chứ không còn bị từ chối.
+- Không đổi tiền và không thêm bảng. Bản 1.9.2 đọc và chơi tiếp được bản lưu mới (đã kiểm validate_state).
 
 # v1.9.2 — 2026-10-06: giao diện cũ trở lại
 

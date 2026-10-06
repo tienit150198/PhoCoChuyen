@@ -255,6 +255,28 @@ class Mistakes(Base):
         self.act(j, 'chua_close', task=tid)
         self.assertIn('mn:kh.loa', self.codes(j.get(tid)))
 
+    def test_order_close_needs_the_count_the_button_shows(self):
+        # Live 06/10: "Xong" looked ready after one chore; the server refused 68 times "Còn việc chưa xếp".
+        j, tid = self.j, self.j.task['id']
+        st, key = self.until(j, tid, 'kh')
+        pub = next(x for x in PG.public_task(j.get(tid))['needs']['steps'] if x['id'] == 'kh')
+        need = len(st['items']) - len(key['bad'])
+        self.assertEqual(pub['need'], need)
+        self.assertTrue(all('bad' not in i for i in pub['items']))
+        right = self.order_of(st, key)
+        for x in right[:-1]:
+            self.act(j, 'chua_seq', task=tid, item=x)
+        with self.assertRaises(GameError) as e:
+            j.act('chua_close', task=tid)
+        self.assertIn(f'{need - 1}/{need}', str(e.exception))
+        # k = n with the decoy in place of the last chore: taken, both named, nothing told before closing
+        self.act(j, 'chua_seq', task=tid, item='loa')
+        self.act(j, 'chua_close', task=tid)
+        codes = self.codes(j.get(tid))
+        self.assertIn('mn:kh.loa', codes)
+        self.assertIn(f'cr:kh.miss.{right[-1]}'[:32], codes)
+        validate_state(json.loads(json.dumps(j.state)))
+
     def test_a_slip_never_cuts_the_allowance(self):
         j = self.at(of('h_huong'))
         tid = j.task['id']

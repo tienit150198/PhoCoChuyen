@@ -443,8 +443,16 @@ def _seq(s, c, d, p):
 def _close_order(t, st, key) -> str:
     got = t['work'].get(st['id'], [])
     need = [i['id'] for i in st['items'] if i['id'] not in key['bad']]
-    kit.need(all(i in got for i in need), 'Còn việc chưa xếp vào thứ tự.')
+    # The button counts “đã xếp k/n” (n = the chores that belong, public_task 'need'); it is ready at n, so
+    # the server takes the sequence at n too (live 06/10: 68 refusals “Còn việc chưa xếp”). A chore that
+    # belongs but was left out for one that does not is a slip, not a refusal: no hint which one it was.
+    kit.need(len(got) >= len(need), f'Còn việc chưa xếp vào thứ tự (đã xếp {len(got)}/{len(need)}).')
     bad = []
+    for iid in need:
+        if iid not in got:
+            name = next(i['name'] for i in st['items'] if i['id'] == iid)
+            if _slip(t, st['id'], 'miss.' + iid, 1, f'Quên mất việc “{name}”.', 'cr', False, st['title']):
+                bad.append(f'Quên mất việc “{name}”.')
     for iid in got:
         if iid in key['bad']:
             sev, why, cat, safety = (list(key['bad'][iid]) + [False])[:4]
@@ -630,6 +638,10 @@ def public_task(t: dict) -> dict:
     if not v['known']:
         v['needs'] = None
         return v
+    for st in v['needs']['steps']:
+        if st['type'] == 'order':
+            # How many chores belong in the sequence: the client shows “đã xếp k/n” and readies the button at n.
+            st['need'] = len(st['items']) - len(t['_key'].get(st['id'], {}).get('bad') or {})
     if t['kind'] == 'setup' and t['day'] == 1:
         for st in v['needs']['steps']:
             tip = _tip(st, t['_key'].get(st['id'], {}))

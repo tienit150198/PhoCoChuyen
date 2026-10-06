@@ -208,6 +208,79 @@ class Morning(Base):
         self.assertEqual(self.d['cart']['cloths'], 'dirty')
 
 
+class LiveFixes(Base):
+    """06/10 live: spots tapped with an empty hand or an empty bottle; a day dead after the morning cart was dropped."""
+    def test_an_empty_bottle_cannot_be_picked_and_refills_mid_job(self):
+        t = self.at(*find(has_spot('guong')))
+        self.j.act('ask', task=t['id'])
+        self.d['cart']['bottles']['kinh'] = 0
+        with self.assertRaises(GameError) as e:
+            self.j.act('gv_product', product='kinh')
+        self.assertIn('Châm', str(e.exception))
+        self.assertIsNone(self.d['hand']['product'])
+        self.j.act('gv_product', product='kho')     # dry and plain water need no bottle
+        self.j.act('gv_fill', product='kinh')
+        self.assertEqual(self.d['cart']['bottles']['kinh'], GV.BOTTLE)
+        self.j.act('gv_product', product='kinh')
+        self.assertEqual(self.d['hand']['product'], 'kinh')
+        validate_state(self.j.state)
+
+    def drop_morning(self):
+        """Leave mid-shift before setting out: the morning task is cancelled the way abandon does it."""
+        from game import abandon
+        self.j = Journey('giupviec')
+        self.j.act('gv_intro')
+        setup = next(t for t in self.j.c['tasks'] if t['kind'] == 'setup')
+        abandon._cancel(self.j.state, self.j.c, setup)
+        self.j.c['active_task'] = None
+        self.j.act('more_work')
+        job = self.j.task
+        self.assertEqual(job['kind'], 'job')
+        self.j.act('ask', task=job['id'])
+        with self.assertRaises(GameError):
+            self.j.act('gv_room', task=job['id'], room=job['needs']['rooms'][0]['id'])
+        return setup['id'], job['id']
+
+    def test_a_dropped_morning_cart_reopens(self):
+        sid, jid = self.drop_morning()
+        r = self.j.act('gv_cart')
+        self.assertIn('Lên đường', r['message'])
+        t = self.j.get(sid)
+        self.assertEqual((t['status'], self.j.c['active_task']), ('understood', sid))
+        self.assertNotIn(sid, self.j.c['completed_ids'])
+        validate_state(json.loads(json.dumps(self.j.state)))
+        self.j.act('gv_wash')
+        self.j.act('gv_open', task=sid)
+        self.assertEqual(self.j.get(sid)['status'], 'completed')
+        self.assertTrue(self.d['cart']['out'])
+        with self.assertRaises(GameError):
+            self.j.act('gv_cart')
+        self.j.act('gv_room', task=jid, room=self.j.get(jid)['needs']['rooms'][0]['id'])
+        validate_state(json.loads(json.dumps(self.j.state)))
+
+    def test_a_missing_morning_task_is_made_again_with_its_own_id(self):
+        sid, jid = self.drop_morning()
+        self.j.c['tasks'] = [t for t in self.j.c['tasks'] if t['id'] != sid]
+        self.j.c['completed_ids'].remove(sid)
+        self.j.act('gv_cart')
+        t = self.j.get(sid)
+        self.assertEqual((t['kind'], t['status'], self.j.c['active_task']), ('setup', 'understood', sid))
+        self.assertEqual(sum(x['kind'] == 'setup' for x in self.j.c['tasks']), 1)
+        validate_state(json.loads(json.dumps(self.j.state)))
+        self.j.act('gv_open', task=sid)
+        self.assertTrue(self.d['cart']['out'])
+
+    def test_a_live_morning_task_is_brought_back_to_the_front(self):
+        self.j = Journey('giupviec')
+        self.j.act('gv_intro')
+        sid = next(t for t in self.j.c['tasks'] if t['kind'] == 'setup')['id']
+        self.j.act('more_work')
+        self.assertNotEqual(self.j.c['active_task'], sid)
+        self.j.act('gv_cart')
+        self.assertEqual(self.j.c['active_task'], sid)
+        self.assertEqual(sum(x['kind'] == 'setup' for x in self.j.c['tasks']), 1)
+
+
 class Cleaning(Base):
     def test_a_clean_job_end_to_end(self):
         t = self.at(*find())
