@@ -56,3 +56,18 @@ def taps_ok(taps: object, elapsed_ms: int) -> bool:
     if taps[0] < 0 or any(b - a < GAP for a, b in zip(taps, taps[1:])):
         return False
     return taps[-1] <= min(TTL, elapsed_ms + SLACK)
+
+
+def land(p: dict, taps: list[int], n: int) -> list[int]:
+    """A chance round's n rings, placed where they can be drawn honestly: the n throws aimed closest to a bottle ring
+    that nearest bottle, the others miss. The count n is the server's draw; this only decides which rings and bottles,
+    so the animation lands each ring next to where the player let it go (players: "ném trúng mà không vào")."""
+    near = []
+    for i, t in enumerate(taps):
+        x = x_at(p, t)
+        b = min(range(len(p['xs'])), key=lambda k: abs(x - p['xs'][k]))
+        near.append((abs(x - p['xs'][b]), i, b))
+    out = [-1] * len(taps)
+    for _, i, b in sorted(near)[:max(0, min(n, len(taps)))]:
+        out[i] = b
+    return out

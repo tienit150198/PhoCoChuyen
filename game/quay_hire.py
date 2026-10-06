@@ -32,6 +32,7 @@ inbox kind: its saves keep journey.quay untouched and 'quay' inbox rows wait pen
 """
 from __future__ import annotations
 
+import calendar
 import json
 import hashlib
 import re
@@ -104,12 +105,41 @@ def _who(store, token: str) -> tuple:
     return sid, display
 
 
-def _old_enough(db, sid: str) -> bool:
+def _age_wait(db, sid: str) -> int | None:
+    """Real hours this account still waits before ACCOUNT_DAYS (0: old enough; None: no registered account)."""
     r = db.execute('SELECT created_at FROM accounts WHERE sid=?', (sid,)).fetchone()
     if not r:
-        return False
+        return None
+    try:
+        made = calendar.timegm(time.strptime(str(r['created_at'])[:19], '%Y-%m-%d %H:%M:%S'))   # stored as UTC text
+    except ValueError:
+        return 0 if _old_enough_text(r['created_at']) else ACCOUNT_DAYS * 24
+    if _old_enough_text(r['created_at']):
+        return 0
+    return max(1, int((made + ACCOUNT_DAYS * DAY - now() + 3599) // 3600))
+
+
+def _old_enough_text(created) -> bool:
     cut = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(now() - ACCOUNT_DAYS * DAY))
-    return str(r['created_at']) <= cut
+    return str(created) <= cut
+
+
+def _old_enough(db, sid: str) -> bool:
+    return _age_wait(db, sid) == 0
+
+
+def _age_why(db, sid: str, what: str, name: str | None = None) -> str | None:
+    """Why an account is too new, said plainly: whose account, and how many real hours are left."""
+    wait = _age_wait(db, sid)
+    if wait == 0:
+        return None
+    if wait is None:
+        return (f'{name} chưa có tài khoản đã đăng ký nên chưa {what} được.' if name else
+                f'Bạn đang chơi bằng phiên khách. Tạo tài khoản rồi chờ {ACCOUNT_DAYS} ngày (đời thực) để {what} nhé.')
+    left = f'{wait // 24} ngày {wait % 24} giờ' if wait >= 24 else f'{wait} giờ'
+    who = f'Tài khoản của {name}' if name else 'Tài khoản của bạn'
+    return (f'{who} cần {ACCOUNT_DAYS} ngày tuổi tính theo đời thực (ngày tạo tài khoản, không phải ngày sống trong game) '
+            f'để {what}: còn khoảng {left}.')
 
 
 def _effect(db, eid: str, sid: str, amount: int, stall: str, what: str, label: str, *, wage=None, source=None) -> None:
@@ -239,7 +269,8 @@ def post(store, sid: str, display: str, d: dict) -> dict:
     code = d.get('to')
     t = now()
     with store.connect() as db:
-        need(_old_enough(db, sid), f'Tài khoản cần {ACCOUNT_DAYS} ngày tuổi để thuê người chơi.', 'too_new')
+        why = _age_why(db, sid, 'thuê người chơi')
+        need(not why, why or '', 'too_new')
         if code:
             p = mr._find(db, mr.clean_code(code))
             need(p and p['sid'] != sid, 'Không tìm thấy người này.', 'not_found', 404)
@@ -351,7 +382,8 @@ def accept(store, sid: str, display: str, d: dict) -> dict:
         need(r and r['status'] == 'open' and r['until'] > t and r['friend'] in (None, sid), 'Ca này vừa có người nhận rồi.', 'gone', 409)
         need(r['owner'] != sid, 'Đây là ca của quầy bạn mà.', 'own')
         need(not mr._blocked(db, sid, r['owner']), 'Không nhận được ca này.', 'blocked')
-        need(_old_enough(db, sid), f'Tài khoản cần {ACCOUNT_DAYS} ngày tuổi để làm thêm.', 'too_new')
+        why = _age_why(db, sid, 'làm thêm')
+        need(not why, why or '', 'too_new')
     loaded = mr._read_state(store, sid)
     need(loaded, 'Không tìm thấy tiến trình.', 'session_missing', 404)
     why = _can_work(loaded[0], r['trade'])
@@ -383,7 +415,8 @@ def accept(store, sid: str, display: str, d: dict) -> dict:
         need(n == 1, 'Ca này vừa có người nhận rồi.', 'gone', 409)
     mr._mutate_retry(store, {sid: fn}, ops)
     _ping(store, r['owner'], f'💼 {display[:24]} đã nhận ca ở {r["stall_name"]}.')
-    return dict(message=f'💼 Đã nhận ca! Vào làm {trade["emoji"]} {trade["name"]}, xong {MIN_TASKS} việc trở lên rồi khép ca.', changed=True)
+    return dict(message=f'💼 Đã nhận ca! Vào làm {trade["emoji"]} {trade["name"]} ở tiệm của bạn, xong {MIN_TASKS} việc trở lên rồi khép ca. '
+                        'Hàng nhập trong ca dùng quỹ nghề của bạn; vốn quầy của chủ không chuyển sang.', changed=True)
 
 
 def decline(store, sid: str, display: str, d: dict) -> dict:
@@ -533,6 +566,32 @@ def _job(r: dict, db, me: str) -> dict:
     return out
 
 
+def _friend_why(store, job: dict) -> str | None:
+    with store.connect() as db:
+        r = _row(db, job['id'])
+        if not r or not r['friend']:
+            return None
+        name = mr._display(db, r['friend'])
+        why = _age_why(db, r['friend'], 'nhận ca', name)
+    if why:
+        return why
+    loaded = mr._read_state(store, r['friend'])
+    if not loaded:
+        return None
+    why = _can_work(loaded[0], r['trade'])
+    return f'{name} chưa nhận được: {why[0].lower() + why[1:]}' if why else None
+
+
+def invite_count(store, token: str) -> int:
+    """Open shift invitations waiting for this player (the home badge); 0 for a guest or on any error."""
+    try:
+        sid = store.key(token)
+        with store.connect() as db:
+            return int(db.execute("SELECT COUNT(*) FROM quay_jobs WHERE friend=? AND status='open' AND until>?", (sid, now())).fetchone()[0])
+    except Exception:  # noqa: BLE001 - no table yet (an older database), a busy moment: no badge
+        return 0
+
+
 def view(store, sid: str, state: dict) -> dict:
     sweep(store)
     t = now()
@@ -544,11 +603,18 @@ def view(store, sid: str, state: dict) -> dict:
                                                          "OR EXISTS (SELECT 1 FROM live_effects e WHERE e.id='quay:' || quay_jobs.id || ':joint-back' AND e.status='pending')) "
                                                          'ORDER BY at DESC LIMIT 12', (sid, t - MINE_DAYS * DAY))]
         board = []
+        my_age = _age_why(db, sid, 'nhận ca làm thêm')
         for r in mr._rows(db, "SELECT * FROM quay_jobs WHERE status='open' AND until>? AND owner<>? AND (friend IS NULL OR friend=?) "
                               'ORDER BY (friend IS NULL), at DESC LIMIT 60', (t, sid, sid)):
-            if len(board) >= BOARD_MAX or mr._blocked(db, sid, r['owner']) or _can_work(state, r['trade']):
+            if len(board) >= BOARD_MAX or mr._blocked(db, sid, r['owner']):
                 continue
-            board.append(_job(r, db, sid))
+            why = my_age or _can_work(state, r['trade'])
+            if why and r['friend'] != sid:
+                continue
+            row = _job(r, db, sid)
+            if why:   # an invite to me that I cannot take yet: shown, with the reason, so nobody waits in silence
+                row['locked'] = why
+            board.append(row)
         friends = []
         if stalls:
             for r in mr._rows(db, 'SELECT f.friend, f.since, p.code FROM friends f JOIN marriage_people p ON p.sid=f.friend '
@@ -556,10 +622,15 @@ def view(store, sid: str, state: dict) -> dict:
                 wait = max(0, r['since'] + FRIEND_DAYS * DAY - t)
                 friends.append(dict(name=mr._display(db, r['friend']), code=r['code'], eligible=not wait,
                                     wait_hours=int((wait + 3599) // 3600)))
-        ok = _old_enough(db, sid)
+        age = _age_why(db, sid, 'thuê hoặc làm thêm')
+    for x in mine:   # my invite still open: why that friend cannot take it yet (their account age, life day, trade)
+        if x['status'] == 'open' and x.get('to'):
+            why = _friend_why(store, x)
+            if why:
+                x['blocked'] = why
     lock = None
-    if not ok:
-        lock = f'Tài khoản cần {ACCOUNT_DAYS} ngày tuổi.'
+    if age:
+        lock = age
     elif int(j.get('life_day') or 0) < LIFE_DAYS:
         lock = f'Mở từ ngày sống {LIFE_DAYS}.'
     return dict(mine=mine, board=board, friends=friends, lock=lock,

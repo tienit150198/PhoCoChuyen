@@ -948,8 +948,10 @@ class ChatFeature(Feature):
         if type(mid) is not int or mid <= 0:
             raise LiveError('bad', 'Tin nhắn không hợp lệ.')
         row = await self.db.fetchrow('SELECT channel, pid, hidden, deleted FROM chat_messages WHERE id=?', (mid,))
-        if not row or row['hidden'] or row['deleted'] or row['pid'] == p.pid:
-            raise LiveError('gone', 'Không tìm thấy người chơi này.')
+        if row and row['pid'] == p.pid:
+            raise LiveError('gone', 'Đây là tin của chính bạn mà.')
+        if not row or row['hidden'] or row['deleted']:
+            raise LiveError('gone', 'Tin này đã bị thu hồi hoặc ẩn. Bấm Kết bạn ở một tin khác của bạn ấy, hoặc tìm trong mục Bạn bè nhé.')
         # Only town/DM/group messages rendered by chat.js; a message ID cannot grant access to a private room.
         channel = await self.member_chan(p, row['channel'])
         if mid <= channel.cleared.get(p.pid, 0):
@@ -965,7 +967,7 @@ class ChatFeature(Feature):
             if not sid:
                 sid = await self.db.fetchval('SELECT m.sid FROM chat_members m JOIN accounts a ON a.sid=m.sid WHERE m.pid=? LIMIT 1', (row['pid'],))
         if not sid:
-            raise LiveError('gone', 'Bạn ấy chưa có tài khoản hoặc đã rời phố. Thử lại khi bạn ấy online nhé.')
+            raise LiveError('gone', 'Bạn ấy đang chơi bằng phiên khách (chưa có tài khoản) hoặc đã rời phố, nên chưa kết bạn được.')
         blocked = await self.db.fetchval('SELECT 1 FROM marriage_blocks WHERE (sid=? AND target=?) OR (sid=? AND target=?) LIMIT 1', (p.sid, sid, sid, p.sid))
         if blocked:
             raise LiveError('gone', 'Không tìm thấy người chơi này.')

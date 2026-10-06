@@ -19,7 +19,7 @@ import {confirmPurchase} from './payment.js';
 import {RIDE,rideSVG,turnChoices} from './quay-ride.js';
 import {signalHTML,mountSignals} from './traffic.js';
 import {cloneMenu,selectDishes,menuPayload,filterDishes,pricePreview,restockQuote,createQuayPoller,focusSnapshot,restoreInputFocus,syncDraftValue} from './quay-business-ui.js';
-import {businessControls} from './business-economy-ui.js';
+import {businessControls,tickRunningCosts,theftRiskHTML} from './business-economy-ui.js';
 import {staffLifeCard} from '../staff-life-ui.js';
 import {ownerQueueHTML,ownerArrivalText,counterActivity,counterActivityHTML} from './quay-owner-queue.js';
 import {shopEventCard} from '../shop-events-ui.js';
@@ -77,6 +77,7 @@ function dialog(){
   for(const ev of ['wheel','touchstart','keydown'])d.addEventListener(ev,()=>{S.hold=null;},{passive:true});
   d.addEventListener('close',()=>{import('./workplace-visit.js').then(m=>m.workVisitsOwnerFocus(S.env)).catch(()=>{});S.poller?.stop();S.flash=null;S.view='list';S.pick=null;S.run=null;});
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')S.poller?.stop();else if(d.open)S.poller?.start();});
+  setInterval(()=>{if(d.open)tickRunningCosts(d,S.costSeen??={});},1000);   // ⏱️ the open counter's running cost, live
   S.dlg=d;return d;
 }
 export async function openQuay(env,data={}){
@@ -89,7 +90,8 @@ export async function openQuay(env,data={}){
   const sheet=document.getElementById('sheet');if(sheet?.open)env.closeSheet();
   await ensureCss();
   const d=dialog();
-  S.focusedVisitorPlace=null;S.view='list';S.pick=null;S.hire=null;S.visitor=data.visitor||null;if(S.visitor){const st=V()?.stalls?.find(st=>st.business?.visitor_orders?.some(o=>String(o.id)===String(S.visitor)));if(st){S.visit=st.id;S.view='visitor';}}
+  S.focusedVisitorPlace=null;S.view='list';S.pick=null;S.hire=null;S.visitor=data.visitor||null;if(env.api.quayInvites>0&&!data.visitor)S.tab='jobs';   // 💼 a friend's invitation waits: open on it
+  if(S.visitor){const st=V()?.stalls?.find(st=>st.business?.visitor_orders?.some(o=>String(o.id)===String(S.visitor)));if(st){S.visit=st.id;S.view='visitor';}}
   if(!d.open){d.showModal();toTop();}
   render();
   S.poller??=createQuayPoller({refresh:()=>S.sync.refresh(),active:()=>!!S.dlg?.open&&!S.busy&&document.visibilityState!=='hidden',failed:failed=>{if(S.syncFailed!==failed){S.syncFailed=failed;if(S.dlg?.open)render();}}});S.poller.start();
@@ -118,7 +120,7 @@ const ask=async(title,msg,label,money)=>!money||await preparePayment()?S.env.con
 const took=d=>{if(d?.state&&typeof d.revision==='number')S.env.api.accept({state:d.state,revision:d.revision});};
 async function loadHire(){
   if(S.loading)return;S.loading=true;
-  try{const d=await S.env.api.json('/api/quay');took(d);S.hire=d;}
+  try{const d=await S.env.api.json('/api/quay');took(d);S.hire=d;S.env.api.quayInvites=(d.board||[]).filter(b=>b.invite).length;}
   catch(e){S.hire={error:e.status===404?'Quầy đang dọn hàng. Mở lại sau ít phút nhé.':(e.message||'Chưa tải được. Thử lại nhé.')};}
   finally{S.loading=false;render();}
 }
@@ -304,7 +306,8 @@ function page(){
 }
 
 function mainTabs(){
-  const dot=V()?.shift?' <i class="qy-dot" aria-label="Có ca"></i>':'';
+  const invites=S.hire?.board?(S.hire.board.filter(b=>b.invite).length):(S.env?.api?.quayInvites||0);
+  const dot=V()?.shift?' <i class="qy-dot" aria-label="Có ca"></i>':invites?` <span class="qy-badge" aria-label="${invites} lời mời">${invites}</span>`:'';
   return `<div class="segmented qy-main" role="tablist">${[['mine','🏪 Quầy của tôi'],['jobs',`💼 Làm thêm${dot}`]].map(([k,l])=>
     `<button type="button" role="tab" aria-selected="${S.tab===k}" class="${S.tab===k?'active':''}" data-qy="tab" data-tab="${k}">${l}</button>`).join('')}</div>`;
 }
@@ -318,15 +321,16 @@ function jobsView(){
   const mine=sh?`<section class="bk-card qy-shift"><div class="qy-top"><span class="qy-tile" aria-hidden="true">💼<i>${trade(sh.career).emoji}</i></span>
       <div class="grow"><h3>${esc(sh.name)}</h3><p class="qy-line">${esc(sh.who)} · ${xu(sh.wage)}</p></div></div>
     <p class="qy-line">Làm ${esc(trade(sh.career).name)}: xong ${R.tasks||2} việc rồi khép ca.</p>
+    <p class="bk-hint">Ca làm ở tiệm ${esc(trade(sh.career).name)} của chính bạn: hàng nhập dùng quỹ nghề của bạn, nên quỹ đó hết thì nhập hàng không được. Vốn quầy chủ góp ở lại quầy của chủ, không chuyển sang bạn. Xong ca: bạn nhận ${xu(sh.wage)} lương, quầy chủ nhận phần doanh thu.</p>
     <div class="bk-actions">${btn('Vào làm','go',{career:sh.career},'primary')}${btn('Bỏ ca','quit',{},'ghost')}</div></section>`:'';
-  const rows=(h.board||[]).map(b=>`<li class="qy-person"><div class="grow"><b>${b.emoji} ${esc(b.name)}</b>${b.invite?' <span class="qy-tag">Mời bạn</span>':''}<small>${esc(b.owner)} · ${xu(b.wage)}</small></div>
-      <div class="qy-person-act">${btn('Nhận ca','accept',{id:b.id},'small primary',sh?'Bạn đang có một ca':'')}${b.invite?btn('Từ chối','decline',{id:b.id},'small ghost'):''}</div></li>`).join('');
+  const rows=(h.board||[]).map(b=>`<li class="qy-person"><div class="grow"><b>${b.emoji} ${esc(b.name)}</b>${b.invite?' <span class="qy-tag">Mời bạn</span>':''}<small>${esc(b.owner)} · ${xu(b.wage)}</small>${b.locked&&!h.lock?`<small class="qy-locked">🔒 ${esc(b.locked)}</small>`:''}</div>
+      <div class="qy-person-act">${btn('Nhận ca','accept',{id:b.id},'small primary',sh?'Bạn đang có một ca':b.locked?'Chưa nhận được':'')}${b.invite?btn('Từ chối','decline',{id:b.id},'small ghost'):''}</div></li>`).join('');
   const board=`<section class="bk-card"><h3>Quầy cần người ${helpBtn('jobs')}</h3>
     ${helpText('jobs',`Nhận một ca, làm một ngày đúng nghề đó. Xong ${R.tasks||2} việc rồi khép ca là lương vào ví. Bỏ ca lúc nào cũng được, không mất gì.`)}
-    ${h.lock?`<p class="bk-hint">${esc(h.lock)}</p>`:rows?`<ul class="qy-list">${rows}</ul>`:'<p class="bk-hint">Chưa có quầy nào cần người. Ghé lại sau nhé.</p>'}</section>`;
+    ${h.lock?`<p class="bk-hint">${esc(h.lock)}</p>`:''}${rows?`<ul class="qy-list">${rows}</ul>`:h.lock?'':'<p class="bk-hint">Chưa có quầy nào cần người. Ghé lại sau nhé.</p>'}</section>`;
   return mine+board;
 }
-const JOB_LINE={open:x=>x.to?`Chờ ${x.to} trả lời`:'Đang chờ người nhận',taken:x=>`${x.worker} đang làm ca`,paid:x=>`${x.worker} xong ca: +${xu(x.earned)} vào két`,
+const JOB_LINE={open:x=>x.to?(x.blocked?`🔒 ${x.blocked}`:`Đã gửi lời mời. Chờ ${x.to} mở 🏪 Quầy của bạn → 💼 Làm thêm để nhận`):'Đang chờ người nhận',taken:x=>`${x.worker} đang làm ca`,paid:x=>`${x.worker} xong ca: +${xu(x.earned)} vào két`,
   lapsed:()=>'Ca chưa đủ việc: lương về lại',quit:x=>`${x.worker||'Người làm'} bận: lương về lại`,declined:x=>`${x.to||'Bạn ấy'} bận: lương về lại`,
   expired:()=>'Hết hạn: lương về lại',cancelled:()=>'Đã hủy',gone:()=>'Đã hủy'};
 function hirePart(st){
@@ -341,13 +345,13 @@ function hirePart(st){
   const friends=h.friends||[],chosen=friends.find(f=>f.code===to);
   const chips=[{code:'',name:'Ai cũng được'},...friends].map(f=>
     `<button type="button" class="qy-chip${to===f.code?' on':''}" data-qy="to" data-id="${st.id}" data-code="${esc(f.code)}"${f.eligible===false?' disabled':''}>${esc(f.name)}${f.eligible===false?` · chờ ${f.wait_hours} giờ`:''}</button>`).join('');
-  const pending=(h.mine||[]).some(x=>x.stall===st.id&&['open','taken'].includes(x.status));
+  const slots=place(st.place).slots||1,pending=(h.mine||[]).filter(x=>x.stall===st.id&&['open','taken'].includes(x.status)).length>=slots;
   const form=h.lock?`<p class="bk-hint">${esc(h.lock)}</p>`:`<p class="bk-hint">Mời bạn bè: chọn tên bạn bên dưới rồi gửi lời mời. Bạn ấy vào Quầy của bạn → Quầy cần người để nhận ca. Kết bạn xong là mời được ngay.</p><div class="qy-chips">${chips}</div>
     ${!friends.length?'<p class="bk-hint">Chưa có bạn bè. Kết bạn trong mục Bạn bè rồi quay lại đây nhé.</p>':''}
-    ${pending?'<p class="bk-hint">Quầy đã có một ca đang chờ hoặc đang làm. Muốn đổi từ “Ai cũng được” sang mời riêng, hủy ca đang chờ rồi chọn tên bạn và gửi lại.</p>':''}
-    <div class="qy-person"><div class="grow"><small>Lương một ca</small></div><div class="qy-person-act">${stepper(k,w,st.id,'',min,max)}${btn(to?'Gửi lời mời':'Đăng ca công khai','post',{id:st.id,wage:w},'small primary',st.closed?'Quầy đang đóng':pending?'Quầy đã có ca':to&&(!chosen||chosen.eligible===false)?'Bạn này hiện chưa nhận lời mời được':'')}</div></div>`;
+    ${pending?`<p class="bk-hint">Quầy này đăng tối đa ${slots} ca cùng lúc (bằng số chỗ đứng) và đã đủ. Muốn đổi từ “Ai cũng được” sang mời riêng, hủy một ca đang chờ rồi chọn tên bạn và gửi lại.</p>`:''}
+    <div class="qy-person"><div class="grow"><small>Lương một ca</small></div><div class="qy-person-act">${stepper(k,w,st.id,'',min,max)}${btn(to?'Gửi lời mời':'Đăng ca công khai','post',{id:st.id,wage:w},'small primary',st.closed?'Quầy đang đóng':pending?'Quầy đã đủ ca':to&&(!chosen||chosen.eligible===false)?'Bạn này hiện chưa nhận lời mời được':'')}</div></div>`;
   return `<h4>🙋 Thuê người chơi ${helpBtn('hire')}</h4>
-    ${helpText('hire',`Một người chơi làm một ngày nghề này cho quầy. Xong ${R.tasks||2} việc thì họ nhận lương, két nhận tiền bán. Chọn nguồn giữ lương trước khi đăng: két/vốn quầy, ví, tài khoản hoặc quỹ chung. Không dùng tín dụng. Không ai làm thì hoàn về nguồn đã chọn.`)}
+    ${helpText('hire',`Một người chơi làm một ngày nghề này cho quầy, ở tiệm của chính họ: hàng họ nhập dùng quỹ nghề của họ, vốn quầy bạn góp vẫn ở lại quầy. Xong ${R.tasks||2} việc thì họ nhận lương, két nhận tiền bán. Chọn nguồn giữ lương trước khi đăng: két/vốn quầy, ví, tài khoản hoặc quỹ chung. Không dùng tín dụng. Không ai làm thì hoàn về nguồn đã chọn.`)}
     ${offers?`<ul class="qy-list">${offers}</ul>`:''}${form}`;
 }
 
@@ -378,7 +382,7 @@ function stallCard(st){
     !st.business&&!st.closed&&st.left<=1&&st.till>0?`<p class="bk-alert warn">Ghé thu két kẻo quầy đóng nhé.</p>`:'',
   ].join('');
   const self=!!cat.menus&&!!st.menu;   // 🧑‍🍳 a server with the board (1.5.3+)
-  const tabs=[...(self?[['menu','🍽️ Menu'],['look','🎨 Trang trí']]:[]),['staff',`👥 Người (${st.staff.length}/${P.slots||1})`],['stock','📦 Hàng'],['fund','💼 Vốn'],['up','🛠️ Nâng cấp'],...(st.economy?[['economy','🧾 Sổ quầy & an toàn']]:[])];
+  const tabs=[...(self?[['menu','🍽️ Menu'],['look','🎨 Trang trí']]:[]),['staff',`👥 Nhân viên ${st.staff.length}/${P.slots||1} chỗ`],['stock','📦 Hàng'],['fund','💼 Vốn'],['up','🛠️ Nâng cấp'],...(st.economy?[['economy','🧾 Sổ quầy & an toàn']]:[])];
   return `<section class="bk-card qy-stall" data-qk="st:${st.id}">
     ${self?`<canvas class="qy-scene" data-qy-live data-cv="${st.id}" role="img" aria-label="${esc(`Quầy ${st.name}`)}"></canvas>${counterActivityHTML(st,esc)}`:''}
     <div class="qy-top"><span class="qy-tile" aria-hidden="true">${P.emoji||'🏪'}<i>${T.emoji}</i></span>
@@ -405,7 +409,7 @@ function economyPart(st){
   const e=st.economy,tax=CAT().tax||{},c=e.costs;
   const rows=c?[['Doanh thu',e.revenue],['Hàng, lương, điện, giao hàng',-c.base],['Thuê chỗ',-c.rent],['Vật tư & vệ sinh',-c.supplies],['Bảo vệ',-c.security],['Thuế GTGT (game)',-c.vat],['Thuế thu nhập (game)',-c.income],['Thiệt hại / xử lý vi phạm',-c.incident],['Lời sau mọi chi phí',e.net]]:[];
   const ledger=rows.length?`<dl>${rows.map(([name,n])=>`<div class="qy-row"><dt>${name}</dt><dd>${n<0?'−':n>0?'+':''}${xu(Math.abs(n))}</dd></div>`).join('')}</dl>`:'<p class="bk-hint">Bán một ngày để có sổ thu chi.</p>';
-  const controls=[['hygiene','Kiểm hàng & vệ sinh','Ngừng bán hàng hỏng; kiểm tra an toàn đạt khi bật.'],['invoices','Lưu chứng từ','Lưu hóa đơn, sổ hàng để đối chiếu khi kiểm tra.'],['security','Bảo vệ quầy',`${xu(e.security_fee)} / ngày có bán, giảm thiệt hại trộm cướp.`]].map(([kind,label,line])=>`<div class="qy-person"><div class="grow"><b>${label} · ${e[kind]?'Bật':'Tắt'}</b><small>${line}</small></div>${btn(e[kind]?'Tắt':'Bật','prepare',{id:st.id,kind,enabled:!e[kind]},'small')}</div>`).join('');
+  const controls=[['hygiene','Kiểm hàng & vệ sinh','Ngừng bán hàng hỏng; kiểm tra an toàn đạt khi bật.'],['invoices','Lưu chứng từ','Lưu hóa đơn, sổ hàng để đối chiếu khi kiểm tra.'],...(st.business?[]:[['security','Bảo vệ quầy',`${xu(e.security_fee)} / ngày có bán: giảm 20% khả năng bị trộm và giảm thiệt hại trộm cướp.`]])].map(([kind,label,line])=>`<div class="qy-person"><div class="grow"><b>${label} · ${e[kind]?'Bật':'Tắt'}</b><small>${line}</small></div>${btn(e[kind]?'Tắt':'Bật','prepare',{id:st.id,kind,enabled:!e[kind]},'small')}</div>`).join('');
   const incident=e.incident;
   const names={theft:'Trộm két',robbery:'Cướp tiền bán hàng',food_check:'Kiểm tra vệ sinh',police_check:'Kiểm tra chứng từ',extortion:'Bị đòi tiền bảo kê'};
   const states={open:'đang chờ xử lý',clear:'đạt, không phạt',violation:'có vi phạm',repaired:'đã khắc phục',reported:'đã lưu bằng chứng và báo công an',refused:'đã từ chối'};
@@ -423,7 +427,7 @@ function staffPart(st,P){
   const cands=(st.cands||[]).map(c=>{const k=`c:${st.id}:${c.id}`,w=S.wage[k]??c.ask;
     return `<li class="qy-person"><div class="grow"><b>${esc(c.name)}</b>${c.g?' ⭐':''}<small>${esc(c.bio)}</small><small>Xin ${xu(c.ask)}/${st.business?`${Math.round(st.business.period_seconds/60)} phút hoạt động`:'ngày'}</small></div>
       <div class="qy-person-act">${stepper(k,w,st.id)}${btn('Thuê','hire',{id:st.id,cand:c.id,wage:w},'small primary')}</div></li>`;}).join('');
-  return `<div class="qy-part">${rows?`<ul class="qy-list">${rows}</ul>`:''}
+  return `<div class="qy-part"><p class="bk-hint">${esc(P.name||'Quầy')} có ${P.slots||1} chỗ đứng cho nhân viên (Xe đẩy 1, Sạp chợ 2, Ki-ốt 3). Số quầy bạn mở thì không giới hạn.</p>${rows?`<ul class="qy-list">${rows}</ul>`:''}
     ${cands?`<h4>Đang tìm việc ${helpBtn('cand')}</h4>${helpText('cand','Tự đặt lương. Trả cao thì vui, bán đắt hàng hơn. Dưới 60% mức xin là họ không nhận.')}<ul class="qy-list">${cands}</ul>`:''}
     ${!rows&&!cands?'<p class="bk-hint">Chưa có ai.</p>':''}${hirePart(st)}</div>`;
 }
@@ -449,7 +453,7 @@ function upPart(st){
   const items=CAT().items.map(it=>{const have=st.items.includes(it.id);
     return `<li class="qy-up${have?' on':''}"><span class="qy-up-emoji" aria-hidden="true">${it.emoji}</span><div class="grow"><b>${esc(it.name)}</b><small>${esc(it.line)}</small></div>
       ${have?'<span class="qy-have">✓</span>':btn(xu(it.price[st.place]),'buy',{id:st.id,item:it.id},'small')}</li>`;}).join('');
-  return `<div class="qy-part"><ul class="qy-list">${items}</ul></div>`;
+  return `<div class="qy-part">${theftRiskHTML(st)}<ul class="qy-list">${items}</ul></div>`;
 }
 
 /* Opening a counter: what, where, a name. */

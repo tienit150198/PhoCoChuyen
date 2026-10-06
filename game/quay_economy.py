@@ -45,7 +45,32 @@ def _event(s, st, day):
     event = EVENTS[rng.randrange(len(EVENTS))]
     if event in ('theft','robbery') and st['theft'] and day-st['theft'] < qy.THEFT_GAP:
         return None
+    # Camera, chuông, két and bảo vệ cut the odds exactly as their labels say (the
+    # same factors as shop_events.theft_probability, relative to its 20% base).
+    if event in ('theft','robbery') and rng.random() >= theft_factor(st):
+        return None
     return event
+
+
+def protection_level(st):
+    """The protection that counts against theft: the paid plan, or the daily 'Bảo vệ quầy' toggle (basic)."""
+    level = (st.get('business') or {}).get('protection', {}).get('level', 'none')
+    if level == 'none' and (st.get('economy') or {}).get('security'):
+        level = 'basic'
+    return level
+
+
+def theft_factor(st):
+    """0..1: what is left of the theft/robbery odds after the counter's items and protection."""
+    from .shop_events import theft_probability
+    return theft_probability(st.get('items') or [], protection_level(st)) / .20
+
+
+def theft_risk(s, st):
+    """Percent chance (one decimal) that a given sales day here ends with a theft or robbery."""
+    from . import quay as qy
+    n = max(1, len((qy.get(s) or {}).get('stalls') or [st]))
+    return round(100 * .30 / n * 2 / len(EVENTS) * theft_factor(st), 1)
 
 
 def _tax(s, day, revenue, profit):
@@ -88,7 +113,8 @@ def settle(s, st, day):
     if event in ('theft', 'robbery'):
         protected = c['security'] or 'ket' in st['items']
         loss = max(20, round(revenue * (.45 if protected else 1.5)))
-        incident = min(max(0,st['till']-(1 if protected else 0)), loss)
+        # A két sắt: a thief never gets more than half of the till.
+        incident = min(max(0,st['till']//2 if 'ket' in st['items'] else st['till']-(1 if protected else 0)), loss)
         st['till'] -= incident
         if incident:
             st['theft'] = day

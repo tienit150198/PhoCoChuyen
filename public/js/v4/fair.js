@@ -292,6 +292,7 @@ function gateList(){
       <button type="button" class="fh-game" data-fh="tab" data-tab="ring" data-fh-key="g-ring"><span class="fh-gico">${MINI_BOTTLES}</span><span class="grow"><b>Ném vòng cổ chai</b><small>${r.nocap?`Mỗi vòng trúng +${r.ring_hit} xu, trúng cả ${r.rings||5} vòng thêm ${r.ring_all} xu`:`Trúng mỗi chai +${r.ring_hit||2} xu, đủ ${r.rings||5} chai thêm ${r.ring_all||5} xu`}</small>${meter(e.ring)}</span></button>
     </div>
     <div class="fh-sec"><h3>🎲 Thử vận may</h3><span class="fh-tag">Cược nhỏ bằng xu</span></div>
+    ${r.win_pct?`<p class="fh-rule">🍀 Bầu cua, chiếu trong, lô tô, vé cào, ném vòng: khoảng ${r.win_pct} ván trên 100 là thắng. Thua liền 4 ván thì ván sau chắc thắng; thắng liền 4 ván thì vận hơi nguội, còn ${r.cool_pct}%.</p>`:''}
     <div class="fh-luck">
       ${luck('bc',FACE_ART.cua,'Bầu cua',`Đặt 1–${r.bc_max||20} xu một ván`)}
       ${f.knife?luck('dt','🗡️','Phóng dao',`Đặt ${Math.min(...f.knife.stakes)}–${Math.max(...f.knife.stakes)} xu, qua màn nhận thưởng hoặc liều chơi tiếp`):''}
@@ -399,6 +400,8 @@ async function playTrace(trace,lv){
 /** Where the ring is at `t` ms (0..100): the same arithmetic as x_at in game/fair_ring.py. */
 const ringX=(p,t)=>{const u=((t/p.period)+p.phase)%1;return 100*(1-Math.abs(2*u-1));};
 const trackPos=x=>`calc(6% + ${x*0.88}%)`;
+/** Where a missed ring falls: the gap (or shelf end) nearest to its aim, never on a bottle's neck. */
+function ringMiss(xs,x){const gaps=[Math.max(0,xs[0]-9),...xs.slice(1).map((b,k)=>(xs[k]+b)/2),Math.min(100,xs[xs.length-1]+9)];return gaps.reduce((a,g)=>Math.abs(g-x)<Math.abs(a-x)?g:a,gaps[0]);}
 /** Same as judge in game/fair_ring.py: the newer server lets one bottle take several rings (rules.nocap). */
 function ringJudge(p,taps){const rung=new Set(),many=!!R().nocap;return taps.map(t=>{const x=ringX(p,t);const i=p.xs.findIndex((bx,k)=>(many||!rung.has(k))&&Math.abs(x-bx)<=R().ring_tol);if(i>=0)rung.add(i);return i;});}
 function ringView(){
@@ -469,7 +472,9 @@ async function finishRing(rd){
     S.ring.say=rd.chance?(x.n?'Có quà rồi! Cô Tư đếm thưởng cho nha!':'Lượt này chưa trúng, thử vận may lần sau nha!'):x.n>=(R().rings||5)?'Trời ơi, trúng hết luôn! Tay ném thần sầu!':x.n>=3?'Ném hay quá! Nhận quà nè!':'Lượt sau thử lại nha!';
     if(visible){
       // Replay only the server's answer. Misses land between bottles; awarded rings stay on the shelf.
-      if(layer&&!x.late)taps.forEach((t,i)=>{const hit=x.hits?.[i]??-1,gap=i%Math.max(1,rd.xs.length-1),miss=(rd.xs[gap]+rd.xs[gap+1])/2;
+      // A miss drops into the gap nearest to where that ring was let go, a hit onto its bottle: the server's answer,
+      // drawn from the player's own aim.
+      if(layer&&!x.late)taps.forEach((t,i)=>{const hit=x.hits?.[i]??-1,miss=ringMiss(rd.xs,ringX(rd,t));
         const fly=document.createElement('i');fly.className='fh-fly '+(hit>=0?'hit':'miss');fly.style.left=trackPos(hit>=0?rd.xs[hit]:miss);
         fly.style.setProperty('--ring-from',trackPos(ringX(rd,t)));if(hit>=0)fly.style.setProperty('--ring-level',x.hits.slice(0,i).filter(h=>h===hit).length);layer.append(fly);setTimeout(()=>fly.remove(),reduce()?60:700);});
       sfx(x.n>=3?'win':x.n?'clink':'miss');
@@ -876,7 +881,7 @@ function roundView(v){
     <div class="fh-go"><span class="fh-speed" role="group" aria-label="Tốc độ gọi số">${speed}</span>${btn('📣 Kinh!','kinh',{},'primary big fh-kinh',S.lt.claiming?' disabled data-fh-key="kinh"':' data-fh-key="kinh"')}</div>
     ${hut?`<p class="fh-hutline">🙈 Kinh hụt ${hut}${v.hut_max?`/${v.hut_max}`:' lần'}${S.lt.hut?.fine?` · đã bỏ ${xu(S.lt.hut.fine)} vô hũ phạt`:''}</p>`:''}
     <div class="fh-go">${musicBtn()}</div>
-    <p class="fh-rule">Tự chạm số cô Bảy vừa hô trên tờ của bạn. Đủ ${need(v)===1?'một hàng ngang':need(v)===2?'hai hàng ngang trên một tờ':'cả tờ'} thì bấm “Kinh!” trước người khác. Kinh hụt chỉ bị phạt nhẹ, dò lại rồi hô tiếp nha!</p></section>`;
+    <p class="fh-rule">Tự chạm số cô Bảy vừa hô trên tờ của bạn. Đủ ${need(v)===1?'một hàng ngang':need(v)===2?'hai hàng ngang trên một tờ':'cả tờ'} thì bấm “Kinh!” trước người khác. Chưa đủ hàng thì cô Bảy nhắc, không phạt; chỉ đánh dấu số chưa gọi mới là Kinh hụt, phạt nhẹ thôi, dò lại rồi hô tiếp nha!</p></section>`;
 }
 
 /* ---- actions ---- */
@@ -899,7 +904,10 @@ async function kinh(){
     const m=new Set(S.lt.marks[0]||[]),row=v.card.findIndex(r=>r.every(n=>m.has(n)));
     if(row<0){S.flash={text:'Hàng nào đủ 5 số mới kinh được nha!',kind:'warn'};render();return;}
     p={row,at:S.lt.shown};
-  }else{const ci=bestCard(v);p={card:ci,at:S.lt.shown,marks:[...(S.lt.marks[ci]||[])]};}
+  }else{const ci=bestCard(v),rows=fullRows(v,ci),k=need(v);
+    // Kinh đôi needs 2 full rows on one tờ, Hũ đêm hội 3 (game/fair.py LOTO_MODES): say so here instead of a Kinh hụt.
+    if(rows<k){S.flash={text:k===1?'Chưa có hàng nào đủ 5 số đâu, dò tiếp nha!':`Vòng này cần đủ ${k} hàng trên một tờ (đang có ${rows}). Dò tiếp rồi kinh nha!`,kind:'warn'};render();return;}
+    p={card:ci,at:S.lt.shown,marks:[...(S.lt.marks[ci]||[])]};}
   S.lt.claiming=true;pauseLoto();render();
   const r=await send('fair_loto_kinh',p);
   S.lt.claiming=false;

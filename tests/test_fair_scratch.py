@@ -32,9 +32,9 @@ class Table(unittest.TestCase):
         return p * sum(m * w for m, w in xs.PRIZES) / total
 
     def test_rebalanced_prize_table_prefers_small_prizes(self):
-        self.assertEqual((xs.P_HI, xs.P_LO), (.50, .50))
-        self.assertAlmostEqual(self.ev(xs.P_HI), .50 * 1.59)
-        self.assertAlmostEqual(self.ev(xs.P_LO), .50 * 1.59)
+        self.assertEqual((xs.P_HI, xs.P_LO), (fh.WIN_P, fh.WIN_P))       # owner 06/10: about 65% of tickets win
+        self.assertAlmostEqual(self.ev(xs.P_HI), fh.WIN_P * 1.59)
+        self.assertAlmostEqual(self.ev(xs.P_LO), fh.WIN_P * 1.59)
         self.assertEqual(xs.P_HI, xs.P_LO)
         self.assertEqual(xs.MULTS[0], 1)                                  # hoàn vé
         self.assertEqual(sorted(xs.MULTS), list(xs.MULTS))
@@ -113,31 +113,23 @@ class Scratch(FairBase):
         s = story(100)
         s['journey']['fair'] = fh.initial()
         s['journey']['fair']['date'] = fh.vn_date(self.clock.t + 2)
-        s['journey']['fair']['net'] = 3500                          # halfway down the taper
-        mid = (xs.P_HI + xs.P_LO) / 2
-        s, r = self.buy(s, 2, [mid + .001])
-        self.assertEqual(r['fair']['mult'], 0)
-        s, r = self.buy(s, 2, [mid - .001])
-        self.assertGreater(r['fair']['mult'], 0)
-        s['journey']['fair']['net'] = 9000                          # far ahead: P_LO
-        s, r = self.buy(s, 2, [xs.P_LO + .005])
-        self.assertEqual(r['fair']['mult'], 0)
-        s['journey']['fair']['net'] = -400                          # behind: P_HI
-        s, r = self.buy(s, 2, [xs.P_HI - .005])
-        self.assertGreater(r['fair']['mult'], 0)
+        for net in (3500, 9000, -400):                              # 06/10: the same draw at any net
+            s['journey']['fair']['net'] = net
+            s, r = self.buy(s, 2, [fh.LUCK_BASE + .001])
+            self.assertEqual(r['fair']['mult'], 0)
+            s, r = self.buy(s, 2, [fh.LUCK_BASE - .001])
+            self.assertGreater(r['fair']['mult'], 0)
 
     @mock.patch.object(fh, 'featured_game', return_value='xs')
     def test_a_long_run_of_tickets_cools_to_the_floor(self, _featured):
         j, f = {}, dict(fh.initial(), date=fh.vn_date(OPEN))
         ps = [fh.luck_p(j, f, 'xs', OPEN + 5 * i, stake=2) for i in range(40)]
-        self.assertEqual(ps[:fh.RUN_FREE], [xs.P_HI] * fh.RUN_FREE)
-        self.assertAlmostEqual(ps[fh.RUN_FREE], xs.P_HI - xs.RUN_STEP)
-        self.assertEqual(ps[-1], fh.P_FLOOR)
-        self.assertEqual(ps, sorted(ps, reverse=True))
+        self.assertEqual(set(ps), {fh.LUCK_BASE})                   # 06/10: no decay; streaks cool in _draw_luck
+        self.assertGreaterEqual(min(ps), fh.P_FLOOR)
         self.assertEqual(set(j), {'fair_run2'})
         fh.luck_p(j, f, 'bc', OPEN + 300)                           # another stall: one run at a time
         self.assertEqual(set(j), {'fair_run'})
-        self.assertEqual(fh.luck_p(j, f, 'xs', OPEN + 305, stake=2), xs.P_HI)
+        self.assertEqual(fh.luck_p(j, f, 'xs', OPEN + 305, stake=2), fh.LUCK_BASE)
         self.assertEqual(set(j), {'fair_run2'})
         s = story(100)
         s['journey']['fair_run2'] = dict(g='xs', n=3, at=1)
@@ -163,8 +155,8 @@ class Scratch(FairBase):
             wins += r['fair']['mult'] > 0
             paid += 2
             back += r['fair']['prize']
-        self.assertTrue(.45 < wins / 1200 < .55, wins)
-        self.assertTrue(.65 < back / paid < .95, back / paid)
+        self.assertTrue(fh.WIN_P - .03 < wins / 1200 < fh.WIN_P + .03, wins)
+        self.assertTrue(.9 < back / paid < 1.2, back / paid)
 
     def test_prices_and_bad_payloads(self):
         s = story(100)

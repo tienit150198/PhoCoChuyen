@@ -174,13 +174,13 @@ class Knife(FairBase):
         s, r = self.start(s, 10)
         run = r['fair']['run']
         self.assertEqual((run['lv'], run['stage'], run['prize'], run['win']), (1, 'play', 0, kn.prize(10, 1)))
-        self.assertEqual(run['board']['need'], (kn.DIFF[1][0]*135+99)//100)
+        self.assertEqual(run['board']['need'], (kn.DIFF[1][0]*kn.SOFT_DIFFICULTY+99)//100)
         self.assertEqual(s['journey']['wallet'], 90)
         row = s['journey']['history'][-1]
         self.assertEqual((row['kind'], row['amount'], row['label']), ('fair', -10, f'{fh.LABELS["kn"]} · 1 lượt'))
         s, r = self.clear(s)
         x = r['fair']
-        self.assertEqual((x['cleared'], x['hit'], len(x['stuck'])), (True, -1, (kn.DIFF[1][0]*135+99)//100))
+        self.assertEqual((x['cleared'], x['hit'], len(x['stuck'])), (True, -1, (kn.DIFF[1][0]*kn.SOFT_DIFFICULTY+99)//100))
         self.assertEqual((x['run']['stage'], x['run']['prize'], x['run']['win']), ('choice', 11, kn.prize(10, 2)))
         self.assertEqual(s['journey']['wallet'], 90)                         # paid only on Dừng
         s, r = self.act(s, 'fair_kn_stop')
@@ -343,6 +343,7 @@ class Knife(FairBase):
         self.clock.t = fh.window()[1] - 5                                    # the level began just before the close
         s['journey']['fair_kn']['run']['at'] = int(self.clock.t * 1000) - taps[-1] - 100
         s['journey']['fair_kn_skill']['at'] = s['journey']['fair_kn']['run']['at']
+        s['journey']['fair_kn_soft']['at'] = s['journey']['fair_kn']['run']['at']
         s, r = self.act(s, 'fair_kn_throw', lv=1, taps=taps)                 # may still be finished
         self.assertTrue(r['fair']['cleared'])
         with self.assertRaises(GameError) as e:                              # but not played on
@@ -380,7 +381,7 @@ class Knife(FairBase):
         s, r = self.start(s, 10)
         self.assertEqual(s['journey']['fair_kn']['run']['hot'], 2)
         self.assertEqual(self.board(s)['d'], 3)
-        self.assertEqual(r['fair']['run']['board']['need'], (kn.DIFF[3][0]*135+99)//100)
+        self.assertEqual(r['fair']['run']['board']['need'], (kn.DIFF[3][0]*kn.SOFT_DIFFICULTY+99)//100)
         self.assertEqual(public_state(s)['fair']['knife']['hot'], 2)
 
     def test_the_phi_tieu_is_gone(self):
@@ -433,7 +434,8 @@ class Saves(FairBase):
         s, _ = self.act(s, 'fair_kn_start', stake=10)
         v = public_state(s)['fair']['knife']
         json.dumps(v)
-        self.assertEqual(set(v['run']['board']), {'lv', 'need', 'pre', 'th0', 'segs'})
+        self.assertEqual(set(v['run']['board']), {'lv', 'need', 'pre', 'th0', 'segs', 'gap'})   # 06/10: a softer board carries its gap
+        self.assertEqual(v['run']['board']['gap'], kn.SOFT_GAP)
         self.assertFalse(v['run']['chance'])
         self.assertEqual(v['ladder'], list(kn.LADDER))
         self.assertNotIn('sd', json.dumps(v['run']))

@@ -177,7 +177,9 @@ def _cost(choice, cash, kind=None, items=(), wealth=0, percent=None):
     cost=_maximum(choice, wealth, percent)
     if (kind=='power_cut' and 'surge' in items) or (kind=='shop_inspection' and 'hygiene' in items):
         cost=(cost+1)//2
-    return min(cost, max(0, cash if percent is not None else cash // 10)) if choice['loss'] else cost
+    # A counter's két sắt: a theft never takes more than half of the cash there.
+    cap = cash // 2 if kind == 'theft' and 'ket' in items else cash
+    return min(cost, max(0, cap if percent is not None else cash // 10)) if choice['loss'] else cost
 
 
 def public(c, quay=False):
@@ -196,7 +198,8 @@ def public(c, quay=False):
         for x in spec['choices']:
             cost = _cost(x, _cash(c, quay),pending['kind'],items,pending.get('wealth',0),pending.get('percent'))
             effect = x['text'] + (f" Uy tín {'+' if x['rep'] >= 0 else ''}{x['rep']}." if x['rep'] else '')
-            if x['loss']:effect += (' Hao hụt tính theo tài sản lúc phát sinh, không vượt quỹ hiện có.' if 'percent' in pending else ' Hao hụt tối đa 10% quỹ hiện có.')
+            if x['loss']:effect += ((' Hao hụt tính theo tài sản lúc phát sinh, ' + ('két sắt giữ lại ít nhất nửa quỹ hiện có.' if pending['kind'] == 'theft' and 'ket' in items else 'không vượt quỹ hiện có.'))
+                                    if 'percent' in pending else ' Hao hụt tối đa 10% quỹ hiện có.')
             out['pending']['choices'].append(dict(id=x['id'], label=x['label'], cost=cost, max_cost=_maximum(x,pending.get('wealth',0),pending.get('percent')),
                 rep=x['rep'], effect=effect, affordable=_cash(c, quay) >= cost))
     return out

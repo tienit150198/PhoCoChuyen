@@ -21,13 +21,14 @@ class Rotation(unittest.TestCase):
             self.assertIn(selected, games)
             self.assertEqual(fh.featured_game(t + 1799.999), selected)
             self.assertNotEqual(fh.featured_game(t + 1800), selected)
-            self.assertTrue(all(fh.chance_rate(g, t) == .5 for g in games))
+            self.assertTrue(all(fh.chance_rate(g, t) == (fh.XD_BASE if g == 'xd' else fh.LUCK_BASE) for g in games))
         self.assertEqual(set(picked[:5]), set(games))
         self.assertEqual(picked[:5], picked[5:])
 
     def test_price_endpoints_and_monotonic_intermediate_stakes(self):
         for game, minimum in [('bc', 1), ('xd', 10), ('lt', 2), ('xs', 2)]:
-            for selected, high, low in [(game, .50, .50), ('ring', .50, .50)]:
+            rate = fh.chance_rate(game, OPEN)   # 06/10: one rate at every stake and net
+            for selected, high, low in [(game, rate, rate), ('ring', rate, rate)]:
                 with self.subTest(game=game, selected=selected), mock.patch.object(fh, 'featured_game', return_value=selected):
                     rates = [fh.chance_rate(game, OPEN, stake) for stake in range(minimum, 501)]
                     self.assertAlmostEqual(rates[0], high)
@@ -39,8 +40,9 @@ class Rotation(unittest.TestCase):
                                             for stake, rate in zip(range(minimum, 501), rates)))
 
     def test_repeat_floor_never_increases_an_already_lower_rate(self):
-        for selected, stake, base, floor in [('xd', 10, .50, .50), ('xd', 500, .50, .50),
-                                              ('ring', 10, .50, .50), ('ring', 500, .50, .50)]:
+        x = fh.XD_BASE
+        for selected, stake, base, floor in [('xd', 10, x, x), ('xd', 500, x, x),
+                                              ('ring', 10, x, x), ('ring', 500, x, x)]:
             with self.subTest(selected=selected, stake=stake), mock.patch.object(fh, 'featured_game', return_value=selected):
                 j = {}
                 rates = [fh.luck_p(j, None, 'xd', OPEN + i, stake=stake) for i in range(80)]
@@ -52,9 +54,10 @@ class Rotation(unittest.TestCase):
         mean = sum(m * w for m, w in xs.PRIZES) / sum(w for _, w in xs.PRIZES)
         with mock.patch.object(fh, 'featured_game', return_value='xs'):
             returns = [fh.chance_rate('xs', OPEN, p) * mean for p in xs.TIERS]
-        self.assertAlmostEqual(returns[0], .795)
-        self.assertLess(returns[-1], 1)
-        self.assertGreater(sum(r < 1 for r in returns), len(returns) // 2)
+        # Owner 06/10 (65% of tickets win, the prize table unchanged): every tier now returns a little more than it costs.
+        self.assertAlmostEqual(returns[0], fh.LUCK_BASE * 1.59)
+        self.assertTrue(all(abs(r - returns[0]) < 1e-9 for r in returns))
+        self.assertLess(fh.WIN_P * mean, 1.05)
 
 
 class RotationCommands(FairBase):
@@ -62,7 +65,7 @@ class RotationCommands(FairBase):
         for selected in ('xs','ring'):
             with mock.patch.object(fh,'featured_game',return_value=selected):
                 for price in (2,500):
-                    for draw,win in ((.499,True),(.5,False)):
+                    for draw,win in ((fh.LUCK_BASE-.001,True),(fh.LUCK_BASE,False)):
                         self.dice(Draws([draw]))
                         _,result=self.act(story(1000),'fair_xs',price=price)
                         self.assertEqual(result['fair']['prize']>0,win)
@@ -85,10 +88,10 @@ class RotationCommands(FairBase):
             start += 1800
         self.clock.t = start + 1795
         s, result = self.act(story(100), 'fair_ring_start')
-        self.assertEqual(s['journey']['fair_chance']['ring']['p'], 500)
+        self.assertEqual(s['journey']['fair_chance']['ring']['p'], round(fh.LUCK_BASE * 1000))
         s = json.loads(json.dumps(s))
         self.clock.t = start + 1801
-        self.dice(Dice(draws=[.49]))
+        self.dice(Dice(draws=[fh.LUCK_BASE - .01]))
         s, result = self.act(s, 'fair_ring_throw', id=result['fair']['round']['id'], taps=[0, 300, 600, 900, 1200])
         self.assertGreater(result['fair']['prize'], 0)
         validate_state(s)
