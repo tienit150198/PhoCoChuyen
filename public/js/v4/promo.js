@@ -67,7 +67,7 @@ function review(p){
 /** #11: why the last review did not pass and when the next one is. The answers' scores come back with the
  * command (game/promotion.py _later, `review`) and live in ui.pmLast for this session; after a reload only the rule. */
 function lastReview(env,wait){
-  const L=env.ui.pmLast?.career===env.api.state.current?env.ui.pmLast:null;
+  const L=env.ui?.pmLast?.career===env.api.state.current?env.ui.pmLast:null;
   const when=`<p class="small">⏳ Chỉ đếm ngày có làm việc. Làm thêm <b>${wait}</b> ngày là sếp hẹn xét lại ở đầu ca kế tiếp.</p>`;
   if(!L)return `<div class="pm-last">${when}<p class="small muted">💡 Lần xét trước chưa qua: có câu bị chấm 0 điểm, hoặc chọn “Xin cao” khi chưa trả lời tốt nhất cả hai câu. Lần sau chọn cách đúng quy trình nhất rồi “Xin hợp lý”.</p></div>`;
   const mark=s=>s===2?'✅':s===1?'🟡':'❌';
