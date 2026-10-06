@@ -22,6 +22,7 @@
  * Pure string builders + one DOM pass. */
 import {escapeHTML as esc} from '../icons.js';
 import {syncBar} from './action-bar.js';
+import {whyAttrs,placeChips,clean,actBar} from '../ui-kit.js';
 
 /** The next step: the first one not done yet that can be done from here (wrong ones count
  * as not done); a step with no way to do it (sold out, waiting) only counts when nothing else is left. */
@@ -120,11 +121,15 @@ export function stepLine(n){
  *   already allowed it stays reachable as a small "or finish now" link under it. */
 export function stepCta(x,steps,final,{style='primary big grow'}={}){
   const n=pending(steps);
-  const fin=(cls,dis=false)=>`<button type="button" class="btn ${cls}"${goAttrs(final.go)}${dis?' disabled':''}>${final.label}</button>`;
+  final=gate(final);
+  // Not ready yet: dimmed but tappable (a tap says why and offers the fix, ui-kit whyTap), never a mute grey button.
+  const fin=(cls,why='')=>`<button type="button" class="btn ${cls}${why?' is-why':''}"${goAttrs(final.go)}${why?whyAttrs({why,fix:final.fix}):''}>${final.label}</button>`;
   if(!n||!n.go){
     if(final.ready!==false)return fin(`${style} gd-cta gd-final`);
+    // The server's reason is a sentence of its own; the page's guess names the step still open.
+    if(final.said)return `<div class="gd-ctas">${fin(style,final.why)}<small class="gd-why">${esc(final.why)}</small></div>`;
     const why=n?n.label:(final.why||'');
-    return `<div class="gd-ctas">${fin(style,true)}${why?`<small class="gd-why">Còn bước: ${esc(why)}</small>`:''}</div>`;
+    return `<div class="gd-ctas">${fin(style,why?`Còn: ${why}`:'Chưa xong')}${why?`<small class="gd-why">Còn bước: ${esc(why)}</small>`:''}</div>`;
   }
   // Pointer: outlined, with a hand, "👆 <what to tap>"; applyGuide names the control itself once it is on screen.
   const say=pointsOnly(n.go)?(n.go.label&&bareLabel(n.go.label))||bareLabel(n.label,false):'';
@@ -133,6 +138,51 @@ export function stepCta(x,steps,final,{style='primary big grow'}={}){
     :`<button type="button" class="btn ${style} gd-cta"${goAttrs(n.go)}>${n.go.label||`👉 ${esc(n.label)}`}</button>`;
   if(final.ready===false)return step;
   return `<div class="gd-ctas">${step}<button type="button" class="gd-alt"${goAttrs(final.go)}>hoặc ${final.alt||final.label}</button></div>`;
+}
+
+/** The server's pre-check for the finishing action (final.can: true | {why, fix}, from the career's public
+ * view, game/careers/kit.py check) overrides the client's own guess: same rules as the refusal. */
+function gate(final){
+  const can=final?.can;
+  if(!final||can===undefined||can===null)return final||{label:'',go:null,ready:false};
+  if(can===true)return final;
+  return {...final,ready:false,why:can.why||final.why,fix:can.fix||final.fix,said:!!can.why};
+}
+
+/** The bottom bar's two slots for ui-kit actBar ({next, main}): one row, the next step on the left, the one main
+ * button on the right (docs/UI_KIT.md).
+ * - the next step is a command: it is the main button; finishing early, when allowed, is a quiet link on the left;
+ * - the next step only points (go.sel): "👆 <what>" on the left, the finishing button on the right (secondary
+ *   while steps are left, dimmed with its reason when it cannot go yet);
+ * - nothing left: the finishing button alone. */
+export function barParts(x,steps,final,{style='primary big'}={}){
+  final=gate(final);
+  const n=pending(steps),has=!!(final.label&&final.go);
+  const fin=(cls,why='')=>`<button type="button" class="btn ${cls} gd-final${why?' is-why':''}"${goAttrs(final.go)}${why?whyAttrs({why,fix:final.fix}):''}>${final.label}</button>`;
+  const note=(t,cls='')=>`<span class="ui-note${cls?' '+cls:''}">${t}</span>`;
+  if(!n||!n.go){
+    if(!has)return {next:n?note(esc(n.label)):'',main:''};
+    if(final.ready!==false)return {next:'',main:fin(`${style} gd-cta`)};
+    const why=final.said?final.why:n?n.label:(final.why||'');
+    return {next:why?note(`<span aria-hidden="true">⏳</span> ${esc(why)}`,'gd-why'):'',main:fin(style.replace(/\bprimary\b/,'').trim()+' gd-cta',why||'Chưa xong')};
+  }
+  const say=pointsOnly(n.go)?(n.go.label&&bareLabel(n.go.label))||bareLabel(n.label,false):'';
+  if(say){
+    const chip=`<button type="button" class="btn ui-next gd-cta gd-point"${goAttrs(n.go)} data-say="${esc(say)}" aria-label="${esc('Chỉ chỗ: '+say)}">👆 ${esc(say)}</button>`;
+    if(!has)return {next:'',main:chip};
+    const quiet=style.replace(/\bprimary\b/,'').trim();
+    return {next:chip,main:final.ready===false?fin(quiet,final.why||n.label):fin(quiet)};
+  }
+  const step=`<button type="button" class="btn ${style} gd-cta"${goAttrs(n.go)}>${n.go.label||`👉 ${esc(n.label)}`}</button>`;
+  if(!has||final.ready===false)return {next:'',main:step};
+  return {next:`<button type="button" class="gd-alt"${goAttrs(final.go)}>hoặc ${final.alt||final.label}</button>`,main:step};
+}
+
+/** A whole bottom bar from the guide: barParts in ui-kit actBar. `note` fills the left slot when the guide has
+ * nothing for it (a count like "3/6"); `top` is a full-width row above; `cls` the career's own hook class. */
+export function stepBar(x,steps,final,{cls='',top='',note='',style}={}){
+  const {next,main}=barParts(x,steps,final||{label:'',go:null,ready:false},style?{style}:{});
+  return actBar({next:next||note,main,top,cls});
 }
 
 /* ---------------------------------------------------------------- host side */
@@ -213,6 +263,7 @@ export function applyGuide(dialog){
     if(b){if(dup)b.tabIndex=-1;else b.removeAttribute('tabindex');}
   }
   pointers(dialog);
+  if(clean())placeChips(dialog);
   const cur=hint||dialog.querySelector('.gd-next');
   if(cur?.dataset.first&&cur.dataset.pulse){
     const sel=cur.classList.contains('gd-dup')?cur.dataset.pulse.replace('.gd-next .gd-hint','.gd-cta'):cur.dataset.pulse;

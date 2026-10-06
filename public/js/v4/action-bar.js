@@ -13,8 +13,10 @@
  *
  * Layout only: no state, no commands. Every write is skipped when the value did not change. */
 
+import {warnBudget} from '../ui-kit.js';
+
 /** The careers' own bars (the guide finds a bar through its .gd-cta; a bar without one is picked by name). */
-export const BARS='.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar';
+export const BARS='.ui-bar,.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar';
 const set=(el,k,v)=>{if(el.style.getPropertyValue(k)!==v)el.style.setProperty(k,v);};
 
 /** The width taken by the header's right-hand controls (⋯, ❔, ✕, a tag): everything after the title column. */
@@ -40,6 +42,7 @@ export function syncBar(dialog,bar){
   const h=bar?Math.round(bar.getBoundingClientRect().height):0;
   set(dialog,'--abar-h',`${h}px`);
   dialog.toggleAttribute('data-abar',!!bar);
+  if(dialog.open&&dialog.querySelector('.career-job'))warnBudget(dialog);   // dev: the screen's word cap (ui-kit.js)
   const head=dialog.querySelector('#sheetContent .sheet-head,#sheetContent .preparation-topline');
   if(head){
     const r=head.getBoundingClientRect();
