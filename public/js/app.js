@@ -1618,6 +1618,9 @@ try{
   ensureCareerUI();  // its workbench failed to come above (the game opens anyway): ask again in the background
   try{performance.mark('mnl-first-frame');}catch{/* no User Timing */}   // "time to first game frame" (telemetry.js load beacon)
   import('./telemetry.js').then(m=>m.telemetryBoot({api,ui})).catch(e=>console.warn('telemetry:',e));  // Giữ chân: leave/error/load beacons
+  // 💬 The live socket (chat button, friends): first idle moment after the first frame, not last of the queue below
+  // (it came ~6 s late, and after a sign-in sheet even later); its greyed button shows until the welcome.
+  whenIdle(()=>L.live.get().then(m=>m.liveBoot(env())).catch(e=>console.warn('live:',e)),800);
   // The rest of the catalogue (api.more), now that the first frame is out: it never competed with it on the wire.
   api.more().catch(e=>console.warn('content:',e));
   // Always-on features (badges, notices, polls, tips) load once the game is on screen, not before it.
@@ -1627,7 +1630,7 @@ try{
   const tutBoot=[L.tut,m=>m.tutorialBoot(env())];
   let tutNow=false;try{tutNow=localStorage.getItem('mnl.tut.done')!=='1'&&api.state.settings?.tutorialDone!==true;}catch{}
   const bootSteps=[...(tutNow?[]:[tutBoot]),[L.inc,m=>m.incidentBoot(env())],[L.chat,m=>m.aiNoticeBoot(env())],[L.happen,m=>m.happenBoot(env())],
-    [L.people,()=>{}],[L.social,m=>m.startSocialPoll(env())],[L.tips,m=>m.tipsBoot({api,sound})],[L.live,m=>m.liveBoot(env())]];
+    [L.people,()=>{}],[L.social,m=>m.startSocialPoll(env())],[L.tips,m=>m.tipsBoot({api,sound})]];
   const bootNext=i=>{
     if(i>=bootSteps.length){lazyBoot=false;document.dispatchEvent(new CustomEvent('mnl:lazy',{detail:{wanted:true}}));return;}
     const [h,fn]=bootSteps[i];h.get().then(fn).catch(e=>console.warn('lazy boot:',e)).finally(()=>whenIdle(()=>bootNext(i+1),600));

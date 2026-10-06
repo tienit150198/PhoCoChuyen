@@ -41,6 +41,11 @@
 - Khoe: nhân vật cầm máy đang dùng (bản đồ phố, ảnh selfie), huy hiệu máy cạnh “Thay đồ” ở Hành trình, thẻ Phố nghề có máy và 3 món đồ đắt nhất. Mỗi hạng máy thêm một món vui, cộng dồn, không món nào làm ra tiền: Chỉ đường nhớ 3 nơi vừa đi, khung selfie (lưu ảnh về máy), viền màu vỏ máy quanh huy hiệu trên hồ sơ, khung ảnh đôi, viền vàng.
 - Hướng dẫn: mục “Lên đời điện thoại”. Tài phú tính điện thoại và đồ công nghệ theo giá bán lại.
 - Bản lưu: thêm khóa tùy chọn `journey.gadgets` (chỉ có từ lần mua đầu). Bản 1.9.2 đọc, giữ nguyên và lưu lại bản lưu có khóa này; bản lưu cũ vẫn đọc bình thường. Thẻ người chơi (Phố nghề) có thêm `phone`, bản cũ bỏ qua. Không đổi bảng, không đổi dịch vụ live.
+# Chưa phát hành — WP-5 Boot / live
+
+- 💬 Nút Chat hiện ngay sau khung hình đầu: nút xám "đang kết nối…" (chạm thì báo đang kết nối và thử lại liền), sáng lên khi máy chủ chat chào. Kết nối chat khởi động ngay lúc rảnh đầu tiên sau khung hình đầu thay vì cuối hàng chờ (~6 giây). Chưa kết nối được lần nào thì thử lại sau 3, 8, 20 giây rồi mới giãn ra 1–10 phút (trước đây chờ 60 giây, nên ai mở game đúng lúc dịch vụ chat khởi động lại thì không thấy chat cả phút).
+- 🔄 Màn hình tải không còn kẹt: app.js (hoặc một file của nó) tải hỏng, hay một file có phiên bản bị 404 lúc đang cập nhật, thì tự tải lại một lần (chống cache). Hỏng lần nữa trong 2 phút hoặc mất mạng thì hiện nút "Tải lại" kèm phiên bản và mã lỗi. Sau 25 giây vẫn chưa xong thì gợi ý "Tải lại". Stylesheet hỏng được thử lại một lần.
+- 📊 Lỗi tải trang ghi kèm phiên bản và mã HTTP (screen `loading:v1.9.2-<build>:404`, beacon rời trang `p: v<phiên bản>`).
 
 # v1.9.2 — 2026-10-06: giao diện cũ trở lại
 
