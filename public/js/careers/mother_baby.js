@@ -24,7 +24,7 @@ const sfx=new Sound();
 async function run(x,op,payload){
   sfx.configure(x.state.settings||{});sfx.unlock();
   try{
-    const r=await x.api.command(op,payload)||{};
+    const r=await x.api.command(op,payload,"mother_baby")||{};   // the career named: a new account has no `current` yet
     x.ui.flash=op==='ask'?'':r.message||'';
     if(r.celebrate)sfx.success();else if(r.correct===false)sfx.error();else sfx.click();
     if(r.message&&(r.celebrate||r.correct===false||/khách mới|bỏ về|hủy|quá giờ/.test(r.message)))x.toast(r.message,r.correct===false?'error':r.celebrate?'good':false);

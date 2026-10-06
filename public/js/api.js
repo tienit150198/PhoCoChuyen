@@ -266,7 +266,10 @@ export class GameAPI extends EventTarget {
     this.refreshing=work;
     try{return await work;}finally{if(this.refreshing===work)this.refreshing=null;}
   }
-  command(action,payload={},career=this.state?.current){
+  // No career given: the workplace on screen. A new account has no `current` yet; the screen is drawn from `focus`
+  // (app.js career(), v4/careers.js careerContext), so the command goes there too ("Chọn một nghề trước nhé" on the
+  // first milk-tea tap). `jr_*`, `fair_*`, `settings` ignore it.
+  command(action,payload={},career=this.state?.current||this.state?.focus){
     const tap=JSON.stringify([career,action,payload]);
     // A stop tap on a running meter (v4/careers.js): the moment the finger came down rides along as tap_at.
     const stamp=this.tapStamp?.(action);if(stamp)payload={...payload,tap_at:stamp.at};
@@ -326,17 +329,17 @@ export class GameAPI extends EventTarget {
     const job=this.queue.then(execute,execute);this.queue=job.catch(()=>{});return job;
   }
   async aiReply(npc){
-    try{return await this.json('/api/ai/rephrase',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':this.csrf},body:JSON.stringify({career:this.state.current,npc})},11500);}
+    try{return await this.json('/api/ai/rephrase',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':this.csrf},body:JSON.stringify({career:this.state.current||this.state.focus,npc})},11500);}
     catch{return {mode:'scripted',reason:'unavailable'};}
   }
   post(url,body,timeout=12000){return this.json(url,{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':this.csrf},body:JSON.stringify(body)},timeout);}
   /** Reviewer answers the owner's reply (AI persona when allowed, scripted otherwise). */
-  async aiFeedback(post,career=this.state.current){
+  async aiFeedback(post,career=this.state.current||this.state.focus){
     try{const data=await this.post('/api/ai/feedback',{career,post},25000);if(data.state)this.accept(data);return data;}
     catch{return {mode:'none'};}
   }
   /** Rewrite a fresh scripted review in the reviewer's own voice (optional). */
-  async aiReview(post,career=this.state.current){
+  async aiReview(post,career=this.state.current||this.state.focus){
     try{const data=await this.post('/api/ai/review',{career,post},25000);if(data.state)this.accept(data);return data;}
     catch{return {mode:'none'};}
   }

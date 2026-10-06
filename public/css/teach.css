@@ -142,11 +142,12 @@ button.tt-period:hover{border-color:var(--accent)}
 .tt-card.picked{opacity:1;background:var(--accent-soft);border-color:var(--accent)}
 .tt-card-top{display:flex;gap:6px;align-items:flex-start;font-size:var(--tt-s);line-height:1.25;padding-right:18px}
 .tt-card-top b{flex:1}
+.tt-card.picked .tt-card-top{padding-right:28px}  /* the order badge sits inside the card, not over the next one */
 .tt-card-meta{display:flex;justify-content:space-between;align-items:center;gap:4px;flex-wrap:wrap;font-size:var(--tt-s);color:var(--ink-2)}
 .tt-role{padding:0 8px;border-radius:99px;background:var(--surface-2);font-weight:700}
 .tt-role.r-open{background:var(--info-soft)}
 .tt-role.r-check{background:var(--good-soft)}
-.tt-badge{position:absolute;top:-8px;right:-8px;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-style:normal;font-weight:800;font-size:var(--tt-s)}
+.tt-badge{position:absolute;top:6px;right:6px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-style:normal;font-weight:800;font-size:var(--tt-s)}
 
 /* classroom moments */
 .tt-event{padding:12px;border-radius:var(--radius);background:var(--warn-soft);border:1.5px solid var(--warn);display:flex;flex-direction:column;gap:10px}
@@ -545,3 +546,14 @@ html.reduce-motion .tt-meter b,html.reduce-motion .tt-card{transition:none}
 .cl-tab.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
 .cl-tab em{display:inline-block;min-width:20px;padding:0 5px;border-radius:99px;background:var(--warn);color:#fff;font-style:normal;font-size:.75rem}
 .tt-fold>.fold-body[hidden]{display:none}
+/* F#211 (iPhone 390×797, "các lựa chọn cứ xếp chồng lên nhau"): on a phone the sticky bar is one row (compact.css)
+   whose parts are capped at 42% and clamped, so the three plan slots stood in a narrow column over the cards and
+   the bar's next-step line and button piled up. On a phone the slots sit inline above the cards and the bar keeps
+   the next step and the button, full width. (!important: compact.css's phone bar rule is far more specific.) */
+.tt-tray.tt-tray-inline{display:none}
+html[data-layout="phone"] .tt-tray.tt-tray-inline{display:grid}
+html[data-layout="phone"] .tt-bar>.tt-tray{display:none!important}
+html[data-layout="phone"] dialog.sheet .tt-bar>.tt-bar-row{flex:1 1 auto!important;max-width:none!important;display:flex!important;overflow:visible!important;font-size:inherit!important}
+html[data-layout="phone"] dialog.sheet .tt-bar .tt-next{font-size:.875rem;line-height:1.3}
+html[data-layout="phone"] dialog.sheet .tt-bar-btns .btn{min-height:44px}
+dialog.sheet:has(.tt-bar){scroll-padding-bottom:150px}  /* a control scrolled into view (focus, guide) stops above the bar */

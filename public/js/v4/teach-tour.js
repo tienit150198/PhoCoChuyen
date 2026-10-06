@@ -244,11 +244,13 @@ function planStage(t,c,R,ui,first){
   const over=mins>R.limit,short=seq.length===3&&mins<R.min,core=cards.some(x=>x.role==='core'),ready=seq.length===3&&!over&&!short&&core;
   const why=over?'Quá giờ tiết học: bớt một hoạt động dài':short?`Mới ${mins} phút, cần ít nhất ${R.min}`:seq.length===3&&!core?'Thiếu hoạt động chính':seq.length<3?`Chọn thêm ${3-seq.length} hoạt động`:'Giáo án đã đủ. Chốt nhé!';
   const styles=['look','hands','talk','short'].map(s=>`<span class="tt-style ${reach.has(s)?'on':''}">${STYLE_ICON[s]} ${esc(STYLE_SHORT[s])}</span>`).join('');
-  const tray=`<ol class="tt-tray tt-tray-bar" aria-label="Giáo án tiết này">${[0,1,2].map(slot).join('')}</ol>`;
+  // The three slots ride in the sticky bar; on a phone they sit inline above the cards instead (teach.css, F#211:
+  // in the bar they took ~145 px over the cards and the bar's own lines piled up).
+  const slots=[0,1,2].map(slot).join(''),tray=`<ol class="tt-tray tt-tray-bar" aria-label="Giáo án tiết này">${slots}</ol>`;
   const planner=section('📝','Giáo án tiết này',`<p class="tt-tip">${esc(R.cond.emoji)} ${esc(R.cond.tip)}</p>
     <div class="tt-reach" aria-label="Cách học đã có trong giáo án">${styles}</div>
     <details class="fold gd-rules"><summary>📜 Quy tắc</summary><ul><li>⏱ ${R.min}–${R.limit} phút</li><li>⭐ Mở đầu hợp không khí lớp</li><li>⭐ Có đủ cách học của các bạn có mặt</li><li>⭐ Kết thúc bằng thẻ Kiểm tra</li></ul></details>`,`⏱ ${mins}/${R.limit}′`,'tt-planner');
-  const pick=section('🗂️','Thẻ hoạt động',`<div class="tt-hand">${hand}</div>`,'Chạm theo thứ tự');
+  const pick=section('🗂️','Thẻ hoạt động',`<ol class="tt-tray tt-tray-bar tt-tray-inline" aria-label="Giáo án tiết này">${slots}</ol><div class="tt-hand">${hand}</div>`,'Chạm theo thứ tự');
   const next=`<b class="${over||short?'bad-text':''}">⏱ ${mins}/${R.limit}′ · ${seq.length}/3</b> · ${esc(why)}`;
   const steps=[],best=first?bestPlan(R):null,reset={act:'lessonReset',label:'↶ Soạn lại'};
   if(best&&seq.every((id,i)=>best[i]===id))best.forEach((id,i)=>{const x=R.hand.find(h=>h.id===id);
@@ -341,15 +343,28 @@ export const classTab={now:'today'};
 if(typeof document!=='undefined')document.addEventListener('click',e=>{const b=e.target?.closest?.('[data-cl-tab]');if(!b)return;classTab.now=b.dataset.clTab;if(!b.dataset.action)setTimeout(rerender,0);},true);  // after the click: re-rendering now would detach the target and read as a tap outside the sheet
 /* A reply's rules go through the command queue (in order with the other taps) with later:true, so the
  * server answers right after the rules. Rewording a line (op 'voice': the question, a parent's message, then
- * the reaction to the answer) changes no rule and takes the model seconds, so it runs off the queue: other
- * taps never wait for it, and a question being reworded shows "typing" for VOICE_HOLD at most, then the
- * scripted line and the answers (the AI wording replaces it when it comes). Before, the model's wait sat in
- * the queue and disabled the answers: the class looked frozen for up to 25 s ("trả lời học sinh mà bị đứng"). */
-export const VOICE_HOLD=2000;
+ * the reaction to the answer) changes no rule and takes the model seconds; a question being reworded shows
+ * "typing" for VOICE_HOLD at most, then the scripted line and the answers (the AI wording replaces it when it
+ * comes). Before 1.5.3 the model's whole wait sat in the queue: the class looked frozen for up to 25 s ("trả lời
+ * học sinh mà bị đứng"). Fully off the queue, though, the voice's save write (it bumps the revision) landed
+ * under a tap already on its way: 409 revision_conflict on lesson_next / lesson_call / lesson_answer / cl_parent
+ * (15 sessions on 06/10), and a tap dropped when it moved again under the retry. So the voice now takes its
+ * place in the queue (it goes after the taps before it) and the taps after it wait for it, for VOICE_WAIT at
+ * most from when it was sent: a usual model answer lands first, a slow one no longer holds the class. */
+export const VOICE_HOLD=2000,VOICE_WAIT=4000;
 const clPending={},clVoiced=new Set(),clError={};
 export const classAiOn=()=>!!(classApi?.ai?.configured&&classApi?.state?.settings?.aiConsent);
 const rerender=()=>classApi?.dispatchEvent(new CustomEvent('state',{detail:{}}));
 const clQueued=(api,fn)=>{const job=api.queue.then(fn,fn);api.queue=job.catch(()=>{});return job;};
+/** A voice in the queue: it starts after the taps already queued; the taps after it wait until it lands, or
+ * VOICE_WAIT after it was sent (a later landing is what the one 409 retry in api.command is for). */
+export const clVoiceQueued=(api,fn,wait=VOICE_WAIT)=>{
+  let sent;const started=new Promise(r=>{sent=r;});
+  const run=()=>{sent();return fn();};
+  const job=api.queue.then(run,run);
+  api.queue=Promise.race([job.then(()=>{},()=>{}),started.then(()=>new Promise(r=>setTimeout(r,wait)))]);
+  return job;
+};
 const clRid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const held=p=>performance.now()-p.at<VOICE_HOLD;
 /** The answers wait: a reply on its way, or a question still being reworded (for VOICE_HOLD at most). */
@@ -368,7 +383,7 @@ export async function classSend(body,key,text,{hide='first'}={}){
   clPending[key]=mine;delete clError[key];rerender();
   if(voice)setTimeout(()=>{if(clPending[key]===mine)rerender();},VOICE_HOLD+50);
   const rid=clRid(),since=api.accepted,post=()=>api.post('/api/ai/class',{...body,request_id:rid,expected_revision:api.revision,...voice?{}:{later:true}},25000);
-  const send=voice?post:()=>clQueued(api,post);
+  const send=voice?()=>clVoiceQueued(api,post):()=>clQueued(api,post);
   try{
     let data;
     try{data=await send();}
@@ -376,7 +391,7 @@ export async function classSend(body,key,text,{hide='first'}={}){
     if(clPending[key]===mine)delete clPending[key];
     // An answer older than a state adopted meanwhile (a tap that landed while the model wrote) is left out.
     if(!api.accept(data,since))rerender();
-    // The rules are in (later): now the reaction is reworded, off the queue. An older server voiced it already.
+    // The rules are in (later): now the reaction is reworded (a voice in the queue). An older server voiced it already.
     if(!voice&&data?.reason==='later'&&classAiOn())classSend({kind:body.kind,pupil:body.pupil,...body.task?{task:body.task}:{},op:'voice'},key,'',{hide:'last'});
     return data;
   }catch(error){
