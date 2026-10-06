@@ -1,3 +1,9 @@
+# Chưa phát hành — WP-5 Boot / live
+
+- 💬 Nút Chat hiện ngay sau khung hình đầu: nút xám "đang kết nối…" (chạm thì báo đang kết nối và thử lại liền), sáng lên khi máy chủ chat chào. Kết nối chat khởi động ngay lúc rảnh đầu tiên sau khung hình đầu thay vì cuối hàng chờ (~6 giây). Chưa kết nối được lần nào thì thử lại sau 3, 8, 20 giây rồi mới giãn ra 1–10 phút (trước đây chờ 60 giây, nên ai mở game đúng lúc dịch vụ chat khởi động lại thì không thấy chat cả phút).
+- 🔄 Màn hình tải không còn kẹt: app.js (hoặc một file của nó) tải hỏng, hay một file có phiên bản bị 404 lúc đang cập nhật, thì tự tải lại một lần (chống cache). Hỏng lần nữa trong 2 phút hoặc mất mạng thì hiện nút "Tải lại" kèm phiên bản và mã lỗi. Sau 25 giây vẫn chưa xong thì gợi ý "Tải lại". Stylesheet hỏng được thử lại một lần.
+- 📊 Lỗi tải trang ghi kèm phiên bản và mã HTTP (screen `loading:v1.9.2-<build>:404`, beacon rời trang `p: v<phiên bản>`).
+
 # v1.9.2 — 2026-10-06: giao diện cũ trở lại
 
 - 🎨 Theo chủ game: giao diện cổ điển (bản đồ phố 2D, cảnh từng tiệm, như 1.8.1) là giao diện mặc định. Máy chủ giữ nguyên 1.9.1 (quầy có nhân viên +50%, sửa tip kế toán ngày 1, dữ liệu Thư giãn trên đảo vẫn được giữ). Đảo 2.5D sẽ quay lại dưới dạng tuỳ chọn ở bản sau.

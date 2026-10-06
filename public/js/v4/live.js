@@ -4,9 +4,11 @@
  * (./chat.js) loads on first tap.
  *
  * It opens a socket only when the game server names one (bootstrap `live.url`, env LIVE_URL=/live on the game
- * server), and nothing shows until the service says `welcome.flags.chat`. Before a first welcome ever arrives
- * (service down, nginx not routing /live) it retries slowly (1, 2, 5, 10 minutes) so the game server never sees a
- * reconnect storm; after one it reconnects with back-off (1, 2, 4, 8, 15 s, jitter), at once when the tab comes
+ * server). app.js boots it right after the first frame; until the first welcome the chat button is a greyed
+ * placeholder whose tap says "đang kết nối…" (06/10: the button used to appear only after the welcome, and a page
+ * loaded during the live service's restart showed no chat for a minute or more). A welcome without `flags.chat`
+ * removes it. Before a first welcome ever arrives (service restarting or down, nginx not routing /live) it retries
+ * at 3, 8 and 20 s, then slowly (1, 2, 5, 10 minutes) so the game server never sees a reconnect storm; after one it reconnects with back-off (1, 2, 4, 8, 15 s, jitter), at once when the tab comes
  * back or the network returns; the chat dialog refreshes its latest history page. Close codes from
  * the service: 1012 restart (jittered return), 4001 switched off (10 minutes), 4002 another tab took over.
  *
@@ -19,7 +21,7 @@ import {icon} from '../icons.js';
 import {stylesheet} from '../lazy.js';
 import {faceCode} from './face-code.js';
 
-const RETRY=[1,2,4,8,15],SLOW=[60,120,300,600],PING_MS=25000,DEAD_MS=60000,CONNECT_MS=20000;
+const RETRY=[1,2,4,8,15],SLOW=[3,8,20,60,120,300,600],PING_MS=25000,DEAD_MS=60000,CONNECT_MS=20000;
 const listeners=new Map();
 let env=null,ws=null,attempt=0,timer=0,pinger=0,lastFrame=0,tried=0,probing=false,fab=null,shown=false,shownDate=false,renderTimer=0,lastTotal=-1,cssAsked=false,sentFc=null,faceTimer=0;
 let connectTimer=0,probeTimer=0;
@@ -66,7 +68,7 @@ export const live={
   reconnect(force=false){
     if(!env?.api?.live?.url)return;
     if(live.state==='open'){if(force||Date.now()-lastFrame>PING_MS+5000)probe();return;}
-    if(!force&&!(live.welcomed&&live.state==='down'))return;
+    if(!force&&live.state!=='down')return;   // before a first welcome too: a tab back in sight tries again at once
     if(live.state==='connecting'&&Date.now()-tried<4000)return;
     attempt=0;clearTimeout(timer);abandon();connect();
   },
@@ -197,26 +199,29 @@ function frame(f){
 }
 
 /* ---- the chat button (phone: on the scene, top right; wider screens: the rail entry) and its badge ---- */
+/** Before the first welcome of a page with a live service: the placeholder (greyed, its tap says "đang kết nối…"). */
+const waiting=()=>Boolean(env?.api?.live?.url)&&!live.welcomed&&live.state!=='off';
 function paint(){
-  const on=Boolean(live.flags.chat)&&live.welcomed;
-  if(on&&!fab&&!cssAsked){cssAsked=true;stylesheet('/css/chat.css').then(paint);return;}   // the button's look comes with the chat's stylesheet
-  if(on&&!fab){
+  const on=Boolean(live.flags.chat)&&live.welcomed,wait=!on&&waiting(),show=on||wait;
+  document.documentElement.toggleAttribute?.('data-live-wait',wait);   // greys the button and the rail entry (liveBoot's rule)
+  if(show&&!fab&&!cssAsked){cssAsked=true;stylesheet('/css/chat.css').then(paint);return;}   // the button's look comes with the chat's stylesheet
+  if(show&&!fab){
     fab=document.createElement('button');fab.type='button';fab.className='live-fab';fab.dataset.action='liveChat';
     fab.setAttribute('aria-label','Chat');fab.innerHTML=`${icon('chats',22)}<em class="badge" hidden></em>`;
     (document.getElementById('stage')||document.body).append(fab);
   }
   if(fab){
-    fab.hidden=!on;fab.classList.toggle('is-down',live.state!=='open');
-    const n=live.unread(),b=fab.querySelector('.badge');b.hidden=!n;b.textContent=n>99?'99+':String(n);
-    fab.setAttribute('aria-label',n?`Chat · ${n} tin chưa đọc`:'Chat');
+    fab.hidden=!show;fab.classList.toggle('is-down',live.state!=='open');
+    const n=on?live.unread():0,b=fab.querySelector('.badge');b.hidden=!n;b.textContent=n>99?'99+':String(n);
+    fab.setAttribute('aria-label',wait?'Chat · đang kết nối…':n?`Chat · ${n} tin chưa đọc`:'Chat');
   }
   // The rail / "Thêm" entry and its badge come from app.js (navItems reads liveNav()): re-render when they change.
-  const total=on?live.unread():-1,dating=Boolean(live.flags.dating)&&live.welcomed;
-  if(on!==shown||total!==lastTotal||dating!==shownDate){shown=on;shownDate=dating;lastTotal=total;clearTimeout(renderTimer);renderTimer=setTimeout(()=>env?.renderMain?.(),250);}
+  const total=on?live.unread():wait?-2:-1,dating=Boolean(live.flags.dating)&&live.welcomed;
+  if(show!==shown||total!==lastTotal||dating!==shownDate){shown=show;shownDate=dating;lastTotal=total;clearTimeout(renderTimer);renderTimer=setTimeout(()=>env?.renderMain?.(),250);}
 }
 
-/** For app.js navItems: the menu entry ([action, icon, label, badge]) when chat is on, else null. */
-export function liveNav(){return live.flags.chat&&live.welcomed?['liveChat','chats','Chat',live.unread()]:null;}
+/** For app.js navItems: the menu entry ([action, icon, label, badge]) when chat is on or still connecting, else null. */
+export function liveNav(){return live.flags.chat&&live.welcomed?['liveChat','chats','Chat',live.unread()]:waiting()?['liveChat','chats','Chat',0]:null;}
 /** 💕 The "Góc hẹn hò" entry when dates are on, else null. */
 export function dateNav(){return live.flags.dating&&live.welcomed?['liveDate','coffee','Góc hẹn hò']:null;}
 
@@ -226,6 +231,10 @@ if(wanted){try{history.replaceState(null,'','/');}catch{/* file:// */}}
 function deepLink(){if(!wanted||!live.flags.chat)return;const ch=wanted;wanted=null;openChat({ch});}
 export function openChat(data={}){
   if(!env)return;
+  if(!live.welcomed){   // the placeholder: try now (once per tap, never a loop) and say so; a pushed chat opens on the welcome
+    if(data.ch)wanted=data.ch;
+    env.toast?.('💬 Chat đang kết nối… chờ xíu nha.','hint');live.reconnect(true);return;
+  }
   import('./chat.js').then(m=>m.openChat(env,data)).catch(e=>console.warn('chat:',e));
 }
 
@@ -241,6 +250,10 @@ export function benchSpot(walk){if(live.flags.dating&&live.welcomed&&walk&&env)r
 export function liveBoot(e){
   env=e;
   if(liveBoot.done)return;liveBoot.done=true;
+  if(e.api?.live?.url){   // the placeholder's grey (the page's CSP allows inline styles), then the button at once
+    const st=document.createElement('style');st.textContent='html[data-live-wait] [data-action="liveChat"]{opacity:.55;filter:grayscale(1)}';document.head.append(st);
+    paint();
+  }
   navigator.serviceWorker?.addEventListener('message',ev=>{
     if(ev.data?.type!=='open')return;
     const ch=new URL(ev.data.url,location.origin).searchParams.get('chat');
