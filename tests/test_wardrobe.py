@@ -238,7 +238,7 @@ class Colors(unittest.TestCase):
         self.assertEqual((row['amount'], row['kind'], row['label']), (-40, 'life', 'Mở khóa màu · Xanh navy'))
         self.assertEqual(s['colors'], dict(v=1, have=['navy'], wear={}, deco={}))
         # Mirrored for 1.3.1/1.3.2 (rollback): navy on every accessory, in the 1.3.1 shape.
-        self.assertEqual(s['wardrobe_colors'], dict(v=1, wear={}, owned=[f'{i}:navy' for i in wd.TINTABLE]))
+        self.assertEqual(s['wardrobe_colors'], dict(v=1, wear={}, owned=[f'{i}:navy' for i in wd.BASE_TINTABLE]))
         # The accessory, the top, the bottom and the shoes: all free now.
         look = wd.look_of(s)
         for iid in (look['acc'], look['top'], look['bottom'], look['shoes']):
@@ -393,7 +393,7 @@ class Colors(unittest.TestCase):
         self.assertEqual(s, before)                           # the stored save itself is untouched
         self.assertEqual(m['colors'], dict(v=1, have=['vang', 'hong'], wear={}, deco={}))   # palette order
         self.assertEqual(m['wardrobe_colors']['wear'], {'mu_len': 'hong'})
-        self.assertEqual(set(m['wardrobe_colors']['owned']), {f'{i}:{c}' for i in wd.TINTABLE for c in ('hong', 'vang')})
+        self.assertEqual(set(m['wardrobe_colors']['owned']), {f'{i}:{c}' for i in wd.BASE_TINTABLE for c in ('hong', 'vang')})
         self.assertEqual(m['wardrobe_colors']['owned'][:2], ['mu_len:hong', 'kinh_tron:vang'])   # nothing removed
         self.assertEqual(wd.look_of(m)['tint'], {'mu_len': 'hong'})
         for k in set(s) - {'colors', 'wardrobe_colors', 'check'}:   # nothing else of the player changes
@@ -433,7 +433,7 @@ class Colors(unittest.TestCase):
         self.assertEqual(set(s['wardrobe_colors']), {'v', 'wear', 'owned'})
         self.assertTrue(all(x in wd.PAIRS for x in s['wardrobe_colors']['owned']))
         self.assertTrue(all(f'{k}:{v}' in s['wardrobe_colors']['owned'] for k, v in s['wardrobe_colors']['wear'].items()))
-        self.assertTrue({f'{i}:navy' for i in wd.TINTABLE} <= set(s['wardrobe_colors']['owned']))
+        self.assertTrue({f'{i}:navy' for i in wd.BASE_TINTABLE} <= set(s['wardrobe_colors']['owned']))
         wd._validate_look(s)
         wd.validate_colors(s)
         # What a 1.3.1 build would do with this save: drop nothing, ignore s['colors'].

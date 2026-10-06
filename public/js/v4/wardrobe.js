@@ -8,7 +8,7 @@
  * without its colour word: "Áo hoodie · Xanh navy". */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {confirmPurchase} from './payment.js';
-import {lookOf,portrait,figureSVG,SLOTS,ART,PALETTE,TINT_SLOTS,wornColor as wornOf} from './look.js';
+import {lookOf,portrait,figureSVG,SLOTS,ART,PALETTE,TINT_SLOTS,wornColor as wornOf,cozyActive} from './look.js';
 import {GOC,colorList,haveColors,hasColor,priceOf as colorPrice,nameOf as colorName,swatch,unlockColor,openPalette} from './palette.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -21,7 +21,12 @@ const btn=(label,action,data={},style='')=>`<button type="button" class="btn ${s
 const staff=api=>!!api.state.careers?.[C(api).shop]?.started;
 const off=(api,p)=>p&&staff(api)?p-Math.floor(p*C(api).staff_off/100):p;
 const priceOf=(api,it)=>off(api,it.price);
-const owned=api=>api.state.wardrobe?.owned||[];
+// 1.9.2 pieces are owned in their own block (game/wardrobe.py PLUS_KEY)
+const owned=api=>[...(api.state.wardrobe?.owned||[]),...(api.state.wardrobe_plus?.owned||[])];
+/** Tiệm Áo Chỉ Mây sells its 1.9.2 pieces once it is open (chapter 3; game/wardrobe.py shop_open). */
+const shopOpen=api=>{const J=api.state.journey||{};return J.story===false||(J.unlocked||[]).includes(C(api).shop)||staff(api);};
+/** The mirror turns (2.5D only: the island chibi has four facings). */
+const FACINGS=['se','sw','nw','ne'];
 const itemOf=(api,id)=>C(api).items.find(x=>x.id===id);
 
 /* ---- bảng màu ---- */
@@ -53,6 +58,7 @@ function status(api,it){
   else if(need==='married'&&api.state.marriage?.spouse?.status!=='married')return {lock:'Mở sau đám cưới'};
   if(it.price&&!owned(api).includes(it.id)){
     if(need==='shop'&&!staff(api))return {lock:`Chỉ bán cho người làm ở ${C(api).shop_name}`};
+    if(need.startsWith('open:')&&!shopOpen(api))return {lock:`Bán ở ${C(api).shop_name}, mở từ chương 3`};
     return {buy:true,price:priceOf(api,it)};
   }
   return null;
@@ -71,9 +77,10 @@ function tile(api,st,it,look,saved,gender){
     :stt?.lock?`<small class="wd-tag lock">🔒 ${esc(stt.lock)}</small>`
     :stt?.buy?`<small class="wd-tag price">${stt.price<it.price?`<s>${fmt(it.price)}</s> `:''}${fmt(stt.price)} xu</small>`
     :`<small class="wd-tag">${it.price?'Đã có':it.need?'Đã mở':'Miễn phí'}</small>`;
+  const fresh=it.plus&&!owned(api).includes(it.id)?'<i class="wd-new" aria-label="Món mới">Mới</i>':'';
   const L=withTint(api,st,{...look,[it.slot]:it.id}),col=paintable(api,it.id)?tryColor(api,st,it.id):GOC;
   return `<button type="button" class="wd-item${on?' on':''}${stt?.lock?' locked':''}" data-action="jrWdTry" data-item="${esc(it.id)}" aria-pressed="${on}">
-    <span class="wd-thumb" aria-hidden="true">${thumb(L,gender,it.slot)}</span><b>${shownName(api,it,col)}</b>${tag}</button>`;
+    <span class="wd-thumb" aria-hidden="true">${thumb(L,gender,it.slot)}${fresh}</span><b>${shownName(api,it,col)}</b>${tag}</button>`;
 }
 
 /** Màu gốc of an item, as a swatch: its own main colour and the darker part. */
@@ -134,7 +141,7 @@ function tryLook(api,st){
 
 export function wardrobeView(env){
   const {api,ui}=env,c=C(api),J=api.state.journey,st=S(ui),g=J.gender;
-  const top=`<header class="sheet-head jr-head"><button type="button" class="btn ghost small jr-back" data-action="jrView" data-view="home" aria-label="Quay lại hành trình">${icon('back',18)}</button><div class="grow"><span class="eyebrow">NHÂN VẬT</span><h2>Tủ đồ</h2></div></header>`;
+  const top=`<header class="sheet-head jr-head"><button type="button" class="btn ghost small jr-back" data-action="jrView" data-view="home" aria-label="Quay lại hành trình">${icon('back',18)}</button><div class="grow"><span class="eyebrow">NHÂN VẬT</span><h2>Tủ đồ</h2></div><span class="wd-face-slot"><button type="button" class="btn ghost small wd-face" data-action="jrAvatar" aria-label="Gương mặt và biểu cảm (ảnh đại diện khi chat)">🙂 Gương mặt</button></span></header>`;
   if(!c)return top+`<div class="sheet-body jr-body"><p class="muted">Tủ đồ đang được sắp xếp, lát nữa quay lại nhé.</p></div>`;
   if(!SLOTS.includes(st.tab))st.tab='top';
   const {saved,look}=tryLook(api,st),recolor=recolored(api,st,look);
@@ -143,16 +150,18 @@ export function wardrobeView(env){
   const dot=id=>look[id]!==saved[id]||recolor.includes(id);
   const tabs=c.slots.map(s=>`<button type="button" role="tab" class="wd-tab${st.tab===s.id?' active':''}" aria-selected="${st.tab===s.id}" data-action="jrWdTab" data-tab="${s.id}"><span aria-hidden="true">${TAB_EMOJI[s.id]||'•'}</span>${esc(s.name)}${dot(s.id)?'<i class="wd-dot" aria-label="đang thử"></i>':''}</button>`).join('');
   const grid=c.items.filter(x=>x.slot===st.tab).map(it=>tile(api,st,it,look,saved,g)).join('');
+  const facing=FACINGS.includes(st.facing)?st.facing:'se',turn=cozyActive()?`<button type="button" class="wd-turn" data-action="jrWdTurn" aria-label="Xoay người mẫu để xem các phía" title="Xoay">↻</button>`:'';
   const paint=TINT_SLOTS.includes(st.tab)&&c.colors?colorPanel(api,st,look,st.tab):'';
   globalThis.requestAnimationFrame?.(stick);
   return top+`<div class="sheet-body jr-body wd">
     <section class="jr-card wd-stage">
-      <div class="wd-mirror">${figureSVG(look,g,{w:150,h:212,label:'Nhân vật của bạn trong bộ đồ đang thử'})}</div>
+      <div class="wd-mirror">${figureSVG(look,g,{w:150,h:212,label:'Nhân vật của bạn trong bộ đồ đang thử',facing})}${turn}</div>
       <div class="wd-side"><h3>${esc(api.state.name)}</h3>${shop}<div class="wd-actions" aria-live="polite">${actions(api,st,look,saved)}</div></div>
     </section>
     <nav class="wd-tabs" role="tablist" aria-label="Loại đồ">${tabs}</nav>
     ${paint}<div class="wd-grid">${grid}</div>
     <section class="jr-card wd-work"><label class="switch-row"><span class="grow"><b>Mặc đồ làm việc khi vào ca</b><small class="muted block">Tạp dề, áo blouse, yếm… theo nơi làm.</small></span><input type="checkbox" role="switch" data-action="jrWdUniform" ${saved.uniform?'checked':''}><i aria-hidden="true"></i></label></section>
+    <div class="wd-links"><button type="button" class="btn ghost small" data-action="jrAvatar">🙂 Gương mặt &amp; biểu cảm khi chat</button><button type="button" class="btn ghost small" data-action="jrView" data-view="profile">✏️ Tên · giới tính</button></div>
   </div>`;
 }
 
@@ -171,6 +180,7 @@ export async function wardrobeAction(action,data,el,env){
   if(!c)return false;
   switch(action){
     case'jrWdTab':st.tab=SLOTS.includes(data.tab)?data.tab:'top';renderSheet();return true;
+    case'jrWdTurn':{const cur=FACINGS.includes(st.facing)?st.facing:'se';st.facing=FACINGS[(FACINGS.indexOf(cur)+1)%FACINGS.length];renderSheet();return true;}
     case'jrWdTry':{const it=itemOf(api,data.item);if(!it)return true;
       if(lookOf(api.state)[it.slot]===it.id)delete st.draft[it.slot];else st.draft[it.slot]=it.id;renderSheet();return true;}
     case'jrWdTint':{const slot=TINT_SLOTS.includes(st.tab)?st.tab:'acc',id={...lookOf(api.state),...st.draft}[slot],col=data.color;
