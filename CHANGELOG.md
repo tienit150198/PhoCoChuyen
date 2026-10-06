@@ -1,3 +1,10 @@
+# Chưa phát hành — Nhân viên tiệm (staff-speed)
+
+## Nhân viên tiệm bán nhanh như ngày đầu
+
+- Góp ý người chơi 06/10 ("tăng tốc độ bán hàng của nhân viên tiệm", không phải quầy): soát lại mọi bản từ 1.7.8 (04/10, ngày đầu có đơn riêng) tới 1.9.3. Nhịp mỗi đơn chưa từng bị giảm (vẫn 80 phút-công ÷ tốc độ nhân viên); chỉ có uy tín tiệm (từ 1.7.12, 05/10 07:26) làm chậm tối đa 10% khi uy tín âm. Tiệm thường dừng vì hết hàng trên kệ chứ không phải vì đơn chậm.
+- Tiệm bán hàng (nghề có hàng/kho: Mẹ & Bé, tạp hóa, hoa, cà phê, quần áo, trà sữa, thuốc, salon…) giờ 50 phút-công một đơn thay vì 80: nhanh gấp 1,6 lần ngày đầu; uy tín −10 vẫn nhanh gấp ~1,45 lần. Tiệm 2 nhân viên tốc độ ~75: khoảng 190 đơn/giờ thay vì ~120. Nghề dịch vụ không dùng hàng (kế toán, giáo viên…) giữ 80. Vẫn chỉ bán món còn hàng và có lãi sau lương, vật tư; ô "mỗi giờ · đơn" trong Sổ tiệm tự cập nhật từ đơn kế tiếp. Không đổi bản lưu.
+
 # v1.9.3 — 2026-10-06: sửa lỗi + cập nhật thêm
 
 ## Chat: lọc từ nặng bằng dấu *

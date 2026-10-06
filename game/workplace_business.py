@@ -20,6 +20,12 @@ RECENT = 12
 LIMIT = 10**12
 TIME_MAX = 10**11
 PROFIT_PERCENT = 40
+# Staff-minutes per order: an employee of speed 80 takes STAFF_MINUTES*60/80 s (before gear and reputation).
+# 80 since the first release with staff orders (1.7.8, 04/10). Shop staff selling off the shelf work at
+# 50 (owner 06/10, player feedback): 1.6x the first-day pace. They stop when the shelf is empty, so a
+# faster pace only turns stock the owner already bought into money sooner; service careers keep 80.
+STAFF_MINUTES = 80
+SHOP_MINUTES = 50
 
 # Authored independent staff orders. Prices are game coins, not salaries or
 # rewards for the owner's career tasks. Inventory inputs are real catalogue IDs.
@@ -98,10 +104,19 @@ def _eligible(c):
             and not e.get('strike',False)]
 
 
+def is_shop(career):
+    """A workplace whose staff orders take goods off the shelf (tiệm bán hàng): stock-limited."""
+    return bool(ORDERS.get(career,(None,0,0,{}))[3])
+
+
+def _minutes(e):
+    return SHOP_MINUTES if is_shop(e.get('career')) else STAFF_MINUTES
+
+
 def _seconds(c,e):
     from .work_gear import factor
     from .shop_events import demand_factor
-    return max(15, math.ceil(80*60/max(1,e['speed'])/factor(c)/demand_factor(c)))
+    return max(15, math.ceil(_minutes(e)*60/max(1,e['speed'])/factor(c)/demand_factor(c)))
 
 
 def _signature(c,e):

@@ -1,5 +1,6 @@
 """Continuous independent staff orders use server time, actual stock and local funds."""
 import copy
+import math
 import unittest
 from unittest.mock import patch
 
@@ -394,6 +395,62 @@ class StaffCatalogueTests(unittest.TestCase):
         wb.settle(s, self.next(c) + 1000)
         self.assertEqual(c['ops']['business']['served'], 0)
         self.assertIn('không đủ bù lương', wb.public(c)['reason_text'])
+
+
+class ShopStaffPace(unittest.TestCase):
+    """Player feedback 06/10: shop staff sell at least as fast as on the first day (1.7.8, 04/10), now 1.6x."""
+
+    def team(self, career, n):
+        s = new_state(); c = s['careers'][career]; c.update(open=True, started=True)
+        c['ops']['property']['tier'] = 'garden'
+        with patch.object(wb.time, 'time', return_value=2000000000):
+            for i in range(1, n + 1):
+                ops.action(s, c, career, 'ops_hire', {'candidate': f'{career}-staff-{i}', 'confirm': True})
+            wb.settle(s)
+        c['ops']['finance']['opening_balance'] += 100000 - c['money']; c['money'] = 100000
+        return s, c
+
+    @staticmethod
+    def first_day(c):
+        # 1.7.8 (the first release with staff orders): max(15, ceil(80*60/speed/gear)), no reputation factor.
+        return sum(3600 / max(15, math.ceil(80 * 60 / e['speed'])) for e in c['ops']['staff'] if e['status'] == 'hired')
+
+    def test_shop_orders_take_50_staff_minutes_and_services_keep_80(self):
+        for career, minutes in (('mother_baby', 50), ('grocery', 50), ('clothing', 50), ('accounting', 80), ('teacher', 80)):
+            with self.subTest(career=career):
+                s, c = self.team(career, 1); e = c['ops']['staff'][0]
+                self.assertEqual(wb._seconds(c, e), max(15, math.ceil(minutes * 60 / e['speed'])))
+                self.assertEqual(next(iter(c['ops']['business']['pending'].values()))['seconds'], wb._seconds(c, e))
+
+    def test_two_staff_shop_sells_at_least_1_5x_first_day_even_with_bad_reputation(self):
+        for career in ('mother_baby', 'grocery', 'florist', 'cafe_bakery'):
+            with self.subTest(career=career):
+                s, c = self.team(career, 2)
+                c['ops']['shop_events']['reputation'] = -10
+                wb.refresh(c, career, 2000000001)
+                for p in c['ops']['business']['pending'].values():p['signature'] = 'x'  # re-anchor at the new pace
+                wb.refresh(c, career, 2000000001)
+                rate = wb.public(c, 2000000001)['rate_per_hour']
+                self.assertGreaterEqual(rate, 1.4 * self.first_day(c))
+                c['ops']['shop_events']['reputation'] = 0
+                for p in c['ops']['business']['pending'].values():p['signature'] = 'x'
+                wb.refresh(c, career, 2000000001)
+                v = wb.public(c, 2000000001)
+                self.assertGreaterEqual(v['rate_per_hour'], 1.55 * self.first_day(c))
+                self.assertEqual(v['income']['orders_hour'], v['rate_per_hour'])
+
+    def test_real_orders_over_ten_minutes_keep_the_pace_and_stay_valid(self):
+        from game.engine import validate_state
+        s, c = self.team('grocery', 2)
+        start = min(p['at'] for p in c['ops']['business']['pending'].values())
+        expected = wb.public(c, start)['rate_per_hour']
+        wb.settle(s, start + 600)
+        self.assertEqual(c['ops']['business']['reason'], 'working')
+        served = c['ops']['business']['served']
+        self.assertGreaterEqual(served, int(expected / 6) - 1)
+        self.assertGreater(served, 1.5 * self.first_day(c) / 6 - 1)
+        for p in c['ops']['business']['pending'].values():self.assertGreaterEqual(p['seconds'], 15)
+        ops.validate(c, 'grocery'); validate_state(s)
 
 
 class MergedStockOrder(unittest.TestCase):
