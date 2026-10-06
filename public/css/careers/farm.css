@@ -331,3 +331,100 @@
   .career-job.fa.fa-walk{--fv-h:clamp(300px,calc(100dvh - 390px),640px)}
   .career-job.fa .fv-drawer{left:auto;width:min(460px,100%)}
 }
+
+/* ---------- 🌟 Trang trại (farm_plus.js): wall-clock garden, pens, buyers, upgrades ---------- */
+.career-job.fa .fa-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+.career-job.fa .fa-tab small{overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.career-job.fa .fa-badge.new{background:var(--fa-warn)}
+.career-job.fa .fa-allrow{display:flex;gap:6px;margin-top:6px}
+.career-job.fa .fa-allrow .btn{flex:1;min-height:40px}
+.career-job.fa .fp{display:grid;gap:8px}
+.career-job.fa .fp-head{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px 10px;padding:8px 12px;border-radius:var(--fa-rs);background:var(--fa-surface-2)}
+.career-job.fa .fp-lv{display:flex;flex-direction:column;line-height:1.15}
+.career-job.fa .fp-lv b{font-size:15px}
+.career-job.fa .fp-lv span{font-size:12px;color:var(--fa-muted)}
+.career-job.fa .fp-xp{height:10px;border-radius:99px;background:var(--fa-surface);overflow:hidden;box-shadow:inset 0 0 0 1px var(--fa-line)}
+.career-job.fa .fp-xp i{display:block;height:100%;background:linear-gradient(90deg,var(--fa-good),#9bc35a);border-radius:inherit;transition:width .6s ease}
+.career-job.fa .fp-xpn{font-size:12px;color:var(--fa-muted);font-variant-numeric:tabular-nums}
+.career-job.fa .fp-chip{grid-column:1/-1;justify-self:start;font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--fa-surface);box-shadow:inset 0 0 0 1px var(--fa-line)}
+.career-job.fa .fp-chip.fest{color:var(--fa-warn)}
+.career-job.fa .fp-chip.gap{color:var(--fa-good)}
+.career-job.fa .fp-panes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:3px;border-radius:99px;background:var(--fa-surface-2)}
+.career-job.fa .fp-pane{position:relative;display:flex;align-items:center;justify-content:center;gap:4px;min-height:40px;padding:4px 6px;border:0;border-radius:99px;background:none;color:var(--fa-ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.career-job.fa .fp-pane.on{background:var(--fa-surface);box-shadow:0 1px 4px rgb(0 0 0 / 12%)}
+.career-job.fa .fp-pane .fa-badge{position:static;margin-left:2px}
+.career-job.fa .fp-sky{margin:0}
+.career-job.fa .fp-plots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.career-job.fa .fp-plot{display:flex;flex-direction:column;align-items:stretch;gap:4px;min-width:0;padding:0 0 6px;border:2px solid var(--fa-line);border-radius:var(--fa-rs);background:var(--fa-surface);color:var(--fa-ink);font:inherit;text-align:center;overflow:hidden}
+.career-job.fa button.fp-plot{cursor:pointer;min-height:0}
+.career-job.fa .fp-plot.btn{display:flex;padding:0 0 6px;height:auto;white-space:normal}
+.career-job.fa .fp-plot.on{border-color:var(--fa-accent)}
+.career-job.fa .fp-plot.ripe{border-color:var(--fa-good)}
+.career-job.fa .fp-plot.over{border-color:var(--fa-warn)}
+.career-job.fa .fp-plot.needy{border-color:var(--fa-info)}
+.career-job.fa .fp-plot.locked,.career-job.fa .fp-plot.empty{border-style:dashed}
+.career-job.fa .fp-soil{position:relative;display:grid;place-items:center;height:78px;background:repeating-linear-gradient(0deg,rgb(0 0 0 / 0) 0 12px,rgb(0 0 0 / 9%) 12px 14px),linear-gradient(#a77b52,#8a603c)}
+.career-job.fa .fp-plot.empty .fp-soil,.career-job.fa .fp-plot.locked .fp-soil{background:repeating-linear-gradient(0deg,rgb(0 0 0 / 0) 0 12px,rgb(0 0 0 / 6%) 12px 14px),linear-gradient(#c9a77f,#b48d64)}
+.career-job.fa .fp-art{font-size:36px;line-height:1;transform-origin:50% 90%;filter:drop-shadow(0 2px 1px rgb(0 0 0 / 25%))}
+.career-job.fa .fp-plot.empty .fp-art,.career-job.fa .fp-plot.locked .fp-art{font-size:26px;color:#fff6e4;filter:none}
+.career-job.fa .fp-art.seed{font-size:18px}
+.career-job.fa .fp-art.sprout{font-size:26px;animation:fp-sway 2.6s ease-in-out infinite}
+.career-job.fa .fp-art.grow{font-size:34px;animation:fp-sway 3s ease-in-out infinite}
+.career-job.fa .fp-art.ripe{font-size:42px;animation:fp-bob 1.1s ease-in-out infinite}
+.career-job.fa .fp-art.over{font-size:34px;filter:grayscale(.55) drop-shadow(0 2px 1px rgb(0 0 0 / 25%));transform:rotate(-12deg)}
+.career-job.fa .fp-grow{position:absolute;left:0;right:0;bottom:0;height:5px;background:rgb(0 0 0 / 25%)}
+.career-job.fa .fp-grow::after{content:"";position:absolute;inset:0 auto 0 0;width:var(--p,0%);background:#9bd35a;transition:width 1s linear}
+.career-job.fa .fp-plot.ripe .fp-grow::after{background:#ffd34d}
+.career-job.fa .fp-needs{position:absolute;top:4px;right:4px;display:flex;flex-direction:column;gap:4px}
+.career-job.fa .fp-need{min-width:40px;min-height:40px;width:40px;height:40px;padding:0;border-radius:50%;font-size:20px;line-height:1;background:#fffdf6;color:#2f3322;border:2px solid var(--fa-info);box-shadow:0 2px 6px rgb(0 0 0 / 25%);animation:fp-pulse 1.2s ease-in-out infinite}
+.career-job.fa .fp-name{display:block;padding:0 4px;font-size:12px;font-weight:700;line-height:1.2;color:var(--fa-ink);min-height:2.4em;overflow:hidden}
+.career-job.fa .fp-time{font-size:13px;color:var(--fa-muted);font-variant-numeric:tabular-nums}
+.career-job.fa .fp-cut{margin:0 6px;min-height:40px}
+.career-job.fa .fp-tractor{gap:6px}
+.career-job.fa .fp-pick{padding:10px}
+.career-job.fa .fp-seeds{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));margin-top:8px}
+.career-job.fa .fp-seed{min-height:96px}
+.career-job.fa .fp-seed small{font-size:11px;line-height:1.2}
+.career-job.fa .fp-seed-x{opacity:.8}
+.career-job.fa .fp-pens,.career-job.fa .fp-ups{display:grid;gap:6px}
+.career-job.fa .fp-pen,.career-job.fa .fp-up,.career-job.fa .fp-stock{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--fa-line);border-radius:var(--fa-rs);background:var(--fa-surface)}
+.career-job.fa .fp-pen .grow,.career-job.fa .fp-up .grow{min-width:0;flex:1;display:flex;flex-direction:column;line-height:1.25}
+.career-job.fa .fp-pen small,.career-job.fa .fp-up small,.career-job.fa .fp-stock small{display:block;font-size:12px;color:var(--fa-muted);font-weight:400}
+.career-job.fa .fp-pen .btn,.career-job.fa .fp-up .btn,.career-job.fa .fp-stock .btn{flex:none;min-height:40px}
+.career-job.fa .fp-pen-art,.career-job.fa .fp-up-art{font-size:30px;line-height:1}
+.career-job.fa .fp-pen:not(.own) .fp-pen-art{filter:grayscale(.8);opacity:.6}
+.career-job.fa .fp-pen-art.busy{animation:fp-bob 1.6s ease-in-out infinite}
+.career-job.fa .fp-up.own{background:var(--fa-surface-2)}
+.career-job.fa .fp-stock{gap:8px;flex-wrap:wrap}
+.career-job.fa .fp-stock>span{font-size:24px}
+.career-job.fa .fp-stock b.grow{flex:1;min-width:110px}
+.career-job.fa .fp-order{display:grid;gap:6px;padding:10px;border:1px solid var(--fa-line);border-left:4px solid var(--fa-accent);border-radius:var(--fa-rs);background:var(--fa-surface)}
+.career-job.fa .fp-order.haggle{border-left-color:var(--fa-warn)}
+.career-job.fa .fp-order .row{gap:6px;align-items:center}
+.career-job.fa .fp-line{margin:0;font-size:13px;font-style:italic;color:var(--fa-muted)}
+.career-job.fa .fp-items .fa-chip{padding:2px 8px;font-size:13px}
+.career-job.fa .fp-items .fa-chip.ok{box-shadow:inset 0 0 0 2px var(--fa-good)}
+.career-job.fa .fp-why{color:var(--fa-warn);font-size:12px}
+.career-job.fa .fp-x{min-width:44px}
+.career-job.fa .fp-rec{margin:6px 0 0;text-align:center}
+.career-job.fa .fp-intro{text-align:center;display:grid;gap:6px}
+.career-job.fa .fp-intro-art{margin:0;font-size:34px;letter-spacing:4px}
+.career-job.fa .fp-intro h4{margin:0}
+.career-job.fa .fp-intro-list{list-style:none;margin:0 auto;padding:0;text-align:left;font-size:14px;line-height:1.7}
+@keyframes fp-sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
+@keyframes fp-bob{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-5px) scale(1.06)}}
+@keyframes fp-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){.career-job.fa .fp-art,.career-job.fa .fp-need,.career-job.fa .fp-pen-art{animation:none!important}}
+@media (max-width:420px){
+  .career-job.fa .fa-tab{padding:6px 2px}
+  .career-job.fa .fa-tab span{font-size:12px}
+  .career-job.fa .fa-tab small{font-size:10px}
+  .career-job.fa .fp-pane{font-size:12px;gap:2px;padding:4px 2px}
+  .career-job.fa .fp-soil{height:70px}
+}
+/* 🚶 Tự đi: the 🌟 Trại chip on the scene, under the view switches (pointer events on: .fv-top passes them through). */
+.career-job.fa .fv-plus{position:absolute;top:58px;left:8px;z-index:2;min-height:40px;padding:4px 14px;border:0;border-radius:99px;background:rgb(255 253 246 / 92%);color:#2f3322;font-size:14px;font-weight:800;box-shadow:0 2px 8px rgb(0 0 0 / 15%);pointer-events:auto}
+.career-job.fa .fv-plus .fa-badge{position:absolute;top:-6px;right:-6px}
+.career-job.fa .fv-plus.hot{animation:fp-glow 1.6s ease-in-out infinite}
+@keyframes fp-glow{0%,100%{box-shadow:0 2px 8px rgb(0 0 0 / 15%),0 0 0 0 rgb(255 205 60 / 0%)}50%{box-shadow:0 2px 8px rgb(0 0 0 / 15%),0 0 0 6px rgb(255 205 60 / 55%)}}
+@media (prefers-reduced-motion:reduce){.career-job.fa .fv-plus.hot{animation:none;box-shadow:0 0 0 3px rgb(255 205 60 / 70%)}}

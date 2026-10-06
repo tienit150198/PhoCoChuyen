@@ -164,7 +164,7 @@ def public_config() -> dict:
 
 
 TITLES = dict(visit='Có khách ghé quán 👀', review='Đánh giá mới từ Phố nghề ⭐', reply='Có người trả lời bạn 💬', gift='Bạn nhận được quà 🎁',
-              sale='Hàng đã bán ở chợ 🧺', comment='Bình luận mới 💬', daily='Quán đang chờ bạn mở cửa ☀️', community='Mục tiêu cả phố 🎉', chat='Tin nhắn mới 💬',
+              sale='Hàng đã bán ở chợ 🧺', comment='Bình luận mới 💬', daily='Một ngày mới đang chờ bạn ☀️', community='Mục tiêu cả phố 🎉', chat='Tin nhắn mới 💬',
               wedding='Sắp tới giờ cưới 💍', quay='Làm thêm ở quầy 💼')
 DEFAULT_PREFS = dict(social=True, daily=False, hour=19, tz=420)
 
@@ -276,7 +276,20 @@ def _daily(db) -> None:
         if done and done['day'] == day:
             continue
         db.execute('INSERT INTO push_daily(sid,day) VALUES(?,?) ON CONFLICT(sid) DO UPDATE SET day=excluded.day', (r['sid'], day))
-        queue(db, r['sid'], 'daily', 'Khách quen đang chờ. Mở ca hôm nay nhé!', '/')
+        queue(db, r['sid'], 'daily', _daily_body(db, r['sid']), '/')
+
+
+def _daily_body(db, sid: str) -> str:
+    """The daily reminder in the player's current career's words (game/career_voice.py `daily`). The career comes
+    from the public profile; none, or any error, gives the shop line."""
+    from . import career_voice
+    career = None
+    try:
+        row = db.execute('SELECT shop FROM profiles WHERE sid=?', (sid,)).fetchone()
+        career = (json.loads(row['shop'] or '{}') or {}).get('current') if row else None
+    except Exception:  # noqa: BLE001 - a reminder never fails over its wording
+        career = None
+    return career_voice.daily_line(career if isinstance(career, str) else None)
 
 
 def deliver_due(store) -> int:

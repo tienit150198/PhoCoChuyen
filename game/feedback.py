@@ -975,6 +975,8 @@ def action(s: dict, c: dict, career: str, name: str, p: dict, internal: bool = F
         reply = e.clean_text(p.get('text'), 600, 4)
         offer = p.get('offer', 'none')
         need(offer in OFFERS, 'Hình thức bù đắp không hợp lệ.')
+        # A career shows only its own bù đắp (game/career_voice.py; police: none). Refused here, never in validate_post.
+        need(_cv.offer_ok(career, offer), 'Nghề này không bù đắp kiểu đó.')
         tone = p.get('tone', 'free')
         need(_fv.tone_text_ok(tone), 'Giọng trả lời không hợp lệ.')
         if tone != 'free' and tone != 'harsh' and classify(reply)['rude']:
@@ -1312,6 +1314,7 @@ def day_summary(c: dict, day: int) -> dict:
 
 # Chùa Gió Lành's own words in the whole thread (pagoda_voice.py).
 from . import pagoda_voice as _pv  # noqa: E402
+from . import career_voice as _cv  # noqa: E402
 # Livelier threads: extra voices, reply tones, third parties (feedback_voices.py).
 from . import feedback_voices as _fv  # noqa: E402
 _fv.install(globals())

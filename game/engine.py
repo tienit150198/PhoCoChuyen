@@ -1217,7 +1217,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
     for cid,c in v["careers"].items():
         if c.get("summary"):continue
         raw=s["careers"][cid];mod=PLUGINS.get(cid)
-        c["ops"]=ops.public_operations(raw)
+        c["ops"]=ops.public_operations(raw,cid)
         c["situation"]=sit.public(raw,cid)
         c["incidents"]=incs.public(raw,cid,s)
         c["happen"]=haps.public(raw,cid,s)
