@@ -45,6 +45,7 @@ export const SIGNS={
   library:['📚','Thư viện'],hr_admin:['🗂️','Nhân sự'],secretary:['📅','Thư ký'],it_helpdesk:['🖥️','IT hỗ trợ'],
   pagoda:['🛕','Chùa'],farm:['🌾','Nông trại'],homestay:['🏡','Homestay'],teacher:['🍎','Lớp học'],tour_guide:['🧭','Du lịch'],pilot:['✈️','Phi công'],flight_attendant:['💺','Tiếp viên'],oil:['🛢️','Dầu khí'],
 };
+const KIND={pagoda:'pagoda',farm:'farm',homestay:'lodge',teacher:'school',library:'school',tour_guide:'kiosk',pilot:'air',flight_attendant:'air',oil:'air',
   tra_da:'cart',fruit:'cart',ice_cream:'cart',garbage:'cart',drain:'cart',homemaker:'house',giupviec:'house',naucom:'house',babysitter:'house',
   accounting:'office',customer_care:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',hr_admin:'office',secretary:'office',it_helpdesk:'office',
   'lm:bank':'bank','lm:garage':'garage','lm:fair':'gate','lm:board':'board','lm:walk':'park','lm:house':'home','lm:quay':'quay','lm:square':'plaza'};
