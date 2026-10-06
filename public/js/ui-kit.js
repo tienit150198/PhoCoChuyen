@@ -157,7 +157,15 @@ export function placeChips(dialog){
     if(flow.length)row2.prepend(...flow);}
   const old=[...head.querySelectorAll(':scope>.ui-chips')];
   const chips=[...dialog.querySelectorAll('.sheet-body [data-ui-head]')].filter(c=>!c.closest('details:not([open])')&&!c.closest('.ui-chiprow'));
-  if(!chips.length){old.forEach(o=>o.remove());dialog.removeAttribute('data-ui-chips');return;}
+  // No chip left in the body: either the screen has none (drop the row), or this is a second pass over the same
+  // markup (a re-render with nothing changed skips the DOM) and the chips already sit in the header: keep those whose
+  // card is still on the page (wave 4: the milk tea ticket chip vanished on the counter's repeated passes).
+  if(!chips.length){
+    const live=o=>[...o.querySelectorAll('[data-ui-pop]')].some(c=>{try{return !!dialog.querySelector(c.dataset.uiPop);}catch{return false;}});
+    old.forEach(o=>{if(!live(o))o.remove();});
+    if(!head.querySelector(':scope>.ui-chips'))dialog.removeAttribute('data-ui-chips');
+    return;
+  }
   let row=old[0];
   if(!row){row=document.createElement('div');row.className='ui-chips';head.querySelector(':scope>.grow')?.after(row)||head.append(row);}
   for(const o of old.slice(1))o.remove();

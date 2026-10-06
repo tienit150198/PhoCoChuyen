@@ -7,7 +7,7 @@
  * The server decides everything; one tap sends one command. */
 import {stepRows,nextHint,finalGo,pending,stepLine,firstTime} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,lower,tile,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput} from './street_kit.js';
+import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,tip,clean} from './street_kit.js';
 
 const GROUP_ORDER=['canh','man','xao','rau'];
 const DISH=(x,k)=>(cc(x).dishes||{})[k]||{name:k,emoji:'🍽️',group:'',ings:[],method:'nau',heat:'vua',tags:[]};
@@ -61,7 +61,8 @@ function suggest(x,t){
 
 /* ------------------------------------------------------------ the request */
 function ticket(t,x){
-  if(!t.known)return askCard(x,t,'👂 Nghe chủ nhà dặn');
+  // Clean layout: before the ask, Cô Hạnh's hand-over is a scene ("?"); what the family wants comes with the ask.
+  if(!t.known)return clean()?`<article class="card sk-ticket"><div class="row">${x.portrait(x.npc(t.npc),48)}<div class="grow"><h3>${x.esc(x.npc(t.npc).display_name)}</h3>${tip(x.esc(t.opening),'Lời dặn','p')}</div></div></article>`:askCard(x,t,'👂 Nghe chủ nhà dặn');
   const n=t.needs||{},c=CONS(x,t);
   if(!isMeal(t))return person(x,t,`<p class="small">${x.esc(n.note||'')}</p>`,'<span class="tag">🍽️ Nấu thêm</span>');
   const chips=[`👥 ${n.n} người`,`💰 ${n.budget} xu`,`${c.emoji} ${c.label}`,TASTE(x,t).label].filter(Boolean).map(s=>`<span class="nc-chip">${x.esc(s)}</span>`).join('');
@@ -71,12 +72,16 @@ function ticket(t,x){
 /* ------------------------------------------------------------ ① the menu */
 function planPanel(t,x){
   const n=t.needs||{},est=menuCost(x,t,t.menu),over=est>n.budget;
+  // Clean layout, "choices that wait": only the group whose turn it is (the first without a dish, or one whose dish
+  // clashes) is open; the others are one line ("🍖 Món mặn · Thịt kho trứng") that a tap opens.
+  const cur=GROUP_ORDER.find(g=>!t.menu?.[g]||clash(x,t,t.menu[g]).length);
   const groups=GROUP_ORDER.map(g=>{const G=GROUP(x,g);
     const tiles=Object.entries(cc(x).dishes||{}).filter(([,d])=>d.group===g).map(([k,D])=>{const on=t.menu?.[g]===k;
       const tags=D.tags.map(tg=>`<i class="nc-tag ${clash(x,t,k).includes(tg)?'bad':''}">${x.esc(tagLabel(x,tg))}</i>`).join('');
       return tile(x,'nc_pick',{task:t.id,group:g,dish:k},`<span class="tile-emoji">${x.esc(D.emoji)}</span><b>${x.esc(D.name)}</b><small>${dishCost(x,t,k)} xu</small>${tags?`<span class="nc-tags">${tags}</span>`:''}`,on?'selected':'');}).join('');
+    if(clean()&&g!==cur)return `<div class="nc-group" data-group="${g}">${pane(x,`nc-${t.id}-${g}`,`${x.esc(G.emoji)} ${x.esc(G.name)}${t.menu?.[g]?` · ${x.esc(DISH(x,t.menu[g]).name)}`:''}`,`<div class="tile-grid nc-dishes">${tiles}</div>`,false,'nc-fold')}</div>`;
     return `<div class="nc-group" data-group="${g}"><h4>${x.esc(G.emoji)} ${x.esc(G.name)}${t.menu?.[g]?` <small>· ${x.esc(DISH(x,t.menu[g]).name)}</small>`:''}</h4><div class="tile-grid nc-dishes">${tiles}</div></div>`;}).join('');
-  return `<section class="card nc-menu"><h4>📝 Thực đơn hôm nay</h4><p class="small nc-est ${over?'nc-bad':''}">Dự tính <b>${est}</b>/${n.budget} xu · mỗi phần đủ hai người</p>
+  return `<section class="card nc-menu"><h4>📝${clean()?'':' Thực đơn hôm nay'}</h4><p class="small nc-est ${over?'nc-bad':''}">${clean()?`💰 <b>${est}</b>/${n.budget} xu`:`Dự tính <b>${est}</b>/${n.budget} xu · mỗi phần đủ hai người`}</p>${tip('Mỗi phần đủ hai người.','Dự tính')}
     <span class="sk-meter ${over?'bad':''}"><i style="width:${Math.min(100,est/Math.max(1,n.budget)*100)}%"></i></span>${groups}</section>`;
 }
 function planSteps(t,x){
@@ -98,7 +103,7 @@ function planSteps(t,x){
 /* ------------------------------------------------------------ ② the market */
 function ingRow(t,x,i){
   const row=t.cart[i],I=ING(x,i),u=unit(x,t,i),look=row.look;
-  const chip=look==='tuoi'?'<span class="nc-look ok">✓ tươi</span>':look==='uon'?'<span class="nc-look bad">✗ không tươi</span>':'<span class="nc-look">chưa xem</span>';
+  const chip=look==='tuoi'?'<span class="nc-look ok">✓ tươi</span>':look==='uon'?'<span class="nc-look bad">✗ không tươi</span>':clean()?'<span class="nc-look" aria-label="chưa xem">❔</span>':'<span class="nc-look">chưa xem</span>';
   let tools='';
   if(row.n>0)tools=`<span class="nc-got">🛒 ${row.n} phần · ${row.paid} xu</span>${x.cmd('↩️','nc_return',{task:t.id,ing:i},'small ghost nc-back')}`;
   else{
@@ -111,8 +116,9 @@ function marketPanel(t,x){
   const stalls=Object.keys(t.bills||{}).map(st=>{const S=STALL(x,st),b=t.bills[st],ings=Object.keys(t.cart).filter(i=>ING(x,i).stall===st);
     const tools=[b.haggle==null?x.cmd('🙏 Xin bớt','nc_haggle',{task:t.id,stall:st},'small ghost',b.paid<3):`<span class="tag">${b.haggle==='ok'?`🙏 bớt ${b.off} xu`:'🙏 không bớt'}</span>`,
       b.receipt?'<span class="tag green">🧾 có hóa đơn</span>':x.cmd('🧾 Xin hóa đơn','nc_receipt',{task:t.id,stall:st},'small',!b.paid)].join('');
-    return `<section class="card nc-stall" data-stall="${st}"><h4>${x.esc(S.emoji)} ${x.esc(S.name)} <small>· ${b.paid} xu</small></h4><ul class="nc-ings">${ings.map(i=>ingRow(t,x,i)).join('')}</ul><div class="nc-row">${tools}</div></section>`;}).join('');
-  return `<p class="nc-purse">👛 Ví tiền chợ <b>${t.purse}</b> xu · mỗi phần đủ hai người</p>${stalls}`;
+    return `<section class="card nc-stall" data-stall="${st}"><h4 aria-label="${x.esc(S.name)}">${x.esc(S.emoji)} ${x.esc(clean()?S.short:S.name)} <small>· ${b.paid} xu</small></h4><ul class="nc-ings">${ings.map(i=>ingRow(t,x,i)).join('')}</ul><div class="nc-row">${tools}</div></section>`;}).join('');
+  // The portion rule decides how much to buy: it stays, in short.
+  return `<p class="nc-purse">${clean()?`👛 <b>${t.purse}</b> xu · 1 phần = 2 người`:`👛 Ví tiền chợ <b>${t.purse}</b> xu · mỗi phần đủ hai người`}</p>${stalls}`;
 }
 function marketSteps(t,x){
   const rows=[],first=firstTime(x),want=portions(t.needs.n);
@@ -167,11 +173,11 @@ function tableCard(t,x){
   const bowls=amountBox(x,`nc-bowls-${t.id}`,tb.bowls||1,{min:1,max:Number(c.bowls_max||12),label:tb.bowls?`Đã bày ${tb.bowls} bộ chén đũa`:'Bộ chén đũa',send:tb.bowls?'🥢 Bày lại':'🥢 Bày chén',cmd:'nc_bowls',payload:{task:t.id},field:'n',unit:'bộ'});
   const mam=!tb.tasted?x.cmd('🥄 Nếm nước mắm','nc_taste',{task:t.id},'small')
     :`<p class="small">🫙 ${x.esc((c.taste||{})[tb.mam]||'')}</p>${tb.mam==='ok'?'':`<div class="nc-row nc-opts nc-mam" role="group">${Object.entries(c.fix||{}).map(([k,l])=>x.cmd(x.esc(l),'nc_fix',{task:t.id,add:k},'small ghost')).join('')}</div>`}`;
-  return `<section class="card nc-table"><h4>🍽️ Mâm cơm</h4><div class="nc-bowls">${bowls}</div><h4 class="section-title">🫙 Chén nước mắm chấm</h4>${mam}</section>`;
+  return `<section class="card nc-table"><h4>🍽️ Mâm cơm</h4><div class="nc-bowls">${bowls}</div><h4 class="section-title">${clean()?'🫙 Nước mắm':'🫙 Chén nước mắm chấm'}</h4>${mam}</section>`;
 }
 function stoveBar(t,x){
   const ks=order(x,t),b=Number(cc(x).burners||2),n=cooking(x);
-  return `<div class="nc-stove" role="group" aria-label="Bếp"><span class="nc-burner ${n>0?'on':''}">🔥</span><span class="nc-burner ${n>1?'on':''}">🔥</span><small>${n}/${b} bếp đang nấu · ${ks.filter(k=>t.dishes[k].done!=null).length}/${ks.length} món xong</small></div>`;
+  return `<div class="nc-stove" role="group" aria-label="Bếp"><span class="nc-burner ${n>0?'on':''}">🔥</span><span class="nc-burner ${n>1?'on':''}">🔥</span><small>${clean()?`${n}/${b} · ✅ ${ks.filter(k=>t.dishes[k].done!=null).length}/${ks.length}`:`${n}/${b} bếp đang nấu · ${ks.filter(k=>t.dishes[k].done!=null).length}/${ks.length} món xong`}</small></div>`;
 }
 function kitchenSteps(t,x){
   const rows=[],first=firstTime(x),c=cc(x),tb=t.table||{},meal=isMeal(t),full=cooking(x)>=Number(c.burners||2);
@@ -273,12 +279,12 @@ export default {
     if(!t.known)main='';
     else if(!isMeal(t)){
       if(!mealServed(x,t))main='<p class="card small muted">Dọn bữa chính xong rồi nấu thêm món này nhé.</p>';
-      else{const tt=withDish(t);main=`${stoveBar(tt,x)}${dishCard(tt,x,t.needs?.x,g.watch)}`;side=stepRows(x,g.steps,'Món nấu thêm');}
+      else{const tt=withDish(t);main=`${stoveBar(tt,x)}${dishCard(tt,x,t.needs?.x,g.watch)}`;side=stepRows(x,g.steps,'Món nấu thêm',{chip:true});}
     }
-    else if(t.stage==='plan'){main=planPanel(t,x);side=stepRows(x,g.steps,'Lên thực đơn');}
-    else if(t.stage==='market'){main=marketPanel(t,x);side=stepRows(x,g.steps,'Đi chợ');}
-    else if(t.stage==='settle'||t.stage==='done'){main=settlePanel(t,x);side=stepRows(x,g.steps,'Sổ chợ');}
-    else{main=`${stoveBar(t,x)}${riceCard(t,x)}${tableCard(t,x)}${order(x,t).map(k=>dishCard(t,x,k,g.watch)).join('')}`;side=stepRows(x,g.steps,'Trong bếp');}
+    else if(t.stage==='plan'){main=planPanel(t,x);side=stepRows(x,g.steps,'Lên thực đơn',{chip:true});}
+    else if(t.stage==='market'){main=marketPanel(t,x);side=stepRows(x,g.steps,'Đi chợ',{chip:true});}
+    else if(t.stage==='settle'||t.stage==='done'){main=settlePanel(t,x);side=stepRows(x,g.steps,'Sổ chợ',{chip:true});}
+    else{main=`${stoveBar(t,x)}${riceCard(t,x)}${tableCard(t,x)}${order(x,t).map(k=>dishCard(t,x,k,g.watch)).join('')}`;side=stepRows(x,g.steps,'Trong bếp',{chip:true});}
     return `<div class="career-job sk nc" data-nc-wake="${wakeAt(t,x)}">${hint}${top(x)}${ticket(t,x)}${dayBar(x)}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },
   idle(x){

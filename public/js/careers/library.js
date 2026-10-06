@@ -6,7 +6,10 @@
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
-import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,meter} from './street_kit.js';
+import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,meter,clean} from './street_kit.js';
+
+/** A panel button's label in two words on the clean layout (the bar names the step in full); readers get the full one. */
+const say2=(full,short)=>clean()?`<span aria-hidden="true">${short}</span><span class="sr-only">${full}</span>`:full;
 
 const DONE_ST=['completed','cancelled','referred'];
 const tag=(x,text,kind='')=>`<span class="tag ${kind}">${x.esc(text)}</span>`;
@@ -30,16 +33,18 @@ function askBox(t,x){
 /* ------------------------------------------------------------ the morning */
 function openPanel(t,x){
   const st=t.st||{},ok=cc(x).hum_ok||[45,60],hum=t.hum;
-  const humRow=hum==null?btnCmd(x,'🌡️ Xem ẩm kế kho','tv_look',{task:t.id,what:'am'},'full')
-    :`<div class="tv-hum ${hum>ok[1]?'hi':''}"><b>🌡️ ${hum}%</b>${meter(hum,100,hum>ok[1]?'bad':'')}<small>Kho giấy giữ ${ok[0]}–${ok[1]}%</small></div>`;
-  const dehum=x.cmd(st.dehum?'💧 Máy hút ẩm: đang chạy':'💧 Bật máy hút ẩm','tv_dehum',{task:t.id},st.dehum?'tv-btn tv-on':'tv-btn ghost');
+  const humRow=hum==null?btnCmd(x,say2('🌡️ Xem ẩm kế kho','🌡️ Ẩm kế'),'tv_look',{task:t.id,what:'am'},'full')
+    :`<div class="tv-hum ${hum>ok[1]?'hi':''}"><b>🌡️ ${hum}%</b>${meter(hum,100,hum>ok[1]?'bad':'')}<small>${clean()?`giữ ${ok[0]}–${ok[1]}%`:`Kho giấy giữ ${ok[0]}–${ok[1]}%`}</small></div>`;
+  const dehum=x.cmd(st.dehum?say2('💧 Máy hút ẩm: đang chạy','💧 Đang hút ẩm'):say2('💧 Bật máy hút ẩm','💧 Hút ẩm'),'tv_dehum',{task:t.id},st.dehum?'tv-btn tv-on':'tv-btn ghost');
   const fixes=Object.entries(cc(x).pest_fix||{}).map(([k,l])=>x.cmd(x.esc(l),'tv_pest',{task:t.id,how:k},`tv-opt ${st.pest===k?'tv-on':''}`)).join('');
-  const pest=t.pest==null?btnCmd(x,'🪤 Soi bẫy côn trùng','tv_look',{task:t.id,what:'bay'},'full')
+  const pest=t.pest==null?btnCmd(x,say2('🪤 Soi bẫy côn trùng','🪤 Soi bẫy'),'tv_look',{task:t.id,what:'bay'},'full')
     :`<p class="tv-note">🪤 ${x.esc((cc(x).pests||{})[t.pest]||'')}</p><div class="tv-opts tv-pests">${fixes}</div>`;
-  const door=(done,label,what)=>done?tag(x,`✓ ${label}`,'green'):btnCmd(x,label,'tv_look',{task:t.id,what});
-  return `<section class="card tv-store"><h4>🗄️ Kho lưu trữ</h4>${humRow}<div class="tv-row">${dehum}</div></section>
-    <section class="card tv-trap"><h4>🪤 Bẫy côn trùng</h4>${pest}</section>
-    <section class="card tv-door"><h4>🚪 Phòng đọc</h4><div class="tv-row">${door(st.room,'🔑 Mở phòng đọc','phong')}${door(st.board,'📋 Dựng bảng nội quy','bang')}</div></section>`;
+  const door=(done,full,short,what)=>done?tag(x,`✓ ${clean()?short:full}`,'green'):btnCmd(x,say2(full,short),'tv_look',{task:t.id,what});
+  // Clean layout: the buttons name their own job, so the three cards lose their headings (icons stay).
+  const h=(e,l)=>`<h4>${e}${clean()?'':` ${l}`}</h4>`;
+  return `<section class="card tv-store">${h('🗄️','Kho lưu trữ')}${humRow}<div class="tv-row">${dehum}</div></section>
+    <section class="card tv-trap">${h('🪤','Bẫy côn trùng')}${pest}</section>
+    <section class="card tv-door">${h('🚪','Phòng đọc')}<div class="tv-row">${door(st.room,'🔑 Mở phòng đọc','🔑 Phòng đọc','phong')}${door(st.board,'📋 Dựng bảng nội quy','📋 Nội quy','bang')}</div></section>`;
 }
 function openSteps(t,x){
   const st=t.st||{},ok=cc(x).hum_ok||[45,60],rows=[];
@@ -262,7 +267,7 @@ export default {
     if(t.ask?.state==='on')return `<div class="career-job sk tv">${hint}${top}${ticket(t,x)}${askBox(t,x)}${bottom(x,g)}</div>`;
     if(!t.known)return `<div class="career-job sk tv">${hint}${top}${dayBar(x)}${ticket(t,x)}${bottom(x,g)}</div>`;
     const head=t.kind==='open'?dayBar(x):`${ticket(t,x)}${dayBar(x)}`;
-    const side=stepRows(x,g.steps,t.kind==='open'?'Buổi sáng':'Việc cần làm');
+    const side=stepRows(x,g.steps,t.kind==='open'?'Buổi sáng':'Việc cần làm',{chip:true});
     return `<div class="career-job sk tv">${hint}${top}${head}<div class="workbench"><section class="wb-main">${panelOf(t,x)}</section><aside class="wb-side">${side}</aside></div>${bottom(x,g)}</div>`;
   },
   idle(x){

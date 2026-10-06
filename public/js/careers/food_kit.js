@@ -3,7 +3,7 @@
  * result line, the sticky action bar and the end-of-day grade card.
  * Everything here only renders server state and sends commands. */
 import {planBox,dayFold} from './tomorrow_kit.js';
-import {actBar} from '../ui-kit.js';
+import {actBar,clean} from '../ui-kit.js';
 
 const DONE=['completed','cancelled','referred'];
 export const openTasks=x=>(x.room.tasks||[]).filter(t=>!DONE.includes(t.status));
@@ -11,11 +11,12 @@ export const openTasks=x=>(x.room.tasks||[]).filter(t=>!DONE.includes(t.status))
 /** Luck of the day + served count + streak, as one row of chips: "☀️ Ngày thường ▸ · ✅ 3 · 🔥 2" (the group is
  * labelled "Hôm nay" for screen readers; owner 03/10: "chữ ít thôi").
  * The day's hint is one tap away (the chip is a fold; data-auto, so a re-render shuts it again). */
-export function dayStrip(x,day,compact=false){
+/** `tight` (opt-in, UI wave 4 counters): on the clean layout the day is its emoji (its name is the chip's label). */
+export function dayStrip(x,day,compact=false,{tight=false}={}){
   if(!day?.mod)return '';
   const m=day.mod,streak=x.room.life?.streak||0;
   const hint=!compact&&m.hint?`<small class="fk-day-hint">${x.esc(m.hint)}</small>`:'';
-  const chip=`<span aria-hidden="true">${x.esc(m.emoji)}</span><b>${x.esc(m.label)}</b>`;
+  const chip=tight&&clean()?`<span title="${x.esc(m.label)}" aria-label="${x.esc(m.label)}">${x.esc(m.emoji)}</span>`:`<span aria-hidden="true">${x.esc(m.emoji)}</span><b>${x.esc(m.label)}</b>`;
   return `<div class="fk-day chip" role="group" aria-label="Hôm nay">
     ${hint?`<details class="fk-mod" data-auto><summary>${chip}</summary>${hint}</details>`:`<p class="fk-mod">${chip}</p>`}
     <p class="fk-stats"><span title="Đã phục vụ">✅ ${Number(day.served)||0}</span>${streak?`<span class="fk-streak" title="Làm đúng liên tiếp">🔥 ${streak}</span>`:''}${day.walkins?`<span title="Khách vãng lai">🚶 ${day.walkins}</span>`:''}</p>
@@ -37,14 +38,16 @@ export function patience(p){
 }
 
 /** Guest chips: tap to switch order; "+" lets one more guest in. */
-export function queue(x,active){
+/** `tight` (opt-in, UI wave 4 counters): on the clean layout only the guest being served keeps a name under the face
+ * (every chip keeps the full name in its label). */
+export function queue(x,active,{tight=false}={}){
   const tasks=openTasks(x);
   const chips=tasks.map(t=>{
     const who=x.npc(t.npc),g=t.guest||{},on=!!active&&t.id===active.id,p=t.patience??100;
     const badge=t.vip==='critic'?'📝':(g.emoji||'🙂');
     const label=`${who.display_name} · ${t.vip==='critic'?'Người viết review':g.label||'Khách'} · kiên nhẫn ${p}%`;
     return `<button type="button" class="fk-guest${on?' on':''}${p<50?' low':''}" data-command="task_select" data-payload="${x.esc(JSON.stringify({task:t.id}))}" aria-label="${x.esc(label)}"${on?' aria-current="true"':''}>
-      ${x.portrait(who,34)}<em aria-hidden="true">${badge}</em><i class="fk-pat" aria-hidden="true"><b style="width:${Math.max(0,Math.min(100,p))}%"></b></i><small class="fk-name" aria-hidden="true">${x.esc(who.display_name)}</small></button>`;
+      ${x.portrait(who,34)}<em aria-hidden="true">${badge}</em><i class="fk-pat" aria-hidden="true"><b style="width:${Math.max(0,Math.min(100,p))}%"></b></i>${tight&&clean()&&!on?'':`<small class="fk-name" aria-hidden="true">${x.esc(who.display_name)}</small>`}</button>`;
   }).join('');
   // While learning the place (first two jobs), no extra guests: one clear order at a time.
   const learning=(x.room.metrics?.served||0)<2;

@@ -6,7 +6,8 @@
  * keeps the order recap and the serve button in reach. */
 import {Sound} from '../audio.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {nextHint,stepCta,finalGo,pending as nextOf,firstTime,stepLine,todoAttrs} from '../v4/guide.js';
+import {nextHint,stepCta,barParts,finalGo,pending as nextOf,firstTime,stepLine,todoAttrs} from '../v4/guide.js';
+import {actBar,clean,tip,headChip,helpBtn} from '../ui-kit.js';
 
 const ICE=[['none','Không đá'],['little','Ít đá'],['normal','Đá vừa'],['extra','Nhiều đá']];
 const ICE_TEXT={none:'không đá',little:'ít đá',normal:'đá vừa',extra:'nhiều đá'};
@@ -157,14 +158,14 @@ const ring=(p,inner)=>`<span class="mt-ring ${p<40?'low':p<70?'mid':''}" style="
 
 /* ---------------------------------------------------------------- counter parts */
 function hud(x){
-  const b=B(x),mod=b.modifier||{},st=b.streak||0;
+  const b=B(x),mod=b.modifier||{},st=b.streak||0,c=clean();
   return `<div class="mt-hud" role="status">
     <span class="mt-chip${overtime(b)?' hot':''}">🕐 <b>${x.esc(b.clock||'08:00')}</b>${overtime(b)?' · tăng ca':''}</span>
-    ${b.left!=null?`<span class="mt-chip">👥 Còn <b>${b.left}</b> khách</span>`:''}
-    ${st>=2?`<span class="mt-chip hot">🔥 <b>${st}</b> ly liên tiếp</span>`:''}
-    <span class="mt-chip">⭐ Tay nghề <b>${b.level||1}</b>${b.next_tier!=null?` · ${b.total||0}/${b.next_tier} ly`:''}</span>
-    ${mod.title?`<span class="mt-chip mod">${x.esc(mod.emoji||'')} ${x.esc(mod.title)}</span>`:''}
-  </div>${(x.room.ops?.staff||[]).some(e=>e.status==='hired')?`<p class="muted small">👥 Người phụ kiếm thêm xu khi khép ca; bạn vẫn tự pha từng ly. ${x.button('Xem việc đội đang làm','staff',{},'ghost small')}</p>`:''}`;
+    ${b.left!=null?`<span class="mt-chip" aria-label="Còn ${b.left} khách">${c?`👥 <b>${b.left}</b>`:`👥 Còn <b>${b.left}</b> khách`}</span>`:''}
+    ${st>=2?`<span class="mt-chip hot" aria-label="${st} ly liên tiếp">🔥 <b>${st}</b>${c?'':' ly liên tiếp'}</span>`:''}
+    <span class="mt-chip" aria-label="Tay nghề ${b.level||1}">⭐ ${c?'':'Tay nghề '}<b>${b.level||1}</b>${b.next_tier!=null?` · ${b.total||0}/${b.next_tier}${c?'':' ly'}`:''}</span>
+    ${mod.title?`<span class="mt-chip mod" title="${x.esc(mod.title)}" aria-label="${x.esc(mod.title)}">${x.esc(mod.emoji||'')}${c?'':` ${x.esc(mod.title)}`}</span>`:''}${c?helpBtn('mt-counter','🧋 Quầy trà sữa',[{title:'Một ly đúng phiếu',body:'<ul class="ui-rows"><li>🥤 Lấy ly đúng cỡ</li><li>🫖 Rót trà nền, 🍑 siro, 🧋 topping</li><li>🧊 Đá, 🍯 đường như khách dặn</li><li>✅ Dán nắp rồi giao</li></ul>'},{title:'Ủ, nấu & đặt hàng',body:'<p>Ủ trà, nấu trân châu, đặt hàng đều trừ vào quỹ tiệm. Ủ trà, nấu trân châu mất 20 phút khi quán mở. Trà ủ và trân châu không để qua đêm.</p>'}],{tips:true,cls:'mt-help'}):''}
+  </div>${(x.room.ops?.staff||[]).some(e=>e.status==='hired')?(c?tip('👥 Người phụ kiếm thêm xu khi khép ca; bạn vẫn tự pha từng ly.','Người phụ','p'):`<p class="muted small">👥 Người phụ kiếm thêm xu khi khép ca; bạn vẫn tự pha từng ly. ${x.button('Xem việc đội đang làm','staff',{},'ghost small')}</p>`):''}`;
 }
 function alerts(x){
   const b=B(x),out=[];
@@ -188,7 +189,10 @@ function ordered(t){
 }
 /** tea_swap can offer something else for `k` (game/boba.py swap_to): a syrup can always be swapped or dropped;
  * a topping needs another one that is unlocked, on the menu, in stock and not already in the order. */
-const swappable=(x,k,want)=>ing(x,k).group!=='topping'||(B(x).stations||[]).some(s=>s.group==='topping'&&s.id!==k&&!want.toppings.includes(s.id)&&s.unlocked&&s.on!==false&&s.stock>0);
+const swappable=(x,k,want,t=null)=>swapOk(x,t,k)&&(ing(x,k).group!=='topping'||(B(x).stations||[]).some(s=>s.group==='topping'&&s.id!==k&&!want.toppings.includes(s.id)&&s.unlocked&&s.on!==false&&s.stock>0));
+/** The server's pre-check for tea_swap (game/boba.py _swap_rules, can.tea_swap[item]): only a bought syrup or topping
+ * of the order. Pearls, foam or a tea the counter makes are never offered as a swap (it was refused 80 times). */
+function swapOk(x,t,k){const c=t?.can?.tea_swap;return c&&k in c?c[k]===true:!station(x,k).made;}
 /** The order in hand needs something the counter has run out of: offer a swap (only when the server can make one) or an express order. */
 function outOfStock(t,x){
   if(!t?.known||t.cup?.sealed)return '';
@@ -198,7 +202,7 @@ function outOfStock(t,x){
   const made=k=>station(x,k).made,blocked=k=>made(k)&&prepPlan(x,k).why;
   const miss=[...(want.flavor?[want.flavor]:[]),...want.toppings].filter(k=>!items.includes(k)&&station(x,k).stock===0&&(!made(k)||blocked(k)));
   for(const k of miss){
-    const i=ing(x,k),o=soonest(x,k),swap=swappable(x,k,want),why=blocked(k);
+    const i=ing(x,k),o=soonest(x,k),swap=swappable(x,k,want,t),why=blocked(k);
     if(why){rows.push(`<div class="mt-alert warn mt-out"><span>🚫 Hết <b>${x.esc(low(i.name))}</b> · chưa ${x.esc(low(verb(k)))} thêm được: ${x.esc(low(why))}</span><span class="mt-out-btns">${swap?jb(x,'🙏 Mời khách đổi','tea_swap',{task:t.id,item:k},'small cream'):''}${why.startsWith('Thiếu')?topUp(x):''}</span></div>`);continue;}
     rows.push(`<div class="mt-alert warn mt-out"><span>🚫 Hết <b>${x.esc(low(i.name))}</b>${o?` · 📦 ${x.esc(o.eta_label)}`:swap?'':' · không còn topping khác để mời đổi'}</span><span class="mt-out-btns">${swap?jb(x,'🙏 Mời khách đổi','tea_swap',{task:t.id,item:k},'small cream'):''}${o?'':expressBtn(x,k,5,'small ghost')}</span></div>`);
   }
@@ -283,7 +287,7 @@ function queueRow(t,x){
       ${ring(p,face(first,x,40))}<small>${x.esc(first.customer)}</small>${g?`<em class="mt-cups-badge">${sibs.length} ly</em>`:''}</button>`);
   }
   if(!chips.length||(chips.length<2&&!t?.app))return '';
-  return `<section class="mt-queue" aria-label="Hàng chờ"><h4>Hàng chờ</h4><div class="mt-queue-list">${chips.join('')}</div></section>`;
+  return `<section class="mt-queue" aria-label="Hàng chờ">${clean()?'':'<h4>Hàng chờ</h4>'}<div class="mt-queue-list">${chips.join('')}</div></section>`;
 }
 const usualText=(x,u)=>`${ing(x,u.base).name} size ${u.size}${u.flavor?`, vị ${low(ing(x,u.flavor).name)}`:''}, ${u.toppings.length?u.toppings.map(k=>low(ing(x,k).name)).join(', '):'không topping'}, ${u.sugar}% đường, ${ICE_TEXT[u.ice]}`;
 /** The regulars' card: usual cup (for "như mọi khi"), what the shop has learned, and a greeting. */
@@ -306,7 +310,7 @@ function customer(t,x,steps){
   const tags=[t.usual?'🔁 Như mọi khi':'',t.vip?'🎥 Đang quay video':'',t.office?'💼 Văn phòng':'',t.discount?`🏷️ Bớt ${t.discount} xu`:''].filter(Boolean);
   let meter;
   if(t.app){const left=t.app.deadline-(b.turn||0),pct=Math.max(0,Math.min(100,left/t.app.span*100));meter=`<div class="mt-patience app"><span>TÀI XẾ</span><div class="mt-bar"><i style="width:${pct}%"></i></div><small>${left>=0?`${left} nhịp`:'trễ'}</small></div>`;}
-  else meter=`<div class="mt-patience ${p<40?'low':p<70?'mid':''}"><span>KIÊN NHẪN</span><div class="mt-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-label="Kiên nhẫn"><i style="width:${p}%"></i></div><small>${calm?'thong thả':p+'%'}</small></div>`;
+  else meter=`<div class="mt-patience ${p<40?'low':p<70?'mid':''}"><span>${clean()?'<span aria-label="Kiên nhẫn">⏳</span>':'KIÊN NHẪN'}</span><div class="mt-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-label="Kiên nhẫn"><i style="width:${p}%"></i></div><small>${calm?'thong thả':p+'%'}</small></div>`;
   const words=t.known?(t.order_text||t.opening):t.opening;
   return `<section class="mt-customer ${t.app?'is-app':''}">
     <div class="mt-who">${t.app?'<span class="mt-face" style="--s:58px" aria-hidden="true">🛵</span>':face(t,x)}<small>${x.esc(t.customer)}</small></div>
@@ -358,7 +362,7 @@ function lockChip(x,list){
   if(!list.length)return '';
   const lv=list.map(i=>station(x,i.id).level||i.level||1),lo=Math.min(...lv),hi=Math.max(...lv);
   const names=list.map((i,n)=>`${i.name} (cấp ${lv[n]})`).join(', ');
-  return `<p class="mt-lockchip" title="${x.esc(names)}" aria-label="${x.esc(`Chưa mở: ${names}`)}">🔒 ${list.length} món mở ở cấp ${lo===hi?lo:`${lo}–${hi}`}</p>`;
+  return `<p class="mt-lockchip" title="${x.esc(names)}" aria-label="${x.esc(`Chưa mở: ${names}`)}">🔒 ${list.length}${clean()?' · ':' món mở ở '}cấp ${lo===hi?lo:`${lo}–${hi}`}</p>`;
 }
 /** The station the next step is at ('cups', 'base', 'flavor', 'topping', 'dials'); '' = none (all open). */
 const STATION_OF={size:'cups',base:'base',flavor:'flavor',topping:'topping',ice:'dials',sugar:'dials'};
@@ -411,7 +415,7 @@ function sealer(t,x){
   const zones=[['loose',0,S.loose],['ok',S.loose,S.good_lo],['good',S.good_lo,S.good_hi],['ok',S.good_hi,S.burn],['burn',S.burn,S.max]];
   return `<div class="mt-sealer ${start?'running':''}">
     <div class="mt-gauge" data-seal-start="${start||''}" data-s="${[S.loose,S.good_lo,S.good_hi,S.burn,S.max].join(',')}" aria-hidden="true">${zones.map(([k,a,z])=>`<i class="z ${k}" style="left:${pct(a)}%;width:${pct(z-a)}%"></i>`).join('')}<b class="mt-needle" style="transform:translateX(${Math.min(100,pct(held))}%)"></b></div>
-    <small class="mt-gauge-label" aria-live="polite">${start?'Đang ép nhiệt…':ready?`Nắp đẹp +1 xu: ép rồi nhả tay khi kim vào vùng xanh (${S.good_lo}–${S.good_hi} giây)`:'Pha xong trà, đá, đường rồi mới dán nắp'}</small>
+    <small class="mt-gauge-label" aria-live="polite">${start?'Đang ép nhiệt…':ready?(clean()?`✨ +1 xu: nhả tay ở vùng xanh (${S.good_lo}–${S.good_hi} giây)`:`Nắp đẹp +1 xu: ép rồi nhả tay khi kim vào vùng xanh (${S.good_lo}–${S.good_hi} giây)`):clean()?'':'Pha xong trà, đá, đường rồi mới dán nắp'}</small>${!start&&!ready?tip('Pha xong trà, đá, đường rồi mới dán nắp','Dán nắp'):''}
     <div class="mt-seal-btns">${start?jb(x,'✋ Nhả tay!','tea_seal',{task:t.id},'cream big'):jb(x,'🔥 Ép nắp','tea_seal_start',{task:t.id},'cream',!ready)}
     ${start?'':jb(x,'Dán thường','tea_seal',{task:t.id},'ghost small',!ready)}</div>${start?'':wear(x)}</div>`;
 }
@@ -425,7 +429,7 @@ function finish(t,x){
   return `<div class="mt-finish">${sealer(t,x)}
     <div class="mt-minor">${x.confirmCmd('🗑️ Đổ ly','tea_discard',{task:t.id},'Đổ ly đang làm? Nguyên liệu đã dùng được ghi hao hụt và tính là một lần làm lại.','ghost small',!(cup.placed||(cup.items||[]).length))}
     ${jb(x,'🔎 So phiếu','tea_check',{task:t.id},'ghost small',!t.known||!(cup.items||[]).length||cup.sealed)}</div>
-    <p class="muted small">So phiếu miễn phí: không tính lỗi, không trôi thời gian. Trao ly sai hoặc đổ làm lại vẫn tính lỗi.</p></div>`;
+    ${tip('So phiếu miễn phí: không tính lỗi, không trôi thời gian. Trao ly sai hoặc đổ làm lại vẫn tính lỗi.','🔎 So phiếu','p')}</div>`;
 }
 function nextStep(t,x,detail=true){
   if(!t)return 'Chờ khách ghé quầy';
@@ -469,8 +473,8 @@ function brewSteps(t,x){
   const refill=k=>{const s=station(x,k),i=ing(x,k),want=ordered(t);
     if(s.made){const p=prepPlan(x,k);
       if(!p.why)return run('tea_prepare',{item:k,qty:p.qty,confirm:true},`${verb(k)} thêm ${x.esc(low(i.name))} · ${p.cost} xu`);
-      return {sel:'.mt-out',label:want&&i.group!=='base'&&swappable(x,k,want)?`🙏 Hết ${x.esc(low(i.name))}: mời khách đổi`:`🚫 Hết ${x.esc(low(i.name))}: ${x.esc(low(p.why))}`};}
-    if(want&&!swappable(x,k,want))return {sel:'.mt-out',label:soonest(x,k)?`📦 Hết ${x.esc(low(i.name))}: chờ hàng về`:`⚡ Hết ${x.esc(low(i.name))}: gọi hỏa tốc`};
+      return {sel:'.mt-out',label:want&&i.group!=='base'&&swappable(x,k,want,t)?`🙏 Hết ${x.esc(low(i.name))}: mời khách đổi`:`🚫 Hết ${x.esc(low(i.name))}: ${x.esc(low(p.why))}`};}
+    if(want&&!swappable(x,k,want,t))return {sel:'.mt-out',label:soonest(x,k)?`📦 Hết ${x.esc(low(i.name))}: chờ hàng về`:`⚡ Hết ${x.esc(low(i.name))}: gọi hỏa tốc`};
     return {sel:'.mt-out',label:`🙏 Hết ${x.esc(low(i.name))}: mời khách đổi`};};
   const name=k=>low(ing(x,k).name),hasBase=hasGroup(x,cup,'base');
   const tops=items.filter(k=>ing(x,k).group==='topping').length;
@@ -546,9 +550,12 @@ function orderTicket(t,x,steps){
     :`<b class="mt-ticket-who">${x.esc(t.app?`Đơn app ${t.app.code}`:t.customer)}</b>`;
   let meter;
   if(t.app){const left=t.app.deadline-(b.turn||0),pct=Math.max(0,Math.min(100,left/t.app.span*100));meter=`<div class="mt-patience app"><span>TÀI XẾ</span><div class="mt-bar"><i style="width:${pct}%"></i></div><small>${left>=0?`${left} nhịp`:'trễ'}</small></div>`;}
-  else meter=`<div class="mt-patience ${p<40?'low':p<70?'mid':''}"><span>KIÊN NHẪN</span><div class="mt-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-label="Kiên nhẫn"><i style="width:${p}%"></i></div><small>${calm?'thong thả':p+'%'}</small></div>`;
+  else meter=`<div class="mt-patience ${p<40?'low':p<70?'mid':''}"><span>${clean()?'<span aria-label="Kiên nhẫn">⏳</span>':'KIÊN NHẪN'}</span><div class="mt-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}" aria-label="Kiên nhẫn"><i style="width:${p}%"></i></div><small>${calm?'thong thả':p+'%'}</small></div>`;
   const tags=[t.usual?'🔁 Như mọi khi':'',t.vip?'🎥 Quay video':'',t.office?'💼 Văn phòng':'',t.discount?`🏷️ Bớt ${t.discount} xu`:''].filter(Boolean);
-  return `<section class="mt-ticket${t.app?' is-app':''}" aria-label="Phiếu gọi món">
+  // Clean layout: the ticket no longer sticks (one pinned box: the bar); its digest is a header chip that opens it
+  // over the counter once it has scrolled away. Every part of the order stays on the ticket itself.
+  const okN=said.filter(s=>s.row.ok===true).length;
+  return `${headChip('🧾',`${okN}/${said.length}`,'.mt-ticket',{label:`Phiếu gọi món: ${okN}/${said.length} đúng`,tone:said.some(s=>s.row.ok===false)?'bad':okN===said.length?'ok':''})}<section class="mt-ticket${t.app?' is-app':''}" aria-label="Phiếu gọi món">
     <div class="mt-ticket-top">${t.app?'<span class="mt-face" style="--s:34px" aria-hidden="true">🛵</span>':face(t,x,34)}${tabs}${tags.length?`<span class="mt-ticket-tags">${tags.map(v=>`<em>${x.esc(v)}</em>`).join('')}</span>`:''}<b class="mt-price">${t.quoted_price!=null?`${t.quoted_price} xu`:''}</b></div>
     <div class="mt-ticket-order"><b>Ly ${g?g.i:1}:</b><ul class="mt-reqs" aria-label="Món khách gọi">${chips.join('')}</ul></div>
     ${meter}</section>`;
@@ -820,8 +827,12 @@ export default {
       <div class="mt-stations">${stations(t,x,g.final?g.steps:[])}</div></div>`;
     // The order recap and the next step (then the hand-over) stay pinned above the sheet footer.
     // The mini cup keeps the result in view next to whichever station the step scrolled to.
-    const cta=stepCta(x,g.steps,g.final||{label:'',go:null,ready:false},{style:'primary big grow'});
-    const bar=`<div class="fk-bar mt-bar">${t.known?`<span class="mt-bar-cup" aria-hidden="true">${cupArt(x,t.cup,true)}</span>`:''}<p class="fk-next" aria-live="polite">${todoLine(t,x,brew)}</p><div class="fk-bar-btns">${cta}</div></div>`;
+    // The shared bar (ui-kit actBar, UI wave 4): the mini cup and the recap (or the pointer / "hoặc giao" link) on the
+    // left, the one main button on the right. fk-bar stays as a hook (tick, focusStep, food_kit keepBarAboveFooter).
+    const {next,main}=barParts(x,g.steps,g.final||{label:'',go:null,ready:false});
+    const cup=t.known?`<span class="mt-bar-cup" aria-hidden="true">${cupArt(x,t.cup,true)}</span>`:'';
+    const recap=todoLine(t,x,brew),left=`${cup}${next||(recap?`<p class="fk-next" aria-live="polite">${recap}</p>`:'')}`;
+    const bar=actBar({next:left,main,cls:'fk-bar mt-bar'});
     // After each step the screen scrolls to the control of the next one (tick), once per step.
     const n=nextOf(g.steps),at=!n||B(x).event?'':n.go?.sel||(n.go?.cmd==='tea_discard'?'.mt-minor':'')||n.at||'';
     return `<div class="career-job mt" data-mt-at="${x.esc(at)}" data-mt-key="${x.esc(`${t.id}|${n?.label||''}|${n?.ok}`)}">${hintFor(t,x)}${hud(x)}${eventCard(x)}${alerts(x)}${(B(x).care||[]).some(r=>r.tone!=='ok')?careFold(x):''}${appRow(t,x)}${queueRow(t,x)}${customer(t,x,brew)}${outOfStock(t,x)}${t.known?layout:''}${bar}</div>`;

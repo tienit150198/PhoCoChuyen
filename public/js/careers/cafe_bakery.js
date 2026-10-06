@@ -9,8 +9,8 @@
  * yesterday's pastries each morning, and the regulars' notes card. */
 import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,shopSummary,patience,openTasks} from './food_kit.js';
 import {splitMai} from './tomorrow_kit.js';
-import {fold} from '../ui-kit.js';
-import {nextHint,stepCta,finalGo,todoAttrs,todoArrow} from '../v4/guide.js';
+import {fold,actBar,clean,tip,helpBtn,withWhy} from '../ui-kit.js';
+import {nextHint,barParts,finalGo,todoAttrs,todoArrow} from '../v4/guide.js';
 import {restockFor,restockGo} from '../v4/restock.js';
 
 const SHOT_SCALE=45;   // effective seconds shown on the extraction bar
@@ -73,8 +73,11 @@ function rackMeter(x,r){
   const b=bake(x,r.item),[a,g,z]=b.window,scale=z+6,p=v=>v/scale*100,shift=Number(r.shift)||0,pace=r.pace||1,sec=Math.max(0,x.now()-r.start)*pace+shift;
   return bar('rack',`data-oven-start="${r.start}" data-shift="${shift}" data-pace="${pace}" data-w="${a},${g},${z}"`,[['pale',0,p(a)],['golden',p(a),p(g)],['dark',p(g),p(z)],['burnt',p(z),100]],p(sec),sec.toFixed(1)+` giây nướng · ${pace}×`+(shift?' · lò nóng':''));
 }
+const PACE_TIP='2×: chờ một nửa; 4×: chờ một phần tư khi chiết, đánh sữa và nướng. Thanh chạy nhanh tương ứng: tự bấm dừng ở vùng xanh. Mẻ đang trong lò giữ nhịp lúc cho vào.';
 function pacePicker(x){
   const d=data(x),pace=d.bar_pace||1,busy=(d.groups||[]).length>0||(d.wand||[]).length>0;
+  // Clean layout: one row "⚡ 1× 2× 4×"; the explanation goes to "?"; while busy the buttons are dimmed with the reason.
+  if(clean())return `<section class="card cb-pace cb-pace-row" role="group" aria-label="Nhịp pha và nướng"><b aria-hidden="true">⚡</b>${[1,2,4].map(v=>{const b=x.cmd(`${v}×`,'cb_pace',{pace:v},v===pace?'primary small':'ghost small',v===pace).replace('<button ',`<button aria-label="Nhịp ${v===1?'bình thường':v===2?'nhanh':'rất nhanh'}" `);return busy&&v!==pace?withWhy(b,{why:'Dừng chiết và tắt vòi hơi trước khi đổi nhịp máy.'}):b;}).join('')}${tip(PACE_TIP,'⚡ Nhịp pha & nướng')}</section>`;
   return `<section class="card cb-pace"><div class="row wrap spread"><b>⚡ Nhịp pha & nướng</b><div class="row wrap" role="group" aria-label="Nhịp pha và nướng">${[1,2,4].map(v=>x.cmd(v===1?'1× · Bình thường':v===2?'2× · Nhanh':'4× · Rất nhanh','cb_pace',{pace:v},v===pace?'primary small':'ghost small',busy||v===pace)).join('')}</div></div><p class="muted small">2×: chờ một nửa; 4×: chờ một phần tư khi chiết, đánh sữa và nướng. Thanh chạy nhanh tương ứng: tự bấm dừng ở vùng xanh. Mẻ đang trong lò giữ nhịp lúc cho vào.</p>${busy?'<small class="muted">Dừng chiết và tắt vòi hơi trước khi đổi nhịp máy.</small>':''}</section>`;
 }
 
@@ -183,7 +186,8 @@ function drinkRows(t,x){
   if(plated(t))return [R(true,'🛎️',`Đủ ${t.cups.length} ly trên khay, giao một lượt`)];
   const n=spec(t),d=t.drink,dk=drink(x,n.drink),rows=[],sl=cc(x).shot_label||{},id=t.id,dump=dumpGo(t),auto=timer(x);
   const cowMilk=!!(d.milk&&milk(x,d.milk.kind).lactose);
-  if(n.lactose)rows.push(R(d.milk?!cowMilk:null,'⚠️','Không sữa bò','','Khách không dung nạp lactose','danger',cowMilk?dump:null));
+  // The demand stays ("Không sữa bò", in red); why the guest asks is the explanation ("?" on the clean layout).
+  if(n.lactose)rows.push(R(d.milk?!cowMilk:null,'⚠️','Không sữa bò','',clean()?'':'Khách không dung nạp lactose','danger',cowMilk?dump:null));
   if(n.decaf){const bad=d.shots.some(s=>s.beans!=='decaf');rows.push(R(d.shots.length?!bad:null,'⚠️','Chỉ hạt decaf','','Khách phải kiêng caffeine','danger',bad?dump:null));}
   const want=n.takeaway?'paper':n.iced?'glass':'mug';
   const cname={paper:'Ly giấy mang về',glass:'Ly thủy tinh',mug:'Tách sứ'}[want],size=n.size==='L'?'ly lớn':'ly nhỏ';
@@ -585,7 +589,7 @@ function careCard(x,open){
   const feed=s.fed_today===false?`<div class="row wrap">${x.cmd(`🫙 Cho Bé Men ăn (+${s.gain}%)`,'cb_feed',{},'primary small',!x.room.open||stock(x,'flour')<1)}</div>`:'';
   // A tap-to-open line (not a <details>, whose open state the host carries over between screens).
   const key=`care-${open?'idle':'job'}-${x.room.day}`,on=x.ui.cbSt?.[key]??open;
-  return `<section class="cb-care cb-st${on?' open':''}"><button type="button" class="cb-st-sum" data-action="car:st" data-key="${key}" data-open="${on?1:0}" aria-expanded="${on}">🫙 Việc chăm tiệm · ${left?`${left} việc chờ`:'xong hết ✓'}</button>${on?`<div class="cb-st-body">${news}${rlist(rows,x,'Việc chăm tiệm hôm nay')}${feed}${chip}</div>`:''}</section>`;
+  return `<section class="cb-care cb-st${on?' open':''}"><button type="button" class="cb-st-sum" data-action="car:st" data-key="${key}" data-open="${on?1:0}" aria-expanded="${on}" aria-label="Việc chăm tiệm: ${left?`${left} việc chờ`:'xong hết'}">🫙 ${clean()?(left?`${left}`:'✓'):`Việc chăm tiệm · ${left?`${left} việc chờ`:'xong hết ✓'}`}</button>${on?`<div class="cb-st-body">${news}${rlist(rows,x,'Việc chăm tiệm hôm nay')}${feed}${chip}</div>`:''}</section>`;
 }
 /** The regulars' notes card: only what the shop has learned. */
 function bookFold(x){
@@ -661,7 +665,6 @@ function hintFor(x,g){
   const f=g.final&&g.final.ready!==false?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null;
   return nextHint(x,g.steps,{final:f,pulse:g.pulse||''});
 }
-const ctaFor=(x,g)=>stepCta(x,g.steps,g.final||{label:'🛎️ Giao cho khách',go:null,ready:false,why:''});
 
 export default {
   id:'cafe_bakery',
@@ -676,7 +679,7 @@ export default {
     const d=data(x),day=d.day,g=taskGuide(t,x),hint=hintFor(x,g);
     // The last result is shown in full once; after that it is two lines (tap it to read it all).
     const powder=t.known&&t.needs?.kind==='drink'&&drink(x,spec(t).drink).base;
-    const head=`${dayStrip(x,day,true)}${flash(x,day).replace('<p class="fk-flash','<p tabindex="0" class="fk-flash')}${eventCard(x,day,'cb_event')}${queue(x,t)}${powder?'':pacePicker(x)}`;
+    const head=`${dayStrip(x,day,true,{tight:true})}${flash(x,day).replace('<p class="fk-flash','<p tabindex="0" class="fk-flash')}${eventCard(x,day,'cb_event')}${queue(x,t,{tight:true})}${powder?'':pacePicker(x)}`;
     if(!t.known){
       const who=x.npc(t.npc),gu=t.guest||{};
       return `<div class="career-job cb food">${hint}${head}<article class="card ticket cb-ticket"><div class="cb-ticket-head">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3>
@@ -688,7 +691,10 @@ export default {
     const tabs=[['bar','☕','Quầy pha'],['oven','🔥','Lò & ủ bột'],['case','🥐','Tủ kính'],['cake','🎂','Bánh kem']];
     const racks=(d.oven||[]).length,ready=(d.proof||[]).filter(p=>!p.left).length+(d.cold||[]).filter(c=>c.bakeable).length+(d.starter&&!d.starter.fed_today?1:0),inCase=(d.case||[]).filter(l=>l.state==='fresh'&&!l.sale).reduce((a,l)=>a+l.qty,0);
     const badge=k=>k==='oven'&&(racks||ready)?`<em class="cb-badge">${racks+ready}</em>`:k==='case'?`<em class="cb-badge${inCase?' calm':' zero'}">${inCase}</em>`:'';
-    const tabBar=`<div class="cb-tabs" role="tablist" aria-label="Khu làm việc">${tabs.map(([k,e,l])=>`<button type="button" role="tab" class="cb-tab ${ui.tab===k?'on':''}" data-action="car:tab" data-tab="${k}" aria-selected="${ui.tab===k}">${e} ${l}${badge(k)}</button>`).join('')}</div>`;
+    // Clean layout: the open tab keeps its word, the others their icon (the name is the tab's label); the "?" at the
+    // end lists what this screen folded away (the pace rule, …).
+    const c=clean(),help=c?helpBtn('cb-bench','☕ Quầy cà phê & bánh',[{title:'Một order',body:'<ul class="ui-rows"><li>📝 Nhận order, đọc phiếu</li><li>☕ Pha, 🔥 nướng, 🥐 lấy bánh theo phiếu</li><li>🛎️ Giao cho khách</li></ul>'}],{tips:true,cls:'cb-help'}):'';
+    const tabBar=`<div class="cb-tabs" role="tablist" aria-label="Khu làm việc">${tabs.map(([k,e,l])=>`<button type="button" role="tab" class="cb-tab ${ui.tab===k?'on':''}" data-action="car:tab" data-tab="${k}" aria-selected="${ui.tab===k}" aria-label="${l}">${e}${c&&ui.tab!==k?'':` ${l}`}${badge(k)}</button>`).join('')}${help}</div>`;
     const panel={bar:()=>n.kind==='drink'?barPanel(t,x):'<p class="notice">Order này không có đồ uống.</p>',oven:()=>ovenPanel(t,x),case:()=>casePanel(t,x),cake:()=>n.kind==='cake'?cakePanel(t,x):'<p class="notice">Order này không phải bánh kem.</p>'}[ui.tab]?.()||'';
     const preview=n.kind==='drink'?cupArt(t,x)+(Object.keys(n.pastry||{}).length?bagArt(t,x):''):n.kind==='pastry'?bagArt(t,x):cakeArt(t,x);
     const part=n.kind==='cake'?'cake':'drink';
@@ -696,11 +702,12 @@ export default {
     const dump=n.kind!=='pastry'?x.confirmCmd(n.kind==='cake'?'🗑️ Bỏ bánh':'🗑️ Đổ ly','cb_dump',{task:t.id,part},'Đổ bỏ và làm lại? Nguyên liệu đã dùng được ghi hao hụt.','danger small',!dumpable):'';
     // One bottom button (phones) and the same one in the side column (wide screens); only the
     // phone one is the guide's .gd-cta, so the first-time pulse lands on the visible one.
-    const cta=ctaFor(x,g);
+    // The one main button lives in the shared bar on every screen size (ui-kit actBar, UI wave 4).
+    const {next,main}=barParts(x,g.steps,g.final||{label:'🛎️ Giao cho khách',go:null,ready:false,why:''});
     const side=`<div class="cb-side"><div class="cb-look">${preview}<div class="cb-look-txt"><p class="cb-status" aria-live="polite">${x.esc(status(t,x))}</p>${trayCups(t)}</div></div>
-      <div class="fk-wide-only">${cta.replace(/ gd-cta/g,'')}${dump}</div></div>`;
+      <div class="fk-wide-only">${dump}</div></div>`;
     const tools=`<p class="row wrap cb-tools">${dump?`<span class="cb-narrow-only">${dump}</span>`:''}${d.clean_day===x.room.day?'<span class="tag green">🧽 Đã vệ sinh máy hôm nay</span>':x.cmd('🧽 Vệ sinh máy pha','cb_clean',{},'ghost small')}</p>`;
-    return `<div class="career-job cb food">${hint}${head}${extras(x)}${careCard(x,false)}${ticket(t,x)}${tabBar}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div><div class="fk-bar cb-dock"><p class="cb-dock-status" aria-hidden="true">${x.esc(status(t,x))}</p>${cta}</div></div>`;
+    return `<div class="career-job cb food">${hint}${head}${extras(x)}${careCard(x,false)}${ticket(t,x)}${tabBar}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${actBar({next:next||`<p class="cb-dock-status">${x.esc(status(t,x))}</p>`,main,cls:'fk-bar cb-dock'})}</div>`;
   },
   actions:{
     async tab(data,el,x){x.ui.tab=data.tab;x.render();},

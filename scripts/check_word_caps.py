@@ -49,6 +49,16 @@ WORK_DONE += WAVE3
 WORK_CAP.update(hr_admin=30, secretary=30, it_helpdesk=30, corp_accounting=30, customer_care=30)
 DEFAULT += WAVE3
 
+# Wave 4: the food-kit counters and the street-kit careers wave 1/2 left (their first screen: the morning set-up, or
+# the first guest before the order is heard). Capped above 25 only where the choices or the ask need the room.
+WAVE4 = ('milk_tea', 'cafe_bakery', 'restaurant', 'florist', 'ice_cream', 'homemaker', 'garbage', 'fruit', 'nail',
+         'naucom', 'photobooth', 'library')
+WORK_DONE += WAVE4
+# 30 where the choice itself needs the room: homemaker's morning money (the amount, the bills, three answers),
+# fruit's set-up (what each cover is for, the empty scale's reading, the bruised fruit).
+WORK_CAP.update(homemaker=30, fruit=30)
+DEFAULT += ('milk_tea', 'cafe_bakery')
+
 COUNT = r"""async () => {
   const d = [...document.querySelectorAll('dialog[open]')].pop();
   const kit = await import('/js/ui-kit.js');

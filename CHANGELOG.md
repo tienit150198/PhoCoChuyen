@@ -1,3 +1,28 @@
+# Chưa phát hành
+
+## Giao diện gọn: đợt 4
+
+- 12 nghề: quầy trà sữa, cà phê – bánh, quán mì cay, tiệm hoa, tiệm kem, nội trợ, thu gom rác, sạp trái cây, tiệm nail,
+  nấu cơm gia đình, photobooth, thư viện. Màn đầu trên điện thoại (390 px) còn 13–30 chữ (trước 35–109).
+- Trà sữa: hết cảnh 3 khung dính trên màn. Phiếu gọi món không còn dính trên đầu, chỉ còn chip "🧾 0/5" trên đầu màn để
+  mở lại phiếu khi đã cuộn xuống. Thanh dưới chung (ly nhỏ, "Còn n bước" và một nút chính); cà phê cũng vậy, máy tính
+  không còn hai nút giống nhau.
+- Lời giải thích (nhịp pha 2×/4×, so phiếu miễn phí, mẹo dán nắp, lời dẫn buổi sáng…) vào nút "?" (mục "Trên màn này").
+  Danh sách bước thành chip "📋 0/4"; nút trên bàn lặp lại bước ở thanh dưới chỉ còn hai chữ ("🌡️ Ẩm kế").
+- Giữ nguyên trên màn mọi thứ quyết định đúng sai: phiếu gọi món đủ từng dòng ("Không sữa bò", dị ứng hải sản, mang
+  về), lời khách, khoảng cân chuẩn của viên kem, nút tủ cần vặn, túi rác "trông lạ", tác dụng dù/bạt, kim cân lệch, móng
+  khách, luật của nhà nấu cơm ("Bé không ăn cay, sợ xương cá…"), độ ẩm kho kèm khoảng chuẩn. Ngày mưa, cúp điện, nắng
+  gắt thì lời dặn buổi sáng ("mang ủng", "căng bạt", "sạc sẵn đèn pin") vẫn hiện ngay.
+- Nội trợ: buổi nhận tiền chợ còn "💵 “80 xu” · 4 tờ gấp đôi" và ba cách làm gọn chữ, đủ ý. Nấu cơm: thực đơn chỉ mở
+  nhóm món đang tới lượt, nhóm khác một dòng kèm món đã chọn.
+- Máy chủ báo trước, nút mờ kèm lý do (đã bị từ chối nhiều nhất 04–06/10): trà sữa không còn mời khách đổi trân châu khi
+  quầy không nấu được (mời đổi chỉ với siro/topping mua sẵn), mì cay không mời đổi lần hai món đã đổi và chỉ múc thêm chén
+  nước dùng khi tô đã có nước, nội trợ "Còn việc chưa xếp vào thứ tự", thu gom phải quét rác vương vãi trước (nút sửa:
+  "🧹 Quét dọn"), sạp trái cây đủ số trái anh Lâm gom, tiệm nail / photobooth / kem chưa mở tiệm (nút sửa: về việc buổi
+  sáng).
+- Giao diện cổ điển và máy tính giữ chữ như cũ; công tắc "Giao diện gọn" / `MNL_CLEAN_UI=off` vẫn tắt được. Không đổi
+  bản lưu, không thêm bảng, không đổi cách sinh việc.
+
 # v1.9.8 — 2026-10-07
 
 Gồm "Giao diện gọn: đợt 2" (công an, điều dưỡng, cứu hộ bể bơi, dầu khí, phi công, tiếp viên) và "đợt 3" (6 bàn văn phòng, chăm sóc khách hàng, tiệm thú cưng).

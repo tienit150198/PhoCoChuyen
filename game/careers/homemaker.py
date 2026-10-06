@@ -499,9 +499,35 @@ def _put(s, c, d, p):
     return dict(message='')
 
 
+def _sort_rule(t: dict, st: dict, need=kit.need) -> None:
+    got = t['work'].get(st['id'], {})
+    need(all(i['id'] in got for i in st['items']), 'Còn món chưa xếp chỗ.')
+
+
+def _order_rule(t: dict, st: dict, key: dict, need=kit.need) -> None:
+    got = t['work'].get(st['id'], [])
+    want = [i['id'] for i in st['items'] if i['id'] not in key['bad']]
+    need(all(i in got for i in want), 'Còn việc chưa xếp vào thứ tự.')
+
+
+def _close_rules(t: dict, need=kit.need) -> None:
+    """What nt_close refuses at the current step (sort: every thing placed; order: every chore that belongs in
+    the day). public_task sends it as can.nt_close (live 04-06/10: 110 refusals “Còn việc chưa xếp vào thứ tự”)."""
+    if t.get('stage') != 'work' or not t.get('known'):
+        return
+    steps = t['needs']['steps']
+    if not 0 <= t['at'] < len(steps):
+        return
+    st = steps[t['at']]
+    if st['type'] == 'sort':
+        _sort_rule(t, st, need)
+    elif st['type'] == 'order':
+        _order_rule(t, st, t['_key'].get(st['id'], {}), need)
+
+
 def _close_sort(s, c, d, t, st, key) -> str:
     got = t['work'].get(st['id'], {})
-    kit.need(all(i['id'] in got for i in st['items']), 'Còn món chưa xếp chỗ.')
+    _sort_rule(t, st)
     bad = []
     for iid, k in key['items'].items():
         b = got[iid]
@@ -535,8 +561,7 @@ def _seq(s, c, d, p):
 
 def _close_order(s, c, d, t, st, key) -> str:
     got = t['work'].get(st['id'], [])
-    need = [i['id'] for i in st['items'] if i['id'] not in key['bad']]
-    kit.need(all(i in got for i in need), 'Còn việc chưa xếp vào thứ tự.')
+    _order_rule(t, st, key)
     bad = []
     for iid in got:
         if iid in key['bad']:
@@ -948,6 +973,7 @@ def public_task(t: dict) -> dict:
     if not v['known']:
         v['needs'] = None
         return v
+    v['can'] = dict(nt_close=kit.check(_close_rules, t))
     if t['kind'] == 'setup' and t['day'] == 1:
         for st in v['needs']['steps']:
             tip = _tip(st, t['_key'].get(st['id'], {}))

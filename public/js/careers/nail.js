@@ -8,7 +8,12 @@ import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {tomorrowCard} from './tomorrow_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
-import {data,cc,lower,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
+import {data,cc,lower,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,tip,clean} from './street_kit.js';
+import {withWhy} from '../ui-kit.js';
+
+/** The morning note: on a plain day it only repeats the steps ("?" on the clean layout); on a rain, outage or hot day
+ * it is the day's cue (ủng, bạt, đèn pin…) and stays on screen. */
+const dayNote=(x,s,title)=>!s?'':clean()&&(data(x).mod?.id||'normal')==='normal'?tip(x.esc(s),title,'p'):`<p class="small muted">${x.esc(s)}</p>`;
 
 const COL=(x,k)=>(cc(x).colours||[]).find(c=>c.id===k)||{id:k,name:k,emoji:'💅',hex:'#ccc'};
 const SHAPE=(x,k)=>(cc(x).shapes||{})[k]||k;
@@ -22,11 +27,13 @@ const have=(x,k)=>opened(x,k)>0||stock(x,k)>0;
 const LAYER={base:'Lớp base',color:'Lớp màu',top:'Lớp top',art:'Trang trí'};
 const SECS=x=>cc(x).cure_secs||[30,60,90,120];
 
-/** A button that cannot be used yet stays visible, disabled, with the reason under it. */
+/** A button that cannot be used yet stays visible, disabled, with the reason under it. Clean layout: dimmed but
+ * tappable, the reason shows in the bar on a tap (ui-kit withWhy), so the bench is not lined with reasons. */
 function btn(x,label,cmd,payload,cls,why){
+  if(clean())return `<span class="nl-b">${withWhy(x.cmd(label,cmd,payload,cls),why?{why}:true)}</span>`;
   return `<span class="nl-b">${x.cmd(label,cmd,payload,cls,!!why)}${why?`<small class="nl-why">${x.esc(why)}</small>`:''}</span>`;
 }
-const pick=(x,key,val,label,cls='',why='')=>`<span class="nl-b">${act(x,label,'pick',{key,val},`small ${x.ui[key]===val?'primary':'ghost'} ${cls}`,` aria-pressed="${x.ui[key]===val}"${why?' disabled':''}`)}${why?`<small class="nl-why">${x.esc(why)}</small>`:''}</span>`;
+const pick=(x,key,val,label,cls='',why='')=>clean()?`<span class="nl-b">${withWhy(act(x,label,'pick',{key,val},`small ${x.ui[key]===val?'primary':'ghost'} ${cls}`,` aria-pressed="${x.ui[key]===val}"`),why?{why}:true)}</span>`:`<span class="nl-b">${act(x,label,'pick',{key,val},`small ${x.ui[key]===val?'primary':'ghost'} ${cls}`,` aria-pressed="${x.ui[key]===val}"${why?' disabled':''}`)}${why?`<small class="nl-why">${x.esc(why)}</small>`:''}</span>`;
 
 /* ------------------------------------------------------------ the client and her nails */
 function svcLine(x,n){
@@ -43,7 +50,8 @@ function ticket(t,x){
 const NAIL={ok:'Móng chắc, hồng hào, da viền lành.',broken:'Móng ngón giữa nứt ngang.',fungus:'Móng trỏ vàng đục, dày, sần, tách khỏi nền móng.',infected:'Khóe móng ngón cái sưng đỏ, có mủ.'};
 const OLD={none:'Không có sơn cũ.',thuong:'Còn sơn thường cũ.',gel:'Đang có lớp gel cũ.'};
 function lookCard(t,x){
-  if(!t.cond)return `<section class="card nl-look"><h4>🔍 Bàn tay khách</h4><p class="small muted">Khách đặt tay lên gối kê. Nhìn kỹ trước khi làm.</p>${x.cmd('🔍 Xem móng khách','nl_inspect',{task:t.id},'primary nl-inspect')}</section>`;
+  // can.open: a customer picked before “Mở tiệm” (dimmed; the fix brings up the morning set-up).
+  if(!t.cond)return `<section class="card nl-look"><h4>🔍 Bàn tay khách</h4>${tip('Khách đặt tay lên gối kê. Nhìn kỹ trước khi làm.','Bàn tay khách','p')}${withWhy(x.cmd('🔍 Xem móng khách','nl_inspect',{task:t.id},'primary nl-inspect'),data(x).can?.open)}</section>`;
   const c=t.cond,warn=c.nail==='fungus'||c.nail==='infected';
   const no=pane(x,`nl-no-${t.id}`,'<span>🙏 Không làm hôm nay</span><small>nói thật với khách</small>',
     `<div class="nl-row">${x.confirmCmd('🩺 Móng đang bệnh: khuyên đi khám','nl_decline',{task:t.id,why:'health'},'Nói với khách là hôm nay tiệm không làm bộ móng này, khuyên đi khám?','small')}
@@ -55,7 +63,7 @@ function lookCard(t,x){
 function lampBar(t,x){
   const d=data(x),l=d.lamp||{},off=d.power==='off';
   const state=!l.tested?'chưa thử':l.weak?'bóng yếu':'sáng tốt';
-  const tl=d.tools||{},tools=tl.clean?'♨️ dụng cụ vừa hấp':tl.by===t?.id?'🧰 dụng cụ đang dùng cho khách này':'🧰 dụng cụ đã dùng';
+  const tl=d.tools||{},tools=clean()?(tl.clean?'♨️ sạch':tl.by===t?.id?'🧰 khách này':'⚠️ đã dùng'):tl.clean?'♨️ dụng cụ vừa hấp':tl.by===t?.id?'🧰 dụng cụ đang dùng cho khách này':'🧰 dụng cụ đã dùng';
   const sw=['led','uv'].map(k=>pick2(x,k,l.kind===k,off?'Cúp điện':'')).join('');
   return `<div class="nl-lamp ${off?'off':''}" role="group" aria-label="Đèn hơ gel"><span class="nl-lamp-now"><span aria-hidden="true">🪔</span><b>${x.esc(LAMP(x,l.kind))}</b><small>${off?'🔌 cúp điện':x.esc(state)}</small></span>
     ${l.kind==='pin'?'':sw}<span class="nl-tools"><small>${x.esc(tools)}</small>${x.cmd('♨️ Hấp dụng cụ','nl_sterilize',{},'small ghost')}</span></div>`;
@@ -65,7 +73,7 @@ function pick2(x,k,on,why){
 }
 function cureCard(x){
   const cu=cc(x).cure||{},rows=Object.keys(cu).map(k=>`<tr><th>${x.esc(LAMP(x,k))}</th>${['base','color','top','art'].map(l=>`<td>${cu[k][l]} giây</td>`).join('')}</tr>`).join('');
-  return pane(x,'nl-card',`<span>📋 Bảng giờ hơ đèn</span><small>dán trên bàn</small>`,
+  return pane(x,'nl-card',`<span>📋 Bảng giờ hơ đèn</span>${clean()?'':'<small>dán trên bàn</small>'}`,
     `<table class="nl-card"><thead><tr><th></th><th>Base</th><th>Màu</th><th>Top</th><th>Vẽ</th></tr></thead><tbody>${rows}</tbody></table>
     <p class="small muted">Bóng LED yếu: gấp đôi thời gian. Thử đèn mỗi sáng bằng một giọt gel. Sơn thường không hơ đèn, hong quạt cho khô.</p>`,false,'nl-cardpane');
 }
@@ -143,6 +151,8 @@ function setupPanel(t,x){
     :`<span class="tag green">✓ ${x.esc(LAMP(x,l.kind))} sáng tốt</span>`;
   const tools=tl.clean?'<span class="tag green">✓ Dụng cụ đã hấp</span>':x.cmd('♨️ Hấp dụng cụ','nl_sterilize',{},'primary');
   const shelf=sh.stocked?'<span class="tag green">✓ Đã coi kệ hàng</span>':x.cmd('📋 Coi kệ hàng','nl_stock',{},'primary');
+  // Clean layout: the buttons name their own job; the morning note goes to "?".
+  if(clean())return `<section class="card nl-setup"><div class="sk-row">${lamp}</div><div class="sk-row">${tools}</div><div class="sk-row">${shelf}</div>${dayNote(x,t.needs?.note,'Buổi sáng')}${cureCard(x)}</section>`;
   return `<section class="card nl-setup"><h4>Đèn hơ gel</h4>${lamp}<h4 class="section-title">Tủ hấp dụng cụ</h4>${tools}<h4 class="section-title">Kệ hàng</h4>${shelf}
     <p class="small muted">${x.esc(t.needs?.note||'')}</p>${cureCard(x)}</section>`;
 }
@@ -158,7 +168,7 @@ function setupSteps(t,x){
 /* ------------------------------------------------------------ the guide: what comes next, never the answer */
 function serveSteps(t,x){
   const d=data(x),n=t.needs||{},c=t.cond,coats=t.coats||[],rows=[];
-  if(!d.shop?.open)rows.push({ok:null,label:'Mở tiệm xong mới làm',go:null});
+  if(!d.shop?.open)rows.push({ok:null,label:'Mở tiệm xong mới làm',go:d.can?.open?.fix||null});
   rows.push({ok:c?true:null,label:'Xem móng khách',go:{cmd:'nl_inspect',payload:{task:t.id},label:'🔍 Xem móng khách'}});
   // Steps the player works out on the table: the bottom button points at the place (👆), never does them.
   if(c&&c.old!=='none'){const rm=t.rm||{};rows.push({ok:rm.off||rm.wiped?true:null,label:'Tháo sơn cũ',note:rm.wrap!=null?'đang ủ':'',go:c&&!(rm.off||rm.wiped)?{sel:'.nl-old'}:null});}
@@ -205,10 +215,10 @@ export default {
     if(d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk nl">${hint}${top}${bottom(x,g)}</div>`;
     if(x.ui.task!==t.id){x.ui.task=t.id;x.ui.shape=x.ui.len=x.ui.p=x.ui.colour=undefined;x.ui.th='mong';}
     let main='',side='';
-    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc mở tiệm');}
+    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc mở tiệm',{chip:true});}
     else if(!t.known)main='';
     else if(t.stage==='pay')main=cashPanel(x,t.id,t.cash);
-    else{main=`${lookCard(t,x)}${t.cond?`${prepPanel(t,x)}${polishPanel(t,x)}`:''}`;side=stepRows(x,g.steps,'Bộ móng của khách');}
+    else{main=`${lookCard(t,x)}${t.cond?`${prepPanel(t,x)}${polishPanel(t,x)}`:''}`;side=stepRows(x,g.steps,'Bộ móng của khách',{chip:true});}
     const clock=t.needs?.rush&&t.clock!=null&&t.stage==='prep'?`<div class="nl-clock" role="timer" aria-live="off">⏱️ Đã làm <b data-nl-clock="${Number(t.clock)}">0:00</b></div>`:'';
     const head=t.kind==='setup'?dayBar(x):`${ticket(t,x)}${dayBar(x)}${t.known&&t.stage==='prep'?lampBar(t,x):''}${clock}`;
     return `<div class="career-job sk nl">${hint}${top}${head}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;

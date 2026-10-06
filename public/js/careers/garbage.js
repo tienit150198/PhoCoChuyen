@@ -9,7 +9,12 @@
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
-import {data,cc,lower,stockOf,tile,meter,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,troubleLast} from './street_kit.js';
+import {data,cc,lower,stockOf,tile,meter,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,troubleLast,tip,clean} from './street_kit.js';
+import {withWhy} from '../ui-kit.js';
+
+/** The morning note: on a plain day it only repeats the steps ("?" on the clean layout); on a rain, outage or hot day
+ * it is the day's cue (ủng, bạt, đèn pin…) and stays on screen. */
+const dayNote=(x,s,title)=>!s?'':clean()&&(data(x).mod?.id||'normal')==='normal'?tip(x.esc(s),title,'p'):`<p class="small muted">${x.esc(s)}</p>`;
 
 const W=(x,k)=>(cc(x).waste||{})[k]||{name:k,emoji:'🗑️',bin:'con_lai',sharp:false};
 const BINS=['huu_co','tai_che','con_lai'];
@@ -29,7 +34,7 @@ function cartCard(x,compact=false){
   const cells=BINS.map(b=>{const n=cart[b]?.n||0,m=cap[b]||8;return `<div class="rc-bin rc-${b}"><span>${binEmoji(x,b)} ${x.esc(binName(x,b))}</span>${meter(n,m,n>=m?'bad':n>=m-2?'warn':'')}<small>${n}/${m}</small></div>`;}).join('');
   const haz=(d.haz||[]).length,full=BINS.some(b=>(cart[b]?.n||0)>=(cap[b]||8));
   const load=BINS.reduce((s,b)=>s+(cart[b]?.n||0),0)+haz;
-  const dump=d.shift&&load?x.cmd(`🚛 Ra điểm tập kết đổ xe${full?' (ngăn đầy)':''}`,'rac_dump',{},full?'primary':'ghost small'):'';
+  const dump=d.shift&&load?x.cmd(clean()?`🚛 Đổ xe${full?' (đầy)':''}`:`🚛 Ra điểm tập kết đổ xe${full?' (ngăn đầy)':''}`,'rac_dump',{},full?'primary':'ghost small').replace('<button ','<button aria-label="Ra điểm tập kết đổ xe" '):'';
   return `<section class="card rc-cart ${compact?'compact':''}" aria-label="Xe đẩy"><div class="rc-cart-head"><h4>🛒 Xe đẩy</h4><span class="rc-haz">🔴 ${haz}/${d.haz_max||8}</span></div><div class="rc-bins">${cells}</div>${dump}</section>`;
 }
 
@@ -48,9 +53,10 @@ function bagCard(t,x,b){
   const items=b.open?`<ul class="rc-items">${(b.items||[]).map(i=>{const w=W(x,i),haz=w.bin==='nguy_hai',out=(b.pulled||[]).includes(i);
     return `<li class="${haz?'haz':''} ${out?'out':''}"><span aria-hidden="true">${x.esc(w.emoji)}</span>${x.esc(w.name)}${haz&&!out?x.cmd('🔴 Tách ra','rac_pull',{task:t.id,bag:b.id,item:i},'small danger'):out?' <small>✓ hộp đỏ</small>':''}${i==='kinh_vo'?(b.wrapped?' <small>✓ đã bọc</small>':x.cmd('🧷 Bọc','rac_wrap',{task:t.id,bag:b.id},'small')):''}</li>`;}).join('')}</ul>`
     :`<p class="rc-clue">${x.esc(b.clue)}</p>`;
-  const bins=BINS.map(k=>x.cmd(`${binEmoji(x,k)} ${x.esc(binName(x,k))}`,'rac_load',{task:t.id,bag:b.id,bin:k},`rc-to rc-${k}`)).join('');
+  // can.rac_load: a lane left late must be swept first (dimmed with the reason and the sweep as its fix).
+  const bins=BINS.map(k=>withWhy(x.cmd(`${binEmoji(x,k)} ${x.esc(binName(x,k))}`,'rac_load',{task:t.id,bag:b.id,bin:k},`rc-to rc-${k}`),t.can?.rac_load)).join('');
   return `<div class="rc-bag rc-${b.color}" data-bag="${x.esc(b.id)}"><div class="rc-bag-head"><span class="rc-sack" aria-hidden="true"></span><div class="grow"><b>${colour}</b>${b.open?'':`<small>${odd(b)?'⚠️ trông lạ':'trông bình thường'}</small>`}</div>${b.open?'':x.cmd('👀 Mở túi','rac_peek',{task:t.id,bag:b.id},'small rc-peek')}</div>
-    ${items}<div class="rc-tos">${bins}</div>${b.open&&misSorted(x,b)?x.cmd('🏷️ Chưa phân loại: dán phiếu, không thu','rac_refuse',{task:t.id,bag:b.id},'small ghost rc-refuse'):''}</div>`;
+    ${items}<div class="rc-tos">${bins}</div>${b.open&&misSorted(x,b)?x.cmd(clean()?'🏷️ Dán phiếu, không thu':'🏷️ Chưa phân loại: dán phiếu, không thu','rac_refuse',{task:t.id,bag:b.id},'small ghost rc-refuse'):''}</div>`;
 }
 function stopPanel(t,x){
   const si=t.at||0,s=stopsOf(t)[si];if(!s)return '';
@@ -74,9 +80,9 @@ function casePanel(t,x){
 function setupPanel(t,x){
   const d=data(x),n=t.needs||{},gear=cc(x).gear||{},used=cc(x).used||[];
   const tiles=Object.entries(gear).map(([k,label])=>{const on=(d.gear||[]).includes(k),q=used.includes(k)?stockOf(x,k):null;
-    return tile(x,'rac_gear',{item:k},`<span class="tile-emoji">${{gang_tay:'🧤',khau_trang:'😷',ao:'🦺',ung:'🥾'}[k]||'•'}</span><b>${x.esc(label)}</b><small>${on?'✓ đã mặc':q!==null?`còn ${q}`:'mặc vào'}</small>`,`${on?'selected':''} ${(n.gear||[]).includes(k)?'want':''}`,q===0&&!on);}).join('');
+    return tile(x,'rac_gear',{item:k},`<span class="tile-emoji">${{gang_tay:'🧤',khau_trang:'😷',ao:'🦺',ung:'🥾'}[k]||'•'}</span><b>${x.esc(label)}</b><small>${clean()?(on?'✓':q!==null?`📦 ${q}`:''):on?'✓ đã mặc':q!==null?`còn ${q}`:'mặc vào'}</small>`,`${on?'selected':''} ${(n.gear||[]).includes(k)?'want':''}`,q===0&&!on);}).join('');
   return `<section class="card rc-setup"><h4>🦺 Đồ bảo hộ</h4><div class="tile-grid rc-gear">${tiles}</div>
-    <div class="rc-row">${d.cart_ok?'<span class="tag green">✓ Xe đã kiểm</span>':x.cmd('🛒 Kiểm xe đẩy','rac_cart',{},'')}</div><p class="small muted">${x.esc(n.note||'')}</p></section>`;
+    <div class="rc-row">${d.cart_ok?'<span class="tag green">✓ Xe đã kiểm</span>':x.cmd('🛒 Kiểm xe đẩy','rac_cart',{},'')}</div>${dayNote(x,n.note,'Vào ca')}</section>`;
 }
 function setupSteps(t,x){
   const d=data(x),n=t.needs||{},gear=cc(x).gear||{},rows=[];
@@ -173,10 +179,10 @@ export default {
     let main='',side='';
     if(t.twist?.state==='on')return `<div class="career-job sk rc">${hint}${top}${ticket(t,x)}${twistCard(t,x)}${bottom(x,g)}</div>`;
     const clock=d.clock!=null?` · ${hm(d.clock)}`:'';
-    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Vào ca');}
+    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Vào ca',{chip:true});}
     else if(!t.known)main='';
     else if(t.kind==='complaint')main=casePanel(t,x);
-    else{main=laneStrip(t,x)+(t.stage==='round'?stopPanel(t,x):'')+cartCard(x,true);side=t.stage==='round'?stepRows(x,g.steps,'Việc ở nhà này'):'';}
+    else{main=laneStrip(t,x)+(t.stage==='round'?stopPanel(t,x):'')+cartCard(x,true);side=t.stage==='round'?stepRows(x,g.steps,'Việc ở nhà này',{chip:true}):'';}
     const head=t.kind==='setup'?dayBar(x,clock):`${ticket(t,x)}${dayBar(x,clock)}`;
     return `<div class="career-job sk rc">${hint}${top}${head}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },

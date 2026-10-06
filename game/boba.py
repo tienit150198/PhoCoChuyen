@@ -1451,8 +1451,7 @@ def _station(s: dict, c: dict, b: dict, t: dict, name: str, p: dict) -> dict:
             t['patience'] = max(25, t.get('patience', 100) - 4)
             said = 'lên ly L, giữ giá ly M' if other == 'L' else 'xuống ly M, trả tiền ly M'
             return dict(message=f"Quầy hết ly {size}. {customer_name(t)} đồng ý {said}.", _free=True)
-        need(item in BOUGHT and (item in n['toppings'] or item == n['flavor']), 'Món này không có trong ly khách gọi.')
-        need(item not in cup['items'], 'Món này đã vào ly rồi.')
+        _swap_rules(t, item, need)
         need(stock(c)[item] == 0, f"Quầy vẫn còn {ING[item]['name'].lower()}, không cần mời khách đổi.")
         to = swap_to(c, t, item)
         if ING[item]['group'] == 'topping':
@@ -2352,6 +2351,17 @@ def public(c: dict) -> dict:
         sugars=list(SUGARS), ices=list(ICES), seal=seal_zones(b), app_fee=APP_FEE_PCT, turn=c['turn'], **care_loop))
 
 
+def _swap_rules(t: dict, item, need=None) -> None:
+    """What tea_swap refuses for a syrup or a topping of the order, before the stock is read: only a bought item
+    (not pearls, foam or a tea the counter makes), only one the guest ordered, not one already in the cup.
+    public_task sends it as can.tea_swap[item] (live 04-06/10: 80 refusals “Món này không có trong ly khách gọi”,
+    the counter offered a swap for pearls it could not cook)."""
+    need = need or _e().need
+    n, cup = t['needs'], t['cup']
+    need(item in BOUGHT and (item in n['toppings'] or item == n['flavor']), 'Món này không có trong ly khách gọi.')
+    need(item not in cup['items'], 'Món này đã vào ly rồi.')
+
+
 def public_task(t: dict) -> dict:
     v = strip_copy(t)
     v.pop('src', None)
@@ -2364,6 +2374,9 @@ def public_task(t: dict) -> dict:
         # The pinned order ticket (a usual order too: the regulars' card on the same screen shows it).
         v['ticket'] = ticket(t['needs'], t['cup'])
         v['par'] = par(t['needs'])
+        from .careers import kit
+        n = t['needs']
+        v['can'] = dict(tea_swap={k: kit.check(_swap_rules, t, k) for k in [*([n['flavor']] if n.get('flavor') else []), *n['toppings']]})
         if t.get('usual'):
             v['needs'] = None
     v['customer'] = customer_name(t)

@@ -130,3 +130,6 @@ html[data-theme="dem"] .career-job.pb{--sk-accent:#ff8fb1;--sk-accent-2:#c46a8a;
 .career-job.pb .pb-slim p{margin:0}
 .career-job.pb .pb-slim .pb-chips{margin-top:6px}
 .career-job.pb .pb-learn.slim{margin:0 0 8px;padding:8px 12px;border:1px dashed var(--sk-accent);border-radius:12px;font-size:.86rem;background:var(--pb-paper)}
+
+/* Clean layout (UI wave 4): the checklist folded into its header chip leaves the side pane empty: no empty box. */
+html[data-clean] .career-job.sk.pb .wb-side:not(:has(>:not(.ui-chipped))){padding:0;border:0;background:none}

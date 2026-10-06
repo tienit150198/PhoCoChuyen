@@ -7,8 +7,15 @@
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
-import {data,cc,lower,tile,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
+import {data,cc,lower,tile,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,tip,clean} from './street_kit.js';
 import {linesSummary} from './tomorrow_kit.js';
+
+/** A panel button's label in two words on the clean layout (the bar names the step in full); readers get the full one. */
+const say2=(full,short)=>clean()?`<span aria-hidden="true">${short}</span><span class="sr-only">${full}</span>`:full;
+
+/** The morning note: on a plain day it only repeats the steps ("?" on the clean layout); on a rain, outage or hot day
+ * it is the day's cue (ủng, bạt, đèn pin…) and stays on screen. */
+const dayNote=(x,s,title)=>!s?'':clean()&&(data(x).mod?.id||'normal')==='normal'?tip(x.esc(s),title,'p'):`<p class="small muted">${x.esc(s)}</p>`;
 
 const FL=(x,k)=>(cc(x).flavours||[]).find(f=>f.id===k)||{id:k,name:k,short:k,emoji:'🍨'};
 const VS=(x,k)=>(cc(x).vessels||{})[k]||{name:k,emoji:'🥤',max:2,item:null};
@@ -50,13 +57,13 @@ function fzBar(x){
   const d=data(x),fz=d.fz||{},w=d.well||{},feel=fz.feel||'ok';
   const word={ok:'lạnh vừa',soft:'kem mềm',mushy:'kem nhão!',hard:'cứng đá'}[feel]||'';
   const lid=fz.lid?x.cmd('🧊 Đậy nắp tủ','kem_lid',{open:false},'small km-lid open'):x.cmd('Mở nắp','kem_lid',{open:true},'small ghost km-lid');
-  return `<div class="km-fz feel-${x.esc(feel)}" role="group" aria-label="Tủ kem"><span class="km-temp"><span aria-hidden="true">🌡️</span><b>${Number(fz.temp)} °C</b><small>${x.esc(word)}</small></span>
+  return `<div class="km-fz feel-${x.esc(feel)}" role="group" aria-label="Tủ kem"><span class="km-temp"><span aria-hidden="true">🌡️</span><b>${Number(fz.temp)}${clean()?'°':' °C'}</b><small>${x.esc(word)}</small></span>
     ${lid}<span class="km-well ${w.dirty?'dirty':''}"><span aria-hidden="true">💧</span><small>${w.dirty?'nước đục':'nước trong'}</small>${w.dirty&&d.shop?.open?x.cmd('Thay nước','kem_well',{},'small'):''}</span></div>`;
 }
 function meltBar(t,x){
   const m=t.melt;if(!m||m.end!=null||t.stage!=='prep')return '';
   const end=Number(m.start)+Number(m.limit),left=Math.ceil(end-x.now());
-  return `<div class="km-melt ${left<=0?'late':left<=10?'soon':''}" role="timer" aria-live="off"><span aria-hidden="true">⏱️</span><span>Kem bắt đầu chảy sau</span><b data-km-melt="${end}">${left>0?`${left}s`:'đang chảy!'}</b></div>`;
+  return `<div class="km-melt ${left<=0?'late':left<=10?'soon':''}" role="timer" aria-live="off" aria-label="Kem bắt đầu chảy sau"><span aria-hidden="true">⏱️</span>${clean()?'':'<span>Kem bắt đầu chảy sau</span>'}<b data-km-melt="${end}">${left>0?`${left}s`:'đang chảy!'}</b></div>`;
 }
 
 /* ------------------------------------------------------------ the order and the counter */
@@ -76,12 +83,14 @@ function scaleRead(t,x){
   }
   const sc=cup.sc[cup.sc.length-1];if(!sc)return `<div class="km-scale"><span class="km-lcd"><b>0</b><small>g</small></span><div class="km-scale-side"><small>Múc một viên lên cân</small></div></div>`;
   const [lo,hi]=GOOD(x),cls=sc.g<lo?'low':sc.g>hi?'high':'good';
-  return `<div class="km-scale"><span class="km-lcd ${cls}"><b>${sc.g}</b><small>g</small></span><div class="km-scale-side"><small>Viên vừa múc · chuẩn ${lo}–${hi} g</small>${adjButtons(t,x,cup)}</div></div>`;
+  // The weight band stays beside the reading (the server grades the scoop against it).
+  return `<div class="km-scale"><span class="km-lcd ${cls}"><b>${sc.g}</b><small>g</small></span><div class="km-scale-side"><small>${clean()?`chuẩn ${lo}–${hi} g`:`Viên vừa múc · chuẩn ${lo}–${hi} g`}</small>${adjButtons(t,x,cup)}</div></div>`;
 }
 function adjButtons(t,x,cup){
   const sc=cup.sc[cup.sc.length-1];if(!sc)return '';
   const left=ADJ_MAX(x)-sc.a,dis=left<=0;
-  return `<div class="km-adj">${x.cmd(`➖ Gạt bớt ${ADJ(x)} g`,'kem_adjust',{task:t.id,delta:-1},'small',dis)}${x.cmd(`➕ Múc thêm ${ADJ(x)} g`,'kem_adjust',{task:t.id,delta:1},'small',dis)}${dis?'<small class="muted">Viên này chỉnh đủ rồi</small>':''}</div>`;
+  const c=clean();
+  return `<div class="km-adj">${x.cmd(c?`➖ ${ADJ(x)} g`:`➖ Gạt bớt ${ADJ(x)} g`,'kem_adjust',{task:t.id,delta:-1},'small',dis).replace('<button ',`<button aria-label="Gạt bớt ${ADJ(x)} g" `)}${x.cmd(c?`➕ ${ADJ(x)} g`:`➕ Múc thêm ${ADJ(x)} g`,'kem_adjust',{task:t.id,delta:1},'small',dis).replace('<button ',`<button aria-label="Múc thêm ${ADJ(x)} g" `)}${dis?tip('Viên này chỉnh đủ rồi','Gạt bớt, múc thêm'):''}</div>`;
 }
 function counter(t,x){
   const cups=t.cups||[],{used}=plan(t);
@@ -89,27 +98,29 @@ function counter(t,x){
     const sc=c.sc.map(s=>`<span class="km-sc ${s.g<GOOD(x)[0]?'low':s.g>GOOD(x)[1]?'high':''} ${s.x?.some(f=>f!=='hm')?'bad':''} ${s.x?.includes('hm')?'hm':''}">${x.esc(FL(x,s.f).emoji)}<small>${s.g}g</small></span>`).join('');
     return `<li class="km-cup ${i===cups.length-1?'now':''} ${used.has(i)?'done':''}"><span class="km-v" aria-hidden="true">${x.esc(v.emoji)}</span><span class="km-cup-body"><b>${x.esc(v.name)}</b><span class="km-scs">${sc}</span>${c.top?`<small>${x.esc(TP(x,c.top).emoji)} ${x.esc(TP(x,c.top).name)}</small>`:''}</span></li>`;}).join('');
   const drop=cups.length?x.confirmCmd('🗑️ Bỏ ly đang làm','kem_drop',{task:t.id},'Bỏ ly đang làm, làm lại cái khác?','small ghost'):'';
-  return `<section class="card km-counter"><h4>🍨 Trên quầy</h4>${row?`<ul class="km-cups">${row}</ul>`:'<p class="small muted">Chưa có gì. Chọn ly, ốc quế hay trái dừa.</p>'}${scaleRead(t,x)}<div class="sk-go-end">${drop}</div></section>`;
+  return `<section class="card km-counter"><h4>🍨${clean()&&!row?'':' Trên quầy'}</h4>${row?`<ul class="km-cups">${row}</ul>`:tip('Chưa có gì. Chọn ly, ốc quế hay trái dừa.','Trên quầy','p')}${scaleRead(t,x)}<div class="sk-go-end">${drop}</div></section>`;
 }
 function vesselRow(t,x){
   const want=new Set((t.needs?.lines||[]).map(l=>l.v));
   const v=(k)=>{const s=VS(x,k),n=s.item?stock(x,s.item):null,out=n===0;
     const cmd=k==='que'?'kem_que':'kem_vessel',payload=k==='que'?{task:t.id}:{task:t.id,v:k};
-    return tile(x,cmd,payload,`<span class="tile-emoji">${x.esc(s.emoji)}</span><b>${x.esc(s.name)}</b><small>${n==null?(k==='hop'?'theo gam':'không giới hạn'):`còn ${n}`}</small>`,want.has(k)?'want':'',out||(k==='que'&&t.kind!=='serve'));};
-  return `<section class="card km-vessels"><h4>Đựng bằng gì</h4><div class="tile-grid km-vgrid">${['ly','oc','dua_trai','hop','que'].map(v).join('')}</div></section>`;
+    const left=n==null?tip(k==='hop'?'theo gam':'không giới hạn',s.name):`<small>${clean()?n:`còn ${n}`}</small>`;
+    return tile(x,cmd,payload,`<span class="tile-emoji">${x.esc(s.emoji)}</span><b>${x.esc(s.name)}</b>${left}`,want.has(k)?'want':'',out||(k==='que'&&t.kind!=='serve'),data(x).can?.open).replace('<button ',`<button aria-label="${x.esc(s.name)}${n==null?'':`, còn ${n}`}" `);};
+  return `<section class="card km-vessels"><h4>${clean()?'🥤':'Đựng bằng gì'}</h4><div class="tile-grid km-vgrid">${['ly','oc','dua_trai','hop','que'].map(v).join('')}</div></section>`;
 }
 function scoopPanel(t,x){
   const p=press(x),lab=cc(x).press_label||{};
   const presses=Object.keys(cc(x).press||{nhe:1,vua:1,day:1}).map(k=>act(x,x.esc(lab[k]||k),'press',{p:k},`small ${p===k?'primary':'ghost'}`,` aria-pressed="${p===k}"`)).join('');
   const want=new Set((t.needs?.lines||[]).flatMap(l=>l.f));
   const fl=(cc(x).flavours||[]).map(f=>{const g=tubG(x,f.id),n=stock(x,f.id),h=homeReady(x,f.id),rf=data(x).refrozen===f.id;
-    return tile(x,'kem_scoop',{task:t.id,f:f.id,press:p},`<span class="tile-emoji">${x.esc(f.emoji)}</span><b>${x.esc(f.name)}</b><small>${g?`hộp đang múc ${g} g`:h?`${h} hộp nhà làm`:n?`${n} hộp mới`:'hết'}${rf?' · ⚠️ đông đá':''}</small>`,want.has(f.id)?'want':'',!g&&!n&&!h);}).join('');
+    const left=clean()?(g?`${g} g`:h?`${h} nhà làm`:n?`${n} hộp`:'hết'):(g?`hộp đang múc ${g} g`:h?`${h} hộp nhà làm`:n?`${n} hộp mới`:'hết');
+    return tile(x,'kem_scoop',{task:t.id,f:f.id,press:p},`<span class="tile-emoji">${x.esc(f.emoji)}</span><b>${x.esc(f.name)}</b><small>${left}${rf?' · ⚠️ đông đá':''}</small>`,want.has(f.id)?'want':'',!g&&!n&&!h,data(x).can?.open);}).join('');
   return `<section class="card km-scoop"><h4>🥄 Múc kem</h4><div class="km-press" role="group" aria-label="Múc tay">${presses}</div><div class="tile-grid km-fgrid">${fl}</div></section>`;
 }
 function topRow(t,x){
   const cups=t.cups||[],cup=cups[cups.length-1];if(!cup||['que','hop'].includes(cup.v))return '';
   const tops=Object.entries(cc(x).toppings||{}).map(([k,v])=>x.cmd(`${x.esc(v.emoji)} ${x.esc(v.name)}`,'kem_top',{task:t.id,top:k},`small ${cup.top===k?'primary':'ghost'}`)).join('');
-  return `<section class="card km-tops"><h4>✨ Topping cho ${x.esc(lower(VS(x,cup.v).name))} đang làm</h4><div class="km-toprow">${tops}${cup.top?x.cmd('Bỏ topping','kem_top',{task:t.id,top:'none'},'small ghost'):''}</div></section>`;
+  return `<section class="card km-tops"><h4>${clean()?'✨ Topping':`✨ Topping cho ${x.esc(lower(VS(x,cup.v).name))} đang làm`}</h4><div class="km-toprow">${tops}${cup.top?x.cmd('Bỏ topping','kem_top',{task:t.id,top:'none'},'small ghost'):''}</div></section>`;
 }
 function packPanel(t,x){
   if(t.kind!=='tray')return '';
@@ -120,10 +131,13 @@ function packPanel(t,x){
 /* ------------------------------------------------------------ the morning */
 function setupPanel(t,x){
   const d=data(x),fz=d.fz||{},sh=d.shop||{},kt=cc(x).knob_t||{};
-  const knobs=[1,2,3,4,5,6].map(k=>tile(x,'kem_knob',{knob:k},`<b>Số ${k}</b><small>${kt[k]??''} °C</small>`,`${fz.knob===k?'selected':''} ${k===cc(x).knob_ok?'want':''}`)).join('');
-  const thermo=fz.read?`<div class="km-thermo feel-${x.esc(fz.feel||'ok')}"><b>${Number(fz.temp)} °C</b><small>nút đang số ${fz.knob} · về ${fz.goal} °C</small></div>`:x.cmd('🌡️ Xem nhiệt kế tủ','kem_thermo',{},'primary');
-  const tubs=!sh.checked?x.cmd('🔍 Soi các hộp kem','kem_check',{},'primary'):d.refrozen?`<p class="small km-bad">🧊 Hộp ${x.esc(lower(FL(x,d.refrozen).name))} đông đá lại.</p>${x.cmd('🗑️ Bỏ hộp kem hỏng','kem_discard',{},'primary')}`:'<span class="tag green">✓ Hộp kem nào cũng mịn</span>';
-  const well=d.well?.fresh?'<span class="tag green">✓ Nước ngâm muỗng mới thay</span>':x.cmd('💧 Thay nước ngâm muỗng','kem_well',{},'primary');
+  const knobs=[1,2,3,4,5,6].map(k=>tile(x,'kem_knob',{knob:k},`<b>${clean()?k:`Số ${k}`}</b><small>${kt[k]??''}${clean()?'°':' °C'}</small>`,`${fz.knob===k?'selected':''} ${k===cc(x).knob_ok?'want':''}`).replace('<button ',`<button aria-label="Số ${k}" `)).join('');
+  const thermo=fz.read?`<div class="km-thermo feel-${x.esc(fz.feel||'ok')}"><b>${Number(fz.temp)}${clean()?'°':' °C'}</b><small>${clean()?`🎛️ ${fz.knob} → ${fz.goal}°`:`nút đang số ${fz.knob} · về ${fz.goal} °C`}</small></div>`:x.cmd(say2('🌡️ Xem nhiệt kế tủ','🌡️ Nhiệt kế'),'kem_thermo',{},'primary');
+  const tubs=!sh.checked?x.cmd(say2('🔍 Soi các hộp kem','🔍 Soi hộp'),'kem_check',{},'primary'):d.refrozen?`<p class="small km-bad">🧊 Hộp ${x.esc(lower(FL(x,d.refrozen).name))} đông đá lại.</p>${x.cmd('🗑️ Bỏ hộp kem hỏng','kem_discard',{},'primary')}`:'<span class="tag green">✓ Hộp kem nào cũng mịn</span>';
+  const well=d.well?.fresh?'<span class="tag green">✓ Nước ngâm muỗng mới thay</span>':x.cmd(say2('💧 Thay nước ngâm muỗng','💧 Thay nước'),'kem_well',{},'primary');
+  // Clean layout: the buttons name their own job, so only the knob grid keeps a heading; the morning note goes to "?".
+  if(clean())return `<section class="card km-setup">${thermo}<h4 class="section-title">🎛️ Nút vặn</h4><div class="tile-grid km-knobs">${knobs}</div>
+    <div class="sk-row">${tubs}</div><div class="sk-row">${well}</div>${dayNote(x,t.needs?.note,'Buổi sáng')}</section>`;
   return `<section class="card km-setup"><h4>Nhiệt kế tủ kem</h4>${thermo}<h4 class="section-title">Nút vặn tủ</h4><div class="tile-grid km-knobs">${knobs}</div>
     <h4 class="section-title">Hộp kem trong tủ</h4>${tubs}<h4 class="section-title">Khay ngâm muỗng</h4>${well}<p class="small muted">${x.esc(t.needs?.note||'')}</p></section>`;
 }
@@ -139,6 +153,7 @@ function setupSteps(t,x){
 /* ------------------------------------------------------------ học nghề: the first customers with cô Hiền */
 function learnCard(x){
   const l=data(x).learn;if(!l?.on)return '';
+  if(clean())return `<p class="km-learn slim" aria-label="Học nghề">👩‍🍳 ${Math.min(l.n+1,l.of)}/${l.of} · <b>${x.esc(l.title||'')}</b>${tip(x.esc(l.text||''),l.title||'Học nghề')}</p>`;
   return `<section class="card km-learn" aria-label="Học nghề"><span class="eyebrow">👩‍🍳 Học nghề với cô Hiền · khách ${Math.min(l.n+1,l.of)}/${l.of}</span><b>${x.esc(l.title||'')}</b><p class="small">${x.esc(l.text||'')}</p><p class="small muted">Cô đứng cạnh: lỡ sai chỗ nào, cô nhắc trước khi đưa kem cho khách.</p></section>`;
 }
 
@@ -191,14 +206,15 @@ function batchPanel(x){
     return tile(x,'kem_mk_start',{f:k},`<span class="tile-emoji">${x.esc(r.emoji)}</span><b>${x.esc(r.name)}</b><small>${x.esc(why)}</small>`,'',!open||d.made_today||full);}).join('');
   const lead=d.made_today?'Hôm nay máy đánh kem đã chạy một mẻ. Mai làm tiếp nhé.':full?'Tủ đã đủ hộp kem nhà làm, bán bớt rồi nấu thêm.':
     `Mỗi ngày một mẻ. Đông qua đêm, mai bán: viên kem nhà làm khách trả thêm ${cc(x).home_plus||1} xu.`;
-  return pane(x,'kmBatch',`<span>🏠 Kem nhà làm</span><small>${(d.home||[]).length?`${(d.home||[]).length} hộp trong tủ`:'tự nấu một mẻ'}</small>`,
+  return pane(x,'kmBatch',`<span>🏠 Kem nhà làm</span>${clean()&&!(d.home||[]).length?'':`<small>${(d.home||[]).length?`${(d.home||[]).length} hộp trong tủ`:'tự nấu một mẻ'}</small>`}`,
     `<p class="small muted">${x.esc(lead)}</p><div class="tile-grid km-rgrid">${tiles}</div>${home}`,false,'km-batch');
 }
 
 /* ------------------------------------------------------------ the guide */
 function orderSteps(t,x){
   const d=data(x),n=t.needs||{},lines=n.lines||[],cups=t.cups||[],{pairs,active,last}=plan(t),rows=[];
-  if(!d.shop?.open)rows.push({ok:null,label:'Mở tiệm xong mới bán',go:null});
+  // Not open yet: the server's pre-check (can.open) brings up the morning set-up.
+  if(!d.shop?.open)rows.push({ok:null,label:'Mở tiệm xong mới bán',go:d.can?.open?.fix||null});
   if(d.well?.dirty)rows.push({ok:null,label:'Nước ngâm muỗng đục rồi',go:{cmd:'kem_well',payload:{},label:'💧 Thay nước ngâm muỗng'}});
   const lc=cups[last],sc=lc?.sc?.[lc.sc.length-1],[lo,hi]=GOOD(x);
   let scooping=false;
@@ -274,10 +290,10 @@ export default {
     const top=`${introCard(x,'kem_intro','🍨')}${deskCard(x,'kem_desk','Chuyện ở tiệm')}`;
     if(d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk km">${hint}${top}${bottom(x,g)}</div>`;
     let main='',side='';
-    if(t.kind==='setup'){main=`${setupPanel(t,x)}${batchPanel(x)}`;side=stepRows(x,g.steps,'Việc mở tiệm');}
+    if(t.kind==='setup'){main=`${setupPanel(t,x)}${batchPanel(x)}`;side=stepRows(x,g.steps,'Việc mở tiệm',{chip:true});}
     else if(!t.known)main='';
     else if(t.stage==='pay')main=`${t.needs?.coins&&!t.cash?.gap?'<p class="notice small">🪙 Bé đổ cả nắm xu lẻ ra quầy: đếm từng đồng rồi thối lại.</p>':''}${cashPanel(x,t.id,t.cash)}`;
-    else{main=`${meltBar(t,x)}${counter(t,x)}${scoopPanel(t,x)}${topRow(t,x)}${packPanel(t,x)}${vesselRow(t,x)}`;side=stepRows(x,g.steps,'Món của khách');}
+    else{main=`${meltBar(t,x)}${counter(t,x)}${scoopPanel(t,x)}${topRow(t,x)}${packPanel(t,x)}${vesselRow(t,x)}`;side=stepRows(x,g.steps,'Món của khách',{chip:true});}
     const head=t.kind==='setup'?dayBar(x):`${learnCard(x)}${ticket(t,x)}${dayBar(x)}${fzBar(x)}`;
     return `<div class="career-job sk km">${hint}${top}${head}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },

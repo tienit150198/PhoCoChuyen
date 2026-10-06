@@ -3,7 +3,7 @@
  * bar, the bowl with a live status line, chili, one big "Giao món" and the
  * toppings grid. Only renders server state and sends commands; the server
  * checks every rule (and keeps order details hidden until they are known). */
-import {reqList,fold,refTable} from '../ui-kit.js';
+import {reqList,fold,refTable,clean,withWhy} from '../ui-kit.js';
 import {dayStrip,flash,eventCard,keepBarAboveFooter,idlePanel,shopSummary,patience,openTasks} from './food_kit.js';
 import {nextHint,stepBar,finalGo,pending as nextOpen,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
 import {restockFor} from '../v4/restock.js';
@@ -50,6 +50,8 @@ function billLine(t,x){
   const bowls=specs.map(b=>brothPrice(x,b.broth)+Object.entries(b.toppings||{}).reduce((s,[k,q])=>s+(item(x,k).price||0)*q,0)+(b.extra_noodle?10:0)+(n.takeaway?3:0));
   const raw=bowls.reduce((a,v)=>a+v,0),total=Math.max(1,pyRound(raw*mult));
   if(total!==t.quoted_price)return '';   // an order quoted on an earlier day keeps its price
+  // Clean layout: a one-bowl bill at the menu price says nothing the price tag does not; the sums stay when they differ.
+  if(clean()&&bowls.length<2&&mult===1&&!d.rules?.discount)return '';
   const parts=[bowls.length>1?bowls.map((v,i)=>`tô ${i+1}: ${v}`).join(' + '):`${bowls[0]} xu theo thực đơn`];
   if(mult!==1)parts.push(`ngày hội ×1,1 → ${total}`);
   if(d.rules?.discount)parts.push(`học sinh −10% → ${Math.max(1,pyRound(total*0.9))} xu`);
@@ -71,20 +73,20 @@ function floor(x,active){
       const badge=t.vip==='critic'?'📝':(g.emoji||'🙂');
       seats.push(`<button type="button" class="rs-seat${on?' on is-selected':''}${p<50?' low':''}" data-command="task_select" data-payload="${pay(x,{task:t.id})}" aria-label="${x.esc(`${who.display_name} · ${n} tô · ${g.label||'Khách'} · kiên nhẫn ${p}%`)}"${on?' aria-current="true"':''}>
         <span class="rs-ring" style="--p:${p}">${x.portrait(who,40)}</span><em class="rs-mood" aria-hidden="true">${badge}</em>
-        <span class="rs-n" aria-hidden="true">${n} tô</span><b>${x.esc(who.display_name)}</b></button>`);
+        <span class="rs-n" aria-hidden="true">${clean()?`${n}🍜`:`${n} tô`}</span><b>${x.esc(who.display_name)}</b></button>`);
     }else if(canAdd&&i===dine.length){
       seats.push(`<button type="button" class="rs-seat empty add" data-command="more_work" data-payload="{}" aria-label="Đón thêm một khách"><span class="rs-plus" aria-hidden="true">＋</span><b>Đón khách</b></button>`);
     }else seats.push('');
   }
   const free=seats.filter(v=>v==='').length;
-  if(free)seats.push(`<div class="rs-seat empty rs-free"><b>🪑 ${free} bàn trống</b></div>`);
+  if(free)seats.push(`<div class="rs-seat empty rs-free" aria-label="${free} bàn trống"><b>🪑 ${free}${clean()?'':' bàn trống'}</b></div>`);
   const cards=apps.map(t=>{
     const who=x.npc(t.npc),on=!!active&&t.id===active.id,p=Math.max(0,Math.min(100,t.patience??100)),n=t.needs;
-    const what=!t.known||!n?'🧾 Đơn mới, bấm để đọc':n.masked?'Món quen':n.style==='open'?`Tô tùy quán · ≤ ${n.open.budget} xu`:`${brothOf(x,n.broth)?.name||''} · cấp ${n.spice}`;
+    const what=!t.known||!n?(clean()?'🧾 Đơn mới':'🧾 Đơn mới, bấm để đọc'):n.masked?'Món quen':n.style==='open'?`Tô tùy quán · ≤ ${n.open.budget} xu`:`${brothOf(x,n.broth)?.name||''} · cấp ${n.spice}`;
     return `<button type="button" class="rs-app${on?' on is-selected':''}${p<50?' low':''}" data-command="task_select" data-payload="${pay(x,{task:t.id})}" aria-label="${x.esc(`Đơn app ${t.app} · ${who.display_name} · kiên nhẫn ${p}%`)}"${on?' aria-current="true"':''}>
       ${x.portrait(who,30)}<span class="rs-app-txt"><b>${x.esc(t.app)} · ${x.esc(who.display_name)}</b><small>${x.esc(what)}</small><i class="rs-app-bar" aria-hidden="true"><i style="width:${p}%"></i></i></span></button>`;
   }).join('');
-  const appRow=apps.length?`<div class="rs-apps" role="group" aria-label="Đơn app"><span class="rs-apps-tag" aria-hidden="true">🛵<small>Đơn app</small></span><div class="rs-app-list">${cards}</div></div>`:'';
+  const appRow=apps.length?`<div class="rs-apps" role="group" aria-label="Đơn app"><span class="rs-apps-tag" aria-hidden="true">🛵${clean()?'':'<small>Đơn app</small>'}</span><div class="rs-app-list">${cards}</div></div>`:'';
   return `<section class="rs-floor" aria-label="Khách trong quán"><div class="rs-tables" role="group" aria-label="Bàn ăn">${seats.join('')}</div>${appRow}</section>`;
 }
 
@@ -140,7 +142,8 @@ function regularCard(t,x){
   const b=(care(x).book||[]).find(e=>e.npc===t.npc);if(!b)return '';
   const done=t.touches||[],max=care(x).bond_max||5;
   const rows=b.notes.filter(n=>notes.includes(n.touch)).map(n=>({ok:done.includes(n.touch)?true:null,icon:n.emoji,label:n.text,note:done.includes(n.touch)?'đã làm':n.touch==='soup'?'múc 1 phần từ nồi của tô':''}));
-  const btns=b.notes.filter(n=>notes.includes(n.touch)&&!done.includes(n.touch)).map(n=>x.cmd(`${n.emoji} ${x.esc(n.label)}`,'rs_touch',{task:t.id,touch:n.touch},'ghost small')).join('');
+  // can.rs_touch: the extra cup of soup only once a bowl has its broth (dimmed with the reason before that).
+  const btns=b.notes.filter(n=>notes.includes(n.touch)&&!done.includes(n.touch)).map(n=>withWhy(x.cmd(`${n.emoji} ${x.esc(n.label)}`,'rs_touch',{task:t.id,touch:n.touch},'ghost small'),t.can?.rs_touch?.[n.touch])).join('');
   const left=notes.length-done.filter(k=>notes.includes(k)).length;
   const summary=`📒 Khách quen · <span aria-label="Thân thiết ${b.bond} trên ${max}">${hearts(b.bond,max)}</span> · ${left?`${left} thói quen chưa làm`:'nhớ đủ ✓'}`;
   const body=`${reqList(rows,x.esc,'Thói quen của khách quen')}${btns?`<div class="row wrap rs-touches">${btns}</div>`:''}
@@ -337,8 +340,11 @@ function bowlSteps(t,x){
       const h=tops[k]||0,nm=pic?item(x,k).emoji:item(x,k).name;
       if(h>q){s.push({key:'top:'+k,ok:false,label:`${nm}: dư ${h-q} phần`,go:dump});continue;}
       if(h===q){s.push({key:'top:'+k,ok:true,label:`${nm} ${h}/${q}`});continue;}
-      const sub=outOf(k)&&!(t.subs||{})[k]?SUBS.find(v=>v!==k&&!want[v]&&stockOf(x,v)>0&&(item(x,v).unlock||1)<=x.room.level&&!(n.allergy&&item(x,v).allergen===n.allergy)):null;
-      const go=!b.container?null:outOf(k)&&!(t.subs||{})[k]?(sub?once(t,'rs_sub',{task:id,item:k,substitute:sub},`🔄 Hết ${x.esc(lower(item(x,k).name))}: mời khách đổi sang ${x.esc(lower(item(x,sub).name))}`):{sel:'.rs-subs'})
+      const sub=outOf(k)&&!(t.subs||{})[k]&&(!t.can?.rs_sub||!(k in t.can.rs_sub)||t.can.rs_sub[k]===true)?SUBS.find(v=>v!==k&&!want[v]&&stockOf(x,v)>0&&(item(x,v).unlock||1)<=x.room.level&&!(n.allergy&&item(x,v).allergen===n.allergy)):null;
+      // can.rs_sub (game/careers/restaurant.py _sub_rules): only a topping the order itself asks for can be swapped;
+      // a substitute that runs out too is not offered again (it was refused 148 times: “Món này không có trong order”).
+      const subOk=!t.can?.rs_sub||!(k in t.can.rs_sub)||t.can.rs_sub[k]===true;
+      const go=!b.container?null:outOf(k)&&!(t.subs||{})[k]&&subOk?(sub?once(t,'rs_sub',{task:id,item:k,substitute:sub},`🔄 Hết ${x.esc(lower(item(x,k).name))}: mời khách đổi sang ${x.esc(lower(item(x,sub).name))}`):{sel:'.rs-subs'})
         :pic&&!firstTime(x)?{sel:'.rs-tops',label:'👉 Thêm topping theo hình'}:once(t,'rs_topping',{task:id,item:k},`${x.esc(item(x,k).emoji)} Thêm ${x.esc(pic?item(x,k).emoji:lower(item(x,k).name))}`);
       s.push({key:'top:'+k,ok:null,label:`${tag}Thêm ${pic?'topping theo hình':lower(item(x,k).name)}`,note:`${h}/${q}`,go});
     }
@@ -649,7 +655,7 @@ export default {
   },
   job(t,x){
     const d=data(x),day=d.day;
-    const head=`${hintFor(t,x)}${dayStrip(x,day,true)}${flash(x,day)}${eventCard(x,day,'rs_event')}${floor(x,t)}`;
+    const head=`${hintFor(t,x)}${dayStrip(x,day,true,{tight:true})}${flash(x,day)}${eventCard(x,day,'rs_event')}${floor(x,t)}`;
     if(!t.known){
       const who=x.npc(t.npc),g=t.guest||{};
       return `<div class="career-job rs food">${head}<article class="card rs-order"><div class="rs-order-head">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3>

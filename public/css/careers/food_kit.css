@@ -117,3 +117,6 @@ html[data-layout="phone"] .career-job.food{--fk-foot:68px}
 .career-job.food .fk-day.chip>.fk-stats{align-self:center}
 /* The latest result keeps to one line once it is not new (a tap shows it whole again). */
 .career-job.food .fk-flash:not(.new):not(:focus):not(:empty){display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+
+/* Clean layout (UI wave 4): the patience bar keeps an icon instead of its word. */
+html[data-clean] .career-job.food .fk-patience::before{content:"⏳";letter-spacing:0}

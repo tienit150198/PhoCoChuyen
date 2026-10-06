@@ -1084,11 +1084,9 @@ def _handle(s: dict, c: dict, d: dict, pl: dict, name: str, p: dict) -> dict:
         msg = 'Đã đậy nắp, dán tem niêm phong.'
     elif name == 'rs_sub':
         # Out of a topping: offer a substitute; the customer decides by personality.
-        want = {}
-        for b in _specs(n):
-            for k, q in b['toppings'].items():
-                want[k] = want.get(k, 0) + q
-        item = kit.one_of(p.get('item'), want, 'Món này không có trong order.')
+        want = _ordered(n)
+        item = p.get('item')
+        _sub_rules(t, item)
         sub = kit.one_of(p.get('substitute'), TOPPINGS, 'Món thay không tồn tại.')
         kit.need(item not in t['subs'], 'Đã hỏi khách đổi món này rồi.')
         kit.need(kit.stock(c, item) < want[item] or (item == 'beef' and rules.get('bad_beef')), 'Kho vẫn còn món này, không cần đổi.')
@@ -1229,17 +1227,48 @@ def _serve(s: dict, c: dict, d: dict, pl: dict, t: dict, p: dict) -> dict:
     return dict(message=head + (' ' + ' '.join(lines) if lines else ' Khách đang ăn và sẽ để lại đánh giá.'), celebrate=True)
 
 
+def _ordered(n: dict) -> dict:
+    """Each topping the order asks for (every bowl of a table), and how many portions in all."""
+    want = {}
+    for b in _specs(n):
+        for k, q in b['toppings'].items():
+            want[k] = want.get(k, 0) + q
+    return want
+
+
+def _sub_rules(t: dict, item, need=kit.need) -> None:
+    """rs_sub: only a topping the order itself asks for (a substitute already agreed is not one).
+    public_task sends it as can.rs_sub[item] (live 04-06/10: 148 refusals “Món này không có trong order”: the
+    counter offered to swap the substitute when that ran out too)."""
+    need(isinstance(item, str) and item in _ordered(t['needs']), 'Món này không có trong order.')
+
+
+def _broth_of(t: dict):
+    plates = [x for x in t['plates'] if x is not None]
+    return t['bowl']['broth'] or next((x['broth'] for x in plates if x['broth']), None)
+
+
+def _touch_rules(t: dict, touch, need=kit.need) -> None:
+    """rs_touch before the pots are read: a habit in the regular's notes, not done yet; the extra cup of soup only
+    once a bowl has its broth. public_task sends it as can.rs_touch[touch] (live 04-06/10: 82 refusals “Chan nước
+    dùng vào tô trước”)."""
+    need(isinstance(touch, str) and touch in TOUCHES, 'Việc này không có trong sổ khách quen.')
+    snap = t.get('regular') or {}
+    need(touch in snap.get('notes', []), 'Sổ khách quen chưa ghi thói quen này của khách.')
+    need(touch not in t['touches'], 'Đã làm việc này cho khách rồi.')
+    if touch == 'soup':
+        need(_broth_of(t), 'Chan nước dùng vào tô trước, rồi mới múc thêm chén riêng.',
+             fix=dict(sel='.rs-pots', label='🍲 Chan nước dùng'))
+
+
 def _touch(c: dict, d: dict, t: dict, p: dict) -> dict:
     """A little habit of a regular (no turn): iced tea, a wet towel, scalded chopsticks…"""
-    touch = kit.one_of(p.get('touch'), TOUCHES, 'Việc này không có trong sổ khách quen.')
+    touch = p.get('touch')
+    _touch_rules(t, touch)
     snap = t.get('regular') or {}
-    kit.need(touch in snap.get('notes', []), 'Sổ khách quen chưa ghi thói quen này của khách.')
-    kit.need(touch not in t['touches'], 'Đã làm việc này cho khách rồi.')
     msg = TOUCHES[touch][0] + ' ' + TOUCHES[touch][1] + '.'
     if touch == 'soup':
-        plates = [x for x in t['plates'] if x is not None]
-        broth = t['bowl']['broth'] or next((x['broth'] for x in plates if x['broth']), None)
-        kit.need(broth, 'Chan nước dùng vào tô trước, rồi mới múc thêm chén riêng.')
+        broth = _broth_of(t)
         _need_pot(d, broth)
         kit.need(d['pots'][broth] >= 1, f'Nồi {BROTH_INDEX[broth]["name"]} hết nước dùng rồi.')
         _use_pot(d, broth, 1)
@@ -1805,6 +1834,15 @@ def public_task(t: dict) -> dict:
     if v.get('gen') != GEN:
         _upgrade_task(v, None)
     v['bowls_total'] = _bowls_total(v)
+    if v['known']:
+        # Pre-checks (docs/UI_KIT.md): the same rules as the refusals, on the full task (before a usual order is
+        # masked; a masked order names no topping).
+        full = dict(v)
+        masked = v['needs']['style'] == 'usual' and not v.get('recalled')
+        subs = {} if masked or full['needs'].get('style') == 'open' else \
+            {k: kit.check(_sub_rules, full, k) for k in sorted({*_ordered(full['needs']), *(full.get('subs') or {}).values()})}
+        notes = (full.get('regular') or {}).get('notes', [])
+        v['can'] = dict(rs_sub=subs, rs_touch={k: kit.check(_touch_rules, full, k) for k in notes})
     if not v['known']:
         v['needs'] = None
     elif v['needs']['style'] == 'usual' and not v.get('recalled'):

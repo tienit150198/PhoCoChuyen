@@ -7,8 +7,15 @@
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
-import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast} from './street_kit.js';
+import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast,tip,clean} from './street_kit.js';
 import {linesSummary} from './tomorrow_kit.js';
+
+/** A panel button's label in two words on the clean layout (the bar names the step in full); readers get the full one. */
+const say2=(full,short)=>clean()?`<span aria-hidden="true">${short}</span><span class="sr-only">${full}</span>`:full;
+
+/** The morning note: on a plain day it only repeats the steps ("?" on the clean layout); on a rain, outage or hot day
+ * it is the day's cue (ủng, bạt, đèn pin…) and stays on screen. */
+const dayNote=(x,s,title)=>!s?'':clean()&&(data(x).mod?.id||'normal')==='normal'?tip(x.esc(s),title,'p'):`<p class="small muted">${x.esc(s)}</p>`;
 
 const fruitOf=(x,k)=>(cc(x).fruits||[]).find(f=>f.id===k)||{id:k,name:k,emoji:'🍑',unit:'trái',g:300,kg:10,stages:['tuoi']};
 const stageName=(x,s)=>(cc(x).stages||{})[s]||s;
@@ -38,7 +45,7 @@ function scaleCard(t,x){
   const bag=(t.bag||[]).map((b,i)=>{const f=fruitOf(x,b.i);return `<button type="button" class="fr-pick ${cheap(x,b.s)?'cheap':''} ${b.b?'bad':''}" data-command="tc_unpick" data-payload="${x.esc(JSON.stringify({task:t.id,index:i}))}" aria-label="Bỏ ra ${x.esc(f.name)}"><span aria-hidden="true">${x.esc(f.emoji)}</span><small>${b.g}g</small></button>`;}).join('');
   const est=estimate(x,t);
   return `<section class="card fr-scale" aria-label="Cân">${dial(x,shown(x,t))}
-    <div class="fr-scale-side"><div class="fr-basket">${bag||'<small class="muted">Rổ trống</small>'}</div>
+    <div class="fr-scale-side"><div class="fr-basket">${bag||(clean()?'<small class="muted" aria-label="Rổ trống">🧺</small>':'<small class="muted">Rổ trống</small>')}</div>
       <div class="fr-scale-row">${t.tare?'<span class="tag green">✓ Đã trừ bì rổ</span>':x.cmd('⚖️ Trừ bì rổ','tc_tare',{task:t.id},'small fr-tare')}${est?`<b class="fr-est">≈ ${x.fmt(est)} xu</b>`:''}</div></div></section>`;
 }
 
@@ -112,12 +119,13 @@ function setupPanel(t,x){
   const d=data(x),st=d.stall||{},n=t.needs||{},sc=d.scale||{},bruise=Object.entries(d.bruise||{}).filter(([,v])=>v);
   const cover=[['du','⛱️','Dựng dù','Che nắng'],['bat','🟦','Căng bạt','Che mưa']].map(([k,e,l,s])=>tile(x,'tc_cover',{cover:k},`<span class="tile-emoji">${e}</span><b>${l}</b><small>${s}</small>`,`${st.cover===k?'selected':''} ${n.cover===k?'want':''}`)).join('');
   const reading=st.tested?1000+Number(sc.off||0):Number(sc.off||0);
-  const scaleBtn=!st.tested?x.cmd('⚖️ Đặt quả cân 1 ký','tc_scale_test',{},'primary'):sc.off?x.cmd('🔧 Chỉnh kim về đúng','tc_scale_fix',{},'primary'):'<span class="tag green">✓ Cân chuẩn</span>';
+  const scaleBtn=!st.tested?x.cmd(say2('⚖️ Đặt quả cân 1 ký','⚖️ Thử 1 ký'),'tc_scale_test',{},'primary'):sc.off?x.cmd('🔧 Chỉnh kim về đúng','tc_scale_fix',{},'primary'):'<span class="tag green">✓ Cân chuẩn</span>';
   const rows=bruise.map(([k,v])=>{const f=fruitOf(x,k);return `<li><span aria-hidden="true">${x.esc(f.emoji)}</span><span class="grow">${x.esc(f.name)} <small>${v} trái dập</small></span>${x.cmd('🧺 Lựa ra','tc_sort',{item:k},'small')}</li>`;}).join('');
-  return `<section class="card fr-setup"><h4>${st.cover?'✓ ':''}Che sạp</h4><div class="tile-grid fr-cover">${cover}</div>
-    <h4 class="section-title">Thử cân</h4><div class="fr-test">${dial(x,reading,st.tested?'quả cân 1 ký':'cân trống')}<div>${scaleBtn}${st.tested&&sc.off?`<p class="small fr-warn">Lệch ${Math.abs(sc.off)} gam</p>`:''}</div></div>
-    <h4 class="section-title">Trái dập</h4>${rows?`<ul class="fr-bruise">${rows}</ul>`:'<p class="small muted">✓ Rổ nào cũng sạch.</p>'}
-    <p class="small muted">${x.esc(n.note||'')}</p></section>`;
+  const h=(e,l)=>clean()?`<span aria-hidden="true">${e}</span>`:l;   // clean layout: an icon per group, the tiles say the rest
+  return `<section class="card fr-setup"><h4>${st.cover?'✓ ':''}${h('⛱️','Che sạp')}</h4><div class="tile-grid fr-cover">${cover}</div>
+    <h4 class="section-title">${h('⚖️','Thử cân')}</h4><div class="fr-test">${dial(x,reading,st.tested?'quả cân 1 ký':'cân trống')}<div>${scaleBtn}${st.tested&&sc.off?`<p class="small fr-warn">Lệch ${Math.abs(sc.off)} gam</p>`:''}</div></div>
+    <h4 class="section-title">${h('🍑','Trái dập')}</h4>${rows?`<ul class="fr-bruise">${rows}</ul>`:`<p class="small muted">${clean()?'✓':'✓ Rổ nào cũng sạch.'}</p>`}
+    ${dayNote(x,n.note,'Dọn sạp')}</section>`;
 }
 function setupSteps(t,x){
   const d=data(x),st=d.stall||{},n=t.needs||{},sc=d.scale||{},rows=[];
@@ -170,7 +178,8 @@ function guide(t,x){
   if(t.stage==='pay'){const s=changeStep(x,t.id,t.cash),steps=s?[s]:[];return {steps,final:{label:'💵 ĐƯA TIỀN THỐI',go:finalGo(steps,'tc_pay',{task:t.id,...changePayload(x,t.id,t.cash)}),ready:true}};}
   const steps=buySteps(t,x),stuck=steps.some(s=>s.ok===null&&!s.go&&s.note==='hết trái đúng ý');
   if(stuck&&!(t.bag||[]).length)return {steps,final:{label:'🙏 Nói thật: hết trái đúng ý',go:{cmd:'tc_decline',payload:{task:t.id}},ready:true}};
-  return {steps,final:{label:'⚖️ CÂN · TÍNH TIỀN',go:finalGo(steps,'tc_weigh',{task:t.id}),ready:!!(t.bag||[]).length,why:'bỏ trái vào rổ trước'}};
+  // can.tc_weigh: the server's own rule (a basket, and for anh Lâm's bulk order min–max very ripe fruit).
+  return {steps,final:{label:'⚖️ CÂN · TÍNH TIỀN',go:finalGo(steps,'tc_weigh',{task:t.id}),ready:!!(t.bag||[]).length,why:'bỏ trái vào rổ trước',can:t.can?.tc_weigh}};
 }
 const hintFor=(g,x)=>nextHint(x,g.steps,{final:g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null,pulse:g.pulse});
 
@@ -197,12 +206,12 @@ export default {
     if(d.desk?.ev||d.trouble?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk fr">${hint}${top}${bottom(x,g)}</div>`;
     let main='',side='';
     if(t.stage==='credit')return `<div class="career-job sk fr">${hint}${top}${ticket(t,x)}${creditCard(t,x)}${bottom(x,g)}</div>`;
-    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc dọn sạp');}
+    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc dọn sạp',{chip:true});}
     else if(!t.known)main='';
     else if(t.kind==='return')main=returnPanel(t,x);
     else if(t.stage==='haggle')main=scaleCard(t,x)+hagglePanel(t,x);
     else if(t.stage==='pay')main=cashPanel(x,t.id,t.cash);
-    else{main=scaleCard(t,x)+pickPanel(t,x);side=stepRows(x,g.steps,'Việc của khách');}
+    else{main=scaleCard(t,x)+pickPanel(t,x);side=stepRows(x,g.steps,'Việc của khách',{chip:true});}
     const head=t.kind==='setup'?dayBar(x):`${ticket(t,x)}${dayBar(x)}`;
     return `<div class="career-job sk fr">${hint}${top}${head}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },

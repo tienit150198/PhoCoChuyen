@@ -216,3 +216,7 @@ html:not([data-layout="desktop"]) .career-job.rs .rs-side .rs-tabs{display:none}
 .career-job.rs .rs-bar-now>.asm-next{font-size:.8rem}
 /* The order ticket's fold line is a 44 px tap target without making the pinned ticket any taller. */
 .career-job.rs button.asm-pin-head{padding:7px 0;margin:-7px 0}
+
+/* Clean layout (UI wave 4): the order card already lists every part of the order as steps; the compact copy (asm_kit
+   reqPin) waits behind its header chip (🧾 k/n) instead of repeating it in the flow. */
+html[data-clean] .career-job.rs .asm-pin:not(.ui-pop){display:none}

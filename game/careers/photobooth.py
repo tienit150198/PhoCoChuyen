@@ -579,7 +579,20 @@ def _task(c: dict, p: dict, kinds=None) -> dict:
 
 
 def _need_open(d: dict) -> None:
-    kit.need(d['booth']['open'], 'Chưa mở tiệm: lau ống kính, xem cuộn mực, chụp thử rồi bấm “Mở tiệm” nhé.')
+    _open_rules(d)
+
+
+def _open_rules(d: dict, setup=None, need=kit.need) -> None:
+    """The shop must be open before any customer's work (live 04-06/10: refusals on the first tap of a customer
+    picked before “Mở tiệm”). public_data sends it as can.open, with a fix that brings up the morning set-up."""
+    need(d['booth']['open'], 'Chưa mở tiệm: lau ống kính, xem cuộn mực, chụp thử rồi bấm “Mở tiệm” nhé.',
+         fix=dict(cmd='task_select', payload=dict(task=setup), label='🏪 Mở tiệm') if setup else None)
+
+
+def _setup_id(c: dict):
+    """Today's open set-up task (the morning chores), if any."""
+    return next((t['id'] for t in c['tasks'] if t.get('career') == ID and t.get('kind') == 'setup'
+                 and t.get('status') not in ('completed', 'referred', 'cancelled')), None)
 
 
 def _need_prep(t: dict) -> None:
@@ -1173,7 +1186,7 @@ def public_data(c: dict) -> dict:
                 mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']),
                 today=d['today'], stats=d['stats'], regulars={k: dict(v) for k, v in d['regulars'].items()},
                 desk=kit.desk_public(d['desk'], DESK, ID),
-                can=dict(pb_trim={k: kit.check(_trim_rules, c, k) for k in PKGS}),
+                can=dict(pb_trim={k: kit.check(_trim_rules, c, k) for k in PKGS}, open=kit.check(_open_rules, d, _setup_id(c))),
                 learn=dict(on=on, n=d['stats']['customers'], of=APPRENTICE, title=LESSONS[n][0] if on else None, text=LESSONS[n][1] if on else None))
 
 

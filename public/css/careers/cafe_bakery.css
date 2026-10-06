@@ -273,10 +273,9 @@ html.reduce-motion .career-job .cb-fill{transition:none}
 /* Next-step guide (onboarding v0.7): the bottom bar holds what is in hand and the one button
    for the next step, so a whole drink is made from here without scrolling. Timed steps carry
    a small live bar inside the button (and the header hint); the control glows in the green. */
-.career-job.cb .fk-bar.cb-dock{flex-direction:column;align-items:stretch;gap:6px;padding:8px 10px}
-.career-job.cb .cb-dock-status{margin:0;font-size:.8rem;font-weight:700;line-height:1.3;color:var(--cb-accent);overflow-wrap:anywhere}
-.career-job.cb .fk-bar.cb-dock>.btn,.career-job.cb .fk-bar.cb-dock>.gd-ctas{flex:none;width:100%;min-width:0}
-.career-job.cb .fk-bar.cb-dock .btn{min-height:48px}
+/* UI wave 4: the bar is the shared .ui-bar (app.css 27e, ui-kit.js actBar), on every screen size; what is in hand sits
+   in its left slot (two lines at most), the one main button on the right. */
+.career-job.cb .cb-dock-status{margin:0;font-size:var(--fs-2);font-weight:700;line-height:var(--lh);color:var(--cb-accent);overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2}
 .career-job.cb .cb-side .fk-wide-only .gd-ctas .btn{width:100%}
 .career-job.cb .req-row.gd-todo{min-height:44px;align-items:center}
 .btn:has(>.cb-mini){flex-wrap:wrap;row-gap:4px}
@@ -344,3 +343,9 @@ html.reduce-motion .career-job .cb-fill{transition:none}
 .career-job.cb .cb-stations>.cb-st{margin:0;flex:1 1 auto;max-width:100%}
 .career-job.cb .cb-stations>.cb-st.open{flex-basis:100%}
 .career-job.cb .cb-stations>.cb-st:not(.open)>.cb-st-sum{padding:10px 10px;font-size:.84rem}
+
+/* Clean layout (UI wave 4): the pace picker is one row (⚡ 1× 2× 4×); the bench's "?" ends the tab row. */
+html[data-clean] .career-job.cb .cb-pace-row{display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-2) var(--sp-3)}
+html[data-clean] .career-job.cb .cb-pace-row .btn{min-width:48px}
+html[data-clean] .career-job.cb .cb-tabs{align-items:center}
+html[data-clean] .career-job.cb .cb-tabs>.cb-help{flex:none;margin-left:auto}

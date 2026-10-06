@@ -72,9 +72,11 @@ Migrated so far:
 - the office desks (`office_kit.js bar`, hook `ok-bar`: the six Cánh Diều / Mây Tre Xanh / Sông Hồng / Minh Bạch desks),
   the pet shop (`ps-bar`, via `stepBar`) and the support desk (`cs-bar`, customer_care) — wave 3
 
+- milk tea (`fk-bar mt-bar`: the mini cup and "Còn n bước" in the left slot) and cafe (`fk-bar cb-dock`: what is in hand in
+  the left slot; the wide side column no longer repeats the button) — wave 4, via `barParts` + `actBar`.
+
 Not yet migrated (they keep their own bar with the phone rules in compact.css): `dw-bar`, `dl-bar`,
-`fa-bar`, `mb-ctabar`, `td-bar`, `hs-bar`, `gr-billbar`, `sl-bar`, `pc-bar`,
-milk tea's `fk-bar` and cafe's `cb-dock`.
+`fa-bar`, `mb-ctabar`, `td-bar`, `hs-bar`, `gr-billbar`, `sl-bar`, `pc-bar`.
 
 ## Disabled with a reason
 
@@ -117,6 +119,12 @@ for a child stay scored mistakes, never refusals.
 Wave 3: every office desk's `room.data.office.can.work` (game/careers/office.py `need_open`: after 17:30 the work is
 dimmed with the refusal's own words and a fix that points at the overtime button; `office_kit.shutWork` draws it), and
 the payroll row's `can.tp_flag` (tax_payroll: a full row's other cells say "tối đa 3 ô").
+Wave 4 (from the 04–06/10 refusal counts): milk tea `can.tea_swap[item]` (only a bought syrup/topping of the order: the
+counter offered to swap pearls it could not cook, 80 refusals), restaurant `can.rs_sub[item]` (a substitute that ran out
+too is not offered again, 148) and `can.rs_touch[touch]` (the extra soup only once the bowl has broth, 82), homemaker
+`can.nt_close` (every chore that belongs in the day, 110), garbage `can.rac_load` (sweep a late lane first; the fix is
+the sweep, 96), fruit `can.tc_weigh` (anh Lâm's min–max, 138), and `can.open` in nail / photobooth / ice cream
+`public_data` (a customer picked before "Mở tiệm"; the fix is `task_select` on the morning set-up, 90 + 119).
 
 ## Header chip for a pinned card: `headChip(icon, text, selector)`
 
@@ -221,6 +229,39 @@ What stays on the desks' screens, whatever the count: the ask, every paper's dat
 buyer's own number "Nhập theo HĐ-45", "xuất kho 29/03", "lập 16:00", "Bán cho <outsider>", NM × rate), the tray rules
 ("Sếp dặn"), the timesheet's work-hour rule, the step's prompt, the support options' "Khi …" lines and the 📌 basis.
 
+## Shops and street kit B (wave 4)
+
+The food counters (milk tea, cafe, restaurant, florist) and the eight street-kit careers wave 1/2 left (ice cream,
+homemaker, garbage, fruit, nail, nấu cơm, photobooth, library). What the wave added, for the next screens:
+
+- **The one pinned box is the bar.** Milk tea's order ticket no longer sticks (`--mt-stick`); its digest is a header chip
+  (`🧾 k/n`) that opens it over the counter. Restaurant: the order card already lists every part as steps, so the
+  compact copy (asm_kit `reqPin`) waits behind its chip instead of repeating the order in the flow (restaurant.css).
+- **`dayStrip(…, {tight})` / `queue(…, {tight})`** (food_kit, opt-in): the day as its emoji, only the served guest's name
+  under the faces. Other callers (clothing, grocery) are unchanged.
+- **`dayNote(x, note, title)`** (in each street career): the morning note folds to "?" only on a plain day (`mod.id ===
+  'normal'`); on a rain / outage / hot day it is the day's cue ("mang ủng", "căng bạt", "sạc sẵn đèn pin") and stays.
+- **`say2(full, short)`**: a panel button that repeats the bar's step reads two words on the clean layout ("🌡️ Ẩm kế");
+  the full label is in an `sr-only` span.
+- **Curated short forms, keyed by step / option id** (homemaker `SHORT_TEXT`, `SHORT_OPT`): the morning money keeps
+  its amount and its bills (`💵 “80 xu” · 4 tờ gấp đôi`), each answer keeps what it does ("Cất ví riêng, nhắn “nhận 80
+  xu”"). Unknown ids show in full; the full text is the control's label and is listed under "?".
+- **Choices that wait** (nấu cơm's menu): only the dish group whose turn it is is open (the first without a dish, or
+  one whose dish clashes with the family's rule); the others are one line with the chosen dish.
+- **Nail's disabled buttons** (`btn`, `pick`): on the clean layout dimmed but tappable (ui-kit `withWhy`) instead of a
+  reason printed under each; the bench is no longer lined with "Không có sơn cũ".
+- **Header title ≤ 4 words** now also for the four counters (app.js `header`); every cue it cut is on the order card
+  once the order is heard (the allergy row, "mang về", the occasion tag).
+- ui-kit `placeChips` keeps header chips whose card is still on the page when a pass finds no chip left in the body (a
+  re-render with unchanged markup skips the DOM): the milk tea chip vanished on the counter's repeated passes.
+
+Kept on screen, whatever the count: the ice-cream weight band beside the scale (`chuẩn 60–70 g`), the knob's target
+tile and the thermometer's `🎛️ 4 → −18°`; the bag's look ("⚠️ trông lạ") and the clue; which cover each tile is for
+("Che nắng / Che mưa"), the empty scale's reading, the bruised fruit; the client's service, shape, length, photo and
+the nail facts; the family's chips and rule ("Bé không ăn cay, sợ xương cá…"), dish tags and costs, "1 phần = 2 người";
+the photobooth order chips and the customer's words; the humidity range beside the reading; every row of the drink /
+bowl / bouquet order, "Không sữa bò", the guest's quote and temper, the occasion and "Nhận tại tiệm".
+
 ## The switch: `html[data-clean]`
 
 `v4/shell.js applyClean` sets it.
@@ -254,3 +295,11 @@ sheet) and the shared bar. Shared helpers added to `air_kit.js`: `crewDay` (the 
 `splitSay`.
 
 Wave 2 does not edit `street_kit.js`/`.css`, `ui-kit.js`, `guide.js`, `app.css`, `compact.css` or the i18n catalogues.
+
+Wave 4, done (ui-wave4), first work screen on a 390 × 844 phone (`check_word_caps.py`, clean layout): milk tea 22
+(the last screen with 3 pinned boxes: now header + bar), cafe 19, restaurant 24, florist 22, ice cream 22, homemaker 30,
+garbage 23, fruit 28, nail 25, nấu cơm 13, photobooth 24, library 21 (audit harness before: 35–109). Capped at 30:
+homemaker (the morning money: amount, bills and three answers) and fruit (what each cover is for, the empty scale,
+the bruised fruit). Outside its own files wave 4 changed one line of `app.js` (the four counters join the ≤ 4-word header)
+and `ui-kit.js placeChips` (header chips survive a pass over unchanged markup); `food_kit` helpers changed only behind
+the opt-in `{tight}`.
