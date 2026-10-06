@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Ẩn tên tôi",
+  "en": ""
+ },
+ {
+  "vi": "Hiện tên tôi trên bảng xếp hạng",
+  "en": ""
+ },
+ {
   "vi": "Khách chỉ hiện tên nhân vật khi bạn bật.",
   "en": ""
  },
@@ -1789,14 +1797,6 @@
  },
  {
   "vi": "Sang phải",
-  "en": ""
- },
- {
-  "vi": "Đi xuống",
-  "en": ""
- },
- {
-  "vi": "Sang trái",
   "en": ""
  }
 ]

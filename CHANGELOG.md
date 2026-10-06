@@ -1,3 +1,8 @@
+# v1.9.4 — 2026-10-06
+
+- 🏪 Nhân viên tiệm (nơi làm việc) bán nhanh gấp 1,6 lần ngày đầu (góp ý người chơi; lịch sử bản 1.7.8–1.9.3 cho thấy tốc độ chưa từng bị giảm, tiệm thấy chậm chủ yếu do hết hàng).
+- 💬 Góp ý dài tới 10.000 ký tự (trước 1.000).
+
 # Chưa phát hành — Nhân viên tiệm (staff-speed)
 
 ## Nhân viên tiệm bán nhanh như ngày đầu
