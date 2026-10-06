@@ -11,6 +11,8 @@ const write=v=>{try{localStorage.setItem(KEY,v);}catch{}};
 // Paint the last used theme before the first state arrives (no light flash in "Phố đêm").
 try{const t=localStorage.getItem(THEME_KEY);if(t&&/^[a-z_]+$/.test(t))document.documentElement.dataset.theme=t;}catch{/* storage blocked */}
 
+const typing=()=>{const a=document.activeElement;return !!a&&(a.isContentEditable||/^(TEXTAREA|SELECT)$/.test(a.tagName)||(a.tagName==='INPUT'&&!/^(button|submit|checkbox|radio|range|color|file|reset|image)$/.test(a.type)));};
+
 export function detectLayout(){
   const w=window.innerWidth,h=window.innerHeight,coarse=matchMedia('(pointer:coarse)').matches;
   if(w<700||(coarse&&Math.min(w,h)<500))return 'phone';
@@ -25,11 +27,39 @@ export function applyLayout(){
   if(mode==='tablet'&&w<560)mode='phone';
   if(mode!=='phone')root.classList.remove('menu-open');
   root.dataset.layoutPref=pref;
-  root.dataset.orientation=window.innerWidth>window.innerHeight?'landscape':'portrait';
+  // A keyboard that shrinks the window (Android) must not flip a portrait phone into the landscape layout.
+  const turn=window.innerWidth>window.innerHeight?'landscape':'portrait';
+  if(!(mode==='phone'&&root.dataset.orientation&&typing()&&(window.screen?.orientation?.type||'').startsWith(root.dataset.orientation)))root.dataset.orientation=turn;
   if(root.dataset.layout!==mode){root.dataset.layout=mode;window.dispatchEvent(new Event('layoutchange'));}
   return mode;
 }
 export const layoutPref=read;
+
+/* ---- On-screen keyboard (WP8) ----------------------------------------------
+ * html.kb-open while a text field is focused and the keyboard takes the screen: the visual viewport is under
+ * 260px tall, or clearly shorter than the window/screen (iOS shrinks only the visual viewport, Android with
+ * interactive-widget=resizes-content shrinks the window). css/compact.css then folds the sheet header, caps the
+ * chat box at two lines and lets the action bar scroll away; the focused field is scrolled into view.
+ * --vvh is the visual viewport's height, for panes that must fit above the keyboard. */
+const fullH={};
+function syncViewport(){
+  const root=document.documentElement,vv=window.visualViewport,h=vv?vv.height:window.innerHeight;
+  // The height without a keyboard: the tallest window seen at this width while nothing was being typed.
+  const key=`${window.innerWidth}`,typed=typing();
+  if(!typed||!fullH[key])fullH[key]=Math.max(fullH[key]||0,window.innerHeight,vv?vv.height:0);
+  const full=fullH[key];
+  const kb=root.dataset.layout==='phone'&&typed&&(h<260||full-h>Math.max(120,full*.28));
+  if(root.classList.contains('kb-open')!==kb)root.classList.toggle('kb-open',kb);
+  const v=`${Math.round(h)}px`;if(root.style.getPropertyValue('--vvh')!==v)root.style.setProperty('--vvh',v);
+  if(kb){const a=document.activeElement;clearTimeout(syncViewport.t);syncViewport.t=setTimeout(()=>a?.isConnected&&a.scrollIntoView?.({block:'nearest'}),60);}
+}
+function watchViewport(){
+  const vv=window.visualViewport;let q=0;
+  const later=()=>{if(q)return;q=requestAnimationFrame(()=>{q=0;syncViewport();});};
+  vv?.addEventListener('resize',later);window.addEventListener('resize',later);
+  document.addEventListener('focusin',later);document.addEventListener('focusout',()=>setTimeout(later,80));
+  syncViewport();
+}
 export function setLayoutPref(v){write(['auto','phone','tablet','desktop'].includes(v)?v:'auto');applyLayout();}
 
 function applyTheme(settings){
@@ -106,7 +136,7 @@ export const shell={
   /** The career's identity mark for the scene title card (decorative). */
   mark(m){return `<span class="scene-mark" aria-hidden="true">${emojiOf(m||{})}</span>`;},
   boot(env){
-    applyLayout();applyTheme(env.api.state.settings);
+    applyLayout();applyTheme(env.api.state.settings);watchViewport();
     let t;window.addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(applyLayout,120);});
     window.addEventListener('orientationchange',()=>setTimeout(applyLayout,200));
     const unlock=()=>{syncMusic(env).then(()=>music?.unlock());};
