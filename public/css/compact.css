@@ -147,8 +147,12 @@ html[data-layout="phone"][data-orientation="portrait"] .career-job :where(.wb-si
 /* The milk-tea order ticket stays pinned (the order is what the stations below are for) but as one slim line:
    the cup's asks in a row that scrolls sideways and a thin patience bar; who and the price are on the customer
    card right above. */
-html[data-layout="phone"] .career-job .mt-ticket{gap:4px;padding:5px 8px 6px}
-html[data-layout="phone"] .career-job .mt-ticket>.mt-ticket-top:not(:has(.mt-ticket-tabs)){display:none}
+html[data-layout="phone"] .career-job .mt-ticket{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:4px 8px;padding:5px 8px 6px}
+html[data-layout="phone"] .career-job .mt-ticket>*{grid-column:1/-1;min-width:0}
+html[data-layout="phone"] .career-job .mt-ticket>.mt-ticket-top:not(:has(.mt-ticket-tabs)){grid-column:1;flex-direction:column;align-items:flex-start;flex-wrap:nowrap;gap:0;line-height:1.15}
+html[data-layout="phone"] .career-job .mt-ticket>.mt-ticket-top:not(:has(.mt-ticket-tabs))+.mt-ticket-order{grid-column:2}
+html[data-layout="phone"] .career-job .mt-ticket>.mt-ticket-top:not(:has(.mt-ticket-tabs))>.mt-face{display:none}
+html[data-layout="phone"] .career-job .mt-ticket>.mt-ticket-top:not(:has(.mt-ticket-tabs))>b{margin:0;font-size:.767rem;white-space:nowrap;max-width:7em;overflow:hidden;text-overflow:ellipsis}
 html[data-layout="phone"] .career-job .mt-ticket-order{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
 html[data-layout="phone"] .career-job .mt-ticket-order::-webkit-scrollbar{display:none}
 html[data-layout="phone"] .career-job .mt-ticket-order>*{flex:none}
@@ -214,7 +218,7 @@ html[data-layout="phone"][data-orientation="landscape"] .live-fab{position:fixed
 html[data-layout="phone"][data-orientation="landscape"] .stage:has(.live-fab:not([hidden])) .scene-heading{max-width:calc(100% - 20px)}
 html[data-layout="phone"][data-orientation="landscape"] .scene-heading{top:8px;left:8px}
 /* Task card: a 280 px card floating bottom right. */
-html[data-layout="phone"][data-orientation="landscape"] #app .task-hud,html[data-layout="phone"][data-orientation="landscape"] #app .wv-work-hud{left:auto;top:auto;right:max(8px,var(--safe-r));bottom:calc(var(--safe-b) + 8px);width:min(280px,44%);max-height:calc(100% - var(--topbar-h) - var(--safe-t) - 16px)}
+html[data-layout="phone"][data-orientation="landscape"] #app .task-hud,html[data-layout="phone"][data-orientation="landscape"] #app .wv-work-hud{left:auto;top:auto;right:max(8px,var(--safe-r));bottom:calc(var(--safe-b) + 8px);width:min(310px,44%);max-height:calc(100% - var(--topbar-h) - var(--safe-t) - 16px)}
 html[data-layout="phone"][data-orientation="landscape"] #app .wv-work-hud>.task-hud{position:static;right:auto;bottom:auto;width:100%}
 html[data-layout="phone"][data-orientation="landscape"] .task-hud .note-card:not(.task-card){max-height:96px;overflow-y:auto;overscroll-behavior:contain}
 html[data-layout="phone"][data-orientation="landscape"] .wv-owner-toggle{min-height:44px;padding:6px 12px}
@@ -250,7 +254,7 @@ html[data-layout="phone"][data-orientation="landscape"] .mt-stations{grid-column
 html[data-layout="phone"][data-orientation="landscape"] .mt-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
 }
 /* Bar: one slim row (48 px buttons), right-aligned beside the order. */
-html[data-layout="phone"][data-orientation="landscape"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar){padding-top:2px;padding-bottom:calc(2px + var(--safe-b,0px));margin-left:auto;width:min(100%,520px);box-sizing:border-box;border-radius:16px 16px 0 0}
+html[data-layout="phone"][data-orientation="landscape"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar){padding-top:2px;padding-bottom:calc(2px + var(--safe-b,0px));margin-left:auto;width:min(100%,400px);box-sizing:border-box;border-radius:16px 16px 0 0}
 html[data-layout="phone"][data-orientation="landscape"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar) .btn.big{min-height:44px;padding-top:6px;padding-bottom:6px}
 /* The bar's lines sit side by side (what is left on the left, the buttons on the right): one row, ~60 px.
    A bar with more than three parts (the office stamp row, a desk's choices) keeps its own wrapping. */
