@@ -35,7 +35,14 @@ function gearRow(x){
 
 /* ------------------------------------------------------------ packing in the morning */
 /** A tool's name in a word or two on the clean layout (the full name is the tile's label for readers). */
-const SHORT={pit_tong:'Pít-tông',lo_xo:'Dây',may_lo_xo:'Máy điện',may_phun:'Phun',camera:'Camera',moc:'Móc',gau:'Gầu',do_khi:'Đo khí'};
+const SHORT={pit_tong:'Pít-tông',lo_xo:'Dây 5m',may_lo_xo:'Máy 15m',may_phun:'Phun áp',camera:'Camera',moc:'Móc',gau:'Gầu bùn',do_khi:'Đo khí'};
+/** An appointment as one line: the place's icon and the job without the place's own words ("🚿 tiệm tóc"); the
+ * place and the client are its label, the whole book opens from the "📒" chip. */
+function bookLine(x,b){
+  const p=placeOf(x,b.place),lead=String(p.name||'').split(/\s+/).slice(0,2).join(' ').toLowerCase(),txt=String(b.text||'');
+  const rest=txt.toLowerCase().startsWith(lead)&&lead?txt.slice(lead.length).trim():txt;
+  return `<li title="${x.esc(`${b.who} · ${p.name} · ${txt}`)}" aria-label="${x.esc(`${b.who}: ${txt}`)}"><span aria-hidden="true">${x.esc(p.emoji)}</span> ${x.esc(rest||txt)}</li>`;
+}
 const shortOf=tl=>clean()&&SHORT[tl.id]||tl.name;
 function setupPanel(t,x){
   const d=data(x),n=t.needs||{},bike=d.bike||[],slots=d.slots||5;
@@ -43,8 +50,9 @@ function setupPanel(t,x){
   const tools=(cc(x).tools||[]).map(tl=>{const on=bike.includes(tl.id);
     return tile(x,'cg_pack',{tool:tl.id},`<span class="tile-emoji">${x.esc(tl.emoji)}</span><b title="${x.esc(tl.name)}">${x.esc(shortOf(tl))}</b>${tip(x.esc(tl.note),tl.name)}`,on?'selected':'',!on&&bike.length>=slots).replace('<button ',`<button aria-label="${x.esc(tl.name)}" `);}).join('');
   // Clean layout: the appointment book is a header chip ("📒 3 hẹn"), its card opens over the bench.
-  return `${headChip('📒',`${(n.book||[]).length} hẹn`,'.cg-book',{label:'Sổ hẹn hôm nay',flow:true})}<section class="card cg-book ui-chipped"><h4>📒 Sổ hẹn hôm nay</h4><ul class="cg-booklist">${book}</ul>${tip(x.esc(n.note||''),'','p')}</section>
-    <section class="card cg-pack"><h4>🧰 Xếp lên xe <small class="muted">${bike.length}/${slots}</small></h4><div class="tile-grid cg-tools">${tools}</div>
+  const lines=clean()?`<ul class="cg-booklines" aria-label="Sổ hẹn hôm nay">${(n.book||[]).map(b=>bookLine(x,b)).join('')}</ul>`:'';
+  return `${headChip('📒',`${(n.book||[]).length} hẹn`,'.cg-book',{label:'Sổ hẹn hôm nay',flow:true})}${lines}<section class="card cg-book ui-chipped"><h4>📒 Sổ hẹn hôm nay</h4><ul class="cg-booklist">${book}</ul>${tip(x.esc(n.note||''),'','p')}</section>
+    <section class="card cg-pack"><h4>🧰${clean()?'':' Xếp lên xe'} <small class="muted">${bike.length}/${slots}</small></h4><div class="tile-grid cg-tools">${tools}</div>
     <h4 class="section-title">🦺${clean()?'':' Đồ bảo hộ'}</h4>${gearRow(x)}</section>`;
 }
 // What chú Hai would load for each kind of place in the book (a first guess: the clue on site decides).

@@ -95,7 +95,7 @@ export function dayBar(x,tail=''){
 export function person(x,t,inner='',tag=''){
   const who=x.npc(t.npc);
   return `<article class="card sk-ticket"><div class="row">${x.portrait(who,48)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${tag}</div>
-    ${clean()?'':`<p class="small"><b>${x.esc(t.title)}</b></p>`}${inner}
+    ${clean()&&(t.kind==='setup'||few(t.title,4,true)===String(t.title||'').trim())?'':`<p class="small"><b>${x.esc(t.title)}</b></p>`}${inner}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
 }
 /** Before the first question: who is here and the one button to ask. */

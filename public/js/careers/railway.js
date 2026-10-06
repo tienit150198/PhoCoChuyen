@@ -112,16 +112,21 @@ function logPanel(t,x){
 }
 
 /* ------------------------------------------------------------ the hand-over */
-const EQ_WORD={bell:'Chuông',arm:'Cần chắn',radio:'Bộ đàm',flags:'Cờ, còi',book:'Sổ ca',vest:'Đồng phục'};
+const EQ_WORD={bell:'Chuông',arm:'Cần',radio:'Bộ đàm',flags:'Cờ',book:'Sổ',vest:'Áo'};
+/** chú Sáu's logbook note in a few words that keep what it asks. Unknown: in full. */
+const LOG_SHORT=[[/H6 chậm/,'H6 chậm 20′; chắn Nam đã tra dầu'],[/chui chắn/,'Có người chui chắn: canh giờ tan tầm'],
+  [/Bà Bông/,'Bà Bông phơi ớt trên ray: nhắc khéo'],[/Cô Mận/,'Cô Mận xin ghế sát ray: đừng cho'],
+  [/Đèn chòi/,'Đèn chòi chập chờn; pin trong tủ'],[/Chú Hớn/,'Chú Hớn ngủ bờ ray: dìu vô']];
+const logShort=s=>{const t=String(s||'').replace(/^Chú Sáu ghi:\s*/,'');const m=LOG_SHORT.find(([re])=>re.test(t));return m?m[1]:t;};
 function shiftPanel(t,x){
   const n=t.needs||{},eq=cc(x).equip||[],forms=cc(x).forms||{};
-  const board=(n.board||[]).map(b=>`<li aria-label="${x.esc(b.code)} ${x.esc(b.at)} ${x.esc(b.dir)}"><span aria-hidden="true">${x.esc(b.emoji)}</span><b>${x.esc(b.code)}</b><span>${x.esc(b.at)}</span>${clean()?'':`<small>${x.esc(b.dir)}</small>`}</li>`).join('');
+  const board=(n.board||[]).map(b=>`<li aria-label="${x.esc(b.code)} ${x.esc(b.at)} ${x.esc(b.dir)}"><span aria-hidden="true">${x.esc(b.emoji)}</span><b>${x.esc(b.code)}</b><span>${x.esc(b.at)}</span><small>${x.esc(clean()?String(b.dir||'').replace(/\s*→\s*/g,'→'):b.dir)}</small></li>`).join('');
   const tiles=eq.map(e=>{const on=(t.checked||[]).includes(e.id),bad=on&&t.found_item===e.id;
     return `<button type="button" class="tile sk-tile rw-eq ${on?(bad?'bad':'selected'):''}" data-command="rw_check" data-payload="${x.esc(JSON.stringify({task:t.id,item:e.id}))}"${on?' disabled':''}><span class="tile-emoji">${x.esc(e.emoji)}</span><b>${x.esc(clean()&&EQ_WORD[e.id]||e.name)}</b>${on?`<small>${bad?'⚠️ hỏng':'✓ ổn'}</small>`:clean()?tip(x.esc(e.test),e.name):`<small>${x.esc(e.test)}</small>`}</button>`.replace('<button ',`<button aria-label="${x.esc(e.name)}" `);}).join('');
   const fault=t.found?`<section class="card rw-fault"><h4>⚠️ ${x.esc(t.found_text)}</h4>
     ${t.found_fix?(t.fixed?'<span class="tag green">✓ Đã xử lý</span>':x.cmd(`🔧 ${x.esc(t.found_fix)}`,'rw_fix',{task:t.id},'')):'<p class="small muted">Không tự sửa được: báo đúng nơi để thợ tới.</p>'}
     <p class="small"><b>Báo ở đâu?</b> Chọn một hoặc nhiều.</p><div class="rw-forms">${Object.entries(forms).map(([k,f])=>x.cmd(`${x.esc(f.emoji)} ${x.esc(f.name)}<small>${x.esc(f.hint)}</small>`,'rw_form',{task:t.id,form:k},`rw-form ${(t.forms||[]).includes(k)?'rw-on':'ghost'}`)).join('')}</div></section>`:'';
-  return `<section class="card rw-board"><h4>🕐 ${clean()?'Giờ tàu':'Bảng giờ tàu hôm nay'}</h4><ul class="rw-boardlist">${board}</ul>${tip(`📒 ${x.esc(n.handover||'')}`,'Sổ giao ca','p')}</section>
+  return `<section class="card rw-board"><h4>🕐 ${clean()?'Giờ tàu':'Bảng giờ tàu hôm nay'}</h4><ul class="rw-boardlist">${board}</ul>${clean()?`<p class="small rw-handover" title="${x.esc(n.handover||'')}">📒 ${x.esc(logShort(n.handover))}</p>`:`<p class="small rw-handover">📒 ${x.esc(n.handover||'')}</p>`}</section>
     <section class="card"><h4>🧰${clean()?'':' Thử thiết bị'} <small class="muted">${(t.checked||[]).length}/${eq.length}</small></h4><div class="tile-grid rw-eqs">${tiles}</div></section>${fault}`;
 }
 

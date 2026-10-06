@@ -7,7 +7,8 @@ warns in the console of a dev build). Fails when a migrated screen is over its c
 
   intro (street-kit "Giới thiệu nghề" card)  ≤ 30   every street-kit career (21 + police/oil)
   toast (each note on screen)                ≤ 8    every career opened
-  work  (the work sheet, mid-task)           ≤ 25   the careers in WORK_DONE (the per-screen waves add theirs)
+  work  (the work sheet, mid-task)           ≤ 25   the careers in WORK_DONE (the per-screen waves add theirs);
+                                                    ≤ 30 where WORK_CAP says a deciding cue needs the room
 
 Other screens are listed with their counts but do not fail (--all shows every one).
 
@@ -32,6 +33,9 @@ INTRO = ('fruit', 'garbage', 'drain', 'homemaker', 'ice_cream', 'com', 'nail', '
          'naucom', 'babysitter', 'library', 'oil', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'tra_da')
 # Work screens already cut to ≤ 25 words. Each per-screen wave adds its careers here once they pass.
 WORK_DONE: tuple[str, ...] = ('drain', 'com', 'lighthouse', 'railway', 'tra_da', 'babysitter', 'pho', 'pagoda', 'rescue', 'giupviec')   # wave 1
+# A screen may take up to 30 when a cue the right answer depends on needs the room (never fold such a cue away):
+# drain's appointments, cơm's water rule and dish names, the logbook notes, pagoda's chores, trà đá's spot cues.
+WORK_CAP = {'drain': 30, 'com': 30, 'lighthouse': 30, 'railway': 30, 'pagoda': 30, 'tra_da': 30}
 DEFAULT = INTRO + ('florist', 'repair', 'restaurant', 'clothing', 'teacher', 'tour_guide')
 
 COUNT = r"""async () => {
@@ -114,9 +118,9 @@ async def run(args) -> int:
                     rows.append(row)
                     checks = [('toast', True), ('intro', cid in INTRO), ('work', cid in WORK_DONE)]
                     for kind, enforced in checks:
-                        v = row.get(kind)
-                        if v is not None and v > CAPS[kind] and enforced:
-                            over.append(f'{cid} {kind}: {v} words (cap {CAPS[kind]})')
+                        v, cap = row.get(kind), WORK_CAP.get(cid, CAPS[kind]) if kind == 'work' else CAPS[kind]
+                        if v is not None and v > cap and enforced:
+                            over.append(f'{cid} {kind}: {v} words (cap {cap})')
                     print(f"{cid:18} intro {row.get('intro', '-')!s:>3}  work {row['work']:>3}  toast {row['toast']}", flush=True)
                 except Exception as e:  # noqa: BLE001
                     rows.append(dict(career=cid, error=str(e)[:160]))

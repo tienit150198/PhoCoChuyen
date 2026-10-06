@@ -132,9 +132,27 @@ The street-kit intro uses it:
 - The lead and the three lists live behind "?".
 - The start button is the bar's main button.
 
+## Never fold a deciding cue (non-negotiable)
+
+Fold away only explanations, descriptions and flavour. A clue that decides right from wrong stays visible on the
+work screen, without opening "?". Before cutting a screen:
+
+1. For each step, list the facts the server scores or checks the answer against: the customer's words, the
+   job's place, a time, a direction, a trap's tell.
+2. Keep each one on screen, in a short form if needed.
+3. If that needs the room, the screen may take up to 30 words (`WORK_CAP` in `check_word_caps.py`).
+
+Rules of thumb:
+- **Curated short labels** keep the deciding part ("Mở loa ra đường 4h", "Sát mép đường", "Dây 5m"). A label not in
+  the map shows in full, never cut by a guess.
+- **A customer's opening** stays: it is their ask ("Tượng gỗ sơn son, lau nhẹ tay"). Only a morning set-up scene
+  folds.
+- **Logbook notes** that tell what to refuse or watch stay, in a few words ("Cô Mận xin ghế sát ray: đừng cho").
+- **A timetable keeps direction and time.** A rule's numbers stay next to what they apply to ("🌅 05:32 · +15′").
+
 ## Cutting a screen to 25 words (wave 1 recipe)
 
-The ten worst street screens went from 50–120 words to 17–24 this way. Every helper is a no-op on the classic layout, so
+The ten worst street screens went from 47–131 words to 17–30 this way. Every helper is a no-op on the classic layout, so
 desktop keeps its text.
 
 - **Explanations go behind "?":** wrap a rule, a tile's description, a lead paragraph or a story in

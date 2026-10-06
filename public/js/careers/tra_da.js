@@ -108,9 +108,10 @@ function stations(x,steps=null,key='idle'){
 }
 
 /* ------------------------------------------------------------ setup */
+const SPOT_WORD={goc_bang:'Gốc bàng',hien:'Mái hiên',le_duong:'Sát mép đường'};
 function setupPanel(t,x){
   const d=data(x),st=d.stall||{},n=t.needs||{},spots=cc(x).spots||{},owned=d.owned||{};
-  const spotTiles=Object.entries(spots).map(([k,s])=>tile(x,'td_spot',{spot:k},`<span class="tile-emoji">${x.esc(s.emoji)}</span><b>${x.esc(few(s.name,2))}</b>${clean()?tip(x.esc(s.note),s.name):`<small>${x.esc(s.note)}</small>`}`,`${st.spot===k?'selected':''} ${s.legal?'':'danger'}`)).join('');
+  const spotTiles=Object.entries(spots).map(([k,s])=>tile(x,'td_spot',{spot:k},`<span class="tile-emoji">${x.esc(s.emoji)}</span><b>${x.esc(clean()&&SPOT_WORD[k]||s.name)}</b>${clean()?`<small aria-label="${x.esc(s.note)}">${s.shade?'🌳':'☀️'}${s.dry?' ☔':''} 🪑${Number(s.cap)||''}${s.legal?'':' ⚠️ lấn đường'}</small>${tip(x.esc(s.note),s.name)}`:`<small>${x.esc(s.note)}</small>`}`,`${st.spot===k?'selected':''} ${s.legal?'':'danger'}`)).join('');
   const cap=st.spot?spots[st.spot].cap:8,max=Math.min(owned.stools||4,12);
   const stools=Array.from({length:Math.max(0,max-1)},(_,i)=>i+2).map(k=>tile(x,'td_stools',{n:k},`<b>${k}</b><small>ghế</small>`,`td-num ${st.stools===k?'selected':''} ${k>cap?'over':''}`,!st.spot)).join('');
   const here=spots[st.spot],good=st.stools>=cc(x).stools_min&&st.stools<=cap;

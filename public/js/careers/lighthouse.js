@@ -25,12 +25,18 @@ function timeCard(x,t,title,when,cmd,chosen){
   const n=t.needs||{};
   const opts=(n.times||[]).map((at,i)=>x.cmd(`🕰️ ${x.esc(at)}`,cmd,{task:t.id,option:i},`hd-time ${chosen===i?'hd-on':'ghost'}`,chosen!=null)).join('');
   // Clean layout: the time alone ("🌅 05:32"); the rule is in the "?" sheet.
-  const at=clean()?`<p class="small">${x.esc(String(when).replace(/^Mặt trời (mọc|lặn)/,(m,k)=>k==='mọc'?'🌅':'🌇'))}</p>${tip(x.esc(n.rule||''),title.replace(/^\S+\s/,''),'p')}`:`<p class="small">${x.esc(when)} · <span class="muted">${x.esc(n.rule||'')}</span></p>`;
+  const mins=(String(n.rule||'').match(/(\d+)\s*phút/)||[])[1],dawn=/mọc/.test(String(when));
+  const at=clean()?`<p class="small hd-when" aria-label="${x.esc(`${when} · ${n.rule||''}`)}">${x.esc(String(when).replace(/^Mặt trời (mọc|lặn)/,(m,k)=>k==='mọc'?'🌅':'🌇'))}${mins?` · ${dawn?'+':'−'}${mins}′`:''}</p>${tip(x.esc(n.rule||''),title.replace(/^\S+\s/,''),'p')}`:`<p class="small">${x.esc(when)} · <span class="muted">${x.esc(n.rule||'')}</span></p>`;
   return `<section class="card hd-times"><h4>${title}</h4>${at}<div class="hd-row3">${opts}</div></section>`;
 }
 
 /* ------------------------------------------------------------ dawn: the morning round */
 const EQ_WORD={lamp:'Bóng đèn',lens:'Kính đèn',rotate:'Mô-tơ',solar:'Pin',gen:'Máy phát',horn:'Còi'};
+/** chú Bảy's logbook note in a few words that keep what it asks (what to refuse, what to watch). Unknown: in full. */
+const LOG_SHORT=[[/Ông Sáu Ghe.*quay đèn/,'Sáu Ghe xin quay đèn: đừng cho'],[/cano thuê ghé/,'Cano đòi lên tháp: khéo mà cứng'],
+  [/Áp kế/,'Áp kế tụt: để ý mây đông'],[/hai bóng dự phòng/,'Còn 2 bóng dự phòng; xin thêm'],[/gió đông bắc/,'Đêm qua gió giật, đèn tốt'],
+  [/rau muống/,'Rau muống: tưới chiều thôi']];
+const logShort=s=>{const t=String(s||'').replace(/^Chú Bảy ghi:\s*/,'');const m=LOG_SHORT.find(([re])=>re.test(t));return m?m[1]:t;};
 function dawnPanel(t,x){
   const n=t.needs||{},eq=cc(x).equip||[],forms=cc(x).forms||{};
   const tiles=eq.map(e=>{const on=(t.checked||[]).includes(e.id),bad=on&&t.found_item===e.id;
@@ -43,7 +49,7 @@ function dawnPanel(t,x){
   const fault=t.found?`<section class="card hd-fault"><h4>⚠️ ${x.esc(t.found_text)}</h4>
     ${t.found_fix?(t.fixed?'<span class="tag green">✓ Đã xử lý</span>':x.cmd(`🔧 ${x.esc(t.found_fix)}`,'hd_fix',{task:t.id},'')):'<p class="small muted">Không tự sửa được: báo đúng nơi để thợ ra đảo.</p>'}
     <p class="small"><b>Báo ở đâu?</b> Chọn một hoặc nhiều.</p><div class="hd-forms">${Object.entries(forms).map(([k,f])=>x.cmd(`${x.esc(f.emoji)} ${x.esc(f.name)}<small>${x.esc(f.hint)}</small>`,'hd_form',{task:t.id,form:k},`hd-form ${(t.forms||[]).includes(k)?'hd-on':'ghost'}`)).join('')}</div></section>`:'';
-  return `${timeCard(x,t,'💡 Tắt đèn',`Mặt trời mọc ${n.rise||''}`,'hd_off',t.off)}${tip(`📒 ${x.esc(n.handover||'')}`,'Sổ giao ca','p')}
+  return `${timeCard(x,t,'💡 Tắt đèn',`Mặt trời mọc ${n.rise||''}`,'hd_off',t.off)}${clean()?`<p class="small hd-handover" title="${x.esc(n.handover||'')}">📒 ${x.esc(logShort(n.handover))}</p>`:`<p class="small hd-handover">📒 ${x.esc(n.handover||'')}</p>`}
     <section class="card"><h4>🧰${clean()?"":" Thử thiết bị"} <small class="muted">${(t.checked||[]).length}/${eq.length}</small></h4><div class="tile-grid hd-eqs">${tiles}</div>${wipe}</section>
     ${fault}<section class="card hd-fuel"><h4>⛽ Sổ dầu</h4>${fuel}</section>`;
 }

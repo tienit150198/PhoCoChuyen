@@ -37,7 +37,7 @@ function kidCard(t,x){
   const f=fam(x),who=x.npc(t.npc),tm=(cc(x).tempers||{})[f.temper]||['🙂',''];
   // Clean layout: the child's name and age (the temper is right above the greetings); the arrival story is in "?".
   return `<article class="card bm-kid"><div class="row">${x.portrait(who,44)}<div class="grow"><h3>👶 Bé ${x.esc(f.kid||'')} <small class="muted">· ${x.esc(f.age||'')}${clean()?'':` · ${x.esc(tm[0])} ${x.esc(tm[1])}`}</small></h3>
-    ${clean()?tip(x.esc(t.opening||''),'Lúc đón bé','p'):`<p class="small bm-open">${x.esc(t.opening||'')}</p>`}${noteChips(x)}</div></div></article>`;
+    ${clean()&&t.kind==='arrive'?tip(x.esc(t.opening||''),'Lúc đón bé','p'):`<p class="small bm-open">${x.esc(t.opening||'')}</p>`}${noteChips(x)}</div></div></article>`;
 }
 /** The day as a row of chips: what is done, what is now, what is next. */
 function planRow(t,x){
@@ -57,15 +57,17 @@ function learnLine(x){
 function temperLine(x,st){
   const tm=(cc(x).tempers||{})[fam(x).temper];if(!tm)return '';
   const wrong=st.greet&&st.greet!==tm[2];
-  if(clean())return `<p class="bm-temper${wrong?' warn':''}"${wrong?' role="status"':''} aria-label="Tính bé: ${x.esc(tm[1])}">${x.esc(tm[0])} <b>${x.esc(few(tm[1],2))}</b>${wrong?' · ⚠️ đổi cách chào':''}</p>${tip(`${x.esc(tm[0])} ${x.esc(tm[1])}`,'Tính bé','p')}`;
+  if(clean())return `<p class="bm-temper${wrong?' warn':''}"${wrong?' role="status"':''} aria-label="Tính bé: ${x.esc(tm[1])}">${x.esc(tm[0])} <b>${x.esc(tm[1])}</b>${wrong?' · ⚠️ đổi cách chào':''}</p>`;
   return `<p class="bm-temper${wrong?' warn':''}"${wrong?' role="status"':''}>Tính bé: ${x.esc(tm[0])} <b>${x.esc(tm[1])}</b>${wrong?'<br>Bé chưa chịu làm quen. Thử cách chào khác hợp tính bé.':''}</p>`;
 }
+/** Greetings in a few words that keep how you greet (unknown ones: in full). */
+const GREET_WORD={squat:'Ngồi ngang tầm mắt, nhỏ nhẹ',hi5:'Đập tay chào',wait:'Để bé ôm mẹ, chìa đồ chơi',ask:'Hỏi chuyện hôm qua',grab:'Bế xốc lên'};
 function arrivePanel(t,x){
   const st=t.st||{},n=need(t);
   const chores=`<div class="tile-grid bm-chores">${tile(x,'bm_wash',{task:t.id},'<span class="tile-emoji">🧼</span><b>Rửa tay</b>',st.wash?'selected':'')}
     ${tile(x,'bm_note',{task:t.id},`<span class="tile-emoji">📝</span><b>${clean()?'Giấy dặn':'Đọc giấy dặn'}</b>`,st.note?'selected':'')}
     ${tile(x,'bm_bag',{task:t.id},`<span class="tile-emoji">🎒</span><b>${clean()?'Túi đồ':'Mở túi đồ'}</b>`,st.bag?'selected':'')}</div>`;
-  const greets=Object.entries(cc(x).greets||{}).map(([k,[e,l]])=>tile(x,'bm_greet',{task:t.id,greet:k},`<span class="tile-emoji">${x.esc(e)}</span><b>${x.esc(few(l,4))}</b>`,st.greet===k?'selected':'',st.greet!=null&&st.greet===((cc(x).tempers||{})[fam(x).temper]||[])[2])).join('');
+  const greets=Object.entries(cc(x).greets||{}).map(([k,[e,l]])=>tile(x,'bm_greet',{task:t.id,greet:k},`<span class="tile-emoji">${x.esc(e)}</span><b>${x.esc(clean()&&GREET_WORD[k]||l)}</b>`,st.greet===k?'selected':'',st.greet!=null&&st.greet===((cc(x).tempers||{})[fam(x).temper]||[])[2])).join('');
   const have=(n.bag||[]).filter(k=>k!==n.missing);
   const bag=st.bag?`<h4 class="section-title">🎒 Trong túi</h4><p class="bm-bagin">${have.map(k=>`<span>${x.esc(BAGI(x,k)[0])} ${x.esc(BAGI(x,k)[1])}</span>`).join('')}${st.ask?`<span class="got">${x.esc(BAGI(x,st.ask)[0])} ${x.esc(BAGI(x,st.ask)[1])}</span>`:''}</p>
     <h4 class="section-title">🙋 Túi của ${x.esc(kidName(x))} cần có <small class="muted">chạm món còn thiếu để hỏi</small></h4>

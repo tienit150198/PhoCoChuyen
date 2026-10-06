@@ -139,10 +139,13 @@ function setupPanel(t,x){
     // Clean layout: the water depth as a number of knuckles (½ · 1 · 1½); the question is in the "?" sheet.
     return `<div class="ct-cook"><b>${x.esc(R.emoji)} ${x.esc(R.name)}${clean()?'':': đổ nước tới đâu?'}</b><div class="ct-row">${Object.entries(cc(x).water||{}).map(([k,l])=>x.cmd(clean()?WSHORT[k]||x.esc(l):x.esc(l),'com_cook',{r,water:k},'small ghost',!stock(x,R.item||(r==='tam'?'gao_tam':'gao'))).replace('<button ',`<button aria-label="${x.esc(l)}" `)).join('')}</div></div>`;};
   const fix=m.tasted?`<p class="small">🥄 Nước mắm ${x.esc((cc(x).taste||{})[m.q]||'')}</p><div class="ct-row">${Object.entries(cc(x).fix||{}).map(([k,l])=>x.cmd(x.esc(l),'com_fix',{add:k},'small ghost')).join('')}</div>`:x.cmd('🥄 Nếm nước mắm','com_taste',{},'primary');
-  const trays=(cc(x).trays||FIRST_TRAYS).map(k=>{const D=DISH(x,k),n=Number(d.trays?.[k]?.n||0);
-    return tile(x,'com_tray',{item:k},`<span class="tile-emoji">${x.esc(D.emoji)}</span><b>${x.esc(few(D.name,1))}</b><small>${clean()?`${n||'–'} · 📦 ${stock(x,k)}`:`${n?`${n} phần`:'chưa bày'} · kho ${stock(x,k)}`}</small>`,n?'selected':'',!stock(x,k)||n+Number((cc(x).tray_n||{})[k]||8)>Number(cc(x).tray_max||16));}).join('');
-  if(clean())return `<section class="card ct-setup"><h4>💧 Mấy đốt?</h4>${tip('Đổ nước tới đâu (đốt ngón tay)? Gạo tấm hút ít nước hơn gạo trắng.','Hai nồi cơm','p')}${pot('tam')}${pot('trang')}
-    <div class="ct-row ct-morning">${m.tasted?fix:x.cmd('🥄 Nếm mắm','com_taste',{},'primary').replace('<button ','<button aria-label="Nếm chén nước mắm pha tối qua" ')}${g.lit?'<span class="tag green">✓ Than hồng</span>':x.cmd('🔥 Nhóm bếp','com_fire',{},'primary').replace('<button ','<button aria-label="Nhóm bếp than" ')}</div>
+  // Clean layout: each dish in two words unless two dishes would then read the same (then in full).
+  const keys=cc(x).trays||FIRST_TRAYS,two=keys.map(k=>few(DISH(x,k).name,2,true)),dup=new Set(two.filter((v,i)=>two.indexOf(v)!==i));
+  const dishName=(k,i)=>clean()&&!dup.has(two[i])?two[i]:DISH(x,k).name;
+  const trays=keys.map((k,i)=>{const D=DISH(x,k),n=Number(d.trays?.[k]?.n||0);
+    return tile(x,'com_tray',{item:k},`<span class="tile-emoji">${x.esc(D.emoji)}</span><b>${x.esc(dishName(k,i))}</b><small>${clean()?`${n||'–'} · 📦 ${stock(x,k)}`:`${n?`${n} phần`:'chưa bày'} · kho ${stock(x,k)}`}</small>`,n?'selected':'',!stock(x,k)||n+Number((cc(x).tray_n||{})[k]||8)>Number(cc(x).tray_max||16));}).join('');
+  if(clean())return `<section class="card ct-setup"><h4 aria-label="Đổ nước mấy đốt ngón tay? Gạo tấm hút ít nước hơn gạo trắng.">💧 Mấy đốt? Tấm ít hơn</h4>${tip('Đổ nước tới đâu (đốt ngón tay)? Gạo tấm hút ít nước hơn gạo trắng.','Hai nồi cơm','p')}${pot('tam')}${pot('trang')}
+    <div class="ct-row ct-morning">${m.tasted?fix:x.cmd('🥄 Nếm','com_taste',{},'primary').replace('<button ','<button aria-label="Nếm chén nước mắm pha tối qua" ')}${g.lit?'<span class="tag green">✓ Than hồng</span>':x.cmd('🔥 Nhóm','com_fire',{},'primary').replace('<button ','<button aria-label="Nhóm bếp than" ')}</div>
     <h4 class="section-title" aria-label="Bày khay">🍱</h4>${tip('Đồ nấu không để qua đêm: bày vừa đủ bán.','Bày khay lên tủ kính','p')}<div class="tile-grid ct-case">${trays}</div>
     ${tip(x.esc(t.needs?.note||''),'','p')}</section>`;
   return `<section class="card ct-setup"><h4>🍚 Hai nồi cơm</h4><p class="small muted">Gạo tấm hút ít nước hơn gạo trắng.</p>${pot('tam')}${pot('trang')}

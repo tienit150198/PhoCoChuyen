@@ -21,10 +21,24 @@ function notebook(x,auto=false){
 }
 
 /* ------------------------------------------------------------ the job card */
+/** Chores in a few words that keep what makes them right or wrong ("Mở loa ra đường 4h"). Not listed: in full. */
+const PG_WORD={
+  'Thức dậy lúc 4 giờ, rửa mặt':'Thức dậy','Thỉnh chuông sáng, chậm và đều':'Thỉnh chuông sáng','Công phu sáng trong chánh điện':'Công phu sáng',
+  'Quét sân':'Quét sân','Điểm tâm cùng mọi người':'Điểm tâm','Mở loa ra đường đọc kinh từ 4 giờ sáng':'Mở loa ra đường 4h',
+  'Lau lại bằng khăn ẩm vắt thật kiệt':'Lau khăn ẩm vắt kiệt','Bày lại hoa, đèn như cũ':'Bày lại như cũ','Khóa cửa hông cho khỏi ồn':'Khóa cửa hông',
+  'Trải chiếu, kê ghế cho người già ở hàng đầu':'Ghế người già hàng đầu','Chụp ảnh từng người nhận cơm đăng lên mạng':'Chụp người nhận đăng mạng',
+  'Dập bằng bình chữa cháy hoặc khăn ướt':'Dập bằng bình, khăn ướt','Dời đèn cầy, lư nhỏ sang bàn bên':'Dời đèn, lư sang bên',
+  'Gom lá đốt ngay góc sân cho gọn':'Đốt lá góc sân','Gỡ lá phướn khỏi móc, kéo xuống đất':'Gỡ phướn, kéo xuống đất',
+  'Mời mọi người xếp hàng, cụ già và trẻ nhỏ lên trước':'Xếp hàng, cụ già trước','Hô mọi người lùi ra xa':'Hô lùi ra xa','Hốt lá vào sọt':'Hốt lá vào sọt',
+  'Phủi bụi từ trên xuống bằng chổi lông, khăn khô':'Phủi bụi trên xuống','Quét, lau chánh điện':'Quét, lau chánh điện','Thử loa vừa đủ nghe trong sân':'Loa vừa đủ trong sân',
+  'Chừa lối đi giữa và lối ra cửa hông':'Chừa lối đi, cửa hông','Nhặt vỏ chai, giấy, túi ni-lông':'Nhặt rác','Mời thêm ly nước, chỉ chỗ ngồi trong bóng mát':'Mời nước, chỗ mát',
+  'Quét lá từ hiên ra phía cổng':'Quét hiên ra cổng','Phát từng suất, hai tay đưa':'Phát suất, hai tay','Tạt xô nước vào ổ điện bên cạnh cho chắc':'Tạt nước vào ổ điện',
+  'Rửa tay, đeo khẩu trang':'Rửa tay, khẩu trang','Đứng lên bàn thờ cho với tới':'Đứng lên bàn thờ','Tưới hàng cau, chậu kiểng':'Tưới cau, kiểng',
+  'Chắp tay xá trước khi lau':'Xá trước khi lau','Xem kỹ còn tàn lửa âm ỉ không':'Xem còn tàn lửa'};
 function ticket(t,x){
   if(!t.known)return askCard(x,t,'👂 Nghe dặn');
   const tag=`<span class="tag pg-kind">${x.esc(kindEmoji(x,t.kind))} ${x.esc(kindLabel(x,t.kind))}</span>`;
-  return person(x,t,clean()?tip(x.esc(t.opening),'','p'):`<p class="muted small">${x.esc(t.opening)}</p>`,clean()?'':tag);
+  return person(x,t,clean()&&t.kind==='setup'?tip(x.esc(t.opening),'','p'):`<p class="muted small">${x.esc(t.opening)}</p>`,clean()?'':tag);
 }
 function progress(t,x){
   const ss=steps(t);if(ss.length<2)return '';
@@ -58,7 +72,7 @@ function orderStep(t,x,s){
   const got=t.work?.[s.id]||[],by=Object.fromEntries(s.items.map(i=>[i.id,i]));
   const seq=got.map((id,k)=>{const i=by[id];const last=k===got.length-1;
     return `<li><b>${k+1}</b><span aria-hidden="true">${x.esc(i.emoji)}</span><span class="grow">${x.esc(i.name)}</span>${last?x.cmd('↩︎','chua_seq',{task:t.id,item:id},'ghost small pg-undo',false):''}</li>`;}).join('');
-  const left=s.items.filter(i=>!got.includes(i.id)).map(i=>tile(x,'chua_seq',{task:t.id,item:i.id},`<span class="tile-emoji">${x.esc(i.emoji)}</span><b>${x.esc(few(i.name,2))}</b>${clean()?tip(x.esc(i.name),'','small'):''}`,`pg-i-${i.id}`).replace('<button ',`<button aria-label="${x.esc(i.name)}" `)).join('');
+  const left=s.items.filter(i=>!got.includes(i.id)).map(i=>tile(x,'chua_seq',{task:t.id,item:i.id},`<span class="tile-emoji">${x.esc(i.emoji)}</span><b>${x.esc(clean()&&PG_WORD[i.name]||i.name)}</b>${clean()?tip(x.esc(i.name),'','small'):''}`,`pg-i-${i.id}`).replace('<button ',`<button aria-label="${x.esc(i.name)}" `)).join('');
   const n=orderNeed(s);
   if(clean())return `${got.length?`<ol class="pg-seq">${seq}</ol>`:tip('Chạm việc làm trước tiên.','','p')}${left?`<div class="tile-grid pg-left">${left}</div>`:''}<p class="small muted pg-count" aria-live="polite" aria-label="Đã xếp ${got.length}/${n}">🔢 ${got.length}/${n}</p>`;
   return `${got.length?`<ol class="pg-seq">${seq}</ol>`:'<p class="small muted">Chạm việc làm trước tiên.</p>'}${left?`<div class="tile-grid pg-left">${left}</div>`:''}<p class="small muted pg-count" aria-live="polite">Đã xếp ${got.length}/${n}${got.length<n?` · còn ${n-got.length} việc nữa mới xong`:''}.</p>`;

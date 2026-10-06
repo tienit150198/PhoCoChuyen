@@ -12,7 +12,7 @@
 - Bảng cỡ chữ 4 bậc và bảng khoảng cách (`--fs-*`, `--sp-*`).
 - Có công tắc tắt: Cài đặt → Giao diện → "Giao diện gọn" (Tự động / Bật / Tắt), hoặc tắt cho mọi người bằng `MNL_CLEAN_UI=off` trên máy chủ.
 - Máy chủ báo trước thêm cho chùa (xếp việc, xếp chỗ), cơm tấm (dĩa chưa xới cơm) và photobooth (hết khung, hết bao kiếng, chọn quá số tấm).
-- Đợt 1 bớt chữ, 10 màn nhiều chữ nhất: thông cống, cơm tấm, hải đăng, gác chắn tàu, trà đá, bảo mẫu, phở, chùa, tổng đài cứu hộ, giúp việc. Mỗi màn còn ≤ 25 chữ (trước 50–120). Lời giải thích, mô tả đồ nghề, chuyện dẫn được chuyển vào nút "?"; tên đồ nghề còn 1–2 chữ; sổ hẹn và danh sách bước thành chip; tiêu đề màn tối đa 4 chữ. Yêu cầu của khách và các lựa chọn giữ nguyên.
+- Đợt 1 bớt chữ, 10 màn nhiều chữ nhất: thông cống, cơm tấm, hải đăng, gác chắn tàu, trà đá, bảo mẫu, phở, chùa, tổng đài cứu hộ, giúp việc. Mỗi màn còn 17–30 chữ (trước 47–131). Lời giải thích, mô tả đồ nghề và chuyện dẫn được chuyển vào nút "?". Mọi manh mối quyết định đúng sai vẫn hiện ngay trên màn: lời khách, sổ hẹn (mỗi nhà một dòng), hướng tàu, ghi chú giao ca ("đừng cho", "nhắc khéo"), mẹo của việc bẫy ở chùa ("Mở loa ra đường 4h"), chỗ lấn đường ở quán trà đá, quy tắc nước cơm tấm, giờ tắt đèn +15′.
 - Không đổi bản lưu, không thêm bảng, không đổi cách sinh việc.
 
 # v1.9.5 — 2026-10-06/07
