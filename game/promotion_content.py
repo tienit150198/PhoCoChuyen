@@ -30,6 +30,7 @@ EMP_TITLES = {
     'lighthouse': ('Người gác đèn chính', 'Trưởng ca trạm đèn', 'Trạm trưởng đèn Hòn Gió', 'Trưởng đội đèn biển Vịnh Ngọc'),
     'rescue': ('Điều phối viên chính', 'Trưởng ca tổng đài', 'Phó giám đốc Trung tâm điều phối', 'Giám đốc Trung tâm điều phối'),
     'lifeguard': ('Cứu hộ chính', 'Trưởng ca cứu hộ', 'Đội trưởng cứu hộ', 'Quản lý an toàn hồ bơi'),
+    'police': ('Cán bộ khu vực chính thức', 'Tổ phó cảnh sát khu vực', 'Tổ trưởng cảnh sát khu vực', 'Phó trưởng Công an phường'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
@@ -81,7 +82,7 @@ GROUP = {
     'pool': ('lifeguard',),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
-                'mother_baby', 'nurse'),
+                'mother_baby', 'nurse', 'police'),
     'call': ('rescue',),
 }   # every other career: 'trade'
 

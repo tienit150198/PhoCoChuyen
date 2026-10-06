@@ -1,5 +1,185 @@
 [
  {
+  "vi": "Chưa ảnh hưởng ánh sáng, nhưng gió lớn có thể vỡ: xin kính mới theo tàu.",
+  "en": ""
+ },
+ {
+  "vi": "Ắc quy chỉ còn 38%, tấm pin phủ đầy phân chim.",
+  "en": ""
+ },
+ {
+  "vi": "Lau tấm pin, chạy máy phát sạc bù",
+  "en": ""
+ },
+ {
+  "vi": "Pin bẩn thì sạc không vào; mình lau, sạc bù và ghi sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Máy phát rỉ dầu ở khớp ống, nhớt dưới vạch.",
+  "en": ""
+ },
+ {
+  "vi": "Châm nhớt, siết khớp, lót khay hứng dầu",
+  "en": ""
+ },
+ {
+  "vi": "Siết tạm được, nhưng khớp ống phải thay: ghi sổ và xin vật tư.",
+  "en": ""
+ },
+ {
+  "vi": "Còi sương mù kêu khàn một tiếng rồi tắt hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Đêm sương mà còi câm thì tàu không biết đảo ở đâu: đài phải báo tàu thuyền, xí nghiệp gửi thợ.",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đàm VHF chính rè rè, đài nghe chữ được chữ mất.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển sang bộ đàm dự phòng, thử lại",
+  "en": ""
+ },
+ {
+  "vi": "Có máy dự phòng thì mình tự chuyển; máy chính phải gửi về sửa.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy ghi: “Đêm qua gió đông bắc giật cấp 6, đèn chạy tốt. Mèo Mun bắt được con chuột kho.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy ghi: “Còn hai bóng dự phòng trong tủ. Tàu tiếp tế nhớ xin thêm bóng với nhớt máy.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy ghi: “Ông Sáu Ghe lại gọi xin quay đèn về phía lưới. Chú không cho. Con cũng đừng cho.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy ghi: “Chiều qua có cano thuê ghé, đòi lên đỉnh tháp chụp ảnh. Nói khéo mà cứng.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy ghi: “Luống rau muống sau nhà đã lên ngọn. Tưới buổi chiều thôi, nắng trưa cháy lá.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy ghi: “Áp kế hôm qua tụt hai vạch lúc chiều. Hôm nay để ý mây phía đông.”",
+  "en": ""
+ },
+ {
+  "vi": "Lặng – gợn nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "Mặt biển phẳng lì, chỉ gợn lăn tăn như vảy cá.",
+  "en": ""
+ },
+ {
+  "vi": "Sóng nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Sóng nhỏ dài, vài ngọn vỡ lấp lánh, chưa thấy bạc đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Sóng vừa, bạc đầu",
+  "en": ""
+ },
+ {
+  "vi": "Sóng dài hơn, bạc đầu trắng xóa nhiều nơi, có bụi nước.",
+  "en": ""
+ },
+ {
+  "vi": "Sóng lớn, biển động",
+  "en": ""
+ },
+ {
+  "vi": "Sóng chồm cao, bọt trắng bị gió kéo thành vệt dài, bụi nước mù mịt.",
+  "en": ""
+ },
+ {
+  "vi": "Trên 10 km",
+  "en": ""
+ },
+ {
+  "vi": "Thấy rõ mũi Cửa Lở (15 km) xanh thẫm cuối chân trời.",
+  "en": ""
+ },
+ {
+  "vi": "Thấy hòn Đá Bia (8 km), không thấy mũi Cửa Lở đâu.",
+  "en": ""
+ },
+ {
+  "vi": "Thấy hòn Mõ (3 km) mờ mờ, không thấy hòn Đá Bia.",
+  "en": ""
+ },
+ {
+  "vi": "Dưới 1 km",
+  "en": ""
+ },
+ {
+  "vi": "Trắng xóa. Không thấy cả phao số 1 cách bến 800 mét.",
+  "en": ""
+ },
+ {
+  "vi": "Tăng",
+  "en": ""
+ },
+ {
+  "vi": "Đứng",
+  "en": ""
+ },
+ {
+  "vi": "Giảm chậm",
+  "en": ""
+ },
+ {
+  "vi": "Giảm nhanh (từ 3 hPa / 3 giờ)",
+  "en": ""
+ },
+ {
+  "vi": "Máy đo gió",
+  "en": ""
+ },
+ {
+  "vi": "Gió",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn mặt biển",
+  "en": ""
+ },
+ {
+  "vi": "Biển",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn các mốc tầm xa",
+  "en": ""
+ },
+ {
+  "vi": "Tầm nhìn",
+  "en": ""
+ },
+ {
+  "vi": "Áp kế & sổ áp",
+  "en": ""
+ },
+ {
+  "vi": "Áp suất",
+  "en": ""
+ },
+ {
+  "vi": "✅ Thắp đèn đúng giờ",
+  "en": ""
+ },
+ {
   "vi": "🔆 Đèn đúng đặc tính",
   "en": ""
  },
@@ -1617,186 +1797,6 @@
  },
  {
   "vi": "Bé Thủy cười khúc khích rồi tắt máy. Kênh 16 im lặng trở lại.",
-  "en": ""
- },
- {
-  "vi": "Bạn nháy đèn pha ba cái. Một tàu cá gần đó tưởng tín hiệu cầu cứu, gọi đài hỏi rối rít.",
-  "en": ""
- },
- {
-  "vi": "Vy Vlog rủ “collab hẹn hò”",
-  "en": ""
- },
- {
-  "vi": "“Anh ơi làm series “hẹn hò với anh gác đèn” với em nha! Anh chỉ cần đóng vai người yêu em ba ngày trên đảo thôi, view nổ luôn á!”",
-  "en": ""
- },
- {
-  "vi": "“Anh cute mà, lên hình là có fan liền. Thử một tập thôi!”",
-  "en": ""
- },
- {
-  "vi": "“Không đóng thì em đăng cảnh anh từ chối, caption “anh gác đèn lạnh lùng” 😏”",
-  "en": ""
- },
- {
-  "vi": "Muốn quay về nghề thì liên hệ xí nghiệp, quay ở sân trạm ban ngày.",
-  "en": ""
- },
- {
-  "vi": "Vy bĩu môi: “Okela, anh nghiêm túc ghê.” Rồi chuyển sang quay đàn hải âu.",
-  "en": ""
- },
- {
-  "vi": "Bạn nhận lời. Ba ngày quay phim, sổ trực bỏ trống hai buổi quan trắc, đài gọi hỏi liên tục.",
-  "en": ""
- },
- {
-  "vi": "Cô khách xin ở lại “ngắm sao cùng anh”",
-  "en": ""
- },
- {
-  "vi": "Cô khách tàu du lịch",
-  "en": ""
- },
- {
-  "vi": "“Đoàn về rồi, em xin ở lại đảo một đêm ngắm sao với anh nha. Em ngủ ở đâu cũng được, kể cả… phòng anh 😉”",
-  "en": ""
- },
- {
-  "vi": "“Có một đêm thôi, ai mà biết.”",
-  "en": ""
- },
- {
-  "vi": "“Anh sợ gì? Em đâu có ăn thịt anh.”",
-  "en": ""
- },
- {
-  "vi": "Tàu Biển Ngọc còn chuyến chiều, mình gọi giữ chỗ cho bạn nhé.",
-  "en": ""
- },
- {
-  "vi": "Cô khách cười gượng rồi xuống tàu chuyến chiều. Cô Thắm nháy mắt với bạn.",
-  "en": ""
- },
- {
-  "vi": "Bạn cho cô ở lại. Sáng mai cô Thắm báo xí nghiệp: khách của tour ngủ lại đảo trái nội quy.",
-  "en": ""
- },
- {
-  "vi": "Giỏ quà “làm quen” của chủ vựa",
-  "en": ""
- },
- {
-  "vi": "Ông Năm Vựa · chủ vựa cá Cửa Lở",
-  "en": ""
- },
- {
-  "vi": "“Giỏ quà nhỏ cho cậu. Đêm tàu tôi về, cậu thương thì quay đèn pha rọi giùm cái bến riêng của tôi.”",
-  "en": ""
- },
- {
-  "vi": "“Quà nhỏ thôi, ai mà chả nhận.”",
-  "en": ""
- },
- {
-  "vi": "“Không nhận là coi thường tôi đó nghe.”",
-  "en": ""
- },
- {
-  "vi": "Đèn của trạm rọi theo nội quy, không theo quà.",
-  "en": ""
- },
- {
-  "vi": "Bác mang giỏ quà về, bến bác cần đèn thì xin xí nghiệp lắp.",
-  "en": ""
- },
- {
-  "vi": "Ông Năm Vựa xách giỏ quà về, lắc đầu: “Cậu này cứng thiệt.”",
-  "en": ""
- },
- {
-  "vi": "Bạn nhận giỏ quà. Tuần sau đoàn kiểm tra hỏi chuyện “quà của vựa cá”, tên bạn đứng đầu biên bản.",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn lạ lúc nửa đêm",
-  "en": ""
- },
- {
-  "vi": "Một số lạ · “người quen cũ”",
-  "en": ""
- },
- {
-  "vi": "“Ở đảo một mình buồn không anh? Em chèo ghe ra ngồi với anh tới sáng nha, mang theo bia luôn 🍺”",
-  "en": ""
- },
- {
-  "vi": "“Ngồi chơi thôi mà, có làm gì đâu.”",
-  "en": ""
- },
- {
-  "vi": "“Em ra tới bến rồi nè, mở cổng đi.”",
-  "en": ""
- },
- {
-  "vi": "Hẹn hôm vào bờ, ngồi quán cho đàng hoàng.",
-  "en": ""
- },
- {
-  "vi": "Không có tiếng ghe nào nữa. Bạn ghi giờ quan trắc kế tiếp vào sổ.",
-  "en": ""
- },
- {
-  "vi": "Bạn mở cổng. Bia rượu tới khuya, sáng ra bạn ngủ quên giờ tắt đèn.",
-  "en": ""
- },
- {
-  "vi": "Lời bẩn trên kênh 16",
-  "en": ""
- },
- {
-  "vi": "Một tàu cá giấu số hiệu",
-  "en": ""
- },
- {
-  "vi": "Nửa đêm, một giọng say rượu chiếm kênh 16: “Trạm Hòn Gió có em gác đèn nào không? Ra đây anh chở đi chơi, đảo lạnh lắm hả em…”",
-  "en": ""
- },
- {
-  "vi": "Giọng đó cười hô hố, đọc đúng tên bạn trên bản tin.",
-  "en": ""
- },
- {
-  "vi": "“Đêm nay anh ghé đảo nghe em.”",
-  "en": ""
- },
- {
-  "vi": "Kênh 16 là kênh cấp cứu. Dừng ngay.",
-  "en": ""
- },
- {
-  "vi": "Ghi giờ, báo đài và biên phòng.",
-  "en": ""
- },
- {
-  "vi": "Tôi đang trực.",
-  "en": ""
- },
- {
-  "vi": "Thôi kệ.",
-  "en": ""
- },
- {
-  "vi": "Trả lời cho hắn vui.",
-  "en": ""
- },
- {
-  "vi": "Kênh 16 im bặt. Có lẽ ai đó trên tàu đã giật bộ đàm khỏi tay hắn.",
-  "en": ""
- },
- {
-  "vi": "Bạn ghi giờ, báo đài. Đài dò ra tàu, biên phòng mời chủ tàu lên làm việc. Chị Hải Yến: “Báo là đúng, em.”",
   "en": ""
  }
 ]

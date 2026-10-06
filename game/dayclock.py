@@ -71,6 +71,7 @@ NOTES = {
     'lighthouse': 'Dậy trước bình minh tắt đèn, 7:00 quan trắc báo đài; chạng vạng thắp đèn, đêm có chuyện ngoài biển thì canh tới khuya.',
     'rescue': 'Nhận ca lúc 7:00, giao ca lúc 19:00; giờ tan tầm và mưa chiều là lúc đường dây réo nhiều nhất.',
     'lifeguard': 'Mở hồ 6:00, ông Tư xuống nước đầu tiên; trưa nắng gắt đông trẻ con; chiều dễ có dông, nghe sấm là lên bờ hết.',
+    'police': 'Giao ban 7:30, bàn cư trú đông buổi sáng; 11:00 và 16:30 đứng cổng trường giờ tan học; tan ca 17:30.',
     'homestay': 'Quầy lễ tân trực tới 22:00; khách tới muộn gọi chuông, sáng mai bàn giao.',
     'milk_tea': 'Ngày đông khách có thể bán quá giờ, muộn nhất 23:00.',
     'corp_accounting': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',

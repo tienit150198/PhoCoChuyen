@@ -1,5 +1,185 @@
 [
  {
+  "vi": "Rửa tay, đọc giấy dặn rồi mới nhận bé. Mỗi việc trong ngày làm theo lịch, cuối ngày kể thật với bố mẹ bé.",
+  "en": ""
+ },
+ {
+  "vi": "Một ngày bình yên của bé",
+  "en": ""
+ },
+ {
+  "vi": "26 · TỔ TRÔNG TRẺ MÈO CON",
+  "en": ""
+ },
+ {
+  "vi": "Sinh viên sư phạm mầm non, gọn gàng, hát hay.",
+  "en": ""
+ },
+ {
+  "vi": "Từng nấu bếp nhà trẻ, cháo nào cũng vừa miệng bé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh nhẹn, nhìn đâu cũng thấy chỗ cần dọn.",
+  "en": ""
+ },
+ {
+  "vi": "Liên",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ hết món bé nào dị ứng gì.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn đồ chơi, rửa bình",
+  "en": ""
+ },
+ {
+  "vi": "Nấu cháo, sơ chế món ăn",
+  "en": ""
+ },
+ {
+  "vi": "Giấy dặn của bố mẹ",
+  "en": ""
+ },
+ {
+  "vi": "Dị ứng trứng",
+  "en": ""
+ },
+ {
+  "vi": "Dị ứng đậu phộng",
+  "en": ""
+ },
+ {
+  "vi": "Dị ứng sữa bò",
+  "en": ""
+ },
+ {
+  "vi": "Đọc giấy dặn, nhận bé",
+  "en": ""
+ },
+ {
+  "vi": "Chơi vui, ngủ ngon, nhà an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Bàn giao kể thật",
+  "en": ""
+ },
+ {
+  "vi": "Cô Tâm làm cô nuôi dạy trẻ hai mươi năm, về hưu vẫn không xa được tụi nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Cô mở tổ trông trẻ trong căn hộ tầng hai, cửa sổ dán đầy tranh bút sáp.",
+  "en": ""
+ },
+ {
+  "vi": "Cô bảo: “Trông con người ta là giữ cả trái tim của bố mẹ nó.”",
+  "en": ""
+ },
+ {
+  "vi": "Tờ giấy dặn",
+  "en": ""
+ },
+ {
+  "vi": "Ngày đầu, cô Tâm đưa bạn xấp giấy dặn cũ của các nhà, mép giấy quăn hết.",
+  "en": ""
+ },
+ {
+  "vi": "Dòng nào cũng có chữ in đậm: dị ứng, giờ ngủ, đồ ôm.",
+  "en": ""
+ },
+ {
+  "vi": "Cô nói: “Đọc như đọc thư của người thân. Mỗi dòng là một nỗi lo.”",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bin chỉ ngủ khi ôm con gấu bông nâu đã sờn tai.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm đầu bạn đưa nhầm con thỏ, bé khóc mãi.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ bạn nhớ đồ ôm của từng bé, như nhớ tên các bé vậy.",
+  "en": ""
+ },
+ {
+  "vi": "Bé về nhà vui vẻ, kể về cô suốt buổi tối.",
+  "en": ""
+ },
+ {
+  "vi": "Giấy dặn nhớ từng dòng, không phải nhắc.",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký trong ngày rõ ràng, kể thật từng chuyện.",
+  "en": ""
+ },
+ {
+  "vi": "Bé ăn ngoan, ngủ ngon.",
+  "en": ""
+ },
+ {
+  "vi": "Tới giờ việc tiếp theo trong lịch của bé.",
+  "en": ""
+ },
+ {
+  "vi": "Bố mẹ bé sắp tới. Rửa tay, chuẩn bị đón bé nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi ngày trông một bé theo lịch: rửa tay, đọc giấy dặn, chào bé, kiểm túi → bữa ăn hợp tuổi, tránh món bé dị ứng → trò chơi hợp tâm trạng → soát nhà → ru ngủ, vỗ nhẹ theo nhịp thở → dỗ bé khi khóc, ngã, ăn vạ → bàn giao, kể thật.",
+  "en": ""
+ },
+ {
+  "vi": "Matcha đá xay",
+  "en": ""
+ },
+ {
+  "vi": "Cacao đá xay thạch",
+  "en": ""
+ },
+ {
+  "vi": "Bột matcha",
+  "en": ""
+ },
+ {
+  "vi": "Bột cacao",
+  "en": ""
+ },
+ {
+  "vi": "Matcha latte yến mạch",
+  "en": ""
+ },
+ {
+  "vi": "Hòa matcha, thêm đá và sữa yến mạch; không thêm cà phê.",
+  "en": ""
+ },
+ {
+  "vi": "Matcha đá xay mát lạnh",
+  "en": ""
+ },
+ {
+  "vi": "Hòa matcha rồi xay mịn cùng đá và sữa.",
+  "en": ""
+ },
+ {
+  "vi": "Cacao đá xay thêm thạch",
+  "en": ""
+ },
+ {
+  "vi": "Xay cacao cùng đá, sữa; thêm một phần thạch dừa sau khi xay.",
+  "en": ""
+ },
+ {
+  "vi": "Một túi cookie matcha",
+  "en": ""
+ },
+ {
   "vi": "Hai bánh cookie matcha mới, gói mang về.",
   "en": ""
  },
@@ -1617,186 +1797,6 @@
  },
  {
   "vi": "Đọc tin nhắn → bỏ đúng món, size, màu vào gói → in phiếu (COD = tiền gói) → dán gói → giao shipper.",
-  "en": ""
- },
- {
-  "vi": "Chọn bộ hợp chủ đề → hấp phẳng từng món → trưng bày.",
-  "en": ""
- },
- {
-  "vi": "Đúng size, đúng màu",
-  "en": ""
- },
- {
-  "vi": "mặc vừa như đo",
-  "en": ""
- },
- {
-  "vi": "phải quay lại đổi size",
-  "en": ""
- },
- {
-  "vi": "Nhớ lời khách dặn",
-  "en": ""
- },
- {
-  "vi": "quên mất lời dặn",
-  "en": ""
- },
- {
-  "vi": "tiệm hết món khách hỏi",
-  "en": ""
- },
- {
-  "vi": "nhớ đúng lời dặn",
-  "en": ""
- },
- {
-  "vi": "Chuyện ngân sách",
-  "en": ""
- },
- {
-  "vi": "khách chịu chi thêm",
-  "en": ""
- },
- {
-  "vi": "được bớt cho vừa túi",
-  "en": ""
- },
- {
-  "vi": "tư vấn món vừa túi tiền",
-  "en": ""
- },
- {
-  "vi": "nói thật, không ép",
-  "en": ""
- },
- {
-  "vi": "Gu phối đồ",
-  "en": ""
- },
- {
-  "vi": "hợp dịp, có điểm nhấn",
-  "en": ""
- },
- {
-  "vi": "hợp dịp",
-  "en": ""
- },
- {
-  "vi": "chưa hợp dịp",
-  "en": ""
- },
- {
-  "vi": "gọn gàng, lịch sự",
-  "en": ""
- },
- {
-  "vi": "Đường may",
-  "en": ""
- },
- {
-  "vi": "vừa như đo",
-  "en": ""
- },
- {
-  "vi": "chưa chuẩn",
-  "en": ""
- },
- {
-  "vi": "Đúng chính sách",
-  "en": ""
- },
- {
-  "vi": "xử lý rõ ràng",
-  "en": ""
- },
- {
-  "vi": "tạm được",
-  "en": ""
- },
- {
-  "vi": "chưa đúng chính sách",
-  "en": ""
- },
- {
-  "vi": "Thái độ",
-  "en": ""
- },
- {
-  "vi": "cộc lốc",
-  "en": ""
- },
- {
-  "vi": "Đúng đơn",
-  "en": ""
- },
- {
-  "vi": "đúng món, đúng size",
-  "en": ""
- },
- {
-  "vi": "gói sai",
-  "en": ""
- },
- {
-  "vi": "chị Vy ưng",
-  "en": ""
- },
- {
-  "vi": "còn sai sót",
-  "en": ""
- },
- {
-  "vi": "thối thiếu",
-  "en": ""
- },
- {
-  "vi": "thối dư",
-  "en": ""
- },
- {
-  "vi": "Ma-nơ-canh cần thay bộ mới",
-  "en": ""
- },
- {
-  "vi": "Hết size:",
-  "en": ""
- },
- {
-  "vi": "Món trên quầy sai.",
-  "en": ""
- },
- {
-  "vi": "Lời dặn của khách sai.",
-  "en": ""
- },
- {
-  "vi": "Loại việc tiệm áo sai.",
-  "en": ""
- },
- {
-  "vi": "Bước làm việc sai.",
-  "en": ""
- },
- {
-  "vi": "Quầy sai.",
-  "en": ""
- },
- {
-  "vi": "Kết quả thử đồ sai.",
-  "en": ""
- },
- {
-  "vi": "Khách này không trả giá.",
-  "en": ""
- },
- {
-  "vi": "Chuyện ngân sách sai.",
-  "en": ""
- },
- {
-  "vi": "Dòng bill sai.",
   "en": ""
  }
 ]

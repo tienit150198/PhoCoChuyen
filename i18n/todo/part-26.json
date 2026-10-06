@@ -1,5 +1,185 @@
 [
  {
+  "vi": "Kịp giờ ký; IT gỡ được mẩu giấy kẹt sâu trong máy.",
+  "en": ""
+ },
+ {
+  "vi": "Tự giật mạnh tờ giấy ra",
+  "en": ""
+ },
+ {
+  "vi": "Rách trục cuốn giấy, sửa mất 10 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi chờ máy “tự hết”",
+  "en": ""
+ },
+ {
+  "vi": "Máy không tự hết.",
+  "en": ""
+ },
+ {
+  "vi": "Sinh nhật bất ngờ trong 30 phút",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân: “Hôm nay sinh nhật cô Hằng! Em lo cái bánh, 3 giờ cả phòng hát chúc mừng nhé.” Bây giờ là 2 giờ 30.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt bánh nhỏ tiệm gần, gom chữ ký cả phòng vào tấm thiệp",
+  "en": ""
+ },
+ {
+  "vi": "−15 xu, mất 15 phút",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hằng bất ngờ đến rưng rưng; lần đầu thấy cô cười to giữa giờ làm.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt bánh ba tầng cho hoành tráng",
+  "en": ""
+ },
+ {
+  "vi": "Bánh tới lúc 4 giờ rưỡi, cô Hằng đã về.",
+  "en": ""
+ },
+ {
+  "vi": "Hứa rồi quên mất",
+  "en": ""
+ },
+ {
+  "vi": "3 giờ cả phòng đứng nhìn nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng viên giỏi nhưng đang mang thai",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân lật hồ sơ: “Bạn này giỏi đấy, nhưng ghi chú là đang mang thai bốn tháng. Thôi loại đi em, tuyển vào lại nghỉ sinh.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là giám đốc công ty nhỏ, lo mùa tựu trường đơn hàng dồn dập mà thiếu người.",
+  "en": ""
+ },
+ {
+  "vi": "Quy định tuyển dụng",
+  "en": ""
+ },
+ {
+  "vi": "Không được từ chối tuyển dụng vì lý do mang thai, giới tính hay hôn nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ ứng viên",
+  "en": ""
+ },
+ {
+  "vi": "Năm năm thiết kế túi xách, từng làm mẫu cho hai thương hiệu lớn.",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch mùa tựu trường",
+  "en": ""
+ },
+ {
+  "vi": "Cao điểm là tháng 7–8; ứng viên dự sinh tháng 12.",
+  "en": ""
+ },
+ {
+  "vi": "Mời phỏng vấn như mọi người, trình anh Quân lịch cao điểm và kế hoạch người hỗ trợ khi chị nghỉ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Được phỏng vấn công bằng, em vào làm kịp mùa cao điểm. Cảm ơn phòng nhân sự 🌷",
+  "en": ""
+ },
+ {
+  "vi": "Chị ấy vào làm, mẫu balo mới kịp mùa tựu trường; nghỉ sinh có người hỗ trợ sắp sẵn.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng viên",
+  "en": ""
+ },
+ {
+  "vi": "Mình chỉ mong được xét bằng năng lực.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa ra lịch cao điểm vẫn ổn, anh lo xa quá.",
+  "en": ""
+ },
+ {
+  "vi": "Loại hồ sơ theo ý giám đốc",
+  "en": ""
+ },
+ {
+  "vi": "Bị loại chỉ vì đang có em bé. Buồn ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng viên biết lý do thật, đăng lên mạng; công ty bị hỏi thăm vì phân biệt đối xử.",
+  "en": ""
+ },
+ {
+  "vi": "Người ta không nói thẳng, nhưng mình biết.",
+  "en": ""
+ },
+ {
+  "vi": "Đây là chuyện phòng nhân sự phải can ngăn.",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn ứng viên “sau sinh quay lại”",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn sau sinh… nghe lịch sự mà vẫn là loại mình.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng viên nhận việc chỗ khác; công ty thiếu người thiết kế cả mùa.",
+  "en": ""
+ },
+ {
+  "vi": "Mẫu mới chậm, khách hỏi mãi.",
+  "en": ""
+ },
+ {
+  "vi": "Tuyển dụng xét năng lực; lo lắng của sếp thì giải bằng kế hoạch, không bằng loại người.",
+  "en": ""
+ },
+ {
+  "vi": "Thợ lâu năm sợ mất việc vì máy mới",
+  "en": ""
+ },
+ {
+  "vi": "Anh Dũng đứng ngập ngừng: “Nghe nói xưởng mua máy may tự động. Thế… mấy người già như tôi có bị cho nghỉ không cô?”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là thợ may 15 năm, tay nghề giỏi nhưng không rành máy tính.",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Máy mới làm đường may thẳng; mẫu khó vẫn cần thợ tay nghề cao.",
+  "en": ""
+ },
+ {
+  "vi": "Chương trình đào tạo",
+  "en": ""
+ },
+ {
   "vi": "Công ty có ngân sách cho 5 thợ học vận hành máy, ưu tiên người lâu năm.",
   "en": ""
  },
@@ -1617,186 +1797,6 @@
  },
  {
   "vi": "Kinh doanh (mới chuyển từ Kế toán)",
-  "en": ""
- },
- {
-  "vi": "Đã chuyển khỏi phòng kế toán: thu hồi phần mềm kế toán.",
-  "en": ""
- },
- {
-  "vi": "Có phiếu cấp VPN đã duyệt.",
-  "en": ""
- },
- {
-  "vi": "Đúng quyền hiện có.",
-  "en": ""
- },
- {
-  "vi": "Phiếu cấp VPN đã bị hủy.",
-  "en": ""
- },
- {
-  "vi": "Rà soát quyền truy cập tháng này",
-  "en": ""
- },
- {
-  "vi": "Anh Long: “Cuối tháng rồi. Em rà lại bảng quyền truy cập với danh sách nghỉ việc và các phiếu yêu cầu nhé.”",
-  "en": ""
- },
- {
-  "vi": "Quy định quyền truy cập",
-  "en": ""
- },
- {
-  "vi": "Nghỉ việc: thu hồi tất cả ngay.",
-  "en": ""
- },
- {
-  "vi": "Phần mềm kế toán: chỉ người phòng kế toán.",
-  "en": ""
- },
- {
-  "vi": "Thư mục Nhân sự: chỉ phòng nhân sự; thực tập sinh không bao giờ.",
-  "en": ""
- },
- {
-  "vi": "Chỉ cấp quyền khi phiếu yêu cầu ĐÃ DUYỆT.",
-  "en": ""
- },
- {
-  "vi": "Danh sách & phiếu trong tháng",
-  "en": ""
- },
- {
-  "vi": "Không có thay đổi nào.",
-  "en": ""
- },
- {
-  "vi": "Máy in",
-  "en": ""
- },
- {
-  "vi": "Xưởng may",
-  "en": ""
- },
- {
-  "vi": "📷 Tem dán trên máy",
-  "en": ""
- },
- {
-  "vi": "🧾 Hóa đơn mua",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ tài sản",
-  "en": ""
- },
- {
-  "vi": "📝 Phiếu bàn giao",
-  "en": ""
- },
- {
-  "vi": "📦 Hộp máy",
-  "en": ""
- },
- {
-  "vi": "Số serial (S/N)",
-  "en": ""
- },
- {
-  "vi": "Chép đúng S/N trên tem máy, không lấy mã vạch hộp.",
-  "en": ""
- },
- {
-  "vi": "Mã tài sản mới",
-  "en": ""
- },
- {
-  "vi": "Theo phiếu bàn giao.",
-  "en": ""
- },
- {
-  "vi": "Hết bảo hành (dd/mm/yyyy)",
-  "en": ""
- },
- {
-  "vi": "Phòng đã đổi người nhận máy.",
-  "en": ""
- },
- {
-  "vi": "Trưởng phòng gọi xuống: đổi người nhận máy!",
-  "en": ""
- },
- {
-  "vi": "📞 Trưởng phòng gọi",
-  "en": ""
- },
- {
-  "vi": "Đọc tem máy, hóa đơn, sổ tài sản và phiếu bàn giao; ghi đủ năm ô của sổ tài sản.",
-  "en": ""
- },
- {
-  "vi": "Cách ghi sổ",
-  "en": ""
- },
- {
-  "vi": "Mã tài sản: CD-<loại>-<số tiếp theo, 4 chữ số>.",
-  "en": ""
- },
- {
-  "vi": "S/N chép trên tem máy, không lấy mã vạch hộp.",
-  "en": ""
- },
- {
-  "vi": "Hết bảo hành = ngày mua + số tháng bảo hành.",
-  "en": ""
- },
- {
-  "vi": "“Nhà mạng” xin mã OTP",
-  "en": ""
- },
- {
-  "vi": "Nhi chuyển máy: “Anh ơi, bên nhà mạng gọi, bảo nâng cấp sim công ty, xin mã OTP vừa gửi về điện thoại của sếp.”",
-  "en": ""
- },
- {
-  "vi": "Không ai được hỏi mã OTP. Nhà mạng thật không bao giờ xin OTP.",
-  "en": ""
- },
- {
-  "vi": "Số gọi đến",
-  "en": ""
- },
- {
-  "vi": "Số di động lạ, không phải tổng đài nhà mạng.",
-  "en": ""
- },
- {
-  "vi": "Sim của sếp",
-  "en": ""
- },
- {
-  "vi": "Sim đó nhận mã OTP của tài khoản ngân hàng công ty.",
-  "en": ""
- },
- {
-  "vi": "Từ chối, cúp máy, gọi tổng đài chính thức để kiểm tra; báo sếp và cả công ty",
-  "en": ""
- },
- {
-  "vi": "Tổng đài xác nhận không có đợt nâng cấp nào. Cả công ty được cảnh báo kịp.",
-  "en": ""
- },
- {
-  "vi": "Hỏi lại tên, mã nhân viên của người gọi rồi tính",
-  "en": ""
- },
- {
-  "vi": "Kẻ gian đọc tên, mã rất trơn tru. May mà bạn chưa đưa mã.",
-  "en": ""
- },
- {
-  "vi": "Xin mã từ sếp rồi đọc cho họ",
   "en": ""
  }
 ]

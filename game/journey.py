@@ -78,7 +78,7 @@ CH_UNLOCKS = {
     1: ('milk_tea', 'grocery', 'delivery', 'cafe_bakery', 'florist', 'mother_baby', 'restaurant'),
     2: ('pet_care', 'salon', 'repair', 'farm', 'homestay', 'homemaker', 'nail', 'pagoda', 'photobooth', 'giupviec', 'naucom', 'babysitter'),
     3: ('clothing', 'pet_shop', 'tra_da', 'fruit', 'garbage', 'drain', 'ice_cream', 'pho', 'com'),
-    4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting', 'pilot', 'flight_attendant', 'library', 'oil', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard'),
+    4: ('customer_care', 'pharmacy', 'tour_guide', 'teacher', 'accounting', 'pilot', 'flight_attendant', 'library', 'oil', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police'),
     5: ('corp_accounting', 'tax_payroll', 'hr_admin', 'secretary', 'it_helpdesk'),
     6: ('group_accounting',),
 }
@@ -146,7 +146,8 @@ CHAPTERS = [
                 _line('chu_tu', 'Tổng đài cứu hộ phường Mây đang tìm người trực máy. Giọng bình tĩnh, hỏi địa chỉ trước tiên là được việc.'),
                 _line('be_ti', dict(male='Hè này em học bơi ở Hồ bơi Sóng Xanh. Anh Hải cứu hộ bảo đang tìm thêm người cẩn thận, anh thử không?',
                                     female='Hè này em học bơi ở Hồ bơi Sóng Xanh. Anh Hải cứu hộ bảo đang tìm thêm người cẩn thận, chị thử không?',
-                                    none='Hè này em học bơi ở Hồ bơi Sóng Xanh. Anh Hải cứu hộ bảo đang tìm thêm người cẩn thận, thử không?'))],
+                                    none='Hè này em học bơi ở Hồ bơi Sóng Xanh. Anh Hải cứu hộ bảo đang tìm thêm người cẩn thận, thử không?')),
+                _line('co_lua', 'Công an phường Mây đang tuyển cán bộ khu vực. Cô thấy cháu nói nhẹ mà dứt khoát, không nhận của ai cái gì. Hợp lắm.')],
          outro=[_line('co_lua', 'Giờ đi đâu trong phố cũng có người gửi lời chào cháu.'),
                 _line('anh_khoa', 'Công ty mình với bên dịch vụ thuế đang tuyển. Kinh nghiệm ở phố ghi vào CV được hết, thử không?')],
          goals=[dict(id='places', goal=5, text='Làm việc ở 5 nơi khác nhau'),
@@ -266,6 +267,7 @@ TITLES = [
     _t('c_oil', 'career', '🛢️', 'Người giữ ổ khóa đỏ', 'Đạt cấp 3 trên giàn Hải Âu.', lambda x: x['lv'].get('oil', 1) >= 3),
     _t('c_lighthouse', 'career', '🗼', 'Người giữ lửa Hòn Gió', 'Đạt cấp 3 ở đèn biển Hòn Gió.', lambda x: x['lv'].get('lighthouse', 1) >= 3),
     _t('c_rescue', 'career', '📞', 'Giọng nói giữ bình tĩnh', 'Đạt cấp 3 ở tổng đài cứu hộ phường Mây.', lambda x: x['lv'].get('rescue', 1) >= 3),
+    _t('c_police', 'career', '👮', 'Người giữ bình yên hẻm', 'Đạt cấp 3 ở Công an phường Mây.', lambda x: x['lv'].get('police', 1) >= 3),
     # Skills at level 3.
     _t('k_careful', 'skill', '🔍', 'Mắt tinh', 'Kỹ năng cẩn thận, tỉ mỉ đạt mức 3.', lambda x: x['sk'].get('careful', 0) >= 3),
     _t('k_communication', 'skill', '💬', 'Nói dễ hiểu', 'Kỹ năng giao tiếp đạt mức 3.', lambda x: x['sk'].get('communication', 0) >= 3),

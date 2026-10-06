@@ -26,6 +26,13 @@
 - Hơn năm mươi người oái oăm quanh hồ: ông Tư không chịu đội mũ bơi, cô Hằng nhảy aerobic ở làn nhanh, Kha nhào lộn quay TikTok, phụ huynh dán mắt điện thoại, đại gia đòi làn riêng, khách tán tỉnh xin dạy riêng, quản lý không cho đóng hồ vì doanh thu… Bạn tự chọn giọng, lời nói và báo ai; chiều theo không bao giờ có thưởng. Cuối ca tự ghi sổ trực từ những gì thật sự xảy ra.
 - Chứng chỉ Cứu hộ hồ bơi giúp dễ được nhận; thang thăng tiến Cứu hộ chính → Quản lý an toàn hồ bơi.
 
+# Chưa phát hành — Nghề mới: Công an phường
+
+- 👮 Nghề mới **Công an phường** ở Công an phường Mây (chương 4 “Được tin cậy”, mở cùng điều dưỡng, gác chắn): ứng tuyển, phỏng vấn, thử việc; lương ngày cộng thưởng nhỏ cho mỗi việc làm đúng. Nghề người chơi xin, giữ nhẹ nhàng: giúp dân, không có vũ khí hay chiến thuật, không trích luật thật.
+- Một ca gồm: giao ban (đọc sổ trực ban, chọn việc gấp làm trước), bàn cư trú (xem từng giấy, nhận hoặc chỉ đúng giấy cần bổ sung), đồ thất lạc (kiểm đếm cùng người nhặt, hỏi kỹ người tới nhận; có người nhận vơ), hòa giải hàng xóm (karaoke, xe đậu chắn cửa, tường nứt, con chó Lu, cây xoài: nghe từng bên rồi tự đề xuất, hai bên tự quyết theo tính), trẻ lạc (dỗ bé, không đăng ảnh, xác minh người đón), tuần tra chợ, cổng trường, hội chợ, đám cưới (nhắc trước, biên bản sau, nguy hiểm thì xử lý ngay), nói chuyện chống lừa đảo cho các cụ, điện thoại trực ban (ai gặp nguy đi trước, gọi lại trước khi coi là tin báo sai).
+- Hơn bốn mươi người “oái oăm”: phong bì “cà phê”, cháu “sếp quận”, karaoke nửa đêm, cô Thoa ngày nào cũng có “người khả nghi”, Kha livestream cả bàn tiếp dân, chú say quậy, bà Năm mang chè ngồi kể chuyện cả tiếng, tố bừa nhà bên, sếp đòi đủ chỉ tiêu biên bản… Bạn tự chọn giọng, lời nói và báo ai; nhận phong bì hay chiều theo không bao giờ có thưởng.
+- Cuối ca tự ghi sổ trực ban từ những gì thật sự đã xảy ra (dòng “lập thêm biên bản” cho đủ chỉ tiêu là ghi khống). Anh Định kèm ba việc đầu; Chứng chỉ Tiếp dân & hòa giải giúp dễ được nhận; thang thăng tiến Cán bộ khu vực chính thức → Phó trưởng Công an phường; truyện nghề “Cuốn sổ hẻm của anh Định”.
+
 # v1.8.0 — 2026-10-06
 
 Có gì mới (chủ game duyệt): "Cập nhật toàn bộ UI UX", "Thêm Top tài phú trên Bảng xếp hạng".

@@ -394,6 +394,9 @@ INTERVIEWERS = {
     'rescue': _iv('Chị Thảo', 'Trưởng ca, Tổng đài Cứu hộ phường Mây', 'chị', 'em',
                   'nói chậm, rõ từng chữ, hay hỏi "câu đầu tiên em hỏi là gì?"', face='🎧', npc='rescue_npc_01',
                   particles=('nha', 'nè'), cares=('hỏi địa chỉ trước tiên', 'không bỏ ai một mình trên máy')),
+    'police': _iv('Anh Định', 'Tổ trưởng cảnh sát khu vực, Công an phường Mây', 'anh', 'em',
+                  'nói chậm, hay hỏi "người ta nhờ em mà em không chắc thì em làm gì?"', face='👮', npc='police_npc_01',
+                  particles=('nhé', 'nha'), cares=('ai cũng như ai', 'không bao giờ nhận phong bì')),
     # postings with someone else at the table
     'tch-center': _iv('Chị Thùy', 'Quản lý Trung tâm Kỹ năng Sao Nhỏ', 'chị', 'em',
                       'nhanh, thực tế, hay hỏi phụ huynh sẽ nghĩ gì', face='🌟',

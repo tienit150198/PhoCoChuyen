@@ -1,0 +1,114 @@
+/* Công an phường Mây (public/js/careers/police.js): built on street_kit.css and air_kit.css (both loaded first,
+   v4/careers.js CSS_KIT): the street trades' layout, the air crew's encounter card and record. A calm ward-blue
+   with a warm amber for what needs a decision, red only for danger and envelopes; theme tokens for surfaces and
+   text, so the dark theme works. Touch targets stay ≥ 44 px; everything reflows at 360–390 px. */
+html[data-career="police"]{--air-navy:#2f5d8a;--air-sky:#3f78ad}
+.career-job.sk.cap{--sk-accent:#2f5d8a;--sk-accent-2:#d49a3a;--cap-soft:#e3edf7;--cap-red:#c0533f;--cap-amber:#c98a2b;--cap-green:#4f8a4b}
+html[data-theme="dem"] .career-job.sk.cap{--sk-accent:#7fb0de;--sk-accent-2:#c9963d;--cap-soft:#1f2b38}
+
+.career-job.sk.cap .grow{flex:1 1 auto;min-width:0}
+.career-job.sk.cap .cap-big{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--cap-soft);font-size:24px}
+.career-job.sk.cap .card .row{display:flex;gap:10px;align-items:flex-start}
+.career-job.sk.cap .card h4 small{font-weight:400}
+.career-job.sk.cap .card .tag,.career-job.sk.cap .cap-deal,.career-job.sk.cap .cap-log-done{white-space:normal;line-height:1.35;max-width:100%;display:inline-block}
+.career-job.sk.cap .cap-learn{margin:8px 0 0;padding:6px 10px;border-radius:var(--sk-rs);background:var(--cap-soft);font-size:13px}
+.career-job.sk.cap .cap-ground{margin:10px 0;padding:12px;border-radius:var(--sk-r);border:2px solid var(--cap-red);background:var(--sk-surface)}
+.career-job.sk.cap .cap-ground h3{margin:0 0 4px;font-size:16px}
+.career-job.sk.cap .sk-opt{white-space:normal;text-align:left}
+.career-job.sk.cap .sk-opt small{display:block}
+.career-job.sk.cap .cap-said{display:flex;gap:8px;margin:0;padding:6px 10px;border-radius:4px 12px 12px 12px;background:var(--sk-surface-2);font-size:14px;line-height:1.4;flex:1 1 100%}
+.career-job.sk.cap .cap-said b{margin-right:2px}
+.career-job.sk.cap .cap-out{margin:8px 0 0;padding:8px 10px;border-radius:var(--sk-rs);background:var(--cap-soft);font-size:14px;line-height:1.4}
+.career-job.sk.cap .cap-out small{color:var(--sk-muted)}
+.career-job.sk.cap .cap-look{margin:8px 0;padding:6px 10px;border-left:4px solid var(--sk-accent-2);background:var(--sk-surface-2);border-radius:0 8px 8px 0;font-size:14px;line-height:1.4}
+
+/* ---------- the briefing */
+.career-job.sk.cap .cap-notes{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.sk.cap .cap-notes li.read{padding:8px 10px;border-radius:var(--sk-rs);background:var(--sk-surface-2)}
+.career-job.sk.cap .cap-notes li.read p{margin:4px 0 0;font-size:14px;line-height:1.45}
+.career-job.sk.cap .cap-note{width:100%;min-height:52px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;white-space:normal}
+.career-job.sk.cap .cap-note small{color:var(--sk-muted);font-weight:400}
+.career-job.sk.cap .cap-picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.career-job.sk.cap .cap-pick{min-height:48px;white-space:normal;font-size:14px;line-height:1.25}
+.career-job.sk.cap .cap-pick.on{background:var(--sk-accent);border-color:var(--sk-accent);color:#fff}
+
+/* ---------- the residence desk */
+.career-job.sk.cap .cap-press{border-color:var(--cap-red)}
+.career-job.sk.cap .cap-checklist{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.career-job.sk.cap .cap-checklist li.seen{display:grid;gap:2px;padding:8px 10px;border-radius:var(--sk-rs);background:var(--sk-surface-2);font-size:14px;line-height:1.4;border-left:4px solid var(--cap-green)}
+.career-job.sk.cap .cap-checklist li.seen.bad{border-left-color:var(--cap-red)}
+.career-job.sk.cap .cap-check{width:100%;min-height:44px;justify-content:flex-start;text-align:left;white-space:normal}
+.career-job.sk.cap .cap-decide{border-left:6px solid var(--sk-accent)}
+.career-job.sk.cap .cap-back{margin-top:8px}
+
+/* ---------- lost and found, children, calls: questions as chips that turn into answers */
+.career-job.sk.cap .cap-kv{display:grid;grid-template-columns:6.5em minmax(0,1fr);gap:4px 8px;margin:10px 0 6px}
+.career-job.sk.cap .cap-kv dt{color:var(--sk-muted);font-size:13px}
+.career-job.sk.cap .cap-kv dd{margin:0;font-size:14px;line-height:1.4}
+.career-job.sk.cap .cap-count,.career-job.sk.cap .cap-calm{margin-top:10px;min-height:48px}
+.career-job.sk.cap .cap-qs{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.sk.cap .cap-q,.career-job.sk.cap .cap-tagbtn,.career-job.sk.cap .cap-lookbtn,.career-job.sk.cap .cap-cbbtn{min-height:44px;white-space:normal;text-align:left}
+.career-job.sk.cap .cap-tag{margin:8px 0 0;padding:8px 10px;border-radius:var(--sk-rs);background:var(--cap-soft);font-size:14px}
+.career-job.sk.cap .cap-tagbtn{margin-top:8px}
+
+/* ---------- mediation */
+.career-job.sk.cap .cap-sides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.career-job.sk.cap .cap-sides .card{margin:0}
+.career-job.sk.cap .cap-side.side-a{border-top:4px solid var(--sk-accent)}
+.career-job.sk.cap .cap-side.side-b{border-top:4px solid var(--sk-accent-2)}
+.career-job.sk.cap .cap-side p.small{margin:4px 0 0;line-height:1.4}
+.career-job.sk.cap .cap-heard{margin:8px 0 0;padding:8px 10px;border-radius:var(--sk-rs);background:var(--cap-soft);font-size:14px;line-height:1.4}
+.career-job.sk.cap .cap-hear{margin-top:8px;min-height:44px;white-space:normal}
+.career-job.sk.cap .cap-offers ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14px}
+.career-job.sk.cap .cap-term{margin:8px 0}
+.career-job.sk.cap .cap-term>small{display:block;color:var(--sk-muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.career-job.sk.cap .cap-segs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.career-job.sk.cap .cap-seg{min-height:48px;padding:4px 6px;white-space:normal;font-size:13px;line-height:1.25}
+.career-job.sk.cap .cap-seg.on{background:var(--sk-accent);border-color:var(--sk-accent);color:#fff}
+.career-job.sk.cap .cap-offer{margin-top:10px;min-height:48px}
+.career-job.sk.cap .cap-more{margin-top:8px}
+.career-job.sk.cap .cap-deal{display:inline-block;margin-top:10px}
+
+/* ---------- patrols */
+.career-job.sk.cap .cap-place h4{margin:12px 0 6px}
+.career-job.sk.cap .cap-rule{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14px}
+.career-job.sk.cap .cap-scenes{display:grid;gap:10px;margin-top:10px}
+.career-job.sk.cap .cap-scene p.grow{margin:0;line-height:1.45}
+.career-job.sk.cap .cap-scene.done{border-color:var(--cap-green)}
+.career-job.sk.cap .cap-scene .sk-opts{margin-top:8px}
+
+/* ---------- talks */
+.career-job.sk.cap .cap-invite{margin:8px 0 0;padding:8px 10px;border-radius:var(--sk-rs);background:var(--cap-soft);font-size:14px;line-height:1.45}
+.career-job.sk.cap .cap-invitebtn{margin-top:8px;min-height:44px}
+.career-job.sk.cap .cap-chips{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.sk.cap .cap-topic{min-height:44px;border-radius:999px;white-space:normal;text-align:left;font-size:14px}
+.career-job.sk.cap .cap-topic.on{background:var(--sk-accent);border-color:var(--sk-accent);color:#fff}
+.career-job.sk.cap .cap-questions{display:grid;gap:10px;margin-top:10px}
+.career-job.sk.cap .cap-question p{margin:0 0 6px;line-height:1.45}
+
+/* ---------- the duty phone */
+.career-job.sk.cap .cap-calls{display:grid;gap:10px;margin-top:10px}
+.career-job.sk.cap .cap-call p.small{margin:2px 0 0;line-height:1.4}
+.career-job.sk.cap .cap-call.got.p-now{border-color:var(--cap-red)}
+.career-job.sk.cap .cap-prios{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:8px}
+.career-job.sk.cap .cap-prio{min-height:48px;padding:4px 2px;font-size:12px;line-height:1.2;white-space:normal}
+.career-job.sk.cap .cap-prio.on.p-now{background:var(--cap-red);border-color:var(--cap-red);color:#fff}
+.career-job.sk.cap .cap-prio.on.p-soon{background:var(--cap-amber);border-color:var(--cap-amber);color:#fff}
+.career-job.sk.cap .cap-prio.on.p-later{background:var(--sk-accent);border-color:var(--sk-accent);color:#fff}
+.career-job.sk.cap .cap-prio.on.p-fake{background:var(--sk-muted);border-color:var(--sk-muted);color:#fff}
+
+/* ---------- the end of the shift */
+.career-job.sk.cap .cap-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.career-job.sk.cap .cap-tiles div{display:flex;flex-direction:column;align-items:center;padding:6px 2px;border-radius:var(--sk-rs);background:var(--sk-surface-2);text-align:center}
+.career-job.sk.cap .cap-tiles b{font-size:20px}
+.career-job.sk.cap .cap-tiles small{font-size:11px;color:var(--sk-muted);line-height:1.2}
+.career-job.sk.cap .cap-lines{display:grid;gap:6px;margin:6px 0 10px}
+.career-job.sk.cap .cap-line{display:flex;gap:8px;align-items:flex-start;min-height:44px;padding:8px 10px;border-radius:var(--sk-rs);border:1px solid var(--sk-line);background:var(--sk-surface);color:var(--sk-ink);font:inherit;font-size:14px;line-height:1.4;text-align:left;cursor:pointer;white-space:normal}
+.career-job.sk.cap .cap-line.on{border-color:var(--sk-accent);background:var(--cap-soft)}
+.career-job.sk.cap .cap-log-done{display:inline-block;margin:10px 0}
+
+@media (max-width:420px){
+  .career-job.sk.cap .cap-sides{grid-template-columns:minmax(0,1fr)}
+  .career-job.sk.cap .cap-prios{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .career-job.sk.cap .cap-tiles b{font-size:18px}
+}

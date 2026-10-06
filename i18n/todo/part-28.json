@@ -1,5 +1,185 @@
 [
  {
+  "vi": "Sách có trên kệ, thẻ còn hạn mà không cho mượn.",
+  "en": ""
+ },
+ {
+  "vi": "từ chối vô cớ",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ hết hạn thì gia hạn hai phút là xong, sao lại từ chối.",
+  "en": ""
+ },
+ {
+  "vi": "không gia hạn thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Mượn đủ ba cuốn rồi: trả bớt một cuốn hoặc đọc tại chỗ.",
+  "en": ""
+ },
+ {
+  "vi": "đúng hạn",
+  "en": ""
+ },
+ {
+  "vi": "“Đúng hạn mà, trả liền đó.”",
+  "en": ""
+ },
+ {
+  "vi": "thu phí quá nội quy",
+  "en": ""
+ },
+ {
+  "vi": "Miễn giảm phí không có lý do chính đáng, kế toán phường nhắc.",
+  "en": ""
+ },
+ {
+  "vi": "miễn giảm không lý do",
+  "en": ""
+ },
+ {
+  "vi": "Miễn phí mà không hỏi lý do, sổ không ghi gì.",
+  "en": ""
+ },
+ {
+  "vi": "miễn không ghi lý do",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm sách và xem dấu hạn trả trước khi tính phí.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản phí này xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Tính phí sai nội quy, bị bạn đọc chỉ ra ngay ở quầy.",
+  "en": ""
+ },
+ {
+  "vi": "tính phí sai",
+  "en": ""
+ },
+ {
+  "vi": "Cô Nguyệt gật đầu: lý do chính đáng.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nợ phí đầy rồi: đòi bớt nợ cũ đã.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm sách trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Sách không cần sửa.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xử lý rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Cách sửa không có.",
+  "en": ""
+ },
+ {
+  "vi": "Hết băng giấy sửa sách. Mở kho mua thêm nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Băng keo trong vài tháng là ố vàng, dính chặt trang, càng hỏng thêm.",
+  "en": ""
+ },
+ {
+  "vi": "dùng băng keo thường",
+  "en": ""
+ },
+ {
+  "vi": "Sấy nóng, phơi nắng làm giấy cong vênh, giòn gãy.",
+  "en": ""
+ },
+ {
+  "vi": "sấy nóng sách ướt",
+  "en": ""
+ },
+ {
+  "vi": "Sửa không đúng kiểu hỏng của sách.",
+  "en": ""
+ },
+ {
+  "vi": "sửa chưa đúng cách",
+  "en": ""
+ },
+ {
+  "vi": "Hừm, không ổn lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm sách và xem dấu hạn trả trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Tính phí xong rồi mới cất sách.",
+  "en": ""
+ },
+ {
+  "vi": "Sách hỏng mà đưa thẳng lên kệ, người sau mượn lại càng hỏng.",
+  "en": ""
+ },
+ {
+  "vi": "chưa sửa sách",
+  "en": ""
+ },
+ {
+  "vi": "Câu hỏi không có.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn này không có trên xe gợi ý.",
+  "en": ""
+ },
+ {
+  "vi": "gợi ý sai gu",
+  "en": ""
+ },
+ {
+  "vi": "nặng quá",
+  "en": ""
+ },
+ {
+  "vi": "nhẹ quá",
+  "en": ""
+ },
+ {
+  "vi": "gợi ý chưa vừa",
+  "en": ""
+ },
+ {
+  "vi": "hơi nặng đầu",
+  "en": ""
+ },
+ {
+  "vi": "hơi nhẹ quá",
+  "en": ""
+ },
+ {
+  "vi": "Cuốn này không có trên xe sách.",
+  "en": ""
+ },
+ {
+  "vi": "Lớp không có.",
+  "en": ""
+ },
+ {
   "vi": "Cuốn này đang để riêng loại bỏ.",
   "en": ""
  },
@@ -1617,186 +1797,6 @@
  },
  {
   "vi": "Hồ sơ cá nhân: chỉ chính chủ, người thân có giấy tờ, người được ủy quyền",
-  "en": ""
- },
- {
-  "vi": "Hạn chế: phải có lãnh đạo phường ký duyệt",
-  "en": ""
- },
- {
-  "vi": "✅ Cấp bản sao",
-  "en": ""
- },
- {
-  "vi": "📝 Hướng dẫn bổ sung giấy tờ",
-  "en": ""
- },
- {
-  "vi": "✍️ Trình lãnh đạo duyệt",
-  "en": ""
- },
- {
-  "vi": "🙅 Từ chối, giải thích lý do",
-  "en": ""
- },
- {
-  "vi": "Căn cước công dân",
-  "en": ""
- },
- {
-  "vi": "Phiếu yêu cầu khai thác (đã điền)",
-  "en": ""
- },
- {
-  "vi": "Giấy ủy quyền có chứng thực",
-  "en": ""
- },
- {
-  "vi": "Giấy ủy quyền viết tay (chưa chứng thực)",
-  "en": ""
- },
- {
-  "vi": "Giấy giới thiệu của trường",
-  "en": ""
- },
- {
-  "vi": "Giấy chứng tử của bố",
-  "en": ""
- },
- {
-  "vi": "Giấy tờ chứng minh là con",
-  "en": ""
- },
- {
-  "vi": "Công văn của phòng ban",
-  "en": ""
- },
- {
-  "vi": "Bà Xuân xin bản sao giấy phép xây nhà",
-  "en": ""
- },
- {
-  "vi": "“Bà cần bản sao giấy phép xây nhà năm 1996 để làm sổ đỏ, của chính nhà bà.”",
-  "en": ""
- },
- {
-  "vi": "Giấy phép xây dựng nhà bà Xuân, 1996",
-  "en": ""
- },
- {
-  "vi": "Làm sổ đỏ nhà mình",
-  "en": ""
- },
- {
-  "vi": "Anh Tuấn tìm biên bản họp tổ dân phố",
-  "en": ""
- },
- {
-  "vi": "“Tôi cần biên bản họp tổ dân phố những năm 1976 – 1980 cho luận án.”",
-  "en": ""
- },
- {
-  "vi": "Biên bản họp tổ dân phố số 3, 1976 – 1980",
-  "en": ""
- },
- {
-  "vi": "Nghiên cứu luận án",
-  "en": ""
- },
- {
-  "vi": "Ông Thạc xin bản sao giấy khen",
-  "en": ""
- },
- {
-  "vi": "“Năm 1985 tôi được phường khen “gương mẫu”, cho tôi xin bản sao treo nhà.”",
-  "en": ""
- },
- {
-  "vi": "Quyết định khen thưởng năm 1985",
-  "en": ""
- },
- {
-  "vi": "Kỷ niệm của chính mình",
-  "en": ""
- },
- {
-  "vi": "Đạt xin bản đồ phường xưa",
-  "en": ""
- },
- {
-  "vi": "“Cô giao bài tập lịch sử phường mình, cho em xem bản đồ phường hồi xưa với.”",
-  "en": ""
- },
- {
-  "vi": "Bản đồ phường Mây năm 1960",
-  "en": ""
- },
- {
-  "vi": "Bài tập lịch sử",
-  "en": ""
- },
- {
-  "vi": "Chị Loan xin hồ sơ đất nhà hàng xóm",
-  "en": ""
- },
- {
-  "vi": "“Cho chị xem hồ sơ đất nhà bên cạnh, nó xây lấn sang nhà chị, chị cần bằng chứng.”",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ đất nhà số 14 ngõ 7",
-  "en": ""
- },
- {
-  "vi": "Tranh chấp với hàng xóm",
-  "en": ""
- },
- {
-  "vi": "Bà Xuân làm thủ tục thừa kế",
-  "en": ""
- },
- {
-  "vi": "“Bố tôi mất rồi, tôi cần sổ hộ khẩu cũ của bố để làm thừa kế.”",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ hộ khẩu cũ của ông Năm",
-  "en": ""
- },
- {
-  "vi": "Làm thủ tục thừa kế",
-  "en": ""
- },
- {
-  "vi": "Bà Xuân quên giấy tờ",
-  "en": ""
- },
- {
-  "vi": "“Tôi xin hồ sơ hộ khẩu cũ của bố để làm thừa kế. Giấy chứng tử để quên ở nhà rồi.”",
-  "en": ""
- },
- {
-  "vi": "Anh Tuấn cần lý lịch cán bộ cũ",
-  "en": ""
- },
- {
-  "vi": "“Cho tôi chép lý lịch các cán bộ phường thập niên 90, tôi viết sách về họ.”",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ lý lịch cán bộ phường 1990 – 1999",
-  "en": ""
- },
- {
-  "vi": "Viết sách",
-  "en": ""
- },
- {
-  "vi": "Ông Bính cần hồ sơ dự án ngõ 7",
-  "en": ""
- },
- {
-  "vi": "“Mang hồ sơ dự án chỉnh trang ngõ 7 lên phòng họp ngay, tôi đang họp dân.”",
   "en": ""
  }
 ]

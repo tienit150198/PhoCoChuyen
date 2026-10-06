@@ -1,5 +1,185 @@
 [
  {
+  "vi": "Có thể đổi vé cho khách sang chuyến chiều, khi khách đã tỉnh.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối chở chuyến này, nhờ mặt đất đổi sang chuyến chiều",
+  "en": ""
+ },
+ {
+  "vi": "Hôm đó tôi say thật. Tỉnh ra mới thấy xấu hổ. Cảm ơn tổ bay đã đổi vé chứ không bỏ mặc.",
+  "en": ""
+ },
+ {
+  "vi": "Khách ngủ một giấc ở phòng chờ, bay chuyến chiều, lúc lên tàu còn xin lỗi chị Thu.",
+  "en": ""
+ },
+ {
+  "vi": "Cả khoang được một chuyến bay yên ổn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn của khách",
+  "en": ""
+ },
+ {
+  "vi": "Lúc đầu tôi bực, sau thấy họ làm vậy là đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Cho lên, xếp ngồi cuối tàu, dặn chị Thu để ý",
+  "en": ""
+ },
+ {
+  "vi": "Ông khách say ngồi sau lưng tôi hát suốt chuyến bay. Tiếp viên phải ra nhắc năm lần.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyến bay ồn ào nhưng không có chuyện gì lớn.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi đứng cạnh hàng ghế cuối cả chuyến, không phục vụ được ai.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi sợ cứ quay lại nhìn.",
+  "en": ""
+ },
+ {
+  "vi": "Cho lên như thường, nhóm bạn trông anh ấy mà",
+  "en": ""
+ },
+ {
+  "vi": "Có ông say làm loạn trên tàu, đòi mở cửa sổ. Không biết tổ bay nghĩ gì mà cho lên.",
+  "en": ""
+ },
+ {
+  "vi": "Giữa chuyến khách nôn thốc nôn tháo rồi gây gổ. Tới nơi công an sân bay lên tàu.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi bị xô ngã khi can.",
+  "en": ""
+ },
+ {
+  "vi": "Lẽ ra phải từ chối từ cửa tàu.",
+  "en": ""
+ },
+ {
+  "vi": "An toàn cả chuyến bay đứng trước sự tiện cho một người. Từ chối cho khéo và có phương án thay.",
+  "en": ""
+ },
+ {
+  "vi": "Nhầm độ cao khi nhắc lại",
+  "en": ""
+ },
+ {
+  "vi": "Đài cho xuống 5.000 ft, bạn nhắc lại “3.000 ft” và cho tàu xuống. Chị Vân kịp phát hiện, kéo lại. Ngoài hai người, không ai biết.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là chị Vân, người vừa thấy cơ phó của mình nhầm.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện gì đã xảy ra",
+  "en": ""
+ },
+ {
+  "vi": "Máy ghi chuyến bay",
+  "en": ""
+ },
+ {
+  "vi": "Tàu xuống thấp hơn lệnh 300 ft trong vài giây rồi được kéo lên.",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo an toàn tự nguyện",
+  "en": ""
+ },
+ {
+  "vi": "Phòng an toàn bay",
+  "en": ""
+ },
+ {
+  "vi": "Người tự báo không bị phạt. Cả hãng dùng báo cáo để rút kinh nghiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Vân nói",
+  "en": ""
+ },
+ {
+  "vi": "“Chuyện của em, em quyết định. Nhưng chị sẽ hỏi em vì sao nhầm.”",
+  "en": ""
+ },
+ {
+  "vi": "Tự viết báo cáo an toàn, kể rõ vì sao nhầm",
+  "en": ""
+ },
+ {
+  "vi": "Em tự báo cáo, lại chỉ ra được vì sao hai con số dễ nghe nhầm. Phòng an toàn đã sửa quy trình nhắc lại.",
+  "en": ""
+ },
+ {
+  "vi": "Tháng sau, cả hãng đổi cách đọc độ cao cho khỏi nhầm. Tên bạn không bị nêu, chỉ bài học được nêu.",
+  "en": ""
+ },
+ {
+  "vi": "Chị thích người dám nói mình sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ xin lỗi chị Vân, hứa lần sau cẩn thận",
+  "en": ""
+ },
+ {
+  "vi": "Em biết lỗi là tốt. Nhưng bài học chỉ nằm trong buồng lái này.",
+  "en": ""
+ },
+ {
+  "vi": "Tuần sau một tổ bay khác nhầm y hệt.",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi của một người có thể là cái bẫy cho người khác.",
+  "en": ""
+ },
+ {
+  "vi": "Giá mà chúng tôi biết sớm hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, không ai biết thì cho qua",
+  "en": ""
+ },
+ {
+  "vi": "Em im lặng. Chị buồn vì chuyện đó hơn là vì cái lỗi.",
+  "en": ""
+ },
+ {
+  "vi": "Máy ghi chuyến bay vẫn lưu lại. Phòng an toàn hỏi tới, bạn phải giải trình.",
+  "en": ""
+ },
+ {
+  "vi": "Giấu một lỗi nhỏ là tập giấu lỗi lớn.",
+  "en": ""
+ },
+ {
+  "vi": "Trong nghề bay, tự báo lỗi của mình là cách giữ an toàn cho người sau.",
+  "en": ""
+ },
+ {
+  "vi": "Quay video trong buồng lái",
+  "en": ""
+ },
+ {
+  "vi": "Lúc khách đang lên tàu, Bé Na đứng ở cửa buồng lái: “Chú cho con quay video đăng lên lớp được không ạ? Một chút thôi!”",
+  "en": ""
+ },
+ {
   "vi": "Bạn là Bé Na, lần đầu thấy buồng lái thật.",
   "en": ""
  },
@@ -1152,651 +1332,471 @@
   "en": ""
  },
  {
-  "vi": "Tàu đều, xe đều. Hạ chắn đúng lúc: khoảng ba phút trước khi tàu tới, sớm quá là dân sốt ruột.",
+  "vi": "👮 Gọi anh Định",
   "en": ""
  },
  {
-  "vi": "Ca chiều tối",
+  "vi": "🏢 Báo Ban chỉ huy phường",
   "en": ""
  },
  {
-  "vi": "Tàu qua lúc chạng vạng và buổi tối: đèn cầm tay thay cờ, trắng là đường thông, đỏ là dừng. Buồn ngủ thì rửa mặt cho tỉnh.",
+  "vi": "Văn phòng Công an phường",
   "en": ""
  },
  {
-  "vi": "Đường trơn, nhìn kém. Đi tuần để ý đá ba-lát trôi, cống ngập.",
+  "vi": "cán bộ tập sự",
   "en": ""
  },
  {
-  "vi": "Xe đông gấp đôi, ai cũng vội, người chen chắn nhiều: giữ chắn, nói rõ còn mấy phút.",
+  "vi": "cán bộ khu vực",
   "en": ""
  },
  {
-  "vi": "Ray giãn nở, người nóng tính. Đi tuần soi kỹ đoạn đường cong.",
+  "vi": "Tôi đang trong ca trực.",
   "en": ""
  },
  {
-  "vi": "Báo chú Sáu",
+  "vi": "Cán bộ không được nhận quà, tiền của dân.",
   "en": ""
  },
  {
-  "vi": "Báo cung trưởng",
+  "vi": "Cảm ơn, có gì cứ lên phường làm đúng thủ tục.",
   "en": ""
  },
  {
-  "vi": "Đội trưởng",
+  "vi": "Quy định của phường không cho phép.",
   "en": ""
  },
  {
-  "vi": "gác chắn tập sự",
+  "vi": "Có cách khác đúng thủ tục…",
   "en": ""
  },
  {
-  "vi": "gác chắn chính",
+  "vi": "⚖️ Ban chỉ huy: tạm dừng nhiệm vụ hết hôm nay, mai lên giải trình.",
   "en": ""
  },
  {
-  "vi": "🛡️ Báo là đúng: xí nghiệp có quy trình bảo vệ người đang trực gác.",
+  "vi": "🛡️ Báo là đúng: phường có quy trình bảo vệ cán bộ đang làm nhiệm vụ.",
   "en": ""
  },
  {
-  "vi": "⚖️ Đội trưởng: tạm đình chỉ gác hết hôm nay, mai lên đội trình bày.",
+  "vi": "Tạm dừng nhiệm vụ",
   "en": ""
  },
  {
-  "vi": "Ca của bạn đã có người gác thay; bạn thấy nhẹ cả người.",
+  "vi": "Giao ban đầu ca",
   "en": ""
  },
  {
-  "vi": "Tạm đình chỉ gác",
+  "vi": "Anh Định: “Đọc sổ trực ban đêm qua đi em, rồi chọn việc làm trước. Chuyện nào có người đang gặp nguy thì đi trước.”",
   "en": ""
  },
  {
-  "vi": "Thử lần lượt từng thứ, thấy hỏng thì xử lý và báo đúng nơi rồi mới ký nhận ca.",
+  "vi": "Điện thoại trực ban",
   "en": ""
  },
  {
-  "vi": "Nhận ca, kiểm tra thiết bị",
+  "vi": "☎️ Ba cuộc gọi tới cùng lúc. Chị Hằng: “Em xếp giúp chị, ai đi trước.”",
   "en": ""
  },
  {
-  "vi": "Chú Sáu đưa cuốn sổ giao ca: “Đọc sổ, thử từng thứ một. Chưa thử thì đừng ký, con ạ.”",
+  "vi": "Vào ca thôi! Anh Định đang chờ ở phòng giao ban.",
   "en": ""
  },
  {
-  "vi": "Đi hết từng điểm. Tự xử lý việc của mình, chỗ nguy hiểm thì phòng vệ và điện khẩn, ghi đúng loại phiếu.",
+  "vi": "Có chuyện ở phường, quyết xong rồi làm tiếp nhé.",
   "en": ""
  },
  {
-  "vi": "Tuần đường Km 7 – Km 8",
+  "vi": "Bạn đang bị tạm dừng nhiệm vụ hết hôm nay. Tan ca, mai lên Ban chỉ huy giải trình.",
   "en": ""
  },
  {
-  "vi": "Anh Khải đưa cái búa nhỏ với cuốn sổ tuần đường: “Đi chậm, nhìn kỹ. Bu lông, tà vẹt, đá, đèn. Chỗ nào cũng phải tới.”",
+  "vi": "Thao tác không có ở Công an phường.",
   "en": ""
  },
  {
-  "vi": "Vào ca thôi! Chú Sáu đang chờ ở chòi gác.",
+  "vi": "Việc này không thuộc Công an phường.",
   "en": ""
  },
  {
-  "vi": "Thao tác không có ở chòi gác.",
+  "vi": "Chào hỏi, nghe chuyện trước đã.",
   "en": ""
  },
  {
-  "vi": "Có chuyện ở đường ngang, quyết xong rồi làm tiếp nhé.",
+  "vi": "nhận phong bì, làm trái quy định",
   "en": ""
  },
  {
-  "vi": "Bạn đang bị tạm đình chỉ gác hết hôm nay. Tan ca, mai lên đội trình bày.",
+  "vi": "Mục này không có trong sổ trực ban.",
   "en": ""
  },
  {
-  "vi": "Việc này không thuộc chòi gác.",
+  "vi": "Đã đọc mục này rồi.",
   "en": ""
  },
  {
-  "vi": "Thiết bị không có trong chòi.",
+  "vi": "Chọn việc làm trước.",
   "en": ""
  },
  {
-  "vi": "Cái này mình không tự xử lý được: báo đúng nơi để thợ cung tới sửa.",
+  "vi": "Đọc lại sổ: mục nào có người đang cần mình ngay thì làm trước.",
   "en": ""
  },
  {
-  "vi": "📒 Ghi vào sổ giao ca, ký tên, ghi giờ.",
+  "vi": "Chuyện gấp nhất trong sổ trực ban lại để sau cùng.",
   "en": ""
  },
  {
-  "vi": "🧾 Điền phiếu báo hỏng, gửi cung đường qua tàu địa phương.",
+  "vi": "chọn chưa đúng việc gấp",
   "en": ""
  },
  {
-  "vi": "📞 Gọi ga: chị Nguyệt ghi nhận, sẽ dặn lái tàu chú ý đường ngang Bến Mây.",
+  "vi": "Giao ban mà không đọc hết sổ trực ban.",
   "en": ""
  },
  {
-  "vi": "ký nhận ca khi chưa thử hết",
+  "vi": "chưa đọc hết sổ",
   "en": ""
  },
  {
-  "vi": "Thiết bị đường ngang hỏng mà không báo ga, lái tàu không được dặn chú ý.",
+  "vi": "Anh Định gật đầu: “Đúng việc cần làm trước.”",
   "en": ""
  },
  {
-  "vi": "không báo ga",
+  "vi": "Hồ sơ này không có giấy đó.",
   "en": ""
  },
  {
-  "vi": "Nhận ca, ký sổ giao ca.",
+  "vi": "Đã xem giấy này rồi.",
   "en": ""
  },
  {
-  "vi": "Chị Nguyệt: “Cái này ghi sổ là được rồi em, nhưng báo thế chị cũng yên tâm.”",
+  "vi": "Khoan. Ở bàn này ai cũng như ai, không phong bì, không chen hàng, không bỏ bước.",
   "en": ""
  },
  {
-  "vi": "✍️ Ký nhận ca. Chú Sáu gật gù: “Thử kỹ vậy mới yên tâm.”",
+  "vi": "Cán bộ nhận phong bì ngay tại bàn tiếp dân.",
   "en": ""
  },
  {
-  "vi": "✍️ Ký nhận ca. Chú Sáu nhíu mày: “Ký là nhận trách nhiệm đấy con.”",
+  "vi": "Có người quen là được làm trước, người chờ từ sáng phải chờ thêm.",
   "en": ""
  },
  {
-  "vi": "Nhận ca, ký sổ giao ca trước đã nhé.",
+  "vi": "cho chen hàng",
   "en": ""
  },
  {
-  "vi": "Nhắc lại lệnh của ga trước đã.",
+  "vi": "Nhận hồ sơ khỏi xem cho nhanh, chiều phải gọi người ta quay lại.",
   "en": ""
  },
  {
-  "vi": "Có người đang đòi qua chắn: trả lời họ trước đã.",
+  "vi": "nhận mà không xem",
   "en": ""
  },
  {
-  "vi": "Chuẩn bị đóng chắn.”",
+  "vi": "Trả lời chưa khéo, người khai không vui.",
   "en": ""
  },
  {
-  "vi": "Giữ chắn.”",
+  "vi": "trả lời chưa khéo",
   "en": ""
  },
  {
-  "vi": "tàu tới khi chắn chưa hạ",
+  "vi": "Trả lời người khai trước đã.",
   "en": ""
  },
  {
-  "vi": "tàu tới khi trên ray còn người",
+  "vi": "Xem đủ từng giấy trước khi nhận. Thiếu một tờ là người ta phải đi lại.",
   "en": ""
  },
  {
-  "vi": "Lái tàu không thấy cờ báo đường thông, phải giảm tốc qua đường ngang.",
+  "vi": "Nhận hồ sơ bằng giấy tờ của người khác.",
   "en": ""
  },
  {
-  "vi": "không đứng cờ đón tàu",
+  "vi": "nhận giấy tờ không đúng người",
   "en": ""
  },
  {
-  "vi": "Nhìn kỹ đoàn tàu nhé.",
+  "vi": "nhận hồ sơ chưa đủ",
   "en": ""
  },
  {
-  "vi": "Nghe ga gọi bộ đàm trước đã.",
+  "vi": "Nhận hồ sơ mà không xem hết giấy tờ.",
   "en": ""
  },
  {
-  "vi": "Đã nhắc lại lệnh rồi.",
+  "vi": "chưa xem đủ giấy tờ",
   "en": ""
  },
  {
-  "vi": "Mắt díp lại rồi: rửa mặt, đi lại cho tỉnh rồi hãy nghe lệnh.",
+  "vi": "Chọn giấy cần bổ sung.",
   "en": ""
  },
  {
-  "vi": "Nhắc lại lệnh sai, ga phải đọc lại lần nữa.",
+  "vi": "Giấy đó có sao đâu em. Xem lại từng tờ rồi hãy bắt người ta đi bổ sung.",
   "en": ""
  },
  {
-  "vi": "nhắc lại lệnh sai",
+  "vi": "Hồ sơ đủ mà bị bắt về bổ sung, mất thêm buổi làm.",
   "en": ""
  },
  {
-  "vi": "🚰 Bạn vốc nước lạnh lên mặt, đi quanh chòi hai vòng, vươn vai. Tỉnh hẳn.",
+  "vi": "bắt bổ sung khi không cần",
   "en": ""
  },
  {
-  "vi": "Tàu qua rồi.",
+  "vi": "Về bổ sung một giấy chẳng thiếu, lên lại mới biết thiếu giấy khác.",
   "en": ""
  },
  {
-  "vi": "Chuông đèn đang kêu rồi.",
+  "vi": "hướng dẫn bổ sung sai giấy",
   "en": ""
  },
  {
-  "vi": "🔔 Bật chuông, hai cụm đèn đỏ nhấp nháy. Xe cộ chậm lại trước vạch dừng.",
+  "vi": "Chưa xem giấy mà đã bảo thiếu.",
   "en": ""
  },
  {
-  "vi": "Đã nhìn đường ngang rồi.",
+  "vi": "đoán mà không xem",
   "en": ""
  },
  {
-  "vi": "👀 Nhìn hai phía đường ngang:",
+  "vi": "“Dạ, chiều em mang lên đủ.”",
   "en": ""
  },
  {
-  "vi": ". Dẹp hết rồi mới hạ chắn.",
+  "vi": "“Trời, lại phải đi thêm một chuyến…” Nhưng vẫn ghi lại giấy cần mang.",
   "en": ""
  },
  {
-  "vi": "👀 Nhìn hai phía đường ngang: không còn ai, không còn gì trên ray.",
+  "vi": "Đã kiểm đếm rồi.",
   "en": ""
  },
  {
-  "vi": "Người chui chắn",
+  "vi": "Kiểm đếm, ký biên bản tiếp nhận trước đã.",
   "en": ""
  },
  {
-  "vi": "Người đó vẫn đứng giữa ray, mặt tỉnh bơ.",
+  "vi": "Hỏi ít nhất hai câu, có câu bên trong có gì hoặc xem giấy tờ, rồi mới trả.",
   "en": ""
  },
  {
-  "vi": "Nhìn đường ngang trước đã.",
+  "vi": "Nghe lại câu trả lời đi: có khớp với biên bản không?",
   "en": ""
  },
  {
-  "vi": "Trên ray không còn ai như vậy.",
+  "vi": "trả nhầm người",
   "en": ""
  },
  {
-  "vi": "Chọn cách dẹp.",
+  "vi": "Trả đồ mà hỏi qua loa, may mà đúng chủ.",
   "en": ""
  },
  {
-  "vi": "Cần chắn đang hạ rồi.",
+  "vi": "hỏi chưa kỹ",
   "en": ""
  },
  {
-  "vi": "Tàu qua rồi, không cần hạ nữa.",
+  "vi": "Người nhận không phải chủ, đã báo cáo.",
   "en": ""
  },
  {
-  "vi": "Cần chắn kẹt mô-tơ: lắp tay quay trước đã (ở phần nhận ca hoặc tủ dụng cụ).",
+  "vi": "Người ta trả lời khớp hết mà em. Hỏi thêm cho chắc rồi trả.",
   "en": ""
  },
  {
-  "vi": "Hạ chắn mà không nhìn đường ngang: người còn kẹt giữa hai cần chắn.",
+  "vi": "Hỏi vài câu đã, đừng từ chối ngay.",
   "en": ""
  },
  {
-  "vi": "hạ chắn khi chưa nhìn đường ngang",
+  "vi": "Chủ thật trả lời đúng mà vẫn không được nhận lại.",
   "en": ""
  },
  {
-  "vi": "Hạ chắn mà không nhìn hai phía đường ngang.",
+  "vi": "giữ lại khi đúng chủ",
   "en": ""
  },
  {
-  "vi": "không nhìn trước khi hạ",
+  "vi": "Không hỏi câu nào đã từ chối.",
   "en": ""
  },
  {
-  "vi": "Hạ chắn khi trên ray vẫn còn người, họ bị kẹt giữa hai cần chắn.",
+  "vi": "từ chối khi chưa hỏi",
   "en": ""
  },
  {
-  "vi": "hạ chắn khi trên ray còn người",
+  "vi": "Chọn bên muốn nghe.",
   "en": ""
  },
  {
-  "vi": "Hạ chắn không bật chuông đèn, một xe máy lao thẳng vào cần chắn.",
+  "vi": "Đã nghe bên này rồi.",
   "en": ""
  },
  {
-  "vi": "hạ chắn không báo trước",
+  "vi": "Đã đề xuất ba lần rồi. Chuyển tổ hòa giải, hẹn buổi sau.",
   "en": ""
  },
  {
-  "vi": "Chuông vừa kêu đã sập chắn, người đi đường giật nảy mình.",
+  "vi": "Hai bên đã đồng ý rồi, ký biên bản thôi.",
   "en": ""
  },
  {
-  "vi": "chuông đèn chưa đủ thời gian",
+  "vi": "Chọn đủ từng điều khoản.",
   "en": ""
  },
  {
-  "vi": "hạ chắn muộn",
+  "vi": "Nghe cả hai bên đã. Người ta chịu nhường khi thấy mình được nghe.",
   "en": ""
  },
  {
-  "vi": "🚧 Cần chắn hạ xuống, khóa chốt. Xe cộ dồn lại sau vạch dừng.",
+  "vi": "🤝 Hai bên gật đầu. Ký biên bản hòa giải thôi.",
   "en": ""
  },
  {
-  "vi": "🚧 Bạn quay tay, cần chắn hạ chậm rì rì, khóa chốt.",
+  "vi": "Ba lần chưa xong: chuyển tổ hòa giải, hẹn buổi sau.",
   "en": ""
  },
  {
-  "vi": "Chọn cờ.",
+  "vi": "Đã dọa rồi.",
   "en": ""
  },
  {
-  "vi": "Hạ chắn trước rồi mới báo đường thông.",
+  "vi": "Hòa giải là để hai nhà còn nhìn mặt nhau. Dọa phạt thì ai cũng cứng lại.",
   "en": ""
  },
  {
-  "vi": "Trên ray còn người: chưa báo đường thông được. Dẹp ngay, hoặc báo dừng tàu.",
+  "vi": "Lên hòa giải mà bị dọa phạt cả hai nhà.",
   "en": ""
  },
  {
-  "vi": "Đang đứng cờ báo đường thông rồi.",
+  "vi": "dọa thay vì hòa giải",
   "en": ""
  },
  {
-  "vi": "Giơ đèn trắng",
+  "vi": "Hai bên chưa cùng đồng ý.",
   "en": ""
  },
  {
-  "vi": "Giơ cờ xanh",
+  "vi": "Lên phường hòa giải mà chưa xong, phải hẹn buổi khác.",
   "en": ""
  },
  {
-  "vi": "Đã báo dừng tàu rồi.",
+  "vi": "chưa hòa giải được",
   "en": ""
  },
  {
-  "vi": "đèn đỏ",
+  "vi": "Bé đã bình tĩnh hơn rồi.",
   "en": ""
  },
  {
-  "vi": "cờ đỏ",
+  "vi": "Dỗ bé trước đã. Bé đang sợ thì hỏi gì cũng không nói được.",
   "en": ""
  },
  {
-  "vi": "(Trên ray không có gì: lần sau đường thông thì cứ đứng cờ xanh.)",
+  "vi": "Bé đang khóc mà bị hỏi dồn, càng sợ.",
   "en": ""
  },
  {
-  "vi": "Tàu không đứng chờ.",
+  "vi": "chưa dỗ bé",
   "en": ""
  },
  {
-  "vi": "Trên ray còn người, chưa báo thông được.",
+  "vi": "Chọn cách tìm người nhà.",
   "en": ""
  },
  {
-  "vi": "Hạ chắn đã rồi mới cho tàu qua.",
+  "vi": "Xem thẻ tên của bé trước đã.",
   "en": ""
  },
  {
-  "vi": "Tàu không còn tới nữa.",
+  "vi": "Không đăng ảnh, thông tin của trẻ lên mạng. Đọc loa, gọi số trên thẻ là đủ.",
   "en": ""
  },
  {
-  "vi": "Tàu đang đứng chờ bạn báo đường thông.",
+  "vi": "📞 Gọi số trên thẻ: chuông đổ, đầu dây vội vã “Tôi tới ngay!”",
   "en": ""
  },
  {
-  "vi": "⏳ Bạn đứng chờ ở cửa chòi.",
+  "vi": "📞 Gọi số trên thẻ, mẹ bé nghe máy: “Hôm nay ông ngoại đón, chị giữ cháu giúp tôi, ông sắp tới.”",
   "en": ""
  },
  {
-  "vi": "⏳ Bạn đứng cạnh chòi, tay cầm cờ, mắt nhìn về phía tàu tới.",
+  "vi": "📲 Ảnh bé lên nhóm khu phố, ba trăm lượt chia sẻ trong mười phút, kèm cả tên trường.",
   "en": ""
  },
  {
-  "vi": "Không có ai đang đòi qua.",
+  "vi": "Ảnh và thông tin của bé bị đăng lên mạng.",
   "en": ""
  },
  {
-  "vi": "mở chắn khi tàu sắp tới",
+  "vi": "đăng ảnh trẻ lên mạng",
   "en": ""
  },
  {
-  "vi": "Ghi biển số người đang lo việc hiếu, việc bệnh: đúng luật mà nặng tay.",
+  "vi": "Chưa có ai tới đón.",
   "en": ""
  },
  {
-  "vi": "nặng tay với người đang khổ",
+  "vi": "Chọn cách xác minh.",
   "en": ""
  },
  {
-  "vi": "Ghi biển số hàng xóm như bắt tội phạm. Làm căng quá.",
+  "vi": "Đã xác minh cách này rồi.",
   "en": ""
  },
  {
-  "vi": "Tàu chưa tới.",
+  "vi": "Xác minh ít nhất hai cách rồi mới giao bé: để bé tự nhận, hỏi người đón, gọi bố mẹ.",
   "en": ""
  },
  {
-  "vi": "Đã nhìn đoàn tàu rồi.",
+  "vi": "Bố mẹ bé có nhờ người này đón không? Chưa chắc thì giữ bé lại.",
   "en": ""
  },
  {
-  "vi": "🏮 Toa cuối có đèn đuôi đỏ sáng.",
+  "vi": "Bé được giao cho người mà bố mẹ không nhờ đón.",
   "en": ""
  },
  {
-  "vi": "🏮 Toa cuối KHÔNG thấy đèn đuôi đâu!",
+  "vi": "giao trẻ khi chưa xác minh",
   "en": ""
  },
  {
-  "vi": "Đoàn tàu bình thường.",
+  "vi": "Giao bé mà xác minh qua loa, may mà đúng người nhà.",
   "en": ""
  },
  {
-  "vi": "Báo ga chuyện gì?",
+  "vi": "xác minh chưa kỹ",
   "en": ""
  },
  {
-  "vi": "Nhìn đoàn tàu trước đã.",
+  "vi": "Bố mẹ không nhờ người này, đã báo cáo.",
   "en": ""
  },
  {
-  "vi": "Đã báo ga chuyện này rồi.",
+  "vi": "Bé nhận ra người nhà, mọi thứ khớp rồi mà em.",
   "en": ""
  },
  {
-  "vi": "Toa cuối có đèn đuôi mà.",
+  "vi": "Xác minh trước đã, đừng giữ bé vô cớ.",
   "en": ""
  },
  {
-  "vi": "Đoàn tàu không có gì bất thường.",
+  "vi": "Người nhà thật đứng đó mà vẫn phải chờ.",
   "en": ""
  },
  {
-  "vi": "Ga đã xác nhận rồi.",
+  "vi": "giữ bé khi đã rõ người nhà",
   "en": ""
  },
  {
-  "vi": "Đã hỏi ga rồi.",
+  "vi": "Đã xem kỹ rồi.",
   "en": ""
  },
  {
-  "vi": "📻 Chị Nguyệt: “Không còn tàu. Đường ngang Bến Mây được nâng chắn.”",
-  "en": ""
- },
- {
-  "vi": "Cần chắn đang nâng.",
-  "en": ""
- },
- {
-  "vi": "🚧 Ga đã xác nhận tàu còn đứng ở Bến Gỗ: bạn nâng chắn tạm cho xe qua. Khi ga gọi lại thì đóng như từ đầu.",
-  "en": ""
- },
- {
-  "vi": "nâng chắn khi tàu chưa qua",
-  "en": ""
- },
- {
-  "vi": "⚠️ Bạn nâng chắn trong khi tàu vẫn đang tới! Xe ùa qua đường ray. Hạ lại ngay!",
-  "en": ""
- },
- {
-  "vi": "Tàu qua mà gác chắn không nhìn đoàn tàu, không biết đoàn tàu có bình thường không.",
-  "en": ""
- },
- {
-  "vi": "không nhìn đoàn tàu",
-  "en": ""
- },
- {
-  "vi": "nâng chắn khi còn tàu thứ hai",
-  "en": ""
- },
- {
-  "vi": "Nâng chắn mà không hỏi ga còn tàu nào không.",
-  "en": ""
- },
- {
-  "vi": "chưa hỏi ga",
-  "en": ""
- },
- {
-  "vi": "🚧 Nâng chắn, tắt chuông. Dòng xe ùa qua, có người còn bấm còi cảm ơn.",
-  "en": ""
- },
- {
-  "vi": "Tàu qua, nâng chắn rồi mới ghi sổ.",
-  "en": ""
- },
- {
-  "vi": "không báo mất đèn đuôi",
-  "en": ""
- },
- {
-  "vi": "không báo bất thường của tàu",
-  "en": ""
- },
- {
-  "vi": "Sổ nhật ký ghi không khớp với những gì đã xảy ra.",
-  "en": ""
- },
- {
-  "vi": "📒 Ghi sổ nhật ký, ký tên.",
-  "en": ""
- },
- {
-  "vi": "🛡️ Đội sẽ đọc lại chuyến này cùng bạn.",
-  "en": ""
- },
- {
-  "vi": "Không có điểm này trên đoạn tuần.",
-  "en": ""
- },
- {
-  "vi": "Đã đi qua điểm này rồi.",
-  "en": ""
- },
- {
-  "vi": "Đi tới điểm đó đã.",
-  "en": ""
- },
- {
-  "vi": "Đã làm việc này ở đây rồi.",
-  "en": ""
- },
- {
-  "vi": "Ở đây không có ai để nói chuyện.",
-  "en": ""
- },
- {
-  "vi": "(Người ta lầm bầm mãi mới chịu.)",
-  "en": ""
- },
- {
-  "vi": "(Bị mắng một trận, nhưng việc vẫn xong.)",
-  "en": ""
- },
- {
-  "vi": "Đã nhắc nhở.",
-  "en": ""
- },
- {
-  "vi": "Cái này không tự xử lý được: phải báo đúng nơi.",
-  "en": ""
- },
- {
-  "vi": "Ở đây mọi thứ ổn, không có gì để sửa.",
-  "en": ""
- },
- {
-  "vi": "🚩 Bạn cắm cờ đỏ phòng vệ cách hai đầu chỗ hỏng, đứng chờ ở chỗ thấy được tàu tới.",
-  "en": ""
- },
- {
-  "vi": "🚩 Cắm cờ đỏ cho chắc. (Chỗ này không nguy hiểm tới mức phải phòng vệ, nhưng cẩn thận thì không thừa.)",
-  "en": ""
- },
- {
-  "vi": "📒 Ghi sổ tuần đường",
-  "en": ""
- },
- {
-  "vi": "🧾 Điền phiếu báo hỏng gửi cung",
-  "en": ""
- },
- {
-  "vi": "📞 Điện khẩn cho ga",
-  "en": ""
- },
- {
-  "vi": "🏛️ Báo tổ dân phố, phường",
-  "en": ""
- },
- {
-  "vi": "Chị Nguyệt: “Rõ! Ga cho tàu dừng chờ, cử thợ ra ngay.”",
-  "en": ""
- },
- {
-  "vi": "Chị Nguyệt: “Rõ… mà cái này ghi phiếu là được rồi em.”",
-  "en": ""
- },
- {
-  "vi": "bỏ qua điểm tuần",
-  "en": ""
- },
- {
-  "vi": "bỏ sót chỗ nguy hiểm",
-  "en": ""
- },
- {
-  "vi": "không báo khẩn",
-  "en": ""
- },
- {
-  "vi": "không phòng vệ",
-  "en": ""
- },
- {
-  "vi": "chưa xử lý tại chỗ",
-  "en": ""
- },
- {
-  "vi": "ghi chưa đúng loại phiếu",
-  "en": ""
- },
- {
-  "vi": "📒 Ký sổ tuần đường.",
-  "en": ""
- },
- {
-  "vi": "🛡️ Đội sẽ đọc lại buổi tuần này cùng bạn.",
-  "en": ""
- },
- {
-  "vi": "Sáng mai nhận ca: đọc sổ giao ca, thử từng thiết bị rồi mới ký.",
-  "en": ""
- },
- {
-  "vi": "thử từng thứ",
-  "en": ""
- },
- {
-  "vi": "ký khi chưa thử",
+  "vi": "Chuyện này đã xử lý rồi.",
   "en": ""
  }
 ]

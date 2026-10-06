@@ -1,5 +1,185 @@
 [
  {
+  "vi": "Chọn bộ hợp chủ đề → hấp phẳng từng món → trưng bày.",
+  "en": ""
+ },
+ {
+  "vi": "Đúng size, đúng màu",
+  "en": ""
+ },
+ {
+  "vi": "mặc vừa như đo",
+  "en": ""
+ },
+ {
+  "vi": "phải quay lại đổi size",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ lời khách dặn",
+  "en": ""
+ },
+ {
+  "vi": "quên mất lời dặn",
+  "en": ""
+ },
+ {
+  "vi": "tiệm hết món khách hỏi",
+  "en": ""
+ },
+ {
+  "vi": "nhớ đúng lời dặn",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện ngân sách",
+  "en": ""
+ },
+ {
+  "vi": "khách chịu chi thêm",
+  "en": ""
+ },
+ {
+  "vi": "được bớt cho vừa túi",
+  "en": ""
+ },
+ {
+  "vi": "tư vấn món vừa túi tiền",
+  "en": ""
+ },
+ {
+  "vi": "nói thật, không ép",
+  "en": ""
+ },
+ {
+  "vi": "Gu phối đồ",
+  "en": ""
+ },
+ {
+  "vi": "hợp dịp, có điểm nhấn",
+  "en": ""
+ },
+ {
+  "vi": "hợp dịp",
+  "en": ""
+ },
+ {
+  "vi": "chưa hợp dịp",
+  "en": ""
+ },
+ {
+  "vi": "gọn gàng, lịch sự",
+  "en": ""
+ },
+ {
+  "vi": "Đường may",
+  "en": ""
+ },
+ {
+  "vi": "vừa như đo",
+  "en": ""
+ },
+ {
+  "vi": "chưa chuẩn",
+  "en": ""
+ },
+ {
+  "vi": "Đúng chính sách",
+  "en": ""
+ },
+ {
+  "vi": "xử lý rõ ràng",
+  "en": ""
+ },
+ {
+  "vi": "tạm được",
+  "en": ""
+ },
+ {
+  "vi": "chưa đúng chính sách",
+  "en": ""
+ },
+ {
+  "vi": "Thái độ",
+  "en": ""
+ },
+ {
+  "vi": "cộc lốc",
+  "en": ""
+ },
+ {
+  "vi": "Đúng đơn",
+  "en": ""
+ },
+ {
+  "vi": "đúng món, đúng size",
+  "en": ""
+ },
+ {
+  "vi": "gói sai",
+  "en": ""
+ },
+ {
+  "vi": "chị Vy ưng",
+  "en": ""
+ },
+ {
+  "vi": "còn sai sót",
+  "en": ""
+ },
+ {
+  "vi": "thối thiếu",
+  "en": ""
+ },
+ {
+  "vi": "thối dư",
+  "en": ""
+ },
+ {
+  "vi": "Ma-nơ-canh cần thay bộ mới",
+  "en": ""
+ },
+ {
+  "vi": "Hết size:",
+  "en": ""
+ },
+ {
+  "vi": "Món trên quầy sai.",
+  "en": ""
+ },
+ {
+  "vi": "Lời dặn của khách sai.",
+  "en": ""
+ },
+ {
+  "vi": "Loại việc tiệm áo sai.",
+  "en": ""
+ },
+ {
+  "vi": "Bước làm việc sai.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy sai.",
+  "en": ""
+ },
+ {
+  "vi": "Kết quả thử đồ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Khách này không trả giá.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện ngân sách sai.",
+  "en": ""
+ },
+ {
+  "vi": "Dòng bill sai.",
+  "en": ""
+ },
+ {
   "vi": "Tiền khách đưa không khớp bill.",
   "en": ""
  },
@@ -1617,186 +1797,6 @@
  },
  {
   "vi": "Mưa xéo tạt ướt hai bàn ngoài, nước nhỏ giọt xuống chén nước mắm.",
-  "en": ""
- },
- {
-  "vi": "Kéo bạt, dời bàn vào mái hiên, thay chén nước mắm mới",
-  "en": ""
- },
- {
-  "vi": "Mất chút thời gian",
-  "en": ""
- },
- {
-  "vi": "Khách ngồi khô ráo, ăn xong còn ngồi lại uống trà đá chờ tạnh.",
-  "en": ""
- },
- {
-  "vi": "Hai khách ngồi ngoài bỏ dở dĩa cơm vì ướt.",
-  "en": ""
- },
- {
-  "vi": "Chợ phiên: hàng chờ dài",
-  "en": ""
- },
- {
-  "vi": "Chợ phiên đông nghẹt, hàng chờ cơm tấm kéo ra tới sạp rau của chị Lụa. Vỉ sườn chỉ còn hai miếng.",
-  "en": ""
- },
- {
-  "vi": "Nướng mẻ sườn mới, nhờ chị Lụa kêu khách xếp hàng",
-  "en": ""
- },
- {
-  "vi": "Khói sườn thơm lừng, khách xếp hàng trật tự, không ai bỏ đi.",
-  "en": ""
- },
- {
-  "vi": "Bày ghế thêm cho khách ngồi chờ",
-  "en": ""
- },
- {
-  "vi": "Khách ngồi chờ, có người sốt ruột nhìn đồng hồ.",
-  "en": ""
- },
- {
-  "vi": "Miếng sườn còn hồng",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh cắt miếng sườn, chìa cái đĩa ra: “Em coi nè, giữa miếng thịt còn hồng hồng, ăn vô đau bụng ai chịu?”",
-  "en": ""
- },
- {
-  "vi": "Bạn là anh Mạnh, làm hồ cả ngày, chỉ mong một dĩa cơm tấm tử tế.",
-  "en": ""
- },
- {
-  "vi": "Vỉ nướng",
-  "en": ""
- },
- {
-  "vi": "Mẻ sườn vừa rồi lật sớm, mặt dưới chỉ nướng được năm giây.",
-  "en": ""
- },
- {
-  "vi": "Thịt heo",
-  "en": ""
- },
- {
-  "vi": "Thịt heo phải chín hẳn, không còn hồng ở giữa mới ăn được.",
-  "en": ""
- },
- {
-  "vi": "Trên vỉ",
-  "en": ""
- },
- {
-  "vi": "Trên vỉ còn hai miếng sườn mới nướng vàng đều.",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi, đổi ngay miếng sườn chín, nướng lại mẻ kia cho kỹ",
-  "en": ""
- },
- {
-  "vi": "Miếng sườn chưa chín nhưng quán đổi liền, xin lỗi đàng hoàng. Lần sau ăn tiếp.",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh ăn hết dĩa, còn dặn: “Nướng kỹ nghen em.”",
-  "en": ""
- },
- {
-  "vi": "Sai mà sửa liền thì được.",
-  "en": ""
- },
- {
-  "vi": "Thịt heo thì chín mới bán, chậm chút cũng được.",
-  "en": ""
- },
- {
-  "vi": "Bớt cho anh ít tiền",
-  "en": ""
- },
- {
-  "vi": "Bớt tiền thì bớt, nhưng miếng sườn sống vẫn nằm đó.",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh lắc đầu, gạt miếng sườn ra mép dĩa.",
-  "en": ""
- },
- {
-  "vi": "Anh cần miếng sườn chín, đâu cần bớt tiền.",
-  "en": ""
- },
- {
-  "vi": "Thiếu chín là đổi, không phải bớt.",
-  "en": ""
- },
- {
-  "vi": "“Sườn nướng than là vậy đó anh”",
-  "en": ""
- },
- {
-  "vi": "Sườn còn sống mà nói là vậy đó. Tối về đau bụng.",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh đứng dậy bỏ đi, dĩa cơm còn nguyên.",
-  "en": ""
- },
- {
-  "vi": "Coi thường người ăn quá.",
-  "en": ""
- },
- {
-  "vi": "Sườn hồng thì phải nướng lại chớ.",
-  "en": ""
- },
- {
-  "vi": "Sườn nướng mỗi mặt đủ lửa, cắt ra không còn hồng mới bán. Khách phát hiện thì đổi ngay, nướng lại.",
-  "en": ""
- },
- {
-  "vi": "Hộp cơm chay có mỡ hành",
-  "en": ""
- },
- {
-  "vi": "Bà Sương quay lại quầy, giọng run run: “Con ơi, hộp chay của bà có mấy cọng hành mỡ… mỡ này mỡ heo phải không con?”",
-  "en": ""
- },
- {
-  "vi": "Mỡ hành",
-  "en": ""
- },
- {
-  "vi": "Mỡ hành của quán phi bằng mỡ heo.",
-  "en": ""
- },
- {
-  "vi": "Lúc mua bà đã dặn ăn chay, không mỡ hành.",
-  "en": ""
- },
- {
-  "vi": "Hộp mới",
-  "en": ""
- },
- {
-  "vi": "Khay tàu hũ và rau muống còn đủ làm hộp khác.",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi bà, làm hộp chay mới, không hành mỡ, nước tương riêng",
-  "en": ""
- },
- {
-  "vi": "Quán nhận lỗi, làm hộp mới đàng hoàng. Người ăn chay yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Bà Sương nhận hộp mới, dặn: “Lần sau nhớ giùm bà nghe con.”",
   "en": ""
  }
 ]

@@ -1886,6 +1886,45 @@ ARCS = {
                 ('long', 'Chìa khóa phòng máy chủ, từ giờ em giữ một chiếc.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ Công an phường Mây (chương 4)
+    'police': dict(
+        title='Cuốn sổ hẻm của anh Định', emoji='📓',
+        keepsake=dict(emoji='📓', name='Cuốn sổ hẻm của anh Định', desc='Cuốn sổ bìa xanh ghi tên từng nhà, từng cụ già sống một mình trong bảy tổ dân phố. Giờ nó nằm trong túi áo bạn.'),
+        cast={'dinh': _p('Anh Định', '👮', 'Tổ trưởng cảnh sát khu vực', 'police_npc_01'),
+              'nam': _p('Bà Năm', '👵', 'Người dân tổ 3', 'police_npc_03'),
+              'thoa': _p('Cô Thoa', '👀', 'Người dân tổ 5', 'police_npc_04'),
+              'vuong': _p('Anh Vượng', '📊', 'Phó trưởng Công an phường', 'police_npc_07')},
+        beats=[
+            _b('Ai cũng như ai', '🎫', 'Buổi sáng đầu tiên ở bàn tiếp dân.', [
+                ('dinh', 'Ở bàn này, ai lên cũng lấy số. Cụ già, người khuyết tật, bà bầu thì mời lên trước. Còn “người quen” thì không có.'),
+                ('me', 'Kể cả cháu của sếp ạ?'),
+                ('dinh', 'Kể cả cháu của anh.')]),
+            _b('Cô Thoa gọi lần thứ năm', '👀', 'Điện thoại trực ban reo, lại là cô Thoa.', [
+                ('thoa', 'Cái cậu xăm tay lại đứng đầu hẻm! Lần này cô chắc chắn nó rình nhà ai đó.'),
+                ('me', 'Cô ơi, cậu ấy là cậu Tín thuê trọ hẻm 7, khai báo tạm trú tuần trước rồi.'),
+                ('thoa', 'Ờ… vậy hả. Mà nhà cô năm ngoái mất xe, cô sợ lắm con.')],
+                _c('Làm sao cho cô Thoa bớt sợ?',
+                   _o('a', 'Rủ cô Thoa đi một vòng hẻm, giới thiệu cô với mấy nhà mới tới', [('thoa', 'Thằng Tín nó chào cô ngọt xớt. Thôi, cô yên tâm rồi.')], rel='thoa'),
+                   _o('b', 'Chỉ cô lắp khóa xe, đèn cảm ứng trước cửa', [('thoa', 'Đèn sáng cái là cô ngủ ngon. Cảm ơn con.')], rel='thoa'))),
+            _b('Cuộc gọi lúc 8 giờ 20', '📞', 'Bà Năm gọi tới, giọng run run.', [
+                ('nam', 'Có cán bộ gọi bảo bà mang sổ tiết kiệm ra ngân hàng, dặn không được nói với ai…'),
+                ('me', 'Bà đứng yên đó, đừng chuyển gì hết. Cán bộ thật không bao giờ gọi điện bắt chuyển tiền. Con tới liền.'),
+                ('nam', 'Bà đang ở quầy ngân hàng nè. Con tới nhanh nghe con.')],
+                _c('Tới nơi, bạn làm gì tiếp?',
+                   _o('a', 'Ngồi với bà, nhờ ngân hàng khóa giao dịch lạ, rồi chở bà về', [('nam', 'Con tới kịp. Không thì tiền dưỡng già của bà đi hết rồi.')], rel='nam'),
+                   _o('b', 'Hẹn cả tổ 3 một buổi nói chuyện chống lừa đảo ngay tuần này', [('nam', 'Bà rủ hết hội người cao tuổi lên nghe. Ai cũng phải biết.')], rel='nam'))),
+            _b('Bảng thành tích', '📊', 'Anh Vượng treo bảng đếm biên bản ở phòng giao ban.', [
+                ('vuong', 'Tổ khu vực tháng này ít biên bản nhất phường. Mấy đứa đi tuần mà không thấy vi phạm à?'),
+                ('me', 'Dạ, tụi em nhắc nhở nhiều. Lần đầu chuyện nhỏ thì nhắc, người ta sửa liền, khỏi biên bản.'),
+                ('dinh', 'Anh Vượng, chợ Mây tháng này không ai lấn lối thoát hiểm nữa. Con số đó không nằm trên bảng.')],
+                days=6, served=14, gap=1),
+            _b('Cuốn sổ hẻm', '📓', 'Anh Định lên Ban chỉ huy, bàn giao khu vực lại cho bạn.', [
+                ('dinh', 'Mười lăm năm, anh ghi vào sổ này tên từng nhà, từng cụ ở một mình, từng đứa nhỏ hay đi lạc.'),
+                ('dinh', 'Cái phường này yên không phải nhờ biên bản. Nhờ người ta tin mình, gặp chuyện là gọi mình trước.'),
+                ('nam', 'Bà lưu số con đầu danh bạ rồi đó nghen.'),
+                ('me', 'Em sẽ giữ sổ như anh: ai cũng như ai, không nhận của ai cái gì, gặp chuyện thì có mặt.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
 }
 
 

@@ -1,5 +1,185 @@
 [
  {
+  "vi": "Em nhận thêm một ca, chị gọi thêm người cho ca tối.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Phượng thở dài: “Ừ, đúng nội quy.” Chị gọi thêm cứu hộ thời vụ.",
+  "en": ""
+ },
+ {
+  "vi": "Cao điểm hè làm bảy ngày một tuần",
+  "en": ""
+ },
+ {
+  "vi": "“Ba tuần cao điểm hè, nhóm cứu hộ làm đủ bảy ngày mỗi tuần, không nghỉ. Cuối hè tính thưởng.”",
+  "en": ""
+ },
+ {
+  "vi": "“Hè có ba tuần thôi mà.”",
+  "en": ""
+ },
+ {
+  "vi": "“Không làm thì thưởng hè khỏi bàn.”",
+  "en": ""
+ },
+ {
+  "vi": "ngày nghỉ bị cắt",
+  "en": ""
+ },
+ {
+  "vi": "Không ngày nghỉ thì mắt và đầu không còn tỉnh.",
+  "en": ""
+ },
+ {
+  "vi": "Cho em xin lịch xoay ca bằng văn bản.",
+  "en": ""
+ },
+ {
+  "vi": "Ban giám đốc xếp lịch xoay ca, ai cũng có ít nhất một ngày nghỉ mỗi tuần.",
+  "en": ""
+ },
+ {
+  "vi": "Dạy thêm lớp bơi không tính công",
+  "en": ""
+ },
+ {
+  "vi": "“Lớp bơi hè đông quá, em dạy thêm bốn lớp buổi tối nha. Coi như góp sức cho phường, khỏi tính công.”",
+  "en": ""
+ },
+ {
+  "vi": "“Trẻ con trong phường mà em.”",
+  "en": ""
+ },
+ {
+  "vi": "“Năm sau chị xét tăng lương.”",
+  "en": ""
+ },
+ {
+  "vi": "Cho em xin hợp đồng dạy thêm có tính công.",
+  "en": ""
+ },
+ {
+  "vi": "Em dạy hai lớp, hai lớp kia mời thầy cô bơi của phường.",
+  "en": ""
+ },
+ {
+  "vi": "Trung tâm ký hợp đồng dạy thêm có tính công, mời thêm thầy bơi cho hai lớp còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Trực đêm pool party",
+  "en": ""
+ },
+ {
+  "vi": "“Tối thứ bảy có pool party công ty bạn anh, em trực tới hai giờ sáng. Có nhạc, có bia, vui mà.”",
+  "en": ""
+ },
+ {
+  "vi": "“Có bồi dưỡng đàng hoàng.”",
+  "en": ""
+ },
+ {
+  "vi": "“Tiệc của bạn anh, em nể chút.”",
+  "en": ""
+ },
+ {
+  "vi": "giờ trực khuya",
+  "en": ""
+ },
+ {
+  "vi": "Có bia rượu thì không mở khu sâu, trực khuya phải có hai người.",
+  "en": ""
+ },
+ {
+  "vi": "Anh gửi kế hoạch an toàn của buổi tiệc cho trung tâm duyệt.",
+  "en": ""
+ },
+ {
+  "vi": "Buổi tiệc chỉ mở khu cạn tới mười giờ, có thêm hai cứu hộ thuê ngoài.",
+  "en": ""
+ },
+ {
+  "vi": "Báo chú Bảy",
+  "en": ""
+ },
+ {
+  "vi": "Báo xí nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ công đoàn xí nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tổ chức xí nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "người gác đèn tập sự",
+  "en": ""
+ },
+ {
+  "vi": "người gác đèn chính",
+  "en": ""
+ },
+ {
+  "vi": "🛡️ Báo là đúng: xí nghiệp có quy trình bảo vệ người đang trực đèn.",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Xí nghiệp: tạm đình chỉ trực hết hôm nay, chú Bảy trực thay. Mai lên trình bày qua bộ đàm.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy trực thay ca của bạn; bạn ngủ một giấc dài nghe sóng vỗ.",
+  "en": ""
+ },
+ {
+  "vi": "Tắt đèn đúng giờ, thử lần lượt từng thứ, lau kính, ghi sổ dầu; hỏng thì xử lý và báo đúng nơi rồi mới ký sổ trực.",
+  "en": ""
+ },
+ {
+  "vi": "Ca sáng: tắt đèn, kiểm máy",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy đưa cuốn sổ trực: “Tắt đèn đúng giờ, thử từng thứ một, lau kính cho sạch. Chưa thử thì đừng ký, con.”",
+  "en": ""
+ },
+ {
+  "vi": "Thắp đèn đúng giờ, bấm giờ đếm chớp so với danh mục đèn; sai thì báo đài. Sương mù thì chạy còi. Ghi sổ đúng sự thật.",
+  "en": ""
+ },
+ {
+  "vi": "Chạng vạng: thắp đèn",
+  "en": ""
+ },
+ {
+  "vi": "Mặt trời đỏ ối sát mặt biển. Chú Bảy gõ vào cửa phòng đèn: “Tới giờ rồi đó. Thắp xong nhớ đếm chớp.”",
+  "en": ""
+ },
+ {
+  "vi": "Đọc đủ bốn thứ rồi mới báo đài. Gió từ cấp 6 hoặc áp kế giảm nhanh thì phát cảnh báo cho tàu thuyền.",
+  "en": ""
+ },
+ {
+  "vi": "Quan trắc 07:00, báo đài",
+  "en": ""
+ },
+ {
+  "vi": "📻 Chị Hải Yến: “Trạm Hòn Gió, tới giờ quan trắc bảy giờ. Đài chờ số liệu của trạm.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn kỹ trước. Báo đài đúng mức khẩn cấp, đúng phương vị. Không ai tự ra khơi, không ai nhảy xuống bơi.",
+  "en": ""
+ },
+ {
+  "vi": "Xem giấy tờ trước. Nội quy trạm: ban ngày, có giấy của xí nghiệp, có người đi kèm, không vào phòng đèn, không ở lại qua đêm. Người gặp nạn thì luôn cho trú.",
+  "en": ""
+ },
+ {
   "vi": "Đo bồn trước và sau khi bơm, kiểm từng món, ghi rõ món thiếu, món hỏng. Ký đúng số lít đo được.",
   "en": ""
  },
@@ -1617,186 +1797,6 @@
  },
  {
   "vi": "Một tấm kính bảo vệ nứt chân chim ở góc dưới.",
-  "en": ""
- },
- {
-  "vi": "Chưa ảnh hưởng ánh sáng, nhưng gió lớn có thể vỡ: xin kính mới theo tàu.",
-  "en": ""
- },
- {
-  "vi": "Ắc quy chỉ còn 38%, tấm pin phủ đầy phân chim.",
-  "en": ""
- },
- {
-  "vi": "Lau tấm pin, chạy máy phát sạc bù",
-  "en": ""
- },
- {
-  "vi": "Pin bẩn thì sạc không vào; mình lau, sạc bù và ghi sổ.",
-  "en": ""
- },
- {
-  "vi": "Máy phát rỉ dầu ở khớp ống, nhớt dưới vạch.",
-  "en": ""
- },
- {
-  "vi": "Châm nhớt, siết khớp, lót khay hứng dầu",
-  "en": ""
- },
- {
-  "vi": "Siết tạm được, nhưng khớp ống phải thay: ghi sổ và xin vật tư.",
-  "en": ""
- },
- {
-  "vi": "Còi sương mù kêu khàn một tiếng rồi tắt hẳn.",
-  "en": ""
- },
- {
-  "vi": "Đêm sương mà còi câm thì tàu không biết đảo ở đâu: đài phải báo tàu thuyền, xí nghiệp gửi thợ.",
-  "en": ""
- },
- {
-  "vi": "Bộ đàm VHF chính rè rè, đài nghe chữ được chữ mất.",
-  "en": ""
- },
- {
-  "vi": "Chuyển sang bộ đàm dự phòng, thử lại",
-  "en": ""
- },
- {
-  "vi": "Có máy dự phòng thì mình tự chuyển; máy chính phải gửi về sửa.",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy ghi: “Đêm qua gió đông bắc giật cấp 6, đèn chạy tốt. Mèo Mun bắt được con chuột kho.”",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy ghi: “Còn hai bóng dự phòng trong tủ. Tàu tiếp tế nhớ xin thêm bóng với nhớt máy.”",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy ghi: “Ông Sáu Ghe lại gọi xin quay đèn về phía lưới. Chú không cho. Con cũng đừng cho.”",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy ghi: “Chiều qua có cano thuê ghé, đòi lên đỉnh tháp chụp ảnh. Nói khéo mà cứng.”",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy ghi: “Luống rau muống sau nhà đã lên ngọn. Tưới buổi chiều thôi, nắng trưa cháy lá.”",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy ghi: “Áp kế hôm qua tụt hai vạch lúc chiều. Hôm nay để ý mây phía đông.”",
-  "en": ""
- },
- {
-  "vi": "Lặng – gợn nhẹ",
-  "en": ""
- },
- {
-  "vi": "Mặt biển phẳng lì, chỉ gợn lăn tăn như vảy cá.",
-  "en": ""
- },
- {
-  "vi": "Sóng nhỏ",
-  "en": ""
- },
- {
-  "vi": "Sóng nhỏ dài, vài ngọn vỡ lấp lánh, chưa thấy bạc đầu.",
-  "en": ""
- },
- {
-  "vi": "Sóng vừa, bạc đầu",
-  "en": ""
- },
- {
-  "vi": "Sóng dài hơn, bạc đầu trắng xóa nhiều nơi, có bụi nước.",
-  "en": ""
- },
- {
-  "vi": "Sóng lớn, biển động",
-  "en": ""
- },
- {
-  "vi": "Sóng chồm cao, bọt trắng bị gió kéo thành vệt dài, bụi nước mù mịt.",
-  "en": ""
- },
- {
-  "vi": "Trên 10 km",
-  "en": ""
- },
- {
-  "vi": "Thấy rõ mũi Cửa Lở (15 km) xanh thẫm cuối chân trời.",
-  "en": ""
- },
- {
-  "vi": "Thấy hòn Đá Bia (8 km), không thấy mũi Cửa Lở đâu.",
-  "en": ""
- },
- {
-  "vi": "Thấy hòn Mõ (3 km) mờ mờ, không thấy hòn Đá Bia.",
-  "en": ""
- },
- {
-  "vi": "Dưới 1 km",
-  "en": ""
- },
- {
-  "vi": "Trắng xóa. Không thấy cả phao số 1 cách bến 800 mét.",
-  "en": ""
- },
- {
-  "vi": "Tăng",
-  "en": ""
- },
- {
-  "vi": "Đứng",
-  "en": ""
- },
- {
-  "vi": "Giảm chậm",
-  "en": ""
- },
- {
-  "vi": "Giảm nhanh (từ 3 hPa / 3 giờ)",
-  "en": ""
- },
- {
-  "vi": "Máy đo gió",
-  "en": ""
- },
- {
-  "vi": "Gió",
-  "en": ""
- },
- {
-  "vi": "Nhìn mặt biển",
-  "en": ""
- },
- {
-  "vi": "Biển",
-  "en": ""
- },
- {
-  "vi": "Nhìn các mốc tầm xa",
-  "en": ""
- },
- {
-  "vi": "Tầm nhìn",
-  "en": ""
- },
- {
-  "vi": "Áp kế & sổ áp",
-  "en": ""
- },
- {
-  "vi": "Áp suất",
-  "en": ""
- },
- {
-  "vi": "✅ Thắp đèn đúng giờ",
   "en": ""
  }
 ]

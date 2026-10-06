@@ -1,5 +1,185 @@
 [
  {
+  "vi": "Khách đòi bớt tiền vì “dọn nhanh quá”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Diệu nhìn đồng hồ: “Hẹn hai tiếng mà con xong sớm hai mươi phút. Cô trả bớt nhé?”",
+  "en": ""
+ },
+ {
+  "vi": "Mọi phòng trong lịch đã sạch, cô Diệu vừa vuốt găng kiểm xong.",
+  "en": ""
+ },
+ {
+  "vi": "Giá của tổ",
+  "en": ""
+ },
+ {
+  "vi": "Tổ tính theo việc trong lịch hẹn, xong sớm thì tiền công vẫn vậy.",
+  "en": ""
+ },
+ {
+  "vi": "Còn thời gian",
+  "en": ""
+ },
+ {
+  "vi": "Còn hai mươi phút trước lịch nhà sau.",
+  "en": ""
+ },
+ {
+  "vi": "Lễ phép nói giá theo việc; xin làm thêm một việc nhỏ trong hai mươi phút",
+  "en": ""
+ },
+ {
+  "vi": "Con bé nói chuyện lễ phép, còn lau giúp cô cái cửa sổ. Cô trả đủ, vui vẻ.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn lau thêm hai ô cửa sổ. Cô Diệu gật gù trả đủ tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh mà kỹ thì cô chịu.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ giá, giữ cả lòng khách.",
+  "en": ""
+ },
+ {
+  "vi": "Thôi cô bớt bao nhiêu cũng được",
+  "en": ""
+ },
+ {
+  "vi": "Dọn sạch, nhưng hình như cô làm khó con bé.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Diệu bớt một ít. Tối cô Mai bảo lần sau cứ nói giá của tổ.",
+  "en": ""
+ },
+ {
+  "vi": "Cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Làm nhanh mà lại thiệt.",
+  "en": ""
+ },
+ {
+  "vi": "“Cô không trả đủ thì lần sau đừng gọi tổ”",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi một câu mà nói năng xấc xược.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Diệu gọi cho cô Mai đổi người.",
+  "en": ""
+ },
+ {
+  "vi": "Thời nay ăn nói thế à.",
+  "en": ""
+ },
+ {
+  "vi": "Nói giá cho rõ, đừng nói nặng.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền công tính theo việc. Xong sớm thì lễ phép nói rõ, có thể xin làm thêm một việc nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Mấy đồng lẻ khỏi thối, cháu giữ uống nước nghen!",
+  "en": ""
+ },
+ {
+  "vi": "Thôi mấy đồng lẻ em giữ uống nước nha.",
+  "en": ""
+ },
+ {
+  "vi": "Dạ khỏi thối ạ, giữ uống nước nha!",
+  "en": ""
+ },
+ {
+  "vi": "Mấy đồng lẻ bà cho cháu uống nước.",
+  "en": ""
+ },
+ {
+  "vi": "Khỏi thối, em giữ uống nước nha.",
+  "en": ""
+ },
+ {
+  "vi": "Khỏi thối khỏi thối, em giữ uống nước, chị đi đây!",
+  "en": ""
+ },
+ {
+  "vi": "Khỏi thối, giữ uống nước nha.",
+  "en": ""
+ },
+ {
+  "vi": "Đã tính tiền khách này rồi: thối tiền rồi giao hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ cao điểm chỉ bán hàng đóng gói, không cân ký.",
+  "en": ""
+ },
+ {
+  "vi": "Món này chưa có trên máy tính tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm “Tính tiền” trước: khách đưa tiền rồi mới thối.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ vừa thay đổi — nhìn lại giỏ của khách rồi tính tiền nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Máy tính tiền đang trống. Quét hàng trong giỏ trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "— vừa đủ, không cần thối.",
+  "en": ""
+ },
+ {
+  "vi": "bấm dư tiền, khách phải soi ra",
+  "en": ""
+ },
+ {
+  "vi": "bấm dư tiền, khách phải tự soi",
+  "en": ""
+ },
+ {
+  "vi": "quét sót món, khách mang về chưa tính tiền",
+  "en": ""
+ },
+ {
+  "vi": "tính nhanh, thối đúng",
+  "en": ""
+ },
+ {
+  "vi": "chờ tiền thối tới lúc đóng cửa",
+  "en": ""
+ },
+ {
+  "vi": "có lúc bấm sai tiền hàng",
+  "en": ""
+ },
+ {
+  "vi": "Tính tiền & thối tiền",
+  "en": ""
+ },
+ {
+  "vi": "tính đúng, thối đúng từng khách",
+  "en": ""
+ },
+ {
   "vi": "đã tính tiền",
   "en": ""
  },
@@ -1617,186 +1797,6 @@
  },
  {
   "vi": "Gọi IT, trong lúc chờ in nốt ở máy tầng 2",
-  "en": ""
- },
- {
-  "vi": "Kịp giờ ký; IT gỡ được mẩu giấy kẹt sâu trong máy.",
-  "en": ""
- },
- {
-  "vi": "Tự giật mạnh tờ giấy ra",
-  "en": ""
- },
- {
-  "vi": "Rách trục cuốn giấy, sửa mất 10 xu.",
-  "en": ""
- },
- {
-  "vi": "Ngồi chờ máy “tự hết”",
-  "en": ""
- },
- {
-  "vi": "Máy không tự hết.",
-  "en": ""
- },
- {
-  "vi": "Sinh nhật bất ngờ trong 30 phút",
-  "en": ""
- },
- {
-  "vi": "Anh Quân: “Hôm nay sinh nhật cô Hằng! Em lo cái bánh, 3 giờ cả phòng hát chúc mừng nhé.” Bây giờ là 2 giờ 30.",
-  "en": ""
- },
- {
-  "vi": "Đặt bánh nhỏ tiệm gần, gom chữ ký cả phòng vào tấm thiệp",
-  "en": ""
- },
- {
-  "vi": "−15 xu, mất 15 phút",
-  "en": ""
- },
- {
-  "vi": "Cô Hằng bất ngờ đến rưng rưng; lần đầu thấy cô cười to giữa giờ làm.",
-  "en": ""
- },
- {
-  "vi": "Đặt bánh ba tầng cho hoành tráng",
-  "en": ""
- },
- {
-  "vi": "Bánh tới lúc 4 giờ rưỡi, cô Hằng đã về.",
-  "en": ""
- },
- {
-  "vi": "Hứa rồi quên mất",
-  "en": ""
- },
- {
-  "vi": "3 giờ cả phòng đứng nhìn nhau.",
-  "en": ""
- },
- {
-  "vi": "Ứng viên giỏi nhưng đang mang thai",
-  "en": ""
- },
- {
-  "vi": "Anh Quân lật hồ sơ: “Bạn này giỏi đấy, nhưng ghi chú là đang mang thai bốn tháng. Thôi loại đi em, tuyển vào lại nghỉ sinh.”",
-  "en": ""
- },
- {
-  "vi": "Bạn là giám đốc công ty nhỏ, lo mùa tựu trường đơn hàng dồn dập mà thiếu người.",
-  "en": ""
- },
- {
-  "vi": "Quy định tuyển dụng",
-  "en": ""
- },
- {
-  "vi": "Không được từ chối tuyển dụng vì lý do mang thai, giới tính hay hôn nhân.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ ứng viên",
-  "en": ""
- },
- {
-  "vi": "Năm năm thiết kế túi xách, từng làm mẫu cho hai thương hiệu lớn.",
-  "en": ""
- },
- {
-  "vi": "Kế hoạch mùa tựu trường",
-  "en": ""
- },
- {
-  "vi": "Cao điểm là tháng 7–8; ứng viên dự sinh tháng 12.",
-  "en": ""
- },
- {
-  "vi": "Mời phỏng vấn như mọi người, trình anh Quân lịch cao điểm và kế hoạch người hỗ trợ khi chị nghỉ sinh",
-  "en": ""
- },
- {
-  "vi": "Được phỏng vấn công bằng, em vào làm kịp mùa cao điểm. Cảm ơn phòng nhân sự 🌷",
-  "en": ""
- },
- {
-  "vi": "Chị ấy vào làm, mẫu balo mới kịp mùa tựu trường; nghỉ sinh có người hỗ trợ sắp sẵn.",
-  "en": ""
- },
- {
-  "vi": "Ứng viên",
-  "en": ""
- },
- {
-  "vi": "Mình chỉ mong được xét bằng năng lực.",
-  "en": ""
- },
- {
-  "vi": "Hóa ra lịch cao điểm vẫn ổn, anh lo xa quá.",
-  "en": ""
- },
- {
-  "vi": "Loại hồ sơ theo ý giám đốc",
-  "en": ""
- },
- {
-  "vi": "Bị loại chỉ vì đang có em bé. Buồn ghê.",
-  "en": ""
- },
- {
-  "vi": "Ứng viên biết lý do thật, đăng lên mạng; công ty bị hỏi thăm vì phân biệt đối xử.",
-  "en": ""
- },
- {
-  "vi": "Người ta không nói thẳng, nhưng mình biết.",
-  "en": ""
- },
- {
-  "vi": "Đây là chuyện phòng nhân sự phải can ngăn.",
-  "en": ""
- },
- {
-  "vi": "Hẹn ứng viên “sau sinh quay lại”",
-  "en": ""
- },
- {
-  "vi": "Hẹn sau sinh… nghe lịch sự mà vẫn là loại mình.",
-  "en": ""
- },
- {
-  "vi": "Ứng viên nhận việc chỗ khác; công ty thiếu người thiết kế cả mùa.",
-  "en": ""
- },
- {
-  "vi": "Mẫu mới chậm, khách hỏi mãi.",
-  "en": ""
- },
- {
-  "vi": "Tuyển dụng xét năng lực; lo lắng của sếp thì giải bằng kế hoạch, không bằng loại người.",
-  "en": ""
- },
- {
-  "vi": "Thợ lâu năm sợ mất việc vì máy mới",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng đứng ngập ngừng: “Nghe nói xưởng mua máy may tự động. Thế… mấy người già như tôi có bị cho nghỉ không cô?”",
-  "en": ""
- },
- {
-  "vi": "Bạn là thợ may 15 năm, tay nghề giỏi nhưng không rành máy tính.",
-  "en": ""
- },
- {
-  "vi": "Kế hoạch đầu tư",
-  "en": ""
- },
- {
-  "vi": "Máy mới làm đường may thẳng; mẫu khó vẫn cần thợ tay nghề cao.",
-  "en": ""
- },
- {
-  "vi": "Chương trình đào tạo",
   "en": ""
  }
 ]

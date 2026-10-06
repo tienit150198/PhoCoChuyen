@@ -1,5 +1,185 @@
 [
  {
+  "vi": "Có chuyện cần quyết, xong rồi làm tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác không có trong việc dọn nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Việc này không thuộc tổ giúp việc.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa soạn xe: giặt khăn, châm chai rồi bấm “Lên đường” nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm chuông, nghe khách dặn đã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà này dọn xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Khăn sạch rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Giặt khăn bằng nước ấm, vắt kiệt, phơi khô. Xanh, vàng, đỏ, mỗi màu một chồng.",
+  "en": ""
+ },
+ {
+  "vi": "Trên xe không có chai này.",
+  "en": ""
+ },
+ {
+  "vi": "Chai cũ còn dư khi thay",
+  "en": ""
+ },
+ {
+  "vi": "Xe đã lên đường rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Khăn hôm qua chưa giặt, mùi chua, lau đâu dính bẩn đó.",
+  "en": ""
+ },
+ {
+  "vi": "khăn chưa giặt",
+  "en": ""
+ },
+ {
+  "vi": "chai sắp cạn",
+  "en": ""
+ },
+ {
+  "vi": "Giặt khăn, châm chai, lên đường.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Mai nhắn: “Xe gọn gàng thế là chuẩn, đi cẩn thận nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Mai nhắn: “Đi đi con, mai nhớ soạn xe kỹ hơn.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhà này không có phòng đó.",
+  "en": ""
+ },
+ {
+  "vi": "Đang ở phòng này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Trên xe không có dụng cụ này.",
+  "en": ""
+ },
+ {
+  "vi": "Không dùng gì, lau khô.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn phòng để dọn trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng này không có chỗ đó.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn dụng cụ trên xe trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chai (hoặc lau khô) trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "làm mèo hoảng",
+  "en": ""
+ },
+ {
+  "vi": "khăn bồn cầu lau chỗ khác",
+  "en": ""
+ },
+ {
+  "vi": "Nhà có bé (có mèo) mà lau sàn bằng hóa chất, mùi nồng cả buổi.",
+  "en": ""
+ },
+ {
+  "vi": "lau sàn bằng hóa chất",
+  "en": ""
+ },
+ {
+  "vi": "💧 Sàn còn bụi tóc: lau ướt chỉ làm bụi bết thành vệt. Quét trước, lau sau.",
+  "en": ""
+ },
+ {
+  "vi": "Món này đã cất rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Món này đang ở chỗ cũ.",
+  "en": ""
+ },
+ {
+  "vi": "chỗ khách dặn kỹ vẫn bẩn",
+  "en": ""
+ },
+ {
+  "vi": "còn chỗ chưa sạch",
+  "en": ""
+ },
+ {
+  "vi": "không đặt đồ lại chỗ cũ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa dọn chỗ nào. Chọn phòng để bắt đầu nhé.",
+  "en": ""
+ },
+ {
+  "vi": "(khách quen).",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Học nghề xong! Cô Mai: “Từ mai con tự đi một mình được rồi. Có gì gọi cô.”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Mai: “Giỏi lắm!”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Mai: “Trên cao trước, khô trước ướt sau nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Trên xe:",
+  "en": ""
+ },
+ {
+  "vi": "lần lau.",
+  "en": ""
+ },
+ {
+  "vi": "khăn giặt sạch",
+  "en": ""
+ },
+ {
+  "vi": "Chai đủ dùng",
+  "en": ""
+ },
+ {
+  "vi": "chai châm đầy",
+  "en": ""
+ },
+ {
   "vi": "Sạch sẽ",
   "en": ""
  },
@@ -1617,186 +1797,6 @@
  },
  {
   "vi": "Vào nhà người ta là được tin. Chỉ dọn phần được nhờ, không mở tủ, không chụp đồ riêng của ai.",
-  "en": ""
- },
- {
-  "vi": "Khách đòi bớt tiền vì “dọn nhanh quá”",
-  "en": ""
- },
- {
-  "vi": "Cô Diệu nhìn đồng hồ: “Hẹn hai tiếng mà con xong sớm hai mươi phút. Cô trả bớt nhé?”",
-  "en": ""
- },
- {
-  "vi": "Mọi phòng trong lịch đã sạch, cô Diệu vừa vuốt găng kiểm xong.",
-  "en": ""
- },
- {
-  "vi": "Giá của tổ",
-  "en": ""
- },
- {
-  "vi": "Tổ tính theo việc trong lịch hẹn, xong sớm thì tiền công vẫn vậy.",
-  "en": ""
- },
- {
-  "vi": "Còn thời gian",
-  "en": ""
- },
- {
-  "vi": "Còn hai mươi phút trước lịch nhà sau.",
-  "en": ""
- },
- {
-  "vi": "Lễ phép nói giá theo việc; xin làm thêm một việc nhỏ trong hai mươi phút",
-  "en": ""
- },
- {
-  "vi": "Con bé nói chuyện lễ phép, còn lau giúp cô cái cửa sổ. Cô trả đủ, vui vẻ.",
-  "en": ""
- },
- {
-  "vi": "Bạn lau thêm hai ô cửa sổ. Cô Diệu gật gù trả đủ tiền.",
-  "en": ""
- },
- {
-  "vi": "Nhanh mà kỹ thì cô chịu.",
-  "en": ""
- },
- {
-  "vi": "Giữ giá, giữ cả lòng khách.",
-  "en": ""
- },
- {
-  "vi": "Thôi cô bớt bao nhiêu cũng được",
-  "en": ""
- },
- {
-  "vi": "Dọn sạch, nhưng hình như cô làm khó con bé.",
-  "en": ""
- },
- {
-  "vi": "Cô Diệu bớt một ít. Tối cô Mai bảo lần sau cứ nói giá của tổ.",
-  "en": ""
- },
- {
-  "vi": "Cũng được.",
-  "en": ""
- },
- {
-  "vi": "Làm nhanh mà lại thiệt.",
-  "en": ""
- },
- {
-  "vi": "“Cô không trả đủ thì lần sau đừng gọi tổ”",
-  "en": ""
- },
- {
-  "vi": "Hỏi một câu mà nói năng xấc xược.",
-  "en": ""
- },
- {
-  "vi": "Cô Diệu gọi cho cô Mai đổi người.",
-  "en": ""
- },
- {
-  "vi": "Thời nay ăn nói thế à.",
-  "en": ""
- },
- {
-  "vi": "Nói giá cho rõ, đừng nói nặng.",
-  "en": ""
- },
- {
-  "vi": "Tiền công tính theo việc. Xong sớm thì lễ phép nói rõ, có thể xin làm thêm một việc nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Mấy đồng lẻ khỏi thối, cháu giữ uống nước nghen!",
-  "en": ""
- },
- {
-  "vi": "Thôi mấy đồng lẻ em giữ uống nước nha.",
-  "en": ""
- },
- {
-  "vi": "Dạ khỏi thối ạ, giữ uống nước nha!",
-  "en": ""
- },
- {
-  "vi": "Mấy đồng lẻ bà cho cháu uống nước.",
-  "en": ""
- },
- {
-  "vi": "Khỏi thối, em giữ uống nước nha.",
-  "en": ""
- },
- {
-  "vi": "Khỏi thối khỏi thối, em giữ uống nước, chị đi đây!",
-  "en": ""
- },
- {
-  "vi": "Khỏi thối, giữ uống nước nha.",
-  "en": ""
- },
- {
-  "vi": "Đã tính tiền khách này rồi: thối tiền rồi giao hàng.",
-  "en": ""
- },
- {
-  "vi": "Giờ cao điểm chỉ bán hàng đóng gói, không cân ký.",
-  "en": ""
- },
- {
-  "vi": "Món này chưa có trên máy tính tiền.",
-  "en": ""
- },
- {
-  "vi": "Bấm “Tính tiền” trước: khách đưa tiền rồi mới thối.",
-  "en": ""
- },
- {
-  "vi": "Kệ vừa thay đổi — nhìn lại giỏ của khách rồi tính tiền nhé.",
-  "en": ""
- },
- {
-  "vi": "Máy tính tiền đang trống. Quét hàng trong giỏ trước đã.",
-  "en": ""
- },
- {
-  "vi": "— vừa đủ, không cần thối.",
-  "en": ""
- },
- {
-  "vi": "bấm dư tiền, khách phải soi ra",
-  "en": ""
- },
- {
-  "vi": "bấm dư tiền, khách phải tự soi",
-  "en": ""
- },
- {
-  "vi": "quét sót món, khách mang về chưa tính tiền",
-  "en": ""
- },
- {
-  "vi": "tính nhanh, thối đúng",
-  "en": ""
- },
- {
-  "vi": "chờ tiền thối tới lúc đóng cửa",
-  "en": ""
- },
- {
-  "vi": "có lúc bấm sai tiền hàng",
-  "en": ""
- },
- {
-  "vi": "Tính tiền & thối tiền",
-  "en": ""
- },
- {
-  "vi": "tính đúng, thối đúng từng khách",
   "en": ""
  }
 ]

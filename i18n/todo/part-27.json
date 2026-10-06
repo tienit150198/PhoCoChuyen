@@ -1,5 +1,185 @@
 [
  {
+  "vi": "Đã chuyển khỏi phòng kế toán: thu hồi phần mềm kế toán.",
+  "en": ""
+ },
+ {
+  "vi": "Có phiếu cấp VPN đã duyệt.",
+  "en": ""
+ },
+ {
+  "vi": "Đúng quyền hiện có.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu cấp VPN đã bị hủy.",
+  "en": ""
+ },
+ {
+  "vi": "Rà soát quyền truy cập tháng này",
+  "en": ""
+ },
+ {
+  "vi": "Anh Long: “Cuối tháng rồi. Em rà lại bảng quyền truy cập với danh sách nghỉ việc và các phiếu yêu cầu nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Quy định quyền truy cập",
+  "en": ""
+ },
+ {
+  "vi": "Nghỉ việc: thu hồi tất cả ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Phần mềm kế toán: chỉ người phòng kế toán.",
+  "en": ""
+ },
+ {
+  "vi": "Thư mục Nhân sự: chỉ phòng nhân sự; thực tập sinh không bao giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ cấp quyền khi phiếu yêu cầu ĐÃ DUYỆT.",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách & phiếu trong tháng",
+  "en": ""
+ },
+ {
+  "vi": "Không có thay đổi nào.",
+  "en": ""
+ },
+ {
+  "vi": "Máy in",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng may",
+  "en": ""
+ },
+ {
+  "vi": "📷 Tem dán trên máy",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Hóa đơn mua",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ tài sản",
+  "en": ""
+ },
+ {
+  "vi": "📝 Phiếu bàn giao",
+  "en": ""
+ },
+ {
+  "vi": "📦 Hộp máy",
+  "en": ""
+ },
+ {
+  "vi": "Số serial (S/N)",
+  "en": ""
+ },
+ {
+  "vi": "Chép đúng S/N trên tem máy, không lấy mã vạch hộp.",
+  "en": ""
+ },
+ {
+  "vi": "Mã tài sản mới",
+  "en": ""
+ },
+ {
+  "vi": "Theo phiếu bàn giao.",
+  "en": ""
+ },
+ {
+  "vi": "Hết bảo hành (dd/mm/yyyy)",
+  "en": ""
+ },
+ {
+  "vi": "Phòng đã đổi người nhận máy.",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng phòng gọi xuống: đổi người nhận máy!",
+  "en": ""
+ },
+ {
+  "vi": "📞 Trưởng phòng gọi",
+  "en": ""
+ },
+ {
+  "vi": "Đọc tem máy, hóa đơn, sổ tài sản và phiếu bàn giao; ghi đủ năm ô của sổ tài sản.",
+  "en": ""
+ },
+ {
+  "vi": "Cách ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Mã tài sản: CD-<loại>-<số tiếp theo, 4 chữ số>.",
+  "en": ""
+ },
+ {
+  "vi": "S/N chép trên tem máy, không lấy mã vạch hộp.",
+  "en": ""
+ },
+ {
+  "vi": "Hết bảo hành = ngày mua + số tháng bảo hành.",
+  "en": ""
+ },
+ {
+  "vi": "“Nhà mạng” xin mã OTP",
+  "en": ""
+ },
+ {
+  "vi": "Nhi chuyển máy: “Anh ơi, bên nhà mạng gọi, bảo nâng cấp sim công ty, xin mã OTP vừa gửi về điện thoại của sếp.”",
+  "en": ""
+ },
+ {
+  "vi": "Không ai được hỏi mã OTP. Nhà mạng thật không bao giờ xin OTP.",
+  "en": ""
+ },
+ {
+  "vi": "Số gọi đến",
+  "en": ""
+ },
+ {
+  "vi": "Số di động lạ, không phải tổng đài nhà mạng.",
+  "en": ""
+ },
+ {
+  "vi": "Sim của sếp",
+  "en": ""
+ },
+ {
+  "vi": "Sim đó nhận mã OTP của tài khoản ngân hàng công ty.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, cúp máy, gọi tổng đài chính thức để kiểm tra; báo sếp và cả công ty",
+  "en": ""
+ },
+ {
+  "vi": "Tổng đài xác nhận không có đợt nâng cấp nào. Cả công ty được cảnh báo kịp.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi lại tên, mã nhân viên của người gọi rồi tính",
+  "en": ""
+ },
+ {
+  "vi": "Kẻ gian đọc tên, mã rất trơn tru. May mà bạn chưa đưa mã.",
+  "en": ""
+ },
+ {
+  "vi": "Xin mã từ sếp rồi đọc cho họ",
+  "en": ""
+ },
+ {
   "vi": "Tài khoản ngân hàng công ty bị chiếm; cô Hằng phải phong tỏa gấp.",
   "en": ""
  },
@@ -1617,186 +1797,6 @@
  },
  {
   "vi": "Sách đang có người mượn, đọc tại chỗ sao được.",
-  "en": ""
- },
- {
-  "vi": "Sách có trên kệ, thẻ còn hạn mà không cho mượn.",
-  "en": ""
- },
- {
-  "vi": "từ chối vô cớ",
-  "en": ""
- },
- {
-  "vi": "Thẻ hết hạn thì gia hạn hai phút là xong, sao lại từ chối.",
-  "en": ""
- },
- {
-  "vi": "không gia hạn thẻ",
-  "en": ""
- },
- {
-  "vi": "Mượn đủ ba cuốn rồi: trả bớt một cuốn hoặc đọc tại chỗ.",
-  "en": ""
- },
- {
-  "vi": "đúng hạn",
-  "en": ""
- },
- {
-  "vi": "“Đúng hạn mà, trả liền đó.”",
-  "en": ""
- },
- {
-  "vi": "thu phí quá nội quy",
-  "en": ""
- },
- {
-  "vi": "Miễn giảm phí không có lý do chính đáng, kế toán phường nhắc.",
-  "en": ""
- },
- {
-  "vi": "miễn giảm không lý do",
-  "en": ""
- },
- {
-  "vi": "Miễn phí mà không hỏi lý do, sổ không ghi gì.",
-  "en": ""
- },
- {
-  "vi": "miễn không ghi lý do",
-  "en": ""
- },
- {
-  "vi": "Kiểm sách và xem dấu hạn trả trước khi tính phí.",
-  "en": ""
- },
- {
-  "vi": "Khoản phí này xong rồi.",
-  "en": ""
- },
- {
-  "vi": "Tính phí sai nội quy, bị bạn đọc chỉ ra ngay ở quầy.",
-  "en": ""
- },
- {
-  "vi": "tính phí sai",
-  "en": ""
- },
- {
-  "vi": "Cô Nguyệt gật đầu: lý do chính đáng.",
-  "en": ""
- },
- {
-  "vi": "Sổ nợ phí đầy rồi: đòi bớt nợ cũ đã.",
-  "en": ""
- },
- {
-  "vi": "Kiểm sách trước đã.",
-  "en": ""
- },
- {
-  "vi": "Sách không cần sửa.",
-  "en": ""
- },
- {
-  "vi": "Đã xử lý rồi.",
-  "en": ""
- },
- {
-  "vi": "Cách sửa không có.",
-  "en": ""
- },
- {
-  "vi": "Hết băng giấy sửa sách. Mở kho mua thêm nhé.",
-  "en": ""
- },
- {
-  "vi": "Băng keo trong vài tháng là ố vàng, dính chặt trang, càng hỏng thêm.",
-  "en": ""
- },
- {
-  "vi": "dùng băng keo thường",
-  "en": ""
- },
- {
-  "vi": "Sấy nóng, phơi nắng làm giấy cong vênh, giòn gãy.",
-  "en": ""
- },
- {
-  "vi": "sấy nóng sách ướt",
-  "en": ""
- },
- {
-  "vi": "Sửa không đúng kiểu hỏng của sách.",
-  "en": ""
- },
- {
-  "vi": "sửa chưa đúng cách",
-  "en": ""
- },
- {
-  "vi": "Hừm, không ổn lắm.",
-  "en": ""
- },
- {
-  "vi": "Kiểm sách và xem dấu hạn trả trước đã.",
-  "en": ""
- },
- {
-  "vi": "Tính phí xong rồi mới cất sách.",
-  "en": ""
- },
- {
-  "vi": "Sách hỏng mà đưa thẳng lên kệ, người sau mượn lại càng hỏng.",
-  "en": ""
- },
- {
-  "vi": "chưa sửa sách",
-  "en": ""
- },
- {
-  "vi": "Câu hỏi không có.",
-  "en": ""
- },
- {
-  "vi": "Hỏi rồi.",
-  "en": ""
- },
- {
-  "vi": "Cuốn này không có trên xe gợi ý.",
-  "en": ""
- },
- {
-  "vi": "gợi ý sai gu",
-  "en": ""
- },
- {
-  "vi": "nặng quá",
-  "en": ""
- },
- {
-  "vi": "nhẹ quá",
-  "en": ""
- },
- {
-  "vi": "gợi ý chưa vừa",
-  "en": ""
- },
- {
-  "vi": "hơi nặng đầu",
-  "en": ""
- },
- {
-  "vi": "hơi nhẹ quá",
-  "en": ""
- },
- {
-  "vi": "Cuốn này không có trên xe sách.",
-  "en": ""
- },
- {
-  "vi": "Lớp không có.",
   "en": ""
  }
 ]

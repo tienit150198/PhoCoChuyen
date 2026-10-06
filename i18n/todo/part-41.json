@@ -1,5 +1,185 @@
 [
  {
+  "vi": "Khay nào cũng đúng rồi, nộp được.",
+  "en": ""
+ },
+ {
+  "vi": "Soát lại không thấy chỗ nào sai nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch không vướng gì, nộp được.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc kỹ cả câu cuối: người ta hay sửa lại số hoặc giờ ở đó.",
+  "en": ""
+ },
+ {
+  "vi": "Các bước đủ rồi, xem lại thứ tự.",
+  "en": ""
+ },
+ {
+  "vi": "Đủ dữ kiện rồi. Chọn cách vừa đúng quy định vừa có lối ra cho người ta.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác này không dành cho hồ sơ đang mở.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ này đã nộp.",
+  "en": ""
+ },
+ {
+  "vi": "Không có thẻ này.",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ này chưa xếp.",
+  "en": ""
+ },
+ {
+  "vi": "Không có khay này.",
+  "en": ""
+ },
+ {
+  "vi": "Không có chỗ này trong văn bản.",
+  "en": ""
+ },
+ {
+  "vi": "Không có việc này trên bảng lịch.",
+  "en": ""
+ },
+ {
+  "vi": "Việc này chưa xếp.",
+  "en": ""
+ },
+ {
+  "vi": "Ô lịch không có.",
+  "en": ""
+ },
+ {
+  "vi": "Ô này đã có việc khác. Gỡ việc kia ra trước.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu các ô cần ghi.",
+  "en": ""
+ },
+ {
+  "vi": "Ô ghi chép không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Lựa chọn không có.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn ít nhất một bước, mỗi bước một lần.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã tìm hiểu chuyện này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản hồ sơ văn phòng không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ văn phòng sai.",
+  "en": ""
+ },
+ {
+  "vi": "Bài làm của hồ sơ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Khay hồ sơ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ sửa trong văn bản sai.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng lịch sai.",
+  "en": ""
+ },
+ {
+  "vi": "Ô ghi chép sai.",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách bước sai.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ trao đổi sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện đổi ý của hồ sơ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Kết quả hồ sơ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ hoàn tất khi chưa nộp.",
+  "en": ""
+ },
+ {
+  "vi": "Có chuyện cần bạn quyết trước — xử lý xong rồi làm tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ không thuộc bàn này.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận cách trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận nộp hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ trao đổi: chọn cách trả lời để khép lại.",
+  "en": ""
+ },
+ {
+  "vi": "Xem lại hồ sơ rồi hãy nộp.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác văn phòng không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "nộp trong ngày",
+  "en": ""
+ },
+ {
+  "vi": "không sai chỗ nào",
+  "en": ""
+ },
+ {
+  "vi": "không phải hỏi ai",
+  "en": ""
+ },
+ {
+  "vi": "Đúng nguyên tắc",
+  "en": ""
+ },
+ {
+  "vi": "giữ đúng quy định",
+  "en": ""
+ },
+ {
   "vi": "có lỗi làm hại người khác hoặc sai quy định",
   "en": ""
  },
@@ -1617,186 +1797,6 @@
  },
  {
   "vi": "Nó sợ xe máy, hay chui gầm xe.",
-  "en": ""
- },
- {
-  "vi": "Chóp đuôi nó gãy một khúc, phải sờ mới thấy.",
-  "en": ""
- },
- {
-  "vi": "Một chú gọi: “Đầu hẻm 5 có con mèo mướp, không đeo vòng.”",
-  "en": ""
- },
- {
-  "vi": "Chú ấy nhìn kỹ: “Đuôi nó thẳng băng, dài thòng.”",
-  "en": ""
- },
- {
-  "vi": "Một số lạ nhắn: “Tôi nhặt được mèo. Chuyển trước 200 xu tiền giữ giùm rồi tôi mang tới.”",
-  "en": ""
- },
- {
-  "vi": "Hỏi về cái đuôi thì người đó lảng: “Chuyển tiền đi rồi tính.”",
-  "en": ""
- },
- {
-  "vi": "Chị bán xôi ở bãi xe chợ gọi: “Có con mèo con núp gầm xe từ tối qua, run lắm.”",
-  "en": ""
- },
- {
-  "vi": "Chị ấy sờ nhẹ: “Chóp đuôi có khúc gãy nè em.”",
-  "en": ""
- },
- {
-  "vi": "Tofu sổng dây",
-  "en": ""
- },
- {
-  "vi": "Anh Quân thở hổn hển: “Tofu tuột dây ở công viên! Anh chạy tìm cả tiếng rồi. Em dán giúp anh tờ tìm chó.”",
-  "en": ""
- },
- {
-  "vi": "Viết và dán tờ tìm chó Tofu.",
-  "en": ""
- },
- {
-  "vi": "Corgi vàng trắng, mông tròn, đeo yếm xanh.",
-  "en": ""
- },
- {
-  "vi": "Công viên Mây, cổng phía hồ.",
-  "en": ""
- },
- {
-  "vi": "Sáng nay lúc sáu giờ rưỡi.",
-  "en": ""
- },
- {
-  "vi": "Số anh đây em.",
-  "en": ""
- },
- {
-  "vi": "Nghe tiếng túi bánh là chạy tới.",
-  "en": ""
- },
- {
-  "vi": "Sau gáy có vệt lông trắng hình giọt nước.",
-  "en": ""
- },
- {
-  "vi": "Bác bảo vệ trường tiểu học gọi: “Có con chó chân ngắn nằm dưới gốc phượng, đeo yếm xanh.”",
-  "en": ""
- },
- {
-  "vi": "Bác nhìn gáy nó: “Có vệt trắng như giọt nước.”",
-  "en": ""
- },
- {
-  "vi": "Một tin nhắn: “Chó đang ở chỗ tôi. Muốn nhận thì chuyển 300 xu phí chăm sóc.”",
-  "en": ""
- },
- {
-  "vi": "Hỏi gáy có dấu gì, người đó gửi một tấm ảnh corgi lấy trên mạng.",
-  "en": ""
- },
- {
-  "vi": "Một cô gọi: “Có con corgi ở quán cà phê đầu đường, chủ đang ngồi uống cà phê.”",
-  "en": ""
- },
- {
-  "vi": "Cô nhìn gáy con chó: “Không có vệt trắng nào hết.”",
-  "en": ""
- },
- {
-  "vi": "Con vẹt Xanh bay mất",
-  "en": ""
- },
- {
-  "vi": "Chú Sáu cầm cái lồng trống: “Con Xanh bay mất lúc chú thay nước! Nó biết nói đó, cháu dán tờ giấy tìm giùm chú.”",
-  "en": ""
- },
- {
-  "vi": "Viết và dán tờ tìm vẹt Xanh.",
-  "en": ""
- },
- {
-  "vi": "Yến phụng xanh lá, đầu vàng.",
-  "en": ""
- },
- {
-  "vi": "Hẻm 7, bay về phía chợ.",
-  "en": ""
- },
- {
-  "vi": "Chiều qua bốn giờ.",
-  "en": ""
- },
- {
-  "vi": "Số chú đây.",
-  "en": ""
- },
- {
-  "vi": "Hay đậu trên dây phơi đồ.",
-  "en": ""
- },
- {
-  "vi": "Nó biết nói “Sáu ơi”, người lạ nói thì nó im.",
-  "en": ""
- },
- {
-  "vi": "Một số lạ: “Vẹt đang ở nhà tôi, chuyển 150 xu đặt cọc tôi mới giữ.”",
-  "en": ""
- },
- {
-  "vi": "Hỏi con vẹt biết nói gì, người đó bảo: “Chim thì biết hót chứ nói gì.”",
-  "en": ""
- },
- {
-  "vi": "Cô bán hoa đầu chợ gọi: “Có con yến phụng đậu trên sào phơi đồ nhà tôi.”",
-  "en": ""
- },
- {
-  "vi": "Cô gọi thử “Sáu ơi”, con chim nghiêng đầu kêu lại “Sáu ơi!”",
-  "en": ""
- },
- {
-  "vi": "Một bé gọi: “Nhà con có con vẹt xanh mới mua hôm qua, có phải không?”",
-  "en": ""
- },
- {
-  "vi": "Mẹ bé nói con vẹt nhà mình mua ở chợ chim, có hóa đơn.",
-  "en": ""
- },
- {
-  "vi": "Ba bao cát cho nhà năm mèo",
-  "en": ""
- },
- {
-  "vi": "Bà Hai gọi điện: “Giao bà ba bao cát với bốn lon pate mèo. Hẻm 12 chợ Mây, nhanh nghe!”",
-  "en": ""
- },
- {
-  "vi": "Hẻm 12 chợ Mây",
-  "en": ""
- },
- {
-  "vi": "Giao ba bao cát và bốn lon pate mèo.",
-  "en": ""
- },
- {
-  "vi": "Hẻm 12/4, cổng xanh, chứ không phải hẻm 12 nghe con. Hẻm 12 dài lắm.",
-  "en": ""
- },
- {
-  "vi": "Trước năm giờ chiều, bà còn đi chợ.",
-  "en": ""
- },
- {
-  "vi": "Giao hạt cho Tofu",
-  "en": ""
- },
- {
-  "vi": "Anh Quân nhắn: “Em giao giúp anh hai túi hạt vị cừu với một đồ chơi gặm. Chung cư Mây Xanh nhé.”",
   "en": ""
  }
 ]
