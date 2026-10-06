@@ -41,7 +41,8 @@ NORMS = {
     'photobooth': dict(rate=.12, cash=.60, lo=1, hi=4, bill=18),  # a group rounds the bill up after a good strip
     'giupviec': dict(rate=.30, cash=.85, lo=2, hi=8, bill=30),   # a happy client presses a note into your hand at the door
     'naucom': dict(rate=.16, cash=.55, lo=2, hi=6, bill=45),     # a family slips a little extra into the market change
-    'babysitter': dict(rate=.10, cash=0, lo=0, hi=0, bill=18),  # the money tip comes with the day's pay; the blocks get thanks
+    'babysitter': dict(rate=.10, cash=0, lo=0, hi=0, bill=18),
+    'library': dict(rate=.06, cash=0, lo=0, hi=0, bill=10),     # a public library: readers thank with a word or a small gift, never money  # the money tip comes with the day's pay; the blocks get thanks
     'pagoda': dict(rate=.06, cash=0, lo=0, hi=0, bill=8),       # visitors thank with fruit or tea, never money
     # rare, and mostly a thank-you gift: money would not be right here
     'accounting': dict(rate=.08, cash=.30, lo=3, hi=10, bill=50),
@@ -201,6 +202,8 @@ CAREER_LINES = {
                  'Sàn lau nước sạch, thơm mà không nồng.'),
     'naucom': ('Cơm nhà nóng hổi, vừa miệng cả nhà.', 'Nhớ cả lời dặn kiêng muối của ông.', 'Đi chợ khéo, tiền chợ còn dư.',
                'Sổ chợ rõ ràng, hóa đơn đủ cả.'),
+    'library': ('Tìm sách trúng phóc, chẳng phải chờ.', 'Phí phạt rõ ràng, có biên lai.', 'Gợi ý cuốn sách đúng gu luôn.',
+                'Phòng đọc yên mà ai cũng được nói nhẹ nhàng.'),
     'babysitter': ('Bé về nhà vui, kể về cô suốt bữa tối.', 'Nhớ từng dòng giấy dặn, không phải nhắc.', 'Nhật ký trong ngày rõ ràng, kể thật.',
                    'Bé ăn ngoan, ngủ ngon.'),
     'ice_cream': ('Viên kem tròn xoe, đủ gam luôn.', 'Kem lạnh mịn, không chảy giọt nào.', 'Nhớ cả lời dặn dị ứng của bé.',
@@ -252,6 +255,7 @@ GIFTS = {
     'photobooth': (('🎞️', 'một dải ảnh cả nhóm tặng lại'), ('🍬', 'bịch kẹo dẻo hội bạn chia'), ('💌', 'tấm thiệp vẽ cái máy ảnh')),
     'giupviec': (('🍵', 'gói trà bà Xuân gói sẵn'), ('🍰', 'hộp bánh anh Tùng để trên bàn'), ('🐟', 'túi bánh cá chị Hà mua cho bạn')),
     'naucom': (('🐟', 'bịch khô cá cô Lệ phơi'), ('🎨', 'bức tranh mâm cơm bé Bin vẽ'), ('📜', 'bài thơ ông Toàn chép tay')),
+    'library': (('🔖', 'chiếc kẹp sách tự làm'), ('🍵', 'gói trà ông Thạc gửi'), ('💌', 'tấm thiệp cảm ơn của Đạt')),
     'babysitter': (('🎨', 'bức tranh bé vẽ bằng bút sáp'), ('🍘', 'túi bánh gạo bé chia cho'), ('💌', 'tấm thiệp mẹ bé viết tay')),
     'ice_cream': (('🎨', 'bức tranh cây kem bé vẽ bằng bút sáp'), ('🍬', 'nắm kẹo me trong túi áo học sinh'), ('💌', 'tấm thiệp cảm ơn của lớp 2A')),
     'pho': (('🍙', 'gói xôi xéo chị Nguyệt để phần'), ('🎨', 'bức tranh nồi phở bé Bống vẽ'), ('🫙', 'chai tương đen anh Sáu mang từ Sài Gòn')),
