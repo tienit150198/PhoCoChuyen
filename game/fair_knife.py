@@ -52,7 +52,7 @@ from __future__ import annotations
 import bisect
 import random
 
-STAKES = (2, 5, 10, 20, 50, 100, 200, 500)
+STAKES = (2, 5, 10, 20, 50, 100, 200, 500, 1000)
 LEVELS = 10
 # After clearing level k (1..LEVELS), "Dừng" pays LADDER[k - 1] tenths of the stake (rounded, half up), and at least
 # 1 xu more than after level k - 1 (prizes(): at 2 and 5 xu the rounding would make a step worth nothing).

@@ -4,11 +4,7 @@ import {sellerVisitStrip,customerTaskBanner,visitCustomer,customerPortrait} from
 import {equipmentView,staffRefresh,staffRefreshPaused} from './v4/work-equipment.js';
 import {suppressMediaGesture} from './v4/media-gestures.js';
 for(const event of ['contextmenu','dragstart','dblclick'])document.addEventListener(event,suppressMediaGesture);
-import {PhaserWorld} from './isometric/phaser-world.js';
-import {bootIsometricShell,updateIsometricShell,isometricAction} from './isometric-shell.js';
-import {bootIsometricMovement} from './isometric-movement.js';
-import {bootIsometricTown} from './isometric-town.js';
-import {bootCozyPortraits} from './isometric/portraits.js';
+import {BobaWorld} from './boba-world.js';
 import {wordsFor,kindOf} from './scenes/index.js';
 // Scene kinds load on demand: the current career's before the first frame, another career's before switching
 // to it (careerAssets below), so no career flashes the storefront and startup isn't waiting on all of them.
@@ -111,7 +107,7 @@ function shortWork(html){
 }
 const closedBar=()=>notice(`<b>Ca đang nghỉ</b> · mở ca để làm tiếp. ${button(icon('sun',14)+' Mở ca','startHere',{},'primary small')}`,'amber','sun');
 const ui={opsTab:'staff',staffId:null,lessonSequence:[],tourRoute:[],activityCard:null,view:null,tab:'',task:null,npc:null,jobTab:'shelf',journalTab:'quests',libraryQuery:'',docs:new Set(),transactions:new Set(),drafts:{},ai:{},suggestions:{},busy:false,paused:false};
-const world=new PhaserWorld($('#world'),interact);
+const world=new BobaWorld($('#world'),interact);
 soundsBoot({api,world,sound});  // character voices, detail sounds, bank speaker
 api.addEventListener('result',e=>{if(e.detail?.result?.card_swipe)import('./v4/bank.js').then(m=>m.swipeSound(api)).catch(()=>{});});  // 🏦 quẹt thẻ: ting ting
 dayclockBoot();  // giờ trong ngày: HUD clock, closing prompt, the scene's light
@@ -535,7 +531,7 @@ function renderMain(){
   $('#ambientCaption').textContent='';$('#saveState').classList.toggle('offline',!api.connected);
   setHTML($('#saveState'),api.connected?`<i class="saved-dot"></i>Đã lưu`:`<i class="saved-dot"></i>Mất kết nối <button type="button" class="linkish" data-action="reconnect">Thử lại</button>`);
   hudFeedback(c);stepHint(c);
-  sound.configure(api.state.settings);world.update(api.state,api.content);updateIsometricShell(env());
+  sound.configure(api.state.settings);world.update(api.state,api.content);
 }
 document.addEventListener('close',()=>{if(mainDeferred)renderMain();},true);
 /* Toasts (and the update pill) sit just under the open sheet's sticky header: never over its title and buttons,
@@ -616,7 +612,7 @@ function renderSheet(preserve=true){
   if(!preserve||fresh||box._html===undefined)box.innerHTML=html;else if(changed)morph(box,html);
   box._html=html;
   tickNow(env());document.dispatchEvent(new Event('sheetrender'));
-  applyGuide(dialog);watchHead(dialog);updateIsometricShell(env());
+  applyGuide(dialog);watchHead(dialog);
   if(preserve){const now=folds(),keys=foldKeys(now);now.forEach((el,i)=>{const want=openedDetails.has(keys[i])?openedDetails.get(keys[i]):(el._mk??el.open);if(el.open!==want)el.open=want;el._mk=undefined;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});dialog.scrollTop=scroll;if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);el?.focus({preventScroll:true});try{el?.setSelectionRange(selection,selection);}catch{/* not a text input */}}}
   if(!preserve)dialog.scrollTop=0;
   if(ui.view==='chat'){$('#messages')?.scrollTo(0,$('#messages').scrollHeight);}
@@ -1181,7 +1177,7 @@ function inputPrompt(title,value,maxLength=100){
 }
 function finishConfirm(value){const choice=$('#confirmPay');if(value&&choice)value=choice.value;$('#confirmDialog').close();confirmResolve?.(value);confirmResolve=null;document.body.append($('#toasts'));}
 $('#confirmDialog').addEventListener('cancel',e=>{e.preventDefault();finishConfirm(false);});
-$('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.current||world.mode==='town'&&townOn({...env(),ui:{...ui,jrView:'home',homeMode:'town'}}))closeSheet();});
+$('#sheet').addEventListener('cancel',e=>{e.preventDefault();if(api.state?.current)closeSheet();});
 /* Phone bottom sheets show a grab handle: dragging the sheet head down now really closes the sheet (it
  * used to do nothing). Only transform moves while dragging; past 90 px or a quick flick it slides away and
  * closes through the same 'cancel' path as Escape (so sheets that may not close yet stay put). */
@@ -1214,7 +1210,7 @@ async function selectCareer(id){
   ui.task=null;ui.docs.clear();ui.transactions.clear();ui.ai={};ui.phFilter='';ui.jobTab='shelf';
   await careerAssets(id);  // its workbench, stylesheet and scene first: the new place never renders half-styled
   const r=await cmd('select_career',pass, {career:id,quiet:true});if(!r)return;if(r.hired)toast(r.message,'good');
-  world.setMode('work');closeSheet();world.say(greeting());setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
+  closeSheet();world.say(greeting());setPaused(false);if(needsJob())openSheet('jobapp');else if(quickOpen(api.state,id))await openFirstDay();else if(!room().open)openSheet('prepare');
   abandonAfter(r);
 }
 /** A brand-new player's first workplace (v4/onboard.js quickOpen): day 1 opens at once, straight into the first
@@ -1236,8 +1232,6 @@ async function openJob(id,tab){
   if(select){const r=await cmd('task_select',{task:target},{quiet:true});if(!r&&ui.view==='job'&&ui.task===target){ui.task=room().active_task||null;renderSheet(false);}}
 }
 function interact(id){sound.unlock();sound.click();if(ui.paused)return;
-  if(id.startsWith('career:')){handleAction('choose',{career:id.slice(7)});return;}
-  if(id.startsWith('outing:')){void handleAction('leisurePlace',{kind:id.slice(7)}).catch(error=>toast(error.message,true));return;}
   {const alt=careerUI(career())?.spots?.[id];if(alt){openSheet(alt);return;}}  // a career's own place for a scene spot (air crew: no Sổ tiệm)
   if(id.startsWith('staff:')){ui.staffId=id.slice(6);openSheet('operations',{opsTab:'staff'});return;}
   if(id.startsWith('ops:')){openSheet('operations',{opsTab:id.slice(4)});return;}
@@ -1252,13 +1246,6 @@ function interact(id){sound.unlock();sound.click();if(ui.paused)return;
 }
 async function talk(text){if(!ui.npc||!text.trim())return;const id=ui.npc;const r=await (await L.chat.get()).aiTalk(env(),id,text);if(!r)return;ui.suggestions[id]=r.suggestions||[];world.say(r.reply,id);renderSheet();}
 async function handleAction(action,data,el){
-  if(action==='leisurePlace'){
-    if(!['fishing','boat','pool'].includes(data.kind))return;
-    const [{openPixelPlace},{loadLeisureArt}]=await Promise.all([import('./pixel/places.js'),import('./isometric/leisure-art.js')]);
-    const leisureArt=await loadLeisureArt(data.kind);closeSheet();openPixelPlace(data.kind,{...env(),leisureArt});return;
-  }
-  if(action==='home'&&townOn({...env(),ui:{...ui,jrView:'home',homeMode:'town'}}))action='isoTown';
-  if(await isometricAction(action,data,el,env()))return;
   switch(action){
     case'close':closeSheet();break;
     case'confirmNo':finishConfirm(false);break;
@@ -1569,7 +1556,7 @@ try{
   await Promise.all([careerAssets(career(),Boolean(api.state.current&&(!room()?.open||needsJob()))),setLanguage(api.state.settings.lang)]);
   import('./v4/home-guests.js').then(m=>m.homeGuestsBoot(env())).catch(e=>console.warn('homeGuests:',e));
   import('./v4/workplace-visit.js').then(m=>m.workVisitsBoot(env())).catch(e=>console.warn('workVisits:',e));
-  shell.boot(env());journeyBoot(env());boardBoot(env());bootIsometricShell(env);bootIsometricMovement(env);bootIsometricTown(env);bootCozyPortraits();startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
+  shell.boot(env());journeyBoot(env());boardBoot(env());startTicker(()=>env());$('#loading').hidden=true;$('#app').hidden=false;world.resize();renderMain();
   const oauthReturned=accountBoot(env());
   ensureCareerUI();  // its workbench failed to come above (the game opens anyway): ask again in the background
   try{performance.mark('mnl-first-frame');}catch{/* no User Timing */}   // "time to first game frame" (telemetry.js load beacon)
@@ -1600,7 +1587,7 @@ try{
   if(!oauthReturned){
     const deep=new URLSearchParams(location.search);
     if(deep.get('social')){history.replaceState(null,'','/');openSocial(deep.get('social'));}
-    else if(!api.state.current){if(!townOn(env()))openSheet('home');}else if(world.mode==='work'&&!room().open)openSheet(room().shift_summary?'summary':'prepare');
+    else if(!api.state.current)openSheet('home');else{if(!room().open)openSheet(room().shift_summary?'summary':'prepare');}
   }
   // Callback feedback gets the first screen. Start automatic cards only after the player closes it;
   // a queued close event from a sheet already reopened is not a dismissal.

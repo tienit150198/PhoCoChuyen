@@ -48,7 +48,3 @@ test('late frames from an abandoned socket cannot overwrite the active connectio
 test('welcome cancels the connection deadline',()=>{
  const h=harness();h.welcome();h.advance(25000);assert.equal(h.sockets[0].closed,0);assert.equal(h.live.state,'open');
 });
-test('town presence can keep the socket open when chat and other live phases are off',()=>{
- const h=harness();const s=h.sockets[0];s.open();s.frame({t:'welcome',flags:{town:true},me:{name:'Lan'}});
- assert.equal(h.live.state,'open');assert.equal(h.live.flags.town,true);
-});

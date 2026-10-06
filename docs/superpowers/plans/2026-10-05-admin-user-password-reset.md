@@ -1,6 +1,6 @@
 # Admin User Password Reset Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Cho phép admin đổi mật khẩu ngay tại người dùng tìm được.
 
@@ -24,7 +24,7 @@ Ownership: `game/admin_users.py`, `game/accounts.py`, `server.py`, `tests/test_a
 - [x] Viết và chạy kiểm thử thất bại cho quyền admin/CSRF, xác nhận mật khẩu, định danh mục tiêu và thu hồi phiên.
 - [x] Thêm hàm reset và API trước nhánh đọc bản lưu nặng; dùng kiểm tra/băm mật khẩu sẵn có, lỗi JSON thông thường, rate limit.
 - [x] Giao dịch không động vào bản lưu và tài khoản khác; xóa TikTok flow gắn với login bị thu hồi.
-- [x] Chạy lại kiểm thử mới và kiểm thử tài khoản/admin liên quan.
+- [ ] Chạy lại kiểm thử mới và kiểm thử tài khoản/admin liên quan.
 
 ## Task 3: Frontend
 
@@ -38,9 +38,9 @@ Ownership: `public/js/admin/users.js`, `public/js/admin/main.js`, `public/css/ad
 ## Task 4: Kiểm tra tích hợp và bàn giao
 
 - [x] Chơi luồng admin đầy đủ trên desktop và mobile bằng tài khoản thử local; xác minh mật khẩu mới đăng nhập được, mật khẩu cũ/phiên cũ bị từ chối.
-- [x] Review mã và sửa các phát hiện có căn cứ; kiểm tra không lộ mật khẩu trong HTML/phản hồi.
-- [x] Đóng gói bằng cách chỉ thay file của tính năng trong gói baseline; xác minh manifest và file khác giữ nguyên.
-- [x] Báo người dùng kết quả và ảnh giao diện trước khi cập nhật máy chủ.
-- [x] Đối chiếu lại release trước triển khai; nếu thay đổi thì áp dụng phần tính năng lên baseline mới trước khi rolling deploy.
-- [x] Xác minh HTTPS có nút/API mới, kiểm tra quyền truy cập và dịch vụ sau triển khai; không đổi mật khẩu người chơi thật để thử.
-- [x] Đưa delta nguồn đã kiểm tra vào workspace phát triển mà vẫn giữ các chỉnh sửa của công việc khác; lưu báo cáo.
+- [ ] Review mã và sửa các phát hiện có căn cứ; kiểm tra không lộ mật khẩu trong HTML/phản hồi.
+- [ ] Đóng gói bằng cách chỉ thay file của tính năng trong gói baseline; xác minh manifest và file khác giữ nguyên.
+- [ ] Báo người dùng kết quả và ảnh giao diện trước khi cập nhật máy chủ.
+- [ ] Đối chiếu lại release trước triển khai; nếu thay đổi thì áp dụng phần tính năng lên baseline mới trước khi rolling deploy.
+- [ ] Xác minh HTTPS có nút/API mới, kiểm tra quyền truy cập và dịch vụ sau triển khai; không đổi mật khẩu người chơi thật để thử.
+- [ ] Đưa delta nguồn đã kiểm tra vào workspace phát triển mà vẫn giữ các chỉnh sửa của công việc khác; lưu báo cáo.

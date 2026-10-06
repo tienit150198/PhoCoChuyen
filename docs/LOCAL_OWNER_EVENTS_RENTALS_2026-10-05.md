@@ -1,7 +1,5 @@
 # Chủ tiệm và chợ thuê nhà — thay đổi local
 
-**Cập nhật:** sau khi chủ game yêu cầu phát hành, các mục dưới đây đã lên 1.7.12 lúc 07:27:10 ngày 05/10/2026. Xem docs/DEPLOY_1.7.12_2026-10-05.md. Phần bên dưới ghi lại trạng thái và kiểm tra trước phát hành.
-
 Yêu cầu: thêm nhiều tình huống có lựa chọn cho chủ tiệm, camera giảm 50% nguy cơ trộm; chủ nhà tự đặt giá, NPC và người chơi thuê, cùng tin bất động sản làm giá và sức thuê biến động. Đợt này chưa deploy, không đổi Có gì mới và không đổi version 1.7.11 đang chạy.
 
 ## Chủ tiệm

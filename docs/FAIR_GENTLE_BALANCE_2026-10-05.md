@@ -1,6 +1,6 @@
 # Hội chợ dễ chơi hơn — 05/10/2026
 
-Trạng thái: đã deploy theo yêu cầu lúc **18:22:26 ngày 05/10/2026 (UTC+7)**, không tạo thông báo cho người chơi. Chi tiết: [DEPLOY_FAIR_GENTLE_2026-10-05.md](DEPLOY_FAIR_GENTLE_2026-10-05.md).
+Trạng thái: đã sửa và kiểm tra local, chưa deploy, không tạo thông báo cho người chơi.
 
 ## Cân bằng
 
@@ -24,5 +24,5 @@ Trạng thái: đã deploy theo yêu cầu lúc **18:22:26 ngày 05/10/2026 (UTC
 
 - Đã chạy test yêu cầu mới trước sửa: thất bại đúng ở xác suất 60%/45%, số dao 11 và validator không nhận 135.
 - Bộ hồi quy: **159/159 test đạt**, 62,669 giây, exit code 0. Các module: event odds, gentle balance, scratch, knife, round identity, fair và economy pass 2. Bao gồm tiền thưởng, chống trả thưởng hai lần, lưu/tải ván, bộ dựng lịch cũ và lô tô/Kinh.
-- Lượt test source có một cảnh báo flush KPI `stat_counters` không tồn tại trong môi trường PostgreSQL test; không có test failure/error. Gói phát hành đã được kiểm tra riêng và đã xác minh trên production, xem báo cáo deploy.
+- Log có một cảnh báo flush KPI `stat_counters` không tồn tại trong môi trường PostgreSQL test; không có test failure/error. Chưa kiểm tra bản cân bằng này trên production.
 - Log: `output/fair-balance-red.txt`, `output/fair-balance-tests.txt`.

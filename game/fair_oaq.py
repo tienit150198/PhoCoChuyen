@@ -20,9 +20,9 @@ Rules (the common variant; the "Cách chơi" in public/js/v4/fair.js says the sa
 * The game ends when both quan ô are empty (hết quan, tàn dân: each side takes the dân left on its own row), or when a
   player cannot rải quân, or after MAX_PLY turns. Most points wins (dân 1, quan QUAN).
 
-The opponent: "de" (Bé Bi) takes the biggest capture now, or (DE_RANDOM) just plays anything; "kho" (Ông Hai) looks
-three turns ahead (its move, your best answer, its best reply), counts the board too, and now and then (KHO_SECOND)
-plays its second best move.
+The opponent: "de" (Bé Bi) takes the biggest capture now, or (DE_RANDOM) just plays anything.
+"kho" (Ông Hai) searches up to six turns ahead with alpha-beta pruning and a fixed
+work budget. It only uses completed searches and never deliberately picks a worse move.
 """
 from __future__ import annotations
 
@@ -183,14 +183,73 @@ def _search(g: dict, side: int, me: int, depth: int) -> float:
 
 
 DE_RANDOM = 0.45     # Bé Bi: a random move this often, else the biggest capture now
-KHO_SECOND = 0.12    # Ông Hai: the second best move this often (and any move within KHO_SLACK of the best)
-KHO_SLACK = 1.0
+KHO_DEPTH = 6
+KHO_NODES = 6000     # maximum simulated moves per request, including move ordering
+
+
+class _SearchLimit(Exception):
+    pass
+
+
+def _children(g: dict, side: int, me: int, budget: list[int]) -> list:
+    children = []
+    for move in legal(g, side):
+        if budget[0] <= 0:
+            raise _SearchLimit
+        budget[0] -= 1
+        child = copy(g)
+        play(child, side, *move)
+        children.append((_value(child, me), move, child))
+    return sorted(children, key=lambda item: item[0], reverse=side == me)
+
+
+def _deep_search(g: dict, side: int, me: int, depth: int,
+                 alpha: float, beta: float, budget: list[int]) -> float:
+    h = copy(g)
+    if not begin_turn(h, side):
+        return (score(h, me) - score(h, 1 - me)) * 10
+    if depth == 0:
+        return _value(h, me)
+    maximizing = side == me
+    best = -float('inf') if maximizing else float('inf')
+    for _, _, child in _children(h, side, me, budget):
+        value = _deep_search(child, 1 - side, me, depth - 1, alpha, beta, budget)
+        if maximizing:
+            best = max(best, value)
+            alpha = max(alpha, best)
+        else:
+            best = min(best, value)
+            beta = min(beta, best)
+        if alpha >= beta:
+            break
+    return best
+
+
+def _strong_move(g: dict, side: int, rng: random.Random) -> tuple[int, int]:
+    budget = [KHO_NODES]
+    children = _children(g, side, side, budget)
+    # Randomize only the order of tied candidates, never the final score.
+    children.sort(key=lambda item: (item[0], rng.random()), reverse=True)
+    chosen = children[0][1]
+    for depth in range(3, KHO_DEPTH + 1):
+        alpha, scored = -float('inf'), []
+        candidate = chosen
+        try:
+            for _, move, child in children:
+                value = _deep_search(child, 1 - side, side, depth - 1,
+                                     alpha, float('inf'), budget)
+                scored.append((value, move, child))
+                if value > alpha:
+                    alpha, candidate = value, move
+        except _SearchLimit:
+            break  # a partly searched depth cannot replace a fully searched one
+        chosen = candidate
+        children = sorted(scored, key=lambda item: item[0], reverse=True)
+    return chosen
 
 
 def ai_move(g: dict, level: str, rng: random.Random, side: int = 1) -> tuple[int, int]:
-    """The opponent's move (the turn has begun: begin_turn was called). Calibrated against simulated players
-    players: a greedy player (biggest capture now) beats "de" about 2 games in 3 and "kho" about 1 in 20; one who
-    looks two turns ahead beats "de" almost always and "kho" about 4 in 10."""
+    """Choose a legal move after begin_turn; the board and the player's score stay untouched."""
     moves = legal(g, side)
     if level == 'de':
         if rng.random() < DE_RANDOM:
@@ -200,16 +259,7 @@ def ai_move(g: dict, level: str, rng: random.Random, side: int = 1) -> tuple[int
             k = copy(g)
             scored.append((play(k, side, c, d), rng.random(), (c, d)))
         return max(scored)[2]
-    vals = []
-    for c, d in moves:
-        k = copy(g)
-        play(k, side, c, d)
-        vals.append((_search(k, 1 - side, side, 2), rng.random(), (c, d)))
-    vals.sort(reverse=True)
-    if len(vals) > 1 and rng.random() < KHO_SECOND:
-        return vals[1][2]
-    top = vals[0][0]
-    return rng.choice([m for v, _, m in vals if v >= top - KHO_SLACK])
+    return _strong_move(g, side, rng)
 
 
 # ---------------------------------------------------------------- checks

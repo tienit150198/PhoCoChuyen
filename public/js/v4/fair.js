@@ -25,8 +25,8 @@ const TITLE_NAMES={f_kinh2:'🎎 Kinh đôi rộn ràng',f_nguoc:'🙃 Đọc ng
 const GAMES={home:['🏮','Cổng hội'],oaq:['🪨','Ô ăn quan'],ring:['💍','Ném vòng cổ chai'],bc:['🦀','Bầu cua'],lt:['🎱','Lô tô'],dt:['🗡️','Phóng dao'],xs:['🎟️','Vé số cào'],xd:['🕯️','Chiếu trong'],board:['🏆','Bảng vàng'],loan:['💸','Vay nóng'],food:['🍡','Hàng ăn vặt'],pb:['📸','Chụp ảnh']};
 const MINI_BOARD='<svg viewBox="0 0 64 40" aria-hidden="true"><rect x="2" y="6" width="60" height="28" rx="14" fill="#e9c98f" stroke="#8a5a26" stroke-width="2"/><path d="M14 6v28M50 6v28M14 20h36M23 6v28M32 6v28M41 6v28" stroke="#8a5a26" stroke-width="1.6"/><circle cx="8" cy="20" r="4" fill="#5b4636"/><circle cx="56" cy="20" r="4" fill="#5b4636"/><g fill="#7a8b99"><circle cx="18" cy="13" r="1.8"/><circle cx="27" cy="27" r="1.8"/><circle cx="36" cy="13" r="1.8"/><circle cx="45" cy="27" r="1.8"/><circle cx="20" cy="28" r="1.8"/><circle cx="38" cy="25" r="1.8"/></g></svg>';
 const MINI_BOTTLES='<svg viewBox="0 0 64 40" aria-hidden="true"><g stroke="#2d5a3d" stroke-width="1.4"><path d="M12 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#7cc79a"/><path d="M28 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#8fb6e8"/><path d="M44 38V22c0-4 4-5 4-9V5h4v8c0 4 4 5 4 9v16z" fill="#f0b46a"/></g><ellipse cx="34" cy="10" rx="7" ry="2.6" fill="none" stroke="#e2462d" stroke-width="2.4"/></svg>';
-const CHIPS=[1,2,5,10,50,100,200,500];
-const XD_STAKES=[10,20,30,50,100,200,500];
+const CHIPS=[1,2,5,10,50,100,200,500,1000];
+const XD_STAKES=[10,20,30,50,100,200,500,1000];
 const NPC_GRACE=2000,ROLL_MS=450,ROUND_GAP=450;   // the bowl shakes this long; the server wants rounds ≥0.4 s apart (GAP_MS)
 const LS='mnl.fair.lt';
 
@@ -588,7 +588,7 @@ async function shakeXd(){
 const colOf=n=>n<10?0:n>=90?8:Math.floor(n/10);
 const COLS=['1–9','10–19','20–29','30–39','40–49','50–59','60–69','70–79','80–90'];
 const SPEEDS=[['🐢','Chậm',3300],['🙂','Vừa',2300],['🐇','Nhanh',1200]];
-const TIER_NAME={nho:'Vé nhỏ',vua:'Vé vừa',lon:'Vé lớn',dai:'Vé tài lộc',tram:'Vé phú quý',cao:'Vé thịnh vượng',dac_biet:'Vé đặc biệt'};
+const TIER_NAME={nho:'Vé nhỏ',vua:'Vé vừa',lon:'Vé lớn',dai:'Vé tài lộc',tram:'Vé phú quý',cao:'Vé thịnh vượng',dac_biet:'Vé đặc biệt',nghin:'Vé ngàn lộc'};
 const MODE_INFO={thuong:['🎱','Vòng thường','Đủ một hàng ngang trên một tờ là kinh.'],
   nguoc:['🙃','Vòng lật ngược','Cô Bảy đọc số lộn ngược: nghe 21 là số 12, nghe 07 là số 70. Dò cho tỉnh nha!'],
   doi:['🎎','Vòng Kinh đôi','Phải đủ hai hàng ngang trên cùng một tờ mới kinh.'],
@@ -785,10 +785,10 @@ function buyPanel(){
   const g=G(),f=F(),m=curMode()||'thuong',[me,,md]=MODE_INFO[m]||MODE_INFO.thuong,lt=S.lt,price=g.tiers[lt.tier]||5;
   const prize=(g.prizes?.[m]?.[lt.tier]||[])[lt.n-1]||0,rule=g.modes_rule?.[m]||{npcs:4};
   const side=(lt.cl?lt.cls:0)+(lt.cot!=null?lt.cots:0),total=lt.n*price+side;
-  const why=total>(g.max_stake||500)?`Tổng tiền vé và cược phụ tối đa ${g.max_stake||500} xu/ván`:total>(f.wallet||0)?'Ví không đủ xu':S.busy?'Đang mua…':'';
+  const why=total>(g.max_stake||1000)?`Tổng tiền vé và cược phụ tối đa ${g.max_stake||1000} xu/ván`:total>(f.wallet||0)?'Ví không đủ xu':S.busy?'Đang mua…':'';
   const next=g.modes.filter(x=>x[0]>nowSlot()).slice(0,2).map(([s,k])=>`<span class="fh-nextmode">${esc(new Date(s*60000).toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Ho_Chi_Minh'}))} · ${MODE_INFO[k]?.[0]||''} ${esc(modeLabel(k))}</span>`).join('');
   const tiers=Object.entries(g.tiers).map(([k,p])=>`<button type="button" class="fh-tier${lt.tier===k?' on':''}" data-fh="lttier" data-v="${k}" aria-pressed="${lt.tier===k}" data-fh-key="tier-${k}"><b>${esc(TIER_NAME[k]||k)}</b><small>${xu(p)}/tờ</small></button>`).join('');
-  const ns=Array.from({length:g.cards},(_,i)=>i+1).map(n=>`<button type="button" class="fh-chip${lt.n===n?' on':''}" data-fh="ltn" data-v="${n}" aria-pressed="${lt.n===n}" data-fh-key="ltn-${n}"${n*price+side>(g.max_stake||500)?' disabled':''}>${n}</button>`).join('');
+  const ns=Array.from({length:g.cards},(_,i)=>i+1).map(n=>`<button type="button" class="fh-chip${lt.n===n?' on':''}" data-fh="ltn" data-v="${n}" aria-pressed="${lt.n===n}" data-fh-key="ltn-${n}"${n*price+side>(g.max_stake||1000)?' disabled':''}>${n}</button>`).join('');
   const chip=(op,v,on)=>`<button type="button" class="fh-chip small${on?' on':''}" data-fh="${op}" data-v="${v}" aria-pressed="${on}" data-fh-key="${op}-${v}">${v}</button>`;
   const cl=[['chan','Chẵn'],['le','Lẻ']].map(([k,l])=>`<button type="button" class="fh-pickb${lt.cl===k?' on':''}" data-fh="ltcl" data-v="${k}" aria-pressed="${lt.cl===k}" data-fh-key="cl-${k}">${l}</button>`).join('');
   const cot=COLS.map((l,i)=>`<button type="button" class="fh-pickb${lt.cot===i?' on':''}" data-fh="ltcot" data-v="${i}" aria-pressed="${lt.cot===i}" data-fh-key="cot-${i}">${l}</button>`).join('');
@@ -883,7 +883,7 @@ function roundView(v){
 async function buy(){
   if(S.busy)return;
   const g=G(),lt=S.lt;
-  if(g&&lt.n*(g.tiers[lt.tier]||5)+(lt.cl?lt.cls:0)+(lt.cot!=null?lt.cots:0)>(g.max_stake||500))return;
+  if(g&&lt.n*(g.tiers[lt.tier]||5)+(lt.cl?lt.cls:0)+(lt.cot!=null?lt.cots:0)>(g.max_stake||1000))return;
   const mode=curMode();
   const p=g?{tier:lt.tier,n:lt.n,...(mode?{mode}:{}),...(lt.cl?{cl:[lt.cl,lt.cls]}:{}),...(lt.cot!=null?{cot:[lt.cot,lt.cots]}:{})}:{};
   S.busy=true;S.flash=null;render();

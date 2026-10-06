@@ -1,6 +1,6 @@
 # Phóng dao theo thao tác thật, vòng liền nét — 05/10/2026
 
-Trạng thái: đã deploy lúc 19:23:38 ngày 05/10/2026 (UTC+7), xem `DEPLOY_FAIR_SKILL_2026-10-05.md`. Yêu cầu mới thay thế quyết định xác suất của riêng phóng dao. Các trò may rủi khác giữ cân bằng đang chạy.
+Trạng thái: đã sửa và kiểm tra local, chưa deploy. Yêu cầu mới thay thế quyết định xác suất của riêng phóng dao. Các trò may rủi khác giữ cân bằng đang chạy.
 
 ## Nguyên nhân và cách sửa
 
@@ -26,4 +26,4 @@ Runtime thay đổi: `game/fair.py`, `game/fair_knife.py`, `public/js/v4/fair-kn
 
 ## Lưu ý khi triển khai sau
 
-Trước deploy, production là `1.7.15-fair-gentle-final-20261005181749`. Bản này chưa đọc `fair_kn_skill`; nếu đọc lượt mới sẽ nhầm về lịch 100% (7 dao thay vì 10). Đã đưa khả năng đọc/validate metadata và tính va chạm kỹ năng lên tất cả game/live/background writer trước, sau đó mới bật sinh lượt kỹ năng mới. Bản cầu vẫn tạo lượt xác suất cũ, nhưng đọc và xử lý đúng cả hai loại. Rollback về bản cầu `1.7.15-fair-skill-compat-20261005192026`, không về bản gentle cũ sau khi đã ghi lượt kỹ năng mới. Gói được tạo từ release production trước đó với bốn file runtime nêu trên, giữ nguyên các phần không liên quan.
+Production hiện vẫn là `1.7.15-fair-gentle-final-20261005181749`. Bản này chưa đọc `fair_kn_skill`; nếu đọc lượt mới sẽ nhầm về lịch 100% (7 dao thay vì 10). Khi được yêu cầu deploy, phải đưa khả năng đọc/validate metadata và tính va chạm kỹ năng lên tất cả game/live/background writer trước, sau đó mới bật sinh lượt kỹ năng mới. Bản cầu vẫn tạo lượt xác suất cũ, nhưng phải đọc và xử lý đúng cả hai loại; không được bật lượt mới trong lúc còn worker cũ. Rollback về bản cầu này, không về bản gentle cũ sau khi đã ghi lượt kỹ năng mới. Đóng gói từ release production hiện hành với bốn file runtime nêu trên, tránh gom các sửa đổi không liên quan trong checkout.

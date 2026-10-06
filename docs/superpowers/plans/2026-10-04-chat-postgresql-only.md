@@ -83,8 +83,3 @@ The journey payload-size failure reproduces unchanged on the original HEAD `5a9b
 The seven remaining failures/errors were repaired in the test runner and fixtures: required PostgreSQL configuration, dependency paths for isolated compatibility workers, Python JSON recursion expectations, and exact socket-event synchronization. The affected seven cases plus five tooling regressions passed together through the corrected runner: **12 passed, zero skipped, 16.842 seconds** (`output/postgresql-affected-final-report.json`). Separately, socket repeats passed 9/9 and their neighboring suite passed 7/7; tooling verified 24 focused cases including the real old-release compatibility check. No product runtime changes were needed for these fixture repairs.
 
 Final read-only review found no additional issue or weakened assertion in these repairs. Python compileall and integrated diff checks pass after all edits. The temporary PostgreSQL cluster at localhost:58239 was stopped successfully with its exact owned data directory. All changes remain local and uncommitted; no deployment was performed. The original full scan retains the baseline payload-size failure and eleven platform/old-release skips, so it must not be advertised as entirely passing.
-
-
-## Cập nhật triển khai 04/10/2026 17:35 UTC+7
-
-Theo yêu cầu mới của chủ dự án, bản sửa đã rolling deploy thành 1.7.3 (1.7.3+bd37e2a456e6), schema PostgreSQL 18. Các câu chưa deploy phía trên mô tả mốc kiểm tra trước phát hành. Game và live active; health HTTPS 200; admin tìm theo tên và username đã xác minh trên production. Nghề mới giữ ở đợt riêng. Báo cáo: `docs/DEPLOY_1.7.3_2026-10-04.md`.

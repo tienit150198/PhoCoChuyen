@@ -66,14 +66,14 @@ FEATURE_SECONDS = 30 * 60
 CHANCE_GAMES = ('lt', 'bc', 'xd', 'xs', 'ring')  # Knife and o an quan remain skill.
 FEATURE_RATES = (.50, .50)
 ORDINARY_RATES = (.50, .50)
-STAKE_TIERS = dict(bc=(1, 2, 5, 10, 50, 100, 200, 500), xd=(10, 20, 30, 50, 100, 200, 500),
-                   lt=(2, 5, 10, 50, 100, 200, 500), xs=scratch.TIERS)
+STAKE_TIERS = dict(bc=(1, 2, 5, 10, 50, 100, 200, 500, 1000), xd=(10, 20, 30, 50, 100, 200, 500, 1000),
+                   lt=(2, 5, 10, 50, 100, 200, 500, 1000), xs=scratch.TIERS)
 GAP_MS = 400                   # between two rounds of dice/coins (owner 03/10: nhanh lên; was 1200)
 # 🦀 Bầu cua
 FACES = ('bau', 'cua', 'tom', 'ca', 'ga', 'nai')
 FACE_NAMES = dict(bau='Bầu', cua='Cua', tom='Tôm', ca='Cá', ga='Gà', nai='Nai')
 BC_OUTCOMES = [(x, y, z) for x in FACES for y in FACES for z in FACES]   # the 216 ways three dice land
-ROUND_MAX = 500                # combined paid stake per round, including loto side bets
+ROUND_MAX = 1000               # combined paid stake per round, including loto side bets
 BC_MAX = ROUND_MAX
 BAO = 10                       # three dice on the face you bet: BAO:1 (standard rules: 3:1)
 # 🕯️ Chiếu trong
@@ -96,7 +96,7 @@ LOTO_TRIES = 300               # round ids tried for the outcome drawn (≈2..8 
 LOTO_TTL = 20 * 60             # a card can be claimed this long after it was bought
 NEIGHBOURS = (('Bác Tư', '👴'), ('Bà Năm', '👵'), ('Chú Sáu', '🧔'), ('Cô Ba', '👩'), ('Anh Tèo', '🧑'), ('Chị Mận', '👧'))
 STAGES = ('play', 'won', 'lost')
-LOTO_TIERS = dict(nho=2, vua=5, lon=10, dai=50, tram=100, cao=200, dac_biet=500)
+LOTO_TIERS = dict(nho=2, vua=5, lon=10, dai=50, tram=100, cao=200, dac_biet=500, nghin=1000)
 LOTO_CARDS = 3                 # tờ a round at most
 # vòng: (full rows needed on one tờ, neighbours playing, the stall's cut of the pot in %)
 LOTO_MODES = dict(thuong=(1, 4, 8), nguoc=(1, 4, 8), doi=(2, 4, 10), dem=(3, 6, 13))
@@ -1278,7 +1278,7 @@ def validate(j: dict) -> None:
             datetime.date.fromisoformat(f['date'])
         except ValueError:
             need(False, bad, 'invalid_save')
-    # A purchased 500-xu ticket can return 25,000, and pending prizes may settle
+    # A purchased 1,000-xu ticket can return 50,000, and pending prizes may settle
     # beyond the existing 1e6 new-purchase guard. Preserve every earned payout.
     integer(f['net'], -10**9, 10**9)
     integer(f['rounds'], 0, ROUNDS_DAY)

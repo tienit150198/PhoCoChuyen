@@ -56,8 +56,3 @@ Chủ dự án đã xác nhận trong lượt này: “Sửa tính năng hiện 
 ## Lưu ý phát hành
 
 Schema PostgreSQL tăng lên18 cho con chung/lời mời/bản chăm riêng. Chưa chạy migration trên DB người chơi trong lượt này. Giao dịch lớn cần giới hạn lịch sử ngân hàng/ví mới (±1tỷ); trước khi rollback về bản cũ phải mang theo phần validation này, nếu không bản cũ có thể từ chối bản lưu sau giao dịch lớn. Các kiểm tra tương thích bản cũ với giao dịch nhỏ không bảo đảm rollback cho giao dịch lớn.
-
-
-## Cập nhật triển khai 04/10/2026 17:35 UTC+7
-
-Theo yêu cầu mới của chủ dự án, bản sửa đã rolling deploy thành 1.7.3 (1.7.3+bd37e2a456e6), schema PostgreSQL 18. Các câu chưa deploy phía trên mô tả mốc kiểm tra trước phát hành. Game và live active; health HTTPS 200; admin tìm theo tên và username đã xác minh trên production. Nghề mới giữ ở đợt riêng. Báo cáo: `docs/DEPLOY_1.7.3_2026-10-04.md`.

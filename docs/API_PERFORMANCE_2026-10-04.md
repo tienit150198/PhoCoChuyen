@@ -1,6 +1,6 @@
 # Rà soát API sau bản 1.7.8
 
-Trạng thái cập nhật: **đã deploy 1.7.9 lúc 23:54:11 ngày 04/10/2026**, sau khi người dùng yêu cầu. Xem `DEPLOY_1.7.9_2026-10-04.md` để đối chiếu số đo production trước/sau. Các phần dưới ghi lại cuộc điều tra và kiểm tra trước phát hành.
+Trạng thái: sửa và kiểm tra local, **chưa deploy** các thay đổi trong báo cáo này.
 
 ## Số đo production
 

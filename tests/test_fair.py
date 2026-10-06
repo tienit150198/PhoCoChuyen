@@ -149,7 +149,7 @@ class BauCua(FairBase):
 
     def test_stake_rules(self):
         s = story(100)
-        for bets in ({}, {'cop': 1}, {'cua': 0}, {'cua': 501}, {'cua': 250, 'tom': 251}, {'cua': 1.5}, {'cua': True}):
+        for bets in ({}, {'cop': 1}, {'cua': 0}, {'cua': 1001}, {'cua': 500, 'tom': 501}, {'cua': 1.5}, {'cua': True}):
             with self.assertRaises(GameError, msg=bets):
                 self.act(s, 'fair_bc', bets=bets)
         with self.assertRaises(GameError):
@@ -214,7 +214,7 @@ class ChieuTrong(FairBase):
 
     def test_stakes(self):
         s = story(200)
-        for p in (dict(side='chan', stake=9), dict(side='chan', stake=501), dict(side='x', stake=10), dict(stake=10)):
+        for p in (dict(side='chan', stake=9), dict(side='chan', stake=1001), dict(side='x', stake=10), dict(stake=10)):
             with self.assertRaises(GameError, msg=p):
                 apply_action(s, None, 'fair_xd', p)
 
@@ -864,8 +864,7 @@ class OAQRules(unittest.TestCase):
             self.assertLessEqual(g['ply'], oaq.MAX_PLY)
 
     def test_the_opponents_strength(self):
-        """Simple but not dumb: a greedy player usually beats Bé Bi and rarely Ông Hai; looking two turns ahead
-        gives a fair chance against Ông Hai."""
+        """Bé Bi stays approachable; Ông Hai now consistently beats shallow look-ahead players."""
         def player(depth):
             def pick(g, rng):
                 vals = []
@@ -889,7 +888,7 @@ class OAQRules(unittest.TestCase):
             return won / n
         self.assertGreater(wins(player(1), 'de'), .5)
         self.assertLess(wins(player(1), 'kho'), .25)
-        self.assertTrue(.15 < wins(player(2), 'kho') < .75)
+        self.assertLess(wins(player(2), 'kho'), .15)
 
 
 def weakest(g, level, rng, side=1):

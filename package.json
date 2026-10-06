@@ -3,21 +3,8 @@
   "version": "0.9.5",
   "private": true,
   "type": "module",
-  "description": "Phố Có Chuyện: Vietnamese career game with Phaser isometric scenes and server-owned gameplay",
+  "description": "Dependency-free Vietnamese career simulation web game (vi/en): 20 careers, multiplayer street, AI personas, web push",
   "scripts": {
-    "check": "node scripts/check_js.mjs",
-    "build:isometric": "node scripts/build_isometric.mjs",
-    "assets:isometric": "node scripts/prepare_isometric_assets.mjs",
-    "typecheck:isometric": "tsc -p tsconfig.isometric.json",
-    "test:isometric": "node tests/isometric-world.mjs && node tests/isometric-shell.mjs && node tests/isometric-character.mjs && node tests/isometric-movement.mjs && node tests/isometric-town.mjs && node tests/isometric-leisure-presence.mjs && node tests/cozy-portraits.mjs && node tests/delivery_isometric.mjs && node tests/pixel-places.mjs && node tests/leisure-art.mjs && node tests/leisure-actors.mjs && node tests/town-map-contract.mjs",
-    "assets:reference": "node scripts/package_cozy_reference.mjs"
-  },
-  "dependencies": {
-    "phaser": "3.90.0"
-  },
-  "devDependencies": {
-    "esbuild": "0.25.11",
-    "sharp": "0.35.5",
-    "typescript": "5.9.3"
+    "check": "node scripts/check_js.mjs"
   }
 }

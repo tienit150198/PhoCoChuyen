@@ -7,7 +7,6 @@ import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v
 import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
 import {renderNeighborhoodMap} from './delivery_map.js';
-import {lookOf} from '../v4/look.js';
 
 /* ---------- 🛵 Tự lái / ⏩ Đi nhanh: ride each leg yourself (careers/delivery_drive.js, loaded on the first leg) or tap ---------- */
 const MODE_KEY='mnl.dlDrive',HINT_KEY='mnl.dlDriveHint';
@@ -491,7 +490,6 @@ function driveOpts(x,node){
   const d=x.room.data||{},first=!readPref(HINT_KEY);
   if(first)savePref(HINT_KEY,'1');
   return {nodes:nodes(x),at:d.at,target:node,useful:usefulStops(x),fuel:d.fuel,weather:d.weather,driveFactor:d.drive_factor||1,signs:d.road?.signs||[],
-    look:lookOf(x.state),player:{name:x.state.name,gender:x.state.journey?.gender},
     minute:x.room.day_clock?.minute??17*60+(Number(d.clock)||0),first,arrive,now:()=>lastX?.now?.()||x.now(),
     signal:(i,j,axis)=>lastX?.send('dl_signal',{target:node,i,j,axis},{quiet:true}),
     cross:token=>lastX?.send('dl_cross',{target:node,token},{quiet:true}),

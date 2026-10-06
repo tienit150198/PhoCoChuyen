@@ -17,9 +17,9 @@ net profit. Already purchased tickets retain their layout and payment.
 """
 from __future__ import annotations
 
-TIERS = (2, 5, 10, 20, 50, 100, 200, 500)  # the vé's price, xu
+TIERS = (2, 5, 10, 20, 50, 100, 200, 500, 1000)  # the vé's price, xu
 NAMES = {2: 'Vé Lộc Nhỏ', 5: 'Vé Phát Tài', 10: 'Vé Như Ý', 20: 'Vé Đại Cát',
-         50: 'Vé Tài Lộc', 100: 'Vé Phú Quý', 200: 'Vé Thịnh Vượng', 500: 'Vé Đại Lộc'}
+         50: 'Vé Tài Lộc', 100: 'Vé Phú Quý', 200: 'Vé Thịnh Vượng', 500: 'Vé Đại Lộc', 1000: 'Vé Ngàn Lộc'}
 CELLS = 9                       # a 3 × 3 grid under the silver
 MATCH = 3                       # 3 boxes of the same amount: that amount is won
 # (multiple of price, weight per 1000 winning tickets): E[multiple | win] = 1.59
