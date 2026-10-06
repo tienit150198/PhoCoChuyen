@@ -20,6 +20,19 @@
 - 🎖️ Phỏng vấn lên chức hụt không còn im lặng (#11): báo câu nào bị chấm 0 điểm và bạn đã chọn gì, hoặc "Xin cao" khi chưa có hai câu tốt nhất; ghi rõ hẹn xét lại sau 3 ngày làm. Thăng tiến hiện thẻ "📋 Lần xét vừa rồi" (từng câu: ✅ tốt nhất / 🟡 tạm được / ❌ chưa ưng) và cách đếm ngày tới lần xét sau. Nút "?" ở câu hỏi và phần xin lương nói rõ luật.
 - ✈️ Cấp hàm Phó Tổng Giám đốc (F#207, chủ game duyệt): một ngôi sao lớn trên cánh chim vàng, kiểu hàng không, thay cho 4 gạch + 3 sao + cành tùng. Nhãn: "1 sao lớn · cánh chim vàng".
 - Không thêm khóa lưu, không đổi tiền. Máy chủ gửi thêm vài trường chỉ để hiển thị (`review` khi hoãn xét, `office.score/good`, `me`, `good_score`, `got/need` ở yêu cầu phòng điều hành, cờ `big/wing` của cấp hàm); bản 1.9.1 bỏ qua chúng.
+# Chưa phát hành — wardrobe-classic
+
+## Tủ đồ: 45 món mới (góp ý #200)
+
+- 🛍️ Tiệm Áo Chỉ Mây nhập thêm 45 món, mở bán từ chương 3 (nhân viên tiệm vẫn giảm 20%), có nhãn "Mới" trong Tủ đồ:
+  - 8 kiểu tóc: dài uốn sóng, bob mái ngố, đuôi ngựa buộc cao, hai búi tròn, wolf cut, undercut, mái bay, tết bím.
+  - 11 đầm và chân váy: váy hai dây, áo dài cách tân, đầm suông, váy maxi hoa, đầm sơ mi, váy yếm jean, đầm babydoll hoa nhí, đầm dạ hội kim sa, chân váy tennis, chân váy jean, chân váy xếp ly dài.
+  - 11 áo và quần: croptop, baby tee, áo khoác bomber, hoodie oversize, sơ mi oversize, áo khoác jean, áo ba lỗ, quần ống rộng, cargo, jogger, short jean.
+  - 4 đôi giày: sneaker chunky, Mary Jane, bốt cổ ngắn, dép quai ngang.
+  - 11 phụ kiện: kính mát mắt mèo, kính cận gọng vuông, mũ bucket, mũ lưỡi trai, nơ lụa to, kẹp tóc càng cua, vòng cổ, khuyên tai tròn, đồng hồ, khăn bandana, balo mini.
+- Món nào cũng vẽ đủ ở gương Tủ đồ, ảnh tròn, ảnh chat, đám cưới, đi dạo, hội chợ, hẹn hò, cho cả nam và nữ, và đổi màu được bằng Bảng màu (màu đã mở dùng chung).
+- Tủ đồ: nút 🙂 Gương mặt ngay trên đầu (biểu cảm, kiểu mặt khi chat) và lối tới Tên · giới tính ở cuối trang; trên điện thoại 7 mục chia 2 hàng.
+- Bản lưu: thêm khóa gốc tùy chọn `wardrobe_plus` (chỉ có khi đã mua món mới). Khối `wardrobe` cũ chỉ giữ món bản 1.9.2 biết, nên bản 1.9.2 đọc bản lưu mới vẫn hợp lệ, hiện món mặc định ở chỗ món mới và không mất món đã mua. Dịch vụ live cũ cũng hiện món mặc định. Không đổi tiền, không thêm bảng.
 
 # v1.9.2 — 2026-10-06: giao diện cũ trở lại
 

@@ -16,7 +16,9 @@ const DEFAULTS={"male":{"hair":"toc_ngan","shade":"mau_nau","skin":"da_sang","to
 
 /* ---- art per item id ---- */
 export const ART={
-  hair:{toc_ngan:{},toc_bui:{long:1},toc_dai:{long:1},toc_bob:{},toc_duoi_ngua:{},toc_xoan:{},toc_bui_cao:{},toc_bui_doi:{},toc_bui_thap:{}},
+  hair:{toc_ngan:{},toc_bui:{long:1},toc_dai:{long:1},toc_bob:{},toc_duoi_ngua:{},toc_xoan:{},toc_bui_cao:{},toc_bui_doi:{},toc_bui_thap:{},
+    // 1.9.2 (góp ý #200): worn from state.wardrobe_plus (lookOf)
+    toc_song_dai:{long:1},toc_bob_mai:{},toc_duoi_cao:{},toc_bui_tron:{},toc_wolf:{},toc_undercut:{},toc_mai_bay:{},toc_tet:{}},
   shade:{mau_nau:{c:'#5b4436'},mau_den:{c:'#2f2826'},mau_mat_ong:{c:'#9a6a3f'},mau_hong:{c:'#d98fa3'},mau_xanh_khoi:{c:'#6f8ea8'},mau_bach_kim:{c:'#e3d5b8'}},
   skin:{da_sang:{c:'#f5cfae',neck:'#e6b692',face:'#f8dcc2',ear:'#f3ceb1',hand:'#f5d5ba'},da_hong:{c:'#f8d8c6',neck:'#eab9a3',face:'#fbe2d4',ear:'#f2c9b6',hand:'#f7dccb'},
     da_trung:{c:'#e3b389',neck:'#c9966d',face:'#ebbf98',ear:'#dcaa80',hand:'#e6b890'},da_ngam:{c:'#c48d64',neck:'#a8744e',face:'#cc976e',ear:'#b9825b',hand:'#c79168'}},
@@ -29,13 +31,28 @@ export const ART={
     dam_du_tiec:{c:'#395c81',d:'gala',dress:'gala',x:'#d9bd77'},
     dam_yem:{c:'#c68468',d:'pinafore',dress:'pinafore',x:'#8f533e',tx:'d'},
     dam_maxi:{c:'#e7a72a',d:'gala',dress:'gala',x:'#fff3d6'},vay_babydoll:{c:'#f2c1cf',d:'princess',dress:'princess',x:'#fff5f8',tx:'d'},
-    ao_blazer:{c:'#2f3340',d:'suit',x:'#c9b48a'},ao_cardigan:{c:'#efe1c3',d:'knit',x:'#cdb98f',tx:'d'},ao_polo:{c:'#2f4f7a',d:'collar',x:'#e9e4d8',tx:'l'}},
-  bottom:{quan_kem:{c:'#f0d3b8'},quan_xam:{c:'#6f6a78'},quan_jean:{c:'#5b7ea6'},quan_short:{c:'#c9a978',short:1},vay_xoe:{c:'#e39ab0',skirt:'flare'},vay_dai:{c:'#9fb7d8',skirt:'long'},vay_chu_a:{c:'#2d2a2e',skirt:'flare'}},
-  shoes:{giay_nau:{c:'#785c51'},dep_lao:{c:'#5b8fc0',flat:1},giay_trang:{c:'#f4f1ea',line:'#cfc8bb'},giay_do:{c:'#c9514a'},bot_den:{c:'#3d3533',tall:1},sandal_nau:{c:'#8a5a3b',flat:1}},
+    ao_blazer:{c:'#2f3340',d:'suit',x:'#c9b48a'},ao_cardigan:{c:'#efe1c3',d:'knit',x:'#cdb98f',tx:'d'},ao_polo:{c:'#2f4f7a',d:'collar',x:'#e9e4d8',tx:'l'},
+    ao_croptop:{c:'#f7f4ec',d:'crop',x:'#e8b9c4',tx:'d'},ao_baby_tee:{c:'#f4b6c8',d:'babytee',x:'#ffffff',tx:'l'},
+    ao_bomber:{c:'#5d6b4a',d:'bomber',x:'#d98c3a'},ao_hoodie_os:{c:'#a9a6a8',d:'hood',x:'#8f8b8e',tx:'d',os:1},
+    ao_so_mi_os:{c:'#b9d3ea',d:'overshirt',x:'#f7f4ec',os:1},ao_khoac_jean:{c:'#6f8fb8',d:'denim',x:'#d9c38a',tx:'l'},
+    vay_hai_day:{c:'#2e2a30',d:'slip',dress:'slip',x:'#c9b48a'},ao_dai_cach_tan:{c:'#f2a7bd',d:'aodai',x:'#fff1c9',long:1,mini:1},
+    ao_ba_lo:{c:'#f2efe6',d:'tank',x:'#cfc8bb',tx:'d'},dam_suong:{c:'#7fa88f',d:'tee',dress:'shift',x:'#f3ead2',tx:'l'},
+    vay_maxi_hoa:{c:'#f0b9a4',d:'gala',dress:'maxi',x:'#fff3d6'},dam_so_mi:{c:'#9ec1dc',d:'collar',dress:'shirt',x:'#f7f4ec',tx:'l'},
+    vay_yem_jean:{c:'#6f8fb8',d:'pinafore',dress:'pinafore',x:'#d9c38a',tx:'l'},dam_hoa_nhi:{c:'#f6d7a7',d:'princess',dress:'princess',x:'#e58fa6',dots:1},
+    dam_kim_sa:{c:'#9b7cc9',d:'gala',dress:'gala',x:'#fff6d0',sparkle:1}},
+  bottom:{quan_kem:{c:'#f0d3b8'},quan_xam:{c:'#6f6a78'},quan_jean:{c:'#5b7ea6'},quan_short:{c:'#c9a978',short:1},vay_xoe:{c:'#e39ab0',skirt:'flare'},vay_dai:{c:'#9fb7d8',skirt:'long'},vay_chu_a:{c:'#2d2a2e',skirt:'flare'},
+    quan_ong_rong:{c:'#e6d3b3',wide:1},quan_cargo:{c:'#6b7350',cargo:1},vay_tennis:{c:'#f7f4ec',skirt:'pleat'},quan_jogger:{c:'#34313a',cuff:1},
+    quan_short_jean:{c:'#6f8fb8',short:1,stitch:1},chan_vay_jean:{c:'#6f8fb8',skirt:'flare',stitch:1},vay_xep_ly_dai:{c:'#d9a6b5',skirt:'long',pleats:1}},
+  shoes:{giay_nau:{c:'#785c51'},dep_lao:{c:'#5b8fc0',flat:1},giay_trang:{c:'#f4f1ea',line:'#cfc8bb'},giay_do:{c:'#c9514a'},bot_den:{c:'#3d3533',tall:1},sandal_nau:{c:'#8a5a3b',flat:1},
+    sneaker_chunky:{c:'#f4f1ea',line:'#cfc8bb',chunky:1},giay_mary_jane:{c:'#2d2a2e',strap:1},boot_co_ngan:{c:'#8a5a3b',ankle:1},dep_quai_ngang:{c:'#3d3533',flat:1,slide:1}},
   // Each accessory's own colours ("Màu gốc"): c main, d the darker part (frame, band, knot, strap), l the light part.
   acc:{pk_khong:{},kinh_tron:{c:'#6b4f3f',d:'#6b4f3f'},kinh_ram:{c:'#3a3230',d:'#3a3230'},non_la:{c:'#ecd394',d:'#c9a95e',line:'#d6b86f',brim:'#d9bb72'},
     mu_len:{c:'#d8736a',d:'#b95a52',l:'#f3e6d6'},no_toc:{c:'#e0708a',d:'#c85873'},tui_cheo:{c:'#b07a4f',d:'#8a5a3c',l:'#d9a878'},
-    tui_xach:{c:'#3a3436',d:'#221e1f',l:'#d4af37'},bong_tai:{c:'#f3eee4',d:'#c8bead',l:'#ffffff'},khan_lua:{c:'#8e2437',d:'#5f1724',l:'#e7a7b2'}},
+    tui_xach:{c:'#3a3436',d:'#221e1f',l:'#d4af37'},bong_tai:{c:'#f3eee4',d:'#c8bead',l:'#ffffff'},khan_lua:{c:'#8e2437',d:'#5f1724',l:'#e7a7b2'},
+    kinh_mat_meo:{c:'#2f2a2e',d:'#2f2a2e',l:'#e0b43f'},mu_bucket:{c:'#e9dcc0',d:'#b8a47a',l:'#f7efdc'},mu_luoi_trai:{c:'#3a4e7c',d:'#24345a',l:'#f8f4ec'},
+    vong_co:{c:'#e0b43f',d:'#b0821f',l:'#fff6d0'},dong_ho:{c:'#c7ccd4',d:'#8b94a1',l:'#ffffff'},kep_toc:{c:'#e0708a',d:'#c85873',l:'#fde2ea'},
+    kinh_can:{c:'#2f2a2e',d:'#2f2a2e',l:'#ffffff'},no_lua:{c:'#f4b0c4',d:'#d77d9a',l:'#fde2ea'},khuyen_tron:{c:'#e0b43f',d:'#b0821f',l:'#fff6d0'},
+    khan_bandana:{c:'#c9514a',d:'#9e2c27',l:'#f8f4ec'},balo_mini:{c:'#e7c56a',d:'#b0821f',l:'#fff6d0'}},
 };
 /* Bảng màu (1.3.1 accessories, góp ý #70; then clothes, shoes and furniture): look.tint = {item id: colour id};
  * ids, names and prices in game/wardrobe.py COLORS. c main, d darker, l lighter. Furniture: v4/deco-art.js tint.
@@ -60,7 +77,8 @@ export function defaultLook(gender){return {...DEFAULTS[gender==='male'||gender=
 /** The colour item `id` is worn in, from the state (null: its own): accessories in state.wardrobe_colors (1.3.1),
  * clothes and shoes in state.colors. */
 export function wornColor(state,id){
-  const c=(ART.acc[id]?state?.wardrobe_colors?.wear:state?.colors?.wear)?.[id];
+  const plus=state?.wardrobe_plus?.wear;   // 1.9.2 pieces keep their colours in their own block
+  const c=plus&&Object.hasOwn(plus,id)?plus[id]:(ART.acc[id]?state?.wardrobe_colors?.wear:state?.colors?.wear)?.[id];
   return typeof c==='string'&&ACC_COLORS[c]?c:null;
 }
 /** The look to draw for this state: saved slots that this build knows, the gender's default elsewhere, and the
@@ -71,6 +89,10 @@ export function lookOf(state){
     for(const k of SLOTS)if(typeof w[k]==='string'&&ART[k][w[k]])d[k]=w[k];
     if(typeof w.uniform==='boolean')d.uniform=w.uniform;
   }
+  // 1.9.2 pieces (game/wardrobe.py PLUS_KEY): {slot: [piece, the id state.wardrobe wore there]}; a stale entry is ignored.
+  const plus=state?.wardrobe_plus?.look;
+  if(plus&&typeof plus==='object')for(const k of SLOTS){const e=plus[k];
+    if(Array.isArray(e)&&typeof e[0]==='string'&&Object.hasOwn(ART[k],e[0])&&e[1]===d[k])d[k]=e[0];}
   const tint={};
   for(const k of TINT_SLOTS){const id=d[k],col=wornColor(state,id);if(col&&(k!=='acc'||ART.acc[id]?.c))tint[id]=col;}
   if(Object.keys(tint).length)d.tint=tint;
@@ -97,6 +119,13 @@ function hairBack(h,c){
     case'toc_bob':return `<path d="M17 50C11 10 69 10 63 50Q52 56 40 54Q28 56 17 50Z" fill="${c}"/>`;
     case'toc_duoi_ngua':return `<path d="M52 18Q74 20 70 46Q67 60 59 54Q66 40 54 28Z" fill="${c}"/>`;
     case'toc_xoan':return `<g fill="${c}"><circle cx="23" cy="27" r="10"/><circle cx="31" cy="16" r="11"/><circle cx="48" cy="15" r="11"/><circle cx="57" cy="26" r="10"/><circle cx="61" cy="39" r="8"/><circle cx="19" cy="39" r="8"/></g>`;
+    case'toc_song_dai':return `<path d="M18 44C12 10 68 10 62 44Q68 52 63 60Q68 68 62 76H18Q12 68 17 60Q12 52 18 44Z" fill="${c}"/>`;
+    case'toc_bob_mai':return `<path d="M17 50C11 10 69 10 63 50Q52 56 40 54Q28 56 17 50Z" fill="${c}"/>`;
+    case'toc_mai_bay':return `<path d="M18 48C12 10 68 10 62 48Q58 58 52 56H28Q22 58 18 48Z" fill="${c}"/>`;
+    case'toc_duoi_cao':return `<path d="M50 12Q72 6 70 34Q68 52 60 50Q66 34 54 20Z" fill="${c}"/>`;
+    case'toc_bui_tron':return `<g fill="${c}"><circle cx="25" cy="13" r="9"/><circle cx="55" cy="13" r="9"/></g>`;
+    case'toc_wolf':return `<path d="M19 40Q14 52 20 58L24 50L27 58L30 48M61 40Q66 52 60 58L56 50L53 58L50 48" fill="${c}"/>`;
+    case'toc_tet':return `<g fill="${c}"><circle cx="58" cy="52" r="5"/><circle cx="60" cy="60" r="4.8"/><circle cx="61" cy="68" r="4.5"/><circle cx="62" cy="75" r="4.2"/></g><circle cx="62" cy="79" r="2" fill="#e0708a"/>`;
   }
   return '';
 }
@@ -109,12 +138,26 @@ function hairFront(h,c){
     case'toc_bob':return `<path d="M21 35Q20 14 40 14Q60 14 59 35Q51 28 40 29Q29 28 21 35Z" fill="${c}"/>`;
     case'toc_xoan':return `<path d="M21 34Q22 17 40 16Q58 17 59 34Q54 26 47 27Q42 22 36 27Q28 25 21 34Z" fill="${c}"/>`;
     case'toc_duoi_ngua':return `<path d="M21 38Q21 15 40 15Q59 15 59 38Q52 25 41 22Q31 26 21 38Z" fill="${c}"/><circle cx="56" cy="22" r="3" fill="#e0708a"/>`;
+    case'toc_bob_mai':return `<path d="M21 36Q20 14 40 14Q60 14 59 36L58 33H22Z" fill="${c}"/><path d="M22 33H58" stroke="${c}" stroke-width="1"/>`;
+    case'toc_mai_bay':return `<path d="M21 38Q20 14 40 14Q60 14 59 38Q55 27 46 25Q42 28 40 24Q38 28 34 25Q25 27 21 38Z" fill="${c}"/>`;
+    case'toc_duoi_cao':return `<path d="M21 37Q21 15 40 15Q59 15 59 37Q52 25 41 22Q31 26 21 37Z" fill="${c}"/><circle cx="50" cy="13" r="3" fill="#e0708a"/>`;
+    case'toc_bui_tron':return `<path d="M21 36Q20 15 40 15Q60 15 59 36Q49 30 40 22Q31 30 21 36Z" fill="${c}"/>`;
+    case'toc_wolf':return `<path d="M20 38Q16 12 40 12Q64 12 60 38L56 28L52 33L49 24Q40 30 31 24L28 33L24 28Z" fill="${c}"/>`;
+    case'toc_undercut':return `<path d="M22 32Q24 12 42 12Q60 13 58 30Q50 22 40 22Q30 22 22 32Z" fill="${c}"/><path d="M20 36V44M60 36V44" stroke="${c}" stroke-opacity=".45" stroke-width="3"/>`;
+    case'toc_tet':return `<path d="M21 37Q21 15 40 15Q59 15 59 37Q50 26 40 24Q30 26 21 37Z" fill="${c}"/>`;
   }
   return `<path d="M21 38Q21 15 40 15Q59 15 59 38Q52 25 41 22Q31 26 21 38Z" fill="${c}"/>`;
 }
-export function topDetail(t){
+export function topDetail(t,sk){
   const x=t.x;
   switch(t.d){
+    case'crop':return `<path d="M33 61q7 5 14 0" fill="none" stroke="${x}" stroke-width="2.4"/><path d="M14 77H66" stroke="${x}" stroke-width="2"/>`;
+    case'babytee':return `<path d="M33 61q7 5 14 0" fill="none" stroke="${x}" stroke-width="2.6"/><path d="M40 69l1.6 3.2 3.5.5-2.5 2.4.6 3.5-3.2-1.7-3.2 1.7.6-3.5-2.5-2.4 3.5-.5z" fill="${x}"/>`;
+    case'bomber':return `<path d="M31 60Q40 67 49 60" fill="none" stroke="${x}" stroke-width="3.4"/><path d="M40 65V80" stroke="#e8e2d4" stroke-width="1.4"/><circle cx="54" cy="70" r="1.6" fill="${x}"/>`;
+    case'overshirt':return `<path d="M33 60H47L45 80H35Z" fill="${x}"/><path d="M31 60L37 68L34 71ZM49 60L43 68L46 71Z" fill="#00000022"/>`;
+    case'denim':return `<path d="M31 60L40 66L35 71ZM49 60L40 66L45 71Z" fill="${x}"/><path d="M24 70h9v6h-9zM47 70h9v6h-9z" fill="none" stroke="${x}" stroke-width="1.2"/><g fill="#d9d4c8"><circle cx="40" cy="72" r="1"/><circle cx="40" cy="77" r="1"/></g>`;
+    case'tank':return `<path d="M12 80c2-15 54-15 56 0Z" fill="${sk||'#f5cfae'}"/><path d="M24 66Q40 72 56 66L58 80H22Z" fill="${t.c}"/><path d="M26 66V60h7v6M47 66V60h7v6" fill="${t.c}"/><path d="M33 67q7 4 14 0" fill="none" stroke="${x}" stroke-width="1.6"/>`;
+    case'slip':return `<path d="M12 80c2-15 54-15 56 0Z" fill="${sk||'#f5cfae'}"/><path d="M27 66Q40 74 53 66L56 80H24Z" fill="${t.c}"/><path d="M29 66V59M51 66V59" stroke="${x}" stroke-width="1.4"/>`;
     case'princess':return `<path d="M28 64Q40 72 52 64M18 76Q40 82 62 76" fill="none" stroke="${x}" stroke-width="3"/><path d="M40 72l-5-3v6zM40 72l5-3v6z" fill="${x}"/>`;
     case'gala':return `<path d="M29 62Q40 74 51 62" fill="none" stroke="${x}" stroke-width="2"/><path d="M40 70l2 3-2 3-2-3z" fill="${x}"/>`;
     case'pinafore':return `<path d="M25 62h5v18h-5zM50 62h5v18h-5zM30 70h20v10H30z" fill="${x}"/><g fill="#f8edcf"><circle cx="28" cy="70" r="1.8"/><circle cx="52" cy="70" r="1.8"/></g>`;
@@ -142,9 +185,22 @@ export function accBust(a,k){
     case'tui_xach':return `<path d="M58 70q6-8 12 0" fill="none" stroke="${k.d}" stroke-width="2.2"/><rect x="55" y="69" width="18" height="12" rx="3" fill="${k.c}"/><rect x="62" y="72" width="4" height="3" rx="1" fill="${k.l}"/>`;
     case'bong_tai':return `<g fill="${k.c}" stroke="${k.d}" stroke-width=".6"><circle cx="21.5" cy="48" r="2.4"/><circle cx="58.5" cy="48" r="2.4"/></g>`;
     case'khan_lua':return `<path d="M29 57Q40 65 51 57L52 62Q40 71 28 62Z" fill="${k.c}"/><path d="M43 63l5 11-7-3z" fill="${k.d}"/><path d="M33 61q7 4 14 0" fill="none" stroke="${k.l}" stroke-width="1"/>`;
+    case'kinh_mat_meo':return `<g fill="${k.d}"><path d="M25 36H38.5L38 43Q31 46 27 42Z"/><path d="M55 36H41.5L42 43Q49 46 53 42Z"/></g><path d="M38.5 38.5h3" stroke="${k.d}" stroke-width="1.6"/><g fill="${k.l}"><circle cx="25.5" cy="36.5" r="1.2"/><circle cx="54.5" cy="36.5" r="1.2"/></g>`;
+    case'mu_bucket':return `<path d="M20 29Q20 9 40 9Q60 9 60 29Z" fill="${k.c}"/><path d="M12 33Q40 22 68 33L64 27H16Z" fill="${k.d}"/><path d="M21 26H59" stroke="${k.l}" stroke-width="1.4"/>`;
+    case'mu_luoi_trai':return `<path d="M19 30Q19 8 40 8Q61 8 61 30Z" fill="${k.c}"/><path d="M22 29Q46 23 70 31Q62 35 44 33Z" fill="${k.d}"/><circle cx="40" cy="8.5" r="2.2" fill="${k.l}"/>`;
+    case'vong_co':return `<path d="M31 58Q40 68 49 58" fill="none" stroke="${k.c}" stroke-width="1.2"/><path d="M42 66a3.2 3.2 0 1 1-2.6-4.6a2.5 2.5 0 1 0 2.6 4.6z" fill="${k.c}" stroke="${k.d}" stroke-width=".4"/>`;
+    case'dong_ho':return `<rect x="62" y="72" width="9" height="5" rx="2" fill="${k.d}"/><circle cx="66.5" cy="74.5" r="2.3" fill="${k.l}" stroke="${k.c}" stroke-width=".8"/>`;
+    case'kinh_can':return `<g fill="#ffffff30" stroke="${k.d}" stroke-width="1.7"><rect x="26" y="35" width="12" height="10" rx="2.5"/><rect x="42" y="35" width="12" height="10" rx="2.5"/></g><path d="M38 39h4M26 38l-4-2M54 38l4-2" stroke="${k.d}" stroke-width="1.5"/>`;
+    case'no_lua':return `<path d="M40 14L26 5L25 22ZM40 14L54 5L55 22Z" fill="${k.c}"/><circle cx="40" cy="14" r="3.4" fill="${k.d}"/>`;
+    case'khuyen_tron':return `<g fill="none" stroke="${k.c}" stroke-width="1.5"><circle cx="21" cy="52" r="3.6"/><circle cx="59" cy="52" r="3.6"/></g>`;
+    case'khan_bandana':return `<path d="M20 26Q40 14 60 26L60 31Q40 20 20 31Z" fill="${k.c}"/><path d="M59 28l9 6-6 3z" fill="${k.d}"/><g fill="${k.l}"><circle cx="32" cy="24" r="1"/><circle cx="40" cy="22" r="1"/><circle cx="48" cy="24" r="1"/></g>`;
+    case'balo_mini':return `<path d="M25 62L27 80M55 62L53 80" stroke="${k.d}" stroke-width="3" stroke-linecap="round"/><rect x="62" y="64" width="10" height="14" rx="3" fill="${k.c}"/>`;
+    case'kep_toc':return `<g transform="rotate(-20 55 22)"><rect x="49" y="18" width="13" height="7" rx="3" fill="${k.c}"/><path d="M51 25v3M54.5 25v3M58 25v3" stroke="${k.d}" stroke-width="1.4"/></g>`;
   }
   return '';
 }
+/** The classic UI has no 2.5D portraits (v4/wardrobe.js asks before showing the mirror's "Xoay"). */
+export const cozyActive=()=>false;
 /** Warm little portrait (80×80 viewBox), drawn inline. `look` null: the gender's default look. */
 export function portrait(look,gender,size=56,label){
   const Lk=look||defaultLook(gender),hair=hairColour(Lk),sk=art(Lk,'skin'),top=art(Lk,'top'),ak=accPaint(Lk);
@@ -152,7 +208,7 @@ export function portrait(look,gender,size=56,label){
   label??=f?'Nhân vật nữ':m?'Nhân vật nam':'Nhân vật của bạn';
   const eyes=Lk.acc==='kinh_ram'?'':`<ellipse cx="33" cy="40" rx="2.8" ry="3.4" fill="#4b3936"/><ellipse cx="47" cy="40" rx="2.8" ry="3.4" fill="#4b3936"/><circle cx="32.3" cy="38.8" r="1" fill="#fff"/><circle cx="46.3" cy="38.8" r="1" fill="#fff"/>`;
   return `<svg class="jr-av" width="${size}" height="${size}" viewBox="0 0 80 80" role="img" aria-label="${label}"><rect width="80" height="80" rx="26" fill="#f4e4cf"/>`+
-    hairBack(Lk.hair,hair)+`<path d="M12 80c2-23 54-23 56 0" fill="${topColour(Lk,gender)}"/>`+topDetail(top)+(Lk.acc==='tui_cheo'?accBust('tui_cheo',ak):'')+
+    hairBack(Lk.hair,hair)+`<path d="M12 80c2-23 54-23 56 0" fill="${topColour(Lk,gender)}"/>`+topDetail(top,sk.c)+(Lk.acc==='tui_cheo'?accBust('tui_cheo',ak):'')+
     `<rect x="34" y="50" width="12" height="12" rx="5" fill="${sk.neck}"/><ellipse cx="40" cy="38" rx="19" ry="21" fill="${sk.c}"/>${hairFront(Lk.hair,hair)}`+eyes+
     `<ellipse cx="28" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><ellipse cx="52" cy="46" rx="3.6" ry="2.2" fill="#e08f86" opacity=".55"/><path d="M36 48q4 4 8 0" fill="none" stroke="#a46e5e" stroke-width="1.8" stroke-linecap="round"/>`+
     (Lk.acc==='tui_cheo'?'':accBust(Lk.acc,ak))+`</svg>`;
@@ -184,12 +240,13 @@ export const FRONT={short:'M-31 -80C-35 -118 24 -124 32 -84Q26 -95 12 -99Q-4 -92
   soft:'M-30 -88C-33 -119 19 -120 31 -90Q19 -93 7 -105Q5 -88 -12 -84Q-17 -91 -16 -101Q-21 -89 -30 -88Z'};
 /** Resolved colours and shapes of the player's look (from the state, or a look + gender). */
 export const figure=state=>figureOf(lookOf(state),state?.journey?.gender);
+const SHORT_HAIR=new Set(['toc_ngan','toc_wolf','toc_undercut']);
 export function figureOf(Lk,g){
   const top=art(Lk,'top');
   // The default shade keeps the two browns the scene always used.
   const hair=Lk.shade==='mau_nau'?(Lk.hair==='toc_ngan'&&g==='male'?'#4f3a30':'#74503f'):hairColour(Lk);
-  const bottom=top.dress?{c:top.c,skirt:top.dress==='gala'?'long':'flare',dress:top.dress,x:top.x}:art(Lk,'bottom');
-  return {g,L:Lk,hair,skin:art(Lk,'skin'),top,topC:top.c,classic:topColour(Lk,g),bottom,shoes:art(Lk,'shoes'),long:!!art(Lk,'hair').long,short:Lk.hair==='toc_ngan'};
+  const bottom=top.dress?{c:top.c,skirt:top.dress==='gala'||top.dress==='slip'||top.dress==='maxi'?'long':'flare',dress:top.dress,x:top.x}:art(Lk,'bottom');
+  return {g,L:Lk,hair,skin:art(Lk,'skin'),top,topC:top.c,classic:topColour(Lk,g),bottom,shoes:art(Lk,'shoes'),long:!!art(Lk,'hair').long,short:SHORT_HAIR.has(Lk.hair)};
 }
 /** Dress hems share the top's palette and cover the stored bottom in every pose. */
 export function paintDress(c,F,K=CANVAS){
@@ -205,19 +262,44 @@ export function paintDress(c,F,K=CANVAS){
   }else if(t.dress==='pinafore'){
     K.P(c,[[-18,-28],[18,-28],[26,-7],[-26,-7]],t.c);
     K.R(c,-8,-22,16,9,x,2);K.L(c,-20,-9,20,-9,x,1.5);
+  }else if(t.dress==='slip'){
+    K.P(c,[[-18,-28],[18,-28],[22,-4],[-22,-4]],t.c);
+    K.L(c,8,-25,13,-7,'#ffffff40',2);
+  }else if(t.dress==='shift'){
+    K.P(c,[[-19,-28],[19,-28],[21,-9],[-21,-9]],t.c);
+    K.R(c,8,-22,8,6,'#00000018',2);
+  }else if(t.dress==='maxi'){
+    K.P(c,[[-19,-28],[19,-28],[25,-3],[-25,-3]],t.c);
+    for(const [px,py] of [[-14,-22],[6,-25],[14,-14],[-6,-12],[-18,-7],[10,-6]])K.bloom(c,px,py,3.2,x);
+  }else if(t.dress==='shirt'){
+    K.P(c,[[-18,-28],[18,-28],[26,-8],[-26,-8]],t.c);
+    K.L(c,-18,-27,18,-27,x,3);K.L(c,0,-27,0,-9,'#00000022',1.2);
   }
+  if(t.dots)for(const [px,py] of [[-16,-15],[-6,-21],[5,-13],[15,-19],[-10,-9],[11,-9]])K.E(c,px,py,1.6,1.6,x);
+  if(t.sparkle)for(const [px,py] of [[-12,-22],[6,-17],[14,-8],[-7,-9],[0,-25],[-17,-6]])K.E(c,px,py,1.1,1.1,x);
 }
 /** Legs, shoes and skirts (before the torso). */
 export function paintLegs(c,F,step,K=CANVAS){
   const b=F.bottom,sk=F.skin.hand,bare=b.short||b.skirt,s=F.shoes;
   K.R(c,-19,-20,15,20,bare?sk:b.c,5);K.R(c,4,-20,15,20,bare?sk:b.c,5);
   if(b.short){K.R(c,-20,-21,17,10,b.c,4);K.R(c,3,-21,17,10,b.c,4);}
+  if(b.cargo){K.R(c,-21,-14,6,7,'#00000026',2);K.R(c,15,-14,6,7,'#00000026',2);}
+  if(b.cuff){K.R(c,-19,-7,15,4,'#00000033',2);K.R(c,4,-7,15,4,'#00000033',2);}
+  if((s.strap||s.slide)&&bare){K.R(c,-19,-10,15,5,'#fbf7ee',2);K.R(c,4,-10,15,5,'#fbf7ee',2);}
   if(s.tall){K.R(c,-20,-13+step,17,16,s.c,5);K.R(c,3,-13-step,17,16,s.c,5);}
+  if(s.ankle){K.R(c,-20,-10+step,17,12,s.c,5);K.R(c,3,-10-step,17,12,s.c,5);}
+  if(s.chunky){K.R(c,-22,-1+step,21,5,'#e3dccd',3);K.R(c,2,-1-step,21,5,'#e3dccd',3);}
   K.R(c,-21,(s.flat?-4:-7)+step,19,s.flat?7:10,s.c,5,s.line||null,1.2);K.R(c,3,(s.flat?-4:-7)-step,19,s.flat?7:10,s.c,5,s.line||null,1.2);
+  if(s.strap){K.L(c,-19,-5+step,-5,-5+step,'#fbf7ee',1.4);K.L(c,5,-5-step,19,-5-step,'#fbf7ee',1.4);}
+  if(s.slide){K.R(c,-21,-4+step,19,3,'#ffffff55',1.5);K.R(c,3,-4-step,19,3,'#ffffff55',1.5);}
+  if(b.wide){K.P(c,[[-19,-20],[-3,-20],[-1,-2],[-23,-2]],b.c);K.P(c,[[3,-20],[19,-20],[23,-2],[1,-2]],b.c);}
   if(b.dress)paintDress(c,F,K);
   else if(b.skirt==='flare')K.P(c,[[-21,-24],[21,-24],[28,-9],[-28,-9]],b.c);
+  else if(b.skirt==='pleat'){K.P(c,[[-21,-24],[21,-24],[28,-7],[-28,-7]],b.c);for(const x of [-16,-8,0,8,16])K.L(c,x*.85,-23,x*1.1,-8,'#00000026',1);}
+  if(b.pleats)for(const x of [-15,-7,1,9,17])K.L(c,x*.85,-22,x*1.15,-6,'#00000022',1);
+  if(b.stitch){K.L(c,-20,-22,20,-22,'#f1d78f',1);if(b.skirt)K.L(c,-25,-12,25,-12,'#f1d78f',1);else{K.L(c,-19,-12,-3,-12,'#f1d78f',1);K.L(c,4,-12,20,-12,'#f1d78f',1);}}
   else if(b.skirt==='long'){K.P(c,[[-21,-24],[21,-24],[25,-5],[-25,-5]],b.c);for(const [x,y] of [[-14,-14],[0,-10],[13,-16],[-6,-19],[8,-7]])K.E(c,x,y,1.8,1.8,'#fff8ee');}
-  if(F.top.long)K.P(c,[[-17,-22],[17,-22],[13,-5],[-13,-5]],F.topC);   // áo dài flaps
+  if(F.top.long)K.P(c,[[-17,-22],[17,-22],[13,F.top.mini?-11:-5],[-13,F.top.mini?-11:-5]],F.topC);   // áo dài flaps (cách tân: shorter)
 }
 /** Hair behind the body and head (long hair, tail, curls). */
 export function paintHairBack(c,F,K=CANVAS){
@@ -227,6 +309,11 @@ export function paintHairBack(c,F,K=CANVAS){
   else if(h==='toc_duoi_ngua'){K.E(c,31,-90,10,22,col);K.E(c,34,-70,7,10,col);}
   else if(h==='toc_xoan')for(const [x,y,r] of [[-29,-94,13],[29,-94,13],[-21,-112,14],[20,-113,14],[0,-120,14],[-33,-76,9],[33,-76,9]])K.E(c,x,y,r,r,col);
   else if(h==='toc_bui_thap'){K.E(c,29,-63,12,11,col);K.L(c,26,-69,33,-58,'#dfc795',2);}
+  else if(h==='toc_bob_mai'||h==='toc_mai_bay')K.R(c,-31,-99,62,h==='toc_mai_bay'?52:46,col,20);
+  else if(h==='toc_duoi_cao'){K.E(c,24,-116,9,9,col);K.E(c,36,-96,8,22,col);K.E(c,38,-76,6,9,col);}
+  else if(h==='toc_wolf'){K.R(c,-31,-96,62,34,col,14);for(const s of [-1,1])K.P(c,[[s*31,-80],[s*37,-62],[s*24,-70]],col);}
+  else if(h==='toc_tet')for(const [x,y,r] of [[26,-62,6],[28,-52,5.8],[29,-42,5.5],[29,-33,5]])K.E(c,x,y,r,r,col);
+  if(h==='toc_song_dai')for(const s of [-1,1])for(const [y,r] of [[-48,8],[-38,8],[-30,7]])K.E(c,s*28,y,r,r,col);
 }
 /** What the character wears on the torso when the work layer is off. */
 export function paintTop(c,F,K=CANVAS){
@@ -243,7 +330,15 @@ export function paintTop(c,F,K=CANVAS){
     case'logo':K.heart(c,9,-32,.26,x);break;
     case'flowers':for(const [px,py] of [[-13,-42],[10,-45],[-6,-28],[13,-27],[1,-36]])K.bloom(c,px,py,4,x);break;
     case'suit':K.P(c,[[-8,-52],[8,-52],[0,-32]],'#f7f4ec');if(t.bow){K.P(c,[[0,-47],[-7,-51],[-7,-43]],x);K.P(c,[[0,-47],[7,-51],[7,-43]],x);K.E(c,13,-40,3,3,'#f4a6b8');}else K.P(c,[[-2,-49],[2,-49],[3,-37],[0,-33],[-3,-37]],x);break;
+    case'crop':K.R(c,-21,-27,42,10,F.skin.c,4);K.L(c,-21,-28,21,-28,x,2.5);K.L(c,-8,-51,8,-51,x,2.5);break;
+    case'babytee':K.L(c,-8,-51,8,-51,x,3);K.P(c,[[0,-42],[2,-38],[6,-38],[3,-35],[4,-31],[0,-33],[-4,-31],[-3,-35],[-6,-38],[-2,-38]],x);break;
+    case'bomber':K.L(c,-21,-19,21,-19,x,4);K.stroke(c,'M-10 -51Q0 -44 10 -51',x,3);K.L(c,0,-47,0,-20,'#e8e2d4',1.4);K.E(c,13,-42,2,2,x);break;
+    case'overshirt':K.P(c,[[-7,-52],[7,-52],[6,-18],[-6,-18]],x);K.R(c,-24,-22,48,9,t.c,4);K.P(c,[[-10,-52],[-3,-44],[-8,-41]],'#00000022');K.P(c,[[10,-52],[3,-44],[8,-41]],'#00000022');break;
+    case'denim':K.P(c,[[-10,-52],[0,-44],[-5,-40]],x);K.P(c,[[10,-52],[0,-44],[5,-40]],x);K.R(c,-17,-42,9,7,'#00000022',2);K.R(c,8,-42,9,7,'#00000022',2);K.E(c,0,-36,1.4,1.4,'#e8e2d4');K.E(c,0,-28,1.4,1.4,'#e8e2d4');break;
+    case'tank':K.R(c,-23,-52,46,12,F.skin.c,12);K.R(c,-14,-52,7,10,t.c,2);K.R(c,7,-52,7,10,t.c,2);K.stroke(c,'M-8 -45Q0 -40 8 -45',x,2);break;
+    case'slip':K.R(c,-23,-52,46,14,F.skin.c,12);K.L(c,-10,-51,-10,-38,x,1.5);K.L(c,10,-51,10,-38,x,1.5);K.stroke(c,'M-14 -39Q0 -33 14 -39',t.c,3);break;
   }
+  if(t.os&&t.d==='hood')K.R(c,-25,-22,50,9,t.c,4);   // oversize: the hem falls over the hips
 }
 /** Bun, flower and ties (after the front hair). */
 export function paintHairFront(c,F,K=CANVAS){
@@ -252,6 +347,13 @@ export function paintHairFront(c,F,K=CANVAS){
   else if(h==='toc_bui_cao'){K.E(c,0,-126,14,12,F.hair);K.stroke(c,'M-8 -129Q0 -136 8 -128','#ffffff30',1.5);K.L(c,-10,-118,10,-118,'#e0b43f',3);}
   else if(h==='toc_bui_doi'){for(const x of [-30,30]){K.E(c,x,-111,13,12,F.hair);K.L(c,x-7,-101,x+7,-101,'#e0708a',3);}}
   else if(h==='toc_duoi_ngua')K.E(c,27,-104,4.5,4.5,'#e0708a');
+  else if(h==='toc_duoi_cao')K.E(c,22,-117,4.5,4.5,'#e0708a');
+  else if(h==='toc_bui_tron'){for(const x of [-22,22]){K.E(c,x,-118,13,12,F.hair);K.stroke(c,`M${x-6} -122Q${x} -127 ${x+6} -121`,'#ffffff30',1.4);}}
+  else if(h==='toc_bob_mai')K.R(c,-25,-106,50,13,F.hair,5);
+  else if(h==='toc_mai_bay'){K.stroke(c,'M0 -108Q-14 -104 -22 -86',F.hair,6);K.stroke(c,'M0 -108Q14 -104 22 -86',F.hair,6);}
+  else if(h==='toc_wolf')for(const x of [-14,-2,10])K.P(c,[[x-5,-112],[x+5,-112],[x+1,-100]],F.hair);
+  else if(h==='toc_undercut'){K.E(c,4,-117,22,9,F.hair);for(const s of [-1,1])K.R(c,s>0?24:-33,-96,9,16,F.skin.ear,4);}
+  else if(h==='toc_tet')K.E(c,29,-29,3.4,3.4,'#e0708a');
 }
 /** The one accessory (last, over the face and hair). */
 export function paintAcc(c,F,K=CANVAS){
@@ -266,6 +368,17 @@ export function paintAcc(c,F,K=CANVAS){
     case'tui_xach':K.stroke(c,'M22 -32Q28 -42 34 -32',k.d,2.4);K.R(c,19,-33,18,14,k.c,4);K.R(c,26,-29,4,3,k.l,1);break;
     case'bong_tai':K.E(c,-29,-61,2.8,2.8,k.c);K.E(c,29,-61,2.8,2.8,k.c);break;
     case'khan_lua':K.P(c,[[-15,-53],[15,-53],[11,-46],[-11,-46]],k.c);K.P(c,[[4,-47],[11,-35],[1,-39]],k.d);K.L(c,-9,-50,9,-50,k.l,1);break;
+    case'kinh_mat_meo':K.P(c,[[-23,-86],[-3,-84],[-4,-75],[-17,-73]],k.d);K.P(c,[[23,-86],[3,-84],[4,-75],[17,-73]],k.d);K.L(c,-3,-81,3,-81,k.d,2);K.E(c,-22,-85,1.6,1.6,k.l);K.E(c,22,-85,1.6,1.6,k.l);break;
+    case'mu_bucket':K.R(c,-27,-129,54,28,k.c,13);K.P(c,[[-38,-98],[38,-98],[29,-106],[-29,-106]],k.d);K.L(c,-27,-108,27,-108,k.l,2);break;
+    case'mu_luoi_trai':K.R(c,-30,-129,60,28,k.c,14);K.E(c,10,-102,28,6,k.d);K.E(c,0,-129,3,3,k.l);break;
+    case'vong_co':K.stroke(c,'M-10 -52Q0 -42 10 -52',k.c,1.4);K.E(c,0,-43,3,3,k.c);K.E(c,1,-44,2,2,k.d);break;
+    case'dong_ho':K.R(c,19,-42,12,5,k.d,2);K.E(c,25,-39.5,3,3,k.l);break;
+    case'kinh_can':K.R(c,-20,-84,16,12,'#ffffff30',3,k.d,1.8);K.R(c,4,-84,16,12,'#ffffff30',3,k.d,1.8);K.L(c,-4,-79,4,-79,k.d,1.6);break;
+    case'no_lua':K.P(c,[[0,-118],[-18,-130],[-20,-108]],k.c);K.P(c,[[0,-118],[18,-130],[20,-108]],k.c);K.L(c,-3,-117,-8,-100,k.d,3);K.L(c,3,-117,8,-100,k.d,3);K.E(c,0,-118,4.5,4.5,k.d);break;
+    case'khuyen_tron':K.ring(c,-29,-58,4.2,k.c,1.6);K.ring(c,29,-58,4.2,k.c,1.6);break;
+    case'khan_bandana':K.R(c,-31,-112,62,10,k.c,5);K.P(c,[[26,-108],[38,-100],[33,-96]],k.d);K.E(c,-14,-107,1.4,1.4,k.l);K.E(c,0,-108,1.4,1.4,k.l);K.E(c,14,-107,1.4,1.4,k.l);break;
+    case'balo_mini':K.R(c,-33,-48,10,22,k.c,5);K.R(c,23,-48,10,22,k.c,5);K.L(c,-15,-52,-17,-30,k.d,3);K.L(c,15,-52,17,-30,k.d,3);K.E(c,-28,-36,1.6,1.6,k.l);break;
+    case'kep_toc':K.R(c,17,-113,13,7,k.c,3);K.L(c,20,-106,20,-103,k.d,1.4);K.L(c,24,-106,24,-103,k.d,1.4);K.L(c,28,-106,28,-103,k.d,1.4);break;
   }
 }
 /** The whole player as BobaWorld draws it, with the work layer off (the wardrobe mirror). `arms` (optional, the fair's

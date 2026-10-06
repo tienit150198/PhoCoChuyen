@@ -65,3 +65,20 @@ html[data-layout="phone"] .wd-item{min-height:128px;padding:8px 4px}
 html[data-layout="phone"] .wd-pal{width:100%}
 @media (prefers-reduced-motion:reduce){.wd-item,.wd-sw{transition:none}.wd-item:hover,.wd-sw:hover{transform:none}}
 html.reduce-motion .wd-sw{transition:none}html.reduce-motion .wd-sw:hover{transform:none}
+/* 1.9.2: "Mới" on the new pieces, the mirror's "Xoay" (2.5D: the island chibi in four facings), the chat face and the
+   profile (the classic Nhân vật page had them next to Tủ đồ): in the header and under the tiles. */
+.wd-thumb{position:relative}
+.wd-new{position:absolute;top:3px;right:3px;padding:1px 5px;border-radius:var(--radius-pill);background:var(--second);color:var(--surface);font-size:.62rem;font-style:normal;font-weight:800;line-height:1.35}
+.wd-mirror{position:relative}
+.wd-turn{position:absolute;top:6px;right:6px;display:grid;place-items:center;width:34px;height:34px;padding:0;border-radius:50%;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink-2);font-size:1.05rem;font-weight:800;line-height:1;box-shadow:var(--shadow-sm);cursor:pointer}
+.wd-turn:focus-visible{outline:3px solid var(--accent-soft);outline-offset:1px}
+.wd-face-slot{flex:none;display:flex}
+.wd-face{min-height:38px;padding-inline:10px;font-size:.8rem;white-space:nowrap}
+.wd-links{display:flex;flex-wrap:wrap;gap:8px}
+.wd-links .btn{flex:1 1 200px;min-height:40px}
+html[data-layout="phone"] .wd-turn{top:4px;right:4px;width:30px;height:30px;font-size:.95rem}
+/* Phones: the seven tabs in two rows of chips (emoji over the name), none hidden off the edge. */
+html[data-layout="phone"] .wd-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;overflow-x:visible;padding:2px 0 4px}
+html[data-layout="phone"] .wd-tab{flex-direction:column;justify-content:center;gap:1px;min-height:48px;padding:4px 2px;font-size:.72rem;line-height:1.15;white-space:nowrap;border-radius:14px}
+html[data-layout="phone"] .wd-tab>span{font-size:1rem}

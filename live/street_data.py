@@ -138,22 +138,33 @@ VENDORS = {
     'phodibo': (('🍋', 'Trà chanh giã tay đâyyy!'), ('📸', 'Chụp ảnh lấy liền đây, đẹp như idol!'), ('🥗', 'Bánh tráng trộn đây, cay xé lưỡi!')),
 }
 
-# What a look may contain (game/wardrobe.py ITEMS and DEFAULTS; public/js/v4/look.js draws them).
+# What a look may contain (game/wardrobe.py ITEMS and DEFAULTS; public/js/v4/look.js draws them). The 1.9.2 pieces
+# are here too: a 1.9.1 live service (or an old client) does not know them and shows the slot's default.
 LOOK_SLOTS = ('hair', 'shade', 'skin', 'top', 'bottom', 'shoes', 'acc')
 LOOK_IDS = {
-    'hair': ('toc_ngan', 'toc_bui', 'toc_dai', 'toc_bob', 'toc_duoi_ngua', 'toc_xoan', 'toc_bui_cao', 'toc_bui_doi', 'toc_bui_thap'),
+    'hair': ('toc_ngan', 'toc_bui', 'toc_dai', 'toc_bob', 'toc_duoi_ngua', 'toc_xoan', 'toc_bui_cao', 'toc_bui_doi',
+            'toc_bui_thap', 'toc_song_dai', 'toc_bob_mai', 'toc_duoi_cao', 'toc_bui_tron', 'toc_wolf',
+            'toc_undercut', 'toc_mai_bay', 'toc_tet'),
     'shade': ('mau_nau', 'mau_den', 'mau_mat_ong', 'mau_hong', 'mau_xanh_khoi', 'mau_bach_kim'),
     'skin': ('da_sang', 'da_hong', 'da_trung', 'da_ngam'),
-    'top': ('ao_quen', 'ao_thun_kem', 'ao_thun_xanh', 'ao_so_mi', 'ao_len', 'ao_hoodie', 'ao_dai', 'ao_chi_may', 'ao_hoa', 'ao_vest',
-            'ao_cuoi', 'vest_cuoi', 'dam_cong_chua', 'dam_du_tiec', 'dam_yem', 'dam_maxi', 'vay_babydoll', 'ao_blazer',
-            'ao_cardigan', 'ao_polo'),
-    'bottom': ('quan_kem', 'quan_xam', 'quan_jean', 'quan_short', 'vay_xoe', 'vay_dai', 'vay_chu_a'),
-    'shoes': ('giay_nau', 'dep_lao', 'giay_trang', 'giay_do', 'bot_den', 'sandal_nau'),
-    'acc': ('pk_khong', 'kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo', 'tui_xach', 'bong_tai', 'khan_lua'),
+    'top': ('ao_quen', 'ao_thun_kem', 'ao_thun_xanh', 'ao_so_mi', 'ao_len', 'ao_hoodie', 'ao_dai', 'ao_chi_may',
+            'ao_hoa', 'ao_vest', 'ao_cuoi', 'vest_cuoi', 'dam_cong_chua', 'dam_du_tiec', 'dam_yem', 'dam_maxi',
+            'vay_babydoll', 'ao_blazer', 'ao_cardigan', 'ao_polo', 'ao_croptop', 'ao_baby_tee', 'ao_bomber',
+            'ao_hoodie_os', 'ao_so_mi_os', 'ao_khoac_jean', 'vay_hai_day', 'ao_dai_cach_tan', 'ao_ba_lo',
+            'dam_suong', 'vay_maxi_hoa', 'dam_so_mi', 'vay_yem_jean', 'dam_hoa_nhi', 'dam_kim_sa'),
+    'bottom': ('quan_kem', 'quan_xam', 'quan_jean', 'quan_short', 'vay_xoe', 'vay_dai', 'vay_chu_a', 'quan_ong_rong',
+            'quan_cargo', 'vay_tennis', 'quan_jogger', 'quan_short_jean', 'chan_vay_jean', 'vay_xep_ly_dai'),
+    'shoes': ('giay_nau', 'dep_lao', 'giay_trang', 'giay_do', 'bot_den', 'sandal_nau', 'sneaker_chunky',
+            'giay_mary_jane', 'boot_co_ngan', 'dep_quai_ngang'),
+    'acc': ('pk_khong', 'kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo', 'tui_xach', 'bong_tai',
+            'khan_lua', 'kinh_mat_meo', 'mu_bucket', 'mu_luoi_trai', 'vong_co', 'dong_ho', 'kep_toc', 'kinh_can',
+            'no_lua', 'khuyen_tron', 'khan_bandana', 'balo_mini'),
 }
 # Bảng màu (1.3.1 accessories, then clothes and shoes): look['tint'] = {worn item id: colour id}
 # (game/wardrobe.py TINTABLE, CLOTHES, TINT_SLOTS and COLORS). Hair keeps its own shades.
-TINTABLE = ('kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo', 'tui_xach', 'bong_tai', 'khan_lua')
+TINTABLE = ('kinh_tron', 'kinh_ram', 'non_la', 'mu_len', 'no_toc', 'tui_cheo', 'tui_xach', 'bong_tai', 'khan_lua',
+            'kinh_mat_meo', 'mu_bucket', 'mu_luoi_trai', 'vong_co', 'dong_ho', 'kep_toc', 'kinh_can', 'no_lua',
+            'khuyen_tron', 'khan_bandana', 'balo_mini')
 TINT_SLOTS = ('top', 'bottom', 'shoes', 'acc')
 PAINTABLE = frozenset(TINTABLE + LOOK_IDS['top'] + LOOK_IDS['bottom'] + LOOK_IDS['shoes'])
 TINT_MAX = 8      # entries a client may send (it sends at most one per slot in TINT_SLOTS)

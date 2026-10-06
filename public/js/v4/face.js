@@ -38,6 +38,8 @@ export const NAMES={
 };
 /** Headwear that hides the top of the hair (a bun or a top knot is left out under it). */
 const COVER=new Set(['hijab','luoi_trai','len','non_la','tai_beo','khan_dong']);
+/** Wardrobe accessories worn on the head: the chat face's own headwear (head) takes their place. */
+const HEADWEAR=new Set(['non_la','mu_len','no_toc','mu_bucket','mu_luoi_trai','kep_toc','no_lua','khan_bandana']);
 /** Headwear drawn without a colour of its own choosing. */
 export const PLAIN_HEAD=new Set(['0','non_la']);
 
@@ -180,7 +182,7 @@ function draw(o){
     :`<path d="M12 80c2-23 54-23 56 0" fill="${tee.c}"/><path d="M33 61q7 5 14 0" fill="none" stroke="${tee.d}" stroke-width="2.4"/>`;
   // the wardrobe accessory on the head, unless the face has its own glasses / headwear there
   const wa=tu&&L.acc!=='pk_khong'&&L.acc!=='tui_cheo'&&!((L.acc==='kinh_tron'||L.acc==='kinh_ram')&&f.glasses!=='0')&&
-    !((L.acc==='non_la'||L.acc==='mu_len'||L.acc==='no_toc')&&f.head!=='0')?accBust(L.acc,accPaint(L)):'';
+    !(HEADWEAR.has(L.acc)&&f.head!=='0')?accBust(L.acc,accPaint(L)):'';
   const browC=LIGHT_HAIR.has(f.hc)?'#8a7a66':hair,covered=COVER.has(f.head);
   const old=f.age==='gia'?`<g fill="none" stroke="#5a3a2a" stroke-opacity=".35" stroke-width="1.3" stroke-linecap="round"><path d="M33 26.5q7-1.8 14 0M27.5 46.5q1 3 3 4M52.5 46.5q-1 3-3 4M30 44.6q3 1.4 6 0M44 44.6q3 1.4 6 0"/></g>`:'';
   const head=headBack(f.head,hk)+(hijab?'':hairBack(f.hair,hair,covered))+
