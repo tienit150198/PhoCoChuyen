@@ -11,7 +11,7 @@ const scratch={};
 // before the career's sheet) instead of an @import inside it, which cost a second round trip.
 export const CSS_KIT={cafe_bakery:'food_kit',florist:'food_kit',restaurant:'food_kit',tax_payroll:'office_kit',group_accounting:'office_kit',corp_accounting:'office_kit',
   fruit:'street_kit',garbage:'street_kit',drain:'street_kit',homemaker:'street_kit',ice_cream:'street_kit',com:'street_kit',nail:'street_kit',pagoda:'street_kit',pho:'street_kit',photobooth:'street_kit',giupviec:'street_kit',naucom:'street_kit',babysitter:'street_kit',library:'street_kit',pilot:'air_kit',flight_attendant:'air_kit',oil:['street_kit','air_kit'],
-  hr_admin:'office_kit',secretary:'office_kit',it_helpdesk:'office_kit',railway:'street_kit',nurse:'street_kit',lighthouse:'street_kit'};
+  hr_admin:'office_kit',secretary:'office_kit',it_helpdesk:'office_kit',railway:'street_kit',nurse:'street_kit',lighthouse:'street_kit',rescue:'street_kit'};
 
 // A failed import() stays failed for the life of the page (the browser keeps it in its module map): the next try of
 // a workbench that did not come (a weak network) asks for the same file under another URL (…&retry=n).

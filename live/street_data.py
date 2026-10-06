@@ -203,6 +203,7 @@ CERTS = {
     'cert:rail_safety': '🚦 Chứng chỉ An toàn đường ngang',
     'cert:patient_safety': '🏥 Chứng chỉ An toàn người bệnh',
     'cert:light_keeping': '🗼 Chứng chỉ Gác đèn biển',
+    'cert:emergency_call': '📞 Chứng chỉ Tiếp nhận cuộc gọi khẩn cấp',
 }
 
 EMOTES = {'wave': '👋', 'heart': '❤️', 'laugh': '😂', 'wow': '😮', 'pray': '🙏', 'dance': '💃'}   # 💃: a wedding's stage (live/wedding.py)

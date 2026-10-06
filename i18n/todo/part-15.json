@@ -1,5 +1,189 @@
 [
  {
+  "vi": "Thắt lưng da",
+  "en": ""
+ },
+ {
+  "vi": "Tất cổ ngắn",
+  "en": ""
+ },
+ {
+  "vi": "Đầm maxi",
+  "en": ""
+ },
+ {
+  "vi": "Váy babydoll",
+  "en": ""
+ },
+ {
+  "vi": "Set áo + chân váy",
+  "en": ""
+ },
+ {
+  "vi": "Áo blazer",
+  "en": ""
+ },
+ {
+  "vi": "Áo cardigan len",
+  "en": ""
+ },
+ {
+  "vi": "Áo polo",
+  "en": ""
+ },
+ {
+  "vi": "Chân váy chữ A",
+  "en": ""
+ },
+ {
+  "vi": "Quần tây ống suông",
+  "en": ""
+ },
+ {
+  "vi": "Quần short kaki",
+  "en": ""
+ },
+ {
+  "vi": "Giày sneaker",
+  "en": ""
+ },
+ {
+  "vi": "Sandal quai mảnh",
+  "en": ""
+ },
+ {
+  "vi": "Túi xách tay",
+  "en": ""
+ },
+ {
+  "vi": "Bông tai ngọc trai",
+  "en": ""
+ },
+ {
+  "vi": "Khăn lụa",
+  "en": ""
+ },
+ {
+  "vi": "xanh nhạt",
+  "en": ""
+ },
+ {
+  "vi": "hoa nhí",
+  "en": ""
+ },
+ {
+  "vi": "đỏ đô",
+  "en": ""
+ },
+ {
+  "vi": "xanh ngọc",
+  "en": ""
+ },
+ {
+  "vi": "cói",
+  "en": ""
+ },
+ {
+  "vi": "sọc",
+  "en": ""
+ },
+ {
+  "vi": "vàng nghệ",
+  "en": ""
+ },
+ {
+  "vi": "xanh biển",
+  "en": ""
+ },
+ {
+  "vi": "xám",
+  "en": ""
+ },
+ {
+  "vi": "ngọc trai",
+  "en": ""
+ },
+ {
+  "vi": "vàng kim",
+  "en": ""
+ },
+ {
+  "vi": "bạc",
+  "en": ""
+ },
+ {
+  "vi": "Đổi trả trong 7 ngày, đồ còn tem mác, chưa mặc.",
+  "en": ""
+ },
+ {
+  "vi": "Có hóa đơn thì hoàn tiền; mất hóa đơn thì chỉ đổi sang món khác.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng sale không đổi trả (hóa đơn có đóng dấu SALE).",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi của tiệm (bung chỉ, lỗi vải): luôn đổi hoặc hoàn tiền, kể cả đã giặt.",
+  "en": ""
+ },
+ {
+  "vi": "Đi ăn cưới",
+  "en": ""
+ },
+ {
+  "vi": "Váy, áo dài hoặc sơ mi với quần tối màu đều lịch sự.",
+  "en": ""
+ },
+ {
+  "vi": "Không mặc váy trắng (trùng cô dâu) hay đồ đen.",
+  "en": ""
+ },
+ {
+  "vi": "Thắt lưng da giúp bộ đồ gọn gàng hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Túi xách tay, bông tai ngọc trai là điểm nhấn dự tiệc.",
+  "en": ""
+ },
+ {
+  "vi": "Đi phỏng vấn",
+  "en": ""
+ },
+ {
+  "vi": "Sơ mi sáng màu (trắng, xanh nhạt) với quần tối màu.",
+  "en": ""
+ },
+ {
+  "vi": "Thêm thắt lưng cho gọn gàng.",
+  "en": ""
+ },
+ {
+  "vi": "Không đội nón, không đồ quá sặc sỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Blazer với quần tây hoặc chân váy tối màu cũng rất chuyên nghiệp.",
+  "en": ""
+ },
+ {
+  "vi": "Đi biển",
+  "en": ""
+ },
+ {
+  "vi": "Váy liền hoặc áo thun cho mát.",
+  "en": ""
+ },
+ {
+  "vi": "Phải có nón vành che nắng.",
+  "en": ""
+ },
+ {
+  "vi": "Sơ mi, áo dài để ở nhà.",
+  "en": ""
+ },
+ {
   "vi": "Đầm maxi, quần short với sandal đi biển là chuẩn bài.",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "Chị Kiều đặt chiếc váy lên quầy: “Chị chưa mặc đâu, trả lại lấy tiền nha.” Cổ váy thoang thoảng mùi nước hoa.",
-  "en": ""
- },
- {
-  "vi": "Bạn là chị Kiều: tiệc tối qua xong rồi, váy chỉ mặc có một lần thôi mà…",
-  "en": ""
- },
- {
-  "vi": "Tem mác",
-  "en": ""
- },
- {
-  "vi": "Tem đã cắt, chỉ còn lỗ bấm.",
-  "en": ""
- },
- {
-  "vi": "Tình trạng váy",
-  "en": ""
- },
- {
-  "vi": "Cổ váy có vệt phấn, còn mùi nước hoa.",
-  "en": ""
- },
- {
-  "vi": "Đổi trả trong 7 ngày, còn tem, chưa mặc.",
-  "en": ""
- },
- {
-  "vi": "Chỉ bảng chính sách, nhẹ nhàng từ chối, gợi ý dịch vụ giặt hấp giá rẻ",
-  "en": ""
- },
- {
-  "vi": "Không trả được nhưng em nói chuyện dễ chịu, còn chỉ chỗ giặt hấp. Thôi được.",
-  "en": ""
- },
- {
-  "vi": "Chị Kiều hơi phụng phịu nhưng không cãi. Tuần sau chị quay lại mua váy mới.",
-  "en": ""
- },
- {
-  "vi": "Bị bắt bài nhưng không bị làm quê, cũng nể.",
-  "en": ""
- },
- {
-  "vi": "Giữ chính sách mà vẫn giữ được khách, chuẩn.",
-  "en": ""
- },
- {
-  "vi": "Thôi nhận lại cho êm chuyện",
-  "en": ""
- },
- {
-  "vi": "Tiệm dễ thương ghê, đổi trả không làm khó 😘",
-  "en": ""
- },
- {
-  "vi": "Váy có mùi nước hoa không bán được nữa. Tiệm lỗ nguyên chiếc.",
-  "en": ""
- },
- {
-  "vi": "Một lần là thành lệ, chị ấy sẽ còn “mượn” nữa.",
-  "en": ""
- },
- {
-  "vi": "Vải mặc rồi thì hết là đồ mới con à.",
-  "en": ""
- },
- {
-  "vi": "Nói to: “Đồ mặc rồi còn đem trả!”",
-  "en": ""
- },
- {
-  "vi": "Nhân viên tiệm này la khách giữa tiệm. Không bao giờ quay lại.",
-  "en": ""
- },
- {
-  "vi": "Mấy khách đang lựa đồ ngại ngùng bỏ ra ngoài.",
-  "en": ""
- },
- {
-  "vi": "Đúng là chị ấy sai, nhưng nghe la vậy tôi cũng ngại.",
-  "en": ""
- },
- {
-  "vi": "Bị làm nhục trước bao nhiêu người!",
-  "en": ""
- },
- {
-  "vi": "Giữ đúng chính sách đổi trả, nhưng từ chối riêng tư và nhẹ nhàng.",
-  "en": ""
- },
- {
-  "vi": "Tuấn chỉ đủ tiền cho nửa bộ",
-  "en": ""
- },
- {
-  "vi": "Tuấn đếm tiền trong ví: “Em chỉ còn 400 xu mà mai phỏng vấn rồi…”",
-  "en": ""
- },
- {
-  "vi": "Ví của Tuấn",
-  "en": ""
- },
- {
-  "vi": "Còn 400 xu, tuần sau mới có lương thực tập.",
-  "en": ""
- },
- {
-  "vi": "Bộ tối thiểu",
-  "en": ""
- },
- {
-  "vi": "Sơ mi 220 xu, quần jean 280 xu. Tuấn đã có quần tây đen ở nhà.",
-  "en": ""
- },
- {
-  "vi": "Góc cho mượn của Bà Tư",
-  "en": ""
- },
- {
-  "vi": "Bà Tư có mấy chiếc cà vạt cũ, sạch sẽ, sẵn lòng cho mượn.",
-  "en": ""
- },
- {
-  "vi": "Chỉ bán sơ mi, phối với quần tây sẵn có, mượn cà vạt của Bà Tư",
-  "en": ""
- },
- {
-  "vi": "Chị tư vấn đúng cái em cần, không ép mua thêm. Em đậu rồi nè! 🎉",
-  "en": ""
- },
- {
-  "vi": "Tuấn mặc sơ mi mới với quần tây ở nhà, đeo cà vạt của Bà Tư. Tuần sau cậu quay lại khoe đậu phỏng vấn.",
-  "en": ""
- },
- {
-  "vi": "Đỡ lo tiền, tự tin hẳn.",
-  "en": ""
- },
- {
-  "vi": "Cà vạt nằm tủ mấy năm, giờ có người đeo đi làm.",
-  "en": ""
- },
- {
-  "vi": "Bán cả bộ, cho Tuấn ghi nợ phần thiếu",
-  "en": ""
- },
- {
-  "vi": "Chị cho em nợ, em cảm động lắm, lãnh lương em trả liền.",
-  "en": ""
- },
- {
-  "vi": "Tuấn trả đủ sau hai tuần. Chị Vy dặn: lần sau ghi sổ rõ ràng.",
-  "en": ""
- },
- {
-  "vi": "Tin người là tốt, nhưng tiệm nhỏ cũng phải có sổ.",
-  "en": ""
- },
- {
-  "vi": "Khuyên Tuấn mua cả bộ mới cho “chuẩn”",
-  "en": ""
- },
- {
-  "vi": "Em hết tiền ăn cả tuần vì mua bộ đồ này…",
-  "en": ""
- },
- {
-  "vi": "Tuấn mua cả bộ, cả tuần ăn mì gói.",
-  "en": ""
- },
- {
-  "vi": "Đẹp thật, nhưng em đói.",
-  "en": ""
- },
- {
-  "vi": "Tư vấn là phải nhìn túi tiền của người ta chứ.",
-  "en": ""
- },
- {
-  "vi": "Tư vấn tốt là giúp khách đủ dùng, không phải bán được nhiều nhất.",
-  "en": ""
- },
- {
-  "vi": "Áo dài cưới rộng eo lúc nửa đêm",
   "en": ""
  }
 ]

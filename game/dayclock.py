@@ -69,6 +69,7 @@ NOTES = {
     'railway': 'Nhận ca 5:30, thử thiết bị rồi mới ký; tàu qua theo bảng giờ, ngày ca chiều tối thì tàu qua tới khuya.',
     'nurse': 'Nhận ca lúc 7:00, giao ca lúc 19:00; 9:00 bác sĩ đi buồng, chiều là giờ thăm bệnh.',
     'lighthouse': 'Dậy trước bình minh tắt đèn, 7:00 quan trắc báo đài; chạng vạng thắp đèn, đêm có chuyện ngoài biển thì canh tới khuya.',
+    'rescue': 'Nhận ca lúc 7:00, giao ca lúc 19:00; giờ tan tầm và mưa chiều là lúc đường dây réo nhiều nhất.',
     'homestay': 'Quầy lễ tân trực tới 22:00; khách tới muộn gọi chuông, sáng mai bàn giao.',
     'milk_tea': 'Ngày đông khách có thể bán quá giờ, muộn nhất 23:00.',
     'corp_accounting': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',

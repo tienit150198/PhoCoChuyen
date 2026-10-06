@@ -1,5 +1,189 @@
 [
  {
+  "vi": "Cho bé chọn: tô màu hay xếp hình?",
+  "en": ""
+ },
+ {
+  "vi": "Quát to cho bé sợ",
+  "en": ""
+ },
+ {
+  "vi": "Đưa kẹo cho bé nín",
+  "en": ""
+ },
+ {
+  "vi": "Dọa: “Ông kẹ bắt bây giờ!”",
+  "en": ""
+ },
+ {
+  "vi": "khóc nhớ mẹ",
+  "en": ""
+ },
+ {
+  "vi": "ngã trầy đầu gối",
+  "en": ""
+ },
+ {
+  "vi": "ăn vạ đòi kẹo",
+  "en": ""
+ },
+ {
+  "vi": "Bố mẹ đi làm sớm, đón bé lúc 18:00.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa cả ngày",
+  "en": ""
+ },
+ {
+  "vi": "Bé chơi trong nhà cả ngày: sàn chỗ cửa dễ ướt, soát kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Bé hơi sổ mũi",
+  "en": ""
+ },
+ {
+  "vi": "Bố mẹ dặn: chỉ uống nước ấm, không sữa lạnh.",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bin vẫy tay chào bạn tới tận cổng chung cư.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hạnh dán số của bạn lên tủ lạnh: “Gọi khi cần trông Bin.”",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bin vẽ tặng bạn một bức tranh: hai người nắm tay, một con gấu nâu.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân nhắn: “Lần đầu anh đi làm mà không lo.”",
+  "en": ""
+ },
+ {
+  "vi": "Bé Na đòi bố cho “cô bảo mẫu” qua chơi cuối tuần.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân giới thiệu bạn cho cả nhóm phụ huynh lớp Lá.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Mai gật đầu: “Đúng giờ, đúng giấy dặn. Mai em trông tiếp nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Bé Sóc giơ tay đòi bạn bế ngay ở cửa.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Mai in giấy dặn mới, dòng cuối ghi: “Tin em.”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tư dúi cho bạn hộp bánh da lợn: “Bà làm đó, con ăn.”",
+  "en": ""
+ },
+ {
+  "vi": "Bé Mít kể cả xóm nghe chuyện cô bảo mẫu biết trốn tìm giỏi.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tư nói: “Có con trông, bà đi khám mắt yên tâm hẳn.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Duy nói đúng một câu: “Cảm ơn em.” Rồi cười.",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bông chịu cho bạn bế mà không vùng ra.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Duy sửa giùm cô Tâm cái ổ điện, không lấy tiền: “Em trông con anh kỹ quá.”",
+  "en": ""
+ },
+ {
+  "vi": "Giới thiệu nghề: bảo mẫu trông trẻ",
+  "en": ""
+ },
+ {
+  "vi": "Cô Tâm nhận gửi bé theo ngày ở ngõ Hoa Sữa. Mỗi sáng bạn tới một nhà, trông một bé tới chiều bố mẹ về.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc giấy dặn: dị ứng, giờ ngủ, đồ ôm, màn hình",
+  "en": ""
+ },
+ {
+  "vi": "Dọn món hợp tuổi, tránh món bé dị ứng",
+  "en": ""
+ },
+ {
+  "vi": "Chọn trò chơi hợp tâm trạng bé",
+  "en": ""
+ },
+ {
+  "vi": "Soát nhà: ổ điện, cốc nóng, cầu thang, đồ nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Ru ngủ: vỗ nhẹ theo nhịp thở",
+  "en": ""
+ },
+ {
+  "vi": "Dỗ bé khóc, sơ cứu vết xước, bé ăn vạ",
+  "en": ""
+ },
+ {
+  "vi": "Bàn giao: kể đúng những gì đã xảy ra",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hạnh và bé Bin 3 tuổi, nhút nhát",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân và bé Na 5 tuổi, hiếu động",
+  "en": ""
+ },
+ {
+  "vi": "Chị Mai và bé Sóc 18 tháng",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tư và bé Mít 6 tuổi, hay hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Anh Duy và bé Bông 2 tuổi, bướng",
+  "en": ""
+ },
+ {
+  "vi": "Cô Tâm, người dạy bạn nghề",
+  "en": ""
+ },
+ {
+  "vi": "Bé an toàn cả ngày",
+  "en": ""
+ },
+ {
+  "vi": "Ăn đúng món, hợp tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Ngủ đúng giờ, ngủ ngon",
+  "en": ""
+ },
+ {
+  "vi": "Bé vui, được chơi đúng ý",
+  "en": ""
+ },
+ {
   "vi": "Bàn giao rõ ràng, trung thực",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "Nón vành",
-  "en": ""
- },
- {
-  "vi": "Thắt lưng da",
-  "en": ""
- },
- {
-  "vi": "Tất cổ ngắn",
-  "en": ""
- },
- {
-  "vi": "Đầm maxi",
-  "en": ""
- },
- {
-  "vi": "Váy babydoll",
-  "en": ""
- },
- {
-  "vi": "Set áo + chân váy",
-  "en": ""
- },
- {
-  "vi": "Áo blazer",
-  "en": ""
- },
- {
-  "vi": "Áo cardigan len",
-  "en": ""
- },
- {
-  "vi": "Áo polo",
-  "en": ""
- },
- {
-  "vi": "Chân váy chữ A",
-  "en": ""
- },
- {
-  "vi": "Quần tây ống suông",
-  "en": ""
- },
- {
-  "vi": "Quần short kaki",
-  "en": ""
- },
- {
-  "vi": "Giày sneaker",
-  "en": ""
- },
- {
-  "vi": "Sandal quai mảnh",
-  "en": ""
- },
- {
-  "vi": "Túi xách tay",
-  "en": ""
- },
- {
-  "vi": "Bông tai ngọc trai",
-  "en": ""
- },
- {
-  "vi": "Khăn lụa",
-  "en": ""
- },
- {
-  "vi": "xanh nhạt",
-  "en": ""
- },
- {
-  "vi": "hoa nhí",
-  "en": ""
- },
- {
-  "vi": "đỏ đô",
-  "en": ""
- },
- {
-  "vi": "xanh ngọc",
-  "en": ""
- },
- {
-  "vi": "cói",
-  "en": ""
- },
- {
-  "vi": "sọc",
-  "en": ""
- },
- {
-  "vi": "vàng nghệ",
-  "en": ""
- },
- {
-  "vi": "xanh biển",
-  "en": ""
- },
- {
-  "vi": "xám",
-  "en": ""
- },
- {
-  "vi": "ngọc trai",
-  "en": ""
- },
- {
-  "vi": "vàng kim",
-  "en": ""
- },
- {
-  "vi": "bạc",
-  "en": ""
- },
- {
-  "vi": "Đổi trả trong 7 ngày, đồ còn tem mác, chưa mặc.",
-  "en": ""
- },
- {
-  "vi": "Có hóa đơn thì hoàn tiền; mất hóa đơn thì chỉ đổi sang món khác.",
-  "en": ""
- },
- {
-  "vi": "Hàng sale không đổi trả (hóa đơn có đóng dấu SALE).",
-  "en": ""
- },
- {
-  "vi": "Lỗi của tiệm (bung chỉ, lỗi vải): luôn đổi hoặc hoàn tiền, kể cả đã giặt.",
-  "en": ""
- },
- {
-  "vi": "Đi ăn cưới",
-  "en": ""
- },
- {
-  "vi": "Váy, áo dài hoặc sơ mi với quần tối màu đều lịch sự.",
-  "en": ""
- },
- {
-  "vi": "Không mặc váy trắng (trùng cô dâu) hay đồ đen.",
-  "en": ""
- },
- {
-  "vi": "Thắt lưng da giúp bộ đồ gọn gàng hơn.",
-  "en": ""
- },
- {
-  "vi": "Túi xách tay, bông tai ngọc trai là điểm nhấn dự tiệc.",
-  "en": ""
- },
- {
-  "vi": "Đi phỏng vấn",
-  "en": ""
- },
- {
-  "vi": "Sơ mi sáng màu (trắng, xanh nhạt) với quần tối màu.",
-  "en": ""
- },
- {
-  "vi": "Thêm thắt lưng cho gọn gàng.",
-  "en": ""
- },
- {
-  "vi": "Không đội nón, không đồ quá sặc sỡ.",
-  "en": ""
- },
- {
-  "vi": "Blazer với quần tây hoặc chân váy tối màu cũng rất chuyên nghiệp.",
-  "en": ""
- },
- {
-  "vi": "Đi biển",
-  "en": ""
- },
- {
-  "vi": "Váy liền hoặc áo thun cho mát.",
-  "en": ""
- },
- {
-  "vi": "Phải có nón vành che nắng.",
-  "en": ""
- },
- {
-  "vi": "Sơ mi, áo dài để ở nhà.",
   "en": ""
  }
 ]

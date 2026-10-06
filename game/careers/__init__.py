@@ -32,6 +32,7 @@ ORDER = (
     'railway',                     # gác chắn đường sắt: the level crossing at Bến Mây and the track patrol (Xí nghiệp Đường sắt Sông Mây)
     'nurse',                       # điều dưỡng: a day shift on the medical ward of Bệnh viện phường Lá Sen
     'lighthouse',                  # gác hải đăng: keeper of đèn biển Hòn Gió, an island light off bến cá Cửa Lở
+    'rescue',                      # trực tổng đài cứu hộ: the hotline of Tổng đài Cứu hộ phường Mây (fire, flood, accidents, lifts, pets, medical)
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

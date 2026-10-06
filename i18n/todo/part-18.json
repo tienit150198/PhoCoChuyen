@@ -1,5 +1,189 @@
 [
  {
+  "vi": "Giới thiệu nghề: thợ thông cống",
+  "en": ""
+ },
+ {
+  "vi": "Một chiếc xe máy chở hộp đồ nghề, dây lò xo cuộn tròn và cái máy phun áp lực. Chú Hai thông cống cả phường hai mươi lăm năm; bạn theo chú học nghề.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ hẹn, xếp đồ nghề lên xe (tối đa 5 món)",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi, nhìn, xả nước thử để đoán nguyên nhân",
+  "en": ""
+ },
+ {
+  "vi": "Soi camera khi chưa chắc",
+  "en": ""
+ },
+ {
+  "vi": "Báo giá theo bảng giá trước khi làm",
+  "en": ""
+ },
+ {
+  "vi": "Găng tay, khẩu trang, ủng, kính khi phun",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đúng đồ nghề: pít-tông, lò xo, máy phun, móc gắp",
+  "en": ""
+ },
+ {
+  "vi": "Hố ga: rào chắn, đo khí, thông gió, có người canh",
+  "en": ""
+ },
+ {
+  "vi": "Xả nước thử, dọn sạch, dặn khách giữ ống thông",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hồng: quán bún, bồn rửa ngập mỡ",
+  "en": ""
+ },
+ {
+  "vi": "Bà Ngọc: ống gang cũ, rễ cây",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phong: nhà trọ, muốn rẻ",
+  "en": ""
+ },
+ {
+  "vi": "Chị Mai: bé Bin thả đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "Ông Lộc: hố ga của cả ngõ",
+  "en": ""
+ },
+ {
+  "vi": "Hùng: sinh viên, bồn cầu trào lúc nửa đêm",
+  "en": ""
+ },
+ {
+  "vi": "Cô Diệp: thoát sàn đầy tóc",
+  "en": ""
+ },
+ {
+  "vi": "Mưa ngập, thợ dạo nói thách, ống cũ nứt",
+  "en": ""
+ },
+ {
+  "vi": "Đoán đúng nguyên nhân",
+  "en": ""
+ },
+ {
+  "vi": "Báo giá thật, trước khi làm",
+  "en": ""
+ },
+ {
+  "vi": "Đúng đồ nghề, không đổ hóa chất bừa",
+  "en": ""
+ },
+ {
+  "vi": "Đồ bảo hộ, an toàn hố ga",
+  "en": ""
+ },
+ {
+  "vi": "Xả thử, dọn sạch chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hành lỗi của mình",
+  "en": ""
+ },
+ {
+  "vi": "Chuột chui ra từ cống",
+  "en": ""
+ },
+ {
+  "vi": "Vừa mở nắp cống, một con chuột to phóng ra, chạy thẳng vào bếp nhà khách. Chị chủ nhà hét lên.",
+  "en": ""
+ },
+ {
+  "vi": "Bình tĩnh đóng cửa bếp, đuổi chuột ra ngoài, đậy nắp cống",
+  "en": ""
+ },
+ {
+  "vi": "Chuột chạy ra ngõ. Bạn đậy lưới chắn ở miệng cống, dặn khách thay nắp có lưới.",
+  "en": ""
+ },
+ {
+  "vi": "Cầm chổi rượt khắp nhà",
+  "en": ""
+ },
+ {
+  "vi": "Rượt một hồi đổ cả chồng bát. Con chuột chui gầm tủ lạnh mất.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ nó, làm tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Chuột chạy vào bếp mà thợ cứ tỉnh bơ.",
+  "en": ""
+ },
+ {
+  "vi": "Tối đó khách gọi điện than chuột lục đồ ăn.",
+  "en": ""
+ },
+ {
+  "vi": "Thợ dạo báo giá trên trời",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phong đưa điện thoại: “Thằng thợ dán số trên cột điện báo 150 xu mới thông bồn cầu, còn bảo phải đục nền. Thật không em?”",
+  "en": ""
+ },
+ {
+  "vi": "Nói thật bảng giá của tiệm, giải thích không cần đục nền",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phong gọi tiệm làm với giá 20 xu. Anh kể cho cả hội chủ trọ nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Báo 140 xu, rẻ hơn tí cho dễ ăn",
+  "en": ""
+ },
+ {
+  "vi": "Lời to",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi giá thợ tiệm mà cũng nói thách như thợ dạo.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phong hỏi thêm chỗ khác, biết giá thật, giận không thèm gọi nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Không bình luận chuyện thợ khác",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phong gật gù, vẫn phân vân không biết tin ai.",
+  "en": ""
+ },
+ {
+  "vi": "Ống gang cũ nứt",
+  "en": ""
+ },
+ {
+  "vi": "Đi ngang nhà bà Ngọc, bà gọi: “Tường nhà bà thấm nước, có phải ống nứt không cháu?”",
+  "en": ""
+ },
+ {
+  "vi": "Xem giúp, nói thật mức độ, báo giá thay đoạn nứt",
+  "en": ""
+ },
+ {
   "vi": "Ống nứt một đoạn ngắn. Bà Ngọc hẹn cuối tháng thay, cảm ơn cháu nói thật.",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "Đọc sổ hẹn → xếp tối đa 5 món đồ nghề lên xe → đeo găng tay → Lên đường.",
-  "en": ""
- },
- {
-  "vi": "Rào chắn → đo khí → thông gió → người canh → báo giá → múc bùn → xả thử, dọn sạch.",
-  "en": ""
- },
- {
-  "vi": "Hỏi, nhìn, xả nước thử (chưa chắc thì soi camera) → ghi nguyên nhân → báo giá → thông bằng đúng đồ nghề → xả thử → dọn → dặn khách → thu tiền.",
-  "en": ""
- },
- {
-  "vi": "Đã đứng canh trên miệng hố ga, cầm dây an toàn.",
-  "en": ""
- },
- {
-  "vi": "Đã rửa sạch dây lò xo, lau máy phun.",
-  "en": ""
- },
- {
-  "vi": "Đã chở bùn rác ra điểm tập kết.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu tiệm thông cống sai.",
-  "en": ""
- },
- {
-  "vi": "Phiên bản việc thông cống không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Trạng thái việc thông cống sai.",
-  "en": ""
- },
- {
-  "vi": "Việc thông cống sai.",
-  "en": ""
- },
- {
-  "vi": "Mức báo giá sai.",
-  "en": ""
- },
- {
-  "vi": "Kết quả thông cống sai.",
-  "en": ""
- },
- {
-  "vi": "Chuyện của khách không khớp.",
-  "en": ""
- },
- {
-  "vi": "Chuyện của khách sai.",
-  "en": ""
- },
- {
-  "vi": "Giá tự báo sai.",
-  "en": ""
- },
- {
-  "vi": "Đồ trên xe sai.",
-  "en": ""
- },
- {
-  "vi": "Đồ bảo hộ sai.",
-  "en": ""
- },
- {
-  "vi": "Sổ thông tạm sai.",
-  "en": ""
- },
- {
-  "vi": "Số liệu tiệm sai.",
-  "en": ""
- },
- {
-  "vi": "Sổ khách quay lại sai.",
-  "en": ""
- },
- {
-  "vi": "Thông ống cống",
-  "en": ""
- },
- {
-  "vi": "Thông cống chú Hai",
-  "en": ""
- },
- {
-  "vi": "Đúng bệnh, đúng đồ nghề, đúng giá.",
-  "en": ""
- },
- {
-  "vi": "Nắng, nước cống rút ào ào",
-  "en": ""
- },
- {
-  "vi": "Việc gọi",
-  "en": ""
- },
- {
-  "vi": "Hộp đồ nghề",
-  "en": ""
- },
- {
-  "vi": "Đọc sổ hẹn, xếp đồ nghề lên xe. Tới nơi thì hỏi, nhìn, xả nước thử, báo giá rồi mới làm nhé.",
-  "en": ""
- },
- {
-  "vi": "Mỗi đường ống một căn bệnh",
-  "en": ""
- },
- {
-  "vi": "21 · THÔNG CỐNG CHÚ HAI",
-  "en": ""
- },
- {
-  "vi": "Cẩn thận, đứng canh miệng hố ga không rời mắt.",
-  "en": ""
- },
- {
-  "vi": "Khỏe, xách hai xô bùn một lúc.",
-  "en": ""
- },
- {
-  "vi": "Học an toàn lao động, luôn mang máy đo khí.",
-  "en": ""
- },
- {
-  "vi": "Thuộc hết ngõ ngách, chạy về tiệm nhanh như chớp.",
-  "en": ""
- },
- {
-  "vi": "Canh an toàn",
-  "en": ""
- },
- {
-  "vi": "Chở đồ",
-  "en": ""
- },
- {
-  "vi": "Pít-tông",
-  "en": ""
- },
- {
-  "vi": "Bồn cầu tắc gần",
-  "en": ""
- },
- {
-  "vi": "Dây lò xo",
-  "en": ""
- },
- {
-  "vi": "Tóc trong thoát sàn",
-  "en": ""
- },
- {
-  "vi": "Máy phun",
-  "en": ""
- },
- {
-  "vi": "Mỡ đông",
-  "en": ""
- },
- {
-  "vi": "Hố ga",
-  "en": ""
- },
- {
-  "vi": "Đọc sổ hẹn, xếp đồ",
-  "en": ""
- },
- {
-  "vi": "Hỏi, nhìn, xả nước thử",
-  "en": ""
- },
- {
-  "vi": "Báo giá, thông đúng đồ",
-  "en": ""
- },
- {
-  "vi": "Xả thử, dọn sạch, dặn khách",
-  "en": ""
- },
- {
-  "vi": "Cuộn dây lò xo đã theo chú Hai hai mươi năm, mòn bóng ở chỗ tay cầm.",
   "en": ""
  }
 ]

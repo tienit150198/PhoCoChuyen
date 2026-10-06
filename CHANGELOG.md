@@ -8,6 +8,15 @@
 - Tàu tiếp tế mỗi bảy ngày: đo bồn trước và sau, kiểm từng món, ghi món thiếu hỏng, ký đúng số lít dù chú Tư Lực nài ký đủ 200; trả giá giỏ đồ tươi của chú bằng tiền túi.
 - Đời sống trên đảo: nhớ nhà tăng dần, đồ tươi hết giữa hai chuyến tàu; chơi với Mun, tưới vườn rau trên đá, gọi điện về nhà (má hỏi bao giờ lấy vợ lấy chồng). 35 chuyện oái oăm (ông Sáu Ghe xin quay đèn về phía lưới, anh Khôi đòi sơn tháp màu hồng, đếm hải âu, ký khống dầu, ở đảo thêm ba tuần, quấy rối trên kênh 16…), 17 chuyện bất ngờ, 6 tình huống, truyện nghề “Cái giẻ da của chú Bảy”, thang thăng tiến 4 bậc, cảnh đảo và tòa nhà ở Ngoại ô.
 
+# Chưa phát hành — Nghề mới: Nhân viên trực tổng đài cứu hộ
+
+- 📞 Tổng đài Cứu hộ phường Mây (mở ở chương 4 “Được tin cậy”, việc làm thuê): trực đường dây cháy, ngập, tai nạn, kẹt thang máy, thú cưng mắc kẹt, cấp cứu cùng chị Thảo. Chứng chỉ Tiếp nhận cuộc gọi khẩn cấp giúp dễ được nhận; thang thăng tiến 4 bậc.
+- Nhận ca: gọi bộ đàm sáu đội, đánh dấu đội tạm ngưng trên bảng đội; quên đánh dấu thì lát gọi đội đó không ai trả lời.
+- Mỗi cuộc gọi: hỏi địa chỉ trước, rồi chuyện gì, mấy người, nguy hiểm gì, số gọi lại; người gọi không biết chỗ thì hỏi mốc, gửi định vị, nhờ người đi đường; người đang hoảng thì trấn an (mỗi người hợp một cách, quát là hỏng). Cuộc nghi ngờ (giọng cười, im lặng, bé con, ông Ba gọi lần thứ mười) phải nghe, hỏi kỹ, gọi lại rồi mới quyết: có cuộc thật, có cuộc đùa, do tính ẩn của người gọi.
+- Tự chọn mức ưu tiên và đội để gửi, hoặc chuyển đúng nơi với giọng mình chọn (nhẹ, dứt khoát, gắt): khách say đòi taxi, mèo kẹt trên cây từ ba giờ sáng, karaoke, DJ xin “một câu”, “người quan trọng” đòi ưu tiên, gọi nhầm đặt phở… Gửi xe cho chuyện không khẩn thì đội bị giữ chân, ca thật sau phải chờ phường bên.
+- Trong lúc chờ: đọc thẻ hướng dẫn an toàn (có thẻ nghe hợp lý mà nguy hiểm: dội nước vào chảo dầu, đi thang máy khi cháy, tháo mũ bảo hiểm), giữ máy với người gọi một mình. Mùa mưa nhiều đường dây réo cùng lúc: nghe nhanh, xếp ưu tiên. Không bao giờ có hướng dẫn cho uống thuốc.
+- 42 chuyện oái oăm quanh tổng đài (sếp ép KPI, đồng nghiệp rủ cúp máy khỏi hỏi, tắt ghi âm, sửa giờ nhật ký, fan cuồng giọng tổng đài, họ hàng xin ưu tiên…), 14 chuyện bất ngờ ở phòng trực, 6 tình huống, truyện nghề “Chiếc tai nghe của chị Thảo”, sổ nhật ký cuối ca, cảnh phòng trực và tòa nhà ở Phố dịch vụ.
+
 # v1.8.0 — 2026-10-06
 
 Có gì mới (chủ game duyệt): "Cập nhật toàn bộ UI UX", "Thêm Top tài phú trên Bảng xếp hạng".

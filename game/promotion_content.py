@@ -28,6 +28,7 @@ EMP_TITLES = {
     'railway': ('Gác chắn chính', 'Trưởng ca gác chắn', 'Đội phó cung đường', 'Cung trưởng cung đường'),
     'nurse': ('Điều dưỡng chính', 'Trưởng ca điều dưỡng', 'Điều dưỡng trưởng khoa', 'Trưởng phòng Điều dưỡng'),
     'lighthouse': ('Người gác đèn chính', 'Trưởng ca trạm đèn', 'Trạm trưởng đèn Hòn Gió', 'Trưởng đội đèn biển Vịnh Ngọc'),
+    'rescue': ('Điều phối viên chính', 'Trưởng ca tổng đài', 'Phó giám đốc Trung tâm điều phối', 'Giám đốc Trung tâm điều phối'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
@@ -79,6 +80,7 @@ GROUP = {
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
                 'mother_baby', 'nurse'),
+    'call': ('rescue',),
 }   # every other career: 'trade'
 
 
@@ -143,6 +145,14 @@ QUESTIONS['sea'] = [
     _q('l4', 'Đếm chớp thấy chu kỳ 19 giây, danh mục đèn ghi 15 giây.', ('Báo đài phát thông báo hàng hải, báo xí nghiệp', 2), ('Ghi sổ, mai báo', 1), ('Chắc đồng hồ sai, kệ', 0)),
     _q('l5', 'Tàu tiếp tế bơm thiếu dầu, thuyền trưởng đòi ký đủ.', ('Ký đúng số đo được, ghi rõ phần thiếu', 2), ('Ký đủ cho êm chuyện', 0), ('Không ký gì cả', 1)),
     _q('l6', 'Áp kế tụt nhanh mà gió mới cấp 4.', ('Báo đài, phát cảnh báo cho tàu thuyền', 2), ('Chờ gió lên rồi báo', 0), ('Ghi sổ, giờ sau xem lại', 1)),
+]
+QUESTIONS['call'] = [
+    _q('c1', 'Giám đốc nhờ đẩy cuộc gọi của người quen lên mức khẩn cấp.', ('Giữ mức theo nguy hiểm tính mạng, giải thích rõ', 2), ('Đẩy lên cho xong', 0), ('Hỏi chị trưởng ca rồi tính', 1)),
+    _q('c2', 'Ba cuộc gọi đùa liền, cuộc thứ tư giọng nhỏ báo có khói.', ('Hỏi kỹ, lắng nghe, gọi lại rồi mới quyết', 2), ('Cúp máy, chắc lại đùa', 0), ('Gửi xe luôn khỏi hỏi', 1)),
+    _q('c3', 'Người gọi khóc nấc, không nói được địa chỉ.', ('Trấn an, giao một việc nhỏ, hỏi mốc, gửi định vị', 2), ('Bảo họ bình tĩnh rồi gọi lại', 0), ('Chờ họ tự nói', 1)),
+    _q('c4', 'Đồng nghiệp tắt ghi âm “cho thoải mái”.', ('Nhắc bật lại, ghi âm là bảo vệ cả hai bên', 2), ('Tắt theo cho vui', 0), ('Kệ, không phải máy mình', 1)),
+    _q('c5', 'Cuối tháng giám đốc bảo sửa giờ nhấc máy cho đẹp KPI.', ('Giữ số thật, kèm lý do và đề xuất', 2), ('Sửa cho đẹp', 0), ('Không sửa nhưng im lặng', 1)),
+    _q('c6', 'Bạn trực ca thứ ba liền, nghe nhầm số nhà một lần.', ('Báo trưởng ca, xin người thay để nghỉ', 2), ('Uống thêm cà phê cố trực', 1), ('Giấu đi, chắc không sao', 0)),
 ]
 # Steps above 4 (the executive steps): the board's own questions.
 EXEC_GROUP = {'pilot': 'exec_air', 'teacher': 'exec_school'}

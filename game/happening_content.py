@@ -671,6 +671,22 @@ HAPPENINGS = [
     H('hd_phone_sea', 'den', '📱', 'Điện thoại rơi xuống biển',
       'Bạn chụp ảnh hoàng hôn trên mỏm đá cho má xem. Một con sóng hắt lên, điện thoại tuột tay chìm nghỉm giữa khe đá.',
       ('lighthouse',), 'drop', 'self', 'till', 'Mua điện thoại cũ thay tạm', dict(comp=(20, 50)), min_day=4),
+    # ================================================================ 📞 Tổng đài Cứu hộ phường Mây (rescue)
+    H('call_locker', 'trom', '🔐', 'Tủ đồ phòng trực tổng đài bị mở',
+      'Giao ca xong mở tủ đồ, ổ khóa bị bẻ cong. Ví trong túi áo khoác đã không còn, chỉ còn cái thẻ nhân viên.',
+      ('rescue',), 'pick', 'pickpocket', 'door', 'Mất ví ở phòng trực', dict(wallet=(25, 70)), ['shout', 'call', 'camera', 'let'], weight=2, min_day=4),
+    H('call_helmet', 'trom', '⛑️', 'Mất mũ bảo hiểm ở bãi xe trung tâm',
+      'Ra bãi xe sau ca trực, chiếc mũ bảo hiểm móc trên gương đã biến mất. Trời lại lất phất mưa.',
+      ('rescue',), 'ride', 'biker', 'door', 'Mua mũ bảo hiểm mới', dict(wallet=(15, 35)), ['call', 'camera', 'let'], min_day=3),
+    H('call_headset', 'den', '🎧', 'Giật đứt dây tai nghe',
+      'Bạn đứng bật dậy chỉ bảng đội, quên đang đeo tai nghe. Dây giật phựt, đầu cắm gãy lìa.',
+      ('rescue',), 'drop', 'self', 'table', 'Đền một phần tai nghe cho trung tâm', dict(comp=(10, 30)), min_day=3),
+    H('call_mug', 'den', '☕', 'Làm vỡ ly sứ của chị Thảo',
+      'Với tay lấy bộ đàm, bạn quẹt trúng cái ly sứ in chữ “Trưởng ca dễ thương” của chị Thảo. Ly rơi vỡ đôi.',
+      ('rescue',), 'drop', 'self', 'table', 'Đền ly sứ cho chị Thảo', dict(comp=(5, 15)), min_day=2),
+    H('call_phone', 'trom', '📱', 'Điện thoại cá nhân để ở bàn nghỉ bị lấy',
+      'Bạn chạy vào bàn trực nhấc máy cuộc gọi khẩn, quay ra bàn nghỉ thì chiếc điện thoại sạc ở đó không còn.',
+      ('rescue',), 'snatch', 'thief', 'door', 'Mất điện thoại cá nhân', dict(wallet=(40, 110)), ['shout', 'call', 'camera', 'let'], min_day=5),
 ]
 INDEX = {x['id']: x for x in HAPPENINGS}
 

@@ -1,5 +1,189 @@
 [
  {
+  "vi": "Quy chế sử dụng email",
+  "en": ""
+ },
+ {
+  "vi": "Email công ty có thể được kiểm tra khi có lý do, bằng quyết định văn bản, có nhân sự chứng kiến.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chị Huyền",
+  "en": ""
+ },
+ {
+  "vi": "Chị Huyền đề nghị làm theo quy chế: quyết định, biên bản, chỉ xem thư công việc.",
+  "en": ""
+ },
+ {
+  "vi": "Hộp thư của Tuấn",
+  "en": ""
+ },
+ {
+  "vi": "Có cả thư từ gia đình, ngân hàng cá nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Đề nghị anh Quân ra quyết định văn bản, có chị Huyền chứng kiến, chỉ xem thư công việc",
+  "en": ""
+ },
+ {
+  "vi": "Việc kiểm tra đúng quy chế; tìm ra hai thư chuyển báo giá ra ngoài, xử lý có căn cứ.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối thẳng: “Không được đâu anh”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân bực, nhờ người khác làm lén.",
+  "en": ""
+ },
+ {
+  "vi": "Mở hết hộp thư cho anh Quân đọc",
+  "en": ""
+ },
+ {
+  "vi": "Đọc cả thư riêng; Tuấn biết chuyện, công ty bị khiếu nại vi phạm đời tư.",
+  "en": ""
+ },
+ {
+  "vi": "USB nhặt ở bãi xe",
+  "en": ""
+ },
+ {
+  "vi": "Chú Lâm cầm một chiếc USB: “Nhặt ở bãi xe, ngoài ghi ‘Lương 2025 – Mật’. Cắm vào máy xem của ai để trả nhé?”",
+  "en": ""
+ },
+ {
+  "vi": "Quy định thiết bị lạ",
+  "en": ""
+ },
+ {
+  "vi": "Không cắm thiết bị lạ vào máy công ty; giao IT kiểm tra trên máy cách ly.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Long kể",
+  "en": ""
+ },
+ {
+  "vi": "Rải USB có nhãn hấp dẫn là chiêu quen của kẻ gian để cài mã độc.",
+  "en": ""
+ },
+ {
+  "vi": "Nhãn USB",
+  "en": ""
+ },
+ {
+  "vi": "Chữ in, không có tên người hay phòng ban nào.",
+  "en": ""
+ },
+ {
+  "vi": "Không cắm; niêm phong, giao anh Long kiểm tra trên máy cách ly, nhắc cả xưởng",
+  "en": ""
+ },
+ {
+  "vi": "USB chứa mã độc thật. Cả xưởng được nhắc, không ai cắm nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Vứt luôn vào thùng rác",
+  "en": ""
+ },
+ {
+  "vi": "An toàn cho máy, nhưng không ai biết có kẻ đang rải USB.",
+  "en": ""
+ },
+ {
+  "vi": "Cắm thử vào máy kế toán xem của ai",
+  "en": ""
+ },
+ {
+  "vi": "Mã độc chạy ngay, máy kế toán bị khóa cả ngày chốt lương.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu hỗ trợ đều đều, anh Long ngồi góc phòng máy.",
+  "en": ""
+ },
+ {
+  "vi": "Mất điện sáng nay",
+  "en": ""
+ },
+ {
+  "vi": "Điện vừa có lại: máy nào cũng có chuyện, phiếu dày hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Tuần diễn tập lừa đảo",
+  "en": ""
+ },
+ {
+  "vi": "Anh Long âm thầm thử cả công ty — mọi thứ có thể đổi bất ngờ.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra an toàn thông tin",
+  "en": ""
+ },
+ {
+  "vi": "Cuối ngày anh Long soát lại việc bạn làm.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển máy chủ cuối tháng",
+  "en": ""
+ },
+ {
+  "vi": "Đêm nay chuyển máy chủ sang tủ mới: hạn gấp. Tăng ca hôm nay được trả 18 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Ưu tiên",
+  "en": ""
+ },
+ {
+  "vi": "Nhiều người dừng việc hoặc sự cố an ninh: làm ngay. Chữ “GẤP” không đổi mức độ.",
+  "en": ""
+ },
+ {
+  "vi": "Tắt máy, rút điện rồi mới mở. Sự cố an ninh: cách ly trước.",
+  "en": ""
+ },
+ {
+  "vi": "Mạng",
+  "en": ""
+ },
+ {
+  "vi": "Kế toán riêng, khách riêng, camera riêng. Xếp theo người, không theo bàn.",
+  "en": ""
+ },
+ {
+  "vi": "Quyền truy cập",
+  "en": ""
+ },
+ {
+  "vi": "Nghỉ việc thu hồi ngay; chỉ cấp khi phiếu đã duyệt.",
+  "en": ""
+ },
+ {
+  "vi": "Không ai được hỏi OTP hay mật khẩu. Không cắm thiết bị lạ.",
+  "en": ""
+ },
+ {
+  "vi": "Mật khẩu dán trên màn hình",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân dán mật khẩu email ngay mép màn hình, khách ra vào phòng ai cũng thấy.",
+  "en": ""
+ },
+ {
+  "vi": "Cài trình quản lý mật khẩu cho sếp, gỡ tờ giấy",
+  "en": ""
+ },
+ {
   "vi": "Sếp càu nhàu năm phút rồi khen: “Tiện thật, khỏi nhớ.”",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "cấp sai quy định",
-  "en": ""
- },
- {
-  "vi": "Bạn đồng ý cấp. Vào kho lấy hồ sơ.",
-  "en": ""
- },
- {
-  "vi": "Việc không đúng thủ tục mà đẩy lên lãnh đạo, mất thời gian cả hai bên.",
-  "en": ""
- },
- {
-  "vi": "đẩy việc lên lãnh đạo",
-  "en": ""
- },
- {
-  "vi": "Lãnh đạo phường trả phiếu về: “Việc này không duyệt được.”",
-  "en": ""
- },
- {
-  "vi": "Bắt bổ sung giấy tờ vô lý, đi lại mất công.",
-  "en": ""
- },
- {
-  "vi": "Hướng dẫn giấy tờ cho việc không đúng thủ tục, người ta mất công.",
-  "en": ""
- },
- {
-  "vi": "hướng dẫn chưa đúng",
-  "en": ""
- },
- {
-  "vi": "Bạn đưa danh sách giấy tờ cần bổ sung.",
-  "en": ""
- },
- {
-  "vi": "Đủ điều kiện mà bị từ chối.",
-  "en": ""
- },
- {
-  "vi": "Từ chối mà không chỉ đường làm đúng.",
-  "en": ""
- },
- {
-  "vi": "Bạn từ chối.",
-  "en": ""
- },
- {
-  "vi": "Quyết cấp hồ sơ trước đã.",
-  "en": ""
- },
- {
-  "vi": "Đeo rồi.",
-  "en": ""
- },
- {
-  "vi": "Hết găng tay vải. Mở kho mua thêm nhé.",
-  "en": ""
- },
- {
-  "vi": "🧤 Đeo găng tay vải sạch.",
-  "en": ""
- },
- {
-  "vi": "Đã lấy được hồ sơ rồi.",
-  "en": ""
- },
- {
-  "vi": "Cầm hồ sơ cũ bằng tay trần, mồ hôi tay làm ố giấy.",
-  "en": ""
- },
- {
-  "vi": "không đeo găng tay",
-  "en": ""
- },
- {
-  "vi": "Mở hộp hồ sơ bụi mà không đeo khẩu trang, ho cả buổi.",
-  "en": ""
- },
- {
-  "vi": "không đeo khẩu trang",
-  "en": ""
- },
- {
-  "vi": "📦 Mở đúng hộp mục lục ghi… mà không thấy hồ sơ đâu! Đừng vội kết luận mất.",
-  "en": ""
- },
- {
-  "vi": "Giấy giòn, mép đã mủn: cầm thật nhẹ tay.",
-  "en": ""
- },
- {
-  "vi": "Tìm các hộp kế bên",
-  "en": ""
- },
- {
-  "vi": "Xem sổ giao nhận hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Lập biên bản thất lạc, báo lãnh đạo",
-  "en": ""
- },
- {
-  "vi": "Không cần tìm thêm.",
-  "en": ""
- },
- {
-  "vi": "Cách tìm không có.",
-  "en": ""
- },
- {
-  "vi": "Tìm chỗ đó rồi.",
-  "en": ""
- },
- {
-  "vi": "Chưa tìm kỹ đã lập biên bản mất hồ sơ, sau mới thấy nằm ngay hộp bên.",
-  "en": ""
- },
- {
-  "vi": "báo mất khi chưa tìm kỹ",
-  "en": ""
- },
- {
-  "vi": "Lập biên bản thất lạc, hẹn người dân khi có kết quả.",
-  "en": ""
- },
- {
-  "vi": "🔍 Hồ sơ kẹp nhầm trong hộp kế bên! Bạn đặt lại đúng chỗ, ghi chú vào mục lục.",
-  "en": ""
- },
- {
-  "vi": "🔍 Hộp kế bên không có. Xem sổ giao nhận thử.",
-  "en": ""
- },
- {
-  "vi": "🔍 Sổ giao nhận ghi: phòng địa chính mượn từ tuần trước, chưa trả. Gọi điện, họ mang trả ngay.",
-  "en": ""
- },
- {
-  "vi": "🔍 Sổ giao nhận không ghi ai mượn. Tìm các hộp kế bên thử.",
-  "en": ""
- },
- {
-  "vi": "Sao chụp, đóng dấu sao y bản lưu trữ",
-  "en": ""
- },
- {
-  "vi": "Đưa bản gốc cho mang đi",
-  "en": ""
- },
- {
-  "vi": "Lấy được hồ sơ đã.",
-  "en": ""
- },
- {
-  "vi": "Cách cấp không có.",
-  "en": ""
- },
- {
-  "vi": "📜 Bản gốc cho ủy ban mượn theo phiếu đã duyệt, hẹn trả trong ngày. Nhớ ghi sổ, người nhận ký.",
-  "en": ""
- },
- {
-  "vi": "Bản gốc lưu trữ mang ra khỏi kho, không ai biết bao giờ về.",
-  "en": ""
- },
- {
-  "vi": "đưa bản gốc ra ngoài",
-  "en": ""
- },
- {
-  "vi": "Ủy ban đã duyệt mượn bản gốc mà chỉ đưa bản sao, phải chạy xuống lấy lại.",
-  "en": ""
- },
- {
-  "vi": "chưa đúng phiếu duyệt",
-  "en": ""
- },
- {
-  "vi": "🖨️ Sao chụp rõ nét, đóng dấu “sao y bản lưu trữ”",
-  "en": ""
- },
- {
-  "vi": "Đã ghi sổ rồi.",
   "en": ""
  }
 ]
