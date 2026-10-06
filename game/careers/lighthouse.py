@@ -1348,6 +1348,7 @@ def public_task(t: dict) -> dict:
         v['line'] = x['line'] if t['round'] == 0 else x['again']
         v['papers_text'] = x['papers'] if t['papers'] else None
         v['offer'] = x['offer'] or None
+        v['npc_real'] = x['npc'] is not None      # strangers have no portrait of their own: the card shows their emoji
         return v
     v['dips'] = {w: t['_before'] if w == 'before' else t['_after'] for w in t['dipped']}
     v['states'] = {g: t['_states'][g] for g in t['seen']}

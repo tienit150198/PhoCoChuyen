@@ -1,3 +1,13 @@
+# Chưa phát hành — Nghề mới: Người gác hải đăng
+
+- 🗼 Nghề mới ở chương 4 (Được tin cậy): giữ đèn biển Hòn Gió trên một hòn đảo đá cho Xí nghiệp Bảo đảm hàng hải Vịnh Ngọc, cùng chú Bảy Đèn và mèo Mun. Việc làm thuê: ứng tuyển, có lương ngày và thưởng mỗi việc làm đúng quy trình. Chứng chỉ Gác đèn biển giúp dễ được nhận.
+- Ca sáng: tắt đèn đúng giờ theo giờ mặt trời mọc, thử sáu thiết bị, tắt mô-tơ rồi mới lau kính, ghi sổ dầu đúng số đo; hỏng thì tự xử lý hoặc báo đúng nơi (sổ trực, phiếu báo hỏng, báo đài khi ảnh hưởng tín hiệu đèn, còi).
+- Quan trắc 7 giờ: đọc máy đo gió, mặt biển, các mốc tầm xa, áp kế; báo đài bốn số liệu; gió từ cấp 6 hoặc áp giảm nhanh thì phát cảnh báo cho tàu thuyền. Chạng vạng: thắp đèn đúng giờ, đếm chớp so với danh mục đèn, sương mù chạy còi, đèn sai thì báo đài, ghi sổ đúng sự thật.
+- Canh biển: pháo hiệu đỏ giữa bão, tàu chết máy trôi dạt, người rơi xuống nước, tụi nhỏ thách nhau bơi ra đảo, tàu lao về bãi đá ngầm, tàu cố ra khơi khi có lệnh cấm, đánh cá bằng chất nổ. Nhìn kỹ, gọi tàu, ném phao, báo đài đúng mức (MAYDAY RELAY, PAN-PAN, biên phòng) và đúng phương vị, canh giữ mục tiêu. Không bao giờ tự lấy xuồng ra khơi; thuyền trưởng nghe hay không là tùy tính họ.
+- Khách ra đảo (17 kiểu): đoàn có giấy, khách sống ảo đòi lên đỉnh tháp, cặp đôi đòi cầu hôn lúc nửa đêm, Vy Vlog livestream, kênh ma đòi tắt đèn, nhà văn xin ở một tuần, kayak lạc lúc chiều tối… Xem giấy tờ rồi tự chọn cách trả lời; khách nài thêm, có người lẻn lên cầu thang tháp. Người gặp nạn luôn được trú tạm.
+- Tàu tiếp tế mỗi bảy ngày: đo bồn trước và sau, kiểm từng món, ghi món thiếu hỏng, ký đúng số lít dù chú Tư Lực nài ký đủ 200; trả giá giỏ đồ tươi của chú bằng tiền túi.
+- Đời sống trên đảo: nhớ nhà tăng dần, đồ tươi hết giữa hai chuyến tàu; chơi với Mun, tưới vườn rau trên đá, gọi điện về nhà (má hỏi bao giờ lấy vợ lấy chồng). 35 chuyện oái oăm (ông Sáu Ghe xin quay đèn về phía lưới, anh Khôi đòi sơn tháp màu hồng, đếm hải âu, ký khống dầu, ở đảo thêm ba tuần, quấy rối trên kênh 16…), 17 chuyện bất ngờ, 6 tình huống, truyện nghề “Cái giẻ da của chú Bảy”, thang thăng tiến 4 bậc, cảnh đảo và tòa nhà ở Ngoại ô.
+
 # v1.8.0 — 2026-10-06
 
 Có gì mới (chủ game duyệt): "Cập nhật toàn bộ UI UX", "Thêm Top tài phú trên Bảng xếp hạng".

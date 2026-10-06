@@ -128,8 +128,8 @@ function visitorPanel(t,x){
   const answers=open?`<div class="sk-opts">${['escort','yard','refuse','shelter','report'].map(btn).join('')}</div>
     <details class="hd-tempt"><summary>Chiều theo…${t.offer?` (họ dúi ${t.offer} xu)`:''}</summary>${btn('give')}<p class="small muted">Không ai vào phòng đèn, không ai ở lại trái nội quy.</p></details>`:'';
   const stop=t.sneak&&!t.stopped?`<section class="sk-event tense"><h3>🏃 Có người đang leo cầu thang tháp!</h3>${x.cmd('🧗 Chạy lên chặn, mời xuống, khóa cửa tháp','hd_stop',{task:t.id},'primary full')}</section>`:'';
-  const who=x.npc(t.npc);
-  return `${stop}<section class="sk-event ${n.night?'tense':''} hd-visit"><div class="sk-ev-head">${x.portrait(who,40)}<div class="grow"><small>${x.esc(n.wants||'')}${n.night?' · 🌙 ban đêm':''}</small><h3>${x.esc(n.emoji||'')} ${x.esc(n.who||'')}</h3></div>${t.round?'<span class="tag">2/2</span>':''}</div>
+  const who=t.npc_real?x.portrait(x.npc(t.npc),40):`<span class="hd-av" aria-hidden="true">${x.esc(n.emoji||'🚤')}</span>`;
+  return `${stop}<section class="sk-event ${n.night?'tense':''} hd-visit"><div class="sk-ev-head">${who}<div class="grow"><small>${x.esc(n.wants||'')}${n.night?' · 🌙 ban đêm':''}</small><h3>${t.npc_real?`${x.esc(n.emoji||'')} `:''}${x.esc(n.who||'')}</h3></div>${t.round?'<span class="tag">2/2</span>':''}</div>
     <p class="hd-line">${x.esc(t.line||'')}</p>${papers}${answers}</section>`;
 }
 
