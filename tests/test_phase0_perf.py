@@ -157,6 +157,30 @@ class ScopedCareerValidationTests(unittest.TestCase):
                 same = settle_scope.same(before, c)[0]
                 self.check_same_error(c, 'florist', same)
 
+    def test_an_untouched_open_security_case_is_still_referenced(self):
+        """Staging 06/10: settlement moved a career whose security book (with an open case) did not
+        move; the skipped case loop left no ids, so 'active' looked dangling ('hồ sơ an ninh sai')."""
+        s = fixture()
+        c = s['careers']['grocery']
+        ops.spawn_case(s, c, 'grocery', 'misplaced')
+        validate_career(c, 'grocery')
+        self.assertIsNotNone(c['ops']['security']['active'])
+        before = settle_scope.pieces(c)[0]
+        c['money'] += 7  # what settlement does: money and the cash book move, security does not
+        ops.record_money(c, 7, 'Khách trả thêm', None, 'revenue')
+        same = settle_scope.same(before, c)[0]
+        self.assertIn('ops.security', same)
+        self.assertIn('stock', same)
+        validate_career(c, 'grocery', same=same)
+        validate_career(c, 'grocery', same=settle_scope.Same(settle_scope.pieces(c)[0]))
+        # a dangling or duplicated reference is still refused, with the full validation's message
+        for corrupt in (lambda sec: sec.update(active='nope'),
+                        lambda sec: sec['cases'].append(copy.deepcopy(sec['cases'][-1]))):
+            bad = copy.deepcopy(c)
+            before = settle_scope.pieces(bad)[0]
+            corrupt(bad['ops']['security'])
+            self.check_same_error(bad, 'grocery', settle_scope.same(before, bad)[0])
+
     def test_a_new_cash_book_row_is_checked_after_the_stored_ones(self):
         c = copy.deepcopy(fixture()['careers']['grocery'])
         before = settle_scope.pieces(c)[0]
@@ -234,6 +258,21 @@ class DifferentialTests(unittest.TestCase):
         for a, b in zip(old, new):
             self.assertEqual(a, b)
         self.assertTrue(any(isinstance(x, list) and x and x[0][0] == 'career' for x in new), 'work-visit places were written')
+
+    def test_open_security_cases_on_settled_careers_answer_the_same(self):
+        """Settled careers (staff paid by the clock) holding an open security case: the scoped path must not
+        refuse what the full validation accepts (staging 06/10, 'Tham chiếu hồ sơ an ninh sai.')."""
+        s = fixture()
+        for cid in BUSINESS:
+            ops.spawn_case(s, s['careers'][cid], cid, 'misplaced')
+        validate_state(s)
+        start = storage.serialize(s, None, True)
+        with mock.patch.object(storage, 'FULL_EVERY', 10**6):
+            old = self.run_plan(start, old_paths())
+            new = self.run_plan(start, [])
+        self.assertFalse([x for x in new if isinstance(x, tuple) and x and x[0] == 'error' and 'an ninh' in x[2]])
+        self.assertTrue(any(isinstance(x, tuple) and x and x[0] == 'ok' for x in new))
+        self.assertEqual(old, new)
 
     def test_unstamped_and_periodic_commands_are_unchanged_too(self):
         s = fixture()

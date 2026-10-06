@@ -855,7 +855,8 @@ def validate(c:dict,career:str,same:frozenset=frozenset()) -> None:
     for k in ('last_event_day','period_rewards','period_claims'):integer(sec[k],0,10**9)
     need(sec['period_rewards']<=RULES['reward_cap_period'],'Thưởng vượt giới hạn kỳ.')
     need(isinstance(sec['cases'],list) and len(sec['cases'])<=120,'Hồ sơ an ninh quá lớn.');caseids=[]
-    for case in (() if 'ops.security' in same and 'stock' in same else sec['cases']):
+    stored='ops.security' in same and 'stock' in same  # the stored book: its cases passed with this stock
+    for case in (() if stored else sec['cases']):
         need(isinstance(case,dict),'Hồ sơ sai.');txt(case.get('id'),100);caseids.append(case['id'])
         need(case.get('kind') in CASE_KINDS and case.get('_truth') in ('misplaced','forgot_payment','theft'),'Thiếu dữ kiện gốc của hồ sơ.')
         expected='misplaced' if case['kind']=='misplaced' else 'forgot_payment' if case['kind']=='unpaid' else 'theft';need(case['_truth']==expected,'Dữ kiện gốc không khớp loại vụ.')
@@ -879,6 +880,8 @@ def validate(c:dict,career:str,same:frozenset=frozenset()) -> None:
         need(not case['insurance_claimed'] or (case['outcome']=='unrecovered' and case['insured_at_event'] and loss['kind'] in ('stock','cash')),'Hỗ trợ sai điều kiện.')
         need(isinstance(case.get('timeline'),list) and len(case['timeline'])<=30,'Nhật ký an ninh sai.')
         for line in case['timeline']:txt(line,2000)
+    # The ids of skipped cases still count: 'active' points at one of them (as engine.validate_career's taskids).
+    if stored:caseids=[case['id'] for case in sec['cases']]
     need(len(caseids)==len(set(caseids)) and (sec['active'] is None or sec['active'] in caseids),'Tham chiếu hồ sơ an ninh sai.')
     need(isinstance(o['incident_history'],list) and len(o['incident_history'])<=60,'Lịch sử sự cố sai.')
     for i in (() if {'ops.incident','ops.incident_history','ops.staff'}<=same else ([o['incident']] if o['incident'] else [])+o['incident_history']):
