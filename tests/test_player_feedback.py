@@ -46,13 +46,13 @@ class FeedbackModuleTests(unittest.TestCase):
     def test_validation(self):
         st = self.state()
         bad = [dict(kind='rant', text='Không có loại này'), dict(kind=None, text='abcdef'), dict(kind='bug', text=''),
-               dict(kind='bug', text='  a '), dict(kind='bug', text='x' * 1001), dict(kind='bug', text=123), dict(kind='bug'),
+               dict(kind='bug', text='  a '), dict(kind='bug', text='x' * 10001), dict(kind='bug', text=123), dict(kind='bug'),
                dict(kind='idea', text='đm đm')]
         for d in bad:
             with self.subTest(d=d), self.assertRaises(pfb.FeedbackError):
                 pfb.submit(self.store, self.token, st, d)
         self.assertEqual(len(pfb.list_mine(self.store, self.token)), 0)
-        self.send('x' * 1000)  # the limit itself is fine
+        self.send('x' * 10000)  # the limit itself is fine (owner 06/10: 10,000)
         for kind in pfb.KINDS:
             self.send('Một góp ý nhỏ thôi', kind)
 
@@ -254,7 +254,7 @@ class FeedbackHTTPTests(unittest.TestCase):
         self.assertEqual(self.send(a, headers={'Origin': 'https://evil.example'})[0], 403)
         self.assertEqual(self.req({}, '/api/feedback', 'POST', dict(kind='bug', text='Không có phiên'))[0], 401)
         self.assertEqual(self.req({}, '/api/feedback/mine')[0], 401)
-        self.assertEqual(self.req(a, '/api/feedback', 'POST', dict(kind='bug', text='x' * 1001))[0], 400)
+        self.assertEqual(self.req(a, '/api/feedback', 'POST', dict(kind='bug', text='x' * 10001))[0], 400)
         self.assertEqual(self.req(a, '/api/feedback', 'POST', dict(kind='nope', text='Loại không có'))[0], 400)
         self.assertEqual(self.req(a, '/api/feedback/mine')[1]['items'], [])
 
