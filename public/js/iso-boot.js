@@ -11,7 +11,8 @@ import {bootIsometricMovement} from './isometric-movement.js';
 import {bootIsometricTown} from './isometric-town.js';
 import {bootCozyPortraits} from './isometric/portraits.js';
 import {cozyPortraits} from './v4/look.js';
-import {homeListFirst} from './v4/journey.js';
+import {homeListFirst,onIsoLand} from './v4/journey.js';
+import {attachGuide,landNewPlayer} from './iso-guide.js';
 
 export {updateIsometricShell,isometricAction};
 
@@ -22,6 +23,7 @@ export function bootShell(env){
   if(up)return;up=true;
   cozyPortraits(true);   // v4/look.js: portraits drawn from now on carry the chibi marker
   homeListFirst();   // v4/journey.js: the career list, not a second (2D) town map, unless this device chose the map
+  onIsoLand(landNewPlayer);   // a brand-new player lands on the island after the intro (iso-guide.js)
   bootIsometricShell(env);bootIsometricMovement(env);bootIsometricTown(env);bootCozyPortraits();
 }
 
@@ -33,7 +35,8 @@ export function start({env,world,interact,renderMain,fail}){
   const note=document.createElement('div');note.className='iso-loading';note.setAttribute('role','status');note.textContent='Đang dựng phố…';stage.append(note);
   if(!up){bootShell(env);renderMain();}
   requestAnimationFrame(()=>setTimeout(async()=>{
-    try{const PhaserWorld=await loadWorld();world.adopt(new PhaserWorld(canvas,interact));renderMain();}
+    try{const PhaserWorld=await loadWorld(),real=new PhaserWorld(canvas,interact);world.adopt(real);renderMain();
+      real.ready.then(()=>attachGuide(real,env)).catch(e=>console.warn('2.5D guide:',e));}
     catch(e){fail(e);}finally{note.remove();}
   },0));
 }

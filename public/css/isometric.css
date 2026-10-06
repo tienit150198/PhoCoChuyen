@@ -728,3 +728,22 @@ html[data-game="isometric"] .town-presence-status[data-connected="true"] {color:
 @keyframes iso-loading-pulse {50% {opacity:.6;}}
 @media (prefers-reduced-motion: reduce) {.iso-loading {animation:none;}}
 html[data-game="isometric"] #world {background:#ede3ce;}
+
+/* 🧭 Chỉ đường (iso-guide.js): a searchable list of destinations; easy to read on a 360 px phone. */
+.iso-guide-sheet {display:flex;flex-direction:column;max-height:min(720px,calc(100dvh - 24px - var(--safe-t,0px)));padding:0;}
+.iso-guide-sheet:not([open]) {display:none;}
+.iso-guide-sheet .sheet-head p {margin:4px 0 0;font-size:13px;color:var(--muted);}
+.iso-guide-search {padding:10px 16px;border-bottom:1px solid var(--line);}
+.iso-guide-search input {width:100%;min-height:44px;font-size:16px;}
+.iso-guide-body {overflow-y:auto;padding:4px 16px calc(16px + var(--safe-b,0px));}
+.iso-guide-body h3 {margin:14px 0 6px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);}
+.iso-guide-list {display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px;}
+.iso-guide-row {display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:8px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface,#fffaf0);color:inherit;text-align:left;font:inherit;cursor:pointer;}
+.iso-guide-row:hover,.iso-guide-row:focus-visible {border-color:var(--line-strong);background:var(--surface-2,#fff3df);}
+.iso-guide-row.is-first {border-color:#d9a441;box-shadow:0 0 0 2px #f7d39166;}
+.iso-guide-ico {flex:none;width:30px;font-size:22px;text-align:center;}
+.iso-guide-copy {flex:1;min-width:0;display:flex;flex-direction:column;}
+.iso-guide-copy b {font-size:15px;line-height:1.25;}
+.iso-guide-copy small {font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.iso-guide-go {flex:none;font-weight:700;font-size:13px;color:#2f604c;}
+.iso-guide-empty {padding:20px 4px;color:var(--muted);}

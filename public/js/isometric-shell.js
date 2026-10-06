@@ -3,6 +3,7 @@ import {escapeHTML as esc} from './icons.js';
 import {uiIcon as icon} from './isometric/ui-icons.js';
 import {hudMoney,shortNum} from './v4/wealth.js';
 import {myPortrait} from './v4/look.js';
+import {openGuide,goTo} from './iso-guide.js';
 
 const ENDED=new Set(['completed','referred','cancelled']);
 const fmt=n=>Number(n).toLocaleString('vi-VN');
@@ -62,6 +63,7 @@ export function isometricHUDHTML(model,state={}){
     ${control('Cài đặt','settings','settings','iso-round iso-settings',' aria-label="Cài đặt" title="Cài đặt"')}
   </header>
   <nav class="iso-quick" aria-label="Lối tắt">
+    ${control('Chỉ đường','isoGuide','compass','iso-quick-button iso-guide-button',' aria-label="Chỉ đường: chọn nơi muốn tới, nhân vật tự đi" aria-haspopup="dialog"')}
     ${control('Sổ việc','isoQueue','clipboard','iso-quick-button',' aria-label="Sổ việc đang chờ"')}
     ${control('Người quen','people','people','iso-quick-button',' aria-label="Người quen trong phố"')}
     ${m.current?control('Hôm nay','status','clock','iso-quick-button',' aria-label="Hôm nay: giờ, tình trạng và chuyện cần để ý"'):''}
@@ -210,6 +212,8 @@ export async function isometricAction(action,data={},el=null,env){
     case'isoAvatar':env.ui&&(env.ui.isoTab='isoAvatar');env.openSheet('home',{jrView:'wardrobe'});break;
     case'isoBag':env.ui&&(env.ui.isoTab='isoBag');if(model.current)await act('warehouse');else env.openSheet('home',{homeMode:'list',jrView:'home'});break;
     case'isoChat':await act('liveChat');break;
+    case'isoGuide':await openGuide(env);break;   // 🧭 iso-guide.js
+    case'isoGo':await goTo(String(data.dest||''),env);break;
     case'isoCamera':cameraOpen=!cameraOpen;break;
     case'isoMore':
       await act('v4Menu');
