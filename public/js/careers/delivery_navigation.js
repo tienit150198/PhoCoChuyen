@@ -10,6 +10,14 @@ export function mapTransform(width,height,zoom=1,center={x:120,y:80}){
  const at={x:axis(center.x,240,width),y:axis(center.y,160,height)};
  return {scale,ox:width/2-at.x*scale,oy:height/2-at.y*scale,center:at};
 }
+/** Does junction (i,j) count as a traffic-light checkpoint of the leg at→target? The same corridor as the server
+ * (game/careers/delivery.py `_traffic`: via ≤ direct + 2, one block of detour). Off it, the light is scenery: no
+ * dl_signal, no hold. Unknown stops: false (never ask what the server would refuse). */
+export function onLeg(nodes,at,target,i,j){
+ const a=nodes?.[at],b=nodes?.[target];if(!a||!b||at===target)return false;
+ const via=Math.abs(a.x-i)+Math.abs(a.y-j)+Math.abs(b.x-i)+Math.abs(b.y-j),direct=Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
+ return via<=direct+2;
+}
 /** Is (x,y) on a street (with room for the scooter)? */
 export function onRoad(x,y,m=.6){
   const i=Math.round(x/B),j=Math.round(y/B);
