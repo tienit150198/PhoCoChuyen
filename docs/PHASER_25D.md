@@ -123,3 +123,33 @@ Since 1.9.0 the 2.5D island is the game's only world (owner, 06/10). The classic
   `live/town.py` (its geometry depends on the count only). Own sprites are a later art task.
 * **Not ported:** the 2.5D-era chat restyle, the illustrated icons in `icons.js`, the isometric delivery ride
   (`delivery_drive.js`); their tests skip with that reason. `live/hub.py` keeps `broadcast(..., text=True)`.
+
+### Release checks for 1.9.0 (06/10, tree `eef1554`)
+
+* **Task-compat gate** vs an archive of `b71b2ac` (1.8.1): 49 careers, days 1–40, 48,480 generated rows, all match.
+  Rollback: a save with `journey.leisure` migrates and validates on the 1.8.1 tree (block kept).
+* **Tests.** Targeted Python (engine, journey, leisure, live town ×4, town map, webassets, asset names, guides, i18n
+  pack, the eight newest careers): 708 run, 1 failure, `test_public_state_is_small` (11,638 bytes against 8,650). It
+  fails on 1.8.1 as well (11,543); the 2.5D `leisure` block adds 95 bytes. Node: every `tests/*.mjs` that fails on
+  HEAD fails the same way on 1.8.1 (they are fed by Python tests or need a Windows path), except the five that need
+  the toolchain: with `npm ci` from `b307563`'s `package.json` and `python` on `PATH` they pass.
+* **Functional** (chromium + webkit; 390×844, 844×390, 1366×768): every open lands on the island (a new player
+  meets the intro first), walking in 8 directions (joystick / keys), all 49 workplaces entered through their doors and
+  back, every HUD entry. 🧭 Chỉ đường: 57 rows (63 for a story player), search, route walk, arrival opens the place,
+  interrupt by key, tap to walk, the spot remembered after a reload, back at the door after work.
+* **Phone HUD:** an overlap audit (HUD, quick buttons, joystick, dock, task card, toasts) on the island and in a running
+  shift, at 360×780, 390×844, 412×915, 780×360, 844×390 and desktop, chromium and webkit: no overlaps, nothing clipped.
+* **Visual sweep** of the live screens (wedding, fair, street, chat, dating, quầy, house, ranks, Có gì mới, gift),
+  7 viewports × chromium/webkit: the same as 1.8.1. Remaining notes are the harness's: WebKit headless sends no
+  `Origin`/`Sec-Fetch-Site` with `sendBeacon`, so `/api/beacon` answers 403; the wedding end card is not shown to a
+  guest who has the hall open in two browsers (`walk_left why=other`, 1.8.1 too); w13/w17/w23 openers time out now
+  and then on both trees.
+* **Smoothness** (chromium, 360×780 @2×, CPU throttle 4×, 8 s walking): no peers p95 16.7 ms; 29 peers walking the
+  roads (30 people on screen, 10 updates/s like `live/town.py`'s flush) p95 16.8 ms, max 33 ms, no long task. Idle
+  p95 16.8 ms. Peers placed off the roads cost more: `nearestWalkable` scans every road and obstacle per peer per
+  update (p95 50 ms, long tasks up to 100 ms at 29 peers, 270 ms updates). Real clients only send road positions;
+  `LIVE_TOWN` is off by default. A later hardening: `live/town.py clean_point` could require a road like the client.
+* **First load** ("Slow 4G" 1.6 Mbit/s, 150 ms, cold cache): first game frame 5.4 s, 776 KB on the wire (1.8.1:
+  5.5 s, 903 KB). The island is ready at 14.7 s, 2.65 MB; 3.13 MB after 10 s more (images 1.68 MB, the Phaser bundle
+  360 KB, JS 629 KB, CSS 164 KB). Gzip sizes from the sources: first frame JS 391 KB + CSS 113 KB (1.8.1: 391 + 102).
+  Five to six long tasks during load (up to ~200 ms at 4×: Phaser start and texture decode).
