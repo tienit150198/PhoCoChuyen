@@ -2,7 +2,9 @@
  * round (garbage.js) and drain cleaning (drain.js). The intro card, the surprise card, a tap-to-open
  * line, the day bar and the sticky next-step bar. Layout lives in public/css/careers/street_kit.css;
  * each career draws its own stations and keeps its own look in public/css/careers/<id>.css. */
-import {stepCta} from '../v4/guide.js';
+import {barParts} from '../v4/guide.js';
+import {actBar,helpBtn,whyAttrs,clean,tip,headChip,few} from '../ui-kit.js';
+export {tip,clean,headChip,few};
 
 export const DONE=['completed','cancelled','referred'];
 export const data=x=>x.room.data||{};
@@ -12,8 +14,10 @@ export const stockOf=(x,k)=>Number(x.room.inventory?.stock?.[k]||0);
 export const pct=(v,max)=>Math.max(0,Math.min(100,v/Math.max(1,max)*100)).toFixed(1);
 /** A button for a client action of the career module (data-action="car:<name>"). */
 export const act=(x,label,action,d={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-action="car:${action}"${Object.entries(d).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}${extra}>${label}</button>`;
-/** A big square button that sends one server command. */
-export const tile=(x,command,payload,inner,cls='',disabled=false)=>`<button type="button" class="tile sk-tile ${cls}" data-command="${command}" data-payload="${x.esc(JSON.stringify(payload))}"${disabled?' disabled':''}>${inner}</button>`;
+/** A big square button that sends one server command. `can`: the server's pre-check for it (true | {why, fix}):
+ * when it cannot go, the tile is dimmed but tappable and a tap says why (ui-kit whyAttrs). */
+export const tile=(x,command,payload,inner,cls='',disabled=false,can=true)=>{const why=disabled?'':whyAttrs(can);
+  return `<button type="button" class="tile sk-tile ${cls}${why?' is-why':''}" data-command="${command}" data-payload="${x.esc(JSON.stringify(payload))}"${disabled?' disabled':''}${why}>${inner}</button>`;};
 export const meter=(v,max,cls='')=>`<span class="sk-meter ${cls}"><i style="width:${pct(v,max)}%"></i></span>`;
 
 /** One line that a tap opens; remembered per key in x.ui.pane. The body is drawn only while open. */
@@ -31,13 +35,29 @@ export function notesPage(x,{cls,eyebrow,title,body}){
     `<footer class="sheet-foot"><p></p><div class="row wrap"><button type="button" class="btn ghost" data-action="close">Đóng</button><button type="button" class="btn primary" data-action="workbench">Vào việc</button></div></footer>`;
 }
 
-/** The "what this job is" card: shown until the player starts (`go` = the career's intro command). */
+/** A long line cut to its first clause, ≤ `max` words: "Sáng: giặt khăn, châm đầy các chai" → "Giặt khăn". */
+export function shortLine(s,max=5){
+  let t=String(s||'').replace(/^[^:]{1,14}:\s*/,'');   // a "Sáng:" / "Chiều:" label
+  t=t.split(/[,;(—–]|\s-\s/)[0].trim().split(/\s+/).slice(0,max).join(' ');
+  return t?t[0].toUpperCase()+t.slice(1):'';
+}
+/** The intro's long parts (lead and the three lists) as "?" sheet sections. */
+export function introHelp(x,i){
+  const list=rows=>`<ul class="ui-rows">${(rows||[]).map(([e,s])=>`<li><span aria-hidden="true">${x.esc(e)}</span>${x.esc(s)}</li>`).join('')}</ul>`;
+  return [{title:'Giới thiệu',body:`<p>${x.esc(i.lead||'')}</p>`,open:true},{title:'Công việc gồm…',body:list(i.work)},{title:'Bạn sẽ gặp…',body:list(i.meet)},{title:'Được khen khi…',body:list(i.stars)}];
+}
+/** The "what this job is" card: shown until the player starts (`go` = the career's intro command).
+ * Short (≤ 30 words): the job's name, three icon rows of ≤ 5 words (intro.short, or the first three work lines cut
+ * to their first clause) and a "?" with the lead and the three lists. The start button is the bar's main button
+ * (the guide's intro step); the card keeps its own only as a fallback for a screen without that bar. */
 export function introCard(x,go,icon){
   const d=data(x),i=cc(x).intro;if(!i||(d.intro&&!x.ui.intro))return '';
-  const list=(title,rows)=>`<section><h4>${x.esc(title)}</h4><ul class="sk-icons">${rows.map(([e,s])=>`<li><span aria-hidden="true">${x.esc(e)}</span>${x.esc(s)}</li>`).join('')}</ul></section>`;
-  const btn=d.intro?act(x,'Đã hiểu','introClose',{},'primary full'):x.cmd(`${icon} Vào việc thôi!`,go,{},'primary full sk-intro-go');
-  return `<article class="sk-intro card" role="dialog" aria-labelledby="sk-intro-title"><h3 id="sk-intro-title">${icon} ${x.esc(i.title)}</h3><p>${x.esc(i.lead)}</p>
-    <div class="sk-intro-grid">${list('Công việc gồm…',i.work)}${list('Bạn sẽ gặp…',i.meet)}${list('Được khen khi…',i.stars)}</div>${btn}</article>`;
+  const name=String(i.title||'').replace(/^Giới thiệu nghề:?\s*/,'')||String(i.title||'');
+  const rows=(i.short||(i.work||[]).slice(0,3).map(([e,s])=>[e,shortLine(s)])).slice(0,3);
+  const btn=d.intro?act(x,'Đã hiểu','introClose',{},'full'):x.cmd(`${icon} Vào việc thôi!`,go,{},'primary full sk-intro-go');
+  const q=helpBtn(`intro-${x.state?.current||go}`,`${icon} ${name}`,introHelp(x,i),{label:'?',cls:'sk-intro-q'});
+  return `<article class="sk-intro sk-intro-short card" role="dialog" aria-labelledby="sk-intro-title"><div class="sk-intro-head"><h3 id="sk-intro-title"><span aria-hidden="true">${icon}</span> ${x.esc(name.charAt(0).toUpperCase()+name.slice(1))}</h3>${q}</div>
+    <ul class="sk-icons sk-intro-rows">${rows.map(([e,s])=>`<li><span aria-hidden="true">${x.esc(e)}</span>${x.esc(s)}</li>`).join('')}</ul>${btn}</article>`;
 }
 
 /** A surprise waiting for a decision, or the last one's outcome (dismissable). */
@@ -59,19 +79,23 @@ export function deskCard(x,cmd,where='Chuyện giữa ca'){
   return '';
 }
 
-/** The day's weather/mood line (tap for the hint) and the "?" that reopens the intro. */
+/** The day's weather/mood line (tap for the hint) and the "?". Classic layout: "?" reopens the intro card. Clean
+ * layout: "?" opens the help sheet with what this screen folded away (ui-kit tip), the day's hint and the intro. */
 export function dayBar(x,tail=''){
-  const m=data(x).mod||{};
+  const m=data(x).mod||{},i=cc(x).intro;
   const sum=`<span class="sk-sky" aria-hidden="true">${x.esc(m.emoji||'🌤️')}</span><b>${x.esc(m.label||'')}${tail}</b>`;
-  return `<div class="sk-day">${m.hint?pane(x,`day-${x.room.day}`,sum,`<small>${x.esc(m.hint)}</small>`,false,'grow'):`<div class="grow sk-day-line">${sum}</div>`}
-    ${act(x,'❔','intro',{},'ghost small sk-help',' aria-label="Giới thiệu nghề"')}</div>`;
+  const q=clean()&&i?helpBtn(`day-${x.state?.current||''}`,`${m.emoji||'❔'} ${String(i.title||'').replace(/^Giới thiệu nghề:?\s*/,'')}`,
+    [...(m.hint?[{title:`${m.emoji||''} ${m.label||'Hôm nay'}`,body:`<p>${x.esc(m.hint)}</p>`}]:[]),...introHelp(x,i)],{tips:true,cls:'sk-help'})
+    :act(x,'❔','intro',{},'ghost small sk-help',' aria-label="Giới thiệu nghề"');
+  const line=clean()?`<div class="grow sk-day-line">${sum}</div>`:m.hint?pane(x,`day-${x.room.day}`,sum,`<small>${x.esc(m.hint)}</small>`,false,'grow'):`<div class="grow sk-day-line">${sum}</div>`;
+  return `<div class="sk-day">${line}${clean()?'<span class="ui-chiprow"></span>':''}${q}</div>`;
 }
 
 /** The customer on the card: portrait, name, one line and the patience bar. */
 export function person(x,t,inner='',tag=''){
   const who=x.npc(t.npc);
   return `<article class="card sk-ticket"><div class="row">${x.portrait(who,48)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${tag}</div>
-    <p class="small"><b>${x.esc(t.title)}</b></p>${inner}
+    ${clean()&&(t.kind==='setup'||few(t.title,4,true)===String(t.title||'').trim())?'':`<p class="small"><b>${x.esc(t.title)}</b></p>`}${inner}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
 }
 /** Before the first question: who is here and the one button to ask. */
@@ -80,10 +104,13 @@ export function askCard(x,t,label){
   return `<article class="card sk-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>${x.esc(t.opening)}</p></div></div>${x.cmd(label,'ask',{task:t.id},'primary full sk-ask')}</article>`;
 }
 
-/** The sticky bottom bar: the next step, or the finishing button. */
-export function bottom(x,g){
-  if(!g.final)return g.steps.length?`<div class="sk-bar">${stepCta(x,g.steps,{label:'',go:null,ready:false})}</div>`:'';
-  return `<div class="sk-bar">${stepCta(x,g.steps,g.final)}</div>`;
+/** The sticky bottom bar (ui-kit actBar): the next step on the left, the one main button on the right.
+ * g.final.can: the server's pre-check for the finishing action (dimmed with its reason when it cannot go).
+ * `top`: an optional full-width row above (pho's pour gauge). */
+export function bottom(x,g,{top=''}={}){
+  if(!g.final&&!g.steps.length&&!top)return '';
+  const {next,main}=barParts(x,g.steps,g.final||{label:'',go:null,ready:false});
+  return actBar({next,main,top,cls:'sk-bar'});
 }
 
 /** Client actions every street trade uses; spread into the module's `actions`. */

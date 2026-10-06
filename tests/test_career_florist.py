@@ -284,6 +284,21 @@ class FloristTests(unittest.TestCase):
             j2.act('fl_arrange')
             j2.act('fl_banner', text='Chúc mừng')  # banners only go on wreaths
 
+    def test_the_page_is_told_why_the_hand_off_would_be_refused(self):
+        """can.fl_deliver (UI foundation): the same reason fl_deliver refuses with, before the tap."""
+        j = self.journey(GRAD, days=[1])
+        tid = j.task['id']
+        j.act('ask', task=tid)
+        can = FL.public_task(j.get(tid))['can']['fl_deliver']
+        self.assertIsInstance(can, dict)
+        self.assertEqual(can['fix']['act'], 'car:tab')
+        with self.assertRaises(GameError) as e:
+            self.deliver(tid)
+        self.assertEqual(str(e.exception), can['why'])
+        self.build(RECIPES[GRAD], tid=tid)
+        self.assertIs(FL.public_task(j.get(tid))['can']['fl_deliver'], True)
+        self.assertNotIn('can', FL.public_task(dict(Journey('florist').task, known=False)) or {})
+
     def test_wrong_format_refused(self):
         j = self.journey(OPENING, days=[1])
         tid = self.build(RECIPES[OPENING], base='bouquet', paper='kraft')

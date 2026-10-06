@@ -5,7 +5,7 @@
    the bottom win over older rules without !important. */
 
 /* ---------------------------------------------------------------- tokens */
-:root{--ck-radius:12px;--ck-box-radius:10px;--ck-pad-y:10px;--ck-pad-x:14px;--ck-gap:8px}
+:root{--ck-radius:12px;--ck-box-radius:10px;--ck-pad-y:10px;--ck-pad-x:14px;--ck-gap:var(--sp-2)}
 
 /* ------------------------------------------------------ thread/quote box */
 /* A tinted box with a coloured left accent, a bold coloured label and a
@@ -15,7 +15,7 @@
 .ck-box>p:first-child{margin-top:0}
 .ck-label{font-weight:800;color:var(--ck-ink,var(--ink))}
 .ck-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin-bottom:2px}
-.ck-head .ck-label{font-size:.867rem}
+.ck-head .ck-label{font-size:var(--fs-2)}
 .ck-sub{font-size:.767rem;font-weight:600;color:var(--muted)}
 .ck-mute{font-size:.8rem;font-style:italic;color:var(--muted)}
 .ck-owner{--ck-line:var(--warn);--ck-bg:var(--warn-soft);--ck-ink:var(--warn)}
@@ -56,7 +56,7 @@
 .rv-card>.grow{gap:5px}
 .rv-card .persona{width:42px;height:42px;margin:2px}
 .rv-card .ck-meta b{font-size:.95rem}
-.rv-card .ck-stars{font-size:.867rem}
+.rv-card .ck-stars{font-size:var(--fs-2)}
 .rv-card .rv-text{color:var(--ink);font-size:.9rem;line-height:1.6}
 .rv-who{font-weight:800;color:var(--ink-2)}
 .rv-who::after{content:":"}
@@ -79,7 +79,7 @@
 .review-card .review-text{margin:14px 0 0;font-style:normal;font-size:.95rem;line-height:1.65}
 .review-card .thread{gap:10px;margin:14px 0}
 .review-card .thread .ck-box{max-width:none}
-.review-card .rv-guest{margin-left:18px;font-size:.867rem}
+.review-card .rv-guest{margin-left:18px;font-size:var(--fs-2)}
 .review-card .rv-closed{margin:12px 0 0;text-align:center;font-size:.8rem;color:var(--muted)}
 .review-card details.criteria{margin-top:12px}
 /* "Trả lời" on each row is a soft status pill, not a
@@ -103,7 +103,7 @@
 .summary-v6 .notice .btn{min-height:44px}
 .summary-v6 .acct-nudge-ic{width:34px;height:34px;background:var(--info-soft)}
 .summary-v6 .sum-stat em.ck-chips{justify-content:center;gap:4px;margin-top:6px}
-.summary-v6 .sum-stat em .ck-delta{font-size:.733rem;padding:0 7px}
+.summary-v6 .sum-stat em .ck-delta{font-size:var(--fs-1);padding:0 7px}
 .summary-v6 .notice .ck-chips{margin:6px 0 2px}
 /* Milk tea close: tomorrow's tip as a quote box. */
 .summary-v6 .mt-tomorrow-line{border-left:4px solid var(--accent);border-radius:var(--ck-box-radius)}
@@ -121,7 +121,7 @@
 .post-actions .reply-more[open]{flex-basis:100%;order:9}
 .post-actions .reply-more[open]>summary{color:var(--accent-text)}
 .post-actions>small.muted{order:8;margin-left:auto;padding-right:4px}
-.post .comment{--ck-line:var(--line-strong);--ck-bg:var(--surface-2);--ck-ink:var(--ink-2);margin:8px 0 0;padding:8px 12px;border-radius:var(--ck-box-radius);border-left:4px solid var(--ck-line);background:var(--ck-bg);font-size:.867rem;line-height:1.55}
+.post .comment{--ck-line:var(--line-strong);--ck-bg:var(--surface-2);--ck-ink:var(--ink-2);margin:8px 0 0;padding:8px 12px;border-radius:var(--ck-box-radius);border-left:4px solid var(--ck-line);background:var(--ck-bg);font-size:var(--fs-2);line-height:1.55}
 .post .comment.owner-reply{--ck-line:var(--warn);--ck-bg:var(--warn-soft);--ck-ink:var(--warn)}
 .post .comment strong{color:var(--ck-ink);font-weight:800}
 .post .comment p{margin:0}
@@ -186,8 +186,8 @@ button.asm-chip:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
 .asm-need{position:absolute;top:6px;left:6px;z-index:1;padding:1px 7px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:.7rem;font-weight:800;line-height:1.5;white-space:nowrap;pointer-events:none}
 .asm-need.soft{background:var(--good-soft);color:var(--good);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--good) 35%,transparent)}
 .asm-stepper{display:flex;align-items:center;justify-content:space-between;gap:4px;min-width:0}
-.asm-stepper>b{min-width:2ch;text-align:center;font-size:1rem;font-variant-numeric:tabular-nums}
-.asm-step{display:grid;place-items:center;width:40px;height:40px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink);font-size:1.25rem;font-weight:800;line-height:1;cursor:pointer}
+.asm-stepper>b{min-width:2ch;text-align:center;font-size:var(--fs-3);font-variant-numeric:tabular-nums}
+.asm-step{display:grid;place-items:center;width:40px;height:40px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink);font-size:var(--fs-4);font-weight:800;line-height:1;cursor:pointer}
 .asm-step:hover:not(:disabled){border-color:var(--accent);color:var(--accent-text)}
 .asm-step:disabled{opacity:.4;cursor:default}
 .asm-step:focus-visible{outline:3px solid var(--focus);outline-offset:1px}

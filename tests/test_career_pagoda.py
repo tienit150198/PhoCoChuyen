@@ -472,7 +472,10 @@ class Saves(Base):
         self.assertIsNone(next(x for x in public_state(j.state)['careers']['pagoda']['tasks'] if x['id'] == tid)['needs'])
         j.act('ask', task=tid)
         view = next(x for x in public_state(j.state)['careers']['pagoda']['tasks'] if x['id'] == tid)
-        raw = json.dumps(view, ensure_ascii=False)
+        # can.chua_close holds the refusal the close button would get (said on a tap anyway), never an answer.
+        self.assertEqual(set(view.get('can') or {}), {'chua_close'})
+        self.assertIn(view['can']['chua_close'], (True, dict(why='Còn thứ chưa xếp chỗ.', fix=None)))
+        raw = json.dumps({k: v for k, v in view.items() if k != 'can'}, ensure_ascii=False)
         self.assertNotIn('_key', raw)
         for word in ('"ok"', '"right"', '"rules"', '"q"', '"total"', '"why"'):
             self.assertNotIn(word, raw)

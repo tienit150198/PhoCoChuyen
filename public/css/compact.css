@@ -32,7 +32,7 @@ html[data-layout="phone"] .sheet-head>.grow>p,html[data-layout="phone"] .sheet-h
 /* A work screen's header is its title only: the level note under it is on the career's home already. */
 html[data-layout="phone"] .sheet.cozy-job .sheet-head>.grow>p{display:none}
 html[data-layout="phone"] .sheet-head>.icon-btn,html[data-layout="phone"] .sheet-head>.btn.icon-btn,html[data-layout="phone"] .sheet-head>.head-more>summary,html[data-layout="phone"] .sheet-head>.btn:last-child{width:44px;height:44px;min-width:44px;min-height:44px;margin:0;padding:0}
-html[data-layout="phone"] .sheet-head>.tut-help{width:40px;height:40px;min-width:40px;min-height:40px;margin:2px}
+html[data-layout="phone"] .sheet-head>.tut-help{width:44px;height:44px;min-width:44px;min-height:44px;margin:0}
 html[data-layout="phone"] .sheet.cozy-job .sheet-head{padding-top:7px;padding-bottom:1px}
 /* The money line joins the title row: just the numbers ("🏪 365"), the words stay in the chip's text for readers.
    On a work screen only the workplace fund shows (that is what it spends). */
@@ -61,19 +61,19 @@ html[data-layout="phone"] .preparation-topline .btn{min-height:44px}
 /* ---------- A2. One shared action bar ------------------------------------- */
 /* The careers' bars (and any bar the guide marks .abar): flush with the sheet's bottom edge, one compact row,
    the same surface, padding and radius everywhere. */
-html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar){
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.ui-bar,.abar){
   position:sticky;bottom:0;z-index:5;gap:6px 8px;margin-top:8px;margin-bottom:0;
   padding:6px 8px calc(6px + var(--safe-b,0px));border-radius:16px 16px 0 0;border:1px solid var(--line);border-bottom:0;
   background:var(--surface);box-shadow:0 -6px 16px -12px rgba(0,0,0,.35)}
 html[data-layout="phone"] dialog.sheet .career-job.ok>.ok-bar.abar,html[data-layout="phone"] dialog.sheet .career-job.ok>.ok-bar{bottom:0}
 /* The bars keep their own inner layout; their big buttons get one compact height (48 px, a thumb and a bit). */
-html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar) .btn.big{min-height:46px;padding-top:7px;padding-bottom:7px;font-size:1rem;line-height:1.25}
-html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar) .fk-next:empty{display:none}
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.ui-bar,.abar) .btn.big{min-height:46px;padding-top:7px;padding-bottom:7px;font-size:var(--fs-3);line-height:1.25}
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.ui-bar,.abar) .fk-next:empty{display:none}
 /* "Bước tiếp" + "hoặc <kết thúc>": one row, the way out as a small outlined button beside the step. */
 html[data-layout="phone"] dialog.sheet .gd-ctas:has(>.gd-alt){flex-direction:row;align-items:stretch;gap:6px}
 html[data-layout="phone"] dialog.sheet .gd-ctas>.gd-cta{flex:1 1 auto;width:auto;min-width:0}
 html[data-layout="phone"] dialog.sheet .gd-ctas>.gd-alt{flex:0 1 34%;align-self:stretch;display:flex;align-items:center;justify-content:center;min-height:48px;margin:0;padding:4px 8px;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface);font-size:.767rem;line-height:1.2;text-align:center;text-decoration:none;overflow:hidden}
-html[data-layout="phone"] dialog.sheet .gd-why{font-size:.75rem}
+html[data-layout="phone"] dialog.sheet .gd-why{font-size:var(--fs-1)}
 /* Matching scroll padding: a control scrolled to (guide "go to", focus) stops clear of the bar and the header. */
 html[data-layout="phone"] dialog#sheet[data-abar]{scroll-padding-bottom:calc(var(--abar-h,64px) + 8px);scroll-padding-top:calc(var(--hd-h,56px) + 8px)}
 html[data-layout="phone"] dialog#sheet[data-abar] .sheet-body{padding-bottom:calc(8px + var(--safe-b))}
@@ -98,6 +98,11 @@ html[data-layout="phone"] #sheet .toast.multi:not(.open) .toast-lines .tl-tx{dis
 html[data-layout="phone"] #sheet .toast.hint:not(.open){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html[data-layout="phone"] #sheet .toast.open{max-height:calc(var(--vvh,100dvh) * .5);overflow-y:auto}
 html[data-layout="phone"] #sheet .toasts>.toast+.toast{display:none}
+/* Clean layout (html[data-clean]): under the header, not in its title row (it covered the screen's title for up to 8 s),
+   one line across the sheet; a tap still opens or closes it. */
+html[data-clean][data-layout="phone"] dialog#sheet.sheet .toasts,html[data-clean][data-layout="phone"] dialog#sheet.sheet[data-gd-bar] .toasts,html[data-clean][data-layout="phone"] dialog#sheet.sheet[data-gd-bar="below"] .toasts{
+  top:calc(var(--hd-t,10px) + var(--hd-h,52px) + 4px);left:max(8px,var(--safe-l));right:auto;width:calc(100vw - max(8px,var(--safe-l)) - max(8px,var(--safe-r)))}
+html[data-clean][data-layout="phone"] #sheet .toast{min-height:36px;font-size:var(--fs-2)}
 /* Over the scene: under the title card and area chips, on the street itself (never on a chip or the task card). */
 html[data-layout="phone"] .toasts{top:calc(var(--topbar-h) + var(--safe-t) + 112px)}
 /* Coin pops and the bank chip float over the scene, never over the header buttons of a sheet. */
@@ -259,17 +264,18 @@ html[data-layout="phone"][data-orientation="landscape"] .mt-stations{grid-column
 html[data-layout="phone"][data-orientation="landscape"] .mt-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
 }
 /* Bar: one slim row (48 px buttons), right-aligned beside the order. */
-html[data-layout="phone"][data-orientation="landscape"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar){padding-top:2px;padding-bottom:calc(2px + var(--safe-b,0px));margin-left:auto;width:min(100%,400px);box-sizing:border-box;border-radius:16px 16px 0 0}
-html[data-layout="phone"][data-orientation="landscape"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar) .btn.big{min-height:44px;padding-top:6px;padding-bottom:6px}
+html[data-layout="phone"][data-orientation="landscape"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.ui-bar,.abar){padding-top:2px;padding-bottom:calc(2px + var(--safe-b,0px));margin-left:auto;width:min(100%,400px);box-sizing:border-box;border-radius:16px 16px 0 0}
+html[data-layout="phone"][data-orientation="landscape"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.ui-bar,.abar) .btn.big{min-height:44px;padding-top:6px;padding-bottom:6px}
 /* The bar's lines sit side by side (what is left on the left, the buttons on the right): one row, ~60 px.
-   A bar with more than three parts (the office stamp row, a desk's choices) keeps its own wrapping. */
-html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar):not(:has(>:nth-child(4))){flex-direction:row;flex-wrap:nowrap;align-items:center}
-html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar):not(:has(>:nth-child(4)))>*{min-width:0}
-html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar):not(:has(>:nth-child(4)))>:is(.gd-ctas,.fk-bar-btns,.btn,.gd-cta,[class$="-btns"],[class$="-acts"]){flex:1 1 58%;margin:0}
-html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar):not(:has(>:nth-child(4)))>:not(.gd-ctas):not(.fk-bar-btns):not(.btn):not([class$="-btns"]):not([class$="-acts"]):not([class$="-cup"]){flex:0 1 auto;max-width:42%;margin:0;font-size:.8rem;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
+   A bar with more than three parts (the office stamp row, a desk's choices) keeps its own wrapping. Bars on the
+   shared .ui-bar (ui-kit.js actBar) lay themselves out (app.css 27e); this is for the ones not moved yet. No width
+   cap on the text (the old 42% squeezed the teacher's and the tour guide's rows): it takes what the buttons leave. */
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.ui-bar,.abar):not(.ui-bar):not(:has(>:nth-child(4))){flex-direction:row;flex-wrap:nowrap;align-items:center}
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.ui-bar,.abar):not(.ui-bar):not(:has(>:nth-child(4)))>*{min-width:0}
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.ui-bar,.abar):not(.ui-bar):not(:has(>:nth-child(4)))>:is(.gd-ctas,.fk-bar-btns,.btn,.gd-cta,[class$="-btns"],[class$="-acts"]){flex:0 1 auto;max-width:62%;min-width:40%;margin:0}
+html[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.ui-bar,.abar):not(.ui-bar):not(:has(>:nth-child(4)))>:not(.gd-ctas):not(.fk-bar-btns):not(.btn):not([class$="-btns"]):not([class$="-acts"]):not([class$="-cup"]){flex:1 1 0;margin:0;font-size:var(--fs-2);line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
 html[data-layout="phone"] dialog.sheet .mt-bar-cup{flex:none}
 html[data-layout="phone"] dialog.sheet .mt-bar-cup svg{width:30px;height:36px}
-html[data-layout="phone"][data-orientation="landscape"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar):not(:has(>:nth-child(4)))>:is(.gd-ctas,.fk-bar-btns,.btn,.gd-cta,[class$="-btns"],[class$="-acts"]){flex:0 1 60%}
 /* Delivery, driving in landscape: the drive view fills the pane, so the bar waits under it instead of sitting on
    the pedals (Ga / Phanh). */
 html[data-layout="phone"][data-orientation="landscape"] dialog.sheet .career-job.dl:has(.dd-btn) .dl-bar{position:relative}
@@ -303,7 +309,7 @@ html[data-layout="phone"][data-orientation="landscape"] .wd-stage{box-shadow:non
 /* ---------- C. Keyboard open (v4/shell.js kb-open) ----------------------------- */
 html.kb-open[data-layout="phone"] .sheet-head{min-height:44px;padding-top:0;padding-bottom:0}
 html.kb-open[data-layout="phone"] .sheet-head::before,html.kb-open[data-layout="phone"] .mn-line,html.kb-open[data-layout="phone"] .sheet-head .gd-next{display:none}
-html.kb-open[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.abar),html.kb-open[data-layout="phone"] .life-sticky{position:relative}
+html.kb-open[data-layout="phone"] dialog.sheet :is(.fk-bar,.dw-bar,.tt-bar,.dl-bar,.ao-bar,.tv-bar,.fa-bar,.mb-ctabar,.rp-bar,.pl-bar,.sk-bar,.td-bar,.hs-bar,.ps-bar,.ok-bar,.gr-billbar,.sl-bar,.pc-bar,.ui-bar,.abar),html.kb-open[data-layout="phone"] .life-sticky{position:relative}
 html.kb-open[data-layout="phone"] textarea{max-height:calc(2lh + 20px)}
 html.kb-open[data-layout="phone"] .toasts{display:none}
 /* Landscape with the keyboard up: chat and the street keep only the messages and the input (a strip over the

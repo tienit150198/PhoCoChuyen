@@ -55,8 +55,37 @@ def eng():
     return _ENGINE
 
 
-def need(condition: Any, message: str, code: str = 'invalid_action') -> None:
+def need(condition: Any, message: str, code: str = 'invalid_action', fix: dict | None = None) -> None:
+    """Refuse the command unless `condition`. `fix` (a guide `go` with a label) is only for check() below."""
     eng().need(condition, message, code)
+
+
+class _Stop(Exception):
+    """check(): the first rule that fails ends the run, as a refusal would."""
+
+
+def check(rules, *args, **kw) -> Any:
+    """Run a guard function in "check" mode: the same rules the command refuses with, recorded instead of raised.
+
+    `rules(*args, need=..., **kw)` is written once and used twice: the command calls it with need=kit.need (it
+    refuses), the public view calls check(rules, ...) and sends the result to the page as `can[action]`:
+    True when the action would go, else {'why': <the refusal text>, 'fix': {cmd|act|sel, label} or None}.
+    The page then draws the button dimmed but tappable; a tap shows the reason and the fix (ui-kit.js whyTap).
+    A view must never fail because of a pre-check: an unexpected error counts as "can go" (the command itself
+    still checks). Never changes state: rules read only."""
+    box: dict = {}
+
+    def rec(condition: Any, message: str, code: str = 'invalid_action', fix: dict | None = None) -> None:
+        if not condition:
+            box.update(why=str(message), fix=fix)
+            raise _Stop
+    try:
+        rules(*args, need=rec, **kw)
+    except _Stop:
+        return dict(box)
+    except Exception:  # noqa: BLE001 - a view never breaks on a pre-check
+        return True
+    return True
 
 
 def integer(value: Any, low: int = 0, high: int = 999999) -> int:

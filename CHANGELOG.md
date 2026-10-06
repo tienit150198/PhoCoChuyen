@@ -1,6 +1,22 @@
 # v1.9.6 — 2026-10-07
 
 Gồm "Thêm chỗ tiêu xu" (spend-1, bảng donations + chat_style, schema 25) và "Phòng hát Mây" (karaoke-p1, schema 26, TẮT mặc định: LIVE_KARAOKE). CSP mở cho YouTube embed. Có gì mới chỉ nói phần tiêu xu; karaoke thông báo khi bật.
+# Chưa phát hành — Giao diện gọn (ui-foundation)
+
+## Giao diện gọn hơn
+
+- Chủ game 06/10: "gọn hơn, clean hơn, ít chữ hơn, dễ chơi hơn". Đợt nền tảng, dùng chung cho mọi nghề (docs/UI_KIT.md).
+- Một thanh dưới chung (`.ui-bar`): bên trái là bước tiếp, bên phải là một nút chính. Đã chuyển 21 nghề phố (street kit), tiệm hoa, quán ăn, tiệm sửa, tiệm quần áo, giáo viên, hướng dẫn viên. Bỏ luật "42%" bóp chữ trên điện thoại và các bản vá `!important` của giáo viên/hướng dẫn viên.
+- Giới thiệu nghề (21 nghề phố): từ ~180 chữ còn ~22 chữ, gồm tên nghề, 3 dòng biểu tượng và nút "?" chứa phần giới thiệu đầy đủ.
+- Nút chưa bấm được thì mờ đi nhưng vẫn chạm được: chạm vào sẽ hiện một dòng lý do và nút sửa ngay trên thanh dưới, không gửi lệnh vào chỗ chắc bị từ chối. Máy chủ báo trước bằng đúng luật nó dùng để từ chối: giúp việc (lau khi chưa cầm dụng cụ/chai, chai cạn) và tiệm hoa (trao hoa khi chưa cắm/gói xong).
+- Phiếu khách (tiệm hoa, sửa đồ, quán ăn, quần áo) không còn ghim trên điện thoại; số "3/6 ✓" thành chip trên đầu, chạm để mở phiếu.
+- Thông báo hiện ngay trong thanh dưới, chỗ "bước tiếp", vài giây (≤ 8 chữ, chạm để xem hết), không che tên màn hình hay nội dung đang làm.
+- Nút "?" trên đầu và dòng gợi ý đủ 44 px.
+- Bảng cỡ chữ 4 bậc và bảng khoảng cách (`--fs-*`, `--sp-*`).
+- Có công tắc tắt: Cài đặt → Giao diện → "Giao diện gọn" (Tự động / Bật / Tắt), hoặc tắt cho mọi người bằng `MNL_CLEAN_UI=off` trên máy chủ.
+- Máy chủ báo trước thêm cho chùa (xếp việc, xếp chỗ), cơm tấm (dĩa chưa xới cơm) và photobooth (hết khung, hết bao kiếng, chọn quá số tấm).
+- Đợt 1 bớt chữ, 10 màn nhiều chữ nhất: thông cống, cơm tấm, hải đăng, gác chắn tàu, trà đá, bảo mẫu, phở, chùa, tổng đài cứu hộ, giúp việc. Mỗi màn còn 17–30 chữ (trước 47–131). Lời giải thích, mô tả đồ nghề và chuyện dẫn được chuyển vào nút "?". Mọi manh mối quyết định đúng sai vẫn hiện ngay trên màn: lời khách, sổ hẹn (mỗi nhà một dòng), hướng tàu, ghi chú giao ca ("đừng cho", "nhắc khéo"), mẹo của việc bẫy ở chùa ("Mở loa ra đường 4h"), chỗ lấn đường ở quán trà đá, quy tắc nước cơm tấm, giờ tắt đèn +15′.
+- Không đổi bản lưu, không thêm bảng, không đổi cách sinh việc.
 
 # v1.9.5 — 2026-10-06/07
 

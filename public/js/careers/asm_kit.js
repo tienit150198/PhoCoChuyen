@@ -8,6 +8,8 @@
  * Pure string builders plus pinTop(root), which keeps the pin under the sticky header (and under the
  * money chip that hangs off it), and asmActions (spread into a career's actions: the pin folds to one line). */
 
+import {headChip} from '../ui-kit.js';
+
 const MARK={true:'✓',false:'✗',null:''};
 
 const stepText=step=>step?`${step.label}${step.note?` · ${step.note}`:''}`:'';
@@ -35,7 +37,9 @@ export function reqPin(x,{title='Khách cần',sub='',chips=[],tabs='',key='',ne
   const head=key
     ?`<button type="button" class="asm-pin-head asm-fold" data-action="car:asmFold" data-key="${x.esc(key)}" aria-expanded="${!folded}" title="${folded?'Mở phiếu khách':'Thu gọn phiếu khách'}">${inner}<i class="asm-fold-ico" aria-hidden="true">${folded?'▾':'▴'}</i></button>`
     :`<p class="asm-pin-head">${inner}</p>`;
-  return `<section class="asm-pin${folded?' folded':''}" aria-label="${x.esc(title)}">${head}
+  // Clean layout (phones): the card scrolls with the work and this chip in the sheet header opens it (ui-kit headChip).
+  const hchip=headChip('🧾',need.length?`${done}/${need.length}`:title,'.asm-pin',{label:`${title}: ${done}/${need.length} xong`,tone:bad?'bad':need.length&&done===need.length?'ok':''});
+  return `${hchip}<section class="asm-pin${folded?' folded':''}" aria-label="${x.esc(title)}">${head}
     ${folded?'':`<ul class="asm-chips">${chips.map(chip).join('')}</ul>`}${tabs}</section>`;
 }
 

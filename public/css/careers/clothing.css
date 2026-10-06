@@ -232,11 +232,7 @@
 .career-job.ao .till .btn{min-height:44px}
 
 /* The one next-step button rides at the bottom of the sheet. */
-.career-job.ao .ao-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--ao-r);
-  background:var(--ao-s1);border:1px solid var(--ao-line);box-shadow:0 -6px 18px rgb(40 30 80 / 12%)}
-.career-job.ao .ao-bar .btn{flex:1 1 auto;min-height:48px}
-.career-job.ao .ao-bar .gd-ctas{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
-.career-job.ao .ao-bar .gd-alt{margin:0;align-self:center}
+/* The bar itself is the shared .ui-bar (app.css 27e, ui-kit.js actBar); only its own content is styled here. */
 
 @media (max-width:420px){
   .career-job.ao .card{padding:12px}
@@ -280,8 +276,6 @@
 .career-job.ao .ao-chip.want{border-color:var(--ao-violet)}
 .career-job.ao .ao-swatch.want{border-color:var(--ao-violet)}
 .career-job.ao .ao-swatch small{color:var(--ao-muted);font-weight:600}
-.career-job.ao .ao-bar{flex-wrap:wrap}
-.career-job.ao .ao-bar>.asm-next{flex:1 1 100%}
 /* Tap targets ≥ 44 px: the order slip's fold header, its tappable chips (asm_kit) and the size chart fold. */
 .career-job.ao button.asm-pin-head,.career-job.ao button.asm-chip{min-height:44px}
 .career-job.ao .fold>summary{min-height:44px;padding-top:11px;padding-bottom:11px}

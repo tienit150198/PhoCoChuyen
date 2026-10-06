@@ -12,10 +12,10 @@
 import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,shopSummary,patience,openTasks} from './food_kit.js';
 import {splitMai} from './tomorrow_kit.js';
 import {reqList,fold} from '../ui-kit.js';
-import {nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight,stepLine} from '../v4/guide.js';
+import {nextHint,stepBar,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
 import {lockChip} from './stage_fold.js';
-import {reqPin,nextLine,stepper,pinTop,asmActions,finalStep} from './asm_kit.js';
+import {reqPin,stepper,pinTop,asmActions,finalStep} from './asm_kit.js';
 
 const METER_SCALE=20;   // seconds shown on the soak / foam bars
 const VALUE_SCALE=1.2;  // value bar runs to 120% of the budget
@@ -676,7 +676,9 @@ function finalFor(t,x,S){
   if(deliver(t)&&x.ui.slot)payload.slot=x.ui.slot;
   const q=deliver(t)?`Giao lúc ${slotName(x,x.ui.slot||n.delivery||'')}? Người nhận sẽ xem kỹ hoa, thiệp và màu sắc.`:'Khách sẽ xem kỹ hoa, thiệp và màu sắc.';
   return {label:deliver(t)?'🛵 Giao hoa':'💐 Trao hoa cho khách',go:finalGo(S,'fl_deliver',payload,{question:q,confirm:true}),ready:made&&slot&&!blocked,
-    why:blocked?'xử lý chuyện bất ngờ trước':!made?'cắm, gói xong bó hoa':'chọn khung giờ giao'};
+    why:blocked?'xử lý chuyện bất ngờ trước':!made?'cắm, gói xong bó hoa':'chọn khung giờ giao',
+    // The server's pre-check (florist.py _deliver_rules, the rules fl_deliver refuses with): its reason and fix win.
+    can:blocked||!slot?undefined:t.can?.fl_deliver};
 }
 /* The bench follows the guide: after a tap on the hint, the bottom button or a step row, the next
  * render shows the tab of the next step. A tap on the bench's own controls (a flower tile, a tab)
@@ -764,8 +766,8 @@ export default {
     // One bottom button (phone and wide): it does the next step, or the hand-off once nothing is left.
     // Right above it, what is on the bench now, so the result of each tap shows next to the button.
     const n=pending(S),heads=w.stems.slice(0,14).map(s=>glyph(x,s.i)).join('')+(w.stems.length>14?`<small>+${w.stems.length-14}</small>`:'');
-    const now=`<div class="fl-bar-now">${heads?`<span class="fl-bar-stems" aria-hidden="true">${heads}</span>`:''}${nextLine(x,n,g.final?.ready!==false?'Đủ rồi · trao cho khách':'')}<b class="fl-bar-n">${done}/${S.length}</b></div>`;
-    const bar=`<div class="fk-bar fl-bar">${now}${ui.flBusy?stepCta(x,[BUSY],g.final):stepCta(x,S,g.final)}</div>`;
+    const now=heads?`<div class="fl-bar-now"><span class="fl-bar-stems" aria-hidden="true">${heads}</span></div>`:'';
+    const bar=stepBar(x,ui.flBusy?[BUSY]:S,g.final,{cls:'fk-bar fl-bar',top:now,note:S.length?`<b class="fl-bar-n">${done}/${S.length} ✓</b>`:''});
     // Shop care (water, pre-orders) waits below the order: the order on the bench comes first.
     return `<div class="career-job fl food">${top(g)}${extras(x)}${ticket(t,x,g.K)}${pin(t,x,g.K,tabBar,n||finalStep(g.final))}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${careFold(x)}${bar}</div>`;
   },

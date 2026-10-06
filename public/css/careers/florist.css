@@ -302,7 +302,7 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
 /* Next-step guide: one bottom button on every width (it does the next step, then the hand-off) */
 /* min-width:0 + a zero-width status line: the bar never widens the sheet (a squeezed bar once
    pushed its text into one word per line) */
-.career-job.fl .fk-bar.fl-bar{display:flex;flex-direction:column;align-items:stretch;gap:6px;padding:8px 10px;min-width:0}
+/* The bar itself is the shared .ui-bar (app.css 27e, ui-kit.js actBar); only its own content is styled here. */
 .career-job.fl .fl-bar-now{display:flex;align-items:center;gap:8px;min-width:0;min-height:22px}
 .career-job.fl .fl-bar-stems{display:flex;flex:none;max-width:48%;overflow:hidden;font-size:16px;line-height:1}
 .career-job.fl .fl-bar-stems small{font-size:.75rem;font-weight:800;align-self:center;margin-left:2px}
@@ -320,8 +320,6 @@ html.reduce-motion .career-job.fl .fl-fill{transition:none}
 .career-job.fl .fl-qty .fl-seg{min-width:44px;padding:8px 10px;font-size:.9rem;font-weight:800}
 /* Tap targets: folds are at least 44px tall (req rows already are) */
 .career-job.fl details>summary{min-height:44px;cursor:pointer}
-.career-job.fl .fl-bar>.btn,.career-job.fl .fl-bar>.gd-ctas{flex:1 1 auto;min-width:0;width:100%}
-.career-job.fl .fl-bar .btn.gd-cta,.career-job.fl .fl-bar .gd-final{min-height:48px}
 .career-job.fl .fl-bar [data-fl-count]{font-variant-numeric:tabular-nums}
 .career-job.fl .fl-suggest{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:6px 0 0}
 .career-job.fl .fl-suggest small{flex:1 1 200px;min-width:0;font-style:italic;color:var(--ink-2,var(--muted));line-height:1.4}

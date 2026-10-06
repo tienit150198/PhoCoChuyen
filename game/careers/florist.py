@@ -1000,17 +1000,25 @@ def _record_slips(c: dict, t: dict, made: list, slot: str | None, pl: dict) -> l
     return faulty
 
 
+def _deliver_rules(t: dict, need=kit.need) -> None:
+    """The order on the bench must be finished (every piece of a set) before the hand-off. fl_deliver refuses with
+    these; public_task sends them as can.fl_deliver, so the button is dimmed with this reason before the tap."""
+    many = _is_set(t)
+    pieces, cur, w = t['pieces'], t['cur'], t['work']
+    if not many or pieces[cur] is None:
+        why = _unfinished(_spec(t), w)
+        need(not why, (f'Món {cur + 1}: ' if many else '') + (why or ''), fix=dict(act='car:tab', data=dict(tab='design'), label='💐 Cắm & gói'))
+    if many:
+        missing = [str(i + 1) for i, x in enumerate(pieces) if x is None and i != cur]
+        need(not missing, 'Còn món ' + ', '.join(missing) + ' chưa xong. Làm xong từng món rồi giao cả bộ nhé.')
+
+
 def _deliver(s: dict, c: dict, d: dict, pl: dict, t: dict, p: dict) -> dict:
     kit.confirm(p, 'Xác nhận giao hoa.')
     n = t['needs']
     many = _is_set(t)
     pieces, cur, w = t['pieces'], t['cur'], t['work']
-    if not many or pieces[cur] is None:
-        why = _unfinished(_spec(t), w)
-        kit.need(not why, (f'Món {cur + 1}: ' if many else '') + (why or ''))
-    if many:
-        missing = [str(i + 1) for i, x in enumerate(pieces) if x is None and i != cur]
-        kit.need(not missing, 'Còn món ' + ', '.join(missing) + ' chưa xong. Làm xong từng món rồi giao cả bộ nhé.')
+    _deliver_rules(t)
     ev = FS.open_event(pl)
     kit.need(not ev, 'Có chuyện cần bạn quyết trước: ' + (EVENT_INDEX[ev['id']]['title'] if ev else '') + '.')
     slot = None
@@ -1245,6 +1253,7 @@ def public_task(t: dict) -> dict:
         v['card_tone'] = None
         v['quoted_price'] = None
         return v
+    v['can'] = dict(fl_deliver=kit.check(_deliver_rules, v))
     n = v['needs']
     v['card_tone'] = card_tone(n['occasion'], v['work']['card'])
     n['deliver'] = bool(n['delivery'])

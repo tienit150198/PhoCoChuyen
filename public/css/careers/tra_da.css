@@ -149,9 +149,7 @@
 .career-job.td .till .btn{min-height:44px}
 
 /* ---------- next-step bar */
-.career-job.td .td-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:8px 12px 10px;border-radius:var(--td-rs);
-  background:var(--td-surface);border:1px solid var(--td-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
-.career-job.td .td-bar .btn{width:100%;min-height:48px}
+/* The bar is the shared .ui-bar (app.css 27e, ui-kit.js actBar); .td-bar is only a hook now. */
 
 @media (max-width:720px){
   :where(.career-job.td) :where(.workbench){grid-template-columns:1fr}
@@ -194,3 +192,12 @@
   .career-job.td .td-drinks .td-tile,.career-job.td .td-snacks .td-tile{padding:6px 4px;min-height:64px}
   .career-job.td .td-drinks .td-tile b,.career-job.td .td-snacks .td-tile b{font-size:.8rem;overflow-wrap:anywhere}
 }
+
+/* Short intro (UI foundation): name + "?", three icon rows (app.css .ui-rows). */
+.career-job .td-intro-head{display:flex;align-items:center;gap:var(--sp-2)}
+.career-job .td-intro-head h3{flex:1 1 auto;margin:0;font-size:var(--fs-4)}
+.career-job .td-intro-rows{margin:var(--sp-3) 0;gap:var(--sp-2)}
+.career-job .td-intro-rows li{align-items:center;min-height:44px;padding:var(--sp-1) var(--sp-3);border-radius:12px;background:var(--surface-2);font-size:var(--fs-3);font-weight:700}
+.career-job .td-intro-rows li>span{font-size:22px;width:28px}
+/* The bar already starts the job: no second "Vào việc thôi!" on the card. */
+.career-job:has(.td-bar [data-command="td_intro"]) .td-intro-go{display:none}

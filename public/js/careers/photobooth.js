@@ -10,6 +10,7 @@ import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import {data,cc,lower,tile,act,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
 import * as PF from '../v4/photo-frames.js';
+import {whyAttrs,withWhy} from '../ui-kit.js';
 
 const PK=(x,k)=>(cc(x).pkgs||{})[k]||{name:k,emoji:'🎞️',shots:4,paper:'giay_dai',sleeves:1};
 const NAME=(x,table,k)=>(cc(x)[table]||{})[k]||k;
@@ -151,8 +152,9 @@ function pickPanel(t,x){
   const shots=t.shots||[],k=kOf(x,t),pick=t.pick||[],de=t.deco||{},locked=!!t.trim;
   if(!shots.length)return `<section class="card pb-pick"><p class="small muted">Chưa chụp tấm nào. Sang ② Chụp trước nhé.</p></section>`;
   const said=t.want?`<p class="pb-said">💬 Khách chọn: <b>tấm ${t.want.map(i=>i+1).join(', ')}</b></p>`:`<p class="small muted">Mời khách xem màn hình (② Chụp → “Cho khách xem ảnh”) để khách chọn.</p>`;
-  const grid=`<ol class="pb-grid">${shots.map((s,i)=>{const at=pick.indexOf(i);
-    return `<li><button type="button" class="pb-pickbtn ${at>=0?'on':''}" data-command="pb_pick" data-payload="${x.esc(JSON.stringify({task:t.id,i}))}" aria-pressed="${at>=0}"${locked?' disabled':''}>${shotCanvas(x,t,i)}<span class="pb-num">${i+1}</span>${at>=0?`<span class="pb-order">${at+1}</span>`:''}<small class="tag ${Q_TAG[s.q]?.[0]==='ok'?'green':'red'}">${Q_TAG[s.q]?.[1]||''}</small></button></li>`;}).join('')}</ol>`;
+  const full=t.can?.pb_pick;   // the server's pre-check (photobooth.py _pick_rules): one more shot for the package?
+  const grid=`<ol class="pb-grid">${shots.map((s,i)=>{const at=pick.indexOf(i),why=at<0&&!locked?whyAttrs(full):'';
+    return `<li><button type="button" class="pb-pickbtn ${at>=0?'on':''}${why?' is-why':''}" data-command="pb_pick" data-payload="${x.esc(JSON.stringify({task:t.id,i}))}" aria-pressed="${at>=0}"${locked?' disabled':''}${why}>${shotCanvas(x,t,i)}<span class="pb-num">${i+1}</span>${at>=0?`<span class="pb-order">${at+1}</span>`:''}<small class="tag ${Q_TAG[s.q]?.[0]==='ok'?'green':'red'}">${Q_TAG[s.q]?.[1]||''}</small></button></li>`;}).join('')}</ol>`;
   const stickers=Object.entries(cc(x).stickers||{}).map(([k,v])=>{const on=(de.st||[]).includes(k),p=PF_ITEM(PF.STICKERS,k);
     return x.cmd(`<span aria-hidden="true">${x.esc(p.emoji)}</span> ${x.esc(v)}`,'pb_sticker',{task:t.id,st:k},`small pb-st ${on?'primary':'ghost'}`,locked).replace('<button ',`<button aria-pressed="${on}" `);}).join('');
   const date=`<div class="segmented pb-date" role="group" aria-label="Ngày tháng">${x.cmd('📅 Có ngày','pb_date',{task:t.id,on:true},`small ${de.date?'primary':'ghost'}`,locked)}${x.cmd('Không ghi ngày','pb_date',{task:t.id,on:false},`small ${de.date?'ghost':'primary'}`,locked)}</div>`;
@@ -176,8 +178,9 @@ function printPanel(t,x){
   const print=t.trim?'':pr?(changed?x.confirmCmd('🖨️ In lại theo chỉnh mới','pb_print',{task:t.id},'In lại? Tờ ảnh vừa in bỏ đi, tiệm chịu tiền giấy.','pb-print-go',!ready):'')
     :x.cmd('🖨️ In ảnh','pb_print',{task:t.id},'primary pb-print-go',!ready||!d.ribbon);
   const trim=pr&&!t.trim?x.cmd(pr.pkg==='big'?'🪵 Lồng vào khung gỗ':pr.pkg==='double'?'✂️ Cắt đôi, bỏ 2 bao kiếng':'✂️ Cắt rìa, bỏ bao kiếng','pb_trim',{task:t.id},'primary pb-trim'):'';
+  const trimBtn=pr&&!t.trim?withWhy(trim,data(x).can?.pb_trim?.[pr.pkg]):trim;   // photobooth.py _trim_rules: frame, sleeves
   const ribbon=!d.ribbon?`<p class="notice small">Máy in hết mực. ${x.cmd('🖨️ Thay cuộn mực','pb_ribbon',{},'small',!stockOf(x,'muc'))}</p>`:'';
-  return `<section class="card pb-printer"><h4>🖨️ Máy in & bàn cắt</h4>${ribbon}${big}${ink}<div class="sk-row pb-print-row">${print}${trim}</div>
+  return `<section class="card pb-printer"><h4>🖨️ Máy in & bàn cắt</h4>${ribbon}${big}${ink}<div class="sk-row pb-print-row">${print}${trimBtn}</div>
     ${!ready&&!pr?`<p class="small muted">Chọn đủ ${k} tấm ở ③ trước khi in.</p>`:''}</section>`;
 }
 

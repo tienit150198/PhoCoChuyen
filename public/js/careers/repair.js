@@ -2,11 +2,11 @@
  * Server decides every result (readings, quote reply, final test, used-part luck, money).
  * Local state here is only what the player is ticking before sending, and which step tab is open.
  * Phone first: one step panel at a time, one primary button per panel. */
-import {reqList,fold} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,highlight,stepLine} from '../v4/guide.js';
+import {reqList,fold,actBar} from '../ui-kit.js';
+import {stepRows,nextHint,stepBar,finalGo,pending,firstTime,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
 import {tomorrowCard} from './tomorrow_kit.js';
-import {reqPin,nextLine,pinTop,asmActions,finalStep} from './asm_kit.js';
+import {reqPin,pinTop,asmActions,finalStep} from './asm_kit.js';
 const STEPS=['Nhận máy','Đo kiểm','Báo giá','Sửa','Bàn giao'];
 const MODE={live:'cấp điện',open:'mở máy',any:'đo ngoài'};
 
@@ -588,11 +588,12 @@ function lastResult(t,x){
     return `${ts.emoji} ${ts.name}: ${r.reading}${left>1?` · còn ${left} khả nghi`:''}`;}
   return '';
 }
+/** The shared bottom bar (ui-kit actBar via guide stepBar): the last reading on top, the next step and the one
+ * main button in one row. */
 function bar(g,x,t){
   const n=pending(g.steps),last=t?lastResult(t,x):'',head=last?`<p class="rp-bar-last" aria-live="polite">${x.esc(last)}</p>`:'';
-  if(!g.final&&(!n||!n.go))return n?`<div class="rp-bar">${head}<p class="rp-bar-why">${x.esc(n.label)}</p></div>`:'';
-  const line=t&&t.known?nextLine(x,n,g.final?.ready!==false?'Đủ rồi · bấm nút dưới':''):'';
-  return `<div class="rp-bar">${head}${line}${stepCta(x,g.steps,g.final||{label:'',go:null,ready:false})}</div>`;
+  if(!g.final&&(!n||!n.go))return n?actBar({top:head,next:`<span class="ui-note rp-bar-why">${x.esc(n.label)}</span>`,cls:'rp-bar'}):'';
+  return stepBar(x,g.steps,g.final,{cls:'rp-bar',top:head});
 }
 let shownStage='';
 

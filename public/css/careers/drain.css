@@ -94,3 +94,7 @@
 .pk-more>summary::after{content:"▸";margin-left:auto;color:var(--muted);font-weight:400}
 .pk-more[open]>summary::after{content:"▾"}
 .pk-lines{margin:8px 0 0;padding-left:18px}
+
+/* Clean layout: the appointment book as one line per client (the place as its icon + the job). */
+.career-job.cg .cg-booklines{list-style:none;margin:var(--sp-2) 0;padding:0;display:flex;flex-wrap:wrap;gap:var(--sp-1) var(--sp-2)}
+.career-job.cg .cg-booklines>li{display:inline-flex;align-items:center;gap:var(--sp-1);min-height:32px;padding:2px var(--sp-2);border-radius:var(--radius-pill);background:var(--surface-2);font-size:var(--fs-2);font-weight:700}

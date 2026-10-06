@@ -6,7 +6,7 @@
  * The server decides everything; one tap sends one command. */
 import {nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,pane,notesPage,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,tile} from './street_kit.js';
+import {data,cc,pane,notesPage,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,tile,tip,clean,few} from './street_kit.js';
 
 const steps=t=>t.needs?.steps||[];
 const cur=t=>steps(t)[t.at]||null;
@@ -21,16 +21,30 @@ function notebook(x,auto=false){
 }
 
 /* ------------------------------------------------------------ the job card */
+/** Chores in a few words that keep what makes them right or wrong ("Mở loa ra đường 4h"). Not listed: in full. */
+const PG_WORD={
+  'Thức dậy lúc 4 giờ, rửa mặt':'Thức dậy','Thỉnh chuông sáng, chậm và đều':'Thỉnh chuông sáng','Công phu sáng trong chánh điện':'Công phu sáng',
+  'Quét sân':'Quét sân','Điểm tâm cùng mọi người':'Điểm tâm','Mở loa ra đường đọc kinh từ 4 giờ sáng':'Mở loa ra đường 4h',
+  'Lau lại bằng khăn ẩm vắt thật kiệt':'Lau khăn ẩm vắt kiệt','Bày lại hoa, đèn như cũ':'Bày lại như cũ','Khóa cửa hông cho khỏi ồn':'Khóa cửa hông',
+  'Trải chiếu, kê ghế cho người già ở hàng đầu':'Ghế người già hàng đầu','Chụp ảnh từng người nhận cơm đăng lên mạng':'Chụp người nhận đăng mạng',
+  'Dập bằng bình chữa cháy hoặc khăn ướt':'Dập bằng bình, khăn ướt','Dời đèn cầy, lư nhỏ sang bàn bên':'Dời đèn, lư sang bên',
+  'Gom lá đốt ngay góc sân cho gọn':'Đốt lá góc sân','Gỡ lá phướn khỏi móc, kéo xuống đất':'Gỡ phướn, kéo xuống đất',
+  'Mời mọi người xếp hàng, cụ già và trẻ nhỏ lên trước':'Xếp hàng, cụ già trước','Hô mọi người lùi ra xa':'Hô lùi ra xa','Hốt lá vào sọt':'Hốt lá vào sọt',
+  'Phủi bụi từ trên xuống bằng chổi lông, khăn khô':'Phủi bụi trên xuống','Quét, lau chánh điện':'Quét, lau chánh điện','Thử loa vừa đủ nghe trong sân':'Loa vừa đủ trong sân',
+  'Chừa lối đi giữa và lối ra cửa hông':'Chừa lối đi, cửa hông','Nhặt vỏ chai, giấy, túi ni-lông':'Nhặt rác','Mời thêm ly nước, chỉ chỗ ngồi trong bóng mát':'Mời nước, chỗ mát',
+  'Quét lá từ hiên ra phía cổng':'Quét hiên ra cổng','Phát từng suất, hai tay đưa':'Phát suất, hai tay','Tạt xô nước vào ổ điện bên cạnh cho chắc':'Tạt nước vào ổ điện',
+  'Rửa tay, đeo khẩu trang':'Rửa tay, khẩu trang','Đứng lên bàn thờ cho với tới':'Đứng lên bàn thờ','Tưới hàng cau, chậu kiểng':'Tưới cau, kiểng',
+  'Chắp tay xá trước khi lau':'Xá trước khi lau','Xem kỹ còn tàn lửa âm ỉ không':'Xem còn tàn lửa'};
 function ticket(t,x){
   if(!t.known)return askCard(x,t,'👂 Nghe dặn');
   const tag=`<span class="tag pg-kind">${x.esc(kindEmoji(x,t.kind))} ${x.esc(kindLabel(x,t.kind))}</span>`;
-  return person(x,t,`<p class="muted small">${x.esc(t.opening)}</p>`,tag);
+  return person(x,t,clean()&&t.kind==='setup'?tip(x.esc(t.opening),'','p'):`<p class="muted small">${x.esc(t.opening)}</p>`,clean()?'':tag);
 }
 function progress(t,x){
   const ss=steps(t);if(ss.length<2)return '';
   const done=new Set(t.closed||[]),skip=new Set(t.skipped||[]);
   return `<ol class="pg-progress" aria-label="Các bước">${ss.map((s,i)=>{const st=done.has(s.id)?'done':skip.has(s.id)?'skip':i===t.at?'now':'';
-    return `<li class="${st}" title="${x.esc(s.title)}"><span aria-hidden="true">${st==='done'?'✓':st==='skip'?'–':TYPE_ICON[s.type]||'•'}</span><small>${x.esc(s.title)}</small></li>`;}).join('')}</ol>`;
+    return `<li class="${st}" title="${x.esc(s.title)}" aria-label="${x.esc(s.title)}"><span aria-hidden="true">${st==='done'?'✓':st==='skip'?'–':TYPE_ICON[s.type]||'•'}</span>${clean()?'':`<small>${x.esc(s.title)}</small>`}</li>`;}).join('')}</ol>`;
 }
 function linesCard(t,x){
   const ls=t.lines||[];if(!ls.length)return '';
@@ -58,8 +72,9 @@ function orderStep(t,x,s){
   const got=t.work?.[s.id]||[],by=Object.fromEntries(s.items.map(i=>[i.id,i]));
   const seq=got.map((id,k)=>{const i=by[id];const last=k===got.length-1;
     return `<li><b>${k+1}</b><span aria-hidden="true">${x.esc(i.emoji)}</span><span class="grow">${x.esc(i.name)}</span>${last?x.cmd('↩︎','chua_seq',{task:t.id,item:id},'ghost small pg-undo',false):''}</li>`;}).join('');
-  const left=s.items.filter(i=>!got.includes(i.id)).map(i=>tile(x,'chua_seq',{task:t.id,item:i.id},`<span class="tile-emoji">${x.esc(i.emoji)}</span><b>${x.esc(i.name)}</b>`,`pg-i-${i.id}`)).join('');
+  const left=s.items.filter(i=>!got.includes(i.id)).map(i=>tile(x,'chua_seq',{task:t.id,item:i.id},`<span class="tile-emoji">${x.esc(i.emoji)}</span><b>${x.esc(clean()&&PG_WORD[i.name]||i.name)}</b>${clean()?tip(x.esc(i.name),'','small'):''}`,`pg-i-${i.id}`).replace('<button ',`<button aria-label="${x.esc(i.name)}" `)).join('');
   const n=orderNeed(s);
+  if(clean())return `${got.length?`<ol class="pg-seq">${seq}</ol>`:tip('Chạm việc làm trước tiên.','','p')}${left?`<div class="tile-grid pg-left">${left}</div>`:''}<p class="small muted pg-count" aria-live="polite" aria-label="Đã xếp ${got.length}/${n}">🔢 ${got.length}/${n}</p>`;
   return `${got.length?`<ol class="pg-seq">${seq}</ol>`:'<p class="small muted">Chạm việc làm trước tiên.</p>'}${left?`<div class="tile-grid pg-left">${left}</div>`:''}<p class="small muted pg-count" aria-live="polite">Đã xếp ${got.length}/${n}${got.length<n?` · còn ${n-got.length} việc nữa mới xong`:''}.</p>`;
 }
 function chooseStep(t,x,s){
@@ -75,7 +90,7 @@ function tallyStep(t,x,s){
 function stepCard(t,x){
   const s=cur(t);if(!s)return '';
   const body={pick:pickStep,sort:sortStep,order:orderStep,choose:chooseStep,tally:tallyStep}[s.type]?.(t,x,s)||'';
-  return `<section class="card pg-step pg-${s.type}" data-step="${x.esc(s.id)}"><h4>${TYPE_ICON[s.type]||''} ${x.esc(s.title)}</h4>${s.lead?`<p class="small muted pg-lead">${x.esc(s.lead)}</p>`:''}${body}</section>`;
+  return `<section class="card pg-step pg-${s.type}" data-step="${x.esc(s.id)}">${clean()&&steps(t).length>1?'':`<h4>${TYPE_ICON[s.type]||''} ${x.esc(s.title)}</h4>`}${s.lead?(clean()?tip(x.esc(s.lead),s.title,'p'):`<p class="small muted pg-lead">${x.esc(s.lead)}</p>`):''}${body}</section>`;
 }
 
 /* ------------------------------------------------------------ the guide */
@@ -86,7 +101,7 @@ function stepGuide(t,x){
   if(s.type==='pick')return {steps:[],final:{label:x.esc(s.go),go:{cmd:'chua_close',payload:{task:t.id}},ready:true}};
   if(s.type==='sort'){const got=t.work?.[s.id]||{},miss=s.items.find(i=>!got[i.id]);
     const steps=miss?[row(`Xếp chỗ cho ${miss.name}`,{sel:'.pg-sorts',label:`👉 Xếp ${x.esc(miss.name)}`},'')]:[];
-    return {steps,final:{label:x.esc(s.go),go:finalGo(steps,'chua_close',{task:t.id}),ready:!miss,why:'xếp hết mọi thứ'}};}
+    return {steps,final:{label:x.esc(s.go),go:finalGo(steps,'chua_close',{task:t.id}),ready:!miss,why:'xếp hết mọi thứ',can:t.can?.chua_close}};}
   if(s.type==='order'){const got=t.work?.[s.id]||[];
     // The first morning thầy Huệ Minh shows the order (s.tip): the next one glows.
     const tip=Array.isArray(s.tip)?s.tip.find(id=>!got.includes(id)):null,name=tip&&s.items.find(i=>i.id===tip)?.name;
@@ -95,7 +110,7 @@ function stepGuide(t,x){
     // Ready only at k/n, exactly when the server takes the sequence (live 06/10: 68 refusals “Còn việc chưa xếp”).
     const n=orderNeed(s),k=got.length;
     if(!steps.length&&k<n)steps.push(row(`Xếp thêm ${n-k} việc (đã xếp ${k}/${n})`,{sel:'.pg-left',label:'👉 Chạm việc tiếp theo'},''));
-    return {steps,final:{label:x.esc(s.go),go:finalGo(steps,'chua_close',{task:t.id}),ready:k>=n,why:`xếp đủ ${n} việc (đã xếp ${k}/${n})`}};}
+    return {steps,final:{label:x.esc(s.go),go:finalGo(steps,'chua_close',{task:t.id}),ready:k>=n,why:`xếp đủ ${n} việc (đã xếp ${k}/${n})`,can:t.can?.chua_close}};}
   if(s.type==='choose')return {steps:[row(s.title,{sel:'.pg-opts',label:'👉 Chọn cách làm'},typeof s.tip==='string'?`.pg-opts .pg-o-${s.tip}`:'')],final:null};
   if(s.type==='tally')return {steps:[row('Đếm từng tờ, ghi tổng vào sổ',{sel:'.pg-tally',label:'👉 Đếm tiền công đức'},'')],final:null};
   return {steps:[],final:null};
@@ -124,8 +139,8 @@ export default {
     if(d.desk?.ev||!d.intro||x.ui.intro)return wrap(`${hint}${top(x)}${bottom(x,g)}`);
     if(!t.known)return wrap(`${hint}${top(x)}${ticket(t,x)}${dayBar(x)}${bottom(x,g)}`);
     const n=t.needs||{};
-    const note=n.note?`<p class="small muted pg-note">${x.esc(n.note)}</p>`:'';
-    return wrap(`${hint}${top(x)}${ticket(t,x)}${progress(t,x)}${stepCard(t,x)}${linesCard(t,x)}${note}${notebook(x)}${dayBar(x)}${bottom(x,g)}`);
+    const note=n.note?(clean()?tip(x.esc(n.note),'','p'):`<p class="small muted pg-note">${x.esc(n.note)}</p>`):'';
+    return wrap(`${hint}${top(x)}${ticket(t,x)}${progress(t,x)}${stepCard(t,x)}${linesCard(t,x)}${note}${clean()?'':notebook(x)}${dayBar(x)}${bottom(x,g)}`);
   },
   idle(x){
     const d=data(x);

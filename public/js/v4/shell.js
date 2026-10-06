@@ -31,9 +31,27 @@ export function applyLayout(){
   const turn=window.innerWidth>window.innerHeight?'landscape':'portrait';
   if(!(mode==='phone'&&root.dataset.orientation&&typing()&&(window.screen?.orientation?.type||'').startsWith(root.dataset.orientation)))root.dataset.orientation=turn;
   if(root.dataset.layout!==mode){root.dataset.layout=mode;window.dispatchEvent(new Event('layoutchange'));}
+  applyClean();
   return mode;
 }
 export const layoutPref=read;
+
+/* ---- Clean UI switch ("gọn hơn, clean hơn, ít chữ hơn"; docs/UI_KIT.md) ------------------------------------
+ * html[data-clean] turns on the phone-first layout of the shared kit: header chips instead of pinned cards, notes
+ * under the header. Player: Cài đặt → Giao diện → "Giao diện gọn" (Tự động = phones only, Bật = every screen
+ * size, Tắt). Server kill switch for everyone: MNL_CLEAN_UI=off (bootstrap `ui.clean`), kept in storage so the
+ * next first frame already knows. */
+const CLEAN_KEY='mnl.clean',CLEAN_SRV='mnl.clean.srv';
+export const cleanPref=()=>{try{return localStorage.getItem(CLEAN_KEY)||'auto';}catch{return 'auto';}};
+let cleanServer=true;
+try{cleanServer=localStorage.getItem(CLEAN_SRV)!=='off';}catch{/* storage blocked */}
+export function applyClean(){
+  const root=document.documentElement,pref=cleanPref();
+  const on=cleanServer&&(pref==='on'||(pref==='auto'&&root.dataset.layout==='phone'));
+  if(root.hasAttribute('data-clean')!==on)root.toggleAttribute('data-clean',on);
+}
+export function setCleanPref(v){try{localStorage.setItem(CLEAN_KEY,['auto','on','off'].includes(v)?v:'auto');}catch{/* storage blocked */}applyClean();}
+export function setCleanServer(on){cleanServer=on!==false;try{localStorage.setItem(CLEAN_SRV,cleanServer?'on':'off');}catch{/* storage blocked */}applyClean();}
 
 /* ---- On-screen keyboard (WP8) ----------------------------------------------
  * html.kb-open while a text field is focused and the keyboard takes the screen: the visual viewport is under
@@ -136,6 +154,7 @@ export const shell={
   /** The career's identity mark for the scene title card (decorative). */
   mark(m){return `<span class="scene-mark" aria-hidden="true">${emojiOf(m||{})}</span>`;},
   boot(env){
+    if(env.api.uiConfig)setCleanServer(env.api.uiConfig.clean!==false);
     applyLayout();applyTheme(env.api.state.settings);watchViewport();
     let t;window.addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(applyLayout,120);});
     window.addEventListener('orientationchange',()=>setTimeout(applyLayout,200));
@@ -164,6 +183,7 @@ export const shell={
   async action(action,data,el,env){
     switch(action){
       case'v4Layout':setLayoutPref(data.value);env.renderSheet();return true;
+      case'v4Clean':setCleanPref(data.value);env.renderSheet();return true;
       case'v4Menu':document.documentElement.classList.toggle('menu-open');syncMenu();return true;
       case'homeCat':env.ui.homeCat=data.cat;env.renderSheet();return true;
       case'v4Setting':{

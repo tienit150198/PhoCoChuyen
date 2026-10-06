@@ -12,12 +12,12 @@ import {termsSource,T} from './v4/terms.js';
 import {nextStep,lifeNav,guestRibbon,experienceView,extendedJob,experienceSummary,teachTour} from './experience-ui.js';
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
 import {fillToast,toastHead} from './toast-lines.js';
-import {reqList,fold} from './ui-kit.js';
+import {reqList,fold,clean as uiClean,few} from './ui-kit.js';
 import {olderRows,olderButton,loadOlder,syncOlder} from './archive.js';
 import {Sound} from './audio.js';
 import {soundsBoot} from './v4/sounds.js';
 import {dayclockBoot,clockChip,clockAria,clockCard,clockSummary,closingNote,clockStep} from './v4/dayclock.js';  // giờ trong ngày
-import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCareerData,careerContext,startTicker,tickNow,careerSwitchButton} from './v4/careers.js';
+import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCareerData,careerContext,startTicker,tickNow,careerSwitchButton,CSS_KIT} from './v4/careers.js';
 import {applyGuide,guideAction,nextHint,stepCta,plainText,firstTime} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
@@ -199,7 +199,7 @@ function openSheet(view,data={}){$('#sheet').resetGesture?.();if(view!=='job'&&v
 /** "?" of a work screen before the tutorial module has loaded (same markup as tutorial/guide.js helpButton;
  * a tap loads it: TUT_OPEN). Every career's work screen carries it, in the header, next to "Đóng". */
 const helpQ=cid=>`<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(cid||'')}" data-tab="work" aria-label="Hướng dẫn nghề này">?</button>`;
-function header(title,subtitle='',eyebrow='MỘT NGÀY LÀM NGHỀ',extra=''){return `<header class="sheet-head"><div class="grow"><span class="eyebrow">${eyebrow}</span><h2 title="${esc(plainText(title))}">${title}</h2>${subtitle?`<p>${subtitle}</p>`:''}</div>${extra}${ui.view==='job'?(L.tut.m?.guideHelp(career())||helpQ(career())):''}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;}
+function header(title,subtitle='',eyebrow='MỘT NGÀY LÀM NGHỀ',extra=''){const kit=[].concat(CSS_KIT[career()]||[]),short=ui.view==='job'&&uiClean()&&(kit.includes('street_kit')||career()==='tra_da')?esc(few(plainText(title),4)):'';return `<header class="sheet-head"><div class="grow"><span class="eyebrow">${eyebrow}</span><h2 title="${esc(plainText(title))}"${short?` aria-label="${esc(plainText(title))}"`:''}>${short||title}</h2>${subtitle?`<p>${subtitle}</p>`:''}</div>${extra}${ui.view==='job'?(L.tut.m?.guideHelp(career())||helpQ(career())):''}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;}
 function footer(left='',right=''){return `<footer class="sheet-foot"><p>${left}</p><div class="row wrap">${right}</div></footer>`;}
 /** ⋯ in a work sheet's header: the rarely used ways out ("Để lát nữa", "Xem các việc khác") that used to take a
  * whole footer row under the career's action bar. data-auto: every re-render shuts it again. */
