@@ -24,7 +24,7 @@ export const ROWS=[
   [{id:'van_phong',name:'Khu văn phòng',emoji:'🏢',items:['lm:bank','library','accounting','customer_care','corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk']}],
   [{id:'dich_vu',name:'Phố dịch vụ',emoji:'💇',items:['salon','nail','photobooth','pet_care','repair','pharmacy','nurse','clothing','pet_shop','lm:garage']}],
   [{id:'pho_cho',name:'Phố chợ',emoji:'🛒',items:['florist','cafe_bakery','grocery','milk_tea','mother_baby','restaurant','delivery','pho','com']}],
-  [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk']}],
+  [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk','lifeguard']}],
   [{id:'hem',name:'Hẻm nhà',emoji:'🏠',items:['lm:house','homemaker','giupviec','naucom','babysitter','lm:quay','lm:square']}],
 ];
 /** Landmarks: what they open (an existing data-action) and their sign. */
@@ -44,14 +44,14 @@ export const SIGNS={
   accounting:['📒','Kế toán'],customer_care:['🎧','Chăm sóc khách'],corp_accounting:['🧮','Kế toán DN'],tax_payroll:['🧾','Thuế & lương'],group_accounting:['🏢','Tập đoàn'],
   library:['📚','Thư viện'],hr_admin:['🗂️','Nhân sự'],secretary:['📅','Thư ký'],it_helpdesk:['🖥️','IT hỗ trợ'],
   pagoda:['🛕','Chùa'],farm:['🌾','Nông trại'],homestay:['🏡','Homestay'],teacher:['🍎','Lớp học'],tour_guide:['🧭','Du lịch'],pilot:['✈️','Phi công'],flight_attendant:['💺','Tiếp viên'],oil:['🛢️','Dầu khí'],railway:['🚦','Gác chắn'],
-  nurse:['🏥','Bệnh viện'],
+  nurse:['🏥','Bệnh viện'],lifeguard:['🛟','Hồ bơi'],
 };
 const KIND={pagoda:'pagoda',farm:'farm',homestay:'lodge',teacher:'school',library:'school',tour_guide:'kiosk',pilot:'air',flight_attendant:'air',oil:'air',railway:'kiosk',
   tra_da:'cart',fruit:'cart',ice_cream:'cart',garbage:'cart',drain:'cart',homemaker:'house',giupviec:'house',naucom:'house',babysitter:'house',
-  accounting:'office',customer_care:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',hr_admin:'office',secretary:'office',it_helpdesk:'office',nurse:'office',
+  accounting:'office',customer_care:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',hr_admin:'office',secretary:'office',it_helpdesk:'office',nurse:'office',lifeguard:'pool',
   'lm:bank':'bank','lm:garage':'garage','lm:fair':'gate','lm:board':'board','lm:walk':'park','lm:house':'home','lm:quay':'quay','lm:square':'plaza'};
-const WIDE={shop:128,office:128,cart:112,house:124,pagoda:208,farm:196,lodge:142,school:150,kiosk:120,air:156,bank:142,garage:132,gate:152,board:104,park:124,home:132,quay:118,plaza:134};
-const HIGH={shop:150,office:176,cart:122,house:136,pagoda:178,farm:140,lodge:150,school:160,kiosk:124,air:172,bank:160,garage:136,gate:168,board:112,park:118,home:144,quay:126,plaza:118};
+const WIDE={pool:150,shop:128,office:128,cart:112,house:124,pagoda:208,farm:196,lodge:142,school:150,kiosk:120,air:156,bank:142,garage:132,gate:152,board:104,park:124,home:132,quay:118,plaza:134};
+const HIGH={pool:150,shop:150,office:176,cart:122,house:136,pagoda:178,farm:140,lodge:150,school:160,kiosk:124,air:172,bank:160,garage:136,gate:168,board:112,park:118,home:144,quay:126,plaza:118};
 export const kindOf=key=>KIND[key]||'shop';
 
 /** Sizes in town pixels. A row: the band its buildings stand in (FH), then its street (SH). */
@@ -374,7 +374,15 @@ function plaza(c,it,t){
   E(c,cx,G-20,34,12,'#9ec3d0');E(c,cx,G-22,26,8,'#cfe6ee');R(c,cx-4,G-60,8,40,'#d6c4a2',3);E(c,cx,G-62,12,5,'#cfe6ee');
   for(const [px,col] of [[x0+16,'#e2462d'],[x0+w-16,'#f0b44a']]){L(c,px,G-4,px,G-70,'#8a6644',2);P(c,[[px,G-70],[px+18,G-64],[px,G-58]],col);}
 }
-const DRAW={shop,office,house,cart,pagoda,farm,lodge,school,kiosk,air,bank,garage,gate,board,park,home,quay,plaza};
+/** 🛟 The ward's pool: a low white building with a blue roof line, the water and its lane rope in front, the high chair. */
+function pool(c,it,t){
+  const {x0,w,G,h,cx}=it,top=G-h+40;
+  R(c,x0+6,top,w-12,G-top,'#eef7fb',6,'#7fb3c8',2);R(c,x0,top-10,w,14,'#1f8fc4',4);
+  windowAt(c,x0+16,top+14,30,26,t);windowAt(c,x0+w-46,top+14,30,26,t);door(c,cx,G,t,28,48);
+  R(c,x0-8,G-22,w*.36,20,'#7fd0ee',6,'#4fb3dc',1.5);for(let x=x0-2;x<x0+w*.36-12;x+=9)E(c,x+3,G-12,3,2,(Math.floor((x-x0)/9)%2)?'#d6453a':'#ffffff');
+  L(c,x0+w-30,G,x0+w-24,G-56,WOOD_D,3);L(c,x0+w-6,G,x0+w-12,G-56,WOOD_D,3);R(c,x0+w-28,G-62,20,8,WOOD,3);P(c,[[x0+w-34,G-66],[x0+w-18,G-84],[x0+w-2,G-66]],'#d6453a');
+}
+const DRAW={shop,office,house,cart,pagoda,farm,lodge,school,kiosk,air,bank,garage,gate,board,park,home,quay,plaza,pool};
 
 /* ------------------------------------------------------------ what moves */
 /** The live layer, over the cached town: a soft pulse round the lit shops, the bobbing arrow over the suggested
