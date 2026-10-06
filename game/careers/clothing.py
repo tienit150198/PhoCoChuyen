@@ -2036,7 +2036,7 @@ def assist(s: dict, c: dict, e: dict, t: dict | None) -> str | None:
 def hint(c: dict, t: dict) -> str:
     return {
         'fit': 'Nghe khách tả → xem bảng size (form sơ mi ôm: lấy lớn hơn một size so với shop khác) → lấy đúng món, đúng màu → chưa chắc thì mời thử → tính tiền, thối đúng.',
-        'outfit': 'Xem dịp và ngân sách → chọn váy/áo dài hoặc áo + quần, đúng size khách nói → tránh màu kiêng → thêm phụ kiện hợp dịp → tính tiền.',
+        'outfit': 'Xem dịp, ngân sách và lời khách dặn → chọn váy/đầm hoặc áo + quần, đúng size khách nói → tránh màu kiêng → thêm phụ kiện hợp dịp → tính tiền. Lố ngân sách: 💬 trao đổi với khách.',
         'alter': 'Đo trước → tự may (dừng máy đúng vạch xanh) hoặc gửi Bà Tư (chắc ăn, mất 40% công) → tính tiền công.',
         'room': 'Đếm số món khách cầm vào → đưa thẻ số → khách ra thì đếm lại → thiếu: kiểm phòng trước, rồi hỏi khéo → tính tiền cho khách mua.',
         'return': 'Xem tem, hóa đơn, tình trạng đồ → đối chiếu chính sách → hoàn tiền, đổi hoặc từ chối nhẹ nhàng.',
