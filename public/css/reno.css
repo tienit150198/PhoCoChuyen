@@ -10,15 +10,20 @@
 .dc-side{gap:12px}
 .dc-scroll{display:grid;grid-template-columns:30px minmax(0,1fr) 30px;gap:4px;align-items:center;min-width:0;max-width:100%}
 .dc-scroll>[data-dc="scroll"]{min-width:30px;min-height:42px;padding:2px;font-size:24px;line-height:1}
-.dc-scroll>[data-dc-rail]{min-width:0;max-width:100%;scrollbar-width:thin;overscroll-behavior-x:contain}
+.dc-scroll>[data-dc-rail]{min-width:0;max-width:100%;scrollbar-width:thin;overscroll-behavior-x:contain;scroll-padding-inline:8px}
+/* Every rail reaches its last card: room after it (padding-inline-end), a thin scrollbar to grab with a mouse, and the
+   arrows stay live while a command is out (reno.js). */
+.dc-scroll>[data-dc-rail]::after{content:"";flex:0 0 6px}
+.dc-scroll>[data-dc-rail]::-webkit-scrollbar{height:4px}
+.dc-scroll>[data-dc-rail]::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
 
 /* Rooms */
-.rn-rooms{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px}
-.rn-rooms::-webkit-scrollbar{display:none}
+.rn-rooms{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding:2px 2px 4px}
 .rn-room{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font-weight:700;font-size:.9rem;white-space:nowrap;cursor:pointer}
 .rn-room.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
 .rn-room.ok:not(.active){border-color:var(--good);box-shadow:0 0 0 2px var(--good-soft)}
 .rn-room small{min-width:20px;padding:0 6px;border-radius:999px;background:var(--surface-2);color:var(--muted);font-size:.75rem;text-align:center}
+.rn-room small.full{background:var(--warn-soft);color:var(--warn)}
 
 /* The room */
 .dc-roomwrap{position:relative;min-width:0}
@@ -115,11 +120,10 @@
 .dc-seg{flex:1 1 290px;flex-wrap:nowrap;min-width:0}
 .dc-seg>button{min-height:40px}
 .dc-money{flex:none;font-weight:800;color:var(--ink-2);font-size:.9rem}
-.dc-cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
-.dc-cats::-webkit-scrollbar{display:none}
+.dc-cats{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin;padding-bottom:4px}
 .dc-catchip{flex:none;min-height:36px;padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);font:700 .85rem/1.2 var(--font);white-space:nowrap;cursor:pointer}
 .dc-catchip.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.dc-strip{display:flex;gap:8px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;touch-action:pan-x;padding:2px 2px 6px;min-height:150px}
+.dc-strip{display:flex;gap:8px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;touch-action:pan-x;padding:2px 2px 6px;min-height:150px;scroll-padding-inline:8px}
 .dc-buycard{position:relative;flex:none;width:104px;display:grid;justify-items:center;align-content:start;gap:2px;padding:8px 6px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);text-align:center;cursor:grab;scroll-snap-align:start;font:inherit;touch-action:pan-x}
 .dc-buycard b{font-size:.82rem;line-height:1.2;overflow-wrap:anywhere}
 .dc-buycard small{font-size:.75rem;color:var(--muted)}

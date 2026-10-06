@@ -95,3 +95,26 @@
   .hs-market{grid-template-columns:repeat(2,minmax(0,1fr))}
   .hs-facts{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
+
+/* The answer to a tap stays in sight (the list no longer jumps to the top after a command): the flash sticks under the
+   sheet's header (--hs-head: its height, set by house.js). */
+.hs-body>.bk-flash:not(:empty){position:sticky;top:calc(var(--hs-head,96px) + 4px);z-index:5;box-shadow:var(--shadow-sm)}
+
+/* 🧺 Đồ đạc của bạn (v4/home-items.js): every thing owned, fold by fold */
+.hs-inv h3{margin-bottom:4px}
+.hs-inv-fold{border-top:1px solid var(--line);padding:2px 0}
+.hs-inv-fold>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;cursor:pointer;list-style:none}
+.hs-inv-fold>summary::-webkit-details-marker{display:none}
+.hs-inv-fold>summary::after{content:"›";font-size:1.3rem;color:var(--muted);transition:transform .15s}
+.hs-inv-fold[open]>summary::after{transform:rotate(90deg)}
+.hs-inv-fold>summary small{margin-left:auto;color:var(--muted);font-weight:700}
+.hs-inv-room{margin:10px 0 4px;font-size:.9rem;color:var(--ink-2)}
+.hs-inv-room small{color:var(--muted);font-weight:600}
+.hs-inv-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.hs-inv-row{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:12px;background:var(--surface-2,rgba(0,0,0,.04));min-width:0}
+.hs-inv-pic{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--surface);font-size:1.4rem}
+.hs-inv-txt{display:grid;min-width:0}
+.hs-inv-txt b{overflow-wrap:anywhere;line-height:1.25}
+.hs-inv-txt small{color:var(--muted);font-size:.8rem;line-height:1.35;overflow-wrap:anywhere}
+.hs-inv-n,.hs-inv-tag{font-style:normal;font-size:.75rem;padding:0 6px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);white-space:nowrap}
+.hs-inv-tag{background:var(--good-soft);color:var(--good)}

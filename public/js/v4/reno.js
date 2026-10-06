@@ -19,6 +19,7 @@ import * as A from './deco-art.js';
 import {setup as walkSetup} from './home-walk.js';
 import {live} from './live.js';
 import {sharedRooms,ownershipOrder,guestSession} from './home-view.js';
+import {morph,railScroll,railRestore} from './home-morph.js';
 
 const S={dlg:null,env:null,tab:'deco',room:'',edit:false,held:null,sel:'',drawer:'bag',cat:'',busy:false,flash:null,
   undo:[],undoKey:'',press:null,drag:null,dragEnd:0,resetStrip:false,toTop:false,pop:'',cheer:false,photo:null,listening:false,lastLv:-1,
@@ -31,7 +32,8 @@ const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
 const low=s=>String(s||'').slice(0,1).toLowerCase()+String(s||'').slice(1);
 const attrs=o=>Object.entries(o).map(([k,v])=>` data-${k}="${esc(v)}"`).join('');
-const btn=(label,op,data={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-dc="${op}"${attrs(data)}${S.busy?' disabled':''}${extra}>${label}</button>`;
+// The rail arrows (‹ ›) stay live while a command is out: scrolling the drawer changes nothing on the server.
+const btn=(label,op,data={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-dc="${op}"${attrs(data)}${S.busy&&op!=='scroll'?' disabled':''}${extra}>${label}</button>`;
 const J=()=>S.env?.api?.state?.journey||{};
 /* The place you live in, its rooms and pieces (deco.public). 1.4.11: the new rooms (the bathroom, a villa's pool) come
  * as `more` [{t: template, s: skin}] with the templates in the catalogue (`kits`); here they join `rooms`. */
@@ -227,11 +229,13 @@ function checkQ(rm,it,q,list){
   if(list.length>=rm.cap)return {code:'room_full'};
   return null;
 }
+/** The room is full (game/deco.py room_cap): the real number and how to get more room. */
+const roomFull=rm=>`${rm.name} đã bày đủ ${rm.cap} món, mức tối đa của phòng này. Muốn bày thêm: cất bớt món ít dùng vào túi đồ, bày sang phòng khác, hoặc dọn về nhà rộng hơn (phòng càng rộng càng bày được nhiều).`;
 function whyText(bad,rm,it){
   const FX=CD().fix_names||{};
   if(bad.code==='fixture')return `Chỗ này vướng ${FX[bad.f.t]||'chỗ cố định'}.`;
   if(bad.code==='host_full')return 'Trên đó hết chỗ rồi. Đặt chỗ khác nhé.';
-  if(bad.code==='room_full')return `${rm.name} bày đủ ${rm.cap} món rồi. Thu hồi bớt món khác nhé.`;
+  if(bad.code==='room_full')return roomFull(rm);
   if(bad.code==='type')return `${it.name} không hợp đặt ở ${low(rm.name)}.`;
   if(bad.code==='support')return `${it.name} chỉ đặt lên bàn, kệ, giường hoặc sàn trống thôi.`;
   return 'Chỗ này không đặt được.';
@@ -348,13 +352,14 @@ function roomMarkup(rm,opts={}){
     out.push(`<g class="dc-it${sel?' sel':''}${pop?' pop':''}${ghost?' ghost':''}" data-uid="${esc(o.id)}" data-k="${esc(o.k)}"${o.q.on?` data-on="${esc(o.q.on)}"`:''}${frontY(rm,G,o,list)} tabindex="0" role="button" aria-label="${esc(it.name)}"><g class="dc-piece">${body}</g>`
       +`<rect class="dc-hit" x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="6"/>${sel?`<rect class="dc-selbox" x="${bx-3}" y="${by-3}" width="${bw+6}" height="${bh+6}" rx="9"/>`:''}${pop?sparkles(bx,by,bw,bh):''}</g>`);
   }
+  if(all.some(o=>o.k==='may_chieu'))out.push(A.galaxy(rm,G,Lt));   // 🌌 the star projector lights up the wall
   out.push(catsMarkup(rm,G,list,photo));
   if(!photo)out.push(hw().markup(rm,G));
   out.push(A.roomFront(rm,G));
   out.push(A.roomLight(G,Lt,glows,uid));
   out.push('<g class="dc-preview" pointer-events="none"></g>');
   const name=`${rm.name}: ${list.map(o=>o.it.name).join(', ')||'chưa bày gì'}`;
-  return {G,svg:`<svg class="dc-room${edit?' edit':''}${S.held?' holding':''} lt-${Lt.phase}" viewBox="0 0 ${G.W} ${G.H}" role="group" aria-label="${esc(name)}" data-room="${esc(rm.id)}">${out.join('')}</svg>`};
+  return {G,svg:`<svg data-whole class="dc-room${edit?' edit':''}${S.held?' holding':''} lt-${Lt.phase}" viewBox="0 0 ${G.W} ${G.H}" role="group" aria-label="${esc(name)}" data-room="${esc(rm.id)}">${out.join('')}</svg>`};
 }
 
 /** ` data-y="…"`: how far forward a piece stands (its front edge; a small thing: what it stands on), for the walking
@@ -779,21 +784,20 @@ async function takePhoto(){
 
 /* ---- rendering ---- */
 const levelIdx=total=>{const ls=[...(CD().levels||[])].sort((a,b)=>a.min-b.min);let i=-1;for(const l of ls)if(total>=l.min)i++;return Math.max(0,Math.min(4,i));};
-function paintBusy(){S.dlg?.setAttribute('aria-busy',String(S.busy));S.dlg?.querySelectorAll('[data-dc]').forEach(b=>{if(b.tagName==='BUTTON')b.disabled=S.busy;});}
+function paintBusy(){S.dlg?.setAttribute('aria-busy',String(S.busy));S.dlg?.querySelectorAll('[data-dc]').forEach(b=>{if(b.tagName==='BUTTON'&&b.dataset.dc!=='scroll')b.disabled=S.busy;});}
 function render(){
   if(!S.dlg)return;
   catsFreeze();hw().freeze();
+  // Patched in place (v4/home-morph.js), not rewritten: a rail keeps its scroll and a fling in flight goes on.
   const body=S.dlg.querySelector('.dc-body'),top=body?.scrollTop;
-  const scrolls=new Map([...S.dlg.querySelectorAll('[data-dc-rail]')].map(el=>[el.dataset.dcRail,el.scrollLeft]));
+  const scrolls=railScroll(S.dlg);
   const v=V();
   if(v&&!S.remote&&S.undoKey!==v.place.key){S.undoKey=v.place.key;S.undo=[];CATS.room='';}
   if(v&&!S.remote){const lv=levelIdx(v.cozy.total);S.cheer=S.lastLv>=0&&lv>S.lastLv;S.lastLv=lv;}
-  S.dlg.querySelector('.dc-root').innerHTML=page();
-  const b2=S.dlg.querySelector('.dc-body');if(b2&&top!=null)b2.scrollTop=S.toTop?0:top;
+  morph(S.dlg.querySelector('.dc-root'),page());
+  const b2=S.dlg.querySelector('.dc-body');if(b2&&top!=null&&(S.toTop||b2!==body)&&b2.scrollTop!==(S.toTop?0:top))b2.scrollTop=S.toTop?0:top;
   if(S.toTop)S.dlg.scrollTop=0;
-  for(const rail of S.dlg.querySelectorAll('[data-dc-rail]')){
-    const key=rail.dataset.dcRail;if(scrolls.has(key)&&(!S.resetStrip||key==='rooms'))rail.scrollLeft=scrolls.get(key);
-  }
+  const reset=S.resetStrip;railRestore(S.dlg,scrolls,key=>reset&&key!=='rooms');
   S.dlg.setAttribute('aria-busy',String(S.busy));
   S.pop='';S.resetStrip=false;S.toTop=false;
   catsResume();hw().resume();hw().paint();
@@ -843,13 +847,13 @@ function roomTabs(v){
   if(v.rooms.length<2)return '';
   const it=heldItem(),n=id=>v.items.filter(i=>i.r===id).length;
   return scrollRail('rooms',`<div class="rn-rooms dc-rooms" data-dc-rail="rooms" role="tablist" aria-label="Các phòng">${v.rooms.map(r=>{const ok=it&&it.rooms.includes(r.type);
-    return `<button type="button" role="tab" aria-selected="${S.room===r.id}" class="rn-room${S.room===r.id?' active':''}${ok?' ok':''}" data-dc="room" data-room="${r.id}"><span aria-hidden="true">${r.emoji}</span>${esc(r.name)}${n(r.id)?`<small>${n(r.id)}</small>`:''}</button>`;}).join('')}</div>`);
+    return `<button type="button" role="tab" aria-selected="${S.room===r.id}" class="rn-room${S.room===r.id?' active':''}${ok?' ok':''}" data-dc="room" data-room="${r.id}"><span aria-hidden="true">${r.emoji}</span>${esc(r.name)}${n(r.id)?`<small${n(r.id)>=r.cap?' class="full"':''}>${n(r.id)}${S.edit?`/${r.cap}`:''}</small>`:''}</button>`;}).join('')}</div>`);
 }
 function heldBar(v){
   const it=heldItem(),rm=roomOf(S.room);if(!it)return '';
   const here=rm&&it.rooms.includes(rm.type),where=roomsFor(it).map(r=>low(r.name));
   const full=here&&inRoom(rm,new Set(S.held.uid?[S.held.uid]:[])).length>=rm.cap;
-  const hint=!where.length?esc('Món này không hợp chỗ ở này.'):!here?`Món này đặt ở ${where.map(w=>`<i>${esc(w)}</i>`).join(', ')}.`:esc(full?`${rm.name} bày đủ ${rm.cap} món rồi.`:it.spot==='top'?'Chạm hoặc kéo vào phòng: lên bàn, kệ, giường hay sàn đều được.':S.held.src==='room'?'Chạm chỗ muốn dời tới.':'Chạm hoặc kéo vào chỗ muốn đặt.');
+  const hint=!where.length?esc('Món này không hợp chỗ ở này.'):!here?`Món này đặt ở ${where.map(w=>`<i>${esc(w)}</i>`).join(', ')}.`:esc(full?`${rm.name} bày đủ ${rm.cap}/${rm.cap} món. Cất bớt hoặc bày sang phòng khác nhé.`:it.spot==='top'?'Chạm hoặc kéo vào phòng: lên bàn, kệ, giường hay sàn đều được.':S.held.src==='room'?'Chạm chỗ muốn dời tới.':'Chạm hoặc kéo vào chỗ muốn đặt.');
   const sub=S.held.src==='shop'?`${xu(it.price)} · ấm cúng +${it.cozy}`:S.held.src==='bag'?`Trong túi · ấm cúng +${it.cozy}`:'Đang dời';
   return `<div class="dc-held" role="status">${A.thumb(it,40)}<p><b>${esc(it.name)}</b><small>${esc(sub)}</small><small class="dc-held-hint">${hint}</small></p>
     <span class="dc-held-go">${S.held.src==='shop'?btn('🎒 Mua cất túi','buyBag',{},'ghost small',it.price>v.ready?' disabled':''):''}${btn('Thôi','unhold',{},'ghost small')}</span></div>`;

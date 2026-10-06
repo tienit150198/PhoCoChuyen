@@ -78,7 +78,7 @@ class Rooms(unittest.TestCase):
         self.assertIn('bath', DC.ITEMS['may_giat']['rooms'])
         self.assertIn('pool', DC.ITEMS['ban_ngoai']['rooms'])
         self.assertNotIn('bon_tam', [k for k, it in DC.ITEMS.items() if 'bathc' in it['rooms']])   # the shared one: only small things
-        self.assertEqual(sorted(k for k, it in DC.ITEMS.items() if 'bathc' in it['rooms']), ['gio_do_tam', 'nen_thom', 'tham_tam', 'vit_cao_su'])   # nến thơm: after 1.4.19
+        self.assertEqual(sorted(k for k, it in DC.ITEMS.items() if 'bathc' in it['rooms']), ['coc_ban_chai', 'gio_do_tam', 'may_say_toc', 'nen_thom', 'tham_tam', 'vit_cao_su'])   # nến thơm: after 1.4.19; cốc bàn chải, máy sấy: after 1.7.15
 
     def test_a_bathroom_set_up_and_the_spa_set(self):
         s = owner('tap_the')
