@@ -213,10 +213,20 @@ def recall(sid: str, revision: int) -> dict | None:
         return hit[1] if hit and hit[0] == revision else None
 
 
-def remember(sid: str, revision: int, rows: dict) -> None:
-    """Only after the save at `revision` was committed (its summary is then exact)."""
+def synced(sid: str, revision: int) -> dict | None:
+    """The remembered summary of the save at `revision` when the table's rows are known to be exactly it (the
+    storage layer wrote them, or checked them, in that commit), else None: write(old=...) may then send only the
+    rows that moved; otherwise the full self-healing sync."""
     with _recent_lock:
-        _recent[sid] = (revision, rows)
+        hit = _recent.get(sid)
+        return hit[1] if hit and hit[0] == revision and hit[2] else None
+
+
+def remember(sid: str, revision: int, rows: dict, synced: bool = False) -> None:
+    """Only after the save at `revision` was committed (its summary is then exact). `synced`: the table's rows
+    are these rows too (see synced())."""
+    with _recent_lock:
+        _recent[sid] = (revision, rows, synced)
         _recent.move_to_end(sid)
         while len(_recent) > RECENT:
             _recent.popitem(last=False)

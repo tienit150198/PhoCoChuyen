@@ -385,17 +385,44 @@ class DeltaWrite(Base):
         got = {r['board']: tuple(r[f] for f in lb._FIELDS) for r in lb.export_rows(self.store, sid)}
         self.assertEqual(got, want)
 
-    def test_first_command_of_a_process_heals(self):
-        """No remembered summary (a new process, or the save moved elsewhere): the full sync, so a row the table got
-        wrong is put right by the next command that moves a number."""
-        tok = self.player(fund(story(wallet=300), 'grocery', 200), account='An')
+    def worker(self):
+        """A player with XP at the grocery (rows grocery, all, wealth) whose grocery row the table got wrong."""
+        s = fund(story(wallet=3000), 'grocery', 200)
+        c = s['careers']['grocery']
+        c.update(xp=200, day=3)
+        c['metrics']['served'] = 5
+        tok = self.player(s, account='An')
         sid = self.sid(tok)
-        self.store.transaction(lambda db: db.execute("UPDATE leaderboard SET score=1 WHERE sid=? AND board='all'", (sid,)))
-        lb._recent.clear()
-        self.cmd(tok, 'jr_withdraw', {'career': 'grocery', 'amount': 20})
+        self.assertEqual(set(self.rows(tok)), {'grocery', 'all', lb.WEALTH})
+        self.store.transaction(lambda db: db.execute("UPDATE leaderboard SET score=1 WHERE sid=? AND board='grocery'", (sid,)))
+        return tok, sid
+
+    def exact(self, tok, sid):
         state = self.store.read(tok)[0]
         got = {r['board']: tuple(r[f] for f in lb._FIELDS) for r in lb.export_rows(self.store, sid)}
         self.assertEqual(got, {b: v for b, v in lb.summary(state).items() if b != lb.NAME})
+
+    def test_first_command_of_a_process_heals(self):
+        """No remembered summary (a new process, or the save moved elsewhere): the full sync, so a row the table got
+        wrong is put right by the next command that moves a number."""
+        tok, sid = self.worker()
+        lb._recent.clear()
+        self.cmd(tok, 'jr_garage_buy', {'id': 'xe_dap', 'confirm': True})   # 💰 moves (a vehicle loses 30 %)
+        self.exact(tok, sid)
+
+    def test_unchecked_rows_are_not_trusted(self):
+        """A first command that moves nothing writes nothing, so what it remembers is not known to be the table's:
+        the next command that moves a number still does the full sync."""
+        tok, sid = self.worker()
+        lb._recent.clear()
+        self.cmd(tok, 'settings', {'sound': False})               # nothing on a board moved: no write
+        self.assertIsNone(lb.synced(sid, self.store.read(tok)[1]))
+        self.assertEqual(self.rows(tok)['grocery']['score'], 1)
+        self.cmd(tok, 'jr_garage_buy', {'id': 'xe_dap', 'confirm': True})
+        self.exact(tok, sid)
+        self.assertIsNotNone(lb.synced(sid, self.store.read(tok)[1]), 'written in full: trusted from now on')
+        self.cmd(tok, 'jr_garage_buy', {'id': 'xe_dap_dien', 'confirm': True})   # now the delta write
+        self.exact(tok, sid)
 
 
 class Wired(unittest.TestCase):

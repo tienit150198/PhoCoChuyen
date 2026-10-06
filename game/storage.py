@@ -437,7 +437,7 @@ class Store:
             t2=time.perf_counter()
             if self._store(sid,row["revision"],serialized,request_id,fingerprint,receipt,cut,board,steps,action=action,career=career,result=result,after=raw,before=before_out[0]):
                 t3=time.perf_counter()
-                lb.remember(sid,row["revision"]+1,board[0])
+                lb.remember(sid,row["revision"]+1,board[0],synced=bool(board[1]) or board[2] is not None)  # rows written, or unchanged from synced ones
                 if steps[0]:rt.emit_marks(sid,*steps)
                 view=public_state(raw,migrated=True)
                 _slow(action,career,len(row["state"] or ""),t0,t1,t2,t3,time.perf_counter())
@@ -457,7 +457,7 @@ class Store:
         """(new save, result, its text, archive rows, board, steps): what the command cut off from the
         save's lists, to be written in the same transaction as the save (see game/archive.py),
         board = (the save's leaderboard rows, whether a number on a board moved, the rows before when they are
-        known to be the ones in the table: remembered after this process committed that revision, else None) (game/leaderboard.py)
+        known to be the ones in the table: lb.synced(), else None) (game/leaderboard.py)
         and steps = ([(milestone, career, detail)], life day): the funnel steps this command crossed
         (game/retention.py: a dozen counters read from the save before and after, no extra parse)."""
         raw=self.parse_state(text,sid)
@@ -475,7 +475,7 @@ class Store:
         ranks=lb.summary(raw)
         steps=(rt.reached(marked,rt.marks(raw,ranks)),rt.life_day(raw)) if marked else ((),None)
         # An imported backup's own archive is older than anything its migration moved out.
-        return raw,result,serialized,extra+_archive_rows(box,before,raw,career if career in CAREERS else ""),(ranks,ranks!=ranked or (hit is None and lb.heal(ranks)),ranked if hit is not None else None),steps
+        return raw,result,serialized,extra+_archive_rows(box,before,raw,career if career in CAREERS else ""),(ranks,ranks!=ranked or (hit is None and lb.heal(ranks)),lb.synced(sid,revision) if hit is not None else None),steps
 
     def _apply(self,raw:dict,text:str,career,action:str,payload:dict,internal:bool,revision:int):
         extra=[]
@@ -623,7 +623,7 @@ class Store:
             from .home_decor import notify
             notify(db,sid,action)
             db.commit()
-            lb.remember(sid,revision,board[0])
+            lb.remember(sid,revision,board[0],synced=bool(board[1]) or board[2] is not None)
             if steps[0]:rt.emit_marks(sid,*steps)
             return dict(state=public_state(raw,migrated=True),revision=revision,result=result,replayed=False)
         except Exception:
