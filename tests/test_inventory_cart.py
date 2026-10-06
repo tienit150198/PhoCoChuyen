@@ -9,12 +9,14 @@ exactly as they were.
 """
 import copy
 import unittest
+from unittest.mock import patch
 
 import game.careers.kit as kit
 from game import inventory as I
 from game.engine import GameError, public_state, validate_state
 from tests.helpers import Journey
 from tests.test_inventory_flow import empty, public_inv, set_money, wait_until_ready
+from tests.helpers import Journey  # noqa: F811
 
 
 def cart(j, sid='partner'):
@@ -82,6 +84,7 @@ class Draft(unittest.TestCase):
         self.assertNotIn('cart', pub)
         self.assertNotIn('haggle', pub)
 
+    @patch.object(I, 'CART_LINES', 8)  # the full-draft rules, at the size the restaurant catalogue fills
     def test_guard_rails(self):
         j = fresh()
         with self.assertRaises(GameError):
@@ -115,6 +118,13 @@ class Draft(unittest.TestCase):
 class FullDraft(unittest.TestCase):
     """A draft holds CART_LINES lines: the client is told (`cart_lines`), and a "gộp N món thiếu" batch (`fit`)
     adds what fits and says what stayed out instead of refusing the whole batch (player data: inv_cart 47% refused)."""
+
+    def setUp(self):
+        # The full-draft rules at the size these catalogues can fill (CART_LINES is 20 since 1.7.16).
+        p = patch.object(I, 'CART_LINES', 8)
+        p.start()
+        self.addCleanup(p.stop)
+
 
     def items(self, n, skip=()):
         out = [i['id'] for i in I.catalogue('restaurant') if i.get('unlock', 1) <= 1 and i['id'] not in skip]
@@ -161,6 +171,13 @@ class LongBatch(unittest.TestCase):
     """The nail shop opens with 20 items low and the stock room's "🛒 Gộp N món" step listed them all:
     inv_cart refused the whole batch ("Danh sách hàng không hợp lệ."). A `fit` batch longer than a draft
     now fills the draft and says what stayed out; without `fit` the old limit stands."""
+
+    def setUp(self):
+        # The full-draft rules at the size these catalogues can fill (CART_LINES is 20 since 1.7.16).
+        p = patch.object(I, 'CART_LINES', 8)
+        p.start()
+        self.addCleanup(p.stop)
+
 
     def low(self, j):
         inv = public_inv(j)
@@ -573,6 +590,100 @@ class Validation(unittest.TestCase):
         self.assertEqual(public_state(j.state)['careers']['restaurant']['inventory']['carts'], [])
         sups = public_inv(j)['suppliers']
         self.assertTrue(all('ship' in s and 'bulk' in s and 'free_from' in s for s in sups))
+
+
+class WideDraft(unittest.TestCase):
+    """F#198: 20 lines a draft, several sizes of one item, 12 orders on the way; a draft is still
+    saved so a release before 1.7.16 (8 lines, one per item in inv['cart']) loads it."""
+
+    def old_rules_hold(self, j):
+        for sid, k in (j.c['ext']['inv'].get('cart') or {}).items():
+            self.assertLessEqual(len(k['lines']), 8)
+            self.assertEqual(len({l['item'] for l in k['lines']}), len(k['lines']))
+
+    def test_twenty_lines_one_order(self):
+        j = Journey('nail')
+        set_money(j.c, 50000)
+        inv = public_inv(j)
+        self.assertEqual((inv['cart_lines'], inv['transit_cap']), (20, 12))
+        ids = [i['id'] for i in I.catalogue('nail') if inv['room'][i['id']] >= 2][:20]
+        self.assertEqual(len(ids), 20)
+        j.act('inv_cart', supplier='partner', op='add', lines=[dict(item=i, qty=2) for i in ids])
+        self.assertEqual(len(cart(j)['lines']), 20)
+        self.assertEqual(len(j.c['ext']['inv']['cart']['partner']['lines']), 8)
+        self.assertEqual(len(j.c['ext']['inv']['cart_more']['partner']), 12)
+        self.old_rules_hold(j)
+        validate_state(j.state)
+        self.assertNotIn('cart_more', public_inv(j))
+        # Change and drop a line kept in the overflow.
+        j.act('inv_cart', supplier='partner', op='set', item=ids[15], qty=3)
+        j.act('inv_cart', supplier='partner', op='remove', item=ids[19])
+        self.assertEqual({l['item']: l['qty'] for l in cart(j)['lines']}[ids[15]], 3)
+        self.assertEqual(len(cart(j)['lines']), 19)
+        money, k = j.c['money'], cart(j)
+        r, gid = place(j)
+        self.assertEqual(len(group_lines(j, gid)), 19)
+        self.assertEqual(j.c['money'], money - k['total'])
+        self.assertEqual(len(books(j, gid)), 1)
+        self.assertNotIn('cart', j.c['ext']['inv']); self.assertNotIn('cart_more', j.c['ext']['inv'])
+        validate_state(j.state)
+        with self.assertRaises(GameError):
+            j.act('inv_cart', supplier='partner', op='add', lines=[dict(item=i, qty=1) for i in [*ids, ids[0]]][:21])
+
+    def test_several_sizes_of_one_item(self):
+        j = Journey('clothing')
+        set_money(j.c, 50000)
+        for size, qty in (('S', 2), ('M', 3), ('L', 1)):
+            j.act('inv_cart', supplier='partner', op='add', item='tee', qty=qty, size=size)
+        j.act('inv_cart', supplier='partner', op='add', item='tee', qty=1, size='M')
+        rows = {(l['item'], l.get('size')): l['qty'] for l in cart(j)['lines']}
+        self.assertEqual(rows, {('tee', 'S'): 2, ('tee', 'M'): 4, ('tee', 'L'): 1})
+        self.old_rules_hold(j)
+        validate_state(j.state)
+        with self.assertRaises(GameError) as e:
+            j.act('inv_cart', supplier='partner', op='set', item='tee', qty=2)
+        self.assertIn('nhiều size', e.exception.message)
+        j.act('inv_cart', supplier='partner', op='set', item='tee', size='L', qty=2)
+        j.act('inv_cart', supplier='partner', op='remove', item='tee', size='S')
+        rows = {(l['item'], l.get('size')): l['qty'] for l in cart(j)['lines']}
+        self.assertEqual(rows, {('tee', 'M'): 4, ('tee', 'L'): 2})
+        # The shelf counts every size of the item together.
+        room = public_inv(j)['room']['tee']
+        with self.assertRaises(GameError) as e:
+            j.act('inv_cart', supplier='partner', op='add', item='tee', qty=room - 5, size='XL')
+        self.assertIn('chỉ còn chỗ', e.exception.message)
+        r, gid = place(j)
+        held = [(l['size'], l['qty']) for l in (cart(j) or {}).get('lines', [])]  # a line out of stock today stays
+        self.assertEqual(sorted([(o['size'], o['qty']) for o in group_lines(j, gid)] + held), [('L', 2), ('M', 4)])
+        validate_state(j.state)
+
+    def test_twelve_orders_on_the_way(self):
+        j = fresh(money=50000)
+        for n in range(I.TRANSIT_CAP):
+            j.act('inv_order', item='egg' if n % 2 else 'noodle', qty=1, supplier='partner', confirm=True)
+        with self.assertRaises(GameError):
+            j.act('inv_order', item='beef', qty=1, supplier='partner', confirm=True)
+        self.assertEqual(I.TRANSIT_CAP, 12)
+        validate_state(j.state)
+
+    def test_old_saves_and_orphan_overflow_load(self):
+        j = fresh(money=50000)
+        add(j, 'partner', 'noodle', 2)
+        x = j.c['ext']['inv']
+        # A release before 1.7.16 placed the first lines and left the overflow behind.
+        x['cart_more'] = {'partner': [dict(item='egg', qty=2)]}
+        x.pop('cart')
+        validate_state(j.state)
+        self.assertEqual([(l['item'], l['qty']) for l in cart(j)['lines']], [('egg', 2)])
+        r = j.act('inv_haggle', supplier='partner', pct=5) if cart(j)['can_haggle'] else None
+        add(j, 'partner', 'beef', 1)
+        self.assertEqual([l['item'] for l in j.c['ext']['inv']['cart']['partner']['lines']], ['egg', 'beef'])
+        self.assertNotIn('cart_more', j.c['ext']['inv'])
+        validate_state(j.state)
+        bad = copy.deepcopy(j.state)
+        bad['careers']['restaurant']['ext']['inv']['cart']['partner']['lines'].append(dict(item='egg', qty=1))
+        with self.assertRaises(GameError):
+            validate_state(bad)
 
 
 if __name__ == '__main__':

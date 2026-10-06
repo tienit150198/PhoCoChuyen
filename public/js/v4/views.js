@@ -313,7 +313,7 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
   const supMore=x=>{const notes=[priceWord(x),x.short>=15?'hay thiếu hàng':'',x.late>=12?'hay trễ hẹn':'',x.fresh?`tươi thêm ${x.fresh} ngày`:'',x.rating?`${x.rating}★`:''].filter(Boolean).join(' · ');
     const terms=x.free_from!=null?[x.ship?`ship ${x.ship} xu (miễn từ ${x.free_from})`:'',(x.bulk||[]).length?`sỉ từ ${x.bulk[0][0]}: −${x.bulk[0][1]}%`:''].filter(Boolean).join(' · '):'';
     return `<details class="inv-sup-more"><summary>${esc(x.emoji)} ${esc(x.name)}: giờ giao & điều kiện</summary><p class="small">${x.kind==='rush'||!x.window?'':`${esc(x.window)} · `}${esc(notes)}</p>${terms?`<p class="small">${esc(terms)}</p>`:''}${x.note?`<p class="small muted">${esc(x.note)}</p>`:''}</details>`;};
-  const k=carts.find(k=>k.supplier===sup.id),inDraft=k?.lines.find(l=>l.item===pick.id)?.qty||0;
+  const k=carts.find(k=>k.supplier===sup.id),inDraft=k?.lines.find(l=>l.item===pick.id&&(l.size??null)===(orderSize(env,pick.id)??null))?.qty||0;
   // A full draft takes no new line (inv_cart): the button opens that draft to place it instead.
   const lineCap=Number(c.inventory?.cart_lines)||8,cartFull=!!k&&!inDraft&&k.lines.length>=lineCap;
   const tier=q.pct?`<span class="tag green">sỉ −${q.pct}%</span>`:q.tier&&q.tier[0]<=max?`<button type="button" class="chip inv-tier" data-action="v4Qty" data-set="${q.tier[0]}">Lấy ${q.tier[0]}: −${q.tier[1]}%</button>`:'';
@@ -331,9 +331,9 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
  * the haggled discount, the total, what the fund lacks, then ONE "Đặt đơn". Server-priced (inventory.cart_view). */
 function cartCard(env,k,{byId,unit}){
   const {api}=env,s=supplierList(env).find(x=>x.id===k.supplier)||{name:k.supplier,emoji:'🛒'},fn=fundName(api.state.current),sid=k.supplier;
-  const qtyBtn=(l,q,label,aria,dis=false)=>`<button type="button" class="btn ghost" data-action="v4CartQty" data-supplier="${esc(sid)}" data-item="${esc(l.item)}" data-qty="${q}" aria-label="${esc(aria)}"${dis?' disabled':''}>${label}</button>`;
+  const qtyBtn=(l,q,label,aria,dis=false)=>`<button type="button" class="btn ghost" data-action="v4CartQty" data-supplier="${esc(sid)}" data-item="${esc(l.item)}" data-size="${esc(l.size??'')}" data-qty="${q}" aria-label="${esc(aria)}"${dis?' disabled':''}>${label}</button>`;
   const line=l=>{const i=byId[l.item]||{name:l.item},max=Math.min(30,l.room);
-    const tag=l.oos?pill('Hết hàng hôm nay','danger'):l.bulk?pill(`sỉ −${l.bulk}%`,'green'):l.next_tier&&l.next_tier[0]<=max?`<button type="button" class="chip inv-tier" data-action="v4CartQty" data-supplier="${esc(sid)}" data-item="${esc(l.item)}" data-qty="${l.next_tier[0]}">Lấy ${l.next_tier[0]}: −${l.next_tier[1]}%</button>`:'';
+    const tag=l.oos?pill('Hết hàng hôm nay','danger'):l.bulk?pill(`sỉ −${l.bulk}%`,'green'):l.next_tier&&l.next_tier[0]<=max?`<button type="button" class="chip inv-tier" data-action="v4CartQty" data-supplier="${esc(sid)}" data-item="${esc(l.item)}" data-size="${esc(l.size??'')}" data-qty="${l.next_tier[0]}">Lấy ${l.next_tier[0]}: −${l.next_tier[1]}%</button>`:'';
     return `<li class="inv-cl${l.oos?' oos':''}"><span class="inv-cl-name"><span aria-hidden="true">${esc(i.emoji||'📦')}</span> <b>${esc(i.name)}${l.size?` · size ${esc(l.size)}`:''}</b>${tag?`<span class="inv-cl-tag">${tag}</span>`:''}</span>`+
       `<span class="inv-cl-qty">${qtyBtn(l,l.qty-1,'−',`Bớt một ${i.name}`)}<b aria-label="${l.qty} ${esc(unit(i))}">${l.qty}</b>${qtyBtn(l,l.qty+1,'+',`Thêm một ${i.name}`,l.qty>=max)}</span>`+
       `<b class="inv-cl-amt">${l.oos?'—':fmt(l.cost)}</b>${qtyBtn(l,0,icon('x',14),`Bỏ ${i.name} khỏi đơn`).replace('class="btn ghost"','class="icon-btn inv-cl-x"')}</li>`;};
@@ -776,7 +776,7 @@ export async function v4Action(action,data,el,env){
       return true;}
     case'v4CartPut':{  // a career's own stock list (grocery.js): one line straight into the draft
       if(await cmd('inv_cart',{supplier:data.supplier,op:'add',item:data.item,qty:Number(data.qty)||1}))renderSheet();return true;}
-    case'v4CartQty':{if(await cmd('inv_cart',{supplier:data.supplier,op:'set',item:data.item,qty:Math.max(0,Number(data.qty)||0)},{quiet:true}))renderSheet();return true;}
+    case'v4CartQty':{if(await cmd('inv_cart',{supplier:data.supplier,op:'set',item:data.item,...(data.size!==undefined?{size:data.size}:{}),qty:Math.max(0,Number(data.qty)||0)},{quiet:true}))renderSheet();return true;}
     case'v4CartFill':{
       const lines=String(data.items||'').split(',').map(x=>x.split(':')).filter(([id])=>id).map(([item,q])=>({item,qty:Math.max(1,Math.min(30,Number(q)||10))}));
       if(lines.length&&await cmd('inv_cart',{supplier:data.supplier,op:'add',lines,fit:true})){ui.invCart=data.supplier;ui.orderItem=null;ui.invTab='stock';renderSheet(false);}

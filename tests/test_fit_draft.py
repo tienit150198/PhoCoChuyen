@@ -35,7 +35,7 @@ class FitDraftTest(unittest.TestCase):
         sup = next(s for s in inv['suppliers'] if s['id'] == 'partner')
         by = {i['id']: i for i in I.catalogue('nail')}
         low = [i for i in by if inv['stock'].get(i, 0) + inv['arriving'].get(i, 0) <= max(2, inv['capacity'] * 8 // 100)]
-        self.assertGreater(len(low), inv['cart_lines'])
+        self.assertGreaterEqual(len(low), inv['cart_lines'])  # 20 low, 20 lines a draft since 1.7.16
         lines = [dict(id=i, cost=by[i]['cost'], q=min(inv['room'][i], 10)) for i in low]
         draft = json.loads(self.run_node(json.dumps(dict(lines=lines, sup=sup, money=j.c['money'], free=inv['cart_lines'], have=0))))
         self.assertEqual(len(draft), inv['cart_lines'])
