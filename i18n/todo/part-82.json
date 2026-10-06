@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Xử lý chuyện này trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hết khách đứng chờ rồi. Đóng ca nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đã đóng, chưa nhận khách mới.",
+  "en": ""
+ },
+ {
   "vi": "Khách tiếp theo đang tới.",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Chỗ ngồi",
-  "en": ""
- },
- {
-  "vi": "ghế ngồi khó chịu",
-  "en": ""
- },
- {
-  "vi": "ghế nhựa thấp, ngồi lâu mỏi lưng",
-  "en": ""
- },
- {
-  "vi": "bàn sát lề đường, xe chạy qua là bụi bay vào cốc",
   "en": ""
  }
 ]

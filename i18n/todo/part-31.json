@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Mở rèm cửa sổ, ghi sổ mượn trả bằng tay, mở cửa kho cho thoáng",
+  "en": ""
+ },
+ {
+  "vi": "Phòng đọc sáng lại nhờ nắng. Sổ tay ghi đủ từng lượt mượn.",
+  "en": ""
+ },
+ {
+  "vi": "Đóng cửa thư viện cho về hết",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đọc về hết. Ông Thạc càu nhàu suốt cầu thang.",
+  "en": ""
+ },
+ {
+  "vi": "Cho mượn, nhớ trong đầu, lúc có điện nhập sau",
+  "en": ""
+ },
+ {
   "vi": "Có điện thì quên mất hai cuốn ai mượn.",
   "en": ""
  },
@@ -1777,26 +1797,6 @@
  },
  {
   "vi": "Chọn màu vòng tay.",
-  "en": ""
- },
- {
-  "vi": "Nội dung này không có trong giáo án.",
-  "en": ""
- },
- {
-  "vi": "Đã dạy phần này rồi.",
-  "en": ""
- },
- {
-  "vi": "Đã đếm rồi.",
-  "en": ""
- },
- {
-  "vi": "Cho mọi người lên bờ trước rồi mới đếm.",
-  "en": ""
- },
- {
-  "vi": "🔢 Đếm đủ người: dưới nước không còn ai, phòng thay đồ cũng trống.",
   "en": ""
  }
 ]

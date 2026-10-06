@@ -1,5 +1,21 @@
 [
  {
+  "vi": "⏰ Vào ngõ đúng giờ thu gom.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Nhắc đúng nhà chưa phân loại (được thêm điểm kinh nghiệm).",
+  "en": ""
+ },
+ {
+  "vi": "🧹 Không bỏ sót túi nào.",
+  "en": ""
+ },
+ {
+  "vi": "Nhặt kim tiêm, bóng đèn vỡ bằng tay trần",
+  "en": ""
+ },
+ {
   "vi": "Bị thương, lỗi nặng; kim tiêm là lỗi an toàn.",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Gợi ý sách",
-  "en": ""
- },
- {
-  "vi": "[[Hỏi cuốn gần nhất thích]], [[Hỏi đang muốn đọc gì]], rồi chọn một trong bốn cuốn hợp cả hai.",
-  "en": ""
- },
- {
-  "vi": "Biên mục",
-  "en": ""
- },
- {
-  "vi": "Mỗi cuốn: chọn lớp, chọn ký hiệu tác giả (3 chữ đầu của tên), sách hỏng thì để riêng. Xong hết thì [[DÁN NHÃN, XẾP LÊN KỆ]].",
-  "en": ""
- },
- {
-  "vi": "Phòng đọc",
   "en": ""
  }
 ]

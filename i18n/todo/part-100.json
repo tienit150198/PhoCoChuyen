@@ -1,5 +1,337 @@
 [
  {
+  "vi": "Kệ máy chờ",
+  "en": ""
+ },
+ {
+  "vi": "🔩 Mở kho linh kiện",
+  "en": ""
+ },
+ {
+  "vi": "🔧 Sổ tiệm hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Mặc cả với trung tâm",
+  "en": ""
+ },
+ {
+  "vi": "Gửi chị Thảo",
+  "en": ""
+ },
+ {
+  "vi": "Mai lên phòng Điều phối trình bày. Hôm nay tan ca sớm.",
+  "en": ""
+ },
+ {
+  "vi": "sẵn sàng",
+  "en": ""
+ },
+ {
+  "vi": "đang đi",
+  "en": ""
+ },
+ {
+  "vi": "tạm ngưng",
+  "en": ""
+ },
+ {
+  "vi": "Cứu hỏa",
+  "en": ""
+ },
+ {
+  "vi": "Cấp cứu",
+  "en": ""
+ },
+ {
+  "vi": "Xuồng",
+  "en": ""
+ },
+ {
+  "vi": "Thang máy",
+  "en": ""
+ },
+ {
+  "vi": "Công an",
+  "en": ""
+ },
+ {
+  "vi": "✅ Không đội nào",
+  "en": ""
+ },
+ {
+  "vi": "Gọi bộ đàm từng đội",
+  "en": ""
+ },
+ {
+  "vi": "Đội tạm ngưng",
+  "en": ""
+ },
+ {
+  "vi": "⛔ Đánh dấu đội tạm ngưng",
+  "en": ""
+ },
+ {
+  "vi": "Đánh dấu đội tạm ngưng",
+  "en": ""
+ },
+ {
+  "vi": "😰 Người gọi đang hoảng",
+  "en": ""
+ },
+ {
+  "vi": "📵 Máy đã cúp",
+  "en": ""
+ },
+ {
+  "vi": "📍 Đã rõ chỗ",
+  "en": ""
+ },
+ {
+  "vi": "📍 Chưa rõ chỗ",
+  "en": ""
+ },
+ {
+  "vi": "📋 Kịch bản cuộc gọi",
+  "en": ""
+ },
+ {
+  "vi": "🌬️ Trấn an người gọi…",
+  "en": ""
+ },
+ {
+  "vi": "🗺️ Tìm chỗ người gọi…",
+  "en": ""
+ },
+ {
+  "vi": "🔎 Kiểm tra cuộc gọi…",
+  "en": ""
+ },
+ {
+  "vi": "Mức ưu tiên (Bảng ưu tiên Mây, luật của trò chơi):",
+  "en": ""
+ },
+ {
+  "vi": "Đội cần gửi:",
+  "en": ""
+ },
+ {
+  "vi": "🚨 GỬI ĐỘI",
+  "en": ""
+ },
+ {
+  "vi": "Không ai cần xe? Chuyển tới đâu:",
+  "en": ""
+ },
+ {
+  "vi": "Giọng nói:",
+  "en": ""
+ },
+ {
+  "vi": "↪️ CHUYỂN ĐÚNG NƠI",
+  "en": ""
+ },
+ {
+  "vi": "🚒 Gửi đội…",
+  "en": ""
+ },
+ {
+  "vi": "↪️ Không điều xe, chuyển đúng nơi…",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Hướng dẫn an toàn trong lúc chờ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn điều người gọi nên làm. Có thẻ nghe thì hợp lý mà nguy hiểm.",
+  "en": ""
+ },
+ {
+  "vi": "☎️ Kết thúc",
+  "en": ""
+ },
+ {
+  "vi": "☎️ Giữ máy tới khi đội tới",
+  "en": ""
+ },
+ {
+  "vi": "nói chuyện, dặn thêm, nghe tiếng còi xe",
+  "en": ""
+ },
+ {
+  "vi": "📴 Kết thúc cuộc gọi",
+  "en": ""
+ },
+ {
+  "vi": "trả đường dây cho cuộc kế",
+  "en": ""
+ },
+ {
+  "vi": "🌬️ Trấn an",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại số vừa gọi",
+  "en": ""
+ },
+ {
+  "vi": "↩️ Gọi lại",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi địa chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Tìm cho rõ chỗ",
+  "en": ""
+ },
+ {
+  "vi": "🗺️ Tìm chỗ",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chuyện gì",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi mấy người, ai bị thương",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi nguy hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Xin số gọi lại",
+  "en": ""
+ },
+ {
+  "vi": "Gửi đội hoặc chuyển đúng nơi",
+  "en": ""
+ },
+ {
+  "vi": "Đọc hướng dẫn an toàn",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Đọc hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "👂 Nghe máy",
+  "en": ""
+ },
+ {
+  "vi": "🚦 Bảng ưu tiên Mây",
+  "en": ""
+ },
+ {
+  "vi": "Xếp theo nguy hiểm tính mạng, không theo tiếng la. Luật của trò chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi sổ nhật ký.",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi sổ nhật ký (còn thiếu).",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nhật ký có dòng ghi khống.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Ghi vào sổ nhật ký",
+  "en": ""
+ },
+ {
+  "vi": "🗺️ KÝ NHẬN CA",
+  "en": ""
+ },
+ {
+  "vi": "đánh dấu đội tạm ngưng",
+  "en": ""
+ },
+ {
+  "vi": "📞 NHẤC THEO THỨ TỰ",
+  "en": ""
+ },
+ {
+  "vi": "xếp ưu tiên cho đủ các máy",
+  "en": ""
+ },
+ {
+  "vi": "☎️ KẾT THÚC",
+  "en": ""
+ },
+ {
+  "vi": "Quyết chuyện ở phòng trực",
+  "en": ""
+ },
+ {
+  "vi": "📞 Vào ca thôi!",
+  "en": ""
+ },
+ {
+  "vi": "Nghe chị Thảo",
+  "en": ""
+ },
+ {
+  "vi": "👂 Nghe chị Thảo",
+  "en": ""
+ },
+ {
+  "vi": "📞 Nhấc máy",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện ở phòng trực",
+  "en": ""
+ },
+ {
+  "vi": "Các đường dây",
+  "en": ""
+ },
+ {
+  "vi": "Kịch bản",
+  "en": ""
+ },
+ {
+  "vi": "lần gửi đội",
+  "en": ""
+ },
+ {
+  "vi": "cuộc đã kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "hướng dẫn đã đọc",
+  "en": ""
+ },
+ {
+  "vi": "📞 Ca hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "🗺️ Bảng đội",
+  "en": ""
+ },
+ {
+  "vi": "xu theo thực đơn",
+  "en": ""
+ },
+ {
+  "vi": "ngày hội ×1,1 →",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ chưa có món này: hỏi lại.",
+  "en": ""
+ },
+ {
   "vi": "🎓 Học sinh −10%",
   "en": ""
  },
@@ -93,10 +425,6 @@
  },
  {
   "vi": "🎓 Hôm nay giảm 10% cho học sinh trên mọi đơn còn lại.",
-  "en": ""
- },
- {
-  "vi": "Tô đã đủ · giao cho khách",
   "en": ""
  },
  {
@@ -1088,6 +1416,22 @@
   "en": ""
  },
  {
+  "vi": "Gốc bàng",
+  "en": ""
+ },
+ {
+  "vi": "Mái hiên",
+  "en": ""
+ },
+ {
+  "vi": "Sát mép đường",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ lấn đường",
+  "en": ""
+ },
+ {
   "vi": "🌳 Chọn chỗ bày quán",
   "en": ""
  },
@@ -1112,6 +1456,10 @@
   "en": ""
  },
  {
+  "vi": "Đặt thùng đá chỗ râm",
+  "en": ""
+ },
+ {
   "vi": "bà Lựu dặn chỗ khác",
   "en": ""
  },
@@ -1121,10 +1469,6 @@
  },
  {
   "vi": "Dựng ô che nắng",
-  "en": ""
- },
- {
-  "vi": "Đặt thùng đá chỗ râm",
   "en": ""
  },
  {
@@ -1453,350 +1797,6 @@
  },
  {
   "vi": "Thư viện, chợ, vườn nghỉ…",
-  "en": ""
- },
- {
-  "vi": "Mở cửa rồi làm xong việc trong ca",
-  "en": ""
- },
- {
-  "vi": "Chơi ở tab Trò nhỏ",
-  "en": ""
- },
- {
-  "vi": "Bấm 💬 ở một công việc, hoặc Người quen → Trò chuyện, với 2 người khác nhau (chat Cả phố không tính)",
-  "en": ""
- },
- {
-  "vi": "Đóng ca là tính lại từ đầu, nhớ bấm Nhận quà trước khi đóng ca.",
-  "en": ""
- },
- {
-  "vi": "Đổi tên",
-  "en": ""
- },
- {
-  "vi": "(đang mở ca: đóng ca rồi đổi)",
-  "en": ""
- },
- {
-  "vi": "🏷️ Bảng giá của tiệm",
-  "en": ""
- },
- {
-  "vi": "Giá tính ngay trong từng việc.",
-  "en": ""
- },
- {
-  "vi": "🏆 Kỷ lục riêng",
-  "en": ""
- },
- {
-  "vi": "Đã nhận huy hiệu Hẹn ở ngày hội.",
-  "en": ""
- },
- {
-  "vi": "Đã mở góc ngày hội. Bấm Nhận huy hiệu để lưu vào hộ chiếu nghề này.",
-  "en": ""
- },
- {
-  "vi": "Nhận huy hiệu",
-  "en": ""
- },
- {
-  "vi": "Trong cùng ca Ngày hội, làm xong 3 việc và 1 trò nhỏ bằng Chơi ngay (Luyện không thưởng không tính). Sau đó bấm Mở góc ngày hội trước khi đóng ca, rồi Nhận huy hiệu.",
-  "en": ""
- },
- {
-  "vi": "Làm tiếp công việc",
-  "en": ""
- },
- {
-  "vi": "Chơi trò nhỏ",
-  "en": ""
- },
- {
-  "vi": "Ca sắp tới là Ngày hội. Mở ca để bắt đầu 3 việc và 1 trò nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Ngày hội xuất hiện ngẫu nhiên theo nhịp khu phố. Tiếp tục làm việc và xem nhịp ngày ở Chuẩn bị; khi có Ngày hội, mở ca của nghề này.",
-  "en": ""
- },
- {
-  "vi": "Mở ca Ngày hội",
-  "en": ""
- },
- {
-  "vi": "Xem nhịp ngày",
-  "en": ""
- },
- {
-  "vi": "Tiến độ tính riêng trong ca của nghề này; đóng ca sẽ tính lại từ đầu.",
-  "en": ""
- },
- {
-  "vi": "trò nhỏ",
-  "en": ""
- },
- {
-  "vi": "Huy hiệu",
-  "en": ""
- },
- {
-  "vi": "🎟️ Chưa có thiệp.",
-  "en": ""
- },
- {
-  "vi": "Thống kê sử dụng",
-  "en": ""
- },
- {
-  "vi": "Cho phép Google thống kê lượt ghé, các bước chơi và tốc độ để cải thiện game?",
-  "en": ""
- },
- {
-  "vi": "Cho phép",
-  "en": ""
- },
- {
-  "vi": "Chuyện nhân viên",
-  "en": ""
- },
- {
-  "vi": "Bỏ dở việc",
-  "en": ""
- },
- {
-  "vi": "Tạm dừng: còn sự cố đang mở",
-  "en": ""
- },
- {
-  "vi": "Hôm nay không có ca (lịch ngày lẻ)",
-  "en": ""
- },
- {
-  "vi": "Hôm nay không có ca (lịch ngày chẵn)",
-  "en": ""
- },
- {
-  "vi": "Đang xử lý đơn riêng",
-  "en": ""
- },
- {
-  "vi": "Đang chuẩn bị vào việc",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng dùng nguyên liệu và quỹ nghề. Thiếu hàng hoặc tiền lương thì đội tạm dừng, không tự rút tiền cá nhân.",
-  "en": ""
- },
- {
-  "vi": "Đội làm việc cùng bạn",
-  "en": ""
- },
- {
-  "vi": "Muốn mở thêm cơ sở?",
-  "en": ""
- },
- {
-  "vi": "🏪 Quầy của bạn",
-  "en": ""
- },
- {
-  "vi": "có kho, vốn và nhân viên riêng.",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể tự tay pha từng ly và làm các bước của trò pha chế.",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể tự tay làm các bước của nghề.",
-  "en": ""
- },
- {
-  "vi": "xu lương / đơn riêng · trả từ quỹ nghề",
-  "en": ""
- },
- {
-  "vi": "Chọn người phụ bên dưới 👇",
-  "en": ""
- },
- {
-  "vi": "xu/đơn riêng",
-  "en": ""
- },
- {
-  "vi": "kỳ này",
-  "en": ""
- },
- {
-  "vi": "Thuế dự kiến",
-  "en": ""
- },
- {
-  "vi": "Tiền thuê đã tích lũy",
-  "en": ""
- },
- {
-  "vi": "Mỗi 7 ca, thuế bằng 4% doanh thu nghề.",
-  "en": ""
- },
- {
-  "vi": "xu mỗi ca đóng, theo tài sản lúc mở ca. Hỗ trợ 60% giá trị phần chưa thu hồi, chỉ khi đã bật trước sự việc.",
-  "en": ""
- },
- {
-  "vi": "Xử lý sự cố đang mở",
-  "en": ""
- },
- {
-  "vi": "Xử lý hồ sơ đang mở",
-  "en": ""
- },
- {
-  "vi": "Về",
-  "en": ""
- },
- {
-  "vi": "SÂN BAY",
-  "en": ""
- },
- {
-  "vi": "CÒ TRẮNG",
-  "en": ""
- },
- {
-  "vi": "DẦU",
-  "en": ""
- },
- {
-  "vi": "CỬA 3",
-  "en": ""
- },
- {
-  "vi": "ĐÚNG GIỜ",
-  "en": ""
- },
- {
-  "vi": "GIÔNG",
-  "en": ""
- },
- {
-  "vi": "SƯƠNG",
-  "en": ""
- },
- {
-  "vi": "ĐẸP",
-  "en": ""
- },
- {
-  "vi": "ĐÃ CẤT CÁNH",
-  "en": ""
- },
- {
-  "vi": "ĐÃ HỦY",
-  "en": ""
- },
- {
-  "vi": "ĐANG BAY",
-  "en": ""
- },
- {
-  "vi": "ĐANG LÊN TÀU",
-  "en": ""
- },
- {
-  "vi": "TRỄ",
-  "en": ""
- },
- {
-  "vi": "KHỞI HÀNH",
-  "en": ""
- },
- {
-  "vi": "Quý khách vui lòng trông giữ hành lý cẩn thận.",
-  "en": ""
- },
- {
-  "vi": "Ưu tiên lên tàu: người già, trẻ nhỏ và mẹ bế em bé.",
-  "en": ""
- },
- {
-  "vi": "Xin mời quý khách làm thủ tục tại quầy 1 đến 3.",
-  "en": ""
- },
- {
-  "vi": "Bàn bản tin",
-  "en": ""
- },
- {
-  "vi": "Màn hình thời tiết",
-  "en": ""
- },
- {
-  "vi": "Chơi với Mướp trên ghế sofa",
-  "en": ""
- },
- {
-  "vi": "Trời đẹp, gió nhẹ",
-  "en": ""
- },
- {
-  "vi": "VÂN",
-  "en": ""
- },
- {
-  "vi": "PHÒNG TỔ BAY · CÁNH CÒ",
-  "en": ""
- },
- {
-  "vi": "PHIẾU DẦU",
-  "en": ""
- },
- {
-  "vi": "ĐÃ BÁO DANH",
-  "en": ""
- },
- {
-  "vi": "BÁO DANH",
-  "en": ""
- },
- {
-  "vi": "Quầy làm thủ tục",
-  "en": ""
- },
- {
-  "vi": "Soi chiếu an ninh",
-  "en": ""
- },
- {
-  "vi": "đảo",
-  "en": ""
- },
- {
-  "vi": "Soi chiếu: tháo thắt lưng, bỏ chai nước ra ngoài, máy tính để riêng một khay.",
-  "en": ""
- },
- {
-  "vi": "Quầy cửa ra tàu",
-  "en": ""
- },
- {
-  "vi": "Cửa kính nhìn ra sân đỗ",
-  "en": ""
- },
- {
-  "vi": "Sân đỗ vắng: chuyến của mình đang trên trời.",
-  "en": ""
- },
- {
-  "vi": "Cò Trắng đậu ngay ngoài kia, xe hành lý chạy tới chạy lui.",
-  "en": ""
- },
- {
-  "vi": "CHƯA MỞ",
   "en": ""
  }
 ]

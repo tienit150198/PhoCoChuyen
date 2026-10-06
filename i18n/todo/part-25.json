@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Hộp nguy hại sai.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ cư dân sai.",
+  "en": ""
+ },
+ {
   "vi": "Số liệu tổ thu gom sai.",
   "en": ""
  },
@@ -232,6 +240,26 @@
   "en": ""
  },
  {
+  "vi": "Chọn dụng cụ trên xe trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "✋ Cầm đồ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chai (hoặc lau khô) trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "🧴 Chọn chai",
+  "en": ""
+ },
+ {
+  "vi": "🧴 Châm",
+  "en": ""
+ },
+ {
   "vi": "Bấm chuông, nghe khách dặn đã nhé.",
   "en": ""
  },
@@ -313,14 +341,6 @@
  },
  {
   "vi": "Phòng này không có chỗ đó.",
-  "en": ""
- },
- {
-  "vi": "Chọn dụng cụ trên xe trước đã.",
-  "en": ""
- },
- {
-  "vi": "Chọn chai (hoặc lau khô) trước đã.",
   "en": ""
  },
  {
@@ -1777,26 +1797,6 @@
  },
  {
   "vi": "Mở cửa sổ, bật quạt thông gió, đeo khẩu trang",
-  "en": ""
- },
- {
-  "vi": "Gió lùa qua, mùi tan dần. Đầu óc tỉnh hẳn.",
-  "en": ""
- },
- {
-  "vi": "Xịt thêm nước thơm cho át mùi",
-  "en": ""
- },
- {
-  "vi": "Mùi thơm trộn mùi tẩy, càng nồng. Khách về nhăn mũi.",
-  "en": ""
- },
- {
-  "vi": "Bà cụ muốn có người trò chuyện",
-  "en": ""
- },
- {
-  "vi": "Bà Xuân rót trà, kéo ghế: “Con ngồi nghỉ tí, nghe bà kể chuyện ông ngày xưa.”",
   "en": ""
  }
 ]

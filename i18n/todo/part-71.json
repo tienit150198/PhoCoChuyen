@@ -1,5 +1,17 @@
 [
  {
+  "vi": "⭕ Khay: chạm ô sai trên giấy để khoanh (1–3 ô), rồi bấm [[DUYỆT]], [[TRẢ LẠI]] hoặc [[TRÌNH SẾP]].",
+  "en": ""
+ },
+ {
+  "vi": "➡️ Bấm [[Bộ tiếp theo]]. Đủ bộ thì bấm [[Chốt khay]] để báo chị Hạnh.",
+  "en": ""
+ },
+ {
+  "vi": "🧮 Hồ sơ: làm từng bước, chọn rồi bấm [[Xác nhận]], [[Chốt thứ tự]] hoặc [[Xác nhận số liệu]].",
+  "en": ""
+ },
+ {
   "vi": "💡 Bí quá thì bấm [[Xin gợi ý]]. Mỗi lần mất 5 phút, trả lời sai mất thêm 15 phút.",
   "en": ""
  },
@@ -1569,22 +1581,6 @@
  },
  {
   "vi": "Chạm ô sai trong bảng quyền: Cấp quyền, Thu hồi hay Giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "Tìm hiểu trước, rồi chọn cách trả lời người xin mật khẩu, mã OTP, cài phần mềm lạ.",
-  "en": ""
- },
- {
-  "vi": "💾 Sao lưu trước khi sửa. Máy nghi nhiễm mã độc: rút mạng trước.",
-  "en": ""
- },
- {
-  "vi": "🔐 Không ai được hỏi mã OTP hay mật khẩu, kể cả giám đốc.",
-  "en": ""
- },
- {
-  "vi": "🚪 Nghỉ việc thì khóa quyền ngay hôm đó; ai cần quyền nào thì cấp đúng quyền đó.",
   "en": ""
  }
 ]

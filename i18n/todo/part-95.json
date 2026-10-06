@@ -1,5 +1,105 @@
 [
  {
+  "vi": "📘 Sổ tiếp viên",
+  "en": ""
+ },
+ {
+  "vi": "khách đón",
+  "en": ""
+ },
+ {
+  "vi": "món đã mời",
+  "en": ""
+ },
+ {
+  "vi": "lần sơ cứu",
+  "en": ""
+ },
+ {
+  "vi": "Chuyến đầu tiên đang chờ ở cửa tàu.",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Giới thiệu nghề\"",
+  "en": ""
+ },
+ {
+  "vi": "TIẾP VIÊN",
+  "en": ""
+ },
+ {
+  "vi": "TIẾP VIÊN DỰ BỊ",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp viên · cùng chị Thu lo khoang khách",
+  "en": ""
+ },
+ {
+  "vi": "💺 Về khoang khách",
+  "en": ""
+ },
+ {
+  "vi": "khách đón ở cửa",
+  "en": ""
+ },
+ {
+  "vi": "ghế chỉnh trước cất cánh",
+  "en": ""
+ },
+ {
+  "vi": "lần cất xe kịp",
+  "en": ""
+ },
+ {
+  "vi": "Chu đáo",
+  "en": ""
+ },
+ {
+  "vi": "Nói chuyện với khách",
+  "en": ""
+ },
+ {
+  "vi": "Chăm sóc khách",
+  "en": ""
+ },
+ {
+  "vi": "Ghế cần chỉnh",
+  "en": ""
+ },
+ {
+  "vi": "viết",
+  "en": ""
+ },
+ {
+  "vi": "· tiệm bù phần dư",
+  "en": ""
+ },
+ {
+  "vi": "Tông",
+  "en": ""
+ },
+ {
+  "vi": "Màu: chưa hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Có mèo: không ly",
+  "en": ""
+ },
+ {
+  "vi": "Nhà: chưa hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Giờ giao: chưa hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Bọc nylon",
+  "en": ""
+ },
+ {
   "vi": "🏷️ Bảng giá",
   "en": ""
  },
@@ -265,10 +365,6 @@
  },
  {
   "vi": "đang ngâm",
-  "en": ""
- },
- {
-  "vi": "Đủ rồi · trao cho khách",
   "en": ""
  },
  {
@@ -712,6 +808,10 @@
   "en": ""
  },
  {
+  "vi": "🦺 Đồ bảo hộ",
+  "en": ""
+ },
+ {
   "vi": "✓ Xe đã kiểm",
   "en": ""
  },
@@ -988,6 +1088,18 @@
   "en": ""
  },
  {
+  "vi": "Kính",
+  "en": ""
+ },
+ {
+  "vi": "Dịu",
+  "en": ""
+ },
+ {
+  "vi": "Dầu",
+  "en": ""
+ },
+ {
   "vi": "✋ Cầm một dụng cụ ở “Trên tay” trước đã.",
   "en": ""
  },
@@ -1048,10 +1160,6 @@
   "en": ""
  },
  {
-  "vi": "🧴 Châm",
-  "en": ""
- },
- {
   "vi": "hết kho",
   "en": ""
  },
@@ -1068,15 +1176,15 @@
   "en": ""
  },
  {
-  "vi": "🧴 Chai trên xe",
-  "en": ""
- },
- {
   "vi": "✓ Khăn sạch, ba màu",
   "en": ""
  },
  {
   "vi": "🧺 Giặt khăn",
+  "en": ""
+ },
+ {
+  "vi": "🧴 Chai trên xe",
   "en": ""
  },
  {
@@ -1689,114 +1797,6 @@
  },
  {
   "vi": "Tin xác nhận kèm nội quy sẽ gửi cho khách.",
-  "en": ""
- },
- {
-  "vi": "lịch thay đổi, chọn lại phòng",
-  "en": ""
- },
- {
-  "vi": "giữ phòng trước",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách cho chắc",
-  "en": ""
- },
- {
-  "vi": "vướng điều khách cần tránh",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn nơi hợp khách (thẻ xanh, không thẻ đỏ)",
-  "en": ""
- },
- {
-  "vi": "Khách sẽ đi đúng những nơi bạn gợi ý.",
-  "en": ""
- },
- {
-  "vi": "👉 So câu trả lời với sổ rồi quyết định",
-  "en": ""
- },
- {
-  "vi": "📞 Quyết định giao đồ",
-  "en": ""
- },
- {
-  "vi": "Nhấc trứng khỏi chảo",
-  "en": ""
- },
- {
-  "vi": "Quyết chuyện ở quầy",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn cách xử lý chuyện ở quầy",
-  "en": ""
- },
- {
-  "vi": "(khách tới tối nay)",
-  "en": ""
- },
- {
-  "vi": "để khăn ở cửa (biển đừng làm phiền)",
-  "en": ""
- },
- {
-  "vi": "sưởi đêm lạnh",
-  "en": ""
- },
- {
-  "vi": "phòng hết mùi ẩm",
-  "en": ""
- },
- {
-  "vi": "🗓️ Lịch",
-  "en": ""
- },
- {
-  "vi": "📖 Sổ",
-  "en": ""
- },
- {
-  "vi": "Khu trong nhà",
-  "en": ""
- },
- {
-  "vi": "🛏️ Tối mai nhận phòng:",
-  "en": ""
- },
- {
-  "vi": "🧹 Phòng cần dọn:",
-  "en": ""
- },
- {
-  "vi": "🏡 Sổ nhà hôm nay",
-  "en": ""
- },
- {
-  "vi": "Quy định phòng nhân sự",
-  "en": ""
- },
- {
-  "vi": "🗂️ Phòng nhân sự hôm nay",
-  "en": ""
- },
- {
-  "vi": "Quy định bàn IT",
-  "en": ""
- },
- {
-  "vi": "🖥️ Bàn IT hôm nay",
-  "en": ""
- },
- {
-  "vi": "👂 Nghe bạn đọc nói",
-  "en": ""
- },
- {
-  "vi": "🔖 Quầy mượn trả",
   "en": ""
  }
 ]

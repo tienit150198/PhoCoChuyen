@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Quần jogger đen",
+  "en": ""
+ },
+ {
+  "vi": "Quần jogger",
+  "en": ""
+ },
+ {
+  "vi": "Quần short jean",
+  "en": ""
+ },
+ {
   "vi": "Chân váy jean",
   "en": ""
  },
@@ -809,6 +821,14 @@
  },
  {
   "vi": "Ảnh này đã lưu hoặc hết hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Giao diện gọn hơn trên điện thoại: ít chữ, một nút chính, thông báo không che nút",
+  "en": ""
+ },
+ {
+  "vi": "Nút chưa bấm được sẽ mờ và nói lý do",
   "en": ""
  },
  {
@@ -1685,14 +1705,6 @@
  },
  {
   "vi": "Kênh Cả phố: trò chuyện với mọi người đang online, mỗi người 1 tin mỗi 10 giây.",
-  "en": ""
- },
- {
-  "vi": "Chấm xanh cho biết bạn bè nào đang online. Muốn ẩn thì tắt trong Cài đặt.",
-  "en": ""
- },
- {
-  "vi": "Đi dạo khu phố: Bờ hồ, Chợ đêm, Công viên, Phố đi bộ. Gặp người thật, ngồi bàn tám chuyện, nhặt lì xì.",
   "en": ""
  }
 ]

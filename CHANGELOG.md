@@ -1,3 +1,7 @@
+# v1.9.7 — 2026-10-07
+
+Gồm "Giao diện gọn hơn" (ui-foundation + đợt 1: 10 màn, giữ đủ manh mối quyết định). Tắt nhanh: Cài đặt → Giao diện → "Giao diện gọn", hoặc MNL_CLEAN_UI=off trên máy chủ.
+
 # v1.9.6 — 2026-10-07
 
 Gồm "Thêm chỗ tiêu xu" (spend-1, bảng donations + chat_style, schema 25) và "Phòng hát Mây" (karaoke-p1, schema 26, TẮT mặc định: LIVE_KARAOKE). CSP mở cho YouTube embed. Có gì mới chỉ nói phần tiêu xu; karaoke thông báo khi bật.

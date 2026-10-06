@@ -1,5 +1,17 @@
 [
  {
+  "vi": "👛 Tiền khách trả nằm trong quỹ của từng nơi làm (quỹ tiệm), không phải trong ví. Muốn tiêu thì rút tiền lời từ quỹ về ví.",
+  "en": ""
+ },
+ {
+  "vi": "1️⃣ Mở [[Hành trình]], bấm ô [[Ví của bạn]]. (Hoặc chạm số ngày, chọn ô Ví của bạn.)",
+  "en": ""
+ },
+ {
+  "vi": "2️⃣ Ở mục “Quỹ các nơi làm việc”, chạm tên nơi muốn rút để mở ra.",
+  "en": ""
+ },
+ {
   "vi": "3️⃣ Gõ số xu vào ô “Rút về ví”, hoặc bấm [[Tối đa]]. Rồi bấm [[Rút]]: tiền vào ví ngay.",
   "en": ""
  },
@@ -1417,14 +1429,6 @@
  },
  {
   "vi": "💬 Mở [[Người quen]], chọn một người rồi bấm [[Trò chuyện]] (khách ở nơi khác: [[Nhắn hỏi thăm]]). Lần đầu trong ngày +1 đến +3, nói nặng lời −3.",
-  "en": ""
- },
- {
-  "vi": "🎁 [[Tặng quà]] mỗi người một món mỗi ngày: đúng món thích +6, món thường +3, món không ưa −2; quà từ 10 xu thêm +1. Tiền quà lấy từ quỹ nơi đang làm.",
-  "en": ""
- },
- {
-  "vi": "🎉 Được mời mà [[Đi dự]] (10 xu phong bì) +5, [[Gửi lời chúc]] +1, im lặng tới hạn −3. Được tặng quà thì bấm [[Cảm ơn]] +2, để quá 2 ngày −1.",
   "en": ""
  }
 ]

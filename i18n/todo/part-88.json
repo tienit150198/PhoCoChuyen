@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Danh sách tip trong ngày sai.",
+  "en": ""
+ },
+ {
+  "vi": "Dòng tip trong ngày sai.",
+  "en": ""
+ },
+ {
+  "vi": "Kết quả tip của công việc sai.",
+  "en": ""
+ },
+ {
   "vi": "Ngã tư không hợp lệ.",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "\"ngoan quá, giống cháu mình\"",
-  "en": ""
- },
- {
-  "vi": "buồn, \"thời nay khác thật\"",
-  "en": ""
- },
- {
-  "vi": "kể chuyện ngày xưa khổ mà vượt qua, dặn giữ sức",
-  "en": ""
- },
- {
-  "vi": "Hồi đó hẻm này còn cây me to lắm, chiều nào cũng ngồi dưới gốc nghe radio.",
   "en": ""
  }
 ]

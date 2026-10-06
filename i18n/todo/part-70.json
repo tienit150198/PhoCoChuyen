@@ -1,5 +1,21 @@
 [
  {
+  "vi": "[[Hỏi cuốn gần nhất thích]], [[Hỏi đang muốn đọc gì]], rồi chọn một trong bốn cuốn hợp cả hai.",
+  "en": ""
+ },
+ {
+  "vi": "Biên mục",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi cuốn: chọn lớp, chọn ký hiệu tác giả (3 chữ đầu của tên), sách hỏng thì để riêng. Xong hết thì [[DÁN NHÃN, XẾP LÊN KỆ]].",
+  "en": ""
+ },
+ {
+  "vi": "Phòng đọc",
+  "en": ""
+ },
+ {
   "vi": "Mỗi chuyện chọn một cách: nhắc nhỏ, chỉ nội quy, một cách hợp, mời ra hoặc để kệ. Ai cãi lại thì nói thêm một lần. Xong thì [[XONG VÒNG PHÒNG ĐỌC]].",
   "en": ""
  },
@@ -1613,18 +1629,6 @@
  },
  {
   "vi": "📑 Tab [[Quy định]]: xem hạn mức duyệt, nhà cung cấp bị chặn, thuế suất tháng này. Mỗi quy định là một dòng, chạm để đọc.",
-  "en": ""
- },
- {
-  "vi": "⭕ Khay: chạm ô sai trên giấy để khoanh (1–3 ô), rồi bấm [[DUYỆT]], [[TRẢ LẠI]] hoặc [[TRÌNH SẾP]].",
-  "en": ""
- },
- {
-  "vi": "➡️ Bấm [[Bộ tiếp theo]]. Đủ bộ thì bấm [[Chốt khay]] để báo chị Hạnh.",
-  "en": ""
- },
- {
-  "vi": "🧮 Hồ sơ: làm từng bước, chọn rồi bấm [[Xác nhận]], [[Chốt thứ tự]] hoặc [[Xác nhận số liệu]].",
   "en": ""
  }
 ]

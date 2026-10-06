@@ -1,5 +1,13 @@
 [
  {
+  "vi": "Hỏi khách đi cùng ai, ngân sách, thời tiết… chọn 2–3 nơi hợp rồi bấm [[Gửi lịch trình cho khách]].",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3. Bấm [[Nghe máy]], hỏi người gọi. Chắc ăn nhất là [[Nhắn người đặt phòng xác nhận trước]].",
+  "en": ""
+ },
+ {
   "vi": "Ngoài giờ khách, mở tab [[🧹 Buồng]] rồi bấm [[Dọn phòng]], làm đúng thứ tự từ [[Mở cửa sổ, tháo ga gối]] tới [[Đóng cửa sổ, báo phòng sạch]].",
   "en": ""
  },
@@ -1569,22 +1577,6 @@
  },
  {
   "vi": "🟢 Đúng ngăn, không trộn lẫn; không để lọt pin, kim tiêm lên xe ép.",
-  "en": ""
- },
- {
-  "vi": "⏰ Vào ngõ đúng giờ thu gom.",
-  "en": ""
- },
- {
-  "vi": "📝 Nhắc đúng nhà chưa phân loại (được thêm điểm kinh nghiệm).",
-  "en": ""
- },
- {
-  "vi": "🧹 Không bỏ sót túi nào.",
-  "en": ""
- },
- {
-  "vi": "Nhặt kim tiêm, bóng đèn vỡ bằng tay trần",
   "en": ""
  }
 ]

@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Đủ $1 khách hôm nay",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ngày $1 tháng $2 năm $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phố Có Chuyện, life day $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phố Có Chuyện, Ngày sống thứ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Ảnh lưu niệm: $1 nhận $2",
   "en": "",
   "pattern": true
@@ -1480,11 +1500,6 @@
   "pattern": true
  },
  {
-  "vi": "Cất $1",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "Mỗi ngày sống: $1 $2 xu và cơm nước $3 xu.",
   "en": "",
   "pattern": true
@@ -2231,21 +2246,6 @@
  },
  {
   "vi": "🏢 Thưởng điều hành +$1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khách tiếp theo dự kiến tới trong khoảng $1 phút. Giá cao hơn thường khiến khách cân nhắc lâu hơn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khách tiếp theo đang tới, dự kiến khoảng $1 giây. Đơn sẽ hiện ngay tại đây.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "/ $1 NGÃ TƯ",
   "en": "",
   "pattern": true
  }

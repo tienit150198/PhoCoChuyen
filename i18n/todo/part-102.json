@@ -1,5 +1,349 @@
 [
  {
+  "vi": "Ví tiền công",
+  "en": ""
+ },
+ {
+  "vi": "SỔ TỔ GIÚP VIỆC",
+  "en": ""
+ },
+ {
+  "vi": "THÙNG CHAI",
+  "en": ""
+ },
+ {
+  "vi": "Nghỉ hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Nhận lịch hẹn",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG NHẬN DỌN",
+  "en": ""
+ },
+ {
+  "vi": "MAI GỌI NHÉ",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… nhà sạch thơm thế này, nằm đâu cũng sướng.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch hẹn kế tiếp sắp tới giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Giặt khăn, châm chai rồi lên đường nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Xe đồ nghề đang rảnh",
+  "en": ""
+ },
+ {
+  "vi": "Xong lịch rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thêm một nhà hoặc nghỉ hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thêm một nhà",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có nhà nào đang chờ",
+  "en": ""
+ },
+ {
+  "vi": "Sang nhà tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Những khách quen của tổ Nhà Thơm.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và đánh giá của khách nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "Bếp nhỏ của bé",
+  "en": ""
+ },
+ {
+  "vi": "Rương đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "Bàn vẽ của bé",
+  "en": ""
+ },
+ {
+  "vi": "SỔ TRÔNG BÉ",
+  "en": ""
+ },
+ {
+  "vi": "RƯƠNG ĐỒ",
+  "en": ""
+ },
+ {
+  "vi": "Vào trông bé",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG TRÔNG BÉ",
+  "en": ""
+ },
+ {
+  "vi": "Cũi của bé",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… bé ngủ rồi, mèo đi nhẹ chân nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chơi với Mướp bên cửa sổ",
+  "en": ""
+ },
+ {
+  "vi": "An toàn cho bé",
+  "en": ""
+ },
+ {
+  "vi": "Bố mẹ bé sắp tới gửi bé.",
+  "en": ""
+ },
+ {
+  "vi": "Rửa tay, đọc giấy dặn rồi nhận bé nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bé đang chơi ngoan",
+  "en": ""
+ },
+ {
+  "vi": "Làm thêm một việc hoặc về nhà hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Làm thêm một việc",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp ở tổ trông trẻ Mèo Con.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và nhận xét của bố mẹ các bé.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ sách theo ký hiệu",
+  "en": ""
+ },
+ {
+  "vi": "Xe sách trả",
+  "en": ""
+ },
+ {
+  "vi": "Sổ mượn trả",
+  "en": ""
+ },
+ {
+  "vi": "SỔ MƯỢN TRẢ",
+  "en": ""
+ },
+ {
+  "vi": "KHO VẬT TƯ",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ thư viện",
+  "en": ""
+ },
+ {
+  "vi": "Đóng cửa thư viện",
+  "en": ""
+ },
+ {
+  "vi": "Mở cửa thư viện",
+  "en": ""
+ },
+ {
+  "vi": "HẸN MAI ĐỌC TIẾP",
+  "en": ""
+ },
+ {
+  "vi": "Kho lưu trữ hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… nằm trên chồng báo cũ ấm ghê, đừng đuổi mèo nha.",
+  "en": ""
+ },
+ {
+  "vi": "Vuốt mèo ngủ trên chồng báo",
+  "en": ""
+ },
+ {
+  "vi": "Trông coi kho, phòng đọc",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thạc đã đứng chờ ngoài cửa.",
+  "en": ""
+ },
+ {
+  "vi": "Xem ẩm kế kho, soi bẫy rồi mở phòng đọc nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đón thêm bạn đọc hoặc đóng cửa thư viện hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Đón thêm một bạn đọc",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có bạn đọc nào đang chờ",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn đọc tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp ở thư viện phường Mây.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và nhận xét của bạn đọc.",
+  "en": ""
+ },
+ {
+  "vi": "Cờ đỏ, cờ xanh",
+  "en": ""
+ },
+ {
+  "vi": "Bảng giờ tàu",
+  "en": ""
+ },
+ {
+  "vi": "SỔ NHẬT KÝ",
+  "en": ""
+ },
+ {
+  "vi": "TỦ DỤNG CỤ",
+  "en": ""
+ },
+ {
+  "vi": "Thưởng ca",
+  "en": ""
+ },
+ {
+  "vi": "ĐANG GÁC",
+  "en": ""
+ },
+ {
+  "vi": "Chòi gác Bến Mây",
+  "en": ""
+ },
+ {
+  "vi": "Mrrr… mèo nằm trong chòi thôi, ra ray là bị bế vô liền.",
+  "en": ""
+ },
+ {
+  "vi": "Vuốt con mèo nằm trong chòi",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đàm sắp reo.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ca, thử từng thiết bị rồi ký sổ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đường ngang đang thông",
+  "en": ""
+ },
+ {
+  "vi": "Hết tàu rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thêm một chuyến tàu hoặc giao ca hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận thêm một chuyến tàu",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có chuyến tàu nào đang tới",
+  "en": ""
+ },
+ {
+  "vi": "Chuyến tàu tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp ở đường ngang Bến Mây.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và nhận xét quanh đường ngang.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu suất ăn đặc biệt",
+  "en": ""
+ },
+ {
+  "vi": "Cửa ra tàu",
+  "en": ""
+ },
+ {
+  "vi": "SỔ TIẾP VIÊN",
+  "en": ""
+ },
+ {
+  "vi": "Khách chuyến sau đang xếp hàng ở cổng.",
+  "en": ""
+ },
+ {
+  "vi": "Thắt khăn quàng, ra cửa tàu đón khách nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Khoang khách đang yên",
+  "en": ""
+ },
+ {
+  "vi": "Những người bạn gặp trên khoang khách.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn và nhận xét của hành khách.",
+  "en": ""
+ },
+ {
+  "vi": "Chuông gọi & sát khuẩn tay",
+  "en": ""
+ },
+ {
   "vi": "Xe tiêm & tủ vật tư",
   "en": ""
  },
@@ -1453,350 +1797,6 @@
  },
  {
   "vi": "Xong bảng này rồi đi tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Xong! Xem lại trong Cài đặt 📘",
-  "en": ""
- },
- {
-  "vi": "Xem lại trong Cài đặt 📘",
-  "en": ""
- },
- {
-  "vi": "Đã có phiên bản mới, bạn tải lại để cập nhật nha",
-  "en": ""
- },
- {
-  "vi": "trừ vào ví của bạn",
-  "en": ""
- },
- {
-  "vi": "Phạt",
-  "en": ""
- },
- {
-  "vi": "đang chờ sẽ bỏ về",
-  "en": ""
- },
- {
-  "vi": "Việc đã hẹn vẫn giữ, nhưng khách sẽ phật lòng",
-  "en": ""
- },
- {
-  "vi": "và chủ sẽ nhắc “lần sau cho nghỉ”",
-  "en": ""
- },
- {
-  "vi": ", khách quen bắt đầu kháo nhau",
-  "en": ""
- },
- {
-  "vi": "Vẫn đi",
-  "en": ""
- },
- {
-  "vi": "Ở lại làm nốt",
-  "en": ""
- },
- {
-  "vi": "Lần sau còn bỏ ngang là bị cho nghỉ.",
-  "en": ""
- },
- {
-  "vi": "Bỏ quầy nữa là mất khách quen.",
-  "en": ""
- },
- {
-  "vi": "Tiền phạt:",
-  "en": ""
- },
- {
-  "vi": "khách đã bỏ về",
-  "en": ""
- },
- {
-  "vi": "Chủ đã nhắc: lần sau còn bỏ ngang là cho nghỉ.",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm đã nhắc: bỏ quầy hoài là mất khách quen.",
-  "en": ""
- },
- {
-  "vi": "Liên kết TikTok với tài khoản này",
-  "en": ""
- },
- {
-  "vi": "Tiếp tục với TikTok",
-  "en": ""
- },
- {
-  "vi": "Giữ nguyên tên đăng nhập, mật khẩu và tiến trình.",
-  "en": ""
- },
- {
-  "vi": "TikTok chỉ cung cấp mã tài khoản và tên hiển thị. Không cần mật khẩu game.",
-  "en": ""
- },
- {
-  "vi": "Đăng nhập TikTok đang thử nghiệm cho tài khoản được mời.",
-  "en": ""
- },
- {
-  "vi": "Phiên chơi đã thay đổi. Hãy thử lại.",
-  "en": ""
- },
- {
-  "vi": "Đã đăng nhập bằng TikTok.",
-  "en": ""
- },
- {
-  "vi": "Đã liên kết TikTok. Tiến trình và mật khẩu được giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "Đã hủy đăng nhập. Tiến trình vẫn được giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "💍 Hôn nhân · mã người chơi",
-  "en": ""
- },
- {
-  "vi": "Đã liên kết TikTok.",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối được với TikTok. Hãy thử lại.",
-  "en": ""
- },
- {
-  "vi": "Nguồn chính thức",
-  "en": ""
- },
- {
-  "vi": "Căn cứ và nguồn tra cứu",
-  "en": ""
- },
- {
-  "vi": "Chu trình kế toán",
-  "en": ""
- },
- {
-  "vi": "Bút toán",
-  "en": ""
- },
- {
-  "vi": "Chưa có số liệu ở mục này. Ghi hồ sơ đúng để sổ cập nhật.",
-  "en": ""
- },
- {
-  "vi": "dòng · VND",
-  "en": ""
- },
- {
-  "vi": "Chưa có câu trả lời",
-  "en": ""
- },
- {
-  "vi": "ví dụ: 6+4, -500.000, 1,5 triệu",
-  "en": ""
- },
- {
-  "vi": "Chọn đủ các mục theo thứ tự. Chạm dấu × để bỏ một mục.",
-  "en": ""
- },
- {
-  "vi": "× Bỏ",
-  "en": ""
- },
- {
-  "vi": "Chưa chọn mục nào.",
-  "en": ""
- },
- {
-  "vi": "Mỗi dòng là một cặp Nợ/Có cùng số tiền. Có thể thêm tối đa 8 dòng; nhập VND nguyên.",
-  "en": ""
- },
- {
-  "vi": "Tài khoản Nợ",
-  "en": ""
- },
- {
-  "vi": "Tài khoản Có",
-  "en": ""
- },
- {
-  "vi": "Số tiền (VND)",
-  "en": ""
- },
- {
-  "vi": "Bỏ dòng",
-  "en": ""
- },
- {
-  "vi": "+ Thêm dòng",
-  "en": ""
- },
- {
-  "vi": "Loại câu hỏi này chưa được hỗ trợ.",
-  "en": ""
- },
- {
-  "vi": "Đã làm đúng",
-  "en": ""
- },
- {
-  "vi": "Nộp câu và tiếp tục",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra và ghi sổ",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra bài tập",
-  "en": ""
- },
- {
-  "vi": "Gợi ý tiếp",
-  "en": ""
- },
- {
-  "vi": "Cần gợi ý?",
-  "en": ""
- },
- {
-  "vi": "131, phải thu…",
-  "en": ""
- },
- {
-  "vi": "Tra cứu TT99 · hệ thống tài khoản",
-  "en": ""
- },
- {
-  "vi": "Tìm theo số hiệu hoặc tên",
-  "en": ""
- },
- {
-  "vi": "Không thấy tài khoản khớp.",
-  "en": ""
- },
- {
-  "vi": "CHỨNG NHẬN TRONG GAME",
-  "en": ""
- },
- {
-  "vi": "Lưu bản để in",
-  "en": ""
- },
- {
-  "vi": "Thi lại để ôn tập",
-  "en": ""
- },
- {
-  "vi": "Thi hoàn thành khóa",
-  "en": ""
- },
- {
-  "vi": "Bắt đầu thi",
-  "en": ""
- },
- {
-  "vi": "Cần chứng nhận Kế toán cơ bản và hoàn thành 60 bài của khóa này. Thi đạt mở việc ở Sông Hồng Group, lương kế toán ×3 (ngày lễ ×5), không cộng dồn khi thi lại.",
-  "en": ""
- },
- {
-  "vi": "Chương trình học đang được tải.",
-  "en": ""
- },
- {
-  "vi": "Mục lục khóa học",
-  "en": ""
- },
- {
-  "vi": "NỀN TẢNG",
-  "en": ""
- },
- {
-  "vi": "DOANH NGHIỆP · TT99",
-  "en": ""
- },
- {
-  "vi": "· hoàn thành",
-  "en": ""
- },
- {
-  "vi": "BẮT ĐẦU TỪ BẢN CHẤT GIAO DỊCH",
-  "en": ""
- },
- {
-  "vi": "Đọc bài và ví dụ, rồi làm đúng ba bài tập để hoàn thành từng bài. Tiến độ được giữ trong bản lưu.",
-  "en": ""
- },
- {
-  "vi": "Mở lại bài học",
-  "en": ""
- },
- {
-  "vi": "Tiếp tục học",
-  "en": ""
- },
- {
-  "vi": "Sau bài này",
-  "en": ""
- },
- {
-  "vi": "THEO DÕI CÁCH LÀM",
-  "en": ""
- },
- {
-  "vi": "Tự làm bài tập",
-  "en": ""
- },
- {
-  "vi": "Bài đã hoàn thành",
-  "en": ""
- },
- {
-  "vi": "Đang học",
-  "en": ""
- },
- {
-  "vi": "Hoàn thành bài",
-  "en": ""
- },
- {
-  "vi": "Bài tiếp theo →",
-  "en": ""
- },
- {
-  "vi": "Xem điều kiện thi →",
-  "en": ""
- },
- {
-  "vi": "Chọn khóa học",
-  "en": ""
- },
- {
-  "vi": "BÀI THI",
-  "en": ""
- },
- {
-  "vi": "Câu đã nộp được giữ lại. Đáp án và điểm chỉ xuất hiện sau khi nộp đủ bài.",
-  "en": ""
- },
- {
-  "vi": "Tiến độ thi",
-  "en": ""
- },
- {
-  "vi": "Hủy bài thi đang làm",
-  "en": ""
- },
- {
-  "vi": "Khóa thi",
   "en": ""
  }
 ]

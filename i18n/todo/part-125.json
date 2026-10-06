@@ -1,5 +1,20 @@
 [
  {
+  "vi": "Khách tiếp theo dự kiến tới trong khoảng $1 phút. Giá cao hơn thường khiến khách cân nhắc lâu hơn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khách tiếp theo đang tới, dự kiến khoảng $1 giây. Đơn sẽ hiện ngay tại đây.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "/ $1 NGÃ TƯ",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "/ $1 phút hoạt động, lấy từ két/vốn quầy.",
   "en": "",
   "pattern": true

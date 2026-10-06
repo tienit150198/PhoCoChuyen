@@ -1,5 +1,25 @@
 [
  {
+  "vi": "Gửi thư mời ghi tên từng người",
+  "en": ""
+ },
+ {
+  "vi": "Mời đúng người, đúng tên.",
+  "en": ""
+ },
+ {
+  "vi": "Soạn bài phát biểu cho sếp",
+  "en": ""
+ },
+ {
+  "vi": "Sếp cần nói vài lời.",
+  "en": ""
+ },
+ {
+  "vi": "Phân công người đón khách",
+  "en": ""
+ },
+ {
   "vi": "Khách đến không ai đón là thất lễ.",
   "en": ""
  },
@@ -1777,26 +1797,6 @@
  },
  {
   "vi": "Không ai nói gì, càng lo.",
-  "en": ""
- },
- {
-  "vi": "Kế toán mà cứ hẹn lần hẹn lữa.",
-  "en": ""
- },
- {
-  "vi": "Trừ lương bồi thường cần biên bản, nghe người lao động trình bày, và mỗi tháng không quá 30% lương.",
-  "en": ""
- },
- {
-  "vi": "Khay thối tiền không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Thối thiếu tiền, tôi phải đếm lại ngay tại chỗ mới đòi đủ.",
-  "en": ""
- },
- {
-  "vi": "Tiền của khách này đã tính xong.",
   "en": ""
  }
 ]

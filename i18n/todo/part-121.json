@@ -1490,6 +1490,11 @@
   "pattern": true
  },
  {
+  "vi": "Nấu $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bày khay $1",
   "en": "",
   "pattern": true
@@ -1710,7 +1715,17 @@
   "pattern": true
  },
  {
+  "vi": "Xếp $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Xếp $1 lên xe",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cất $1",
   "en": "",
   "pattern": true
  },
@@ -2231,21 +2246,6 @@
  },
  {
   "vi": "Ngâm đủ $1 giây rồi nhấc ra",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎁 Gói $1 & thắt nơ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎁 Gói $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎀 Thắt ruy băng $1",
   "en": "",
   "pattern": true
  }

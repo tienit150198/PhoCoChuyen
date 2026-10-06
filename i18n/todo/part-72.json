@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Tìm hiểu trước, rồi chọn cách trả lời người xin mật khẩu, mã OTP, cài phần mềm lạ.",
+  "en": ""
+ },
+ {
+  "vi": "💾 Sao lưu trước khi sửa. Máy nghi nhiễm mã độc: rút mạng trước.",
+  "en": ""
+ },
+ {
+  "vi": "🔐 Không ai được hỏi mã OTP hay mật khẩu, kể cả giám đốc.",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Nghỉ việc thì khóa quyền ngay hôm đó; ai cần quyền nào thì cấp đúng quyền đó.",
+  "en": ""
+ },
+ {
   "vi": "🔥 Cả công ty dừng việc, nghi mã độc: Khẩn. Chuột hơi rít: Xếp lịch.",
   "en": ""
  },
@@ -1637,18 +1653,6 @@
  },
  {
   "vi": "Rút tiền về ví thế nào?",
-  "en": ""
- },
- {
-  "vi": "👛 Tiền khách trả nằm trong quỹ của từng nơi làm (quỹ tiệm), không phải trong ví. Muốn tiêu thì rút tiền lời từ quỹ về ví.",
-  "en": ""
- },
- {
-  "vi": "1️⃣ Mở [[Hành trình]], bấm ô [[Ví của bạn]]. (Hoặc chạm số ngày, chọn ô Ví của bạn.)",
-  "en": ""
- },
- {
-  "vi": "2️⃣ Ở mục “Quỹ các nơi làm việc”, chạm tên nơi muốn rút để mở ra.",
   "en": ""
  }
 ]

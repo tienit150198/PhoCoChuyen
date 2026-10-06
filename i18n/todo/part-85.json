@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Góp ý theo cảm nhận",
+  "en": ""
+ },
+ {
+  "vi": "Chê một chuyện không có trong ghi nhận",
+  "en": ""
+ },
+ {
+  "vi": "không có ghi nhận nào về chuyện này hôm đó; phần việc chính làm đúng",
+  "en": ""
+ },
+ {
   "vi": "Bạn trừ một sao vì một góc cụ thể (unfair_claim.claim) theo cảm nhận riêng; không có ghi nhận nào xác nhận chuyện đó, phần việc chính làm tốt. Nếu chủ quán/giáo viên trả lời lịch sự, đưa sự thật hoặc cách họ kiểm tra (lịch dọn, quy trình), bạn chấp nhận và trả lại sao; nếu bị cãi hoặc mỉa, bạn giữ ý kiến, xéo xắt nhưng không tục.",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Tự sửa",
-  "en": ""
- },
- {
-  "vi": "Chưa đi được xe này",
-  "en": ""
- },
- {
-  "vi": "Gọi thợ sửa",
-  "en": ""
- },
- {
-  "vi": "Nhà mất Ấm cúng tới khi sửa",
   "en": ""
  }
 ]

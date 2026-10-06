@@ -1,5 +1,81 @@
 [
  {
+  "vi": "🍖 Gắp sườn",
+  "en": ""
+ },
+ {
+  "vi": "hết trứng: nhập ở Kho hoặc nói thật với khách",
+  "en": ""
+ },
+ {
+  "vi": "Chan mỡ hành",
+  "en": ""
+ },
+ {
+  "vi": "Khách không ăn mỡ hành",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ mỡ hành",
+  "en": ""
+ },
+ {
+  "vi": "Múc canh",
+  "en": ""
+ },
+ {
+  "vi": "Khách không lấy canh",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Múc canh",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ canh",
+  "en": ""
+ },
+ {
+  "vi": "Mở quán xong mới bán",
+  "en": ""
+ },
+ {
+  "vi": "Khách mua mang về: lấy hộp",
+  "en": ""
+ },
+ {
+  "vi": "Khách ngồi ăn: lấy dĩa",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ Làm lại",
+  "en": ""
+ },
+ {
+  "vi": "làm sau",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa này không đúng món khách gọi",
+  "en": ""
+ },
+ {
+  "vi": "Quyết chuyện ở quán",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Vào việc thôi!",
+  "en": ""
+ },
+ {
+  "vi": "🍚 MỞ QUÁN",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi khách",
+  "en": ""
+ },
+ {
   "vi": "💵 ĐƯA TIỀN THỐI",
   "en": ""
  },
@@ -29,6 +105,10 @@
  },
  {
   "vi": "🍚 Nồi hết cơm",
+  "en": ""
+ },
+ {
+  "vi": "đổ nước tới đâu?",
   "en": ""
  },
  {
@@ -580,15 +660,35 @@
   "en": ""
  },
  {
+  "vi": "Dây 5m",
+  "en": ""
+ },
+ {
+  "vi": "Máy 15m",
+  "en": ""
+ },
+ {
+  "vi": "Phun áp",
+  "en": ""
+ },
+ {
+  "vi": "Móc",
+  "en": ""
+ },
+ {
+  "vi": "Gầu bùn",
+  "en": ""
+ },
+ {
+  "vi": "Sổ hẹn hôm nay",
+  "en": ""
+ },
+ {
   "vi": "📒 Sổ hẹn hôm nay",
   "en": ""
  },
  {
-  "vi": "🧰 Xếp lên xe",
-  "en": ""
- },
- {
-  "vi": "🦺 Đồ bảo hộ",
+  "vi": "Xếp lên xe",
   "en": ""
  },
  {
@@ -1697,106 +1797,6 @@
  },
  {
   "vi": "chăm sóc khách trước",
-  "en": ""
- },
- {
-  "vi": "📘 Sổ tiếp viên",
-  "en": ""
- },
- {
-  "vi": "khách đón",
-  "en": ""
- },
- {
-  "vi": "món đã mời",
-  "en": ""
- },
- {
-  "vi": "lần sơ cứu",
-  "en": ""
- },
- {
-  "vi": "Chuyến đầu tiên đang chờ ở cửa tàu.",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Giới thiệu nghề\"",
-  "en": ""
- },
- {
-  "vi": "TIẾP VIÊN",
-  "en": ""
- },
- {
-  "vi": "TIẾP VIÊN DỰ BỊ",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên · cùng chị Thu lo khoang khách",
-  "en": ""
- },
- {
-  "vi": "💺 Về khoang khách",
-  "en": ""
- },
- {
-  "vi": "khách đón ở cửa",
-  "en": ""
- },
- {
-  "vi": "ghế chỉnh trước cất cánh",
-  "en": ""
- },
- {
-  "vi": "lần cất xe kịp",
-  "en": ""
- },
- {
-  "vi": "Chu đáo",
-  "en": ""
- },
- {
-  "vi": "Nói chuyện với khách",
-  "en": ""
- },
- {
-  "vi": "Chăm sóc khách",
-  "en": ""
- },
- {
-  "vi": "Ghế cần chỉnh",
-  "en": ""
- },
- {
-  "vi": "viết",
-  "en": ""
- },
- {
-  "vi": "· tiệm bù phần dư",
-  "en": ""
- },
- {
-  "vi": "Tông",
-  "en": ""
- },
- {
-  "vi": "Màu: chưa hỏi",
-  "en": ""
- },
- {
-  "vi": "Có mèo: không ly",
-  "en": ""
- },
- {
-  "vi": "Nhà: chưa hỏi",
-  "en": ""
- },
- {
-  "vi": "Giờ giao: chưa hỏi",
-  "en": ""
- },
- {
-  "vi": "Bọc nylon",
   "en": ""
  }
 ]

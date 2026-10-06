@@ -1,5 +1,157 @@
 [
  {
+  "vi": "ngừng bán",
+  "en": ""
+ },
+ {
+  "vi": "đã hết. Chưa gọi hỏa tốc được",
+  "en": ""
+ },
+ {
+  "vi": "Đổ ly để đổi cỡ",
+  "en": ""
+ },
+ {
+  "vi": ". Ly đang có trà: đổ ly rồi mới đổi cỡ",
+  "en": ""
+ },
+ {
+  "vi": "Pha xong trà, đá, đường rồi mới dán nắp",
+  "en": ""
+ },
+ {
+  "vi": "So phiếu miễn phí: không tính lỗi, không trôi thời gian. Trao ly sai hoặc đổ làm lại vẫn tính lỗi.",
+  "en": ""
+ },
+ {
+  "vi": "Ly này sai rồi. Đổ ly và pha lại từ đầu?",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ Đổ ly, pha lại",
+  "en": ""
+ },
+ {
+  "vi": "⚙️ Dán nắp",
+  "en": ""
+ },
+ {
+  "vi": "máy dán nắp đang ngưng, chờ có điện",
+  "en": ""
+ },
+ {
+  "vi": "✅ Dán nắp",
+  "en": ""
+ },
+ {
+  "vi": "Dán nắp",
+  "en": ""
+ },
+ {
+  "vi": "(không gọi)",
+  "en": ""
+ },
+ {
+  "vi": "(đang sai, chỉnh lại)",
+  "en": ""
+ },
+ {
+  "vi": "(sai, cần đổ ly làm lại)",
+  "en": ""
+ },
+ {
+  "vi": "(đã đúng)",
+  "en": ""
+ },
+ {
+  "vi": "(chưa làm)",
+  "en": ""
+ },
+ {
+  "vi": "Món khách gọi",
+  "en": ""
+ },
+ {
+  "vi": "✓ Ly đã xong · giao cho tài xế",
+  "en": ""
+ },
+ {
+  "vi": "✓ Ly đã xong · trao cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách xử lý chuyện ở quầy",
+  "en": ""
+ },
+ {
+  "vi": "👍 Làm tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Khách có thể trả ly.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nhà nào bán mặt hàng này.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nhanh",
+  "en": ""
+ },
+ {
+  "vi": "· ngừng bán",
+  "en": ""
+ },
+ {
+  "vi": "🚫 ngừng bán ·",
+  "en": ""
+ },
+ {
+  "vi": "dùng hết ngày mai",
+  "en": ""
+ },
+ {
+  "vi": "⚠ Cần nhập / cần ủ",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Quỹ tiệm",
+  "en": ""
+ },
+ {
+  "vi": ", hoặc góp tiền từ ví vào quỹ",
+  "en": ""
+ },
+ {
+  "vi": "❔ Ủ, nấu & đặt hàng thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Ủ trà, nấu trân châu, đặt hàng đều trừ vào quỹ tiệm. Ủ trà, nấu trân châu mất 20 phút khi quán mở; làm trước giờ mở cửa thì không mất thời gian. Trà ủ và trân châu không để qua đêm.",
+  "en": ""
+ },
+ {
+  "vi": "Trả tiền khi đặt. Mỗi nhà giao một kiểu: hỏa tốc 15–30 phút, xe bốn chuyến mỗi ngày, chợ chiều nay hoặc sáng mai, xưởng 1–2 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "· đợi hàng tới rồi mới đặt thêm",
+  "en": ""
+ },
+ {
+  "vi": "disabled title=\"Quán cần bán ít nhất một loại trà nền\"",
+  "en": ""
+ },
+ {
+  "vi": "Đang bán",
+  "en": ""
+ },
+ {
+  "vi": "Tắt món không muốn bán: khách mới sẽ không gọi, quầy cũng không cần nhập. Ly khách đã gọi vẫn pha như cũ. Luôn giữ ít nhất một loại trà nền.",
+  "en": ""
+ },
+ {
   "vi": "món ngừng bán",
   "en": ""
  },
@@ -1368,6 +1520,118 @@
   "en": ""
  },
  {
+  "vi": "Thức dậy",
+  "en": ""
+ },
+ {
+  "vi": "Thỉnh chuông sáng",
+  "en": ""
+ },
+ {
+  "vi": "Công phu sáng",
+  "en": ""
+ },
+ {
+  "vi": "Điểm tâm",
+  "en": ""
+ },
+ {
+  "vi": "Mở loa ra đường 4h",
+  "en": ""
+ },
+ {
+  "vi": "Lau khăn ẩm vắt kiệt",
+  "en": ""
+ },
+ {
+  "vi": "Bày lại như cũ",
+  "en": ""
+ },
+ {
+  "vi": "Khóa cửa hông",
+  "en": ""
+ },
+ {
+  "vi": "Ghế người già hàng đầu",
+  "en": ""
+ },
+ {
+  "vi": "Chụp người nhận đăng mạng",
+  "en": ""
+ },
+ {
+  "vi": "Dập bằng bình, khăn ướt",
+  "en": ""
+ },
+ {
+  "vi": "Dời đèn, lư sang bên",
+  "en": ""
+ },
+ {
+  "vi": "Đốt lá góc sân",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ phướn, kéo xuống đất",
+  "en": ""
+ },
+ {
+  "vi": "Xếp hàng, cụ già trước",
+  "en": ""
+ },
+ {
+  "vi": "Hô lùi ra xa",
+  "en": ""
+ },
+ {
+  "vi": "Phủi bụi trên xuống",
+  "en": ""
+ },
+ {
+  "vi": "Loa vừa đủ trong sân",
+  "en": ""
+ },
+ {
+  "vi": "Chừa lối đi, cửa hông",
+  "en": ""
+ },
+ {
+  "vi": "Nhặt rác",
+  "en": ""
+ },
+ {
+  "vi": "Mời nước, chỗ mát",
+  "en": ""
+ },
+ {
+  "vi": "Quét hiên ra cổng",
+  "en": ""
+ },
+ {
+  "vi": "Phát suất, hai tay",
+  "en": ""
+ },
+ {
+  "vi": "Rửa tay, khẩu trang",
+  "en": ""
+ },
+ {
+  "vi": "Đứng lên bàn thờ",
+  "en": ""
+ },
+ {
+  "vi": "Tưới cau, kiểng",
+  "en": ""
+ },
+ {
+  "vi": "Xá trước khi lau",
+  "en": ""
+ },
+ {
+  "vi": "Xem còn tàn lửa",
+  "en": ""
+ },
+ {
   "vi": "📦 Nhập",
   "en": ""
  },
@@ -1533,270 +1797,6 @@
  },
  {
   "vi": "Nhà gia đình:",
-  "en": ""
- },
- {
-  "vi": "🚰 Khóa vòi · nước đã trong",
-  "en": ""
- },
- {
-  "vi": "⏹️ Tắt máy sấy · khô rồi",
-  "en": ""
- },
- {
-  "vi": "⏹️ Tắt máy sấy ngay!",
-  "en": ""
- },
- {
-  "vi": "Chào bé khách quen, hỏi thăm lần trước",
-  "en": ""
- },
- {
-  "vi": "👋 Gọi tên bé, hỏi thăm",
-  "en": ""
- },
- {
-  "vi": ", khuyên đi thú y",
-  "en": ""
- },
- {
-  "vi": "📝 Ghi lời báo cho chủ",
-  "en": ""
- },
- {
-  "vi": "💬 Chọn ý báo lại cho chủ",
-  "en": ""
- },
- {
-  "vi": "Báo lại cho chủ",
-  "en": ""
- },
- {
-  "vi": "Sấy khô tới chân lông rồi tắt máy",
-  "en": ""
- },
- {
-  "vi": "Bé nhảy khỏi bàn: đưa bé về an toàn",
-  "en": ""
- },
- {
-  "vi": "🚪 Đóng cửa, ngồi thấp, gọi tên nhỏ nhẹ",
-  "en": ""
- },
- {
-  "vi": "Móng rỉ máu: rắc bột cầm máu",
-  "en": ""
- },
- {
-  "vi": "Bé hay nhảy khỏi bàn: đeo vòng giữ",
-  "en": ""
- },
- {
-  "vi": "Chải gỡ rối trước khi tắm",
-  "en": ""
- },
- {
-  "vi": "Chọn sữa tắm hợp với bé",
-  "en": ""
- },
- {
-  "vi": "🧴 Chọn sữa tắm hợp với bé",
-  "en": ""
- },
- {
-  "vi": "🚿 Mở vòi xả thêm",
-  "en": ""
- },
- {
-  "vi": "💨 Chọn nấc sấy",
-  "en": ""
- },
- {
-  "vi": "Hỏi chủ đồng ý rọ mõm mềm",
-  "en": ""
- },
- {
-  "vi": "Đeo rọ mõm trước khi cầm chân bé",
-  "en": ""
- },
- {
-  "vi": "Quấn khăn giữ bé trước khi cắt móng",
-  "en": ""
- },
- {
-  "vi": "🌯 Quấn khăn giữ bé",
-  "en": ""
- },
- {
-  "vi": "(móng đen)",
-  "en": ""
- },
- {
-  "vi": "✂️ Chọn cách cắt móng",
-  "en": ""
- },
- {
-  "vi": "bỏ qua",
-  "en": ""
- },
- {
-  "vi": "🙅 Bỏ qua lau tai · tai có vấn đề",
-  "en": ""
- },
- {
-  "vi": "👂 Lau tai hay bỏ qua?",
-  "en": ""
- },
- {
-  "vi": "Bé đang hoảng: cho bé nghỉ đã",
-  "en": ""
- },
- {
-  "vi": "Bé đang căng thẳng: dỗ bé đã",
-  "en": ""
- },
- {
-  "vi": "Còn:",
-  "en": ""
- },
- {
-  "vi": "Tắt vòi / máy sấy trước",
-  "en": ""
- },
- {
-  "vi": "Sổ tiêm không đủ hạn: từ chối lịch sự",
-  "en": ""
- },
- {
-  "vi": "Bé có dấu hiệu bệnh: từ chối, mời đi khám",
-  "en": ""
- },
- {
-  "vi": "Hết chuồng phù hợp: từ chối lịch sự",
-  "en": ""
- },
- {
-  "vi": "Kiểm bé trước khi nhận",
-  "en": ""
- },
- {
-  "vi": "🙏 Chọn lý do từ chối",
-  "en": ""
- },
- {
-  "vi": "Chọn chuồng hợp loài, hợp cân nặng",
-  "en": ""
- },
- {
-  "vi": "Ghi kế hoạch ăn theo bảng",
-  "en": ""
- },
- {
-  "vi": "🥣 Tính khẩu phần rồi bấm 💾 Ghi",
-  "en": ""
- },
- {
-  "vi": "Xem sổ tiêm, chọn chuồng và ghi kế hoạch ăn trước",
-  "en": ""
- },
- {
-  "vi": "Xem bé trước khi cho ăn",
-  "en": ""
- },
- {
-  "vi": "Cho ăn đúng loại, đúng bảng",
-  "en": ""
- },
- {
-  "vi": "🥣 Cân khẩu phần rồi cho ăn",
-  "en": ""
- },
- {
-  "vi": "💊 Đọc nhãn, chọn liều",
-  "en": ""
- },
- {
-  "vi": "🦮 Dắt bé đi dạo",
-  "en": ""
- },
- {
-  "vi": "túi nhặt phân",
-  "en": ""
- },
- {
-  "vi": "Cho bé ăn và uống thuốc trước",
-  "en": ""
- },
- {
-  "vi": "Cho bé ăn trước",
-  "en": ""
- },
- {
-  "vi": "Hỏi nếp nhà của gia đình",
-  "en": ""
- },
- {
-  "vi": "🐾 Chọn bé hợp nếp nhà",
-  "en": ""
- },
- {
-  "vi": "Hỏi nếp nhà rồi chọn một bé",
-  "en": ""
- },
- {
-  "vi": "🔔 Ra quầy quyết giúp",
-  "en": ""
- },
- {
-  "vi": "· nhập hàng rồi làm tiếp, hoặc khép ca: việc dở được giữ tới mai.",
-  "en": ""
- },
- {
-  "vi": "Có bé đang để lát nữa",
-  "en": ""
- },
- {
-  "vi": "· khép ca lúc nào cũng được, việc dở được giữ tới mai.",
-  "en": ""
- },
- {
-  "vi": "Nước còn đục bọt. Nút sáng lên khi xả đủ.",
-  "en": ""
- },
- {
-  "vi": "Chân lông còn ẩm. Nút sáng lên khi khô.",
-  "en": ""
- },
- {
-  "vi": "🐾 Sổ tiệm hôm nay",
-  "en": ""
- },
- {
-  "vi": "Phí nhận nuôi",
-  "en": ""
- },
- {
-  "vi": "🎨 Khách dặn màu",
-  "en": ""
- },
- {
-  "vi": "Chọn màu khách dặn",
-  "en": ""
- },
- {
-  "vi": "🎨 Chọn",
-  "en": ""
- },
- {
-  "vi": "TIỆM THÚ NHỎ",
-  "en": ""
- },
- {
-  "vi": "Đang dùng",
-  "en": ""
- },
- {
-  "vi": "Đã mua",
   "en": ""
  }
 ]

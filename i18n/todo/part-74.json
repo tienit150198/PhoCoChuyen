@@ -1,5 +1,13 @@
 [
  {
+  "vi": "🎁 [[Tặng quà]] mỗi người một món mỗi ngày: đúng món thích +6, món thường +3, món không ưa −2; quà từ 10 xu thêm +1. Tiền quà lấy từ quỹ nơi đang làm.",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Được mời mà [[Đi dự]] (10 xu phong bì) +5, [[Gửi lời chúc]] +1, im lặng tới hạn −3. Được tặng quà thì bấm [[Cảm ơn]] +2, để quá 2 ngày −1.",
+  "en": ""
+ },
+ {
   "vi": "⭐ Phục vụ khách quen: 5★ +2, 3★ −1, 2★ −3, 1★ −5, thối thiếu −3. Hơn 14 ngày không gặp thì nhạt dần, cứ 7 ngày −1, không tụt dưới 40 (hàng xóm) hay 20 (khách).",
   "en": ""
  },
@@ -1189,18 +1197,6 @@
  },
  {
   "vi": "👥 Nhân viên trong Sổ tiệm nhận và xử lý đơn riêng liên tục, cả lúc offline. Các ly bạn đang pha vẫn giữ nguyên để bạn tiếp tục khi muốn.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên ở Quầy của bạn cũng tự bán theo thời gian thật. Cả hai nơi đều dừng khi hết hàng hoặc tiền lương; xem trạng thái để bổ sung đúng chỗ.",
-  "en": ""
- },
- {
-  "vi": "Trà và trân châu chuẩn bị xong ngay sau thao tác; 20 phút là giờ trong game, không phải chờ ngoài đời.",
-  "en": ""
- },
- {
-  "vi": "Ngân hàng bị hack thì mất tiền thế nào?",
   "en": ""
  }
 ]

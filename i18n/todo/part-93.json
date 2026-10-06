@@ -1,5 +1,13 @@
 [
  {
+  "vi": "😮‍💨 Mệt",
+  "en": ""
+ },
+ {
+  "vi": "hợp lý ≤",
+  "en": ""
+ },
+ {
   "vi": "aria-label=\"Bớt\"",
   "en": ""
  },
@@ -104,6 +112,10 @@
   "en": ""
  },
  {
+  "vi": "Lúc đón bé",
+  "en": ""
+ },
+ {
   "vi": "Lịch trong ngày",
   "en": ""
  },
@@ -112,7 +124,35 @@
   "en": ""
  },
  {
+  "vi": "· ⚠️ đổi cách chào",
+  "en": ""
+ },
+ {
   "vi": "Bé chưa chịu làm quen. Thử cách chào khác hợp tính bé.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi ngang tầm mắt, nhỏ nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "Đập tay chào",
+  "en": ""
+ },
+ {
+  "vi": "Để bé ôm mẹ, chìa đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chuyện hôm qua",
+  "en": ""
+ },
+ {
+  "vi": "Bế xốc lên",
+  "en": ""
+ },
+ {
+  "vi": "Túi đồ",
   "en": ""
  },
  {
@@ -121,6 +161,10 @@
  },
  {
   "vi": "chạm món còn thiếu để hỏi",
+  "en": ""
+ },
+ {
+  "vi": "Chào bé",
   "en": ""
  },
  {
@@ -225,10 +269,6 @@
  },
  {
   "vi": "Chào bé hợp tính",
-  "en": ""
- },
- {
-  "vi": "Chào bé",
   "en": ""
  },
  {
@@ -1616,7 +1656,7 @@
   "en": ""
  },
  {
-  "vi": "đổ nước tới đâu?",
+  "vi": ": đổ nước tới đâu?",
   "en": ""
  },
  {
@@ -1625,6 +1665,50 @@
  },
  {
   "vi": "chưa bày",
+  "en": ""
+ },
+ {
+  "vi": "Đổ nước mấy đốt ngón tay? Gạo tấm hút ít nước hơn gạo trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Bày khay",
+  "en": ""
+ },
+ {
+  "vi": "💧 Mấy đốt? Tấm ít hơn",
+  "en": ""
+ },
+ {
+  "vi": "Đổ nước tới đâu (đốt ngón tay)? Gạo tấm hút ít nước hơn gạo trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Hai nồi cơm",
+  "en": ""
+ },
+ {
+  "vi": "🥄 Nếm",
+  "en": ""
+ },
+ {
+  "vi": "Nếm chén nước mắm pha tối qua",
+  "en": ""
+ },
+ {
+  "vi": "✓ Than hồng",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Đồ nấu không để qua đêm: bày vừa đủ bán.",
+  "en": ""
+ },
+ {
+  "vi": "Bày khay lên tủ kính",
   "en": ""
  },
  {
@@ -1644,10 +1728,6 @@
   "en": ""
  },
  {
-  "vi": "Đồ nấu không để qua đêm: bày vừa đủ bán.",
-  "en": ""
- },
- {
   "vi": "✓ Than hồng đều",
   "en": ""
  },
@@ -1661,10 +1741,6 @@
  },
  {
   "vi": "Chỉnh",
-  "en": ""
- },
- {
-  "vi": "Bày khay lên tủ kính",
   "en": ""
  },
  {
@@ -1721,82 +1797,6 @@
  },
  {
   "vi": "Gắp miếng sườn vàng đều",
-  "en": ""
- },
- {
-  "vi": "🍖 Gắp sườn",
-  "en": ""
- },
- {
-  "vi": "hết trứng: nhập ở Kho hoặc nói thật với khách",
-  "en": ""
- },
- {
-  "vi": "Chan mỡ hành",
-  "en": ""
- },
- {
-  "vi": "Khách không ăn mỡ hành",
-  "en": ""
- },
- {
-  "vi": "Bỏ mỡ hành",
-  "en": ""
- },
- {
-  "vi": "Múc canh",
-  "en": ""
- },
- {
-  "vi": "Khách không lấy canh",
-  "en": ""
- },
- {
-  "vi": "🥣 Múc canh",
-  "en": ""
- },
- {
-  "vi": "Bỏ canh",
-  "en": ""
- },
- {
-  "vi": "Mở quán xong mới bán",
-  "en": ""
- },
- {
-  "vi": "Khách mua mang về: lấy hộp",
-  "en": ""
- },
- {
-  "vi": "Khách ngồi ăn: lấy dĩa",
-  "en": ""
- },
- {
-  "vi": "🗑️ Làm lại",
-  "en": ""
- },
- {
-  "vi": "làm sau",
-  "en": ""
- },
- {
-  "vi": "Dĩa này không đúng món khách gọi",
-  "en": ""
- },
- {
-  "vi": "Quyết chuyện ở quán",
-  "en": ""
- },
- {
-  "vi": "🍚 Vào việc thôi!",
-  "en": ""
- },
- {
-  "vi": "🍚 MỞ QUÁN",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách",
   "en": ""
  }
 ]

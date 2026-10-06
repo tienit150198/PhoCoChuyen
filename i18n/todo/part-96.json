@@ -1,5 +1,113 @@
 [
  {
+  "vi": "lịch thay đổi, chọn lại phòng",
+  "en": ""
+ },
+ {
+  "vi": "giữ phòng trước",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi khách cho chắc",
+  "en": ""
+ },
+ {
+  "vi": "vướng điều khách cần tránh",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn nơi hợp khách (thẻ xanh, không thẻ đỏ)",
+  "en": ""
+ },
+ {
+  "vi": "Khách sẽ đi đúng những nơi bạn gợi ý.",
+  "en": ""
+ },
+ {
+  "vi": "👉 So câu trả lời với sổ rồi quyết định",
+  "en": ""
+ },
+ {
+  "vi": "📞 Quyết định giao đồ",
+  "en": ""
+ },
+ {
+  "vi": "Nhấc trứng khỏi chảo",
+  "en": ""
+ },
+ {
+  "vi": "Quyết chuyện ở quầy",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn cách xử lý chuyện ở quầy",
+  "en": ""
+ },
+ {
+  "vi": "(khách tới tối nay)",
+  "en": ""
+ },
+ {
+  "vi": "để khăn ở cửa (biển đừng làm phiền)",
+  "en": ""
+ },
+ {
+  "vi": "sưởi đêm lạnh",
+  "en": ""
+ },
+ {
+  "vi": "phòng hết mùi ẩm",
+  "en": ""
+ },
+ {
+  "vi": "🗓️ Lịch",
+  "en": ""
+ },
+ {
+  "vi": "📖 Sổ",
+  "en": ""
+ },
+ {
+  "vi": "Khu trong nhà",
+  "en": ""
+ },
+ {
+  "vi": "🛏️ Tối mai nhận phòng:",
+  "en": ""
+ },
+ {
+  "vi": "🧹 Phòng cần dọn:",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Sổ nhà hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Quy định phòng nhân sự",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Phòng nhân sự hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Quy định bàn IT",
+  "en": ""
+ },
+ {
+  "vi": "🖥️ Bàn IT hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "👂 Nghe bạn đọc nói",
+  "en": ""
+ },
+ {
+  "vi": "🔖 Quầy mượn trả",
+  "en": ""
+ },
+ {
   "vi": "🏷️ Biên mục",
   "en": ""
  },
@@ -1080,6 +1188,50 @@
   "en": ""
  },
  {
+  "vi": "mọc",
+  "en": ""
+ },
+ {
+  "vi": "Bóng đèn",
+  "en": ""
+ },
+ {
+  "vi": "Mô-tơ",
+  "en": ""
+ },
+ {
+  "vi": "Máy phát",
+  "en": ""
+ },
+ {
+  "vi": "Còi",
+  "en": ""
+ },
+ {
+  "vi": "Sáu Ghe xin quay đèn: đừng cho",
+  "en": ""
+ },
+ {
+  "vi": "Cano đòi lên tháp: khéo mà cứng",
+  "en": ""
+ },
+ {
+  "vi": "Áp kế tụt: để ý mây đông",
+  "en": ""
+ },
+ {
+  "vi": "Còn 2 bóng dự phòng; xin thêm",
+  "en": ""
+ },
+ {
+  "vi": "Đêm qua gió giật, đèn tốt",
+  "en": ""
+ },
+ {
+  "vi": "Rau muống: tưới chiều thôi",
+  "en": ""
+ },
+ {
   "vi": "⚠️ hỏng",
   "en": ""
  },
@@ -1124,15 +1276,15 @@
   "en": ""
  },
  {
-  "vi": "🧰 Thử thiết bị",
-  "en": ""
- },
- {
   "vi": "⛽ Sổ dầu",
   "en": ""
  },
  {
   "vi": "💡 Tắt đèn",
+  "en": ""
+ },
+ {
+  "vi": "Thử thiết bị",
   "en": ""
  },
  {
@@ -1645,158 +1797,6 @@
  },
  {
   "vi": "Ngừng bán",
-  "en": ""
- },
- {
-  "vi": "ngừng bán",
-  "en": ""
- },
- {
-  "vi": "đã hết. Chưa gọi hỏa tốc được",
-  "en": ""
- },
- {
-  "vi": "Đổ ly để đổi cỡ",
-  "en": ""
- },
- {
-  "vi": ". Ly đang có trà: đổ ly rồi mới đổi cỡ",
-  "en": ""
- },
- {
-  "vi": "Pha xong trà, đá, đường rồi mới dán nắp",
-  "en": ""
- },
- {
-  "vi": "So phiếu miễn phí: không tính lỗi, không trôi thời gian. Trao ly sai hoặc đổ làm lại vẫn tính lỗi.",
-  "en": ""
- },
- {
-  "vi": "Ly này sai rồi. Đổ ly và pha lại từ đầu?",
-  "en": ""
- },
- {
-  "vi": "🗑️ Đổ ly, pha lại",
-  "en": ""
- },
- {
-  "vi": "⚙️ Dán nắp",
-  "en": ""
- },
- {
-  "vi": "máy dán nắp đang ngưng, chờ có điện",
-  "en": ""
- },
- {
-  "vi": "✅ Dán nắp",
-  "en": ""
- },
- {
-  "vi": "Dán nắp",
-  "en": ""
- },
- {
-  "vi": "(không gọi)",
-  "en": ""
- },
- {
-  "vi": "(đang sai, chỉnh lại)",
-  "en": ""
- },
- {
-  "vi": "(sai, cần đổ ly làm lại)",
-  "en": ""
- },
- {
-  "vi": "(đã đúng)",
-  "en": ""
- },
- {
-  "vi": "(chưa làm)",
-  "en": ""
- },
- {
-  "vi": "Món khách gọi",
-  "en": ""
- },
- {
-  "vi": "✓ Ly đã xong · giao cho tài xế",
-  "en": ""
- },
- {
-  "vi": "✓ Ly đã xong · trao cho khách",
-  "en": ""
- },
- {
-  "vi": "Chọn cách xử lý chuyện ở quầy",
-  "en": ""
- },
- {
-  "vi": "👍 Làm tiếp",
-  "en": ""
- },
- {
-  "vi": "Khách có thể trả ly.",
-  "en": ""
- },
- {
-  "vi": "Chưa nhà nào bán mặt hàng này.",
-  "en": ""
- },
- {
-  "vi": "Chọn nhanh",
-  "en": ""
- },
- {
-  "vi": "· ngừng bán",
-  "en": ""
- },
- {
-  "vi": "🚫 ngừng bán ·",
-  "en": ""
- },
- {
-  "vi": "dùng hết ngày mai",
-  "en": ""
- },
- {
-  "vi": "⚠ Cần nhập / cần ủ",
-  "en": ""
- },
- {
-  "vi": "🏪 Quỹ tiệm",
-  "en": ""
- },
- {
-  "vi": ", hoặc góp tiền từ ví vào quỹ",
-  "en": ""
- },
- {
-  "vi": "❔ Ủ, nấu & đặt hàng thế nào?",
-  "en": ""
- },
- {
-  "vi": "Ủ trà, nấu trân châu, đặt hàng đều trừ vào quỹ tiệm. Ủ trà, nấu trân châu mất 20 phút khi quán mở; làm trước giờ mở cửa thì không mất thời gian. Trà ủ và trân châu không để qua đêm.",
-  "en": ""
- },
- {
-  "vi": "Trả tiền khi đặt. Mỗi nhà giao một kiểu: hỏa tốc 15–30 phút, xe bốn chuyến mỗi ngày, chợ chiều nay hoặc sáng mai, xưởng 1–2 ngày.",
-  "en": ""
- },
- {
-  "vi": "· đợi hàng tới rồi mới đặt thêm",
-  "en": ""
- },
- {
-  "vi": "disabled title=\"Quán cần bán ít nhất một loại trà nền\"",
-  "en": ""
- },
- {
-  "vi": "Đang bán",
-  "en": ""
- },
- {
-  "vi": "Tắt món không muốn bán: khách mới sẽ không gọi, quầy cũng không cần nhập. Ly khách đã gọi vẫn pha như cũ. Luôn giữ ít nhất một loại trà nền.",
   "en": ""
  }
 ]

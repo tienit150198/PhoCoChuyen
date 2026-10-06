@@ -1,5 +1,20 @@
 [
  {
+  "vi": "🎁 Gói $1 & thắt nơ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎁 Gói $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎀 Thắt ruy băng $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "✅ Xong món $1, đặt sang bàn chờ",
   "en": "",
   "pattern": true
@@ -1535,6 +1550,11 @@
   "pattern": true
  },
  {
+  "vi": "Đã xếp $1/",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã xếp $1/$2$3.",
   "en": "",
   "pattern": true
@@ -1935,11 +1955,6 @@
   "pattern": true
  },
  {
-  "vi": "Nồi còn $1%",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "🥖 $1 quẩy",
   "en": "",
   "pattern": true
@@ -2011,11 +2026,6 @@
  },
  {
   "vi": "Thiếu $1: chan rồi mới xếp",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xếp $1",
   "en": "",
   "pattern": true
  },
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "↪️ Đi $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "/$1 ngày tốt",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏢 $1/$2 ngày điều hành tốt",
   "en": "",
   "pattern": true
  }

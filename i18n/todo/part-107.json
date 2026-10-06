@@ -1,5 +1,377 @@
 [
  {
+  "vi": "Cô Bảy đang xé tờ…",
+  "en": ""
+ },
+ {
+  "vi": "🎟️ Mua tờ dò",
+  "en": ""
+ },
+ {
+  "vi": "🏅 Bảng kinh hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "lần kinh",
+  "en": ""
+ },
+ {
+  "vi": "👑 Vua kinh hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Cô Bảy hô số nào, bạn chạm số đó trên tờ dò. Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.",
+  "en": ""
+ },
+ {
+  "vi": "Cách chơi gánh lô tô",
+  "en": ""
+ },
+ {
+  "vi": "Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.",
+  "en": ""
+ },
+ {
+  "vi": "rồi dò tiếp, hụt mấy lần cũng được",
+  "en": ""
+ },
+ {
+  "vi": "Hũ = tiền tờ của cả chiếu (của bạn và hàng xóm), cô Bảy giữ một chút tiền gánh. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.",
+  "en": ""
+ },
+ {
+  "vi": ", vừa gọi",
+  "en": ""
+ },
+ {
+  "vi": "Viền đứt: số đã gọi (tới số chốt) mà bạn chưa chạm.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng số úp lại trong vòng lật ngược",
+  "en": ""
+ },
+ {
+  "vi": "🙃 Vòng lật ngược: bảng số úp lại, nghe cô Bảy đọc rồi tự lật nha!",
+  "en": ""
+ },
+ {
+  "vi": "Bảng số đã gọi",
+  "en": ""
+ },
+ {
+  "vi": "chờ 1!",
+  "en": ""
+ },
+ {
+  "vi": "Các số vừa gọi",
+  "en": ""
+ },
+ {
+  "vi": "Người chơi khác",
+  "en": ""
+ },
+ {
+  "vi": "Tốc độ gọi số",
+  "en": ""
+ },
+ {
+  "vi": "🙈 Kinh hụt",
+  "en": ""
+ },
+ {
+  "vi": "một hàng ngang",
+  "en": ""
+ },
+ {
+  "vi": "hai hàng ngang trên một tờ",
+  "en": ""
+ },
+ {
+  "vi": "cả tờ",
+  "en": ""
+ },
+ {
+  "vi": "Hàng nào đủ 5 số mới kinh được nha!",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có hàng nào đủ 5 số đâu, dò tiếp nha!",
+  "en": ""
+ },
+ {
+  "vi": "Nhạc hội",
+  "en": ""
+ },
+ {
+  "vi": "hội chợ: no fairground",
+  "en": ""
+ },
+ {
+  "vi": "Buồng chụp ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được bảng vàng.",
+  "en": ""
+ },
+ {
+  "vi": "Hội đã tàn · Bảng vàng chung cuộc",
+  "en": ""
+ },
+ {
+  "vi": "ngày chơi",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở Bảng vàng…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ai lời xu nào. Thắng là có tên trên bảng!",
+  "en": ""
+ },
+ {
+  "vi": "· hạng",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ ai đang lời mới có tên trên bảng.",
+  "en": ""
+ },
+ {
+  "vi": "Tên bạn đang ẩn nên chưa lên bảng và chưa nhận được danh hiệu. Bật “Hiện tên tôi” ở Xếp hạng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🏆 Bảng vàng hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Cách xếp hạng",
+  "en": ""
+ },
+ {
+  "vi": "Xếp theo số xu bạn thắng ở hội chợ lần này: tiền thắng trừ tiền thua ở bầu cua, phóng dao, vé số cào, lô tô, chiếu trong, cộng xu kiếm từ ô ăn quan và ném vòng.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền vốn được tặng, tiền vay và tiền trả nợ không tính.",
+  "en": ""
+ },
+ {
+  "vi": "Bằng xu thì ai đạt trước đứng trên.",
+  "en": ""
+ },
+ {
+  "vi": "Danh hiệu đã trao khi hội tàn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã bỏ vô ví của bạn. Chúc bà con chơi hội vui vẻ, ăn nhiều nha!",
+  "en": ""
+ },
+ {
+  "vi": "🏮 Vào hội",
+  "en": ""
+ },
+ {
+  "vi": "· trả lúc nào cũng được",
+  "en": ""
+ },
+ {
+  "vi": "Hội tàn mà chưa trả thì bà tự thu: lấy tiền trong ví trước, thiếu thì lấy từ tài khoản ngân hàng, vẫn thiếu thì trừ dần khi bạn có tiền vào ví. Ví không bao giờ bị âm.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đủ thì cứ chơi tiếp, có đủ rồi ghé trả bà nha.",
+  "en": ""
+ },
+ {
+  "vi": "Có tiền rồi hả? Trả bà là xong, vay tiếp lúc nào cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Đang trả…",
+  "en": ""
+ },
+ {
+  "vi": "Số tiền vay",
+  "en": ""
+ },
+ {
+  "vi": "💸 Vay nóng hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "· trả lại",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi lần một khoản. Trả hết lúc nào cũng được ngay tại đây. Hội tàn mà chưa trả thì bà tự thu từ ví, rồi tài khoản ngân hàng; còn thiếu thì trừ dần khi có tiền vào ví.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu vốn chơi hội hả con? Bà cho vay liền, lãi hai chục phần trăm thôi, trả lúc nào cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Út kẹo bông",
+  "en": ""
+ },
+ {
+  "vi": "Bắp nướng mỡ hành mới lên lò nè, thơm lừng!",
+  "en": ""
+ },
+ {
+  "vi": "Bánh tráng nướng giòn rụm, ăn liền cho nóng nha!",
+  "en": ""
+ },
+ {
+  "vi": "Chú Năm nước mía",
+  "en": ""
+ },
+ {
+  "vi": "Chè ba màu mát lạnh đây bà con ơi!",
+  "en": ""
+ },
+ {
+  "vi": "Tàu hũ nước đường gừng, ăn ấm bụng nè!",
+  "en": ""
+ },
+ {
+  "vi": "Kẹo bông, bắp nướng, nước mía, chè… vài xu một món",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món đi, chú Năm làm liền!",
+  "en": ""
+ },
+ {
+  "vi": "Chọn món đi, cô Út làm liền!",
+  "en": ""
+ },
+ {
+  "vi": "Trả bằng xu trong ví, ăn xong no bụng hơn.",
+  "en": ""
+ },
+ {
+  "vi": "🍭 Qua xe kẹo bông",
+  "en": ""
+ },
+ {
+  "vi": "🥤 Qua xe nước mía",
+  "en": ""
+ },
+ {
+  "vi": "Ăn vặt trả bằng xu trong ví, no bụng và tỉnh táo tăng như ăn thêm lúc đi làm. No rồi vẫn mua ăn cho vui được.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà & Gia đình",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được gia đình của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Thử tải lại",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi · Chờ người ấy",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời cần bạn trả lời",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Mời về ở chung",
+  "en": ""
+ },
+ {
+  "vi": "👶 Mời đón con chung",
+  "en": ""
+ },
+ {
+  "vi": "Đón bé mới sinh",
+  "en": ""
+ },
+ {
+  "vi": "Người ấy mở Nhà & Gia đình để đồng ý hoặc từ chối.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ khi bạn đồng ý, hai bạn mới",
+  "en": ""
+ },
+ {
+  "vi": "ở chung nhà.",
+  "en": ""
+ },
+ {
+  "vi": "cùng đón bé.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy lời mời",
+  "en": ""
+ },
+ {
+  "vi": "Đồng ý ở chung",
+  "en": ""
+ },
+ {
+  "vi": "Đồng ý đón bé",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Nhà của hai bạn",
+  "en": ""
+ },
+ {
+  "vi": "Nhà ở & quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "Nhà và đồ vẫn thuộc từng người. Góp tiền mua nhà qua Quỹ chung rồi chọn “Lấy từ quỹ chung” khi mua.",
+  "en": ""
+ },
+ {
+  "vi": "Đang ở chung",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ở chung",
+  "en": ""
+ },
+ {
+  "vi": "Cùng trở về nhà và dùng nội thất của hai bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời đã gửi. Chờ người ấy đồng ý để dọn về cùng nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có lời mời ở chung ở phía trên.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nhà cần đang ở căn nhà mình sở hữu để gửi lời mời. Mở Nhà của bạn để mua nhà hoặc dọn về căn đã có; nếu nhà của người ấy, nhờ người ấy gửi lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Vào nhà",
+  "en": ""
+ },
+ {
+  "vi": "Mời người ấy về ở chung",
+  "en": ""
+ },
+ {
   "vi": "🏠 Chọn nhà để ở chung",
   "en": ""
  },
@@ -433,6 +805,10 @@
  },
  {
   "vi": "Nhận quà 💛",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xong",
   "en": ""
  },
  {
@@ -1421,382 +1797,6 @@
  },
  {
   "vi": "Bạn đang thuê phòng này.",
-  "en": ""
- },
- {
-  "vi": "✓ Đủ tiền cọc",
-  "en": ""
- },
- {
-  "vi": "Chuyển qua đây",
-  "en": ""
- },
- {
-  "vi": "Thuê",
-  "en": ""
- },
- {
-  "vi": "(chưa tính quỹ chung)",
-  "en": ""
- },
- {
-  "vi": "Đủ trả trước",
-  "en": ""
- },
- {
-  "vi": "Đủ mua đứt",
-  "en": ""
- },
- {
-  "vi": "Trả trước",
-  "en": ""
- },
- {
-  "vi": "Đây là nhà của bạn.",
-  "en": ""
- },
- {
-  "vi": "🐷 Tiết kiệm mua nhà",
-  "en": ""
- },
- {
-  "vi": "Có tài khoản Ngân hàng Phố mới gửi tiết kiệm và vay mua nhà được.",
-  "en": ""
- },
- {
-  "vi": "Sổ tiết kiệm:",
-  "en": ""
- },
- {
-  "vi": "Gửi 1.000 xu nhận thêm",
-  "en": ""
- },
- {
-  "vi": "Khi đáo hạn",
-  "en": ""
- },
- {
-  "vi": "🏘️ Thuê & cho thuê",
-  "en": ""
- },
- {
-  "vi": "Tự đặt giá, tìm khách NPC hoặc thuê nhà người chơi.",
-  "en": ""
- },
- {
-  "vi": "Mở chợ thuê nhà",
-  "en": ""
- },
- {
-  "vi": "Nhà đang rao",
-  "en": ""
- },
- {
-  "vi": "Sổ nhà cửa",
-  "en": ""
- },
- {
-  "vi": "Đã gửi lời mời · Chờ người ấy đồng ý.",
-  "en": ""
- },
- {
-  "vi": "Hai bạn đang ở chung nhà.",
-  "en": ""
- },
- {
-  "vi": "Bạn có thể mời người ấy về căn nhà đang ở.",
-  "en": ""
- },
- {
-  "vi": "Người ấy có nhà. Nhờ người ấy gửi lời mời về ở chung.",
-  "en": ""
- },
- {
-  "vi": "Mua nhà hoặc dọn về căn nhà bạn sở hữu để mời người ấy.",
-  "en": ""
- },
- {
-  "vi": "Mời bạn bè vào chơi hoặc ở chung mà không cần kết hôn. Con chung nằm trong mục Gia đình.",
-  "en": ""
- },
- {
-  "vi": "Xem và trả lời lời mời",
-  "en": ""
- },
- {
-  "vi": "Xem lời mời đã gửi",
-  "en": ""
- },
- {
-  "vi": "Trả ngay",
-  "en": ""
- },
- {
-  "vi": "Tổng lãi",
-  "en": ""
- },
- {
-  "vi": "Thời hạn vay",
-  "en": ""
- },
- {
-  "vi": "Cần tài khoản Ngân hàng Phố để vay.",
-  "en": ""
- },
- {
-  "vi": "Trả đủ một lần, không vay",
-  "en": ""
- },
- {
-  "vi": "💞 Góp từ quỹ chung để mua nhà. Mua xong, mở Gia đình chung gửi lời mời ở chung; người ấy cần đồng ý.",
-  "en": ""
- },
- {
-  "vi": "Góc gia đình chỉ có trong hành trình.",
-  "en": ""
- },
- {
-  "vi": "Mỗi ngày chăm một lần cho từng mục: ăn, vệ sinh, chơi hoặc đọc truyện. Ngày mới tính khi bạn khép ca làm việc.",
-  "en": ""
- },
- {
-  "vi": "Tên gọi & đồ dùng",
-  "en": ""
- },
- {
-  "vi": "🏡 Góc gia đình",
-  "en": ""
- },
- {
-  "vi": "Một góc nhỏ để trở về cùng nhau",
-  "en": ""
- },
- {
-  "vi": "🏡 Nhà & Gia đình với người ấy",
-  "en": ""
- },
- {
-  "vi": "🐾 Con riêng & thú cưng",
-  "en": ""
- },
- {
-  "vi": "Tối đa một bé và một mèo hoặc cún. Chăm theo ngày sống của nhân vật; không tự thu phí khi vắng mặt.",
-  "en": ""
- },
- {
-  "vi": "Mở lời mời ở chung và chăm con chung tại đây.",
-  "en": ""
- },
- {
-  "vi": "Mời bạn bè vào chơi hoặc ở chung mà không cần kết hôn. Con chung mở sau khi cưới.",
-  "en": ""
- },
- {
-  "vi": "Đón thành viên về chăm riêng",
-  "en": ""
- },
- {
-  "vi": "Mở từ ngày sống 10.",
-  "en": ""
- },
- {
-  "vi": "Tên bạn muốn gọi",
-  "en": ""
- },
- {
-  "vi": "Đón về nhà",
-  "en": ""
- },
- {
-  "vi": "· nhận nuôi miễn phí",
-  "en": ""
- },
- {
-  "vi": "💇 Đi làm đẹp · 🎨 DIY",
-  "en": ""
- },
- {
-  "vi": "Mua đồ cho bé",
-  "en": ""
- },
- {
-  "vi": "Mua và mặc",
-  "en": ""
- },
- {
-  "vi": "Khôi phục uy tín thế nào?",
-  "en": ""
- },
- {
-  "vi": "Uy tín này đổi theo cách xử lý những Chuyện đời mới ở nơi đang làm. Trả lại đồ nhặt được, hợp tác hoặc xử lý hậu quả đúng mực có thể tăng điểm; kết quả sẽ ghi mức tăng hoặc giảm. Bỏ dở việc có thể làm giảm uy tín.",
-  "en": ""
- },
- {
-  "vi": "Tình làng nghĩa xóm là chỉ số riêng. Trò chuyện, nhậu, karaoke và Nhớ lại chuyện cũ không tăng uy tín này.",
-  "en": ""
- },
- {
-  "vi": "🏮 Xem Tình làng nghĩa xóm",
-  "en": ""
- },
- {
-  "vi": "Khung thời gian biểu đồ",
-  "en": ""
- },
- {
-  "vi": "H = giờ · D = ngày · W = tuần · M = 30 ngày ngoài đời",
-  "en": ""
- },
- {
-  "vi": "Chưa có lịch sử giá cho biểu đồ.",
-  "en": ""
- },
- {
-  "vi": "Xem giá tại thời điểm",
-  "en": ""
- },
- {
-  "vi": "% trong dữ liệu hiển thị",
-  "en": ""
- },
- {
-  "vi": "Kéo để xem giá từng mốc",
-  "en": ""
- },
- {
-  "vi": "/chỉ",
-  "en": ""
- },
- {
-  "vi": "Thị trường mới mở, đang hiển thị toàn bộ lịch sử đã có.",
-  "en": ""
- },
- {
-  "vi": "Lịch sử giá theo thời gian thực.",
-  "en": ""
- },
- {
-  "vi": "· bấm Cập nhật giá để tải khung đã chọn",
-  "en": ""
- },
- {
-  "vi": "Chưa cập nhật được giá. Bấm Cập nhật giá để thử lại.",
-  "en": ""
- },
- {
-  "vi": "TÀI SẢN CỦA BẠN",
-  "en": ""
- },
- {
-  "vi": "phiên trước",
-  "en": ""
- },
- {
-  "vi": "Phiên hiện tại",
-  "en": ""
- },
- {
-  "vi": "phiên 10 phút",
-  "en": ""
- },
- {
-  "vi": "Vàng đổi giá theo ngày thực · Coin đổi giá theo ngày sống.",
-  "en": ""
- },
- {
-  "vi": "Giá chung cả phố · 1 giờ thực = 1 ngày thị trường.",
-  "en": ""
- },
- {
-  "vi": "Trị giá hiện tại",
-  "en": ""
- },
- {
-  "vi": "Giá được chốt khi máy chủ nhận lệnh.",
-  "en": ""
- },
- {
-  "vi": "so với phiên trước",
-  "en": ""
- },
- {
-  "vi": "📰 Tin thị trường trong game",
-  "en": ""
- },
- {
-  "vi": "Đang hỗ trợ đà tăng",
-  "en": ""
- },
- {
-  "vi": "Đang tạo áp lực giảm",
-  "en": ""
- },
- {
-  "vi": "phân",
-  "en": ""
- },
- {
-  "vi": "chỉ",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được giá vàng. Mở lại mục Đầu tư để thử nhé.",
-  "en": ""
- },
- {
-  "vi": "Số vàng giao dịch",
-  "en": ""
- },
- {
-  "vi": "Tiệm vàng Kim Phát",
-  "en": ""
- },
- {
-  "vi": "Bán ngay được",
-  "en": ""
- },
- {
-  "vi": "Tiền đã bỏ vào",
-  "en": ""
- },
- {
-  "vi": "1 chỉ = 10 phân. Mua bằng ví, thiếu thì lấy từ tài khoản ngân hàng; bán nhận xu vào ví. Giá mua/bán đã gồm chênh lệch 2,5% mỗi chiều.",
-  "en": ""
- },
- {
-  "vi": "Biến động so với phiên trước. Giá được chốt khi máy chủ nhận lệnh.",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Bớt vàng\"",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Thêm vàng\"",
-  "en": ""
- },
- {
-  "vi": "1 phân",
-  "en": ""
- },
- {
-  "vi": "1 chỉ",
-  "en": ""
- },
- {
-  "vi": "5 chỉ",
-  "en": ""
- },
- {
-  "vi": "Chọn tài sản",
-  "en": ""
- },
- {
-  "vi": "Mở khi ví từng có 500 xu",
-  "en": ""
- },
- {
-  "vi": "☁️ Mây Coin",
   "en": ""
  }
 ]

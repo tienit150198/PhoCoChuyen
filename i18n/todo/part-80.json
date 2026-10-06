@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Bảo bạn ấy hỏi sếp",
+  "en": ""
+ },
+ {
+  "vi": "Sát hạn nộp mà số liệu còn lệch.",
+  "en": ""
+ },
+ {
+  "vi": "Báo sếp sớm, xin thêm giờ",
+  "en": ""
+ },
+ {
   "vi": "Nộp đại cho kịp",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Giảm thêm 25% khả năng bị trộm",
-  "en": ""
- },
- {
-  "vi": "Bộ chống chập điện",
-  "en": ""
- },
- {
-  "vi": "Giảm 50% chi phí sửa nguồn điện",
-  "en": ""
- },
- {
-  "vi": "Tủ vệ sinh",
   "en": ""
  }
 ]

@@ -1,5 +1,15 @@
 [
  {
+  "vi": "/$1 ngày tốt",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏢 $1/$2 ngày điều hành tốt",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Hạ cánh $1",
   "en": "",
   "pattern": true
@@ -251,6 +261,11 @@
  },
  {
   "vi": "📋 Việc ở bước này ($1/$2)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Thảo bấm nút nghe kèm: cuộc gọi $1/$2. Sai gì chị nhắc trước.",
   "en": "",
   "pattern": true
  },
@@ -736,6 +751,11 @@
  },
  {
   "vi": "/$1 ghế bày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "chè $1/$2 · đá $3/$4 · cốc $5 · ghế $6/",
   "en": "",
   "pattern": true
  },
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Mai mở cửa $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đủ $1 khách hôm nay",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ngày $1 tháng $2 năm $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phố Có Chuyện, life day $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phố Có Chuyện, Ngày sống thứ $1",
   "en": "",
   "pattern": true
  }
