@@ -1,5 +1,9 @@
 # v1.9.3 — 2026-10-06: sửa lỗi + cập nhật thêm
 
+## Chat: lọc từ nặng bằng dấu *
+
+- Chủ game 06/10 (một người chơi chửi bới ở Cả phố, đã ẩn tin và khóa chat 24 giờ): từ nặng giờ hiện thành dấu * theo đúng số chữ ("đéo" → "***"); bắt cả kiểu viết chen dấu chấm/gạch ("đ.ị.t", "l.ồ.n", "v-ú"); thêm "đéo", "vú", "làm gái" (trừ "vú sữa", "vú nuôi", "vú em"). Tiếng lóng GenZ ("vl", "đm", "cút") vẫn giữ như luật 30/09. Số điện thoại, link vẫn che •••.
+
 Có gì mới (chủ game: "sửa lỗi, cập nhật thêm"): sửa lỗi tiệm hoa/giúp việc/chùa/giáo viên/giao hàng/tiệm quần áo; 45 món avatar; cửa hàng điện thoại; bầu cua xúc xắc thật; thăng tiến rõ ràng hơn. Các mục "Chưa phát hành" bên dưới là nội dung của bản này.
 
 # Chưa phát hành — Bầu cua xúc xắc thật

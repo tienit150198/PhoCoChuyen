@@ -44,8 +44,18 @@ class FilterTests(unittest.TestCase):
                      'con đĩa', 'buổi sáng', 'các bạn ơi', 'lon nước', 'số nhà 123', 'lên level 12'):
             self.assertEqual(self.m(text), text, text)
         # heavy, direct profanity only
-        for text, want in {'địt mẹ mày': '••• mẹ mày', 'lồnnnn': '•••', 'đồ đĩ': 'đồ •••', 'fuuuck you': '••• you', 'dit me may': '••• may'}.items():
+        # (owner 06/10: shown as one * per letter)
+        for text, want in {'địt mẹ mày': '*** mẹ mày', 'lồnnnn': '***', 'đồ đĩ': 'đồ **', 'fuuuck you': '**** you', 'dit me may': '*** ** may'}.items():
             self.assertEqual(self.m(text), want, text)
+
+    def test_owner_0610_words_and_dotted_spellings(self):
+        # Owner 06/10, after a player's abuse in Cả phố: đéo, vú, làm gái too, and letters spaced out with dots or dashes.
+        for text, want in {'đéo để cho ai nghỉ': '*** để cho ai nghỉ', 'Đéo': '***', 'con v.ú': 'con **', 'l.ồ.n': '***',
+                           'đ.ị.t thôi': '*** thôi', 'đ-ị-t': '***', 'đi làm gái à': 'đi *** *** à'}.items():
+            self.assertEqual(self.m(text), want, text)
+        for text in ('ăn vú sữa ngon', 'vú nuôi của bé', 'gọi vú em', 'đi tìm', 'đến đó', 'làm gì', 'cô gái'):
+            self.assertEqual(self.m(text), text, text)
+        self.assertEqual(self.m('gọi 0912345678 nha'), 'gọi ••• nha')   # phones and links keep •••
 
     def test_clean(self):
         self.assertEqual(filters.clean('  a​  b\n\n\n\nc\x07 ', 300), 'a b\n\nc')

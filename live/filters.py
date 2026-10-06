@@ -18,8 +18,15 @@ MASK = '•••'
 # Heavy words only (owner, 30/09). With their diacritics: without them most are everyday words (lon = can,
 # cac = các, buoi = buổi), so they are left alone. A repeated letter ("lồnnn") still matches.
 HEAVY = ('địt', 'đjt', 'đ1t', 'đụ', 'lồn', 'l0n', 'cặc', 'c4c', 'buồi', 'đĩ', 'fuck', 'fucking', 'fucker', 'motherfucker',
-         'cunt', 'pussy', 'nigger', 'nigga', 'faggot')
-HEAVY_PHRASES = ('dit me', 'dit con me', 'djt me', 'du ma', 'du me')
+         'cunt', 'pussy', 'nigger', 'nigga', 'faggot',
+         'đéo', 'vú')   # owner 06/10 (a player's abuse in Cả phố): these too, shown as *
+HEAVY_PHRASES = ('dit me', 'dit con me', 'djt me', 'du ma', 'du me', 'làm gái')
+# Everyday words that contain a heavy one: never masked (vú sữa = star apple, vú nuôi / vú em = a nanny).
+HEAVY_OK = ('vú sữa', 'vú nuôi', 'vú em')
+# Owner 06/10: heavy words show as one * per letter ("đéo" → "***"); phones, links and contacts keep MASK.
+STAR = '*'
+# Letters spaced out with punctuation to dodge the filter ("đ.ị.t", "l.ồ.n", "v-ú"): up to two such marks between letters.
+_SEP = r"[.\-_*,'’`·•~^]{0,2}"
 
 TLDS = ('com|net|org|vn|io|me|xyz|link|co|info|app|gg|tk|ly|to|site|online|shop|store|club|top|biz|asia|cc|tv|live|pro|'
         'fun|vip|one|ai|dev|page|blog|click|space|website|icu|win|bet|cam')
@@ -30,8 +37,23 @@ _CONTACT = re.compile(r'(?<!\w)(zalo|zl|fb|facebook|face|insta|instagram|ig|tikt
                       r'snap|snapchat|kakao|wechat|viber|line|sđt|sdt)(\s*[:=\-]?\s*)([A-Za-z0-9_.#\-]{3,})', re.I)
 _DIGITS = re.compile(r'\+?\d[\d \t.\-()]{6,}\d')
 _MONEY = re.compile(r'\d{1,3}(?:\.\d{3})+')
-_WORDS = re.compile('|'.join(r'(?<!\w)' + ''.join(re.escape(ch) + '+' for ch in w) + r'(?!\w)' for w in HEAVY)
+_WORDS = re.compile('|'.join(r'(?<!\w)' + _SEP.join(re.escape(ch) + '+' for ch in w) + r'(?!\w)' for w in HEAVY)
                     + '|' + '|'.join(r'(?<!\w)' + re.escape(p).replace(r'\ ', r'\s+') + r'(?!\w)' for p in HEAVY_PHRASES), re.I)
+_OK = re.compile('|'.join(r'(?<!\w)' + re.escape(p).replace(r'\ ', r'\s+') + r'(?!\w)' for p in HEAVY_OK), re.I)
+
+
+def _stars(m: re.Match) -> str:
+    """A heavy word or phrase as one * per letter (spaces kept), unless it is part of an everyday phrase."""
+    w = m.group(0)
+    w = re.sub(r'(\w)\1+', r'\1', re.sub(r"[.\-_*,'’`·•~^]", '', w))   # "lồnnnn", "đ.ị.t" → the word's own length
+    return re.sub(r'\w', STAR, w)
+
+
+def _heavy(text: str) -> str:
+    keep = [(m.start(), m.end()) for m in _OK.finditer(text)]
+    if not keep:
+        return _WORDS.sub(_stars, text)
+    return _WORDS.sub(lambda m: m.group(0) if any(a <= m.start() < b for a, b in keep) else _stars(m), text)
 _SPACES = re.compile(r'[ \t  -​  　]+')
 _ZW = re.compile('[​-‏ -‮⁠-⁯﻿]')
 
@@ -141,7 +163,7 @@ def mask(text: str, known: set | None = None) -> str:
     text = _HANDLE.sub(_mention(known), text)
     text = _CONTACT.sub(_contact, text)
     text = _DIGITS.sub(_phone, text)
-    text = _WORDS.sub(MASK, text)
+    text = _heavy(text)
     return text
 
 
