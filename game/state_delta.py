@@ -74,32 +74,35 @@ def _splittable(value) -> bool:
     return (t is list or t is tuple) and bool(value)
 
 
+def _part(value, path: list, depth: int, known: frozenset, refs: list, keys: list) -> bytes:
+    data = fj.dumps_body(value)
+    h = digest(data) if len(data) >= MIN else None
+    if h is not None and h in known:
+        refs.append([path, h])
+        return b"0"
+    if h is not None:
+        keys.append([path, h])
+    if len(data) > SPLIT and depth < MAX_DEPTH and _splittable(value):
+        return _members(value, path, depth + 1, known, refs, keys)
+    return data
+
+
+def _members(value, path: list, depth: int, known: frozenset, refs: list, keys: list) -> bytes:
+    if type(value) is dict:
+        return b"{" + b",".join(_key(k) + b":" + _part(v, path + [k], depth, known, refs, keys) for k, v in value.items()) + b"}"
+    return b"[" + b",".join(_part(v, path + [i], depth, known, refs, keys) for i, v in enumerate(value)) + b"]"
+
+
 def encode(state: dict, known: frozenset = frozenset()) -> tuple[bytes, dict]:
     """(JSON bytes of `state` with the parts in `known` written as 0, the `delta` member)."""
+    # Module-level helpers avoid a recursive closure cycle retaining each request's
+    # known hashes and delta paths until cyclic garbage collection runs.
     refs: list = []
     keys: list = []
 
-    def part(value, path: list, depth: int, data: bytes | None = None) -> bytes:
-        if data is None:
-            data = fj.dumps_body(value)
-        h = digest(data) if len(data) >= MIN else None
-        if h is not None and h in known:
-            refs.append([path, h])
-            return b"0"
-        if h is not None:
-            keys.append([path, h])
-        if len(data) > SPLIT and depth < MAX_DEPTH and _splittable(value):
-            return members(value, path, depth + 1)
-        return data
-
-    def members(value, path: list, depth: int) -> bytes:
-        if type(value) is dict:
-            return b"{" + b",".join(_key(k) + b":" + part(v, path + [k], depth) for k, v in value.items()) + b"}"
-        return b"[" + b",".join(part(v, path + [i], depth) for i, v in enumerate(value)) + b"]"
-
     if not (type(state) is dict and _splittable(state)):
         return fj.dumps_body(state), dict(refs=refs, keys=keys)
-    return members(state, [], 1), dict(refs=refs, keys=keys)
+    return _members(state, [], 1, known, refs, keys), dict(refs=refs, keys=keys)
 
 
 # ---- the page's side, in Python (tests and scripts; public/js/api.js inflate() is the real one) ----------

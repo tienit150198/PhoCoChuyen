@@ -153,9 +153,15 @@ class GameServer(ThreadingHTTPServer):
     # without upstream keep-alive); a short accept queue drops SYNs and the client only
     # retries after 1 s. The kernel caps this at net.core.somaxconn.
     request_queue_size=1024
-    # At most MAX_THREADS requests in flight per worker: past it the accept loop waits, so the
-    # kernel queue absorbs a burst instead of one more thread (and its memory) per connection.
+    # At most MAX_THREADS connections per worker, including idle keep-alive sockets.
+    # Past it the accept loop waits, so the kernel queue absorbs a burst instead of
+    # one more thread (and its memory) per connection.
     max_threads=max(4,int(os.environ.get("MAX_THREADS","64") or 64))
+    # Release idle connections promptly so a client's pool cannot hold every slot.
+    try:keepalive_timeout=float(os.environ.get("HTTP_KEEPALIVE_SECONDS") or 2)
+    except ValueError:keepalive_timeout=2
+    if not math.isfinite(keepalive_timeout):keepalive_timeout=2
+    keepalive_timeout=max(0.1,min(120,keepalive_timeout))
     def process_request(self,request,client_address):
         if not hasattr(self,"_slots"):self._slots=threading.BoundedSemaphore(self.max_threads)
         self._slots.acquire()
@@ -248,10 +254,18 @@ class Handler(BaseHTTPRequestHandler):
     def setup(self):
         super().setup();self.connection.settimeout(20)
 
+    def handle_one_request(self):
+        self.connection.settimeout(self.server.keepalive_timeout if getattr(self,"_handled_request",False) else 20)
+        self._handled_request=True
+        return super().handle_one_request()
+
     def parse_request(self):
         # When this request reached us: answers carry it as server_recv next to server_time, so the page's estimate
         # of our clock (public/js/api.js clockSample) leaves out the time spent here (a lock, a busy CPU).
         self.recv_time=time.time()
+        # The next request line has arrived: headers, body and response retain the
+        # original active-request budget, independent of the idle keep-alive limit.
+        self.connection.settimeout(20)
         return super().parse_request()
 
     def log_message(self,format,*args):
@@ -281,6 +295,9 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type",ctype)
         self.send_header("Content-Length",str(len(data)))
+        # Commands release their handler slot after this response. Advertise the
+        # close so client/proxy pools do not reuse a socket that is being closed.
+        if self.command=="POST" and urlsplit(self.path).path=="/api/command":self.send_header("Connection","close")
         self.send_header("X-Content-Type-Options","nosniff")
         self.send_header("Referrer-Policy","no-referrer")
         self.send_header("Content-Security-Policy",csp)

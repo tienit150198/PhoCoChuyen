@@ -113,9 +113,20 @@ location @asset_miss {                              # mã chưa có trong kho: t
 | `SLOW_COMMAND_MS`, `SLOW_LOG_PER_MINUTE` | Ghi `[slow-cmd]` khi một thao tác mất quá số mili giây này (mặc định 1500); `[slow-lock]`/`[slow-write]` khi chờ khóa hoặc ghi quá nửa mức đó. Mỗi tiến trình ghi tối đa `SLOW_LOG_PER_MINUTE` dòng như vậy mỗi phút (mặc định 20, `0` = không giới hạn); dòng kế tiếp ghi số dòng đã bỏ. |
 | `STATIC_CAS_DIR` | Kho tệp tĩnh theo mã băm mà proxy phục vụ cho URL `?v=` (mặc định `public/_v`). Xem mục “Tài nguyên tĩnh có phiên bản”. |
 | `API_GZIP_LEVEL` | Mức gzip của phản hồi `/api/` (mặc định 4: tốn ~2/3 CPU so với mức 5, dữ liệu gửi đi nhiều hơn ~5%). Tệp tĩnh luôn được nén sẵn ở mức 6. |
+| `COMMAND_CONCURRENCY` | Số worker xử lý `Store.command` trong một tiến trình, mặc định `4` (1–64). Yêu cầu chờ trước khi tải bản lưu từ PostgreSQL và dùng lại nhóm thread cố định để tái sử dụng bộ nhớ. Giới hạn này tách biệt với `MAX_THREADS` của kết nối HTTP. Khi tăng, phải đo lại RAM và độ trễ; thêm thread không tạo thêm CPU cho một tiến trình Python. |
+| `HTTP_KEEPALIVE_SECONDS` | Chờ dòng yêu cầu kế tiếp trên kết nối HTTP đang rảnh, mặc định `2` giây (0,1–120). Riêng `POST /api/command` luôn trả `Connection: close` và nhả slot ngay sau phản hồi, không phụ thuộc biến này. GET/tệp tĩnh vẫn tái sử dụng kết nối. Yêu cầu đầu tiên và giai đoạn đọc header/body vẫn có timeout 20 giây; WebSocket không bị ảnh hưởng. Mỗi command cần TCP/thread HTTP mới; khi Nginx/Caddy kết thúc TLS, đây là kết nối upstream tới Python, không bắt buộc tạo lại TLS phía trình duyệt. |
+| `MALLOC_ARENA_MAX` | Tùy chọn cho Linux/glibc: có thể thử `2` để giới hạn số vùng cấp phát bộ nhớ, rồi đo lại RAM/độ trễ. Bản sửa đã có nhóm thread tái sử dụng; lượt tải cuối dùng mặc định, không cần biến này. **Phải đặt trước khi Python khởi chạy**, qua systemd `Environment=`, Docker `environment`/`env_file` hoặc shell; `server.py` đọc `.env` sau khi Python đã chạy nên không đủ. Không áp dụng cho Windows hay libc khác. |
 | `GC_THRESHOLD` | Ngưỡng bộ gom rác của Python (mặc định `50000,20,20`: ít lượt gom hơn khi đọc/ghi bản lưu lớn; `700,10,10` là mặc định của Python). Đối tượng lúc khởi động được `gc.freeze()` giữ ngoài các lượt gom. |
 | `MNL_DEV` | **Không bao giờ đặt trên máy chủ thật.** `MNL_DEV=1` tắt hành trình (mở mọi nghề, không trừ tiền sinh hoạt) và cho nhận việc không cần phỏng vấn. Chỉ dùng cho script kiểm trình duyệt. |
 | `VAPID_SUBJECT`, `VAPID_PRIVATE_KEY`, `VAPID_KEY_FILE`, `PUSH_DISABLED` | Web push. Mặc định khóa được tự tạo ở `vapid.json` trong thư mục của `GAME_NAMESPACE`; `VAPID_KEY_FILE` chọn một tệp khóa hiện có. Đừng xóa hoặc thay khóa này: mọi đăng ký thông báo cũ cần dùng cùng khóa. |
+
+**Nginx production (06/10/2026):** upstream `phocochuyen_app` không có `keepalive`. Vì vậy nginx đóng kết nối tới Python sau mỗi request, và `Connection: close` cùng `HTTP_KEEPALIVE_SECONDS` không đổi gì ở đó. Header này là hop-by-hop, trình duyệt không nhận được. Phần có tác dụng là `COMMAND_CONCURRENCY` và delta. Nếu sau này bật `keepalive` cho upstream, hãy đặt `keepalive_timeout` của upstream **nhỏ hơn** `HTTP_KEEPALIVE_SECONDS`. Nếu không, nginx có thể dùng lại một kết nối Python vừa đóng. `/api/` có `proxy_next_upstream … non_idempotent` nên gửi lại được. Các location khác như `/api/account/login` và `/api/bootstrap` thì không: request sẽ nhận 502.
+
+## Theo dõi PostgreSQL khi tải ghi lớn
+
+Bài 1.000 người/200 command mỗi giây ghi nhận nhiều `COMMIT` chờ `WALWrite` hơn 0,5 giây. Thử nén WAL, tăng ngưỡng checkpoint và thay RAM/CPU trong một lượt chẩn đoán **không cải thiện kết quả**; không áp dụng các cấu hình thử đó làm mặc định. [Báo cáo và giới hạn phép đo](performance/2026-10-06-fix/REPORT.md) giữ cả các lượt không đạt.
+
+Khi đo trên staging đúng máy, ghi CPU, RAM, I/O, `pg_stat_wal`, `pg_stat_bgwriter` và wait event. Giữ `fsync`, `synchronous_commit`, `full_page_writes` bật; không đổi độ bền dữ liệu để lấy số latency đẹp. [Tài liệu WAL chính thức](https://www.postgresql.org/docs/16/runtime-config-wal.html).
 
 ## Bảo mật và vận hành
 
