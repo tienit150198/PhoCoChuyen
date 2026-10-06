@@ -1,5 +1,513 @@
 [
  {
+  "vi": "Chi phí sửa tường",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tâm tự lo",
+  "en": ""
+ },
+ {
+  "vi": "Chia đôi",
+  "en": ""
+ },
+ {
+  "vi": "Ông Lực chịu hết",
+  "en": ""
+ },
+ {
+  "vi": "Ai sửa",
+  "en": ""
+ },
+ {
+  "vi": "Thợ của ông Lực",
+  "en": ""
+ },
+ {
+  "vi": "Hai bên cùng chọn thợ",
+  "en": ""
+ },
+ {
+  "vi": "Thợ do bà Tâm chọn",
+  "en": ""
+ },
+ {
+  "vi": "Con chó Lu tổ 4",
+  "en": ""
+ },
+ {
+  "vi": "“Lu hiền khô à, nó chạy theo chơi thôi.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi kể: Lu mười hai tuổi rồi, đeo rọ mõm là nó sợ, bỏ ăn. Cho Lu vào nhà ban đêm thì anh làm được.",
+  "en": ""
+ },
+ {
+  "vi": "“Lu già rồi, rọ mõm là nó bỏ ăn đó.”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Bích",
+  "en": ""
+ },
+ {
+  "vi": "“Chó thả rông đuổi cháu tôi, đêm thì sủa cả xóm mất ngủ!”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Bích kể: thật ra Lu chỉ chạy theo cháu chơi; cái bà khổ là Lu sủa đêm ngay sát vách, cả tháng nay bà mất ngủ.",
+  "en": ""
+ },
+ {
+  "vi": "“Đêm nó sủa vậy tôi ngủ sao nổi.”",
+  "en": ""
+ },
+ {
+  "vi": "Khi Lu ra hẻm",
+  "en": ""
+ },
+ {
+  "vi": "Thả như cũ",
+  "en": ""
+ },
+ {
+  "vi": "Dắt dây",
+  "en": ""
+ },
+ {
+  "vi": "Dắt dây, đeo rọ mõm",
+  "en": ""
+ },
+ {
+  "vi": "Ban đêm",
+  "en": ""
+ },
+ {
+  "vi": "Để Lu ngoài sân",
+  "en": ""
+ },
+ {
+  "vi": "Vào nhà sau 22:00",
+  "en": ""
+ },
+ {
+  "vi": "Vào nhà sau 21:00, dời chuồng xa vách",
+  "en": ""
+ },
+ {
+  "vi": "Cây xoài chìa sang mái tôn",
+  "en": ""
+ },
+ {
+  "vi": "“Cây xoài vợ tôi trồng hai mươi năm, chặt sao đành.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Hai kể: chú quý trái hơn quý cành, mỗi mùa chia cho cả xóm. Tỉa cành thì chú tiếc nhưng chịu được.",
+  "en": ""
+ },
+ {
+  "vi": "“Trái xoài của bà nhà tôi, ai hái thì hái à?”",
+  "en": ""
+ },
+ {
+  "vi": "“Trái rơi trúng mái tôn kêu như sấm, lá rụng nghẹt máng xối!”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Lan kể: cô chẳng thiết trái. Cô chỉ cần đêm không bị đánh thức, máng xối không nghẹt.",
+  "en": ""
+ },
+ {
+  "vi": "“Không tỉa thì mái tôn nhà tôi hứng tới bao giờ?”",
+  "en": ""
+ },
+ {
+  "vi": "Cành chìa sang",
+  "en": ""
+ },
+ {
+  "vi": "Để nguyên",
+  "en": ""
+ },
+ {
+  "vi": "Tỉa cành chìa sang",
+  "en": ""
+ },
+ {
+  "vi": "Tỉa cành, giăng lưới hứng trái",
+  "en": ""
+ },
+ {
+  "vi": "Trái xoài",
+  "en": ""
+ },
+ {
+  "vi": "Chú Hai hái hết",
+  "en": ""
+ },
+ {
+  "vi": "Chia đôi mỗi mùa",
+  "en": ""
+ },
+ {
+  "vi": "Rơi bên nào bên đó lấy",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi tên bé",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi bố mẹ tên gì",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi bé đi với ai, ở đâu",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn áo, dép, đồ bé cầm",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ đọc loa: tả áo, dép, không đọc họ tên đầy đủ",
+  "en": ""
+ },
+ {
+  "vi": "Gọi số điện thoại ghi trên thẻ của bé",
+  "en": ""
+ },
+ {
+  "vi": "Chụp ảnh bé đăng lên nhóm mạng khu phố",
+  "en": ""
+ },
+ {
+  "vi": "Để bé tự nhận: “Ai đây con?”",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi người tới đón: tên bé, áo bé mặc",
+  "en": ""
+ },
+ {
+  "vi": "Xem giấy tờ, gọi số trên thẻ để bố mẹ xác nhận",
+  "en": ""
+ },
+ {
+  "vi": "Chợ Mây, đứng khóc cạnh sạp cá",
+  "en": ""
+ },
+ {
+  "vi": "Chợ Mây",
+  "en": ""
+ },
+ {
+  "vi": "“Con tên Bin.” (Tên ở nhà.)",
+  "en": ""
+ },
+ {
+  "vi": "“Mẹ con tên… Mẹ.”",
+  "en": ""
+ },
+ {
+  "vi": "“Mẹ đi mua cá, con đi coi con rùa.”",
+  "en": ""
+ },
+ {
+  "vi": "Áo khủng long xanh, dép đỏ, tay cầm con rùa nhựa.",
+  "en": ""
+ },
+ {
+  "vi": "Balo có thẻ tên: Nguyễn Gia Bảo (Bin), lớp Mầm 2, kèm số điện thoại của mẹ.",
+  "en": ""
+ },
+ {
+  "vi": "Bin chạy ào tới ôm chân: “Mẹ ơi!”",
+  "en": ""
+ },
+ {
+  "vi": "“Bé tên Gia Bảo, ở nhà gọi Bin, mặc áo khủng long xanh, dép đỏ.”",
+  "en": ""
+ },
+ {
+  "vi": "Căn cước tên Trần Thị Ngọc; gọi số trên thẻ thì điện thoại chị đổ chuông ngay trong túi.",
+  "en": ""
+ },
+ {
+  "vi": "4 tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Hội chợ phường, cạnh vòng xoay ngựa gỗ",
+  "en": ""
+ },
+ {
+  "vi": "Hội chợ phường",
+  "en": ""
+ },
+ {
+  "vi": "Bé lắc đầu, nép sau cột đèn, không nói.",
+  "en": ""
+ },
+ {
+  "vi": "“Ba… ba Tín.”",
+  "en": ""
+ },
+ {
+  "vi": "“Ba mua kẹo bông, Na đi coi ngựa.”",
+  "en": ""
+ },
+ {
+  "vi": "Váy vàng, tóc buộc nơ đỏ, tay cầm que kẹo bông.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng tay giấy của hội chợ ghi “Na · 4 tuổi” và số điện thoại của ba.",
+  "en": ""
+ },
+ {
+  "vi": "Na nhìn một lúc, rồi buông tay bạn chạy tới: “Ba!”",
+  "en": ""
+ },
+ {
+  "vi": "“Con tôi tên Na, bốn tuổi, váy vàng, nơ đỏ.”",
+  "en": ""
+ },
+ {
+  "vi": "Căn cước tên Hồ Văn Tín; số trên vòng tay đúng số máy anh đang cầm.",
+  "en": ""
+ },
+ {
+  "vi": "Bé Tùng",
+  "en": ""
+ },
+ {
+  "vi": "Cổng trường Tiểu học Mây, tan học đã nửa tiếng",
+  "en": ""
+ },
+ {
+  "vi": "Cổng trường",
+  "en": ""
+ },
+ {
+  "vi": "“Con tên Tùng, lớp 2A.”",
+  "en": ""
+ },
+ {
+  "vi": "“Mẹ con tên Thủy.”",
+  "en": ""
+ },
+ {
+  "vi": "“Hôm nay ông ngoại đón mà ông chưa tới.”",
+  "en": ""
+ },
+ {
+  "vi": "Đồng phục trường, balo siêu nhân, đeo thẻ học sinh.",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ học sinh: Lê Minh Tùng, lớp 2A, kèm số điện thoại của mẹ.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hạnh hàng xóm",
+  "en": ""
+ },
+ {
+  "vi": "Tùng gật đầu: “Cô Hạnh nhà bên.” Nhưng bé không chạy tới, cứ nắm tay bạn.",
+  "en": ""
+ },
+ {
+  "vi": "“Thằng Tùng nhà chị Thủy chứ ai, để chị dẫn về luôn cho.”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi số trên thẻ, chị Thủy nghe máy: “Hôm nay ông ngoại đón, tôi không nhờ ai hết. Giữ cháu giúp tôi, ông sắp tới.”",
+  "en": ""
+ },
+ {
+  "vi": "Bé Mi",
+  "en": ""
+ },
+ {
+  "vi": "Đám cưới hẻm 4, đứng khóc cạnh rạp",
+  "en": ""
+ },
+ {
+  "vi": "Đám cưới hẻm 4",
+  "en": ""
+ },
+ {
+  "vi": "“Con tên Mi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Con đi với bà nội.”",
+  "en": ""
+ },
+ {
+  "vi": "“Bà nội đang ăn cỗ, Mi đi coi cô dâu.”",
+  "en": ""
+ },
+ {
+  "vi": "Áo dài đỏ nhỏ xíu, tay cầm cái kẹo dừa.",
+  "en": ""
+ },
+ {
+  "vi": "Trong túi áo có mẩu giấy bà nội viết: “Mi, cháu bà Sáu tổ 4”, kèm số điện thoại của mẹ.",
+  "en": ""
+ },
+ {
+  "vi": "Mi òa khóc chạy tới: “Bà nội!”",
+  "en": ""
+ },
+ {
+  "vi": "“Cháu Mi của tôi, sáu tuổi, mặc áo dài đỏ.”",
+  "en": ""
+ },
+ {
+  "vi": "Bà quên căn cước ở nhà. Gọi số trên mẩu giấy: mẹ Mi nghe máy, nói đúng là bà nội đưa Mi đi ăn cưới.",
+  "en": ""
+ },
+ {
+  "vi": "Bà bán rau bày mẹt lấn ra nửa lối đi.",
+  "en": ""
+ },
+ {
+  "vi": "Bà mới dọn ra chỗ này sáng nay, dì Út chưa kịp nhắc lần nào.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc bà dời mẹt vào trong vạch sơn, chỉ chỗ trống",
+  "en": ""
+ },
+ {
+  "vi": "Bà kéo mẹt vào ngay, còn dúi cho bạn mớ rau răm. Bạn cảm ơn, trả lại.",
+  "en": ""
+ },
+ {
+  "vi": "Lập biên bản lấn chiếm lối đi",
+  "en": ""
+ },
+ {
+  "vi": "Bà rưng rưng ký biên bản. Cả dãy rau nhìn bạn như nhìn người lạ.",
+  "en": ""
+ },
+ {
+  "vi": "Đi tiếp, chuyện nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Lối đi hẹp, người mua lách qua lách lại.",
+  "en": ""
+ },
+ {
+  "vi": "Sạp quần áo dựng giá treo chắn hết lối thoát hiểm phía sau chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Dì Út đã nhắc ba lần tuần này. Lối này là đường cho xe chữa cháy vào chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Lập biên bản, yêu cầu dọn lối thoát hiểm ngay",
+  "en": ""
+ },
+ {
+  "vi": "Chủ sạp cằn nhằn nhưng dọn giá. Lối thoát hiểm thông.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc thêm một lần nữa",
+  "en": ""
+ },
+ {
+  "vi": "Chủ sạp “dạ dạ”, chiều lại dựng ra như cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ, ai cũng làm vậy",
+  "en": ""
+ },
+ {
+  "vi": "Lối thoát hiểm vẫn bị chắn suốt chiều.",
+  "en": ""
+ },
+ {
+  "vi": "Mấy thanh niên lượn sát người mua, một bà cụ đeo túi hờ hững sau lưng.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng nay hai người báo mất điện thoại ở dãy này. Chưa ai thấy ai lấy.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc bà con giữ túi phía trước, đứng gần dãy này, báo anh Định tăng tuần tra",
+  "en": ""
+ },
+ {
+  "vi": "Bà cụ chuyển túi ra trước. Mấy thanh niên thấy bạn đứng gần thì tản đi.",
+  "en": ""
+ },
+ {
+  "vi": "Chặn mấy thanh niên lại khám túi",
+  "en": ""
+ },
+ {
+  "vi": "Không có căn cứ gì. Họ quay clip “bị khám vô cớ”, đăng ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thấy ai lấy thì thôi",
+  "en": ""
+ },
+ {
+  "vi": "Chiều đó thêm một người báo mất ví.",
+  "en": ""
+ },
+ {
+  "vi": "Một chị mua thịt kêu sạp cân thiếu, hai bên to tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "Ban quản lý chợ có cân đối chứng ngay cổng. Chưa ai cân lại.",
+  "en": ""
+ },
+ {
+  "vi": "Mời hai bên ra cân đối chứng, ban quản lý chợ xử lý theo kết quả",
+  "en": ""
+ },
+ {
+  "vi": "Cân đối chứng: thiếu một lạng. Chủ sạp bù đủ, xin lỗi; ban quản lý nhắc kiểm định cân.",
+  "en": ""
+ },
+ {
+  "vi": "Bênh người mua, mắng chủ sạp trước mặt mọi người",
+  "en": ""
+ },
+ {
+  "vi": "Chưa cân lại đã kết luận. Chủ sạp làm đơn phản ánh.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện mua bán, tự giải quyết",
+  "en": ""
+ },
+ {
+  "vi": "Hai bên cãi nhau thêm nửa tiếng rồi bỏ đi.",
+  "en": ""
+ },
+ {
+  "vi": "Cụ ông đứng ngơ ngác giữa chợ, hỏi ai cũng “nhà tôi ở đâu?”.",
+  "en": ""
+ },
+ {
+  "vi": "Cụ đeo vòng tay ghi “Ông Lâm, tổ 6” và số điện thoại của con gái.",
+  "en": ""
+ },
+ {
   "vi": "Mời cụ ngồi nghỉ, cho uống nước, gọi số trên vòng tay",
   "en": ""
  },
@@ -1289,514 +1797,6 @@
  },
  {
   "vi": "Cô Thoa mời cậu tài xế công nghệ hẻm 7 vào nhà uống ly trà đá.",
-  "en": ""
- },
- {
-  "vi": "Chú Quý: “Hát chút xíu mà làm như tội ác.”",
-  "en": ""
- },
- {
-  "vi": "Chú Quý mua tấm cách âm dán tường phòng hát.",
-  "en": ""
- },
- {
-  "vi": "Chú Quý rủ chị Mận hát chung bài “Hà Nội mùa vắng những cơn mưa” tối thứ Bảy, 21:30 tắt loa.",
-  "en": ""
- },
- {
-  "vi": "Kha: “Sếp ơi cho em quay chút xíu thôi.”",
-  "en": ""
- },
- {
-  "vi": "Kha làm clip “thủ tục tạm trú trong 3 phút”, che hết mặt người dân.",
-  "en": ""
- },
- {
-  "vi": "Kha quyên góp được hai trăm mũ bảo hiểm cho học sinh Tiểu học Mây.",
-  "en": ""
- },
- {
-  "vi": "Dì Út: “Ở chợ này, đứa nhỏ nào lạc cũng về được.”",
-  "en": ""
- },
- {
-  "vi": "Dì Út dúi cho bạn ly sâm bí đao giữa buổi tuần tra.",
-  "en": ""
- },
- {
-  "vi": "Dì Út khen: “Cán bộ trẻ mà nhắc khéo như người cũ.”",
-  "en": ""
- },
- {
-  "vi": "Chị Hằng: “Hồ sơ đủ thì người ta đi một lần là xong.”",
-  "en": ""
- },
- {
-  "vi": "Chị Hằng chỉ bạn cách xếp hồ sơ theo tổ cho dễ tìm.",
-  "en": ""
- },
- {
-  "vi": "Chị Hằng gửi bạn bình trà gừng: “Cả tổ uống chung.”",
-  "en": ""
- },
- {
-  "vi": "Cúp điện cả trụ sở",
-  "en": ""
- },
- {
-  "vi": "Đèn tắt, máy tính bàn cư trú tắt phụt giữa lúc hàng chờ đang dài.",
-  "en": ""
- },
- {
-  "vi": "Chuyển sang ghi sổ tay, phát số thứ tự, hẹn giờ trả rõ ràng",
-  "en": ""
- },
- {
-  "vi": "Hàng chờ vẫn đi đều. Có điện lại, chị Hằng nhập máy một lượt là xong.",
-  "en": ""
- },
- {
-  "vi": "Treo biển “nghỉ, mai quay lại”",
-  "en": ""
- },
- {
-  "vi": "Lên phường từ sáng, cúp điện cái là đuổi về.",
-  "en": ""
- },
- {
-  "vi": "Mấy người đi làm xin nghỉ nửa buổi để lên, giờ phải xin nghỉ thêm.",
-  "en": ""
- },
- {
-  "vi": "Ngồi chờ có điện",
-  "en": ""
- },
- {
-  "vi": "Bốn mươi phút sau có điện, hàng chờ đã cáu.",
-  "en": ""
- },
- {
-  "vi": "Túi xoài “cảm ơn”",
-  "en": ""
- },
- {
-  "vi": "Một chị vừa làm xong giấy tờ quay lại, để túi xoài cát lên bàn: “Quà quê, cán bộ ăn lấy thảo.”",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn, gửi lại túi xoài, nói làm giấy tờ là việc của mình",
-  "en": ""
- },
- {
-  "vi": "Chị ngại ngùng xách xoài về, còn khen phường làm nhanh.",
-  "en": ""
- },
- {
-  "vi": "Nhận, chia cho cả tổ",
-  "en": ""
- },
- {
-  "vi": "Làm giấy tờ xong mới thấy người ta xách quà lên. Vậy là phải có quà à?",
-  "en": ""
- },
- {
-  "vi": "Người chờ phía sau nhìn túi xoài, thì thầm “phải có quà mới nhanh”.",
-  "en": ""
- },
- {
-  "vi": "Để đó, lát tính",
-  "en": ""
- },
- {
-  "vi": "Túi xoài nằm trên bàn cả buổi, ai đi qua cũng nhìn.",
-  "en": ""
- },
- {
-  "vi": "Đám đông vây người bị tố móc túi",
-  "en": ""
- },
- {
-  "vi": "Ở cổng chợ, đám đông vây một cậu thanh niên, có người hô “đánh cho nó chừa”.",
-  "en": ""
- },
- {
-  "vi": "Tách cậu ta khỏi đám đông, mời người bị mất đồ và cậu ta về phường làm rõ",
-  "en": ""
- },
- {
-  "vi": "Về phường mới rõ: cậu ta nhặt được ví, đang đi tìm chủ. Suýt nữa thì oan.",
-  "en": ""
- },
- {
-  "vi": "Đứng xem, dân tự xử",
-  "en": ""
- },
- {
-  "vi": "Cán bộ đứng nhìn đám đông xô đẩy một người.",
-  "en": ""
- },
- {
-  "vi": "Cậu thanh niên bị xô ngã trầy tay. Về sau mới biết cậu không lấy gì.",
-  "en": ""
- },
- {
-  "vi": "Quay clip làm bằng chứng",
-  "en": ""
- },
- {
-  "vi": "Clip có đủ cả, nhưng cậu thanh niên đã bị xô ngã trước khi bạn kịp làm gì.",
-  "en": ""
- },
- {
-  "vi": "Cụ bà đi lạc vào trụ sở",
-  "en": ""
- },
- {
-  "vi": "Một cụ bà đi chân đất vào trụ sở, hỏi: “Nhà tôi đâu rồi cháu?”",
-  "en": ""
- },
- {
-  "vi": "Mời cụ ngồi, rót nước, xem vòng tay, gọi người nhà",
-  "en": ""
- },
- {
-  "vi": "Vòng tay có số của con trai. Nửa tiếng sau anh tới đón, cảm ơn mãi.",
-  "en": ""
- },
- {
-  "vi": "Dắt cụ đi hỏi từng nhà",
-  "en": ""
- },
- {
-  "vi": "Đi hai vòng hẻm mới gặp người quen của cụ. Bàn cư trú bỏ trống một tiếng.",
-  "en": ""
- },
- {
-  "vi": "Chỉ đường cho cụ tự về",
-  "en": ""
- },
- {
-  "vi": "Mẹ tôi lên phường hỏi đường mà bị chỉ cho tự về, lạc thêm hai tiếng.",
-  "en": ""
- },
- {
-  "vi": "Cụ lạc sang tận chợ cá.",
-  "en": ""
- },
- {
-  "vi": "Mưa lớn, nắp cống bị hút",
-  "en": ""
- },
- {
-  "vi": "Hẻm 5 ngập tới bắp chân, một nắp cống bị nước đẩy bật ra, xe máy vẫn chạy qua.",
-  "en": ""
- },
- {
-  "vi": "Cắm biển, rào tạm miệng cống, đứng phân luồng, báo đội thoát nước",
-  "en": ""
- },
- {
-  "vi": "Không ai sụp chân xuống cống. Đội thoát nước tới đậy lại nắp.",
-  "en": ""
- },
- {
-  "vi": "Chỉ gọi báo đội thoát nước rồi về",
-  "en": ""
- },
- {
-  "vi": "Trong lúc chờ, một xe máy sụp bánh xuống miệng cống.",
-  "en": ""
- },
- {
-  "vi": "Mưa thì ai cũng biết đường tránh",
-  "en": ""
- },
- {
-  "vi": "Miệng cống mở toang giữa hẻm ngập mà không ai cắm biển.",
-  "en": ""
- },
- {
-  "vi": "Một bé đi học về sụp chân, may có người kéo lên kịp.",
-  "en": ""
- },
- {
-  "vi": "Tụi nhỏ đốt pháo tự chế",
-  "en": ""
- },
- {
-  "vi": "Ở bãi đất trống, mấy đứa nhỏ đang trộn thứ gì đó trong lon sữa, bảo là “làm pháo coi trên mạng”.",
-  "en": ""
- },
- {
-  "vi": "Bảo tụi nhỏ dừng tay, lùi xa, gọi phụ huynh tới, giải thích vì sao nguy hiểm",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh tới, cảm ơn rối rít. Tụi nhỏ hứa không làm nữa.",
-  "en": ""
- },
- {
-  "vi": "Dọa “bắt hết về phường”",
-  "en": ""
- },
- {
-  "vi": "Con tôi bị dọa bắt, về nhà khóc cả tối.",
-  "en": ""
- },
- {
-  "vi": "Tụi nhỏ chạy mất, mang theo cái lon.",
-  "en": ""
- },
- {
-  "vi": "Trẻ con nghịch, kệ",
-  "en": ""
- },
- {
-  "vi": "Chiều đó cái lon nổ, một đứa bị bỏng nhẹ ở tay.",
-  "en": ""
- },
- {
-  "vi": "Chú Hòa vừa bị lừa",
-  "en": ""
- },
- {
-  "vi": "Chú Hòa ngồi khóc ở bàn tiếp dân: vừa chuyển tiền cho “nhân viên ngân hàng” để “mở khóa tài khoản”.",
-  "en": ""
- },
- {
-  "vi": "Trấn an, hướng dẫn gọi ngay ngân hàng yêu cầu khóa tài khoản, lập biên bản tiếp nhận",
-  "en": ""
- },
- {
-  "vi": "Ngân hàng khóa kịp một phần tiền. Chú Hòa ngồi uống trà gừng của chị Hằng tới khi bình tĩnh.",
-  "en": ""
- },
- {
-  "vi": "“Sao chú dại vậy?”",
-  "en": ""
- },
- {
-  "vi": "Bị lừa đã khổ, lên phường còn bị trách.",
-  "en": ""
- },
- {
-  "vi": "Chú Hòa đứng dậy bỏ về, không kịp gọi ngân hàng.",
-  "en": ""
- },
- {
-  "vi": "Hẹn chú mai lên làm đơn",
-  "en": ""
- },
- {
-  "vi": "Qua một đêm, tiền đã bị rút hết.",
-  "en": ""
- },
- {
-  "vi": "Kha livestream hàng chờ",
-  "en": ""
- },
- {
-  "vi": "Kha giơ điện thoại quay cả hàng chờ, cả giấy tờ trên bàn: “Cả nhà ơi, hôm nay phường đông vl!”",
-  "en": ""
- },
- {
-  "vi": "Nhờ Kha không quay mặt người dân và giấy tờ; muốn quay thì quay cổng, quay bảng hướng dẫn",
-  "en": ""
- },
- {
-  "vi": "Kha xoay máy ra bảng hướng dẫn: “Ok sếp, quay cái này còn có ích hơn.”",
-  "en": ""
- },
- {
-  "vi": "Giật điện thoại của Kha",
-  "en": ""
- },
- {
-  "vi": "Bị cán bộ giật điện thoại giữa trụ sở. Live có hết!",
-  "en": ""
- },
- {
-  "vi": "Clip “bị giật điện thoại” lên xu hướng trong một giờ.",
-  "en": ""
- },
- {
-  "vi": "Kệ, quay gì thì quay",
-  "en": ""
- },
- {
-  "vi": "Tối đó có người nhắn phường: mặt và giấy tờ của tôi lên mạng rồi.",
-  "en": ""
- },
- {
-  "vi": "Anh Định mua xôi cho cả tổ",
-  "en": ""
- },
- {
-  "vi": "Đầu ca, anh Định đặt túi xôi lên bàn: “Ăn đi rồi làm. Bụng đói dễ cáu với dân.”",
-  "en": ""
- },
- {
-  "vi": "Ăn nhanh ở phòng nghỉ rồi ra bàn",
-  "en": ""
- },
- {
-  "vi": "No bụng, cả buổi sáng bạn nói năng nhẹ nhàng.",
-  "en": ""
- },
- {
-  "vi": "Thôi, ra bàn luôn",
-  "en": ""
- },
- {
-  "vi": "Mười giờ bụng réo, bạn trả lời hơi cụt.",
-  "en": ""
- },
- {
-  "vi": "Mang xôi ra ăn ngay tại bàn tiếp dân",
-  "en": ""
- },
- {
-  "vi": "Người dân đứng chờ nhìn bạn ăn xôi. Anh Định nhắc khéo.",
-  "en": ""
- },
- {
-  "vi": "Đèn tín hiệu ngã tư hỏng",
-  "en": ""
- },
- {
-  "vi": "Đèn tín hiệu ngã tư đầu phường nhấp nháy vàng đúng giờ tan tầm, xe chen nhau kín ngã tư.",
-  "en": ""
- },
- {
-  "vi": "Đứng phân luồng, báo đơn vị quản lý đèn tới sửa",
-  "en": ""
- },
- {
-  "vi": "Ngã tư thông dần. Hai mươi phút sau đèn sáng lại.",
-  "en": ""
- },
- {
-  "vi": "Chỉ gọi báo rồi về trụ sở",
-  "en": ""
- },
- {
-  "vi": "Ngã tư tắc cả tiếng, hai xe va quẹt nhẹ.",
-  "en": ""
- },
- {
-  "vi": "Không phải việc của phường",
-  "en": ""
- },
- {
-  "vi": "Ngã tư loạn cào cào, cán bộ phường đi ngang không dừng.",
-  "en": ""
- },
- {
-  "vi": "Ngã tư tắc tới tối.",
-  "en": ""
- },
- {
-  "vi": "Mùi gas trong hẻm",
-  "en": ""
- },
- {
-  "vi": "Đi ngang hẻm 2, mùi gas nồng nặc từ một căn nhà khóa cửa ngoài.",
-  "en": ""
- },
- {
-  "vi": "Không bật công tắc, không bấm chuông điện; gọi chủ nhà, mời hàng xóm ra xa, báo đội cứu hỏa",
-  "en": ""
- },
- {
-  "vi": "Chủ nhà về mở cửa, khóa van, mở toang cửa sổ. Ống dẫn gas bị chuột cắn.",
-  "en": ""
- },
- {
-  "vi": "Bấm chuông cửa liên tục gọi chủ nhà",
-  "en": ""
- },
- {
-  "vi": "May chuông không tóe lửa. Anh Định nghe kể mà tái mặt.",
-  "en": ""
- },
- {
-  "vi": "Chắc nhà nào nấu ăn",
-  "en": ""
- },
- {
-  "vi": "Tối đó cả hẻm phải sơ tán.",
-  "en": ""
- },
- {
-  "vi": "Đoàn rước dâu chắn đường",
-  "en": ""
- },
- {
-  "vi": "Đoàn rước dâu mười chiếc xe hoa dừng giữa đường chụp ảnh, xe phía sau bóp còi inh ỏi.",
-  "en": ""
- },
- {
-  "vi": "Chúc mừng, mời đoàn dạt vào lề chụp, phân luồng cho xe qua",
-  "en": ""
- },
- {
-  "vi": "Đoàn rước dâu chụp ảnh xong, còn mời bạn vào hình.",
-  "en": ""
- },
- {
-  "vi": "Thổi còi, quát đoàn đi ngay",
-  "en": ""
- },
- {
-  "vi": "Ngày cưới bị cán bộ quát giữa đường.",
-  "en": ""
- },
- {
-  "vi": "Cô dâu méo mặt. Ảnh cưới có cả bạn đang quát.",
-  "en": ""
- },
- {
-  "vi": "Ngày vui, kệ họ",
-  "en": ""
- },
- {
-  "vi": "Đường tắc thêm mười lăm phút.",
-  "en": ""
- },
- {
-  "vi": "Bà Năm mang cơm trưa",
-  "en": ""
- },
- {
-  "vi": "Bà Năm xách cặp lồng cơm lên: “Bà nấu dư, con ăn đi. Ngồi đây bà kể chuyện thằng cháu bà nghe nè…”",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn bà, ngồi nghe bà mười phút, xin phép làm tiếp, hẹn chiều ghé nhà",
-  "en": ""
- },
- {
-  "vi": "Bà Năm vui vẻ đi về: “Chiều nhớ ghé nghe con.”",
-  "en": ""
- },
- {
-  "vi": "Ngồi nghe bà kể hết chuyện",
-  "en": ""
- },
- {
-  "vi": "Bà kể từ thằng cháu tới con mèo tới hồi năm bảy mấy. Hàng chờ dài ra.",
-  "en": ""
- },
- {
-  "vi": "“Bà về đi, con đang bận”",
-  "en": ""
- },
- {
-  "vi": "Bà lên thăm mà bị đuổi về như đuổi tà.",
-  "en": ""
- },
- {
-  "vi": "Bà Năm lặng lẽ xách cặp lồng về.",
   "en": ""
  }
 ]

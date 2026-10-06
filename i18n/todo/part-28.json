@@ -1,5 +1,513 @@
 [
  {
+  "vi": "Chuẩn bị bộ phát 4G dự phòng",
+  "en": ""
+ },
+ {
+  "vi": "Xem trước rồi mới khởi động lại.",
+  "en": ""
+ },
+ {
+  "vi": "Khởi động xong mới thử.",
+  "en": ""
+ },
+ {
+  "vi": "Cắm dây xong mới thử.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Long: “Bên tòa nhà báo 3 giờ cắt mạng cáp quang để sửa đường dây!”",
+  "en": ""
+ },
+ {
+  "vi": "Mạng chính sắp bị cắt.",
+  "en": ""
+ },
+ {
+  "vi": "Có bộ phát dự phòng rồi thử luôn.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn các bước sẽ làm, theo đúng thứ tự; bỏ ra những bước gây hại. Bước không cần thì làm hay không cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên tắc sửa chữa",
+  "en": ""
+ },
+ {
+  "vi": "An toàn điện trước: tắt máy, rút điện rồi mới mở.",
+  "en": ""
+ },
+ {
+  "vi": "Sự cố an ninh: cách ly trước, báo anh Long, giữ bằng chứng.",
+  "en": ""
+ },
+ {
+  "vi": "Không dùng phần mềm lậu, không trả tiền chuộc.",
+  "en": ""
+ },
+ {
+  "vi": "Mạng nhân viên",
+  "en": ""
+ },
+ {
+  "vi": "Mạng kế toán",
+  "en": ""
+ },
+ {
+  "vi": "Mạng khách",
+  "en": ""
+ },
+ {
+  "vi": "Mạng camera & thiết bị",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hằng — Kế toán",
+  "en": ""
+ },
+ {
+  "vi": "Kế toán vào mạng kế toán.",
+  "en": ""
+ },
+ {
+  "vi": "Linh — Kinh doanh (ngồi tạm tuần này)",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi bàn kế toán nhưng là nhân viên kinh doanh: theo người, không theo bàn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên vào mạng nhân viên.",
+  "en": ""
+ },
+ {
+  "vi": "Thực tập sinh dùng mạng khách.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng họp lớn — ổ trên bàn",
+  "en": ""
+ },
+ {
+  "vi": "Ổ phòng họp khách hay cắm: mạng khách.",
+  "en": ""
+ },
+ {
+  "vi": "Camera cổng xưởng",
+  "en": ""
+ },
+ {
+  "vi": "Camera vào mạng camera.",
+  "en": ""
+ },
+ {
+  "vi": "Máy chấm công",
+  "en": ""
+ },
+ {
+  "vi": "Máy chấm công là thiết bị: mạng camera & thiết bị.",
+  "en": ""
+ },
+ {
+  "vi": "Máy in chung tầng 2",
+  "en": ""
+ },
+ {
+  "vi": "Máy in chung cho nhân viên: mạng nhân viên.",
+  "en": ""
+ },
+ {
+  "vi": "Máy in phòng kế toán (in bảng lương)",
+  "en": ""
+ },
+ {
+  "vi": "In bảng lương: mạng kế toán.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân — Giám đốc",
+  "en": ""
+ },
+ {
+  "vi": "Mạng kế toán chỉ cho phòng kế toán; giám đốc xem báo cáo qua phần mềm có phân quyền.",
+  "en": ""
+ },
+ {
+  "vi": "“Cho anh vào mạng kế toán luôn cho tiện xem số.” — Anh Quân",
+  "en": ""
+ },
+ {
+  "vi": "Linh đã chuyển sang làm kế toán kho.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Huyền báo: “Linh chuyển hẳn sang làm kế toán kho từ hôm nay rồi nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Đã ký hợp đồng chính thức.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Long mở tủ mạng, dây chằng chịt: “Sau đợt chuyển chỗ ngồi, em đấu lại từng ổ vào đúng mạng nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Quy định mạng",
+  "en": ""
+ },
+ {
+  "vi": "Mạng kế toán: chỉ người phòng kế toán và máy in bảng lương.",
+  "en": ""
+ },
+ {
+  "vi": "Mạng nhân viên: nhân viên chính thức, máy in chung.",
+  "en": ""
+ },
+ {
+  "vi": "Mạng khách: khách, thực tập sinh, ổ trong phòng họp.",
+  "en": ""
+ },
+ {
+  "vi": "Mạng camera & thiết bị: camera, máy chấm công.",
+  "en": ""
+ },
+ {
+  "vi": "Xếp theo người đang dùng, không theo bàn.",
+  "en": ""
+ },
+ {
+  "vi": "Thư mục Nhân sự",
+  "en": ""
+ },
+ {
+  "vi": "Giữ nguyên",
+  "en": ""
+ },
+ {
+  "vi": "Cấp quyền",
+  "en": ""
+ },
+ {
+  "vi": "Hằng",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hằng · Kế toán",
+  "en": ""
+ },
+ {
+  "vi": "Đã nghỉ việc: thu hồi hết.",
+  "en": ""
+ },
+ {
+  "vi": "Thực tập sinh không được vào thư mục Nhân sự.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu xin quyền phần mềm kế toán CHƯA được duyệt: giữ nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Phiếu yêu cầu CHƯA DUYỆT: Linh xin quyền Phần mềm kế toán.",
+  "en": ""
+ },
+ {
+  "vi": "Kinh doanh (mới chuyển từ Kế toán)",
+  "en": ""
+ },
+ {
+  "vi": "Đã chuyển khỏi phòng kế toán: thu hồi phần mềm kế toán.",
+  "en": ""
+ },
+ {
+  "vi": "Có phiếu cấp VPN đã duyệt.",
+  "en": ""
+ },
+ {
+  "vi": "Đúng quyền hiện có.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu cấp VPN đã bị hủy.",
+  "en": ""
+ },
+ {
+  "vi": "Rà soát quyền truy cập tháng này",
+  "en": ""
+ },
+ {
+  "vi": "Anh Long: “Cuối tháng rồi. Em rà lại bảng quyền truy cập với danh sách nghỉ việc và các phiếu yêu cầu nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Quy định quyền truy cập",
+  "en": ""
+ },
+ {
+  "vi": "Nghỉ việc: thu hồi tất cả ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Phần mềm kế toán: chỉ người phòng kế toán.",
+  "en": ""
+ },
+ {
+  "vi": "Thư mục Nhân sự: chỉ phòng nhân sự; thực tập sinh không bao giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ cấp quyền khi phiếu yêu cầu ĐÃ DUYỆT.",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách & phiếu trong tháng",
+  "en": ""
+ },
+ {
+  "vi": "Không có thay đổi nào.",
+  "en": ""
+ },
+ {
+  "vi": "Máy in",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng may",
+  "en": ""
+ },
+ {
+  "vi": "📷 Tem dán trên máy",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Hóa đơn mua",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ tài sản",
+  "en": ""
+ },
+ {
+  "vi": "📝 Phiếu bàn giao",
+  "en": ""
+ },
+ {
+  "vi": "📦 Hộp máy",
+  "en": ""
+ },
+ {
+  "vi": "Số serial (S/N)",
+  "en": ""
+ },
+ {
+  "vi": "Chép đúng S/N trên tem máy, không lấy mã vạch hộp.",
+  "en": ""
+ },
+ {
+  "vi": "Mã tài sản mới",
+  "en": ""
+ },
+ {
+  "vi": "Theo phiếu bàn giao.",
+  "en": ""
+ },
+ {
+  "vi": "Hết bảo hành (dd/mm/yyyy)",
+  "en": ""
+ },
+ {
+  "vi": "Phòng đã đổi người nhận máy.",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng phòng gọi xuống: đổi người nhận máy!",
+  "en": ""
+ },
+ {
+  "vi": "📞 Trưởng phòng gọi",
+  "en": ""
+ },
+ {
+  "vi": "Đọc tem máy, hóa đơn, sổ tài sản và phiếu bàn giao; ghi đủ năm ô của sổ tài sản.",
+  "en": ""
+ },
+ {
+  "vi": "Cách ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Mã tài sản: CD-<loại>-<số tiếp theo, 4 chữ số>.",
+  "en": ""
+ },
+ {
+  "vi": "S/N chép trên tem máy, không lấy mã vạch hộp.",
+  "en": ""
+ },
+ {
+  "vi": "Hết bảo hành = ngày mua + số tháng bảo hành.",
+  "en": ""
+ },
+ {
+  "vi": "“Nhà mạng” xin mã OTP",
+  "en": ""
+ },
+ {
+  "vi": "Nhi chuyển máy: “Anh ơi, bên nhà mạng gọi, bảo nâng cấp sim công ty, xin mã OTP vừa gửi về điện thoại của sếp.”",
+  "en": ""
+ },
+ {
+  "vi": "Không ai được hỏi mã OTP. Nhà mạng thật không bao giờ xin OTP.",
+  "en": ""
+ },
+ {
+  "vi": "Số gọi đến",
+  "en": ""
+ },
+ {
+  "vi": "Số di động lạ, không phải tổng đài nhà mạng.",
+  "en": ""
+ },
+ {
+  "vi": "Sim của sếp",
+  "en": ""
+ },
+ {
+  "vi": "Sim đó nhận mã OTP của tài khoản ngân hàng công ty.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, cúp máy, gọi tổng đài chính thức để kiểm tra; báo sếp và cả công ty",
+  "en": ""
+ },
+ {
+  "vi": "Tổng đài xác nhận không có đợt nâng cấp nào. Cả công ty được cảnh báo kịp.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi lại tên, mã nhân viên của người gọi rồi tính",
+  "en": ""
+ },
+ {
+  "vi": "Kẻ gian đọc tên, mã rất trơn tru. May mà bạn chưa đưa mã.",
+  "en": ""
+ },
+ {
+  "vi": "Xin mã từ sếp rồi đọc cho họ",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản ngân hàng công ty bị chiếm; cô Hằng phải phong tỏa gấp.",
+  "en": ""
+ },
+ {
+  "vi": "“Anh Quân” nhắn xin mật khẩu quản trị",
+  "en": ""
+ },
+ {
+  "vi": "Zalo mới tên “Anh Quân (số mới)” nhắn: “Anh đổi số. Gửi anh mật khẩu quản trị email công ty, anh đang ở sân bay cần gấp.”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi số cũ của sếp",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân nghe máy, đang ngồi họp ở tầng 3, không đổi số nào.",
+  "en": ""
+ },
+ {
+  "vi": "Mật khẩu quản trị không gửi qua tin nhắn cho bất kỳ ai.",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh đại diện",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh lấy từ trang công ty.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi số cũ xác minh, báo tài khoản giả, cảnh báo cả công ty",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản giả bị báo cáo; ba người khác cũng vừa nhận tin y hệt và đã được cảnh báo.",
+  "en": ""
+ },
+ {
+  "vi": "Lờ đi, không nói ai",
+  "en": ""
+ },
+ {
+  "vi": "Bạn không mất gì, nhưng Linh suýt gửi mật khẩu email của mình.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi mật khẩu vì sếp đang gấp",
+  "en": ""
+ },
+ {
+  "vi": "Kẻ gian vào được email cả công ty, gửi hóa đơn giả cho khách hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Thợ lạ đến “bảo trì camera”",
+  "en": ""
+ },
+ {
+  "vi": "Một người mặc áo đồng phục đến quầy: “Anh bên bảo trì camera, có lịch hôm nay, cho anh vào phòng máy chủ nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Lịch bảo trì",
+  "en": ""
+ },
+ {
+  "vi": "Không có lịch bảo trì nào hôm nay; đơn vị bảo trì thật đến vào thứ Năm cuối tháng.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi đơn vị bảo trì",
+  "en": ""
+ },
+ {
+  "vi": "Họ không cử ai đến hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ nhân viên",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ in giấy thường, không có ảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch sự mời chờ ở sảnh, gọi đơn vị bảo trì xác minh, không cho vào phòng máy chủ",
+  "en": ""
+ },
+ {
+  "vi": "Người lạ viện cớ bỏ đi. Camera ghi lại mặt, báo bảo vệ khu.",
+  "en": ""
+ },
+ {
+  "vi": "Cho vào nhưng đi kèm từng bước",
+  "en": ""
+ },
+ {
+  "vi": "Hắn lén cắm một thiết bị lạ, may anh Long phát hiện tối đó.",
+  "en": ""
+ },
+ {
+  "vi": "Cho vào phòng máy chủ, mình về chỗ làm tiếp",
+  "en": ""
+ },
+ {
   "vi": "Ổ cứng sao lưu biến mất; dữ liệu khách hàng bị đem bán.",
   "en": ""
  },
@@ -1289,514 +1797,6 @@
  },
  {
   "vi": "Nhờ có chút việc mà cán bộ thư viện từ chối cứng nhắc.",
-  "en": ""
- },
- {
-  "vi": "Việc buổi sáng không có.",
-  "en": ""
- },
- {
-  "vi": "Phòng đọc mở rồi.",
-  "en": ""
- },
- {
-  "vi": "🔑 Mở cửa phòng đọc, bật đèn, bật quạt, kéo rèm cho sáng.",
-  "en": ""
- },
- {
-  "vi": "Bảng nội quy dựng rồi.",
-  "en": ""
- },
- {
-  "vi": "📋 Dựng bảng nội quy ở cửa: giữ yên lặng, không ăn uống, nghe điện thoại ngoài hành lang.",
-  "en": ""
- },
- {
-  "vi": "Xem rồi.",
-  "en": ""
- },
- {
-  "vi": "Cao hơn mức cho phép của kho giấy.",
-  "en": ""
- },
- {
-  "vi": "Trong mức cho phép.",
-  "en": ""
- },
- {
-  "vi": "💧 Bật máy hút ẩm kho, hẹn giờ chạy tới trưa.",
-  "en": ""
- },
- {
-  "vi": "Tắt máy hút ẩm.",
-  "en": ""
- },
- {
-  "vi": "Soi bẫy trước đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Cách xử lý không có.",
-  "en": ""
- },
- {
-  "vi": "Mở phòng đọc đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Sáng không ai xem ẩm kế kho.",
-  "en": ""
- },
- {
-  "vi": "chưa xem ẩm kế",
-  "en": ""
- },
- {
-  "vi": "kho ẩm không hút ẩm",
-  "en": ""
- },
- {
-  "vi": "Không ai soi bẫy côn trùng sáng nay.",
-  "en": ""
- },
- {
-  "vi": "chưa soi bẫy",
-  "en": ""
- },
- {
-  "vi": "Xịt thuốc diệt côn trùng thẳng lên kệ sách, mùi hắc cả phòng, thuốc dính lên trang.",
-  "en": ""
- },
- {
-  "vi": "xịt thuốc lên sách",
-  "en": ""
- },
- {
-  "vi": "Thấy dấu côn trùng mà để đó, mấy hôm sau cả kệ bị hại.",
-  "en": ""
- },
- {
-  "vi": "bỏ qua côn trùng",
-  "en": ""
- },
- {
-  "vi": "Xử lý côn trùng chưa đúng cách.",
-  "en": ""
- },
- {
-  "vi": "Không dựng bảng nội quy, bạn đọc không biết quy định.",
-  "en": ""
- },
- {
-  "vi": "thiếu bảng nội quy",
-  "en": ""
- },
- {
-  "vi": "Mở cửa thư viện.",
-  "en": ""
- },
- {
-  "vi": "Cô Nguyệt gật đầu: “Kho ổn, phòng đọc sẵn sàng.”",
-  "en": ""
- },
- {
-  "vi": "Cô Nguyệt nhắc: “Sáng ra là phải kỹ, kho hỏng thì không cứu được.”",
-  "en": ""
- },
- {
-  "vi": "còn trên kệ.",
-  "en": ""
- },
- {
-  "vi": "sách tra cứu: chỉ đọc tại chỗ, không cho mượn về.",
-  "en": ""
- },
- {
-  "vi": "Thẻ còn hạn, đang mượn một cuốn.",
-  "en": ""
- },
- {
-  "vi": "Thẻ hết hạn từ tháng trước.",
-  "en": ""
- },
- {
-  "vi": "Kiểm thẻ trước đã.",
-  "en": ""
- },
- {
-  "vi": "Thẻ không cần gia hạn.",
-  "en": ""
- },
- {
-  "vi": "Thẻ không có nợ phí.",
-  "en": ""
- },
- {
-  "vi": "Nợ phí cũ được bớt mà không có lý do, kế toán phường hỏi.",
-  "en": ""
- },
- {
-  "vi": "bớt nợ không lý do",
-  "en": ""
- },
- {
-  "vi": "Tra máy xem sách còn không đã.",
-  "en": ""
- },
- {
-  "vi": "Kiểm thẻ bạn đọc trước đã.",
-  "en": ""
- },
- {
-  "vi": "Sách đang có người mượn: giúp bạn đọc đặt trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Sách tra cứu mà cho mượn về, người khác cần tra không có.",
-  "en": ""
- },
- {
-  "vi": "cho mượn sách tra cứu",
-  "en": ""
- },
- {
-  "vi": "Thẻ hết hạn mà vẫn cho mượn.",
-  "en": ""
- },
- {
-  "vi": "thẻ hết hạn",
-  "en": ""
- },
- {
-  "vi": "quá số sách cho mượn",
-  "en": ""
- },
- {
-  "vi": "Thẻ còn nợ phí mà vẫn cho mượn tiếp.",
-  "en": ""
- },
- {
-  "vi": "thẻ còn nợ phí",
-  "en": ""
- },
- {
-  "vi": "Mời đọc tại phòng đọc",
-  "en": ""
- },
- {
-  "vi": "Photo phần cần (dưới một phần mười cuốn)",
-  "en": ""
- },
- {
-  "vi": "Ghi phiếu đặt trước, báo khi sách về",
-  "en": ""
- },
- {
-  "vi": "Trả bớt một cuốn rồi mượn tiếp",
-  "en": ""
- },
- {
-  "vi": "Từ chối, giải thích nội quy",
-  "en": ""
- },
- {
-  "vi": "Cách giúp không có.",
-  "en": ""
- },
- {
-  "vi": "Sách tra cứu thì đọc tại chỗ được luôn, đặt trước làm gì.",
-  "en": ""
- },
- {
-  "vi": "Sách đang có người mượn, đọc tại chỗ sao được.",
-  "en": ""
- },
- {
-  "vi": "Sách có trên kệ, thẻ còn hạn mà không cho mượn.",
-  "en": ""
- },
- {
-  "vi": "từ chối vô cớ",
-  "en": ""
- },
- {
-  "vi": "Thẻ hết hạn thì gia hạn hai phút là xong, sao lại từ chối.",
-  "en": ""
- },
- {
-  "vi": "không gia hạn thẻ",
-  "en": ""
- },
- {
-  "vi": "Mượn đủ ba cuốn rồi: trả bớt một cuốn hoặc đọc tại chỗ.",
-  "en": ""
- },
- {
-  "vi": "đúng hạn",
-  "en": ""
- },
- {
-  "vi": "“Đúng hạn mà, trả liền đó.”",
-  "en": ""
- },
- {
-  "vi": "thu phí quá nội quy",
-  "en": ""
- },
- {
-  "vi": "Miễn giảm phí không có lý do chính đáng, kế toán phường nhắc.",
-  "en": ""
- },
- {
-  "vi": "miễn giảm không lý do",
-  "en": ""
- },
- {
-  "vi": "Miễn phí mà không hỏi lý do, sổ không ghi gì.",
-  "en": ""
- },
- {
-  "vi": "miễn không ghi lý do",
-  "en": ""
- },
- {
-  "vi": "Kiểm sách và xem dấu hạn trả trước khi tính phí.",
-  "en": ""
- },
- {
-  "vi": "Khoản phí này xong rồi.",
-  "en": ""
- },
- {
-  "vi": "Tính phí sai nội quy, bị bạn đọc chỉ ra ngay ở quầy.",
-  "en": ""
- },
- {
-  "vi": "tính phí sai",
-  "en": ""
- },
- {
-  "vi": "Cô Nguyệt gật đầu: lý do chính đáng.",
-  "en": ""
- },
- {
-  "vi": "Sổ nợ phí đầy rồi: đòi bớt nợ cũ đã.",
-  "en": ""
- },
- {
-  "vi": "Kiểm sách trước đã.",
-  "en": ""
- },
- {
-  "vi": "Sách không cần sửa.",
-  "en": ""
- },
- {
-  "vi": "Đã xử lý rồi.",
-  "en": ""
- },
- {
-  "vi": "Cách sửa không có.",
-  "en": ""
- },
- {
-  "vi": "Hết băng giấy sửa sách. Mở kho mua thêm nhé.",
-  "en": ""
- },
- {
-  "vi": "Băng keo trong vài tháng là ố vàng, dính chặt trang, càng hỏng thêm.",
-  "en": ""
- },
- {
-  "vi": "dùng băng keo thường",
-  "en": ""
- },
- {
-  "vi": "Sấy nóng, phơi nắng làm giấy cong vênh, giòn gãy.",
-  "en": ""
- },
- {
-  "vi": "sấy nóng sách ướt",
-  "en": ""
- },
- {
-  "vi": "Sửa không đúng kiểu hỏng của sách.",
-  "en": ""
- },
- {
-  "vi": "sửa chưa đúng cách",
-  "en": ""
- },
- {
-  "vi": "Hừm, không ổn lắm.",
-  "en": ""
- },
- {
-  "vi": "Kiểm sách và xem dấu hạn trả trước đã.",
-  "en": ""
- },
- {
-  "vi": "Tính phí xong rồi mới cất sách.",
-  "en": ""
- },
- {
-  "vi": "Sách hỏng mà đưa thẳng lên kệ, người sau mượn lại càng hỏng.",
-  "en": ""
- },
- {
-  "vi": "chưa sửa sách",
-  "en": ""
- },
- {
-  "vi": "Câu hỏi không có.",
-  "en": ""
- },
- {
-  "vi": "Hỏi rồi.",
-  "en": ""
- },
- {
-  "vi": "Cuốn này không có trên xe gợi ý.",
-  "en": ""
- },
- {
-  "vi": "gợi ý sai gu",
-  "en": ""
- },
- {
-  "vi": "nặng quá",
-  "en": ""
- },
- {
-  "vi": "nhẹ quá",
-  "en": ""
- },
- {
-  "vi": "gợi ý chưa vừa",
-  "en": ""
- },
- {
-  "vi": "hơi nặng đầu",
-  "en": ""
- },
- {
-  "vi": "hơi nhẹ quá",
-  "en": ""
- },
- {
-  "vi": "Cuốn này không có trên xe sách.",
-  "en": ""
- },
- {
-  "vi": "Lớp không có.",
-  "en": ""
- },
- {
-  "vi": "Cuốn này đang để riêng loại bỏ.",
-  "en": ""
- },
- {
-  "vi": "Ký hiệu không có.",
-  "en": ""
- },
- {
-  "vi": "Lý do không có.",
-  "en": ""
- },
- {
-  "vi": "Còn cuốn chưa xếp lớp hoặc chưa ghi ký hiệu tác giả.",
-  "en": ""
- },
- {
-  "vi": "xếp nhầm lớp",
-  "en": ""
- },
- {
-  "vi": "sai ký hiệu tác giả",
-  "en": ""
- },
- {
-  "vi": "Sách mốc, sách lậu lên kệ chung.",
-  "en": ""
- },
- {
-  "vi": "Sách hỏng, lỗi thời, in lậu lẫn lên kệ.",
-  "en": ""
- },
- {
-  "vi": "không lọc sách hỏng",
-  "en": ""
- },
- {
-  "vi": "Bỏ cả sách quý in năm 1960.",
-  "en": ""
- },
- {
-  "vi": "Loại nhầm sách còn tốt.",
-  "en": ""
- },
- {
-  "vi": "loại nhầm sách tốt",
-  "en": ""
- },
- {
-  "vi": "Sách lên kệ mà chưa có nhãn gáy.",
-  "en": ""
- },
- {
-  "vi": "thiếu nhãn gáy",
-  "en": ""
- },
- {
-  "vi": "Không có ai như vậy trong phòng.",
-  "en": ""
- },
- {
-  "vi": "Chuyện này xong rồi.",
-  "en": ""
- },
- {
-  "vi": "Bạn nói chắc chắn mà từ tốn. Người kia lẩm bẩm rồi cũng làm theo.",
-  "en": ""
- },
- {
-  "vi": "Người kia vẫn càu nhàu, cô Nguyệt phải ra nói thêm một câu mới xong.",
-  "en": ""
- },
- {
-  "vi": "Bạn ghé tận nơi nhắc nhỏ",
-  "en": ""
- },
- {
-  "vi": "Bạn chỉ lên bảng nội quy",
-  "en": ""
- },
- {
-  "vi": "Bạn mời ra khỏi phòng",
-  "en": ""
- },
- {
-  "vi": "Còn chuyện trong phòng chưa xong.",
-  "en": ""
- },
- {
-  "vi": "Phòng đọc yên trở lại, chỉ còn tiếng lật trang.",
-  "en": ""
- },
- {
-  "vi": "Phòng đọc tạm yên, vẫn còn vài tiếng xì xào.",
-  "en": ""
- },
- {
-  "vi": "Phòng đọc vẫn ồn, mấy người đọc bỏ về sớm.",
-  "en": ""
- },
- {
-  "vi": "Đã tập huấn nghiệp vụ lưu trữ rồi.",
-  "en": ""
- },
- {
-  "vi": "Trả lời đủ các câu đã nhé.",
   "en": ""
  }
 ]

@@ -1,5 +1,513 @@
 [
  {
+  "vi": "Gọi lại hỏi lý do, hướng dẫn làm đơn và bàn giao",
+  "en": ""
+ },
+ {
+  "vi": "Mất 15 phút",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy đang bị nợ lương thưởng nên giận. Gỡ xong, bạn ấy ở lại thêm hai tuần bàn giao.",
+  "en": ""
+ },
+ {
+  "vi": "Thả tim, ghi “nghỉ việc”",
+  "en": ""
+ },
+ {
+  "vi": "Không ai bàn giao danh sách khách; Linh phải gọi lại từng người.",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời gắt: “Thế thì khỏi nhận lương”",
+  "en": ""
+ },
+ {
+  "vi": "Nghỉ việc thì bị dọa không trả lương.",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh chụp tin nhắn bị đăng lên nhóm tìm việc của khu.",
+  "en": ""
+ },
+ {
+  "vi": "Tủ lạnh chung bốc mùi",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hằng bịt mũi: “Hộp cơm ai để từ tuần trước? Mùi lên tận phòng kế toán rồi!” Ai cũng bảo không phải của mình.",
+  "en": ""
+ },
+ {
+  "vi": "Dán thông báo: chiều thứ Sáu dọn tủ, hộp không ghi tên sẽ bỏ",
+  "en": ""
+ },
+ {
+  "vi": "Thứ Sáu tủ sạch bong. Cô Hằng gật đầu hài lòng.",
+  "en": ""
+ },
+ {
+  "vi": "Tự đeo găng dọn hết",
+  "en": ""
+ },
+ {
+  "vi": "Mất 20 phút",
+  "en": ""
+ },
+ {
+  "vi": "Tủ sạch, nhưng tuần sau lại y như cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ, không phải việc của mình",
+  "en": ""
+ },
+ {
+  "vi": "Hành chính để tủ lạnh chung hôi rình cả tuần.",
+  "en": ""
+ },
+ {
+  "vi": "Mùi lan ra cả hành lang lúc khách đến.",
+  "en": ""
+ },
+ {
+  "vi": "Chiến tranh điều hòa",
+  "en": ""
+ },
+ {
+  "vi": "Phòng kinh doanh để 18 độ, phòng kế toán đòi 26 độ. Chung một cái máy. Hai bên cùng gọi cho bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Chốt 25 độ theo quy định tiết kiệm điện, xếp chỗ ngồi gần cửa gió cho người hay nóng",
+  "en": ""
+ },
+ {
+  "vi": "Không ai hoàn toàn vừa ý nhưng không ai cãi nữa; hóa đơn điện giảm hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Theo phòng kinh doanh cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Kế toán ngồi run cầm cập cả buổi.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hằng mặc áo khoác ngồi làm, mặt lạnh hơn máy lạnh.",
+  "en": ""
+ },
+ {
+  "vi": "Giấu luôn cái điều khiển",
+  "en": ""
+ },
+ {
+  "vi": "Hai phòng chuyển sang giận… bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ quẹt thẻ hộ",
+  "en": ""
+ },
+ {
+  "vi": "Linh nhắn: “Chị ơi em kẹt xe, chị quẹt thẻ hộ em cái, thẻ em để ngăn kéo đó. Em mua trà sữa đền!”",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, nhắc Linh làm giải trình đi muộn",
+  "en": ""
+ },
+ {
+  "vi": "Linh hơi dỗi, nhưng giải trình xong chị Huyền chỉ nhắc nhẹ.",
+  "en": ""
+ },
+ {
+  "vi": "Quẹt hộ một lần thôi",
+  "en": ""
+ },
+ {
+  "vi": "Camera cổng ghi lại hết. Cả hai bị lập biên bản chấm hộ.",
+  "en": ""
+ },
+ {
+  "vi": "Linh đến muộn, quên luôn chuyện xin phép.",
+  "en": ""
+ },
+ {
+  "vi": "Đồng phục phải có ngay",
+  "en": ""
+ },
+ {
+  "vi": "Chú Lâm: “Mai đoàn khách Nhật thăm xưởng! Ba mươi bộ đồng phục mới, chiều nay phải có!”",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm kho đồng phục dự phòng, đặt thêm phần thiếu giao sáng mai",
+  "en": ""
+ },
+ {
+  "vi": "Kho còn 22 bộ, xưởng in giao nốt 8 bộ lúc 7 giờ sáng. Kịp đón khách.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt gấp 30 bộ, trả phí giao hỏa tốc",
+  "en": ""
+ },
+ {
+  "vi": "Kịp, nhưng kho dự phòng vẫn còn nguyên 22 bộ.",
+  "en": ""
+ },
+ {
+  "vi": "“Không kịp đâu chú”",
+  "en": ""
+ },
+ {
+  "vi": "Có mỗi bộ đồng phục cũng không lo nổi.",
+  "en": ""
+ },
+ {
+  "vi": "Thợ mặc áo cũ bạc màu đón khách. Chú Lâm giận cả tuần.",
+  "en": ""
+ },
+ {
+  "vi": "Thư góp ý nặc danh",
+  "en": ""
+ },
+ {
+  "vi": "Hộp thư góp ý có lá thư nặc danh chê Anh Quân “quyết xong lại đổi”. Anh Quân bảo: “Tìm xem ai viết cho anh.”",
+  "en": ""
+ },
+ {
+  "vi": "Giữ nặc danh; tóm tắt góp ý gửi anh Quân kèm đề xuất họp giao ban rõ kế hoạch",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân càu nhàu nhưng tuần sau họp giao ban chốt kế hoạch hẳn hoi.",
+  "en": ""
+ },
+ {
+  "vi": "So nét chữ đi tìm người viết",
+  "en": ""
+ },
+ {
+  "vi": "Góp ý nặc danh mà phòng nhân sự đi dò nét chữ.",
+  "en": ""
+ },
+ {
+  "vi": "Cả công ty biết chuyện; từ đó hộp góp ý trống trơn.",
+  "en": ""
+ },
+ {
+  "vi": "Vứt thư đi cho yên chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Không ai biết góp ý có được đọc không.",
+  "en": ""
+ },
+ {
+  "vi": "Máy in kẹt giữa 40 bản hợp đồng",
+  "en": ""
+ },
+ {
+  "vi": "In tới bản thứ 17 thì máy kẹt giấy, đèn đỏ nhấp nháy. 2 giờ nữa ký hợp đồng hàng loạt.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi IT, trong lúc chờ in nốt ở máy tầng 2",
+  "en": ""
+ },
+ {
+  "vi": "Kịp giờ ký; IT gỡ được mẩu giấy kẹt sâu trong máy.",
+  "en": ""
+ },
+ {
+  "vi": "Tự giật mạnh tờ giấy ra",
+  "en": ""
+ },
+ {
+  "vi": "Rách trục cuốn giấy, sửa mất 10 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi chờ máy “tự hết”",
+  "en": ""
+ },
+ {
+  "vi": "Máy không tự hết.",
+  "en": ""
+ },
+ {
+  "vi": "Sinh nhật bất ngờ trong 30 phút",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân: “Hôm nay sinh nhật cô Hằng! Em lo cái bánh, 3 giờ cả phòng hát chúc mừng nhé.” Bây giờ là 2 giờ 30.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt bánh nhỏ tiệm gần, gom chữ ký cả phòng vào tấm thiệp",
+  "en": ""
+ },
+ {
+  "vi": "−15 xu, mất 15 phút",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hằng bất ngờ đến rưng rưng; lần đầu thấy cô cười to giữa giờ làm.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt bánh ba tầng cho hoành tráng",
+  "en": ""
+ },
+ {
+  "vi": "Bánh tới lúc 4 giờ rưỡi, cô Hằng đã về.",
+  "en": ""
+ },
+ {
+  "vi": "Hứa rồi quên mất",
+  "en": ""
+ },
+ {
+  "vi": "3 giờ cả phòng đứng nhìn nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng viên giỏi nhưng đang mang thai",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân lật hồ sơ: “Bạn này giỏi đấy, nhưng ghi chú là đang mang thai bốn tháng. Thôi loại đi em, tuyển vào lại nghỉ sinh.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là giám đốc công ty nhỏ, lo mùa tựu trường đơn hàng dồn dập mà thiếu người.",
+  "en": ""
+ },
+ {
+  "vi": "Quy định tuyển dụng",
+  "en": ""
+ },
+ {
+  "vi": "Không được từ chối tuyển dụng vì lý do mang thai, giới tính hay hôn nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ ứng viên",
+  "en": ""
+ },
+ {
+  "vi": "Năm năm thiết kế túi xách, từng làm mẫu cho hai thương hiệu lớn.",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch mùa tựu trường",
+  "en": ""
+ },
+ {
+  "vi": "Cao điểm là tháng 7–8; ứng viên dự sinh tháng 12.",
+  "en": ""
+ },
+ {
+  "vi": "Mời phỏng vấn như mọi người, trình anh Quân lịch cao điểm và kế hoạch người hỗ trợ khi chị nghỉ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Được phỏng vấn công bằng, em vào làm kịp mùa cao điểm. Cảm ơn phòng nhân sự 🌷",
+  "en": ""
+ },
+ {
+  "vi": "Chị ấy vào làm, mẫu balo mới kịp mùa tựu trường; nghỉ sinh có người hỗ trợ sắp sẵn.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng viên",
+  "en": ""
+ },
+ {
+  "vi": "Mình chỉ mong được xét bằng năng lực.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa ra lịch cao điểm vẫn ổn, anh lo xa quá.",
+  "en": ""
+ },
+ {
+  "vi": "Loại hồ sơ theo ý giám đốc",
+  "en": ""
+ },
+ {
+  "vi": "Bị loại chỉ vì đang có em bé. Buồn ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng viên biết lý do thật, đăng lên mạng; công ty bị hỏi thăm vì phân biệt đối xử.",
+  "en": ""
+ },
+ {
+  "vi": "Người ta không nói thẳng, nhưng mình biết.",
+  "en": ""
+ },
+ {
+  "vi": "Đây là chuyện phòng nhân sự phải can ngăn.",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn ứng viên “sau sinh quay lại”",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn sau sinh… nghe lịch sự mà vẫn là loại mình.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng viên nhận việc chỗ khác; công ty thiếu người thiết kế cả mùa.",
+  "en": ""
+ },
+ {
+  "vi": "Mẫu mới chậm, khách hỏi mãi.",
+  "en": ""
+ },
+ {
+  "vi": "Tuyển dụng xét năng lực; lo lắng của sếp thì giải bằng kế hoạch, không bằng loại người.",
+  "en": ""
+ },
+ {
+  "vi": "Thợ lâu năm sợ mất việc vì máy mới",
+  "en": ""
+ },
+ {
+  "vi": "Anh Dũng đứng ngập ngừng: “Nghe nói xưởng mua máy may tự động. Thế… mấy người già như tôi có bị cho nghỉ không cô?”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là thợ may 15 năm, tay nghề giỏi nhưng không rành máy tính.",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Máy mới làm đường may thẳng; mẫu khó vẫn cần thợ tay nghề cao.",
+  "en": ""
+ },
+ {
+  "vi": "Chương trình đào tạo",
+  "en": ""
+ },
+ {
+  "vi": "Công ty có ngân sách cho 5 thợ học vận hành máy, ưu tiên người lâu năm.",
+  "en": ""
+ },
+ {
+  "vi": "Tin đồn trong xưởng",
+  "en": ""
+ },
+ {
+  "vi": "Có người bảo mua máy để cắt giảm một nửa tổ.",
+  "en": ""
+ },
+ {
+  "vi": "Nói rõ kế hoạch, mời anh Dũng đăng ký lớp vận hành máy đầu tiên",
+  "en": ""
+ },
+ {
+  "vi": "Tưởng mất việc, ai dè được đi học máy mới. Tôi yên tâm rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Dũng thành người đứng máy giỏi nhất, còn kèm thợ trẻ.",
+  "en": ""
+ },
+ {
+  "vi": "Già rồi vẫn học được, mà còn được ưu tiên.",
+  "en": ""
+ },
+ {
+  "vi": "Tổ yên ổn, không ai bỏ đi.",
+  "en": ""
+ },
+ {
+  "vi": "“Chưa biết đâu anh, cứ làm đi”",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi mà không ai nói rõ, lo vẫn hoàn lo.",
+  "en": ""
+ },
+ {
+  "vi": "Hai thợ giỏi xin nghỉ trước vì tin đồn.",
+  "en": ""
+ },
+ {
+  "vi": "Không biết thì sợ.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận tin đồn cho anh chuẩn bị tinh thần",
+  "en": ""
+ },
+ {
+  "vi": "Phòng nhân sự cũng bảo sẽ cắt người. Thôi tôi đi tìm chỗ khác.",
+  "en": ""
+ },
+ {
+  "vi": "Tin sai lan khắp xưởng; năng suất tụt hẳn cả tháng.",
+  "en": ""
+ },
+ {
+  "vi": "Ai nói với thợ là cắt người thế?",
+  "en": ""
+ },
+ {
+  "vi": "Tin đồn chỉ dập được bằng thông tin rõ và một con đường cụ thể cho người đang lo.",
+  "en": ""
+ },
+ {
+  "vi": "Bị mắng trước cả phòng",
+  "en": ""
+ },
+ {
+  "vi": "Linh chạy vào phòng nhân sự, mắt đỏ hoe: “Anh Quân quát em trước cả phòng vì báo giá sai. Em muốn nghỉ luôn.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là nhân viên trẻ, lỗi thì có nhưng bị mắng giữa mọi người thấy nhục.",
+  "en": ""
+ },
+ {
+  "vi": "Báo giá bị sai",
+  "en": ""
+ },
+ {
+  "vi": "Linh gõ nhầm đơn giá, khách phát hiện trước khi ký.",
+  "en": ""
+ },
+ {
+  "vi": "Góp ý công việc làm riêng, tôn trọng; không xúc phạm trước đông người.",
+  "en": ""
+ },
+ {
+  "vi": "Thành tích của Linh",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo doanh số",
+  "en": ""
+ },
+ {
+  "vi": "Ba tháng liền vượt chỉ tiêu.",
+  "en": ""
+ },
+ {
+  "vi": "Lắng nghe Linh, cùng lập bảng tự kiểm báo giá; gặp riêng anh Quân góp ý cách nhắc nhở theo quy chế",
+  "en": ""
+ },
+ {
   "vi": "Em vẫn sai thật, nhưng giờ em có checklist, sếp cũng nhẹ giọng hơn rồi 😅",
   "en": ""
  },
@@ -1289,514 +1797,6 @@
  },
  {
   "vi": "Dán mật khẩu mạng khách lên bàn họp",
-  "en": ""
- },
- {
-  "vi": "Chuẩn bị bộ phát 4G dự phòng",
-  "en": ""
- },
- {
-  "vi": "Xem trước rồi mới khởi động lại.",
-  "en": ""
- },
- {
-  "vi": "Khởi động xong mới thử.",
-  "en": ""
- },
- {
-  "vi": "Cắm dây xong mới thử.",
-  "en": ""
- },
- {
-  "vi": "Anh Long: “Bên tòa nhà báo 3 giờ cắt mạng cáp quang để sửa đường dây!”",
-  "en": ""
- },
- {
-  "vi": "Mạng chính sắp bị cắt.",
-  "en": ""
- },
- {
-  "vi": "Có bộ phát dự phòng rồi thử luôn.",
-  "en": ""
- },
- {
-  "vi": "Chọn các bước sẽ làm, theo đúng thứ tự; bỏ ra những bước gây hại. Bước không cần thì làm hay không cũng được.",
-  "en": ""
- },
- {
-  "vi": "Nguyên tắc sửa chữa",
-  "en": ""
- },
- {
-  "vi": "An toàn điện trước: tắt máy, rút điện rồi mới mở.",
-  "en": ""
- },
- {
-  "vi": "Sự cố an ninh: cách ly trước, báo anh Long, giữ bằng chứng.",
-  "en": ""
- },
- {
-  "vi": "Không dùng phần mềm lậu, không trả tiền chuộc.",
-  "en": ""
- },
- {
-  "vi": "Mạng nhân viên",
-  "en": ""
- },
- {
-  "vi": "Mạng kế toán",
-  "en": ""
- },
- {
-  "vi": "Mạng khách",
-  "en": ""
- },
- {
-  "vi": "Mạng camera & thiết bị",
-  "en": ""
- },
- {
-  "vi": "Cô Hằng — Kế toán",
-  "en": ""
- },
- {
-  "vi": "Kế toán vào mạng kế toán.",
-  "en": ""
- },
- {
-  "vi": "Linh — Kinh doanh (ngồi tạm tuần này)",
-  "en": ""
- },
- {
-  "vi": "Ngồi bàn kế toán nhưng là nhân viên kinh doanh: theo người, không theo bàn.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên vào mạng nhân viên.",
-  "en": ""
- },
- {
-  "vi": "Thực tập sinh dùng mạng khách.",
-  "en": ""
- },
- {
-  "vi": "Phòng họp lớn — ổ trên bàn",
-  "en": ""
- },
- {
-  "vi": "Ổ phòng họp khách hay cắm: mạng khách.",
-  "en": ""
- },
- {
-  "vi": "Camera cổng xưởng",
-  "en": ""
- },
- {
-  "vi": "Camera vào mạng camera.",
-  "en": ""
- },
- {
-  "vi": "Máy chấm công",
-  "en": ""
- },
- {
-  "vi": "Máy chấm công là thiết bị: mạng camera & thiết bị.",
-  "en": ""
- },
- {
-  "vi": "Máy in chung tầng 2",
-  "en": ""
- },
- {
-  "vi": "Máy in chung cho nhân viên: mạng nhân viên.",
-  "en": ""
- },
- {
-  "vi": "Máy in phòng kế toán (in bảng lương)",
-  "en": ""
- },
- {
-  "vi": "In bảng lương: mạng kế toán.",
-  "en": ""
- },
- {
-  "vi": "Anh Quân — Giám đốc",
-  "en": ""
- },
- {
-  "vi": "Mạng kế toán chỉ cho phòng kế toán; giám đốc xem báo cáo qua phần mềm có phân quyền.",
-  "en": ""
- },
- {
-  "vi": "“Cho anh vào mạng kế toán luôn cho tiện xem số.” — Anh Quân",
-  "en": ""
- },
- {
-  "vi": "Linh đã chuyển sang làm kế toán kho.",
-  "en": ""
- },
- {
-  "vi": "Chị Huyền báo: “Linh chuyển hẳn sang làm kế toán kho từ hôm nay rồi nhé.”",
-  "en": ""
- },
- {
-  "vi": "Đã ký hợp đồng chính thức.",
-  "en": ""
- },
- {
-  "vi": "Anh Long mở tủ mạng, dây chằng chịt: “Sau đợt chuyển chỗ ngồi, em đấu lại từng ổ vào đúng mạng nhé.”",
-  "en": ""
- },
- {
-  "vi": "Quy định mạng",
-  "en": ""
- },
- {
-  "vi": "Mạng kế toán: chỉ người phòng kế toán và máy in bảng lương.",
-  "en": ""
- },
- {
-  "vi": "Mạng nhân viên: nhân viên chính thức, máy in chung.",
-  "en": ""
- },
- {
-  "vi": "Mạng khách: khách, thực tập sinh, ổ trong phòng họp.",
-  "en": ""
- },
- {
-  "vi": "Mạng camera & thiết bị: camera, máy chấm công.",
-  "en": ""
- },
- {
-  "vi": "Xếp theo người đang dùng, không theo bàn.",
-  "en": ""
- },
- {
-  "vi": "Thư mục Nhân sự",
-  "en": ""
- },
- {
-  "vi": "Giữ nguyên",
-  "en": ""
- },
- {
-  "vi": "Cấp quyền",
-  "en": ""
- },
- {
-  "vi": "Hằng",
-  "en": ""
- },
- {
-  "vi": "Cô Hằng · Kế toán",
-  "en": ""
- },
- {
-  "vi": "Đã nghỉ việc: thu hồi hết.",
-  "en": ""
- },
- {
-  "vi": "Thực tập sinh không được vào thư mục Nhân sự.",
-  "en": ""
- },
- {
-  "vi": "Phiếu xin quyền phần mềm kế toán CHƯA được duyệt: giữ nguyên.",
-  "en": ""
- },
- {
-  "vi": "⏳ Phiếu yêu cầu CHƯA DUYỆT: Linh xin quyền Phần mềm kế toán.",
-  "en": ""
- },
- {
-  "vi": "Kinh doanh (mới chuyển từ Kế toán)",
-  "en": ""
- },
- {
-  "vi": "Đã chuyển khỏi phòng kế toán: thu hồi phần mềm kế toán.",
-  "en": ""
- },
- {
-  "vi": "Có phiếu cấp VPN đã duyệt.",
-  "en": ""
- },
- {
-  "vi": "Đúng quyền hiện có.",
-  "en": ""
- },
- {
-  "vi": "Phiếu cấp VPN đã bị hủy.",
-  "en": ""
- },
- {
-  "vi": "Rà soát quyền truy cập tháng này",
-  "en": ""
- },
- {
-  "vi": "Anh Long: “Cuối tháng rồi. Em rà lại bảng quyền truy cập với danh sách nghỉ việc và các phiếu yêu cầu nhé.”",
-  "en": ""
- },
- {
-  "vi": "Quy định quyền truy cập",
-  "en": ""
- },
- {
-  "vi": "Nghỉ việc: thu hồi tất cả ngay.",
-  "en": ""
- },
- {
-  "vi": "Phần mềm kế toán: chỉ người phòng kế toán.",
-  "en": ""
- },
- {
-  "vi": "Thư mục Nhân sự: chỉ phòng nhân sự; thực tập sinh không bao giờ.",
-  "en": ""
- },
- {
-  "vi": "Chỉ cấp quyền khi phiếu yêu cầu ĐÃ DUYỆT.",
-  "en": ""
- },
- {
-  "vi": "Danh sách & phiếu trong tháng",
-  "en": ""
- },
- {
-  "vi": "Không có thay đổi nào.",
-  "en": ""
- },
- {
-  "vi": "Máy in",
-  "en": ""
- },
- {
-  "vi": "Xưởng may",
-  "en": ""
- },
- {
-  "vi": "📷 Tem dán trên máy",
-  "en": ""
- },
- {
-  "vi": "🧾 Hóa đơn mua",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ tài sản",
-  "en": ""
- },
- {
-  "vi": "📝 Phiếu bàn giao",
-  "en": ""
- },
- {
-  "vi": "📦 Hộp máy",
-  "en": ""
- },
- {
-  "vi": "Số serial (S/N)",
-  "en": ""
- },
- {
-  "vi": "Chép đúng S/N trên tem máy, không lấy mã vạch hộp.",
-  "en": ""
- },
- {
-  "vi": "Mã tài sản mới",
-  "en": ""
- },
- {
-  "vi": "Theo phiếu bàn giao.",
-  "en": ""
- },
- {
-  "vi": "Hết bảo hành (dd/mm/yyyy)",
-  "en": ""
- },
- {
-  "vi": "Phòng đã đổi người nhận máy.",
-  "en": ""
- },
- {
-  "vi": "Trưởng phòng gọi xuống: đổi người nhận máy!",
-  "en": ""
- },
- {
-  "vi": "📞 Trưởng phòng gọi",
-  "en": ""
- },
- {
-  "vi": "Đọc tem máy, hóa đơn, sổ tài sản và phiếu bàn giao; ghi đủ năm ô của sổ tài sản.",
-  "en": ""
- },
- {
-  "vi": "Cách ghi sổ",
-  "en": ""
- },
- {
-  "vi": "Mã tài sản: CD-<loại>-<số tiếp theo, 4 chữ số>.",
-  "en": ""
- },
- {
-  "vi": "S/N chép trên tem máy, không lấy mã vạch hộp.",
-  "en": ""
- },
- {
-  "vi": "Hết bảo hành = ngày mua + số tháng bảo hành.",
-  "en": ""
- },
- {
-  "vi": "“Nhà mạng” xin mã OTP",
-  "en": ""
- },
- {
-  "vi": "Nhi chuyển máy: “Anh ơi, bên nhà mạng gọi, bảo nâng cấp sim công ty, xin mã OTP vừa gửi về điện thoại của sếp.”",
-  "en": ""
- },
- {
-  "vi": "Không ai được hỏi mã OTP. Nhà mạng thật không bao giờ xin OTP.",
-  "en": ""
- },
- {
-  "vi": "Số gọi đến",
-  "en": ""
- },
- {
-  "vi": "Số di động lạ, không phải tổng đài nhà mạng.",
-  "en": ""
- },
- {
-  "vi": "Sim của sếp",
-  "en": ""
- },
- {
-  "vi": "Sim đó nhận mã OTP của tài khoản ngân hàng công ty.",
-  "en": ""
- },
- {
-  "vi": "Từ chối, cúp máy, gọi tổng đài chính thức để kiểm tra; báo sếp và cả công ty",
-  "en": ""
- },
- {
-  "vi": "Tổng đài xác nhận không có đợt nâng cấp nào. Cả công ty được cảnh báo kịp.",
-  "en": ""
- },
- {
-  "vi": "Hỏi lại tên, mã nhân viên của người gọi rồi tính",
-  "en": ""
- },
- {
-  "vi": "Kẻ gian đọc tên, mã rất trơn tru. May mà bạn chưa đưa mã.",
-  "en": ""
- },
- {
-  "vi": "Xin mã từ sếp rồi đọc cho họ",
-  "en": ""
- },
- {
-  "vi": "Tài khoản ngân hàng công ty bị chiếm; cô Hằng phải phong tỏa gấp.",
-  "en": ""
- },
- {
-  "vi": "“Anh Quân” nhắn xin mật khẩu quản trị",
-  "en": ""
- },
- {
-  "vi": "Zalo mới tên “Anh Quân (số mới)” nhắn: “Anh đổi số. Gửi anh mật khẩu quản trị email công ty, anh đang ở sân bay cần gấp.”",
-  "en": ""
- },
- {
-  "vi": "Gọi số cũ của sếp",
-  "en": ""
- },
- {
-  "vi": "Anh Quân nghe máy, đang ngồi họp ở tầng 3, không đổi số nào.",
-  "en": ""
- },
- {
-  "vi": "Mật khẩu quản trị không gửi qua tin nhắn cho bất kỳ ai.",
-  "en": ""
- },
- {
-  "vi": "Ảnh đại diện",
-  "en": ""
- },
- {
-  "vi": "Ảnh lấy từ trang công ty.",
-  "en": ""
- },
- {
-  "vi": "Gọi số cũ xác minh, báo tài khoản giả, cảnh báo cả công ty",
-  "en": ""
- },
- {
-  "vi": "Tài khoản giả bị báo cáo; ba người khác cũng vừa nhận tin y hệt và đã được cảnh báo.",
-  "en": ""
- },
- {
-  "vi": "Lờ đi, không nói ai",
-  "en": ""
- },
- {
-  "vi": "Bạn không mất gì, nhưng Linh suýt gửi mật khẩu email của mình.",
-  "en": ""
- },
- {
-  "vi": "Gửi mật khẩu vì sếp đang gấp",
-  "en": ""
- },
- {
-  "vi": "Kẻ gian vào được email cả công ty, gửi hóa đơn giả cho khách hàng.",
-  "en": ""
- },
- {
-  "vi": "Thợ lạ đến “bảo trì camera”",
-  "en": ""
- },
- {
-  "vi": "Một người mặc áo đồng phục đến quầy: “Anh bên bảo trì camera, có lịch hôm nay, cho anh vào phòng máy chủ nhé.”",
-  "en": ""
- },
- {
-  "vi": "Lịch bảo trì",
-  "en": ""
- },
- {
-  "vi": "Không có lịch bảo trì nào hôm nay; đơn vị bảo trì thật đến vào thứ Năm cuối tháng.",
-  "en": ""
- },
- {
-  "vi": "Gọi đơn vị bảo trì",
-  "en": ""
- },
- {
-  "vi": "Họ không cử ai đến hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Thẻ nhân viên",
-  "en": ""
- },
- {
-  "vi": "Thẻ in giấy thường, không có ảnh.",
-  "en": ""
- },
- {
-  "vi": "Lịch sự mời chờ ở sảnh, gọi đơn vị bảo trì xác minh, không cho vào phòng máy chủ",
-  "en": ""
- },
- {
-  "vi": "Người lạ viện cớ bỏ đi. Camera ghi lại mặt, báo bảo vệ khu.",
-  "en": ""
- },
- {
-  "vi": "Cho vào nhưng đi kèm từng bước",
-  "en": ""
- },
- {
-  "vi": "Hắn lén cắm một thiết bị lạ, may anh Long phát hiện tối đó.",
-  "en": ""
- },
- {
-  "vi": "Cho vào phòng máy chủ, mình về chỗ làm tiếp",
   "en": ""
  }
 ]

@@ -1,5 +1,513 @@
 [
  {
+  "vi": "Thở: thổi bong bóng dưới nước",
+  "en": ""
+ },
+ {
+  "vi": "Nổi sao biển, có người đỡ",
+  "en": ""
+ },
+ {
+  "vi": "Bám thành, đạp chân",
+  "en": ""
+ },
+ {
+  "vi": "Thấy bạn chìm: không nhảy xuống, gọi người lớn, ném đồ nổi",
+  "en": ""
+ },
+ {
+  "vi": "Nội quy: đi chậm, không xuống nước một mình",
+  "en": ""
+ },
+ {
+  "vi": "Cả lớp úp mặt thổi bong bóng, đếm tới năm rồi ngóc lên hít vào bằng miệng.",
+  "en": ""
+ },
+ {
+  "vi": "Từng bé dang tay chân nổi sao biển, bạn đỡ nhẹ dưới lưng rồi buông dần.",
+  "en": ""
+ },
+ {
+  "vi": "Các bé bám thành hồ, duỗi thẳng chân đạp đều như cây kéo.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn dạy: thấy bạn chìm thì không nhảy xuống, la to gọi người lớn, ném phao hay bất cứ thứ gì nổi.",
+  "en": ""
+ },
+ {
+  "vi": "Cả lớp đọc to: “Đi chậm, không chạy. Không xuống nước khi không có người lớn.”",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bon chạy trên bờ, trượt chân té, đầu gối trầy rướm máu, khóc ré lên.",
+  "en": ""
+ },
+ {
+  "vi": "“Con chạy có xíu thôi mà… đau quá!”",
+  "en": ""
+ },
+ {
+  "vi": "🧼 Đeo găng, rửa vết trầy bằng nước sạch, đắp gạc, băng lại; dặn đi chậm",
+  "en": ""
+ },
+ {
+  "vi": "Bon nín khóc, ngắm cái băng trên gối như huy chương. Lần sau bé đi rón rén.",
+  "en": ""
+ },
+ {
+  "vi": "🦷 Bôi kem đánh răng cho mát",
+  "en": ""
+ },
+ {
+  "vi": "Kem đánh răng không phải thuốc, vết trầy càng rát. Anh Hải lắc đầu, rửa lại từ đầu.",
+  "en": ""
+ },
+ {
+  "vi": "🙈 “Không sao, đi chơi tiếp đi con”",
+  "en": ""
+ },
+ {
+  "vi": "Vết trầy dính nước hồ, chiều về sưng đỏ. Chị Mai lên hỏi tội.",
+  "en": ""
+ },
+ {
+  "vi": "Kha ngoi lên sau cú lặn sâu, máu cam chảy ròng ròng xuống cằm.",
+  "en": ""
+ },
+ {
+  "vi": "“Tự nhiên chảy máu à anh, chắc tại lặn sâu.”",
+  "en": ""
+ },
+ {
+  "vi": "🙇 Đeo găng, cho ngồi, cúi đầu về trước, bóp chặt cánh mũi mềm chừng mười phút",
+  "en": ""
+ },
+ {
+  "vi": "Máu ngừng hẳn. Kha ngồi nghỉ, hứa hôm nay không lặn nữa.",
+  "en": ""
+ },
+ {
+  "vi": "🙆 Bảo ngửa cổ ra sau cho máu khỏi chảy",
+  "en": ""
+ },
+ {
+  "vi": "Ngửa cổ ra sau, máu chảy ngược xuống họng, Kha nuốt phải rồi buồn nôn.",
+  "en": ""
+ },
+ {
+  "vi": "🏊 Rửa mặt bằng nước hồ rồi bơi tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Máu loang trên mặt nước, cả làn hoảng hồn la ầm lên.",
+  "en": ""
+ },
+ {
+  "vi": "Giữa làn bơi chậm, ông Tư bám dây phao, nhăn mặt: “Chuột rút bắp chân rồi!”",
+  "en": ""
+ },
+ {
+  "vi": "“Bắp chân trái nó cứng đơ như khúc gỗ.”",
+  "en": ""
+ },
+ {
+  "vi": "🦵 Đưa sào cho ông bám vào thành, đỡ lên bờ, duỗi thẳng chân, kéo mũi bàn chân về phía người",
+  "en": ""
+ },
+ {
+  "vi": "Cơ chân dịu dần. Ông Tư ngồi nghỉ, uống ngụm nước, lầm bầm cảm ơn.",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Bảo ông tự xoa dầu nóng rồi bơi tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Dầu nóng trôi lềnh bềnh, ông bơi được nửa vòng thì rút tiếp, phải bám dây phao kêu cứu.",
+  "en": ""
+ },
+ {
+  "vi": "⏳ “Ông nằm ngửa chờ nó hết”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Tư hoảng, sặc nước, phải lôi lên bờ gấp.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hằng dụi mắt đỏ hoe: “Nước gì mà cay xè, mở mắt không nổi!” Mấy chị trong nhóm cũng kêu cay.",
+  "en": ""
+ },
+ {
+  "vi": "“Cả nhóm cay mắt từ lúc xuống nước.”",
+  "en": ""
+ },
+ {
+  "vi": "🚿 Dẫn ra vòi nước sạch rửa mắt thật lâu, báo anh Tâm đo lại nước hồ",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hằng đỡ cay. Anh Tâm đo lại thấy clo cao, chỉnh ngay, cả hồ cảm ơn.",
+  "en": ""
+ },
+ {
+  "vi": "✋ “Cô dụi dụi chút là hết”",
+  "en": ""
+ },
+ {
+  "vi": "Dụi mắt càng đỏ, cô Hằng đòi hoàn vé cho cả nhóm.",
+  "en": ""
+ },
+ {
+  "vi": "💧 Đưa lọ thuốc nhỏ mắt của mình cho cô nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc của người này không phải của người kia. Anh Hải nhắc: chỉ rửa nước sạch, cần thì đi khám.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Mai nằm phơi nắng cả trưa, đứng dậy thì choáng, ngồi bệt xuống sàn, mặt đỏ, mồ hôi vã ra.",
+  "en": ""
+ },
+ {
+  "vi": "“Chóng mặt quá em… nắng quá.”",
+  "en": ""
+ },
+ {
+  "vi": "⛱️ Dìu vào chỗ mát, nới lỏng đồ, cho uống từng ngụm nước, theo dõi; lơ mơ thì gọi 115",
+  "en": ""
+ },
+ {
+  "vi": "Mười phút sau chị Mai tỉnh táo, ngồi quạt, hứa lần sau nằm dưới dù.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Dội nguyên xô nước đá lên người",
+  "en": ""
+ },
+ {
+  "vi": "Chị Mai giật nảy, run cầm cập. Làm mát từ từ thôi.",
+  "en": ""
+ },
+ {
+  "vi": "🏊 Bảo chị nhảy xuống hồ cho mát",
+  "en": ""
+ },
+ {
+  "vi": "Đang choáng mà xuống nước: suýt ngã nhào xuống làn chậm.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn của Kha",
+  "en": ""
+ },
+ {
+  "vi": "Một cậu nhảy cắm đầu ở khu cạn, đập đầu xuống đáy, ngồi ở bậc ôm cổ: “Tê tê hai tay…”",
+  "en": ""
+ },
+ {
+  "vi": "“Em nhảy kiểu Kha, ai dè cạn quá.”",
+  "en": ""
+ },
+ {
+  "vi": "🧍 Giữ yên đầu cổ, không cho cử động, gọi 115, ủ ấm, ở cạnh trấn an",
+  "en": ""
+ },
+ {
+  "vi": "Xe 115 tới, nẹp cổ đưa đi chụp phim. Bác sĩ dặn: giữ yên là đúng.",
+  "en": ""
+ },
+ {
+  "vi": "💪 Kéo dậy, bảo xoay cổ thử xem có sao không",
+  "en": ""
+ },
+ {
+  "vi": "Tê tay sau va đầu là phải giữ yên cổ. Anh Hải hét dừng lại, cậu ấy may còn cử động được.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Chườm đá rồi cho về",
+  "en": ""
+ },
+ {
+  "vi": "Về nhà tối đó tê thêm, cả nhà chở đi viện trong đêm.",
+  "en": ""
+ },
+ {
+  "vi": "Một chị khách",
+  "en": ""
+ },
+ {
+  "vi": "Một chị bị ong đốt ở bãi cỏ cạnh hồ, mười phút sau nổi mẩn khắp người, môi sưng, thở khò khè.",
+  "en": ""
+ },
+ {
+  "vi": "“Chị hay dị ứng lắm… thở khó quá em ơi.”",
+  "en": ""
+ },
+ {
+  "vi": "🚑 Gọi 115 ngay, cho ngồi tư thế dễ thở, hỏi chị có mang thuốc riêng bác sĩ kê không, ở cạnh theo dõi",
+  "en": ""
+ },
+ {
+  "vi": "Xe 115 tới sau bảy phút. Chị khách được xử trí kịp, gửi lời cảm ơn cả đội.",
+  "en": ""
+ },
+ {
+  "vi": "💊 Đưa chị viên thuốc dị ứng trong túi mình",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc của mình không phải của người ta, lại không biết có hợp không. Anh Hải giữ tay bạn lại, gọi 115.",
+  "en": ""
+ },
+ {
+  "vi": "⏳ “Chị ngồi nghỉ chút chắc đỡ”",
+  "en": ""
+ },
+ {
+  "vi": "Mười phút sau chị thở rít, tím môi. Anh Hải gọi 115 gấp.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Tư đạp phải mảnh chai ở bờ hồ, gan bàn chân chảy máu ròng ròng.",
+  "en": ""
+ },
+ {
+  "vi": "“Đứa nào đập chai ở đây vậy trời!”",
+  "en": ""
+ },
+ {
+  "vi": "🩸 Đeo găng, ấn gạc sạch cầm máu, kê cao chân; quây khu đó, gọi người dọn mảnh chai",
+  "en": ""
+ },
+ {
+  "vi": "Máu cầm lại. Mảnh chai được gom sạch, khu bờ hồ mở lại sau khi lau kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "✋ Lấy tay không bịt vết thương cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Máu dính đầy tay, không có găng. Anh Hải nhắc: găng trước, rồi mới chạm.",
+  "en": ""
+ },
+ {
+  "vi": "🏊 Bảo ông xuống hồ rửa cho sạch",
+  "en": ""
+ },
+ {
+  "vi": "Máu loang làn chậm, mảnh chai còn nằm đó, có thêm người đạp phải.",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bon sặc nước ở khu cạn, ho sặc sụa, nước mũi tèm lem nhưng vẫn khóc to được.",
+  "en": ""
+ },
+ {
+  "vi": "“Con uống nước hồ… ho quá…”",
+  "en": ""
+ },
+ {
+  "vi": "👀 Cho ngồi nghỉ, vỗ lưng nhẹ, theo dõi; dặn mẹ nếu tối còn ho, mệt, khó thở thì đi khám ngay",
+  "en": ""
+ },
+ {
+  "vi": "Bon hết ho, ngồi uống nước ấm. Chị Mai cất điện thoại, ngồi canh con cả buổi.",
+  "en": ""
+ },
+ {
+  "vi": "🙃 Dốc ngược bé cho nước chảy ra",
+  "en": ""
+ },
+ {
+  "vi": "Dốc ngược không lấy ra được nước, chỉ làm bé sặc thêm. Anh Hải đỡ bé ngồi dậy ngay.",
+  "en": ""
+ },
+ {
+  "vi": "🏊 “Không sao, xuống bơi tiếp đi con”",
+  "en": ""
+ },
+ {
+  "vi": "Bon xuống nước được năm phút lại ho, mặt tái. Mẹ phải đưa về.",
+  "en": ""
+ },
+ {
+  "vi": "Sảnh nhà thay đồ, mái bê tông",
+  "en": ""
+ },
+ {
+  "vi": "Dưới mái bạt, dù che nắng quanh hồ",
+  "en": ""
+ },
+ {
+  "vi": "Gốc cây bàng to ở góc sân",
+  "en": ""
+ },
+ {
+  "vi": "Ông Tư vẫn bơi nốt vòng ếch ở làn nhanh, tai nghe chẳng thấy gì.",
+  "en": ""
+ },
+ {
+  "vi": "Mây đen kéo tới từ phía sông, gió đổi chiều, lá bàng bay lả tả xuống mặt hồ.",
+  "en": ""
+ },
+ {
+  "vi": "Một tia chớp xa phía cầu, đếm tới tám mới nghe sấm ì ầm.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa rào trút xuống, mặt hồ lốm đốm. Sấm thêm một tiếng phía xa.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa tạnh, nắng hửng. Mấy cậu nhóc đứng sẵn ở mép hồ, nhấp nhổm.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Phượng: “Tạnh rồi, mở lại đi em, khách đòi trả tiền vé kìa!”",
+  "en": ""
+ },
+ {
+  "vi": "Đã ba mươi lăm phút không nghe sấm, không thấy chớp. Trời trong vắt.",
+  "en": ""
+ },
+ {
+  "vi": "Một bé còn ngồi chơi ở bậc khu cạn, mẹ tưởng con đã lên bờ.",
+  "en": ""
+ },
+ {
+  "vi": "Trời oi bức, mây xám đặc kéo tới từ phía tây.",
+  "en": ""
+ },
+ {
+  "vi": "Chớp lóe trên nóc nhà văn hóa, sấm nổ gần như cùng lúc.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa nhỏ dần, nắng le lói sau mây.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hằng: “Nhóm chị đóng tiền tháng rồi, cho xuống tập nốt đi em!”",
+  "en": ""
+ },
+ {
+  "vi": "Sấm lại rền một tiếng dài phía sông.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Phượng: “Hai mươi phút rồi đó, mở đi em!”",
+  "en": ""
+ },
+ {
+  "vi": "Đã hơn ba mươi phút không nghe sấm. Trời quang, mặt hồ phẳng lặng.",
+  "en": ""
+ },
+ {
+  "vi": "Bản tin trên loa phường: chiều nay có dông rải rác, đề phòng lốc sét.",
+  "en": ""
+ },
+ {
+  "vi": "Một tiếng sấm khô khốc ngay trên đầu, cả hồ giật mình.",
+  "en": ""
+ },
+ {
+  "vi": "Kha: “Mưa có đâu anh, sấm thôi mà. Cho em quay nốt cú nhào này!”",
+  "en": ""
+ },
+ {
+  "vi": "Mây tan dần, nắng chói chang trở lại.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Phượng: “Nắng chang chang rồi, đóng hồ chi nữa!”",
+  "en": ""
+ },
+ {
+  "vi": "Đã hơn ba mươi phút không nghe sấm, không thấy chớp.",
+  "en": ""
+ },
+ {
+  "vi": "Nội quy: ba mươi phút sau tiếng sấm cuối mới xuống nước",
+  "en": ""
+ },
+ {
+  "vi": "Xin phát vé bơi bù cho khách chờ",
+  "en": ""
+ },
+ {
+  "vi": "Thôi được, mở luôn cho vui lòng",
+  "en": ""
+ },
+ {
+  "vi": "Khách đều, nắng vừa. Quét đủ năm khu, thổi còi đúng luật.",
+  "en": ""
+ },
+ {
+  "vi": "Nắng gắt cuối tuần",
+  "en": ""
+ },
+ {
+  "vi": "Trẻ con đông gấp đôi, cổng chật kín: soát kỹ ai xuống nước, uống nước, thay ca ghế cao.",
+  "en": ""
+ },
+ {
+  "vi": "Chiều có dông",
+  "en": ""
+ },
+ {
+  "vi": "Chiều nay có dông: nghe sấm là cho tất cả lên bờ, vào sảnh có mái kiên cố. Ba mươi phút sau tiếng sấm cuối mới mở lại.",
+  "en": ""
+ },
+ {
+  "vi": "Khai giảng lớp bơi hè",
+  "en": ""
+ },
+ {
+  "vi": "Lớp bơi đông: bơi thử từng bé rồi mới phát vòng tay, đếm đủ đầu lúc lên bờ.",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn kiểm tra an toàn hồ bơi",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn của phường đi kiểm: mở hồ thử đủ từng món, sổ trực ghi thật.",
+  "en": ""
+ },
+ {
+  "vi": "Giới thiệu nghề: nhân viên cứu hộ hồ bơi",
+  "en": ""
+ },
+ {
+  "vi": "Hồ bơi Sóng Xanh của Trung tâm Văn hóa – Thể thao phường. Bạn ngồi ghế cao, mắt không rời mặt nước: kiểm hồ trước khi mở, quét từng khu, thổi còi đúng luật, xuống cứu khi cần và đóng hồ khi có sấm. Anh Hải kèm bạn mấy việc đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Mở hồ: kiểm nước, que thử, nắp hút đáy, phao, hộp sơ cứu",
+  "en": ""
+ },
+ {
+  "vi": "Quét đủ năm khu, có hẹn giờ",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ra người đuối nước: im lặng, người dựng đứng, không tiến lên được",
+  "en": ""
+ },
+ {
+  "vi": "Với, ném trước; xuống nước thì mang phao ống",
+  "en": ""
+ },
+ {
+  "vi": "Soát người xuống nước ở cổng",
+  "en": ""
+ },
+ {
   "vi": "Dạy bơi: bơi thử rồi mới phát vòng tay",
   "en": ""
  },
@@ -1289,514 +1797,6 @@
  },
  {
   "vi": "Hồ có lớp bơi người lớn tối thứ ba, chị đăng ký ở lễ tân nhé.",
-  "en": ""
- },
- {
-  "vi": "Chị Vy nhún vai: “Nghiêm túc ghê.” Hôm sau thấy tên chị trong danh sách lớp bơi người lớn.",
-  "en": ""
- },
- {
-  "vi": "Bạn hẹn tối dạy riêng. Bảo vệ thấy đèn hồ sáng lúc chín giờ đêm, sáng ra cả trung tâm đồn ầm.",
-  "en": ""
- },
- {
-  "vi": "Anh Bảo · khách bơi sải",
-  "en": ""
- },
- {
-  "vi": "Anh Bảo đứng dưới ghế cao, nháy mắt: “Ngồi trên đó nắng ghê, cho anh xin Zalo, chiều anh mời trà sữa nha.”",
-  "en": ""
- },
- {
-  "vi": "“Có số thôi mà, anh hỏi lịch hồ cho tiện.”",
-  "en": ""
- },
- {
-  "vi": "“Làm giá vậy, anh bơi ngay dưới ghế cho bạn canh luôn nè.”",
-  "en": ""
- },
- {
-  "vi": "Mình đang trực, anh bơi đi cho mình canh hồ.",
-  "en": ""
- },
- {
-  "vi": "Lịch hồ có trên trang của trung tâm, anh xem ở đó nhé.",
-  "en": ""
- },
- {
-  "vi": "Anh Bảo gãi đầu, bơi tiếp. Từ đó chỉ chào một câu rồi thôi.",
-  "en": ""
- },
- {
-  "vi": "Bạn cho Zalo. Tối đó hai mươi tin nhắn, có tin hỏi “mai bạn trực ghế nào để anh bơi gần”.",
-  "en": ""
- },
- {
-  "vi": "“Thoa kem chống nắng lưng giùm”",
-  "en": ""
- },
- {
-  "vi": "Một vị khách ở ghế nằm",
-  "en": ""
- },
- {
-  "vi": "“Bạn cứu hộ ơi, thoa kem chống nắng lưng giùm cái, với không tới. Tay bạn chắc mát lắm ha 😏”",
-  "en": ""
- },
- {
-  "vi": "“Có xíu thôi mà, giúp khách chút đi.”",
-  "en": ""
- },
- {
-  "vi": "“Cứu hộ mà không cứu được cái lưng cháy nắng của mình hả?”",
-  "en": ""
- },
- {
-  "vi": "Mình đang trực, không rời mắt khỏi hồ được.",
-  "en": ""
- },
- {
-  "vi": "Lễ tân có bình xịt chống nắng, mình chỉ chỗ nhé.",
-  "en": ""
- },
- {
-  "vi": "Vị khách cười trừ, ra lễ tân mượn bình xịt.",
-  "en": ""
- },
- {
-  "vi": "Bạn rời ghế thoa kem. Đúng lúc đó khu cạn có bé trượt chân, anh Hải phải thổi còi gọi bạn.",
-  "en": ""
- },
- {
-  "vi": "Giả vờ đuối nước “để được hô hấp”",
-  "en": ""
- },
- {
-  "vi": "Toàn · sinh viên năm nhất",
-  "en": ""
- },
- {
-  "vi": "Toàn ngoi lên cười hì hì: “Lần sau em giả chìm cho bạn cứu hộ xinh hô hấp nhân tạo nha, đùa thôi 😆”",
-  "en": ""
- },
- {
-  "vi": "“Đùa xíu mà căng thế.”",
-  "en": ""
- },
- {
-  "vi": "“Thì em chìm thật luôn cho bạn xuống cứu.”",
-  "en": ""
- },
- {
-  "vi": "Giả đuối nước là vi phạm nội quy, lần sau mời ra khỏi hồ.",
-  "en": ""
- },
- {
-  "vi": "Không vui đâu, bạn dừng kiểu đùa đó.",
-  "en": ""
- },
- {
-  "vi": "Toàn đỏ mặt, bơi về làn chậm. Nhóm bạn cũng thôi cười.",
-  "en": ""
- },
- {
-  "vi": "Bạn cười theo. Chiều đó Toàn giả chìm thật, cả hồ hoảng, anh Hải nhảy xuống, Toàn bị mời ra khỏi hồ.",
-  "en": ""
- },
- {
-  "vi": "Quay clip “cứu hộ cởi áo”",
-  "en": ""
- },
- {
-  "vi": "“Bạn cứu hộ ơi, cởi áo phông ra, đứng trên ghế cao thổi còi cho em quay trend nha, triệu view đó!”",
-  "en": ""
- },
- {
-  "vi": "“Mười giây thôi mà, hồ bơi còn phải cảm ơn em quảng bá.”",
-  "en": ""
- },
- {
-  "vi": "“Không quay thì em quay bạn từ chối, cho mạng xã hội phán xử nha 🙃”",
-  "en": ""
- },
- {
-  "vi": "Đang trực thì không quay clip, không làm mẫu.",
-  "en": ""
- },
- {
-  "vi": "Muốn quay giới thiệu hồ thì liên hệ chị Phượng nhé.",
-  "en": ""
- },
- {
-  "vi": "Mi Mi thả icon lè lưỡi. Clip vẫn lên, chỉ có cảnh mặt nước lấp lánh.",
-  "en": ""
- },
- {
-  "vi": "Bạn quay trend trên ghế cao. Clip có cả mấy bé ở khu cạn phía sau, chị Phượng gọi lên.",
-  "en": ""
- },
- {
-  "vi": "Đồng hồ “cảm ơn” đổi làn đẹp",
-  "en": ""
- },
- {
-  "vi": "Anh Thái · đại gia bơi buổi sáng",
-  "en": ""
- },
- {
-  "vi": "Anh Thái tháo chiếc đồng hồ đặt lên ghế trực: “Tặng em. Sáng mai giữ làn số 1 cho anh, dây phao kéo riêng.”",
-  "en": ""
- },
- {
-  "vi": "“Đồ xịn đó em, chục triệu. Có làn thôi mà.”",
-  "en": ""
- },
- {
-  "vi": "“Không nhận là chê anh à?”",
-  "en": ""
- },
- {
-  "vi": "Làn bơi dùng chung, không giữ riêng cho ai.",
-  "en": ""
- },
- {
-  "vi": "Sáng sớm sáu giờ làn 1 thường vắng, anh tới sớm nhé.",
-  "en": ""
- },
- {
-  "vi": "Anh Thái cất đồng hồ, hừ một tiếng. Sáng hôm sau anh tới lúc sáu giờ, bơi một mình một làn thật.",
-  "en": ""
- },
- {
-  "vi": "Bạn nhận đồng hồ, kéo dây giữ làn. Ông Tư bơi sang bị chặn, la ầm cả hồ.",
-  "en": ""
- },
- {
-  "vi": "Con trai giám đốc trung tâm rủ đi bar",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi · con trai giám đốc Trung tâm",
-  "en": ""
- },
- {
-  "vi": "“Tối nay đi bar với anh. Đi thì tháng sau anh nói ba xếp em làm ca hành chính, khỏi phơi nắng.”",
-  "en": ""
- },
- {
-  "vi": "“Anh nói một câu là xong, em nghĩ kỹ đi.”",
-  "en": ""
- },
- {
-  "vi": "“Người khác muốn còn không được.”",
-  "en": ""
- },
- {
-  "vi": "Ca làm xếp theo lịch của trung tâm, không đổi bằng cuộc hẹn.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn anh, tối em bận rồi.",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi cười nhạt: “Cứng ghê.” Lịch tháng sau vẫn y như cũ.",
-  "en": ""
- },
- {
-  "vi": "Bạn đi bar. Sáng ra cả trung tâm biết, phòng tổ chức mời bạn lên “nói chuyện”.",
-  "en": ""
- },
- {
-  "vi": "Khách quen mời cà phê sau ca",
-  "en": ""
- },
- {
-  "vi": "Chú Định · khách bơi ếch lâu năm",
-  "en": ""
- },
- {
-  "vi": "“Con cứu hộ dễ thương ghê. Chiều nay tan ca chú chở đi cà phê, chú có thằng con trai ngoan lắm, giới thiệu cho.”",
-  "en": ""
- },
- {
-  "vi": "“Chú quý thì chú mời thôi mà.”",
-  "en": ""
- },
- {
-  "vi": "“Gặp một lần cho biết, có mất gì đâu.”",
-  "en": ""
- },
- {
-  "vi": "Con cảm ơn chú, con xin phép không đi.",
-  "en": ""
- },
- {
-  "vi": "Chú cứ bơi đều, gặp nhau ở hồ là vui rồi.",
-  "en": ""
- },
- {
-  "vi": "Chú Định cười xòa: “Ừ thôi, bơi tiếp.”",
-  "en": ""
- },
- {
-  "vi": "Bạn đi cà phê. Chú Định kể khắp hồ là “sắp thành sui gia với cứu hộ”.",
-  "en": ""
- },
- {
-  "vi": "Huýt sáo trêu chị bơi làn chậm",
-  "en": ""
- },
- {
-  "vi": "Nhóm thanh niên ở ghế nằm",
-  "en": ""
- },
- {
-  "vi": "Mấy anh thanh niên huýt sáo, bình phẩm to về một chị đang bơi làn chậm. Chị ấy co người lại, bơi sát thành.",
-  "en": ""
- },
- {
-  "vi": "“Khen thôi mà, có làm gì đâu.”",
-  "en": ""
- },
- {
-  "vi": "Cả nhóm cười hô hố, quay sang huýt sáo bạn.",
-  "en": ""
- },
- {
-  "vi": "Các anh dừng lại. Ngay.",
-  "en": ""
- },
- {
-  "vi": "Trêu ghẹo khách là vi phạm nội quy, tôi mời bảo vệ.",
-  "en": ""
- },
- {
-  "vi": "Cả nhóm im bặt, kéo khăn che mặt. Chị bơi làn chậm gật đầu cảm ơn.",
-  "en": ""
- },
- {
-  "vi": "Bảo vệ mời cả nhóm ra khỏi hồ, ghi tên vào sổ. Chị bơi làn chậm được xin lỗi.",
-  "en": ""
- },
- {
-  "vi": "Nhóm đó còn huýt sáo tới chiều. Không phải lỗi của bạn: gọi bảo vệ là quyền của bạn.",
-  "en": ""
- },
- {
-  "vi": "Bạn cười cho qua, cả nhóm được thể làm tới. Chị bơi làn chậm bỏ về.",
-  "en": ""
- },
- {
-  "vi": "“Vô tình” chạm người khác dưới nước",
-  "en": ""
- },
- {
-  "vi": "Một ông khách ở làn chậm",
-  "en": ""
- },
- {
-  "vi": "Bạn thấy một ông khách cứ bơi sát rồi “vô tình” chạm vào một cô gái. Cô ấy đổi làn, ông ta bơi theo.",
-  "en": ""
- },
- {
-  "vi": "“Đông người thì đụng nhau, bình thường mà.”",
-  "en": ""
- },
- {
-  "vi": "“Cô ta không nói gì, mắc gì cậu xen vô?”",
-  "en": ""
- },
- {
-  "vi": "Ông dừng lại và lên bờ.",
-  "en": ""
- },
- {
-  "vi": "Đụng chạm người khác là quấy rối, tôi báo bảo vệ.",
-  "en": ""
- },
- {
-  "vi": "Tôi đang trực và tôi thấy hết.",
-  "en": ""
- },
- {
-  "vi": "Ông ta lên bờ, đi thẳng vào phòng thay đồ. Cô gái nhìn bạn, thở phào.",
-  "en": ""
- },
- {
-  "vi": "Bảo vệ giữ ông ta lại, cô gái kể rõ sự việc. Hồ cấm ông ta tới bơi, biên bản chuyển công an phường.",
-  "en": ""
- },
- {
-  "vi": "Ông ta bơi lờ vờ tới chiều. Không ai ghi lại gì, lần sau có thể còn tái diễn. Báo là quyền của bạn.",
-  "en": ""
- },
- {
-  "vi": "Bạn quay đi cho đỡ phiền. Cô gái đó không bao giờ quay lại hồ nữa.",
-  "en": ""
- },
- {
-  "vi": "Ông khách đó quay lại",
-  "en": ""
- },
- {
-  "vi": "Ông khách ở làn chậm",
-  "en": ""
- },
- {
-  "vi": "Ông khách hôm trước lại tới, lần này bơi sát mấy bé gái ở khu cạn, cười cười.",
-  "en": ""
- },
- {
-  "vi": "“Tui bơi chỗ nào kệ tui.”",
-  "en": ""
- },
- {
-  "vi": "“Có bằng chứng gì không?”",
-  "en": ""
- },
- {
-  "vi": "Ông lên bờ ngay.",
-  "en": ""
- },
- {
-  "vi": "Tôi gọi bảo vệ và báo phụ huynh.",
-  "en": ""
- },
- {
-  "vi": "Ông ta lên bờ, bỏ về. Bạn ghi sổ, báo anh Hải để cả nhóm để ý.",
-  "en": ""
- },
- {
-  "vi": "Lần này bảo vệ có đủ hai lần ghi sổ, hồ cấm cửa ông ta, công an phường mời lên làm việc.",
-  "en": ""
- },
- {
-  "vi": "Ông ta lảng vảng tới khi phụ huynh để ý. Lần sau gọi bảo vệ ngay nhé.",
-  "en": ""
- },
- {
-  "vi": "Không ai được bắt bạn làm ngơ. Báo ngay là đúng.",
-  "en": ""
- },
- {
-  "vi": "Quay lén người mặc đồ bơi",
-  "en": ""
- },
- {
-  "vi": "Một thanh niên trên khán đài",
-  "en": ""
- },
- {
-  "vi": "Trên khán đài, một thanh niên giấu điện thoại trong mũ lưỡi trai, ống kính chĩa xuống mấy chị đang lên bờ.",
-  "en": ""
- },
- {
-  "vi": "“Quay cảnh hồ bơi thôi mà, ai cấm.”",
-  "en": ""
- },
- {
-  "vi": "Anh ta bỏ điện thoại vào túi, định chuồn.",
-  "en": ""
- },
- {
-  "vi": "Anh dừng quay, xóa ngay.",
-  "en": ""
- },
- {
-  "vi": "Quay lén người khác là vi phạm, bảo vệ sẽ xem máy.",
-  "en": ""
- },
- {
-  "vi": "Anh ta xóa clip trước mặt bạn rồi đi thẳng.",
-  "en": ""
- },
- {
-  "vi": "Bảo vệ giữ anh ta lại, kiểm tra điện thoại, lập biên bản. Mấy chị cảm ơn bạn rối rít.",
-  "en": ""
- },
- {
-  "vi": "Anh ta chuồn mất. Clip đi đâu không ai biết. Lần sau gọi bảo vệ ngay.",
-  "en": ""
- },
- {
-  "vi": "Bạn làm lơ. Tối đó clip lên một nhóm kín.",
-  "en": ""
- },
- {
-  "vi": "Khách say đòi xuống hồ",
-  "en": ""
- },
- {
-  "vi": "Anh Cường · vừa nhậu đầu hẻm",
-  "en": ""
- },
- {
-  "vi": "Anh Cường mặt đỏ, nồng mùi bia, nắm cổ tay bạn ở cổng: “Cho anh xuống bơi cho tỉnh! Cản là anh không để yên đâu!”",
-  "en": ""
- },
- {
-  "vi": "Anh ta siết tay chặt hơn: “Mày biết tao là ai không?”",
-  "en": ""
- },
- {
-  "vi": "“Có ba lon thôi, làm gì căng!”",
-  "en": ""
- },
- {
-  "vi": "Buông tay tôi ra.",
-  "en": ""
- },
- {
-  "vi": "Có rượu bia thì không xuống nước, tôi gọi bảo vệ.",
-  "en": ""
- },
- {
-  "vi": "Tôi đang trực, mời anh ra ngoài.",
-  "en": ""
- },
- {
-  "vi": "Anh ta buông tay, lảo đảo ra cổng. Anh Hải vỗ vai bạn: “Lần sau cứ gọi bảo vệ liền.”",
-  "en": ""
- },
- {
-  "vi": "Bảo vệ ra trong một phút, mời anh ta ra ngoài, lập biên bản. Vợ anh ta tới đón, xin lỗi bạn.",
-  "en": ""
- },
- {
-  "vi": "Anh ta lải nhải ở cổng nửa tiếng mới đi. Không phải lỗi của bạn: gọi bảo vệ là quyền của bạn.",
-  "en": ""
- },
- {
-  "vi": "Không ai được “chiều” người say xuống nước. Bạn thoát ra được nhưng cổ tay còn đỏ.",
-  "en": ""
- },
- {
-  "vi": "Đồng nghiệp bình phẩm cơ thể khách",
-  "en": ""
- },
- {
-  "vi": "Anh Lâm · cứu hộ ca chiều",
-  "en": ""
- },
- {
-  "vi": "Anh Lâm ngồi ghế bên chấm điểm từng chị khách bơi qua: “Con này 7 điểm, con kia béo quá, 3 điểm.” Có khách nghe thấy.",
-  "en": ""
- },
- {
-  "vi": "“Nói vui thôi, ai mà chẳng nhìn.”",
-  "en": ""
- },
- {
-  "vi": "“Mày làm như thanh tra đạo đức.”",
-  "en": ""
- },
- {
-  "vi": "Anh dừng kiểu nói đó lại.",
-  "en": ""
- },
- {
-  "vi": "Bình phẩm cơ thể khách là quấy rối, khách nghe thấy rồi.",
   "en": ""
  }
 ]

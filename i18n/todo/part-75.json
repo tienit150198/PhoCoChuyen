@@ -1,5 +1,529 @@
 [
  {
+  "vi": "Đôi khi có cảnh báo đăng nhập lạ trước 1–2 ngày sống. Mở Bảo hiểm & rủi ro → Đổi mã bảo mật & khóa phiên lạ để chặn vụ hack miễn phí.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ qua cảnh báo: mất 8% số dư tài khoản thanh toán lúc xảy ra, tối đa 3.000 xu và chịu giới hạn rủi ro chung. Ví, tiết kiệm, thẻ và quỹ chung không bị trừ.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm Khóa phiên lạ & báo công an: sau 2 ngày sống có kết quả. Có 30% cơ hội bắt được kẻ hack và hoàn đủ khoản mất vào tài khoản, ghi trong lịch sử ngân hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hiểm hiện tại không bồi thường hack. Thẻ sự cố quá 3 ngày sống sẽ tự khóa phiên và trình báo. Ngày sống chỉ tiến khi đóng ca, không chạy lúc offline.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Bảo hiểm & rủi ro",
+  "en": ""
+ },
+ {
+  "vi": "Mua sắm bằng tiền trong ngân hàng được không?",
+  "en": ""
+ },
+ {
+  "vi": "Khi xác nhận mua sắm cá nhân, chọn Tiền lương / ví, tài khoản ngân hàng, thẻ hoặc quỹ chung nếu khoản chi hỗ trợ. Lương đã nhận nằm trong ví; lương chưa trả chưa dùng được.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tài khoản là chuyển khoản trực tiếp, thiếu số dư thì dừng. Lựa chọn chỉ áp dụng lần này; đổi mặc định ở Ngân hàng → Cách trả mặc định.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ lương thuê người chơi có thể dùng két/vốn quầy, ví, tài khoản hoặc quỹ chung. Hủy ca chưa làm thì hoàn về nguồn cũ; quỹ chung đã đóng thì hoàn về ví người chi.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy huy hiệu Hẹn ở ngày hội thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Ngày hội xuất hiện ngẫu nhiên ở Chuẩn bị. Trong cùng ca Ngày hội của nghề cần huy hiệu, làm xong 3 việc và 1 trò nhỏ bằng Chơi ngay; Luyện không thưởng không tính.",
+  "en": ""
+ },
+ {
+  "vi": "Trước khi đóng ca, bấm Mở góc ngày hội rồi Nhận huy hiệu trong Hộ chiếu. Thẻ hướng dẫn ở đó hiển thị tiến độ hiện tại.",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn bè vào làm ở quầy thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Mở Quầy của bạn → Người → Thuê người chơi, chọn tên bạn rồi Gửi lời mời. Kết bạn xong là mời được ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn được mời mở Quầy cần người để nhận ca. Nếu đang có ca công khai chờ người, hủy ca đó rồi mời riêng. Một quầy chỉ có một ca đang chờ hoặc đang làm.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận nuôi em bé, nuôi mèo hoặc cún ở đâu?",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày sống 10, mở Nhà của bạn → Gia đình · Thú cưng. Tự chọn một em bé và một mèo hoặc cún, đặt tên rồi xác nhận đón về.",
+  "en": ""
+ },
+ {
+  "vi": "Ăn, vệ sinh và chơi là ba mục chăm sóc mỗi ngày sống. Em bé lớn lên sau 5 và 20 ngày được chăm; có đồ mặc để chọn. Gia đình lưu riêng theo nhân vật, không tự trừ phí khi vắng mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Đi làm tóc, làm nail hoặc DIY cho mình ở đâu?",
+  "en": ""
+ },
+ {
+  "vi": "Mở Nhà của bạn → Gia đình · Thú cưng → Đi làm đẹp · DIY. Đây là đi chơi với vai trò khách, không cần mở ca làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "Ở Xưởng handmade, chọn món rồi vào bàn làm: gấu bông có đo, cắt, may, nhồi bông và trang trí; gốm, vòng tay và thiệp có công đoạn riêng. Kéo theo vạch hoặc dùng bàn phím, có làm lại từng bước.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ thanh toán vật liệu khi hoàn thành và xác nhận. Đồ làm xong được cất lên kệ với đúng vị trí họa tiết bạn đã đặt; bản nháp trên máy được giữ theo tài khoản khi đóng xưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy lời, lỗ và nộp thuế ra sao?",
+  "en": ""
+ },
+ {
+  "vi": "Xem bảng vận hành để đối chiếu doanh thu, tiền nhập hàng, lương, thuê chỗ, điện, giao hàng và thuế. Khi nhân viên còn bán, thời gian offline vẫn phát sinh doanh thu và chi phí.",
+  "en": ""
+ },
+ {
+  "vi": "Doanh thu bán liên tục chịu thuế 2% xu trong game. Lương và phí vận hành tính theo thời gian thực, tiền lẻ được giữ lại để nhiều lần tải trang không thu thêm phí.",
+  "en": ""
+ },
+ {
+  "vi": "Biên nhận của ca thuê người chơi và các kỳ cũ được giữ trong Sổ quầy & an toàn. Xem riêng bảng vận hành liên tục để biết kho, vốn và lãi hiện tại.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày bình thường lời vừa phải; sự cố có thể gây lỗ. Chi phí chưa đủ chỉ tạm dừng quầy đó; không tự lấy tiền ví, ngân hàng hay quầy khác.",
+  "en": ""
+ },
+ {
+  "vi": "Trộm, kiểm tra và bảo kê ở quầy xử lý thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm hàng/vệ sinh và lưu chứng từ bật sẵn. Kiểm tra đạt không phạt; tắt chuẩn bị có thể tạo vi phạm. Quầy vi phạm vệ sinh tạm dừng, bật lại kiểm hàng để khắc phục.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo vệ tốn 2 xu mỗi ngày bán; bảo vệ hoặc két sắt giảm thiệt hại trộm/cướp. Báo công an có thể tìm lại một phần tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Bị đòi bảo kê: lưu bằng chứng và báo công an hoặc từ chối, không bắt buộc trả tiền. Mỗi ngày tối đa một quầy trong chuỗi gặp sự cố kinh doanh.",
+  "en": ""
+ },
+ {
+  "vi": "Phát triển nghề shipper thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Mở Sổ shipper ở Hành trình hoặc Quầy của bạn. Cần mở nghề Giao hàng; chọn hợp đồng và xem phí chuẩn bị trước khi nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Giao đủ đơn mới phù hợp trong nghề rồi nhận thưởng hợp đồng. Phí giao từng đơn vẫn tính riêng; đơn trễ hoặc sai sót làm giảm thưởng. Một đơn không cộng lại khi bấm nhiều lần.",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tất 3 rồi 10 hợp đồng để lên bậc. Túi giữ nhiệt và áo mưa giảm khấu trừ chất lượng, không miễn phạt giao thông. Hủy hợp đồng không hoàn phí chuẩn bị.",
+  "en": ""
+ },
+ {
+  "vi": "Đi qua đèn đỏ và học lái máy bay thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Khi tự lái giao hàng hoặc giao đơn quầy, đến đèn thì chờ xanh hoặc chọn đi tiếp. Vượt đèn đỏ bị phạt 12 xu một lần cho ngã tư đó; đứng chờ không mất tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Khi tự bay, mở hướng dẫn để xem mục tiêu từng giai đoạn, nút điều khiển và cách chỉnh lại đường bay. Có thể bật lại hướng dẫn hoặc chọn bay nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "Bể cá mẫu bị gõ nứt",
+  "en": ""
+ },
+ {
+  "vi": "Hai cậu nhóc gõ lên kính bể cá mẫu cho cá giật mình. Một cậu cầm chùm chìa khóa gõ mạnh, kính nứt một đường, nước rỉ ra sàn.",
+  "en": ""
+ },
+ {
+  "vi": "Bể cá mẫu nứt, phải thay kính",
+  "en": ""
+ },
+ {
+  "vi": "Làm rơi túi cá của khách",
+  "en": ""
+ },
+ {
+  "vi": "Bạn buộc túi cá cho khách, tay trơn, túi rơi xuống nền gạch vỡ toang. Mấy con cá giãy đành đạch, khách tái mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Đền cá và bể mới cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Mặc chồng hai lớp trong phòng thử",
+  "en": ""
+ },
+ {
+  "vi": "Một cô gái ôm ba chiếc áo vào phòng thử, lúc ra chỉ trả lại hai. Áo khoác ngoài của cô phồng lên hơn lúc bước vào.",
+  "en": ""
+ },
+ {
+  "vi": "Mất áo trong phòng thử",
+  "en": ""
+ },
+ {
+  "vi": "Mấy tiệm quần áo nhớ đưa thẻ số ở phòng thử nha, có người mặc chồng áo bên trong rồi đi ra tỉnh bơ.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn ủi hơi làm ố áo dài của khách",
+  "en": ""
+ },
+ {
+  "vi": "Khách nhờ hấp lại chiếc áo dài mang theo để chiều đi đám. Bạn để bàn ủi lâu một chỗ, tà áo lụa ngả vàng một vệt.",
+  "en": ""
+ },
+ {
+  "vi": "Đền áo dài cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ đu ma-nơ-canh",
+  "en": ""
+ },
+ {
+  "vi": "Hai đứa nhỏ chờ mẹ thử đồ, chơi trò đu tay ma-nơ-canh. Ma-nơ-canh ngã sấp, gãy một tay, bộ váy trưng dính đầy dấu tay kẹo.",
+  "en": ""
+ },
+ {
+  "vi": "Ma-nơ-canh gãy tay, váy trưng lấm bẩn",
+  "en": ""
+ },
+ {
+  "vi": "Kẻ gian ôm rổ xoài",
+  "en": ""
+ },
+ {
+  "vi": "Chợ đang đông, một thanh niên đứng chọn trái, rồi ôm luôn cả rổ xoài chín lẩn vào dòng người.",
+  "en": ""
+ },
+ {
+  "vi": "Trộm ôm rổ xoài",
+  "en": ""
+ },
+ {
+  "vi": "Giật túi tiền đeo hông",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cúi xuống lựa cam cho khách, túi tiền lẻ đeo hông lủng lẳng. Một chiếc xe máy áp sát, giật phăng rồi rồ ga.",
+  "en": ""
+ },
+ {
+  "vi": "Mất túi tiền lẻ",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ làm đổ rổ cam",
+  "en": ""
+ },
+ {
+  "vi": "Mấy đứa nhỏ rượt nhau quanh chợ, va vào sạp. Rổ cam đổ ào, trái lăn khắp lối đi, vài trái bị xe cán bẹp.",
+  "en": ""
+ },
+ {
+  "vi": "Cam lăn ra đường, bẹp dập",
+  "en": ""
+ },
+ {
+  "vi": "Chó hoang tha nải chuối",
+  "en": ""
+ },
+ {
+  "vi": "Một con chó gầy lảng vảng quanh sạp, chồm lên tha luôn nải chuối rồi chạy mất vào hẻm.",
+  "en": ""
+ },
+ {
+  "vi": "Chó tha mất nải chuối",
+  "en": ""
+ },
+ {
+  "vi": "Túi trái của khách bị rách",
+  "en": ""
+ },
+ {
+  "vi": "Bạn xách túi trái đưa khách, quai túi đứt phựt. Trái rơi xuống đất, dập mấy trái.",
+  "en": ""
+ },
+ {
+  "vi": "Đền trái cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Đêm qua sạp bị lục",
+  "en": ""
+ },
+ {
+  "vi": "Sáng ra tấm bạt che sạp bị rạch một đường, mấy rổ trái hụt đi trông thấy.",
+  "en": ""
+ },
+ {
+  "vi": "Mất trái trong đêm",
+  "en": ""
+ },
+ {
+  "vi": "Kẻ gian xách rổ thịt bò",
+  "en": ""
+ },
+ {
+  "vi": "Quán đông nghẹt giờ đi làm, bạn quay lưng chan nước. Một người lạ xách rổ thịt bò trên thớt rồi lẩn ra đầu ngõ.",
+  "en": ""
+ },
+ {
+  "vi": "Mất rổ thịt bò",
+  "en": ""
+ },
+ {
+  "vi": "Giật hộp tiền trên bàn thu",
+  "en": ""
+ },
+ {
+  "vi": "Hộp tiền lẻ để cạnh ống đũa. Một chiếc xe máy tạt sát vỉa hè, chộp lấy rồi rồ ga mất hút.",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ đá bóng trúng rổ quẩy",
+  "en": ""
+ },
+ {
+  "vi": "Mấy đứa nhỏ đá bóng trong ngõ, quả bóng bay thẳng vào rổ quẩy, quẩy rơi lả tả xuống đất.",
+  "en": ""
+ },
+ {
+  "vi": "Đổ cả rổ quẩy",
+  "en": ""
+ },
+ {
+  "vi": "Nước phở bắn lên áo khách",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bưng tô phở qua lối hẹp, vấp chân ghế nhựa. Nước dùng sóng sánh bắn lên tà áo sơ mi trắng của một anh đi làm.",
+  "en": ""
+ },
+ {
+  "vi": "Đêm qua tủ thịt bị cạy",
+  "en": ""
+ },
+ {
+  "vi": "Sáng ra khóa tủ đựng thịt bị bẻ cong, tấm bạt che rách một đường. Mấy phần thịt bò ướp sẵn không còn.",
+  "en": ""
+ },
+ {
+  "vi": "Mất thịt trong đêm",
+  "en": ""
+ },
+ {
+  "vi": "Khách lạ cầm nhầm đạo cụ",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang cắt ảnh cho khách. Một nhóm lạ chụp xong đi ra, rổ đạo cụ hụt cái vương miện với cặp kính tim.",
+  "en": ""
+ },
+ {
+  "vi": "Mất mấy món đạo cụ",
+  "en": ""
+ },
+ {
+  "vi": "Hộp tiền để sát cửa cho tiện thối. Một chiếc xe máy tạt vào lề, chộp lấy rồi rồ ga mất hút về phía chợ đêm.",
+  "en": ""
+ },
+ {
+  "vi": "Bé giật đổ cây đèn vòng",
+  "en": ""
+ },
+ {
+  "vi": "Một bé chạy vào buồng chụp, níu chân đèn vòng. Cây đèn ngã xuống, xấp giấy in trên ghế rơi tung tóe.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏng xấp giấy in",
+  "en": ""
+ },
+ {
+  "vi": "Đổ ly trà sữa lên váy khách",
+  "en": ""
+ },
+ {
+  "vi": "Bạn với tay lấy bao kiếng, khuỷu tay quẹt trúng ly trà sữa khách gửi trên quầy. Trà đổ xuống vạt váy trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng ra ổ khóa cửa kéo méo xệch. Ngăn giấy in trống trơn, mấy khung gỗ trên kệ cũng không thấy đâu.",
+  "en": ""
+ },
+ {
+  "vi": "Mất giấy in trong đêm",
+  "en": ""
+ },
+ {
+  "vi": "Mất túi đồ bảo hộ trên xe",
+  "en": ""
+ },
+ {
+  "vi": "Bạn vào ngõ gom túi rác, túi găng tay và khẩu trang treo ở tay xe đẩy biến mất lúc nào không hay.",
+  "en": ""
+ },
+ {
+  "vi": "Mất găng tay, khẩu trang",
+  "en": ""
+ },
+ {
+  "vi": "Bao ve chai bị lấy mất",
+  "en": ""
+ },
+ {
+  "vi": "Bao lon, chai nhựa sạch bạn gom riêng để bán cô Tám, quay ra đã bị một người đạp xe lấy mất.",
+  "en": ""
+ },
+ {
+  "vi": "Mất bao ve chai sạch",
+  "en": ""
+ },
+ {
+  "vi": "Thanh niên đạp đổ xe rác",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm thanh niên đi nhậu về, một cậu đạp vào xe đẩy cho vui. Xe đổ nghiêng, một ngăn bung nắp.",
+  "en": ""
+ },
+ {
+  "vi": "Xe đẩy gãy bản lề nắp",
+  "en": ""
+ },
+ {
+  "vi": "Chó bới tung túi rác",
+  "en": ""
+ },
+ {
+  "vi": "Con chó nhà cuối ngõ lao ra, cắn rách hai túi rác bạn vừa gom, rác vương vãi khắp nơi.",
+  "en": ""
+ },
+ {
+  "vi": "Túi rách, phải quét lại",
+  "en": ""
+ },
+ {
+  "vi": "Xe đẩy quẹt xước ô tô trong ngõ",
+  "en": ""
+ },
+ {
+  "vi": "Ngõ hẹp, ô tô đậu lấn lối. Góc xe đẩy quẹt một đường dài trên cửa xe.",
+  "en": ""
+ },
+ {
+  "vi": "Đền sơn cửa ô tô",
+  "en": ""
+ },
+ {
+  "vi": "Đêm qua xe đẩy bị tháo bánh",
+  "en": ""
+ },
+ {
+  "vi": "Sáng ra chỗ gửi xe đẩy, bánh xe đã bị ai tháo mất một cái.",
+  "en": ""
+ },
+ {
+  "vi": "Mua bánh xe mới",
+  "en": ""
+ },
+ {
+  "vi": "Mất cuộn dây lò xo trên xe",
+  "en": ""
+ },
+ {
+  "vi": "Bạn vào nhà khách xem bồn cầu, cuộn dây lò xo buộc sau xe máy bị ai đó cắt dây mang đi.",
+  "en": ""
+ },
+ {
+  "vi": "Mua cuộn dây lò xo mới",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại đặt trên bệ bị cuỗm",
+  "en": ""
+ },
+ {
+  "vi": "Đang cúi dưới gầm lavabo, bạn để điện thoại trên bệ cửa. Ngẩng lên thì bệ trống trơn.",
+  "en": ""
+ },
+ {
+  "vi": "Mất điện thoại, mua máy cũ dùng tạm",
+  "en": ""
+ },
+ {
+  "vi": "Trẻ con nghịch máy phun",
+  "en": ""
+ },
+ {
+  "vi": "Bạn quay đi lấy xô, mấy đứa nhỏ nhà bên bật công tắc máy phun, vòi nước quật tung tóe.",
+  "en": ""
+ },
+ {
+  "vi": "Vòi phun bị gãy đầu",
+  "en": ""
+ },
+ {
+  "vi": "Làm nứt viên gạch nhà khách",
+  "en": ""
+ },
+ {
+  "vi": "Tháo nắp thoát sàn mạnh tay, viên gạch men quanh miệng cống nứt đôi.",
+  "en": ""
+ },
+ {
+  "vi": "Đền gạch cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Nước bẩn bắn lên tường mới sơn",
+  "en": ""
+ },
+ {
+  "vi": "Rút dây lò xo ra nhanh quá, nước cống bắn một vệt dài lên bức tường vừa sơn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đền tiền sơn lại tường",
+  "en": ""
+ },
+ {
+  "vi": "Mất chai trên xe đồ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Bạn để xe đồ nghề ở sảnh chung cư, chạy lên tầng lấy chìa khóa. Quay xuống, ngăn chai trên xe hụt mất mấy chai.",
+  "en": ""
+ },
+ {
   "vi": "Mất mấy chai nước tẩy",
   "en": ""
  },
@@ -1273,530 +1797,6 @@
  },
  {
   "vi": "Chọn căn nhà nhé.",
-  "en": ""
- },
- {
-  "vi": "Chọn cho thuê hay lấy lại nhà nhé.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn đang ở căn này: dọn sang căn khác rồi mới cho thuê được nhé.",
-  "en": ""
- },
- {
-  "vi": "Nhà mua bằng quỹ chung cần giữ quyền của cả hai, chưa thể cho thuê.",
-  "en": ""
- },
- {
-  "vi": "Giá thuê phải là số xu nguyên dương.",
-  "en": ""
- },
- {
-  "vi": "Đã gỡ tin cho NPC thuê nhà.",
-  "en": ""
- },
- {
-  "vi": ". Căn nhà đang để trống.",
-  "en": ""
- },
- {
-  "vi": "Bạn không có khoản vay mua nhà nào.",
-  "en": ""
- },
- {
-  "vi": "Khoản vay đã trả xong, căn nhà hoàn toàn là của bạn!",
-  "en": ""
- },
- {
-  "vi": "Xác nhận tất toán khoản vay mua nhà.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa có nhà để bán.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận bán nhà.",
-  "en": ""
- },
- {
-  "vi": "Giá thị trường vừa thay đổi. Xem lại rồi bán nhé.",
-  "en": ""
- },
- {
-  "vi": "Tiền bán nhà chưa đủ trả hết khoản vay. Nộp thêm tiền trả bớt nợ rồi hãy bán nhé.",
-  "en": ""
- },
- {
-  "vi": "Tiền bán chưa đủ trả hết nợ vay",
-  "en": ""
- },
- {
-  "vi": "Đang cho thuê: lấy lại nhà trước",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu nhà ở không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Mối hàng “hiệu” giá rẻ",
-  "en": ""
- },
- {
-  "vi": "Một người chở tới hai bao quần áo gắn mác hãng nổi tiếng, giá chỉ bằng một phần năm: “Hàng xách tay, bán chạy lắm em.”",
-  "en": ""
- },
- {
-  "vi": "Đường may lệch, chữ trên mác in nhòe.",
-  "en": ""
- },
- {
-  "vi": "Không có hóa đơn, không có giấy nhập khẩu.",
-  "en": ""
- },
- {
-  "vi": "Bán hàng giả mạo nhãn hiệu có thể bị tịch thu và phạt.",
-  "en": ""
- },
- {
-  "vi": "Từ chối, chỉ bán hàng có nguồn gốc rõ ràng",
-  "en": ""
- },
- {
-  "vi": "Người đó lầm bầm rồi chở bao hàng đi. Chị Vy gật gù: “Tiệm nhỏ nhưng phải sạch.”",
-  "en": ""
- },
- {
-  "vi": "Lấy một bao, dán mác tiệm lên bán",
-  "en": ""
- },
- {
-  "vi": "Kho có thêm một bao hàng rẻ. Tuần sau đội quản lý thị trường đi kiểm tra cả dãy phố.",
-  "en": ""
- },
- {
-  "vi": "Bài đăng chê tiệm không cho trả đồ",
-  "en": ""
- },
- {
-  "vi": "Một bài đăng trong nhóm cư dân: “Tiệm áo đầu hẻm không cho trả váy, thái độ lồi lõm!” Kèm ảnh chiếc váy đã cắt mác.",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn ghi rõ chính sách: còn tem, chưa mặc.",
-  "en": ""
- },
- {
-  "vi": "Chiếc váy trong ảnh đã cắt mác, cổ váy có vệt phấn.",
-  "en": ""
- },
- {
-  "vi": "Nhiều khách quen đang đọc bài.",
-  "en": ""
- },
- {
-  "vi": "Trả lời nhẹ nhàng, đăng ảnh bảng chính sách, mời chị ghé uống trà nói chuyện",
-  "en": ""
- },
- {
-  "vi": "Khách quen vào bình luận bênh tiệm. Chị khách tự gỡ bài, hôm sau ghé mua đôi tất làm hòa.",
-  "en": ""
- },
- {
-  "vi": "Hoàn tiền cho yên chuyện",
-  "en": ""
- },
- {
-  "vi": "Bài đăng được gỡ, nhưng trong nhóm bắt đầu rủ nhau “mặc một lần rồi trả”.",
-  "en": ""
- },
- {
-  "vi": "Đăng bài đáp trả, bêu tên khách",
-  "en": ""
- },
- {
-  "vi": "Hai bên cãi nhau hơn trăm bình luận. Ai đọc cũng ngại ghé tiệm.",
-  "en": ""
- },
- {
-  "vi": "Xe tải chở chó con tới mời bán sỉ",
-  "en": ""
- },
- {
-  "vi": "Một chiếc xe tải đậu trước tiệm, thùng sau chật cứng lồng chó con. Người lái xe chìa giá rẻ như cho, chú Út nghe mà xiêu lòng.",
-  "en": ""
- },
- {
-  "vi": "Không lồng nào có sổ tiêm, vài bé đang tiêu chảy.",
-  "en": ""
- },
- {
-  "vi": "Góc nhận nuôi của tiệm dán rõ: chó mèo chỉ về nhà mới qua nhóm cứu hộ.",
-  "en": ""
- },
- {
-  "vi": "Từ chối mua, gọi nhóm Chân Nhỏ và thú y phường tới xem các bé",
-  "en": ""
- },
- {
-  "vi": "Nhóm cứu hộ nhận chữa mấy bé yếu nhất, thú y phường ghi lại biển số xe. Chú Út lặng người một lúc rồi gật đầu.",
-  "en": ""
- },
- {
-  "vi": "Từ chối cho xong",
-  "en": ""
- },
- {
-  "vi": "Xe tải chạy sang phường bên. Mấy bé chó con không ai biết đi đâu.",
-  "en": ""
- },
- {
-  "vi": "Lấy vài con về bán cho có lời",
-  "en": ""
- },
- {
-  "vi": "Hai hôm sau hai bé ốm nặng, cả góc nhận nuôi phải khử trùng, tiệm bỏ tiền chữa.",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn “nhặt được thú cưng” đòi chuyển tiền",
-  "en": ""
- },
- {
-  "vi": "Tờ tìm mèo dán trên bảng của tiệm vừa lên nhóm Zalo khu phố. Một số lạ nhắn vào máy tiệm: “Tôi nhặt được mèo. Chuyển trước 200 xu tiền giữ giùm, tôi mang tới liền.”",
-  "en": ""
- },
- {
-  "vi": "Người đó không trả lời được con mèo có dấu riêng gì.",
-  "en": ""
- },
- {
-  "vi": "Ảnh gửi kèm là ảnh lấy trên mạng.",
-  "en": ""
- },
- {
-  "vi": "Hỏi dấu riêng, không chuyển tiền, báo chủ nuôi cảnh giác",
-  "en": ""
- },
- {
-  "vi": "Người kia chặn số ngay. Chủ nuôi cảm ơn tiệm đã chặn giùm một vố lừa.",
-  "en": ""
- },
- {
-  "vi": "Người kia nhắn sang chủ nuôi. May mà chủ nuôi hỏi lại tiệm kịp.",
-  "en": ""
- },
- {
-  "vi": "Chuyển tiền giùm cho nhanh, chủ nuôi trả lại sau",
-  "en": ""
- },
- {
-  "vi": "Chuyển xong thì bị chặn số. Tiền mất, mèo vẫn chưa về.",
-  "en": ""
- },
- {
-  "vi": "Người lạ mời bán vẹt bắt ngoài rừng",
-  "en": ""
- },
- {
-  "vi": "Một anh đội mũ sụp đưa lồng vẹt lông xanh lạ mắt: “Hàng hiếm, bắt ngoài rừng. Tiệm lấy về bán giá cao!”",
-  "en": ""
- },
- {
-  "vi": "Chân con chim còn vết dây buộc, lông xơ xác.",
-  "en": ""
- },
- {
-  "vi": "Chim hoang dã không được mua bán; tiệm chỉ bán chim nuôi có giấy nguồn gốc.",
-  "en": ""
- },
- {
-  "vi": "Không mua, báo kiểm lâm",
-  "en": ""
- },
- {
-  "vi": "Kiểm lâm tới nhận con vẹt về trạm cứu hộ, cảm ơn tiệm đã báo sớm.",
-  "en": ""
- },
- {
-  "vi": "Không mua, bảo anh ta đi chỗ khác",
-  "en": ""
- },
- {
-  "vi": "Anh ta đi mất. Con vẹt chắc lại bị bán ở đâu đó.",
-  "en": ""
- },
- {
-  "vi": "Mua lại bán cho dân chơi chim",
-  "en": ""
- },
- {
-  "vi": "Đoàn kiểm tra phát hiện, tịch thu con vẹt và lập biên bản tiệm.",
-  "en": ""
- },
- {
-  "vi": "Thú y phường kiểm tra sau phản ánh",
-  "en": ""
- },
- {
-  "vi": "Hôm qua có người phản ánh lên app về cách tiệm chăm và bán thú. Sáng nay bác sĩ thú y phường ghé, xem từng bể, từng chuồng và sổ nhập thú.",
-  "en": ""
- },
- {
-  "vi": "Phản ánh kèm ảnh chụp bể cá và lồng thú.",
-  "en": ""
- },
- {
-  "vi": "Sổ nhập thú của tiệm ghi nguồn gốc từ trại Bến Mây.",
-  "en": ""
- },
- {
-  "vi": "Mở sổ, nhận lỗi, cách ly bé ốm, cam kết hỏi kỹ trước khi bán",
-  "en": ""
- },
- {
-  "vi": "Bác sĩ lập biên bản nhắc nhở, phạt mức thấp và hẹn tuần sau ghé lại. Nhã dán bảng “Hỏi kỹ rồi mới bán” ngay trước quầy.",
-  "en": ""
- },
- {
-  "vi": "Cãi rằng tiệm nào cũng bán vậy",
-  "en": ""
- },
- {
-  "vi": "Bác sĩ chụp ảnh bể quá đông và bé ốm để chung. Biên bản ghi phạt nặng, khách đăng bài nhắc cả khu phố.",
-  "en": ""
- },
- {
-  "vi": "Tiệm bán thú mà không lo cho thú. Mọi người cân nhắc.",
-  "en": ""
- },
- {
-  "vi": "Không bảo đảm điều kiện chăm sóc, vệ sinh thú nuôi để bán",
-  "en": ""
- },
- {
-  "vi": "Báo giá chuyện đời không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Tỷ lệ chuyện đời không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Sáu",
-  "en": ""
- },
- {
-  "vi": "Xe tuyến kẹt ở trạm nên về trễ mấy tiếng, kho xin lỗi quý khách.",
-  "en": ""
- },
- {
-  "vi": "Mẻ hôm nay ra lò muộn, xưởng giao trễ hơn hẹn ạ.",
-  "en": ""
- },
- {
-  "vi": "Xe từ Đà Lạt xuống bị sương mù đèo Mây, tới trễ chừng một tiếng.",
-  "en": ""
- },
- {
-  "vi": "Rẻ nhất. Đặt trước 13:00, hàng tới chiều nay; đặt sau, hàng tới sáng mai trước giờ mở cửa. Thỉnh thoảng giao thiếu, cần đếm kỹ.",
-  "en": ""
- },
- {
-  "vi": "Giá niêm yết, có phiếu giao rõ ràng. Xe chạy bốn chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng.",
-  "en": ""
- },
- {
-  "vi": "Đắt nhất nhưng tới trong 15–30 phút. Dùng khi cháy hàng giữa ca.",
-  "en": ""
- },
- {
-  "vi": "Gói nước dùng, phô mai, bánh gạo, bò Mỹ nhập thẳng: rẻ hơn hẳn nhưng 1–2 ngày mới tới. Đặt sớm cho cả tuần.",
-  "en": ""
- },
- {
-  "vi": "Rang theo đơn hai mẻ mỗi ngày. Đặt trước 11:00, hạt mới rang tới chiều nay; đặt sau, sáng mai có. Rẻ và thơm hơn.",
-  "en": ""
- },
- {
-  "vi": "Chợ hoa họp đêm, ban ngày còn sạp sỉ: đặt trước 15:00, hoa tới chiều nay; đặt sau, hoa tới sáng mai trước giờ mở cửa. Rẻ, nhưng hay gãy hoặc thiếu vài cành.",
-  "en": ""
- },
- {
-  "vi": "Hoa cắt tại vườn: đặt trước 09:00, vườn gửi xe khách, chiều nay tới; đặt sau, hoa đi xe đêm, sáng mai tới. Rẻ nhất và tươi thêm 1 ngày, nhưng xe đèo hay trễ.",
-  "en": ""
- },
- {
-  "vi": "Hàng khô, nước, bia theo thùng: giá sỉ, sáng mai giao. Hợp để trữ hàng không hạn.",
-  "en": ""
- },
- {
-  "vi": "Linh kiện tương thích và đồ tháo máy giá mềm. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có. Đôi khi thiếu, đếm kỹ.",
-  "en": ""
- },
- {
-  "vi": "Hàng hãng có tem bảo hành, gửi từ kho miền: 1–2 ngày. Rẻ hơn đại lý nhưng phải hẹn khách trước.",
-  "en": ""
- },
- {
-  "vi": "Giá xã viên. Đặt trước 11:00, xe hợp tác xã chở tới chiều nay; đặt sau, sáng mai có. Thỉnh thoảng thiếu một bao.",
-  "en": ""
- },
- {
-  "vi": "Chở gấp trong 15–30 phút, đắt. Dùng khi gà sắp hết cám.",
-  "en": ""
- },
- {
-  "vi": "Cây giống ươm theo đơn: rẻ nhất nhưng 1–2 ngày mới có.",
-  "en": ""
- },
- {
-  "vi": "Giá sỉ bao bì. Đặt trước 20:00, tối nay có; đặt sau, chiều mai có trước giờ vào ca. Đôi khi thiếu, đếm kỹ.",
-  "en": ""
- },
- {
-  "vi": "Giá niêm yết, xe tải nhỏ giao trong 1–2 giờ. Quá giờ tan ca thì hàng chờ sẵn trước ca mai.",
-  "en": ""
- },
- {
-  "vi": "Xe tải của kho kẹt ở cầu Mây, bên em báo trễ chừng mười lăm phút ạ.",
-  "en": ""
- },
- {
-  "vi": "Đồ ăn sáng và minibar giá chợ. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có trước giờ khách dậy. Hay thiếu vài món.",
-  "en": ""
- },
- {
-  "vi": "Ga gối, khăn, bộ đồ tắm từ xưởng: rẻ nhất, 1–2 ngày mới giao. Đặt trước mùa đông khách.",
-  "en": ""
- },
- {
-  "vi": "Giá sỉ cho tiệm. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có trước giờ mở cửa. Thỉnh thoảng thiếu, đếm kỹ.",
-  "en": ""
- },
- {
-  "vi": "Sữa tắm da nhạy cảm, dầu xả, bột cầm máu hàng nhập: rẻ hơn đại lý, 1–2 ngày mới tới.",
-  "en": ""
- },
- {
-  "vi": "Dầu gội, khăn, găng, giấy bạc giá sỉ. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có. Hay thiếu vài món.",
-  "en": ""
- },
- {
-  "vi": "Thuốc nhuộm, oxy, toner, keratin chính hãng từ kho hãng: rẻ nhất, 1–2 ngày. Đặt trước khi hết tuýp.",
-  "en": ""
- },
- {
-  "vi": "Giá sát lắm rồi, chở miễn phí cho em là được.",
-  "en": ""
- },
- {
-  "vi": "Bớt vậy lấy gì ăn em? Giá này là chót rồi.",
-  "en": ""
- },
- {
-  "vi": "Trả giá kiểu này thì em qua sạp khác đi!",
-  "en": ""
- },
- {
-  "vi": "Giá niêm yết không giảm được ạ, bên em xin miễn phí giao cho đơn này.",
-  "en": ""
- },
- {
-  "vi": "Giá đã là giá niêm yết, bên em không giảm thêm được ạ.",
-  "en": ""
- },
- {
-  "vi": "Yêu cầu đã được ghi nhận. Lần sau quý khách vui lòng đặt theo bảng giá.",
-  "en": ""
- },
- {
-  "vi": "Hỏa tốc tính theo cuốc xe, bên em không giảm ạ.",
-  "en": ""
- },
- {
-  "vi": "Mặt hàng này không có size đó.",
-  "en": ""
- },
- {
-  "vi": "Đang có nhiều hàng chờ giao. Nhận bớt rồi đặt tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Chọn mức xin bớt có sẵn nhé.",
-  "en": ""
- },
- {
-  "vi": "Thêm hàng vào đơn trước rồi mới trả giá nhé.",
-  "en": ""
- },
- {
-  "vi": "· miễn ship",
-  "en": ""
- },
- {
-  "vi": "Thao tác đơn gộp không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Kệ đã đủ hàng, không cần nhập thêm.",
-  "en": ""
- },
- {
-  "vi": "Món này có nhiều size trong đơn: chọn đúng dòng size nhé.",
-  "en": ""
- },
- {
-  "vi": "Món này chưa có trong đơn.",
-  "en": ""
- },
- {
-  "vi": "Xác nhận đơn gộp và số tiền trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Đơn đang trống. Thêm hàng vào đơn trước nhé.",
-  "en": ""
- },
- {
-  "vi": "(miễn ship)",
-  "en": ""
- },
- {
-  "vi": "Đơn không tồn tại.",
-  "en": ""
- },
- {
-  "vi": "Đếm từng món trong thùng trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Đơn gộp sai mã.",
-  "en": ""
- },
- {
-  "vi": "Đơn gộp không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Dòng đơn gộp sai.",
-  "en": ""
- },
- {
-  "vi": "Đơn gộp trùng món.",
-  "en": ""
- },
- {
-  "vi": "Giá thương lượng sai.",
-  "en": ""
- },
- {
-  "vi": "Giá coin cập nhật mỗi 10 phút thực. Chỉ dùng tiền nhàn rỗi nhé.",
   "en": ""
  }
 ]

@@ -1,5 +1,513 @@
 [
  {
+  "vi": "Từ chối: quán không giữ tiền hộ",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hùng hiểu, mang túi tiền theo người.",
+  "en": ""
+ },
+ {
+  "vi": "Đúng thôi, đông thế này ai trông cho xuể.",
+  "en": ""
+ },
+ {
+  "vi": "Thà từ chối còn hơn nhận rồi để mất.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ tiền hộ người khác thì đếm trước mặt, ghi rõ số; không kham nổi thì từ chối.",
+  "en": ""
+ },
+ {
+  "vi": "Trời mưa: dọn vào mái hiên tiệm may cho khô.",
+  "en": ""
+ },
+ {
+  "vi": "Nắng to: nhớ dựng ô che thùng đá.",
+  "en": ""
+ },
+ {
+  "vi": "Bày dưới gốc bàng cho mát, gọn sát tường.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng ngày mưa",
+  "en": ""
+ },
+ {
+  "vi": "Dọn hàng đầu ngày",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu: “Mưa thế này thì dọn vào mái hiên, cháu nhé. Pha ấm chè, đập đá rồi hãy mở hàng.”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu: “Dọn hàng thôi cháu! Bày ghế, dựng ô, đặt thùng đá, pha ấm chè, đập đá.”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường ghé trả sổ theo hẹn. Đọc sổ cho chú, đúng dòng nào thu dòng đó.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường trả sổ",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tường rút ví: “Đến hẹn rồi, sổ chú hết bao nhiêu cháu?”",
+  "en": ""
+ },
+ {
+  "vi": "Vào việc thôi! Bà Lựu đang chờ ở gốc bàng.",
+  "en": ""
+ },
+ {
+  "vi": "Đã dặn anh Tuấn xe đá: sáng mai khỏi thả đá.",
+  "en": ""
+ },
+ {
+  "vi": "Trật tự đô thị đang tới! Dẹp ghế, gấp ô trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Có chuyện ở quán, quyết xong rồi làm tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác không có ở quán trà.",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Xe trật tự đô thị đang tới đầu phố! Dẹp ghế, gấp ô ngay!",
+  "en": ""
+ },
+ {
+  "vi": "Việc này không thuộc quán trà.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ bày quán không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Chỗ này lấn ra lòng đường, phường mà đi qua là bị phạt.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chỗ bày quán trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Dựng hay gấp ô?",
+  "en": ""
+ },
+ {
+  "vi": "⛱️ Đã dựng ô.",
+  "en": ""
+ },
+ {
+  "vi": "⛱️ Đã gấp ô lại.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Thùng đá đã đặt chỗ râm, nắp đậy kín.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt thùng đá vào chỗ râm trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Bày quán tràn ra tận lòng đường, xe máy phải lách. Phường đi qua là phạt đấy cháu.",
+  "en": ""
+ },
+ {
+  "vi": "bày lấn lòng đường",
+  "en": ""
+ },
+ {
+  "vi": "Mưa thế này mà không dọn vào mái hiên, ghế ướt hết.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ này nắng quá, gốc bàng mát hơn nhiều.",
+  "en": ""
+ },
+ {
+  "vi": "chọn chỗ chưa hợp",
+  "en": ""
+ },
+ {
+  "vi": "Nắng thế mà không dựng ô, đá tan hết, khách ngồi chói mắt.",
+  "en": ""
+ },
+ {
+  "vi": "quên dựng ô",
+  "en": ""
+ },
+ {
+  "vi": "Ghế bày tràn ra lối đi, người đi bộ phải lách.",
+  "en": ""
+ },
+ {
+  "vi": "bày quá nhiều ghế",
+  "en": ""
+ },
+ {
+  "vi": "Chưa pha chè đã mở hàng, khách đến lại phải chờ.",
+  "en": ""
+ },
+ {
+  "vi": "chưa pha chè",
+  "en": ""
+ },
+ {
+  "vi": "Ấm chè đầu ngày mà nhạt thế này thì các ông chê chết.",
+  "en": ""
+ },
+ {
+  "vi": "pha chè nhạt",
+  "en": ""
+ },
+ {
+  "vi": "Thùng đá còn trống trơn, trà đá lấy gì mà mát?",
+  "en": ""
+ },
+ {
+  "vi": "chưa đập đá",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu gật gù: “Gọn gàng, đâu ra đấy. Mở hàng thôi!”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Lựu chép miệng: “Thôi, mở hàng đã, lần sau nhớ nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Quán đang bày rồi.",
+  "en": ""
+ },
+ {
+  "vi": "nước chè vàng nhạt",
+  "en": ""
+ },
+ {
+  "vi": "nước chè xanh vàng, thơm đúng vị",
+  "en": ""
+ },
+ {
+  "vi": "nước chè đậm, chát nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "Bình hết sạch chè rồi, châm nước chỉ ra nước lã. Pha ấm mới nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bình còn đầy.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Chè nhạt rồi đấy, khách quen sẽ chê.",
+  "en": ""
+ },
+ {
+  "vi": "Bình đang trống.",
+  "en": ""
+ },
+ {
+  "vi": "🚰 Đổ bỏ chè cũ, tráng bình sạch.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt thùng đá ra trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Thùng đá còn đầy, đập thêm là tràn ra ngoài.",
+  "en": ""
+ },
+ {
+  "vi": "Hết đá cây rồi! Chờ xe đá, hoặc mở kho gọi đá gấp.",
+  "en": ""
+ },
+ {
+  "vi": "Không còn cốc bẩn nào.",
+  "en": ""
+ },
+ {
+  "vi": "Nước chậu bắt đầu đục, lần sau thay nước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nước chậu vẫn còn trong.",
+  "en": ""
+ },
+ {
+  "vi": "🪣 Hắt chậu nước đục vào rãnh, xách chậu nước sạch mới.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa dọn hàng: bày ghế, dựng ô, đặt thùng đá rồi bấm “Mở hàng” nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Quán đang dẹp. Bày lại ghế đã rồi bán tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đưa trà cho khách rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Món này quán không có.",
+  "en": ""
+ },
+ {
+  "vi": "Bình chè hết rồi. Pha ấm mới đã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hết cốc sạch! Rửa cốc trong chậu đã.",
+  "en": ""
+ },
+ {
+  "vi": "Hết đá, cốc này không có đá!",
+  "en": ""
+ },
+ {
+  "vi": "Cốc còn nhờn vì rửa nước đục.",
+  "en": ""
+ },
+ {
+  "vi": "Chè để lâu đã hơi ôi.",
+  "en": ""
+ },
+ {
+  "vi": "Chè nhạt.",
+  "en": ""
+ },
+ {
+  "vi": "Món này quán không bán.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy thế đủ rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Món này chưa lấy ra.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nói với cháu rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🙅 “Thuốc lá cô không bán cho trẻ con đâu. Cháu về bảo bố ra tự mua nhé!” Cu Tủn gãi đầu: “Dạ…”",
+  "en": ""
+ },
+ {
+  "vi": "rót nhầm món",
+  "en": ""
+ },
+ {
+  "vi": "thiếu cốc",
+  "en": ""
+ },
+ {
+  "vi": "rót thừa",
+  "en": ""
+ },
+ {
+  "vi": "Trà gì mà nhạt như nước lã, uống chẳng ra vị chè.",
+  "en": ""
+ },
+ {
+  "vi": "chè nhạt như nước lã",
+  "en": ""
+ },
+ {
+  "vi": "Chè hôm nay nhạt quá, châm nước nhiều rồi phải không?",
+  "en": ""
+ },
+ {
+  "vi": "chè nhạt",
+  "en": ""
+ },
+ {
+  "vi": "Chè để từ sáng, uống có vị ôi ôi.",
+  "en": ""
+ },
+ {
+  "vi": "chè để lâu bị ôi",
+  "en": ""
+ },
+ {
+  "vi": "Trà đá mà chẳng có viên đá nào, uống ấm ấm.",
+  "en": ""
+ },
+ {
+  "vi": "trà đá không có đá",
+  "en": ""
+ },
+ {
+  "vi": "Cốc còn nhờn nhờn, rửa bằng nước đục phải không?",
+  "en": ""
+ },
+ {
+  "vi": "cốc chưa sạch",
+  "en": ""
+ },
+ {
+  "vi": "quên món ăn vặt",
+  "en": ""
+ },
+ {
+  "vi": "Quán bán thuốc lá cho trẻ con! Con tôi mới mười tuổi.",
+  "en": ""
+ },
+ {
+  "vi": "bán thuốc lá cho trẻ em",
+  "en": ""
+ },
+ {
+  "vi": "thiếu ghế",
+  "en": ""
+ },
+ {
+  "vi": "Hết cả hiệp một mới đủ trà. Cả bàn khát khô cổ.",
+  "en": ""
+ },
+ {
+  "vi": "ra trà chậm",
+  "en": ""
+ },
+ {
+  "vi": "Khay còn trống. Rót trà hoặc lấy đồ cho khách đã.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đến lúc ghi sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi số tiền vào sổ đã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chào chú Tường đã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đọc sổ cho chú rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ của chú trắng trơn. Chú cười: “Thế thì làm cốc trà đá, trả tiền ngay!”",
+  "en": ""
+ },
+ {
+  "vi": "Không có dòng nào đang thắc mắc.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách xử lý dòng sổ.",
+  "en": ""
+ },
+ {
+  "vi": "ghi sổ lố tiền",
+  "en": ""
+ },
+ {
+  "vi": "Chú đã xem sổ rồi, dòng này ghi lố thật. Sửa lại hoặc bỏ dòng đó.",
+  "en": ""
+ },
+ {
+  "vi": "to tiếng với khách quen",
+  "en": ""
+ },
+ {
+  "vi": "😤 Hai bên to tiếng. Chú Tường lầm bầm trả đủ, mặt nặng như chì.",
+  "en": ""
+ },
+ {
+  "vi": "Còn tiền trong sổ, thu tiền nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ của chú Tường đã sạch.",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Xe trật tự đô thị dừng đầu phố, loa phát: “Đề nghị các hộ không lấn chiếm vỉa hè!”",
+  "en": ""
+ },
+ {
+  "vi": "Không có đoàn kiểm tra nào đang tới.",
+  "en": ""
+ },
+ {
+  "vi": "Dẹp gì trước?",
+  "en": ""
+ },
+ {
+  "vi": "Ghế đã xếp chồng gọn hết rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Ô đã gấp rồi.",
+  "en": ""
+ },
+ {
+  "vi": "và cái ô",
+  "en": ""
+ },
+ {
+  "vi": "Xe còn ở đầu phố, tranh thủ dẹp tiếp!",
+  "en": ""
+ },
+ {
+  "vi": "Phạt lấn chiếm vỉa hè",
+  "en": ""
+ },
+ {
+  "vi": "✅ Xe trật tự đi qua. Quán đã dẹp gọn sát gốc cây, các anh chỉ gật đầu. Bày lại quán rồi bán tiếp!",
+  "en": ""
+ },
+ {
+  "vi": "Dẹp gọn kịp lúc, trật tự đô thị đi qua không nhắc nhở gì.",
+  "en": ""
+ },
+ {
+  "vi": "ô chưa gấp",
+  "en": ""
+ },
+ {
+  "vi": "quán bày lấn lòng đường",
+  "en": ""
+ },
+ {
+  "vi": ". Bày lại quán rồi bán tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Không có chuyện mới của quán.",
+  "en": ""
+ },
+ {
+  "vi": "Vỉa hè không kê thêm ghế được nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Khay cốc đã đủ nhiều rồi.",
+  "en": ""
+ },
+ {
   "vi": "Quán đã có ô to rồi.",
   "en": ""
  },
@@ -1289,514 +1797,6 @@
  },
  {
   "vi": "Chờ có kết quả rồi mới gọi",
-  "en": ""
- },
- {
-  "vi": "Gọi khách cập nhật trước buổi trưa, kể cả khi chưa có tin mới",
-  "en": ""
- },
- {
-  "vi": "Nhắn “đang xử lý” rồi thôi",
-  "en": ""
- },
- {
-  "vi": "Khách đang chờ cần biết vụ của mình vẫn có người theo.",
-  "en": ""
- },
- {
-  "vi": "Khách quát: “Năm ngày rồi hàng chưa tới!” Câu mở đầu nào tốt nhất?",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi vì khách phải chờ, xác nhận mã đơn, nói mình kiểm ngay",
-  "en": ""
- },
- {
-  "vi": "Khách đòi bồi thường gấp đôi tiền hàng.",
-  "en": ""
- },
- {
-  "vi": "Nói rõ điều nơi mình làm được, không hứa ngoài quyền, hẹn mốc cập nhật",
-  "en": ""
- },
- {
-  "vi": "Đồng ý cho xong chuyện",
-  "en": ""
- },
- {
-  "vi": "“Không có chuyện đó.” rồi thôi",
-  "en": ""
- },
- {
-  "vi": "Hứa ngoài quyền thì nơi làm phải gánh, lần sau khách lại đòi.",
-  "en": ""
- },
- {
-  "vi": "Khách bắt đầu xúc phạm bạn qua điện thoại.",
-  "en": ""
- },
- {
-  "vi": "Giữ giọng bình tĩnh, nhắc nhẹ ranh giới, đề nghị nói tiếp khi khách sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "Im lặng chịu đựng tới hết cuộc gọi",
-  "en": ""
- },
- {
-  "vi": "Không đáp trả xúc phạm, nhưng cũng không phải chịu đựng mãi.",
-  "en": ""
- },
- {
-  "vi": "Khách đòi gặp quản lý ngay.",
-  "en": ""
- },
- {
-  "vi": "Nói rõ việc mình làm được ngay; khách vẫn muốn thì chuyển kèm bản tóm tắt",
-  "en": ""
- },
- {
-  "vi": "Quản lý có tóm tắt thì khách khỏi kể lại từ đầu.",
-  "en": ""
- },
- {
-  "vi": "Ở quầy thuốc, khách hỏi “uống mấy viên cho mau khỏi?”, phiếu không ghi liều.",
-  "en": ""
- },
- {
-  "vi": "Không tự đưa liều; mời người phụ trách hoặc hỏi lại nơi kê phiếu",
-  "en": ""
- },
- {
-  "vi": "Nói theo kinh nghiệm nhà mình",
-  "en": ""
- },
- {
-  "vi": "Liều dùng là việc của người có chuyên môn.",
-  "en": ""
- },
- {
-  "vi": "Một người gọi tới hỏi địa chỉ giao hàng của một khách quen để “gửi quà bất ngờ”.",
-  "en": ""
- },
- {
-  "vi": "Đọc địa chỉ vì người đó biết tên khách",
-  "en": ""
- },
- {
-  "vi": "Không cung cấp; địa chỉ của khách là thông tin riêng",
-  "en": ""
- },
- {
-  "vi": "Cho số điện thoại khách để họ tự hỏi",
-  "en": ""
- },
- {
-  "vi": "Địa chỉ, số điện thoại của khách là thông tin riêng tư.",
-  "en": ""
- },
- {
-  "vi": "Khách hỏi một chuyện bạn không biết chắc.",
-  "en": ""
- },
- {
-  "vi": "Nói thật là chưa rõ, hỏi người biết hoặc hẹn tìm hiểu rồi báo lại",
-  "en": ""
- },
- {
-  "vi": "Bịa một câu cho xong",
-  "en": ""
- },
- {
-  "vi": "Người đáng tin là người không bịa.",
-  "en": ""
- },
- {
-  "vi": "Khi dẫn đoàn, lúc nào phải đếm đủ người?",
-  "en": ""
- },
- {
-  "vi": "Đang dẫn đoàn thì mưa to.",
-  "en": ""
- },
- {
-  "vi": "Đưa đoàn tới chỗ có mái che gần nhất, đổi lộ trình, báo điều phối",
-  "en": ""
- },
- {
-  "vi": "Hết ca, một vụ của bạn vẫn chưa xong.",
-  "en": ""
- },
- {
-  "vi": "Để mai tính, không ghi gì",
-  "en": ""
- },
- {
-  "vi": "Đóng vụ cho gọn danh sách",
-  "en": ""
- },
- {
-  "vi": "Ghi bàn giao: đã làm gì, đang chờ ai, đã hẹn khách mốc nào",
-  "en": ""
- },
- {
-  "vi": "Ca sau đọc bàn giao là tiếp được, khách không phải kể lại.",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ Nghiệp vụ sư phạm",
-  "en": ""
- },
- {
-  "vi": "Nghiệp vụ sư phạm",
-  "en": ""
- },
- {
-  "vi": "Trường Tiểu học Mầm Nắng (lớp giả lập)",
-  "en": ""
- },
- {
-  "vi": "Dạy một lớp có nhiều nhịp học, nhận xét cho đúng, làm việc với phụ huynh và giữ lớp an toàn.",
-  "en": ""
- },
- {
-  "vi": "Cùng một mục tiêu, nhiều cách: hình ảnh, làm thử, kể chuyện; chia nhóm để bạn nhanh giúp bạn chậm.",
-  "en": ""
- },
- {
-  "vi": "Tiết học vừa thời gian: khởi động ngắn, phần chính, luyện tập, rồi phiếu ra lớp để biết ai đã hiểu.",
-  "en": ""
- },
- {
-  "vi": "Nhận xét cụ thể vào việc làm được và bước tiếp theo; không so sánh bạn này với bạn kia trước lớp.",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh nhắn khuya: trả lời ngắn, hẹn trao đổi trong giờ hành chính, chuẩn bị sổ lớp. Không bỏ mặc, không tranh cãi.",
-  "en": ""
- },
- {
-  "vi": "Sự kiện lớp: hỏi mong muốn của lớp, kiểm tra dị ứng thức ăn, công khai quỹ lớp; không ép phụ huynh đóng thêm.",
-  "en": ""
- },
- {
-  "vi": "Trẻ buồn kéo dài hay bị trêu chọc: quan sát, nói chuyện riêng, báo phụ huynh và nhà trường khi cần.",
-  "en": ""
- },
- {
-  "vi": "Ra khỏi lớp: điểm danh trước khi đi và sau khi về. Làm sai thì nhận, sửa và nói rõ.",
-  "en": ""
- },
- {
-  "vi": "Mục tiêu tiết học nên viết thế nào?",
-  "en": ""
- },
- {
-  "vi": "“Con hiểu bài.”",
-  "en": ""
- },
- {
-  "vi": "Cụ thể, đo được: “Con đọc đúng giờ trên đồng hồ.”",
-  "en": ""
- },
- {
-  "vi": "Không cần mục tiêu",
-  "en": ""
- },
- {
-  "vi": "Mục tiêu đo được thì cuối tiết mới biết lớp đạt chưa.",
-  "en": ""
- },
- {
-  "vi": "Học sinh hỏi một câu bạn chưa biết.",
-  "en": ""
- },
- {
-  "vi": "Nói thật, cùng tìm hiểu và trả lời vào buổi sau",
-  "en": ""
- },
- {
-  "vi": "Bảo con đừng hỏi linh tinh",
-  "en": ""
- },
- {
-  "vi": "Thầy cô không bịa; cùng tìm hiểu cũng là một bài học.",
-  "en": ""
- },
- {
-  "vi": "Một bạn làm xong bài sớm.",
-  "en": ""
- },
- {
-  "vi": "Cho ngồi chơi",
-  "en": ""
- },
- {
-  "vi": "Bắt làm lại bài cũ",
-  "en": ""
- },
- {
-  "vi": "Có sẵn nhiệm vụ mở rộng hoặc nhờ bạn giúp bạn khác",
-  "en": ""
- },
- {
-  "vi": "Bạn nhanh cũng cần được học tiếp.",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh muốn xem điểm của cả lớp.",
-  "en": ""
- },
- {
-  "vi": "Chỉ trao đổi kết quả của con mình; điểm bạn khác là riêng tư",
-  "en": ""
- },
- {
-  "vi": "Gửi bảng điểm cả lớp",
-  "en": ""
- },
- {
-  "vi": "Đọc điểm to trong buổi họp",
-  "en": ""
- },
- {
-  "vi": "Kết quả học tập của mỗi em là thông tin riêng.",
-  "en": ""
- },
- {
-  "vi": "Dạy theo nhóm giỏi cho kịp chương trình",
-  "en": ""
- },
- {
-  "vi": "Cùng mục tiêu, nhiều cách làm; nhóm hỗ trợ lẫn nhau",
-  "en": ""
- },
- {
-  "vi": "Dạy học phân hóa: không ai bị bỏ lại, không ai phải chán.",
-  "en": ""
- },
- {
-  "vi": "Cuối tiết, cách nhanh nhất để biết ai đã hiểu bài?",
-  "en": ""
- },
- {
-  "vi": "Phiếu ra lớp: mỗi bạn trả lời một câu ngắn",
-  "en": ""
- },
- {
-  "vi": "Hỏi cả lớp “hiểu chưa?”",
-  "en": ""
- },
- {
-  "vi": "Chờ tới bài kiểm tra cuối kỳ",
-  "en": ""
- },
- {
-  "vi": "Cả lớp đồng thanh “hiểu rồi” không cho biết ai còn vướng.",
-  "en": ""
- },
- {
-  "vi": "Bạn Vy làm sai bài toán nhưng đã cố gắng nhiều.",
-  "en": ""
- },
- {
-  "vi": "Đọc to lỗi sai trước lớp để cả lớp rút kinh nghiệm",
-  "en": ""
- },
- {
-  "vi": "Chỉ ghi “Sai” rồi trả bài",
-  "en": ""
- },
- {
-  "vi": "Khen cụ thể phần làm đúng, chỉ bước tiếp theo để sửa",
-  "en": ""
- },
- {
-  "vi": "Nhận xét cụ thể giúp con biết sửa gì tiếp theo.",
-  "en": ""
- },
- {
-  "vi": "Để động viên cả lớp, bạn nói gì?",
-  "en": ""
- },
- {
-  "vi": "Nêu điều cả lớp đã tiến bộ và mục tiêu tiếp theo",
-  "en": ""
- },
- {
-  "vi": "“Sao các con không được như bạn An?”",
-  "en": ""
- },
- {
-  "vi": "Dán bảng xếp hạng điểm lên bảng",
-  "en": ""
- },
- {
-  "vi": "So sánh trước lớp làm các con ngại, không làm các con giỏi hơn.",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh nhắn tin gay gắt lúc 22 giờ.",
-  "en": ""
- },
- {
-  "vi": "Ranh giới rõ nhưng không bỏ mặc.",
-  "en": ""
- },
- {
-  "vi": "Lớp tổ chức Trung thu. Việc đầu tiên?",
-  "en": ""
- },
- {
-  "vi": "Đặt bánh và đèn cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Hỏi mong muốn của lớp, kiểm tra dị ứng và quỹ lớp",
-  "en": ""
- },
- {
-  "vi": "Chuẩn bị từ người tham gia, không tạo áp lực cho gia đình.",
-  "en": ""
- },
- {
-  "vi": "Một bạn dị ứng đậu phộng. Buổi liên hoan có bánh đậu phộng.",
-  "en": ""
- },
- {
-  "vi": "Chuẩn bị món khác cho bạn, ghi vào sổ lớp, dặn người phụ trách bữa ăn",
-  "en": ""
- },
- {
-  "vi": "Dặn bạn tự tránh món đó",
-  "en": ""
- },
- {
-  "vi": "Cho ăn ít thôi chắc không sao",
-  "en": ""
- },
- {
-  "vi": "Dị ứng thức ăn có thể nguy hiểm; người lớn phải chủ động.",
-  "en": ""
- },
- {
-  "vi": "Bạn Bảo mấy hôm nay ngồi một mình, có bạn trêu chọc.",
-  "en": ""
- },
- {
-  "vi": "Để các con tự giải quyết",
-  "en": ""
- },
- {
-  "vi": "Phạt cả lớp đứng dậy",
-  "en": ""
- },
- {
-  "vi": "Quan sát, nói chuyện riêng với các bạn, báo phụ huynh và nhà trường khi cần",
-  "en": ""
- },
- {
-  "vi": "Chuyện trêu chọc cần người lớn để ý sớm và xử lý riêng.",
-  "en": ""
- },
- {
-  "vi": "Dẫn lớp ra sân tập thể dục. Bạn làm gì trước và sau?",
-  "en": ""
- },
- {
-  "vi": "Điểm danh trước khi ra và sau khi về lớp",
-  "en": ""
- },
- {
-  "vi": "Chỉ điểm danh buổi sáng",
-  "en": ""
- },
- {
-  "vi": "Nhờ lớp trưởng nhớ giùm",
-  "en": ""
- },
- {
-  "vi": "Ra khỏi lớp là lúc dễ thiếu một bạn mà không ai hay.",
-  "en": ""
- },
- {
-  "vi": "Kế hoạch cho một tiết 35 phút nào hợp lý?",
-  "en": ""
- },
- {
-  "vi": "35 phút giảng liên tục",
-  "en": ""
- },
- {
-  "vi": "Khởi động ngắn, phần chính, luyện tập, phiếu ra lớp",
-  "en": ""
- },
- {
-  "vi": "Cho làm bài tập suốt tiết",
-  "en": ""
- },
- {
-  "vi": "Có nhịp và có kiểm tra cuối tiết.",
-  "en": ""
- },
- {
-  "vi": "Quỹ lớp còn dư sau buổi liên hoan.",
-  "en": ""
- },
- {
-  "vi": "Giữ lại dùng cho lớp, khỏi báo",
-  "en": ""
- },
- {
-  "vi": "Công khai thu chi với phụ huynh, bàn cách dùng tiếp",
-  "en": ""
- },
- {
-  "vi": "Chia lại tiền mặt cho vài bạn",
-  "en": ""
- },
- {
-  "vi": "Tiền của phụ huynh thì phải minh bạch.",
-  "en": ""
- },
- {
-  "vi": "Lớp ồn khi làm việc nhóm.",
-  "en": ""
- },
- {
-  "vi": "Dùng tín hiệu im lặng đã thống nhất, nhắc lại mục tiêu và thời gian",
-  "en": ""
- },
- {
-  "vi": "Quát lớn cho cả lớp im",
-  "en": ""
- },
- {
-  "vi": "Hủy hoạt động nhóm",
-  "en": ""
- },
- {
-  "vi": "Tín hiệu quen thuộc giữ lớp mà không phá không khí.",
-  "en": ""
- },
- {
-  "vi": "Bạn được nhờ dạy thay một lớp lạ.",
-  "en": ""
- },
- {
-  "vi": "Dạy theo giáo án của mình, không cần biết lớp",
-  "en": ""
- },
- {
-  "vi": "Cho lớp tự học cả buổi",
-  "en": ""
- },
- {
-  "vi": "Đọc sổ lớp, hỏi giáo viên chủ nhiệm về các bạn cần lưu ý",
-  "en": ""
- },
- {
-  "vi": "Biết lớp trước thì tiết dạy thay mới trọn.",
   "en": ""
  }
 ]

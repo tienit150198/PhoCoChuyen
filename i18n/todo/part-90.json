@@ -1,5 +1,549 @@
 [
  {
+  "vi": "Lễ thành hôn (lễ đường)",
+  "en": ""
+ },
+ {
+  "vi": "Cổng hoa, sân khấu, rót rượu, cắt bánh trước quan khách.",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh cưới & album",
+  "en": ""
+ },
+ {
+  "vi": "Chụp ngoại cảnh một ngày, album 30 trang.",
+  "en": ""
+ },
+ {
+  "vi": "Váy cưới & vest (thuê)",
+  "en": ""
+ },
+ {
+  "vi": "Hai bộ váy, một bộ vest, đổi size miễn phí.",
+  "en": ""
+ },
+ {
+  "vi": "Trang điểm",
+  "en": ""
+ },
+ {
+  "vi": "Trang điểm và làm tóc cho cô dâu, chú rể.",
+  "en": ""
+ },
+ {
+  "vi": "MC dẫn chương trình",
+  "en": ""
+ },
+ {
+  "vi": "Dẫn lễ, mời phát biểu, giữ nhịp tiệc.",
+  "en": ""
+ },
+ {
+  "vi": "Ban nhạc & ca sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Ba nhạc công và một ca sĩ hát suốt tiệc.",
+  "en": ""
+ },
+ {
+  "vi": "Xe kết hoa tươi rước dâu, có tài xế.",
+  "en": ""
+ },
+ {
+  "vi": "Trang trí hoa",
+  "en": ""
+ },
+ {
+  "vi": "Cổng hoa, bàn gallery, hoa bàn tiệc.",
+  "en": ""
+ },
+ {
+  "vi": "Thiệp cưới",
+  "en": ""
+ },
+ {
+  "vi": "Miễn phí. Mời bằng thiệp thì khách đến đông hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Pháo giấy",
+  "en": ""
+ },
+ {
+  "vi": "Pháo kim tuyến lúc cô dâu chú rể bước vào.",
+  "en": ""
+ },
+ {
+  "vi": "Quà cảm ơn khách",
+  "en": ""
+ },
+ {
+  "vi": "0,8 xu mỗi khách: hộp kẹo và túi trà nhỏ in tên hai bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Linh đình, cả phố còn nhắc mãi",
+  "en": ""
+ },
+ {
+  "vi": "Rộn ràng, khách nán lại chụp ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Vui vẻ, ấm cúng",
+  "en": ""
+ },
+ {
+  "vi": "Tiệc gọn, khách ăn xong về sớm",
+  "en": ""
+ },
+ {
+  "vi": "Họ hàng hai bên",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bè",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm khu phố",
+  "en": ""
+ },
+ {
+  "vi": "Khách quen của tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu Việt kiều",
+  "en": ""
+ },
+ {
+  "vi": "một chỉ vàng",
+  "en": ""
+ },
+ {
+  "vi": "Chú về ăn cưới tụi con nè! Mừng một chỉ vàng làm vốn, mai mốt mở tiệm nhớ mời chú ghé.",
+  "en": ""
+ },
+ {
+  "vi": "Bác Hai chủ vựa trái cây",
+  "en": ""
+ },
+ {
+  "vi": "mười triệu",
+  "en": ""
+ },
+ {
+  "vi": "Bác không giỏi nói, bác gửi phong bì dày dày chút cho hai đứa.",
+  "en": ""
+ },
+ {
+  "vi": "Dì Út trúng số năm ngoái",
+  "en": ""
+ },
+ {
+  "vi": "tám triệu",
+  "en": ""
+ },
+ {
+  "vi": "Dì hên được một lần, giờ chia hên cho tụi con!",
+  "en": ""
+ },
+ {
+  "vi": "Tèo bạn nối khố",
+  "en": ""
+ },
+ {
+  "vi": "Phong bì có đúng một tờ vé số và dòng chữ “trúng thì chia đôi nghe”.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Bảy xe ôm đầu hẻm",
+  "en": ""
+ },
+ {
+  "vi": "Mừng 2 xu kèm lời hứa chở cô dâu chú rể miễn phí trọn một năm.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm bạn đại học",
+  "en": ""
+ },
+ {
+  "vi": "Mười hai đứa góp chung một phong bì, bên trong 10 xu và mười hai chữ ký.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tư tiệm sửa đồ",
+  "en": ""
+ },
+ {
+  "vi": "Chú quên phong bì trên xe rồi! Mai chú gửi qua nghe, đừng giận chú.",
+  "en": ""
+ },
+ {
+  "vi": "Cô để quên cái ví ở nhà, mà chuyện đám cưới này cô kể khắp hẻm giùm rồi nha!",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khoa hàng xóm",
+  "en": ""
+ },
+ {
+  "vi": "Anh chuyển khoản mà app ngân hàng bảo trì. Tối anh chuyển lại liền!",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hai Loa: “Cỗ ngon mà chè hơi ngọt. Nói vậy thôi chứ cô ăn hai chén.”",
+  "en": ""
+ },
+ {
+  "vi": "Thím Bảy: “Cô dâu chú rể hôm nay đẹp hơn bữa đi chợ nhiều!”",
+  "en": ""
+ },
+ {
+  "vi": "Chị Tư Zalo đã đăng 37 tấm ảnh lên nhóm khu phố trước khi tiệc tàn.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tám: “Bà nhìn hai đứa từ hồi còn ở gác trọ. Giờ thì về chung một nhà rồi, nhớ thương nhau nghe.”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Lụa (tổ trưởng): “Thay mặt tổ dân phố, chúc hai cháu thuận vợ thuận chồng, tát biển Đông cũng cạn.”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Ba tạp hóa: “Ly trà đầu tiên ở phố cô còn nhớ, giờ tới ly rượu mừng. Chúc hai đứa hạnh phúc!”",
+  "en": ""
+ },
+ {
+  "vi": "Chú Tư: “Nhà cửa có gì hư cứ gọi chú. Còn tình cảm thì hai đứa tự giữ nghe!”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Sáu: “Sống với nhau là nhường nhau một chút. Bà chúc hai đứa sớm có tin vui.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khoa: “Chúc mừng đồng nghiệp! Từ nay có người nhắc giờ khép ca rồi nha.”",
+  "en": ""
+ },
+ {
+  "vi": "Bé Tí: “Chúc anh chị hạnh phúc! Có bánh kem thì cho em một miếng nha.”",
+  "en": ""
+ },
+ {
+  "vi": "Một vị khách lớn tuổi: “Chúc hai cháu trăm năm đầu bạc răng long.”",
+  "en": ""
+ },
+ {
+  "vi": "Đã về chung một nhà",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Quà từ admin: 500 xu đi đám cưới",
+  "en": ""
+ },
+ {
+  "vi": "Trăm năm hạnh phúc 💕",
+  "en": ""
+ },
+ {
+  "vi": "Bách niên giai lão 🎎",
+  "en": ""
+ },
+ {
+  "vi": "Sớm có tin vui nha 👶",
+  "en": ""
+ },
+ {
+  "vi": "Đầu bạc răng long 👴👵",
+  "en": ""
+ },
+ {
+  "vi": "Thương nhau dài dài nha 💞",
+  "en": ""
+ },
+ {
+  "vi": "Hạnh phúc ngập tràn 🥰",
+  "en": ""
+ },
+ {
+  "vi": "một năm",
+  "en": ""
+ },
+ {
+  "vi": "Gà luộc",
+  "en": ""
+ },
+ {
+  "vi": "Canh măng",
+  "en": ""
+ },
+ {
+  "vi": "Bò xào",
+  "en": ""
+ },
+ {
+  "vi": "Lẩu thái",
+  "en": ""
+ },
+ {
+  "vi": "Tôm hấp",
+  "en": ""
+ },
+ {
+  "vi": "Chè đậu",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Đám cưới đông vui",
+  "en": ""
+ },
+ {
+  "vi": "💞 Trăm ngày bên nhau",
+  "en": ""
+ },
+ {
+  "vi": "🎂 Tròn một năm",
+  "en": ""
+ },
+ {
+  "vi": "💍 Năm trăm ngày thương",
+  "en": ""
+ },
+ {
+  "vi": "👑 Nghìn ngày son sắt",
+  "en": ""
+ },
+ {
+  "vi": "🥇 Khách quý của phố",
+  "en": ""
+ },
+ {
+  "vi": "🎊 Ăn cưới chuyên nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Chọn giờ cưới cách bây giờ ít nhất 1 tiếng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn ngày cưới trong vòng 14 ngày tới nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn cần chốt kế hoạch cưới trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ tổ chức không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn ngày trong vòng 14 ngày tới nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệc cưới của hai bạn đã tổ chức rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệc sắp bắt đầu rồi, không đổi giờ được nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn ngày giờ tổ chức tiệc trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Đám cưới không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn số tiền trong phong bì nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một lời chúc nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệc cưới này không mở nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Phong bì là của khách mừng hai bạn đó 😄",
+  "en": ""
+ },
+ {
+  "vi": "Vào dự tiệc rồi mới gửi phong bì được nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Phong bì này đã gửi rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa gửi được, thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Quà này dành cho lúc đi dự tiệc cưới nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã nhận quà đi đám cưới rồi nha.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu quà đám cưới không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh này đã lưu hoặc hết hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Nông trại mới: vườn lớn theo giờ thật, nuôi vịt bò heo, khách đặt hàng, nhà kính, máy cày, VietGAP",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi nghề một cách nói: chùa, bệnh viện, công an, trường học không còn gọi là “tiệm”",
+  "en": ""
+ },
+ {
+  "vi": "Nghề làm công lương không còn bị trừ thuế tiệm và tiền thuê",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên tiệm bán nhanh gấp 1,6 lần ngày đầu",
+  "en": ""
+ },
+ {
+  "vi": "Góp ý viết dài tới 10.000 chữ",
+  "en": ""
+ },
+ {
+  "vi": "Sửa lỗi: tiệm hoa trên điện thoại chọn hoa được, giúp việc, chùa, giáo viên, giao hàng, tiệm quần áo",
+  "en": ""
+ },
+ {
+  "vi": "Thêm 45 món mới cho avatar: tóc, váy đầm, áo quần, giày, phụ kiện",
+  "en": ""
+ },
+ {
+  "vi": "Cửa hàng điện thoại cạnh Gara: mua máy, khoe trên tay, khung selfie",
+  "en": ""
+ },
+ {
+  "vi": "Bầu cua lăn xúc xắc ngẫu nhiên thật",
+  "en": ""
+ },
+ {
+  "vi": "Thăng tiến rõ ràng hơn, cấp hàm Phó Tổng Giám đốc mới",
+  "en": ""
+ },
+ {
+  "vi": "Giao diện quen thuộc đã trở lại: bản đồ phố và từng tiệm như trước",
+  "en": ""
+ },
+ {
+  "vi": "Quầy có nhân viên bán lãi hơn 50%",
+  "en": ""
+ },
+ {
+  "vi": "Cập nhật toàn bộ UI UX",
+  "en": ""
+ },
+ {
+  "vi": "Thêm Top tài phú trên Bảng xếp hạng",
+  "en": ""
+ },
+ {
+  "vi": "thay đổi cơ cấu đầu tư: giá vàng/coin sẽ biến động theo thời gian thực: quy đổi 1h đời thực = 1 ngày game",
+  "en": ""
+ },
+ {
+  "vi": "tăng tốc độ xử lý, giảm lag",
+  "en": ""
+ },
+ {
+  "vi": "tăng cơ hội kiếm tiền khi đầu tư quầy",
+  "en": ""
+ },
+ {
+  "vi": "cân bằng game",
+  "en": ""
+ },
+ {
+  "vi": "Tặng xu chơi hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Tăng tỷ lệ thắng khi chơi hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Tăng tỷ lệ lãi khi mở tiệm riêng",
+  "en": ""
+ },
+ {
+  "vi": "Tối ưu tải chỗ làm và cập nhật đơn dịch vụ, giảm xử lý nền để thao tác chơi nhẹ hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng Khách ghé gọn lại, không che nút Làm tiếp hay Hoàn thành. Trên điện thoại, khách và công việc nằm ở hai hàng riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách bạn bè gọn hơn: nút nhắn tin và ghé chỗ làm nhỏ đều nhau, nằm cạnh tên bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy riêng mở không giới hạn, menu thêm nhiều món và tự đặt giá. Giá bán ảnh hưởng lượng khách, tiền lãi và đánh giá.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên tự động ở Quầy riêng và Sổ tiệm làm cả khi bạn offline, đến khi hết hàng hoặc quỹ lương. Không thuê thì tự làm!",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi nghề có thiết bị giúp làm nhanh hơn; giao hàng cũng có đồ tăng tốc. Mở mục Làm nhanh hơn để chọn nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Ghé chỗ làm của bạn bè, làm khách và đặt dịch vụ. Xong đơn mới đánh giá; chủ tiệm có thể trả lời nhận xét của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn ghé nhà hoặc ở chung lâu dài, không cần kết hôn. Bạn đã nhận lời ở chung có thể vào khi chủ offline.",
+  "en": ""
+ },
+ {
+  "vi": "Cùng thấy nhau và đồ trang trí trong nhà. Gửi ôm, hôn, thả tim; người kia chọn Đáp lại, Ngại ngùng hay Giận dỗi!",
+  "en": ""
+ },
+ {
+  "vi": "Nhà & Gia đình, Mời về ở và Con chung dễ tìm hơn; lời mời cần trả lời nằm ngay đầu trang.",
+  "en": ""
+ },
+ {
+  "vi": "Xưởng handmade có gấu bông: tự đo, cắt, may, nhồi bông rồi gắn mặt và nơ. Làm lại từng bước ngay trên bàn thủ công.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một tin nhắn rồi bấm Trả lời để trích đúng tin. Đổi tên nhân vật cũng cập nhật tên trong bạn bè và chat.",
+  "en": ""
+ },
+ {
+  "vi": "Shop thú cưng chia cá vào từng bể riêng, kiểm tra sức chứa và loài phù hợp; không còn gom nhiều loại cá vào một bể.",
+  "en": ""
+ },
+ {
   "vi": "Sửa lỗi mở lại máy cà phê đang pha ở bản lưu cũ. Công việc đang làm được giữ để bạn tiếp tục.",
   "en": ""
  },
@@ -909,782 +1453,6 @@
  },
  {
   "vi": "Bộ dụng cụ và máy chẩn đoán",
-  "en": ""
- },
- {
-  "vi": "Bộ tưới và dụng cụ thu hoạch",
-  "en": ""
- },
- {
-  "vi": "Bộ truyền động và dẫn đường",
-  "en": ""
- },
- {
-  "vi": "Xe dụng cụ và bộ dọn phòng",
-  "en": ""
- },
- {
-  "vi": "Bộ vòi tắm và máy sấy",
-  "en": ""
- },
- {
-  "vi": "Bộ kéo và máy hấp tóc",
-  "en": ""
- },
- {
-  "vi": "Máy quét hóa đơn và bộ xử lý sổ",
-  "en": ""
- },
- {
-  "vi": "Bộ xử lý bảng lương",
-  "en": ""
- },
- {
-  "vi": "Bộ đối soát và máy trạm",
-  "en": ""
- },
- {
-  "vi": "Động cơ máy may và bàn cắt",
-  "en": ""
- },
- {
-  "vi": "Bộ chia thức ăn và xe hàng",
-  "en": ""
- },
- {
-  "vi": "Bình ủ và bộ định lượng",
-  "en": ""
- },
- {
-  "vi": "Bộ dao và máy ép cải tiến",
-  "en": ""
- },
- {
-  "vi": "Xe dụng cụ và bộ gắp rác",
-  "en": ""
- },
- {
-  "vi": "Máy hút và bộ đầu thông",
-  "en": ""
- },
- {
-  "vi": "Bộ đồ dùng và xe dọn nhà",
-  "en": ""
- },
- {
-  "vi": "Bộ giữ lạnh và muỗng định lượng",
-  "en": ""
- },
- {
-  "vi": "Bộ máy và khay dụng cụ nail",
-  "en": ""
- },
- {
-  "vi": "Xe dụng cụ và bộ chuẩn bị lễ",
-  "en": ""
- },
- {
-  "vi": "Bếp giữ nhiệt và bộ trụng phở",
-  "en": ""
- },
- {
-  "vi": "Nồi cơm và bếp nướng cải tiến",
-  "en": ""
- },
- {
-  "vi": "Bộ đèn và linh kiện máy ảnh",
-  "en": ""
- },
- {
-  "vi": "Máy hút bụi và bộ lau nhà",
-  "en": ""
- },
- {
-  "vi": "Bộ nồi và bếp gia đình",
-  "en": ""
- },
- {
-  "vi": "Bộ chuẩn bị bữa và đồ chăm bé",
-  "en": ""
- },
- {
-  "vi": "Máy quét mã vạch và máy hút ẩm kho",
-  "en": ""
- },
- {
-  "vi": "Máy quét và bộ xử lý hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Bộ máy trạm và thiết bị văn phòng",
-  "en": ""
- },
- {
-  "vi": "Bộ chẩn đoán và linh kiện dự phòng",
-  "en": ""
- },
- {
-  "vi": "Bộ cờ đèn và tay quay cần chắn",
-  "en": ""
- },
- {
-  "vi": "Xe tiêm và bộ máy đo cầm tay",
-  "en": ""
- },
- {
-  "vi": "Ống nhòm và bộ đàm VHF",
-  "en": ""
- },
- {
-  "vi": "Tai nghe, bộ đàm và màn hình điều phối",
-  "en": ""
- },
- {
-  "vi": "Phao ống, sào cứu hộ và máy AED",
-  "en": ""
- },
- {
-  "vi": "Bộ đàm tuần tra và máy quét giấy tờ",
-  "en": ""
- },
- {
-  "vi": "Giảm thời gian chạy tuyến và tăng tốc xe khi tự lái.",
-  "en": ""
- },
- {
-  "vi": "Tăng nhịp chiết cà phê, đánh sữa và lò nướng cho lượt bắt đầu mới.",
-  "en": ""
- },
- {
-  "vi": "Đang thực hiện yêu cầu",
-  "en": ""
- },
- {
-  "vi": "Đang đón và hỏi khách",
-  "en": ""
- },
- {
-  "vi": "Chủ tiệm cần chuẩn bị một yêu cầu nghề nghiệp còn trống.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên đang phục vụ",
-  "en": ""
- },
- {
-  "vi": "Chủ quầy phục vụ",
-  "en": ""
- },
- {
-  "vi": "Nhân viên cần đủ quỹ để nhận thêm đơn.",
-  "en": ""
- },
- {
-  "vi": "Quầy cần nhập thêm hàng.",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm này đã đóng.",
-  "en": ""
- },
- {
-  "vi": "Đăng nhập để ghé chỗ làm của bạn bè.",
-  "en": ""
- },
- {
-  "vi": "Người chơi đã rời",
-  "en": ""
- },
- {
-  "vi": "Thanh toán đơn đã phục vụ tại quầy đã đóng",
-  "en": ""
- },
- {
-  "vi": "Thanh toán đơn khách thật",
-  "en": ""
- },
- {
-  "vi": "Hoàn tiền đơn chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Không tìm thấy chỗ làm này.",
-  "en": ""
- },
- {
-  "vi": "Chọn danh sách chỗ làm.",
-  "en": ""
- },
- {
-  "vi": "Trang không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Thông tin đặt dịch vụ không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Thiếu mã thao tác đặt đơn.",
-  "en": ""
- },
- {
-  "vi": "Mỗi đơn gồm một dịch vụ.",
-  "en": ""
- },
- {
-  "vi": "Hãy ghé chỗ làm của người khác nhé.",
-  "en": ""
- },
- {
-  "vi": "Dịch vụ này hiện chưa sẵn sàng.",
-  "en": ""
- },
- {
-  "vi": "Giá đã thay đổi. Xem lại giá trước khi đặt nhé.",
-  "en": ""
- },
- {
-  "vi": "Dịch vụ khách thật dùng ví hành trình.",
-  "en": ""
- },
- {
-  "vi": "Giữ tiền đơn chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm hiện không nhận đơn.",
-  "en": ""
- },
- {
-  "vi": "Thông tin dịch vụ đã đổi. Xem giá mới trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn đang có nhiều đơn chờ. Hoàn thành hoặc hủy bớt nhé.",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm đang có nhiều khách chờ.",
-  "en": ""
- },
- {
-  "vi": "Đã giữ tiền cho đơn; trạng thái phục vụ được cập nhật tại đây.",
-  "en": ""
- },
- {
-  "vi": "Thông tin nhận đơn không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Không tìm thấy đơn.",
-  "en": ""
- },
- {
-  "vi": "Đơn không còn chờ nhận.",
-  "en": ""
- },
- {
-  "vi": "Không thể nhận đơn này.",
-  "en": ""
- },
- {
-  "vi": "Chủ quầy cần trực tiếp nhận đơn này.",
-  "en": ""
- },
- {
-  "vi": "Đơn đã được xử lý.",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm không còn nhận khách này.",
-  "en": ""
- },
- {
-  "vi": "Đã nhận khách. Vào nghề để phục vụ yêu cầu thực tế nhé.",
-  "en": ""
- },
- {
-  "vi": "Thông tin hủy đơn không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Đơn đã bắt đầu phục vụ, không thể hủy ở đây.",
-  "en": ""
- },
- {
-  "vi": "Đơn đã dừng và tiền đã hoàn về ví khách.",
-  "en": ""
- },
- {
-  "vi": "Thông tin nhận tiền không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Đã đối soát các đơn đã phục vụ thực tế.",
-  "en": ""
- },
- {
-  "vi": "Chọn ai được ghé chỗ làm.",
-  "en": ""
- },
- {
-  "vi": "Không tìm thấy chỗ làm của bạn.",
-  "en": ""
- },
- {
-  "vi": "Đã cập nhật quyền ghé chỗ làm.",
-  "en": ""
- },
- {
-  "vi": "Thông tin đánh giá không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chọn từ 1 đến 5 sao.",
-  "en": ""
- },
- {
-  "vi": "Nhãn đánh giá không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chỉ đánh giá dịch vụ đã được phục vụ và thanh toán.",
-  "en": ""
- },
- {
-  "vi": "Không thể gửi nội dung cho đơn này.",
-  "en": ""
- },
- {
-  "vi": "Mỗi đơn chỉ có một đánh giá xác thực.",
-  "en": ""
- },
- {
-  "vi": "Chưa có đánh giá để trả lời.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã trả lời đánh giá này.",
-  "en": ""
- },
- {
-  "vi": "Đã lưu đánh giá xác thực.",
-  "en": ""
- },
- {
-  "vi": "Đã gửi lời cảm ơn khách.",
-  "en": ""
- },
- {
-  "vi": "Thao tác chỗ làm không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: một món đồ em bé",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: xuất một hộp theo phiếu đã kiểm",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ riêng: phân loại và đối chiếu phiếu",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ riêng: xác minh và trả lời một yêu cầu",
-  "en": ""
- },
- {
-  "vi": "Buổi riêng: hỗ trợ một bài thực hành",
-  "en": ""
- },
- {
-  "vi": "Lượt riêng: hướng dẫn khách tại điểm tham quan",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: trà sữa size M không topping",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: mì kim chi mang về",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: gói một cành hồng",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: một túi gạo",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: chuẩn bị luống và gieo hạt thuê",
-  "en": ""
- },
- {
-  "vi": "Lượt riêng: thay ga và chuẩn bị phòng thuê",
-  "en": ""
- },
- {
-  "vi": "Lượt riêng: vệ sinh và chăm sóc thú cưng",
-  "en": ""
- },
- {
-  "vi": "Lượt riêng: gội và cắt tóc đơn giản",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ riêng: kiểm chứng từ doanh nghiệp",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ riêng: rà soát bảng lương",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ riêng: đối chiếu nội bộ",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: áo thun đúng cỡ",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: thức ăn chó trưởng thành",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: trà nóng và bánh quy",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: một phần xoài",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: thu gom một bao rác",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: dọn và sắp xếp một phòng",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: hộp kem dừa mang về 1,2 kg",
-  "en": ""
- },
- {
-  "vi": "Lượt riêng: cắt dũa và sơn móng thường",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: chuẩn bị vật phẩm theo đặt hàng",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: phở chín mang về",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: cơm trứng rau mang về",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: lau kính một phòng",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: chuẩn bị một phần ăn đặt trước",
-  "en": ""
- },
- {
-  "vi": "Lượt riêng: hỗ trợ một buổi trông trẻ",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: bao bìa, dán nhãn một chồng sách cho trường",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: hỗ trợ kiểm tra kế hoạch bay",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: chuẩn bị một lượt phục vụ",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: chăm sóc người bệnh theo yêu cầu của khoa",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ riêng: kiểm và lưu hồ sơ nhân sự",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: chuẩn bị lịch và hồ sơ cuộc họp",
-  "en": ""
- },
- {
-  "vi": "Yêu cầu riêng: kiểm tra và hỗ trợ thiết bị",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: trực gác thay một ca ngắn",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: trực đèn thay một ca ngắn",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: trực tổng đài thay một ca ngắn",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: trực cứu hộ cho một lớp bơi",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: hỗ trợ tiếp dân một buổi",
-  "en": ""
- },
- {
-  "vi": "Nhân viên đang xử lý đơn riêng.",
-  "en": ""
- },
- {
-  "vi": "Nơi làm việc đã đóng ca.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã tạm dừng đơn của nhân viên.",
-  "en": ""
- },
- {
-  "vi": "Chưa có nhân viên trong ca.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên đang nghỉ hoặc chờ xử lý sự cố.",
-  "en": ""
- },
- {
-  "vi": "Hết nguyên liệu cho đơn riêng; nhập hàng để tiếp tục.",
-  "en": ""
- },
- {
-  "vi": "Quỹ nơi làm việc không đủ trả lương và vật tư trước đơn tiếp theo.",
-  "en": ""
- },
- {
-  "vi": "Sổ thu chi đã đạt giới hạn lưu trữ.",
-  "en": ""
- },
- {
-  "vi": "Lương đơn riêng",
-  "en": ""
- },
- {
-  "vi": "Vật tư đơn riêng",
-  "en": ""
- },
- {
-  "vi": "Thưởng 40% lợi nhuận",
-  "en": ""
- },
- {
-  "vi": "đơn riêng",
-  "en": ""
- },
- {
-  "vi": "Mỗi đơn trả 1/4 lương ca, làm tròn lên; vật tư trừ quỹ nơi làm việc.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên đang phục vụ khách người chơi.",
-  "en": ""
- },
- {
-  "vi": "quần áo còn size bán được",
-  "en": ""
- },
- {
-  "vi": "cho đơn riêng; nhập hàng để đội làm tiếp.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu đơn riêng của nhân viên không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Không có phần dữ liệu này.",
-  "en": ""
- },
- {
-  "vi": "Chờ một chút rồi cập nhật giá nhé.",
-  "en": ""
- },
- {
-  "vi": "Tham số không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Khoảng ngày chỉ nhận 7, 30 hoặc 90.",
-  "en": ""
- },
- {
-  "vi": "Máy chủ đang bận, thử lại sau ít giây nhé.",
-  "en": ""
- },
- {
-  "vi": "Không có mục thống kê này.",
-  "en": ""
- },
- {
-  "vi": "Chỉ mục Giữ chân và Tổng quan đầu tư có bản CSV.",
-  "en": ""
- },
- {
-  "vi": "Số liệu đang được tính, thử lại sau ít giây nhé.",
-  "en": ""
- },
- {
-  "vi": "Không có phần báo cáo này.",
-  "en": ""
- },
- {
-  "vi": "Máy chủ đang bận, thử lại sau giây lát.",
-  "en": ""
- },
- {
-  "vi": "Thử quá nhiều lần. Chờ một phút rồi thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Từ từ thôi, hội chợ còn dài mà!",
-  "en": ""
- },
- {
-  "vi": "Từ từ thôi, bày trí chậm lại chút nhé!",
-  "en": ""
- },
- {
-  "vi": "Không nhận từ website khác.",
-  "en": ""
- },
- {
-  "vi": "Thiếu nguồn gửi.",
-  "en": ""
- },
- {
-  "vi": "Chưa có phiên chơi.",
-  "en": ""
- },
- {
-  "vi": "Đã dừng. Tiến trình đã được lưu.",
-  "en": ""
- },
- {
-  "vi": "Nhấn Ctrl+C để dừng.",
-  "en": ""
- },
- {
-  "vi": "Máy chủ phản hồi quá lâu. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Mất kết nối máy chủ. Thử lại sau nhé.",
-  "en": ""
- },
- {
-  "vi": "Thô tục",
-  "en": ""
- },
- {
-  "vi": "Lộ thông tin",
-  "en": ""
- },
- {
-  "vi": "🛟 An toàn / trẻ vị thành niên",
-  "en": ""
- },
- {
-  "vi": "Nhắn riêng",
-  "en": ""
- },
- {
-  "vi": "10 phút",
-  "en": ""
- },
- {
-  "vi": "1 giờ",
-  "en": ""
- },
- {
-  "vi": "24 giờ",
-  "en": ""
- },
- {
-  "vi": "1 tin/phút · 1 giờ",
-  "en": ""
- },
- {
-  "vi": "1 tin/2 phút · 24 giờ",
-  "en": ""
- },
- {
-  "vi": "30 giây/tin · 1 giờ",
-  "en": ""
- },
- {
-  "vi": "1 phút/tin · 1 giờ",
-  "en": ""
- },
- {
-  "vi": "1 phút/tin · 3 giờ",
-  "en": ""
- },
- {
-  "vi": "tên chat",
-  "en": ""
- },
- {
-  "vi": "tên Phố nghề",
-  "en": ""
- },
- {
-  "vi": "tên nhân vật",
-  "en": ""
- },
- {
-  "vi": "Tìm chữ, tên hoặc mã người chơi",
-  "en": ""
- },
- {
-  "vi": "Tìm tin nhắn",
-  "en": ""
- },
- {
-  "vi": "Tìm",
-  "en": ""
- },
- {
-  "vi": "Bỏ lọc",
-  "en": ""
- },
- {
-  "vi": "Tin bị bộ lọc che (•••) có thêm dòng",
-  "en": ""
- },
- {
-  "vi": "Gốc",
-  "en": ""
- },
- {
-  "vi": ": chữ người chơi gõ, chỉ quản trị thấy. Tin trước bản 1.2.2 chỉ còn bản đã che.",
   "en": ""
  }
 ]

@@ -1,5 +1,513 @@
 [
  {
+  "vi": "Chào buổi sáng! Hôm nay làm tốt nha.",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ anh/em",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ mình quá à.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay mệt quá",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay mệt quá, về ôm cái nha.",
+  "en": ""
+ },
+ {
+  "vi": "Ôm một cái",
+  "en": ""
+ },
+ {
+  "vi": "Ôm một cái cho đỡ mệt.",
+  "en": ""
+ },
+ {
+  "vi": "Thơm một cái",
+  "en": ""
+ },
+ {
+  "vi": "Thơm một cái!",
+  "en": ""
+ },
+ {
+  "vi": "Mang cơm trưa",
+  "en": ""
+ },
+ {
+  "vi": "Mang cơm trưa tới tận nơi, ăn cho no nha.",
+  "en": ""
+ },
+ {
+  "vi": "Tặng quà nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ vợ chồng đã cưới mới dùng được mục này.",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ chung đã đầy.",
+  "en": ""
+ },
+ {
+  "vi": "Việc này đã làm xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi vào quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn không còn là vợ chồng.",
+  "en": ""
+ },
+ {
+  "vi": "Rút từ quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "💸 Cho mượn",
+  "en": ""
+ },
+ {
+  "vi": "💸 Gửi",
+  "en": ""
+ },
+ {
+  "vi": "cho bạn mượn",
+  "en": ""
+ },
+ {
+  "vi": "gửi bạn",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một lời nhắn soạn sẵn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản này đã vào sổ nợ.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang có một lời nhờ chờ trả lời rồi.",
+  "en": ""
+ },
+ {
+  "vi": "hỏi mượn",
+  "en": ""
+ },
+ {
+  "vi": "xin trợ giúp",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhờ này không còn chờ trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả lời. Lần sau giúp nhau nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhờ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã rút lại lời nhờ.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản nợ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản nợ này đã khép lại.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một câu đòi nợ soạn sẵn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một câu soạn sẵn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ai đòi khoản này.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xin khất.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản nợ vừa thay đổi. Xem lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "— hết nợ rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Hết nợ!",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một điều muốn gửi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một món trong túi quà nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn gửi điều này rồi. Mai gửi tiếp nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Món này không còn trong túi quà của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Chia quỹ chung khi chia tay",
+  "en": ""
+ },
+ {
+  "vi": "Phần quỹ chung khi chia tay",
+  "en": ""
+ },
+ {
+  "vi": "(đã trừ/cộng nợ)",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tiền thẻ chung",
+  "en": ""
+ },
+ {
+  "vi": "Loại giao dịch không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Số tiền không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mã giao dịch không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Quỹ chung chưa sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chưa có quỹ chung.",
+  "en": ""
+ },
+ {
+  "vi": "Giao dịch này đã hết hạn. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Người ấy",
+  "en": ""
+ },
+ {
+  "vi": "Tuyến hàng xóm",
+  "en": ""
+ },
+ {
+  "vi": "Bữa nóng đến nhà",
+  "en": ""
+ },
+ {
+  "vi": "Chuyến giao đúng hẹn",
+  "en": ""
+ },
+ {
+  "vi": "Đối tác chuỗi cửa hàng",
+  "en": ""
+ },
+ {
+  "vi": "Túi giao hàng chuyên dụng",
+  "en": ""
+ },
+ {
+  "vi": "Giảm 1 xu khấu trừ thưởng cho mỗi đơn có phàn nàn.",
+  "en": ""
+ },
+ {
+  "vi": "Gói hỗ trợ sự cố hợp đồng",
+  "en": ""
+ },
+ {
+  "vi": "Giảm một nửa khấu trừ thưởng còn lại. Không hoàn tiền phạt giao thông.",
+  "en": ""
+ },
+ {
+  "vi": "Mở nghề Giao hàng trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác hợp đồng không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn hợp đồng giao hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tất hoặc hủy hợp đồng đang nhận trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tất thêm hợp đồng để mở tuyến này.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận nhận hợp đồng và chi phí chuẩn bị.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận hợp đồng đầu tiên trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Món này không hợp lệ hoặc đã có.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận mua đồ nghề.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có hợp đồng đang làm.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận hủy hợp đồng. Chi phí chuẩn bị không hoàn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đã hủy hợp đồng, không bị phạt thêm. Chi phí chuẩn bị đã dùng không hoàn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa giao đủ đơn mới theo hợp đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Thưởng hợp đồng",
+  "en": ""
+ },
+ {
+  "vi": "Thưởng hợp đồng ·",
+  "en": ""
+ },
+ {
+  "vi": "Đủ đơn rồi, mở Sổ shipper nhận thưởng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ hợp đồng giao hàng không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn thành các bước trên bàn thủ công trước khi cất món đồ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đêm",
+  "en": ""
+ },
+ {
+  "vi": "🔔 Đến giờ đóng cửa. Không đón thêm khách: làm nốt việc dở rồi khép ca nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🔔 Đến giờ đóng cửa. Ngày đông thì bán nốt khách đang đợi, muộn nhất 23:00, rồi khép ca nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Ca tối: đơn đồ ăn dồn vào giờ cơm tối.",
+  "en": ""
+ },
+ {
+  "vi": "Ca tối: mỗi ngõ có giờ đổ rác, tới muộn là rác bị bới tung.",
+  "en": ""
+ },
+ {
+  "vi": "Quán cơm mở từ sáng sớm; 11:30 dân văn phòng ra mua cơm hộp là đông nhất.",
+  "en": ""
+ },
+ {
+  "vi": "Quán mở từ 5:30 sáng; 6:30 người đi làm ghé đông nhất, gần trưa là vãn.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm mở từ trưa; 17:00 học sinh tan trường, tối cuối tuần chợ đêm đông nhất.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch hẹn từ 7:00; khách đi làm để chìa khóa, chiều tối khách về đi kiểm nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Ra chợ từ sáng, 8 giờ cá tôm tươi nhất; cơm phải lên mâm trước giờ cả nhà về ăn.",
+  "en": ""
+ },
+ {
+  "vi": "Bố mẹ gửi bé lúc 7:30, đón lúc 18:00; giữa trưa là giờ ngủ của bé.",
+  "en": ""
+ },
+ {
+  "vi": "Thư viện mở 7:30, đóng 17:30; sáng sớm ông Thạc đã chờ cửa, chiều học sinh tan trường ghé đông.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ca 5:30, thử thiết bị rồi mới ký; tàu qua theo bảng giờ, ngày ca chiều tối thì tàu qua tới khuya.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ca lúc 7:00, giao ca lúc 19:00; 9:00 bác sĩ đi buồng, chiều là giờ thăm bệnh.",
+  "en": ""
+ },
+ {
+  "vi": "Dậy trước bình minh tắt đèn, 7:00 quan trắc báo đài; chạng vạng thắp đèn, đêm có chuyện ngoài biển thì canh tới khuya.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ca lúc 7:00, giao ca lúc 19:00; giờ tan tầm và mưa chiều là lúc đường dây réo nhiều nhất.",
+  "en": ""
+ },
+ {
+  "vi": "Mở hồ 6:00, ông Tư xuống nước đầu tiên; trưa nắng gắt đông trẻ con; chiều dễ có dông, nghe sấm là lên bờ hết.",
+  "en": ""
+ },
+ {
+  "vi": "Giao ban 7:30, bàn cư trú đông buổi sáng; 11:00 và 16:30 đứng cổng trường giờ tan học; tan ca 17:30.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy lễ tân trực tới 22:00; khách tới muộn gọi chuông, sáng mai bàn giao.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày đông khách có thể bán quá giờ, muộn nhất 23:00.",
+  "en": ""
+ },
+ {
+  "vi": "Tăng ca được tới 20:00 nếu xin phép trưởng phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Tăng ca được tới 20:00 nếu xin phép giám đốc.",
+  "en": ""
+ },
+ {
+  "vi": "Tăng ca được tới 20:00 nếu xin phép trưởng nhóm.",
+  "en": ""
+ },
+ {
+  "vi": "⚽ Tối nay có trận: quán bán tới 22:00.",
+  "en": ""
+ },
+ {
+  "vi": "Đến giờ đóng cửa",
+  "en": ""
+ },
+ {
+  "vi": "Tổ ấm trong mơ",
+  "en": ""
+ },
+ {
+  "vi": "Rất ấm cúng",
+  "en": ""
+ },
+ {
+  "vi": "Ấm cúng",
+  "en": ""
+ },
+ {
+  "vi": "Còn trống trải",
+  "en": ""
+ },
+ {
+  "vi": "📦 Chuyển chỗ ở rồi: đồ trang trí đã gói vào túi đồ, vào bày lại phòng mới nhé!",
+  "en": ""
+ },
+ {
+  "vi": "cửa ra vào",
+  "en": ""
+ },
+ {
+  "vi": "cửa sổ",
+  "en": ""
+ },
+ {
+  "vi": "kệ bếp",
+  "en": ""
+ },
+ {
+  "vi": "tường bếp",
+  "en": ""
+ },
+ {
+  "vi": "mái gác",
+  "en": ""
+ },
+ {
+  "vi": "cầu thang",
+  "en": ""
+ },
+ {
+  "vi": "cái gối",
+  "en": ""
+ },
+ {
+  "vi": "kệ đầu giường",
+  "en": ""
+ },
+ {
+  "vi": "vòi sen",
+  "en": ""
+ },
+ {
+  "vi": "bồn cầu",
+  "en": ""
+ },
+ {
+  "vi": "chỗ cố định",
+  "en": ""
+ },
+ {
+  "vi": "món khác",
+  "en": ""
+ },
+ {
+  "vi": "Chọn phòng muốn đặt đồ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ này không đặt đồ được.",
+  "en": ""
+ },
+ {
+  "vi": "Hướng đặt không hợp lệ.",
+  "en": ""
+ },
+ {
   "vi": "Thứ tự không hợp lệ.",
   "en": ""
  },
@@ -1289,514 +1797,6 @@
  },
  {
   "vi": "Tắm tỉa thú nhỏ",
-  "en": ""
- },
- {
-  "vi": "Tắm tỉa thú vừa",
-  "en": ""
- },
- {
-  "vi": "Tắm tỉa thú lớn",
-  "en": ""
- },
- {
-  "vi": "Tắm tỉa mèo",
-  "en": ""
- },
- {
-  "vi": "Trông chó",
-  "en": ""
- },
- {
-  "vi": "Trông mèo",
-  "en": ""
- },
- {
-  "vi": "Giao xe máy",
-  "en": ""
- },
- {
-  "vi": "Giao xe tải",
-  "en": ""
- },
- {
-  "vi": "Tháo gel",
-  "en": ""
- },
- {
-  "vi": "Nối móng",
-  "en": ""
- },
- {
-  "vi": "Chấm đá",
-  "en": ""
- },
- {
-  "vi": "Bầu",
-  "en": ""
- },
- {
-  "vi": "Gà",
-  "en": ""
- },
- {
-  "vi": "Anh Tèo",
-  "en": ""
- },
- {
-  "vi": "Vòng thường",
-  "en": ""
- },
- {
-  "vi": "Vòng lật ngược",
-  "en": ""
- },
- {
-  "vi": "Vòng Kinh đôi",
-  "en": ""
- },
- {
-  "vi": "Hũ đêm hội",
-  "en": ""
- },
- {
-  "vi": "Ông Hai",
-  "en": ""
- },
- {
-  "vi": "Cao tay ô ăn quan",
-  "en": ""
- },
- {
-  "vi": "Thắng Ông Hai một ván ô ăn quan ở hội chợ dân gian.",
-  "en": ""
- },
- {
-  "vi": "Tay ném vòng thần sầu",
-  "en": ""
- },
- {
-  "vi": "Ném trúng cả năm cổ chai trong một lượt ở hội chợ.",
-  "en": ""
- },
- {
-  "vi": "Thần lô tô hội chợ",
-  "en": ""
- },
- {
-  "vi": "Hô “Kinh!” thắng một ván lô tô ở hội chợ dân gian.",
-  "en": ""
- },
- {
-  "vi": "Kinh đôi rộn ràng",
-  "en": ""
- },
- {
-  "vi": "Thắng một vòng Kinh đôi ở gánh lô tô hội chợ.",
-  "en": ""
- },
- {
-  "vi": "Đọc ngược như xuôi",
-  "en": ""
- },
- {
-  "vi": "Thắng một vòng lô tô lật ngược ở hội chợ.",
-  "en": ""
- },
- {
-  "vi": "Ôm hũ đêm hội",
-  "en": ""
- },
- {
-  "vi": "Kinh cả tờ, ôm Hũ đêm hội ở gánh lô tô.",
-  "en": ""
- },
- {
-  "vi": "Trúng bão bầu cua",
-  "en": ""
- },
- {
-  "vi": "Ba con xúc xắc cùng ra đúng mặt bạn đặt ở hội chợ.",
-  "en": ""
- },
- {
-  "vi": "Mắt thần phi tiêu",
-  "en": ""
- },
- {
-  "vi": "Phóng phi tiêu cắm ngay hồng tâm ở hội chợ dân gian.",
-  "en": ""
- },
- {
-  "vi": "Bị công an hỏi thăm",
-  "en": ""
- },
- {
-  "vi": "Đang chơi ở chiếu trong thì công an phường tới kiểm tra.",
-  "en": ""
- },
- {
-  "vi": "Vua trò chơi",
-  "en": ""
- },
- {
-  "vi": "Đứng đầu Bảng vàng hội chợ dân gian khi hội tàn.",
-  "en": ""
- },
- {
-  "vi": "Cao thủ hội chợ",
-  "en": ""
- },
- {
-  "vi": "Lọt top 10 Bảng vàng hội chợ dân gian khi hội tàn.",
-  "en": ""
- },
- {
-  "vi": "🦀 Bầu cua hội chợ",
-  "en": ""
- },
- {
-  "vi": "🕯️ Chiếu trong hội chợ",
-  "en": ""
- },
- {
-  "vi": "🎱 Lô tô hội chợ",
-  "en": ""
- },
- {
-  "vi": "🪨 Ô ăn quan hội chợ",
-  "en": ""
- },
- {
-  "vi": "💍 Ném vòng hội chợ",
-  "en": ""
- },
- {
-  "vi": "🎯 Phi tiêu hội chợ",
-  "en": ""
- },
- {
-  "vi": "🎟️ Vé số cào hội chợ",
-  "en": ""
- },
- {
-  "vi": "🗡️ Phóng dao hội chợ",
-  "en": ""
- },
- {
-  "vi": "ván",
-  "en": ""
- },
- {
-  "vi": "ván thắng",
-  "en": ""
- },
- {
-  "vi": "vé",
-  "en": ""
- },
- {
-  "vi": "Sạp phi tiêu đã đổi thành trò phóng dao. Tải lại trang để chơi nha.",
-  "en": ""
- },
- {
-  "vi": "Hội chợ đã tàn, hẹn lần sau nha!",
-  "en": ""
- },
- {
-  "vi": "Hội chợ chưa mở đâu, hẹn bạn ngày khai hội nha!",
-  "en": ""
- },
- {
-  "vi": "Hôm nay chơi vậy đủ rồi, mai ghé tiếp nha.",
-  "en": ""
- },
- {
-  "vi": "Ví không đủ xu cho ván này. Hội chợ không cho vay để chơi đâu nha.",
-  "en": ""
- },
- {
-  "vi": "Từ từ thôi, xúc xắc chưa kịp lăn!",
-  "en": ""
- },
- {
-  "vi": "Lượt trước còn chờ: chơi tiếp hoặc dừng nhận thưởng đã nha.",
-  "en": ""
- },
- {
-  "vi": "Màn này đang chơi dở, phóng tiếp nha.",
-  "en": ""
- },
- {
-  "vi": "Màn này đã xong rồi.",
-  "en": ""
- },
- {
-  "vi": "Lượt này đã đổi rồi. Mở lại bia hiện tại nhé.",
-  "en": ""
- },
- {
-  "vi": "Lâu quá bia ngừng quay rồi, lượt này thua. Phóng lượt mới nha.",
-  "en": ""
- },
- {
-  "vi": "Dao chạm dao rồi! Lượt này thua hết.",
-  "en": ""
- },
- {
-  "vi": "Không có màn nào đang chờ chơi tiếp.",
-  "en": ""
- },
- {
-  "vi": "Không có thưởng nào đang chờ.",
-  "en": ""
- },
- {
-  "vi": "Thưởng lượt này đã vô ví rồi.",
-  "en": ""
- },
- {
-  "vi": "🚨 Công an kiểm tra hội chợ · Thu tiền trong ví",
-  "en": ""
- },
- {
-  "vi": "Thao tác hội chợ không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Hội chợ chỉ có trong hành trình.",
-  "en": ""
- },
- {
-  "vi": "Chọn mặt để đặt nha.",
-  "en": ""
- },
- {
-  "vi": "Chờ chú Tám mở bát đã nha!",
-  "en": ""
- },
- {
-  "vi": "Hòa vốn.",
-  "en": ""
- },
- {
-  "vi": "Chọn chẵn hay lẻ nha.",
-  "en": ""
- },
- {
-  "vi": "Chẵn",
-  "en": ""
- },
- {
-  "vi": "Lẻ",
-  "en": ""
- },
- {
-  "vi": "Chọn loại vé và số tờ nha.",
-  "en": ""
- },
- {
-  "vi": "Ván lô tô này đã xong rồi.",
-  "en": ""
- },
- {
-  "vi": "Vòng này cần đủ nhiều hàng hơn, tải lại trang để chơi tiếp nha.",
-  "en": ""
- },
- {
-  "vi": "Ván này tàn lâu rồi, mua tờ mới nha.",
-  "en": ""
- },
- {
-  "vi": "Hàng này chưa đủ số đâu, dò lại nha!",
-  "en": ""
- },
- {
-  "vi": "Kinh hụt rồi!",
-  "en": ""
- },
- {
-  "vi": "Dò lại cho kỹ nha.",
-  "en": ""
- },
- {
-  "vi": "Chọn người chơi cùng nha.",
-  "en": ""
- },
- {
-  "vi": "Ông đi trước rồi, tới cháu nha!",
-  "en": ""
- },
- {
-  "vi": "Bạn đi trước nha!",
-  "en": ""
- },
- {
-  "vi": "Ván ô ăn quan này đã xong rồi.",
-  "en": ""
- },
- {
-  "vi": "Nước này đi rồi, bàn đã sang lượt mới. Coi lại bàn rồi đi tiếp nha.",
-  "en": ""
- },
- {
-  "vi": "Chọn một ô của bạn còn quân nha.",
-  "en": ""
- },
- {
-  "vi": "Hòa ván ô ăn quan.",
-  "en": ""
- },
- {
-  "vi": "Thua ván ô ăn quan, ván sau gỡ nha.",
-  "en": ""
- },
- {
-  "vi": "Từ từ thôi, vòng chưa phát xong!",
-  "en": ""
- },
- {
-  "vi": "Lượt ném này đã xong rồi.",
-  "en": ""
- },
- {
-  "vi": "Lượt này lâu quá rồi, phát vòng mới nha.",
-  "en": ""
- },
- {
-  "vi": "Lượt ném này không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chuỗi kết quả hội chợ không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu hội chợ không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu phóng dao không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Bà Sáu cho vay nóng",
-  "en": ""
- },
- {
-  "vi": "Hội chợ đang đóng.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã nhận tiền vốn hội chợ rồi nha.",
-  "en": ""
- },
- {
-  "vi": "🎁 Tiền vốn hội chợ (ban tổ chức tặng)",
-  "en": ""
- },
- {
-  "vi": "Trả hết khoản đang vay rồi mới vay tiếp nha.",
-  "en": ""
- },
- {
-  "vi": "Còn nợ vay nóng kỳ trước, trả xong rồi vay tiếp nha.",
-  "en": ""
- },
- {
-  "vi": "Bạn không nợ gì cả.",
-  "en": ""
- },
- {
-  "vi": "💸 Trả vay nóng hội chợ",
-  "en": ""
- },
- {
-  "vi": "💸 Hội chợ tàn: thu vay nóng",
-  "en": ""
- },
- {
-  "vi": "Hội chợ thu vay nóng",
-  "en": ""
- },
- {
-  "vi": "💸 Trả dần nợ vay nóng hội chợ",
-  "en": ""
- },
- {
-  "vi": "(hết nợ)",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu vay nóng hội chợ không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "🍡 Ăn vặt hội chợ",
-  "en": ""
- },
- {
-  "vi": "Kẹo bông gòn",
-  "en": ""
- },
- {
-  "vi": "Xốp xốp, ngọt lịm, dính cả mép luôn!",
-  "en": ""
- },
- {
-  "vi": "Bắp nướng mỡ hành",
-  "en": ""
- },
- {
-  "vi": "Thơm lừng mỡ hành, gặm từng hàng hạt nóng hổi!",
-  "en": ""
- },
- {
-  "vi": "Bánh tráng nướng",
-  "en": ""
- },
- {
-  "vi": "Giòn rụm, trứng cút với hành phi, thơm phức!",
-  "en": ""
- },
- {
-  "vi": "Ly nước mía tắc",
-  "en": ""
- },
- {
-  "vi": "Mát rượi cả cổ họng, tỉnh hẳn người!",
-  "en": ""
- },
- {
-  "vi": "Ly chè ba màu",
-  "en": ""
- },
- {
-  "vi": "Đậu xanh, đậu đỏ, nước cốt dừa béo ngậy, mát lạnh!",
-  "en": ""
- },
- {
-  "vi": "Chén tàu hũ nước đường",
-  "en": ""
- },
- {
-  "vi": "Tàu hũ mềm mịn, nước đường gừng ấm bụng!",
-  "en": ""
- },
- {
-  "vi": "Chưa đủ xu",
-  "en": ""
- },
- {
-  "vi": "(\\d{1,6}) món",
-  "en": ""
- },
- {
-  "vi": "· (\\d{1,6}) món",
-  "en": ""
- },
- {
-  "vi": "1 món",
   "en": ""
  }
 ]

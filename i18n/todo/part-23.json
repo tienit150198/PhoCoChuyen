@@ -1,5 +1,513 @@
 [
  {
+  "vi": "Chú Bảy muốn bày mâm ngũ quả nhưng sạp chỉ còn xoài chín kỹ và thanh long hơi héo.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng còn lại",
+  "en": ""
+ },
+ {
+  "vi": "Xoài chín kỹ để mai là nhũn; thanh long cuống đã héo.",
+  "en": ""
+ },
+ {
+  "vi": "Mâm bày mấy ngày",
+  "en": ""
+ },
+ {
+  "vi": "Chú bày từ chiều nay tới hết ngày rằm, gần ba ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng về",
+  "en": ""
+ },
+ {
+  "vi": "Sáng mai dì Tư lấy hàng mới ở chợ đầu mối.",
+  "en": ""
+ },
+ {
+  "vi": "Nói thật, hẹn chú sáng mai lấy trái mới",
+  "en": ""
+ },
+ {
+  "vi": "Hết trái đẹp thì nói thật, hẹn sáng mai có hàng mới. Tin được.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng hôm sau chú Bảy ghé sớm, chọn được mâm trái thật đẹp.",
+  "en": ""
+ },
+ {
+  "vi": "Cúng là tấm lòng, trái héo thì ngại lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Mất một mối hôm nay còn hơn mất khách mãi.",
+  "en": ""
+ },
+ {
+  "vi": "Gợi ý đổi loại trái khác còn tươi",
+  "en": ""
+ },
+ {
+  "vi": "Không đủ loại mình muốn, nhưng được tư vấn trái khác bày lâu được.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy lấy bưởi, cam thay cho xoài.",
+  "en": ""
+ },
+ {
+  "vi": "Cũng được, miễn tươi.",
+  "en": ""
+ },
+ {
+  "vi": "Bưởi, cam bày cả tuần vẫn đẹp.",
+  "en": ""
+ },
+ {
+  "vi": "Bán luôn, bảo “trái còn tốt mà chú”",
+  "en": ""
+ },
+ {
+  "vi": "Mâm ngũ quả mới bày một hôm đã nhũn, ruồi bu. Buồn lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm sau chú Bảy mang mâm trái nhũn trả lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ cúng mà bán vậy thì hết tin.",
+  "en": ""
+ },
+ {
+  "vi": "Nói thật thì khách còn quay lại.",
+  "en": ""
+ },
+ {
+  "vi": "Trái để bày lâu phải chắc và tươi; không có thì nói thật và hẹn hàng mới.",
+  "en": ""
+ },
+ {
+  "vi": "Trời mưa: căng bạt che kín các rổ.",
+  "en": ""
+ },
+ {
+  "vi": "Nắng gắt: dựng dù, để rổ trong bóng râm.",
+  "en": ""
+ },
+ {
+  "vi": "Dựng dù, thử cân, lựa trái dập rồi mở hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn sạp ngày mưa",
+  "en": ""
+ },
+ {
+  "vi": "Dọn sạp đầu ngày",
+  "en": ""
+ },
+ {
+  "vi": "Dì Tư nhắn: “Dì đi lấy hàng rồi. Con dựng dù, thử cân, lựa trái dập ra rồi hẵng bán nghe.”",
+  "en": ""
+ },
+ {
+  "vi": "Vào việc thôi! Mấy rổ trái đang chờ ở sạp.",
+  "en": ""
+ },
+ {
+  "vi": "Có chuyện ở sạp, quyết xong rồi bán tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Có chuyện ở sạp: xử lý trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác không có ở sạp trái cây.",
+  "en": ""
+ },
+ {
+  "vi": "Việc này không thuộc sạp trái cây.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa mở hàng: dựng dù, thử cân, lựa trái dập rồi bấm “Mở hàng” nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Dựng dù hay căng bạt?",
+  "en": ""
+ },
+ {
+  "vi": "⛱️ Đã dựng dù che nắng.",
+  "en": ""
+ },
+ {
+  "vi": "🟦 Đã căng bạt kín, kê rổ lên cao cho khỏi ướt.",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Đặt quả cân 1 ký: kim chỉ đúng 1 ký. Cân chuẩn.",
+  "en": ""
+ },
+ {
+  "vi": "Thử cân với quả cân 1 ký trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Cân đang chuẩn rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🔧 Vặn con ốc dưới mặt cân, kim về đúng 1 ký. Cân chuẩn rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Rổ trái này không có.",
+  "en": ""
+ },
+ {
+  "vi": "Trái dập lựa ra",
+  "en": ""
+ },
+ {
+  "vi": "Dựng dù hoặc căng bạt trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa thế này mà chỉ dựng dù, nước hắt ướt hết rổ.",
+  "en": ""
+ },
+ {
+  "vi": "Căng bạt kín mít giữa nắng, trái hầm hơi mau nhũn.",
+  "en": ""
+ },
+ {
+  "vi": "che sạp chưa hợp trời",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thử cân đã bán, lỡ cân lệch thì khách thiệt.",
+  "en": ""
+ },
+ {
+  "vi": "chưa thử cân",
+  "en": ""
+ },
+ {
+  "vi": "Thử cân thấy lệch mà không chỉnh, bán vậy là cân sai cho khách.",
+  "en": ""
+ },
+ {
+  "vi": "cân lệch chưa chỉnh",
+  "en": ""
+ },
+ {
+  "vi": "Còn trái dập lẫn trong rổ, để lâu lây sang trái lành.",
+  "en": ""
+ },
+ {
+  "vi": "chưa lựa trái dập",
+  "en": ""
+ },
+ {
+  "vi": "Dọn sạp, thử cân, lựa trái dập.",
+  "en": ""
+ },
+ {
+  "vi": "☀️ Mở hàng!",
+  "en": ""
+ },
+ {
+  "vi": "Dì Tư nhắn: “Giỏi lắm con, bán đắt nghe!”",
+  "en": ""
+ },
+ {
+  "vi": "Dì Tư nhắn: “Mở hàng đi, mai nhớ kỹ hơn nghe con.”",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi khách mua gì đã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cân xong rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Sạp không có trái này.",
+  "en": ""
+ },
+ {
+  "vi": "Độ chín không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Rổ đầy rồi.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Trái này bị dập (rổ chưa lựa)!",
+  "en": ""
+ },
+ {
+  "vi": "Rổ còn trống.",
+  "en": ""
+ },
+ {
+  "vi": "Đã trừ bì rồi.",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Nhấc rổ không lên cân, vặn kim về 0: đã trừ bì rổ.",
+  "en": ""
+ },
+ {
+  "vi": "Anh gom trái chín kỹ giá rẻ, sao bỏ lẫn trái khác vào?",
+  "en": ""
+ },
+ {
+  "vi": "lẫn trái không phải chín kỹ",
+  "en": ""
+ },
+ {
+  "vi": "thiếu loại trái",
+  "en": ""
+ },
+ {
+  "vi": "sai số trái",
+  "en": ""
+ },
+ {
+  "vi": "Mua về ăn liền mà trái còn xanh, cứng ngắc.",
+  "en": ""
+ },
+ {
+  "vi": "Trái chín nhũn cả rồi, không bày được lâu.",
+  "en": ""
+ },
+ {
+  "vi": "Trái héo cuống, không tươi như lời hứa.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi dặn trái xanh để dành, chín thế này mai là nhũn.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi lấy loại khác cơ.",
+  "en": ""
+ },
+ {
+  "vi": "chọn sai độ chín",
+  "en": ""
+ },
+ {
+  "vi": "Túi có trái tôi đâu có mua.",
+  "en": ""
+ },
+ {
+  "vi": "bỏ nhầm trái",
+  "en": ""
+ },
+ {
+  "vi": "bán trái dập",
+  "en": ""
+ },
+ {
+  "vi": "cân thiếu cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Rổ còn trống. Chọn trái cho khách đã.",
+  "en": ""
+ },
+ {
+  "vi": "cân chưa đủ",
+  "en": ""
+ },
+ {
+  "vi": "Bớt chút đi, tính cho tròn!",
+  "en": ""
+ },
+ {
+  "vi": "Mua nhiều vậy mà không cho thêm gì à?",
+  "en": ""
+ },
+ {
+  "vi": "Đắt thế, bớt đi chứ?",
+  "en": ""
+ },
+ {
+  "vi": "Khách không trả giá.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách trả giá.",
+  "en": ""
+ },
+ {
+  "vi": "Trái tươi, cân đủ, giá này là đúng giá rồi ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Trả giá có một chút mà không bớt đồng nào.",
+  "en": ""
+ },
+ {
+  "vi": "không chịu bớt giá",
+  "en": ""
+ },
+ {
+  "vi": "Hết cam để tặng thêm rồi. Chọn cách khác nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Giá này nha, con tặng thêm trái cam ăn lấy thảo.",
+  "en": ""
+ },
+ {
+  "vi": "(bán dưới giá vốn)",
+  "en": ""
+ },
+ {
+  "vi": "Khách cười tươi, móc tiền ra.",
+  "en": ""
+ },
+ {
+  "vi": "Khách gật, nhưng hơi lưỡng lự.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe khách nói đã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xem trái đã phán, chẳng hỏi han gì.",
+  "en": ""
+ },
+ {
+  "vi": "chưa xem trái",
+  "en": ""
+ },
+ {
+  "vi": "Đổi trái cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Giải thích cho khách vì sao trái như vậy.",
+  "en": ""
+ },
+ {
+  "vi": "Trái dập từ sạp mà còn giải thích vòng vo.",
+  "en": ""
+ },
+ {
+  "vi": "đổ lỗi cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Cãi với khách giữa chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Mang trái lại mà bị cãi như mình đi ăn vạ.",
+  "en": ""
+ },
+ {
+  "vi": "cãi khách",
+  "en": ""
+ },
+ {
+  "vi": "Xoài còn xanh, cô để thêm hai hôm là chín ngọt.",
+  "en": ""
+ },
+ {
+  "vi": "Chuối chín kỹ vì để nắng, ruột vẫn ngon anh ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay đã rao xả rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Không có trái chín kỹ hay héo nào để xả.",
+  "en": ""
+ },
+ {
+  "vi": "“Quên ví ở nhà rồi, ghi nợ đi, mai trả.”",
+  "en": ""
+ },
+ {
+  "vi": "“Mua ở đây bao năm rồi, ghi sổ tí có sao đâu.”",
+  "en": ""
+ },
+ {
+  "vi": "“Cuối tháng lương về trả một thể, ok không?”",
+  "en": ""
+ },
+ {
+  "vi": "“Ghi nợ đi em, chị quỵt đâu mà lo, hihi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Để chị chạy ra xe lấy ví nha…” rồi xách túi đi thẳng.",
+  "en": ""
+ },
+ {
+  "vi": "“Ơ quên ví, để anh ra cây ATM…” vừa nói vừa bước nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "“Tí quay lại trả nha!” Túi trái đã trên tay.",
+  "en": ""
+ },
+ {
+  "vi": "Khách vừa nghe điện thoại vừa lùi dần ra đường, túi trái vẫn cầm chặt.",
+  "en": ""
+ },
+ {
+  "vi": "Khách không xin nợ.",
+  "en": ""
+ },
+ {
+  "vi": "Mua có túi trái mà bị giữ lại như kẻ trộm, bực mình.",
+  "en": ""
+ },
+ {
+  "vi": "Chạy ra xe lấy ví thôi mà gọi bảo vệ như bắt trộm, xấu hổ ghê.",
+  "en": ""
+ },
+ {
+  "vi": "nghi oan khách",
+  "en": ""
+ },
+ {
+  "vi": "Một bà khách lạ",
+  "en": ""
+ },
+ {
+  "vi": "Một cậu thanh niên đội mũ lưỡi trai",
+  "en": ""
+ },
+ {
+  "vi": "Hai cô bé mặc đồng phục",
+  "en": ""
+ },
+ {
+  "vi": "Một ông đeo kính râm",
+  "en": ""
+ },
+ {
+  "vi": "Một chị khách lạ",
+  "en": ""
+ },
+ {
   "vi": "Một chị khách giơ điện thoại quay sạp: “Cả nhà xem nè, trái cây gì mà bán đắt vl, chợ mạng rẻ bằng nửa!”",
   "en": ""
  },
@@ -1289,514 +1797,6 @@
  },
  {
   "vi": "Có ba người nhận là của mình. Mãi mới tìm đúng bà cụ nhà số 5.",
-  "en": ""
- },
- {
-  "vi": "Bỏ túi, không ai biết",
-  "en": ""
- },
- {
-  "vi": "Của trời cho?",
-  "en": ""
- },
- {
-  "vi": "Nghe nói nhẫn cưới của bà cụ rơi vào rác, tổ thu gom nhặt được mà im.",
-  "en": ""
- },
- {
-  "vi": "Mấy hôm sau chuyện lộ ra. Chị Hạnh buồn, không nói một lời.",
-  "en": ""
- },
- {
-  "vi": "Mưa to, cống ngập",
-  "en": ""
- },
- {
-  "vi": "Mưa như trút, nước dâng lên ngang mắt cá. Mấy túi rác trôi lềnh bềnh, chặn ngay miệng cống.",
-  "en": ""
- },
- {
-  "vi": "Vớt rác chắn miệng cống cho nước rút",
-  "en": ""
- },
- {
-  "vi": "Ướt hết người",
-  "en": ""
- },
- {
-  "vi": "Nước rút ào xuống cống. Bác Tâm cầm ô đứng xem, gật đầu.",
-  "en": ""
- },
- {
-  "vi": "Trú mưa, chờ tạnh rồi làm",
-  "en": ""
- },
- {
-  "vi": "Mưa tạnh, rác đã trôi ra tận đầu ngõ. Phải đi gom lại từng túi.",
-  "en": ""
- },
- {
-  "vi": "Mặc kệ, đẩy xe về",
-  "en": ""
- },
- {
-  "vi": "Mưa ngập mà rác chắn cống, tổ thu gom đi thẳng.",
-  "en": ""
- },
- {
-  "vi": "Nước ngập vào mấy nhà đầu ngõ. Sáng mai có người gọi thợ thông cống.",
-  "en": ""
- },
- {
-  "vi": "Quán nhậu nhờ lấy rác ngoài",
-  "en": ""
- },
- {
-  "vi": "Chủ quán nhậu đầu ngõ dúi 10 xu: “Lấy giùm anh mười bao đồ chưa phân loại, khỏi ghi sổ phí nha!”",
-  "en": ""
- },
- {
-  "vi": "Từ chối tiền, hướng dẫn đăng ký thu gom theo khối lượng",
-  "en": ""
- },
- {
-  "vi": "Chủ quán cằn nhằn, nhưng hôm sau ra phường đăng ký hợp đồng thu gom.",
-  "en": ""
- },
- {
-  "vi": "Nhận tiền, lấy hết cho xong",
-  "en": ""
- },
- {
-  "vi": "Thêm 10 xu…",
-  "en": ""
- },
- {
-  "vi": "Tổ thu gom nhận tiền ngoài, rác quán nhậu đổ chung hết.",
-  "en": ""
- },
- {
-  "vi": "Xe đầy ứ, ngăn tái chế lẫn nước bia. Chị Hạnh cau mày.",
-  "en": ""
- },
- {
-  "vi": "Bà cụ mời nước",
-  "en": ""
- },
- {
-  "vi": "Bà cụ nhà có giàn hoa giấy chờ sẵn ở cửa với hai chai nước mát: “Nóng thế này, uống đi các cháu.”",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn bà, uống nước rồi làm tiếp",
-  "en": ""
- },
- {
-  "vi": "Nước mát lạnh. Bà cụ bảo tối nào cũng nghe tiếng xe rác là biết giờ đi ngủ.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn, xin mang theo vì đang vội",
-  "en": ""
- },
- {
-  "vi": "Bà cụ cười, dặn đi đường cẩn thận.",
-  "en": ""
- },
- {
-  "vi": "Túi rác nặng trịch xà bần",
-  "en": ""
- },
- {
-  "vi": "Nhà đang sửa nhét gạch vụn vào túi đen, buộc chặt, đặt cạnh thùng rác. Nhấc lên rách toạc, gạch văng đầy chân.",
-  "en": ""
- },
- {
-  "vi": "Dán phiếu: xà bần phải thuê xe riêng, để lại",
-  "en": ""
- },
- {
-  "vi": "Sáng hôm sau chủ nhà gọi xe ba gác chở đi, còn xin lỗi tổ thu gom.",
-  "en": ""
- },
- {
-  "vi": "Khuân lên xe cho xong",
-  "en": ""
- },
- {
-  "vi": "Nặng, dễ hỏng xe",
-  "en": ""
- },
- {
-  "vi": "Gạch làm cong thanh chắn ngăn xe, sửa mất 5 xu. Chú Sáu càu nhàu vì xe ép kêu rắc rắc.",
-  "en": ""
- },
- {
-  "vi": "Để nguyên, đi tiếp",
-  "en": ""
- },
- {
-  "vi": "Túi rác nhà tôi để nguyên không ai lấy, tổ thu gom làm ăn kiểu gì?",
-  "en": ""
- },
- {
-  "vi": "Túi xà bần nằm chềnh ềnh trước cửa thêm ba ngày.",
-  "en": ""
- },
- {
-  "vi": "Con chuột chết trong túi",
-  "en": ""
- },
- {
-  "vi": "Mở túi rác nhà ông Thước ra, một con chuột chết đã trương, ruồi bay ra kín mặt. Ông đứng cửa: “Thì rác chứ sao, lấy đi!”",
-  "en": ""
- },
- {
-  "vi": "Đeo khẩu trang, bọc hai lớp bao, bỏ ngăn còn lại",
-  "en": ""
- },
- {
-  "vi": "Tốn một bao",
-  "en": ""
- },
- {
-  "vi": "Gọn gàng, không ai bị gì. Ông Thước lần đầu nói câu “cảm ơn cháu”.",
-  "en": ""
- },
- {
-  "vi": "Nín thở xách luôn",
-  "en": ""
- },
- {
-  "vi": "Mùi bám tay tới tận sáng.",
-  "en": ""
- },
- {
-  "vi": "“Ông bọc lại cho kỹ rồi hãy đem ra”",
-  "en": ""
- },
- {
-  "vi": "Có con chuột chết mà công nhân cũng làm khó.",
-  "en": ""
- },
- {
-  "vi": "Ông Thước sập cửa, sáng mai gọi lên phường.",
-  "en": ""
- },
- {
-  "vi": "Bà cụ gọi lúc mười một giờ đêm",
-  "en": ""
- },
- {
-  "vi": "Chị Hạnh chuyển máy: bà cụ nhà số 9 gọi, giọng run run: “Bà quên đổ rác, cháu quay lại lấy giúp bà được không?”",
-  "en": ""
- },
- {
-  "vi": "Quay lại lấy, dặn bà giờ đổ rác lần sau",
-  "en": ""
- },
- {
-  "vi": "Đi thêm một vòng",
-  "en": ""
- },
- {
-  "vi": "Bà cụ đứng chờ ở cửa với cái túi nhỏ xíu, dúi cho gói kẹo gừng.",
-  "en": ""
- },
- {
-  "vi": "Hẹn bà tối mai",
-  "en": ""
- },
- {
-  "vi": "Bà “ừ” nhỏ, túi rác nằm trong bếp thêm một ngày.",
-  "en": ""
- },
- {
-  "vi": "“Qua giờ rồi bà ơi, quy định là quy định”",
-  "en": ""
- },
- {
-  "vi": "Người già quên có lần mà cũng không linh động.",
-  "en": ""
- },
- {
-  "vi": "Bà cụ cúp máy. Con trai bà viết một bài dài trên nhóm cư dân.",
-  "en": ""
- },
- {
-  "vi": "Chủ chó mắng vì xe rác đi qua",
-  "en": ""
- },
- {
-  "vi": "Xe rác vừa qua, con chó nhà bên sủa ầm. Chủ nhà xồng xộc ra: “Đi đứng kiểu gì làm chó tao sủa cả tối, cút đi chỗ khác mà đẩy!”",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi, đẩy xe nhẹ tay qua đoạn đó",
-  "en": ""
- },
- {
-  "vi": "Anh ta lầm bầm rồi vào nhà. Lần sau bạn đẩy xe sát lề bên kia.",
-  "en": ""
- },
- {
-  "vi": "Làm như không nghe",
-  "en": ""
- },
- {
-  "vi": "Anh ta chửi với theo tới hết ngõ.",
-  "en": ""
- },
- {
-  "vi": "“Ngõ chung chứ có phải nhà anh đâu”",
-  "en": ""
- },
- {
-  "vi": "Công nhân vệ sinh láo, cãi dân tay đôi.",
-  "en": ""
- },
- {
-  "vi": "Hai bên cãi nhau, chó sủa to hơn, cả ngõ thức giấc.",
-  "en": ""
- },
- {
-  "vi": "Chủ tiệm cấm đậu xe rác",
-  "en": ""
- },
- {
-  "vi": "Chủ tiệm quần áo đứng chắn cửa: “Không được đậu xe rác trước tiệm tôi! Khách thấy là mất hết mối, đẩy ra chỗ khác!”",
-  "en": ""
- },
- {
-  "vi": "Đậu sát góc tường, gom nhanh, rắc vôi khử mùi",
-  "en": ""
- },
- {
-  "vi": "Chủ tiệm gật: “Thế thì được.” Còn nhờ gom giúp mấy thùng các-tông.",
-  "en": ""
- },
- {
-  "vi": "Đậu tít đầu ngõ, xách bộ từng túi",
-  "en": ""
- },
- {
-  "vi": "Mất sức",
-  "en": ""
- },
- {
-  "vi": "Xách bộ mười mấy túi, mỏi rã tay.",
-  "en": ""
- },
- {
-  "vi": "“Rác tiệm chị cũng đổ vào xe này đấy”",
-  "en": ""
- },
- {
-  "vi": "Xe rác đậu lì trước tiệm, nhắc còn cãi.",
-  "en": ""
- },
- {
-  "vi": "Chủ tiệm gọi điện thẳng cho tổ trưởng.",
-  "en": ""
- },
- {
-  "vi": "Quán nhậu đổ dầu mỡ vào xe",
-  "en": ""
- },
- {
-  "vi": "Nhân viên quán nhậu xách can dầu chiên cũ đổ thẳng vào ngăn hữu cơ: “Rác thì rác, chê gì!” Dầu chảy lênh láng đáy xe.",
-  "en": ""
- },
- {
-  "vi": "Chặn lại, hướng dẫn để dầu vào can cho người thu mua riêng",
-  "en": ""
- },
- {
-  "vi": "Quán gọi người thu mua dầu cũ. Ngăn xe khỏi bốc mùi cả tuần.",
-  "en": ""
- },
- {
-  "vi": "Để yên, về rửa xe sau",
-  "en": ""
- },
- {
-  "vi": "Tốn nước rửa",
-  "en": ""
- },
- {
-  "vi": "Rửa mãi mùi dầu ôi vẫn còn.",
-  "en": ""
- },
- {
-  "vi": "Quát ầm lên",
-  "en": ""
- },
- {
-  "vi": "Công nhân rác quát nhân viên quán giữa phố.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên quán cãi lại, khách nhậu quay ra xem.",
-  "en": ""
- },
- {
-  "vi": "Đám cưới xong bỏ rác đầy ngõ",
-  "en": ""
- },
- {
-  "vi": "Đám cưới tan, nhà chủ để lại ba mươi bao rác, bàn ghế gãy, hoa héo: “Tiện thì dọn luôn giùm nha, cho mấy chục nghìn uống nước.”",
-  "en": ""
- },
- {
-  "vi": "Báo giá thu gom theo khối lượng, có biên lai",
-  "en": ""
- },
- {
-  "vi": "Nhà chủ đóng phí đúng quy định, tổ gọi thêm người dọn trong một giờ.",
-  "en": ""
- },
- {
-  "vi": "Nhận tiền uống nước, dọn không biên lai",
-  "en": ""
- },
- {
-  "vi": "Tổ thu gom nhận tiền ngoài, không biên lai.",
-  "en": ""
- },
- {
-  "vi": "Dọn xong mệt nhoài, chị Hạnh biết chuyện thì không vui.",
-  "en": ""
- },
- {
-  "vi": "Chỉ lấy rác sinh hoạt, đồ cồng kềnh hẹn xe riêng",
-  "en": ""
- },
- {
-  "vi": "Nhà chủ cằn nhằn nhưng gọi xe riêng.",
-  "en": ""
- },
- {
-  "vi": "Biệt thự đòi thu riêng",
-  "en": ""
- },
- {
-  "vi": "Bà chủ biệt thự đầu ngõ: “Rác nhà tôi thu trước, thu riêng, đừng để lẫn với rác mấy nhà nghèo kia. Đây, cầm lấy 10 xu.”",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn, từ chối tiền: nhà nào cũng thu như nhau",
-  "en": ""
- },
- {
-  "vi": "Bà chủ hơi phật ý, nhưng từ đó phân loại rác kỹ nhất ngõ.",
-  "en": ""
- },
- {
-  "vi": "Nhận tiền, thu riêng nhà bà trước",
-  "en": ""
- },
- {
-  "vi": "Tổ thu gom ưu tiên nhà giàu, nhà khác chờ dài cổ.",
-  "en": ""
- },
- {
-  "vi": "Các nhà khác xì xào “có tiền là được ưu tiên”.",
-  "en": ""
- },
- {
-  "vi": "Bé đòi lại đồ chơi trong túi rác",
-  "en": ""
- },
- {
-  "vi": "Một bé gái mếu máo chạy theo xe: “Mẹ vứt con gấu bông của con rồi, chú ơi tìm giúp con với!” Túi đã lên xe.",
-  "en": ""
- },
- {
-  "vi": "Đeo găng lục ngăn còn lại, tìm con gấu",
-  "en": ""
- },
- {
-  "vi": "Con gấu dính chút vỏ cam, bé ôm chầm lấy. Mẹ bé cảm ơn mãi.",
-  "en": ""
- },
- {
-  "vi": "Nói bé về hỏi mẹ, mai tính",
-  "en": ""
- },
- {
-  "vi": "Bé đứng khóc ở đầu ngõ.",
-  "en": ""
- },
- {
-  "vi": "“Vứt rồi thì thôi con”",
-  "en": ""
- },
- {
-  "vi": "Bé khóc òa. Bé Na đứng cạnh nhìn bạn trách móc.",
-  "en": ""
- },
- {
-  "vi": "Bị gọi đường dây nóng vì ồn",
-  "en": ""
- },
- {
-  "vi": "Phường gọi: có người phản ánh “xe rác ồn, công nhân nói chuyện to lúc mười giờ đêm”. Người phản ánh là ông Thước.",
-  "en": ""
- },
- {
-  "vi": "Nhận góp ý, tra dầu bánh xe, nói nhỏ lại",
-  "en": ""
- },
- {
-  "vi": "Bánh xe hết kêu. Ông Thước tối sau không gọi nữa.",
-  "en": ""
- },
- {
-  "vi": "Giải thích giờ thu gom theo lịch phường",
-  "en": ""
- },
- {
-  "vi": "Phường ghi nhận, ông Thước vẫn lầm bầm.",
-  "en": ""
- },
- {
-  "vi": "Cố tình đập nắp xe thật to trước nhà ông",
-  "en": ""
- },
- {
-  "vi": "Công nhân cố tình gây ồn trả đũa người già.",
-  "en": ""
- },
- {
-  "vi": "Lần này phường mời cả tổ lên làm việc.",
-  "en": ""
- },
- {
-  "vi": "Bị chụp ảnh chê “nghề rác”",
-  "en": ""
- },
- {
-  "vi": "Hai cô cậu chụp ảnh bạn đang bốc rác, cười khúc khích: “Đăng story caption ‘không học thì như này nè’, flex vl.”",
-  "en": ""
- },
- {
-  "vi": "Mỉm cười, làm tiếp cho gọn",
-  "en": ""
- },
- {
-  "vi": "Bé Na đi ngang thấy hết, về viết bài “người giữ phố sạch” được cô khen.",
-  "en": ""
- },
- {
-  "vi": "Nói nhẹ: “Xóa giùm cái ảnh nha”",
-  "en": ""
- },
- {
-  "vi": "Hai đứa ngượng, xóa ảnh.",
-  "en": ""
- },
- {
-  "vi": "“Thích thì đăng đấy!” rồi bỏ chạy.",
   "en": ""
  }
 ]

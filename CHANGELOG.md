@@ -1,3 +1,7 @@
+# v1.9.5 — 2026-10-06/07
+
+Gồm các mục "Chưa phát hành" bên dưới: nông trại mới (farm-plus), mỗi nghề một cách nói (voice-w1), nghề làm công không đóng thuế tiệm (salary-notax).
+
 # Chưa phát hành — Nghề làm công không đóng thuế tiệm (salary-notax)
 
 ## Nghề làm công không đóng thuế tiệm

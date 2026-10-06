@@ -1,5 +1,629 @@
 [
  {
+  "vi": "Bị thương, lỗi nặng; kim tiêm là lỗi an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Để lọt đồ nguy hại lên xe",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ: pin, bình xịt dễ cháy nổ trong xe ép.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ nhầm ngăn",
+  "en": ""
+ },
+ {
+  "vi": "Một túi là lỗi nhỏ, nhiều túi là lỗi rõ; túi tái chế bẩn cô Tám không mua.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ sót túi",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ, hôm sau cư dân phản ánh.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu áo phản quang, găng tay khi vào ca",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ ngay từ đầu ca.",
+  "en": ""
+ },
+ {
+  "vi": "Còn rác trên xe lúc tan ca",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hạnh đổ giúp, không có tiền ve chai.",
+  "en": ""
+ },
+ {
+  "vi": "Bị kim tiêm đâm mà chỉ băng tạm",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi nặng: kim tiêm phải đi khám, tiêm phòng.",
+  "en": ""
+ },
+ {
+  "vi": "🧤 Găng tay, khẩu trang, bao bọc mảnh vỡ mua ở [[Kho đồ bảo hộ]].",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Xe có ba ngăn: hữu cơ 8 túi, tái chế 8 túi, còn lại 10 túi; hộp đỏ 8 món.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Tổ trả tiền theo từng ngõ; cô Tám trả tiền ve chai cho túi tái chế sạch.",
+  "en": ""
+ },
+ {
+  "vi": "👥 Nhân viên: Tuyết, Liên quét dọn; Dũng, Quang đẩy xe.",
+  "en": ""
+ },
+ {
+  "vi": "🌙 Tối thường, mưa (mang ủng), oi nồng (đeo khẩu trang kín), ngõ có đám cưới (nhiều chai lon).",
+  "en": ""
+ },
+ {
+  "vi": "🏍️ Xe máy lao vào ngõ tối: kéo xe sát tường. Có áo phản quang thì người lái thấy từ xa.",
+  "en": ""
+ },
+ {
+  "vi": "💍 Nhặt được đồ quý trong rác: báo chị Hạnh, tìm đúng chủ.",
+  "en": ""
+ },
+ {
+  "vi": "🍻 Quán nhậu dúi tiền nhờ lấy rác chưa phân loại: từ chối, chỉ cách đăng ký thu gom.",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Đám quậy phá lúc nửa đêm: nói chuyện, chụp ảnh, gọi công an phường, hay lờ đi. Có lửa thì phải dập.",
+  "en": ""
+ },
+ {
+  "vi": "🚛 Điểm tập kết tràn: xếp gọn, rắc vôi, gọi chú Sáu hay đứng đợi; bỏ về là bị báo lên phường.",
+  "en": ""
+ },
+ {
+  "vi": "VÀO CA",
+  "en": ""
+ },
+ {
+  "vi": "Đẩy xe vào ngõ",
+  "en": ""
+ },
+ {
+  "vi": "Tách ra",
+  "en": ""
+ },
+ {
+  "vi": "Bọc",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc nhà này phân loại",
+  "en": ""
+ },
+ {
+  "vi": "Ra điểm tập kết đổ xe",
+  "en": ""
+ },
+ {
+  "vi": "XONG NGÕ",
+  "en": ""
+ },
+ {
+  "vi": "Kho đồ bảo hộ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa phân loại: dán phiếu, không thu",
+  "en": ""
+ },
+ {
+  "vi": "Thu, nói nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc quy định",
+  "en": ""
+ },
+ {
+  "vi": "Miễn tháng này",
+  "en": ""
+ },
+ {
+  "vi": "Bạn theo chú Hai đi thông cống: xếp đồ nghề lên xe, tìm đúng bệnh, báo giá thật trước khi làm, thông bằng đúng đồ nghề, an toàn ở hố ga.",
+  "en": ""
+ },
+ {
+  "vi": "Xếp đồ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Đọc sổ hẹn, chọn tối đa 5 món lên xe, đeo găng tay rồi [[LÊN ĐƯỜNG]]. Thiếu đồ thì phải [[Về tiệm lấy đồ nghề khác]], khách chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm bệnh",
+  "en": ""
+ },
+ {
+  "vi": "[[Hỏi thêm]], mở nắp soi đèn, [[Xả nước thử]] (hoặc [[Soi camera]] nếu mang theo), rồi chọn nguyên nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Báo [[Theo bảng giá]] của nguyên nhân đã chọn, trước khi làm. Đổi nguyên nhân thì báo lại giá.",
+  "en": ""
+ },
+ {
+  "vi": "Thông",
+  "en": ""
+ },
+ {
+  "vi": "Tóc: dây lò xo. Mỡ đông: máy phun (đeo kính). Giấy ướt: máy lò xo điện hoặc pít-tông. Đồ rơi, tổ chim: móc gắp. Rễ cây: máy lò xo điện. Ống nứt: [[Thay ống xi-phông]].",
+  "en": ""
+ },
+ {
+  "vi": "Rào chắn, đo khí, bật quạt, có người canh; mang ủng, khẩu trang, gầu múc bùn. Phường chuyển khoản.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi đêm",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3: giá theo bảng đã gồm phụ phí đêm, nói rõ trước.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại bảo hành",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi thông tạm hôm trước của tiệm thì bảo hành, không lấy tiền. Tắc mới thì tính như việc mới.",
+  "en": ""
+ },
+ {
+  "vi": "Tự báo giá",
+  "en": ""
+ },
+ {
+  "vi": "Mở [[Tự báo giá]], gõ số rồi [[Báo giá này]]. Giá thật thì khách gật; hét giá thì khách trả giá lại hoặc gọi thợ khác.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nhà đứng lèm bèm",
+  "en": ""
+ },
+ {
+  "vi": "Nhịn làm tiếp, đáp lại, mời ra ngoài chờ, hay từ chối làm tiếp. Mỗi người phản ứng một kiểu.",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ “tiện tay”, hết tiền mặt",
+  "en": ""
+ },
+ {
+  "vi": "Làm luôn, báo giá việc phụ, hay nói việc khác tính riêng. Khách hết tiền: đợi đi rút, ghi nợ, hay xin trả trước; nợ nằm trong [[Sổ nợ]].",
+  "en": ""
+ },
+ {
+  "vi": "👂 Bấm [[Nghe khách kể]].",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Tìm hai manh mối trở lên, rồi chọn nguyên nhân.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Báo giá theo bảng giá.",
+  "en": ""
+ },
+ {
+  "vi": "🧤 Đeo găng tay (máy phun: thêm kính), chọn đồ nghề để thông.",
+  "en": ""
+ },
+ {
+  "vi": "💧 [[Xả nước thử]], [[Dọn sạch chỗ làm]], [[Dặn khách]], rồi [[TÍNH TIỀN]] và thối đúng.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Đúng bệnh, đúng đồ nghề: thử sai là mất thời gian.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Báo giá thật: nói thách thì khách bỏ đi hoặc biết ra là bị chê.",
+  "en": ""
+ },
+ {
+  "vi": "🦺 An toàn: găng tay, kính khi phun, đủ bước ở hố ga.",
+  "en": ""
+ },
+ {
+  "vi": "💧 Xả thử, dọn sạch, dặn khách giữ ống thông.",
+  "en": ""
+ },
+ {
+  "vi": "🧪 Không đổ hóa chất vào ống gang cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Xuống hố ga không đo khí, không thông gió",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: choáng váng, 1★.",
+  "en": ""
+ },
+ {
+  "vi": "Nói thách",
+  "en": ""
+ },
+ {
+  "vi": "Nhiều khách bỏ đi ngay; khách nhận thì sau biết giá thật, lỗi rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tạm mà không nói",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ: vài hôm sau tắc lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đổ bột thông cống thiếu găng, kính",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn; ống gang cũ còn bị hỏng.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xả thử, chưa dọn",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi thứ là một lỗi nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Thu tiền việc bảo hành lỗi của tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ, khách mất lòng tin.",
+  "en": ""
+ },
+ {
+  "vi": "Chặt chém: tự báo giá cao hơn hẳn bảng giá",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ, uy tín trong phố giảm, ông Lộc đăng bài; có khách quay lại đòi tiền chênh.",
+  "en": ""
+ },
+ {
+  "vi": "Cãi tay đôi với chủ nhà",
+  "en": ""
+ },
+ {
+  "vi": "Người nóng tính nổi đóa: lỗi rõ.",
+  "en": ""
+ },
+ {
+  "vi": "🧰 Xe chở 5 món trong 8: pít-tông, dây lò xo tay, máy lò xo điện, máy phun áp lực, camera, móc gắp, gầu múc bùn, máy đo khí.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Ống xi-phông, bột thông cống, găng tay mua ở [[Kho vật tư]].",
+  "en": ""
+ },
+ {
+  "vi": "👥 Nhân viên: Tâm, Vy canh an toàn hố ga; Lực, Sơn chở đồ.",
+  "en": ""
+ },
+ {
+  "vi": "⛈️ Mưa lớn: hố ga dễ tràn, cả ngõ cùng gọi; ưu tiên nhà người già, trẻ nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Thợ dạo báo giá trên trời: nói thật bảng giá của tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "🐀 Chuột chui ra từ cống: bình tĩnh đuổi ra, đậy lưới chắn.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Khách nhờ ghi hóa đơn khống: từ chối.",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Khách bị chặt chém quay lại: trả lại tiền chênh, trả bớt, giải thích, hay không trả. Trả ít quá là bị chê.",
+  "en": ""
+ },
+ {
+  "vi": "LÊN ĐƯỜNG",
+  "en": ""
+ },
+ {
+  "vi": "Về tiệm lấy đồ nghề khác",
+  "en": ""
+ },
+ {
+  "vi": "Theo bảng giá",
+  "en": ""
+ },
+ {
+  "vi": "Thay ống xi-phông",
+  "en": ""
+ },
+ {
+  "vi": "Nghe khách kể",
+  "en": ""
+ },
+ {
+  "vi": "Dọn sạch chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Dặn khách",
+  "en": ""
+ },
+ {
+  "vi": "Báo giá này",
+  "en": ""
+ },
+ {
+  "vi": "Bạn giúp việc nhà cho chị Thảo: đi chợ, nấu theo khẩu vị từng người, giặt giũ, lau dọn, trông bé Su, chăm bà Lành, giữ sổ chợ khớp từng xu.",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ danh sách rồi [[Ra chợ]]. Chọn rau tươi, cá mắt trong; [[Mua giá này]] hay [[Trả giá]]; về [[Ghi sổ chợ, trả tiền thừa]] đúng số đã tiêu.",
+  "en": ""
+ },
+ {
+  "vi": "Xem [[Sổ tay nhà]]: bé Su dị ứng tôm, bà ăn nhạt, Cốm ăn cháo. Nấu sai món dị ứng là lỗi an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Lục túi quần trước khi giặt. Tách đồ trắng, đồ màu, đồ len; váy lụa giặt tay, phơi trong bóng râm.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ sống ngăn dưới, đồ chín ngăn trên, đồ cũ ra trước. Cây vàng lá thì xem đất trước khi tưới.",
+  "en": ""
+ },
+ {
+  "vi": "Mất điện, nồi cơm khê, tắc bồn, khách đến bất ngờ, chảo dầu bắt lửa, rò ga: chọn cách xử lý an toàn trước.",
+  "en": ""
+ },
+ {
+  "vi": "Có hôm chị Thảo khất tiền công: nhận ghi nợ hay xin nhẹ nhàng. Nợ nằm trong [[Sổ nợ]].",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đứng xe cơm của dì Bảy ở đầu chợ: nấu hai nồi cơm đúng nước, nếm chén nước mắm cho vừa, nướng sườn chín vàng, xới đủ vá, gắp đúng món, nhớ lời dặn ăn chay, thối đúng tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn quán đầu ngày",
+  "en": ""
+ },
+ {
+  "vi": "Nồi cơm tấm đổ nước [[Lưng đốt ngón tay]], nồi cơm trắng [[Một đốt ngón tay]]. [[Nếm nước mắm]], [[Nhóm bếp than]], bày khay lên tủ kính rồi [[MỞ QUÁN]].",
+  "en": ""
+ },
+ {
+  "vi": "Chén nước mắm",
+  "en": ""
+ },
+ {
+  "vi": "Mặn thì [[Thêm nước sôi để nguội]], lạt thì [[Thêm nước mắm nhĩ]], ngọt quá thì [[Vắt thêm chanh]], chua quá thì [[Thêm đường]]. Chén đã vừa mà thêm nữa là hỏng.",
+  "en": ""
+ },
+ {
+  "vi": "Nướng sườn",
+  "en": ""
+ },
+ {
+  "vi": "Đặt 1 tới 4 miếng lên vỉ. Mỗi mặt 8–16 giây (thanh xanh): [[Trở mặt]] một lần rồi [[Gắp ra khay]]. Sớm quá là còn hồng (lỗi an toàn), lâu quá là xém rồi khét.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi dĩa cơm",
+  "en": ""
+ },
+ {
+  "vi": "[[Lấy dĩa]] cho khách ngồi ăn, [[Lấy hộp]] cho khách mang về. Xới đúng nồi: ít cơm một vá, dĩa thường hai vá, thêm cơm ba vá. Gắp món khách gọi từ tủ kính, khay giữ ấm, chảo trứng.",
+  "en": ""
+ },
+ {
+  "vi": "Mỡ hành, nước mắm, canh",
+  "en": ""
+ },
+ {
+  "vi": "[[Mỡ hành]] cho dĩa cơm (trừ khách dặn không hành). Hộp mang về: [[Nước mắm để riêng]], đừng rưới vô hộp. Khách gọi canh thì múc [[Chén canh]].",
+  "en": ""
+ },
+ {
+  "vi": "Mỡ hành phi bằng mỡ heo, canh nấu tôm khô: khách ăn chay thì không mỡ hành, không canh, chỉ [[Nước tương]].",
+  "en": ""
+ },
+ {
+  "vi": "Đơn cơm văn phòng",
+  "en": ""
+ },
+ {
+  "vi": "Từ ngày 3, cứ ba ngày chị Ngân đặt bốn hộp cho cả phòng, có một hộp chay. Làm từng hộp cho đúng lời dặn.",
+  "en": ""
+ },
+ {
+  "vi": "👂 Bấm [[Hỏi khách gọi gì]]: xem cơm tấm hay cơm trắng, mấy vá, món nào, lời dặn.",
+  "en": ""
+ },
+ {
+  "vi": "🍽️ [[Lấy dĩa]] hoặc [[Lấy hộp]], xới cơm từng vá từ đúng nồi.",
+  "en": ""
+ },
+ {
+  "vi": "🍱 Gắp món từ tủ kính; sườn lấy miếng vàng đều trên khay giữ ấm; trứng ốp la từ chảo.",
+  "en": ""
+ },
+ {
+  "vi": "🌿 Mỡ hành, nước mắm, canh đúng như khách dặn, rồi bấm [[ĐƯA CƠM]].",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Cơm dẻo, đủ vá: anh Mạnh liếc dĩa là biết thiếu.",
+  "en": ""
+ },
+ {
+  "vi": "🍖 Sườn vàng đều, giữa không còn hồng.",
+  "en": ""
+ },
+ {
+  "vi": "🫙 Nước mắm vừa miệng: sáng nào cũng nếm.",
+  "en": ""
+ },
+ {
+  "vi": "📿 Nhớ người ăn chay: không mỡ hành, nước tương.",
+  "en": ""
+ },
+ {
+  "vi": "🥡 Hộp mang về nước mắm để riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Bán miếng sườn còn hồng",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: khách không ăn, chấm 1 sao, mai có thể có đoàn kiểm tra.",
+  "en": ""
+ },
+ {
+  "vi": "Mỡ hành, nước mắm cho khách ăn chay",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi rõ: khách đã dặn mà quán quên. Làm lại hộp mới, không gạt ra.",
+  "en": ""
+ },
+ {
+  "vi": "Đổ nước nồi cơm sai",
+  "en": ""
+ },
+ {
+  "vi": "Cả nồi nhão hoặc sượng, dĩa nào xới từ nồi đó cũng bị chê. Nồi hết mới nấu được nồi mới.",
+  "en": ""
+ },
+ {
+  "vi": "Xới thiếu cơm",
+  "en": ""
+ },
+ {
+  "vi": "Khách gọi thêm cơm mà xới hai vá là bị nhắc; với anh Mạnh là lỗi rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Rưới nước mắm vào hộp mang về",
+  "en": ""
+ },
+ {
+  "vi": "Về tới nơi cơm nhão. Hộp nào cũng để nước mắm riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Bày khay quá nhiều",
+  "en": ""
+ },
+ {
+  "vi": "Đồ nấu không để qua đêm: tối dư bao nhiêu là bỏ bấy nhiêu.",
+  "en": ""
+ },
+ {
+  "vi": "🌾 Gạo, sườn ướp, trứng, đồ kho, hộp giấy nhập ở [[Kho quán cơm]]. Sườn và đồ kho để được hai ngày, rau một ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🍱 Mỗi phần hàng trong kho bày ra được một khay (6–8 phần). Bày vừa đủ bán, hết thì bày thêm giữa ngày.",
+  "en": ""
+ },
+ {
+  "vi": "👥 Nhân viên: Tí, Tâm quạt than canh bếp; Hồng, Lan rửa chén dọn bàn.",
+  "en": ""
+ },
+ {
+  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, mưa dầm (nhiều hộp mang về), chợ phiên (khách cơm tấm nối đuôi), ngày rằm (khách ăn chay).",
+  "en": ""
+ },
+ {
+  "vi": "🪰 Ruồi bu tủ kính, khói bếp bay vào nhà bên, cô bán vé số xin chén cơm, phường kiểm tra an toàn thực phẩm.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm bếp than",
+  "en": ""
+ },
+ {
+  "vi": "MỞ QUÁN",
+  "en": ""
+ },
+ {
+  "vi": "Trở mặt",
+  "en": ""
+ },
+ {
+  "vi": "Gắp ra khay",
+  "en": ""
+ },
+ {
+  "vi": "Lấy dĩa",
+  "en": ""
+ },
+ {
+  "vi": "Lấy hộp",
+  "en": ""
+ },
+ {
+  "vi": "Chén canh",
+  "en": ""
+ },
+ {
+  "vi": "ĐƯA CƠM",
+  "en": ""
+ },
+ {
+  "vi": "Kho quán cơm",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đứng bếp quán phở của bác Lâm dưới gốc cây si: giữ nồi nước lăn tăn, trong và vừa miệng, trụng bánh tơi, xếp thịt đúng lời khách, chan nước dừng muôi đúng vạch, bưng ra nóng hổi, thối đúng tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Mở quán đầu ngày",
+  "en": ""
+ },
+ {
+  "vi": "Nồi xương ủ lửa từ đêm. [[Vặn lửa lăn tăn]], [[Hớt bọt]] cho sạch, [[Nếm nước dùng]] rồi [[Nêm nước mắm]] hoặc [[Châm nước sôi]]. [[Ngửi rổ bánh phở]], chua thì [[Bỏ bánh chua]]. Xong bấm [[MỞ QUÁN]].",
+  "en": ""
+ },
+ {
+  "vi": "Lửa lăn tăn giữ 97 °C: tái chín hồng, nước trong. Lửa lớn nóng nhanh nhưng bọt nổi, sôi lâu là nước đục cả ngày. Lửa ủ không đủ nóng để chín tái.",
+  "en": ""
+ },
+ {
   "vi": "Trụng bánh",
   "en": ""
  },
@@ -1173,630 +1797,6 @@
  },
  {
   "vi": "Phòng đọc",
-  "en": ""
- },
- {
-  "vi": "Mỗi chuyện chọn một cách: nhắc nhỏ, chỉ nội quy, một cách hợp, mời ra hoặc để kệ. Ai cãi lại thì nói thêm một lần. Xong thì [[XONG VÒNG PHÒNG ĐỌC]].",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ lưu trữ",
-  "en": ""
- },
- {
-  "vi": "Lần đầu làm bài tập huấn. Rồi [[Xem giấy tờ]], [[Đưa phiếu yêu cầu]], [[Tra mục lục]], quyết, đeo găng, lấy đúng hộp, cấp bản sao, [[Ghi sổ khai thác]], [[BÀN GIAO HỒ SƠ]].",
-  "en": ""
- },
- {
-  "vi": "🌡️ Sáng: ẩm kế, bẫy côn trùng, phòng đọc, bảng nội quy.",
-  "en": ""
- },
- {
-  "vi": "🔖 Quầy: [[Tra máy]], [[Kiểm thẻ]], rồi cho mượn hoặc giúp cách khác.",
-  "en": ""
- },
- {
-  "vi": "💰 Trả sách: kiểm sách, xem dấu hạn, tính phí đúng nội quy.",
-  "en": ""
- },
- {
-  "vi": "🏷️ Biên mục: lớp, ký hiệu tác giả, lọc sách hỏng.",
-  "en": ""
- },
- {
-  "vi": "🗂️ Lưu trữ: giấy tờ, phiếu, mục lục, đúng hộp, bản sao, ghi sổ.",
-  "en": ""
- },
- {
-  "vi": "📋 Làm đúng nội quy, không làm khó ai vô cớ.",
-  "en": ""
- },
- {
-  "vi": "⚖️ Phí phạt đúng nội quy; miễn thì có lý do, có ghi sổ.",
-  "en": ""
- },
- {
-  "vi": "🔒 Không lộ sổ mượn, hồ sơ của người khác.",
-  "en": ""
- },
- {
-  "vi": "🏷️ Lớp và ký hiệu đúng, sách hỏng không lên kệ.",
-  "en": ""
- },
- {
-  "vi": "🧤 Bản gốc không rời kho, găng tay khi mở hộp cũ.",
-  "en": ""
- },
- {
-  "vi": "Cho xem hồ sơ, sổ mượn của người khác",
-  "en": ""
- },
- {
-  "vi": "Lỗi nặng: mất tiền phụ cấp, bạn đọc mất lòng tin.",
-  "en": ""
- },
- {
-  "vi": "Thu phí quá nội quy",
-  "en": ""
- },
- {
-  "vi": "Bạn đọc biết luật chỉ thẳng lên bảng; ai không biết thì trả rồi về kể lại.",
-  "en": ""
- },
- {
-  "vi": "Miễn phí không có lý do",
-  "en": ""
- },
- {
-  "vi": "Kế toán phường nhắc, mất một sao.",
-  "en": ""
- },
- {
-  "vi": "Cho mượn sách tra cứu về nhà",
-  "en": ""
- },
- {
-  "vi": "Người sau cần tra không có sách.",
-  "en": ""
- },
- {
-  "vi": "Xịt thuốc lên kệ, bỏ qua kho ẩm",
-  "en": ""
- },
- {
-  "vi": "Sách hỏng cả loạt, cô Nguyệt nhắc.",
-  "en": ""
- },
- {
-  "vi": "Đưa bản gốc ra khỏi kho, không ghi sổ",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ đi lạc, lỗi nặng.",
-  "en": ""
- },
- {
-  "vi": "Chiều theo nhờ vả sai quy định",
-  "en": ""
- },
- {
-  "vi": "Lần này êm, nhưng bị trừ sao và phụ cấp.",
-  "en": ""
- },
- {
-  "vi": "📦 Kho vật tư: nhãn gáy sách (mỗi cuốn lên kệ một tờ), băng giấy sửa sách, găng tay vải.",
-  "en": ""
- },
- {
-  "vi": "🎓 Chứng chỉ nghiệp vụ lưu trữ: phường trả thêm phụ cấp cho mỗi lượt hồ sơ.",
-  "en": ""
- },
- {
-  "vi": "🙋 Hầu như việc nào cũng có người nhờ: gia hạn qua điện thoại, xem sổ mượn của con, photo nguyên cuốn, phong bì, xin số điện thoại…",
-  "en": ""
- },
- {
-  "vi": "🌫️ Trời nồm thì kho dễ ẩm, mọt; mùa thi phòng đọc kín chỗ; nghỉ hè trẻ con đông.",
-  "en": ""
- },
- {
-  "vi": "🔔 Mưa dột kho, cúp điện, cả lớp kéo tới không báo, đoàn kiểm tra: chọn cách xử lý.",
-  "en": ""
- },
- {
-  "vi": "📒 Bạn đọc nợ phí thì ghi sổ nợ, đòi nhẹ nhàng hoặc xóa nợ.",
-  "en": ""
- },
- {
-  "vi": "Xem ẩm kế kho",
-  "en": ""
- },
- {
-  "vi": "Bật máy hút ẩm",
-  "en": ""
- },
- {
-  "vi": "Soi bẫy côn trùng",
-  "en": ""
- },
- {
-  "vi": "Mở phòng đọc",
-  "en": ""
- },
- {
-  "vi": "Dựng bảng nội quy",
-  "en": ""
- },
- {
-  "vi": "MỞ CỬA THƯ VIỆN",
-  "en": ""
- },
- {
-  "vi": "Tra máy",
-  "en": ""
- },
- {
-  "vi": "Kiểm thẻ",
-  "en": ""
- },
- {
-  "vi": "Xem dấu hạn",
-  "en": ""
- },
- {
-  "vi": "Hỏi lý do",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ nợ",
-  "en": ""
- },
- {
-  "vi": "Miễn phí",
-  "en": ""
- },
- {
-  "vi": "CẤT SÁCH LÊN KỆ",
-  "en": ""
- },
- {
-  "vi": "Hỏi cuốn gần nhất thích",
-  "en": ""
- },
- {
-  "vi": "Hỏi đang muốn đọc gì",
-  "en": ""
- },
- {
-  "vi": "DÁN NHÃN, XẾP LÊN KỆ",
-  "en": ""
- },
- {
-  "vi": "XONG VÒNG PHÒNG ĐỌC",
-  "en": ""
- },
- {
-  "vi": "Xem giấy tờ",
-  "en": ""
- },
- {
-  "vi": "Đưa phiếu yêu cầu",
-  "en": ""
- },
- {
-  "vi": "Tra mục lục",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ khai thác",
-  "en": ""
- },
- {
-  "vi": "BÀN GIAO HỒ SƠ",
-  "en": ""
- },
- {
-  "vi": "Bạn trả lời tin nhắn, soát đơn và chứng cứ, rồi chọn cách xử lý đúng và theo tới cùng.",
-  "en": ""
- },
- {
-  "vi": "Khách mới hỏi xem đơn ở đâu. Không có gì sai: đóng dấu [[Giải thích & hướng dẫn]].",
-  "en": ""
- },
- {
-  "vi": "Ảnh và đơn lệch màu: đánh dấu dòng trong ảnh, rồi [[Đổi đúng món]].",
-  "en": ""
- },
- {
-  "vi": "Bấm [[Hỏi Ngọc bên giao nhận]], chờ 2 nhịp. Điểm giao lệch địa chỉ: [[Mở đối soát giao nhận]].",
-  "en": ""
- },
- {
-  "vi": "Bị trừ tiền hai lần",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. Lần 2 là “giữ tạm”, tự hoàn sau 3 ngày: đánh dấu rồi [[Giải thích & hướng dẫn]].",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. Xem hạn đổi trả trong sổ quy định. Quá hạn: [[Giải thích & hướng dẫn]], đừng đổi.",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. Bấm [[Xem thông tin ảnh gốc]]. Chụp trước lúc nhận: [[Từ chối có căn cứ]]. Sau lúc nhận: [[Hoàn tiền]].",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. Trạm hứa gửi bù thiệp mà quên. Đánh dấu dòng lịch sử, rồi [[Gửi bù / gửi lại]].",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3. Thư “đã giao” gửi nhầm, kiện còn ở kho: đánh dấu rồi [[Giải thích & hướng dẫn]].",
-  "en": ""
- },
- {
-  "vi": "Hoàn vào tài khoản mới",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3. Vừa đổi mật khẩu trên máy lạ, xin đổi tài khoản qua chat: [[Tạm khóa & gọi xác minh]].",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3. Bài nói sai số ngày: [[Trả lời công khai, mời nhắn riêng]]. Không đăng chi tiết đơn.",
-  "en": ""
- },
- {
-  "vi": "Cuộc gọi dọa dẫm",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 4. Lời dọa tới tận kho là chuyện an toàn: đánh dấu rồi [[Chuyển chị Mai]].",
-  "en": ""
- },
- {
-  "vi": "Chuyện anh Phúc",
-  "en": ""
- },
- {
-  "vi": "Ngày 2, 5, 8, 12. Số nhắn khác hồ sơ: [[Gọi số đã đăng ký]] trước khi [[Đổi địa chỉ theo yêu cầu]].",
-  "en": ""
- },
- {
-  "vi": "Vụ theo dõi nhiều ngày",
-  "en": ""
- },
- {
-  "vi": "Sáu bước, đánh số trên vé: xác minh, mở đủ chứng cứ, chọn phương án khớp dòng 📌 Căn cứ, gửi đầu mối, kiểm kết quả, đóng vụ (+65 xu).",
-  "en": ""
- },
- {
-  "vi": "Gọi khách cập nhật",
-  "en": ""
- },
- {
-  "vi": "Vụ mở qua đêm: sáng hôm sau gọi khách trước 12:00, chọn [[Báo tình trạng thật của đơn]].",
-  "en": ""
- },
- {
-  "vi": "💬 Mục [[Trả lời đầu tiên]]: chọn câu trả lời ân cần, đúng việc. Làm trước khi hết giờ.",
-  "en": ""
- },
- {
-  "vi": "📥 Bấm [[Mở hồ sơ đơn]] để xem tin nhắn, đơn hàng, ảnh và lịch sử liên hệ.",
-  "en": ""
- },
- {
-  "vi": "📖 Mở [[Sổ quy định hôm nay]]: hạn đổi trả, khu giao chậm, luật MỚI.",
-  "en": ""
- },
- {
-  "vi": "👆 Chạm dòng có vấn đề, chọn quy định nó trái. Dòng khóa 🔒 phải kiểm trước.",
-  "en": ""
- },
- {
-  "vi": "🔍 Bấm bước kiểm như [[Gọi số đã đăng ký]]; phải chờ thì [[Chờ một nhịp]].",
-  "en": ""
- },
- {
-  "vi": "🖋️ Chọn một con dấu, rồi bấm [[Đóng dấu]]. Đóng rồi là không sửa được.",
-  "en": ""
- },
- {
-  "vi": "🗂️ Vụ nhiều ngày: [[Xác minh mã đơn]], mở đủ chứng cứ, đọc dòng 📌 Căn cứ rồi chọn phương án khớp nó (“đổi đúng mã” → [[Đổi đúng món]]). Chọn lệch thì trạm chỉ lại dòng đó.",
-  "en": ""
- },
- {
-  "vi": "✅ Bấm [[Gửi việc cho đầu mối]], có kết quả thì [[Kiểm kết quả]], rồi [[Hoàn tất & đóng vụ]].",
-  "en": ""
- },
- {
-  "vi": "💬 Câu trả lời đầu phải là câu tốt nhất; câu cụt hay câu đòi khách kể lại làm mất “Chuẩn”.",
-  "en": ""
- },
- {
-  "vi": "⏰ Từ ngày 3 mỗi tin có hạn phản hồi, xem đồng hồ trên vé. Trễ hạn thì điểm tốc độ còn 2.",
-  "en": ""
- },
- {
-  "vi": "✔ Chỉ ra hết chỗ sai, không đánh dấu nhầm, làm đủ bước kiểm cần có.",
-  "en": ""
- },
- {
-  "vi": "🎯 Chọn con dấu tốt nhất: “Chuẩn” đủ thù lao, “Đạt” 60%, “Chưa đúng” không có gì.",
-  "en": ""
- },
- {
-  "vi": "📞 Khi gọi khách: báo tình trạng thật, xin lỗi khi họ phải chờ. Đừng hứa chắc chắn hay nói nặng lời.",
-  "en": ""
- },
- {
-  "vi": "Từ chối khi hàng giao sai rõ ràng, khi đơn chưa đối soát, hoặc sau khi trạm lỡ hẹn",
-  "en": ""
- },
- {
-  "vi": "Lỗi nặng: không thù lao, review 2★, khách có thể báo cáo lên app.",
-  "en": ""
- },
- {
-  "vi": "Hoàn tiền theo ảnh cũ hay vào tài khoản lạ, đăng chi tiết đơn của khách lên mạng",
-  "en": ""
- },
- {
-  "vi": "Lỗi nặng: không thù lao, 2★, bị báo cáo. Đăng chi tiết đơn còn làm bài chê lan thêm.",
-  "en": ""
- },
- {
-  "vi": "Ẩn bài chê thay vì trả lời",
-  "en": ""
- },
- {
-  "vi": "Bài chê lan gấp đôi. Mức ồn cao làm khách hôm sau dễ sốt ruột hơn.",
-  "en": ""
- },
- {
-  "vi": "Hoàn tay khoản giữ tạm, đổi hàng quá hạn, hoàn tiền vì bị dọa",
-  "en": ""
- },
- {
-  "vi": "Không thù lao, review khoảng 3–4★, cộng điểm rủi ro.",
-  "en": ""
- },
- {
-  "vi": "Đổi thông tin đơn khi chưa gọi số đã đăng ký",
-  "en": ""
- },
- {
-  "vi": "Tính là sai dù đúng người; cộng điểm rủi ro, từ phiếu thứ ba trong ngày bị trừ tới 20 xu.",
-  "en": ""
- },
- {
-  "vi": "Trả lời trễ hạn, quên gọi cập nhật trước 12:00",
-  "en": ""
- },
- {
-  "vi": "Kiên nhẫn tụt, khách căng hơn, ghi thêm một lỗi. Trễ vé công khai làm bài chê lan.",
-  "en": ""
- },
- {
-  "vi": "Dồn điểm rủi ro tới ngày chị Mai xem báo cáo (mỗi 6 ngày)",
-  "en": ""
- },
- {
-  "vi": "Biên bản, trừ tới 60 xu. Không sai sót nào thì được thưởng 25 xu.",
-  "en": ""
- },
- {
-  "vi": "🗂️ Đầu ca mở dock [[Theo dõi]]: đọc bàn giao ca trước, bấm [[Đã đọc bàn giao]].",
-  "en": ""
- },
- {
-  "vi": "📋 Mục “Vụ đang mở”: bấm [[Mở vụ]] cho vụ có kết quả trong đêm để kiểm và đóng.",
-  "en": ""
- },
- {
-  "vi": "📞 Vụ đang chờ kho hay bên vận chuyển: gọi khách cập nhật trước 12:00.",
-  "en": ""
- },
- {
-  "vi": "📰 Đọc bản tin: hạn đổi trả đổi giữa 7 và 5 ngày, Mây Express chậm ở một khu.",
-  "en": ""
- },
- {
-  "vi": "☎️ Người xưng công an đòi đọc địa chỉ khách: từ chối, hướng dẫn gửi văn bản chính thức.",
-  "en": ""
- },
- {
-  "vi": "😠 Khách gọi lần thứ năm, dọa đợi lúc tan ca: báo trưởng ca và an ninh, đừng chửi lại.",
-  "en": ""
- },
- {
-  "vi": "🛍️ Ngày giảm giá hàng đợi đông; từ ngày 5 phải xử lý theo thứ tự, không ưu tiên người quen.",
-  "en": ""
- },
- {
-  "vi": "🗯️ Đồng nghiệp đổ lỗi, ví bị móc, laptop bị lấy: bình tĩnh đưa email và nhật ký làm bằng chứng.",
-  "en": ""
- },
- {
-  "vi": "Bạn soát phiếu phòng khám, lấy đúng hộp, đúng lô rồi giao; việc ngoài phạm vi thì chuyển cô Thu.",
-  "en": ""
- },
- {
-  "vi": "Phiếu gọn gàng",
-  "en": ""
- },
- {
-  "vi": "Phiếu đủ, dấu đúng mẫu, khay đúng tên và số lượng: đóng dấu [[Giao đúng phiếu]].",
-  "en": ""
- },
- {
-  "vi": "Hàng thông thường, không phiếu",
-  "en": ""
- },
- {
-  "vi": "Siro, viên gừng, men lá không cần phiếu. Soát khay rồi [[Giao đúng phiếu]], đừng từ chối.",
-  "en": ""
- },
- {
-  "vi": "Khoa lấy nhầm hộp tên gần giống. Đánh dấu dòng tên, rồi [[Đổi cho đúng rồi giao]].",
-  "en": ""
- },
- {
-  "vi": "Khách xin lấy dư",
-  "en": ""
- },
- {
-  "vi": "Phiếu ghi 1 hộp mà khay có 3. Đánh dấu số hộp, rồi [[Đổi cho đúng rồi giao]].",
-  "en": ""
- },
- {
-  "vi": "Thuốc nhóm K không phiếu",
-  "en": ""
- },
- {
-  "vi": "Khách dúi tiền xin một hộp. Đánh dấu dòng “Phiếu”, đóng dấu [[Từ chối, giải thích rõ]].",
-  "en": ""
- },
- {
-  "vi": "Phiếu hết hạn",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. Hạn phiếu đã qua: đánh dấu dòng “Hạn phiếu”, rồi [[Từ chối, giải thích rõ]].",
-  "en": ""
- },
- {
-  "vi": "Lô đang thu hồi",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 2. So số lô trên khay với danh sách thu hồi, rồi [[Đổi cho đúng rồi giao]] sang lô khác.",
-  "en": ""
- },
- {
-  "vi": "Con dấu lạ",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3. So dấu với bản tin hôm nay, bấm [[Gọi phòng khám xác minh]], rồi [[Chuyển cô Thu]].",
-  "en": ""
- },
- {
-  "vi": "Sai hàm lượng",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 3. Phiếu ghi 250, kệ chỉ còn 500. Đánh dấu dòng tên rồi [[Chuyển cô Thu]].",
-  "en": ""
- },
- {
-  "vi": "Hàng lạnh, tủ mát chập chờn",
-  "en": ""
- },
- {
-  "vi": "Bấm [[Xem nhật ký tủ mát]]. Có mốc trên 8°C thì [[Chuyển cô Thu]]; cả ngày 2–8°C thì giao.",
-  "en": ""
- },
- {
-  "vi": "Người nhận thay",
-  "en": ""
- },
- {
-  "vi": "Người đứng quầy trùng dòng “Nhận thay” thì giao. Khác tên thì đánh dấu rồi [[Chuyển cô Thu]].",
-  "en": ""
- },
- {
-  "vi": "Từ ngày 4. Có mã số thuế và tem sợi bạc 🧵 thì [[Nhận lô hàng]]. Tem phẳng, rẻ bất ngờ: [[Chuyển cô Thu]].",
-  "en": ""
- },
- {
-  "vi": "Mỗi 4 ngày. Chỉ ra dòng sổ thiếu số phiếu, mốc tủ mát bỏ trống, rồi [[Nhận thiếu sót, bổ sung ngay]].",
-  "en": ""
- },
- {
-  "vi": "Chuyện bác Năm",
-  "en": ""
- },
- {
-  "vi": "Ngày 2, 5, 9, 14. Dán nhãn chữ to; vỉ mất nhãn hay thuốc trùng thì [[Chuyển cô Thu]].",
-  "en": ""
- },
- {
-  "vi": "Phiếu lấy hàng theo mã hộp",
-  "en": ""
- },
- {
-  "vi": "Hỏi rõ phiếu, đọc nhãn từng lô, chỉ lấy lô “Hợp lệ”, tự kiểm khay rồi bàn giao.",
-  "en": ""
- },
- {
-  "vi": "Phiếu lặp lại của khách quen",
-  "en": ""
- },
- {
-  "vi": "Tab [[Khách quen]]: bấm [[Gọi nhắc lấy thuốc]] đúng lịch, khách tới thì bấm [[Giao]] (+30 xu).",
-  "en": ""
- },
- {
-  "vi": "Tab [[Sổ lô]]: bấm [[Ghi nhiệt độ]] lượt sáng trước 12:00 và lượt chiều từ 14:00.",
-  "en": ""
- },
- {
-  "vi": "Rút hộp hỏng khỏi kệ",
-  "en": ""
- },
- {
-  "vi": "Hộp quá hạn, thu hồi hay hỏng lạnh: bấm [[Rút khỏi kệ]]. Lô thu hồi được hoàn tiền.",
-  "en": ""
- },
- {
-  "vi": "📥 Chạm khách, bấm [[Nhận giấy tờ]] để đặt phiếu và khay lên quầy.",
-  "en": ""
- },
- {
-  "vi": "📖 Mở [[Sổ quy định hôm nay]]: xem luật MỚI, mẫu dấu từng phòng khám, lô thu hồi.",
-  "en": ""
- },
- {
-  "vi": "👆 Chạm dòng có vấn đề, chọn đúng quy định nó trái. ✔ là trúng, × là nhầm.",
-  "en": ""
- },
- {
-  "vi": "🔍 Mục “Kiểm tra thêm”: bấm [[Gọi phòng khám xác minh]] hoặc [[Xem nhật ký tủ mát]] khi có.",
-  "en": ""
- },
- {
-  "vi": "⏳ Bước kiểm nào phải chờ thì bấm [[Chờ một nhịp]] hoặc làm việc khác.",
-  "en": ""
- },
- {
-  "vi": "🧰 Phiếu lấy hàng kiểu cũ: [[Hỏi rõ phiếu]], [[Đọc nhãn]] từng lô, [[Lấy 1]] hộp lô hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "✅ Tích đủ ba ô tự kiểm, bấm [[Kiểm khay]] rồi [[Bàn giao phiếu]] (+40 xu).",
-  "en": ""
- },
- {
-  "vi": "🎯 Được “Chuẩn” (đủ 100% thù lao) khi chọn đúng con dấu tốt nhất.",
-  "en": ""
- },
- {
-  "vi": "✔ Phải chỉ ra hết mọi dòng sai, đúng quy định, trước khi đóng dấu.",
-  "en": ""
- },
- {
-  "vi": "❌ Không đánh dấu nhầm lần nào: mỗi lần nhầm khách mất 5% kiên nhẫn.",
-  "en": ""
- },
- {
-  "vi": "🔍 Làm đủ các bước kiểm cần thiết, như xem nhật ký tủ mát trước khi giao hàng lạnh.",
-  "en": ""
- },
- {
-  "vi": "⏱️ Khách chấm cả thời gian chờ: kiên nhẫn từ 90% trở lên mới được 5 điểm.",
   "en": ""
  }
 ]

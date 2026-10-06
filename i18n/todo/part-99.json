@@ -1,5 +1,945 @@
 [
  {
+  "vi": "BẠN CẦM LÁI",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại: kéo cần lái, trượt cần ga. Bàn phím: ← → nghiêng, ↓ kéo mũi lên, ↑ hạ mũi, W tăng ga, S giảm ga.",
+  "en": ""
+ },
+ {
+  "vi": "1/3 · Cất cánh",
+  "en": ""
+ },
+ {
+  "vi": "Tăng ga hết, giữ vạch giữa, chờ 110 knot.",
+  "en": ""
+ },
+ {
+  "vi": "Kéo nhẹ mũi lên để rời đường băng.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ W hoặc đẩy cần ga lên. Dùng ← → để bám vạch giữa.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ ↓ nhẹ hoặc kéo cần lái về phía mình; thả khi đã lên đều.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đủ tốc độ thì thả cần lái, tiếp tục tăng ga. Lệch vạch thì chỉnh nhẹ về giữa.",
+  "en": ""
+ },
+ {
+  "vi": "2/3 · Trên đường bay",
+  "en": ""
+ },
+ {
+  "vi": "Vòng qua đám mây giông rồi trở về hướng cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Dùng ← → hoặc kéo cần lái sang bên để nghiêng cánh; trả cần về giữa khi đã tránh giông.",
+  "en": ""
+ },
+ {
+  "vi": "Đừng bay xuyên mây giông. Chỉnh từng chút, nhìn lại đường bay sau khi vòng qua.",
+  "en": ""
+ },
+ {
+  "vi": "Lần này không còn đủ dầu bay lại. Chỉnh nhẹ theo vạch tím và lời cơ trưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Giảm ga bằng S hoặc kéo cần ga xuống. Chưa ổn định ở cổng kiểm tra thì bấm G để bay lại.",
+  "en": ""
+ },
+ {
+  "vi": "Tăng ga bằng W hoặc đẩy cần ga lên. Chưa ổn định thì bấm G để bay lại.",
+  "en": ""
+ },
+ {
+  "vi": "Hạ mũi nhẹ bằng ↑, giữ tốc độ. Nếu chưa ổn định, bấm G để bay lại.",
+  "en": ""
+ },
+ {
+  "vi": "Kéo mũi lên nhẹ bằng ↓. Nếu chưa ổn định, bấm G để bay lại.",
+  "en": ""
+ },
+ {
+  "vi": "Không thấy đường băng hoặc chưa ổn định: bấm G để bay lại; đây là lựa chọn an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "3/3 · Hạ cánh",
+  "en": ""
+ },
+ {
+  "vi": "Thu ga, ghìm mũi nhẹ cho bánh chạm đất.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ 115 knot, 2 đèn trắng + 2 đỏ và tim đường băng.",
+  "en": ""
+ },
+ {
+  "vi": "Kéo ga xuống hết; kéo cần lái nhẹ về mình (↓), không giật mạnh.",
+  "en": ""
+ },
+ {
+  "vi": "Ga chỉnh tốc độ, mũi chỉnh độ cao; bám thanh tím. Kiểm tra ở 1.000 ft và 200 ft.",
+  "en": ""
+ },
+ {
+  "vi": "2/3 · Quyết định trên đường bay",
+  "en": ""
+ },
+ {
+  "vi": "Đọc tình huống và chọn cách xử lý trước khi tiếp tục.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn phương án ở bảng tình huống. Máy bay đang được lái tự động.",
+  "en": ""
+ },
+ {
+  "vi": "Đối chiếu thời tiết, sức khỏe khách và lượng dầu; đọc rõ kết quả rồi tiếp tục.",
+  "en": ""
+ },
+ {
+  "vi": "Bay lại an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Chờ cơ trưởng đưa tàu về vị trí tiếp cận mới.",
+  "en": ""
+ },
+ {
+  "vi": "Thả cần lái; hệ thống đang điều khiển đoạn bay lại.",
+  "en": ""
+ },
+ {
+  "vi": "Khi nhận lại lái, giảm thao tác mạnh và giữ tốc độ mục tiêu.",
+  "en": ""
+ },
+ {
+  "vi": "Đã chạm đất",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển chặng",
+  "en": ""
+ },
+ {
+  "vi": "Chờ lăn vào bến, rồi đỗ tàu để khép chuyến.",
+  "en": ""
+ },
+ {
+  "vi": "Lái tự động đang đưa tàu tới bước tiếp theo.",
+  "en": ""
+ },
+ {
+  "vi": "Thả cần lái và theo dõi lời cơ trưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể mở Học từng bước bất kỳ lúc nào để đọc lại hướng dẫn.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Hết:",
+  "en": ""
+ },
+ {
+  "vi": "📦 Sắp hết:",
+  "en": ""
+ },
+ {
+  "vi": "Mặc cả với phường",
+  "en": ""
+ },
+ {
+  "vi": "Gửi anh Định",
+  "en": ""
+ },
+ {
+  "vi": "Anh chỉ vào một mục trong sổ: “Chuyện này có người đang cần mình ngay.”",
+  "en": ""
+ },
+ {
+  "vi": "Mai lên Ban chỉ huy giải trình. Hôm nay tan ca sớm.",
+  "en": ""
+ },
+ {
+  "vi": "Bị hạ bậc, tạm dừng nhiệm vụ hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Tạm dừng nhiệm vụ hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Tạm dừng nhiệm vụ: tan ca",
+  "en": ""
+ },
+ {
+  "vi": "📖 Đọc mục này",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ trực ban đêm qua",
+  "en": ""
+ },
+ {
+  "vi": "🚶 Làm trước",
+  "en": ""
+ },
+ {
+  "vi": "Đọc từng mục sổ trực ban",
+  "en": ""
+ },
+ {
+  "vi": "📖 Đọc",
+  "en": ""
+ },
+ {
+  "vi": "Chọn việc làm trước",
+  "en": ""
+ },
+ {
+  "vi": "🚶 Chọn việc làm trước",
+  "en": ""
+ },
+ {
+  "vi": "Trước khi xem hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Hồ sơ khai báo tạm trú",
+  "en": ""
+ },
+ {
+  "vi": "📄 Thiếu, sai",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Nhận hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "đủ giấy, hẹn giờ trả",
+  "en": ""
+ },
+ {
+  "vi": "📄 Hướng dẫn bổ sung…",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời người khai",
+  "en": ""
+ },
+ {
+  "vi": "Nhận hồ sơ hoặc hướng dẫn bổ sung",
+  "en": ""
+ },
+ {
+  "vi": "nộp",
+  "en": ""
+ },
+ {
+  "vi": "Hình dáng",
+  "en": ""
+ },
+ {
+  "vi": "Bên trong",
+  "en": ""
+ },
+ {
+  "vi": "Nhặt ở",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Đã ký biên bản tiếp nhận",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Kiểm đếm cùng người nhặt, ký biên bản",
+  "en": ""
+ },
+ {
+  "vi": "tới xin nhận lại",
+  "en": ""
+ },
+ {
+  "vi": "✅ Trả lại, ký nhận",
+  "en": ""
+ },
+ {
+  "vi": "khớp với biên bản",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Chưa trả",
+  "en": ""
+ },
+ {
+  "vi": "hẹn mang giấy tờ, chứng minh",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm đếm, ký biên bản",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Kiểm đếm, ký biên bản",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi người tới nhận (ít nhất hai câu)",
+  "en": ""
+ },
+ {
+  "vi": "❓ Hỏi người tới nhận",
+  "en": ""
+ },
+ {
+  "vi": "Trả lại hoặc chưa trả",
+  "en": ""
+ },
+ {
+  "vi": "📝 Các lần đề xuất",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Hai bên đã đồng ý. Ký biên bản hòa giải.",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Đề xuất của bạn",
+  "en": ""
+ },
+ {
+  "vi": "📝 Đề xuất với hai bên",
+  "en": ""
+ },
+ {
+  "vi": "Cách khác…",
+  "en": ""
+ },
+ {
+  "vi": "😤 Dọa phạt cả hai cho xong",
+  "en": ""
+ },
+ {
+  "vi": "“không chịu thì phạt hết”",
+  "en": ""
+ },
+ {
+  "vi": "📅 Chuyển tổ hòa giải, hẹn buổi sau",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển tổ hòa giải, hẹn hai nhà buổi sau?",
+  "en": ""
+ },
+ {
+  "vi": "Đề xuất để hai bên cùng đồng ý",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Đề xuất",
+  "en": ""
+ },
+ {
+  "vi": "🧸 Bé đã bình tĩnh, đứng yên một chỗ dễ thấy",
+  "en": ""
+ },
+ {
+  "vi": "🧸 Ngồi xuống dỗ bé, đứng yên một chỗ",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Hỏi bé",
+  "en": ""
+ },
+ {
+  "vi": "🎒 Xem balo, thẻ tên",
+  "en": ""
+ },
+ {
+  "vi": "📢 Tìm người nhà",
+  "en": ""
+ },
+ {
+  "vi": "tới đón bé",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Giao bé cho người nhà",
+  "en": ""
+ },
+ {
+  "vi": "đã xác minh",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Giữ bé ở phường",
+  "en": ""
+ },
+ {
+  "vi": "gọi bố mẹ xác nhận",
+  "en": ""
+ },
+ {
+  "vi": "Dỗ bé, đứng một chỗ",
+  "en": ""
+ },
+ {
+  "vi": "🧸 Dỗ bé",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi bé, xem thẻ tên",
+  "en": ""
+ },
+ {
+  "vi": "Tìm người nhà",
+  "en": ""
+ },
+ {
+  "vi": "Xác minh người đón (hai cách)",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Xác minh người đón",
+  "en": ""
+ },
+ {
+  "vi": "Giao bé hoặc giữ lại",
+  "en": ""
+ },
+ {
+  "vi": "📏 Quy tắc tuần tra phường Mây",
+  "en": ""
+ },
+ {
+  "vi": "💬 Lần đầu, chuyện nhỏ: nhắc nhở, hướng dẫn.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Tái phạm hoặc gây nguy hiểm: lập biên bản.",
+  "en": ""
+ },
+ {
+  "vi": "🛑 Nguy hiểm trước mắt: làm cho an toàn trước.",
+  "en": ""
+ },
+ {
+  "vi": "✉️ Phong bì, chiếu bạc: không bao giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Luật của trò chơi.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Xem kỹ, hỏi chuyện",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Chọn cách xử lý",
+  "en": ""
+ },
+ {
+  "vi": "✉️ Đọc thư mời",
+  "en": ""
+ },
+ {
+  "vi": "🗂️ Chọn chủ đề",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chủ đề",
+  "en": ""
+ },
+ {
+  "vi": "Mức ưu tiên",
+  "en": ""
+ },
+ {
+  "vi": "📞 Gọi lại hỏi rõ",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Thẻ ưu tiên tin báo",
+  "en": ""
+ },
+ {
+  "vi": "Ai đang gặp nguy thì đi trước. Luật của trò chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Xếp",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi sổ trực ban.",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi sổ trực ban (còn thiếu).",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trực ban có dòng ghi khống.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn những gì thật sự đã xảy ra, đủ để ca sau theo dõi.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Ghi vào sổ trực ban",
+  "en": ""
+ },
+ {
+  "vi": "chọn việc làm trước",
+  "en": ""
+ },
+ {
+  "vi": "🤝 KÝ BIÊN BẢN HÒA GIẢI",
+  "en": ""
+ },
+ {
+  "vi": "🚶 XONG VÒNG TUẦN TRA",
+  "en": ""
+ },
+ {
+  "vi": "xử lý đủ ba chuyện",
+  "en": ""
+ },
+ {
+  "vi": "🎤 TRÌNH BÀY",
+  "en": ""
+ },
+ {
+  "vi": "chọn ít nhất một chủ đề",
+  "en": ""
+ },
+ {
+  "vi": "🚨 ĐIỀU ĐỘNG",
+  "en": ""
+ },
+ {
+  "vi": "xếp mức ưu tiên cho cả ba cuộc gọi",
+  "en": ""
+ },
+ {
+  "vi": "Quyết chuyện ở phường",
+  "en": ""
+ },
+ {
+  "vi": "👮 Vào ca thôi!",
+  "en": ""
+ },
+ {
+  "vi": "Chào hỏi, nghe chuyện",
+  "en": ""
+ },
+ {
+  "vi": "👋 Chào hỏi, nghe chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện ở phường",
+  "en": ""
+ },
+ {
+  "vi": "👋 Mời ngồi, nhận hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "👋 Nhận đồ từ người nhặt",
+  "en": ""
+ },
+ {
+  "vi": "👋 Mời hai bên ngồi",
+  "en": ""
+ },
+ {
+  "vi": "🏃 Tới chỗ bé",
+  "en": ""
+ },
+ {
+  "vi": "🚶 Bắt đầu tuần tra",
+  "en": ""
+ },
+ {
+  "vi": "👋 Tới nhà văn hóa",
+  "en": ""
+ },
+ {
+  "vi": "☎️ Nhấc máy",
+  "en": ""
+ },
+ {
+  "vi": "👋 Chào hỏi",
+  "en": ""
+ },
+ {
+  "vi": "lần giúp dân",
+  "en": ""
+ },
+ {
+  "vi": "lần nhắc nhở",
+  "en": ""
+ },
+ {
+  "vi": "biên bản",
+  "en": ""
+ },
+ {
+  "vi": "👮 Ca hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Mặc cả với đội",
+  "en": ""
+ },
+ {
+  "vi": "Đèn trắng",
+  "en": ""
+ },
+ {
+  "vi": "Cờ xanh",
+  "en": ""
+ },
+ {
+  "vi": "🟥 Báo dừng",
+  "en": ""
+ },
+ {
+  "vi": "🔔 Chuông đang kêu",
+  "en": ""
+ },
+ {
+  "vi": "🔕 Chuông tắt",
+  "en": ""
+ },
+ {
+  "vi": "🚧 Chắn đã hạ",
+  "en": ""
+ },
+ {
+  "vi": "🚧 Chắn đang nâng",
+  "en": ""
+ },
+ {
+  "vi": "✅ Tàu đã qua",
+  "en": ""
+ },
+ {
+  "vi": "🟥 Tàu đứng chờ",
+  "en": ""
+ },
+ {
+  "vi": "📻 Nghe ga gọi bộ đàm",
+  "en": ""
+ },
+ {
+  "vi": "📻 Nhắc lại lệnh của ga",
+  "en": ""
+ },
+ {
+  "vi": "Đọc lại đúng số hiệu tàu, giờ rời Bến Gỗ, giờ qua đường ngang.",
+  "en": ""
+ },
+ {
+  "vi": "🚰 Rửa mặt, đi lại cho tỉnh",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nhìn hai phía đường ngang.",
+  "en": ""
+ },
+ {
+  "vi": "✅ Trên ray không còn ai, không còn gì.",
+  "en": ""
+ },
+ {
+  "vi": "Đòi qua chắn",
+  "en": ""
+ },
+ {
+  "vi": "Chắn đã hạ thì không mở cho bất kỳ ai.",
+  "en": ""
+ },
+ {
+  "vi": "✅ lùi lại",
+  "en": ""
+ },
+ {
+  "vi": "😒 càm ràm, chờ",
+  "en": ""
+ },
+ {
+  "vi": "😤 nổi khùng",
+  "en": ""
+ },
+ {
+  "vi": "🏃 chui chắn",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ được mở chắn",
+  "en": ""
+ },
+ {
+  "vi": "⏳ đứng chờ",
+  "en": ""
+ },
+ {
+  "vi": "👥 Người chờ ở chắn",
+  "en": ""
+ },
+ {
+  "vi": "⚪ Giơ đèn trắng",
+  "en": ""
+ },
+ {
+  "vi": "🟩 Giơ cờ xanh",
+  "en": ""
+ },
+ {
+  "vi": "🔴 Báo dừng tàu, đèn đỏ",
+  "en": ""
+ },
+ {
+  "vi": "🟥 Báo dừng tàu, cờ đỏ",
+  "en": ""
+ },
+ {
+  "vi": "👀 Nhìn đường ngang",
+  "en": ""
+ },
+ {
+  "vi": "🔔 Bật chuông đèn",
+  "en": ""
+ },
+ {
+  "vi": "🚧 Quay tay hạ chắn",
+  "en": ""
+ },
+ {
+  "vi": "🚧 Hạ chắn",
+  "en": ""
+ },
+ {
+  "vi": "📻 Hỏi ga: tàu còn đứng ở Bến Gỗ?",
+  "en": ""
+ },
+ {
+  "vi": "🚧 Nâng chắn tạm (ga đã xác nhận)",
+  "en": ""
+ },
+ {
+  "vi": "📻 Báo ga: đường đã thông",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Đứng chờ tàu",
+  "en": ""
+ },
+ {
+  "vi": "Báo ga dừng tàu? Chỉ dùng khi đường ngang có vật cản không dẹp kịp.",
+  "en": ""
+ },
+ {
+  "vi": "👁️ Nhìn hết đoàn tàu",
+  "en": ""
+ },
+ {
+  "vi": "🏮 Có đèn đuôi toa cuối.",
+  "en": ""
+ },
+ {
+  "vi": "Không thấy đèn đuôi!",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã báo mất đèn đuôi",
+  "en": ""
+ },
+ {
+  "vi": "📻 Báo ga: không có đèn đuôi",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã báo bất thường",
+  "en": ""
+ },
+ {
+  "vi": "📻 Báo ga: toa có bất thường",
+  "en": ""
+ },
+ {
+  "vi": "✓ Ga cho nâng chắn",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Chờ tàu thứ hai qua, hỏi lại ga",
+  "en": ""
+ },
+ {
+  "vi": "📻 Hỏi ga: còn tàu nào không?",
+  "en": ""
+ },
+ {
+  "vi": "🚧 Nâng chắn, tắt chuông",
+  "en": ""
+ },
+ {
+  "vi": "🚆 Tàu đã qua",
+  "en": ""
+ },
+ {
+  "vi": "📒 Ghi sổ nhật ký",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đúng những gì đã xảy ra với chuyến này.",
+  "en": ""
+ },
+ {
+  "vi": "✍️ GHI SỔ, KÝ TÊN",
+  "en": ""
+ },
+ {
+  "vi": "Không tự sửa được: báo đúng nơi để thợ tới.",
+  "en": ""
+ },
+ {
+  "vi": "🕐 Bảng giờ tàu hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Làm gì",
+  "en": ""
+ },
+ {
+  "vi": "Báo đâu",
+  "en": ""
+ },
+ {
+  "vi": "Gửi đội trưởng",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Tạm đình chỉ gác hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Chuyến tàu đang tới thì vẫn gác cho xong an toàn. Mai lên đội trình bày.",
+  "en": ""
+ },
+ {
+  "vi": "✓ đã qua",
+  "en": ""
+ },
+ {
+  "vi": "🕐 Bảng giờ tàu",
+  "en": ""
+ },
+ {
+  "vi": "Nhận ca, ký sổ giao ca trước",
+  "en": ""
+ },
+ {
+  "vi": "📻 Chọn câu nhắc lại",
+  "en": ""
+ },
+ {
+  "vi": "Dẹp người, vật trên ray",
+  "en": ""
+ },
+ {
+  "vi": "👉 Dẹp khỏi ray",
+  "en": ""
+ },
+ {
+  "vi": "Báo ga đường đã thông",
+  "en": ""
+ },
+ {
+  "vi": "📻 Báo ga đường thông",
+  "en": ""
+ },
+ {
+  "vi": "đòi qua: bạn trả lời sao?",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn hai phía đường ngang",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn cách dẹp",
+  "en": ""
+ },
+ {
+  "vi": "Tàu chậm: hỏi ga tàu còn đứng ở Bến Gỗ không",
+  "en": ""
+ },
+ {
+  "vi": "👉 Hỏi ga",
+  "en": ""
+ },
+ {
+  "vi": "Ga xác nhận tàu còn đứng: được nâng chắn tạm",
+  "en": ""
+ },
+ {
+  "vi": "👉 Nâng chắn tạm",
+  "en": ""
+ },
+ {
+  "vi": "Bật chuông đèn trước khi hạ",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chuông đèn",
+  "en": ""
+ },
+ {
+  "vi": "👉 Hạ chắn",
+  "en": ""
+ },
+ {
+  "vi": "Giơ đèn trắng đón tàu",
+  "en": ""
+ },
+ {
+  "vi": "Giơ cờ xanh đón tàu",
+  "en": ""
+ },
+ {
+  "vi": "👉 Đứng cờ",
+  "en": ""
+ },
+ {
+  "vi": "Đứng chờ tàu qua",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chờ tàu",
+  "en": ""
+ },
+ {
+  "vi": "👁️ Nhìn đoàn tàu",
+  "en": ""
+ },
+ {
   "vi": "Thấy bất thường thì báo ga ngay",
   "en": ""
  },
@@ -857,946 +1797,6 @@
  },
  {
   "vi": "Chưa xem thân tóc — ánh thật có thể lệch",
-  "en": ""
- },
- {
-  "vi": "Thân tóc ánh cam: bát ấm thêm một bậc (đã tính)",
-  "en": ""
- },
- {
-  "vi": "Ảnh gốc",
-  "en": ""
- },
- {
-  "vi": "Bát ra",
-  "en": ""
- },
- {
-  "vi": "Tẩy, xả xong mới soi được ánh nền",
-  "en": ""
- },
- {
-  "vi": "Khử đúng ánh đang có",
-  "en": ""
- },
- {
-  "vi": "Toner này không khử đúng ánh đang có",
-  "en": ""
- },
- {
-  "vi": "✓ Đúng bảng pha",
-  "en": ""
- },
- {
-  "vi": "≠ Chưa đúng bảng pha",
-  "en": ""
- },
- {
-  "vi": ", khớp",
-  "en": ""
- },
- {
-  "vi": "Tỷ lệ hàng ∶ cột",
-  "en": ""
- },
- {
-  "vi": "Bảng pha màu",
-  "en": ""
- },
- {
-  "vi": "chạm ô để thử",
-  "en": ""
- },
- {
-  "vi": "Mỗi tuýp 1 phần",
-  "en": ""
- },
- {
-  "vi": "🎨 Bảng pha màu",
-  "en": ""
- },
- {
-  "vi": "chưa chốt phương án",
-  "en": ""
- },
- {
-  "vi": "Sản phẩm mời (khách có thể không lấy)",
-  "en": ""
- },
- {
-  "vi": "Tiền gấp nếu kịp giờ",
-  "en": ""
- },
- {
-  "vi": "Tạm tính tối đa",
-  "en": ""
- },
- {
-  "vi": "Làm sai, khách có thể bớt tiền dịch vụ.",
-  "en": ""
- },
- {
-  "vi": "Chỉ mời khi hợp tóc và vừa ngân sách",
-  "en": ""
- },
- {
-  "vi": "🛍️ Sản phẩm hợp tóc (tùy chọn)",
-  "en": ""
- },
- {
-  "vi": "Chờ vùng xanh rồi xả thuốc",
-  "en": ""
- },
- {
-  "vi": "Ra quầy: chọn một cách xử lý",
-  "en": ""
- },
- {
-  "vi": "Xem tận tay",
-  "en": ""
- },
- {
-  "vi": "📸 Soi ảnh gốc",
-  "en": ""
- },
- {
-  "vi": "Thử một lọn trước khi tẩy",
-  "en": ""
- },
- {
-  "vi": "🤝 Chốt",
-  "en": ""
- },
- {
-  "vi": "🤝 Sang chốt phương án",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn dịch vụ cho khách",
-  "en": ""
- },
- {
-  "vi": "💬 Trao đổi với khách về giá",
-  "en": ""
- },
- {
-  "vi": "Báo giá vượt ngân sách: trao đổi với khách",
-  "en": ""
- },
- {
-  "vi": "Thoa thuốc",
-  "en": ""
- },
- {
-  "vi": "🖌️ Thoa thuốc từ chân tới ngọn",
-  "en": ""
- },
- {
-  "vi": "Bát sai: đổ, pha lại",
-  "en": ""
- },
- {
-  "vi": "🎨 Về bàn pha màu",
-  "en": ""
- },
- {
-  "vi": "Lấy thuốc theo bảng pha",
-  "en": ""
- },
- {
-  "vi": "✨ Lấy theo bảng",
-  "en": ""
- },
- {
-  "vi": "Chọn tuýp toner",
-  "en": ""
- },
- {
-  "vi": "Chọn tuýp màu",
-  "en": ""
- },
- {
-  "vi": "Chọn oxy",
-  "en": ""
- },
- {
-  "vi": "Chọn tỷ lệ thuốc ∶ oxy",
-  "en": ""
- },
- {
-  "vi": "Dỗ bé ngồi yên",
-  "en": ""
- },
- {
-  "vi": "Dỗ bé",
-  "en": ""
- },
- {
-  "vi": "🧒 Chọn cách dỗ bé",
-  "en": ""
- },
- {
-  "vi": "Chia vùng tóc",
-  "en": ""
- },
- {
-  "vi": "✂️ Chia vùng tóc",
-  "en": ""
- },
- {
-  "vi": "Cắt thêm",
-  "en": ""
- },
- {
-  "vi": "Cắt đường chuẩn · bớt",
-  "en": ""
- },
- {
-  "vi": "Khách thấy còn dài: cắt thêm",
-  "en": ""
- },
- {
-  "vi": "Tỉa tầng nhẹ (mẫu có tầng)",
-  "en": ""
- },
- {
-  "vi": "✂️ Tỉa tầng",
-  "en": ""
- },
- {
-  "vi": "🪞 Soi đối xứng & chốt",
-  "en": ""
- },
- {
-  "vi": "Sấy",
-  "en": ""
- },
- {
-  "vi": "💨 Chọn kiểu sấy hợp khách",
-  "en": ""
- },
- {
-  "vi": "Khách sẽ soi gương và đánh giá.",
-  "en": ""
- },
- {
-  "vi": "⏳ Chờ vùng xanh · còn",
-  "en": ""
- },
- {
-  "vi": "🚿 Xả thuốc ngay!",
-  "en": ""
- },
- {
-  "vi": "💇 Sổ tiệm hôm nay",
-  "en": ""
- },
- {
-  "vi": "Quy định bàn thư ký",
-  "en": ""
- },
- {
-  "vi": "📅 Bàn thư ký hôm nay",
-  "en": ""
- },
- {
-  "vi": "🙏 Nhắc khách đưa thêm",
-  "en": ""
- },
- {
-  "vi": "Hỏi nhẹ nhàng, khách tự đếm lại",
-  "en": ""
- },
- {
-  "vi": "🚓 Báo công an",
-  "en": ""
- },
- {
-  "vi": "Phải chờ công an tới, khách phía sau sốt ruột",
-  "en": ""
- },
- {
-  "vi": "🤐 Bỏ qua, coi như bớt giá",
-  "en": ""
- },
- {
-  "vi": "Mất khoản thiếu, khách vui vẻ ra về",
-  "en": ""
- },
- {
-  "vi": "📒 Cho nợ, mai trả",
-  "en": ""
- },
- {
-  "vi": "Hẹn bé mai mang ra trả",
-  "en": ""
- },
- {
-  "vi": "🧺 Bớt món cho vừa tiền",
-  "en": ""
- },
- {
-  "vi": "Bé để lại bớt một món",
-  "en": ""
- },
- {
-  "vi": "🎁 Thôi, cho con luôn",
-  "en": ""
- },
- {
-  "vi": "Mất khoản thiếu, bé vui",
-  "en": ""
- },
- {
-  "vi": "🚶 Để khách đi",
-  "en": ""
- },
- {
-  "vi": "Mất khoản thiếu",
-  "en": ""
- },
- {
-  "vi": "Bé không đủ tiền",
-  "en": ""
- },
- {
-  "vi": "Khách chối, không chịu đưa thêm",
-  "en": ""
- },
- {
-  "vi": "✓ Đã đếm lại: đủ tiền",
-  "en": ""
- },
- {
-  "vi": "🔍 Đếm lại tiền khách đưa",
-  "en": ""
- },
- {
-  "vi": "Gọi công an khu vực tới quầy? Phải chờ một lúc, khách phía sau sẽ sốt ruột.",
-  "en": ""
- },
- {
-  "vi": "Vào việc",
-  "en": ""
- },
- {
-  "vi": "Chuyện giữa ca",
-  "en": ""
- },
- {
-  "vi": "Hôm nay đòi rồi, mai đòi tiếp.",
-  "en": ""
- },
- {
-  "vi": "📒 Đòi nợ",
-  "en": ""
- },
- {
-  "vi": "Đòi bao nhiêu",
-  "en": ""
- },
- {
-  "vi": "🙂 Nhắc nhẹ",
-  "en": ""
- },
- {
-  "vi": "🗣️ Nói thẳng",
-  "en": ""
- },
- {
-  "vi": "👪 Nhờ người nhà",
-  "en": ""
- },
- {
-  "vi": "🤝 Xóa nợ",
-  "en": ""
- },
- {
-  "vi": "✅ đã trả",
-  "en": ""
- },
- {
-  "vi": "👻 mất",
-  "en": ""
- },
- {
-  "vi": "🤝 đã xóa",
-  "en": ""
- },
- {
-  "vi": "Không ai nợ.",
-  "en": ""
- },
- {
-  "vi": "Điền một số đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Lương giờ (Hợp đồng) × 8 giờ.",
-  "en": ""
- },
- {
-  "vi": "Số ngày nghỉ KHÔNG lương (Bảng chấm công) × Lương 1 ngày. Nghỉ phép năm không trừ.",
-  "en": ""
- },
- {
-  "vi": "Mỗi dòng tăng ca: số giờ × Lương giờ × hệ số đã xếp ở bước 1, rồi cộng lại.",
-  "en": ""
- },
- {
-  "vi": "Lương cơ bản − Trừ nghỉ không lương + 3 phụ cấp trong Hợp đồng + Tiền tăng ca.",
-  "en": ""
- },
- {
-  "vi": "Lương đóng bảo hiểm (Hợp đồng) × 8%, làm tròn xuống.",
-  "en": ""
- },
- {
-  "vi": "Lương đóng bảo hiểm × 1,5% (× 15 ÷ 1000), làm tròn xuống.",
-  "en": ""
- },
- {
-  "vi": "Lương đóng bảo hiểm × 1%, làm tròn xuống.",
-  "en": ""
- },
- {
-  "vi": "Tổng thu nhập − ăn trưa (miễn tối đa 700) − 3 khoản bảo hiểm − 5000 bản thân − 2000 × người phụ thuộc ĐÃ đăng ký.",
-  "en": ""
- },
- {
-  "vi": "Áp biểu lũy tiến tháng (📋 Quy định · Thuế TNCN) lên Thu nhập tính thuế, làm tròn xuống.",
-  "en": ""
- },
- {
-  "vi": "Tổng thu nhập − 3 khoản bảo hiểm − Thuế TNCN (số của các bước trên).",
-  "en": ""
- },
- {
-  "vi": "Tổng thực lĩnh trên Bảng lương ĐÃ DUYỆT — không lấy tổng file nháp.",
-  "en": ""
- },
- {
-  "vi": "Cộng cột “Thuế GTGT” của mọi hóa đơn bán ra.",
-  "en": ""
- },
- {
-  "vi": "Cộng cột “Thuế GTGT” của hóa đơn mua vào, bỏ các tờ đã loại ở bước 1.",
-  "en": ""
- },
- {
-  "vi": "Thuế đầu ra − thuế đầu vào được khấu trừ (bước trước).",
-  "en": ""
- },
- {
-  "vi": "Số tiền thuế × 3 × số ngày trễ ÷ 10000 (0,03% mỗi ngày), làm tròn xuống.",
-  "en": ""
- },
- {
-  "vi": "Dòng “Thực lĩnh” phiếu tháng 8 − dòng “Thực lĩnh” phiếu tháng 9.",
-  "en": ""
- },
- {
-  "vi": "12 × 5000 bản thân + 2000 × số tháng có người phụ thuộc (giấy “Người phụ thuộc đã đăng ký”).",
-  "en": ""
- },
- {
-  "vi": "Thu nhập chịu thuế của MỌI nơi − bảo hiểm bắt buộc − Tổng giảm trừ.",
-  "en": ""
- },
- {
-  "vi": "Áp biểu lũy tiến NĂM (mốc tháng × 12) lên Thu nhập tính thuế cả năm, làm tròn xuống.",
-  "en": ""
- },
- {
-  "vi": "Thuế phải nộp cả năm − thuế đã khấu trừ ở mọi nơi; âm là được hoàn.",
-  "en": ""
- },
- {
-  "vi": "✗ chưa khớp",
-  "en": ""
- },
- {
-  "vi": "✓ khớp",
-  "en": ""
- },
- {
-  "vi": "📐 Cách tính",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn ·",
-  "en": ""
- },
- {
-  "vi": "Không có dòng nào của",
-  "en": ""
- },
- {
-  "vi": "✓ Bắt đúng lỗi",
-  "en": ""
- },
- {
-  "vi": "✗ Bỏ sót — ô này sai",
-  "en": ""
- },
- {
-  "vi": "✗ Đánh dấu nhầm — ô này đúng",
-  "en": ""
- },
- {
-  "vi": "✓ Ô này đúng",
-  "en": ""
- },
- {
-  "vi": "Không tính",
-  "en": ""
- },
- {
-  "vi": "✓ bắt đúng",
-  "en": ""
- },
- {
-  "vi": "✗ sót",
-  "en": ""
- },
- {
-  "vi": "✗ nhầm",
-  "en": ""
- },
- {
-  "vi": "Bảng nháp:",
-  "en": ""
- },
- {
-  "vi": "Đúng:",
-  "en": ""
- },
- {
-  "vi": "📎 Căn cứ",
-  "en": ""
- },
- {
-  "vi": "👆 Chạm vào ô bất kỳ để xem cách tính.",
-  "en": ""
- },
- {
-  "vi": "Dòng này không có lỗi và bạn không đánh dấu nhầm ô nào.",
-  "en": ""
- },
- {
-  "vi": "Sót",
-  "en": ""
- },
- {
-  "vi": "Đánh dấu nhầm",
-  "en": ""
- },
- {
-  "vi": "đối chiếu hồ sơ gốc",
-  "en": ""
- },
- {
-  "vi": "sót",
-  "en": ""
- },
- {
-  "vi": "đánh dấu nhầm",
-  "en": ""
- },
- {
-  "vi": "Thu gọn",
-  "en": ""
- },
- {
-  "vi": "Xem từng ô",
-  "en": ""
- },
- {
-  "vi": "✓ Bạn bắt đúng lỗi",
-  "en": ""
- },
- {
-  "vi": "Đúng từ đầu, bạn không đánh dấu nhầm ô nào.",
-  "en": ""
- },
- {
-  "vi": "Viền đỏ: ô sai bạn bỏ sót. Viền cam: ô đúng bạn đánh dấu nhầm. Cách tính nằm ngay dưới mỗi dòng.",
-  "en": ""
- },
- {
-  "vi": "Bắt đủ mọi lỗi, không giữ lương oan ô nào.",
-  "en": ""
- },
- {
-  "vi": "lần chưa khớp",
-  "en": ""
- },
- {
-  "vi": "khớp ngay",
-  "en": ""
- },
- {
-  "vi": "khớp hết ngay lần đầu",
-  "en": ""
- },
- {
-  "vi": "🗂️ Xem lại hồ sơ đã làm",
-  "en": ""
- },
- {
-  "vi": "hồ sơ · cách tính từng ô",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ đã làm",
-  "en": ""
- },
- {
-  "vi": "Xem lại hồ sơ",
-  "en": ""
- },
- {
-  "vi": "📋 Quy định kỳ này",
-  "en": ""
- },
- {
-  "vi": "thẻ · mức sàn bảo hiểm, ngày lễ, tạm ứng…",
-  "en": ""
- },
- {
-  "vi": "Soát tiếp",
-  "en": ""
- },
- {
-  "vi": "xong dòng",
-  "en": ""
- },
- {
-  "vi": "so từng ô rồi xong dòng",
-  "en": ""
- },
- {
-  "vi": "↩️ Bỏ chọn",
-  "en": ""
- },
- {
-  "vi": "☑️ Chọn",
-  "en": ""
- },
- {
-  "vi": "✍️ Điền theo giấy tờ",
-  "en": ""
- },
- {
-  "vi": "bảng lương đã chuyển",
-  "en": ""
- },
- {
-  "vi": "sẽ tới khiếu nại sáng mai",
-  "en": ""
- },
- {
-  "vi": "Chạm chọn một đáp án trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Chạm chọn ít nhất một ô trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Chạm đủ các việc theo thứ tự trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Chọn đủ từng dòng trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Điền đủ các ô số trước khi kiểm tra nhé.",
-  "en": ""
- },
- {
-  "vi": "💵 Khách trả tiền mặt",
-  "en": ""
- },
- {
-  "vi": "Khay thối còn trống",
-  "en": ""
- },
- {
-  "vi": "Khách đưa vừa đủ, không cần thối.",
-  "en": ""
- },
- {
-  "vi": "Không cần thối.",
-  "en": ""
- },
- {
-  "vi": "📦 Hết hàng",
-  "en": ""
- },
- {
-  "vi": "📉 Sắp hết",
-  "en": ""
- },
- {
-  "vi": "⏳ Hết hạn trong ngày mai",
-  "en": ""
- },
- {
-  "vi": "thùng đã tới, chưa mở lên kệ",
-  "en": ""
- },
- {
-  "vi": "🚚 Đang về",
-  "en": ""
- },
- {
-  "vi": "kiện đã tới, chưa đếm nhận",
-  "en": ""
- },
- {
-  "vi": "✓ Kho đủ hàng cho ngày mai",
-  "en": ""
- },
- {
-  "vi": "📦 Mở Kho",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ nghề hôm nay",
-  "en": ""
- },
- {
-  "vi": "📋 Sổ nghề hôm nay",
-  "en": ""
- },
- {
-  "vi": "✓ Kệ đủ hàng, chưa có gì phải lo cho ngày mai.",
-  "en": ""
- },
- {
-  "vi": "🍵 Vào việc thôi!",
-  "en": ""
- },
- {
-  "vi": "Trật tự đô thị đang tới",
-  "en": ""
- },
- {
-  "vi": "Dẹp ghế, gấp ô ngay!",
-  "en": ""
- },
- {
-  "vi": "Xe của phường dừng đầu phố. Kịp xếp chồng ghế sát gốc cây và gấp ô thì không sao; để ghế ngoài vỉa hè là bị phạt, thu ghế.",
-  "en": ""
- },
- {
-  "vi": "🪑 Xếp chồng ghế",
-  "en": ""
- },
- {
-  "vi": "Đã gấp ô",
-  "en": ""
- },
- {
-  "vi": "Chuyện của quán",
-  "en": ""
- },
- {
-  "vi": "đậm vừa",
-  "en": ""
- },
- {
-  "vi": "nhạt như nước",
-  "en": ""
- },
- {
-  "vi": "Bình trống",
-  "en": ""
- },
- {
-  "vi": "tan rất nhanh",
-  "en": ""
- },
- {
-  "vi": "tan chậm",
-  "en": ""
- },
- {
-  "vi": "🫖 Bình chè",
-  "en": ""
- },
- {
-  "vi": "🫖 Châm nước",
-  "en": ""
- },
- {
-  "vi": "🚰 Đổ bỏ",
-  "en": ""
- },
- {
-  "vi": "Đổ bỏ chè đang có trong bình?",
-  "en": ""
- },
- {
-  "vi": "🧊 Thùng đá",
-  "en": ""
- },
- {
-  "vi": "🔨 Đập 1 cây đá",
-  "en": ""
- },
- {
-  "vi": "🥛 Cốc & chậu",
-  "en": ""
- },
- {
-  "vi": "đục ngầu",
-  "en": ""
- },
- {
-  "vi": "hơi đục",
-  "en": ""
- },
- {
-  "vi": "còn trong",
-  "en": ""
- },
- {
-  "vi": "🧽 Rửa cốc",
-  "en": ""
- },
- {
-  "vi": "🪣 Thay nước",
-  "en": ""
- },
- {
-  "vi": "🪑 Ghế · ô",
-  "en": ""
- },
- {
-  "vi": "Đang dẹp",
-  "en": ""
- },
- {
-  "vi": "đang dựng",
-  "en": ""
- },
- {
-  "vi": "🪑 Bày lại quán",
-  "en": ""
- },
- {
-  "vi": "Quầy trà",
-  "en": ""
- },
- {
-  "vi": "🌳 Chọn chỗ bày quán",
-  "en": ""
- },
- {
-  "vi": "🪑 Bày ghế",
-  "en": ""
- },
- {
-  "vi": "⛱️ Gấp ô",
-  "en": ""
- },
- {
-  "vi": "⛱️ Dựng ô",
-  "en": ""
- },
- {
-  "vi": "🧊 Thùng đá đã đặt",
-  "en": ""
- },
- {
-  "vi": "🧊 Đặt thùng đá chỗ râm",
-  "en": ""
- },
- {
-  "vi": "bà Lựu dặn chỗ khác",
-  "en": ""
- },
- {
-  "vi": "Bày ghế nhựa",
-  "en": ""
- },
- {
-  "vi": "Dựng ô che nắng",
-  "en": ""
- },
- {
-  "vi": "Đặt thùng đá chỗ râm",
-  "en": ""
- },
- {
-  "vi": "🧊 Đặt thùng đá",
-  "en": ""
- },
- {
-  "vi": "Pha một bình chè đậm vừa",
-  "en": ""
- },
- {
-  "vi": "chè nhạt: pha lại",
-  "en": ""
- },
- {
-  "vi": "🍵 Pha bình chè (2 nắm)",
-  "en": ""
- },
- {
-  "vi": "Đập một cây đá vào thùng",
-  "en": ""
- },
- {
-  "vi": "🔨 Đập một cây đá",
-  "en": ""
- },
- {
-  "vi": "đá cây",
-  "en": ""
- },
- {
-  "vi": "trẻ con hỏi mua",
-  "en": ""
- },
- {
-  "vi": "💵 Tiền mặt",
-  "en": ""
- },
- {
-  "vi": "người ngồi",
-  "en": ""
- },
- {
-  "vi": "1 người",
-  "en": ""
- },
- {
-  "vi": "sấu",
-  "en": ""
- },
- {
-  "vi": "🥤 Rót trà",
-  "en": ""
- },
- {
-  "vi": "🌻 Đồ ăn vặt",
-  "en": ""
- },
- {
-  "vi": "🙅 Đã từ chối bán thuốc",
-  "en": ""
- },
- {
-  "vi": "🙅 Không bán thuốc lá cho trẻ con",
-  "en": ""
- },
- {
-  "vi": "Hóa đơn:",
   "en": ""
  }
 ]

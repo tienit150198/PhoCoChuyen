@@ -1,5 +1,445 @@
 [
  {
+  "vi": "3️⃣ Gõ số xu vào ô “Rút về ví”, hoặc bấm [[Tối đa]]. Rồi bấm [[Rút]]: tiền vào ví ngay.",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Quỹ luôn phải giữ lại 80 xu và đủ tiền các hóa đơn chưa trả. Rút được tối đa = quỹ − 80 − hóa đơn chưa trả.",
+  "en": ""
+ },
+ {
+  "vi": "🧮 Ví dụ: quỹ 200 xu, hóa đơn chưa trả 30 xu. Rút được tối đa 200 − 80 − 30 = 90 xu.",
+  "en": ""
+ },
+ {
+  "vi": "⛔ Báo “Quỹ cần giữ 80 xu và đủ tiền hóa đơn chưa trả, nên chưa rút được”: quỹ còn mỏng. Làm thêm việc ở nơi đó rồi quay lại rút.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Báo “Chỉ rút được tối đa … xu”: số bạn gõ lớn hơn mức cho phép. Bấm [[Tối đa]] để điền đúng số.",
+  "en": ""
+ },
+ {
+  "vi": "✏️ Báo “Nhập số xu là số nguyên dương”: gõ số nguyên từ 1 trở lên, không có dấu chấm hay phẩy.",
+  "en": ""
+ },
+ {
+  "vi": "⬇️ Chiều ngược lại: gõ số vào ô “Góp vốn” rồi bấm [[Góp]] để đưa tiền từ ví vào quỹ, khi tiệm thiếu tiền nhập hàng.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Nơi làm thuê (nhà thuốc, lớp học, văn phòng…) không cần rút: lương và tiền bo về thẳng ví khi khép ca.",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Tiền trong tài khoản ngân hàng: mở [[Ngân hàng]], gõ số xu, bấm [[Rút tiền]]. Chọn cây ATM khác ngân hàng thì mất phí 1 xu.",
+  "en": ""
+ },
+ {
+  "vi": "💞 Đã cưới: mở [[Hôn nhân]], tab Quỹ chung, gõ số rồi bấm [[Rút ra]]. Rút và chi theo số dư quỹ chung, không có hạn mức mỗi ngày.",
+  "en": ""
+ },
+ {
+  "vi": "📉 Ví âm là đang nợ tiền phòng và câu chuyện tạm dừng. Rút tiền lời về ví là trả được ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Ví, quỹ tiệm, tài khoản: khác nhau thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "👛 Ví (tiền mặt): tiền riêng của bạn, bắt đầu 60 xu. Trả tiền phòng, cơm nước, học phí, chuyện đời, mua sắm.",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Quỹ tiệm: tiền của từng nơi làm. Khách trả, nhập hàng, lương người phụ, hóa đơn, tiền phạt của tiệm đều đi qua đây.",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Tài khoản ngân hàng: chỗ cất tiền, gửi tiết kiệm, trả thẻ và trả góp. Cần mở tài khoản trước.",
+  "en": ""
+ },
+ {
+  "vi": "💞 Quỹ chung vợ chồng: tiền hai người cùng góp sau khi cưới, cả hai cùng thấy mọi khoản.",
+  "en": ""
+ },
+ {
+  "vi": "🚫 Mỗi khoản trừ đúng chỗ của nó: nhập hàng trừ quỹ tiệm, tiền phòng trừ ví. Tiền nằm chỗ này muốn dùng cho chỗ kia thì rút hoặc góp trước.",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Quỹ → ví: [[Rút]]. Ví → quỹ: [[Góp]]. Ví → tài khoản: [[Nộp tiền]]. Tài khoản → ví: [[Rút tiền]].",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Sổ ví ghi từng khoản vào ra của ví; [[Sổ tiệm]] → [[Thu chi]] ghi quỹ của từng nơi.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Lúc nhập hàng, mua sắm, gửi rút tiền: ngay dưới tiêu đề trang luôn có dòng “Ví … · Quỹ tiệm …”. Không đủ tiền thì bảng xác nhận ghi rõ còn thiếu bao nhiêu.",
+  "en": ""
+ },
+ {
+  "vi": "Lương khi đi làm thuê",
+  "en": ""
+ },
+ {
+  "vi": "🏢 Giáo viên, hướng dẫn viên, nhà thuốc, văn phòng… là làm thuê: phải xin việc trước.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Lương tính theo ngày: khép ca một ngày có làm xong ít nhất một việc là lương về thẳng ví.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Thử việc nhận 85% lương. Làm tốt thì ký hợp đồng chính thức, nhận đủ.",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Ngày không làm xong việc nào thì không có lương hôm đó.",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Tiền bo khi làm thuê là của bạn: cũng về thẳng ví.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Xem lại trong sổ ví: dòng “Lương ngày … · tên nơi làm”.",
+  "en": ""
+ },
+ {
+  "vi": "Chi phí sống",
+  "en": ""
+ },
+ {
+  "vi": "🍚 Mỗi lần khép ca là qua một ngày sống: ví trả tiền phòng và cơm nước 10–20 xu, tăng dần theo chương.",
+  "en": ""
+ },
+ {
+  "vi": "💡 Nơi bạn không làm hôm đó không tốn đồng nào: quỹ, hàng và người làm cứ để nguyên chờ bạn quay lại.",
+  "en": ""
+ },
+ {
+  "vi": "🏃 Chỉ khi bỏ đi lúc đang làm dở mới bị phạt một lần, hộp xác nhận ghi rõ số tiền trước khi đi.",
+  "en": ""
+ },
+ {
+  "vi": "📉 Ví âm là đang nợ tiền phòng: câu chuyện tạm dừng tới khi trả xong.",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Có tài khoản ngân hàng còn tiền: sáng hôm sau tài khoản tự bù phần ví đang âm (tắt được trong Ngân hàng).",
+  "en": ""
+ },
+ {
+  "vi": "Thu tiền và thối tiền",
+  "en": ""
+ },
+ {
+  "vi": "💵 Khách đưa tờ tiền. Bạn tự chọn tờ để thối, đủ từng xu.",
+  "en": ""
+ },
+ {
+  "vi": "🧮 Tiền thối = tiền khách đưa − tiền hàng. Đếm lại trước khi bấm giao.",
+  "en": ""
+ },
+ {
+  "vi": "😠 Thối thiếu: khách kỹ tính đếm ngay và đòi thêm. Khách khác về nhà mới thấy: review 2★, có khi báo lên app.",
+  "en": ""
+ },
+ {
+  "vi": "💸 Thối dư: khách thật thà trả lại. Khách khác giữ luôn, tiệm mất đúng số đó.",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Thối đúng: đôi khi khách nói “khỏi thối, giữ tiền lẻ đi”. Tiền đó thành tiền bo.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền bo",
+  "en": ""
+ },
+ {
+  "vi": "🍀 Làm tốt thì thỉnh thoảng khách bo thêm tiền hoặc một món quà nhỏ. Hên xui.",
+  "en": ""
+ },
+ {
+  "vi": "💇 Salon, tour, chăm thú cưng, homestay hay được bo. Quầy bán hàng thỉnh thoảng. Kế toán hiếm, thường là quà.",
+  "en": ""
+ },
+ {
+  "vi": "🎀 Nhà thuốc, lớp học, chăm sóc khách hàng, văn phòng: thỉnh thoảng có quà cảm ơn, không bao giờ bo tiền.",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Việc 5★ dễ được bo nhất, 4★ chỉ bằng một nửa, 3★ rất hiếm, 1–2★ không bao giờ.",
+  "en": ""
+ },
+ {
+  "vi": "😤 Khách càu nhàu hay đang bực thì hiếm bo. Khách đòi giảm, đòi hoàn, bỏ về, từ chối, hoặc có lỗi an toàn: không bo.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Tiền bo thường khoảng 5–15% hóa đơn. Hiếm hoi có khách bo đậm, khoảng nửa hóa đơn, tối đa 100 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Thối đúng tiền, đôi khi khách nói “khỏi thối, giữ tiền lẻ đi”: số lẻ đó thành tiền bo.",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Ngày hội, ngày lương, mùa cưới khách rộng tay hơn. Khách thân với bạn cũng hay bo hơn.",
+  "en": ""
+ },
+ {
+  "vi": "👛 Tiệm của bạn: bo vào quỹ tiệm. Làm thuê: bo về ví. Có nhân viên trong ca: bo chia cho cả đội.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Mỗi lần được bo có thông báo nhỏ; bản tổng kết ngày có mục “Tip hôm nay”.",
+  "en": ""
+ },
+ {
+  "vi": "🌱 Việc đầu tiên ở mỗi nơi không có bo.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tiệm và hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "📒 [[Sổ tiệm]] → [[Thu chi]]: mọi khoản thu, chi và hóa đơn của nơi đó.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Khép ca sinh hóa đơn: lương người phụ, điện nước. Tiền mặt bằng tính theo kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "💳 Bấm [[Thanh toán]] để trả từng hóa đơn trước hạn.",
+  "en": ""
+ },
+ {
+  "vi": "📊 Bản tổng kết cuối ngày có thẻ “✓ Lãi/lỗ hôm nay: +N xu”; chạm vào để xem chi tiết thu chi.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Sổ tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Thuế và tiền phạt",
+  "en": ""
+ },
+ {
+  "vi": "🏛️ Cứ 7 ngày là một kỳ: thuế 4% doanh thu và tiền mặt bằng thành hóa đơn.",
+  "en": ""
+ },
+ {
+  "vi": "👮 Tiền phạt đến từ chuyện đời: kiểm tra, vi phạm, công an phường.",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Mỗi vụ có vài cách xử lý. Cách đúng luật, trung thực thường nhẹ nhất về lâu dài.",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Bỏ dở việc giữa chừng để đi nơi khác cũng bị phạt.",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng: nộp, rút và tiết kiệm",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Mở [[Ngân hàng]], bấm [[Mở tài khoản miễn phí]]. Chỉ có trong hành trình.",
+  "en": ""
+ },
+ {
+  "vi": "⬇️ Nộp: gõ số xu, bấm [[Nộp tiền]]. Tiền đi từ ví vào tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "⬆️ Rút: gõ số xu, chọn cây ATM, bấm [[Rút tiền]]. Cây ATM Ngân hàng Phố miễn phí, cây ATM khác ngân hàng mất 1 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🐷 Tab Tiết kiệm: không kỳ hạn lãi 3%/năm, rút lúc nào cũng được. Có kỳ hạn từ 7 ngày tới 3 năm, lãi 6–8,8%/năm, gửi càng lâu lãi càng cao.",
+  "en": ""
+ },
+ {
+  "vi": "🗓️ Trong game, 1 tháng là 5 ngày sống, 1 năm là 60 ngày sống. Kỳ hạn 12 tháng là 60 ngày sống.",
+  "en": ""
+ },
+ {
+  "vi": "📅 Sổ kỳ hạn gửi ít nhất 20 xu, tối đa 5 sổ. Đáo hạn thì gốc và lãi về tài khoản, hoặc chọn tự tái tục để gửi tiếp. [[Tất toán sớm]] chỉ được lãi không kỳ hạn.",
+  "en": ""
+ },
+ {
+  "vi": "🛟 “Tự động bù ví khi ví âm” bật sẵn: ví âm thì sáng hôm sau tài khoản tự trả phần đang nợ. Bỏ dấu chọn để tắt.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Tin nhắn và cuộc gọi của ngân hàng hiện trong tab Tổng quan.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Ngân hàng",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển khoản cho bạn bè",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Mở [[Ngân hàng]] → [[Chuyển khoản cho bạn bè]]: chọn bạn, gõ số xu, lời nhắn rồi bấm [[Tiếp tục]] để xem lại và gửi.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Không giới hạn số lần, tổng xu gửi hoặc nhận mỗi ngày. Chỉ chuyển số xu bạn đang có; không mất phí.",
+  "en": ""
+ },
+ {
+  "vi": "💳 Tiền đi từ tài khoản ngân hàng hoặc tiền mặt. Bạn ấy nhận ngay, hoặc khi vào game.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Chuyển khoản",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ tín dụng: quẹt trước, trả sau",
+  "en": ""
+ },
+ {
+  "vi": "💳 Tab Thẻ, bấm [[Nộp hồ sơ mở thẻ]]. Cần điểm tín dụng từ 580 và thu nhập đều: ít nhất 3 ngày có lương hoặc tiền lời rút về ví trong 14 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🛍️ Thẻ dùng để trả học phí, đi cửa sau, mua nhẫn và lo cưới. Chọn cách trả mặc định ở mục “Khi mua sắm cá nhân”.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Cứ 7 ngày sống có một sao kê. Hạn trả là 3 ngày sau sao kê.",
+  "en": ""
+ },
+ {
+  "vi": "✅ [[Trả hết sao kê]] trước hạn thì không mất lãi. [[Trả tối thiểu]] (10% sao kê, ít nhất 10 xu) thì phần còn lại chịu lãi 0,5%/ngày.",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Trễ hạn: phạt 8 xu, trừ điểm tín dụng, thẻ tạm khóa tới khi trả phần quá hạn.",
+  "en": ""
+ },
+ {
+  "vi": "🤖 Chọn “Tự động trả toàn bộ sao kê” hoặc “Tự động trả tối thiểu” rồi bấm [[Lưu cách tự động trả]] để khỏi quên.",
+  "en": ""
+ },
+ {
+  "vi": "🏧 [[Ứng tiền mặt]]: phí 4% (ít nhất 3 xu), lãi tính ngay, tối đa 50% hạn mức. Chỉ dùng khi thật cần.",
+  "en": ""
+ },
+ {
+  "vi": "Vay tiền và điểm tín dụng",
+  "en": ""
+ },
+ {
+  "vi": "💸 Vay tiêu dùng: tiền vào tài khoản của bạn, lãi 4% mỗi kỳ 7 ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Vay mở rộng tiệm: tiền vào thẳng quỹ một tiệm bạn làm chủ, lãi 3,5% mỗi kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "📆 Vay 50–5.000 xu, kỳ hạn 14, 21 hoặc 28 ngày, tối đa 2 khoản cùng lúc. Xem lịch trả rồi bấm [[Xem lại & ký hợp đồng]].",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Tới ngày trả góp, ngân hàng tự trích từ tài khoản (thiếu thì lấy thêm tiền mặt). Trễ hạn phạt 5% kỳ đó, ít nhất 3 xu.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Trễ hạn (thẻ hay khoản vay) 3 lần là bị ghi nợ xấu 30 ngày: không mở thẻ, không vay mới, thẻ tạm ngưng.",
+  "en": ""
+ },
+ {
+  "vi": "📈 Điểm tín dụng 300–850, bắt đầu 650. Trả đúng hạn, dư nợ thẻ dưới 30% hạn mức, thu nhập đều thì điểm tăng.",
+  "en": ""
+ },
+ {
+  "vi": "📉 Mỗi lần nộp hồ sơ vay hay mở thẻ, điểm giảm một chút. Đừng nộp dồn dập.",
+  "en": ""
+ },
+ {
+  "vi": "Thuê phòng, mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Mở [[Nhà của bạn]] ở trang Hành trình hoặc trong Ngân hàng. Luôn thấy tiền mặt, tài khoản và còn thiếu bao nhiêu.",
+  "en": ""
+ },
+ {
+  "vi": "🛏️ Phòng trọ khép kín: cọc 60 xu (trả lại khi dọn đi), tiền phòng 14 xu/ngày, tinh thần +1 mỗi sáng.",
+  "en": ""
+ },
+ {
+  "vi": "👥 Ký túc xá Hẻm 7: ở ghép giường tầng, cọc 20 xu, 7 xu/ngày. Từ chương 3 rẻ hơn gác Bà Tám, có 3 bạn cùng phòng.",
+  "en": ""
+ },
+ {
+  "vi": "🏢 Căn hộ, nhà phố, biệt thự rao bán từ 1.800 tới 60.000 xu. Trả trước ít nhất 30% giá và 2% phí công chứng, sang tên.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Phần còn lại vay Ngân hàng Phố 1–3 năm, trả góp mỗi tháng (5 ngày sống). Lãi 9–11,4%/năm tùy điểm tín dụng.",
+  "en": ""
+ },
+ {
+  "vi": "🔑 Có nhà thì hết tiền phòng, chỉ còn điện nước 2–16 xu/ngày, và tinh thần được cộng mỗi sáng.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Nhà từ 6.000 xu có phí bảo trì mỗi tháng: 0,2–0,35% giá mua, dù ở, để trống hay cho thuê. Căn hộ nhỏ dưới 6.000 xu không tốn phí này.",
+  "en": ""
+ },
+ {
+  "vi": "🏰 Penthouse cần điểm tín dụng từ 670 mới vay được, biệt thự từ 700 hoặc 740.",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Thiếu tiền trả góp: 3 ngày ân hạn không phạt. Quá hạn mới phạt 2% và giảm điểm tín dụng. Ngân hàng không bao giờ lấy nhà.",
+  "en": ""
+ },
+ {
+  "vi": "💞 Vợ chồng có thể góp tiền mua nhà từ quỹ chung. Ở Hành trình, bấm [[Mời về ở]]; chủ nhà gửi lời mời, người ấy đồng ý mới dọn về.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Giá nhà tăng khoảng 3% mỗi năm. Bán nhà mất 3% phí, tiền bán trả hết nợ vay trước.",
+  "en": ""
+ },
+ {
+  "vi": "🏘️ Có thể có tới 4 căn nhà: ở một căn, căn khác để trống hoặc cho thuê, tiền thuê về đúng ngày trả góp. Ngân hàng tính chung mọi khoản trả góp.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Đầu tư cá nhân",
+  "en": ""
+ },
+ {
+  "vi": "🔓 Mở khi ví từng có 500 xu.",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Gửi tiết kiệm ngân hàng phường kỳ hạn 7 ngày, lãi nhỏ nhưng chắc: 0,3%/ngày cho 20.000 xu đầu, phần trên 0,1%/ngày.",
+  "en": ""
+ },
+ {
   "vi": "🪙 Mây Coin lên xuống mỗi ngày, mua bán mất phí 2%.",
   "en": ""
  },
@@ -985,394 +1425,6 @@
  },
  {
   "vi": "🎉 Được mời mà [[Đi dự]] (10 xu phong bì) +5, [[Gửi lời chúc]] +1, im lặng tới hạn −3. Được tặng quà thì bấm [[Cảm ơn]] +2, để quá 2 ngày −1.",
-  "en": ""
- },
- {
-  "vi": "⭐ Phục vụ khách quen: 5★ +2, 3★ −1, 2★ −3, 1★ −5, thối thiếu −3. Hơn 14 ngày không gặp thì nhạt dần, cứ 7 ngày −1, không tụt dưới 40 (hàng xóm) hay 20 (khách).",
-  "en": ""
- },
- {
-  "vi": "💛 Càng thân, cơ hội được bo càng cao, tới gấp 1,6 lần. Từ Thân thiết: dễ bỏ qua lỗi nhỏ, báo trước khi có kiểm tra. Như người nhà đôi khi lì xì 10–30 xu.",
-  "en": ""
- },
- {
-  "vi": "🎒 Từ Người quen, thỉnh thoảng họ tặng đồ vào túi quà: tặng lại, bấm [[Dùng]], hoặc tặng vợ/chồng ở tab Tương tác của mục Hôn nhân.",
-  "en": ""
- },
- {
-  "vi": "💍 Độ thân quyết định đám cưới: Như người nhà tới dự khoảng 95% và mừng 20–100 xu, Thân thiết 80% và 10–30 xu, Người lạ chỉ 10% và 2–5 xu.",
-  "en": ""
- },
- {
-  "vi": "🔁 Giữ thân: hỏi thăm mỗi ngày, tặng đúng món họ thích, trả lời lời mời và cảm ơn quà đúng hạn, phục vụ khách quen chu đáo.",
-  "en": ""
- },
- {
-  "vi": "Mở Người quen",
-  "en": ""
- },
- {
-  "vi": "Trò chuyện với hàng xóm",
-  "en": ""
- },
- {
-  "vi": "👥 Mở [[Người quen]], chọn một người rồi bấm [[Trò chuyện]]; có sẵn câu hỏi nhanh.",
-  "en": ""
- },
- {
-  "vi": "💞 Trò chuyện lần đầu trong ngày làm hai người thân hơn một chút (xem mục Thân thiết với hàng xóm).",
-  "en": ""
- },
- {
-  "vi": "✨ Nhân vật có thể trả lời bằng AI (xem mục Trò chuyện với nhân vật AI).",
-  "en": ""
- },
- {
-  "vi": "🔐 Đừng gõ thông tin cá nhân thật. Mỗi tin nhắn tối đa 200 ký tự.",
-  "en": ""
- },
- {
-  "vi": "Trò chuyện với nhân vật AI",
-  "en": ""
- },
- {
-  "vi": "💬 Ở màn hình Trò chuyện với khách, gõ tin nhắn (tối đa 200 ký tự) hoặc chọn câu hỏi nhanh rồi bấm [[Gửi]].",
-  "en": ""
- },
- {
-  "vi": "✨ Khi AI bật, nhân vật trả lời theo tính cách riêng; câu do AI viết có nhãn AI nhỏ. AI không cộng trừ tiền hay hàng được.",
-  "en": ""
- },
- {
-  "vi": "📤 Gửi tới nhà cung cấp AI: tin bạn gõ, vài câu gần nhất, lời trả lời review và vài dữ kiện của lượt chơi. Tên nhân vật của bạn không được gửi đi.",
-  "en": ""
- },
- {
-  "vi": "🔐 Số điện thoại, e-mail và đường link bị ẩn trước khi gửi. Dù vậy, đừng gõ thông tin cá nhân thật.",
-  "en": ""
- },
- {
-  "vi": "⚙️ Bật sẵn khi máy chủ có AI. Tắt ở Cài đặt → Cách chơi → [[Nhân vật trò chuyện bằng AI]], hoặc bấm [[Tắt AI]] trên thẻ nhắc lần đầu.",
-  "en": ""
- },
- {
-  "vi": "🔁 Tắt AI, mạng lỗi hay nhắn quá dồn dập thì nhân vật trả lời bằng lời có sẵn. Hỏi chuyện không hay thì nhân vật lảng sang chuyện khác.",
-  "en": ""
- },
- {
-  "vi": "🧹 Muốn xóa đoạn chat: mở phần giới thiệu người đó trong Trò chuyện rồi bấm [[Xóa tin nhắn]].",
-  "en": ""
- },
- {
-  "vi": "Mở Trò chuyện",
-  "en": ""
- },
- {
-  "vi": "Nhóm Cư Dân Phố",
-  "en": ""
- },
- {
-  "vi": "🏘️ Nhóm kín của khu phố: hàng xóm đăng bài đều đặn khi bạn chơi.",
-  "en": ""
- },
- {
-  "vi": "❤️ Bày tỏ cảm xúc, bình luận, hoặc tự đăng bài; dùng [[@ Nhắc tên]] để gọi ai đó.",
-  "en": ""
- },
- {
-  "vi": "🔢 Mỗi ngày sống đăng được tối đa 20 bài.",
-  "en": ""
- },
- {
-  "vi": "👀 Thỉnh thoảng có người bàn tán về bạn: chọn Giải thích, Cười trừ, Hỏi thẳng hoặc Kệ thôi.",
-  "en": ""
- },
- {
-  "vi": "🚫 Đừng đăng số điện thoại, địa chỉ, tài khoản. Tin chưa rõ thì đừng lan.",
-  "en": ""
- },
- {
-  "vi": "Mở Nhóm phố",
-  "en": ""
- },
- {
-  "vi": "📰 Bảng tin của nơi bạn đang làm: lời nhắn, chuyện của khách và các đánh giá.",
-  "en": ""
- },
- {
-  "vi": "✍️ Kể chuyện tiệm cho hàng xóm nghe, thích bài, trả lời từng người.",
-  "en": ""
- },
- {
-  "vi": "⭐ Bấm [[Trả lời đánh giá]] để sang thẳng phần trả lời khách.",
-  "en": ""
- },
- {
-  "vi": "🔄 [[Xem lời nhắn mới]] để thời gian trôi thêm, lời nhắn mới tới.",
-  "en": ""
- },
- {
-  "vi": "Mở Chuyện phố",
-  "en": ""
- },
- {
-  "vi": "Ảnh và kỷ niệm",
-  "en": ""
- },
- {
-  "vi": "📸 Mở [[Kỷ niệm]], bấm [[Chụp góc hiện tại]] để lưu ảnh tiệm.",
-  "en": ""
- },
- {
-  "vi": "🖼️ Album giữ 6 ảnh gần nhất; tải ảnh về máy nếu muốn giữ lâu.",
-  "en": ""
- },
- {
-  "vi": "🏅 Nhận kỷ niệm của một câu chuyện trong Sổ tay thì kỷ vật hiện trong album.",
-  "en": ""
- },
- {
-  "vi": "👥 Độ thân với từng người xem ở [[Người quen]] (mục Thân thiết với hàng xóm).",
-  "en": ""
- },
- {
-  "vi": "Mở Kỷ niệm",
-  "en": ""
- },
- {
-  "vi": "Phố nghề: ghé quán nhau",
-  "en": ""
- },
- {
-  "vi": "🪪 Tạo hồ sơ với tên hiển thị, biểu tượng; chọn có hiện quán cho mọi người hay không.",
-  "en": ""
- },
- {
-  "vi": "🏪 Tab Phố: tìm quán người khác, bấm [[Ghé quán]], theo dõi quán mình thích.",
-  "en": ""
- },
- {
-  "vi": "⭐ Đã ghé thì được chấm sao quán đó, mỗi ngày một lần; chủ quán trả lời một lần.",
-  "en": ""
- },
- {
-  "vi": "🎁 Tặng sticker kèm 0, 10 hoặc 20 xu: tối đa 5 món mỗi ngày, mỗi người một món.",
-  "en": ""
- },
- {
-  "vi": "🎯 Cả phố cùng góp sức cho mục tiêu phục vụ khách mỗi tuần.",
-  "en": ""
- },
- {
-  "vi": "🔞 Phố nghề dành cho người từ 13 tuổi.",
-  "en": ""
- },
- {
-  "vi": "Mở Phố nghề",
-  "en": ""
- },
- {
-  "vi": "Chợ, bảng tin, an toàn",
-  "en": ""
- },
- {
-  "vi": "🧺 Chợ: đăng bán nguyên liệu trong kho, tối đa 5 món cùng lúc.",
-  "en": ""
- },
- {
-  "vi": "🛒 Mua ở chợ: hàng về kho nghề đó, xu trừ ở ví nghề đó; người bán nhận xu lần tới vào game.",
-  "en": ""
- },
- {
-  "vi": "📝 Bảng tin: Mẹo nghề, Chuyện nghề, Hỏi nhanh, Cần mua/bán; tối đa 10 bài mỗi ngày.",
-  "en": ""
- },
- {
-  "vi": "🚫 Không đăng đường link, e-mail, số điện thoại hay số tài khoản.",
-  "en": ""
- },
- {
-  "vi": "🚩 Nội dung xấu thì [[Báo cáo]]; bị nhiều người báo cáo sẽ tự ẩn. Ai làm phiền thì [[Chặn]].",
-  "en": ""
- },
- {
-  "vi": "📬 Hộp thư báo ai ghé, ai chấm sao, tặng quà hay mua hàng của bạn.",
-  "en": ""
- },
- {
-  "vi": "Bảng xếp hạng",
-  "en": ""
- },
- {
-  "vi": "🏆 [[Trải nghiệm]]: bảng [[Tất cả]] cho cả phố và một bảng cho từng nơi làm. [[Danh hiệu]]: xếp theo số danh hiệu đã có. [[Chứng chỉ]]: xếp theo số chứng chỉ đã có. [[Tài phú]]: ai giàu nhất phố.",
-  "en": ""
- },
- {
-  "vi": "🏅 Danh hiệu tuần: top 1, top 2–3 và top 4–10 của bảng Tất cả, Danh hiệu, Chứng chỉ, Tài phú, và top 1 mỗi nơi làm giữ một danh hiệu riêng, hiện cạnh tên. Cập nhật mỗi ngày, chốt tuần lúc 0:00 thứ Hai.",
-  "en": ""
- },
- {
-  "vi": "🌟 Bảng cả phố: XP mọi nơi làm, cộng 80 cho mỗi nơi đã phục vụ khách. Bằng điểm thì ai thạo nhiều nghề hơn, rồi làm nhiều ngày hơn đứng trước.",
-  "en": ""
- },
- {
-  "vi": "🏪 Bảng từng nơi: XP ở nơi đó. Bằng điểm thì ai làm nhiều ngày hơn, rồi được nhiều sao hơn đứng trước.",
-  "en": ""
- },
- {
-  "vi": "📜 Top chứng chỉ: bằng số chứng chỉ thì ai có tổng điểm thi cao hơn, rồi ai có sớm hơn đứng trước.",
-  "en": ""
- },
- {
-  "vi": "💰 Top tài phú: tài sản ròng như ở Tiền của bạn (ví, quỹ nơi làm, ngân hàng, nhà theo giá thị trường, trừ hết nợ). Chỉ tính người chơi theo câu chuyện.",
-  "en": ""
- },
- {
-  "vi": "➕ Tài phú còn cộng sổ tiết kiệm Mây, Mây Coin và vàng theo giá vốn, xe theo giá bán lại, quầy riêng theo giá sang nhượng, và trừ vay nóng hội chợ. Không tính Quỹ chung.",
-  "en": ""
- },
- {
-  "vi": "👀 Mỗi bảng hiện 50 người đầu, chỉ có tên, điểm, cấp, số ngày làm và sao. Ô của bạn cho biết hạng của bạn, kể cả khi đang ẩn tên.",
-  "en": ""
- },
- {
-  "vi": "👤 Tài khoản hiện tên hiển thị sẵn. Khách chỉ hiện khi tự bật và đã đặt tên nhân vật khác “Mây”, kèm nhãn khách.",
-  "en": ""
- },
- {
-  "vi": "🙈 Bật tắt ở Cài đặt → Dữ liệu → [[Hiện tên tôi trên bảng xếp hạng]], hoặc bấm [[Ẩn tên tôi]] trên bảng. Không ai thấy tên đăng nhập của bạn.",
-  "en": ""
- },
- {
-  "vi": "Mở Xếp hạng",
-  "en": ""
- },
- {
-  "vi": "Bạn bè & hôn nhân",
-  "en": ""
- },
- {
-  "vi": "Kết hôn từ A tới Z",
-  "en": ""
- },
- {
-  "vi": "🔐 Bước 1: tạo tài khoản. Kết hôn là chuyện giữa hai người chơi thật, nên khách chưa có tài khoản mở [[Hôn nhân]] sẽ thấy nút [[Tạo tài khoản]].",
-  "en": ""
- },
- {
-  "vi": "👥 Bước 2: kết bạn với người ấy bằng đúng tên đăng nhập hoặc mã PCC-…, chờ họ [[Chấp nhận]]. Chỉ bạn bè mới cầu hôn được nhau. Xem mục “Bạn bè giữa người chơi”.",
-  "en": ""
- },
- {
-  "vi": "💛 Bước 3 (nên làm): thân với hàng xóm. Người càng thân càng hay tới dự và mừng dày, đỡ tiền tiệc. Xem mục “Thân thiết với hàng xóm”.",
-  "en": ""
- },
- {
-  "vi": "💰 Bước 4: để dành tiền trong ví. Nhẫn 50–900 xu; lúc chốt kế hoạch cưới mỗi người đặt cọc phần mình trong 30% tổng tiệc. Rút tiền lời từ nơi làm về ví trước.",
-  "en": ""
- },
- {
-  "vi": "💎 Bước 5: mua nhẫn ở tab [[Tiệm nhẫn]] của mục [[Hôn nhân]], chọn màu rồi bấm [[Mua]]. Xem mục “Tiệm nhẫn: mua và đổi màu nhẫn”.",
-  "en": ""
- },
- {
-  "vi": "💌 Bước 6: tab [[Cầu hôn]], chọn người bạn, chiếc nhẫn, một lời soạn sẵn rồi bấm [[Gửi lời cầu hôn]]. Người ấy bấm [[Đồng ý]] là đính hôn. Xem “Cầu hôn và trả lời”.",
-  "en": ""
- },
- {
-  "vi": "📋 Bước 7: một người lập [[Kế hoạch cưới]] (nơi, số bàn, thực đơn, ngày, tỉ lệ góp) rồi gửi; người kia bấm [[Xác nhận & đặt cọc]]. Xem “Đám cưới từng bước”.",
-  "en": ""
- },
- {
-  "vi": "🎊 Bước 8: sau 2–10 ngày sống, đám cưới tự diễn ra kể cả khi một người vắng. Khách mừng, trả nốt tiệc, hai bạn thành vợ chồng. Xem “Ngày cưới: khách và tiền mừng”.",
-  "en": ""
- },
- {
-  "vi": "🏡 Bước 9: sống chung với [[Quỹ chung]], thẻ chung, [[Tương tác]] mỗi ngày và sổ nợ. Xem “Quỹ chung & thẻ chung”, “Đời vợ chồng” và “Ly hôn và hủy hôn ước”.",
-  "en": ""
- },
- {
-  "vi": "Mở Hôn nhân",
-  "en": ""
- },
- {
-  "vi": "Bạn bè giữa người chơi",
-  "en": ""
- },
- {
-  "vi": "🔐 Bạn bè là người chơi thật nên cần tài khoản. Khách chưa có tài khoản mở [[Bạn bè]] sẽ thấy nút [[Tạo tài khoản]].",
-  "en": ""
- },
- {
-  "vi": "🔎 Ở “Tìm bạn”, gõ đúng tên đăng nhập của người ấy rồi bấm [[Tìm]]. Không tìm gần đúng, không có danh sách để lướt; chữ hoa hay thường đều được.",
-  "en": ""
- },
- {
-  "vi": "🪪 Có mã người chơi dạng PCC-XXXXXX thì gõ mã vào cùng ô đó. Mã của bạn ở cuối mục Bạn bè, bấm [[Chép mã]] để gửi cho người quen.",
-  "en": ""
- },
- {
-  "vi": "📨 Bấm [[Kết bạn]] để gửi lời mời. Người kia chọn [[Chấp nhận]], [[Từ chối]] hoặc [[Chặn]]. Nếu họ đã mời bạn trước, nút thành [[Chấp nhận kết bạn]] và hai bạn thành bạn ngay.",
-  "en": ""
- },
- {
-  "vi": "⏳ Lời mời bạn gửi nằm ở “Đang chờ trả lời”, đổi ý thì bấm [[Rút lại]]. Có lời mời mới, nút [[Bạn bè]] trên thanh bên hiện số.",
-  "en": ""
- },
- {
-  "vi": "🔢 Mỗi ngày tìm tối đa 100 lần (20 lần mỗi phút) và gửi 10 lời mời; cùng lúc chờ tối đa 20 lời mời; danh sách giữ tối đa 200 bạn.",
-  "en": ""
- },
- {
-  "vi": "💍 Thẻ bạn bè ghi tên hiển thị, nghề chính, cấp và tình trạng: Độc thân, Đã đính hôn, Đã kết hôn. Bạn đang độc thân thì có nút [[Cầu hôn]] ngay trên thẻ.",
-  "en": ""
- },
- {
-  "vi": "🚫 [[Hủy kết bạn]] xóa cả hai khỏi danh sách của nhau. [[Chặn]] thì người đó không tìm, không mời, không cầu hôn bạn được nữa. Người thương của mình thì không hủy hay chặn được.",
-  "en": ""
- },
- {
-  "vi": "🙈 Tắt [[Cho phép tìm tôi bằng tên đăng nhập]] thì chỉ ai có mã mới tìm được bạn. Người khác chỉ thấy tên hiển thị, không bao giờ thấy tên đăng nhập.",
-  "en": ""
- },
- {
-  "vi": "Mở Bạn bè",
-  "en": ""
- },
- {
-  "vi": "Tiệm nhẫn: mua và đổi màu nhẫn",
-  "en": ""
- },
- {
-  "vi": "💍 Mở [[Hôn nhân]], tab [[Tiệm nhẫn]]. Đã đính hôn hay đã cưới thì tab này tên là [[Kim hoàn]].",
-  "en": ""
- },
- {
-  "vi": "💰 Giá gốc: nhẫn bạc khắc tên 50 xu, vàng tây 18K 150 xu, vàng ta 24K (1 chỉ) 280 xu, vàng đính ruby 480 xu, kim cương 5 ly 900 xu.",
-  "en": ""
- },
- {
-  "vi": "🎨 Mỗi nhẫn chọn Màu kim loại: Bạc, Vàng, Vàng hồng hay Bạch kim; nhẫn ruby và kim cương chọn thêm Màu đá. Hình nhẫn đổi màu ngay để xem trước.",
-  "en": ""
- },
- {
-  "vi": "➕ Màu sang hơn màu gốc thì cộng thêm, ví dụ nhẫn bạc lên Bạch kim +60 xu, nhẫn ruby đổi đá Kim cương trắng +30 xu. Chọn màu rẻ hơn thì giá không giảm.",
-  "en": ""
- },
- {
-  "vi": "🛒 Bấm [[Mua]] rồi xác nhận. Nút chỉ bấm được khi ví đủ tiền, thiếu thì hiện [[Chưa đủ tiền]]: rút tiền lời từ nơi làm về ví trước.",
-  "en": ""
- },
- {
-  "vi": "💳 Tiền nhẫn trừ vào ví. Ai chọn [[Ưu tiên quẹt thẻ tín dụng]] trong Ngân hàng và thẻ còn hạn mức thì nhẫn được quẹt thẻ. Thẻ chung vợ chồng không trả tiền nhẫn.",
-  "en": ""
- },
- {
-  "vi": "📦 Hộp nhẫn giữ tối đa 5 chiếc, tính cả nhẫn đang nằm trong lời cầu hôn chờ trả lời. Bị từ chối hay lời cầu hôn hết hạn thì nhẫn về lại hộp.",
-  "en": ""
- },
- {
-  "vi": "🔁 Tiệm kim hoàn: trong Hộp nhẫn bấm [[Đổi màu]], chọn màu mới rồi bấm nút đổi màu. Phí 20 xu, cộng phần chênh nếu màu mới đắt hơn màu đang có. Bấm [[Thôi]] để bỏ.",
   "en": ""
  }
 ]

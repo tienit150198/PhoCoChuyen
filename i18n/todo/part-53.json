@@ -1,5 +1,513 @@
 [
  {
+  "vi": "Gác chắn đi kể chuyện nội bộ với báo chí.",
+  "en": ""
+ },
+ {
+  "vi": "Bài báo giật tít “Gác chắn tố…”. Anh Quý gọi bạn lên phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Xua tay: “Đi chỗ khác, đang làm việc”",
+  "en": ""
+ },
+ {
+  "vi": "Cô phóng viên chụp ảnh cái chòi, chú thích “gác chắn từ chối trả lời”.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa to, nước tràn đường ngang",
+  "en": ""
+ },
+ {
+  "vi": "Mưa như trút. Nước ngập ngang mặt ray ở đoạn cống Km 7+420. Chị Nguyệt gọi: “Đường ngang Bến Mây thấy gì báo ngay!”",
+  "en": ""
+ },
+ {
+  "vi": "Báo ga nước ngập mặt ray, đề nghị tàu chạy chậm, xin thợ cung ra kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "Ga ra lệnh tàu chạy chậm qua Km 7. Anh Khải đội mưa ra cắm cờ, kiểm tra nền đường.",
+  "en": ""
+ },
+ {
+  "vi": "Chờ tạnh mưa rồi ra xem",
+  "en": ""
+ },
+ {
+  "vi": "Nước ngập ray mà không báo ga.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu SE chạy qua chỗ ngập ở tốc độ thường, rung lắc mạnh. Ga gọi hỏi sao không báo.",
+  "en": ""
+ },
+ {
+  "vi": "“Chắc không sao, năm nào chả ngập”",
+  "en": ""
+ },
+ {
+  "vi": "Coi thường nước ngập nền đường.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng ra đá ba-lát trôi một đoạn. Anh Khải lắc đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Quán cà phê kê ghế sát ray",
+  "en": ""
+ },
+ {
+  "vi": "Cô Mận kê thêm dãy ghế nhựa sát mép ray, treo biển “Check-in tàu chạy sát mặt”. Khách xếp hàng chờ ngồi.",
+  "en": ""
+ },
+ {
+  "vi": "Nói rõ hành lang an toàn, xin cô dời ghế vào trong, ghi phiếu báo phường nếu cô không dời",
+  "en": ""
+ },
+ {
+  "vi": "Cô Mận cằn nhằn nhưng dời ghế lùi ba mét. Khách vẫn chụp được, mà an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Thôi kệ, quán người ta làm ăn",
+  "en": ""
+ },
+ {
+  "vi": "Gác chắn để quán kê ghế sát ray, khách suýt bị gương tàu quệt.",
+  "en": ""
+ },
+ {
+  "vi": "Chiều đó gương chiếu hậu tàu địa phương quệt sát một vị khách. Ai cũng tái mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Tự tay dẹp hết ghế ra giữa ngõ",
+  "en": ""
+ },
+ {
+  "vi": "Gác chắn vào tận quán quăng ghế.",
+  "en": ""
+ },
+ {
+  "vi": "Ghế được dẹp, nhưng cô Mận đăng bài tố bạn “hành xử như côn đồ”.",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ đặt xu lên ray",
+  "en": ""
+ },
+ {
+  "vi": "Ba đứa nhỏ rủ nhau đặt đồng xu lên ray chờ tàu cán dẹt “làm huy hiệu”. Tàu tiếp theo còn hai mươi phút.",
+  "en": ""
+ },
+ {
+  "vi": "Gom xu, dắt tụi nhỏ vào, kể cho tụi nhỏ nghe vì sao xu trên ray nguy hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ há hốc nghe chuyện đồng xu văng như đạn. Chiều đó tụi nó về kể cho cả xóm.",
+  "en": ""
+ },
+ {
+  "vi": "Quát cho tụi nó chạy",
+  "en": ""
+ },
+ {
+  "vi": "Tụi nhỏ chạy mất, để lại ba đồng xu trên ray. Bạn phải ra nhặt.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ, có đồng xu thôi mà",
+  "en": ""
+ },
+ {
+  "vi": "Gác chắn thấy trẻ con nghịch trên ray mà kệ.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu cán qua, một đồng xu văng trúng cửa kính quán nước. May không ai sao.",
+  "en": ""
+ },
+ {
+  "vi": "Mắt díp lại giữa ca",
+  "en": ""
+ },
+ {
+  "vi": "Đã khuya. Hai chuyến tàu nữa mới hết ca. Cái ghế trong chòi êm quá, mắt bạn cứ díp lại.",
+  "en": ""
+ },
+ {
+  "vi": "Rửa mặt nước lạnh, đứng dậy đi quanh chòi, gọi ga hỏi giờ tàu",
+  "en": ""
+ },
+ {
+  "vi": "Nước lạnh làm bạn tỉnh hẳn. Chị Nguyệt còn đọc cho bạn nghe giờ tàu đêm.",
+  "en": ""
+ },
+ {
+  "vi": "Chợp mắt năm phút thôi, có chuông bộ đàm thì dậy",
+  "en": ""
+ },
+ {
+  "vi": "Gác chắn ngủ gật trong ca, ga gọi ba lần không ai nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Năm phút thành hai mươi phút. Bộ đàm réo, bạn giật mình đánh rơi cả cốc trà.",
+  "en": ""
+ },
+ {
+  "vi": "Pha cốc cà phê đặc",
+  "en": ""
+ },
+ {
+  "vi": "Tỉnh được một lúc, nhưng tim đập thình thịch.",
+  "en": ""
+ },
+ {
+  "vi": "Phong bì “cảm ơn” của chủ xe tải",
+  "en": ""
+ },
+ {
+  "vi": "Một ông chủ xe tải dúi phong bì: “Tuần sau xe anh qua đây đêm, em nâng sẵn chắn chờ nhé, đỡ mất thời gian.”",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối phong bì, nói rõ chắn chỉ nâng khi đã an toàn, báo đội trưởng",
+  "en": ""
+ },
+ {
+  "vi": "Ông chủ xe ngượng ngùng cất phong bì. Đội trưởng ghi nhận ca của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận, hứa “để em xem”",
+  "en": ""
+ },
+ {
+  "vi": "Gác chắn nhận phong bì của chủ xe tải.",
+  "en": ""
+ },
+ {
+  "vi": "Tuần sau ông ta gọi điện “nhắc”. Bạn mất ngủ cả đêm, rồi phải nộp lại phong bì cho đội.",
+  "en": ""
+ },
+ {
+  "vi": "Cười trừ, không nhận không từ",
+  "en": ""
+ },
+ {
+  "vi": "Ông ta để phong bì lại trên bàn rồi đi. Bạn phải mang nộp lên đội.",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn chụp ảnh cưới trên ray",
+  "en": ""
+ },
+ {
+  "vi": "Một đôi cô dâu chú rể cùng thợ ảnh bày cả váy cưới trên đường ray: “Ảnh cưới đường tàu đang hot lắm anh ơi, cho chụp mười phút thôi!”",
+  "en": ""
+ },
+ {
+  "vi": "Chúc mừng, mời ra bãi cỏ cạnh ray chụp, chỉ chỗ vẫn thấy đường tàu mà an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh chụp từ bãi cỏ, đường ray làm nền đẹp không kém. Cô dâu còn mời bạn kẹo cưới.",
+  "en": ""
+ },
+ {
+  "vi": "Cho chụp, tàu tới thì đuổi",
+  "en": ""
+ },
+ {
+  "vi": "Gác chắn cho cả đoàn chụp ảnh cưới trên ray.",
+  "en": ""
+ },
+ {
+  "vi": "Đang chụp thì ga báo tàu. Cả đoàn ôm váy chạy toán loạn, chân váy mắc vào ray.",
+  "en": ""
+ },
+ {
+  "vi": "“Không là không”",
+  "en": ""
+ },
+ {
+  "vi": "Gác chắn khó đăm đăm, không chúc mừng được câu nào.",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn cưới dọn đồ đi, cô dâu phụng phịu.",
+  "en": ""
+ },
+ {
+  "vi": "Ca sau xin vào muộn",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu gọi: “Chú sốt, chiều chú vào trễ hai tiếng. Con gác thêm giúp chú, đừng báo đội nhé, phiền.”",
+  "en": ""
+ },
+ {
+  "vi": "Gác thêm giúp chú, nhưng báo đội trưởng để có người thay đúng quy định",
+  "en": ""
+ },
+ {
+  "vi": "Đội cử anh Lộc vào thay. Chú Sáu được nghỉ ốm đàng hoàng, còn cảm ơn bạn đã báo.",
+  "en": ""
+ },
+ {
+  "vi": "Gác thêm, im lặng cho chú yên",
+  "en": ""
+ },
+ {
+  "vi": "Bạn gác một mạch mười bốn tiếng, cuối ca mắt mờ đi. Chú Sáu áy náy mãi.",
+  "en": ""
+ },
+ {
+  "vi": "Hết giờ là về, ca sau tự lo",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ chòi gác không người lúc giao ca.",
+  "en": ""
+ },
+ {
+  "vi": "Hai tiếng không ai gác. Ga phải báo tàu chạy chậm qua Bến Mây.",
+  "en": ""
+ },
+ {
+  "vi": "Hội mê tàu hỏa",
+  "en": ""
+ },
+ {
+  "vi": "Mấy bạn trẻ mê tàu hỏa xin vào chòi xem bạn làm việc, xin chụp bảng giờ tàu “cho hội nhóm”.",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn, mời đứng ngoài vạch an toàn, kể vài điều về nghề, không cho vào chòi",
+  "en": ""
+ },
+ {
+  "vi": "Hội mê tàu nghe say sưa, hứa nhắc cả nhóm không bao giờ đứng trong vạch.",
+  "en": ""
+ },
+ {
+  "vi": "Cho vào chòi bấm thử chuông",
+  "en": ""
+ },
+ {
+  "vi": "Gác chắn cho người lạ vào chòi bấm chuông.",
+  "en": ""
+ },
+ {
+  "vi": "Một bạn bấm nhầm nút hạ chắn giữa lúc xe đang qua. Một phen hú vía.",
+  "en": ""
+ },
+ {
+  "vi": "Đuổi đi cho đỡ vướng",
+  "en": ""
+ },
+ {
+  "vi": "Hội mê tàu đi, đăng bài “gác chắn Bến Mây khó tính”.",
+  "en": ""
+ },
+ {
+  "vi": "Nắng bốn mươi độ",
+  "en": ""
+ },
+ {
+  "vi": "Nắng gắt, mặt ray nóng bỏng tay. Anh Khải gọi: “Trưa nay để ý đoạn cong Km 7+650, ray dễ giãn.”",
+  "en": ""
+ },
+ {
+  "vi": "Đội mũ, mang nước, ra soi đoạn cong, thấy lạ là báo ga ngay",
+  "en": ""
+ },
+ {
+  "vi": "Đoạn cong vẫn ổn. Anh Khải dặn chiều mai đi soi lại lúc nắng nhất.",
+  "en": ""
+ },
+ {
+  "vi": "Nắng quá, chiều mát hẵng đi",
+  "en": ""
+ },
+ {
+  "vi": "Được dặn soi ray lúc nắng mà để chiều.",
+  "en": ""
+ },
+ {
+  "vi": "Chiều ra thì ray đã nguội. Không ai biết trưa nay nó ra sao.",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ chú Hớn nhà gần đó ra nhìn hộ",
+  "en": ""
+ },
+ {
+  "vi": "Chú Hớn bảo “thẳng tắp”. Chú vừa uống xong hai chén.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ bò đòi đền",
+  "en": ""
+ },
+ {
+  "vi": "Ông chủ con bò hôm qua tới chòi: “Hôm qua cậu lùa bò tôi, nó trượt chân què. Đền đi, 30 xu!”",
+  "en": ""
+ },
+ {
+  "vi": "Bình tĩnh kể lại, mời tổ dân phố làm chứng, nhắc ông buộc bò xa hành lang đường sắt",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm làm chứng con bò vẫn đi lại bình thường. Ông chủ bò lẳng lặng về, từ đó buộc bò xa ray.",
+  "en": ""
+ },
+ {
+  "vi": "Đền cho xong chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Bạn mất 30 xu. Con bò chiều đó vẫn gặm cỏ tung tăng.",
+  "en": ""
+ },
+ {
+  "vi": "“Bò ông thả trên ray, tôi chưa phạt là may”",
+  "en": ""
+ },
+ {
+  "vi": "Gác chắn cãi tay đôi với người dân.",
+  "en": ""
+ },
+ {
+  "vi": "Hai bên to tiếng. Bà Bông phải bưng chè ra can.",
+  "en": ""
+ },
+ {
+  "vi": "Đám tang xin qua trước",
+  "en": ""
+ },
+ {
+  "vi": "Chắn vừa hạ. Đoàn đưa tang dừng lại, ông trưởng họ xin: “Giờ đẹp sắp qua rồi cháu, mở cho đoàn qua trước, tàu còn xa.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là ông trưởng họ: thầy cúng dặn đúng giờ, cả họ đang nhìn vào ông.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng giờ",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đàm",
+  "en": ""
+ },
+ {
+  "vi": "Ga báo tàu SE còn ba phút tới đường ngang.",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn tàu",
+  "en": ""
+ },
+ {
+  "vi": "Tàu khách nặng mấy trăm tấn, phanh khẩn cấp cũng trượt cả trăm mét.",
+  "en": ""
+ },
+ {
+  "vi": "Nội quy gác chắn",
+  "en": ""
+ },
+ {
+  "vi": "Chắn đã hạ chỉ được nâng khi tàu đã qua hết và ga xác nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Chia buồn, giải thích tàu còn ba phút, mời đoàn chờ sau vạch, qua ngay khi tàu qua",
+  "en": ""
+ },
+ {
+  "vi": "Cậu gác chắn lễ phép, nói rõ ràng, đoàn chờ có ba phút rồi qua.",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn chờ ba phút. Tàu qua, bạn nâng chắn và cúi đầu chào đoàn.",
+  "en": ""
+ },
+ {
+  "vi": "Ông trưởng họ",
+  "en": ""
+ },
+ {
+  "vi": "Ba phút thôi mà mình cứ tưởng lâu lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Thương người là giữ chắn cho người ta về nhà lành lặn.",
+  "en": ""
+ },
+ {
+  "vi": "Nâng chắn cho đoàn qua nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Đang qua thì còi tàu rúc, cả đoàn chạy tán loạn. Suýt nữa thì…",
+  "en": ""
+ },
+ {
+  "vi": "Còi tàu rúc lên khi người cuối cùng vừa ra khỏi ray.",
+  "en": ""
+ },
+ {
+  "vi": "Lái tàu",
+  "en": ""
+ },
+ {
+  "vi": "Tôi kéo phanh mà tay run cả buổi.",
+  "en": ""
+ },
+ {
+  "vi": "“Không là không, đứng đó mà chờ”",
+  "en": ""
+ },
+ {
+  "vi": "Đúng quy định nhưng nói năng lạnh lùng với người đang có tang.",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn chờ, nhưng ai cũng nhìn bạn không vui.",
+  "en": ""
+ },
+ {
+  "vi": "Bà con trong đoàn",
+  "en": ""
+ },
+ {
+  "vi": "Đúng thì đúng, nhưng nói một câu chia buồn cũng được mà.",
+  "en": ""
+ },
+ {
+  "vi": "Giữ chắn bằng tay, nói chuyện bằng lòng.",
+  "en": ""
+ },
+ {
+  "vi": "Chắn đã hạ thì không nâng cho ai; nói rõ còn mấy phút và nói bằng sự tôn trọng.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc lại lệnh ậm ừ",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đàm rè rè: “Đường ngang Bến Mây, tàu TN… rời Bến Gỗ lúc… dự kiến qua…” Bạn nghe được nửa câu.",
+  "en": ""
+ },
+ {
   "vi": "Tai bạn",
   "en": ""
  },
@@ -1289,514 +1797,6 @@
  },
  {
   "vi": "“Anh nhờ mỗi em thôi đó.”",
-  "en": ""
- },
- {
-  "vi": "Tuần thêm cả đoạn Km 9",
-  "en": ""
- },
- {
-  "vi": "“Tổ tuần đường thiếu người. Tuần này em đi thêm bốn ca tuần đoạn Km 9 nữa nhé, đi bộ khỏe người.”",
-  "en": ""
- },
- {
-  "vi": "“Đi bộ thôi mà, có gì đâu.”",
-  "en": ""
- },
- {
-  "vi": "“Ai cũng phải gánh thêm.”",
-  "en": ""
- },
- {
-  "vi": "ca tuần",
-  "en": ""
- },
- {
-  "vi": "Trực xuyên lễ",
-  "en": ""
- },
- {
-  "vi": "Đội trưởng đội gác chắn",
-  "en": ""
- },
- {
-  "vi": "“Dịp lễ này em trực liền bốn ngày nhé, người khác về quê hết rồi.”",
-  "en": ""
- },
- {
-  "vi": "“Lễ nào chả thế, ráng đi em.”",
-  "en": ""
- },
- {
-  "vi": "😮‍💨 Mệt rồi: thưởng ca chỉ còn một nửa. Xin nghỉ bù ở chòi gác.",
-  "en": ""
- },
- {
-  "vi": "🎧 Gọi chị Thảo",
-  "en": ""
- },
- {
-  "vi": "🏢 Báo trung tâm",
-  "en": ""
- },
- {
-  "vi": "Phòng Điều phối",
-  "en": ""
- },
- {
-  "vi": "nhân viên tiếp nhận tập sự",
-  "en": ""
- },
- {
-  "vi": "Tôi đang trực đường dây khẩn.",
-  "en": ""
- },
- {
-  "vi": "Trung tâm không cho trực ban nhận quà, hẹn hò người gọi.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn, chúc anh chị bình an.",
-  "en": ""
- },
- {
-  "vi": "⚖️ Phòng Điều phối: tạm đình chỉ trực hết hôm nay, mai lên trình bày.",
-  "en": ""
- },
- {
-  "vi": "🛡️ Báo là đúng: trung tâm có quy trình bảo vệ trực ban.",
-  "en": ""
- },
- {
-  "vi": "😮‍💨 Mệt rồi: thưởng cuộc gọi chỉ còn một nửa. Xin nghỉ bù ở phòng trực.",
-  "en": ""
- },
- {
-  "vi": "Nhận ca, rà bảng đội",
-  "en": ""
- },
- {
-  "vi": "Chị Thảo: “Gọi bộ đàm từng đội đi em. Đội nào tạm ngưng thì đánh dấu lên bảng trước khi ký nhận ca, kẻo lát gửi tới đội không ai trả lời.”",
-  "en": ""
- },
- {
-  "vi": "Nhiều đường dây cùng réo",
-  "en": ""
- },
- {
-  "vi": "Cuộc gọi đến",
-  "en": ""
- },
- {
-  "vi": "Vào ca thôi! Chị Thảo đang chờ ở bảng đội.",
-  "en": ""
- },
- {
-  "vi": "Có chuyện ở phòng trực, quyết xong rồi làm tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn đang bị tạm đình chỉ trực hết hôm nay. Tan ca, mai lên phòng Điều phối trình bày.",
-  "en": ""
- },
- {
-  "vi": "Thao tác không có ở tổng đài.",
-  "en": ""
- },
- {
-  "vi": "Việc này không thuộc tổng đài.",
-  "en": ""
- },
- {
-  "vi": "Nhấc máy trước đã.",
-  "en": ""
- },
- {
-  "vi": "Nghe chị Thảo giao việc đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã quyết cuộc này rồi: đọc hướng dẫn hoặc kết thúc cuộc gọi.",
-  "en": ""
- },
- {
-  "vi": "Quyết gửi đội hay chuyển đúng nơi trước đã.",
-  "en": ""
- },
- {
-  "vi": "Đội không có trên bảng.",
-  "en": ""
- },
- {
-  "vi": "Đã gọi đội này rồi.",
-  "en": ""
- },
- {
-  "vi": "Chọn đội tạm ngưng, hoặc “không đội nào”.",
-  "en": ""
- },
- {
-  "vi": "Nghe lại bộ đàm: có đội nào báo tạm ngưng không? Đánh dấu cho đúng rồi hãy ký.",
-  "en": ""
- },
- {
-  "vi": "Ký nhận ca mà bảng đội chưa đánh dấu đúng đội tạm ngưng.",
-  "en": ""
- },
- {
-  "vi": "bảng đội chưa đúng",
-  "en": ""
- },
- {
-  "vi": "Nhận ca mà không gọi đủ các đội.",
-  "en": ""
- },
- {
-  "vi": "chưa gọi đủ các đội",
-  "en": ""
- },
- {
-  "vi": "Nhận ca, rà bảng đội.",
-  "en": ""
- },
- {
-  "vi": "Bảng đội: tất cả sẵn sàng.",
-  "en": ""
- },
- {
-  "vi": "Chị Thảo gật đầu: “Bảng đúng, ca này yên tâm.”",
-  "en": ""
- },
- {
-  "vi": "Máy đã cúp: tút tút tút. Gọi lại số vừa gọi trước đã.",
-  "en": ""
- },
- {
-  "vi": "Người gọi đang hoảng, hỏi gì cũng không nghe. Trấn an trước, rồi hỏi tiếp.",
-  "en": ""
- },
- {
-  "vi": "Câu hỏi không có trong kịch bản.",
-  "en": ""
- },
- {
-  "vi": "Địa chỉ trước em ơi. Lỡ rớt máy giữa chừng thì còn biết gửi xe tới đâu.",
-  "en": ""
- },
- {
-  "vi": "(Tút… tút… tút. Máy cúp ngang.)",
-  "en": ""
- },
- {
-  "vi": "Cách tìm chỗ không có.",
-  "en": ""
- },
- {
-  "vi": "Đã thử cách này rồi.",
-  "en": ""
- },
- {
-  "vi": "Hỏi địa chỉ trước đã.",
-  "en": ""
- },
- {
-  "vi": "“Thì ngay số nhà tôi vừa đọc đó.”",
-  "en": ""
- },
- {
-  "vi": "📲 Định vị về khớp địa chỉ người gọi vừa đọc.",
-  "en": ""
- },
- {
-  "vi": "🙋 “Không có ai đi ngang… mà địa chỉ tôi đọc rồi đó.”",
-  "en": ""
- },
- {
-  "vi": "Cách trấn an không có.",
-  "en": ""
- },
- {
-  "vi": "Đã nói câu này rồi.",
-  "en": ""
- },
- {
-  "vi": "Quát người đang hoảng thì họ càng hoảng. Thử cho họ một việc nhỏ, hoặc thở cùng họ.",
-  "en": ""
- },
- {
-  "vi": "Tổng đài quát người gọi đang hoảng.",
-  "en": ""
- },
- {
-  "vi": "quát người đang hoảng",
-  "en": ""
- },
- {
-  "vi": "😭 Người gọi khóc to hơn: “Sao chị la tôi!”",
-  "en": ""
- },
- {
-  "vi": "↩️ Gọi lại: người gọi nghe máy ngay, vẫn đang ở đó.",
-  "en": ""
- },
- {
-  "vi": "👂 Tiếng nền khớp với lời người gọi kể.",
-  "en": ""
- },
- {
-  "vi": "🔎 Người gọi kể thêm chi tiết, khớp với những gì đã nói.",
-  "en": ""
- },
- {
-  "vi": "Chọn mức ưu tiên trên bảng.",
-  "en": ""
- },
- {
-  "vi": "Chọn đội cần gửi.",
-  "en": ""
- },
- {
-  "vi": "Chọn ít nhất một đội để gửi.",
-  "en": ""
- },
- {
-  "vi": "Chưa có địa chỉ chắc chắn: xe không biết đi đâu. Hỏi địa chỉ, hỏi mốc hoặc gửi định vị trước.",
-  "en": ""
- },
- {
-  "vi": "Chưa biết chuyện gì mà đã chọn đội? Hỏi “chuyện gì đang xảy ra” đã em.",
-  "en": ""
- },
- {
-  "vi": "Giọng này có gì lạ không? Lắng nghe, hỏi kỹ hoặc gọi lại trước khi quyết.",
-  "en": ""
- },
- {
-  "vi": "Có ai đang gặp nguy hiểm tính mạng không? Đường dây khẩn gửi xe cho chuyện nguy hiểm thôi.",
-  "en": ""
- },
- {
-  "vi": "Nghe lại lời người gọi: còn đội nào cần tới nữa không?",
-  "en": ""
- },
- {
-  "vi": "Nguy hiểm tính mạng tới đâu? Xem lại bảng ưu tiên.",
-  "en": ""
- },
- {
-  "vi": "Anh Bình: “Nhận, xuất phát!”",
-  "en": ""
- },
- {
-  "vi": "Bác sĩ Vy: “Xe chạy rồi, em giữ người gọi giúp chị.”",
-  "en": ""
- },
- {
-  "vi": "Bộ đàm: “Nhận, đang tới.”",
-  "en": ""
- },
- {
-  "vi": "gọi đội đang tạm ngưng",
-  "en": ""
- },
- {
-  "vi": "đội bị giữ chân vì gửi thừa",
-  "en": ""
- },
- {
-  "vi": "Chọn nơi chuyển tới.",
-  "en": ""
- },
- {
-  "vi": "Chưa kiểm tra mà đã cho là gọi đùa? Lắng nghe, hỏi kỹ hoặc gọi lại trước khi quyết.",
-  "en": ""
- },
- {
-  "vi": "Người gọi đang gặp nguy hiểm thật đó. Nghe lại: có cần gửi đội không?",
-  "en": ""
- },
- {
-  "vi": "Từ chối cũng giữ giọng lịch sự em. Dứt khoát mà không gắt.",
-  "en": ""
- },
- {
-  "vi": "Tổng đài trả lời cộc lốc, gắt gỏng.",
-  "en": ""
- },
- {
-  "vi": "gắt với người gọi",
-  "en": ""
- },
- {
-  "vi": "“Thái độ gì vậy! Tôi khiếu nại đó!”",
-  "en": ""
- },
- {
-  "vi": "“Gắt với ai đó? Tôi gọi lại hoài cho coi!”",
-  "en": ""
- },
- {
-  "vi": "Nói nhẹ quá, người gọi cứ nằn nì, đường dây bị giữ lâu.",
-  "en": ""
- },
- {
-  "vi": "để người gọi nằn nì giữ máy",
-  "en": ""
- },
- {
-  "vi": "“Thôi mà, giúp tôi chút đi!”",
-  "en": ""
- },
- {
-  "vi": "“…dạ… em xin lỗi.” (cúp máy)",
-  "en": ""
- },
- {
-  "vi": "“Dạ… con đi gọi ông…”",
-  "en": ""
- },
- {
-  "vi": "“Ờ, có người hỏi han là vui rồi.”",
-  "en": ""
- },
- {
-  "vi": "“Ờ… ờ… để anh gọi taxi.”",
-  "en": ""
- },
- {
-  "vi": "“Vậy để tôi gọi số đó.”",
-  "en": ""
- },
- {
-  "vi": "“Okela, Long gọi phòng truyền thông.”",
-  "en": ""
- },
- {
-  "vi": "“Ờ, để tôi gọi điện lực.”",
-  "en": ""
- },
- {
-  "vi": "“Sáng mai hả… thôi cũng được.”",
-  "en": ""
- },
- {
-  "vi": "“Ờ, vậy tôi đi khám.”",
-  "en": ""
- },
- {
-  "vi": "“À… vậy hả, để tôi gọi đúng chỗ.”",
-  "en": ""
- },
- {
-  "vi": "Thẻ hướng dẫn không dành cho cuộc gọi này.",
-  "en": ""
- },
- {
-  "vi": "Đã đọc thẻ này rồi.",
-  "en": ""
- },
- {
-  "vi": "hướng dẫn nguy hiểm",
-  "en": ""
- },
- {
-  "vi": "Chọn giữ máy hay kết thúc cuộc gọi.",
-  "en": ""
- },
- {
-  "vi": "Chưa xin số gọi lại. Lỡ đội lạc đường thì gọi ai?",
-  "en": ""
- },
- {
-  "vi": "Người gọi đang một mình, đang sợ. Giữ máy với họ tới khi đội tới.",
-  "en": ""
- },
- {
-  "vi": "Quyết mà chưa hỏi chuyện gì đang xảy ra.",
-  "en": ""
- },
- {
-  "vi": "quyết khi chưa hỏi chuyện gì",
-  "en": ""
- },
- {
-  "vi": "Không xin số gọi lại; rớt máy là mất liên lạc.",
-  "en": ""
- },
- {
-  "vi": "thiếu số gọi lại",
-  "en": ""
- },
- {
-  "vi": "Không hỏi mấy người, ai bị thương.",
-  "en": ""
- },
- {
-  "vi": "không hỏi số người",
-  "en": ""
- },
- {
-  "vi": "Không hỏi lửa, gas, điện, nước: đội tới không biết trước nguy hiểm.",
-  "en": ""
- },
- {
-  "vi": "không hỏi nguy hiểm",
-  "en": ""
- },
- {
-  "vi": "Ca nguy hiểm tính mạng mà xếp mức thấp, xe chạy không còi.",
-  "en": ""
- },
- {
-  "vi": "xếp ưu tiên thấp hơn mức nguy hiểm",
-  "en": ""
- },
- {
-  "vi": "Xếp mức cao hơn cần thiết, xe hú còi chạy ẩu qua phố.",
-  "en": ""
- },
- {
-  "vi": "xếp ưu tiên cao quá",
-  "en": ""
- },
- {
-  "vi": "gửi thiếu đội",
-  "en": ""
- },
- {
-  "vi": "gửi thừa đội",
-  "en": ""
- },
- {
-  "vi": "thiếu hướng dẫn an toàn",
-  "en": ""
- },
- {
-  "vi": "Người gọi một mình đang sợ, tổng đài cúp máy.",
-  "en": ""
- },
- {
-  "vi": "bỏ người gọi một mình",
-  "en": ""
- },
- {
-  "vi": "Gửi xe cho chuyện không khẩn: đội bị giữ chân, ca thật phải chờ.",
-  "en": ""
- },
- {
-  "vi": "gửi xe cho cuộc không khẩn",
-  "en": ""
- },
- {
-  "vi": "Xe chạy tới nơi không có chuyện gì.",
-  "en": ""
- },
- {
-  "vi": "gửi xe cho cuộc gọi giả",
-  "en": ""
- },
- {
-  "vi": "Gửi xe mà không kiểm tra cuộc gọi nghi ngờ.",
   "en": ""
  }
 ]
