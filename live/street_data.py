@@ -175,6 +175,11 @@ LOOK_DEFAULTS = {
     None: dict(hair='toc_ngan', shade='mau_nau', skin='da_sang', top='ao_quen', bottom='quan_kem', shoes='giay_nau', acc='pk_khong'),
 }
 
+# 🎖️ The rank a stroller wears (game/org_content.py grade ids, public/js/v4/insignia.js draws them): `rk` = {o, g} in
+# walk_in / wed_in, apart from the look (older services ignore it, an id this list lacks shows nothing).
+ORG_GRADES = {'cand': ('binh_nhi', 'binh_nhat', 'ha_si', 'trung_si', 'thuong_si', 'thieu_uy', 'trung_uy', 'thuong_uy', 'dai_uy',
+                       'thieu_ta', 'trung_ta', 'thuong_ta', 'dai_ta')}
+
 # Danh hiệu shown under the name tag (game/journey.py TITLES: id -> emoji + name). A title the game adds later
 # and this list does not have yet simply shows no title.
 TITLES = {

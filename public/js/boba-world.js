@@ -18,7 +18,8 @@ import shop from './scenes/shop.js';
 import {language} from './v4/i18n.js';
 import {daylight} from './v4/dayclock.js';
 import {watch,CHECK} from './scenes/room-watch.js';   // what the room read of the game: a new state keeps its backdrop unless that changed
-import {figure,paintLegs,paintHairBack,paintTop,paintHairFront,paintAcc} from './v4/look.js';  // Tủ đồ: the player's look
+import {figure,paintLegs,paintHairBack,paintTop,paintHairFront,paintAcc,CANVAS} from './v4/look.js';  // Tủ đồ: the player's look
+import {paintRank,paintCap} from './v4/insignia.js';  // 🎖️ an org ladder's uniform, boards and cap (game/org.py)
 const themes={
  teacher:{primary:'#8ca97c',dark:'#556e46',light:'#f0f2dc',mint:'#e5d8ac',wall:'#fcf5df',awning:'#b5c897',title:'Lớp học Mầm Nắng',sub:'CÙNG THỬ · CÙNG HIỂU · CÙNG TIẾN BỘ',shelves:['Góc học liệu','Hộp đồ lớp mình']},
  tour_guide:{primary:'#78b3b6',dark:'#467c7f',light:'#eaf4e5',mint:'#e2caae',wall:'#eef5e8',awning:'#b3d2c4',title:'Mây Lang Thang',sub:'ĐI CÙNG NHAU · MANG VỀ MỘT CÂU CHUYỆN',shelves:['Bưu thiếp khu phố','Bản đồ & hành trang']},
@@ -327,6 +328,7 @@ export class BobaWorld extends World {
    R(c,-23,-52,46,36,outfit,15);E(c,-25,-36,8,14,sk?.hand||'#f5d5ba');E(c,25,-36,8,14,sk?.hand||'#f5d5ba');
    // Tủ đồ: "Mặc đồ làm việc khi vào ca" off shows the chosen top as it is.
    if(F&&!F.L.uniform)paintTop(c,F);
+   else if(F?.rk)paintRank(c,F,CANVAS,true);   // 🎖️ on shift: the uniform with its cấp hiệu and huy hiệu
    else if(player&&look==='male')this.workOutfit(pal);
    else if(player||employee){P(c,[[-14,-47],[14,-47],[19,-16],[-19,-16]],'#fff7e8');L(c,-15,-49,-10,-59,'#fff7e8',4);L(c,15,-49,10,-59,'#fff7e8',4);R(c,-10,-31,20,10,pal.light,4);heart(c,0,-26,.22,pal.primary);}
    // Generous face, warm cheeks, layered hair and eye highlights.
@@ -343,6 +345,7 @@ export class BobaWorld extends World {
    if(old){for(const ex of [-11,11]){c.beginPath();c.arc(ex,-78,9,0,Math.PI*2);c.strokeStyle='#89736a';c.lineWidth=1.6;c.stroke();}L(c,-2,-78,2,-78,'#89736a',1);}
    if(officer){R(c,-34,-109,68,14,'#69938c',8);R(c,-25,-119,50,18,'#82aca0',7);T(c,'★',0,-110,10,'#f7dd93');R(c,9,-39,10,9,'#f0d995',2);}
    if(F)paintAcc(c,F);
+   if(F?.rk)paintCap(c,F,CANVAS);
    if(this.career==='customer_care'&&player){c.beginPath();c.arc(0,-84,32,Math.PI,0);c.strokeStyle=pal.dark;c.lineWidth=5;c.stroke();R(c,27,-82,9,17,pal.primary,4);L(c,32,-69,17,-64,pal.dark,2);}
    c.restore();
  }

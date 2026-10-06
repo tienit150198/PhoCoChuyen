@@ -446,9 +446,9 @@ function statusView(){
  * the review when one waits, and 🧑‍💼 from step 3. Nothing for a brand-new place. */
 function promoStrip(c){
   const p=c.promo;if(!p||!(p.rank||p.due||p.next?.good||p.mgr))return '';
-  if(p.due)return `<button type="button" class="pm-strip due" data-action="promo"><span aria-hidden="true">🎖️</span><b>${p.due.who==='Phòng sếp'?'Sếp hẹn gặp bạn':'Hội buôn phố ghé thăm'}</b><small>${esc(p.due.title)}</small></button>`;
+  if(p.due)return `<button type="button" class="pm-strip due" data-action="promo"><span aria-hidden="true">🎖️</span><b>${p.due.who==='Phòng sếp'?'Sếp hẹn gặp bạn':p.due.who==='Ban chỉ huy'?'Ban chỉ huy hẹn gặp':'Hội buôn phố ghé thăm'}</b><small>${esc(p.due.title)}</small></button>`;
   const n=p.next,w=n?Math.round(100*n.good/Math.max(1,n.need)):100;
-  return `<div class="pm-strip-row"><button type="button" class="pm-strip" data-action="promo"><span aria-hidden="true">🎖️</span><b>${esc(p.title)}</b>${n?`<small>${n.good}/${n.need}</small><span class="bar"><i style="width:${w}%"></i></span>`:''}</button>${p.mgr?'<button type="button" class="pm-strip mgr" data-action="promo" aria-label="Ca quản lý">🧑‍💼</button>':''}</div>`;
+  return `<div class="pm-strip-row"><button type="button" class="pm-strip" data-action="promo"><span aria-hidden="true">🎖️</span><b>${esc(p.title)}</b>${p.org?`<small class="og-warn${p.org.warns.length?' on':''}">⚠️ ${p.org.warns.length}/${p.org.warn_max}</small>`:''}${n?`<small>${n.good}/${n.need}</small><span class="bar"><i style="width:${w}%"></i></span>`:''}</button>${p.mgr?'<button type="button" class="pm-strip mgr" data-action="promo" aria-label="Ca quản lý">🧑‍💼</button>':''}</div>`;
 }
 function taskCards(c){
   const t=c.tasks.find(x=>x.id===c.active_task&&!ended(x))||c.tasks.find(x=>!ended(x)),W=wordsFor(career()),desk=deskWork(),notes=hudNotes(c);

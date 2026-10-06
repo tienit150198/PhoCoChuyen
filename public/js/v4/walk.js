@@ -44,7 +44,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
 import {stylesheet} from '../lazy.js';
-import {lookOf,figureOf,paintPlayer,CANVAS,portrait} from './look.js';
+import {lookOf,figureOf,paintPlayer,CANVAS,portrait,rankRef} from './look.js';
 import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
 import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scenes/stroll.js';
 import * as feast from './wedfeast.js';
@@ -170,7 +170,7 @@ function onClose(){
 function leaveLocal(){S.log=[];S.logOpen=false;S.envp=null;S.tray=null;S.toss=null;S.dj=false;paintLog();S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;syncMusic();paintOverlays();}
 
 function enter(place){
-  const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined};
+  const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined,...(rankRef(st)?{rk:rankRef(st)}:{})};   // 🎖️ rk: the rank worn (live/street.py clean_rank; older services ignore it)
   if(S.wedding!==null){S.want='wed';live.send({t:'wed_in',id:S.wedding,...me});return;}
   S.want=place;
   const r=wire(choice(st,S.env?.api?.content,TWO));
@@ -281,7 +281,7 @@ function bind(){
   });
 }
 function sample(at){if(typeof at!=='number')return;S.offs.push(at-Date.now()/1000);if(S.offs.length>12)S.offs.shift();S.off=Math.max(...S.offs);}
-function person(p){const q={pid:p.pid,name:p.name,ti:p.ti,lk:p.lk,g:p.g,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
+function person(p){const q={pid:p.pid,name:p.name,ti:p.ti,lk:p.lk,rk:p.rk||null,g:p.g,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
 /** 💑 Sitting behind someone (`b`: the driver's pid, optional, from a newer live service): their speed is the driver's. */
 function behind(q,e){const b=typeof e.b==='string'?e.b:null,v=Number(e.v);if(b)q.v=v>0&&v<2000?v:q.v;else if(q.b&&!q.r)q.v=undefined;q.b=b;}
 /** 🛵 A people entry's vehicle (r, v: optional, from a newer live service), the rider's motion. */
@@ -693,7 +693,7 @@ function sprite(p){
   const key=`${S.k}|${S.dpr}`;if(p.sp&&p.spk===key)return p.sp;
   const s=AV*S.k*S.dpr,cv=document.createElement('canvas');cv.width=Math.ceil(110*s);cv.height=Math.ceil(160*s);
   const c=cv.getContext('2d');c.setTransform(s,0,0,s,55*s,150*s);
-  try{paintPlayer(c,figureOf(p.lk,p.g),CANVAS);}catch(e){console.warn('walk: look',e);}
+  try{const F=figureOf(p.lk,p.g);if(p.rk)F.rk=p.rk;paintPlayer(c,F,CANVAS);}catch(e){console.warn('walk: look',e);}
   p.sp=cv;p.spk=key;return cv;
 }
 const npcs=new Map();   // the wedding show's characters (./wedfeast.js), cached like the players' sprites

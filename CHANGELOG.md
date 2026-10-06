@@ -1,3 +1,15 @@
+# Chưa phát hành
+
+## Cấp bậc công an
+
+- Hệ chức vụ & cấp bậc dùng chung (game/org.py + org_content.py), công an trước: cấp bậc hàm (Binh nhì → Đại tá; Thiếu tướng Giám đốc chỉ là NPC) và chức vụ (Tổ viên → Tổ phó → Tổ trưởng → Đội phó/Đội trưởng 113 → Phó/Trưởng CA phường Mây → Phó/Trưởng phòng PC06 → Trợ lý BGĐ → Phó Giám đốc CATP) là hai đường riêng. Hàm lên theo ngày làm, ★ và hồ sơ sạch, tới trần của chức vụ; vài bậc cần khóa học (2 câu kiểm tra). Chức vụ lên bằng bổ nhiệm: đủ hàm, đủ ngày, chờ ghế trống, phỏng vấn 2 câu. Trưởng phòng PC06 trần Thượng tá.
+- ⚠️ Hệ thống tự nhận diện làm sai quy trình (xem thiếu giấy, chen hàng, trả đồ/giao trẻ khi chưa xác minh, đăng ảnh trẻ, bỏ qua nguy hiểm, xử lý sai mức, dọa khi hòa giải, bỏ tin báo chưa gọi lại, ghi khống sổ trực ban): mỗi lần một cảnh cáo, lần 4 hạ 1 bậc hàm. 10 ngày sạch hết 1 cảnh cáo; kỳ "Hoàn thành xuất sắc" xóa 1. Ở Binh nhì: tạm đình chỉ 3 ngày, không lương. Hạ hàm dưới chức vụ thì về chức cao nhất hàm cho phép. Lúc thử việc và khi anh Định còn kèm: chỉ nhắc.
+- 💵 Nhận phong bì: hạ 1 bậc ngay, ghi dấu liêm chính mãi mãi (không làm Trợ lý BGĐ, Phó Giám đốc, không lên Đại tá); tự giác nộp lại trong ca thì thành 1 cảnh cáo, dấu vẫn ghi "đã tự giác". Phong bì mới ở đồ thất lạc, hòa giải, tuần tra; lập biên bản hành vi đưa hối lộ được +1 Liêm chính.
+- 🏢 Phòng chỉ huy từ Tổ trưởng (dùng chung phòng điều hành của phi công): phân công, khen, nhắc, khiển trách, cảnh cáo, kiểm điểm, kỷ luật, thăng/giáng, điều động, tăng/hạ bậc lương, chỉ với cán bộ NPC (có người nhận phong bì ngầm). Kỷ luật thiếu căn cứ bị tính cảnh cáo cho mình. Trợ lý BGĐ: kiểm tra điều lệnh 2 đơn vị một ngày rồi trình PGĐ.
+- 🎖️ Thẻ cấp bậc (cấp hiệu, ⚠️ n/3, ★, Liêm chính), nhân vật mặc quân phục có cấp hiệu, huy hiệu, mũ khi vào ca công an; người khác thấy cấp hiệu ở phố đi dạo và đám cưới. Hình cấp hiệu vẽ đơn giản, chờ chủ game duyệt.
+- Cán bộ khu vực cũ vào thang theo bậc đang có (bậc 0 → Tổ viên Hạ sĩ … bậc 4 → Phó Trưởng CA Thiếu tá), không đổi tiền, lương không thấp hơn hôm nay. Lương theo hệ số hàm × phụ cấp chức vụ. Hỗ trợ tiếp dân bán thời gian giữ thang cũ. Các nghề khác: mới có khung nội dung.
+- Bản lưu: thêm khóa tùy chọn `journey.promo.police.org` và `careers.police.ext.data.beat`; bản 1.9.4 đọc được (đã thử quay về và chơi tiếp một ngày).
+
 # v1.9.4 — 2026-10-06
 
 - 🏪 Nhân viên tiệm (nơi làm việc) bán nhanh gấp 1,6 lần ngày đầu (góp ý người chơi; lịch sử bản 1.7.8–1.9.3 cho thấy tốc độ chưa từng bị giảm, tiệm thấy chậm chủ yếu do hết hàng).

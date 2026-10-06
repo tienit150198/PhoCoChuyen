@@ -112,3 +112,12 @@ html[data-theme="dem"] .career-job.sk.cap{--sk-accent:#7fb0de;--sk-accent-2:#c99
   .career-job.sk.cap .cap-prios{grid-template-columns:repeat(2,minmax(0,1fr))}
   .career-job.sk.cap .cap-tiles b{font-size:18px}
 }
+
+/* 🎖️ Cấp bậc (game/org.py): the rank line and the envelope card */
+.cap-rank{display:flex;align-items:center;gap:8px;margin:6px 0;padding:6px 10px;border-radius:14px;background:var(--card,#fff);box-shadow:0 1px 0 #0000000f}
+.cap-rank .og-board{flex:none;height:auto}
+.cap-rank b{flex:1;min-width:0}
+.cap-rank .og-warn{padding:2px 8px;border-radius:99px;font-weight:800;background:#0000000d}
+.cap-rank .og-warn.on{background:#fde3c8;color:#8a3d00}
+.cap-rank .bad{color:#b4231b;font-weight:800}
+.cap-beat{margin-bottom:10px}

@@ -35,6 +35,10 @@ happen, the tempting quota lines, are ghi khống).
 
 Money only through the engine (the salary at day close, a small bonus per task). Everything random comes from
 (day, slot) or the task id: make_task is pure.
+
+Cấp bậc công an (game/org.py, owner 06/10): the cán bộ khu vực posting is on the CAND ladder. A procedure violation
+read from a task's own grading is a ⚠️ cảnh cáo, a bribe taken (the desk's envelope, a patrol's mat, or the beat
+overlay's envelope: game/careers/police_beat.py, rolled at task start, outside make_task) demotes one grade at once.
 """
 from __future__ import annotations
 
@@ -46,6 +50,7 @@ from . import air_odd as ao
 from . import street_folk as folk
 from .. import consequences as cq
 from . import police_content as PC
+from . import police_beat as BT
 from .police_content import (PEOPLE, BRIEF, BRIEF_IDS, FLAG_TASK, DOCS, DOC_TEXT, BACK_LINE, DESKS, PRESS, LOSTS, QUESTIONS_LOST,
                              DISPUTES, CHILDREN, KID_Q, ANNOUNCE, VERIFY, PLACES, SCENES, PATROLS, TOPICS, TALK_Q, TALKS, PRIO, CALLS)
 
@@ -314,7 +319,7 @@ def _pressure(c: dict, d: dict) -> int:
 # ================================================================ the actions
 FREE = ('cap_intro', 'cap_rest')
 NO_TICK = ('cap_intro', 'cap_rest', 'cap_read', 'cap_doc', 'cap_lq', 'cap_kq', 'cap_look', 'cap_topic', 'cap_invite', 'cap_cb', 'cap_prio',
-           'cap_desk', 'cap_odd', 'cap_log', 'cap_hear', 'cap_verify')
+           'cap_desk', 'cap_odd', 'cap_log', 'cap_hear', 'cap_verify', 'cap_beat')
 PHYSICAL = ('cap_accept', 'cap_give', 'cap_handover', 'cap_act', 'cap_dispatch', 'cap_sign', 'cap_present')
 GROUNDED = ('cap_first', 'cap_accept', 'cap_back', 'cap_count', 'cap_give', 'cap_keep', 'cap_offer', 'cap_sign', 'cap_refer', 'cap_calm',
             'cap_handover', 'cap_hold', 'cap_act', 'cap_endpatrol', 'cap_present', 'cap_answer', 'cap_dispatch')
@@ -339,15 +344,87 @@ def handle(s: dict, c: dict, name: str, p: dict) -> dict:
             _odd_tick(s, c, d, result)
         return result
     if name == 'cap_log':
-        return _log(s, c, d, p)
+        result = _log(s, c, d, p)
+        if d['today']['log'] == 'false':
+            _rank_note(result, _promo().violation(s, c, ID, 'false_log', f'log-{c["day"]}', _grace(c, d)))
+        return result
+    if name == 'cap_beat':
+        return _beat(s, c, d, p)
     kit.desk_block(desk, 'Có chuyện ở phường, quyết xong rồi làm tiếp nhé.')
     ao.block(odd, 'Có người đang chờ bạn trả lời, xong rồi làm tiếp nhé.')
     kit.need(not (ao.grounded(c, odd) and name in GROUNDED), 'Bạn đang bị tạm dừng nhiệm vụ hết hôm nay. Tan ca, mai lên Ban chỉ huy giải trình.', 'grounded')
     fn = ACTIONS.get(name)
     kit.need(fn, 'Thao tác không có ở Công an phường.')
+    t0 = _task_of(c, p)
+    before = {x['code'] for x in cq.slips(t0)} if t0 else set()
     result = fn(s, c, d, p)
+    if t0:
+        _procedure(s, c, d, t0, before, result)
     _after(s, c, d, result)
     return result
+
+
+# ---------------------------------------------------------------- 🎖️ cấp bậc: procedure violations and the beat overlay
+def _promo():
+    from .. import promotion
+    return promotion
+
+
+def _task_of(c: dict, p: dict) -> dict | None:
+    tid = p.get('task') or c.get('active_task')
+    t = next((x for x in c['tasks'] if x['id'] == tid), None)
+    return t if t and t.get('career') == ID else None
+
+
+def _grace(c: dict, d: dict) -> bool:
+    """While anh Định stands beside a new officer, or on probation: a reminder, not a warning."""
+    return d['learn']['n'] < LEARN or bool((c.get('job') or {}).get('probation'))
+
+
+def _rank_note(result: dict, line: str) -> None:
+    if line:
+        result['message'] = f'{result.get("message", "")} {line}'.strip()
+        result['rank_note'] = line
+
+
+def _procedure(s: dict, c: dict, d: dict, t: dict, before: set, result: dict) -> None:
+    """After an action: the task's new slips → a ⚠️ cảnh cáo (one per task) or an accepted bribe; then maybe an envelope."""
+    new = {x['code'] for x in cq.slips(t)} - before
+    pm = _promo()
+    if 'bribe' in new:
+        _rank_note(result, pm.bribe(s, c, ID, f'bribe-{t["id"]}'))
+    v = BT.detect(t, new)
+    if v:
+        _rank_note(result, pm.violation(s, c, ID, v, t['id'], _grace(c, d)))
+    if not pm.org_live(s, c, ID, True)[1]:
+        return
+    o = BT.maybe_offer(d, c, t)
+    if o:
+        x = BT.OFFER_INDEX[o['k']][1]
+        result['message'] = f'{result.get("message", "")} 🔔 {x[1]} {x[2]}: phong bì. Trả lời ngay nhé.'.strip()
+        result['beat'] = o['k']
+
+
+def _beat(s, c, d, p):
+    """Answer the envelope on a task: refuse, report it (Liêm chính), or take it (never rewarded)."""
+    t = _task(c, p, known=False)
+    b = BT.state(d, c['day'])
+    o = BT.offer_of(b, t['id'])
+    kit.need(o and o['a'] is None, 'Không có phong bì nào chờ trả lời.')
+    choice = kit.one_of(p.get('choice'), BT.ANSWERS, 'Chọn cách trả lời.')
+    who = BT.OFFER_INDEX[o['k']][1][2]
+    o['a'] = choice
+    pm = _promo()
+    if choice == 'take':
+        note = _bribe(c, d, t, f'{who} đưa phong bì, cán bộ nhận.')
+        result = dict(message=note or '💵', correct=False)
+        _rank_note(result, pm.bribe(s, c, ID, f'bribe-{t["id"]}'))
+        return result
+    _bump(d, 'refused')
+    if choice == 'report':
+        _fact(d, t, f'Lập biên bản hành vi đưa hối lộ: {_low(who)}, phong bì niêm phong nộp Ban chỉ huy.', key=True)
+        return dict(message=f'📝 Lập biên bản, niêm phong phong bì. {who} tái mặt. {pm.report_bribe(s, c, ID)}'.strip(), celebrate=True)
+    return dict(message=f'🙅 “Cán bộ không nhận gì của dân.” {who} rụt tay lại.', correct=True)
 
 
 def _after(s: dict, c: dict, d: dict, result: dict) -> None:
@@ -1404,7 +1481,7 @@ def public_data(c: dict) -> dict:
                            log=today.get('log'), facts=facts),
                 stats=d['stats'], regulars={k: dict(v) for k, v in d['regulars'].items()},
                 learn=dict(on=lr.get('n', 0) < LEARN, n=lr.get('n', 0), of=LEARN, point=point),
-                desk=kit.desk_public(d['desk'], PC.DESK, ID), odd=ao.public(c, ao.ensure(d), PC.ODD, ID, CFG))
+                desk=kit.desk_public(d['desk'], PC.DESK, ID), odd=ao.public(c, ao.ensure(d), PC.ODD, ID, CFG), beat=BT.public(raw, c))
 
 
 def content() -> dict:
@@ -1527,6 +1604,7 @@ def validate_data(c: dict) -> None:
         kit.text(k, 40)
     kit.desk_validate(d['desk'], PC.DESK)
     ao.validate(d['odd'], PC.ODD)
+    BT.validate(d)   # the beat overlay (optional key)
 
 
 # ================================================================ the plugin spec

@@ -11,6 +11,7 @@ import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {data,cc,act,pane,introCard,deskCard,dayBar,askCard,bottom,kitActions} from './street_kit.js';
 import {oddCard,restCard,record,ACTIONS as oddActions} from './air_kit.js';
+import {boardSVG} from '../v4/insignia.js';   // 🎖️ cấp hiệu (game/org.py)
 
 const ODD_CFG={odd:'cap_odd',rest:'cap_rest',kinds:{charm:'Lời mời khó từ chối',harass:'Quấy rối',demand:'Yêu cầu oái oăm',corner:'Làm tắt',bargain:'Mặc cả với phường'},
   rest_to:[['self','Gửi anh Định'],['company','Nhờ công đoàn']]};
@@ -41,6 +42,17 @@ function caseCard(t,x){
   const n=t.needs||{};
   if(t.kind==='desk')return `<article class="card sk-ticket cap-who"><div class="row"><span class="cap-big" aria-hidden="true">${x.esc(n.emoji)}</span><div class="grow"><h3>${x.esc(n.who)}</h3><p class="small muted">${x.esc(n.role)}</p><p class="small">${x.esc(String(t.opening||'').split('): ').slice(1).join('): '))}</p>${waitBar(t)}</div></div></article>`;
   return `<article class="card sk-ticket cap-who"><div class="row"><span class="cap-big" aria-hidden="true">${x.esc(n.emoji)}</span><div class="grow"><h3>${x.esc(n.title)}</h3><p class="small">${x.esc(t.opening)}</p>${waitBar(t)}</div></div></article>`;
+}
+/* ------------------------------------------------------------ 🎖️ cấp bậc: the rank line, an envelope, owning up */
+function rankBar(x){
+  const o=x.room.promo?.org;if(!o)return '';
+  const own=o.own?x.cmd('🙇 Tự giác nộp lại','pm_org_own',{},'small primary'):'';
+  return `<div class="cap-rank" role="status">${boardSVG(o.grade.ins,40,o.grade.name)}<b>${x.esc(o.grade.name)}</b><span class="og-warn${o.warns.length?' on':''}">⚠️ ${o.warns.length}/${o.warn_max}</span>${o.susp?`<span class="bad">⛔ ${o.susp}</span>`:''}${own}</div>`;
+}
+function beatCard(t,x){
+  const b=(data(x).beat?.offers||[]).find(o=>o.t===t.id&&!o.a);if(!b)return '';
+  return `<section class="sk-event tense cap-beat" role="alertdialog" aria-label="Phong bì"><div class="sk-ev-head"><span aria-hidden="true">${x.esc(b.emoji)}</span><div><small>${x.esc(b.who)}</small><h3>Phong bì</h3></div></div><p>${x.esc(b.text)}</p>
+    <div class="sk-opts">${turn(b.options,t.id).map(o=>opt(x,x.esc(o.label),'','cap_beat',{task:t.id,choice:o.id})).join('')}</div></section>`;
 }
 const said=(e,who,text)=>`<p class="cap-said"><span aria-hidden="true">${e}</span><span><b>${who}</b> ${text}</span></p>`;
 
@@ -265,10 +277,10 @@ export default {
     if(t.kind!=='brief'&&!t.known)main=askCard(x,t,ASK_LABEL[t.kind]||'👋 Chào hỏi');
     else{
       const body=(PANELS[t.kind]||(()=>''))(t,x);
-      main=['desk','dispute'].includes(t.kind)?`${caseCard(t,x)}${body}`:body;
+      main=beatCard(t,x)+(['desk','dispute'].includes(t.kind)?`${caseCard(t,x)}${body}`:body);
       side=stepRows(x,g.steps,t.kind==='brief'?'Giao ban':'Các bước');
     }
-    return `<div class="career-job sk cap">${hint}${head}${learnNote(x)}${dayBar(x)}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
+    return `<div class="career-job sk cap">${hint}${head}${learnNote(x)}${dayBar(x)}${rankBar(x)}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },
   idle(x){
     const d=data(x),head=top(x);
@@ -279,7 +291,7 @@ export default {
     }
     const td=d.today||{};
     const tiles=[[td.tasks||0,'việc'],[td.helped||0,'lần giúp dân'],[td.reminders||0,'lần nhắc nhở'],[td.reports||0,'biên bản']];
-    return `<div class="career-job sk cap">${head}${dayBar(x)}<section class="card cap-today"><h4>👮 Ca hôm nay</h4><div class="cap-tiles">${tiles.map(([v,l])=>`<div><b>${x.esc(v)}</b><small>${x.esc(l)}</small></div>`).join('')}</div></section>
+    return `<div class="career-job sk cap">${head}${dayBar(x)}${rankBar(x)}<section class="card cap-today"><h4>👮 Ca hôm nay</h4><div class="cap-tiles">${tiles.map(([v,l])=>`<div><b>${x.esc(v)}</b><small>${x.esc(l)}</small></div>`).join('')}</div></section>
       ${logCard(x)}<section class="card cap-record"><h4>📁 Hồ sơ của bạn</h4>${record(x)}${restCard(x,ODD_CFG)}</section></div>`;
   },
   tick(root){keepBarAboveFooter(root);},

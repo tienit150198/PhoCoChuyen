@@ -767,6 +767,10 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
     # A 🧑‍💼 manager shift that got work done is a worked day too (no customer of your own that day).
     if job['status'] != 'hired' or (c['day_completed'] < 1 and not promotion.managed_today(s, c, career)):
         return dict(boss=boss) if boss else None
+    if promotion.suspended(s, c, career):   # ⛔ tạm đình chỉ công tác (game/org.py): the day counts, no salary
+        job['days_worked'] += 1
+        e.log(s, c, 'job', f'⛔ Ngày {c["day"]}: đang tạm đình chỉ công tác, không có lương.')
+        return dict(salary=0, probation=job['probation'], suspended=True, **(dict(boss=boss) if boss else {}))
     post = _posting(career, job['employer'])
     from .accounting_school import salary_multiplier
     from .accounting_jobs import pay as boosted

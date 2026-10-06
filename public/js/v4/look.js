@@ -9,6 +9,7 @@
  * Small and always loaded; the wardrobe sheet itself (v4/wardrobe.js) loads on first use. The chat face (v4/face.js)
  * draws the wardrobe top and accessory with art(), topDetail() and accBust(). */
 import {R,E,L,P,heart,bloom} from '../scenes/kit.js';
+import {paintRank} from './insignia.js';
 
 export const SLOTS=['hair','shade','skin','top','bottom','shoes','acc'];
 // Same as game/wardrobe.py DEFAULTS (tests/test_wardrobe.py compares them).
@@ -239,7 +240,14 @@ export const SVG={
 export const FRONT={short:'M-31 -80C-35 -118 24 -124 32 -84Q26 -95 12 -99Q-4 -92 -18 -97Q-26 -92 -31 -80Z',
   soft:'M-30 -88C-33 -119 19 -120 31 -90Q19 -93 7 -105Q5 -88 -12 -84Q-17 -91 -16 -101Q-21 -89 -30 -88Z'};
 /** Resolved colours and shapes of the player's look (from the state, or a look + gender). */
-export const figure=state=>{const L=lookOf(state),h=state?.journey?.gadgets?.hand?.color;if(typeof h==='string'&&/^#[0-9a-f]{6}$/i.test(h))L.held=h;return figureOf(L,state?.journey?.gender);};   // 📱 held: the phone in use (game/gadgets.py); never in lookOf (live frames refuse unknown keys)
+export const figure=state=>{const L=lookOf(state),h=state?.journey?.gadgets?.hand?.color;if(typeof h==='string'&&/^#[0-9a-f]{6}$/i.test(h))L.held=h;const F=figureOf(L,state?.journey?.gender),rk=rankRef(state);if(rk)F.rk=rk;return F;};
+/** 🎖️ The rank the character wears (game/org.py, v4/insignia.js): the current career's org grade, while "Mặc đồ làm việc"
+ * is on. {o: org id, g: grade id}; never in lookOf (live frames carry it apart, as `rk`). */
+export function rankRef(state){
+  const o=state?.careers?.[state?.current]?.promo?.org;
+  if(!o?.grade?.id||!o.org||lookOf(state).uniform===false)return null;
+  return {o:o.org,g:o.grade.id};
+}   // 📱 held: the phone in use (game/gadgets.py); never in lookOf (live frames refuse unknown keys)
 const SHORT_HAIR=new Set(['toc_ngan','toc_wolf','toc_undercut']);
 export function figureOf(Lk,g){
   const top=art(Lk,'top');
@@ -398,6 +406,7 @@ export function paintPlayer(c,F,K=SVG,arms=null){
   if(male){K.L(c,-16,-89,-6,-90,F.hair,2.4);K.L(c,6,-90,16,-89,F.hair,2.4);}
   K.stroke(c,'M4 -66A4 4 0 0 1 -4 -66','#b17c69',1.6);
   paintHairFront(c,F,K);paintAcc(c,F,K);
+  if(F.rk)paintRank(c,F,K);   // 🎖️ cấp hiệu and huy hiệu over the top
   if(arms)for(const [s,p] of [[-1,arms.l],[1,arms.r]])if(p){K.L(c,s*20,-44,p[0],p[1],F.topC||F.classic,11);K.E(c,p[0],p[1],7,7.5,sk.hand);}
 }
 /** Full-body SVG of a look (the wardrobe mirror and the item tiles). */

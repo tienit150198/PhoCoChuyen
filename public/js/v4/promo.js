@@ -10,6 +10,7 @@
  *            three tabs: 📥 việc cần quyết, 🗓️ điều phối (tap a slot, tap a person), 👥 nhân sự (tap a person, pick a decision).
  *            Shown in the 'manager' sheet while ui.pmOffice is set. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {orgView,inspView} from './org.js';   // 🎖️ a career on an org ladder (game/org.py)
 
 const KIND={khach:['🗣️','Khách'],tay:['🔧','Tay nghề'],so:['📋','Giấy tờ'],gap:['⚡','Việc gấp']};
 const mood=n=>n>=80?'😊':n>=60?'🙂':n>=40?'😐':'😟';
@@ -79,6 +80,7 @@ function lastReview(env,wait){
 export function promoView(env){
   const c=room(env),p=c.promo;
   if(!p)return head('🎖️ Thăng tiến')+`<div class="sheet-body"><p class="muted">Có việc làm rồi mới tính chuyện lên chức nhé.</p></div>`;
+  if(p.org)return orgView(env,head,act,cmd,esc(place(env)).toUpperCase());
   if(p.due)return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body">${review(p)}</div>`;
   const n=p.next,sh=p.shift;
   const line=n?`${n.good}/${n.need} ngày tốt → ${esc(n.title)}`:'Bậc cao nhất rồi!';
@@ -157,19 +159,20 @@ function officeToday(of,p,empty){
     ok(!empty,empty?`${empty} ${esc(of.unit)} chưa xếp người`:'Đã xếp đủ người'),
     ok(!tired,tired?`${tired} người đã làm ${tiredAt(of)}+ ngày liền đang được xếp (dễ trễ): xoay ca`:'Xoay ca: không ai làm ngày thứ 3 liền'),
     ok(!over,over?'Quỹ lương đang vượt (trừ 2 điểm mỗi %)':'Quỹ lương trong mức')].join('');
-  return `<details class="of-today"${of.me===false?' open':''}><summary><b>🎯 ${r?`Ngày điều hành tốt: ${r.got}/${r.need}`:'Hôm nay tính ngày tốt?'}</b><span>${r?bar(r.got,r.need):''}</span></summary><ul>${rows}</ul><p class="small muted">Cuối ngày, điểm điều hành từ ${of.good_score||60}/100 là tính 1 ngày tốt. Điểm và cách tính hiện ở tổng kết ngày.</p></details>`;
+  return `<details class="of-today"${of.me===false&&!p.org?' open':''}><summary><b>🎯 ${r?`Ngày điều hành tốt: ${r.got}/${r.need}`:'Hôm nay tính ngày tốt?'}</b><span>${r?bar(r.got,r.need):''}</span></summary><ul>${rows}</ul><p class="small muted">Cuối ngày, điểm điều hành từ ${of.good_score||60}/100 là tính 1 ngày tốt. Điểm và cách tính hiện ở tổng kết ngày.</p></details>`;
 }
 export function officeView(env){
   const c=room(env),p=c.promo,of=p?.office,ui=env.ui;
   if(!of)return head('🏢 Phòng điều hành')+`<div class="sheet-body"><p class="muted">Phòng điều hành mở từ bậc lãnh đạo.</p></div>`;
   const eyebrow=esc(place(env)).toUpperCase();
   if(of.wait||!of.live)return head(`🏢 ${esc(of.name)}`,'',eyebrow)+`<div class="sheet-body">${of.kpi?officeKpi(of):''}<p class="of-empty">${of.wait?'Phòng mở từ ca sau. Mở ca là có việc ngay.':'Phòng điều hành làm việc trong ca. Mở ca để điều phối và quyết việc.'}</p>${act('Về quầy','close',{},'primary big full')}</div>`;
-  const tabs=[['inbox',`📥 Việc${of.inbox.length?` (${of.inbox.length})`:''}`],['plan','🗓️ Điều phối'],['staff','👥 Nhân sự']];
-  const tab=tabs.some(t=>t[0]===ui.pmOfTab)?ui.pmOfTab:(of.inbox.length?'inbox':of.slots.some(s=>s.who==null)?'plan':'staff');
+  const insp=p.org?.insp?[['insp','🔎 Kiểm tra']]:[];   // 🎖️ Trợ lý BGĐ: kiểm tra điều lệnh (game/org.py)
+  const tabs=[...insp,['inbox',`📥 Việc${of.inbox.length?` (${of.inbox.length})`:''}`],['plan','🗓️ Điều phối'],['staff','👥 Nhân sự']];
+  const tab=tabs.some(t=>t[0]===ui.pmOfTab)?ui.pmOfTab:insp.length&&!p.org.insp.sent?'insp':(of.inbox.length?'inbox':of.slots.some(s=>s.who==null)?'plan':'staff');
   const empty=of.slots.filter(s=>s.who==null).length;
   const line=of.inbox.length?`${of.inbox.length} việc chờ quyết`:empty?`${empty} ${of.unit} chưa xếp người`:'Bảng hôm nay đã xếp đủ';
   const bar=`<div class="of-tabs" role="tablist">${tabs.map(([id,label])=>`<button type="button" role="tab" class="of-tab${tab===id?' on':''}" aria-selected="${tab===id}" data-action="pmOfTab" data-tab="${id}">${label}</button>`).join('')}</div>`;
-  const body=tab==='inbox'?officeInbox(of):tab==='plan'?officePlan(of,ui):officeStaff(of,ui);
+  const body=tab==='insp'?inspView(p.org,cmd):tab==='inbox'?officeInbox(of):tab==='plan'?officePlan(of,ui):officeStaff(of,ui);
   const log=of.log?.length?`<details class="pm-more"><summary>Nhật ký</summary><ul class="pm-rules">${of.log.slice().reverse().map(x=>`<li>${esc(x)}</li>`).join('')}</ul></details>`:'';
   const foot=`<footer class="sheet-foot"><p>🗳️ ${of.left} lượt quyết · thưởng tối đa ${of.cap} xu</p>${act('Xong','close',{},'primary')}</footer>`;
   return head(`🏢 ${esc(of.name)}`,line,eyebrow)+`<div class="sheet-body of-board">${officeKpi(of)}${officeToday(of,p,empty)}${bar}<div class="of-body" role="tabpanel">${body}</div>${log}</div>`+foot;
@@ -215,6 +218,7 @@ export function promoSummary(p){
   const bits=[];
   if(p.manager)bits.push(`🧑‍💼 Ca quản lý: ${p.manager.good}/${p.manager.size} việc tốt · +${p.manager.bonus} xu`);
   if(p.tip)bits.push(`🎖️ Khách quen boa thêm +${p.tip} xu`);
+  if(p.org)bits.push(...p.org.map(esc));   // 🎖️ cấp bậc (game/org.py): warnings, evaluation, a step, a course
   if(p.office){bits.push(...(p.office.lines||[]).map(esc));if(p.office.bonus)bits.push(`🏢 Thưởng điều hành +${p.office.bonus} xu`);}
   if(p.line)bits.push(esc(p.line));
   else if(p.next){

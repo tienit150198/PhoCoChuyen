@@ -605,7 +605,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     if mod:no_tick|=set(mod.SPEC.get('no_tick',()))
     no_tick|=CARE_FREE
     if action.startswith("cl_"):need(c["open"],"Mở ca trước khi làm hoạt động lớp nhé.")
-    no_tick|={"pm_answer","pm_ask","pm_close","pm_of_plan","pm_of_hr","pm_of_inbox"}  # 🎖️ the review, closing the board and the 🏢 office take no time; a manager's moves do
+    no_tick|={"pm_answer","pm_ask","pm_close","pm_of_plan","pm_of_hr","pm_of_inbox","pm_of_insp","pm_org_aim","pm_org_own"}  # (pm_org_*, pm_of_insp: the org ladder, game/org.py) 🎖️ the review, closing the board and the 🏢 office take no time; a manager's moves do
     if action not in no_tick and not action.startswith(("ops_","fb_","job_","soc_","cl_","inc_","hap_",*life.NEW_ACTION_PREFIXES)):c["turn"]+=1
     if action.startswith(life.NEW_ACTION_PREFIXES):
         result.update(life.handle(s,c,career,action,p))

@@ -29,11 +29,17 @@ because builds up to 1.7.15 validate it there and would refuse the whole save af
 4 live in the record's optional key 'hi' = {n: steps above 4, due: that review, log: those steps}, which those
 builds keep and ignore (they show the holder as step 4). Nobody's rank is ever rewritten. From the executive step
 the 🏢 Phòng điều hành (game/promotion_office.py) opens, kept in the record's optional key 'office'.
+
+Org ladders (game/org.py, owner spec 06/10, police first): a career with an org (org_content.CAREER_ORG) keeps its
+rank and post in the record's optional key 'org' (older builds keep and ignore it), with its own appointment, course,
+warnings and management office (inside 'org', never in 'office', so older builds never validate it). The plain step
+`rank` follows the post (org_content step) for builds without org; `due` stays None.
 """
 from __future__ import annotations
 
 import random
 
+from . import org as ORG
 from . import promotion_content as PC
 from . import promotion_office as OF
 
@@ -191,10 +197,13 @@ def _sync(rec: dict, c: dict) -> None:
         return
     keep = rec['log']
     h = _hi(rec)
+    old_org = ORG.get(rec)
     rec.clear()
     rec.update(new_record(), emp=job.get('employer'), hd=job.get('hired_day') or 0, log=keep)
     if h and h['log']:
         rec['hi'] = dict(n=0, due=None, log=h['log'])   # the executive steps' log is kept too
+    if old_org and ORG.wears(career_of(old_org), c):   # a new contract on the ladder: the integrity mark is the person's
+        rec['org'] = ORG.new(old_org['org'], *ORG.OC.ORGS[old_org['org']]['start'], keep=old_org)
 
 
 def _live(s: dict, c: dict, career: str, create: bool = False) -> dict | None:
@@ -218,12 +227,76 @@ def rank(s: dict, c: dict, career: str) -> int:
     return _rank(rec) if rec else 0
 
 
+def career_of(x: dict) -> str:
+    return next((cid for cid, (oid, _) in ORG.OC.CAREER_ORG.items() if oid == x.get('org')), '')
+
+
+def _old_pct(rec: dict) -> int:
+    n = min(_rank(rec), len(EMP_STEPS) - 1)
+    return EMP_STEPS[n]['pct'] + rec['extra'] if n >= 1 else 0
+
+
+def org_live(s: dict, c: dict, career: str, create: bool = False):
+    """(record, org block) of a contract on an org ladder; created (lazy migration) when `create`."""
+    if not ORG.wears(career, c):
+        return None, None
+    rec = _live(s, c, career, create)
+    if rec is None:
+        return None, None
+    x = ORG.active(career, c, rec)
+    if x is None and create:
+        x = ORG.ensure(s, c, career, rec, _rank(rec) if (rec['worked'] or _rank(rec)) else -1, _old_pct(rec))
+    return rec, x
+
+
+def suspended(s: dict, c: dict, career: str) -> bool:
+    """⛔ Tạm đình chỉ (an org ladder's 4th warning at the entry grade): no salary (employment.on_close)."""
+    return ORG.suspended(org_live(s, c, career)[1])
+
+
+def violation(s: dict, c: dict, career: str, code: str, key: str, grace: bool = False) -> str:
+    """A career's detected procedure violation (⚠️ cảnh cáo) on its org ladder; '' when the contract has none."""
+    rec, x = org_live(s, c, career, True)
+    if not x:
+        return ''
+    before = x['p']
+    line = ORG.violation(x, s, c, code, key, grace)
+    _org_step(rec, x, before)
+    return line
+
+
+def bribe(s: dict, c: dict, career: str, key: str) -> str:
+    rec, x = org_live(s, c, career, True)
+    if not x:
+        return ''
+    before = x['p']
+    line = ORG.bribe(x, s, c, key)
+    _org_step(rec, x, before)
+    return line
+
+
+def report_bribe(s: dict, c: dict, career: str) -> str:
+    return ORG.report(org_live(s, c, career, True)[1])
+
+
+def _org_step(rec: dict, x: dict, before: str) -> None:
+    """Builds without org read the plain step: it follows the post when the post changes (0..TOP)."""
+    rec['due'] = None
+    if x['p'] != before:
+        rec['rank'] = max(0, min(TOP, ORG.step(x)))
+
+
 def raise_pct(s: dict, c: dict, career: str) -> int:
     """Employee: the raise (%) on the contract salary at today's step (employment.on_close)."""
     if track(career) != 'emp':
         return 0
     rec = _live(s, c, career)
-    if not rec or _rank(rec) < 1:
+    if not rec:
+        return 0
+    x = ORG.active(career, c, rec)
+    if x is not None:
+        return ORG.raise_pct(x)
+    if _rank(rec) < 1:
         return 0
     return EMP_STEPS[_rank(rec)]['pct'] + rec['extra']
 
@@ -678,6 +751,9 @@ def _score(qid: str, oid: str) -> int:
 
 
 def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
+    rec, x = org_live(s, c, career, True)
+    if x is not None and (name.startswith(('pm_org_', 'pm_of_')) or name in ('pm_answer', 'pm_ask')):
+        return _org_action(s, c, career, rec, x, name, p)
     if name in ('pm_answer', 'pm_ask'):
         return _review(s, c, career, name, p)
     if name.startswith('pm_of_'):
@@ -703,7 +779,65 @@ def _office_action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
     return OF.action(career, off, n, c, name, p, _seed(s), e.need)
 
 
+ORG_DISCIPLINE = ('reprimand', 'warn', 'review', 'suspend', 'demote', 'cut')
+
+
+def _org_level(x: dict) -> int | None:
+    return ORG.post(x).get('olv')
+
+
+def _org_action(s: dict, c: dict, career: str, rec: dict, x: dict, name: str, p: dict) -> dict:
+    e = _core()
+    need = e.need
+    before = x['p']
+    try:
+        if name == 'pm_answer':
+            return ORG.answer(x, s, c, p, need)
+        if name == 'pm_ask':
+            need(False, 'Cấp bậc hàm theo quy định, không xin lương.')
+        if name == 'pm_org_aim':
+            return ORG.set_aim(x, p, need)
+        if name == 'pm_org_own':
+            need(ORG.can_own(x, c), 'Không có phong bì nào cần tự giác nộp lại hôm nay.')
+            return dict(message=ORG.own(x, s, c))
+        lvl = _org_level(x)
+        need(lvl and x['office'] is not None, 'Phòng chỉ huy mở từ Tổ trưởng.', 'not_manager')
+        okey = ORG.OC.ORGS[x['org']]['office']
+        if name == 'pm_of_insp':
+            need(OF.ready(x['office'], c), 'Phòng chỉ huy làm việc trong ca. Mở ca trước nhé.', 'office_closed')
+            r = ORG.inspect(x, s, c, p, need)
+            if x['insp'] and x['insp']['sent']:
+                x['office']['me'] = True   # the inspection is the Trợ lý's day of work
+            return r
+        r = OF.action(okey, x['office'], lvl, c, name, p, _seed(s), need)
+        if name == 'pm_of_hr' and p.get('act') in ORG_DISCIPLINE and r.get('just') is False:
+            # Abuse of power over an NPC is noted against the player (the Trợ lý's inspection): a normal warning.
+            line = ORG.violation(x, s, c, 'wrong_discipline', f'hr-{c["day"]}')
+            if line:
+                r['message'] = f'{r["message"]} 🗂️ Trợ lý BGĐ ghi nhận. {line}'
+        return r
+    finally:
+        _org_step(rec, x, before)
+
+
+def _org_office_start(s: dict, c: dict, career: str) -> bool:
+    rec, x = org_live(s, c, career, True)
+    if x is None:
+        return False
+    lvl = _org_level(x)
+    if lvl:
+        okey = ORG.OC.ORGS[x['org']]['office']
+        if x['office'] is None:
+            x['office'] = OF.new_office(okey, _seed(s), c['day'], lvl)
+        OF.day_roll(okey, x['office'], _seed(s), c['day'], lvl)
+        if lvl == 4:
+            ORG.insp_today(x, s, c)
+    return True
+
+
 def _office_start(s: dict, c: dict, career: str) -> None:
+    if _org_office_start(s, c, career):
+        return
     rec, off, n = _office(s, c, career)
     if not rec:
         return
@@ -713,6 +847,17 @@ def _office_start(s: dict, c: dict, career: str) -> None:
 
 
 def _office_close(s: dict, c: dict, career: str) -> dict | None:
+    rec, x = org_live(s, c, career)
+    if x is not None:
+        lvl = _org_level(x)
+        off = x['office']
+        if not lvl or not off or off['day'] != c['day']:
+            return None
+        okey = ORG.OC.ORGS[x['org']]['office']
+        res = OF.close(okey, off, lvl, _seed(s), c['day'])
+        if res['bonus'] > 0:
+            _core().money(s, c, res['bonus'], f'🏢 Thưởng chỉ huy · {OF.OFFICE[okey]["name"]}', f'pmo-{c["day"]}', category='bonus')
+        return res
     rec, off, n = _office(s, c, career)
     if not off or off['day'] != c['day']:
         return None
@@ -782,9 +927,32 @@ def on_close(s: dict, c: dict, career: str, summary: dict) -> dict | None:
             out['office']['lines'] = (office['lines'][:2] + [f'🏢 Ngày điều hành tốt: {prog[0]}/{prog[1]} → {title(s, c, career, _rank(rec) + 1)}']
                                       + office['lines'][2:])
     worked = c['day_completed'] >= 1 or bool(mgr and mgr['done'] >= 1)
+    x = ORG.active(career, c, rec) if emp else None
+    if x is None and emp and ORG.wears(career, c):
+        x = org_live(s, c, career, True)[1]
+    good = (mgr['quality'] >= GOOD_Q if mgr else _good_normal(c, summary)) if worked else False
+    if x is not None:
+        before = x['p']
+        today = [f['stars'] for f in c['feed'] if f.get('stars') and f.get('day') == c['day'] and f.get('kind') == 'review']
+        lines = ORG.close(x, s, c, career, worked, good, sum(today) / len(today) if today else None)
+        _org_step(rec, x, before)
+        if worked:
+            rec['worked'] = min(10**6, rec['worked'] + 1)
+            if good:
+                rec['good'] = min(10**6, rec['good'] + 1)
+            out['good'] = good
+        if lines:
+            out['org'] = lines
+        if x['due']:
+            dd = x['due']
+            out['line'] = '🎖️ ' + (f'Đầu ca sau: bài kiểm tra {ORG.OC.ORGS[x["org"]]["courses"][dd["to"]]}.' if dd['k'] == 'course'
+                                  else f'Ban chỉ huy hẹn đầu ca sau: xét bổ nhiệm {ORG._post(ORG.OC.ORGS[x["org"]], dd["to"])["short"]}.')
+        nxt = _org_next(x)
+        if nxt and worked:
+            out['next'] = nxt
+        return out or None
     if not worked:
         return out or None
-    good = mgr['quality'] >= GOOD_Q if mgr else _good_normal(c, summary)
     if not emp and rec['rank'] >= 1:
         st = OWN_STEPS[rec['rank']]
         tip = min(st['cap'], _day_sales(c) * st['pct'] // 100)
@@ -881,11 +1049,53 @@ def _shift_view(sh: dict) -> dict:
     return v
 
 
+def _org_next(x: dict) -> dict | None:
+    """The strip's line (good/need/title) and requirements: the next grade inside the post, else the next post."""
+    ng = ORG.next_grade(x)
+    if ng:
+        return dict(title=ng['name'], good=ng['good'], need=ng['need'], requirements=ng['rows'], why=None, wait=x['wait'], pct=0)
+    tp = ORG.target(x)
+    if not tp:
+        return None
+    o = ORG.OC.ORGS[x['org']]
+    days = ORG.post(x)['days']
+    return dict(title=ORG._post(o, tp)['short'], good=min(x['tip'], days), need=days, requirements=ORG.post_rows(x, tp), why=None,
+                wait=x['wait'], pct=0)
+
+
+def _org_public(s: dict, c: dict, career: str, rec: dict | None) -> dict | None:
+    import copy
+    x = ORG.active(career, c, rec) if rec else None
+    if x is None:   # not migrated yet: what the lazy migration will make, on a copy
+        tmp = copy.deepcopy(rec) if rec else new_record()
+        x = ORG.ensure(s, c, career, tmp, _rank(tmp) if (tmp['worked'] or _rank(tmp)) else -1, _old_pct(tmp))
+        rec = tmp
+    if x is None:
+        return None
+    ov = ORG.public(x, c)
+    v = dict(track='emp', rank=min(_rank(rec), TOP), top=TOP, title=ov['title'], pct=ov['pct'], next=_org_next(x), mgr=can_manage(s, c, career),
+             team=TEAM.get(min(max(_rank(rec), MGR_FROM), TOP)), due=None, log=[], shifts=rec['mgr']['n'], pcts=[], org=ov)
+    if x['due']:
+        v['due'] = dict(ov['due'], who='Ban chỉ huy')
+    lvl = _org_level(x)
+    if lvl:
+        okey = ORG.OC.ORGS[x['org']]['office']
+        off = x['office']
+        v['office'] = (OF.public(okey, off, lvl, c, _seed(s)) if isinstance(off, dict)
+                       else dict(name=OF.OFFICE[okey]['name'], live=False, wait=True))
+    sh = _shift(s, c, career)
+    if sh:
+        v['shift'] = _shift_view(sh)
+    return v
+
+
 def public(s: dict, c: dict, career: str) -> dict | None:
     """c['promo'] of the career on screen: small (the board only while a manager shift runs)."""
     emp = track(career) == 'emp'
     if emp and not _job_ok(c):
         return None
+    if emp and ORG.wears(career, c):
+        return _org_public(s, c, career, _live(s, c, career))
     rec = _live(s, c, career)
     if rec is None:
         rec = new_record()
@@ -959,6 +1169,8 @@ def validate(s: dict) -> None:
                 need(h['due']['to'] <= hi_top, bad)
         if 'office' in rec:
             OF.validate(cid, rec['office'], need, integer, txt, bad)
+        if 'org' in rec:
+            ORG.validate(cid, rec['org'], need, integer, txt, bad)
         mgr = rec['mgr']
         need(isinstance(mgr, dict), bad)
         integer(mgr.get('n'), 0, 10**6)

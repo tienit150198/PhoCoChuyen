@@ -69,6 +69,7 @@ import time
 from . import coride, effects
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
+from .street_data import ORG_GRADES
 from .street_data import (CERTS, COLOR_IDS, EMOTES, LOOK_DEFAULTS, LOOK_IDS, LOOK_SLOTS, PAINTABLE, PLACES, PUBLIC, TINT_MAX,
                           TINT_SLOTS, TITLES, TOPICS, VENDORS, H, W)
 
@@ -267,10 +268,19 @@ def clean_look(look, g) -> tuple[dict, str | None]:
     return out, g
 
 
-class Walker:
-    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill')
+def clean_rank(rk) -> dict | None:
+    """🎖️ The rank a client says its character wears ({o: org, g: grade id}, game/org.py): kept only when both ids are
+    known here; anything else simply shows no rank (never refused: an older or newer client still walks in)."""
+    if isinstance(rk, dict) and len(rk) == 2 and rk.get('g') in ORG_GRADES.get(rk.get('o'), ()):
+        return dict(o=rk['o'], g=rk['g'])
+    return None
 
-    def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None):
+
+class Walker:
+    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'rk')
+
+    def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None, rk: dict | None = None):
+        self.rk = rk
         self.pid, self.player = player.pid, player
         self.name = player.name or 'Khách dạo phố'
         self.title, self.look, self.g = title, look, g
@@ -288,6 +298,8 @@ class Walker:
     def public(self) -> dict:
         d = dict(pid=self.pid, name=self.name, ti=self.title, lk=self.look, g=self.g, p=self.path, at=round(self.t0, 3),
                  s=list(self.seat) if self.seat else None)
+        if self.rk:
+            d['rk'] = self.rk
         if self.ride:
             d['r'], d['v'] = self.ride, self.speed
         if self.back:
@@ -576,7 +588,7 @@ class StreetFeature(Feature):
         now = time.time()
         sx, sy = GEO[place].spots['spawn']
         at = GEO[place].clamp(sx + random.uniform(-150, 150), sy + random.uniform(-45, 45))
-        self._enter(room, conn, Walker(p, look, g, title, at, now, r))
+        self._enter(room, conn, Walker(p, look, g, title, at, now, r, clean_rank(f.get('rk'))))
         out = self._snapshot(room, p, now)
         if by:
             out['taken'] = coride.taken_frame('walk_taken', self.hub, by)

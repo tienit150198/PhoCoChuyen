@@ -59,6 +59,9 @@ ACTS = {
     'demote': dict(icon='⬇️', label='Giáng chức'),
     'raise': dict(icon='💰', label='Tăng bậc lương'),
     'cut': dict(icon='📉', label='Hạ bậc lương'),
+    # Org ladders (game/org.py): khiển trách and điều động between the unit's teams. No pilot or teacher power has them.
+    'reprimand': dict(icon='🟡', label='Khiển trách'),
+    'move': dict(icon='🔀', label='Điều động'),
 }
 # (target mood with a reason, without; the room's mood without a reason; complaints without a reason)
 FX = {
@@ -72,6 +75,8 @@ FX = {
     'demote': (-22, -30, -8, 1),
     'raise': (12, 8, -4, 0),
     'cut': (-12, -20, -6, 1),
+    'reprimand': (-6, -12, -3, 0),
+    'move': (4, -12, -3, 0),
 }
 MARK_LABEL = ('', 'Đã nhắc nhở', 'Đã cảnh cáo', 'Đã kiểm điểm')
 QUIT_AT = 8           # mood at or below which a person hands in their notice
@@ -116,9 +121,47 @@ OFFICE = {
         cancel='bỏ trống, phụ huynh phàn nàn', rest='Đã gánh việc 3 ngày liền: cho nghỉ một hôm đã.',
     ),
 }
+# 👮 Org ladders (game/org.py, org_content.ORGS[...]['office']): keyed by the org, not the career. Levels are the post's
+# office level (org_content posts' olv): 1 Tổ trưởng, 2 Đội 113, 3 Ban chỉ huy CA phường / Phòng PC06, 4 Trợ lý BGĐ
+# (kiểm tra điều lệnh, game/org.py inspect), 5 Phó Giám đốc. NPC subordinates only: a player never acts on a player.
+CAND_LADDER = ('Hạ sĩ', 'Trung sĩ', 'Thượng sĩ', 'Thiếu úy', 'Trung úy', 'Thượng úy', 'Đại úy')
+OFFICE['cand'] = dict(
+    name='Phòng chỉ huy', unit='việc', plan='Phân công',
+    kpi=('Tin báo đúng hạn', 'Phản ánh của dân', 'Tinh thần', 'Quỹ lương'),
+    roles={'tt': dict(label='Tuần tra', ladder=CAND_LADDER, pay=24), 'tb': dict(label='Trực ban', ladder=CAND_LADDER, pay=22)},
+    roster=(('Hạ sĩ Lâm Tùng', 'tt', 0, 1, 52, 70), ('Trung sĩ Vy Hạnh', 'tb', 1, 2, 64, 72), ('Thượng sĩ Bảo An', 'tt', 2, 3, 70, 66),
+            ('Thiếu úy Kim Ngọc', 'tb', 3, 3, 76, 68), ('Hạ sĩ Ninh Khôi', 'tt', 0, 1, 48, 74), ('Trung úy Phó Đức', 'tt', 4, 4, 80, 62),
+            ('Trung sĩ Cù Mai', 'tb', 1, 2, 58, 70), ('Thượng úy Lã Sơn', 'tt', 5, 5, 84, 60), ('Thiếu úy Hồ Nhung', 'tb', 3, 3, 68, 72),
+            ('Đại úy Viên Quang', 'tt', 6, 5, 88, 58), ('Hạ sĩ Đinh Thơ', 'tb', 0, 1, 50, 76), ('Thượng sĩ Khúc Hải', 'tt', 2, 2, 62, 68)),
+    extra=(), all_from=99,
+    grow={1: 4, 2: 6, 3: 8, 4: 8, 5: 12},
+    hires=('Hạ sĩ Tạ Minh', 'Hạ sĩ Lý Nga', 'Hạ sĩ Ông Tín', 'Hạ sĩ Hứa Vân', 'Hạ sĩ Từ Lộc', 'Hạ sĩ Âu Thy'),
+    issues=dict(late='⏰ Giao ban trễ', slip='📒 Ghi sổ trực ban sót việc', rude='😤 Dân phản ánh thái độ', tired='🥱 Trực đêm liền, xin nghỉ',
+                bribe='💵 Có tin nhận phong bì'),
+    more_faults=('bribe',), integrity=True,
+    slots=(('🚶 Tuần tra Chợ Mây – bến xe buýt', 'Ca sáng', 'tt', 0), ('🚶 Tuần tra cổng trường – Hẻm 7', 'Giờ tan trường', 'tt', 0),
+           ('🌙 Tuần tra đêm bờ kênh', 'Sau 22:00', 'tt', 2), ('☎️ Trực ban 113', 'Cả ngày', 'tb', 0), ('📒 Bàn tiếp dân', 'Giờ hành chính', 'tb', 0),
+           ('🗂️ Đối chiếu sổ cư trú', 'Buổi chiều', 'tb', 1), ('🔎 Kiểm tra cơ sở kinh doanh có điều kiện', 'Có quyết định kiểm tra', 'tt', 3),
+           ('🎤 Nói chuyện chống lừa đảo ở tổ dân phố', 'Tối', 'tb', 1)),
+    powers={1: ('talk', 'praise', 'remind'),
+            2: ('talk', 'praise', 'remind', 'review', 'promote', 'demote', 'move'),
+            3: ('talk', 'praise', 'remind', 'reprimand', 'warn', 'review', 'suspend', 'promote', 'demote', 'move', 'raise', 'cut'),
+            4: ('talk', 'remind'),
+            5: ('talk', 'praise', 'remind', 'reprimand', 'warn', 'review', 'suspend', 'promote', 'demote', 'move', 'raise', 'cut')},
+    acts={1: 3, 2: 4, 3: 5, 4: 3, 5: 6}, cap={1: 20, 2: 26, 3: 32, 4: 26, 5: 40}, inbox={1: 1, 2: 1, 3: 2, 4: 1, 5: 2},
+    cancel='bỏ trống, tin báo phải chờ', rest='Đã trực 3 ngày liền: theo quy định phải nghỉ hôm nay.',
+)
 FAULT = ('late', 'slip', 'rude')
 SEVERE = ('slip', 'rude')
 ISSUES = FAULT + ('tired',)
+
+
+def _faults(o: dict) -> tuple:
+    return FAULT + o.get('more_faults', ())
+
+
+def _issues(o: dict) -> tuple:
+    return ISSUES + o.get('more_faults', ())
 
 # The day's slots. need: the lowest step on the person's own ladder; role: whose job it is.
 TEACHER_SLOTS = (('🏫 Dạy thay lớp {c}', 0), ('📝 Coi kiểm tra khối {k}', 0), ('🏆 Bồi dưỡng học sinh giỏi', 1),
@@ -152,6 +195,10 @@ def _slots(career: str, day: int, seed: int, n: int) -> list[dict]:
         for t, role, need in AIR_EXTRA_SLOTS[:max(0, n - 4)]:
             out.append(dict(t=t, sub='Cả ngày', role=role, need=need))
         return out
+    o = OFFICE[career]
+    if o.get('slots'):   # an org office: its own slots, by the person's grade on the role's ladder
+        r = _rng('of-slots', seed, career, day)
+        return [dict(t=t, sub=sub, role=role, need=need) for t, sub, role, need in r.sample(o['slots'], n)]
     r = _rng('of-slots', seed, career, day)
     picks = r.sample(TEACHER_SLOTS, n)
     return [dict(t=t.format(c=r.choice('12345') + r.choice('ABC'), k=r.choice('12345')), sub='Trong giờ học', role='gv', need=need)
@@ -162,16 +209,25 @@ def _cost(o: dict, st: dict) -> int:
     return o['roles'][st['r']]['pay'] + 12 * st['lv'] + 8 * (st['pay'] - 1)
 
 
-def _person(o: dict, sid: str, row: tuple, trait: str) -> dict:
+def _person(o: dict, sid: str, row: tuple, trait: str, seed: int = 0) -> dict:
     name, role, lv, pay, sk, mood = row
-    return dict(id=sid, n=name, r=role, lv=lv, pay=pay, mood=mood, sk=sk, tr=trait, seen=False, mk=0, iss=None, off=0, duty=0, cl=0)
+    st = dict(id=sid, n=name, r=role, lv=lv, pay=pay, mood=mood, sk=sk, tr=trait, seen=False, mk=0, iss=None, off=0, duty=0, cl=0)
+    if o.get('integrity'):   # hidden: 0 takes envelopes … 3 spotless (org offices only)
+        st['ig'] = _rng('of-ig', seed, sid, name).choice((0, 1, 2, 2, 3, 3, 3))
+    return st
 
 
-def new_office(career: str, seed: int, day: int) -> dict:
+def _grow(o: dict, level: int) -> int:
+    g = o.get('grow')
+    return max([v for k, v in g.items() if k <= level] or [min(g.values())]) if g else len(o['roster'])
+
+
+def new_office(career: str, seed: int, day: int, level: int = 0) -> dict:
     o = OFFICE[career]
     traits = list(TRAITS)
     _rng('of-traits', seed, career).shuffle(traits)
-    staff = [_person(o, f's{i + 1}', row, traits[i % len(traits)]) for i, row in enumerate(o['roster'])]
+    rows = o['roster'][:_grow(o, level)] if o.get('grow') else o['roster']
+    staff = [_person(o, f's{i + 1}', row, traits[i % len(traits)], seed) for i, row in enumerate(rows)]
     return dict(v=1, day=0, staff=staff, plan=[], inbox=[], left=0, acted=[], me=False, xc=0, all=False, hires=0,
                 budget=round(sum(_cost(o, st) for st in staff) * 1.1), kpi=dict(ontime=80, compl=0, good=0, days=0), log=[])
 
@@ -289,6 +345,41 @@ INBOX = {
            ('Đòi phụ huynh xóa bài, dọa “mời công an”', False, 'Phụ huynh đăng tiếp ảnh chụp tin nhắn.', dict(compl=3, mood=-3))),
     ],
 }
+# 👮 The police commander's awkward demands (org office 'cand'). Giving in is never rewarded; criticism is never a fault.
+INBOX['cand'] = [
+    _x('c_quota', '📊', 'Chỉ tiêu biên bản', 'Cấp trên nhắn: “Tháng này tổ của {a} thiếu biên bản, làm cho đủ số nhé.”', 'any',
+       ('Báo cáo số thật, kèm lý do: nhắc nhở nhiều, vi phạm giảm', True, 'Số liệu thật được ghi nhận, tổ yên tâm làm đúng.', dict(mood=4)),
+       ('Bảo {a} lập thêm biên bản cho đủ', False, '{a} phải “tìm lỗi” của dân, phản ánh dồn về phường.', dict(a=-12, compl=3)),
+       ('Im lặng, chờ tháng sau', False, 'Cuối tháng vẫn bị hỏi, cả tổ lo.', dict(mood=-4))),
+    _x('c_mate', '🤝', '“Anh em mình cả”', 'Một tổ trưởng nhắn riêng: “Anh em mình cả, đợt kiểm tra tới phần tổ em nương tay nhé.”', 'any',
+       ('Trả lời rõ: kiểm tra như mọi tổ', True, 'Tổ trưởng hơi ngượng, nhưng cả đơn vị nể.', dict(mood=3)),
+       ('Hứa nương tay', False, 'Chuyện lộ ra, các tổ khác thấy bất công.', dict(mood=-8, compl=1)),
+       ('Không trả lời, để đó', False, 'Tổ trưởng tưởng là đồng ý.', dict(mood=-3))),
+    _x('c_fruit', '🧺', 'Giỏ trái cây lên phòng', 'Vợ của {a} mang giỏ trái cây lên phòng, “cảm ơn chỉ huy đã quan tâm”.', 'any',
+       ('Cảm ơn, từ chối khéo, mời chị về', True, 'Chị hiểu, {a} cũng nhẹ người.', dict(a=2)),
+       ('Nhận cho chị vui', False, 'Cả đơn vị xì xào chuyện “quà cáp”.', dict(mood=-8, compl=1)),
+       ('Nhận, chia cho cả phòng', False, 'Vẫn là nhận. Đoàn kiểm tra hỏi tới.', dict(mood=-6, compl=2))),
+    _x('c_report', '⏰', 'Báo cáo trước 7 giờ sáng', 'Lãnh đạo cần báo cáo tình hình an ninh trật tự trước 7 giờ sáng mai.', 'any',
+       ('Giao {a} tổng hợp trong giờ, mình duyệt tối nay', True, 'Báo cáo gọn, đúng hạn, không ai thức trắng.', dict(ontime=4)),
+       ('Bắt cả tổ trực ban ở lại làm tới khuya', False, 'Báo cáo đẹp, sáng mai ai cũng phờ phạc.', dict(mood=-10, ontime=2)),
+       ('Gửi số liệu tháng trước cho kịp', False, 'Số liệu cũ bị phát hiện, mất uy tín.', dict(ontime=-6, compl=1))),
+    _x('c_critic', '📱', 'Bài chê phường trên mạng', 'Một người dân đăng bài chê phường tiếp dân chậm. {a} đề nghị “mời lên làm việc”.', 'any',
+       ('Không mời: góp ý không phải vi phạm. Xem phần đúng để sửa', True, 'Bàn tiếp dân thêm số thứ tự, bài viết được sửa thành lời khen.', dict(compl=-1)),
+       ('Mời lên phường cho “biết điều”', False, 'Giấy mời không căn cứ. Chuyện lên báo.', dict(compl=3, mood=-4)),
+       ('Nhắn người đó gỡ bài', False, 'Ảnh chụp tin nhắn lan khắp nhóm khu phố.', dict(compl=2))),
+    _x('c_night', '🌙', 'Tuần tra đêm thứ ba liền', '{a} xin đổi ca: đã tuần tra đêm ba hôm liền.', 'tired',
+       ('Xếp người khác, cho {a} nghỉ bù', True, '{a} cảm ơn, ca sau tỉnh táo hẳn.', dict(a=12, rest=True, clear=True)),
+       ('Bảo cố thêm một đêm', False, '{a} gật gù trên xe, suýt bỏ sót một tin báo.', dict(a=-14, ontime=-6)),
+       ('Cho nghỉ nhưng trừ thi đua', False, '{a} thấy bị phạt vì mệt.', dict(a=-6, rest=True))),
+    _x('c_cam', '📹', 'Camera ghi hình tắt', 'Camera ghi hình của {a} tắt giữa lúc xử lý một vụ va chạm.', 'any',
+       ('Lập biên bản sự việc, kiểm tra lại toàn bộ thiết bị', True, 'Lỗi pin được thay, tổ yên tâm làm đúng.', dict(ontime=2, mood=2)),
+       ('Bỏ qua, chắc hết pin', False, 'Người dân khiếu nại, không có hình đối chứng.', dict(compl=2)),
+       ('Dặn mọi người đừng nói ra', False, 'Chuyện lộ ra, mất niềm tin.', dict(compl=3, mood=-6))),
+    _x('c_karaoke', '🎤', 'Quán karaoke gửi “quà”', 'Chủ quán karaoke gửi phong bì cho {a}, mong “bỏ qua” giờ đóng cửa.', 'any',
+       ('Lập biên bản hành vi đưa hối lộ, khen {a} đã báo', True, 'Quán đóng cửa đúng giờ, {a} được khen trước đơn vị.', dict(a=8, mood=3)),
+       ('Bảo {a} trả lại, không lập biên bản', False, 'Quán thử lại với tổ khác.', dict(compl=1)),
+       ('Để {a} tự xử lý', False, '{a} lúng túng, tin đồn lan ra.', dict(a=-6, compl=2))),
+]
 INBOX_INDEX = {c: {x['id']: x for x in rows} for c, rows in INBOX.items()}
 
 
@@ -310,6 +401,17 @@ def day_roll(career: str, off: dict, seed: int, day: int, rank: int) -> None:
     if rank >= o['all_from'] and not off['all'] and o['extra']:
         _add_everyone(career, off, seed)
     lvl = _level(o, rank)
+    if o.get('grow'):   # an org office grows with the post: the next people of the roster join
+        traits = list(TRAITS)
+        _rng('of-traits', seed, career).shuffle(traits)
+        have = {st['id'] for st in off['staff']}
+        for i, row in enumerate(o['roster'][:_grow(o, lvl)]):
+            if len(off['staff']) >= min(STAFF_MAX, _grow(o, lvl)):
+                break
+            if f's{i + 1}' not in have:
+                st = _person(o, f's{i + 1}', row, traits[i % len(traits)], seed)
+                off['staff'].append(st)
+                off['budget'] = min(10**5, off['budget'] + round(_cost(o, st) * 1.1))
     off['day'] = day
     n = 4 + (len(AIR_EXTRA_SLOTS) if off['all'] and career == 'pilot' else 0)
     off['plan'] = [None] * n
@@ -327,6 +429,8 @@ def day_roll(career: str, off: dict, seed: int, day: int, rank: int) -> None:
         chance = .1 + (.15 if st['mood'] < 40 else 0) + (.12 if st['tr'] == 'lazy' else 0)
         if r.random() < chance:
             st['iss'] = r.choice(FAULT)
+            if st.get('ig') == 0 and r.random() < .5:   # an org office: someone who takes envelopes, sooner or later
+                st['iss'] = 'bribe'
     r = _rng('of-inbox', seed, career, day)
     main = next(iter(o['roles']))
     picks = r.sample(INBOX[career], o['inbox'][lvl])
@@ -350,19 +454,24 @@ def _can_plan(o: dict, off: dict, slot: dict, i: int) -> str | None:
     return None
 
 
-def _just(act: str, st: dict) -> bool:
-    fault = st['iss'] in FAULT
+def _just(act: str, st: dict, o: dict | None = None) -> bool:
+    fault = st['iss'] in (_faults(o) if o else FAULT)
+    severe = SEVERE + (o.get('more_faults', ()) if o else ())
+    if st['iss'] == 'bribe' and act in ('praise', 'promote', 'raise'):
+        return False   # praise for a member who takes envelopes is never just
     return {
         'talk': True,
         'praise': st['iss'] is None and st['sk'] >= 60,
         'remind': fault,
-        'warn': fault and (st['mk'] >= 1 or st['iss'] in SEVERE),
+        'warn': fault and (st['mk'] >= 1 or st['iss'] in severe),
         'review': fault and st['mk'] >= 2,
-        'suspend': st['iss'] in SEVERE and st['mk'] >= 2,
+        'suspend': st['iss'] in severe and (st['mk'] >= 2 or st['iss'] == 'bribe'),
         'promote': st['iss'] is None and st['mk'] == 0 and st['sk'] >= 70,
         'demote': st['mk'] >= 2 or st['sk'] < 40,
         'raise': st['mk'] == 0 and st['sk'] >= 65 and st['iss'] not in FAULT,
         'cut': st['mk'] >= 2,
+        'reprimand': fault,
+        'move': st['iss'] in ('tired', 'rude') or st['sk'] < 50,
     }[act]
 
 
@@ -374,6 +483,8 @@ def _hire(career: str, off: dict, i: int, seed: int) -> str:
     name = o['hires'][(off['hires'] - 1) % len(o['hires'])]
     off['staff'][i] = dict(id=f'n{off["hires"]}', n=name, r=old['r'], lv=0, pay=1, mood=62, sk=r.randint(42, 58), tr=r.choice(TRAITS),
                            seen=False, mk=0, iss=None, off=0, duty=0, cl=0)
+    if o.get('integrity'):
+        off['staff'][i]['ig'] = r.choice((1, 2, 3))
     off['plan'] = [None if w == i else w for w in off['plan']]
     for x in off['inbox']:
         if x['a'] == i and x['pick'] is None:
@@ -396,6 +507,8 @@ def _hr(career: str, off: dict, rank: int, i: int, act: str, seed: int, need) ->
     st = off['staff'][i]
     need(st['id'] not in off['acted'], f'Hôm nay đã quyết chuyện của {st["n"]} rồi.')
     ladder = o['roles'][st['r']]['ladder']
+    if act == 'move':
+        need(len(o['roles']) > 1, 'Không có tổ nào khác để điều động.')
     if act == 'promote':
         need(st['lv'] < len(ladder) - 1, f'{st["n"]} đã ở bậc cao nhất của vị trí này.')
     if act == 'demote':
@@ -404,7 +517,7 @@ def _hr(career: str, off: dict, rank: int, i: int, act: str, seed: int, need) ->
         need(st['pay'] < PAY_MAX, f'{st["n"]} đã ở bậc lương cao nhất.')
     if act == 'cut':
         need(st['pay'] > 1, f'{st["n"]} đang ở bậc lương thấp nhất.')
-    just = _just(act, st)
+    just = _just(act, st, o)
     good, bad, room, compl = FX[act]
     delta = good if just else bad
     tr = st['tr']
@@ -428,11 +541,18 @@ def _hr(career: str, off: dict, rank: int, i: int, act: str, seed: int, need) ->
         _room(off, 2, st)
     off['kpi']['compl'] = min(999, off['kpi']['compl'] + (0 if just else compl))
     # What the decision changes on paper.
-    if act in ('remind', 'warn', 'review', 'suspend') and just:
+    if act in ('remind', 'reprimand', 'warn', 'review', 'suspend') and just and not (st['iss'] == 'bribe' and act in ('remind', 'reprimand')):
         st['iss'] = None
         st['cl'] = 0
-    if act in ('remind', 'warn', 'review', 'suspend'):
-        st['mk'] = max(st['mk'], {'remind': 1, 'warn': 2, 'review': 3, 'suspend': 3}[act])
+    if act in ('remind', 'reprimand', 'warn', 'review', 'suspend'):
+        st['mk'] = max(st['mk'], {'remind': 1, 'reprimand': 2, 'warn': 2, 'review': 3, 'suspend': 3}[act])
+    if act == 'move':
+        others = [r_ for r_ in o['roles'] if r_ != st['r']]
+        st['r'] = others[0]
+        st['lv'] = min(st['lv'], len(o['roles'][st['r']]['ladder']) - 1)
+        off['plan'] = [None if w == i else w for w in off['plan']]
+        if st['iss'] == 'tired' and just:
+            st['iss'] = None
     if act == 'suspend':
         st['off'] = 2
         off['plan'] = [None if w == i else w for w in off['plan']]
@@ -572,7 +692,7 @@ def close(career: str, off: dict, rank: int, seed: int, day: int) -> dict:
             ok += 1
         elif r.random() < .6:
             compl += 1
-    compl += sum(1 for st in off['staff'] if st['iss'] == 'rude')
+    compl += sum(1 for st in off['staff'] if st['iss'] in ('rude', 'bribe'))
     today = round(100 * ok / len(slots)) if slots else 0
     morale = round(sum(st['mood'] for st in off['staff']) / len(off['staff']))
     cost = sum(_cost(o, st) for st in off['staff'] if not st['off']) + off['xc']
@@ -713,7 +833,10 @@ def validate(career: str, off, need, integer, txt, bad: str) -> None:
     need(isinstance(staff, list) and 1 <= len(staff) <= STAFF_MAX, bad)
     ids = set()
     for st in staff:
-        need(isinstance(st, dict) and set(st) == STAFF_KEYS and st['r'] in o['roles'] and st['tr'] in TRAITS, bad)
+        keys = STAFF_KEYS | ({'ig'} if o.get('integrity') else set())
+        need(isinstance(st, dict) and set(st) == keys and st['r'] in o['roles'] and st['tr'] in TRAITS, bad)
+        if o.get('integrity'):
+            integer(st['ig'], 0, 3)
         txt(st['id'], 12)
         txt(st['n'], 24)
         ids.add(st['id'])
@@ -725,7 +848,7 @@ def validate(career: str, off, need, integer, txt, bad: str) -> None:
         integer(st['off'], 0, 2)
         integer(st['duty'], 0, 9)
         integer(st['cl'], 0, 99)
-        need(type(st['seen']) is bool and st['iss'] in (None, *ISSUES), bad)
+        need(type(st['seen']) is bool and st['iss'] in (None, *_issues(o)), bad)
     need(len(ids) == len(staff), bad)
     plan = off['plan']
     need(isinstance(plan, list) and len(plan) <= 4 + len(AIR_EXTRA_SLOTS), bad)

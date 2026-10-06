@@ -119,3 +119,28 @@
 .of-today li{color:var(--muted)}
 .of-today li.on{color:var(--good,var(--ink))}
 .of-today p{margin:4px 0 0}
+
+/* 🎖️ Cấp bậc & chức vụ (v4/org.js, game/org.py) */
+.og-card{text-align:center}
+.og-top{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px 0 6px}
+.og-board{display:block;max-width:100%;height:auto;filter:drop-shadow(0 1px 1px #0003)}
+.og-badge{display:block;flex:none}
+.og-post{margin:0 0 6px;font-weight:700;color:var(--muted)}
+.og-stats{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:0 0 8px;font-weight:700}
+.og-stats span{padding:2px 8px;border-radius:99px;background:var(--surface-2,#0000000d)}
+.og-warn{padding:2px 8px;border-radius:99px;font-weight:800;background:#0000000d}
+.og-warn.on{background:#fde3c8;color:#8a3d00}
+.og-ladder{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px}
+.og-ladder li{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.74rem;opacity:.55}
+.og-ladder li.on{opacity:1;font-weight:700}
+.og-aims{gap:6px;margin:6px 0}
+.og-units{display:grid;gap:8px}
+.og-member h4{margin:2px 0 6px}
+.og-arts{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.og-arts li{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.og-arts li>span:first-child{display:flex;flex-direction:column;min-width:0}
+.og-arts small{color:var(--muted);font-size:.78rem}
+.og-mark{display:flex;gap:4px;flex:none}
+.og-grades{gap:4px;margin-top:8px}
+.bad{color:#b4231b}
+.og-member>summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:8px;align-items:baseline}.og-member>summary small{color:var(--muted)}.og-member[open]>summary{margin-bottom:8px}
