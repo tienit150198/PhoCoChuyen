@@ -587,6 +587,16 @@ HAPPENINGS = [
     H('tablet_drop', 'den', '📟', 'Máy tính bảng tài liệu bay rơi xuống sân đỗ',
       'Gió sân đỗ thổi tung tập giấy, bạn chụp vội thì máy tính bảng tài liệu bay tuột tay, nứt màn hình.',
       ('pilot',), 'drop', 'self', 'table', 'Đền một phần máy tính bảng cho hãng', dict(comp=(25, 60)), min_day=4),
+    # ================================================================ 🏥 Bệnh viện phường Lá Sen (nurse)
+    H('ward_locker', 'trom', '🔐', 'Tủ đồ phòng trực bị cạy',
+      'Hết ca đi buồng quay về phòng trực, cửa tủ đồ cá nhân của bạn hé mở, ổ khóa cong vênh. Ví trong túi áo khoác đã biến mất.',
+      ('nurse',), 'pick', 'pickpocket', 'door', 'Mất ví ở phòng trực', dict(wallet=(30, 80)), ['shout', 'call', 'camera', 'let'], weight=2, min_day=4),
+    H('ward_helmet', 'trom', '⛑️', 'Mất mũ bảo hiểm ở bãi xe bệnh viện',
+      'Giao ca xong ra bãi xe nhân viên, chiếc mũ bảo hiểm móc trên gương đã không còn. Trời lại sắp mưa.',
+      ('nurse',), 'ride', 'biker', 'door', 'Mua mũ bảo hiểm mới', dict(wallet=(15, 35)), ['call', 'camera', 'let'], min_day=3),
+    H('ward_glasses', 'den', '👓', 'Làm rơi kính của bà Tư',
+      'Bạn nâng gối cho bà Tư ngồi dậy, chiếc kính lão trên gối trượt xuống sàn, nứt một bên tròng.',
+      ('nurse',), 'drop', 'self', 'table', 'Đền kính lão cho bà Tư', dict(comp=(10, 25)), min_day=3),
 ]
 INDEX = {x['id']: x for x in HAPPENINGS}
 

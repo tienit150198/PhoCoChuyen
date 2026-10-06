@@ -1505,6 +1505,42 @@ ARCS = {
                 ('chin', 'Lần sau bà bay, bà vẫn tìm cô tiếp viên này.'),
                 ('me', 'Em sẽ giữ khoang khách như chị giữ: nhỏ nhẹ mà chắc chắn.')]),
         ]),
+    # ------------------------------------------------------------ 🏥 Bệnh viện phường Lá Sen (chương 4)
+    'nurse': dict(
+        title='Sổ giao ca của chị Hoa', emoji='📒',
+        keepsake=dict(emoji='⏱️', name='Đồng hồ quả quýt của chị Hoa', desc='Chiếc đồng hồ chị Hoa đeo trên túi áo hai mươi năm, đếm mạch bằng kim giây. Giờ nó nằm trên túi áo bạn.'),
+        cast={'hoa': _p('Chị Hoa', '👩‍⚕️', 'Điều dưỡng trưởng khoa Nội', 'nurse_npc_01'),
+              'khang': _p('Bác sĩ Khang', '🩺', 'Bác sĩ điều trị khoa Nội', 'nurse_npc_02'),
+              'tu': _p('Bà Tư', '👵', 'Người bệnh giường 3', 'nurse_npc_03'),
+              'tuan': _p('Tuấn', '🤳', 'Người bệnh giường 8', 'nurse_npc_06')},
+        beats=[
+            _b('Hỏi tên mỗi lần', '🪪', 'Chị Hoa đứng nhìn bạn hỏi tên bà Tư lần thứ ba trong buổi sáng.', [
+                ('tu', 'Cháu hỏi tên bà hoài, bà nhớ cháu rồi mà.'),
+                ('me', 'Dạ, cháu hỏi để chắc là thuốc này đúng của bà.'),
+                ('hoa', 'Đúng rồi. Người bệnh nhớ mình là một chuyện, mình chắc là đúng người là chuyện khác.')]),
+            _b('Chuông giường 3', '🔔', 'Đèn chuông giường 3 sáng lần thứ năm trong ca.', [
+                ('tu', 'Bà không đau gì đâu cháu. Bà chỉ muốn có người nói chuyện.'),
+                ('me', 'Ca hôm nay đông, mà bà ngồi một mình cả tuần rồi.')],
+               _c('Làm sao cho bà Tư bớt cô đơn?',
+                  _o('a', 'Giúp bà gọi video cho con trai ở xa', [('tu', 'Thằng Quang nó cười, nó bảo cuối tuần về. Cảm ơn cháu.')], rel='tu'),
+                  _o('b', 'Xin chị Hoa nhờ nhóm tình nguyện ghé đọc báo cho bà', [('hoa', 'Ý hay. Chị gọi nhóm sinh viên tình nguyện, chiều mai họ tới.')], rel='hoa'))),
+            _b('Hai giờ sáng', '📞', 'Ca trực đêm, SpO2 bà Tư tụt dưới thẻ báo động.', [
+                ('me', 'Em gọi anh lúc hai giờ sáng, xin lỗi anh…'),
+                ('khang', 'Đừng xin lỗi. Bất thường mà không gọi thì anh mới giận.'),
+                ('khang', 'Em kể lại anh nghe: chỉ số nào, từ lúc nào, em đã làm gì rồi.')],
+               _c('Báo bác sĩ thế nào cho rõ?',
+                  _o('a', 'Nói lần lượt: người bệnh, chỉ số bất thường, đã làm gì, cần anh làm gì', [('khang', 'Gọn, đủ, anh hình dung được ngay. Ca sau dạy lại cho bạn mới nhé.')], rel='khang'),
+                  _o('b', 'Đọc hết phiếu theo dõi từ đầu ca', [('khang', 'Đủ thật, nhưng lần sau nói chỉ số bất thường trước, anh nghe nhanh hơn.')], rel='khang'))),
+            _b('Clip của Tuấn', '🤳', 'Tuấn khoe clip mới: “một ngày nằm viện đúng quy định”.', [
+                ('tuan', 'Chị xem nè, em quay lại, không lộ mặt ai hết. Có cả đoạn chị sát khuẩn tay.'),
+                ('me', 'Bảng tên bệnh án cũng che rồi hả?'),
+                ('tuan', 'Che hết rồi bro. Chị dạy em mà.')]),
+            _b('Đồng hồ quả quýt', '⏱️', 'Chị Hoa lên phòng Điều dưỡng, bàn giao khoa lại cho người mới.', [
+                ('hoa', 'Hồi chị mới vào nghề, máy đo còn hiếm. Chị đếm mạch bằng cái đồng hồ này.'),
+                ('hoa', 'Máy báo sai được. Mắt mình mở to, tay mình sạch, miệng mình dám nói, thì ít khi sai.'),
+                ('khang', 'Khoa Nội có người giữ sổ giao ca kỹ như chị rồi, anh yên tâm.'),
+                ('me', 'Em sẽ giữ sổ như chị: thật, đủ, ca sau đọc là hiểu.')]),
+        ]),
     # ------------------------------------------------------------ Công ty CP Cánh Diều (chương 5)
     'hr_admin': dict(
         title='Người giữ hồ sơ', emoji='🗂️',

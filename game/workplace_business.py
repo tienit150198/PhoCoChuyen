@@ -64,6 +64,7 @@ ORDERS = {
     'babysitter': ('Lượt riêng: hỗ trợ một buổi trông trẻ', 18, 4, {}),
     'pilot': ('Việc riêng: hỗ trợ kiểm tra kế hoạch bay', 22, 5, {}),
     'flight_attendant': ('Việc riêng: chuẩn bị một lượt phục vụ', 18, 4, {}),
+    'nurse': ('Việc riêng: chăm sóc người bệnh theo yêu cầu của khoa', 18, 4, {}),
     'hr_admin': ('Hồ sơ riêng: kiểm và lưu hồ sơ nhân sự', 16, 3, {}),
     'secretary': ('Việc riêng: chuẩn bị lịch và hồ sơ cuộc họp', 16, 3, {}),
     'it_helpdesk': ('Yêu cầu riêng: kiểm tra và hỗ trợ thiết bị', 20, 4, {}),

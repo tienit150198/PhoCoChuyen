@@ -27,6 +27,7 @@ ORDER = (
     'babysitter',                  # bảo mẫu: a day minding one family's child for cô Tâm's sitting service
     'pilot', 'flight_attendant',
     'hr_admin', 'secretary', 'it_helpdesk',   # Công ty CP Cánh Diều: HR, the director's secretary, IT helpdesk
+    'nurse',                       # điều dưỡng: a day shift on the medical ward of Bệnh viện phường Lá Sen
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

@@ -24,6 +24,7 @@ EMP_TITLES = {
     'pilot': ('Cơ phó cao cấp', 'Cơ trưởng', 'Cơ trưởng Huấn luyện', 'Trưởng đội bay',
               'Phó Giám đốc Khối khai thác bay', 'Giám đốc Khối khai thác bay', 'Phó Tổng Giám đốc'),
     'flight_attendant': ('TV hạng thương gia', 'Tiếp viên phó', 'Tiếp viên trưởng', 'Trưởng ban tiếp viên'),
+    'nurse': ('Điều dưỡng chính', 'Trưởng ca điều dưỡng', 'Điều dưỡng trưởng khoa', 'Trưởng phòng Điều dưỡng'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
@@ -69,7 +70,7 @@ GROUP = {
     'air': ('pilot', 'flight_attendant'),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'pagoda',
-                'mother_baby'),
+                'mother_baby', 'nurse'),
 }   # every other career: 'trade'
 
 

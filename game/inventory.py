@@ -58,6 +58,7 @@ HOURS = {
     'giupviec': (7 * 60, 19 * 60),      # bookings from 7:00, clients walk through after work
     'naucom': (6 * 60 + 30, 19 * 60),   # the market at dawn, the family's dinner on the table before going home
     'babysitter': (7 * 60 + 30, 18 * 60),   # the child is dropped off at 7:30 and picked up at 18:00
+    'nurse': (7 * 60, 19 * 60),         # the ward's day shift: handover at 7:00 and 19:00
 }
 EARLY = 30  # goods due after closing wait at the door this many minutes before the next opening
 # How much later than its window a late delivery comes (minutes), by supplier kind; a
