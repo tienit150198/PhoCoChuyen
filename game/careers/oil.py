@@ -356,7 +356,13 @@ def _data(c: dict) -> dict:
 
 
 CFG = dict(crew='Báo chú Toàn (trưởng ca)', company='Báo phòng An toàn', union='Nhờ công đoàn', office='Phòng điều phối nhân sự',
-           demoted='kỹ thuật viên tập sự', title='kỹ thuật viên vận hành')
+           demoted='kỹ thuật viên tập sự', title='kỹ thuật viên vận hành',
+           harass_note='🛡️ Báo là đúng: giàn có quy trình bảo vệ người đang làm ca.',
+           ground_line='⚖️ Phòng An toàn: tạm đình chỉ làm ca hết hôm nay, mai lên trình bày.',
+           demote_line='⚖️ Hội đồng kỷ luật: hạ xuống {demoted}, tạm đình chỉ làm ca hôm nay, thưởng ca về 0 tới khi hồ sơ sạch lại.',
+           tired_line='😮‍💨 Mệt rồi: thưởng ca còn một nửa. Xin nghỉ bù với trưởng ca.',
+           rest_ok=' Ca của bạn đã có người làm thay; bạn thấy nhẹ cả người.',
+           levels={'ground': 'Tạm đình chỉ làm ca'})
 
 
 def _pressure(c: dict, d: dict) -> int:
