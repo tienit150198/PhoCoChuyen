@@ -316,7 +316,7 @@ def _welcome(s: dict, c: dict, t: dict, out: dict) -> dict:
     line = _fill(lines[seed % len(lines)], s, spoken)
     paid = bill(c, t)
     base = dict(out, p=100, big=False, line=line, who=spoken['who'], voice=spoken['voice'])
-    if paid > 0:
+    if paid > 0 and n['hi'] > 0:   # a career that never tips cash (hi 0: the office desks) welcomes with a gift
         return dict(base, kind='cash', amount=min(n['hi'], max(n['lo'], nice(paid * tc.WELCOME_SHARE))), emoji='💝', gift='')
     gifts = tc.GIFTS.get(career, tc.DEFAULT_GIFTS)
     emoji, gift = gifts[seed // 7 % len(gifts)]

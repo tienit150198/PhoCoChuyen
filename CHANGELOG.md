@@ -1,3 +1,7 @@
+# v1.9.1 — 2026-10-06 (hotfix)
+
+- Người chơi mới thi đạt kế toán ngày 1 rồi làm Kế toán doanh nghiệp / tập đoàn: nộp việc đầu tiên bị từ chối "Kết quả tip của công việc sai." (lời chào việc đầu thành tip 0 xu ở nghề không có tip tiền). Giờ là một món quà. Không có "Có gì mới".
+
 # v1.9.0 — 2026-10-06
 
 Có gì mới (chủ game duyệt): đảo 2.5D, Chỉ đường, quầy có nhân viên lãi hơn 50%.
