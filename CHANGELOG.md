@@ -1,3 +1,9 @@
+# Chưa phát hành — phản hồi đánh giá + thanh dưới hướng dẫn viên
+
+- Phản hồi đánh giá: chạm bị dội (409 revision_conflict ở fb_reply và các chạm ngay sau, ~29 phiên ở trà sữa, quần áo, cà phê, thư ký, homestay). Lời AI của khách đáp lại chủ quán (`/api/ai/feedback`) và lời đánh giá được viết lại (`/api/ai/review`) ghi vào save ngoài hàng lệnh; giờ chúng xếp hàng như lời AI của giáo viên: các chạm sau chờ chúng xong, tối đa 4 giây (`AI_WAIT`, dùng chung với `VOICE_WAIT`), AI chậm không làm đứng màn hình, câu trả lời AI cũ hơn trạng thái đang hiện thì bỏ qua. Test mới: tests/fb_queue.mjs (tests/test_fb_queue.py).
+- Hướng dẫn viên, bước chọn lộ trình trên điện thoại: thanh dưới bị ép 42% như thanh giáo viên trước đây, chỉ còn thấy ⏱ (🎟 xu và 😊 khách bị cắt), dòng gợi ý và nút dồn vào phần còn lại. Giờ ba con số nằm một dòng riêng đủ rộng trên cùng thanh, dòng gợi ý và nút dùng cả bề ngang (teach.css). Máy tính không đổi.
+- Chỉ sửa phía trình duyệt: không có khóa lưu mới, không đổi máy chủ.
+
 # Chưa phát hành — WP-3 lệnh nghề + giáo viên
 
 - Người chơi mới: chạm đầu tiên ở tiệm trà sữa (Ủ trà…) bị từ chối "Chọn một nghề trước nhé." (14 phiên ngày 06/10). Màn hình vẽ theo nơi đang mở (`focus`) nhưng lệnh gửi theo `current`, còn trống ở tài khoản mới. Trà sữa và Mẹ & bé giờ ghi rõ nghề; `api.command` (và lời AI phản hồi, đánh giá) mặc định theo `current`, không có thì `focus`, như app.js. Bộ kế hoạch nhập hàng / ngày mai đọc kho cũng vậy. Test mới: tests/command_career.mjs (kiểm cả mọi nghề không gọi `api.command` thiếu nghề).

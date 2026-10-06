@@ -34,6 +34,22 @@ export function clockSample(samples,sent,got,time,recv){
   return best.offset;
 }
 
+/* An AI write (a reviewer's answer to the owner's reply, /api/ai/feedback; a review reworded, /api/ai/review; the
+ * teacher's voice, v4/teach-tour.js) saves after the model has written, seconds later, and bumps the revision. Off the
+ * command queue it landed under a tap already on its way: 409 revision_conflict on fb_reply and the taps after it
+ * (about 29 sessions on 06/10: trà sữa, quần áo, cà phê, thư ký, homestay), and a tap dropped when it moved again
+ * under the one retry. So it takes its place in the queue (after the taps already queued) and the taps after it wait
+ * until it lands, AI_WAIT at most from when it was sent: a usual answer lands first, a slow model never freezes the
+ * screen (a later landing is what the one 409 retry in command() is for). Returns the write's own promise. */
+export const AI_WAIT=4000;
+export function aiQueued(api,fn,wait=AI_WAIT){
+  let sent;const started=new Promise(resolve=>{sent=resolve;});
+  const run=()=>{sent();return fn();};
+  const job=api.queue.then(run,run);
+  api.queue=Promise.race([job.then(()=>{},()=>{}),started.then(()=>sleep(wait))]);
+  return job;
+}
+
 /** The "Đang cập nhật máy chủ…" note: shown once a retry has lasted `after` ms, gone with the last one.
  * Top layer (popover) so an open sheet does not hide it; inline styles, never takes a tap. */
 export class UpdatingNote{
@@ -333,16 +349,17 @@ export class GameAPI extends EventTarget {
     catch{return {mode:'scripted',reason:'unavailable'};}
   }
   post(url,body,timeout=12000){return this.json(url,{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':this.csrf},body:JSON.stringify(body)},timeout);}
+  /** An AI save write in the command queue (see aiQueued). `since` is taken when it is sent: an answer older than a
+   * state a later tap adopted meanwhile (the model was slower than AI_WAIT) is left out, the screen never steps back. */
+  async aiWrite(url,body){
+    let since;
+    try{const data=await aiQueued(this,()=>{since=this.accepted;return this.post(url,body,25000);},this.aiWait??AI_WAIT);if(data?.state)this.accept(data,since);return data;}
+    catch{return {mode:'none'};}
+  }
   /** Reviewer answers the owner's reply (AI persona when allowed, scripted otherwise). */
-  async aiFeedback(post,career=this.state.current||this.state.focus){
-    try{const data=await this.post('/api/ai/feedback',{career,post},25000);if(data.state)this.accept(data);return data;}
-    catch{return {mode:'none'};}
-  }
+  aiFeedback(post,career=this.state.current||this.state.focus){return this.aiWrite('/api/ai/feedback',{career,post});}
   /** Rewrite a fresh scripted review in the reviewer's own voice (optional). */
-  async aiReview(post,career=this.state.current||this.state.focus){
-    try{const data=await this.post('/api/ai/review',{career,post},25000);if(data.state)this.accept(data);return data;}
-    catch{return {mode:'none'};}
-  }
+  aiReview(post,career=this.state.current||this.state.focus){return this.aiWrite('/api/ai/review',{career,post});}
   async socialGet(route,query={}){
     const q=new URLSearchParams(Object.entries(query).filter(([,v])=>v!==undefined&&v!==null&&v!=='')).toString();
     return this.json(`/api/social/${route}${q?'?'+q:''}`);

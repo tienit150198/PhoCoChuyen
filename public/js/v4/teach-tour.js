@@ -11,7 +11,7 @@ import {escapeHTML as esc,portrait} from '../icons.js';
 import {t as tr,language} from './i18n.js';
 import {keepBarAboveFooter} from '../careers/food_kit.js';
 import {reqList} from '../ui-kit.js';
-import {GameAPI} from '../api.js';
+import {GameAPI,aiQueued} from '../api.js';
 import {asset} from '../assets.js';
 import {nextHint,stepCta,finalGo,pending,firstTime} from './guide.js';
 
@@ -358,13 +358,7 @@ const rerender=()=>classApi?.dispatchEvent(new CustomEvent('state',{detail:{}}))
 const clQueued=(api,fn)=>{const job=api.queue.then(fn,fn);api.queue=job.catch(()=>{});return job;};
 /** A voice in the queue: it starts after the taps already queued; the taps after it wait until it lands, or
  * VOICE_WAIT after it was sent (a later landing is what the one 409 retry in api.command is for). */
-export const clVoiceQueued=(api,fn,wait=VOICE_WAIT)=>{
-  let sent;const started=new Promise(r=>{sent=r;});
-  const run=()=>{sent();return fn();};
-  const job=api.queue.then(run,run);
-  api.queue=Promise.race([job.then(()=>{},()=>{}),started.then(()=>new Promise(r=>setTimeout(r,wait)))]);
-  return job;
-};
+export const clVoiceQueued=(api,fn,wait=VOICE_WAIT)=>aiQueued(api,fn,wait);   // api.js, shared with the reviews' AI writes
 const clRid=()=>globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
 const held=p=>performance.now()-p.at<VOICE_HOLD;
 /** The answers wait: a reply on its way, or a question still being reworded (for VOICE_HOLD at most). */
