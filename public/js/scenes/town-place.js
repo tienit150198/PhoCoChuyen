@@ -21,7 +21,7 @@ import {t as tr} from '../v4/i18n.js';
 /* ------------------------------------------------------------ the town */
 export const ROWS=[
   [{id:'chua',name:'Chùa',emoji:'🛕',items:['pagoda']},{id:'ngoai_o',name:'Ngoại ô',emoji:'🌾',items:['farm','homestay','teacher']},{id:'san_bay',name:'Sân bay',emoji:'✈️',items:['tour_guide','pilot','flight_attendant']}],
-  [{id:'van_phong',name:'Khu văn phòng',emoji:'🏢',items:['lm:bank','accounting','customer_care','corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk']}],
+  [{id:'van_phong',name:'Khu văn phòng',emoji:'🏢',items:['lm:bank','library','accounting','customer_care','corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk']}],
   [{id:'dich_vu',name:'Phố dịch vụ',emoji:'💇',items:['salon','nail','photobooth','pet_care','repair','pharmacy','clothing','pet_shop','lm:garage']}],
   [{id:'pho_cho',name:'Phố chợ',emoji:'🛒',items:['florist','cafe_bakery','grocery','milk_tea','mother_baby','restaurant','delivery','pho','com']}],
   [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk']}],
@@ -42,10 +42,10 @@ export const SIGNS={
   tra_da:['🧊','Trà đá'],fruit:['🍉','Trái cây'],ice_cream:['🍨','Kem'],garbage:['♻️','Thu gom rác'],drain:['🚧','Thông cống'],
   homemaker:['🧺','Nội trợ'],giupviec:['🧹','Giúp việc'],naucom:['🍲','Nấu cơm'],babysitter:['👶','Bảo mẫu'],
   accounting:['📒','Kế toán'],customer_care:['🎧','Chăm sóc khách'],corp_accounting:['🧮','Kế toán DN'],tax_payroll:['🧾','Thuế & lương'],group_accounting:['🏢','Tập đoàn'],
-  hr_admin:['🗂️','Nhân sự'],secretary:['📅','Thư ký'],it_helpdesk:['🖥️','IT hỗ trợ'],
+  library:['📚','Thư viện'],hr_admin:['🗂️','Nhân sự'],secretary:['📅','Thư ký'],it_helpdesk:['🖥️','IT hỗ trợ'],
   pagoda:['🛕','Chùa'],farm:['🌾','Nông trại'],homestay:['🏡','Homestay'],teacher:['🍎','Lớp học'],tour_guide:['🧭','Du lịch'],pilot:['✈️','Phi công'],flight_attendant:['💺','Tiếp viên'],
 };
-const KIND={pagoda:'pagoda',farm:'farm',homestay:'lodge',teacher:'school',tour_guide:'kiosk',pilot:'air',flight_attendant:'air',
+const KIND={pagoda:'pagoda',farm:'farm',homestay:'lodge',teacher:'school',library:'school',tour_guide:'kiosk',pilot:'air',flight_attendant:'air',
   tra_da:'cart',fruit:'cart',ice_cream:'cart',garbage:'cart',drain:'cart',homemaker:'house',giupviec:'house',naucom:'house',babysitter:'house',
   accounting:'office',customer_care:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',hr_admin:'office',secretary:'office',it_helpdesk:'office',
   'lm:bank':'bank','lm:garage':'garage','lm:fair':'gate','lm:board':'board','lm:walk':'park','lm:house':'home','lm:quay':'quay','lm:square':'plaza'};

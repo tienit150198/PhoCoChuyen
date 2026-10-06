@@ -25,6 +25,7 @@ ORDER = (
     'giupviec',                    # giúp việc theo giờ: cô Mai's Nhà Thơm team, cleaning clients' flats by the hour
     'naucom',                      # nấu cơm gia đình: a hired home cook, one family's meal a day
     'babysitter',                  # bảo mẫu: a day minding one family's child for cô Tâm's sitting service
+    'library',                     # thư viện – lưu trữ: cô Nguyệt's ward library and the ward's records store
     'pilot', 'flight_attendant',
     'hr_admin', 'secretary', 'it_helpdesk',   # Công ty CP Cánh Diều: HR, the director's secretary, IT helpdesk
 )

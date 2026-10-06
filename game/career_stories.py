@@ -1426,6 +1426,44 @@ ARCS = {
                 ('tu', 'Bà giới thiệu con cho cả xóm rồi.'),
                 ('me', 'Con sẽ nhớ đồ ôm của từng bé, như nhớ tên các bé vậy.')]),
         ]),
+    # ------------------------------------------------------------ 📚 Thư viện – Lưu trữ phường Mây
+    'library': dict(
+        title='Chùm chìa khóa kho', emoji='🗝️',
+        keepsake=dict(emoji='🔖', name='Chiếc kẹp sách tre của cô Nguyệt', desc='Mảnh tre mỏng khắc chữ “Giữ hộ”, mòn nhẵn sau ba mươi năm kẹp trong sổ mượn.'),
+        cast={'nguyet': _p('Cô Nguyệt', '📚', 'Phụ trách Thư viện – Lưu trữ phường', 'library_npc_01'),
+              'thac': _p('Ông Thạc', '👓', 'Cụ hưu đọc báo mỗi sáng', 'library_npc_02'),
+              'tuan': _p('Anh Tuấn', '📜', 'Nghiên cứu sinh ngành sử', 'library_npc_05'),
+              'dat': _p('Đạt', '📗', 'Học sinh lớp 8 mê truyện tranh', 'library_npc_08')},
+        beats=[
+            _b('Chùm chìa khóa kho', '🗝️', 'Cô Nguyệt tháo chùm chìa khóa buộc mấy mẩu vải màu, đặt vào tay bạn.', [
+                ('nguyet', 'Chìa đỏ là kho lưu trữ, chìa xanh là phòng đọc, chìa vàng là tủ sách quý.'),
+                ('nguyet', 'Hồ sơ của dân là của dân. Mình chỉ giữ hộ thôi, con nhớ nghe.'),
+                ('me', 'Dạ. Đủ giấy tờ mới cấp, bản gốc không rời kho.')]),
+            _b('Ghế của ông Thạc', '🪑', 'Bảy giờ rưỡi, ông Thạc lên tới nơi thì ghế gần cửa sổ đã có một bạn sinh viên ngồi.', [
+                ('thac', 'Ghế đó của tôi ba mươi năm nay rồi đấy!'),
+                ('nguyet', 'Nội quy thì ai tới trước ngồi trước. Mà người già cũng cần một chỗ quen.'),
+                ('me', 'Ông chờ cháu một chút, để cháu tìm cách.')],
+                _c('Ông Thạc đứng khoanh tay, bạn sinh viên ngước lên ngại ngùng',
+                   _o('a', 'Kê thêm cái bàn nhỏ sát cửa sổ cho ông', [('thac', 'Ừ, chỗ này còn sáng hơn. Được, cháu được đấy.')], rel='thac'),
+                   _o('b', 'Mời ông ngồi góc báo, pha cho ông cốc trà', [('thac', 'Trà ngon. Thôi, mai tôi lên sớm hơn vậy.')], rel='thac'))),
+            _b('Đạt trả trễ lần thứ năm', '📗', 'Đạt đứng trước quầy, giấu cuốn truyện tranh sau lưng, mặt đỏ lựng.', [
+                ('dat', 'Em xin lỗi… em trả trễ nữa rồi. Em không có tiền nộp phạt.'),
+                ('nguyet', 'Nội quy là để nhắc nhau, không phải để làm khó một đứa trẻ thích đọc.'),
+                ('me', 'Mình tìm cách để em nhớ hạn trả nhé.')],
+                _c('Đạt cúi gằm mặt chờ',
+                   _o('a', 'Rủ Đạt làm trợ lý giờ kể chuyện cuối tuần', [('dat', 'Thật hả cô? Em kể chuyện siêu nhân hay lắm!')], rel='dat'),
+                   _o('b', 'Cùng Đạt dán lịch trả sách lên cặp', [('dat', 'Có lịch là em nhớ liền. Lần này em hứa!')], rel='dat'))),
+            _b('Hộp hồ sơ năm 1976', '📜', 'Anh Tuấn ngồi lặng trước hộp hồ sơ, tay đeo găng vải, lật từng tờ giấy giòn.', [
+                ('tuan', 'Biên bản họp tổ dân phố, chữ viết tay của ông nội tôi đây này.'),
+                ('tuan', 'Tôi tìm khắp nơi, không ngờ nó nằm ngay trong kho phường mình.'),
+                ('me', 'Để em làm bản sao có đóng dấu. Bản gốc mình giữ lại cho cả phường.')]),
+            _b('Buổi kể chuyện cuối năm', '🎄', 'Cuối năm, tầng hai nhà văn hóa chật kín. Đạt cầm micro kể chuyện, ông Thạc ngồi hàng đầu.', [
+                ('dat', 'Ngày xửa ngày xưa, ở phường Mây có một cái thư viện…'),
+                ('thac', 'Thằng bé kể hay thật. Hồi trước nó trả sách trễ nhất phường đấy.'),
+                ('tuan', 'Cuốn sách của tôi in xong rồi. Trang đầu ghi tên thư viện phường mình.'),
+                ('nguyet', 'Cô sắp nghỉ hưu. Chiếc kẹp sách này, con giữ giúp cô nhé.'),
+                ('me', 'Con sẽ giữ hộ, như cô đã giữ.')]),
+        ]),
     # ------------------------------------------------------------ ✈️ Hãng bay Cánh Cò
     'pilot': dict(
         title='Đường bay ra đảo', emoji='🛩️',

@@ -22,6 +22,7 @@ export const KIND_OF={
   photobooth:'booth',
   giupviec:'flat',
   babysitter:'nursery',
+  library:'library',
   pilot:'airfield',flight_attendant:'airfield',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
@@ -164,6 +165,12 @@ const CAREER_WORDS={
     idle_line:'Bố mẹ bé sắp tới gửi bé.',open_hint:'Rửa tay, đọc giấy dặn rồi nhận bé nhé.',free_eyebrow:'Bé đang chơi ngoan',free_title:'Xong việc rồi!',
     free_more:'Làm thêm một việc hoặc về nhà hôm nay.',more_btn:'Làm thêm một việc',none_waiting:'Chưa có việc nào đang chờ',next_btn:'Sang việc tiếp theo',
     people_sub:'Những người bạn gặp ở tổ trông trẻ Mèo Con.',feed_sub:'Lời nhắn và nhận xét của bố mẹ các bé.',rail_in:'Trong nhà',books:'Sổ trông bé'},
+  library:{shelf:'Kệ sách theo ký hiệu',evidence:'Bảng nội quy',counter:'Quầy mượn trả',warehouse:'Xe sách trả',finance:'Sổ mượn trả',ledger:'SỔ MƯỢN TRẢ',store:'KHO VẬT TƯ',
+    till:'Quỹ thư viện',door_open:'Đóng cửa thư viện',door_closed:'Mở cửa thư viện',open_sign:'ĐANG MỞ CỬA',closed_sign:'HẸN MAI ĐỌC TIẾP',property:'Kho lưu trữ hồ sơ',
+    cat_line:'Mrrr… nằm trên chồng báo cũ ấm ghê, đừng đuổi mèo nha.',pet:'Vuốt mèo ngủ trên chồng báo',security:'Trông coi kho, phòng đọc',board:'Chuyện phố',
+    idle_line:'Ông Thạc đã đứng chờ ngoài cửa.',open_hint:'Xem ẩm kế kho, soi bẫy rồi mở phòng đọc nhé.',free_eyebrow:'Quầy đang vắng',free_title:'Xong việc rồi!',
+    free_more:'Đón thêm bạn đọc hoặc đóng cửa thư viện hôm nay.',more_btn:'Đón thêm một bạn đọc',none_waiting:'Chưa có bạn đọc nào đang chờ',next_btn:'Mời bạn đọc tiếp theo',
+    people_sub:'Những người bạn gặp ở thư viện phường Mây.',feed_sub:'Lời nhắn và nhận xét của bạn đọc.',rail_in:'Trong thư viện',books:'Sổ thư viện'},
   pagoda:{shelf:'Chậu cây kiểng',evidence:'Bảng nội quy',counter:'Lư hương lớn',warehouse:'Nhà kho sau chùa',finance:'HÒM CÔNG ĐỨC',ledger:'SỔ CÔNG ĐỨC',store:'NHÀ KHO',
     till:'Tiền chi dùng',door_open:'Đóng cổng chùa',door_closed:'Mở cổng chùa',open_sign:'CỔNG CHÙA ĐANG MỞ',closed_sign:'ĐÃ ĐÓNG CỔNG',property:'Chùa Gió Lành',
     cat_line:'Mrrr… nằm hiên chùa nghe chuông, mát ghê.',pet:'Chơi với Mướp dưới hiên chùa',security:'Trông coi sân chùa',board:'Chuyện xóm',

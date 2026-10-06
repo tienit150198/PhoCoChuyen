@@ -62,6 +62,7 @@ ORDERS = {
     'giupviec': ('Việc riêng: lau kính một phòng', 12, 2, {'chai_kinh': 1}),
     'naucom': ('Việc riêng: chuẩn bị một phần ăn đặt trước', 18, 8, {}),
     'babysitter': ('Lượt riêng: hỗ trợ một buổi trông trẻ', 18, 4, {}),
+    'library': ('Việc riêng: bao bìa, dán nhãn một chồng sách cho trường', 16, 2, {'nhan': 1}),
     'pilot': ('Việc riêng: hỗ trợ kiểm tra kế hoạch bay', 22, 5, {}),
     'flight_attendant': ('Việc riêng: chuẩn bị một lượt phục vụ', 18, 4, {}),
     'hr_admin': ('Hồ sơ riêng: kiểm và lưu hồ sơ nhân sự', 16, 3, {}),
