@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """Build a deployable release zip from the LIVE release plus a git change, instead of from scratch.
 
-    python3 scripts/release_from_live.py --live DIR --ref REF --out ZIP [--base live-1.7.15]
-    python3 scripts/release_from_live.py --live DIR --check-base [--base live-1.7.15]
+    python3 scripts/release_from_live.py --live DIR --ref REF --out ZIP [--base COMMIT]
+    python3 scripts/release_from_live.py --live DIR --check-base [--base COMMIT]
 
 DIR is the live release directory (/opt/mot-ngay-lam-nghe/current, or a copy of it:
 `ssh root@host 'tar cf - -C /opt/mot-ngay-lam-nghe/current --exclude=__pycache__ .' | tar xf - -C DIR`).
-BASE is the commit that describes DIR (docs/LIVE_BASE.md); REF is what to ship.
+BASE is the commit that describes DIR (docs/LIVE_BASE.md). By default it is looked up in REF's history (HEAD's with
+--check-base): the newest commit that committed DIR's own MANIFEST.json. For release 1.7.15-hai-thousand
+that is the first commit of branch live-1.7.15. REF is what to ship.
 
 The zip is the live release, file for file. It keeps the live release's minified front end, so an
 unchanged JS/CSS file keeps its bytes, its ?v= URL and the players' cache. Only the files that differ
@@ -50,7 +52,6 @@ import zipfile
 from pathlib import Path, PurePosixPath
 
 TOP = 'mot-ngay-lam-nghe'
-DEFAULT_BASE = 'live-1.7.15'
 MINI_BEGIN, MINI_END = '<!-- minified-only:begin -->', '<!-- minified-only:end -->'
 
 
@@ -188,6 +189,17 @@ def check_base(manifest: dict, live_files: dict[str, bytes], base_tree: Path, bu
     return dict(identical=same, minified_reproduced=len(reproduced), minified_only=len(no_source))
 
 
+def find_base(repo: Path, live: Path, ref: str) -> str:
+    """The newest commit in REF's history that committed the live release's own MANIFEST.json."""
+    blob = git(repo, 'hash-object', str(live / 'MANIFEST.json')).strip()
+    for commit in git(repo, 'log', '--format=%H', ref, '--', 'MANIFEST.json').split():
+        run = subprocess.run(['git', '-C', str(repo), 'rev-parse', '--verify', '-q', f'{commit}:MANIFEST.json'], capture_output=True, text=True)
+        if run.stdout.strip() == blob:
+            return commit
+    raise Refuse(f'no commit in the history of {ref} holds this live MANIFEST.json: commit it on the branch '
+                 'that describes the release (docs/LIVE_BASE.md), or pass --base')
+
+
 def sort_key(rel: str):
     return PurePosixPath(rel).parts
 
@@ -195,7 +207,8 @@ def sort_key(rel: str):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     ap.add_argument('--live', type=Path, required=True, help='the live release directory (or a copy)')
-    ap.add_argument('--base', default=DEFAULT_BASE, help=f'the commit that describes the live release (default {DEFAULT_BASE})')
+    ap.add_argument('--base', help="the commit that describes the live release (default: the commit in REF's history "
+                                   "that committed the live MANIFEST.json)")
     ap.add_argument('--ref', help='the commit to ship')
     ap.add_argument('--out', type=Path, help='the release zip to write')
     ap.add_argument('--repo', type=Path, default=Path(__file__).resolve().parents[1], help='the git repository')
@@ -204,8 +217,12 @@ def main(argv=None):
     if not args.check_base and not (args.ref and args.out):
         ap.error('--ref and --out are needed (or --check-base)')
     repo, live = args.repo.resolve(), args.live.resolve()
-    base = git(repo, 'rev-parse', '--verify', f'{args.base}^{{commit}}').strip()
     ref = git(repo, 'rev-parse', '--verify', f'{args.ref}^{{commit}}').strip() if args.ref else None
+    if args.base:
+        base = git(repo, 'rev-parse', '--verify', f'{args.base}^{{commit}}').strip()
+    else:
+        base = find_base(repo, live, ref or 'HEAD')
+        args.base = base[:10]
 
     t0 = time.time()
     manifest, live_files = read_live(live)

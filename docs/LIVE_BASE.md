@@ -85,5 +85,8 @@ found, add it here as `` | `path` | sha256 | ``. The operator who deployed it ho
 Do not `scripts/package.py` this branch for production. It would re-minify every JS/CSS file, so every URL
 changes and players re-download the whole front end. Use `scripts/release_from_live.py` instead. It starts from
 the live release, replaces only the files that differ between this branch and the ref you name, minifies those
-the way `package.py` does, and rewrites their MANIFEST entries. The task-compatibility gate still applies:
+the way `package.py` does, and rewrites their MANIFEST entries. The branch moves on, so the base is the commit
+that committed the live `MANIFEST.json`, which is the first commit of this branch. The script finds it in the
+ref's history by itself. After deploying a zip built this way, commit that zip's `MANIFEST.json` on top of the
+ref, so the next run can find its base. The task-compatibility gate still applies:
 `python3 scripts/check_task_compat.py <tree of live-1.7.15> <tree of your ref>`.
