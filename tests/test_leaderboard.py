@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from game import accounts, social
 from game import leaderboard as lb
-from game.engine import new_state
+from game.engine import GameError, new_state
 from game.storage import Store
 
 ROOT =Path(__file__).resolve().parents[1]
@@ -206,10 +206,11 @@ class BoardTests(Base):
         self.assertEqual([(r['name'], r['guest']) for r in rows], [('Bé Na', True), ('Tài Khoản', False)])
         # The account's own name is its display name, never the username.
         self.assertNotIn('user', json.dumps(rows))
-        # A guest who renames the character to something unfit disappears from the board.
-        self.cmd(named, 'settings', {'name': 'vcl'})
+        # An unfit name is refused at the rename itself now (moderation #13): the board keeps the old name.
+        with self.assertRaises(GameError):
+            self.cmd(named, 'settings', {'name': 'vcl'})
         lb.clear_cache()
-        self.assertEqual([r['name'] for r in lb.view(self.store, 'grocery')['rows']], ['Tài Khoản'])
+        self.assertEqual([r['name'] for r in lb.view(self.store, 'grocery')['rows']], ['Bé Na', 'Tài Khoản'])
 
     def test_names_are_stored_verbatim_and_safely(self):
         tricky = "O'Neil -- 1"
