@@ -9,13 +9,18 @@
  * Pure string builders plus two client-only helpers (tab switch, bar offset):
  * every game action still goes through the career's own commands. */
 
-import {nextHint,stepCta,pending,goAttrs,firstTime,bareLabel,guideAction} from '../v4/guide.js';
+import {nextHint,stepCta,pending,goAttrs,firstTime,bareLabel,guideAction,barParts} from '../v4/guide.js';
+import {actBar,clean,tip,few,helpBtn,whyAttrs} from '../ui-kit.js';
 
 const DONE=['completed','cancelled','referred'];
 export const openTasks=x=>(x.room.tasks||[]).filter(t=>!DONE.includes(t.status));
 export const hhmm=m=>`${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;
 export const span=m=>m>=60?`${Math.floor(m/60)} giờ${m%60?` ${m%60} phút`:''}`:`${m} phút`;
 const clamp=v=>Math.max(0,Math.min(100,Number(v)||0));
+const escA=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/** An explanation line (HTML-safe `text`): as before on the classic layout; on the clean layout it leaves the work screen
+ * for the "?" sheet (ui-kit tip, listed under "Trên màn này" with `title`). */
+export const note=(text,title='',cls='ok-note',tag='p')=>text?`<${tag} class="${cls} ui-tip"${title?` data-tip="${escA(title)}"`:''}>${text}</${tag}>`:'';
 
 /** Deadline of a timed dossier against the office clock (null when untimed). */
 export function dueOf(t,x){
@@ -28,28 +33,46 @@ export function dueOf(t,x){
 const shortSpan=m=>m>=60?`${Math.floor(m/60)}g${m%60?String(m%60).padStart(2,'0'):''}`:`${m} phút`;
 export function dueText(due){return due?`Hạn ${due.time} · ${due.overdue?'đã trễ':'còn '+span(due.left)}`:'';}
 
-/** Status strip: clock, deadline of the open dossier, the boss's trust, the day's luck, overtime. */
-export function statusStrip(x,t,{boss,op}){
+/** Status strip: clock, deadline of the open dossier, the boss's trust, the day's luck, overtime.
+ * Clean layout ("ít chữ", docs/UI_KIT.md): icons and numbers only (the words stay in aria-label/title), the alerts in a
+ * word or two (their explanation goes to the "?" at the end of the row, which also lists what the screen folded away). */
+export function statusStrip(x,t,{boss,op,help=''}){
   const d=x.room.data||{},o=d.office;if(!o)return '';
-  const mod=d.today?.mod,due=t&&t.status!=='completed'?dueOf(t,x):null,trust=clamp(o.trust);
+  const c=clean(),mod=d.today?.mod,due=t&&t.status!=='completed'?dueOf(t,x):null,trust=clamp(o.trust);
   const pay=mod?.id==='crunch'?18:12,ask=`Ở lại tới 20:00? Được trả ${pay} xu, mai vào muộn 30 phút vì mệt.`;
   let alert='';
-  if(o.locked)alert=`<p class="ok-alert bad">🔒 20:00 — văn phòng khóa cửa.</p>`;
-  else if(o.closed)alert=`<div class="ok-alert warn"><span>🌇 17:30 — hết giờ hành chính.</span>${x.confirmCmd(`🌙 Ở lại tăng ca (+${pay} xu)`,op,{},ask,'small')}</div>`;
-  else if(o.can_overtime)alert=`<div class="ok-alert"><span>Sắp hết giờ. Còn việc dở?</span>${x.confirmCmd(`🌙 Đăng ký tăng ca (+${pay} xu)`,op,{},ask,'ghost small')}</div>`;
+  if(o.locked)alert=`<p class="ok-alert bad">🔒 20:00${c?'':' — văn phòng khóa cửa.'}</p>`;
+  else if(o.closed)alert=`<div class="ok-alert warn"><span>🌇 17:30${c?'':' — hết giờ hành chính.'}</span>${x.confirmCmd(c?`🌙 Tăng ca +${pay} xu`:`🌙 Ở lại tăng ca (+${pay} xu)`,op,{},ask,'small')}</div>`;
+  else if(o.can_overtime)alert=`<div class="ok-alert">${c?'':'<span>Sắp hết giờ. Còn việc dở?</span>'}${x.confirmCmd(c?`🌙 Tăng ca +${pay} xu`:`🌙 Đăng ký tăng ca (+${pay} xu)`,op,{},ask,'ghost small')}</div>`;
   const lvl=trust<35?'low':trust>=75?'high':'',en=d.care?.energy;
   const tired=en&&(en.tone==='warn'||en.tone==='bad');
-  const energy=en?`<span class="ok-energy ${x.esc(en.tone||'')}" role="img" aria-label="Sức bền ${Number(en.value)||0}/100 · ${x.esc(en.label||'')}">🔋 <b>${Number(en.value)||0}</b>${tired?` · ${x.esc(en.label)}`:''}</span>`:'';
-  if(!alert&&en?.low&&!o.locked)alert=`<p class="ok-alert warn">😮‍💨 Sức bền ${Number(en.value)||0}/100 — việc gì cũng chậm hơn một chút, hôm nay không tăng ca được. Về đúng giờ là hồi lại.</p>`;
+  const energy=en?`<span class="ok-energy ${x.esc(en.tone||'')}" role="img" aria-label="Sức bền ${Number(en.value)||0}/100 · ${x.esc(en.label||'')}">🔋 <b>${Number(en.value)||0}</b>${tired&&!c?` · ${x.esc(en.label)}`:''}</span>`:'';
+  const lowSay='việc gì cũng chậm hơn một chút, hôm nay không tăng ca được. Về đúng giờ là hồi lại.';
+  if(!alert&&en?.low&&!o.locked)alert=c?`<p class="ok-alert warn">😮‍💨 ${Number(en.value)||0}/100 · chậm${tip(lowSay,'Sức bền thấp')}</p>`
+    :`<p class="ok-alert warn">😮‍💨 Sức bền ${Number(en.value)||0}/100 — ${lowSay}</p>`;
+  const trustSay=`${boss}: ${o.trust_label||''}`;
   // One row: clock · trust · energy · deadline · luck · the five-day calendar as a chip that opens.
   return `<div class="ok-top"><header class="ok-strip" aria-label="Giờ làm việc hôm nay">
-    <span class="ok-clock"><b>🕗 ${x.esc(o.time)}</b><small>${o.overtime?'tăng ca tới 20:00':o.lunch?'nghỉ trưa 12:00':'tan sở 17:30'}</small></span>
-    <span class="ok-trust" title="${x.esc(boss)}: ${x.esc(o.trust_label||'')}"><small>👩‍💼 <span class="ok-boss">${x.esc(boss)}: </span><b>${x.esc(o.trust_label||'')}</b></small><span class="ok-meter ${lvl}" role="meter" aria-label="${x.esc(boss)} tin bạn" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${trust}"><i style="width:${trust}%"></i></span></span>
+    <span class="ok-clock"><b>🕗 ${x.esc(o.time)}</b>${c?'':`<small>${o.overtime?'tăng ca tới 20:00':o.lunch?'nghỉ trưa 12:00':'tan sở 17:30'}</small>`}</span>
+    <span class="ok-trust" title="${x.esc(trustSay)}">${c?'<span aria-hidden="true">👩‍💼</span>':`<small>👩‍💼 <span class="ok-boss">${x.esc(boss)}: </span><b>${x.esc(o.trust_label||'')}</b></small>`}<span class="ok-meter ${lvl}" role="meter" aria-label="${x.esc(c?`${boss} tin bạn: ${o.trust_label||''}`:`${boss} tin bạn`)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${trust}"><i style="width:${trust}%"></i></span></span>
     ${energy}
-    ${due?`<span class="ok-due ${due.overdue?'bad':due.soon?'warn':''}" title="${x.esc(dueText(due))}" aria-label="${x.esc(dueText(due))}">⏰ ${x.esc(due.time)} · ${due.overdue?'đã trễ':`còn ${x.esc(shortSpan(due.left))}`}</span>`:''}
-    ${mod&&mod.id!=='normal'?`<span class="ok-modchip">${x.esc(mod.emoji)} ${x.esc(mod.name)}</span>`:''}
-    ${calChip(x)}
+    ${due?`<span class="ok-due ${due.overdue?'bad':due.soon?'warn':''}" title="${x.esc(dueText(due))}" aria-label="${x.esc(dueText(due))}">${due.overdue&&c?'⚠️':'⏰'} ${x.esc(due.time)}${c?'':` · ${due.overdue?'đã trễ':`còn ${x.esc(shortSpan(due.left))}`}`}</span>`:''}
+    ${mod&&mod.id!=='normal'?`<span class="ok-modchip" title="${x.esc(mod.name)}" aria-label="${x.esc(mod.name)}">${x.esc(mod.emoji)}${c?'':` ${x.esc(mod.name)}`}</span>`:''}
+    ${calChip(x)}${c?help:''}
   </header>${alert}</div>`;
+}
+/** The desk's "?" (clean layout, end of the status row): what this screen folded away (ui-kit tip), the day's luck and
+ * how the desk works. `extra`: the career's own sections [{title, body}]. */
+export function deskHelp(x,{key,title,boss,extra=[]}){
+  if(!clean())return '';
+  const d=x.room.data||{},mod=d.today?.mod,en=d.care?.energy;
+  const rows=[`<li>📥 Hộp thư · 📂 Hồ sơ · 📋 Quy định: chạm thẻ trên cùng để chuyển.</li>`,
+    `<li>👩‍💼 Thanh màu: ${x.esc(boss)} tin bạn tới đâu. Nộp đúng hạn, ít sai thì tăng.</li>`,
+    `<li>⏰ Hạn của hồ sơ đang mở. Đồng hồ chỉ chạy khi bạn làm việc.</li>`,
+    en?`<li>🔋 Sức bền: về đúng giờ thì hồi, tăng ca thì giảm. Thấp quá thì làm chậm hơn.</li>`:'',
+    `<li>🌙 Tăng ca tới 20:00 được trả thêm, mai vào muộn 30 phút.</li>`].join('');
+  return helpBtn(key,title,[...(mod&&mod.id!=='normal'?[{title:`${mod.emoji||''} ${mod.name||''}`,body:`<p>${x.esc(mod.text||'')}</p>`}]:[]),
+    ...extra,{title:'Bàn làm việc',body:`<ul>${rows}</ul>`}],{tips:true,cls:'ok-help'});
 }
 
 /* ---------------------------------------------------------------- care: calendar, plan, colleagues, track */
@@ -70,7 +93,7 @@ export function calChip(x){
   const cal=x.room.data?.care?.calendar;if(!cal?.length)return '';
   const items=cal.flatMap(c=>c.items||[]),late=items.filter(i=>i.state==='late').length,due=items.filter(i=>i.state==='due').length;
   const n=late?`<em class="ok-cal-n bad">⚠️ ${late}</em>`:due?`<em class="ok-cal-n warn">⏰ ${due}</em>`:'';
-  return `<details class="ok-calfold"${kept(x,'cal',false)?' open':''}><summary data-action="car:fold" data-fold="cal" aria-label="Lịch ${cal.length} ngày tới">📅 ${cal.length} ngày${n}</summary>${calStrip(x)}</details>`;
+  return `<details class="ok-calfold"${kept(x,'cal',false)?' open':''}><summary data-action="car:fold" data-fold="cal" aria-label="Lịch ${cal.length} ngày tới">📅 ${cal.length}${clean()?'':' ngày'}${n}</summary>${calStrip(x)}</details>`;
 }
 
 const PLAN_TONE={done:'good',filed:'good',ok:'good',late_done:'warn',late_filed:'warn',boss:'bad',late:'bad',due:'warn',in:'info',fixing:'info',todo:'',wait:'',locked:''};
@@ -106,7 +129,7 @@ export function mateCards(x,{prefix,t=null}){
   const owed=cr.mates.filter(m=>m.owes).length;
   const sum=`👥 Đồng nghiệp <small>${cr.mates.length} người${owed?` · ${owed} người nợ bạn`:''}</small>${cr.asked?' <span class="ok-tag info">Có người nhờ</span>':''}`;
   return fold(sum,`<ul class="ok-mates">${cards}</ul>
-    <p class="ok-note">Giúp thì mất ít phút nhưng người ta nhớ — lúc kẹt hạn, nhờ lại được một lần (+1 giờ). Từ chối không sao cả.</p>`,kept(x,'mates',!!cr.asked),'ok-people','mates');
+    ${note('Giúp thì mất ít phút nhưng người ta nhớ — lúc kẹt hạn, nhờ lại được một lần (+1 giờ). Từ chối không sao cả.','Đồng nghiệp')}`,kept(x,'mates',!!cr.asked),'ok-people','mates');
 }
 
 /** The mentor / promotion track, energy and the career story arc, folded. */
@@ -201,9 +224,12 @@ export function taskMails(x,t,body=''){
   return list.map(v=>{
     const who=x.npc(v.npc),due=dueOf(v,x),cur=v.id===t?.id;
     const tag=cur?{label:'Đang mở',tone:'accent'}:due?.overdue?{label:'Trễ hạn',tone:'bad'}:!v.known?{label:'Mới',tone:'info'}:null;
-    return {line:!cur,avatar:x.portrait(who,40),from:x.esc(who.display_name),role:x.esc(who.role||''),time:due&&!cur?`Hạn ${x.esc(due.time)}`:'',
-      subject:x.esc(v.title),preview:cur?'':`“${x.esc(v.opening)}”`,unread:!v.known&&!cur,current:cur,tag,
-      body:cur?body:'',act:cur?'':`data-action="job" data-task="${x.esc(v.id)}" aria-label="${x.esc(`Mở việc: ${v.title} · ${who.display_name}`)}"`};
+    // Clean layout: a one-line message's subject in a few words (the full title is the row's label and tooltip). The
+    // dossier still in its envelope is one line too: its ask is on the 📂 pane (envelope), side by side on a wide sheet.
+    const env=cur&&clean()&&!v.known;
+    return {line:!cur||env,avatar:x.portrait(who,40),from:x.esc(who.display_name),role:x.esc(who.role||''),time:due&&!cur?`Hạn ${x.esc(due.time)}`:'',
+      subject:x.esc(!cur&&clean()?few(v.title,4):v.title),preview:cur?'':`“${x.esc(v.opening)}”`,unread:!v.known&&!cur,current:cur,tag,
+      body:cur&&!env?body:'',act:cur?'':`data-action="job" data-task="${x.esc(v.id)}" aria-label="${x.esc(`Mở việc: ${v.title} · ${who.display_name}`)}"`};
   });
 }
 
@@ -228,10 +254,12 @@ export function dayMails(x,{boss,key}){
 /** The inbox pane: dossiers, then other messages, then "take more work". */
 export function inboxPane(x,{tasks=[],other=[],title='Hộp thư đến',plan='',people='',track='',take=true}){
   const open=openTasks(x),more=take&&x.room.open&&!x.room.more_gate&&open.length<4?`<p class="ok-more">${x.cmd('＋ Nhận thêm việc','more_work',{},'ghost')}</p>`:'';
-  return `<h3 class="ok-h">📥 ${x.esc(title)} <small>${tasks.length+other.length} thư</small></h3>
+  // Clean layout: the tab already names the pane; the heading and the "messages" title go.
+  const c=clean();
+  return `${c?'':`<h3 class="ok-h">📥 ${x.esc(title)} <small>${tasks.length+other.length} thư</small></h3>`}
     ${tasks.length?`<ul class="ok-mails" aria-label="Việc được giao">${tasks.map(mail).join('')}</ul>`:''}
     ${more}${plan}${people}
-    ${other.length?`<h4 class="ok-h2">Tin nhắn trong ngày</h4><ul class="ok-mails" aria-label="Tin nhắn">${other.map(mail).join('')}</ul>`:''}
+    ${other.length?`${c?'':'<h4 class="ok-h2">Tin nhắn trong ngày</h4>'}<ul class="ok-mails" aria-label="Tin nhắn">${other.map(mail).join('')}</ul>`:''}
     ${track}`;
 }
 
@@ -244,6 +272,27 @@ export function rulesList(x,rules,title){
     <ul class="ok-rule-list">${[...fresh,...rest].map(card).join('')}</ul></section>`;
 }
 
+/** The 📂 pane while the dossier is still in its envelope. Clean layout: who asks and their own words (the ask stays on
+ * screen; the brief, how to go about it, goes to the "?"), so the first screen is the job, not the inbox. Classic: the
+ * empty envelope as before. `quote`: ready HTML for the words (default: the opening in quotes). */
+/** The words someone says, without the scene around them (“Chị Huyền gửi file: “…”” → “…”); the name is beside it. */
+const said=s=>{const m=/“([^”]{8,})”/.exec(String(s||''));return m?m[1]:String(s||'').replace(/^[“"]|[”"]$/g,'');};
+/** A long ask (> 16 words) whose first sentence says the case (≥ 8 words) shows that sentence; the rest (how to go about
+ * it: "Ghép từng dòng…", "Em soát từng ô…") goes to the "?" with the brief. Only the
+ * envelope does this: its one action is "receive", the work and its papers come after. */
+function firstWords(x,q){
+  const m=String(q).split(/\s+/).length>16&&/^(.+?[.!?…])\s+(.+)$/.exec(q);
+  // A short first sentence ("Em lọc thư giúp anh.") is only the opener: the demand comes after it, so it stays whole.
+  if(!m||m[1].split(/\s+/).length<8)return `<p class="ok-quote">“${x.esc(q)}”</p>`;
+  return `<p class="ok-quote">“${x.esc(m[1])} …”</p>${note(x.esc(m[2]),'Lời dặn')}`;
+}
+export function envelope(x,t,{empty='Hồ sơ còn trong phong bì.',quote=null,extra=''}={}){
+  if(!clean())return `<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${x.esc(empty)}</span></p>`;
+  const who=x.npc(t.npc);
+  return `<article class="ok-env" data-step-card="${x.esc(t.id)}:env"><header class="ok-env-head"><span class="ok-av" aria-hidden="true">${x.portrait(who,40)}</span><b>${x.esc(who.display_name)}</b></header>
+    ${quote?`<p class="ok-quote">${quote}</p>`:firstWords(x,said(t.opening))}${extra}${note(t.brief?`🎯 ${x.esc(t.brief)}`:'','Yêu cầu')}</article>`;
+}
+
 /* ---------------------------------------------------------------- the desk frame */
 export const tabKey=t=>`${t.id}:${t.known?1:0}`;
 const TAB_TONE={warn:'warn',bad:'bad'};
@@ -251,9 +300,11 @@ const TAB_TONE={warn:'warn',bad:'bad'};
 /** tabs: [{id:'inbox'|'doc'|'rules'|'books', icon, label, badge, tone}]; panes: {id: html}. */
 export function desk(x,t,{cls,tabs,panes,strip,bar,def,hint=''}){
   x.ui.okLast=t.id;   // the done screen (idleDesk) knows which dossier just closed
-  const key=tabKey(t),want=x.ui.okTab?.[key]||def||(t.known?'doc':'inbox');
+  // Clean layout: the dossier's own tab first, even in its envelope (the ask is there: envelope()).
+  const key=tabKey(t),want=x.ui.okTab?.[key]||def||(t.known||clean()?'doc':'inbox');
   const tab=tabs.some(v=>v.id===want)?want:tabs[0].id;
-  const nav=tabs.map(v=>`<button type="button" role="tab" class="ok-tab ok-tab-${v.id}" id="ok-tab-${v.id}" data-action="car:tab" data-tab="${v.id}" data-key="${x.esc(key)}" aria-controls="ok-pane-${v.id}" aria-selected="${v.id===tab}">
+  // aria-label: the clean layout shows only the open tab's word (the others: icon and badge, office_kit.css).
+  const nav=tabs.map(v=>`<button type="button" role="tab" class="ok-tab ok-tab-${v.id}" id="ok-tab-${v.id}" data-action="car:tab" data-tab="${v.id}" data-key="${x.esc(key)}" aria-controls="ok-pane-${v.id}" aria-selected="${v.id===tab}" aria-label="${x.esc(v.label)}${v.badge?` (${x.esc(String(v.badge))})`:''}" title="${x.esc(v.label)}">
       <span class="ok-tab-ico" aria-hidden="true">${v.icon}</span><span class="ok-tab-label">${x.esc(v.label)}</span>${v.badge?`<em class="ok-badge ${TAB_TONE[v.tone]||''}">${x.esc(String(v.badge))}</em>`:''}</button>`).join('');
   return `<div class="career-job ok ${cls}" data-ok-tab="${tab}">${hint}${strip}
     <nav class="ok-tabs" role="tablist" aria-label="Bàn làm việc">${nav}</nav>
@@ -270,13 +321,17 @@ const echoes=(next,main)=>{
   const a=plain(next),b=plain(main);
   return !!b&&(a===b||a.startsWith(b+' '));
 };
-export function bar(x,t,next,main='',always=false){
-  const cap=String(next).replace(/^\s*(\S)/,(m,c)=>m.replace(c,c.toUpperCase()));
-  const label=next&&!echoes(next,main)?`<p class="ok-next" aria-live="polite">${cap}</p>`:'';
+/** The shared bar (ui-kit actBar, .ui-bar): `next` on the left, the main button on the right. `main` may be a guideOf
+ * result ({cta, next}): its pointer fills the left slot when the career has no line of its own. `top`: a full-width row
+ * above (choices that belong to the bar, e.g. the reasons for a gap on the matching board). */
+export function bar(x,t,next,main='',always=false,{top=''}={}){
+  if(main&&typeof main==='object'){const g=main;main=g.cta||'';if(!next)next=g.next||'';}
+  const point=/^\s*<button\b/.test(String(next||''));
+  const cap=point?next:String(next).replace(/^\s*(\S)/,(m,c)=>m.replace(c,c.toUpperCase()));
+  const label=next&&!echoes(next,main)?(point?cap:`<p class="ok-next" aria-live="polite">${cap}</p>`):'';
   const back=main?'primary big grow gd-cta':'ghost';
-  return `<div class="ok-bar${always?' always':''}${main?'':' bare'}" data-cta-bar>${label}
-    ${main?`<div class="ok-bar-btns ok-main">${main}</div>`:''}
-    <div class="ok-bar-btns ok-back"><button type="button" class="btn ${back}" data-action="car:tab" data-tab="doc" data-key="${x.esc(tabKey(t))}">📂 Về hồ sơ</button></div></div>`;
+  return actBar({cls:`ok-bar${always?' always':''}${main?'':' bare'}`,attrs:' data-cta-bar',top,next:label,
+    main:`${main?`<div class="ok-bar-btns ok-main">${main}</div>`:''}<div class="ok-bar-btns ok-back"><button type="button" class="btn ${back}" data-action="car:tab" data-tab="doc" data-key="${x.esc(tabKey(t))}">📂 Về hồ sơ</button></div>`});
 }
 
 /* ---------------------------------------------------------------- the office is shut (office.need_open: office_closed) */
@@ -286,17 +341,22 @@ export const shut=x=>Boolean(x.room.open&&x.room.data?.office?.closed);
  * `free(op, tag)` lets through) and its client actions that send one (`acts`, e.g. ['check'] for car:check). */
 export function shutWork(x,html,{prefix,acts=[],free=()=>false}){
   if(!shut(x))return html;
+  // Dimmed but tappable (ui-kit whyAttrs): a tap says why (the server's own rule, office.can.work) and points at the
+  // overtime button; it never sends the command (the refusal "office_closed" was a top one, 04–06/10).
+  const can=x.room.data?.office?.can?.work;
+  const why=whyAttrs(can&&can!==true?can:{why:'Văn phòng đã đóng cửa.'});
   return String(html).replace(/<button\b[^>]*>/g,tag=>{
-    if(/\sdisabled\b/.test(tag))return tag;
+    if(/\sdisabled\b/.test(tag)||/\saria-disabled=/.test(tag))return tag;
     const op=/\sdata-(?:command|op)="([^"]*)"/.exec(tag)?.[1]||'',act=/\sdata-action="car:([^"]*)"/.exec(tag)?.[1]||'';
     const work=acts.includes(act)||op.startsWith(prefix)&&op!==prefix+'overtime'&&!free(op,tag);
-    return work?tag.replace(/>$/,' disabled title="Văn phòng đã đóng cửa">'):tag;
+    if(!work)return tag;
+    return tag.replace(/\sclass="([^"]*)"/,(m,cls)=>` class="${cls} is-why"`).replace(/>$/,`${why} title="Văn phòng đã đóng cửa">`);
   });
 }
 /** The bottom bar while shut: why, and the day's close (app.js “end”). Overtime stays in the status strip. */
 export function shutBar(x,t){
   const o=x.room.data.office;
-  return bar(x,t,`🌇 Văn phòng đóng cửa lúc ${x.esc(o.limit_time||'17:30')} — việc dở được giữ nguyên.`,x.button(`${x.icon('exit',16)} Khép ca · xem tổng kết`,'end',{},'primary big grow'));
+  return bar(x,t,clean()?`🌇 Đóng cửa ${x.esc(o.limit_time||'17:30')}`:`🌇 Văn phòng đóng cửa lúc ${x.esc(o.limit_time||'17:30')} — việc dở được giữ nguyên.`,x.button(`${x.icon('exit',16)} ${clean()?'Khép ca':'Khép ca · xem tổng kết'}`,'end',{},'primary big grow'));
 }
 
 /* ---------------------------------------------------------------- next step (v4/guide.js) */
@@ -316,8 +376,10 @@ export function gotoAction(data,el,x){
 function pointCta(x,n,final){
   const say=bareLabel(n.go.label||'')||bareLabel(n.label,false);
   const btn=`<button type="button" class="btn big grow gd-cta gd-point"${goAttrs(n.go)} data-say="${x.esc(say)}" aria-label="${x.esc('Chỉ chỗ: '+say)}">👆 ${x.esc(say)}</button>`;
-  if(!final||final.ready===false)return btn;
-  return `<div class="gd-ctas">${btn}<button type="button" class="gd-alt"${goAttrs(final.go)}>hoặc ${final.alt||final.label}</button></div>`;
+  if(!final||final.ready===false)return {next:'',main:btn};
+  // The bar's two slots (docs/UI_KIT.md): the pointer on the left, the finish on the right, quiet while a step is left.
+  const left=`<button type="button" class="btn ui-next gd-cta gd-point"${goAttrs(n.go)} data-say="${x.esc(say)}" aria-label="${x.esc('Chỉ chỗ: '+say)}">👆 ${x.esc(say)}</button>`;
+  return {next:left,main:`<button type="button" class="btn big gd-final"${goAttrs(final.go)}>${final.label}</button>`};
 }
 const plainLabel=s=>String(s||'').replace(/<[^>]*>/g,'').replace(/^[^\p{L}\p{N}]+/u,'').trim();
 /** The one-line hint (top of the job, pinned in the sheet header) and the bar's main button, from one step list.
@@ -327,14 +389,16 @@ export function guideOf(x,t,steps,final=null,{done='',main=''}={}){
   // The hint says the step (the button says the action): drop the button label unless the step points elsewhere.
   const hs=steps.map(s=>s.hintGo?{...s,go:s.hintGo}:s.go?{...s,go:{...s.go,label:''}}:s);
   const hint=nextHint(x,hs,{final:final&&final.ready!==false?{label:plainLabel(final.label),go:final.go}:null,done});
-  let cta=main;
+  let cta=main,next='';
   const n=pending(steps);
-  if(!cta&&n?.go?.act==='car:goto')cta=pointCta(x,n,final);
+  if(!cta&&n?.go?.act==='car:goto')({next,main:cta}=pointCta(x,n,final));
   if(!cta){
-    if(final)cta=stepCta(x,steps,final,{style:'primary big grow'});
+    // The finish: the shared bar's slots (a step left: its button, or a pointer on the left; the finish dimmed with its
+    // reason until it can go, guide.js barParts).
+    if(final)({next,main:cta}=barParts(x,steps,final,{style:'primary big grow'}));
     else{cta=n?.go?`<button type="button" class="btn primary big grow gd-cta"${goAttrs(n.go)}>${n.go.label||`👉 ${x.esc(n.label)}`}</button>`:'';}
   }
-  return {hint,cta};
+  return {hint,cta,next};
 }
 
 /** Steps of a step-by-step dossier (corp & group share the widgets: `pre` = 'ca' | 'ga', `confirm` = {kind: [label, action]}).

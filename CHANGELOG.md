@@ -9,6 +9,28 @@
 - Danh sách bước thành chip "📋 0/4" trên dòng ngày; lựa chọn chờ (làm trước, giường xem trước, mở cổng) mở ra khi tới lượt.
 - Máy chủ báo trước, nút mờ kèm lý do: công an chọn chủ đề thứ tư, điều dưỡng chuyển đi thủ thuật khi người bệnh đã từ chối, cứu hộ mở lại hồ khi dông chưa tới, thợ dầu khí xả áp/kiểm về không khi chưa khóa đủ, phi công cất cánh khi chưa xong checklist/thông báo, bay lại khi chỉ còn dầu cho lần này, tiếp viên mời món ghế đã có.
 - Giao diện cổ điển và máy tính giữ chữ như cũ; tắt nhanh như đợt 1. Không đổi bản lưu, không thêm bảng, không đổi cách sinh việc.
+## Giao diện gọn: đợt 3
+
+- 8 màn bàn giấy và tiệm thú: kế toán tập đoàn, kế toán doanh nghiệp, thuế & lương, hành chính – nhân sự, thư ký, IT
+  helpdesk, chăm sóc khách hàng, tiệm thú cưng. Màn đầu (điện thoại 390 px) còn 18–30 chữ (trước 68–141).
+- Bàn văn phòng (6 nghề): hàng trạng thái chỉ còn biểu tượng và số (🕗 · thanh tin tưởng · 🔋 · ⏰ · 📅); thẻ trên cùng chỉ
+  ghi chữ ở thẻ đang mở; hồ sơ chưa nhận mở thẳng tab 📂 với người giao việc và lời họ nói (lời dặn dài và "🎯 yêu cầu"
+  vào nút "?"); thanh dưới dùng chung `.ui-bar`, một nút chính (dấu DUYỆT/TRÌNH SẾP/TRẢ LẠI và lý do lệch sổ thành một
+  hàng nút đủ to phía trên).
+- Cách tính 📐, mẹo, chi phí hỏi gợi ý, chú thích bảng… vào nút "?" (mục "Trên màn này"). Ô nào vừa kiểm sai thì cách
+  tính của ô đó vẫn hiện ngay.
+- Giữ nguyên trên màn mọi thứ quyết định đúng sai: lời người giao việc, dữ liệu giấy tờ, "Sếp dặn", quy định giờ làm,
+  đề bài từng bước; dòng sổ đối chiếu chỉ bỏ chữ lặp lại, giữ "Nhập theo HĐ-45", "xuất kho 29/03", "lập 16:00",
+  "Bán cho …", số NM × tỷ giá.
+- Sau 17:30 nút làm việc mờ đi nhưng vẫn chạm được: hiện lý do và nút "🌙 Tăng ca" (máy chủ báo trước `can.work`, trước
+  đây hành chính – nhân sự và thư ký bị từ chối "office_closed" nhiều). Bảng lương: dòng đã đánh dấu đủ 3 ô thì các ô
+  còn lại mờ và nói rõ lý do (`can.tp_flag`).
+- Chăm sóc khách hàng: thanh dưới giữ nút việc bây giờ; bước, lời giải thích, cuộc gọi chưa bắt đầu gọn lại một dòng
+  (vẫn thấy tâm trạng khách); các phương án vẫn ghi "Khi …".
+- Tiệm thú cưng: giới thiệu nghề còn tên, 3 dòng biểu tượng và "?"; một nút "Vào tiệm" duy nhất; lời khách giữ nguyên,
+  cảnh dẫn vào "?"; danh sách việc thành chip "📋 0/2".
+- Giao diện cổ điển và máy tính giữ như cũ; công tắc "Giao diện gọn" / `MNL_CLEAN_UI=off` vẫn tắt được.
+- Không đổi bản lưu, không thêm bảng, không đổi cách sinh việc.
 
 # v1.9.7 — 2026-10-07
 

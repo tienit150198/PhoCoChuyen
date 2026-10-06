@@ -75,11 +75,14 @@ def closed(o: dict) -> bool:
     return o['clock'] >= limit(o)
 
 
-def need_open(o: dict) -> None:
+def need_open(o: dict, need=None) -> None:
+    """Work that takes office time is refused once the office is shut. Written once, run twice (kit.check): the view
+    sends the same rule as `can.work`, so the page dims the work with this reason and points at the overtime button."""
+    need = need or kit.need
     if o['clock'] >= LOCK:
-        kit.need(False, 'Đã 20:00, văn phòng khóa cửa. Khép ngày để về nghỉ nhé — việc dở được giữ nguyên.', 'office_closed')
-    kit.need(not closed(o), 'Đã 17:30, hết giờ hành chính. Chọn “Ở lại tăng ca” hoặc khép ngày — việc dở được giữ nguyên.',
-             'office_closed')
+        need(False, 'Đã 20:00, văn phòng khóa cửa. Khép ngày để về nghỉ nhé — việc dở được giữ nguyên.', 'office_closed')
+    need(not closed(o), 'Đã 17:30, hết giờ hành chính. Chọn “Ở lại tăng ca” hoặc khép ngày — việc dở được giữ nguyên.',
+         'office_closed', fix=None if o['ot'] else dict(sel='.ok-alert', label='🌙 Tăng ca'))
 
 
 def spend(o: dict, minutes: int) -> str:
@@ -228,7 +231,8 @@ def public(o: dict, day: int) -> dict:
     return dict(clock=clock, time=hhmm(clock), limit=lim, limit_time=hhmm(lim), closed=clock >= lim, locked=clock >= LOCK,
                 overtime=ot, can_overtime=today and not ot and clock >= CLOSE - 60, lunch=clock < LUNCH,
                 trust=o['trust'], trust_label=trust_label(o['trust']), streak=o['streak'], fines=o['fines'],
-                ontime=o['ontime'], late=o['late'], notes=list(o['notes'][-4:]), tired=o['tired'] == day)
+                ontime=o['ontime'], late=o['late'], notes=list(o['notes'][-4:]), tired=o['tired'] == day,
+                can=dict(work=kit.check(need_open, dict(clock=clock, ot=ot))))   # a view field (never saved)
 
 
 def public_task(t: dict, o: dict, day: int) -> dict | None:

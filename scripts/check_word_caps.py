@@ -41,6 +41,14 @@ WORK_DONE: tuple[str, ...] = ('drain', 'com', 'lighthouse', 'railway', 'tra_da',
 WORK_CAP = {'drain': 30, 'com': 30, 'lighthouse': 30, 'railway': 30, 'pagoda': 30, 'tra_da': 30, 'pilot': 30}
 DEFAULT = INTRO + ('florist', 'repair', 'restaurant', 'clothing', 'teacher', 'tour_guide')
 
+# Wave 3: the office desks (their first screen is the dossier's envelope: who asks and their words), the support desk
+# and the pet shop. 30 where the ask itself needs the room (its demand is never cut): the timesheet, the mail sorting
+# ("cái gì anh phải xem thì để riêng"), the helpdesk's call, the voucher tray, the support customer's words.
+WAVE3 = ('group_accounting', 'hr_admin', 'secretary', 'it_helpdesk', 'corp_accounting', 'tax_payroll', 'customer_care', 'pet_shop')
+WORK_DONE += WAVE3
+WORK_CAP.update(hr_admin=30, secretary=30, it_helpdesk=30, corp_accounting=30, customer_care=30)
+DEFAULT += WAVE3
+
 COUNT = r"""async () => {
   const d = [...document.querySelectorAll('dialog[open]')].pop();
   const kit = await import('/js/ui-kit.js');
