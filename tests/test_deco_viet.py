@@ -18,19 +18,21 @@ from tests.test_deco import D, bag, fp, owner
 from tests.test_home_rooms import put_new
 
 ROOT = Path(__file__).resolve().parents[1]
-NEW = tuple(DC.ITEMS)[len(DC.KNOWN_1419):]
+NEW = tuple(DC.ITEMS)[len(DC.KNOWN_1419):len(DC.KNOWN_1715)]
+LATER = tuple(DC.ITEMS)[len(DC.KNOWN_1715):]          # after 1.7.15 (tests/test_deco_more.py)
+LATER_SETS = ('choi', 'bep_nha', 'sao')
 NEW_SETS = ('tet', 'xua', 'hien', 'bep_moi', 'mo')
 
 
 @contextlib.contextmanager
 def older_build():
     """The catalogue as 1.4.19 has it: without the pieces, sets and shop shelf added since (restored in order)."""
-    items = {k: DC.ITEMS.pop(k) for k in NEW}
-    sets = {k: DC.SETS.pop(k) for k in NEW_SETS}
+    items = {k: DC.ITEMS.pop(k) for k in NEW + LATER}
+    sets = {k: DC.SETS.pop(k) for k in NEW_SETS + LATER_SETS}
     resort = DC.SETS['resort']
     DC.SETS['resort'] = dict(resort, need=(('ghe_tam_nang',), ('du_che',), ('phao', 'vit_cao_su')))
     cats = DC.CATS
-    DC.CATS = cats[:-1]
+    DC.CATS = tuple(c for c in cats if c[0] not in ('le', 'bep'))
     try:
         yield
     finally:
@@ -60,7 +62,7 @@ class Catalogue(unittest.TestCase):
         by_room = {t: [k for k in NEW if t in DC.ITEMS[k]['rooms']] for t in ('living', 'bed', 'kitchen', 'bath', 'balcony', 'yard', 'pool')}
         for t, ks in by_room.items():
             self.assertGreaterEqual(len(ks), 3, t)                               # something new for every kind of room
-        self.assertEqual([x['id'] for x in jr.content()['deco']['items']][-35:], list(NEW))
+        self.assertEqual([x['id'] for x in jr.content()['deco']['items']][81:116], list(NEW))
 
     def test_every_piece_is_drawn_and_named_in_english(self):
         js = (ROOT / 'public' / 'js' / 'v4' / 'deco-art.js').read_text(encoding='utf-8')

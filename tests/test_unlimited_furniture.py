@@ -191,7 +191,8 @@ class FurnitureFacing(unittest.TestCase):
             t['journey']['decor_faces'] = value
             with self.assertRaises(GameError):
                 validate_state(t)
-        self.assertEqual(set(dc.catalogue()['facing']), {'tv', 'sofa'})
+        self.assertEqual(set(dc.catalogue()['facing']), set(dc.FACING_ITEMS))
+        self.assertEqual(dc.FACES_OLD, ('tv', 'sofa'))                      # what journey.decor_faces may hold (1.7.15)
 
     def test_explicit_front_and_new_back_purchase_are_idempotent(self):
         for kind in ('tv', 'sofa'):

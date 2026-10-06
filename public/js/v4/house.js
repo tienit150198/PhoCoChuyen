@@ -7,8 +7,12 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {portrait,myPortrait} from './look.js';
 import {rentalMarketView,rentalPrice,rentalDemandHint,rentalRetryable,propertyNews} from './rentals-ui.js';
+import {thumb} from './deco-art.js';
+import {inventoryHTML} from './home-items.js';
+import {morph} from './home-morph.js';
 
 const S={dlg:null,env:null,view:'home',busy:false,flash:null,buy:{kind:'',down:0,months:36,joint:0,move_in:true},joint:null,family:null,couple:null,jointAt:0,listening:false};
+S.inv=new Set();   // 🧺 the folds of "Đồ đạc của bạn" open now (their rows are drawn only then)
 S.rentals=null;S.rentalsLoading=false;S.rentalSeq=0;S.rentalDrafts={};S.rentalRequests=new Map();
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
@@ -73,6 +77,8 @@ function dialog(){
   d.addEventListener('input',e=>{if(e.target.dataset.rentalPrice){S.rentalDrafts[e.target.dataset.rentalPrice]=e.target.value;const out=e.target.closest('.rental-card')?.querySelector('[data-rental-demand]');if(out)out.textContent=rentalDemandHint(e.target.value,Number(e.target.dataset.reference));}else if(e.target.closest('[data-hs-buy]'))onBuyField(e.target,false);});
   d.addEventListener('change',e=>{if(e.target.closest('[data-hs-buy]'))onBuyField(e.target,true);});
   d.addEventListener('submit',e=>e.preventDefault());
+  d.addEventListener('toggle',e=>{const f=e.target;if(!f?.dataset?.inv)return;const was=S.inv.has(f.dataset.inv);if(f.open===was)return;
+    if(f.open)S.inv.add(f.dataset.inv);else S.inv.delete(f.dataset.inv);render();},true);
   d.addEventListener('close',()=>{invalidateRentals();S.flash=null;S.view='home';});
   S.dlg=d;return d;
 }
@@ -115,7 +121,9 @@ async function send(action,payload={}){
     S.flash={text:[r.message,...extra].filter(Boolean).join(' '),kind:r.approved===false?'warn':'good'};
     return r;
   }catch(e){S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}  // quiet: api.js, the save moved under the tap twice
-  finally{S.busy=false;if(S.dlg?.open){if(refreshRentals)loadRentals();else render();S.dlg.querySelector('.hs-body')?.scrollTo?.(0,0);}}
+  // The list stays where the player was (it used to jump to the top after every tap); the answer shows in the
+  // flash, which sticks to the top of the sheet (house.css).
+  finally{S.busy=false;if(S.dlg?.open){if(refreshRentals)loadRentals();else render();}}
 }
 const ask=(title,msg,label,money)=>S.env.confirmAction(title,msg,label,money);  // money: {cost,pocket} → "còn thiếu" (v4/money.js)
 const FROM_BANK=['account','wallet'];   // housing takes the account first, the rest in cash
@@ -176,6 +184,7 @@ async function onClick(op,data){
     case'bank':S.dlg.close();(await import('./bank.js')).openBank(S.env,data.tab||'save');return;
     case'inside':S.dlg.close();(await import('./reno.js')).openReno(S.env,data.mode);return;   // 🛠️ Trong nhà: xem, sửa, trang trí
     case'garage':S.dlg.close();(await import('./garage.js')).openGarage(S.env);return;   // 🚗 the vehicle parked out front
+    case'wardrobe':S.dlg.close();S.env.openSheet('home',{jrView:'wardrobe'});return;   // 👗 Tủ đồ (v4/wardrobe.js)
     case'family':S.dlg.close();S.env.openSheet('home',{jrView:'household'});return;
     case'homeGuests':S.dlg.close();S.env.act('homeGuests',{});return;
     case'sharedFamily':S.dlg.close();(await import('./marriage.js')).openMarriage(S.env,data.tab||'family',data.section);return;
@@ -253,15 +262,17 @@ function preview(){
 /* ---- rendering ---- */
 function keepFocus(fn){
   const a=document.activeElement,id=a&&S.dlg?.contains(a)?a.id:'',pos=id&&'selectionStart' in a?a.selectionStart:null;
-  const top=S.dlg?.querySelector('.hs-body')?.scrollTop;
+  const was=S.dlg?.querySelector('.hs-body'),top=was?.scrollTop;
   fn();
-  if(id){const el=S.dlg.querySelector('#'+CSS.escape(id));if(el){el.focus({preventScroll:true});try{if(pos!=null)el.setSelectionRange(pos,pos);}catch{/* number inputs */}}}
-  if(top!=null){const body=S.dlg.querySelector('.hs-body');if(body)body.scrollTop=top;}
+  if(id&&document.activeElement!==a){const el=S.dlg.querySelector('#'+CSS.escape(id));if(el){el.focus({preventScroll:true});try{if(pos!=null)el.setSelectionRange(pos,pos);}catch{/* number inputs */}}}
+  // the same body node keeps its own scroll (writing it again would stop a fling); a new one gets it back
+  if(top!=null){const body=S.dlg.querySelector('.hs-body');if(body&&body!==was&&body.scrollTop!==top)body.scrollTop=top;}
 }
 function render(){
   if(!S.dlg)return;
-  keepFocus(()=>{S.dlg.querySelector('.hs-root').innerHTML=page();});
+  keepFocus(()=>{morph(S.dlg.querySelector('.hs-root'),page());});   // patched in place: scroll, focus and open folds stay
   S.dlg.setAttribute('aria-busy',String(S.busy));
+  const h=S.dlg.querySelector('.sheet-head')?.offsetHeight;if(h)S.dlg.style.setProperty('--hs-head',`${h}px`);
 }
 function head(){
   const v=V();
@@ -444,9 +455,15 @@ function homeView(v){
   const more=PROPS(v).map(x=>propCard(v,x)+loanCard(v,x)).join('');
   const cap=Array.isArray(v.props)&&MINE(v).length?` Có thể có tới ${v.rules.owned_max} căn${canBuy(v).ok?'':`: ${esc(canBuy(v).why)}`}.`:'';
   const bill=v.care?.month?`<p class="bk-hint hs-care">🧾 Phí bảo trì các căn của bạn khoảng ${xu(v.care.month)}/tháng, trừ cùng hóa đơn ${onDay(v.care.next)}: tiền mặt trước, thiếu thì lấy từ tài khoản, không bao giờ làm ví âm.</p>`:'';
-  return moneyStrip(v)+`<section class="bk-card"><h3>🏘️ Thuê & cho thuê</h3><p>Tự đặt giá, tìm khách NPC hoặc thuê nhà người chơi.</p>${btn('Mở chợ thuê nhà','rentals',{},'primary')}</section>`+familyCard()+nextStep(v)+placeCard(v)+sharedCard(v)+ownCard(v)+loanCard(v)+more+bill+
+  return moneyStrip(v)+`<section class="bk-card"><h3>🏘️ Thuê & cho thuê</h3><p>Tự đặt giá, tìm khách NPC hoặc thuê nhà người chơi.</p>${btn('Mở chợ thuê nhà','rentals',{},'primary')}</section>`+familyCard()+nextStep(v)+placeCard(v)+inventoryCard()+sharedCard(v)+ownCard(v)+loanCard(v)+more+bill+
     `<section class="bk-card hs-listing"><h3>Nhà đang rao</h3><p class="bk-hint">Trả trước ${v.rules.down_pct}% + phí, còn lại vay 3 năm.${cap}</p>${marketGroups(v)}</section>`+
     savingsCard(v)+(log?`<section class="bk-card"><h3>Sổ nhà cửa</h3><ul class="bk-score-log">${log}</ul></section>`:'');
+}
+
+/** 🧺 Everything the player owns, down to the smallest piece (v4/home-items.js). */
+function inventoryCard(){
+  const st=S.env?.api?.state,c=S.env?.api?.content;if(!st?.journey?.story)return '';
+  return inventoryHTML(st,c,{open:S.inv,thumb,btn});
 }
 
 function familyCard(){

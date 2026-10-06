@@ -38,7 +38,7 @@ POOLSIDE = ('pool', 'yard')
 
 CATS = (('bed', '🛏️', 'Giường, tủ & thảm'), ('table', '🪑', 'Bàn ghế'), ('light', '💡', 'Đèn'), ('plant', '🪴', 'Cây & hoa'),
         ('wall', '🖼️', 'Trang trí tường'), ('fun', '🧸', 'Đồ chơi & tiện ích'), ('bath', '🛁', 'Nhà tắm'),
-        ('pool', '🏖️', 'Hồ bơi & sân vườn'), ('le', '🏮', 'Trung thu & Tết'))
+        ('pool', '🏖️', 'Hồ bơi & sân vườn'), ('le', '🏮', 'Trung thu & Tết'), ('bep', '🍳', 'Bếp & ăn uống'))
 SPOTS = ('wall', 'floor', 'rug', 'top')
 
 
@@ -180,10 +180,72 @@ ITEMS = {
     'canh_dao': _i('le', 'floor', 1, 1, 130, 3, IN + OUT + ('loft',), 'Bình đào Tết', '🌸', ('plant', 'flower')),
     'cau_doi': _i('le', 'wall', 2, 2, 40, 1, IN, 'Câu đối đỏ', '🧧', ('art',)),
     'mam_ngu_qua': _i('le', 'top', 1, 1, 45, 1, SMALL + OUT, 'Mâm ngũ quả', '🍍'),
+    # After 1.7.15 (KNOWN_1715, góp ý #192 "thêm nội thất"): more for every room, small things too. Phòng khách
+    'sofa_don': _i('table', 'floor', 1, 1, 120, 2, LIVE + ('loft',), 'Ghế sofa đơn', '🛋️', ('seat', 'soft')),
+    'ke_tivi': _i('table', 'floor', 3, 1, 150, 2, ('living', 'studio', 'bed'), 'Kệ tivi gỗ dài', '🗄️', (), surface=16),
+    'ghe_bap_benh': _i('table', 'floor', 1, 1, 130, 2, LIVE + ('loft',) + OUT, 'Ghế bập bênh gỗ', '🪑', ('seat',)),
+    'piano': _i('fun', 'floor', 2, 1, 420, 3, ('living', 'studio', 'bed'), 'Đàn piano đứng', '🎹', ('music',)),
+    'binh_gom': _i('plant', 'floor', 1, 1, 85, 2, IN + ('loft',) + OUT, 'Bình gốm Bát Tràng', '🏺', ('art',)),
+    'tranh_son_dau': _i('wall', 'wall', 2, 2, 160, 3, IN, 'Tranh sơn dầu phố cổ', '🎨', ('art',)),
+    'khung_anh_bo': _i('wall', 'wall', 2, 1, 45, 1, WALLS, 'Bộ khung ảnh mini', '🖼️', ('art',)),
+    'den_chum': _i('light', 'wall', 2, 1, 180, 2, LIVE, 'Đèn chùm pha lê', '💎', ('lamp',)),
+    'tham_tron': _i('bed', 'rug', 2, 2, 70, 2, IN + ('loft',), 'Thảm tròn len', '🟠', ('rug', 'soft')),
+    'tham_dai': _i('bed', 'rug', 3, 1, 60, 1, IN + ('loft',), 'Thảm hành lang dài', '🟫', ('rug',)),
+    'bang_neon': _i('light', 'wall', 2, 1, 95, 2, LIVE + ('loft', 'bunk'), 'Bảng đèn neon chill', '💡', ('lamp', 'gaming')),
+    'ke_tron': _i('wall', 'wall', 1, 1, 35, 1, WALLS, 'Kệ tròn treo tường', '⭕', (), ledge=22),
+    'chuong_gio': _i('wall', 'wall', 1, 1, 25, 1, WALLS, 'Chuông gió tre', '🎐'),
+    'may_chieu': _i('light', 'top', 1, 1, 90, 2, SMALL, 'Máy chiếu dải ngân hà', '🌌', ('lamp',)),
+    # Phòng ngủ
+    'giuong_don': _i('bed', 'floor', 2, 2, 150, 2, SLEEP + ('loft',), 'Giường đơn sắt', '🛏️', ('bed',), surface=16),
+    'tu_ngan_keo': _i('bed', 'floor', 1, 1, 95, 1, SLEEP + ('living', 'loft'), 'Tủ ngăn kéo', '🗃️', (), surface=26),
+    'guong_dung': _i('bed', 'floor', 1, 1, 85, 1, SLEEP + ('living',) + BATH, 'Gương đứng toàn thân', '🪞'),
+    'den_trang': _i('light', 'top', 1, 1, 40, 1, SMALL, 'Đèn ngủ mặt trăng', '🌙', ('lamp',)),
+    'goi_tua': _i('bed', 'top', 1, 1, 20, 1, SLEEP + ('living', 'loft', 'bunk'), 'Gối tựa ca rô', '🟨', ('soft',)),
+    'rem_voan': _i('wall', 'wall', 1, 2, 55, 2, IN, 'Rèm voan trắng', '🤍', ('fabric',)),
+    'tho_bong': _i('fun', 'top', 1, 1, 30, 1, LIVE + ('loft', 'bunk'), 'Thỏ bông tai dài', '🐰', ('soft', 'toy')),
+    'ke_giay': _i('bed', 'floor', 1, 1, 55, 1, IN + ('loft',), 'Kệ giày gỗ', '👟', (), surface=18),
+    # Đồ chơi & đồ nhỏ
+    'ngua_go': _i('fun', 'floor', 1, 1, 90, 2, LIVE + ('loft',), 'Ngựa gỗ bập bênh', '🐴', ('toy',)),
+    'leu_choi': _i('fun', 'floor', 2, 1, 140, 3, LIVE + ('loft',), 'Lều chơi cho bé', '⛺', ('toy', 'soft')),
+    'xep_hinh': _i('fun', 'top', 1, 1, 45, 1, SMALL, 'Bộ xếp hình', '🧱', ('toy',)),
+    'xe_do_choi': _i('fun', 'top', 1, 1, 25, 1, SMALL + OUT, 'Xe ô tô đồ chơi', '🚗', ('toy',)),
+    'rubik': _i('fun', 'top', 1, 1, 15, 1, SMALL, 'Khối rubik', '🟥', ('toy',)),
+    'cau_tuyet': _i('fun', 'top', 1, 1, 40, 1, SMALL, 'Quả cầu tuyết', '🔮'),
+    'dong_ho_bao_thuc': _i('fun', 'top', 1, 1, 20, 1, SMALL, 'Đồng hồ báo thức', '⏰'),
+    'sach_mo': _i('fun', 'top', 1, 1, 15, 1, SMALL + OUT, 'Chồng sách đang đọc', '📖', ('books',)),
+    # Bếp & ăn uống
+    'bep_ga': _i('bep', 'top', 1, 1, 110, 1, ('kitchen', 'studio'), 'Bếp ga đôi', '🔥', ('kitchen',)),
+    'treo_noi': _i('bep', 'wall', 2, 1, 40, 1, ('kitchen', 'studio'), 'Thanh treo nồi chảo', '🍳', ('kitchen',)),
+    'thot_dao': _i('bep', 'top', 1, 1, 20, 1, ('kitchen', 'studio'), 'Thớt gỗ và dao', '🔪', ('kitchen',)),
+    'may_xay': _i('bep', 'top', 1, 1, 70, 1, ('kitchen', 'studio'), 'Máy xay sinh tố', '🥤', ('kitchen',)),
+    'hu_dua': _i('bep', 'top', 1, 1, 15, 1, ('kitchen', 'studio'), 'Hũ dưa muối', '🫙', ('kitchen',)),
+    'may_ca_phe': _i('bep', 'top', 1, 1, 160, 2, ('kitchen', 'studio', 'living'), 'Máy pha cà phê', '☕', ('kitchen',)),
+    'dao_bep': _i('bep', 'floor', 2, 1, 190, 2, ('kitchen',), 'Đảo bếp gỗ', '🪵', ('table', 'kitchen'), surface=26),
+    'ghe_bar': _i('bep', 'floor', 1, 1, 60, 1, ('kitchen', 'living', 'studio'), 'Ghế quầy bar', '🪑', ('seat',)),
+    'ro_rau': _i('bep', 'floor', 1, 1, 35, 1, ('kitchen',) + OUT, 'Rổ rau củ', '🥕', ('kitchen',)),
+    'lo_nuong_banh': _i('bep', 'top', 1, 1, 120, 1, ('kitchen', 'studio'), 'Lò nướng bánh mini', '🧁', ('kitchen',)),
+    'ke_chen': _i('bep', 'wall', 2, 1, 45, 1, ('kitchen', 'studio'), 'Kệ treo chén đĩa', '🍽️', ('kitchen',)),
+    # Nhà tắm
+    'ke_my_pham': _i('bath', 'wall', 1, 1, 35, 1, BATH, 'Kệ mỹ phẩm', '🧴'),
+    'may_say_toc': _i('bath', 'top', 1, 1, 45, 1, BATH + ('bathc',) + SLEEP, 'Máy sấy tóc', '💨'),
+    'gio_giat': _i('bath', 'floor', 1, 1, 30, 1, BATH + SLEEP, 'Giỏ đựng đồ giặt', '🧺', ('towel',)),
+    'coc_ban_chai': _i('bath', 'top', 1, 1, 10, 1, BATH + ('bathc',), 'Cốc bàn chải', '🪥'),
+    'cay_truc': _i('plant', 'floor', 1, 1, 65, 2, IN + OUT + BATH + ('loft', 'pool'), 'Chậu trúc phát tài', '🎋', ('plant',)),
+    'tu_thuoc': _i('bath', 'wall', 1, 1, 50, 1, BATH, 'Tủ thuốc treo tường', '💊'),
+    # Ban công, sân vườn
+    'ghe_trung': _i('pool', 'floor', 1, 1, 180, 3, OUT + ('living',), 'Ghế trứng treo', '🪺', ('seat', 'soft')),
+    'chau_cuc': _i('plant', 'floor', 1, 1, 30, 1, OUT + ('pool',), 'Chậu cúc vạn thọ', '🌼', ('plant', 'flower')),
+    'bon_hoa': _i('plant', 'floor', 2, 1, 70, 2, OUT, 'Bồn hoa gỗ', '🌷', ('plant', 'flower')),
+    'ho_ca_koi': _i('pool', 'floor', 2, 1, 240, 3, ('yard',), 'Hồ cá koi mini', '🐟', ('water',)),
+    'ghe_dai': _i('pool', 'floor', 2, 1, 120, 2, OUT + ('pool',), 'Ghế dài công viên', '🪑', ('seat',)),
+    'den_bao': _i('light', 'top', 1, 1, 40, 1, SMALL + OUT + ('pool',), 'Đèn bão cổ', '🪔', ('lamp',)),
+    'nha_cho': _i('pool', 'floor', 1, 1, 130, 2, OUT, 'Nhà gỗ cho cún', '🐕', ('soft',)),
+    'binh_tuoi': _i('pool', 'top', 1, 1, 20, 1, OUT + ('pool',), 'Bình tưới cây', '🚿'),
 }
 LEGACY = tuple(ITEMS)[:27]          # the 1.2.0 catalogue (reno.py slots)
 KNOWN_132 = tuple(ITEMS)[:65]       # what a 1.3.2 build knows (the grid mirror only holds these)
 KNOWN_1419 = tuple(ITEMS)[:81]      # what 1.4.11–1.4.19 know (an older build keeps the others in reno.items, unshown)
+KNOWN_1715 = tuple(ITEMS)[:116]     # what 1.7.15 knows (the pieces after it wait in its bag, as above)
 
 
 # ---------------------------------------------------------------- rooms
@@ -312,10 +374,14 @@ SETS = {
     'hien': dict(emoji='🐦', name='Hiên nhà thong thả', bonus=2, need=(('bonsai',), ('long_chim',), ('ban_co_tuong', 'am_chen'))),
     'bep_moi': dict(emoji='🍱', name='Bếp tiện nghi', bonus=2, need=(('lo_vi_song',), ('am_sieu_toc',), ('chan_bat', 'tu_lanh_magnet'))),
     'mo': dict(emoji='🌙', name='Phòng ngủ mộng mơ', bonus=2, need=(('ban_trang_diem',), ('gau_bong_lon',), ('den_sao', 'man_tuyn'))),
+    # After 1.7.15
+    'choi': dict(emoji='🧸', name='Góc vui chơi', bonus=2, need=(('leu_choi', 'ngua_go'), ('tag', 'toy'), ('tag', 'soft'))),
+    'bep_nha': dict(emoji='🍳', name='Bếp nhà nấu', bonus=2, need=(('bep_ga',), ('thot_dao', 'treo_noi'), ('hu_dua', 'ro_rau', 'ke_chen'))),
+    'sao': dict(emoji='🌌', name='Đêm đầy sao', bonus=2, need=(('may_chieu',), ('den_trang', 'den_sao'), ('tag', 'bed'))),
 }
 # What a missing ('tag', t) entry is called in a hint ("Thiếu: một cây đèn").
 TAG_WORDS = {'desk': 'một cái bàn', 'lamp': 'một cây đèn', 'books': 'kệ sách', 'plant': 'một chậu cây', 'rug': 'một tấm thảm',
-             'soft': 'đồ bông mềm', 'bed': 'giường hoặc nệm', 'fabric': 'rèm', 'art': 'tranh, ảnh'}
+             'soft': 'đồ bông mềm', 'bed': 'giường hoặc nệm', 'fabric': 'rèm', 'art': 'tranh, ảnh', 'toy': 'một món đồ chơi'}
 
 
 # ---------------------------------------------------------------- the neighbours who drop by

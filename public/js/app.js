@@ -1,7 +1,7 @@
 /** Front-end orchestration. Economic rules live on the Python server, not in chat. */
 import {GameAPI} from './api.js';
 import {sellerVisitStrip,customerTaskBanner,visitCustomer,customerPortrait} from './v4/workplace-visit-ui.js';
-import {equipmentView,staffRefresh,staffRefreshPaused} from './v4/work-equipment.js';
+import {equipmentView,staffRefresh,staffRefreshPaused,scrollGuard} from './v4/work-equipment.js';
 import {suppressMediaGesture} from './v4/media-gestures.js';
 for(const event of ['contextmenu','dragstart','dblclick'])document.addEventListener(event,suppressMediaGesture);
 import {BobaWorld} from './boba-world.js';
@@ -217,6 +217,7 @@ function setHTML(el,html){if(el&&el._html!==html){if(el._html===undefined)el.inn
  * attribute wins (a fold the career opens for the current step and shuts after it). English mode: text the
  * i18n layer already translated from the same Vietnamese source is left alone. */
 const morphTpl=document.createElement('template');
+const sheetScroll=scrollGuard();   // the open sheet's scroll: redraws wait for a fling, inner lists keep their place
 const morphSame=(cur,src)=>cur===src||cur===i18nT(src);
 function morph(el,html){morphTpl.innerHTML=html;morphKids(el,morphTpl.content);morphTpl.innerHTML='';}
 function morphKids(from,to){
@@ -609,11 +610,12 @@ function renderSheet(preserve=true){
   const openedDetails=preserve?(list=>new Map(foldKeys(list).map((k,i)=>[k,list[i].open])))(folds()):null,scroll=preserve?dialog.scrollTop:0,active=document.activeElement,selection=active?.selectionStart;
   const fkey=el=>el.id||(el.name&&el.form?`${el.form.dataset.socForm||el.form.id||''}|${el.form.dataset.pid||el.form.dataset.post||el.form.dataset.id||''}|${el.name}`:null);
   const fields={};if(preserve)dialog.querySelectorAll('[data-preserve]').forEach(el=>{const k=fkey(el);if(k)fields[k]={value:el.value,checked:el.checked};});const focusKey=preserve&&active&&dialog.contains(active)?fkey(active):null;
+  sheetScroll.watch(dialog);if(!preserve)sheetScroll.reset();
   if(!preserve||fresh||box._html===undefined)box.innerHTML=html;else if(changed)morph(box,html);
   box._html=html;
   tickNow(env());document.dispatchEvent(new Event('sheetrender'));
   applyGuide(dialog);watchHead(dialog);
-  if(preserve){const now=folds(),keys=foldKeys(now);now.forEach((el,i)=>{const want=openedDetails.has(keys[i])?openedDetails.get(keys[i]):(el._mk??el.open);if(el.open!==want)el.open=want;el._mk=undefined;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});dialog.scrollTop=scroll;if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);el?.focus({preventScroll:true});try{el?.setSelectionRange(selection,selection);}catch{/* not a text input */}}}
+  if(preserve){const now=folds(),keys=foldKeys(now);now.forEach((el,i)=>{const want=openedDetails.has(keys[i])?openedDetails.get(keys[i]):(el._mk??el.open);if(el.open!==want)el.open=want;el._mk=undefined;});dialog.querySelectorAll('[data-preserve]').forEach(el=>{const data=fields[fkey(el)];if(data){el.value=data.value;if(el.type==='checkbox')el.checked=data.checked;}});if(dialog.scrollTop!==scroll)dialog.scrollTop=scroll;sheetScroll.restore(dialog);if(focusKey){const el=[...dialog.querySelectorAll('[data-preserve],input,textarea,select')].find(x=>fkey(x)===focusKey);el?.focus({preventScroll:true});try{el?.setSelectionRange(selection,selection);}catch{/* not a text input */}}}
   if(!preserve)dialog.scrollTop=0;
   if(ui.view==='chat'){$('#messages')?.scrollTo(0,$('#messages').scrollHeight);}
 }
@@ -1497,7 +1499,7 @@ document.addEventListener('change',async e=>{
 window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').open&&!$('#confirmDialog').open&&api.state?.current){setPaused(!ui.paused);}});
 // Back in the tab: re-sync, unless the state is fresh anyway (every focus used to refetch and re-render all).
 window.addEventListener('focus',()=>{if(api.state&&!ui.busy&&!(ui.view==='home'&&ui.jrView==='invest')&&Date.now()-(api.syncedAt||0)>15000)api.refresh().catch(()=>{});});
-const stopStaffRefresh=staffRefresh({state:()=>api.state,refresh:()=>api.refresh(),busy:()=>staffRefreshPaused(ui,!!document.querySelector('dialog.qy-sheet[open]'),!!document.querySelector('dialog.fh-sheet[open]')),lastSync:()=>api.syncedAt||0});
+const stopStaffRefresh=staffRefresh({state:()=>api.state,refresh:()=>api.refresh(),busy:()=>staffRefreshPaused(ui,!!document.querySelector('dialog.qy-sheet[open]'),!!document.querySelector('dialog.fh-sheet[open]'))||sheetScroll.busy(),lastSync:()=>api.syncedAt||0});
 window.addEventListener('pagehide',event=>{if(!event.persisted)stopStaffRefresh();});
 let responsiveTimer;
 window.addEventListener('resize',()=>{clearTimeout(responsiveTimer);responsiveTimer=setTimeout(()=>{if(api.state&&api.content)renderMain();},140);});
@@ -1507,7 +1509,8 @@ window.addEventListener('layoutchange',()=>{world.resize();if(api.state&&api.con
 /* A workbench showing picks ahead of the server (milk tea: module.settling) skips drawing its sheet for an answer that
  * another queued answer follows: the sheet shows those picks already, and the last answer draws it. */
 const settling=()=>{if(ui.view!=='job')return false;try{return !!careerUI(career())?.settling?.(careerContext(env()));}catch{return false;}};
-api.addEventListener('state',()=>{syncOlder(api.revision);ensureCareerUI();renderMain();if(ui.view&&!settling())renderSheet();shell.update(env());});
+// While the player scrolls the open sheet, its redraw waits for the scroll to settle (work-equipment.js scrollGuard).
+api.addEventListener('state',()=>{syncOlder(api.revision);ensureCareerUI();renderMain();if(ui.view&&!settling()){if(sheetScroll.busy())sheetScroll.later(()=>{if(ui.view&&!settling())renderSheet();});else renderSheet();}shell.update(env());});
 api.addEventListener('busy',e=>{ui.busy=e.detail;document.body.classList.toggle('busy',ui.busy);$('#saveState')?.setAttribute('aria-busy',String(ui.busy));if(!ui.busy&&heldTap)setTimeout(replayHeld,60);else if(!ui.busy)holdMark(null);});
 /* "Game mất chữ": an iPhone tab left open across a deploy came back with every card of the work sheet
  * blank (containers, portrait and button shapes drawn, no words) while the DOM still held the text.

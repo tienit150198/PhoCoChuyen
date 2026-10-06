@@ -74,8 +74,24 @@ OWNED_MAX = 64
 LAYER_RANK = {'rug': 0, 'wall': 1, 'floor': 2, 'top': 3}
 PIECE_KEYS = ('r', 'x', 'y', 'f')  # every placed piece
 PIECE_OPT = ('on', 'z', 'face')    # face is exposed in commands/views, saved separately for older readers
-FACING_ITEMS = ('tv', 'sofa')
+# ↻ Xoay hướng (front/back). tv and sofa since 1.7.x: their facing lives in journey.decor_faces, which a 1.7.15 build
+# checks against exactly these two. Every other piece that has a back to show (góp ý #192) keeps its facing in
+# journey.decor_turn {v, items {uid: 'back'}}, a key a 1.7.15 build ignores (it just draws the front).
+FACES_OLD = ('tv', 'sofa')
+FACING_ITEMS = FACES_OLD + (
+    'giuong', 'ban_lam_viec', 'ban_hoc', 'ban_gaming', 'ghe_hoc', 'ghe_gaming', 'ghe_may', 'tu_quan_ao', 'ke_sach',
+    'tu_lanh', 'tu_lanh_magnet', 'may_giat', 'ban_trang_diem', 'chan_bat', 'quat',
+    'sofa_don', 'ke_tivi', 'ghe_bap_benh', 'piano', 'giuong_don', 'tu_ngan_keo', 'guong_dung', 'ghe_bar', 'ghe_dai',
+    'dao_bep', 'leu_choi', 'nha_cho')
 FACES_VERSION = 1
+TURN_VERSION = 1
+# Room cap (góp ý #192, chat 06/10): a room takes ROOM_GROW × what 1.7.15 allowed (old_cap). journey.decor and
+# journey.decor_new keep at most old_cap pieces a room (exactly what a 1.7.15 build's checks accept, so a rolling
+# deploy or a rollback never refuses the save); the pieces past it ride in journey.decor_more {v, at, items}, which
+# a 1.7.15 build ignores (it shows them in its bag; nothing is lost).
+ROOM_GROW = (3, 2)
+MORE_KEYS = {'v', 'at', 'items'}
+MORE_VERSION = 1
 _ID = re.compile(r'^[a-z0-9_]{1,24}$')
 _KEY = re.compile(r'^[a-z0-9_:]{1,48}$')
 _ON = re.compile(r'^#?[a-z0-9_]{1,24}$')
@@ -131,6 +147,13 @@ def get_new(s: dict) -> dict | None:
     (it keeps them in its bag; the key itself it ignores). {v, at (the place), items {uid: piece}}; absent when empty."""
     j = s.get('journey')
     X = j.get('decor_new') if isinstance(j, dict) else None
+    return X if isinstance(X, dict) else None
+
+
+def get_more(s: dict) -> dict | None:
+    """journey.decor_more: the pieces placed past a room's 1.7.15 cap (see ROOM_GROW); absent when none."""
+    j = s.get('journey')
+    X = j.get('decor_more') if isinstance(j, dict) else None
     return X if isinstance(X, dict) else None
 
 
@@ -344,9 +367,14 @@ def _ff(f: dict) -> dict:
     return DC.FIX_FREE.get(f['t'], {})
 
 
-def room_cap(room: dict) -> int:
-    """How many pieces one room takes (small things on tables count too)."""
+def old_cap(room: dict) -> int:
+    """How many pieces one room took up to 1.7.15 (what journey.decor / journey.decor_new hold at most a room)."""
     return room['cols'] * (room['wrows'] + room['frows']) + 4
+
+
+def room_cap(room: dict) -> int:
+    """How many pieces one room takes (small things on tables count too): 1.5 × the 1.7.15 cap."""
+    return old_cap(room) * ROOM_GROW[0] // ROOM_GROW[1]
 
 
 def zone(room: dict, k: str) -> tuple[int, int] | None:
@@ -397,7 +425,7 @@ def host_of(room: dict, on: str, pos: dict, kinds: dict) -> dict | None:
     return None
 
 
-def check(room: dict, k: str, q: dict, pos: dict, kinds: dict) -> tuple[str, str] | None:
+def check(room: dict, k: str, q: dict, pos: dict, kinds: dict, cap=room_cap) -> tuple[str, str] | None:
     """Can a piece of kind `k` stand at `q` in `room` among `pos` (itself left out)? None, or (code, what is in the
     way: '#fixture', a uid or '')."""
     it = ITEMS[k]
@@ -423,7 +451,7 @@ def check(room: dict, k: str, q: dict, pos: dict, kinds: dict) -> tuple[str, str
         b = blocked(room, k, x, y)
         if b:
             return ('fixture', '#' + b)
-    if sum(1 for v in pos.values() if v['r'] == room['id']) >= room_cap(room):
+    if sum(1 for v in pos.values() if v['r'] == room['id']) >= cap(room):
         return ('room_full', '')
     return None
 
@@ -433,16 +461,21 @@ def _rank(k: str, q: dict) -> int:
     return 4 if q.get('on') else LAYER_RANK.get(spot, 9)
 
 
-def settle_free(rooms: list, kinds: dict, pos: dict, order: list) -> tuple[dict, list]:
+def free_order(kinds: dict, pos: dict, order: list) -> list:
+    """The order settle_free checks pieces in (a 1.7.15 build uses the same): rugs, walls, floor, small things."""
+    idx = {u: i for i, u in enumerate(order)}
+    return sorted(pos, key=lambda u: (_rank(kinds.get(u), pos[u]), idx.get(u, len(idx))))
+
+
+def settle_free(rooms: list, kinds: dict, pos: dict, order: list, cap=room_cap) -> tuple[dict, list]:
     """Keep what may stand where it is, in order (rugs, walls, floor, small things on the floor, then on surfaces):
     (kept, the uids left out). Each piece is checked against those kept before it."""
-    idx = {u: i for i, u in enumerate(order)}
     rs = {r['id']: r for r in rooms}
     kept, out = {}, []
-    for uid in sorted(pos, key=lambda u: (_rank(kinds.get(u), pos[u]), idx.get(u, len(idx)))):
+    for uid in free_order(kinds, pos, order):
         q = pos[uid]
         k = kinds.get(uid)
-        if k not in ITEMS or q['r'] not in rs or q['f'] not in (0, 1) or check(rs[q['r']], k, q, kept, kinds):
+        if k not in ITEMS or q['r'] not in rs or q['f'] not in (0, 1) or check(rs[q['r']], k, q, kept, kinds, cap):
             out.append(uid)
             continue
         kept[uid] = q
@@ -582,6 +615,9 @@ def layout(s: dict) -> dict:
     X = get_new(s)
     if X is not None and X['at'] == pl['key']:   # the new rooms' pieces (a piece an older build has placed since: its spot)
         pos.update({u: dict(v) for u, v in X['items'].items() if u in kinds and u not in pos})
+    M = get_more(s)
+    if M is not None and M['at'] == pl['key']:   # the pieces past a room's 1.7.15 cap (ROOM_GROW)
+        pos.update({u: dict(v) for u, v in M['items'].items() if u in kinds and u not in pos})
     faces = _faces(j)
     for u, q in pos.items():
         if faces.get(u) == 'back' and kinds.get(u) in FACING_ITEMS:
@@ -591,9 +627,14 @@ def layout(s: dict) -> dict:
 
 
 def _faces(j: dict) -> dict:
-    """Facing travels with a piece, including while it is in the bag. Older layout blocks keep their exact shape."""
-    b = j.get('decor_faces')
-    return b['items'] if isinstance(b, dict) and isinstance(b.get('items'), dict) else {}
+    """Facing travels with a piece, including while it is in the bag. Older layout blocks keep their exact shape:
+    tv and sofa in journey.decor_faces, every other piece in journey.decor_turn (see FACES_OLD)."""
+    out = {}
+    for key in ('decor_faces', 'decor_turn'):
+        b = j.get(key)
+        if isinstance(b, dict) and isinstance(b.get('items'), dict):
+            out.update(b['items'])
+    return out
 
 
 def _match(need: tuple, items: list, tags: tuple) -> tuple[int, list]:
@@ -713,7 +754,7 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     pl = place(j)
     D = get_free(s)
     if d['at'] != pl['key']:
-        if d['pos'] or (D is not None and D['items']):
+        if d['pos'] or (D is not None and D['items']) or get_more(s) is not None:
             notes.append('📦 Chuyển chỗ ở rồi: đồ trang trí đã gói vào túi đồ, vào bày lại phòng mới nhé!')
         d['at'], d['pos'] = pl['key'], {}
     if D is not None and D['at'] != pl['key']:
@@ -721,6 +762,9 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     X = get_new(s)
     if X is not None and X['at'] != pl['key']:
         j.pop('decor_new')
+    M = get_more(s)
+    if M is not None and M['at'] != pl['key']:
+        j.pop('decor_more')
     target = int(j['life_day'])
     d['day'] = max(d['day'], target - CATCHUP)
     if d['day'] < target:
@@ -753,7 +797,8 @@ _WHY = {
     'support': '{it} chỉ đặt lên bàn, kệ, giường hoặc sàn trống thôi.',
     'fixture': 'Chỗ này vướng {other}.',
     'host_full': 'Trên {other} hết chỗ rồi. Đặt chỗ khác nhé.',
-    'room_full': '{room} bày đủ {cap} món rồi. Thu hồi bớt món khác nhé.',
+    'room_full': '{room} đã bày đủ {cap} món, mức tối đa của phòng này. Muốn bày thêm: cất bớt món ít dùng vào túi đồ, '
+                 'bày sang phòng khác, hoặc dọn về nhà rộng hơn (phòng càng rộng càng bày được nhiều).',
 }
 FIX_NAMES = {'door': 'cửa ra vào', 'window': 'cửa sổ', 'counter': 'kệ bếp', 'splash': 'tường bếp', 'slope': 'mái gác',
              'ladder': 'cầu thang', 'pillow': 'cái gối', 'shelf': 'kệ đầu giường', 'shower': 'vòi sen', 'toilet': 'bồn cầu',
@@ -799,24 +844,47 @@ def _store(d: dict, D: dict, L: dict, pos: dict) -> None:
             faces[u] = 'back'
         else:
             faces.pop(u, None)
-    if faces:
-        j['decor_faces'] = dict(v=FACES_VERSION, items=faces)
-    else:
-        j.pop('decor_faces', None)
+    for key, part, ver in (('decor_faces', {u: v for u, v in faces.items() if L['kinds'][u] in FACES_OLD}, FACES_VERSION),
+                           ('decor_turn', {u: v for u, v in faces.items() if L['kinds'][u] not in FACES_OLD}, TURN_VERSION)):
+        if part:
+            j[key] = dict(v=ver, items=part)
+        else:
+            j.pop(key, None)
     L['faces'] = faces
     saved = {u: {k: v for k, v in q.items() if k != 'face'} for u, q in pos.items()}
     new = {r['id'] for r in L['rooms'] if r.get('new')}
-    D['items'] = {u: saved[u] for u in L['order'] if u in pos and pos[u]['r'] not in new}
-    xs = {u: saved[u] for u in L['order'] if u in pos and pos[u]['r'] in new}
+    more = past_old_cap(L['rooms'], L['kinds'], saved, L['order'])
+    D['items'] = {u: saved[u] for u in L['order'] if u in pos and pos[u]['r'] not in new and u not in more}
+    xs = {u: saved[u] for u in L['order'] if u in pos and pos[u]['r'] in new and u not in more}
     if xs:
         j['decor_new'] = dict(v=NEW_VERSION, at=L['place']['key'], items=xs)
     else:
         j.pop('decor_new', None)
+    ms = {u: saved[u] for u in L['order'] if u in more}
+    if ms:
+        j['decor_more'] = dict(v=MORE_VERSION, at=L['place']['key'], items=ms)
+    else:
+        j.pop('decor_more', None)
     L['pos'] = {u: dict(pos[u]) for u in L['order'] if u in pos}
     g = to_grid(L['rooms'], L['kinds'], D['items'], L['order'])
     d['pos'] = {u: list(g[u]) for u in L['order'] if u in g}
     D['sig'] = sig(d['pos'])
     d['stats']['best'] = max(d['stats']['best'], points(L)['total'])
+
+
+def past_old_cap(rooms: list, kinds: dict, pos: dict, order: list) -> set:
+    """The pieces a 1.7.15 build would leave out for its room cap: per room, those after the first old_cap in the
+    order its checks run (free_order). Small things on a surface come after every surface, so a piece that stays
+    never stands on one that goes."""
+    rs = {r['id']: r for r in rooms}
+    n, out = {}, set()
+    for u in free_order(kinds, pos, order):
+        r = pos[u]['r']
+        if r in rs and n.get(r, 0) >= old_cap(rs[r]):
+            out.add(u)
+        else:
+            n[r] = n.get(r, 0) + 1
+    return out
 
 
 def _int(p: dict, key: str, default=None):
@@ -1325,12 +1393,13 @@ def upgrade(j: dict) -> None:
     r = j.get('reno') if isinstance(j, dict) else None
     items = r.get('items') if isinstance(r, dict) else None
     kinds = {it['id']: it['k'] for it in items if isinstance(it, dict) and isinstance(it.get('id'), str)} if isinstance(items, list) else {}
-    F = j.get('decor_faces') if isinstance(j, dict) else None
-    if isinstance(F, dict) and isinstance(F.get('items'), dict):
-        for u in [u for u in F['items'] if u not in kinds]:
-            F['items'].pop(u)
-        if not F['items']:
-            j.pop('decor_faces', None)
+    for key in ('decor_faces', 'decor_turn'):
+        F = j.get(key) if isinstance(j, dict) else None
+        if isinstance(F, dict) and isinstance(F.get('items'), dict):
+            for u in [u for u in F['items'] if u not in kinds]:
+                F['items'].pop(u)
+            if not F['items']:
+                j.pop(key, None)
     if isinstance(d, dict) and isinstance(d.get('stats'), dict) and isinstance(d.get('pos'), dict):
         for k in STATS:
             d['stats'].setdefault(k, 0)
@@ -1360,6 +1429,18 @@ def upgrade(j: dict) -> None:
                 X['items'].pop(u)
         if not X['items']:
             j.pop('decor_new')
+    M = j.get('decor_more') if isinstance(j, dict) else None
+    if isinstance(M, dict) and isinstance(M.get('items'), dict):
+        placed = set(D['items']) if isinstance(D, dict) and isinstance(D.get('items'), dict) else set()
+        placed |= set(X['items']) if isinstance(X, dict) and isinstance(X.get('items'), dict) else set()
+        for u in [u for u in M['items'] if u not in kinds or u in placed]:   # sold, or placed by an older build since
+            M['items'].pop(u)
+        hosts = placed | set(M['items'])
+        for u, v in list(M['items'].items()):
+            if isinstance(v, dict) and isinstance(v.get('on'), str) and v['on'] and v['on'][0] != '#' and v['on'] not in hosts:
+                M['items'].pop(u)
+        if not M['items']:
+            j.pop('decor_more')
 
 
 def _piece_ok(v) -> bool:
@@ -1391,8 +1472,16 @@ def validate(s: dict) -> None:
         bad = 'Hướng nhìn đồ đạc trong bản lưu không hợp lệ.'
         need(isinstance(F, dict) and set(F) == {'v', 'items'} and type(F['v']) is int and F['v'] == FACES_VERSION
              and isinstance(F['items'], dict), bad, 'invalid_save')
-        need(all(u in kinds and kinds[u] in FACING_ITEMS and isinstance(v, str) and v == 'back'
+        need(all(u in kinds and kinds[u] in FACES_OLD and isinstance(v, str) and v == 'back'
                  for u, v in F['items'].items()), bad, 'invalid_save')
+    if j.get('decor_turn') is not None:
+        F = j['decor_turn']
+        bad = 'Hướng nhìn đồ đạc trong bản lưu không hợp lệ.'
+        need(isinstance(F, dict) and set(F) == {'v', 'items'} and type(F['v']) is int and F['v'] == TURN_VERSION
+             and isinstance(F['items'], dict) and bool(F['items']), bad, 'invalid_save')
+        # a newer build may turn a piece this one does not know; a known piece must be one that turns
+        need(all(u in kinds and (kinds[u] in FACING_ITEMS or kinds[u] not in ITEMS) and kinds[u] not in FACES_OLD
+                 and isinstance(v, str) and v == 'back' for u, v in F['items'].items()), bad, 'invalid_save')
     if j.get('deco') is not None:
         d = j['deco']
         bad = 'Dữ liệu bày trí phòng không hợp lệ.'
@@ -1433,7 +1522,7 @@ def validate(s: dict) -> None:
         if rooms is not None and all(kinds[u] in ITEMS for u in D['items']):   # a newer build's pieces or place: shape only
             new = {r['id'] for r in rooms if r.get('new')}
             need(not any(v['r'] in new for v in D['items'].values()), bad)
-            _kept, out = settle_free(rooms, kinds, D['items'], list(kinds))
+            _kept, out = settle_free(rooms, kinds, D['items'], list(kinds), old_cap)   # what 1.7.15 accepts
             need(not out, bad)
     if j.get('decor_new') is not None:
         X = j['decor_new']
@@ -1449,5 +1538,23 @@ def validate(s: dict) -> None:
         if rooms is not None and all(kinds[u] in ITEMS for u in X['items']):
             new = {r['id'] for r in rooms if r.get('new')}
             need(all(v['r'] in new for v in X['items'].values()), bad)
-            _kept, out = settle_free(rooms, kinds, X['items'], list(kinds))
+            _kept, out = settle_free(rooms, kinds, X['items'], list(kinds), old_cap)
+            need(not out, bad)
+    if j.get('decor_more') is not None:
+        M = j['decor_more']
+        bad = 'Dữ liệu bày trí phòng không hợp lệ.'
+        need(isinstance(M, dict) and set(M) == MORE_KEYS and M['v'] == MORE_VERSION, bad, 'invalid_save')
+        need(isinstance(M['at'], str) and _KEY.match(M['at']), bad)
+        need(isinstance(M['items'], dict) and bool(M['items']), bad)
+        others = {}
+        for key in ('decor', 'decor_new'):
+            B = j.get(key)
+            if isinstance(B, dict) and B.get('at') == M['at']:
+                others.update(B['items'])
+        for uid, v in M['items'].items():
+            need(uid in kinds and uid not in others and _piece_ok(v), bad)
+        rooms = rooms_of(M['at'])
+        every = {**others, **M['items']}
+        if rooms is not None and all(kinds[u] in ITEMS for u in every):   # the whole room, at today's cap
+            _kept, out = settle_free(rooms, kinds, every, list(kinds))
             need(not out, bad)
