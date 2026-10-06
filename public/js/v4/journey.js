@@ -31,18 +31,13 @@ const TW=lazy(()=>import('./town-walk.js'),{css:['/css/town.css']});
  * the layout choice (localStorage). ui.homeMode: the other one opened for now ("📋 Danh sách" on the town, "🗺️ Bản đồ
  * phố" on the list or the menu); the "Hành trình" entry clears it. A browser without canvas keeps the list. */
 const HOME_KEY='mnl.home';
-let homeDefault='town';
-/** 🏝️ The island is the map, so the home sheet opens as the list unless this device chose the map. */
-export function homeListFirst(){homeDefault='list';}
-/** 🏝️ After the intro a new player lands on the island (iso-guide.js landNewPlayer), no job is picked here. */
-let isoLand=null;
-export function onIsoLand(fn){isoLand=fn;}
-export const homePref=()=>{try{const v=localStorage.getItem(HOME_KEY);return v==='list'||v==='town'?v:homeDefault;}catch{return homeDefault;}};
+export const homePref=()=>{try{return localStorage.getItem(HOME_KEY)==='list'?'list':'town';}catch{return 'town';}};
 export function setHomePref(v){try{localStorage.setItem(HOME_KEY,v==='list'?'list':'town');}catch{/* storage blocked */}}
 let canvasOK=null;
-/** 🏝️ The old 2D Khu phố map (v4/town-walk.js) is not shown since the 2.5D island became the map: the home sheet is
- * the list. Kept as a function so its callers stay as they are. */
-export function townOK(){return false;}
+export function townOK(){
+  if(canvasOK===null){try{canvasOK=!!document.createElement('canvas').getContext('2d')&&typeof ResizeObserver==='function';}catch{canvasOK=false;}}
+  return canvasOK;
+}
 const townWanted=ui=>townOK()&&(ui.homeMode||homePref())==='town';
 /** Does the home sheet show the town now? (app.js gives the sheet its fixed height then) */
 export function townOn(env){
@@ -308,7 +303,7 @@ function introView(env){
   const {api,ui}=env,J=api.state.journey,C=api.content.journey,ch=C.chapters[0];
   const ids=ch.unlocks.filter(id=>api.state.careers[id]);
   const rec=ids.includes(FIRST_JOB)?FIRST_JOB:ids[0],job=ids.includes(ui.jrJob)?ui.jrJob:rec;
-  const pick=ui.jrGender||J.gender||'',town=Boolean(isoLand)||townWanted(ui);   // 🗺️ the town is the way in: no job to pick here
+  const pick=ui.jrGender||J.gender||'',town=townWanted(ui);   // 🗺️ the town is the way in: no job to pick here
   const card=(g,label)=>`<button type="button" class="jr-gender ${pick===g?'active':''}" data-action="jrGender" data-gender="${g}" aria-pressed="${pick===g}">${avatar(g,64)}<b>${label}</b></button>`;
   const chip=id=>{const m=meta(api,id),on=id===job;
     return `<button type="button" class="onb-job ${on?'active':''} ${id===rec?'rec':''}" data-action="jrJob" data-career="${esc(id)}" aria-pressed="${on}" style="--career:${colour(m.color)}"><span aria-hidden="true">${emojiOf(m)}</span>${esc(jobLabel(m))}${id===rec?'<small>hợp người mới</small>':''}</button>`;};
@@ -580,7 +575,6 @@ export async function journeySubmit(f,env){
     const r=await cmd('jr_profile',{name,gender});
     if(!r){if(btn)btn.disabled=false;return true;}
     ui.jrGender=null;
-    if(isoLand){ui.jrJob=null;isoLand(env);return true;}   // 🏝️ onto the 2.5D island
     if(town){ui.jrJob=null;renderSheet(false);return true;}   // 🗺️ into the town: the lit shops show where to start
     const ids=api.content.journey.chapters[0].unlocks.filter(id=>api.state.careers[id]);
     const job=ids.includes(ui.jrJob)?ui.jrJob:ids.includes(FIRST_JOB)?FIRST_JOB:ids[0];ui.jrJob=null;

@@ -1,3 +1,8 @@
+# v1.9.2 — 2026-10-06: giao diện cũ trở lại
+
+- 🎨 Theo chủ game: giao diện cổ điển (bản đồ phố 2D, cảnh từng tiệm, như 1.8.1) là giao diện mặc định. Máy chủ giữ nguyên 1.9.1 (quầy có nhân viên +50%, sửa tip kế toán ngày 1, dữ liệu Thư giãn trên đảo vẫn được giữ). Đảo 2.5D sẽ quay lại dưới dạng tuỳ chọn ở bản sau.
+- Có gì mới: thay mục 1.9.0 (đảo 2.5D) bằng 1.9.2: giao diện quen thuộc, quầy +50%.
+
 # v1.9.1 — 2026-10-06 (hotfix)
 
 - Người chơi mới thi đạt kế toán ngày 1 rồi làm Kế toán doanh nghiệp / tập đoàn: nộp việc đầu tiên bị từ chối "Kết quả tip của công việc sai." (lời chào việc đầu thành tip 0 xu ở nghề không có tip tiền). Giờ là một món quà. Không có "Có gì mới".

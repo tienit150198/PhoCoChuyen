@@ -37,9 +37,7 @@
     if(typeof url!=='string'||!/^\/(js|css)\/[\w\-/]+\.(js|css)$/.test(url)||asset(url)===url)continue;
     hint(asset(url),url.endsWith('.js')?'script':'style');
   }};
-  try{const warm=JSON.parse(store('mnl.warm')||'[]');warmUp(Array.isArray(warm)?warm.slice(0,6):[]);}catch{/* no hint */}
-  // 🏝️ The island's Phaser bundle (~360 KB gz): fetched now, behind the first frame's files; run after the first frame.
-  try{const u=asset('/js/isometric/phaser-world.js');if(u!=='/js/isometric/phaser-world.js'){const l=d.createElement('link');l.rel='modulepreload';l.href=u;l.fetchPriority='low';d.head.append(l);}}catch{/* no hint */}
+  try{const warm=JSON.parse(store('mnl.warm')||'[]');warmUp([...(Array.isArray(warm)?warm.slice(0,6):[]),store('mnl.scene')]);}catch{/* no hint */}
   B.response?.then(r=>{
     B.got=Date.now();   // when its headers came in: api.js clockSample
     const place=r.headers.get('X-Game-Place')||'';

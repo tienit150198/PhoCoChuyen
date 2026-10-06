@@ -49,9 +49,7 @@ class PageAndContentTests(unittest.TestCase):
         self.assertLess(html.index('type="importmap"'),html.index('type="module"'))
         # Every static import of app.js is preloaded in one round.
         preloaded={u.split('?')[0] for u in re.findall(r'rel="modulepreload" href="([^"]+)"',html)}
-        self.assertTrue({'/js/api.js','/js/iso-boot.js','/js/isometric-shell.js','/js/v4/journey.js','/js/v4/stories.js'}<=preloaded)
-        self.assertNotIn('/js/boba-world.js',preloaded,'2.5D only: the old canvas world is not loaded')
-        self.assertNotIn('/js/isometric/phaser-world.js',preloaded,'Phaser is fetched at low priority by boot.js, run after the first frame')
+        self.assertTrue({'/js/api.js','/js/world.js','/js/v4/journey.js','/js/v4/stories.js'}<=preloaded)
         # 304 on revalidation.
         self.assertEqual(self.req('/',{'If-None-Match':h['ETag']})[0],304)
 
@@ -112,7 +110,7 @@ class PageAndContentTests(unittest.TestCase):
     def test_bootstrap_names_the_first_workplace_to_preload(self):
         _,h,body=self.req('/api/bootstrap?lite=1');view=json.loads(body)['state']
         place=view.get('current') or view.get('focus')
-        warm=[u for u in h.get('X-Game-Warm','').split(',') if u];self.assertFalse(any(u.startswith('/js/scenes/') for u in warm),warm)   # 🏝️ the island draws the workplace: no canvas scene
+        warm=h.get('X-Game-Warm','').split(',');self.assertTrue(warm[0].startswith('/js/scenes/'),warm)
         _,html=self.page();imap=json.loads(re.search(r'<script type="importmap">(.*?)</script>',html,re.S).group(1))['imports']
         preloaded={u.split('?')[0] for u in re.findall(r'rel="modulepreload" href="([^"]+)"',html)}
         for path in warm:self.assertIn(path,imap);self.assertNotIn(path,preloaded,'already in the first round')
@@ -195,11 +193,11 @@ class DeployTests(unittest.TestCase):
         mini='import{a as b}from"./x.js";import"./side.js";export*from"../y.js";export{c as d}from"./z.js";const m=import("./lazy.js");export const s="./not.js";'
         self.assertEqual(sorted(module_imports(mini)),['../y.js','./side.js','./x.js','./z.js'])
 
-    def test_career_warm_lists_workbench_and_stylesheets(self):
+    def test_career_warm_lists_scene_workbench_and_stylesheets(self):
         warm=WebAssets(PUBLIC,"script-src 'self'",lambda:'c').snapshot().warm
-        self.assertEqual(warm['milk_tea'].split(','),['/js/careers/milk_tea.js','/js/careers/food_kit.js','/js/careers/tomorrow_kit.js','/css/careers/milk_tea.css'])
+        self.assertEqual(warm['milk_tea'].split(','),['/js/scenes/teabar.js','/js/scenes/backroom.js','/js/scenes/interior.js','/js/careers/milk_tea.js','/js/careers/food_kit.js','/js/careers/tomorrow_kit.js','/css/careers/milk_tea.css'])
         self.assertEqual(warm['restaurant'].split(',')[-2:],['/css/careers/food_kit.css','/css/careers/restaurant.css'],'the kit before the career sheet')
-        self.assertFalse(any('/js/scenes/' in v for v in warm.values()),'no BobaWorld scene is warmed (2.5D only)')
+        self.assertEqual(warm['teacher'],'/js/scenes/classroom.js')
         self.assertEqual(set(warm),set(webassets.js_table((PUBLIC/'js/scenes/index.js').read_text(),'KIND_OF')))
 
 

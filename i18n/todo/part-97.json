@@ -1,9 +1,5 @@
 [
  {
-  "vi": "bên trái đường tiếp cận",
-  "en": ""
- },
- {
   "vi": "bên phải đường tiếp cận",
   "en": ""
  },
@@ -1797,6 +1793,10 @@
  },
  {
   "vi": "Gọi bộ đàm từng đội",
+  "en": ""
+ },
+ {
+  "vi": "Đánh dấu đội tạm ngưng",
   "en": ""
  }
 ]
