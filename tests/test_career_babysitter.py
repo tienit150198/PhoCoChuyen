@@ -247,7 +247,10 @@ class Arrive(Base):
             with self.subTest(family=fid):
                 day,slot=find('arrive',days=range(1,150),pred=lambda t:t['needs']['fam']==fid)
                 t=self.at(day,slot);tid=t['id'];right=BM.TEMPERS[self.fam(t)['temper']][2]
-                self.j.act('bm_greet',task=tid,greet='grab')
+                miss=self.j.act('bm_greet',task=tid,greet='grab')
+                # The refusal names the child's temper (players could not tell which greeting fits), never the greeting.
+                self.assertIn(BM.TEMPERS[self.fam(t)['temper']][1],miss['message'])
+                self.assertNotIn(BM.GREETS[right][1],miss['message'])
                 self.assertTrue(self.j.act('bm_greet',task=tid,greet=right)['correct'])
                 with self.assertRaises(GameError):self.j.act('bm_greet',task=tid,greet='grab')
 

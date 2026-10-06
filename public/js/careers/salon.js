@@ -251,12 +251,30 @@ function consult(t,x){
     ${tests.length?`<div class="sl-tests"><h5 class="sl-sub">Thử & soi trước khi làm</h5><div class="stack">${tests.join('')}</div></div>`:''}${cta}`;
 }
 
+/** Over the budget (1.7.16, góp ý #199): four ways to talk. The client's stretch stays hidden; mood narrows it. */
+function talkBox(t,x){
+  const k=t.talk;if(!k)return '';
+  if(k.state!=='open'){
+    const put=(k.drop||[]).map(s=>svc(x,s).name.toLowerCase()).join(', ');
+    const line={raised:`🙂 Khách đồng ý nâng ngân sách lên ${x.money(k.budget)}.`,off:`🏷️ Đã hứa bớt ${x.money(k.off)} khi thanh toán.`,swap:`💡 Khách đồng ý dời ${x.esc(put)} sang lần sau — bỏ ra rồi chốt lại.`}[k.state];
+    return line?`<p class="sl-note">${line}</p>`:'';
+  }
+  const v=t.talk_view||{};
+  return `<section class="sl-talk"><h5 class="sl-sub">💬 Báo giá ${x.money(k.over)} — khách chỉ mang ${x.money(v.budget??0)}</h5>
+    <p class="small">Mỗi khách rộng tay một kiểu: hỏi chuyện, xem tính khách rồi chọn cách nói.</p>
+    <div class="stack">${x.cmd('💡 Giải thích giá, gợi ý dời bớt dịch vụ','sl_talk',{task:t.id,answer:'swap'},'ghost full')}
+    ${x.cmd(v.asked?'🙏 Nài thêm lần nữa (khách đã từ chối)':'🙏 Xin khách thêm ngân sách','sl_talk',{task:t.id,answer:'raise'},'ghost full')}
+    ${x.cmd(`🏷️ Bớt ${x.money(v.off??0)} cho vừa`,'sl_talk',{task:t.id,answer:'discount'},'ghost full',v.off_ok===false)}
+    ${v.off_ok===false?'<p class="small muted">Bớt quá 20% báo giá — tiệm không cho.</p>':v.small===false?'<p class="small muted">Bớt hơi nhiều: tiệm chịu phần lỗ này.</p>':''}
+    ${x.confirmCmd('🙅 Nói thật: hôm nay chưa làm vừa túi tiền','sl_talk',{task:t.id,answer:'decline'},'Khách sẽ về, không làm gì hôm nay. Chắc chưa?','ghost full')}</div></section>`;
+}
 function planPanel(t,x){
   const u=ui(x,t),n=t.needs;
   if(started(t)&&t.plan)return `<p>${t.plan.services.map(s=>`${svc(x,s).emoji} ${x.esc(svc(x,s).name)}`).join(' · ')}</p><p class="small muted">${t.plan.sessions>1?`Lộ trình ${t.plan.sessions} buổi — hôm nay là buổi 1.`:'Làm trong một buổi.'} Báo giá ${x.money(t.quote)}.</p>`;
   const tiles=x.cc.services.map(s=>{
     const on=u.services.includes(s.id),asked=n.services.includes(s.id),advise=!asked&&s.id==='treatment'&&t.weak;
-    return `<button type="button" class="sl-tile ${on?'selected':''} ${asked?'':advise?'advise':'extra'}" ${carAttr(x,'svc',{task:t.id,id:s.id})} aria-pressed="${on}"><span class="sl-emoji" aria-hidden="true">${s.emoji}</span><b>${x.esc(s.name)}</b><small>${x.money(price(x,s.id))} · ${asked?'khách yêu cầu':advise?'tóc yếu — nên phục hồi':'mời thêm'}</small></button>`;
+    const put=(t.talk?.drop||[]).includes(s.id);
+    return `<button type="button" class="sl-tile ${on?'selected':''} ${asked?'':advise?'advise':'extra'}" ${carAttr(x,'svc',{task:t.id,id:s.id})} aria-pressed="${on}"><span class="sl-emoji" aria-hidden="true">${s.emoji}</span><b>${x.esc(s.name)}</b><small>${x.money(price(x,s.id))} · ${put?'khách dời lần sau':asked?'khách yêu cầu':advise?'tóc yếu — nên phục hồi':'mời thêm'}</small></button>`;
   }).join('');
   const quote=u.services.reduce((a,s)=>a+price(x,s),0);
   const seg=[1,2,3].map(v=>`<button type="button" class="sl-seg ${u.sessions===v?'on':''}" ${carAttr(x,'sessions',{task:t.id,v})} aria-pressed="${u.sessions===v}">${v} buổi</button>`).join('');
@@ -265,7 +283,7 @@ function planPanel(t,x){
   const picked=x.cc.services.map(s=>s.id).filter(s=>u.services.includes(s));
   const same=!!t.plan&&u.sessions===t.plan.sessions&&picked.length===t.plan.services.length&&picked.every(s=>t.plan.services.includes(s));
   const label=!t.plan?'🤝 Chốt với khách':same?'✓ Đã chốt phương án này':'🔁 Chốt lại phương án';
-  return `${warn}
+  return `${warn}${talkBox(t,x)}
     <div class="sl-grid">${tiles}</div>
     <h5 class="sl-sub">Số buổi để tới ảnh mẫu</h5><div class="sl-segs">${seg}</div>
     <div class="sl-cta"><b>Báo giá hôm nay: ${x.money(quote)}</b>${x.cmd(label,'sl_plan',{task:t.id,services:picked,sessions:u.sessions},'full',!u.services.length||same)}</div>`;
@@ -564,7 +582,8 @@ function smartPlan(t,x){
   const noDye=t.patch_done||t.reacted||['none','allergy'].includes(t.patch_record);
   const hurt=/không thoa hóa chất/.test(nfc(t.findings?.scalp));
   const weak=t.health!=null&&t.health<(care(x).bleach_stop||30);
-  const keep=t.needs.services.filter(s=>!(noDye&&(s==='color'||s==='toner'))&&!(hurt&&CHEM.includes(s))&&!(weak&&(s==='bleach'||s==='toner')));
+  const put=t.talk?.drop||[];   // what the client agreed to put off over the budget (1.7.16)
+  const keep=t.needs.services.filter(s=>!put.includes(s)&&!(noDye&&(s==='color'||s==='toner'))&&!(hurt&&CHEM.includes(s))&&!(weak&&(s==='bleach'||s==='toner')));
   const m=/(\d)\s*buổi/.exec(nfc(t.strand_text));
   return {services:x.cc.services.map(s=>s.id).filter(id=>keep.includes(id)),sessions:m?Number(m[1]):1};
 }
@@ -650,7 +669,8 @@ function guideOf(t,x){
     else if(u.services.length){const picked=x.cc.services.map(s=>s.id).filter(s=>u.services.includes(s));
       go={cmd:'sl_plan',payload:{task:id,services:picked,sessions:u.sessions},label:`🤝 Chốt: ${x.esc(svcNames(x,picked))}${u.sessions>1?` · ${u.sessions} buổi`:''}`};}
     else go={sel:'.sl-grid',label:'👉 Chọn dịch vụ cho khách'};
-    steps.push({ok:null,label:'Chốt phương án với khách',go});
+    if(t.talk?.state==='open')go={sel:'.sl-talk',label:'💬 Trao đổi với khách về giá'};
+    steps.push({ok:null,label:t.talk?.state==='open'?'Báo giá vượt ngân sách: trao đổi với khách':'Chốt phương án với khách',go});
     return {steps};
   }
   if(at==='color'){

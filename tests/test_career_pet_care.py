@@ -1925,3 +1925,28 @@ class PetCareLoopTests(unittest.TestCase):
         for bad in ('Chị chủ', 'chị chủ', 'anh chủ', 'cô chủ', 'rồi anh', 'nha anh', 'anh tin em'):
             self.assertNotIn(bad, texts)
         self.assertFalse(re.search(r'trong game|của game|người chơi|NPC|mô phỏng|giả lập', texts))
+
+
+class HomeCardClose(unittest.TestCase):
+    """Out of towels with a pet half done (chat C#23990): closing is never blocked, and the home card offers it."""
+
+    def test_close_with_a_parked_pet_keeps_it_for_tomorrow(self):
+        j = Journey('pet_care')
+        tid = j.task['id']
+        j.act('defer', task=tid)
+        j.act('end_day')
+        t = j.get(tid)
+        self.assertNotIn(t['status'], ('completed', 'cancelled', 'referred'))
+        validate_state(j.state)
+
+    def test_home_card_offers_close(self):
+        import shutil
+        import subprocess
+        from pathlib import Path
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        root = Path(__file__).resolve().parents[1]
+        out = subprocess.run([node, str(root / 'tests' / 'pet_hud_card.mjs')], cwd=root, capture_output=True, text=True,
+                             encoding='utf-8', timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr + out.stdout)

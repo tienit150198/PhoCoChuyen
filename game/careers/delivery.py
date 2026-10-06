@@ -1490,7 +1490,16 @@ def public_task(t: dict) -> dict:
     v = strip_copy(t)
     if not t['known']:
         v['needs'] = None
-        v['preview'] = dict(pickup=t['needs']['pickup'], dest=t['needs']['dest'], kind=t['needs']['kind'], emoji=t['needs']['emoji'])
+        n = t['needs']
+        v['preview'] = dict(pickup=n['pickup'], dest=n['dest'], kind=n['kind'], emoji=n['emoji'])
+        # The deadline shows before ✋ Nhận đơn: from day 2 its clock runs from the moment the order appears, and a
+        # courier lost stars to a time they never saw. Day 1 starts the clock at accept (known_request): how long.
+        span = n['window'] if n['kind'] == 'food' else n['by']
+        if span:
+            if t['run']['day'] <= 1:
+                v['preview']['within'] = span
+            else:
+                v['preview']['due'] = _due(t)
         return v
     v['due'] = _due(t)
     v['ready'] = _ready(t) if t['needs']['kind'] == 'food' else None

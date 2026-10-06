@@ -50,6 +50,13 @@ function learnLine(x){
 }
 
 /* ------------------------------------------------------------ the blocks */
+/** The child's temper, readable right above the greetings (it decides which greeting works); after a wrong try it
+ * stands out. It names the temper only, never the greeting. */
+function temperLine(x,st){
+  const tm=(cc(x).tempers||{})[fam(x).temper];if(!tm)return '';
+  const wrong=st.greet&&st.greet!==tm[2];
+  return `<p class="bm-temper${wrong?' warn':''}"${wrong?' role="status"':''}>Tính bé: ${x.esc(tm[0])} <b>${x.esc(tm[1])}</b>${wrong?'<br>Bé chưa chịu làm quen. Thử cách chào khác hợp tính bé.':''}</p>`;
+}
 function arrivePanel(t,x){
   const st=t.st||{},n=need(t);
   const chores=`<div class="tile-grid bm-chores">${tile(x,'bm_wash',{task:t.id},'<span class="tile-emoji">🧼</span><b>Rửa tay</b>',st.wash?'selected':'')}
@@ -61,7 +68,7 @@ function arrivePanel(t,x){
     <h4 class="section-title">🙋 Túi của ${x.esc(kidName(x))} cần có <small class="muted">chạm món còn thiếu để hỏi</small></h4>
     <div class="tile-grid bm-need">${(n.bag||[]).map(k=>tile(x,'bm_ask',{task:t.id,item:k},`<span class="tile-emoji">${x.esc(BAGI(x,k)[0])}</span><b>${x.esc(BAGI(x,k)[1])}</b>`,st.ask===k?'selected':'',!!st.ask)).join('')}</div>`:'';
   return `<section class="card bm-arrive"><h4>👋 Đón ${x.esc(kidName(x))}</h4>${chores}
-    <h4 class="section-title">🙂 Chào bé</h4>${st.greet&&st.greet!==((cc(x).tempers||{})[fam(x).temper]||[])[2]?'<p class="small" role="status">Bé chưa chịu làm quen. Bạn có thể thử cách chào khác hợp tính bé.</p>':''}<div class="tile-grid bm-greets">${greets}</div>${bag}</section>`;
+    <h4 class="section-title">🙂 Chào bé</h4>${temperLine(x,st)}<div class="tile-grid bm-greets">${greets}</div>${bag}</section>`;
 }
 function foodPanel(t,x){
   const st=t.st||{},n=need(t),plate=st.plate||[],full=plate.length>=(n.groups||[]).length+1;

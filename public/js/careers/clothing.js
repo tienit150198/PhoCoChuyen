@@ -11,7 +11,12 @@ import {cashPanel,changeStep,changePayload,tray,tillActions} from './till.js';
 import * as SF from './stage_fold.js';
 import {reqPin,pinTop,asmActions,finalStep} from './asm_kit.js';
 const ID='clothing';
-const FREE=['hat','belt','socks'];
+/** Free-size goods (no fitting): the hat, belt, socks and the 1.7.16 bag, earrings, scarf. */
+const isFree=(x,id)=>{const z=x.cc.sizes?.[id];return !z||z.length===1&&z[0]==='F';};
+/** A fit order's lines plus the add-on the customer asked for once told (t.wish, 1.7.16), unless sold out. */
+const wanted=t=>[...(t.needs?.lines||[]),...(t.wish?.kind==='addon'&&!t.wish.skipped?[t.wish.line]:[])];
+/** The budget now: what the customer came with (+ a shoes wish's money), or what they agreed to raise it to. */
+const budgetOf=t=>t.talk?.state==='raised'?t.talk.budget:(t.needs?.budget||0)+(t.wish&&t.wish.kind!=='addon'?Number(t.wish.extra||0):0);
 const data=x=>x.room.data||{};
 const catalogue=x=>x.content.inventory?.items?.[ID]||[];
 const item=(x,id)=>catalogue(x).find(i=>i.id===id)||{id,name:id,emoji:'👚',unit:'cái'};
@@ -59,8 +64,9 @@ function bookLine(x,t){
 function ticket(t,x){
   const w=x.npc(t.npc),kind=x.cc.kinds?.[t.kind]||t.kind;
   const said=t.kind==='fit'?t.needs.lines.map(l=>l.say).join(' '):t.kind==='outfit'?t.needs.note:t.opening;
+  const wish=t.wish?(t.wish.kind==='addon'?t.wish.line.say:t.wish.say):'';
   return `<article class="card ticket ao-ticket"><div class="row">${x.portrait(w,52)}<div class="grow"><div class="row spread wrap"><h3>${x.esc(w.display_name)}</h3><span class="tag">${KIND_ICON[t.kind]||''} ${x.esc(kind)}</span></div>
-    <p class="ao-said">“${x.esc(said)}”</p>${bookLine(x,t)}
+    <p class="ao-said">“${x.esc(said)}”</p>${wish?`<p class="ao-said ao-wish">💬 “${x.esc(wish)}”${t.wish.skipped?' <small>(tiệm hết hàng)</small>':''}</p>`:''}${bookLine(x,t)}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
 }
 
@@ -70,13 +76,17 @@ const pickOf=(x,t)=>{const p=x.ui.pick;return p&&p.task===t.id?p:{task:t.id,item
 function needOf(t,x){
   const out=new Map(),add=(i,c)=>{if(!out.has(i))out.set(i,c||'');};
   if(!t.known)return out;
-  if(t.kind==='fit'&&t.stage==='pick'){const m=lineMatches(t);t.needs.lines.forEach((l,k)=>{if(m[k]<0)add(l.item,l.colour);});}
+  if(t.kind==='fit'&&t.stage==='pick'){const m=lineMatches(t);wanted(t).forEach((l,k)=>{if(m[k]<0)add(l.item,l.colour);});}
   else if(t.kind==='online'&&!t.parcel.sealed){const m=packMatch(t);t.needs.lines.forEach((l,k)=>{if(m[k]<0)add(l.item,l.colour);});}
   else if(t.kind==='room'&&t.stage==='pick'){const b=t.needs.buy;if(!t.picks.some(p=>p.item===b.item&&p.colour===b.colour))add(b.item,b.colour);}
   else if(t.kind==='outfit'&&t.stage==='pick'){
     const o=x.cc.occasions?.[t.needs.occasion]||{},have=new Set(t.picks.map(p=>p.item));
     if(!isSet(t,x))for(const m of o.mains||[])if(m.some(i=>have.has(i))||!have.size)for(const i of m)if(!have.has(i))add(i);
     for(const i of o.need||[])if(!have.has(i))add(i);
+    const w=t.wish?.kind;
+    if(w==='shoes'&&!t.picks.some(p=>(x.cc.shoes||[]).includes(p.item)))for(const i of x.cc.shoes||[])add(i);
+    if(w==='bag'&&!have.has('bag'))add('bag');
+    if(w==='no_jeans'&&out.has('jeans'))out.delete('jeans');
   }
   return out;
 }
@@ -111,6 +121,7 @@ function sizeChart(x){
   return fold('📐 Bảng size của tiệm',`<table class="ao-chart"><thead><tr><th>Size</th><th>Cao</th><th>Nặng</th></tr></thead><tbody>${rows}</tbody></table>
     <p class="small">👖 Quần jean theo vòng eo (cm):</p><div class="ao-kvs">${jeans}</div>
     <p class="small">🧒 Đồ trẻ em theo tuổi:</p><div class="ao-kvs">${kids}</div>
+    <p class="small">🕴️ Quần tây đo eo như quần jean · 👟 Giày, sandal theo size chân khách nói · 👜 Túi, bông tai, khăn: free size.</p>
     <p class="small ao-tipline">💡 Sơ mi của tiệm may ôm: khách mặc size nào ở shop khác thì lấy <b>lớn hơn một size</b>.</p>`);
 }
 function picked(t,x){
@@ -119,7 +130,7 @@ function picked(t,x){
   return `<ul class="ao-picked">${t.picks.map((p,i)=>{const tried=t.tried[i];
     const tag=tried==='ok'?'<span class="tag green">✓ vừa</span>':tried==='small'?'<span class="tag danger">chật</span>':tried==='big'?'<span class="tag danger">rộng</span>':'';
     return `<li>${dot(x,p.colour)}<span class="grow">${x.esc(pieceLabel(x,p))}<small>${x.fmt(price(x,p.item))} xu</small></span>${tag}
-      ${canTry&&!FREE.includes(p.item)&&tried==null?x.cmd('🚪 Mời thử','ao_try',{task:t.id,index:i},'small ghost'):''}
+      ${canTry&&!isFree(x,p.item)&&tried==null?x.cmd('🚪 Mời thử','ao_try',{task:t.id,index:i},'small ghost'):''}
       ${canTry?`<button type="button" class="btn small ghost ao-x" data-command="ao_unpick" data-payload="${x.esc(JSON.stringify({task:t.id,index:i}))}" aria-label="Treo lại ${x.esc(item(x,p.item).name)}">✕</button>`:''}</li>`;}).join('')}</ul>`;
 }
 function receipt(t,x){
@@ -165,13 +176,13 @@ const billFinal=(t,x,ready)=>({label:'🧾 Chốt bill',go:{cmd:'ao_bill',payloa
 /* ------------------------------------------------------------ fit */
 function lineMatches(t){
   const used=new Set();
-  return t.needs.lines.map(l=>{const i=t.picks.findIndex((p,j)=>!used.has(j)&&p.item===l.item&&p.colour===l.colour);if(i>=0)used.add(i);return i;});
+  return wanted(t).map(l=>{const i=t.picks.findIndex((p,j)=>!used.has(j)&&p.item===l.item&&p.colour===l.colour);if(i>=0)used.add(i);return i;});
 }
 /** True when the rack already shows this line's item and colour, so the next move is a size. */
 const onRackPick=(x,t,l)=>{const p=pickOf(x,t);return p.item===l.item&&p.colour===l.colour;};
 function fitSteps(t,x){
   if(t.stage==='pay')return paySteps(t,x);
-  const m=lineMatches(t),rows=t.needs.lines.map((l,k)=>{const i=m[k],it=item(x,l.item),tried=i>=0?t.tried[i]:null;
+  const m=lineMatches(t),rows=wanted(t).map((l,k)=>{const i=m[k],it=item(x,l.item),tried=i>=0?t.tried[i]:null;
     if(i>=0&&(tried==='small'||tried==='big'))return {ok:false,label:`${it.emoji} ${it.name} ${tried==='small'?'chật':'rộng'}: đổi size`,go:{cmd:'ao_unpick',payload:{task:t.id,index:i},label:`↩︎ Treo lại size ${t.picks[i].size}`}};
     // The customer named their size ("Mình mặc size M"): another size on the counter is flagged at once.
     if(i>=0&&l.told&&tried!=='ok'&&t.picks[i].size!==l.told)return {ok:false,label:`${it.emoji} ${it.name}: khách nói size ${l.told}`,go:{cmd:'ao_unpick',payload:{task:t.id,index:i},label:`↩︎ Treo lại size ${t.picks[i].size}`}};
@@ -193,7 +204,9 @@ function isSet(t,x){
   const items=t.picks.map(p=>p.item),grp=x.cc.groups||{};
   return items.some(i=>grp[i]==='one')||(items.some(i=>grp[i]==='top')&&items.some(i=>grp[i]==='bottom'));
 }
-const outfitWrong=(t,x)=>{const n=t.needs;return t.picks.find(p=>p.item==='jeans'?p.size!==n.waist:!FREE.includes(p.item)&&p.item!=='kids'&&sizes(x,p.item).includes(n.top)&&p.size!==n.top);};
+const outfitWrong=(t,x)=>{const n=t.needs,foot=t.wish?.foot;return t.picks.find(p=>(x.cc.waist_items||['jeans']).includes(p.item)?p.size!==n.waist
+  :(x.cc.shoes||[]).includes(p.item)?!!foot&&sizes(x,p.item).includes(foot)&&p.size!==foot
+  :!isFree(x,p.item)&&p.item!=='kids'&&sizes(x,p.item).includes(n.top)&&p.size!==n.top);};
 function outfitSteps(t,x){
   if(t.stage==='pay')return paySteps(t,x);
   const n=t.needs,items=t.picks.map(p=>p.item),grp=x.cc.groups||{};
@@ -208,18 +221,55 @@ function outfitSteps(t,x){
   return [
     pick,
     {ok:!t.picks.length?null:wrongSize?false:true,label:`Đúng size khách nói: áo ${n.top}, quần ${n.waist}`,note:wrongSize?`${item(x,wrongSize.item).name} đang size ${wrongSize.size}`:'',go:wrongSize?{cmd:'ao_unpick',payload:{task:t.id,index:t.picks.indexOf(wrongSize)},label:'↩︎ Treo lại món sai size'}:null},
-    {ok:!t.picks.length?null:total<=n.budget?true:false,label:`Trong ngân sách ${n.budget} xu`,note:`đang ${total} xu`},
+    ...(t.talk?.state==='open'?[{ok:null,label:'💬 Trao đổi với khách chuyện ngân sách',go:{sel:'.ao-talk',label:'💬 Trao đổi với khách'}}]:[]),
+    {ok:!t.picks.length?null:total<=budgetOf(t)||t.talk?.state==='off'&&total-t.talk.off<=budgetOf(t)?true:false,label:`Trong ngân sách ${budgetOf(t)} xu`,note:`đang ${total} xu`},
+    ...(wishRow(t,x)),
   ];
 }
 function outfitJob(t,x){
-  const o=x.cc.occasions?.[t.needs.occasion]||{},total=sum(t.picks.map(p=>price(x,p.item))),pct=Math.min(100,total/t.needs.budget*100);
+  const b=budgetOf(t),o=x.cc.occasions?.[t.needs.occasion]||{},total=sum(t.picks.map(p=>price(x,p.item))),pct=Math.min(100,total/b*100);
   const items=t.picks.map(p=>p.item),grp=x.cc.groups||{},top=items.some(i=>grp[i]==='top'),set=items.some(i=>grp[i]==='one')||(top&&items.some(i=>grp[i]==='bottom'));
   // One row: the occasion and the budget bar; under it what the occasion needs (the shop checks it at the
   // counter), open while picking, folded after (data-auto: the render decides).
   return `<section class="card ao-occasion compact"><div class="row"><span class="ao-big" aria-hidden="true">${x.esc(o.emoji||'👗')}</span><div class="grow"><h4>${x.esc(o.name||'')}</h4>
-    <div class="ao-budget"><small>Ngân sách</small><div class="bar ${total>t.needs.budget?'low':''}"><i style="width:${pct}%"></i></div><b class="${total>t.needs.budget?'bad':''}">${x.fmt(total)}/${x.fmt(t.needs.budget)}</b></div></div></div>
+    <div class="ao-budget"><small>Ngân sách</small><div class="bar ${total>b?'low':''}"><i style="width:${pct}%"></i></div><b class="${total>b?'bad':''}">${x.fmt(total)}/${x.fmt(b)}</b></div></div></div>
     ${(o.tips||[]).length?`<details class="ao-tipfold" data-auto${t.stage==='pick'?' open':''}><summary>💡 Dịp này cần</summary><ul class="small ao-tips">${o.tips.map(v=>`<li>${x.esc(v)}</li>`).join('')}</ul></details>`:''}</section>
-    ${t.stage==='pick'?rack(t,x,'pick',set?'':top?'bottom':'top'):''}${counter(t,x,'🛍️ Bộ đồ đang phối')}${payBlock(t,x)}`;
+    ${talkBox(t,x)}${t.stage==='pick'?rack(t,x,'pick',set?'':top?'bottom':'top'):''}${counter(t,x,'🛍️ Bộ đồ đang phối')}${payBlock(t,x)}`;
+}
+
+/* ------------------------------------------------------------ the customer's wish, the budget talk (1.7.16) */
+const WISH_TEXT={dress:'Muốn mặc đầm / váy liền',no_jeans:'Không lấy quần jean',bag:'Có túi xách hợp bộ thì lấy (nếu vừa tiền)',shoes:'Giày / sandal đi biển'};
+const wishText=w=>w.kind==='shoes'?`${WISH_TEXT.shoes} size ${w.foot}`:WISH_TEXT[w.kind]||'';
+function wishOk(t,x){
+  const w=t.wish,items=t.picks.map(p=>p.item),grp=x.cc.groups||{};
+  if(!w||!items.length)return null;
+  if(w.kind==='dress')return items.some(i=>grp[i]==='one');
+  if(w.kind==='no_jeans')return !items.includes('jeans');
+  if(w.kind==='shoes')return items.some(i=>(x.cc.shoes||[]).includes(i))||null;
+  return items.includes('bag')||null;
+}
+function wishRow(t,x){
+  if(!t.wish||t.wish.kind==='addon')return [];
+  const ok=wishOk(t,x);
+  return [{ok,label:`💬 Khách dặn: ${wishText(t.wish)}`,note:t.wish.kind==='bag'?'không bắt buộc':''}];
+}
+/** Over the budget: four ways to talk (the customer's stretch is hidden; mood narrows it). */
+function talkBox(t,x){
+  const k=t.talk;if(!k||t.stage!=='pick')return '';
+  if(k.state!=='open'){
+    const line={raised:`🙂 Khách đồng ý nâng ngân sách lên ${x.fmt(k.budget)} xu.`,off:`🏷️ Đã hứa bớt ${x.fmt(k.off)} xu cho vừa túi tiền.`,swap:`💡 Đã hứa tìm bộ dưới ${x.fmt(budgetOf(t))} xu: treo bớt món đắt.`}[k.state];
+    return line?`<p class="card ao-talk-note small">${line}</p>`:'';
+  }
+  const v=t.talk_view||{},who=x.esc(x.npc(t.npc).display_name),h=x.cc.haggle||{small:5,big:20};
+  return `<section class="card ao-talk"><h4>💬 Trao đổi với ${who}</h4>
+    <p class="small">Bộ này <b>${x.fmt(k.over)} xu</b>, khách chỉ định chi <b>${x.fmt(v.budget??budgetOf(t))} xu</b> (lố ${x.fmt(v.off??0)}). Mỗi khách rộng tay một kiểu — đọc tính khách mà chọn.</p>
+    <div class="ao-talk-opts">
+      ${x.cmd('💡 Giải thích & gợi ý món rẻ hơn','ao_talk',{task:t.id,answer:'swap'},'ghost full')}
+      ${x.cmd(v.asked?'🙏 Nài thêm lần nữa (khách đã từ chối)':'🙏 Xin khách thêm ngân sách','ao_talk',{task:t.id,answer:'raise'},'ghost full')}
+      ${x.cmd(`🏷️ Bớt ${x.fmt(v.off??0)} xu cho vừa`,'ao_talk',{task:t.id,answer:'discount'},'ghost full',v.off_ok===false)}
+      ${v.off_ok===false?`<p class="small muted">Bớt quá ${h.big}% — chị Vy không cho.</p>`:v.small===false?`<p class="small muted">Quá ${h.small}% chị Vy dặn: tiệm chịu lỗ, chị Vy sẽ nhắc.</p>`:''}
+      ${x.confirmCmd('🙅 Nói thật: tiệm chưa có bộ vừa túi tiền','ao_talk',{task:t.id,answer:'decline'},'Khách sẽ về, không mua gì. Chắc chưa?','ghost full')}
+    </div></section>`;
 }
 
 /* ------------------------------------------------------------ alterations */
@@ -379,7 +429,7 @@ function pin(t,x,next){
   const clue=l=>l.ask||l.say.split('. ').slice(1).join('. ').replace(/\.$/,'');
   if(t.kind==='fit'){
     const m=lineMatches(t);
-    t.needs.lines.forEach((l,k)=>{const i=m[k],tried=i>=0?t.tried[i]:null,off=i>=0&&l.told&&tried!=='ok'&&t.picks[i].size!==l.told,bad=tried==='small'||tried==='big'||off;
+    wanted(t).forEach((l,k)=>{const i=m[k],tried=i>=0?t.tried[i]:null,off=i>=0&&l.told&&tried!=='ok'&&t.picks[i].size!==l.told,bad=tried==='small'||tried==='big'||off;
       chips.push({ok:i<0?null:!bad,icon:it(l.item).emoji,title:l.say,act:i<0?find(l.item,l.colour):'',
         text:`${it(l.item).name} · ${l.colour} · ${i<0?clue(l):`size ${t.picks[i].size}${off?` · khách nói ${l.told}`:bad?(tried==='small'?' chật':' rộng'):tried==='ok'?' vừa':''}`}`});});
     const extra=t.picks.length-m.filter(i=>i>=0).length;
@@ -392,7 +442,8 @@ function pin(t,x,next){
     chips.push({ok:!any?null:!wrong,icon:'📏',text:`Áo ${n.top} · quần ${n.waist}${wrong?` · ${it(wrong.item).name} đang ${wrong.size}`:''}`});
     for(const i of o.need||[])chips.push({ok:have.has(i)||null,icon:it(i).emoji,text:it(i).name,act:have.has(i)?'':find(i)});
     if((o.bad||[]).length)chips.push({info:true,ok:null,icon:'🚫',text:`Tránh màu ${o.bad.join(', ')}`});
-    chips.push({ok:!any?null:total<=n.budget,icon:'💰',text:`Tối đa ${x.fmt(n.budget)} xu · đang ${x.fmt(total)}`});
+    if(t.wish)chips.push({ok:wishOk(t,x),icon:'💬',text:wishText(t.wish)});
+    chips.push({ok:!any?null:total<=budgetOf(t)||t.talk?.state==='off'&&total-t.talk.off<=budgetOf(t),icon:'💰',text:`Tối đa ${x.fmt(budgetOf(t))} xu · đang ${x.fmt(total)}${t.talk?.state==='off'?` · hứa bớt ${x.fmt(t.talk.off)}`:''}`});
   }else if(t.kind==='online'){
     const m=packMatch(t),n=t.needs;
     n.lines.forEach((l,k)=>chips.push({ok:m[k]>=0||null,icon:it(l.item).emoji,text:`${it(l.item).name} · size ${l.size} · ${l.colour}`,act:m[k]>=0?'':find(l.item,l.colour)}));

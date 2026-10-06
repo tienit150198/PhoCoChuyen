@@ -115,6 +115,14 @@
 .career-job.ao .ao-rline{justify-content:space-between;border-top:1px dashed var(--ao-line)}
 .career-job.ao .ao-rline.total{font-size:1.05rem}
 .career-job.ao .ao-haggle{border-color:var(--ao-mustard)}
+/* 1.7.16: the customer's extra wish and the budget talk */
+.career-job.ao .ao-wish{font-size:.95rem;color:var(--ink,inherit);background:color-mix(in srgb,var(--ao-mustard) 14%,transparent);border-radius:8px;padding:4px 8px}
+.career-job.ao .ao-talk{border-color:var(--ao-mustard)}
+.career-job.ao .ao-talk h4{margin:0 0 4px}
+.career-job.ao .ao-talk-opts{display:grid;gap:6px;margin-top:6px}
+.career-job.ao .ao-talk-opts .btn{white-space:normal;line-height:1.25;text-align:left;min-height:40px}
+.career-job.ao .ao-talk-opts p{margin:0 0 2px}
+.career-job.ao .ao-talk-note{margin:6px 0;padding:8px 10px}
 
 /* Occasion, budget */
 .career-job.ao .ao-big{font-size:34px;width:44px;text-align:center}

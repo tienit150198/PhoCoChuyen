@@ -12,6 +12,16 @@
 - Đánh giá giữa người chơi (Phố nghề, dịch vụ chỗ làm): chỉ tính đánh giá mới nhất của mỗi người, tài khoản từ 3 ngày tuổi, không tính đánh giá trong 24 giờ quanh lúc chủ quán chuyển xu/tặng quà xu. Không xóa đánh giá nào.
 - Tên hiển thị: đổi tên ở Cài đặt và Hành trình dùng chung bộ lọc tên tài khoản, chặn thêm cách viết không dấu/viết liền (concac, dcm…). Quản trị có danh sách tên vi phạm và nút "Đổi tên an toàn"; không tự đổi tên ai.
 - Chat: nhắc nhở an toàn thân thiện (một lần) khi tin nhắn có hẹn gặp, địa chỉ, số điện thoại, zalo/fb/ig/tiktok; lý do báo cáo "An toàn / trẻ vị thành niên" lên đầu hàng chờ quản trị; khóa chat theo phút và chế độ chậm cho từng người hoặc cả Cả phố; @tên người chơi đang có trong Cả phố không bị che. Không tự cấm ai.
+# Chưa phát hành — WP3 Nghề & hàng tiệm
+
+- Tiệm áo, salon: bill/phương án lố ngân sách mở 💬 Trao đổi: gợi ý món rẻ hơn hoặc dời dịch vụ, xin thêm ngân sách (khách tự quyết theo tính, chỉ hỏi một lần), bớt giá trong mức chủ cho, hoặc nói thật. Lờ khách hay thất hứa vẫn bị trừ.
+- Tiệm áo thêm 14 món: đầm maxi, váy babydoll, set áo + chân váy, blazer, cardigan, polo, chân váy chữ A, quần tây, quần short, sneaker, sandal, túi xách, bông tai, khăn lụa; khách quen hay dặn thêm (lấy thêm món, muốn mặc đầm, không jean, giày đi biển). Món mới nhập qua Kho; tủ đồ có thêm đồ tương ứng.
+- Lớp học: lời học trò hiện ngay sau tối đa 2 giây (AI viết lại thì thay sau); phiếu cuối tiết có dòng hướng dẫn chấm.
+- Giữ trẻ: tính bé hiện rõ dưới “🙂 Chào bé”, chào sai thì nhắc đúng tính bé.
+- Buồng ảnh: mã phòng gõ được R, S, F, X, J, W, DD dù đang bật Telex.
+- Giao hàng: đơn mới hiện giờ hẹn trước khi nhận (ngày 1: giao trong bao nhiêu phút).
+- Thú cưng: thẻ việc có nút Khép ca khi đang để lát nữa, hết giờ hoặc thiếu hàng (kèm dòng “Hết …”).
+- Homestay: 📥 Hộp đơn OTA có huy hiệu số đơn trùng và hướng dẫn xử lý.
 
 # 1.7.15 — 2026-10-05
 
