@@ -31,6 +31,7 @@ ORDER = (
     'hr_admin', 'secretary', 'it_helpdesk',   # Công ty CP Cánh Diều: HR, the director's secretary, IT helpdesk
     'railway',                     # gác chắn đường sắt: the level crossing at Bến Mây and the track patrol (Xí nghiệp Đường sắt Sông Mây)
     'nurse',                       # điều dưỡng: a day shift on the medical ward of Bệnh viện phường Lá Sen
+    'police',                      # công an phường: community police at Công an phường Mây (papers, lost and found, mediation, patrols)
 )
 # Development filter: MNL_CAREERS=restaurant,florist loads only those plugins.
 _ONLY = {x.strip() for x in os.environ.get('MNL_CAREERS', '').split(',') if x.strip()}

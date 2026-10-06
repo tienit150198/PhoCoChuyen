@@ -20,7 +20,7 @@ from .incident_content import ALL, EMPLOYEE, RETAIL
 
 EMPLOYED = ('pharmacy', 'customer_care', 'teacher', 'tour_guide', 'repair', 'delivery', 'pet_care', 'salon',
             'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'homemaker', 'naucom', 'babysitter', 'library', 'pilot', 'flight_attendant', 'oil',
-            'hr_admin', 'secretary', 'it_helpdesk', 'giupviec', 'railway', 'nurse')
+            'hr_admin', 'secretary', 'it_helpdesk', 'giupviec', 'railway', 'nurse', 'police')
 OFFICE = ('accounting', 'customer_care', 'corp_accounting', 'tax_payroll', 'group_accounting', 'hr_admin', 'secretary', 'it_helpdesk')
 FACING = RETAIL + ('homestay', 'delivery', 'tour_guide', 'customer_care', 'fruit', 'drain', 'ice_cream', 'nail', 'pho', 'com', 'photobooth', 'giupviec', 'library')
 CALLING = ('pagoda',)      # a monk: no boss, no shop, no rent; the pagoda is not a place for a karaoke night
@@ -106,6 +106,7 @@ WORK = {
     'oil': ('Chú Toàn với ca trực giàn Hải Âu', '🛢️'),
     'railway': ('Chú Sáu với ca gác Bến Mây', '🚦'),
     'nurse': ('Chị Hoa với các bạn khoa Nội', '🏥'),
+    'police': ('Anh Định với tổ khu vực phường Mây', '👮'),
 }
 
 

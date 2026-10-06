@@ -68,6 +68,7 @@ NOTES = {
     'oil': 'Ca 12 tiếng trên giàn: 6:00 họp an toàn đầu ca, 18:00 giao ca. Ngày bay ra giàn và ngày về bờ theo đợt 14 ngày.',
     'railway': 'Nhận ca 5:30, thử thiết bị rồi mới ký; tàu qua theo bảng giờ, ngày ca chiều tối thì tàu qua tới khuya.',
     'nurse': 'Nhận ca lúc 7:00, giao ca lúc 19:00; 9:00 bác sĩ đi buồng, chiều là giờ thăm bệnh.',
+    'police': 'Giao ban 7:30, bàn cư trú đông buổi sáng; 11:00 và 16:30 đứng cổng trường giờ tan học; tan ca 17:30.',
     'homestay': 'Quầy lễ tân trực tới 22:00; khách tới muộn gọi chuông, sáng mai bàn giao.',
     'milk_tea': 'Ngày đông khách có thể bán quá giờ, muộn nhất 23:00.',
     'corp_accounting': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',

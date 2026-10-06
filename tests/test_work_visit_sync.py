@@ -38,7 +38,7 @@ class WorkVisitSync(Base):
     def test_unchanged_45_careers_read_places_once_without_writing(self):
         self.sync()
         before = self.rows()
-        self.assertEqual(len(before), 45)   # 41 + library (thư viện), oil (thợ dầu khí), railway (gác chắn đường sắt), nurse (điều dưỡng)
+        self.assertEqual(len(before), 46)   # 41 + library (thư viện), oil (thợ dầu khí), railway (gác chắn đường sắt), nurse (điều dưỡng), police (công an phường)
         queries = self.sync(now=200)
         self.assertEqual(self.rows(), before)
         self.assertEqual(self.writes(queries), [])

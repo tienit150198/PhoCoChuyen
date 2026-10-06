@@ -655,6 +655,22 @@ HAPPENINGS = [
     H('ward_bag', 'trom', '👜', 'Túi xách để ở bàn trực bị lấy',
       'Bạn chạy vào giường 3 trả lời chuông, quay ra thì chiếc túi để dưới gầm bàn trực không còn. Hành lang giờ thăm đông người lạ.',
       ('nurse',), 'pick', 'pickpocket', 'door', 'Mất ví ở bàn trực', dict(wallet=(25, 70)), ['shout', 'call', 'camera', 'let'], min_day=5),
+    # ================================================================ 👮 Công an phường Mây (police)
+    H('cap_helmet', 'trom', '⛑️', 'Mất mũ bảo hiểm ngay cổng phường',
+      'Tan ca ra bãi xe, chiếc mũ bảo hiểm móc trên gương đã không còn. Ngay cổng trụ sở mới đau chứ.',
+      ('police',), 'ride', 'biker', 'door', 'Mua mũ bảo hiểm mới', dict(wallet=(15, 35)), ['call', 'camera', 'let'], min_day=3),
+    H('cap_che', 'den', '🍲', 'Làm đổ cặp lồng chè của bà Năm',
+      'Bạn đứng dậy vội đi nghe điện thoại trực ban, khuỷu tay quẹt trúng cặp lồng chè bà Năm để trên bàn. Chè đậu đổ lênh láng, nắp cặp lồng móp méo.',
+      ('police',), 'drop', 'self', 'table', 'Mua cặp lồng mới cho bà Năm', dict(comp=(5, 15)), min_day=2),
+    H('cap_basket', 'den', '🥬', 'Va phải mẹt rau ở chợ',
+      'Đi tuần chợ Mây, bạn lùi lại nhường đường xe đẩy, gót giày đạp trúng mẹt rau của bà bán rau. Cả mớ rau muống dập nát.',
+      ('police',), 'drop', 'self', 'table', 'Đền mớ rau cho bà bán rau', dict(comp=(6, 18)), min_day=2),
+    H('cap_phone', 'den', '📱', 'Làm rơi điện thoại của Kha',
+      'Kha dí điện thoại sát mặt bạn livestream, bạn giơ tay ra hiệu “đừng quay”, quẹt trúng làm máy rơi xuống nền gạch, nứt một góc màn hình.',
+      ('police',), 'drop', 'self', 'table', 'Đền một phần tiền thay kính điện thoại', dict(comp=(15, 40)), min_day=4),
+    H('cap_wallet', 'trom', '👛', 'Bị móc ví lúc phân luồng hội chợ',
+      'Đứng phân luồng giữa hội chợ đông nghẹt, lúc về mới thấy túi quần nhẹ tênh. Ví đã không còn. Anh Định cười: “Nhắc dân giữ ví mà quên ví mình.”',
+      ('police',), 'pick', 'pickpocket', 'door', 'Mất ví ở hội chợ', dict(wallet=(20, 60)), ['shout', 'call', 'camera', 'let'], min_day=5),
 ]
 INDEX = {x['id']: x for x in HAPPENINGS}
 

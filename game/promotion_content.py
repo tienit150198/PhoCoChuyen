@@ -27,6 +27,7 @@ EMP_TITLES = {
     'oil': ('Kỹ thuật viên bậc 2', 'Trưởng nhóm vận hành', 'Trưởng ca giàn', 'Quản đốc giàn'),
     'railway': ('Gác chắn chính', 'Trưởng ca gác chắn', 'Đội phó cung đường', 'Cung trưởng cung đường'),
     'nurse': ('Điều dưỡng chính', 'Trưởng ca điều dưỡng', 'Điều dưỡng trưởng khoa', 'Trưởng phòng Điều dưỡng'),
+    'police': ('Cán bộ khu vực chính thức', 'Tổ phó cảnh sát khu vực', 'Tổ trưởng cảnh sát khu vực', 'Phó trưởng Công an phường'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
@@ -76,7 +77,7 @@ GROUP = {
     'rail': ('railway',),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
-                'mother_baby', 'nurse'),
+                'mother_baby', 'nurse', 'police'),
 }   # every other career: 'trade'
 
 

@@ -49,7 +49,7 @@ class WorkplaceBusinessTests(unittest.TestCase):
         self.assertEqual(c['money'],c['ops']['finance']['opening_balance']+sum(x['amount'] for x in c['ops']['finance']['ledger']))
 
     def test_all_45_careers_have_real_independent_orders_and_keep_manual_work(self):
-        self.assertEqual(len(new_state()['careers']),45)   # 41 + library (thư viện), oil (thợ dầu khí), railway (gác chắn đường sắt), nurse (điều dưỡng)
+        self.assertEqual(len(new_state()['careers']),46)   # 41 + library (thư viện), oil (thợ dầu khí), railway (gác chắn đường sắt), nurse (điều dưỡng), police (công an phường)
         for career in new_state()['careers']:
             with self.subTest(career=career):
                 s,c,e=self.sample(career);tasks=copy.deepcopy(c['tasks'])
