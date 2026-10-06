@@ -597,6 +597,12 @@ HAPPENINGS = [
     H('ward_glasses', 'den', '👓', 'Làm rơi kính của bà Tư',
       'Bạn nâng gối cho bà Tư ngồi dậy, chiếc kính lão trên gối trượt xuống sàn, nứt một bên tròng.',
       ('nurse',), 'drop', 'self', 'table', 'Đền kính lão cho bà Tư', dict(comp=(10, 25)), min_day=3),
+    H('ward_phone', 'den', '📱', 'Làm rơi điện thoại của Tuấn',
+      'Bạn đỡ Tuấn ngồi dậy, chiếc điện thoại đang livestream trên gối trượt xuống sàn, nứt một góc màn hình.',
+      ('nurse',), 'drop', 'self', 'table', 'Đền một phần tiền thay kính điện thoại', dict(comp=(15, 40)), min_day=4),
+    H('ward_bag', 'trom', '👜', 'Túi xách để ở bàn trực bị lấy',
+      'Bạn chạy vào giường 3 trả lời chuông, quay ra thì chiếc túi để dưới gầm bàn trực không còn. Hành lang giờ thăm đông người lạ.',
+      ('nurse',), 'pick', 'pickpocket', 'door', 'Mất ví ở bàn trực', dict(wallet=(25, 70)), ['shout', 'call', 'camera', 'let'], min_day=5),
 ]
 INDEX = {x['id']: x for x in HAPPENINGS}
 

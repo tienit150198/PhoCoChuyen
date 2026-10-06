@@ -1520,7 +1520,8 @@ ARCS = {
                 ('hoa', 'Đúng rồi. Người bệnh nhớ mình là một chuyện, mình chắc là đúng người là chuyện khác.')]),
             _b('Chuông giường 3', '🔔', 'Đèn chuông giường 3 sáng lần thứ năm trong ca.', [
                 ('tu', 'Bà không đau gì đâu cháu. Bà chỉ muốn có người nói chuyện.'),
-                ('me', 'Ca hôm nay đông, mà bà ngồi một mình cả tuần rồi.')],
+                ('me', 'Ca hôm nay đông, mà bà ngồi một mình cả tuần rồi.'),
+                ('hoa', 'Cô đơn cũng là một thứ bệnh, em ạ. Nghĩ cách giúp bà đi.')],
                _c('Làm sao cho bà Tư bớt cô đơn?',
                   _o('a', 'Giúp bà gọi video cho con trai ở xa', [('tu', 'Thằng Quang nó cười, nó bảo cuối tuần về. Cảm ơn cháu.')], rel='tu'),
                   _o('b', 'Xin chị Hoa nhờ nhóm tình nguyện ghé đọc báo cho bà', [('hoa', 'Ý hay. Chị gọi nhóm sinh viên tình nguyện, chiều mai họ tới.')], rel='hoa'))),
