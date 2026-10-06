@@ -198,3 +198,15 @@ Measure with the audit harness or `scripts/check_word_caps.py --careers <id>`. W
   - one filled main button (other primaries on the screen look secondary)
 - **What does not change with the switch** (no layout risk): the bar component, the dimmed-with-reason buttons, the
   short intro and the 44 px tap targets.
+
+## Waves
+
+Each wave owns its screens and their files; no other wave edits them.
+
+| Wave | Branch | Screens | Files owned |
+|---|---|---|---|
+| Foundation + 1 (shipped 1.9.7) | `rel-1.9.7` | drain, com, lighthouse, railway, tra_da, babysitter, pho, pagoda, rescue, giupviec | shared kit files; those 10 careers |
+| **2: uniformed** (audit plan W2, `air_kit`; lighthouse, railway and rescue went out in wave 1) | `ui-wave2` | **police, nurse, lifeguard, oil, pilot, flight_attendant** | `careers/air_kit.js` + `.css`, `pilot_tutor.js`, `pilot_fly.js`; `public/js/careers/<id>.js` + `public/css/careers/<id>.css` and `game/careers/<id>.py` of those 6 |
+| 3 | `ui-wave3` | the rest: not any screen above | not any file above |
+
+Wave 2 does not edit `street_kit.js`/`.css`, `ui-kit.js`, `guide.js`, `app.css`, `compact.css` or the i18n catalogues.
