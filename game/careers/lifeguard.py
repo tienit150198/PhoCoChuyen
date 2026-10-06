@@ -822,10 +822,11 @@ def _verdict(s, c, d, p):
 
 GATE_SAY = {
     'in': '{who} cảm ơn, xuống nước.',
-    'fix': '{who} {grumble}đi sửa rồi vào.',
-    'adult': '{who} {grumble}ở khu cạn, có người lớn kèm sát.',
-    'no': '{who} {grumble}hẹn hôm khác.',
+    'fix': '{who} đi sửa rồi vào.',
+    'adult': '{who} ở khu cạn, có người lớn kèm sát.',
+    'no': '{who} hẹn hôm khác.',
 }
+GRUMBLE = '{who} càu nhàu một hồi rồi cũng nghe.'
 
 
 def _gate(s, c, d, p):
@@ -844,9 +845,9 @@ def _gate(s, c, d, p):
         got = t['marks'][f'v:{i}']
         gi, bi = STRICT.index(got), STRICT.index(x['best'])
         tr = folk.traits(f'{t["id"]}:{i}', PEOPLE[x['npc']][3] if x.get('npc') is not None else None)
-        grumble = 'càu nhàu một hồi rồi ' if tr['rude'] >= 60 else ''
+        grumble = GRUMBLE.format(who=x['who']) + ' ' if tr['rude'] >= 60 and got != 'in' else ''
         if got == x['best']:
-            lines.append(f'{VERDICTS[got][0]} ' + GATE_SAY[got].format(who=x['who'], grumble=grumble))
+            lines.append(f'{VERDICTS[got][0]} {grumble}' + GATE_SAY[got].format(who=x['who']))
             continue
         if f'ask:{i}' not in t['seen'] and f'look:{i}' not in t['seen']:
             t['mistakes'] += 1
