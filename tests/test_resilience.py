@@ -125,6 +125,12 @@ class HttpResilience(unittest.TestCase):
         first = (b'POST /api/command HTTP/1.1\r\nHost: ' + host + b'\r\nContent-Type: application/json\r\nX-Game-CSRF: x\r\n'
                  b'Content-Length: ' + str(len(body)).encode() + b'\r\n\r\n' + body)
         statuses, data = self.raw_pair(first)  # no cookie: 401 before the body is read
+        # POST /api/command always answers Connection: close (its handler slot is released at once), so the
+        # pipelined GET is never read: one clean answer, then the server closes. No stray body bytes.
+        self.assertEqual(statuses, [401], data[:600])
+        self.assertIn(b'\r\nConnection: close\r\n', data)
+        # Any other refused POST keeps the connection, and the next request on it is parsed cleanly.
+        statuses, data = self.raw_pair(first.replace(b'POST /api/command ', b'POST /api/social/profile '))
         self.assertEqual(statuses, [401, 200], data[:600])
         self.assertIn(b'"status":"ok"', data)  # compact JSON (game/fastjson.py)
         # a database outage in the session check (503) as well
