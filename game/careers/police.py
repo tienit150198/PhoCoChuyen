@@ -528,7 +528,8 @@ def _accept(s, c, d, p):
     t['result'] = 'accepted'
     _bump(d, 'helped')
     who = t['needs']['who']
-    _fact(d, t, f'Bàn cư trú: nhận hồ sơ tạm trú của {who}' + (' (còn thiếu giấy, phải gọi lại).' if issue else ', đủ giấy tờ.'), key=bool(issue),
+    _fact(d, t, f'Bàn cư trú: nhận hồ sơ tạm trú của {who} (còn thiếu giấy, phải gọi lại).' if issue else f'Bàn cư trú: nhận hồ sơ tạm trú của {who}, đủ giấy tờ.',
+          key=bool(issue),
           lie=f'Bàn cư trú: hồ sơ của {who} đã đối chiếu đủ từng giấy.' if cq.slips(t) else None)
     msg = _finish(s, c, d, t, BONUS, f'Nhận hồ sơ tạm trú của {who}.')
     return dict(message=f'🗂️ Nhận hồ sơ, hẹn trả giấy chiều nay. {msg}'.strip(), celebrate=not cq.slips(t), correct=not cq.safety(t))
@@ -638,8 +639,9 @@ def _keep(s, c, d, p):
         cq.slip(t, 'blind', 1, 'Không hỏi câu nào đã từ chối.', 'từ chối khi chưa hỏi')
     t['choice'] = 'keep'
     t['result'] = 'kept'
-    _fact(d, t, f'Đồ thất lạc: chưa trả {_low(x["item"])}, người tới nhận ' + ('chưa chứng minh được là chủ.' if not x['genuine'] else 'được hẹn mang thêm giấy tờ.'),
-          key=not x['genuine'])
+    item = _low(x['item'])
+    _fact(d, t, f'Đồ thất lạc: chưa trả {item}, người tới nhận chưa chứng minh được là chủ.' if not x['genuine'] else
+          f'Đồ thất lạc: chưa trả {item}, người tới nhận được hẹn mang thêm giấy tờ.', key=not x['genuine'])
     msg = _finish(s, c, d, t, BONUS, f'Giữ lại {_low(x["item"])} chờ chủ thật.')
     head = (f'🔒 Bạn cất {_low(x["item"])} vào tủ: “Anh mang thêm giấy tờ, chứng minh được thì phường trả.” {x["who"]} lủi đi mất.'
             if not x['genuine'] else f'🔒 {x["who"]} ngơ ngác: “Tôi trả lời đúng hết mà?” Hẹn mai lên lại.')
@@ -943,7 +945,8 @@ def _endpatrol(s, c, d, p):
     rep = sum(1 for v in t['acts'].values() if v == 'report')
     rem = sum(1 for v in t['acts'].values() if v == 'remind')
     unsafe = any(r.get('safety') for r in cq.slips(t))
-    _fact(d, t, f'Tuần tra {name}: {rem} lần nhắc nhở, {rep} biên bản' + (' — có chuyện nguy hiểm bị bỏ qua.' if unsafe else '.'), key=unsafe or rep > 0,
+    _fact(d, t, f'Tuần tra {name}: {rem} lần nhắc nhở, {rep} biên bản — có chuyện nguy hiểm bị bỏ qua.' if unsafe else
+          f'Tuần tra {name}: {rem} lần nhắc nhở, {rep} biên bản.', key=unsafe or rep > 0,
           lie=f'Tuần tra {name}: lập {rep + 3} biên bản xử lý vi phạm.')
     msg = _finish(s, c, d, t, BONUS, f'Tuần tra {name}.')
     return dict(message=f'🚶 Xong vòng tuần tra {name}. {msg}'.strip(), celebrate=not cq.slips(t), correct=not unsafe)
@@ -1022,7 +1025,8 @@ def _answer(s, c, d, p):
         t['choice'] = 'done'
         t['result'] = 'talked'
         _bump(d, 'helped')
-        _fact(d, t, f'Nói chuyện chống lừa đảo ở {_low(x["where"])}: ' + ', '.join(_low(TOPICS[k][1]) for k in t['topics']) + '.',
+        topics = ', '.join(_low(TOPICS[k][1]) for k in t['topics'])
+        _fact(d, t, f'Nói chuyện chống lừa đảo ở {_low(x["where"])}: {topics}.',
               key=False, lie=f'Nói chuyện chống lừa đảo ở {_low(x["where"])}: trả lời đúng hết mọi câu hỏi.' if cq.slips(t) else None)
         msg += ' ' + _finish(s, c, d, t, BONUS, f'Nói chuyện chống lừa đảo ở {_low(x["where"])}.')
         msg = f'🎤 {msg} Buổi nói chuyện kết thúc, các cụ vỗ tay.' if not cq.slips(t) else f'🎤 {msg}'
@@ -1093,7 +1097,7 @@ def _dispatch(s, c, d, p):
     nows = [CALLS[k]['who'] for i, k in enumerate(ids) if t['prio'][str(i)] == 'now']
     if worst >= 3:
         _bump(d, 'safety')
-    _fact(d, t, 'Trực ban: ba cuộc gọi, ' + (f'đi ngay: {", ".join(nows)}.' if nows else 'không có việc đi ngay.'), key=bool(nows) or worst >= 3,
+    _fact(d, t, f'Trực ban: ba cuộc gọi, đi ngay: {", ".join(nows)}.' if nows else 'Trực ban: ba cuộc gọi, không có việc đi ngay.', key=bool(nows) or worst >= 3,
           lie='Trực ban: xử lý đúng mức cả ba cuộc gọi.' if cq.slips(t) else None)
     msg = _finish(s, c, d, t, BONUS, 'Xếp cuộc gọi ở điện thoại trực ban.')
     head = '☎️ ' + ' '.join(lines)
@@ -1299,7 +1303,8 @@ def known_request(c: dict, t: dict) -> str:
     if k == 'brief':
         return 'Sổ trực ban: ' + '; '.join(x['name'] for x in n['entries']) + '.'
     if k == 'desk':
-        return f'{n["who"]} ({_low(n["role"])}) khai báo tạm trú: ' + ', '.join(_low(DOCS[x][1]) for x in n['docs']) + '.'
+        docs = ', '.join(_low(DOCS[x][1]) for x in n['docs'])
+        return f'{n["who"]} ({_low(n["role"])}) khai báo tạm trú: {docs}.'
     if k == 'lost':
         return f'{n["finder"]} nộp {_low(n["item"])} nhặt được: {_low(n["found"])}.'
     if k == 'dispute':
