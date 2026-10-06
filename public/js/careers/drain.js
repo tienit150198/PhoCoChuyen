@@ -10,7 +10,7 @@ import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {planBox,stockLines,figures} from './plan_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
-import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast} from './street_kit.js';
+import {data,cc,lower,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast,tip,clean,headChip} from './street_kit.js';
 
 const toolOf=(x,k)=>(cc(x).tools||[]).find(t=>t.id===k)||{id:k,name:k,emoji:'🔧',note:''};
 const placeOf=(x,k)=>(cc(x).places||{})[k]||{name:k,emoji:'🕳️',price:0};
@@ -29,18 +29,23 @@ function bikeCard(x,compact=false){
 }
 function gearRow(x){
   const d=data(x);
-  return `<div class="cg-gear-row">${Object.entries(cc(x).gear||{}).map(([k,l])=>x.cmd(`${GEAR_EMOJI[k]||''} ${x.esc(l)}`,'cg_gear',{item:k},(d.gear||[]).includes(k)?'small cg-on':'small ghost')).join('')}</div>`;
+  // Clean layout: the icon alone (the name is its label for readers and its tooltip).
+  return `<div class="cg-gear-row">${Object.entries(cc(x).gear||{}).map(([k,l])=>x.cmd(clean()?`${GEAR_EMOJI[k]||''}`:`${GEAR_EMOJI[k]||''} ${x.esc(l)}`,'cg_gear',{item:k},(d.gear||[]).includes(k)?'small cg-on':'small ghost').replace('<button ',`<button aria-label="${x.esc(l)}" title="${x.esc(l)}" `)).join('')}</div>`;
 }
 
 /* ------------------------------------------------------------ packing in the morning */
+/** A tool's name in a word or two on the clean layout (the full name is the tile's label for readers). */
+const SHORT={pit_tong:'Pít-tông',lo_xo:'Dây',may_lo_xo:'Máy điện',may_phun:'Phun',camera:'Camera',moc:'Móc',gau:'Gầu',do_khi:'Đo khí'};
+const shortOf=tl=>clean()&&SHORT[tl.id]||tl.name;
 function setupPanel(t,x){
   const d=data(x),n=t.needs||{},bike=d.bike||[],slots=d.slots||5;
   const book=(n.book||[]).map(b=>{const p=placeOf(x,b.place);return `<li><span aria-hidden="true">${x.esc(p.emoji)}</span><div><b>${x.esc(b.who)}</b><small>${x.esc(p.name)} · ${x.esc(b.text)}</small></div></li>`;}).join('');
   const tools=(cc(x).tools||[]).map(tl=>{const on=bike.includes(tl.id);
-    return tile(x,'cg_pack',{tool:tl.id},`<span class="tile-emoji">${x.esc(tl.emoji)}</span><b>${x.esc(tl.name)}</b><small>${x.esc(tl.note)}</small>`,on?'selected':'',!on&&bike.length>=slots);}).join('');
-  return `<section class="card cg-book"><h4>📒 Sổ hẹn hôm nay</h4><ul class="cg-booklist">${book}</ul><p class="small muted">${x.esc(n.note||'')}</p></section>
+    return tile(x,'cg_pack',{tool:tl.id},`<span class="tile-emoji">${x.esc(tl.emoji)}</span><b title="${x.esc(tl.name)}">${x.esc(shortOf(tl))}</b>${tip(x.esc(tl.note),tl.name)}`,on?'selected':'',!on&&bike.length>=slots).replace('<button ',`<button aria-label="${x.esc(tl.name)}" `);}).join('');
+  // Clean layout: the appointment book is a header chip ("📒 3 hẹn"), its card opens over the bench.
+  return `${headChip('📒',`${(n.book||[]).length} hẹn`,'.cg-book',{label:'Sổ hẹn hôm nay',flow:true})}<section class="card cg-book ui-chipped"><h4>📒 Sổ hẹn hôm nay</h4><ul class="cg-booklist">${book}</ul>${tip(x.esc(n.note||''),'','p')}</section>
     <section class="card cg-pack"><h4>🧰 Xếp lên xe <small class="muted">${bike.length}/${slots}</small></h4><div class="tile-grid cg-tools">${tools}</div>
-    <h4 class="section-title">🦺 Đồ bảo hộ</h4>${gearRow(x)}</section>`;
+    <h4 class="section-title">🦺${clean()?'':' Đồ bảo hộ'}</h4>${gearRow(x)}</section>`;
 }
 // What chú Hai would load for each kind of place in the book (a first guess: the clue on site decides).
 const PLACE_TOOLS={bon_rua:['may_phun','lo_xo'],lavabo:['lo_xo'],thoat_san:['lo_xo'],bon_cau:['pit_tong','may_lo_xo'],ong_chinh:['may_lo_xo','camera'],ho_ga:['gau','do_khi'],mai:['moc']};
@@ -54,8 +59,8 @@ function setupSteps(t,x){
   // Yesterday's tools are still on the bike: take off one today's book does not need, to make room.
   const spare=full&&next?bike.find(k=>!plan.includes(k)):null,sp=spare&&toolOf(x,spare);
   rows.push({ok:!next||(full&&!spare)?true:null,label:'Xếp đồ nghề theo sổ hẹn',note:`${bike.length}/${d.slots||5}`,
-    go:next&&!full?{cmd:'cg_pack',payload:{tool:next},label:`${x.esc(tl.emoji)} Xếp ${x.esc(lower(tl.name))} lên xe`}
-      :spare?{cmd:'cg_pack',payload:{tool:spare},label:`${x.esc(sp.emoji)} Cất ${x.esc(lower(sp.name))} lại tiệm`}:null});
+    go:next&&!full?{cmd:'cg_pack',payload:{tool:next},label:clean()?`${x.esc(tl.emoji)} Xếp ${x.esc(lower(shortOf(tl)))}`:`${x.esc(tl.emoji)} Xếp ${x.esc(lower(tl.name))} lên xe`}
+      :spare?{cmd:'cg_pack',payload:{tool:spare},label:clean()?`${x.esc(sp.emoji)} Cất ${x.esc(lower(shortOf(sp)))}`:`${x.esc(sp.emoji)} Cất ${x.esc(lower(sp.name))} lại tiệm`}:null});
   rows.push({ok:(d.gear||[]).includes('gang_tay')?true:null,label:'Đeo găng tay',go:{cmd:'cg_gear',payload:{item:'gang_tay'},label:'🧤 Đeo găng tay'}});
   return rows;
 }
@@ -187,13 +192,13 @@ export default {
     if(d.desk?.ev||d.trouble?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk cg">${hint}${top}${bottom(x,g)}</div>`;
     let main='',side='';
     if(t.twist?.state==='on'){const head=`${ticket(t,x)}`;return `<div class="career-job sk cg">${hint}${top}${head}${twistCard(t,x)}${bottom(x,g)}</div>`;}
-    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Chuẩn bị');}
+    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Chuẩn bị',{chip:true});}
     else if(!t.known)main='';
     else if(t.stage==='pay')main=cashPanel(x,t.id,t.cash);
     else if(t.cleared==='full'||t.cleared==='temp')main=finishPanel(t,x);
     else{
       main=(!t.diag||t.cleared==='fail'?checkPanel(t,x):'')+(t.diag?quotePanel(t,x):'')+(t.quote!=null?safetyPanel(t,x)+workPanel(t,x):'');
-      side=stepRows(x,g.steps,'Việc ở nhà khách');
+      side=stepRows(x,g.steps,'Việc ở nhà khách',{chip:true});
     }
     const head=t.kind==='setup'?dayBar(x):`${ticket(t,x)}${dayBar(x)}`;
     return `<div class="career-job sk cg">${hint}${top}${head}<div class="workbench"><section class="wb-main">${main}${t.kind!=='setup'?bikeCard(x,true):''}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;

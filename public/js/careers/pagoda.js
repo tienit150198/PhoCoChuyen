@@ -6,7 +6,7 @@
  * The server decides everything; one tap sends one command. */
 import {nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,pane,notesPage,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,tile} from './street_kit.js';
+import {data,cc,pane,notesPage,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,tile,tip,clean,few} from './street_kit.js';
 
 const steps=t=>t.needs?.steps||[];
 const cur=t=>steps(t)[t.at]||null;
@@ -24,13 +24,13 @@ function notebook(x,auto=false){
 function ticket(t,x){
   if(!t.known)return askCard(x,t,'👂 Nghe dặn');
   const tag=`<span class="tag pg-kind">${x.esc(kindEmoji(x,t.kind))} ${x.esc(kindLabel(x,t.kind))}</span>`;
-  return person(x,t,`<p class="muted small">${x.esc(t.opening)}</p>`,tag);
+  return person(x,t,clean()?tip(x.esc(t.opening),'','p'):`<p class="muted small">${x.esc(t.opening)}</p>`,clean()?'':tag);
 }
 function progress(t,x){
   const ss=steps(t);if(ss.length<2)return '';
   const done=new Set(t.closed||[]),skip=new Set(t.skipped||[]);
   return `<ol class="pg-progress" aria-label="Các bước">${ss.map((s,i)=>{const st=done.has(s.id)?'done':skip.has(s.id)?'skip':i===t.at?'now':'';
-    return `<li class="${st}" title="${x.esc(s.title)}"><span aria-hidden="true">${st==='done'?'✓':st==='skip'?'–':TYPE_ICON[s.type]||'•'}</span><small>${x.esc(s.title)}</small></li>`;}).join('')}</ol>`;
+    return `<li class="${st}" title="${x.esc(s.title)}" aria-label="${x.esc(s.title)}"><span aria-hidden="true">${st==='done'?'✓':st==='skip'?'–':TYPE_ICON[s.type]||'•'}</span>${clean()?'':`<small>${x.esc(s.title)}</small>`}</li>`;}).join('')}</ol>`;
 }
 function linesCard(t,x){
   const ls=t.lines||[];if(!ls.length)return '';
@@ -58,8 +58,9 @@ function orderStep(t,x,s){
   const got=t.work?.[s.id]||[],by=Object.fromEntries(s.items.map(i=>[i.id,i]));
   const seq=got.map((id,k)=>{const i=by[id];const last=k===got.length-1;
     return `<li><b>${k+1}</b><span aria-hidden="true">${x.esc(i.emoji)}</span><span class="grow">${x.esc(i.name)}</span>${last?x.cmd('↩︎','chua_seq',{task:t.id,item:id},'ghost small pg-undo',false):''}</li>`;}).join('');
-  const left=s.items.filter(i=>!got.includes(i.id)).map(i=>tile(x,'chua_seq',{task:t.id,item:i.id},`<span class="tile-emoji">${x.esc(i.emoji)}</span><b>${x.esc(i.name)}</b>`,`pg-i-${i.id}`)).join('');
+  const left=s.items.filter(i=>!got.includes(i.id)).map(i=>tile(x,'chua_seq',{task:t.id,item:i.id},`<span class="tile-emoji">${x.esc(i.emoji)}</span><b>${x.esc(few(i.name,2))}</b>${clean()?tip(x.esc(i.name),'','small'):''}`,`pg-i-${i.id}`).replace('<button ',`<button aria-label="${x.esc(i.name)}" `)).join('');
   const n=orderNeed(s);
+  if(clean())return `${got.length?`<ol class="pg-seq">${seq}</ol>`:tip('Chạm việc làm trước tiên.','','p')}${left?`<div class="tile-grid pg-left">${left}</div>`:''}<p class="small muted pg-count" aria-live="polite" aria-label="Đã xếp ${got.length}/${n}">🔢 ${got.length}/${n}</p>`;
   return `${got.length?`<ol class="pg-seq">${seq}</ol>`:'<p class="small muted">Chạm việc làm trước tiên.</p>'}${left?`<div class="tile-grid pg-left">${left}</div>`:''}<p class="small muted pg-count" aria-live="polite">Đã xếp ${got.length}/${n}${got.length<n?` · còn ${n-got.length} việc nữa mới xong`:''}.</p>`;
 }
 function chooseStep(t,x,s){
@@ -75,7 +76,7 @@ function tallyStep(t,x,s){
 function stepCard(t,x){
   const s=cur(t);if(!s)return '';
   const body={pick:pickStep,sort:sortStep,order:orderStep,choose:chooseStep,tally:tallyStep}[s.type]?.(t,x,s)||'';
-  return `<section class="card pg-step pg-${s.type}" data-step="${x.esc(s.id)}"><h4>${TYPE_ICON[s.type]||''} ${x.esc(s.title)}</h4>${s.lead?`<p class="small muted pg-lead">${x.esc(s.lead)}</p>`:''}${body}</section>`;
+  return `<section class="card pg-step pg-${s.type}" data-step="${x.esc(s.id)}">${clean()&&steps(t).length>1?'':`<h4>${TYPE_ICON[s.type]||''} ${x.esc(s.title)}</h4>`}${s.lead?(clean()?tip(x.esc(s.lead),s.title,'p'):`<p class="small muted pg-lead">${x.esc(s.lead)}</p>`):''}${body}</section>`;
 }
 
 /* ------------------------------------------------------------ the guide */
@@ -124,8 +125,8 @@ export default {
     if(d.desk?.ev||!d.intro||x.ui.intro)return wrap(`${hint}${top(x)}${bottom(x,g)}`);
     if(!t.known)return wrap(`${hint}${top(x)}${ticket(t,x)}${dayBar(x)}${bottom(x,g)}`);
     const n=t.needs||{};
-    const note=n.note?`<p class="small muted pg-note">${x.esc(n.note)}</p>`:'';
-    return wrap(`${hint}${top(x)}${ticket(t,x)}${progress(t,x)}${stepCard(t,x)}${linesCard(t,x)}${note}${notebook(x)}${dayBar(x)}${bottom(x,g)}`);
+    const note=n.note?(clean()?tip(x.esc(n.note),'','p'):`<p class="small muted pg-note">${x.esc(n.note)}</p>`):'';
+    return wrap(`${hint}${top(x)}${ticket(t,x)}${progress(t,x)}${stepCard(t,x)}${linesCard(t,x)}${note}${clean()?'':notebook(x)}${dayBar(x)}${bottom(x,g)}`);
   },
   idle(x){
     const d=data(x);

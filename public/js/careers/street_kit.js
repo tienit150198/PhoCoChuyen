@@ -3,8 +3,8 @@
  * line, the day bar and the sticky next-step bar. Layout lives in public/css/careers/street_kit.css;
  * each career draws its own stations and keeps its own look in public/css/careers/<id>.css. */
 import {barParts} from '../v4/guide.js';
-import {actBar,helpBtn,whyAttrs,clean,tip} from '../ui-kit.js';
-export {tip};
+import {actBar,helpBtn,whyAttrs,clean,tip,headChip,few} from '../ui-kit.js';
+export {tip,clean,headChip,few};
 
 export const DONE=['completed','cancelled','referred'];
 export const data=x=>x.room.data||{};
@@ -88,14 +88,14 @@ export function dayBar(x,tail=''){
     [...(m.hint?[{title:`${m.emoji||''} ${m.label||'Hôm nay'}`,body:`<p>${x.esc(m.hint)}</p>`}]:[]),...introHelp(x,i)],{tips:true,cls:'sk-help'})
     :act(x,'❔','intro',{},'ghost small sk-help',' aria-label="Giới thiệu nghề"');
   const line=clean()?`<div class="grow sk-day-line">${sum}</div>`:m.hint?pane(x,`day-${x.room.day}`,sum,`<small>${x.esc(m.hint)}</small>`,false,'grow'):`<div class="grow sk-day-line">${sum}</div>`;
-  return `<div class="sk-day">${line}${q}</div>`;
+  return `<div class="sk-day">${line}${clean()?'<span class="ui-chiprow"></span>':''}${q}</div>`;
 }
 
 /** The customer on the card: portrait, name, one line and the patience bar. */
 export function person(x,t,inner='',tag=''){
   const who=x.npc(t.npc);
   return `<article class="card sk-ticket"><div class="row">${x.portrait(who,48)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${tag}</div>
-    <p class="small"><b>${x.esc(t.title)}</b></p>${inner}
+    ${clean()?'':`<p class="small"><b>${x.esc(t.title)}</b></p>`}${inner}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
 }
 /** Before the first question: who is here and the one button to ask. */

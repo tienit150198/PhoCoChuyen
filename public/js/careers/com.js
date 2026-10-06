@@ -7,7 +7,7 @@
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
-import {data,cc,lower,tile,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
+import {data,cc,lower,tile,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,tip,clean,few} from './street_kit.js';
 
 const DISH=(x,k)=>(cc(x).dishes||{})[k]||{name:k,short:k,emoji:'🍽️',src:'tray'};
 const RICE=(x,k)=>(cc(x).rice||{})[k]||{name:k,short:k,emoji:'🍚'};
@@ -131,14 +131,20 @@ function platePanel(t,x){
 }
 
 /* ------------------------------------------------------------ the morning */
+const WSHORT={lung:'½',mot:'1',ruoi:'1½'};
 function setupPanel(t,x){
   const d=data(x),m=d.mam||{},g=d.grill||{};
   const pot=r=>{const R=RICE(x,r),p=d.pots?.[r]||{};
     if(p.va)return `<div class="ct-cook"><b>${x.esc(R.emoji)} ${x.esc(R.name)}</b>${potLine(x,r)}</div>`;
-    return `<div class="ct-cook"><b>${x.esc(R.emoji)} ${x.esc(R.name)}: đổ nước tới đâu?</b><div class="ct-row">${Object.entries(cc(x).water||{}).map(([k,l])=>x.cmd(x.esc(l),'com_cook',{r,water:k},'small ghost',!stock(x,R.item||(r==='tam'?'gao_tam':'gao')))).join('')}</div></div>`;};
+    // Clean layout: the water depth as a number of knuckles (½ · 1 · 1½); the question is in the "?" sheet.
+    return `<div class="ct-cook"><b>${x.esc(R.emoji)} ${x.esc(R.name)}${clean()?'':': đổ nước tới đâu?'}</b><div class="ct-row">${Object.entries(cc(x).water||{}).map(([k,l])=>x.cmd(clean()?WSHORT[k]||x.esc(l):x.esc(l),'com_cook',{r,water:k},'small ghost',!stock(x,R.item||(r==='tam'?'gao_tam':'gao'))).replace('<button ',`<button aria-label="${x.esc(l)}" `)).join('')}</div></div>`;};
   const fix=m.tasted?`<p class="small">🥄 Nước mắm ${x.esc((cc(x).taste||{})[m.q]||'')}</p><div class="ct-row">${Object.entries(cc(x).fix||{}).map(([k,l])=>x.cmd(x.esc(l),'com_fix',{add:k},'small ghost')).join('')}</div>`:x.cmd('🥄 Nếm nước mắm','com_taste',{},'primary');
   const trays=(cc(x).trays||FIRST_TRAYS).map(k=>{const D=DISH(x,k),n=Number(d.trays?.[k]?.n||0);
-    return tile(x,'com_tray',{item:k},`<span class="tile-emoji">${x.esc(D.emoji)}</span><b>${x.esc(D.name)}</b><small>${n?`${n} phần`:'chưa bày'} · kho ${stock(x,k)}</small>`,n?'selected':'',!stock(x,k)||n+Number((cc(x).tray_n||{})[k]||8)>Number(cc(x).tray_max||16));}).join('');
+    return tile(x,'com_tray',{item:k},`<span class="tile-emoji">${x.esc(D.emoji)}</span><b>${x.esc(few(D.name,1))}</b><small>${clean()?`${n||'–'} · 📦 ${stock(x,k)}`:`${n?`${n} phần`:'chưa bày'} · kho ${stock(x,k)}`}</small>`,n?'selected':'',!stock(x,k)||n+Number((cc(x).tray_n||{})[k]||8)>Number(cc(x).tray_max||16));}).join('');
+  if(clean())return `<section class="card ct-setup"><h4>💧 Mấy đốt?</h4>${tip('Đổ nước tới đâu (đốt ngón tay)? Gạo tấm hút ít nước hơn gạo trắng.','Hai nồi cơm','p')}${pot('tam')}${pot('trang')}
+    <div class="ct-row ct-morning">${m.tasted?fix:x.cmd('🥄 Nếm mắm','com_taste',{},'primary').replace('<button ','<button aria-label="Nếm chén nước mắm pha tối qua" ')}${g.lit?'<span class="tag green">✓ Than hồng</span>':x.cmd('🔥 Nhóm bếp','com_fire',{},'primary').replace('<button ','<button aria-label="Nhóm bếp than" ')}</div>
+    <h4 class="section-title" aria-label="Bày khay">🍱</h4>${tip('Đồ nấu không để qua đêm: bày vừa đủ bán.','Bày khay lên tủ kính','p')}<div class="tile-grid ct-case">${trays}</div>
+    ${tip(x.esc(t.needs?.note||''),'','p')}</section>`;
   return `<section class="card ct-setup"><h4>🍚 Hai nồi cơm</h4><p class="small muted">Gạo tấm hút ít nước hơn gạo trắng.</p>${pot('tam')}${pot('trang')}
     <h4 class="section-title">🫙 Chén nước mắm pha tối qua</h4>${fix}
     <h4 class="section-title">🔥 Bếp than</h4>${g.lit?'<span class="tag green">✓ Than hồng đều</span>':x.cmd('🔥 Nhóm bếp than','com_fire',{},'primary')}
@@ -148,7 +154,7 @@ function setupPanel(t,x){
 function setupSteps(t,x){
   const d=data(x),m=d.mam||{},rows=[],water=cc(x).water||{};
   for(const r of ['tam','trang']){const R=RICE(x,r),w=R.water||(r==='tam'?'lung':'mot'),p=d.pots?.[r]||{};
-    rows.push({ok:p.va?true:null,label:`Nấu nồi ${lower(R.name)}`,go:{cmd:'com_cook',payload:{r,water:w},label:`${R.emoji} ${water[w]||'Nấu'}`}});}
+    rows.push({ok:p.va?true:null,label:`Nấu nồi ${lower(R.name)}`,go:{cmd:'com_cook',payload:{r,water:w},label:clean()?`${R.emoji} Nấu ${WSHORT[w]||''}`:`${R.emoji} ${water[w]||'Nấu'}`}});}
   if(!m.tasted)rows.push({ok:null,label:'Nếm chén nước mắm',go:{cmd:'com_taste',payload:{},label:'🥄 Nếm nước mắm'}});
   else if(m.q!=='ok'){const k=FIX_FOR[m.q];rows.push({ok:false,label:'Chỉnh nước mắm cho vừa',note:(cc(x).taste||{})[m.q]||'',go:{cmd:'com_fix',payload:{add:k},label:`🫙 ${(cc(x).fix||{})[k]||'Chỉnh'}`}});}
   else rows.push({ok:true,label:'Nước mắm vừa miệng'});
@@ -252,11 +258,11 @@ export default {
     const top=`${introCard(x,'com_intro','🍚')}${deskCard(x,'com_desk','Chuyện ở quán')}`;
     if(d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk ct">${hint}${top}${bottom(x,g)}</div>`;
     let main='',side='';
-    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc mở quán');}
+    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc mở quán',{chip:true});}
     else if(!t.known)main='';
     else if(t.stage==='pay')main=cashPanel(x,t.id,t.cash);
     else{const fire=!!data(x).grill?.b;   // a batch on the grill comes first: its bar is what to watch
-      main=fire?`${grillCard(x,t)}${counter(t,x)}${platePanel(t,x)}${potsCard(x)}`:`${counter(t,x)}${platePanel(t,x)}${grillCard(x,t)}${potsCard(x)}`;side=stepRows(x,g.steps,'Cơm của khách');}
+      main=fire?`${grillCard(x,t)}${counter(t,x)}${platePanel(t,x)}${potsCard(x)}`:`${counter(t,x)}${platePanel(t,x)}${grillCard(x,t)}${potsCard(x)}`;side=stepRows(x,g.steps,'Cơm của khách',{chip:true});}
     const head=t.kind==='setup'?dayBar(x):`${ticket(t,x)}${dayBar(x)}${stallBar(x)}`;
     return `<div class="career-job sk ct" data-ct-wake="${wakeAt(x)}">${hint}${top}${head}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },

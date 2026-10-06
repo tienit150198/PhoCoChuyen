@@ -22,7 +22,7 @@
  * Pure string builders + one DOM pass. */
 import {escapeHTML as esc} from '../icons.js';
 import {syncBar} from './action-bar.js';
-import {whyAttrs,placeChips,clean,actBar} from '../ui-kit.js';
+import {whyAttrs,placeChips,clean,actBar,headChip} from '../ui-kit.js';
 import {toastHead} from '../toast-lines.js';
 
 /** The next step: the first one not done yet that can be done from here (wrong ones count
@@ -68,8 +68,11 @@ export function bareLabel(s,html=true){
 export const firstTime=x=>!((x?.room?.metrics?.served)>0);
 
 /** Checklist rows: done rows stay plain, the rest become buttons with a small "→". */
-export function stepRows(x,steps,label='Việc cần làm'){
-  return `<ul class="checklist gd-list" aria-label="${esc(label)}">${(steps||[]).filter(Boolean).map(s=>{
+export function stepRows(x,steps,label='Việc cần làm',{chip=false}={}){
+  const all=(steps||[]).filter(Boolean),done=all.filter(s=>s.ok===true).length;
+  // chip: on the clean layout the list folds into a header chip ("📋 2/5"); a tap opens it (ui-kit headChip).
+  const head=chip&&all.length?headChip('📋',`${done}/${all.length}`,'.gd-list.ui-chipped',{label:`${label}: ${done}/${all.length} xong`,tone:done===all.length?'ok':'',flow:true}):'';
+  return `${head}<ul class="checklist gd-list${head?' ui-chipped':''}" aria-label="${esc(label)}">${all.map(s=>{
     const cls=s.ok===true?'ok':s.ok===false?'bad':'',mark=s.ok===true?'✓':s.ok===false?'✗':'○';
     const tap=s.ok!==true&&s.go?` role="button" tabindex="0"${goAttrs(s.go)}`:'';
     return `<li class="${cls}${tap?' gd-todo':''}"${tap}><span>${mark}</span>${esc(s.label)}${s.note?`<small>${esc(s.note)}</small>`:''}${tap?'<i class="gd-go" aria-hidden="true">→</i>':''}</li>`;

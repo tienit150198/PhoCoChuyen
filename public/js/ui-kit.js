@@ -99,8 +99,8 @@ export function whyTap(el){
 /** A pinned card's digest as a header chip on phones: `icon` + a short `text` (≤ 3 words, numbers welcome).
  * `target`: a selector for the card. While data-clean is on, guide.js moves the chip into the sheet header and the
  * card stops pinning; a tap opens the card as a popover under the header (a second tap, or ✕, closes it). */
-export function headChip(icon,text,target,{label='',tone=''}={}){
-  return `<button type="button" class="ui-chip${tone?' '+e(tone):''}" data-ui-head data-ui-pop="${e(target)}" aria-expanded="false" aria-label="${e(label||text)}"><span aria-hidden="true">${e(icon)}</span><b>${e(text)}</b><i aria-hidden="true">›</i></button>`;
+export function headChip(icon,text,target,{label='',tone='',flow=false}={}){
+  return `<button type="button" class="ui-chip${tone?' '+e(tone):''}" data-ui-head${flow?'="flow"':''} data-ui-pop="${e(target)}" aria-expanded="false" aria-label="${e(label||text)}"><span aria-hidden="true">${e(icon)}</span><b>${e(text)}</b><i aria-hidden="true">›</i></button>`;
 }
 
 /* The "?" sheet: rules, formulas and intros live here, never on the work screen. Content is kept by key at render
@@ -150,8 +150,13 @@ function openHelp(key,btn){
 export function placeChips(dialog){
   if(!dialog)return;
   const head=dialog.querySelector('#sheetContent .sheet-head');if(!head)return;
+  // flow chips (the digest of a card that never pinned: a checklist, a booking list) join the screen's in-flow chip
+  // row (.ui-chiprow, the street kit's day line) so the header stays one row; without one they go to the header.
+  const row2=dialog.querySelector('.sheet-body .ui-chiprow');
+  if(row2){const flow=[...dialog.querySelectorAll('.sheet-body [data-ui-head="flow"]')].filter(c=>!row2.contains(c)&&!c.closest('details:not([open])'));
+    if(flow.length)row2.prepend(...flow);}
   const old=[...head.querySelectorAll(':scope>.ui-chips')];
-  const chips=[...dialog.querySelectorAll('.sheet-body [data-ui-head]')].filter(c=>!c.closest('details:not([open])'));
+  const chips=[...dialog.querySelectorAll('.sheet-body [data-ui-head]')].filter(c=>!c.closest('details:not([open])')&&!c.closest('.ui-chiprow'));
   if(!chips.length){old.forEach(o=>o.remove());dialog.removeAttribute('data-ui-chips');return;}
   let row=old[0];
   if(!row){row=document.createElement('div');row.className='ui-chips';head.querySelector(':scope>.grow')?.after(row)||head.append(row);}
@@ -172,6 +177,16 @@ function togglePop(chip){
   if(open){card.classList.add('ui-pop');chip.setAttribute('aria-expanded','true');}
 }
 
+/** A label in at most `max` words for the clean layout (numbers are free): cut at the first clause, then at `max`
+ * words, never ending on a little word ("lúc", "cùng"…). On the classic layout the whole label. */
+const LITTLE=new Set(['lúc','từ','ra','vào','trong','cùng','và','với','cho','của','ở','để','mọi','các','những','một','bằng','theo','khi','thì','là','đi','lên','xuống','hay','hoặc']);
+export function few(s,max=3,force=false){
+  const full=String(s||'').trim();if(!force&&!clean())return full;
+  const head=full.split(/[,;(:—–]|\s-\s/)[0].trim(),out=[];let n=0;
+  for(const w of head.split(/\s+/)){const word=/\p{L}/u.test(w);if(word&&n>=max)break;out.push(w);if(word)n++;}
+  while(out.length>1&&(LITTLE.has(out[out.length-1].toLowerCase())||!/[\p{L}\p{N}]/u.test(out[out.length-1])))out.pop();
+  return out.join(' ')||full;
+}
 /* ---------------------------------------------------------------- word budget (dev) */
 export const WORD_CAPS={work:25,intro:30,toast:8,life:30};
 const visibleWords=root=>{
@@ -191,7 +206,7 @@ const visibleWords=root=>{
  * street-kit intro card is up, else 'work' for a work sheet. Dev builds warn in the console when over. */
 export function wordBudget(dialog){
   if(!dialog?.open||typeof document==='undefined')return null;
-  const kind=dialog.querySelector('.sk-intro')?'intro':dialog.querySelector('.career-job')?'work':'life';
+  const kind=dialog.querySelector('.sk-intro,.td-intro')?'intro':dialog.querySelector('.career-job')?'work':'life';
   const words=visibleWords(dialog);
   // A note is transient: it is not part of the screen's words, it has its own cap (8).
   const toasts=[...document.querySelectorAll('#toasts>.toast'),...dialog.querySelectorAll('.ui-bar-note:not(.open)')].filter(t=>t.getClientRects().length).map(t=>(t.innerText.match(/\S+/g)||[]).filter(k=>/\p{L}/u.test(k)).length);

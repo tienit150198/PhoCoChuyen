@@ -31,7 +31,7 @@ CAPS = {'work': 25, 'intro': 30, 'toast': 8}
 INTRO = ('fruit', 'garbage', 'drain', 'homemaker', 'ice_cream', 'com', 'nail', 'pagoda', 'pho', 'photobooth', 'giupviec',
          'naucom', 'babysitter', 'library', 'oil', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'tra_da')
 # Work screens already cut to ≤ 25 words. Each per-screen wave adds its careers here once they pass.
-WORK_DONE: tuple[str, ...] = ()
+WORK_DONE: tuple[str, ...] = ('drain', 'com', 'lighthouse', 'railway', 'tra_da', 'babysitter', 'pho', 'pagoda', 'rescue', 'giupviec')   # wave 1
 DEFAULT = INTRO + ('florist', 'repair', 'restaurant', 'clothing', 'teacher', 'tour_guide')
 
 COUNT = r"""async () => {

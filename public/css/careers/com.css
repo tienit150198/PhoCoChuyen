@@ -82,3 +82,6 @@
   .career-job.ct .ct-trays li .sk-meter,.career-job.ct .ct-trays li small{grid-column:2}
 }
 @media (prefers-reduced-motion:reduce){.career-job.ct .ct-needle{transition:none}}
+
+/* Clean layout: the knuckle buttons (½ · 1 · 1½) stay a thumb wide. */
+html[data-clean] .career-job .ct-cook .btn{min-width:48px}

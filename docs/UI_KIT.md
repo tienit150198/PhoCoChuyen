@@ -132,6 +132,41 @@ The street-kit intro uses it:
 - The lead and the three lists live behind "?".
 - The start button is the bar's main button.
 
+## Cutting a screen to 25 words (wave 1 recipe)
+
+The ten worst street screens went from 50–120 words to 17–24 this way. Every helper is a no-op on the classic layout, so
+desktop keeps its text.
+
+- **Explanations go behind "?":** wrap a rule, a tile's description, a lead paragraph or a story in
+  `tip(htmlSafeText, 'what it explains', tag)` (ui-kit; the street kit re-exports it).
+  - On the clean layout it is hidden.
+  - The day line's "?" lists it under "Trên màn này" (`helpBtn(..., {tips:true})`), followed by the day's hint and
+    the intro.
+- **Labels in a word or two:** `few(label, max)` cuts at the first clause, then at `max` words, and never ends on
+  "lúc", "cùng" and similar little words. Numbers are free.
+  - Where a cut reads badly, use a small curated map instead (drain's `SHORT`, the railway and lighthouse `EQ_WORD`,
+    rescue's `UNIT_WORD`, giúp việc's `BOTTLE_WORD`).
+  - Always keep the full name as the control's `aria-label`.
+  - Keep what the player decides with: customer demands, a spot's danger mark, a child's temper. Shorten how it is
+    said, not what is asked.
+- **Icons and numbers, not words**, for state such as `🍵 0/12 · 🧊 0/24`, gear and fill buttons, and the knuckle
+  buttons `½ · 1 · 1½`. Put the words in `aria-label`.
+- **Reference cards become chips:** a card the player only checks now and then (an appointment book, the step
+  checklist) gets `headChip(icon, '3 hẹn', '.card-sel', {flow:true})`, and the card gets the class `ui-chipped`.
+  - On the clean layout the card is hidden and the chip opens it as a popover.
+  - `flow:true` puts the chip in the screen's in-flow chip row (the street kit's day line), so the pinned header stays
+    one row.
+  - `stepRows(x, steps, label, {chip:true})` does this for the checklist.
+- **Choices that wait:** a set of choices only needed after other steps can sit behind one `pane()` line that opens
+  by itself when its turn comes (babysitter greetings, rescue's units on pause).
+- **The header** shows the task title in at most 4 words on the clean layout (`app.js header`). The full title stays
+  in `title=` and `aria-label`.
+- **Notes (toasts)** go into the bar's left slot for a few seconds (guide.js `barNote`). They never cover the work and
+  never count toward the screen's 25. Their own cap is 8 (toast-lines.js `toastHead`).
+
+Measure with the audit harness or `scripts/check_word_caps.py --careers <id>`. When a screen passes, add it to
+`WORK_DONE`.
+
 ## The switch: `html[data-clean]`
 
 `v4/shell.js applyClean` sets it.

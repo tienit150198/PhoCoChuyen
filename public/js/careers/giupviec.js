@@ -4,7 +4,9 @@
  * top to bottom and dry before wet, lift the vase off and put it back, the ring into the tray, the cat out of the
  * way, then the client's walk-through. The server decides everything; one tap sends one command. */
 import {stepRows,nextHint,finalGo,pending,stepLine,firstTime} from '../v4/guide.js';
-import {data,cc,lower,tile,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,meter} from './street_kit.js';
+import {data,cc,lower,tile,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,meter,tip,clean} from './street_kit.js';
+/** One word per bottle on the clean layout (the whole name stays the row's label for readers). */
+const BOTTLE_WORD={kinh:'Kính',da_nang:'Dịu',dau_mo:'Dầu',toilet:'Bồn cầu',lau_san:'Sàn'};
 
 const need=t=>t.needs||{};
 const SPOT=(x,k)=>(cc(x).spots||{})[k]||{name:k,emoji:'✨',lvl:1,mat:'',tools:[],products:[]};
@@ -96,9 +98,9 @@ function handPanel(x){
 function setupPanel(t,x){
   const d=data(x),cart=d.cart||{},full=Number(cc(x).bottle||12);
   const rows=(cc(x).bottles||[]).map(p=>{const v=PROD(x,p),n=Number(cart.bottles?.[p]||0),s=stockOf(x,v.item);
-    return `<li><span class="gv-bottle">${x.esc(v.emoji)} ${x.esc(v.short)}</span>${meter(n,full,n<Number(cc(x).bottle_low||3)?'low':'')}<small>${n}/${full}</small>${x.cmd(`Châm đầy <small>📦 ${s}</small>`,'gv_fill',{product:p},'small gv-fill',n>=full||!s)}</li>`;}).join('');
-  return `<section class="card gv-setup"><h4>🧺 Khăn lau</h4><div class="sk-row">${cart.cloths==='clean'?'<span class="tag green">✓ Khăn sạch, ba màu</span>':x.cmd('🧺 Giặt khăn','gv_wash',{},'primary gv-wash')}</div>
-    <h4 class="section-title">🧴 Chai trên xe</h4><ul class="gv-bottles">${rows}</ul><p class="small muted">${x.esc(need(t).note||'')}</p></section>`;
+    return `<li aria-label="${x.esc(v.name||v.short)}"><span class="gv-bottle">${x.esc(v.emoji)} ${x.esc(clean()&&BOTTLE_WORD[p]||v.short)}</span>${meter(n,full,n<Number(cc(x).bottle_low||3)?'low':'')}<small>${n}/${full}</small>${x.cmd(clean()?`🧴 <small>📦 ${s}</small>`:`Châm đầy <small>📦 ${s}</small>`,'gv_fill',{product:p},'small gv-fill',n>=full||!s).replace('<button ','<button aria-label="Châm đầy" ')}</li>`;}).join('');
+  return `<section class="card gv-setup">${clean()?'':'<h4>🧺 Khăn lau</h4>'}<div class="sk-row">${cart.cloths==='clean'?'<span class="tag green">✓ Khăn sạch, ba màu</span>':x.cmd('🧺 Giặt khăn','gv_wash',{},'primary gv-wash')}</div>
+    ${clean()?'':'<h4 class="section-title">🧴 Chai trên xe</h4>'}<ul class="gv-bottles">${rows}</ul>${tip(x.esc(need(t).note||''),'','p')}</section>`;
 }
 function setupSteps(t,x){
   const d=data(x),cart=d.cart||{},low=Number(cc(x).bottle_low||3)+3,rows=[];
@@ -184,10 +186,10 @@ export default {
     const g=guide(t,x),d=data(x),hint=hintFor(g,x);
     const top=`${introCard(x,'gv_intro','🧹')}${deskCard(x,'gv_desk','Chuyện ở nhà khách')}`;
     if(d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk gv">${hint}${top}${bottom(x,g)}</div>`;
-    if(t.kind==='setup')return `<div class="career-job sk gv">${hint}${top}${dayBar(x)}<div class="workbench"><section class="wb-main">${setupPanel(t,x)}</section><aside class="wb-side">${stepRows(x,g.steps,'Soạn xe')}</aside></div>${bottom(x,g)}</div>`;
+    if(t.kind==='setup')return `<div class="career-job sk gv">${hint}${top}${dayBar(x)}<div class="workbench"><section class="wb-main">${setupPanel(t,x)}</section><aside class="wb-side">${stepRows(x,g.steps,'Soạn xe',{chip:true})}</aside></div>${bottom(x,g)}</div>`;
     if(!d.cart?.out)return `<div class="career-job sk gv">${hint}${top}${t.known?ticket(t,x,true):''}${cartBack(x)}${dayBar(x)}${bottom(x,g)}</div>`;
     if(!t.known)return `<div class="career-job sk gv">${hint}${top}${learnCard(x)}${ticket(t,x)}${dayBar(x)}${bottom(x,g)}</div>`;
-    const bench=`${roomTabs(t,x)}<div class="workbench"><section class="wb-main">${roomPanel(t,x)}</section><aside class="wb-side">${t.room?handPanel(x):''}${stepRows(x,g.steps,'Việc trong nhà')}</aside></div>`;
+    const bench=`${roomTabs(t,x)}<div class="workbench"><section class="wb-main">${roomPanel(t,x)}</section><aside class="wb-side">${t.room?handPanel(x):''}${stepRows(x,g.steps,'Việc trong nhà',{chip:true})}</aside></div>`;
     return `<div class="career-job sk gv">${hint}${top}${learnCard(x,!t.room)}${ticket(t,x,!!t.room)}${bench}${dayBar(x)}${bottom(x,g)}</div>`;
   },
   idle(x){

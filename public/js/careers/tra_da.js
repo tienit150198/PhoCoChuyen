@@ -4,12 +4,12 @@
  * chú Tường, the timed "trật tự đô thị" sweep, surprises, the stall's own story
  * and what it can buy to grow. Everything is decided on the server; the client
  * only shows it and sends one command per tap. */
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
+import {stepRows,nextHint,stepBar,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import {linesSummary} from './tomorrow_kit.js';
 import {shortLine,introHelp} from './street_kit.js';
-import {helpBtn} from '../ui-kit.js';
+import {helpBtn,tip,clean,few} from '../ui-kit.js';
 const DONE=['completed','cancelled','referred'];
 const data=x=>x.room.data||{};
 const cc=x=>x.cc||{};
@@ -65,11 +65,16 @@ function deskCard(x){
 }
 function arcCard(x){
   const due=data(x).arc?.due;if(!due)return '';
-  return `<article class="td-arc card"><small>Chuyện của quán</small><h3>${x.esc(due.emoji)} ${x.esc(due.title)}</h3>${due.text.map(s=>`<p>${x.esc(s)}</p>`).join('')}${x.cmd('Ghi nhớ','td_arc',{},'small primary td-arc-go')}</article>`;
+  // Clean layout: the chapter's title and "Ghi nhớ"; its story is in the "?" sheet.
+  const story=clean()?tip(due.text.map(s=>x.esc(s)).join(' '),due.title,'p'):due.text.map(s=>`<p>${x.esc(s)}</p>`).join('');
+  return `<article class="td-arc card">${clean()?'':'<small>Chuyện của quán</small>'}<h3>${x.esc(due.emoji)} ${x.esc(due.title)}</h3>${story}${x.cmd('Ghi nhớ','td_arc',{},'small primary td-arc-go')}</article>`;
 }
 function dayBar(x){
   const d=data(x),m=d.mod||{},st=d.stall||{},spot=(cc(x).spots||{})[st.spot];
   const sum=`<span class="td-sky" aria-hidden="true">${x.esc(m.emoji||'🌤️')}</span><b>${x.esc(m.label||'')}${spot?` · ${x.esc(spot.emoji)} ${x.esc(spot.name)}`:''}</b>`;
+  // Clean layout: the in-flow chip row (a checklist's "📋 2/5") and a "?" with what this screen folded away.
+  if(clean()){const i=cc(x).intro||{};
+    return `<div class="td-day"><div class="grow td-day-line">${sum}</div><span class="ui-chiprow"></span>${helpBtn('day-tra_da',`🌳 ${String(i.title||'').replace(/^Giới thiệu nghề:?\s*/,'')}`,[...(m.hint?[{title:`${m.emoji||''} ${m.label||'Hôm nay'}`,body:`<p>${x.esc(m.hint)}</p>`}]:[]),...(i.lead?introHelp(x,i):[])],{tips:true,cls:'td-help'})}</div>`;}
   return `<div class="td-day">${m.hint?pane(x,`day-${x.room.day}`,sum,`<small>${x.esc(m.hint)}</small>`,false,'grow'):`<div class="grow td-day-line">${sum}</div>`}
     ${carBtn(x,'❔','intro',{},'ghost small td-help',' aria-label="Giới thiệu nghề"')}</div>`;
 }
@@ -96,29 +101,31 @@ function stations(x,steps=null,key='idle'){
   const low={tea:!th.tea||th.stale||th.strength<c.weak,ice:(ice.portions||0)<4,cups:!g.clean||(d.basin||0)>=(d.basin_max||12),stools:!!st.packed};
   const open=keys.filter(k=>k===cur||(st.open&&low[k]));
   const rest=keys.filter(k=>!open.includes(k));
-  const sum=`🧰 chè ${th.tea||0}/${th.max||12} · đá ${ice.portions||0}/${ice.max||24} · cốc ${g.clean||0} · ghế ${st.stools||0}/${d.owned?.stools||0}`;
+  // Clean layout: icons and numbers only (the words are the line's label for readers).
+  const sum=clean()?`<span aria-label="chè ${th.tea||0}/${th.max||12} · đá ${ice.portions||0}/${ice.max||24} · cốc ${g.clean||0} · ghế ${st.stools||0}/${d.owned?.stools||0}">🍵 ${th.tea||0}/${th.max||12} · 🧊 ${ice.portions||0}/${ice.max||24} · 🥤 ${g.clean||0} · 🪑 ${st.stools||0}/${d.owned?.stools||0}</span>`
+    :`🧰 chè ${th.tea||0}/${th.max||12} · đá ${ice.portions||0}/${ice.max||24} · cốc ${g.clean||0} · ghế ${st.stools||0}/${d.owned?.stools||0}`;
   return `<section class="td-stations" aria-label="Quầy trà">${open.map(k=>card[k]).join('')}</section>${rest.length?pane(x,`st-${key}-${cur}`,sum,`<div class="td-stations">${rest.map(k=>card[k]).join('')}</div>`,false,'td-st-more'):''}`;
 }
 
 /* ------------------------------------------------------------ setup */
 function setupPanel(t,x){
   const d=data(x),st=d.stall||{},n=t.needs||{},spots=cc(x).spots||{},owned=d.owned||{};
-  const spotTiles=Object.entries(spots).map(([k,s])=>tile(x,'td_spot',{spot:k},`<span class="tile-emoji">${x.esc(s.emoji)}</span><b>${x.esc(s.name)}</b><small>${x.esc(s.note)}</small>`,`${st.spot===k?'selected':''} ${s.legal?'':'danger'}`)).join('');
+  const spotTiles=Object.entries(spots).map(([k,s])=>tile(x,'td_spot',{spot:k},`<span class="tile-emoji">${x.esc(s.emoji)}</span><b>${x.esc(few(s.name,2))}</b>${clean()?tip(x.esc(s.note),s.name):`<small>${x.esc(s.note)}</small>`}`,`${st.spot===k?'selected':''} ${s.legal?'':'danger'}`)).join('');
   const cap=st.spot?spots[st.spot].cap:8,max=Math.min(owned.stools||4,12);
   const stools=Array.from({length:Math.max(0,max-1)},(_,i)=>i+2).map(k=>tile(x,'td_stools',{n:k},`<b>${k}</b><small>ghế</small>`,`td-num ${st.stools===k?'selected':''} ${k>cap?'over':''}`,!st.spot)).join('');
   const here=spots[st.spot],good=st.stools>=cc(x).stools_min&&st.stools<=cap;
   const spotSec=here?pane(x,`spot-${t.id}`,`✓ ${x.esc(here.emoji)} Chỗ bày: ${x.esc(here.name)}${here.legal?'':' ⚠️'}`,`<div class="tile-grid td-spots">${spotTiles}</div>`,false,`td-done${here.legal?'':' warn'}`)
-    :`<h4>🌳 Chọn chỗ bày quán</h4><div class="tile-grid td-spots">${spotTiles}</div>`;
+    :`${clean()?'':'<h4>🌳 Chọn chỗ bày quán</h4>'}<div class="tile-grid td-spots">${spotTiles}</div>`;
   const stoolSec=!st.spot?'':st.stools&&good?pane(x,`stools-${t.id}`,`✓ 🪑 ${st.stools} ghế · chỗ này vừa ${cap} ghế`,`<div class="td-stools">${stools}</div>`,false,'td-done')
     :`<h4 class="section-title">🪑 Bày ghế <small class="muted">chỗ này vừa ${cap} ghế</small></h4><div class="td-stools">${stools}</div>`;
   return `<div class="card td-setup">${spotSec}${stoolSec}
-    <div class="td-row space-top">${x.cmd(st.umbrella?'⛱️ Gấp ô':'⛱️ Dựng ô','td_umbrella',{up:!st.umbrella},st.umbrella?'ghost':'')}${x.cmd(st.box?'🧊 Thùng đá đã đặt':'🧊 Đặt thùng đá chỗ râm','td_box',{},'',!st.spot||st.box)}</div>
-    <p class="small muted">${x.esc(n.note||'')}</p></div>`;
+    <div class="td-row space-top">${x.cmd(st.umbrella?'⛱️ Gấp ô':'⛱️ Dựng ô','td_umbrella',{up:!st.umbrella},st.umbrella?'ghost':'')}${x.cmd(clean()?(st.box?'🧊 ✓':'🧊 Thùng đá'):st.box?'🧊 Thùng đá đã đặt':'🧊 Đặt thùng đá chỗ râm','td_box',{},'',!st.spot||st.box).replace('<button ','<button aria-label="Đặt thùng đá chỗ râm" ')}</div>
+    ${clean()?tip(x.esc(n.note||''),'','p'):`<p class="small muted">${x.esc(n.note||'')}</p>`}</div>`;
 }
 function setupSteps(t,x){
   const d=data(x),st=d.stall||{},n=t.needs||{},spots=cc(x).spots||{},th=d.thermos||{},ice=d.ice||{},c=cc(x),rows=[],owned=d.owned||{};
   const want=spots[n.spot]||{};
-  rows.push({ok:st.spot?st.spot===n.spot:null,label:`Bày ở ${lower(want.name||'')}`,note:st.spot&&st.spot!==n.spot?'bà Lựu dặn chỗ khác':'',go:{cmd:'td_spot',payload:{spot:n.spot},label:`${x.esc(want.emoji||'')} Bày ở ${x.esc(lower(want.name||''))}`}});
+  rows.push({ok:st.spot?st.spot===n.spot:null,label:`Bày ở ${lower(want.name||'')}`,note:st.spot&&st.spot!==n.spot?'bà Lựu dặn chỗ khác':'',go:{cmd:'td_spot',payload:{spot:n.spot},label:clean()?`${x.esc(want.emoji||'')} ${x.esc(few(want.name||'',2))}`:`${x.esc(want.emoji||'')} Bày ở ${x.esc(lower(want.name||''))}`}});
   const cap=want.cap||8,good=st.stools>=c.stools_min&&st.stools<=(spots[st.spot]||want).cap,k=Math.min(owned.stools||4,cap);
   rows.push({ok:st.stools?good:null,label:'Bày ghế nhựa',note:st.stools?`${st.stools} ghế`:'',go:st.spot?{cmd:'td_stools',payload:{n:k},label:`🪑 Bày ${k} ghế`}:null});
   if(n.umbrella)rows.push({ok:st.umbrella||st.spot==='hien'?true:null,label:'Dựng ô che nắng',go:{cmd:'td_umbrella',payload:{up:true},label:'⛱️ Dựng ô'}});
@@ -234,9 +241,10 @@ function hintFor(g,x){
   const f=g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null;
   return nextHint(x,g.steps,{final:f,pulse:g.pulse});
 }
+/** The shared bottom bar (ui-kit actBar via guide stepBar). */
 function bottom(t,x,g){
-  if(!g.final)return g.steps.length?`<div class="td-bar">${stepCta(x,g.steps,{label:'',go:null,ready:false})}</div>`:'';
-  return `<div class="td-bar">${stepCta(x,g.steps,g.final)}</div>`;
+  if(!g.final&&!g.steps.length)return '';
+  return stepBar(x,g.steps,g.final,{cls:'td-bar'});
 }
 
 /* ------------------------------------------------------------ idle: the book, growth, ice */
@@ -280,12 +288,12 @@ export default {
     const top=`${introCard(x,!!x.ui.intro)}${sweepCard(x)}${deskCard(x)}`;
     if(d.sweep?.stage==='coming'||d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job td">${hint}${top}${bottom(t,x,g)}</div>`;
     let main='',side='';
-    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc dọn hàng');}
+    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc dọn hàng',{chip:true});}
     else if(t.kind==='settle'){main=settlePanel(t,x)+(t.stage==='pay'&&t.cash?cashPanel(x,t.id,t.cash,{title:'💵 Chú Tường trả tiền'}):'');}
     else if(!t.known){main='';}
     else if(t.stage==='pay'){main=cashPanel(x,t.id,t.cash);}
     else if(t.stage==='book'){main=bookPanel(t,x);}
-    else{main=pourPanel(t,x);side=stepRows(x,g.steps,'Việc của khách');}
+    else{main=pourPanel(t,x);side=stepRows(x,g.steps,'Việc của khách',{chip:true});}
     const head=t.kind==='setup'?`${arcCard(x)}${dayBar(x)}`:`${ticket(t,x)}${dayBar(x)}`;
     return `<div class="career-job td">${hint}${top}${head}
       <div class="workbench"><section class="wb-main">${main}${stations(x,g.steps,t.id)}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(t,x,g)}</div>`;
@@ -293,7 +301,7 @@ export default {
   idle(x){
     const d=data(x),steps=idleSteps(x),todo=pending(steps)?.go,hint=todo?nextHint(x,steps,{}):'';
     const top=`${introCard(x,!!x.ui.intro)}${sweepCard(x)}${deskCard(x)}`;
-    const bar=todo?`<div class="td-bar">${stepCta(x,steps,{label:'',go:null,ready:false})}</div>`:'';
+    const bar=todo?stepBar(x,steps,null,{cls:'td-bar'}):'';
     if(d.sweep?.stage==='coming'||d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job td">${hint}${top}${bar}</div>`;
     return `<div class="career-job td">${hint}${top}${arcCard(x)}${dayBar(x)}${stations(x,steps,'idle')}${tabFold(x)}${growFold(x)}${bar}</div>`;
   },

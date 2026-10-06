@@ -10,7 +10,7 @@
  * reading, priority and log line stays the player's own choice. */
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,lower,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,kitInput,amountBox,act,meter} from './street_kit.js';
+import {data,cc,lower,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,kitInput,amountBox,act,meter,tip,clean,few} from './street_kit.js';
 import {ACTIONS as oddActions} from './air_kit.js';
 
 const odd=x=>data(x).odd||{};
@@ -24,24 +24,27 @@ function choiceRow(x,list,cur,action,tid,key){
 function timeCard(x,t,title,when,cmd,chosen){
   const n=t.needs||{};
   const opts=(n.times||[]).map((at,i)=>x.cmd(`🕰️ ${x.esc(at)}`,cmd,{task:t.id,option:i},`hd-time ${chosen===i?'hd-on':'ghost'}`,chosen!=null)).join('');
-  return `<section class="card hd-times"><h4>${title}</h4><p class="small">${x.esc(when)} · <span class="muted">${x.esc(n.rule||'')}</span></p><div class="hd-row3">${opts}</div></section>`;
+  // Clean layout: the time alone ("🌅 05:32"); the rule is in the "?" sheet.
+  const at=clean()?`<p class="small">${x.esc(String(when).replace(/^Mặt trời (mọc|lặn)/,(m,k)=>k==='mọc'?'🌅':'🌇'))}</p>${tip(x.esc(n.rule||''),title.replace(/^\S+\s/,''),'p')}`:`<p class="small">${x.esc(when)} · <span class="muted">${x.esc(n.rule||'')}</span></p>`;
+  return `<section class="card hd-times"><h4>${title}</h4>${at}<div class="hd-row3">${opts}</div></section>`;
 }
 
 /* ------------------------------------------------------------ dawn: the morning round */
+const EQ_WORD={lamp:'Bóng đèn',lens:'Kính đèn',rotate:'Mô-tơ',solar:'Pin',gen:'Máy phát',horn:'Còi'};
 function dawnPanel(t,x){
   const n=t.needs||{},eq=cc(x).equip||[],forms=cc(x).forms||{};
   const tiles=eq.map(e=>{const on=(t.checked||[]).includes(e.id),bad=on&&t.found_item===e.id;
-    return `<button type="button" class="tile sk-tile hd-eq ${on?(bad?'bad':'selected'):''}" data-command="hd_check" data-payload="${x.esc(JSON.stringify({task:t.id,item:e.id}))}"${on?' disabled':''}><span class="tile-emoji">${x.esc(e.emoji)}</span><b>${x.esc(e.name)}</b><small>${on?(bad?'⚠️ hỏng':'✓ ổn'):x.esc(e.test)}</small></button>`;}).join('');
+    return `<button type="button" class="tile sk-tile hd-eq ${on?(bad?'bad':'selected'):''}" data-command="hd_check" data-payload="${x.esc(JSON.stringify({task:t.id,item:e.id}))}"${on?' disabled':''}><span class="tile-emoji">${x.esc(e.emoji)}</span><b>${x.esc(clean()&&EQ_WORD[e.id]||e.name)}</b>${on?`<small>${bad?'⚠️ hỏng':'✓ ổn'}</small>`:clean()?tip(x.esc(e.test),e.name):`<small>${x.esc(e.test)}</small>`}</button>`.replace('<button ',`<button aria-label="${x.esc(e.name)}" `);}).join('');
   const lens=(t.checked||[]).includes('lens');
-  const clean=!lens?'':t.cleaned?`<p class="small hd-ok">✓ Đã lau kính${t.cleaned==='quick'?' (lúc đèn còn quay)':''}</p>`
+  const wipe=!lens?'':t.cleaned?`<p class="small hd-ok">✓ Đã lau kính${t.cleaned==='quick'?' (lúc đèn còn quay)':''}</p>`
     :`<div class="hd-row2">${x.cmd('🔒 Tắt mô-tơ, treo biển rồi lau','hd_clean',{task:t.id,how:'lock'},'')}${x.cmd('🧽 Lau luôn khi đèn còn quay','hd_clean',{task:t.id,how:'quick'},'ghost')}</div>`;
-  const fuel=t.fuel_seen==null?'<p class="small muted">Đo bồn dầu ở máy phát trước đã.</p>'
+  const fuel=t.fuel_seen==null?(clean()?tip('Đo bồn dầu ở máy phát trước đã.','Sổ dầu','p'):'<p class="small muted">Đo bồn dầu ở máy phát trước đã.</p>')
     :`<p class="small">📏 Thước đo bồn: <b>${x.fmt(t.fuel_seen)} lít</b>${t.fuel_log!=null?` · sổ đang ghi ${x.fmt(t.fuel_log)} lít`:''}</p>${amountBox(x,`fuel-${t.id}`,300,{min:0,max:5000,step:5,label:'Ghi sổ dầu',send:'⛽ Ghi sổ dầu',cmd:'hd_fuel',payload:{task:t.id},field:'litres',unit:'lít'})}`;
   const fault=t.found?`<section class="card hd-fault"><h4>⚠️ ${x.esc(t.found_text)}</h4>
     ${t.found_fix?(t.fixed?'<span class="tag green">✓ Đã xử lý</span>':x.cmd(`🔧 ${x.esc(t.found_fix)}`,'hd_fix',{task:t.id},'')):'<p class="small muted">Không tự sửa được: báo đúng nơi để thợ ra đảo.</p>'}
     <p class="small"><b>Báo ở đâu?</b> Chọn một hoặc nhiều.</p><div class="hd-forms">${Object.entries(forms).map(([k,f])=>x.cmd(`${x.esc(f.emoji)} ${x.esc(f.name)}<small>${x.esc(f.hint)}</small>`,'hd_form',{task:t.id,form:k},`hd-form ${(t.forms||[]).includes(k)?'hd-on':'ghost'}`)).join('')}</div></section>`:'';
-  return `${timeCard(x,t,'💡 Tắt đèn',`Mặt trời mọc ${n.rise||''}`,'hd_off',t.off)}<p class="small hd-handover">📒 ${x.esc(n.handover||'')}</p>
-    <section class="card"><h4>🧰 Thử thiết bị <small class="muted">${(t.checked||[]).length}/${eq.length}</small></h4><div class="tile-grid hd-eqs">${tiles}</div>${clean}</section>
+  return `${timeCard(x,t,'💡 Tắt đèn',`Mặt trời mọc ${n.rise||''}`,'hd_off',t.off)}${tip(`📒 ${x.esc(n.handover||'')}`,'Sổ giao ca','p')}
+    <section class="card"><h4>🧰${clean()?"":" Thử thiết bị"} <small class="muted">${(t.checked||[]).length}/${eq.length}</small></h4><div class="tile-grid hd-eqs">${tiles}</div>${wipe}</section>
     ${fault}<section class="card hd-fuel"><h4>⛽ Sổ dầu</h4>${fuel}</section>`;
 }
 
@@ -286,7 +289,7 @@ export default {
   job(t,x){
     const g=guide(t,x),d=data(x),hint=hintFor(g,x),top=tops(x);
     if(d.desk?.ev||odd(x).ev||!d.intro||x.ui.intro)return `<div class="career-job sk hd">${hint}${top}${bottom(x,g)}</div>`;
-    let main='',side=stepRows(x,g.steps,TITLE[t.kind]||'Việc cần làm');
+    let main='',side=stepRows(x,g.steps,TITLE[t.kind]||'Việc cần làm',{chip:true});
     const lab=t.kind==='sea'?'🔭 Nhìn ra biển':t.kind==='supply'?'⛴️ Ra bến đón tàu':'🚤 Ra bến đón khách';
     if(!t.known){main=askCard(x,t,lab);side='';}
     else if(t.kind==='dawn')main=dawnPanel(t,x);

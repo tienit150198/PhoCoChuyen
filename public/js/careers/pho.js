@@ -8,7 +8,7 @@
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
-import {data,cc,lower,tile,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,meter} from './street_kit.js';
+import {tip,clean,data,cc,lower,tile,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,meter} from './street_kit.js';
 
 const VS=(x,k)=>(cc(x).vessels||{})[k]||{name:k,emoji:'🍜',rate:12,bag:k==='hop'};
 const MT=(x,k)=>(cc(x).meats||{})[k]||{name:k,emoji:'🥩'};
@@ -62,7 +62,7 @@ function potBar(x,setup=false){
   const taste=!setup&&d.shop?.open&&!p.taste?x.cmd('👅 Nếm','pho_taste',{},'small ghost'):'';
   return `<div class="ph-pot ${hot?'hot':'cool'} ${p.cloudy?'cloudy':''}" role="group" aria-label="Nồi nước dùng">
     <span class="ph-temp"><span aria-hidden="true">🌡️</span><b>${Number(p.heat)} °C</b><small>${x.esc(p.word||'')}${p.cloudy?' · nước đục':''}</small></span>
-    <span class="ph-level"><small>Nồi còn ${Number(p.level)}%</small>${meter(Number(p.level),100,low?'warn':'')}</span>
+    <span class="ph-level"><small>${clean()?'🍲':'Nồi còn'} ${Number(p.level)}%</small>${meter(Number(p.level),100,low?'warn':'')}</span>
     ${p.taste?`<span class="tag ${p.salt?'amber':'green'}">👅 ${x.esc(p.taste)}</span>`:''}
     <div class="ph-fires" role="group" aria-label="Lửa bếp">${fire}</div>
     <div class="ph-pot-acts">${foam}${taste}${top}</div></div>`;
@@ -155,17 +155,21 @@ function sidePanel(t,x){
 /* ------------------------------------------------------------ the morning */
 function setupPanel(t,x){
   const d=data(x),p=d.pot||{},old=Number(d.old_banh||0);
-  const taste=p.taste?`<p class="ph-taste ${p.salt?'off':''}">👅 <b>${x.esc(p.taste)}</b></p>${p.salt?`<div class="ph-acts">${x.cmd('🫙 Nêm nước mắm','pho_season',{what:'mam'},`ph-act ${p.salt<0?'want':''}`)}${x.cmd('💧 Châm nước sôi','pho_season',{what:'nuoc'},`ph-act ${p.salt>0?'want':''}`)}</div>`:''}`
-    :`<div class="ph-acts">${x.cmd('👅 Nếm nước dùng','pho_taste',{},'primary ph-act')}${x.cmd('🫙 Nêm nước mắm','pho_season',{what:'mam'},'ph-act ghost')}${x.cmd('💧 Châm nước sôi','pho_season',{what:'nuoc'},'ph-act ghost')}</div>`;
-  const banh=d.sour==null?x.cmd('👃 Ngửi rổ bánh phở','pho_sniff',{},'primary ph-act')
+  // Clean layout: a word or two per button (the full action is its label for readers).
+  const L=(full,short)=>clean()?short:full,A=(full)=>clean()?` aria-label="${x.esc(full)}"`:'';
+  const btn=(full,short,cmd,p,cls)=>x.cmd(L(full,short),cmd,p,cls).replace('<button ',`<button${A(full)} `);
+  const taste=p.taste?`<p class="ph-taste ${p.salt?'off':''}">👅 <b>${x.esc(p.taste)}</b></p>${p.salt?`<div class="ph-acts">${btn('🫙 Nêm nước mắm','🫙 Nêm','pho_season',{what:'mam'},`ph-act ${p.salt<0?'want':''}`)}${btn('💧 Châm nước sôi','💧 Châm','pho_season',{what:'nuoc'},`ph-act ${p.salt>0?'want':''}`)}</div>`:''}`
+    :`<div class="ph-acts">${btn('👅 Nếm nước dùng','👅 Nếm','pho_taste',{},'primary ph-act')}${btn('🫙 Nêm nước mắm','🫙 Nêm','pho_season',{what:'mam'},'ph-act ghost')}${btn('💧 Châm nước sôi','💧 Châm','pho_season',{what:'nuoc'},'ph-act ghost')}</div>`;
+  const banh=d.sour==null?btn('👃 Ngửi rổ bánh phở','👃 Ngửi bánh','pho_sniff',{},'primary ph-act')
     :d.sour&&old?`<p class="small ph-bad">🤢 ${old} nắm bánh hôm qua chua, nhớt tay.</p>${x.cmd('🗑️ Bỏ bánh chua','pho_toss',{},'primary ph-act')}`
     :`<span class="tag green">✓ ${old?`${old} nắm bánh hôm qua còn thơm`:'Bánh mới giao, trắng mềm'}</span>`;
-  return `<section class="card ph-setup"><h4>🍲 Nồi nước dùng</h4>${potBar(x,true)}<h4 class="section-title">Nếm và nêm</h4>${taste}
-    <h4 class="section-title">Rổ bánh phở</h4>${banh}<p class="small muted">${x.esc(t.needs?.note||'')}</p></section>`;
+  const h=(s,cls='section-title')=>clean()?'':`<h4 class="${cls}">${s}</h4>`;
+  return `<section class="card ph-setup">${clean()?'':'<h4>🍲 Nồi nước dùng</h4>'}${potBar(x,true)}${h('Nếm và nêm')}${taste}
+    ${h('Rổ bánh phở')}${banh}${tip(x.esc(t.needs?.note||''),'','p')}</section>`;
 }
 function setupSteps(t,x){
   const d=data(x),p=d.pot||{},ok=cc(x).fire_ok||'vua',old=Number(d.old_banh||0),rows=[];
-  rows.push({ok:p.fire===ok?true:null,label:'Vặn lửa lăn tăn',note:p.fire!==ok?(p.fire==='lon'?'lửa lớn làm nước đục':'lửa ủ chưa đủ sôi'):'',go:{cmd:'pho_fire',payload:{fire:ok},label:'🔥 Vặn lửa lăn tăn'}});
+  rows.push({ok:p.fire===ok?true:null,label:'Vặn lửa lăn tăn',note:p.fire!==ok?(p.fire==='lon'?'lửa lớn làm nước đục':'lửa ủ chưa đủ sôi'):'',go:{cmd:'pho_fire',payload:{fire:ok},label:clean()?'🔥 Lửa lăn tăn':'🔥 Vặn lửa lăn tăn'}});
   rows.push({ok:Number(p.foam)===0?true:null,label:'Hớt bọt trên mặt nồi',note:p.foam?`còn ${p.foam} muôi bọt`:'',go:{cmd:'pho_skim',payload:{},label:'🥄 Hớt bọt'}});
   if(!p.taste)rows.push({ok:null,label:'Nếm nước dùng',go:{cmd:'pho_taste',payload:{},label:'👅 Nếm nước dùng'}});
   else rows.push({ok:p.salt?null:true,label:p.salt?(p.salt<0?'Nêm thêm nước mắm':'Châm nước sôi cho dịu'):'Nước vừa miệng',note:p.salt?p.taste:'',
@@ -263,13 +267,13 @@ export default {
     const top=`${introCard(x,'pho_intro','🍜')}${deskCard(x,'pho_desk','Chuyện ở quán')}`;
     if(d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk ph">${hint}${top}${bottom(x,g)}</div>`;
     let main='',side='';
-    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc mở quán');}
+    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc mở quán',{chip:true});}
     else if(!t.known)main='';
     else if(t.stage==='pay')main=cashPanel(x,t.id,t.cash);
     else{
       const b=(t.bowls||[])[(t.bowls||[]).length-1],making=b&&(!finished(b)||t.pour);
       main=`${hotBar(t,x)}${ladlePanel(t,x)}${making?bowlPanel(t,x):vesselRow(t,x)}${counter(t,x)}${sidePanel(t,x)}`;
-      side=stepRows(x,g.steps,'Món của khách');
+      side=stepRows(x,g.steps,'Món của khách',{chip:true});
     }
     const head=t.kind==='setup'?dayBar(x):`${learnCard(x)}${ticket(t,x)}${dayBar(x)}${t.known&&t.stage==='prep'?potBar(x):''}`;
     const mini=t.kind!=='setup'&&t.stage==='prep'?pourMini(t,x):'',bar=bottom(x,g,{top:mini});

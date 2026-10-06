@@ -1989,6 +1989,8 @@ html[data-clean] dialog#sheet[data-ui-note] .toasts{display:none}
 html:not([data-clean]) [data-ui-head]{display:none}
 .ui-chips{display:flex;align-items:center;gap:var(--sp-1);flex:0 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none;order:1}
 .ui-chips::-webkit-scrollbar{display:none}
+.ui-chiprow{display:flex;align-items:center;gap:var(--sp-1);flex:0 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}
+.ui-chiprow:empty{display:none}
 .ui-chip{display:inline-flex;align-items:center;gap:var(--sp-1);flex:none;min-height:44px;padding:0 var(--sp-3);border-radius:var(--radius-pill);border:1px solid var(--line-strong);background:var(--surface-2);color:var(--ink);font-size:var(--fs-1);font-weight:800;line-height:1.1;white-space:nowrap;cursor:pointer}
 .ui-chip>i{font-style:normal;color:var(--muted)}
 .ui-chip[aria-expanded="true"]{border-color:var(--career,var(--accent));background:var(--career-soft,var(--accent-soft));color:var(--career-text,var(--accent-text))}
@@ -2001,6 +2003,8 @@ html[data-clean][data-layout] .sheet-head>.ui-chips{flex:1 1 100%;order:3;paddin
 /* Order and requirement cards never stick: their digest is the header chip (asm_kit reqPin). */
 html[data-clean] .asm-pin{position:relative!important;top:auto!important}
 html[data-clean] .asm-pin.stuck{box-shadow:none}
+/* A reference card folded into its header chip (ui-kit headChip + .ui-chipped): only the popover shows it. */
+html[data-clean] .ui-chipped:not(.ui-pop){display:none!important}
 /* One main button per screen, and it is the bar's: other filled buttons on a work screen read as secondary. */
 html[data-clean] dialog.sheet:has(.ui-bar .btn.primary) .sheet-body .btn.primary:not(.ui-bar *):not(.sk-intro-go){background:var(--surface);border-color:var(--career,var(--accent));color:var(--career-text,var(--accent-text));box-shadow:0 1px 0 var(--line-strong)}
 html[data-clean] .ui-pop{position:fixed!important;top:calc(var(--hd-t,0px) + var(--hd-h,56px) + var(--sp-1))!important;left:max(var(--sp-2),var(--safe-l));right:max(var(--sp-2),var(--safe-r));z-index:30;max-height:min(60vh,calc(var(--vvh,100dvh) - var(--hd-h,56px) - 96px));overflow-y:auto;overscroll-behavior:contain;margin:0;box-shadow:var(--shadow-lg)}

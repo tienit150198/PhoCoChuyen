@@ -7,11 +7,14 @@
 - Giới thiệu nghề (21 nghề phố): từ ~180 chữ còn ~22 chữ, gồm tên nghề, 3 dòng biểu tượng và nút "?" chứa phần giới thiệu đầy đủ.
 - Nút chưa bấm được thì mờ đi nhưng vẫn chạm được: chạm vào sẽ hiện một dòng lý do và nút sửa ngay trên thanh dưới, không gửi lệnh vào chỗ chắc bị từ chối. Máy chủ báo trước bằng đúng luật nó dùng để từ chối: giúp việc (lau khi chưa cầm dụng cụ/chai, chai cạn) và tiệm hoa (trao hoa khi chưa cắm/gói xong).
 - Phiếu khách (tiệm hoa, sửa đồ, quán ăn, quần áo) không còn ghim trên điện thoại; số "3/6 ✓" thành chip trên đầu, chạm để mở phiếu.
-- Thông báo nằm dưới thanh tiêu đề, không che tên màn hình nữa.
+- Thông báo hiện ngay trong thanh dưới, chỗ "bước tiếp", vài giây (≤ 8 chữ, chạm để xem hết), không che tên màn hình hay nội dung đang làm.
 - Nút "?" trên đầu và dòng gợi ý đủ 44 px.
 - Bảng cỡ chữ 4 bậc và bảng khoảng cách (`--fs-*`, `--sp-*`).
 - Có công tắc tắt: Cài đặt → Giao diện → "Giao diện gọn" (Tự động / Bật / Tắt), hoặc tắt cho mọi người bằng `MNL_CLEAN_UI=off` trên máy chủ.
+- Máy chủ báo trước thêm cho chùa (xếp việc, xếp chỗ), cơm tấm (dĩa chưa xới cơm) và photobooth (hết khung, hết bao kiếng, chọn quá số tấm).
+- Đợt 1 bớt chữ, 10 màn nhiều chữ nhất: thông cống, cơm tấm, hải đăng, gác chắn tàu, trà đá, bảo mẫu, phở, chùa, tổng đài cứu hộ, giúp việc. Mỗi màn còn ≤ 25 chữ (trước 50–120). Lời giải thích, mô tả đồ nghề, chuyện dẫn được chuyển vào nút "?"; tên đồ nghề còn 1–2 chữ; sổ hẹn và danh sách bước thành chip; tiêu đề màn tối đa 4 chữ. Yêu cầu của khách và các lựa chọn giữ nguyên.
 - Không đổi bản lưu, không thêm bảng, không đổi cách sinh việc.
+
 # v1.9.5 — 2026-10-06/07
 
 Gồm các mục "Chưa phát hành" bên dưới: nông trại mới (farm-plus), mỗi nghề một cách nói (voice-w1), nghề làm công không đóng thuế tiệm (salary-notax).

@@ -6,7 +6,7 @@
  * honest day log. The server decides everything; one tap sends one command. */
 import {stepRows,nextHint,finalGo,pending,stepLine,firstTime} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,lower,tile,introCard,deskCard,dayBar,bottom,kitActions,meter,notesPage} from './street_kit.js';
+import {data,cc,lower,tile,introCard,deskCard,dayBar,bottom,kitActions,meter,notesPage,tip,clean,few,pane} from './street_kit.js';
 
 const KIND={arrive:['👋','Nhận bé'],snack:['🍎','Bữa phụ'],meal:['🍚','Bữa trưa'],play:['🧸','Giờ chơi'],safety:['🔌','Soát nhà'],
   nap:['😴','Ngủ trưa'],moment:['💛','Chuyện nhỏ'],handover:['📝','Bàn giao']};
@@ -29,23 +29,25 @@ const pressed=(html,on)=>html.replace('<button ',`<button aria-pressed="${on}" `
 /* ------------------------------------------------------------ the child and the day */
 function noteChips(x){
   const f=fam(x),td=data(x).today||{};
-  if(!td.note)return '<p class="small muted bm-note-hide">📝 Giấy dặn chưa đọc</p>';
+  if(!td.note)return clean()?'':'<p class="small muted bm-note-hide">📝 Giấy dặn chưa đọc</p>';
   const chip=(s,cls='')=>`<span class="bm-chip ${cls}">${s}</span>`;
   return `<p class="bm-chips">${chip(f.allergy?`⚠️ Dị ứng ${x.esc(ALG(x,f.allergy))}`:'✅ Không dị ứng','warn')}${chip(`😴 Ngủ ${x.esc(f.nap||'')}`)}${chip(`${x.esc(LOVEY(x,f.lovey)[0])} ${x.esc(LOVEY(x,f.lovey)[1])}`)}${chip(f.screen?`📺 ${f.screen} phút, sau ngủ trưa`:'📺 Không màn hình')}</p>`;
 }
 function kidCard(t,x){
   const f=fam(x),who=x.npc(t.npc),tm=(cc(x).tempers||{})[f.temper]||['🙂',''];
-  return `<article class="card bm-kid"><div class="row">${x.portrait(who,44)}<div class="grow"><h3>👶 Bé ${x.esc(f.kid||'')} <small class="muted">· ${x.esc(f.age||'')} · ${x.esc(tm[0])} ${x.esc(tm[1])}</small></h3>
-    <p class="small bm-open">${x.esc(t.opening||'')}</p>${noteChips(x)}</div></div></article>`;
+  // Clean layout: the child's name and age (the temper is right above the greetings); the arrival story is in "?".
+  return `<article class="card bm-kid"><div class="row">${x.portrait(who,44)}<div class="grow"><h3>👶 Bé ${x.esc(f.kid||'')} <small class="muted">· ${x.esc(f.age||'')}${clean()?'':` · ${x.esc(tm[0])} ${x.esc(tm[1])}`}</small></h3>
+    ${clean()?tip(x.esc(t.opening||''),'Lúc đón bé','p'):`<p class="small bm-open">${x.esc(t.opening||'')}</p>`}${noteChips(x)}</div></div></article>`;
 }
 /** The day as a row of chips: what is done, what is now, what is next. */
 function planRow(t,x){
   const plan=data(x).plan||[],now=slotOf(t);
   return `<ol class="bm-plan" aria-label="Lịch trong ngày">${plan.map((p,i)=>{const k=KIND[p.kind]||['•',p.kind];
-    return `<li class="${i<now?'done':i===now?'now':''}"><span aria-hidden="true">${i<now?'✓':k[0]}</span><b>${x.esc(p.time)}</b><small>${x.esc(k[1])}</small></li>`;}).join('')}</ol>`;
+    return `<li class="${i<now?'done':i===now?'now':''}" aria-label="${x.esc(p.time)} ${x.esc(k[1])}"><span aria-hidden="true">${i<now?'✓':k[0]}</span><b>${x.esc(p.time)}</b>${clean()?'':`<small>${x.esc(k[1])}</small>`}</li>`;}).join('')}</ol>`;
 }
 function learnLine(x){
   const l=data(x).learn;if(!l?.on)return '';
+  if(clean())return `<p class="bm-learn" aria-label="Học nghề">📞 ${Math.min(l.n+1,l.of)}/${l.of}</p>${tip(x.esc(l.title||''),'Học nghề','p')}`;
   return `<p class="bm-learn" aria-label="Học nghề">📞 Học nghề · ngày ${Math.min(l.n+1,l.of)}/${l.of} · <b>${x.esc(l.title||'')}</b></p>`;
 }
 
@@ -55,20 +57,24 @@ function learnLine(x){
 function temperLine(x,st){
   const tm=(cc(x).tempers||{})[fam(x).temper];if(!tm)return '';
   const wrong=st.greet&&st.greet!==tm[2];
+  if(clean())return `<p class="bm-temper${wrong?' warn':''}"${wrong?' role="status"':''} aria-label="Tính bé: ${x.esc(tm[1])}">${x.esc(tm[0])} <b>${x.esc(few(tm[1],2))}</b>${wrong?' · ⚠️ đổi cách chào':''}</p>${tip(`${x.esc(tm[0])} ${x.esc(tm[1])}`,'Tính bé','p')}`;
   return `<p class="bm-temper${wrong?' warn':''}"${wrong?' role="status"':''}>Tính bé: ${x.esc(tm[0])} <b>${x.esc(tm[1])}</b>${wrong?'<br>Bé chưa chịu làm quen. Thử cách chào khác hợp tính bé.':''}</p>`;
 }
 function arrivePanel(t,x){
   const st=t.st||{},n=need(t);
   const chores=`<div class="tile-grid bm-chores">${tile(x,'bm_wash',{task:t.id},'<span class="tile-emoji">🧼</span><b>Rửa tay</b>',st.wash?'selected':'')}
-    ${tile(x,'bm_note',{task:t.id},'<span class="tile-emoji">📝</span><b>Đọc giấy dặn</b>',st.note?'selected':'')}
-    ${tile(x,'bm_bag',{task:t.id},'<span class="tile-emoji">🎒</span><b>Mở túi đồ</b>',st.bag?'selected':'')}</div>`;
-  const greets=Object.entries(cc(x).greets||{}).map(([k,[e,l]])=>tile(x,'bm_greet',{task:t.id,greet:k},`<span class="tile-emoji">${x.esc(e)}</span><b>${x.esc(l)}</b>`,st.greet===k?'selected':'',st.greet!=null&&st.greet===((cc(x).tempers||{})[fam(x).temper]||[])[2])).join('');
+    ${tile(x,'bm_note',{task:t.id},`<span class="tile-emoji">📝</span><b>${clean()?'Giấy dặn':'Đọc giấy dặn'}</b>`,st.note?'selected':'')}
+    ${tile(x,'bm_bag',{task:t.id},`<span class="tile-emoji">🎒</span><b>${clean()?'Túi đồ':'Mở túi đồ'}</b>`,st.bag?'selected':'')}</div>`;
+  const greets=Object.entries(cc(x).greets||{}).map(([k,[e,l]])=>tile(x,'bm_greet',{task:t.id,greet:k},`<span class="tile-emoji">${x.esc(e)}</span><b>${x.esc(few(l,4))}</b>`,st.greet===k?'selected':'',st.greet!=null&&st.greet===((cc(x).tempers||{})[fam(x).temper]||[])[2])).join('');
   const have=(n.bag||[]).filter(k=>k!==n.missing);
   const bag=st.bag?`<h4 class="section-title">🎒 Trong túi</h4><p class="bm-bagin">${have.map(k=>`<span>${x.esc(BAGI(x,k)[0])} ${x.esc(BAGI(x,k)[1])}</span>`).join('')}${st.ask?`<span class="got">${x.esc(BAGI(x,st.ask)[0])} ${x.esc(BAGI(x,st.ask)[1])}</span>`:''}</p>
     <h4 class="section-title">🙋 Túi của ${x.esc(kidName(x))} cần có <small class="muted">chạm món còn thiếu để hỏi</small></h4>
     <div class="tile-grid bm-need">${(n.bag||[]).map(k=>tile(x,'bm_ask',{task:t.id,item:k},`<span class="tile-emoji">${x.esc(BAGI(x,k)[0])}</span><b>${x.esc(BAGI(x,k)[1])}</b>`,st.ask===k?'selected':'',!!st.ask)).join('')}</div>`:'';
-  return `<section class="card bm-arrive"><h4>👋 Đón ${x.esc(kidName(x))}</h4>${chores}
-    <h4 class="section-title">🙂 Chào bé</h4>${temperLine(x,st)}<div class="tile-grid bm-greets">${greets}</div>${bag}</section>`;
+  // Clean layout: the greetings wait behind one line ("🙂 Chào bé ›") until the three chores are done, then open.
+  const greetBox=clean()?pane(x,`greet-${t.id}`,`🙂 <b>Chào bé</b>`,`${temperLine(x,st)}<div class="tile-grid bm-greets">${greets}</div>`,!!(st.wash&&st.note&&st.bag)||st.greet!=null)
+    :`<h4 class="section-title">🙂 Chào bé</h4>${temperLine(x,st)}<div class="tile-grid bm-greets">${greets}</div>`;
+  return `<section class="card bm-arrive">${clean()?'':`<h4>👋 Đón ${x.esc(kidName(x))}</h4>`}${chores}
+    ${greetBox}${bag}</section>`;
 }
 function foodPanel(t,x){
   const st=t.st||{},n=need(t),plate=st.plate||[],full=plate.length>=(n.groups||[]).length+1;
@@ -217,7 +223,7 @@ export default {
     const g=guide(t,x),d=data(x),hint=hintFor(g,x);
     if(d.desk?.ev||!d.intro||x.ui.intro)return wrap(`${hint}${top(x)}${bottom(x,g)}`);
     const panel=(PANEL[t.kind]||handoverPanel)(t,x);
-    const side=stepRows(x,g.steps,'Việc của bước này');
+    const side=stepRows(x,g.steps,'Việc của bước này',{chip:true});
     return wrap(`${hint}${top(x)}${learnLine(x)}${kidCard(t,x)}${planRow(t,x)}<div class="workbench"><section class="wb-main">${panel}</section><aside class="wb-side">${side}</aside></div>${dayBar(x)}${bottom(x,g)}`);
   },
   idle(x){

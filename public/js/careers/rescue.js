@@ -8,7 +8,7 @@
  * The server decides everything; hints show the next step, never which way a decision should go. */
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,act,pane,introCard,deskCard,dayBar,askCard,bottom,kitActions} from './street_kit.js';
+import {data,cc,act,pane,introCard,deskCard,dayBar,askCard,bottom,kitActions,tip,clean,few} from './street_kit.js';
 import {oddCard,restCard,record,ACTIONS as oddActions} from './air_kit.js';
 
 const ODD_CFG={odd:'cu_odd',rest:'cu_rest',kinds:{charm:'Lời mời khó từ chối',harass:'Quấy rối',demand:'Yêu cầu oái oăm',corner:'Làm tắt',bargain:'Mặc cả với trung tâm'},
@@ -35,6 +35,7 @@ function lineStep(x){
 }
 function learnNote(x){
   const l=data(x).learn;if(!l?.on)return '';
+  if(clean())return `<p class="cu-learn">🎧 ${Math.min(l.n+1,l.of)}/${l.of}</p>${tip(`Chị Thảo bấm nút nghe kèm: cuộc gọi ${Math.min(l.n+1,l.of)}/${l.of}. Sai gì chị nhắc trước.`,'Học nghề','p')}`;
   return `<p class="cu-learn">🎧 Chị Thảo bấm nút nghe kèm: cuộc gọi ${Math.min(l.n+1,l.of)}/${l.of}. Sai gì chị nhắc trước.</p>`;
 }
 const STATE={ready:['✅','sẵn sàng'],away:['⏳','đang đi'],down:['⛔','tạm ngưng']};
@@ -48,19 +49,23 @@ function boardChips(x,pick=null,t=null){
 }
 
 /* ------------------------------------------------------------ the board at the start of the shift */
+/** A unit in a word or two on the clean layout ("Đội chữa cháy và cứu nạn" → "Cứu hỏa"). */
+const UNIT_WORD={'Đội chữa cháy và cứu nạn':'Cứu hỏa','Xe cấp cứu':'Cấp cứu','Xuồng cứu hộ':'Xuồng','Thợ cứu hộ thang máy':'Thang máy','Công an phường':'Công an'};
+const unitWord=u=>clean()?(UNIT_WORD[u.name]||few(u.name,2)):u.name;
 function shiftPanel(t,x){
   const units=(t.needs||{}).units||[],down=x.ui.down?.[t.id];
   const rows=units.map(u=>`<li class="${u.note?'read':''}">${u.note?`<p>${x.esc(u.note)}</p>`
-    :x.cmd(`<span>${x.esc(u.emoji)} <b>${x.esc(u.name)}</b></span><small>📻 Gọi bộ đàm</small>`,'cu_radio',{task:t.id,unit:u.id},'cu-radio')}</li>`).join('');
-  const pick=[...units.map(u=>act(x,`${x.esc(u.emoji)} ${x.esc(u.name)}`,'pickDown',{task:t.id,unit:u.id},`cu-down${down===u.id?' on':''}`,` aria-pressed="${down===u.id}"`)),
+    :x.cmd(`<span>${x.esc(u.emoji)} <b>${x.esc(unitWord(u))}</b></span><small>📻${clean()?'':' Gọi bộ đàm'}</small>`,'cu_radio',{task:t.id,unit:u.id},'cu-radio').replace('<button ',`<button aria-label="Gọi bộ đàm: ${x.esc(u.name)}" `)}</li>`).join('');
+  const pick=[...units.map(u=>act(x,`${x.esc(u.emoji)} ${x.esc(unitWord(u))}`,'pickDown',{task:t.id,unit:u.id},`cu-down${down===u.id?' on':''}`,` aria-pressed="${down===u.id}"`)),
     act(x,'✅ Không đội nào','pickDown',{task:t.id,unit:'none'},`cu-down${down==='none'?' on':''}`,` aria-pressed="${down==='none'}"`)].join('');
-  return `<section class="card cu-shift"><h4>📻 Gọi bộ đàm từng đội</h4><ul class="cu-notes">${rows}</ul></section>
-    <section class="card cu-mark"><h4>⛔ Đánh dấu đội tạm ngưng</h4><div class="cu-downs">${pick}</div></section>`;
+  return `<section class="card cu-shift"><h4>📻 ${clean()?'Bộ đàm':'Gọi bộ đàm từng đội'}</h4><ul class="cu-notes">${rows}</ul></section>
+    ${clean()?`<section class="card cu-mark">${pane(x,`down-${t.id}`,'⛔ <b>Đội tạm ngưng</b>',`<div class="cu-downs">${pick}</div>`,!units.some(u=>!u.note)||!!down)}</section>`
+      :`<section class="card cu-mark"><h4>⛔ Đánh dấu đội tạm ngưng</h4><div class="cu-downs">${pick}</div></section>`}`;
 }
 function shiftSteps(t,x){
   const units=(t.needs||{}).units||[],next=units.find(u=>!u.note),down=x.ui.down?.[t.id];
   return [{ok:!next||null,label:'Gọi bộ đàm từng đội',note:`${units.filter(u=>u.note).length}/${units.length}`,
-    go:next?{cmd:'cu_radio',payload:{task:t.id,unit:next.id},label:`📻 Gọi ${x.esc(next.name.toLowerCase())}`}:null},
+    go:next?{cmd:'cu_radio',payload:{task:t.id,unit:next.id},label:`📻 Gọi ${x.esc(unitWord(next).toLowerCase())}`}:null},
     {ok:down?true:null,label:'Đánh dấu đội tạm ngưng',go:{sel:'.cu-mark',label:'⛔ Đánh dấu đội tạm ngưng'},pulse:''}];
 }
 
@@ -196,12 +201,12 @@ export default {
     const g=guide(t,x),d=data(x),hint=hintFor(g,x),head=top(x);
     if(d.desk?.ev||d.odd?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk cu">${hint}${head}${bottom(x,g)}</div>`;
     let main='',side='';
-    if(t.kind==='shift'){main=shiftPanel(t,x);side=stepRows(x,g.steps,'Nhận ca');}
+    if(t.kind==='shift'){main=shiftPanel(t,x);side=stepRows(x,g.steps,'Nhận ca',{chip:true});}
     else if(!t.known)main=askCard(x,t,t.kind==='queue'?'👂 Nghe chị Thảo':'📞 Nhấc máy');
-    else if(t.kind==='queue'){main=queuePanel(t,x);side=stepRows(x,g.steps,'Các đường dây');}
+    else if(t.kind==='queue'){main=queuePanel(t,x);side=stepRows(x,g.steps,'Các đường dây',{chip:true});}
     else{
       main=`${callerCard(t,x)}${scriptPanel(t,x)}${helpPanes(t,x)}${t.stage==='open'?decidePanel(t,x):afterPanel(t,x)}`;
-      side=stepRows(x,g.steps,'Kịch bản');
+      side=stepRows(x,g.steps,'Kịch bản',{chip:true});
     }
     return `<div class="career-job sk cu">${hint}${head}${learnNote(x)}${dayBar(x)}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },
