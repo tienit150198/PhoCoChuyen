@@ -1657,6 +1657,44 @@ ARCS = {
                 ('khang', 'Khoa Nội có người giữ sổ giao ca kỹ như chị rồi, anh yên tâm.'),
                 ('me', 'Em sẽ giữ sổ như chị: thật, đủ, ca sau đọc là hiểu.')]),
         ]),
+    # ------------------------------------------------------------ 🗼 Đèn biển Hòn Gió (chương 4)
+    'lighthouse': dict(
+        title='Cái giẻ da của chú Bảy', emoji='🗼',
+        keepsake=dict(emoji='🧽', name='Miếng giẻ da lau kính của chú Bảy', desc='Mềm như lụa, đã lau kính đèn Hòn Gió ba mươi năm. Chú Bảy bảo kính sạch thì đèn mới xa.'),
+        cast={'bay': _p('Chú Bảy Đèn', '💡', 'Trạm trưởng đèn biển Hòn Gió', 'lighthouse_npc_01'),
+              'yen': _p('Chị Hải Yến', '📻', 'Trực ban Đài Duyên hải Vịnh Ngọc', 'lighthouse_npc_02'),
+              'sau': _p('Ông Sáu Ghe', '🎣', 'Chủ tàu cá bến Cửa Lở', 'lighthouse_npc_04'),
+              'tham': _p('Cô Thắm', '🚤', 'Hướng dẫn viên tàu Biển Ngọc', 'lighthouse_npc_08')},
+        beats=[
+            _b('Ngọn tháp trắng', '🗼', 'Chú Bảy dắt bạn leo một trăm lẻ tám bậc cầu thang xoắn lên phòng đèn.', [
+                ('bay', 'Đèn này mà tắt một đêm là có người không về nhà được. Nhớ vậy là đủ.'),
+                ('bay', 'Thắp đúng giờ, đếm chớp cho đúng, lau kính cho sạch. Ba việc đó, ngày nào cũng vậy.'),
+                ('me', 'Dạ. Ba việc đó, ngày nào cũng vậy.')]),
+            _b('Giọng trên kênh 16', '📻', 'Bảy giờ sáng, bộ đàm rè rè, giọng chị Hải Yến sang sảng.', [
+                ('yen', 'Trạm mới hả? Báo số liệu cho gọn: gió cấp mấy, biển ra sao, tầm nhìn, áp suất. Đừng “chắc khoảng khoảng” nghe em.'),
+                ('me', 'Dạ: gió cấp 3, sóng nhỏ, tầm nhìn trên mười cây số, áp suất đứng.'),
+                ('yen', 'Được. Trạm Hòn Gió có người báo rõ rồi.')],
+                _c('Chị Hải Yến hỏi có muốn học thêm cách đọc mây',
+                   _o('a', 'Xin chị gửi tài liệu đọc mây, tối em học', [('yen', 'Ham học đấy. Chị chụp gửi theo tàu tiếp tế.')], rel='yen'),
+                   _o('b', 'Hỏi chú Bảy chỉ cho trên đảo', [('bay', 'Mây đen phía đông chiều nay là có giông. Nhìn đi, rồi nhớ.')], rel='bay'))),
+            _b('Quay đèn về phía lưới', '🎣', 'Nửa đêm, ông Sáu Ghe gọi kênh 16 lần thứ ba trong tuần.', [
+                ('sau', 'Cậu quay đèn về đông bắc giùm tui một đêm thôi. Mực đang lên!'),
+                ('me', 'Đèn quay đều thì tàu cả vịnh mới nhận ra Hòn Gió, ông ạ. Ông dùng đèn câu trên tàu nhé, cháu đọc bản tin gió cho ông.'),
+                ('sau', 'Ờ… thì thôi. Đọc bản tin đi, cậu.')],
+                _c('Ông Sáu xin cái bản tin gió mỗi tối',
+                   _o('a', 'Hứa tối nào cũng gọi đọc bản tin cho tàu ông', [('sau', 'Có người đọc bản tin cho nghe, đi biển yên bụng hẳn.')], rel='sau'),
+                   _o('b', 'Chỉ ông dò kênh bản tin của đài', [('yen', 'Đài phát mỗi tối tám giờ. Em chỉ đúng rồi đó.')], rel='yen'))),
+            _b('Mèo Mun và đoàn khách', '🐈‍⬛', 'Tàu Biển Ngọc cập bến, mèo Mun chạy ra đón trước cả bạn.', [
+                ('tham', 'Khách mê con mèo của trạm lắm. Mà em giữ nội quy kỹ ghê, không ai đòi lên phòng đèn nữa.'),
+                ('me', 'Chụp ở sân trạm cũng đẹp mà chị. Phòng đèn để đèn làm việc.'),
+                ('tham', 'Chị in luôn câu đó vào tờ rơi tour.')]),
+            _b('Miếng giẻ da', '🧽', 'Sáng sau đêm bão, chú Bảy đưa bạn miếng giẻ da cũ mềm như lụa.', [
+                ('bay', 'Năm bão lớn, chú quay tay mô-tơ suốt đêm cho đèn khỏi đứng. Tay chú tê tới ba ngày.'),
+                ('bay', 'Giờ chú giao cái này cho con. Kính sạch thì đèn mới xa.'),
+                ('yen', 'Cả tháng trạm Hòn Gió không trễ một giờ quan trắc. Đài khen đó.'),
+                ('sau', 'Mùa bão này tàu tui về đủ. Cảm ơn cái đèn, cảm ơn cậu.'),
+                ('me', 'Con sẽ giữ, và giữ đèn như chú dạy.')]),
+        ]),
     # ------------------------------------------------------------ Công ty CP Cánh Diều (chương 5)
     'hr_admin': dict(
         title='Người giữ hồ sơ', emoji='🗂️',

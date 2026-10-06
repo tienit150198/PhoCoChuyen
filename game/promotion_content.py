@@ -27,6 +27,7 @@ EMP_TITLES = {
     'oil': ('Kỹ thuật viên bậc 2', 'Trưởng nhóm vận hành', 'Trưởng ca giàn', 'Quản đốc giàn'),
     'railway': ('Gác chắn chính', 'Trưởng ca gác chắn', 'Đội phó cung đường', 'Cung trưởng cung đường'),
     'nurse': ('Điều dưỡng chính', 'Trưởng ca điều dưỡng', 'Điều dưỡng trưởng khoa', 'Trưởng phòng Điều dưỡng'),
+    'lighthouse': ('Người gác đèn chính', 'Trưởng ca trạm đèn', 'Trạm trưởng đèn Hòn Gió', 'Trưởng đội đèn biển Vịnh Ngọc'),
 }
 
 # Owner careers: the place's own standing. By the character: '{chu}' Ông chủ / Bà chủ / Chủ tiệm, '{ong}' Ông chủ / Bà chủ / Chủ.
@@ -74,6 +75,7 @@ GROUP = {
     'air': ('pilot', 'flight_attendant'),
     'rig': ('oil',),
     'rail': ('railway',),
+    'sea': ('lighthouse',),
     'service': ('pharmacy', 'teacher', 'tour_guide', 'pet_care', 'salon', 'nail', 'homestay', 'photobooth',
                 'homemaker', 'giupviec', 'naucom', 'babysitter', 'library', 'pagoda',
                 'mother_baby', 'nurse'),
@@ -133,6 +135,14 @@ QUESTIONS['rail'] = [
     _q('r4', 'Cung trưởng bảo ghi tàu chậm thành đúng giờ.', ('Ghi đúng, kèm lý do chậm', 2), ('Sửa cho đẹp báo cáo', 0), ('Ghi đúng nhưng không nói gì', 1)),
     _q('r5', 'Ca đêm thứ ba liền, bạn buồn ngủ díp mắt.', ('Báo đội trưởng, xin người thay hoặc nghỉ bù', 2), ('Chợp mắt giữa hai chuyến', 0), ('Uống thêm cà phê cố gác', 1)),
     _q('r6', 'Tàu qua mà không thấy đèn đuôi toa cuối.', ('Báo ngay trực ban ga', 2), ('Ghi sổ, cuối ca báo', 1), ('Cho qua, chắc đèn hỏng', 0)),
+]
+QUESTIONS['sea'] = [
+    _q('l1', 'Đêm bão thấy pháo hiệu đỏ, xuồng của trạm nằm ngay dưới bến.', ('Báo đài MAYDAY RELAY, đủ vị trí, canh giữ mục tiêu', 2), ('Lấy xuồng ra cứu cho kịp', 0), ('Chờ pháo hiệu thứ hai cho chắc', 1)),
+    _q('l2', 'Sếp bảo ghi “đèn sáng bình thường” cho đêm đèn tắt hai mươi phút.', ('Ghi đúng giờ tắt, nguyên nhân, cách xử lý', 2), ('Ghi theo lời sếp', 0), ('Không ghi gì', 1)),
+    _q('l3', 'Khách không có giấy đòi lên phòng đèn chụp ảnh, dúi tiền.', ('Từ chối, mời chụp ở sân trạm, không nhận tiền', 2), ('Cho lên năm phút, mình đi kèm', 0), ('Đuổi về không nói gì', 1)),
+    _q('l4', 'Đếm chớp thấy chu kỳ 19 giây, danh mục đèn ghi 15 giây.', ('Báo đài phát thông báo hàng hải, báo xí nghiệp', 2), ('Ghi sổ, mai báo', 1), ('Chắc đồng hồ sai, kệ', 0)),
+    _q('l5', 'Tàu tiếp tế bơm thiếu dầu, thuyền trưởng đòi ký đủ.', ('Ký đúng số đo được, ghi rõ phần thiếu', 2), ('Ký đủ cho êm chuyện', 0), ('Không ký gì cả', 1)),
+    _q('l6', 'Áp kế tụt nhanh mà gió mới cấp 4.', ('Báo đài, phát cảnh báo cho tàu thuyền', 2), ('Chờ gió lên rồi báo', 0), ('Ghi sổ, giờ sau xem lại', 1)),
 ]
 # Steps above 4 (the executive steps): the board's own questions.
 EXEC_GROUP = {'pilot': 'exec_air', 'teacher': 'exec_school'}

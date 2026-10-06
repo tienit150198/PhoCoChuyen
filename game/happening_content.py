@@ -655,6 +655,22 @@ HAPPENINGS = [
     H('ward_bag', 'trom', '👜', 'Túi xách để ở bàn trực bị lấy',
       'Bạn chạy vào giường 3 trả lời chuông, quay ra thì chiếc túi để dưới gầm bàn trực không còn. Hành lang giờ thăm đông người lạ.',
       ('nurse',), 'pick', 'pickpocket', 'door', 'Mất ví ở bàn trực', dict(wallet=(25, 70)), ['shout', 'call', 'camera', 'let'], min_day=5),
+    # ================================================================ 🗼 Đèn biển Hòn Gió (lighthouse)
+    H('hd_wallet', 'trom', '👛', 'Mất ví lúc khách du lịch ra đảo',
+      'Bạn dẫn đoàn khách đi quanh sân trạm, để áo khoác trên ghế ở nhà trạm. Tàu khách về rồi, ví trong túi áo đã không còn.',
+      ('lighthouse',), 'pick', 'pickpocket', 'door', 'Mất ví ở nhà trạm', dict(wallet=(15, 50)), ['shout', 'call', 'camera', 'let'], weight=2, min_day=3),
+    H('hd_binocular', 'den', '🔭', 'Làm rơi ống nhòm của trạm',
+      'Gió giật mạnh lúc bạn đứng trên ban công đếm tàu. Ống nhòm chưa đeo dây tuột tay, rơi xuống chân tháp vỡ một mắt.',
+      ('lighthouse',), 'drop', 'self', 'till', 'Đền một phần ống nhòm cho xí nghiệp', dict(comp=(15, 40)), min_day=3),
+    H('hd_mug', 'den', '☕', 'Làm vỡ ấm trà của chú Bảy',
+      'Bạn với tay lấy cuốn sổ trực, cùi chỏ quẹt trúng cái ấm trà men xanh chú Bảy giữ ba mươi năm. Ấm rơi xuống sàn đá, mẻ vòi.',
+      ('lighthouse',), 'drop', 'self', 'table', 'Đền ấm trà cho chú Bảy', dict(comp=(5, 15)), min_day=2),
+    H('hd_kids_rock', 'pha', '🧒', 'Tụi nhỏ ném đá vỡ kính nhà trạm',
+      'Tụi nhỏ theo ghe ra đảo chơi ném thia lia, một hòn bay lệch trúng ô kính cửa sổ nhà trạm vỡ toang.',
+      ('lighthouse',), 'knock', 'kids', 'shelf', 'Thay ô kính nhà trạm', dict(damage=(5, 15)), KIDS, min_day=2),
+    H('hd_phone_sea', 'den', '📱', 'Điện thoại rơi xuống biển',
+      'Bạn chụp ảnh hoàng hôn trên mỏm đá cho má xem. Một con sóng hắt lên, điện thoại tuột tay chìm nghỉm giữa khe đá.',
+      ('lighthouse',), 'drop', 'self', 'till', 'Mua điện thoại cũ thay tạm', dict(comp=(20, 50)), min_day=4),
 ]
 INDEX = {x['id']: x for x in HAPPENINGS}
 

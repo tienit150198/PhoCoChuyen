@@ -20,7 +20,7 @@ import {t as tr} from '../v4/i18n.js';
 
 /* ------------------------------------------------------------ the town */
 export const ROWS=[
-  [{id:'chua',name:'Chùa',emoji:'🛕',items:['pagoda']},{id:'ngoai_o',name:'Ngoại ô',emoji:'🌾',items:['farm','homestay','teacher','railway']},{id:'san_bay',name:'Sân bay',emoji:'✈️',items:['tour_guide','pilot','flight_attendant','oil']}],
+  [{id:'chua',name:'Chùa',emoji:'🛕',items:['pagoda']},{id:'ngoai_o',name:'Ngoại ô',emoji:'🌾',items:['farm','homestay','teacher','railway','lighthouse']},{id:'san_bay',name:'Sân bay',emoji:'✈️',items:['tour_guide','pilot','flight_attendant','oil']}],
   [{id:'van_phong',name:'Khu văn phòng',emoji:'🏢',items:['lm:bank','library','accounting','customer_care','corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk']}],
   [{id:'dich_vu',name:'Phố dịch vụ',emoji:'💇',items:['salon','nail','photobooth','pet_care','repair','pharmacy','nurse','clothing','pet_shop','lm:garage']}],
   [{id:'pho_cho',name:'Phố chợ',emoji:'🛒',items:['florist','cafe_bakery','grocery','milk_tea','mother_baby','restaurant','delivery','pho','com']}],
@@ -44,9 +44,9 @@ export const SIGNS={
   accounting:['📒','Kế toán'],customer_care:['🎧','Chăm sóc khách'],corp_accounting:['🧮','Kế toán DN'],tax_payroll:['🧾','Thuế & lương'],group_accounting:['🏢','Tập đoàn'],
   library:['📚','Thư viện'],hr_admin:['🗂️','Nhân sự'],secretary:['📅','Thư ký'],it_helpdesk:['🖥️','IT hỗ trợ'],
   pagoda:['🛕','Chùa'],farm:['🌾','Nông trại'],homestay:['🏡','Homestay'],teacher:['🍎','Lớp học'],tour_guide:['🧭','Du lịch'],pilot:['✈️','Phi công'],flight_attendant:['💺','Tiếp viên'],oil:['🛢️','Dầu khí'],railway:['🚦','Gác chắn'],
-  nurse:['🏥','Bệnh viện'],
+  nurse:['🏥','Bệnh viện'],lighthouse:['🗼','Hải đăng'],
 };
-const KIND={pagoda:'pagoda',farm:'farm',homestay:'lodge',teacher:'school',library:'school',tour_guide:'kiosk',pilot:'air',flight_attendant:'air',oil:'air',railway:'kiosk',
+const KIND={pagoda:'pagoda',farm:'farm',homestay:'lodge',teacher:'school',library:'school',tour_guide:'kiosk',pilot:'air',flight_attendant:'air',oil:'air',railway:'kiosk',lighthouse:'kiosk',
   tra_da:'cart',fruit:'cart',ice_cream:'cart',garbage:'cart',drain:'cart',homemaker:'house',giupviec:'house',naucom:'house',babysitter:'house',
   accounting:'office',customer_care:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',hr_admin:'office',secretary:'office',it_helpdesk:'office',nurse:'office',
   'lm:bank':'bank','lm:garage':'garage','lm:fair':'gate','lm:board':'board','lm:walk':'park','lm:house':'home','lm:quay':'quay','lm:square':'plaza'};
@@ -319,6 +319,8 @@ function kiosk(c,it,t){
   R(c,x0+6,top+30,w-12,h-30,t.wall,8,t.trim,2);R(c,x0,top+18,w,16,t.trim,6);
   R(c,x0+16,G-74,w-32,34,GLASS,4,t.dark,2);T(c,'🗺️',cx,G-57,18,INK,400);
   R(c,x0+12,G-36,w-24,36,t.dark,4);R(c,x0+16,G-32,w-32,10,'#f4efe4',3);
+  if(it.key==='lighthouse'){const lx=x0+w-14;P(c,[[lx-9,top+34],[lx+9,top+34],[lx+6,top-30],[lx-6,top-30]],'#f8fafc');R(c,lx-8,top-4,16,8,'#d6382b',2);
+    R(c,lx-7,top-40,14,10,'#f2c14e',3,'#26303b',1.5);P(c,[[lx-8,top-40],[lx+8,top-40],[lx,top-48]],'#d6382b');}
 }
 function air(c,it,t){
   const {x0,w,G,h,cx}=it,top=G-h;

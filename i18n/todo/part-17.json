@@ -1,5 +1,197 @@
 [
  {
+  "vi": "Xới nồi nào?",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa đầy cơm rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa đầy món rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Khay giữ ấm hết sườn. Nướng mẻ mới nhé.",
+  "en": ""
+ },
+ {
+  "vi": "dĩa",
+  "en": ""
+ },
+ {
+  "vi": "Lòng đào hay chín kỹ?",
+  "en": ""
+ },
+ {
+  "vi": "Hết trứng rồi. Nhập thêm ở kho nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🍳 Đập trứng vào chảo mỡ nóng,",
+  "en": ""
+ },
+ {
+  "vi": "lòng đỏ còn sóng sánh: ốp la lòng đào.",
+  "en": ""
+ },
+ {
+  "vi": "lật hai mặt: ốp la chín kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "🌿 Chan một muỗng mỡ hành lên cơm.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ mỡ hành ra.",
+  "en": ""
+ },
+ {
+  "vi": "Không lấy nước mắm.",
+  "en": ""
+ },
+ {
+  "vi": "Nước mắm thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "🫙 Rưới một vá nước mắm lên cơm.",
+  "en": ""
+ },
+ {
+  "vi": "🫙 Rưới nước mắm vào hộp.",
+  "en": ""
+ },
+ {
+  "vi": "🫙 Múc nước mắm ra",
+  "en": ""
+ },
+ {
+  "vi": "bịch nhỏ, cột thun bỏ kèm hộp.",
+  "en": ""
+ },
+ {
+  "vi": "chén nhỏ đặt cạnh dĩa.",
+  "en": ""
+ },
+ {
+  "vi": "🫘 Lấy nước tương",
+  "en": ""
+ },
+ {
+  "vi": "bịch riêng.",
+  "en": ""
+ },
+ {
+  "vi": "chén riêng.",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Múc",
+  "en": ""
+ },
+ {
+  "vi": "bịch canh nóng, cột chặt.",
+  "en": ""
+ },
+ {
+  "vi": "chén canh chua nóng.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ canh ra.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có dĩa nào.",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa cơm làm lại",
+  "en": ""
+ },
+ {
+  "vi": "sai món, thiếu món",
+  "en": ""
+ },
+ {
+  "vi": "Có dĩa tôi đâu có gọi.",
+  "en": ""
+ },
+ {
+  "vi": "Miếng sườn cắt ra còn hồng ở giữa, thịt heo chưa chín!",
+  "en": ""
+ },
+ {
+  "vi": "bán sườn chưa chín",
+  "en": ""
+ },
+ {
+  "vi": "Miếng sườn cháy khét, đắng nghét.",
+  "en": ""
+ },
+ {
+  "vi": "sườn cháy khét",
+  "en": ""
+ },
+ {
+  "vi": "Cơm nhão nhoẹt, dính bết.",
+  "en": ""
+ },
+ {
+  "vi": "Cơm sượng, nhai còn hột.",
+  "en": ""
+ },
+ {
+  "vi": "cơm nấu chưa đúng nước",
+  "en": ""
+ },
+ {
+  "vi": "nước mắm pha chưa vừa",
+  "en": ""
+ },
+ {
+  "vi": "Tôi kêu cơm tấm mà xới cơm trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi ăn cơm trắng mà xới cơm tấm.",
+  "en": ""
+ },
+ {
+  "vi": "xới nhầm nồi",
+  "en": ""
+ },
+ {
+  "vi": "Kêu thêm cơm mà dĩa có chút xíu.",
+  "en": ""
+ },
+ {
+  "vi": "Dĩa cơm ít quá.",
+  "en": ""
+ },
+ {
+  "vi": "xới thiếu cơm",
+  "en": ""
+ },
+ {
+  "vi": "Đã dặn ít cơm mà xới cả núi.",
+  "en": ""
+ },
+ {
+  "vi": "dặn ít cơm mà xới nhiều",
+  "en": ""
+ },
+ {
+  "vi": "Đã dặn ăn chay mà còn mỡ hành, nước mắm, canh tôm!",
+  "en": ""
+ },
+ {
+  "vi": "đồ mặn cho người ăn chay",
+  "en": ""
+ },
+ {
   "vi": "Cơm tấm mà không có mỡ hành, khô khốc.",
   "en": ""
  },
@@ -1605,198 +1797,6 @@
  },
  {
   "vi": "Xem giúp, nói thật mức độ, báo giá thay đoạn nứt",
-  "en": ""
- },
- {
-  "vi": "Ống nứt một đoạn ngắn. Bà Ngọc hẹn cuối tháng thay, cảm ơn cháu nói thật.",
-  "en": ""
- },
- {
-  "vi": "Dọa phải đục cả nền nhà thay hết ống",
-  "en": ""
- },
- {
-  "vi": "Việc to…",
-  "en": ""
- },
- {
-  "vi": "Thợ dọa đục cả nhà, hỏi thợ khác chỉ cần thay một đoạn.",
-  "en": ""
- },
- {
-  "vi": "Bà Ngọc hoảng, gọi con trai về. Anh con trai hỏi thêm thợ khác.",
-  "en": ""
- },
- {
-  "vi": "Hẹn hôm khác ghé xem",
-  "en": ""
- },
- {
-  "vi": "Bà Ngọc gật đầu, dặn đừng quên.",
-  "en": ""
- },
- {
-  "vi": "Mưa to, cả ngõ gọi",
-  "en": ""
- },
- {
-  "vi": "Mưa như trút, điện thoại réo liên tục: ba nhà cùng báo nước trào, ông Lộc báo hố ga đầu ngõ tràn.",
-  "en": ""
- },
- {
-  "vi": "Hỏi từng nhà, ưu tiên nhà có người già, trẻ nhỏ, hẹn giờ rõ ràng",
-  "en": ""
- },
- {
-  "vi": "Nhà bà cụ ở một mình được làm trước. Các nhà khác biết giờ, yên tâm chờ.",
-  "en": ""
- },
- {
-  "vi": "Ai gọi trước làm trước",
-  "en": ""
- },
- {
-  "vi": "Làm xong nhà đầu thì nhà bà cụ đã ngập tới mắt cá.",
-  "en": ""
- },
- {
-  "vi": "Nhà nào trả cao làm trước",
-  "en": ""
- },
- {
-  "vi": "Mưa ngập mà thợ đòi ai trả cao làm trước.",
-  "en": ""
- },
- {
-  "vi": "Được thêm tiền, nhưng cả ngõ bàn tán về tiệm.",
-  "en": ""
- },
- {
-  "vi": "Khách dúi thêm tiền",
-  "en": ""
- },
- {
-  "vi": "Anh Phong dúi 10 xu: “Ghi hóa đơn cao lên giúp anh, anh đòi tiền sửa chữa của khách trọ.”",
-  "en": ""
- },
- {
-  "vi": "Từ chối, ghi đúng số tiền",
-  "en": ""
- },
- {
-  "vi": "Anh Phong cười trừ: “Thôi được, em thẳng quá.”",
-  "en": ""
- },
- {
-  "vi": "Nhận tiền, ghi khống",
-  "en": ""
- },
- {
-  "vi": "Nghe nói tiệm thông cống ghi hóa đơn khống cho chủ trọ.",
-  "en": ""
- },
- {
-  "vi": "Khách trọ phát hiện hóa đơn ghi sai, làm ầm lên.",
-  "en": ""
- },
- {
-  "vi": "Chủ nhà bắt bọc giày",
-  "en": ""
- },
- {
-  "vi": "Bà Ngọc chặn ở cửa: “Bọc hai lớp ni-lông vào giày, trải báo từ cổng tới nhà tắm. Bẩn một vết là lau cho sạch nha cháu.”",
-  "en": ""
- },
- {
-  "vi": "Bọc giày, trải báo, làm gọn",
-  "en": ""
- },
- {
-  "vi": "Mất thêm chút thời gian",
-  "en": ""
- },
- {
-  "vi": "Bà Ngọc kiểm từng viên gạch, gật gù: “Thợ này được, sạch sẽ.”",
-  "en": ""
- },
- {
-  "vi": "Cởi giày đi chân đất vào",
-  "en": ""
- },
- {
-  "vi": "Nhanh, nhưng bẩn chân",
-  "en": ""
- },
- {
-  "vi": "Chân dẫm phải nước cống, bạn rửa mất nửa buổi. Bà Ngọc vẫn lầm bầm.",
-  "en": ""
- },
- {
-  "vi": "“Nhà cháu chứ có phải khách sạn đâu bà”",
-  "en": ""
- },
- {
-  "vi": "Thợ gì mà cãi chủ nhà như hát hay.",
-  "en": ""
- },
- {
-  "vi": "Bà Ngọc đứng khoanh tay canh từng bước, cả buổi không ai nói với ai câu nào.",
-  "en": ""
- },
- {
-  "vi": "Khách livestream chê thợ",
-  "en": ""
- },
- {
-  "vi": "Hùng giơ điện thoại quay thẳng mặt bạn: “Cả nhà ơi, thợ thông cống nè, xem thử có chặt chém không nha, hóng đi mọi người!”",
-  "en": ""
- },
- {
-  "vi": "Bình thản giải thích từng bước, báo giá ngay trên sóng",
-  "en": ""
- },
- {
-  "vi": "Người xem khen thợ nói rõ ràng. Có hai người nhắn xin số tiệm.",
-  "en": ""
- },
- {
-  "vi": "Nhờ tắt máy cho tập trung làm",
-  "en": ""
- },
- {
-  "vi": "Hùng tắt máy, lầm bầm “làm gì căng”.",
-  "en": ""
- },
- {
-  "vi": "Thợ không cho quay, chắc có gì mờ ám.",
-  "en": ""
- },
- {
-  "vi": "Hùng càng quay hăng: “Thấy chưa, thợ sợ lộ kìa mọi người!”",
-  "en": ""
- },
- {
-  "vi": "Gạt điện thoại: “Quay cái gì mà quay!”",
-  "en": ""
- },
- {
-  "vi": "Thợ gạt điện thoại khách, thái độ như giang hồ.",
-  "en": ""
- },
- {
-  "vi": "Clip “thợ thông cống nổi điên” có vài nghìn lượt xem. Chú Hai gọi điện hỏi chuyện.",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm đứng chỉ đạo",
-  "en": ""
- },
- {
-  "vi": "Ông hàng xóm chống nạnh đứng sau lưng: “Sai rồi, phải chọc chỗ kia cơ! Hồi xưa tôi làm thế này này…” rồi giật luôn dây lò xo.",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn bác, mời bác ngồi uống nước xem cho vui",
   "en": ""
  }
 ]

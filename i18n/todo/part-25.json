@@ -1,5 +1,197 @@
 [
  {
+  "vi": "bán hàng online",
+  "en": ""
+ },
+ {
+  "vi": "chụp ảnh sản phẩm",
+  "en": ""
+ },
+ {
+  "vi": "trả lời tin nhắn khách",
+  "en": ""
+ },
+ {
+  "vi": "lái xe tải",
+  "en": ""
+ },
+ {
+  "vi": "thuộc đường nội thành",
+  "en": ""
+ },
+ {
+  "vi": "bốc xếp hàng",
+  "en": ""
+ },
+ {
+  "vi": "giao nhận chứng từ",
+  "en": ""
+ },
+ {
+  "vi": "bằng lái xe hạng C",
+  "en": ""
+ },
+ {
+  "vi": "Kế toán kho",
+  "en": ""
+ },
+ {
+  "vi": "kế toán",
+  "en": ""
+ },
+ {
+  "vi": "phần mềm kế toán",
+  "en": ""
+ },
+ {
+  "vi": "Excel nâng cao",
+  "en": ""
+ },
+ {
+  "vi": "đối chiếu công nợ",
+  "en": ""
+ },
+ {
+  "vi": "bằng cao đẳng kế toán",
+  "en": ""
+ },
+ {
+  "vi": "tiếng Anh giao tiếp",
+  "en": ""
+ },
+ {
+  "vi": "nấu ăn",
+  "en": ""
+ },
+ {
+  "vi": "đàn guitar",
+  "en": ""
+ },
+ {
+  "vi": "cờ tướng",
+  "en": ""
+ },
+ {
+  "vi": "chạy bộ",
+  "en": ""
+ },
+ {
+  "vi": "trồng cây",
+  "en": ""
+ },
+ {
+  "vi": "Mời phỏng vấn",
+  "en": ""
+ },
+ {
+  "vi": "Không mời",
+  "en": ""
+ },
+ {
+  "vi": "“Mới cưới, chắc sắp sinh con. Loại đi em.” — Anh Quân",
+  "en": ""
+ },
+ {
+  "vi": "“Quê xa thế, làm vài tháng lại về quê thôi.” — Linh",
+  "en": ""
+ },
+ {
+  "vi": "“Lớn tuổi rồi, khó bảo lắm.” — Chú Lâm",
+  "en": ""
+ },
+ {
+  "vi": "“Con gái chân yếu tay mềm, làm sao bê nổi.” — Chú Lâm",
+  "en": ""
+ },
+ {
+  "vi": "Tốt nghiệp THPT",
+  "en": ""
+ },
+ {
+  "vi": "Trung cấp nghề",
+  "en": ""
+ },
+ {
+  "vi": "Cao đẳng",
+  "en": ""
+ },
+ {
+  "vi": "Đủ kinh nghiệm, kỹ năng và bằng cấp theo yêu cầu.",
+  "en": ""
+ },
+ {
+  "vi": "Bằng là yêu cầu bắt buộc mà chưa có bản sao — xin bổ sung rồi mới mời.",
+  "en": ""
+ },
+ {
+  "vi": "Lương mong muốn cao hơn khung chỉ cần thương lượng; đủ điều kiện thì vẫn mời.",
+  "en": ""
+ },
+ {
+  "vi": "“Email gì mà trẻ con thế, loại cho nhanh.” — Linh",
+  "en": ""
+ },
+ {
+  "vi": "Địa chỉ email ngộ nghĩnh không phải lý do để loại người đủ điều kiện.",
+  "en": ""
+ },
+ {
+  "vi": "Không loại vì giới tính, hôn nhân, quê quán hay tuổi tác — chỉ xét yêu cầu công việc.",
+  "en": ""
+ },
+ {
+  "vi": "“Cháu anh đấy, cho vào thẳng nhé.” — Anh Quân",
+  "en": ""
+ },
+ {
+  "vi": "Người quen giới thiệu vẫn phỏng vấn như mọi người; hồ sơ đủ điều kiện.",
+  "en": ""
+ },
+ {
+  "vi": "Kinh nghiệm: chưa đi làm",
+  "en": ""
+ },
+ {
+  "vi": "Đã có sổ BHXH bổ sung, đủ kinh nghiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng viên đã rút hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên tắc lọc hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ xét yêu cầu công việc: không loại vì giới tính, hôn nhân, tuổi, quê quán.",
+  "en": ""
+ },
+ {
+  "vi": "CV và tra cứu BHXH lệch nhau, hoặc thiếu bản sao bằng bắt buộc → Cần xác minh.",
+  "en": ""
+ },
+ {
+  "vi": "Người quen giới thiệu vẫn xét như mọi người.",
+  "en": ""
+ },
+ {
+  "vi": "thứ Hai",
+  "en": ""
+ },
+ {
+  "vi": "thứ Ba",
+  "en": ""
+ },
+ {
+  "vi": "thứ Tư",
+  "en": ""
+ },
+ {
+  "vi": "thứ Năm",
+  "en": ""
+ },
+ {
   "vi": "thứ Sáu",
   "en": ""
  },
@@ -1605,198 +1797,6 @@
  },
  {
   "vi": "Loại theo ý sếp",
-  "en": ""
- },
- {
-  "vi": "Phân biệt đối xử là lỗi rất nặng của người làm nhân sự.",
-  "en": ""
- },
- {
-  "vi": "Lặng lẽ mời mà không nói gì với sếp",
-  "en": ""
- },
- {
-  "vi": "Đúng hướng nhưng né trao đổi.",
-  "en": ""
- },
- {
-  "vi": "Đồng nghiệp hỏi lương của người khác. Bạn trả lời sao?",
-  "en": ""
- },
- {
-  "vi": "Không nói; chỉ thang lương công khai và cách đề nghị xét lương",
-  "en": ""
- },
- {
-  "vi": "Bảo mật mà vẫn giúp được.",
-  "en": ""
- },
- {
-  "vi": "Nói nhỏ thôi, chỗ thân quen",
-  "en": ""
- },
- {
-  "vi": "Lộ lương là mất lòng tin cả công ty.",
-  "en": ""
- },
- {
-  "vi": "“Bí mật” rồi thôi",
-  "en": ""
- },
- {
-  "vi": "Đúng nhưng cộc.",
-  "en": ""
- },
- {
-  "vi": "Hành chính – Nhân sự",
-  "en": ""
- },
- {
-  "vi": "Công bằng từ tờ CV đến tờ hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Nắng nhẹ, quạt trần quay đều",
-  "en": ""
- },
- {
-  "vi": "Bàn nhân sự",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ ứng tuyển, bảng chấm công và hợp đồng hôm nay đã xếp trên bàn. Soát kỹ, công bằng với từng người nhé.",
-  "en": ""
- },
- {
-  "vi": "Mỗi tờ giấy là một con người",
-  "en": ""
- },
- {
-  "vi": "22 · CÁNH DIỀU · NHÂN SỰ",
-  "en": ""
- },
- {
-  "vi": "Mới vào, gọi điện còn run nhưng rất chịu khó.",
-  "en": ""
- },
- {
-  "vi": "Lễ tân kiêm văn thư, nhớ mặt từng khách.",
-  "en": ""
- },
- {
-  "vi": "Thuộc lòng nội quy, soát một lần là ra lỗi.",
-  "en": ""
- },
- {
-  "vi": "Chuyên viên tuyển dụng",
-  "en": ""
- },
- {
-  "vi": "Hành chính – văn thư",
-  "en": ""
- },
- {
-  "vi": "Bàn nhân sự ngăn nắp",
-  "en": ""
- },
- {
-  "vi": "CV ứng tuyển",
-  "en": ""
- },
- {
-  "vi": "Tuyển dụng",
-  "en": ""
- },
- {
-  "vi": "Tiền lương",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng lao động",
-  "en": ""
- },
- {
-  "vi": "Xếp lịch phỏng vấn",
-  "en": ""
- },
- {
-  "vi": "Chốt công",
-  "en": ""
- },
- {
-  "vi": "Bạn thợ may đầu tiên",
-  "en": ""
- },
- {
-  "vi": "Một cô gái quê Nghệ An nộp hồ sơ, CV viết tay, email ngộ nghĩnh.",
-  "en": ""
- },
- {
-  "vi": "Bạn mời cô thử tay nghề dù Linh bảo “email trẻ con quá”.",
-  "en": ""
- },
- {
-  "vi": "Ba tháng sau, cô may mẫu balo bán chạy nhất mùa tựu trường.",
-  "en": ""
- },
- {
-  "vi": "Tờ đơn nghỉ phép",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng nghỉ không phép ba hôm, chú Lâm đòi đuổi.",
-  "en": ""
- },
- {
-  "vi": "Bạn hỏi ra chuyện con anh nằm viện, chỉ anh làm đơn nghỉ phép năm.",
-  "en": ""
- },
- {
-  "vi": "Anh Dũng quay lại làm, tặng cả phòng nhân sự chùm chôm chôm nhà trồng.",
-  "en": ""
- },
- {
-  "vi": "Lịch phỏng vấn kín mít",
-  "en": ""
- },
- {
-  "vi": "Mùa tuyển dụng, một ngày 9 buổi phỏng vấn, 3 phòng họp.",
-  "en": ""
- },
- {
-  "vi": "Bạn xếp lại từng ô, tránh giờ giám đốc đi ngân hàng.",
-  "en": ""
- },
- {
-  "vi": "Không ứng viên nào phải chờ quá 10 phút.",
-  "en": ""
- },
- {
-  "vi": "Hồ sơ rõ ràng, hỏi là có câu trả lời.",
-  "en": ""
- },
- {
-  "vi": "Được đối xử công bằng.",
-  "en": ""
- },
- {
-  "vi": "Chuyện riêng được giữ kín.",
-  "en": ""
- },
- {
-  "vi": "Lịch hẹn đúng giờ.",
-  "en": ""
- },
- {
-  "vi": "Mỗi hồ sơ là một việc thật: lọc CV vào khay, soát bảng chấm công từng ô, soát hợp đồng, xếp lịch phỏng vấn, trao đổi chuyện khó. Đọc giấy tờ bên cạnh, rồi nộp trước giờ hạn. Thỉnh thoảng sếp đổi ý giữa chừng — đọc kỹ tin báo rồi sửa lại. Lương ngày trả khi khép ca.",
-  "en": ""
- },
- {
-  "vi": "Ly giấy",
-  "en": ""
- },
- {
-  "vi": "Hũ topping",
   "en": ""
  }
 ]

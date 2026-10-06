@@ -180,6 +180,7 @@ TITLES = {
     'c_teacher': '🍎 Người dạy tận tâm', 'c_accounting': '📒 Người giữ sổ gọn', 'c_corp_accounting': '🧮 Kế toán vững tay',
     'c_tax_payroll': '🧾 Người tính lương chuẩn', 'c_group_accounting': '🏢 Kế toán hợp nhất',
     'c_hr_admin': '🗂️ Người giữ hồ sơ nhân sự', 'c_secretary': '📅 Thư ký chu đáo', 'c_it_helpdesk': '🖥️ Cứu tinh máy tính', 'c_oil': '🛢️ Người giữ ổ khóa đỏ',
+    'c_lighthouse': '🗼 Người giữ lửa Hòn Gió',
     'k_careful': '🔍 Mắt tinh', 'k_communication': '💬 Nói dễ hiểu', 'k_patience': '🌱 Kiên nhẫn như đất', 'k_numbers': '🔢 Đầu óc con số',
     'k_teamwork': '🫶 Đồng đội tốt', 'k_creative': '🎨 Bàn tay khéo', 'k_tech': '💻 Rành máy móc', 'k_calm': '🧘 Bình tĩnh giờ cao điểm',
     'k_learning': '📚 Ham học hỏi',
@@ -201,6 +202,7 @@ CERTS = {
     'cert:archive_craft': '🗂️ Chứng chỉ nghiệp vụ lưu trữ',
     'cert:rail_safety': '🚦 Chứng chỉ An toàn đường ngang',
     'cert:patient_safety': '🏥 Chứng chỉ An toàn người bệnh',
+    'cert:light_keeping': '🗼 Chứng chỉ Gác đèn biển',
 }
 
 EMOTES = {'wave': '👋', 'heart': '❤️', 'laugh': '😂', 'wow': '😮', 'pray': '🙏', 'dance': '💃'}   # 💃: a wedding's stage (live/wedding.py)

@@ -1,0 +1,72 @@
+/* Người gác hải đăng — scoped styles (.career-job.hd), over the street kit (street_kit.css).
+   Its own look: sea blue and lamp yellow, the logbook's paper, a radio-room feel for the reports. */
+.career-job.hd{--sk-accent:#2f6f8f;--sk-accent-2:#f2c14e;--hd-sea:#2f88a8;--hd-lamp:#f2c14e;--hd-red:#d6382b}
+
+/* ---------- shared rows */
+.career-job.hd .hd-row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.career-job.hd .hd-row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.career-job.hd .hd-row2 .btn,.career-job.hd .hd-row3 .btn{min-height:48px;white-space:normal}
+.career-job.hd .hd-segs{display:flex;flex-wrap:wrap;gap:6px}
+.career-job.hd .hd-segs .btn{min-height:44px;min-width:44px;white-space:normal;text-align:left}
+.career-job.hd .hd-field{display:grid;gap:4px;margin:8px 0}
+.career-job.hd .hd-field>small{color:var(--sk-muted);font-weight:700}
+.career-job.hd .hd-on{background:color-mix(in srgb,var(--sk-accent) 14%,var(--sk-surface));border-color:var(--sk-accent);font-weight:700}
+.career-job.hd .btn.hd-on{color:var(--sk-ink)}
+.career-job.hd .hd-ok{color:var(--sk-good);font-weight:700}
+.career-job.hd .hd-em{font-size:24px;width:32px;text-align:center;flex:none}
+.career-job.hd .hd-av{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--sk-surface-2);font-size:22px;flex:none}
+.career-job.hd .hd-line{margin:6px 0 10px;font-size:15px;line-height:1.4}
+
+/* ---------- times, equipment, faults, the fuel log */
+.career-job.hd .hd-time{font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:16px}
+.career-job.hd .hd-handover{padding:8px 10px;border-radius:10px;background:#fbf6e7;color:#4a3b20;border:1px solid #e8dcb6}
+.career-job.hd .hd-forms{display:grid;gap:8px}
+.career-job.hd .hd-form{min-height:48px;white-space:normal;text-align:left;display:flex;flex-direction:column;align-items:flex-start}
+.career-job.hd .hd-form small{font-weight:400;color:var(--sk-muted)}
+.career-job.hd .hd-eq.bad{border-color:var(--hd-red);background:color-mix(in srgb,var(--hd-red) 10%,var(--sk-surface))}
+
+/* ---------- the weather watch */
+.career-job.hd .hd-reads,.career-job.hd .hd-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.career-job.hd .hd-reads li{display:flex;gap:8px;align-items:flex-start}
+.career-job.hd .hd-reads li>span{font-size:22px;width:30px;text-align:center}
+.career-job.hd .hd-reads small,.career-job.hd .hd-list small{display:block;font-size:13px;line-height:1.35;color:var(--sk-muted)}
+.career-job.hd .hd-read{min-height:46px;width:100%;justify-content:flex-start;text-align:left}
+.career-job.hd .hd-beau{display:flex;flex-wrap:wrap;gap:4px 10px;font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.career-job.hd .hd-beau b{color:var(--sk-accent)}
+
+/* ---------- the evening light */
+.career-job.hd .hd-tired{padding:8px;border-radius:10px;background:color-mix(in srgb,var(--sk-warn) 16%,var(--sk-surface))}
+.career-job.hd .hd-count{padding:8px 10px;border-radius:10px;background:#1f2a33;color:#f6e3a1;font-family:ui-monospace,Menlo,monospace}
+.career-job.hd .hd-count small{color:#c7cdd4}
+.career-job.hd .hd-remarks{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.career-job.hd .hd-remarks .btn{min-height:44px;white-space:normal;text-align:left}
+
+/* ---------- the sea */
+.career-job.hd .hd-seen{padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--hd-sea) 12%,var(--sk-surface));line-height:1.4}
+.career-job.hd .hd-said{font-style:italic;line-height:1.4}
+.career-job.hd .hd-acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px}
+.career-job.hd .hd-acts .btn,.career-job.hd .hd-acts .tag{min-height:46px;white-space:normal;text-align:left;justify-content:flex-start}
+.career-job.hd .hd-kinds{display:grid;gap:6px}
+.career-job.hd .hd-kind{min-height:48px;white-space:normal;text-align:left;display:flex;flex-direction:column;align-items:flex-start}
+.career-job.hd .hd-kind small{font-weight:400;color:var(--sk-muted)}
+.career-job.hd .hd-tempt{margin-top:10px}
+.career-job.hd .hd-tempt summary{cursor:pointer;color:var(--sk-muted);font-size:13px;min-height:32px}
+.career-job.hd .hd-risk .sk-opt-label,.career-job.hd .hd-risk,.career-job.hd .hd-give .sk-opt-label{color:var(--sk-bad)}
+.career-job.hd .hd-give{border-style:dashed}
+
+/* ---------- visitors, the supply boat */
+.career-job.hd .hd-papers{padding:8px 10px;border-radius:10px;background:#fbf6e7;color:#4a3b20;border:1px dashed #d9c58f}
+.career-job.hd .hd-ans{min-height:46px}
+.career-job.hd .hd-list li{padding:8px;border-radius:10px;border:1px solid var(--sk-line);background:var(--sk-surface)}
+.career-job.hd .hd-list li.bad{border-left:5px solid var(--hd-red)}
+.career-job.hd .hd-list li .btn{min-height:44px;white-space:normal}
+
+/* ---------- encounters, the record, life on the rock */
+.career-job.hd .hd-odd-row{display:grid;grid-template-columns:44px minmax(0,1fr);gap:6px;align-items:start;margin:6px 0}
+.career-job.hd .hd-odd-row>small{padding-top:12px;color:var(--sk-muted);font-weight:700}
+.career-job.hd .hd-step{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.career-job.hd .hd-record{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.career-job.hd .hd-meter{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center}
+.career-job.hd .hd-meter>small{color:var(--sk-muted);font-weight:700}
+.career-job.hd .hd-sumlist{margin:0;padding-left:18px;display:grid;gap:4px}
+@media (max-width:420px){.career-job.hd .hd-row3{grid-template-columns:1fr}}
