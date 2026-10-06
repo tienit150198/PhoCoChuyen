@@ -197,6 +197,7 @@ CERTS = {
     'cert:customer_service': '🎧 Chứng chỉ Chăm sóc khách hàng', 'cert:teaching': '🍎 Chứng chỉ Nghiệp vụ sư phạm',
     'cert:accounting': '🧮 Chứng chỉ Kế toán cơ bản', 'cert:air_safety': '✈️ Chứng chỉ An toàn bay cơ bản',
     'cert:office_admin': '🗂️ Chứng chỉ Hành chính văn phòng', 'cert:ice_cream_craft': '🍨 Chứng chỉ làm kem',
+    'cert:rail_safety': '🚦 Chứng chỉ An toàn đường ngang',
 }
 
 EMOTES = {'wave': '👋', 'heart': '❤️', 'laugh': '😂', 'wow': '😮', 'pray': '🙏', 'dance': '💃'}   # 💃: a wedding's stage (live/wedding.py)

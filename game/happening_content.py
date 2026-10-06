@@ -587,6 +587,25 @@ HAPPENINGS = [
     H('tablet_drop', 'den', '📟', 'Máy tính bảng tài liệu bay rơi xuống sân đỗ',
       'Gió sân đỗ thổi tung tập giấy, bạn chụp vội thì máy tính bảng tài liệu bay tuột tay, nứt màn hình.',
       ('pilot',), 'drop', 'self', 'table', 'Đền một phần máy tính bảng cho hãng', dict(comp=(25, 60)), min_day=4),
+    # ================================================================ 🚦 Gác chắn đường ngang Bến Mây (railway)
+    H('rw_wallet', 'trom', '👛', 'Mất ví ở chòi gác',
+      'Bạn ra đứng cờ đón tàu, để áo khoác trên ghế trong chòi. Tàu qua, quay vào thì ví trong túi áo đã không còn.',
+      ('railway',), 'pick', 'pickpocket', 'door', 'Mất ví ở chòi gác', dict(wallet=(15, 50)), ['shout', 'call', 'camera', 'let'], weight=2, min_day=3),
+    H('rw_phone', 'trom', '📱', 'Giật điện thoại lúc đứng chờ tàu',
+      'Bạn rút điện thoại xem giờ tàu thì một chiếc xe máy trong dòng xe đang chờ chắn vọt tới giật phắt rồi quay đầu chạy.',
+      ('railway',), 'snatch', 'thief', 'door', 'Mất điện thoại cá nhân', dict(wallet=(50, 120)), THEFT_SOLO, min_day=5),
+    H('rw_helmet', 'trom', '⛑️', 'Mất mũ bảo hiểm sau chòi',
+      'Tan ca ra sau chòi lấy xe, chiếc mũ bảo hiểm móc trên gương đã biến mất. Đường về hẻm còn ba cây số.',
+      ('railway',), 'ride', 'biker', 'door', 'Mua mũ bảo hiểm mới', dict(wallet=(15, 35)), ['call', 'camera', 'let'], min_day=3),
+    H('rw_kids_glass', 'pha', '🧒', 'Tụi nhỏ ném vỡ kính chòi gác',
+      'Mấy đứa nhỏ chơi ném đá vào cột điện, một hòn bay lệch trúng ô kính chòi gác vỡ toang.',
+      ('railway',), 'knock', 'kids', 'shelf', 'Thay ô kính chòi gác', dict(damage=(5, 15)), KIDS),
+    H('rw_lamp_drop', 'den', '🏮', 'Làm rơi đèn cầm tay của xí nghiệp',
+      'Bạn vội chạy ra đón tàu đêm, vấp bậc chòi. Cái đèn cầm tay rơi xuống đá ba-lát, vỡ kính.',
+      ('railway',), 'drop', 'self', 'till', 'Đền một phần đèn cầm tay cho xí nghiệp', dict(comp=(10, 30)), min_day=3),
+    H('rw_mirror', 'den', '🪞', 'Cần chắn quệt gương xe máy',
+      'Một anh dừng xe sát quá vạch, cần chắn hạ xuống quệt gãy gương chiếu hậu. Anh ấy đòi bạn đền.',
+      ('railway',), 'drop', 'self', 'door', 'Đền gương xe máy', dict(comp=(8, 20)), min_day=2),
 ]
 INDEX = {x['id']: x for x in HAPPENINGS}
 

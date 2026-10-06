@@ -64,6 +64,7 @@ NOTES = {
     'giupviec': 'Lịch hẹn từ 7:00; khách đi làm để chìa khóa, chiều tối khách về đi kiểm nhà.',
     'naucom': 'Ra chợ từ sáng, 8 giờ cá tôm tươi nhất; cơm phải lên mâm trước giờ cả nhà về ăn.',
     'babysitter': 'Bố mẹ gửi bé lúc 7:30, đón lúc 18:00; giữa trưa là giờ ngủ của bé.',
+    'railway': 'Nhận ca 5:30, thử thiết bị rồi mới ký; tàu qua theo bảng giờ, ngày ca chiều tối thì tàu qua tới khuya.',
     'homestay': 'Quầy lễ tân trực tới 22:00; khách tới muộn gọi chuông, sáng mai bàn giao.',
     'milk_tea': 'Ngày đông khách có thể bán quá giờ, muộn nhất 23:00.',
     'corp_accounting': 'Tăng ca được tới 20:00 nếu xin phép trưởng phòng.',
