@@ -27,6 +27,7 @@ export const KIND_OF={
   oil:'rig',
   railway:'lane',
   nurse:'ward',
+  rescue:'dispatch',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
 
@@ -206,6 +207,14 @@ const CAREER_WORDS={
     none_waiting:'Chưa có việc nào đang chờ',next_btn:'Việc tiếp theo',rail_in:'Trong khoa',books:'Sổ khoa',
     end_title:'Giao ca hôm nay?',end_text:'Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho ca sau.',
     people_sub:'Những người bạn gặp ở khoa Nội.',feed_sub:'Lời nhắn và nhận xét của người bệnh, người nhà.'},
+  rescue:{shelf:'Bảng đội',evidence:'Sổ nhật ký & bản đồ',workbench:'Bàn trực tổng đài',counter:'Điện thoại khẩn',warehouse:'Giá bộ đàm',
+    finance:'Bàn giấy tờ',property:'Bản đồ phường',security:'An ninh trung tâm',ledger:'SỔ NHẬT KÝ',store:'GIÁ BỘ ĐÀM',till:'Quỹ lương',
+    door_open:'Giao ca',door_closed:'Nhận ca',open_sign:'ĐANG TRỰC',closed_sign:'ĐÃ GIAO CA',pet:'Mướp ngủ cạnh giá bộ đàm',
+    cat_line:'Mrrr… Mướp nằm ổ thôi, không nằm lên bàn bộ đàm đâu.',idle_line:'Đường dây sắp réo rồi.',open_hint:'Nhận ca, gọi bộ đàm từng đội rồi ký nhé.',
+    free_eyebrow:'Đường dây đang yên',free_title:'Hết cuộc gọi rồi!',free_more:'Nhận thêm một cuộc gọi hoặc giao ca hôm nay.',more_btn:'Nhận thêm một cuộc gọi',
+    none_waiting:'Chưa có cuộc gọi nào đang chờ',next_btn:'Cuộc gọi tiếp theo',rail_in:'Trong phòng trực',books:'Sổ nhật ký',
+    end_title:'Giao ca hôm nay?',end_text:'Lương ngày vào quỹ lương. Cuộc gọi chưa xong được giao lại cho ca sau.',
+    people_sub:'Những người bạn gặp ở tổng đài cứu hộ.',feed_sub:'Lời nhắn và nhận xét của người gọi, của đội.'},
 };
 export const wordsFor=career=>({...BASE,...KIND_WORDS[kindOf(career)],...CAREER_WORDS[career]});
 
