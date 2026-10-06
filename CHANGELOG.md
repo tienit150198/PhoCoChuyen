@@ -1,3 +1,11 @@
+# Chưa phát hành — Nghề mới: Gác chắn đường sắt
+
+- Nghề mới ở chương 4 (Được tin cậy): nhân viên gác chắn đường ngang Bến Mây kiêm tuần đường cho Xí nghiệp Đường sắt Sông Mây. Việc làm thuê: ứng tuyển, có lương ngày và thưởng mỗi chuyến gác đúng quy trình. Chứng chỉ An toàn đường ngang giúp dễ được nhận.
+- Nhận ca: đọc sổ giao ca, thử từng thiết bị (chuông đèn, cần chắn, bộ đàm, cờ đèn…), hỏng thì tự xử lý (thay pin, lắp tay quay) và báo đúng nơi: sổ giao ca, phiếu báo hỏng hay gọi ga.
+- Mỗi chuyến tàu: nghe ga gọi và nhắc lại lệnh, dẹp người trên ray (khách chụp ảnh, tụi nhỏ, chú Hớn ngủ quên, con bò, xe ba gác kẹt…), chuông trước chắn sau, hạ chắn đúng lúc, giữ chắn trước gần 30 kiểu người đòi qua (xe ôm, đám tang, xe hoa, xe cứu thương, người dúi tiền, TikToker…); bạn tự chọn cách trả lời, người ta tự quyết theo tính. Không dẹp kịp thì báo dừng tàu: luôn đúng.
+- Tàu chậm giữa chừng, tàu thứ hai chạy ngược chiều, toa thiếu đèn đuôi, bầu trục bốc khói: nhìn hết đoàn tàu, hỏi ga trước khi nâng chắn, ghi sổ nhật ký đúng sự thật.
+- Tuần đường Km 7 – Km 8: bu lông lỏng, tà vẹt nứt, đá ba-lát trôi, ray nứt, ray cong vì nắng, đèn tín hiệu tắt, nong ớt trên ray… tự xử lý, cắm cờ phòng vệ, điện khẩn hay ghi đúng phiếu.
+- Chuyện oái oăm quanh chòi gác: lời mời “có ý”, quấy rối, sếp bảo sửa giờ cho đẹp, đồng nghiệp nhờ ký sổ khống, gác thêm ca đêm; ca đêm làm mệt, mệt thì phải tỉnh táo trước khi nghe lệnh. Có truyện nghề “Cái còi đồng của chú Sáu”.
 # Chưa phát hành — WP1 Nhân viên tiệm & nhập hàng
 
 - Nhân viên bán theo cả danh mục hàng của tiệm (Mẹ & Bé, tạp hóa, thú cưng, trái cây, hoa, trà đá, kem, cơm, phở, mì cay, cà phê, salon, nail, sửa chữa…), chỉ món còn hàng, ưu tiên món còn nhiều; hết thỏ bông vẫn bán món khác.
