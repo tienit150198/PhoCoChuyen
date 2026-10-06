@@ -9,6 +9,11 @@ The differential tests run the same commands, from the same save and the same fr
 with the 1.7.15 paths (full validation of moved careers, places under the lock, str texts) and
 once with the new ones, and require byte-identical stored saves, results, views and side tables.
 scripts/bench_command.py does the same across two trees on 225 KB / 1.4 MB / 3 MB saves.
+
+Pieces are skipped only with orjson (fastjson.FAST, as on the production server: the vendored
+wheel, scripts/vendor_orjson.sh); without it serialize validates every moved career in full, as
+1.7.15 did. The tests that need the skip to happen are skipped without orjson; the byte-for-byte
+comparisons run either way.
 """
 import copy
 import json
@@ -76,6 +81,7 @@ class PiecesTests(unittest.TestCase):
                 self.assertEqual(out['ops'], fj.dumps_raw(c['ops']), cid)
                 self.assertEqual(out['ops.finance.ledger'], fj.dumps_raw(c['ops']['finance']['ledger']), cid)
 
+    @unittest.skipUnless(fj.FAST, 'scoped validation needs orjson (fastjson.FAST)')
     def test_record_that_cannot_be_cut_is_not_snapshotted(self):
         s = fixture()
         known = fj.loads(storage.serialize(s, None, True))['check']['careers']
@@ -85,6 +91,12 @@ class PiecesTests(unittest.TestCase):
             snap = settle_scope.snapshot(s, known, 'accounting')
         self.assertNotIn('grocery', snap)
         self.assertIn('accounting', snap)
+
+    def test_without_orjson_nothing_is_snapshotted(self):
+        s = fixture()
+        known = fj.loads(storage.serialize(s, None, True))['check']['careers']
+        with mock.patch.object(fj, 'FAST', False), mock.patch.object(wb.time, 'time', return_value=T0 + 99999):
+            self.assertEqual(settle_scope.snapshot(s, known, 'accounting'), {})
 
     def test_only_records_with_their_stored_digest_are_snapshotted(self):
         s = fixture()
@@ -208,7 +220,10 @@ class DifferentialTests(unittest.TestCase):
                 return real(c, cid, finite, same)
             with mock.patch.object(storage, 'validate_career', spy):
                 new = self.run_plan(start, [])
-        self.assertTrue(any(calls), 'no career was validated with pieces skipped')
+        if fj.FAST:
+            self.assertTrue(any(calls), 'no career was validated with pieces skipped')
+        else:  # without orjson every moved career is validated in full (see the module doc)
+            self.assertTrue(calls and not any(calls))
         self.assertEqual(len(old), len(new))
         for a, b in zip(old, new):
             self.assertEqual(a, b)
