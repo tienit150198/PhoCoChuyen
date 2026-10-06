@@ -110,6 +110,11 @@ html[data-layout="phone"] .scene-heading:not(:empty){padding:2px 12px 2px 2px}
 html[data-layout="phone"] .scene-mark{width:32px;height:32px}
 /* Area chips: a thumb tall. */
 html[data-layout="phone"] .sa-chip{min-height:44px;min-width:44px;padding:0 10px}
+/* Portrait: icon-only chips (the name stays in title/aria-label), so they fit beside the title card. */
+html[data-layout="phone"][data-orientation="portrait"] .sa-chip{padding:0 6px}
+html[data-layout="phone"][data-orientation="portrait"] .sa-chip b{display:none}
+html[data-layout="phone"][data-orientation="portrait"] .scene-areas{gap:2px;padding:2px}
+html[data-layout="phone"][data-orientation="portrait"] .scene-heading:not(:empty){padding-right:8px}
 /* Dock: 64 px, icon over a one-line label (two for a long name). */
 html[data-layout="phone"][data-orientation="portrait"] .dock-btn{height:calc(var(--dock-h) - 4px);min-height:56px;gap:1px;padding-top:4px}
 html[data-layout="phone"][data-orientation="portrait"] .dock-btn>svg{height:26px}
@@ -127,7 +132,7 @@ html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud>.wv-owner{fl
 html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud>.wv-owner .wv-owner-toggle{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:62px;min-height:56px;padding:4px;border-radius:14px;text-align:center;line-height:1.15;font-size:.7rem;overflow:hidden}
 html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud>.wv-owner .wv-owner-toggle b{display:block;font-size:.6rem;line-height:1.1}
 /* Other cards in the swipe row (a visit, a notice) stay as short as the task card; their extra lines scroll. */
-html[data-layout="phone"][data-orientation="portrait"] .task-hud .note-card:not(.task-card){max-height:96px;overflow-y:auto;overscroll-behavior:contain}
+html[data-layout="phone"][data-orientation="portrait"] .task-hud .note-card:not(.task-card){max-height:64px;overflow-y:auto;overscroll-behavior:contain}
 /* Opened, the visitors' panel takes the whole row above the task card. */
 html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud:has(.wv-owner-toggle[aria-expanded="true"]){flex-direction:column-reverse}
 html[data-layout="phone"][data-orientation="portrait"] .wv-work-hud:has(.wv-owner-toggle[aria-expanded="true"])>.wv-owner{flex:none;width:100%}
@@ -270,6 +275,11 @@ html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-t
 html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-top>.lx-nav) .lx-tab{flex:0 0 auto;justify-content:flex-start}
 html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-top>.lx-nav)>.life-content{grid-column:2;grid-row:2}
 html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-top>.lx-nav)>:not(.lx-top):not(.life-content){grid-column:1/-1}
+html[data-layout="phone"][data-orientation="landscape"] #sheetContent:has(>.lx-top>.lx-nav)>.life-sticky:not(.lx-top):not(.life-content){grid-column:2;margin-left:8px;border-radius:16px 0 0 0;border-left:1px solid var(--line)}
+/* The header's level line sits beside the name, not under it. */
+html[data-layout="phone"][data-orientation="landscape"] .lx-head>.grow{display:flex;align-items:center;gap:6px 14px;flex-wrap:nowrap;min-width:0}
+html[data-layout="phone"][data-orientation="landscape"] .lx-head>.grow>h2{flex:0 1 auto;min-width:0;max-width:50%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+html[data-layout="phone"][data-orientation="landscape"] .lx-head>.grow>:not(h2):not(.eyebrow){flex:1 1 auto;min-width:0;margin:0}
 /* Wardrobe: the preview on the left, the items on the right. */
 html[data-layout="phone"][data-orientation="landscape"] .wd-stage{box-shadow:none}
 
