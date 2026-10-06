@@ -40,10 +40,9 @@ export function onIsoLand(fn){isoLand=fn;}
 export const homePref=()=>{try{const v=localStorage.getItem(HOME_KEY);return v==='list'||v==='town'?v:homeDefault;}catch{return homeDefault;}};
 export function setHomePref(v){try{localStorage.setItem(HOME_KEY,v==='list'?'list':'town');}catch{/* storage blocked */}}
 let canvasOK=null;
-export function townOK(){
-  if(canvasOK===null){try{canvasOK=!!document.createElement('canvas').getContext('2d')&&typeof ResizeObserver==='function';}catch{canvasOK=false;}}
-  return canvasOK;
-}
+/** 🏝️ The old 2D Khu phố map (v4/town-walk.js) is not shown since the 2.5D island became the map: the home sheet is
+ * the list. Kept as a function so its callers stay as they are. */
+export function townOK(){return false;}
 const townWanted=ui=>townOK()&&(ui.homeMode||homePref())==='town';
 /** Does the home sheet show the town now? (app.js gives the sheet its fixed height then) */
 export function townOn(env){

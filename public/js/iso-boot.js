@@ -27,18 +27,23 @@ export function bootShell(env){
   bootIsometricShell(env);bootIsometricMovement(env);bootIsometricTown(env);bootCozyPortraits();
 }
 
-/** After the first frame (app.js): the HUD if it was not in time, then the Phaser bundle into app.js's stand-in world.
- * A bundle that fails to load or start: app.js's fail (back to the classic UI). Its stylesheets come with this module
- * (app.js lazy(..., {css})). */
-export function start({env,world,interact,renderMain,fail}){
+/** After the first frame (app.js): the Phaser bundle (already downloading, boot.js) into app.js's stand-in world. A
+ * bundle that fails to load is tried again (3 times, waiting longer each time), then the player gets a retry button. */
+export function start({env,world,interact,renderMain}){
   const canvas=document.getElementById('world'),stage=document.getElementById('stage')||document.body;
   const note=document.createElement('div');note.className='iso-loading';note.setAttribute('role','status');note.textContent='Đang dựng phố…';stage.append(note);
   if(!up){bootShell(env);renderMain();}
-  requestAnimationFrame(()=>setTimeout(async()=>{
-    try{const PhaserWorld=await loadWorld(),real=new PhaserWorld(canvas,interact);world.adopt(real);renderMain();
+  const attempt=async n=>{
+    try{const PhaserWorld=await loadWorld(),real=new PhaserWorld(canvas,interact);world.adopt(real);renderMain();note.remove();
       real.ready.then(()=>attachGuide(real,env)).catch(e=>console.warn('2.5D guide:',e));}
-    catch(e){fail(e);}finally{note.remove();}
-  },0));
+    catch(e){
+      console.warn('2.5D:',e);
+      if(n<3){setTimeout(()=>attempt(n+1),1500*2**n);return;}
+      note.classList.add('is-error');note.innerHTML='Chưa tải được phố. <button type="button" class="btn primary small">Thử lại</button>';
+      note.querySelector('button').addEventListener('click',()=>location.reload());
+    }
+  };
+  requestAnimationFrame(()=>setTimeout(()=>attempt(0),0));
 }
 
 /** The Phaser world class (the big bundle). */

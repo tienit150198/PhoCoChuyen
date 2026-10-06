@@ -73,12 +73,6 @@ def content_hash(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()[:HASH_LEN]
 
 
-def ui25d_default() -> str:
-    """UI25D_DEFAULT: the UI a device that never chose gets, "1" the 2.5D town (the default), "0" the classic UI.
-    Players switch in Cài đặt → Giao diện; their choice stays on their device (localStorage mnl.ui25d)."""
-    return "0" if (os.environ.get("UI25D_DEFAULT") or "1").strip() in ("0", "false", "off", "no") else "1"
-
-
 def csp_hash(text: str) -> str:
     return "'sha256-" + base64.b64encode(hashlib.sha256(text.encode()).digest()).decode() + "'"
 
@@ -204,8 +198,6 @@ class WebAssets:
             raise ValueError("boot.js must not contain </script>")
         head = [*observability.head_tags(), f'<script type="importmap">{importmap}</script>',
                 f'<meta name="mnl-version" content="{version}">']
-        # 🏝️ Giao diện 2.5D for a device that never chose (public/js/app.js UI25D): UI25D_DEFAULT=0 serves the classic UI.
-        head.append(f'<meta name="mnl-ui25d" content="{ui25d_default()}">')
         if content:
             head.append(f'<meta name="mnl-content" content="/api/content?v={content}">')
         head.append(f"<script>{boot_src}</script>")
@@ -218,8 +210,9 @@ class WebAssets:
 
     def career_warm(self, files: dict[str, str], preload: list[str]) -> dict[str, str]:
         """career -> the files its first frame waits for beyond app.js's graph, comma-separated URL paths:
-        its scene kind (+ imports), its workbench (+ imports), then its stylesheets (kit first). Mirrors
-        careerAssets() in app.js, KIND_OF in scenes/index.js and CSS_KIT/loadCareerModules in v4/careers.js."""
+        its workbench (+ imports), then its stylesheets (kit first). Mirrors careerAssets() in app.js and
+        CSS_KIT/loadCareerModules in v4/careers.js. The careers are KIND_OF's in scenes/index.js. No scene module:
+        the 2.5D island draws every workplace (the old canvas scenes are not loaded)."""
         def read(url):
             try:
                 return (self.public / url.lstrip("/")).read_text(encoding="utf-8")
@@ -231,7 +224,7 @@ class WebAssets:
         out = {}
         for cid, kind in kinds.items():  # every career has a scene kind; most have a workbench module too
             order = []
-            for entry in (f"/js/scenes/{kind}.js", f"/js/careers/{cid}.js"):
+            for entry in (f"/js/careers/{cid}.js",):
                 if entry in files:
                     order += [u for u in self.module_graph(entry) if u in files and u not in have and u not in order]
             order += [u for u in (f"/css/careers/{kits[cid]}.css" if cid in kits else "", f"/css/careers/{cid}.css") if u in files]

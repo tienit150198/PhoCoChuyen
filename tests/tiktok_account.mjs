@@ -42,7 +42,7 @@ const appSource=(await readFile(new URL('../public/js/app.js',import.meta.url),'
 const startupBegin=appSource.indexOf('  await api.init();'),startupEnd=appSource.lastIndexOf("}catch(error){$('#loading')");
 assert.ok(startupBegin>0&&startupEnd>startupBegin,'app startup block exists');
 const startup=appSource.slice(startupBegin,startupEnd).replace(/\bimport\(/g,'loadModule(');
-async function startGame({marker='',current=null,open=false,summary=false,social=''}={}){
+async function startGame({marker='',current=null,open=false,summary=false,social='',newbie=false}={}){
   const sheet=Object.assign(new EventTarget(),{open:false}),ui={},calls=[],idle=[];
   const query=new URLSearchParams();if(marker)query.set('tiktok',marker);if(social)query.set('social',social);
   location={href:'https://game.example/?'+query,search:'?'+query,origin:'https://game.example'};
@@ -54,8 +54,8 @@ async function startGame({marker='',current=null,open=false,summary=false,social
   const L={tut:lazy(['tutorialBoot']),inc:lazy(['incidentBoot']),chat:lazy(['aiNoticeBoot']),happen:lazy(['happenBoot']),
     people:lazy([]),social:lazy(['startSocialPoll','invalidate']),tips:lazy(['tipsBoot']),live:lazy(['liveBoot'])};
   const node={hidden:true};
-  // The classic UI (app.js UI25D off): the 2.5D boot has its own browser checks (docs/PHASER_25D.md).
-  const context={UI25D:false,ISO:null,api:game,ui,L,CAREER_MODULES:[],career:()=>current,careerAssets:async()=>{},setLanguage:async()=>{},
+  // The 2.5D HUD and world are stubbed (iso-boot.js has its own tests).
+  const context={iso:{bootShell(){},start(){},booted:()=>false},interact:()=>{},isoTownFirst:()=>!newbie,api:game,ui,L,CAREER_MODULES:[],career:()=>current,careerAssets:async()=>{},setLanguage:async()=>{},
     shell:{boot:noop},journeyBoot:noop,boardBoot:noop,startTicker:noop,$:selector=>selector==='#sheet'?sheet:node,
     world:{resize:noop},renderMain:noop,accountBoot,env:()=>environment,ensureCareerUI:noop,performance:{mark:noop},
     console,localStorage,location,history,CustomEvent,URL,URLSearchParams,sound:{prepare:noop},needsJob:()=>false,
@@ -91,7 +91,8 @@ for(const [name,test] of [
     for(const name of automatic)assert.equal(g.calls.filter(c=>c===name).length,1,name+' stays one-use');
   }],
   ['ordinary startup keeps initial sheets, social link and automatic features',async()=>{
-    for(const [state,view] of [[{},'home'],[{current:'tea'},'prepare'],[{current:'tea',summary:true},'summary'],[{current:'tea',open:true},null],[{social:'street'},'social']]){
+    // 🏝️ Every open lands on the 2.5D island (no workplace sheet); a brand-new player meets the intro (home) first.
+    for(const [state,view] of [[{newbie:true},'home'],[{},null],[{current:'tea'},null],[{current:'tea',summary:true},null],[{current:'tea',open:true},null],[{social:'street'},'social']]){
       const g=await startGame(state);assert.equal(g.ui.view||null,view);
       for(const name of automatic)assert.equal(g.calls.filter(c=>c===name).length,1,name+' starts normally');
     }
