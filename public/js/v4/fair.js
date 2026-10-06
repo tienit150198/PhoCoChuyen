@@ -299,7 +299,7 @@ function gateList(){
       <button type="button" class="fh-game" data-fh="tab" data-tab="ring" data-fh-key="g-ring"><span class="fh-gico">${MINI_BOTTLES}</span><span class="grow"><b>Ném vòng cổ chai</b><small>${r.nocap?`Mỗi vòng trúng +${r.ring_hit} xu, trúng cả ${r.rings||5} vòng thêm ${r.ring_all} xu`:`Trúng mỗi chai +${r.ring_hit||2} xu, đủ ${r.rings||5} chai thêm ${r.ring_all||5} xu`}</small>${meter(e.ring)}</span></button>
     </div>
     <div class="fh-sec"><h3>🎲 Thử vận may</h3><span class="fh-tag">Cược nhỏ bằng xu</span></div>
-    ${r.win_pct?`<p class="fh-rule">🍀 Bầu cua, chiếu trong, lô tô, vé cào, ném vòng: khoảng ${r.win_pct} ván trên 100 là thắng. Thua liền 4 ván thì ván sau chắc thắng; thắng liền 4 ván thì vận hơi nguội, còn ${r.cool_pct}%.</p>`:''}
+    ${r.win_pct?`<p class="fh-rule">🍀 Chiếu trong, lô tô, vé cào, ném vòng: khoảng ${r.win_pct} ván trên 100 là thắng. Thua liền 4 ván thì ván sau chắc thắng; thắng liền 4 ván thì vận hơi nguội, còn ${r.cool_pct}%.</p>`:''}
     <div class="fh-luck">
       ${luck('bc',FACE_ART.cua,'Bầu cua',`Đặt 1–${r.bc_max||20} xu một ván`)}
       ${f.knife?luck('dt','🗡️','Phóng dao',`Đặt ${Math.min(...f.knife.stakes)}–${Math.max(...f.knife.stakes)} xu, qua màn nhận thưởng hoặc liều chơi tiếp`):''}
@@ -515,6 +515,7 @@ function bcView(){
     ${stop?'<p class="fh-rule"><b>Hôm nay chơi đủ rồi, mai ghé lắc tiếp nha.</b></p>':''}<div class="fh-go"><span>Đặt <b>${total}</b>/${max} xu</span>${btn(rolling?'Đang lắc…':'🥣 Lắc!','roll',{},'primary big',total&&!rolling&&!stop&&!why?' data-fh-key="roll"':' disabled data-fh-key="roll"')}</div>
     ${why&&!stop&&!rolling?`<p class="fh-why">${esc(why)}: bớt tiền đặt nha (Gom lại rồi đặt ít hơn).</p>`:''}
     <p class="fh-rule">Ra mấy con trùng mặt đặt thì ăn bấy nhiêu lần tiền cược, kèm tiền vốn. Ba con giống nhau (bão) ăn ${r.bao||10} lần.</p>
+    <p class="fh-rule">🎲 Ba con xúc xắc lăn ngẫu nhiên thật: mỗi mặt 1/6, đặt mặt nào cũng vậy.</p>
   </section>`;
 }
 function bcResult(l){

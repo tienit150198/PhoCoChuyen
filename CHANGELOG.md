@@ -1,3 +1,7 @@
+# Chưa phát hành — Bầu cua xúc xắc thật
+
+- 🎲 Chủ game 06/10 ("ra cua nhiều quá, bị cheat"): bầu cua lăn ba xúc xắc ngẫu nhiên thật, mỗi mặt 1/6, không quyết thắng thua trước và không còn "thua 4 ván thì ván sau chắc thắng" (trước đây xúc xắc chọn theo mặt đặt nên ai đặt cua thì cua ra nhiều). Lâu dài đặt một mặt lỗ khoảng 4,6% (bão vẫn 10:1). Chiếu trong, lô tô, vé cào, ném vòng giữ như cũ. Không đổi bản lưu.
+
 # Chưa phát hành — Tiệm hoa trên điện thoại + Bảng giá (WP-B)
 
 - Góp ý #204 và chat: trên điện thoại dọc (từ 1.8.0), ở tiệm hoa thẻ "Khách cần" dính trên đầu che kệ hoa, chữ bên cột xem trước đè lên ô hoa, chạm không chọn được loại hoa. Giờ thẻ mở thì cuộn theo trang (thu gọn còn một dòng thì vẫn ghim), cột xem trước nằm đúng chỗ, nơ/băng rôn/giấy bóng không vẽ đè lên thẻ nữa. Sửa chung cho mọi nghề dùng thẻ này: sửa đồ, tiệm quần áo, quán mì. Điện thoại ngang và máy tính giữ như cũ.

@@ -212,6 +212,8 @@ class FairWinRate(FairBase):
 
     def test_every_luck_stall_is_won_about_65_percent(self):
         for game in fh.CHANCE_GAMES:
+            if game == 'bc':
+                continue   # owner 06/10: bầu cua rolls honest dice (tests/test_fair_bc_honest.py), no 65% luck draw
             with self.subTest(game=game):
                 rate = self.play(game)
                 self.assertAlmostEqual(rate, .65, delta=.02, msg=(game, rate))

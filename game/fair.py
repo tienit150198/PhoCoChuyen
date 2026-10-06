@@ -519,6 +519,11 @@ def bc_roll(bets: dict, want: bool) -> list:
     return dice
 
 
+def bc_fair_roll() -> list:
+    """Three honest dice (owner 06/10): uniform over the 216 outcomes, whatever was bet. Single-face EV −10/216 a xu."""
+    return [_rng.choice(FACES) for _ in range(3)]
+
+
 def xd_toss(side: str, want: bool) -> list:
     """Four coins that make `side` right (want) or wrong: any of the 8 patterns of that parity alike."""
     coins = [_rng.randrange(2) for _ in range(4)]
@@ -871,9 +876,11 @@ def apply(s: dict, name: str, p: dict) -> dict:
         need(stake <= BC_MAX, f'Mỗi ván đặt tối đa {BC_MAX} xu.')
         need(f is None or int(t * 1000) - f['last'] >= BC_GAP_MS or f['last'] > int(t * 1000),
              'Chờ chú Tám mở bát đã nha!', 'fair_slow')
-        want = _draw_luck(j, 'bc', luck_p(j, f, 'bc', t, stake=stake))
+        luck_p(j, f, 'bc', t, stake=stake)   # the run counters only
         _guard_round(e, f, j, t, stake, stake)
-        dice = bc_roll(bets, want)
+        # Owner 06/10 ("ra cua nhiều quá, bị cheat, cho random lại"): three honest dice, each face 1/6, nothing
+        # decided before the roll and no sure win after a losing streak (bets no longer pull the dice their way).
+        dice = bc_fair_roll()
         back = bc_back(bets, dice)
         bao = next((face for face in bets if dice.count(face) == 3), None)
         st['bc'] += 1

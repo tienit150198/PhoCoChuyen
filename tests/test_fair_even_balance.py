@@ -46,13 +46,19 @@ class EvenRates(unittest.TestCase):
 
 
 class EvenCommands(FairBase):
-    def test_actual_dice_rounds_keep_streak_after_reload(self):
+    def test_bau_cua_dice_are_honest_no_sure_win_after_losses(self):
+        # Owner 06/10: honest dice for bầu cua. Ten crab bets on dice without a crab all lose (no streak rescue),
+        # and dice with crabs win whatever the past rounds were.
         s = story(10000)
         for i in range(10):
-            self.dice(Dice(draws=[.999]))
+            self.dice(Dice(faces=['bau', 'tom', 'ga'], draws=[.999]))
             s, result = self.act(s, 'fair_bc', bets={'cua': 10})
-            self.assertEqual(result['fair']['net'] > 0, i in (4, 9))
+            self.assertEqual(result['fair']['dice'], ['bau', 'tom', 'ga'])
+            self.assertLess(result['fair']['net'], 0)
             s = json.loads(json.dumps(s)); validate_state(s)
+        self.dice(Dice(faces=['cua', 'cua', 'nai'], draws=[.999]))
+        s, result = self.act(s, 'fair_bc', bets={'cua': 10})
+        self.assertEqual(result['fair']['net'], 20)
 
     def test_invalid_streaks_and_skill_keys_are_rejected(self):
         for invalid in ({'bc': 5}, {'xs': -5}, {'ring': True}, {'kn': 1}):

@@ -15,7 +15,7 @@ def rich(net=60000, wallet=100000):
 
 class WealthRaid(FairBase):
     def test_seizes_thirty_percent_of_wallet_after_round_and_records_it(self):
-        self.dice(Dice(draws=[.99, .699999]))  # losing bet then successful check
+        self.dice(Dice(draws=[.699999]))  # losing bet (honest dice: no luck draw) then successful check
         s, result = self.act(rich(), 'fair_bc', bets={'cua': 1})
         raid = result['fair']['wealth_raid']
         self.assertEqual(raid['amount'], 29999)  # 30% of 99,999, whole xu
@@ -30,25 +30,25 @@ class WealthRaid(FairBase):
 
     def test_boundary_and_no_penalty_for_large_wallet_alone(self):
         for net in (0, 50000, 50001):
-            self.dice(Dice(draws=[.99, 0]))
+            self.dice(Dice(draws=[0]))
             s, result = self.act(rich(net=net), 'fair_bc', bets={'cua': 1})
             self.assertNotIn('wealth_raid', result['fair'])
             self.assertNotIn('wealth_check_at', s['journey']['fair'])
-        self.dice(Dice(draws=[.99, .70]))
+        self.dice(Dice(draws=[.70]))
         s, result = self.act(rich(), 'fair_bc', bets={'cua': 1})
         self.assertNotIn('wealth_raid', result['fair'])
         self.assertIn('wealth_check_at', s['journey']['fair'])
 
     def test_failed_check_also_waits_thirty_minutes_and_survives_reload(self):
-        self.dice(Dice(draws=[.99, .70]))
+        self.dice(Dice(draws=[.70]))
         s, _ = self.act(rich(), 'fair_bc', bets={'cua': 1})
         checked = s['journey']['fair']['wealth_check_at']
         s = json.loads(json.dumps(s))
-        self.dice(Dice(draws=[.99, 0]))
+        self.dice(Dice(draws=[0]))
         s, result = self.act(s, 'fair_bc', bets={'cua': 1})
         self.assertNotIn('wealth_raid', result['fair'])
         self.clock.t = checked + 1800
-        self.dice(Dice(draws=[.99, 0]))
+        self.dice(Dice(draws=[0]))
         s, result = self.act(s, 'fair_bc', bets={'cua': 1})
         self.assertIn('wealth_raid', result['fair'])
         validate_state(s)
@@ -64,10 +64,10 @@ class WealthRaid(FairBase):
     def test_new_day_clears_eligibility_and_wallet_never_goes_negative(self):
         s = rich()
         self.clock.t += 86400
-        self.dice(Dice(draws=[.99, 0]))
+        self.dice(Dice(draws=[0]))
         s, result = self.act(s, 'fair_bc', bets={'cua': 1})
         self.assertNotIn('wealth_raid', result['fair'])
-        self.dice(Dice(draws=[.99, 0]))
+        self.dice(Dice(draws=[0]))
         self.clock.t = OPEN
         s, result = self.act(rich(wallet=1), 'fair_bc', bets={'cua': 1})
         self.assertEqual(s['journey']['wallet'], 0)
@@ -109,7 +109,7 @@ class WealthRaidReplay(StoreBase):
         def prepare(s):
             s['journey']['fair'] = dict(fh.initial(), date=fh.vn_date(OPEN), ed=fh.edition(), net=60000)
         mr._mutate(self.store, {self.store.key(tok): prepare})
-        self.dice(Dice(draws=[.99, 0]))
+        self.dice(Dice(draws=[0]))
         args = (tok, 'wealth-raid-retry-01', self.store.read(tok)[1], None, 'fair_bc', {'bets': {'cua': 1}})
         first = self.store.command(*args)
         wallet = self.store.read(tok)[0]['journey']['wallet']
