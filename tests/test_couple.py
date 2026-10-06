@@ -117,8 +117,10 @@ class FriendTests(Base):
 
     def test_friend_card_career_and_marriage_status(self):
         def board(db):
-            for board, level, score in (('all', 7, 900), ('grocery', 5, 600), ('certs', 2, 50), ('milk_tea', 3, 100)):
-                db.execute('INSERT INTO leaderboard(sid,board,score,k1,k2,level,days,served,stars,mastered,since,updated) VALUES(?,?,?,0,0,?,1,1,1,0,0,0)',
+            for board, level, score in (('all', 7, 900), ('grocery', 5, 600), ('certs', 2, 50), ('milk_tea', 3, 100),
+                                       ('wealth', 0, 54000), ('titles', 9, 700), ('fair20261003xu', 0, 800)):   # the last three: not workplaces
+                db.execute('INSERT INTO leaderboard(sid,board,score,k1,k2,level,days,served,stars,mastered,since,updated) VALUES(?,?,?,0,0,?,1,1,1,0,0,0) '
+                           'ON CONFLICT(sid,board) DO UPDATE SET score=excluded.score,level=excluded.level',   # a story save has its 💰 row
                            (self.sid(self.b), board, score, level))
         self.store.transaction(board)
         self.befriend(self.sid(self.a), self.sid(self.b))

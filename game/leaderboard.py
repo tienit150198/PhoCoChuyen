@@ -16,8 +16,17 @@ Boards
 * ``titles`` - Top danh hiệu. Score = game titles earned (game/journey.py TITLES,
   secret ones included). Ties: more secret titles, then earned sooner (the life
   day of the latest one), then first to reach, then a fixed order.
+* ``wealth`` - 💰 Top tài phú (owner 05/10: "thêm top tài phú cho toàn server").
+  Score = net worth in xu (game/wealth.py): what the "Tiền của bạn" sheet shows
+  (wallet, workplace funds, bank, homes at market value, minus every debt), plus
+  the Mây savings book, Mây Coin and gold at their cost basis (giá vốn, never a
+  live price), vehicles at buy-back price and Quầy riêng at their sang nhượng
+  price, minus what those counters owe and the fair's Vay nóng. Not the couple's
+  Quỹ chung. Story mode only;
+  0 or less: no row. Ties: more total assets, then who reached that amount
+  first, then a fixed order.
 
-Weekly titles: the top of `all`, `titles`, `certs` and of every workplace board
+Weekly titles: the top of `all`, `titles`, `certs`, `wealth` and of every workplace board
 hold a title for the week, recomputed daily (game/lb_titles.py).
 
 * ``fair<YYYYMMDD>xu`` - 🏆 Bảng vàng hội chợ while a folk fair runs (game/fair.py
@@ -47,12 +56,13 @@ from collections import OrderedDict
 
 from . import lb_titles as lbt   # 🏅 Danh hiệu tuần (the top of each board, refreshed daily)
 from . import fair as fh          # 🏮 Hội chợ dân gian: its board (fh.board()) while it runs
+from . import wealth as wl        # 💰 net worth: "Tiền của bạn" (public/js/v4/wealth.js) + what the save holds beyond it
 from .content import CAREERS
 
-VERSION = 2                # bump when a formula changes: the next start rebuilds every row (2: the titles board)
-OVERALL, CERTS, TITLES = 'all', 'certs', 'titles'
+VERSION = 3                # bump when a formula changes: the next start rebuilds every row (2: the titles board, 3: wealth)
+OVERALL, CERTS, TITLES, WEALTH = 'all', 'certs', 'titles', 'wealth'
 CAREER_IDS = frozenset(CAREERS)
-BOARDS = CAREER_IDS | {OVERALL, CERTS, TITLES}
+BOARDS = CAREER_IDS | {OVERALL, CERTS, TITLES, WEALTH}
 NAME = '_name'              # summary key of the guest's character name (not a board)
 LIMIT = 50
 CACHE_SECONDS = 5.0
@@ -168,6 +178,9 @@ def summary(state) -> dict:
     n, secret, last = _titles(state)
     if n:
         out[TITLES] = (n, secret, -last, n, last, secret, 0, n)
+    w = wl.score(state)
+    if w:     # 💰 net worth, then total assets; ties go to who reached the amount first (since)
+        out[WEALTH] = (w[0], w[1], 0, 0, 0, 0, 0, 0)
     won, days = fh.money_of(state.get('journey'))
     if won > 0:   # 🏆 Bảng vàng hội chợ: xu won, players ahead only; ties go to who reached the score first (since)
         out[fh.board()] = (won, 0, 0, 0, days, 0, 0, 0)
@@ -201,10 +214,20 @@ def recall(sid: str, revision: int) -> dict | None:
         return hit[1] if hit and hit[0] == revision else None
 
 
-def remember(sid: str, revision: int, rows: dict) -> None:
-    """Only after the save at `revision` was committed (its summary is then exact)."""
+def synced(sid: str, revision: int) -> dict | None:
+    """The remembered summary of the save at `revision` when the table's rows are known to be exactly it (the
+    storage layer wrote them, or checked them, in that commit), else None: write(old=...) may then send only the
+    rows that moved; otherwise the full self-healing sync."""
     with _recent_lock:
-        _recent[sid] = (revision, rows)
+        hit = _recent.get(sid)
+        return hit[1] if hit and hit[0] == revision and hit[2] else None
+
+
+def remember(sid: str, revision: int, rows: dict, synced: bool = False) -> None:
+    """Only after the save at `revision` was committed (its summary is then exact). `synced`: the table's rows
+    are these rows too (see synced())."""
+    with _recent_lock:
+        _recent[sid] = (revision, rows, synced)
         _recent.move_to_end(sid)
         while len(_recent) > RECENT:
             _recent.popitem(last=False)
@@ -222,14 +245,25 @@ _NAME = ("INSERT INTO leaderboard_players(sid,name,updated) VALUES(?,?,?) ON CON
          "WHERE leaderboard_players.name IS DISTINCT FROM excluded.name")
 
 
-def write(db, sid: str, rows: dict, now: float | None = None) -> None:
+def write(db, sid: str, rows: dict, now: float | None = None, old: dict | None = None) -> None:
     """Sync every row of one save to `rows` (a summary), inside the caller's
     transaction: upsert its boards (unchanged rows are not rewritten), drop the
-    boards it no longer earns, keep its guest name."""
+    boards it no longer earns, keep its guest name.
+    `old`: the summary the rows were synced to before (the storage layer's, of the
+    save this command started from). With the same boards, only the rows that
+    moved are sent: 💰 wealth moves with most money changes, one statement then
+    instead of one per board. A board gained or lost: the full sync above."""
     if not rows:
         return
     now = time.time() if now is None else now
     boards = [b for b in rows if b != NAME]
+    if old and old.keys() == rows.keys():
+        for b in boards:
+            if old[b] != rows[b]:
+                db.execute(_UPSERT, (sid, b, *rows[b], now, now))
+        if NAME in rows and old[NAME] != rows[NAME]:
+            db.execute(_NAME, (sid, rows[NAME], now))
+        return
     for b in boards:
         db.execute(_UPSERT, (sid, b, *rows[b], now, now))
     marks = ','.join('?' * len(boards))
@@ -368,7 +402,7 @@ def clear_cache() -> None:
 
 
 def parse_query(q: dict) -> tuple[str, int]:
-    """(board, limit) of GET /api/leaderboard?career=<id|all>|board=certs|titles&limit=50;
+    """(board, limit) of GET /api/leaderboard?career=<id|all>|board=certs|titles|wealth&limit=50;
     ValueError with a player-facing message otherwise."""
     board = q.get('board') or q.get('career') or OVERALL
     if board not in BOARDS and board not in (fh.board(), fh.edition()):   # edition: an older client (rolling release)
@@ -387,6 +421,8 @@ def _row_out(board: str, r) -> dict:
         out.update(certs=r['mastered'], best=r['served'], day=r['days'])
     elif board == TITLES:
         out.update(titles=r['mastered'], secret=r['served'], day=r['days'])
+    elif board == WEALTH:
+        out['xu'] = r['score']
     elif board.startswith('fair'):
         out.update(xu=r['score'], days=r['days'])
     else:

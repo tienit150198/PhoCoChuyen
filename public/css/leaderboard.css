@@ -1,6 +1,6 @@
 /* ==========================================================================
    Bảng xếp hạng (public/js/v4/leaderboard.js): Top trải nghiệm (overall +
-   per workplace) and Top chứng chỉ. Theme tokens only (docs/DESIGN.md).
+   per workplace), Top danh hiệu, Top chứng chỉ and 💰 Top tài phú. Theme tokens only (docs/DESIGN.md).
    Phone first (390px): big names, 44px tap targets, the workplace picker is
    one swipeable row; wider sheets wrap the picker and keep one column.
    Loaded on first use by leaderboard.js (not on the game's first paint).
@@ -10,14 +10,23 @@
 .lb{display:grid;gap:14px;align-content:start}
 .lb>*{min-width:0;margin:0}
 
-/* Board kind: Trải nghiệm | Danh hiệu | Chứng chỉ (| Khách mời) */
+/* Board kind: Trải nghiệm | Danh hiệu | Chứng chỉ | Tài phú (| Khách mời) */
 .lb-kinds{flex-wrap:nowrap}
 .lb-kinds>button{min-height:44px;font-size:.967rem;gap:6px}
-.lb-kinds.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}   /* + 💍 Khách mời của tuần */
-.lb-kinds.three>button{min-width:0;padding:0 4px;gap:3px;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lb-kinds.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}   /* + 🎖️ Danh hiệu and 💍 Khách mời */
-.lb-kinds.four>button{min-width:0;padding:0 4px;gap:3px;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-html[data-layout="phone"] .lb-kinds.four{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}   /* 2 × 2: whole words on a phone */
+.lb-kinds.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.lb-kinds.five{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}   /* + 💍 Khách mời của tuần */
+.lb-kinds.four>button,.lb-kinds.five>button{min-width:0;padding:0 4px;gap:3px;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Phone (or a narrow sheet): whole words, 2 × 2, or 3 + 2 with the last two wider */
+html[data-layout="phone"] .lb-kinds.four{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+html[data-layout="phone"] .lb-kinds.five{grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+html[data-layout="phone"] .lb-kinds.five>button{grid-column:span 2}
+html[data-layout="phone"] .lb-kinds.five>button:nth-child(n+4){grid-column:span 3}
+@media (max-width:700px){
+  .lb-kinds.four{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+  .lb-kinds.five{grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}
+  .lb-kinds.five>button{grid-column:span 2}
+  .lb-kinds.five>button:nth-child(n+4){grid-column:span 3}
+}
 
 /* Workplace picker */
 .lb-picker{display:flex;flex-wrap:wrap;gap:8px}

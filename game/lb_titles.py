@@ -1,10 +1,12 @@
 """🏅 Danh hiệu tuần của Bảng xếp hạng: the top players of a board hold its weekly titles.
 
 The owner (01/10): "bảng xếp hạng cũng có danh hiệu nhé, mỗi tuần sẽ có danh hiệu cho các top. Được cập nhật mỗi
-ngày nhé" — the boards with titles include Chứng chỉ and Danh hiệu (game/leaderboard.py `certs`, `titles`).
+ngày nhé" — the boards with titles include Chứng chỉ and Danh hiệu (game/leaderboard.py `certs`, `titles`), and
+from 05/10 💰 Tài phú (`wealth`, "thêm top tài phú cho toàn server").
 
 Who holds what
-* Trải nghiệm (`all`), Danh hiệu (`titles`), Chứng chỉ (`certs`): three tiers each, top 1 / top 2–3 / top 4–10,
+* Trải nghiệm (`all`), Danh hiệu (`titles`), Chứng chỉ (`certs`), Tài phú (`wealth`): three tiers each, top 1 /
+  top 2–3 / top 4–10,
   with their own names (TIERS, BOARD_TITLES).
 * Every workplace board: its top 1 is "🏆 Trùm <nghề>" (CAREER_NOUN).
 * Only players the board shows (game/leaderboard.py _VISIBLE: accounts unless hidden, guests who opted in), in
@@ -33,16 +35,17 @@ import time
 from .wedding_live import vn_day, vn_week, week_start, VN   # the Vietnam calendar ("Khách mời của tuần" uses it too)
 
 META = 'weekly'                 # leaderboard_meta key: '<VN day>|<ISO week>' of the last refresh
-ALL, TITLES, CERTS = 'all', 'titles', 'certs'
-TOP = 10                        # ranks that hold a title on the three main boards
+ALL, TITLES, CERTS, WEALTH = 'all', 'titles', 'certs', 'wealth'
+TOP = 10                        # ranks that hold a title on the main boards
 TIERS = ((1, 1), (2, 3), (4, 10))   # (first rank, last rank) of each tier
 TIER_LABELS = ('Top 1', 'Top 2–3', 'Top 4–10')
 BOARD_TITLES = {                # (emoji, name) per tier
     ALL: (('👑', 'Trùm cuối của phố'), ('🔥', 'Chiến thần cày cuốc'), ('⚡', 'Dân cày top 10')),
     TITLES: (('🏅', 'Vua săn danh hiệu'), ('✨', 'Nhà sưu tầm xịn sò'), ('🎖️', 'Hội săn danh hiệu')),
     CERTS: (('🎓', 'Thủ khoa của phố'), ('📜', 'Học bá chính hiệu'), ('🤓', 'Mọt sách có số má')),
+    WEALTH: (('💎', 'Đại gia của phố'), ('💰', 'Đại gia mới nổi'), ('🤑', 'Hội nhà giàu')),
 }
-MAIN = (ALL, TITLES, CERTS)     # the order of honour (a name tag shows the best one: tier first, then this order)
+MAIN = (ALL, TITLES, CERTS, WEALTH)     # the order of honour (a name tag shows the best one: tier first, then this order)
 CAREER_EMOJI = '🏆'
 CAREER_NOUN = dict(
     milk_tea='trà sữa', grocery='tạp hóa', delivery='giao hàng', cafe_bakery='bánh & cà phê', florist='tiệm hoa',
@@ -225,7 +228,7 @@ def clear_cache() -> None:
 
 
 def holders(store) -> dict:
-    """{sid: [{board, rank, emoji, name, text, tier, label}, …best first]} of the current week (≤ 58 rows), cached
+    """{sid: [{board, rank, emoji, name, text, tier, label}, …best first]} of the current week (≤ 40 + one per workplace), cached
     HOLDERS_SECONDS per process."""
     t, key = time.monotonic(), _key(store)
     with _cache_lock:
