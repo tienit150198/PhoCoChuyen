@@ -22,26 +22,40 @@ the temporary helpers). The usual hands-on shift stays available every day.
 
 State: journey['promo'] = {career: record} — a new optional key: older servers ignore it (their
 journey.validate allows extra keys), and nothing about the career or job blocks changes.
+
+Longer ladders (F#193): TOP_BY_CAREER lets a career go past step 4 (pilot to 7: Phó Giám đốc / Giám đốc Khối
+khai thác bay, Phó Tổng Giám đốc; teacher to 5: Hiệu trưởng). The record's own 'rank' never goes past 4 (TOP),
+because builds up to 1.7.15 validate it there and would refuse the whole save after a rollback: the steps above
+4 live in the record's optional key 'hi' = {n: steps above 4, due: that review, log: those steps}, which those
+builds keep and ignore (they show the holder as step 4). Nobody's rank is ever rewritten. From the executive step
+the 🏢 Phòng điều hành (game/promotion_office.py) opens, kept in the record's optional key 'office'.
 """
 from __future__ import annotations
 
 import random
 
 from . import promotion_content as PC
+from . import promotion_office as OF
 
 VERSION = 1
-# Steps 1..4. good: good days since the last step; ratio: share of worked days that were good (%).
+# Steps 1..7. good: good days since the last step; ratio: share of worked days that were good (%).
+# Steps 5..7 exist only in a career with a longer ladder (TOP_BY_CAREER); office: good days in the 🏢 office.
 EMP_STEPS = (None,
              dict(good=5, ratio=70, pct=8),
              dict(good=8, pct=16),
              dict(good=12, pct=25, served=40, cert=True),
-             dict(good=20, pct=35, served=80, chapter=5))
+             dict(good=20, pct=35, served=80, chapter=5),
+             dict(good=24, pct=45, served=120),
+             dict(good=28, pct=55, served=160, office=5),
+             dict(good=32, pct=65, served=200, office=8))
 OWN_STEPS = (None,
              dict(good=5, ratio=70, served=15, pct=3, cap=10),
              dict(good=8, served=30, rating=40, pct=6, cap=18),
              dict(good=12, served=50, pct=9, cap=26),
              dict(good=20, served=100, chapter=5, pct=12, cap=35))
-TOP = 4
+TOP = 4                        # the stored rank's cap (record['rank']; older builds validate it there)
+TOP_BY_CAREER = {'pilot': 7, 'teacher': 5}   # longer ladders: the steps above TOP live in record['hi']
+HI_KEYS = frozenset(('n', 'due', 'log'))
 ACCT = ('corp_accounting', 'tax_payroll', 'group_accounting')
 ACCT_CARE = {1: 2, 2: 3}       # the accounting care track's rank a step needs
 RETRY = 3                      # worked days before a review that did not pass comes again
@@ -84,6 +98,47 @@ def track(career: str) -> str:
 
 def group(career: str) -> str:
     return next((g for g, ids in PC.GROUP.items() if career in ids), 'trade')
+
+
+def top(career: str) -> int:
+    return TOP_BY_CAREER.get(career, TOP) if track(career) == 'emp' else TOP
+
+
+def _hi(rec: dict, create: bool = False) -> dict | None:
+    h = rec.get('hi')
+    if not isinstance(h, dict):
+        if not create:
+            return None
+        h = rec['hi'] = dict(n=0, due=None, log=[])
+    return h
+
+
+def _rank(rec: dict) -> int:
+    """The step held: the stored one (≤ TOP) plus the steps above it."""
+    h = _hi(rec)
+    return rec['rank'] + (h['n'] if h else 0)
+
+
+def _due(rec: dict) -> dict | None:
+    h = _hi(rec)
+    return rec['due'] or (h['due'] if h else None)
+
+
+def _set_due(rec: dict, due: dict | None) -> None:
+    if due is None:
+        rec['due'] = None
+        h = _hi(rec)
+        if h:
+            h['due'] = None
+    elif due['to'] <= TOP:
+        rec['due'] = due
+    else:
+        _hi(rec, True)['due'] = due
+
+
+def _logs(rec: dict) -> list:
+    h = _hi(rec)
+    return rec['log'] + (h['log'] if h else [])
 
 
 def _own_key(career: str) -> str:
@@ -135,8 +190,11 @@ def _sync(rec: dict, c: dict) -> None:
     if rec['emp'] == job.get('employer') and rec['hd'] == job.get('hired_day'):
         return
     keep = rec['log']
+    h = _hi(rec)
     rec.clear()
     rec.update(new_record(), emp=job.get('employer'), hd=job.get('hired_day') or 0, log=keep)
+    if h and h['log']:
+        rec['hi'] = dict(n=0, due=None, log=h['log'])   # the executive steps' log is kept too
 
 
 def _live(s: dict, c: dict, career: str, create: bool = False) -> dict | None:
@@ -157,7 +215,7 @@ def _live(s: dict, c: dict, career: str, create: bool = False) -> dict | None:
 
 def rank(s: dict, c: dict, career: str) -> int:
     rec = _live(s, c, career)
-    return rec['rank'] if rec else 0
+    return _rank(rec) if rec else 0
 
 
 def raise_pct(s: dict, c: dict, career: str) -> int:
@@ -165,9 +223,9 @@ def raise_pct(s: dict, c: dict, career: str) -> int:
     if track(career) != 'emp':
         return 0
     rec = _live(s, c, career)
-    if not rec or rec['rank'] < 1:
+    if not rec or _rank(rec) < 1:
         return 0
-    return EMP_STEPS[rec['rank']]['pct'] + rec['extra']
+    return EMP_STEPS[_rank(rec)]['pct'] + rec['extra']
 
 
 def step_pct(career: str, n: int, extra: int = 0) -> int:
@@ -180,7 +238,7 @@ def title(s: dict, c: dict, career: str, n: int) -> str:
     if track(career) == 'emp':
         if n < 1:
             job = c.get('job') or {}
-            return job.get('title') or PC.BASE_EMP
+            return PC.BASE_BY_POSTING.get(job.get('employer')) or job.get('title') or PC.BASE_EMP
         return PC.EMP_TITLES.get(career, PC.EMP_TITLES['repair'])[n - 1]
     if n < 1:
         return PC.BASE_OWN
@@ -205,8 +263,8 @@ def _care_rank(c: dict) -> int:
 
 def _gates(s: dict, c: dict, career: str, rec: dict) -> list[dict]:
     """All career-specific requirements, shared by eligibility and its public explanation."""
-    n = rec['rank'] + 1
-    if n > TOP:
+    n = _rank(rec) + 1
+    if n > top(career):
         return []
     emp = track(career) == 'emp'
     st = (EMP_STEPS if emp else OWN_STEPS)[n]
@@ -232,6 +290,10 @@ def _gates(s: dict, c: dict, career: str, rec: dict) -> list[dict]:
     if st.get('chapter') and j.get('story'):
         rows.append(dict(id='chapter', met=int(j.get('chapter') or 1) >= st['chapter'],
                          label=f'Tới chương {st["chapter"]}'))
+    if st.get('office'):
+        off = rec.get('office')
+        got = off['kpi']['good'] if isinstance(off, dict) else 0
+        rows.append(dict(id='office', met=got >= st['office'], label=f'🏢 {st["office"]} ngày điều hành tốt ({got} rồi)'))
     return rows
 
 
@@ -241,8 +303,8 @@ def gate(s: dict, c: dict, career: str, rec: dict) -> str | None:
 
 
 def ready(s: dict, c: dict, career: str, rec: dict) -> bool:
-    n = rec['rank'] + 1
-    if n > TOP or rec['wait'] > 0 or rec['due']:
+    n = _rank(rec) + 1
+    if n > top(career) or rec['wait'] > 0 or _due(rec):
         return False
     st = (EMP_STEPS if track(career) == 'emp' else OWN_STEPS)[n]
     if rec['good'] < st['good']:
@@ -351,7 +413,7 @@ def _escalations(s: dict, c: dict, career: str, n_rank: int, team: list) -> list
 
 def start_shift(s: dict, c: dict, career: str) -> str:
     rec = _live(s, c, career, create=True)
-    n = min(rec['rank'], TOP)
+    n = min(_rank(rec), TOP)
     team = _team(s, c, career, TEAM[n])
     rec['shift'] = dict(day=c['day'], size=SIZE[n], n=0, team=team, tasks=_jobs(s, c, career, SIZE[n]),
                         esc=_escalations(s, c, career, n, team), pts=0, caught=0, closed=False, bonus=0, wage=0)
@@ -391,7 +453,7 @@ def _results(sh: dict) -> dict:
 
 def _close(s: dict, c: dict, career: str, rec: dict, sh: dict) -> dict:
     e = _core()
-    n = min(rec['rank'], TOP)
+    n = min(_rank(rec), TOP)
     res = _results(sh)
     if track(career) == 'emp':
         bonus = min(CAP.get(n, CAP[3]), XU_PER_PT * sh['pts'])
@@ -499,33 +561,44 @@ def _move(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
 
 # ------------------------------------------------------------------------------------- the review
 def _draw_qs(s: dict, career: str, rec: dict, day: int) -> list[str]:
-    bank = PC.QUESTIONS[group(career)]
-    r = _rng('pm-qs', _seed(s), career, rec['rank'], len(rec['log']), day)
+    n = _rank(rec)
+    bank = PC.QUESTIONS[PC.EXEC_GROUP[career] if n + 1 > TOP and career in PC.EXEC_GROUP else group(career)]
+    r = _rng('pm-qs', _seed(s), career, n, len(_logs(rec)), day)
     return [q['id'] for q in r.sample(bank, 2)]
 
 
 def _promote(s: dict, c: dict, career: str, rec: dict, extra: int) -> dict:
     j = s.get('journey') or {}
-    rec['rank'] += 1
+    _set_due(rec, None)
+    if rec['rank'] < TOP:
+        rec['rank'] += 1
+        book = rec
+    else:
+        book = _hi(rec, True)
+        book['n'] += 1
+    now = _rank(rec)
     rec['extra'] = min(EXTRA_MAX, rec['extra'] + extra)
     rec['good'] = rec['worked'] = rec['wait'] = 0
-    rec['due'] = None
-    pct = step_pct(career, rec['rank'], rec['extra'])
-    rec['log'] = (rec['log'] + [dict(d=int(j.get('life_day') or 1), to=rec['rank'], pct=pct)])[-LOG_MAX:]
-    name = title(s, c, career, rec['rank'])
+    pct = step_pct(career, now, rec['extra'])
+    book['log'] = (book['log'] + [dict(d=int(j.get('life_day') or 1), to=now, pct=pct)])[-LOG_MAX:]
+    if isinstance(rec.get('office'), dict):
+        rec['office']['kpi']['good'] = 0   # the next step counts the office days earned at this one
+    name = title(s, c, career, now)
     _core().log(s, c, 'job', f'🎖️ Lên {name}.')
     if track(career) == 'emp':
         base = int(c['job']['salary'])
         line = f'🎉 Bạn lên {name}! Từ mai lương {base} → {round(base * (100 + pct) / 100)} xu/ngày.'
     else:
         line = f'🎉 Bạn thành {name}! Khách quen boa thêm {pct}% doanh thu.'
-    if rec['rank'] == MGR_FROM:
+    if now == MGR_FROM:
         line += ' Mở khóa 🧑‍💼 Ca quản lý.'
-    return dict(message=line, celebrate=True, promoted=dict(to=rec['rank'], title=name, pct=pct))
+    if OF.available(career, now) and not OF.available(career, now - 1):
+        line += f' Mở khóa 🏢 {OF.OFFICE[career]["name"]} từ ca sau.'
+    return dict(message=line, celebrate=True, promoted=dict(to=now, title=name, pct=pct))
 
 
 def _later(rec: dict, line: str) -> dict:
-    rec['due'] = None
+    _set_due(rec, None)
     rec['wait'] = RETRY
     return dict(message=line, later=True)
 
@@ -534,7 +607,7 @@ def _review(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
     e = _core()
     need = e.need
     rec = _live(s, c, career)
-    due = rec.get('due') if rec else None
+    due = _due(rec) if rec else None
     need(due, 'Chưa có buổi xét lên chức nào.')
     emp = track(career) == 'emp'
     if name == 'pm_answer':
@@ -573,12 +646,52 @@ def _score(qid: str, oid: str) -> int:
 def action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
     if name in ('pm_answer', 'pm_ask'):
         return _review(s, c, career, name, p)
+    if name.startswith('pm_of_'):
+        return _office_action(s, c, career, name, p)
     return _move(s, c, career, name, p)
+
+
+# ------------------------------------------------------------------------------------- 🏢 the office
+def _office(s: dict, c: dict, career: str):
+    """(record, office, step) when the step held opens the office (the office state may still be None), else (None, None, step)."""
+    rec = _live(s, c, career)
+    n = _rank(rec) if rec else 0
+    if not rec or not OF.available(career, n):
+        return None, None, n
+    off = rec.get('office')
+    return rec, off if isinstance(off, dict) else None, n
+
+
+def _office_action(s: dict, c: dict, career: str, name: str, p: dict) -> dict:
+    e = _core()
+    rec, off, n = _office(s, c, career)
+    e.need(rec, 'Phòng điều hành mở từ bậc lãnh đạo.', 'not_manager')
+    return OF.action(career, off, n, c, name, p, _seed(s), e.need)
+
+
+def _office_start(s: dict, c: dict, career: str) -> None:
+    rec, off, n = _office(s, c, career)
+    if not rec:
+        return
+    if off is None:
+        off = rec['office'] = OF.new_office(career, _seed(s), c['day'])
+    OF.day_roll(career, off, _seed(s), c['day'], n)
+
+
+def _office_close(s: dict, c: dict, career: str) -> dict | None:
+    rec, off, n = _office(s, c, career)
+    if not off or off['day'] != c['day']:
+        return None
+    res = OF.close(career, off, n, _seed(s), c['day'])
+    if res['bonus'] > 0:
+        _core().money(s, c, res['bonus'], f'🏢 Thưởng điều hành · {OF.OFFICE[career]["name"]}', f'pmo-{c["day"]}', category='bonus')
+    return res
 
 
 # ------------------------------------------------------------------------------------- engine hooks
 def on_start(s: dict, c: dict, career: str, p: dict) -> str | None:
     """start_day: {manager: true} opens a manager shift (checked before the shift opens: see allowed_start)."""
+    _office_start(s, c, career)
     if p.get('manager') is True:
         return start_shift(s, c, career)
     rec = _live(s, c, career)
@@ -626,6 +739,9 @@ def on_close(s: dict, c: dict, career: str, summary: dict) -> dict | None:
         mgr = _close(s, c, career, rec, sh) if not sh['closed'] else _results(sh)
         out['manager'] = mgr
     rec['shift'] = None
+    office = _office_close(s, c, career)
+    if office:
+        out['office'] = dict(lines=office['lines'], bonus=office['bonus'], ontime=office['ontime'], compl=office['compl'])
     worked = c['day_completed'] >= 1 or bool(mgr and mgr['done'] >= 1)
     if not worked:
         return out or None
@@ -643,8 +759,8 @@ def on_close(s: dict, c: dict, career: str, summary: dict) -> dict | None:
         rec['wait'] -= 1
     out['good'] = good
     if ready(s, c, career, rec):
-        rec['due'] = dict(to=rec['rank'] + 1, day=c['day'] + 1, qs=_draw_qs(s, career, rec, c['day']), ans={})
-        out['due'] = title(s, c, career, rec['rank'] + 1)
+        _set_due(rec, dict(to=_rank(rec) + 1, day=c['day'] + 1, qs=_draw_qs(s, career, rec, c['day']), ans={}))
+        out['due'] = title(s, c, career, _rank(rec) + 1)
         out['line'] = (f'🎖️ Sếp hẹn gặp bạn đầu ca sau để xét lên {out["due"]}.' if emp else
                        f'🎖️ Hội buôn phố hẹn ghé sáng mai: xét danh hiệu {out["due"]}.')
     nxt = _next(s, c, career, rec)
@@ -662,8 +778,8 @@ def forget(s: dict, career: str) -> None:
 
 # ------------------------------------------------------------------------------------- the client's view
 def _next(s: dict, c: dict, career: str, rec: dict) -> dict | None:
-    n = rec['rank'] + 1
-    if n > TOP:
+    n = _rank(rec) + 1
+    if n > top(career):
         return None
     st = (EMP_STEPS if track(career) == 'emp' else OWN_STEPS)[n]
     requirements = [dict(id='good', met=rec['good'] >= st['good'],
@@ -678,7 +794,7 @@ def _next(s: dict, c: dict, career: str, rec: dict) -> dict | None:
     requirements.extend(_gates(s, c, career, rec))
     if rec['wait'] > 0:
         requirements.append(dict(id='wait', met=False, label=f'Hẹn xét lại sau {rec["wait"]} ngày làm'))
-    if rec['due']:
+    if _due(rec):
         requirements.append(dict(id='review', met=False, label='Đã có lịch xét bậc ở đầu ca sau'))
     return dict(title=title(s, c, career, n), good=min(rec['good'], st['good']), need=st['good'],
                 why=gate(s, c, career, rec), wait=rec['wait'], pct=step_pct(career, n, rec['extra']),
@@ -686,7 +802,7 @@ def _next(s: dict, c: dict, career: str, rec: dict) -> dict | None:
 
 
 def _due_view(s: dict, c: dict, career: str, rec: dict) -> dict | None:
-    due = rec.get('due')
+    due = _due(rec)
     if not due:
         return None
     emp = track(career) == 'emp'
@@ -734,10 +850,27 @@ def public(s: dict, c: dict, career: str) -> dict | None:
     rec = _live(s, c, career)
     if rec is None:
         rec = new_record()
-    n = rec['rank']
-    v = dict(track='emp' if emp else 'own', rank=n, top=TOP, title=title(s, c, career, n), pct=step_pct(career, n, rec['extra']),
+    n = _rank(rec)
+    t = top(career)
+    v = dict(track='emp' if emp else 'own', rank=n, top=t, title=title(s, c, career, n), pct=step_pct(career, n, rec['extra']),
              next=_next(s, c, career, rec), mgr=can_manage(s, c, career), team=TEAM.get(min(max(n, MGR_FROM), TOP)),
-             due=_due_view(s, c, career, rec), log=rec['log'][-3:], shifts=rec['mgr']['n'])
+             due=_due_view(s, c, career, rec), log=_logs(rec)[-3:], shifts=rec['mgr']['n'],
+             pcts=[step_pct(career, i) for i in range(1, t + 1)])
+    if t > TOP:   # a long ladder: the whole way up, for "Xem thêm"
+        v['ladder'] = [title(s, c, career, i) for i in range(1, t + 1)]
+    if career in PC.INSIGNIA:
+        x = PC.INSIGNIA[career][n]
+        v['insignia'] = dict(x, label=PC.insignia_label(x))
+        v['insignias'] = [dict(y, label=PC.insignia_label(y)) for y in PC.INSIGNIA[career][1:t + 1]]
+    elif career in PC.BADGE:
+        v['badge'] = PC.BADGE[career][n]
+    if OF.available(career, t):
+        v['office_from'] = min(OF.OFFICE[career]['powers'])
+        v['office_title'] = title(s, c, career, v['office_from'])
+    if OF.available(career, n):
+        off = rec.get('office')
+        v['office'] = (OF.public(career, off, n, c, _seed(s)) if isinstance(off, dict)
+                       else dict(name=OF.OFFICE[career]['name'], live=False, wait=True))
     sh = _shift(s, c, career)
     if sh:
         v['shift'] = _shift_view(sh)
@@ -757,6 +890,7 @@ def validate(s: dict) -> None:
     for cid, rec in book.items():
         need(isinstance(rec, dict) and REC_KEYS <= set(rec), bad, 'invalid_save')
         integer(rec['rank'], 0, TOP)
+        hi_top = top(cid)
         for k in ('good', 'worked'):
             integer(rec[k], 0, 10**6)
         integer(rec['wait'], 0, RETRY)
@@ -769,22 +903,44 @@ def validate(s: dict) -> None:
             integer(row.get('d'), 1, 10**6)
             integer(row.get('to'), 1, TOP)
             integer(row.get('pct'), 0, 100)
+        if 'hi' in rec:
+            h = rec['hi']
+            need(isinstance(h, dict) and set(h) == HI_KEYS, bad, 'invalid_save')
+            integer(h['n'], 0, hi_top - TOP)
+            need(h['n'] == 0 or rec['rank'] == TOP, bad)
+            need(isinstance(h['log'], list) and len(h['log']) <= LOG_MAX, bad)
+            for row in h['log']:
+                need(isinstance(row, dict) and set(row) == {'d', 'to', 'pct'}, bad)
+                integer(row['d'], 1, 10**6)
+                integer(row['to'], TOP + 1, hi_top)
+                integer(row['pct'], 0, 100)
+            if h['due'] is not None:
+                need(rec['due'] is None and rec['rank'] == TOP, bad)
+                _validate_due(h['due'], TOP + h['n'] + 1, need, integer, bad)
+                need(h['due']['to'] <= hi_top, bad)
+        if 'office' in rec:
+            OF.validate(cid, rec['office'], need, integer, txt, bad)
         mgr = rec['mgr']
         need(isinstance(mgr, dict), bad)
         integer(mgr.get('n'), 0, 10**6)
         integer(mgr.get('best'), 0, 100)
         due = rec['due']
         if due is not None:
-            need(isinstance(due, dict) and due.get('to') == rec['rank'] + 1, bad)
-            integer(due.get('day'), 1, 10**9)
-            qs, ans = due.get('qs'), due.get('ans')
-            need(isinstance(qs, list) and len(qs) == 2 and len(set(qs)) == 2 and all(q in PC.QUESTION_INDEX for q in qs), bad)
-            need(isinstance(ans, dict) and set(ans) <= set(qs), bad)
-            for q, o in ans.items():
-                need(o in [x['id'] for x in PC.QUESTION_INDEX[q]['options']], bad)
+            _validate_due(due, rec['rank'] + 1, need, integer, bad)
+            need(due['to'] <= TOP, bad)
         sh = rec['shift']
         if sh is not None:
             _validate_shift(sh, need, integer, txt, bad)
+
+
+def _validate_due(due, to: int, need, integer, bad) -> None:
+    need(isinstance(due, dict) and due.get('to') == to, bad)
+    integer(due.get('day'), 1, 10**9)
+    qs, ans = due.get('qs'), due.get('ans')
+    need(isinstance(qs, list) and len(qs) == 2 and len(set(qs)) == 2 and all(q in PC.QUESTION_INDEX for q in qs), bad)
+    need(isinstance(ans, dict) and set(ans) <= set(qs), bad)
+    for q, o in ans.items():
+        need(o in [x['id'] for x in PC.QUESTION_INDEX[q]['options']], bad)
 
 
 def _validate_shift(sh, need, integer, txt, bad) -> None:
