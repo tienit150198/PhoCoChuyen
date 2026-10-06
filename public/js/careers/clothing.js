@@ -3,9 +3,9 @@
  *  alterations at Bà Tư's machine, returns by the house policy, sale tags, Zalo/Facebook
  *  parcels, the mannequin, and a real till (./till.js). Intro card "Giới thiệu nghề" on first open. */
 import {keepBarAboveFooter} from './food_kit.js';
-import {reqList,fold} from '../ui-kit.js';
+import {reqList,fold,clean,tip,helpBtn,withWhy} from '../ui-kit.js';
 import {stepRows,nextHint,stepBar,finalGo,pending,stepLine} from '../v4/guide.js';
-import {restockButton,crates} from '../v4/restock.js';
+import {restockButton,restockGo,crates} from '../v4/restock.js';
 import {tomorrowCard} from './tomorrow_kit.js';
 import {cashPanel,changeStep,changePayload,tray,tillActions} from './till.js';
 import * as SF from './stage_fold.js';
@@ -35,6 +35,32 @@ const dot=(x,c)=>`<i class="ao-dot" style="background:${x.esc(swatch(x,c))}" ari
 const pieceLabel=(x,p)=>`${item(x,p.item).emoji} ${item(x,p.item).name}${p.size&&p.size!=='F'?` · size ${p.size}`:''} · ${p.colour}`;
 const carBtn=(x,label,action,d={},cls='')=>`<button type="button" class="btn ${cls}" data-action="car:${action}"${Object.entries(d).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}>${label}</button>`;
 
+/* ------------------------------------------------------------ clean layout (docs/UI_KIT.md, wave 5) */
+/** Short item names for the clean layout's rack (the full name stays in aria-label and title). */
+const SHORT={tee:'Áo thun',shirt:'Sơ mi',jeans:'Quần jean',dress:'Váy liền',aodai:'Áo dài',pajama:'Đồ bộ',kids:'Đồ bé',hat:'Nón',belt:'Thắt lưng',socks:'Tất',
+  maxi:'Đầm maxi',babydoll:'Babydoll',set2:'Set váy',blazer:'Blazer',cardigan:'Cardigan',polo:'Polo',skirt:'Chân váy',trousers:'Quần tây',shorts:'Quần short',
+  sneaker:'Sneaker',sandal:'Sandal',bag:'Túi xách',earrings:'Bông tai',scarf:'Khăn lụa'};
+/** An explanation paragraph: as before on the classic layout, in "?" on the clean one (ui-kit tip). HTML-safe text. */
+const tipP=(text,title)=>clean()?tip(text,title,'span'):`<p class="small">${text}</p>`;
+const shortName=(x,id)=>clean()?SHORT[id]||item(x,id).name:item(x,id).name;
+/** The "?" of the shop (clean layout): the intro, the size chart, the return policy, and the explanations folded
+ * off this screen (ui-kit tip). */
+function helpQ(x){
+  const i=x.cc.intro||{},list=rows=>`<ul class="ui-rows">${(rows||[]).map(([e,t])=>`<li><span aria-hidden="true">${x.esc(e)}</span>${x.esc(t)}</li>`).join('')}</ul>`;
+  return helpBtn('ao-help',`🧵 ${i.title||'Tiệm áo'}`,[{title:'Giới thiệu',body:`<p>${x.esc(i.story||'')}</p>`,open:true},{title:'Công việc gồm…',body:list(i.does)},
+    {title:'Bạn sẽ gặp…',body:list(i.meets)},{title:'Được sao khi…',body:list(i.stars)},{title:'📐 Bảng size',body:chartBody(x)},
+    {title:'📋 Chính sách đổi trả',body:`<ul>${(x.cc.policy||[]).map(v=>`<li>${x.esc(v)}</li>`).join('')}</ul>`}],{tips:true,cls:'ao-q'});
+}
+/** Under each size button on the clean layout: the chart row it stands for (numbers only, no words): height and
+ * weight for letter sizes, the waist for jeans and trousers, the age for kids' sets. The customer's clue is a
+ * number (“cao 160 phân”, “eo 74”, “bé 5 tuổi”), so the right size reads off the button itself. */
+function sizeClue(x,id,s){
+  if((x.cc.waist_items||['jeans']).includes(id)){const w=x.cc.jeans_waist?.[s];return w?{t:`↔${w}`,a:`eo ${w} cm`}:null;}
+  if(id==='kids'){const a=x.cc.kids_age?.[s];return a?{t:`👶${a[0]}–${a[1]}`,a:`bé ${a[0]}–${a[1]} tuổi`}:null;}
+  const r=(x.cc.top_chart||[]).find(v=>v[0]===s);
+  return r&&!(x.cc.shoes||[]).includes(id)?{t:`↕${r[1]}–${r[2]}`,t2:`⚖${r[3]}–${r[4]}`,a:`cao ${r[1]}–${r[2]} cm, nặng ${r[3]}–${r[4]} kg`}:null;
+}
+
 /* ------------------------------------------------------------ intro card */
 function introCard(x,closable=true){
   const i=x.cc.intro;if(!i)return '';
@@ -53,6 +79,8 @@ const introFold=x=>`<details class="ao-intro-fold"><summary>🧵 Giới thiệu 
 function todayStrip(x){
   const t=data(x).today;if(!t)return '';
   const sale=data(x).sale_today;
+  // Clean layout: the day's mood in a word or two (an ordinary day: just its icon), its story behind "?".
+  if(clean())return `<div class="ao-today compact"><span aria-hidden="true">${x.esc(t.emoji)}</span><p title="${x.esc(t.name)}">${t.id==='calm'?'':`<b>${x.esc(t.name)}</b>`}${tip(x.esc(t.text),t.name)}</p>${sale?`<span class="tag amber">🏷️ Sale</span>`:''}${helpQ(x)}</div>`;
   return `<div class="ao-today"><span aria-hidden="true">${x.esc(t.emoji)}</span><p><b>Ngày ${t.day} · ${x.esc(t.name)}</b><small>${x.esc(t.text)}</small></p>${sale?`<span class="tag amber">🏷️ Đang sale</span>`:''}</div>`;
 }
 function bookLine(x,t){
@@ -61,11 +89,13 @@ function bookLine(x,t){
   const parts=[row.top?`áo ${row.top}`:'',row.waist?`quần ${row.waist}`:'',(row.kid||[]).length?`bé ${row.kid.join(', ')}`:''].filter(Boolean);
   return parts.length?`<p class="ao-book small">📒 Sổ size khách quen: <b>${x.esc(parts.join(' · '))}</b></p>`:'';
 }
+/** The job's kind as a tag; on the clean layout its icon only (the header says the job) and the shop's "?". */
+const kindTag=(x,t,kind)=>clean()?`<span class="ao-kindq"><span class="tag" title="${x.esc(kind)}" aria-label="${x.esc(kind)}">${KIND_ICON[t.kind]||'🧵'}</span>${helpQ(x)}</span>`:`<span class="tag">${KIND_ICON[t.kind]||''} ${x.esc(kind)}</span>`;
 function ticket(t,x){
   const w=x.npc(t.npc),kind=x.cc.kinds?.[t.kind]||t.kind;
   const said=t.kind==='fit'?t.needs.lines.map(l=>l.say).join(' '):t.kind==='outfit'?t.needs.note:t.opening;
   const wish=t.wish?(t.wish.kind==='addon'?t.wish.line.say:t.wish.say):'';
-  return `<article class="card ticket ao-ticket"><div class="row">${x.portrait(w,52)}<div class="grow"><div class="row spread wrap"><h3>${x.esc(w.display_name)}</h3><span class="tag">${KIND_ICON[t.kind]||''} ${x.esc(kind)}</span></div>
+  return `<article class="card ticket ao-ticket"><div class="row">${x.portrait(w,52)}<div class="grow"><div class="row spread wrap"><h3>${x.esc(w.display_name)}</h3>${kindTag(x,t,kind)}</div>
     <p class="ao-said">“${x.esc(said)}”</p>${wish?`<p class="ao-said ao-wish">💬 “${x.esc(wish)}”${t.wish.skipped?' <small>(tiệm hết hàng)</small>':''}</p>`:''}${bookLine(x,t)}
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div></article>`;
 }
@@ -90,35 +120,57 @@ function needOf(t,x){
   }
   return out;
 }
+/** The server's pre-check for a pick off the rack (public_data can.ao_pick: only the sizes it would refuse, keyed
+ * "item:size"), with the stock room's own next step as the fix (a crate at the door opens, an order on its way waits). */
+function pickCan(x,t,id,s){
+  const c=data(x).can?.ao_pick?.[`${id}:${s}`];if(!c||c===true)return null;
+  return {why:c.why,fix:restockGo(x.room,[{id,need:4}],{task:t.id})};
+}
 function rack(t,x,mode='pick',want=''){
-  const p=pickOf(x,t),cmd=mode==='pack'?'ao_pack':'ao_pick',need=mode==='dress'?new Map():needOf(t,x);
+  const p=pickOf(x,t),cmd=mode==='pack'?'ao_pack':'ao_pick',need=mode==='dress'?new Map():needOf(t,x),cl=clean();
   // What the customer asked for leads the rack ("Khách cần"), and a tap on it picks the colour they said.
-  const list=[...catalogue(x)].sort((a,b)=>need.has(b.id)-need.has(a.id));
+  let list=[...catalogue(x)].sort((a,b)=>need.has(b.id)-need.has(a.id));
+  // Clean layout, an order that names its items (fit, parcel, the fitting room's buyer): those items and the one in
+  // hand; the rest of the rack is one tap away ("＋ 18 món"), never gone.
+  const all=!cl||mode==='dress'||t.kind==='outfit'||!need.size||(x.ui.rackAll||{})[t.id];
+  const hidden=all?0:list.filter(it=>!need.has(it.id)&&it.id!==p.item).length;
+  if(!all)list=list.filter(it=>need.has(it.id)||it.id===p.item);
   const chips=list.map(it=>{const left=sizes(x,it.id).reduce((s,z)=>s+free(x,it.id,z),0),w=need.has(it.id);
-    return `<button type="button" class="ao-chip g-${x.esc(x.cc.groups?.[it.id]||'')}${p.item===it.id?' on':''}${w?' want':''}" data-action="car:item" data-task="${x.esc(t.id)}" data-item="${x.esc(it.id)}"${w&&need.get(it.id)?` data-colour="${x.esc(need.get(it.id))}"`:''} aria-pressed="${p.item===it.id}">${w?'<i class="asm-need">Khách cần</i>':''}<span aria-hidden="true">${x.esc(it.emoji)}</span><b>${x.esc(it.name)}</b><small>${mode==='dress'?'':`còn ${left} · `}${x.fmt(price(x,it.id))} xu</small></button>`;}).join('');
-  let body=`<p class="small muted ao-lab">${mode==='dress'?'Chạm một món để chọn màu.':'Chạm một món để chọn màu và size.'}</p>`;
+    const sub=cl?`${mode!=='dress'&&left<=0?'✕ ':''}${x.fmt(price(x,it.id))}`:`${mode==='dress'?'':`còn ${left} · `}${x.fmt(price(x,it.id))} xu`;
+    return `<button type="button" class="ao-chip g-${x.esc(x.cc.groups?.[it.id]||'')}${p.item===it.id?' on':''}${w?' want':''}${cl&&left<=0&&mode!=='dress'?' out':''}" data-action="car:item" data-task="${x.esc(t.id)}" data-item="${x.esc(it.id)}"${w&&need.get(it.id)?` data-colour="${x.esc(need.get(it.id))}"`:''} aria-pressed="${p.item===it.id}"${cl?` aria-label="${x.esc(`${it.name}${w?', khách cần':''}, còn ${left}, ${price(x,it.id)} xu`)}" title="${x.esc(it.name)}"`:''}>${w?`<i class="asm-need">${cl?'★':'Khách cần'}</i>`:''}<span aria-hidden="true">${x.esc(it.emoji)}</span><b>${x.esc(cl?shortName(x,it.id):it.name)}</b><small>${sub}</small></button>`;}).join('')
+    +(hidden?`<button type="button" class="ao-chip ao-more" data-action="car:rackAll" data-task="${x.esc(t.id)}" aria-label="Xem cả giá treo: ${hidden} món khác"><span aria-hidden="true">＋</span><b>${hidden}</b><small aria-hidden="true">👚</small></button>`:'');
+  let body=cl?'':`<p class="small muted ao-lab">${mode==='dress'?'Chạm một món để chọn màu.':'Chạm một món để chọn màu và size.'}</p>`;
   if(p.item){
     const it=item(x,p.item),said=need.get(p.item)||'';
     const cols=[...colours(x,p.item)].sort((a,b)=>(b===said)-(a===said));
     const sw=cols.map(c=>mode==='dress'
       ?`<button type="button" class="ao-swatch" data-command="ao_dress" data-payload="${x.esc(JSON.stringify({task:t.id,item:p.item,colour:c}))}">${dot(x,c)}<span>${x.esc(c)}</span></button>`
-      :`<button type="button" class="ao-swatch${p.colour===c?' on':''}${c===said?' want':''}" data-action="car:colour" data-task="${x.esc(t.id)}" data-colour="${x.esc(c)}" aria-pressed="${p.colour===c}">${dot(x,c)}<span>${x.esc(c)}${c===said?' <small>· khách dặn</small>':''}</span></button>`).join('');
-    const sz=mode==='dress'?'':sizes(x,p.item).map(s=>{const n=free(x,p.item,s),off=!p.colour||n<=0;
-      return `<button type="button" class="ao-size${n<=0?' out':''}" data-command="${cmd}" data-payload="${x.esc(JSON.stringify({task:t.id,item:p.item,size:s,colour:p.colour}))}"${off?' disabled':''} aria-label="${x.esc(`${it.name} size ${s}, còn ${n}`)}"><b>${x.esc(sizeLabel(s))}</b><small>${n<=0?'hết':`còn ${n}`}</small></button>`;}).join('');
+      :`<button type="button" class="ao-swatch${p.colour===c?' on':''}${c===said?' want':''}" data-action="car:colour" data-task="${x.esc(t.id)}" data-colour="${x.esc(c)}" aria-pressed="${p.colour===c}"${cl?` aria-label="${x.esc(c)}${c===said?', khách dặn':''}" title="${x.esc(c)}"`:''}>${dot(x,c)}<span${cl&&said&&c!==said&&c!==p.colour?' class="sr-only"':''}>${x.esc(c)}${c===said?(cl?' <small aria-hidden="true">★</small>':' <small>· khách dặn</small>'):''}</span></button>`).join('');
+    const sz=mode==='dress'?'':sizes(x,p.item).map(s=>{const n=free(x,p.item,s),off=!p.colour||n<=0,k=cl?sizeClue(x,p.item,s):null;
+      const btn=`<button type="button" class="ao-size${n<=0?' out':''}${k?' clue':''}" data-command="${cmd}" data-payload="${x.esc(JSON.stringify({task:t.id,item:p.item,size:s,colour:p.colour}))}"${off?' disabled':''} aria-label="${x.esc(`${it.name} size ${s}, còn ${n}${k?`, ${k.a}`:''}`)}"><b>${x.esc(sizeLabel(s))}</b>${cl?`${k?`<small class="ao-k">${x.esc(k.t)}</small>${k.t2?`<small class="ao-k">${x.esc(k.t2)}</small>`:''}`:''}<i class="ao-left" aria-hidden="true">${n<=0?'✕':n}</i>`:`<small>${n<=0?'hết':`còn ${n}`}</small>`}</button>`;
+      // Sold out (the server would refuse it): dimmed but tappable, the tap says why and offers the stock room.
+      const can=p.colour&&n<=0&&mode!=='pack'?pickCan(x,t,p.item,s):null;
+      return can?withWhy(btn,can):btn;}).join('');
     const empty=sizes(x,p.item).some(s=>onRack(x,p.item,s)<=0);
-    body=`<div class="ao-sel"><span class="ao-sel-emoji" aria-hidden="true">${x.esc(it.emoji)}</span><b>${x.esc(it.name)}</b><span class="muted">${x.fmt(price(x,p.item))} xu</span></div>
-      <p class="ao-lab">${mode==='dress'?'Chạm màu để mặc lên ma-nơ-canh':'1 · Màu'}</p><div class="ao-swatches">${sw}</div>
-      ${mode==='dress'?'':`<p class="ao-lab">2 · Size <small>${p.colour?'(số nhỏ = còn trên giá)':'— chọn màu trước'}</small></p><div class="ao-sizes">${sz}</div>`}
+    // The shop's slim cut decides the size for a "shop khác mặc M" clue: it sits right above the sizes.
+    // Only where it decides: a fit line whose clue is the size worn at another shop ("brand").
+    const slim=cl&&mode==='pick'&&x.cc.runs_small?.[p.item]&&t.kind==='fit'&&wanted(t).some(l=>l.item===p.item&&l.clue==='brand')?`<p class="ao-lab ao-slim">💡 may ôm: +${x.cc.runs_small[p.item]} size</p>`:'';
+    body=`${cl&&mode!=='dress'?'':`<div class="ao-sel"><span class="ao-sel-emoji" aria-hidden="true">${x.esc(it.emoji)}</span><b>${x.esc(cl?shortName(x,p.item):it.name)}</b><span class="muted">${x.fmt(price(x,p.item))}${cl?'':' xu'}</span></div>`}
+      ${cl&&mode!=='dress'?'':`<p class="ao-lab">${mode==='dress'?'Chạm màu để mặc lên ma-nơ-canh':'1 · Màu'}</p>`}<div class="ao-swatches">${sw}</div>
+      ${mode==='dress'?'':cl?`${slim}<div class="ao-sizes${p.colour?'':' wait'}" role="group" aria-label="Size${p.colour?'':', chọn màu trước'}">${sz}</div>`:`<p class="ao-lab">2 · Size <small>${p.colour?'(số nhỏ = còn trên giá)':'— chọn màu trước'}</small></p><div class="ao-sizes">${sz}</div>`}
       ${empty&&mode!=='dress'?`<div class="ao-restock">${restockButton(x.room,[{id:p.item,need:4}],{task:t.id},'small ghost')}</div>`:''}`;
   }
   const title=mode==='pack'?'📦 Lấy đồ trên giá bỏ vào gói':mode==='dress'?'🧍‍♀️ Chọn đồ cho ma-nơ-canh':'👚 Giá treo';
-  return `<section class="card ao-rack"${want?` data-want="${x.esc(want)}"`:''}><h4>${title}</h4><div class="ao-chips" role="group" aria-label="Các món trong tiệm">${chips}</div>${body}</section>`;
+  return `<section class="card ao-rack"${want?` data-want="${x.esc(want)}"`:''}>${cl?'':`<h4>${title}</h4>`}<div class="ao-chips" role="group" aria-label="${x.esc(cl?title.replace(/^\S+\s/,''):'Các món trong tiệm')}">${chips}</div>${body}</section>`;
 }
 function sizeChart(x){
+  return fold('📐 Bảng size của tiệm',chartBody(x));
+}
+function chartBody(x){
   const rows=(x.cc.top_chart||[]).map(([s,h1,h2,w1,w2])=>`<tr><th>${s}</th><td>${h1}–${h2} cm</td><td>${w1}–${w2} kg</td></tr>`).join('');
   const jeans=Object.entries(x.cc.jeans_waist||{}).map(([s,w])=>`<span class="ao-kv"><b>${s}</b> eo ${w}</span>`).join('');
   const kids=Object.entries(x.cc.kids_age||{}).map(([s,[a,b]])=>`<span class="ao-kv"><b>${s}</b> ${a}–${b} tuổi</span>`).join('');
-  return fold('📐 Bảng size của tiệm',`<table class="ao-chart"><thead><tr><th>Size</th><th>Cao</th><th>Nặng</th></tr></thead><tbody>${rows}</tbody></table>
+  return (`<table class="ao-chart"><thead><tr><th>Size</th><th>Cao</th><th>Nặng</th></tr></thead><tbody>${rows}</tbody></table>
     <p class="small">👖 Quần jean theo vòng eo (cm):</p><div class="ao-kvs">${jeans}</div>
     <p class="small">🧒 Đồ trẻ em theo tuổi:</p><div class="ao-kvs">${kids}</div>
     <p class="small">🕴️ Quần tây đo eo như quần jean · 👟 Giày, sandal theo size chân khách nói · 👜 Túi, bông tai, khăn: free size.</p>
@@ -143,6 +195,7 @@ function receipt(t,x){
 }
 /** The counter list: open while picking, one line once the bill is closed. */
 function counter(t,x,title){
+  if(clean()&&t.stage==='pick'&&!t.picks.length)return '';   // an empty counter says nothing yet
   const card=`<section class="card ao-counter"><h4>${title}</h4>${picked(t,x)}</section>`;
   if(t.stage!=='pay')return card;
   return SF.part(x,t.id,new Set(),'counter',title,card,{done:true,sum:t.picks.map(p=>x.esc(item(x,p.item).name)).join(', ')||'quầy trống'});
@@ -187,13 +240,14 @@ function fitSteps(t,x){
     // The customer named their size ("Mình mặc size M"): another size on the counter is flagged at once.
     if(i>=0&&l.told&&tried!=='ok'&&t.picks[i].size!==l.told)return {ok:false,label:`${it.emoji} ${it.name}: khách nói size ${l.told}`,go:{cmd:'ao_unpick',payload:{task:t.id,index:i},label:`↩︎ Treo lại size ${t.picks[i].size}`}};
     return {ok:i>=0?true:null,label:`${it.emoji} ${it.name} · màu ${l.colour}`,note:i>=0?`đã lấy size ${t.picks[i].size}`:l.say.split('. ').slice(1).join('. '),
-      go:i>=0?null:onRackPick(x,t,l)?{sel:'.ao-sizes',label:'👉 Chọn size trên giá treo'}:{act:'car:item',data:{task:t.id,item:l.item,colour:l.colour},label:`👉 Lấy ${x.esc(it.name.toLowerCase())} màu ${x.esc(l.colour)}`}};});
+      go:i>=0?null:onRackPick(x,t,l)?{sel:'.ao-sizes',label:clean()?'👉 Chọn size':'👉 Chọn size trên giá treo'}:{act:'car:item',data:{task:t.id,item:l.item,colour:l.colour},label:clean()?`👉 ${x.esc(shortName(x,l.item))} ${x.esc(l.colour)}`:`👉 Lấy ${x.esc(it.name.toLowerCase())} màu ${x.esc(l.colour)}`}};});
   const extra=t.picks.length-m.filter(i=>i>=0).length;
   if(extra>0)rows.push({ok:false,label:'Trên quầy có món khách không hỏi',go:{sel:'.ao-picked'}});
   return rows;
 }
 function fitJob(t,x){
-  const shelf=t.stage==='pick'?`${rack(t,x)}${sizeChart(x)}`:'';
+  // Clean layout: the chart's numbers ride on the size buttons (sizeClue) and the whole chart is in "?".
+  const shelf=t.stage==='pick'?`${rack(t,x)}${clean()?'':sizeChart(x)}`:'';
   // Every asked line is on the counter: the counter (and any extra item to put back) comes before the rack.
   if(t.picks.length&&lineMatches(t).every(i=>i>=0))return `${counter(t,x,'🛍️ Trên quầy')}${shelf}${payBlock(t,x)}`;
   return `${shelf}${counter(t,x,'🛍️ Trên quầy')}${payBlock(t,x)}`;
@@ -262,7 +316,7 @@ function talkBox(t,x){
   }
   const v=t.talk_view||{},who=x.esc(x.npc(t.npc).display_name),h=x.cc.haggle||{small:5,big:20};
   return `<section class="card ao-talk"><h4>💬 Trao đổi với ${who}</h4>
-    <p class="small">Bộ này <b>${x.fmt(k.over)} xu</b>, khách chỉ định chi <b>${x.fmt(v.budget??budgetOf(t))} xu</b> (lố ${x.fmt(v.off??0)}). Mỗi khách rộng tay một kiểu — đọc tính khách mà chọn.</p>
+    <p class="small">Bộ này <b>${x.fmt(k.over)} xu</b>, khách chỉ định chi <b>${x.fmt(v.budget??budgetOf(t))} xu</b> (lố ${x.fmt(v.off??0)}). ${tip('Mỗi khách rộng tay một kiểu — đọc tính khách mà chọn.','💬 Trao đổi','span')}</p>
     <div class="ao-talk-opts">
       ${x.cmd('💡 Giải thích & gợi ý món rẻ hơn','ao_talk',{task:t.id,answer:'swap'},'ghost full')}
       ${x.cmd(v.asked?'🙏 Nài thêm lần nữa (khách đã từ chối)':'🙏 Xin khách thêm ngân sách','ao_talk',{task:t.id,answer:'raise'},'ghost full')}
@@ -288,14 +342,14 @@ function alterJob(t,x){
   const a=t.alt,n=t.needs,g=item(x,n.garment),id=t.id,job=n.job==='hem'?'Lai quần':'Bóp eo';
   const cm=Math.max(1,Math.min(10,Number((x.ui.cm||{})[id]??a.cm??3)));
   let body='';
-  if(!a.measured)body=`<p class="small">Mời khách mặc thử để đo và ghim kim trước.</p>`;
+  if(!a.measured)body=clean()?'':`<p class="small">Mời khách mặc thử để đo và ghim kim trước.</p>`;
   else if(t.stage==='measure')body=`<p class="ao-measure">📏 Số đo: <b>${a.cm} cm</b> cần ${n.job==='hem'?'cắt lên':'bóp vào'}</p>
-    <div class="ao-choice"><div class="card ao-opt"><h5>✂️ Tự may</h5><p class="small">Chọn số cm rồi ngồi vào máy. Công trọn ${n.fee} xu, nhưng lỡ tay là khách buồn.</p>
+    <div class="ao-choice"><div class="card ao-opt"><h5>✂️ Tự may</h5>${tipP(`Chọn số cm rồi ngồi vào máy. Công trọn ${n.fee} xu, nhưng lỡ tay là khách buồn.`,'✂️ Tự may')}
       <div class="ao-step" role="group" aria-label="Số cm"><button type="button" class="btn ghost" data-action="car:cm" data-task="${x.esc(id)}" data-d="-1" aria-label="Bớt 1 cm">−</button><b>${cm} cm</b><button type="button" class="btn ghost" data-action="car:cm" data-task="${x.esc(id)}" data-d="1" aria-label="Thêm 1 cm">+</button></div>
       ${x.cmd(`✂️ Phấn ${cm} cm & ngồi máy`,'ao_alter_self',{task:id,cm},'primary full')}</div>
-    <div class="card ao-opt"><h5>👵 Gửi Bà Tư</h5><p class="small">Chắc tay, đẹp đường may. Chờ một lát, bà lấy ${x.cc.tailor_share||40}% tiền công.</p>${x.cmd('👵 Mang sang gian bên','ao_alter_send',{task:id},'ghost full')}</div></div>`;
+    <div class="card ao-opt"><h5>👵 Gửi Bà Tư</h5>${tipP(`Chắc tay, đẹp đường may. Chờ một lát, bà lấy ${x.cc.tailor_share||40}% tiền công.`,'👵 Gửi Bà Tư')}${x.cmd('👵 Mang sang gian bên','ao_alter_send',{task:id},'ghost full')}</div></div>`;
   else if(t.stage==='sew'){const z=t.sew?.zone||[.7,.92];
-    body=`<p class="small">Phấn ${a.cut} cm. Kim chạy dọc đường may — dừng máy khi kim nằm trong vạch xanh.</p>
+    body=`<p class="small">Phấn ${a.cut} cm. ${tip('Kim chạy dọc đường may — dừng máy khi kim nằm trong vạch xanh.','🧵 Máy may','span')}</p>
       <div class="ao-sew" data-ao-sew="1" data-start="${a.start||0}" data-sec="${t.sew?.seconds||4}" data-lo="${z[0]}" data-hi="${z[1]}"><div class="ao-seam"><i class="ao-zone" style="left:${z[0]*100}%;width:${(z[1]-z[0])*100}%"></i><i class="ao-needle"><b></b></i></div><small class="ao-sew-label">${a.start?'Máy đang chạy…':'Sẵn sàng'}</small></div>
       ${a.start?x.cmd('✋ Dừng máy!','ao_sew_stop',{task:id},'primary big full ao-stop'):x.cmd('🧵 Đạp máy may','ao_sew_start',{task:id},'primary big full')}`;}
   else if(t.stage==='wait')body=`<p class="small">👵 Bà Tư đang may ở gian bên…</p>`;
@@ -369,7 +423,7 @@ function saleJob(t,x){
     return `<div class="ao-sale-line" data-line="${i}"><div class="row spread"><b>${x.esc(it.emoji)} ${x.esc(it.name)}</b><span class="tag amber">−${l.pct}%</span></div>
       <p class="small muted">Giá gốc ${x.fmt(base)} xu · ${x.fmt(base)} × ${100-l.pct}% = ?</p>
       <div class="ao-4">${(t.sale.options[i]||[]).map(v=>`<button type="button" class="btn ${got===v?'primary':'ghost'}" data-command="ao_tag" data-payload="${x.esc(JSON.stringify({task:t.id,line:i,price:v}))}" aria-pressed="${got===v}">${x.fmt(v)}</button>`).join('')}</div></div>`;}).join('');
-  return `<section class="card ao-sale"><h4>🏷️ Máy in tem sale</h4><p class="small">Làm tròn xuống. Tem thấp tiệm lỗ, tem cao khách phàn nàn.</p>${rows}</section>`;
+  return `<section class="card ao-sale"><h4>🏷️ Máy in tem sale</h4><p class="small">Làm tròn xuống. ${tip('Tem thấp tiệm lỗ, tem cao khách phàn nàn.','🏷️ Tem sale','span')}</p>${rows}</section>`;
 }
 
 /* ------------------------------------------------------------ online orders */
@@ -456,7 +510,9 @@ function pin(t,x,next){
   }else return '';
   if(t.stage==='pay'&&!chips.some(c=>c.ok===false))return '';   // at the till the bill says it all
   const who=x.npc(t.npc);
-  return reqPin(x,{sub:x.esc(who.display_name),chips,key:id,next});
+  // Clean layout: a fit order, a parcel and the fitting room's buyer say the same words in the ticket / chat right
+  // above, so their card is the header chip's popover only; the outfit's card (occasion rules, sizes, budget) stays.
+  return reqPin(x,{sub:x.esc(who.display_name),chips,key:id,next,chipped:clean()&&t.kind!=='outfit'&&!chips.some(c=>c.ok===false)});
 }
 
 /* ------------------------------------------------------------ the guide */
@@ -480,7 +536,9 @@ function hintFor(g,x){
   return nextHint(x,steps,{final:f});
 }
 // One next step: the bottom button names it (a second "Bước tiếp" line here read the order line, not the action).
-const bottomBar=(g,x)=>g.final?stepBar(x,g.steps,g.final,{cls:'ao-bar'}):'';
+// Clean layout: a job with no finishing button yet (alterations before the bill, the fitting room, a return) still
+// gets the shared bar, its next step as the one main button.
+const bottomBar=(g,x)=>g.final?stepBar(x,g.steps,g.final,{cls:'ao-bar'}):clean()&&pending(g.steps)?.go?stepBar(x,g.steps,null,{cls:'ao-bar'}):'';
 
 /* ------------------------------------------------------------ between customers */
 function swapCards(x){
@@ -534,17 +592,25 @@ export default {
   job(t,x){
     const g=taskGuide(t,x);
     // On a task the intro is one line (open it to read, "Vào ca thôi!" inside marks it read); ❔ in the dock opens it.
-    const intro=x.ui.intro?introCard(x,!data(x).intro):!data(x).intro?introFold(x):'';
+    // Clean layout: the unread intro is in the shop's "?" (the dock's ❔ still opens the card).
+    const intro=x.ui.intro?introCard(x,!data(x).intro):!data(x).intro&&!clean()?introFold(x):'';
     if(t.known)SF.opened(x,t.id);
     if(!t.known){
       const w=x.npc(t.npc),kind=x.cc.kinds?.[t.kind]||t.kind;
+      // Clean layout: who and their words; the job's name is the header, the intro is in "?", the ask is the bar's
+      // one main button (ui-kit actBar via stepBar).
+      if(clean()){
+        const go={cmd:'ask',payload:{task:t.id},label:`👂 ${t.kind==='online'?'Mở tin nhắn':t.kind==='sale'||t.kind==='display'?'Nghe chị Vy':'Nghe khách'}`};
+        return `<div class="career-job ao">${hintFor(g,x)}${todayStrip(x)}<article class="card ticket ao-ticket"><div class="row">${x.portrait(w,56)}<div class="grow"><div class="row spread wrap"><h3>${x.esc(w.display_name)}</h3><span class="tag" title="${x.esc(kind)}" aria-label="${x.esc(kind)}">${KIND_ICON[t.kind]||'🧵'}</span></div><p>“${x.esc(t.opening)}”</p></div></div></article>${swapCards(x)}
+          ${stepBar(x,[{ok:null,label:ASK[t.kind]||'Nghe khách',go}],null,{cls:'ao-bar'})}</div>`;
+      }
       return `<div class="career-job ao">${hintFor(g,x)}${intro}${todayStrip(x)}<article class="card ticket ao-ticket"><div class="row">${x.portrait(w,56)}<div class="grow"><div class="row spread wrap"><h3>${x.esc(w.display_name)}</h3><span class="tag">${KIND_ICON[t.kind]||''} ${x.esc(kind)}</span></div><p class="small"><b>${x.esc(t.title)}</b></p><p>“${x.esc(t.opening)}”</p></div></div>
         ${x.cmd('👂 '+(ASK[t.kind]||'Nghe khách'),'ask',{task:t.id},'primary full gd-cta')}</article>${swapCards(x)}</div>`;
     }
     const body={fit:fitJob,outfit:outfitJob,alter:alterJob,room:roomJob,return:returnJob,sale:saleJob,online:onlineJob,display:displayJob}[t.kind]||(()=>'');
     // The checklist sits under the work (the bottom bar and the header already show the next step).
     const k=g.steps.filter(s=>s&&s.ok!==true).length;
-    const list=g.steps.length?`<details class="card ao-steps"><summary>📝 Việc cần làm <small>· ${k?`còn ${k}`:'xong hết'}/${g.steps.length}</small></summary>${stepRows(x,g.steps)}</details>`:'';
+    const list=g.steps.length&&clean()?stepRows(x,g.steps,'Việc cần làm',{chip:true}):g.steps.length?`<details class="card ao-steps"><summary>📝 Việc cần làm <small>· ${k?`còn ${k}`:'xong hết'}/${g.steps.length}</small></summary>${stepRows(x,g.steps)}</details>`:'';
     return `<div class="career-job ao">${hintFor(g,x)}${intro}${ticket(t,x)}${pin(t,x,pending(g.steps)||finalStep(g.final))}${body(t,x)}${list}${bottomBar(g,x)}</div>`;
   },
   idle(x){
@@ -562,6 +628,7 @@ export default {
     // A tap on what the order asks for comes with its colour: straight on to the sizes.
     async item(d,el,x){x.ui.pick={task:d.task,item:d.item,colour:d.colour||null};x.render();
       requestAnimationFrame(()=>document.querySelector(`.career-job.ao ${d.colour?'.ao-sizes':'.ao-swatches'}`)?.scrollIntoView({block:'center',behavior:'smooth'}));},
+    async rackAll(d,el,x){(x.ui.rackAll??={})[d.task]=true;x.render();},
     async colour(d,el,x){const p=x.ui.pick;if(p&&p.task===d.task){p.colour=d.colour;x.render();}},
     async cm(d,el,x){const t=(x.room.tasks||[]).find(v=>v.id===d.task);if(!t)return;const m=(x.ui.cm??={});m[d.task]=Math.max(1,Math.min(10,Number(m[d.task]??t.alt?.cm??3)+Number(d.d)));x.render();},
     async ns(d,el,x){(x.ui.ns??={})[d.task]=d.size;x.render();},

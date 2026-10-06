@@ -3,7 +3,8 @@
    Phone first: one quote, the papers, a short rulebook, and one row of stamps. */
 import {icon,portrait,escapeHTML as esc} from './icons.js';
 import {asset} from './assets.js';
-import {nextHint} from './v4/guide.js';
+import {nextHint,barParts} from './v4/guide.js';
+import {clean,tip,actBar,helpBtn} from './ui-kit.js';
 
 if(typeof document!=='undefined'&&!document.querySelector('link[data-desk-css]')){
   const link=document.createElement('link');link.rel='stylesheet';link.href=asset('/css/desk.css');link.dataset.deskCss='';document.head.append(link);
@@ -21,6 +22,10 @@ const act=(label,action,data={},cls='')=>`<button type="button" class="btn ${cls
 const cmdBtn=(label,command,payload={},cls='',disabled=false)=>`<button type="button" class="btn ${cls}" data-command="${command}" data-payload="${esc(JSON.stringify(payload))}"${disabled?' disabled':''}>${label}</button>`;
 const person=(api,id)=>api.content.npcs.find(n=>n.id===id)||{display_name:'Khách',role:''};
 const room=api=>api.state.careers[api.state.current];
+/** UI wave 5, clean layout: the pharmacy and bookkeeping cases drop the screen's instructions to "?" (ui-kit tip) and
+ * take the shared bar; every paper's line, the rules, the checks and the stamps stay. The support desk's cases keep
+ * the layout wave 3 left them with. */
+const slim=t=>clean()&&t.career!=='customer_care';
 
 /** Visual clinic stamp: shape-colour-petals, e.g. 'tron-do-5'. */
 export function stampArt(mark,size=34){
@@ -40,7 +45,9 @@ function patience(t,api){const v=room(api).life.mode==='calm'?100:(t.patience??1
 function header(t,api){
   const n=person(api,t.npc),line=t.known?t.request:t.opening;
   const mood=t.career==='customer_care'?`<span class="dk-mood ${esc(t.mood)}">${MOOD[t.mood]||''}</span>`:'';
-  return `<header class="dk-head">${portrait(n,44)}<div class="dk-who"><strong>${esc(n.display_name)}</strong> ${mood}<small>${esc(n.role||'')}</small></div>${patience(t,api)}${act(icon('chat',16),'chat',{npc:t.npc,task:t.id},'ghost icon-only dk-chat')}</header><p class="dk-quote">${line.includes('“')?esc(line):`“${esc(line)}”`}</p>`;
+  // Clean layout (slim): a "?" with what the screen folded away and how a case goes.
+  const q=slim(t)?helpBtn('desk-case-'+t.career,t.career==='pharmacy'?'💊 Soát phiếu thuốc':'📒 Soát sổ',[{title:'Cách làm',body:'<ol><li>Nhận giấy tờ của khách.</li><li>Soát từng dòng: chạm dòng sai, chọn quy định nó trái (sổ quy định hôm nay).</li><li>Chạy kiểm tra thêm khi cần, đếm két khi có.</li><li>Đóng dấu quyết định: đóng rồi thì hồ sơ khép lại.</li></ol>'}],{tips:true,cls:'dk-q'}):'';
+  return `<header class="dk-head">${portrait(n,44)}<div class="dk-who"><strong>${esc(n.display_name)}</strong> ${mood}<small>${esc(n.role||'')}</small></div>${patience(t,api)}${q}${act(icon('chat',16),'chat',{npc:t.npc,task:t.id},'ghost icon-only dk-chat')}</header><p class="dk-quote">${line.includes('“')?esc(line):`“${esc(line)}”`}</p>`;
 }
 
 function queueStrip(t,api){
@@ -62,7 +69,7 @@ function replies(t,api){
 function rulebook(t){
   const fresh=t.rules.filter(r=>r.new).length;
   const stamps=t.stamps?`<div class="dk-registry">${Object.entries(t.stamps).map(([k,m])=>`<span>${stampArt(m,26)}<small>${esc(CLINIC[k]||k)}</small></span>`).join('')}</div>`:'';
-  return `<details class="dk-book"${fresh?' data-fresh':''}><summary>${icon('book',16)} Sổ quy định hôm nay <span class="dk-count">${t.rules.length}</span>${fresh?`<span class="dk-new">${fresh} MỚI</span>`:''}</summary>${t.bulletin?.length?`<ul class="dk-notices">${t.bulletin.map(n=>`<li>📰 ${esc(n)}</li>`).join('')}</ul>`:''}${stamps}<ol class="dk-rules">${t.rules.map(r=>`<li class="${r.new?'new':''}"><b>${esc(r.short)}</b>${r.new?' <span class="dk-new">MỚI</span>':''}<span>${esc(r.text)}</span></li>`).join('')}</ol></details>`;
+  return `<details class="dk-book"${fresh?' data-fresh':''}><summary${slim(t)?' aria-label="Sổ quy định hôm nay"':''}>${icon('book',16)} ${slim(t)?'Quy định':'Sổ quy định hôm nay'} <span class="dk-count">${t.rules.length}</span>${fresh?`<span class="dk-new">${fresh} MỚI</span>`:''}</summary>${t.bulletin?.length?`<ul class="dk-notices">${t.bulletin.map(n=>`<li>📰 ${esc(n)}</li>`).join('')}</ul>`:''}${stamps}<ol class="dk-rules">${t.rules.map(r=>`<li class="${r.new?'new':''}"><b>${esc(r.short)}</b>${r.new?' <span class="dk-new">MỚI</span>':''}<span>${esc(r.text)}</span></li>`).join('')}</ol></details>`;
 }
 
 function markOf(t,ref){const ms=(t.marks||[]).filter(m=>m.field===ref);return ms.find(m=>m.result==='found')||ms.find(m=>m.result==='partial')||ms[ms.length-1];}
@@ -103,7 +110,8 @@ function drawer(t,api){
 
 function stamps(t,api){
   const open=room(api).open;
-  return `<section class="dk-stamps"><h4>Đóng dấu quyết định</h4><div class="dk-stamp-grid">${t.verdicts.map(v=>act(`<span class="dk-stamp-ico">${v.icon}</span><span>${esc(v.label)}</span>`,'desk:decide',{task:t.id,verdict:v.id,label:v.label},'dk-stamp'+(open?'':' disabled'))).join('')}</div><p class="dk-hint">Đánh dấu nhầm làm khách sốt ruột.</p></section>`;
+  const s=slim(t);
+  return `<section class="dk-stamps"${s?' aria-label="Đóng dấu quyết định"':''}><h4>${s?'🔏 Đóng dấu':'Đóng dấu quyết định'}</h4><div class="dk-stamp-grid">${t.verdicts.map(v=>act(`<span class="dk-stamp-ico">${v.icon}</span><span>${esc(v.label)}</span>`,'desk:decide',{task:t.id,verdict:v.id,label:v.label},'dk-stamp'+(open?'':' disabled'))).join('')}</div>${s?tip('Đánh dấu nhầm làm khách sốt ruột.','🔏 Đóng dấu','p'):'<p class="dk-hint">Đánh dấu nhầm làm khách sốt ruột.</p>'}</section>`;
 }
 
 function progress(t){
@@ -137,7 +145,15 @@ export function deskJob(t,ctx){
   if(!t.known){
     body+=`<div class="dk-start">${cmdBtn('📥 '+(t.career==='customer_care'?'Mở hồ sơ đơn':'Nhận giấy tờ'),'ask',{task:t.id},'primary full dk-cta',!room(api).open)}</div>`;
   }else{
-    body+=rulebook(t)+`<p class="dk-hint">Chạm vào dòng có vấn đề, rồi chọn quy định mà nó trái.</p><div class="dk-docs">${(t.docs||[]).map(d=>docCard(t,d,api)).join('')}</div>`+progress(t)+drawer(t,api)+checks(t,api)+stamps(t,api);
+    const how='Chạm vào dòng có vấn đề, rồi chọn quy định mà nó trái.';
+    body+=rulebook(t)+(slim(t)?tip(how,'Soát giấy tờ','p'):`<p class="dk-hint">${how}</p>`)+`<div class="dk-docs">${(t.docs||[]).map(d=>docCard(t,d,api)).join('')}</div>`+progress(t)+drawer(t,api)+checks(t,api)+stamps(t,api);
+    // The shared bar: the next step points at its place (a check to run is the main button), short labels.
+    if(slim(t)){
+      const SHORT={'Đếm két: chạm từng tờ rồi chốt số':'🧮 Đếm két','Soát từng dòng: chạm dòng sai, chọn quy định nó trái':'👆 Soát từng dòng','Đóng dấu quyết định':'🔏 Đóng dấu'};
+      const steps=deskSteps(t,api).map(s=>SHORT[s.label]&&s.go?.sel?{...s,go:{...s.go,label:SHORT[s.label]}}:s);
+      const {next,main}=barParts({room:room(api)},steps,{label:'',go:null,ready:false});
+      body+=actBar({next,main,cls:'dk-bar'});
+    }
   }
   return `<div class="dk" data-career="${esc(t.career)}">${header(t,api)}${body}</div>`;
 }

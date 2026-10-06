@@ -1,3 +1,27 @@
+# Chưa phát hành
+
+## Giao diện gọn: đợt 5
+
+- Đợt cuối: 13 màn làm việc và các trang đời sống còn nhiều chữ. Màn đầu trên điện thoại (390 px) còn 16–26 chữ: giao
+  hàng 128 → 26, nhà thuốc 90 → 24, giáo viên 87 → 24, kế toán 83 → 22, hướng dẫn viên 82 → 23, shop quần áo 60 → 25,
+  tạp hóa 43 → 18, homestay 41 → 18, sửa đồ 40 → 24, salon 37 → 26, chăm thú cưng 34 → 18, mẹ & bé 32 → 21, nông trại
+  26 → 16. Trang đời sống tối đa 30 chữ: nhà 115 → 29, bản đồ khu phố 51 → 29, hội chợ 66 → 25, ngân hàng (đã mở tài
+  khoản) 144 → 27; quầy, tủ đồ, đi chơi, phòng hát, màn chính vốn đã gọn, giữ nguyên.
+- Mọi nghề còn lại dùng thanh dưới chung một nút chính (nhà thuốc, kế toán, mẹ & bé, giao hàng, nông trại, homestay, tạp
+  hóa, salon, chăm thú cưng, shop quần áo). Lời giải thích, luật, cách tính vào nút "?".
+- Giữ nguyên trên màn mọi thứ quyết định đúng sai: lời khách nói (giao hàng giữ trọn câu dặn), phiếu thuốc và nhãn lô,
+  chứng từ và số tiền khi đối chiếu, câu hỏi và câu trả lời của học trò, yêu cầu của đoàn khách, phòng và đơn của khách
+  homestay, size/màu/ngân sách khi bán quần áo, bệnh máy khách kể, yêu cầu màu tóc (tên việc của salon và sửa đồ không bao
+  giờ bị cắt ngắn vì chính là lời khách).
+- Nút chưa bấm được thì mờ nhưng vẫn chạm được, nói rõ lý do và có nút sửa (máy chủ báo trước): nhà thuốc (khay chưa khớp
+  phiếu, chưa đọc nhãn lô), kế toán (ghép chứng từ, bàn giao), giao hàng (ngã tư ngoài chặng, chưa chọn điểm đến), homestay
+  (phòng có đơn app chờ đồng bộ, gợi ý quá nhiều nơi), shop quần áo (giá treo hết size), salon, sửa đồ, chăm thú cưng.
+- Hội chợ: trò ném vòng không còn tự chơi lại lượt đã xong (trước đây bị báo "Lượt ném này đã xong rồi." liên tục).
+- Nhà: thẻ nơi ở chỉ còn tên và tiền mỗi ngày bằng biểu tượng; đồ đạc và nhà đang rao gọn thành một dòng mở ra được. Ngân
+  hàng: các mục là biểu tượng, cách trả mặc định gọn một dòng, dòng báo thành công tự mờ sau 6 giây.
+- Giao diện cổ điển và máy tính giữ như cũ; công tắc "Giao diện gọn" / `MNL_CLEAN_UI=off` vẫn tắt được.
+- Không đổi bản lưu, không thêm bảng, không đổi cách sinh việc.
+
 # v1.9.8 — 2026-10-07
 
 Gồm "Giao diện gọn: đợt 2" (công an, điều dưỡng, cứu hộ bể bơi, dầu khí, phi công, tiếp viên) và "đợt 3" (6 bàn văn phòng, chăm sóc khách hàng, tiệm thú cưng).

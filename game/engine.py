@@ -35,6 +35,7 @@ from . import board as bd
 from . import life as doi
 from . import career_stories as cst
 from . import desk as dk
+from . import desk_can as dcan  # the classic desks' guards, also run as the view's `can` (UI wave 5)
 from . import giftshop as gifts
 from . import incidents as incs
 from . import happenings as haps
@@ -397,17 +398,7 @@ def ensure_shop(t:dict,c:dict,pack_check:bool=True) -> None:
 
 
 def ensure_pharmacy(t:dict,c:dict) -> None:
-    need(t["known"],"Phiếu chưa đủ thông tin, cần hỏi lại hoặc chuyển người phụ trách.")
-    need(not t["needs"]["referral"],"Yêu cầu này cần chuyển người phụ trách, không lấy hộp thay thế.")
-    n=t["needs"]
-    need(sum(t["basket"].values())==n["qty"],"Số lượng trong khay chưa khớp phiếu.")
-    for lid,qty in t["basket"].items():
-        lot=LOT_INDEX.get(lid)
-        need(lot and lot["product"]==n["product"],"Mã hộp chưa khớp phiếu.")
-        need(lot["status"]=="available" and lid not in c["held_lots"] and lot["valid_until"]>=c["day"],"Lô này không được xuất: tạm giữ hoặc không còn hợp lệ.")
-        need(lid in t["inspected"],"Mở nhãn lô đã chọn để đọc trước khi xác nhận.")
-        block=ph_shelf_block(c,lid);need(not block,block or "")
-        need(c["stock"].get(lid,0)>=qty,"Số lượng kho của lô không đủ.")
+    dcan.ph_ready(t,c)  # game/desk_can.py: the same rules are the view's can.ph_check
 
 
 def tick_pending(s:dict,c:dict) -> list[str]:
@@ -907,20 +898,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
             result["message"]="Đã sửa từ bản gốc, không ghi đè mất dấu vết."
         elif action=="ac_match":
             ds=p.get("docs",[]);ts=p.get("transactions",[])
-            need(isinstance(ds,list) and isinstance(ts,list) and 1<=len(ds)<=6 and 1<=len(ts)<=6,"Chọn phiếu và giao dịch để ghép.")
-            need(all(isinstance(x,str) for x in ds+ts),"Mã nhóm chưa hợp lệ.")
-            need(len(set(ds))==len(ds) and len(set(ts))==len(ts),"Không lặp thẻ trong cùng nhóm.")
-            need(len(ds)==1 or len(ts)==1,"Ghép theo từng quan hệ nhiều-một hoặc một-nhiều, không gộp cả hồ sơ.")
-            trans={x["id"]:x for x in t["transactions"]}
-            need(all(x in docs for x in ds) and all(x in trans for x in ts),"Mã thẻ không tồn tại.")
-            need(all(x in t["inspected"] and x not in t["removed"] and not docs[x].get("missing") for x in ds),"Đọc đủ bản gốc, không ghép thẻ thiếu hoặc đã loại.")
-            need(not any(set(ds)&set(g["docs"]) or set(ts)&set(g["transactions"]) for g in t["groups"]),"Có thẻ đã nằm trong nhóm khác. Tháo nhóm cũ để ghép lại.")
-            need(not any(docs[x].get("duplicate_of") for x in ds),"Có bản sao cùng nguồn trong nhóm; đối chiếu và loại trùng trước nhé.")
-            need(all(docs[x]["amount"]==docs[x]["original"] for x in ds),"Số nhập còn khác nguồn. Điều chỉnh có căn cứ trước.")
-            a=sum(docs[x]["amount"] for x in ds);b=sum(trans[x]["amount"] for x in ts)
-            need(a==b,f"Tổng phiếu {a} xu chưa khớp giao dịch {b} xu. Thử kiểm phần còn thiếu nhé.")
-            refs={docs[x]["ref"] for x in ds};txrefs=set(r for x in ts for r in trans[x]["refs"])
-            need(refs==txrefs,"Tổng giống nhau nhưng tham chiếu nguồn chưa khớp. Kiểm mã hóa đơn nhé.")
+            dcan.ac_match_rules(t,ds,ts)  # game/desk_can.py: the same rules are the view's can.ac_match
+            a=sum(docs[x]["amount"] for x in ds)
             t["groups"].append(dict(docs=ds,transactions=ts,total=a));metric(c,"matched")
             log(s,c,"match",f'Đã ghép {", ".join(ds)} với {", ".join(ts)} = {a} xu.',t["npc"],t["id"])
             result["message"]=f"Hai phía khớp {a} xu và cùng tham chiếu nguồn."
@@ -928,10 +907,7 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
             index=integer(p.get("index"),0,len(t["groups"])-1);t["groups"].pop(index)
             result["message"]="Đã tháo nhóm, các thẻ trở lại bàn."
         elif action=="ac_complete":
-            valid=[d for d in t["docs"] if d["id"] not in t["removed"]]
-            linked={x for g in t["groups"] for x in g["docs"]};txlinked={x for g in t["groups"] for x in g["transactions"]}
-            need(all(d["id"] in linked and not d.get("missing") and not d.get("duplicate_of") for d in valid),"Còn chứng từ chưa đối chiếu, thiếu nguồn hoặc chưa loại bản trùng.")
-            need(len(txlinked)==len(t["transactions"]),"Còn giao dịch chưa ghép.")
+            dcan.ac_complete_rules(t)  # game/desk_can.py: also the view's can.ac_complete
             need(p.get("explanation")=="source_report","Chọn báo cáo giải thích tổng và nguồn; không chỉ đưa một con số.")
             t["explanation"]="Bảng đối chiếu: "+"; ".join(f'{", ".join(g["docs"])} ↔ {", ".join(g["transactions"])}: {g["total"]} xu' for g in t["groups"])
             task_done(s,c,t,70,"Bạn đã bàn giao hồ sơ có đối chiếu và nguồn: "+t["title"]+".")
@@ -1159,6 +1135,8 @@ def _task_view(t:dict) -> dict:
     if career in ("mother_baby","pharmacy") and not t["known"]:v["needs"]=None
     if career=="mother_baby" and t.get("gen"):return gifts.public_task(t,v)
     if career=="accounting":
+        can=dcan.ac_view(t)  # view only, never saved
+        if can:v["can"]=can
         for d in v["docs"]:
             if d["id"] not in t["inspected"]:
                 d.pop("original",None);d.pop("duplicate_of",None)
@@ -1243,6 +1221,10 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         if raw.get("open") and pm.managing(s,raw,cid):gate=dict(why="manager",error="Hôm nay bạn làm quản lý: giao việc cho đội nhé.")  # 🧑‍💼 no "Đón thêm khách"
         c["more_gate"]={k:v for k,v in gate.items() if k!="error"} if gate else None  # "Đón thêm khách" or the next real step
         c["tasks"]=[task_view(t) for t in s["careers"][cid]["tasks"]]
+        if cid=="pharmacy":
+            for tv,t in zip(c["tasks"],raw["tasks"]):
+                can=dcan.ph_view(t,raw)  # can.ph_check: the tray against the slip (view only, never saved)
+                if can:tv["can"]=can
         if cid in CARE_CAREERS:
             care_lines=care_notices(raw,cid)
             for tv,t in zip(c["tasks"],raw["tasks"]):

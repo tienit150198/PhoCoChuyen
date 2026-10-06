@@ -282,8 +282,10 @@
 
 /* Next step (guide.js): the bottom bar always does, or names, the next step. */
 .career-job.sl{--fk-foot:0px}
-.career-job.sl .sl-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:4;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--sl-r);background:var(--sl-s1);border:1px solid var(--sl-line);box-shadow:0 -6px 18px rgb(0 0 0 / 10%)}
-.career-job.sl .sl-bar>.btn,.career-job.sl .sl-bar .gd-ctas>.btn{flex:1 1 auto;min-height:52px}
+/* The bar is the shared .ui-bar now (wave 5); its own layout only applies to an older markup without it. */
+.career-job.sl .sl-bar:not(.ui-bar){position:sticky;bottom:var(--fk-foot,0px);z-index:4;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--sl-r);background:var(--sl-s1);border:1px solid var(--sl-line);box-shadow:0 -6px 18px rgb(0 0 0 / 10%)}
+.career-job.sl .sl-bar:not(.ui-bar)>.btn,.career-job.sl .sl-bar .gd-ctas>.btn{flex:1 1 auto;min-height:52px}
+.career-job.sl .sl-bar.ui-bar{bottom:var(--fk-foot,0px)}
 .career-job.sl .sl-bar [hidden]{display:none!important}
 .career-job.sl .sl-bar .sl-left{font-variant-numeric:tabular-nums}
 .career-job.sl .sl-side .gd-list{margin:0;padding:10px 12px;border-radius:var(--sl-r);background:var(--sl-s1);border:1px solid var(--sl-line)}
@@ -342,3 +344,10 @@ body.reduce-motion .career-job.sl .sl-calm .bar i,html.reduce-motion .career-job
 .career-job.sl .sl-ticket.compact{grid-template-columns:minmax(0,1fr)}
 /* Tap targets ≥ 44 px: the folds (regulars' card, bookings). */
 .career-job.sl .fold>summary{min-height:44px;padding-top:11px;padding-bottom:11px}
+
+/* ---------- wave 5, clean layout (html[data-clean]): fewer words on the chair */
+.career-job.sl .sl-helpq{flex:none;min-width:44px;min-height:44px}
+.career-job.sl .sl-want{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.career-job.sl .sl-want>.sl-helpq{margin-left:auto}
+.career-job.sl .sl-back{margin:0 0 var(--sp-2)}
+html[data-clean] .career-job.sl .sl-nav button{min-height:44px}

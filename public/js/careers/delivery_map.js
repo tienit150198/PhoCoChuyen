@@ -50,7 +50,10 @@ function roads(){
 }
 const ROADS=roads();
 
-export function renderNeighborhoodMap({nodes={},at,route=[],draft=[],status={},signs=[],minutes=3,text={}}){
+/** `bare` (the clean layout, docs/UI_KIT.md): no title bar, district names or legend; a stop shows its name only where
+ * something happens (you are there, a parcel waits, it is on the route); every other stop is its emoji (its name stays
+ * in the pin's <title>). */
+export function renderNeighborhoodMap({nodes={},at,route=[],draft=[],status={},signs=[],minutes=3,text={},bare=false}){
   const words={title:'Khu phố Mây Chiều',here:'Bạn đang ở',planned:'Tuyến đã chốt',draft:'Tuyến nháp',pick:'Điểm lấy hàng',drop:'Điểm giao hàng',residential:'Khu dân cư',services:'Khu dịch vụ',garden:'Khu nhà vườn',order:'Thứ tự điểm dừng',...text};
   const here=nodes[at],from=route.length?route[route.length-1]:at;
   const trace=(points,cls,color,dashed=false)=>points?`${dashed?'':`<polyline class="dm-route-under" points="${points}" fill="none" stroke="#fffdf5" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>`}<polyline class="${cls}" points="${points}" fill="none" stroke="${color}" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" ${dashed?'stroke-dasharray="5 7"':''}/>`:'';
@@ -61,18 +64,18 @@ export function renderNeighborhoodMap({nodes={},at,route=[],draft=[],status={},s
     const numbers=sequence.flatMap((stop,i)=>stop===id?[i+1]:[]),isDraft=numbers.length&&numbers[0]>route.length;
     const color=s.drop?'#27816e':s.pick?'#517faa':'#b7bcad';
     const hazard=signs.find(g=>g.node===id),symbol=hazard?{jam:'🚦',works:'🚧',flood:'🌊'}[hazard.kind]:'';
-    const label=String(n.label??n.name??id),labelWidth=Math.max(32,Math.min(110,[...label].length*7.3+10));
+    const label=bare&&!(current||s.pick||s.drop||numbers.length)?'':String(n.label??n.name??id),labelWidth=Math.max(32,Math.min(110,[...label].length*7.3+10));
     return `<g class="dm-pin${current?' here':''}${s.pick?' pick':''}${s.drop?' drop':''}" transform="translate(${px},${py})"><title>${esc(n.name??id)}${current?' · '+esc(words.here):''}${numbers.length?' · '+esc(words.order)+': '+numbers.join(', '):''}</title>
       ${current?'<circle class="dm-current" r="25" fill="#d4eeea" stroke="#27816e" stroke-width="2" stroke-dasharray="3 4"/>':''}
       <circle class="dm-pin-disc" r="17" fill="#fffdf8" stroke="${color}" stroke-width="${s.pick||s.drop?3:1.5}"/>
       <text class="dm-emoji" y="6" text-anchor="middle" font-size="18">${esc(n.emoji??'📍')}</text>
-      <rect class="dm-label-bg" x="${-labelWidth/2}" y="22" width="${labelWidth}" height="17" rx="5" fill="#fffdf5" fill-opacity=".94"/>
-      <text class="dm-label" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="#35463d" data-no-translate>${esc(label)}</text>
+      ${label?`<rect class="dm-label-bg" x="${-labelWidth/2}" y="22" width="${labelWidth}" height="17" rx="5" fill="#fffdf5" fill-opacity=".94"/>
+      <text class="dm-label" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="#35463d" data-no-translate>${esc(label)}</text>`:''}
       ${numbers.length?`<g class="dm-stop-number${isDraft?' draft':''}" transform="translate(19,-19)"><circle r="11" fill="${isDraft?'#bd741c':'#27816e'}" stroke="#fffdf8" stroke-width="2"/><text y="4" text-anchor="middle" fill="#fff" font-size="11" font-weight="800">${numbers[0]}${numbers.length>1?'+':''}</text></g>`:''}
       ${symbol?`<text x="-29" y="-14" font-size="14">${symbol}</text>`:''}</g>`;
   }).join('');
-  const districts=[words.residential,words.services,words.garden].map((name,i)=>`<text class="dm-district-label" x="${132+i*168}" y="27" text-anchor="middle" font-size="12" font-weight="700" letter-spacing=".5" fill="#758477">${esc(name)}</text>`).join('');
-  return `<figure class="dl-map"><div class="dl-map-head"><b>${esc(words.title)}</b><span>🛵 ${esc(words.here)}: <strong>${esc(here?.name??at??'')}</strong></span></div>
+  const districts=bare?'':[words.residential,words.services,words.garden].map((name,i)=>`<text class="dm-district-label" x="${132+i*168}" y="27" text-anchor="middle" font-size="12" font-weight="700" letter-spacing=".5" fill="#758477">${esc(name)}</text>`).join('');
+  return `<figure class="dl-map${bare?' bare':''}">${bare?'':`<div class="dl-map-head"><b>${esc(words.title)}</b><span>🛵 ${esc(words.here)}: <strong>${esc(here?.name??at??'')}</strong></span></div>`}
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(words.title)} · ${esc(words.here)}: ${esc(here?.name??at??'')}"><rect class="dm-ground" width="${W}" height="${H}" fill="#f1f1e7"/>${districts}<g aria-hidden="true">${SCENERY}${ROADS}</g>${paths}${pins}<g class="dm-north" transform="translate(576,20)" aria-hidden="true"><path d="M0 0l-4 9 4-2 4 2z" fill="#758477"/><text y="22" text-anchor="middle" fill="#758477" font-size="10" font-weight="700">N</text></g></svg>
-    <figcaption><div class="dl-map-legend"><span><i class="route"></i>${esc(words.planned)}</span><span><i class="draft"></i>${esc(words.draft)}</span><span><i class="pick"></i>${esc(words.pick)}</span><span><i class="drop"></i>${esc(words.drop)}</span></div><small class="muted">${esc(text.scale??`Mỗi ô phố ${minutes} phút`)}</small></figcaption></figure>`;
+    ${bare?'':`<figcaption><div class="dl-map-legend"><span><i class="route"></i>${esc(words.planned)}</span><span><i class="draft"></i>${esc(words.draft)}</span><span><i class="pick"></i>${esc(words.pick)}</span><span><i class="drop"></i>${esc(words.drop)}</span></div><small class="muted">${esc(text.scale??`Mỗi ô phố ${minutes} phút`)}</small></figcaption>`}</figure>`;
 }

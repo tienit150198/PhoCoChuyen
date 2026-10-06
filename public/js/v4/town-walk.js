@@ -100,7 +100,7 @@ export function townHTML(env,h){
   const s=env.api.state,J=s.journey||{},g=guide();
   const x3=s.x3?.today?.length?`<button type="button" class="tw-chip tw-x3" data-action="x3Week" aria-label="${esc(`Hôm nay lời x${s.x3.x}`)}">🔥 x${esc(s.x3.x)}</button>`:'';
   const close=s.current?`<button type="button" class="icon-btn tw-close" data-action="close" aria-label="Đóng">${icon('x',20)}</button>`:'';
-  const day=J.story?`<small>Ngày sống ${fmt(J.life_day)}</small>`:'';
+  const day=!J.story?'':typeof document!=='undefined'&&document.documentElement?.hasAttribute?.('data-clean')?`<small aria-label="Ngày sống ${fmt(J.life_day)}">📅 ${fmt(J.life_day)}</small>`:`<small>Ngày sống ${fmt(J.life_day)}</small>`;
   // Clean layout (docs/UI_KIT.md, wave 5): the same pointer in five words, under the goal card that already names the job.
   const slim=typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
   const hint=g.fresh?`<p class="tw-hint" role="status"><span aria-hidden="true">👉</span> ${slim?'Vào tiệm sáng đèn':'Đi tới một tiệm đang sáng để làm'}</p>`:'';

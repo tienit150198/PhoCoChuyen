@@ -48,7 +48,7 @@ html[data-layout="phone"] .career-job.dw{--dw-foot:calc(73px + var(--safe-b,0px)
 .dw-quote{padding:10px 14px;border-radius:4px 14px 14px 14px;background:var(--surface-2);color:var(--ink-2);font-size:.967rem;line-height:1.5}
 
 /* sticky bar above the sheet footer */
-.dw-bar{position:sticky;bottom:var(--dw-foot);z-index:4;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 12px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line-strong);box-shadow:var(--shadow)}
+.dw-bar:not(.ui-bar){position:sticky;bottom:var(--dw-foot);z-index:4;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 12px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--line-strong);box-shadow:var(--shadow)}
 .dw-bar-text{flex:1 1 170px;min-width:0;font-size:.933rem;font-weight:600;line-height:1.4;color:var(--ink)}
 .dw-bar-btns{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto}
 
@@ -110,7 +110,7 @@ html[data-layout="phone"] .career-job.dw{--dw-foot:calc(73px + var(--safe-b,0px)
 .dw-refer>div{flex:1 1 200px;min-width:0}
 @container sheet (min-width:760px){
   .dw-ph-grid{grid-template-columns:minmax(0,1fr) minmax(280px,340px);grid-template-rows:auto auto auto 1fr;grid-template-areas:"lots slip" "lots tray" "lots refer" "lots .";align-items:start;column-gap:20px}
-  .dw-ph .dw-bar{display:none}
+  .dw-ph .dw-bar:not(.ui-bar){display:none}
 }
 
 /* ---------- bookkeeping: documents ↔ transactions */
@@ -355,3 +355,24 @@ p.wh-bad,.card p.wh-bad{margin:0;color:var(--bad)}
 .career-job.dw .cs-call-fold>summary::-webkit-details-marker{display:none}
 .career-job.dw .cs-call-fold>summary::after{content:"▾";margin-left:auto;color:var(--muted)}
 .career-job.dw .cs-call-fold[open]>summary::after{content:"▴"}
+
+/* ---- Pharmacy counter and bookkeeping board, clean layout (UI wave 5; app.js pharmacyClean / accountingClean). Only
+   drawn with html[data-clean]: the slip in one row (code · name · × count), the counter's to-dos as a chip by the
+   customer (.dw-chiprow, ui-kit headChip flow), the desk's "?" (.dw-q), the original amount beside a card that is off;
+   the one main button sits in the shared bar (.ui-bar.dw-bar, app.css 27e). */
+.career-job.dw .dw-chiprow{display:flex;align-items:center;gap:var(--sp-1);flex:none}
+.career-job.dw .dw-chiprow:empty{display:none}
+.career-job.dw .dw-q{flex:none}
+.dw-slip.dw-slip-c{display:flex;align-items:baseline;flex-wrap:wrap;gap:var(--sp-1) var(--sp-2);padding:var(--sp-3) var(--sp-4)}
+.dw-slip-c .dw-slip-code,.dw-slip-c .dw-slip-qty{font-size:var(--fs-4);font-weight:800;font-variant-numeric:tabular-nums}
+.dw-slip-c .dw-slip-qty{margin-left:auto}
+.dw-orig{font-size:var(--fs-2);font-weight:700;color:var(--bad)}
+.dw-alert>span{font-size:var(--fs-2);font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.ui-bar .dw-sums{flex:1 1 auto;min-width:0;flex-wrap:nowrap}
+.ui-bar .dw-sums>span{flex-direction:row;align-items:center;gap:var(--sp-1);white-space:nowrap}
+.ui-bar .dw-sums b{font-size:var(--fs-3)}
+.ui-bar.dw-bar .ui-bar-next>.icon-btn{flex:none}
+.dw-checks.dw-checks-c{grid-template-columns:repeat(3,minmax(0,1fr))}
+.dw-checks-c .dw-tick{align-items:center;padding:var(--sp-2);gap:var(--sp-2)}
+html[data-clean] .dw-ac .dw-line>.btn{margin-left:auto}
+html[data-clean] .dw-ac .dw-line>.dw-state+.btn{margin-left:0}

@@ -10,7 +10,9 @@
 import {escapeHTML as esc,portrait} from '../icons.js';
 import {t as tr,language} from './i18n.js';
 import {keepBarAboveFooter} from '../careers/food_kit.js';
-import {reqList,actBar} from '../ui-kit.js';
+import {reqList,actBar,clean,tip,helpBtn,few} from '../ui-kit.js';
+/** ui-kit clean() (the "Giao diện gọn" layout), false where there is no page (render tests with a stub document). */
+const isClean=()=>{try{return clean();}catch{return false;}};
 import {GameAPI,aiQueued} from '../api.js';
 import {asset} from '../assets.js';
 import {nextHint,stepCta,finalGo,pending,firstTime} from './guide.js';
@@ -84,7 +86,8 @@ function ttFold(key,summary,body,open=false,cls='fold tt-fold'){
 const wide=()=>typeof matchMedia==='function'&&matchMedia('(min-width:761px)').matches;
 function meter(label,value){
   const v=Math.max(0,Math.min(100,value??100)),tone=v>=80?'good':v>=55?'warn':'bad';
-  return `<div class="tt-meter ${tone}" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${v}" aria-label="${esc(label)}"><span>${esc(label)}</span><i><b style="width:${v}%"></b></i><strong>${v}%</strong></div>`;
+  // Clean layout (docs/UI_KIT.md): the meter's name is its aria-label; a small icon stands in for the words.
+  return `<div class="tt-meter ${tone}" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${v}" aria-label="${esc(label)}">${isClean()?'<span aria-hidden="true">💗</span>':`<span>${esc(label)}</span>`}<i><b style="width:${v}%"></b></i><strong>${v}%</strong></div>`;
 }
 function hud(label,value,t,person){
   return `<div class="tt-hud">${meter(label,value)}<button type="button" class="tt-who" data-action="chat" data-npc="${esc(t.npc)}" data-task="${esc(t.id)}" aria-label="Trò chuyện với ${esc(person?.display_name||'')}">${portrait(person||{display_name:'?'},30)}<span aria-hidden="true">💬</span></button></div>`;
@@ -104,7 +107,9 @@ function eventCard(ev,op,task){
     const chips=`<div class="tt-chips">${mood?`<span class="tag ${mood>0?'green':'amber'}">${mood>0?'😊':'😕'} ${signed(mood)}</span>`:''}${(ev.trust||[]).map(x=>`<span class="tag ${x.delta>0?'green':'amber'}">${x.delta>0?'💛':'💔'} ${esc(x.name)} ${signed(x.delta)}</span>`).join('')}${ev.minutes?`<span class="tag">⏱ +${ev.minutes}′</span>`:''}${ev.mistake?'<span class="tag danger">Chưa ổn</span>':''}</div>`;
     return `<div class="tt-event done ${ev.mistake?'oops':''}">${ttFold('ev-'+task+'-'+ev.id,`${em(ev.emoji)} <b>${esc(ev.title)}</b>${ev.mistake?' <b class="bad-text">chưa ổn</b>':' <b class="good-text">✓</b>'}`,`<p class="tt-outcome">${esc(ev.outcome)}</p>${chips}`)}</div>`;
   }
-  return `<article class="tt-event" aria-live="polite" data-ev="${esc(ev.id)}"><header>${em(ev.emoji)}<div><small>Cần bạn quyết</small><b>${esc(ev.title)}</b></div></header><p>${esc(ev.text)}</p><div class="tt-options">${ev.options.map(o=>act(`<span>${esc(o.label)}</span>${o.cost?`<small>−${o.cost} xu quỹ đoàn</small>`:''}`,op,{task,event:ev.id,option:o.id},'tt-option',{attr:` data-opt="${esc(o.id)}"`})).join('')}</div></article>`;
+  // Clean layout: the title, what happens and every choice (with its cost) stay; only the "Cần bạn quyết" kicker goes.
+  const C=isClean();
+  return `<article class="tt-event" aria-live="polite" data-ev="${esc(ev.id)}"><header>${em(ev.emoji)}<div>${C?'':'<small>Cần bạn quyết</small>'}<b>${esc(ev.title)}</b></div></header><p>${esc(ev.text)}</p><div class="tt-options">${ev.options.map(o=>act(`<span>${esc(o.label)}</span>${o.cost?`<small>−${o.cost} xu${C?'':' quỹ đoàn'}</small>`:''}`,op,{task,event:ev.id,option:o.id},'tt-option',{attr:` data-opt="${esc(o.id)}"`})).join('')}</div></article>`;
 }
 function logList(log){
   return log.length?`<ul class="tt-log">${log.map(e=>`<li>${em(e.emoji)} <span>${esc(e.title)}</span> ${e.mistake?'<b class="bad-text">chưa ổn</b>':'<b class="good-text">✓</b>'}</li>`).join('')}</ul>`:'';
@@ -155,24 +160,46 @@ function timetable(t,c){
   const list=(c.tasks||[]).filter(x=>x.career==='teacher'&&(x.day===c.day||!ENDED.includes(x.status)));
   if(!list.some(x=>x.id===t.id))list.push(t);
   list.sort((a,b)=>(a.day-b.day)||String(a.id).localeCompare(String(b.id),undefined,{numeric:true}));
+  const C=isClean();
   const cells=list.map((x,i)=>{
     const on=x.id===t.id,done=ENDED.includes(x.status);
     const st=done?'✓ Đã dạy':on?'● Đang dạy':x.room&&x.room.stage!=='roll'?'Dạy dở':'Chưa vào';
-    const inner=`<span><b>Tiết ${i+1}</b> · ${esc(x.lesson?.topic||x.title)}</span><small>${st}</small>`;
-    return on||done?`<li class="tt-period ${on?'on':'done'}"${on?' aria-current="true"':''}>${inner}</li>`:`<li>${local(inner,'job',{task:x.id},'tt-period',false,`Tiết ${i+1}: ${x.title}`)}</li>`;
+    // Clean layout: one number per period (✓ taught); the topic and the state are its aria-label.
+    const say=`Tiết ${i+1}: ${x.lesson?.topic||x.title} · ${st}`;
+    const inner=C?`<b aria-hidden="true">${done?'✓':i+1}</b>`:`<span><b>Tiết ${i+1}</b> · ${esc(x.lesson?.topic||x.title)}</span><small>${st}</small>`;
+    return on||done?`<li class="tt-period ${on?'on':'done'}"${on?' aria-current="true"':''}${C?` role="img" aria-label="${esc(say)}"`:''}>${inner}</li>`:`<li>${local(inner,'job',{task:x.id},'tt-period',false,C?say:`Tiết ${i+1}: ${x.title}`)}</li>`;
   }).join('');
-  return `<nav class="tt-periods-wrap" aria-label="Thời khoá biểu hôm nay"><ol class="tt-periods">${cells}</ol></nav>`;
+  return `<nav class="tt-periods-wrap" aria-label="Thời khoá biểu hôm nay"><ol class="tt-periods${C?' tt-periods-mini':''}">${cells}</ol></nav>`;
 }
+
+/** Clean layout: the rules of a period behind one "?" (with the explanations this screen folded away). */
+function lessonHelp(R){
+  return helpBtn('teach-lesson','🏫 Tiết học',[
+    {title:'Soạn giáo án',body:`<ul><li>⏱ ${R.min}–${R.limit} phút, 3 hoạt động, có ít nhất một hoạt động chính</li><li>⭐ Mở đầu hợp không khí lớp</li><li>⭐ Có đủ cách học của các bạn có mặt</li><li>⭐ Kết thúc bằng thẻ Kiểm tra</li></ul>`},
+    {title:'Chấm phiếu',body:'<p>So bài với đáp án: đúng → 🌟 Khen cụ thể · sai hoặc chép nhầm → 🪜 Gợi ý một bước · ghi "Giống hệt phiếu của…" → 🤝 Gặp riêng.</p>'},
+  ],{tips:true,cls:'tt-q'});
+}
+const ROLL_SHORT={excused:'Vắng có phép',present:'Có mặt'};
+const ROLE_SHORT={open:'Mở đầu',core:'Chính',check:'Kiểm tra'};
+/** An activity card's name in two words on the clean layout (it is scored on its icons: energy, ways of learning,
+ * minutes, role; never on the name). The full name stays in title. */
+const CARD_SHORT={breath:'Hít thở',dance:'Vận động',riddle:'Câu đố',demo:'Làm mẫu',cards:'Thẻ đồ vật',story:'Kể chuyện',relay:'Tiếp sức',pairs:'Hỏi đáp',poster:'Vẽ sơ đồ',board:'Giơ bảng',ticket:'Phiếu cuối',share:'Nói lại'};
+const cname=x=>isClean()&&CARD_SHORT[x.id]?CARD_SHORT[x.id]:x.name;
+const MARK_SHORT={praise:'Khen',hint:'Gợi ý',private:'Gặp riêng'};
+const METHOD_SHORT={look:'Vẽ hình',hands:'Tự thử',talk:'Kể ví dụ',short:'Chia nhỏ'};
 
 function board(t,R,index){
   const at=LESSON_STEPS.findIndex(x=>x[0]===R.stage);
   const card=id=>R.hand.find(h=>h.id===id);
-  const plan=R.plan?.length?`<ol class="tt-flow" aria-label="Giáo án">${R.plan.map((id,i)=>{const x=card(id);if(!x)return '';const st=R.stage==='teach'?(i<R.phase?'done':i===R.phase?'now':''):'done';return `<li class="${st}"${st==='now'?' aria-current="step"':''}>${em(x.emoji)}<span>${esc(x.name)}</span><small>${st==='now'?'▶ Đang dạy · ':''}${x.minutes}′</small></li>`;}).join('')}</ol>`:'';
-  const teach=R.stage==='teach';
-  const top=`<span class="tt-board-top"><span>Tiết ${index} · ${esc(t.lesson.topic)}</span>${R.tier>1?`<span class="tt-tier" aria-label="Độ khó ${R.tier}">${'★'.repeat(R.tier)}</span>`:''}<small>${plan&&!teach?'Đề bài · giáo án':'Đề bài'}</small></span>`;
+  const plan=R.plan?.length?`<ol class="tt-flow" aria-label="Giáo án">${R.plan.map((id,i)=>{const x=card(id);if(!x)return '';const st=R.stage==='teach'?(i<R.phase?'done':i===R.phase?'now':''):'done';return `<li class="${st}"${st==='now'?' aria-current="step"':''}>${em(x.emoji)}<span title="${esc(x.name)}">${esc(cname(x))}</span><small>${st==='now'?(isClean()?'▶ ':'▶ Đang dạy · '):''}${x.minutes}′</small></li>`;}).join('')}</ol>`:'';
+  const teach=R.stage==='teach',C=isClean();
+  // Clean layout: the topic alone (the timetable numbers the period), 📜 for the fold, the class's mood line in "?"
+  // (the planner keeps its advice where the opener is chosen), the chalk keeps "1/5"; a "?" with the rules.
+  const top=`<span class="tt-board-top"><span>${C?'':`Tiết ${index} · `}${esc(t.lesson.topic)}</span>${R.tier>1?`<span class="tt-tier" aria-label="Độ khó ${R.tier}">${'★'.repeat(R.tier)}</span>`:''}${C?'<small aria-label="Đề bài">📜</small>':`<small>${plan&&!teach?'Đề bài · giáo án':'Đề bài'}</small>`}</span>`;
+  const cond=`${esc(R.cond.emoji)} ${esc(R.cond.text)}`;
   return `<section class="tt-board" aria-label="Bảng lớp">
     ${ttFold('board-'+t.id,top,`<p class="tt-prompt">${esc(t.lesson.prompt)}</p>${teach?'':plan}`,false,'tt-board-more')}${teach?plan:''}
-    <div class="tt-board-foot"><span>${esc(R.cond.emoji)} ${esc(R.cond.text)}</span><span class="tt-chalk" role="img" aria-label="Bước ${at+1}/5: ${esc(LESSON_STEPS[at]?.[1]||'')}">${LESSON_STEPS.map((_,i)=>`<i class="${i<at?'done':i===at?'now':''}"></i>`).join('')}<b>${at+1}/5 · ${esc(LESSON_STEPS[at]?.[1]||'')}</b></span></div>
+    <div class="tt-board-foot">${C?`<span aria-hidden="true">${esc(R.cond.emoji)}</span>${tip(cond,'Không khí lớp','span')}`:`<span>${cond}</span>`}<span class="tt-chalk" role="img" aria-label="Bước ${at+1}/5: ${esc(LESSON_STEPS[at]?.[1]||'')}">${LESSON_STEPS.map((_,i)=>`<i class="${i<at?'done':i===at?'now':''}"></i>`).join('')}<b>${at+1}/5${C?'':` · ${esc(LESSON_STEPS[at]?.[1]||'')}`}</b></span>${C?lessonHelp(R):''}</div>
   </section>`;
 }
 
@@ -180,7 +207,8 @@ function board(t,R,index){
 function seatCue(k,R,c,reach){
   if(R.stage==='roll')return k.done?(ROLL_DONE[`${k.status}:${k.done}`]||['good','✓']):ROLL_WAIT[k.status]||['',''];
   if(!isHere(k))return ['dim','Vắng'];
-  if(R.stage==='plan'){const st=kidStyle(c,k.id);return st?[reach.has(st)?'good':'',`${STYLE_ICON[st]} ${STYLE_SHORT[st]}${reach.has(st)?' ✓':''}`]:['','❓ Chưa rõ'];}
+  // Clean layout: the way a pupil learns as its icon (the same icons as the activity cards); the trait stays.
+  if(R.stage==='plan'){const st=kidStyle(c,k.id),C=isClean();return st?[reach.has(st)?'good':'',`${STYLE_ICON[st]}${C?'':' '+STYLE_SHORT[st]}${reach.has(st)?' ✓':''}`]:['',C?'❓':'❓ Chưa rõ'];}
   const lost=R.lost.find(x=>x.id===k.id),ticket=R.tickets.find(x=>x.kid===k.id);
   if(R.stage==='teach'){
     if(!lost)return ['','🙂 Theo kịp'];
@@ -199,23 +227,30 @@ function seating(t,c,R,reach=new Set()){
     const hand=A&&A.kid===k.id?`<span class="cl-raise${A.state==='quiet'?' quiet':''}" role="img" aria-label="${esc(A.state==='up'?k.name+' đang giơ tay':k.name+' có điều muốn hỏi')}">${A.state==='up'?'🙋 ?':'✏️'}</span>`:'';
     return `<li class="tt-seat ${tone?'tone-'+tone:''}${hand?' cl-asking':''}">${hand}<span class="tt-face" aria-hidden="true">${k.emoji}</span><b>${esc(k.name)}</b><small>${esc(cue)}</small>${hint}</li>`;
   }).join('');
-  const aside=R.stage==='roll'?`${R.kids.filter(k=>k.done).length}/${R.kids.length} đã ghi`:`${here}/${R.kids.length} có mặt`;
-  const room=`<div class="tt-room${R.stage==='plan'?' wide':''}"><p class="tt-front" aria-hidden="true">Bục giảng</p><ul class="tt-seats" aria-label="Chỗ ngồi của các bạn">${seats}</ul></div>`;
+  const C=isClean(),done=R.kids.filter(k=>k.done).length;
+  const aside=R.stage==='roll'?`${done}/${R.kids.length} đã ghi`:`${here}/${R.kids.length} có mặt`;
+  const room=`<div class="tt-room${R.stage==='plan'?' wide':''}">${C?"":`<p class="tt-front" aria-hidden="true">Bục giảng</p>`}<ul class="tt-seats" aria-label="Chỗ ngồi của các bạn">${seats}</ul></div>`;
   // Roll call and planning read every desk; later the class is a strip of faces that opens into the chart.
-  if(R.stage==='roll'||R.stage==='plan')return section('🪑','Sơ đồ lớp',room,aside,'tt-class');
+  // Clean layout: the roll call folds too (the seated pupils are one tap in the bar; the ones to write down one by
+  // one have their own cards above), and the strip says only the count.
+  const count=R.stage==='roll'?`${done}/${R.kids.length}`:`${here}/${R.kids.length}`;
+  if(R.stage==='plan'||(R.stage==='roll'&&!C))return section('🪑',C?'':'Sơ đồ lớp',room,C?`<span aria-label="${esc(aside)}">${count}</span>`:aside,'tt-class');
   const faces=R.kids.map(k=>{const [tone]=seatCue(k,R,c,reach);return `<i class="${tone?'tone-'+tone:''}" title="${esc(k.name)}">${k.emoji}${A&&A.kid===k.id?'🙋':''}</i>`;}).join('');
-  return `<section class="tt-sec tt-class tt-class-fold">${ttFold('seats-'+t.id,`${em('🪑')} <span>Sơ đồ lớp</span><span class="tt-faces" aria-hidden="true">${faces}</span><small>${aside}</small>`,room)}</section>`;
+  return `<section class="tt-sec tt-class tt-class-fold">${ttFold('seats-'+t.id,C?`${em('🪑')}<span class="tt-faces" aria-hidden="true">${faces}</span><small aria-label="${esc('Sơ đồ lớp: '+aside)}">${count}</small>`:`${em('🪑')} <span>Sơ đồ lớp</span><span class="tt-faces" aria-hidden="true">${faces}</span><small>${aside}</small>`,room)}</section>`;
 }
 
 function rollStage(t,c,R,first){
   const odd=R.kids.filter(k=>k.status!=='here'),todo=R.kids.filter(k=>k.status==='here'&&!k.done),left=odd.filter(k=>!k.done);
-  const card=k=>`<article class="tt-kid st-${k.status}" data-kid="${esc(k.id)}"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div><b>${esc(k.name)}</b><small>${k.mark_emoji} ${esc(k.clue)}</small></div></div><div class="tt-options">${k.options.map(o=>act(esc(o.label),'lesson_roll',{task:t.id,kid:k.id,choice:o.id},'tt-option',{attr:` data-opt="${esc(o.id)}"`})).join('')}</div></article>`;
-  const cases=left.length?section('📋','Sổ điểm danh',`<div class="tt-kids">${left.map(card).join('')}</div>`,`${left.length} bạn cần ghi riêng`):'';
-  const next=`📋 ${R.kids.filter(k=>k.done).length}/${R.kids.length}${left.length?` · ${left.length} bạn ghi riêng`:''}`;
+  // Clean layout: the pupil's name, the clue (a note from home, a late arrival, an empty chair) and every choice stay;
+  // "Ghi vắng có phép / Ghi có mặt" lose their "Ghi"; the book's title and count fold into the bar's "📋 n/5".
+  const C=isClean(),say=o=>C&&ROLL_SHORT[o.id]&&/^Ghi /.test(o.label)?ROLL_SHORT[o.id]:o.label;
+  const card=k=>`<article class="tt-kid st-${k.status}" data-kid="${esc(k.id)}"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div><b>${esc(k.name)}</b><small>${k.mark_emoji} ${esc(k.clue)}</small></div></div><div class="tt-options">${k.options.map(o=>act(esc(say(o)),'lesson_roll',{task:t.id,kid:k.id,choice:o.id},'tt-option',{attr:` data-opt="${esc(o.id)}"`,aria:say(o)===o.label?'':o.label})).join('')}</div></article>`;
+  const cases=left.length?C?`<section class="tt-sec tt-roll" aria-label="Sổ điểm danh"><div class="tt-kids">${left.map(card).join('')}</div></section>`:section('📋','Sổ điểm danh',`<div class="tt-kids">${left.map(card).join('')}</div>`,`${left.length} bạn cần ghi riêng`):'';
+  const next=`📋 ${R.kids.filter(k=>k.done).length}/${R.kids.length}${left.length&&!C?` · ${left.length} bạn ghi riêng`:''}`;
   const steps=[];
   if(todo.length)steps.push({ok:null,label:`Điểm danh ${todo.length} bạn đang ngồi`,go:{cmd:'lesson_roll',payload:{task:t.id,kid:'all'},label:`✓ Có mặt · ${todo.length} bạn`}});
   for(const k of left){const box=`.tt-kid[data-kid="${k.id}"]`;
-    steps.push({ok:null,label:`Ghi điểm danh cho ${k.name}`,go:{sel:box,label:`📋 Ghi điểm danh cho ${esc(k.name)}`},...glow(first,ROLL_GOOD[k.status]&&`${box} [data-opt="${ROLL_GOOD[k.status]}"]`)});}
+    steps.push({ok:null,label:`Ghi điểm danh cho ${k.name}`,go:{sel:box,label:C?`📋 Ghi cho ${esc(k.name)}`:`📋 Ghi điểm danh cho ${esc(k.name)}`},...glow(first,ROLL_GOOD[k.status]&&`${box} [data-opt="${ROLL_GOOD[k.status]}"]`)});}
   // The pupils to write down one by one sit right under the board; the seating chart follows.
   return {body:cases+seating(t,c,R),status:esc(next),steps,final:{label:'Soạn bài →',ready:false}};
 }
@@ -239,23 +274,32 @@ function bestPlan(R){
 function planStage(t,c,R,ui,first){
   ui.lessonSequence??=[];const seq=ui.lessonSequence.filter(id=>R.hand.some(x=>x.id===id)).slice(0,3);
   const cards=seq.map(id=>R.hand.find(x=>x.id===id)),mins=cards.reduce((s,x)=>s+x.minutes,0);
-  const reach=new Set(cards.flatMap(x=>x.styles));
-  const slot=i=>{const x=cards[i];return `<li class="${x?'filled':''}"><i>${i+1}</i>${x?`<span><b>${em(x.emoji)} ${esc(x.name)}</b><small>${esc(ROLE[x.role])} · ${ENERGY[x.energy][0]} ${esc(ENERGY[x.energy][1])}</small></span><strong>${x.minutes}′</strong>`:`<span class="muted">${esc(SLOT_HINT[i])}</span>`}</li>`;};
-  const hand=R.hand.map(x=>{const n=seq.indexOf(x.id);return local(`<span class="tt-card-top">${em(x.emoji)}<b>${esc(x.name)}</b></span><span class="tt-card-meta"><span>${ENERGY[x.energy][0]} ${esc(ENERGY[x.energy][1])}</span><span>⏱ ${x.minutes}′</span></span><span class="tt-card-meta"><span aria-label="${esc(x.styles.map(s=>STYLE_LONG[s]).join(', '))}">${x.styles.map(s=>STYLE_ICON[s]).join(' ')}</span><span class="tt-role r-${x.role}">${esc(ROLE[x.role])}</span></span>${n>=0?`<i class="tt-badge" aria-label="Thứ tự ${n+1}">${n+1}</i>`:''}`,'lessonStep',{step:x.id},'tt-card'+(n>=0?' picked':''),n>=0||seq.length>=3,'',n>=0);}).join('');
+  const reach=new Set(cards.flatMap(x=>x.styles)),C=isClean();
+  // Clean layout: every fact a card is scored on stays (energy as its icon, minutes, the ways of learning, the role in
+  // one or two words); the words go to aria-labels and the rules to "?".
+  const role=r=>C?ROLE_SHORT[r]:ROLE[r],energy=e=>C?`<span aria-label="${esc(ENERGY[e][1])}">${ENERGY[e][0]}</span>`:`${ENERGY[e][0]} ${esc(ENERGY[e][1])}`;
+  // An empty slot on the clean layout is its number only (the order rule is in "?"; each card names its role).
+  const slot=i=>{const x=cards[i];return `<li class="${x?'filled':''}"${C&&!x?` aria-label="${esc(SLOT_HINT[i])}"`:''}><i>${i+1}</i>${x?`<span><b title="${esc(x.name)}">${em(x.emoji)} ${esc(cname(x))}</b><small>${esc(role(x.role))} · ${energy(x.energy)}</small></span><strong>${x.minutes}′</strong>`:`<span class="muted">${C?'—':esc(SLOT_HINT[i])}</span>`}</li>`;};
+  const hand=R.hand.map(x=>{const n=seq.indexOf(x.id);return local(`<span class="tt-card-top">${em(x.emoji)}<b title="${esc(x.name)}">${esc(cname(x))}</b></span><span class="tt-card-meta"><span>${energy(x.energy)}</span><span>⏱ ${x.minutes}′</span></span><span class="tt-card-meta"><span aria-label="${esc(x.styles.map(s=>STYLE_LONG[s]).join(', '))}">${x.styles.map(s=>STYLE_ICON[s]).join(' ')}</span><span class="tt-role r-${x.role}">${esc(role(x.role))}</span></span>${n>=0?`<i class="tt-badge" aria-label="Thứ tự ${n+1}">${n+1}</i>`:''}`,'lessonStep',{step:x.id},'tt-card'+(n>=0?' picked':''),n>=0||seq.length>=3,'',n>=0);}).join('');
   const over=mins>R.limit,short=seq.length===3&&mins<R.min,core=cards.some(x=>x.role==='core'),ready=seq.length===3&&!over&&!short&&core;
   const why=over?'Quá giờ tiết học: bớt một hoạt động dài':short?`Mới ${mins} phút, cần ít nhất ${R.min}`:seq.length===3&&!core?'Thiếu hoạt động chính':seq.length<3?`Chọn thêm ${3-seq.length} hoạt động`:'Giáo án đã đủ. Chốt nhé!';
-  const styles=['look','hands','talk','short'].map(s=>`<span class="tt-style ${reach.has(s)?'on':''}">${STYLE_ICON[s]} ${esc(STYLE_SHORT[s])}</span>`).join('');
+  const styles=['look','hands','talk','short'].map(s=>`<span class="tt-style ${reach.has(s)?'on':''}"${C?` aria-label="${esc(STYLE_SHORT[s])}${reach.has(s)?' ✓':''}"`:''}>${STYLE_ICON[s]}${C?'':' '+esc(STYLE_SHORT[s])}</span>`).join('');
   // The three slots ride in the sticky bar; on a phone they sit inline above the cards instead (teach.css, F#211:
   // in the bar they took ~145 px over the cards and the bar's own lines piled up).
   const slots=[0,1,2].map(slot).join(''),tray=`<ol class="tt-tray tt-tray-bar" aria-label="Giáo án tiết này">${slots}</ol>`;
-  const planner=section('📝','Giáo án tiết này',`<p class="tt-tip">${esc(R.cond.emoji)} ${esc(R.cond.tip)}</p>
+  // The class's mood decides the opener: on the clean layout it is "Mở đầu:" and the energies that fit (the same
+  // table the server scores, COND want), its sentence in aria-label.
+  const want=COND_WANT[R.cond.id];
+  const tipLine=C&&want?`<p class="tt-tip" aria-label="${esc(R.cond.tip)}">${esc(R.cond.emoji)} Mở đầu: ${want.map(e=>`<span title="${esc(ENERGY[e][1])}">${ENERGY[e][0]}</span>`).join(' ')}</p>`:`<p class="tt-tip">${esc(R.cond.emoji)} ${esc(R.cond.tip)}</p>`;
+  const planner=section('📝',C?'':'Giáo án tiết này',`${tipLine}
     <div class="tt-reach" aria-label="Cách học đã có trong giáo án">${styles}</div>
-    <details class="fold gd-rules"><summary>📜 Quy tắc</summary><ul><li>⏱ ${R.min}–${R.limit} phút</li><li>⭐ Mở đầu hợp không khí lớp</li><li>⭐ Có đủ cách học của các bạn có mặt</li><li>⭐ Kết thúc bằng thẻ Kiểm tra</li></ul></details>`,`⏱ ${mins}/${R.limit}′`,'tt-planner');
-  const pick=section('🗂️','Thẻ hoạt động',`<ol class="tt-tray tt-tray-bar tt-tray-inline" aria-label="Giáo án tiết này">${slots}</ol><div class="tt-hand">${hand}</div>`,'Chạm theo thứ tự');
-  const next=`<b class="${over||short?'bad-text':''}">⏱ ${mins}/${R.limit}′ · ${seq.length}/3</b> · ${esc(why)}`;
+    ${C?'':`<details class="fold gd-rules"><summary>📜 Quy tắc</summary><ul><li>⏱ ${R.min}–${R.limit} phút</li><li>⭐ Mở đầu hợp không khí lớp</li><li>⭐ Có đủ cách học của các bạn có mặt</li><li>⭐ Kết thúc bằng thẻ Kiểm tra</li></ul></details>`}`,`⏱ ${mins}/${R.limit}′`,'tt-planner');
+  const pick=section('🗂️',C?'':'Thẻ hoạt động',`<ol class="tt-tray tt-tray-bar tt-tray-inline" aria-label="Giáo án tiết này">${slots}</ol><div class="tt-hand">${hand}</div>`,C?`≥ ${R.min}′`:'Chạm theo thứ tự');
+  const generic=!over&&!short&&(seq.length<3||core);
+  const next=`<b class="${over||short?'bad-text':''}">⏱ ${mins}/${R.limit}′ · ${seq.length}/3</b>${C&&generic?'':` · ${esc(why)}`}`;
   const steps=[],best=first?bestPlan(R):null,reset={act:'lessonReset',label:'↶ Soạn lại'};
   if(best&&seq.every((id,i)=>best[i]===id))best.forEach((id,i)=>{const x=R.hand.find(h=>h.id===id);
-    steps.push({ok:i<seq.length||null,label:`Thẻ ${i+1}: ${x.name}`,go:{act:'lessonStep',data:{step:id},label:`🗂️ Chọn thẻ ${i+1}: ${esc(x.name)}`},pulse:`.tt-card[data-step="${id}"]`});});
+    steps.push({ok:i<seq.length||null,label:`Thẻ ${i+1}: ${x.name}`,go:{act:'lessonStep',data:{step:id},label:C?`🗂️ ${i+1}: ${esc(cname(x))}`:`🗂️ Chọn thẻ ${i+1}: ${esc(x.name)}`},pulse:`.tt-card[data-step="${id}"]`});});
   else if(best)steps.push({ok:false,label:'Soạn lại cho hợp lớp',go:reset});
   else{
     steps.push({ok:seq.length===3||null,label:'Chọn 3 thẻ hoạt động theo thứ tự',go:{sel:'.tt-hand',label:`🗂️ Chọn thẻ ${Math.min(3,seq.length+1)}/3`}});
@@ -268,8 +312,10 @@ function planStage(t,c,R,ui,first){
 function teachStage(t,c,R,first){
   const events=R.events.map(ev=>eventCard(ev,'lesson_call',t.id)).join('');
   const need=R.lost.filter(k=>!k.helped&&!k.away);
-  const help=k=>`<article class="tt-kid" data-kid="${esc(k.id)}"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div><b>${esc(k.name)}</b><small>${esc(k.clue)}</small></div></div><div class="tt-methods" role="group" aria-label="Cách giúp ${esc(k.name)}">${R.methods.map(m=>act(`${em(m.emoji)}<span>${esc(m.name)}</span>`,'lesson_help',{task:t.id,kid:k.id,method:m.id},'tt-method',{attr:` data-method="${esc(m.id)}"`})).join('')}</div></article>`;
-  const helpBox=need.length?section('🙋','Bạn cần giúp',`<div class="tt-kids">${need.map(help).join('')}</div>`,`${need.length} bạn`):'';
+  // Clean layout: the pupil's clue stays whole (it says how they learn); each way to help in two words.
+  const C=isClean(),mname=m=>C&&METHOD_SHORT[m.id]?METHOD_SHORT[m.id]:m.name;
+  const help=k=>`<article class="tt-kid" data-kid="${esc(k.id)}"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${k.emoji}</span><div><b>${esc(k.name)}</b><small>${esc(k.clue)}</small></div></div><div class="tt-methods" role="group" aria-label="Cách giúp ${esc(k.name)}">${R.methods.map(m=>act(`${em(m.emoji)}<span>${esc(mname(m))}</span>`,'lesson_help',{task:t.id,kid:k.id,method:m.id},'tt-method',{attr:` data-method="${esc(m.id)}"`,aria:mname(m)===m.name?'':m.name})).join('')}</div></article>`;
+  const helpBox=need.length?section('🙋',C?'Cần giúp':'Bạn cần giúp',`<div class="tt-kids">${need.map(help).join('')}</div>`,C?'':`${need.length} bạn`):'';
   const waiting=R.pending.length>0,last=R.phase>=2,A=R.ask,hand=A&&A.state==='up'&&!A.result;
   const next=`▶ ${R.phase+1}/3${need.length?` · 🙋 ${need.length}`:' · 🌟'}`;
   const steps=[];
@@ -282,10 +328,10 @@ function teachStage(t,c,R,first){
     steps.push({ok:null,label:`Trả lời ${A.name}`,go:{sel:'.cl-ask .cl-chips',label:`🙋 Trả lời ${esc(A.name)}`},...glow(first,`.cl-ask .cl-chip:nth-child(${k+1})`)});
   }
   for(const k of need){const box=`.tt-kid[data-kid="${k.id}"]`;
-    steps.push({ok:null,label:`Giúp ${k.name} hiểu bài`,go:{sel:box,label:`🙋 Giúp ${esc(k.name)} hiểu bài`},...glow(first,KID_STYLE[k.id]&&`${box} [data-method="${KID_STYLE[k.id]}"]`)});}
+    steps.push({ok:null,label:`Giúp ${k.name} hiểu bài`,go:{sel:box,label:C?`🙋 Giúp ${esc(k.name)}`:`🙋 Giúp ${esc(k.name)} hiểu bài`},...glow(first,KID_STYLE[k.id]&&`${box} [data-method="${KID_STYLE[k.id]}"]`)});}
   const label=last?'Thu phiếu →':`Sang hoạt động ${R.phase+2} →`;
   const go=finalGo(steps,'lesson_next',{task:t.id},{question:hand?`${A.name} đang giơ tay sẽ hạ tay xuống.`:''});
-  return {body:(events?section('💬','Chuyện trong lớp',events):'')+askPanel(t,R)+helpBox+seating(t,c,R),status:esc(next),steps,
+  return {body:(events?section('💬',C?'':'Chuyện trong lớp',events):'')+askPanel(t,R)+helpBox+seating(t,c,R),status:esc(next),steps,
     final:{label,hint:last?'Thu phiếu cuối tiết':`Sang hoạt động ${R.phase+2}`,go,ready:!waiting}};
 }
 
@@ -298,14 +344,16 @@ function rightMark(t,R,x){
 }
 function checkStage(t,c,R,first){
   const todo=R.tickets.filter(x=>!x.mark),done=R.tickets.length-todo.length;
-  const card=x=>`<article class="tt-ticket" data-kid="${esc(x.kid)}"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${x.emoji}</span><div><b>${esc(x.name)}</b><small>${esc(x.note)}</small></div><strong class="tt-answer" aria-label="Bài làm: ${esc(x.answer)}">${esc(x.answer)}</strong></div><div class="tt-marks">${R.marks.map(m=>act(`${em(m.emoji)} <span>${esc(m.label)}</span>`,'lesson_mark',{task:t.id,kid:x.kid,mark:m.id},'tt-option',{attr:` data-mark="${esc(m.id)}"`})).join('')}</div></article>`;
+  const card=x=>`<article class="tt-ticket" data-kid="${esc(x.kid)}"><div class="tt-kid-top"><span class="tt-face" aria-hidden="true">${x.emoji}</span><div><b>${esc(x.name)}</b><small>${esc(x.note)}</small></div><strong class="tt-answer" aria-label="Bài làm: ${esc(x.answer)}">${esc(x.answer)}</strong></div><div class="tt-marks">${R.marks.map(m=>{const say=isClean()&&MARK_SHORT[m.id]||m.label;return act(`${em(m.emoji)} <span>${esc(say)}</span>`,'lesson_mark',{task:t.id,kid:x.kid,mark:m.id},'tt-option',{attr:` data-mark="${esc(m.id)}"`,aria:say===m.label?'':m.label});}).join('')}</div></article>`;
   // How to grade, in one line (players asked "chấm phiếu sao ạ"): which feedback fits which paper.
-  const how=`<p class="tt-tip">So bài với đáp án: đúng → 🌟 Khen cụ thể · sai hoặc chép nhầm → 🪜 Gợi ý một bước · ghi "Giống hệt phiếu của…" → 🤝 Gặp riêng. Chấm hết các phiếu rồi bấm Khép tiết.</p>`;
-  const key=`<div class="tt-key"><b>Đáp án đúng</b><p>${esc(t.lesson.fact)}</p></div>${how}`;
+  // Clean layout: the answer key and each paper (name, note, answer, the three marks) stay; how to grade is in "?".
+  const C=isClean(),howText='So bài với đáp án: đúng → 🌟 Khen cụ thể · sai hoặc chép nhầm → 🪜 Gợi ý một bước · ghi "Giống hệt phiếu của…" → 🤝 Gặp riêng. Chấm hết các phiếu rồi bấm Khép tiết.';
+  const how=C?tip(esc(howText),'Chấm phiếu','p'):`<p class="tt-tip">${esc(howText)}</p>`;
+  const key=`<div class="tt-key">${C?'<b aria-label="Đáp án đúng">✅</b>':'<b>Đáp án đúng</b>'}<p>${esc(t.lesson.fact)}</p></div>${how}`;
   const steps=todo.map(x=>{const box=`.tt-ticket[data-kid="${x.kid}"]`;
-    return {ok:null,label:`Chấm phiếu của ${x.name}`,go:{sel:box,label:`🎫 Chấm phiếu của ${esc(x.name)}`},...glow(first,`${box} [data-mark="${rightMark(t,R,x)}"]`)};});
-  const rest=todo.slice(1),queue=rest.length?`<p class="tt-queue">Phiếu tiếp theo: ${rest.map(x=>`${x.emoji} ${esc(x.name)}`).join(' · ')}</p>`:'';
-  return {body:section('🎫','Chấm phiếu cuối tiết',`${key}<div class="tt-tickets">${todo.slice(0,1).map(card).join('')}</div>${queue}`,`${done}/${R.tickets.length} đã chấm`)+seating(t,c,R),
+    return {ok:null,label:`Chấm phiếu của ${x.name}`,go:{sel:box,label:C?`🎫 Chấm ${esc(x.name)}`:`🎫 Chấm phiếu của ${esc(x.name)}`},...glow(first,`${box} [data-mark="${rightMark(t,R,x)}"]`)};});
+  const rest=todo.slice(1),queue=rest.length?C?`<p class="tt-queue" aria-label="${esc('Phiếu tiếp theo: '+rest.map(x=>x.name).join(', '))}">⏭ ${rest.map(x=>x.emoji).join(' ')}</p>`:`<p class="tt-queue">Phiếu tiếp theo: ${rest.map(x=>`${x.emoji} ${esc(x.name)}`).join(' · ')}</p>`:'';
+  return {body:section('🎫',C?'':'Chấm phiếu cuối tiết',`${key}<div class="tt-tickets">${todo.slice(0,1).map(card).join('')}</div>${queue}`,C?'':`${done}/${R.tickets.length} đã chấm`)+seating(t,c,R),
     status:`🎫 ${done}/${R.tickets.length}`,steps,final:{label:'Khép tiết',ready:false}};
 }
 
@@ -421,7 +469,11 @@ export function clBubbles(lines,key,{typing='',mine=''}={}){
 export function clReply(key,body,options,max,placeholder){
   const busy=blocking(clPending[key]),id='cl-in-'+key.replace(/[^a-z0-9]/gi,'-');
   const chips=options.map(o=>`<button type="button" class="cl-chip" data-action="clChip" data-cl="${esc(key)}" data-body="${esc(JSON.stringify({...body,option:o.id}))}" data-label="${esc(o.label)}"${busy?' disabled':''}>${esc(o.label)}</button>`).join('');
-  return `<div class="cl-reply"><div class="cl-chips" role="group" aria-label="Câu soạn sẵn">${chips}</div><form class="cl-form" data-cl-form="${esc(key)}" data-body="${esc(JSON.stringify(body))}"><textarea id="${id}" name="text" data-preserve rows="2" maxlength="${max}" required placeholder="${esc(placeholder)}" aria-label="${esc(placeholder)}"></textarea><button type="submit" class="btn primary"${busy?' disabled':''}>Gửi</button></form><small class="cl-mode">${classAiOn()?'✨ Nhân vật trả lời bằng AI · đừng gõ thông tin thật':'Gõ câu của bạn hoặc chọn một câu ở trên'} · tối đa ${max} ký tự</small></div>`;
+  return `<div class="cl-reply"><div class="cl-chips" role="group" aria-label="Câu soạn sẵn">${chips}</div><form class="cl-form" data-cl-form="${esc(key)}" data-body="${esc(JSON.stringify(body))}"><textarea id="${id}" name="text" data-preserve rows="2" maxlength="${max}" required placeholder="${esc(placeholder)}" aria-label="${esc(placeholder)}"></textarea><button type="submit" class="btn primary"${busy?' disabled':''}>Gửi</button></form>${modeLine(`${classAiOn()?'✨ Nhân vật trả lời bằng AI · đừng gõ thông tin thật':'Gõ câu của bạn hoặc chọn một câu ở trên'} · tối đa ${max} ký tự`)}</div>`;
+}
+/** The reply box's mode line; on the clean layout it is listed in "?" (the AI warning stays: it is not an explanation). */
+function modeLine(text){
+  return isClean()&&!classAiOn()?tip(esc(text),'Trả lời','small'):`<small class="cl-mode">${esc(text)}</small>`;
 }
 if(typeof document!=='undefined'){
   document.addEventListener('click',e=>{
@@ -445,7 +497,10 @@ if(typeof document!=='undefined'){
 function askPanel(t,R){
   const A=R.ask;if(!A)return '';
   const key='ask:'+t.id,body={kind:'pupil',pupil:A.kid,task:t.id};
-  if(A.state==='quiet')return section('✏️',`${esc(A.name)} có điều muốn hỏi`,`<div class="cl-ask quiet"><p class="tt-tip">${esc(A.clue)}</p><div class="tt-options">${act(esc(A.invite),'lesson_invite',{task:t.id},'tt-option')}</div></div>`,'Nhút nhát');
+  // Clean layout: the pupil's name, the clue, the question and every answer stay; a question already answered folds to
+  // one line (who, and how it went) that opens to the thread.
+  const C=isClean();
+  if(A.state==='quiet')return section('✏️',C?esc(A.name):`${esc(A.name)} có điều muốn hỏi`,`<div class="cl-ask quiet"><p class="tt-tip">${esc(A.clue)}</p><div class="tt-options">${act(esc(A.invite),'lesson_invite',{task:t.id},'tt-option')}</div></div>`,C?'':'Nhút nhát');
   if(A.state==='up'&&A.lines[0]?.mode==='scripted'&&!A.result)classVoice(key,body);
   const voicing=classVoicing(key)&&A.state==='up';
   const lines=voicing?A.lines.slice(1):A.lines;
@@ -453,6 +508,7 @@ function askPanel(t,R){
   const tag={good:['green','💡 Hiểu ra'],ok:['amber','🤔 Còn lăn tăn'],poor:['danger','😶 Ngại hỏi'],ignored:['danger','✋ Hạ tay']}[A.result];
   const foot=A.state==='up'&&!A.result&&A.options?clReply(key,body,A.options,A.max||200,`Trả lời ${A.name}…`):`${A.note?`<p class="tt-tip">${esc(A.note)}</p>`:''}`;
   const head=A.state==='up'?`${A.emoji} ${esc(A.name)} giơ tay`:`${A.emoji} Câu hỏi của ${esc(A.name)}`;
+  if(C&&A.state!=='up'&&!typingNow(clPending[key]))return `<section class="tt-sec cl-ask ${A.state}" aria-label="${esc(head)}">${ttFold('ask-'+t.id,`${em('🙋')} <span>${A.emoji} ${esc(A.name)}</span>${tag?` <span class="tag ${tag[0]}">${tag[1]}</span>`:''}`,thread+foot)}</section>`;
   return `<section class="tt-sec cl-ask ${A.state}" aria-label="${esc(head)}"><div class="tt-sec-head"><h3>${em('🙋')} ${head}</h3>${tag?`<span class="tag ${tag[0]}">${tag[1]}</span>`:''}</div>${thread}${foot}</section>`;
 }
 
@@ -463,6 +519,16 @@ const ANGLE_LABEL={history:'chuyện xưa',fun:'trò vui',photo:'góc ảnh'};
 const CALL_DONE={rest:'nghỉ ở homestay',clinic:'đã đi khám',push:'cố đi cùng đoàn'};
 
 const tourFold=(key,summary,body,open=false)=>ttFold(key,summary,body,open);
+/* Clean layout (docs/UI_KIT.md): a place in a word or two beside its emoji; the full name stays in aria-label and
+ * title. The route is scored on the tags (shown as their icons), indoors or not, minutes, fee and closures, all kept. */
+const PLACE_SHORT={museum:'Gốm',garden:'Vườn',market:'Chợ',river:'Bờ sông',cafe:'Quán trà',temple:'Chùa',craft:'Nón lá',hill:'Đồi',food:'Ăn vặt',gate:'Bến'};
+const pname=p=>isClean()&&PLACE_SHORT[p.id]?PLACE_SHORT[p.id]:p.name;
+function tourHelp(T){
+  return helpBtn('teach-tour','🧭 Dẫn đoàn',[
+    {title:'Chốt lộ trình',body:`<ul><li>Chọn 3–5 điểm theo thứ tự đi, có một chỗ nghỉ chân (🪑)</li><li>Vé ≤ quỹ đoàn, tổng giờ đi và tham quan ≤ ${T.limit}′</li><li>Nắng gắt: tối đa 2 điểm ngoài trời · mưa, gió: có điểm đóng cửa</li><li>Mỗi người có một điều mong (biểu tượng cạnh tên): ghé nơi có biểu tượng ấy</li><li>Người lớn tuổi ngại đồi dốc</li></ul>`},
+    {title:'Trên đường',body:'<ul><li>Xử lý chuyện của đoàn trước khi đi tiếp</li><li>Kể chuyện hợp số đông (số người thích cạnh mỗi cách kể) và hợp nơi đang đứng</li></ul>'},
+  ],{tips:true,cls:'tt-q'});
+}
 /** The career's record of this leg's group (c.life.tour.group), when the trip is a leg of it. */
 function legGroup(T,c){const G=c.life?.tour?.group;return G&&T.group&&G.start===T.group.start?G:null;}
 const hardRoute=(T,route,mins)=>route.includes('hill')||mins>100||(T.weather.id==='heat'&&route.filter(id=>!T.places.find(p=>p.id===id)?.indoor).length>1);
@@ -492,7 +558,7 @@ function tripMap(T,route,at=-1,small=false){
   const pin=p=>{
     const n=route.indexOf(p.id),done=n>=0&&n<at,here=n>=0&&n===at;
     const label=n>=0?`${n+1}. ${p.name}${done?' (đã qua)':here?' (đang ở đây)':''}`:p.closed?`${p.name} (đóng)`:p.name;
-    return `<span class="tt-pin${p.closed?' closed':''}${n>=0?' on':''}${done?' done':''}${here?' here':''}" style="left:${p.x}%;top:${p.y}%" title="${esc(label)}">${em(p.emoji)}${n>=0?`<i>${done?'✓':n+1}</i>`:''}</span>`;
+    return `<span class="tt-pin${p.closed?' closed':''}${n>=0?' on':''}${done?' done':''}${here?' here':''}" style="left:${p.x}%;top:${p.y}%" title="${esc(label)}">${em(p.emoji)}${n>=0?`<i aria-hidden="true">${done?'✓':n+1}</i>`:''}</span>`;
   };
   const alt=route.length?`Lộ trình: ${route.map((id,i)=>`${i+1}. ${T.places.find(p=>p.id===id)?.name}`).join(', ')}`:'Chưa chọn điểm nào';
   return `<div class="tt-map${small?' small':''}" role="img" aria-label="${esc('Bản đồ. '+alt)}"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 70 C20 62 30 90 50 84 S80 70 100 78" class="tt-river"/><polyline points="${line(pts)}" class="tt-route"/>${walked?`<polyline points="${line(pts.slice(0,walked+1))}" class="tt-walked"/>`:''}</svg><span class="tt-pin gate${at<0&&T.stage!=='plan'?' here':''}" style="left:${T.gate.x}%;top:${T.gate.y}%" title="${esc(T.gate.name)}">${em(T.gate.emoji)}</span>${T.places.map(pin).join('')}</div>`;
@@ -526,26 +592,30 @@ function roster(T,route,G=null){
     const short=tone==='warn'||tone==='dim'?cue:T.stage==='stop'?ANGLE_ICON[m.angle]:'✓';
     return `<li class="${tone?'tone-'+tone:''}" title="${esc(cue)}"><span class="tt-face" aria-hidden="true">${m.emoji}</span><b>${esc(m.name)}</b><small${short===cue?'':` aria-label="${esc(cue)}"`}>${esc(short)}</small></li>`;
   };
-  const title=T.group?`Đoàn ${T.group.days} ngày · ngày ${T.group.leg+1}/${T.group.days}`:'Đoàn hôm nay';
-  if(!full)return section('👥',title,`<ul class="tt-group compact">${T.members.map(li).join('')}</ul>`,aside);
+  // Clean layout: the group's title and count as numbers (👥 1/3 · 😊 2/4); every name and their wish icon stay.
+  const C=isClean();
+  const title=C?(T.group?`${T.group.leg+1}/${T.group.days}`:''):T.group?`Đoàn ${T.group.days} ngày · ngày ${T.group.leg+1}/${T.group.days}`:'Đoàn hôm nay';
+  const aside2=C?aside.replace(/ (có điều mong|đã tới|người)$/,''):aside;
+  if(!full)return section('👥',title,`<ul class="tt-group compact">${T.members.map(li).join('')}</ul>`,aside2);
   // Planning: one pill per person with their wish (✓ once the route has it); the full cards unfold.
   const pill=m=>{const [tone,cue]=memberCue(m,T,route),w=T.tags[m.wish];const short=tone==='warn'||tone==='dim'?cue:`${w?.emoji||''}${tone==='good'?' ✓':''}`;
     return `<li class="${tone?'tone-'+tone:''}" title="${esc(cue)}"><span class="tt-face" aria-hidden="true">${m.emoji}</span><b>${esc(m.name)}</b><small aria-label="${esc(cue)}">${esc(short)}</small></li>`;};
-  return section('👥',title,`<ul class="tt-group compact">${T.members.map(pill).join('')}</ul>${ttFold('roster-'+T.stage,'Chi tiết từng người',`<ul class="tt-group">${T.members.map(li).join('')}</ul>`)}`,aside);
+  return section('👥',title,`<ul class="tt-group compact">${T.members.map(pill).join('')}</ul>${ttFold('roster-'+T.stage,C?'<span aria-label="Chi tiết từng người">ℹ️ ▾</span>':'Chi tiết từng người',`<ul class="tt-group">${T.members.map(li).join('')}</ul>`)}`,aside2);
 }
 /** The map, folded on a phone (the numbered list says the same); open beside the list on a wide screen. */
 function mapFold(T,route,at=-1,small=false){
-  return ttFold('map-'+T.stage,`${em('🗺️')} <span>Bản đồ lộ trình</span>`,tripMap(T,route,at,small),wide());
+  return ttFold('map-'+T.stage,isClean()?`${em('🗺️')} <span aria-label="Bản đồ lộ trình">▾</span>`:`${em('🗺️')} <span>Bản đồ lộ trình</span>`,tripMap(T,route,at,small),wide());
 }
 
 function itinerary(T){
-  let prev='gate';
+  let prev='gate';const C=isClean();
   const rows=T.route.map((id,i)=>{
     const p=T.places.find(x=>x.id===id),leg=T.legs[`${prev}>${id}`]||0;prev=id;
     const st=T.stage==='ready'||(T.stage==='stop'&&i<T.at)?'done':T.stage==='stop'&&i===T.at?'now':'';
-    return `<li class="${st}"${st==='now'?' aria-current="step"':''}><i aria-hidden="true">${st==='done'?'✓':i+1}</i><span><b>${em(p.emoji)} ${esc(p.name)}</b><small>Đi ${leg}′ · tham quan ${p.minutes}′${p.fee?` · vé ${p.fee} xu`:''}</small></span></li>`;
+    const say=`Đi ${leg}′ · tham quan ${p.minutes}′${p.fee?` · vé ${p.fee} xu`:''}`;
+    return `<li class="${st}"${st==='now'?' aria-current="step"':''}><i aria-hidden="true">${st==='done'?'✓':i+1}</i><span><b title="${esc(p.name)}">${em(p.emoji)} ${esc(pname(p))}</b>${C?`<small aria-label="${esc(say)}">🚶${leg}′ · 👀${p.minutes}′${p.fee?` · 🎟${p.fee}`:''}</small>`:`<small>${say}</small>`}</span></li>`;
   }).join('');
-  return `<ol class="tt-itin" aria-label="Lịch trình"><li class="gate ${T.stage==='gather'?'now':'done'}"><i aria-hidden="true">${T.gate.emoji}</i><span><b>${esc(T.gate.name)}</b><small>Điểm hẹn · xuất phát</small></span></li>${rows}</ol>`;
+  return `<ol class="tt-itin" aria-label="Lịch trình"><li class="gate ${T.stage==='gather'?'now':'done'}"><i aria-hidden="true">${T.gate.emoji}</i><span><b>${esc(pname(T.gate))}</b>${C?'':'<small>Điểm hẹn · xuất phát</small>'}</span></li>${rows}</ol>`;
 }
 
 /** Someone in a multi-day group woke up sick: decide before the route. */
@@ -556,7 +626,7 @@ function sickCard(t,T,G){
   if(C?.sick&&C.call)return `<article class="tt-event done ${C.mistake?'oops':''}"><header>${em(C.emoji||'🤒')}<b>${esc(C.name)} · ${esc(CALL_DONE[C.call]||'')}</b></header><p class="tt-outcome">${esc(C.outcome||'')}</p>${C.mistake?'<div class="tt-chips"><span class="tag danger">Chưa ổn</span></div>':''}</article>`;
   const who=C?.sick?C:G?.sick&&sickPending(T,G)?(()=>{const m=G.members.find(x=>x.id===G.sick);return {name:m?.name||'',emoji:m?.emoji||'🤒',text:`Sáng nay ${m?.name||''} ${G.sick_text}.`,options:FALLBACK_CARE.map(([id,label,note])=>({id,label,note}))};})():null;
   if(!who)return '';
-  return `<article class="tt-event tt-sick" aria-live="polite"><header>${em('🤒')}<div><small>Cần bạn quyết trước khi chốt lộ trình</small><b>${esc(who.text)}</b></div></header><div class="tt-options">${who.options.map(o=>act(`<span>${esc(o.label)}</span>${o.note?`<small>${esc(o.note)}</small>`:''}`,'tour_care',{task:t.id,option:o.id},'tt-option',{attr:` data-opt="${esc(o.id)}"`})).join('')}</div></article>`;
+  return `<article class="tt-event tt-sick" aria-live="polite"><header>${em('🤒')}<div>${isClean()?'':'<small>Cần bạn quyết trước khi chốt lộ trình</small>'}<b>${esc(who.text)}</b></div></header><div class="tt-options">${who.options.map(o=>act(`<span>${esc(o.label)}</span>${o.note?`<small>${esc(o.note)}</small>`:''}`,'tour_care',{task:t.id,option:o.id},'tt-option',{attr:` data-opt="${esc(o.id)}"`})).join('')}</div></article>`;
 }
 
 /** Việc chăm hôm nay: partners to call, the kit, tomorrow's weather. */
@@ -581,7 +651,9 @@ function carePanel(t,T,c){
   if(k.flag<k.flag_worn)todo++;
   if(k.flag<60)btns.push(act(`🚩 Khâu cờ · ${k.flag_fix} xu`,'tour_kit',{item:'flag'},'small'));
   const body=reqList(rows,esc,'Việc chăm hôm nay')+(btns.length?`<div class="tt-care-btns">${btns.join('')}</div>`:'')+`<p class="tt-forecast">${em(f.emoji)} <span><b>Ngày mai: ${esc(f.name)}</b> · ${esc(f.tip)}</span></p>`;
-  const sum=`${em('📋')} <span>Việc chăm hôm nay</span>${todo?`<b class="tt-count">${todo} việc chờ</b>`:'<small class="good-text">✓ Ổn</small>'}`;
+  // Clean layout: the fold's line is its icon and the count (the rows inside keep their words).
+  const sum=isClean()?`${em('📋')} <span aria-label="${esc(`Việc chăm hôm nay: ${todo?todo+' việc chờ':'ổn'}`)}">${todo?`<b class="tt-count">${todo}</b>`:'<small class="good-text">✓</small>'}</span>`
+    :`${em('📋')} <span>Việc chăm hôm nay</span>${todo?`<b class="tt-count">${todo} việc chờ</b>`:'<small class="good-text">✓ Ổn</small>'}`;
   // Open by itself only when a partner call is waiting before the group leaves (and no sick guest comes first).
   return tourFold('care',sum,body,(call>0&&T.stage==='plan'&&!sickPending(T,G?legGroup(T,c):null))||(lunch&&T.stage==='gather'));
 }
@@ -597,7 +669,7 @@ function bookPanel(T,c){
   const G=legGroup(T,c)||X.group;
   const diary=G?.diary?.length?`<h4>📔 Nhật ký đoàn ${G.days} ngày</h4><ol class="tt-diary">${G.diary.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:'';
   const opened=X.know.filter(k=>k.level).length;
-  return tourFold('book',`${em('🤝')} <span>Bạn hàng · Sổ tay · Đánh giá</span>${R.avg?`<small>${R.avg}★</small>`:''}`,
+  return tourFold('book',isClean()?`${em('🤝')}${em('📖')} <span aria-label="Bạn hàng · Sổ tay · Đánh giá">${R.avg?`${R.avg}★`:'▾'}</span>`:`${em('🤝')} <span>Bạn hàng · Sổ tay · Đánh giá</span>${R.avg?`<small>${R.avg}★</small>`:''}`,
     `<h4>🤝 Bạn hàng</h4>${partners}<h4>⭐ Trang đặt tour</h4>${rating}<h4>📖 Sổ tay điểm đến${opened?` · mở ${opened}/${X.know.length}`:''}</h4><p class="tt-tip">Kể hợp đoàn ${X.know_at?.[0]??4} lần ở một điểm để mở chuyện ít ai biết, ${X.know_at?.[1]??10} lần để mở góc ẩn.</p>${know}${diary}`);
 }
 
@@ -625,23 +697,29 @@ function bestRoute(T,G){
 function planTrip(t,T,ui,c,first){
   const G=legGroup(T,c);
   ui.tourRoute??=[];const route=ui.tourRoute.filter(id=>T.places.some(p=>p.id===id&&!p.closed)).slice(0,5),S=tripSummary(T,route,G);
-  const row=p=>{const n=route.indexOf(p.id),full=route.length>=5&&n<0;return local(`${n>=0?`<i class="tt-badge">${n+1}</i>`:'<i class="tt-badge off" aria-hidden="true">＋</i>'}<span class="tt-place-emoji" aria-hidden="true">${p.emoji}</span><span class="tt-place-main"><b>${esc(p.name)}</b><small>${p.closed?`🚧 ${esc(p.closed)}`:`${p.tags.map(g=>T.tags[g].emoji).join(' ')} · ${p.indoor?'trong nhà':'ngoài trời'}`}</small></span><span class="tt-place-cost"><b>${p.minutes}′</b><small>${p.fee?p.fee+' xu':'miễn phí'}</small></span>`,'tourRoute',{place:p.id},'tt-place'+(n>=0?' picked':''),Boolean(p.closed)||full,n>=0?`Bỏ điểm ${n+1}: ${p.name}`:`Thêm ${p.name}`,n>=0);};
-  const top=`<div class="tt-bar-stats"><span class="${S.mins>T.limit?'bad':''}">⏱ ${S.mins}/${T.limit}′</span><span class="${S.fee>T.fund?'bad':''}">🎟 ${S.fee}/${T.fund} xu</span><span>😊 ${S.happy}/${S.people}</span></div>`;
+  // Clean layout: a place is its emoji, a short name, the tags' icons, 🏠 indoors / 🌤 outdoors, the minutes and the
+  // fee (🎟 0 = free); a closed one says 🚧 Đóng. The full wording is the row's aria-label.
+  const C=isClean();
+  const placeSay=p=>`${p.name}: ${p.closed?'đóng, '+p.closed:`${p.tags.map(g=>T.tags[g].label).join(', ')}, ${p.indoor?'trong nhà':'ngoài trời'}, ${p.minutes} phút, ${p.fee?p.fee+' xu':'miễn phí'}`}`;
+  const row=p=>{const n=route.indexOf(p.id),full=route.length>=5&&n<0;return local(`${n>=0?`<i class="tt-badge">${n+1}</i>`:'<i class="tt-badge off" aria-hidden="true">＋</i>'}<span class="tt-place-emoji" aria-hidden="true">${p.emoji}</span><span class="tt-place-main"><b>${esc(pname(p))}</b><small>${p.closed?(C?'🚧 Đóng':`🚧 ${esc(p.closed)}`):`${p.tags.map(g=>T.tags[g].emoji).join(' ')} · ${C?(p.indoor?'🏠':'🌤'):p.indoor?'trong nhà':'ngoài trời'}`}</small></span><span class="tt-place-cost"><b>${p.minutes}′</b><small>${C?`🎟${p.fee}`:p.fee?p.fee+' xu':'miễn phí'}</small></span>`,'tourRoute',{place:p.id},'tt-place'+(n>=0?' picked':''),Boolean(p.closed)||full,C?(n>=0?`Bỏ điểm ${n+1}: ${placeSay(p)}`:`Thêm ${placeSay(p)}`):n>=0?`Bỏ điểm ${n+1}: ${p.name}`:`Thêm ${p.name}`,n>=0);};
+  const top=`<div class="tt-bar-stats"><span class="${S.mins>T.limit?'bad':''}">⏱ ${S.mins}/${T.limit}′</span><span class="${S.fee>T.fund?'bad':''}">🎟 ${S.fee}/${T.fund}${C?"":" xu"}</span><span>😊 ${S.happy}/${S.people}</span></div>`;
   const sick=sickPending(T,G);
-  const next=sick?'Quyết định cho người ốm trước đã':!route.length?'Chạm 3–5 điểm theo thứ tự đi':S.warn[0]||`${route.length} điểm · đủ điều kiện. Chốt nhé!`;
+  const next=sick?(C?'🤒 Người ốm trước':'Quyết định cho người ốm trước đã'):!route.length?(C?'Chạm 3–5 điểm':'Chạm 3–5 điểm theo thứ tự đi'):(C&&S.warn[0]?S.warn[0].replace(/\s*\(.*\)\.?$/,''):S.warn[0])||(C?`✓ ${route.length} điểm`:`${route.length} điểm · đủ điều kiện. Chốt nhé!`);
   const card=sickCard(t,T,G);
-  const places=section('🗺️','Chọn điểm theo thứ tự đi',`<p class="tt-tip">${esc(T.weather.emoji)} ${esc(T.weather.text)}</p><div class="tt-split"><div class="tt-places">${T.places.map(row).join('')}</div>${mapFold(T,route)}</div>${S.warn.length>1?`<ul class="tt-warn">${S.warn.map(w=>`<li>⚠️ ${esc(w)}</li>`).join('')}</ul>`:''}`,`${route.length}/5 điểm`);
+  // The weather's rule (heat: at most 2 outdoor stops; rain, wind: a place shut) stays; a fine day's line goes to "?".
+  const rule=T.weather.outdoor_max!=null||T.places.some(p=>p.closed),wx=`${esc(T.weather.emoji)} ${esc(T.weather.text)}`;
+  const places=section('🗺️',C?'':'Chọn điểm theo thứ tự đi',`${C&&!rule?tip(wx,'Thời tiết','p'):`<p class="tt-tip">${wx}</p>`}<div class="tt-split"><div class="tt-places">${T.places.map(row).join('')}</div>${mapFold(T,route)}</div>${S.warn.length>1?`<ul class="tt-warn">${S.warn.map(w=>`<li>⚠️ ${esc(w)}</li>`).join('')}</ul>`:''}`,C?`${route.length}/5`:`${route.length}/5 điểm`);
   const steps=[],reset={act:'tourReset',label:'↶ Chọn lại lộ trình'};
   if(sick)steps.push({ok:null,label:'Quyết cho người ốm trước',go:{sel:'.tt-sick',label:'🤒 Quyết cho người ốm'},...glow(first,'.tt-sick [data-opt="rest"]')});
   const best=first?bestRoute(T,G):null;
   if(best&&route.every((id,i)=>best[i]===id))best.forEach((id,i)=>{const p=T.places.find(x=>x.id===id);
-    steps.push({ok:i<route.length||null,label:`Điểm ${i+1}: ${p.name}`,go:{act:'tourRoute',data:{place:id},label:`${esc(p.emoji)} Chọn điểm ${i+1}: ${esc(p.name)}`},pulse:`.tt-place[data-place="${id}"]`});});
+    steps.push({ok:i<route.length||null,label:`Điểm ${i+1}: ${p.name}`,go:{act:'tourRoute',data:{place:id},label:C?`${esc(p.emoji)} Chọn ${esc(pname(p))}`:`${esc(p.emoji)} Chọn điểm ${i+1}: ${esc(p.name)}`},pulse:`.tt-place[data-place="${id}"]`});});
   else if(best)steps.push({ok:false,label:'Chọn lại cho hợp đoàn',go:reset});
   else{
-    steps.push({ok:route.length>=3||null,label:'Chạm 3–5 điểm theo thứ tự đi',go:{sel:'.tt-places',label:`🗺️ Chọn điểm ${route.length+1} (3–5 điểm)`}});
+    steps.push({ok:route.length>=3||null,label:'Chạm 3–5 điểm theo thứ tự đi',go:{sel:'.tt-places',label:C?`🗺️ Chọn điểm ${route.length+1}`:`🗺️ Chọn điểm ${route.length+1} (3–5 điểm)`}});
     if(route.length>=3&&!S.ok)steps.push({ok:false,label:S.warn[0]||'Lộ trình chưa hợp',go:{sel:'.tt-places',label:`⚠️ ${esc(S.warn[0]||'Sửa lộ trình')}`}});
   }
-  return {first:card?section('🤒','Người ốm sáng nay',card):'',body:places+roster(T,route,G),status:esc(next),top,steps,
+  return {first:card?section('🤒',C?'':'Người ốm sáng nay',card):'',body:places+roster(T,route,G),status:esc(next),top,steps,
     extra:route.length?local('↶','tourReset',{},'btn ghost',false,'Chọn lại'):'',
     final:{label:'Chốt lộ trình →',hint:'Chốt lộ trình',go:{cmd:'tour_plan',payload:{task:t.id,route,v:2}},ready:S.ok&&!sick}};
 }
@@ -661,29 +739,34 @@ function careSteps(T,c,lunch){
 function gatherTrip(t,T,c,first){
   const G=legGroup(T,c),late=(T.events||[]).find(e=>!e.chosen);
   const events=(T.events||[]).map(ev=>eventCard(ev,'tour_call',t.id)).join('');
-  const route=section('🧭','Lộ trình đã chốt',`<div class="tt-split">${itinerary(T)}${mapFold(T,T.route)}</div>`,`${T.route.length} điểm`);
-  const n=T.present??T.members.length,sick=T.care?.sick&&T.care.call?section('🤒','Người ốm sáng nay',sickCard(t,T,G)):'';
-  return {body:(events?section('📍',`Điểm hẹn · ${esc(T.gate.name)}`,events):'')+sick+roster(T,T.route,G)+route,
-    status:esc(late?'Đoàn chưa đủ người: xử lý trước khi đi':`Đủ ${n}/${n} người ở ${T.gate.name}`),steps:[...eventSteps(T,first),...careSteps(T,c,true)],
+  const C=isClean();
+  const route=section('🧭',C?'Lộ trình':'Lộ trình đã chốt',`<div class="tt-split">${itinerary(T)}${mapFold(T,T.route)}</div>`,C?'':`${T.route.length} điểm`);
+  const n=T.present??T.members.length,sick=T.care?.sick&&T.care.call?section('🤒',C?'':'Người ốm sáng nay',sickCard(t,T,G)):'';
+  return {body:(events?section('📍',C?esc(pname(T.gate)):`Điểm hẹn · ${esc(T.gate.name)}`,events):'')+sick+roster(T,T.route,G)+route,
+    status:esc(late?(C?'⚠️ Chưa đủ người':'Đoàn chưa đủ người: xử lý trước khi đi'):C?`👥 ${n}/${n}`:`Đủ ${n}/${n} người ở ${T.gate.name}`),steps:[...eventSteps(T,first),...careSteps(T,c,true)],
     final:{label:'Xuất phát →',hint:'Xuất phát',go:{cmd:'tour_depart',payload:{task:t.id}},ready:!late}};
 }
 
 function stopTrip(t,T,c,first){
   const H=T.here,pending=(T.events||[]).some(e=>!e.chosen),last=T.at===T.route.length-1,X=c.life?.tour;
+  // Clean layout: the place's tags (what the best story suits), each way of telling with how many like it (❤️ n), the
+  // events and their choices stay; the notebook's progress line goes to "?".
+  const C=isClean();
   const fans=a=>T.members.filter(m=>m.angle===a&&!m.away).length;
-  const tell=H.told?`<blockquote class="tt-quote">${ANGLE_ICON[H.told]} “${esc(H.line)}”</blockquote>`:`<div class="tt-angles" role="group" aria-label="Cách kể ở điểm này">${T.angles.map(a=>act(`${em(a.emoji)}<span>${esc(a.label)}</span><small>${fans(a.id)} người thích</small>`,'tour_tell',{task:t.id,angle:a.id},'tt-angle',{attr:` data-angle="${esc(a.id)}"`})).join('')}</div>`;
+  const tell=H.told?(C?`<p class="tt-quote-mini">${ANGLE_ICON[H.told]} ✓</p>${tip(`“${esc(H.line)}”`,'Đã kể','p')}`:`<blockquote class="tt-quote">${ANGLE_ICON[H.told]} “${esc(H.line)}”</blockquote>`):`<div class="tt-angles" role="group" aria-label="Cách kể ở điểm này">${T.angles.map(a=>act(`${em(a.emoji)}<span>${esc(a.label)}</span>${C?`<small aria-label="${fans(a.id)} người thích">❤️ ${fans(a.id)}</small>`:`<small>${fans(a.id)} người thích</small>`}`,'tour_tell',{task:t.id,angle:a.id},'tt-angle',{attr:` data-angle="${esc(a.id)}"`})).join('')}</div>`;
   const K=X?.know?.find(k=>k.id===H.id);
-  const book=K?`<p class="tt-note">${K.level===2?`🗝️ Sổ tay: kể hợp đoàn là dẫn được vào ${esc(K.spot||'góc ẩn')}`:K.level===1?`📖 Sổ tay: có chuyện ít ai biết · kể hay thêm ${K.need} lần để mở góc ẩn`:`📖 Sổ tay: kể hay thêm ${K.need} lần để mở chuyện ít ai biết`}</p>`:'';
+  const bookText=K?(K.level===2?`🗝️ Sổ tay: kể hợp đoàn là dẫn được vào ${esc(K.spot||'góc ẩn')}`:K.level===1?`📖 Sổ tay: có chuyện ít ai biết · kể hay thêm ${K.need} lần để mở góc ẩn`:`📖 Sổ tay: kể hay thêm ${K.need} lần để mở chuyện ít ai biết`):'';
+  const book=K?(C?tip(bookText,'Sổ tay','p'):`<p class="tt-note">${bookText}</p>`):'';
   const mic=X?.kit?`<span class="${X.kit.mic<X.kit.mic_use?'bad-text':X.kit.mic<X.kit.mic_use*3?'tt-low':''}">🔋 ${X.kit.mic}%</span>`:'';
   const nextStop=last?null:T.places.find(p=>p.id===T.route[T.at+1]);
-  const here=`<div class="tt-here"><span aria-hidden="true">${H.emoji}</span><div><small>Điểm ${T.at+1}/${T.route.length} · đang ở đây</small><h3>${esc(H.name)}</h3><p>${H.tags.map(g=>`${T.tags[g].emoji} ${esc(T.tags[g].label)}`).join(' · ')}</p></div></div>`;
+  const here=`<div class="tt-here"><span aria-hidden="true">${H.emoji}</span><div><small${C?` aria-label="Điểm ${T.at+1}/${T.route.length} · đang ở đây"`:''}>${C?`📍 ${T.at+1}/${T.route.length}`:`Điểm ${T.at+1}/${T.route.length} · đang ở đây`}</small><h3>${esc(H.name)}</h3><p>${H.tags.map(g=>`${T.tags[g].emoji} ${esc(C?few(T.tags[g].label,2,true):T.tags[g].label)}`).join(' · ')}</p></div></div>`;
   const open=(T.events||[]).filter(e=>!e.chosen).map(ev=>eventCard(ev,'tour_call',t.id)).join(''),past=(T.events||[]).filter(e=>e.chosen).map(ev=>eventCard(ev,'tour_call',t.id)).join('');
-  const next=nextStop?`➜ ${nextStop.emoji} ${nextStop.name}`:`➜ ${T.gate.emoji} ${T.gate.name}`;
+  const next=nextStop?`➜ ${nextStop.emoji} ${pname(nextStop)}`:`➜ ${T.gate.emoji} ${pname(T.gate)}`;
   // The angle most of the group enjoys, plus the one that suits the place (as the server scores it).
   const ppl=T.members.filter(m=>!m.away),score=a=>{const f=ppl.filter(m=>m.angle===a).length;return 3*f-(ppl.length-f)+(H.tags.some(g=>BEST_ANGLE[g]===a)?2:0);};
   const angle=T.angles.map(a=>a.id).reduce((b,a)=>score(a)>score(b)?a:b);
-  const steps=[...eventSteps(T,first),...careSteps(T,c,false),{ok:H.told?true:null,label:'Kể chuyện cho đoàn nghe',go:{sel:'.tt-angles',label:'🎙️ Chọn cách kể chuyện'},...glow(first,`.tt-angle[data-angle="${angle}"]`)}];
-  return {body:here+(open?section('⚠️','Chuyện trên đường',open):'')+section('🎙️','Kể gì cho đoàn nghe?',tell+book,H.told?'✓ Đã kể':mic)+(past?`<div class="tt-past">${past}</div>`:'')+roster(T,T.route,legGroup(T,c))+mapFold(T,T.route,T.at,true),
+  const steps=[...eventSteps(T,first),...careSteps(T,c,false),{ok:H.told?true:null,label:'Kể chuyện cho đoàn nghe',go:{sel:'.tt-angles',label:C?'🎙️ Chọn cách kể':'🎙️ Chọn cách kể chuyện'},...glow(first,`.tt-angle[data-angle="${angle}"]`)}];
+  return {body:here+(open?section('⚠️',C?'':'Chuyện trên đường',open):'')+section('🎙️',C?'Kể chuyện':'Kể gì cho đoàn nghe?',tell+book,H.told?(C?'✓':'✓ Đã kể'):mic)+(past?`<div class="tt-past">${past}</div>`:'')+roster(T,T.route,legGroup(T,c))+mapFold(T,T.route,T.at,true),
     status:esc(next),steps,final:{label:last?'Đếm đoàn & về bến →':'Đếm đoàn & đi tiếp →',hint:last?'Đếm đoàn, về bến':'Đếm đoàn, đi tiếp',go:{cmd:'tour_next',payload:{task:t.id}},ready:!pending&&!!H.told}};
 }
 
@@ -700,9 +783,13 @@ export function tripV2(t,c,content,ui){
   const g=guided({room:c},t,T.stage,view);
   const mood=c.life?.mode==='calm'?100:(t.patience??100);
   const at=TRIP_STEPS.findIndex(x=>x[0]===T.stage);
-  const chips=`${T.group?`<span class="tag blue">👥 Đoàn ${T.group.days} ngày · ${T.group.leg+1}/${T.group.days}</span>`:''}<span class="tag">${esc(T.weather.emoji)} ${esc(T.weather.name)}</span><span class="tag">🎟 Quỹ ${T.stage==='plan'?T.fund:T.fund_left} xu</span>${T.wallet?`<span class="tag amber">👛 Bù ${T.wallet} xu</span>`:''}<span class="tag">⏱ ${T.stage==='plan'?'≤ '+T.limit:T.clock+'/'+T.limit}′</span>${T.tier>1?`<span class="tt-tier" aria-label="Độ khó ${T.tier}">${'★'.repeat(T.tier)}</span>`:''}`;
-  const steps=`<span class="tt-chalk tt-trail-mini" role="img" aria-label="Chặng ${at+1}/4: ${esc(TRIP_STEPS[at]?.[1]||'')}">${TRIP_STEPS.map((_,i)=>`<i class="${i<at?'done':i===at?'now':''}"></i>`).join('')}<b>${at+1}/4 · ${esc(TRIP_STEPS[at]?.[1]||'')}</b></span>`;
-  return `<div class="tt tt-trip"${g.attrs}>${g.hint}<div class="tt-trip-top">${chips}${steps}${hud('Nhịp đoàn',mood,t,person)}</div><div class="tt-body">${view.first||''}${carePanel(t,T,c)}${view.body}${bookPanel(T,c)}</div>${bar(view.status,(view.extra||'')+g.cta,view.top||'')}</div>`;
+  // Clean layout: the chips are icons and numbers (weather icon, 🎟 fund, ⏱ limit), their words in aria-labels; a "?"
+  // holds the route rules and the explanations folded away.
+  const C=isClean(),fund=T.stage==='plan'?T.fund:T.fund_left,lim=T.stage==='plan'?'≤ '+T.limit:T.clock+'/'+T.limit;
+  const chips=C?`${T.group?`<span class="tag blue" aria-label="Đoàn ${T.group.days} ngày · ngày ${T.group.leg+1}">👥 ${T.group.leg+1}/${T.group.days}</span>`:''}<span class="tag" title="${esc(T.weather.name)}" aria-label="${esc(T.weather.name)}">${esc(T.weather.emoji)}</span><span class="tag" aria-label="Quỹ đoàn ${fund} xu">🎟 ${fund}</span>${T.wallet?`<span class="tag amber" aria-label="Bù ${T.wallet} xu tiền túi">👛 ${T.wallet}</span>`:''}<span class="tag" aria-label="Thời gian ${lim} phút">⏱ ${lim}′</span>${T.tier>1?`<span class="tt-tier" aria-label="Độ khó ${T.tier}">${'★'.repeat(T.tier)}</span>`:''}`
+    :`${T.group?`<span class="tag blue">👥 Đoàn ${T.group.days} ngày · ${T.group.leg+1}/${T.group.days}</span>`:''}<span class="tag">${esc(T.weather.emoji)} ${esc(T.weather.name)}</span><span class="tag">🎟 Quỹ ${fund} xu</span>${T.wallet?`<span class="tag amber">👛 Bù ${T.wallet} xu</span>`:''}<span class="tag">⏱ ${lim}′</span>${T.tier>1?`<span class="tt-tier" aria-label="Độ khó ${T.tier}">${'★'.repeat(T.tier)}</span>`:''}`;
+  const steps=`<span class="tt-chalk tt-trail-mini" role="img" aria-label="Chặng ${at+1}/4: ${esc(TRIP_STEPS[at]?.[1]||'')}">${TRIP_STEPS.map((_,i)=>`<i class="${i<at?'done':i===at?'now':''}"></i>`).join('')}<b>${at+1}/4${C?'':` · ${esc(TRIP_STEPS[at]?.[1]||'')}`}</b></span>`;
+  return `<div class="tt tt-trip"${g.attrs}>${g.hint}<div class="tt-trip-top">${chips}${steps}${hud('Nhịp đoàn',mood,t,person)}${C?tourHelp(T):''}</div><div class="tt-body">${view.first||''}${carePanel(t,T,c)}${view.body}${bookPanel(T,c)}</div>${bar(view.status,(view.extra||'')+g.cta,view.top||'')}</div>`;
 }
 
 export const v2Stage=t=>t?.room?({roll:'Điểm danh đầu giờ',plan:'Soạn ba hoạt động',teach:'Dạy và giúp từng bạn',check:'Phản hồi phiếu cuối tiết',ready:'Khép tiết'}[t.room.stage]):t?.trip?({plan:'Chọn lộ trình hợp đoàn',gather:'Tập trung ở điểm hẹn',stop:'Kể chuyện và giữ đoàn',ready:'Khép chuyến'}[t.trip.stage]):null;

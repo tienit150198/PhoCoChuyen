@@ -756,6 +756,36 @@ def _reserved(c: dict, rid: str, start: int, nights: int, *, skip_task=None, ski
     return None
 
 
+MAX_PICKS = 3
+OTA_FIX = dict(act='car:fold', data=dict(key='board', open=''), label='📥 Đơn chờ')
+
+
+def _assign_room_rules(c: dict, rid: str, nights: int, need=kit.need) -> None:
+    """hs_assign, per room: the same refusal the command gives, and (kit.check) the page's dimmed room tile
+    (UI wave 5, docs/UI_KIT.md "Disabled with a reason"; the audit's top homestay refusal was an app order still
+    waiting to sync on the room picked: "Phòng … có đơn … chờ đồng bộ"). Reads only."""
+    why = _blocked(c, rid, c['day'], nights)
+    need(why is None, why or '', fix=OTA_FIX if why and 'chờ đồng bộ' in why else None)
+
+
+def _pick_more_rules(picks: list, need=kit.need) -> None:
+    """hs_pick, adding a place: at most three (the refusal, and the page's dimmed place cards)."""
+    need(len(picks) < MAX_PICKS, f'Gợi ý tối đa {MAX_PICKS} nơi thôi, nhiều quá khách rối.',
+         fix=dict(sel='.hs-place.selected', label='✕ Bỏ một nơi'))
+
+
+def _assign_can(c: dict) -> dict:
+    """View only (never saved): {task id: {room id: True | {why, fix}}} for each check-in still choosing its rooms."""
+    out = {}
+    for t in c.get('tasks', []):
+        if (t.get('career') != ID or t.get('job') != 'checkin' or not t.get('known') or t.get('status') in ('completed', 'cancelled', 'referred')
+                or (t.get('ci') or {}).get('rooms')):
+            continue
+        nights = (t.get('needs') or {}).get('nights') or 1
+        out[t['id']] = {r['id']: kit.check(_assign_room_rules, c, r['id'], nights) for r in ROOMS if r['unlock'] <= kit.level(c)}
+    return out
+
+
 def _ready_now(c: dict, rid: str, nights: int) -> str | None:
     why = _blocked(c, rid, c['day'], nights)
     if why:
@@ -1514,8 +1544,7 @@ def _checkin(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         kit.need(rooms, 'Chọn ít nhất một phòng.')
         for rid in rooms:
             # A room still waiting for housekeeping can be handed over — the guest will notice.
-            why = _blocked(c, rid, c['day'], n['nights'])
-            kit.need(why is None, why or '')
+            _assign_room_rules(c, rid, n['nights'])
         staying = booked if ci['extra'] == 'refuse' else arrived
         cap = sum(ROOM_INDEX[r]['cap'] for r in rooms)
         kit.need(cap >= staying, f'Phòng chỉ đủ {cap} người, cần chỗ cho {staying} người. Vượt sức chứa là không an toàn.')
@@ -1974,7 +2003,7 @@ def _recommend(s: dict, c: dict, t: dict, name: str, p: dict) -> dict:
         if place in t['picks']:
             t['picks'].remove(place)
             return dict(message=f'Bỏ {PLACE_INDEX[place]["name"]} khỏi lịch trình.')
-        kit.need(len(t['picks']) < 3, 'Gợi ý tối đa 3 nơi thôi, nhiều quá khách rối.')
+        _pick_more_rules(t['picks'])
         t['picks'].append(place)
         kit.start_work(t)
         return dict(message=f'Thêm {PLACE_INDEX[place]["name"]} vào lịch trình.')
@@ -2197,6 +2226,7 @@ def public_task(t: dict) -> dict:
                 v['cash'] = None
     elif t['job'] == 'recommend':
         v['answers'] = {q: x['probes'][q] for q in t['inspected'] if q in x['probes']}
+        v['can'] = dict(hs_pick=kit.check(_pick_more_rules, t['picks']))   # view only: a fourth place is dimmed
     elif t['job'] == 'breakfast':
         v['egg_windows'] = EGG
         if t.get('gen') and t.get('diet'):
@@ -2252,6 +2282,7 @@ def public_data(c: dict) -> dict:
     d['air'] = _air(c)
     d['ota'] = [o for o in d['ota'] if o['status'] == 'new' or o['day'] >= day - 1]
     _care_public(c, d)
+    d['can'] = dict(hs_assign=_assign_can(c))   # view only: the room tiles a check-in cannot take yet, with the reason
     return d
 
 

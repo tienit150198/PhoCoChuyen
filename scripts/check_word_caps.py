@@ -53,6 +53,15 @@ WORK_DONE += WAVE3
 WORK_CAP.update(hr_admin=30, secretary=30, it_helpdesk=30, corp_accounting=30, customer_care=30)
 DEFAULT += WAVE3
 
+# Wave 5: the last career screens. 30 where the deciding cue needs the room: delivery's customer ask stays whole
+# (16 words: where, what, the awkward extra), the salon's title is the customer's demand ("Nâu lạnh đi làm, tỉa ngọn")
+# and is never cut. Repair's and the salon's titles are the symptom/demand, so app.js header never shortens them.
+WAVE5 = ('mother_baby', 'pharmacy', 'accounting', 'teacher', 'tour_guide', 'grocery', 'repair', 'farm', 'delivery',
+         'homestay', 'pet_care', 'salon', 'clothing')
+WORK_DONE += WAVE5
+WORK_CAP.update(delivery=30, salon=30, pharmacy=30, mother_baby=30)   # the lot states; an occasion order's ask (day 2+)
+DEFAULT += tuple(c for c in WAVE5 if c not in DEFAULT)
+
 # Life sheets (cap 30, docs/UI_KIT.md): [name, rail action, rail group]; HUD is the home screen with no sheet open.
 LIFE = (('HUD', '', ''), ('town', 'jrTown', 'pho'), ('house', 'house', 'tien'), ('bank', 'bank', 'tien'), ('fair', 'fair', 'pho'),
         ('stall', 'quay', 'tien'), ('wardrobe', 'jrWardrobe', 'minh'), ('spend', 'spend', 'pho'))

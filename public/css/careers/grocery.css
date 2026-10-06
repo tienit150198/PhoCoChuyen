@@ -199,7 +199,8 @@
 .career-job.gr .gr-haggle-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 
 /* Sticky bill bar: the one primary action */
-.career-job.gr .gr-billbar{position:sticky;bottom:var(--fk-foot,0px);z-index:2;display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;border-radius:var(--gr-r);background:var(--gr-surface);border:1px solid var(--gr-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
+/* The bar is the shared .ui-bar now (wave 5); this layout only applies to an older markup without it. */
+.career-job.gr .gr-billbar:not(.ui-bar){position:sticky;bottom:var(--fk-foot,0px);z-index:2;display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 12px;border-radius:var(--gr-r);background:var(--gr-surface);border:1px solid var(--gr-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
 .career-job.gr .gr-billsum{display:flex;flex-direction:column;min-width:78px}
 .career-job.gr .gr-billsum small{color:var(--gr-muted);font-size:12px}
 .career-job.gr .gr-billsum b{font-size:18px}
@@ -310,3 +311,11 @@
   .career-job.gr .gr-today{padding:6px 10px;gap:6px;margin-bottom:6px}
   .career-job.gr .gr-mood-emoji{font-size:20px}
 }
+
+/* ---------- wave 5, clean layout (html[data-clean]): fewer words at the counter */
+.career-job.gr .gr-billbar.ui-bar{bottom:var(--fk-foot,0px)}
+.career-job.gr .gr-billbar .ui-bar-top .gr-billsum{flex-direction:row;align-items:baseline;gap:var(--sp-2)}
+.career-job.gr .gr-helpq{flex:none;min-width:44px;min-height:44px}
+.career-job.gr .gr-today.compact{padding:var(--sp-1) var(--sp-3);gap:var(--sp-1)}
+.career-job.gr .patience .gr-helpq{margin-left:var(--sp-1)}
+.career-job.gr .gr-q-row{display:flex;justify-content:flex-end}

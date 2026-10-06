@@ -218,8 +218,8 @@ html.reduce-motion .mb-event{animation:none}
 .mb-want{font-size:.75rem;font-weight:800;color:var(--accent-text)}
 .mb-card-btns .btn.mb-out{font-size:.75rem;min-width:0;padding:6px 8px}
 .mb-till .gd-list{margin:10px 0 0}
-.mb-ctabar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;margin-top:4px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:0 -4px 14px -6px var(--overlay,#0003)}
-.mb-ctabar>.btn,.mb-ctabar>.gd-ctas{flex:1 1 auto;width:100%}
+.mb-ctabar:not(.ui-bar){position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;margin-top:4px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);box-shadow:0 -4px 14px -6px var(--overlay,#0003)}
+.mb-ctabar:not(.ui-bar)>.btn,.mb-ctabar:not(.ui-bar)>.gd-ctas{flex:1 1 auto;width:100%}
 .mb-card-btns .btn{min-height:44px}
 /* After a desk change the view lands on the desk, clear of the sticky header and request strip. */
 .mb-steps{scroll-margin-top:calc(var(--job-head,84px) + 64px)}
@@ -231,3 +231,17 @@ html.reduce-motion .mb-event{animation:none}
 .mb-customer.slim .mb-bubble p{font-weight:600;font-size:.9rem;line-height:1.35}
 .mb-customer.slim .mb-bubble:before{top:14px}
 .mb-customer.slim .mb-patience .mb-chat{margin-left:auto;min-width:44px;min-height:40px;padding:0 8px}
+
+/* ---------- clean layout (UI wave 5; mother_baby.js clean()): icons and numbers, the shared bar (.ui-bar.mb-ctabar,
+   app.css 27e) with one main button. The request strip folds into the basket chip (ui-kit headChip, .ui-chipped). */
+.mb-clean .mb-hud{align-items:center}
+.mb-clean .mb-bubble p.mb-ask{font-weight:700}
+.mb-clean .mb-patience .mb-chat{margin-left:auto;min-width:44px;min-height:40px;padding:0 8px}
+.mb-steps.mb-steps-c button{flex:0 0 auto;min-width:44px;padding:0 10px}
+.mb-steps.mb-steps-c button.on{flex:1 1 auto}
+.mb-clean .mb-filter{min-width:44px}
+.mb-clean .mb-card-btns .btn.mb-add{min-width:44px;font-size:var(--fs-3);font-weight:800;background:var(--accent-soft);color:var(--accent-text);border-color:var(--accent)}
+.mb-pack-c .mb-swatch{min-width:44px;justify-content:center}
+.mb-pack-c #mb-card{width:100%;min-height:44px}
+.mb-kit-rule{margin:0}
+.mb-tools-c .btn{min-width:44px;font-size:var(--fs-3)}

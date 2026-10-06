@@ -976,13 +976,14 @@ function goal(o,W){
   if(!T||T.id===S.at){S.goal.hidden=true;return;}
   S.goal.hidden=false;
   const route=routeNow(o,W),nav=navigation(route,S.a,T.gate),detail=S.goal.querySelector('.dd-nav-detail'),parking=S.goal.querySelector('.dd-parking');
-  const name=`${T.emoji} ${tr(T.name)}`;if(b.textContent!==name)b.textContent=name;
+  // opts.label(id): the page's short name for a stop (clean layout: "🏢 Mây Xanh"), else the full name.
+  const name=`${T.emoji} ${o.label?.(o.target)||tr(T.name)}`;if(b.textContent!==name)b.textContent=name;
   let cue=tr({left:'Rẽ trái',right:'Rẽ phải',uturn:'Quay đầu ở ngã tư',straight:'Đi thẳng',arrive:'Giữ phanh để dừng xe'}[nav.cue]);
   if(nav.cue!=='arrive'&&nav.cue!=='straight')cue+=` · ${Math.round(nav.turnDistance)} m`;
   const arriving=nav.cue==='arrive';
   if(arriving&&S.sending&&S.stopDone)cue=tr('Tới rồi!');
   if(s.textContent!==cue)s.textContent=cue;
-  const info=S.v<-.1?tr('Đang lùi · giữ phanh để dừng'):arriving?tr('Dừng trong ô vàng trước người vẫy tay'):`${Math.round(nav.distance)} m · ${tr('theo đường phố')}`;
+  const info=S.v<-.1?tr('Đang lùi · giữ phanh để dừng'):arriving?tr('Dừng trong ô vàng trước người vẫy tay'):`${Math.round(nav.distance)} m${o.terse?'':` · ${tr('theo đường phố')}`}`;
   if(detail.textContent!==info)detail.textContent=info;
   parking.hidden=!arriving;parking.value=S.sending?1:Math.abs(S.v)<=.6&&!S.stopDone?clamp(S.still/.35,0,1):0;
   ar.style.transform=`rotate(${{left:-90,right:90,uturn:180,straight:0,arrive:0}[nav.cue]}deg)`;
