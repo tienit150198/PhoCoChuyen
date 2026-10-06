@@ -11,6 +11,7 @@ def pose(kind='fishing', **fields):
                 moving=False, **fields)
 
 
+@unittest.skipUnless(town_tests.TOWN_WIRED, town_tests.NOT_WIRED)
 class ActivityCase(unittest.IsolatedAsyncioTestCase):
     asyncSetUp = town_tests.TownCase.asyncSetUp
     asyncTearDown = town_tests.TownCase.asyncTearDown

@@ -5,10 +5,16 @@ import math
 import unittest
 from unittest.mock import patch
 
-from game import leisure
+from game import journey, leisure
 from game.engine import GameError, apply_action, new_state, public_state, validate_state
 
+# Release 1.8.0 keeps game/leisure.py (private pixel fishing/boat/pool rounds) but does not wire it: game/journey.py
+# neither imports it nor routes jr_leisure_* actions, and saves carry no `leisure` block. See docs/PHASER_25D.md.
+LEISURE_WIRED = any(module is leisure for module in vars(journey).values())
 
+
+@unittest.skipUnless(LEISURE_WIRED, 'game/leisure.py is not wired into game/journey.py in 1.8.0 (no jr_leisure_* '
+                     'actions); see docs/PHASER_25D.md')
 class Leisure(unittest.TestCase):
     def setUp(self):
         self.s = new_state()

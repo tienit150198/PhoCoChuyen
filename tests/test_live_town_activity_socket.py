@@ -2,12 +2,15 @@
 import asyncio
 import json
 import time
+import unittest
 
 from tests import test_live_town_socket as town_sockets
 from tests.live_support import LiveCase
+from tests.test_live_town import NOT_WIRED, TOWN_WIRED
 from tests.test_live_town_activity import pose
 
 
+@unittest.skipUnless(TOWN_WIRED, NOT_WIRED)
 class ActivitySockets(LiveCase):
     cfg_extra = dict(town=True)
     enter = town_sockets.TownSockets.enter

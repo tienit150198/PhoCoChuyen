@@ -1,7 +1,8 @@
 /** Compare the actual TS navigation and all career doors with live's mirrored geometry. */
+import './phaser25d-wired.mjs';  // skipped while the 2.5D client is not wired (docs/PHASER_25D.md)
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
-import {build} from 'esbuild';
+const {build}=await import('esbuild');  // after the guard
 
 const compiled=await build({entryPoints:['client/isometric/model.ts'],bundle:true,write:false,platform:'node',format:'esm',logLevel:'silent'});
 const model=await import('data:text/javascript;base64,'+Buffer.from(compiled.outputFiles[0].text).toString('base64'));

@@ -1,11 +1,14 @@
 """Real authenticated sockets on a disposable PostgreSQL schema (TEST_DATABASE_URL)."""
 import asyncio
 import time
+import unittest
 
 from live.town import MAP_ID
 from tests.live_support import LiveCase
+from tests.test_live_town import NOT_WIRED, TOWN_WIRED
 
 
+@unittest.skipUnless(TOWN_WIRED, NOT_WIRED)
 class TownSockets(LiveCase):
     cfg_extra = dict(town=True)
 

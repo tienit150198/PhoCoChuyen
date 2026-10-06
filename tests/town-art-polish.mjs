@@ -1,8 +1,9 @@
+import './phaser25d-wired.mjs';  // skipped while the 2.5D client is not wired (docs/PHASER_25D.md)
 import assert from 'node:assert/strict';
-import {build} from 'esbuild';
+const {build}=await import('esbuild');  // after the guard
 import {readFile,stat} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
-import sharp from 'sharp';
+const {default:sharp}=await import('sharp');
 const compile=async path=>{const result=await build({entryPoints:[path],bundle:true,write:false,platform:'node',format:'esm',logLevel:'silent'});return import('data:text/javascript;base64,'+Buffer.from(result.outputFiles[0].text).toString('base64'));};
 const m=await compile('client/isometric/model.ts'),art=await compile('client/isometric/building-art.ts');
 const content=JSON.parse(execFileSync(process.env.PYTHON||'python',['-c','import json; from game.content import public_content; print(json.dumps({"catalogue":public_content()["catalogue"]}))'],{encoding:'utf8'}));

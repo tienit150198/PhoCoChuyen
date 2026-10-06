@@ -1,3 +1,4 @@
+import './phaser25d-wired.mjs';  // skipped while the 2.5D client is not wired (docs/PHASER_25D.md)
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 

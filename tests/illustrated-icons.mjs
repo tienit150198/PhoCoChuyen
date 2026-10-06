@@ -1,8 +1,10 @@
+import './phaser25d-wired.mjs';  // skipped while the 2.5D client is not wired (docs/PHASER_25D.md)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readdirSync,readFileSync} from 'node:fs';
-import {icon,itemArt,portrait,hasIcon,careerIconNames} from '../public/js/icons.js';
-import {uiIcon} from '../public/js/isometric/ui-icons.js';
+// Dynamic, after the guard: 1.8.0's icons.js has no careerIconNames, and a static import would fail to link.
+const {icon,itemArt,portrait,hasIcon,careerIconNames}=await import('../public/js/icons.js');
+const {uiIcon}=await import('../public/js/isometric/ui-icons.js');
 
 const art = svg => svg.slice(svg.indexOf('>')+1,svg.lastIndexOf('</svg>'));
 // Icon fields observed in the real GET /api/content, including products and upgrades.
