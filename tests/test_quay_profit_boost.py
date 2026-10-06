@@ -29,6 +29,44 @@ class ProfitBoost(unittest.TestCase):
         self.assertEqual(qs.price(st, 'hong_tra'), 100)
         self.assertEqual(qb.public(st)['profit_bonus'], expected)
 
+    def test_staff_sale_bonus_is_110_percent_and_owner_take_is_one_and_a_half(self):
+        s, st = self.shop()
+        st['menu'] = dict(on=['hong_tra'], p={'hong_tra':100})
+        cost = qb.unit_cost(st, 'hong_tra')
+        tax = (100 - cost) * 7 // 100
+        margin = 100 - cost - tax
+        employee = fixture()[1]['staff'][0]
+        before = st['till'] + st['fund']
+        self_bonus = qb.sale(copy.deepcopy(st), ['hong_tra'], 1000000)
+        staff_bonus = qb.sale(st, ['hong_tra'], 1000000, employee=employee)
+        self.assertEqual(self_bonus, margin * 40 // 100)
+        self.assertEqual(staff_bonus, margin * 110 // 100)
+        self.assertEqual(st['till'] + st['fund'] - before - cost, margin + staff_bonus)
+        self.assertEqual(qb.public(st)['staff_bonus_percent'], 110)
+        self.assertEqual(qb.public(st)['bonus_percent'], 40)
+
+    def test_staffed_day_take_rises_by_half_and_self_serve_is_unchanged(self):
+        def take(percent):
+            s, st = fixture()
+            qb.settle(s, now=1000)
+            st['business']['stock'] = {d: 2000 for d in qs.menu(st)['on']}
+            st['business']['halted'] = -1
+            cash, stock = st['till'] + st['fund'], dict(st['business']['stock'])
+            with patch.object(qb, 'STAFF_BONUS_PERCENT', percent):
+                qb.settle(s, now=1000 + 86400)
+            used = sum((n - st['business']['stock'][d]) * qb.unit_cost(st, d) for d, n in stock.items())
+            return st['till'] + st['fund'] - cash - used
+        old, new = take(40), take(110)
+        self.assertGreater(old, 0)
+        self.assertAlmostEqual(new / old, 1.5, delta=0.01)
+        self.assertEqual(qb.BONUS_PERCENT, 40)
+
+    def test_bonus_respects_money_cap(self):
+        _, st = self.shop()
+        st['till'] = quay.MONEY_MAX - 3
+        qb.sale(st, ['hong_tra'], 1000000, total=1000, employee=fixture()[1]['staff'][0])
+        self.assertLessEqual(st['till'], quay.MONEY_MAX)
+
     def test_fractional_small_profits_are_carried(self):
         _, st = self.shop()
         cost = qb.unit_cost(st, 'hong_tra')

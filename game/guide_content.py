@@ -5943,7 +5943,7 @@ GROUPS = [{'id': 'start',
              {'id': 'own_counter',
               'emoji': '🏪',
               'title': 'Quầy của bạn: tự tay bán',
-              'points': ['🏪 Mở bao nhiêu quầy tùy vốn ở [[Quầy của bạn]], không giới hạn số quầy. Có nhân viên thì tự bán cả lúc offline tới khi hết hàng hoặc tiền lương.',
+              'points': ['🏪 Mở bao nhiêu quầy tùy vốn ở [[Quầy của bạn]]. Có nhân viên thì tự bán cả lúc offline tới khi hết hàng hoặc tiền lương. Lãi sau chi phí được thưởng: nhân viên bán 110%, tự bán 40%.',
                          '🍽️ Tab [[Menu]]: chọn bao nhiêu món trong danh mục cũng được, nhập giá riêng. Giá thấp đông khách hơn nhưng lãi mỗi món ít; giá quá cao giảm khách và đánh giá.',
                          '🎨 Tab [[Trang trí]]: tên bảng hiệu, màu mái che, đồ trang trí, bàn ghế. Hình quầy đổi ngay.',
                          '🧑\u200d🍳 [[Tự đứng quầy]]: chạm đúng món khách gọi, [[Tính tiền]], thối đủ tiền rồi cảm '

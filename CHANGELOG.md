@@ -1,3 +1,11 @@
+# Chưa phát hành
+
+## Quầy: nhân viên bán lãi hơn 50%
+
+- 🧑‍🍳 Ở Quầy của bạn, mỗi đơn nhân viên bán giờ được thưởng 110% phần lãi sau chi phí và thuế (trước đây 40%). Cùng giá, cùng hàng, tiền bạn thực nhận mỗi ngày từ quầy có nhân viên tăng khoảng 50% ở cả Xe đẩy, Sạp chợ và Ki-ốt.
+- Đơn bạn tự đứng quầy, đơn online tự đóng gói và đơn khách là người chơi vẫn thưởng 40% như cũ. Quầy đang lỗ (ví dụ Ki-ốt chỉ một nhân viên) không có lãi nên không có thưởng: thuê đủ người hoặc chỉnh giá trước.
+- Chỉ áp dụng cho đơn bán từ lúc cập nhật; tiền đã ghi sổ giữ nguyên. Ghi chú trong thẻ quầy và mục Hướng dẫn “Quầy của bạn” ghi rõ hai mức thưởng.
+
 # v1.8.1 — 2026-10-06
 
 ## Nghề mới: Người gác hải đăng
