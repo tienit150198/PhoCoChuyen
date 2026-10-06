@@ -1,5 +1,1129 @@
 [
  {
+  "vi": "Ngày tạo",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động gần nhất",
+  "en": ""
+ },
+ {
+  "vi": "Không tìm thấy người dùng khớp tên hoặc username.",
+  "en": ""
+ },
+ {
+  "vi": "Trang trước",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách người dùng",
+  "en": ""
+ },
+ {
+  "vi": "Tìm một phần tên hoặc username, không phân biệt hoa thường. Bao gồm tên tài khoản và tên nhân vật hiện tại.",
+  "en": ""
+ },
+ {
+  "vi": "Mật khẩu cần 8–128 ký tự.",
+  "en": ""
+ },
+ {
+  "vi": "Các phiên đăng nhập cũ của tài khoản này sẽ cần đăng nhập lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đang đổi…",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác quá nhanh. Chờ một chút rồi thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản đã thay đổi hoặc không còn tồn tại. Đóng hộp thoại rồi tải lại danh sách.",
+  "en": ""
+ },
+ {
+  "vi": "Mật khẩu không hợp lệ. Kiểm tra mật khẩu và phần nhập lại.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xác nhận được kết quả. Kiểm tra kết nối và thử đăng nhập bằng mật khẩu mới trước khi gửi lại.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cho phép thống kê / Statistics allowed.",
+  "en": ""
+ },
+ {
+  "vi": "Đã tắt thống kê / Statistics disabled.",
+  "en": ""
+ },
+ {
+  "vi": "Trình duyệt không cho lưu lựa chọn / Browser storage is unavailable.",
+  "en": ""
+ },
+ {
+  "vi": "Đang cập nhật máy chủ…",
+  "en": ""
+ },
+ {
+  "vi": "Phản hồi không đọc được.",
+  "en": ""
+ },
+ {
+  "vi": "Làm tiếp việc đang chờ",
+  "en": ""
+ },
+ {
+  "vi": "Làm nốt việc dở",
+  "en": ""
+ },
+ {
+  "vi": "Khép ca · xem tổng kết",
+  "en": ""
+ },
+ {
+  "vi": "Ca đang nghỉ",
+  "en": ""
+ },
+ {
+  "vi": "mở ca để làm tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Bấm để tắt",
+  "en": ""
+ },
+ {
+  "vi": "Hướng dẫn nghề này",
+  "en": ""
+ },
+ {
+  "vi": "Thêm lựa chọn",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm phố",
+  "en": ""
+ },
+ {
+  "vi": "Bản đồ phố",
+  "en": ""
+ },
+ {
+  "vi": "Xếp hạng",
+  "en": ""
+ },
+ {
+  "vi": "Tủ đồ",
+  "en": ""
+ },
+ {
+  "vi": "Đi dạo",
+  "en": ""
+ },
+ {
+  "vi": "Lịch cưới",
+  "en": ""
+ },
+ {
+  "vi": "Hôn nhân",
+  "en": ""
+ },
+ {
+  "vi": "Nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Xe & phương tiện",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại & đồ công nghệ",
+  "en": ""
+ },
+ {
+  "vi": "Quầy của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Học kế toán",
+  "en": ""
+ },
+ {
+  "vi": "Hành trình · mục tiêu của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Dạo phố, vào nơi làm",
+  "en": ""
+ },
+ {
+  "vi": "Ghé tiệm người chơi khác",
+  "en": ""
+ },
+ {
+  "vi": "Tin nhắn hàng xóm",
+  "en": ""
+ },
+ {
+  "vi": "Khách khen, chê, kể chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng & nhà",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Của mình",
+  "en": ""
+ },
+ {
+  "vi": "việc đang chờ",
+  "en": ""
+ },
+ {
+  "vi": "No bụng",
+  "en": ""
+ },
+ {
+  "vi": "Sếp hẹn gặp bạn",
+  "en": ""
+ },
+ {
+  "vi": "Hội buôn phố ghé thăm",
+  "en": ""
+ },
+ {
+  "vi": "Ca quản lý",
+  "en": ""
+ },
+ {
+  "vi": "Buổi tối: ăn gì, ngủ mấy giờ",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍💼 Bảng quản lý",
+  "en": ""
+ },
+ {
+  "vi": "Chạm sàn để đi · Chạm đồ vật để làm · WASD / mũi tên · E tương tác",
+  "en": ""
+ },
+ {
+  "vi": "NGÂN HÀNG & NHÀ",
+  "en": ""
+ },
+ {
+  "vi": "Việc giữa ca",
+  "en": ""
+ },
+ {
+  "vi": "Yêu cầu ngoài phiếu: chuyển cô Thu",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển cô Thu →",
+  "en": ""
+ },
+ {
+  "vi": "👁️ Đọc nhãn từng lô",
+  "en": ""
+ },
+ {
+  "vi": "➖ Bỏ hộp không xuất được",
+  "en": ""
+ },
+ {
+  "vi": "➖ Bỏ bớt một hộp",
+  "en": ""
+ },
+ {
+  "vi": "➕ Lấy hộp từ lô hợp lệ",
+  "en": ""
+ },
+ {
+  "vi": "Không lô nào xuất được: chuyển cô Thu",
+  "en": ""
+ },
+ {
+  "vi": "Tự kiểm khay: mã, số lượng, lô",
+  "en": ""
+ },
+ {
+  "vi": "☑️ Đã so mã, số lượng, lô",
+  "en": ""
+ },
+ {
+  "vi": "☑️ Tự so mã, số lượng, lô",
+  "en": ""
+ },
+ {
+  "vi": "✓ Kiểm khay",
+  "en": ""
+ },
+ {
+  "vi": "📦 Hết · nhập hàng",
+  "en": ""
+ },
+ {
+  "vi": "Mở bản gốc từng chứng từ",
+  "en": ""
+ },
+ {
+  "vi": "Xin nguồn cho phiếu còn thiếu",
+  "en": ""
+ },
+ {
+  "vi": "📨 Xin nguồn bổ sung",
+  "en": ""
+ },
+ {
+  "vi": "trùng với một phiếu khác",
+  "en": ""
+ },
+ {
+  "vi": "🔗 Ghép nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Mở cả hai bản gốc trước",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ bản sao cùng nguồn mới loại trùng",
+  "en": ""
+ },
+ {
+  "vi": "Đọc đủ bản gốc trước",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ thiếu nguồn chưa ghép được",
+  "en": ""
+ },
+ {
+  "vi": "Loại bản trùng trước",
+  "en": ""
+ },
+ {
+  "vi": "Sửa theo gốc trước",
+  "en": ""
+ },
+ {
+  "vi": "Khi kiện giao thiếu món",
+  "en": ""
+ },
+ {
+  "vi": "Khi kiện chậm, kẹt hay báo giao mà chưa tới",
+  "en": ""
+ },
+ {
+  "vi": "Khi khách nhận sai mã, sai màu",
+  "en": ""
+ },
+ {
+  "vi": "Khi hồ sơ có yêu cầu hoàn hợp lệ",
+  "en": ""
+ },
+ {
+  "vi": "Khi đơn không lỗi, khách cần cách làm",
+  "en": ""
+ },
+ {
+  "vi": "📂 Mở",
+  "en": ""
+ },
+ {
+  "vi": "Gửi việc cho đầu mối →",
+  "en": ""
+ },
+ {
+  "vi": "Chờ kết quả từ đầu mối",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Kiểm kết quả",
+  "en": ""
+ },
+ {
+  "vi": "✓ Hoàn tất & đóng vụ",
+  "en": ""
+ },
+ {
+  "vi": "Khớp mã đơn khách đưa thì mới được xem hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc đủ các nguồn: một dòng trong đó chỉ cách xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn phương án khớp căn cứ",
+  "en": ""
+ },
+ {
+  "vi": "Mới là đề xuất: gửi việc thì đầu mối mới làm.",
+  "en": ""
+ },
+ {
+  "vi": "Đầu mối báo xong: kiểm với khách trước khi đóng.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đã xác nhận: đóng vụ, nhận 65 xu.",
+  "en": ""
+ },
+ {
+  "vi": "📌 Căn cứ",
+  "en": ""
+ },
+ {
+  "vi": "Gộp",
+  "en": ""
+ },
+ {
+  "vi": "Mở tiệm trước",
+  "en": ""
+ },
+ {
+  "vi": "Mở quầy trước",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Đặt đơn gộp ·",
+  "en": ""
+ },
+ {
+  "vi": "mã",
+  "en": ""
+ },
+ {
+  "vi": "Tick “Gộp” ở ít nhất một mã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi mã từ 1 đến 6 món.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt đơn gộp",
+  "en": ""
+ },
+ {
+  "vi": "📦 Mở Kho & sổ quầy",
+  "en": ""
+ },
+ {
+  "vi": "🌙 Ăn tối, đi ngủ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có cảm nhận mới",
+  "en": ""
+ },
+ {
+  "vi": "Phòng & cơm −",
+  "en": ""
+ },
+ {
+  "vi": "Nơi làm khác −",
+  "en": ""
+ },
+ {
+  "vi": "Lương +",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Quà +",
+  "en": ""
+ },
+ {
+  "vi": "Khách thập phương nhắc nhiều nhất về",
+  "en": ""
+ },
+ {
+  "vi": "cảm nhận chờ hồi đáp.",
+  "en": ""
+ },
+ {
+  "vi": "Xem cảm nhận",
+  "en": ""
+ },
+ {
+  "vi": "đánh giá chờ trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "vừa kết kỳ thuế",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Kết kỳ thuế ngày",
+  "en": ""
+ },
+ {
+  "vi": "xu thuế",
+  "en": ""
+ },
+ {
+  "vi": "Đội hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "không vào ca",
+  "en": ""
+ },
+ {
+  "vi": "tạm dừng vì còn sự cố đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Xem nhân viên",
+  "en": ""
+ },
+ {
+  "vi": "Buổi tối",
+  "en": ""
+ },
+ {
+  "vi": "BUỔI TỐI",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tới buổi tối",
+  "en": ""
+ },
+ {
+  "vi": "Khép ca xong rồi chọn bữa tối và giờ đi ngủ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Một ngày đã xong",
+  "en": ""
+ },
+ {
+  "vi": "Tối nay thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Kết quả ngày làm",
+  "en": ""
+ },
+ {
+  "vi": "Lãi/lỗ hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn thanh toán",
+  "en": ""
+ },
+ {
+  "vi": "Lựa chọn chỉ áp dụng cho lần này. Đổi mặc định trong Ngân hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đủ số dư.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nguồn thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Việc đang làm vừa thay đổi. Bấm chuyển lần nữa để xem lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mất kết nối. Thử lại sau một chút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập giá bằng số nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mua & lắp",
+  "en": ""
+ },
+ {
+  "vi": "Đang có đủ việc: làm tiếp việc đang chờ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay đủ khách rồi: làm nốt rồi khép ca nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Sắp đóng cửa: không đón thêm khách. Làm nốt rồi khép ca nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xem hết sổ cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Xem cũ hơn",
+  "en": ""
+ },
+ {
+  "vi": "Mạng hơi chậm, khu phố vẫn đang tải… Lâu quá thì bấm Tải lại nha.",
+  "en": ""
+ },
+ {
+  "vi": "Tải chưa xong rồi 😢 Mạng chập chờn hoặc khu phố vừa cập nhật. Bấm Tải lại là vào được nha!",
+  "en": ""
+ },
+ {
+  "vi": "mất kết nối",
+  "en": ""
+ },
+ {
+  "vi": "chưa tải được",
+  "en": ""
+ },
+ {
+  "vi": "Lịch bay hôm nay có khi báo danh.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng giờ bay",
+  "en": ""
+ },
+ {
+  "vi": "GIỜ",
+  "en": ""
+ },
+ {
+  "vi": "CHUYẾN",
+  "en": ""
+ },
+ {
+  "vi": "ĐẾN",
+  "en": ""
+ },
+ {
+  "vi": "CỬA",
+  "en": ""
+ },
+ {
+  "vi": "TÌNH TRẠNG",
+  "en": ""
+ },
+ {
+  "vi": "Vào phòng tổ bay",
+  "en": ""
+ },
+ {
+  "vi": "Sân bay Thành phố",
+  "en": ""
+ },
+ {
+  "vi": "Tan ca hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Tan ca hiện tại, rồi chọn Mở ca quản lý để giao việc cho tổ bay.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn Thăng tiến → Mở ca quản lý để giao việc cho tổ bay.",
+  "en": ""
+ },
+ {
+  "vi": "Từ bậc 3 · Cơ trưởng huấn luyện, mở Ca quản lý. Hoàn thành ngày bay tốt và trả lời buổi xét thăng chức.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍💼 Thăng tiến · Ca quản lý",
+  "en": ""
+ },
+ {
+  "vi": "🎖️ Xem lộ trình thăng tiến",
+  "en": ""
+ },
+ {
+  "vi": "Lịch bay hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Mục tiêu hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Có quà",
+  "en": ""
+ },
+ {
+  "vi": "Tổ bay hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "SỔ BAY",
+  "en": ""
+ },
+ {
+  "vi": "Gần đây",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có chuyến nào trong sổ.",
+  "en": ""
+ },
+ {
+  "vi": "😮‍💨 Bạn đang mệt: còn mệt thì thưởng chuyến chỉ được một nửa. Xin nghỉ bù ở phòng tổ bay.",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Đang bị cách chức: chưa có thưởng chuyến.",
+  "en": ""
+ },
+ {
+  "vi": "🌅 Ngày mai",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Vào phòng tổ bay",
+  "en": ""
+ },
+ {
+  "vi": "chưa có nhận xét",
+  "en": ""
+ },
+ {
+  "vi": "🛬 Tan ca lúc",
+  "en": ""
+ },
+ {
+  "vi": ". Về tới hẻm kịp cơm tối.",
+  "en": ""
+ },
+ {
+  "vi": "Các chuyến hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tổ bay",
+  "en": ""
+ },
+ {
+  "vi": "Tổ bay & khách quen",
+  "en": ""
+ },
+ {
+  "vi": "Đã báo",
+  "en": ""
+ },
+ {
+  "vi": "Chiều theo",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ ngỏ",
+  "en": ""
+ },
+ {
+  "vi": "Đã chốt",
+  "en": ""
+ },
+ {
+  "vi": "Đúng luật",
+  "en": ""
+ },
+ {
+  "vi": "Bị phạt",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời khó từ chối",
+  "en": ""
+ },
+ {
+  "vi": "Quấy rối",
+  "en": ""
+ },
+ {
+  "vi": "Yêu cầu oái oăm",
+  "en": ""
+ },
+ {
+  "vi": "Làm tắt",
+  "en": ""
+ },
+ {
+  "vi": "Mặc cả với hãng",
+  "en": ""
+ },
+ {
+  "vi": "😮‍💨 Mệt",
+  "en": ""
+ },
+ {
+  "vi": "hợp lý ≤",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Bớt\"",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Thêm\"",
+  "en": ""
+ },
+ {
+  "vi": "Giọng",
+  "en": ""
+ },
+ {
+  "vi": "💬 Nói",
+  "en": ""
+ },
+ {
+  "vi": "Chọn giọng và ý muốn nói",
+  "en": ""
+ },
+ {
+  "vi": "📝 Hôm nay đã xin nghỉ rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi điều phái",
+  "en": ""
+ },
+ {
+  "vi": "· đang mệt",
+  "en": ""
+ },
+ {
+  "vi": "📝 Gửi đơn",
+  "en": ""
+ },
+ {
+  "vi": "Mai lên phòng an toàn trình bày. Hôm nay tan ca sớm.",
+  "en": ""
+ },
+ {
+  "vi": "Bị cách chức, tạm đình chỉ bay hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Tạm đình chỉ bay hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "💬 Trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Tạm đình chỉ bay: tan ca",
+  "en": ""
+ },
+ {
+  "vi": "Khách cần",
+  "en": ""
+ },
+ {
+  "vi": "đã đúng",
+  "en": ""
+ },
+ {
+  "vi": "Mở phiếu khách",
+  "en": ""
+ },
+ {
+  "vi": "Thu gọn phiếu khách",
+  "en": ""
+ },
+ {
+  "vi": "Xong hết, giao cho khách thôi!",
+  "en": ""
+ },
+ {
+  "vi": "Bớt 1",
+  "en": ""
+ },
+ {
+  "vi": "Thêm 1",
+  "en": ""
+ },
+ {
+  "vi": "Bữa phụ",
+  "en": ""
+ },
+ {
+  "vi": "Bữa trưa",
+  "en": ""
+ },
+ {
+  "vi": "📝 Giấy dặn chưa đọc",
+  "en": ""
+ },
+ {
+  "vi": "✅ Không dị ứng",
+  "en": ""
+ },
+ {
+  "vi": "📺 Không màn hình",
+  "en": ""
+ },
+ {
+  "vi": "Lịch trong ngày",
+  "en": ""
+ },
+ {
+  "vi": "Tính bé",
+  "en": ""
+ },
+ {
+  "vi": "Bé chưa chịu làm quen. Thử cách chào khác hợp tính bé.",
+  "en": ""
+ },
+ {
+  "vi": "🎒 Trong túi",
+  "en": ""
+ },
+ {
+  "vi": "chạm món còn thiếu để hỏi",
+  "en": ""
+ },
+ {
+  "vi": "🙂 Chào bé",
+  "en": ""
+ },
+ {
+  "vi": "cứng, hạt nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "🍽️ Bàn bếp",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Đĩa của bé",
+  "en": ""
+ },
+ {
+  "vi": "Chạm món trên bàn bếp để lấy ra đĩa.",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã rửa tay bé",
+  "en": ""
+ },
+ {
+  "vi": "🧼 Rửa tay cho bé",
+  "en": ""
+ },
+ {
+  "vi": "✓ Bé ngồi ghế",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Cho bé ngồi ghế ăn",
+  "en": ""
+ },
+ {
+  "vi": "mảnh nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "màn hình",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đã dọn đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Cùng bé dọn đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "🧸 Kệ đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi ngang tầm bé: chạm vào chỗ dễ nguy hiểm.",
+  "en": ""
+ },
+ {
+  "vi": "🤲 Vỗ nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "😴 Phòng ngủ",
+  "en": ""
+ },
+ {
+  "vi": "bé ngủ say",
+  "en": ""
+ },
+ {
+  "vi": "Tắt đèn, đưa đúng đồ ôm, bé nằm yên rồi mới vỗ.",
+  "en": ""
+ },
+ {
+  "vi": "khách quen +",
+  "en": ""
+ },
+ {
+  "vi": "chăm kỹ +",
+  "en": ""
+ },
+ {
+  "vi": "📝 Nhật ký trong ngày",
+  "en": ""
+ },
+ {
+  "vi": "chỉ ghi chuyện có thật",
+  "en": ""
+ },
+ {
+  "vi": "🧼 Rửa tay",
+  "en": ""
+ },
+ {
+  "vi": "📝 Đọc giấy dặn",
+  "en": ""
+ },
+ {
+  "vi": "Chào bé hợp tính",
+  "en": ""
+ },
+ {
+  "vi": "Chào bé",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn cách chào bé",
+  "en": ""
+ },
+ {
+  "vi": "🎒 Mở túi đồ",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi món còn thiếu",
+  "en": ""
+ },
+ {
+  "vi": "👉 Hỏi món còn thiếu",
+  "en": ""
+ },
+ {
+  "vi": "👶 NHẬN BÉ",
+  "en": ""
+ },
+ {
+  "vi": "🪑 Cho bé ngồi ghế",
+  "en": ""
+ },
+ {
+  "vi": "🍽️ DỌN CHO BÉ ĂN",
+  "en": ""
+ },
+ {
+  "vi": "chọn món cho bé",
+  "en": ""
+ },
+ {
+  "vi": "Chọn trò hợp tâm trạng bé",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn trò chơi",
+  "en": ""
+ },
+ {
+  "vi": "Chơi cùng bé",
+  "en": ""
+ },
+ {
+  "vi": "👉 Trả lời bé",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Dọn đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "✅ CHƠI XONG",
+  "en": ""
+ },
+ {
+  "vi": "chơi với bé thêm chút nữa",
+  "en": ""
+ },
+ {
+  "vi": "Chạm chỗ dễ nguy hiểm",
+  "en": ""
+ },
+ {
+  "vi": "👉 Soát phòng",
+  "en": ""
+ },
+ {
+  "vi": "🛡️ CHO BÉ RA CHƠI",
+  "en": ""
+ },
+ {
+  "vi": "🚽 Đi vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "🌙 Kéo rèm",
+  "en": ""
+ },
+ {
+  "vi": "Đúng đồ ôm của bé",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn đồ ôm",
+  "en": ""
+ },
+ {
+  "vi": "Hát ru",
+  "en": ""
+ },
+ {
+  "vi": "🎵 Hát ru",
+  "en": ""
+ },
+ {
+  "vi": "Vỗ nhẹ lúc bé thở ra",
+  "en": ""
+ },
+ {
+  "vi": "🤲 Vỗ lúc bé thở ra",
+  "en": ""
+ },
+ {
+  "vi": "😴 BÉ NGỦ RỒI",
+  "en": ""
+ },
+ {
+  "vi": "vỗ cho bé ngủ say",
+  "en": ""
+ },
+ {
+  "vi": "Dỗ bé tới khi bé ổn",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn cách dỗ",
+  "en": ""
+ },
+ {
+  "vi": "💛 BÉ ỔN RỒI",
+  "en": ""
+ },
+ {
   "vi": "dỗ bé thêm",
   "en": ""
  },
@@ -673,1130 +1797,6 @@
  },
  {
   "vi": "Lai quần",
-  "en": ""
- },
- {
-  "vi": "Bóp eo",
-  "en": ""
- },
- {
-  "vi": "Mời khách mặc thử để đo và ghim kim trước.",
-  "en": ""
- },
- {
-  "vi": "Số cm",
-  "en": ""
- },
- {
-  "vi": "📏 Số đo:",
-  "en": ""
- },
- {
-  "vi": "✂️ Tự may",
-  "en": ""
- },
- {
-  "vi": "👵 Gửi Bà Tư",
-  "en": ""
- },
- {
-  "vi": "cắt lên",
-  "en": ""
- },
- {
-  "vi": "bóp vào",
-  "en": ""
- },
- {
-  "vi": "👵 Mang sang gian bên",
-  "en": ""
- },
- {
-  "vi": "Máy đang chạy…",
-  "en": ""
- },
- {
-  "vi": "👵 Bà Tư đang may ở gian bên…",
-  "en": ""
- },
- {
-  "vi": "(đường may hơi xiên)",
-  "en": ""
- },
- {
-  "vi": "xong lượt thử",
-  "en": ""
- },
- {
-  "vi": "thử xong: đếm lại đồ",
-  "en": ""
- },
- {
-  "vi": "🚪 Khách bước ra, đếm lại",
-  "en": ""
- },
- {
-  "vi": "Thiếu món: kiểm phòng thử trước",
-  "en": ""
- },
- {
-  "vi": "🔍 Kiểm phòng thử",
-  "en": ""
- },
- {
-  "vi": "Phòng trống: hỏi khéo khách",
-  "en": ""
- },
- {
-  "vi": "🙏 Hỏi khéo khách",
-  "en": ""
- },
- {
-  "vi": "Phòng thử đã vãn",
-  "en": ""
- },
- {
-  "vi": "✓ đủ đồ",
-  "en": ""
- },
- {
-  "vi": "✓ đồ để quên trên móc",
-  "en": ""
- },
- {
-  "vi": "✓ khách trả lại",
-  "en": ""
- },
- {
-  "vi": "mất một món",
-  "en": ""
- },
- {
-  "vi": "Đưa thẻ số — khách cầm vào mấy món?",
-  "en": ""
- },
- {
-  "vi": "hoặc cho vào luôn, khỏi thẻ",
-  "en": ""
- },
- {
-  "vi": "🏷️ Thẻ số",
-  "en": ""
- },
- {
-  "vi": "· đang thử đồ…",
-  "en": ""
- },
- {
-  "vi": "🔍 Kiểm phòng",
-  "en": ""
- },
- {
-  "vi": "🙏 Hỏi khéo",
-  "en": ""
- },
- {
-  "vi": "👋 Để khách đi",
-  "en": ""
- },
- {
-  "vi": "Đang tới lượt",
-  "en": ""
- },
- {
-  "vi": "🚪 Phòng thử",
-  "en": ""
- },
- {
-  "vi": "đang kéo",
-  "en": ""
- },
- {
-  "vi": "Xem tem mác",
-  "en": ""
- },
- {
-  "vi": "Xem tình trạng đồ",
-  "en": ""
- },
- {
-  "vi": "Đối chiếu chính sách rồi quyết",
-  "en": ""
- },
- {
-  "vi": "Đổi hàng · size mới",
-  "en": ""
- },
- {
-  "vi": "Từ chối · cách nói",
-  "en": ""
- },
- {
-  "vi": "trả lấy tiền",
-  "en": ""
- },
- {
-  "vi": "📋 Chính sách đổi trả",
-  "en": ""
- },
- {
-  "vi": "🙂 Nhẹ nhàng, chỉ bảng",
-  "en": ""
- },
- {
-  "vi": "😤 Nói thẳng",
-  "en": ""
- },
- {
-  "vi": "🙅 Từ chối đổi trả",
-  "en": ""
- },
- {
-  "vi": "Từ chối đổi trả cho khách?",
-  "en": ""
- },
- {
-  "vi": "🏷️ Máy in tem sale",
-  "en": ""
- },
- {
-  "vi": "Làm tròn xuống. Tem thấp tiệm lỗ, tem cao khách phàn nàn.",
-  "en": ""
- },
- {
-  "vi": "👉 Nhập thêm hàng ở giá treo",
-  "en": ""
- },
- {
-  "vi": "👉 Xem giá treo",
-  "en": ""
- },
- {
-  "vi": "Gói có món không đúng đơn",
-  "en": ""
- },
- {
-  "vi": "In phiếu giao",
-  "en": ""
- },
- {
-  "vi": "🖨️ In phiếu giao",
-  "en": ""
- },
- {
-  "vi": "Dán băng keo",
-  "en": ""
- },
- {
-  "vi": "📦 Dán băng keo",
-  "en": ""
- },
- {
-  "vi": "đã dán",
-  "en": ""
- },
- {
-  "vi": "🖨️ In lại phiếu",
-  "en": ""
- },
- {
-  "vi": "Shipper chạy luôn, không mở gói ra được nữa.",
-  "en": ""
- },
- {
-  "vi": "in phiếu giao",
-  "en": ""
- },
- {
-  "vi": "Mặc đồ hợp chủ đề lên ma-nơ-canh",
-  "en": ""
- },
- {
-  "vi": "Cởi ra",
-  "en": ""
- },
- {
-  "vi": "♨️ Hấp",
-  "en": ""
- },
- {
-  "vi": "Chủ đề",
-  "en": ""
- },
- {
-  "vi": "🧍‍♀️ Ma-nơ-canh cạnh cửa",
-  "en": ""
- },
- {
-  "vi": "✨ Trưng bày",
-  "en": ""
- },
- {
-  "vi": "Khách đi ngang sẽ ngắm bộ này mấy ngày tới.",
-  "en": ""
- },
- {
-  "vi": "mặc đồ lên ma-nơ-canh",
-  "en": ""
- },
- {
-  "vi": "Tem sẽ được dùng ở quầy cả ngày hôm nay.",
-  "en": ""
- },
- {
-  "vi": "in đủ tem",
-  "en": ""
- },
- {
-  "vi": "món khách không hỏi",
-  "en": ""
- },
- {
-  "vi": "Một bộ: váy/áo dài, hoặc áo + quần",
-  "en": ""
- },
- {
-  "vi": "món không đúng đơn",
-  "en": ""
- },
- {
-  "vi": "Thu hộ khi giao",
-  "en": ""
- },
- {
-  "vi": "Đã chuyển khoản",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách đi dịp gì",
-  "en": ""
- },
- {
-  "vi": "Xem đồ cần sửa",
-  "en": ""
- },
- {
-  "vi": "Ra trông phòng thử",
-  "en": ""
- },
- {
-  "vi": "Nghe khách đổi trả",
-  "en": ""
- },
- {
-  "vi": "Nghe chị Vy dặn",
-  "en": ""
- },
- {
-  "vi": "Mở tin nhắn đặt hàng",
-  "en": ""
- },
- {
-  "vi": "🔁 Khách quay lại đổi size",
-  "en": ""
- },
- {
-  "vi": "ℹ️ Giới thiệu nghề",
-  "en": ""
- },
- {
-  "vi": "📋 Việc chăm tiệm",
-  "en": ""
- },
- {
-  "vi": "Việc chăm tiệm",
-  "en": ""
- },
- {
-  "vi": "👚 Giá treo theo size",
-  "en": ""
- },
- {
-  "vi": "Nhập hàng → chọn size đang thiếu, hoặc chọn “Tự chia size” để ưu tiên M, L… Đếm nhận xong mới lên giá.",
-  "en": ""
- },
- {
-  "vi": "Bán vừa size cho khách quen, tiệm sẽ nhớ size của họ ở đây.",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ size khách quen",
-  "en": ""
- },
- {
-  "vi": "🧍‍♀️ Ma-nơ-canh",
-  "en": ""
- },
- {
-  "vi": "đang hút khách",
-  "en": ""
- },
- {
-  "vi": "đã cũ, nên thay",
-  "en": ""
- },
- {
-  "vi": "Thối tiền và giao đồ",
-  "en": ""
- },
- {
-  "vi": "Làm tiếp việc đang dở",
-  "en": ""
- },
- {
-  "vi": "📝 Việc cần làm",
-  "en": ""
- },
- {
-  "vi": "xong hết",
-  "en": ""
- },
- {
-  "vi": "📒 Khách quen",
-  "en": ""
- },
- {
-  "vi": "🧍‍♀️ Cửa kính",
-  "en": ""
- },
- {
-  "vi": "Chưa trưng bộ nào. Chị Vy sẽ nhờ bạn thay đồ ma-nơ-canh.",
-  "en": ""
- },
- {
-  "vi": "Kim đang chạy… chưa tới vạch",
-  "en": ""
- },
- {
-  "vi": "TRONG VẠCH — dừng ngay!",
-  "en": ""
- },
- {
-  "vi": "Lố vạch rồi!",
-  "en": ""
- },
- {
-  "vi": "👗 Sổ tiệm hôm nay",
-  "en": ""
- },
- {
-  "vi": "vá",
-  "en": ""
- },
- {
-  "vi": "· không hành mỡ",
-  "en": ""
- },
- {
-  "vi": "· có canh",
-  "en": ""
- },
- {
-  "vi": "còn hồng…",
-  "en": ""
- },
- {
-  "vi": "VÀNG ĐỀU — ĐƯỢC RỒI!",
-  "en": ""
- },
- {
-  "vi": "xém cạnh rồi…",
-  "en": ""
- },
- {
-  "vi": "cháy khét!",
-  "en": ""
- },
- {
-  "vi": "🔥 Bếp than",
-  "en": ""
- },
- {
-  "vi": "Bếp chưa nhóm.",
-  "en": ""
- },
- {
-  "vi": "🔥 Nhóm bếp than",
-  "en": ""
- },
- {
-  "vi": "miếng sườn trên vỉ",
-  "en": ""
- },
- {
-  "vi": "mặt thứ nhất",
-  "en": ""
- },
- {
-  "vi": "đã trở, mặt thứ hai",
-  "en": ""
- },
- {
-  "vi": "🔄 Trở mặt",
-  "en": ""
- },
- {
-  "vi": "🍖 Gắp ra khay",
-  "en": ""
- },
- {
-  "vi": "Đặt sườn lên vỉ",
-  "en": ""
- },
- {
-  "vi": "Hết sườn: nhập ở Kho",
-  "en": ""
- },
- {
-  "vi": "Khay giữ ấm đầy",
-  "en": ""
- },
- {
-  "vi": "Bỏ miếng sườn này?",
-  "en": ""
- },
- {
-  "vi": "🔥 Bếp than · vỉ sườn",
-  "en": ""
- },
- {
-  "vi": "Khay giữ ấm",
-  "en": ""
- },
- {
-  "vi": "Chưa có miếng nào.",
-  "en": ""
- },
- {
-  "vi": "hết cơm",
-  "en": ""
- },
- {
-  "vi": "dẻo thơm",
-  "en": ""
- },
- {
-  "vi": "Xe cơm",
-  "en": ""
- },
- {
-  "vi": "vừa miệng",
-  "en": ""
- },
- {
-  "vi": "chưa vừa",
-  "en": ""
- },
- {
-  "vi": "chưa nếm",
-  "en": ""
- },
- {
-  "vi": "khay trống",
-  "en": ""
- },
- {
-  "vi": "👂 Hỏi khách gọi gì",
-  "en": ""
- },
- {
-  "vi": "📿 Ăn chay",
-  "en": ""
- },
- {
-  "vi": "👀 Liếc dĩa kỹ",
-  "en": ""
- },
- {
-  "vi": "(lẫn hai nồi)",
-  "en": ""
- },
- {
-  "vi": "chưa xới cơm",
-  "en": ""
- },
- {
-  "vi": "🌿 mỡ hành",
-  "en": ""
- },
- {
-  "vi": "🗑️ Làm lại dĩa này",
-  "en": ""
- },
- {
-  "vi": "Bỏ dĩa đang làm, làm lại cái khác?",
-  "en": ""
- },
- {
-  "vi": "🍽️ Trên quầy",
-  "en": ""
- },
- {
-  "vi": "Xới cơm",
-  "en": ""
- },
- {
-  "vi": "Chan, rưới",
-  "en": ""
- },
- {
-  "vi": "Dĩa",
-  "en": ""
- },
- {
-  "vi": "🌿 Mỡ hành",
-  "en": ""
- },
- {
-  "vi": "🥣 Bịch canh",
-  "en": ""
- },
- {
-  "vi": "🥣 Chén canh",
-  "en": ""
- },
- {
-  "vi": "Không nước mắm",
-  "en": ""
- },
- {
-  "vi": "đổ nước tới đâu?",
-  "en": ""
- },
- {
-  "vi": "🥄 Nếm nước mắm",
-  "en": ""
- },
- {
-  "vi": "chưa bày",
-  "en": ""
- },
- {
-  "vi": "🍚 Hai nồi cơm",
-  "en": ""
- },
- {
-  "vi": "Gạo tấm hút ít nước hơn gạo trắng.",
-  "en": ""
- },
- {
-  "vi": "🫙 Chén nước mắm pha tối qua",
-  "en": ""
- },
- {
-  "vi": "🍱 Bày khay lên tủ kính",
-  "en": ""
- },
- {
-  "vi": "Đồ nấu không để qua đêm: bày vừa đủ bán.",
-  "en": ""
- },
- {
-  "vi": "✓ Than hồng đều",
-  "en": ""
- },
- {
-  "vi": "Nếm chén nước mắm",
-  "en": ""
- },
- {
-  "vi": "Chỉnh nước mắm cho vừa",
-  "en": ""
- },
- {
-  "vi": "Chỉnh",
-  "en": ""
- },
- {
-  "vi": "Bày khay lên tủ kính",
-  "en": ""
- },
- {
-  "vi": "khay · bày vừa đủ",
-  "en": ""
- },
- {
-  "vi": "trên khay hết miếng ngon",
-  "en": ""
- },
- {
-  "vi": "🍖 Đặt sườn lên vỉ",
-  "en": ""
- },
- {
-  "vi": "Hết sườn ướp",
-  "en": ""
- },
- {
-  "vi": "nhập ở Kho hoặc nói thật với khách",
-  "en": ""
- },
- {
-  "vi": "🧺 Nhập ở Kho",
-  "en": ""
- },
- {
-  "vi": "Chờ mặt dưới vàng rồi trở",
-  "en": ""
- },
- {
-  "vi": "Chờ mặt kia vàng rồi gắp",
-  "en": ""
- },
- {
-  "vi": "giây nữa",
-  "en": ""
- },
- {
-  "vi": "Trở mặt sườn",
-  "en": ""
- },
- {
-  "vi": "Gắp sườn ra khay",
-  "en": ""
- },
- {
-  "vi": "Xới",
-  "en": ""
- },
- {
-  "vi": "· nồi chưa sẵn",
-  "en": ""
- },
- {
-  "vi": "Gắp miếng sườn vàng đều",
-  "en": ""
- },
- {
-  "vi": "🍖 Gắp sườn",
-  "en": ""
- },
- {
-  "vi": "hết trứng: nhập ở Kho hoặc nói thật với khách",
-  "en": ""
- },
- {
-  "vi": "Chan mỡ hành",
-  "en": ""
- },
- {
-  "vi": "Khách không ăn mỡ hành",
-  "en": ""
- },
- {
-  "vi": "Bỏ mỡ hành",
-  "en": ""
- },
- {
-  "vi": "Múc canh",
-  "en": ""
- },
- {
-  "vi": "Khách không lấy canh",
-  "en": ""
- },
- {
-  "vi": "🥣 Múc canh",
-  "en": ""
- },
- {
-  "vi": "Bỏ canh",
-  "en": ""
- },
- {
-  "vi": "Mở quán xong mới bán",
-  "en": ""
- },
- {
-  "vi": "Khách mua mang về: lấy hộp",
-  "en": ""
- },
- {
-  "vi": "Khách ngồi ăn: lấy dĩa",
-  "en": ""
- },
- {
-  "vi": "🗑️ Làm lại",
-  "en": ""
- },
- {
-  "vi": "làm sau",
-  "en": ""
- },
- {
-  "vi": "Dĩa này không đúng món khách gọi",
-  "en": ""
- },
- {
-  "vi": "Quyết chuyện ở quán",
-  "en": ""
- },
- {
-  "vi": "🍚 Vào việc thôi!",
-  "en": ""
- },
- {
-  "vi": "🍚 MỞ QUÁN",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách",
-  "en": ""
- },
- {
-  "vi": "💵 ĐƯA TIỀN THỐI",
-  "en": ""
- },
- {
-  "vi": "🙏 Nói thật: quán hết món này",
-  "en": ""
- },
- {
-  "vi": "Dĩa đang làm phải bỏ. Nói thật với khách là quán hết món?",
-  "en": ""
- },
- {
-  "vi": "🍚 ĐƯA CƠM",
-  "en": ""
- },
- {
-  "vi": "làm dĩa cơm trước đã",
-  "en": ""
- },
- {
-  "vi": "＋ Bày",
-  "en": ""
- },
- {
-  "vi": "🍱 Tủ kính",
-  "en": ""
- },
- {
-  "vi": "🍚 Nồi hết cơm",
-  "en": ""
- },
- {
-  "vi": "Nấu cơm, mở quán",
-  "en": ""
- },
- {
-  "vi": "Xới cơm cho khách",
-  "en": ""
- },
- {
-  "vi": "Việc mở quán",
-  "en": ""
- },
- {
-  "vi": "Cơm của khách",
-  "en": ""
- },
- {
-  "vi": "chín rồi",
-  "en": ""
- },
- {
-  "vi": "vá cơm",
-  "en": ""
- },
- {
-  "vi": "📦 Sắp hết",
-  "en": ""
- },
- {
-  "vi": "🧺 Mở Kho",
-  "en": ""
- },
- {
-  "vi": "Dĩa, hộp đã bán",
-  "en": ""
- },
- {
-  "vi": "Vá cơm xới dư",
-  "en": ""
- },
- {
-  "vi": "Đồ bỏ cuối ngày",
-  "en": ""
- },
- {
-  "vi": "Nhập gạo, sườn, trứng, đồ kho, hộp…",
-  "en": ""
- },
- {
-  "vi": "Số lượng THỰC GIAO (Biên bản giao nhận) × Đơn giá chưa thuế (Đơn đặt hàng).",
-  "en": ""
- },
- {
-  "vi": "Tiền hàng chưa thuế × 10%.",
-  "en": ""
- },
- {
-  "vi": "Tiền hàng chưa thuế + Thuế GTGT.",
-  "en": ""
- },
- {
-  "vi": "Số dư cuối kỳ theo Sổ tiền gửi, cộng tiền vào / trừ tiền ra của các khoản cần ghi bổ sung.",
-  "en": ""
- },
- {
-  "vi": "Cộng cột “Còn phải thu” của mọi hóa đơn chưa thu đủ (Sổ chi tiết công nợ 131).",
-  "en": ""
- },
- {
-  "vi": "Bảng kiểm đếm: mỗi dòng mệnh giá × số tờ, rồi cộng lại.",
-  "en": ""
- },
- {
-  "vi": "Sổ quỹ: tồn quỹ đầu ngày + các phiếu thu − các phiếu chi.",
-  "en": ""
- },
- {
-  "vi": "Nguyên giá ÷ (số năm × 12), theo Sổ tài sản cố định. Mới dùng trong tháng hoặc đã khấu hao hết thì ghi 0.",
-  "en": ""
- },
- {
-  "vi": "Nguyên giá − hao mòn lũy kế − khấu hao tháng này (Sổ tài sản cố định).",
-  "en": ""
- },
- {
-  "vi": "Thực đếm (Biên bản kiểm kê) − Tồn theo sổ (Thẻ kho). Thiếu ghi số âm, khớp ghi 0.",
-  "en": ""
- },
- {
-  "vi": "Số lượng thiếu (bước trước) × Đơn giá vốn trên Thẻ kho.",
-  "en": ""
- },
- {
-  "vi": "Thuế đầu ra (TK 3331) − thuế đầu vào được khấu trừ (TK 133), trên bảng số dư.",
-  "en": ""
- },
- {
-  "vi": "Tổng cột Dư Nợ và tổng cột Dư Có của bảng cân đối thử: lấy tổng lớn trừ tổng nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Số dư TK 511 trên Sổ cái.",
-  "en": ""
- },
- {
-  "vi": "Doanh thu thuần − Giá vốn (TK 632).",
-  "en": ""
- },
- {
-  "vi": "Lợi nhuận gộp − chi phí bán hàng (641) − chi phí quản lý (642), theo số đã sửa.",
-  "en": ""
- },
- {
-  "vi": "bảng hàng hóa",
-  "en": ""
- },
- {
-  "vi": "giấy kẹp kèm",
-  "en": ""
- },
- {
-  "vi": "chỗ sai",
-  "en": ""
- },
- {
-  "vi": "hồ sơ hoàn tất",
-  "en": ""
- },
- {
-  "vi": "chứng từ đã đóng dấu",
-  "en": ""
- },
- {
-  "vi": "Chưa hiểu số đã ghi. Ghi số nguyên, vd 1.500.000, -200 hoặc 6+4.",
-  "en": ""
- },
- {
-  "vi": "ví dụ: 6+4, -200, 1.500.000",
-  "en": ""
- },
- {
-  "vi": "Khu phố Mây Chiều",
-  "en": ""
- },
- {
-  "vi": "Bạn đang ở",
-  "en": ""
- },
- {
-  "vi": "Tuyến đã chốt",
-  "en": ""
- },
- {
-  "vi": "Tuyến nháp",
-  "en": ""
- },
- {
-  "vi": "Điểm lấy hàng",
-  "en": ""
- },
- {
-  "vi": "Điểm giao hàng",
-  "en": ""
- },
- {
-  "vi": "Khu dân cư",
-  "en": ""
- },
- {
-  "vi": "Khu dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Khu nhà vườn",
-  "en": ""
- },
- {
-  "vi": "Thứ tự điểm dừng",
-  "en": ""
- },
- {
-  "vi": "🗺️ Lộ trình · bản đồ & điểm dừng",
-  "en": ""
- },
- {
-  "vi": "Khách đếm lại thấy thối thiếu: thối thêm cho đủ rồi đưa lại.",
-  "en": ""
- },
- {
-  "vi": "Lập biên bản hàng hỏng? Bạn đền một phần giá trị hàng, bảo hiểm trả phần còn lại.",
-  "en": ""
- },
- {
-  "vi": "⏰ Hẹn giao trước",
-  "en": ""
- },
- {
-  "vi": "· đã quá giờ hẹn",
-  "en": ""
- },
- {
-  "vi": "🛵 Chạy tới",
-  "en": ""
- },
- {
-  "vi": "⏳ Cây xăng mất điện — chờ 5 phút",
-  "en": ""
- },
- {
-  "vi": "⛽ Đổ đầy bình",
-  "en": ""
- },
- {
-  "vi": "⛽ Sắp hết xăng: lên lộ trình tới cây xăng",
-  "en": ""
- },
- {
-  "vi": "🍾 Mua xăng chai",
-  "en": ""
- },
- {
-  "vi": "⛽ Không đủ xăng tới đây",
-  "en": ""
- },
- {
-  "vi": "📱 Máy hơi chậm: đã chuyển sang ⏩ Đi nhanh. Bấm 🛵 Tự lái để thử lại.",
-  "en": ""
- },
- {
-  "vi": "Tự lái chưa tải được",
-  "en": ""
- },
- {
-  "vi": "Cách chạy xe",
-  "en": ""
- },
- {
-  "vi": "🛵 Tự lái",
-  "en": ""
- },
- {
-  "vi": "⏩ Đi nhanh",
-  "en": ""
- },
- {
-  "vi": "↺ Đếm lại tiền nộp",
-  "en": ""
- },
- {
-  "vi": "Nộp tiền cho kế toán",
-  "en": ""
- },
- {
-  "vi": "Hàng cồng kềnh, không có dây ràng: từ chối nhận",
-  "en": ""
- },
- {
-  "vi": "☑ Báo lệch cân lên app",
-  "en": ""
- },
- {
-  "vi": "Gói",
-  "en": ""
- },
- {
-  "vi": "Món lên thùng",
-  "en": ""
- },
- {
-  "vi": "Gọi khách trước khi tới",
-  "en": ""
- },
- {
-  "vi": "(khách dặn)",
-  "en": ""
- },
- {
-  "vi": "↺ Đếm lại tiền thối",
-  "en": ""
- },
- {
-  "vi": "khách đòi thối thêm",
-  "en": ""
- },
- {
-  "vi": "Chọn cách xử lý chuyện dọc đường",
-  "en": ""
- },
- {
-  "vi": "Khách đã hủy vì chờ quá lâu",
-  "en": ""
- },
- {
-  "vi": "Hàng hỏng, khách không nhận: lập biên bản",
-  "en": ""
- },
- {
-  "vi": "📍 Xem điểm dừng",
-  "en": ""
- },
- {
-  "vi": "Việc của đơn",
-  "en": ""
- },
- {
-  "vi": "🛵 Sổ shipper",
-  "en": ""
- },
- {
-  "vi": "🔧 Ghé tiệm Chú Bảy:",
-  "en": ""
- },
- {
-  "vi": "📦 Mở kho vật tư",
-  "en": ""
- },
- {
-  "vi": "TẠP HÓA",
-  "en": ""
- },
- {
-  "vi": "CÀ PHÊ",
   "en": ""
  }
 ]

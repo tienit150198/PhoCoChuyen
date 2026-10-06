@@ -11,6 +11,15 @@
 
 - 🏪 Nhân viên tiệm (nơi làm việc) bán nhanh gấp 1,6 lần ngày đầu (góp ý người chơi; lịch sử bản 1.7.8–1.9.3 cho thấy tốc độ chưa từng bị giảm, tiệm thấy chậm chủ yếu do hết hàng).
 - 💬 Góp ý dài tới 10.000 ký tự (trước 1.000).
+# Chưa phát hành — Mỗi nghề một cách nói (voice-w1)
+
+## Mỗi nghề một cách nói
+
+- Chủ game 06/10 ("nghề mỗi nghề mỗi khác, ví dụ như nhà sư mà nó bảo shop", "sửa mấy cách trò chuyện"): mỗi nghề có một bộ từ riêng (`game/career_voice.py`: chỗ làm, người được phục vụ, ca, tiền, đánh giá, bù đắp), gửi kèm danh mục nghề cho máy khách (`terms`). Tiệm, quán giữ nguyên chữ như cũ.
+- Các màn hình dùng chung đọc bộ từ này thay vì chữ "tiệm": hộp xác nhận ("Xác nhận việc chùa", "Xác nhận việc trực ban"), khép ca và sổ ("Sổ chùa", "Sổ khoa", "Đóng cổng chùa hôm nay?"), sổ đội ("Ban công quả", "Mời Phật tử làm công quả", "Thu nhập nghề", "Sân chùa đang yên.", "Về chùa"), chip quỹ ("Quỹ chùa", "Quỹ nghề"), thăng tiến ("Phật tử biếu thêm 5% công đức"), nhắc mỗi ngày ("Chuông sáng đã điểm, chùa đang chờ thầy ☀️", "Ca trực sáng sắp bắt đầu 🩺"), ghé chỗ làm và hồ sơ bạn bè ("Thầy tiếp", "Chấm chỗ làm của…", "lượt tiếp dân").
+- Nghề hưởng lương (chùa, giáo viên, điều dưỡng, công an, cứu hộ, thư viện, gác chắn, hải đăng, tổ bay, giàn khoan, văn phòng, CSKH): lời khép ca không còn nhắc tiền thuê, thuế hay "sổ tiệm".
+- Trả lời đánh giá: 26 nghề không phải tiệm có câu trả lời mẫu riêng (khoa, bên phường, tổ, thư viện, em thư ký…), nhãn riêng ("Mời làm việc", "Mời gặp", "Hẹn thu bổ sung") và bù đắp hợp nghề (chai nước ấm, gia hạn sách, bớt tiền công). Công an không bao giờ bù đắp thứ gì có giá trị: không hiện mục bù đắp, máy chủ cũng từ chối. Người bình luận dưới đánh giá không còn "bênh quán". Chùa và giáo viên giữ bộ câu riêng như cũ.
+- Chỉ đổi chữ: cùng mã giọng, mã bù đắp, mã khách, cách sinh việc như cũ (cổng task-compat OK). Câu trả lời cũ trong bản lưu giữ nguyên. Thuế 4% và tiền thuê không đổi ở bản này. Không thêm khóa lưu, không đổi bảng. Không có "Có gì mới".
 
 # Chưa phát hành — Nhân viên tiệm (staff-speed)
 

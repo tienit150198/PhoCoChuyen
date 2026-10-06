@@ -210,9 +210,11 @@ def initial_career(career: str) -> dict:
 
 def public_content() -> dict:
     from . import journey  # the story layer imports this module; keep the import lazy
+    from . import career_voice  # each career's words for the shared screens (public/js/v4/terms.js)
     catalogue=copy.deepcopy(CATALOG)
     for c in catalogue:
         c.update(CAREER_META.get(c["id"], {}))
+        c['terms']=copy.deepcopy(career_voice.terms(c["id"]))
         c['playable'] = c['id'] in CAREERS   # 🏝️ the 2.5D town draws a door only for a career one can play
         if c["id"] in PLUGINS:  # its work needs the shift open (engine: "Mở ca trước…"): greyed out while closed
             sp=PLUGINS[c["id"]].SPEC;c["shift_gate"]=dict(prefix=sp["prefix"],free=list(sp.get("free_actions",())))
