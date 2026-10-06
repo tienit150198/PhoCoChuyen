@@ -870,11 +870,21 @@ def _row_done(t: dict) -> bool:
     return all(not _left_items(t, s) or s['seat'] in t['skipped'] for s in _row(t)['seats'])
 
 
+def _give_rules(t: dict, st: dict, item: str, need=kit.need) -> None:
+    """What fa_give refuses for this seat and item: a guest left to sleep, or a dish the seat already has. A sleeper
+    woken, peanuts in the allergy row and a hot drink for a child are mistakes the purser catches, not refusals.
+    public_task sends the refusals of the row being served as can.fa_give {seat: {item: {why, fix}}}."""
+    need(st['seat'] not in t['skipped'], 'Ghế này đã để khách ngủ.')
+    if st['kind'] == 'sleep' or (item == 'nuts' and t['needs']['ssr'].get('nut') == _row(t)['row']) or (item in HOT and st['kind'] == 'kid'):
+        return
+    need(item in _left_items(t, st) or item not in right_items(st), f'Ghế {st["seat"]} đã có {ITEM[item]["name"].lower()} rồi.')
+
+
 def _give(s, c, d, p):
     t = _task(c, p, 'service')
     st = _seat(t, p.get('seat'))
     item = kit.one_of(p.get('item'), ITEM, 'Trên xe không có món này.')
-    kit.need(st['seat'] not in t['skipped'], 'Ghế này đã để khách ngủ.')
+    _give_rules(t, st, item)
     kit.start_work(t)
     who = 'em bé' if st['kind'] == 'kid' else 'khách'
     if st['kind'] == 'sleep':
@@ -888,7 +898,6 @@ def _give(s, c, d, p):
         return _miss(t, 'hot_kid', 2, 'Tiếp viên suýt đưa ly nước nóng cho em bé.', 'đưa đồ uống nóng cho trẻ nhỏ',
                      '✋ Chị Thu đỡ lấy ly: “Trẻ nhỏ không uống đồ nóng, dễ bỏng lắm. Mời bé nước cam nhé.”')
     left = _left_items(t, st)
-    kit.need(item in left or item not in right_items(st), f'Ghế {st["seat"]} đã có {ITEM[item]["name"].lower()} rồi.')
     if item not in left:
         if st['kind'] == 'veg' and item == 'banhmi':
             return _miss(t, 'veg', 2, f'Khách ghế {st["seat"]} đặt suất chay mà suýt nhận bánh mì pa-tê.', 'nhầm suất ăn chay',
@@ -1293,6 +1302,13 @@ def public_task(t: dict) -> dict:
         out['ssr'] = n['ssr']
         out['rows'] = [dict(row=r['row'], seats=[_pub_seat(t, s) for s in r['seats']]) if i <= t['row'] else dict(row=r['row'], seats=None)
                        for i, r in enumerate(n['rows'])]
+        if t['stage'] == 'work':
+            gives = {}
+            for st in _row(t)['seats']:
+                why = {i: r for i in ITEM if (r := kit.check(_give_rules, t, st, i)) is not True}
+                if why:
+                    gives[st['seat']] = why
+            v['can'] = dict(fa_give=gives)
     elif k == 'calm':
         x = CALM[n['script']]
         beat = x['beats'][t['step']] if t['step'] < len(x['beats']) else None

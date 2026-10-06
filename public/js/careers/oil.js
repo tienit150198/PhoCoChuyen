@@ -8,8 +8,9 @@
  * Everything is decided on the server; one tap sends one command. Layout: street_kit.css + oil.css. */
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,tile,pane,introCard,deskCard,askCard,bottom,kitActions,act,kitInput} from './street_kit.js';
+import {data,cc,tile,pane,introCard,deskCard,askCard,bottom,kitActions,act,kitInput,tip,clean,introHelp} from './street_kit.js';
 import * as air from './air_kit.js';
+import {helpBtn,whyAttrs} from '../ui-kit.js';
 
 const BAD='⚠️ ';
 const isBad=s=>typeof s==='string'&&s.startsWith(BAD);
@@ -22,7 +23,12 @@ const hz=(x,k)=>(cc(x).hazards||{})[k]||{name:k,emoji:'⚠️'};
 function hitchBar(x){
   const d=data(x),h=d.hitch||{},m=d.mod||{};
   const home=h.home_in?` · về bờ sau ${h.home_in} ngày`:'';
-  const sum=`<span class="sk-sky" aria-hidden="true">${x.esc(m.emoji||'🌤️')}</span><b>${x.esc(h.label||'')}</b>`;
+  const sum=`<span class="sk-sky" aria-hidden="true">${x.esc(m.emoji||'🌤️')}</span><b${clean()?` aria-label="${x.esc(h.label||'')}"`:''}>${x.esc(clean()?String(h.label||'').split(' · ')[0]:h.label||'')}</b>`;
+  if(clean()){
+    const i=cc(x).intro,day=[{title:`${m.emoji||''} ${m.label||'Hôm nay'}`,body:`<p>${x.esc(`${m.hint||''}${home}`)}</p>${air.record(x)}`}];
+    const q=helpBtn('day-oil',`${m.emoji||'🛢️'} ${String(i?.title||'Thợ dầu khí').replace(/^Giới thiệu nghề:?\s*/,'')}`,[...day,...(i?introHelp(x,i):[])],{tips:true,cls:'sk-help'});
+    return `<div class="sk-day dk-hitch"><div class="grow sk-day-line">${sum}</div><span class="ui-chiprow"></span>${q}</div>`;
+  }
   return `<div class="sk-day dk-hitch">${pane(x,`hitch-${x.room.day}`,sum,`<small>${x.esc(m.label||'')}: ${x.esc(m.hint||'')}${x.esc(home)}</small>${air.record(x)}`,false,'grow')}
     ${act(x,'❔','intro',{},'ghost small sk-help',' aria-label="Giới thiệu nghề"')}</div>`;
 }
@@ -31,18 +37,38 @@ function stopBox(t,x){
   if(!['ptw','round','drill','secure','toolbox'].includes(t.kind)||t.worked||t.status==='completed')return '';
   const open=x.ui.stop===t.id,used=(t.stops||[]).length;
   const reasons=Object.entries(cc(x).stop_reasons||{}).map(([k,l])=>x.cmd(x.esc(l),'dk_stop',{task:t.id,reason:k},'small ghost dk-reason')).join('');
-  return `<section class="card dk-stop"><div class="row spread"><div><b>✋ Quyền dừng việc</b><small class="muted"> · ai cũng có, không bị trách${used?` · đã dừng ${used} lần`:''}</small></div>
+  const note=`ai cũng có, không bị trách${used?` · đã dừng ${used} lần`:''}`;
+  return `<section class="card dk-stop"><div class="row spread"><div><b>✋ Quyền dừng việc</b>${clean()?(used?` <small class="muted">· ${used}</small>`:'')+tip(note,'Quyền dừng việc'):`<small class="muted"> · ${note}</small>`}</div>
     ${act(x,open?'Đóng':'✋ Dừng việc','stopOpen',{task:t.id},open?'small ghost':'small danger dk-stop-go')}</div>${open?`<div class="dk-reasons">${reasons}</div>`:''}</section>`;
 }
 function reportBox(t,x){
   if(!t.can_report||t.nearmiss)return '';
-  return `<section class="card dk-nm"><p class="small">Có chuyện suýt xảy ra ở việc này. Ghi lại để cả giàn học, người báo không bị phạt.</p>${x.cmd('📝 Báo suýt sự cố','dk_nearmiss',{task:t.id},'primary full dk-nm-go')}</section>`;
+  const why='Có chuyện suýt xảy ra ở việc này. Ghi lại để cả giàn học, người báo không bị phạt.';
+  return `<section class="card dk-nm">${clean()?tip(why,'Báo suýt sự cố','p'):`<p class="small">${why}</p>`}${x.cmd('📝 Báo suýt sự cố','dk_nearmiss',{task:t.id},'primary full dk-nm-go')}</section>`;
 }
 /** Who gave the job, in one compact line (the opening folds under it). */
 function who(t,x){
   const w=x.npc(t.npc);
-  return `<article class="card dk-who"><div class="row">${x.portrait(w,40)}<div class="grow"><b>${x.esc(w.display_name)}</b><small class="muted"> · ${x.esc(w.role||'')}</small>
-    ${pane(x,`open-${t.id}`,`<span class="small">💬 ${x.esc(t.opening.length>70?t.opening.slice(0,68)+'…':t.opening)}</span>`,`<p class="small">${x.esc(t.opening)}</p>`,false,'dk-open')}</div></div></article>`;
+  return `<article class="card dk-who"><div class="row">${x.portrait(w,40)}<div class="grow"><b>${x.esc(w.display_name)}</b>${clean()?tip(x.esc(w.role||''),w.display_name):`<small class="muted"> · ${x.esc(w.role||'')}</small>`}
+    ${pane(x,`open-${t.id}`,`<span class="small">💬 ${x.esc(sayShort(t.opening))}</span>`,`<p class="small">${x.esc(t.opening)}</p>`,false,'dk-open')}</div></div></article>`;
+}
+/** Clean layout: things in a word or two that keep what decides (what is banned, what weighs); full names in aria-label. */
+const BAG_WORD={quan_ao:'Quần áo 14 ngày',thuoc:'Thuốc có đơn',sac:'Sạc dự phòng',laptop:'Laptop',mi:'Mì cay',ta:'Tạ tay',banh:'Bánh Má gói',
+  bat_lua:'Bật lửa',xit:'Keo xịt tóc',dao:'Dao gấp',ruou:'Rượu thuốc',vape:'Thuốc lá điện tử'};
+const GEAR_WORD={suit:'Đồ bơi giữ nhiệt',vest:'Áo phao',ebs:'Bình thở',ear:'Chụp tai'};
+const word=(map,i)=>clean()&&map[i.id]||i.name;
+/** Clean layout: a long opening said shorter, keeping every ask (unknown: in full). */
+const SAY_SHORT=[[/Soạn túi cho gọn/,'“Túi gọn, mặc đồ bơi giữ nhiệt, nghe hướng dẫn thoát hiểm.”']];
+/** The opening in the "who" line: the quote said short on the clean layout, else the first 70 characters. */
+function sayShort(s){
+  if(clean()){const {say}=air.splitSay(s),m=SAY_SHORT.find(([re])=>re.test(say));const t=m?m[1]:say;if(t.length<=90)return t;}
+  return s.length>70?s.slice(0,68)+'…':s;
+}
+/** Before the first tap (clean layout): who gives the job and what they ask; the bar's button takes it. */
+function askClean(t,x){
+  const w=x.npc(t.npc),{who,scene,say}=air.splitSay(t.opening),name=who||w.display_name||'';
+  const said=(SAY_SHORT.find(([re])=>re.test(say))||[])[1]||say;
+  return `<article class="card sk-ticket"><div class="row">${x.portrait(w,56)}<div class="grow"><h3>${x.esc(name)}</h3><p aria-label="${x.esc(t.opening)}">${x.esc(said)}</p>${scene&&scene!==name?tip(x.esc(scene),name,'p'):''}</div></div></article>`;
 }
 const reading=(x,label,s)=>s?`<p class="dk-read ${isBad(s)?'bad':s.startsWith('Đã xử lý')?'fixed':'ok'}"><b>${x.esc(label)}</b> ${x.esc(isBad(s)?s.slice(BAD.length):s)}</p>`:'';
 
@@ -52,13 +78,13 @@ function heliPanel(t,x){
   if(n.cancel)return `<section class="card dk-board"><h4>🌀 Áp thấp gần bờ</h4><p>Bảng giờ bay: <b>HỦY CHUYẾN</b>. Trực thăng không bay khi có bão. Nghe thông báo rồi về nhà chờ.</p></section>`;
   const items=(cc(x).bag||[]).filter(b=>(n.bag||[]).includes(b.id)).sort((a,b)=>n.bag.indexOf(a.id)-n.bag.indexOf(b.id));
   const out=t.bag_out||[],kg=t.bag_kg||0,over=kg>n.limit;
-  const bag=items.map(b=>tile(x,'dk_bag',{task:t.id,item:b.id},`<span class="tile-emoji">${x.esc(b.emoji)}</span><b>${x.esc(b.name)}</b><small>${String(b.kg).replace('.',',')} kg${out.includes(b.id)?' · để ở nhà':''}</small>`,out.includes(b.id)?'selected dk-out':'')).join('');
-  const gear=(cc(x).gear||[]).map(g=>tile(x,'dk_gear',{task:t.id,item:g.id},`<span class="tile-emoji">${x.esc(g.emoji)}</span><b>${x.esc(g.name)}</b><small>${x.esc(g.note)}</small>`,(t.gear||[]).includes(g.id)?'selected':'')).join('');
+  const bag=items.map(b=>tile(x,'dk_bag',{task:t.id,item:b.id},`<span class="tile-emoji">${x.esc(b.emoji)}</span><b>${x.esc(word(BAG_WORD,b))}</b><small>${String(b.kg).replace('.',',')} kg${out.includes(b.id)?(clean()?' · 🏠':' · để ở nhà'):''}</small>`,out.includes(b.id)?'selected dk-out':'').replace('<button ',`<button aria-label="${x.esc(b.name)}${out.includes(b.id)?': để ở nhà':''}" `)).join('');
+  const gear=(cc(x).gear||[]).map(g=>tile(x,'dk_gear',{task:t.id,item:g.id},`<span class="tile-emoji">${x.esc(g.emoji)}</span><b>${x.esc(word(GEAR_WORD,g))}</b>${clean()?tip(x.esc(g.note),g.name):`<small>${x.esc(g.note)}</small>`}`,(t.gear||[]).includes(g.id)?'selected':'').replace('<button ',`<button aria-label="${x.esc(g.name)}" `)).join('');
   const q=t.quizq;
-  const quiz=q?`<section class="card dk-quiz"><h4>🎬 Video thoát hiểm trực thăng</h4><p>${x.esc(q.text)}</p>${t.quiz?`<p class="small muted">Đã trả lời.</p>`:`<div class="sk-opts">${q.options.map(o=>x.cmd(`<span class="sk-opt-label">${x.esc(o.label)}</span>`,'dk_quiz',{task:t.id,answer:o.id},'sk-opt')).join('')}</div>`}</section>`:'';
+  const quiz=q?`<section class="card dk-quiz"><h4>🎬 ${clean()?'Thoát hiểm':'Video thoát hiểm trực thăng'}</h4><p>${x.esc(q.text)}</p>${t.quiz?`<p class="small muted">Đã trả lời.</p>`:`<div class="sk-opts">${q.options.map(o=>x.cmd(`<span class="sk-opt-label">${x.esc(o.label)}</span>`,'dk_quiz',{task:t.id,answer:o.id},'sk-opt')).join('')}</div>`}</section>`:'';
   const delay=n.delay?`<p class="dk-read ${t.waited?'ok':'bad'}"><b>📢 Loa cảng:</b> chuyến hoãn ${n.delay} phút vì ${n.wx==='fog'?'sương mù':'gió giật'}.${t.waited?' Đã nghe, đang chờ ở phòng chờ.':''}</p>`:'';
-  return `${delay}<section class="card dk-bag"><div class="row spread"><h4>🎒 Túi mềm lên trực thăng</h4><span class="tag ${over?'danger':'green'}">${String(kg).replace('.',',')}/${n.limit} kg</span></div>
-    <p class="small muted">Chạm một món để để nó ở nhà. Cảng soi túi: đồ cấm bị giữ lại, quá ký phải bỏ bớt.</p><div class="tile-grid">${bag}</div></section>
+  return `${delay}<section class="card dk-bag"><div class="row spread"><h4>🎒 ${clean()?'Túi mềm':'Túi mềm lên trực thăng'}</h4><span class="tag ${over?'danger':'green'}">${String(kg).replace('.',',')}/${n.limit} kg</span></div>
+    ${clean()?tip('Chạm một món để để nó ở nhà. Cảng soi túi: đồ cấm bị giữ lại, quá ký phải bỏ bớt.','Túi mềm','p'):'<p class="small muted">Chạm một món để để nó ở nhà. Cảng soi túi: đồ cấm bị giữ lại, quá ký phải bỏ bớt.</p>'}<div class="tile-grid">${bag}</div></section>
     <section class="card dk-gear"><h4>🦺 Đồ cứu sinh</h4><div class="tile-grid">${gear}</div></section>${quiz}`;
 }
 function heliSteps(t,x){
@@ -100,7 +126,7 @@ function toolboxPanel(t,x){
   return `<section class="card"><h4>🗣️ Việc hôm nay</h4><p>${x.esc(n.storm?'Chằng buộc boong trước bão: gió giật, sàn trơn, làm trên cao.':t.opening)}</p></section>
     <section class="card dk-ppe"><h4>🦺 Đồ bảo hộ của cả ca</h4><div class="tile-grid">${ppe}</div></section>
     <section class="card dk-mon"><h4>📟 Máy đo khí cá nhân</h4>${mon}</section>
-    <section class="card dk-haz"><h4>⚠️ Mối nguy của việc hôm nay</h4><p class="small muted">Chọn những mối nguy có thật ở việc này để cả ca cùng nói cách phòng.</p><div class="tile-grid">${haz}</div></section>
+    <section class="card dk-haz"><h4>⚠️ ${clean()?'Mối nguy hôm nay':'Mối nguy của việc hôm nay'}</h4>${clean()?tip('Chọn những mối nguy có thật ở việc này để cả ca cùng nói cách phòng.','Mối nguy','p'):'<p class="small muted">Chọn những mối nguy có thật ở việc này để cả ca cùng nói cách phòng.</p>'}<div class="tile-grid">${haz}</div></section>
     <section class="card">${t.remind?'<p class="dk-read ok">✋ Đã nhắc quyền dừng việc.</p>':x.cmd('✋ Nhắc cả ca quyền dừng việc','dk_remind',{task:t.id},'ghost full')}</section>`;
 }
 function toolboxSteps(t,x){
@@ -126,8 +152,10 @@ function ptwPanel(t,x){
     return `<li class="dk-point ${on?'on':''}"><span aria-hidden="true">${pt.kind==='valve'?'🛞':'🔌'}</span><div class="grow"><b>${x.esc(pt.id)}</b><small>${x.esc(pt.name)}</small></div>${done?(on?'🔒':''):x.cmd(on?'🔒 Đã khóa':'🔓 Khóa, treo thẻ','dk_iso',{task:t.id,point:pt.id},on?'small primary':'small ghost')}</li>`;}).join('');
   const rows=[];
   rows.push(`<li>${t.xref?reading(x,'📋 Bảng giấy phép:',read.xref):x.cmd('📋 Đối chiếu bảng giấy phép đang mở','dk_xref',{task:t.id},'ghost full',done)}</li>`);
-  if(j.bleed)rows.push(`<li>${t.bled?`<p class="dk-read ok">💨 Đã xả: ${x.esc(j.bleed)}.</p>`:x.cmd(`💨 Xả áp · ${x.esc(j.bleed)}`,'dk_bleed',{task:t.id},'ghost full',done)}</li>`);
-  if(j.prove)rows.push(`<li>${t.proven?reading(x,'0️⃣ Kiểm về không:',read.verify):x.cmd(`0️⃣ Kiểm về không · ${x.esc(j.prove)}`,'dk_verify',{task:t.id},'ghost full',done)}</li>`);
+  // Dimmed with the server's reason (can.dk_bleed / can.dk_verify) until every point it needs is locked.
+  const why=(html,can)=>{const a=whyAttrs(can);return a?html.replace('<button ',`<button${a} `).replace('class="btn ','class="btn is-why '):html;};
+  if(j.bleed)rows.push(`<li>${t.bled?`<p class="dk-read ok">💨 Đã xả: ${x.esc(j.bleed)}.</p>`:why(x.cmd(`💨 Xả áp · ${x.esc(j.bleed)}`,'dk_bleed',{task:t.id},'ghost full',done),t.can?.dk_bleed)}</li>`);
+  if(j.prove)rows.push(`<li>${t.proven?reading(x,'0️⃣ Kiểm về không:',read.verify):why(x.cmd(`0️⃣ Kiểm về không · ${x.esc(j.prove)}`,'dk_verify',{task:t.id},'ghost full',done),t.can?.dk_verify)}</li>`);
   rows.push(`<li>${t.gas?reading(x,'📟 Đo khí:',read.gas):x.cmd('📟 Đo khí tại chỗ làm','dk_gas',{task:t.id},'ghost full',done)}</li>`);
   if(j.watch){const w=(cc(x).watch||{})[j.watch]||{};rows.push(`<li>${t.watch?`<p class="dk-read ok">${x.esc(w.emoji||'')} ${x.esc(w.name||'')}: đã bố trí.</p>`:x.cmd(`${x.esc(w.emoji||'')} ${x.esc(w.name||'')}`,'dk_watch',{task:t.id},'ghost full',done)}</li>`);}
   const after=done?`<section class="card dk-after"><h4>🔧 Đã làm xong việc chính</h4>${t.restored?'<p class="dk-read ok">🔁 Đã tháo khóa, chạy thử.</p>':x.cmd('🔁 Tháo khóa, mở van theo thứ tự, chạy thử','dk_restore',{task:t.id},'ghost full')}</section>`:'';
@@ -157,7 +185,7 @@ function roundPanel(t,x){
   const rows=(t.gauges||[]).map(g=>{const v=reads[g.tag];
     const btns=v?`<span class="tag ${v==='ok'?'green':'amber'}">${v==='ok'?'✅ Trong giới hạn':v==='high'?'🔺 Cao':'🔻 Thấp'}</span>${v!=='ok'&&!called.includes(g.tag)?x.cmd('📻 Báo phòng điều khiển','dk_call',{task:t.id,tag:g.tag},'small primary'):called.includes(g.tag)?'<small class="muted">📻 đã báo</small>':''}`
       :['ok','high','low'].map(k=>x.cmd(k==='ok'?'✅ Trong':k==='high'?'🔺 Cao':'🔻 Thấp','dk_read',{task:t.id,tag:g.tag,verdict:k},'small ghost')).join('');
-    return `<li class="dk-gauge dk-g-${x.esc(g.tag)}"><div class="grow"><b>${x.esc(g.tag)}</b> <small>${x.esc(g.name)}</small><div class="dk-dial"><span class="dk-val">${g.value} ${x.esc(g.unit)}</span><small>giới hạn ${g.lo}–${g.hi}</small></div></div><div class="row wrap dk-gbtn">${btns}</div></li>`;}).join('');
+    return `<li class="dk-gauge dk-g-${x.esc(g.tag)}"><div class="grow"><b>${x.esc(g.tag)}</b> <small>${x.esc(g.name)}</small><div class="dk-dial"><span class="dk-val">${g.value} ${x.esc(g.unit)}</span><small>${clean()?'':'giới hạn '}${g.lo}–${g.hi}</small></div></div><div class="row wrap dk-gbtn">${btns}</div></li>`;}).join('');
   const look=(t.needs?.areas||[]).map(a=>{const ar=areas[a]||{};const seen=(t.looked||[]).includes(a);
     return seen?`<span class="tag">${x.esc(ar.emoji||'')} ${x.esc(ar.name||a)} ✓</span>`:x.cmd(`${x.esc(ar.emoji||'')} ${x.esc(ar.name||a)}`,'dk_look',{task:t.id,area:a},'small ghost');}).join('');
   const leak=t.found&&!t.leak?`<section class="sk-event tense dk-leak"><div class="sk-ev-head"><span aria-hidden="true">🛢️</span><div><small>Phát hiện lúc đi tuần</small><h3>Có dấu hiệu rò</h3></div></div>${t.leak_seen?`<p class="dk-read bad">${x.esc(t.leak_seen)}</p>`:''}
@@ -217,7 +245,7 @@ function handoverPanel(t,x){
   const O=cc(x).open_items||{};
   const rows=(t.needs?.items||[]).map(i=>{const it=O[i]||{},on=(t.picked||[]).includes(i);
     return `<li>${tile(x,'dk_note',{task:t.id,item:i},`<span class="tile-emoji">${x.esc(it.emoji||'')}</span><b>${x.esc(it.text||i)}</b><small>${on?'✍️ đã ghi':'chạm để ghi'}</small>`,on?'selected dk-note':'dk-note')}</li>`;}).join('');
-  return `<section class="card dk-hand"><h4>📝 Bàn giao cho người ca sau</h4><p class="small muted">Người ca sau chỉ biết những gì bạn ghi.</p><ul class="dk-list dk-notes">${rows}</ul></section>`;
+  return `<section class="card dk-hand"><h4>📝 Bàn giao cho người ca sau</h4>${clean()?tip('Người ca sau chỉ biết những gì bạn ghi.','Bàn giao','p'):'<p class="small muted">Người ca sau chỉ biết những gì bạn ghi.</p>'}<ul class="dk-list dk-notes">${rows}</ul></section>`;
 }
 function handoverSteps(t){
   const steps=[{ok:(t.picked||[]).length?true:null,label:'Ghi các việc còn dở',go:{sel:'.dk-notes',label:'✍️ Ghi bàn giao'}}];
@@ -240,7 +268,7 @@ function shorePanel(t,x){
        <div class="dk-words">${chips}</div>${stepper}
        <div class="row wrap">${act(x,'📲 Gửi số này','send',{task:t.id,req:r.id,max:r.ask*2,def:amt},'primary grow dk-send')}${act(x,'🙅 Không gửi','send',{task:t.id,req:r.id,max:r.ask*2,def:0,zero:1},'ghost')}</div>`;
     return `<li class="card dk-req dk-req-${x.esc(r.id)}"><div class="row"><span class="dk-req-emoji" aria-hidden="true">${x.esc(r.emoji)}</span><div class="grow"><b>${x.esc(r.who)}</b> <small class="muted">xin ${r.ask} xu</small><p>“${x.esc(r.line)}”</p></div></div>${body}</li>`;}).join('');
-  return `<section class="card dk-allow"><div class="row spread"><h4>💵 Phụ cấp đi biển</h4><span class="tag green">${n.allowance} xu</span></div><p class="small muted">Vào quỹ khi bạn bắt đầu trả lời. Gửi bao nhiêu, nói gì là do bạn.</p>
+  return `<section class="card dk-allow"><div class="row spread"><h4>💵 Phụ cấp đi biển</h4><span class="tag green">${n.allowance} xu</span></div>${clean()?tip('Vào quỹ khi bạn bắt đầu trả lời. Gửi bao nhiêu, nói gì là do bạn.','Phụ cấp','p'):'<p class="small muted">Vào quỹ khi bạn bắt đầu trả lời. Gửi bao nhiêu, nói gì là do bạn.</p>'}
     ${t.called?'<p class="dk-read ok">📹 Đã gọi video cả nhà.</p>':x.cmd('📹 Gọi video cả nhà','dk_love',{task:t.id},'ghost full')}</section><ul class="dk-reqs">${reqs}</ul>`;
 }
 function shoreSteps(t,x){
@@ -282,9 +310,9 @@ export default {
     const g=guide(t,x),d=data(x),hint=hintFor(g,x);
     if(d.desk?.ev||d.odd?.ev||!d.intro||x.ui.intro||(d.odd?.conduct?.ground&&['toolbox','ptw','round','drill','secure'].includes(t.kind)))
       return `<div class="career-job sk dk">${hint}${top(x)}${bottom(x,g)}</div>`;
-    const head=t.known?who(t,x):askCard(x,t,ASK[t.kind]||'Nhận việc');
+    const head=t.known?who(t,x):clean()?askClean(t,x):askCard(x,t,ASK[t.kind]||'Nhận việc');
     const main=t.known?(PANELS[t.kind]||(()=>''))(t,x)+reportBox(t,x)+stopBox(t,x):'';
-    const side=t.known&&g.steps.length?stepRows(x,g.steps,'Các bước'):'';
+    const side=t.known&&g.steps.length?stepRows(x,g.steps,'Các bước',{chip:true}):'';
     return `<div class="career-job sk dk">${hint}${top(x)}${hitchBar(x)}${head}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },
   idle(x){

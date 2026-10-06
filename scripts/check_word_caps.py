@@ -30,12 +30,15 @@ from browser_v04 import CMD, server  # noqa: E402
 CAPS = {'work': 25, 'intro': 30, 'toast': 8}
 # Careers whose intro is the street kit's card (public/js/careers/street_kit.js introCard).
 INTRO = ('fruit', 'garbage', 'drain', 'homemaker', 'ice_cream', 'com', 'nail', 'pagoda', 'pho', 'photobooth', 'giupviec',
-         'naucom', 'babysitter', 'library', 'oil', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'tra_da')
+         'naucom', 'babysitter', 'library', 'oil', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'tra_da',
+         'pilot', 'flight_attendant')   # wave 2: the air crew uses the same short card
 # Work screens already cut to ≤ 25 words. Each per-screen wave adds its careers here once they pass.
-WORK_DONE: tuple[str, ...] = ('drain', 'com', 'lighthouse', 'railway', 'tra_da', 'babysitter', 'pho', 'pagoda', 'rescue', 'giupviec')   # wave 1
+WORK_DONE: tuple[str, ...] = ('drain', 'com', 'lighthouse', 'railway', 'tra_da', 'babysitter', 'pho', 'pagoda', 'rescue', 'giupviec',   # wave 1
+                               'police', 'nurse', 'lifeguard', 'oil', 'pilot', 'flight_attendant')   # wave 2
 # A screen may take up to 30 when a cue the right answer depends on needs the room (never fold such a cue away):
-# drain's appointments, cơm's water rule and dish names, the logbook notes, pagoda's chores, trà đá's spot cues.
-WORK_CAP = {'drain': 30, 'com': 30, 'lighthouse': 30, 'railway': 30, 'pagoda': 30, 'tra_da': 30}
+# drain's appointments, cơm's water rule and dish names, the logbook notes, pagoda's chores, trà đá's spot cues;
+# the pilot's first hop: whoever stands at the cockpit door says what they want, in full (Anh Kiệt's hurry is a trap).
+WORK_CAP = {'drain': 30, 'com': 30, 'lighthouse': 30, 'railway': 30, 'pagoda': 30, 'tra_da': 30, 'pilot': 30}
 DEFAULT = INTRO + ('florist', 'repair', 'restaurant', 'clothing', 'teacher', 'tour_guide')
 
 COUNT = r"""async () => {

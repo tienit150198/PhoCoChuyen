@@ -149,3 +149,20 @@ button.ab-row{cursor:pointer;min-height:44px}
 .air-rest summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}
 .air-rest .air-rest-send{width:100%;margin-top:10px}
 .air-rest-done{margin:8px 0 0}
+
+/* ---------- UI wave 2 (docs/UI_KIT.md): the short intro, the crew's day line, the shared bar */
+.career-job:is(.pl,.tv) .sk-intro{margin:0 0 var(--sp-3);padding:var(--sp-3);border:2px solid var(--air-sky);border-radius:var(--radius);background:var(--surface);color:var(--ink)}
+.career-job:is(.pl,.tv) .sk-intro-head{display:flex;align-items:center;gap:var(--sp-2)}
+.career-job:is(.pl,.tv) .sk-intro-head h3{flex:1 1 auto;margin:0;font-size:var(--fs-4)}
+.career-job:is(.pl,.tv) .sk-intro-rows{list-style:none;display:grid;margin:var(--sp-3) 0;padding:0;gap:var(--sp-2)}
+.career-job:is(.pl,.tv) .sk-intro-rows li{display:flex;align-items:center;gap:var(--sp-2);min-height:44px;padding:var(--sp-1) var(--sp-3);border-radius:var(--radius-sm);background:var(--surface-2);font-size:var(--fs-3);font-weight:700;line-height:var(--lh)}
+.career-job:is(.pl,.tv) .sk-intro-rows li span{flex:none;width:28px;font-size:22px;text-align:center}
+.career-job:is(.pl,.tv) .sk-intro .btn.full{width:100%;min-height:44px}
+/* The bar's main button starts the job: the card's own start button is a fallback for a screen without it. */
+.career-job:is(.pl,.tv):has(.ui-bar [data-command$="_intro"]) .sk-intro-go{display:none}
+.career-job.pl .pl-day.air-day{flex-wrap:nowrap}
+.career-job.pl .pl-day.air-day>b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.career-job.pl .pl-day.air-day small{flex-basis:auto;color:inherit;font-weight:600}
+.career-job.pl .pl-day.air-day>.ui-chiprow{display:flex;gap:var(--sp-1);font-size:var(--fs-2)}
+.career-job:is(.pl,.tv) :is(.pl-help,.tv-help){flex:none;min-width:44px;min-height:44px}
+.career-job.tv .tv-strip .tv-help{margin:-6px -8px -6px 0;background:rgb(255 255 255 / 16%);border-color:transparent;color:inherit}

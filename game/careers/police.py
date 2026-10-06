@@ -961,6 +961,12 @@ def _invite(s, c, d, p):
     return dict(message=f'✉️ {_case_of(t)["invite"]}')
 
 
+def _add_topic_rules(t: dict, need=kit.need) -> None:
+    """What cap_topic refuses when one more topic is added (a chosen chip only comes off). public_task sends it as
+    can.cap_topic, for the chips not chosen yet."""
+    need(len(t['topics']) < PC.TOPIC_MAX, f'Chọn tối đa {PC.TOPIC_MAX} chủ đề cho một buổi.')
+
+
 def _topic(s, c, d, p):
     t = _task(c, p, ('talk',))
     kit.need(not _seen(t, 'present'), 'Đã trình bày rồi.')
@@ -968,7 +974,7 @@ def _topic(s, c, d, p):
     if k in t['topics']:
         t['topics'].remove(k)
         return dict(message=f'Bỏ chủ đề: {_low(TOPICS[k][1])}.')
-    kit.need(len(t['topics']) < PC.TOPIC_MAX, f'Chọn tối đa {PC.TOPIC_MAX} chủ đề cho một buổi.')
+    _add_topic_rules(t)
     t['topics'].append(k)
     return dict(message=f'{TOPICS[k][0]} Thêm chủ đề: {_low(TOPICS[k][1])}.')
 
@@ -1374,6 +1380,8 @@ def public_task(t: dict) -> dict:
         view = dict(n, scenes=rows)
     else:
         view = dict(n, invite=x['invite'] if 'invite' in seen else None, presented='present' in seen)
+        if 'present' not in seen:
+            v['can'] = dict(cap_topic=kit.check(_add_topic_rules, t))
         if 'present' in seen:
             view['questions'] = [dict(id=q, who=TALK_Q[q]['who'], text=TALK_Q[q]['text'], answered=t['answers'].get(q),
                                       options=[dict(id=o[0], label=o[1]) for o in TALK_Q[q]['options']]) for q in x['qs']]

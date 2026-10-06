@@ -67,9 +67,11 @@ Migrated so far:
 - `food_kit.actionBar`
 - the florist (`fl-bar`), restaurant (`rs-bar`), repair (`rp-bar`) and clothing (`ao-bar`) bars
 - teacher and tour guide (`teach-tour.js bar`)
+- the pilot (`pl-cta`) and the flight attendant (`tv-cta`), wave 2. Their hook is not `pl-bar`: palette.css owns a
+  `.pl-bar` (the colour count's progress bar) once the palette has been opened.
 
 Not yet migrated (they keep their own bar with the phone rules in compact.css): `dw-bar`, `ok-bar`, `dl-bar`,
-`tv-bar`, `fa-bar`, `mb-ctabar`, `pl-bar`, `td-bar`, `hs-bar`, `ps-bar`, `gr-billbar`, `sl-bar`, `pc-bar`,
+`fa-bar`, `mb-ctabar`, `td-bar`, `hs-bar`, `ps-bar`, `gr-billbar`, `sl-bar`, `pc-bar`,
 milk tea's `fk-bar` and cafe's `cb-dock`.
 
 ## Disabled with a reason
@@ -104,6 +106,12 @@ Rules for the server side:
 - `can` is a view field. It is never saved.
 
 Done so far: giúp việc `can.gv_wipe` (tool, product, empty bottle) and the florist's `can.fl_deliver`.
+Wave 2: police `can.cap_topic` (a fourth topic), nurse `can.dd_send` (the patient said no to the operation),
+lifeguard `can.hb_reopen` (the storm has not come), oil `can.dk_bleed` / `can.dk_verify` (a point not locked, not bled
+yet), pilot `can.pl_takeoff` (checklist, the delay announcement) and `can.pl_around` (fuel for this approach only), and
+the flight attendant's `can.fa_give`: one map for the row being served, `{seat: {item: {why, fix}}}`, with only the
+refusals in it (a seat left to sleep, a dish it already has). A sleeper woken, peanuts in the allergy row and a hot drink
+for a child stay scored mistakes, never refusals.
 
 ## Header chip for a pinned card: `headChip(icon, text, selector)`
 
@@ -149,6 +157,12 @@ Rules of thumb:
   folds.
 - **Logbook notes** that tell what to refuse or watch stay, in a few words ("Cô Mận xin ghế sát ray: đừng cho").
 - **A timetable keeps direction and time.** A rule's numbers stay next to what they apply to ("🌅 05:32 · +15′").
+  Wave 2 did this for a rule card the player had to open before: the nurse's alarm limits sit on each sign's tile
+  (`🚨 ≥38,0 · ≤35,5`), the pool's Clo and pH ranges beside the strip's reading (`Clo 2 (1–3)`), the storm's wait beside the
+  last thunder (`⚡ 14:05 +30′`), and the pilot's fuel list has the storm hold as its own row.
+- **Who says it, then what they ask.** An opening "Chị Thu mở cửa tàu: “…”" shows "Chị Thu" and the quote; the scene
+  before the colon folds (air_kit `splitSay`). A scene with a number or a sentence of its own is never split ("Xả áp
+  xong, đồng hồ vẫn 4 bar. Thợ bảo: …" keeps its reading).
 
 ## Cutting a screen to 25 words (wave 1 recipe)
 
@@ -208,5 +222,11 @@ Each wave owns its screens and their files; no other wave edits them.
 | Foundation + 1 (shipped 1.9.7) | `rel-1.9.7` | drain, com, lighthouse, railway, tra_da, babysitter, pho, pagoda, rescue, giupviec | shared kit files; those 10 careers |
 | **2: uniformed** (audit plan W2, `air_kit`; lighthouse, railway and rescue went out in wave 1) | `ui-wave2` | **police, nurse, lifeguard, oil, pilot, flight_attendant** | `careers/air_kit.js` + `.css`, `pilot_tutor.js`, `pilot_fly.js`; `public/js/careers/<id>.js` + `public/css/careers/<id>.css` and `game/careers/<id>.py` of those 6 |
 | 3 | `ui-wave3` | the rest: not any screen above | not any file above |
+
+Wave 2, done (ui-wave2): police 84 → 23 visible words, nurse 78 → 19, lifeguard 67 → 25, oil 42 → 22, pilot 135 → 30
+(cap 30: the opening at the cockpit door stays whole), flight attendant 172 → 26, on a 390 × 844 phone. The pilot and
+the flight attendant now use the street kit's short intro (`introCard`, 27–28 words, was 135–172 inside the work
+sheet) and the shared bar. Shared helpers added to `air_kit.js`: `crewDay` (the crew's day line with "?") and
+`splitSay`.
 
 Wave 2 does not edit `street_kit.js`/`.css`, `ui-kit.js`, `guide.js`, `app.css`, `compact.css` or the i18n catalogues.

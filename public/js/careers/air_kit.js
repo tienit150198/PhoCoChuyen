@@ -10,6 +10,7 @@
  * (a tone, one or two things to say, whom to bring in, how many units in a bargain), restCard asks for rest days,
  * and the crew record (conduct, fatigue) shows in the crew room and on the boarding pass. Another career may reuse oddCard and
  * restCard with its own words: cfg.kinds (the kind labels) and cfg.rest_to ([[id, label]×2], where the request goes). */
+import {helpBtn} from '../ui-kit.js';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const upper=s=>String(s||'').toLocaleUpperCase('vi-VN');
 const ended=t=>['completed','cancelled','referred'].includes(t.status);
@@ -123,6 +124,27 @@ export function page(view,x,cfg){
   if(view==='prepare')return crewRoom(x,cfg);
   if(view==='prices')return flightLog(x,cfg);
   return '';
+}
+
+/** The crew's day line on the clean layout (the street kit's dayBar in the crew's look): the weather and an optional
+ * tail (a count), the in-flow chip row, and "?" with the day's hint, what the screen folded away (ui-kit tip) and
+ * `sections` (the intro). `cls`: the career's prefix (pl, tv). */
+export function crewDay(x,{cls,tail='',sections=[]}){
+  const m=(x.room.data||{}).mod||{},i=x.cc?.intro;
+  const name=String(i?.title||'').replace(/^Giới thiệu nghề:?\s*/,'');
+  const day=m.hint?[{title:`${m.emoji||''} ${m.label||'Hôm nay'}`,body:`<p>${esc(m.hint)}</p>`}]:[];
+  const q=helpBtn(`day-${x.state?.current||cls}`,`${m.emoji||'❔'} ${name}`,[...day,...sections],{tips:true,cls:`${cls}-help`});
+  return `<div class="${cls}-day air-day"><span aria-hidden="true">${esc(m.emoji||'🌤️')}</span><b class="grow">${esc(m.label||'')}${tail}</b><span class="ui-chiprow"></span>${q}</div>`;
+}
+
+/** "Chị Thu mở cửa tàu: “…”" → {who:'Chị Thu', scene:'Chị Thu mở cửa tàu', say:'“…”'}. On the clean layout the quote
+ * (the ask) stays under who says it, and the scene before it folds into "?". Only a short scene with no number and no
+ * sentence of its own folds ("Xả áp xong, đồng hồ vẫn 4 bar. Thợ bảo: …" keeps its reading); anything else is all say. */
+export function splitSay(s){
+  const t=String(s||''),m=t.match(/^([^“”:.,;!?\d]{1,40}):\s*(“[^“”]*”)\s*$/);
+  if(!m)return {who:'',scene:'',say:t};
+  const scene=m[1].trim();
+  return {who:scene.split(/\s+/).slice(0,2).join(' '),scene,say:m[2]};
 }
 
 /* ------------------------------------------------------------ chuyện oái oăm */

@@ -86,3 +86,6 @@ html[data-career="oil"]{--air-navy:#1f5f7a;--air-sky:#2f88a8}
   .career-job.sk.dk .dk-gauge{flex-direction:column;align-items:stretch}
   .career-job.sk.dk .dk-reasons .btn{flex:1 1 100%}
 }
+
+/* Clean layout: the checklist folded into its header chip leaves the side pane empty: no empty box (UI wave 2). */
+html[data-clean] .career-job.sk.dk .wb-side:not(:has(>:not(.ui-chipped))){padding:0;border:0;background:none}

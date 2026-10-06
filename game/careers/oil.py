@@ -771,14 +771,29 @@ def _iso(s, c, d, p):
     return dict(message=f'🔒 {verb} {name.lower()} {tag}, treo ổ khóa đỏ của bạn và thẻ “Cấm thao tác”.')
 
 
+def _bleed_rules(t: dict, need=kit.need) -> None:
+    """What dk_bleed refuses once the permit is out: no bleed on this job, bled already, a valve not locked yet.
+    public_task sends it as can.dk_bleed (the button is dimmed with the reason until every valve is locked)."""
+    job = _job(t)
+    need(job['bleed'], 'Việc này không cần xả.')
+    need(not t['bled'], 'Đã xả rồi.')
+    valves = [x[0] for x in job['points'] if x[2] == 'valve']
+    need(all(v in t['locks'] for v in valves), 'Khóa đủ các van cô lập rồi mới xả.')
+
+
+def _verify_rules(t: dict, need=kit.need) -> None:
+    """What dk_verify refuses once the permit is out (can.dk_verify): every point locked, bled first."""
+    job = _job(t)
+    need(job['prove'], 'Việc này không có gì để kiểm về không.')
+    need(all(x[0] in t['locks'] for x in job['points']), 'Khóa đủ mọi điểm cô lập trước khi kiểm về không.')
+    need(not job['bleed'] or t['bled'], 'Xả áp trước rồi mới kiểm về không.')
+
+
 def _bleed(s, c, d, p):
     t = _ptw_live(c, d, p)
     _need_permit(t)
     job = _job(t)
-    kit.need(job['bleed'], 'Việc này không cần xả.')
-    kit.need(not t['bled'], 'Đã xả rồi.')
-    valves = [x[0] for x in job['points'] if x[2] == 'valve']
-    kit.need(all(v in t['locks'] for v in valves), 'Khóa đủ các van cô lập rồi mới xả.')
+    _bleed_rules(t)
     t['bled'] = True
     return dict(message=f'💨 Mở {job["bleed"]}: xả áp, xả cạn về bồn thu.')
 
@@ -787,9 +802,7 @@ def _verify(s, c, d, p):
     t = _ptw_live(c, d, p)
     _need_permit(t)
     job = _job(t)
-    kit.need(job['prove'], 'Việc này không có gì để kiểm về không.')
-    kit.need(all(x[0] in t['locks'] for x in job['points']), 'Khóa đủ mọi điểm cô lập trước khi kiểm về không.')
-    kit.need(not job['bleed'] or t['bled'], 'Xả áp trước rồi mới kiểm về không.')
+    _verify_rules(t)
     t['proven'] = True
     trap = _trap_open(t)
     if trap in ('passing', 'live'):
@@ -1469,6 +1482,8 @@ def public_task(t: dict) -> dict:
         v['job'] = dict(id=j['id'], title=j['title'], tag=j['tag'], work=j['work'], bleed=j['bleed'], prove=j['prove'], watch=j['watch'],
                         points=[dict(id=a, name=b, kind=c_) for a, b, c_ in j['points']])
         v['can_report'] = bool(t['fixed']) or bool(cq.slips(t))
+        if t['permit'] and not t['worked']:
+            v['can'] = dict(dk_bleed=kit.check(_bleed_rules, t), dk_verify=kit.check(_verify_rules, t))
     elif k == 'round':
         v['gauges'] = [dict(_gauge(t, g['tag']), verdict=None) for g in n['gauges']]
         v['can_report'] = bool(cq.slips(t))

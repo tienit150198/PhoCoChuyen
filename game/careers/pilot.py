@@ -774,10 +774,15 @@ def _pa(s, c, d, p):
     return dict(message='📢 “Tàu sắp cất cánh rồi.” Mười phút sau vẫn chưa đi, khoang khách bắt đầu xì xào.')
 
 
+def _takeoff_rules(t: dict, need=kit.need) -> None:
+    """What pl_takeoff refuses (public_task: can.pl_takeoff, the "Cất cánh" button says why before it is pressed)."""
+    need(len(t['switches']) == len(ORDER), 'Làm xong checklist trước khi cất cánh.')
+    need(not t['delay'] or t['pa'], 'Chuyến bay chậm: thông báo cho khách trước đã.')
+
+
 def _takeoff(s, c, d, p):
     t = _task(c, p, 'start')
-    kit.need(len(t['switches']) == len(ORDER), 'Làm xong checklist trước khi cất cánh.')
-    kit.need(not t['delay'] or t['pa'], 'Chuyến bay chậm: thông báo cho khách trước đã.')
+    _takeoff_rules(t)
     if t['delay']:
         t['patience'] = max(25, t.get('patience', 100) - {'clear': 5, 'vague': 15, 'hide': 25}[t['pa']])
     ev = t['needs']['event']
@@ -943,12 +948,18 @@ def _continue(s, c, d, p):
     return out
 
 
+def _around_rules(t: dict, need=kit.need) -> None:
+    """What pl_around refuses at a gate: at the alternate after the last go-around there is fuel for this approach
+    only (public_task: can.pl_around, "Bay lại" dimmed with the reason)."""
+    need(t['arounds'] < MAX_AROUNDS or not t['at'], 'Dầu chỉ còn đủ cho lần tiếp cận này ở sân bay dự bị: hạ cánh thôi.')
+
+
 def _around(s, c, d, p):
     t = _task(c, p, 'approach')
     _gate_ready(t)
     _sky_ready(d, t)
     g = _current_gate(t)
-    kit.need(t['arounds'] < MAX_AROUNDS or not t['at'], 'Dầu chỉ còn đủ cho lần tiếp cận này ở sân bay dự bị: hạ cánh thôi.')
+    _around_rules(t)
     t['gates_log'] = (t['gates_log'] + [dict(ap=t['ap'], g=g['id'], go='around')])[-8:]
     d['today']['arounds'] += 1
     if t['arounds'] >= MAX_AROUNDS:
@@ -1239,6 +1250,10 @@ def public_task(t: dict) -> dict:
                       event=event, gates=gates)
     v['problem'] = _arrival_problem(t) if t['stage'] == 'approach' else None
     v['where'] = _where(t)
+    if t['stage'] == 'start':
+        v['can'] = dict(pl_takeoff=kit.check(_takeoff_rules, t))
+    elif t['stage'] == 'approach':
+        v['can'] = dict(pl_around=kit.check(_around_rules, t))
     if t['stage'] == 'approach':
         v['fly'] = _fly_view(n['gates'][t['ap']])
     return v

@@ -6,9 +6,11 @@
  * ✈️ Tự bay (./pilot_fly.js, loaded when first needed): the take-off, a storm cell on the track and the approach are
  * flown in a first-person cockpit; ⏩ Bay nhanh keeps these panels. The cockpit shows this file's own decision
  * panels (turbulence, a sick passenger, weather over the field, the rain set-up) over its instrument panel. */
-import {nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
+import {nextHint,stepBar,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import * as air from './air_kit.js';
+import {introCard as shortIntro,introHelp} from './street_kit.js';
+import {tip,clean,whyAttrs} from '../ui-kit.js';
 import {insignia} from '../v4/promo.js';
 const data=x=>x.room.data||{};
 const cc=x=>x.cc||{};
@@ -64,13 +66,9 @@ function modeSwitch(x){
 const STAGES=[['brief','📋','Bản tin'],['walk','🚶','Vòng tàu'],['start','✅','Checklist'],['cruise','✈️','Bay'],['approach','🛬','Hạ cánh']];
 
 /* ------------------------------------------------------------ cards on top */
-function introCard(x,force=false){
-  const d=data(x),i=cc(x).intro;if(!i||(d.intro&&!force))return '';
-  const list=(title,rows)=>`<section><h4>${x.esc(title)}</h4><ul class="pl-icons">${rows.map(([e,s])=>`<li><span aria-hidden="true">${x.esc(e)}</span>${x.esc(s)}</li>`).join('')}</ul></section>`;
-  const go=d.intro?carBtn(x,'Đã hiểu','introClose',{},'primary full'):x.cmd('✈️ Vào ca bay','pl_intro',{},'primary full pl-intro-go');
-  return `<article class="pl-intro card" role="dialog" aria-labelledby="pl-intro-title"><h3 id="pl-intro-title">🧑‍✈️ ${x.esc(i.title)}</h3><p>${x.esc(i.lead)}</p>
-    <div class="pl-intro-grid">${list('Công việc gồm…',i.work)}${list('Bạn sẽ gặp…',i.meet)}${list('Được khen khi…',i.stars)}</div>${go}</article>`;
-}
+/** The job's intro: the street trades' short card (name, three icon rows of ≤ 5 words, "?" with the lead and the
+ * lists); the start button is the bar's (the guide's intro step). Shown until the player starts, or reopened by ❔. */
+function introCard(x){return shortIntro(x,'pl_intro','🧑‍✈️');}
 function deskCard(x){
   const desk=data(x).desk;if(!desk)return '';
   const ev=desk.ev;
@@ -89,6 +87,8 @@ function arcCard(x){
   return `<article class="pl-arc card"><small>Chuyện nghề bay</small><h3>${x.esc(due.emoji)} ${x.esc(due.title)}</h3>${due.text.map(s=>`<p>${x.esc(s)}</p>`).join('')}${x.cmd('Ghi nhớ','pl_arc',{},'small primary')}</article>`;
 }
 function dayLine(x){
+  if(clean()){const s=data(x).schedule,i=cc(x).intro;
+    return air.crewDay(x,{cls:'pl',tail:s&&x.room.open?` <small aria-label="${x.esc(`Lịch hôm nay: ${s.total} chặng, ${s.completed} đã bay`)}">· ✈️ ${x.esc(s.completed)}/${x.esc(s.total)}</small>`:'',sections:i?introHelp(x,i):[]});}
   const m=data(x).mod||{},s=data(x).schedule;
   const roster=s&&x.room.open?`<p class="small">✈️ Lịch hôm nay: ${x.esc(s.total)} chặng · ${x.esc(s.completed)} đã bay · ${x.esc(s.remaining)} còn lại</p>`:'';
   return `<div class="pl-day"><span aria-hidden="true">${x.esc(m.emoji||'🌤️')}</span><b class="grow">${x.esc(m.label||'')}</b><small>${x.esc(m.hint||'')}</small>${carBtn(x,'❔','intro',{},'ghost small pl-help',' aria-label="Giới thiệu nghề"')}</div>${roster}`;
@@ -96,33 +96,39 @@ function dayLine(x){
 /** The flight strip: code, route, time, passengers and where the hop is. */
 function strip(t,x){
   const n=t.needs||{},leg=n.leg||{},at=STAGES.findIndex(s=>s[0]===t.stage),stage=t.stage==='landed'||t.stage==='done'?STAGES.length:at;
-  const dots=STAGES.map(([id,e,label],i)=>`<li class="${i<stage?'done':i===stage?'now':''}"><span aria-hidden="true">${e}</span><small>${x.esc(label)}</small></li>`).join('');
+  const dots=STAGES.map(([id,e,label],i)=>`<li class="${i<stage?'done':i===stage?'now':''}"${clean()?` aria-label="${x.esc(label)}" title="${x.esc(label)}"`:''}><span aria-hidden="true">${e}</span>${clean()?'':`<small>${x.esc(label)}</small>`}</li>`).join('');
+  const rule='Thưởng đủ khi bay đúng quy trình; lỗi an toàn mất thưởng. Lương theo hợp đồng.';
   const late=(t.delay||0)+(t.air_late||0);
   return `<article class="pl-strip"><div class="pl-strip-top"><b class="pl-code">${x.esc(leg.code||'')}</b><span class="pl-route">${x.esc(leg.frm||'')} → ${x.esc(t.where||leg.to||'')} ${x.esc(leg.emoji||'')}</span></div>
-    <div class="pl-strip-sub"><span>⏱️ ${leg.minutes||0}′</span><span>👥 ${n.pax||0}</span><span>Thưởng dự kiến ${x.esc(t.expected_bonus??12)} xu</span>${late?`<span class="pl-late">+${late}′</span>`:''}${t.at?`<span class="pl-late">↪️ ${x.esc(t.at)}</span>`:''}</div>
-    <p class="small muted">Thưởng đủ khi bay đúng quy trình; lỗi an toàn mất thưởng. Lương theo hợp đồng.</p>
+    <div class="pl-strip-sub"><span>⏱️ ${leg.minutes||0}′</span><span>👥 ${n.pax||0}</span><span${clean()?` aria-label="Thưởng dự kiến ${x.esc(t.expected_bonus??12)} xu"`:''}>${clean()?'💰':'Thưởng dự kiến'} ${x.esc(t.expected_bonus??12)} xu</span>${late?`<span class="pl-late">+${late}′</span>`:''}${t.at?`<span class="pl-late">↪️ ${x.esc(t.at)}</span>`:''}</div>
+    ${clean()?tip(rule,'Thưởng chuyến','p'):`<p class="small muted">${rule}</p>`}
     <ol class="pl-stages" aria-label="Các bước chuyến bay">${dots}</ol></article>`;
 }
 
 /* ------------------------------------------------------------ brief */
+/** An option's consequence: under it on the classic layout, in the "?" sheet on the clean one. */
+const sub=(s,title)=>clean()?tip(s,title):`<small>${s}</small>`;
 function needFuel(t){const f=t.needs?.fuel||{};return (f.trip||0)+(f.alt||0)+(f.reserve||0)+(t.needs?.wx?.id==='storm'?(f.hold||0):0);}
 function briefPanel(t,x){
   if(!t.known){
     const who=x.npc(t.npc);
-    return `<article class="card pl-brief-ask"><div class="row">${x.portrait(who,48)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p class="small">${x.esc(t.opening)}</p></div></div></article>`;
+    // Clean layout: the quote (the ask) stays; the scene before it folds into "?".
+    const {who:by,scene,say}=clean()?air.splitSay(t.opening):{who:'',scene:'',say:t.opening};
+    return `<article class="card pl-brief-ask"><div class="row">${x.portrait(who,48)}<div class="grow"><h3>${x.esc(by||who.display_name)}</h3><p class="small">${x.esc(say)}</p>${scene&&scene!==by?tip(x.esc(scene),by,'p'):''}</div></div></article>`;
   }
   const n=t.needs,wx=n.wx||{},f=n.fuel||{},c=cc(x);
   const wxCard=`<article class="pl-wx wx-${x.esc(wx.id)}"><span class="pl-wx-emoji" aria-hidden="true">${x.esc(wx.emoji)}</span><div><small>Thời tiết ở ${x.esc(n.leg.to)}</small><b>${x.esc(wx.name)}</b><p>${x.esc(wx.text)}</p></div></article>`;
   let body='';
   if(t.fuel==null){
-    const rows=[['🛫',`Chặng ${n.leg.frm} → ${n.leg.to}`,f.trip],['↪️',`Bay đi dự bị ${n.leg.alt}`,f.alt],['⏳','Dự phòng 30 phút',f.reserve]];
-    const tiles=(f.options||[]).map(v=>cmdTile(x,'pl_fuel',{task:t.id,kg:v},`<b>${kg(v)}</b><small>${v===c.tanks?'đầy bình':''}</small>`,'pl-fuel-tile','',` data-kg="${v}"`)).join('');
+    const rows=clean()?[['🛫',`${n.leg.frm} → ${n.leg.to}`,f.trip],['↪️',`Dự bị ${n.leg.alt}`,f.alt],['⏳','Dự phòng 30′',f.reserve],['⛈️','Nếu giông: chờ 20′',f.hold]]
+      :[['🛫',`Chặng ${n.leg.frm} → ${n.leg.to}`,f.trip],['↪️',`Bay đi dự bị ${n.leg.alt}`,f.alt],['⏳','Dự phòng 30 phút',f.reserve]];
+    const tiles=(f.options||[]).map(v=>cmdTile(x,'pl_fuel',{task:t.id,kg:v},`<b>${kg(v)}</b><small>${v===c.tanks?(clean()?'⛽ đầy':'đầy bình'):''}</small>`,'pl-fuel-tile','',` data-kg="${v}"`)).join('');
     body=`<article class="card pl-fuel"><h4>⛽ Nạp dầu</h4><ul class="pl-sum">${rows.map(([e,l,v])=>`<li><span aria-hidden="true">${e}</span><span class="grow">${x.esc(l)}</span><b>${kg(v)}</b></li>`).join('')}</ul>
-      <p class="pl-rule small">⛈️ Dự báo giông lúc tới: thêm dầu chờ 20 phút (${kg(f.hold)}).${n.full?` · 🧳 Kín khách: đừng đổ đầy bình.`:''}</p><div class="pl-tiles pl-fuel-tiles">${tiles}</div></article>`;
+      ${clean()?(n.full?'<p class="pl-rule small">🧳 Kín khách: đừng đổ đầy bình</p>':''):`<p class="pl-rule small">⛈️ Dự báo giông lúc tới: thêm dầu chờ 20 phút (${kg(f.hold)}).${n.full?` · 🧳 Kín khách: đừng đổ đầy bình.`:''}</p>`}<div class="pl-tiles pl-fuel-tiles">${tiles}</div></article>`;
   }else if(wx.id==='fog'&&!t.fog){
     body=`<article class="card pl-fog"><h4>🌫️ Sương ở ${x.esc(n.leg.to)}</h4><p class="small">Dầu đã nạp ${kg(t.fuel)}.</p>
-      <div class="pl-opts">${x.cmd('<span class="pl-opt-label">🌫️ Lùi giờ cất cánh, chờ sương tan</span><small>Trễ 30 phút, chờ dưới đất</small>','pl_fog',{task:t.id,wait:true},'pl-opt pl-fog-wait')}
-      ${x.cmd('<span class="pl-opt-label">🛫 Giữ giờ cất cánh</span><small>Tới nơi mà sương chưa tan thì…</small>','pl_fog',{task:t.id,wait:false},'pl-opt')}</div></article>`;
+      <div class="pl-opts">${x.cmd(`<span class="pl-opt-label">🌫️ Lùi giờ cất cánh, chờ sương tan</span>${sub('Trễ 30 phút, chờ dưới đất','Chờ sương')}`,'pl_fog',{task:t.id,wait:true},'pl-opt pl-fog-wait')}
+      ${x.cmd(`<span class="pl-opt-label">🛫 Giữ giờ cất cánh</span>${sub('Tới nơi mà sương chưa tan thì…','Giữ giờ')}`,'pl_fog',{task:t.id,wait:false},'pl-opt')}</div></article>`;
   }
   return wxCard+body;
 }
@@ -144,8 +150,8 @@ function walkPanel(t,x){
   let defect='';
   if(df&&!t.handled){
     defect=`<section class="pl-event tense pl-defect"><div class="pl-ev-head"><span aria-hidden="true">⚠️</span><div><small>Phát hiện khi kiểm tàu</small><h3>${x.esc(df.text)}</h3></div></div>
-      <div class="pl-opts">${df.own?x.cmd(`<span class="pl-opt-label">🔧 ${x.esc(df.fix)}</span><small>Tự xử lý</small>`,'pl_defect',{task:t.id,how:'fix'},'pl-opt pl-fix'):''}
-      ${x.cmd('<span class="pl-opt-label">📞 Gọi chú Mẫn kiểm tra, ghi sổ kỹ thuật</span><small>Có thể trễ chuyến</small>','pl_defect',{task:t.id,how:'report'},'pl-opt pl-report')}
+      <div class="pl-opts">${df.own?x.cmd(`<span class="pl-opt-label">🔧 ${x.esc(df.fix)}</span>${sub('Tự xử lý','Tự sửa')}`,'pl_defect',{task:t.id,how:'fix'},'pl-opt pl-fix'):''}
+      ${x.cmd(`<span class="pl-opt-label">📞 Gọi chú Mẫn kiểm tra, ghi sổ kỹ thuật</span>${sub('Có thể trễ chuyến','Gọi thợ máy')}`,'pl_defect',{task:t.id,how:'report'},'pl-opt pl-report')}
       ${x.cmd('<span class="pl-opt-label">⏩ Bỏ qua cho kịp giờ</span>','pl_defect',{task:t.id,how:'ignore'},'pl-opt ghost')}</div></section>`;
   }
   return `${defect}<article class="card pl-walk"><h4>🚶 Một vòng quanh tàu <small class="muted">${(t.checked||[]).length}/${points.length}</small></h4><div class="pl-plane-box">${PLANE}${spots}</div></article>`;
@@ -188,9 +194,9 @@ function approachPanel(t,x){
   if(!g)return '';
   const rows=g.rows.map(([label,value,limit])=>`<tr><th>${x.esc(label)}</th><td><b>${x.esc(value)}</b></td><td><small>${x.esc(limit)}</small></td></tr>`).join('');
   const round=t.arounds?`<small class="muted"> · lần tiếp cận ${t.arounds+1}</small>`:'';
-  return `<article class="card pl-gate"><h4>🛬 ${x.esc(g.name)}${round}</h4><p class="small muted">Tới ${x.esc(t.where)} · số liệu phải nằm trong giới hạn mới được xuống tiếp.</p>
+  return `<article class="card pl-gate"><h4>🛬 ${x.esc(g.name)}${round}</h4>${clean()?`<p class="small muted">→ ${x.esc(t.where)}</p>${tip('Số liệu phải nằm trong giới hạn mới được xuống tiếp.',g.name,'p')}`:`<p class="small muted">Tới ${x.esc(t.where)} · số liệu phải nằm trong giới hạn mới được xuống tiếp.</p>`}
     <table class="pl-read">${rows}</table>
-    <div class="pl-gate-btns">${x.cmd('✅ Ổn định · tiếp tục','pl_gate',{task:t.id},'primary big pl-gate-go')}${x.cmd('↗️ Bay lại','pl_around',{task:t.id},'big pl-gate-around')}</div></article>`;
+    <div class="pl-gate-btns">${x.cmd('✅ Ổn định · tiếp tục','pl_gate',{task:t.id},'primary big pl-gate-go')}${x.cmd('↗️ Bay lại','pl_around',{task:t.id},`big pl-gate-around${whyAttrs(t.can?.pl_around)?' is-why':''}`).replace('<button ',`<button${whyAttrs(t.can?.pl_around)} `)}</div></article>`;
 }
 
 /* ------------------------------------------------------------ rain and squalls on arrival */
@@ -220,7 +226,7 @@ function guide(t,x){
   if(d.desk?.ev)return {steps:[{ok:null,label:'Quyết chuyện ở sân bay',go:{sel:'.pl-desk-opts',label:'👉 Chọn cách xử lý'},pulse:''}],final:null};
   const o=air.oddStep(x);if(o)return {steps:[o],final:null};
   if(!d.intro)return {steps:[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'pl_intro',payload:{},label:'✈️ Vào ca bay'}}],final:null};
-  if(!t.known)return {steps:[{ok:null,label:'Nhận bản tin bay',go:{cmd:'ask',payload:{task:t.id},label:'📋 Nhận bản tin bay'}}],final:null};
+  if(!t.known)return {steps:[{ok:null,label:'Nhận bản tin bay',go:{cmd:'ask',payload:{task:t.id},label:clean()?'📋 Nhận bản tin':'📋 Nhận bản tin bay'}}],final:null};
   const n=t.needs,id=t.id;
   if(t.stage==='brief'){
     if(t.fuel==null)return {steps:[{ok:null,label:'Nạp dầu cho chặng bay',go:{sel:'.pl-fuel-tiles',label:'⛽ Chọn lượng dầu'},pulse:first?`.pl-fuel-tile[data-kg="${needFuel(t)}"]`:''}],final:null};
@@ -237,7 +243,7 @@ function guide(t,x){
     const steps=(c.checklist||[]).map((r,i)=>({ok:i<done.length?true:null,label:`${r.name}: ${r.state}`,go:i===done.length?{cmd:'pl_switch',payload:{task:id,id:r.id},label:`${x.esc(r.emoji)} ${x.esc(r.name)}: ${x.esc(r.state)}`}:null}));
     if(t.delay)steps.push({ok:t.pa?true:null,label:'Thông báo trễ chuyến cho khách',go:t.pa?null:{sel:'.pl-pa',label:'📢 Chọn câu thông báo'},pulse:first?'.pl-pa-clear':''});
     const go=flyOn()?{act:'car:fly',data:{task:id}}:finalGo(steps,'pl_takeoff',{task:id});
-    return {steps,final:{label:'🛫 CẤT CÁNH',go,ready:done.length===(c.checklist||[]).length&&(!t.delay||!!t.pa),why:'làm xong checklist'}};
+    return {steps,final:{label:'🛫 CẤT CÁNH',go,ready:done.length===(c.checklist||[]).length&&(!t.delay||!!t.pa),why:'làm xong checklist',can:t.can?.pl_takeoff}};
   }
   if(t.stage==='cruise')return {steps:[{ok:null,label:'Quyết định trên đường bay',go:{sel:'.pl-cruise-opts',label:'👉 Chọn cách xử lý'},pulse:''}],final:null};
   if(t.stage==='approach'){
@@ -253,9 +259,10 @@ function hintFor(g,x){
   const f=g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null;
   return nextHint(x,g.steps,{final:f,pulse:g.pulse});
 }
+/** The shared bottom bar (.ui-bar via guide.js stepBar): the next step on the left, the one main button on the right. */
 function bottom(t,x,g){
-  if(!g.final)return g.steps.length?`<div class="pl-bar">${stepCta(x,g.steps,{label:'',go:null,ready:false})}</div>`:'';
-  return `<div class="pl-bar">${stepCta(x,g.steps,g.final)}</div>`;
+  if(!g.final&&!g.steps.length)return '';
+  return stepBar(x,g.steps,g.final,{cls:'pl-cta'});
 }
 
 /* ------------------------------------------------------------ idle: the logbook */
@@ -315,7 +322,7 @@ export default {
     shown=t;
     if(flyPref()&&flyCan()&&t.known)flyMod();   // the cockpit's code on its way before the take-off
     const g=guide(t,x),hint=hintFor(g,x),d=data(x);
-    const top=`${dayLine(x)}${introCard(x,!!x.ui.intro)}${deskCard(x)}${air.oddCard(x,crew(x))}${air.groundCard(x)}`;
+    const top=`${dayLine(x)}${introCard(x)}${deskCard(x)}${air.oddCard(x,crew(x))}${air.groundCard(x)}`;
     if(d.desk?.ev||d.odd?.ev||(d.odd?.conduct?.ground&&['brief','walk','start'].includes(t.stage))||!d.intro||x.ui.intro)return `<div class="career-job pl">${hint}${top}${bottom(t,x,g)}</div>`;
     let main='';
     if(!t.known||t.stage==='brief')main=briefPanel(t,x);
@@ -323,7 +330,7 @@ export default {
     else if(t.stage==='start')main=startPanel(t,x);
     else if(t.stage==='cruise')main=cruisePanel(t,x);
     else if(t.stage==='approach')main=approachPanel(t,x);
-    else if(t.stage==='landed')main=`<article class="card pl-landed"><h3>🛬 Đã hạ cánh ở ${x.esc(t.where)}</h3><p class="small">Lăn vào bến, tắt máy, ghi sổ bay.</p></article>`;
+    else if(t.stage==='landed')main=`<article class="card pl-landed"><h3>🛬 Đã hạ cánh ở ${x.esc(t.where)}</h3>${clean()?tip('Lăn vào bến, tắt máy, ghi sổ bay.','Hạ cánh','p'):'<p class="small">Lăn vào bến, tắt máy, ghi sổ bay.</p>'}</article>`;
     const mode=t.known&&['brief','walk','start','cruise','approach'].includes(t.stage)?modeSwitch(x):'';
     return `<div class="career-job pl">${hint}${top}${t.known?strip(t,x):''}${mode}
       <div class="workbench"><section class="wb-main">${main}</section></div>${bottom(t,x,g)}</div>`;
@@ -331,8 +338,8 @@ export default {
   idle(x){
     const d=data(x),steps=d.desk?.ev?[{ok:null,label:'Quyết chuyện ở sân bay',go:{sel:'.pl-desk-opts',label:'👉 Chọn cách xử lý'},pulse:''}]:air.oddStep(x)?[air.oddStep(x)]:!d.intro?[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'pl_intro',payload:{},label:'✈️ Vào ca bay'}}]:[];
     const hint=pending(steps)?.go?nextHint(x,steps,{}):'';
-    const bar=pending(steps)?.go?`<div class="pl-bar">${stepCta(x,steps,{label:'',go:null,ready:false})}</div>`:'';
-    const top=`${introCard(x,!!x.ui.intro)}${deskCard(x)}${air.oddCard(x,crew(x))}${air.groundCard(x)}`;
+    const bar=pending(steps)?.go?stepBar(x,steps,null,{cls:'pl-cta'}):'';
+    const top=`${introCard(x)}${deskCard(x)}${air.oddCard(x,crew(x))}${air.groundCard(x)}`;
     if(d.desk?.ev||d.odd?.ev||!d.intro||x.ui.intro)return `<div class="career-job pl">${hint}${top}${bar}</div>`;
     return `<div class="career-job pl">${hint}${top}${arcCard(x)}${dayLine(x)}${rankCard(x)}${logbook(x)}${bar}</div>`;
   },
