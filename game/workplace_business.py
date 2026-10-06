@@ -52,7 +52,8 @@ ORDERS = {
     'garbage': ('Việc riêng: thu gom một bao rác', 14, 2, {'bao': 1}),
     'drain': ('Việc riêng: vệ sinh đoạn thoát nước', 18, 2, {'bot': 1, 'gang_tay': 1}),
     'homemaker': ('Việc riêng: dọn và sắp xếp một phòng', 16, 4, {}),
-    'ice_cream': ('Đơn riêng: một phần kem dừa', 6, 1, {'dua': 1}),
+    # One sealed tub sells as a whole 1.2 kg take-away tub (5 xu/100 g), never at a scoop's price.
+    'ice_cream': ('Đơn riêng: hộp kem dừa mang về 1,2 kg', 60, 1, {'dua': 1}),
     'nail': ('Lượt riêng: cắt dũa và sơn móng thường', 12, 1, {'son_nude': 1}),
     'pagoda': ('Việc riêng: chuẩn bị vật phẩm theo đặt hàng', 12, 5, {}),
     'pho': ('Đơn riêng: phở chín mang về', 32, 2, {'banh': 1, 'chin': 1, 'rau': 1, 'hop': 1}),
@@ -199,11 +200,28 @@ def _clothing_size(c,item):
     return clothing.staff_size(c,item)
 
 
-def _order(c,career,visitor=False):
-    if career=='clothing' and not visitor:
+def _cash(c,career,e):
+    return math.ceil(staff_life.wage(c['ops'],e)/4)+ORDERS[career][2]
+
+
+def _order(c,career,visitor=False,e=None):
+    """The next staff order. Shops with a menu (game/staff_orders.py) sell across their
+    real catalogue at shelf prices, only what is in stock and still earns after the
+    wage; visiting players keep buying the single authored order."""
+    if visitor:return ORDERS[career]
+    served=c['ops'].get('business',{}).get('served',0)
+    if career=='clothing':
         from .careers import clothing
-        return clothing.staff_order(c,c['ops'].get('business',{}).get('served',0))
+        return clothing.staff_order(c,served)
+    from . import staff_orders
+    if career in staff_orders.MENUS and e is not None:
+        return staff_orders.pick(c,career,served,_cash(c,career,e),ORDERS[career][2])
     return ORDERS[career]
+
+
+def _receipt_key(career):
+    from . import staff_orders
+    return 'business_clothing_receipts' if career=='clothing' else 'business_receipts' if career in staff_orders.MENUS else None
 
 
 def _take_stock(c,career,inputs):
@@ -230,19 +248,19 @@ def _take_stock(c,career,inputs):
     return sum(costs.get(item,0)*qty for item,qty in inputs.items())
 
 
-def _blocked(c,career,e,b,visitor=False):
-    order=_order(c,career,visitor)
+def _blocked(c,career,e,b,visitor=False,order=False):
+    if c['money']<_cash(c,career,e):return 'fund'
+    if order is False:order=_order(c,career,visitor,e)
     if order is None:return 'stock'
     _,_,supplies,inputs=order
-    if c['money']<math.ceil(staff_life.wage(c['ops'],e)/4)+supplies:return 'fund'
     if not _stock_ok(c,career,inputs):return 'stock'
     if b['served']>=LIMIT or c['earnings']>10**9-1000 or c['money']>10**9-1000:return 'limit'
     return None
 
 
-def _finish(s,c,career,e,at):
+def _finish(s,c,career,e,at,order=None):
     from . import operations as ops
-    b=c['ops']['business'];label,base,supplies,inputs=_order(c,career)
+    b=c['ops']['business'];label,base,supplies,inputs=order or _order(c,career,e=e)
     seq=b['served']+1
     quality=staff_life.quality(e,seq,career)['stars']
     revenue=base*(80+quality*4)//100
@@ -261,9 +279,12 @@ def _finish(s,c,career,e,at):
     receipt=dict(id=ref,at=at,employee=e['id'],name=e['name'],label=label,stars=quality,
                  items=dict(inputs),revenue=revenue,wage=wage,materials=supplies,goods=goods,
                  expenses=expenses,cash_expenses=cash,net=revenue-expenses)
-    if career=='clothing':
-        c['ops']['business_clothing_receipts']=(_recent(c)+[receipt])[-RECENT:]
-        b['recent']=[]  # older servers only accept the original tee receipt
+    key=_receipt_key(career)
+    if key:
+        # Older servers only accept the original single-item receipt in b['recent'];
+        # catalogue receipts live in a sidecar they ignore.
+        c['ops'][key]=(_recent(c)+[receipt])[-RECENT:]
+        b['recent']=[]
     else:b['recent']=(b['recent']+[receipt])[-RECENT:]
     credit_profit_bonus(c,revenue-expenses,ref,e['name'])
     e['jobs']=min(10**9,e['jobs']+1);e['last_work']=f'{label} · {quality}/5 sao · thu {revenue} xu, lương {wage} xu.'
@@ -272,7 +293,8 @@ def _finish(s,c,career,e,at):
 
 
 def _recent(c):
-    legacy=c['ops']['business']['recent'];actual=c['ops'].get('business_clothing_receipts')
+    legacy=c['ops']['business']['recent']
+    actual=c['ops'].get('business_clothing_receipts',c['ops'].get('business_receipts'))
     if actual is None:return legacy
     ids={r['id'] for r in legacy}
     return ([r for r in actual if r['id'] not in ids]+legacy)[-RECENT:]
@@ -326,12 +348,13 @@ def _settle(s,now=None):
                for career,c,b,employees in businesses for sid,p in b['pending'].items() if p['at']<=now]
         if not ready:break
         at,career,sid,c,b,pending,e=min(ready,key=lambda x:x[:3])
-        reason=_blocked(c,career,e,b)
+        order=_order(c,career,e=e) if c['money']>=_cash(c,career,e) else None
+        reason=_blocked(c,career,e,b,order=order)
         if reason:
             # Discard blocked time: replenishment never pays work performed
             # when the business had no goods or wages available.
             b['pending']={};b['reason']=reason;changed=True;continue
-        _finish(s,c,career,e,at);remaining-=1;changed=True
+        _finish(s,c,career,e,at,order);remaining-=1;changed=True
         staff_life.tick_career(s,c,career)
         tick_career(s,c,career)
         pending['seconds']=_seconds(c,e);pending['signature']=_signature(c,e)
@@ -382,11 +405,56 @@ def public(c,now=None):
                next_at=next_at,server_now=now,catching_up=next_at is not None and next_at<=now,
                rate_per_hour=round(sum(3600/p['seconds'] for p in b['pending'].values()),1),
                wage_basis='Mỗi đơn trả 1/4 lương ca, làm tròn lên; vật tư trừ quỹ nơi làm việc.',fund=c['money'])
+    _explain(c,b,out)
     if staff_working(c):
         out.update(status='running',reason='working',reason_text='Nhân viên đang phục vụ khách người chơi.',visitor_working=True)
         times=[r['due_at'] for r in c.get('player_service_jobs',[]) if r['status']=='queued' and r['due_at'] is not None]
         if times:out['next_at']=min(times+[next_at] if next_at is not None else times)
     out.pop('pending');return out
+
+
+def _item_names(career):
+    from . import staff_orders
+    if career=='mother_baby':
+        from .content import PRODUCT_INDEX
+        return {k:p['name'] for k,p in PRODUCT_INDEX.items()}
+    if career=='pharmacy':
+        from .content import LOT_INDEX
+        return {k:l['name']+' · '+k for k,l in LOT_INDEX.items()}
+    from . import inventory as inv
+    return {x['id']:x['name'] for x in inv.catalogue(career)}
+
+
+def _explain(c,b,out):
+    """Read-only: what the next staff order sells, earns and costs, and why a stop happened."""
+    career=next((e.get('career') for e in c['ops']['staff'] if e.get('career') in ORDERS),None)
+    if career is None:return
+    team=_eligible(c) or [e for e in c['ops']['staff'] if e['status']=='hired']
+    if not team:return
+    e=min(team,key=lambda x:x['id']);cash=_cash(c,career,e);wage=cash-ORDERS[career][2]
+    names=_item_names(career) if any(ORDERS[career][3].values()) or career=='clothing' else {}
+    order=_order(c,career,e=e)
+    if order is not None and _stock_ok(c,career,order[3]):
+        from . import staff_orders
+        label,base,supplies,inputs=order
+        unit=staff_orders.costs(career) if names else {}
+        goods=sum(unit.get(i,0)*q for i,q in inputs.items())
+        typical=base*96//100
+        out['next_order']=dict(label=label,revenue=base,revenue_low=base*84//100,wage=wage,materials=supplies,goods=goods,
+                               margin=typical-wage-supplies-goods,
+                               items=[dict(item=i,name=names.get(i,i),qty=q) for i,q in inputs.items()])
+    if b['reason']=='stock':
+        from . import staff_orders
+        if career in staff_orders.MENUS:out['reason_text']=staff_orders.why(c,career,cash)
+        else:
+            if career=='clothing':gone=['quần áo còn size bán được']
+            elif career=='milk_tea':
+                from . import boba
+                gone=[name for name,ok in (('sữa tươi',boba.stock(c)['milk']>=1),('ly size M',boba.view(c)['cups']['M']>=1)) if not ok]
+            else:gone=[names.get(i,i) for i,q in ORDERS[career][3].items() if not _stock_ok(c,career,{i:q})]
+            if gone:out['reason_text']='Hết '+', '.join(gone)+' cho đơn riêng; nhập hàng để đội làm tiếp.'
+    out['money_note']=('Tiền đơn riêng vào quỹ nghề (Sổ thu chi), không vào ví. Mỗi đơn: thu theo giá kệ, trả lương '
+                       f'{wage} xu và vật tư {ORDERS[career][2]} xu từ quỹ; giá vốn hàng đã trả lúc nhập.')
 
 
 def validate(c,career):
@@ -420,10 +488,13 @@ def validate(c,career):
         check(sid in ids and isinstance(p,dict) and set(p)=={'at','seconds','signature'})
         check(integer(p['at'],0,TIME_MAX) and integer(p['seconds'],15,100000) and isinstance(p['signature'],str) and len(p['signature'])<=100)
     check(isinstance(b['recent'],list) and len(b['recent'])<=min(RECENT,b['served']))
-    receipts=b['recent'];actual=c['ops'].get('business_clothing_receipts')
-    if actual is not None:
-        check(career=='clothing' and isinstance(actual,list) and len(actual)<=min(RECENT,b['served']))
-        receipts=receipts+actual
+    receipts=b['recent'];actual=None
+    for key in ('business_clothing_receipts','business_receipts'):
+        if key in c['ops']:
+            check(actual is None and _receipt_key(career)==key)
+            actual=c['ops'][key]
+            check(isinstance(actual,list) and len(actual)<=min(RECENT,b['served']))
+    if actual is not None:receipts=receipts+actual
     seen=set()
     for r in receipts:
         check(isinstance(r,dict) and set(r)=={'id','at','employee','name','label','stars','items','revenue','wage','materials','goods','expenses','cash_expenses','net'})
@@ -435,6 +506,10 @@ def validate(c,career):
             check(len(r['items'])==1 and all(item in clothing.ITEM and qty==1 for item,qty in r['items'].items()))
             item=next(iter(r['items']))
             check(r['label']=='Đơn riêng: '+clothing.ITEM[item]['name'] or item=='tee' and r['label']==ORDERS[career][0])
+        elif actual is not None and any(r is row for row in actual):
+            from .staff_orders import known
+            items=known(career)
+            check(1<=len(r['items'])<=8 and all(item in items and type(qty) is int and 1<=qty<=999 for item,qty in r['items'].items()))
         else:check(r['items']==ORDERS[career][3])
         check(all(type(qty) is int for qty in r['items'].values()))
         for key in ('revenue','wage','materials','goods','expenses','cash_expenses'):check(integer(r[key]))
