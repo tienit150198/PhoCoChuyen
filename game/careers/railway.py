@@ -75,7 +75,8 @@ NIGHT_TIMES = (None, 17 * 60 + 50, 19 * 60 + 5, 20 * 60 + 10, 20 * 60 + 45, 21 *
 # The words of the encounters (air_odd): who to bring in, the office, the rank lost on a demotion.
 CFG = dict(crew='Báo chú Sáu', company='Báo cung trưởng', union='Nhờ công đoàn xí nghiệp', office='Đội trưởng', demoted='gác chắn tập sự',
            title='gác chắn chính', harass_note='🛡️ Báo là đúng: xí nghiệp có quy trình bảo vệ người đang trực gác.', ground_line='⚖️ Đội trưởng: tạm đình chỉ gác hết hôm nay, mai lên đội trình bày.',
-           demote_line='⚖️ Hội đồng kỷ luật xí nghiệp: hạ xuống {demoted}, tạm đình chỉ gác hôm nay, thưởng ca về 0 tới khi hồ sơ sạch lại.')
+           demote_line='⚖️ Hội đồng kỷ luật xí nghiệp: hạ xuống {demoted}, tạm đình chỉ gác hôm nay, thưởng ca về 0 tới khi hồ sơ sạch lại.',
+           rest_ok=' Ca của bạn đã có người gác thay; bạn thấy nhẹ cả người.', levels={'ground': 'Tạm đình chỉ gác'})
 
 
 # ================================================================ small helpers

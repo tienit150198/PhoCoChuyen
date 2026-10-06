@@ -22,6 +22,7 @@ NAMES = {
  'hr_admin':'Máy quét và bộ xử lý hồ sơ', 'secretary':'Bộ máy trạm và thiết bị văn phòng',
  'it_helpdesk':'Bộ chẩn đoán và linh kiện dự phòng',
  'railway':'Bộ cờ đèn và tay quay cần chắn',
+ 'nurse':'Xe tiêm và bộ máy đo cầm tay',
 }
 RATES=(100,115,135,160)
 PRICES=(0,90,220,480)

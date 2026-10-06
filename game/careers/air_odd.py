@@ -21,6 +21,11 @@ the day (đình chỉ bay) or demote them (cách chức). Harassment is never th
 legitimate and the company backs it; not reporting only means the harasser may come back. A bargain accepted
 beyond the rules pays overtime but tires the crew (fatigue): tired crew earn half the flight bonus, and asking
 for rest days is the player's own move from the crew room.
+
+Other careers reuse the engine (oil keeps the air crew's words; railway and nurse word it their own way). Besides
+crew, company, union, office, demoted and title, a career's cfg may carry, each optional (the air crew's line
+otherwise): labels {kind: {word id: label}}, levels {level id: label}, harass_note, ground_line, demote_line
+('{demoted}' is filled in), tired_line and rest_ok. The air kit's oddCard/restCard read cfg.kinds and cfg.rest_to.
 """
 from __future__ import annotations
 
@@ -345,7 +350,7 @@ def _resolve(s: dict, c: dict, career: str, odd: dict, x: dict, out: dict, cfg: 
         if kind == 'harass' and how != 'report' and x.get('follow'):
             odd['marks'][x['follow']] = c['day']          # unreported, the same man may fly with you again
         if kind == 'harass' and how == 'report':
-            notes.append(cfg.get('harass_note', '🛡️ Báo là đúng: hãng có quy trình bảo vệ tổ bay.'))
+            notes.append(cfg.get('harass_note') or '🛡️ Báo là đúng: hãng có quy trình bảo vệ tổ bay.')
     if out['sharp_boss']:
         odd['marks']['strained'] = c['day']
     if conduct:
@@ -383,12 +388,13 @@ def _conduct(c: dict, odd: dict, delta: int, cfg: dict) -> str:
     if after >= DEMOTE_AT and not cd['demoted']:
         cd['demoted'] = True
         cd['ground'] = c['day']
-        # A career outside the airline (railway) words these in its own cfg; the air crew keep the lines they had.
-        line = cfg.get('demote_line', '⚖️ Hội đồng kỷ luật: cách chức xuống {demoted}, tạm đình chỉ bay hôm nay, thưởng chuyến về 0 tới khi hồ sơ sạch lại.')
+        # A career outside the airline (railway, nurse) words these in its own cfg; '{demoted}' is filled in.
+        # The air crew (pilot, flight_attendant, oil) keep the lines they had.
+        line = cfg.get('demote_line') or '⚖️ Hội đồng kỷ luật: cách chức xuống {demoted}, tạm đình chỉ bay hôm nay, thưởng chuyến về 0 tới khi hồ sơ sạch lại.'
         return line.format(demoted=cfg['demoted'])
     if before < GROUND_AT <= after:
         cd['ground'] = c['day']
-        return cfg.get('ground_line', '⚖️ Phòng an toàn: tạm đình chỉ bay hết hôm nay, mai lên trình bày.')
+        return cfg.get('ground_line') or '⚖️ Phòng an toàn: tạm đình chỉ bay hết hôm nay, mai lên trình bày.'
     if before < 4 <= after:
         return '⚠️ Cảnh cáo bằng văn bản vào hồ sơ.'
     if before < 2 <= after:
@@ -431,7 +437,9 @@ def close(s: dict, c: dict, odd: dict, scripts: list) -> str | None:
     return f'{x["emoji"]} {x["title"]}: hết ca vẫn bỏ ngỏ.'
 
 
-def day_lines(c: dict, odd: dict) -> list:
+def day_lines(c: dict, odd: dict, cfg: dict | None = None) -> list:
+    """The day summary's lines; a career other than the air crew passes its cfg for its own words (tired_line)."""
+    cfg = cfg or {}
     today = [h for h in odd['log'] if h['day'] == c['day'] and h['how'] != 'lapse']
     lines = []
     if today:
@@ -439,9 +447,9 @@ def day_lines(c: dict, odd: dict) -> list:
         lines.append(f'🙄 Gặp {len(today)} chuyện oái oăm, xử lý đẹp {ok}.')
     lv = level(odd['conduct']['points'])
     if lv[1] != 'ok':
-        lines.append(f'📁 Hồ sơ: {lv[2].lower()}.')
+        lines.append(f'📁 Hồ sơ: {(cfg.get("levels") or {}).get(lv[1], lv[2]).lower()}.')
     if odd['fatigue'] >= TIRED:
-        lines.append('😮‍💨 Mệt rồi: thưởng chuyến còn một nửa. Xin nghỉ bù ở phòng tổ bay.')
+        lines.append(cfg.get('tired_line') or '😮‍💨 Mệt rồi: thưởng chuyến còn một nửa. Xin nghỉ bù ở phòng tổ bay.')
     return lines
 
 
@@ -465,7 +473,7 @@ def rest(s: dict, c: dict, odd: dict, p: dict, pressure: int, cfg: dict) -> dict
     if grant:
         c['xp'] += 4 * grant
         head = f'📝 {cfg["office"]} duyệt {grant} ngày nghỉ bù.' + (' Không đủ như xin, nhưng có còn hơn không.' if grant < n else '')
-        tail = ' Người bay thay đã xếp xong; bạn thấy nhẹ cả người.' if before else ''
+        tail = (cfg.get('rest_ok') or ' Người bay thay đã xếp xong; bạn thấy nhẹ cả người.') if before else ''
         return dict(message=head + tail, celebrate=True)
     return dict(message=f'📝 {cfg["office"]}: “Cao điểm mà nghỉ gì em, cố lên 💪.” Đơn bị trả về.' + (' Mệt thế này thì nêu quy định giờ nghỉ hoặc nhờ công đoàn.' if tired else ''))
 
@@ -477,7 +485,8 @@ def public(c: dict, odd: dict, scripts: list, career: str, cfg: dict) -> dict:
     if ev:
         x = script(scripts, ev['script'])
         if x:
-            words = {**LABELS[x['kind']], **x.get('words', {})}
+            # A career may word the answers its own way (cfg['labels'][kind]); a script's own words come last.
+            words = {**LABELS[x['kind']], **(cfg.get('labels') or {}).get(x['kind'], {}), **x.get('words', {})}
             said = ev.get('said', [])
             line = x['text'] if not said else x['push'][min(len(said), len(x['push'])) - 1]
             ch = {'self': 'Tự xử lý', 'crew': cfg['crew'], 'company': cfg['union'] if x['kind'] == 'bargain' else cfg['company']}
@@ -497,7 +506,8 @@ def public(c: dict, odd: dict, scripts: list, career: str, cfg: dict) -> dict:
         if x:
             log.append(dict(title=x['title'], emoji=x['emoji'], day=h['day'], how=h['how'], good=h['good']))
     return dict(ev=view, last=odd.get('last'), log=log,
-                conduct=dict(points=cd['points'], level=lv[1], label=lv[2], ground=cd['ground'] == c['day'], demoted=cd['demoted']),
+                conduct=dict(points=cd['points'], level=lv[1], label=(cfg.get('levels') or {}).get(lv[1], lv[2]), ground=cd['ground'] == c['day'],
+                             demoted=cd['demoted']),
                 fatigue=odd.get('fatigue', 0), tired=odd.get('fatigue', 0) >= TIRED, rest_today=odd.get('rest') == c['day'],
                 rest_words=[dict(id=k, label=v) for k, v in REST_WORDS.items()])
 
