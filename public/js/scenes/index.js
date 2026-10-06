@@ -23,6 +23,7 @@ export const KIND_OF={
   giupviec:'flat',
   babysitter:'nursery',
   pilot:'airfield',flight_attendant:'airfield',
+  nurse:'ward',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
 
@@ -174,6 +175,14 @@ const CAREER_WORDS={
     open_sign:'ĐANG ĐÓN KHÁCH',idle_line:'Khách chuyến sau đang xếp hàng ở cổng.',open_hint:'Thắt khăn quàng, ra cửa tàu đón khách nhé.',
     free_eyebrow:'Khoang khách đang yên',free_title:'Xong việc rồi!',free_more:'Nhận thêm một việc hoặc tan ca hôm nay.',more_btn:'Nhận thêm một việc',
     none_waiting:'Chưa có việc nào đang chờ',next_btn:'Việc tiếp theo',people_sub:'Những người bạn gặp trên khoang khách.',feed_sub:'Lời nhắn và nhận xét của hành khách.'},
+  nurse:{shelf:'Bảng phân giường',evidence:'Sổ giao ca',workbench:'Bàn điều dưỡng',counter:'Chuông gọi & sát khuẩn tay',warehouse:'Xe tiêm & tủ vật tư',
+    finance:'Bàn hồ sơ',property:'Giường bệnh',security:'An ninh bệnh viện',ledger:'SỔ KHOA',store:'TỦ VẬT TƯ',till:'Quỹ lương',
+    door_open:'Giao ca',door_closed:'Nhận ca',open_sign:'ĐANG TRỰC',closed_sign:'ĐÃ GIAO CA',pet:'Mướp nằm ngoài cửa sổ',
+    cat_line:'Mrrr… Mướp đứng ngoài cửa sổ thôi, khoa Nội phải sạch sẽ.',idle_line:'Chuông gọi sắp réo rồi.',open_hint:'Nhận ca, đọc sổ giao ca rồi đi buồng nhé.',
+    free_eyebrow:'Khoa đang yên',free_title:'Xong việc rồi!',free_more:'Nhận thêm một việc hoặc giao ca hôm nay.',more_btn:'Nhận thêm một việc',
+    none_waiting:'Chưa có việc nào đang chờ',next_btn:'Việc tiếp theo',rail_in:'Trong khoa',books:'Sổ khoa',
+    end_title:'Giao ca hôm nay?',end_text:'Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho ca sau.',
+    people_sub:'Những người bạn gặp ở khoa Nội.',feed_sub:'Lời nhắn và nhận xét của người bệnh, người nhà.'},
 };
 export const wordsFor=career=>({...BASE,...KIND_WORDS[kindOf(career)],...CAREER_WORDS[career]});
 
