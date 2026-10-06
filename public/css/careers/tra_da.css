@@ -194,3 +194,10 @@
   .career-job.td .td-drinks .td-tile,.career-job.td .td-snacks .td-tile{padding:6px 4px;min-height:64px}
   .career-job.td .td-drinks .td-tile b,.career-job.td .td-snacks .td-tile b{font-size:.8rem;overflow-wrap:anywhere}
 }
+
+/* Short intro (UI foundation): name + "?", three icon rows (app.css .ui-rows). */
+.career-job .td-intro-head{display:flex;align-items:center;gap:var(--sp-2)}
+.career-job .td-intro-head h3{flex:1 1 auto;margin:0;font-size:var(--fs-4)}
+.career-job .td-intro-rows{margin:var(--sp-3) 0;gap:var(--sp-2)}
+.career-job .td-intro-rows li{align-items:center;min-height:44px;padding:var(--sp-1) var(--sp-3);border-radius:12px;background:var(--surface-2);font-size:var(--fs-3);font-weight:700}
+.career-job .td-intro-rows li>span{font-size:22px;width:28px}

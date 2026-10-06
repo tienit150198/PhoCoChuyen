@@ -8,6 +8,8 @@ import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import {linesSummary} from './tomorrow_kit.js';
+import {shortLine,introHelp} from './street_kit.js';
+import {helpBtn} from '../ui-kit.js';
 const DONE=['completed','cancelled','referred'];
 const data=x=>x.room.data||{};
 const cc=x=>x.cc||{};
@@ -28,12 +30,14 @@ function pane(x,key,summary,body,auto=false,cls=''){
 }
 
 /* ------------------------------------------------------------ cards on top */
+/** The short intro (UI foundation, as the street kit's): the job's name, three icon rows and a "?" with the lead and lists. */
 function introCard(x,force=false){
   const d=data(x),i=cc(x).intro;if(!i||(d.intro&&!force))return '';
-  const list=(title,rows)=>`<section><h4>${x.esc(title)}</h4><ul class="td-icons">${rows.map(([e,s])=>`<li><span aria-hidden="true">${x.esc(e)}</span>${x.esc(s)}</li>`).join('')}</ul></section>`;
-  const go=d.intro?carBtn(x,'Đã hiểu','introClose',{},'primary full'):x.cmd('🍵 Vào việc thôi!','td_intro',{},'primary full td-intro-go');
-  return `<article class="td-intro card" role="dialog" aria-labelledby="td-intro-title"><h3 id="td-intro-title">🌳 ${x.esc(i.title)}</h3><p>${x.esc(i.lead)}</p>
-    <div class="td-intro-grid">${list('Công việc gồm…',i.work)}${list('Bạn sẽ gặp…',i.meet)}${list('Được khen khi…',i.stars)}</div>${go}</article>`;
+  const name=String(i.title||'').replace(/^Giới thiệu nghề:?\s*/,'')||String(i.title||'');
+  const rows=(i.short||(i.work||[]).slice(0,3).map(([e,s])=>[e,shortLine(s)])).slice(0,3);
+  const go=d.intro?carBtn(x,'Đã hiểu','introClose',{},'full'):x.cmd('🍵 Vào việc thôi!','td_intro',{},'primary full td-intro-go');
+  return `<article class="td-intro td-intro-short card" role="dialog" aria-labelledby="td-intro-title"><div class="td-intro-head"><h3 id="td-intro-title"><span aria-hidden="true">🌳</span> ${x.esc(name.charAt(0).toUpperCase()+name.slice(1))}</h3>${helpBtn('intro-tra_da',`🌳 ${name}`,introHelp(x,i))}</div>
+    <ul class="ui-rows td-intro-rows">${rows.map(([e,s])=>`<li><span aria-hidden="true">${x.esc(e)}</span>${x.esc(s)}</li>`).join('')}</ul>${go}</article>`;
 }
 function sweepCard(x){
   const sw=data(x).sweep;if(!sw||sw.stage!=='coming')return '';
