@@ -17,7 +17,7 @@ import re
 import unicodedata
 from typing import Any
 from .content import (CAREERS,CAREER_META,NPCS,NPC_INDEX,PRODUCTS,PRODUCT_INDEX,PAPERS,RIBBONS,
-    LOT_INDEX,UPGRADE_INDEX,QUESTS,QUEST_INDEX,make_task,initial_career)
+    LOT_INDEX,UPGRADE_INDEX,QUESTS,QUEST_INDEX,REVIEW_FOLLOWUP,make_task,initial_career)
 from .events import SCRIPTS,instantiate,event_view
 from . import operations as ops
 from . import business
@@ -1058,8 +1058,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         elif action=="review_followup":
             need(post["kind"]=="review","Chỉ mở trao đổi từ review.")
             need(not c["event"] or c["event"]["stage"]=="resolved","Bạn đang có một chuyện khác. Làm xong rồi trao đổi thêm nhé.")
-            need(career in ORIGINAL,"Trả lời review trong mục Phản hồi khách để khách tự quyết định sửa đánh giá nhé.")
-            eid={"mother_baby":"MB-E09","pharmacy":"PH-E16","accounting":"AC-E22","customer_care":"CS-E14"}[career]
+            need(career in REVIEW_FOLLOWUP,"Trả lời review trong mục Phản hồi khách để khách tự quyết định sửa đánh giá nhé.")
+            eid=REVIEW_FOLLOWUP[career]
             c["event"]=instantiate(eid,s["seq"]+1,c["day"],True)
             result["message"]="Mở diễn tập trao đổi review. Số sao cũ không tự thay đổi vì một câu trả lời."
         else:

@@ -78,9 +78,13 @@ html dialog#sheet[data-gd-bar="below"] .toasts{top:calc(var(--cta-bar-b,0px) + 6
  * pulse costs no repaint (the old animated box-shadow repainted the button every frame, 60-75% CPU idle on a
  * throttled phone). .gd-ring: the same ring for other elements (cafe_bakery.css). */
 .gd-pulse,.gd-ring{position:relative;z-index:1}
-.gd-pulse::before,.gd-ring::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 4px var(--accent),0 0 0 10px var(--accent-soft);opacity:0;will-change:opacity;animation:gd-ring 1.8s ease-in-out infinite}
+.gd-pulse::before,.gd-ring::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 4px var(--accent),0 0 0 10px var(--accent-soft);opacity:1;will-change:opacity;animation:gd-ring 1.8s ease-in-out 3}
+/* Backlog 4 F#235 (Safari lag): the infinite ring restyled the page every frame (60 style recalcs a second on an idle
+ * town screen, and a ::before animation is not composited in WebKit). It now dims three times and stays lit (no fill:
+ * the base opacity is the lit ring); a new screen draws a new ring. "Giảm chuyển động" gets the still ring at once. */
+html.reduce-motion .gd-pulse::before,html.reduce-motion .gd-ring::before,body.reduce-motion .gd-pulse::before,body.reduce-motion .gd-ring::before{animation:none;opacity:1}
 @keyframes gd-flash{0%,100%{box-shadow:0 0 0 0 transparent}40%{box-shadow:0 0 0 4px var(--accent),0 0 0 9px var(--accent-soft)}}
-@keyframes gd-ring{0%,100%{opacity:0}50%{opacity:1}}
+@keyframes gd-ring{0%,100%{opacity:1}50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){
   .gd-flash{animation:none;outline:3px solid var(--accent);outline-offset:2px}
   .gd-pulse{outline:3px solid var(--accent);outline-offset:2px}

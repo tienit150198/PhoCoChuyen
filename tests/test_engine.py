@@ -158,6 +158,17 @@ class EngineTests(unittest.TestCase):
         j=Journey();j.solve();j.state['careers']['pharmacy']['money']=450;j.act('reset_career',confirm='BAT DAU LAI');self.assertEqual(j.c['money'],320);self.assertEqual(j.state['careers']['pharmacy']['money'],450)
 
 # Each concrete authored incident/choice is a separately counted test.
+    def test_review_followup_only_where_the_catalogue_says(self):
+        """Backlog 4 #6: Chuyện phố draws "Trao đổi tình huống" only for careers flagged `review_followup`."""
+        from game.engine import add_feed
+        flagged={c['id'] for c in public_content()['catalogue'] if c.get('review_followup')}
+        self.assertEqual(flagged,{'mother_baby','pharmacy','accounting','customer_care'})
+        j=Journey();j.solve();j.c['event']=None;j.act('review_followup',post=j.c['feed'][0]['id']);self.assertTrue(j.c['event']['practice'])
+        other=next(x for x in CAREERS if x not in flagged)
+        j=Journey(other);post=add_feed(j.state,j.c,'player','Quán ổn','t-1',4,'review');before=copy.deepcopy(j.state)
+        with self.assertRaises(GameError):j.act('review_followup',post=post['id'])
+        self.assertEqual(before,j.state)
+
 class ScenarioTests(unittest.TestCase):pass
 for event_id,script in SCRIPTS.items():
     for choice in ('a','b'):

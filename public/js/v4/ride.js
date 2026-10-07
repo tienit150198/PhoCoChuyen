@@ -39,7 +39,7 @@ export function loadSpouse(api,force=false){
   if(SP_GO)return SP_GO;
   if(!force&&SP_AT&&Date.now()-SP_AT<60000)return Promise.resolve(SP);
   SP_GO=api.json('/api/garage/spouse').then(d=>{const q=d?.spouse;
-    SP=q&&typeof q.pid==='string'&&/^[0-9a-f]{16}$/.test(q.pid)&&Array.isArray(q.cars)?{pid:q.pid,name:String(q.name||'').slice(0,24)||'Người ấy',cars:q.cars,ride:q.ride}:null;return SP;})
+    SP=q&&typeof q.pid==='string'&&/^[0-9a-f]{16}$/.test(q.pid)&&Array.isArray(q.cars)?{pid:q.pid,name:[...String(q.name||'')].slice(0,24).join('')||'Người ấy',cars:q.cars,ride:q.ride}:null;return SP;})
     .catch(()=>SP).finally(()=>{SP_AT=Date.now();SP_GO=null;});
   return SP_GO;
 }

@@ -460,12 +460,32 @@ class BeaconHTTPTests(unittest.TestCase):
         self.assertEqual(self.beacon(dev, dict(leave=dict(v='home')), origin=None), 204)   # Sec-Fetch-Site alone is enough
         self.assertEqual(self.beacon(dev, dict(leave=dict(v='home')), site=None), 204)     # Origin alone too
 
+    def test_takes_safari_beacons(self):
+        """Backlog 4 #2: WebKit sends sendBeacon with `Origin: null` under Referrer-Policy: no-referrer (every
+        iPhone beacon was a 403). Our other host (www ↔ apex) is same-site, not a foreign website."""
+        dev, body = self.device(), dict(leave=dict(v='job'))
+        self.assertEqual(self.beacon(dev, body, origin='null', site='same-origin'), 204)   # Safari 16.4+, iOS WebViews
+        self.assertEqual(self.beacon(dev, body, origin='null', site=None), 204)            # older Safari
+        self.assertEqual(self.beacon(dev, body, origin='null', site='none'), 204)
+        self.assertEqual(self.beacon(dev, body, site='same-site'), 204)
+        self.assertEqual(self.beacon(dev, body, origin='http://localhost:1', site='same-site'), 204)   # an allowed host
+        self.assertEqual(self.beacon(None, body, origin='null', site=None), 401)           # still needs the session cookie
+        self.assertEqual(len(self.rows(self.sid(dev))), 5)                                 # each one stored
+        # The state-changing API keeps its CSRF and Origin checks: `Origin: null` is still refused there.
+        status, _, _ = self.raw('POST', '/api/command', json.dumps(dict(request_id='y' * 12, expected_revision=0, action='settings', payload={})),
+                                {'Content-Type': 'application/json', 'Origin': 'null'}, cookie=dev['cookie'], csrf=dev['csrf'])
+        self.assertEqual(status, 403)
+
     def test_refuses_other_sites_and_no_session(self):
         dev = self.device()
         body = dict(leave=dict(v='job'))
         self.assertEqual(self.beacon(dev, body, origin='https://evil.example'), 403)
         self.assertEqual(self.beacon(dev, body, site='cross-site'), 403)
-        self.assertEqual(self.beacon(dev, body, site='same-site'), 403)
+        self.assertEqual(self.beacon(dev, body, origin='https://evil.example', site='same-site'), 403)
+        self.assertEqual(self.beacon(dev, body, origin=None, site='same-site'), 403)    # a sibling site must say who it is
+        self.assertEqual(self.beacon(dev, body, origin='null', site='same-site'), 403)
+        self.assertEqual(self.beacon(dev, body, origin='null', site='cross-site'), 403)
+        self.assertEqual(self.beacon(dev, body, origin='file://x', site=None), 403)
         self.assertEqual(self.beacon(dev, body, origin=None, site=None), 403)
         self.assertEqual(self.beacon(None, body), 401)
         self.assertEqual(self.beacon(dict(cookie='mnl_session=' + 'ab' * 32), body), 204)   # unknown save: taken, nothing stored

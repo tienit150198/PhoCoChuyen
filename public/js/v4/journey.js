@@ -317,19 +317,21 @@ function introView(env){
   return `<div class="jr-intro onb-intro"><div class="jr-street" aria-hidden="true"><span>🏠</span><span>🏪</span><span>🌳</span><span>🧋</span><span>🏮</span><span>🛵</span></div>
     <h1>Chào bạn mới! 👋</h1><p class="jr-lead">Một khu phố nhỏ, nhiều nghề để thử.</p>
     <form class="jr-who" data-jr-form="start"><div class="jr-genders" role="group" aria-label="Giới tính">${card('male','Nam')}${card('female','Nữ')}</div>${pick?'':'<p class="onb-need" id="onb-need">👆 Chọn Nam hoặc Nữ để bắt đầu</p>'}
-    <label class="jr-name"><span>Tên của bạn</span><input id="jr-name" name="name" maxlength="24" autocomplete="nickname" required value="${esc(api.state.name)}" data-preserve></label>
+    <label class="jr-name"><span>Tên của bạn</span><input id="jr-name" name="name" maxlength="24" autocomplete="nickname" required value="${esc(api.state.name)}" aria-describedby="jr-name-hint" data-preserve><small class="jr-name-hint" id="jr-name-hint">${NAME_HINT}</small></label>
     ${town?'':`<fieldset class="onb-jobs"><legend>Làm ở đâu trước?</legend><div class="onb-job-row">${ids.map(chip).join('')}</div></fieldset>`}
     <button type="submit" class="btn primary big full"${pick?'':' aria-describedby="onb-need"'}>${town?'Vào phố thôi':'Vào làm thôi'} ${icon('arrow',16)}</button></form>
     ${!town&&J.gender&&townOK()?`<button type="button" class="jr-link" data-action="jrTown">🗺️ Bản đồ phố</button>`:''}
     ${api.account?'':`<button type="button" class="jr-link acct-intro-link" data-action="v4AccountOpen" data-mode="login">${icon('user',14)} Đã có tài khoản? Đăng nhập</button>`}</div>`;
 }
 
+/** The display-name rule (game/social.py name_problem), said before the server has to refuse it. */
+const NAME_HINT='Chữ, số, khoảng trắng và tối đa 2 emoji';
 function whoForm(env,title,sub,cta){
   const {api,ui}=env,J=api.state.journey,pick=ui.jrGender||J.gender||'';
   const card=(g,label)=>`<button type="button" class="jr-gender ${pick===g?'active':''}" data-action="jrGender" data-gender="${g}" aria-pressed="${pick===g}">${avatar(g,96)}<b>${label}</b></button>`;
   return (title?`<span class="eyebrow">Nhân vật</span><h1>${title}</h1><p class="jr-lead">${sub}</p>`:'')+`
     <form class="jr-who" data-jr-form="profile"><div class="jr-genders" role="group" aria-label="Giới tính">${card('male','Nam')}${card('female','Nữ')}</div>
-    <label class="jr-name"><span>Tên của bạn</span><input id="jr-name" name="name" maxlength="24" autocomplete="nickname" required value="${esc(api.state.name)}" data-preserve></label>
+    <label class="jr-name"><span>Tên của bạn</span><input id="jr-name" name="name" maxlength="24" autocomplete="nickname" required value="${esc(api.state.name)}" aria-describedby="jr-name-hint" data-preserve><small class="jr-name-hint" id="jr-name-hint">${NAME_HINT}</small></label>
     <button type="submit" class="btn primary big full" ${pick?'':'disabled'}>${cta} ${icon('arrow',16)}</button></form>`;
 }
 

@@ -85,10 +85,11 @@ def _fold(text: str) -> str:
     return re.sub(r'\s+', ' ', text)
 
 
-def clean(text, limit: int, minimum: int = 0, field: str = 'Nội dung') -> str:
+def clean(text, limit: int, minimum: int = 0, field: str = 'Nội dung', keep: str = '') -> str:
+    """`keep`: format characters to keep (names keep the emoji joiner U+200D, see name_problem)."""
     need(isinstance(text, str), f'{field} không hợp lệ.')
     text = unicodedata.normalize('NFC', text)
-    text = ''.join(ch for ch in text if ch in '\n' or unicodedata.category(ch)[0] != 'C')
+    text = ''.join(ch for ch in text if ch in '\n' or ch in keep or unicodedata.category(ch)[0] != 'C')
     text = re.sub(r'[ \t]+', ' ', text).strip()
     text = re.sub(r'\n{3,}', '\n\n', text)
     need(minimum <= len(text) <= limit, f'{field} cần từ {minimum} đến {limit} ký tự.')
@@ -101,6 +102,65 @@ def clean(text, limit: int, minimum: int = 0, field: str = 'Nội dung') -> str:
         pattern = r'(?<!\w)' + re.escape(word) + r'(?!\w)'
         text = re.sub(pattern, '•••', text, flags=re.I)
     return text
+
+
+# Display names (backlog 4 #10): letters, digits, spaces, . ' - and at most NAME_EMOJI_MAX emoji ("Vịt🐣", "Bơ 🐨").
+# One emoji is one picture: a flag (two regional letters), or a pictograph with its variation selector, skin tone
+# and any ZWJ-joined parts (👩‍💻). A name needs at least one letter or digit, and is not digits only.
+NAME_EMOJI_MAX = 2
+NAME_RULE = f'Tên chỉ gồm chữ, số, khoảng trắng và tối đa {NAME_EMOJI_MAX} emoji.'
+NAME_JOINER = '‍'
+_PICTO = ((0x1F300, 0x1F5FF), (0x1F600, 0x1F64F), (0x1F680, 0x1F6FF), (0x1F7E0, 0x1F7EB), (0x1F900, 0x1F9FF),
+          (0x1FA70, 0x1FAFF), (0x2600, 0x27BF), (0x2B1B, 0x2B1C), (0x2B50, 0x2B55), (0x231A, 0x231B), (0x23E9, 0x23FA),
+          (0x1F004, 0x1F004), (0x1F0CF, 0x1F0CF), (0x1F18E, 0x1F18E), (0x1F191, 0x1F19A), (0x3030, 0x3030), (0x303D, 0x303D))
+_TONE = (0x1F3FB, 0x1F3FF)
+
+
+def _picto(cp: int) -> bool:
+    return not _TONE[0] <= cp <= _TONE[1] and any(a <= cp <= b for a, b in _PICTO)
+
+
+def name_emoji(name: str) -> tuple[str, int] | None:
+    """(the name without its emoji, how many emoji it has); None when an emoji part stands alone (a joiner, a
+    variation selector, a skin tone or half a flag)."""
+    plain, count, i, n = [], 0, 0, len(name)
+    while i < n:
+        cp = ord(name[i])
+        if 0x1F1E6 <= cp <= 0x1F1FF:                       # a flag: two regional letters
+            if i + 1 < n and 0x1F1E6 <= ord(name[i + 1]) <= 0x1F1FF:
+                i, count = i + 2, count + 1
+                continue
+            return None
+        if _picto(cp):
+            i += 1
+            while i < n:
+                c = ord(name[i])
+                if c == 0xFE0F or _TONE[0] <= c <= _TONE[1]:
+                    i += 1
+                elif c == 0x200D and i + 1 < n and _picto(ord(name[i + 1])):
+                    i += 2
+                else:
+                    break
+            count += 1
+            continue
+        if cp in (0x200D, 0xFE0F, 0x20E3) or _TONE[0] <= cp <= _TONE[1]:
+            return None
+        plain.append(name[i])
+        i += 1
+    return ''.join(plain), count
+
+
+def name_problem(name: str) -> str | None:
+    """Why `name` (already clean()ed) breaks the display-name rule, or None when it is fine."""
+    parts = name_emoji(name)
+    if parts is None:
+        return NAME_RULE
+    plain, count = parts
+    if count > NAME_EMOJI_MAX:
+        return f'Tên chỉ dùng tối đa {NAME_EMOJI_MAX} emoji nhé.'
+    if not re.fullmatch(r"[\w .'\-]*", plain) or not re.search(r'[^\W_]', plain) or plain.replace(' ', '').isdigit():
+        return NAME_RULE
+    return None
 
 
 def ival(value, low: int, high: int, field: str = 'Số') -> int:
@@ -564,8 +624,9 @@ def post(store, token: str, state: dict, route: str, d: dict) -> dict:
     me = touch(store, sid, state, must=True)
     mine = me['pid']
     if route == 'profile':
-        name = clean(d.get('name'), 24, 2, 'Tên hiển thị')
-        need(re.fullmatch(r"[\w .'\-]+", name) and not name.isdigit(), 'Tên chỉ gồm chữ, số và khoảng trắng.')
+        name = clean(d.get('name'), 24, 2, 'Tên hiển thị', keep=NAME_JOINER)
+        problem = name_problem(name)
+        need(not problem, problem)
         from .accounts import offensive_name   # moderation #13: unaccented and run-together spellings too
         need('•' not in name and not offensive_name(name), 'Chọn một cái tên thân thiện hơn nhé.', 'bad_name')
         bio = clean(d.get('bio', ''), 140, 0, 'Giới thiệu')

@@ -145,6 +145,7 @@ button.jr-stat:hover{border-color:var(--line-strong)}
 .jr-name{display:grid;gap:6px;text-align:left;font-weight:700;font-size:.9rem}
 .jr-name input{min-height:48px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--field-line);background:var(--surface);font-size:1.05rem;font-weight:600}
 .jr-name input:focus{outline:3px solid var(--focus);outline-offset:1px}
+.jr-name-hint{font-weight:500;font-size:.8rem;color:var(--muted,#6b5a50)}
 .jr-first-jobs{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:6px 0 12px}
 .jr-job{display:grid;justify-items:center;align-content:start;gap:4px;padding:16px 12px 14px;border-radius:var(--radius-lg);background:var(--surface);border:2px solid var(--line);box-shadow:var(--shadow-sm);text-align:center;transition:border-color var(--dur),transform .15s}
 .jr-job:hover{border-color:var(--career);transform:translateY(-2px)}

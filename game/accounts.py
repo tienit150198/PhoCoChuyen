@@ -117,10 +117,11 @@ def offensive_name(name) -> bool:
 
 def clean_display(value) -> str:
     try:
-        name = social.clean(value, 24, 1, 'Tên hiển thị')
+        name = social.clean(value, 24, 1, 'Tên hiển thị', keep=social.NAME_JOINER)
     except social.SocialError as e:
         raise AccountError(e.message, 'bad_display') from None
-    need(name and re.fullmatch(r"[\w .'\-]+", name) and not name.isdigit(), 'Tên hiển thị chỉ gồm chữ, số và khoảng trắng.', 'bad_display')
+    problem = social.name_problem(name) if name else social.NAME_RULE   # backlog 4 #10: up to 2 emoji ("Vịt🐣")
+    need(not problem, problem, 'bad_display')
     need('•' not in name and not offensive_name(name), 'Chọn một cái tên thân thiện hơn nhé.', 'bad_display')
     return name
 
