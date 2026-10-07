@@ -264,7 +264,7 @@ class Loc(FairBase):
         row = min(range(3), key=lambda i: max(pos[n] for n in rv['card'][i]))
         self.dice(Dice(draws=[0]))
         s, r = self.act(s, 'fair_loto_kinh', row=row, at=max(pos[n] for n in rv['card'][row]) + 1)
-        self.assertEqual(r['fair']['loc']['won'], 50)                # ×10 the 5-xu tờ, instead of its 11-xu prize
+        self.assertEqual(r['fair']['loc']['won'], 50)                # ×10 the 5-xu tờ, instead of its 10-xu prize
         self.assertEqual(s['journey']['wallet'], 1000 - 5 + 5 + 50)
         validate_state(s)
 
@@ -275,8 +275,9 @@ class Loc(FairBase):
         self.dice(Dice(draws=[.5, .1, 0, 0]))
         s, r = self.act(s, 'fair_xd', side='chan', stake=100)
         self.assertEqual(r['fair']['loc']['won'], 1000)
-        self.assertEqual(r['fair']['wealth_raid']['gain'], 61000)
-        self.assertEqual(r['fair']['wealth_raid']['amount'], 6100)
+        self.assertNotIn('wealth_raid', r['fair'])                    # today's net 1,000: the 1.9.9 raid is not due
+        self.assertEqual(r['fair']['audit']['gain'], 61000)
+        self.assertEqual(r['fair']['audit']['amount'], 6100)
 
 
 class StoreLoc(StoreBase):

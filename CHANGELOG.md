@@ -16,14 +16,16 @@ Gồm "Giao diện gọn: đợt 4" (quầy ăn uống + phố còn lại) và "
   nhất 20 xu và ít nhất ¼ tiền cược gần nhất ở trò đang nguội; hoặc nghỉ trò đó 10 phút. Ván cược nhỏ hơn, ném vòng,
   ô ăn quan, phóng dao không tính. Trong gian hiện dòng "🥶 Vận đang nguội…" kèm "cần thêm N ván ≥ X xu ở trò khác".
   Bầu cua vẫn là xúc xắc thật (mỗi mặt 1/6), không bị vận nguội.
-- Công an hỏi nguồn tài sản thay cho lần thu 30% ví: khi tiền lời ở hội chợ kỳ này (số trên Bảng vàng) trên 50.000 xu,
-  sau một ván có cược, tối đa 2 tiếng một lần, 45%. Thu 10% phần lời mới từ lần kiểm tra trước (không thu hai lần
-  trên cùng một đồng), lấy ví trước rồi tới tài khoản ngân hàng, không bao giờ âm, không thành nợ. Ghi trong Sổ ví.
-  Người thắng đều tay gặp công an khoảng 2–3 lần một ngày (trước gần nửa tiếng một lần).
+- Lần công an thu 30% ví giữ nguyên như 1.9.9 (sau một ván có cược, lời hôm nay trên 50.000 xu, 70%, tối đa 30 phút
+  một lần).
+- Thêm một luật riêng: công an hỏi nguồn tài sản khi tiền lời ở hội chợ kỳ này (số trên Bảng vàng) trên 50.000 xu, sau
+  một ván có cược, tối đa 2 tiếng một lần, 45%. Thu 10% phần lời mới từ lần hỏi trước (không thu hai lần trên cùng một
+  đồng), lấy ví trước rồi tới tài khoản ngân hàng, không bao giờ âm, không thành nợ. Ghi trong Sổ ví. Cùng một ván
+  thì lần thu 30% ví đến trước, lần hỏi tài sản sau, tính trên tiền lời còn lại; hai thẻ hiện lần lượt.
 - 🍀 Lộc trời cho: một ván may rủi có cược vừa thắng (cả bầu cua, xúc xắc vẫn thật) đôi khi ăn ×10 tiền cược thay cho
   tiền thắng thường. Cả máy chủ mỗi giờ nhiều nhất một lần (khóa chung trong bảng mnl_meta, giữ trong cùng giao dịch
   của lệnh: thử lại lệnh không nhận hai lần). Tính vào tiền lời hội chợ.
-- Bản lưu: thêm khóa tùy chọn journey.fair_audit {ed, base} và journey.fair_cool {trò: {n, at, sw, st}}; bản 1.9.9 vẫn
+- Bản lưu: thêm khóa tùy chọn journey.fair_audit {ed, base, at} và journey.fair_cool {trò: {n, at, sw, st}}; bản 1.9.9 vẫn
   nhận bản lưu mới. Không thêm bảng, không
   đổi SCHEMA_VERSION. Chiếu dẹp vẫn bày lại sau 2 phút như cũ.
 
