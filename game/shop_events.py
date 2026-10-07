@@ -38,7 +38,7 @@ CATALOGUE = {
         _choice('promote', 'In tờ giới thiệu và mẫu trưng bày', 180, 2, 'Người trong khu biết rõ dịch vụ của tiệm; khoản quảng bá được ghi sổ.'),
         _choice('decline', 'Tiếp tục giới thiệu trực tiếp tại tiệm', 0, 0, 'Bạn giữ ngân sách và tiếp tục giới thiệu với khách ghé tiệm.')),
     'theft': _event('Khách lén lấy đồ', 'Bạn thấy một người giấu món hàng rồi đi qua quầy thanh toán. Giữ khoảng cách an toàn; không đuổi theo ngoài đường.',
-        _choice('report', 'Nhờ hỗ trợ, giữ chứng cứ và báo sự việc', 4, 1, 'Bạn giữ an toàn, bàn giao chứng cứ. Ghi nhận phần hao hụt nhỏ chưa thu hồi.', True),
+        _choice('report', '📹 Xem camera, báo công an phường, giữ chứng cứ', 4, 1, 'Bạn giữ an toàn, bàn giao chứng cứ. Ghi nhận phần hao hụt nhỏ chưa thu hồi.', True),
         _choice('record', 'Ghi nhận hao hụt và siết việc kiểm hàng', 12, -1, 'Bạn kiểm lại quầy và ghi nhận thiệt hại thực tế, không quy lỗi cho người khác.', True)),
     'dine_dash': _event('Khách ăn xong định bỏ đi', 'Một bàn đã dùng món nhưng rời đi khi hóa đơn còn chưa thanh toán.',
         _choice('remind', 'Nhắc hóa đơn bình tĩnh, nhờ đồng nghiệp hỗ trợ', 0, 1, 'Khách quay lại thanh toán. Bạn giữ được không khí bình tĩnh.'),
@@ -74,6 +74,24 @@ CATALOGUE = {
         _choice('pause', 'Ngắt thiết bị, tự kiểm ổ cắm an toàn', 0, -1, 'Bạn ngừng thiết bị, xác nhận nguồn an toàn rồi mới tiếp tục; khách phải đợi thêm.'),
         _choice('repair', 'Nhờ thợ kiểm tra nguồn điện', 9, 2, 'Thợ kiểm tra và khắc phục đầu nối, bạn lưu khoản sửa chữa.')),
 }
+
+
+# F#221: every event has a choice that need not cost anything. A theft's 'report' (call the ward police, check the camera)
+# gets the goods back with these odds (camera at the time of the event), else the old small loss. The saved row keeps the
+# choice's own text (older builds validate it); the view and the message say what happened.
+RECOVER = {('theft', 'report'): (.5, .85)}
+RECOVERED = 'Bạn giữ an toàn, bàn giao chứng cứ cho công an phường. Món hàng được trả lại, không mất xu nào.'
+
+
+def recover_odds(kind, choice_id, camera):
+    """The chance (%) a choice gets the loss back, or None."""
+    p = RECOVER.get((kind, choice_id))
+    return None if p is None else round(100 * p[1 if camera else 0])
+
+
+def _recovered(pending, choice_id):
+    pct = recover_odds(pending['kind'], choice_id, pending['camera_at_event'])
+    return pct is not None and random.Random(f'shop-recover|{pending["id"]}|{choice_id}').random() * 100 < pct
 
 
 def career_eligible(career):
@@ -188,7 +206,11 @@ def public(c, quay=False):
     if not state:
         return None
     items = c['items'] if quay else c['ops']['security']['items']
-    out = dict(pending=None, recent=copy.deepcopy(state['recent']), camera='camera' in items,
+    recent = copy.deepcopy(state['recent'])
+    for row in recent:
+        if (row['kind'], row['choice']) in RECOVER and row['cost'] == 0:
+            row['text'] = RECOVERED
+    out = dict(pending=None, recent=recent, camera='camera' in items,
                theft_probability=theft_probability(items,container.get('business',{}).get('protection',{}).get('level','none')), gap=GAP, reputation=state['reputation'], spent=state['spent'])
     out.update(demand_factor=demand_factor(c,quay), reputation_effect='Uy tín ảnh hưởng lượng khách của nhân viên, tối đa ±10%.')
     pending = state['pending']
@@ -200,8 +222,11 @@ def public(c, quay=False):
             effect = x['text'] + (f" Uy tín {'+' if x['rep'] >= 0 else ''}{x['rep']}." if x['rep'] else '')
             if x['loss']:effect += ((' Hao hụt tính theo tài sản lúc phát sinh, ' + ('két sắt giữ lại ít nhất nửa quỹ hiện có.' if pending['kind'] == 'theft' and 'ket' in items else 'không vượt quỹ hiện có.'))
                                     if 'percent' in pending else ' Hao hụt tối đa 10% quỹ hiện có.')
+            odds = recover_odds(pending['kind'], x['id'], pending['camera_at_event'])
+            if odds is not None:
+                effect = f'🎲 Hên xui · {odds}% lấy lại đủ, không mất xu. Không được thì: ' + effect[0].lower() + effect[1:]
             out['pending']['choices'].append(dict(id=x['id'], label=x['label'], cost=cost, max_cost=_maximum(x,pending.get('wealth',0),pending.get('percent')),
-                rep=x['rep'], effect=effect, affordable=_cash(c, quay) >= cost))
+                rep=x['rep'], effect=effect, affordable=_cash(c, quay) >= cost, odds=odds))
     return out
 
 
@@ -219,6 +244,9 @@ def _choose(s, c, owner, p, quay):
     need(choice, 'Cách xử lý không hợp lệ.')
     items=c['items'] if quay else c['ops']['security']['items']
     cost = _cost(choice, _cash(c, quay),pending['kind'],items,pending.get('wealth',0),pending.get('percent'))
+    back = _recovered(pending, choice['id'])
+    if back:
+        cost = 0
     need(_cash(c, quay) >= cost, 'Quỹ không đủ; chọn phương án không tốn xu.', 'no_money')
     if quay:
         from . import quay as qy, quay_business as qb
@@ -236,7 +264,7 @@ def _choose(s, c, owner, p, quay):
         c['money'] -= cost
         c['costs'] += cost
         if cost:operations.record_money(c, -cost, spec['title'], pending['id'], 'other_cost')
-        engine.log(s, c, 'shop_event', choice['text'], ref=pending['id'])
+        engine.log(s, c, 'shop_event', RECOVERED if back else choice['text'], ref=pending['id'])
         progress = _career_progress(c)
     state['reputation'] = max(-10, min(10, state['reputation'] + choice['rep']))
     state['spent'] += cost
@@ -247,6 +275,8 @@ def _choose(s, c, owner, p, quay):
     state['recent'] = (state['recent'] + [row])[-RECENT:]
     state['pending'] = None
     state['next'] = progress + GAP
+    if back:
+        return dict(message='📹 ' + RECOVERED, shop_event=dict(row, text=RECOVERED), celebrate=True)
     return dict(message=choice['text'] + (f' Đã ghi chi phí {cost} xu.' if cost else ''), shop_event=row)
 
 

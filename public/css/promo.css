@@ -144,3 +144,7 @@
 .og-grades{gap:4px;margin-top:8px}
 .bad{color:#b4231b}
 .og-member>summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:8px;align-items:baseline}.og-member>summary small{color:var(--muted)}.og-member[open]>summary{margin-bottom:8px}
+/* F#227: the accounting careers' "Cách lên bậc" (promo.js CARE_HOW) */
+.pm-how{align-self:stretch;text-align:left;padding:8px 10px;border-radius:12px;background:var(--surface-2)}
+.pm-how .pm-eyebrow{margin:0}
+.pm-how .pm-rules{list-style:none;padding-left:0}

@@ -583,6 +583,15 @@ def desk_close(s: dict, c: dict, career: str, desk: dict, scripts: list, hook=No
     return f'{x["title"]}: chưa kịp quyết nên để mặc — {r["message"]}'
 
 
+def desk_hint(o: dict) -> str:
+    """An option's visible hint; a gamble (luck) also says its odds (F#221: "🎲 Hên xui · 40% được việc")."""
+    hint = o.get('hint', '')
+    luck = o.get('luck')
+    if not luck:
+        return hint
+    return (f'{hint} · ' if hint else '') + f'🎲 Hên xui · {round(100 * luck["p"])}% được việc'
+
+
 def desk_public(desk: dict, scripts: list, career: str) -> dict:
     ev = desk.get('ev')
     view = None
@@ -591,7 +600,7 @@ def desk_public(desk: dict, scripts: list, career: str) -> dict:
         if x:
             view = dict(id=ev['id'], script=x['id'], title=x['title'], emoji=x['emoji'], text=x['text'], tone=x.get('tone', 'gentle'),
                         npc=npc_id(career, x.get('npc', 0)), at=ev.get('at'),
-                        options=[dict(id=o['id'], label=o['label'], hint=o.get('hint', ''),
+                        options=[dict(id=o['id'], label=o['label'], hint=desk_hint(o),
                                       cost=-min(0, int(o.get('effects', {}).get('money', 0)))) for o in x['options']])
     return dict(ev=view, last=desk.get('last'), marks=sorted(desk.get('marks', {})), plan=list(desk.get('plan', [])),
                 fired=desk.get('fired', 0), log=[dict(script=h['script'], choice=h['choice'], day=h['day'], good=h['good'])

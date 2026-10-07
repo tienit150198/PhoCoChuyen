@@ -42,6 +42,10 @@ const place=env=>env.api.content.catalogue?.find(x=>x.id===env.api.state.current
 
 /** F#206: what a "ngày điều hành tốt" is (game/promotion_office.py close: score, GOOD_SCORE). */
 const OFFICE_RULE=`<li>🏢 Ngày điều hành tốt: trong ca, tự xếp ít nhất 1 việc ở 🗓️ Điều phối, rồi khép ngày với điểm điều hành từ 60/100.</li><li>Điểm = ½ tỷ lệ đúng giờ + 0,3 × tinh thần + 20, trừ 6 mỗi phàn nàn và 2 mỗi % vượt quỹ lương. Việc bỏ trống, việc cần quyết để tới cuối ngày đều thêm phàn nàn.</li><li>🔁 Xoay ca: ai đã làm 2 ngày liền thì sáng hôm sau dễ 🥱 mệt (1 phần 2), và hôm đó làm dễ trễ hơn hẳn. Đừng để ai làm ngày thứ 3 liền, cho nghỉ 1 ngày là hết mệt.</li><li>Số ngày điều hành tốt đếm lại từ 0 sau mỗi lần lên bậc.</li>`;
+/** F#227: the accounting careers (requirement 'care', game/promotion.py _care_gate): how the two counters fit, in three
+ * short steps (≤ 25 words on screen); the rule itself behind "?". */
+const CARE_HOW=`<div class="pm-how"><p class="pm-eyebrow">🪜 Cách lên bậc</p><ol class="pm-rules"><li>1️⃣ Ngày chắc tay = ngày tốt</li><li>2️⃣ Giữ tin tưởng sếp</li><li>3️⃣ Đủ hai mốc → hẹn xét</li></ol>
+  <details class="pm-more"><summary>?</summary><p class="small muted">Ngày chắc tay: nộp ít nhất 1 hồ sơ, không trễ hạn, không lỗi nặng. Mỗi ngày như vậy cộng 1 ngày tốt và 1 ngày vào 🧭 Lộ trình. Lộ trình bậc 2 cần 6 ngày chắc tay và tin tưởng từ 55, bậc 3 cần 10 ngày và tin tưởng từ 70. Tin tưởng lên khi nộp sớm, bắt đúng lỗi; xuống khi trễ hạn, duyệt nhầm. Đủ mốc thì cuối ngày tự lên bậc lộ trình.</p></details></div>`;
 /** F#212: "đã làm N ngày liền" on a person (duty = days in a row worked before today; TIRED_AT costs). */
 const tiredAt=of=>of.tired_at||2;
 const rowTag=(of,m)=>!m.duty||m.rest?'':m.duty>=tiredAt(of)?`<i class="bad">🥱 ${m.duty} ngày liền · nên nghỉ</i>`:`<i>🔁 ${m.duty} ngày liền</i>`;
@@ -85,7 +89,8 @@ export function promoView(env){
   if(p.due)return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body">${review(p)}</div>`;
   const n=p.next,sh=p.shift;
   const line=n?`${n.good}/${n.need} ngày tốt → ${esc(n.title)}`:'Bậc cao nhất rồi!';
-  const lock=(n?.requirements?.length?`<ul class="pm-rules">${n.requirements.map(r=>`<li>${r.met?'✓':'🔒'} ${esc(r.label)}${r.id==='office'&&r.need?`${bar(r.got,r.need)}<small class="pm-hint">Ngày tốt khi: tự xếp ít nhất 1 việc ở 🗓️ Điều phối và cuối ngày điểm điều hành từ 60/100.</small>`:''}</li>`).join('')}</ul>`
+  const care=n?.requirements?.find(r=>r.id==='care');
+  const lock=(n?.requirements?.length?`<ul class="pm-rules">${n.requirements.map(r=>`<li>${r.met?'✓':'🔒'} ${esc(r.label)}${r.id==='office'&&r.need?`${bar(r.got,r.need)}<small class="pm-hint">Ngày tốt khi: tự xếp ít nhất 1 việc ở 🗓️ Điều phối và cuối ngày điểm điều hành từ 60/100.</small>`:''}${r.id==='care'&&!r.met&&r.need?bar(r.got,r.need):''}</li>`).join('')}</ul>${care&&!care.met?CARE_HOW:''}`
     :[n?.why,n?.wait?`Hẹn xét lại sau ${n.wait} ngày làm`:null].filter(Boolean).map(s=>`<p class="pm-lock">🔒 ${esc(s)}</p>`).join(''))+(n?.wait?lastReview(env,n.wait):'');
   const work=p.rank>=3?'Bạn có thể mở ca quản lý: giao việc cho đội, kiểm tra kết quả và xử lý chuyện trong ca. Mỗi ngày vẫn có thể chọn tự làm ở quầy.'
     :'Công việc ở quầy vẫn như trước. Từ bậc 3, bạn có thêm ca quản lý để giao việc cho đội và kiểm tra kết quả.';

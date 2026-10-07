@@ -146,7 +146,8 @@ class Rates(unittest.TestCase):
         self.assertEqual(self.freq(1), 0)
         self.assertEqual(self.freq(2), 0)
         early, late = self.freq(4), self.freq(14)
-        self.assertTrue(0.2 < early < 0.4, early)
+        self.assertTrue(0.1 < early < 0.2, early)   # F#221: the first week runs at half the rate
+        self.assertTrue(0.35 < self.freq(8) < 0.55)
         self.assertTrue(0.45 < late < 0.65, late)
         self.assertLess(self.freq(14, 'calm'), late - 0.15)
         self.assertGreater(self.freq(14, 'festival'), late)
