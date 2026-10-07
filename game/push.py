@@ -165,7 +165,7 @@ def public_config() -> dict:
 
 TITLES = dict(visit='Có khách ghé quán 👀', review='Đánh giá mới từ Phố nghề ⭐', reply='Có người trả lời bạn 💬', gift='Bạn nhận được quà 🎁',
               sale='Hàng đã bán ở chợ 🧺', comment='Bình luận mới 💬', daily='Một ngày mới đang chờ bạn ☀️', community='Mục tiêu cả phố 🎉', chat='Tin nhắn mới 💬',
-              wedding='Sắp tới giờ cưới 💍', quay='Làm thêm ở quầy 💼')
+              wedding='Sắp tới giờ cưới 💍', quay='Làm thêm ở quầy 💼', auction='Nhà đấu giá 🔨')
 DEFAULT_PREFS = dict(social=True, daily=False, hour=19, tz=420)
 
 

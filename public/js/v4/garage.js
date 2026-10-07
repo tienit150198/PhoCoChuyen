@@ -31,10 +31,12 @@ function link(href,key){
 const ensureCss=()=>cssReady??=Promise.all([link('/css/bank.css','bk-css'),link('/css/house.css','hs-css'),link('/css/garage.css','gr-css')]);
 
 /** The vehicle's picture: its emoji on a tile in its paint, the plate under it (the owner's words, escaped). */
-export function tileHTML(v,color,plate='',size=''){
+export function tileHTML(v,color,plate='',size='',uq=false){
   const p=paint(color||v?.paint);
-  return `<span class="gr-tile ${size}" style="--gr-paint:${esc(p.hex)}" aria-hidden="true"><span class="gr-emoji">${v?.emoji||'🚗'}</span>${plate?`<span class="gr-plate">${esc(plate)}</span>`:''}</span>`;
+  return `<span class="gr-tile ${size}" style="--gr-paint:${esc(p.hex)}" aria-hidden="true"><span class="gr-emoji">${v?.emoji||'🚗'}</span>${plate?`<span class="gr-plate${uq?' uq':''}">${esc(plate)}</span>`:''}</span>`;
 }
+/** 🔨 A vanity plate won at the auction house (game/auction.py): gold, on the vehicle in use. */
+const uqPlate=()=>{const o=J().uniq?.own||{};const x=Object.values(o).filter(v=>v?.k==='plate').sort((a,b)=>(b.p||0)-(a.p||0))[0];return x?.t||'';};
 
 function dialog(){
   if(S.dlg)return S.dlg;
@@ -151,7 +153,7 @@ function mineView(v){
   const cards=v.cars.map(c=>{
     const it=item(c.id);if(!it)return '';
     const on=v.ride===c.id,g=group(it.group);
-    return `<li class="hs-home gr-car${on?' mine':''}" style="--hs-tone:${esc(g.color||'')}"><div class="hs-home-top">${tileHTML(it,c.color,c.plate)}<div class="grow"><b>${esc(it.name)}</b><small>${on?'🛞 Đang đi':`Mua ngày ${fmt(c.day)}`} · ${esc(paint(c.color).name)}</small></div></div>
+    return `<li class="hs-home gr-car${on?' mine':''}" style="--hs-tone:${esc(g.color||'')}"><div class="hs-home-top">${on&&uqPlate()?tileHTML(it,c.color,uqPlate(),'',true):tileHTML(it,c.color,c.plate)}<div class="grow"><b>${esc(it.name)}</b><small>${on?'🛞 Đang đi':`Mua ngày ${fmt(c.day)}`} · ${esc(paint(c.color).name)}</small></div></div>
       ${perkChips(it,c.upkeep)}
       ${Number.isInteger(c.broken)?`<div class="bk-actions">${btn(`🔧 Đang hỏng · Sửa ${xu(c.broken)}`,'fix',{id:c.id},'primary')}</div>`:''}
       <div class="bk-actions">${btn(`${esc(it.trip)}${it.fuel?` · ${xu(it.fuel)}`:''}`,'trip',{id:c.id},'primary',c.trip_why||'')}${on?'':btn('Đi chiếc này','ride',{id:c.id},'ghost')}${btn('🎨 Sơn & biển tên','edit',{id:c.id},'ghost')}</div>

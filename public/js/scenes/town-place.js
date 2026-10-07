@@ -20,8 +20,8 @@ import {t as tr} from '../v4/i18n.js';
 
 /* ------------------------------------------------------------ the town */
 export const ROWS=[
-  [{id:'chua',name:'Chùa',emoji:'🛕',items:['pagoda','lm:congduc']},{id:'ngoai_o',name:'Ngoại ô',emoji:'🌾',items:['farm','homestay','teacher','railway','lighthouse']},{id:'san_bay',name:'Sân bay',emoji:'✈️',items:['tour_guide','pilot','flight_attendant','oil','lm:travel']}],
-  [{id:'van_phong',name:'Khu văn phòng',emoji:'🏢',items:['lm:bank','library','accounting','customer_care','corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk']}],
+  [{id:'chua',name:'Chùa',emoji:'🛕',items:['pagoda','lm:congduc']},{id:'ngoai_o',name:'Ngoại ô',emoji:'🌾',items:['farm','homestay','teacher','railway','lighthouse','lm:danhthang']},{id:'san_bay',name:'Sân bay',emoji:'✈️',items:['tour_guide','pilot','flight_attendant','oil','lm:travel']}],
+  [{id:'van_phong',name:'Khu văn phòng',emoji:'🏢',items:['lm:bank','lm:daugia','library','accounting','customer_care','corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk']}],
   [{id:'dich_vu',name:'Phố dịch vụ',emoji:'💇',items:['salon','nail','photobooth','pet_care','repair','pharmacy','nurse','police','rescue','clothing','pet_shop','lm:pets','lm:garage','lm:gadgets','lm:spa','lm:style','lm:hanghieu']}],
   [{id:'pho_cho',name:'Phố chợ',emoji:'🛒',items:['florist','cafe_bakery','grocery','milk_tea','mother_baby','restaurant','delivery','pho','com','zpop','lm:quan']}],
   [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk','lm:rap','lm:karaoke','lm:mtq','lifeguard']}],
@@ -40,6 +40,8 @@ export const LANDMARKS={
   // 🛍️ Mua sắm (v4/lux.js, game/lux.py): each door opens its tab
   travel:{emoji:'✈️',name:'Đại lý vé',action:'luxTrip'},hanghieu:{emoji:'💎',name:'Hàng hiệu',action:'luxSuu'},
   mtq:{emoji:'🎆',name:'Mạnh Thường Quân',action:'luxMtq'},dinhthu:{emoji:'🏰',name:'Dinh thự',action:'luxNha'},
+  // 🔨 Nhà đấu giá đồ độc bản (v4/auction.js, game/auction.py); 🏞️ the plaques of the landmarks named at auction
+  daugia:{emoji:'🔨',name:'Nhà đấu giá',action:'auction'},danhthang:{emoji:'🏞️',name:'Danh thắng',action:'auctionLands'},
 };
 /** The sign over each door: an emoji and a short name (the card says the full place name). */
 export const SIGNS={
@@ -57,7 +59,7 @@ export const SIGNS={
 const KIND={pagoda:'pagoda',farm:'farm',homestay:'lodge',teacher:'school',library:'school',tour_guide:'kiosk',pilot:'air',flight_attendant:'air',oil:'air',railway:'kiosk',lighthouse:'kiosk',
   tra_da:'cart',fruit:'cart',ice_cream:'cart',garbage:'cart',drain:'cart',homemaker:'house',giupviec:'house',naucom:'house',babysitter:'house',
   accounting:'office',customer_care:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',hr_admin:'office',secretary:'office',it_helpdesk:'office',nurse:'office',rescue:'office',lifeguard:'pool',police:'office',
-  'lm:bank':'bank','lm:garage':'garage','lm:fair':'gate','lm:board':'board','lm:walk':'park','lm:house':'home','lm:quay':'quay','lm:square':'plaza','lm:congduc':'kiosk','lm:rap':'office','lm:travel':'kiosk','lm:mtq':'board','lm:dinhthu':'home'};
+  'lm:bank':'bank','lm:garage':'garage','lm:fair':'gate','lm:board':'board','lm:walk':'park','lm:house':'home','lm:quay':'quay','lm:square':'plaza','lm:congduc':'kiosk','lm:rap':'office','lm:travel':'kiosk','lm:mtq':'board','lm:dinhthu':'home','lm:daugia':'bank','lm:danhthang':'board'};
 const WIDE={pool:150,shop:128,office:128,cart:112,house:124,pagoda:208,farm:196,lodge:142,school:150,kiosk:120,air:156,bank:142,garage:132,gate:152,board:104,park:124,home:132,quay:118,plaza:134};
 const HIGH={pool:150,shop:150,office:176,cart:122,house:136,pagoda:178,farm:140,lodge:150,school:160,kiosk:124,air:172,bank:160,garage:136,gate:168,board:112,park:118,home:144,quay:126,plaza:118};
 export const kindOf=key=>KIND[key]||'shop';

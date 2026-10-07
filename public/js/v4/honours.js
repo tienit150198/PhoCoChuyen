@@ -48,6 +48,8 @@ function noun(api,b){const n=NOUN[b];if(n)return n;const s=api?.content?.careers
 export function title(api,id){
   if(typeof id!=='string')return null;
   const e=EVENT[id];if(e)return {emoji:e[0],short:e[2],full:e[1],src:e[3]};
+  // 👑 a one-of-a-kind title won at the auction house (game/auction_content.py, content.journey.auction)
+  if(id.startsWith('dh_')){const u=(api?.content?.journey?.auction?.items||[]).find(x=>x.id===id&&x.kind==='title');return u?{emoji:u.emoji,short:u.short||u.name,full:u.name,src:'Danh hiệu độc bản · Nhà đấu giá'}:null;}
   const m=LB.exec(id);if(!m)return null;
   const b=m[1],r=Number(m[2]),B=BOARDS[b];
   if(B){const [label,tiers]=B,[emoji,name]=tiers[tierOf(r)];return {emoji,short:`Top ${r} ${label}`,full:name,src:`Top ${r} ${label} · tuần này`};}

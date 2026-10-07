@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 28  # 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 29  # 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -505,6 +505,29 @@ CREATE TABLE IF NOT EXISTS lux_gifts (
 CREATE INDEX IF NOT EXISTS lux_gifts_week ON lux_gifts(week, sid);
 CREATE INDEX IF NOT EXISTS lux_gifts_kind ON lux_gifts(kind, at);
 CREATE UNIQUE INDEX IF NOT EXISTS lux_gifts_slot ON lux_gifts(slot) WHERE slot <> '';
+-- 🔨 Nhà đấu giá đồ độc bản (game/auction.py; SCHEMA_VERSION 29). One row per lot (system lots: the day's plan
+-- '<yyyymmdd>-<slot>' or an operator's 'a<hex>'), locked FOR UPDATE by every bid and by the settlement; `seq` moves on
+-- every change (compare-and-set). An item is in at most one open or sold lot (an unsold one goes back to the pool).
+CREATE TABLE IF NOT EXISTS auction_lots (
+  id {T} PRIMARY KEY, item {T} NOT NULL, kind {T} NOT NULL, tier bigint NOT NULL, name {T} NOT NULL, emoji {T} NOT NULL DEFAULT '',
+  data {T} NOT NULL DEFAULT '{{}}', start bigint NOT NULL CHECK(start > 0), step bigint NOT NULL CHECK(step > 0),
+  starts_at double precision NOT NULL, ends_at double precision NOT NULL, planned_end double precision NOT NULL,
+  status {T} NOT NULL DEFAULT 'open', high bigint NOT NULL DEFAULT 0, high_sid {T} NOT NULL DEFAULT '',
+  high_anon bigint NOT NULL DEFAULT 0, bids bigint NOT NULL DEFAULT 0, seq bigint NOT NULL DEFAULT 0,
+  winner_sid {T} NOT NULL DEFAULT '', winner_name {T} NOT NULL DEFAULT '', price bigint NOT NULL DEFAULT 0,
+  settled_at double precision, src {T} NOT NULL DEFAULT 'plan', created double precision NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS auction_lots_item ON auction_lots(item) WHERE status IN ('open', 'sold');
+CREATE INDEX IF NOT EXISTS auction_lots_due ON auction_lots(status, ends_at);
+CREATE INDEX IF NOT EXISTS auction_lots_settled ON auction_lots(settled_at);
+-- One row per player per lot: the latest bid and the escrow the database knows (`held`, 0 once refunded or burned;
+-- refunds travel through live_effects rows 'auc:<lot>:<pid>:b<n>', `refunds` = n).
+CREATE TABLE IF NOT EXISTS auction_bids (
+  lot {T} NOT NULL, sid {T} NOT NULL, amount bigint NOT NULL CHECK(amount > 0), held bigint NOT NULL DEFAULT 0 CHECK(held >= 0),
+  anon bigint NOT NULL DEFAULT 0, n bigint NOT NULL DEFAULT 0, refunds bigint NOT NULL DEFAULT 0, at double precision NOT NULL,
+  pushed_at double precision NOT NULL DEFAULT 0, PRIMARY KEY(lot, sid)
+);
+CREATE INDEX IF NOT EXISTS auction_bids_sid ON auction_bids(sid, lot);
 """
 
 INDEX_DDL = """
@@ -788,6 +811,8 @@ TABLES = [
     dict(name='kara_reviews', identity=None),
     dict(name='pet_board', identity=None),
     dict(name='lux_gifts', identity=None),
+    dict(name='auction_lots', identity=None),
+    dict(name='auction_bids', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

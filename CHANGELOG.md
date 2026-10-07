@@ -15,6 +15,42 @@ Chỉ gồm "Hội chợ: công an bắt ít hơn một nửa" (không thông b�
 - Chiếu trong vẫn khoảng 50 ván thắng trên 100 (chơi liền một trò thì thấp nhất 40%): ít bị dẹp hơn nên xác suất rút
   thăm chỉnh lại cho khớp (XD_BASE .513 → .508, XD_FLOOR .407 → .404).
 - Không đổi bản lưu, không thêm khóa, không đổi CSDL; 1.9.10 và 1.9.11 vẫn đọc được bản lưu. Không thêm mục "Có gì mới".
+# Chưa phát hành
+
+## Nhà đấu giá đồ độc bản
+
+- Chủ phố 07/10: một chỗ tiêu tiền thật lớn cho người giàu (top 1% giữ 57% tiền, người giàu nhất 4,1 triệu xu, người
+  giữa bảng kiếm ~262 xu/ngày). 🔨 **Nhà đấu giá** (game/auction.py + auction_content.py, v4/auction.js): chỉ phố mở phiên,
+  người chơi không tự đăng bán (không rửa tiền được). Mỗi lô là một món độc nhất, chỉ đúng một người sở hữu mãi mãi.
+- 48 món, 3 hạng giá khởi điểm 5.000 / 50.000 / 500.000 xu (bước giá tối thiểu 500 / 2.500 / 25.000 hoặc 5%, lấy số lớn):
+  🚗 biển số đẹp (29A-888.88, 51G-999.99, Mây-6666, 68-LỘC-68…: biển vàng trên xe đang đi, ở Gara, trên phố của mình và hồ
+  sơ; biển tên tự viết không được chép), 📱 số điện thoại đẹp (0999.999.999…: trên hồ sơ và điện thoại đang dùng),
+  🖼️ tranh độc bản của họa sĩ trong phố (treo ở nhà như đồ trang trí, có bảng đồng, không bán lại), 🏞️ quyền đặt tên
+  danh thắng (Hồ, Đồi, Bến, Vườn, Cầu, Thác mang tên người thắng, bảng 🏞️ Danh thắng trên bản đồ), 👑 danh hiệu độc bản
+  ("Người đầu tiên lên Mặt Trăng Phố Mây"…: bên tên trong chat `tt`, đeo ở Phong cách).
+- Lịch: mỗi ngày 1–3 phiên, tính sẵn theo ngày (phiên 1 hạng thường, phiên 2 quý hiếm, phiên 3 huyền thoại), mở 20:30 /
+  21:00 / 21:30 (sau giờ cao điểm), chạy 24 giờ. 5 phút cuối có người trả giá: thêm 5 phút (tối đa 6 giờ). Không ai trả:
+  món về lại kho. Người vận hành thêm phiên: POST /api/admin/auction (món trong danh mục, hoặc biển số/số điện thoại tự đặt).
+- Trả giá (`jr_auc_bid`): tiền được giữ từ ví rồi tới tài khoản, không bao giờ nợ; tự nâng giá của mình chỉ giữ thêm phần
+  chênh. Bị trả cao hơn: tiền về ngay (trang nhận tin từ dịch vụ live và lấy lại liền; về đúng chỗ đã lấy: phần từ tài
+  khoản về tài khoản). Thắng: tiền của người thắng bị đốt (không ai nhận). Tài khoản phải đủ 3 ngày; tối đa 12 lần trả giá
+  một phút; tên hiển thị qua bộ lọc, có ô "Ẩn danh". "🔒 Đang giữ cho đấu giá" hiện trên chip ví; bảng 💰 Tài phú vẫn tính
+  tiền đang giữ. Không pay-to-win: chỉ để khoe.
+- An toàn tiền: mỗi lần trả giá khóa dòng phiên (FOR UPDATE) trong chính giao dịch lưu bản lưu, so khớp tiền giữ trong bản
+  lưu với cơ sở dữ liệu, compare-and-set theo `seq`; sai thì cả lệnh hủy, không mất xu. Tiền trả lại và món thắng đi qua
+  `live_effects` (loại 'auction'), dòng chuyển trạng thái ngay trong giao dịch của bản lưu nên chỉ trả một lần. Chốt phiên
+  (dọn dẹp mỗi 30 giây và khi có người mở trang) khóa dòng, chỉ từ 'open', id cố định: chạy bao nhiêu lần, bao nhiêu
+  worker cũng chỉ một lần.
+- Live: `auction_watch` khi đang mở Nhà đấu giá; giá mới tới ngay từ NOTIFY của lệnh trả giá (không hỏi CSDL theo khung
+  hình); `auction_outbid` / `auction_won` tới người chơi ở bất cứ đâu trong game. Thông báo đẩy khi bị trả cao hơn (mỗi
+  phiên tối đa 10 phút một lần) và khi thắng. Bán từ 50.000 xu: một dòng trên bảng tin phố.
+- Giao diện: cửa 🔨 Nhà đấu giá (Khu văn phòng) và 🏞️ Danh thắng (Ngoại ô) trên bản đồ, mục trong "Ngân hàng & nhà";
+  4 tab (Đang đấu, Đã chốt, Danh thắng, Của tôi), 20 chữ một màn (check_word_caps --life).
+- Bản lưu: khóa tùy chọn `journey.uniq` {v, hold, own, stats} (migrate + validate); các bức tranh thắng là món `uq_tr_*`
+  trong `journey.reno.items`; danh hiệu thắng nằm trong `journey.spend.own`. Đã thử (scripts/auction_rollback_check.py):
+  bản lưu mới mở, kiểm tra, chơi qua một ngày và lưu lại trên 1.9.11, quay về bản mới vẫn nguyên tiền giữ và đồ.
+  Quay về 1.9.11: phiên không chốt, tiền đang giữ nằm nguyên trong bản lưu, dòng 'auction' chờ bản mới.
+- CSDL: SCHEMA_VERSION 29 (`auction_lots`, `auction_bids`; chỉ thêm bảng). Cổng task-compat với 1.9.11: OK.
 
 # v1.9.11 — 2026-10-07
 

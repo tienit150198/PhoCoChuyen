@@ -45,6 +45,9 @@ export function loadSpouse(api,force=false){
 }
 /** For tests: set the spouse as the server would send it. */
 export function setSpouse(q){SP=q||null;SP_AT=Date.now();}
+/** 🔨 The dearest vanity plate won at the auction house (game/auction.py, journey.uniq.own), or ''. */
+export function uniqPlate(J){const o=J?.uniq?.own;if(!o||typeof o!=='object')return '';
+  const x=Object.values(o).filter(v=>v&&v.k==='plate'&&typeof v.t==='string').sort((a,b)=>(b.p||0)-(a.p||0))[0];return x?x.t:'';}
 function entries(cars,cat,two,owner){
   const out=[];
   for(const c of cars){
@@ -65,6 +68,7 @@ export function options(state,content,{two=false}={}){
   const out=g&&Array.isArray(g.cars)?entries(g.cars,cat,two,null):[];
   const main=out.findIndex(v=>v.id===g?.ride);
   if(main>0)out.unshift(...out.splice(main,1));
+  const uq=uniqPlate(J);if(uq&&out[0]&&g?.ride===out[0].id)out[0]={...out[0],plate:uq,uq:true};   // 🔨 a vanity plate won at auction, on the vehicle in use
   if(SP){const theirs=entries(SP.cars,cat,two,SP),m=theirs.findIndex(v=>v.id===SP.ride);if(m>0)theirs.unshift(...theirs.splice(m,1));out.push(...theirs);}
   return out;
 }

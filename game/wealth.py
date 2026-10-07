@@ -149,6 +149,9 @@ def _extras(j) -> tuple[int, int]:
     if type(j.get('lux')) is dict:   # 🛍️ villas, crewed vehicles, collection pieces at their 60 % buy-back (game/lux.py)
         from .lux import worth as lux_worth
         assets += lux_worth(j)
+    if type(j.get('uniq')) is dict:   # 🔨 escrow held for auction bids: still the player's money (game/auction.py)
+        from .auction import worth as auction_worth
+        assets += auction_worth(j)
     stalls = _l(_d(j.get('quay')).get('stalls'))
     if stalls:
         from .quay import ITEMS, PLACES, SELL_PCT, UPGRADE_BACK
