@@ -142,7 +142,10 @@ ESTATES = (
          kits=(('bath_xl', 2),)),
 )
 
-# Biệt thự Sông Hồng (game/housing.py 'biet_thu_song'), three floors: every room it had (same ids, bigger) and more.
+# Biệt thự Sông Hồng (game/housing.py 'biet_thu_song'), three floors: every room it had (same ids) and more.
+# These rows are the rooms as 1.9.11..1.9.17 build them (estates.legacy_rooms; their saves are checked against them):
+# kitchen and bed2 have a row less than the old house, and the windows / counter cover old cells. Never edit them;
+# estates.rooms_of() grows each room the house already had to a strict superset of the old one (estates.superset).
 # Its own rooms keep the look of its repairs (game/reno.py); the new ones get their room type's look.
 SONG_HONG = 'biet_thu_song'
 SONG_HONG_V2 = dict(rooms=(('living', 'living', 11, 4, 1, ''), ('kitchen', 'kitchen', 9, 3, 1, ''), ('study', 'study', 8, 3, 1, ''),

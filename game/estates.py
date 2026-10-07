@@ -7,7 +7,12 @@
   the bag: never refused, never lost.
 * Biệt thự Sông Hồng (game/housing.py) gets the bigger three-floor inside (SONG_HONG_V2) under the place key
   '<its old key>:v2', for the same reason; a layout saved under the old key is read as the same place (deco.upgrade
-  renames it), since every room it had is still there, only bigger.
+  renames it, every piece at its exact spot). That holds because rooms_of() builds each room the house already had as
+  a strict superset of it (superset()): never fewer columns or rows, and a SONG_HONG_V2 fixture keeps only the cells
+  that lie outside the old room or where the old room had the same fixture. As 1.9.11 shipped it (legacy_rooms(), what
+  a 1.9.11..1.9.17 build still uses), the kitchen and the second bedroom had a row less and new windows / a longer
+  counter over old floor and wall cells: 139 pieces of 16 players went to the bag on 07/10. deco._store writes what
+  those builds accept where they read it, the rest in journey.decor_wide (they ignore it: those pieces wait in their bag).
 * Living there: the day's "tiền phòng" is the villa's điện nước (`power`), the cozy morning follows a home you own
   (game/reno.py steps), and the infinity pool counts as a pool for game/relax.py. There are no parts to repair: the
   staff the monthly bill pays keep it.
@@ -93,9 +98,57 @@ def rooms_of(key: str) -> list | None:
         e = ESTATE[bits[1]]
         out = [room(*r, theme=e['theme']) for r in e['rooms']] + _kits(e['kits'])
     elif key.endswith(V2) and len(bits) >= 4 and bits[-2] == EC.SONG_HONG:
-        out = [room(*r) for r in EC.SONG_HONG_V2['rooms']] + _kits(EC.SONG_HONG_V2['kits'])
+        from .deco import rooms_of as home_rooms
+        old = {r['id']: r for r in home_rooms(key[:-len(V2)]) or ()}
+        out = [superset(old[r['id']], r) if r['id'] in old else r for r in legacy_rooms(key)]
     if out is not None and len(_ROOMS) < 64:
         _ROOMS[key] = out
+    return out
+
+
+_LEGACY: dict = {}
+
+
+def legacy_rooms(key: str) -> list | None:
+    """Biệt thự Sông Hồng's three-floor rooms exactly as 1.9.11..1.9.17 build them (their deco.validate checks
+    journey.deco / decor / decor_new / decor_more against these); None: any other place."""
+    bits = key.split(':')
+    if not (key.endswith(V2) and len(bits) >= 4 and bits[-2] == EC.SONG_HONG):
+        return None
+    if key in _LEGACY:
+        return _LEGACY[key]
+    out = [room(*r) for r in EC.SONG_HONG_V2['rooms']] + _kits(EC.SONG_HONG_V2['kits'])
+    if len(_LEGACY) < 64:
+        _LEGACY[key] = out
+    return out
+
+
+def _rows(r: dict, layer: str) -> int:
+    return r['wrows'] if layer == 'wall' else r['frows']
+
+
+def superset(old: dict, new: dict) -> dict:
+    """`new` grown so that every spot of `old` stays usable: as many columns and rows as either, and each of new's
+    fixtures cut down to the columns that are outside `old` or where `old` had the same fixture (a piece that stood
+    there in `old` then still can; a cell only freed is never a problem for a layout made in `new`)."""
+    out = dict(new, cols=max(old['cols'], new['cols']), wrows=max(old['wrows'], new['wrows']),
+               frows=max(old['frows'], new['frows']))
+    def same(layer, t, x, y):
+        return any(f['layer'] == layer and f['t'] == t and f['x'] <= x < f['x'] + f['w'] and f['y'] <= y < f['y'] + f['h']
+                   for f in old['fix'])
+    fix = []
+    for f in new['fix']:
+        keep = [x for x in range(f['x'], f['x'] + f['w'])
+                if all(x >= old['cols'] or y >= _rows(old, f['layer']) or same(f['layer'], f['t'], x, y)
+                       for y in range(f['y'], f['y'] + f['h']))]
+        run: list = []
+        for x in keep + [None]:
+            if run and (x is None or x != run[-1] + 1):
+                fix.append(dict(f, x=run[0], w=len(run)))
+                run = []
+            if x is not None:
+                run.append(x)
+    out['fix'] = fix
     return out
 
 

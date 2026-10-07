@@ -47,6 +47,7 @@ from __future__ import annotations
 import json
 import random
 import re
+import sys
 import zlib
 
 from . import deco_content as DC
@@ -92,6 +93,19 @@ TURN_VERSION = 1
 ROOM_GROW = (3, 2)
 MORE_KEYS = {'v', 'at', 'items'}
 MORE_VERSION = 1
+# 1.9.18 (incident 07/10): Biệt thự Sông Hồng's rooms grew to a strict superset of the old house (game/estates.py).
+# journey.decor / decor_new / decor_more / the grid mirror keep only what a 1.9.11..1.9.17 build accepts in its own
+# smaller rooms (estates.legacy_rooms); the pieces only the grown rooms take ride in journey.decor_wide {v, at, items},
+# which those builds ignore (their bag shows them). Absent when empty, like decor_more.
+WIDE_KEYS = {'v', 'at', 'items'}
+WIDE_VERSION = 1
+# A move no longer loses the layout: the place left keeps it in journey.decor_away {v, places: [{at, items, skins}]}
+# (the latest AWAY_MAX places), and coming back puts it back. Older builds ignore the key (a move packs everything
+# into the bag there, as before). Pieces sold since are dropped from it on load.
+AWAY_KEYS = {'v', 'places'}
+AWAY_VERSION = 1
+AWAY_MAX = 3
+OWNED_ITEMS_MAX = 2000                 # pieces a kept layout may hold (reno.items is far below)
 _ID = re.compile(r'^[a-z0-9_]{1,24}$')
 _KEY = re.compile(r'^[a-z0-9_:]{1,48}$')
 _ON = re.compile(r'^#?[a-z0-9_]{1,24}$')
@@ -160,6 +174,19 @@ def get_more(s: dict) -> dict | None:
     j = s.get('journey')
     X = j.get('decor_more') if isinstance(j, dict) else None
     return X if isinstance(X, dict) else None
+
+
+def get_wide(s: dict) -> dict | None:
+    """journey.decor_wide: the pieces only Biệt thự Sông Hồng's grown rooms take (see WIDE_KEYS); absent when none."""
+    j = s.get('journey')
+    X = j.get('decor_wide') if isinstance(j, dict) else None
+    return X if isinstance(X, dict) else None
+
+
+def grid_rooms(key: str, rooms: list) -> list:
+    """The rooms the blocks an older build validates are written for: a 1.9.11..1.9.17 build's smaller Sông Hồng
+    rooms at its ':v2' key (game/estates.py), else the place's own rooms."""
+    return _es().legacy_rooms(key) or rooms
 
 
 def get_free(s: dict) -> dict | None:
@@ -601,11 +628,12 @@ def _merge(rooms: list, kinds: dict, order: list, fpos: dict, gpos: dict) -> dic
 
 
 # ---------------------------------------------------------------- the layout as it stands today
-def layout(s: dict) -> dict:
-    """Today's layout without writing anything: place, rooms, kinds {uid: k}, order, pos {uid: piece} (journey.decor and
-    journey.decor_new together), skins, journey (for _store)."""
+def layout(s: dict, pl: dict | None = None) -> dict:
+    """Today's layout without writing anything: place, rooms, kinds {uid: k}, order, pos {uid: piece} (journey.decor,
+    decor_new, decor_more and decor_wide together), skins, journey (for _store). `pl`: read the blocks saved for that
+    place instead of where the player lives now (_v2_alias: the layout exactly as the build before showed it)."""
     j = s['journey']
-    pl = place(j)
+    pl = pl or place(j)
     rooms = rooms_of(pl['key']) or []
     r = _rn().get(s)
     items = r['items'] if r else []
@@ -623,7 +651,7 @@ def layout(s: dict) -> dict:
     if D is not None and D['at'] == pl['key']:
         pos = {u: dict(v) for u, v in D['items'].items() if u in kinds}
         if d is not None and (slots or sig(d['pos']) != D['sig']):
-            pos = _merge(rooms, kinds, order, pos, gpos)
+            pos = _merge(grid_rooms(pl['key'], rooms), kinds, order, pos, gpos)   # the mirror is written for those
         skins = {rm: dict(v) for rm, v in D['skins'].items()}
     else:
         pos = from_grid(rooms, kinds, gpos)
@@ -633,6 +661,9 @@ def layout(s: dict) -> dict:
     M = get_more(s)
     if M is not None and M['at'] == pl['key']:   # the pieces past a room's 1.7.15 cap (ROOM_GROW)
         pos.update({u: dict(v) for u, v in M['items'].items() if u in kinds and u not in pos})
+    W = get_wide(s)
+    if W is not None and W['at'] == pl['key']:   # 🏰 the pieces only Sông Hồng's grown rooms take (WIDE_KEYS)
+        pos.update({u: dict(v) for u, v in W['items'].items() if u in kinds and u not in pos})
     faces = _faces(j)
     for u, q in pos.items():
         if faces.get(u) == 'back' and kinds.get(u) in FACING_ITEMS:
@@ -758,6 +789,66 @@ def guest(s: dict, L: dict, total: int, day: int) -> dict | None:
 
 
 # ---------------------------------------------------------------- the daily tick
+_LAYOUT_BLOCKS = ('decor', 'decor_new', 'decor_more', 'decor_wide')
+
+
+def _away(j: dict) -> list:
+    A = j.get('decor_away')
+    return A['places'] if isinstance(A, dict) and isinstance(A.get('places'), list) else []
+
+
+def _move(s: dict, pl: dict) -> list[str]:
+    """Follow the player to where they live now. Every piece of the place left goes to the bag, as always, but its
+    layout (and its walls and floors) is kept in journey.decor_away; coming back to a place kept there puts its layout
+    back (a piece sold since stays sold, one that no longer fits waits in the bag). Nothing happens when the blocks are
+    already at `pl`. Called by on_life_day and _ensure (the first command after a move). Returns the morning notes."""
+    j = s['journey']
+    key = pl['key']
+    d, D = get(s), get_free(s)
+    left = next((B['at'] for B in (d, D) if B is not None and B.get('at') != key), None)
+    notes: list[str] = []
+    if left is not None:
+        r = _rn().get(s)
+        kinds = {it['id']: it['k'] for it in (r['items'] if r else [])}
+        items: dict = {}
+        for name in _LAYOUT_BLOCKS:
+            B = j.get(name)
+            if isinstance(B, dict) and B.get('at') == left and isinstance(B.get('items'), dict):
+                items.update({u: dict(v) for u, v in B['items'].items() if u in kinds and u not in items})
+        skins = dict(D['skins']) if D is not None and D.get('at') == left else {}
+        if items or (d is not None and d.get('at') == left and d['pos']):
+            notes.append('📦 Chuyển chỗ ở rồi: đồ trang trí đã gói vào túi đồ, vào bày lại phòng mới nhé! '
+                         'Cách bày ở chỗ cũ vẫn được nhớ: quay về là đồ tự bày lại như trước.')
+        if items or skins:
+            places = [x for x in _away(j) if x.get('at') != left] + [dict(at=left, items=items, skins=skins)]
+            j['decor_away'] = dict(v=AWAY_VERSION, places=places[-AWAY_MAX:])
+    if d is not None and d['at'] != key:
+        d['at'], d['pos'] = key, {}
+    if D is not None and D['at'] != key:
+        D.update(at=key, items={}, skins={}, sig=sig(d['pos'] if d is not None else {}))
+    for name in _LAYOUT_BLOCKS[1:]:
+        B = j.get(name)
+        if isinstance(B, dict) and B.get('at') != key:
+            j.pop(name)
+    back = next((x for x in _away(j) if x.get('at') == key), None) if left is not None else None
+    if back is not None and d is not None and D is not None:
+        rest = [x for x in _away(j) if x is not back]
+        if rest:
+            j['decor_away']['places'] = rest
+        else:
+            j.pop('decor_away')
+        L = layout(s, pl)
+        rs = {x['id'] for x in L['rooms']}
+        pos = {u: dict(v) for u, v in back['items'].items() if u in L['kinds'] and isinstance(v, dict) and _piece_ok(v)}
+        kept, _out = settle_free(L['rooms'], L['kinds'], pos, L['order'])
+        D['skins'] = {rm: dict(v) for rm, v in (back.get('skins') or {}).items() if rm in rs}
+        L['skins'] = D['skins']
+        _store(d, D, L, kept)
+        if kept:
+            notes.append(f'🏠 Về lại chỗ cũ: {len(kept)} món trang trí đã bày lại như trước.')
+    return notes
+
+
 def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     """Follow the player home (a move puts everything in the bag), the morning bonus outside a home you own (a home
     you own: reno.on_life_day), a neighbour's visit. Only a block that exists is touched; idempotent."""
@@ -765,21 +856,8 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
     d = get(s)
     if d is None or not j.get('story'):
         return []
-    notes: list[str] = []
     pl = place(j)
-    D = get_free(s)
-    if d['at'] != pl['key']:
-        if d['pos'] or (D is not None and D['items']) or get_more(s) is not None:
-            notes.append('📦 Chuyển chỗ ở rồi: đồ trang trí đã gói vào túi đồ, vào bày lại phòng mới nhé!')
-        d['at'], d['pos'] = pl['key'], {}
-    if D is not None and D['at'] != pl['key']:
-        D.update(at=pl['key'], items={}, skins={}, sig=sig(d['pos']))
-    X = get_new(s)
-    if X is not None and X['at'] != pl['key']:
-        j.pop('decor_new')
-    M = get_more(s)
-    if M is not None and M['at'] != pl['key']:
-        j.pop('decor_more')
+    notes = _move(s, pl)
     target = int(j['life_day'])
     d['day'] = max(d['day'], target - CATCHUP)
     if d['day'] < target:
@@ -834,6 +912,7 @@ def _ensure(s: dict) -> tuple[dict, dict, dict]:
     """Both blocks for a command, following the player home; older layouts become free positions now
     (1.2.0 slots leave the reno items)."""
     j = s['journey']
+    _move(s, place(j))   # moved since the last command: the place left keeps its layout (decor_away)
     L = layout(s)
     d, D = get(s), get_free(s)
     if d is None:
@@ -867,10 +946,17 @@ def _store(d: dict, D: dict, L: dict, pos: dict) -> None:
             j.pop(key, None)
     L['faces'] = faces
     saved = {u: {k: v for k, v in q.items() if k != 'face'} for u, q in pos.items()}
-    new = {r['id'] for r in L['rooms'] if r.get('new')}
-    more = past_old_cap(L['rooms'], L['kinds'], saved, L['order'])
-    D['items'] = {u: saved[u] for u in L['order'] if u in pos and pos[u]['r'] not in new and u not in more}
-    xs = {u: saved[u] for u in L['order'] if u in pos and pos[u]['r'] in new and u not in more}
+    R = grid_rooms(L['place']['key'], L['rooms'])   # 🏰 what an older build checks these blocks against
+    wide: set = set()
+    if R is not L['rooms']:   # a piece only the grown rooms take (or one standing on it): journey.decor_wide
+        wide = set(settle_free(R, L['kinds'], saved, L['order'])[1])
+        saved, ws = {u: q for u, q in saved.items() if u not in wide}, {u: saved[u] for u in L['order'] if u in wide}
+    else:
+        ws = {}
+    new = {r['id'] for r in R if r.get('new')}
+    more = past_old_cap(R, L['kinds'], saved, L['order'])
+    D['items'] = {u: saved[u] for u in L['order'] if u in saved and saved[u]['r'] not in new and u not in more}
+    xs = {u: saved[u] for u in L['order'] if u in saved and saved[u]['r'] in new and u not in more}
     if xs:
         j['decor_new'] = dict(v=NEW_VERSION, at=L['place']['key'], items=xs)
     else:
@@ -880,8 +966,12 @@ def _store(d: dict, D: dict, L: dict, pos: dict) -> None:
         j['decor_more'] = dict(v=MORE_VERSION, at=L['place']['key'], items=ms)
     else:
         j.pop('decor_more', None)
+    if ws:
+        j['decor_wide'] = dict(v=WIDE_VERSION, at=L['place']['key'], items=ws)
+    else:
+        j.pop('decor_wide', None)
     L['pos'] = {u: dict(pos[u]) for u in L['order'] if u in pos}
-    g = to_grid(L['rooms'], L['kinds'], D['items'], L['order'])
+    g = to_grid(R, L['kinds'], D['items'], L['order'])
     d['pos'] = {u: list(g[u]) for u in L['order'] if u in g}
     D['sig'] = sig(d['pos'])
     d['stats']['best'] = max(d['stats']['best'], points(L)['total'])
@@ -1467,45 +1557,85 @@ def upgrade(j: dict) -> None:
                 M['items'].pop(u)
         if not M['items']:
             j.pop('decor_more')
+    W = j.get('decor_wide') if isinstance(j, dict) else None   # 🏰 as decor_more
+    if isinstance(W, dict) and isinstance(W.get('items'), dict):
+        placed = set()
+        for B in (D, X, M):
+            if isinstance(B, dict) and isinstance(B.get('items'), dict):
+                placed |= set(B['items'])
+        for u in [u for u in W['items'] if u not in kinds or u in placed]:   # sold, or placed by an older build since
+            W['items'].pop(u)
+        hosts = placed | set(W['items'])
+        for u, v in list(W['items'].items()):
+            if isinstance(v, dict) and isinstance(v.get('on'), str) and v['on'] and v['on'][0] != '#' and v['on'] not in hosts:
+                W['items'].pop(u)
+        if not W['items']:
+            j.pop('decor_wide')
+    A = j.get('decor_away') if isinstance(j, dict) else None   # a place left: pieces sold since leave its layout
+    if isinstance(A, dict) and isinstance(A.get('places'), list):
+        for x in A['places']:
+            if isinstance(x, dict) and isinstance(x.get('items'), dict):
+                for u in [u for u in x['items'] if u not in kinds]:
+                    x['items'].pop(u)
+        A['places'] = [x for x in A['places'] if not isinstance(x, dict) or x.get('items') or x.get('skins')]
+        if not A['places']:
+            j.pop('decor_away')
 
 
 def _v2_alias(j: dict) -> None:
-    """🏰 Biệt thự Sông Hồng's layout saved under its key from before the three-floor inside (or by an older build since)
-    is the same place: every room it had is still there, only bigger (game/estates.py)."""
+    """🏰 Biệt thự Sông Hồng's layout saved under its key from before the three-floor inside is the same place: every
+    room it had is still there, as a strict superset of the old one (game/estates.py superset()), so every piece keeps
+    its exact spot. The layout is read exactly as the build before showed it (layout() at the old key: its grid mirror,
+    its merge rules) and written once by _store (the blocks an older build validates hold what its own rooms take, the
+    rest journey.decor_wide; the grid mirror and its sig agree, so layout() never merges it again). A piece that still
+    cannot stand (a newer content table, a corrupt spot) goes to the bag and is logged ([deco-v2] on stderr).
+    Before 1.9.18 this settled each block into 1.9.11's smaller rooms piece by piece: 139 pieces of 16 players went to
+    the bag on 07/10, and the re-settled grid mirror made layout() snap some others to grid cells."""
     if not isinstance(j, dict) or not isinstance(j.get('story'), bool):
         return
     try:
-        key = place(j)['key']
+        pl = place(j)
     except Exception:   # noqa: BLE001 - an unreadable home block: validate says so
         return
+    key = pl['key']
     if not key.endswith(_es().V2):
         return
     old = key[:-len(_es().V2)]
-    rooms = rooms_of(key) or []
+    names = [n for n in ('deco',) + _LAYOUT_BLOCKS if isinstance(j.get(n), dict) and j[n].get('at') == old]
+    if not names:
+        return
     r = j.get('reno')
     items = r.get('items') if isinstance(r, dict) and isinstance(r.get('items'), list) else []
-    kinds = {it['id']: it['k'] for it in items if isinstance(it, dict) and isinstance(it.get('id'), str)}
-    order = list(kinds)
-    others: dict = {}
-    for name in ('deco', 'decor', 'decor_new', 'decor_more'):
-        B = j.get(name)
-        if not (isinstance(B, dict) and B.get('at') == old):
-            continue
-        B['at'] = key
-        if name == 'deco' or not isinstance(B.get('items'), dict):
-            continue   # the grid mirror: upgrade() below settles it in the new rooms
-        pos = {u: v for u, v in B['items'].items() if u in kinds and isinstance(v, dict) and _piece_ok(v)}
-        if not all(kinds[u] in ITEMS for u in pos):
-            continue   # a newer build's pieces: left as they are
-        if name == 'decor_more':   # the whole room at today's cap, as validate() checks it
-            kept, _ = settle_free(rooms, kinds, {**others, **pos}, order)
-            kept = {u: v for u, v in kept.items() if u in pos}
-        else:   # what a 1.7.15 build accepts a room
-            kept, _ = settle_free(rooms, kinds, pos, order, old_cap)
-        B['items'] = kept   # a piece the bigger room's new windows or doors cover goes back to the bag
-        others.update(kept)
-        if name != 'decor' and not kept:
-            j.pop(name)
+    if not all(isinstance(it, dict) and it.get('k') in ITEMS for it in items):   # a newer build's pieces: keep its blocks
+        for n in names:
+            j[n]['at'] = key
+        return
+    s = dict(journey=j)
+    try:
+        L1 = layout(s, dict(pl, key=old))   # exactly what the build before showed
+        pos = dict(L1['pos'])
+        if any(isinstance(j.get(n), dict) and j[n].get('at') == key for n in _LAYOUT_BLOCKS):   # placed under the new key
+            pos.update({u: q for u, q in layout(s, pl)['pos'].items() if u not in pos})          # by a newer build since
+    except Exception:   # noqa: BLE001 - an unreadable layout: validate says so
+        return
+    for n in names:
+        j[n]['at'] = key
+    d = j['deco'] if isinstance(j.get('deco'), dict) else None
+    if d is None:
+        d = j['deco'] = blank(j.get('life_day') or 1, key)
+    D = j['decor'] if isinstance(j.get('decor'), dict) else None
+    if D is None:
+        D = j['decor'] = blank_free(key)
+    rooms = rooms_of(key) or []
+    L = dict(L1, place=pl, rooms=rooms)
+    kept, out = settle_free(rooms, L['kinds'], pos, L['order'])
+    if out:
+        what = ', '.join(f"{u}:{L['kinds'].get(u)}" for u in out)
+        sys.stderr.write(f'[deco-v2] {len(out)} piece(s) to the bag moving {old} -> {key}: {what}\n')
+    D['skins'] = L1['skins']
+    for it in items:   # the 1.2.0 slots are in the layout now (as _ensure does)
+        it['r'] = it['x'] = None
+    _store(d, D, L, kept)
 
 
 def _piece_ok(v) -> bool:
@@ -1623,3 +1753,38 @@ def validate(s: dict) -> None:
         if rooms is not None and all(kinds[u] in ITEMS for u in every):   # the whole room, at today's cap
             _kept, out = settle_free(rooms, kinds, every, list(kinds))
             need(not out, bad)
+    if j.get('decor_wide') is not None:   # 🏰 1.9.18
+        W = j['decor_wide']
+        bad = 'Dữ liệu bày trí phòng không hợp lệ.'
+        need(isinstance(W, dict) and set(W) == WIDE_KEYS and W['v'] == WIDE_VERSION, bad, 'invalid_save')
+        need(isinstance(W['at'], str) and _KEY.match(W['at']), bad)
+        need(isinstance(W['items'], dict) and bool(W['items']), bad)
+        others = {}
+        for key in ('decor', 'decor_new', 'decor_more'):
+            B = j.get(key)
+            if isinstance(B, dict) and B.get('at') == W['at']:
+                others.update(B['items'])
+        for uid, v in W['items'].items():
+            need(uid in kinds and uid not in others and _piece_ok(v), bad)
+        rooms = rooms_of(W['at'])
+        every = {**others, **W['items']}
+        if rooms is not None and all(kinds[u] in ITEMS for u in every):   # the whole place, at today's cap
+            _kept, out = settle_free(rooms, kinds, every, list(kinds))
+            need(not out, bad)
+    if j.get('decor_away') is not None:   # 1.9.18: the layouts of places left (shape only: a piece may be sold since)
+        A = j['decor_away']
+        bad = 'Dữ liệu bày trí phòng không hợp lệ.'
+        need(isinstance(A, dict) and set(A) == AWAY_KEYS and A['v'] == AWAY_VERSION, bad, 'invalid_save')
+        need(isinstance(A['places'], list) and len(A['places']) <= AWAY_MAX, bad)
+        seen = set()
+        for x in A['places']:
+            need(isinstance(x, dict) and set(x) == {'at', 'items', 'skins'} and isinstance(x['at'], str)
+                 and _KEY.match(x['at']) and x['at'] not in seen, bad)
+            seen.add(x['at'])
+            need(isinstance(x['items'], dict) and len(x['items']) <= OWNED_ITEMS_MAX, bad)
+            for uid, v in x['items'].items():
+                need(isinstance(uid, str) and _ID.match(uid) and _piece_ok(v), bad)
+            need(isinstance(x['skins'], dict) and len(x['skins']) <= 16, bad)
+            for rm, v in x['skins'].items():
+                need(isinstance(rm, str) and _ID.match(rm) and isinstance(v, dict) and set(v) <= {'w', 'f'}
+                     and all(isinstance(y, str) and _SKIN.match(y) for y in v.values()), bad)
