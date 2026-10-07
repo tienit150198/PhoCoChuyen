@@ -1,3 +1,22 @@
+# Chưa phát hành
+
+## Sửa lỗi nhỏ (backlog 4: misc4)
+
+- 📡 iPhone gửi được số liệu ẩn danh (beacon): Safari và WebView iOS (Zalo…) gửi `Origin: null` khi trang đặt
+  `Referrer-Policy: no-referrer`, nên mọi beacon từ iPhone bị 403 (07/10: 2.818 lần, 0 lần nhận). Giờ `null` tính là
+  "không rõ nguồn", nhận `Sec-Fetch-Site` same-origin / same-site / none và Origin là host của mình (www ↔ không www);
+  website khác vẫn bị chặn. Beacon chỉ ghi bảng stat_*, cookie phiên SameSite=Strict; API đổi dữ liệu giữ nguyên
+  kiểm tra CSRF và Origin.
+- 💬 Chuyện phố: nút "Trao đổi tình huống" chỉ hiện ở nghề máy chủ nhận (mẹ & bé, nhà thuốc, kế toán, CSKH; giáo viên,
+  hướng dẫn viên, trà sữa mở sổ riêng). 45 nghề khác không còn nút bấm ra lời từ chối; "Trả lời đánh giá" vẫn như cũ.
+  Danh mục nghề có cờ `review_followup` (game/content.py REVIEW_FOLLOWUP).
+- 🐣 Tên nhân vật được có tối đa 2 emoji ("Vịt🐣", "Bơ 🐨", cờ 🇻🇳, emoji ghép 👩‍💻 tính là 1). Cần ít nhất một chữ hoặc
+  số; lọc từ tục vẫn chạy (emoji chen giữa chữ không lách được). Ô tên ở màn chào có dòng nhắc luật. Chữ cái đầu ở ảnh
+  đại diện (Chuyện phố, hôn nhân) và tên khi đi chung xe không còn cắt đôi emoji.
+- 🐢 Đỡ lag trên điện thoại: vòng sáng chỉ đường (gd-pulse / gd-ring) nhấp nháy 3 lần rồi sáng đứng yên, không chạy mãi
+  (trước đó trang tính lại kiểu chữ 60 lần mỗi giây khi đứng yên). Bật "Giảm chuyển động" thì vòng đứng yên ngay.
+- Không thêm khóa bản lưu, không đổi DDL.
+
 # v1.9.10 — 2026-10-07
 
 Gồm "Cấp bậc công an" (ranks-police: org ladder, cấp hiệu bảng màu riêng của game). Có gì mới cũng thông báo Phòng hát Mây (bật từ 07:28 07/10 bằng LIVE_KARAOKE).

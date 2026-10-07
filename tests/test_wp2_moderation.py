@@ -181,6 +181,28 @@ class Names(unittest.TestCase):
         j.act('jr_profile', name='Bí Ve')
         self.assertEqual(j.state['name'], 'Bí Ve')
 
+    def test_names_may_carry_two_emoji(self):
+        """Backlog 4 #10: chat names carry emoji (🐨, Vịt🐣); the intro form refused them. Up to 2 now."""
+        for n in ('Vịt🐣', 'Bơ 🐨', '🐨 Koala 🐣', 'Lan ❤️', 'Dev 👩‍💻', 'Nam 🇻🇳', 'Hà 👍🏽', 'Mây ⭐☕'):
+            self.assertEqual(accounts.clean_display(n), n, n)
+        self.assertEqual(accounts.clean_display('  Vịt🐣  '), 'Vịt🐣')
+        for n in ('🐣🐨', '🐣', 'Vịt 🐣🐨🌸', '123 🐣', 'Vịt‍', 'A \U0001F1FB', 'Vịt 🏻', 'Lan <3', 'Vịt 🐣 lồn', 'lồ🐣n', 'c🐣ặc',
+                  'Vịt 🐣 abc.com'):
+            with self.assertRaises(accounts.AccountError, msg=n):
+                accounts.clean_display(n)
+        j = Journey('milk_tea')
+        j.act('jr_profile', name='Vịt🐣', gender='female')
+        self.assertEqual(j.state['name'], 'Vịt🐣')
+        j.act('settings', name='Bơ 🐨')
+        self.assertEqual(j.state['name'], 'Bơ 🐨')
+        from game import leaderboard, social
+        self.assertEqual(leaderboard.guest_name('Bơ 🐨'), 'Bơ 🐨')
+        self.assertEqual(social.name_emoji('A👩‍👩‍👧‍👦B🇻🇳'), ('AB', 2))
+        from live.auth import clean_name
+        self.assertEqual(clean_name('Vịt🐣'), 'Vịt🐣')
+        # Chat keeps masking heavy words around emoji.
+        self.assertEqual(filters.mask('🐣 lồn 🐣'), '🐣 *** 🐣')
+
     def test_an_older_name_never_blocks_other_settings(self):
         j = Journey('milk_tea')
         j.state['name'] = 'Mây 🌸'                    # allowed before; not renamed automatically

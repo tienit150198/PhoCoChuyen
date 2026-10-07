@@ -30,6 +30,9 @@ NPC_INDEX = {n["id"]: n for n in NPCS}
 EVENT_SEEDS = load_reference("events_96.json")
 QUEST_SEEDS = load_reference("quests_12.json")
 CAREERS = ("mother_baby", "pharmacy", "accounting", "customer_care") + extra.NEW_CAREERS + tuple(PLUGINS)
+# "Trao đổi tình huống" on a review (engine action review_followup): only these careers have a review practice
+# event; the catalogue flags them (`review_followup`) so Chuyện phố draws the button only where it works (backlog 4 #6).
+REVIEW_FOLLOWUP = {"mother_baby": "MB-E09", "pharmacy": "PH-E16", "accounting": "AC-E22", "customer_care": "CS-E14"}
 CAREER_META = {
     "mother_baby": dict(short="Tiệm mẹ & bé", place="Tiệm Mây Nhỏ", tagline="Gói một món quà. Giữ một niềm vui.", icon="gift", color="#bc6589", light="#ffe7ef", weather="Nắng dịu", work="Đơn hàng", station="Quầy thu ngân", greeting="Khách đầu tiên đang chờ bạn. Chạm vào khách để làm quen nhé.", caption="Một tiệm nhỏ, rất nhiều câu chuyện", map_label="01 · GÓC PHỐ ẤM ÁP"),
     "pharmacy": dict(short="Nhà thuốc nhỏ", place="Quầy Bình An", tagline="Chậm một nhịp. Đúng từng chi tiết.", icon="cross", color="#398b83", light="#dff4ec", weather="Trời trong", work="Phiếu", station="Khay kiểm tra", greeting="Chạm vào khách, đọc phiếu và lấy đúng mã hộp.", caption="Sự cẩn thận cũng có câu chuyện của nó", map_label="02 · QUẦY BÌNH AN"),
@@ -216,6 +219,7 @@ def public_content() -> dict:
         c.update(CAREER_META.get(c["id"], {}))
         c['terms']=copy.deepcopy(career_voice.terms(c["id"]))
         c['playable'] = c['id'] in CAREERS   # 🏝️ the 2.5D town draws a door only for a career one can play
+        if c['id'] in REVIEW_FOLLOWUP:c['review_followup'] = True
         if c["id"] in PLUGINS:  # its work needs the shift open (engine: "Mở ca trước…"): greyed out while closed
             sp=PLUGINS[c["id"]].SPEC;c["shift_gate"]=dict(prefix=sp["prefix"],free=list(sp.get("free_actions",())))
     return dict(version="0.9.5",experiences=extra.public_content(),inventory=inventory.content(),employment=employment.content(CAREERS),

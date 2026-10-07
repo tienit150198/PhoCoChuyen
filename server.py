@@ -1010,14 +1010,14 @@ class Handler(BaseHTTPRequestHandler):
         """POST /api/beacon (navigator.sendBeacon, public/js/telemetry.js): where a page was left, client errors,
         load times, where a new player came from (game/retention.py). The session cookie only (a beacon carries
         no CSRF header), from this site only (Origin / Sec-Fetch-Site), at most BEACON_MAX bytes, rate limited;
-        never reads a save. 204 when taken."""
+        never reads a save. 204 when taken.
+        Safari / iOS WebViews (backlog 4 #2): under our `Referrer-Policy: no-referrer` WebKit sends a no-cors
+        sendBeacon with `Origin: null` (Fetch spec, "append a request Origin header"), so every iPhone beacon was
+        refused. `null` counts as "no origin given"; Sec-Fetch-Site same-origin / same-site / none, or an Origin on
+        one of our own hosts (www ↔ apex), is accepted; only a real other website is refused. A beacon only adds
+        to the stat_* tables, and the session cookie is SameSite=Strict (a cross-site POST carries none → 401)."""
         if not self.valid_host():self.error(403,"Host không được phép.","forbidden");return
-        origin,site=self.headers.get("Origin"),self.headers.get("Sec-Fetch-Site")
-        if origin:
-            parsed=urlsplit(origin)
-            if parsed.scheme not in ("http","https") or parsed.netloc!=self.headers.get("Host"):self.error(403,"Không nhận từ website khác.","forbidden");return
-        if site and site!="same-origin":self.error(403,"Không nhận từ website khác.","forbidden");return
-        if not origin and not site:self.error(403,"Thiếu nguồn gửi.","forbidden");return
+        if not self.beacon_source_ok():self.error(403,"Không nhận từ website khác.","forbidden");return
         token=self.token()
         if not token:self.error(401,"Chưa có phiên chơi.","session_missing");return
         try:length=int(self.headers.get("Content-Length","0"))
@@ -1036,6 +1036,17 @@ class Handler(BaseHTTPRequestHandler):
             except ValueError:host=""
             retention.beacon(self.server.store,sid,data,own_host=host)
         self.respond(204,b"","text/plain; charset=utf-8")
+
+    def beacon_source_ok(self)->bool:
+        """Is this beacon from our own pages? (see beacon()). Never used for state-changing routes (guarded())."""
+        origin,site=(self.headers.get("Origin") or "").strip(),(self.headers.get("Sec-Fetch-Site") or "").strip().lower()
+        if site and site not in ("same-origin","same-site","none"):return False
+        if not origin:return bool(site) and site!="same-site"      # neither header: not a browser page of ours
+        if origin=="null":return site!="same-site"                 # WebKit beacon (Safari < 16.4 sends no Sec-Fetch-Site)
+        try:parsed=urlsplit(origin);hostname=parsed.hostname
+        except ValueError:return False
+        if parsed.scheme not in ("http","https"):return False
+        return parsed.netloc==self.headers.get("Host") or hostname in self.server.allowed_hosts   # same page, or www ↔ apex
 
     def require_admin(self,token:str):
         """Feedback inbox: only signed-in accounts listed in ADMIN_USERS (403 for everyone else)."""
