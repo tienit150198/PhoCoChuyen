@@ -1,3 +1,7 @@
+# v1.9.17 — 2026-10-07
+
+Gồm r6-misc: thẻ "Lúc bạn vắng" (ops.business_used tùy chọn), ném vòng cách nhau 2 giây, dòng chữ đấu giá và danh hiệu.
+
 # Chưa phát hành — Mic trực tiếp: người nghe nối được và thấy trạng thái (B3)
 
 - SDK LiveKit tải từ chính máy chủ game (`public/js/vendor/livekit-client-2.22.3.umd.js`, cùng SRI), jsDelivr chỉ còn là dự phòng; mỗi nguồn chờ tối đa 15 giây. Người nghe tải SDK trước rồi mới xin vé, nên mạng chậm không làm hết hạn vé 60 giây. Bản phát hành không nén lại thư mục `vendor/`.
