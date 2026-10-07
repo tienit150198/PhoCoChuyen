@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Thao tác két không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Két trống. Quầy vẫn mở bình thường.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy mở lại rồi!",
+  "en": ""
+ },
+ {
   "vi": "Két vào vốn quầy",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "đúng món",
-  "en": ""
- },
- {
-  "vi": "sai món",
-  "en": ""
- },
- {
-  "vi": "dán kín",
-  "en": ""
- },
- {
-  "vi": "quên dán",
   "en": ""
  }
 ]

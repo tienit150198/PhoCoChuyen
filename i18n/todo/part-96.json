@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Số dòng đếm nền mỗi 2 phút; bảng lớn là số ước tính (≈).",
+  "en": ""
+ },
+ {
+  "vi": "Máy chủ đọc/ghi bản lưu khi người chơi thao tác; số liệu vận hành tính nền theo mẫu, có giới hạn thời gian và tạm dừng khi máy bận, để không làm chậm người chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Phần của tổng quan đầu tư",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ số",
+  "en": ""
+ },
+ {
   "vi": "Định nghĩa · cách tính",
   "en": ""
  },
@@ -128,6 +144,10 @@
   "en": ""
  },
  {
+  "vi": "🎙️ Cắt mic",
+  "en": ""
+ },
+ {
   "vi": "🧩 Dừng đố",
   "en": ""
  },
@@ -164,6 +184,10 @@
   "en": ""
  },
  {
+  "vi": "· lúc hát mic trực tiếp (không có bản ghi)",
+  "en": ""
+ },
+ {
   "vi": "🚫 Cấm bài",
   "en": ""
  },
@@ -173,6 +197,10 @@
  },
  {
   "vi": "🚪 Mời ra",
+  "en": ""
+ },
+ {
+  "vi": "🎂 Hỏi lại năm sinh",
   "en": ""
  },
  {
@@ -1769,34 +1797,6 @@
  },
  {
   "vi": "không vào ca",
-  "en": ""
- },
- {
-  "vi": "tạm dừng vì còn sự cố đang mở",
-  "en": ""
- },
- {
-  "vi": "Xem nhân viên",
-  "en": ""
- },
- {
-  "vi": "Buổi tối",
-  "en": ""
- },
- {
-  "vi": "BUỔI TỐI",
-  "en": ""
- },
- {
-  "vi": "Chưa tới buổi tối",
-  "en": ""
- },
- {
-  "vi": "Khép ca xong rồi chọn bữa tối và giờ đi ngủ nhé.",
-  "en": ""
- },
- {
-  "vi": "Một ngày đã xong",
   "en": ""
  }
 ]

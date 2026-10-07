@@ -1,5 +1,189 @@
 [
  {
+  "vi": "Sốt ruột",
+  "en": ""
+ },
+ {
+  "vi": "Dễ tính",
+  "en": ""
+ },
+ {
+  "vi": "Có khách tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "khách tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "người chờ tới lượt",
+  "en": ""
+ },
+ {
+  "vi": "Người tiếp theo đang ghé",
+  "en": ""
+ },
+ {
+  "vi": "Đi lên",
+  "en": ""
+ },
+ {
+  "vi": "Sang phải",
+  "en": ""
+ },
+ {
+  "vi": "Đi xuống",
+  "en": ""
+ },
+ {
+  "vi": "Sang trái",
+  "en": ""
+ },
+ {
+  "vi": "↰ RẼ TRÁI",
+  "en": ""
+ },
+ {
+  "vi": "↑ ĐI THẲNG",
+  "en": ""
+ },
+ {
+  "vi": "RẼ PHẢI ↱",
+  "en": ""
+ },
+ {
+  "vi": "ĐIỂM GIAO HÀNG",
+  "en": ""
+ },
+ {
+  "vi": "Góc nhìn người lái",
+  "en": ""
+ },
+ {
+  "vi": "đã qua các ngã tư",
+  "en": ""
+ },
+ {
+  "vi": "ngã tư",
+  "en": ""
+ },
+ {
+  "vi": "ĐÓNG CỬA",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Sổ bán hàng ở bên dưới",
+  "en": ""
+ },
+ {
+  "vi": "Mọi đơn đều được ghi tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "LƯỢT BÁN VỪA GHI NHẬN",
+  "en": ""
+ },
+ {
+  "vi": "KHÁCH ĐANG CHỜ",
+  "en": ""
+ },
+ {
+  "vi": "KHAY MÓN",
+  "en": ""
+ },
+ {
+  "vi": "KÉT QUẦY",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang tạm dừng",
+  "en": ""
+ },
+ {
+  "vi": "Xem nguyên liệu và vốn ở bên dưới",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đọc được cập nhật quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên chơi đã thay đổi. Mở lại quầy nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang đồng bộ. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đồng bộ được số dư. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đang dọn hàng. Mở lại sau ít phút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi gói bảo vệ quầy?",
+  "en": ""
+ },
+ {
+  "vi": "Chọn gói",
+  "en": ""
+ },
+ {
+  "vi": "từ két/vốn",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số lượng nguyên dương cho ít nhất một món.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập hàng vào kho quầy?",
+  "en": ""
+ },
+ {
+  "vi": "Tắt kiểm tra hằng ngày?",
+  "en": ""
+ },
+ {
+  "vi": "Quầy có thể vi phạm khi kiểm tra. Bạn có thể bật lại bất cứ lúc nào.",
+  "en": ""
+ },
+ {
+  "vi": "Tắt kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "Đăng ca làm thêm?",
+  "en": ""
+ },
+ {
+  "vi": "Đăng ca",
+  "en": ""
+ },
+ {
+  "vi": "Két và vốn quầy",
+  "en": ""
+ },
+ {
+  "vi": "Giữ lương từ két và vốn quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ ca này?",
+  "en": ""
+ },
+ {
+  "vi": "Không mất gì cả. Lương về lại cho chủ quầy.",
+  "en": ""
+ },
+ {
   "vi": "Bỏ ca",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "hưu",
-  "en": ""
- },
- {
-  "vi": "cao tuổi",
-  "en": ""
- },
- {
-  "vi": "Đang tắt vì Âm thanh thao tác tắt.",
-  "en": ""
- },
- {
-  "vi": "Giọng & chi tiết",
-  "en": ""
- },
- {
-  "vi": "Tiếng ting ting khi nhận tiền",
-  "en": ""
- },
- {
-  "vi": "Lương, quà, khách chuyển khoản… tiền về là nghe “ting ting” như app ngân hàng.",
-  "en": ""
- },
- {
-  "vi": "Giọng đọc số tiền",
-  "en": ""
- },
- {
-  "vi": "Đọc số tiền vừa về như loa ngân hàng: “Đã nhận 50 xu”. Khoản dưới 10 xu chỉ ting ting.",
-  "en": ""
- },
- {
-  "vi": "Giọng nhân vật",
-  "en": ""
- },
- {
-  "vi": "Nhân vật “líu lo” vài tiếng khi nói, mỗi người một giọng.",
-  "en": ""
- },
- {
-  "vi": "Âm thanh chi tiết",
-  "en": ""
- },
- {
-  "vi": "Tiếng thu ngân, chuông cửa, lật giấy…",
-  "en": ""
- },
- {
-  "vi": "Trên iPhone, chế độ im lặng (nút gạt bên hông) sẽ tắt âm thanh thao tác và giọng nhân vật. Gạt tắt để nghe.",
-  "en": ""
- },
- {
-  "vi": "Màu tên",
-  "en": ""
- },
- {
-  "vi": "Khung hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Tuần này xem rồi",
-  "en": ""
- },
- {
-  "vi": "Mua 7 ngày",
-  "en": ""
- },
- {
-  "vi": "Chỗ tiêu xu",
-  "en": ""
- },
- {
-  "vi": "🏪 Quán người chơi",
-  "en": ""
- },
- {
-  "vi": "Cuống vé",
-  "en": ""
- },
- {
-  "vi": "Lời cầu",
-  "en": ""
- },
- {
-  "vi": "🛕 Chùa Gió Lành",
-  "en": ""
- },
- {
-  "vi": "Cất",
-  "en": ""
- },
- {
-  "vi": "Gần nhất",
-  "en": ""
- },
- {
-  "vi": "Để gặp đoạn tiếp theo",
-  "en": ""
- },
- {
-  "vi": "Các mốc tính riêng tại nơi làm này, theo ngày trong game.",
-  "en": ""
- },
- {
-  "vi": "Đã đạt",
-  "en": ""
- },
- {
-  "vi": "Đủ điều kiện. Tiếp tục làm việc ở đây để gặp đoạn mới.",
-  "en": ""
- },
- {
-  "vi": "Tiếp tục làm việc",
-  "en": ""
- },
- {
-  "vi": "quỹ đoàn",
-  "en": ""
- },
- {
-  "vi": "🏫 Tiết học",
-  "en": ""
- },
- {
-  "vi": "Soạn giáo án",
-  "en": ""
- },
- {
-  "vi": "⭐ Mở đầu hợp không khí lớp",
-  "en": ""
- },
- {
-  "vi": "⭐ Có đủ cách học của các bạn có mặt",
-  "en": ""
- },
- {
-  "vi": "⭐ Kết thúc bằng thẻ Kiểm tra",
-  "en": ""
- },
- {
-  "vi": "So bài với đáp án: đúng → 🌟 Khen cụ thể · sai hoặc chép nhầm → 🪜 Gợi ý một bước · ghi \"Giống hệt phiếu của…\" → 🤝 Gặp riêng.",
-  "en": ""
- },
- {
-  "vi": "Vắng có phép",
-  "en": ""
- },
- {
-  "vi": "Chính",
-  "en": ""
- },
- {
-  "vi": "Hít thở",
-  "en": ""
- },
- {
-  "vi": "Câu đố",
-  "en": ""
- },
- {
-  "vi": "Thẻ đồ vật",
-  "en": ""
- },
- {
-  "vi": "Kể chuyện",
-  "en": ""
- },
- {
-  "vi": "Tiếp sức",
-  "en": ""
- },
- {
-  "vi": "Vẽ sơ đồ",
-  "en": ""
- },
- {
-  "vi": "Giơ bảng",
-  "en": ""
- },
- {
-  "vi": "Phiếu cuối",
-  "en": ""
- },
- {
-  "vi": "Nói lại",
   "en": ""
  }
 ]

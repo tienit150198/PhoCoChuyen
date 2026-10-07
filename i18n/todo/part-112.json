@@ -1,5 +1,49 @@
 [
  {
+  "vi": "Chiếu trong: xóc đĩa chẵn lẻ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chẵn hay lẻ",
+  "en": ""
+ },
+ {
+  "vi": "Tiền cược",
+  "en": ""
+ },
+ {
+  "vi": "Cược",
+  "en": ""
+ },
+ {
+  "vi": "Bốn đồng xu, mặt đỏ chẵn (0, 2, 4) là Chẵn, lẻ (1, 3) là Lẻ. Đoán trúng ăn 1:1.",
+  "en": ""
+ },
+ {
+  "vi": "0, 2 hoặc 4 mặt đỏ",
+  "en": ""
+ },
+ {
+  "vi": "1 hoặc 3 mặt đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Đang xóc…",
+  "en": ""
+ },
+ {
+  "vi": "🫙 Xóc!",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Công an phường kiểm tra!",
+  "en": ""
+ },
+ {
+  "vi": "“Hội chợ vui thì vui, chiếu trong là dẹp nha bà con! Ai ngồi đây thì ghi tên, nộp phạt rồi ra trước chơi cho đàng hoàng.”",
+  "en": ""
+ },
+ {
   "vi": "Tiền cược bị tịch thu",
   "en": ""
  },
@@ -1753,50 +1797,6 @@
  },
  {
   "vi": "Trả trước 5 ngày sống của bạn. Hết kỳ cần gia hạn.",
-  "en": ""
- },
- {
-  "vi": "Gia hạn thuê nhà?",
-  "en": ""
- },
- {
-  "vi": "Trả nhà đang thuê?",
-  "en": ""
- },
- {
-  "vi": "Tiền thuê đã trả trước cho những ngày còn lại không được hoàn. Bạn dọn khỏi nhà thuê và giữ đồ của mình.",
-  "en": ""
- },
- {
-  "vi": "Trả nhà",
-  "en": ""
- },
- {
-  "vi": "Lấy lại nhà?",
-  "en": ""
- },
- {
-  "vi": "người thuê",
-  "en": ""
- },
- {
-  "vi": "Lấy lại nhà",
-  "en": ""
- },
- {
-  "vi": "Tiền giường",
-  "en": ""
- },
- {
-  "vi": "Tiền phòng",
-  "en": ""
- },
- {
-  "vi": "Ở ghép với 3 bạn cùng phòng.",
-  "en": ""
- },
- {
-  "vi": "Chuyển chỗ ở",
   "en": ""
  }
 ]

@@ -1,5 +1,45 @@
 [
  {
+  "vi": "Chốt $1 bản cần $2 xu, quỹ tiệm chưa đủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chốt đặt trước $1 bản Jewel",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ ghi $1 bản mà chỉ chốt $2: có người đặt trước sẽ không có hàng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ ghi $1 bản mà chốt tới $2: tiền nằm chết trong kho.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Chốt $1 bản Jewel với $2: −$3 xu, hàng đã về kho.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Biển giới hạn ghi sai: hôm nay nhà phân phối cho $1 bản/người.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💿 Mở tiệm! $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Lấy $2 ($3).",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Kệ hết $1 rồi. Nhập thêm ở Kho, hoặc nói thật với khách.",
   "en": "",
   "pattern": true
@@ -2206,46 +2246,6 @@
  },
  {
   "vi": "Đơn gộp $1 món cần soạn riêng, $2 mới giao được ạ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhập gộp $1 món",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã đặt đơn gộp $1 món · $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 giao một chuyến $2 ($3).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Số đếm $1 chưa khớp số hàng thực có trong thùng. Đếm lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kiểm nhận đơn gộp từ $1: $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã nhập kho cả thùng: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giao thiếu $1 món: bấm “Khiếu nại phần thiếu” ngay trong kho để được hoàn $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "cho $1 xu đầu, phần trên lãi $2,$3%/ngày",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,49 @@
 [
  {
+  "vi": "Gia hạn thuê nhà?",
+  "en": ""
+ },
+ {
+  "vi": "Trả nhà đang thuê?",
+  "en": ""
+ },
+ {
+  "vi": "Tiền thuê đã trả trước cho những ngày còn lại không được hoàn. Bạn dọn khỏi nhà thuê và giữ đồ của mình.",
+  "en": ""
+ },
+ {
+  "vi": "Trả nhà",
+  "en": ""
+ },
+ {
+  "vi": "Lấy lại nhà?",
+  "en": ""
+ },
+ {
+  "vi": "người thuê",
+  "en": ""
+ },
+ {
+  "vi": "Lấy lại nhà",
+  "en": ""
+ },
+ {
+  "vi": "Tiền giường",
+  "en": ""
+ },
+ {
+  "vi": "Tiền phòng",
+  "en": ""
+ },
+ {
+  "vi": "Ở ghép với 3 bạn cùng phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển chỗ ở",
+  "en": ""
+ },
+ {
   "vi": "Trả giường ký túc xá?",
   "en": ""
  },
@@ -1012,7 +1056,47 @@
   "en": ""
  },
  {
+  "vi": "🎤 Mic trực tiếp sắp có; giờ hát theo video, cả phòng xem chung",
+  "en": ""
+ },
+ {
   "vi": "🎤 Sân khấu trống",
+  "en": ""
+ },
+ {
+  "vi": "Tắt mic",
+  "en": ""
+ },
+ {
+  "vi": "Bật mic trực tiếp",
+  "en": ""
+ },
+ {
+  "vi": "🔴 Tắt mic",
+  "en": ""
+ },
+ {
+  "vi": "🎤 Đang phát trực tiếp giọng hát",
+  "en": ""
+ },
+ {
+  "vi": "· 🎧 Đeo tai nghe cho đỡ vọng nhạc",
+  "en": ""
+ },
+ {
+  "vi": "🔈 Chạm để nghe giọng",
+  "en": ""
+ },
+ {
+  "vi": "Âm lượng giọng hát",
+  "en": ""
+ },
+ {
+  "vi": "Bật tiếng giọng hát",
+  "en": ""
+ },
+ {
+  "vi": "Tắt tiếng giọng hát",
   "en": ""
  },
  {
@@ -1040,6 +1124,10 @@
   "en": ""
  },
  {
+  "vi": "Mở YouTube → Chia sẻ → Sao chép đường liên kết → dán vào đây",
+  "en": ""
+ },
+ {
   "vi": "✓ Phát được",
   "en": ""
  },
@@ -1060,6 +1148,54 @@
   "en": ""
  },
  {
+  "vi": "🎙️ Hát trực tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Cả phòng nghe giọng bạn ngay lúc hát. Không ghi âm. Mic tự tắt khi hết bài hoặc sau 6 phút.",
+  "en": ""
+ },
+ {
+  "vi": "🎧 Đeo tai nghe để nhạc không vọng vào mic.",
+  "en": ""
+ },
+ {
+  "vi": "🎙️ Bật mic",
+  "en": ""
+ },
+ {
+  "vi": "Năm sinh",
+  "en": ""
+ },
+ {
+  "vi": "🎂 Bạn sinh năm nào?",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ để mở mic trực tiếp (từ 16 tuổi). Lưu một lần, không đổi được.",
+  "en": ""
+ },
+ {
+  "vi": "🎧 Bạn nghe cùng mọi người nhé",
+  "en": ""
+ },
+ {
+  "vi": "Mic trực tiếp dành cho bạn từ 16 tuổi. Bạn vẫn nghe, thả tim và cổ vũ được nha.",
+  "en": ""
+ },
+ {
+  "vi": "🚩 Báo cáo giọng hát",
+  "en": ""
+ },
+ {
+  "vi": "Nói bậy / quấy rối",
+  "en": ""
+ },
+ {
+  "vi": "🛟 Có vẻ là trẻ em",
+  "en": ""
+ },
+ {
   "vi": "🧩 Đố bài",
   "en": ""
  },
@@ -1076,7 +1212,27 @@
   "en": ""
  },
  {
+  "vi": "🔇 Cắt mic (QL)",
+  "en": ""
+ },
+ {
   "vi": "🔒 Đóng phòng",
+  "en": ""
+ },
+ {
+  "vi": "Chặn người này? Hai bạn sẽ không thấy tin, không nghe giọng nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Đã chặn.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn năm sinh nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa lưu được.",
   "en": ""
  },
  {
@@ -1101,6 +1257,30 @@
  },
  {
   "vi": "Chưa tặng được.",
+  "en": ""
+ },
+ {
+  "vi": "Máy này chỉ nghe được. Mở bằng Safari/Chrome để hát trực tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa bật được mic, thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mic đã ngắt kết nối.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chưa cho phép micro. Mở cài đặt trang web › Micro để bật nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Không thấy micro trên máy này.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa kết nối được mic, thử lại nhé.",
   "en": ""
  },
  {
@@ -1508,6 +1688,10 @@
   "en": ""
  },
  {
+  "vi": "Ví chưa đủ",
+  "en": ""
+ },
+ {
   "vi": "🛡️ Bảo hiểm",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "Bán chiếc nhẫn dư?",
-  "en": ""
- },
- {
-  "vi": "Bán nhẫn",
-  "en": ""
- },
- {
-  "vi": "Mang nhẫn ra tiệm kim hoàn?",
-  "en": ""
- },
- {
-  "vi": "Nhập đúng tên đăng nhập của bạn ấy nhé.",
-  "en": ""
- },
- {
-  "vi": "Chặn người này?",
-  "en": ""
- },
- {
-  "vi": "Người này sẽ không tìm thấy bạn, không gửi được lời mời kết bạn hay lời cầu hôn cho bạn nữa.",
-  "en": ""
- },
- {
-  "vi": "Hai bạn sẽ không còn trong danh sách bạn bè của nhau.",
-  "en": ""
- },
- {
-  "vi": "Hủy kết bạn",
-  "en": ""
- },
- {
-  "vi": "Khoản này vào sổ nợ của hai bạn. Người ấy trả dần lúc nào cũng được.",
-  "en": ""
- },
- {
-  "vi": "Tiền chuyển từ ví của bạn sang ví của người ấy.",
-  "en": ""
- },
- {
-  "vi": "Nhập số xu cần nhờ nhé.",
-  "en": ""
- },
- {
-  "vi": "Khoản này vào sổ nợ, người ấy sẽ trả lại.",
-  "en": ""
- },
- {
-  "vi": "Xóa khoản nợ này?",
-  "en": ""
- },
- {
-  "vi": "Người ấy không cần trả nữa. Sổ nợ vẫn ghi lại.",
-  "en": ""
- },
- {
-  "vi": "Nhận lời cầu hôn?",
-  "en": ""
- },
- {
-  "vi": "Hai bạn sẽ đính hôn. Mỗi người chỉ có một người thương cùng lúc, các lời cầu hôn khác tự đóng lại.",
-  "en": ""
- },
- {
-  "vi": "Người này sẽ không gửi lời cầu hôn cho bạn được nữa. Bạn bỏ chặn lúc nào cũng được.",
-  "en": ""
- },
- {
-  "vi": "Chốt kế hoạch và đặt cọc?",
-  "en": ""
- },
- {
-  "vi": "Đặt cọc",
-  "en": ""
- },
- {
-  "vi": "PHỐ CÓ CHUYỆN",
-  "en": ""
- },
- {
-  "vi": "👥 Bạn bè",
-  "en": ""
- },
- {
-  "vi": "💍 Hôn nhân",
-  "en": ""
- },
- {
-  "vi": "Nhẫn cưới, lời cầu hôn và một đám cưới cho cả phố.",
-  "en": ""
- },
- {
-  "vi": "Đang mở sổ hôn nhân…",
-  "en": ""
- },
- {
-  "vi": "💍 Hai bạn",
-  "en": ""
- },
- {
-  "vi": "💍 Kim hoàn",
-  "en": ""
- },
- {
-  "vi": "💞 Hai bạn",
-  "en": ""
- },
- {
-  "vi": "📋 Kế hoạch cưới",
-  "en": ""
- },
- {
-  "vi": "💍 Tiệm nhẫn",
-  "en": ""
- },
- {
-  "vi": "Mục hôn nhân",
-  "en": ""
- },
- {
-  "vi": "Kết bạn trước, rồi mới trao nhẫn.",
-  "en": ""
- },
- {
-  "vi": "Tạo tài khoản để kết hôn",
-  "en": ""
- },
- {
-  "vi": "Kết hôn là chuyện giữa hai người chơi thật trên phố, nên cần một tài khoản để giữ nhẫn, lời hứa và ngày cưới của hai bạn.",
-  "en": ""
- },
- {
-  "vi": "Có gì ở đây?",
-  "en": ""
- },
- {
-  "vi": "Mua nhẫn ở tiệm vàng đầu hẻm, cầu hôn bằng mã người chơi.",
-  "en": ""
- },
- {
-  "vi": "Cùng nhau lên kế hoạch cưới: rạp, số bàn, thực đơn, lễ ăn hỏi, xe hoa…",
-  "en": ""
- },
- {
-  "vi": "Ngày cưới, hàng xóm thân quen tới dự và mừng phong bì.",
-  "en": ""
- },
- {
-  "vi": "Cả phố thấy tin vui chạy trên bảng tin (nếu hai bạn đồng ý).",
-  "en": ""
- },
- {
-  "vi": "Tiệm nhẫn",
-  "en": ""
- },
- {
-  "vi": "Màu kim loại",
-  "en": ""
- },
- {
-  "vi": "Màu đá",
-  "en": ""
- },
- {
-  "vi": "cầu hôn bạn",
-  "en": ""
- },
- {
-  "vi": "Báo tin vui cho cả phố (bảng tin chạy chữ)",
-  "en": ""
- },
- {
-  "vi": "Nhẫn",
-  "en": ""
- },
- {
-  "vi": "💞 Đồng ý",
-  "en": ""
- },
- {
-  "vi": "Chặn người này",
-  "en": ""
- },
- {
-  "vi": "Muốn cầu hôn thì cần một chiếc nhẫn trước đã.",
   "en": ""
  }
 ]

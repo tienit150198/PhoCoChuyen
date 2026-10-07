@@ -1,5 +1,49 @@
 [
  {
+  "vi": "ℹ️ Giới thiệu nghề",
+  "en": ""
+ },
+ {
+  "vi": "📋 Việc chăm tiệm",
+  "en": ""
+ },
+ {
+  "vi": "👚 Giá treo theo size",
+  "en": ""
+ },
+ {
+  "vi": "Nhập hàng → chọn size đang thiếu, hoặc chọn “Tự chia size” để ưu tiên M, L… Đếm nhận xong mới lên giá.",
+  "en": ""
+ },
+ {
+  "vi": "Bán vừa size cho khách quen, tiệm sẽ nhớ size của họ ở đây.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Sổ size khách quen",
+  "en": ""
+ },
+ {
+  "vi": "🧍‍♀️ Ma-nơ-canh",
+  "en": ""
+ },
+ {
+  "vi": "đang hút khách",
+  "en": ""
+ },
+ {
+  "vi": "đã cũ, nên thay",
+  "en": ""
+ },
+ {
+  "vi": "Thối tiền và giao đồ",
+  "en": ""
+ },
+ {
+  "vi": "Làm tiếp việc đang dở",
+  "en": ""
+ },
+ {
   "vi": "Mở tin nhắn",
   "en": ""
  },
@@ -1753,50 +1797,6 @@
  },
  {
   "vi": "chưa có luống nào trồng",
-  "en": ""
- },
- {
-  "vi": "🌿 Nhãn hữu cơ + QR",
-  "en": ""
- },
- {
-  "vi": "🏷️ Nhãn thường",
-  "en": ""
- },
- {
-  "vi": "Dán nhãn đúng sự thật",
-  "en": ""
- },
- {
-  "vi": "hợp đồng cần nhãn hữu cơ",
-  "en": ""
- },
- {
-  "vi": "có lô không hữu cơ",
-  "en": ""
- },
- {
-  "vi": "🏷️ Chọn nhãn: hữu cơ chỉ khi mọi lô đều hữu cơ",
-  "en": ""
- },
- {
-  "vi": "Khách sẽ kiểm số lượng, loại hàng và quét QR trên nhãn.",
-  "en": ""
- },
- {
-  "vi": "dán nhãn trước",
-  "en": ""
- },
- {
-  "vi": "xếp hàng vào thùng trước",
-  "en": ""
- },
- {
-  "vi": "Quyết chuyện ở trại",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn cách xử lý chuyện ở trại",
   "en": ""
  }
 ]

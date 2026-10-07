@@ -1,5 +1,189 @@
 [
  {
+  "vi": "Bán nhẫn",
+  "en": ""
+ },
+ {
+  "vi": "Mang nhẫn ra tiệm kim hoàn?",
+  "en": ""
+ },
+ {
+  "vi": "Nhập đúng tên đăng nhập của bạn ấy nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chặn người này?",
+  "en": ""
+ },
+ {
+  "vi": "Người này sẽ không tìm thấy bạn, không gửi được lời mời kết bạn hay lời cầu hôn cho bạn nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn sẽ không còn trong danh sách bạn bè của nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy kết bạn",
+  "en": ""
+ },
+ {
+  "vi": "Khoản này vào sổ nợ của hai bạn. Người ấy trả dần lúc nào cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền chuyển từ ví của bạn sang ví của người ấy.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu cần nhờ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Khoản này vào sổ nợ, người ấy sẽ trả lại.",
+  "en": ""
+ },
+ {
+  "vi": "Xóa khoản nợ này?",
+  "en": ""
+ },
+ {
+  "vi": "Người ấy không cần trả nữa. Sổ nợ vẫn ghi lại.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận lời cầu hôn?",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn sẽ đính hôn. Mỗi người chỉ có một người thương cùng lúc, các lời cầu hôn khác tự đóng lại.",
+  "en": ""
+ },
+ {
+  "vi": "Người này sẽ không gửi lời cầu hôn cho bạn được nữa. Bạn bỏ chặn lúc nào cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Chốt kế hoạch và đặt cọc?",
+  "en": ""
+ },
+ {
+  "vi": "Đặt cọc",
+  "en": ""
+ },
+ {
+  "vi": "PHỐ CÓ CHUYỆN",
+  "en": ""
+ },
+ {
+  "vi": "👥 Bạn bè",
+  "en": ""
+ },
+ {
+  "vi": "💍 Hôn nhân",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn cưới, lời cầu hôn và một đám cưới cho cả phố.",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở sổ hôn nhân…",
+  "en": ""
+ },
+ {
+  "vi": "💍 Hai bạn",
+  "en": ""
+ },
+ {
+  "vi": "💍 Kim hoàn",
+  "en": ""
+ },
+ {
+  "vi": "💞 Hai bạn",
+  "en": ""
+ },
+ {
+  "vi": "📋 Kế hoạch cưới",
+  "en": ""
+ },
+ {
+  "vi": "💍 Tiệm nhẫn",
+  "en": ""
+ },
+ {
+  "vi": "Mục hôn nhân",
+  "en": ""
+ },
+ {
+  "vi": "Kết bạn trước, rồi mới trao nhẫn.",
+  "en": ""
+ },
+ {
+  "vi": "Tạo tài khoản để kết hôn",
+  "en": ""
+ },
+ {
+  "vi": "Kết hôn là chuyện giữa hai người chơi thật trên phố, nên cần một tài khoản để giữ nhẫn, lời hứa và ngày cưới của hai bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Có gì ở đây?",
+  "en": ""
+ },
+ {
+  "vi": "Mua nhẫn ở tiệm vàng đầu hẻm, cầu hôn bằng mã người chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Cùng nhau lên kế hoạch cưới: rạp, số bàn, thực đơn, lễ ăn hỏi, xe hoa…",
+  "en": ""
+ },
+ {
+  "vi": "Ngày cưới, hàng xóm thân quen tới dự và mừng phong bì.",
+  "en": ""
+ },
+ {
+  "vi": "Cả phố thấy tin vui chạy trên bảng tin (nếu hai bạn đồng ý).",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm nhẫn",
+  "en": ""
+ },
+ {
+  "vi": "Màu kim loại",
+  "en": ""
+ },
+ {
+  "vi": "Màu đá",
+  "en": ""
+ },
+ {
+  "vi": "cầu hôn bạn",
+  "en": ""
+ },
+ {
+  "vi": "Báo tin vui cho cả phố (bảng tin chạy chữ)",
+  "en": ""
+ },
+ {
+  "vi": "Nhẫn",
+  "en": ""
+ },
+ {
+  "vi": "💞 Đồng ý",
+  "en": ""
+ },
+ {
+  "vi": "Chặn người này",
+  "en": ""
+ },
+ {
+  "vi": "Muốn cầu hôn thì cần một chiếc nhẫn trước đã.",
+  "en": ""
+ },
+ {
   "vi": "💍 Đến tiệm nhẫn",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "Đang giục lớn",
-  "en": ""
- },
- {
-  "vi": "Sốt ruột",
-  "en": ""
- },
- {
-  "vi": "Dễ tính",
-  "en": ""
- },
- {
-  "vi": "Có khách tại quầy",
-  "en": ""
- },
- {
-  "vi": "khách tại quầy",
-  "en": ""
- },
- {
-  "vi": "người chờ tới lượt",
-  "en": ""
- },
- {
-  "vi": "Người tiếp theo đang ghé",
-  "en": ""
- },
- {
-  "vi": "Đi lên",
-  "en": ""
- },
- {
-  "vi": "Sang phải",
-  "en": ""
- },
- {
-  "vi": "Đi xuống",
-  "en": ""
- },
- {
-  "vi": "Sang trái",
-  "en": ""
- },
- {
-  "vi": "↰ RẼ TRÁI",
-  "en": ""
- },
- {
-  "vi": "↑ ĐI THẲNG",
-  "en": ""
- },
- {
-  "vi": "RẼ PHẢI ↱",
-  "en": ""
- },
- {
-  "vi": "ĐIỂM GIAO HÀNG",
-  "en": ""
- },
- {
-  "vi": "Góc nhìn người lái",
-  "en": ""
- },
- {
-  "vi": "đã qua các ngã tư",
-  "en": ""
- },
- {
-  "vi": "ngã tư",
-  "en": ""
- },
- {
-  "vi": "ĐÓNG CỬA",
-  "en": ""
- },
- {
-  "vi": "Tiệm đang mở",
-  "en": ""
- },
- {
-  "vi": "Sổ bán hàng ở bên dưới",
-  "en": ""
- },
- {
-  "vi": "Mọi đơn đều được ghi tại quầy",
-  "en": ""
- },
- {
-  "vi": "LƯỢT BÁN VỪA GHI NHẬN",
-  "en": ""
- },
- {
-  "vi": "KHÁCH ĐANG CHỜ",
-  "en": ""
- },
- {
-  "vi": "KHAY MÓN",
-  "en": ""
- },
- {
-  "vi": "KÉT QUẦY",
-  "en": ""
- },
- {
-  "vi": "Quầy đang tạm dừng",
-  "en": ""
- },
- {
-  "vi": "Xem nguyên liệu và vốn ở bên dưới",
-  "en": ""
- },
- {
-  "vi": "Chưa đọc được cập nhật quầy.",
-  "en": ""
- },
- {
-  "vi": "Phiên chơi đã thay đổi. Mở lại quầy nhé.",
-  "en": ""
- },
- {
-  "vi": "Quầy đang đồng bộ. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa đồng bộ được số dư. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Quầy đang dọn hàng. Mở lại sau ít phút nhé.",
-  "en": ""
- },
- {
-  "vi": "Đổi gói bảo vệ quầy?",
-  "en": ""
- },
- {
-  "vi": "Chọn gói",
-  "en": ""
- },
- {
-  "vi": "từ két/vốn",
-  "en": ""
- },
- {
-  "vi": "Nhập số lượng nguyên dương cho ít nhất một món.",
-  "en": ""
- },
- {
-  "vi": "Nhập hàng vào kho quầy?",
-  "en": ""
- },
- {
-  "vi": "Tắt kiểm tra hằng ngày?",
-  "en": ""
- },
- {
-  "vi": "Quầy có thể vi phạm khi kiểm tra. Bạn có thể bật lại bất cứ lúc nào.",
-  "en": ""
- },
- {
-  "vi": "Tắt kiểm tra",
-  "en": ""
- },
- {
-  "vi": "Đăng ca làm thêm?",
-  "en": ""
- },
- {
-  "vi": "Đăng ca",
-  "en": ""
- },
- {
-  "vi": "Két và vốn quầy",
-  "en": ""
- },
- {
-  "vi": "Giữ lương từ két và vốn quầy.",
-  "en": ""
- },
- {
-  "vi": "Bỏ ca này?",
-  "en": ""
- },
- {
-  "vi": "Không mất gì cả. Lương về lại cho chủ quầy.",
   "en": ""
  }
 ]

@@ -1,5 +1,45 @@
 [
  {
+  "vi": "Bàn cư trú: hồ sơ của $1 đã đối chiếu đủ từng giấy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhận hồ sơ tạm trú của $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🗂️ Nhận hồ sơ, hẹn trả giấy chiều nay. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn cư trú: hướng dẫn $1 bổ sung $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bàn cư trú: đã nhận đủ hồ sơ của $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hướng dẫn $1 bổ sung hồ sơ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 Kiểm đếm cùng $1: $2; bên trong: $3. Hai bên ký biên bản tiếp nhận. Một lúc sau, $4 tới xin nhận lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 được trả cho người không phải chủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đồ thất lạc: trả $1 cho $2, có ký nhận.",
   "en": "",
   "pattern": true
@@ -2206,46 +2246,6 @@
  },
  {
   "vi": "Kho chỉ còn chỗ cho $1 bản Jewel.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chốt $1 bản cần $2 xu, quỹ tiệm chưa đủ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chốt đặt trước $1 bản Jewel",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sổ ghi $1 bản mà chỉ chốt $2: có người đặt trước sẽ không có hàng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sổ ghi $1 bản mà chốt tới $2: tiền nằm chết trong kho.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Chốt $1 bản Jewel với $2: −$3 xu, hàng đã về kho.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Biển giới hạn ghi sai: hôm nay nhà phân phối cho $1 bản/người.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💿 Mở tiệm! $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Lấy $2 ($3).",
   "en": "",
   "pattern": true
  }

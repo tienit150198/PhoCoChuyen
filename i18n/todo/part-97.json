@@ -1,5 +1,33 @@
 [
  {
+  "vi": "tạm dừng vì còn sự cố đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Xem nhân viên",
+  "en": ""
+ },
+ {
+  "vi": "Buổi tối",
+  "en": ""
+ },
+ {
+  "vi": "BUỔI TỐI",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tới buổi tối",
+  "en": ""
+ },
+ {
+  "vi": "Khép ca xong rồi chọn bữa tối và giờ đi ngủ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Một ngày đã xong",
+  "en": ""
+ },
+ {
   "vi": "Tối nay thế nào?",
   "en": ""
  },
@@ -64,6 +92,10 @@
   "en": ""
  },
  {
+  "vi": "Trình duyệt này quá cũ nên khu phố chưa mở được 😢 Bạn cập nhật iOS (Cài đặt → Cài đặt chung → Cập nhật phần mềm) hoặc mở game bằng Chrome nha!",
+  "en": ""
+ },
+ {
   "vi": "Mạng hơi chậm, khu phố vẫn đang tải… Lâu quá thì bấm Tải lại nha.",
   "en": ""
  },
@@ -72,11 +104,23 @@
   "en": ""
  },
  {
+  "vi": "lỗi cú pháp",
+  "en": ""
+ },
+ {
   "vi": "mất kết nối",
   "en": ""
  },
  {
   "vi": "chưa tải được",
+  "en": ""
+ },
+ {
+  "vi": "Trình duyệt cũ",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi cú pháp",
   "en": ""
  },
  {
@@ -1753,50 +1797,6 @@
  },
  {
   "vi": "🔁 Khách quay lại đổi size",
-  "en": ""
- },
- {
-  "vi": "ℹ️ Giới thiệu nghề",
-  "en": ""
- },
- {
-  "vi": "📋 Việc chăm tiệm",
-  "en": ""
- },
- {
-  "vi": "👚 Giá treo theo size",
-  "en": ""
- },
- {
-  "vi": "Nhập hàng → chọn size đang thiếu, hoặc chọn “Tự chia size” để ưu tiên M, L… Đếm nhận xong mới lên giá.",
-  "en": ""
- },
- {
-  "vi": "Bán vừa size cho khách quen, tiệm sẽ nhớ size của họ ở đây.",
-  "en": ""
- },
- {
-  "vi": "📒 Sổ size khách quen",
-  "en": ""
- },
- {
-  "vi": "🧍‍♀️ Ma-nơ-canh",
-  "en": ""
- },
- {
-  "vi": "đang hút khách",
-  "en": ""
- },
- {
-  "vi": "đã cũ, nên thay",
-  "en": ""
- },
- {
-  "vi": "Thối tiền và giao đồ",
-  "en": ""
- },
- {
-  "vi": "Làm tiếp việc đang dở",
   "en": ""
  }
 ]

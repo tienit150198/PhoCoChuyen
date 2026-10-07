@@ -1,5 +1,49 @@
 [
  {
+  "vi": "Tự động trả từ tài khoản vào ngày đến hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trả hết sao kê",
+  "en": ""
+ },
+ {
+  "vi": "Trả toàn bộ dư nợ",
+  "en": ""
+ },
+ {
+  "vi": "Trả số khác",
+  "en": ""
+ },
+ {
+  "vi": "Lưu cách tự động trả",
+  "en": ""
+ },
+ {
+  "vi": "Lịch trả nợ dự kiến",
+  "en": ""
+ },
+ {
+  "vi": "Tổng tiền lãi:",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả trễ",
+  "en": ""
+ },
+ {
+  "vi": "Trả khoản quá hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trả trước kỳ tới",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm nhận vốn",
+  "en": ""
+ },
+ {
   "vi": "Chưa có tiệm bạn làm chủ",
   "en": ""
  },
@@ -1753,50 +1797,6 @@
  },
  {
   "vi": "Nhận hợp đồng",
-  "en": ""
- },
- {
-  "vi": "Đã có",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng hoàn tất sẽ được ghi ở đây.",
-  "en": ""
- },
- {
-  "vi": "Hủy hợp đồng?",
-  "en": ""
- },
- {
-  "vi": "Không phạt thêm, nhưng chi phí chuẩn bị không hoàn lại.",
-  "en": ""
- },
- {
-  "vi": "Chừa khe nhỏ để nhồi bông",
-  "en": ""
- },
- {
-  "vi": "Hai lớp vải đặt chồng · cắt cùng một mẫu",
-  "en": ""
- },
- {
-  "vi": "Món thủ công tự tay làm",
-  "en": ""
- },
- {
-  "vi": "Bạn gấu do mình may",
-  "en": ""
- },
- {
-  "vi": "Chiếc túi do mình may",
-  "en": ""
- },
- {
-  "vi": "Chiếc chậu do mình nặn",
-  "en": ""
- },
- {
-  "vi": "Vòng tay do mình xâu",
   "en": ""
  }
 ]

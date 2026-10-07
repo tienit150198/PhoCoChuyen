@@ -1,5 +1,45 @@
 [
  {
+  "vi": "Nồi $1 chưa chín, chờ chừng $2 giây nữa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ Cơm $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Xới một vá $2: dĩa có $3 vá ($4).$5",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ Miếng này $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khay $1 hết rồi. Bày thêm khay từ kho nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Gắp $2 lên $3.$4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍳 Đập trứng vào chảo mỡ nóng, $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🫙 Múc nước mắm ra $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🫘 Lấy nước tương $1",
   "en": "",
   "pattern": true
@@ -2206,46 +2246,6 @@
  },
  {
   "vi": "🚪 $1 đi một vòng:",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💍 Đưa $1 khay đồ: $2. “Ôi, cảm ơn em!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Sạch quá, lần sau em lại tới nhé!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💸 Ting ting: nhận $1 xu tiền công",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧹 Dọn $1 nhà, $2 phòng, $3 lượt lau.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⭐ $1/$2 nhà khách khen sạch, không chê chỗ nào.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔁 $1 chỗ phải lau lại vì bụi rơi từ trên xuống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trên xe: $1 lần lau.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trên xe: $1",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,189 @@
 [
  {
+  "vi": "Đang tìm những cánh cửa đang mở…",
+  "en": ""
+ },
+ {
+  "vi": "Quầy riêng",
+  "en": ""
+ },
+ {
+  "vi": "Nghề hiện tại",
+  "en": ""
+ },
+ {
+  "vi": "Ghé xem dịch vụ và tình hình tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Xem chỗ của tôi",
+  "en": ""
+ },
+ {
+  "vi": "Xem thêm chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có chỗ làm có thể ghé ở đây. Bạn có thể xem Mọi người quanh phố.",
+  "en": ""
+ },
+ {
+  "vi": "Không gian ghé chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ đứng của bạn. Dùng phím mũi tên để di chuyển.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi chỗ đứng",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm của người chơi",
+  "en": ""
+ },
+ {
+  "vi": "QUẦY ĐÓN KHÁCH",
+  "en": ""
+ },
+ {
+  "vi": "GÓC LÀM VIỆC",
+  "en": ""
+ },
+ {
+  "vi": "· Bạn",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn ghé vào",
+  "en": ""
+ },
+ {
+  "vi": "👋 Chào",
+  "en": ""
+ },
+ {
+  "vi": "💗 Thả tim",
+  "en": ""
+ },
+ {
+  "vi": "👏 Cổ vũ",
+  "en": ""
+ },
+ {
+  "vi": "Bên trái",
+  "en": ""
+ },
+ {
+  "vi": "Ở giữa",
+  "en": ""
+ },
+ {
+  "vi": "Bên phải",
+  "en": ""
+ },
+ {
+  "vi": "Nói một câu tại đây…",
+  "en": ""
+ },
+ {
+  "vi": "Lời nói trong chỗ làm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa kết nối phòng trực tiếp. Đơn dịch vụ vẫn cập nhật.",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở cửa chỗ làm…",
+  "en": ""
+ },
+ {
+  "vi": "Công việc hiện tại",
+  "en": ""
+ },
+ {
+  "vi": "Ai có thể ghé?",
+  "en": ""
+ },
+ {
+  "vi": "LÀM KHÁCH",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn cần gì?",
+  "en": ""
+ },
+ {
+  "vi": "Không bắt buộc",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn cho người phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhắn cho người làm",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên có thể phục vụ khi chủ tiệm vắng.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tiệm nhận đơn và tự thực hiện trước khi bạn nhận.",
+  "en": ""
+ },
+ {
+  "vi": "nhận đơn và tự làm trước khi bạn nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn dịch vụ để xem giá và gửi lời nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một việc để xem giá và gửi lời nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Nơi này chưa có dịch vụ nhận khách lúc này.",
+  "en": ""
+ },
+ {
+  "vi": "Nơi này chưa nhận khách lúc này.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đang ghé",
+  "en": ""
+ },
+ {
+  "vi": "Đơn của bạn tại đây",
+  "en": ""
+ },
+ {
+  "vi": "Khách đã nhận dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "đã ghé",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lời trả lời",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có đánh giá dịch vụ.",
+  "en": ""
+ },
+ {
+  "vi": "Người phụ việc đang làm",
+  "en": ""
+ },
+ {
   "vi": "Nhận khách",
   "en": ""
  },
@@ -1709,46 +1893,6 @@
  },
  {
   "vi": "Nói nhỏ nha cả nhà 👀 đêm nào $1 cũng về khuya lơ khuya lắc, đồ thì mặc đẹp ghê. Làm ca đêm hay làm “phố đêm” vậy ta 🤭 Chị hỏi cho vui thôi à.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm qua cô đếm, $1 ra vô hẻm 4 lần, mỗi lần mặc một kiểu 👀 làm gì mà bận dữ vậy ta, cô không có ý gì đâu nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hóng nè: $1 một ngày chạy ba bốn chỗ, chỗ nào cũng có người quen 👀 Làm gì mà bận như bộ trưởng vậy ta, chị thắc mắc xíu thôi nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dạo này thấy $1 tiêu rủng rỉnh ghê, hôm trước còn nghe than hết tiền, nay lại xách đồ mới về 👀 Chắc làm ăn gì… cô không biết nữa, cô chỉ thắc mắc thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghe đâu dạo này $1 xài tiền như nước nha cả nhà 👀 mới lên phố mà. Chị không có ý gì, chị chỉ thấy lạ lạ thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm qua có cái xe chở hàng đậu trước $1, người ta khuân vô khuân ra gần tiếng đồng hồ, cô đếm được 11 thùng 👀 Buôn bán gì to vậy ta, có giấy phép không ta…",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xe tải lại đỗ trước $1… thùng lớn thùng nhỏ. Hàng gì mà nhiều dữ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Có người gửi chị tấm hình xe tải đổ hàng trước $1 nè 📸 Hàng gì mà về tối ngày vậy ta, có tem nhãn đàng hoàng không ta 👀",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tối qua có người lạ đứng trước cổng nhà bà Tám tìm $1, nói chuyện nhỏ nhỏ mười mấy phút rồi đi 👀 Cô không có ý gì đâu nha, dạo này nhiều người lạ quá.",
   "en": "",
   "pattern": true
  }

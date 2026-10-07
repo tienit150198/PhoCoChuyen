@@ -1,5 +1,45 @@
 [
  {
+  "vi": "💍 Đưa $1 khay đồ: $2. “Ôi, cảm ơn em!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Sạch quá, lần sau em lại tới nhé!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💸 Ting ting: nhận $1 xu tiền công",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧹 Dọn $1 nhà, $2 phòng, $3 lượt lau.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⭐ $1/$2 nhà khách khen sạch, không chê chỗ nào.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔁 $1 chỗ phải lau lại vì bụi rơi từ trên xuống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trên xe: $1 lần lau.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trên xe: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "còn $1% kiên nhẫn",
   "en": "",
   "pattern": true
@@ -2206,46 +2246,6 @@
  },
  {
   "vi": "🚿 Rửa sạch đồ làm $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cả $1 bếp đều đang bận. Tắt một bếp đã nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔥 Bắc $1 lên bếp, $2. Canh chừng $3–$4 giây rồi tắt bếp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✋ Tắt bếp $1 sau $2 giây: $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cả $1 bếp đều đang bận.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "♨️ Hâm nóng lại $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 còn sạn, chưa rửa kỹ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 chưa chín, ăn vô đau bụng!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 còn sống sượng.",
   "en": "",
   "pattern": true
  }

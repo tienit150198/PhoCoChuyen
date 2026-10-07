@@ -1,3 +1,7 @@
+# v1.9.15 — 2026-10-07
+
+Gồm sửa karaoke (hết giật, nhận thêm kiểu link), lux (nút mờ khi thiếu tiền), và mic trực tiếp (schema 30 account_birth; bật bằng LIVE_KARAOKE_MIC=1 sau khi cài LiveKit: deploy/livekit).
+
 # v1.9.14 — 2026-10-07 (hotfix)
 
 Gồm "Sửa lỗi iPhone iOS 15–16.3 không vào được game".

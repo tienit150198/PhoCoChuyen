@@ -1508,7 +1508,7 @@
   "en": ""
  },
  {
-  "vi": "Link YouTube chưa đúng. Dán link bài hát nhé.",
+  "vi": "Chưa thấy link YouTube trong đó.",
   "en": ""
  },
  {
@@ -1585,6 +1585,18 @@
  },
  {
   "vi": "Phòng không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mic trực tiếp chưa mở.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn năm sinh của bạn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa lưu được, thử lại nhé.",
   "en": ""
  },
  {
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Vòng này đã được lưu.",
-  "en": ""
- },
- {
-  "vi": "Vòng chơi đã đóng hoặc thuộc lần chơi khác.",
-  "en": ""
- },
- {
-  "vi": "Vòng chơi đã hết giờ. Hãy bắt đầu lại.",
-  "en": ""
- },
- {
-  "vi": "Mốc đường không hợp lệ.",
   "en": ""
  }
 ]

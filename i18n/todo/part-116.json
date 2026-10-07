@@ -1,5 +1,189 @@
 [
  {
+  "vi": "cao tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Đang tắt vì Âm thanh thao tác tắt.",
+  "en": ""
+ },
+ {
+  "vi": "Giọng & chi tiết",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng ting ting khi nhận tiền",
+  "en": ""
+ },
+ {
+  "vi": "Lương, quà, khách chuyển khoản… tiền về là nghe “ting ting” như app ngân hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Giọng đọc số tiền",
+  "en": ""
+ },
+ {
+  "vi": "Đọc số tiền vừa về như loa ngân hàng: “Đã nhận 50 xu”. Khoản dưới 10 xu chỉ ting ting.",
+  "en": ""
+ },
+ {
+  "vi": "Giọng nhân vật",
+  "en": ""
+ },
+ {
+  "vi": "Nhân vật “líu lo” vài tiếng khi nói, mỗi người một giọng.",
+  "en": ""
+ },
+ {
+  "vi": "Âm thanh chi tiết",
+  "en": ""
+ },
+ {
+  "vi": "Tiếng thu ngân, chuông cửa, lật giấy…",
+  "en": ""
+ },
+ {
+  "vi": "Trên iPhone, chế độ im lặng (nút gạt bên hông) sẽ tắt âm thanh thao tác và giọng nhân vật. Gạt tắt để nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Màu tên",
+  "en": ""
+ },
+ {
+  "vi": "Khung hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Tuần này xem rồi",
+  "en": ""
+ },
+ {
+  "vi": "Mua 7 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ tiêu xu",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Quán người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Cuống vé",
+  "en": ""
+ },
+ {
+  "vi": "Lời cầu",
+  "en": ""
+ },
+ {
+  "vi": "🛕 Chùa Gió Lành",
+  "en": ""
+ },
+ {
+  "vi": "Cất",
+  "en": ""
+ },
+ {
+  "vi": "Gần nhất",
+  "en": ""
+ },
+ {
+  "vi": "Để gặp đoạn tiếp theo",
+  "en": ""
+ },
+ {
+  "vi": "Các mốc tính riêng tại nơi làm này, theo ngày trong game.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đạt",
+  "en": ""
+ },
+ {
+  "vi": "Đủ điều kiện. Tiếp tục làm việc ở đây để gặp đoạn mới.",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp tục làm việc",
+  "en": ""
+ },
+ {
+  "vi": "quỹ đoàn",
+  "en": ""
+ },
+ {
+  "vi": "🏫 Tiết học",
+  "en": ""
+ },
+ {
+  "vi": "Soạn giáo án",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Mở đầu hợp không khí lớp",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Có đủ cách học của các bạn có mặt",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Kết thúc bằng thẻ Kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "So bài với đáp án: đúng → 🌟 Khen cụ thể · sai hoặc chép nhầm → 🪜 Gợi ý một bước · ghi \"Giống hệt phiếu của…\" → 🤝 Gặp riêng.",
+  "en": ""
+ },
+ {
+  "vi": "Vắng có phép",
+  "en": ""
+ },
+ {
+  "vi": "Chính",
+  "en": ""
+ },
+ {
+  "vi": "Hít thở",
+  "en": ""
+ },
+ {
+  "vi": "Câu đố",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ đồ vật",
+  "en": ""
+ },
+ {
+  "vi": "Kể chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp sức",
+  "en": ""
+ },
+ {
+  "vi": "Vẽ sơ đồ",
+  "en": ""
+ },
+ {
+  "vi": "Giơ bảng",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu cuối",
+  "en": ""
+ },
+ {
+  "vi": "Nói lại",
+  "en": ""
+ },
+ {
   "vi": "Gặp riêng",
   "en": ""
  },
@@ -1613,190 +1797,6 @@
  },
  {
   "vi": "Chọn một chỗ làm để xem bạn ấy đang làm gì.",
-  "en": ""
- },
- {
-  "vi": "Đang tìm những cánh cửa đang mở…",
-  "en": ""
- },
- {
-  "vi": "Quầy riêng",
-  "en": ""
- },
- {
-  "vi": "Nghề hiện tại",
-  "en": ""
- },
- {
-  "vi": "Ghé xem dịch vụ và tình hình tiệm",
-  "en": ""
- },
- {
-  "vi": "Xem chỗ của tôi",
-  "en": ""
- },
- {
-  "vi": "Xem thêm chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Chưa có chỗ làm có thể ghé ở đây. Bạn có thể xem Mọi người quanh phố.",
-  "en": ""
- },
- {
-  "vi": "Không gian ghé chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Chỗ đứng của bạn. Dùng phím mũi tên để di chuyển.",
-  "en": ""
- },
- {
-  "vi": "Đổi chỗ đứng",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm của người chơi",
-  "en": ""
- },
- {
-  "vi": "QUẦY ĐÓN KHÁCH",
-  "en": ""
- },
- {
-  "vi": "GÓC LÀM VIỆC",
-  "en": ""
- },
- {
-  "vi": "· Bạn",
-  "en": ""
- },
- {
-  "vi": "Mời bạn ghé vào",
-  "en": ""
- },
- {
-  "vi": "👋 Chào",
-  "en": ""
- },
- {
-  "vi": "💗 Thả tim",
-  "en": ""
- },
- {
-  "vi": "👏 Cổ vũ",
-  "en": ""
- },
- {
-  "vi": "Bên trái",
-  "en": ""
- },
- {
-  "vi": "Ở giữa",
-  "en": ""
- },
- {
-  "vi": "Bên phải",
-  "en": ""
- },
- {
-  "vi": "Nói một câu tại đây…",
-  "en": ""
- },
- {
-  "vi": "Lời nói trong chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối phòng trực tiếp. Đơn dịch vụ vẫn cập nhật.",
-  "en": ""
- },
- {
-  "vi": "Đang mở cửa chỗ làm…",
-  "en": ""
- },
- {
-  "vi": "Công việc hiện tại",
-  "en": ""
- },
- {
-  "vi": "Ai có thể ghé?",
-  "en": ""
- },
- {
-  "vi": "LÀM KHÁCH",
-  "en": ""
- },
- {
-  "vi": "Hôm nay bạn cần gì?",
-  "en": ""
- },
- {
-  "vi": "Không bắt buộc",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn cho người phục vụ",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn cho người làm",
-  "en": ""
- },
- {
-  "vi": "Nhân viên có thể phục vụ khi chủ tiệm vắng.",
-  "en": ""
- },
- {
-  "vi": "Chủ tiệm nhận đơn và tự thực hiện trước khi bạn nhận.",
-  "en": ""
- },
- {
-  "vi": "nhận đơn và tự làm trước khi bạn nhận.",
-  "en": ""
- },
- {
-  "vi": "Chọn dịch vụ để xem giá và gửi lời nhắn.",
-  "en": ""
- },
- {
-  "vi": "Chọn một việc để xem giá và gửi lời nhắn.",
-  "en": ""
- },
- {
-  "vi": "Nơi này chưa có dịch vụ nhận khách lúc này.",
-  "en": ""
- },
- {
-  "vi": "Nơi này chưa nhận khách lúc này.",
-  "en": ""
- },
- {
-  "vi": "Khách đang ghé",
-  "en": ""
- },
- {
-  "vi": "Đơn của bạn tại đây",
-  "en": ""
- },
- {
-  "vi": "Khách đã nhận dịch vụ",
-  "en": ""
- },
- {
-  "vi": "đã ghé",
-  "en": ""
- },
- {
-  "vi": "Gửi lời trả lời",
-  "en": ""
- },
- {
-  "vi": "Chưa có đánh giá dịch vụ.",
-  "en": ""
- },
- {
-  "vi": "Người phụ việc đang làm",
   "en": ""
  }
 ]

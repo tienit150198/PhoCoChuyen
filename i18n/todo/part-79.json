@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Vòng chơi đã đóng hoặc thuộc lần chơi khác.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng chơi đã hết giờ. Hãy bắt đầu lại.",
+  "en": ""
+ },
+ {
+  "vi": "Mốc đường không hợp lệ.",
+  "en": ""
+ },
+ {
   "vi": "Hãy đi đến vòng mốc đang sáng.",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Một mình mà vẫn ấm. Tuổi mới, mình thương mình.",
-  "en": ""
- },
- {
-  "vi": "Tắt đèn đi ngủ sớm",
-  "en": ""
- },
- {
-  "vi": "Ngủ không được, nhưng nằm yên cũng đỡ.",
-  "en": ""
- },
- {
-  "vi": "Buổi mai mối thảm họa",
   "en": ""
  }
 ]
