@@ -3,6 +3,7 @@
  * All interactions also have DOM buttons; precise pointing is never required.
  */
 import {t as tr} from './v4/i18n.js';
+import {encodePhoto} from './v4/photo-encode.js';
 const W=1200,H=790,TW=45,TH=24;
 const PALETTE={mother_baby:{wall:'#f1e2c8',side:'#e4d3b5',accent:'#8da181',counter:'#a8b695',wood:'#c8aa79'},pharmacy:{wall:'#e1eddf',side:'#c8dccc',accent:'#6e9d90',counter:'#8ab3a3',wood:'#b7bc94'},accounting:{wall:'#ebe4ee',side:'#d5ccdf',accent:'#9292ac',counter:'#a4a2b7',wood:'#b8a78e'},customer_care:{wall:'#e1ebed',side:'#c9dade',accent:'#7e9faa',counter:'#9eb8bf',wood:'#b9ac94'}};
 PALETTE.teacher={...PALETTE.accounting};PALETTE.tour_guide={...PALETTE.customer_care};PALETTE.milk_tea={...PALETTE.mother_baby};
@@ -425,7 +426,8 @@ export class World {
     for(const p of this.particles){c.globalAlpha=Math.max(0,p.life/p.max);rr(c,p.x,p.y,p.size,p.size,p.color,1);}c.globalAlpha=1;this.drawSpeech();
     if(!this.reduced){for(let i=0;i<11;i++){const x=250+((i*119+this.time*4)%780),y=190+((i*73+Math.sin(this.time+i)*14)%430);ell(c,x,y,1.3,1.3,'#fffbed65');}}
   }
-  snapshot(){const copy=document.createElement('canvas');copy.width=1080;copy.height=Math.round(1080*this.canvas.height/this.canvas.width);const c=copy.getContext('2d');c.drawImage(this.canvas,0,0,copy.width,copy.height);return copy.toDataURL('image/webp',.72);}
+  /** The scene for the album (app.js 📸): WebP or JPEG, at most PHOTO_MAX characters (B10: Safari sent a PNG > 256 KB); null: none fits. */
+  snapshot(){return encodePhoto(this.canvas,{width:1080,bg:'#efe7d5'});}
   preview(career){
     if(this.previewCache.has(career))return this.previewCache.get(career);
     const backup={ctx:this.ctx,career:this.career,c:this.c,state:this.state,game:this.game,hotspots:this.hotspots,player:this.player,obstacles:this.obstacles,hover:this.hover,nav:this.nav,people:this.people,props:this.props,pending:this.pending,marker:this.marker};

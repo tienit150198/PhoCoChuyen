@@ -16,6 +16,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {Sound} from '../audio.js';
 import * as A from './deco-art.js';
+import {encodePhoto} from './photo-encode.js';
 import {petInner,lookup as petLookup} from './pet-art.js';   // 🐾 the player's own pets live here too (game/pets.py)
 import {setup as walkSetup} from './home-walk.js';
 import {live} from './live.js';
@@ -785,15 +786,10 @@ async function takePhoto(){
     const url=URL.createObjectURL(new Blob([src],{type:'image/svg+xml'}));
     const img=new Image();img.decoding='async';
     await new Promise((ok,bad)=>{img.onload=ok;img.onerror=bad;img.src=url;});
-    let scale=2,image='';
-    for(const q of [.86,.72,.55]){
-      const c=document.createElement('canvas');c.width=Math.round(W*scale);c.height=Math.round(H*scale);
-      const x=c.getContext('2d');x.drawImage(img,0,0,c.width,c.height);
-      image=c.toDataURL('image/webp',q);if(!image.startsWith('data:image/webp'))image=c.toDataURL('image/png');
-      if(image.length<=440000)break;scale=1.5;
-    }
+    // B10: WebP or JPEG (Safari's fallback was a PNG, often over the 256 KB command cap), ≤ PHOTO_MAX characters.
+    const image=encodePhoto(img,{w:W,h:H,width:W*2,bg:'#fffdf7'});
     URL.revokeObjectURL(url);
-    if(image.length>440000)throw new Error('big');
+    if(!image)throw new Error('big');
     S.photo={image,title,saved:false};sfx('chime');
   }catch{S.flash={text:'Máy chưa chụp được ảnh. Thử lại nhé.',kind:'bad'};}
   finally{S.busy=false;render();}
