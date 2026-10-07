@@ -26,7 +26,7 @@ class Outings(unittest.TestCase):
         s,_=self.act(s,'jr_out_salon',hair='toc_bui_doi')
         self.assertIn('toc_bui_doi',s['wardrobe']['owned'])
         self.assertEqual(s['wardrobe']['look']['hair'],'toc_bui_doi')
-        self.assertEqual(start-s['journey']['wallet'],12+wardrobe.price(s,'toc_bui_doi'))
+        self.assertEqual(start-s['journey']['wallet'],outings.SALON_FEE+wardrobe.price(s,'toc_bui_doi'))
         again,r=self.act(s,'jr_out_salon',hair='toc_bui_doi')
         self.assertEqual(s,again)
         self.assertTrue(r['duplicate'])
@@ -34,7 +34,7 @@ class Outings(unittest.TestCase):
     def test_owned_hair_only_charges_service(self):
         s=story();s['wardrobe']['owned'].append('toc_bob')
         s,_=self.act(s,'jr_out_salon',hair='toc_bob')
-        self.assertEqual(s['journey']['wallet'],488)
+        self.assertEqual(s['journey']['wallet'],500-outings.SALON_FEE)   # 💹 07/10: 12 -> 13 xu
 
     def test_nails_and_craft_keep_visible_choices_across_roundtrip(self):
         s=story()
@@ -88,12 +88,12 @@ class Outings(unittest.TestCase):
     def test_salon_requires_full_quote_in_selected_account(self):
         s=story()
         bank.action(s,'jr_bk_open',{})
-        bank.get(s)['balance']=60
+        bank.get(s)['balance']=70
         bank.get(s)['pref']='account'
         with self.assertRaises(GameError):self.act(s,'jr_out_salon',hair='toc_bui_doi')
-        self.assertEqual(bank.get(s)['balance'],60)
+        self.assertEqual(bank.get(s)['balance'],70)
         self.assertNotIn('toc_bui_doi',s['wardrobe']['owned'])
-        bank.get(s)['balance']=72
+        bank.get(s)['balance']=outings.SALON_FEE+wardrobe.price(s,'toc_bui_doi')   # 💹 07/10: 13 + 66
         s,_=self.act(s,'jr_out_salon',hair='toc_bui_doi')
         self.assertEqual(bank.get(s)['balance'],0)
         self.assertEqual(s['journey']['wallet'],500)

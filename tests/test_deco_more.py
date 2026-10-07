@@ -11,6 +11,7 @@ from pathlib import Path
 
 from game import deco as dc
 from game import deco_content as DC
+from game import price_index as pi
 from game import housing as hs
 from game import reno as rn
 from game.engine import GameError, migrate_state, validate_state
@@ -74,7 +75,7 @@ class Catalogue(unittest.TestCase):
         for k in NEW:
             it = DC.ITEMS[k]
             with self.subTest(k=k):
-                self.assertTrue(10 <= it['price'] <= 450 and 1 <= it['cozy'] <= 3)
+                self.assertTrue(10 <= it['price'] <= pi.price(450) and 1 <= it['cozy'] <= 3)   # 💹 07/10: base 10–450
                 if it['spot'] == 'wall':
                     self.assertTrue(all(it['h'] <= rows.get(t, 2) for t in it['rooms']))   # fits every wall it is sold for
                 if it['spot'] == 'top':

@@ -36,6 +36,7 @@ import json
 import re
 
 from . import marriage as mr
+from . import price_index as pi   # 💹 07/10: LUNCH_COST
 from .engine import GameError
 
 FUND_MAX = 10 ** 7
@@ -46,7 +47,7 @@ HELP_DAYS = 3
 CLAIM_HOURS = 12
 HAPPY_MAX, HAPPY_DAY_MAX, STREAK_BONUS_MAX = 100, 6, 5
 ANNIV_DAYS = 30
-LUNCH_COST = 5
+LUNCH_COST = pi.price(5)   # 💹 07/10: base 5
 HOLD_S = 30                        # a card spend not in the spender's save after this is refunded
 HISTORY = 12
 VN = datetime.timezone(datetime.timedelta(hours=7))

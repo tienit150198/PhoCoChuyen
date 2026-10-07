@@ -79,7 +79,7 @@ class CommunityPersistence(unittest.TestCase):
             before,revision,*_=store.read(token)
             payload=dict(place='books',choice='letter',pay='cash')
             first=store.command(token,'community-visit-001',revision,None,'jr_out_community',payload)
-            self.assertEqual(first['state']['journey']['wallet'],before['journey']['wallet']-12)
+            self.assertEqual(first['state']['journey']['wallet'],before['journey']['wallet']-13)   # 💹 07/10: 12 -> 13 xu
             retry=store.command(token,'community-visit-001',revision,None,'jr_out_community',payload)
             self.assertTrue(retry['replayed'])
             saved,revision,*_=store.read(token)

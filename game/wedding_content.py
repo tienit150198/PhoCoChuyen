@@ -9,8 +9,14 @@ a little in the red, a lavish one with few acquaintances costs a lot.
 
 Every price here is authoritative: the client only shows these numbers and the
 server recomputes every total (marriage.quote).
+
+💹 07/10: the prices below are written as the base and indexed once after EXTRAS (game/price_index.py): rings,
+colours, the re-plating fee, venues, menus, ceremonies and extras. What guests give (gifts, TIER_GIFTS…) stays.
+A ring keeps the price paid (its resale), a planned wedding keeps its stored quote.
 """
 from __future__ import annotations
+
+from . import price_index as pi
 
 DEPOSIT_PCT = 30            # đặt cọc when both spouses confirm; the rest is paid on the day
 TABLE_SEATS = 10
@@ -130,6 +136,21 @@ EXTRAS = [
          desc='0,8 xu mỗi khách: hộp kẹo và túi trà nhỏ in tên hai bạn.'),
 ]
 EXTRA_INDEX = {x['id']: x for x in EXTRAS}
+
+# 💹 07/10: index the base prices above once (the INDEX dicts share these rows).
+for _row in RINGS + CEREMONIES + EXTRAS:
+    if _row.get('price'):
+        _row['price'] = pi.price(_row['price'])
+for _row in METALS + STONES:
+    _row['extra'] = pi.price(_row['extra'])
+for _row in VENUES:
+    _row['fee'] = pi.price(_row['fee'])
+for _row in MENUS:
+    _row['price'] = pi.price(_row['price'])
+CEREMONY_INDEX['an_hoi']['options'] = tuple((n, pi.price(x), m) for n, x, m in CEREMONY_INDEX['an_hoi']['options'])
+EXTRA_INDEX['favors']['per10'] = pi.price(EXTRA_INDEX['favors']['per10'])
+EXTRA_INDEX['favors']['desc'] = EXTRA_INDEX['favors']['desc'].replace('0,8 xu', f"0,{EXTRA_INDEX['favors']['per10']} xu")
+RECOLOR_FEE = pi.price(RECOLOR_FEE)
 
 MOODS = ((12, '🎊', 'Linh đình, cả phố còn nhắc mãi'), (8, '🥳', 'Rộn ràng, khách nán lại chụp ảnh'),
          (4, '😊', 'Vui vẻ, ấm cúng'), (0, '🙂', 'Tiệc gọn, khách ăn xong về sớm'))

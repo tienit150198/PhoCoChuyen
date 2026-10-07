@@ -42,7 +42,7 @@ class Catalogue(unittest.TestCase):
         phones = [gd.ITEMS[i] for i in gd.PHONES]
         self.assertEqual([p['tier'] for p in phones], [1, 2, 3, 4, 5])        # cheap → gold, one each
         self.assertEqual([p['price'] for p in phones], sorted(p['price'] for p in phones))
-        self.assertLessEqual(phones[0]['price'], jr.START_WALLET + 2 * 50)     # day-1 reachable: about two days of pay
+        self.assertLessEqual(phones[0]['price'] - gd.TRADE_IN, jr.START_WALLET + 2 * 50)   # day-1 reachable (old phone in): ~two days of pay
         self.assertGreaterEqual(phones[-1]['price'], 20000)                    # the gold edition is a rich player's toy
         self.assertLess(phones[-1]['price'], max(v['price'] for v in gr.VEHICLES.values()))
         for gid in gd.GROUP_IDS:
@@ -77,13 +77,13 @@ class Buying(unittest.TestCase):
         before = money(s)
         s, r = buy(s, 'may_lite', trade=False)
         j = s['journey']
-        self.assertEqual(j['wallet'], 350)
-        self.assertEqual(G(s)['own'], {'may_lite': dict(d=j['life_day'], p=150)})
+        self.assertEqual(j['wallet'], 335)                                    # 💹 07/10: 150 -> 165 xu
+        self.assertEqual(G(s)['own'], {'may_lite': dict(d=j['life_day'], p=165)})
         self.assertEqual(G(s)['hand'], 'may_lite')                           # the first phone is the one in use
         self.assertEqual(j['history'][-1]['kind'], 'life')                    # an existing kind: older builds validate
-        self.assertEqual(j['history'][-1]['amount'], -150)
-        self.assertEqual(before - money(s), 150)
-        self.assertIn('150 xu tiền mặt', r['message'])
+        self.assertEqual(j['history'][-1]['amount'], -165)
+        self.assertEqual(before - money(s), 165)
+        self.assertIn('165 xu tiền mặt', r['message'])
         validate_state(s)
 
     def test_trade_in_the_old_phone_once(self):
@@ -91,45 +91,45 @@ class Buying(unittest.TestCase):
         self.assertEqual(public_state(s)['journey']['gadgets']['old'], 0)
         refused(self, s, 'jr_gadget_buy', id='may_lite', confirm=True, trade='yes')
         s, r = buy(s, 'may_lite')                                             # the first phone takes the old one in
-        self.assertEqual(s['journey']['wallet'], 500 - 130)
-        self.assertEqual(G(s)['own']['may_lite']['p'], 130)                   # what was paid: the base of selling back
+        self.assertEqual(s['journey']['wallet'], 500 - 145)
+        self.assertEqual(G(s)['own']['may_lite']['p'], 145)                   # what was paid: the base of selling back
         self.assertEqual(G(s)['old'], 1)
         self.assertIn('Anh Khoa', r['message'])
         s['journey']['wallet'] += 600
         s, _ = buy(s, 'sao_mai_s', trade=True)                                # the old phone is gone: full price
-        self.assertEqual(s['journey']['wallet'], 370)
-        self.assertEqual(G(s)['own']['sao_mai_s']['p'], 600)
+        self.assertEqual(s['journey']['wallet'], 295)
+        self.assertEqual(G(s)['own']['sao_mai_s']['p'], 660)
         s3, _ = buy(story(500), 'may_lite', trade=False)                      # kept as a keepsake: full price
-        self.assertEqual((G(s3)['old'], G(s3)['own']['may_lite']['p']), (0, 150))
+        self.assertEqual((G(s3)['old'], G(s3)['own']['may_lite']['p']), (0, 165))
         s2 = story(500)
         s2, _ = buy(s2, 'tai_nghe', trade=True)                               # gear never takes the phone in
         self.assertEqual(G(s2)['old'], 0)
-        self.assertEqual(G(s2)['own']['tai_nghe']['p'], 120)
+        self.assertEqual(G(s2)['own']['tai_nghe']['p'], 130)
 
     def test_trade_in_makes_a_short_wallet_enough(self):
-        s = story(140)
+        s = story(160)
         why = refused(self, s, 'jr_gadget_buy', 'not_enough', id='may_lite', confirm=True, trade=False)
-        self.assertIn('Còn thiếu 10 xu', why)
+        self.assertIn('Còn thiếu 5 xu', why)
         s, _ = buy(s, 'may_lite')
-        self.assertEqual(s['journey']['wallet'], 10)
+        self.assertEqual(s['journey']['wallet'], 15)
 
     def test_not_enough_debt_and_never_the_card(self):
         s = story(100)
         why = refused(self, s, 'jr_gadget_buy', 'not_enough', id='sao_mai_s', confirm=True)
-        self.assertIn('Còn thiếu 480 xu', why)                               # the old phone's 20 xu counted
-        self.assertEqual(public_state(s)['journey']['gadgets']['why']['sao_mai_s'], 'Còn thiếu 480 xu.')
+        self.assertIn('Còn thiếu 540 xu', why)                               # the old phone's 20 xu counted
+        self.assertEqual(public_state(s)['journey']['gadgets']['why']['sao_mai_s'], 'Còn thiếu 540 xu.')
         why = public_state(s)['journey']['gadgets']['why']
-        self.assertEqual((why['may_lite'], why['tai_nghe']), ('Còn thiếu 30 xu.', 'Còn thiếu 20 xu.'))
-        self.assertNotIn('may_lite', public_state(story(130))['journey']['gadgets']['why'])   # 150 − 20 for the old phone
+        self.assertEqual((why['may_lite'], why['tai_nghe']), ('Còn thiếu 45 xu.', 'Còn thiếu 30 xu.'))
+        self.assertNotIn('may_lite', public_state(story(145))['journey']['gadgets']['why'])   # 165 − 20 for the old phone
         s = story(-5)
         self.assertIn('Ví đang nợ 5 xu', refused(self, s, 'jr_gadget_buy', id='tai_nghe', confirm=True))
 
     def test_wallet_then_account_never_below_zero(self):
-        s = opened(wallet=2400, deposit=2000)          # 400 cash, 2 000 in the account
+        s = opened(wallet=2640, deposit=2000)          # 640 cash, 2 000 in the account
         s, r = buy(s, 'may_pro', trade=False)
         self.assertEqual(s['journey']['wallet'], 0)
         self.assertEqual(B(s)['balance'], 0)
-        self.assertIn('400 xu tiền mặt và 2.000 xu từ tài khoản', r['message'])
+        self.assertIn('640 xu tiền mặt và 2.000 xu từ tài khoản', r['message'])
         self.assertEqual(B(s)['log'][-1]['amt'], -2000)
         refused(self, s, 'jr_gadget_buy', 'not_enough', id='tai_nghe', confirm=True)
         validate_state(s)
@@ -143,7 +143,7 @@ class Buying(unittest.TestCase):
         s, _ = buy(s, 'may_lite', trade=False)
         s, r = buy(s, 'may_lite')                                              # a second tap pays nothing
         self.assertTrue(r.get('duplicate'))
-        self.assertEqual(s['journey']['wallet'], 350)
+        self.assertEqual(s['journey']['wallet'], 335)
 
     def test_free_play_has_no_shop(self):
         s = new_state()
@@ -181,7 +181,7 @@ class Owning(unittest.TestCase):
 
     def test_buying_a_better_phone_takes_the_hand(self):
         s, _ = buy(self.s, 'kim_long')
-        self.assertEqual(G(s)['own']['kim_long']['p'], 24000)                 # the old phone went with the first one
+        self.assertEqual(G(s)['own']['kim_long']['p'], 28800)                 # the old phone went with the first one
         self.assertEqual(G(s)['hand'], 'kim_long')
         self.assertEqual(public_state(s)['journey']['gadgets']['perks'], list(gd.PERK_IDS))
 
@@ -189,10 +189,10 @@ class Owning(unittest.TestCase):
         s = self.s
         w = s['journey']['wallet']
         s, r = act(s, 'jr_gadget_sell', id='sao_mai_s', confirm=True)
-        self.assertEqual(s['journey']['wallet'], w + 390)
+        self.assertEqual(s['journey']['wallet'], w + 425)
         self.assertEqual(s['journey']['history'][-1]['kind'], 'life')
         self.assertEqual(G(s)['hand'], 'may_lite')                           # the best phone left
-        self.assertIn('390 xu', r['message'])
+        self.assertIn('425 xu', r['message'])
         refused(self, s, 'jr_gadget_sell', id='sao_mai_s', confirm=True)      # gone
         refused(self, s, 'jr_gadget_sell', id='may_lite')                     # no confirm
         s, _ = act(s, 'jr_gadget_sell', id='may_lite', confirm=True)
@@ -214,8 +214,8 @@ class Owning(unittest.TestCase):
         net0, assets0, _ = wealth.worth(s)
         s, _ = buy(s, 'sao_mai_s', trade=False)
         net1, assets1, _ = wealth.worth(s)
-        self.assertEqual(net0 - net1, 600 - gd.sell_price(600))
-        self.assertEqual(wealth_pricing.total(s), 400 + gd.sell_price(600))
+        self.assertEqual(net0 - net1, 660 - gd.sell_price(660))
+        self.assertEqual(wealth_pricing.total(s), 340 + gd.sell_price(660))
 
 
 class Saves(unittest.TestCase):

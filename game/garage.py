@@ -40,6 +40,7 @@ import hashlib
 import re
 
 from . import bank as bk
+from . import price_index as pi   # 💹 07/10: prices below are the base; the catalogue holds the indexed ones
 from . import upkeep as up   # 🧾 phí giữ xe & bảo dưỡng a tháng
 
 VERSION = 1
@@ -71,8 +72,11 @@ PAINT_INDEX = {p[0]: dict(id=p[0], name=p[1], hex=p[2]) for p in PAINTS}
 
 
 def _v(vid, group, emoji, name, price, desc, spirit, fuel, trip, paint='do'):
-    """spirit: tinh thần from one ride out; fuel: its xu (0: free); trip: the button's words; paint: the default."""
-    return vid, dict(id=vid, group=group, emoji=emoji, name=name, price=price, desc=desc, spirit=spirit, fuel=fuel,
+    """spirit: tinh thần from one ride out; fuel: its xu (0: free); trip: the button's words; paint: the default.
+    price and fuel are the base (pre-07/10) prices: the catalogue holds them through game/price_index.py (the luxury
+    tiers included). A vehicle keeps the price paid (`p`), which selling back and the upkeep use."""
+    return vid, dict(id=vid, group=group, emoji=emoji, name=name, price=pi.price(price), desc=desc, spirit=spirit,
+                     fuel=pi.price(fuel, luxury=False),
                      trip=trip, paint=paint)
 
 

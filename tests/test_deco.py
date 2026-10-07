@@ -9,6 +9,7 @@ from game import deco as dc
 from game import deco_content as DC
 from game import housing as hs
 from game import journey as jr
+from game import price_index as pi
 from game import reno as rn
 from game.engine import GameError, migrate_state, public_state, validate_state
 from tests.test_bank import act, story
@@ -67,7 +68,7 @@ def tick(s, n=1):
 
 
 def owner(kind='tap_the', wallet=6000):
-    s = story(wallet=wallet)
+    s = story(wallet=wallet + hs.tax(kind))   # 💹 07/10: the thuế trước bạ on top
     s, _ = buy(s, kind)
     s['journey']['wallet'] = max(s['journey']['wallet'], wallet)
     return s
@@ -92,8 +93,8 @@ class Catalogue(unittest.TestCase):
                'ban_ngoai': (160, 2), 'tranh': (70, 2), 'den_long': (35, 1), 'den_nhay': (30, 2), 'dong_ho': (50, 1),
                'guong': (45, 1), 'ke_cay': (55, 2), 'anh': (25, 1), 'lich': (15, 1), 'may_lanh': (320, 2), 'ke_bep': (30, 1)}
         self.assertEqual(set(DC.LEGACY), set(old))                          # every 1.2.0 piece still exists, same price
-        for k, (price, cozy) in old.items():
-            self.assertEqual((DC.ITEMS[k]['price'], DC.ITEMS[k]['cozy']), (price, cozy), k)
+        for k, (price, cozy) in old.items():                                # (💹 07/10: through the price index)
+            self.assertEqual((DC.ITEMS[k]['price'], DC.ITEMS[k]['cozy']), (pi.price(price), cozy), k)
         cats = {c[0] for c in DC.CATS}
         for k, it in DC.ITEMS.items():
             with self.subTest(k=k):
@@ -110,7 +111,7 @@ class Catalogue(unittest.TestCase):
         self.assertEqual({c['id'] for c in dc.catalogue()['cats']}, cats)
         c = jr.content()['deco']
         self.assertEqual([x['id'] for x in c['items']], list(DC.ITEMS))
-        self.assertEqual(next(x for x in c['items'] if x['id'] == 'sofa')['sell'], 90)
+        self.assertEqual(next(x for x in c['items'] if x['id'] == 'sofa')['sell'], 100)   # 💹 07/10: half of 200
 
     def test_every_piece_has_a_place_and_every_place_has_choices(self):
         places = ['attic'] + [f'rent:{k}:1' for k in ('tro_moi', 'ky_tuc_xa')] + [f'own:h1:{k}' for k in rn.HOUSES]
@@ -147,12 +148,12 @@ class Placement(unittest.TestCase):
         cash = s['journey']['wallet']
         s, r = place_new(s, 'sofa', 'living', 1, 1)
         uid = r['uid']
-        self.assertEqual(s['journey']['wallet'], cash - 180)
+        self.assertEqual(s['journey']['wallet'], cash - 200)               # 💹 07/10: 180 -> 200
         self.assertIn('Đặt ở phòng khách', r['message'])
         self.assertEqual(at(s, uid), ('living', 1, 1, 0))
         s, r = act(s, 'jr_deco_buy', item='sofa', confirm=True, room='living', x=1, y=1)
         self.assertTrue(r['duplicate'])
-        self.assertEqual(s['journey']['wallet'], cash - 180)                # paid once
+        self.assertEqual(s['journey']['wallet'], cash - 200)                # paid once
         self.assertEqual(D(s)['cozy']['total'], 3)
         self.assertEqual(s['journey']['history'][-1]['kind'], 'home')
 
@@ -198,7 +199,7 @@ class Placement(unittest.TestCase):
         s, r = place_new(s, 'den_ban', 'living', 4, 2)                       # a lamp on the coffee table
         self.assertIsNotNone(at(s, r['uid']))
         s, _ = place_new(s, 'den_ban', 'kitchen', 0, 0)                      # and on the kitchen counter
-        self.assertEqual(s['journey']['wallet'], cash - 90 - 70 - 35 - 35)
+        self.assertEqual(s['journey']['wallet'], cash - 99 - 77 - 39 - 39)
         self.assertEqual(at(s, sofa), ('living', 1, 1, 0))
         with self.assertRaises(GameError) as e:                               # someone else's piece
             act(s, 'jr_deco_place', uid='zz', room='living', x=0, y=0)
@@ -241,7 +242,7 @@ class Placement(unittest.TestCase):
         self.assertEqual((D(s)['items'], len(bag(s))), ([], 2))
         cash = s['journey']['wallet']
         s, r = act(s, 'jr_deco_sell', uid=sofa, confirm=True)
-        self.assertEqual(s['journey']['wallet'], cash + 90)                 # half of 180
+        self.assertEqual(s['journey']['wallet'], cash + 100)                # half of 200
         self.assertNotIn(sofa, [it['id'] for it in s['journey']['reno']['items']])
         with self.assertRaises(GameError):
             act(s, 'jr_deco_sell', uid=sofa, confirm=True)
@@ -693,12 +694,12 @@ class Skins(unittest.TestCase):
         with self.assertRaises(GameError):                                   # a priced one wants a yes
             act(s, 'jr_deco_skin', r='living', part='wall', skin='hoa_nhi')
         s, r = act(s, 'jr_deco_skin', r='living', part='wall', skin='hoa_nhi', confirm=True, n='skin-1')
-        self.assertIn('Đã mua giấy hoa nhí, 35 xu', r['message'])
+        self.assertIn('Đã mua giấy hoa nhí, 39 xu', r['message'])
         s, r = act(s, 'jr_deco_skin', r='living', part='wall', skin='hoa_nhi', confirm=True, n='skin-1')
         self.assertTrue(r['duplicate'])
-        self.assertEqual((s['journey']['wallet'], D(s)['owned']), (cash - 35, ['hoa_nhi']))
+        self.assertEqual((s['journey']['wallet'], D(s)['owned']), (cash - 39, ['hoa_nhi']))
         s, r = act(s, 'jr_deco_skin', r='bed', part='wall', skin='hoa_nhi')  # bought once, any room
-        self.assertEqual(s['journey']['wallet'], cash - 35)
+        self.assertEqual(s['journey']['wallet'], cash - 39)
         s, _ = act(s, 'jr_deco_skin', r='living', part='floor', skin='go_sang')
         self.assertEqual(D(s)['rooms'][0]['skin'], {'w': 'hoa_nhi', 'f': 'go_sang'})
         s, r = act(s, 'jr_deco_skin', r='living', part='floor', skin='go_sang')
@@ -745,15 +746,15 @@ class Idempotent(unittest.TestCase):
         s, r = act(s, 'jr_deco_buy', item='cay_canh', confirm=True, n='tap-aaaa')
         s, r2 = act(s, 'jr_deco_buy', item='cay_canh', confirm=True, n='tap-aaaa')
         self.assertTrue(r2['duplicate'])
-        self.assertEqual((bag(s), s['journey']['wallet']), (['cay_canh'], cash - 40))
+        self.assertEqual((bag(s), s['journey']['wallet']), (['cay_canh'], cash - 44))
         s, r = act(s, 'jr_deco_buy', item='cay_canh', confirm=True, put=dict(r='living', x=0, y=20))
         s, r2 = act(s, 'jr_deco_buy', item='cay_canh', confirm=True, put=dict(r='living', x=0, y=20))   # same piece, same spot
         self.assertTrue(r2['duplicate'])
-        self.assertEqual(s['journey']['wallet'], cash - 80)
+        self.assertEqual(s['journey']['wallet'], cash - 88)
         s, _ = act(s, 'jr_deco_sell', uid=r['uid'], confirm=True, n='sell-bbbb')
         s, r3 = act(s, 'jr_deco_sell', uid=r['uid'], confirm=True, n='sell-bbbb')
         self.assertTrue(r3['duplicate'])
-        self.assertEqual(s['journey']['wallet'], cash - 80 + 20)
+        self.assertEqual(s['journey']['wallet'], cash - 88 + 22)
         for i in range(dc.OPS_MAX + 3):                                      # the nonces kept stay few
             s, _ = act(s, 'jr_deco_skin', r='living', part='wall', skin=('kem', 'bac_ha')[i % 2], n=f'op-{i:04d}')
         self.assertEqual(len(s['journey']['decor']['ops']), dc.OPS_MAX)
@@ -917,16 +918,16 @@ class Colours(unittest.TestCase):
         with self.assertRaises(GameError):                                   # not unlocked, no buy
             act(s, 'jr_wd_deco', uid=uid, color='navy')
         s, r = act(s, 'jr_wd_deco', uid=uid, color='navy', buy=True)
-        self.assertEqual(r['message'], 'Đã trả 40 xu mở khóa màu Xanh navy. Bàn học giờ mang màu Xanh navy.')
-        self.assertEqual(s['journey']['wallet'], w0 - 40)
+        self.assertEqual(r['message'], 'Đã trả 44 xu mở khóa màu Xanh navy. Bàn học giờ mang màu Xanh navy.')
+        self.assertEqual(s['journey']['wallet'], w0 - 44)
         self.assertEqual(public_state(s)['colors']['deco'], {uid: 'navy'})
         s, r = act(s, 'jr_wd_deco', uid=uid, color='navy', buy=True)         # a second tap: nothing paid
         self.assertTrue(r.get('duplicate'))
-        self.assertEqual(s['journey']['wallet'], w0 - 40)
+        self.assertEqual(s['journey']['wallet'], w0 - 44)
         s, _ = place_new(s, 'den_ban', 'tro', 0, 0)
         lamp = D(s)['items'][-1]['id']
         s, _ = act(s, 'jr_wd_deco', uid=lamp, color='navy')                  # unlocked once: free on any piece
-        self.assertEqual(s['journey']['wallet'], w0 - 40 - DC.ITEMS['den_ban']['price'])
+        self.assertEqual(s['journey']['wallet'], w0 - 44 - DC.ITEMS['den_ban']['price'])
         s, _ = act(s, 'jr_home_leave', confirm=True)                         # moving out: everything in the bag
         self.assertEqual(D(s)['items'], [])
         self.assertEqual(s['colors']['deco'], {uid: 'navy', lamp: 'navy'})

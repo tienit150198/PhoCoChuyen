@@ -52,6 +52,8 @@ build that changes such a slot makes the entry stale (ignored, dropped on the ne
 """
 from __future__ import annotations
 
+from . import price_index as pi   # 💹 07/10: ITEMS and COLORS prices are written as the base, indexed by _i/_c
+
 VERSION = 1
 KEY = 'wardrobe'
 SLOTS = ('hair', 'shade', 'skin', 'top', 'bottom', 'shoes', 'acc')
@@ -66,7 +68,7 @@ KIND = 'life'                     # journey.HISTORY_KINDS (an existing kind: old
 def _i(iid, slot, name, price=0, need=None, plain=None, plus=False):
     """plain: the name without its colour word ("Áo hoodie" for "Áo hoodie tím"), used once it is recoloured.
     plus: a 1.9.2 piece, saved in s['wardrobe_plus'] (see PLUS_KEY), never in s['wardrobe']."""
-    out = dict(id=iid, slot=slot, name=name, price=price, need=need, plain=plain or name)
+    out = dict(id=iid, slot=slot, name=name, price=pi.price(price), need=need, plain=plain or name)
     if plus:
         out['plus'] = True
     return out
@@ -223,7 +225,7 @@ UNLOCK_LABEL = 'Mở khóa màu'           # wallet row: "Mở khóa màu · Xan
 
 
 def _c(cid, name, price=COLOR_PRICE):
-    return dict(id=cid, name=name, price=price)
+    return dict(id=cid, name=name, price=pi.price(price))
 
 
 # The art (hex) lives in public/js/v4/look.js ACC_COLORS under the same ids; live/street_data.py copies the ids.

@@ -6,8 +6,13 @@ optional journey.outings block. No workplace is opened and no daily bill is crea
 from __future__ import annotations
 import copy
 from . import bank, wardrobe, community_outings, craft_work
+from . import price_index as pi
 
-SALON_FEE, NAIL_FEE, CRAFT_FEE = 12, 18, 22
+# 💹 07/10 (game/price_index.py): the salon's fee is indexed (a save keeps only its range). NAIL_FEE and CRAFT_FEE stay:
+# 1.9.9 pins them in validate (a save holding the new price would not load there); validate below already accepts the
+# indexed ones (NAIL_NEXT, CRAFT_NEXT) so that a later release can raise them and still roll back here.
+SALON_FEE, NAIL_FEE, CRAFT_FEE = pi.price(12), 18, 22
+NAIL_NEXT, CRAFT_NEXT = pi.price(NAIL_FEE), pi.price(CRAFT_FEE)
 MAX_CRAFTS = 24
 COLORS = [dict(id='rose',name='Hồng cánh hoa',hex='#de829d'),dict(id='mint',name='Xanh bạc hà',hex='#74bba0'),
           dict(id='lavender',name='Tím oải hương',hex='#a795cf'),dict(id='sun',name='Vàng nắng',hex='#e6b950'),
@@ -121,12 +126,12 @@ def validate(s: dict) -> None:
     if d['nails'] is not None:
         record(d['nails'],{'color','pattern','day','cost'})
         _choice(d['nails']['color'],COLOR_IDS);_choice(d['nails']['pattern'],PATTERN_IDS)
-        _need(d['nails']['cost']==NAIL_FEE,msg)
+        _need(d['nails']['cost'] in (NAIL_FEE,NAIL_NEXT),msg)
     _need(isinstance(d['crafts'],list) and len(d['crafts'])==d['seq'],msg)
     combos=set()
     for index,x in enumerate(d['crafts'],1):
         record(x,{'id','kind','color','pattern','day','cost'}|({'work'} if isinstance(x,dict) and 'work' in x else set()))
-        _need(type(x['id']) is int and x['id']==index and x['cost']==CRAFT_FEE,msg)
+        _need(type(x['id']) is int and x['id']==index and x['cost'] in (CRAFT_FEE,CRAFT_NEXT),msg)
         _choice(x['kind'],CRAFT_IDS);_choice(x['color'],COLOR_IDS);_choice(x['pattern'],PATTERN_IDS)
         craft_work.validate(x['kind'],x.get('work'))
         combo=craft_work.identity(x['kind'],x['color'],x['pattern'],x.get('work'));_need(combo not in combos,msg);combos.add(combo)

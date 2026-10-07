@@ -64,6 +64,7 @@ import random
 
 from . import archive as ar
 from . import bank as bk
+from . import price_index as pi   # 💹 07/10: GEAR prices and THUOC are the base
 from . import wealth_pricing
 
 VERSION = 1
@@ -108,6 +109,7 @@ GEAR = {
     'diet_virus': dict(emoji='💻', name='Phần mềm diệt virus', price=1800, what='Giảm một nửa số xu mất khi bị hack, trước giới hạn chung'),
     'bao_dong': dict(emoji='🚨', name='Chuông báo trộm', price=900, what='Giảm một nửa khả năng trộm vào nhà; dùng cùng khóa và két sắt'),
 }
+pi.index(GEAR)   # 💹 07/10 (game/price_index.py)
 
 # ---------------------------------------------------------------- odds and costs
 XE_P = (1200, 360)                # per 10 000 after an actual outing: displayed vehicle / another vehicle
@@ -120,7 +122,7 @@ NHA_SUBS = {   # sub: (weight, reno part, basis points of the list price)
 NGAP_GROUPS = ('townhouse', 'villa')   # a flat high up does not flood
 OM_P = (300, 600, 300)            # per 10 000: everyone, + no bụng or tỉnh táo low, + tinh thần < 35
 OM_PCT, OM_MIN, OM_MAX = 150, 30, 600   # the clinic: basis points of W − FLOOR, clamped
-THUOC = 15                        # medicine from the pharmacy
+THUOC = pi.price(15)              # medicine from the pharmacy (💹 07/10: base 15)
 THUOC_LAI = 30                    # % it does not help: a second card two days later
 MOC_P, MOC_RICH = 360, 3000       # per 10 000 with cash ≥ FLOOR + 100; ×1,5 with more cash than MOC_RICH
 MOC_PCT, MOC_MAX = 12, 2000       # % of the cash above FLOOR, at most

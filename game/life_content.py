@@ -17,6 +17,7 @@ text: the card shows the real numbers from the state (losses are capped by the w
 from __future__ import annotations
 
 from .incident_content import ALL, EMPLOYEE, RETAIL
+from . import price_index as pi   # 💹 07/10: COMFORT, COPE, ASK, IMPULSE and SICK amounts are the base, indexed below
 
 EMPLOYED = ('pharmacy', 'customer_care', 'teacher', 'tour_guide', 'repair', 'delivery', 'pet_care', 'salon',
             'corp_accounting', 'tax_payroll', 'group_accounting', 'garbage', 'homemaker', 'naucom', 'babysitter', 'library', 'pilot', 'flight_attendant', 'oil',
@@ -814,6 +815,13 @@ SICK = [
     dict(id='sick_stomach', emoji='🤢', title='Đau bao tử', cost=14,
          lines=['Mấy hôm ăn uống thất thường.', 'Tối qua đau quặn cả bụng.']),
 ]
+
+# 💹 07/10 (game/price_index.py): what a comfort, a way to cope, an impulse buy, a doctor's visit and a neighbour's ask
+# cost (the ask's two amounts are suggestions, like the Chùa's). The hard days' own amounts (HARD) stay.
+for _row in COMFORT + COPE + SICK:
+    _row['cost'] = pi.price(_row['cost'], luxury=False)
+for _row in ASK + IMPULSE:
+    _row['big'], _row['small'] = pi.price(_row['big'], luxury=False), pi.price(_row['small'], luxury=False)
 
 # Invites when you are low (no hard day needed).
 INVITE_CATS = ('ru',)

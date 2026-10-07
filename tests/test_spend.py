@@ -14,6 +14,7 @@ from unittest.mock import patch
 from game import bank as bk
 from game import journey as jr
 from game import needs as nd
+from game import price_index as pi
 from game import social
 from game import spend as sp
 from game import spend_content as C
@@ -62,15 +63,15 @@ def contrast(a, b):
 
 class Catalogue(unittest.TestCase):
     def test_price_bands_follow_income_percentiles(self):
-        # T0 3–40 (a few % of a median 262 xu day), T1 50–400 (≤ 1.5 median days), công đức from 5
+        # T0 3–40 (a few % of a median 262 xu day), T1 50–400 (≤ 1.5 median days), công đức from 5; 💹 07/10: +10 %
         for sh in C.SHOPS.values():
             for it in sh['items']:
-                self.assertTrue(3 <= it['price'] <= 40, it)
+                self.assertTrue(3 <= it['price'] <= pi.price(40), it)
         for it in C.SPA:
-            self.assertTrue(3 <= it['price'] <= 40, it)
-        self.assertTrue(3 <= C.FILM_PRICE <= 40)
+            self.assertTrue(3 <= it['price'] <= pi.price(40), it)
+        self.assertTrue(3 <= C.FILM_PRICE <= pi.price(40))
         for it in C.STYLE_ITEMS.values():
-            self.assertTrue(50 <= it['price'] <= 400, it)
+            self.assertTrue(50 <= it['price'] <= pi.price(400), it)
         self.assertEqual(C.GIVE_MIN, 5)
         self.assertGreaterEqual(C.GIVE_MAX, 1_000_000)   # open-ended enough for the top of the 💰 board
 
@@ -99,9 +100,9 @@ class Quan(unittest.TestCase):
     def test_a_drink_costs_its_price_from_the_wallet_and_stamps_the_card(self):
         s = story(100)
         s, r = act(s, 'jr_spend_eat', shop='co_lan', item='ca_phe_muoi')
-        self.assertEqual(s['journey']['wallet'], 91)
+        self.assertEqual(s['journey']['wallet'], 90)                          # 💹 07/10: 9 -> 10 xu
         row = s['journey']['history'][-1]
-        self.assertEqual((row['kind'], row['amount']), ('life', -9))
+        self.assertEqual((row['kind'], row['amount']), ('life', -10))
         self.assertIn(row['kind'], jr.HISTORY_KINDS)
         self.assertEqual(SP(s)['stamps'], {'co_lan': 1})
         self.assertIn('Thẻ tích điểm 1/10', r['message'])
@@ -111,7 +112,7 @@ class Quan(unittest.TestCase):
         s = story(500)
         s['journey'].setdefault('life', {})['spirit'] = 50
         s, r = act(s, 'jr_spend_eat', shop='lau_ba_sau', item='lau_mot_nguoi')
-        self.assertEqual(s['journey']['life']['spirit'], 52)                 # a ≥ 28 xu meal: +2
+        self.assertEqual(s['journey']['life']['spirit'], 52)                 # a ≥ 31 xu meal (base 28): +2
         s, r = act(s, 'jr_spend_eat', shop='co_lan', item='bac_xiu')
         self.assertEqual(s['journey']['life']['spirit'], 52)                 # the second quán of the day: nothing
         self.assertNotIn('Tinh thần', r['message'])
@@ -126,7 +127,7 @@ class Quan(unittest.TestCase):
         self.assertEqual(SP(s)['stamps'], {'tra_sua_may': 0})
         self.assertEqual(SP(s)['stickers'], {'tra_sua_may': 1})
         self.assertIn('nhãn dán', r['message'])
-        self.assertEqual(s['journey']['wallet'], 1000 - 120)
+        self.assertEqual(s['journey']['wallet'], 1000 - 130)
 
     def test_needs_bars_go_up_and_a_full_belly_refuses_food(self):
         s = story(500)
@@ -142,7 +143,7 @@ class Quan(unittest.TestCase):
 
     def test_refusals(self):
         s = story(5)
-        self.assertIn('chưa đủ 9 xu', refused(self, s, 'jr_spend_eat', 'not_enough', shop='co_lan', item='ca_phe_muoi'))
+        self.assertIn('chưa đủ 10 xu', refused(self, s, 'jr_spend_eat', 'not_enough', shop='co_lan', item='ca_phe_muoi'))
         s = story(100)
         refused(self, s, 'jr_spend_eat', shop='co_lan', item='pho_tai_lan')     # not this shop's
         refused(self, s, 'jr_spend_eat', shop='co_lan', item='x')
@@ -157,9 +158,9 @@ class SpaFilm(unittest.TestCase):
         s = story(200)
         s['journey'].setdefault('life', {})['spirit'] = 10
         s, r = act(s, 'jr_spend_spa', item='massage_chan')
-        self.assertEqual((s['journey']['wallet'], s['journey']['life']['spirit']), (160, 12))
+        self.assertEqual((s['journey']['wallet'], s['journey']['life']['spirit']), (156, 12))
         s, r = act(s, 'jr_spend_spa', item='lam_mong')
-        self.assertEqual((s['journey']['wallet'], s['journey']['life']['spirit']), (130, 12))
+        self.assertEqual((s['journey']['wallet'], s['journey']['life']['spirit']), (123, 12))
         self.assertIn('thư giãn rồi', r['message'])
 
     def test_one_film_a_week(self):
@@ -220,7 +221,7 @@ class Style(unittest.TestCase):
         s = story(2000)
         with at(T0):
             s, r = act(s, 'jr_spend_style', id='c_ngoc', confirm=True)
-            self.assertEqual(s['journey']['wallet'], 1850)
+            self.assertEqual(s['journey']['wallet'], 1835)                  # 💹 07/10: 150 -> 165 xu
             self.assertEqual(SP(s)['own']['c_ngoc'], int(T0) + C.WEEK_SECS)
             self.assertEqual(sp.style_now(s), {'c': 'c_ngoc'})
             s, _ = act(s, 'jr_spend_style', id='c_ngoc', confirm=True)          # renew: stacked
@@ -241,7 +242,7 @@ class Style(unittest.TestCase):
             self.assertEqual(sp.style_now(s), {})                               # c_vang ran out
             self.assertNotIn('c_vang', public_state(s)['journey']['spend']['own'])
             refused(self, s, 'jr_spend_wear', 'expired', kind='color', id='c_vang')
-        self.assertEqual(s['journey']['wallet'], 2000 - 4 * 150 - 300)
+        self.assertEqual(s['journey']['wallet'], 2000 - 4 * 165 - 330)
 
     def test_some_titles_unlock_by_playing(self):
         s = story(2000)
@@ -257,7 +258,7 @@ class Style(unittest.TestCase):
         s, _ = act(story(500), 'jr_bk_open')
         s, _ = act(s, 'jr_bk_deposit', amount=250)
         s, r = act(s, 'jr_spend_style', id='f_rong_may', confirm=True)
-        self.assertEqual((s['journey']['wallet'], s['journey']['bank']['balance']), (0, 100))
+        self.assertEqual((s['journey']['wallet'], s['journey']['bank']['balance']), (0, 60))
         self.assertIn('từ tài khoản', r['message'])
         s['journey']['wallet'] = -1
         refused(self, s, 'jr_spend_style', 'not_enough', id='f_tre', confirm=True)

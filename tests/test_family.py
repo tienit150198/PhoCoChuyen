@@ -115,11 +115,11 @@ class FamilyTests(CoupleBase):
         self.act(self.a, 'family_child_care', child='shared', act='milk', pay='cash', rid=care_rid)
         self.assertEqual(self.wallet(self.a), before - 4)
         self.act(self.a, 'family_child_style', child='shared', item='yem', pay='cash', rid=style_rid)
-        self.assertEqual(self.wallet(self.a), before - 22)
+        self.assertEqual(self.wallet(self.a), before - 24)   # 💹 07/10: milk 4 + yếm 20 (was 18)
         self.assertIn('yem', self.family(self.b)['child']['owned'])
         self.act(self.a, 'family_child_care', child='shared', act='milk', pay='cash', rid=care_rid)
         self.act(self.a, 'family_child_style', child='shared', item='yem', pay='cash', rid=style_rid)
-        self.assertEqual(self.wallet(self.a), before - 22)
+        self.assertEqual(self.wallet(self.a), before - 24)   # 💹 07/10: milk 4 + yếm 20 (was 18)
 
     def test_concurrent_same_slot_pays_once(self):
         self.child()

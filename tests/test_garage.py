@@ -50,7 +50,7 @@ class Catalogue(unittest.TestCase):
             self.assertRegex(vid, gr.ID_RE.pattern)
             self.assertIn(v['paint'], gr.PAINT_INDEX)
             self.assertGreater(v['price'], 0)
-            self.assertTrue(1 <= v['spirit'] <= 8 and 0 <= v['fuel'] <= 30, vid)   # a small perk, small fuel
+            self.assertTrue(1 <= v['spirit'] <= 8 and 0 <= v['fuel'] <= 33, vid)   # a small perk, small fuel (💹 07/10: 30 -> 33)
             self.assertLess(v['fuel'] * 20, v['price'], vid)
             self.assertGreater(v['price'], gr.sell_price(v['price']))           # selling back always loses
         for gid in gr.GROUP_IDS:
@@ -65,12 +65,12 @@ class Buying(unittest.TestCase):
         s = story(500)
         s, r = buy(s, 'xe_dap', color='do', plate='MÂY 01')
         j = s['journey']
-        self.assertEqual(j['wallet'], 380)
-        self.assertEqual(G(s)['cars'], {'xe_dap': dict(c='do', n='MÂY 01', d=j['life_day'], p=120)})
+        self.assertEqual(j['wallet'], 370)                # 💹 07/10: the bicycle 120 -> 130 xu
+        self.assertEqual(G(s)['cars'], {'xe_dap': dict(c='do', n='MÂY 01', d=j['life_day'], p=130)})
         self.assertEqual(G(s)['ride'], 'xe_dap')       # the first vehicle is the one you ride
         self.assertEqual(j['history'][-1]['kind'], 'life')
-        self.assertEqual(j['history'][-1]['amount'], -120)
-        self.assertIn('120 xu tiền mặt', r['message'])
+        self.assertEqual(j['history'][-1]['amount'], -130)
+        self.assertIn('130 xu tiền mặt', r['message'])
         s, r = buy(s, 'xe_dap_dien')                    # the default paint; the ride stays
         self.assertEqual(G(s)['cars']['xe_dap_dien']['c'], gr.VEHICLES['xe_dap_dien']['paint'])
         self.assertEqual(G(s)['ride'], 'xe_dap')
@@ -79,9 +79,9 @@ class Buying(unittest.TestCase):
     def test_not_enough_is_refused_with_the_reason(self):
         s = story(500)
         why = refused(self, s, 'jr_garage_buy', 'not_enough', id='xe_so', confirm=True)
-        self.assertIn('Còn thiếu 100 xu', why)
+        self.assertIn('Còn thiếu 160 xu', why)
         row = next(m for m in public_state(s)['journey']['garage']['market'] if m['id'] == 'xe_so')
-        self.assertEqual(row['why'], 'Còn thiếu 100 xu.')
+        self.assertEqual(row['why'], 'Còn thiếu 160 xu.')
         self.assertIsNone(next(m for m in public_state(s)['journey']['garage']['market'] if m['id'] == 'xe_dap')['why'])
 
     def test_debt_buys_nothing_and_the_card_is_never_used(self):
@@ -92,12 +92,12 @@ class Buying(unittest.TestCase):
         refused(self, s, 'jr_garage_buy', 'not_enough', id='o_to_mini', confirm=True)
 
     def test_wallet_then_account_never_below_zero(self):
-        s = opened(wallet=3000, deposit=2500)          # 500 cash, 2 500 in the account
-        s, r = buy(s, 'o_to_mini')                      # 3 000
+        s = opened(wallet=3300, deposit=2800)          # 500 cash, 2 800 in the account
+        s, r = buy(s, 'o_to_mini')                      # 3 300
         self.assertEqual(s['journey']['wallet'], 0)
         self.assertEqual(B(s)['balance'], 0)
-        self.assertIn('500 xu tiền mặt và 2.500 xu từ tài khoản', r['message'])
-        self.assertEqual(B(s)['log'][-1]['amt'], -2500)
+        self.assertIn('500 xu tiền mặt và 2.800 xu từ tài khoản', r['message'])
+        self.assertEqual(B(s)['log'][-1]['amt'], -2800)
         refused(self, s, 'jr_garage_buy', 'not_enough', id='xe_dap', confirm=True)
         validate_state(s)
 
@@ -111,7 +111,7 @@ class Buying(unittest.TestCase):
         s, _ = buy(s, 'xe_dap')
         s, r = buy(s, 'xe_dap')                         # a second tap pays nothing
         self.assertTrue(r.get('duplicate'))
-        self.assertEqual(s['journey']['wallet'], 380)
+        self.assertEqual(s['journey']['wallet'], 370)
 
     def test_free_play_has_no_garage(self):
         s = new_state()
@@ -128,8 +128,8 @@ class Owning(unittest.TestCase):
 
     def test_paint_plate_and_ride(self):
         s, r = act(self.s, 'jr_garage_paint', id='xe_so', color='vang', plate='  59-MÂY  ')
-        self.assertEqual(G(s)['cars']['xe_so'], dict(c='vang', n='59-MÂY', d=1, p=600))
-        self.assertEqual(s['journey']['wallet'], 2000 - 720)   # repainting is free
+        self.assertEqual(G(s)['cars']['xe_so'], dict(c='vang', n='59-MÂY', d=1, p=660))
+        self.assertEqual(s['journey']['wallet'], 2000 - 790)   # repainting is free
         s, r = act(s, 'jr_garage_paint', id='xe_so', plate='')
         self.assertEqual(G(s)['cars']['xe_so']['n'], '')
         refused(self, s, 'jr_garage_paint', id='xe_ga', color='do')          # not yours
@@ -148,7 +148,7 @@ class Owning(unittest.TestCase):
         L['spirit'] = 50
         s, r = act(s, 'jr_garage_trip', id='xe_so')
         self.assertEqual(spirit(s), 53)
-        self.assertEqual(s['journey']['wallet'], 2000 - 720 - 2)   # the fuel, shown on the button
+        self.assertEqual(s['journey']['wallet'], 2000 - 790 - 2)   # the fuel, shown on the button
         self.assertEqual(r['effects'], ['😊 Tinh thần +3'])
         self.assertEqual(G(s)['trip'], s['journey']['life_day'])
         self.assertTrue(any(line in r['message'] for line in gr.TRIP_LINES['bike']))
@@ -158,7 +158,7 @@ class Owning(unittest.TestCase):
         s['journey']['life_day'] += 1
         s, _ = act(s, 'jr_garage_trip', id='xe_dap')     # a bicycle needs no fuel
         self.assertEqual(spirit(s), 55)
-        self.assertEqual(s['journey']['wallet'], 2000 - 720 - 2)
+        self.assertEqual(s['journey']['wallet'], 2000 - 790 - 2)
         self.assertEqual(G(s)['stats']['trips'], 2)
 
     def test_fuel_needs_the_wallet(self):
@@ -173,7 +173,7 @@ class Owning(unittest.TestCase):
         s = self.s
         refused(self, s, 'jr_garage_sell', id='xe_dap')   # no confirm
         s, r = act(s, 'jr_garage_sell', id='xe_dap', confirm=True)
-        self.assertEqual(s['journey']['wallet'], 2000 - 720 + 80)   # 70 % of 120, rounded down to 10
+        self.assertEqual(s['journey']['wallet'], 2000 - 790 + 90)   # 70 % of 130, rounded down to 10
         self.assertNotIn('xe_dap', G(s)['cars'])
         self.assertIsNone(G(s)['ride'])
         refused(self, s, 'jr_garage_sell', id='xe_dap', confirm=True)

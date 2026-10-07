@@ -232,7 +232,7 @@ class Money(unittest.TestCase):
             day(s)
         L(s)['pending'] = None
         s, r = act(s, 'lf_cope', choice='nhau')
-        self.assertEqual(s['journey']['wallet'], 100 + 30 - 12)
+        self.assertEqual(s['journey']['wallet'], 100 + 30 - 13)   # 💹 07/10: 12 -> 13 xu
         with self.assertRaises(GameError):
             act(s, 'lf_cope', choice='ho')
         before = L(s)['spirit']
@@ -313,7 +313,7 @@ class Neighbours(unittest.TestCase):
         L(s)['pending'] = card
         s, _ = act(s, 'lf_choose', id=card['id'], choice='big')
         self.assertEqual(L(s)['bonds']['ba_sau'], lf.BOND_START + 8)
-        self.assertEqual(s['journey']['wallet'], 75)
+        self.assertEqual(s['journey']['wallet'], 72)               # 💹 07/10: góp 25 -> 28 xu
         self.assertEqual(L(s)['log'][-1]['kind'], 'ask')
 
     def test_rumour_needs_a_real_fact_and_always_gets_comfort(self):

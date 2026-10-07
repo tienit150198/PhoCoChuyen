@@ -11,6 +11,7 @@ from pathlib import Path
 
 from game import deco as dc
 from game import deco_content as DC
+from game import price_index as pi
 from game import journey as jr
 from game.engine import migrate_state, public_state, validate_state
 from tests.test_bank import act, story
@@ -52,7 +53,7 @@ class Catalogue(unittest.TestCase):
         for k in NEW:
             it = DC.ITEMS[k]
             with self.subTest(k=k):
-                self.assertTrue(10 <= it['price'] <= 320 and 1 <= it['cozy'] <= 3, k)   # the shop's usual range
+                self.assertTrue(10 <= it['price'] <= pi.price(320) and 1 <= it['cozy'] <= 3, k)   # the shop's usual range (💹 07/10)
                 self.assertIn(it['cat'], cats)
                 if it['spot'] == 'wall':
                     self.assertTrue(set(it['rooms']) - set(DC.OUT))

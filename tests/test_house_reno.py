@@ -48,7 +48,7 @@ def tick(s, n=1, salary=0):
     return notes
 
 
-def owner(kind='tap_the', wallet=4000, days=0):
+def owner(kind='tap_the', wallet=4500, days=0):   # 💹 07/10: enough for a mini flat with its thuế trước bạ
     s = story(wallet=wallet)
     s, r = buy(s, kind)
     if days:
@@ -69,7 +69,7 @@ class Catalogue(unittest.TestCase):
                 self.assertTrue({'living', 'bed', 'kitchen'} <= {r['id'] for r in rooms})
                 self.assertTrue(all(r['wall'] <= 9 and r['floor'] <= 9 for r in rooms))   # slots w0..w9 / f0..f9
                 ups = sum(rn.up_cost(kind, p, lv) for p in rn.PARTS for lv in (1, 2))
-                self.assertLess(ups, hs.HOMES[kind]['price'])               # a full renovation costs less than the home
+                self.assertLess(ups, hs.HOMES[kind]['price'] + hs.tax(kind))   # a full renovation costs less than the home (💹 tax in)
                 start = rn.blank(dict(id='h1', kind=kind, day=1), 1)['parts']
                 self.assertTrue(all(rn.COND_MIN <= x['c'] <= 100 for x in start.values()))
         fix = sum(rn.fix_cost('tap_the', p, x['c']) for p, x in rn.blank(dict(id='h1', kind='tap_the', day=1), 1)['parts'].items())
@@ -145,7 +145,7 @@ class ViewAndRepairs(unittest.TestCase):
         self.assertEqual((B(s)['balance'], s['journey']['wallet']), (bal - took, cash - (p['fix'] - took)))
 
     def test_not_enough_money_and_stale_prices(self):
-        s = owner(wallet=1800 + hs.buy_fee(1800) + 20, days=12)            # 20 xu left after buying
+        s = owner(wallet=1800 + hs.buy_fee(1800) + hs.tax('tap_the') + 20, days=12)   # 20 xu left after buying
         v = view(s)
         with self.assertRaises(GameError) as e:
             act(s, 'jr_reno_fix', part='all', cost=v['fix_all'], confirm=True)
@@ -201,7 +201,7 @@ class OldPage(unittest.TestCase):
         s = owner()
         cash = s['journey']['wallet']
         s, r = act(s, 'jr_reno_buy', item='sofa', room='living', slot='f0', confirm=True)
-        self.assertEqual(s['journey']['wallet'], cash - 180)
+        self.assertEqual(s['journey']['wallet'], cash - 200)                # 💹 07/10: 180 -> 200
         self.assertEqual(s['journey']['history'][-1]['kind'], 'home')
         self.assertEqual(r['uid'], 'd1')
         self.assertEqual(placed(s), {'d1': ('sofa', 'living')})
@@ -236,7 +236,7 @@ class OldPage(unittest.TestCase):
         s, _ = act(s, 'jr_reno_move', uid='d2', room='kitchen', slot='w0')  # back out of the bag
         cash = s['journey']['wallet']
         s, r = act(s, 'jr_reno_sell', uid='d1', confirm=True)
-        self.assertEqual(s['journey']['wallet'], cash + 20)                 # half of 40 xu
+        self.assertEqual(s['journey']['wallet'], cash + 22)                 # half of 44 xu
         self.assertEqual([i['id'] for i in R(s)['items']], ['d2'])
         with self.assertRaises(GameError):
             act(s, 'jr_reno_sell', uid='d1', confirm=True)
@@ -299,7 +299,7 @@ class MovingHouse(unittest.TestCase):
         validate_state(s)
         cash = s['journey']['wallet']
         s, r = act(s, 'jr_reno_sell', uid='d1', confirm=True)              # the kho can still be sold from the attic
-        self.assertEqual(s['journey']['wallet'], cash + 90)
+        self.assertEqual(s['journey']['wallet'], cash + 100)
         s, _ = buy(s, 'can_ho_mini')
         v = view(s)
         self.assertEqual(v['home']['kind'], 'can_ho_mini')

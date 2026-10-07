@@ -4,6 +4,7 @@ import json
 import unittest
 
 from game import journey as jr
+from game import price_index as pi
 from game import wardrobe as wd
 from game.engine import GameError, apply_action, migrate_state, new_state, public_state, validate_state
 from live import street_data as sd
@@ -43,7 +44,7 @@ class Catalogue(unittest.TestCase):
         self.assertGreaterEqual(len(by['acc']), 10)
         for x in plus:   # priced like the shop's other goods, sold once the shop is open
             self.assertEqual(x['need'], wd.OPEN_SHOP)
-            self.assertTrue(30 <= x['price'] <= 180, x['id'])
+            self.assertTrue(pi.price(30) <= x['price'] <= pi.price(180), x['id'])   # 💹 07/10: the base band 30–180
             self.assertLessEqual(len(x['id']), 24)    # live/street.py clean_look takes ids up to 24 characters
         self.assertTrue(set(wd.BASE_INDEX).isdisjoint(wd.PLUS))
         self.assertEqual(wd.PAIRS, frozenset(f'{i}:{c}' for i in wd.BASE_TINTABLE for c in wd.COLOR_INDEX))

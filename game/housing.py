@@ -29,6 +29,16 @@ biệt thự) need a higher credit score for the mortgage (`score`); the install
 (validate accepts OLD_PRICES); its market value still grows from the price paid, so nobody gets a windfall.
 Rents did not change (the room's rent is part of the daily living cost, not a house price).
 
+💹 07/10 (game/price_index.py, owner: "tăng giá tất cả mọi thứ"): buying a home costs its list price's index on top, as
+its own line, 💹 Thuế trước bạ (`tax()`: +10 %, +20 % from 20 000 xu, +30 % from 60 000 xu of the list price), paid in
+cash with the down payment and the fee, never from the joint fund and never lent. The list price itself (own.price, the
+fee, the loan) stays: 1.9.9 pins it in validate (prices()), so a home bought under this build still loads there.
+prices() already accepts the indexed price, so a later release can fold the tax into the list price. The tax buys no
+value: the market value, the sale, the rent a tenant pays and the phí bảo trì still follow the list price, so it is a
+pure sink and a home bought before 07/10 and sold after gains nothing. The closed room's daily rent is indexed (the
+deposit is pinned in validate and comes back anyway), MOVE_FEE too. The dorm bed stays 7 xu: a new player's first bed,
+kept at Bà Tám's attic price in chapter 2 and under half the closed room (7,7 would round to 8, +14 %).
+
 🛏️ Ký túc xá Hẻm 7 (DORM, feedback #59 "ở ghép share tiền phòng"): a bed in a four-bed bunk room, rented and left
 like the other room. Rent DORM_RENT a day: one xu more than Bà Tám's attic in chapter 1, the same in chapter 2 and
 less from chapter 3 on (the attic follows journey.LIVING at 60 %); a small deposit; no comfort bonus. Its three
@@ -80,6 +90,7 @@ from . import archive as ar
 from . import bank as bk
 from . import bank_content as BK
 from . import days as dy
+from . import price_index as pi   # 💹 07/10: Thuế trước bạ (tax()), rooms' rent, the moving truck
 from . import property_market as pm
 from . import upkeep as up   # 🧾 phí bảo trì a tháng
 
@@ -101,7 +112,7 @@ LATE_PCT, LATE_MIN = 2, 2
 PAYOFF_FEE_PCT, PAYOFF_FEE_MIN = 1, 5
 LOG_MAX, PAST_MAX = 30, 6
 OWNED_MAX = 4                     # homes owned at once, the one you live in included
-MOVE_FEE = 20                     # dọn nhà: a truck for the furniture
+MOVE_FEE = pi.price(20)           # dọn nhà: a truck for the furniture (base 20 xu, 💹 07/10)
 RENT_BP = 1000                    # reference monthly asking rent: list price × 10 % a year / 12
 TENANT_GAP = 3 * MONTH_DAYS       # life days between two tenant moments, at least
 TENANT_ODDS = 4                   # one month boundary in four (seeded) brings one
@@ -136,10 +147,10 @@ GROUP_IDS = tuple(g[0] for g in GROUPS)
 HOMES = {
     'ky_tuc_xa': dict(kind='rent', group='rent', emoji='🛏️', name='Ký túc xá Hẻm 7', where='Hẻm 7 · giường tầng',
                       desc='Phòng máy lạnh bốn giường tầng, giường nào cũng có rèm riêng và tủ khóa. Ở ghép với ba bạn trẻ, chia nhau tiền phòng.',
-                      perk='👥 Ở ghép với 3 bạn cùng phòng', rent=7, deposit=20, comfort=0),
+                      perk='👥 Ở ghép với 3 bạn cùng phòng', rent=7, deposit=20, comfort=0),   # 💹 07/10: stays 7 (below)
     'tro_moi': dict(kind='rent', group='rent', emoji='🛏️', name='Phòng trọ khép kín', where='Hẻm 12, cạnh chợ',
                     desc='Phòng 18 m² có gác lửng, cửa sổ, nhà vệ sinh riêng. Cô Hạnh chủ nhà cho nuôi mèo.',
-                    rent=14, deposit=60, comfort=1),
+                    rent=pi.price(14), deposit=60, comfort=1),
     'tap_the': dict(kind='own', group='apartment', emoji='🏢', name='Căn tập thể cũ', where='Khu tập thể đầu phố, tầng 4',
                     desc='35 m², hai phòng nhỏ. Cầu thang hơi dốc nhưng hàng xóm vui tính, chiều nào cũng có người pha trà.',
                     price=1800, upkeep=2, comfort=1),
@@ -171,6 +182,9 @@ HOMES = {
                           desc='Ba tầng nhìn ra sông, hồ bơi nhỏ sau nhà. Hoàng hôn đổ xuống mặt nước mỗi chiều.',
                           perk='🌊 Hồ bơi và bến ngắm sông', price=60000, upkeep=16, comfort=7, score=740),
 }
+for _H in HOMES.values():   # 💹 07/10: the daily điện nước of a home you own (the list prices stay: see tax())
+    if _H.get("upkeep"):
+        _H["upkeep"] = pi.price(_H["upkeep"], luxury=False)
 OWN = tuple(k for k, v in HOMES.items() if v['kind'] == 'own')
 RENT = tuple(k for k, v in HOMES.items() if v['kind'] == 'rent')
 DORM = 'ky_tuc_xa'
@@ -185,8 +199,14 @@ OLD_PRICES = {'tap_the': (1500,), 'can_ho_mini': (3000,), 'nha_pho': (6500,), 'n
 
 
 def prices(kind: str) -> tuple[int, ...]:
-    """Every list price a save may hold for `kind`: today's, then older ones."""
-    return (HOMES[kind]['price'],) + OLD_PRICES.get(kind, ())
+    """Every list price a save may hold for `kind`: today's, then older ones, then the 💹 indexed one (07/10: not
+    written yet; accepted so that a later release can fold tax() into the list price and still roll back here)."""
+    return (HOMES[kind]['price'],) + OLD_PRICES.get(kind, ()) + (pi.price(HOMES[kind]['price']),)
+
+
+def tax(kind: str) -> int:
+    """💹 Thuế trước bạ (07/10): the price index on the list price, paid in cash on top of the down payment and fee."""
+    return pi.extra(HOMES[kind]['price'])
 
 
 def need_score(kind: str) -> int:
@@ -850,18 +870,19 @@ def apply(s: dict, name: str, p: dict) -> dict:
         # #137 "đang ở biệt thự, mua căn hộ xong ở luôn căn hộ") the new one stays empty unless the player says so.
         move_in = p.get('move_in', own is None and not _shared_ok(s, h['shared'] if h else None))
         need(type(move_in) is bool, 'Chọn dọn về ở hay để trống nhé.')
-        price, fee = H['price'], buy_fee(H['price'])
+        price, fee, duty = H['price'], buy_fee(H['price']), tax(kind)
         down = _int(p, 'down', down_min(price), price, f'Trả trước từ {_fmt(down_min(price))} xu ({DOWN_PCT}% giá nhà) tới {_fmt(price)} xu.')
         loan = price - down
         need(loan == 0 or loan >= LOAN_MIN, f'Vay ít nhất {_fmt(LOAN_MIN)} xu, hoặc trả đủ luôn nhé.')
-        pay = down + fee
+        pay = down + fee + duty
         joint = p.get('joint', 0)
         need(type(joint) is int and 0 <= joint <= pay, 'Số xu lấy từ quỹ chung không hợp lệ.')
+        need(joint <= down + fee, f'Quỹ chung góp tới {_fmt(down + fee)} xu (trả trước và phí); thuế trước bạ trả từ ví hoặc tài khoản nhé.', 'no_joint')
         need(not joint or move_in, 'Quỹ chung chỉ góp mua căn nhà cả hai cùng về ở.', 'no_joint')
         need(p.get('confirm') is True, 'Xác nhận ký hợp đồng mua nhà.')
         have = _have(s)
         short = pay - joint - have['balance'] - have['wallet']
-        need(short <= 0, f'Trả trước và phí cần {_fmt(pay)} xu: bạn còn thiếu {_fmt(short)} xu.', 'not_enough')
+        need(short <= 0, f'Trả trước, phí và thuế cần {_fmt(pay)} xu: bạn còn thiếu {_fmt(short)} xu.', 'not_enough')
         if joint:
             acc = bk.joint(s)
             need(acc is not None, 'Bạn chưa có quỹ chung vợ chồng.', 'no_joint')
@@ -890,7 +911,9 @@ def apply(s: dict, name: str, p: dict) -> dict:
             sp = _spouse(s) or {}
             _couple().joint_spend(s, joint, f'Mua {lname(H["name"])}', f'home{sp.get("side", "x")}{day}n{h["seq"] + 1}', kind='home')
         hid = _seq(h)
-        _take(s, pay - joint, f'Trả trước mua {lname(H["name"])}', day)
+        _take(s, pay - duty - joint, f'Trả trước mua {lname(H["name"])}', day)
+        if duty:
+            _take(s, duty, f'💹 Thuế trước bạ · {lname(H["name"])}', day)
         ln = None
         if loan:
             ln = dict(principal=loan, rate=rate, months=months, start=day, rows=q['rows'])
@@ -910,7 +933,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
         h['stats']['bought'] += 1
         j['stats']['homes_bought'] = j['stats'].get('homes_bought', 0) + 1
         _log(h, day, f'Mua {lname(H["name"])} giá {_fmt(price)} xu' + (f', vay {_fmt(loan)} xu' if loan else ', trả đủ một lần') + '.', -pay)
-        msg = f'Chúc mừng! {H["name"]} ở {H["where"]} giờ là nhà của bạn. Đã trả {_fmt(pay)} xu (gồm {_fmt(fee)} xu phí công chứng, sang tên)'
+        msg = f'Chúc mừng! {H["name"]} ở {H["where"]} giờ là nhà của bạn. Đã trả {_fmt(pay)} xu (gồm {_fmt(fee)} xu phí công chứng, sang tên'
+        msg += f', {_fmt(duty)} xu thuế trước bạ)' if duty else ')'
         msg += f', trong đó {_fmt(joint)} xu từ quỹ chung.' if joint else '.'
         if loan:
             msg += f' Khoản vay {_fmt(loan)} xu trả {months} kỳ, mỗi kỳ khoảng {_fmt(q["installment"])} xu, kỳ đầu {dy.on_day(s, q["rows"][0]["due"])}.'
@@ -1088,9 +1112,9 @@ def catalogue() -> dict:
         if H['kind'] == 'rent':
             row.update(rent=H['rent'], deposit=H['deposit'])
         else:
-            p = H['price']
-            row.update(price=p, upkeep=H['upkeep'], down_min=down_min(p), fee=buy_fee(p), need=down_min(p) + buy_fee(p),
-                       cash_all=p + buy_fee(p), score=need_score(k), let_rent=rent_of(k), care=up.home_month(k, p))
+            p, fee = H['price'], buy_fee(H['price']) + tax(k)   # fee: what is paid on top of the down payment (💹 tax in)
+            row.update(price=p, upkeep=H['upkeep'], down_min=down_min(p), fee=fee, tax=tax(k), need=down_min(p) + fee,
+                       cash_all=p + fee, score=need_score(k), let_rent=rent_of(k), care=up.home_month(k, p))
         homes.append(row)
     return dict(groups=[dict(id=g, emoji=e, name=n, color=c) for g, e, n, c in GROUPS], homes=homes)
 
@@ -1103,7 +1127,7 @@ def _market(ready: int, back: int = 0) -> list[dict]:
         if H['kind'] == 'rent':
             out.append(dict(id=k, missing=max(0, H['deposit'] - ready - back)))
         else:
-            p, fee = H['price'], buy_fee(H['price'])
+            p, fee = H['price'], buy_fee(H['price']) + tax(k)
             out.append(dict(id=k, missing=max(0, down_min(p) + fee - ready), missing_all=max(0, p + fee - ready)))
     return out
 

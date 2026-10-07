@@ -5,10 +5,10 @@ Owner 06/10: "cho nhiều cái cho mọi người tiêu tiền hơn". DESIGN_061
 
 * ☕ Đi quán (jr_spend_eat {shop, item}): the street's own shops sell to the player. No bụng / tỉnh táo go up (only
   while today's bars are on, game/needs.py; refused when every bar the item fills is already full), the first quán of
-  a life day gives +1 tinh thần (+2 for a ≥ 28 xu meal), every order stamps that shop's card: the 10th stamp is its
+  a life day gives +1 tinh thần (+2 for a ≥ C.BIG_MEAL xu meal, 31 xu), every order stamps that shop's card: the 10th stamp is its
   sticker. A line of the shop being awkward for once ("Quán hết đá…"), flavour only.
 * 💆 Spa (jr_spend_spa {item}): +2 tinh thần for the first spa of a life day; buying again only rests the eyes.
-* 🎬 Rạp Mây (jr_spend_film {}): one film a week (Vietnam ISO week), 20 xu, +2 tinh thần, the ticket stub is kept.
+* 🎬 Rạp Mây (jr_spend_film {}): one film a week (Vietnam ISO week), C.FILM_PRICE (22 xu), +2 tinh thần, the ticket stub is kept.
 * 🙏 Công đức (jr_spend_give {amount, wish, anon, confirm}): 5 – 1,000,000 xu, a pure sink. A wish from a fixed list
   (nothing typed reaches the public board), anonymous or by account name. The Sư thầy thanks everyone the same way.
   The row goes to the `donations` table in the save's own transaction (command_commit); board() is the weekly
@@ -338,7 +338,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         got = 0
         if 'cafe' not in b['today']:
             b['today'].append('cafe')
-            got = _spirit(s, 2 if it['price'] >= 28 else 1)
+            got = _spirit(s, 2 if it['price'] >= C.BIG_MEAL else 1)
         n = b['stamps'].get(shop_id, 0) + 1
         sticker = n >= C.STAMP_CARD
         b['stamps'][shop_id] = 0 if sticker else n

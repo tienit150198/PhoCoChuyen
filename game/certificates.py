@@ -36,6 +36,7 @@ import re
 import time
 
 from . import certificate_content as CC
+from . import price_index as pi   # 💹 07/10: the content's `fee` is the base tuition
 from . import days as days_
 
 GROUPS = CC.GROUPS
@@ -117,12 +118,13 @@ def serial(seed: int, gid: str, earned_day: int) -> str:
 
 
 def tuition(gid: str) -> int:
-    return int(INDEX[gid]['fee'])
+    """💹 07/10: the content's fee (the base) through game/price_index.py."""
+    return pi.price(int(INDEX[gid]['fee']))
 
 
 def retake_fee(gid: str) -> int:
     """A review class before a retake (or a try for a higher score): half the tuition, rounded up."""
-    return (int(INDEX[gid]['fee']) + 1) // 2
+    return (tuition(gid) + 1) // 2
 
 
 def fee(j: dict, gid: str, mode: str) -> int:

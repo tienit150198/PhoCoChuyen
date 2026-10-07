@@ -163,7 +163,7 @@ class DayTests(unittest.TestCase):
         self.assertIsNone(E['chosen'])
         full = n['full']
         s, r = jr_act(s, 'jr_needs_eve', meal='bua_ngon', bed=22 * 60)
-        self.assertEqual(s['journey']['wallet'], 100 + jr.WELCOME_GIFT - 10 - 9)   # living 10, the gift, the meal
+        self.assertEqual(s['journey']['wallet'], 100 + jr.WELCOME_GIFT - jr.LIVING[1] - nd.EVE['bua_ngon']['price'])   # living, the gift, the meal
         self.assertEqual(N(s)['full'], min(100, full + nd.EVE['bua_ngon']['full']))
         self.assertEqual(public_state(s)['needs']['evening']['chosen']['meal'], 'bua_ngon')
         self.assertEqual(N(s)['usual'], dict(meal='bua_ngon', bed=22 * 60))
@@ -285,8 +285,8 @@ class MoneyTests(unittest.TestCase):
         s, _ = jr_act(s, 'jr_needs_eve', meal='nha', bed=23 * 60)
         s, _ = act(s, 'start_day')
         cost = jr.living_cost(s['journey'])['total']
-        self.assertEqual(s['journey']['wallet'], before - 10 + jr.WELCOME_GIFT)
-        self.assertEqual(cost, 10)
+        self.assertEqual(s['journey']['wallet'], before - jr.LIVING[1] + jr.WELCOME_GIFT)
+        self.assertEqual(cost, jr.LIVING[1])   # 💹 07/10: 10 -> 11 xu
 
 
 class SafetyTests(unittest.TestCase):
