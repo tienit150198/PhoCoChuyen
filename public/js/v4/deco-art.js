@@ -442,6 +442,40 @@ export const ART={
   nha_cho:{h:52,d:()=>shadow(40,30)+R(5,-34,30,32,P.woodL,2)+Pa('M2 -32L20 -52L38 -32z',P.red)+Pa('M13 -2v-16q0-7 7-7q7 0 7 7v16z',P.dark,1.2)+R(14,-46,12,5,P.white,1,1)+L('M16 -43.5h8',P.woodD,.8)+E(20,-5,6,2.5,P.butterD,1),
     back:()=>shadow(40,30)+R(5,-34,30,32,P.wood,2)+Pa('M2 -32L20 -52L38 -32z',P.redD)+L('M8 -24h24M8 -14h24',P.woodD,1)},
   binh_tuoi:{h:24,top:1,d:()=>E(20,-2,12,2.4,'#000',0,' opacity=".1"')+L('M28 -10l8-8',P.leafD,2.4)+E(37,-19,2.2,3,P.leafD,1,' transform="rotate(45 37 -19)"')+Pa('M9 -2v-14q0-4 4-4h10q4 0 4 4v14z',P.leaf)+L('M12 -20q6-8 12 0',P.leafD,2)},
+  /* 🏰 villa pieces (game/estates_content.py ITEMS, 07/10): each room type's signature furniture */
+  giuong_king:{h:104,d:(W,D)=>shadow(W,D)+legs([4,W-8],-6,6,P.woodD)+R(0,-D-44,W,42,P.woodD,10)+R(8,-D-38,W-16,30,'#8a5a3a',7)+L(`M${W/2} ${-D-38}v30`,P.woodD,1.4)
+    +R(2,-D-4,W-4,D-6,P.white,6)+E(W*.28,-D+2,18,7,P.cream)+E(W*.72,-D+2,18,7,P.cream)
+    +Pa(`M4 ${-D*0.6}q${W/2-4} -8 ${W-8} 0v${D*0.6-14}h${-(W-8)}z`,P.butter)+L(`M8 ${-D*0.42}h${W-16}`,P.gold,2)+R(2,-14,W-4,10,P.woodD,3)},
+  ban_go_lim:{h:30,d:(W)=>shadow(W,30)+legs([6,W-12],-22,22,'#6b3f22',5)+box(2,W-4,20,6,10,'#6b3f22','#8a5232',3)+R(10,-26,18,2,P.cream,1,0)+R(W-30,-27,14,3,'#2f2f35',1,0)+shine(12,-35,W-30,1.6)},
+  ghe_da_bo:{h:46,d:()=>shadow(40,30)+legs([8,28],-6,6,'#6b3f22')+R(3,-44,34,26,'#9a4f2e',9)+box(4,32,6,10,8,'#9a4f2e','#b8653d',5)+R(1,-30,8,24,'#b8653d',4)+R(31,-30,8,24,'#b8653d',4)
+    +[10,20,30].map(x=>C(x,-38,1.2,'#6b3f22',0)).join('')},
+  qua_dia_cau:{h:34,top:1,d:()=>E(20,-2,9,2.4,'#000',0,' opacity=".1"')+R(14,-6,12,4,P.woodD,1.5,1)+L('M20 -6v-4',P.woodD,2)+C(20,-20,10,P.sky)
+    +Pa('M14 -24q4-4 8 0q2 4-2 6q-4 0-6-6zM22 -14q4-2 6 2q-2 3-6 1z',P.leaf,1)+L('M10 -20a10 10 0 0 0 20 0',P.gold,1.6)},
+  ghe_rap_doi:{h:52,d:(W)=>shadow(W,30)+R(2,-52,W-4,34,'#8e2b3a',9)+R(6,-48,W/2-8,26,'#b13a4c',7)+R(W/2+2,-48,W/2-8,26,'#b13a4c',7)
+    +box(2,W-4,4,12,8,'#8e2b3a','#b13a4c',5)+R(0,-34,8,30,'#6e1f2c',3)+R(W/2-4,-34,8,30,'#6e1f2c',3)+R(W-8,-34,8,30,'#6e1f2c',3)+C(W/2,-35,2.4,P.butter,1)},
+  may_bong_ngo:{h:64,d:()=>shadow(40,30)+R(8,-22,24,22,P.redD,3)+L('M10 -14h20',P.butter,2)+R(6,-58,28,36,'#f6f0e5',3)+Rn(9,-54,22,28,'#fff7d6',2)
+    +[[13,-32],[19,-35],[25,-31],[16,-40],[23,-42],[28,-37],[12,-44]].map(([x,y])=>C(x,y,2.6,P.butter,.8)).join('')+R(6,-64,28,6,P.redD,2)},
+  loa_cot:{h:74,d:()=>shadow(40,30)+R(9,-74,22,74,'#2c2a33',4)+C(20,-58,6,'#4a4754',1.2)+C(20,-58,2.4,'#1b1a20',0)+C(20,-34,8,'#4a4754',1.2)+C(20,-34,3,'#1b1a20',0)+C(20,-14,3,'#4a4754',1)},
+  thung_ruou:{h:44,surface:22,d:()=>shadow(40,30)+Pa('M6 -8q-4-16 0-32h28q4 16 0 32z','#9a6438')+L('M5 -14h30M5 -34h30',P.dark,2.2)+L('M12 -40q-2 16 0 32M28 -40q2 16 0 32',P.woodD,1)+C(20,-24,3,P.woodD,1)+R(17,-25,6,2,'#6b3f22',1,0)},
+  ban_nem_ruou:{h:40,d:(W)=>shadow(W,30)+legs([8,W-12],-24,24,'#6b3f22',4)+box(2,W-4,22,6,10,'#6b3f22','#8a5232',3)
+    +R(12,-46,5,16,'#5a1a2a',1.5,1)+C(14.5,-48,2,'#5a1a2a',1)+Pa(`M${W-26} -40h8l-1 6q-3 3-6 0z`,'#f6e9ef',1)+L(`M${W-22} -34v6M${W-25} -28h6`,OL,1.2)+Pa(`M${W-23} -38h6l-1 3h-4z`,'#a3203a',0)},
+  may_chay_bo:{h:56,d:(W)=>shadow(W,30)+R(2,-12,W-4,10,'#3d3a4a',4)+Rn(6,-12,W-14,4,'#2a2833',2)+L(`M${W-10} -12l6-34`,'#8d96a0',3)+R(W-14,-54,16,10,'#5a566b',3)+Rn(W-11,-52,10,5,'#7ec8e3',1)
+    +L(`M${W-14} -36h-14`,'#8d96a0',2.4)},
+  gia_ta:{h:46,d:(W)=>shadow(W,30)+L(`M6 0v-40M${W-6} 0v-40M6 -40h${W-12}M6 -20h${W-12}`,'#5a566b',3)+[12,22,W-22,W-12].map(x=>R(x-3,-30,6,20,'#2f2f35',2,1)).join('')
+    +L(`M8 -36h${W-16}`,'#a39a90',2.6)+R(6,-41,8,10,'#2f2f35',2,1)+R(W-14,-41,8,10,'#2f2f35',2,1)},
+  tu_giay:{h:68,wall:1,d:(W,H)=>R(2,2,W-4,H-4,'#f6f0e5',4)+Rn(5,5,W-10,H-10,'#e6f3f8',2)+[0.33,0.66].map(t=>L(`M5 ${H*t}h${W-10}`,'#c9d6dc',1.4)).join('')
+    +[[10,H*.33-4,P.redD],[W-22,H*.33-4,P.dark],[12,H*.66-4,P.pinkD],[W-24,H*.66-4,P.butterD],[W/2-6,H-9,P.navy]].map(([x,y,c])=>Pa(`M${x} ${y}h8l4 3v2h-12z`,c,1)).join('')},
+  dao_trang_suc:{h:36,surface:22,d:(W)=>shadow(W,30)+box(2,W-4,0,20,10,'#f6f0e5','#ffffff',4)+Rn(8,-28,W-16,6,'#e6f3f8',2,.9)
+    +[[12,-24,P.gold],[22,-25,P.pinkD],[32,-24,P.skyD],[W-18,-25,P.mintD]].map(([x,y,c])=>C(x,y,2.4,c,1)).join('')+L(`M6 -10h${W-12}`,P.gold,1.6)},
+  xe_may_co:{h:44,d:(W)=>shadow(W,30)+C(14,-12,10,'#2f2f35')+C(14,-12,5,'#c7d3db',1)+C(W-14,-12,10,'#2f2f35')+C(W-14,-12,5,'#c7d3db',1)
+    +Pa(`M14 -12l12-16h${W-48}l10 16`,'none',2.4)+Pa(`M22 -26q10-12 26-10l10 10z`,'#5a9a8a')+R(W/2-8,-36,18,5,'#6b3f22',2,1)+L(`M${W-18} -30l6-12h6`,'#8d96a0',2.2)+C(W-10,-34,3,P.butter,1)},
+  bien_neon:{h:34,wall:1,g:(W)=>[W/2,17,W*.55],d:(W,H)=>R(3,4,W-6,H-8,'#2a2833',5)+L(`M10 ${H-11}l6-14l6 14M28 ${H-11}v-14l10 14v-14M46 ${H-11}h-6v-14h6M${W-22} ${H-25}v14h6`,'#ff7ab8',2.6)
+    +L(`M10 ${H-11}l6-14l6 14M28 ${H-11}v-14l10 14v-14`,'#ffd1e8',1)},
+  lo_suoi_ngoai:{h:40,g:()=>[20,-22,30],d:()=>shadow(40,30)+E(20,-6,16,6,'#7d7a74')+E(20,-8,13,4,'#4a4754',1)+Pa('M12 -10q-2-12 6-18q0 8 4 10q2-10 8-12q2 12-4 20z','#ffb84d',1)
+    +Pa('M16 -10q0-8 4-12q2 6 4 6q2 4-2 6z','#ffe08a',0)+L('M8 -4l-2 4M32 -4l2 4',P.dark,2)},
+  quay_bar_ho:{h:54,surface:26,d:(W)=>shadow(W,30)+box(2,W-4,0,24,10,'#d9a066','#ecc28f',3)+[8,18,28,38,48,58,68].filter(x=>x<W-6).map(x=>L(`M${x} -24v22`,'#b47a45',1.2)).join('')
+    +Pa(`M${W-24} -46q12-12 22 0z`,P.red,1)+L(`M${W-13} -46v10`,P.dark,1.6)+Pa('M12 -40h8l-2 6h-4z','#ff9a4d',1)+L('M16 -34v4',OL,1.2)+C(15,-41,1.6,P.leaf,0)},
+  kinh_thien_van:{h:58,d:()=>shadow(40,30)+L('M20 -26l-10 26M20 -26l10 26M20 -26v26',P.dark,2)+`<g transform="rotate(-32 20 -36)">`+R(4,-42,30,11,P.navy,5)+R(30,-43,6,13,'#3a4670',2,1)+R(2,-40,4,7,P.gold,1,1)+'</g>'},
 };
 /* ↻ Xoay hướng: the back of the pieces from 1.7.15 and before that turn too (game/deco.py FACING_ITEMS; the new
  * ones above carry their own `back`). Seen from behind: the back panel in front, what faced you hidden behind it. */
@@ -501,8 +535,11 @@ export function galaxy(room,G,Lt){
 /** Kept for older callers: is it dark outside right now (local clock)? */
 export const night=()=>{const h=new Date().getHours();return h>=18||h<6;};
 
-const WALLS={l0:'#eadcc3',l1:'#f9e7cf',l2:'#dfeee0',studio:'#f3e2cc',attic:'#ecd2ab',tro:'#d9eee5',loft:'#f6e3d3',bunk:'#e7dcf5'};
-const FLOORS={l0:'#cfc6b6',l1:'#efe6d6',l2:'#d29a63',attic:'#c99363',tro:'#eadfcf',loft:'#d7a874',bunk:'#fdf3ec',balcony:'#e2d3bf',yard:'#a8d58a',pool:'#efe2cc'};
+const WALLS={l0:'#eadcc3',l1:'#f9e7cf',l2:'#dfeee0',studio:'#f3e2cc',attic:'#ecd2ab',tro:'#d9eee5',loft:'#f6e3d3',bunk:'#e7dcf5',
+  // 🏰 villa rooms (game/estates_content.py): each type its own colour under its theme's paper
+  study:'#ead9bd',suite:'#efe4f2',cinema:'#3a2f40',cellar:'#cdb89c',gym:'#e3ecef',closet:'#f6e6ee',showroom:'#dfe3e8'};
+const FLOORS={l0:'#cfc6b6',l1:'#efe6d6',l2:'#d29a63',attic:'#c99363',tro:'#eadfcf',loft:'#d7a874',bunk:'#fdf3ec',balcony:'#e2d3bf',yard:'#a8d58a',pool:'#efe2cc',
+  study:'#b98a5a',suite:'#e9dccb',cinema:'#5a2f3a',cellar:'#9c8166',gym:'#3f4a52',closet:'#efe2d8',showroom:'#cfd5dc',terrace:'#d8c4a8',infinity:'#ece4d4',pavilion:'#a8d58a'};
 /** 1.4.11: a bathroom (its own or the shared one) is tiled up to two thirds of the wall, and on the floor. */
 const tiledRoom=room=>room.type==='bath'||room.type==='bathc';
 
@@ -533,6 +570,13 @@ const WALL_SKIN={
   may_sao:id=>[pat(id,64,44,E(14,12,10,4,'#ffffff',0)+E(20,10,7,4,'#ffffff',0)+`<path d="M46 26l1.5 3.5l3.5 1.5l-3.5 1.5l-1.5 3.5l-1.5-3.5l-3.5-1.5l3.5-1.5z" fill="#ffe08a"/>`+C(56,8,1.4,'#ffe08a',0)+C(30,36,1.2,'#ffffff',0),'#dce6fb'),`url(#${id})`],
   gach_the:id=>[pat(id,26,14,Rn(1,1,24,5,'#f0d3bf',1)+Rn(-12,8,24,5,'#ecccb6',1)+Rn(14,8,24,5,'#f0d3bf',1),'#f8e8dc'),`url(#${id})`],
   op_go:id=>['','#f7ead6'],
+  // 🏰 the villas' themes (game/estates_content.py SKINS)
+  go_thong:id=>[pat(id,26,40,Rn(0,0,26,40,'#e3c79c')+Rn(25,0,1,40,'#c9a678')+C(9,14,1.2,'#c9a678',0)+C(18,30,1,'#c9a678',0),''),`url(#${id})`],
+  dong_duong:id=>[pat(id,60,60,Rn(0,0,60,60,'#f4dfa2')+Rn(8,8,14,30,'#5f9a7a',1)+Rn(38,8,14,30,'#5f9a7a',1)+L('M8 14h14M8 20h14M8 26h14M8 32h14M38 14h14M38 20h14M38 26h14M38 32h14','#4a7d62',1),''),`url(#${id})`],
+  kinh:id=>[pat(id,48,80,Rn(0,0,48,80,'#cfe6f2')+Rn(0,0,2,80,'#9fb8c6')+Pa('M8 70l30-50h6l-30 50z','#ffffff',0,' opacity=".45"'),''),`url(#${id})`],
+  trang_bien:id=>[pat(id,40,40,Rn(0,0,40,40,'#f8fbfc')+Rn(0,30,40,10,'#bfe0ee')+L('M0 34q5-3 10 0t10 0t10 0t10 0','#7fb8e0',1.2),''),`url(#${id})`],
+  nhung:id=>[pat(id,24,60,Rn(0,0,24,60,'#6e1f2c')+Rn(0,0,6,60,'#5a1824')+Rn(12,0,3,60,'#7f2836'),''),`url(#${id})`],
+  da_hoc:id=>[pat(id,44,30,Rn(0,0,44,30,'#b9a385')+R(1,1,20,12,'#cdb89c',3,.8)+R(23,1,20,12,'#c4ad8f',3,.8)+R(-10,16,20,12,'#c4ad8f',3,.8)+R(12,16,20,12,'#cdb89c',3,.8)+R(34,16,20,12,'#c4ad8f',3,.8),''),`url(#${id})`],
 };
 export const SKIN_WALL=Object.keys(WALL_SKIN);
 /** Floor: [defs, fill]. */
@@ -549,6 +593,15 @@ const FLOOR_SKIN={
   ga_dau:id=>[pat(id,26,22,Pa('M7 7q-4 0-4 4q0 5 4 7q4-2 4-7q0-4-4-4z','#ef7f72',0)+Pa('M5 7l2-3l2 3z',P.leaf,0)+C(19,17,1.3,'#f5a9bc',0),'#fff8ef'),`url(#${id})`],
   ga_meo:id=>[pat(id,30,26,C(9,10,4.5,'#ffffff',0)+Pa('M5 8l0-5l3 3zM13 8l0-5l-3 3z','#ffffff',0)+C(7.5,10,.8,OL,0)+C(10.5,10,.8,OL,0)+C(23,21,1.3,'#f5a9bc',0),'#dccff3'),`url(#${id})`],
 };
+// 🏰 the villas' floors (game/estates_content.py SKINS)
+Object.assign(FLOOR_SKIN,{
+  da_cam_thach:id=>[pat(id,60,30,Rn(0,0,60,30,'#f3efe8')+L('M4 22q14-10 26-4t28-8','#d9d2c8',1)+Rn(0,29,60,1,'#dcd5ca')+Rn(59,0,1,30,'#dcd5ca'),''),`url(#${id})`],
+  go_oc_cho:id=>[pat(id,90,15,Rn(0,0,90,15,'#6b4a2e')+Rn(0,14,90,1,'#4f3520')+Rn(40,0,1,15,'#4f3520')+L('M6 6q20-3 30 1','#7d5a3a',1),''),`url(#${id})`],
+  go_tau:id=>[pat(id,60,12,Rn(0,0,60,12,'#c99a62')+Rn(0,11,60,1,'#8e6440')+C(8,6,.9,'#8e6440',0)+C(52,6,.9,'#8e6440',0),''),`url(#${id})`],
+  tham_do:id=>[pat(id,20,20,Rn(0,0,20,20,'#8e2b3a')+C(10,10,1.2,'#b13a4c',0),''),`url(#${id})`],
+  cao_su:id=>[pat(id,30,30,Rn(0,0,30,30,'#3f4a52')+Rn(0,0,30,1,'#2f383f')+Rn(0,0,1,30,'#2f383f')+C(15,15,1,'#55606a',0),''),`url(#${id})`],
+  gach_nung:id=>[pat(id,32,16,Rn(0,0,32,16,'#b4683f')+Rn(0,15,32,1,'#8a4a2a')+Rn(16,0,1,8,'#8a4a2a')+Rn(0,8,1,8,'#8a4a2a')+Rn(0,7,32,1,'#8a4a2a'),''),`url(#${id})`],
+});
 export const SKIN_FLOOR=Object.keys(FLOOR_SKIN);
 
 /** A swatch of a skin for the drawer (its own SVG). */
@@ -578,6 +631,17 @@ function fixture(f,room,G,parts,Lt,uid){
       if(lv===1)s+=R(x+10,y-4,60,4,P.woodD,1.5,1.1)+[16,28,40,52].map(a=>R(x+a,y-12,8,8,[P.red,P.butter,P.mint,P.sky][a/12-1|0]||P.peach,1.5,1)).join('');
       if((parts?.kitchen?.c??100)<60)s+=E(x+w-48,y+4,26,12,'#4a3f35',0,' opacity=".22"');
       return s;}
+    // 🏰 the villa rooms' signature fixtures (game/estates.py): bookshelves, the cinema screen, wine racks, the gym
+    // mirror, the clothes rails, the showroom's roller door
+    if(f.t==='bookwall'){const cols=['#c0504d','#4f81bd','#9bbb59','#f2c14e','#8064a2','#4bacc6'];
+      return R(x+1,y,w-2,h+BASE-4,'#6b3f22',2)+[0,1,2,3].map(r=>Rn(x+5,y+4+r*((h+BASE-12)/4),w-10,(h+BASE-12)/4-3,'#8a5232',1)
+        +Array.from({length:Math.floor((w-12)/7)},(_,i)=>Rn(x+7+i*7,y+6+r*((h+BASE-12)/4),5,(h+BASE-12)/4-7,cols[(i+r)%6],1)).join('')).join('');}
+    if(f.t==='screen')return R(x,y-2,w,h-6,'#1b1a20',3)+Rn(x+4,y+2,w-8,h-14,Lt.night?'#dfe9ff':'#cfd8e6',2)+L(`M${x+w*.2} ${y+h*.55}l${w*.18} -${h*.25}l${w*.14} ${h*.15}l${w*.22} -${h*.3}`,'#8fa6c4',2);
+    if(f.t==='racks')return R(x,y,w,h+BASE-4,'#6b3f22',2)+Array.from({length:Math.floor(w/14)*3},(_,i)=>C(x+9+(i%Math.floor(w/14))*14,y+10+Math.floor(i/Math.floor(w/14))*((h+BASE-12)/3),4.2,['#5a1a2a','#2f4a2a','#7a1f2e'][i%3],1)).join('');
+    if(f.t==='mirror')return R(x+2,y,w-4,h+BASE-6,'#c7d3db',3)+Rn(x+6,y+4,w-12,h+BASE-14,'#eef6fa',2)+Pa(`M${x+12} ${y+h}l${w*.3} -${h*.8}h8l-${w*.3} ${h*.8}z`,'#ffffff',0,' opacity=".6"');
+    if(f.t==='rails'){const c=[P.pink,P.sky,P.mint,P.butter,P.lilac,P.peach,P.red];
+      return L(`M${x+4} ${y+6}h${w-8}`,'#a39a90',2.4)+Array.from({length:Math.floor((w-10)/10)},(_,i)=>Pa(`M${x+8+i*10} ${y+8}l-4 6v${h-4}h10v${-(h-4)}l-4 -6z`,c[i%7],1)).join('');}
+    if(f.t==='gate')return R(x,y,w,G.FY-y,'#b8bec6',3)+Array.from({length:Math.floor((G.FY-y)/8)},(_,i)=>L(`M${x+3} ${y+6+i*8}h${w-6}`,'#9aa3ab',1.2)).join('');
     if(f.t==='slope')return Pa(`M${x-PX} ${y-TOP-CEIL}h${w+PX+20}L${x-PX} ${y+h+10}z`,'#b98a5e')+L(`M${x-PX} ${y+h-6}L${x+w+6} ${y-TOP-CEIL}M${x-PX} ${y+h-24}L${x+w-14} ${y-TOP-CEIL}`,'#8e6440',2.4);
     if(f.t==='shelf'){const ly=y+(f.ledge||24);   // the dorm's shelf over the pillow: a plank on two brackets
       return Rn(x+6,ly+5,w-12,3,'#000',1,.08)+Pa(`M${x+12} ${ly+4}v8l8-8z`,P.woodD,1.2)+Pa(`M${x+w-12} ${ly+4}v8l-8-8z`,P.woodD,1.2)+R(x+3,ly,w-6,5,P.woodL,2,1.3)+Rn(x+6,ly+1,w-12,1.4,'#fff',0,.5);}
@@ -605,6 +669,12 @@ function fixture(f,room,G,parts,Lt,uid){
       +Rn(x,y0,w,h,`url(#${id})`,6)+Rn(x,y0,w,7,'#000',4,.13)+(dk?E(x+w/2,y0+h*.6,w*.3,h*.3,'#bff3ff',0,' opacity=".35"'):'')
       +`<g pointer-events="none">${waves}${[[.2,.4],[.62,.25],[.8,.68]].map(([a,b],i)=>C(x+w*a,y0+h*b,1.6,'#ffffff',0).replace('/>',` class="dc-glint g${i}"/>`)).join('')}</g>`
       +L(`M${x+w-20} ${y0-12}v20M${x+w-10} ${y0-12}v20M${x+w-20} ${y0-2}h10M${x+w-20} ${y0+6}h10`,'#aab8c2',2.4);}
+  if(f.t==='car')return `<g transform="translate(${x} ${by})">`+E(w/2,-4,w*.46,5,'#000',0,' opacity=".12"')   // 🏰 the showroom's classic car
+    +Pa(`M6 -14q0-14 16-16l18-14h${w-80}l22 14q16 2 16 16z`,'#c0392b')+Pa(`M44 -30l12-10h${w-104}l14 10z`,'#cfe6f2',1)
+    +C(28,-10,10,'#2f2f35')+C(28,-10,4.5,'#c7d3db',1)+C(w-28,-10,10,'#2f2f35')+C(w-28,-10,4.5,'#c7d3db',1)+R(w-12,-22,8,5,P.butter,1.5,1)+'</g>';
+  if(f.t==='gazebo')return `<g transform="translate(${x} ${by})">`+R(4,-(f.h*FR)-60,6,f.h*FR+60,P.woodD,1.5)+R(w-10,-(f.h*FR)-60,6,f.h*FR+60,P.woodD,1.5)   // 🏰 the garden pavilion
+    +Pa(`M-8 ${-(f.h*FR)-58}L${w/2} ${-(f.h*FR)-92}L${w+8} ${-(f.h*FR)-58}z`,'#b0503a')+L(`M-4 ${-(f.h*FR)-60}q${w/2+4} 10 ${w+8} 0`,'#8a3a28',2)
+    +R(16,-24,w-32,8,P.woodL,3)+L(`M22 -16v14M${w-22} -16v14`,P.woodD,2.4)+'</g>';
   if(f.t==='pillow')return `<g transform="translate(${x} ${by})">`+E(CW/2,-6,17,3,'#000',0,' opacity=".08"')+R(3,-24,CW-6,18,P.white,8)+L('M8 -15q12 4 24 0',P.grey,1.2)+C(CW-10,-18,1.6,P.pinkL,0)+'</g>';
   return '';
 }
@@ -634,11 +704,16 @@ export function roomBack(room,G,parts,Lt,uid='',skin={}){
   const ws=WALL_SKIN[skin?.w],fs=FLOOR_SKIN[skin?.f];
   if(room.out){
     out.push(sky(0,0,G.W,G.FY,Lt,`dcSkyOut${uid}`));
-    if(room.type==='balcony'){
-      const sky2=[[0,40],[30,56],[54,32],[84,66],[106,46],[146,74],[174,44],[210,66],[240,48],[272,78],[298,52],[330,70],[360,44]].filter(([x])=>x<G.W);
+    if(room.type==='infinity'){   // 🏰 a villa's infinity pool: the sea to the horizon behind the edge
+      out.push(Rn(0,G.FY-40,G.W,40,Lt.night?'#1f3b5c':'#4fa3c7')+L(`M0 ${G.FY-40}H${G.W}`,Lt.night?'#2c5b86':'#bfe7f5',1.6)
+        +Array.from({length:Math.ceil(G.W/60)},(_,i)=>L(`M${i*60+10} ${G.FY-24}q6-3 12 0`,'#ffffff',1.2,' opacity=".6"')).join(''));
+    }else if(room.type==='balcony'||room.type==='terrace'){
+      const base=[[0,40],[30,56],[54,32],[84,66],[106,46],[146,74],[174,44],[210,66],[240,48],[272,78],[298,52],[330,70],[360,44]];
+      const sky2=[...base,...base.map(([x,h])=>[x+390,h])].filter(([x])=>x<G.W);   // a villa's terrace is wider
       out.push(Pa(`M0 ${G.FY}`+sky2.map(([x,h])=>`V${G.FY-h}H${x+30}`).join('')+`V${G.FY}z`,Lt.night?'#3a4566':'#b9cfdd',0));
-      if(Lt.night)out.push([[40,G.FY-30],[96,G.FY-50],[150,G.FY-36],[210,G.FY-44]].map(([a,b])=>Rn(a,b,4,4,'#ffd76a',1,.9)).join(''));
-      out.push(Rn(0,G.FY-26,G.W,4,'#7a6656',2)+Array.from({length:Math.ceil(G.W/18)},(_,i)=>Rn(i*18+6,G.FY-24,3,24,'#7a6656',1)).join(''));
+      if(Lt.night)out.push([[40,G.FY-30],[96,G.FY-50],[150,G.FY-36],[210,G.FY-44],[300,G.FY-40],[420,G.FY-52]].filter(([a])=>a<G.W).map(([a,b])=>Rn(a,b,4,4,'#ffd76a',1,.9)).join(''));
+      if(room.type==='terrace')out.push(Rn(0,G.FY-30,G.W,30,'#cfe6f2',0,.45)+Rn(0,G.FY-31,G.W,3,'#9fb8c6',1)+Array.from({length:Math.ceil(G.W/80)},(_,i)=>Rn(i*80+2,G.FY-30,2,30,'#9fb8c6')).join(''));   // 🏰 glass rail
+      else out.push(Rn(0,G.FY-26,G.W,4,'#7a6656',2)+Array.from({length:Math.ceil(G.W/18)},(_,i)=>Rn(i*18+6,G.FY-24,3,24,'#7a6656',1)).join(''));
     }else{
       out.push(E(G.W*.2,G.FY-30,60,34,Lt.night?'#2f5a45':'#8cc47a',0)+E(G.W*.75,G.FY-34,70,40,Lt.night?'#2a5240':'#7cb86c',0)
         +Rn(0,G.FY-22,G.W,22,Lt.night?'#2e5a40':'#6aa851')+Array.from({length:Math.ceil(G.W/22)},(_,i)=>R(i*22+4,G.FY-30,12,30,'#f3e6cf',2,1.1)).join(''));
@@ -725,7 +800,11 @@ export const TINT={sofa:'pink',ban_tra:'wood',giuong:'sky',tv:'wood',be_ca:'wood
   dong_ho_bao_thuc:'red',sach_mo:['sky','red'],bep_ga:'dark',treo_noi:'red',thot_dao:'wood',may_xay:'pink',hu_dua:'red',may_ca_phe:'dark',
   dao_bep:['mint','white'],ghe_bar:'red',ro_rau:'wood',lo_nuong_banh:'peach',ke_chen:'wood',ke_my_pham:'white',may_say_toc:'pink',gio_giat:'wood',
   coc_ban_chai:'mint',cay_truc:{white:'c',grey:'d'},tu_thuoc:'white',ghe_trung:'wood',chau_cuc:'pot',bon_hoa:'wood',ho_ca_koi:'grey',ghe_dai:'wood',
-  den_bao:'red',nha_cho:'red',binh_tuoi:{leaf:'c',leafD:'d'}};
+  den_bao:'red',nha_cho:'red',binh_tuoi:{leaf:'c',leafD:'d'},
+  giuong_king:'butter',ban_go_lim:{'#8a5232':'c','#6b3f22':'d'},ghe_da_bo:{'#b8653d':'c','#9a4f2e':'d'},qua_dia_cau:'sky',ghe_rap_doi:{'#b13a4c':'c','#8e2b3a':'d'},
+  may_bong_ngo:'red',loa_cot:{'#2c2a33':'c'},thung_ruou:{'#9a6438':'c'},ban_nem_ruou:{'#8a5232':'c','#6b3f22':'d'},may_chay_bo:{'#3d3a4a':'c'},
+  gia_ta:{'#5a566b':'c'},tu_giay:{'#f6f0e5':'c'},dao_trang_suc:{'#ffffff':'l','#f6f0e5':'c'},xe_may_co:{'#5a9a8a':'c'},bien_neon:{'#ff7ab8':'c'},
+  lo_suoi_ngoai:{'#7d7a74':'c'},quay_bar_ho:'wood',kinh_thien_van:'navy'};
 const MAPS=new Map();
 function tintMap(id){
   if(MAPS.has(id))return MAPS.get(id);

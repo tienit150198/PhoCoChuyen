@@ -120,5 +120,28 @@ for _row in [it for sh in SHOPS.values() for it in sh['items']] + list(SPA) + li
 FILM_PRICE = pi.price(FILM_PRICE)
 GIVE_PRESETS = tuple(pi.price(x) for x in GIVE_PRESETS)   # the Chùa's suggested amounts (GIVE_MIN stays)
 BIG_MEAL = pi.price(28)   # game/spend.py: the first quán of a day from this price gives +2 tinh thần (base 28)
+# 🛍️ Titles earned in Mua sắm (game/lux.py, owner 07/10): never sold (price 0, `earn` says how), granted for good
+# (own until PERMANENT) and worn like the weekly ones, so the live service shows them the same way (an older live
+# service, or an older game server, ignores an id it does not know). Ids: game/lux_content.py EARN.
+PERMANENT = 2**34 - 1
+LUX_TITLES = (
+    dict(id='t_xe_dich', emoji='🧳', name='Dân xê dịch', price=0, need={}, earn='Đi 3 nước'),
+    dict(id='t_toan_cau', emoji='🌏', name='Công dân toàn cầu', price=0, need={}, earn='Đi đủ 5 nơi'),
+    dict(id='t_suu_tam', emoji='💎', name='Nhà sưu tầm', price=0, need={}, earn='Mua 5 món sưu tập'),
+    dict(id='t_bau_vat', emoji='✨', name='Chủ báu vật', price=0, need={}, earn='Có món ★★★★'),
+    dict(id='t_dinh_thu', emoji='🏰', name='Chủ dinh thự', price=0, need={}, earn='Có dinh thự'),
+    dict(id='t_chu_dao', emoji='🏝️', name='Chúa đảo', price=0, need={}, earn='Có đảo riêng'),
+    dict(id='t_bau_troi', emoji='🛫', name='Dân chơi bầu trời', price=0, need={}, earn='Có phi cơ, du thuyền'),
+    dict(id='t_trum_tiec', emoji='🎉', name='Trùm tiệc tùng', price=0, need={}, earn='Mở 5 bữa tiệc'),
+    dict(id='t_da_ngon_ngu', emoji='🗣️', name='Đa ngôn ngữ', price=0, need={}, earn='Học 3 ngoại ngữ'),
+    dict(id='t_mba', emoji='🎓', name='Thạc sĩ MBA', price=0, need={}, earn='Học xong MBA'),
+    dict(id='t_sommelier', emoji='🍷', name='Sommelier', price=0, need={}, earn='Học nếm vang'),
+    dict(id='t_golf', emoji='⛳', name='Golf thủ', price=0, need={}, earn='Học golf'),
+    dict(id='t_phi_cong', emoji='🛩️', name='Phi công tư nhân', price=0, need={}, earn='Học lái máy bay'),
+    dict(id='t_mtq', emoji='🏛️', name='Mạnh Thường Quân', price=0, need={}, earn='Tài trợ 100.000 xu'),
+    dict(id='t_thap_sang', emoji='🎆', name='Người thắp sáng phố', price=0, need={}, earn='Bắn pháo hoa'),
+    dict(id='t_an_nhan', emoji='📚', name='Ân nhân thư viện', price=0, need={}, earn='Góp 50.000 xu thư viện'),
+)
+TITLES = TITLES + LUX_TITLES
 STYLE_ITEMS = {x['id']: dict(x, kind=k) for k, rows in (('color', COLORS), ('frame', FRAMES), ('title', TITLES)) for x in rows}
 TITLE_TEXT = {x['id']: f"{x['emoji']} {x['name']}" for x in TITLES}

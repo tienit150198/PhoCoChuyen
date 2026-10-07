@@ -117,6 +117,11 @@ def _rx():
     return relax
 
 
+def _es():
+    from . import estates
+    return estates
+
+
 def _fr():
     from . import fridge
     return fridge
@@ -179,7 +184,15 @@ def sig(pos: dict) -> int:
 
 # ---------------------------------------------------------------- where you live, its rooms
 def place(j: dict) -> dict:
-    """Where the player lives now: key (changes with every move), where ('own'|'shared'|'rent'|'attic'), home kind."""
+    """Where the player lives now: key (changes with every move), where ('own'|'shared'|'rent'|'attic'|'estate'), home
+    kind (a villa's id for 'estate', game/estates.py). Biệt thự Sông Hồng's key ends in ':v2' (its three-floor inside)."""
+    est = _es().place(j)   # 🏰 living in a villa bought in Mua sắm
+    if est:
+        return est
+    return _es().v2_key(_place(j))
+
+
+def _place(j: dict) -> dict:
     lease = hs.active_lease(j)
     if lease:
         return dict(key=f"lease:{lease['id'][5:]}:{lease['kind']}", where='lease', kind=lease['kind'])
@@ -210,6 +223,8 @@ def rooms_of(key: str) -> list | None:
     if key in _ROOMS:
         return _ROOMS[key]
     bits = key.split(':')
+    if bits[0] == 'estate' or key.endswith(':v2'):   # 🏰 a villa's rooms, Sông Hồng's three floors (game/estates.py)
+        return _es().rooms_of(key)
     out = None
     kind = ''
     if key == 'attic':
@@ -771,7 +786,7 @@ def on_life_day(s: dict, result: dict | None = None) -> list[str]:
         L = layout(s)
         pts = points(L)['total']
         total = pts + (_rn().upgrade_points(s) if pl['where'] == 'own' else 0)
-        n = rent_perk(pts) if pl['where'] != 'own' else 0
+        n = _rn().perk_of(pts) if pl['where'] == 'estate' else rent_perk(pts) if pl['where'] != 'own' else 0   # 🏰 a villa: a home's steps
         while d['day'] < target:
             d['day'] += 1
             if n:
@@ -800,7 +815,7 @@ _WHY = {
     'room_full': '{room} đã bày đủ {cap} món, mức tối đa của phòng này. Muốn bày thêm: cất bớt món ít dùng vào túi đồ, '
                  'bày sang phòng khác, hoặc dọn về nhà rộng hơn (phòng càng rộng càng bày được nhiều).',
 }
-FIX_NAMES = {'door': 'cửa ra vào', 'window': 'cửa sổ', 'counter': 'kệ bếp', 'splash': 'tường bếp', 'slope': 'mái gác',
+FIX_NAMES = {**DC._EC.FIX_NAMES, 'door': 'cửa ra vào', 'window': 'cửa sổ', 'counter': 'kệ bếp', 'splash': 'tường bếp', 'slope': 'mái gác',
              'ladder': 'cầu thang', 'pillow': 'cái gối', 'shelf': 'kệ đầu giường', 'shower': 'vòi sen', 'toilet': 'bồn cầu',
              'pool': 'hồ bơi'}
 
@@ -1304,6 +1319,9 @@ def catalogue() -> dict:
 
 
 def _place_name(pl: dict) -> tuple[str, str]:
+    est = _es().name_of(pl)
+    if est:
+        return est
     if pl['where'] == 'attic':
         return hs.ATTIC['emoji'], hs.ATTIC['name']
     H = hs.HOMES[pl['kind']]
@@ -1317,8 +1335,11 @@ def _fix_view(f: dict) -> dict:
 
 
 def _room_view(x: dict) -> dict:
-    return dict(id=x['id'], type=x['type'], emoji=x['emoji'], name=x['name'], cols=x['cols'], wrows=x['wrows'],
-                frows=x['frows'], out=x['out'], tags=list(x['tags']), fix=[_fix_view(f) for f in fixtures(x)], cap=room_cap(x))
+    out = dict(id=x['id'], type=x['type'], emoji=x['emoji'], name=x['name'], cols=x['cols'], wrows=x['wrows'],
+               frows=x['frows'], out=x['out'], tags=list(x['tags']), fix=[_fix_view(f) for f in fixtures(x)], cap=room_cap(x))
+    if x.get('fl'):   # 🏰 a villa's floor (the interior's floor switcher) and its room type's own look
+        out.update(fl=x['fl'], skin0=dict(x.get('skin0') or {}))
+    return out
 
 
 def public(s: dict) -> dict | None:
@@ -1334,10 +1355,10 @@ def public(s: dict) -> dict | None:
     own = pl['where'] == 'own'
     up = rn.upgrade_points(s) if own else 0
     total = pts['total'] + up
-    if own:
+    if own or pl['where'] == 'estate':   # 🏰 a villa you live in: a home's steps (no parts to repair)
         steps = [dict(min=low, spirit=n) for low, n in rn.COZY_STEPS]
         perk = rn.perk_of(total)
-        off = rn.perk_off(s)
+        off = rn.perk_off(s) if own else None
     else:
         steps = [dict(min=low, spirit=n) for low, n in RENT_STEPS]
         perk, off = rent_perk(total), None
@@ -1366,6 +1387,9 @@ def public(s: dict) -> dict | None:
     # `rooms`: the rooms every build draws; `more`: the new ones by their template (catalogue `kits`), which a page
     # loaded before 1.4.11 ignores ({t: kit[, s: its skin]}).
     more = [dict(t=x['kit'], s=skin(x)) if skin(x) else dict(t=x['kit']) for x in L['rooms'] if x.get('new')]
+    for m, x in zip(more, [x for x in L['rooms'] if x.get('new')]):
+        if x.get('fl'):
+            m['fl'] = x['fl']   # 🏰 a villa's bathroom or pool: its floor
     out = dict(place=dict(key=pl['key'], where=pl['where'], kind=pl['kind'], name=name, emoji=emoji, repairs=own),
                rooms=[dict(_room_view(x), skin=skin(x)) for x in L['rooms'] if not x.get('new')], more=more,
                items=placed, bag=bag, count=len(r['items']) if r else 0, max=None, owned=owned,
@@ -1389,6 +1413,7 @@ def upgrade(j: dict) -> None:
     """On load: future stats join with 0; pieces sold by an older build leave both layouts; a grid layout this build's
     rooms no longer allow goes back to the bag piece by piece (never lost: the pieces stay in reno.items). The free
     layout is read (and merged with an older build's changes) by layout(), written by the next command."""
+    _v2_alias(j)
     d = j.get('deco') if isinstance(j, dict) else None
     r = j.get('reno') if isinstance(j, dict) else None
     items = r.get('items') if isinstance(r, dict) else None
@@ -1441,6 +1466,45 @@ def upgrade(j: dict) -> None:
                 M['items'].pop(u)
         if not M['items']:
             j.pop('decor_more')
+
+
+def _v2_alias(j: dict) -> None:
+    """🏰 Biệt thự Sông Hồng's layout saved under its key from before the three-floor inside (or by an older build since)
+    is the same place: every room it had is still there, only bigger (game/estates.py)."""
+    if not isinstance(j, dict) or not isinstance(j.get('story'), bool):
+        return
+    try:
+        key = place(j)['key']
+    except Exception:   # noqa: BLE001 - an unreadable home block: validate says so
+        return
+    if not key.endswith(_es().V2):
+        return
+    old = key[:-len(_es().V2)]
+    rooms = rooms_of(key) or []
+    r = j.get('reno')
+    items = r.get('items') if isinstance(r, dict) and isinstance(r.get('items'), list) else []
+    kinds = {it['id']: it['k'] for it in items if isinstance(it, dict) and isinstance(it.get('id'), str)}
+    order = list(kinds)
+    others: dict = {}
+    for name in ('deco', 'decor', 'decor_new', 'decor_more'):
+        B = j.get(name)
+        if not (isinstance(B, dict) and B.get('at') == old):
+            continue
+        B['at'] = key
+        if name == 'deco' or not isinstance(B.get('items'), dict):
+            continue   # the grid mirror: upgrade() below settles it in the new rooms
+        pos = {u: v for u, v in B['items'].items() if u in kinds and isinstance(v, dict) and _piece_ok(v)}
+        if not all(kinds[u] in ITEMS for u in pos):
+            continue   # a newer build's pieces: left as they are
+        if name == 'decor_more':   # the whole room at today's cap, as validate() checks it
+            kept, _ = settle_free(rooms, kinds, {**others, **pos}, order)
+            kept = {u: v for u, v in kept.items() if u in pos}
+        else:   # what a 1.7.15 build accepts a room
+            kept, _ = settle_free(rooms, kinds, pos, order, old_cap)
+        B['items'] = kept   # a piece the bigger room's new windows or doors cover goes back to the bag
+        others.update(kept)
+        if name != 'decor' and not kept:
+            j.pop(name)
 
 
 def _piece_ok(v) -> bool:

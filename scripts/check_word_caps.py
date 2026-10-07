@@ -74,7 +74,8 @@ DEFAULT += tuple(c for c in WAVE5 if c not in DEFAULT)
 
 # Life sheets (cap 30, docs/UI_KIT.md): [name, rail action, rail group]; HUD is the home screen with no sheet open.
 LIFE = (('HUD', '', ''), ('town', 'jrTown', 'pho'), ('house', 'house', 'tien'), ('bank', 'bank', 'tien'), ('fair', 'fair', 'pho'),
-        ('stall', 'quay', 'tien'), ('wardrobe', 'jrWardrobe', 'minh'), ('spend', 'spend', 'pho'), ('pets', 'pets', 'pho'))
+        ('stall', 'quay', 'tien'), ('wardrobe', 'jrWardrobe', 'minh'), ('spend', 'spend', 'pho'), ('pets', 'pets', 'pho'),
+        ('lux', 'lux', 'tien'))   # 🛍️ Mua sắm
 LIFE_CAP = 30
 # One step further on a life sheet: the fair's gift card closed, the bank's account opened (its confirm accepted).
 LIFE_DEEP = r"""()=>{const b=document.querySelector('dialog[open] [data-fh="giftok"]')||[...document.querySelectorAll('dialog[open] button')].find(b=>/Mở tài khoản miễn phí/.test(b.innerText));

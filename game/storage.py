@@ -628,6 +628,9 @@ class Store:
                 if action.startswith('jr_pet_'):
                     from . import pets
                     pets.command_commit(db,sid,action,current)  # 🐾 Bé cưng của tuần (pet_board)
+                if action.startswith('jr_lux_'):
+                    from . import lux
+                    lux.command_commit(db,sid,action,current)  # 🎆 the lux_gifts row, the ticker line (a taken plaque refuses)
             if action == 'settings':
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,current)
@@ -696,6 +699,9 @@ class Store:
             if action.startswith('jr_pet_'):
                 from . import pets
                 pets.command_commit(db,sid,action,raw)  # 🐾 Bé cưng của tuần (pet_board)
+            if action.startswith('jr_lux_'):
+                from . import lux
+                lux.command_commit(db,sid,action,raw)  # 🎆 the lux_gifts row, the ticker line (a taken plaque refuses)
             if action == 'settings':
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,raw)
@@ -732,6 +738,8 @@ class Store:
             spend.forget(db,sid)  # 🎨 the style row; 🙏 donations stay on the board as anonymous
             from . import pets
             pets.forget(db,sid)  # 🐾 their pets leave the weekly board
+            from . import lux
+            lux.forget(db,sid)  # 🎆 plaques and sponsorships stay, as anonymous
             db.execute("DELETE FROM archive WHERE sid=?",(sid,))
             db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
             lb.forget(db,[sid])

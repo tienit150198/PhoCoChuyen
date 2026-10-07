@@ -1,0 +1,16 @@
+/* 🛍️ Mua sắm (public/js/v4/lux.js): on top of spend.css (the same sheet, tabs, chips, rows and bottom bar). */
+.lx-tabs button{min-width:0;flex:1}
+.lx-sub{margin:var(--sp-1) 0;font-size:var(--fs-2);color:var(--ink-2)}
+.lx-docs .lx-doc{font-size:var(--fs-1);min-height:44px}
+.lx-tools{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-2)}
+.lx-help{margin-top:var(--sp-2)}
+.lx-help>summary{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);cursor:pointer;list-style:none;font-weight:700}
+.lx-help>summary::-webkit-details-marker{display:none}
+.lx-help ul{margin:var(--sp-2) 0 0;padding-left:var(--sp-4);font-size:var(--fs-1);color:var(--ink-2)}
+.lx-rooms{font-size:1.4rem;letter-spacing:.15em;margin:var(--sp-2) 0;line-height:1.5;word-break:break-all}
+.lx-step{display:flex;align-items:center;justify-content:center;gap:var(--sp-3);margin-top:var(--sp-3)}
+.lx-step .sd-chip{min-width:44px;min-height:44px;font-size:var(--fs-4)}
+.lx-slots{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--sp-1);margin:var(--sp-2) 0}
+.lx-slots .sd-chip{min-height:44px;padding:0}
+.lx-slots .sd-chip:disabled{opacity:.35;text-decoration:line-through}
+.lx-estate{border-top:6px solid var(--warn)}

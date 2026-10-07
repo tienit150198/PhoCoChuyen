@@ -305,6 +305,7 @@ function navItems(c){
   if(api.state?.journey?.story&&api.state.journey.gadgets)items.push(['gadgets','phone','Điện thoại & đồ công nghệ']);  // 📱 (v4/gadgets.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.pets)items.push(['pets','paw','Thú cưng']);  // 🐾 v4/pets.js (own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.spend)items.push(['spend','coffee','Đi chơi'],['spendStyle','sparkle','Phong cách']);  // ☕🙏 quán, spa, rạp, công đức; 🎨 màu tên tuần (v4/spend.js, own dialog): only once the server has it
+  if(api.state?.journey?.story&&api.state.journey.lux)items.push(['lux','bag','Mua sắm']);  // 🛍️ du lịch, sưu tập, dinh thự, tiệc, khóa học, Mạnh Thường Quân (v4/lux.js, own dialog): only once the server has it
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
@@ -333,12 +334,14 @@ const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREE
 const RAIL_GROUPS=[
   ['pho','building','Khu phố',['fair','spend','pets','liveWalk','liveWed','liveKara','nhom','phone','social','jrTown','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
-  ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage','gadgets','rui','quay']],
+  ['tien','coin','Ngân hàng & nhà',['money','bank','house','lux','garage','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
   ['minh','gift','Của mình',['jrWardrobe','spendStyle','album','passport','workshop','journal','accountingSchool']],
 ];
 /** ☕ v4/spend.js (game/spend.py): the menu entries and the town map's doors (each opens its tab). */
 const SPEND_OPEN=new Set(['spend','spendQuan','spendSpa','spendRap','spendChua','spendStyle']);
+/** 🛍️ v4/lux.js (game/lux.py): the menu entry and the town map's doors (each opens its tab). */
+const LUX_OPEN=new Set(['lux','luxTrip','luxSuu','luxNha','luxBay','luxTiec','luxHoc','luxMtq']);
 const RAIL_GROUPED=new Set(RAIL_GROUPS.flatMap(g=>g[3]));
 /** Numbers add up; a dot alone stays a dot. */
 function groupBadge(items){
@@ -1574,6 +1577,7 @@ async function handleAction(action,data,el){
       if(action==='pets'){await (await import('./v4/pets.js')).petsAction(action,data,el,env());break;}  // 🐾 Nuôi thú cưng: lazy
       if(action==='gadgets'){await (await import('./v4/gadgets.js')).gadgetsAction(action,data,el,env());break;}  // 📱 Cửa hàng điện thoại: lazy
       if(SPEND_OPEN.has(action)){await (await import('./v4/spend.js')).spendAction(action,data,el,env());break;}  // ☕ Đi quán, spa, rạp, 🙏 công đức, 🎨 phong cách: lazy
+      if(LUX_OPEN.has(action)){await (await import('./v4/lux.js')).luxAction(action,data,el,env());break;}  // 🛍️ Mua sắm: lazy
       if(action==='vang'){ui.ivMarket='gold';await journeyAction('jrInvest',data,el,env());break;}
       if(action==='rui'){await (await import('./v4/rui.js')).ruiAction(action,data,el,env());break;}
       if(action==='homeGuests'){await (await import('./v4/home-guests.js')).openHomeGuests(env(),data);break;}

@@ -460,3 +460,12 @@ def skin_fits(room: dict, skin: str, part: str) -> bool:
     if S['types'] is not None:
         return room['type'] in S['types']
     return room['type'] not in ('bunk', 'yard')
+
+
+# ---------------------------------------------------------------- 🏰 villas (07/10): game/estates_content.py
+# The villa-only room types, their skins, fixtures, signature furniture and sets join the tables above (appended:
+# the KNOWN_* lists of older builds stay as they were).
+KNOWN_199 = tuple(ITEMS)          # what 1.9.9 knows (the villa pieces after it wait in its bag, as above)
+from . import estates_content as _EC   # noqa: E402
+
+_EC.register(globals())

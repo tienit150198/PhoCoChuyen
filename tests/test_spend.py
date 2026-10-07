@@ -71,6 +71,9 @@ class Catalogue(unittest.TestCase):
             self.assertTrue(3 <= it['price'] <= pi.price(40), it)
         self.assertTrue(3 <= C.FILM_PRICE <= pi.price(40))
         for it in C.STYLE_ITEMS.values():
+            if it.get('earn'):   # 🛍️ a title earned in Mua sắm (game/lux.py): never sold
+                self.assertEqual(it['price'], 0)
+                continue
             self.assertTrue(50 <= it['price'] <= pi.price(400), it)
         self.assertEqual(C.GIVE_MIN, 5)
         self.assertGreaterEqual(C.GIVE_MAX, 1_000_000)   # open-ended enough for the top of the 💰 board

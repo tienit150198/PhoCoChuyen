@@ -290,3 +290,6 @@
 @keyframes hc-body-pose{0%,100%{transform:rotate(0deg)}22%,72%{transform:rotate(var(--hc-lean))}45%{transform:rotate(calc(var(--hc-lean)*.8))}}
 @keyframes hc-heart-reach{0%,100%{opacity:0;transform:translate(calc(var(--hc-flight-x)/2),0) scale(.7)}25%,75%{opacity:1;transform:translate(calc(var(--hc-flight-x)/2),-8px) scale(1)}}
 @keyframes hc-heart-flight{0%,14%{opacity:0;transform:translate(0,0) scale(.5)}28%{opacity:1;transform:translate(0,-3px) scale(1)}62%,85%{opacity:1;transform:translate(var(--hc-flight-x),var(--hc-flight-y)) scale(1.2)}100%{opacity:0;transform:translate(var(--hc-flight-x),calc(var(--hc-flight-y) - 8px)) scale(.8)}}
+/* 🏰 a villa's floors (v4/reno.js floorTabs) */
+.dc-floors{display:flex;gap:6px;margin:0 2px 6px}
+.dc-floors button{flex:1;min-height:36px}

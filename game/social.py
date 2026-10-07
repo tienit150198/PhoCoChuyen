@@ -241,6 +241,10 @@ def snapshot(state: dict) -> dict:
     if st:   # 🎨 name colour, frame, title worn this week (game/spend.py): a new key, older clients ignore it
         b = spend_block(state)
         out['style'] = dict(st, u=min(b['own'][x] for x in st.values()))
+    from .lux import show_view as lux_view
+    lux = lux_view(state) if isinstance(j, dict) else None
+    if lux:   # 🛍️ the dearest villa or vehicle, the dearest piece, pieces and countries (game/lux.py): a new key
+        out['lux'] = lux
     return out, served
 
 
