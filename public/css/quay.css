@@ -187,3 +187,4 @@
 /* Clean layout (docs/UI_KIT.md, wave 5): an explanation folded behind "?" (quay.js why); 44 px targets on the phone. */
 .qy-why{margin:var(--sp-1) 0 0}
 html[data-clean] .qy-help{width:44px;height:44px}
+.qy-off-tag{display:flex;align-items:center;flex-wrap:wrap;gap:6px;color:var(--warn)!important;font-weight:700}.qy-off-tag .btn{min-height:32px;padding:4px 12px}.qy-off-menu{display:flex;align-items:center;flex-wrap:wrap;gap:8px}

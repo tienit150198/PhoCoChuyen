@@ -606,7 +606,7 @@ function fundTab(){
     ?`<li class="mr-li-wrap"><span>Bạn ${r.loan?'hỏi mượn':'xin trợ giúp'} <b>${xu(r.amount)}</b>${r.note?`: “${esc(r.note)}”`:''}<small>Chờ ${partner} trả lời</small></span>${btn('Rút lại','help_cancel',{id:r.id},'ghost small')}</li>`
     :`<li class="mr-li-wrap mr-ask"><span><b>${partner}</b> ${r.loan?'hỏi mượn':'xin trợ giúp'} <b>${xu(r.amount)}</b>${r.note?`: “${esc(r.note)}”`:''}${r.loan?'<small>Có ghi sổ nợ</small>':''}</span><span class="mr-actions tight">${btn(`Giúp ${xu(r.amount)}`,'help_answer',{id:r.id,answer:'accept'},'primary small',wallet()<r.amount?' disabled':'')}${btn('Để lần sau','help_answer',{id:r.id,answer:'decline'},'cream small')}</span></li>`).join('');
   return `${notice()}<section class="mr-card mr-fund"><div class="mr-fund-top"><div><small>Quỹ chung của hai bạn</small><b class="mr-fund-bal">${xu(f.balance)}</b></div><div class="mr-fund-wallet"><small>Ví của bạn</small><b>${xu(wallet())}</b></div></div>
-      <div class="mr-fund-grid"><div><p class="mr-label">Gửi vào quỹ chung</p>${money('dep','Gửi vào',{op:'fund',data:{k:'dep'}},'primary',L.send_max)}</div>
+      <div class="mr-fund-grid"><div><p class="mr-label">Gửi vào quỹ chung</p>${money('dep','Gửi vào',{op:'fund',data:{k:'dep'}},'primary',L.deposit_max??L.send_max)}</div>
       <div><p class="mr-label">Rút về ví</p>${money('wd','Rút ra',{op:'fund',data:{k:'wd'}},'cream',f.balance)}<p class="mr-hint">Rút và chi theo số dư ${xu(f.balance)}, không có hạn mức mỗi ngày. ${partner} được báo mỗi lần rút.</p></div></div>
       <h4>Lịch sử quỹ</h4>${hist}</section>
     ${reqs?`<section class="mr-card mr-accent"><h3>Lời nhờ</h3><ul class="mr-list">${reqs}</ul></section>`:''}

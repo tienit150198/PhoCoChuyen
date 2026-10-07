@@ -284,7 +284,7 @@ class ContinuousBusiness(unittest.TestCase):
         b.settle(s,now=first-.001)
         self.assertEqual(st['business']['sold'],before['sold'])
         b.settle(s,now=first)
-        self.assertEqual(st['business']['sold'],3)
+        self.assertEqual(st['business']['sold'],1)   # staggered first arrivals (_fresh): one dish at a time
         upgraded_poll=copy.deepcopy(s)
         for at in range(int(first)+1,7001):
             b.settle(upgraded_poll,now=at)

@@ -4,6 +4,15 @@ Gồm "Cấp bậc công an" (ranks-police: org ladder, cấp hiệu bảng màu
 
 # Chưa phát hành
 
+## Sửa lỗi: quầy chỉ bán 3 món, nhà cho thuê không lấy lại được, quỹ chung tối đa 5.000 xu
+
+- 🏪 Quầy (F#232, F#220): nhân viên chỉ bán món đã bật ở Menu, mà menu mặc định chỉ có 3 món đầu (Áo, Quần, Váy), trong khi tab 📦 Hàng cho nhập cả 12. Quầy mới bật sẵn mọi món của nghề (tối đa 18). Nhập hàng một món chưa bật thì tự bật món đó (giữ giá đã đặt). Tab 📦 Hàng ghi "Chưa bật ở Menu" cạnh món có hàng mà chưa bán, kèm nút "Bật" và "Bật tất cả món có hàng"; bật thêm món được cả khi đang đứng quầy (đổi giá, bỏ món vẫn phải đóng ca). Quầy cũ giữ nguyên menu, không tự đổi.
+- 🏪 Khi menu nhiều món, khách của nhân viên tới lần lượt từng món thay vì dồn một đợt (cùng số khách mỗi giờ như trước).
+- 💼 Góp vốn quầy: lấy ví trước, thiếu thì lấy tài khoản ngân hàng, đúng như hướng dẫn; ví đang nợ thì không góp, không bao giờ làm âm ví hay tài khoản.
+- 🏠 Thuê nhà người chơi (F#225): người thuê nghỉ chơi thì ngày sống không trôi, hợp đồng treo mãi. Chủ nhà nay thấy "hết hạn ngày X" và nút "Lấy lại nhà" khi kỳ đã trả hết theo giờ thật: quá 5 ngày kể từ lần trả gần nhất (10 ngày nếu người thuê đã trả trước kỳ sau), hoặc người thuê vắng 3 ngày mà chưa trả trước kỳ sau. Không bao giờ giữa kỳ. Người thuê nhận thông báo (hộp thư + nhật ký nhà), không mất thêm xu, tìm chỗ ở mới. Điều khoản thuê ghi rõ điều này.
+- 🏦 Quỹ chung (F#231): mỗi lần gửi tối đa 200.000 xu (trước đây dùng nhầm hạn mức tặng tiền 5.000). Tặng / cho mượn vẫn tối đa 5.000.
+- Bản lưu: không thêm khóa mới (quầy mới ghi sẵn `menu`, khóa đã có). Bảng `rentals` có thêm trạng thái `ended`. Bản 1.9.10 đọc được mọi bản lưu mới (đã thử).
+
 ## Cấp bậc công an
 
 - Hệ chức vụ & cấp bậc dùng chung (game/org.py + org_content.py), công an trước: cấp bậc hàm (Binh nhì → Đại tá; Thiếu tướng Giám đốc chỉ là NPC) và chức vụ (Tổ viên → Tổ phó → Tổ trưởng → Đội phó/Đội trưởng 113 → Phó/Trưởng CA phường Mây → Phó/Trưởng phòng PC06 → Trợ lý BGĐ → Phó Giám đốc CATP) là hai đường riêng. Hàm lên theo ngày làm, ★ và hồ sơ sạch, tới trần của chức vụ; vài bậc cần khóa học (2 câu kiểm tra). Chức vụ lên bằng bổ nhiệm: đủ hàm, đủ ngày, chờ ghế trống, phỏng vấn 2 câu. Trưởng phòng PC06 trần Thượng tá.

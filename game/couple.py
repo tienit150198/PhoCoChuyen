@@ -39,7 +39,8 @@ from . import marriage as mr
 from .engine import GameError
 
 FUND_MAX = 10 ** 7
-SEND_MAX, HELP_MAX = 5000, 2000
+SEND_MAX, HELP_MAX = 5000, 2000         # a gift / loan to the spouse, a help request (unchanged)
+DEPOSIT_MAX = 200000                # F#231: one deposit into the joint fund (it had borrowed SEND_MAX, 5,000)
 SENDS_PER_DAY = 20
 HELP_DAYS = 3
 CLAIM_HOURS = 12
@@ -175,7 +176,7 @@ def _once(fn):
 # ---------------------------------------------------------------- 🏦 quỹ chung
 @_once
 def deposit(store, sid, display, d):
-    amount = _amount(d, 'amount', SEND_MAX)
+    amount = _amount(d, 'amount', DEPOSIT_MAX)
     with store.connect() as db:
         c = _married(db, sid)
     eid = f'fund:{c["id"]}:{mr._rid(d)}'
@@ -710,7 +711,7 @@ def view(db, sid: str, c: dict | None) -> dict:
                claim_lines={k: dict(tone=v[0], text=v[1]) for k, v in CLAIM_LINES.items()}, later_lines=LATER_LINES,
                moments_kinds={k: dict(emoji=v[0], label=v[1], points=v[3]) for k, v in MOMENTS.items()},
                gifts={k: dict(name=v['name'], emoji=v['emoji']) for k, v in _received()[0].items()},
-               limits=dict(withdraw_cap=None, send_max=SEND_MAX, help_max=HELP_MAX, lunch=LUNCH_COST, anniv_days=ANNIV_DAYS))
+               limits=dict(withdraw_cap=None, send_max=SEND_MAX, deposit_max=DEPOSIT_MAX, help_max=HELP_MAX, lunch=LUNCH_COST, anniv_days=ANNIV_DAYS))
     if not c or c['status'] != 'married':
         return out
     cid = c['id']

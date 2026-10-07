@@ -229,6 +229,23 @@ class FundTests(CoupleBase):
         self.assertEqual(err.exception.code, 'fund_low')
         self.assertEqual(self.home(self.a)['fund']['balance'], 500)
 
+    def test_deposit_cap_is_its_own_200k_and_gifts_keep_5000(self):
+        """F#231: a joint-fund deposit borrowed the spouse-gift cap (5,000)."""
+        self.assertEqual((cp.DEPOSIT_MAX, cp.SEND_MAX), (200000, 5000))
+        limits = self.home(self.a)['limits']
+        self.assertEqual((limits['deposit_max'], limits['send_max']), (200000, 5000))
+        self.fund(self.a, 250000)
+        self.act(self.a, 'fund_deposit', amount=200000, rid='big-deposit-01')
+        self.assertEqual(self.home(self.b)['fund']['balance'], 200000)
+        self.assertEqual(self.wallet(self.a), 50000)
+        with self.assertRaises(mr.MarriageError) as err:
+            self.act(self.a, 'fund_deposit', amount=200001, rid='big-deposit-02')
+        self.assertEqual(err.exception.code, 'bad_amount')
+        with self.assertRaises(mr.MarriageError) as err:
+            self.act(self.a, 'send', amount=5001, rid='big-send-0001')
+        self.assertEqual(err.exception.code, 'bad_amount')
+        self.assertEqual((self.wallet(self.a), self.home(self.a)['fund']['balance']), (50000, 200000))
+
     def test_spouse_block_links_the_couple(self):
         sp = self.state(self.a)['marriage']['spouse']
         self.assertEqual((sp['couple'], sp['side'], sp['status']), (self.cid, 'a', 'married'))

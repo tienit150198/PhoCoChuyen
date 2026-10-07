@@ -6365,7 +6365,7 @@ GROUPS = [{'id': 'start',
               'points': ['🏦 Quỹ chung tự có khi hai bạn cưới xong, bắt đầu từ 0 xu, không cần mở gì thêm. Đang đính '
                          'hôn thì chưa có.',
                          '⬇️ Gửi: tab [[Quỹ chung]] của mục [[Hôn nhân]], gõ số xu rồi bấm [[Gửi vào]]. Tiền đi từ ví '
-                         'vào quỹ, tối đa 5.000 xu mỗi lần, gửi bao nhiêu lần cũng được.',
+                         'vào quỹ, tối đa 200.000 xu mỗi lần, gửi bao nhiêu lần cũng được.',
                          '⬆️ Rút: gõ số xu rồi bấm [[Rút ra]], tiền về ví của bạn. Rút và chi theo số dư quỹ chung, không giới hạn mỗi ngày.',
                          '🏧 Trong [[Ngân hàng]], tab [[Tổng quan]] có thẻ [[Tài khoản chung vợ chồng]] với nút [[Gửi '
                          'vào quỹ chung]] và [[Rút bằng thẻ chung]]. Cần [[Mở tài khoản miễn phí]] trước.',

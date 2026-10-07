@@ -125,12 +125,20 @@ def reconcile(s):
     return changed
 
 
+def _fresh(at, intervals):
+    """First arrivals of a (re)scheduled board, staggered: the k-th of n dishes comes after k/n of its interval, so a
+    full board sells one dish at a time instead of all of them at once (F#232, 12 dishes). The last dish keeps the
+    whole interval and each dish then repeats on its own interval: the same number of sales as before, spread out."""
+    k = len(intervals)
+    return {d: market.advance(at, max(1, n * (i + 1) // k)) for i, (d, n) in enumerate(intervals.items())}
+
+
 def _schedule(st, at):
     b = st['business']
     sig = _signature(st)
     if b['signature'] != sig:
         b['signature'] = sig
-        b['arrivals'] = {d: market.advance(at, n) for d, n in _intervals(st).items()}
+        b['arrivals'] = _fresh(at, _intervals(st))
 
 
 def status(st):
@@ -351,7 +359,7 @@ def settle(s, now=None):
         market.enter_epoch(st, at)
         if status(st) != 'running':
             # Time while closed never becomes deferred sales after restocking.
-            b['arrivals'] = {d: market.advance(at, n) for d, n in intervals.items()}
+            b['arrivals'] = _fresh(at, intervals)
         qs.settle_queue(s, st, at)
         b['cursor'] = at
         tick_quay(s, st)
@@ -375,7 +383,7 @@ def action(s, st, name, p):
                 b['closed_at'] = b['cursor']
             else:
                 market.enter_epoch(st, b['cursor'])
-                b['arrivals'] = {d: market.advance(b['cursor'], n) for d, n in _intervals(st).items()}
+                b['arrivals'] = _fresh(b['cursor'], _intervals(st))
                 qs.reopen_queue(st)
         return dict(message='Đã đóng quầy, xử lý nốt đơn đã nhận.' if p['on'] else 'Đã mở quầy, bắt đầu nhận khách mới.')
     if name == 'jr_quay_protection':
@@ -396,7 +404,11 @@ def action(s, st, name, p):
     b['expenses']['goods'] += cost
     b['halted'] = -1
     qy._log(st, s['journey']['life_day'], 'Nhập hàng vào kho', -cost)
-    return dict(message=f'Đã nhập {sum(items.values())} món, hết {cost} xu.')
+    # F#232: staff sell only the board. Restocking a dish that is off it turns it on (not during an old-style run,
+    # whose walk-ins come from the board as it was at the start; the 📦 tab then shows "Chưa bật ở Menu").
+    added = [] if qs.board_locked(st, int(s['journey']['life_day'])) else qs.turn_on(st, items)
+    tail = f' Đã bật ở Menu: {", ".join(rows[d]["name"] for d in added)}.' if added else ''
+    return dict(message=f'Đã nhập {sum(items.values())} món, hết {cost} xu.{tail}')
 
 
 def income(st, at):

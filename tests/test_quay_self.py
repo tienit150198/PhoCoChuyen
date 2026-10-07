@@ -69,6 +69,9 @@ class Board(unittest.TestCase):
             rows = qs.MENUS[t][:3]
             self.assertEqual(sum(r[3] for r in rows), 3 * qy.TRADES[t]['price'], t)   # three dishes average the trade's price
         s = opened('xe', staff=False)
+        self.assertEqual(ST(s)['menu'], dict(on=[d[0] for d in qs.MENUS['milk_tea']], p={}))   # F#232: a new counter: the whole trade
+        ST(s).pop('menu')                     # a counter that never saved a board keeps the old default: three dishes
+        self.assertEqual(qs.menu(ST(s))['on'], [d[0] for d in qs.MENUS['milk_tea'][:3]])
         self.assertEqual(qs.board_pct(ST(s)), 100.0)
         self.assertEqual(qs.goods_pct(ST(s)), 100.0)
         self.assertEqual(qs.demand_pct(ST(s)), 100.0)
@@ -102,13 +105,14 @@ class Board(unittest.TestCase):
         s, _ = act(s, 'jr_quay_look', stall=sid, t=1)                                       # fewer: free, no money back
         s, _ = act(s, 'jr_quay_look', stall=sid, t=2, confirm=True)
         self.assertEqual(s['journey']['wallet'], w - 3 * qs.TABLES['sap'][1])
-        self.assertAlmostEqual(qs.demand_pct(ST(s)), 100 * (1 + 2 * qs.TABLE_PCT / 100))
+        variety = qs.VARIETY.get(len(qs.menu(ST(s))['on']), 110) / 100   # a new counter's full board
+        self.assertAlmostEqual(qs.demand_pct(ST(s)), 100 * variety * (1 + 2 * qs.TABLE_PCT / 100))
 
     def test_online_toggle(self):
         s = opened('xe', staff=False)
         s, _ = act(s, 'jr_quay_online', stall=stall_id(s), on=True)
         self.assertIs(ST(s)['online'], True)
-        self.assertAlmostEqual(qs.demand_pct(ST(s)), qs.ONLINE_REACH)
+        self.assertAlmostEqual(qs.demand_pct(ST(s)), qs.ONLINE_REACH * qs.VARIETY.get(len(qs.menu(ST(s))['on']), 110) / 100)
         refused(self, s, 'jr_quay_online', stall=stall_id(s), on='yes')
 
 

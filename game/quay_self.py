@@ -100,12 +100,39 @@ def cost_of(trade: str, dish: str) -> float:
 
 # ---------------------------------------------------------------- the board, the look, online
 def menu(st: dict) -> dict:
-    """{on: [dish], p: {dish: price}}: the board (its default: the first three dishes at their base)."""
+    """{on: [dish], p: {dish: price}}: the board. A counter opened from 1.9.10 saves its full board at opening
+    (default_menu); an older counter that never saved one keeps its old default, the first three dishes (F#232:
+    staff only sell the board, so the 📦 tab offers "Bật ở Menu" instead of changing it silently)."""
     m = st.get('menu')
     rows = DISH[st['trade']]
     if isinstance(m, dict) and m.get('on'):
         return dict(on=list(m['on']), p={d: int(m.get('p', {}).get(d, rows[d]['base'])) for d in rows})
     return dict(on=[d[0] for d in MENUS[st['trade']][:3]], p={d: v['base'] for d, v in rows.items()})
+
+
+def default_menu(trade: str) -> dict:
+    """A new counter's board: every dish of the trade (up to MENU_MAX) at its base price."""
+    return dict(on=[d[0] for d in MENUS[trade]][:MENU_MAX], p={})
+
+
+def turn_on(st: dict, dishes) -> list[str]:
+    """Put `dishes` on the board (keeping the prices and the dishes already on, in the trade's order, up to MENU_MAX).
+    Returns the dishes newly turned on. Only call where jr_quay_menu could: not in an old-style (non-continuous) run,
+    whose walk-ins are drawn from the board as it was at the start."""
+    rows = DISH[st['trade']]
+    board = menu(st)
+    add = [d for d in rows if d in set(dishes) and d not in board['on']]
+    add = add[:max(0, MENU_MAX - len(board['on']))]
+    if add:
+        on = set(board['on']) | set(add)
+        st['menu'] = dict(on=[d for d in rows if d in on], p={d: board['p'][d] for d in rows if board['p'][d] != rows[d]['base']})
+    return add
+
+
+def board_locked(st: dict, day: int) -> bool:
+    """An old-style run draws its walk-ins from the board as it was at the start: no board change until it closes."""
+    run = _open_run(st, day)
+    return run is not None and not run.get('continuous')
 
 
 def price(st: dict, dish: str, board: dict | None = None) -> int:
@@ -278,8 +305,11 @@ def action(s: dict, name: str, p: dict, st: dict) -> dict:
         return serve_visit(st,p)
     if name == 'jr_quay_menu':
         _need(set(p) <= {'stall', 'on', 'p'}, 'Menu không hợp lệ.')
-        _need(_open_run(st, day) is None, 'Đang đứng quầy. Đóng ca rồi sửa menu nhé.', 'busy')
         on, prices = p.get('on'), p.get('p', {})
+        # While you stand at the counter only adding dishes is allowed (the 📦 tab's "Bật ở Menu"): the queue and its
+        # prices are already drawn; an old-style run draws from the board as it was, so nothing changes there.
+        adding = not prices and isinstance(on, list) and all(isinstance(d, str) for d in on) and set(menu(st)['on']) <= set(on)
+        _need(_open_run(st, day) is None or adding and not board_locked(st, day), 'Đang đứng quầy. Đóng ca rồi sửa menu nhé.', 'busy')
         _need(isinstance(on, list) and 1 <= len(on) <= MENU_MAX and all(isinstance(d, str) for d in on) and len(set(on)) == len(on) and all(d in rows for d in on),
               f'Chọn từ 1 đến {MENU_MAX} món nhé.')
         _need(isinstance(prices, dict) and set(prices) <= set(rows), 'Giá không hợp lệ.')
