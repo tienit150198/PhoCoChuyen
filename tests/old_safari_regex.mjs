@@ -61,11 +61,30 @@ assert.deepEqual(checkSource('const a=[1].at(-1);',{polyfilled:new Set(['at'])})
 assert.deepEqual(msgs('const id=crypto.randomUUID?.()||1;if(typeof structuredClone==="function")structuredClone(1);try{crypto.randomUUID();}catch{}'),[],'guarded');
 assert.deepEqual(msgs('class A{#x=1;static y=2;#m(){return #x in this;}}\nawait 0;\nlet z;z??=1;'),[],'ES2022 that Safari 15.0 has');
 assert.deepEqual(msgs('const r=/(?<=a)b/; // old-safari-ok'),[],'explicit allow');
+// 07/10 B1/B2: canvas roundRect (Safari 16) and <dialog>.showModal() (15.4) are flagged unless boot.js covers them.
+assert.deepEqual(msgs('c.beginPath();c.roundRect(0,0,10,10,4);'),['.roundRect() needs Safari 16+: guard it or load the page with boot.js polyfills']);
+assert.deepEqual(msgs('new Path2D().roundRect(0,0,1,1);').length,1);
+assert.deepEqual(msgs('d.showModal();'),['.showModal() needs Safari 15.4+: guard it or load the page with boot.js polyfills']);
+assert.deepEqual(checkSource('c.roundRect(0,0,1,1);d.showModal();',{polyfilled:new Set(['roundRect','showModal'])}),[],'covered by boot.js');
+assert.deepEqual(msgs('c.roundRect?.(0,0,1,1);c.roundRect?c.roundRect(0,0,1,1):c.rect(0,0,1,1);if(typeof d.showModal==="function")d.showModal();'),[],'guarded');
+assert.deepEqual(msgs('function roundRect(c){}roundRect(c);'),[],'a plain function of that name');
+// Other Safari 15/16 gaps: flagged bare, fine when guarded (feature test, optional call, try).
+assert.match(msgs('requestIdleCallback(f);')[0],/requestIdleCallback is missing on every Safari/);
+assert.match(msgs('window.requestIdleCallback(f);')[0],/requestIdleCallback/);
+assert.deepEqual(msgs('if(globalThis.requestIdleCallback)requestIdleCallback(f);(window.requestIdleCallback||setTimeout)(f);'),[]);
+assert.match(msgs('const o=new OffscreenCanvas(1,1);')[0],/OffscreenCanvas needs Safari 16\.4/);
+assert.deepEqual(msgs('if(typeof OffscreenCanvas==="function")new OffscreenCanvas(1,1);'),[]);
+assert.match(msgs('ctx.reset();')[0],/canvas reset/);
+assert.deepEqual(msgs('form.reset();edit().reset();'),[],'reset() of a form or a helper is not the canvas one');
+assert.match(msgs('el.checkVisibility();')[0],/checkVisibility/);
+assert.deepEqual(msgs('typeof e.checkVisibility==="function"?e.checkVisibility():0;'),[]);
+assert.match(msgs('navigator.userActivation.isActive;')[0],/userActivation/);
+assert.deepEqual(msgs('const o={structuredClone:1};a.structuredClone(1);class K{structuredClone(){}}'),[],'a key or a property, not the global');
 console.log('old_safari_regex.mjs (check): ok');
 
 // boot.js: the polyfills the check relies on are there, and work where the built-ins are missing.
 const boot=readFileSync(new URL('../public/js/boot.js',import.meta.url),'utf8');
-assert.deepEqual([...bootPolyfills(boot)].sort(),['at','findLast','findLastIndex','hasOwn','randomUUID']);
+assert.deepEqual([...bootPolyfills(boot)].sort(),['at','findLast','findLastIndex','hasOwn','randomUUID','roundRect','showModal']);
 const head=boot.slice(boot.indexOf('(()=>{')+6,boot.indexOf('const d=document'));
 const ctx=vm.createContext({});
 vm.runInContext(`delete Array.prototype.at;delete String.prototype.at;delete Object.getPrototypeOf(Int8Array.prototype).at;delete Object.hasOwn;
@@ -91,3 +110,82 @@ assert.equal(r.nullThrows,true);
 const ctx2=vm.createContext({});const nativeAt=vm.runInContext('Array.prototype.at',ctx2);vm.runInContext(head,ctx2);
 assert.equal(vm.runInContext('Array.prototype.at',ctx2),nativeAt);
 console.log('old_safari_regex.mjs (boot polyfills): ok');
+
+// boot.js roundRect: where Safari 15 has none. A path recorder stands in for the canvas; the outline it draws is
+// flattened and compared, on a grid, with an independent rounded-rectangle test (radius i at the i-th corner going
+// round from (x, y): (x,y), (x+w,y), (x+w,y+h), (x,y+h); corners scaled down together when they would overlap).
+const ctx3=vm.createContext({});
+vm.runInContext(`globalThis.CanvasRenderingContext2D=function(){};globalThis.Path2D=function(){};
+  globalThis.OffscreenCanvasRenderingContext2D=function(){};OffscreenCanvasRenderingContext2D.prototype.roundRect=function native(){};`,ctx3);
+vm.runInContext(head,ctx3);
+const RR=vm.runInContext('CanvasRenderingContext2D.prototype.roundRect',ctx3);
+assert.equal(typeof RR,'function');
+assert.equal(vm.runInContext('Path2D.prototype.roundRect',ctx3),RR,'Path2D too');
+assert.equal(vm.runInContext('OffscreenCanvasRenderingContext2D.prototype.roundRect.name',ctx3),'native','a native one is kept');
+assert.equal(vm.runInContext('Object.keys(CanvasRenderingContext2D.prototype).length',ctx3),0,'not enumerable');
+function recorder(){
+  const ops=[];
+  return {ops,moveTo:(x,y)=>ops.push(['M',x,y]),lineTo:(x,y)=>ops.push(['L',x,y]),closePath:()=>ops.push(['Z']),
+    ellipse:(cx,cy,rx,ry,rot,a0,a1,ccw)=>{assert.ok(rx>0&&ry>0&&rot===0);ops.push(['E',cx,cy,rx,ry,a0,a1,ccw]);}};
+}
+/** The recorded outline as a polygon (first subpath only), and the trailing moveTo. */
+function outline(ops){
+  const pts=[];let i=0;
+  for(;i<ops.length;i++){const o=ops[i];
+    if(o[0]==='M'){if(pts.length)break;pts.push([o[1],o[2]]);}
+    else if(o[0]==='L')pts.push([o[1],o[2]]);
+    else if(o[0]==='E'){const [,cx,cy,rx,ry,a0,a1,ccw]=o;
+      assert.ok(ccw?a0>=a1:a1>=a0,'sweeps the short way round');
+      for(let k=0;k<=24;k++){const a=a0+(a1-a0)*k/24;pts.push([cx+rx*Math.cos(a),cy+ry*Math.sin(a)]);}}
+    else if(o[0]==='Z'){i++;break;}
+  }
+  return {pts,rest:ops.slice(i)};
+}
+const inPoly=(pts,[px,py])=>{let w=false;for(let i=0,j=pts.length-1;i<pts.length;j=i++){const [xi,yi]=pts[i],[xj,yj]=pts[j];
+  if((yi>py)!==(yj>py)&&px<(xj-xi)*(py-yi)/(yj-yi)+xi)w=!w;}return w;};
+const area=pts=>pts.reduce((s,[x1,y1],i)=>{const [x2,y2]=pts[(i+1)%pts.length];return s+x1*y2-x2*y1;},0)/2;
+function reference(x,y,w,h,radii){
+  const list=Array.isArray(radii)?radii:[radii],n=list.length;
+  let r=list.map(v=>typeof v==='object'?[v.x??0,v.y??0]:[v,v]);
+  r=n===4?r:n===3?[r[0],r[1],r[2],r[1]]:n===2?[r[0],r[1],r[0],r[1]]:[r[0],r[0],r[0],r[0]];
+  const W=Math.abs(w),H=Math.abs(h);
+  const s=Math.min(1,W/(r[0][0]+r[1][0]),H/(r[1][1]+r[2][1]),W/(r[2][0]+r[3][0]),H/(r[0][1]+r[3][1]));
+  r=r.map(([a,b])=>[a*s,b*s]);
+  const corners=[[x,y],[x+w,y],[x+w,y+h],[x,y+h]];
+  return ([px,py])=>{
+    if(px<=Math.min(x,x+w)||px>=Math.max(x,x+w)||py<=Math.min(y,y+h)||py>=Math.max(y,y+h))return false;
+    for(let i=0;i<4;i++){const [cx,cy]=corners[i],[rx,ry]=r[i];if(!(rx>0&&ry>0))continue;
+      const ex=cx+(cx===Math.min(x,x+w)?rx:-rx),ey=cy+(cy===Math.min(y,y+h)?ry:-ry);   // the corner ellipse's centre
+      const inCorner=(cx<ex?px<ex:px>ex)&&(cy<ey?py<ey:py>ey);
+      if(inCorner&&((px-ex)/rx)**2+((py-ey)/ry)**2>1)return false;}
+    return true;
+  };
+}
+const CASES=[
+  [10,10,80,40,8],[10,10,80,40,0],[10,10,80,40,[12]],[10,10,80,40,[20,4]],[10,10,80,40,[20,4,10]],[10,10,80,40,[22,22,0,0]],
+  [10,10,80,40,[30,2,14,6]],[10,10,80,40,{x:30,y:12}],[10,10,80,40,[{x:30,y:6},4,{x:2,y:18},0]],[10,10,80,40,100],
+  [10,10,80,40,[60,60,10,10]],[90,10,-80,40,[30,2,14,6]],[10,50,80,-40,[30,2,14,6]],[90,50,-80,-40,[30,2,14,6]],
+  [5.5,7.25,33.3,61.9,[9.5,1,20,3.3]],[0,0,100,100,50],[10,10,80,40,[{x:80,y:5}]],
+];
+for(const [x,y,w,h,radii] of CASES){
+  const rec=recorder();RR.call(rec,x,y,w,h,radii);
+  const {pts,rest}=outline(rec.ops),ref=reference(x,y,w,h,radii),tag=JSON.stringify([x,y,w,h,radii]);
+  assert.deepEqual(rest,[['M',Math.min(x,x+w),Math.min(y,y+h)]],`ends with a new subpath at the top left, like Chromium and WebKit: ${tag}`);
+  assert.equal(Math.sign(area(pts)),Math.sign(w*h),`direction flips with each negative side: ${tag}`);
+  let bad=0,tested=0;
+  for(let gx=-2;gx<=102;gx+=0.37)for(let gy=-2;gy<=72;gy+=0.41){
+    const ins=ref([gx,gy]);
+    // skip points within half a unit of the true edge (polygon flattening, boundaries)
+    const near=[[.5,0],[-.5,0],[0,.5],[0,-.5]].some(([dx,dy])=>ref([gx+dx,gy+dy])!==ins);
+    if(near)continue;tested++;if(inPoly(pts,[gx,gy])!==ins)bad++;
+  }
+  assert.ok(tested>2000,tag);
+  assert.equal(bad,0,`same shape as the reference: ${tag}`);
+}
+// Spec edge cases: non-finite input draws nothing; 0 or 5 radii, or a negative one, is a RangeError.
+for(const args of [[NaN,0,10,10,2],[0,0,Infinity,10,2],[0,0,10,10,NaN],[0,0,10,10,[1,Infinity]],[0,0,10,10,{x:NaN,y:1}]]){
+  const rec=recorder();RR.call(rec,...args);assert.deepEqual(rec.ops,[],`nothing for ${args}`);
+}
+for(const radii of [[],[1,2,3,4,5],-1,[1,-2],{x:1,y:-1}])assert.throws(()=>RR.call(recorder(),0,0,10,10,radii),e=>e instanceof RangeError||e?.name==='RangeError',JSON.stringify(radii));
+{const rec=recorder();RR.call(rec,1,2,30,40);assert.deepEqual(rec.ops.filter(o=>o[0]==='E'),[],'no radii: square corners');}
+console.log(`old_safari_regex.mjs (roundRect polyfill): ${CASES.length} shapes match`);

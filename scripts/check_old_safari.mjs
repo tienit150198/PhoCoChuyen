@@ -8,7 +8,8 @@
 //     class static blocks (16.4); top-level await outside a module; anything newer than ES2022 does not parse.
 //  2. Regex literals and RegExp('…') strings: no lookbehind (?<= (?<! (16.4), no flag v (17) or d (kept out,
 //     like the task asks), no modifiers (?i:…) (ES2025), no duplicate named groups (17).
-//  3. Built-ins newer than Safari 15.0: .at() / Object.hasOwn / findLast / findLastIndex / crypto.randomUUID are
+//  3. Built-ins newer than Safari 15.0: .at() / Object.hasOwn / findLast / findLastIndex / crypto.randomUUID /
+//     canvas and Path2D .roundRect() (Safari 16) / <dialog>.showModal() (15.4) are
 //     polyfilled by public/js/boot.js (pages with boot.js only: index.html); the checker verifies those polyfills
 //     are there. Others (structuredClone, toSorted, Object.groupBy, Promise.withResolvers, Set#union, …) must be
 //     guarded: an optional call `x?.()`, a `typeof`/truthiness test, a try block, or `// old-safari-ok` on the line.
@@ -49,7 +50,15 @@ const APIS=[
   {name:'.findLast()',min:'15.4',poly:'findLast',match:n=>n.type==='CallExpression'&&member(n.callee,'findLast')},
   {name:'.findLastIndex()',min:'15.4',poly:'findLastIndex',match:n=>n.type==='CallExpression'&&member(n.callee,'findLastIndex')},
   {name:'crypto.randomUUID',min:'15.4',poly:'randomUUID',match:n=>n.type==='MemberExpression'&&propName(n)==='randomUUID'},
-  {name:'structuredClone',min:'15.4',match:n=>n.type==='Identifier'&&n.name==='structuredClone'},
+  // 07/10 B1: ~3,700 errors from iOS 15.4–15.8 (scenes drew nothing); B2: no sheet opens on iOS 15.0–15.3.
+  {name:'.roundRect()',min:'16',poly:'roundRect',match:n=>n.type==='CallExpression'&&member(n.callee,'roundRect')},
+  {name:'.showModal()',min:'15.4',poly:'showModal',match:n=>n.type==='CallExpression'&&member(n.callee,'showModal')},
+  {name:'ctx.reset()',why:'is missing on Safari 15/16 (canvas reset())',match:n=>n.type==='CallExpression'&&member(n.callee,'reset')&&/^(c|ctx|g|context|cx)$/.test(n.callee.object?.name||'')},
+  {name:'.checkVisibility()',min:'17.4',match:n=>n.type==='CallExpression'&&member(n.callee,'checkVisibility')},
+  {name:'requestIdleCallback',why:'is missing on every Safari',match:(n,p)=>name(n,p)==='requestIdleCallback'||isPath(n,'window','requestIdleCallback')||isPath(n,'globalThis','requestIdleCallback')||isPath(n,'self','requestIdleCallback')},
+  {name:'OffscreenCanvas',min:'16.4',match:(n,p)=>name(n,p)==='OffscreenCanvas'},
+  {name:'navigator.userActivation',min:'16.4',match:n=>isPath(n,'navigator','userActivation')},
+  {name:'structuredClone',min:'15.4',match:(n,p)=>name(n,p)==='structuredClone'},
   ...['toSorted','toReversed','toSpliced'].map(p=>({name:`.${p}()`,min:'16',match:n=>n.type==='CallExpression'&&member(n.callee,p)})),
   {name:'Array.fromAsync',min:'16.4',match:n=>isPath(n,'Array','fromAsync')},
   ...['isWellFormed','toWellFormed'].map(p=>({name:`.${p}()`,min:'16.4',match:n=>n.type==='CallExpression'&&member(n.callee,p)})),
@@ -63,6 +72,13 @@ const APIS=[
   {name:'AbortSignal.any',min:'17.4',match:n=>isPath(n,'AbortSignal','any')},
   {name:'Iterator.from',min:'18.4',match:n=>isPath(n,'Iterator','from')},
 ];
+/** A free identifier's name (not the `b` of `a.b`, nor an object key): what a global reference looks like. */
+function name(n,parents){
+  if(n.type!=='Identifier')return null;
+  const p=parents.at(-1);
+  if(p&&((p.type==='MemberExpression'&&p.property===n&&!p.computed)||(p.type==='Property'&&p.key===n&&!p.computed&&!p.shorthand)||(p.type==='MethodDefinition'||p.type==='PropertyDefinition')&&p.key===n))return null;
+  return n.name;
+}
 function propName(m){return m.computed?(m.property.type==='Literal'?m.property.value:null):m.property.name;}
 function member(n,name){return n?.type==='MemberExpression'&&propName(n)===name;}
 function isPath(n,obj,prop){
@@ -122,10 +138,10 @@ export function checkSource(src,{module=true,polyfilled=new Set()}={}){
       for(const m of regexProblems(text,f))at(n,`${m} in RegExp()`);
     }
     for(const api of APIS){
-      if(!api.match(n))continue;
+      if(!api.match(n,parents))continue;
       if(api.poly&&polyfilled.has(api.poly))continue;
       if(guarded(n,parents,api.name.replace(/^.*[.#]|\(\)$/g,''),src))continue;
-      at(n,`${api.name} needs Safari ${api.min}+: guard it${api.poly?' or load the page with boot.js polyfills':''}`);
+      at(n,`${api.name} ${api.why||`needs Safari ${api.min}+`}: guard it${api.poly?' or load the page with boot.js polyfills':''}`);
     }
   });
   return out;
@@ -139,6 +155,8 @@ export function bootPolyfills(src=readFileSync(BOOT,'utf8')){
   if(/poly\(\s*Array\.prototype\s*,\s*'findLast'/.test(src))has.add('findLast');
   if(/poly\(\s*Array\.prototype\s*,\s*'findLastIndex'/.test(src))has.add('findLastIndex');
   if(/poly\(\s*C\s*,\s*'randomUUID'/.test(src))has.add('randomUUID');
+  if(/poly\(\s*globalThis\.CanvasRenderingContext2D\?\.prototype\s*,\s*'roundRect'/.test(src)&&/poly\(\s*globalThis\.Path2D\?\.prototype\s*,\s*'roundRect'/.test(src))has.add('roundRect');
+  if(/typeof HTMLDialogElement!=='function'/.test(src)&&/poly\(\s*P\s*,\s*'showModal'/.test(src)&&/poly\(\s*P\s*,\s*'close'/.test(src))has.add('showModal');
   return has;
 }
 

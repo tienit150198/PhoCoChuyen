@@ -7,6 +7,19 @@ Gồm sửa lỗi vòng góp ý 5: trả lời đánh giá không mất, nút Kh
 Gồm sửa karaoke (hết giật, nhận thêm kiểu link), lux (nút mờ khi thiếu tiền), và mic trực tiếp (schema 30 account_birth; bật bằng LIVE_KARAOKE_MIC=1 sau khi cài LiveKit: deploy/livekit).
 # Chưa phát hành
 
+## Sửa lỗi iPhone iOS 15: cảnh tiệm không vẽ, sheet không mở (B1, B2)
+
+- iOS 15.4–15.8 (mở được game từ 1.9.14) không vẽ được cảnh nào: khoảng 3.680 lỗi `roundRect is not a function`
+  từ 14:17, vì `roundRect` của canvas chỉ có từ Safari 16. `public/js/boot.js` thêm `roundRect` cho
+  CanvasRenderingContext2D, Path2D và OffscreenCanvasRenderingContext2D, chỉ khi trình duyệt chưa có. Bản này theo
+  spec HTML: bán kính là số, `{x,y}` hoặc danh sách 1–4 giá trị; báo RangeError khi sai; bỏ qua NaN/∞; thu nhỏ góc
+  chồng nhau; lật khi w/h âm. Đã so từng điểm ảnh với bản gốc của WebKit và Chromium (fill, stroke, Path2D): trùng
+  khớp. iOS 15.0–15.3 không có `<dialog>` (39 chỗ `showModal()`), nên boot.js thêm một bản thay tối giản: chỉ chạy khi
+  không có `HTMLDialogElement`; có open/showModal/close, sự kiện close, Esc gửi cancel và một lớp nền `.mnl-backdrop`.
+  `scripts/check_old_safari.mjs` giờ chặn `.roundRect(` và `.showModal(` nếu boot.js không có bản thay. Nó cũng chặn
+  `requestIdleCallback`, `OffscreenCanvas`, `ctx.reset()`, `checkVisibility()` và `navigator.userActivation` khi dùng
+  không có kiểm tra (các chỗ đang dùng đều đã có). Không đổi save, không đổi server.
+
 ## Sửa lỗi chiều 07/10 (trả lời đánh giá, Khép ca, công an hội chợ, tiệm hoa)
 
 - Trả lời đánh giá không còn mất im lặng (fb_reply 409: 29 → 148 lần): khi lời AI của khách lưu chậm, câu trả lời được

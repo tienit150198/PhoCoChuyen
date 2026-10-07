@@ -29,6 +29,79 @@
   const C=globalThis.crypto;
   if(C&&typeof C.getRandomValues==='function')poly(C,'randomUUID',()=>{const b=C.getRandomValues(new Uint8Array(16));b[6]=b[6]&15|64;b[8]=b[8]&63|128;
     const h=Array.from(b,x=>(x+256).toString(16).slice(1)).join('');return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;});
+  // Canvas roundRect (Safari 16.0). 07/10: about 3,700 "roundRect is not a function" from iOS 15.4–15.8 once 1.9.14
+  // let them in, and no scene drew (scenes/kit.js R(), world.js, boba-world.js and ~45 other files call it).
+  // The HTML spec's steps: radii a number, a DOMPointInit {x,y} or a list of 1–4 of them (RangeError otherwise or when
+  // negative), non-finite input draws nothing, overlapping corners scaled down, a negative w/h flips the rectangle
+  // (and the direction), then a new subpath at its top left. Corners are quarter ellipses (x and y radii may differ).
+  // Pixel for pixel the native one of Chromium and WebKit (fill, stroke, Path2D; dashes start where Chromium's do).
+  const roundRect=function(x,y,w,h,radii=0){
+    x=+x;y=+y;w=+w;h=+h;
+    const list=radii!==null&&typeof radii==='object'&&typeof radii[Symbol.iterator]==='function'?[...radii]:[radii];
+    if(![x,y,w,h].every(Number.isFinite))return;
+    if(list.length<1||list.length>4)throw new RangeError(`roundRect: ${list.length} radii, expected 1 to 4`);
+    const r=[];
+    for(const v of list){
+      const p=v!==null&&typeof v==='object'?[+(v.x??0),+(v.y??0)]:[+v,+v];
+      if(!Number.isFinite(p[0])||!Number.isFinite(p[1]))return;
+      if(p[0]<0||p[1]<0)throw new RangeError(`roundRect: radius ${p[0]<0?p[0]:p[1]} is negative`);
+      r.push(p);
+    }
+    const n=r.length;   // upper-left, upper-right, lower-right, lower-left
+    let [ul,ur,lr,ll]=n===4?r:n===3?[r[0],r[1],r[2],r[1]]:n===2?[r[0],r[1],r[0],r[1]]:[r[0],r[0],r[0],r[0]];
+    let cw=true;
+    if(w<0){x+=w;w=-w;cw=!cw;[ul,ur,lr,ll]=[ur,ul,ll,lr];}
+    if(h<0){y+=h;h=-h;cw=!cw;[ul,ur,lr,ll]=[ll,lr,ur,ul];}
+    const s=Math.min(w/(ul[0]+ur[0]),h/(ur[1]+lr[1]),w/(lr[0]+ll[0]),h/(ul[1]+ll[1]));
+    if(s<1)[ul,ur,lr,ll]=[ul,ur,lr,ll].map(([a,b])=>[a*s,b*s]);
+    const H=Math.PI/2;
+    // [centre x, centre y, rx, ry, start angle, end angle] of each corner, clockwise from the top right.
+    const C={ur:[x+w-ur[0],y+ur[1],ur[0],ur[1],-H,0],lr:[x+w-lr[0],y+h-lr[1],lr[0],lr[1],0,H],
+      ll:[x+ll[0],y+h-ll[1],ll[0],ll[1],H,2*H],ul:[x+ul[0],y+ul[1],ul[0],ul[1],2*H,3*H]};
+    this.moveTo(x+ul[0],y);
+    for(const k of cw?['ur','lr','ll','ul']:['ul','ll','lr','ur']){
+      const [cx,cy,rx,ry,a0,a1]=C[k],[from,to]=cw?[a0,a1]:[a1,a0];
+      if(rx>0&&ry>0)this.ellipse(cx,cy,rx,ry,0,from,to,!cw);
+      else{this.lineTo(cx+rx*Math.cos(from),cy+ry*Math.sin(from));this.lineTo(cx+rx*Math.cos(to),cy+ry*Math.sin(to));}
+    }
+    this.closePath();this.moveTo(x,y);
+  };
+  poly(globalThis.CanvasRenderingContext2D?.prototype,'roundRect',roundRect);
+  poly(globalThis.Path2D?.prototype,'roundRect',roundRect);
+  poly(globalThis.OffscreenCanvasRenderingContext2D?.prototype,'roundRect',roundRect);
+  // <dialog> (Safari 15.4, Firefox 98): iOS 15.0–15.3 could open no sheet (~39 showModal() calls). Only where the
+  // browser has no HTMLDialogElement at all: open/show/showModal/close/returnValue, a 'close' event, Escape fires a
+  // cancelable 'cancel', a .mnl-backdrop element under the dialog (a tap on it is a tap on the dialog, like ::backdrop).
+  if(typeof HTMLDialogElement!=='function'&&typeof HTMLElement==='function'&&typeof document==='object'){try{
+    const P=HTMLElement.prototype,open=[],dd=document;let z=2147480000;
+    const css=dd.createElement('style');
+    css.textContent='dialog:not([open]){display:none!important}dialog[open]{display:block}'
+      +'dialog{position:absolute;left:0;right:0;margin:auto;width:-webkit-fit-content;width:fit-content;height:-webkit-fit-content;height:fit-content;border:solid;padding:1em;background:#fff;color:#000}'
+      +'dialog.mnl-modal{position:fixed;top:0;bottom:0;max-width:calc(100% - 6px - 2em);max-height:calc(100% - 6px - 2em);overflow:auto}'
+      +'.mnl-backdrop{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.4)}';
+    (dd.head||dd.documentElement).append(css);
+    if(!('open' in P))Object.defineProperty(P,'open',{configurable:true,get(){return this.hasAttribute('open');},set(v){this.toggleAttribute('open',Boolean(v));}});
+    if(!('returnValue' in P))Object.defineProperty(P,'returnValue',{configurable:true,writable:true,value:''});
+    poly(P,'show',function(){this.setAttribute('open','');});
+    poly(P,'showModal',function(){
+      if(this.hasAttribute('open'))return;
+      const b=dd.createElement('div');b.className='mnl-backdrop';b.style.zIndex=String(z++);this.style.zIndex=String(z++);
+      // A dialog removed or un-opened without close() leaves no backdrop over the game: the next tap clears it.
+      b.addEventListener('click',()=>{if(this.isConnected&&this.hasAttribute('open'))this.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true}));
+        else{b.remove();const i=open.indexOf(this);if(i>=0)open.splice(i,1);}});
+      this.before(b);this._mnlBack=b;this.classList.add('mnl-modal');this.setAttribute('open','');open.push(this);
+      this.querySelector('[autofocus]')?.focus?.();
+    });
+    poly(P,'close',function(v){
+      if(!this.hasAttribute('open'))return;
+      if(v!==undefined)this.returnValue=String(v);
+      this.removeAttribute('open');this.classList.remove('mnl-modal');this._mnlBack?.remove();this._mnlBack=null;
+      const i=open.indexOf(this);if(i>=0)open.splice(i,1);
+      this.dispatchEvent(new Event('close'));
+    });
+    dd.addEventListener('keydown',e=>{const top=open[open.length-1];
+      if(e.key==='Escape'&&top&&top.dispatchEvent(new Event('cancel',{cancelable:true})))top.close();},true);
+  }catch{/* keep going without */}}
   const d=document,B=globalThis.__mnlBoot={sent:Date.now()};
   let map={};
   try{map=JSON.parse(d.querySelector('script[type="importmap"]')?.textContent||'{}').imports||{};}catch{/* no import map: plain URLs */}
