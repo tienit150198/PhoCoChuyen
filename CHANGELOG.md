@@ -1,3 +1,7 @@
+# v1.9.16 — 2026-10-07
+
+Gồm sửa lỗi vòng góp ý 5: trả lời đánh giá không mất, nút Khép ca to, hội chợ 10 phút/20 ván đầu không kiểm tra, tiệm hoa, situationView, ảnh JPEG ≤ 200 KB, log 413. Không có Có gì mới.
+
 # v1.9.15 — 2026-10-07
 
 Gồm sửa karaoke (hết giật, nhận thêm kiểu link), lux (nút mờ khi thiếu tiền), và mic trực tiếp (schema 30 account_birth; bật bằng LIVE_KARAOKE_MIC=1 sau khi cài LiveKit: deploy/livekit).
