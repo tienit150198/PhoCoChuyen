@@ -27,6 +27,7 @@ import {emojiOf,townOn} from './v4/journey.js';
 import {lowItems,crates} from './v4/restock.js';  // the bar's Kho badge
 import {setLanguage,t as i18nT} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
+import {workplaceAway,awayFresh,awayToast} from './away-report.js';   // B4: 🧾 Lúc bạn vắng
 import {accountSubmit,accountNudge,accountAction,accountBoot} from './v4/account.js';
 import {registerWorker,listenWorker} from './v4/push.js';
 import {homeView as homeV4,futureView as futureV4,journeyBoot,journeyAction,journeySubmit} from './v4/home.js';
@@ -456,6 +457,8 @@ function hudNotes(c){
   if(cl&&c.open){const ev=cl.active||cl.offers.find(o=>o.kind==='event');if(ev)notes.push(['classroom',{},'book',cl.active?'Đang làm dở':'Lịch lớp · '+cl.month,`${ev.emoji} ${ev.title}`]);}
   if(low)notes.push(['feedback',{filter:'open'},'star','Đánh giá',`${low} đánh giá ≤3★ chờ bạn trả lời`]);
   if(alert)notes.push(['opsTab',{tab:alert.tab},'store',wordsFor(career()).books,alert.text]);
+  // B4 (F#243, F#247): what the staff sold while the player was away; the card itself is on Sổ tiệm → Nhân viên.
+  const away=workplaceAway(c,career(),api.state.name);if(away)notes.unshift(['opsTab',{tab:'staff'},'store','Lúc bạn vắng',`Đội bán ${fmt(away.orders)} đơn · xem chi tiết`]);
   return notes;
 }
 const noteRows=notes=>notes.map(([a,d,i,k,txt])=>`<button type="button" class="hud-note" data-action="${a}"${attrs(d)}><span class="hud-note-ico">${icon(i,16)}</span><span class="grow"><small>${esc(k)}</small><b>${esc(txt)}</b></span>${icon('chevron',14)}</button>`).join('');
@@ -569,6 +572,7 @@ function renderMain(){
   setHTML($('#sceneHeading'),`${shell.mark(m)}<div class="scene-title"><h1>${esc(c.life.shop_name||m.place)}</h1></div>${careerSwitchButton()}${otChip(c)}`);
   setHTML($('#sceneBadge'),'');  // open/closed, weather and mode: status sheet (tap the day)
   setHTML($('#taskHUD'),taskCards(c));
+  const away=workplaceAway(c,career(),api.state.name);if(away&&awayFresh(away.key))toast(awayToast(away),'good');
   setHTML($('#dock'),dockHTML(c));
   setHTML($('#sceneHint'),c.day<=1&&layout()!=='phone'?`${icon('move',12)} Chạm sàn để đi · Chạm đồ vật để làm · WASD / mũi tên · E tương tác`:'');
   $('#ambientCaption').textContent='';$('#saveState').classList.toggle('offline',!api.connected);

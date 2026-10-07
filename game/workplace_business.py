@@ -290,6 +290,7 @@ def _finish(s,c,career,e,at,order=None):
     revenue=base*(80+quality*4)//100
     wage=math.ceil(staff_life.wage(c['ops'],e)/4);cash=wage+supplies
     goods=_take_stock(c,career,inputs)
+    _count_used(c,inputs)
     ref=f'staff-order-{career}-{seq}'
     # Customer revenue retains the normal deferred tax. Stock cost was already
     # paid on purchase; its basis belongs in the margin, never another cash debit.
@@ -314,6 +315,29 @@ def _finish(s,c,career,e,at,order=None):
     e['jobs']=min(10**9,e['jobs']+1);e['last_work']=f'{label} · {quality}/5 sao · thu {revenue} xu, lương {wage} xu.'
     if quality<4:e['errors']=min(10**9,e['errors']+1)
 
+
+
+# B4 (F#243, F#247: "đồ trong shop mất hết", "nhập 30 ly giấy … hết ngày lại báo hết"): what the staff orders took from
+# the shelf, a running total per item. The page keeps its own copy of these totals from the player's last look and shows
+# the difference on return ("Lúc bạn vắng: … dùng 37 cà phê, 37 ly"). A stock count cannot say it: expiry at the day's
+# close and a theft also lower it. Optional: a save without it is valid, created at the first order after this release.
+USED_ITEMS = 400
+USED_FALLBACK = {'milk': 'Sữa tươi', 'cup_M': 'Ly size M'}   # milk_tea's inputs live in boba, not the catalogue
+
+
+def _count_used(c,inputs):
+    if not inputs:return
+    used=c['ops'].setdefault('business_used',{})
+    for item,qty in inputs.items():
+        if item in used or len(used)<USED_ITEMS:used[item]=min(LIMIT,used.get(item,0)+qty)
+
+
+def _usage(c,career,out):
+    """Read-only: the running totals as [[item, name, qty], ...], largest first (the page's away report)."""
+    used=c['ops'].get('business_used')
+    if not used:return
+    names=_item_names(career) if career else {}
+    out['used']=[[i,names.get(i) or USED_FALLBACK.get(i,i),q] for i,q in sorted(used.items(),key=lambda x:(-x[1],x[0]))]
 
 
 def _recent(c):
@@ -430,6 +454,7 @@ def public(c,now=None):
                rate_per_hour=round(sum(3600/p['seconds'] for p in b['pending'].values()),1),
                wage_basis='Mỗi đơn trả 1/4 lương ca, làm tròn lên; vật tư trừ quỹ nơi làm việc.',fund=c['money'])
     _explain(c,b,out)
+    _usage(c,next((e.get('career') for e in c['ops']['staff'] if e.get('career') in ORDERS),None),out)
     out['income']=_income(out)
     if staff_working(c):
         out.update(status='running',reason='working',reason_text='Nhân viên đang phục vụ khách người chơi.',visitor_working=True)
@@ -496,9 +521,13 @@ def _explain(c,b,out):
 def validate(c,career):
     from .engine import need
     b=c['ops'].get('business')
-    if b is None:return
     def check(ok):need(ok,'Dữ liệu đơn riêng của nhân viên không hợp lệ.','invalid_save')
     def integer(v,lo=0,hi=LIMIT):return type(v) is int and lo<=v<=hi
+    used=c['ops'].get('business_used')
+    if used is not None:
+        check(isinstance(used,dict) and len(used)<=USED_ITEMS)
+        check(all(isinstance(item,str) and 1<=len(item)<=80 and integer(qty,1) for item,qty in used.items()))
+    if b is None:return
     profit=c['ops'].get('business_profit')
     if profit is not None:
         check(isinstance(profit,dict) and set(profit) in ({'v','anchor','positive','total','carry','recent'}, {'v','anchor','positive','total','carry','recent','visitor_total','visits'}))
