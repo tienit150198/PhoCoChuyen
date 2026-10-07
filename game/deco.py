@@ -1580,6 +1580,30 @@ def upgrade(j: dict) -> None:
         A['places'] = [x for x in A['places'] if not isinstance(x, dict) or x.get('items') or x.get('skins')]
         if not A['places']:
             j.pop('decor_away')
+    _v2_fit(j, kinds)
+
+
+def _v2_fit(j: dict, kinds: dict) -> None:
+    """🏰 A piece a 1.9.11..1.9.17 build placed where 1.9.18's Sông Hồng rooms have nothing to hold it (the counter's 7th
+    cell: game/estates.py superset() keeps the old 6) goes to the bag, as validate() checks the blocks against these
+    rooms. Only the free layout blocks; the grid mirror and its sig stay, so layout() never merges it back."""
+    blocks = [(n, j[n]) for n in _LAYOUT_BLOCKS if isinstance(j.get(n), dict) and isinstance(j[n].get('items'), dict)
+              and isinstance(j[n].get('at'), str)]
+    for at in {B['at'] for _n, B in blocks}:
+        rooms = rooms_of(at) if _es().legacy_rooms(at) is not None else None
+        every = {u: v for _n, B in blocks if B['at'] == at for u, v in B['items'].items()}
+        if not rooms or not all(kinds.get(u) in ITEMS and isinstance(v, dict) and _piece_ok(v) for u, v in every.items()):
+            continue
+        _kept, out = settle_free(rooms, kinds, every, list(kinds))
+        if not out:
+            continue
+        sys.stderr.write(f"[deco-v2] {len(out)} piece(s) to the bag at {at}: {', '.join(f'{u}:{kinds.get(u)}' for u in out)}\n")
+        for n, B in blocks:
+            if B['at'] == at:
+                for u in out:
+                    B['items'].pop(u, None)
+                if n != 'decor' and not B['items']:
+                    j.pop(n)
 
 
 def _v2_alias(j: dict) -> None:

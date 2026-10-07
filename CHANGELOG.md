@@ -3,6 +3,7 @@
 Gồm "🔒 Giữ lại cho ca của tôi" (ops.business_keep, business.keep tùy chọn) và sửa sự cố đồ trang trí 07/10:
 
 - Biệt thự Sông Hồng: từ 1.9.11 bếp và phòng ngủ 2 mất một hàng, cửa sổ / quầy bếp mới đè lên ô cũ, nên khi đổi khóa `:v2` 139 món của 16 người chơi vào túi đồ và lưới cũ làm vài món bị nắn lệch. Nay mỗi phòng cũ là tập cha của phòng cũ (estates.superset), `_v2_alias` giữ nguyên từng vị trí; món chỉ phòng mới chứa nằm ở `journey.decor_wide` (tùy chọn, 1.9.17 bỏ qua: hiện trong túi).
+- Món mà 1.9.11..1.9.17 đặt trên ô thứ 7 của quầy bếp Sông Hồng (quầy nay 6 ô như nhà cũ) vào túi đồ khi tải (`deco._v2_fit`); trước đó validate từ chối cả bản lưu (5 bản lưu thật, bắt được ở bước kiểm tra trước deploy).
 - Chuyển chỗ ở: bố cục chỗ cũ được nhớ trong `journey.decor_away` (3 chỗ gần nhất, tùy chọn), quay về là bày lại; món đã bán thì thôi.
 
 # Chưa phát hành — 🔒 Giữ lại cho ca của tôi (B4 phần 2, góp ý #243, #247)

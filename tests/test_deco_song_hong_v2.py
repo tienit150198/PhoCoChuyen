@@ -178,6 +178,30 @@ class Alias(unittest.TestCase):
         self.assertIn(uid, [it['id'] for it in s['journey']['reno']['items']])   # in the bag, never lost
 
 
+class CounterCell(unittest.TestCase):
+    def test_a_thing_on_the_1_9_11_counters_7th_cell_goes_to_the_bag_on_load(self):
+        """5 real saves at 20:15 07/10: a kettle on the 7th counter cell (placed by 1.9.11..1.9.17 at the ':v2' key) made
+        1.9.18's validate refuse the whole save. On load it now goes to the bag; the rest stays where it stands."""
+        s, _ = old_save()
+        jr.upgrade(s['journey'])
+        s, r = act(s, 'jr_deco_buy', item='am_sieu_toc', confirm=True)
+        j = s['journey']
+        before = dc.layout(s)['pos']
+        q = dict(r='kitchen', x=6 * U, y=0, f=0, on='#counter')
+        leg = es.legacy_rooms(NEW)
+        kinds = {it['id']: it['k'] for it in j['reno']['items']}
+        self.assertIsNone(dc.check(next(x for x in leg if x['id'] == 'kitchen'), 'am_sieu_toc', q, {}, kinds))
+        j['decor']['items'][r['uid']] = q                  # what a 1.9.17 build wrote
+        import io
+        from contextlib import redirect_stderr
+        with redirect_stderr(io.StringIO()):
+            jr.upgrade(j)
+        validate_state(s)
+        self.assertNotIn(r['uid'], dc.layout(s)['pos'])
+        self.assertEqual(dc.layout(s)['pos'], before)
+        self.assertIn(r['uid'], kinds)                     # in the bag, never lost
+
+
 class Moving(unittest.TestCase):
     def test_a_villa_and_back_puts_the_home_layout_back(self):
         """The 07/10 trap: buy a villa, move in, a day passes, sell it: the home's layout came back empty."""
