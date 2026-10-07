@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 29  # 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 30  # 30: 🎙️ Phòng hát mic trực tiếp (account_birth: game/karaoke_mic.py); 29: 🔨 Nhà đấu giá (auction_lots, auction_bids: game/auction.py); 28: 🎆 Mạnh Thường Quân (lux_gifts: game/lux.py); 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py; ensure() also creates any table missing); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -528,6 +528,12 @@ CREATE TABLE IF NOT EXISTS auction_bids (
   pushed_at double precision NOT NULL DEFAULT 0, PRIMARY KEY(lot, sid)
 );
 CREATE INDEX IF NOT EXISTS auction_bids_sid ON auction_bids(sid, lot);
+-- 🎙️ Phòng hát mic trực tiếp (game/karaoke_mic.py, live/karaoke.py; SCHEMA_VERSION 30): an account's optional birth year,
+-- asked the first time it turns the live mic on (under 16: listening only). Set once; deleted with the player's data.
+-- Its own table (not a column of accounts, not a save key): a rollback never sees it.
+CREATE TABLE IF NOT EXISTS account_birth (
+  sid {T} PRIMARY KEY, year bigint NOT NULL, at double precision NOT NULL
+);
 """
 
 INDEX_DDL = """
@@ -813,6 +819,7 @@ TABLES = [
     dict(name='lux_gifts', identity=None),
     dict(name='auction_lots', identity=None),
     dict(name='auction_bids', identity=None),
+    dict(name='account_birth', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

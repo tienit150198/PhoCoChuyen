@@ -38,6 +38,30 @@ Gồm "Sửa lỗi iPhone iOS 15–16.3 không vào được game".
   trả bằng ví rồi tới tài khoản ngân hàng như máy chủ). Các nút mua khác (thanh dưới) đã có sẵn lý do.
 - Không đổi bản lưu, không thêm khóa, không đổi CSDL. Không thêm mục "Có gì mới".
 
+# Chưa phát hành
+
+## Phòng hát: mic trực tiếp
+
+- 🎙️ Phòng hát Mây: người đang đứng sân khấu bấm **🎙️ Mic** để cả phòng nghe giọng mình hát trực tiếp (trễ ~0,2–0,5 s),
+  người nghe không nói được, không ghi âm ở đâu cả. Cả phòng thấy "🎤 Đang phát trực tiếp giọng hát"; người nghe có
+  nút âm lượng giọng riêng (🎤, 🔇) đè lên video YouTube của chính mình, "🔈 Chạm để nghe giọng" khi điện thoại cần chạm.
+  Lần đầu: một dòng khuyên đeo tai nghe, rồi hỏi năm sinh (lưu một lần), rồi trình duyệt xin quyền micro. Đồng bộ video
+  giữ nguyên như cũ.
+- An toàn: dưới 16 tuổi (tính theo tuổi nhỏ nhất có thể từ năm sinh) chỉ nghe; tài khoản phải đủ 1 ngày; mic tự tắt khi
+  hết bài / bỏ bài / bị bỏ phiếu / QL bỏ bài, khi rời phòng, sau 6 phút, khi QL bấm 🔇 Cắt mic (trong phòng hoặc trang
+  quản trị) hay 3 người báo cáo giọng hát (🚩: nói bậy / 🛟 có vẻ là trẻ em / khác; QL thấy là "🎙️ lúc hát mic trực
+  tiếp"). Mời ra, khóa chat như cũ. Chặn nhau (👥 › 🚫 mới trong phòng) thì không nghe giọng nhau, chặn giữa bài cũng bị
+  ngắt trong 1 giây. QL có thêm "🎂 Hỏi lại năm sinh".
+- Kỹ thuật: SFU LiveKit tự cài (deploy/livekit: cấu hình, systemd, nginx `/sfu/`, ufw 7881/tcp, script `install.sh`
+  để lead chạy; TURN/TLS qua 443 là bước 2 tùy chọn). Nhà mạng chặn UDP vào/ra máy chủ (đã đo, chỉ đọc), nên tiếng đi
+  qua ICE/TCP. Mỗi lượt mic một phòng SFU riêng, xóa là cắt ngay; token của ca sĩ chỉ phát micro, của người nghe chỉ
+  nghe (live/sfu.py). SDK livekit-client 2.22.3 tải từ jsDelivr, khóa SRI, chỉ khi có mic.
+- Công tắc `LIVE_KARAOKE_MIC=1` (mặc định tắt, cả live và game server). Tắt: header, route, khung live y như 1.9.13
+  (`Permissions-Policy: microphone=()`). Bật: `microphone=(self)`, CSP thêm đúng một file SDK và nguồn SFU.
+- CSDL: bảng mới `account_birth` (SCHEMA_VERSION 30, sau 29 của đấu giá; chỉ thêm bảng; quay về 1.9.13 không thấy nó). Không thêm khóa nào
+  trong bản lưu. Xóa dữ liệu cá nhân xóa luôn năm sinh.
+- Kiểm thử: tests/test_karaoke_mic.py, tests/test_live_karaoke_mic.py; scripts/browser_live_karaoke_mic.py (4 điện
+  thoại, LiveKit thật, mic giả; `--tcp-only`: không UDP).
 # v1.9.13 — 2026-10-07
 
 Gồm "Nhà đấu giá đồ độc bản" (schema 29: auction_lots, auction_bids; journey.uniq).

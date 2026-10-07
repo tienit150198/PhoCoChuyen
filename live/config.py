@@ -9,6 +9,10 @@
 | `LIVE_HOME` | as `LIVE_STREET` | married players in the same home see each other and share gestures (live/home.py) |
 | `LIVE_TOWN` | 0 | real player presence on the shared 2.5D town map, independent of chat (live/town.py) |
 | `LIVE_KARAOKE` | 0 | 🎤 Phòng hát: public karaoke rooms with a synced YouTube video, a queue, the stage and 🧩 Đoán bài (live/karaoke.py, welcome flag `kara`) |
+| `LIVE_KARAOKE_MIC` | 0 | 🎙️ the stage singer's live mic in those rooms (welcome flag `kara_mic`; needs `LIVE_KARAOKE=1` and the four LIVEKIT_* below, else it stays off). The game server reads the same switch for its headers (server.py) |
+| `LIVEKIT_URL` | unset | what browsers open for the mic (the SFU's signal URL, `wss://phocochuyen.io.vn/sfu`; deploy/livekit) |
+| `LIVEKIT_API_URL` | http://127.0.0.1:7880 | the SFU's server API (create / delete rooms, remove a listener) |
+| `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET` | unset | the SFU's key pair (`/etc/livekit/keys.yaml`); tokens are signed with it |
 | `LIVE_ORIGINS` | the local game | allowed `Origin` values, comma-separated (`https://phocochuyen.io.vn,...`) |
 | `LIVE_TRUST_PROXY` | 0 | 1 behind nginx: the client IP is `X-Real-IP` (set by nginx), else the socket peer |
 | `LIVE_MAX_CONN` | 5000 | open sockets at most; more are refused (503) |
@@ -52,6 +56,11 @@ class Config:
     visits: bool = False             # workplace visits with persisted access checks
     town: bool = False               # 🏝️ shared 2.5D town map (live/town.py); explicitly LIVE_TOWN=1
     kara: bool = False               # 🎤 Phòng hát (live/karaoke.py); explicitly LIVE_KARAOKE=1, off by default
+    kara_mic: bool = False           # 🎙️ its live mic (LIVE_KARAOKE_MIC=1 and the SFU configured); off by default
+    sfu_url: str = ''                # LIVEKIT_URL: the signal URL browsers open
+    sfu_api: str = 'http://127.0.0.1:7880'
+    sfu_key: str = ''
+    sfu_secret: str = ''
     origins: frozenset = frozenset({'http://localhost:8765', 'http://127.0.0.1:8765'})
     trust_proxy: bool = False
     max_conn: int = 5000
@@ -78,7 +87,8 @@ class Config:
     flags_extra: dict = field(default_factory=dict)
 
     def flags(self) -> dict:
-        return dict(chat=self.chat, street=self.street, dating=self.dating, wedding=self.wedding, fair=self.fair, home=self.home, visits=self.visits, town=self.town, kara=self.kara, **self.flags_extra)
+        return dict(chat=self.chat, street=self.street, dating=self.dating, wedding=self.wedding, fair=self.fair, home=self.home, visits=self.visits, town=self.town, kara=self.kara,
+                    kara_mic=self.kara and self.kara_mic, **self.flags_extra)
 
     def any_on(self) -> bool:
         return self.chat or self.street or self.dating or self.wedding or self.fair or self.home or self.visits or self.town or self.kara
@@ -111,4 +121,12 @@ def from_env(argv=None) -> Config:
                  handshakes_per_ip=_int('LIVE_HANDSHAKES_PER_IP', 60), admins=admin_users(), db_schema=args.schema)
     if origins:
         cfg.origins = frozenset(origins)
+    cfg.sfu_url = (os.environ.get('LIVEKIT_URL') or '').strip()
+    cfg.sfu_api = (os.environ.get('LIVEKIT_API_URL') or '').strip() or cfg.sfu_api
+    cfg.sfu_key = (os.environ.get('LIVEKIT_API_KEY') or '').strip()
+    cfg.sfu_secret = (os.environ.get('LIVEKIT_API_SECRET') or '').strip()
+    want = _flag('LIVE_KARAOKE_MIC')
+    cfg.kara_mic = want and cfg.kara and bool(cfg.sfu_url and cfg.sfu_key and cfg.sfu_secret)
+    if want and not cfg.kara_mic:
+        print('[live] LIVE_KARAOKE_MIC=1 ignored: needs LIVE_KARAOKE=1, LIVEKIT_URL, LIVEKIT_API_KEY and LIVEKIT_API_SECRET', flush=True)
     return cfg

@@ -1,7 +1,8 @@
 /** "🎤 Phòng hát" of the operator site (game/karaoke.py admin_view / admin_act; the rooms: live/karaoke.py).
  *  GET  /api/admin/karaoke   open reports by target (🛟 'minor' first), banned songs, the public rooms
  *  POST /api/admin/karaoke   {act: skip | close | end_round, room} · {act: kick, pid} · {act: ban | unban, vid} ·
- *                            {act: mute, pid, minutes} · {act: keep, target}
+ *                            {act: mute, pid, minutes} · {act: keep, target} · 🎙️ {act: mic, room} (cut the live mic for
+ *                            the rest of the song) · {act: birth_clear, pid} (a mistyped birth year: asked again)
  * Room acts reach the live service at once (NOTIFY); in a room an admin also has the same buttons under ⋯. */
 import {esc,icon,hm,num,toast,tag} from './ui.js';
 
@@ -22,7 +23,7 @@ export class KaraAdmin{
     if(this.error&&!this.data)return `<div class="notice bad">${icon('alert',16)}<div>${esc(this.error)}<br><button type="button" class="btn ghost sm" data-act="karaReload">Thử lại</button></div></div>`;
     if(!this.data)return '<p class="note">Đang tải…</p>';
     const d=this.data;
-    const rooms=d.rooms.map(r=>`<div class="gift-user"><div class="grow"><b>${esc(r)}</b></div>${['skip','end_round','close'].map(a=>`<button type="button" class="btn ghost sm" data-act="kara" data-value="${a}" data-id="${esc(r)}">${{skip:'⏭ Bỏ bài',end_round:'🧩 Dừng đố',close:'🔒 Đóng 10 phút'}[a]}</button>`).join('')}</div>`).join('');
+    const rooms=d.rooms.map(r=>`<div class="gift-user"><div class="grow"><b>${esc(r)}</b></div>${['skip','mic','end_round','close'].map(a=>`<button type="button" class="btn ghost sm" data-act="kara" data-value="${a}" data-id="${esc(r)}">${{skip:'⏭ Bỏ bài',mic:'🎙️ Cắt mic',end_round:'🧩 Dừng đố',close:'🔒 Đóng 10 phút'}[a]}</button>`).join('')}</div>`).join('');
     const items=d.items.length?d.items.map(it=>this.item(it)).join(''):'<p class="note">Không có báo cáo nào chờ.</p>';
     const banned=d.banned.length?d.banned.map(b=>`<div class="gift-user"><div class="grow"><b>${esc(b.title||b.vid)}</b> <small class="muted">${esc(b.vid)} · ${esc(b.by)} · ${hm(b.at)}</small></div><button type="button" class="btn ghost sm" data-act="kara" data-value="unban" data-id="${esc(b.vid)}">Bỏ cấm</button></div>`).join(''):'<p class="note">Chưa cấm bài nào.</p>';
     return `<div class="gift-admin${this.busy?' is-busy':''}">
@@ -32,10 +33,10 @@ export class KaraAdmin{
   }
   item(it){
     const reasons=Object.entries(it.reasons).map(([k,n])=>tag(`${REASON[k]||k} × ${n}`,k==='minor'?'bad':'')).join(' ');
-    const what=it.kind==='v'?`🎵 <b>${esc(it.title||it.ref)}</b> <small class="muted">${esc(it.ref)}${it.banned?' · đã cấm':''}</small>`:`👤 <b>${esc(it.name||it.ref)}</b> <small class="muted">${esc(it.ref)}</small>`;
+    const what=it.kind==='v'?`🎵 <b>${esc(it.title||it.ref)}</b> <small class="muted">${esc(it.ref)}${it.banned?' · đã cấm':''}</small>`:`${it.kind==='m'?'🎙️ ':''}👤 <b>${esc(it.name||it.ref)}</b> <small class="muted">${esc(it.ref)}${it.kind==='m'?' · lúc hát mic trực tiếp (không có bản ghi)':''}</small>`;
     const msgs=(it.msgs||[]).map(m=>`<li><small class="muted">${hm(m.at)} ${esc(m.ch)}</small> ${esc(m.text)}</li>`).join('');
     const acts=it.kind==='v'?`<button type="button" class="btn primary sm" data-act="kara" data-value="ban" data-id="${esc(it.ref)}">🚫 Cấm bài</button>`:
-      `<button type="button" class="btn primary sm" data-act="kara" data-value="mute" data-id="${esc(it.ref)}">🔇 Khóa 1 giờ</button><button type="button" class="btn ghost sm" data-act="kara" data-value="kick" data-id="${esc(it.ref)}">🚪 Mời ra</button>`;
+      `<button type="button" class="btn primary sm" data-act="kara" data-value="mute" data-id="${esc(it.ref)}">🔇 Khóa 1 giờ</button><button type="button" class="btn ghost sm" data-act="kara" data-value="kick" data-id="${esc(it.ref)}">🚪 Mời ra</button>${it.kind==='m'?`<button type="button" class="btn ghost sm" data-act="kara" data-value="birth_clear" data-id="${esc(it.ref)}">🎂 Hỏi lại năm sinh</button>`:''}`;
     return `<div class="gift-user${it.safety?' safety':''}"><div class="grow">${what}<br>${reasons}${msgs?`<ul class="kara-msgs">${msgs}</ul>`:''}</div>${acts}<button type="button" class="btn ghost sm" data-act="kara" data-value="keep" data-id="${esc(it.target)}">Bỏ qua</button></div>`;
   }
   /** true when the click was ours */
@@ -43,9 +44,9 @@ export class KaraAdmin{
     if(act==='karaReload'){this.reset();this.hooks.rerender();return true;}
     if(act!=='kara')return false;
     const a=data.value,id=data.id,body={act:a};
-    if(['skip','close','end_round'].includes(a))body.room=id;else if(['ban','unban'].includes(a))body.vid=id;else if(a==='keep')body.target=id;else body.pid=id;
+    if(['skip','close','end_round','mic'].includes(a))body.room=id;else if(['ban','unban'].includes(a))body.vid=id;else if(a==='keep')body.target=id;else body.pid=id;
     if(a==='mute')body.minutes=60;
-    if(['close','ban','mute','kick'].includes(a)&&!confirm('Chắc chắn?'))return true;
+    if(['close','ban','mute','kick','birth_clear'].includes(a)&&!confirm('Chắc chắn?'))return true;
     try{await this.api.post('/api/admin/karaoke',body);toast('Đã xong.');this.reset();this.hooks.rerender();}
     catch(e){if(e.status===403||e.status===401){this.hooks.forbidden(e);return true;}toast(e.message||'Chưa được.','bad');}
     return true;

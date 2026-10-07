@@ -410,7 +410,9 @@ class Headers(unittest.TestCase):
                      ('form-action', ["'self'"]), ('style-src', ["'self'", "'unsafe-inline'"]), ('media-src', ["'self'", 'blob:'])):
             self.assertEqual(d[k], v, k)
         self.assertNotIn("'unsafe-eval'", csp)
-        self.assertIn('"Permissions-Policy","camera=(), microphone=(), geolocation=(), payment=()"', src)   # phase 1 records nothing
+        # phase 1 records nothing: the mic stays off unless LIVE_KARAOKE_MIC turns it on (tests/test_karaoke_mic.py)
+        self.assertIn('PERMISSIONS="camera=(), microphone=(), geolocation=(), payment=()"', src)
+        self.assertIn('self.send_header("Permissions-Policy",PERMISSIONS)', src)
 
     def test_player_sends_its_origin_to_youtube(self):
         js = (Path(__file__).resolve().parents[1] / 'public/js/v4/karaoke.js').read_text(encoding='utf-8')

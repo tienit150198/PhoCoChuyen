@@ -27,7 +27,7 @@ html[data-layout="phone"] .sheet.kr-sheet{width:100%;max-width:100%;height:calc(
 .kr-video iframe,.kr-video .kr-yt{position:absolute;inset:0;width:100%;height:100%;border:0}
 
 /* the stage line, the round, the queue, bubbles */
-.kr-dyn{display:grid;gap:8px}
+.kr-dyn{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
 .kr-on{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;background:var(--accent-soft);color:var(--ink)}
 .kr-on .grow{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}
 .kr-on small{color:var(--ink-2,var(--muted));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -73,6 +73,17 @@ label.kr-field{padding:0;border:0;background:none;margin-right:36px;width:auto}
 .kr-people li{display:flex;align-items:center;gap:6px}
 .kr-people li span{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .kr-pill{min-height:40px;min-width:44px;padding:0 12px;border-radius:var(--radius-pill,999px);background:var(--surface);color:var(--ink);border:1px solid var(--line);font-weight:700}
+
+/* 🎙️ the live mic: the notice, the singer's time, a listener's own voice volume (never on the player) */
+.kr-micbtn{white-space:nowrap;flex:0 0 auto}
+.kr-micbtn.on{background:var(--bad-soft,#fde7e7);border-color:var(--bad,#b3261e)}
+.kr-live{display:flex;flex-direction:column;gap:6px;padding:8px 10px;border-radius:14px;border:2px solid var(--bad,#b3261e);background:var(--surface);color:var(--ink)}
+.kr-live b{font-size:.95rem}
+.kr-live small{color:var(--muted)}
+.kr-live-ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.kr-vol{flex:1 1 140px;display:flex;align-items:center;gap:6px;min-width:0}
+.kr-vol input{flex:1 1 auto;min-width:0;min-height:40px;accent-color:var(--accent)}
+select.kr-field{min-height:44px;font-size:16px}
 
 /* the one bottom bar */
 .kr-bar{flex:0 0 auto;display:grid;gap:6px;padding:8px 10px calc(8px + var(--safe-b,0px));border-top:1px solid var(--line);background:var(--surface)}
