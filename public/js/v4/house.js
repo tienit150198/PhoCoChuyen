@@ -179,6 +179,8 @@ async function onClick(op,data){
     }
     case'rentalLeave':if(await ask('Trả nhà đang thuê?',S.rentals?.rules?.leave_terms||'Tiền thuê đã trả trước cho những ngày còn lại không được hoàn. Bạn dọn khỏi nhà thuê và giữ đồ của mình.','Trả nhà'))await rentalPost('leave',{id:S.rentals?.tenancy?.id});return;
     case'rentalCancel':await rentalPost('cancel',{id:data.id});return;
+    case'rentalReclaim':{const row=S.rentals?.mine?.find(x=>String(x.id)===String(data.id));if(!row)return;   // F#225
+      if(await ask('Lấy lại nhà?',`Kỳ thuê của ${row.tenant_name||'người thuê'} đã hết. Người thuê được báo dọn đi, không bị trừ thêm tiền.`,'Lấy lại nhà'))await rentalPost('reclaim',{id:row.id});return;}
     case'close':S.dlg.close();return;
     case'back':S.view='home';S.flash=null;render();return;
     case'look':startBuy(data.kind);S.flash=null;render();S.dlg.querySelector('.hs-body')?.scrollTo?.(0,0);return;

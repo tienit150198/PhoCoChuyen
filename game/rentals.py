@@ -2,11 +2,14 @@
 
 Authoritative rows and both wallets commit together after sorted session locks.
 Only the tenant can leave early (unused days are non-refundable) or buy an extra
-period. Owners cannot evict during a paid period. Reducer commit hooks inspect
-only the already-locked session and rental rows; they never lock another save.
+period. Owners cannot evict during a paid period. Once it is over by the wall
+clock (F#225: an inactive tenant's life days never run out), the owner may
+reclaim the home: see reclaim_why. Reducer commit hooks inspect only the
+already-locked session and rental rows; they never lock another save.
 """
 from __future__ import annotations
 
+import datetime
 import hashlib
 import json
 import re
@@ -17,7 +20,13 @@ from . import housing as hs
 from . import marriage as mr
 
 PERIOD = hs.MONTH_DAYS
-TERMS = 'Trả trước 5 ngày sống của người thuê. Tự gia hạn; không tự trừ tiền. Trả nhà sớm không hoàn tiền những ngày còn lại. Chủ nhà không thể lấy lại nhà giữa kỳ.'
+TERMS = ('Trả trước 5 ngày sống của người thuê. Tự gia hạn; không tự trừ tiền. Trả nhà sớm không hoàn tiền những ngày còn lại. '
+         'Chủ nhà không thể lấy lại nhà giữa kỳ; chỉ lấy lại sau kỳ đã trả: quá 5 ngày thật kể từ lần trả gần nhất, '
+         'hoặc người thuê vắng 3 ngày thật mà chưa trả trước kỳ sau.')
+DAY_S = 86400
+REAL_DAYS = PERIOD          # F#225: a paid period, by the wall clock, lasts this many real days after the payment
+IDLE_DAYS = 3               # ... or ends when the tenant has not played for this long and holds no further prepaid period
+VN = datetime.timezone(datetime.timedelta(hours=7))
 RID = re.compile(r'[A-Za-z0-9_-]{8,64}')
 
 
@@ -51,14 +60,47 @@ def _marker(row):
     return {k: row[k] for k in ('id', 'kind', 'rent', 'start_day', 'end_day')}
 
 
-def _view(row):
+def paid_until(row) -> float:
+    """When the paid period is over by the wall clock: REAL_DAYS after the last payment (accept / renew set `updated`)."""
+    return float(row['updated']) + REAL_DAYS * DAY_S
+
+
+def _date(t: float) -> str:
+    return datetime.datetime.fromtimestamp(t, VN).strftime('%d/%m')
+
+
+def reclaim_why(row, tenant_day: int, idle: bool, now: float) -> str | None:
+    """None when the owner may take the home back (F#225), else why not. Never during a paid period: the period is over
+    REAL_DAYS after the last payment, or as soon as the tenant has been away IDLE_DAYS without a further prepaid period.
+    A further period bought ahead (renew) is honoured to its own end: twice REAL_DAYS after that payment."""
+    if row['status'] != 'leased':
+        return 'Nhà này không còn cho thuê.'
+    if row['end_day'] - tenant_day > PERIOD:
+        end = float(row['updated']) + 2 * REAL_DAYS * DAY_S
+        return None if now > end else f'Người thuê đã trả trước thêm một kỳ, tới ngày {_date(end)}.'
+    if now > paid_until(row) or idle:
+        return None
+    return f'Người thuê đã trả tới ngày {_date(paid_until(row))}. Chưa thể lấy lại nhà giữa kỳ.'
+
+
+def _idle(db, sid) -> bool:
+    """The tenant's save has not been written for IDLE_DAYS (sessions.updated_at, as storage.prune reads it)."""
+    from . import db as dbm
+    r = db.execute(f'SELECT updated_at<{dbm.UTC_INTERVAL_TEXT} AS idle FROM sessions WHERE sid=?', (f'-{IDLE_DAYS} days', sid)).fetchone()
+    return bool(r and r['idle'])
+
+
+def _view(row, reclaim=None):
     home = hs.HOMES[row['kind']]
     reference = hs.rent_of(row['kind'])
-    return dict(id=row['id'], property=row['property'], kind=row['kind'], name=home['name'], emoji=home['emoji'],
-                owner_name=row.get('current_owner', row['owner_name']), tenant_name=row.get('current_tenant', row['tenant_name']), rent=row['rent'],
-                status=row['status'], start_day=row['start_day'], end_day=row['end_day'], period_days=PERIOD,
-                market_rent=reference, demand_pct=hs.demand(row['rent'], reference),
-                market_news=hs.pm.quote(row['kind'])['news'])
+    out = dict(id=row['id'], property=row['property'], kind=row['kind'], name=home['name'], emoji=home['emoji'],
+               owner_name=row.get('current_owner', row['owner_name']), tenant_name=row.get('current_tenant', row['tenant_name']), rent=row['rent'],
+               status=row['status'], start_day=row['start_day'], end_day=row['end_day'], period_days=PERIOD,
+               market_rent=reference, demand_pct=hs.demand(row['rent'], reference),
+               market_news=hs.pm.quote(row['kind'])['news'])
+    if reclaim is not None:   # the owner's own leased row: when the paid period ends, and whether it may be reclaimed now
+        out.update(paid_until=paid_until(row), reclaim=reclaim)
+    return out
 
 
 def get(store, token, state=None, offset=0):
@@ -79,7 +121,11 @@ def get(store, token, state=None, offset=0):
                         "ORDER BY r.at DESC,r.id DESC LIMIT 101 OFFSET ?", (sid, sid, sid, _pid(sid), _pid(sid), offset))
         mine = mr._rows(db, select + "WHERE r.owner=? ORDER BY CASE WHEN r.status IN ('listing','leased') THEN 0 ELSE 1 END,r.at DESC LIMIT 40", (sid,))
         tenancy = mr._row(db, select + "WHERE r.tenant=? AND r.status='leased'", (sid,))
-    return dict(market=[_view(r) for r in rows[:100]], next_offset=offset + 100 if len(rows) > 100 else None, mine=[_view(r) for r in mine],
+        t = time.time()
+        # Shown, not decided: act() checks again with the tenant's save (a further period bought ahead waits longer).
+        reclaim = {r['id']: t > paid_until(r) or _idle(db, r['tenant']) for r in mine if r['status'] == 'leased'}
+    return dict(market=[_view(r) for r in rows[:100]], next_offset=offset + 100 if len(rows) > 100 else None,
+                mine=[_view(r, reclaim.get(r['id'])) for r in mine],
                 tenancy=_view(tenancy) if tenancy else None,
                 rules=dict(period_days=PERIOD, clock='tenant_life_day', prepaid=True, refundable=False, terms=TERMS))
 
@@ -108,7 +154,7 @@ def act(store, token, action, data):
     from .engine import migrate_state, validate_state, public_state
     from .storage import serialize, _write_archive, _archive_rows
     sid, display = _who(store, token)
-    need(action in ('listing', 'accept', 'renew', 'leave', 'cancel'), 'Thao tác thuê nhà không hợp lệ.', 'unknown_action')
+    need(action in ('listing', 'accept', 'renew', 'leave', 'cancel', 'reclaim'), 'Thao tác thuê nhà không hợp lệ.', 'unknown_action')
     need(isinstance(data, dict) and isinstance(data.get('rid'), str) and RID.fullmatch(data['rid']),
          'Mã thao tác không hợp lệ. Tải lại trang nhé.', 'bad_rid')
     rid = data['rid']
@@ -121,6 +167,10 @@ def act(store, token, action, data):
             peek = mr._row(db, 'SELECT * FROM rentals WHERE id=?', (data['id'],))
         need(peek, 'Tin thuê nhà không còn tồn tại.', 'not_found', 404)
         other = peek['owner']
+        if action == 'reclaim':   # the owner acts; the tenant's save is the other one (checked again under the row lock)
+            need(peek['owner'] == sid, 'Chỉ chủ nhà được lấy lại nhà.', 'forbidden', 403)
+            need(peek['tenant'], 'Nhà này chưa có người thuê.', 'not_available', 409)   # status: checked under the lock (a replay sees 'ended')
+            other = peek['tenant']
     identities = sorted({sid, other} - {None})
     with store.connect() as db:
         db.begin()
@@ -141,7 +191,7 @@ def act(store, token, action, data):
         else:
             states = {key: migrate_state(store.parse_state(r['state'], key), owned=True) for key, r in saved.items()}
             for key, s in states.items():
-                need(s['journey'].get('story'), 'Thuê nhà chỉ có trong hành trình.', 'story_only')
+                need(s['journey'].get('story') or action == 'reclaim' and key != sid, 'Thuê nhà chỉ có trong hành trình.', 'story_only')
                 need(db.execute('SELECT 1 FROM accounts WHERE sid=?', (key,)).fetchone(), 'Cả hai cần có tài khoản.', 'account_required', 403)
             cuts = {}
             owner_box = ar.collect()
@@ -149,6 +199,7 @@ def act(store, token, action, data):
             with ar.collect() as box:
                 actor = states[sid]
                 j = actor['journey']
+                moved = sid   # whose home changed (deco bags furniture on a changed place)
                 if action == 'listing':
                     prop, rent = data.get('property'), data.get('rent')
                     need(isinstance(prop, str), 'Chọn căn nhà.', 'bad_property')
@@ -164,7 +215,31 @@ def act(store, token, action, data):
                     row = mr._row(db, 'SELECT * FROM rentals WHERE id=? FOR UPDATE', (data['id'],))
                     need(row, 'Không tìm thấy tin thuê nhà.', 'not_found', 404)
                     owner = states[row['owner']]
-                    if action == 'cancel':
+                    if action == 'reclaim':
+                        need(sid == row['owner'], 'Chỉ chủ nhà được lấy lại nhà.', 'forbidden', 403)
+                        need(row['status'] == 'leased' and row['tenant'] == other, 'Nhà này không còn cho thuê.', 'not_available', 409)
+                        tenant = states[other]
+                        tj = tenant['journey']
+                        why = reclaim_why(row, int(tj.get('life_day', 0)), _idle(db, other), time.time())
+                        need(why is None, why or '', 'paid_period', 409)
+                        db.execute("UPDATE rentals SET status='ended',updated=? WHERE id=? AND status='leased'", (time.time(), row['id']))
+                        home = hs.HOMES[row['kind']]['name']
+                        tenant_name = row.get('current_tenant') or row['tenant_name'] or 'Người thuê'
+                        with owner_box:   # the tenant's rows cut here go to the tenant's archive
+                            if (tj.get('rental') or {}).get('id') == row['id']:
+                                tj.pop('rental', None)
+                            th = hs.get(tenant)
+                            if th:
+                                hs._log(th, tj['life_day'], f'Hết kỳ thuê {hs.lname(home)}: chủ nhà đã lấy lại nhà. Tìm chỗ ở mới nhé.')
+                        oh = hs.get(actor)
+                        if oh:
+                            hs._log(oh, j['life_day'], f'Lấy lại {hs.lname(home)} sau kỳ thuê của {tenant_name}.')
+                        from . import social
+                        social.notify(store, db, _pid(other), 'rental',
+                                      f'🏠 Hết kỳ thuê {hs.lname(home)}: {display} đã lấy lại nhà. Không trừ thêm tiền; tìm chỗ ở mới nhé.')
+                        moved = other
+                        result = dict(message=f'Đã lấy lại {hs.lname(home)}. {tenant_name} được báo dọn đi, không mất thêm tiền.', changed=True)
+                    elif action == 'cancel':
                         need(sid == row['owner'], 'Chỉ chủ nhà được gỡ tin.', 'forbidden', 403)
                         need(row['status'] in ('listing', 'cancelled'), 'Hợp đồng đã trả trước không thể bị chủ nhà hủy giữa kỳ.', 'active_lease', 409)
                         db.execute("UPDATE rentals SET status='cancelled',updated=? WHERE id=?", (time.time(), row['id']))
@@ -216,8 +291,11 @@ def act(store, token, action, data):
                 # Reducer reconciliation bags furniture on a changed place without deleting ownership.
                 from . import deco
                 for key, s in states.items():
-                    if key == sid:
+                    if key == moved == sid:
                         deco.on_life_day(s)
+                    elif key == moved:
+                        with owner_box:   # reclaim: the tenant's rows go to the tenant's archive
+                            deco.on_life_day(s)
                     validate_state(s)
                     mr.validate_save(s)
             # Owner and tenant history tails are collected separately.

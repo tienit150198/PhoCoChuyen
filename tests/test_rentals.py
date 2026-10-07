@@ -319,5 +319,85 @@ class Rentals(unittest.TestCase):
             self.assertLess(hs.value_of(prop, prop['day'], basis), prop['price'])
 
 
+class Reclaim(Rentals):
+    """F#225: a tenant who stops playing never runs out of life days; after the paid period the owner may reclaim."""
+
+    def age(self, lid, days):
+        self.store.transaction(lambda db: db.execute('UPDATE rentals SET updated=updated-? WHERE id=?', (days * 86400, lid)))
+
+    def away(self, tok):
+        sid = self.store.key(tok)
+        self.store.transaction(lambda db: db.execute("UPDATE sessions SET updated_at='2000-01-01 00:00:00' WHERE sid=?", (sid,)))
+
+    def mine(self, owner, lid):
+        return next(r for r in rentals.get(self.store, owner)['mine'] if r['id'] == lid)
+
+    def test_never_mid_period_then_after_five_real_days(self):
+        owner, tenant = self.user('owner'), self.user('tenant')
+        lid, prop = self.listing(owner, 100)
+        self.act(tenant, 'accept', id=lid)
+        row = self.mine(owner, lid)
+        self.assertFalse(row['reclaim'])
+        self.assertGreater(row['paid_until'], 0)
+        with self.assertRaises(rentals.RentalError) as e:
+            self.act(owner, 'reclaim', id=lid)
+        self.assertEqual(e.exception.code, 'paid_period')
+        self.assertIn('Chưa thể lấy lại nhà giữa kỳ', str(e.exception))
+        with self.assertRaises(rentals.RentalError) as e:
+            self.act(tenant, 'reclaim', id=lid)
+        self.assertEqual(e.exception.code, 'forbidden')
+        self.age(lid, 5.01)
+        self.assertTrue(self.mine(owner, lid)['reclaim'])
+        money = self.total(owner), self.total(tenant)
+        out = self.act(owner, 'reclaim', id=lid, rid='reclaim-0000001')
+        self.assertTrue(self.act(owner, 'reclaim', id=lid, rid='reclaim-0000001')['replayed'])
+        self.assertIn('Đã lấy lại', out['message'])
+        self.assertEqual((self.total(owner), self.total(tenant)), money)        # no money moves
+        self.assertEqual(self.mine(owner, lid)['status'], 'ended')
+        t = self.state(tenant)
+        self.assertNotIn('rental', t['journey'])
+        self.assertIsNone(rentals.get(self.store, tenant)['tenancy'])
+        self.assertNotEqual(hs.public(t)['place']['where_id'], 'lease')
+        self.assertIn('chủ nhà đã lấy lại nhà', t['journey']['home']['log'][-1]['text'])
+        self.assertIn('Lấy lại', self.state(owner)['journey']['home']['log'][-1]['text'])
+        with self.store.connect() as db:
+            note = db.execute("SELECT text FROM inbox WHERE pid=? AND kind='rental'", (rentals._pid(self.store.key(tenant)),)).fetchone()
+        self.assertIn('đã lấy lại nhà', note['text'])
+        validate_state(t); mr.validate_save(t); validate_state(self.state(owner))
+        self.cmd(tenant, 'jr_home_rent', kind=next(iter(hs.RENT)), confirm=True)   # finds a new home (commit hook happy)
+        self.cmd(owner, 'jr_home_move', id=prop['id'], confirm=True)            # the owner has the home back
+        with self.assertRaises(rentals.RentalError):
+            self.act(owner, 'reclaim', id=lid)
+
+    def test_an_absent_tenant_without_a_further_period(self):
+        owner, tenant = self.user('owner'), self.user('tenant')
+        lid, _ = self.listing(owner, 100)
+        self.act(tenant, 'accept', id=lid)
+        self.away(tenant)
+        self.assertTrue(self.mine(owner, lid)['reclaim'])
+        self.act(owner, 'reclaim', id=lid)
+        self.assertNotIn('rental', self.state(tenant)['journey'])
+
+    def test_a_further_period_bought_ahead_is_honoured(self):
+        owner, tenant = self.user('owner'), self.user('tenant')
+        lid, _ = self.listing(owner, 100)
+        self.act(tenant, 'accept', id=lid)
+        self.act(tenant, 'renew', id=lid)
+        self.away(tenant)
+        self.age(lid, 6)
+        with self.assertRaises(rentals.RentalError) as e:
+            self.act(owner, 'reclaim', id=lid)
+        self.assertIn('trả trước thêm một kỳ', str(e.exception))
+        self.assertIn('rental', self.state(tenant)['journey'])
+        self.age(lid, 4.01)
+        self.act(owner, 'reclaim', id=lid)
+        self.assertNotIn('rental', self.state(tenant)['journey'])
+
+    def test_terms_say_after_the_period_never_mid_period(self):
+        terms = rentals.get(self.store, self.user('owner'))['rules']['terms']
+        self.assertIn('không thể lấy lại nhà giữa kỳ', terms)
+        self.assertIn('sau kỳ đã trả', terms)
+
+
 if __name__ == '__main__':
     unittest.main()

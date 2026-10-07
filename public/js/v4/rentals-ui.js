@@ -1,5 +1,7 @@
 import {escapeHTML as esc} from '../icons.js';
 const xu=n=>Number(n||0).toLocaleString('vi-VN')+' xu';
+// F#225: the wall-clock end of a player tenant's paid period (dd/mm, Vietnam time).
+export const paidDate=t=>{const d=new Date(Number(t)*1000+7*3600e3),p=n=>String(n).padStart(2,'0');return `${p(d.getUTCDate())}/${p(d.getUTCMonth()+1)}`;};
 export const rentalRetryable=error=>!error?.status||error.status>=500||[408,429].includes(error.status);
 export const rentalPrice=value=>{const n=Number(String(value??'').trim());return Number.isSafeInteger(n)&&n>0&&n<=1000000000?n:null;};
 export function rentalDemandHint(value,reference){const ask=rentalPrice(value);if(!ask)return 'Nhập số xu nguyên dương.';const chance=Math.max(0,Math.min(90,Math.floor((300*reference-100*ask)/(4*Math.max(1,reference)))));return `${chance>=50?'Dễ tìm khách':chance>0?'Khó tìm khách hơn':'Giá quá cao: NPC chưa thuê'} · khoảng ${chance}% cơ hội mỗi ngày.`;}
@@ -16,7 +18,7 @@ export function rentalMarketView(data,homes,drafts,button){
     const ad=home.rental_ad;
     let status;
     if(home.let)status=`<p>${esc(home.let.name)} đang thuê · ${xu(home.let.rent)}/kỳ.</p>${button('Lấy lại nhà NPC','unlet',{id:home.id},'ghost')}`;
-    else if(row)status=`<p>${row.status==='leased'?`${esc(row.tenant_name||'Người chơi')} đã thuê tới ngày ${Number(row.end_day)} của người thuê.`:`Đã đăng ${xu(row.rent)}/kỳ; đang chờ người chơi.`}</p>${row.status==='leased'?'':button('Gỡ tin','rentalCancel',{id:row.id},'ghost')}`;
+    else if(row)status=`<p>${row.status==='leased'?`${esc(row.tenant_name||'Người chơi')} đang thuê${row.paid_until?` · hết hạn ngày ${paidDate(row.paid_until)}`:` tới ngày ${Number(row.end_day)} của người thuê`}.`:`Đã đăng ${xu(row.rent)}/kỳ; đang chờ người chơi.`}</p>${row.status!=='leased'?button('Gỡ tin','rentalCancel',{id:row.id},'ghost'):row.reclaim?button('Lấy lại nhà','rentalReclaim',{id:row.id},'ghost'):''}`;   // F#225: after the paid period the owner may reclaim
     else if(ad)status=`<p>Đang tìm NPC · ${xu(ad.rent)}/kỳ. ${Number(ad.demand_pct||0)}% cơ hội tìm khách mỗi ngày.</p>${button('Gỡ tin NPC','unlet',{id:home.id},'ghost')}`;
     else status=`<label class="rental-price" for="rent-${esc(home.id)}">Giá cho thuê / ${period} ngày<input id="rent-${esc(home.id)}" data-rental-price="${esc(home.id)}" data-reference="${Number(home.let_rent)}" type="number" inputmode="numeric" min="1" step="1" value="${esc(drafts[home.id]??home.let_rent)}"></label><output class="bk-hint" data-rental-demand aria-live="polite">${rentalDemandHint(drafts[home.id]??home.let_rent,home.let_rent)}</output><div class="bk-actions">${button('Tìm khách NPC','rentalNpc',{id:home.id},'primary')}${button('Đăng cho người chơi','rentalList',{id:home.id},'ghost')}</div>`;
     return `<article class="rental-card"><h3>${esc(home.emoji||'🏠')} ${esc(home.name)}</h3><p>Tham khảo ${xu(home.let_rent)}/kỳ · định giá cao sẽ khó tìm khách hơn.</p>${propertyNews(home.market_news)}${status}</article>`;

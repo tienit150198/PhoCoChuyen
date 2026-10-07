@@ -470,6 +470,7 @@ def action(s: dict, name: str, p: dict) -> dict:
                   order='vua', due=0, left=0, rep=100, items=[], staff=[], case=None, theft=0, hist=[], log=[])
         from .quay_economy import config
         config(st)
+        st['menu'] = _qs().default_menu(trade)   # F#232: every dish on the board; staff sell only what is on it
         _take(s, total, f'Mở quầy {nm}', trade)
         _log(st, day, 'Mở quầy', -total)
         q['stalls'].append(st)
@@ -521,9 +522,14 @@ def action(s: dict, name: str, p: dict) -> dict:
         amount = e.integer(p.get('amount'), -MONEY_MAX, MONEY_MAX)
         need(amount != 0, 'Số xu không hợp lệ.')
         if amount > 0:
-            need(j['wallet'] >= amount, 'Ví không đủ số này.', 'no_money')
-            _jr()._wallet(j, -amount, KIND_IN, f'Góp vốn quầy {st["name"]}', st['trade'])
-            st['fund'] = min(MONEY_MAX, st['fund'] + amount)
+            # The wallet first, then the bank account (as the 💼 Vốn help says; _take, like opening a counter).
+            # Never into debt: _take leaves a wallet at 0 at least, and the account gives only what it holds.
+            need(j['wallet'] >= 0, 'Ví đang nợ. Trả nợ trước rồi góp vốn nhé.', 'in_debt')
+            need(_have(s) >= amount, 'Ví và tài khoản ngân hàng chưa đủ số này.', 'no_money')
+            amount = min(amount, MONEY_MAX - st['fund'])
+            need(amount > 0, 'Vốn quầy đã đầy.', 'fund_full')
+            _take(s, amount, f'Góp vốn quầy {st["name"]}', st['trade'])
+            st['fund'] += amount
             quay_business.collect_fines(st)
             return dict(message=f'Đã góp {_fmt(amount)} xu vào vốn quầy.')
         need(st['fund'] >= -amount, f'Vốn quầy chỉ còn {_fmt(st["fund"])} xu.', 'no_money')
