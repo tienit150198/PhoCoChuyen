@@ -23,7 +23,7 @@ const NOUN={milk_tea:'trà sữa',grocery:'tạp hóa',delivery:'giao hàng',caf
   customer_care:'chăm sóc khách',pharmacy:'nhà thuốc',tour_guide:'dẫn tour',teacher:'bục giảng',accounting:'sổ sách',
   pilot:'buồng lái',flight_attendant:'khoang khách',oil:'giàn khoan',corp_accounting:'kế toán doanh nghiệp',
   tax_payroll:'thuế & lương',group_accounting:'kế toán tập đoàn',hr_admin:'nhân sự',secretary:'thư ký',it_helpdesk:'IT văn phòng',
-  railway:'gác chắn',nurse:'khoa Nội',lighthouse:'hải đăng',rescue:'tổng đài cứu hộ',lifeguard:'hồ bơi',police:'công an phường'};
+  railway:'gác chắn',nurse:'khoa Nội',lighthouse:'hải đăng',rescue:'tổng đài cứu hộ',lifeguard:'hồ bơi',police:'công an phường',zpop:'tiệm album'};
 const CAREER_TITLE={pagoda:['🪷','Siêng việc chùa nhất tuần','Siêng việc chùa']};
 // game/fair.py TITLE_ROWS (full names) with a short one for the chip; game/wedding_live.py TITLE_NAMES (the race)
 const EVENT={
