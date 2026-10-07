@@ -193,9 +193,20 @@ function resolve(key,depth){
   }
   // "3 bước · thưởng 40 xu" → segments; then sentence by sentence.
   if(out===null&&SEP.test(key))out=segments(key,depth);
-  if(out===null){const parts=key.split(/(?<=[.!?…:])\s+/u);if(parts.length>1)out=pieces(parts,depth,' ');}
+  if(out===null){const parts=sentences(key);if(parts.length>1)out=pieces(parts,depth,' ');}
   if(memo.size>20000)memo.clear();
   memo.set(key,{out,depth});
+  return out;
+}
+
+// Sentence by sentence: cut after . ! ? … : and the spaces that follow. The end mark is matched and kept (no
+// lookbehind: Safari parses `(?<=…)` only from 16.4, and one such regex stopped the game loading on iOS 15 /
+// 16.0–16.3). Same pieces as `key.split(/(?<=[.!?…:])\s+/u)` (tests/old_safari_regex.mjs).
+const SENTENCE_END=/([.!?…:])\s+/gu;
+export function sentences(key){
+  const out=[];let from=0;
+  for(const m of key.matchAll(SENTENCE_END)){out.push(key.slice(from,m.index+1));from=m.index+m[0].length;}
+  out.push(key.slice(from));
   return out;
 }
 

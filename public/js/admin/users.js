@@ -118,7 +118,7 @@ export class UsersAdmin{
     if(!this.dlg)return;
     const controls=[...this.el.querySelectorAll('button:not(:disabled),input:not(:disabled)')];
     if(!controls.length){ev.preventDefault();this.el.querySelector('[role=dialog]')?.focus();return;}
-    const first=controls[0],last=controls.at(-1);
+    const first=controls[0],last=controls[controls.length-1];   // no .at(): Safari 15.4+
     if(ev.shiftKey&&(document.activeElement===first||!controls.includes(document.activeElement))){ev.preventDefault();last.focus();}
     else if(!ev.shiftKey&&(document.activeElement===last||!controls.includes(document.activeElement))){ev.preventDefault();first.focus();}
   }

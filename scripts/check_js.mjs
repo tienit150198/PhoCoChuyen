@@ -8,4 +8,6 @@ walk('public');
 let failed=0;
 for(const f of files){try{execFileSync(process.execPath,['--check',f],{stdio:'pipe'});}catch(e){failed++;console.error(`✗ ${f}\n${e.stderr}`);}}
 console.log(`${files.length-failed}/${files.length} JS files OK`);
+// …and each one must also parse and run on old iPhones (Safari 15.0 / iOS 15, 16.0–16.3): scripts/check_old_safari.mjs.
+try{execFileSync(process.execPath,[new URL('./check_old_safari.mjs',import.meta.url).pathname],{stdio:'inherit'});}catch{failed++;}
 process.exit(failed?1:0);

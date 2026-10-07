@@ -16,7 +16,34 @@
   trên bó đã cắm là OK và không đổi gì (không tính nhịp, không trừ kiên nhẫn) thay vì báo "Đã hoàn thành dáng.".
 - Bảng tình huống không còn lỗi khi trạng thái chưa có nghề hiện tại (12 lỗi lúc khởi động lại 10:22).
 - Lệnh quá lớn (>256 KB) ghi một dòng `[cmd-413]`: tên lệnh, cỡ, ba trường lớn nhất (chỉ tên và cỡ, không ghi nội dung).
+- Ảnh chụp cảnh (📸 album) và ảnh phòng (Sửa nhà) trên iPhone không còn bị từ chối "Thao tác quá lớn": Safari không
+  làm được WebP nên trước đây gửi PNG (thường > 256 KB). Giờ thử WebP, không được thì JPEG (không bao giờ PNG), hạ dần
+  chất lượng rồi cỡ ảnh tới khi ≤ 200.000 ký tự (v4/photo-encode.js).
 - Không thêm mục "Có gì mới". Không đổi CSDL.
+
+# v1.9.14 — 2026-10-07 (hotfix)
+
+Gồm "Sửa lỗi iPhone iOS 15–16.3 không vào được game".
+
+# Chưa phát hành
+
+## Sửa lỗi iPhone iOS 15–16.3 không vào được game
+
+- Từ ít nhất 01/10, iPhone chạy iOS 15 và iOS 16.0–16.3 (khoảng 90 máy mỗi ngày) không mở được game: hai biểu thức
+  regex dùng "nhìn lùi" `(?<=…)` mà Safari chỉ hiểu từ 16.4 (`public/js/toast-lines.js`, `public/js/v4/i18n.js`). Một
+  file không đọc được là cả game không tải, rồi màn hình cứ tải lại ↔ "Tải lại" mãi.
+- Viết lại hai chỗ đó không dùng nhìn lùi (`splitNotes`, `sentences`), kết quả cắt câu y hệt bản cũ
+  (tests/old_safari_regex.mjs so trên ~20.000 chuỗi mẫu và ngẫu nhiên).
+- `boot.js`: thêm bản vá cho `.at()`, `Object.hasOwn`, `findLast`/`findLastIndex`, `crypto.randomUUID` (iOS 15.0–15.3
+  chưa có; chỉ thêm khi máy thiếu). `admin/users.js` bỏ `.at()` (trang admin không có boot.js).
+- `boot.js`: khi file của game không đọc được (lỗi cú pháp), lần đầu tự tải lại một lần như cũ; lần thứ hai không tải
+  lại nữa mà báo rõ "Trình duyệt này quá cũ… cập nhật iOS hoặc mở bằng Chrome" (máy mới thì vẫn là "Tải lại"), và gửi
+  một beacon kèm UA: cột screen `old:v<bản>:ios15.8` / `parse:v<bản>:chrome90` trong stat_client_errors.
+- Kiểm tra mới `scripts/check_old_safari.mjs` (chạy kèm `node scripts/check_js.mjs`, và tests/test_old_safari.py): đọc
+  mọi file public/**/*.js bằng acorn (để sẵn ở scripts/vendor, không cần npm) và báo lỗi khi gặp thứ Safari 15.0 không
+  có: regex nhìn lùi, cờ v/d, modifier, tên nhóm trùng; class static block; cú pháp mới hơn ES2022; await ngoài module;
+  `.at()`/`Object.hasOwn`/`structuredClone`/`toSorted`/`Object.groupBy`/… khi chưa có bản vá hay chưa kiểm tra.
+- Không đổi bản lưu, không thêm khóa, không đổi CSDL. Không thêm mục "Có gì mới".
 
 # v1.9.13 — 2026-10-07
 
