@@ -1,3 +1,21 @@
+# Chưa phát hành
+
+## Chat hiện đủ danh hiệu
+
+- Chủ game 07/10: ai đang giữ danh hiệu nào thì chat hiện hết bên tên. Gồm danh hiệu tuần của bảng xếp hạng (Trải
+  nghiệm, Danh hiệu, Chứng chỉ, Tài phú top 10; Trùm từng nghề top 1), danh hiệu hội chợ dân gian (🌪️ Trúng bão bầu
+  cua, 🎯 Mắt thần phi tiêu, 👑 Vua trò chơi, 🎪 Cao thủ hội chợ… cả 11 cái) và 🥇/🎊 Khách mời của tuần (đám cưới).
+- Chip nhỏ bên tên: emoji + tên ngắn kèm hạng ("💰 Top 3 Tài phú", "🏆 Trùm trà sữa", "🌪️ Bão bầu cua"). Điện
+  thoại hiện 2 chip + "+N", máy tính 3; chạm tên hoặc "+N" mở hộp nhỏ liệt kê đủ tên và nguồn ("Top 3 Tài phú · tuần
+  này", "Hội chợ dân gian"). Có ở Cả phố, nhóm, lời trích khi trả lời (chip tốt nhất), đầu cuộc nhắn riêng (DM), thẻ
+  người chơi ở phố đi dạo; bảng tên trên phố thêm emoji các danh hiệu còn lại. Danh hiệu mua tuần (🎨) giữ như cũ.
+- Live service: khung `msg`, trang lịch sử, `reply` và walker/`card` có thêm `tt` (danh sách id, tốt nhất trước:
+  `lb_<bảng>_<hạng>`, `f_*`, `w_vip`/`w_pro`). Máy chủ tự tra từ lb_weekly và bản lưu (journey.titles), không bao giờ
+  tin client; cache LRU 20.000 người (TTL 15 phút), bảng tuần đọc lại mỗi 5 phút. Game báo NOTIFY `honours` (trúng danh
+  hiệu hội chợ, nhận danh hiệu qua live_fx) và `honours_lb` (làm mới bảng tuần, chốt tuần thứ Hai) để cập nhật ngay;
+  tuần đã hết thì chip tự mất. Không thêm truy vấn mỗi tin nhắn. Client cũ bỏ qua `tt`, `ti` giữ nguyên chữ.
+- Không thêm khóa bản lưu, không đổi DDL.
+
 # v1.9.10 — 2026-10-07
 
 Gồm "Cấp bậc công an" (ranks-police: org ladder, cấp hiệu bảng màu riêng của game). Có gì mới cũng thông báo Phòng hát Mây (bật từ 07:28 07/10 bằng LIVE_KARAOKE).

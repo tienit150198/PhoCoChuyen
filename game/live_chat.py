@@ -86,6 +86,21 @@ def notify(db, event: dict) -> None:
     db.execute('SELECT pg_notify(?, ?)', (NOTIFY_CHANNEL, json.dumps(event, separators=(',', ':'))))
 
 
+def honours_commit(db, sid: str, action: str, result) -> None:
+    """🏅 A title shown beside the name in chat was granted by this command (a fair round's title, or a fair / wedding
+    title paid by game/live_effects.py): the live service reads the player's titles again (live/honours.py). Called by
+    the storage layer in the save's transaction; an older live service ignores the op."""
+    r = result if isinstance(result, dict) else {}
+    if action.startswith('fair_'):
+        got = bool((r.get('fair') or {}).get('titles'))
+    elif action == 'live_fx':
+        got = (r.get('live') or {}).get('kind') == 'title' and bool(r.get('message'))
+    else:
+        return
+    if got:
+        notify(db, dict(op='honours', pid=pid_of(sid)))
+
+
 def _kind(channel: str) -> str:
     return 'town' if channel == 'town' else 'dm' if channel.startswith('dm:') else 'group' if channel.startswith('g:') else channel.split(':', 1)[0]
 

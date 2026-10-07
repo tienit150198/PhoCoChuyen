@@ -4,15 +4,17 @@ import vm from 'node:vm';
 import test from 'node:test';
 import {escapeHTML} from '../public/js/icons.js';
 const source=readFileSync(new URL('../public/js/v4/chat.js',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
+// the stripped imports: 🎨 style-tag.js and 🏅 honours.js (a name with no `st` / `tt` draws as before)
+const STUBS={nameAttrs:()=>'',frameAttrs:()=>({cls:'',attrs:''}),titleChip:()=>'',hnChips:()=>'',hnList:()=>'',hnTitles:()=>[],inlineMax:()=>2};
 function harness(){
   const listeners=new Map(),nodes=new Map();let writes=0,html='';
   const body={dataset:{},scrollHeight:1000,scrollTop:200,clientHeight:200,onlineChecked:false,get innerHTML(){return html;},set innerHTML(v){writes++;html=v;this.onlineChecked=/data-ch-field="online" checked/.test(v);}};
   const ta={value:'Bản nháp',maxLength:300};
-  for(const s of ['.ch-head','.ch-net','.ch-flash','.ch-ro','.ch-pinbar','.ch-reply-compose','.ch-count'])nodes.set(s,{});
+  for(const s of ['.ch-head','.ch-net','.ch-flash','.ch-safety','.ch-ro','.ch-pinbar','.ch-reply-compose','.ch-count'])nodes.set(s,{});
   nodes.set('.ch-body',body);nodes.set('textarea',ta);nodes.set('.ch-compose',{querySelector:()=>ta});
   nodes.set('.ch-send',{classList:{remove(){}},querySelector:()=>true,setAttribute(){}});
   const live={state:'open',welcomed:true,me:{pid:'me',name:'Mình',account:true},flags:{},friends:[],limits:{},chans:[],on:(t,f)=>listeners.set(t,f),unread:()=>live.unreadCount||0,friend:()=>null,send(){}};
-  const ctx=vm.createContext({live,esc:escapeHTML,icon:()=>'',avInner:()=>'',faceCode:()=>'',clearTimeout(){},setTimeout(){},document:{visibilityState:'visible'},console});
+  const ctx=vm.createContext({live,esc:escapeHTML,icon:()=>'',avInner:()=>'',faceCode:()=>'',clearTimeout(){},setTimeout(){},document:{visibilityState:'visible'},console,...STUBS});
   vm.runInContext(source+'\nglobalThis.h={S,render,bind,onClose};',ctx);
   const h=ctx.h;h.S.dlg={open:true,querySelector:s=>nodes.get(s)};h.S.town.loaded=true;
   h.S.town.msgs=[{id:1,pid:'peer',name:'Bạn',text:'Tin nhắn',at:1700000000}];h.bind();

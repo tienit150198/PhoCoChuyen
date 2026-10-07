@@ -618,6 +618,9 @@ class Store:
                 if action.startswith('jr_spend_'):
                     from . import spend
                     spend.command_commit(db,sid,action,current)  # ☕ 🙏 the donation row, 🎨 the chat_style row
+                if action.startswith('fair_') or action=='live_fx':
+                    from . import live_chat
+                    live_chat.honours_commit(db,sid,action,result)  # 🏅 a title shown beside the name in chat
             if action == 'settings':
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,current)
@@ -675,6 +678,9 @@ class Store:
             if action.startswith('jr_spend_'):
                 from . import spend
                 spend.command_commit(db,sid,action,raw)  # ☕ 🙏 the donation row, 🎨 the chat_style row
+            if action.startswith('fair_') or action=='live_fx':
+                from . import live_chat
+                live_chat.honours_commit(db,sid,action,result)  # 🏅 a title shown beside the name in chat
             if action == 'settings':
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,raw)

@@ -190,6 +190,8 @@ def refresh(store, t: float | None = None, best_effort_ms: int | None = None) ->
                     db.execute('UPDATE lb_weekly SET final=1 WHERE final=0 AND week=?', (last_week,))
             db.execute('DELETE FROM lb_weekly WHERE final=0')
             _insert(db, week, rows, 0, day, t)
+            from .live_chat import notify   # 🏅 the live service reads the holders again (live/honours.py `tt`)
+            notify(db, dict(op='honours_lb'))
             return True
         did = store.transaction(step, best_effort_ms)
         if did is None:     # busy (best effort): try again on a later request

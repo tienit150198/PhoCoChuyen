@@ -1,6 +1,7 @@
 """Resolve reply IDs at the read boundary; never cache another message's text."""
 from .protocol import LiveError
 from .player_names import names_of
+from . import honours
 
 MAX_ID = 2 ** 63 - 1
 QUOTE_LEN = 160
@@ -54,12 +55,14 @@ async def project_many(chat, players, messages):
                 sources[r['viewer']][int(r['id'])] = r
     names = await names_of(chat, [m.get('pid') for m in messages] +
                            [source['pid'] for visible in sources.values() for source in visible.values()])
+    quoted = [source['pid'] for visible in sources.values() for source in visible.values()]
+    tt = await honours.of_app(chat.app).of(quoted) if quoted else {}   # 🏅 the quoted author's titles now (cached)
     if epoch != chat.reply_epoch:
         sources = {p.pid: {} for p in players}
-    return {p.pid: _render(p, messages, sources[p.pid], names) for p in players}
+    return {p.pid: _render(p, messages, sources[p.pid], names, tt) for p in players}
 
 
-def _render(player, messages, sources, names):
+def _render(player, messages, sources, names, tt=None):
     out = []
     for message in messages:
         result = dict(message)
@@ -71,6 +74,8 @@ def _render(player, messages, sources, names):
             source = sources.get(mid)
             if source and source['channel'] == result['ch'] and source['pid'] not in player.hidden:
                 result['reply'] = dict(id=mid, pid=source['pid'], name=names.get(source['pid']) or source['name'], text=source['text'][:QUOTE_LEN])
+                if (tt or {}).get(source['pid']):
+                    result['reply']['tt'] = tt[source['pid']]
             else:
                 result['reply'] = dict(id=mid, unavailable=True)
         out.append(result)

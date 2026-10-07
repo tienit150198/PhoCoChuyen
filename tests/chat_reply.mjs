@@ -5,6 +5,8 @@ import test from 'node:test';
 import {escapeHTML} from '../public/js/icons.js';
 
 const source=readFileSync(new URL('../public/js/v4/chat.js',import.meta.url),'utf8').replace(/^import .*\r?\n/gm,'').replace(/^export /gm,'');
+// the stripped imports: 🎨 style-tag.js and 🏅 honours.js (a name with no `st` / `tt` draws as before)
+const STUBS={nameAttrs:()=>'',frameAttrs:()=>({cls:'',attrs:''}),titleChip:()=>'',hnChips:()=>'',hnList:()=>'',hnTitles:()=>[],inlineMax:()=>2};
 const CH='dm:aaaaaaaaaaaaaaaa:bbbbbbbbbbbbbbbb',OTHER='group:other';
 const message=(id,extra={})=>({t:'msg',ch:CH,id,pid:'bbbbbbbbbbbbbbbb',name:'Bạn <An>',text:'Gốc <img onerror=x>',at:1700000000+id,...extra});
 function harness(ch=CH){
@@ -14,7 +16,7 @@ function harness(ch=CH){
   const dlg={open:true,querySelector:s=>nodes.get(s)||null};
   const live={state:'open',me:{pid:'aaaaaaaaaaaaaaaa',account:true,name:'Mình',adm:true},flags:{chatdel:true},chans:[{id:CH,kind:'dm'},{id:OTHER,kind:'group'}],friends:[],limits:{},
     on:(type,fn)=>listeners.set(type,fn),send(frame){sent.push(frame);return this.state==='open';},chan(ch){return this.chans.find(c=>c.id===ch);},friend:()=>null,unread:()=>0,quiet:()=>false};
-  const ctx=vm.createContext({live,document:{visibilityState:'visible'},icon:()=>'',esc:escapeHTML,avInner:()=>'',stylesheet:async()=>{},faceCode:()=>'',setTimeout:()=>1,clearTimeout:()=>{},console});
+  const ctx=vm.createContext({live,document:{visibilityState:'visible'},icon:()=>'',esc:escapeHTML,avInner:()=>'',stylesheet:async()=>{},faceCode:()=>'',setTimeout:()=>1,clearTimeout:()=>{},console,...STUBS});
   vm.runInContext(source+'\nrender=()=>{if(typeof renderReply===\"function\")renderReply();};counter=()=>{};countdown=()=>{};globalThis.chat={S,bind,thread,openThread,onAct,submit,onClose,actBar,messages:(list,more,kind)=>msgList(list,kind,more),renderPin};',ctx);
   const h=ctx.chat;h.S.dlg=dlg;h.bind();if(ch!=='town')h.openThread(ch,false);
   const list=ch==='town'?h.S.town:h.thread(ch);list.msgs=[message(12,{ch})];list.loaded=true;

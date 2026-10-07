@@ -30,6 +30,8 @@ Moving (memory only, never the database)
 * 🎨 A name colour, frame or title of the week (game/spend.py, read from `chat_style` by live/styles.py, never sent by a
   client): a public entry and a `card` may carry `st` {c?, f?, t?}; the bought title also leads `ti` after the honours,
   so an older client shows it as text. Optional: an older client ignores `st`, an older service sends none.
+* 🏅 Every honour title held now (live/honours.py: weekly leaderboard tops, fair titles, the wedding race) goes out as
+  `tt` [ids] on a public entry and a `card`; `ti` keeps its text for older clients.
 
 Talking
 * `say {text}` goes through the chat's store_message (filters, mutes, duplicates, kept like all chat) in the
@@ -69,7 +71,7 @@ import re
 import secrets
 import time
 
-from . import coride, effects, styles
+from . import coride, effects, honours, styles
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
 from .street_data import ORG_GRADES
@@ -280,7 +282,7 @@ def clean_rank(rk) -> dict | None:
 
 
 class Walker:
-    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk')
+    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk', 'tt')
 
     def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None, rk: dict | None = None):
         self.rk = rk
@@ -291,6 +293,7 @@ class Walker:
         self.ride = ride
         self.back = self.pill = None   # 🛵 the driver I sit behind / who sits behind me (pids, live/coride.py)
         self.st = None                 # 🎨 name colour / frame / title of the week (live/styles.py), outside the look
+        self.tt = None                 # 🏅 every honour title held now (live/honours.py): ids, best first
 
     @property
     def speed(self) -> float:
@@ -310,6 +313,8 @@ class Walker:
             d['b'], d['v'] = self.back, self.speed
         if self.st:
             d['st'] = self.st
+        if self.tt:
+            d['tt'] = self.tt
         return d
 
 
@@ -587,6 +592,7 @@ class StreetFeature(Feature):
         p = conn.player
         await self.lb_fresh()
         st = await styles.of_app(self.app).one(p.pid)   # 🎨 read from chat_style, never from the frame
+        tt = await honours.of_app(self.app).one(p.pid)  # 🏅 read from the game's records, never from the frame
         title = self.title_of(p, f.get('title'), f.get('titles'), st)
         await self._ensure_loaded(p)
         r, by = await coride.check(self.db, self.hub, p, clean_ride(f.get('r')))   # no await from here on
@@ -597,6 +603,7 @@ class StreetFeature(Feature):
         at = GEO[place].clamp(sx + random.uniform(-150, 150), sy + random.uniform(-45, 45))
         w = Walker(p, look, g, title, at, now, r, clean_rank(f.get('rk')))
         w.st = st or None
+        w.tt = tt or None
         self._enter(room, conn, w)
         out = self._snapshot(room, p, now)
         if by:
@@ -826,7 +833,8 @@ class StreetFeature(Feature):
             except DbError as e:
                 log('card code:', type(e).__name__)
         return dict(t='card', pid=w.pid, name=w.name, ti=w.title, lk=w.look, g=w.g, friend=friend, account=o.account,
-                    code=code, cafe=room.id.startswith(PREFIX) and not GEO[room.data['place']].private, **({'st': w.st} if w.st else {}))
+                    code=code, cafe=room.id.startswith(PREFIX) and not GEO[room.data['place']].private, **({'st': w.st} if w.st else {}),
+                    **({'tt': w.tt} if w.tt else {}))
 
     @on('invite', rate=(4, 60))
     async def invite(self, conn, f):
@@ -875,7 +883,7 @@ class StreetFeature(Feature):
         for k, (p, conns, old) in enumerate(moving):
             sx, sy = g.spots['spawn']
             w = Walker(p, old.look, old.g, old.title, g.clamp(sx + (50 if k == 0 else -50), sy), now, rk=old.rk)   # seat 0 is on the right
-            w.st = old.st
+            w.st, w.tt = old.st, old.tt
             for c in conns:
                 self._enter(cafe, c, w)
             tb = cafe.data['tables'][0]

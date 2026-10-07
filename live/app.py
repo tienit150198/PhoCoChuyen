@@ -20,7 +20,7 @@ import os
 import signal
 import time
 
-from . import PROTOCOL, jsonx
+from . import PROTOCOL, honours, jsonx
 from .auth import identify, token_from
 from .booth import BoothFeature
 from .chat import ChatFeature
@@ -210,10 +210,12 @@ class App:
         except ValueError:
             return
         if isinstance(event, dict):
+            honours.on_notify(self, event)   # 🏅 a title granted, the weekly holders moved (live/honours.py)
             for feat in self.features:
                 await feat.on_notify(event)
 
     async def on_reconnect(self) -> None:
+        honours.of_app(self).clear()   # 🏅 announcements may have been missed while LISTEN was down
         if self.chat:
             await self.chat.reconcile()
 

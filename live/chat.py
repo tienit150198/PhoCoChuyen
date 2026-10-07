@@ -64,6 +64,11 @@ title a player paid for, read from `chat_style` (live/styles.py; never from a fr
 live messages and on the messages of a page, beside `fc`. An older client ignores `st`; without the table (before
 SCHEMA_VERSION 25) nobody has one.
 
+🏅 Danh hiệu (owner 07/10: "bảng xếp hạng, hội chợ event mà có là hiển thị ra hết"): every honour title the author
+holds now (weekly leaderboard tops, fair titles, the wedding race), resolved by live/honours.py from the game's
+records (never from a frame), goes out as `tt` [ids, best first] beside `st`: on live messages, on the messages of a
+page and on a reply's quote. An older client ignores `tt`.
+
 😍 Reactions (owner, 01/10: "nhấn giữ là reaction"): one of REACTS per player per message (`chat_reacts`, primary key
 (msg, pid)) in Cả phố, DMs and groups. `react {id, e}` sets e; the same e again (or e null) takes it back; another
 replaces it. Not on a hidden or deleted message, not by a muted player or a guest, DMs and groups only for their
@@ -93,6 +98,7 @@ import time
 from . import faces as facemod
 from . import filters
 from . import chat_reply
+from . import honours
 from . import player_names
 from . import styles
 from .auth import pid_of, profile
@@ -636,6 +642,9 @@ class ChatFeature(Feature):
         st = await styles.of_app(self.app).one(p.pid)
         if st:
             frame['st'] = st
+        tt = await honours.of_app(self.app).one(p.pid)   # 🏅 every honour title held now (live/honours.py)
+        if tt:
+            frame['tt'] = tt
         return frame
 
     # ---- 🙂 faces ---------------------------------------------------------------------------------------------
@@ -678,7 +687,8 @@ class ChatFeature(Feature):
                 else:
                     m.pop('fc', None)
             out.append(m)
-        return await styles.with_styles(self.app, out)   # 🎨 and their `st` now (live/styles.py)
+        out = await styles.with_styles(self.app, out)   # 🎨 and their `st` now (live/styles.py)
+        return await honours.with_honours(self.app, out)   # 🏅 and their `tt` now (live/honours.py)
 
     async def store_face(self, p, code: str) -> bool:
         """Keep my face (a cleaned code, '' = none). True when it changed."""

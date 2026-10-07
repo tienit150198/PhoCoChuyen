@@ -103,6 +103,7 @@ class WeddingFeature(Feature):
         self.att: dict = {}         # wedding id -> {pid: Att}
         self.names: dict = {}       # sid -> display name (bounded by the parties)
         self.race: dict = {}        # pid -> race title text worn this week
+        self.race_ids: dict = {}    # pid -> its id (w_vip, w_pro)
         self.race_week = None
         self.next_refresh = 0.0
         self.refreshing = None      # the schedule read in flight (others wait for it)
@@ -183,6 +184,7 @@ class WeddingFeature(Feature):
             row = await self.db.fetchrow('SELECT top FROM wedding_race WHERE week=?', (prev,))
         top = json.loads(row['top']) if row else []
         self.race = {w['pid']: WL.TITLE_NAMES[w['title']] for w in top if w.get('title') in WL.TITLE_NAMES}
+        self.race_ids = {w['pid']: w['title'] for w in top if w.get('title') in WL.TITLE_NAMES}   # 🏅 `tt` (live/honours.py)
         self.race_week = prev
 
     async def settle_week(self, week: str) -> list:

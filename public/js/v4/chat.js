@@ -27,6 +27,7 @@ import {stylesheet} from '../lazy.js';
 import {avInner} from './face.js';
 import {faceCode} from './face-code.js';
 import {nameAttrs,frameAttrs,titleChip} from './style-tag.js';   // 🎨 `st` of the week (live/styles.py)
+import {chips as hnChips,list as hnList,titles as hnTitles,inlineMax} from './honours.js';   // 🏅 `tt`: every honour title held now (live/honours.py)
 
 const S={dlg:null,env:null,tab:'town',thread:null,view:null,bodyHTML:null,threads:new Map(),
   town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false,pin:null},pinOpen:false,reactFor:null,lp:null,
@@ -75,7 +76,11 @@ function dialog(){
     if(S.lp?.fired&&(!S.lp.up||Date.now()-S.lp.up<400)){S.lp=null;e.preventDefault();return;}
     if(e.target.closest('a[href]'))return;   // a link in an admin message opens (a new tab), nothing else
     const el=e.target.closest('[data-ch-act]');
-    if(!el||!d.contains(el)||el.disabled){if(S.reactFor!=null&&!e.target.closest('.ch-react-bar')){S.reactFor=null;render();}return;}
+    if(!el||!d.contains(el)||el.disabled){
+      let redraw=false;
+      if(S.reactFor!=null&&!e.target.closest('.ch-react-bar')){S.reactFor=null;redraw=true;}
+      if(S.honFor!=null&&!e.target.closest('.hn-pop')){S.honFor=null;redraw=true;}   // 🏅 a tap elsewhere closes the titles
+      if(redraw)render();return;}
     e.preventDefault();onAct(el.dataset.chAct,el.dataset,el);
   });
   // 😍 press and hold a message: the emoji bar
@@ -174,7 +179,7 @@ function restoreFailed(ch){
 function replyQuote(q){
   if(!q||!Number.isSafeInteger(q.id)||q.id<1)return '';
   if(q.unavailable)return '<span class="ch-quote unavailable">Tin nhắn không còn khả dụng</span>';
-  return `<span class="ch-quote"><b data-no-translate>${esc(q.name||'Bạn')}</b><span data-no-translate>${esc(String(q.text||'').slice(0,180))}</span></span>`;
+  return `<span class="ch-quote"><b data-no-translate>${esc(q.name||'Bạn')}${hnChips(S.env?.api,q.tt,1,false)}</b><span data-no-translate>${esc(String(q.text||'').slice(0,180))}</span></span>`;
 }
 function renderReply(){
   const box=S.dlg?.querySelector?.('.ch-reply-compose');if(!box)return;
@@ -342,7 +347,9 @@ function openThread(ch,draw=true){if(S.thread!==ch)resetReply();S.thread=ch;S.no
 /* ---- actions ----------------------------------------------------------------------------------- */
 function onAct(act,d,el){
   if(act!=='react')S.reactFor=null;
+  if(act!=='honours')S.honFor=null;
   switch(act){
+    case'honours':S.honFor=S.honFor===d.id?null:d.id;break;   // 🏅 tapping a name with titles (or "+N"): all of them
     case'workvisit':S.dlg.close();S.env.act('workVisit',{pid:d.pid});return;
     case'friend':{
       const id=Number(d.id);if(!live.me?.account||!live.me?.friend_card||friendRequests.has(id))return;
@@ -446,6 +453,12 @@ function rich(t){
 const text=m=>m.adm?rich(m.text):lines(m.text);
 const badge=m=>m.adm?'<em class="ch-adm">📢 Quản trị</em>':'';
 
+/** 🏅 A DM peer's titles: the `tt` of their newest message in the open chat (null when none). */
+function peerTitles(pid){
+  const L=pid&&S.thread?thread(S.thread).msgs:null;if(!L)return null;
+  for(let i=L.length-1;i>=0;i--)if(L[i].pid===pid&&!L[i].sys)return hnTitles(S.env?.api,L[i].tt).length?L[i].tt:null;
+  return null;
+}
 function head(){
   const x=`<button type="button" class="icon-btn" data-ch-act="close" aria-label="Đóng">${icon('x',20)}</button>`;
   const back=`<button type="button" class="icon-btn" data-ch-act="back" aria-label="Quay lại">${icon('chevron',20,'ch-back-ico')}</button>`;
@@ -456,7 +469,8 @@ function head(){
     const c=live.chan(S.thread),grp=c?.kind==='group'||S.thread.startsWith('g:');
     const peer=c?.peer||live.friend(S.thread.slice(3).split(':').find(p=>p!==me()))||{};
     const title=grp?esc(c?.title||'Nhóm'):esc(peer.name||'Bạn bè');
-    const sub=grp?`${c?.n||''} người`:peer.on?'Đang online':'';
+    const ptt=grp?null:peerTitles(peer.pid||S.thread.slice(3).split(':').find(p=>p!==me())),hon=ptt?`<button type="button" class="hn-btn hn-head" data-ch-act="honours" data-id="peer" aria-expanded="${S.honFor==='peer'}">${hnChips(S.env?.api,ptt,inlineMax())}</button>`:'';
+    const sub=(grp?`${c?.n||''} người`:peer.on?'Đang online':'')+hon;
     const q=live.quiet(c),bell=c?`<button type="button" class="icon-btn ch-bell${q?' off':''}" data-ch-act="notifyMenu" aria-expanded="${Boolean(S.notifyOpen)}" aria-label="Thông báo: ${q?'Tắt':'Bật'}" title="Thông báo: ${q?'Tắt':'Bật'}"><span aria-hidden="true">${q?'🔕':'🔔'}</span></button>`:'';
     const more=(!grp&&peer.pid?`<button type="button" class="ch-mini" data-ch-act="workvisit" data-pid="${esc(peer.pid)}">Ghé chỗ làm</button>`:'')+bell+(grp?`<button type="button" class="icon-btn" data-ch-act="members" aria-label="Thành viên">${icon('people',19)}</button>`:
       (peer.pid?`<button type="button" class="ch-mini${S.confirm==='block:'+peer.pid?' warn':''}" data-ch-act="block" data-pid="${esc(peer.pid)}">${S.confirm==='block:'+peer.pid?'Chặn thật?':'Chặn'}</button>`:''));
@@ -467,6 +481,14 @@ function head(){
   return `<div class="ch-tabs grow" role="tablist">${TABS.map(([id,label])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'on':''}" data-ch-act="tab" data-tab="${id}">${label}${id==='inbox'&&n?`<em class="badge">${n>99?'99+':n}</em>`:''}${id==='friends'&&on?`<i class="ch-on-n">${on}</i>`:''}</button>`).join('')}</div>${date}${x}`;
 }
 
+/** A message's name row: 🎨 colour and bought title, 🏅 honour chips (tap: every title, in a small popover). */
+function nameRow(m){
+  const api=S.env?.api,inner=`<span data-no-translate${nameAttrs(api,m.st)}>${esc(m.name)}</span>${titleChip(api,m.st)}${badge(m)}`;
+  if(!hnTitles(api,m.tt).length)return `<b class="ch-name">${inner}</b>`;
+  const key=String(m.id),open=S.honFor===key;
+  return `<button type="button" class="ch-name hn-btn" data-ch-act="honours" data-id="${key}" aria-expanded="${open}">${inner}${hnChips(api,m.tt,inlineMax())}</button>`+
+    (open?hnList(api,m.tt,m.name):'');
+}
 function msgList(list,kind,more){
   if(!list.length)return '';
   let out=more?`<button type="button" class="ch-older" data-ch-act="older"${S.older?' disabled':''}>${S.older?'Đang tải…':'Xem cũ hơn'}</button>`:'';
@@ -474,7 +496,7 @@ function msgList(list,kind,more){
   for(const m of list){
     if(m.sys){if(m.sys==='date'&&Date.now()/1000-m.at<CALL_SHOW)out+=callLine(m);prev=null;continue;}
     const mine=m.pid===me(),first=!prev||prev.pid!==m.pid||m.at-prev.at>300;
-    const name=!mine&&first&&kind!=='dm'?`<b class="ch-name"><span data-no-translate${nameAttrs(S.env?.api,m.st)}>${esc(m.name)}</span>${titleChip(S.env?.api,m.st)}${badge(m)}</b>`:'';   // 🎨 colour + title of the week
+    const name=!mine&&first&&kind!=='dm'?nameRow(m):'';   // 🎨 colour + title of the week, 🏅 honour titles
     const bar=S.act===m.id?actBar(m,mine,kind):'';
     const pinned=kind==='town'&&S.town.pin?.id===m.id?'<i class="ch-pinned" aria-label="Đang ghim">📌</i>':'';
     // an admin message with links: a div acting as the button (a link cannot sit inside a <button>)
@@ -566,7 +588,8 @@ function body(){
     const t=thread(S.thread);
     if(!t.loaded)return t.error?empty('chat','Không tải được tin nhắn.')+'<button type="button" class="btn primary full" data-ch-act="historyRetry">Thử lại</button>':empty('chat','Đang tải…');
     const kind=S.thread.startsWith('g:')?'group':'dm';
-    return notifyMenu()+(t.msgs.length?msgList(t.msgs,kind,t.more):empty('chats','Gửi lời chào đầu tiên 👋'));
+    const peer=kind==='dm'&&S.honFor==='peer'?(live.chan(S.thread)?.peer||{}):null,ptt=peer?peerTitles(peer.pid||S.thread.slice(3).split(':').find(p=>p!==me())):null;
+    return notifyMenu()+(ptt?hnList(S.env?.api,ptt,peer.name||''):'')+(t.msgs.length?msgList(t.msgs,kind,t.more):empty('chats','Gửi lời chào đầu tiên 👋'));
   }
   if(S.tab==='town'){
     const T=S.town;
