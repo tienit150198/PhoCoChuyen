@@ -1,25 +1,28 @@
 /** Cấp hiệu, huy hiệu and the uniform of an org ladder (game/org_content.py `ins`; owner to review the art).
  * One painter for both pens of look.js (CANVAS on the scenes, SVG on the cards), so the rank card, the workplace and
  * the live street always match. Generic `ins` keys, any org may use them:
- *   base 'red'|'yellow'|'gold'  board colour · v chevrons · h straight stripes · b long bars · s stars · big one big star
+ *   base 'nco'|'officer'|'general'  board colour · v chevrons · h straight stripes · b long bars · s stars · big one big star
  *   GRADES       grade id → ins (a copy of org_content CAND_GRADES; tests/test_org_police.py compares them)
  *   boardSVG()   a shoulder board (the rank card)            badgeSVG()  the CAND badge (huy hiệu)
  *   paintRank()  boards + chest badge on a figure (pen K)    paintCap()  the peaked cap with the badge (on shift) */
-export const GRADES={cand:{binh_nhi:{base:'red',v:1},binh_nhat:{base:'red',v:2},ha_si:{base:'red',h:1},trung_si:{base:'red',h:2},
-  thuong_si:{base:'red',h:3},thieu_uy:{base:'yellow',b:1,s:1},trung_uy:{base:'yellow',b:1,s:2},thuong_uy:{base:'yellow',b:1,s:3},
-  dai_uy:{base:'yellow',b:1,s:4},thieu_ta:{base:'yellow',b:2,s:1},trung_ta:{base:'yellow',b:2,s:2},thuong_ta:{base:'yellow',b:2,s:3},
-  dai_ta:{base:'yellow',b:2,s:4},thieu_tuong:{base:'gold',big:1,s:1}}};
-const BASE={red:['#c8102e','#8f0a1f'],yellow:['#efc94c','#a8841f'],gold:['#e2b33c','#8c6a14']};
-const MARK={red:'#f6d24a',yellow:'#c8102e',gold:'#c8102e'};   // stripes and chevrons: yellow on red, red on yellow
-const STAR='#fbfbf7',STAR_EDGE='#5b4a17',UNI='#6f8455',UNI_D='#55693f',BAND='#c8102e',VISOR='#26221f';
-export const CAP_GOLD='#e0b43f';
+export const GRADES={cand:{binh_nhi:{base:'nco',v:1},binh_nhat:{base:'nco',v:2},ha_si:{base:'nco',h:1},trung_si:{base:'nco',h:2},
+  thuong_si:{base:'nco',h:3},thieu_uy:{base:'officer',b:1,s:1},trung_uy:{base:'officer',b:1,s:2},thuong_uy:{base:'officer',b:1,s:3},
+  dai_uy:{base:'officer',b:1,s:4},thieu_ta:{base:'officer',b:2,s:1},trung_ta:{base:'officer',b:2,s:2},thuong_ta:{base:'officer',b:2,s:3},
+  dai_ta:{base:'officer',b:2,s:4},thieu_tuong:{base:'general',big:1,s:1}}};
+/* The game's own palette for Công an phường Mây (owner 07/10: "cho khác màu xíu", not the real red/yellow): deep teal
+ * boards with a darker edge, silver stripes and chevrons, pale gold stars; enlisted and NCOs on a lighter teal; the
+ * NPC-only general on warm bronze. [fill, edge] per base. */
+const BASE={nco:['#2f7f80','#1b5254'],officer:['#1d5a5f','#0f3a3e'],general:['#b07a3c','#6c4720']};
+const MARK={nco:'#dfe5ea',officer:'#c9d1d8',general:'#f4e7c2'};   // silver on teal, cream on bronze
+const STAR='#f3e2a4',STAR_EDGE='#6a5a2c',UNI='#6f8455',UNI_D='#55693f',BAND='#1d5a5f',VISOR='#26221f';
+export const CAP_GOLD='#e7d59a';
 const starPts=(cx,cy,r)=>Array.from({length:10},(_,i)=>{const a=Math.PI/5*i-Math.PI/2,rr=i%2?r*.45:r;return [cx+rr*Math.cos(a),cy+rr*Math.sin(a)];});
 /** The grade's insignia from a rank ref {o, g} (o: org id, g: grade id) or an `ins` object itself. */
 export const insOf=rk=>rk?.base?rk:(GRADES[rk?.o]?.[rk?.g]||null);
 
 /** One shoulder board, lying along x (the button at the neck end `inner`: -1 left, +1 right). */
 export function board(c,K,ins,x,y,w,h,inner=-1){
-  const [fill,edge]=BASE[ins.base]||BASE.yellow,mark=MARK[ins.base]||MARK.yellow;
+  const [fill,edge]=BASE[ins.base]||BASE.officer,mark=MARK[ins.base]||MARK.officer;
   K.R(c,x,y,w,h,edge,h/2);K.R(c,x+.6,y+.6,w-1.2,h-1.2,fill,h/2);
   const bx=inner<0?x+h*.55:x+w-h*.55;K.E(c,bx,y+h/2,h*.22,h*.22,edge);   // the button
   const x0=inner<0?x+h*1.05:x+h*.35,x1=inner<0?x+w-h*.35:x+w-h*1.05,len=x1-x0,cy=y+h/2;
@@ -29,11 +32,12 @@ export function board(c,K,ins,x,y,w,h,inner=-1){
   if(ins.big){K.P(c,starPts(x0+len*.55,cy,h*.42),STAR_EDGE);K.P(c,starPts(x0+len*.55,cy,h*.34),'#fff6d0');return;}
   if(ins.s){const r=Math.min(h*.26,len/(ins.s*2.4));for(let i=0;i<ins.s;i++){const px=x0+len*(i+.5)/ins.s;K.P(c,starPts(px,cy,r*1.25),STAR_EDGE);K.P(c,starPts(px,cy,r),STAR);}}
 }
-/** The CAND badge (huy hiệu): a gold ring, a red disc, the yellow star, two ears of rice. */
+/** The ward's emblem (huy hiệu Công an phường Mây): the badge's shape in the game's palette: a pale-gold ring, a teal
+ * disc, a cream star, two silver ears of rice. */
 export function badge(c,K,x,y,r){
-  K.E(c,x,y,r,r,'#b8860b');K.E(c,x,y,r*.86,r*.86,CAP_GOLD);K.E(c,x,y,r*.66,r*.66,BAND);
-  K.P(c,starPts(x,y-r*.04,r*.48),'#ffd84a');
-  for(const s of [-1,1])for(let i=0;i<3;i++){const a=Math.PI*(.62+i*.13),px=x+s*Math.cos(a)*r*.76*-1,py=y+Math.sin(a)*r*.76;K.E(c,px,py,r*.11,r*.17,'#ffe08a');}
+  K.E(c,x,y,r,r,'#8a7640');K.E(c,x,y,r*.86,r*.86,CAP_GOLD);K.E(c,x,y,r*.66,r*.66,BAND);
+  K.P(c,starPts(x,y-r*.04,r*.48),'#f7ecc6');
+  for(const s of [-1,1])for(let i=0;i<3;i++){const a=Math.PI*(.62+i*.13),px=x+s*Math.cos(a)*r*.76*-1,py=y+Math.sin(a)*r*.76;K.E(c,px,py,r*.11,r*.17,'#dfe5ea');}
 }
 /** Boards on both shoulders and the badge on the chest (the figure's coordinates of look.js: shoulders at y≈-52). */
 export function paintRank(c,F,K,full=false){
@@ -57,7 +61,7 @@ export function boardSVG(ins,w=96,label=''){
   const x=insOf(ins);if(!x)return '';const out=[];board(out,PEN,x,1,1,98,34,-1);
   return `<svg class="og-board" viewBox="0 0 100 36" width="${w}" height="${Math.round(w*.36)}" ${label?`role="img" aria-label="${label}"`:'aria-hidden="true"'}>${out.join('')}</svg>`;
 }
-export function badgeSVG(size=28,label='Huy hiệu Công an nhân dân'){
+export function badgeSVG(size=28,label='Huy hiệu Công an phường Mây'){
   const out=[];badge(out,PEN,20,20,19);
   return `<svg class="og-badge" viewBox="0 0 40 40" width="${size}" height="${size}" role="img" aria-label="${label}">${out.join('')}</svg>`;
 }

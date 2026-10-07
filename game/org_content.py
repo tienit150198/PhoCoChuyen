@@ -7,7 +7,7 @@ An org has two separate tracks (owner spec 06/10):
   appointment), days in the current post, ★, no open warning, a vacancy and a short interview.
 
 Insignia (`ins`) are drawn by public/js/v4/insignia.js, generic for every org:
-  base 'red' | 'yellow' | 'gold'   the board's colour (cấp hiệu nền)
+  base 'nco' | 'officer' | 'general'   the board's colour (the game's own palette: teal, deep teal, bronze)
   v  chevrons (vạch chữ V)          h  straight stripes (vạch ngang)
   b  long bars (1 cấp úy, 2 cấp tá) s  stars                big  one big star (cấp tướng)
 Another org may later add its own shape keys (the pilot keeps promotion_content.INSIGNIA for now).
@@ -30,23 +30,23 @@ def _p(pid, name, short, level, lo, hi, days=0, need=38, frm=(), olv=None, bonus
                 bonus=bonus, chain=chain, extra=extra or {}, npc=npc)
 
 
-RED, YELLOW, GOLD = 'red', 'yellow', 'gold'
+NCO, OFFICER, GENERAL = 'nco', 'officer', 'general'   # the game's palette (v4/insignia.js), not the real colours
 
 CAND_GRADES = (
-    _g('binh_nhi', 'Binh nhì', dict(base=RED, v=1), 3, 30, coef=3.0),
-    _g('binh_nhat', 'Binh nhất', dict(base=RED, v=2), 3, 30, coef=3.1),
-    _g('ha_si', 'Hạ sĩ', dict(base=RED, h=1), 4, 32, coef=3.2),
-    _g('trung_si', 'Trung sĩ', dict(base=RED, h=2), 4, 35, coef=3.5),
-    _g('thuong_si', 'Thượng sĩ', dict(base=RED, h=3), 5, 35, 'course:chuyen_loai', coef=3.8),
-    _g('thieu_uy', 'Thiếu úy', dict(base=YELLOW, b=1, s=1), 6, 38, coef=4.2),
-    _g('trung_uy', 'Trung úy', dict(base=YELLOW, b=1, s=2), 6, 38, coef=4.6),
-    _g('thuong_uy', 'Thượng úy', dict(base=YELLOW, b=1, s=3), 8, 40, coef=5.0),
-    _g('dai_uy', 'Đại úy', dict(base=YELLOW, b=1, s=4), 8, 40, 'course:chi_huy_co_so', coef=5.4),
-    _g('thieu_ta', 'Thiếu tá', dict(base=YELLOW, b=2, s=1), 10, 42, coef=6.0),
-    _g('trung_ta', 'Trung tá', dict(base=YELLOW, b=2, s=2), 10, 43, 'course:chi_huy_tp', coef=6.6),
-    _g('thuong_ta', 'Thượng tá', dict(base=YELLOW, b=2, s=3), 12, 45, 'clean', coef=7.3),
-    _g('dai_ta', 'Đại tá', dict(base=YELLOW, b=2, s=4), None, None, coef=8.0),            # the players' ceiling
-    _g('thieu_tuong', 'Thiếu tướng', dict(base=GOLD, big=1, s=1), None, None, 'npc'),   # Giám đốc CATP: an NPC only
+    _g('binh_nhi', 'Binh nhì', dict(base=NCO, v=1), 3, 30, coef=3.0),
+    _g('binh_nhat', 'Binh nhất', dict(base=NCO, v=2), 3, 30, coef=3.1),
+    _g('ha_si', 'Hạ sĩ', dict(base=NCO, h=1), 4, 32, coef=3.2),
+    _g('trung_si', 'Trung sĩ', dict(base=NCO, h=2), 4, 35, coef=3.5),
+    _g('thuong_si', 'Thượng sĩ', dict(base=NCO, h=3), 5, 35, 'course:chuyen_loai', coef=3.8),
+    _g('thieu_uy', 'Thiếu úy', dict(base=OFFICER, b=1, s=1), 6, 38, coef=4.2),
+    _g('trung_uy', 'Trung úy', dict(base=OFFICER, b=1, s=2), 6, 38, coef=4.6),
+    _g('thuong_uy', 'Thượng úy', dict(base=OFFICER, b=1, s=3), 8, 40, coef=5.0),
+    _g('dai_uy', 'Đại úy', dict(base=OFFICER, b=1, s=4), 8, 40, 'course:chi_huy_co_so', coef=5.4),
+    _g('thieu_ta', 'Thiếu tá', dict(base=OFFICER, b=2, s=1), 10, 42, coef=6.0),
+    _g('trung_ta', 'Trung tá', dict(base=OFFICER, b=2, s=2), 10, 43, 'course:chi_huy_tp', coef=6.6),
+    _g('thuong_ta', 'Thượng tá', dict(base=OFFICER, b=2, s=3), 12, 45, 'clean', coef=7.3),
+    _g('dai_ta', 'Đại tá', dict(base=OFFICER, b=2, s=4), None, None, coef=8.0),            # the players' ceiling
+    _g('thieu_tuong', 'Thiếu tướng', dict(base=GENERAL, big=1, s=1), None, None, 'npc'),   # Giám đốc CATP: an NPC only
 )
 
 # Ward chain → (transfer) city. Trưởng phòng PC06's ceiling is Thượng tá (owner OK 06/10), so the way to PGĐ works.

@@ -72,7 +72,7 @@ class Ladder(unittest.TestCase):
         self.assertEqual((x['p'], O['grades'][x['g']]['id']), ('to_vien', 'binh_nhi'))
         v = view(j)
         self.assertEqual(v['title'], 'Binh nhì · Tổ viên')
-        self.assertEqual(v['org']['grade']['ins'], dict(base='red', v=1))
+        self.assertEqual(v['org']['grade']['ins'], dict(base='nco', v=1))
         self.assertEqual(v['org']['warns'], [])
         validate_state(j.state)
 
