@@ -8,6 +8,8 @@ import {Sound} from '../audio.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {nextHint,stepCta,barParts,finalGo,pending as nextOf,firstTime,stepLine,todoAttrs} from '../v4/guide.js';
 import {actBar,clean,tip,headChip,helpBtn,whyAttrs} from '../ui-kit.js';
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox,QTY} from '../qty-input.js';
 
 const ICE=[['none','Không đá'],['little','Ít đá'],['normal','Đá vừa'],['extra','Nhiều đá']];
 const ICE_TEXT={none:'không đá',little:'ít đá',normal:'đá vừa',extra:'nhiều đá'};
@@ -655,7 +657,7 @@ function supplierPicker(x,id){
   const chip=s=>{const ok=sells(s),on=s.id===sup.id,tags=[s.factor===cheapest?'rẻ nhất':s.factor>1?'đắt':'',s.late>=12?'hay trễ':''].filter(Boolean);
     return `<button type="button" class="mt-sup-chip ${on?'on':''}" data-action="car:sup" data-sup="${x.esc(s.id)}" aria-pressed="${on}"${ok?'':' disabled'}><b><span aria-hidden="true">${x.esc(s.emoji)}</span> ${x.esc(s.name)}</b><small>${ok?`${x.esc(s.quote?.label||s.window)} · ×${String(s.factor).replace('.',',')}${tags.length?' · '+tags.map(v=>x.esc(v)).join(' · '):''}`:'Không bán mặt hàng này'}</small></button>`;};
   const go=why?whyBtn(x,`🚚 Đặt · ${cost} xu`,why,'primary'):jb(x,cups?`🚚 Đặt ${qty} thùng · ${cost} xu`:`🚚 Đặt ${qty} phần · ${cost} xu`,'tea_order',{item:id,qty,supplier:sup.id,confirm:true},'primary');
-  return `<div class="mt-picker"><div class="mt-order-qty"><div class="mt-stepper" role="group" aria-label="Số lượng">${step(qty-1,'−','Bớt một',qty<=1)}<output aria-live="polite"><b>${qty}</b> <small>${cups?`thùng · ${qty*pack} ly`:'phần'}</small></output>${step(qty+1,'+','Thêm một',qty>=max)}</div><div class="mt-qty-chips" role="group" aria-label="Chọn nhanh">${chips}</div></div>
+  return `<div class="mt-picker"><div class="mt-order-qty"><div class="mt-stepper" role="group" aria-label="Số lượng">${step(qty-1,'−','Bớt một',qty<=1)}<label class="mt-typed">${qtyBox({value:qty,min:1,max,label:cups?'Số thùng':'Số phần',go:step(QTY,'','',false),live:true})}<small aria-live="polite">${cups?`thùng · ${qty*pack} ly`:'phần'}</small></label>${step(qty+1,'+','Thêm một',qty>=max)}</div><div class="mt-qty-chips" role="group" aria-label="Chọn nhanh">${chips}</div></div>
     <p class="mt-bill" role="status"><b>Tổng ${cost.toLocaleString('vi-VN')} xu</b><span>Quỹ còn ${Math.max(0,fund(x)-cost).toLocaleString('vi-VN')} xu</span></p>
     <div class="mt-sup-chips" role="group" aria-label="Nhà cung cấp">${sups.map(chip).join('')}</div>
     <details class="mt-sup-more"><summary>${x.esc(sup.emoji)} ${x.esc(sup.name)}: giờ giao</summary><p>${x.esc(sup.window)}${sup.note?` · ${x.esc(sup.note)}`:''}</p></details>

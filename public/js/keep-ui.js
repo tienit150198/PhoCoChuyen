@@ -1,7 +1,9 @@
 /** 🔒 "Giữ lại cho ca của tôi" (B4 part 2, F#243 / F#247): a per-item floor the staff never sell below, so the owner's
- * own shift still has stock. One stepper row per item in the stock room (Kho: workplace_business ops_keep) and in a
+ * own shift still has stock. One stepper row per item (the number typed or stepped) in the stock room (Kho: workplace_business ops_keep) and in a
  * counter's 📦 tab (quay_business jr_quay_keep). Each tap sends the new number; the server keeps it and says it back. */
 import {escapeHTML as esc} from './icons.js';
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox,QTY} from './qty-input.js';
 
 export const KEEP_MAX=999;
 /** 0,1,…,10, then 15,20,…,50, then by tens: few taps for a big floor, exact for a small one. */
@@ -12,7 +14,7 @@ export const keepDown=n=>Math.max(0,n<=10?n-1:n<=50?n-5:n-10);
 export function keepStepper(n,attrs,name=''){
   n=Math.max(0,Number(n)||0);
   const b=(q,label,aria,off)=>`<button type="button" class="btn ghost" ${attrs(q)} aria-label="${esc(aria)}"${off?' disabled':''}>${label}</button>`;
-  return `<div class="keep-row" data-testid="keep-row"><span>🔒 Giữ cho ca bạn</span><div class="inv-stepper keep-step">${b(keepDown(n),'−',`Giữ ít ${name} hơn`,n<=0)}<output aria-label="Số giữ lại${name?` ${esc(name)}`:''}">${n}</output>${b(keepUp(n),'+',`Giữ thêm ${name}`,n>=KEEP_MAX)}</div></div>`;
+  return `<div class="keep-row" data-testid="keep-row"><span>🔒 Giữ cho ca bạn</span><div class="inv-stepper keep-step">${b(keepDown(n),'−',`Giữ ít ${name} hơn`,n<=0)}${qtyBox({value:n,min:0,max:KEEP_MAX,label:`Số giữ lại${name?` ${name}`:''}`,go:attrs(QTY)})}${b(keepUp(n),'+',`Giữ thêm ${name}`,n>=KEEP_MAX)}</div></div>`;
 }
 
 /** A workplace item (Kho): one the staff orders can take (business.keepable, sent by a server that knows ops_keep),

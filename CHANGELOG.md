@@ -1,3 +1,18 @@
+# Chưa phát hành — Gõ số thay vì bấm + (chủ game 07/10: "cho nhập số nhé")
+
+- Con số giữa − và + giờ là ô gõ được (`public/js/qty-input.js` `qtyBox`, docs/UI_KIT.md "Typed quantity"): bàn phím số,
+  chạm vào là chọn cả số, chỉ nhận chữ số (dán "1.000" = 1000), Enter hoặc rời ô thì kẹp vào khoảng cho phép (trống/0 = mức
+  thấp nhất), tổng tiền đổi theo như khi bấm. Nút − / + và các chip (5, 10, "Đầy kệ"…) vẫn còn. Chữ ≥ 16px (iPhone không zoom).
+- Có ở: Kho nhập hàng (số lượng, đơn gộp, đếm nhận thùng, 🔒 Giữ cho ca bạn), Kho & sổ quầy (nhà thuốc, mẹ & bé), vàng (Đầu tư
+  và Tiệm vàng), sổ tiết kiệm/Mây Coin (số xu khác ngoài chip), quầy (lương, bàn ghế, nhập thêm, góp vốn, giữ hàng), tiệc
+  (số khách, theo bước 5), số bàn cưới, đấu giá (trả giá tùy ý, không dưới mức tối thiểu), ô tiền của street kit (mọi nghề
+  dùng `amountBox`, đòi nợ), dầu, pet shop (cá theo bể, đóng hàng), trà sữa (đặt hàng), tạp hóa (tem giá, số lượng nhập),
+  pet care (gram/bữa), thương lượng "Nhận n/…" (đường sắt, hải đăng, tổ bay).
+- Máy chủ không đổi: mọi lệnh các ô này gửi đã từ chối số ngoài khoảng, số lẻ, chữ và true/false (tests/test_typed_qty.py).
+  Lương quầy phía máy khách nay tối đa 10.000 xu như máy chủ (trước 1.000.000, máy chủ từ chối).
+- Không có khóa lưu mới.
+- Có gì mới (cho bản phát hành): 🔢 Khỏi bấm + mỏi tay: số lượng nhập hàng, vàng, lương, số khách… giờ chạm vào là gõ số được luôn
+
 # v1.9.18 — 2026-10-07
 
 Gồm "🔒 Giữ lại cho ca của tôi" (ops.business_keep, business.keep tùy chọn) và sửa sự cố đồ trang trí 07/10:

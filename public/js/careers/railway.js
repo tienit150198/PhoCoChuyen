@@ -10,7 +10,7 @@
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {data,cc,lower,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,act,tip,clean,few} from './street_kit.js';
-import {ACTIONS as oddActions} from './air_kit.js';
+import {ACTIONS as oddActions,oddBox} from './air_kit.js';
 
 const DONE=['completed','cancelled','referred'];
 const odd=x=>data(x).odd||{};
@@ -161,7 +161,7 @@ function oddCard(x){
   const seg=(list,cur,a)=>list.map(i=>act(x,x.esc(i.label),a,{v:i.id},`small ${cur===i.id?'rw-on':'ghost'}`,` aria-pressed="${cur===i.id}"`)).join('');
   const words=ev.words.map(w=>act(x,x.esc(w.label),'oddSay',{v:w.id},`small ${u.say.includes(w.id)?'rw-on':'ghost'}${w.id==='yes'?' rw-give':''}`,` aria-pressed="${u.say.includes(w.id)}"`)).join('');
   const b=ev.bargain;
-  const count=b?`<div class="rw-odd-row"><small>Nhận</small><div class="rw-step">${act(x,'−','oddN',{v:-1},'small ghost',' aria-label="Bớt"')}<b>${u.n}/${b.ask} ${x.esc(b.unit)}</b>${act(x,'+','oddN',{v:1},'small ghost',' aria-label="Thêm"')}<small class="muted">hợp lý ≤ ${b.limit}</small></div></div>`:'';
+  const count=b?`<div class="rw-odd-row"><small>Nhận</small><div class="rw-step">${act(x,'−','oddN',{v:-1},'small ghost',' aria-label="Bớt"')}${oddBox(u.n,b,x.esc)}${act(x,'+','oddN',{v:1},'small ghost',' aria-label="Thêm"')}<small class="muted">hợp lý ≤ ${b.limit}</small></div></div>`:'';
   const ready=u.tone&&u.say.length,payload={tone:u.tone||'soft',say:u.say,to:u.to,...(b?{n:u.n}:{})};
   const thread=ev.said.length?`<p class="small muted">Bạn (${x.esc(ev.said[ev.said.length-1].tone.toLowerCase())}): ${x.esc(ev.said[ev.said.length-1].say.join(' '))}</p>`:'';
   return `<section class="sk-event tense rw-odd" role="group" aria-labelledby="rw-odd-title"><div class="sk-ev-head">${who}<div class="grow"><small>${x.esc(KIND[ev.kind]||'')} · ${x.esc(ev.who)}</small><h3 id="rw-odd-title">${x.esc(ev.title)}</h3></div>${ev.round>1?`<span class="tag">${ev.round}/${ev.rounds}</span>`:''}</div>

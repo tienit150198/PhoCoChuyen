@@ -11,12 +11,15 @@
  * and the crew record (conduct, fatigue) shows in the crew room and on the boarding pass. Another career may reuse oddCard and
  * restCard with its own words: cfg.kinds (the kind labels) and cfg.rest_to ([[id, label]×2], where the request goes). */
 import {helpBtn} from '../ui-kit.js';
+import {qtyBox,QTY} from '../qty-input.js';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const upper=s=>String(s||'').toLocaleUpperCase('vi-VN');
 const ended=t=>['completed','cancelled','referred'].includes(t.status);
 const dayNo=x=>x.state?.journey?.story?x.state.journey.life_day:x.room.day;
 const npcId=(cfg,i)=>`${cfg.id}_npc_${String(i+1).padStart(2,'0')}`;
 const odd=x=>(x.room.data||{}).odd||{};
+/** The bargain's count as a typed box (owner 07/10: "cho nhập số"); also used by railway and lighthouse. */
+export const oddBox=(n,b,esc)=>`<label class="odd-typed">${qtyBox({value:n,min:0,max:b.ask,label:`Nhận bao nhiêu ${b.unit||''}`,live:true,go:`data-action="car:oddNSet" data-v="${QTY}"`})}<small>/${b.ask} ${esc(b.unit)}</small></label>`;
 const car=(x,label,action,d={},cls='',extra='')=>`<button type="button" class="${cls}" data-action="car:${action}"${Object.entries(d).map(([k,v])=>` data-${k}="${esc(v)}"`).join('')}${extra}>${label}</button>`;
 
 /** Today's flights of this career, in slot order. */
@@ -182,7 +185,7 @@ export function oddCard(x,cfg){
   const seg=(list,cur,act)=>list.map(i=>car(x,esc(i.label),act,{v:i.id},`air-seg${cur===i.id?' on':''}`,` aria-pressed="${cur===i.id}"`)).join('');
   const words=ev.words.map(w=>car(x,esc(w.label),'oddSay',{v:w.id},`air-word${u.say.includes(w.id)?' on':''}${w.id==='yes'?' give':''}`,` aria-pressed="${u.say.includes(w.id)}"`)).join('');
   const b=ev.bargain;
-  const count=b?`<div class="air-odd-row"><small>Nhận</small><div class="air-stepper">${car(x,'−','oddN',{v:-1},'air-seg',' aria-label="Bớt"')}<b>${u.n}/${b.ask} ${esc(b.unit)}</b>${car(x,'+','oddN',{v:1},'air-seg',' aria-label="Thêm"')}<small class="air-limit">hợp lý ≤ ${b.limit}</small></div></div>`:'';
+  const count=b?`<div class="air-odd-row"><small>Nhận</small><div class="air-stepper">${car(x,'−','oddN',{v:-1},'air-seg',' aria-label="Bớt"')}${oddBox(u.n,b,esc)}${car(x,'+','oddN',{v:1},'air-seg',' aria-label="Thêm"')}<small class="air-limit">hợp lý ≤ ${b.limit}</small></div></div>`:'';
   const ready=u.tone&&u.say.length;
   const payload={tone:u.tone||'soft',say:u.say,to:u.to,...(b?{n:u.n}:{})};
   const thread=ev.said.length?`<p class="air-odd-me">Bạn (${esc(ev.said[ev.said.length-1].tone.toLowerCase())}): ${esc(ev.said[ev.said.length-1].say.join(' '))}</p>`:'';
@@ -227,6 +230,7 @@ export const ACTIONS={
   async oddTo(d,el,x){x.ui.odd.to=d.v;x.render();},
   async oddSay(d,el,x){const u=x.ui.odd,i=u.say.indexOf(d.v);if(i>=0)u.say.splice(i,1);else{u.say.push(d.v);if(u.say.length>2)u.say.shift();}x.render();},
   async oddN(d,el,x){const b=odd(x).ev?.bargain;if(!b)return;x.ui.odd.n=Math.max(0,Math.min(b.ask,(x.ui.odd.n||0)+Number(d.v)));x.render();},
+  async oddNSet(d,el,x){const b=odd(x).ev?.bargain;if(!b)return;x.ui.odd.n=Math.max(0,Math.min(b.ask,Math.floor(Number(d.v))||0));x.render();},   // typed
   async restSay(d,el,x){const u=x.ui.rest,i=u.say.indexOf(d.v);if(i>=0)u.say.splice(i,1);else{u.say.push(d.v);if(u.say.length>2)u.say.shift();}x.render();},
   async restTo(d,el,x){x.ui.rest.to=d.v;x.render();},
   async restN(d,el,x){x.ui.rest.n=Number(d.v);x.render();},

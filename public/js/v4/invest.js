@@ -6,6 +6,8 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {marketBoot,refreshQuotes,changeRange,marketView} from './invest-market.js';
 import {marketChart,rangeControls} from './invest-chart.js';
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox,QTY} from '../qty-input.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const xu=n=>`${fmt(n)} xu`;
@@ -53,7 +55,9 @@ function marketClock(C){
 function chips(env,box,limit){
   const cur=pick(env,box);
   return `<div class="chip-row iv-chips" role="group" aria-label="Chọn số xu">${CHIPS.map(v=>{const on=String(cur)===String(v);
-    return `<button type="button" class="chip ${on?'selected':''}" data-action="ivAmt" data-box="${box}" data-v="${v}" aria-pressed="${on}"${v!=='all'&&limit!=null&&v>limit?' data-over="1"':''}>${label(v)}</button>`;}).join('')}</div>`;
+    return `<button type="button" class="chip ${on?'selected':''}" data-action="ivAmt" data-box="${box}" data-v="${v}" aria-pressed="${on}"${v!=='all'&&limit!=null&&v>limit?' data-over="1"':''}>${label(v)}</button>`;}).join('')}`+
+    // Any other amount, typed (owner 07/10): the chips stay for the usual ones.
+    `<label class="iv-typed">${qtyBox({value:cur==='all'?'':cur,min:1,max:1e9,money:true,label:'Số xu khác',placeholder:'Số khác',live:true,go:`data-action="ivAmt" data-box="${box}" data-v="${QTY}"`})}<small>xu</small></label></div>`;
 }
 
 /* ------------------------------------------------------------------ cards */
@@ -118,7 +122,7 @@ function goldCard(env,G){
     ${marketChart(env,'gold',G.hist,G.market_clock)}
     <div class="iv-hold"><div class="iv-kv"><span>Đang giữ</span><b>${goldAmount(G.phan)}</b></div><div class="iv-kv"><span>Bán ngay được</span><b>${xu(G.value)}</b></div><div class="iv-kv"><span>Tiền đã bỏ vào</span><b>${xu(G.cost)}</b></div><div class="iv-kv iv-pnl ${gain>=0?'gain':'loss'}"><span>${gain>=0?'Lãi tạm tính':'Lỗ tạm tính'}</span><b>${signed(gain)}</b></div></div>
     <p class="iv-hint">Tiệm bán ${xu(G.buy)}/chỉ · mua lại ${xu(G.sell)}/chỉ.${G.market_clock?' Biến động so với phiên trước. Giá được chốt khi máy chủ nhận lệnh.':''}</p>
-    <div class="iv-gold-quantity" role="group" aria-label="Số vàng giao dịch">${btn('−','ivGoldStep',{d:-1},'cream',' aria-label="Bớt vàng"')}<b>${goldAmount(n)}</b>${btn('+','ivGoldStep',{d:1},'cream',' aria-label="Thêm vàng"')}</div>
+    <div class="iv-gold-quantity" role="group" aria-label="Số vàng giao dịch">${btn('−','ivGoldStep',{d:-1},'cream',' aria-label="Bớt vàng"')}<label class="iv-gold-typed">${qtyBox({value:n,min:1,max:100000,label:'Số phân vàng',go:`data-action="ivGoldQty" data-n="${QTY}"`,live:true})}<small>phân${n>=10?` = ${goldAmount(n)}`:''}</small></label>${btn('+','ivGoldStep',{d:1},'cream',' aria-label="Thêm vàng"')}</div>
     <div class="iv-gold-chips">${[[1,'1 phân'],[10,'1 chỉ'],[50,'5 chỉ']].map(([q,label])=>btn(label,'ivGoldQty',{n:q},q===n?'primary small':'cream small',` aria-pressed="${q===n}"`)).join('')}</div>
     <div class="iv-actions">${btn(`Mua · ${xu(goldCost(n,G))}`,'ivGoldBuy',{},'primary',J.wallet<0||goldCost(n,G)>have||G.phan+n>100000?' disabled':'')}${btn(`Bán · ${xu(goldWorth(sellN,G))}`,'ivGoldSell',{},'cream',!sellN?' disabled':'')}</div>
     <p class="iv-hint">1 chỉ = 10 phân. Mua bằng ví, thiếu thì lấy từ tài khoản ngân hàng; bán nhận xu vào ví. Giá mua/bán đã gồm chênh lệch 2,5% mỗi chiều.</p>

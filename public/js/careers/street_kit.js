@@ -4,6 +4,8 @@
  * each career draws its own stations and keeps its own look in public/css/careers/<id>.css. */
 import {barParts} from '../v4/guide.js';
 import {actBar,helpBtn,whyAttrs,clean,tip,headChip,few} from '../ui-kit.js';
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox} from '../qty-input.js';
 export {tip,clean,headChip,few};
 
 export const DONE=['completed','cancelled','referred'];
@@ -127,7 +129,7 @@ const amtOf=(x,key,def)=>{const v=(x.ui.amt??={})[key];return v===undefined||v==
 export function amountBox(x,key,def,{min=1,max=500,step=1,label='',send='Gửi',cmd,payload={},field='price',unit='xu'}={}){
   const v=Math.max(min,Math.min(max,amtOf(x,key,def)));
   const d=(n)=>act(x,n<0?'−':'+','amtStep',{key,delta:n*step,min,max,def},'ghost sk-step',` aria-label="${n<0?'Bớt':'Thêm'} ${step} ${unit}"`);
-  return `<div class="sk-amt">${label?`<span class="sk-amt-label">${x.esc(label)}</span>`:''}<div class="sk-amt-row">${d(-1)}<label class="sk-amt-in"><input type="number" inputmode="numeric" min="${min}" max="${max}" value="${v}" data-sk-amt="${x.esc(key)}" aria-label="${x.esc(label||'Số tiền')}"><small>${x.esc(unit)}</small></label>${d(1)}</div>
+  return `<div class="sk-amt">${label?`<span class="sk-amt-label">${x.esc(label)}</span>`:''}<div class="sk-amt-row">${d(-1)}<label class="sk-amt-in">${qtyBox({value:v,min,max,label:label||'Số tiền',attrs:`data-sk-amt="${x.esc(key)}"`})}<small>${x.esc(unit)}</small></label>${d(1)}</div>
     ${act(x,send,'amtSend',{key,def,cmd,field,extra:JSON.stringify(payload)},'primary sk-amt-go')}</div>`;
 }
 /** Keeps a typed amount (call from the module's input hook). */
@@ -150,7 +152,7 @@ export function debtBook(x,debts,cmd){
     const tone=(t,l)=>act(x,l,'debtChase',{debt:d.id,tone:t,key:`debt-${d.id}`,def:owe,cmd},'small');
     return `<li class="sk-debt"><div class="row spread"><b>${x.esc(d.who)}</b><span class="tag amber">${x.fmt(owe)} xu</span></div>
       <small class="muted">${x.esc(d.what)} · ngày ${d.day}${d.tries?` · đã đòi ${d.tries} lần`:''}</small>${d.last?`<p class="small">${x.esc(d.last)}</p>`:''}
-      ${today?'<p class="small muted">Hôm nay đòi rồi, mai đòi tiếp.</p>':x.ui.debtRow!==d.id?`<div class="sk-go-end"><button type="button" class="btn small" data-action="car:debtRow" data-row="${x.esc(d.id)}">📒 Đòi nợ</button></div>`:`<div class="sk-amt-row">${act(x,'−','amtStep',{key:`debt-${d.id}`,delta:-1,min:1,max:owe,def:owe},'ghost sk-step')}<label class="sk-amt-in"><input type="number" inputmode="numeric" min="1" max="${owe}" value="${Math.min(owe,amtOf(x,`debt-${d.id}`,owe))}" data-sk-amt="debt-${x.esc(d.id)}" aria-label="Đòi bao nhiêu"><small>xu</small></label>${act(x,'+','amtStep',{key:`debt-${d.id}`,delta:1,min:1,max:owe,def:owe},'ghost sk-step')}</div>
+      ${today?'<p class="small muted">Hôm nay đòi rồi, mai đòi tiếp.</p>':x.ui.debtRow!==d.id?`<div class="sk-go-end"><button type="button" class="btn small" data-action="car:debtRow" data-row="${x.esc(d.id)}">📒 Đòi nợ</button></div>`:`<div class="sk-amt-row">${act(x,'−','amtStep',{key:`debt-${d.id}`,delta:-1,min:1,max:owe,def:owe},'ghost sk-step')}<label class="sk-amt-in">${qtyBox({value:Math.min(owe,amtOf(x,`debt-${d.id}`,owe)),min:1,max:owe,label:'Đòi bao nhiêu',attrs:`data-sk-amt="debt-${x.esc(d.id)}"`})}<small>xu</small></label>${act(x,'+','amtStep',{key:`debt-${d.id}`,delta:1,min:1,max:owe,def:owe},'ghost sk-step')}</div>
       <div class="sk-row">${tone('soft','🙂 Nhắc nhẹ')}${tone('straight','🗣️ Nói thẳng')}${tone('family','👪 Nhờ người nhà')}${x.confirmCmd('🤝 Xóa nợ',cmd,{debt:d.id,forgive:true},`Xóa khoản ${owe} xu cho ${d.who}?`,'small ghost')}</div>`}</li>`;}).join('');
   const done=(debts||[]).filter(d=>d.state!=='open').slice(-3).map(d=>`<li class="muted small">${x.esc(d.who)} · ${d.state==='paid'?'✅ đã trả':d.state==='gone'?'👻 mất':'🤝 đã xóa'}</li>`).join('');
   const sum=open.reduce((s,d)=>s+d.owed-d.paid,0);

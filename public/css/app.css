@@ -2086,6 +2086,14 @@ html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{an
 .inv-stepper{display:inline-grid;grid-template-columns:44px 76px 44px;gap:6px;align-items:center}
 .inv-stepper .btn{min-width:44px;min-height:44px;padding:0;font-size:var(--fs-4)}
 .inv-stepper .input{text-align:center;font-weight:800;font-size:1.1rem;font-variant-numeric:tabular-nums;padding-inline:6px}
+/* Typed quantity (qty-input.js, owner 07/10 "cho nhập số"): the number between − and + is a box. Never under 16px, so
+   iOS does not zoom; as wide as the largest number allowed (--qch digits), never wider than its row (the :not()s outweigh
+   the app's own input rule, which makes every field 100% wide). */
+input.qty-in:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]){flex:none;width:calc(var(--qch,3) * 1ch + 26px);max-width:100%;min-width:52px;padding-inline:6px;text-align:center;font-weight:800;font-size:max(16px,1rem);font-variant-numeric:tabular-nums;color:var(--ink)}
+.inv-stepper input.qty-in:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=file]){width:100%;min-width:0;font-size:max(16px,1.1rem)}
+input.qty-in:focus{border-color:var(--accent)}
+.odd-typed,.mr-tables-typed,.iv-typed,.au-typed{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.iv-typed small,.au-typed small{color:var(--muted)}
 /* 🔒 Giữ cho ca (keep-ui.js): one row, the words left and the stepper right; the number reads like the order stepper */
 .keep-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--sp-2);margin-top:var(--sp-2);font-size:var(--fs-2);color:var(--ink-2)}
 .keep-step output{text-align:center;font-weight:800;font-size:var(--fs-3);font-variant-numeric:tabular-nums;color:var(--ink)}

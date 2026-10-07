@@ -8,6 +8,8 @@
  * Styles: /css/whatsnew.css (the card's shell) + /css/rui.css. app.js loads this module lazily (ruiBoot, ruiAction). */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {quiet,turn,want} from './break-gate.js';
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox,QTY} from '../qty-input.js';
 
 const S={env:null,pop:null,page:null,view:'',busy:false,flash:null,done:null,timer:0,calm:0,seen:new Set(),qty:10,listening:false};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -109,6 +111,7 @@ function spark(hist,clock){
 }
 const amount=n=>n<10?`${n} phân`:n%10?`${fmt(Math.floor(n/10))},${n%10} chỉ`:`${fmt(n/10)} chỉ`;
 const costOf=(n,g)=>Math.ceil(n*g.buy/10);
+const unitLine=n=>`phân${n>=10?` = ${amount(n)}`:''}`;
 const worthOf=(n,g)=>Math.floor(n*g.sell/10);
 function vangPage(){
   const g=G();
@@ -120,7 +123,7 @@ function vangPage(){
   return head('💰','Tiệm vàng Kim Phát',g.market_clock?'Giá chung cả phố · 10 phút/phiên · 1 giờ thực = 1 ngày thị trường':'Giá chung cả phố, đổi mỗi ngày','vangTitle')+`<div class="wn-body">${flash()}`+
     `<div class="rui-price"><b>${xu(g.p)}</b><span>/ chỉ</span>${chip}</div>${g.news?`<p class="rui-news">📰 ${esc(g.news)}</p>`:''}${spark(g.hist,g.market_clock)}`+
     `<p class="rui-sub">Tiệm bán ${xu(g.buy)} · mua lại ${xu(g.sell)}</p>${mine}`+
-    `<div class="rui-qty" role="group" aria-label="Số vàng"><button type="button" class="btn small" data-rui="qty" data-d="-1" aria-label="Bớt">−</button><b>${amount(q)}</b><button type="button" class="btn small" data-rui="qty" data-d="1" aria-label="Thêm">+</button></div>`+
+    `<div class="rui-qty" role="group" aria-label="Số vàng"><button type="button" class="btn small" data-rui="qty" data-d="-1" aria-label="Bớt">−</button><label class="rui-typed">${qtyBox({value:q,min:1,max:100000,label:'Số phân vàng',go:`data-rui="typed" data-n="${QTY}"`,live:true})}<small>${unitLine(q)}</small></label><button type="button" class="btn small" data-rui="qty" data-d="1" aria-label="Thêm">+</button></div>`+
     `<div class="rui-quick">${[[1,'1 phân'],[10,'1 chỉ'],[50,'5 chỉ']].map(([n,l])=>`<button type="button" class="btn ghost small${q===n?' on':''}" data-rui="set" data-n="${n}">${l}</button>`).join('')}</div>`+
     `<div class="rui-trade"><button type="button" class="btn primary big" data-rui="buy"${S.busy?' disabled':''}>Mua · ${xu(costOf(q,g))}</button>`+
     `<button type="button" class="btn big" data-rui="sell"${S.busy||!g.phan?' disabled':''}>Bán · nhận ${xu(worthOf(sellN||q,g))}</button></div>`+
@@ -207,6 +210,11 @@ async function onClick(d,op,data){
     case'fix':send('jr_rui_fix',{kind:data.kind,ref:data.ref});return;
     case'qty':{const step=S.qty>=10?10:1;S.qty=Math.max(1,Math.min(100000,S.qty+Number(data.d)*step));render();return;}
     case'set':S.qty=Number(data.n)||10;render();return;
+    // A typed number (qty-input.js): no redraw under the finger; the price on the two buttons follows it.
+    case'typed':{S.qty=Math.max(1,Math.min(100000,Math.floor(Number(data.n))||1));if(!g)return;const q=S.qty,[buy,sell]=d.querySelectorAll('.rui-trade button');
+      if(buy)buy.textContent=`Mua · ${xu(costOf(q,g))}`;if(sell)sell.textContent=`Bán · nhận ${xu(worthOf(Math.min(q,g.phan||0)||q,g))}`;
+      const u=d.querySelector('.rui-typed small');if(u)u.textContent=unitLine(q);
+      d.querySelectorAll('.rui-quick [data-n]').forEach(b=>b.classList.toggle('on',Number(b.dataset.n)===q));return;}
     case'buy':{if(!g)return;const n=S.qty,cost=costOf(n,g);
       if(await ask(`Mua ${amount(n)} vàng?`,`Giá tiệm bán hôm nay ${xu(g.buy)} một chỉ.`,`Mua · ${xu(cost)}`,{cost,pocket:POCKET}))send('jr_vang_buy',{phan:n});return;}
     case'sell':{if(!g?.phan)return;const n=Math.min(S.qty,g.phan),all=n===g.phan;

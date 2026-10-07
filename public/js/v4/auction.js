@@ -7,6 +7,8 @@
  * Its own dialog, opened with data-action="auction" (menu, the town map's 🔨 door) or "auctionLands" (🏞️ Danh thắng).
  * Styles: /css/spend.css + /css/auction.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox,QTY,afterTap,qtyVal} from '../qty-input.js';
 
 const TABS=[['live','🔨','Đang đấu giá'],['past','📜','Đã chốt'],['lands','🏞️','Danh thắng'],['mine','🎁','Của tôi']];
 export const ACTIONS={auction:'live',auctionLands:'lands'};
@@ -39,6 +41,9 @@ function dialog(){
     e.preventDefault();onClick(el.dataset.au,el.dataset);
   });
   d.addEventListener('change',e=>{if(e.target.name==='anon'){S.anon=e.target.checked;}});
+  // A bid being typed: the main button says what it will pay (never under the next minimum), before the box commits.
+  d.addEventListener('input',e=>{const l=lot(),b=d.querySelector('[data-au="go"]');if(!l||!b||!e.target.matches?.('input[data-qty]'))return;
+    S.amount=Math.max(l.next,qtyVal(e.target));b.textContent=`Trả ${fmt(bidOf(l))} xu`;});
   d.addEventListener('close',()=>{S.flash=null;clearInterval(S.timer);S.timer=0;watch(false);});
   S.dlg=d;return d;
 }
@@ -169,7 +174,10 @@ const TIER={1:'',2:'💎',3:'👑'};
 function render(){
   if(!S.dlg)return;
   const body=S.dlg.querySelector('.sd-body'),y=body?.scrollTop;
+  // Another player's bid redraws the page: a bid being typed stays in its box, with the focus.
+  const a=document.activeElement,typing=a?.matches?.('input[data-qty]')&&S.dlg.contains(a)?a.value:null;
   S.dlg.querySelector('.sd-root').innerHTML=page();
+  if(typing!==null){const b=S.dlg.querySelector('input[data-qty]');if(b){b.value=typing;b.focus({preventScroll:true});try{b.setSelectionRange(typing.length,typing.length);}catch{/* not a text box */}}}
   if(y)S.dlg.querySelector('.sd-body').scrollTop=y;
   S.dlg.setAttribute('aria-busy',String(S.busy));
 }
@@ -208,7 +216,7 @@ function live(){
   return REAL+chips+`<section class="sd-card au-lot">${art(l)}<h3>${esc(l.emoji)} <span data-no-translate>${esc(l.name)}</span></h3>
     <div class="au-price"><b>${fmt(l.bids?l.high:l.start)} xu</b><small>${l.bids?`${l.bids} lượt · ${who}`:'Giá khởi điểm'}</small></div>
     <p class="au-clock" data-au-clock>${esc(left(l))}</p>${state}
-    <div class="sd-chips sd-amounts">${quick}</div>${anon}${help()}</section>`;
+    <div class="sd-chips sd-amounts">${quick}<label class="au-typed">${qtyBox({value:bidOf(l),min:l.next,max:1e9,money:true,label:'Trả bao nhiêu xu',go:`data-au="typed" data-id="${QTY}"`})}<small>xu</small></label></div>${anon}${help()}</section>`;
 }
 const help=()=>`<details class="lx-help au-help"><summary aria-label="Luật đấu giá">?</summary><ul>
   <li>Trả giá thì tiền được giữ lại. Bị trả cao hơn: tiền về ngay.</li><li>5 phút cuối có người trả: thêm 5 phút.</li>
@@ -234,6 +242,7 @@ async function onClick(op,data){
     case'tab':S.tab=data.tab;S.flash=null;render();S.dlg.querySelector('.sd-body')?.scrollTo?.(0,0);return;
     case'lot':S.lot=data.id;S.amount=0;S.flash=null;render();return;
     case'amount':S.amount=Number(data.id)||0;render();return;
+    case'typed':S.amount=Number(data.id)||0;afterTap(render);return;   // a typed bid (qty-input.js): never under the next minimum (bidOf)
     case'go':{const l=lot();if(!l||why(l))return;await send({lot:l.id,amount:bidOf(l),anon:S.anon,label:l.name.slice(0,40)});return;}
   }
 }

@@ -5,6 +5,8 @@
  *  trust / lean days / repayment plans in the credit book, weekly regular lists. */
 import {keepBarAboveFooter} from './food_kit.js';
 import {reqList,fold,clean,tip,helpBtn,actBar} from '../ui-kit.js';
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox,QTY} from '../qty-input.js';
 import {stepRows,nextHint,stepCta,barParts,stepBar,finalGo,pending,stepLine,goAttrs} from '../v4/guide.js';
 import {restockGo,restockBar,restockButton,shortOf,orderQuote,fullGo,vansLine,shortName} from '../v4/restock.js';
 const ID='grocery';
@@ -621,7 +623,7 @@ function stockView(x){
       <div class="gr-sinfo"><b>${x.esc(it.name)}</b><div class="gr-sbar" aria-hidden="true"><i style="width:${Math.min(100,q/cap*100)}%"></i></div>
         <small>Còn <b>${q}</b> ${x.esc(stockUnit(x,it.id))}${held?` · ${held} đang giữ trên bill`:''}${transit?` · 🚚 ${transit} đang về`:''}</small>
         ${exp?`<small class="bad">⚠ ${exp} hết hạn hôm nay</small>`:''}${near?`<small class="warn">⏳ ${near} HSD ngày mai — nên xả giá</small>`:''}${rot.has(it.id)?'<small class="warn">🔄 kệ chưa xoay</small>':''}${short[it.id]?`<small class="warn">📅 mai cần ~${short[it.id].want}, thiếu ${short[it.id].short}</small>`:''}</div>
-      <div class="gr-sprice"><div class="gr-tagbox">${x.cmd('−','gr_tag',{item:it.id,price:p-step},'small ghost gr-step',p-step<lo)}<span class="gr-ptag" aria-label="Giá ${p} xu">${x.fmt(p)}<small>/${x.esc(priceUnit(x,it.id))}</small></span>${x.cmd('+','gr_tag',{item:it.id,price:p+step},'small ghost gr-step',p+step>hi)}</div>
+      <div class="gr-sprice"><div class="gr-tagbox">${x.cmd('−','gr_tag',{item:it.id,price:p-step},'small ghost gr-step',p-step<lo)}<span class="gr-ptag">${qtyBox({value:p,min:lo,max:hi,label:`Giá ${it.name} (xu)`,go:x.cmd('','gr_tag',{item:it.id,price:QTY},'')})}<small>/${x.esc(priceUnit(x,it.id))}</small></span>${x.cmd('+','gr_tag',{item:it.id,price:p+step},'small ghost gr-step',p+step>hi)}</div>
         ${theirs!=null?`<small class="${p>theirs?'bad':'ok'}">Mây Mart ${x.fmt(theirs)}</small>`:''}</div>
       <div class="gr-sact">${exp?x.confirmCmd('🗑️ Rút hàng hết hạn','gr_pull_today',{item:it.id},`Rút ${exp} ${stockUnit(x,it.id)} ${it.name} hết hạn hôm nay khỏi kệ? Ghi vào hao hụt.`,'small danger'):''}
         ${near&&!exp&&!cleared.includes(it.id)?x.cmd(`🏷️ Xả ${near>12?12:near} món −${100-(x.cc.clear_percent||70)}%`,'gr_clear',{item:it.id},'small ghost'):''}
@@ -634,7 +636,7 @@ function stockView(x){
   return `<div class="card gr-stock"><div class="row spread"><h4>🏷️ Kho & giá</h4><small class="muted">Sức chứa ${cap} mỗi loại</small></div>
     <p class="small muted gr-how">Bấm 📦 Nhập để đặt hàng → thùng về thì mở ở 📦 Kho, chạm đếm từng món → hàng mới lên kệ. Chỉnh giá bán bằng − / +.</p>
     ${rotationNotes(x)}${incoming(x)}
-    ${cartChips(x)}<div class="gr-orderbar"><small>Nhập từ</small>${supplierPick(x)}${vline?`<div class="rs-bar" role="status"><p class="rs-line"><b>${vline}</b>${full?' · nhận bớt thùng rồi đặt tiếp':''}</p>${full?x.button(full.label,full.act,full.data||{},'small primary rs-btn'):''}</div>`:''}<div class="gr-qty" role="radiogroup" aria-label="Số lượng mỗi lần nhập">${[5,10,20,30].map(v=>`<button type="button" role="radio" aria-checked="${v===qty}" class="btn small ${v===qty?'primary':'ghost'}" data-action="car:qty" data-qty="${v}">${v}</button>`).join('')}</div></div>
+    ${cartChips(x)}<div class="gr-orderbar"><small>Nhập từ</small>${supplierPick(x)}${vline?`<div class="rs-bar" role="status"><p class="rs-line"><b>${vline}</b>${full?' · nhận bớt thùng rồi đặt tiếp':''}</p>${full?x.button(full.label,full.act,full.data||{},'small primary rs-btn'):''}</div>`:''}<div class="gr-qty" role="radiogroup" aria-label="Số lượng mỗi lần nhập">${[5,10,20,30].map(v=>`<button type="button" role="radio" aria-checked="${v===qty}" class="btn small ${v===qty?'primary':'ghost'}" data-action="car:qty" data-qty="${v}">${v}</button>`).join('')}${qtyBox({value:qty,min:1,max:30,label:'Số lượng mỗi lần nhập',live:true,go:`data-action="car:qty" data-qty="${QTY}"`})}</div></div>
     <div class="gr-stock-list">${rows}</div>
     ${rules(x,x.cc.stock_rules,'Quy tắc kho')}</div>`;
 }
