@@ -312,6 +312,26 @@ class ClassicCaseChoiceTests(unittest.TestCase):
             line = next(e for e in v['evidence'] if e['id'] == v['basis'])
             self.assertIn(words[j.task['variant']].lower(), line['text'].lower())
 
+    def test_missing_policy_reads_as_shortage(self):
+        """07/10: "Chính sách đổi trả" on the missing-item case read as "đổi đúng món". On screen it is "Chính sách thiếu
+        hàng"; the stored title stays (1.9.10 and the task-compat gate regenerate the case and compare it), and a wrong
+        pick quotes the 📌 line first."""
+        j = next(x for x in (self.case(s) for s in range(6)) if x.task['variant'] == 'missing')
+        self.read_all(j)
+        stored = [e['title'] for e in j.task['evidence']]
+        self.assertIn('Chính sách đổi trả', stored)
+        shown = [e['title'] for e in self.view(j)['evidence']]
+        self.assertIn('Chính sách thiếu hàng', shown)
+        self.assertNotIn('Chính sách đổi trả', shown)
+        with self.assertRaises(GameError) as err:
+            j.act('cs_propose', solution='exchange')
+        msg = str(err.exception)
+        self.assertTrue(msg.startswith('📌 '), msg)
+        self.assertIn('không phải thiếu món', msg)
+        self.assertNotIn('đổi trả', msg)
+        self.assertEqual([e['title'] for e in j.task['evidence']], stored)   # never written back
+        validate_state(j.state)
+
     def test_missing_item_still_takes_a_refund(self):
         j = self.case(0)
         self.read_all(j)

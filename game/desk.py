@@ -586,6 +586,21 @@ LEGACY_TEXT = {
 }
 
 
+# Wording shown on screen in place of the stored words (render time only, never written back). The customer-care
+# "missing" case's policy line was titled "Chính sách đổi trả", and players read it as "đổi đúng món" (an exchange)
+# instead of "gửi bù phần thiếu" (07/10). The stored title stays: the task-compat gate and 1.9.10's validator regenerate
+# each case and compare its evidence word for word, so a renamed title in content.py or a LEGACY_TEXT swap in
+# migrate() would make every open case "Dữ kiện gốc của nhiệm vụ không hợp lệ" on the old worker of a rolling deploy.
+SHOWN_TEXT = {
+    'Chính sách đổi trả': 'Chính sách thiếu hàng',
+}
+
+
+def shown(text):
+    """The words to show for a stored text (SHOWN_TEXT), the text itself otherwise."""
+    return SHOWN_TEXT.get(text, text) if isinstance(text, str) else text
+
+
 def _swap(obj: dict, keys) -> None:
     for k in keys:
         if isinstance(obj.get(k), str) and obj[k] in LEGACY_TEXT:

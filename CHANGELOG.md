@@ -60,6 +60,15 @@ Bản lưu: không thêm khóa mới; bản 1.9.10 đọc được.
 - 🐢 Đỡ lag trên điện thoại: vòng sáng chỉ đường (gd-pulse / gd-ring) nhấp nháy 3 lần rồi sáng đứng yên, không chạy mãi
   (trước đó trang tính lại kiểu chữ 60 lần mỗi giây khi đứng yên). Bật "Giảm chuyển động" thì vòng đứng yên ngay.
 - Không thêm khóa bản lưu, không đổi DDL.
+## Sửa lỗi bấm hai lần khi khách đang trả lời
+
+- Lỗi từ 1.9.3: khi khách đang "viết" (AI trả lời đánh giá, viết lại đánh giá, giọng cô giáo), lệnh bấm sau phải chờ tới 4 giây mà nút không báo gì, người chơi bấm lại, lệnh trùng xếp hàng rồi bị từ chối ("Khách đang đọc phản hồi trước của bạn.", "Còn một chuyện trong lớp cần xử lý trước."). Giờ lệnh y hệt đang chờ hoặc đang gửi không gửi lần hai; vừa xếp hàng là màn đã coi như đang bận (giữ lần bấm sau, nút hiện vòng chờ). Ô trả lời đánh giá và nút "Gửi trả lời" tắt trong lúc gửi. Mốc chờ AI tối đa 4 giây giữ nguyên.
+- Đánh giá: chỉ gửi kiểu bù đắp mà nghề đang chơi có (tab mở từ trước 1.9.5 gửi "Hoàn 20 xu" cho nghề không hoàn → "Nghề này không bù đắp kiểu đó."); chưa có danh mục của nghề thì chỉ "Không bù". Trang cũ hơn bản máy chủ: nút "🔄 Tải lại để cập nhật" không tắt được và trang tự tải lại ở lần chuyển màn tiếp theo (khi không gõ dở, không có lệnh đang gửi; mỗi phiên bản một lần).
+- Tab cũ tự làm mới: mỗi lệnh gửi kèm phiên bản trang (`cv`); máy chủ trả 426 `client_outdated` cho trang cũ hơn `MIN_CLIENT` (mặc định 1.9.11, biến môi trường `MIN_CLIENT`, để trống là tắt; không bao giờ cao hơn bản máy chủ đang chạy nên trang mới không bao giờ bị từ chối). Trang trò chơi chưa gửi `cv` (có X-Game-Delta) tính là cũ; công cụ/script không có header đó thì không. Trang tự tải lại khi rảnh, tối đa một lần mỗi phiên bản và một lần mỗi 2 phút (không lặp khi triển khai cuốn chiếu); worker cũ bỏ qua `cv`.
+- Trà sữa sau khi khép ca: ly còn dở vẫn mở được quầy nhưng ly, trà, siro, topping, đá, đường, dán nắp mờ đi, bấm vào hiện "⚠ Mở ca trước" kèm nút mở ca; nút chính dưới cùng thành "☀️ Mở ca". Không còn chọn món hiện trước rồi bị trả về. Kho, ủ trà, đặt hàng vẫn dùng được.
+- Chăm sóc khách: chứng cứ "Chính sách đổi trả" của vụ thiếu món hiện là "Chính sách thiếu hàng" (chỉ đổi chữ trên màn, bản lưu giữ nguyên để 1.9.10 vẫn đọc được). Gợi ý "Đổi đúng món" thêm "(không phải thiếu món)"; chọn sai phương án thì dòng 📌 căn cứ hiện trước.
+- Tiệm hoa: hẹn giờ nhấc hoa / cắm mút không gửi lại khi người chơi đã tự bấm và lệnh còn đang gửi; đọc lại bó hoa trước bước cắm.
+- Không thêm khóa bản lưu, không đổi CSDL.
 
 # v1.9.10 — 2026-10-07
 

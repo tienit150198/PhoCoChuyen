@@ -157,6 +157,37 @@ class SharedLimits:
     def prune(self)->None:
         with self.store.connect() as db:db.pg("DELETE FROM hits WHERE at<%s",(time.time()-86400,))
 
+# Stale tabs (07/10): a page left open across releases keeps sending what the server no longer takes (review offers
+# from tabs opened before 1.9.5: "Nghề này không bù đắp kiểu đó."). Each command of the page carries its release
+# (`cv`, public/js/api.js); a command from a page older than MIN_CLIENT is refused with HTTP 426 `client_outdated`,
+# which the page already understands (public/js/update.js: it reloads onto the new release when idle, at most once
+# per version and once per 2 minutes, else the "Tải lại để cập nhật" pill). A page from before `cv` sends none: when
+# it is a game page (X-Game-Delta: 1, every page since 03/10) it counts as outdated; scripts and tools without that
+# header are never refused. The floor is never above this server's own release, so a page served by this very release
+# (the brand-new client) is never refused, even if MIN_CLIENT is set ahead of game/__init__.py. Env MIN_CLIENT=''
+# turns the check off. During a rolling deploy an old worker simply ignores `cv`.
+MIN_CLIENT=os.environ.get("MIN_CLIENT","1.9.11")
+
+
+def release_of(version)->tuple|None:
+    """(1, 9, 11) from "1.9.11" or "1.9.11+abc"; None when it is not a release number."""
+    if not isinstance(version,str):return None
+    parts=version.split("+",1)[0].strip().split(".")
+    if not parts or not all(p.isdigit() for p in parts) or len(parts)>4:return None
+    return tuple(int(p) for p in parts)
+
+
+def client_outdated(data:dict,game_page:bool,minimum:str|None=None,server:str=__version__)->bool:
+    """True when a command comes from a page older than the floor (see MIN_CLIENT)."""
+    floor=release_of(MIN_CLIENT if minimum is None else minimum)
+    own=release_of(server)
+    if floor is None:return False
+    if own is not None and own<floor:floor=own
+    if "cv" not in data:return bool(game_page)
+    have=release_of(data.get("cv"))
+    return have is not None and have<floor
+
+
 class GameServer(ThreadingHTTPServer):
     daemon_threads=True
     allow_reuse_address=True
@@ -871,6 +902,7 @@ class Handler(BaseHTTPRequestHandler):
                 if str(data.get("action",""))[:5]=="fair_" and not self.server.rate_limit("fair:"+token,int(os.environ.get("FAIR_PER_MINUTE","40"))):self.error(429,"Từ từ thôi, hội chợ còn dài mà!","rate_limited");return  # 🏮 game/fair.py
                 if str(data.get("action",""))[:8]=="jr_deco_" and not self.server.rate_limit("deco:"+token,int(os.environ.get("DECO_PER_MINUTE","150"))):self.error(429,"Từ từ thôi, bày trí chậm lại chút nhé!","rate_limited");return  # 🪴 game/deco.py: drags send one move each
                 if length>256*1024 and data.get("action")!="import_save":self.error(413,"Thao tác quá lớn.");return
+                if client_outdated(data,self.headers.get("X-Game-Delta")=="1"):self.error(426,"Trò chơi vừa có bản mới. Tải lại trang để chơi tiếp nhé.","client_outdated");return
                 result=self.server.store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),data.get("action"),data.get("payload",{}))
                 self.json(200,result,known=state_delta.parse_known(data.get("known")));return
             if length>64*1024:self.error(413,"Nội dung quá lớn.");return

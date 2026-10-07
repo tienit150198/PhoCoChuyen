@@ -196,8 +196,9 @@ async function cmd(action,payload={},options={}){
 /** 💼 A certified accountant's shift opens with the knowledge check (game/accounting_jobs.py): state.accounting_school.jobs. */
 const acctDue=cid=>!!api.state?.accounting_school?.jobs?.places?.[cid]?.[2]&&!api.state.careers?.[cid]?.open;
 async function acctCheck(cid){const m=await viaLazy(L.accountingSchool);if(await m.accountingCheckOpen(env(),cid))openSheet('accountingSchool');}
-function closeSheet(){if($('#sheet').open)$('#sheet').close();ui.view=null;ui.ai={};world.paused=ui.paused;}
-function openSheet(view,data={}){$('#sheet').resetGesture?.();if(view!=='job'&&view!=='chat'){ui.task=null;}Object.assign(ui,data);ui.view=view;renderSheet(false);if(!$('#sheet').open){const d=$('#sheet');d.showModal();d.scrollTop=0;d.tabIndex=-1;d.focus({preventScroll:true});}}
+// A page behind the server's release (update.js FIRM) reloads onto it at the next navigation, when nothing is lost.
+function closeSheet(){if($('#sheet').open)$('#sheet').close();ui.view=null;ui.ai={};world.paused=ui.paused;api.updates.navigated();}
+function openSheet(view,data={}){if(api.updates.navigated())return;$('#sheet').resetGesture?.();if(view!=='job'&&view!=='chat'){ui.task=null;}Object.assign(ui,data);ui.view=view;renderSheet(false);if(!$('#sheet').open){const d=$('#sheet');d.showModal();d.scrollTop=0;d.tabIndex=-1;d.focus({preventScroll:true});}}
 /** "?" of a work screen before the tutorial module has loaded (same markup as tutorial/guide.js helpButton;
  * a tap loads it: TUT_OPEN). Every career's work screen carries it, in the header, next to "Đóng". */
 const helpQ=cid=>`<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(cid||'')}" data-tab="work" aria-label="Hướng dẫn nghề này">?</button>`;
@@ -947,7 +948,7 @@ function accountingJob(t){
 }
 
 // Each option says WHEN it fits (game/engine.py CS_SOL_WHEN), so the evidence decides the pick, not trial and error.
-const solutions=[['reship','Gửi bù món thiếu','box','Khi kiện giao thiếu món'],['trace','Đối soát giao nhận','search','Khi kiện chậm, kẹt hay báo giao mà chưa tới'],['exchange','Đổi đúng món','refresh','Khi khách nhận sai mã, sai màu'],['refund','Thực hiện hoàn','coin','Khi hồ sơ có yêu cầu hoàn hợp lệ'],['guide','Hướng dẫn khách','book','Khi đơn không lỗi, khách cần cách làm']];
+const solutions=[['reship','Gửi bù món thiếu','box','Khi kiện giao thiếu món'],['trace','Đối soát giao nhận','search','Khi kiện chậm, kẹt hay báo giao mà chưa tới'],['exchange','Đổi đúng món','refresh','Khi khách nhận sai mã, sai màu (không phải thiếu món)'],['refund','Thực hiện hoàn','coin','Khi hồ sơ có yêu cầu hoàn hợp lệ'],['guide','Hướng dẫn khách','book','Khi đơn không lỗi, khách cần cách làm']];
 const CS_STEPS=['Xác minh','Chứng cứ','Phương án','Thực hiện','Kiểm kết quả','Đóng vụ'];
 const CS_CHANNELS=['💬 Tin nhắn','📞 Gọi điện','✉️ Thư điện tử'];
 /** Where a support case stands (0–5), from server fields only. */
@@ -1712,10 +1713,13 @@ document.addEventListener('click',e=>{
   tap.el=el&&!el.disabled&&!el.hasAttribute('data-own-busy')?el:null;tap.at=performance.now();
 },true);
 document.addEventListener('submit',e=>{tap.el=e.submitter||e.target.querySelector?.('button:not([type=button])')||null;tap.at=performance.now();},true);
-api.addEventListener('net',e=>{
-  if(e.detail>0){const el=tap.el;if(el?.isConnected&&performance.now()-tap.at<400&&!tap.pending.has(el)){el.classList.add('is-pending');el.setAttribute('aria-busy','true');tap.pending.add(el);}}
-  else{for(const el of tap.pending){el.classList.remove('is-pending');el.removeAttribute('aria-busy');}tap.pending.clear();}
-});
+// A command waiting in the queue counts as on its way (api.js 'queued': behind an AI write that holds the queue up to
+// AI_WAIT, its request starts seconds after the tap); the mark stays until no request and no command is left.
+const markTap=()=>{const el=tap.el;if(el?.isConnected&&performance.now()-tap.at<400&&!tap.pending.has(el)){el.classList.add('is-pending');el.setAttribute('aria-busy','true');tap.pending.add(el);}};
+const unmarkTaps=()=>{if(api.inflight>0||api.waiting>0)return;for(const el of tap.pending){el.classList.remove('is-pending');el.removeAttribute('aria-busy');}tap.pending.clear();};
+api.addEventListener('net',e=>{if(e.detail>0)markTap();else unmarkTaps();});
+api.addEventListener('queued',markTap);
+api.addEventListener('busy',e=>{if(!e.detail)unmarkTaps();});
 /* Career workbenches and scene kinds load on demand (startup: the current one; selectCareer: the next one).
  * Anything else that switches careers is covered by ensureCareerUI (re-renders once the module is in). */
 const CAREER_MODULES=[];

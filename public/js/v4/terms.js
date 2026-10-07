@@ -8,16 +8,20 @@ let source=()=>null;
 /** app.js hands over where the catalogue lives (api.content.catalogue), once at boot. */
 export const termsSource=fn=>{source=typeof fn==='function'?fn:()=>null;};
 
-/** The career's row of words (SHOP for an unknown career or before the catalogue is in). */
-export function terms(career){
+/** The catalogue's own row of words for the career, or null (unknown career, catalogue not in, or older than `terms`). */
+function own(career){
   let list=null;
   try{list=source();}catch{list=null;}
   const row=Array.isArray(list)?list.find(c=>c&&c.id===career):null;
-  return row&&row.terms&&typeof row.terms==='object'?row.terms:SHOP;
+  return row&&row.terms&&typeof row.terms==='object'?row.terms:null;
 }
+/** The career's row of words (SHOP for an unknown career or before the catalogue is in). */
+export function terms(career){return own(career)||SHOP;}
 /** One word: T('pagoda','books') → "Sổ chùa". A missing key gives the shop word. */
 export const T=(career,key)=>{const v=terms(career)[key];return v==null?SHOP[key]:v;};
 /** A shop (true) or a job whose shared screens must not say tiệm / quán / phục vụ (false). */
 export const isShop=career=>terms(career).commerce!==false;
-/** The bù đắp a career can give: [[id,label]…] (police: none). */
-export const offersOf=career=>Object.entries(terms(career).offers||SHOP.offers).filter(([,l])=>l);
+/** The bù đắp a career can give: [[id,label]…] (police: none). Without the career's own row (the catalogue not in,
+ * or one from before `terms`) nothing is offered: the shop's three were refused by every career that has fewer
+ * ("Nghề này không bù đắp kiểu đó."), and "Không bù" is always safe. */
+export const offersOf=career=>{const t=own(career);return t?Object.entries(t.offers||{}).filter(([,l])=>l):[];};

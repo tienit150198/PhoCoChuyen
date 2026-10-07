@@ -885,10 +885,21 @@ export async function v4Submit(form,env){
     return true;
   }
   if(form.dataset.v4Fb){
-    const post=form.dataset.v4Fb,text=form.querySelector('textarea').value.trim(),offer=form.querySelector('input[name=offer]:checked')?.value||'none';
+    const post=form.dataset.v4Fb,ta=form.querySelector('textarea'),text=ta.value.trim(),picked=form.querySelector('input[name=offer]:checked')?.value||'none';
     const tone=form.querySelector('input[name=tone]')?.value||'free';
-    if(!text)return true;
-    const r=await cmd('fb_reply',{post,text,offer,tone});
+    if(!text||form.dataset.sending)return true;
+    // A tab older than its catalogue (before 1.9.5 every career offered the shop's bù đắp): only an offer this
+    // career gives goes out, anything else as 'none' (the server refused it: "Nghề này không bù đắp kiểu đó.").
+    const cur=api.state?.current||api.state?.focus,offer=picked==='none'||offersOf(cur).some(([id])=>id===picked)?picked:'none';
+    // While the reply is on its way (it may wait behind a reviewer's AI answer, up to AI_WAIT): the box and the send
+    // button are off, so a second tap cannot send it again ("Khách đang đọc phản hồi trước của bạn.").
+    const go=form.querySelector('button[type=submit],button:not([type])'),off=on=>{
+      if(on)form.dataset.sending='1';else delete form.dataset.sending;
+      for(const el of [ta,go])if(el){el.disabled=on;if(on)el.setAttribute('aria-busy','true');else el.removeAttribute('aria-busy');}
+      go?.classList.toggle('is-pending',on);
+    };
+    off(true);
+    let r;try{r=await cmd('fb_reply',{post,text,offer,tone});}finally{if(form.isConnected)off(false);}
     if(r){
       form.querySelector('textarea').value='';env.ui.fbOffer='none';env.ui.fbTone=null;
       // Give the reviewer a moment to "read" before answering.

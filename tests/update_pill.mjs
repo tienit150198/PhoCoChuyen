@@ -1,7 +1,7 @@
 // Unit test of public/js/update.js ("Đã có phiên bản mới" pill) with a tiny fake DOM.
 // Run by tests/test_webassets.py (node tests/update_pill.mjs); exits non-zero on failure.
 import assert from 'node:assert/strict';
-import {shouldOffer,compareRelease,UpdateNotice,TEXT,releaseUrls,prewarmRelease} from '../public/js/update.js';
+import {shouldOffer,compareRelease,UpdateNotice,TEXT,FIRM,RELOAD_GAP,releaseUrls,prewarmRelease} from '../public/js/update.js';
 
 assert.equal(compareRelease('0.9.0+a','0.8.10+b'),1);
 assert.equal(compareRelease('0.8.0+a','0.8.0+b'),0);
@@ -55,6 +55,7 @@ const store=()=>{const m=new Map();return {getItem:k=>m.get(k)??null,setItem:(k,
   const doc=fakeDoc(),session=store(),win={listeners:{},addEventListener(t,f){this.listeners[t]=f;}};
   let reloads=0,idle=true,server='0.8.0+aaa';
   const n=new UpdateNotice('0.8.0+aaa',{doc,storage:store(),session,reload:()=>reloads++,idle:()=>idle});
+  let clock=1e6;n.now=()=>clock;   // RELOAD_GAP: at most one reload by itself every 2 minutes
   const check=async()=>{n.seen(server);};
   n.watch(check,win);clearInterval(n.timer);
   assert.equal(n.seen('0.8.0+bbb'),true);assert.equal(reloads,0,'on the page: the pill only');
@@ -68,9 +69,12 @@ const store=()=>{const m=new Map();return {getItem:k=>m.get(k)??null,setItem:(k,
   server='0.8.2+ccc';idle=false;doc.listeners.visibilitychange();await new Promise(r=>setTimeout(r,0));
   assert.equal(reloads,1,'typing or sending: no reload');assert.equal(n.shown,'0.8.2+ccc','the pill instead');
   idle=true;win.listeners.pageshow({persisted:true});await new Promise(r=>setTimeout(r,0));
+  assert.equal(reloads,1,'within RELOAD_GAP of the last reload: no second one (no loop during a rolling deploy)');
+  clock+=RELOAD_GAP;win.listeners.pageshow({persisted:true});await new Promise(r=>setTimeout(r,0));
   assert.equal(reloads,2,'a page restored from the back/forward cache counts as coming back');
   assert.equal(n.seen('0.8.3+ddd'),true);assert.equal(reloads,2,'while on the page: never by itself');
-  assert.equal(n.seen('0.8.3+ddd',true),true);assert.equal(reloads,3,'incompatible + idle: reloads');
+  clock+=RELOAD_GAP;assert.equal(n.seen('0.8.3+ddd',true),true);assert.equal(reloads,3,'incompatible + idle: reloads');
+  clearTimeout(n.later);
   const broken=new UpdateNotice('0.8.0+aaa',{doc:fakeDoc(),storage:store(),session:{getItem(){throw new Error('blocked');},setItem(){throw new Error('blocked');}},reload:()=>reloads++,idle:()=>true});
   broken.returning=true;assert.equal(broken.seen('0.9.0+x'),true);assert.equal(reloads,3,'no session storage: no auto reload (no loop guard), pill');
 }
@@ -89,5 +93,33 @@ const store=()=>{const m=new Map();return {getItem:k=>m.get(k)??null,setItem:(k,
   const storage=store();storage.setItem('mnl.warm',JSON.stringify(['/js/careers/farm.js']));storage.setItem('mnl.scene','/js/scenes/farm.js');
   assert.equal(await prewarmRelease(doc,storage),4);
   assert.deepEqual(head.children.map(l=>[l.rel,l.href]),[['prefetch','/js/api.js?v=aaaaaaaaaaaa'],['prefetch','/js/careers/farm.js?v=bbbbbbbbbbbb'],['prefetch','/js/scenes/farm.js?v=cccccccccccc'],['prefetch','/api/content?v=dddddddddddd&part=core']]);
+}
+{ // 07/10: a page behind the server's RELEASE (tabs from before 1.9.5 sent offers the server no longer takes): the pill
+  // keeps itself (no ✕, a dismissed version shows again) and the next navigation reloads when idle, once per version
+  const doc=fakeDoc(),storage=store(),session=store();let reloads=0,idle=false;
+  const n=new UpdateNotice('1.9.4+aaa',{doc,storage,session,reload:()=>reloads++,idle:()=>idle});
+  assert.equal(n.navigated(),false,'nothing newer seen: navigation is just navigation');
+  assert.equal(n.seen('1.9.4+bbb'),true);assert.equal(n.behind,null,'a new build of the same release is not "behind"');
+  assert.equal(doc.body.children[0].children.length,2,'a new build: the pill keeps its ✕');
+  assert.equal(n.navigated(),false);
+  storage.setItem('mnl.update.dismissed','1.9.10+ccc');
+  assert.equal(n.seen('1.9.10+ccc'),true,'behind: a dismissed version shows again');
+  const pill=doc.body.children.at(-1);
+  assert.equal(pill.children.length,1,'no ✕');assert.equal(pill.children[0].textContent,'🔄 '+FIRM);assert.match(pill.className,/is-firm/);
+  assert.equal(reloads,0,'never by itself while on the page');
+  assert.equal(n.navigated(),false);assert.equal(reloads,0,'typing or sending: no reload');
+  idle=true;assert.equal(n.navigated(),true);assert.equal(reloads,1,'next navigation, idle: reloads');
+  assert.equal(n.navigated(),false);assert.equal(reloads,1,'once per version (no reload loop)');
+  assert.equal(new UpdateNotice('1.9.10+ccc',{doc:fakeDoc(),storage:store(),reload:()=>reloads++}).seen('1.9.9+ddd'),false,'an older worker during a rolling deploy: nothing');
+}
+{ // 426 client_outdated (server.py MIN_CLIENT) while a command is still being answered (not idle): tried again a
+  // moment later, then at the next navigation
+  const doc=fakeDoc();let reloads=0,idle=false;
+  const n=new UpdateNotice('1.9.10+aaa',{doc,storage:store(),session:store(),reload:()=>reloads++,idle:()=>idle});
+  assert.equal(n.seen('1.9.11+bbb',true),true);assert.equal(reloads,0);
+  idle=true;await new Promise(r=>setTimeout(r,1600));
+  assert.equal(reloads,1,'reloads once the command is answered');
+  assert.equal(n.seen('1.9.11+bbb',true),true);await new Promise(r=>setTimeout(r,1600));
+  assert.equal(reloads,1,'never twice for one version');
 }
 console.log('update pill: ok');

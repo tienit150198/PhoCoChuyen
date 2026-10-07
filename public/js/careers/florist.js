@@ -697,6 +697,13 @@ function taskGuide(t,x){
 }
 /** Several commands from one tap, in order; stops at the first refusal. While they run the hint and
  * the button say "Đang làm…"; the flag drops before the last command so its own render is the real one. */
+/* A timer's own fl_lift / fl_arrange on the wire (task:cmd), like milk tea's `flying`: wait() never sends one twice. */
+const waitFlying=new Set();
+async function waitSend(x,cmd,task){
+  const key=`${task}:${cmd}`;if(waitFlying.has(key))return null;
+  waitFlying.add(key);
+  try{return await x.send(cmd,{task});}finally{waitFlying.delete(key);}
+}
 async function run(x,list){
   if(x.ui.flBusy||!list.length)return;
   x.ui.flBusy=true;
@@ -795,9 +802,17 @@ export default {
       try{
         const ms=(Number(data.at)-x.now())*1000+300;
         if(ms>0){x.toast(data.cmd==='fl_lift'?`Chờ thêm ${Math.ceil(ms/1000)} giây, đủ nước là tự nhấc ra.`:`Chờ thêm ${Math.ceil(ms/1000)} giây, mút chìm là tự cắm.`);await new Promise(r=>setTimeout(r,ms));}
-        const w=(x.api.state?.careers?.florist?.tasks||[]).find(v=>v.id===data.task)?.work;
-        if(!w||(data.cmd==='fl_lift'&&!w.soak)||(data.cmd==='fl_arrange'&&w.arranged))return;
-        if(await x.send(data.cmd,{task:data.task})&&data.then)await x.send(data.then,{task:data.task});
+        // The player may have tapped "🙌 Nhấc ra" / "Cắm" themselves meanwhile: its command still on the wire, the
+        // state read here does not show it yet, and a second one only earned "đã cắm rồi" (07/10). Skip it then.
+        const task={task:data.task},busy=c=>waitFlying.has(`${data.task}:${c}`)||!!x.api.sending?.(c,task,'florist')||!!x.api.sending?.(c,task);
+        const work=()=>(x.api.state?.careers?.florist?.tasks||[]).find(v=>v.id===data.task)?.work;
+        const w=work();
+        if(!w||busy(data.cmd)||(data.cmd==='fl_lift'&&!w.soak)||(data.cmd==='fl_arrange'&&w.arranged))return;
+        if(!await waitSend(x,data.cmd,data.task)||!data.then)return;
+        // Re-read after the first step landed: the arrange may have gone from another tap in between.
+        const after=work();
+        if(!after||busy(data.then)||(data.then==='fl_arrange'&&after.arranged))return;
+        await waitSend(x,data.then,data.task);
       }finally{x.ui.flWait=null;}
     },
     async cardtpl(data,el,x){x.ui.cardText=null;await x.send('fl_card',{task:data.task,text:data.text});},
