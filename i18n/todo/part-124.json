@@ -1,5 +1,45 @@
 [
  {
+  "vi": "Bên em chỉ nhận đơn gộp từ $1 xu ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “$2” Thêm hàng hoặc đặt lẻ từng món nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thiếu $1 xu để đặt đơn này (quỹ nghề còn $2 xu). Tiền nhập hàng trừ vào quỹ của nghề đang làm, không lấy từ ví hay vốn quầy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hết $1 rồi em, giao trước mấy món kia nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kho tạm hết $1, bên em giao trước phần còn lại ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "” Không tính tiền $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gộp $1 món soạn không kịp chuyến, $2 mới tới nha em.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đơn gộp $1 món cần soạn riêng, $2 mới giao được ạ.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Nhập gộp $1 món",
   "en": "",
   "pattern": true

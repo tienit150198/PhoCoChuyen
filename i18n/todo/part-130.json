@@ -1,5 +1,90 @@
 [
  {
+  "vi": "Ứng $1 tiền mặt từ thẻ?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phí ứng $1 ($2%, ít nhất $3). Lãi $4/ngày tính ngay từ hôm nay, không có miễn lãi. Dư nợ tăng $5.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ký hợp đồng $1 $2?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả $1 kỳ, mỗi $2 ngày, kỳ đầu $3. Tổng lãi $4, tổng phải trả $5. Tiền giải ngân vào $6. Trễ hạn bị phạt $7% kỳ đó và giảm điểm tín dụng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ký · lãi $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả $1 đang quá hạn?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả trước kỳ $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trừ từ $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gốc còn lại $1$2, lãi những ngày đã dùng $3, phí trả trước hạn $4. Tổng $5. Bạn bớt được $6 tiền lãi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "khoản quá hạn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gửi $1 vào quỹ chung?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Rút $1 bằng thẻ chung?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiền về ví của bạn. Quỹ chung còn $1. Người ấy nhận thông báo về giao dịch này.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Vay ít nhất $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hạn mức hiện tại tối đa $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mỗi kỳ $1 vượt $2% thu nhập một tuần ($3): ngân hàng sẽ không duyệt. Chọn số nhỏ hơn hoặc kỳ hạn dài hơn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Số tài khoản $1 · Ngày sống $2",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🐷 Tiết kiệm tới $1",
   "en": "",
   "pattern": true
@@ -2161,91 +2246,6 @@
  },
  {
   "vi": "Gắn bó $1/100",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ngày chăm sóc$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mốc tiếp theo: $1 ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đồ dùng $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuẩn bị cho $1: $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đón $1 về nhà?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ". $1 Chăm sóc theo ngày sống, không có phí tự động.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đồ dùng ban đầu $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Biểu đồ $1 $2, trục giá theo xu và thời gian thực",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "điểm giá$1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giá $1 $2 $3: từ $4 xu tới $5 xu, thấp nhất $6, cao nhất $7.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ngày thị trường $1 · Giá đổi mỗi 10 phút, kể cả khi bạn offline.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giá đang xem: $1 (giờ Việt Nam).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lãi $1/ngày$2, cộng vào sổ mỗi $3 ngày. Không bao giờ lỗ vốn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "cho $1 đầu, phần trên lãi $2,$3%/ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kỳ này vẫn tính $1/ngày cho cả sổ, từ kỳ sau tính theo bậc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiệm bán $1/chỉ · mua lại $2/chỉ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang giữ $1",
   "en": "",
   "pattern": true
  }

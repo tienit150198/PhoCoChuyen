@@ -1010,6 +1010,16 @@
   "pattern": true
  },
  {
+  "vi": "Số giữ lại từ 0 đến $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔒 Giữ $1 cho ca của bạn.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã chọn $1.",
   "en": "",
   "pattern": true
@@ -1036,6 +1046,26 @@
  },
  {
   "vi": "Đã nhập $1 món, hết $2 xu.$3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔒 Giữ $1$2 cho ca của bạn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔒 Giữ $1$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔒 Giữ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", +$1 món",
   "en": "",
   "pattern": true
  },
@@ -2216,36 +2246,6 @@
  },
  {
   "vi": "Uy tín $1$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hao hụt tính theo tài sản lúc phát sinh, $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎲 Hên xui · $1% lấy lại đủ, không mất xu. Không được thì:",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã ghi chi phí $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 lục ví, đỏ mặt: “Ấy chết, hai tờ dính vào nhau! Xin lỗi nha.” rồi đưa thêm $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đếm lại, bật cười: “Trời, đếm hụt thật. Cảm ơn đã nhắc khéo nha.” rồi đưa thêm $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đếm lại từng tờ, cười hiền: “Già rồi mắt kém, may có con nhắc.” rồi đưa thêm $2 xu.",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,113 @@
 [
  {
+  "vi": "Xem bé dặn gì",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời khách",
+  "en": ""
+ },
+ {
+  "vi": "👉 Hỏi rồi trả lời khách",
+  "en": ""
+ },
+ {
+  "vi": "💿 Vào việc thôi!",
+  "en": ""
+ },
+ {
+  "vi": "💿 MỞ TIỆM",
+  "en": ""
+ },
+ {
+  "vi": "👉 Chọn cách trả lời",
+  "en": ""
+ },
+ {
+  "vi": "🙏 Nói thật: kệ hết hàng",
+  "en": ""
+ },
+ {
+  "vi": "lấy hàng vào giỏ trước đã",
+  "en": ""
+ },
+ {
+  "vi": "💿 Kệ hàng",
+  "en": ""
+ },
+ {
+  "vi": "Đếm kho, dựng biển, mở tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Bán album cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Việc với khách này",
+  "en": ""
+ },
+ {
+  "vi": "Món đã bán",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện quay lại",
+  "en": ""
+ },
+ {
+  "vi": "Album, Búa hồng, pin, toploader, ống poster…",
+  "en": ""
+ },
+ {
+  "vi": "💊 Soát phiếu thuốc",
+  "en": ""
+ },
+ {
+  "vi": "📒 Soát sổ",
+  "en": ""
+ },
+ {
+  "vi": "Nhận giấy tờ của khách.",
+  "en": ""
+ },
+ {
+  "vi": "Soát từng dòng: chạm dòng sai, chọn quy định nó trái (sổ quy định hôm nay).",
+  "en": ""
+ },
+ {
+  "vi": "Chạy kiểm tra thêm khi cần, đếm két khi có.",
+  "en": ""
+ },
+ {
+  "vi": "Đóng dấu quyết định: đóng rồi thì hồ sơ khép lại.",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Sổ quy định hôm nay\"",
+  "en": ""
+ },
+ {
+  "vi": "Đủ dấu rồi",
+  "en": ""
+ },
+ {
+  "vi": "Đã đánh dấu quy định này",
+  "en": ""
+ },
+ {
+  "vi": "Đủ dấu rồi: đóng dấu quyết định.",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Đóng dấu quyết định\"",
+  "en": ""
+ },
+ {
+  "vi": "🔏 Đóng dấu",
+  "en": ""
+ },
+ {
   "vi": "Chọn câu trả lời đầu tiên cho khách",
   "en": ""
  },
@@ -121,6 +229,10 @@
  },
  {
   "vi": "🎟️ Chưa có thiệp.",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Giữ cho ca bạn",
   "en": ""
  },
  {
@@ -1685,118 +1797,6 @@
  },
  {
   "vi": "KHO GẠO",
-  "en": ""
- },
- {
-  "vi": "Dọn quán",
-  "en": ""
- },
- {
-  "vi": "Mở quán",
-  "en": ""
- },
- {
-  "vi": "ĐANG BÁN CƠM",
-  "en": ""
- },
- {
-  "vi": "Mrrr… miếng sườn cháy cạnh thơm quá, cho Mướp xin một miếng?",
-  "en": ""
- },
- {
-  "vi": "Khách đi chợ sắp ghé ăn cơm.",
-  "en": ""
- },
- {
-  "vi": "Nấu cơm, nếm nước mắm, nhóm bếp rồi mở quán nhé.",
-  "en": ""
- },
- {
-  "vi": "Quán đang vãn",
-  "en": ""
- },
- {
-  "vi": "Mời thêm khách hoặc dọn quán hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở quán cơm tấm Dì Bảy.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá quanh quán cơm.",
-  "en": ""
- },
- {
-  "vi": "Bàn ghế nhựa",
-  "en": ""
- },
- {
-  "vi": "Kho sau bếp",
-  "en": ""
- },
- {
-  "vi": "SỔ QUÁN PHỞ",
-  "en": ""
- },
- {
-  "vi": "KHO BẾP",
-  "en": ""
- },
- {
-  "vi": "Đóng quán",
-  "en": ""
- },
- {
-  "vi": "ĐANG BÁN PHỞ",
-  "en": ""
- },
- {
-  "vi": "HẾT PHỞ, MAI GHÉ NHÉ",
-  "en": ""
- },
- {
-  "vi": "Mrrr… cho Mướp xin miếng gân bò thôi mà.",
-  "en": ""
- },
- {
-  "vi": "Nồi nước đang lăn tăn, khách sắp ghé.",
-  "en": ""
- },
- {
-  "vi": "Vặn lửa, hớt bọt, nếm nước rồi mở quán nhé.",
-  "en": ""
- },
- {
-  "vi": "Bếp đang vãn",
-  "en": ""
- },
- {
-  "vi": "Mời thêm khách hoặc đóng quán hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Những người bạn gặp ở quán phở Cây Si.",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và đánh giá quanh quán phở.",
-  "en": ""
- },
- {
-  "vi": "Trong quán",
-  "en": ""
- },
- {
-  "vi": "Sổ quán",
-  "en": ""
- },
- {
-  "vi": "Khung mẫu",
-  "en": ""
- },
- {
-  "vi": "Quầy & máy in",
   "en": ""
  }
 ]

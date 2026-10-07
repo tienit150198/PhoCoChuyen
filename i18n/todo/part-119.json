@@ -1,5 +1,40 @@
 [
  {
+  "vi": "Chưa trở mặt: một mặt nướng $1 giây, mặt kia còn sống.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hai mặt $1 và $2 giây.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍖 Gắp $1 miếng sườn ra khay giữ ấm: $2. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Miếng sườn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🗑️ Bỏ miếng sườn $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Lấy $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nồi $1 hết cơm. Nấu nồi mới nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Nồi $1 chưa chín, chờ chừng $2 giây nữa.",
   "en": "",
   "pattern": true
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "$1 Bế Mướp sang phòng ngủ, khép cửa. Mướp ngáp một cái rồi ngủ tiếp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Nhấc $2 ra, đặt lên khăn mềm ở góc an toàn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Đặt $2 lại đúng chỗ cũ, xoay đúng mặt như lúc đầu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tôi dặn lau kỹ $1 mà vẫn còn bẩn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "và $1 chỗ nữa",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 vẫn bẩn$3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 để dưới góc, không đặt lại chỗ cũ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚪 $1 đi một vòng:",
   "en": "",
   "pattern": true
  }

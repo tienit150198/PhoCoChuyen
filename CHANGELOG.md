@@ -1,3 +1,10 @@
+# v1.9.18 — 2026-10-07
+
+Gồm "🔒 Giữ lại cho ca của tôi" (ops.business_keep, business.keep tùy chọn) và sửa sự cố đồ trang trí 07/10:
+
+- Biệt thự Sông Hồng: từ 1.9.11 bếp và phòng ngủ 2 mất một hàng, cửa sổ / quầy bếp mới đè lên ô cũ, nên khi đổi khóa `:v2` 139 món của 16 người chơi vào túi đồ và lưới cũ làm vài món bị nắn lệch. Nay mỗi phòng cũ là tập cha của phòng cũ (estates.superset), `_v2_alias` giữ nguyên từng vị trí; món chỉ phòng mới chứa nằm ở `journey.decor_wide` (tùy chọn, 1.9.17 bỏ qua: hiện trong túi).
+- Chuyển chỗ ở: bố cục chỗ cũ được nhớ trong `journey.decor_away` (3 chỗ gần nhất, tùy chọn), quay về là bày lại; món đã bán thì thôi.
+
 # Chưa phát hành — 🔒 Giữ lại cho ca của tôi (B4 phần 2, góp ý #243, #247)
 
 - Kho: chạm một món, dòng "🔒 Giữ cho ca bạn − N +" đặt số tối thiểu (0–999) nhân viên không bán; ô hàng hiện "🔒 N". Nhân viên (và khách người chơi họ phục vụ) dừng món đó khi kho còn đúng N, lý do ghi "🔒 Giữ 5 ly giấy cho ca của bạn."; việc của chủ vẫn dùng hết. Thực đơn nhân viên, trọng số món và cỡ áo đều tính phần giữ (quần áo: bán từ cỡ còn nhiều nhất để phần giữ còn đủ cỡ). Quầy: cùng ô ở tab 📦 Hàng. Thẻ "Lúc bạn vắng" thêm dòng "🔒 Giữ lại 5 ly giấy cho bạn". Khóa tùy chọn `ops.business_keep` / `business.keep` của quầy ({món: 1..999}); không đặt thì như cũ, 1.9.17 nhận và giữ nguyên khóa. Không đổi cách sinh việc.

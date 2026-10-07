@@ -1,5 +1,33 @@
 [
  {
+  "vi": "Tắt hoặc bật thông báo cho từng nhóm chat, tin nhắn riêng. Góc hẹn hò cho biết ai đang chờ, có nút 📣 Rủ mọi người.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền về là nghe “ting ting” như app ngân hàng, kèm giọng đọc số tiền. Tắt được trong Cài đặt → Âm thanh.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn tính lương: ô sai được tô đỏ, chạm vào để xem số đúng, cách tính từng bước và quy định áp dụng.",
+  "en": ""
+ },
+ {
+  "vi": "Ô ngày giờ ở văn phòng tự thêm dấu / và : khi gõ bằng bàn phím số, hoặc bấm 📅 để chọn ngày trên lịch.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm tóc: khách chê “còn dài” thì luôn cắt thêm được, kể cả khi đã tỉa tầng. Hết cảnh soi gương mãi không chốt được.",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn lân mới về tiệc cưới: đầu lân to rực rỡ, chớp mắt, há miệng, chồm lên đớp lì xì theo tiếng trống.",
+  "en": ""
+ },
+ {
+  "vi": "Sân khấu cưới có quả cầu disco, đèn màu quét theo nhạc và bốn cái loa góc sân rung theo từng nhịp.",
+  "en": ""
+ },
+ {
   "vi": "Nhạc cưới mới sôi động, chú rể chọn nhạc cho cả tiệc: EDM, remix, Latin, funk, nhạc chậm. Chú rể vắng thì cô dâu chọn.",
   "en": ""
  },
@@ -872,6 +900,14 @@
   "en": ""
  },
  {
+  "vi": "Món này nhân viên không bán.",
+  "en": ""
+ },
+ {
+  "vi": "Đã giữ quá nhiều món.",
+  "en": ""
+ },
+ {
   "vi": "Lương đơn riêng",
   "en": ""
  },
@@ -901,6 +937,10 @@
  },
  {
   "vi": "cho đơn riêng; nhập hàng để đội làm tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "cho ca của bạn.",
   "en": ""
  },
  {
@@ -1757,46 +1797,6 @@
  },
  {
   "vi": "Ngôn ngữ trình duyệt",
-  "en": ""
- },
- {
-  "vi": "Lượt mở của bot",
-  "en": ""
- },
- {
-  "vi": "Bot (máy tìm kiếm, xem trước liên kết) cũng tạo bản lưu; chúng không bao giờ thành \"người chơi mới\" vì không thao tác.",
-  "en": ""
- },
- {
-  "vi": "Chưa đo (mẫu bản lưu chưa tính).",
-  "en": ""
- },
- {
-  "vi": "Tiến trình · CPU",
-  "en": ""
- },
- {
-  "vi": "Thao tác / phút (lúc này)",
-  "en": ""
- },
- {
-  "vi": "sau nén",
-  "en": ""
- },
- {
-  "vi": "chưa nén",
-  "en": ""
- },
- {
-  "vi": "Bảng lớn nhất",
-  "en": ""
- },
- {
-  "vi": "Bảng",
-  "en": ""
- },
- {
-  "vi": "Số dòng",
   "en": ""
  }
 ]

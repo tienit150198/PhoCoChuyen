@@ -1,5 +1,40 @@
 [
  {
+  "vi": "$1 Nhấc $2 ra, đặt lên khăn mềm ở góc an toàn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Đặt $2 lại đúng chỗ cũ, xoay đúng mặt như lúc đầu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi dặn lau kỹ $1 mà vẫn còn bẩn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "và $1 chỗ nữa",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 vẫn bẩn$3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 để dưới góc, không đặt lại chỗ cũ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚪 $1 đi một vòng:",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "💍 Đưa $1 khay đồ: $2. “Ôi, cảm ơn em!”",
   "en": "",
   "pattern": true
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "🙏 $1 lắc đầu: “Giá này rẻ rồi con, cô bán đúng giá mà.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 $1 ghi hóa đơn: $2 xu, ký tên rõ ràng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Còn chưa mua: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏠 Xách giỏ về nhà: chợ hết $1 xu, ví tiền chợ còn $2 xu. Vo gạo bắc nồi cơm trước nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍚 Vo gạo hai nước, đổ nước $1, bấm nút nồi cơm. Chừng $2 giây nữa cơm chín.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🥢 Bày $1 bộ chén đũa quanh mâm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🥄 Chấm đầu đũa nếm chén nước mắm: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚿 Rửa sạch đồ làm $1",
   "en": "",
   "pattern": true
  }

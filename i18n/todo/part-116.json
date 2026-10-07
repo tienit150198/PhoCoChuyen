@@ -1,5 +1,145 @@
 [
  {
+  "vi": "🌱 Phố còn bình yên với người mới. Cứ yên tâm làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "🚔 Tiền hoàn đang chờ: cần tài khoản ngân hàng và số dư dưới mức tối đa để nhận ở ngày sống tiếp theo.",
+  "en": ""
+ },
+ {
+  "vi": "🔧 Đang hỏng",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hiểm & rủi ro",
+  "en": ""
+ },
+ {
+  "vi": "Phòng trước, đỡ lo",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Đồ phòng thân",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện xấu luôn báo trước 1–2 ngày. Phòng trước là tránh được.",
+  "en": ""
+ },
+ {
+  "vi": "Không truy thu rủi ro trong thời gian offline.",
+  "en": ""
+ },
+ {
+  "vi": "Không bao giờ bị nợ vì rủi ro.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm vàng chưa mở.",
+  "en": ""
+ },
+ {
+  "vi": "Giá chung cả phố · 10 phút/phiên · 1 giờ thực = 1 ngày thị trường",
+  "en": ""
+ },
+ {
+  "vi": "Giá chung cả phố, đổi mỗi ngày",
+  "en": ""
+ },
+ {
+  "vi": "/ chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Số vàng",
+  "en": ""
+ },
+ {
+  "vi": "Mua đắt hơn giá 2,5%, bán rẻ hơn 2,5%.",
+  "en": ""
+ },
+ {
+  "vi": "Giá có thể tăng hoặc giảm, giữ lâu vẫn có thể lỗ.",
+  "en": ""
+ },
+ {
+  "vi": "Giá đổi mỗi 10 phút thực, kể cả khi offline.",
+  "en": ""
+ },
+ {
+  "vi": "Giá lên xuống mỗi ngày, có thể lỗ.",
+  "en": ""
+ },
+ {
+  "vi": "1 chỉ = 10 phân.",
+  "en": ""
+ },
+ {
+  "vi": "Thay đồ cho nhân vật",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh đại diện khi chat",
+  "en": ""
+ },
+ {
+  "vi": "Xem các cập nhật mới",
+  "en": ""
+ },
+ {
+  "vi": "Giao diện gọn",
+  "en": ""
+ },
+ {
+  "vi": "Ít chữ, một nút chính, phiếu khách thành chip trên đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Hiện chỗ làm của tôi cho mọi người",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ của tôi",
+  "en": ""
+ },
+ {
+  "vi": "Tìm tên chỗ làm…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có chỗ làm nào ở đây.",
+  "en": ""
+ },
+ {
+  "vi": "Không tính điểm",
+  "en": ""
+ },
+ {
+  "vi": "Không tính vào điểm trung bình",
+  "en": ""
+ },
+ {
+  "vi": "Chưa mở chỗ làm nào.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm của tôi",
+  "en": ""
+ },
+ {
+  "vi": "Hai bạn sẽ không thấy chỗ làm, bài viết và quà của nhau.",
+  "en": ""
+ },
+ {
+  "vi": "thiếu nhi",
+  "en": ""
+ },
+ {
+  "vi": "hưu",
+  "en": ""
+ },
+ {
   "vi": "cao tuổi",
   "en": ""
  },
@@ -596,6 +736,10 @@
   "en": ""
  },
  {
+  "vi": "Giữ cho ca của bạn",
+  "en": ""
+ },
+ {
   "vi": "Đơn đang soạn",
   "en": ""
  },
@@ -832,6 +976,10 @@
   "en": ""
  },
  {
+  "vi": "Chưa vào quầy nào",
+  "en": ""
+ },
+ {
   "vi": "🎓 Xem chứng chỉ của bạn",
   "en": ""
  },
@@ -901,6 +1049,14 @@
  },
  {
   "vi": "Đặt đơn",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời chưa gửi được, khách vừa nhắn.",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc trao đổi này đã khép, không gửi thêm được.",
   "en": ""
  },
  {
@@ -1641,162 +1797,6 @@
  },
  {
   "vi": "Ẩn các bản trước",
-  "en": ""
- },
- {
-  "vi": "Xem các bản trước",
-  "en": ""
- },
- {
-  "vi": "Có gì mới ở Phố Có Chuyện",
-  "en": ""
- },
- {
-  "vi": "THIẾT BỊ NGHỀ",
-  "en": ""
- },
- {
-  "vi": "Làm nhanh hơn",
-  "en": ""
- },
- {
-  "vi": "Trả bằng quỹ của nghề này. Chọn bậc để xem đúng tác dụng trước khi mua; công việc đang chạy giữ tốc độ lúc bắt đầu.",
-  "en": ""
- },
- {
-  "vi": "Thiết bị cơ bản",
-  "en": ""
- },
- {
-  "vi": "Đã lắp",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm của bạn · đang đón khách",
-  "en": ""
- },
- {
-  "vi": "Bạn đang làm khách · việc riêng vẫn được giữ",
-  "en": ""
- },
- {
-  "vi": "Gặp bạn bè, nhận một dịch vụ thật",
-  "en": ""
- },
- {
-  "vi": "đơn người chơi ·",
-  "en": ""
- },
- {
-  "vi": "Đơn dịch vụ",
-  "en": ""
- },
- {
-  "vi": "Đang chờ nhận đơn",
-  "en": ""
- },
- {
-  "vi": "Dịch vụ đã sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "Dịch vụ đã hoàn tất",
-  "en": ""
- },
- {
-  "vi": "Đang hoàn lại xu",
-  "en": ""
- },
- {
-  "vi": "Chủ tiệm chưa thể nhận",
-  "en": ""
- },
- {
-  "vi": "Thực hiện yêu cầu trên phiếu công việc.",
-  "en": ""
- },
- {
-  "vi": "Thân thiện",
-  "en": ""
- },
- {
-  "vi": "Chăm chút",
-  "en": ""
- },
- {
-  "vi": "Giá hợp lý",
-  "en": ""
- },
- {
-  "vi": "Bạn đã rời phòng trực tiếp. Quyền ghé thăm có thể vừa thay đổi.",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối được. Các đơn và bản nháp vẫn được giữ.",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được chỗ làm. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa gửi được. Bạn có thể thử lại.",
-  "en": ""
- },
- {
-  "vi": "Làm khách tại",
-  "en": ""
- },
- {
-  "vi": "xu. Xu được giữ cho đơn dịch vụ này.",
-  "en": ""
- },
- {
-  "vi": "Đặt dịch vụ",
-  "en": ""
- },
- {
-  "vi": "GHÉ NHAU MỘT CHÚT",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Quay lại\"",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm quanh phố",
-  "en": ""
- },
- {
-  "vi": "Mọi người",
-  "en": ""
- },
- {
-  "vi": "Đơn của tôi",
-  "en": ""
- },
- {
-  "vi": "Chọn chỗ làm muốn ghé",
-  "en": ""
- },
- {
-  "vi": "Mọi người đang làm gì?",
-  "en": ""
- },
- {
-  "vi": "Đón khách theo cách của bạn",
-  "en": ""
- },
- {
-  "vi": "Hôm nay ghé ai nhỉ?",
-  "en": ""
- },
- {
-  "vi": "Chọn nơi làm để đặt quyền ghé thăm và xem khách.",
-  "en": ""
- },
- {
-  "vi": "Chọn một chỗ làm để xem bạn ấy đang làm gì.",
   "en": ""
  }
 ]

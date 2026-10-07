@@ -1,5 +1,40 @@
 [
  {
+  "vi": "$1 đang ở màu gốc rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đang mang màu $2 rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Màu $1 chưa mở khóa. Mở ở Bảng màu của bạn nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Màu $1 đã có trong bảng màu của bạn rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Từ giờ màu này dùng được cho mọi món đồ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 trở lại màu gốc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 giờ mang màu $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 $2 giờ mang màu $3.",
   "en": "",
   "pattern": true
@@ -136,6 +171,11 @@
  },
  {
   "vi": "Tiền đơn riêng vào quỹ nghề (Sổ thu chi), không vào ví. Mỗi đơn: thu theo giá kệ, trả lương $1 xu và vật tư $2 xu từ quỹ; giá vốn hàng đã trả lúc nhập.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "+$1 món",
   "en": "",
   "pattern": true
  },
@@ -880,6 +920,11 @@
   "pattern": true
  },
  {
+  "vi": "Đội bán $1 đơn · xem chi tiết",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "mở $1",
   "en": "",
   "pattern": true
@@ -1096,6 +1141,26 @@
  },
  {
   "vi": "Việc $1+ trả ×2, việc $2+ thêm $3%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "dùng $1 loại hàng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Từ $1$2, khoảng $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "($1 ngày trước)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ". Hàng không hết hạn: nhân viên đã bán, tiền vào $1.",
   "en": "",
   "pattern": true
  },
@@ -2181,71 +2246,6 @@
  },
  {
   "vi": "Thiếu $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛵 Về tiệm lấy $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Còn $1 người nợ · $2 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛵 Hôm nay · $1 việc · $2 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Loại B tính $1% giá$2 · hàng giao dư không tính tiền.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "nhãn hữu cơ thật: ×$1%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mua $1 liều phân bón lá thúc ($2 xu) phun luống $3? Thời gian lớn rút thêm $4%, đất màu −$5.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đạm cá, hữu cơ · đã thúc $1/$2%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mỗi liều rút $1% thời gian lớn, tốn $2 đất màu. Tối đa $3% mỗi vụ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thúc −$1%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giá sỉ loại A (xu) · bán thêm $1 → −10%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📦 Hết $1: mở Kho nhập thêm",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thu hoạch $1 luống $2 vào kho mát?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧺 Thu hoạch $1 luống $2",
   "en": "",
   "pattern": true
  }

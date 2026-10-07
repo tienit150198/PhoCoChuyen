@@ -1,5 +1,161 @@
 [
  {
+  "vi": "Xem các bản trước",
+  "en": ""
+ },
+ {
+  "vi": "Có gì mới ở Phố Có Chuyện",
+  "en": ""
+ },
+ {
+  "vi": "THIẾT BỊ NGHỀ",
+  "en": ""
+ },
+ {
+  "vi": "Làm nhanh hơn",
+  "en": ""
+ },
+ {
+  "vi": "Trả bằng quỹ của nghề này. Chọn bậc để xem đúng tác dụng trước khi mua; công việc đang chạy giữ tốc độ lúc bắt đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Thiết bị cơ bản",
+  "en": ""
+ },
+ {
+  "vi": "Đã lắp",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm của bạn · đang đón khách",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang làm khách · việc riêng vẫn được giữ",
+  "en": ""
+ },
+ {
+  "vi": "Gặp bạn bè, nhận một dịch vụ thật",
+  "en": ""
+ },
+ {
+  "vi": "đơn người chơi ·",
+  "en": ""
+ },
+ {
+  "vi": "Đơn dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "Đang chờ nhận đơn",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ đã sẵn sàng",
+  "en": ""
+ },
+ {
+  "vi": "Dịch vụ đã hoàn tất",
+  "en": ""
+ },
+ {
+  "vi": "Đang hoàn lại xu",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tiệm chưa thể nhận",
+  "en": ""
+ },
+ {
+  "vi": "Thực hiện yêu cầu trên phiếu công việc.",
+  "en": ""
+ },
+ {
+  "vi": "Thân thiện",
+  "en": ""
+ },
+ {
+  "vi": "Chăm chút",
+  "en": ""
+ },
+ {
+  "vi": "Giá hợp lý",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã rời phòng trực tiếp. Quyền ghé thăm có thể vừa thay đổi.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa kết nối được. Các đơn và bản nháp vẫn được giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được chỗ làm. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa gửi được. Bạn có thể thử lại.",
+  "en": ""
+ },
+ {
+  "vi": "Làm khách tại",
+  "en": ""
+ },
+ {
+  "vi": "xu. Xu được giữ cho đơn dịch vụ này.",
+  "en": ""
+ },
+ {
+  "vi": "Đặt dịch vụ",
+  "en": ""
+ },
+ {
+  "vi": "GHÉ NHAU MỘT CHÚT",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Quay lại\"",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ làm quanh phố",
+  "en": ""
+ },
+ {
+  "vi": "Mọi người",
+  "en": ""
+ },
+ {
+  "vi": "Đơn của tôi",
+  "en": ""
+ },
+ {
+  "vi": "Chọn chỗ làm muốn ghé",
+  "en": ""
+ },
+ {
+  "vi": "Mọi người đang làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Đón khách theo cách của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay ghé ai nhỉ?",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nơi làm để đặt quyền ghé thăm và xem khách.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một chỗ làm để xem bạn ấy đang làm gì.",
+  "en": ""
+ },
+ {
   "vi": "Đang tìm những cánh cửa đang mở…",
   "en": ""
  },
@@ -305,6 +461,10 @@
  },
  {
   "vi": "Đội đang xử lý đơn riêng",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Đội dừng: giữ hàng cho bạn",
   "en": ""
  },
  {
@@ -1858,41 +2018,6 @@
  },
  {
   "vi": "📢 Tổ dân phố xin chúc mừng $1! Mới về phố chưa lâu mà đã giúp được bao nhiêu nơi. Cả hẻm ai cũng nhắc: “$2”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hóng nè cả nhà ơi: nghe đâu $1 mới bắt đầu làm ở $2 đó 👀 Ai ghé ủng hộ thì ghé nha, người trong hẻm mình mà!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà khoe chút nghe bà con: đứa nhỏ ở gác nhà bà giờ đã lên tay nghề ở $1 rồi đó 🥹 Mới hôm nào còn lóng ngóng, giờ người ta khen quá trời.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ Dạo này có người nhắn rủ góp tiền vào “$1”, hứa lãi 30% mỗi tuần, mời thêm người còn được thưởng. Anh nói thẳng: LỪA ĐẢO. Không ai trả lãi như vậy đâu. Mọi người đừng chuyển tiền.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghe gì chưa cả nhà ơi 😱 Cái dự án “$1” sập rồi đó, trang web đóng cửa, nhóm chat bị xóa sạch. Nghe đâu có người mất mấy chục triệu… Tội nghiệp ghê.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chào mừng đồng nghiệp văn phòng mới của phố mình 👔 $1 vừa được nhận vào $2 rồi đó mọi người. Thật ra đi làm văn phòng có nhiều cái phải học lắm: email, họp hành, báo cáo… để anh chỉ dần cho nha 🤓",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cô không có ý gì đâu nha, nhưng mấy hôm nay thấy $1 đêm nào cũng về khuya lắm, hôm qua gần 12 giờ mới dắt xe vô hẻm. Làm gì mà khuya dữ vậy ta… chắc đi làm “phố đêm” 🤔 Cô chỉ nói những gì cô thấy thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nói nhỏ nha cả nhà 👀 đêm nào $1 cũng về khuya lơ khuya lắc, đồ thì mặc đẹp ghê. Làm ca đêm hay làm “phố đêm” vậy ta 🤭 Chị hỏi cho vui thôi à.",
   "en": "",
   "pattern": true
  }

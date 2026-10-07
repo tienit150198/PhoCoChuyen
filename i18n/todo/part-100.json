@@ -1,5 +1,105 @@
 [
  {
+  "vi": "🚓 Gọi công an phường",
+  "en": ""
+ },
+ {
+  "vi": "🤐 Lờ đi",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Đứng đợi xe ép",
+  "en": ""
+ },
+ {
+  "vi": "🧹 Xếp gọn, quét, rắc vôi",
+  "en": ""
+ },
+ {
+  "vi": "📞 Gọi chú Sáu",
+  "en": ""
+ },
+ {
+  "vi": "🚶 Bỏ về",
+  "en": ""
+ },
+ {
+  "vi": "✅ đã đóng",
+  "en": ""
+ },
+ {
+  "vi": "🚪 không đóng",
+  "en": ""
+ },
+ {
+  "vi": "🤝 miễn",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay gõ cửa rồi, mai thu tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Gõ cửa thu",
+  "en": ""
+ },
+ {
+  "vi": "Thu bao nhiêu",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Thu, nói nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "📜 Nhắc quy định",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Miễn tháng này",
+  "en": ""
+ },
+ {
+  "vi": "Đồ bảo hộ, kiểm xe",
+  "en": ""
+ },
+ {
+  "vi": "Nghe cư dân phản ánh",
+  "en": ""
+ },
+ {
+  "vi": "Gom rác từng nhà",
+  "en": ""
+ },
+ {
+  "vi": "Việc ở nhà này",
+  "en": ""
+ },
+ {
+  "vi": "Túi rác đã gom",
+  "en": ""
+ },
+ {
+  "vi": "Túi nhầm ngăn",
+  "en": ""
+ },
+ {
+  "vi": "Món nguy hại đã tách",
+  "en": ""
+ },
+ {
+  "vi": "Tiền ve chai (xu)",
+  "en": ""
+ },
+ {
+  "vi": "Túi để lại qua đêm",
+  "en": ""
+ },
+ {
+  "vi": "📦 Mở kho đồ bảo hộ",
+  "en": ""
+ },
+ {
   "vi": "Găng tay, khẩu trang, bao",
   "en": ""
  },
@@ -1697,106 +1797,6 @@
  },
  {
   "vi": "Báo lại",
-  "en": ""
- },
- {
-  "vi": "📣 Chọn người cần báo",
-  "en": ""
- },
- {
-  "vi": "Mở cổng hay hoãn",
-  "en": ""
- },
- {
-  "vi": "🚪 Quyết mở cổng",
-  "en": ""
- },
- {
-  "vi": "Đã quét đủ năm khu",
-  "en": ""
- },
- {
-  "vi": "⏱️ Vòng quét",
-  "en": ""
- },
- {
-  "vi": "👀 Vòng quét",
-  "en": ""
- },
- {
-  "vi": "👀 BẮT ĐẦU VÒNG QUÉT",
-  "en": ""
- },
- {
-  "vi": "chạm để nhìn",
-  "en": ""
- },
- {
-  "vi": "đã nhìn",
-  "en": ""
- },
- {
-  "vi": "Chạm một khu đã nhìn để thổi còi hoặc báo động.",
-  "en": ""
- },
- {
-  "vi": "Vòng quét",
-  "en": ""
- },
- {
-  "vi": "📣 Đã nhắc",
-  "en": ""
- },
- {
-  "vi": "📣 Thổi còi nhắc…",
-  "en": ""
- },
- {
-  "vi": "Báo động nhầm khu này rồi.",
-  "en": ""
- },
- {
-  "vi": "🚨 Còi dài: có người đang chìm!",
-  "en": ""
- },
- {
-  "vi": "Ổn thì để yên, quét tiếp.",
-  "en": ""
- },
- {
-  "vi": "📣 Đã gọi hỗ trợ",
-  "en": ""
- },
- {
-  "vi": "🤐 Tự làm một mình",
-  "en": ""
- },
- {
-  "vi": "📣 Ba hồi còi: anh Hải trông hồ, gọi 115",
-  "en": ""
- },
- {
-  "vi": "🤐 Tự làm, khỏi phiền ai",
-  "en": ""
- },
- {
-  "vi": "🩺 Gọi to, vỗ vai, nhìn ngực mười giây",
-  "en": ""
- },
- {
-  "vi": "Có người gặp nạn",
-  "en": ""
- },
- {
-  "vi": "1. Gọi hỗ trợ",
-  "en": ""
- },
- {
-  "vi": "2. Đưa người vào bờ",
-  "en": ""
- },
- {
-  "vi": "3. Xem tỉnh, thở",
   "en": ""
  }
 ]

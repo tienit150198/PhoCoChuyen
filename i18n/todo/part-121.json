@@ -1,5 +1,40 @@
 [
  {
+  "vi": "🧾 $1 ghi hóa đơn: $2 xu, ký tên rõ ràng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Còn chưa mua: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏠 Xách giỏ về nhà: chợ hết $1 xu, ví tiền chợ còn $2 xu. Vo gạo bắc nồi cơm trước nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍚 Vo gạo hai nước, đổ nước $1, bấm nút nồi cơm. Chừng $2 giây nữa cơm chín.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥢 Bày $1 bộ chén đũa quanh mâm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥄 Chấm đầu đũa nếm chén nước mắm: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚿 Rửa sạch đồ làm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Cả $1 bếp đều đang bận. Tắt một bếp đã nhé.",
   "en": "",
   "pattern": true
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "✋ Anh Định kéo tay bạn lại: “$1”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giao ban, làm trước: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📋 Giao ban xong. Việc đầu tiên: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bàn cư trú: $1 kẹp phong bì trong hồ sơ, đã trả lại, ghi sổ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 chưa đúng kìa. Hướng dẫn bổ sung, đừng nhận vội.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ còn thiếu ($1) mà vẫn nhận, chị Hằng phải gọi người ta lên lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bàn cư trú: nhận hồ sơ tạm trú của $1 (còn thiếu giấy, phải gọi lại).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bàn cư trú: nhận hồ sơ tạm trú của $1, đủ giấy tờ.",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,90 @@
 [
  {
+  "vi": "ngày chăm sóc$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mốc tiếp theo: $1 ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đồ dùng $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chuẩn bị cho $1: $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đón $1 về nhà?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ". $1 Chăm sóc theo ngày sống, không có phí tự động.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đồ dùng ban đầu $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Biểu đồ $1 $2, trục giá theo xu và thời gian thực",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "điểm giá$1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giá $1 $2 $3: từ $4 xu tới $5 xu, thấp nhất $6, cao nhất $7.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ngày thị trường $1 · Giá đổi mỗi 10 phút, kể cả khi bạn offline.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giá đang xem: $1 (giờ Việt Nam).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lãi $1/ngày$2, cộng vào sổ mỗi $3 ngày. Không bao giờ lỗ vốn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "cho $1 đầu, phần trên lãi $2,$3%/ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kỳ này vẫn tính $1/ngày cho cả sổ, từ kỳ sau tính theo bậc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiệm bán $1/chỉ · mua lại $2/chỉ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang giữ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Mở khi ví của bạn từng có $1. Bạn vẫn có thể mua bán vàng ngay.",
   "en": "",
   "pattern": true
@@ -2161,91 +2246,6 @@
  },
  {
   "vi": "Toàn bộ số hàng thực nhận sẽ vào size $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "còn $1 xu, thiếu $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đơn đang soạn $1 món",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ship $1 xu (miễn từ $2)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "sỉ từ $1: −$2%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "sỉ −$1%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lấy $1: −$2%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hàng $1 + ship $2 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hàng $1 xu · miễn ship",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "còn $1 xu · kệ sau khi nhận $2/",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛒 Đơn đủ $1 món · xem & đặt",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛒 Thêm vào đơn$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả tiền khi đặt. Gộp nhiều món một đơn (tối đa $1 món): một lần ship. Hàng vào kệ sau khi bạn mở thùng và đếm đúng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn $1 đủ $2 món: đặt đơn đó trước, hoặc “Đặt ngay” riêng món này.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bỏ $1 khỏi đơn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💬 Đơn từ $1 xu được xin bớt",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "nhận đơn gộp từ $1 xu (còn thiếu $2 xu hàng).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "thiếu $1 xu.",
   "en": "",
   "pattern": true
  }

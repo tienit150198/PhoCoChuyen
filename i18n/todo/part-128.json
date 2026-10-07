@@ -1,5 +1,70 @@
 [
  {
+  "vi": "🛵 Về tiệm lấy $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Còn $1 người nợ · $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛵 Hôm nay · $1 việc · $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Loại B tính $1% giá$2 · hàng giao dư không tính tiền.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nhãn hữu cơ thật: ×$1%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mua $1 liều phân bón lá thúc ($2 xu) phun luống $3? Thời gian lớn rút thêm $4%, đất màu −$5.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đạm cá, hữu cơ · đã thúc $1/$2%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mỗi liều rút $1% thời gian lớn, tốn $2 đất màu. Tối đa $3% mỗi vụ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thúc −$1%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giá sỉ loại A (xu) · bán thêm $1 → −10%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📦 Hết $1: mở Kho nhập thêm",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thu hoạch $1 luống $2 vào kho mát?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧺 Thu hoạch $1 luống $2",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "📦 Xếp $1 $2 $3 loại $4 vào thùng",
   "en": "",
   "pattern": true
@@ -2181,71 +2246,6 @@
  },
  {
   "vi": "đã kiểm $1/",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ $1 điều lưu ý",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã chải$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "chuẩn $1–$2°C",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "°C · xả $1 giây · khô $2%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏃 Bé đã nhảy khỏi bàn $1 lần.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💓 Stress $1: bé đang hoảng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã ghi $1 ý",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đang chọn $1 ý",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚠️ đã thấy $1 điều cần báo",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "→ chia $1 bữa ≈",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã hỏi $1/",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⏳ Đang xả… còn $1 giây",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⏳ Đang sấy… khô $1%",
   "en": "",
   "pattern": true
  }

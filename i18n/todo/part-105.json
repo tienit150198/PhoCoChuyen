@@ -1,5 +1,113 @@
 [
  {
+  "vi": "Hỏi địa chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Tìm cho rõ chỗ",
+  "en": ""
+ },
+ {
+  "vi": "🗺️ Tìm chỗ",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chuyện gì",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi mấy người, ai bị thương",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi nguy hiểm",
+  "en": ""
+ },
+ {
+  "vi": "Xin số gọi lại",
+  "en": ""
+ },
+ {
+  "vi": "Gửi đội hoặc chuyển đúng nơi",
+  "en": ""
+ },
+ {
+  "vi": "Đọc hướng dẫn an toàn",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Đọc hướng dẫn",
+  "en": ""
+ },
+ {
+  "vi": "👂 Nghe máy",
+  "en": ""
+ },
+ {
+  "vi": "🚦 Bảng ưu tiên Mây",
+  "en": ""
+ },
+ {
+  "vi": "Xếp theo nguy hiểm tính mạng, không theo tiếng la. Luật của trò chơi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi sổ nhật ký.",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi sổ nhật ký (còn thiếu).",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nhật ký có dòng ghi khống.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Ghi vào sổ nhật ký",
+  "en": ""
+ },
+ {
+  "vi": "🗺️ KÝ NHẬN CA",
+  "en": ""
+ },
+ {
+  "vi": "đánh dấu đội tạm ngưng",
+  "en": ""
+ },
+ {
+  "vi": "📞 NHẤC THEO THỨ TỰ",
+  "en": ""
+ },
+ {
+  "vi": "xếp ưu tiên cho đủ các máy",
+  "en": ""
+ },
+ {
+  "vi": "☎️ KẾT THÚC",
+  "en": ""
+ },
+ {
+  "vi": "Quyết chuyện ở phòng trực",
+  "en": ""
+ },
+ {
+  "vi": "📞 Vào ca thôi!",
+  "en": ""
+ },
+ {
+  "vi": "Nghe chị Thảo",
+  "en": ""
+ },
+ {
+  "vi": "👂 Nghe chị Thảo",
+  "en": ""
+ },
+ {
+  "vi": "📞 Nhấc máy",
+  "en": ""
+ },
+ {
   "vi": "Chuyện ở phòng trực",
   "en": ""
  },
@@ -1689,114 +1797,6 @@
  },
  {
   "vi": "Học nghề với chị Thơ",
-  "en": ""
- },
- {
-  "vi": "Xem bé dặn gì",
-  "en": ""
- },
- {
-  "vi": "Trả lời khách",
-  "en": ""
- },
- {
-  "vi": "👉 Hỏi rồi trả lời khách",
-  "en": ""
- },
- {
-  "vi": "💿 Vào việc thôi!",
-  "en": ""
- },
- {
-  "vi": "💿 MỞ TIỆM",
-  "en": ""
- },
- {
-  "vi": "👉 Chọn cách trả lời",
-  "en": ""
- },
- {
-  "vi": "🙏 Nói thật: kệ hết hàng",
-  "en": ""
- },
- {
-  "vi": "lấy hàng vào giỏ trước đã",
-  "en": ""
- },
- {
-  "vi": "💿 Kệ hàng",
-  "en": ""
- },
- {
-  "vi": "Đếm kho, dựng biển, mở tiệm",
-  "en": ""
- },
- {
-  "vi": "Bán album cho khách",
-  "en": ""
- },
- {
-  "vi": "Việc với khách này",
-  "en": ""
- },
- {
-  "vi": "Món đã bán",
-  "en": ""
- },
- {
-  "vi": "Chuyện quay lại",
-  "en": ""
- },
- {
-  "vi": "Album, Búa hồng, pin, toploader, ống poster…",
-  "en": ""
- },
- {
-  "vi": "💊 Soát phiếu thuốc",
-  "en": ""
- },
- {
-  "vi": "📒 Soát sổ",
-  "en": ""
- },
- {
-  "vi": "Nhận giấy tờ của khách.",
-  "en": ""
- },
- {
-  "vi": "Soát từng dòng: chạm dòng sai, chọn quy định nó trái (sổ quy định hôm nay).",
-  "en": ""
- },
- {
-  "vi": "Chạy kiểm tra thêm khi cần, đếm két khi có.",
-  "en": ""
- },
- {
-  "vi": "Đóng dấu quyết định: đóng rồi thì hồ sơ khép lại.",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Sổ quy định hôm nay\"",
-  "en": ""
- },
- {
-  "vi": "Đủ dấu rồi",
-  "en": ""
- },
- {
-  "vi": "Đã đánh dấu quy định này",
-  "en": ""
- },
- {
-  "vi": "Đủ dấu rồi: đóng dấu quyết định.",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Đóng dấu quyết định\"",
-  "en": ""
- },
- {
-  "vi": "🔏 Đóng dấu",
   "en": ""
  }
 ]

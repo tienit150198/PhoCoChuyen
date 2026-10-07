@@ -1,5 +1,90 @@
 [
  {
+  "vi": "còn $1 xu, thiếu $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đơn đang soạn $1 món",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ship $1 xu (miễn từ $2)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "sỉ từ $1: −$2%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "sỉ −$1%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lấy $1: −$2%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hàng $1 + ship $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hàng $1 xu · miễn ship",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "còn $1 xu · kệ sau khi nhận $2/",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛒 Đơn đủ $1 món · xem & đặt",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛒 Thêm vào đơn$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả tiền khi đặt. Gộp nhiều món một đơn (tối đa $1 món): một lần ship. Hàng vào kệ sau khi bạn mở thùng và đếm đúng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đơn $1 đủ $2 món: đặt đơn đó trước, hoặc “Đặt ngay” riêng món này.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bỏ $1 khỏi đơn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💬 Đơn từ $1 xu được xin bớt",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nhận đơn gộp từ $1 xu (còn thiếu $2 xu hàng).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "thiếu $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đủ $1 đơn đang về: nhận bớt thùng rồi đặt tiếp.",
   "en": "",
   "pattern": true

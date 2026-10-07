@@ -1,5 +1,35 @@
 [
  {
+  "vi": "Hao hụt tính theo tài sản lúc phát sinh, $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎲 Hên xui · $1% lấy lại đủ, không mất xu. Không được thì:",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã ghi chi phí $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lục ví, đỏ mặt: “Ấy chết, hai tờ dính vào nhau! Xin lỗi nha.” rồi đưa thêm $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đếm lại, bật cười: “Trời, đếm hụt thật. Cảm ơn đã nhắc khéo nha.” rồi đưa thêm $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đếm lại từng tờ, cười hiền: “Già rồi mắt kém, may có con nhắc.” rồi đưa thêm $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 mở khăn tay lấy thêm $2 xu: “Ờ ha, nãy đếm lộn. Con thật thà quá.”",
   "en": "",
   "pattern": true
@@ -1195,17 +1225,22 @@
   "pattern": true
  },
  {
-  "vi": "Đội đang chờ hàng: hết $1$2. Nhập thêm để đội làm tiếp.",
+  "vi": "$1Đội đang chờ hàng: hết $2$3. Nhập thêm để đội làm tiếp.",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đội đang chờ hàng: hết $1$2",
+  "vi": "$1Đội đang chờ hàng: hết $2$3",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Đội đang chờ hàng: hết $1",
+  "vi": "$1Đội đang chờ hàng: hết $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1Đội đang chờ hàng: hết",
   "en": "",
   "pattern": true
  },
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "Màu $1 chưa mở khóa ($2 xu).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đang ở màu gốc rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đang mang màu $2 rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Màu $1 chưa mở khóa. Mở ở Bảng màu của bạn nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Màu $1 đã có trong bảng màu của bạn rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Từ giờ màu này dùng được cho mọi món đồ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 trở lại màu gốc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 giờ mang màu $2.",
   "en": "",
   "pattern": true
  }

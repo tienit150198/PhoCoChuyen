@@ -1,5 +1,145 @@
 [
  {
+  "vi": "việc tốt",
+  "en": ""
+ },
+ {
+  "vi": "chất lượng",
+  "en": ""
+ },
+ {
+  "vi": "tinh thần đội",
+  "en": ""
+ },
+ {
+  "vi": "Khép ngày",
+  "en": ""
+ },
+ {
+  "vi": "👆 Chọn người",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ rối",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ rối trước đã",
+  "en": ""
+ },
+ {
+  "vi": "Chọn người làm việc này",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm việc: ✅ hay ↩️",
+  "en": ""
+ },
+ {
+  "vi": "Chạm một việc để giao",
+  "en": ""
+ },
+ {
+  "vi": "Xong hết rồi!",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Chờ",
+  "en": ""
+ },
+ {
+  "vi": "Chốt ca",
+  "en": ""
+ },
+ {
+  "vi": "Giao đúng sở trường (ô xanh): nhanh và ít lỗi.",
+  "en": ""
+ },
+ {
+  "vi": "Việc trả về có ⚠️: bấm ↩️ để làm lại, được thêm điểm.",
+  "en": ""
+ },
+ {
+  "vi": "Việc ổn mà trả về: mất thời gian, đội buồn.",
+  "en": ""
+ },
+ {
+  "vi": "Thưởng = 2 xu × điểm ⭐ (có trần).",
+  "en": ""
+ },
+ {
+  "vi": "Ngày tốt!",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay chưa đạt ngày tốt.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm một việc trước nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập giá nguyên dương, tối đa 1.000.000 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Giá thấp hơn tiền nguyên liệu.",
+  "en": ""
+ },
+ {
+  "vi": "Giá cao: khách có thể ít hơn, đánh giá giá cả giảm.",
+  "en": ""
+ },
+ {
+  "vi": "Giá mềm: dễ thu hút khách, lãi mỗi món mỏng hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Giá gần mức tham khảo.",
+  "en": ""
+ },
+ {
+  "vi": "Khách người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Hoạt động khách tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "khách đang tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "lượt vừa mua xong",
+  "en": ""
+ },
+ {
+  "vi": "Vừa mua xong",
+  "en": ""
+ },
+ {
+  "vi": "Đang phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Lượt mua đã ghi sổ trong 90 giây gần đây.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy đã mở. Giá trên menu đang cao nên khách ghé thưa hơn; bạn vẫn có thể rời quầy bất cứ lúc nào.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đang ghé. Đơn mới tiếp tục tới trong lúc bạn chuẩn bị món và tính tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Đang giục lớn",
+  "en": ""
+ },
+ {
   "vi": "Sốt ruột",
   "en": ""
  },
@@ -708,6 +848,10 @@
   "en": ""
  },
  {
+  "vi": "🔒 Đang giữ hàng cho bạn",
+  "en": ""
+ },
+ {
   "vi": "Đã hết nguyên liệu",
   "en": ""
  },
@@ -1196,10 +1340,6 @@
   "en": ""
  },
  {
-  "vi": "Máy chưa chụp được ảnh. Thử lại nhé.",
-  "en": ""
- },
- {
   "vi": "Về Nhà của bạn",
   "en": ""
  },
@@ -1657,146 +1797,6 @@
  },
  {
   "vi": "Ngưng",
-  "en": ""
- },
- {
-  "vi": "🌱 Phố còn bình yên với người mới. Cứ yên tâm làm việc.",
-  "en": ""
- },
- {
-  "vi": "🚔 Tiền hoàn đang chờ: cần tài khoản ngân hàng và số dư dưới mức tối đa để nhận ở ngày sống tiếp theo.",
-  "en": ""
- },
- {
-  "vi": "🔧 Đang hỏng",
-  "en": ""
- },
- {
-  "vi": "Bảo hiểm & rủi ro",
-  "en": ""
- },
- {
-  "vi": "Phòng trước, đỡ lo",
-  "en": ""
- },
- {
-  "vi": "🔒 Đồ phòng thân",
-  "en": ""
- },
- {
-  "vi": "Chuyện xấu luôn báo trước 1–2 ngày. Phòng trước là tránh được.",
-  "en": ""
- },
- {
-  "vi": "Không truy thu rủi ro trong thời gian offline.",
-  "en": ""
- },
- {
-  "vi": "Không bao giờ bị nợ vì rủi ro.",
-  "en": ""
- },
- {
-  "vi": "Tiệm vàng chưa mở.",
-  "en": ""
- },
- {
-  "vi": "Giá chung cả phố · 10 phút/phiên · 1 giờ thực = 1 ngày thị trường",
-  "en": ""
- },
- {
-  "vi": "Giá chung cả phố, đổi mỗi ngày",
-  "en": ""
- },
- {
-  "vi": "/ chỉ",
-  "en": ""
- },
- {
-  "vi": "Số vàng",
-  "en": ""
- },
- {
-  "vi": "Mua đắt hơn giá 2,5%, bán rẻ hơn 2,5%.",
-  "en": ""
- },
- {
-  "vi": "Giá có thể tăng hoặc giảm, giữ lâu vẫn có thể lỗ.",
-  "en": ""
- },
- {
-  "vi": "Giá đổi mỗi 10 phút thực, kể cả khi offline.",
-  "en": ""
- },
- {
-  "vi": "Giá lên xuống mỗi ngày, có thể lỗ.",
-  "en": ""
- },
- {
-  "vi": "1 chỉ = 10 phân.",
-  "en": ""
- },
- {
-  "vi": "Thay đồ cho nhân vật",
-  "en": ""
- },
- {
-  "vi": "Ảnh đại diện khi chat",
-  "en": ""
- },
- {
-  "vi": "Xem các cập nhật mới",
-  "en": ""
- },
- {
-  "vi": "Giao diện gọn",
-  "en": ""
- },
- {
-  "vi": "Ít chữ, một nút chính, phiếu khách thành chip trên đầu.",
-  "en": ""
- },
- {
-  "vi": "Hiện chỗ làm của tôi cho mọi người",
-  "en": ""
- },
- {
-  "vi": "Chỗ của tôi",
-  "en": ""
- },
- {
-  "vi": "Tìm tên chỗ làm…",
-  "en": ""
- },
- {
-  "vi": "Chưa có chỗ làm nào ở đây.",
-  "en": ""
- },
- {
-  "vi": "Không tính điểm",
-  "en": ""
- },
- {
-  "vi": "Không tính vào điểm trung bình",
-  "en": ""
- },
- {
-  "vi": "Chưa mở chỗ làm nào.",
-  "en": ""
- },
- {
-  "vi": "Chỗ làm của tôi",
-  "en": ""
- },
- {
-  "vi": "Hai bạn sẽ không thấy chỗ làm, bài viết và quà của nhau.",
-  "en": ""
- },
- {
-  "vi": "thiếu nhi",
-  "en": ""
- },
- {
-  "vi": "hưu",
   "en": ""
  }
 ]

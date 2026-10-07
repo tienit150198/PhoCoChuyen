@@ -1,5 +1,45 @@
 [
  {
+  "vi": "Lượt mở của bot",
+  "en": ""
+ },
+ {
+  "vi": "Bot (máy tìm kiếm, xem trước liên kết) cũng tạo bản lưu; chúng không bao giờ thành \"người chơi mới\" vì không thao tác.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đo (mẫu bản lưu chưa tính).",
+  "en": ""
+ },
+ {
+  "vi": "Tiến trình · CPU",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác / phút (lúc này)",
+  "en": ""
+ },
+ {
+  "vi": "sau nén",
+  "en": ""
+ },
+ {
+  "vi": "chưa nén",
+  "en": ""
+ },
+ {
+  "vi": "Bảng lớn nhất",
+  "en": ""
+ },
+ {
+  "vi": "Bảng",
+  "en": ""
+ },
+ {
+  "vi": "Số dòng",
+  "en": ""
+ },
+ {
   "vi": "Số dòng đếm nền mỗi 2 phút; bảng lớn là số ước tính (≈).",
   "en": ""
  },
@@ -1360,6 +1400,10 @@
   "en": ""
  },
  {
+  "vi": "Lúc bạn vắng",
+  "en": ""
+ },
+ {
   "vi": "việc đang chờ",
   "en": ""
  },
@@ -1753,50 +1797,6 @@
  },
  {
   "vi": "Nơi làm khác −",
-  "en": ""
- },
- {
-  "vi": "Lương +",
-  "en": ""
- },
- {
-  "vi": "🎁 Quà +",
-  "en": ""
- },
- {
-  "vi": "Khách thập phương nhắc nhiều nhất về",
-  "en": ""
- },
- {
-  "vi": "cảm nhận chờ hồi đáp.",
-  "en": ""
- },
- {
-  "vi": "Xem cảm nhận",
-  "en": ""
- },
- {
-  "vi": "đánh giá chờ trả lời.",
-  "en": ""
- },
- {
-  "vi": "vừa kết kỳ thuế",
-  "en": ""
- },
- {
-  "vi": "🧾 Kết kỳ thuế ngày",
-  "en": ""
- },
- {
-  "vi": "xu thuế",
-  "en": ""
- },
- {
-  "vi": "Đội hôm nay",
-  "en": ""
- },
- {
-  "vi": "không vào ca",
   "en": ""
  }
 ]

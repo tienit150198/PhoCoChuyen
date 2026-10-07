@@ -1,5 +1,40 @@
 [
  {
+  "vi": "Hóng nè cả nhà ơi: nghe đâu $1 mới bắt đầu làm ở $2 đó 👀 Ai ghé ủng hộ thì ghé nha, người trong hẻm mình mà!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà khoe chút nghe bà con: đứa nhỏ ở gác nhà bà giờ đã lên tay nghề ở $1 rồi đó 🥹 Mới hôm nào còn lóng ngóng, giờ người ta khen quá trời.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚠️ Dạo này có người nhắn rủ góp tiền vào “$1”, hứa lãi 30% mỗi tuần, mời thêm người còn được thưởng. Anh nói thẳng: LỪA ĐẢO. Không ai trả lãi như vậy đâu. Mọi người đừng chuyển tiền.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nghe gì chưa cả nhà ơi 😱 Cái dự án “$1” sập rồi đó, trang web đóng cửa, nhóm chat bị xóa sạch. Nghe đâu có người mất mấy chục triệu… Tội nghiệp ghê.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chào mừng đồng nghiệp văn phòng mới của phố mình 👔 $1 vừa được nhận vào $2 rồi đó mọi người. Thật ra đi làm văn phòng có nhiều cái phải học lắm: email, họp hành, báo cáo… để anh chỉ dần cho nha 🤓",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cô không có ý gì đâu nha, nhưng mấy hôm nay thấy $1 đêm nào cũng về khuya lắm, hôm qua gần 12 giờ mới dắt xe vô hẻm. Làm gì mà khuya dữ vậy ta… chắc đi làm “phố đêm” 🤔 Cô chỉ nói những gì cô thấy thôi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nói nhỏ nha cả nhà 👀 đêm nào $1 cũng về khuya lơ khuya lắc, đồ thì mặc đẹp ghê. Làm ca đêm hay làm “phố đêm” vậy ta 🤭 Chị hỏi cho vui thôi à.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Hôm qua cô đếm, $1 ra vô hẻm 4 lần, mỗi lần mặc một kiểu 👀 làm gì mà bận dữ vậy ta, cô không có ý gì đâu nha.",
   "en": "",
   "pattern": true
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "🔄 Trở mặt sườn sau $1 giây: $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chưa trở mặt: một mặt nướng $1 giây, mặt kia còn sống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hai mặt $1 và $2 giây.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍖 Gắp $1 miếng sườn ra khay giữ ấm: $2. $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Miếng sườn $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🗑️ Bỏ miếng sườn $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Lấy $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nồi $1 hết cơm. Nấu nồi mới nhé.",
   "en": "",
   "pattern": true
  }

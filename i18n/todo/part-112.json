@@ -1,5 +1,121 @@
 [
  {
+  "vi": "Trời ơi, trúng hết luôn! Tay ném thần sầu!",
+  "en": ""
+ },
+ {
+  "vi": "Ném hay quá! Nhận quà nè!",
+  "en": ""
+ },
+ {
+  "vi": "Lượt sau thử lại nha!",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Lắc tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Bầu cua tôm cá",
+  "en": ""
+ },
+ {
+  "vi": "Chiếu bầu cua: chạm một con để đặt",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi lần chạm đặt",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi chạm",
+  "en": ""
+ },
+ {
+  "vi": "🎲 Ba con xúc xắc lăn ngẫu nhiên thật: mỗi mặt 1/6, đặt mặt nào cũng vậy. Lắc liền bao nhiêu ván cũng không bị vận nguội.",
+  "en": ""
+ },
+ {
+  "vi": "Gom lại",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay chơi đủ rồi, mai ghé lắc tiếp nha.",
+  "en": ""
+ },
+ {
+  "vi": "Đang lắc…",
+  "en": ""
+ },
+ {
+  "vi": "🥣 Lắc!",
+  "en": ""
+ },
+ {
+  "vi": "bớt tiền đặt nha (Gom lại rồi đặt ít hơn).",
+  "en": ""
+ },
+ {
+  "vi": "🌪️ Bão!",
+  "en": ""
+ },
+ {
+  "vi": "Lắc nè, lắc nè… xóc xóc xóc!",
+  "en": ""
+ },
+ {
+  "vi": "Trúng rồi! Chú chung tiền liền nè!",
+  "en": ""
+ },
+ {
+  "vi": "Huề vốn, vui là chính!",
+  "en": ""
+ },
+ {
+  "vi": "Ván sau gỡ lại nha, đừng buồn!",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Danh hiệu mới",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay chơi vậy đủ rồi",
+  "en": ""
+ },
+ {
+  "vi": "CHẴN",
+  "en": ""
+ },
+ {
+  "vi": "LẺ",
+  "en": ""
+ },
+ {
+  "vi": "Chiếu dẹp rồi, bày lại sau",
+  "en": ""
+ },
+ {
+  "vi": "Ra trước chơi bầu cua, lô tô cho lành nha.",
+  "en": ""
+ },
+ {
+  "vi": "Ví không đủ xu cho chiếu trong",
+  "en": ""
+ },
+ {
+  "vi": "🦀 Ra chơi bầu cua",
+  "en": ""
+ },
+ {
+  "vi": "Mấy ván gần đây",
+  "en": ""
+ },
+ {
+  "vi": "Bạn: thắng",
+  "en": ""
+ },
+ {
   "vi": "Chiếu trong: xóc đĩa chẵn lẻ",
   "en": ""
  },
@@ -1681,122 +1797,6 @@
  },
  {
   "vi": "🧊 Mở ngăn tủ của bạn",
-  "en": ""
- },
- {
-  "vi": "🍽️ Ăn",
-  "en": ""
- },
- {
-  "vi": "Tủ còn trống. Cất vài món bên dưới, đói thì lấy ra ăn.",
-  "en": ""
- },
- {
-  "vi": "🛒 Đi chợ cất tủ",
-  "en": ""
- },
- {
-  "vi": "Mua bằng tiền trong ví. Đói lúc nào thì lấy ra ăn lúc đó.",
-  "en": ""
- },
- {
-  "vi": "🧊 Bày tủ lạnh ra để cất đồ ăn",
-  "en": ""
- },
- {
-  "vi": "🧊 Có tủ lạnh là cất được đồ ăn",
-  "en": ""
- },
- {
-  "vi": "Chạm sàn để đi · chạm đồ để dùng",
-  "en": ""
- },
- {
-  "vi": "Trải nghiệm",
-  "en": ""
- },
- {
-  "vi": "Tài phú",
-  "en": ""
- },
- {
-  "vi": "Siêng việc chùa",
-  "en": ""
- },
- {
-  "vi": "Thần lô tô",
-  "en": ""
- },
- {
-  "vi": "Kinh đôi",
-  "en": ""
- },
- {
-  "vi": "Đọc ngược",
-  "en": ""
- },
- {
-  "vi": "Bão bầu cua",
-  "en": ""
- },
- {
-  "vi": "Mắt thần",
-  "en": ""
- },
- {
-  "vi": "Bị hỏi thăm",
-  "en": ""
- },
- {
-  "vi": "Khách quý",
-  "en": ""
- },
- {
-  "vi": "Khách mời của tuần",
-  "en": ""
- },
- {
-  "vi": "Ăn cưới pro",
-  "en": ""
- },
- {
-  "vi": "Danh hiệu độc bản · Nhà đấu giá",
-  "en": ""
- },
- {
-  "vi": "Top 1 tuần này",
-  "en": ""
- },
- {
-  "vi": "Chưa tải thêm được. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được chợ nhà. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã thanh toán và dọn vào nhà thuê.",
-  "en": ""
- },
- {
-  "vi": "Đã cập nhật.",
-  "en": ""
- },
- {
-  "vi": "Chưa xác nhận được kết quả. Bấm lại để kiểm tra cùng giao dịch, không trả tiền lần hai.",
-  "en": ""
- },
- {
-  "vi": "Chưa thực hiện được giao dịch.",
-  "en": ""
- },
- {
-  "vi": "Nhập giá thuê là số nguyên dương hợp lệ nhé.",
-  "en": ""
- },
- {
-  "vi": "Trả trước 5 ngày sống của bạn. Hết kỳ cần gia hạn.",
   "en": ""
  }
 ]

@@ -1,5 +1,121 @@
 [
  {
+  "vi": "🍽️ Ăn",
+  "en": ""
+ },
+ {
+  "vi": "Tủ còn trống. Cất vài món bên dưới, đói thì lấy ra ăn.",
+  "en": ""
+ },
+ {
+  "vi": "🛒 Đi chợ cất tủ",
+  "en": ""
+ },
+ {
+  "vi": "Mua bằng tiền trong ví. Đói lúc nào thì lấy ra ăn lúc đó.",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Bày tủ lạnh ra để cất đồ ăn",
+  "en": ""
+ },
+ {
+  "vi": "🧊 Có tủ lạnh là cất được đồ ăn",
+  "en": ""
+ },
+ {
+  "vi": "Chạm sàn để đi · chạm đồ để dùng",
+  "en": ""
+ },
+ {
+  "vi": "Trải nghiệm",
+  "en": ""
+ },
+ {
+  "vi": "Tài phú",
+  "en": ""
+ },
+ {
+  "vi": "Siêng việc chùa",
+  "en": ""
+ },
+ {
+  "vi": "Thần lô tô",
+  "en": ""
+ },
+ {
+  "vi": "Kinh đôi",
+  "en": ""
+ },
+ {
+  "vi": "Đọc ngược",
+  "en": ""
+ },
+ {
+  "vi": "Bão bầu cua",
+  "en": ""
+ },
+ {
+  "vi": "Mắt thần",
+  "en": ""
+ },
+ {
+  "vi": "Bị hỏi thăm",
+  "en": ""
+ },
+ {
+  "vi": "Khách quý",
+  "en": ""
+ },
+ {
+  "vi": "Khách mời của tuần",
+  "en": ""
+ },
+ {
+  "vi": "Ăn cưới pro",
+  "en": ""
+ },
+ {
+  "vi": "Danh hiệu độc bản · Nhà đấu giá",
+  "en": ""
+ },
+ {
+  "vi": "Top 1 tuần này",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải thêm được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được chợ nhà. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã thanh toán và dọn vào nhà thuê.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cập nhật.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xác nhận được kết quả. Bấm lại để kiểm tra cùng giao dịch, không trả tiền lần hai.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa thực hiện được giao dịch.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập giá thuê là số nguyên dương hợp lệ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Trả trước 5 ngày sống của bạn. Hết kỳ cần gia hạn.",
+  "en": ""
+ },
+ {
   "vi": "Gia hạn thuê nhà?",
   "en": ""
  },
@@ -804,6 +920,10 @@
   "en": ""
  },
  {
+  "vi": "💬 Danh hiệu tự hiện cạnh tên trong chat. Chạm để đổi cái đang đeo.",
+  "en": ""
+ },
+ {
   "vi": "Xem nơi làm việc",
   "en": ""
  },
@@ -1076,11 +1196,31 @@
   "en": ""
  },
  {
+  "vi": "🎙️ Đang nối mic…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa phát được giọng",
+  "en": ""
+ },
+ {
   "vi": "🎤 Đang phát trực tiếp giọng hát",
   "en": ""
  },
  {
   "vi": "· 🎧 Đeo tai nghe cho đỡ vọng nhạc",
+  "en": ""
+ },
+ {
+  "vi": "Máy này chưa nghe được giọng trực tiếp. Mở bằng Chrome hoặc Safari nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nghe được giọng",
+  "en": ""
+ },
+ {
+  "vi": "🎧 Đang nối giọng…",
   "en": ""
  },
  {
@@ -1264,15 +1404,15 @@
   "en": ""
  },
  {
+  "vi": "Bạn chưa cho phép micro. Mở cài đặt trang web › Micro để bật nhé.",
+  "en": ""
+ },
+ {
   "vi": "Chưa bật được mic, thử lại nhé.",
   "en": ""
  },
  {
   "vi": "Mic đã ngắt kết nối.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa cho phép micro. Mở cài đặt trang web › Micro để bật nhé.",
   "en": ""
  },
  {
@@ -1657,146 +1797,6 @@
  },
  {
   "vi": "Mai học tiếp",
-  "en": ""
- },
- {
-  "vi": "Hôm nay học rồi",
-  "en": ""
- },
- {
-  "vi": "Trời đang có pháo hoa",
-  "en": ""
- },
- {
-  "vi": "Chọn một chỗ",
-  "en": ""
- },
- {
-  "vi": "Chọn số",
-  "en": ""
- },
- {
-  "vi": "chưa có visa",
-  "en": ""
- },
- {
-  "vi": "🎁 Quà",
-  "en": ""
- },
- {
-  "vi": "📷 Chụp ảnh",
-  "en": ""
- },
- {
-  "vi": "Ví chưa đủ",
-  "en": ""
- },
- {
-  "vi": "🛡️ Bảo hiểm",
-  "en": ""
- },
- {
-  "vi": "Phỏng vấn: trả lời thật, có vé khứ hồi.",
-  "en": ""
- },
- {
-  "vi": "Thiếu hay sai một giấy là bị trả hồ sơ, phí không hoàn.",
-  "en": ""
- },
- {
-  "vi": "Về nhà cũ",
-  "en": ""
- },
- {
-  "vi": "Các phòng",
-  "en": ""
- },
- {
-  "vi": "🏠 Đang ở ·",
-  "en": ""
- },
- {
-  "vi": "Bớt khách",
-  "en": ""
- },
- {
-  "vi": "Thêm khách",
-  "en": ""
- },
- {
-  "vi": "Lời khắc",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được mục Hôn nhân.",
-  "en": ""
- },
- {
-  "vi": "Miễn phí. Tiệc 10 phút có MC, cỗ, múa lân, nhạc cưới. Ai có mặt được 20 xu mỗi phút, mỗi khách đến hai bạn được 15 xu.",
-  "en": ""
- },
- {
-  "vi": "🎉 Tổ chức tiệc cưới",
-  "en": ""
- },
- {
-  "vi": "Chọn ngày giờ để cả phố vào dự. Đây cũng là ngày cưới hiện trên thẻ của hai bạn.",
-  "en": ""
- },
- {
-  "vi": "Chốt giờ tiệc",
-  "en": ""
- },
- {
-  "vi": "🎉 Tiệc cưới đã tổ chức",
-  "en": ""
- },
- {
-  "vi": "khách đến chung vui 💛",
-  "en": ""
- },
- {
-  "vi": "🎊 Tiệc cưới đang mở!",
-  "en": ""
- },
- {
-  "vi": "Vào dự",
-  "en": ""
- },
- {
-  "vi": "💌 Mời khách",
-  "en": ""
- },
- {
-  "vi": "Tiệc mở trước 5 phút ở Khu phố › Lịch cưới. Bạn bè được nhắc trước 30 phút.",
-  "en": ""
- },
- {
-  "vi": "💌 Đã mời bạn bè và cả phố",
-  "en": ""
- },
- {
-  "vi": "💌 Mời khách (miễn phí)",
-  "en": ""
- },
- {
-  "vi": "Đổi giờ",
-  "en": ""
- },
- {
-  "vi": "Lưu giờ mới",
-  "en": ""
- },
- {
-  "vi": "phí địa điểm",
-  "en": ""
- },
- {
-  "vi": "Mã của bạn",
-  "en": ""
- },
- {
-  "vi": "Bán chiếc nhẫn dư?",
   "en": ""
  }
 ]

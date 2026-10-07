@@ -1,5 +1,121 @@
 [
  {
+  "vi": "Tới hạn tự tái tục (gốc và lãi gửi tiếp kỳ mới)",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Tiết kiệm mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "Còn thiếu bao nhiêu để trả trước 30%?",
+  "en": ""
+ },
+ {
+  "vi": "Sổ có kỳ hạn",
+  "en": ""
+ },
+ {
+  "vi": "Rút về tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có sổ nào.",
+  "en": ""
+ },
+ {
+  "vi": "💳 Khi mua sắm",
+  "en": ""
+ },
+ {
+  "vi": "Khi mua sắm cá nhân",
+  "en": ""
+ },
+ {
+  "vi": "Học phí, trang phục, đi cửa sau… dùng cách trả mặc định khi bạn không chọn riêng. Ưu tiên thẻ chung sẽ trừ quỹ chung nếu đủ số dư; nếu không, thử ví rồi thẻ tín dụng. Chi phí quầy lấy từ két và vốn quầy; góp vốn dùng ví.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn trả từ tài khoản để mua sắm không cần rút tiền. Chỉ trừ số dư tài khoản thanh toán; thiếu tiền sẽ dừng, không tự dùng ví hoặc vay thẻ. Tiền tiết kiệm không bị trừ.",
+  "en": ""
+ },
+ {
+  "vi": "Cách trả mặc định",
+  "en": ""
+ },
+ {
+  "vi": "Biểu phí thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Lãi khi không trả hết sao kê",
+  "en": ""
+ },
+ {
+  "vi": "/ngày trên dư nợ còn lại",
+  "en": ""
+ },
+ {
+  "vi": "Trả tối thiểu",
+  "en": ""
+ },
+ {
+  "vi": "Phí trễ hạn",
+  "en": ""
+ },
+ {
+  "vi": "và giảm điểm tín dụng",
+  "en": ""
+ },
+ {
+  "vi": "Ứng tiền mặt",
+  "en": ""
+ },
+ {
+  "vi": "Sao kê · hạn trả",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ tín dụng Ngân hàng Phố",
+  "en": ""
+ },
+ {
+  "vi": "Quẹt trước, trả sau. Trả hết dư nợ sao kê trước hạn thì không mất đồng lãi nào.",
+  "en": ""
+ },
+ {
+  "vi": "Dự kiến được duyệt hạn mức",
+  "en": ""
+ },
+ {
+  "vi": "Nộp hồ sơ mở thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ sao kê",
+  "en": ""
+ },
+ {
+  "vi": "Tối thiểu",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ này đã xong. 👍",
+  "en": ""
+ },
+ {
+  "vi": "Ví dụ 20",
+  "en": ""
+ },
+ {
+  "vi": "Trả từ",
+  "en": ""
+ },
+ {
+  "vi": "Số khác",
+  "en": ""
+ },
+ {
   "vi": "Tự động trả từ tài khoản vào ngày đến hạn",
   "en": ""
  },
@@ -1681,122 +1797,6 @@
  },
  {
   "vi": "💡 Sở thích",
-  "en": ""
- },
- {
-  "vi": "🗓️ Gần đây",
-  "en": ""
- },
- {
-  "vi": "Tất cả người quen",
-  "en": ""
- },
- {
-  "vi": "🎁 Tặng quà",
-  "en": ""
- },
- {
-  "vi": "💬 Hôm nay đã hỏi thăm rồi.",
-  "en": ""
- },
- {
-  "vi": "Chưa biết gì. Thân hơn hoặc tặng thử một món là biết.",
-  "en": ""
- },
- {
-  "vi": "👥 Người quen",
-  "en": ""
- },
- {
-  "vi": "Chưa có dữ liệu người quen.",
-  "en": ""
- },
- {
-  "vi": "Càng thân, người ta càng thương mình.",
-  "en": ""
- },
- {
-  "vi": "Càng thân, hàng xóm càng hay hỏi thăm, tặng quà và tới dự ngày vui của bạn.",
-  "en": ""
- },
- {
-  "vi": "Đang mở sổ sinh hoạt…",
-  "en": ""
- },
- {
-  "vi": "Ghé hiệu sách, tham gia câu lạc bộ cùng các nhân vật trong phố hoặc dành một buổi cho gia đình. Mỗi nơi lưu một buổi mỗi ngày sống; chỉ thanh toán khi bạn xác nhận. Kỷ niệm gần nhất được giữ ở cuối trang.",
-  "en": ""
- },
- {
-  "vi": "Sổ kỷ niệm trong phố",
-  "en": ""
- },
- {
-  "vi": "xu / buổi",
-  "en": ""
- },
- {
-  "vi": "Tham gia miễn phí",
-  "en": ""
- },
- {
-  "vi": "✓ Đã lưu buổi hôm nay. Ngày sống mới có câu chuyện tiếp theo.",
-  "en": ""
- },
- {
-  "vi": "🎤 Vào Phòng hát",
-  "en": ""
- },
- {
-  "vi": "Mở YouTube để chọn beat ↗",
-  "en": ""
- },
- {
-  "vi": "Chưa có kỷ niệm. Chọn một hoạt động ở trên để bắt đầu.",
-  "en": ""
- },
- {
-  "vi": "Nhận hợp đồng, vào nghề Giao hàng giao đơn thật rồi trở lại nhận thưởng. Phí giao đơn và tiền COD vẫn nằm trong sổ nghề; ở đây chỉ tính thưởng hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Hoàn tất 3 hợp đồng mở tuyến nhanh, 10 hợp đồng mở đối tác chuỗi. Mỗi lần theo một hợp đồng; không hết hạn khi bạn nghỉ chơi.",
-  "en": ""
- },
- {
-  "vi": "Đồ nghề hợp đồng",
-  "en": ""
- },
- {
-  "vi": "📦 Vào nghề Giao hàng",
-  "en": ""
- },
- {
-  "vi": "Mở nghề Giao hàng trong hành trình để nhận hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Sai sót hoặc giao trễ giảm thưởng; từ chối/giao thất bại không tính tiến độ. Đồ nghề hỗ trợ giảm khấu trừ.",
-  "en": ""
- },
- {
-  "vi": "giao thành công",
-  "en": ""
- },
- {
-  "vi": "Nhận thưởng",
-  "en": ""
- },
- {
-  "vi": "Hủy hợp đồng",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng đang có",
-  "en": ""
- },
- {
-  "vi": "Nhận hợp đồng",
   "en": ""
  }
 ]

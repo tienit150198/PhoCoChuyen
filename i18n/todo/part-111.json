@@ -1,5 +1,121 @@
 [
  {
+  "vi": "Mọi người sẵn sàng rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Chờ chủ phòng bấm chụp…",
+  "en": ""
+ },
+ {
+  "vi": "Chờ mọi người sẵn sàng…",
+  "en": ""
+ },
+ {
+  "vi": "Chọn dáng rồi bấm sẵn sàng",
+  "en": ""
+ },
+ {
+  "vi": "Tuỳ chỉnh ảnh",
+  "en": ""
+ },
+ {
+  "vi": "‹ Đổi cách chụp",
+  "en": ""
+ },
+ {
+  "vi": "Rời phòng",
+  "en": ""
+ },
+ {
+  "vi": "Loại dáng",
+  "en": ""
+ },
+ {
+  "vi": "Một người",
+  "en": ""
+ },
+ {
+  "vi": "Cả nhóm",
+  "en": ""
+ },
+ {
+  "vi": "đổi giữa các kiểu",
+  "en": ""
+ },
+ {
+  "vi": "chọn là thấy liền trong buồng",
+  "en": ""
+ },
+ {
+  "vi": "Chọn là cả phòng cùng dáng",
+  "en": ""
+ },
+ {
+  "vi": "Biểu cảm hợp với mọi dáng",
+  "en": ""
+ },
+ {
+  "vi": "Đang in ảnh…",
+  "en": ""
+ },
+ {
+  "vi": "Dải ảnh hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Sửa sticker",
+  "en": ""
+ },
+ {
+  "vi": "↩ Hoàn tác",
+  "en": ""
+ },
+ {
+  "vi": "⬆️ Lên trên",
+  "en": ""
+ },
+ {
+  "vi": "🗑 Xoá",
+  "en": ""
+ },
+ {
+  "vi": "🧹 Xoá hết",
+  "en": ""
+ },
+ {
+  "vi": "Loại sticker",
+  "en": ""
+ },
+ {
+  "vi": "Đã đủ số sticker tối đa",
+  "en": ""
+ },
+ {
+  "vi": "Chạm để dán · kéo để dời · ↻ xoay, đổi cỡ",
+  "en": ""
+ },
+ {
+  "vi": "Màu ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Chữ",
+  "en": ""
+ },
+ {
+  "vi": "📸 Chụp lượt nữa",
+  "en": ""
+ },
+ {
+  "vi": "Bộ lọc, sticker và trang trí chỉ đổi trên ảnh của bạn. Ảnh không lưu lên máy chủ: lưu về máy để giữ nha.",
+  "en": ""
+ },
+ {
+  "vi": "⬇️ Lưu ảnh",
+  "en": ""
+ },
+ {
   "vi": "‹ Về buồng chụp",
   "en": ""
  },
@@ -1681,122 +1797,6 @@
  },
  {
   "vi": "Lượt này chưa trúng, thử vận may lần sau nha!",
-  "en": ""
- },
- {
-  "vi": "Trời ơi, trúng hết luôn! Tay ném thần sầu!",
-  "en": ""
- },
- {
-  "vi": "Ném hay quá! Nhận quà nè!",
-  "en": ""
- },
- {
-  "vi": "Lượt sau thử lại nha!",
-  "en": ""
- },
- {
-  "vi": "🔁 Lắc tiếp",
-  "en": ""
- },
- {
-  "vi": "Bầu cua tôm cá",
-  "en": ""
- },
- {
-  "vi": "Chiếu bầu cua: chạm một con để đặt",
-  "en": ""
- },
- {
-  "vi": "Mỗi lần chạm đặt",
-  "en": ""
- },
- {
-  "vi": "Mỗi chạm",
-  "en": ""
- },
- {
-  "vi": "🎲 Ba con xúc xắc lăn ngẫu nhiên thật: mỗi mặt 1/6, đặt mặt nào cũng vậy. Lắc liền bao nhiêu ván cũng không bị vận nguội.",
-  "en": ""
- },
- {
-  "vi": "Gom lại",
-  "en": ""
- },
- {
-  "vi": "Hôm nay chơi đủ rồi, mai ghé lắc tiếp nha.",
-  "en": ""
- },
- {
-  "vi": "Đang lắc…",
-  "en": ""
- },
- {
-  "vi": "🥣 Lắc!",
-  "en": ""
- },
- {
-  "vi": "bớt tiền đặt nha (Gom lại rồi đặt ít hơn).",
-  "en": ""
- },
- {
-  "vi": "🌪️ Bão!",
-  "en": ""
- },
- {
-  "vi": "Lắc nè, lắc nè… xóc xóc xóc!",
-  "en": ""
- },
- {
-  "vi": "Trúng rồi! Chú chung tiền liền nè!",
-  "en": ""
- },
- {
-  "vi": "Huề vốn, vui là chính!",
-  "en": ""
- },
- {
-  "vi": "Ván sau gỡ lại nha, đừng buồn!",
-  "en": ""
- },
- {
-  "vi": "🎉 Danh hiệu mới",
-  "en": ""
- },
- {
-  "vi": "Hôm nay chơi vậy đủ rồi",
-  "en": ""
- },
- {
-  "vi": "CHẴN",
-  "en": ""
- },
- {
-  "vi": "LẺ",
-  "en": ""
- },
- {
-  "vi": "Chiếu dẹp rồi, bày lại sau",
-  "en": ""
- },
- {
-  "vi": "Ra trước chơi bầu cua, lô tô cho lành nha.",
-  "en": ""
- },
- {
-  "vi": "Ví không đủ xu cho chiếu trong",
-  "en": ""
- },
- {
-  "vi": "🦀 Ra chơi bầu cua",
-  "en": ""
- },
- {
-  "vi": "Mấy ván gần đây",
-  "en": ""
- },
- {
-  "vi": "Bạn: thắng",
   "en": ""
  }
 ]
