@@ -37,6 +37,7 @@ from . import db as dbm
 from . import fastjson as fj
 from . import pg_schema
 from . import settle_scope
+from . import fair as fh  # 🍀 Lộc trời cho: the server-wide hourly gate (loc_prepare / loc_claim)
 
 SAVE_FORMATS=("mot-ngay-lam-nghe/save-v1","mot-ngay-lam-nghe/save-v2","mot-ngay-lam-nghe/save-v3","mot-ngay-lam-nghe/save-v4")
 BUSY_MS=12000          # a write that must happen waits this long for the lock
@@ -466,6 +467,7 @@ class Store:
                 row=_snapshot_row(db.execute("SELECT s.revision AS revision,s.state AS state,r.request_hash AS rhash,r.result AS rresult,"
                                "EXISTS(SELECT 1 FROM accounts a WHERE a.sid=s.sid) AS acct FROM sessions s "
                                "LEFT JOIN receipts r ON r.sid=s.sid AND r.request_id=? WHERE s.sid=?",(request_id,sid),text_bytes=True).fetchone())
+                fh.loc_prepare(db,action)  # a fair luck round: is the hourly 🍀 gate open (no read for other actions)
             if not row:raise GameError("Phiên chơi không tồn tại.","session_missing")
             who[0]=sid
             if row["rhash"] is not None:return self._replay(sid,row,fingerprint)
@@ -602,6 +604,8 @@ class Store:
             tx=tl
             if not row or row[0]!=revision:
                 db.rollback();return False
+            if not fh.loc_claim(db,result):  # 🍀 another worker took this hour's Lộc first: compute the command again
+                db.rollback();return False
             if action:
                 from . import work_visits
                 if before is None:before=self.parse_state(row['state'],sid)
@@ -662,7 +666,12 @@ class Store:
                 db.rollback();return self._replay(sid,row,fingerprint)
             if expected is not None and row["revision"]!=expected:raise Conflict("Tiến trình đã thay đổi ở tab khác. Đã đồng bộ lại; hãy xem trạng thái trước khi thao tác tiếp.","revision_conflict")
             before_out=[]
-            raw,result,serialized,cut,board,steps=self._compute(sid,row["state"],career,action,payload,internal,row["revision"],before_out=before_out)
+            fh.loc_prepare(db,action)
+            first=tree_copy(payload) if action in fh.LOC_ACTIONS else payload
+            raw,result,serialized,cut,board,steps=self._compute(sid,row["state"],career,action,first,internal,row["revision"],before_out=before_out)
+            if not fh.loc_claim(db,result):  # 🍀 taken by another worker meanwhile: the same command, gate shut
+                fh.loc_shut();before_out=[]
+                raw,result,serialized,cut,board,steps=self._compute(sid,row["state"],career,action,payload,internal,row["revision"],before_out=before_out)
             revision=row["revision"]+1
             from . import work_visits
             before=before_out[0]

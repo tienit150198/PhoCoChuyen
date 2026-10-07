@@ -328,6 +328,9 @@ html[data-theme="dem"] .fh-cell.hint{background:color-mix(in srgb,var(--fh-gold)
 .fh-back{min-height:40px;padding:6px 12px}
 .fh-luck-left{margin:0 0 10px;font-size:.85rem;color:var(--ink-2)}
 .fh-luck-left small{color:var(--muted)}
+.fh-cold{margin:0 0 10px;padding:6px 10px;border-radius:10px;font-size:.82rem;line-height:1.4;color:var(--ink-2);background:color-mix(in srgb,#7fb0ea 14%,var(--surface))}
+.fh-loc{text-align:center;border-color:color-mix(in srgb,var(--good) 45%,var(--line));background:linear-gradient(180deg,color-mix(in srgb,var(--good) 14%,var(--surface)),var(--surface) 70%)}
+.fh-loc h3{margin:0 0 4px}
 
 /* ---- 🏮 Cổng hội ---- */
 .fh-sec{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 8px}

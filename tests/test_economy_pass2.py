@@ -11,13 +11,16 @@ from tests.test_fair_knife import safe_taps
 class PaidStakeLimits(FairBase):
     def test_large_payouts_and_raid_cross_old_net_bound_safely(self):
         state=story(10000)
-        state['journey']['fair']=dict(fh.initial(), date=fh.vn_date(self.clock.t), net=999000)
+        state['journey']['fair']=dict(fh.initial(), date=fh.vn_date(self.clock.t), ed=fh.edition(), net=999000)
+        state['journey']['fair']['stats']['won']=999000
         self.dice(random.Random(1))
         with patch.object(xs, 'prize_mult', return_value=50):
             state,result=self.act(state,'fair_xs',price=500)
         self.assertEqual(result['fair']['prize'],25000)
-        self.assertEqual(result['fair']['wealth_raid']['amount'],10350)
-        self.assertEqual(state['journey']['fair']['net'],1023500-10350)
+        # 07/10: 10% of the fair's profit (1,023,500), as much as the wallet holds (no bank account here)
+        self.assertEqual(result['fair']['wealth_raid']['due'],102350)
+        self.assertEqual(result['fair']['wealth_raid']['amount'],10000-500+25000)
+        self.assertEqual(state['journey']['fair']['net'],1023500-34500)
         validate_state(state)
         with self.assertRaises(GameError):self.act(state,'fair_xs',price=2)
         state=story(10000)

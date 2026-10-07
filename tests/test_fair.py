@@ -1170,7 +1170,7 @@ class Odds(FairBase):
         ps = [fh.luck_p(j, f, 'xd', OPEN + i) for i in range(40)]
         self.assertEqual(ps[:fh.RUN_FREE], [base] * fh.RUN_FREE)
         self.assertAlmostEqual(ps[fh.RUN_FREE], base - fh.RUN_STEP)
-        self.assertEqual(ps[-1], base)                                   # 06/10: no decay in a long run
+        self.assertEqual(ps[-1], fh.XD_FLOOR)                            # 07/10: a long run cools to the floor
         self.assertGreaterEqual(base, fh.P_FLOOR)
         self.assertEqual(fh.luck_p(j, f, 'bc', OPEN + 41), fh.chance_rate('bc', OPEN + 41))
         j['fair_run'] = dict(g='xd', n=30, at=int(OPEN))

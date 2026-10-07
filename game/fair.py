@@ -1,16 +1,25 @@
-"""Folk fair, played with in-game xu only. Current rules (owner 05/10):
+"""Folk fair, played with in-game xu only. Current rules (owner 07/10: "giảm tỷ lệ thắng của mọi người ở hội chợ,
+nếu ai spam 1 trò thì tỷ lệ thắng sẽ giảm dần xuống còn 40%, công an sẽ đòi chứng minh tài sản ở đâu ra và thu 10%
+lợi nhuận của cả hội chợ"):
 
-* Owner 06/10 ("tăng lên 65% đi cho thoải mái"): every luck stall is won about 65% of the
-  time in practice, for every stake, time slot and net profit (WIN_P).
-* Per-player, per-stall signed streaks: four losses in a row and the next round is a win;
-  after four wins in a row the next rounds cool off to WIN_P_LOW (55%), never lower. The
-  neutral draw (LUCK_BASE, a little above 65%) makes the long-run rate WIN_P with both rules;
-  xóc đĩa's draw is higher again so its 1.76% raids still leave 65% won rounds. Reloads,
-  switching stalls and elapsed time do not reset the streaks.
+* Every luck stall (xóc đĩa, lô tô, vé cào, ném vòng's draw) is won about 55% of the time in normal play (WIN_P), for
+  every stake, time slot and net profit. Bầu cua is three honest dice (owner 06/10), house edge −10/216 a xu.
+* Per-player, per-stall winning streaks: after four wins in a row the next rounds cool off to WIN_P_LOW (50%). The sure
+  win after four losses is gone (07/10: bet small four times, then big). The neutral draw (LUCK_BASE, a little above
+  55%) makes the long-run rate WIN_P with the cool-off; xóc đĩa's draw is higher again so its 1.76% raids still leave
+  55% won rounds.
+* Spam decay (the existing run counters, _run): past RUN_FREE rounds of the same luck stall in a row (no break longer
+  than RUN_GAP), each round's draw is RUN_STEP lower, down to P_FLOOR (40% won rounds; xóc đĩa XD_FLOOR so its won
+  rounds stop at 40% too). Another stall or a RUN_GAP pause starts a new run at the full rate. Bầu cua (honest dice)
+  is exempt. The stall shows "Vận đang nguội vì chơi liền một trò" (public: cold).
 * Knife and o an quan remain skill games with unchanged opponents/collisions.
-* Normal back-corner raids remain 1.76%. Paid chance rounds can also trigger a
-  70% enforcement check above 50,000 daily net xu, at most once per 30 minutes;
-  a successful check seizes 30% of the current wallet after settling the round.
+* Normal back-corner raids remain 1.76%. Paid chance rounds can also bring the police's asset check (chứng minh nguồn
+  tài sản) once the player's fair profit this edition (money_of, the Bảng vàng number) is above WEALTH_THRESHOLD: 45%,
+  at most once per 2 hours. It takes AUDIT_PCT (10%) of the profit made since the last check (journey['fair_audit']
+  keeps that mark: never twice on the same xu), from the wallet first, then the bank account, never below zero.
+* 🍀 Lộc trời cho: a won paid luck round (bầu cua too: the dice stay honest) may, LOC_P of the time, win LOC_MULT× its
+  stake instead of its normal winnings, at most once per LOC_GAP across the whole server (mnl_meta row LOC_KEY, taken in
+  the command's own transaction by storage: loc_prepare / loc_claim).
 
 Wallet limits, side bets, deadlines, the calendar and leaderboard remain unchanged.
 Scratch prizes lean towards refunds/small prizes. Loto still requires correct
@@ -24,6 +33,7 @@ Commands are idempotent through storage.
 """
 from __future__ import annotations
 
+import contextvars
 import datetime
 import hashlib
 import os
@@ -51,14 +61,17 @@ KIND = 'fair'                  # journey wallet history kind (journey.HISTORY_KI
 # puts on the saved counters (rolling release), which therefore stop there.
 DAY_CAP = 150
 ROUNDS_DAY = 400
-# Same base chance for all paid/free luck stalls; the draw guard below is symmetric.
-WIN_P, WIN_P_LOW = .65, .55   # the long-run rate of won rounds, and the cool-off floor after a winning streak
+# Same base chance for all paid/free luck stalls (owner 07/10: lower, 65% → 55%).
+WIN_P, WIN_P_LOW = .55, .50   # the long-run rate of won rounds, and the cool-off after a winning streak
 LOTO_WIN_P = WIN_P
-LUCK_BASE = .665               # the draw at a neutral streak: with the two streak rules the long run is WIN_P
-XD_BASE = .68                  # xóc đĩa: raids (RAID_PCT) come first, so its draw is higher for WIN_P won rounds
-STREAK = 4                     # losses in a row before a sure win; wins in a row before the cool-off
-# Keep legacy counters and published constants for saved/client compatibility.
-RUN_FREE, RUN_STEP, RUN_GAP, P_FLOOR = 10, 0, 180, WIN_P_LOW
+LUCK_BASE = .555               # the draw at a neutral streak: with the cool-off the long run is WIN_P (3 decimals: a
+XD_BASE = .566                 # ring round keeps it as p/1000); xóc đĩa: raids (RAID_PCT) come first, so a higher draw
+STREAK = 4                     # wins in a row before the cool-off (no sure win after losses since 07/10)
+# Spam decay (owner 07/10): rounds RUN_FREE + 1, + 2, … of one luck stall in a row draw RUN_STEP less each, down to
+# P_FLOOR (XD_FLOOR for xóc đĩa: 40% won rounds after its raids). A RUN_GAP pause or another stall: a new run.
+RUN_FREE, RUN_STEP, RUN_GAP, P_FLOOR = 10, .015, 600, .40
+XD_FLOOR = .407
+DECAY_EXEMPT = ('bc',)         # bầu cua: honest dice with a house edge, no draw to lower
 RUN_GAMES = ('bc', 'xd', 'lt', 'dt')
 # Stalls newer than 1.4.17, whose validator takes only RUN_GAMES in 'fair_run': their run is journey['fair_run2'], the
 # same shape; there is one run at a time (a round of the other kind drops the other key), as if it were one key.
@@ -89,7 +102,17 @@ RAID_PCT = 1.76                # owner follow-up: +10% relative to 1.6%
 FINE_MIN = 3
 FINE_DIV = 4                   # a raid's fine: stake // FINE_DIV, at least FINE_MIN
 RAID_COOLDOWN = 120
-WEALTH_THRESHOLD, WEALTH_CHECK_GAP, WEALTH_RAID_P = 50000, 1800, .70
+# 07/10 (players: "công an tới hoài"): at most once per 2 hours, 45% when due (a failed draw waits too): an active
+# winner meets it 2–3 times a fair day instead of about every 30 minutes. The total taken (10% of the new profit) is the same.
+WEALTH_THRESHOLD, WEALTH_CHECK_GAP, WEALTH_RAID_P = 50000, 7200, .45
+AUDIT_KEY, AUDIT_PCT = 'fair_audit', 10   # journey['fair_audit'] {ed, base}: the profit left after the last check
+AUDIT_LABEL = '🚨 Công an kiểm tra tài sản · Thu 10% tiền lời hội chợ'
+POLICE_SAY = 'Chào em, nghe nói em lời ở hội chợ hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.'
+# 🍀 Lộc trời cho (owner 07/10): a won round of a paid luck stall pays LOC_MULT× its stake, LOC_P of the time, once per
+# LOC_GAP for the whole server (the mnl_meta row LOC_KEY holds the last one's time).
+LOC_MULT, LOC_P, LOC_GAP, LOC_KEY = 10, .015, 3600, 'fair_loc_at'
+LOC_LABEL = '🍀 Lộc trời cho ×10'
+LOC_ACTIONS = ('fair_bc', 'fair_xd', 'fair_xs', 'fair_loto_kinh')
 # 🎱 Lô tô
 LOTO_PRICE = 5
 LOTO_PRIZE = 11                # the older client's plain card: prize_of('thuong', LOTO_PRICE, 1) (was 23, a pot)
@@ -476,21 +499,43 @@ def chance_rate(game: str, t: float, stake: int | None = None, net: int = 0) -> 
     return XD_BASE if game == 'xd' else LUCK_BASE
 
 
+def run_rate(game: str, n: int) -> float:
+    """The draw of round n (1: the first) of a run of one stall: the full rate for RUN_FREE rounds, then RUN_STEP less a
+    round, never below the floor. Bầu cua (DECAY_EXEMPT) keeps its rate (its dice are honest anyway)."""
+    base = chance_rate(game, 0)
+    if game in DECAY_EXEMPT or n <= RUN_FREE:
+        return base
+    return max(XD_FLOOR if game == 'xd' else P_FLOOR, round(base - RUN_STEP * (n - RUN_FREE), 3))
+
+
 def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = None) -> float:
-    """Keep legacy purchase counters, with no profit, price or spam penalty."""
-    _run(j, game, t)
-    return chance_rate(game, t, stake)
+    """Count the round in the player's run and return its draw (run_rate): no profit or price penalty."""
+    return run_rate(game, _run(j, game, t))
+
+
+def cold(j: dict, t: float) -> dict | None:
+    """The stall whose next round is cooled by a long run (public: the "Vận đang nguội" hint), else None."""
+    for key in ('fair_run', 'fair_run2', 'fair_run3'):
+        r = j.get(key)
+        if not isinstance(r, dict) or r.get('g') in DECAY_EXEMPT or not 0 <= int(t) - r.get('at', 0) <= RUN_GAP:
+            continue
+        p = run_rate(r['g'], r['n'] + 1)
+        if p < chance_rate(r['g'], t):
+            won = p * (1 - RAID_PCT / 100) if r['g'] == 'xd' else p
+            return dict(game=r['g'], pct=round(won * 100), n=r['n'], gap=RUN_GAP // 60)
+    return None
 
 
 def _draw_luck(j: dict, game: str, probability: float) -> bool:
     draw = _rng.random()
-    # Previously purchased rounds keep their locked probability (a ring round bought before this build).
-    if probability not in (LUCK_BASE, XD_BASE):
+    # A round locked at a higher rate before this build (a ring round started earlier) keeps it.
+    if probability > chance_rate(game, 0) + 1e-9:
         return draw < probability
     balance = j.setdefault('fair_balance', {})
     streak = balance.get(game, 0)
-    # Four losses in a row: a sure win. Four wins in a row or more: cooled off to WIN_P_LOW, never below.
-    won = True if streak <= -STREAK else draw < (WIN_P_LOW if streak >= STREAK else probability)
+    # Four wins in a row or more: cooled off to WIN_P_LOW (a draw already lower stays lower). No sure win after losses;
+    # the losing side of the streak is still counted, within the older validator's bound.
+    won = draw < (min(probability, WIN_P_LOW) if streak >= STREAK else probability)
     balance[game] = min(STREAK, max(0, streak) + 1) if won else max(-STREAK, min(0, streak) - 1)
     return won
 
@@ -807,6 +852,9 @@ def _scratch(e, j: dict, f: dict, p: dict, t: float) -> dict:
     _pay(j, f, 'xs', prize - price)
     out = dict(game='xs', id=_rng.getrandbits(31), price=price, name=scratch.NAMES[price], cells=cells, prize=prize,
                mult=mult, net=prize - price, hits=[i for i, v in enumerate(cells) if prize and v == prize])
+    loc = _loc(j, f, 'xs', price, prize - price, t)
+    if loc:
+        out['loc'] = loc
     return dict(fair=out, message='')
 
 
@@ -821,23 +869,115 @@ def _guard_round(e, f: dict, j: dict, t: float, stake: int, worst: int) -> None:
     _day(f, t)
 
 
-def _wealth_raid(j: dict, f: dict, t: float) -> dict | None:
-    """Check only after a paid chance round. Reads/offline time cannot take money."""
-    if f['net'] <= WEALTH_THRESHOLD or t - f.get('wealth_check_at', 0) < WEALTH_CHECK_GAP:
+def _xu(n: int) -> str:
+    return f'{n:,}'.replace(',', '.')
+
+
+def audit_base(j: dict) -> int:
+    """The fair profit already checked by the police this edition (0: none yet)."""
+    a = j.get(AUDIT_KEY)
+    return a['base'] if isinstance(a, dict) and a.get('ed') == edition() else 0
+
+
+def _wealth_raid(s: dict, j: dict, f: dict, t: float) -> dict | None:
+    """🚨 The police's asset check (chứng minh nguồn tài sản), only after a paid chance round (reads and offline time
+    cannot take money): fair profit this edition above WEALTH_THRESHOLD, new profit since the last check, the 2-hour
+    cooldown (WEALTH_CHECK_GAP), then WEALTH_RAID_P. It takes AUDIT_PCT of the new profit, from the wallet, then the bank account, never
+    below zero (what neither holds is let go, no debt); the profit left becomes the next check's base."""
+    profit = money_of(j)[0]
+    gain = profit - audit_base(j)
+    if profit <= WEALTH_THRESHOLD or gain <= 0 or t - f.get('wealth_check_at', 0) < WEALTH_CHECK_GAP:
         return None
     f['wealth_check_at'] = int(t)  # Failed checks share the cooldown, across workers/reloads.
     if _rng.random() >= WEALTH_RAID_P:
         return None
-    amount = max(0, j['wallet']) * 30 // 100
-    if not amount:
+    due = min(10**7, gain * AUDIT_PCT // 100)
+    if not due:
         return None
     from . import journey as jr
-    jr._wallet(j, -amount, KIND, '🚨 Công an kiểm tra hội chợ · Thu tiền trong ví')
-    f['net'] -= amount
-    f['stats']['lost'] += amount
-    f['stats']['raids'] += 1
-    return dict(amount=amount, wallet=j['wallet'],
-                message=f'Công an kiểm tra đánh bạc! Thu {amount:,} xu trong ví.'.replace(',', '.'))
+    from . import bank as bk
+    cash = min(max(0, j['wallet']), due)
+    if cash:
+        jr._wallet(j, -cash, KIND, AUDIT_LABEL)
+    b = bk.get(s)
+    bank = min(max(0, b['balance']), due - cash) if b and type(b.get('balance')) is int else 0
+    if bank:
+        b['balance'] -= bank
+        bk._log(b, j['life_day'], 'acc', 'Công an thu 10% tiền lời hội chợ', -bank)
+    took = cash + bank
+    if took:
+        f['net'] -= took
+        f['stats']['lost'] += took
+        f['stats']['raids'] += 1
+    j[AUDIT_KEY] = dict(ed=edition(), base=profit - took)
+    where = ' và '.join(x for x in (cash and f'ví {_xu(cash)}', bank and f'tài khoản ngân hàng {_xu(bank)}') if x)
+    msg = (f'Công an hỏi nguồn tài sản: thu 10% tiền lời mới ở hội chợ, {_xu(took)} xu ({where}).' if took else
+           'Công an hỏi nguồn tài sản, nhưng ví với tài khoản trống trơn nên lần này cho qua.')
+    return dict(amount=took, cash=cash, bank=bank, due=due, gain=gain, pct=AUDIT_PCT, say=POLICE_SAY,
+                wallet=j['wallet'], audit=True, message=msg)
+
+
+# ---------------------------------------------------------------- 🍀 Lộc trời cho
+# The server-wide hourly gate. storage reads it before computing a luck-round command (loc_prepare) and takes it in the
+# command's own transaction (loc_claim): a retried command replays its receipt, one that lost the race is computed
+# again with the gate shut. Outside storage (tools, tests of the reducer alone) the gate is shut.
+_loc_gate: contextvars.ContextVar = contextvars.ContextVar('fair_loc_gate', default=False)
+_loc_seen = [0.0]   # this worker's latest known grant time (any worker's): no read while it is under an hour old
+
+
+def loc_prepare(db, action: str) -> None:
+    """Before computing `action`: open the gate for this command when the last Lộc is LOC_GAP old (one row read)."""
+    if action not in LOC_ACTIONS:
+        _loc_gate.set(False)
+        return
+    t = now()
+    if t - _loc_seen[0] < LOC_GAP:
+        _loc_gate.set(False)
+        return
+    row = db.execute('SELECT value FROM mnl_meta WHERE key=?', (LOC_KEY,)).fetchone()
+    try:
+        last = float(row[0]) if row else 0.0
+    except (TypeError, ValueError):
+        last = 0.0
+    _loc_seen[0] = max(_loc_seen[0], last)
+    _loc_gate.set(t - last >= LOC_GAP)
+
+
+def loc_shut() -> None:
+    _loc_gate.set(False)
+
+
+def loc_claim(db, result: dict | None) -> bool:
+    """In the command's transaction: take the gate for a Lộc this result granted (True when none was granted). One
+    atomic statement: a second worker waits for the first one's commit, then finds the row too new."""
+    loc = ((result or {}).get('fair') or {}).get('loc') if isinstance(result, dict) else None
+    if not loc:
+        return True
+    at = int(loc['at'])
+    row = db.execute('INSERT INTO mnl_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value '
+                     'WHERE CAST(mnl_meta.value AS double precision) <= ? RETURNING key', (LOC_KEY, str(at), at - LOC_GAP)).fetchone()
+    if row is None:
+        return False
+    _loc_seen[0] = max(_loc_seen[0], at)
+    return True
+
+
+def _loc(j: dict, f: dict, game: str, stake: int, gain: int, t: float) -> dict | None:
+    """A won round (gain > 0) of a paid luck stall, the gate open: LOC_P of the time it wins LOC_MULT× its stake
+    (capped at the stall's ROUND_MAX) instead of `gain`; the difference is the system's, its own Sổ ví row."""
+    if gain <= 0 or not _loc_gate.get() or _rng.random() >= LOC_P:
+        return None
+    stake = min(stake, ROUND_MAX)
+    bonus = LOC_MULT * stake - gain
+    if bonus <= 0:   # the round already won as much (a bão, a big ticket): nothing to add, the gate stays open
+        return None
+    from . import journey as jr
+    _loc_gate.set(False)
+    jr._wallet(j, bonus, KIND, f'{LOC_LABEL} · {LABELS[game]}')
+    f['net'] += bonus
+    f['stats']['won'] += bonus
+    return dict(game=game, stake=stake, mult=LOC_MULT, won=LOC_MULT * stake, bonus=bonus, at=int(t),
+                message=f'🍀 Lộc trời cho! Ván này ăn ×{LOC_MULT} tiền cược: +{_xu(LOC_MULT * stake)} xu.')
 
 
 def apply(s: dict, name: str, p: dict) -> dict:
@@ -886,10 +1026,13 @@ def apply(s: dict, name: str, p: dict) -> dict:
         st['bc'] += 1
         delta = back - stake
         _pay(j, f, 'bc', delta)
+        loc = _loc(j, f, 'bc', stake, delta, t)
         if bao:
             st['bao'] += 1
             _grant(j, 'f_bao', got)
         result['fair'] = dict(game='bc', dice=dice, bets=dict(bets), stake=stake, back=back, net=delta, bao=bao)
+        if loc:
+            result['fair']['loc'] = loc
         result['message'] = (f'Bão {FACE_NAMES[bao].lower()}! +{delta} xu.' if bao else
                              f'Thắng {delta} xu.' if delta > 0 else 'Hòa vốn.' if delta == 0 else f'Thua {-delta} xu.')
     elif name == 'fair_xd':
@@ -919,7 +1062,10 @@ def apply(s: dict, name: str, p: dict) -> dict:
             win = (p['side'] == 'chan') == even
             delta = stake if win else -stake
             _pay(j, f, 'xd', delta)
+            loc = _loc(j, f, 'xd', stake, delta, t)
             result['fair'] = dict(game='xd', raid=False, side=p['side'], stake=stake, coins=coins, even=even, net=delta)
+            if loc:
+                result['fair']['loc'] = loc
             result['message'] = f'{"Chẵn" if even else "Lẻ"}! ' + (f'Thắng {stake} xu.' if win else f'Thua {stake} xu.')
     elif name == 'fair_loto_buy':
         slot = int(t // 60)
@@ -1013,10 +1159,14 @@ def apply(s: dict, name: str, p: dict) -> dict:
             st['lt_won'] += 1
             _ltd(f)['w'] += 1
             _pay(j, f, 'lt', prize)
+            cost = rv['price'] * rv['n']
+            loc = _loc(j, f, 'lt', cost, prize - cost, t)
             _grant(j, 'f_loto', got)
             if rv['mode'] in ('doi', 'nguoc', 'dem'):
                 _grant(j, dict(doi='f_kinh2', nguoc='f_nguoc', dem='f_hu')[rv['mode']], got)
             result['fair'] = dict(game='lt', won=True, prize=prize, mode=rv['mode'], **({} if marks is not None else dict(row=row)))
+            if loc:
+                result['fair']['loc'] = loc
             result['message'] = f'Kinh! Bạn thắng {prize} xu.'
     elif name == 'fair_loto_fold':
         need(not p, 'Dữ liệu thao tác không hợp lệ.')
@@ -1123,10 +1273,13 @@ def apply(s: dict, name: str, p: dict) -> dict:
             result['message'] = f'Trúng {n}/{ring.BOTTLES} cổ chai' + (f', +{prize} xu.' if prize else '.')
     paid_round = name in ('fair_bc', 'fair_xd', 'fair_xs') or name == 'fair_loto_kinh' and result['fair'].get('won')
     if paid_round and not result['fair'].get('raid'):
-        seizure = _wealth_raid(j, f, t)
+        seizure = _wealth_raid(s, j, f, t)
         if seizure:
             result['fair']['wealth_raid'] = seizure
             result['message'] = (result['message'] + ' ' + seizure['message']).strip()
+    loc = (result.get('fair') or {}).get('loc')
+    if loc and name != 'fair_xs':   # the vé cào's message says nothing before the silver is scratched
+        result['message'] = (result['message'] + ' ' + loc['message']).strip()
     if got:
         result['fair']['titles'] = got
     return result
@@ -1206,7 +1359,12 @@ def public(s: dict) -> dict:
                            loto_price=LOTO_PRICE, loto_prize=LOTO_PRIZE, loto_npcs=LOTO_NPCS, faces=list(FACES),
                            oaq_prize=dict(OAQ_PRIZE), oaq_people={k: list(v) for k, v in OAQ_PEOPLE.items()}, quan=oaq.QUAN,
                            quan_non=oaq.QUAN_NON, ring_hit=RING_HIT, ring_all=RING_ALL, rings=ring.RINGS, ring_tol=ring.TOL,
-                           ring_day=RING_DAY, ring_left=RING_DAY, oaq_turn=1, xd_fine_div=FINE_DIV, nocap=1, ring_chance=True, win_pct=round(WIN_P * 100), cool_pct=round(WIN_P_LOW * 100)),
+                           ring_day=RING_DAY, ring_left=RING_DAY, oaq_turn=1, xd_fine_div=FINE_DIV, nocap=1, ring_chance=True,
+                           # 07/10 rules under new names: an older client (its line promised a sure win after 4 losses) shows none
+                           luck_pct=round(WIN_P * 100), cooled_pct=round(WIN_P_LOW * 100), run_free=RUN_FREE,
+                           floor_pct=round(P_FLOOR * 100), run_gap_min=RUN_GAP // 60, audit_pct=AUDIT_PCT,
+                           audit_from=WEALTH_THRESHOLD, loc_mult=LOC_MULT),
+                cold=cold(j, t),   # the stall whose run has cooled its luck ("Vận đang nguội"), or None
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
                 ring=ring_view((f or {}).get('ring'), t, j),
                 loto=loto, stats={k: st.get(k, 0) for k in STATS},
@@ -1258,6 +1416,12 @@ def validate(j: dict) -> None:
         balance = j['fair_balance']
         need(isinstance(balance, dict) and set(balance) <= set(CHANCE_GAMES), 'Chuỗi kết quả hội chợ không hợp lệ.', 'invalid_save')
         for streak in balance.values():integer(streak, -4, 4)
+    if AUDIT_KEY in j:   # 07/10, optional: an older server ignores it (the journey keeps unknown blocks)
+        from .engine import need, integer
+        a = j[AUDIT_KEY]
+        need(isinstance(a, dict) and set(a) == {'ed', 'base'} and isinstance(a['ed'], str) and len(a['ed']) <= 12,
+             'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+        integer(a['base'], -10**10, 10**10)
     if 'fair_run3' in j:
         from .engine import need, integer
         r = j['fair_run3']

@@ -176,17 +176,24 @@ class KnifeAndRing(unittest.TestCase):
 
 
 class FairWinRate(FairBase):
-    """Owner 06/10: "tăng lên 65% đi cho thoải mái": every luck stall is won about 65% of the time in practice (a
-    long winning streak cools off, never below 55%). Real commands, a seeded source standing in for the OS one."""
+    """Owner 07/10: every luck stall is won about 55% of the time in normal play (a long winning streak cools off to
+    50%); a long run of one stall cools to 40%. Real commands, a seeded source standing in for the OS one."""
     N = 1500
 
     def setUp(self):
         super().setUp()
         self.dice(random.Random(6102026))
 
-    def play(self, game):
+    def play(self, game, run=8, n=None, skip=0):
+        """n rounds of one stall, another stall every `run` rounds (normal play, as if the player went over to
+        another stall: a new run; None: one long run); the share won after the first `skip` rounds."""
         s, wins = story(10 ** 7), 0
-        for _ in range(self.N):
+        for i in range((n or self.N) + skip):
+            if i == skip:
+                wins = 0
+            if run and i and i % run == 0:
+                for key in ('fair_run', 'fair_run2', 'fair_run3'):
+                    s['journey'].pop(key, None)
             f = s['journey'].get('fair')
             if f:
                 f['raid_until'] = 0                       # past a raid's cooldown
@@ -208,17 +215,23 @@ class FairWinRate(FairBase):
                 s, r = self.act(s, 'fair_ring_throw', id=r['fair']['round']['id'], taps=[0, 300, 600, 900, 1200])
                 wins += r['fair']['n'] > 0
         validate_state(s)
-        return wins / self.N
+        return wins / (n or self.N)
 
-    def test_every_luck_stall_is_won_about_65_percent(self):
+    def test_every_luck_stall_is_won_about_55_percent(self):
         for game in fh.CHANCE_GAMES:
             if game == 'bc':
-                continue   # owner 06/10: bầu cua rolls honest dice (tests/test_fair_bc_honest.py), no 65% luck draw
+                continue   # owner 06/10: bầu cua rolls honest dice (tests/test_fair_bc_honest.py), no luck draw
             with self.subTest(game=game):
                 rate = self.play(game)
-                self.assertAlmostEqual(rate, .65, delta=.02, msg=(game, rate))
+                self.assertAlmostEqual(rate, .55, delta=.03, msg=(game, rate))
 
-    def test_long_runs_never_cool_below_55_percent(self):
+    def test_spamming_one_stall_cools_to_40_percent(self):
+        for game in ('xd', 'xs', 'ring'):
+            with self.subTest(game=game):
+                rate = self.play(game, run=None, n=1000, skip=fh.RUN_FREE + 12)
+                self.assertAlmostEqual(rate, .40, delta=.035, msg=(game, rate))
+
+    def test_long_streaks_never_cool_below_50_percent(self):
         for game, base in (('bc', fh.LUCK_BASE), ('xd', fh.XD_BASE)):
             j, used = {}, []
 

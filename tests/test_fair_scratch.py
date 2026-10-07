@@ -32,7 +32,7 @@ class Table(unittest.TestCase):
         return p * sum(m * w for m, w in xs.PRIZES) / total
 
     def test_rebalanced_prize_table_prefers_small_prizes(self):
-        self.assertEqual((xs.P_HI, xs.P_LO), (fh.WIN_P, fh.WIN_P))       # owner 06/10: about 65% of tickets win
+        self.assertEqual((xs.P_HI, xs.P_LO), (fh.WIN_P, fh.WIN_P))       # owner 07/10: about 55% of tickets win
         self.assertAlmostEqual(self.ev(xs.P_HI), fh.WIN_P * 1.59)
         self.assertAlmostEqual(self.ev(xs.P_LO), fh.WIN_P * 1.59)
         self.assertEqual(xs.P_HI, xs.P_LO)
@@ -124,7 +124,8 @@ class Scratch(FairBase):
     def test_a_long_run_of_tickets_cools_to_the_floor(self, _featured):
         j, f = {}, dict(fh.initial(), date=fh.vn_date(OPEN))
         ps = [fh.luck_p(j, f, 'xs', OPEN + 5 * i, stake=2) for i in range(40)]
-        self.assertEqual(set(ps), {fh.LUCK_BASE})                   # 06/10: no decay; streaks cool in _draw_luck
+        self.assertEqual(ps[:fh.RUN_FREE], [fh.LUCK_BASE] * fh.RUN_FREE)   # 07/10: a long run of tickets cools
+        self.assertEqual(ps[-1], fh.P_FLOOR)
         self.assertGreaterEqual(min(ps), fh.P_FLOOR)
         self.assertEqual(set(j), {'fair_run2'})
         fh.luck_p(j, f, 'bc', OPEN + 300)                           # another stall: one run at a time
@@ -156,7 +157,7 @@ class Scratch(FairBase):
             paid += 2
             back += r['fair']['prize']
         self.assertTrue(fh.WIN_P - .03 < wins / 1200 < fh.WIN_P + .03, wins)
-        self.assertTrue(.9 < back / paid < 1.2, back / paid)
+        self.assertTrue(.78 < back / paid < .98, back / paid)   # 07/10: 55% × 1.59 ≈ 0.875 back a xu
 
     def test_prices_and_bad_payloads(self):
         s = story(100)

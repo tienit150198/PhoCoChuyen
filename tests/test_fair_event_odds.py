@@ -1,4 +1,5 @@
-"""Owner 05/10: higher fair odds, one repetition floor, 20% fewer raids."""
+"""Owner 05/10: one repetition floor, 20% fewer raids. Owner 07/10: 55% won rounds, a long run of one stall cools to
+40% (bầu cua exempt: honest dice)."""
 import unittest
 
 from game import fair as fh
@@ -11,15 +12,24 @@ from tests.test_fair_knife import safe_taps, crash_tap
 
 class EventOdds(unittest.TestCase):
     def test_each_chance_stall_starts_at_requested_rate(self):
-        for game in fh.CHANCE_GAMES:   # owner 06/10: the neutral draw that gives 65% won rounds in the long run
+        for game in fh.CHANCE_GAMES:   # owner 07/10: the neutral draw that gives 55% won rounds in the long run
             with self.subTest(game=game):
                 self.assertAlmostEqual(fh.luck_p({}, None, game, OPEN), fh.XD_BASE if game == 'xd' else fh.LUCK_BASE)
         self.assertEqual((xs.P_HI, xs.P_LO), (fh.WIN_P, fh.WIN_P))
 
-    def test_repetition_keeps_the_same_probability(self):
+    def test_repetition_cools_every_luck_stall_but_bau_cua(self):
         for game in fh.CHANCE_GAMES:
-            j={}
-            self.assertEqual(set(fh.luck_p(j,None,game,OPEN+i*5) for i in range(100)), {fh.chance_rate(game, OPEN)})
+            j = {}
+            rates = [fh.luck_p(j, None, game, OPEN + i * 5) for i in range(100)]
+            base = fh.chance_rate(game, OPEN)
+            if game == 'bc':   # honest dice: exempt
+                self.assertEqual(set(rates), {base})
+                continue
+            floor = fh.XD_FLOOR if game == 'xd' else fh.P_FLOOR
+            self.assertEqual(rates[:fh.RUN_FREE], [base] * fh.RUN_FREE)
+            self.assertAlmostEqual(rates[fh.RUN_FREE], base - fh.RUN_STEP)
+            self.assertEqual(rates, sorted(rates, reverse=True))
+            self.assertEqual(rates[30:], [floor] * 70)
 
     def test_switch_or_break_resets_run(self):
         j = {}
@@ -31,12 +41,13 @@ class EventOdds(unittest.TestCase):
             fh.luck_p(j, None, 'bc', OPEN + 42 + i)
         self.assertEqual(fh.luck_p(j, None, 'bc', OPEN + 82 + 181), fh.chance_rate('bc', OPEN + 263))
 
-    def test_existing_profit_taper_and_spam_never_breach_floor(self):
+    def test_profit_does_not_matter_and_spam_never_breaches_the_floor(self):
         f = dict(fh.initial(), date=fh.vn_date(OPEN), net=100000)
         for game in fh.CHANCE_GAMES:
             j = {}
-            rates = [fh.luck_p(j, f, game, OPEN + i) for i in range(100)]
-            self.assertTrue(all(p == fh.chance_rate(game, OPEN) >= fh.WIN_P_LOW for p in rates))
+            rates = [fh.luck_p(j, f, game, OPEN + i) for i in range(300)]
+            self.assertTrue(all(p >= fh.P_FLOOR for p in rates))
+            self.assertEqual(rates[0], fh.chance_rate(game, OPEN))
 
 
 class RaidOdds(FairBase):
@@ -123,8 +134,11 @@ class ServerDecides(FairBase):
         for i in range(50):
             s, _ = self.act(s, 'fair_ring_start')
             s = json.loads(json.dumps(s))
-            self.assertEqual(s['journey']['fair_chance']['ring']['p'], round(fh.LUCK_BASE * 1000))   # 06/10: 665, within the older validator's 400..700
+            p = s['journey']['fair_chance']['ring']['p']
+            self.assertEqual(p, round(fh.run_rate('ring', i + 1) * 1000))   # 07/10: 555 cooling to 400, within the older validator's 400..700
+            self.assertTrue(400 <= p <= 700)
             validate_state(s)
+        self.assertEqual(p, 400)
         self.assertTrue(public_state(s)['fair']['ring']['chance'])
 
     def test_raid_round_also_counts_in_repetition(self):

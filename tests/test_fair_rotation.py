@@ -40,9 +40,9 @@ class Rotation(unittest.TestCase):
                                             for stake, rate in zip(range(minimum, 501), rates)))
 
     def test_repeat_floor_never_increases_an_already_lower_rate(self):
-        x = fh.XD_BASE
-        for selected, stake, base, floor in [('xd', 10, x, x), ('xd', 500, x, x),
-                                              ('ring', 10, x, x), ('ring', 500, x, x)]:
+        x, low = fh.XD_BASE, fh.XD_FLOOR   # 07/10: a long run of xóc đĩa cools to its floor (40% won rounds)
+        for selected, stake, base, floor in [('xd', 10, x, low), ('xd', 500, x, low),
+                                              ('ring', 10, x, low), ('ring', 500, x, low)]:
             with self.subTest(selected=selected, stake=stake), mock.patch.object(fh, 'featured_game', return_value=selected):
                 j = {}
                 rates = [fh.luck_p(j, None, 'xd', OPEN + i, stake=stake) for i in range(80)]
@@ -54,10 +54,10 @@ class Rotation(unittest.TestCase):
         mean = sum(m * w for m, w in xs.PRIZES) / sum(w for _, w in xs.PRIZES)
         with mock.patch.object(fh, 'featured_game', return_value='xs'):
             returns = [fh.chance_rate('xs', OPEN, p) * mean for p in xs.TIERS]
-        # Owner 06/10 (65% of tickets win, the prize table unchanged): every tier now returns a little more than it costs.
+        # Owner 07/10 (55% of tickets win, the prize table unchanged): every tier returns less than it costs.
         self.assertAlmostEqual(returns[0], fh.LUCK_BASE * 1.59)
         self.assertTrue(all(abs(r - returns[0]) < 1e-9 for r in returns))
-        self.assertLess(fh.WIN_P * mean, 1.05)
+        self.assertLess(fh.WIN_P * mean, .9)
 
 
 class RotationCommands(FairBase):
