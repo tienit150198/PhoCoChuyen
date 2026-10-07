@@ -290,3 +290,111 @@ class Blocks(MicCase):
             self.assertEqual((await a.expect('error'))['code'], 'sfu')
         await b.nothing('kara_live')
         self.assertEqual((await self.mic_on(a))['on'], 1)   # back up: works
+
+
+class VideoTime(MicCase):
+    """🎙️ kara_vt: the singer's own video time, relayed (stamped) to the mic's listeners only."""
+
+    async def live(self):
+        a, b, c, e = await self.singing()
+        await self.mic_on(a)
+        for x in (b, c):
+            self.assertEqual((await x.call('kara_listen', 'kara_listen'))['on'], 1)
+        return a, b, c, e
+
+    def again(self, *conns):
+        """The next kara_vt may be relayed at once (no VT_GAP, no rate window)."""
+        mic = self.room().data['mic']
+        mic['vt_at'] = 0.0
+        for x in conns:
+            self.app.hub.players[x.pid].rates.pop('kara_vt', None)
+
+    async def test_relayed_stamped_to_listeners_of_this_room(self):
+        a, b, c, e = await self.live()
+        d = await self.enter('Tú')                       # in the room, never asked to listen
+        o = await self.enter('Khoa', theme='bolero')     # another room
+        t0 = time.time()
+        await a.send(t='kara_vt', e=e, vt=1.25, st=t0 - 0.2, rtt=84)
+        for x in (b, c):
+            f = await x.expect('kara_vt')
+            self.assertEqual((f['id'], f['e'], f['vt'], f['rtt']), ('kara:tre', e, 1.25, 84))
+            self.assertAlmostEqual(f['at'], t0 - 0.2, delta=0.01)   # the singer's own moment, not the relay's
+        await a.nothing('kara_vt')
+        await d.nothing('kara_vt', wait=0.05)
+        await o.nothing('kara_vt', wait=0.05)
+        await a.nothing('error', wait=0.05)                         # no reply to the singer either
+
+    async def test_only_the_live_singer_and_song(self):
+        a, b, c, e = await self.singing()
+        self.assertEqual((await b.call('kara_listen', 'kara_listen'))['on'], 0)
+        await a.send(t='kara_vt', e=e, vt=1.0)                      # the mic is not on yet
+        await b.nothing('kara_vt')
+        await self.mic_on(a)
+        for x in (b, c):
+            await x.call('kara_listen', 'kara_listen')
+        await b.send(t='kara_vt', e=e, vt=1.0)                      # a listener cannot steer the others
+        await c.nothing('kara_vt')
+        await a.send(t='kara_vt', e='kq-other', vt=1.0)             # another song's
+        await c.nothing('kara_vt')
+        await a.send(t='kara_vt', e=e, vt=1.0)
+        await c.expect('kara_vt', vt=1.0)
+        await a.send(t='kara_mic', on=0)
+        await c.expect('kara_live', on=0)
+        self.again(a)
+        await a.send(t='kara_vt', e=e, vt=2.0)                      # the mic is off again
+        await c.nothing('kara_vt', vt=2.0)
+        g = await self.enter('Khách', account=False)
+        await g.send(t='kara_vt', e=e, vt=1.0)
+        await c.nothing('kara_vt', vt=1.0, wait=0.05)
+
+    async def test_sane_numbers(self):
+        a, b, c, e = await self.live()
+        for vt in ('1.5', None, True, -1, 1e9, 40.0, [1]):          # 40 s: far from the shared clock (VT_SPAN)
+            self.again(a)
+            await a.send(t='kara_vt', e=e, vt=vt)
+        await b.nothing('kara_vt')
+        t0 = time.time()
+        # at: 'back' = the relay's now − VT_BACK (too old a stamp), 'now' = the relay's now, else the singer's own stamp
+        for st, rtt, r, want_at, want_rtt, want_r in ((t0 - 60, -5, 9, 'back', None, None), (t0 + 60, 99999, 1, 'now', None, None),
+                                                      ('x', 'x', '1.05', 'now', None, None), (None, 120.7, 1.05, 'now', 120, 1.05),
+                                                      (t0, 0, 0.95, t0, 0, 0.95), (t0, None, True, t0, None, None)):
+            self.again(a)
+            t1 = time.time()
+            await a.send(t='kara_vt', e=e, vt=2.0, st=st, rtt=rtt, r=r)
+            f = await b.expect('kara_vt')
+            t2 = time.time()
+            if want_at == 'back':
+                self.assertTrue(t1 - lk.VT_BACK - 0.01 <= f['at'] <= t2 - lk.VT_BACK + 0.01, (f['at'], t1, t2))
+            elif want_at == 'now':
+                self.assertTrue(t1 - 0.01 <= f['at'] <= t2 + 0.01, (f['at'], t1, t2))
+            else:
+                self.assertAlmostEqual(f['at'], want_at, delta=0.001)
+            self.assertEqual((f.get('rtt'), f.get('r')), (want_rtt, want_r))
+
+    async def test_gap_and_rate_limit(self):
+        a, b, c, e = await self.live()
+        await a.send(t='kara_vt', e=e, vt=1.0)
+        await a.send(t='kara_vt', e=e, vt=1.1)                      # within VT_GAP: dropped
+        await b.expect('kara_vt', vt=1.0)
+        await b.nothing('kara_vt', vt=1.1)
+        self.room().data['mic']['vt_at'] = 0.0
+        for i in range(4):
+            await a.send(t='kara_vt', e=e, vt=2.0 + i)
+        err = await a.expect('error')                               # the 5th within 3 s
+        self.assertEqual((err['code'], err['ref']), ('slow', 'kara_vt'))
+
+    async def test_blocks_respected(self):
+        a, b, c, e = await self.live()
+        await c.send(t='block', pid=a.pid)
+        await c.expect('blocked')
+        await a.send(t='kara_vt', e=e, vt=1.0)                      # before the tick takes c out of the SFU room
+        await b.expect('kara_vt', vt=1.0)
+        await c.nothing('kara_vt')
+
+    async def test_not_in_a_room(self):
+        a, b, c, e = await self.live()
+        await a.send(t='kara_out')
+        await a.expect('kara_left')
+        await a.send(t='kara_vt', e=e, vt=1.0)
+        self.assertEqual((await a.expect('error'))['ref'], 'kara_vt')   # the page ignores it (v4/karaoke.js)
+        await b.nothing('kara_vt')

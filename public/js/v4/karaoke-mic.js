@@ -85,7 +85,7 @@ export async function publish({url,token,onEnd,onStage}){
     catch(e){throw tag(e,'track');}
     onStage?.('track');
   }catch(e){stop();throw tag(e,'signal');}
-  return {stop,room,track,stats:()=>rtp(track,'outbound-rtp')};
+  return {stop,room,track,stats:()=>rtp(track,'outbound-rtp'),path:()=>path(track)};
 }
 
 /** A listener: the singer's voice, at `volume` (0..1). Resolves once the voice is subscribed. `onTap(true)` when the
@@ -118,6 +118,7 @@ export async function listen({url,token,volume=1,onTap,onEnd,onStage}){
     canPlay:()=>!!room.canPlaybackAudio,
     stats:()=>voice?rtp(voice,'inbound-rtp'):Promise.resolve(null),
     path:()=>voice?path(voice):Promise.resolve(null),
+    delay:()=>voice?delay(voice):Promise.resolve(null),
     heard:()=>!!voice};
 }
 
@@ -127,7 +128,20 @@ async function path(track){
     const rep=await track.getRTCStatsReport?.();if(!rep)return null;
     let pair=null;for(const s of rep.values())if(s.type==='candidate-pair'&&s.state==='succeeded'&&(s.nominated||!pair))pair=s;
     const loc=pair&&rep.get(pair.localCandidateId),rem=pair&&rep.get(pair.remoteCandidateId);
-    return pair?{protocol:loc?.protocol||rem?.protocol,local:loc?.candidateType,remote:rem?.candidateType,rtt:pair.currentRoundTripTime??null}:null;
+    let back=null;for(const s of rep.values())if(s.type==='remote-inbound-rtp'&&Number.isFinite(s.roundTripTime))back=s.roundTripTime;   // a sender's own report
+    return pair?{protocol:loc?.protocol||rem?.protocol,local:loc?.candidateType,remote:rem?.candidateType,rtt:pair.currentRoundTripTime??back}:back!==null?{rtt:back}:null;
+  }catch{return null;}
+}
+/** For the voice's delay (lagStep): the jitter buffer's running totals and the media path's round trip, raw. */
+async function delay(track){
+  try{
+    const rep=await track.getRTCStatsReport?.();if(!rep)return null;
+    let jbd,jbn,pair=null;
+    for(const s of rep.values()){
+      if(s.type==='inbound-rtp'&&(s.kind==='audio'||s.mediaType==='audio')){jbd=s.jitterBufferDelay;jbn=s.jitterBufferEmittedCount;}
+      else if(s.type==='candidate-pair'&&s.state==='succeeded'&&(s.nominated||!pair))pair=s;
+    }
+    return {jbd,jbn,rtt:pair?.currentRoundTripTime};
   }catch{return null;}
 }
 /** The RTP counters of the track (packets and bytes), from getStats: the "audio flows" stage and the checks. */
@@ -138,3 +152,44 @@ async function rtp(track,type){
   }catch{/* closed */}
   return null;
 }
+
+/* ---------------------------------------------------------------- 🎙️ voice and music together (07/10 "bị delay xíu")
+ * The singer sings to their OWN video; the voice reaches a listener `voiceLag` seconds later. So while a listener
+ * hears the voice, their video follows the singer's (kara_vt: its time `vt` at server time `at`, relayed by the live
+ * service) minus that delay, instead of the shared server clock. Pure functions: v4/karaoke.js sync() and the tests. */
+export const LAG={base:.04,guess:.2,max:1.5,fresh:3,span:15,a:.3};
+const num=Number.isFinite;
+/** One getStats reading (delay(): {jbd, jbn, rtt}) into the running estimate `s` ({} at first): the jitter buffer's
+ * delay over the samples played since the last reading (Δ jitterBufferDelay / Δ jitterBufferEmittedCount, seconds;
+ * the first reading: since the voice was subscribed), and the path's round trip, each smoothed (factor LAG.a). A
+ * reading without the counters changes nothing. */
+export function lagStep(s,raw){
+  const o={...s};if(!raw)return o;
+  if(num(raw.jbd)&&num(raw.jbn)){
+    const d0=num(s.jbd)?s.jbd:0,n0=num(s.jbn)?s.jbn:0;
+    if(raw.jbn>n0&&raw.jbd>=d0){const x=(raw.jbd-d0)/(raw.jbn-n0);if(x>=0&&x<LAG.max*2)o.jb=num(s.jb)?s.jb+(x-s.jb)*LAG.a:x;}
+    o.jbd=raw.jbd;o.jbn=raw.jbn;
+  }
+  if(num(raw.rtt)&&raw.rtt>=0&&raw.rtt<5)o.rtt=num(s.rtt)?s.rtt+(raw.rtt-s.rtt)*LAG.a:raw.rtt;
+  return o;
+}
+/** Seconds from the singer's mouth to my ear: capture and encode (LAG.base), half the singer's round trip to the SFU
+ * (`up`, seconds, theirs when the frame carried it, else as mine), half of mine, and my jitter buffer (LAG.guess
+ * until getStats has one). Within 0..LAG.max. */
+export function voiceLag(s,up){
+  const mine=num(s?.rtt)?s.rtt:0,theirs=num(up)&&up>=0?up:mine;
+  return Math.max(0,Math.min(LAG.max,LAG.base+(num(s?.jb)?s.jb:LAG.guess)+(mine+theirs)/2));
+}
+/** Where my video should be now. `clock` the shared server-clock position (pos()), `vt` the last kara_vt
+ * ({vt, at, r?}), `now` my server-clock time, `age` seconds since it came, `lag` voiceLag(), `voice` true while I hear
+ * the voice. Following: vt + (now − at) × r − lag (r: the singer's playback rate while their own sync nudges it),
+ * only with a fresh vt (under LAG.fresh s) and the voice playing, and never more than LAG.span from the clock;
+ * otherwise the clock, exactly as without a mic. */
+export function followTarget({clock,vt,now,age,lag,voice}){
+  if(!voice||!vt||!num(vt.vt)||!num(vt.at)||!num(now)||!(age>=0&&age<LAG.fresh))return {t:clock,voice:false};
+  const r=num(vt.r)&&vt.r>=.5&&vt.r<=2?vt.r:1;
+  const t=vt.vt+Math.max(0,Math.min(age+LAG.fresh,now-vt.at))*r-(num(lag)?lag:0);
+  return num(t)&&Math.abs(t-clock)<=LAG.span?{t,voice:true}:{t:clock,voice:false};
+}
+/** A delay in ms as one letter for the error beacon, whose server masks digits: a 0–99, b 100–199, … p ≥ 1500. */
+export const bucket=ms=>num(ms)?String.fromCharCode(97+Math.max(0,Math.min(15,Math.floor(ms/100)))):'-';

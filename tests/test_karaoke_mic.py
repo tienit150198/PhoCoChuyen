@@ -209,5 +209,28 @@ class AdminTools(Base):
             kg.admin_act(self.store, 'boss', dict(act='birth_clear', pid='nope'))
 
 
+class VoiceSync(unittest.TestCase):
+    """🎙️ Voice and music together (07/10 "bị delay xíu"): the target math in node, and the page's rollback guards."""
+
+    def test_target_math(self):
+        import shutil
+        import subprocess
+        node = shutil.which('node')
+        if not node:
+            self.skipTest('node not installed')
+        out = subprocess.run([node, str(ROOT / 'tests' / 'karaoke_sync.mjs')], cwd=ROOT, capture_output=True, text=True,
+                             encoding='utf-8', timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr + out.stdout)
+
+    def test_page_works_with_an_older_live_service(self):
+        js = (ROOT / 'public/js/v4/karaoke.js').read_text(encoding='utf-8')
+        quiet = re.search(r"\[('kara_dur'[^\]]*)\]\.includes\(f\.ref\)", js).group(1)
+        self.assertIn("'kara_vt'", quiet)                                   # its refusals never toast
+        self.assertIn("f.ref==='kara_vt'&&(f.code==='unknown'||f.code==='off'))K.vtOff=true", js)   # 'unknown': stop sending
+        self.assertIn("on('welcome',()=>{K.vtOff=false;", js)              # a new service may know it
+        self.assertIn('if(K.vtOff||', js)
+        self.assertRegex(js, r"if\(!hearing\|\|!v\|\|v\.e!==e\)return \{t:clock,voice:false,hearing\};")   # no video time: the clock
+
+
 if __name__ == '__main__':
     unittest.main()

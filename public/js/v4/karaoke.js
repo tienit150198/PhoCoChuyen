@@ -4,8 +4,8 @@
  * game), a queue, the singer on stage, reactions, a cheer meter, bubbles, xu tips, a 10 s applause moment, and 🧩 Đoán
  * bài (a lyric line with blanks or emoji clues; guesses are typed in the same box). No voice in v1.
  *
- * The clock: `kara_time` five times on entering, the reply with the smallest round trip gives the server offset; a song
- * plays from (server now − at). Every second a playing video more than DRIFT seconds off is nudged back (sync()); nothing is
+ * The clock: `kara_time` five times on entering (then one every 15 s), the reply with the smallest round trip gives the
+ * server offset; a song plays from (server now − at). Every second a playing video more than DRIFT seconds off is nudged back (sync()); nothing is
  * corrected while YouTube is not playing (an ad, buffering). Phone first, few words: one bottom bar, one main button
  * (🎤 Thêm bài, or Gửi once something is typed); the rest sits behind ⋯.
  *
@@ -13,7 +13,9 @@
  * stage line; the first time a short note with the headphones advice, then the birth year if the account has none,
  * then the browser's permission prompt); everyone in the room then sees "🎤 Đang phát trực tiếp giọng hát" and hears
  * the voice over their own YouTube player (a 🎤 volume of its own, 🔇, and "Chạm để nghe" when a phone wants a tap).
- * The SDK and the SFU are in v4/karaoke-mic.js, loaded only then. The video's clock and sync are the same as without.
+ * The SDK and the SFU are in v4/karaoke-mic.js, loaded only then. While a listener hears the voice, their video follows
+ * the singer's own (kara_vt, about once a second) minus the voice's delay, not the shared clock (follow(); 07/10 "bị
+ * delay xíu": the singer sings to their video, the voice comes later); without one it is the clock, as without a mic.
  * Each side shows where it is: a listener "🎧 Đang nối giọng…", then the voice (or "Chạm để nghe giọng"), or "Chưa
  * nghe được giọng · Thử lại"; the singer "Đang nối mic…", then the timer, or "Chưa phát được giọng · Thử lại". A
  * failed step (and a wait given up on) goes to the page's error beacon (micReport) with the stage it stopped at:
@@ -28,11 +30,12 @@ const DRIFT=.35,REACT=['👏','❤️','🔥','🌹'],YT_HOST='https://www.youtu
 const K={dlg:null,env:null,bound:false,view:'list',rooms:null,room:null,stage:null,queue:[],round:null,n:0,people:[],said:[],fx:{},cheer:0,
   off:0,best:9,c:0,sent:{},yt:null,player:null,ready:false,vid:null,e:null,durSent:null,timer:0,tick:0,panel:null,song:null,busy:false,
   err:'',ticket:null,clap:null,startAt:0,blanks:new Set(),mode:'lyric',want:false,near:0,won:null,reveal:null,
-  live:null,mic:{pub:null,pubE:null,sub:null,subE:null,busy:false,joining:false,tap:false,muted:false,tries:0,vol:vol(),
-    ls:'',at:'',gen:0,t0:0,hc:0,pubAt:'',pubFail:null}};
+  live:null,M:null,ct:0,vt:null,vtOff:false,vSeeks:0,far:0,
+  mic:{pub:null,pubE:null,sub:null,subE:null,busy:false,joining:false,tap:false,muted:false,tries:0,vol:vol(),
+    ls:'',at:'',gen:0,t0:0,hc:0,pubAt:'',pubFail:null,lag:{},sy:null,syE:null,up:null,vtAt:0,pt:0,polling:false}};
 function vol(){try{const v=Number(localStorage.getItem('kr-voice-vol'));return v>=0&&v<=1&&localStorage.getItem('kr-voice-vol')!==null?v:.9;}catch{return .9;}}
 const micFlag=()=>!!live.flags?.kara_mic;
-const mic=()=>import('./karaoke-mic.js');
+const mic=()=>import('./karaoke-mic.js').then(m=>(K.M=m));
 const snow=()=>Date.now()/1000+K.off;
 const rid=()=>(crypto.randomUUID?.()||Math.random().toString(36).slice(2)+Date.now().toString(36)).replace(/[^A-Za-z0-9-]/g,'').slice(0,40);
 const fmt=s=>{s=Math.max(0,Math.round(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;};
@@ -54,6 +57,8 @@ function bind(){
   on('kara_end',f=>{if(!here(f))return;liveOff();if(K.stage?.e===f.e)K.stage.phase='clap';K.clap={...f};if(f.why!=='done'&&f.why!=='cut')stopVideo();paint();});
   on('kara_live',f=>{if(!here(f))return;onLive(f);});
   on('kara_listen',f=>{if(here(f)&&!f.on&&K.mic.sub){stopListen();paint();}});   // the server took my listening away (a block)
+  on('kara_vt',f=>{if(!here(f)||!K.stage||f.e!==K.stage.e||!Number.isFinite(f.vt)||!Number.isFinite(f.at))return;   // 🎙️ the singer's own video time
+    K.vt={e:f.e,vt:f.vt,at:f.at,r:Number.isFinite(f.r)?f.r:1,up:Number.isFinite(f.rtt)?f.rtt/1000:null,got:Date.now()};if(K.mic.sy)K.mic.sy.up=K.vt.up;});
   on('kara_fx',f=>{if(!here(f))return;K.cheer=f.cheer||0;for(const [k,n] of Object.entries(f.r||{}))floatFx(k,Math.min(n,6));if(K.stage)K.stage.hearts=(K.stage.hearts||0)+Object.values(f.r||{}).reduce((a,b)=>a+b,0);paintMeter();});
   on('kara_tipped',f=>{if(!here(f))return;if(K.stage?.e===f.e)K.stage.tips=f.tips;floatFx('💰',2);said({pid:f.frm?.pid,name:f.frm?.name,text:`💰 +${f.xu} xu`,sys:1});});
   on('kara_said',f=>{if(f.ch!==K.room?.id)return;said(f);});
@@ -62,11 +67,17 @@ function bind(){
   on('kara_near',f=>{if(!here(f))return;K.near=Date.now();toast('Gần đúng rồi! 🤏');});
   on('kara_won',f=>{toast(`🎉 Bạn đoán đúng! +${f.xu} xu`);});
   on('deleted',f=>{if(f.ch&&f.ch===K.room?.id){K.said=K.said.filter(m=>m.id!==f.id);paintSaid();}});
-  on('error',f=>{if(!String(f.ref||'').startsWith('kara_')||['kara_dur','kara_time','kara_react','kara_cheer','kara_can','kara_mic','kara_listen'].includes(f.ref))return;K.busy=false;K.err=f.msg||'Chưa được, thử lại nhé.';toast(K.err,true);render();});
-  on('welcome',()=>{if(K.dlg?.open){if(K.room)live.send({t:'kara_in',id:K.room.id});else live.send({t:'kara_list'});clock();}});
+  on('error',f=>{if(f.ref==='kara_vt'&&(f.code==='unknown'||f.code==='off'))K.vtOff=true;   // an older live service: stop sending it
+    if(!String(f.ref||'').startsWith('kara_')||['kara_dur','kara_time','kara_react','kara_cheer','kara_can','kara_mic','kara_listen','kara_vt'].includes(f.ref))return;K.busy=false;K.err=f.msg||'Chưa được, thử lại nhé.';toast(K.err,true);render();});
+  on('welcome',()=>{K.vtOff=false;if(K.dlg?.open){if(K.room)live.send({t:'kara_in',id:K.room.id});else live.send({t:'kara_list'});clock();}});
 }
 const here=f=>K.room&&f.id===K.room.id;
-function clock(){K.best=9;for(let i=0;i<5;i++)setTimeout(()=>{const c=++K.c%1e6;K.sent[c]=Date.now()/1000;live.send({t:'kara_time',c});},i*250);}
+function clock(){K.best=9;for(let i=0;i<5;i++)setTimeout(timeAsk,i*250);}
+/** One more clock reading (kept only if its round trip beats the best so far): every CLOCK_EVERY s in a room, as the
+ * five on entering may come while the page is busy loading, and a late reply skews the offset (a listener following a
+ * live voice compares two pages' clocks: kara_vt). */
+function timeAsk(){const c=++K.c%1e6;K.sent[c]=Date.now()/1000;if(!live.send({t:'kara_time',c}))delete K.sent[c];}
+const CLOCK_EVERY=15;
 
 /* ---------------------------------------------------------------- the dialog */
 function dialog(){
@@ -102,7 +113,7 @@ export async function openKaraoke(env,data={}){
   if(data.room){live.send({t:'kara_in',id:data.room});}
   else if(!K.room){K.view='list';live.send({t:'kara_list'});}
   render();
-  clearInterval(K.timer);K.timer=setInterval(()=>{if(!d.open)return clearInterval(K.timer);if(K.view==='list'&&++K.tick%10===0)live.send({t:'kara_list'});if(K.room){sync();paintClock();}},1000);
+  clearInterval(K.timer);K.timer=setInterval(()=>{if(!d.open)return clearInterval(K.timer);if(K.view==='list'&&++K.tick%10===0)live.send({t:'kara_list'});if(K.room){sync();paintClock();micPoll();if(++K.ct%CLOCK_EVERY===0)timeAsk();}},1000);
 }
 
 function enterRoom(f){
@@ -159,6 +170,7 @@ function start(){
   const st=K.stage,p=K.player;if(!st||!p||!K.ready)return;
   const at=pos();
   if(K.vid!==st.vid){K.vid=st.vid;at<0?p.cueVideoById({videoId:st.vid}):p.loadVideoById({videoId:st.vid,startSeconds:at});}
+  K.vSeeks=0;K.far=0;
   clearTimeout(K.startAt);if(K.rate&&K.rate!==1)try{p.setPlaybackRate?.(1);}catch{/* gone */}K.rate=1;   // a new song starts at 1×
   if(at<0){K.startAt=setTimeout(()=>{if(K.stage===st){try{p.seekTo(Math.max(0,pos()),true);p.playVideo();}catch{/* player gone */}want();}},-at*1000);}
   else{try{p.seekTo(at,true);p.playVideo();}catch{/* player gone */}want();}
@@ -177,19 +189,69 @@ function stopVideo(){clearTimeout(K.startAt);try{K.player?.stopVideo?.();}catch{
  * seek, at most every SEEK_GAP ms, aimed ahead by what the last seek took to play again (≤ SEEK_LEAD s). Only while
  * YouTube says it is playing: never during an ad, a buffer or a pause. */
 const SEEK_AT=2,SEEK_GAP=10000,SEEK_LEAD=1.5,NUDGE_OK=.12;   // a lead < SEEK_AT: a wrong guess is nudged, never sought again
+/** 🎙️ Following a live voice (follow()) is tighter: a nudge past DRIFT_V (two readings in a row: YouTube's time comes
+ * through postMessage and jitters) until within NUDGE_OK_V; a seek past SEEK_AT_V, VOICE_SEEKS a song at most (then
+ * only past SEEK_AT, as without: a phone whose seeks are slow never loops). The singer's own sync is unchanged: it
+ * sends its video time (kara_vt) every VT_EVERY ms while its mic is live and its video plays. */
+const DRIFT_V=.12,NUDGE_OK_V=.05,SEEK_AT_V=.6,VOICE_SEEKS=2,VT_EVERY=900;
 function sync(){
   const p=K.player,st=K.stage;if(!p||!K.ready||!st||st.phase==='clap'||K.clap)return;
-  const target=pos();if(target<0)return;
+  const clock=pos();if(clock<0)return;
   let s,cur;try{s=p.getPlayerState();cur=p.getCurrentTime();}catch{return;}
   if(s!==1)return;
-  const off=cur-target,now=Date.now();
-  if(Math.abs(off)>SEEK_AT){
+  if(K.mic.pub&&K.mic.pubE===st.e)sendVt(st.e,cur);
+  const {t:target,voice,hearing}=follow(clock);
+  const off=cur-target,now=Date.now(),seekAt=voice&&K.vSeeks<VOICE_SEEKS?SEEK_AT_V:SEEK_AT;
+  if(hearing&&K.mic.sy)K.mic.sy.h++;
+  if(voice)syncSeen(off);
+  if(Math.abs(off)>seekAt){
     if(now-(K.seekAt||0)<SEEK_GAP)return nudge(p,off);
-    K.seekAt=now;K.seekT=performance.now();nudge(p,0);
+    K.seekAt=now;K.seekT=performance.now();nudge(p,0);K.far=0;if(voice)K.vSeeks++;
     try{p.seekTo(target+(K.lag||0),true);}catch{/* gone */}
     return;
   }
+  if(voice){K.far=Math.abs(off)>DRIFT_V?K.far+1:0;return nudge(p,K.far>=2||(K.rate&&K.rate!==1&&Math.abs(off)>NUDGE_OK_V)?off:0);}
+  K.far=0;
   nudge(p,Math.abs(off)>DRIFT||(K.rate&&K.rate!==1&&Math.abs(off)>NUDGE_OK)?off:0);
+}
+/** 🎙️ sync()'s target: while I hear a live voice and the singer's video time is fresh, theirs minus the voice's delay
+ * (karaoke-mic.js followTarget, voiceLag); otherwise the shared clock, exactly as without a mic. */
+function follow(clock){
+  const M=K.M,h=K.mic.sub,v=K.vt,e=K.stage?.e;
+  const hearing=!!(M&&h&&K.mic.subE===e&&!K.mic.tap&&h.heard());
+  if(!hearing||!v||v.e!==e)return {t:clock,voice:false,hearing};
+  return {...M.followTarget({clock,vt:v,now:snow(),age:(Date.now()-v.got)/1000,lag:M.voiceLag(K.mic.lag,v.up),voice:true}),hearing};
+}
+/** 🎙️ The singer: my video's time now, for the listeners to follow (live/karaoke.py kara_vt relays it, stamped). */
+function sendVt(e,cur){
+  const t=Date.now();if(K.vtOff||t-K.mic.vtAt<VT_EVERY||!Number.isFinite(cur))return;
+  K.mic.vtAt=t;
+  const f={t:'kara_vt',e,vt:Math.round(cur*1000)/1000,st:Math.round(snow()*1000)/1000};
+  if(K.rate&&K.rate!==1)f.r=K.rate;if(Number.isFinite(K.mic.up))f.rtt=Math.round(K.mic.up*1000);
+  live.send(f);
+}
+/** 🎙️ Every 2 s while the mic is in play, from getStats: a listener's voice delay (jitter buffer, path; lagStep), the
+ * singer's path round trip (sent with kara_vt). */
+function micPoll(){
+  const M=K.M,sub=K.mic.sub,pub=K.mic.pub;
+  if(!M||!(sub||pub)||K.mic.polling||++K.mic.pt%2)return;
+  K.mic.polling=true;
+  Promise.resolve(sub?sub.delay?.():pub.path?.()).then(r=>{
+    if(sub){if(K.mic.sub===sub)K.mic.lag=M.lagStep(K.mic.lag,r);}
+    else if(K.mic.pub===pub&&Number.isFinite(r?.rtt))K.mic.up=r.rtt;
+  }).catch(()=>{/* closed */}).then(()=>{K.mic.polling=false;});
+}
+/** 🎙️ Once a song a listener tells the error beacon (as micReport does) how the voice and the video lined up. The
+ * server masks digits, so each value is a letter (karaoke-mic.js bucket: a 0–99 ms, b 100–199 ms … p ≥ 1.5 s): jb my
+ * jitter buffer, rtt my path's round trip, up the singer's, lag the delay followed, off how far my video stayed from
+ * its target (median of the last 10 s); `novt` when no video time of the singer came (an older page or service).
+ * Sent after 30 s of following, or when listening stops (if the voice played 10 s or more). */
+function syncSeen(off){const y=K.mic.sy;if(!y)return;y.n++;y.offs.push(Math.abs(off));if(y.offs.length>10)y.offs.shift();if(y.n===30)syncReport();}
+function syncReport(){
+  const y=K.mic.sy,M=K.M;if(!y||!M||K.mic.syE===y.e||y.h<10)return;   // heard 10 s at least
+  K.mic.syE=y.e;
+  const b=x=>M.bucket(Number.isFinite(x)?x*1000:NaN),l=K.mic.lag||{},o=[...y.offs].sort((a,c)=>a-c)[y.offs.length>>1];
+  try{beacon('toast',`kara_mic sync${y.n?'':' novt'} jb=${b(l.jb)} rtt=${b(l.rtt)} up=${b(y.up)} lag=${b(M.voiceLag(l,y.up))} off=${b(o)}`,'kara');}catch{/* never in the way */}
 }
 /** Play a little faster (behind) or slower (ahead), or at 1. YouTube rounds an unoffered rate toward 1: a no-op then. */
 function nudge(p,off){
@@ -512,12 +574,13 @@ function sendCheck(h){
   },5000);
 }
 function micOff(){if(!K.mic.pub)return;micStop();live.send({t:'kara_mic',on:0});paint();}
-function micStop(){const h=K.mic.pub;K.mic.pub=null;K.mic.pubE=null;try{h?.stop();}catch{/* gone */}}
+function micStop(){const h=K.mic.pub;K.mic.pub=null;K.mic.pubE=null;K.mic.up=null;K.mic.vtAt=0;try{h?.stop();}catch{/* gone */}}
 /** Listening off here. A listener still waiting after 8 s (the song ended, they left) is reported with its stage. */
 function stopListen(){
   const h=K.mic.sub;
   if(K.mic.joining&&Date.now()-K.mic.t0>8000)micReport('listen',NEXT[K.mic.at]||'?','left waiting');
   else if(h&&K.mic.tap)micReport('listen','audio','tap not pressed');
+  syncReport();K.vt=null;K.mic.sy=null;K.mic.lag={};
   K.mic.gen++;K.mic.joining=false;K.mic.sub=null;K.mic.subE=null;K.mic.tap=false;K.mic.ls='';clearTimeout(K.mic.hc);
   try{h?.stop();}catch{/* gone */}
 }
@@ -555,6 +618,7 @@ async function listen(){
         listenFailed(gen,'ice',`dropped r${why??'?'}`);}});
     if(!still()){h.stop();return;}
     K.mic.sub=h;K.mic.subE=e;K.mic.ls='live';h.mute(K.mic.muted);
+    K.mic.lag={};if(K.mic.sy?.e!==e)K.mic.sy={e,n:0,h:0,offs:[],up:K.vt?.up??null};
     heardCheck(gen);
   }catch(err){
     if(mine())listenFailed(gen,err?.stage||NEXT[K.mic.at]||'?',errCode(err));
@@ -600,7 +664,9 @@ export const karaoke={state:()=>({view:K.view,room:K.room?.id||null,stage:K.stag
   queue:K.queue.length,round:K.round,reveal:K.reveal,off:K.off,best:K.best,pos:K.stage?pos():null,
   cur:(()=>{try{return K.player?.getCurrentTime?.()??null;}catch{return null;}})(),ps:(()=>{try{return K.player?.getPlayerState?.()??null;}catch{return null;}})(),said:K.said.length,
   live:K.live?{e:K.live.e,by:K.live.by?.pid}:null,pub:!!K.mic.pub,sub:!!K.mic.sub,heard:!!K.mic.sub?.heard(),tap:K.mic.tap,panel:K.panel,
-  ls:K.mic.ls,at:K.mic.at,pubAt:K.mic.pubAt,pubFail:K.mic.pubFail?.stage||null,tries:K.mic.tries}),
+  ls:K.mic.ls,at:K.mic.at,pubAt:K.mic.pubAt,pubFail:K.mic.pubFail?.stage||null,tries:K.mic.tries,
+  follow:K.stage?follow(pos()).voice:false,target:K.stage?follow(pos()).t:null,vt:K.vt?{vt:K.vt.vt,at:K.vt.at,up:K.vt.up,age:(Date.now()-K.vt.got)/1000}:null,vtOff:K.vtOff,
+  lag:K.M&&K.mic.sub?K.M.voiceLag(K.mic.lag,K.vt?.up):null,jb:K.mic.lag?.jb??null,rate:K.rate||1}),
   /** 🎙️ the RTP counters of my mic (singer) or of the voice I hear (listener) */
   micStats:async()=>({pub:await K.mic.pub?.stats?.()??null,sub:await K.mic.sub?.stats?.()??null}),
   micPath:async()=>await K.mic.sub?.path?.()??null};

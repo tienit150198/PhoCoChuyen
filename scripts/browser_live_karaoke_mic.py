@@ -13,6 +13,8 @@ real jsDelivr URL when --sdk FILE is given (its SRI is still checked by the brow
     live; everyone sees "🎤 Đang phát trực tiếp giọng hát";
   * Minh hears her: his inbound RTP packets/bytes grow (getStats), Lan's outbound ones too; Hoa (who blocked her)
     sees the notice but gets no audio; the SFU lists Lan as the only publisher and Minh as a hidden listener;
+  * Minh's video follows Lan's own video time (kara_vt) minus the voice's delay: Lan's video − Minh's ≈ that delay,
+    and his once-a-song "kara_mic sync jb=… lag=…" beacon is stored;
   * Lan's song is skipped: her mic is cut (the SFU room is gone: no participant left), Minh stops hearing;
   * Bé joins late (the mic is already live) on a network where the SDK cannot load (both copies fail): "🎧 Đang nối
     giọng…", two quiet retries, then "Chưa nghe được giọng · Thử lại", and the page's error beacon stores
@@ -249,6 +251,17 @@ async def run(shots: Path | None, sdk_file: Path | None, tcp_only: bool) -> list
             await asyncio.sleep(3.0)
             sm, sl = await minh.page.evaluate(STATE), await lan.page.evaluate(STATE)
             check(sm['at'] == 'audio' and sm['ls'] == 'live' and sl['pubAt'] == 'audio', f'stages: Minh {sm["at"]} ({sm["ls"]}), Lan {sl["pubAt"]}')
+            # 🎙️ voice and music together: Minh's video follows Lan's own (kara_vt) minus the voice's delay (getStats)
+            sm = await until(minh, 's.follow && s.vt && s.vt.age < 3 && s.jb !== null', "Minh follows Lan's video", 20)
+            check(0 < sm['lag'] <= 1.5 and not sl['vtOff'], f"Minh's voice delay {sm['lag']:.3f} s (jitter buffer {sm['jb']:.3f} s), Lan sends her video time")
+            await until(minh, 's.follow && s.rate === 1 && Math.abs(s.cur - s.target) < 0.12', 'Minh settles on that target (nudged at 5 %, a seek past 0.6 s)', 45)
+            gaps = []
+            for _ in range(5):
+                cl, cm = await asyncio.gather(lan.page.evaluate(STATE), minh.page.evaluate(STATE))
+                gaps.append(round(cl['cur'] - cm['cur'] - cm['lag'], 3))
+                await asyncio.sleep(0.4)
+            print("Lan's video − Minh's − delay:", gaps, '| Lan', {k: cl[k] for k in ('pos', 'cur', 'rate')}, '| Minh', {k: cm[k] for k in ('pos', 'cur', 'target', 'rate', 'lag')}, flush=True)
+            check(max(abs(g) for g in gaps) < 0.2, f"Minh's music is where Lan's was when she sang what he hears (± {max(abs(g) for g in gaps):.3f} s)")
             sh = await hoa.page.evaluate(STATE)
             check(sh['live'] and not sh['sub'] and sh['ls'] == '', f'Hoa (who blocked Lan) sees the notice and gets no audio, and no "đang nối" either ({sh["ls"]!r})')
             txt = await hoa.page.inner_text('.kr-sheet[open] .kr-live')
@@ -304,6 +317,15 @@ async def run(shots: Path | None, sdk_file: Path | None, tcp_only: bool) -> list
             await lan.page.click('.kr-sheet[open] [data-kr=skip]')
             await until(lan, '!s.pub', 'Lan\'s mic is off', 10)
             await until(minh, '!s.sub && !s.live', 'Minh stops hearing', 10)
+            rows = []
+            for _ in range(30):   # Minh's once-a-song sync beacon (letters: the server masks digits)
+                rows = sql(db, "SELECT message_key FROM stat_client_errors WHERE message_key LIKE 'kara_mic sync%'")
+                if rows:
+                    break
+                await asyncio.sleep(0.5)
+            print('sync beacon:', rows, flush=True)
+            check(rows and all(' novt' not in r[0] for r in rows) and any('jb=-' not in r[0] and 'lag=' in r[0] for r in rows),
+                  f'the sync beacon (Minh; Bé too if she heard 10 s): {rows}')
             await asyncio.sleep(1.0)
             left = [r for r in await api_client.rooms() if r.startswith('kara-')]
             check(left == [], f'the SFU room is deleted on the stage change ({left})')

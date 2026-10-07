@@ -56,6 +56,9 @@ Moderation
   'birth' and 'young'). Each mic session gets its own SFU room (live/sfu.py room_name: room, song, n-th session),
   created before any token is given; the singer's token publishes the microphone only, a listener's (`kara_listen`)
   subscribes only and is good for LISTEN_TTL seconds to join.
+* Voice and music together: the singer's page sends its own video time (`kara_vt {e, vt, st, r, rtt}`, about once a
+  second while the mic is on); it is relayed, stamped, to the mic's listeners (`kara_vt {e, vt, at, r?, rtt?}`), whose
+  video then follows the singer's minus the voice's delay (v4/karaoke.js sync()). Data never goes over the SFU.
 * The room sees `kara_live {on, by, until}` (and `stage.mic`): "🎤 Đang phát trực tiếp giọng hát".
 * Cut (the SFU room is deleted: the singer and every listener are disconnected at once, an old token joins nothing):
   the song ends, is skipped, voted off, cut by an admin, the singer is kicked or muted or leaves, the room closes,
@@ -76,10 +79,11 @@ Frames (client → server; replies in brackets)
   kara_react {k}   kara_cheer {}    kara_say {text} [kara_said … to the room]      kara_report {pid | vid, reason}
   kara_round {mode, clue, answer, vid?}   kara_round_end {}       kara_kick {pid}  kara_close {}  kara_ban {vid}
   kara_mic {on}                     [kara_mic {on, url?, token?, until?}]   kara_listen {} [kara_listen {on, url?, token?, e?}]
-  kara_mic_cut {}  (admin)
+  kara_mic_cut {}  (admin)          kara_vt {e, vt, st?, r?, rtt?}  (the live singer; no reply)
 Server pushes: kara_ppl {n, pid, name, on}, kara_q {queue}, kara_play, kara_stage, kara_votes {e, n, need},
 kara_end, kara_fx {r, cheer}, kara_tipped {e, frm, name, xu}, kara_said, kara_round, kara_reveal, kara_near,
-kara_won {xu}, kara_left {why: out | other | kick | closed}, kara_live {on, e, by?, until?, why?}, kara_listen {on: 0}.
+kara_won {xu}, kara_left {why: out | other | kick | closed}, kara_live {on, e, by?, until?, why?}, kara_listen {on: 0},
+kara_vt {e, vt, at, r?, rtt?} (to the mic's listeners).
 """
 from __future__ import annotations
 
@@ -125,6 +129,11 @@ GUESS_MIN_SECS = 5.0          # a right guess this fast pays nothing (bots, frie
 SAY_LEN = 120
 TASKS_MAX = 500
 REASONS = KG.REASONS
+VT_GAP = 0.6                  # 🎙️ kara_vt: one relayed at most this often (the singer's page sends one a second)
+VT_SPAN = 15.0                # a singer's video time this far from the shared clock is not relayed
+VT_BACK = 1.5                 # the singer's own time stamp is trusted this far back at most
+VT_RTT_MAX = 3000             # ms
+VT_RATE = (0.5, 2.0)          # a playback rate relayed (the page nudges 0.95 / 1.05)
 
 
 class Member:
@@ -733,7 +742,7 @@ class KaraokeFeature(Feature):
     @staticmethod
     def _new_mic(st: Entry, name: str, now: float, cut: str | None = None) -> dict:
         return dict(e=st.e, pid=st.pid, name=name, n=0, sfu='', on=False, busy=False, cut=cut, until=now + KM.MIC_SECS,
-                    subs=set(), reports=set())
+                    subs=set(), reports=set(), vt_at=0.0)
 
     def _song_mic(self, d) -> dict | None:
         """The mic session of the song on stage (None: not turned on yet, or the dict is an older song's)."""
@@ -867,6 +876,37 @@ class KaraokeFeature(Feature):
         mic['subs'].add(m.pid)
         return dict(t='kara_listen', id=room.id, on=1, e=mic['e'], url=self.sfu.url, room=mic['sfu'],
                     token=self.sfu.token(m.pid, m.name, mic['sfu'], publish=False, ttl=KM.LISTEN_TTL))
+
+    @on('kara_vt', rate=(4, 3.0))
+    async def kara_vt(self, conn, f):
+        """🎙️ Voice and music together ("bị delay xíu", 07/10): while the mic is on, the singer's page sends its own
+        video time about once a second (`vt`, seconds into the song; `st`, its server-clock reading of that moment;
+        `r`, its playback rate while its own sync nudges it; `rtt`, its media path's round trip in ms). Only the stage singer of the live mic, a number near the shared
+        clock (VT_SPAN), at most one every VT_GAP seconds. Relayed, stamped with `at` (server time of `vt`: the
+        singer's `st` when it is no more than VT_BACK old, else now), to the mic's listeners in this room (blocks
+        respected); a listener's video then follows the singer's minus the voice's delay. Anything else is dropped
+        without a word (an older page never sends it; an older service answers 'unknown', which the page ignores)."""
+        room, m = self._mine(conn)
+        d = room.data
+        mic = self._song_mic(d)
+        if mic is None or not mic['on'] or mic['pid'] != m.pid or f.get('e') != mic['e'] or d['phase'] not in ('deck', 'play'):
+            return None
+        vt, st, r, rtt = f.get('vt'), f.get('st'), f.get('r'), f.get('rtt')
+        if type(vt) not in (int, float) or not math.isfinite(vt) or not 0 <= vt <= DUR_MAX + VT_SPAN:
+            return None
+        now = time.time()
+        if abs(vt - (now - d['at'])) > VT_SPAN or now - mic['vt_at'] < VT_GAP:
+            return None
+        mic['vt_at'] = now
+        at = min(now, max(now - VT_BACK, float(st))) if type(st) in (int, float) and math.isfinite(st) else now
+        frame = dict(t='kara_vt', id=room.id, e=mic['e'], vt=round(float(vt), 3), at=round(at, 3))
+        if type(rtt) in (int, float) and math.isfinite(rtt) and 0 <= rtt <= VT_RTT_MAX:
+            frame['rtt'] = int(rtt)
+        if type(r) in (int, float) and math.isfinite(r) and VT_RATE[0] <= r <= VT_RATE[1] and r != 1:
+            frame['r'] = round(float(r), 3)
+        subs = mic['subs']
+        self.hub.send_many([c for c in room.conns if c is not conn and c.player.pid in subs and not self._split(m.pid, c.player.pid)], frame)
+        return None
 
     @on('kara_mic_cut', rate=(20, 60))
     async def kara_mic_cut(self, conn, f):
