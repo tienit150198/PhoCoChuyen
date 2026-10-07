@@ -41,6 +41,7 @@ from __future__ import annotations
 
 from . import dayclock as dc
 from . import housing as hs
+from . import price_index as pi   # 💹 07/10: LUNCH, EVE and SNACK prices are the base, indexed below
 
 VERSION = 1
 START_FULL, START_WAKE = 90, 100     # a save that meets this layer: just had breakfast, slept well
@@ -93,6 +94,8 @@ SNACK = {
     'pho': dict(emoji='🍜', name='Tô phở bò', short='Tô phở', price=8, full=50, wake=0),
     'ca_phe': dict(emoji='☕', name='Ly cà phê sữa đá', short='Cà phê', price=3, full=0, wake=15),
 }
+for _menu in (LUNCH, EVE, SNACK):   # 💹 07/10 (game/price_index.py; under 5 xu a price stays)
+    pi.index(_menu, luxury=False)
 FULL_CAP, WAKE_CAP = 90, 90   # at or above: "no rồi" / "tỉnh rồi", that item is refused
 COOK_SKILL = 3            # Nội trợ: after this many jobs there, your own cooking is a little nicer (+1 tinh thần)
 

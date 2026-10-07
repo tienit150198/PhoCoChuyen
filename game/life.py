@@ -34,6 +34,7 @@ import random
 from .life_content import (ASK, CALLING, CATS, COMFORT, COPE, COPE_INDEX, DORM, FACTS, FRIENDS, GIFTS, GOSSIPS, HARD, IMPULSE,
                            JOYS, NOT_FOR_CALLING, ROOMMATES, SICK, TOKENS, WORK)
 from . import archive as ar
+from . import price_index as pi   # 💹 07/10: DOCTOR (the content's prices: game/life_content.py)
 
 VERSION = 1
 KIND = 'life'                 # journey wallet history kind
@@ -59,7 +60,7 @@ SICK_SPIRIT, SICK_P = 15, .5
 LOW_SPIRIT = 30
 HIT_SCALE = 1.6               # authored hits are gentle numbers; a hard day should really sting
 COMFORT_SCALE = .7
-DOCTOR = 20
+DOCTOR = pi.price(20)         # 💹 07/10: base 20
 HANGOVER = 6
 MOODS = ((80, '😄', 'Phơi phới'), (60, '🙂', 'Ổn áp'), (40, '😐', 'Hơi mệt'), (20, '😔', 'Buồn'), (0, '😢', 'Kiệt sức'))
 WARMTH_NAMES = ((75, 'Thương nhau như ruột thịt'), (60, 'Tối lửa tắt đèn có nhau'), (45, 'Hàng xóm quen'), (0, 'Còn hơi lạ'))

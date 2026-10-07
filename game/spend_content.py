@@ -1,4 +1,4 @@
-"""☕ Chỗ tiêu xu: the catalogue of game/spend.py (pure data, no imports: live/styles.py reads it too).
+"""☕ Chỗ tiêu xu: the catalogue of game/spend.py (pure data, one import: game/price_index.py; live/styles.py reads it too).
 
 Prices are keyed to the income percentiles of DESIGN_0610 §0.1 (xu per life day: p50 ≈ 260, p75 ≈ 400, p90 ≈ 690):
 * T0 thói quen, 8–40 xu (3–15 % of a median day): a drink or a bowl at the street's own shops, a spa, a film;
@@ -7,7 +7,11 @@ Prices are keyed to the income percentiles of DESIGN_0610 §0.1 (xu per life day
 Nothing here pays xu, speeds up work or helps an exam: needs bars (game/needs.py), tinh thần and showing off only.
 
 Ids are stored in saves and in the `chat_style` table: never rename or remove one (retire it with `gone: True`).
+
+💹 07/10: every price below is written as the base and indexed once at the end of this file (game/price_index.py):
+the shops, the spa, the film, the week's styles and the công đức presets (GIVE_MIN stays: spend.validate pins it).
 """
+from . import price_index as pi
 
 # ---------------------------------------------------------------- T0: đi quán làm khách
 # shop id → (emoji, name, items). Item: id, emoji, name, price, full (no bụng +), wake (tỉnh táo +).
@@ -110,5 +114,11 @@ TITLES = (
     dict(id='t_tam_long_vang', emoji='🙏', name='Tấm lòng vàng', price=200, need={'give': 5}),
     dict(id='t_dai_gia', emoji='💎', name='Đại gia phố Mây', price=400, need={}),
 )
+# 💹 07/10: index the base prices above once (the dicts are this module's own).
+for _row in [it for sh in SHOPS.values() for it in sh['items']] + list(SPA) + list(COLORS) + list(FRAMES) + list(TITLES):
+    _row['price'] = pi.price(_row['price'])
+FILM_PRICE = pi.price(FILM_PRICE)
+GIVE_PRESETS = tuple(pi.price(x) for x in GIVE_PRESETS)   # the Chùa's suggested amounts (GIVE_MIN stays)
+BIG_MEAL = pi.price(28)   # game/spend.py: the first quán of a day from this price gives +2 tinh thần (base 28)
 STYLE_ITEMS = {x['id']: dict(x, kind=k) for k, rows in (('color', COLORS), ('frame', FRAMES), ('title', TITLES)) for x in rows}
 TITLE_TEXT = {x['id']: f"{x['emoji']} {x['name']}" for x in TITLES}

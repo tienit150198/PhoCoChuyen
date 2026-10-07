@@ -454,15 +454,15 @@ class RingColorTests(Base):
     def test_buy_with_colours_and_prices(self):
         a = self.user('an', 5000)
         from game import wedding_content as W
-        self.act(a, 'ring_buy', tier='bac', metal='vang', rid='ring-color-1')              # silver ring in gold: +20
+        self.act(a, 'ring_buy', tier='bac', metal='vang', rid='ring-color-1')              # silver ring in gold: +22 (💹 07/10: +20)
         self.act(a, 'ring_buy', tier='kim_cuong', metal='vang_hong', stone='ruby', rid='ring-color-2')   # cheaper colours never discount
         self.act(a, 'ring_buy', tier='ruby', rid='ring-color-3')                            # the tier's own colours
         rings = {r['tier']: r for r in self.view(a)['rings']}
-        self.assertEqual((rings['bac']['price'], rings['bac']['metal'], rings['bac']['stone']), (W.RING_INDEX['bac']['price'] + 20, 'vang', None))
+        self.assertEqual((rings['bac']['price'], rings['bac']['metal'], rings['bac']['stone']), (W.RING_INDEX['bac']['price'] + 22, 'vang', None))
         self.assertEqual((rings['kim_cuong']['price'], rings['kim_cuong']['stone_name']), (W.RING_INDEX['kim_cuong']['price'], 'Ruby đỏ'))
         self.assertEqual((rings['ruby']['metal'], rings['ruby']['stone']), ('vang', 'ruby'))
         self.assertTrue(rings['ruby']['colors']['stone'].startswith('#'))
-        self.assertEqual(self.wallet(a), 5000 - 70 - 900 - 480)
+        self.assertEqual(self.wallet(a), 5000 - 77 - 990 - 530)
         for bad in (dict(tier='bac', stone='ruby'), dict(tier='ruby', stone='kim_cuong_xanh'), dict(tier='bac', metal='dong'), dict(tier='ruby', stone=None)):
             with self.assertRaises(mr.MarriageError) as e:
                 self.act(a, 'ring_buy', **bad)
@@ -478,7 +478,7 @@ class RingColorTests(Base):
         w = self.wallet(a)
         self.act(a, 'ring_recolor', ring=rid, metal='bach_kim', stone='sapphire', rid='recolor-0001')
         self.act(a, 'ring_recolor', ring=rid, metal='bach_kim', stone='sapphire', rid='recolor-0001')   # replay
-        self.assertEqual(self.wallet(a), w - (20 + 40 + 20))
+        self.assertEqual(self.wallet(a), w - (22 + 44 + 22))
         self.assertIn('Tiệm kim hoàn', self.label_of(a))
         with self.assertRaises(mr.MarriageError) as e:
             self.act(a, 'ring_recolor', ring=rid, metal='bach_kim', stone='sapphire', rid='recolor-0002')

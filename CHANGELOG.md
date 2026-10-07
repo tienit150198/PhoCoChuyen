@@ -4,6 +4,32 @@ Gồm "Giao diện gọn: đợt 4" (quầy ăn uống + phố còn lại) và "
 
 # Chưa phát hành
 
+## Giá cả tăng ~10%
+
+- Chủ phố 07/10: "mọi người nhiều tiền quá rồi". Bảng 💰 Top tài phú 07/10: 38.725 người, top 1% giữ 57% tổng tài sản
+  (06/10: 50%), top 10 giữ 22%; người giữa bảng ~470 xu. Thứ người giàu mua là xe, nhà, đồ đắt tiền.
+- Một chỗ duy nhất: `game/price_index.py` (`INDEX_PCT = 110`, bậc xa xỉ `LUXURY`: từ 20.000 xu +20%, từ 60.000 xu +30%).
+  Mọi bảng giá người chơi trả ghi giá gốc và đi qua `pi.price()` khi nạp; lần chỉnh sau chỉ sửa một dòng.
+- Tăng ~10% (làm tròn đẹp, giá dưới 5 xu giữ nguyên): tiền phòng + cơm nước mỗi ngày 10–20 → 11–22 xu, phòng trọ 14 → 15
+  (giường ký túc xá giữ 7 xu cho người mới), điện nước nhà mình, xe dọn nhà; xe (và tiền xăng), điện thoại, quần áo, mở khóa màu, nội thất, giấy
+  dán tường, sửa và nâng cấp nhà; đi quán, spa, rạp phim, phong cách tuần, gợi ý công đức (5/20/50/200/1.000 → 6/22/55/220/1.100);
+  ăn trưa/tối/ăn thêm, tủ lạnh, nuôi mèo/cún và đồ cho bé; học phí lớp cấp tốc 15–30 → 17–33; làm tóc, đi chơi khu phố,
+  chụp ảnh hội chợ 5 → 6; đồ chống rủi ro, thuốc, khám bệnh, xả stress, mua sắm bốc đồng, góp giúp hàng xóm (gợi ý);
+  nhẫn, tiệc cưới (rạp, cỗ, nghi lễ, dịch vụ); phạt trễ thẻ 8 → 9; cơm trưa mang cho vợ/chồng 5 → 6.
+- Xa xỉ tăng mạnh hơn (chỉ người giàu chạm tới): Siêu xe 30.000 → 36.000, Siêu du thuyền 150.000 → 195.000, Phản lực
+  90.000 → 117.000, Kim Long Vàng 24.000 → 28.800, mua penthouse/biệt thự thêm 20–30% thuế.
+- 🏠 Nhà: giá niêm yết giữ nguyên (1.9.9 khóa giá nhà trong bản lưu), thay bằng dòng 💹 Thuế trước bạ 10/20/30% trả cùng
+  khoản trả trước (ví hoặc tài khoản; không vay, không lấy quỹ chung). Thuế không cộng vào giá thị trường, giá bán, tiền
+  cho thuê hay phí bảo trì. `prices()` đã nhận sẵn giá mới để bản sau gộp thuế vào giá niêm yết.
+- Không đổi: lương, tiền bo, giá khách NPC trả, giá sỉ/hàng nhập của nghề, quầy riêng (giá mặt bằng, thuê, nâng cấp),
+  giá người chơi tự đặt, tiền cược hội chợ và vé số, khoản vay/lãi suất, các khoản trả từ quỹ nơi làm (quà đồng nghiệp,
+  đồ nghề), phí theo % (ngân hàng, Mây Coin, vàng). Làm nail 18 và làm đồ thủ công 22 giữ nguyên (1.9.9 khóa giá trong bản
+  lưu; validate đã nhận giá mới cho bản sau). Vé tham quan của nghề hướng dẫn viên giữ nguyên (nằm trong việc sinh ra).
+- Đồ đã mua giữ giá đã trả: xe, điện thoại bán lại 70%/65% giá đã trả, nhẫn 80% giá đã trả, nhà theo giá mua. Bảng tài
+  phú không tăng ảo. Nội thất bán lại 50% giá hiện hành (món mua trước 07/10 bán được ~55% giá đã trả, vẫn lỗ).
+- Bản lưu: không thêm khóa. Bản lưu làm ở bản này vẫn mở được trên 1.9.9 (đã thử: nhà 3 bậc thuế, du thuyền, phản lực,
+  điện thoại vàng, quần áo, nội thất, phong cách, công đức, học phí, làm tóc, đi chơi). Cổng task-compat với 1.9.9: OK.
+
 ## Giao diện gọn: đợt 4
 
 - 12 nghề: quầy trà sữa, cà phê – bánh, quán mì cay, tiệm hoa, tiệm kem, nội trợ, thu gom rác, sạp trái cây, tiệm nail,

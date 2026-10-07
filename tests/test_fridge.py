@@ -85,7 +85,7 @@ class NoFridge(unittest.TestCase):
 
 class OwnFridge(unittest.TestCase):
     def setUp(self):
-        self.s, self.uid = with_fridge(home(300))
+        self.s, self.uid = with_fridge(home(330))   # 💹 07/10: the fridge 260 -> 286 xu
 
     def test_buy_into_the_fridge(self):
         s = self.s
@@ -93,7 +93,7 @@ class OwnFridge(unittest.TestCase):
         s, r = act(s, 'jr_fridge_buy', item='com_hop')
         s, r = act(s, 'jr_fridge_buy', item='com_hop')
         s, r = act(s, 'jr_fridge_buy', item='sua')
-        self.assertEqual(s['journey']['wallet'], w - 5 - 5 - 2)
+        self.assertEqual(s['journey']['wallet'], w - 6 - 6 - 2)
         self.assertEqual(s['journey']['fridge']['items'], {'com_hop': 2, 'sua': 1})
         self.assertIn('3/10', r['message'])
         v = F(s)
@@ -102,7 +102,7 @@ class OwnFridge(unittest.TestCase):
         # one Sổ ví row a day, updated in place
         rows = [h for h in s['journey']['history'] if h['label'].startswith(fr.LABEL)]
         self.assertEqual(len(rows), 1)
-        self.assertEqual((rows[0]['kind'], rows[0]['amount'], rows[0]['label']), ('living', -12, f'{fr.LABEL} · 3 món'))
+        self.assertEqual((rows[0]['kind'], rows[0]['amount'], rows[0]['label']), ('living', -14, f'{fr.LABEL} · 3 món'))
         validate_state(s)
 
     def test_capacity(self):
@@ -114,7 +114,7 @@ class OwnFridge(unittest.TestCase):
             act(s, 'jr_fridge_buy', item='flan')
         self.assertEqual(e.exception.code, 'full')
         # a second fridge doubles the room, no more than FRIDGES_MAX count
-        s['journey']['wallet'] += 300
+        s['journey']['wallet'] += 340   # 💹 07/10: the second fridge 300 -> 330 xu
         s, _ = with_fridge(s, 'tu_lanh_magnet')
         self.assertEqual(F(s)['cap'], 2 * fr.FRIDGE_CAP)
         s, _ = act(s, 'jr_fridge_buy', item='flan')

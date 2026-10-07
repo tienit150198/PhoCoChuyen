@@ -29,6 +29,7 @@ from .content import CAREERS, CAREER_META
 from . import archive as ar
 from . import certificates as ct
 from . import bank as bk   # 🏦 Ngân hàng Phố (game/bank.py)
+from . import price_index as pi   # 💹 07/10: LIVING
 from . import wardrobe as wd   # 👗 Tủ đồ (game/wardrobe.py)
 from . import avatar as avt    # 🙂 Ảnh đại diện khi chat (game/avatar.py)
 from . import housing as hs   # 🏠 Nhà của bạn (game/housing.py)
@@ -65,7 +66,8 @@ ONBOARD_MARK = 'onb1'   # settings.notesSeen: named with the new-player onboardi
 WELCOME_GIFT = 20     # a brand-new neighbour's gift, into the wallet when the first life day ends
 WELCOME_LABEL = 'Quà chào hàng xóm mới 🎁'
 BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
-LIVING = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}
+# 💹 07/10 (game/price_index.py): written as the base, indexed -> 11 13 15 18 20 22 22 xu a life day
+LIVING = {ch: pi.price(xu, luxury=False) for ch, xu in {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}.items()}
 UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}   # the old idle fee per tier: no longer charged (upkeep() is 0)
 MODES = (('calm', .25), ('normal', .55), ('festival', .20))
 HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank', 'home', 'fair', 'karaoke')   # 'karaoke': accepted from 1.9.5 (step 1); game/karaoke.py WRITE_KIND says when it is written

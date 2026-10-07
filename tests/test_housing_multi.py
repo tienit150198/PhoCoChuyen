@@ -176,7 +176,7 @@ class SecondHome(unittest.TestCase):
         validate_state(s)
 
     def test_buying_never_takes_the_wallet_below_zero(self):
-        s = story(wallet=2000)
+        s = story(wallet=2200)
         s, _ = buy(s, 'tap_the')
         before = copy.deepcopy(s)
         with self.assertRaises(GameError) as e:
@@ -335,7 +335,7 @@ class Moving(unittest.TestCase):
         validate_state(s)
 
     def test_moving_needs_the_truck_money_and_an_empty_home(self):
-        s = story(wallet=1836 + 2400 + hs.buy_fee(2400))
+        s = story(wallet=1836 + hs.tax('tap_the') + 2400 + hs.buy_fee(2400) + hs.tax('can_ho_studio'))   # 💹 07/10: + thuế trước bạ
         s, _ = buy(s, 'tap_the')
         s, _ = buy2(s, 'can_ho_studio')
         x = H(s)['props'][0]

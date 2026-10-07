@@ -23,6 +23,8 @@ height of a floor surface; `ledge`: where a wall shelf's plank is, from the top 
 """
 from __future__ import annotations
 
+from . import price_index as pi   # 💹 07/10: the prices below are the base; _i and _sk index them
+
 # Room types (a room's `type`; an item lists the types it suits).
 LIVE = ('living', 'bed', 'bed2', 'studio')
 SLEEP = ('bed', 'bed2', 'studio')
@@ -43,7 +45,7 @@ SPOTS = ('wall', 'floor', 'rug', 'top')
 
 
 def _i(cat, spot, w, h, price, cozy, rooms, name, emoji, tags=(), surface=0, ledge=0):
-    return dict(cat=cat, spot=spot, w=w, h=h, price=price, cozy=cozy, rooms=tuple(rooms), name=name, emoji=emoji,
+    return dict(cat=cat, spot=spot, w=w, h=h, price=pi.price(price), cozy=cozy, rooms=tuple(rooms), name=name, emoji=emoji,
                 tags=tuple(tags), surface=surface, ledge=ledge)
 
 
@@ -413,7 +415,7 @@ GUESTS = {
 # used in any room. types: the room types it suits (None: any room with that part, but not the bunk's mattress and
 # not a garden lawn; the bunk has its own sheets). Ids are stored in saves.
 def _sk(part, name, price, types=None):
-    return dict(part=part, name=name, price=price, types=types)
+    return dict(part=part, name=name, price=pi.price(price), types=types)
 
 
 SKINS = {

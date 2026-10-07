@@ -76,7 +76,7 @@ class Rates(unittest.TestCase):
         for vid in ('sieu_xe', 'truc_thang', 'sieu_du_thuyen'):
             self.assertIn(vid, gr.VEHICLES)
         cat = {v['id']: v for v in gr.catalogue()['vehicles']}
-        self.assertEqual(cat['phan_luc']['upkeep'], 1125)
+        self.assertEqual(cat['phan_luc']['upkeep'], 1463)          # 💹 07/10: 117 000 × 1,25 %
         self.assertEqual(cat['xe_dap']['upkeep'], 0)
         homes = {h['id']: h for h in hs.catalogue()['homes']}
         self.assertEqual(homes['biet_thu_song']['care'], 210)
@@ -92,10 +92,10 @@ class Bills(unittest.TestCase):
         validate_state(s)                                            # an older save: no block, valid
         s, r = act(s, 'jr_seen', ids=['x'])
         self.assertEqual(U(s), dict(v=1, since=12, day=12, acc=dict(car=0, home=0), paid=dict(car=0, home=0)))
-        self.assertTrue(any('Ban quản lý' in x and '50 xu mỗi tháng' in x for x in r['effects']), r['effects'])
+        self.assertTrue(any('Ban quản lý' in x and '54 xu mỗi tháng' in x for x in r['effects']), r['effects'])
         self.assertEqual(s['journey']['wallet'], 5000)               # nothing for the ten days before
         to_bill_day(s)                                               # day 15: days 13, 14, 15
-        self.assertEqual(s['journey']['wallet'], 5000 - 6600 * 75 * 3 // 50000)
+        self.assertEqual(s['journey']['wallet'], 5000 - 7250 * 75 * 3 // 50000)   # 💹 07/10: the SUV 6 600 -> 7 250 xu
         self.assertEqual(rows(s)[-1]['label'], 'Phí giữ xe & bảo dưỡng · 1 xe')
 
     def test_a_month_bills_once_whatever_the_retries(self):
@@ -106,13 +106,13 @@ class Bills(unittest.TestCase):
         s['journey']['life_day'] = 5 * 4 - 1
         U(s).update(since=19, day=19)
         notes = days(s)                                             # day 20: one day of the jet
-        self.assertEqual(s['journey']['wallet'], 20000 - 225)                # 90 000 × 1,25 % / 5 days
+        self.assertEqual(s['journey']['wallet'], 20000 - 292)                # 117 000 × 1,25 % / 5 days
         before = copy.deepcopy(s)
         self.assertEqual(up.on_life_day(s), [])                      # again: nothing
         self.assertEqual(s, before)
-        for _ in range(5):                                           # a whole tháng: 1 125 xu
+        for _ in range(5):                                           # a whole tháng: 1 462–1 463 xu
             days(s)
-        self.assertEqual(before['journey']['wallet'] - s['journey']['wallet'], 1125)
+        self.assertIn(before['journey']['wallet'] - s['journey']['wallet'], (1462, 1463))
         self.assertTrue(any(n.startswith('🧾 Hóa đơn tháng: phí giữ xe & bảo dưỡng') for n in notes))
 
     def test_pro_rata_for_a_vehicle_bought_or_sold_in_the_month(self):
@@ -123,18 +123,18 @@ class Bills(unittest.TestCase):
         days(s, 2)
         own_car(s, 'du_thuyen')                                     # owned for the last 3 mornings of this tháng
         to_bill_day(s)
-        self.assertEqual(w - s['journey']['wallet'], 45000 * 100 * 3 // 50000)
+        self.assertEqual(w - s['journey']['wallet'], 54000 * 100 * 3 // 50000)   # 💹 07/10: 45 000 -> 54 000
         w = s['journey']['wallet']
         days(s)
         s['journey']['garage']['cars'].pop('du_thuyen')             # sold after one more morning
         to_bill_day(s)
-        self.assertEqual(w - s['journey']['wallet'], 45000 * 100 // 50000)
+        self.assertEqual(w - s['journey']['wallet'], 54000 * 100 // 50000)
 
     def test_never_below_zero_the_bank_account_then_waived(self):
         s = opened(wallet=500, deposit=300)
         up.on_life_day(s)
         to_bill_day(s)
-        own_car(s, 'phan_luc')                                       # 1 125 a tháng
+        own_car(s, 'phan_luc')                                       # 1 463 a tháng
         s['journey']['wallet'] = 100
         notes = []
         for _ in range(up.MONTH_DAYS):
@@ -143,7 +143,7 @@ class Bills(unittest.TestCase):
         self.assertEqual(s['journey']['bank']['balance'], 0)
         self.assertFalse(s['journey']['in_debt'])
         line = next(n for n in notes if n.startswith('🧾'))
-        self.assertIn('725 xu còn thiếu được miễn, không tính nợ', line)
+        self.assertIn('1.062 xu còn thiếu được miễn, không tính nợ', line)
         self.assertEqual(U(s)['paid']['car'], 400)
         s['journey']['wallet'] = -30                                 # a wallet in debt: never deeper
         for _ in range(up.MONTH_DAYS):
@@ -179,8 +179,8 @@ class Bills(unittest.TestCase):
         s = story(5000)
         s, _ = act(s, 'jr_garage_buy', id='o_to_mini', confirm=True)
         g = public_state(s)['journey']['garage']
-        self.assertEqual(g['cars'][0]['upkeep'], 23)
-        self.assertEqual(g['upkeep']['month'], 23)
+        self.assertEqual(g['cars'][0]['upkeep'], 25)                # 💹 07/10: 3 300 × 0,75 %
+        self.assertEqual(g['upkeep']['month'], 25)
         self.assertEqual(g['upkeep']['next'] % up.MONTH_DAYS, 0)
         s2 = story(5000)
         s2, _ = act(s2, 'jr_garage_buy', id='xe_dap', confirm=True)

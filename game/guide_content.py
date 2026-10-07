@@ -1855,7 +1855,7 @@ CAREERS = {'milk_tea': {'emoji': '🧋',
                        {'emoji': '🏡',
                         'name': 'Bán thú & nhận nuôi',
                         'how': 'Từ ngày 2. Hỏi kỹ người muốn nuôi rồi mới [[Đồng ý giao bé]] hoặc [[Hẹn quay lại '
-                               'sau]]. Chó mèo chỉ về nhà mới qua góc nhận nuôi, phí 30 xu.'},
+                               'sau]]. Chó mèo chỉ về nhà mới qua góc nhận nuôi, phí 33 xu.'},
                        {'emoji': '🧽',
                         'name': 'Chăm thú trong tiệm',
                         'how': 'Cho ăn, dọn bể và chuồng, đo nhiệt, soi từng bể, cách ly bé ốm. Từ ngày 5, ngày lẻ nào '
@@ -5529,8 +5529,8 @@ GROUPS = [{'id': 'start',
              {'id': 'living',
               'emoji': '🏠',
               'title': 'Chi phí sống',
-              'points': ['🍚 Mỗi lần khép ca là qua một ngày sống: ví trả tiền phòng và cơm nước 10–20 xu, tăng dần '
-                         'theo chương.',
+              'points': ['🍚 Mỗi lần khép ca là qua một ngày sống: ví trả tiền phòng và cơm nước 11–22 xu, tăng dần '
+                         'theo chương. 💹 Từ 07/10 giá cả trong phố tăng nhẹ khoảng 10%.',
                          '💡 Nơi bạn không làm hôm đó không tốn đồng nào: quỹ, hàng và người làm cứ để nguyên chờ bạn quay '
                          'lại.',
                          '🏃 Chỉ khi bỏ đi lúc đang làm dở mới bị phạt một lần, hộp xác nhận ghi rõ số tiền trước khi đi.',
@@ -5616,7 +5616,7 @@ GROUPS = [{'id': 'start',
                          '🧾 Cứ 7 ngày sống có một sao kê. Hạn trả là 3 ngày sau sao kê.',
                          '✅ [[Trả hết sao kê]] trước hạn thì không mất lãi. [[Trả tối thiểu]] (10% sao kê, ít nhất 10 '
                          'xu) thì phần còn lại chịu lãi 0,5%/ngày.',
-                         '⏰ Trễ hạn: phạt 8 xu, trừ điểm tín dụng, thẻ tạm khóa tới khi trả phần quá hạn.',
+                         '⏰ Trễ hạn: phạt 9 xu, trừ điểm tín dụng, thẻ tạm khóa tới khi trả phần quá hạn.',
                          '🤖 Chọn “Tự động trả toàn bộ sao kê” hoặc “Tự động trả tối thiểu” rồi bấm [[Lưu cách tự động '
                          'trả]] để khỏi quên.',
                          '🏧 [[Ứng tiền mặt]]: phí 4% (ít nhất 3 xu), lãi tính ngay, tối đa 50% hạn mức. Chỉ dùng khi '
@@ -5642,12 +5642,14 @@ GROUPS = [{'id': 'start',
               'title': 'Thuê phòng, mua nhà',
               'points': ['🏠 Mở [[Nhà của bạn]] ở trang Hành trình hoặc trong Ngân hàng. Luôn thấy tiền mặt, tài khoản và '
                          'còn thiếu bao nhiêu.',
-                         '🛏️ Phòng trọ khép kín: cọc 60 xu (trả lại khi dọn đi), tiền phòng 14 xu/ngày, tinh thần +1 mỗi sáng.',
+                         '🛏️ Phòng trọ khép kín: cọc 60 xu (trả lại khi dọn đi), tiền phòng 15 xu/ngày, tinh thần +1 mỗi sáng.',
                          '👥 Ký túc xá Hẻm 7: ở ghép giường tầng, cọc 20 xu, 7 xu/ngày. Từ chương 3 rẻ hơn gác Bà Tám, có 3 bạn cùng phòng.',
                          '🏢 Căn hộ, nhà phố, biệt thự rao bán từ 1.800 tới 60.000 xu. Trả trước ít nhất 30% giá và 2% phí công chứng, sang tên.',
+                         '💹 Thuế trước bạ (từ 07/10): thêm 10% giá nhà, 20% từ 20.000 xu, 30% từ 60.000 xu. Trả cùng khoản trả '
+                         'trước, bằng ví hoặc tài khoản (không vay, không lấy từ quỹ chung). Thuế không cộng vào giá bán lại.',
                          '📝 Phần còn lại vay Ngân hàng Phố 1–3 năm, trả góp mỗi tháng (5 ngày sống). Lãi 9–11,4%/năm tùy '
                          'điểm tín dụng.',
-                         '🔑 Có nhà thì hết tiền phòng, chỉ còn điện nước 2–16 xu/ngày, và tinh thần được cộng mỗi sáng.',
+                         '🔑 Có nhà thì hết tiền phòng, chỉ còn điện nước 2–18 xu/ngày, và tinh thần được cộng mỗi sáng.',
                          '🧾 Nhà từ 6.000 xu có phí bảo trì mỗi tháng: 0,2–0,35% giá mua, dù ở, để trống hay cho thuê. '
                          'Căn hộ nhỏ dưới 6.000 xu không tốn phí này.',
                          '🏰 Penthouse cần điểm tín dụng từ 670 mới vay được, biệt thự từ 700 hoặc 740.',
@@ -5711,7 +5713,7 @@ GROUPS = [{'id': 'start',
                          'bước làm mất an toàn hay CV ghi sai sự thật.',
                          '📚 [[Lớp cấp tốc]] có học phí, học xong thi ngay hôm nay. [[Tự học]] miễn phí, thi từ ngày '
                          'mai.',
-                         '💰 Học phí lớp cấp tốc 15–30 xu tùy chứng chỉ. Thi lại, hay thi để lấy điểm cao hơn, thì lớp '
+                         '💰 Học phí lớp cấp tốc 17–33 xu tùy chứng chỉ. Thi lại, hay thi để lấy điểm cao hơn, thì lớp '
                          'ôn chỉ tốn nửa học phí.',
                          '📝 Đề 6 câu, đúng 4 là đạt, được mở sách. Phân vân thì bấm 💡 Gợi ý: gạch bớt một đáp án sai '
                          'và nhắc lại bài học, không trừ điểm.',
@@ -6034,7 +6036,7 @@ GROUPS = [{'id': 'start',
               'emoji': '📸',
               'title': 'Chụp ảnh ở hội chợ',
               'points': ['🏮 Lúc hội chợ mở, vào [[Cổng hội chợ]] rồi tới [[Buồng chụp ảnh]].',
-                         '📸 Chụp một mình, với bạn bè hoặc người lạ: 5 xu một lượt 4 kiểu, ai chụp nấy trả từ ví.',
+                         '📸 Chụp một mình, với bạn bè hoặc người lạ: 6 xu một lượt 4 kiểu, ai chụp nấy trả từ ví.',
                          '💾 Xong thì lưu dải ảnh về máy để khoe bạn bè.'],
               'go': {'action': 'fair', 'label': 'Mở Hội chợ'}},
              {'id': 'hands_on',
@@ -6178,7 +6180,7 @@ GROUPS = [{'id': 'start',
                          'Chỉ bạn bè mới cầu hôn được nhau. Xem mục “Bạn bè giữa người chơi”.',
                          '💛 Bước 3 (nên làm): thân với hàng xóm. Người càng thân càng hay tới dự và mừng dày, đỡ tiền '
                          'tiệc. Xem mục “Thân thiết với hàng xóm”.',
-                         '💰 Bước 4: để dành tiền trong ví. Nhẫn 50–900 xu; lúc chốt kế hoạch cưới mỗi người đặt cọc '
+                         '💰 Bước 4: để dành tiền trong ví. Nhẫn 55–990 xu; lúc chốt kế hoạch cưới mỗi người đặt cọc '
                          'phần mình trong 30% tổng tiệc. Rút tiền lời từ nơi làm về ví trước.',
                          '💎 Bước 5: mua nhẫn ở tab [[Tiệm nhẫn]] của mục [[Hôn nhân]], chọn màu rồi bấm [[Mua]]. Xem '
                          'mục “Tiệm nhẫn: mua và đổi màu nhẫn”.',
@@ -6218,19 +6220,19 @@ GROUPS = [{'id': 'start',
               'title': 'Tiệm nhẫn: mua và đổi màu nhẫn',
               'points': ['💍 Mở [[Hôn nhân]], tab [[Tiệm nhẫn]]. Đã đính hôn hay đã cưới thì tab này tên là [[Kim '
                          'hoàn]].',
-                         '💰 Giá gốc: nhẫn bạc khắc tên 50 xu, vàng tây 18K 150 xu, vàng ta 24K (1 chỉ) 280 xu, vàng '
-                         'đính ruby 480 xu, kim cương 5 ly 900 xu.',
+                         '💰 Giá gốc: nhẫn bạc khắc tên 55 xu, vàng tây 18K 165 xu, vàng ta 24K (1 chỉ) 310 xu, vàng '
+                         'đính ruby 530 xu, kim cương 5 ly 990 xu.',
                          '🎨 Mỗi nhẫn chọn Màu kim loại: Bạc, Vàng, Vàng hồng hay Bạch kim; nhẫn ruby và kim cương chọn '
                          'thêm Màu đá. Hình nhẫn đổi màu ngay để xem trước.',
-                         '➕ Màu sang hơn màu gốc thì cộng thêm, ví dụ nhẫn bạc lên Bạch kim +60 xu, nhẫn ruby đổi đá '
-                         'Kim cương trắng +30 xu. Chọn màu rẻ hơn thì giá không giảm.',
+                         '➕ Màu sang hơn màu gốc thì cộng thêm, ví dụ nhẫn bạc lên Bạch kim +66 xu, nhẫn ruby đổi đá '
+                         'Kim cương trắng +33 xu. Chọn màu rẻ hơn thì giá không giảm.',
                          '🛒 Bấm [[Mua]] rồi xác nhận. Nút chỉ bấm được khi ví đủ tiền, thiếu thì hiện [[Chưa đủ '
                          'tiền]]: rút tiền lời từ nơi làm về ví trước.',
                          '💳 Tiền nhẫn trừ vào ví. Ai chọn [[Ưu tiên quẹt thẻ tín dụng]] trong Ngân hàng và thẻ còn hạn '
                          'mức thì nhẫn được quẹt thẻ. Thẻ chung vợ chồng không trả tiền nhẫn.',
                          '📦 Hộp nhẫn giữ tối đa 5 chiếc, tính cả nhẫn đang nằm trong lời cầu hôn chờ trả lời. Bị từ '
                          'chối hay lời cầu hôn hết hạn thì nhẫn về lại hộp.',
-                         '🔁 Tiệm kim hoàn: trong Hộp nhẫn bấm [[Đổi màu]], chọn màu mới rồi bấm nút đổi màu. Phí 20 '
+                         '🔁 Tiệm kim hoàn: trong Hộp nhẫn bấm [[Đổi màu]], chọn màu mới rồi bấm nút đổi màu. Phí 22 '
                          'xu, cộng phần chênh nếu màu mới đắt hơn màu đang có. Bấm [[Thôi]] để bỏ.',
                          '💞 Nhẫn cưới của hai bạn cũng đổi màu được, ai đổi cũng được và người kia được báo. Nhẫn đang '
                          'nằm trong lời cầu hôn thì chờ trả lời xong mới đổi.'],
@@ -6282,17 +6284,17 @@ GROUPS = [{'id': 'start',
              {'id': 'wedding_prices',
               'emoji': '💵',
               'title': 'Bảng giá đám cưới',
-              'points': ['🏠 Rạp cưới tại nhà: phí 120 xu, tối đa 30 bàn, cỗ rẻ hơn 15%, hàng xóm tới đông hơn.',
-                         '🍽️ Nhà hàng Hoa Sen: phí 200 xu, tối đa 40 bàn. Trung tâm tiệc cưới Sen Vàng: phí 450 xu, '
+              'points': ['🏠 Rạp cưới tại nhà: phí 130 xu, tối đa 30 bàn, cỗ rẻ hơn 15%, hàng xóm tới đông hơn.',
+                         '🍽️ Nhà hàng Hoa Sen: phí 220 xu, tối đa 40 bàn. Trung tâm tiệc cưới Sen Vàng: phí 495 xu, '
                          'tối đa 60 bàn, cỗ đắt hơn 40% nhưng khách mừng nhiều hơn.',
                          '🪑 Ít nhất 5 bàn, mỗi bàn 10 ghế. Ghế trống vẫn trả tiền cỗ, nên đừng đặt dư quá nhiều bàn.',
-                         '🍲 Một bàn Bình dân / Tiêu chuẩn / Sang trọng: tại nhà 21/34/55 xu, nhà hàng 25/40/65 xu, '
-                         'trung tâm 35/56/91 xu. Thực đơn sang thì khách mừng nhỉnh hơn.',
-                         '🎎 Nghi lễ, không bắt buộc: Lễ dạm ngõ 20 xu, Lễ ăn hỏi tráp 5/7/9 mâm giá 60/85/120 xu, Lễ '
-                         'gia tiên 30 xu, Lễ thành hôn 50 xu.',
-                         '✨ Dịch vụ thêm: ảnh cưới và album 120, ban nhạc 70, váy cưới và vest 60, trang trí hoa 60, '
-                         'xe hoa 45, MC 30, trang điểm 25, pháo giấy 15 xu.',
-                         '💌 Thiệp cưới 3 xu và quà cảm ơn khách 8 xu cho mỗi bàn. Có thiệp mời đàng hoàng thì khách '
+                         '🍲 Một bàn Bình dân / Tiêu chuẩn / Sang trọng: tại nhà 24/37/61 xu, nhà hàng 28/44/72 xu, '
+                         'trung tâm 39/62/101 xu. Thực đơn sang thì khách mừng nhỉnh hơn.',
+                         '🎎 Nghi lễ, không bắt buộc: Lễ dạm ngõ 22 xu, Lễ ăn hỏi tráp 5/7/9 mâm giá 66/94/130 xu, Lễ '
+                         'gia tiên 33 xu, Lễ thành hôn 55 xu.',
+                         '✨ Dịch vụ thêm: ảnh cưới và album 130, ban nhạc 77, váy cưới và vest 66, trang trí hoa 66, '
+                         'xe hoa 50, MC 33, trang điểm 28, pháo giấy 17 xu.',
+                         '💌 Thiệp cưới miễn phí, quà cảm ơn khách 9 xu cho mỗi bàn. Có thiệp mời đàng hoàng thì khách '
                          'tới đông hơn.',
                          '🥳 Nghi lễ và dịch vụ làm tiệc vui hơn, từ “Tiệc gọn” tới “Linh đình”: khách tới đông và mừng '
                          'dày hơn một chút, nhưng chưa chắc bù đủ tiền bỏ ra.',
@@ -6327,7 +6329,7 @@ GROUPS = [{'id': 'start',
               'points': ['🏡 Mở [[Nhà & Gia đình]] để ở chung và chăm con. Trong [[Hôn nhân]], tab [[Hai bạn]] hiện điểm hạnh phúc và quỹ chung; [[Tương tác]] để gửi lời thương.',
                          '💞 Tab [[Tương tác]]: [[Chào buổi sáng]], [[Nhớ anh/em]], [[Hôm nay mệt quá]], [[Ôm một '
                          'cái]], [[Thơm một cái]], mỗi cái +1 điểm hạnh phúc, mỗi kiểu một lần mỗi ngày.',
-                         '🍱 [[Mang cơm trưa]] tốn 5 xu, +2 điểm. Chọn một món trong túi quà (đồ hàng xóm tặng) rồi bấm '
+                         '🍱 [[Mang cơm trưa]] tốn 6 xu, +2 điểm. Chọn một món trong túi quà (đồ hàng xóm tặng) rồi bấm '
                          '[[Tặng]]: +2 điểm, món quà sang túi quà của người ấy.',
                          '💗 Điểm hạnh phúc tối đa 100, không bị trừ. Mỗi ngày tính tối đa 6 điểm từ tương tác; ngày '
                          'liền nhau được thưởng thêm tới 4 điểm. Ngày mới tính từ 0 giờ.',

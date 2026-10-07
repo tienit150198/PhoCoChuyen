@@ -112,15 +112,15 @@ class RingAndProposalTests(Base):
         a = self.user('an', wallet=200)
         self.act(a, 'ring_buy', tier='vang_tay', rid='ring-request-01')
         self.act(a, 'ring_buy', tier='vang_tay', rid='ring-request-01')   # a retried request
-        self.assertEqual(self.wallet(a), 50)
+        self.assertEqual(self.wallet(a), 35)                               # 💹 07/10: 150 -> 165 xu
         rings = self.view(a)['rings']
         self.assertEqual([(r['tier'], r['status']) for r in rings], [('vang_tay', 'owned')])
         hist = self.state(a)['journey']['history'][-1]
-        self.assertEqual((hist['kind'], hist['amount']), ('life', -150))
+        self.assertEqual((hist['kind'], hist['amount']), ('life', -165))
         with self.assertRaises(mr.MarriageError) as e:
             self.act(a, 'ring_buy', tier='kim_cuong')
         self.assertEqual(e.exception.code, 'not_enough')
-        self.assertEqual(self.wallet(a), 50)
+        self.assertEqual(self.wallet(a), 35)                               # 💹 07/10: 150 -> 165 xu
         with self.assertRaises(mr.MarriageError):
             self.act(a, 'ring_buy', tier='nhua')
 
@@ -175,7 +175,7 @@ class RingAndProposalTests(Base):
         self.act(a, 'propose', code=self.code(b), ring=rid, message='hem')
         self.act(b, 'respond', id=self.view(b)['incoming'][0]['id'], answer='decline')
         self.assertEqual(self.view(a)['rings'][0]['status'], 'owned')       # no refund, the ring is still his
-        self.assertEqual(self.wallet(a), 2000 - 50)
+        self.assertEqual(self.wallet(a), 2000 - 55)
         self.assertIsNone(self.view(a)['couple'])
         with self.assertRaises(mr.MarriageError) as e:
             self.act(a, 'propose', code=self.code(b), ring=rid, message='hem')
@@ -288,16 +288,16 @@ class PlannerMathTests(unittest.TestCase):
     def test_costs_deposit_and_balance(self):
         q = mr.costs(mr.clean_plan(PLAN))
         sub = {s['id']: s['subtotal'] for s in q['sections']}
-        self.assertEqual(sub, dict(venue=200, reception=20 * 40, ceremony=20 + 60 + 30, extras=60 + 25 + 30 + 0))   # thiệp cưới miễn phí (01/10)
-        self.assertEqual(q['total'], 1225)
-        self.assertEqual(q['deposit'], 368)                 # 30 % rounded up
-        self.assertEqual(q['balance'], 1225 - 368)
+        self.assertEqual(sub, dict(venue=220, reception=20 * 44, ceremony=22 + 66 + 33, extras=66 + 28 + 33 + 0))   # 💹 07/10: +10 %   # thiệp cưới miễn phí (01/10)
+        self.assertEqual(q['total'], 1348)
+        self.assertEqual(q['deposit'], 405)                 # 30 % rounded up
+        self.assertEqual(q['balance'], 1348 - 405)
         self.assertEqual(q['seats'], 200)
 
     def test_menu_price_depends_on_venue(self):
-        self.assertEqual(mr.table_price('home', 'tieu_chuan'), 34)
-        self.assertEqual(mr.table_price('restaurant', 'tieu_chuan'), 40)
-        self.assertEqual(mr.table_price('center', 'sang_trong'), 91)
+        self.assertEqual(mr.table_price('home', 'tieu_chuan'), 37)
+        self.assertEqual(mr.table_price('restaurant', 'tieu_chuan'), 44)
+        self.assertEqual(mr.table_price('center', 'sang_trong'), 101)
 
     def test_plan_is_validated(self):
         for bad in (dict(PLAN, venue='castle'), dict(PLAN, tables=4), dict(PLAN, venue='home', tables=31), dict(PLAN, tables=20.5),
@@ -457,7 +457,7 @@ class WeddingTests(Base):
         with self.assertRaises(mr.MarriageError) as e:
             self.act(self.b, 'confirm', id=w['id'], version=w['version'])
         self.assertEqual(e.exception.code, 'not_enough')
-        self.assertEqual((self.wallet(self.a), self.wallet(self.b)), (1500 - 50, 10))
+        self.assertEqual((self.wallet(self.a), self.wallet(self.b)), (1500 - 55, 10))
         self.assertEqual(self.view(self.a)['wedding']['status'], 'proposed')
 
     def test_resolution_idempotent_from_either_save(self):
@@ -508,7 +508,7 @@ class WeddingTests(Base):
         v = self.view(self.a)['wedding']
         r = v['result']
         self.assertEqual(r['profit'], r['gifts'] + r['late_total'] - r['total'])
-        self.assertEqual(r['total'], 1225)
+        self.assertEqual(r['total'], 1348)
         self.assertEqual(r['names'], dict(a='An', b='Binh'))
         self.assertTrue(r['speeches'] and r['speeches'][0].startswith('MC'))      # an MC was hired
         self.assertIn('close', r)
@@ -695,7 +695,7 @@ class MarriageHTTPTests(unittest.TestCase):
         self.assertEqual(status, 200, data)
         status, data = self.req(dev, '/api/marriage/ring_buy', 'POST', dict(tier='bac'))
         self.assertEqual(status, 200, data)
-        self.assertEqual(data['state']['journey']['wallet'], 10)
+        self.assertEqual(data['state']['journey']['wallet'], 5)
         self.assertEqual(data['view']['rings'][0]['tier'], 'bac')
         self.assertIn('marriage', data['state'])
         status, data = self.req(dev, '/api/marriage/ring_buy', 'POST', dict(tier='bac'))
@@ -703,7 +703,7 @@ class MarriageHTTPTests(unittest.TestCase):
         status, data = self.req(dev, '/api/marriage/nope', 'POST', {})
         self.assertEqual(status, 404)
         status, data = self.req(dev, '/api/marriage/quote', 'POST', dict(plan=PLAN, mine=50))
-        self.assertEqual((status, data['quote']['total']), (200, 1225))
+        self.assertEqual((status, data['quote']['total']), (200, 1348))
         status, data = self.req(dev, '/api/news?since=0')
         self.assertEqual(data['me']['alerts'], 0)
 

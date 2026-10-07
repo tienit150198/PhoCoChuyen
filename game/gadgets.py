@@ -34,6 +34,7 @@ from __future__ import annotations
 import re
 
 from . import bank as bk
+from . import price_index as pi   # 💹 07/10: the prices in ITEMS are written as the base; _i() indexes them
 
 VERSION = 1
 KIND = 'life'                     # journey wallet history kind (an existing one: older builds validate the row)
@@ -63,8 +64,10 @@ PERK_IDS = tuple(p[0] for p in PERKS)
 
 
 def _i(iid, group, emoji, name, price, desc, *, tier=0, color='#8a8f98', brand=''):
-    """tier: a phone's rank 1–5 (its perks are PERK_IDS[:tier]); 0 for gear. color: the shell, drawn in the hand."""
-    return iid, dict(id=iid, group=group, emoji=emoji, name=name, price=price, desc=desc, tier=tier, color=color,
+    """tier: a phone's rank 1–5 (its perks are PERK_IDS[:tier]); 0 for gear. color: the shell, drawn in the hand.
+    price: the base (pre-07/10) price, indexed here (game/price_index.py, luxury tiers included). An item keeps the
+    price paid (`p`), which selling back uses."""
+    return iid, dict(id=iid, group=group, emoji=emoji, name=name, price=pi.price(price), desc=desc, tier=tier, color=color,
                      brand=brand)
 
 

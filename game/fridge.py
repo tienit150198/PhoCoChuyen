@@ -32,6 +32,7 @@ import re
 
 from . import housing as hs
 from . import needs as nd
+from . import price_index as pi   # 💹 07/10: FOODS prices are the base, indexed below
 
 VERSION = 1
 KEYS = {'v', 'items', 'n', 'b'}
@@ -54,6 +55,7 @@ FOODS = {
     'com_hop': dict(emoji='🍱', name='Hộp cơm thịt kho', price=5, full=40, wake=0, say='Hâm nóng hộp cơm thịt kho trứng, ăn ngon lành.'),
     'ca_phe': dict(emoji='🧋', name='Chai cà phê sữa', price=3, full=0, wake=15, say='Cà phê sữa đá mát lạnh, tỉnh hẳn người.'),
 }
+pi.index(FOODS, luxury=False)   # 💹 07/10 (the same function as needs.SNACK: bánh bao and cà phê stay equal)
 
 NO_FRIDGE = 'Chưa có tủ lạnh'
 IN_BAG = 'Tủ lạnh còn trong túi đồ'

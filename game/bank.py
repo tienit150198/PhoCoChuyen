@@ -30,6 +30,7 @@ import hashlib
 from . import archive as ar
 from . import bank_content as K
 from . import days as dy      # "Ngày N" wording (game/days.py)
+from . import price_index as pi   # 💹 07/10: the flat fees (the percentages and the loan rates stay; 1.9.9 pins LOAN_BP)
 
 VERSION = 1
 KIND = 'bank'               # journey wallet history kind (journey.HISTORY_KINDS)
@@ -66,8 +67,8 @@ CARD_CYCLE = 7              # a statement every 7 life days
 CARD_GRACE = 3              # due 3 life days after the statement
 CARD_MIN_PCT, CARD_MIN_FLOOR = 10, 10
 CARD_BP = 50                # 0,5 %/ngày on carried balances and cash advances
-CARD_LATE_FEE = 8
-CASH_FEE_PCT, CASH_FEE_MIN, CASH_SHARE = 4, 3, 50
+CARD_LATE_FEE = pi.price(8)   # 💹 07/10: base 8
+CASH_FEE_PCT, CASH_FEE_MIN, CASH_SHARE = 4, pi.price(3), 50
 LIMIT_MIN, LIMIT_MAX = 50, 5000
 
 # Loans (interest per 7-day period, basis points).

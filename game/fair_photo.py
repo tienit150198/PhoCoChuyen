@@ -14,8 +14,10 @@ from __future__ import annotations
 
 import re
 
+from . import price_index as pi   # 💹 07/10: PRICE (base 5 xu)
+
 COMMANDS = ('fair_photo',)
-PRICE = 5                       # xu a shoot (four shots), each player pays their own (owner: "xu sinks")
+PRICE = pi.price(5)             # xu a shoot (four shots), each player pays their own (owner: "xu sinks")
 SHOTS = 4
 LABEL = '📸 Chụp ảnh hội chợ'
 MODES = ('solo', 'stranger', 'friends')

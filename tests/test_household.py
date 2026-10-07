@@ -30,10 +30,10 @@ class Household(unittest.TestCase):
         with self.assertRaises(GameError):
             act(s, 'jr_hh_adopt', kind='cat', name='Miu')
         s, _ = act(s, 'jr_hh_adopt', kind='cat', name='Miu', confirm=True)
-        self.assertEqual(s['journey']['wallet'], 470)
+        self.assertEqual(s['journey']['wallet'], 467)   # 💹 07/10: adopting 30 -> 33 xu
         with self.assertRaises(GameError):
             act(s, 'jr_hh_adopt', kind='dog', name='Mun', confirm=True)
-        self.assertEqual(s['journey']['wallet'], 470)
+        self.assertEqual(s['journey']['wallet'], 467)   # 💹 07/10: adopting 30 -> 33 xu
         validate_state(s)
 
     def test_care_daily_slots_growth_and_offline_no_charge(self):
@@ -130,7 +130,7 @@ class Household(unittest.TestCase):
                 B(seed)['pref'] = 'account'
                 mr._mutate(store, {store.key(token):lambda s:s.update(copy.deepcopy(seed))})
                 spend = 0
-                purchases = [('jr_hh_adopt', dict(kind='child', name='Bông', confirm=True), 0), ('jr_hh_adopt', dict(kind='cat', name='Miu', confirm=True), 30), ('jr_hh_care', dict(member='child', act='milk'), 4), ('jr_hh_style', dict(member='child', item='yem', confirm=True), 18)]
+                purchases = [('jr_hh_adopt', dict(kind='child', name='Bông', confirm=True), 0), ('jr_hh_adopt', dict(kind='cat', name='Miu', confirm=True), 33), ('jr_hh_care', dict(member='child', act='milk'), 4), ('jr_hh_style', dict(member='child', item='yem', confirm=True), 20)]
                 for i, (action, payload, cost) in enumerate(purchases):
                     rev = store.read(token)[1]
                     args = (token, f'household-replay-{i:04d}', rev, None, action, payload)
@@ -153,7 +153,7 @@ class Household(unittest.TestCase):
         with patch.object(cp, 'joint_account', return_value=dict(balance=100, daily_left=100)), patch.object(cp, 'joint_spend', return_value={}) as spend:
             paid, _ = act(s, 'jr_hh_adopt', kind='cat', name='Miu', confirm=True)
         spend.assert_called_once()
-        self.assertEqual(spend.call_args.args[1], 30)
+        self.assertEqual(spend.call_args.args[1], 33)
         self.assertEqual(paid['journey']['wallet'], s['journey']['wallet'])
 
     def test_browser_payment_confirmation_and_failed_api(self):

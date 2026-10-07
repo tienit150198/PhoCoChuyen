@@ -7,6 +7,7 @@ payment reducer and command receipts. The optional block is ignored by old build
 from __future__ import annotations
 
 from . import bank, needs
+from . import price_index as pi   # 💹 07/10: the costs below are the base, indexed after FIELDS
 
 KINDS = {'child': ('👶', 'Em bé', 0), 'cat': ('🐱', 'Mèo', 30), 'dog': ('🐶', 'Cún', 30)}
 ACTS = {
@@ -22,6 +23,9 @@ OUTFITS = {
     'yem': dict(name='Yếm cầu vồng', color='#83b9db', cost=18),
     'flower': dict(name='Bộ hoa nhỏ', color='#e5a0b1', cost=22),
 }
+KINDS = {k: (e, n, pi.price(x)) for k, (e, n, x) in KINDS.items()}   # 💹 07/10
+pi.index(ACTS, 'cost', luxury=False)
+pi.index(OUTFITS, 'cost')
 FIELDS = {'kind', 'name', 'since', 'day', 'did', 'care_days', 'bond', 'food', 'clean', 'joy', 'outfit', 'owned'}
 
 

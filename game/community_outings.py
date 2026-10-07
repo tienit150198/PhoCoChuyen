@@ -6,10 +6,11 @@ records the chosen outcome through the normal command receipt transaction.
 from __future__ import annotations
 import copy
 from . import bank, needs, archive as ar
+from . import price_index as pi   # 💹 07/10: a place's cost is the base, indexed by _place
 
 
 def _place(id, name, emoji, host, cost, intro, choices):
-    return dict(id=id,name=name,emoji=emoji,host=host,cost=cost,intro=intro,
+    return dict(id=id,name=name,emoji=emoji,host=host,cost=pi.price(cost),intro=intro,
                 choices=[dict(id=k,name=n,keepsake=m,story=t) for k,n,m,t in choices])
 
 

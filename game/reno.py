@@ -35,6 +35,7 @@ import re
 
 from . import deco_content as DC
 from . import housing as hs
+from . import price_index as pi   # 💹 07/10: PARTS and FIX_MIN
 from .jsoncopy import tree_copy
 
 VERSION = 1
@@ -43,7 +44,7 @@ STATS = ('fixed', 'upgraded', 'bought', 'sold', 'cozy_days', 'spirit')
 COND_MIN = 30                      # wear stops here: tired, never ruined
 WEAR_DAYS = (4, 6, 8)              # life days per point of wear, by upgrade level
 WORN_AT = 60                       # below this the drawing shows the flaw and the morning says so once
-FIX_MIN = 5
+FIX_MIN = pi.price(5)            # 💹 07/10: base 5
 SELL_PCT = 50
 COZY_LV = 2                        # Ấm cúng per upgrade level
 COZY_STEPS = ((24, 2), (10, 1))    # Ấm cúng from → tinh thần each morning
@@ -63,6 +64,9 @@ PARTS = {
     'kitchen': dict(emoji='🍲', name='Bếp', flaw='Bếp cũ, ám khói', fix=90,
                     up=(('Bếp ga mới, kệ bếp', 140), ('Tủ bếp trọn bộ, máy hút mùi', 340))),
 }
+for _P in PARTS.values():   # 💹 07/10 (game/price_index.py): the prices above are the base
+    _P['fix'] = pi.price(_P['fix'], luxury=False)
+    _P['up'] = tuple((n, pi.price(x, luxury=False)) for n, x in _P['up'])
 PART_IDS = tuple(PARTS)
 LV_MAX = 2
 

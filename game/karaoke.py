@@ -47,13 +47,14 @@ import json
 import re
 import time
 import unicodedata
+from . import price_index as pi   # 💹 07/10: QUEUE_XU
 import urllib.error
 import urllib.request
 from urllib.parse import parse_qs, quote, urlsplit
 
 KIND = 'karaoke'                 # journey.HISTORY_KINDS from this build on (step 1: accepted)
 WRITE_KIND = 'life'              # what this build writes (an old kind: 1.9.4 validates it). Step 2: KIND.
-QUEUE_XU = 2                     # a queued song (owner 06/10), the first of the day free
+QUEUE_XU = pi.price(2)           # a queued song (owner 06/10), the first of the day free (💹 07/10: 2 xu stays 2)
 TIP_CHIPS = (5, 10, 20, 50)
 TIP_KEEP = 80                    # percent the singer receives; the rest is burned (owner 06/10: 20%)
 TIP_SEND_DAY = 200               # xu one player may tip per Vietnam day

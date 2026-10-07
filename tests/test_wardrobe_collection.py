@@ -4,12 +4,14 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from game import price_index as pi
 from game import wardrobe as wd
 from game.engine import GameError, migrate_state, validate_state
 from tests.test_wardrobe import story, act
 
 NEW = {'toc_bui_cao': ('hair', 50), 'toc_bui_doi': ('hair', 60), 'toc_bui_thap': ('hair', 45),
        'dam_cong_chua': ('top', 160), 'dam_du_tiec': ('top', 180), 'dam_yem': ('top', 120)}
+NEW = {k: (slot, pi.price(p)) for k, (slot, p) in NEW.items()}   # 💹 07/10: the base prices above, indexed
 
 
 class Collection(unittest.TestCase):

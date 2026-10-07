@@ -9,6 +9,7 @@ import unittest
 from game import deco as dc
 from game import deco_content as DC
 from game import journey as jr
+from game import price_index as pi
 from game import needs as nd
 from game import relax as rx
 from game import reno as rn
@@ -74,7 +75,7 @@ class Rooms(unittest.TestCase):
         for k in ('bon_tam', 'buong_tam', 'bon_rua', 'guong_tam', 'ke_khan', 'ke_tam', 'gio_do_tam', 'tham_tam', 'vit_cao_su',
                   'ghe_tam_nang', 'du_che', 'phao', 'lo_nuong', 'cay_dua', 'den_vuon'):
             it = DC.ITEMS[k]
-            self.assertTrue(10 <= it['price'] <= 300 and it['cat'] in ('bath', 'pool'), k)
+            self.assertTrue(10 <= it['price'] <= pi.price(300) and it['cat'] in ('bath', 'pool'), k)   # 💹 07/10
         self.assertIn('bath', DC.ITEMS['may_giat']['rooms'])
         self.assertIn('pool', DC.ITEMS['ban_ngoai']['rooms'])
         self.assertNotIn('bon_tam', [k for k, it in DC.ITEMS.items() if 'bathc' in it['rooms']])   # the shared one: only small things
@@ -88,7 +89,7 @@ class Rooms(unittest.TestCase):
         s, plant = put_new(s, 'cay_luoi_ho', 'bath', 60, 40)
         s, cactus = put_new(s, 'xuong_rong', 'bath', 0, 0, on='#toilet')               # on the cistern
         self.assertEqual(fp(s, cactus)[4], '#toilet')
-        self.assertEqual(s['journey']['wallet'], cash - 300 - 40 - 50 - 15)
+        self.assertEqual(s['journey']['wallet'], cash - 330 - 44 - 55 - 17)   # 💹 07/10: 300 40 50 15
         done = {x['id'] for x in D(s)['sets'] if x['done']}
         self.assertIn('spa', done)
         with self.assertRaises(GameError):                                              # a sofa does not go in a bathroom

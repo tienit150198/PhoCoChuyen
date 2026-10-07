@@ -72,7 +72,7 @@ class Listing(unittest.TestCase):
         always well under the closed room, with a smaller deposit and no comfort bonus."""
         bed, room = hs.HOMES[DORM_ID], hs.HOMES['tro_moi']
         attic = {ch: hs.attic_rent(dict(chapter=ch)) for ch in jr.LIVING}
-        self.assertEqual(attic, {1: 6, 2: 7, 3: 8, 4: 9, 5: 10, 6: 12, 7: 12})
+        self.assertEqual(attic, {1: 6, 2: 7, 3: 9, 4: 10, 5: 12, 6: 13, 7: 13})   # 💹 07/10: LIVING indexed (the bed stays 7)
         self.assertGreater(bed['rent'], attic[1])
         self.assertEqual(bed['rent'], attic[2])
         for ch in range(3, jr.LAST + 1):
@@ -138,12 +138,12 @@ class RentAndLeave(unittest.TestCase):
         validate_state(s)
 
     def test_buying_a_home_ends_the_bed(self):
-        s, _ = in_dorm(wallet=2000)
+        s, _ = in_dorm(wallet=2200)
         price = hs.HOMES['tap_the']['price']
         s, r = act(s, 'jr_home_buy', kind='tap_the', down=price, confirm=True)
         self.assertTrue(r['approved'])
         self.assertIsNone(H(s)['rent'])
-        self.assertEqual(s['journey']['wallet'], 2000 - price - hs.buy_fee(price))   # the 20 xu came back
+        self.assertEqual(s['journey']['wallet'], 2200 - price - hs.buy_fee(price) - hs.tax('tap_the'))   # the 20 xu came back
         validate_state(s)
 
 

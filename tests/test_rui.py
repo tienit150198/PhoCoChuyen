@@ -198,13 +198,13 @@ class Flow(unittest.TestCase):
         warn(s, 'xe', 'car', 'o_to_mini')
         notes = days(s)
         c = R(s)['card']
-        self.assertEqual((c['kind'], c['ref'], c['cost']), ('xe', 'o_to_mini', 3000 * rui.XE_PCT // 10000))
+        self.assertEqual((c['kind'], c['ref'], c['cost']), ('xe', 'o_to_mini', 3300 * rui.XE_PCT // 10000))   # 💹 07/10: 3 000 -> 3 300
         self.assertTrue(any('hỏng' in n for n in notes))
         v = public_state(s)['rui']['card']
         self.assertEqual([o['id'] for o in v['opts']], ['sua', 'de'])   # a car: no do-it-yourself
         w = s['journey']['wallet']
         act_ok(s, 'jr_rui_choose', id=c['id'], choice='sua')
-        self.assertEqual(w - s['journey']['wallet'], 120)
+        self.assertEqual(w - s['journey']['wallet'], 132)
         self.assertEqual(rows(s, 'Sửa xe')[-1]['kind'], 'life')
         self.assertIsNone(R(s)['card'])
 
@@ -222,8 +222,8 @@ class Flow(unittest.TestCase):
         self.assertEqual(R(s)['card']['cover'], 80)
         w = s['journey']['wallet']
         act_ok(s, 'jr_rui_choose', id=R(s)['card']['id'], choice='sua')
-        self.assertEqual(w - s['journey']['wallet'], 120 - 120 * 80 // 100)
-        self.assertEqual(R(s)['stats']['covered'], 96)
+        self.assertEqual(w - s['journey']['wallet'], 132 - 132 * 80 // 100)
+        self.assertEqual(R(s)['stats']['covered'], 105)
 
     def test_illness_choices_and_the_company_bhyt(self):
         s = grown(3000)
@@ -294,9 +294,9 @@ class Flow(unittest.TestCase):
         s = grown(5300)
         own_home(s, 'can_ho_mini')
         act_ok(s, 'jr_rui_gear', id='ket')
-        self.assertEqual(s['journey']['wallet'], 4800)
+        self.assertEqual(s['journey']['wallet'], 4750)              # 💹 07/10: the safe 500 -> 550
         r = R(s)
-        self.assertEqual(rui._theft(s, r, 'trom'), min(rui.TROM_MAX, 4500 * rui.TROM_PCT // 100) // 4)
+        self.assertEqual(rui._theft(s, r, 'trom'), min(rui.TROM_MAX, 4450 * rui.TROM_PCT // 100) // 4)
         p0 = next(p for p, k, *_ in rui.candidates(s, r, 30) if k == 'trom')
         act_ok(s, 'jr_rui_gear', id='khoa')
         p1 = next(p for p, k, *_ in rui.candidates(s, R(s), 30) if k == 'trom')
@@ -314,7 +314,7 @@ class Flow(unittest.TestCase):
         R(s)['month']['n'] = 0
         warn(s, 'phat', 'do', 'o_to_suv')
         days(s)
-        self.assertEqual(R(s)['card']['cost'], rui._phat_cost(6600))
+        self.assertEqual(R(s)['card']['cost'], rui._phat_cost(7250))
 
     def test_unanswered_card_takes_the_default(self):
         s = grown(3000)
@@ -328,8 +328,8 @@ class Flow(unittest.TestCase):
         # a broken vehicle: no ride out, sells for less, repaired later
         self.assertIn('hỏng', gr.why_not_trip(s, 'xe_ga'))
         car = next(c for c in public_state(s)['journey']['garage']['cars'] if c['id'] == 'xe_ga')
-        self.assertEqual(car['broken'], 40)
-        self.assertEqual(car['sell'], gr.sell_price(1000) - 40)
+        self.assertEqual(car['broken'], 44)                           # 💹 07/10: the scooter 1 000 -> 1 100
+        self.assertEqual(car['sell'], gr.sell_price(1100) - 44)
         with self.assertRaises(GameError):
             act(s, 'jr_garage_trip', id='xe_ga')
         act_ok(s, 'jr_rui_fix', kind='xe', ref='xe_ga')

@@ -170,20 +170,20 @@ class Wear(unittest.TestCase):
 class Buy(unittest.TestCase):
     def test_buy_pays_the_wallet_with_a_ledger_row(self):
         s = story(wallet=100)
-        s, r = act(s, 'jr_wd_buy', item='ao_len')
-        self.assertEqual(s['journey']['wallet'], 20)
+        s, r = act(s, 'jr_wd_buy', item='ao_len')                 # 💹 07/10: 80 -> 88 xu
+        self.assertEqual(s['journey']['wallet'], 12)
         self.assertEqual(s['wardrobe']['owned'], ['ao_len'])
         self.assertEqual(s['wardrobe']['look']['top'], 'ao_len')
         row = s['journey']['history'][-1]
-        self.assertEqual((row['amount'], row['kind'], row['label']), (-80, 'life', 'Mua sắm quần áo · Áo len mùa đông'))
+        self.assertEqual((row['amount'], row['kind'], row['label']), (-88, 'life', 'Mua sắm quần áo · Áo len mùa đông'))
         with self.assertRaises(GameError):
             act(s, 'jr_wd_buy', item='ao_len')          # already owned
         with self.assertRaises(GameError):
-            act(s, 'jr_wd_buy', item='ao_hoodie')       # 90 xu, wallet has 20
+            act(s, 'jr_wd_buy', item='ao_hoodie')       # 99 xu, wallet has 12
         # Owned: wearable later without paying again.
         s, _ = act(s, 'jr_wd_wear', look={'top': 'ao_quen'})
         s, _ = act(s, 'jr_wd_wear', look={'top': 'ao_len'})
-        self.assertEqual(s['journey']['wallet'], 20)
+        self.assertEqual(s['journey']['wallet'], 12)
 
     def test_buy_without_wearing_and_bad_payloads(self):
         s = story()
@@ -204,10 +204,10 @@ class Buy(unittest.TestCase):
         s['careers'][wd.SHOP]['started'] = True
         before = s['journey']['wallet']
         s, r = act(s, 'jr_wd_buy', item='ao_chi_may')
-        self.assertEqual(before - s['journey']['wallet'], 36)      # 45 − 20 %
+        self.assertEqual(before - s['journey']['wallet'], 40)      # 50 − 20 % (💹 07/10: 45 -> 50)
         self.assertIn('giá nhân viên', r['message'])
         s, _ = act(s, 'jr_wd_buy', item='ao_dai')
-        self.assertEqual(s['journey']['history'][-1]['amount'], -128)  # 160 − 20 %
+        self.assertEqual(s['journey']['history'][-1]['amount'], -140)  # 175 − 20 %
         self.assertEqual(s['journey']['history'][-1]['career'], wd.SHOP)
 
     def test_failed_purchase_changes_nothing(self):
@@ -219,12 +219,12 @@ class Buy(unittest.TestCase):
 
 
 class Colors(unittest.TestCase):
-    """Bảng màu: Màu gốc free; a colour unlocked once (40 xu, ánh kim 60) is free on every accessory, top, bottom and pair
+    """Bảng màu: Màu gốc free; a colour unlocked once (44 xu, ánh kim 66; 💹 07/10: 40, 60) is free on every accessory, top, bottom and pair
     of shoes (furniture: tests/test_deco.py). 1.3.1's per-accessory colours join the wallet."""
 
     def with_hat(self, wallet=200):
         s = story(wallet=wallet)
-        s, _ = act(s, 'jr_wd_buy', item='mu_len')            # 50 xu
+        s, _ = act(s, 'jr_wd_buy', item='mu_len')            # 55 xu
         return s
 
     def test_unlock_once_use_on_every_kind_of_item(self):
@@ -232,10 +232,10 @@ class Colors(unittest.TestCase):
         self.assertNotIn('colors', s)                         # nothing until the first colour
         self.assertNotIn('wardrobe_colors', s)
         s, r = act(s, 'jr_wd_unlock', color='navy')
-        self.assertEqual(s['journey']['wallet'], 410)
-        self.assertIn('Đã trả 40 xu mở khóa màu Xanh navy.', r['message'])
+        self.assertEqual(s['journey']['wallet'], 401)
+        self.assertIn('Đã trả 44 xu mở khóa màu Xanh navy.', r['message'])
         row = s['journey']['history'][-1]
-        self.assertEqual((row['amount'], row['kind'], row['label']), (-40, 'life', 'Mở khóa màu · Xanh navy'))
+        self.assertEqual((row['amount'], row['kind'], row['label']), (-44, 'life', 'Mở khóa màu · Xanh navy'))
         self.assertEqual(s['colors'], dict(v=1, have=['navy'], wear={}, deco={}))
         # Mirrored for 1.3.1/1.3.2 (rollback): navy on every accessory, in the 1.3.1 shape.
         self.assertEqual(s['wardrobe_colors'], dict(v=1, wear={}, owned=[f'{i}:navy' for i in wd.BASE_TINTABLE]))
@@ -244,7 +244,7 @@ class Colors(unittest.TestCase):
         for iid in (look['acc'], look['top'], look['bottom'], look['shoes']):
             s, r = act(s, 'jr_wd_color', item=iid, color='navy')
             self.assertNotIn('Đã trả', r['message'])
-        self.assertEqual(s['journey']['wallet'], 410)
+        self.assertEqual(s['journey']['wallet'], 401)
         self.assertEqual(wd.look_of(s)['tint'], {'mu_len': 'navy', 'ao_quen': 'navy', 'quan_kem': 'navy', 'giay_nau': 'navy'})
         self.assertEqual(s['colors']['wear'], {'ao_quen': 'navy', 'quan_kem': 'navy', 'giay_nau': 'navy'})
         self.assertEqual(s['wardrobe_colors']['wear'], {'mu_len': 'navy'})   # accessories keep their 1.3.1 home
@@ -253,14 +253,14 @@ class Colors(unittest.TestCase):
         self.assertEqual(r['message'], 'Giày nâu trở lại màu gốc. Mặc luôn rồi nè!')
         s, _ = act(s, 'jr_wd_wear', look={'tint': {'quan_kem': 'goc', 'mu_len': 'goc', 'giay_nau': 'navy'}})
         self.assertEqual(wd.look_of(s)['tint'], {'ao_quen': 'navy', 'giay_nau': 'navy'})
-        self.assertEqual(s['journey']['wallet'], 410)
+        self.assertEqual(s['journey']['wallet'], 401)
         validate_state(s)
 
     def test_names_do_not_contradict_the_colour(self):
         s = story(wallet=500)
         s, _ = act(s, 'jr_wd_buy', item='ao_hoodie')
         s, r = act(s, 'jr_wd_color', item='ao_hoodie', color='navy', buy=True)
-        self.assertEqual(r['message'], 'Đã trả 40 xu mở khóa màu Xanh navy. Áo hoodie giờ mang màu Xanh navy. Mặc luôn rồi nè!')
+        self.assertEqual(r['message'], 'Đã trả 44 xu mở khóa màu Xanh navy. Áo hoodie giờ mang màu Xanh navy. Mặc luôn rồi nè!')
         self.assertEqual(wd.item_name('ao_hoodie', 'navy'), 'Áo hoodie · Xanh navy')
         self.assertEqual(wd.item_name('ao_hoodie'), 'Áo hoodie tím')
         self.assertEqual(wd.item_name('giay_do', 'den'), 'Giày búp bê · Đen tuyền')
@@ -273,14 +273,14 @@ class Colors(unittest.TestCase):
     def test_metal_colours_and_the_staff_price(self):
         s = self.with_hat(300)
         s, _ = act(s, 'jr_wd_unlock', color='vang')
-        self.assertEqual(s['journey']['wallet'], 190)        # ánh kim: 60
+        self.assertEqual(s['journey']['wallet'], 179)        # ánh kim: 66
         if wd.SHOP not in CAREERS:
             return
         s['careers'][wd.SHOP]['started'] = True
         before = s['journey']['wallet']
         s, r = act(s, 'jr_wd_unlock', color='mint')
         s, _ = act(s, 'jr_wd_unlock', color='bac')
-        self.assertEqual(before - s['journey']['wallet'], 32 + 48)
+        self.assertEqual(before - s['journey']['wallet'], 36 + 53)
         self.assertIn('giá nhân viên', r['message'])
         self.assertEqual(s['journey']['history'][-1]['career'], wd.SHOP)
 
@@ -290,7 +290,7 @@ class Colors(unittest.TestCase):
         s, r = act(s, 'jr_wd_unlock', color='hong')
         self.assertTrue(r.get('duplicate'))
         s, _ = act(s, 'jr_wd_color', item='mu_len', color='hong', buy=True)   # open already: no charge
-        self.assertEqual(s['journey']['wallet'], 210)
+        self.assertEqual(s['journey']['wallet'], 201)
         self.assertEqual(sum(1 for x in s['journey']['history'] if x['label'].startswith('Mở khóa màu')), 1)
         # Through the store: the same request sent twice is applied once.
         with tempfile.TemporaryDirectory() as td:
@@ -303,7 +303,7 @@ class Colors(unittest.TestCase):
             store.command(token, 'req-col-0001', rev, None, 'jr_wd_unlock', {'color': 'do'})
             store.command(token, 'req-col-0001', rev, None, 'jr_wd_unlock', {'color': 'do'})
             s2 = store.read(token)[0]
-            self.assertEqual((s2['journey']['wallet'], s2['colors']['have']), (60, ['do']))
+            self.assertEqual((s2['journey']['wallet'], s2['colors']['have']), (56, ['do']))
             store.close_pool()
 
     def test_locked_colour_or_item_cannot_be_used(self):
@@ -327,14 +327,14 @@ class Colors(unittest.TestCase):
         self.assertEqual(s['wardrobe']['look']['top'], 'ao_quen')
 
     def test_wallet_never_goes_below_zero(self):
-        s = self.with_hat(80)                                  # 30 xu left
+        s = self.with_hat(80)                                  # 25 xu left
         before = copy.deepcopy(s)
         for name, p in (('jr_wd_unlock', {'color': 'hong'}), ('jr_wd_color', {'item': 'mu_len', 'color': 'hong', 'buy': True})):
             with self.assertRaises(GameError) as e:
                 act(s, name, **p)
-            self.assertIn('Ví chưa đủ 40 xu', str(e.exception))
+            self.assertIn('Ví chưa đủ 44 xu', str(e.exception))
         self.assertEqual(s, before)
-        self.assertEqual(s['journey']['wallet'], 30)
+        self.assertEqual(s['journey']['wallet'], 25)
 
     def test_bad_payloads(self):
         s = self.with_hat()
@@ -453,8 +453,8 @@ class Colors(unittest.TestCase):
         self.assertEqual([x['id'] for x in c['colors']], [x['id'] for x in wd.COLORS])
         self.assertEqual(c['tintable'], list(wd.TINTABLE))
         self.assertEqual(c['clothes'], [x['id'] for x in wd.ITEMS if x['slot'] in ('top', 'bottom', 'shoes')])
-        self.assertEqual(sorted({x['price'] for x in c['colors']}), [40, 60])
-        self.assertEqual([x['id'] for x in c['colors'] if x['price'] == 60], ['vang', 'bac'])
+        self.assertEqual(sorted({x['price'] for x in c['colors']}), [44, 66])
+        self.assertEqual([x['id'] for x in c['colors'] if x['price'] == 66], ['vang', 'bac'])
         self.assertTrue(all(x['plain'] for x in c['items']))
         self.assertGreaterEqual(len(wd.COLORS), 8)
         shades = [x['id'] for x in wd.ITEMS if x['slot'] == 'shade']
