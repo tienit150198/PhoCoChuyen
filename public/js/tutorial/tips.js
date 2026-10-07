@@ -175,7 +175,7 @@ const HINTS=[
     find:()=>first('#sheet[open] .dc-chip')||first('#sheet[open] [data-testid="clock"]')||first('#sheet[open] .mt-hud .mt-chip')||(calmStage()&&(first('#topbar .dc-chip')||first('#topbar .hud-day')))},
   {id:'h-door',emoji:'🚪',text:'Xong việc? Bấm đây (hoặc đi ra cửa) để khép ca.',ttl:9000,
     when:()=>calmStage()&&!!room()?.open,
-    find:()=>first('#taskHUD .icon-btn[data-action="end"]'),
+    find:()=>first('#taskHUD .calm-end[data-action="end"]')||first('#taskHUD .icon-btn[data-action="end"]'),
     done:()=>view()==='summary'},
 ];
 let H=null;

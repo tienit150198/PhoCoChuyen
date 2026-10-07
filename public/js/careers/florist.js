@@ -457,7 +457,7 @@ function designPanel(t,x){
   const verb={bouquet:'🌀 Bó xoắn ốc & buộc dây',vase:'🏺 Cắm vào bình',basket:'🧺 Cắm vào giỏ',wreath:'🕊️ Cắm kín mặt kệ'}[w.base]||'Cắm hoa';
   const foamWait=w.foam&&!w.foam.pushed&&x.now()-w.foam.start<min;
   const canArrange=w.base&&!w.arranged&&w.stems.length>=3&&!soaking(t)&&!w.stems.some(s=>!s.c)&&!foamWait;
-  const arrange=`<div class="row wrap">${x.cmd(verb,'fl_arrange',{task:t.id},'',!canArrange)}${x.cmd('↩️ Tháo ra','fl_untie',{task:t.id},'ghost small',!w.arranged||!!w.paper||!!w.ribbon||!!w.banner)}</div>`;
+  const arrange=`<div class="row wrap">${x.button(verb,'car:arrange',{task:t.id,drawn},'',!canArrange)}${x.cmd('↩️ Tháo ra','fl_untie',{task:t.id},'ghost small',!w.arranged||!!w.paper||!!w.ribbon||!!w.banner)}</div>`;
   let step=3;
   const papers=w.base==='bouquet'?`<h4 class="section-title">${step++} · Giấy gói</h4><div class="fl-swatches">${(cc(x).papers||[]).map(p=>swatch(x,{cmd:'fl_wrap',payload:{task:t.id,paper:p.id},hex:p.hex,name:p.name,count:stock(x,p.item),selected:w.paper===p.id,disabled:!w.arranged||!!w.paper||!stock(x,p.item)})).join('')}</div>`:'';
   const ribbons=`<h4 class="section-title">${step++} · Ruy băng <span class="fl-swatch-n${stock(x,'ribbon')?'':' zero'}">${stock(x,'ribbon')}</span></h4><div class="fl-swatches">${(cc(x).ribbons||[]).map(r=>swatch(x,{cmd:'fl_ribbon',payload:{task:t.id,color:r.id},hex:r.hex,name:r.name,selected:w.ribbon===r.id,disabled:!w.arranged||!!w.ribbon||(w.base==='bouquet'&&!w.paper)||!stock(x,'ribbon')})).join('')}</div>
@@ -516,7 +516,7 @@ const point=(x,tab,sel,label)=>x.ui.tab===tabOf(tab)?{sel,label}:{act:'car:goto'
 /** A step that needs real seconds: one tap waits (live countdown in the label), then does it. */
 function waitGo(t,x,cmd,at,what,done,then=''){
   const left=Math.ceil(at-x.now());
-  if(left<=0)return then?seqGo([[cmd,{task:t.id}],[then,{task:t.id}]],done):{cmd,payload:{task:t.id},label:done};
+  if(left<=0)return then?seqGo([[cmd,{task:t.id}],[then,{task:t.id}]],done):cmd==='fl_arrange'?{act:'car:arrange',data:{task:t.id,drawn},label:done}:{cmd,payload:{task:t.id},label:done};
   return {act:'car:wait',data:{task:t.id,cmd,then,at:at.toFixed(2)},label:`<span>⏱ ${what} · <span data-fl-count data-at="${at.toFixed(2)}">còn ${left} giây</span></span>`};
 }
 /** Two bench commands that always go together, as one tap (e.g. cut + strip). */
@@ -645,7 +645,7 @@ function orderSteps(t,x){
   const verb={bouquet:'🌀 Bó xoắn ốc & buộc dây',vase:'🏺 Cắm vào bình',basket:'🧺 Cắm vào giỏ',wreath:'🕊️ Cắm kín mặt kệ'}[sp.format]||'Cắm hoa';
   const canArrange=w.base&&!w.arranged&&total>=3&&!inPail&&!uncut;
   push('arrange',{ok:w.arranged||null,label:{bouquet:'Bó xoắn ốc',vase:'Cắm bình',basket:'Cắm giỏ',wreath:'Cắm kệ'}[sp.format]||'Cắm hoa',tab:'design',
-    go:!canArrange?null:foamAt?waitGo(t,x,'fl_arrange',foamAt,'Chờ mút tự chìm rồi cắm',verb):{cmd:'fl_arrange',payload:{task},label:verb}});
+    go:!canArrange?null:foamAt?waitGo(t,x,'fl_arrange',foamAt,'Chờ mút tự chìm rồi cắm',verb):{act:'car:arrange',data:{task,drawn},label:verb}});
   if(fm.wrap){
     const pp=paperPick(t,x);
     push('wrap',{ok:w.paper?true:null,label:'Gói giấy',note:w.paper?paper(x,w.paper).name:'',tab:'design',
@@ -699,9 +699,22 @@ function taskGuide(t,x){
  * the button say "Đang làm…"; the flag drops before the last command so its own render is the real one. */
 /* A timer's own fl_lift / fl_arrange on the wire (task:cmd), like milk tea's `flying`: wait() never sends one twice. */
 const waitFlying=new Set();
+/* B8 (07/10: "Đã hoàn thành dáng." 16 sessions / 26 refusals after the 1.9.10 fix): a Cắm tap from a screen drawn
+ * before the timer's arrange landed still went out. Every arrange tap now goes through actions.arrange, and its
+ * button carries the bench it was drawn on (`drawn`, counted in job()). A tap is ignored (the bench is drawn again)
+ * when its bench is from before an arrange of that task was sent (until the next redraw), when the state already
+ * says arranged, or while an arrange is on the wire. The server also takes a repeat as a quiet no-op. */
+let drawn=0;
+const arrangeSent=new Map();   // task → the `drawn` count when its last arrange was sent
+const benchOf=(x,task)=>(x.api.state?.careers?.florist?.tasks||[]).find(v=>v.id===task)?.work;
+export function arrangeStale(x,task,from=Infinity){
+  const key={task},w=benchOf(x,task);
+  return (arrangeSent.has(task)&&Number(from)<=arrangeSent.get(task))||!w||!!w.arranged||waitFlying.has(`${task}:fl_arrange`)
+    ||!!x.api.sending?.('fl_arrange',key,'florist')||!!x.api.sending?.('fl_arrange',key);
+}
 async function waitSend(x,cmd,task){
   const key=`${task}:${cmd}`;if(waitFlying.has(key))return null;
-  waitFlying.add(key);
+  waitFlying.add(key);if(cmd==='fl_arrange')arrangeSent.set(task,drawn);
   try{return await x.send(cmd,{task});}finally{waitFlying.delete(key);}
 }
 async function run(x,list){
@@ -709,7 +722,9 @@ async function run(x,list){
   x.ui.flBusy=true;
   for(let i=0;i<list.length;i++){
     if(i===list.length-1)x.ui.flBusy=false;
-    if(!await x.send(list[i][0],list[i][1])){x.ui.flBusy=false;x.render();return;}
+    const [cmd,payload]=list[i];
+    if(cmd==='fl_arrange'){if(arrangeStale(x,payload?.task)){x.ui.flBusy=false;x.render();return;}if(!await waitSend(x,cmd,payload.task)){x.ui.flBusy=false;x.render();return;}continue;}
+    if(!await x.send(cmd,payload)){x.ui.flBusy=false;x.render();return;}
   }
 }
 // While a one-tap sequence is still sending, the hint and the button wait instead of offering its middle step.
@@ -738,6 +753,7 @@ export default {
     return html.replace(/^(<div[^>]*>)/,`$1${nextHint(x,steps,{cta:false})}`);
   },
   job(t,x){
+    drawn++;   // B8: a new bench on screen (arrange taps from the one before are stale)
     const d=data(x),day=d.day,ui=x.ui;
     const top=g=>`${hintFor(g,x)}${dayLine(x,day,t)}${flash(x,day)}${eventCard(x,day,'fl_event')}`;
     if(!t.known){
@@ -785,6 +801,11 @@ export default {
     async slot(data,el,x){x.ui.slot=data.slot;x.render();},
     async check(data,el,x){x.ui.flCheck=!x.ui.flCheck;},
     async busy(){/* a sequence is still running: nothing to add */},
+    /** Cắm / bó (B8): a tap from a bench drawn before an arrange landed, or while one is on the wire, does nothing. */
+    async arrange(data,el,x){
+      if(arrangeStale(x,data.task,data.drawn??Infinity)){x.render();return;}
+      await waitSend(x,'fl_arrange',data.task);
+    },
     /** Commands that go together, one after the other; stops at the first refusal. */
     async seq(data,el,x){let list=[];try{list=JSON.parse(data.seq||'[]');}catch{/* bad markup: nothing to do */}await run(x,list);},
     /** Learning orders: one tap picks exactly the stems the order needs ("id:n,id:n"). */

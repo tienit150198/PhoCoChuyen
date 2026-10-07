@@ -83,7 +83,7 @@ function moreWay(c,label,style='primary'){
   const g=moreGate(c);if(!g)return commandButton(label,'more_work',{},style);
   const left=c.tasks.filter(x=>!ended(x)).length;
   if(left)return button(`${g.why==='full'?'Làm tiếp việc đang chờ':'Làm nốt việc dở'} · ${left} `+icon('arrow',14),'nextJob',{},style);
-  return button(icon('exit',16)+' Khép ca · xem tổng kết','end',{},style+' gd-pulse');
+  return button(icon('exit',16)+' Khép ca · xem tổng kết','end',{},style+' gd-pulse way-end');
 }
 /** Shift closed: every control whose command needs it open (game/engine.py "Mở ca trước khi xử lý công việc nhé")
  * is drawn disabled, and the work sheet's "Mở ca" bar is the one way on (it opens the shift in place). */
@@ -106,7 +106,7 @@ function shortWork(html){
     return cost>c.money?`<button${a} disabled>${label}<small class="mn-miss"> · thiếu ${fmt(cost-c.money)} xu</small></button>`:m;
   });
 }
-const closedBar=()=>notice(`<b>Ca đang nghỉ</b> · mở ca để làm tiếp. ${button(icon('sun',14)+' Mở ca','startHere',{},'primary small')}`,'amber','sun');
+const closedBar=()=>notice(`<b>Ca đang nghỉ</b> · mở ca để làm tiếp. ${button(icon('sun',16)+' Mở ca','startHere',{},'primary way-end closed-open')}`,'amber','sun');   // F#236: a full-width 44 px Mở ca, never a small chip
 const ui={opsTab:'staff',staffId:null,lessonSequence:[],tourRoute:[],activityCard:null,view:null,tab:'',task:null,npc:null,jobTab:'shelf',journalTab:'quests',libraryQuery:'',docs:new Set(),transactions:new Set(),drafts:{},ai:{},suggestions:{},busy:false,paused:false};
 const world=new BobaWorld($('#world'),interact);
 soundsBoot({api,world,sound});  // character voices, detail sounds, bank speaker
@@ -160,7 +160,9 @@ const toastLife=(message,cls)=>Math.min(8000,Math.max(cls==='error'?4500:cls==='
 /* A toast says a few words (toast-lines.js toastHead: ≤8, an error its first sentence; owner 03/10 "chữ ít thôi"):
  * a note with more to it shows a small ▾, and a first tap opens the whole text (a second tap closes it).
  * The text is put into English first (when that is on), so the few words are cut from the shown language. */
-function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls=kind===true||kind==='error'?'error':kind==='good'?'good':kind==='hint'?'hint':'';
+/* opts.action {label,run}: a button in the toast (B4: "Gửi lại" for a review reply the save moved under); the toast
+ * stays longer and the button's tap runs it (a tap elsewhere still closes the toast). */
+function toast(message,kind=false,opts={}){if(!message)return;const box=$('#toasts'),cls=kind===true||kind==='error'?'error':kind==='good'?'good':kind==='hint'?'hint':'';
   const said=String(i18nT(String(message))),{head,more}=toastHead(said,{error:cls==='error'});let life=toastLife(head,cls);
   const mount=$('#confirmDialog').open?$('#confirmDialog'):$('#sheet').open?$('#sheet'):document.body;mount.append(box);
   if(mount.id==='sheet')requestAnimationFrame(headMeasure);   // the header may have moved (a centred sheet changing height)
@@ -171,6 +173,13 @@ function toast(message,kind=false){if(!message)return;const box=$('#toasts'),cls
   const el=document.createElement('div');el.className=`toast ${cls}`.trim();el.dataset.msg=message;
   const fill=text=>{fillToast(el,text);if(cls==='hint'){const face=document.createElement('span');face.className='hint-face';face.setAttribute('aria-hidden','true');face.textContent='💡';el.prepend(face);}};
   fill(head);
+  const act=opts?.action;
+  if(act?.label&&typeof act.run==='function'){
+    life=Math.max(life,9000);el.classList.add('has-action');
+    const b=document.createElement('button');b.type='button';b.className='toast-act';b.textContent=act.label;
+    b.addEventListener('click',e=>{e.stopPropagation();clearTimeout(el._t);el.classList.add('leaving');setTimeout(()=>el.remove(),320);act.run();});
+    el.append(b);
+  }
   if(more){el.classList.add('has-more');el.insertAdjacentHTML('beforeend','<i class="toast-more" aria-hidden="true">▾</i>');}
   el.title=more?said:'Bấm để tắt';
   el.addEventListener('click',()=>{
@@ -186,7 +195,7 @@ async function cmd(action,payload={},options={}){
   const pm=action==='start_day'&&payload?.acct_check&&pmWant===(options.career||career());
   if(pm)payload={...payload,manager:true};
   try{const r=await api.command(action,payload,options.career||career());if(pm){pmWant=null;ui.pmPick=null;ui.task=null;setTimeout(()=>openSheet('manager'),0);}if(!options.quiet)toast(r.message,r.correct===false?'error':r.celebrate?'good':false);if(r.celebrate){sound.success();world.celebrate();}else sound.click();for(const note of new Set(r.effects||[]))toast(note);if(r.clock)setTimeout(()=>toast(r.clock.text),1400);if(r.needs_say)setTimeout(()=>world.say(r.needs_say),700);if(r.quay)quayFlush();return r;}
-  catch(error){if(error.quiet)return null;
+  catch(error){if(error.quiet){if(error.conflict)options.dropped?.(error);return null;}   // B4: the save kept moving under it (api.js), a caller with typed words offers "Gửi lại"
     if(error.data?.code==='acct_check'&&!payload?.acct_check){acctCheck(options.career||career());return null;}   // 💼 kế toán: the entry check first (v4/accounting-school.js)
     // A command aimed at another workplace while work is in progress here (engine: ab.check with no confirm): ask once
     // with the real numbers, switch with the player's confirm, then send the command again. Never a silent loop.
@@ -493,7 +502,9 @@ function taskCards(c){
   // So is a day whose customers are all dealt, or whose next customer would arrive at closing time (more_gate).
   else if(moreGate(c)||c.day_clock?.is_open&&c.day_clock.level==='closing')main=`<article class="note-card calm-card">${closingNote(c.day_clock,false,moreGate(c))}${button(icon('exit',16)+' Khép ca · xem tổng kết','end',{},'primary big grow gd-pulse')}${bell}</article>`;
   else if(wrapUp(c))main=`<article class="note-card calm-card">${button('Khép ca hôm nay','end',{},'primary big grow gd-pulse')}${moreGate(c)?'':`<button type="button" class="icon-btn hud-sum" data-command="more_work" data-payload="{}" aria-label="${desk?'Nhận thêm một việc':esc(W.more_btn)}">${icon('plus',18)}</button>`}${bell}</article>`;
-  else main=`<article class="note-card calm-card">${commandButton(desk?'Nhận thêm một việc':esc(W.more_btn),'more_work',{},'primary big grow')}<button type="button" class="icon-btn hud-sum" data-action="end" aria-label="Khép ca hôm nay">${icon('exit',18)}</button>${bell}</article>`;
+  // F#236 (07/10, tra_da on a 360 px Android): "khép ca nhỏ xíu khó bấm quá, cho nó về như cũ". Khép ca was a bare 44 px
+  // door icon here; it is a named button again, on a row of its own under the next customer.
+  else main=`<article class="note-card calm-card calm-two">${commandButton(desk?'Nhận thêm một việc':esc(W.more_btn),'more_work',{},'primary big grow')}${bell}${button(icon('exit',16)+' Khép ca hôm nay','end',{},'ghost calm-end')}</article>`;
   // A career with its own home card (the air crew's boarding pass) draws it; hiring keeps the shared "Xin việc".
   // 🧑‍💼 A manager shift's day: the board is the one way on (closed: the day's close).
   const mg=c.open&&!needsJob()?c.promo?.shift:null;
@@ -669,7 +680,7 @@ function jobView(){
   const idle=mod?.idle&&(!t||ended(t))?`<div class="career-idle space-top">${mod.idle(careerContext(env()))}</div>`:'';
   if(!t){
     // Between customers there is always one clear way on: the next customer (unless the career's own panel offers it).
-    const more=wrapUp(c)?button('Khép ca hôm nay','end',{},'primary gd-pulse'):c.open&&(moreGate(c)||!idle.includes('data-command="more_work"'))?moreWay(c,icon('plus',14)+' '+(deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).next_btn))):'';
+    const more=wrapUp(c)?button('Khép ca hôm nay','end',{},'primary gd-pulse way-end'):c.open&&(moreGate(c)||!idle.includes('data-command="more_work"'))?moreWay(c,icon('plus',14)+' '+(deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).next_btn))):'';
     return header(deskWork()?'Bàn làm việc đang trống':esc(wordsFor(career()).none_waiting),c.open?'':'Ca đang nghỉ.')+`<div class="sheet-body">${c.open?'':closedBar()}${idle||empty('Làm điều mình thích một chút','','coffee')}<div class="row wrap space-top">${more}${button(esc(wordsFor(career()).queue_btn),'queue',{},more||idle.includes('more_work')?'ghost':'primary')}${mod?.noDecor?'':button('Chăm chút không gian','decor',{},'ghost')}</div></div>`;
   }
   if(ended(t)){
@@ -677,7 +688,7 @@ function jobView(){
     // more / close the day, never "Công việc tiếp theo"). The career's between-orders panel folds into one line
     // under it (drawn in full it made this screen 2–4 screens deep); it opens by itself when a surprise at the
     // counter needs a decision first (kit.desk_block) or the career marks its panel data-idle-open.
-    const way=c.tasks.some(x=>!ended(x))?button('Công việc tiếp theo','nextJob',{},'primary'):wrapUp(c)?button('Khép ca hôm nay','end',{},'primary gd-pulse'):c.open?moreWay(c,deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).more_btn)):'';
+    const way=c.tasks.some(x=>!ended(x))?button('Công việc tiếp theo','nextJob',{},'primary'):wrapUp(c)?button('Khép ca hôm nay','end',{},'primary gd-pulse way-end'):c.open?moreWay(c,deskWork()?'Nhận thêm một việc':esc(wordsFor(career()).more_btn)):'';
     const ways=`${c.open?'':closedBar()}<div class="row wrap space-top done-ways" style="justify-content:center">${way}${button('Đọc lời nhắn','phone',{},'ghost small')}${c.event?button('Chuyện vừa xảy ra','event',{},'cream small'):''}</div>`;
     const open=Boolean(c.data?.desk?.ev)||/data-idle-open|class="fk-event"/.test(idle)||ui.idleOpen===t.id;
     const fold=idle?`<details class="idle-fold space-top" data-auto data-idle-task="${esc(t.id)}"${open?' open':''}><summary>${icon('clipboard',16)}<b>${deskWork()?'Bàn làm việc':'Việc giữa ca'}</b></summary>${idle}</details>`:'';

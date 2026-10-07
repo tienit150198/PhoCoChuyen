@@ -88,6 +88,12 @@ class FairBase(unittest.TestCase):
         g = mock.patch.object(fh, 'BC_GAP_MS', 0)   # the test clock steps 2 s a call; test_the_bowl_opens_after_5_s checks the gap
         g.start()
         self.addCleanup(g.stop)
+        # The police checks' own tests play as if well into a session; the quiet start (B6, GRACE_S / GRACE_ROUNDS)
+        # has its own tests (tests/test_fair_police_grace.py), which put the real values back.
+        for name in ('GRACE_S', 'GRACE_ROUNDS'):
+            q = mock.patch.object(fh, name, 0)
+            q.start()
+            self.addCleanup(q.stop)
         self.dice(Dice())
 
     def dice(self, d):

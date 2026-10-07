@@ -607,6 +607,25 @@ BENCH = ('fl_pick', 'fl_remove', 'fl_cut', 'fl_strip', 'fl_soak', 'fl_lift', 'fl
          'fl_wrap', 'fl_ribbon', 'fl_banner', 'fl_unwrap', 'fl_card', 'fl_dump', 'fl_cover')
 
 
+def repeat(s: dict, c: dict, name: str, p: dict) -> dict | None:
+    """B8 (07/10: "Đã hoàn thành dáng." 16 sessions / 26 refusals): a Cắm tap from a screen drawn before the
+    timer's arrange landed. Arranging a bench that is already arranged is a quiet OK that changes nothing
+    (engine._apply_action asks this before the beat, the ticks and the handler). None: not a repeat, the
+    command runs (and refuses) as before."""
+    if name != 'fl_arrange' or not c.get('open') or not isinstance(p, dict):
+        return None
+    tid = p.get('task') or c.get('active_task')
+    t = next((x for x in c.get('tasks') or () if x.get('id') == tid), None)
+    if not t or t.get('career') != ID or not t.get('known') or t.get('status') in ('completed', 'referred', 'cancelled'):
+        return None
+    if _is_set(t) and t['pieces'][t['cur']] is not None:
+        return None
+    w = t.get('work')
+    if not isinstance(w, dict) or not w.get('arranged'):
+        return None
+    return dict(message='', effects=[], repeat=True)
+
+
 def handle(s: dict, c: dict, name: str, p: dict) -> dict:
     d = _migrate(c)
     pl = _plan(c)

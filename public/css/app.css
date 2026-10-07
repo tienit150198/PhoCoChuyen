@@ -509,6 +509,9 @@ html[data-layout="tablet"] .sheet.drawer{width:min(620px,92vw);max-height:100dvh
 .toast-lines li+li{padding-top:5px;border-top:1px solid color-mix(in srgb,currentColor 16%,transparent)}
 .toast-lines .tl-ic{text-align:center;line-height:1.4}
 .toast.leaving{opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s}
+/* B4: a toast with one action ("Gửi lại"): the button sits at the end of the line, a full 44 px tap. */
+.toast.has-action{display:flex;align-items:center;gap:12px}
+.toast-act{flex:none;min-height:44px;padding:0 14px;border:0;border-radius:10px;background:var(--on-inverse);color:var(--inverse);font:inherit;font-weight:700;cursor:pointer}
 @keyframes mnl-toast-in{from{opacity:0;transform:translateY(8px)}}
 dialog .toasts{top:calc(max(10px,var(--safe-t)) + 10px);bottom:auto}
 /* Below the scene's title card (.scene-heading), so hints never cover the shop name. */
@@ -1956,6 +1959,10 @@ html.large-text .req-row{font-size:var(--fs-3)}
 .ui-bar>.ui-bar-next{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-2);line-height:var(--lh)}
 .ui-bar>.ui-bar-main{flex:0 1 auto;display:flex;align-items:stretch;justify-content:flex-end;gap:var(--sp-2);min-width:min(40%,200px);max-width:62%}
 .ui-bar:not(:has(>.ui-bar-next))>.ui-bar-main,.ui-bar>.ui-bar-main:only-child{flex:1 1 100%;max-width:none}
+/* F#236 (07/10): closing or opening the shift is never squeezed into the main slot's 40-62% cap on a small phone:
+   Khép ca / Mở ca take a row of their own (the next step above it), 48 px tall. */
+.ui-bar>.ui-bar-main:has([data-action="end"],[data-action="startHere"]){flex:1 1 100%;max-width:none;order:2}
+.ui-bar .btn[data-action="end"],.ui-bar .btn[data-action="startHere"]{min-height:48px}
 .ui-bar-main>.btn,.ui-bar-main>.gd-ctas{flex:1 1 auto;min-width:0}
 .ui-bar .btn.big{min-height:48px;padding-top:var(--sp-2);padding-bottom:var(--sp-2);font-size:var(--fs-3);line-height:var(--lh-btn)}
 .ui-bar-next>*{min-width:0}
@@ -2488,6 +2495,13 @@ html:not(.reduce-motion) .scene-hint:not(:empty){animation:calm-fade 1s ease 8s 
 .calm-card{display:flex;align-items:center;gap:10px;padding:10px}
 .calm-card>.btn{margin:0!important;flex:none;white-space:nowrap}
 .calm-card>.btn.grow{flex:1 1 auto;min-width:0}
+/* F#236: the home card's Khép ca is a named button on a row of its own (it was a bare door icon); the work sheet's
+   Khép ca / Mở ca (.way-end) fill their row. Never under 44 px. */
+.calm-card.calm-two{flex-wrap:wrap}
+.calm-card>.btn.calm-end{flex:1 1 100%;min-height:44px}
+html[data-layout="phone"][data-orientation] .task-hud .note-card.calm-card.calm-two{max-height:none;overflow:visible}   /* compact.css caps a card at 64/96 px: two rows here */
+.row>.btn.way-end{flex:1 1 100%;min-height:48px;justify-content:center}
+.notice .btn.closed-open{display:flex;width:100%;min-height:44px;margin-top:8px;justify-content:center}
 .calm-what{display:flex;align-items:center;gap:10px;flex:1 1 auto;min-width:0;min-height:44px;padding:0 2px;border-radius:12px;color:var(--ink);text-align:left}
 .calm-what b{min-width:0;font-size:var(--fs-3);font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .calm-what .npc-mini{flex:none;display:block}

@@ -346,6 +346,32 @@ class FloristTests(unittest.TestCase):
         self.assertIn('cắt thẳng', fresh['note'])
         self.assertIn('tuốt', fresh['note'])
 
+    def test_repeated_arrange_is_a_quiet_no_op(self):
+        """B8 (07/10): a Cắm tap from a screen drawn before the timer's arrange landed was refused ("Đã hoàn thành
+        dáng.", 26 refusals). A repeat on an arranged bench is now OK and changes nothing: no beat, no tick."""
+
+        j = self.journey(GRAD, days=[1])
+        tid = self.prep(RECIPES[GRAD]['stems'])
+        j.act('fl_base', task=tid, kind='bouquet')
+        j.act('fl_arrange', task=tid)
+        before = copy.deepcopy(j.state)
+        r = j.act('fl_arrange', task=tid)
+        self.assertEqual(r['message'], '')
+        self.assertTrue(r.get('repeat'))
+        self.assertEqual(j.state['careers']['florist'], before['careers']['florist'], 'the bench, the beat and the queue stay')
+        r = j.act('fl_arrange')   # the active task, no payload: the same
+        self.assertTrue(r.get('repeat'))
+        validate_state(j.state)
+        # Untied, it is a real arrange again; not arranged and not ready, the old refusals stay.
+        j.act('fl_untie', task=tid)
+        self.assertFalse(j.get(tid)['work']['arranged'])
+        r = j.act('fl_arrange', task=tid)
+        self.assertFalse(r.get('repeat'))
+        self.assertTrue(j.get(tid)['work']['arranged'])
+        j.act('end_day', carry_event=True)
+        with self.assertRaises(GameError):
+            j.act('fl_arrange', task=tid)   # shift closed: refused as before, never a quiet OK
+
     def test_foam_must_sink_by_itself(self):
         j = self.journey(OPENING, days=[1])
         tid = self.prep(RECIPES[OPENING]['stems'], soak=0)
