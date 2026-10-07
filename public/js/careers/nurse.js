@@ -110,7 +110,12 @@ function chartForm(t,x){
   }
   if(!all)return '';
   const typed=(x.ui.chart??={})[t.id]||{};
-  const rows=ids.map(k=>`<label class="dd-field"><span>${x.esc(SIGN(x,k).emoji)} ${x.esc(SIGN(x,k).name)}</span><input name="${x.esc(k)}" inputmode="decimal" autocomplete="off" maxlength="12" value="${x.esc(typed[k]||'')}" data-dd-chart="${x.esc(k)}" placeholder="${k==='bp'?'120/80':''}"><small>${x.esc(SIGN(x,k).unit)}</small></label>`).join('');
+  // Huyết áp: two number boxes with the "/" printed between them (a phone's number pad has no "/" key; owner 07/10).
+  const bp=(typed.bp||'').split('/');
+  const box=(name,val,ph)=>`<input name="${name}" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="3" value="${x.esc(val||'')}" data-dd-chart="${name}" placeholder="${ph}" aria-label="${ph==='120'?'Tâm thu':'Tâm trương'}">`;
+  const rows=ids.map(k=>`<label class="dd-field${k==='bp'?' dd-bp':''}"><span>${x.esc(SIGN(x,k).emoji)} ${x.esc(SIGN(x,k).name)}</span>${k==='bp'
+    ?`<span class="dd-bp-in">${box('bp_sys',typed.bp_sys??bp[0],'120')}<b aria-hidden="true">/</b>${box('bp_dia',typed.bp_dia??bp[1],'80')}</span>`
+    :`<input name="${x.esc(k)}" inputmode="decimal" autocomplete="off" maxlength="12" value="${x.esc(typed[k]||'')}" data-dd-chart="${x.esc(k)}">`}<small>${x.esc(SIGN(x,k).unit)}</small></label>`).join('');
   return `<form class="card dd-chart" data-dd-form="chart"><h4>📝 Ghi phiếu theo dõi</h4>${clean()?tip('Gõ đúng số vừa đo.','Phiếu theo dõi','p'):'<p class="small muted">Gõ đúng số vừa đo.</p>'}<div class="dd-fields">${rows}</div><button type="submit" class="btn primary full">📝 Ghi phiếu</button></form>`;
 }
 function callPanel(t,x){
@@ -314,7 +319,9 @@ export default {
   async submit(form,x){
     if(form.dataset.ddForm!=='chart')return false;
     const t=(x.room.tasks||[]).find(r=>r.id===x.room.active_task);if(!t)return true;
-    const vals={};for(const k of cc(x).sign_ids||[])vals[k]=(form.elements[k]?.value||'').trim();
+    const vals={};for(const k of cc(x).sign_ids||[])vals[k]=k==='bp'
+      ?((s,d)=>s&&d?`${s}/${d}`:'')((form.elements.bp_sys?.value||'').trim(),(form.elements.bp_dia?.value||'').trim())
+      :(form.elements[k]?.value||'').trim();
     if(Object.values(vals).some(v=>!v)){x.toast('Điền đủ năm ô rồi ghi phiếu nhé.');return true;}
     await x.send('dd_chart',{task:t.id,vals});
     return true;

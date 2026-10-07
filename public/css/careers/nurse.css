@@ -41,6 +41,10 @@ html[data-theme="dem"] .career-job.dd{--sk-accent:#6cc7c1;--sk-accent-2:#3f8e89;
 .career-job.dd .dd-field span{font-size:14px}
 .career-job.dd .dd-field input{min-height:44px;padding:6px 8px;border-radius:var(--sk-rs);border:1px solid var(--sk-line);background:var(--sk-surface);color:var(--sk-ink);font:inherit;font-family:var(--air-mono);font-size:16px}
 .career-job.dd .dd-field small{color:var(--sk-muted);font-size:12px}
+/* Huyết áp: tâm thu / tâm trương as two number boxes (no "/" key on a phone number pad) */
+.career-job.dd .dd-bp-in{display:flex;align-items:center;gap:4px;min-width:0}
+.career-job.dd .dd-bp-in input{flex:1 1 0;width:0;min-width:0;text-align:center;padding:6px 4px}
+.career-job.dd .dd-bp-in b{font-size:18px;color:var(--sk-muted)}
 .career-job.dd .dd-chart .btn.full{margin-top:10px;min-height:48px}
 .career-job.dd .dd-chart-done{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:4px;font-size:14px}
 .career-job.dd .dd-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}

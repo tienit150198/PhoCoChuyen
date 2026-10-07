@@ -1,5 +1,8 @@
 # v1.9.16 — 2026-10-07
 
+- Điều dưỡng: ô Huyết áp tách thành hai ô số (tâm thu / tâm trương) có dấu "/" in sẵn, vì bàn phím số điện thoại không có phím "/" (chủ game 07/10). Gửi lên vẫn là "120/80".
+- iOS 15: vẽ khung bo góc (roundRect) và hộp thoại (<dialog>) có bản thay thế.
+
 Gồm sửa lỗi vòng góp ý 5: trả lời đánh giá không mất, nút Khép ca to, hội chợ 10 phút/20 ván đầu không kiểm tra, tiệm hoa, situationView, ảnh JPEG ≤ 200 KB, log 413. Không có Có gì mới.
 
 # v1.9.15 — 2026-10-07
