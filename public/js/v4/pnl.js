@@ -45,6 +45,7 @@ const CAT={
   security_reward:['other','Quỹ khu phố thưởng'],skill_reward:['other','Thưởng tay nghề'],goal_reward:['other','Thưởng mục tiêu ngày'],
   activity_reward:['other','Thưởng trò nhỏ'],festival_reward:['other','Thưởng ngày hội'],story_reward:['other','Thưởng câu chuyện'],
   situation_reward:['other','Thưởng tình huống'],promotion:['other','Được giới thiệu quán'],other_income:['other','Thu khác'],
+  overtime:['other','Tăng ca, thưởng năng suất'],   // ⏱️ game/overtime.py and the office's phụ cấp tăng ca
   // Chuyển tiền của chủ: moves money between the fund and your wallet, never profit.
   owner_draw:['transfers','Rút tiền lời về ví'],owner_capital:['transfers','Góp vốn từ ví'],salary_to_wallet:['transfers','Lương chuyển về ví'],
 };

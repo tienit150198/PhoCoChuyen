@@ -52,6 +52,7 @@ from . import system_gift as sg
 from . import live_effects as lfx
 from . import fair as fh  # 🏮 Hội chợ dân gian
 from . import x3_week as x3w  # 🔥 Nghề x3 trong tuần
+from . import overtime as ovt  # ⏱️ Tăng ca ×2, ⚡ thưởng năng suất
 from . import needs as nd  # 🍚 No bụng, 😴 Tỉnh táo
 from . import chua as cg  # 🛕 Đi chùa
 from . import promotion as pm  # 🎖️ Thăng tiến, 🧑‍💼 Ca quản lý
@@ -345,6 +346,7 @@ def task_done(s:dict,c:dict,t:dict,reward:int,narrative:str,status:str="complete
     remember(s,c,t["npc"],narrative,t["id"])
     made=fbk.make_review(s,c,t,status)
     review=made["text"];stars=made["stars"]
+    ovt.on_job(s,c,t,reward,status,(made.get("feedback") or {}).get("fair",stars))  # ⏱️ Tăng ca ×2 past the normal day (game/overtime.py)
     if t['mistakes']==0 and status=='completed' and not made["feedback"].get("unfair") and made.get("aside",True):
         mod=PLUGINS.get(t['career'])
         remarks=mod.SPEC.get('review_asides',[]) if mod else extra.REVIEW_ASIDES.get(t['career'],[])
@@ -689,6 +691,8 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
         if left:summary["abandon"]=left
         promo=pm.on_close(s,c,career,summary)  # 🎖️ a good day counts; a manager shift still open closes (its pay is in the net)
         if promo:summary["promo"]=promo
+        ot=ovt.on_close(s,c,career)  # ⚡ the busy tier's bonus; the day's ⏱️ overtime for the summary (journey: not in the x3 net)
+        if ot:summary["ot"]=ot
         # The day's figures once everything has closed: the salary and the career's own closing are in, and
         # owner transfers are not (journey._transfer keeps them out of earnings/costs). The fund's change since the
         # morning is not used: a withdrawal larger than the morning fund clamps day_start_money at 0 and lost the
@@ -1218,6 +1222,7 @@ def public_state(s:dict,full:str|None=None,migrated:bool=False) -> dict:
         c.pop("ext",None)
         c["life"]=life.public_life(s["careers"][cid])
         c["day_clock"]=dc.view(raw,cid)  # giờ trong ngày: HUD clock, closing warnings, the scene's light
+        c["ot"]=None if pm.managing(s,raw,cid) else ovt.public(raw,cid)  # ⏱️ the work screen's overtime chip (view only)
         gate=more_gate(raw,cid,1) if raw.get("open") else None
         if raw.get("open") and pm.managing(s,raw,cid):gate=dict(why="manager",error="Hôm nay bạn làm quản lý: giao việc cho đội nhé.")  # 🧑‍💼 no "Đón thêm khách"
         c["more_gate"]={k:v for k,v in gate.items() if k!="error"} if gate else None  # "Đón thêm khách" or the next real step

@@ -612,7 +612,9 @@ def _end_of_day(s: dict, career: str, result: dict) -> None:
     # 🔥 This career's x3 day (game/x3_week.py): the day's net once more, twice, into the wallet.
     extra = 0
     if x3.on(career):
-        extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0))
+        # ⏱️ Tăng ca ×2 and ⚡ năng suất (game/overtime.py) stay out of the boosted net: they never stack with x3.
+        ot = ((result.get('summary') or {}).get('ot') or {}).get('total') or 0
+        extra = x3.bonus(int((result.get('summary') or {}).get('net') or 0) - int(ot))
         if extra > 0:
             _wallet(j, extra, 'salary', f'🔥 Thưởng ngày x{x3.X} · {_place(career)}', career)
             notes.append(f'🔥 Hôm nay {_place(career)} lời x{x3.X}: thưởng thêm {extra} xu vào ví.')
