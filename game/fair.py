@@ -12,13 +12,18 @@ lợi nhuận của cả hội chợ"):
 * Spam decay (journey[COOL_KEY], _heat): past RUN_FREE rounds of the same luck stall, each round's draw is RUN_STEP
   lower, down to P_FLOOR (40% won rounds; xóc đĩa XD_FLOOR so its won rounds stop at 40% too). Only two things bring a
   stall back to the full rate: SWITCH_ROUNDS rounds of other paid luck stalls (PAID_LUCK, any mix) since its last
-  round, each staking at least switch_min (max(SWITCH_MIN, ¼ of the last stake there)), or a RUN_GAP pause from it. Free or skill stalls (ném vòng, ô ăn quan, phóng dao) change nothing. Bầu cua (honest dice)
-  never cools. The stall shows "Vận đang nguội vì chơi liền một trò" (public: cold).
+  round, each staking at least switch_min (max(SWITCH_MIN, ¼ of the last stake there)), or a RUN_GAP pause from it.
+  Free or skill stalls (ném vòng, ô ăn quan, phóng dao) change nothing. Bầu cua (honest dice) never cools.
+  The stall shows "Vận đang nguội vì chơi liền một trò" (public: cold).
 * Knife and o an quan remain skill games with unchanged opponents/collisions.
-* Normal back-corner raids remain 1.76%. Paid chance rounds can also bring the police's asset check (chứng minh nguồn
-  tài sản) once the player's fair profit this edition (money_of, the Bảng vàng number) is above WEALTH_THRESHOLD: 45%,
-  at most once per 2 hours. It takes AUDIT_PCT (10%) of the profit made since the last check (journey['fair_audit']
-  keeps that mark: never twice on the same xu), from the wallet first, then the bank account, never below zero.
+* Normal back-corner raids remain 1.76%. Paid chance rounds can also trigger a
+  70% enforcement check above 50,000 daily net xu, at most once per 30 minutes;
+  a successful check seizes 30% of the current wallet after settling the round.
+* Owner 07/10 adds, as a separate rule after that check on the same round, the police's asset check (chứng minh
+  nguồn tài sản, _asset_audit) once the player's fair profit this edition (money_of, the Bảng vàng number) is
+  above AUDIT_FROM: AUDIT_P, at most once per AUDIT_GAP. It takes AUDIT_PCT (10%) of the profit made since the last
+  check (journey['fair_audit'] keeps that mark: never twice on the same xu), from the wallet first, then the bank
+  account, never below zero.
 * 🍀 Lộc trời cho: a won paid luck round (bầu cua too: the dice stay honest) may, LOC_P of the time, win LOC_MULT× its
   stake instead of its normal winnings, at most once per LOC_GAP across the whole server (mnl_meta row LOC_KEY, taken in
   the command's own transaction by storage: loc_prepare / loc_claim).
@@ -110,10 +115,11 @@ RAID_PCT = 1.76                # owner follow-up: +10% relative to 1.6%
 FINE_MIN = 3
 FINE_DIV = 4                   # a raid's fine: stake // FINE_DIV, at least FINE_MIN
 RAID_COOLDOWN = 120
-# 07/10 (players: "công an tới hoài"): at most once per 2 hours, 45% when due (a failed draw waits too): an active
-# winner meets it 2–3 times a fair day instead of about every 30 minutes. The total taken (10% of the new profit) is the same.
-WEALTH_THRESHOLD, WEALTH_CHECK_GAP, WEALTH_RAID_P = 50000, 7200, .45
-AUDIT_KEY, AUDIT_PCT = 'fair_audit', 10   # journey['fair_audit'] {ed, base}: the profit left after the last check
+WEALTH_THRESHOLD, WEALTH_CHECK_GAP, WEALTH_RAID_P = 50000, 1800, .70
+# 🚨 The asset check (owner 07/10, a rule of its own; players: "công an tới hoài": at most once per 2 hours, 45% when
+# due, a failed draw waits too): fair profit above AUDIT_FROM, AUDIT_PCT of the profit made since the last check.
+AUDIT_FROM, AUDIT_GAP, AUDIT_P = 50000, 7200, .45
+AUDIT_KEY, AUDIT_PCT = 'fair_audit', 10   # journey['fair_audit'] {ed, base, at}: the profit left, the last check's time
 AUDIT_LABEL = '🚨 Công an kiểm tra tài sản · Thu 10% tiền lời hội chợ'
 POLICE_SAY = 'Chào em, nghe nói em lời ở hội chợ hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.'
 # 🍀 Lộc trời cho (owner 07/10): a won round of a paid luck stall pays LOC_MULT× its stake, LOC_P of the time, once per
@@ -924,17 +930,41 @@ def audit_base(j: dict) -> int:
     return a['base'] if isinstance(a, dict) and a.get('ed') == edition() else 0
 
 
-def _wealth_raid(s: dict, j: dict, f: dict, t: float) -> dict | None:
-    """🚨 The police's asset check (chứng minh nguồn tài sản), only after a paid chance round (reads and offline time
-    cannot take money): fair profit this edition above WEALTH_THRESHOLD, new profit since the last check, the 2-hour
-    cooldown (WEALTH_CHECK_GAP), then WEALTH_RAID_P. It takes AUDIT_PCT of the new profit, from the wallet, then the bank account, never
-    below zero (what neither holds is let go, no debt); the profit left becomes the next check's base."""
-    profit = money_of(j)[0]
-    gain = profit - audit_base(j)
-    if profit <= WEALTH_THRESHOLD or gain <= 0 or t - f.get('wealth_check_at', 0) < WEALTH_CHECK_GAP:
+def _wealth_raid(j: dict, f: dict, t: float) -> dict | None:
+    """Check only after a paid chance round. Reads/offline time cannot take money."""
+    if f['net'] <= WEALTH_THRESHOLD or t - f.get('wealth_check_at', 0) < WEALTH_CHECK_GAP:
         return None
     f['wealth_check_at'] = int(t)  # Failed checks share the cooldown, across workers/reloads.
     if _rng.random() >= WEALTH_RAID_P:
+        return None
+    amount = max(0, j['wallet']) * 30 // 100
+    if not amount:
+        return None
+    from . import journey as jr
+    jr._wallet(j, -amount, KIND, '🚨 Công an kiểm tra hội chợ · Thu tiền trong ví')
+    f['net'] -= amount
+    f['stats']['lost'] += amount
+    f['stats']['raids'] += 1
+    return dict(amount=amount, wallet=j['wallet'],
+                message=f'Công an kiểm tra đánh bạc! Thu {amount:,} xu trong ví.'.replace(',', '.'))
+
+
+def _asset_audit(s: dict, j: dict, f: dict, t: float, raided: bool = False) -> dict | None:
+    """🚨 The police's asset check (chứng minh nguồn tài sản, owner 07/10), a rule of its own next to _wealth_raid (which
+    stays as it was): only after a paid chance round (reads and offline time cannot take money), with fair profit this
+    edition (money_of, the Bảng vàng number) above AUDIT_FROM, new profit since the last check, AUDIT_GAP since the
+    last check (journey['fair_audit']['at'], failed draws too), then AUDIT_P. It takes AUDIT_PCT of the new profit, from
+    the wallet, then the bank account, never below zero (what neither holds is let go, no debt); the profit left becomes
+    the next check's base. A raid on the same round comes first: what it took is already out of the profit."""
+    a = j.get(AUDIT_KEY)
+    a = a if isinstance(a, dict) else {}
+    profit = money_of(j)[0]
+    base = audit_base(j)
+    gain = profit - base
+    if profit <= AUDIT_FROM or gain <= 0 or t - a.get('at', 0) < AUDIT_GAP:
+        return None
+    j[AUDIT_KEY] = dict(ed=edition(), base=base, at=int(t))   # failed draws wait too, across workers/reloads
+    if _rng.random() >= AUDIT_P:
         return None
     due = min(10**7, gain * AUDIT_PCT // 100)
     if not due:
@@ -954,12 +984,12 @@ def _wealth_raid(s: dict, j: dict, f: dict, t: float) -> dict | None:
         f['net'] -= took
         f['stats']['lost'] += took
         f['stats']['raids'] += 1
-    j[AUDIT_KEY] = dict(ed=edition(), base=profit - took)
+    j[AUDIT_KEY]['base'] = profit - took
     where = ' và '.join(x for x in (cash and f'ví {_xu(cash)}', bank and f'tài khoản ngân hàng {_xu(bank)}') if x)
     msg = (f'Công an hỏi nguồn tài sản: thu 10% tiền lời mới ở hội chợ, {_xu(took)} xu ({where}).' if took else
            'Công an hỏi nguồn tài sản, nhưng ví với tài khoản trống trơn nên lần này cho qua.')
     return dict(amount=took, cash=cash, bank=bank, due=due, gain=gain, pct=AUDIT_PCT, say=POLICE_SAY,
-                wallet=j['wallet'], audit=True, message=msg)
+                wallet=j['wallet'], after_raid=raided, message=msg)
 
 
 # ---------------------------------------------------------------- 🍀 Lộc trời cho
@@ -1318,10 +1348,14 @@ def apply(s: dict, name: str, p: dict) -> dict:
             result['message'] = f'Trúng {n}/{ring.BOTTLES} cổ chai' + (f', +{prize} xu.' if prize else '.')
     paid_round = name in ('fair_bc', 'fair_xd', 'fair_xs') or name == 'fair_loto_kinh' and result['fair'].get('won')
     if paid_round and not result['fair'].get('raid'):
-        seizure = _wealth_raid(s, j, f, t)
+        seizure = _wealth_raid(j, f, t)
         if seizure:
             result['fair']['wealth_raid'] = seizure
             result['message'] = (result['message'] + ' ' + seizure['message']).strip()
+        audit = _asset_audit(s, j, f, t, bool(seizure))   # 07/10: a separate rule, after the raid
+        if audit:
+            result['fair']['audit'] = audit
+            result['message'] = (result['message'] + ' ' + audit['message']).strip()
     loc = (result.get('fair') or {}).get('loc')
     if loc and name != 'fair_xs':   # the vé cào's message says nothing before the silver is scratched
         result['message'] = (result['message'] + ' ' + loc['message']).strip()
@@ -1409,7 +1443,7 @@ def public(s: dict) -> dict:
                            luck_pct=round(WIN_P * 100), cooled_pct=round(WIN_P_LOW * 100), run_free=RUN_FREE,
                            floor_pct=round(P_FLOOR * 100), run_gap_min=RUN_GAP // 60, run_switch=SWITCH_ROUNDS, run_switch_min=SWITCH_MIN,
                            audit_pct=AUDIT_PCT,
-                           audit_from=WEALTH_THRESHOLD, loc_mult=LOC_MULT),
+                           audit_from=AUDIT_FROM, loc_mult=LOC_MULT),
                 cold=cold(j, t),   # the stall whose run has cooled its luck ("Vận đang nguội"), or None
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
                 ring=ring_view((f or {}).get('ring'), t, j),
@@ -1465,9 +1499,10 @@ def validate(j: dict) -> None:
     if AUDIT_KEY in j:   # 07/10, optional: an older server ignores it (the journey keeps unknown blocks)
         from .engine import need, integer
         a = j[AUDIT_KEY]
-        need(isinstance(a, dict) and set(a) == {'ed', 'base'} and isinstance(a['ed'], str) and len(a['ed']) <= 12,
+        need(isinstance(a, dict) and set(a) == {'ed', 'base', 'at'} and isinstance(a['ed'], str) and len(a['ed']) <= 12,
              'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
         integer(a['base'], -10**10, 10**10)
+        integer(a['at'], 0, 10**11)
     if COOL_KEY in j:   # 07/10, optional: an older server keeps it as is
         from .engine import need, integer
         c = j[COOL_KEY]

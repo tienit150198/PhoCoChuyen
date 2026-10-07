@@ -154,7 +154,7 @@ const animating=()=>S.busy||S.tab==='dt'&&!!KN?.busy()||S.tab==='xs'&&!!XS?.busy
 
 async function send(action,payload={}){
   const {api}=S.env;
-  try{const result=await api.command(action,payload);if(result?.fair?.wealth_raid)S.wealthRaid=result.fair.wealth_raid;if(result?.fair?.loc)S.loc=result.fair.loc;return result;}
+  try{const result=await api.command(action,payload);if(result?.fair?.wealth_raid)S.wealthRaid=result.fair.wealth_raid;if(result?.fair?.audit)S.audit=result.fair.audit;if(result?.fair?.loc)S.loc=result.fair.loc;return result;}
   catch(e){S.err=e.code||e.data?.code||'';S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
 }
 
@@ -273,7 +273,7 @@ function page(){
   const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().knife?kn().view():homeView(),xs:()=>F().scratch?xs().view():homeView(),pb:()=>F().photo?pb().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
   const gifting=!!S.gift&&clean();   // the gift card is the whole screen until "Vào hội" (clean layout: nothing else behind it)
-  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open&&!gifting?strip():''}${f.open?nav():''}${wealthRaidCard()}${locCard()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab)+coldLine(S.tab):''}${body}${gifting?'':note()}</div>`;
+  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open&&!gifting?strip():''}${f.open?nav():''}${wealthRaidCard()}${auditCard()}${locCard()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab)+coldLine(S.tab):''}${body}${gifting?'':note()}</div>`;
 }
 // 🥶 a long run of one luck stall cools its luck (server: fair.cold); honest about it, in that stall only
 const coldLine=tab=>{const c=F().cold;if(!c||c.game!==tab)return '';
@@ -285,10 +285,14 @@ function locCard(){
 }
 function wealthRaidCard(){
   const r=S.wealthRaid;if(!r)return '';
-  if(r.audit)return `<section class="fh-card fh-raid" role="alert" data-fh-key="wealth-raid"><h3>🚨 Công an hỏi nguồn tài sản</h3>${r.say?say({name:'Công an phường',emoji:'👮'},r.say):''}
-    <div class="fh-raid-bill"><span>Tiền lời mới ở hội chợ</span><b>${xu(r.gain)}</b><span>Thu ${r.pct}%</span><b>−${xu(r.amount)}</b>${r.bank?`<span>Từ ví</span><b>−${xu(r.cash)}</b><span>Từ tài khoản ngân hàng</span><b>−${xu(r.bank)}</b>`:''}</div>
-    <p>${esc(r.message)}</p><p>Ví còn <b>${xu(r.wallet)}</b>. Khoản thu đã được ghi trong Sổ ví.</p>${btn('Dạ, em hiểu','wealthraidok',{},'primary')}</section>`;
   return `<section class="fh-card fh-raid" role="alert" data-fh-key="wealth-raid"><h3>🚨 Công an kiểm tra</h3><p>${esc(r.message)}</p><p>Ví còn <b>${xu(r.wallet)}</b>. Khoản thu đã được ghi trong Sổ ví.</p>${btn('Đã hiểu','wealthraidok',{},'primary')}</section>`;
+}
+// 🚨 07/10: the asset check (chứng minh nguồn tài sản), a rule of its own; after a raid on the same round it says so
+function auditCard(){
+  const r=S.audit;if(!r)return '';
+  return `<section class="fh-card fh-raid" role="alert" data-fh-key="asset-audit"><h3>🚨 Công an hỏi nguồn tài sản</h3>${r.after_raid?'<p><small>Thêm một lần nữa, sau lần thu 30% ví ở trên.</small></p>':''}${r.say?say({name:'Công an phường',emoji:'👮'},r.say):''}
+    <div class="fh-raid-bill"><span>Tiền lời mới ở hội chợ</span><b>${xu(r.gain)}</b><span>Thu ${r.pct}%</span><b>−${xu(r.amount)}</b>${r.bank?`<span>Từ ví</span><b>−${xu(r.cash)}</b><span>Từ tài khoản ngân hàng</span><b>−${xu(r.bank)}</b>`:''}</div>
+    <p>${esc(r.message)}</p><p>Ví còn <b>${xu(r.wallet)}</b>. Khoản thu đã được ghi trong Sổ ví.</p>${btn('Dạ, em hiểu','auditok',{},'primary')}</section>`;
 }
 function closedCard(gone){
   const f=F();
@@ -1126,6 +1130,7 @@ async function onClick(op,data){
     case'shakexd':shakeXd();return;
     case'raidok':x.raid=null;S.tab=data.tab||'bc';render();S.dlg.scrollTop=0;if(S.tab==='lt')resumeLoto();return;
     case'wealthraidok':S.wealthRaid=null;render();return;
+    case'auditok':S.audit=null;render();return;
     case'locok':S.loc=null;render();return;
     case'buy':buy();return;
     case'mark':mark(Number(data.c)||0,Number(data.n));return;
