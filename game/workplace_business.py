@@ -81,6 +81,7 @@ ORDERS = {
     'rescue': ('Việc riêng: trực tổng đài thay một ca ngắn', 18, 4, {}),
     'lifeguard': ('Việc riêng: trực cứu hộ cho một lớp bơi', 18, 4, {}),
     'police': ('Việc riêng: hỗ trợ tiếp dân một buổi', 16, 3, {}),
+    'zpop': ('Đơn riêng: một bản PINK STATIC Pink ver', 20, 1, {'ps_pink': 1}),
 }
 REASONS = {
     'working': 'Nhân viên đang xử lý đơn riêng.', 'closed': 'Nơi làm việc đã đóng ca.',

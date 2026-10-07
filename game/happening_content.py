@@ -719,6 +719,22 @@ HAPPENINGS = [
     H('cap_wallet', 'trom', '👛', 'Bị móc ví lúc phân luồng hội chợ',
       'Đứng phân luồng giữa hội chợ đông nghẹt, lúc về mới thấy túi quần nhẹ tênh. Ví đã không còn. Anh Định cười: “Nhắc dân giữ ví mà quên ví mình.”',
       ('police',), 'pick', 'pickpocket', 'door', 'Mất ví ở hội chợ', dict(wallet=(20, 60)), ['shout', 'call', 'camera', 'let'], min_day=5),
+    # ================================================================ 💿 Tiệm album Mây Pop (zpop)
+    H('zp_shelf', 'trom', '💿', 'Khách lạ lén nhét album vào túi',
+      'Giữa giờ comeback đông nghẹt, bạn quay lưng tìm Digipack cho Na. Quay lại thì kệ Jewel hụt mất mấy bản.',
+      ('zpop',), 'snatch', 'thief', 'shelf', 'Mất mấy bản album', dict(stock=(1, 2)), THEFT_SOLO, weight=2),
+    H('zp_cashbox', 'trom', '🫙', 'Giật hộp tiền trên quầy',
+      'Hộp tiền để sát cửa cho tiện thối. Một chiếc xe máy tạt vào lề, chộp lấy rồi rồ ga mất hút về phía chợ.',
+      ('zpop',), 'ride', 'biker', 'till', 'Mất hộp tiền', dict(cash=(8, 24)), THEFT_SOLO, weight=2),
+    H('zp_kids', 'pha', '🧒', 'Bé nghịch làm đổ kệ standee',
+      'Một bé chạy vòng quanh tiệm, níu tấm standee BLANKPINK. Tấm standee đổ ập xuống chồng album trên bàn.',
+      ('zpop',), 'knock', 'kids', 'shelf', 'Mấy bản album móp bìa', dict(stock=(1, 2)), KIDS),
+    H('zp_spill', 'den', '🧋', 'Đổ trà sữa lên slogan của khách',
+      'Bạn với tay lấy ống cuộn poster, khuỷu tay quẹt trúng ly trà sữa khách gửi trên quầy. Trà đổ ướt cái slogan khách vừa mua.',
+      ('zpop',), 'drop', 'self', 'till', 'Đền slogan mới cho khách', dict(comp=(6, 14))),
+    H('zp_night', 'dem', '🌙', 'Đêm qua cửa tiệm bị cạy',
+      'Sáng ra ổ khóa cửa kéo méo xệch. Tủ kính lightstick mở toang, mấy cây Búa hồng không thấy đâu.',
+      ('zpop',), 'night', 'thief', 'shelf', 'Mất hàng trong đêm', dict(stock=(1, 3)), min_day=5),
 ]
 INDEX = {x['id']: x for x in HAPPENINGS}
 

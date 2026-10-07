@@ -83,8 +83,8 @@ class Week(unittest.TestCase):
 
     def test_this_release_s_careers_join_without_moving_anyone(self):
         """pho, com, photobooth (1.5.0), giupviec, naucom and babysitter (1.5.1), library, oil, railway, nurse,
-        lighthouse, rescue, lifeguard and police each take one day; each one added later moves none added before (nor the 35 of FIRST)."""
-        added = ['pho', 'com', 'photobooth', 'giupviec', 'naucom', 'babysitter', 'library', 'oil', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police']
+        lighthouse, rescue, lifeguard, police and zpop (bán album) each take one day; each one added later moves none added before (nor the 35 of FIRST)."""
+        added = ['pho', 'com', 'photobooth', 'giupviec', 'naucom', 'babysitter', 'library', 'oil', 'railway', 'nurse', 'lighthouse', 'rescue', 'lifeguard', 'police', 'zpop']
         self.assertEqual([c for c in CAREERS if c not in x3.FIRST], added)
         for w in range(52):
             t = at(2026, 9, 28) + w * 7 * 86400

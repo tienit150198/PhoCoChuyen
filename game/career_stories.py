@@ -1925,6 +1925,45 @@ ARCS = {
                 ('me', 'Em sẽ giữ sổ như anh: ai cũng như ai, không nhận của ai cái gì, gặp chuyện thì có mặt.')],
                 days=9, served=22, gap=2, level=4),
         ]),
+    # ------------------------------------------------------------ 💿 Tiệm album Mây Pop (all groups fictional)
+    'zpop': dict(
+        title='Tấm card đầu tiên của chị Thơ', emoji='💿',
+        keepsake=dict(emoji='🃏', name='Tấm card cũ bọc ba lớp toploader', desc='Tấm card chị Thơ đổi được năm mười lăm tuổi bằng cả tháng tiền ăn sáng. Mép đã sờn, ba lớp bọc vẫn sạch bong.'),
+        cast={'tho': _p('Chị Thơ', '💿', 'Chủ tiệm Mây Pop', 'zpop_npc_01'),
+              'na': _p('Na', '🍑', 'BLINKY bảy năm', 'zpop_npc_02'),
+              'hanh': _p('Cô Hạnh', '👩‍👧', 'Mẹ của bé Bống', 'zpop_npc_03'),
+              'dung': _p('Anh Dũng', '📊', 'Trưởng nhóm đẩy chart', 'zpop_npc_05')},
+        beats=[
+            _b('Kệ album biết nói', '📚', 'Chị Thơ dắt bạn đi một vòng kệ, tay chỉ từng hộp album.', [
+                ('tho', 'Pink, Blank, Jewel: card ngẫu nhiên. Digipack: bìa ai thì card người đó, chắc chắn.'),
+                ('tho', 'Fan hỏi “có card Mận-Ji không” là hỏi chuyện may rủi. Đừng bao giờ hứa cái mình không chắc.'),
+                ('me', 'Dạ, muốn chắc thì Digipack, còn lại là hên xui.')]),
+            _b('Na và tờ lịch comeback', '🍑', 'Na tới từ sớm, tay cầm tờ lịch khoanh đỏ.', [
+                ('na', 'Chị ơi em để dành tiền ăn sáng ba tuần đó. Quét Zchart giùm em nha, Mận-Ji phải lên top!'),
+                ('me', 'Quét từng bản, poster chị cuộn ống cho em luôn.'),
+                ('na', 'Chị hiểu fan ghê á!')],
+                _c('Na hỏi mua thêm cho chắc trúng fansign',
+                   _o('a', 'Nói thật tỉ lệ, khuyên mua vừa sức', [('na', 'Ừa… em mua hai bản thôi, còn tiền đi xem concert.')], rel='na'),
+                   _o('b', 'Hỏi chị Thơ cách tính tỉ lệ cho Na hiểu', [('tho', 'Ba mươi suất trên cả nghìn phiếu. Thương idol thì mua, đừng mua vì chắc trúng.')], rel='tho'))),
+            _b('Cô Hạnh và bé Bống', '👩‍👧', 'Cô Hạnh đứng trước kệ, nhìn mãi không phân biệt được nhóm nào.', [
+                ('hanh', 'Con bé dặn mua cái gì “bản Đêm”, cô tưởng là album ngủ ngon…'),
+                ('me', 'Dạ cô cho con xem tin nhắn của Bống nha. À, Gió Mùa bản Đêm của nhóm 7GIÓ.'),
+                ('hanh', 'Trời, may có con. Cô suýt mua cái hồng hồng kia.')],
+                _c('Cô Hạnh hỏi có nên mua thêm lightstick cho con không',
+                   _o('a', 'Khuyên cô chưa cần, mua đúng thứ bé dặn trước', [('hanh', 'Con thật thà ghê. Lần sau cô lại ghé.')], rel='hanh'),
+                   _o('b', 'Gợi ý cô hỏi Bống trước khi mua thêm', [('hanh', 'Ừ, để tối cô hỏi nó. Mua bậy nó lại giận.')], rel='hanh'))),
+            _b('Tuần chart', '📊', 'Anh Dũng đặt lên quầy một xấp tiền và một tờ danh sách.', [
+                ('dung', 'Anh chỉ cần hóa đơn quét Zchart. Album để lại, em bán lại, bớt anh chút.'),
+                ('me', 'Dạ không được anh. Bán là bán thật, album anh mang về hoặc gửi hộp quyên góp thư viện.'),
+                ('dung', 'Ừ… đẩy chart sạch thì nhóm anh mới đứng lâu. Gửi năm bản vào hộp quyên góp nha em.')],
+                days=6, served=14, gap=1),
+            _b('Tấm card đầu tiên', '🃏', 'Tối đóng tiệm, chị Thơ mở ngăn kéo, lấy ra một tấm card bọc ba lớp toploader.', [
+                ('tho', 'Tấm card chị đổi được năm mười lăm tuổi, bằng cả tháng tiền ăn sáng.'),
+                ('tho', 'Card nào cũng là tuổi trẻ của ai đó. Chị giao quầy cho em, cầm cho nhẹ tay nghe.'),
+                ('na', 'Em trúng fansign rồi chị ơi! Em kể với Mận-Ji là tiệm mình đó!'),
+                ('me', 'Em sẽ giữ tiệm như chị: đúng phiên bản, đúng giới hạn, và luôn nói thật.')],
+                days=9, served=22, gap=2, level=4),
+        ]),
 }
 
 

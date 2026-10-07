@@ -66,6 +66,7 @@ HOURS = {
     'rescue': (7 * 60, 19 * 60),        # the hotline's day shift: handover at 7:00 and 19:00
     'lifeguard': (6 * 60, 20 * 60),     # the pool opens at 6:00 (ông Tư first in) and closes at 20:00
     'police': (7 * 60 + 30, 17 * 60 + 30),   # Công an phường Mây: the briefing at 7:30, off at 17:30
+    'zpop': (9 * 60, 21 * 60),          # Tiệm album Mây Pop: after school at 17:00, fans after work
 }
 EARLY = 30  # goods due after closing wait at the door this many minutes before the next opening
 # How much later than its window a late delivery comes (minutes), by supplier kind; a
@@ -350,6 +351,16 @@ SUPPLIERS = {
              items=['dye_3_0', 'dye_4_6', 'dye_5_0', 'dye_6_1', 'dye_7_3', 'dye_8_1', 'dev_10', 'dev_20', 'dev_30',
                     'dev_40', 'bleach', 'toner_silver', 'toner_beige', 'keratin'],
              note='Thuốc nhuộm, oxy, toner, keratin chính hãng từ kho hãng: rẻ nhất, 1–2 ngày. Đặt trước khi hết tuýp.'),
+    ],
+    # 💿 Tiệm album Mây Pop: albums and lightsticks only through the distributor (stamped, official); the wholesale
+    # market has the small things (batteries, toploaders, binders, poster tubes), never an album.
+    'zpop': [
+        _s(MARKET, name='Chợ sỉ phụ kiện Mây', emoji='🧺', items=['pin_aaa', 'pin_aa', 'toploader', 'binder', 'ong_poster'],
+           note='Pin, toploader, binder, ống poster giá sỉ. Đặt trước 13:00, chiều nay có; đặt sau, sáng mai có. Hay thiếu vài món.'),
+        _s(PARTNER, name='Nhà phân phối Sóng Âm', emoji='💿',
+           note='Album, Búa hồng, slogan chính hãng có tem. Xe chạy bốn chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, '
+                'hàng tới sau đó khoảng một tiếng.'),
+        EXPRESS,
     ],
 }
 # Shipping, wholesale tiers and push-back for every supplier (đơn gộp): by id, else by kind.

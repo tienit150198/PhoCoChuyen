@@ -32,6 +32,7 @@ export const KIND_OF={
   rescue:'dispatch',
   lifeguard:'pool',
   police:'station',
+  zpop:'albumshop',
 };
 export const kindOf=career=>KIND_OF[career]||'shop';
 
@@ -243,6 +244,12 @@ const CAREER_WORDS={
     none_waiting:'Chưa có việc nào đang chờ',next_btn:'Việc tiếp theo',rail_in:'Trong trụ sở',books:'Sổ trực ban',
     end_title:'Tan ca hôm nay?',end_text:'Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho ca sau.',
     people_sub:'Những người bạn gặp ở phường Mây.',feed_sub:'Lời nhắn và nhận xét của người dân.'},
+  zpop:{shelf:'Kệ album',evidence:'Sổ đặt trước',counter:'Quầy & máy quét Zchart',warehouse:'Kho album',finance:'Hộp tiền',ledger:'SỔ TIỆM ALBUM',store:'KHO ALBUM',
+    till:'Hộp tiền',door_open:'Đóng tiệm',door_closed:'Mở tiệm',open_sign:'ĐANG BÁN ALBUM',closed_sign:'HẸN MAI NHA',
+    cat_line:'Mrrr… cho Mướp nằm trên chồng album, ấm ghê.',idle_line:'Học sinh sắp tan trường ghé tiệm.',open_hint:'Đếm bản giới hạn, dựng biển rồi mở tiệm nhé.',
+    free_eyebrow:'Quầy đang vãn',free_title:'Vãn khách rồi!',free_more:'Mời thêm khách hoặc đóng tiệm hôm nay.',more_btn:'Mời thêm một khách',
+    none_waiting:'Chưa có khách nào đang chờ',next_btn:'Mời khách tiếp theo',
+    people_sub:'Những người bạn gặp ở tiệm album Mây Pop.',feed_sub:'Lời nhắn và đánh giá quanh tiệm album.'},
 };
 /** A non-shop career's own words for the shared dialogs (game/career_voice.py via v4/terms.js): "Xác nhận việc chùa",
  * "Sổ trực ban"… under the scene kind's and the career's own words, so those still win. A shop keeps BASE. */

@@ -284,6 +284,15 @@ def _photobooth(m):
     m.fixed('Đơn riêng: chụp và in ảnh lớn', {'giay_lon': 1}, m.price('big'))
 
 
+def _zpop(m):
+    # Staff orders carry a small service on top of the shelf price (gift wrap, delivery): album margins alone are thin.
+    m.fixed('Đơn riêng: gói quà Búa hồng ver.2 kèm vỉ pin AA', {'bua2': 1, 'pin_aa': 1}, m.price('bua2') + m.price('pin_aa') + 5)
+    m.fixed('Đơn riêng: bộ sưu tầm card (binder và ba gói toploader)', {'binder': 1, 'toploader': 3},
+            m.price('binder') + 3 * m.price('toploader') + 4)
+    m.fixed('Đơn riêng: giao tận nhà một bản PINK STATIC, poster cuộn ống', {'ps_pink': 1, 'ong_poster': 1}, m.price('ps_pink') + 10)
+    m.fixed('Đơn riêng: giao tận nhà hai bản Chua Chua', {'cc_std': 2}, 2 * m.price('cc_std') + 10)
+
+
 def _farm(m):
     from . import inventory as inv
     feed = m.first('compost', 'npk')
@@ -319,7 +328,7 @@ def _drain(m):
 MENUS = dict(mother_baby=_mother_baby, pharmacy=_pharmacy, grocery=_grocery, fruit=_fruit, pet_shop=_pet_shop,
              florist=_florist, tra_da=_tra_da, ice_cream=_ice_cream, com=_com, pho=_pho, restaurant=_restaurant,
              cafe_bakery=_cafe_bakery, salon=_salon, pet_care=_pet_care, nail=_nail, giupviec=_giupviec,
-             photobooth=_photobooth, farm=_farm, repair=_repair, delivery=_delivery, drain=_drain)
+             photobooth=_photobooth, farm=_farm, repair=_repair, delivery=_delivery, drain=_drain, zpop=_zpop)
 
 
 def target(cash: int) -> int:
