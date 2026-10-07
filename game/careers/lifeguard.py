@@ -1137,12 +1137,18 @@ def _reply(s, c, d, p):
     return dict(message=f'{REPLIES[say][0]} {line}')
 
 
+def _reopen_rules(t: dict, need=kit.need) -> None:
+    """What hb_reopen refuses: the storm has not come yet (no one sent out, no thunder). public_task sends it as
+    can.hb_reopen, so "Mở lại hồ" says why before it is pressed."""
+    need('shelter' in t['marks'] or _thunder_at(t) is not None, 'Dông chưa tới: chờ, xem trời đã.')
+
+
 def _reopen(s, c, d, p):
     t = _task(c, p, ('storm',))
     cave = bool(p.get('cave'))
     now = _minutes(_events(t)[t['step']][0])
     last = _thunder_at(t)
-    kit.need('shelter' in t['marks'] or last is not None, 'Dông chưa tới: chờ, xem trời đã.')
+    _reopen_rules(t)
     case = STORMS[t['_v']['case']]
     early = 'shelter' in t['marks'] and last is not None and now - last < LC.WAIT_AFTER
     if early:
@@ -1453,6 +1459,7 @@ def public_task(t: dict) -> dict:
                       last_thunder=last[-1][0] if last else None, more=t['step'] < len(_events(t)) - 1,
                       shelter=m.get('shelter'), counted='count' in seen, sky='sky' in seen,
                       push=ev[-1][1] == 'push' and f'reply:{t["step"]}' not in seen)
+    v['can'] = dict(hb_reopen=kit.check(_reopen_rules, t))
     return v
 
 

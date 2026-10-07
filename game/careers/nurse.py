@@ -853,13 +853,19 @@ def _jewel(s, c, d, p):
     return dict(message='💍 Tháo dây chuyền, nhẫn, cho vào túi niêm phong, giao người nhà ký nhận.')
 
 
+def _send_rules(t: dict, need=kit.need) -> None:
+    """What dd_send refuses: the patient said no to the operation (seen on the consent paper) and was not talked
+    round. public_task sends it as can.dd_send, so the final button says why before it is pressed."""
+    if _case_of(t)['variant'] == 'refuse' and 'consent' in t['seen']:
+        need(t['said'] == 'pushed', f'{_who(t)} đã nói không mổ. Không chuyển người bệnh đi khi họ không đồng ý.')
+
+
 def _send(s, c, d, p):
     t = _task(c, p, ('proc',))
     x = _case_of(t)
     v = x['variant']
     who = _who(t)
-    if v == 'refuse' and 'consent' in t['seen']:
-        kit.need(t['said'] == 'pushed', f'{who} đã nói không mổ. Không chuyển người bệnh đi khi họ không đồng ý.')
+    _send_rules(t)
     signed = x['consent'] == 'signed' or 'signed' in t['seen']
     if t['idm'] != 'open':
         g = _guard(d, 'id', 'Chuyển người bệnh đi thủ thuật mà chưa hỏi họ tên, ngày sinh, đối chiếu vòng tay?')
@@ -1354,6 +1360,7 @@ def public_task(t: dict) -> dict:
         view.update(proc=t['needs']['proc'], time=t['needs']['time'], jewel_off='jewel_off' in seen, signed='signed' in seen,
                     explained='explained' in seen, checks={w: _proc_line(x, w, b) for w in PROC_KEYS if w in seen},
                     state={w: state[w] for w in PROC_KEYS if w in seen})
+        v['can'] = dict(dd_send=kit.check(_send_rules, t))
     else:
         view.update(rush=t['needs']['rush'], cannula_off='cannula_off' in seen, signed='signed' in seen, teachback='teachback' in seen,
                     checks={w: NC.DISCHARGE_TEXT[w][x[w]] for w in DIS_CHECKS if w in seen},

@@ -7,7 +7,9 @@
  * Its own dialog (not the shared #sheet), opened by the rail entry "Ngân hàng" (action `bank`). */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {Sound} from '../audio.js';
-import {bindXfer,xferOpen,xferPage,xferClick,xferInput} from './bank-xfer.js';   // 💸 Chuyển khoản bạn bè (game/bank_xfer.py)
+import {bindXfer,xferOpen,xferPage,xferClick,xferInput} from './bank-xfer.js';
+// Clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded so node tests can load this file.
+const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');   // 💸 Chuyển khoản bạn bè (game/bank_xfer.py)
 
 const S={dlg:null,env:null,tab:'home',busy:false,flash:null,filter:'all',joint:null,jointAt:0,loan:{kind:'personal',amount:0,term:28,career:''},listening:false};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -71,6 +73,7 @@ function dialog(){
   d.addEventListener('change',e=>{if(e.target.closest('[data-bk-loan]'))onLoanField(e.target);else if(e.target.id==='bx-src')xferInput(e.target);});
   d.addEventListener('submit',e=>e.preventDefault());
   d.addEventListener('close',()=>{S.flash=null;});
+  d.addEventListener('toggle',e=>{if(e.target.classList?.contains('bk-pref-fold'))S.prefOpen=e.target.open;},true);   // the fold stays open across renders
   S.dlg=d;return d;
 }
 export async function openBank(env,tab){
@@ -108,7 +111,7 @@ async function send(action,payload={},{quiet=false}={}){
   if(!quiet){S.busy=true;render();}
   try{
     const r=await api.command(action,payload);
-    if(!quiet){const extra=(r.effects||[]).filter(Boolean);S.flash={text:[r.message,...extra].filter(Boolean).join(' '),kind:r.approved===false?'warn':'good'};}
+    if(!quiet){const extra=(r.effects||[]).filter(Boolean);S.flash={text:[r.message,...extra].filter(Boolean).join(' '),kind:r.approved===false?'warn':'good'};fadeFlash(S.flash);}
     return r;
   }catch(e){if(!quiet)S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}  // e.quiet: api.js, the save moved under the tap twice
   finally{if(!quiet){S.busy=false;render();}else if(S.dlg?.open&&!S.busy)render();}
@@ -224,15 +227,19 @@ function head(sub){
   return `<header class="sheet-head bk-head"><span class="bk-logo" aria-hidden="true">${LOGO}</span><div class="grow"><span class="eyebrow">NGÂN HÀNG PHỐ · ỨNG DỤNG</span><h2 id="bk-title">Ngân hàng Phố</h2>${sub?`<p>${sub}</p>`:''}</div>
     <button class="icon-btn" type="button" data-bk="close" aria-label="Đóng">${icon('x',21)}</button></header>`;
 }
+function fadeFlash(f){
+  if(!clean()||f.kind!=='good')return;
+  setTimeout(()=>{if(S.flash!==f)return;S.flash=null;const el=S.dlg?.querySelector('.bk-flash');if(el){el.textContent='';el.className='bk-flash';}},6000);
+}
 const flash=()=>`<p class="bk-flash ${S.flash?.kind||''}" role="status" aria-live="polite">${S.flash?esc(S.flash.text):''}</p>`;
 function page(){
   const b=B();
   if(!b.story)return head('Tài khoản, tiết kiệm, thẻ và khoản vay của riêng bạn.')+`<div class="sheet-body bk bk-body"><section class="bk-card bk-center"><div class="bk-big-emoji" aria-hidden="true">🏦</div><h3>Ngân hàng chỉ có trong chế độ hành trình</h3><p>Ở chế độ chơi tự do, mỗi nơi làm việc có quỹ riêng. Vào hành trình để có ví, tài khoản ngân hàng, thẻ và khoản vay của một nhân vật.</p></section></div>`;
   if(!b.open)return head('')+`<div class="sheet-body bk bk-body">${flash()}${welcome(b)}</div>`;
-  const tabs=[['home','Tổng quan'],['tx','Giao dịch'],['save','Tiết kiệm'],['card','Thẻ'],['loan','Vay']];
-  const bar=`<div class="segmented bk-tabs" role="tablist" aria-label="Mục ngân hàng">${tabs.map(([id,l])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'active':''}" data-bk="tab" data-tab="${id}">${l}${id==='card'&&b.card?.past_due||id==='loan'&&(b.loans||[]).some(x=>x.overdue)?'<i class="dot" aria-hidden="true"></i>':''}</button>`).join('')}</div>`;
+  const tabs=[['home','Tổng quan','📊'],['tx','Giao dịch','🧾'],['save','Tiết kiệm','🐷'],['card','Thẻ','💳'],['loan','Vay','📝']],slim=clean();
+  const bar=`<div class="segmented bk-tabs" role="tablist" aria-label="Mục ngân hàng">${tabs.map(([id,l,ic])=>`<button type="button" role="tab" aria-selected="${S.tab===id}" class="${S.tab===id?'active':''}" data-bk="tab" data-tab="${id}"${slim?` aria-label="${l}"`:''}>${slim?(S.tab===id?`${ic} ${l}`:ic):l}${id==='card'&&b.card?.past_due||id==='loan'&&(b.loans||[]).some(x=>x.overdue)?'<i class="dot" aria-hidden="true"></i>':''}</button>`).join('')}</div>`;
   const body={home,tx,save,card,loan,xfer:xferPage}[S.tab]||home;
-  return head(`Số tài khoản ${acctNo(b.no)} · Ngày sống ${b.life_day}`)+`<div class="sheet-body bk bk-body">${bar}${flash()}${alerts(b)}${body(b)}</div>`;
+  return head(clean()?`STK ${acctNo(b.no)}`:`Số tài khoản ${acctNo(b.no)} · Ngày sống ${b.life_day}`)+`<div class="sheet-body bk bk-body">${bar}${flash()}${alerts(b)}${body(b)}</div>`;
 }
 
 /** Before an account: four short chips say what it offers, the button opens one; the details fold (owner 03/10: "chữ ít thôi"). */
@@ -277,15 +284,17 @@ function scoreGauge(sc,R){
 
 function home(b){
   const c=b.card,sv=b.savings,loanLeft=(b.loans||[]).reduce((x,l)=>x+l.left,0);
-  const hero=`<section class="bk-hero"><small>Tài khoản thanh toán</small><strong class="bk-balance">${xu(b.balance)}</strong>
-    <div class="bk-move"><label class="bk-field"><span>Số xu</span><input id="bk-amt" type="number" inputmode="numeric" min="1" placeholder="Ví dụ 50"></label>
-    <label class="bk-field"><span>Rút ở</span><select id="bk-atm">${Object.entries(b.atms).map(([k,v])=>`<option value="${k}">${esc(v)}${k==='other'?` (phí ${xu(b.rules.atm_fee)})`:''}</option>`).join('')}</select></label></div>
+  const slim=clean();
+  const hero=`<section class="bk-hero"><small${slim?' aria-label="Tài khoản thanh toán"':''}>${slim?'Thanh toán':'Tài khoản thanh toán'}</small><strong class="bk-balance">${xu(b.balance)}</strong>
+    <div class="bk-move"><label class="bk-field"><span${clean()?' class="sr-only"':''}>Số xu</span><input id="bk-amt" type="number" inputmode="numeric" min="1" placeholder="${clean()?'Số xu, ví dụ 50':'Ví dụ 50'}"></label>
+    <label class="bk-field"><span${clean()?' class="sr-only"':''}>Rút ở</span><select id="bk-atm">${Object.entries(b.atms).map(([k,v])=>`<option value="${k}">${esc(v)}${k==='other'?` (phí ${xu(b.rules.atm_fee)})`:''}</option>`).join('')}</select></label></div>
     <div class="bk-actions">${btn(icon('download',17)+' Nộp tiền','deposit',{},'primary')}${btn(icon('upload',17)+' Rút tiền','withdraw',{},'ghost')}</div>
-    <div class="bk-actions">${btn('💸 Chuyển khoản cho bạn bè','xfer',{},'ghost bx-open')}</div></section>`;
-  const tile=(tab,emoji,label,value,sub)=>`<button type="button" class="bk-tile" data-bk="tab" data-tab="${tab}"${S.busy?' disabled':''}><span class="bk-tile-emoji" aria-hidden="true">${emoji}</span><span class="bk-tile-label">${label}</span><strong>${value}</strong><small>${sub}</small></button>`;
+    <div class="bk-actions">${btn(clean()?'💸 Chuyển khoản':'💸 Chuyển khoản cho bạn bè','xfer',{},'ghost bx-open',clean()?' aria-label="Chuyển khoản cho bạn bè"':'')}</div></section>`;
+  const quiet=new Set(['Chưa có sổ kỳ hạn','Mở thẻ ở mục Thẻ','Xem hạn mức vay']);
+  const tile=(tab,emoji,label,value,sub)=>(sub=clean()&&quiet.has(sub)?'':sub,`<button type="button" class="bk-tile" data-bk="tab" data-tab="${tab}"${S.busy?' disabled':''}><span class="bk-tile-emoji" aria-hidden="true">${emoji}</span><span class="bk-tile-label">${label}</span><strong>${value}</strong>${sub?`<small>${sub}</small>`:''}</button>`);
   const tiles=`<div class="bk-tiles">${tile('save','🐷','Tiết kiệm',xu(sv.total),sv.terms.length?`${sv.terms.length} sổ có kỳ hạn`:'Chưa có sổ kỳ hạn')}
-    ${tile('card','💳','Thẻ tín dụng',c?xu(c.bal):'Chưa có',c?`Dư nợ · hạn mức ${xu(c.limit)}`:'Mở thẻ ở mục Thẻ')}
-    ${tile('loan','📝','Khoản vay',loanLeft?xu(loanLeft):'Không nợ',loanLeft?`${b.loans.length} khoản đang trả`:'Xem hạn mức vay')}</div>`;
+    ${tile('card','💳',slim?'Thẻ':'Thẻ tín dụng',c?xu(c.bal):slim?'—':'Chưa có',c?`Dư nợ · hạn mức ${xu(c.limit)}`:'Mở thẻ ở mục Thẻ')}
+    ${tile('loan','📝',slim?'Vay':'Khoản vay',loanLeft?xu(loanLeft):slim?'0':'Không nợ',loanLeft?`${b.loans.length} khoản đang trả`:'Xem hạn mức vay')}</div>`;
   const inbox=(b.inbox||[]).slice(0,6).map(m=>`<li class="${m.read?'':'new'}"><span class="bk-ib-ic" aria-hidden="true">${m.kind==='call'?'📞':'💬'}</span><div><small>Ngày sống ${m.day}</small><p>${esc(m.text)}</p></div></li>`).join('');
   const sc=b.score;
   const scoreBox=`<section class="bk-card"><h3>Điểm tín dụng</h3>${scoreGauge(sc,b.rules)}
@@ -357,10 +366,14 @@ function save(b){
 }
 
 function paymentSettings(b){
-  return `<section class="bk-card"><h3>Khi mua sắm cá nhân</h3><p class="bk-hint">Học phí, trang phục, đi cửa sau… dùng cách trả mặc định khi bạn không chọn riêng. Ưu tiên thẻ chung sẽ trừ quỹ chung nếu đủ số dư; nếu không, thử ví rồi thẻ tín dụng. Chi phí quầy lấy từ két và vốn quầy; góp vốn dùng ví.</p>
+  if(clean())return `<details class="bk-card bk-pref-fold"${S.prefOpen?' open':''}><summary><b>💳 Khi mua sắm</b><small title="${esc(b.prefs?.[b.pref]||'')}">${esc(String(b.prefs?.[b.pref]||'').split(/[:(,]/)[0])}</small></summary>${paymentBody(b)}</details>`;
+  return `<section class="bk-card"><h3>Khi mua sắm cá nhân</h3>${paymentBody(b)}</section>`;
+}
+function paymentBody(b){
+  return `<p class="bk-hint">Học phí, trang phục, đi cửa sau… dùng cách trả mặc định khi bạn không chọn riêng. Ưu tiên thẻ chung sẽ trừ quỹ chung nếu đủ số dư; nếu không, thử ví rồi thẻ tín dụng. Chi phí quầy lấy từ két và vốn quầy; góp vốn dùng ví.</p>
     <p class="bk-hint">Chọn trả từ tài khoản để mua sắm không cần rút tiền. Chỉ trừ số dư tài khoản thanh toán; thiếu tiền sẽ dừng, không tự dùng ví hoặc vay thẻ. Tiền tiết kiệm không bị trừ.</p>
     <div class="bk-move"><label class="bk-field wide"><span>Cách trả mặc định</span><select id="bk-pref">${Object.entries(b.prefs).map(([k,v])=>`<option value="${k}"${b.pref===k?' selected':''}>${esc(v)}</option>`).join('')}</select></label></div>
-    <div class="bk-actions">${btn('Lưu','pref',{},'ghost small')}</div></section>`;
+    <div class="bk-actions">${btn('Lưu','pref',{},'ghost small')}</div>`;
 }
 
 function card(b){

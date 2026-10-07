@@ -864,6 +864,14 @@ def _take_set(c: dict) -> bool:
     return False
 
 
+def _gloves_rules(c: dict, need=None) -> None:
+    """Every bowl takes a pair of gloves (sl_mix). Written once, run twice (docs/UI_KIT.md "Disabled with a reason"):
+    sl_mix refuses with the stock room's own words (the salon's top refusal 04–06/10, “Hết Găng tay…”), public_data
+    sends it as can.sl_mix so “Trộn bát” is dimmed with these words and a way to the stock room."""
+    (need or kit.need)(kit.stock(c, 'gloves') >= 1, f'Hết {ITEM_INDEX["gloves"]["name"]}. Mở Kho để nhập thêm nhé.',
+                       fix=dict(act='v4Restock', data=dict(items='gloves', task=''), label='📦 Nhập hàng'))
+
+
 def _use_tools(c: dict, t: dict) -> str:
     """The client's first hands-on step takes a sterilised set from the jar (or a used one when the jar is empty)."""
     if not t.get('gen') or t.get('tools'):
@@ -1581,7 +1589,9 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             _drop(c, t, ('bleach', 'toner'))
             return dict(message=f'Linh vuốt thử ngọn tóc rồi lắc đầu: tóc {who} chỉ còn sức khỏe {_hp(t)}/100 — tẩy lúc này là gãy. '
                                 'Hôm nay phục hồi trước, hẹn tẩy khi tóc khỏe lại. Phần tẩy đã được gạch khỏi phương án.', refused=True)
-        cost = kit.take(c, shade, 1) + kit.take(c, DEV_ITEM[dev], 1) + kit.take(c, 'gloves', 1)
+        cost = kit.take(c, shade, 1) + kit.take(c, DEV_ITEM[dev], 1)
+        _gloves_rules(c)
+        cost += kit.take(c, 'gloves', 1)
         if mx and mx['b']:
             cost += kit.take(c, mx['b'], 1)
         if kind == 'bleach':
@@ -2226,6 +2236,7 @@ def public_data(c: dict) -> dict:
         # Options come in a shuffled order so the careful answer is not always the first button.
         kit.rng(ID, 'desk-order', d['desk']['ev']['id'], c['day']).shuffle(d['desk']['ev']['options'])
     d['tier'] = kit.tier(c['day'])
+    d['can'] = dict(sl_mix=kit.check(_gloves_rules, c))   # a view field, never saved
     d['allergy'] = len(d['allergy'])
     # Care loop: cards, the appointment book, the tool jar.
     real = kit.data(c)

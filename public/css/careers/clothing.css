@@ -232,11 +232,7 @@
 .career-job.ao .till .btn{min-height:44px}
 
 /* The one next-step button rides at the bottom of the sheet. */
-.career-job.ao .ao-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--ao-r);
-  background:var(--ao-s1);border:1px solid var(--ao-line);box-shadow:0 -6px 18px rgb(40 30 80 / 12%)}
-.career-job.ao .ao-bar .btn{flex:1 1 auto;min-height:48px}
-.career-job.ao .ao-bar .gd-ctas{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
-.career-job.ao .ao-bar .gd-alt{margin:0;align-self:center}
+/* The bar itself is the shared .ui-bar (app.css 27e, ui-kit.js actBar); only its own content is styled here. */
 
 @media (max-width:420px){
   .career-job.ao .card{padding:12px}
@@ -280,8 +276,22 @@
 .career-job.ao .ao-chip.want{border-color:var(--ao-violet)}
 .career-job.ao .ao-swatch.want{border-color:var(--ao-violet)}
 .career-job.ao .ao-swatch small{color:var(--ao-muted);font-weight:600}
-.career-job.ao .ao-bar{flex-wrap:wrap}
-.career-job.ao .ao-bar>.asm-next{flex:1 1 100%}
 /* Tap targets ≥ 44 px: the order slip's fold header, its tappable chips (asm_kit) and the size chart fold. */
 .career-job.ao button.asm-pin-head,.career-job.ao button.asm-chip{min-height:44px}
 .career-job.ao .fold>summary{min-height:44px;padding-top:11px;padding-bottom:11px}
+
+/* ---------- wave 5, clean layout (html[data-clean], docs/UI_KIT.md): fewer words on the work screen */
+.career-job.ao .ao-today.compact{padding:4px 4px 4px 12px;gap:8px}
+.career-job.ao .ao-today.compact p{display:flex;align-items:center;gap:6px}
+.career-job.ao .ao-kindq{display:inline-flex;align-items:center;gap:4px;margin-left:auto}
+.career-job.ao .ao-q{flex:none;min-width:44px;min-height:44px}
+.career-job.ao .ao-chip.out{opacity:.6;border-style:dashed}
+.career-job.ao .ao-chip.ao-more{align-items:center;justify-content:center;border-style:dashed;color:var(--ao-violet)}
+.career-job.ao .ao-size.clue{position:relative;min-height:64px;gap:1px}
+.career-job.ao .ao-size .ao-k{font-size:var(--fs-1);line-height:1.1;color:var(--ao-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.career-job.ao .ao-size .ao-left{position:absolute;top:2px;right:4px;font-style:normal;font-size:var(--fs-1);font-weight:800;color:var(--ao-violet);font-variant-numeric:tabular-nums}
+.career-job.ao .ao-size.out .ao-left{color:var(--ao-bad)}
+.career-job.ao .ao-size.is-why{opacity:.55}
+.career-job.ao .ao-sizes.wait{opacity:.7}
+.career-job.ao .ao-slim{margin:var(--sp-2) 0 var(--sp-1);color:var(--ao-violet)}
+.career-job.ao .ao-swatch{min-width:44px;justify-content:center}

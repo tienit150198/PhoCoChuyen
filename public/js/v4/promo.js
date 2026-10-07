@@ -10,6 +10,7 @@
  *            three tabs: 📥 việc cần quyết, 🗓️ điều phối (tap a slot, tap a person), 👥 nhân sự (tap a person, pick a decision).
  *            Shown in the 'manager' sheet while ui.pmOffice is set. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {T} from './terms.js';
 import {orgView,inspView} from './org.js';   // 🎖️ a career on an org ladder (game/org.py)
 
 const KIND={khach:['🗣️','Khách'],tay:['🔧','Tay nghề'],so:['📋','Giấy tờ'],gap:['⚡','Việc gấp']};
@@ -45,13 +46,13 @@ const OFFICE_RULE=`<li>🏢 Ngày điều hành tốt: trong ca, tự xếp ít 
 const tiredAt=of=>of.tired_at||2;
 const rowTag=(of,m)=>!m.duty||m.rest?'':m.duty>=tiredAt(of)?`<i class="bad">🥱 ${m.duty} ngày liền · nên nghỉ</i>`:`<i>🔁 ${m.duty} ngày liền</i>`;
 /** The steps behind "Xem thêm": what each step gives. */
-function more(p){
+function more(p,career){
   const emp=p.track==='emp',pcts=(p.pcts||[]).map(x=>x+'%').join(' → ');
   const rows=(p.log||[]).map(x=>`<li>✓ Ngày ${x.d}: bậc ${x.to}</li>`).join('');
   const ladder=p.ladder?`<ol class="pm-path">${p.ladder.map((t,i)=>`<li class="${i<p.rank?'on':''}">${p.insignias?insignia(p.insignias[i],46):''}<span>${esc(t)}</span></li>`).join('')}</ol>`:'';
   return `<details class="pm-more"><summary>Xem thêm</summary>${ladder}<ul class="pm-rules">
     <li>Ngày tốt: ca thường xong từ 2 việc, đánh giá trong ngày từ ★3.5 nếu có. Nghề văn phòng theo kết quả “ngày chắc tay”; ca quản lý đạt chất lượng từ 60%.</li>
-    <li>${emp?'Mỗi bậc: tăng lương ':'Mỗi bậc: khách quen boa thêm '}${pcts}.</li>
+    <li>${emp?'Mỗi bậc: tăng lương ':`Mỗi bậc: ${esc(T(career,'tip').toLowerCase())} `}${pcts}.</li>
     <li>Bậc 3: mở 🧑‍💼 Ca quản lý${p.track==='own'?' (nhân viên + phụ việc thời vụ)':''}.</li>
     ${p.office_from?`<li>Bậc ${p.office_from} (${esc(p.office_title)}): mở 🏢 phòng điều hành: điều phối, quản lý nhân sự, xử lý việc khó.</li>${OFFICE_RULE}`:''}
     <li>Không bao giờ bị giáng chức. Ngày chưa tốt không cộng ngày tốt và vẫn tính vào tỷ lệ ngày làm.</li>${rows}</ul></details>`;
@@ -98,7 +99,7 @@ export function promoView(env){
   const step=`<span class="pm-step">${Array.from({length:p.top},(_,i)=>`<i class="${i<p.rank?'on':''}"></i>`).join('')}</span>`;
   if(office&&c.open&&of.live&&!sh)main=office+act('Về quầy','close',{},'ghost full');
   else if(office)main=office+main;
-  return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body"><article class="pm-card pm-ladder">${badge(p)}<h3 class="pm-title">${esc(p.title)}</h3>${step}${n?bar(n.good,n.need):''}<p class="pm-line">${line}</p><p class="small">💰 ${benefit}</p><p class="small muted">${work}</p>${lock}${main}${more(p)}</article></div>`;
+  return head('🎖️ Thăng tiến','',esc(place(env)).toUpperCase())+`<div class="sheet-body"><article class="pm-card pm-ladder">${badge(p)}<h3 class="pm-title">${esc(p.title)}</h3>${step}${n?bar(n.good,n.need):''}<p class="pm-line">${line}</p><p class="small">💰 ${benefit}</p><p class="small muted">${work}</p>${lock}${main}${more(p,env.api.state.current)}</article></div>`;
 }
 
 /* ------------------------------------------------------------------ 🏢 Phòng điều hành */
@@ -188,7 +189,7 @@ export function managerView(env){
     const own=p.track==='own';
     return head('🧑‍💼 Chốt ca','',eyebrow)+`<div class="sheet-body"><article class="pm-card pm-done"><span class="pm-badge" aria-hidden="true">${sh.quality>=60?'🎉':'🙂'}</span>
       <div class="pm-stats"><span><b>${sh.good}/${sh.size}</b><small>việc tốt</small></span><span><b>${sh.quality}%</b><small>chất lượng</small></span><span><b>${mood(sh.mood)}</b><small>tinh thần đội</small></span></div>
-      <p class="pm-pay">+${sh.bonus} xu ${own?'doanh thu đội':'thưởng quản lý'}${sh.wage?` · −${sh.wage} xu phụ việc`:''}</p>${act('Khép ngày','end',{},'primary big full')}</article></div>`;
+      <p class="pm-pay">+${sh.bonus} xu ${own?esc(T(env.api.state.current,'income'))+' đội':'thưởng quản lý'}${sh.wage?` · −${sh.wage} xu phụ việc`:''}</p>${act('Khép ngày','end',{},'primary big full')}</article></div>`;
   }
   const pick=Number.isInteger(ui.pmPick)&&sh.tasks[ui.pmPick]?.st==='q'?ui.pmPick:null,esc_=sh.esc,busy=!!esc_;
   const team=`<div class="pm-team" role="group" aria-label="Đội">${sh.team.map(m=>{
@@ -214,10 +215,10 @@ export function managerView(env){
 }
 
 /** The day summary's line (summaryView). */
-export function promoSummary(p){
+export function promoSummary(p,career){
   const bits=[];
   if(p.manager)bits.push(`🧑‍💼 Ca quản lý: ${p.manager.good}/${p.manager.size} việc tốt · +${p.manager.bonus} xu`);
-  if(p.tip)bits.push(`🎖️ Khách quen boa thêm +${p.tip} xu`);
+  if(p.tip)bits.push(`🎖️ ${esc(T(career,'tip'))} +${p.tip} xu`);
   if(p.org)bits.push(...p.org.map(esc));   // 🎖️ cấp bậc (game/org.py): warnings, evaluation, a step, a course
   if(p.office){bits.push(...(p.office.lines||[]).map(esc));if(p.office.bonus)bits.push(`🏢 Thưởng điều hành +${p.office.bonus} xu`);}
   if(p.line)bits.push(esc(p.line));

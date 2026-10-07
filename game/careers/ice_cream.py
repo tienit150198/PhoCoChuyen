@@ -631,7 +631,20 @@ def _task(c: dict, p: dict, kinds=None) -> dict:
 
 
 def _need_open(d: dict) -> None:
-    kit.need(d['shop']['open'], 'Chưa mở tiệm: xem nhiệt kế, soi hộp kem, thay nước muỗng rồi bấm “Mở tiệm” nhé.')
+    _open_rules(d)
+
+
+def _open_rules(d: dict, setup=None, need=kit.need) -> None:
+    """The shop must be open before any customer's work (live 04-06/10: refusals on the first tap of a customer
+    picked before “Mở tiệm”). public_data sends it as can.open, with a fix that brings up the morning set-up."""
+    need(d['shop']['open'], 'Chưa mở tiệm: xem nhiệt kế, soi hộp kem, thay nước muỗng rồi bấm “Mở tiệm” nhé.',
+         fix=dict(cmd='task_select', payload=dict(task=setup), label='🏪 Mở tiệm') if setup else None)
+
+
+def _setup_id(c: dict):
+    """Today's open set-up task (the morning chores), if any."""
+    return next((t['id'] for t in c['tasks'] if t.get('career') == ID and t.get('kind') == 'setup'
+                 and t.get('status') not in ('completed', 'referred', 'cancelled')), None)
 
 
 # ---------------------------------------------------------------- the freezer and the morning
@@ -1549,7 +1562,7 @@ def public_data(c: dict) -> dict:
     mod = mod_of(c['day'])
     fz = d['fz']
     stock = {x['id']: kit.stock(c, x['id']) for x in ITEMS} if c['ext'].get('inv') else {}
-    return dict(intro=d['intro'], shop=d['shop'], fz=dict(fz, goal=KNOB_T.get(fz.get('knob'), -18), feel=soft_of(fz.get('temp', -18))),
+    return dict(can=dict(open=kit.check(_open_rules, d, _setup_id(c))), intro=d['intro'], shop=d['shop'], fz=dict(fz, goal=KNOB_T.get(fz.get('knob'), -18), feel=soft_of(fz.get('temp', -18))),
                 well=dict(n=d['well']['n'], fresh=d['well']['fresh'], dirty=not d['well']['fresh'] or d['well']['n'] > WELL_MAX),
                 tubs={k: dict(g=v['g']) for k, v in d['tubs'].items()}, refrozen=d['refrozen'] if d['shop'].get('checked') else None,
                 stock=stock, mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']),

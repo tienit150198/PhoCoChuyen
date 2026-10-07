@@ -8,7 +8,7 @@
  * The server decides everything; hints show the next step, never which way a decision should go. */
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
+import {data,cc,act,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,tip,clean} from './street_kit.js';
 import {oddCard,restCard,record,ACTIONS as oddActions} from './air_kit.js';
 
 const ODD_CFG={odd:'hb_odd',rest:'hb_rest',kinds:{charm:'Lời mời khó từ chối',harass:'Quấy rối',demand:'Yêu cầu oái oăm',corner:'Làm tắt',bargain:'Mặc cả với hồ'},
@@ -21,6 +21,7 @@ const tapCmd=(x,label,command,payload,cls='')=>`<button type="button" class="btn
 /* ------------------------------------------------------------ shared pieces */
 function learnNote(x){
   const l=data(x).learn;if(!l?.on)return '';
+  if(clean())return `<p class="hb-learn" aria-label="Anh Hải kèm: việc ${Math.min(l.n+1,l.of)}/${l.of}">🛟 ${Math.min(l.n+1,l.of)}/${l.of}</p>${tip(`Anh Hải ngồi cạnh kèm bạn: việc ${Math.min(l.n+1,l.of)}/${l.of}. Sai gì anh nhắc trước.`,'Học nghề','p')}`;
   return `<p class="hb-learn">🛟 Anh Hải ngồi cạnh kèm bạn: việc ${Math.min(l.n+1,l.of)}/${l.of}. Sai gì anh nhắc trước.</p>`;
 }
 function groundCard(x){
@@ -33,10 +34,34 @@ function poolStep(x){
   if(o.conduct?.ground)return {ok:null,label:'Tạm đình chỉ trực: tan ca',go:{sel:'.hb-ground',label:'⚖️ Tan ca'},pulse:''};
   return null;
 }
-const opt=(x,label,sub,command,payload,cls='')=>x.cmd(`<span class="sk-opt-label">${label}</span>${sub?`<small>${x.esc(sub)}</small>`:''}`,command,payload,`sk-opt ${cls}`);
+/** A choice; on the clean layout its explanation (`sub`) is in the "?" sheet. */
+const opt=(x,label,sub,command,payload,cls='')=>x.cmd(`<span class="sk-opt-label">${label}</span>${sub?(clean()?tip(x.esc(sub),label.replace(/^\S+\s/,'')):`<small>${x.esc(sub)}</small>`):''}`,command,payload,`sk-opt ${cls}`);
 
 /* ------------------------------------------------------------ opening the pool */
+/** Clean layout: each check in a word or two (the full name stays in aria-label), the report channels short. */
+const LG_WORD={clear:'Nước',strip:'Que thử',drain:'Nắp hút',tube:'Phao ống',ring:'Phao tròn',kit:'Sơ cứu',signs:'Biển',phone:'Điện thoại'};
+const CHAN_WORD={book:'Ghi sổ trực',tech:'Báo kỹ thuật',boss:'Gọi quản lý ngay'};
+const checkWord=r=>clean()&&LG_WORD[r.id]||r.label;
+/** The water card's ranges as numbers ("Clo: từ 1 tới 3 trên bảng mẫu" → "1–3"), '' when it does not read so. */
+const rangeOf=s=>{const m=String(s||'').match(/từ\s+([\d,]+)\s+tới\s+([\d,]+)/);return m?`${m[1]}–${m[2]}`:'';};
+function openClean(t,x){
+  const n=t.needs||{},rows=n.checks||[],chan=cc(x).channels||{};
+  // Checked fine or not yet: a tile. A fault: its own row with what was found (the cue), the fix and whom to tell.
+  const tiles=rows.filter(r=>r.state!=='fault').map(r=>{const name=x.esc(r.label);
+    if(!r.state)return x.cmd(`<span class="tile-emoji">${x.esc(r.emoji)}</span><b>${x.esc(checkWord(r))}</b>`,'hb_check',{task:t.id,what:r.id},'tile sk-tile hb-tile').replace('<button ',`<button aria-label="Kiểm ${name.toLowerCase()}" `);
+    return `<div class="sk-tile hb-tile done" aria-label="${name}: ổn"><span class="tile-emoji">✅</span><b>${x.esc(checkWord(r))}</b>${tip(x.esc(r.text||''),r.label)}</div>`;}).join('');
+  const faults=rows.filter(r=>r.state==='fault').map(r=>{
+    const fix=r.fix?(r.fixed?`<span class="tag green">🔧 ${x.esc(r.fix)}</span>`:x.cmd(`🔧 ${x.esc(r.fix)}`,'hb_fix',{task:t.id,what:r.id},'small hb-fix')):'';
+    const rep=r.rep?`<span class="tag blue">${x.esc(PAIR(x,'channels',r.rep)[0])} Đã báo: ${x.esc(CHAN_WORD[r.rep]||PAIR(x,'channels',r.rep)[1])}</span>`
+      :`<div class="hb-chans" role="group" aria-label="Báo cho ai">${Object.entries(chan).map(([k,[e,l]])=>x.cmd(`${x.esc(e)} ${x.esc(CHAN_WORD[k]||l)}`,'hb_rep',{task:t.id,what:r.id,to:k},'ghost small').replace('<button ',`<button aria-label="${x.esc(l)}" `)).join('')}</div>`;
+    return `<li class="seen fault">⚠️ <b>${x.esc(r.label)}:</b> ${x.esc(r.text)}<div class="hb-row">${fix}</div>${rep}</li>`;}).join('');
+  const done=rows.filter(r=>r.state).length,all=done===rows.length;
+  const decide=pane(x,`gate-${t.id}`,'🚪 <b>Mở cổng?</b>',`<div class="sk-opts">${opt(x,'🔓 Mở cổng đón khách','mọi thứ đã an toàn','hb_open',{task:t.id,decision:'open'})}${opt(x,'⏳ Hoãn mở, chờ kỹ thuật','khách chờ ngoài cổng','hb_open',{task:t.id,decision:'delay'})}</div>`,all);
+  return `<section class="card hb-open"><h4 aria-label="Danh sách mở hồ">🧪 <small class="muted">${done}/${rows.length}</small></h4><div class="tile-grid hb-tiles">${tiles}</div>${faults?`<ul class="hb-checklist">${faults}</ul>`:''}</section>${n.strip?logForm(t,x):''}
+    <section class="card hb-decide">${decide}</section>`;
+}
 function openPanel(t,x){
+  if(clean())return openClean(t,x);
   const n=t.needs||{},rows=n.checks||[],chan=cc(x).channels||{};
   const items=rows.map(r=>{
     if(!r.state)return `<li>${x.cmd(`${x.esc(r.emoji)} ${x.esc(r.label)}`,'hb_check',{task:t.id,what:r.id},'ghost hb-check')}</li>`;
@@ -52,21 +77,21 @@ function openPanel(t,x){
 }
 function logForm(t,x){
   const n=t.needs||{},st=n.strip;
-  const strip=`<div class="hb-strip" aria-label="Que thử"><span class="hb-pad cl" style="--v:${Math.min(1,(parseFloat(String(st.cl).replace(',','.'))||0)/5)}"></span><span class="hb-pad ph" style="--v:${Math.min(1,Math.max(0,((parseFloat(String(st.ph).replace(',','.'))||7)-6.8)/1.6))}"></span><b>Clo ${x.esc(st.cl)} · pH ${x.esc(st.ph)}</b></div>`;
+  const strip=`<div class="hb-strip" aria-label="Que thử"><span class="hb-pad cl" style="--v:${Math.min(1,(parseFloat(String(st.cl).replace(',','.'))||0)/5)}"></span><span class="hb-pad ph" style="--v:${Math.min(1,Math.max(0,((parseFloat(String(st.ph).replace(',','.'))||7)-6.8)/1.6))}"></span><b>Clo ${x.esc(st.cl)}${clean()&&rangeOf(n.card?.cl)?` <small>(${x.esc(rangeOf(n.card.cl))})</small>`:''} · pH ${x.esc(st.ph)}${clean()&&rangeOf(n.card?.ph)?` <small>(${x.esc(rangeOf(n.card.ph))})</small>`:''}</b></div>`;
   if(n.log)return `<section class="card hb-log"><h4>📒 Sổ nước hôm nay</h4>${strip}<p class="tag green">Đã ghi: Clo ${x.esc(n.log.cl)} · pH ${x.esc(n.log.ph)}</p></section>`;
   const typed=(x.ui.log??={})[t.id]||{};
   const f=(k,label)=>`<label class="hb-field"><span>${label}</span><input name="${k}" inputmode="decimal" autocomplete="off" maxlength="8" value="${x.esc(typed[k]||'')}" data-hb-log="${k}"></label>`;
-  return `<form class="card hb-log" data-hb-form="log"><h4>📒 Ghi sổ nước</h4>${strip}<p class="small muted">Gõ đúng số trên que thử.</p><div class="hb-fields">${f('cl','🧪 Clo')}${f('ph','🧪 pH')}</div><button type="submit" class="btn primary full">📒 Ghi sổ nước</button></form>`;
+  return `<form class="card hb-log" data-hb-form="log"><h4>📒 Ghi sổ nước</h4>${strip}${clean()?tip('Gõ đúng số trên que thử. Ngoài bảng mẫu (số trong ngoặc) là chưa mở hồ, báo kỹ thuật.','Sổ nước','p'):'<p class="small muted">Gõ đúng số trên que thử.</p>'}<div class="hb-fields">${f('cl','🧪 Clo')}${f('ph','🧪 pH')}</div><button type="submit" class="btn primary full">📒 Ghi sổ nước</button></form>`;
 }
 function openSteps(t,x){
   const n=t.needs||{},rows=n.checks||[],next=rows.find(r=>!r.state);
-  const steps=[{ok:!next||null,label:'Kiểm từng món',note:`${rows.filter(r=>r.state).length}/${rows.length}`,go:next?{cmd:'hb_check',payload:{task:t.id,what:next.id},label:`${x.esc(next.emoji)} Kiểm ${x.esc(next.label.toLowerCase())}`}:null}];
+  const steps=[{ok:!next||null,label:'Kiểm từng món',note:`${rows.filter(r=>r.state).length}/${rows.length}`,go:next?{cmd:'hb_check',payload:{task:t.id,what:next.id},label:`${x.esc(next.emoji)} Kiểm ${x.esc(checkWord(next).toLowerCase())}`}:null}];
   if(n.strip)steps.push({ok:n.log?true:null,label:'Ghi số que thử vào sổ nước',go:{sel:'.hb-log',label:'📒 Ghi sổ nước'},pulse:''});
   for(const r of rows.filter(r=>r.state==='fault')){
     if(r.fix)steps.push({ok:r.fixed||null,label:`Tự xử lý: ${r.label}`,go:{cmd:'hb_fix',payload:{task:t.id,what:r.id},label:`🔧 ${x.esc(r.fix)}`}});
     steps.push({ok:r.rep?true:null,label:`Báo lại: ${r.label}`,go:{sel:'.hb-chans',label:'📣 Chọn người cần báo'},pulse:''});
   }
-  steps.push({ok:null,label:'Mở cổng hay hoãn',go:{sel:'.hb-decide',label:'🚪 Quyết mở cổng'},pulse:''});
+  steps.push({ok:null,label:'Mở cổng hay hoãn',go:{sel:clean()?'.hb-decide .sk-pane-sum':'.hb-decide',label:'🚪 Quyết mở cổng'},pulse:''});
   return steps;
 }
 
@@ -78,23 +103,23 @@ function clockBar(t,x){
 }
 function watchPanel(t,x){
   const n=t.needs||{},zones=n.zones||[];
-  if(n.sweep==null)return `<section class="card hb-start"><h4>👀 Vòng quét</h4><p>Nhìn đủ năm khu trong ${x.esc(cc(x).sweep_s||60)} giây. Người đuối nước thường im lặng: người dựng đứng, đầu ngửa ra sau, không tiến lên được.</p>${tapCmd(x,'👀 BẮT ĐẦU VÒNG QUÉT','hb_scan',pay(t),'primary big full hb-go')}</section>`;
+  if(n.sweep==null)return `<section class="card hb-start"><h4>👀 Vòng quét</h4>${clean()?`<p>⏱️ 5 khu · ${x.esc(cc(x).sweep_s||60)}″ · 🆘 Đuối nước: im lặng, người dựng đứng, đầu ngửa</p>`:`<p>Nhìn đủ năm khu trong ${x.esc(cc(x).sweep_s||60)} giây. Người đuối nước thường im lặng: người dựng đứng, đầu ngửa ra sau, không tiến lên được.</p>`}${tapCmd(x,'👀 BẮT ĐẦU VÒNG QUÉT','hb_scan',pay(t),'primary big full hb-go')}</section>`;
   const sel=x.ui.zone?.[t.id];
   const tiles=zones.map(z=>{
     const mark=n.alarm===z.id?'🚨':z.whistle?'📣':z.text!=null?'👁️':'';
-    if(z.text==null)return tapCmd(x,`<span class="tile-emoji">${x.esc(z.emoji)}</span><b>${x.esc(z.name)}</b><small>chạm để nhìn</small>`,'hb_look',{task:t.id,zone:z.id},'tile sk-tile hb-zone');
+    if(z.text==null)return tapCmd(x,`<span class="tile-emoji">${x.esc(z.emoji)}</span><b>${x.esc(z.name)}</b>${clean()?'':'<small>chạm để nhìn</small>'}`,'hb_look',{task:t.id,zone:z.id},'tile sk-tile hb-zone');
     return act(x,`<span class="tile-emoji">${x.esc(z.emoji)}</span><b>${x.esc(z.name)}</b><small>${mark} đã nhìn</small>`,'zone',{task:t.id,zone:z.id},`tile sk-tile hb-zone seen${sel===z.id?' on':''}`,` aria-pressed="${sel===z.id}"`);
   }).join('');
   return `${clockBar(t,x)}<div class="tile-grid hb-zones">${tiles}</div>${zoneCard(t,x,sel)}${n.alarm?rescueCard(t,x):''}`;
 }
 function zoneCard(t,x,id){
   const n=t.needs||{},z=(n.zones||[]).find(r=>r.id===id&&r.text!=null);
-  if(!z)return '<p class="small muted hb-tip">Chạm một khu đã nhìn để thổi còi hoặc báo động.</p>';
+  if(!z)return clean()?tip('Chạm một khu đã nhìn để thổi còi hoặc báo động.','Vòng quét','p'):'<p class="small muted hb-tip">Chạm một khu đã nhìn để thổi còi hoặc báo động.</p>';
   const rules=cc(x).rules||{};
   const wh=z.whistle?`<p class="tag blue">📣 Đã nhắc: ${x.esc((rules[z.whistle]||['',''])[1])}</p>`
     :pane(x,`wh-${t.id}-${z.id}`,'📣 Thổi còi nhắc…',`<div class="hb-rules">${Object.entries(rules).map(([k,[e,l]])=>x.cmd(`${x.esc(e)} ${x.esc(l)}`,'hb_whistle',{task:t.id,zone:z.id,rule:k},'ghost small hb-rule')).join('')}</div>`,false,'hb-whpane');
   const alarm=n.alarm?'':n.false===z.id?'<p class="tag amber">Báo động nhầm khu này rồi.</p>':tapCmd(x,'🚨 Còi dài: có người đang chìm!','hb_alarm',{task:t.id,zone:z.id},'danger full hb-alarm');
-  return `<section class="card hb-zonecard"><h4>${x.esc(z.emoji)} ${x.esc(z.name)}</h4><p>${x.esc(z.text)}</p><p class="small muted">Ổn thì để yên, quét tiếp.</p>${wh}${alarm}</section>`;
+  return `<section class="card hb-zonecard"><h4>${x.esc(z.emoji)} ${x.esc(z.name)}</h4><p>${x.esc(z.text)}</p>${clean()?tip('Ổn thì để yên, quét tiếp.',z.name,'p'):'<p class="small muted">Ổn thì để yên, quét tiếp.</p>'}${wh}${alarm}</section>`;
 }
 function rescueCard(t,x){
   const r=(t.needs||{}).rescue||{},m=cc(x).methods||{},care=cc(x).care||{};
@@ -180,8 +205,10 @@ function aidSteps(t,x){
 function stormPanel(t,x){
   const n=t.needs||{},sh=cc(x).shelters||{},rp=cc(x).replies||{};
   const ev=(n.events||[]).map(e=>`<li class="${e.thunder?'th':''} k-${x.esc(e.kind)}"><span class="hb-at">${x.esc(e.at)}</span><span>${e.thunder?'⚡ ':''}${x.esc(e.text)}</span></li>`).join('');
-  const status=`<p class="hb-now">🕒 Giờ: <b>${x.esc(n.now||'')}</b>${n.last_thunder?` · ⚡ Sấm cuối: <b>${x.esc(n.last_thunder)}</b>`:' · chưa nghe sấm'}</p>`;
-  const rule=pane(x,'storm-rule','📏 Nội quy dông sét',`<p class="small">Nghe sấm hoặc thấy chớp: tất cả lên bờ, vào nơi có mái kiên cố, đếm người. ${x.esc(cc(x).wait_after||30)} phút sau tiếng sấm cuối mới xuống lại.</p>`,false,'hb-rulepane');
+  const wait=cc(x).wait_after||30;
+  const status=clean()?`<p class="hb-now" aria-label="Giờ ${x.esc(n.now||'')}${n.last_thunder?`, sấm cuối ${x.esc(n.last_thunder)}, chờ ${wait} phút`:', chưa nghe sấm'}">🕒 <b>${x.esc(n.now||'')}</b>${n.last_thunder?` · ⚡ <b>${x.esc(n.last_thunder)}</b> +${wait}′`:` · ⚡ chưa · +${wait}′`}</p>`
+    :`<p class="hb-now">🕒 Giờ: <b>${x.esc(n.now||'')}</b>${n.last_thunder?` · ⚡ Sấm cuối: <b>${x.esc(n.last_thunder)}</b>`:' · chưa nghe sấm'}</p>`;
+  const rule=clean()?tip(`Nghe sấm hoặc thấy chớp: tất cả lên bờ, vào nơi có mái kiên cố, đếm người. ${x.esc(wait)} phút sau tiếng sấm cuối mới xuống lại.`,'📏 Nội quy dông sét','p'):pane(x,'storm-rule','📏 Nội quy dông sét',`<p class="small">Nghe sấm hoặc thấy chớp: tất cả lên bờ, vào nơi có mái kiên cố, đếm người. ${x.esc(cc(x).wait_after||30)} phút sau tiếng sấm cuối mới xuống lại.</p>`,false,'hb-rulepane');
   const acts=[];
   if(!n.sky)acts.push(x.cmd('📻 Nghe bản tin thời tiết','hb_sky',pay(t),'ghost small'));
   if(n.shelter&&!n.counted)acts.push(x.cmd('🔢 Đếm người','hb_count',pay(t),'small'));
@@ -215,7 +242,7 @@ function finalOf(t,x,steps){
   if(t.kind==='watch')return n.sweep==null?null:{label:'✅ KẾT THÚC VÒNG QUÉT',go:finalGo(steps,'hb_round',pay(t)),ready:!n.alarm||!!(n.rescue||{}).care,why:'đưa người vào bờ, sơ cứu'};
   if(t.kind==='gate'){const all=((n.queue||[]).length)&&(n.queue||[]).every(p=>p.verdict);return {label:'🎫 XONG LƯỢT CỔNG',go:all?finalGo(steps,'hb_gate',pay(t)):null,ready:!!all,why:'quyết cho cả ba người'};}
   if(t.kind==='lesson'){const all=(n.kids||[]).every(k=>k.band);return {label:'🏫 TAN LỚP',go:all?finalGo(steps,'hb_lesson',pay(t)):null,ready:all,why:'phát vòng tay cho cả ba bé'};}
-  if(t.kind==='storm')return {label:'🔓 MỞ LẠI HỒ',go:finalGo(steps.filter(s=>s.label!=='Chờ đủ rồi mở lại'),'hb_reopen',pay(t)),ready:true};
+  if(t.kind==='storm')return {label:'🔓 MỞ LẠI HỒ',go:finalGo(steps.filter(s=>s.label!=='Chờ đủ rồi mở lại'),'hb_reopen',pay(t)),ready:true,can:t.can?.hb_reopen};
   return null;
 }
 function guide(t,x){
@@ -246,7 +273,7 @@ export default {
     if(t.kind!=='open'&&!t.known)main=askCard(x,t,ASK[t.kind]||'👋 Tới xem');
     else{
       main=(['open','storm','watch'].includes(t.kind)?'':person(x,t))+(PANEL[t.kind]||(()=>''))(t,x);
-      side=stepRows(x,g.steps,'Các bước');
+      side=stepRows(x,g.steps,'Các bước',{chip:true});
     }
     return `<div class="career-job sk hb">${hint}${head}${learnNote(x)}${dayBar(x)}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },

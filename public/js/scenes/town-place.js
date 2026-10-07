@@ -4,7 +4,7 @@
  *   1  🏢 Khu văn phòng                        (Ngân hàng, the accounting and office jobs)
  *   2  💇 Phố dịch vụ                          (salon, nail, photos, pets, repair, pharmacy, clothes; Gara)
  *   3  🛒 Phố chợ                              (the seven first-chapter shops, phở, cơm tấm): a new player starts here
- *   4  🧺 Phố hàng rong                        (carts: trà đá, trái cây, kem, rác, cống; Cổng hội chợ, Nhóm phố, Đi dạo)
+ *   4  🧺 Phố hàng rong                        (carts: trà đá, trái cây, kem, rác, cống; Cổng hội chợ, Nhóm phố, Đi dạo, 🎤 Phòng hát)
  *   5  🏠 Hẻm nhà                              (Nhà mình, the home careers, Quầy của bạn, Quảng trường)
  * Lanes between every few buildings (and a road round both ends) join one street to the next. A career this file
  * does not know yet joins the row of its kind, so a new career always has a door.
@@ -20,11 +20,11 @@ import {t as tr} from '../v4/i18n.js';
 
 /* ------------------------------------------------------------ the town */
 export const ROWS=[
-  [{id:'chua',name:'Chùa',emoji:'🛕',items:['pagoda']},{id:'ngoai_o',name:'Ngoại ô',emoji:'🌾',items:['farm','homestay','teacher','railway','lighthouse']},{id:'san_bay',name:'Sân bay',emoji:'✈️',items:['tour_guide','pilot','flight_attendant','oil']}],
+  [{id:'chua',name:'Chùa',emoji:'🛕',items:['pagoda','lm:congduc']},{id:'ngoai_o',name:'Ngoại ô',emoji:'🌾',items:['farm','homestay','teacher','railway','lighthouse']},{id:'san_bay',name:'Sân bay',emoji:'✈️',items:['tour_guide','pilot','flight_attendant','oil']}],
   [{id:'van_phong',name:'Khu văn phòng',emoji:'🏢',items:['lm:bank','library','accounting','customer_care','corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk']}],
-  [{id:'dich_vu',name:'Phố dịch vụ',emoji:'💇',items:['salon','nail','photobooth','pet_care','repair','pharmacy','nurse','police','rescue','clothing','pet_shop','lm:garage','lm:gadgets']}],
-  [{id:'pho_cho',name:'Phố chợ',emoji:'🛒',items:['florist','cafe_bakery','grocery','milk_tea','mother_baby','restaurant','delivery','pho','com']}],
-  [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk','lifeguard']}],
+  [{id:'dich_vu',name:'Phố dịch vụ',emoji:'💇',items:['salon','nail','photobooth','pet_care','repair','pharmacy','nurse','police','rescue','clothing','pet_shop','lm:garage','lm:gadgets','lm:spa','lm:style']}],
+  [{id:'pho_cho',name:'Phố chợ',emoji:'🛒',items:['florist','cafe_bakery','grocery','milk_tea','mother_baby','restaurant','delivery','pho','com','lm:quan']}],
+  [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk','lm:rap','lm:karaoke','lifeguard']}],
   [{id:'hem',name:'Hẻm nhà',emoji:'🏠',items:['lm:house','homemaker','giupviec','naucom','babysitter','lm:quay','lm:square']}],
 ];
 /** Landmarks: what they open (an existing data-action) and their sign. */
@@ -33,6 +33,10 @@ export const LANDMARKS={
   fair:{emoji:'🏮',name:'Cổng hội chợ',action:'fair'},board:{emoji:'📋',name:'Nhóm phố',action:'nhom'},
   walk:{emoji:'🚶',name:'Đi dạo',action:'liveWalk'},house:{emoji:'🏠',name:'Nhà mình',action:'house'},
   quay:{emoji:'🏪',name:'Quầy của bạn',action:'quay'},square:{emoji:'🎏',name:'Quảng trường',action:'town'},
+  // ☕ chỗ tiêu xu (v4/spend.js, game/spend.py): each door opens its tab
+  quan:{emoji:'☕',name:'Đi quán',action:'spendQuan'},spa:{emoji:'💆',name:'Spa Sen',action:'spendSpa'},rap:{emoji:'🎬',name:'Rạp Mây',action:'spendRap'},
+  congduc:{emoji:'🙏',name:'Công đức',action:'spendChua'},style:{emoji:'🎨',name:'Phong cách',action:'spendStyle'},
+  karaoke:{emoji:'🎤',name:'Phòng hát Mây',action:'liveKara'},   // 🎤 v4/karaoke.js: only while the live service has it on (else not built)
 };
 /** The sign over each door: an emoji and a short name (the card says the full place name). */
 export const SIGNS={
@@ -50,7 +54,7 @@ export const SIGNS={
 const KIND={pagoda:'pagoda',farm:'farm',homestay:'lodge',teacher:'school',library:'school',tour_guide:'kiosk',pilot:'air',flight_attendant:'air',oil:'air',railway:'kiosk',lighthouse:'kiosk',
   tra_da:'cart',fruit:'cart',ice_cream:'cart',garbage:'cart',drain:'cart',homemaker:'house',giupviec:'house',naucom:'house',babysitter:'house',
   accounting:'office',customer_care:'office',corp_accounting:'office',tax_payroll:'office',group_accounting:'office',hr_admin:'office',secretary:'office',it_helpdesk:'office',nurse:'office',rescue:'office',lifeguard:'pool',police:'office',
-  'lm:bank':'bank','lm:garage':'garage','lm:fair':'gate','lm:board':'board','lm:walk':'park','lm:house':'home','lm:quay':'quay','lm:square':'plaza'};
+  'lm:bank':'bank','lm:garage':'garage','lm:fair':'gate','lm:board':'board','lm:walk':'park','lm:house':'home','lm:quay':'quay','lm:square':'plaza','lm:congduc':'kiosk','lm:rap':'office'};
 const WIDE={pool:150,shop:128,office:128,cart:112,house:124,pagoda:208,farm:196,lodge:142,school:150,kiosk:120,air:156,bank:142,garage:132,gate:152,board:104,park:124,home:132,quay:118,plaza:134};
 const HIGH={pool:150,shop:150,office:176,cart:122,house:136,pagoda:178,farm:140,lodge:150,school:160,kiosk:124,air:172,bank:160,garage:136,gate:168,board:112,park:118,home:144,quay:126,plaza:118};
 export const kindOf=key=>KIND[key]||'shop';
@@ -60,11 +64,12 @@ const FH=186,SH=112,PITCH=FH+SH,TOP=124,EDGE=78,GAP=60,PAD=14;
 export const DIM={FH,SH,PITCH,TOP,EDGE,GAP};
 
 const CACHE=new Map();
-/** The town for these career ids (the ones the save has), `cats`: {id: category} for careers not placed above. */
-export function plan(ids,cats={}){
-  const key=ids.join(',');
+/** The town for these career ids (the ones the save has), `cats`: {id: category} for careers not placed above,
+ * `skip`: landmark keys ('lm:karaoke') left out while their feature is off. */
+export function plan(ids,cats={},skip=[]){
+  const key=ids.join(',')+(skip.length?'|-'+skip.join(','):'');
   if(CACHE.has(key))return CACHE.get(key);
-  const have=new Set(ids),rows=ROWS.map(r=>r.map(d=>({...d,items:d.items.filter(k=>k.startsWith('lm:')||have.has(k))})));
+  const have=new Set(ids),gone=new Set(skip),rows=ROWS.map(r=>r.map(d=>({...d,items:d.items.filter(k=>k.startsWith('lm:')?!gone.has(k):have.has(k))})));
   const placed=new Set(ROWS.flat().flatMap(d=>d.items));
   for(const id of ids)if(!placed.has(id)){const row=['food','shop'].includes(cats[id])?3:2;rows[row][rows[row].length-1].items.push(id);}
   // Each row left to right: a lane after every third building and between districts.

@@ -32,6 +32,27 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.9.9", date="2026-10-07", items=(
+        dict(emoji='🧹', text='Gọn chữ toàn bộ: mọi nghề và nhà, bản đồ, ngân hàng, hội chợ trên điện thoại'),
+        dict(emoji='🛠️', text='Sửa lỗi: ném vòng hội chợ lặp ván, quán ăn gợi ý món đã hết, phòng homestay có đơn app chờ'),
+    )),
+    dict(version="1.9.8", date="2026-10-07", items=(
+        dict(emoji='🧹', text='Gọn chữ thêm 14 nghề: công an, điều dưỡng, cứu hộ bể bơi, dầu khí, phi công, tiếp viên, văn phòng, tiệm thú cưng'),
+    )),
+    dict(version="1.9.7", date="2026-10-07", items=(
+        dict(emoji='🧹', text='Giao diện gọn hơn trên điện thoại: ít chữ, một nút chính, thông báo không che nút'),
+        dict(emoji='💡', text='Nút chưa bấm được sẽ mờ và nói lý do'),
+    )),
+    dict(version="1.9.6", date="2026-10-07", items=(
+        dict(emoji='☕', text='Đi quán, spa, Rạp Mây: tiêu xu cho vui, no bụng, tỉnh táo'),
+        dict(emoji='🙏', text='Công đức Chùa Gió Lành, có bảng công đức tuần'),
+        dict(emoji='🎨', text='Màu tên, khung hồ sơ, danh hiệu 7 ngày'),
+    )),
+    dict(version="1.9.5", date="2026-10-06", items=(
+        dict(emoji='🌟', text='Nông trại mới: vườn lớn theo giờ thật, nuôi vịt bò heo, khách đặt hàng, nhà kính, máy cày, VietGAP'),
+        dict(emoji='🗣️', text='Mỗi nghề một cách nói: chùa, bệnh viện, công an, trường học không còn gọi là “tiệm”'),
+        dict(emoji='🧾', text='Nghề làm công lương không còn bị trừ thuế tiệm và tiền thuê'),
+    )),
     dict(version="1.9.4", date="2026-10-06", items=(
         dict(emoji='🏪', text='Nhân viên tiệm bán nhanh gấp 1,6 lần ngày đầu'),
         dict(emoji='💬', text='Góp ý viết dài tới 10.000 chữ'),

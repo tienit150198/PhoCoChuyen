@@ -3,8 +3,8 @@
  * Local state is only what is being picked before sending (services, tubes, parts, length, products) and the open step tab.
  * The bowl preview runs the server's own verdict (salon_mix.js) on what the stylist has found out; nothing is mixed until "Trộn bát".
  * Care loop: the client card (formula, hair health, patch test, last cut), follow-up bookings and the jar of clean tool sets. */
-import {reqList,fold} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
+import {reqList,fold,clean,tip,helpBtn,actBar,withWhy} from '../ui-kit.js';
+import {stepRows,nextHint,stepCta,stepBar,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
 import {tomorrowCard} from './tomorrow_kit.js';
 import {keepBarAboveFooter} from './food_kit.js';
@@ -33,6 +33,17 @@ const cardOf=(x,t)=>x.room.data?.cards?.[t.npc]||null;
 const cardFormula=(x,t)=>(x.room.data?.card_for||[]).includes(t.id)?cardOf(x,t)?.formula||null:null;
 const deskBusy=x=>!!x.room.data?.desk?.ev;
 
+/* ---------- clean layout (docs/UI_KIT.md, wave 5): short labels, explanations behind "?" ---------- */
+const SVC_WORD={color:'Nhuộm',bleach:'Tẩy',toner:'Toner',cut:'Cắt',treatment:'Phục hồi',style:'Sấy'};
+const TOPIC_WORD={history:'Hóa chất',patch:'Dị ứng',lifestyle:'Thói quen',length:'Độ dài',budget:'Ngân sách'};
+const svcWord=(x,id)=>clean()?SVC_WORD[id]||svc(x,id).name:svc(x,id).name;
+const topicWord=(x,q)=>clean()?TOPIC_WORD[q.id]||q.label:q.label;
+/** The salon's "?" (clean layout): today's theme, the colour rules and the explanations folded off this screen. */
+function helpQ(x){
+  const d=x.room.data?.today;
+  return helpBtn('sl-help','💇 Tiệm tóc',[...(d?[{title:`${d.emoji} ${d.title}`,body:`<p>${x.esc(d.text)}</p>`,open:true}]:[]),
+    {title:'📜 Quy tắc pha màu',body:`<ul>${(x.cc.rules||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul>`}],{tips:true,cls:'sl-helpq'});
+}
 function ui(x,t){
   const u=x.ui[t.id]??={services:[],sessions:1,kind:null,a:null,b:null,pa:1,pb:1,shade:null,dev:null,ratio:null,len:2,products:[],book:[],tab:null,tabAt:null,init:false};
   if(!u.init&&t.needs){u.services=[...t.needs.services];u.init=true;}
@@ -68,7 +79,7 @@ function nav(t,x,list,at,tab){
   const ai=list.indexOf(at);
   return `<nav class="sl-nav" style="--n:${list.length}" aria-label="Các bước làm tóc">${list.map((s,i)=>{
     const [e,l]=STAGES[s],open=i<=ai||(s==='plan'&&!t.plan),done=i<ai;
-    return `<button type="button" class="${done?'done':''} ${s===at?'now':''} ${s===tab?'open':''}" ${carAttr(x,'tab',{task:t.id,tab:s,at})} aria-current="${s===tab?'step':'false'}" ${open?'':'disabled'}><span aria-hidden="true">${done?'✓':e}</span>${x.esc(l)}</button>`;
+    return `<button type="button" class="${done?'done':''} ${s===at?'now':''} ${s===tab?'open':''}" ${carAttr(x,'tab',{task:t.id,tab:s,at})} aria-current="${s===tab?'step':'false'}" ${open?'':'disabled'}><span aria-hidden="true">${done?'✓':e}</span>${clean()&&s!==tab?`<span class="sr-only">${x.esc(l)}</span>`:x.esc(l)}</button>`;
   }).join('')}</nav>`;
 }
 
@@ -99,6 +110,7 @@ function foot(x,folded=false){
   const body=`<div class="sl-foot">${jar(x)}<p class="row wrap">${x.cmd(label,'sl_sanitize',{},n?'ghost small':'primary small',n>=max||busy)}${x.button('📦 Kho thuốc & vật tư','inventory',{},'ghost small')}</p></div>`;
   // During a job: one line that still shows how many clean sets are left (open while the jar is empty).
   if(!folded)return body;
+  if(clean())return `<details class="sl-foot-fold"><summary aria-label="Dụng cụ sạch ${n}/${max} bộ: khử khuẩn, kho">🧼 ${n}/${max}</summary>${body}</details>`;
   return `<details class="sl-foot-fold"><summary>🧼 Dụng cụ sạch ${n}/${max} bộ <small>· khử khuẩn, kho</small></summary>${body}</details>`;
 }
 
@@ -202,7 +214,7 @@ function ticket(t,x){
   const who=x.npc(t.npc),n=t.needs,ph=n.photo,cs=caseOf(t),ci=cs?x.cc.cases?.[cs]:null,left=rushLeft(t,x);
   const sw=ph.level?`<span class="sl-swatch" style="--sw:${x.esc(levelColor(x,ph.level))}" aria-hidden="true"></span>`:'<span class="sl-swatch cut" aria-hidden="true">✂️</span>';
   const patch={file:['🩹 Có hồ sơ thử dị ứng','green'],log:['🩹 Sổ tiệm: đã thử','green'],none:['🩹 Chưa thử dị ứng','danger'],allergy:['🩹 Sổ dị ứng: từng phản ứng','danger']}[t.patch_record]||null;
-  const tags=[t.budget!=null?x.pill('💰 '+x.money(t.budget),'amber'):x.pill('💰 chưa hỏi ngân sách')];
+  const tags=[t.budget!=null?x.pill('💰 '+x.money(t.budget),'amber'):clean()?`<span class="tag" aria-label="Chưa hỏi ngân sách" title="Chưa hỏi ngân sách">💰 ?</span>`:x.pill('💰 chưa hỏi ngân sách')];
   if(ci)tags.push(`<span class="tag sl-case">${x.esc(ci.emoji)} ${x.esc(ci.label)}</span>`);
   if(left!=null)tags.push(`<span class="tag ${left>=0?(left<=4?'danger':'green'):'danger'} sl-rush">⏱️ ${left>=0?`còn ${left} nhịp · +${x.esc(x.money(n.rush.bonus))}`:'đã trễ hẹn'}</span>`);
   if(patch)tags.push(x.pill(patch[0],patch[1]));
@@ -215,10 +227,10 @@ function ticket(t,x){
   // Compact ticket: who + patience, the services, and the customer's reference photo as one thumbnail row.
   return `<article class="sl-ticket compact"><div class="row">${x.portrait(who,40)}<div class="grow">
       <div class="row spread wrap"><h3>${x.esc(who.display_name)}</h3><div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${Number(t.patience)||0}%"></i></div><small>${Number(t.patience)||0}%</small></div></div>
-      <p class="sl-want">${n.services.map(s=>`${svc(x,s).emoji} ${x.esc(svc(x,s).name)}`).join(' · ')}</p></div></div>
+      <p class="sl-want">${n.services.map(s=>`${svc(x,s).emoji} ${x.esc(svcWord(x,s))}`).join(' · ')}${clean()?helpQ(x):''}</p></div></div>
     ${t.plan?'':`<p class="small sl-wantline">${x.esc(n.want)}</p>`}
     <div class="sl-photo slim">${sw}<div class="grow"><b>📸 ${x.esc(ph.style)}</b>${photoLine}</div></div>${real}
-    <details class="sl-more"><summary>💬 Lời dặn của khách</summary>${t.plan?`<p class="small">${x.esc(n.want)}</p>`:''}<p class="muted small">“${x.esc(n.note)}”</p></details>
+    <details class="sl-more"><summary>💬 ${clean()?'Lời dặn':'Lời dặn của khách'}</summary>${t.plan?`<p class="small">${x.esc(n.want)}</p>`:''}<p class="muted small">“${x.esc(n.note)}”</p></details>
     ${t.calm!=null&&!t.done.includes('cut')?calmBar(t):''}
     <div class="row wrap sl-tags">${tags.join('')}</div>
     ${cardFold(t,x)}
@@ -229,7 +241,7 @@ function ticket(t,x){
 function consult(t,x){
   const qa=x.cc.topics.map(q=>{
     const a=t.answers?.[q.id];
-    return `<div class="sl-qa ${a?'done':''}">${a?`<p class="sl-q" title="${x.esc(q.ask)}">${q.emoji} ${x.esc(q.label)}</p><p class="sl-a">${x.esc(a)}</p>`:x.cmd(`${q.emoji} ${x.esc(q.label)}`,'sl_consult',{task:t.id,topic:q.id},'ghost small')}</div>`;
+    return `<div class="sl-qa ${a?'done':''}">${a?`<p class="sl-q" title="${x.esc(q.ask)}">${q.emoji} ${x.esc(topicWord(x,q))}</p><p class="sl-a">${x.esc(a)}</p>`:x.cmd(`${q.emoji} ${x.esc(topicWord(x,q))}`,'sl_consult',{task:t.id,topic:q.id},'ghost small')}</div>`;
   }).join('');
   const zones=x.cc.zones.map(z=>{
     const f=t.findings?.[z.id];
@@ -245,10 +257,11 @@ function consult(t,x){
       :x.cmd('🩹 Thử dị ứng sau tai','sl_patch',{task:t.id},'small',t.patch_record==='file'||t.patch_record==='log'));
   }
   if(bleach)tests.push(t.strand_text?`<p class="sl-note">🧵 ${x.esc(t.strand_text)}</p>`:x.cmd('🧵 Thử một lọn sau gáy','sl_strand',{task:t.id},'small'));
-  const cta=t.plan?'':`<div class="sl-cta">${x.button('🤝 Sang chốt phương án →','car:tab',{task:t.id,tab:'plan',at:'consult'},'full')}</div>`;
+  // Clean layout: the bar's button and the 🤝 tab already lead to the plan.
+  const cta=t.plan||clean()?'':`<div class="sl-cta">${x.button('🤝 Sang chốt phương án →','car:tab',{task:t.id,tab:'plan',at:'consult'},'full')}</div>`;
   return `<div class="sl-qa-list">${qa}</div>
-    <div class="sl-look"><h5 class="sl-sub">Xem tóc tận tay</h5><div class="sl-zones">${zones}</div></div>
-    ${tests.length?`<div class="sl-tests"><h5 class="sl-sub">Thử & soi trước khi làm</h5><div class="stack">${tests.join('')}</div></div>`:''}${cta}`;
+    <div class="sl-look">${clean()?'':'<h5 class="sl-sub">Xem tóc tận tay</h5>'}<div class="sl-zones">${zones}</div></div>
+    ${tests.length?`<div class="sl-tests">${clean()?'':'<h5 class="sl-sub">Thử & soi trước khi làm</h5>'}<div class="stack">${tests.join('')}</div></div>`:''}${cta}`;
 }
 
 /** Over the budget (1.7.16, góp ý #199): four ways to talk. The client's stretch stays hidden; mood narrows it. */
@@ -261,7 +274,7 @@ function talkBox(t,x){
   }
   const v=t.talk_view||{};
   return `<section class="sl-talk"><h5 class="sl-sub">💬 Báo giá ${x.money(k.over)} — khách chỉ mang ${x.money(v.budget??0)}</h5>
-    <p class="small">Mỗi khách rộng tay một kiểu: hỏi chuyện, xem tính khách rồi chọn cách nói.</p>
+    ${clean()?tip('Mỗi khách rộng tay một kiểu: hỏi chuyện, xem tính khách rồi chọn cách nói.','💬 Báo giá'):'<p class="small">Mỗi khách rộng tay một kiểu: hỏi chuyện, xem tính khách rồi chọn cách nói.</p>'}
     <div class="stack">${x.cmd('💡 Giải thích giá, gợi ý dời bớt dịch vụ','sl_talk',{task:t.id,answer:'swap'},'ghost full')}
     ${x.cmd(v.asked?'🙏 Nài thêm lần nữa (khách đã từ chối)':'🙏 Xin khách thêm ngân sách','sl_talk',{task:t.id,answer:'raise'},'ghost full')}
     ${x.cmd(`🏷️ Bớt ${x.money(v.off??0)} cho vừa`,'sl_talk',{task:t.id,answer:'discount'},'ghost full',v.off_ok===false)}
@@ -442,7 +455,15 @@ function colorPanel(t,x){
     <h5 class="sl-sub">Oxy trợ nhuộm</h5><div class="sl-segs sl-devs">${devs}</div>
     <h5 class="sl-sub">Tỷ lệ thuốc ∶ oxy</h5><div class="sl-segs sl-ratios">${ratios}</div>
     ${blocked?'<p class="sl-note">Tẩy và xả xong rồi mới phủ toner.</p>':''}${mixing?(u.a?colourPreview(t,x,u):''):t.gen?recipePreview(t,x,u):''}${outNote}
-    <div class="sl-cta">${x.cmd('🥣 Trộn bát','sl_mix',payload,'full sl-mix-go',!ready||blocked)}</div>${tail}`;
+    <div class="sl-cta">${mixBtn(x,t,payload,ready,blocked,out)}</div>${tail}`;
+}
+/** "Trộn bát": out of gloves (the server's can.sl_mix, the same rule as its refusal) it is dimmed but tappable, the
+ * tap says why and opens the stock room; otherwise disabled until the bowl is picked, as before. */
+function mixBtn(x,t,payload,ready,blocked,out){
+  const can=x.room.data?.can?.sl_mix;
+  if(can&&can!==true&&!blocked&&out.length===1&&out[0]==='gloves')
+    return withWhy(x.cmd('🥣 Trộn bát','sl_mix',payload,'full sl-mix-go'),{why:can.why,fix:restockFor(x,['gloves'],itemName(x,'gloves'),{task:t.id})||can.fix});
+  return x.cmd('🥣 Trộn bát','sl_mix',payload,'full sl-mix-go',!ready||blocked);
 }
 /** What "Trộn bát" sends with the current picks, and whether it can be sent. */
 function bowlOrder(t,x,u){
@@ -451,7 +472,7 @@ function bowlOrder(t,x,u){
   let payload,ready;
   if(mixing){payload={task:t.id,kind:'color',shade:u.a,parts:[u.pa,u.b?u.pb:0],dev:u.dev,ratio:u.ratio};if(u.b)payload.shade2=u.b;ready=!!(u.a&&u.dev&&u.ratio);}
   else{payload={task:t.id,kind:u.kind,dev:u.dev,ratio:u.ratio};if(u.kind!=='bleach')payload.shade=u.shade;ready=!!(u.dev&&u.ratio&&(u.kind==='bleach'||u.shade));}
-  const need=[u.dev?'dev_'+u.dev:null,...(mixing?[u.a,u.b]:[u.kind==='bleach'?'bleach':u.shade]),u.kind==='bleach'?'foil':null].filter(Boolean);
+  const need=[u.dev?'dev_'+u.dev:null,...(mixing?[u.a,u.b]:[u.kind==='bleach'?'bleach':u.shade]),u.kind==='bleach'?'foil':null,'gloves'].filter(Boolean);
   const out=need.filter(id=>!x.stock(id));
   if(out.length)ready=false;
   return {payload,ready:ready&&!blocked,out,blocked,mixing};
@@ -645,9 +666,9 @@ function guideOf(t,x){
   if(d.desk?.ev)return {steps:[{ok:null,label:'Ra quầy: chọn một cách xử lý',go:{sel:'.sl-desk .sl-opts'},pulse:first?'.sl-desk .sl-opt':''}]};
   const steps=[];
   if(!t.tools&&!(Number(d.clean)>0)&&current(t)!=='bill')
-    steps.push({ok:null,label:'Khử khuẩn dụng cụ',go:{cmd:'sl_sanitize',payload:{},label:'🧴 Khử khuẩn dụng cụ'}});
+    steps.push({ok:null,label:'Khử khuẩn dụng cụ',go:{cmd:'sl_sanitize',payload:{},label:clean()?'🧴 Khử khuẩn':'🧴 Khử khuẩn dụng cụ'}});
   if(!t.known){
-    steps.push({ok:null,label:'Mời khách ngồi, nghe mong muốn',go:{cmd:'ask',payload:{task:id},label:'💬 Mời ngồi & nghe mong muốn'}});
+    steps.push({ok:null,label:'Mời khách ngồi, nghe mong muốn',go:{cmd:'ask',payload:{task:id},label:clean()?'💬 Mời ngồi':'💬 Mời ngồi & nghe mong muốn'}});
     return {steps};
   }
   const u=ui(x,t),{at,tab}=viewTab(t,u);
@@ -655,7 +676,7 @@ function guideOf(t,x){
     const {asks,looks}=consultNeeds(t),topic=k=>x.cc.topics.find(q=>q.id===k),zone=k=>x.cc.zones.find(z=>z.id===k);
     const q=asks.find(k=>!t.asked.includes(k)),z=looks.find(k=>!t.inspected.includes(k));
     if(asks.length)steps.push({ok:q?null:true,label:`Hỏi: ${asks.map(k=>topic(k).label.toLowerCase()).join(', ')}`,note:`${asks.filter(k=>t.asked.includes(k)).length}/${asks.length}`,
-      go:q&&{cmd:'sl_consult',payload:{task:id,topic:q},label:`${topic(q).emoji} Hỏi khách: ${x.esc(topic(q).label.toLowerCase())}`}});
+      go:q&&{cmd:'sl_consult',payload:{task:id,topic:q},label:clean()?`${topic(q).emoji} Hỏi: ${x.esc(topicWord(x,topic(q)).toLowerCase())}`:`${topic(q).emoji} Hỏi khách: ${x.esc(topic(q).label.toLowerCase())}`}});
     if(looks.length)steps.push({ok:z?null:true,label:`Xem tận tay: ${looks.map(k=>zone(k).label.toLowerCase()).join(', ')}`,note:`${looks.filter(k=>t.inspected.includes(k)).length}/${looks.length}`,
       go:z&&{cmd:'sl_inspect',payload:{task:id,zone:z},label:`${zone(z).emoji} Xem ${x.esc(zone(z).label.toLowerCase())}`}});
     if(caseOf(t)==='photo'&&!t.photo_seen)steps.push({ok:null,label:'Soi ảnh gốc chưa qua filter',go:{cmd:'sl_photo',payload:{task:id},label:'📸 Soi ảnh gốc'}});
@@ -742,9 +763,12 @@ function guideBits(t,x){
   const g=guideOf(t,x),first=firstTime(x);
   const final=g.bill?billFinal(t,x,g.steps):null;
   const hint=nextHint(x,g.steps,{final:final?.ready?{label:'Thanh toán & tiễn khách',go:final.go}:null});
-  const cta=g.timer?timerCta(t,x):stepCta(x,g.steps,final||{label:'💳 Thanh toán & tiễn khách',go:null,ready:false});
+  const fin=final||{label:'💳 Thanh toán & tiễn khách',go:null,ready:false},attrs=first?' data-first="1"':'';
+  // The shared bar (ui-kit actBar / guide stepBar): one main button; sl-bar stays as the hook (the timer's swap).
+  const bar=g.timer?actBar({main:timerCta(t,x),cls:'sl-bar',attrs}):stepBar(x,g.steps,fin,{cls:'sl-bar'}).replace(/^<div class="ui-bar sl-bar"/,`<div class="ui-bar sl-bar"${attrs}`);
   const k=g.steps.filter(s=>s&&s.ok!==true).length;
-  return {g,hint,bar:`<div class="sl-bar"${first?' data-first="1"':''}>${cta}</div>`,rows:g.steps.length?`<details class="sl-todo-fold"><summary>📝 Việc cần làm <small>· ${k?`còn ${k}`:'xong hết'}/${g.steps.length}</small></summary>${stepRows(x,g.steps,'Việc cần làm')}</details>`:''};
+  if(clean())return {g,hint,bar,rows:g.steps.length?stepRows(x,g.steps,'Việc cần làm',{chip:true}):''};
+  return {g,hint,bar,rows:g.steps.length?`<details class="sl-todo-fold"><summary>📝 Việc cần làm <small>· ${k?`còn ${k}`:'xong hết'}/${g.steps.length}</small></summary>${stepRows(x,g.steps,'Việc cần làm')}</details>`:''};
 }
 
 export default {
@@ -780,6 +804,7 @@ export default {
     const desk=deskCard(x),who=x.npc(t.npc),gb=guideBits(t,x);
     if(!t.known){
       const back=t.regular!=null?`<p class="sl-note good">📇 Khách quen quay lại — thẻ khách đã có công thức, sức khỏe tóc và lần cắt trước.</p>`:'';
+      if(clean())return `<div class="career-job sl">${gb.hint}${desk}<article class="sl-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${helpQ(x)}</div><p>“${x.esc(t.opening)}”</p></div></div>${t.regular!=null?`<p class="sl-note good">📇 Khách quen${tip('Thẻ khách đã có công thức, sức khỏe tóc và lần cắt trước.','📇 Khách quen','span')}</p>`:''}</article>${foot(x,true)}${apptBook(x,false)}${gb.bar}</div>`;
       return `<div class="career-job sl">${gb.hint}${desk}${todayChip(x,true)}<article class="sl-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><h3>${x.esc(who.display_name)}</h3><p>“${x.esc(t.opening)}”</p></div></div>${back}</article>${foot(x,true)}${apptBook(x,false)}${gb.bar}</div>`;
     }
     if(desk)return `<div class="career-job sl">${gb.hint}${t.timer?timerCard(t,x):''}${desk}${ticket(t,x)}${gb.bar}</div>`;
@@ -789,7 +814,7 @@ export default {
     const key=[t.id,tab,at,t.asked.length,t.inspected.length,t.bowl?1:0,t.timer?1:0,t.cut.steps.length,t.done.length].join('|');
     const moved=!!t.plan||t.asked.length+t.inspected.length>0||tab!==at;
     const nx=pending(gb.g.steps)?.go?.cmd,focus=tab!=='consult'?'':nx==='sl_inspect'?'.sl-look':nx==='sl_consult'?'.sl-qa-list':/^sl_(patch|photo|strand)$/.test(nx||'')?'.sl-tests':'';
-    const panel=`<section class="sl-sec sl-panel ${tab===at?'focus':''}" data-sl-key="${x.esc(key)}" data-sl-reveal="${moved?1:0}" data-sl-focus="${focus}" aria-live="polite"><h4 class="section-title">${STAGES[tab][0]} ${x.esc(TITLES[tab])}${back}</h4>${PANELS[tab](t,x)}</section>`;
+    const panel=`<section class="sl-sec sl-panel ${tab===at?'focus':''}" data-sl-key="${x.esc(key)}" data-sl-reveal="${moved?1:0}" data-sl-focus="${focus}" aria-live="polite">${clean()?(back?`<p class="sl-back">${back}</p>`:''):`<h4 class="section-title">${STAGES[tab][0]} ${x.esc(TITLES[tab])}${back}</h4>`}${PANELS[tab](t,x)}</section>`;
     return `<div class="career-job sl">${gb.hint}${t.timer?timerCard(t,x):''}${lastDesk(x)}${ticket(t,x)}${nav(t,x,list,at,tab)}
       <div class="sl-bench"><div class="sl-main">${panel}${foot(x,true)}${apptBook(x,false)}</div>
       <aside class="sl-side">${gb.rows}${mirror(t,x)}${tab==='bill'?'':receipt(t,x,true)}</aside></div>${gb.bar}</div>`;

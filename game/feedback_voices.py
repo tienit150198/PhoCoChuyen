@@ -820,26 +820,30 @@ def tone_choices(post: dict, career: str | None = None) -> list[dict]:
     The pagoda answers in its own words (pagoda_voice.py): same tones, other labels and texts."""
     from .feedback import PERSONAS, _hash
     from . import pagoda_voice as pv
+    from . import career_voice as cv
     fb = post['feedback']
     parent = PERSONAS[fb['persona']]['group'] == 'parent'
     pagoda = pv.on(career)
+    own = not parent and not pagoda and cv.own_replies(career)   # a non-shop career: its own words (career_voice)
     worst = min(fb['criteria'], key=lambda x: x['score'])
     fact = fb['unfair']['truth'] if fb.get('unfair') else worst['note']
-    who = pv.address(post, fb['persona']) if pagoda else 'phụ huynh' if parent else 'bạn'
+    who = pv.address(post, fb['persona']) if pagoda else 'phụ huynh' if parent else cv.who_for(career, fb['persona']) if own else 'bạn'
     item = fb.get('item') or '“' + str(fb.get('title') or 'lần này') + '”'
     happy = (post.get('stars') or 0) >= 4 and worst['score'] >= 4 and not fb.get('unfair')
     label = pv.topic(fb['unfair'] if fb.get('unfair') else worst) if pagoda else worst['label']
     # Every public view of an open review builds these: the same inputs give the same replies.
-    key = (post['id'], fb['rounds'], parent, happy, label, fact, item, who, pagoda)
+    key = (post['id'], fb['rounds'], parent, happy, label, fact, item, who, pagoda, career if own else None)
     if type(fb['rounds']) is not int or not all(type(x) is str for x in (post['id'], label, fact, item)):
         key = None  # only plain inputs (1 == True == 1.0 would share a memo row, not a text)
     texts = _TONES_MEMO.get(key) if key is not None else None
     if texts is None:
         texts = (pv.tone_texts(post['id'], fb['rounds'], happy, who, label, fact, _hash) if pagoda
+                 else _own_texts(career, post['id'], fb['rounds'], happy, who, label, fact, item, _hash) if own
                  else _tone_texts(post['id'], fb['rounds'], parent, happy, who, label, fact, item, _hash))
         if key is not None:
             _TONES_MEMO.put(key, texts, size_of(key) + size_of(texts))
-    return [dict(id=tid, label=pv.LABEL[tid] if pagoda else spec.get('label_parent', spec['label']) if parent else spec['label'],
+    return [dict(id=tid, label=pv.LABEL[tid] if pagoda else spec.get('label_parent', spec['label']) if parent
+                 else cv.tone_label(career, tid, spec['label']) if own else spec['label'],
                  emoji=spec['emoji'], risk=spec['risk'], text=text) for tid, text in zip(TONE_ORDER, texts) for spec in (TONES[tid],)]
 
 
@@ -852,6 +856,17 @@ def _tone_texts(post_id, rounds, parent, happy, who, label, fact, item, _hash) -
     for tid in TONE_ORDER:
         rows = (TONES_POS[tid] if happy else TONES[tid])['parent' if parent else 'customer']
         out.append(_cap(fill(_pick(rows, _hash('tpl', post_id, rounds, tid)), who=who, label=_lower(label), fact=fact, item=item)))
+    return tuple(out)
+
+
+def _own_texts(career, post_id, rounds, happy, who, label, fact, item, _hash) -> tuple:
+    """One reply text per tone in a non-shop career's own words (career_voice.tone_rows); same seeds as the shops."""
+    from . import career_voice as cv
+    args = cv.fill_args(career, who)
+    out = []
+    for tid in TONE_ORDER:
+        rows = cv.tone_rows(career, tid, happy)
+        out.append(_cap(fill(_pick(rows, _hash('tpl', post_id, rounds, tid)), label=_lower(label), fact=fact, item=item, **args)))
     return tuple(out)
 
 
@@ -879,10 +894,13 @@ def add_guest(s: dict, c: dict, post: dict, situation: str, seed: int, career: s
     thread = fb['thread']
     if len(thread) >= 8 or sum(1 for x in thread if x.get('role') == 'guest') >= GUESTS_PER_POST or _guests_today(c) >= GUESTS_PER_DAY:
         return None
+    from . import career_voice as cv
     grp = 'parent' if PERSONAS[fb['persona']]['group'] == 'parent' else 'customer'
-    names, lines = (pv.GUEST_NAMES, pv.GUEST_TEXT) if pv.on(career) else (GUEST_NAMES[grp], GUEST_TEXT[grp])
+    names, lines = ((pv.GUEST_NAMES, pv.GUEST_TEXT) if pv.on(career)
+                    else (GUEST_NAMES[grp], cv.GUEST_TEXT) if grp == 'customer' and cv.own_replies(career)
+                    else (GUEST_NAMES[grp], GUEST_TEXT[grp]))
     name, emoji = _pick(names, seed)
-    text = teacher_title(s, _pick(lines[situation], seed // 3))
+    text = teacher_title(s, fill(_pick(lines[situation], seed // 3), host=cv.term(career, 'owner', 'chủ quán')))
     row = dict(role='guest', name=name, emoji=emoji, side=GUEST_SIDE[situation], text=text, day=c['day'])
     # Bystanders comment on the owner's reply while the reviewer is still reading,
     # so the reviewer's own answer stays the last word of the round.
@@ -898,7 +916,9 @@ def _fans(s: dict, c: dict, career: str, post: dict, n: int) -> int:
     parent = PERSONAS[fb['persona']]['group'] == 'parent'
     pool = [k for k in e.NPC_INDEX if k.startswith(career + '_npc_') and k != post['npc']] or [k for k in e.NPC_INDEX if k != post['npc']]
     from . import pagoda_voice as pv
-    rows = pv.FAN_TEXT if pv.on(career) else FAN_TEXT['parent' if parent else 'customer']
+    from . import career_voice as cv
+    rows = (pv.FAN_TEXT if pv.on(career) else cv.FAN_TEXT if not parent and cv.own_replies(career)
+            else FAN_TEXT['parent' if parent else 'customer'])
     made = 0
     for i in range(max(0, min(n, FANS_PER_DAY - _fans_today(c)))):
         h = _hash('fan', post['id'], i)

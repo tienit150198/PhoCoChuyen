@@ -3,8 +3,9 @@
  *  tờ khai làm từng bước với giấy tờ gốc và máy tính bàn), 📋 Quy định (quy định kỳ lương + sổ tay luật),
  *  and a sticky bar with the next step and the main action. */
 import {statusStrip,taskMails,dayMails,inboxPane,rulesList,desk,bar,switchTab,keepBarAboveFooter,fold,idleDesk,dueOf,openTasks,planCard,mateCards,trackFold,careSummary,foldToggle,
-  coachOf,goto,gotoAction,guideOf,shut,shutWork,shutBar,summaryCard} from './office_kit.js';
+  coachOf,goto,gotoAction,guideOf,note,envelope,deskHelp,shut,shutWork,shutBar,summaryCard} from './office_kit.js';
 import {pending,stepLine} from '../v4/guide.js';
+import {clean,whyAttrs} from '../ui-kit.js';
 import {amountAttrs,amountNoteHTML,amountOf,refreshAmountNote} from '../v4/amount-parse.js';
 
 const BOSS='Chị Hồng';
@@ -102,7 +103,7 @@ function field(t,st,x,{key,label,options,miss}){
   const box=options?`<select class="${bad?'tp-bad':''}" id="${id}" data-preserve${mark}><option value="">Chọn…</option>${options.map(o=>`<option value="${x.esc(o.id)}">${x.esc(o.label)}</option>`).join('')}</select>`
     :`<input class="input tp-num${bad?' tp-bad':''}" id="${id}" data-preserve ${amountAttrs('xu',{plain:true})} placeholder="0"${mark}>${amountNoteHTML('','xu')}`;
   return `<div class="tp-field${bad?' bad':ok?' ok':''}" data-amt-box><div class="tp-field-top"><label for="${id}">${x.esc(label)}</label>${bad?'<span class="tp-ftag bad">✗ chưa khớp</span>':ok?'<span class="tp-ftag ok">✓ khớp</span>':''}</div>
-    ${how?`<details class="tp-how" id="${id}-how"><summary>📐 Cách tính</summary><p>${x.esc(how)}</p></details>`:''}${box}</div>`;
+    ${how?(clean()&&!bad?note(`📐 ${x.esc(how)}`,`Cách tính: ${label}`,'tp-how-tip','span'):`<details class="tp-how" id="${id}-how"><summary>📐 Cách tính</summary><p>${x.esc(how)}</p></details>`):''}${box}</div>`;
 }
 
 function inputView(st,t,x){
@@ -115,7 +116,7 @@ function inputView(st,t,x){
     case'match':return `<div class="tp-match">${st.left.map(l=>`<label class="tp-cell-row"><span>${x.esc(l.label)}</span><select id="${fid(t,st.id,l.id)}" data-preserve><option value="">Chọn…</option>${st.right.map(r=>`<option value="${x.esc(r.id)}">${x.esc(r.label)}</option>`).join('')}</select></label>`).join('')}</div>`;
     case'order':{
       const picked=u.order[st.id]||[],rest=st.items.filter(o=>!picked.includes(o.id));
-      return `<ol class="tp-order">${picked.map((id,i)=>`<li><span class="tp-no">${i+1}</span><span class="grow">${x.esc(lab(st.items,id))}</span><button type="button" class="btn small ghost" data-action="car:unpick" data-task="${tid}" data-step="${sid}" data-i="${i}" aria-label="Bỏ bước ${i+1}">✕</button></li>`).join('')||'<li class="tp-order-empty">Chạm các việc bên dưới theo đúng thứ tự.</li>'}</ol>
+      return `<ol class="tp-order">${picked.map((id,i)=>`<li><span class="tp-no">${i+1}</span><span class="grow">${x.esc(lab(st.items,id))}</span><button type="button" class="btn small ghost" data-action="car:unpick" data-task="${tid}" data-step="${sid}" data-i="${i}" aria-label="Bỏ bước ${i+1}">✕</button></li>`).join('')||(clean()?'<li class="tp-order-empty">👇</li>':'<li class="tp-order-empty">Chạm các việc bên dưới theo đúng thứ tự.</li>')}</ol>
         <div class="tp-choices">${rest.map(o=>`<button type="button" class="tp-choice" data-action="car:opick" data-task="${tid}" data-step="${sid}" data-v="${x.esc(o.id)}">＋ ${x.esc(o.label)}</button>`).join('')}</div>`;
     }
   }
@@ -137,17 +138,17 @@ function resultCard(cur,miss,tries,x){
 function worksheet(t,x){
   const p=t.progress||{at:0,total:0,attempts:{}},steps=t.steps||[],cur=steps[p.at];
   const solved=steps.filter(s=>s.state==='solved'),last=solved[solved.length-1];
-  const done=solved.length?fold(`✓ ${solved.length} bước đã xong <small>xem lại</small>`,`<ol class="tp-steps">${solved.map(st=>`<li class="tp-step solved"><div class="tp-step-head"><span class="tp-no" aria-hidden="true">✓</span><b>${x.esc(st.title)}</b></div><div class="tp-answer">${solvedText(st,x)}</div>${st.explain?`<p class="tp-explain">${x.esc(st.explain)}</p>`:''}${st.work?.length?`<ol class="tp-ex-work">${st.work.map(w=>`<li>${x.esc(w)}</li>`).join('')}</ol>`:''}</li>`).join('')}</ol>`):'';
+  const done=solved.length?fold(clean()?`✓ ${solved.length}`:`✓ ${solved.length} bước đã xong <small>xem lại</small>`,`<ol class="tp-steps">${solved.map(st=>`<li class="tp-step solved"><div class="tp-step-head"><span class="tp-no" aria-hidden="true">✓</span><b>${x.esc(st.title)}</b></div><div class="tp-answer">${solvedText(st,x)}</div>${st.explain?`<p class="tp-explain">${x.esc(st.explain)}</p>`:''}${st.work?.length?`<ol class="tp-ex-work">${st.work.map(w=>`<li>${x.esc(w)}</li>`).join('')}</ol>`:''}</li>`).join('')}</ol>`):'';
   let body='';
   if(cur&&cur.state==='current'){
     const tries=p.attempts[cur.id]||0,hint=resultCard(cur,state(x,t).miss?.[cur.id],tries,x);
-    body=`<article class="tp-work" data-step-card="${x.esc(t.id)}:${x.esc(cur.id)}"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">${p.at+1}</span><div class="grow"><small>Bước ${p.at+1}/${p.total}${p.total-p.at-1?` · còn ${p.total-p.at-1} bước sau`:''}${tries>1?` · ${tries} lần kiểm`:''}</small><h3>${x.esc(cur.title)}</h3></div>${cur.tag==='ethic'?'<span class="ok-tag warn">🔒 bảo mật & quy trình</span>':''}</header>
+    body=`<article class="tp-work" data-step-card="${x.esc(t.id)}:${x.esc(cur.id)}"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">${p.at+1}</span><div class="grow"><small>${clean()?`${p.at+1}/${p.total}${tries>1?` · ↻ ${tries}`:''}`:`Bước ${p.at+1}/${p.total}${p.total-p.at-1?` · còn ${p.total-p.at-1} bước sau`:''}${tries>1?` · ${tries} lần kiểm`:''}`}</small><h3>${x.esc(cur.title)}</h3></div>${cur.tag==='ethic'?'<span class="ok-tag warn">🔒 bảo mật & quy trình</span>':''}</header>
       <p class="tp-prompt">${x.esc(cur.prompt)}</p>${inputView(cur,t,x)}${hint}</article>`;
   }else if(!t.filed)body=`<article class="tp-work done"><header class="tp-work-head"><span class="tp-no" aria-hidden="true">📤</span><div class="grow"><small>Bước cuối</small><h3>Nộp / bàn giao hồ sơ</h3></div></header></article>`;
   const pct=p.total?Math.round(p.at/p.total*100):0;
-  return `<section class="tp-sheet"><h3 class="ok-h">🧮 Bảng tính hồ sơ <small>${p.at}/${p.total} bước</small></h3>
+  return `<section class="tp-sheet">${clean()?'':`<h3 class="ok-h">🧮 Bảng tính hồ sơ <small>${p.at}/${p.total} bước</small></h3>`}
     <div class="tp-progress" role="progressbar" aria-label="Tiến độ hồ sơ" aria-valuemin="0" aria-valuemax="${p.total}" aria-valuenow="${p.at}"><i style="width:${pct}%"></i></div>
-    ${last&&cur&&last.explain?`<p class="tp-lastok">✓ <b>${x.esc(last.title)}</b> — ${x.esc(last.explain)}</p>`:''}${body}${done}</section>`;
+    ${last&&cur&&last.explain?(clean()?`<p class="tp-lastok">✓ <b>${x.esc(last.title)}</b>${note(x.esc(last.explain),last.title,'','span')}</p>`:`<p class="tp-lastok">✓ <b>${x.esc(last.title)}</b> — ${x.esc(last.explain)}</p>`):''}${body}${done}</section>`;
 }
 
 /** The desk calculator, folded to one line unless the step asks for numbers or it has results on its tape. */
@@ -155,7 +156,7 @@ function calculator(x,cur){
   const hist=x.ui.calc||[],open=x.ui.okFold?.calc??(hist.length>0||['number','fields'].includes(cur?.kind));
   return `<details class="ok-fold tp-calc"${open?' open':''}><summary data-action="car:fold" data-fold="calc">🧮 Máy tính bàn${hist.length?` <small>${hist.length} phép tính</small>`:''}</summary><div class="ok-fold-body">
     <div class="tp-calc-row"><input class="input" id="tp-calc" data-preserve type="text" inputmode="decimal" autocomplete="off" placeholder="vd: 12400 × 8%" aria-label="Phép tính">${x.button('=','car:calc',{},'primary')}</div>
-    <ul class="tp-tape">${hist.map(h=>`<li><span>${x.esc(h.expr)}</span><b>${x.esc(h.out)}</b></li>`).join('')||'<li class="tp-tape-help">Dấu chấm là phân cách hàng nghìn; % hiểu là chia 100. Kết quả làm tròn xuống ghi kèm.</li>'}</ul></div></details>`;
+    <ul class="tp-tape">${hist.map(h=>`<li><span>${x.esc(h.expr)}</span><b>${x.esc(h.out)}</b></li>`).join('')||(clean()?note('Dấu chấm là phân cách hàng nghìn; % hiểu là chia 100. Kết quả làm tròn xuống ghi kèm.','🧮 Máy tính bàn','tp-tape-help','li'):'<li class="tp-tape-help">Dấu chấm là phân cách hàng nghìn; % hiểu là chia 100. Kết quả làm tròn xuống ghi kèm.</li>')}</ul></div></details>`;
 }
 
 /** Law notes (lương, bảo hiểm, thuế, hạn nộp) as one fold per group. */
@@ -170,7 +171,7 @@ function claimMails(x){
   const cl=x.room.data?.claims||[],ch=x.cc.claim_choices||[];
   return cl.map(c=>({avatar:'<span class="ok-emoji">📨</span>',from:x.esc(c.name),role:'Khiếu nại lương',tone:'bad',
     subject:`Thiếu ${fmtN(c.amount)} xu`,
-    body:`<p>${x.esc(c.why)}</p><div class="tp-claim-acts">${ch.map((o,i)=>x.cmd(x.esc(o.label),'tp_claim',{claim:c.id,choice:o.id},i===0?'primary small':'ghost small')).join('')}</div><p class="ok-note">Chưa xử lý tới cuối ngày là ${BOSS} mất tin tưởng.</p>`}));
+    body:`<p>${x.esc(c.why)}</p><div class="tp-claim-acts">${ch.map((o,i)=>x.cmd(x.esc(o.label),'tp_claim',{claim:c.id,choice:o.id},i===0?'primary small':'ghost small')).join('')}</div>${note(`Chưa xử lý tới cuối ngày là ${BOSS} mất tin tưởng.`,'Khiếu nại lương')}`}));
 }
 
 /* ---------------------------------------------------------------- the payroll grid */
@@ -228,7 +229,8 @@ function rowCard(t,r,x){
   const cell=c=>{
     const cls=`${flags.has(c.z)?' flagged':''}${truth.has(c.z)?' truth':''}${c.z==='name'?' name':''}`;
     const inner=`<span class="k">${x.esc(c.k)}</span><span class="v">${x.esc(c.v)}</span>`;
-    return live?`<button type="button" class="tp-cell${cls}" data-action="car:flag" data-task="${x.esc(t.id)}" data-row="${x.esc(r.id)}" data-cell="${x.esc(c.z)}" aria-pressed="${flags.has(c.z)}">${inner}</button>`:`<div class="tp-cell${cls}">${inner}</div>`;
+    const why=!flags.has(c.z)?whyAttrs(r.can?.tp_flag):'';   // the row is full: dimmed, a tap says so (never sent)
+    return live?`<button type="button" class="tp-cell${cls}${why?' is-why':''}" data-action="car:flag" data-task="${x.esc(t.id)}" data-row="${x.esc(r.id)}" data-cell="${x.esc(c.z)}" aria-pressed="${flags.has(c.z)}"${why}>${inner}</button>`:`<div class="tp-cell${cls}">${inner}</div>`;
   };
   let foot='';
   if(r.result){
@@ -239,7 +241,7 @@ function rowCard(t,r,x){
   }else{
     // First payroll: why each glowing cell is wrong, next to the cells (the header hint stays one short line).
     const co=coachOf(x,t)?.rows?.[r.id],why=co?.z?co.z.filter(z=>!flags.has(z)).map(z=>`<p class="tp-hint">💡 Ô “${x.esc(cellName(r,z))}” sai: ${x.esc(co.why?.[co.z.indexOf(z)]||'đối chiếu hồ sơ gốc')}</p>`).join(''):'';
-    foot=`${why}${r.tip?`<p class="tp-hint">💡 ${x.esc(r.tip)}</p>`:''}<div class="tp-row-tools"><small>${flags.size?`🚩 ${flags.size}/${max} ô nghi sai`:'Chạm vào ô sai để đánh dấu'}</small>${r.hinted?'':x.cmd('💡 Gợi ý','tp_hint',{task:t.id,row:r.id},'ghost small')}</div>`;
+    foot=`${why}${r.tip?`<p class="tp-hint">💡 ${x.esc(r.tip)}</p>`:''}<div class="tp-row-tools"><small>${clean()?`🚩 ${flags.size}/${max}`:flags.size?`🚩 ${flags.size}/${max} ô nghi sai`:'Chạm vào ô sai để đánh dấu'}</small>${r.hinted?'':x.cmd('💡 Gợi ý','tp_hint',{task:t.id,row:r.id},'ghost small')}</div>`;
   }
   return `<section class="tp-person"${r.reviewed||t.filed?'':` data-step-card="${x.esc(t.id)}:${x.esc(r.id)}"`}><header><span class="tp-avatar" aria-hidden="true">${x.esc(nameOf(r).split(' ').pop().slice(0,1))}</span><b>${x.esc(nameOf(r))}</b><small>Dòng ${x.esc(r.id.slice(1))}</small></header>
     <div class="tp-cells-grid">${(r.cells||[]).map(cell).join('')}</div>${foot}</section>`;
@@ -292,7 +294,7 @@ function periodRules(t,x){
   const p=t.period;if(!p?.rules?.length)return '';
   const today=x.room.data?.today?.month,other=today!=null&&today!==p.month;
   const body=`${other?`<p class="tp-hint">⚠️ Bảng này thuộc kỳ lương tháng ${x.esc(p.month)}: soát theo quy định của kỳ đó, không phải kỳ tháng ${x.esc(today)}.</p>`:''}${rulesList(x,p.rules,`Quy định kỳ lương tháng ${p.month}`)}`;
-  return fold(`📋 Quy định kỳ này <small>${p.rules.length} thẻ · mức sàn bảo hiểm, ngày lễ, tạm ứng…</small>`,body,other||(x.ui.okFold?.prules??false),'tp-prules','prules');
+  return fold(clean()?`📋 <small>${p.rules.length}</small>`:`📋 Quy định kỳ này <small>${p.rules.length} thẻ · mức sàn bảo hiểm, ngày lễ, tạm ứng…</small>`,body,other||(x.ui.okFold?.prules??false),'tp-prules','prules');
 }
 function gridDoc(t,x){
   const rows=t.rows||[],r=rowOf(t,x),g=t.grid||{};
@@ -303,18 +305,18 @@ function gridDoc(t,x){
   const {idx,html}=paperTabs(t,x,'Hồ sơ gốc');
   const u=state(x,t),who=r&&!t.filed?nameOf(r):'',only=who&&!u.allRef?who:'',p=t.papers[idx];
   const toggle=who?x.button(only?`Xem cả ${p.rows.length} dòng`:`Chỉ xem ${x.esc(who.split(' ').pop())}`,'car:refall',{task:t.id},'ghost small tp-refall'):'';
-  const count=t.filed?`<small class="tp-grid-sum">💸 Đã chuyển · ${g.ok}/${g.total} dòng chuẩn</small>`:`<small>${g.reviewed||0}/${g.total||rows.length} đã soát</small>`;
-  return `<nav class="tp-queue" aria-label="Bảng lương nháp"><span class="tp-qlabel">👥 Bảng lương</span>${chips}${count}</nav>
+  const count=t.filed?`<small class="tp-grid-sum">💸 Đã chuyển · ${g.ok}/${g.total} dòng chuẩn</small>`:`<small>${g.reviewed||0}/${g.total||rows.length}${clean()?'':' đã soát'}</small>`;
+  return `<nav class="tp-queue" aria-label="Bảng lương nháp"><span class="tp-qlabel">👥${clean()?'':' Bảng lương'}</span>${chips}${count}</nav>
     ${r?rowCard(t,r,x):''}
-    <section class="tp-tray"><h3 class="ok-h">🗃️ Hồ sơ gốc để đối chiếu${only?` <small>· dòng của ${x.esc(only)}</small>`:''}</h3>${html}<article class="tp-paper"><h4>${x.esc(p.title)}</h4>${refList(p,x,only)}${toggle?`<p class="tp-refbar">${toggle}</p>`:''}</article>${t.filed?'':periodRules(t,x)}</section>`;
+    <section class="tp-tray"><h3 class="ok-h">🗃️ ${clean()?(only?`<small>${x.esc(only)}</small>`:''):`Hồ sơ gốc để đối chiếu${only?` <small>· dòng của ${x.esc(only)}</small>`:''}`}</h3>${html}<article class="tp-paper"><h4>${x.esc(p.title)}</h4>${refList(p,x,only)}${toggle?`<p class="tp-refbar">${toggle}</p>`:''}</article>${t.filed?'':periodRules(t,x)}</section>`;
 }
 function gridBar(t,x,gd){
   const r=rowOf(t,x),g=t.grid||{};
-  if(!t.filed&&g.reviewed===g.total)return bar(x,t,`Đã soát đủ ${g.total} người.`,gd.cta);
+  if(!t.filed&&g.reviewed===g.total)return bar(x,t,clean()?`✓ ${g.total}/${g.total}`:`Đã soát đủ ${g.total} người.`,gd);
   if(!r||t.filed)return bar(x,t,'Bảng lương đã chuyển.');
-  if(r.reviewed)return bar(x,t,`${x.esc(nameOf(r))}: đã soát`,gd.cta);
+  if(r.reviewed)return bar(x,t,`${x.esc(nameOf(r))}: ✓`,gd);
   const n=(r.flags||[]).length;
-  return bar(x,t,`👤 ${x.esc(nameOf(r))}${n?` · 🚩 ${n}`:''}`,gd.cta);
+  return bar(x,t,`👤 ${x.esc(clean()?nameOf(r).split(' ').pop():nameOf(r))}${n?` · 🚩 ${n}`:''}`,gd);
 }
 const cellSel=(r,z)=>`.tp-cell[data-row="${r.id}"][data-cell="${z}"]`;
 const cellName=(r,z)=>(r.cells||[]).find(c=>c.z===z)?.k||z;
@@ -342,12 +344,12 @@ function gridSteps(t,x){
 /* ---------------------------------------------------------------- a form (tờ khai) done step by step */
 function formDoc(t,x){
   const {idx,html}=paperTabs(t,x,'Giấy tờ');
-  return `${worksheet(t,x)}<section class="tp-tray"><h3 class="ok-h">🗃️ Giấy tờ khách gửi <small>${t.papers.length} tờ</small></h3>${html}${paperView(t.papers[idx],x)}</section>${calculator(x,(t.steps||[])[(t.progress||{}).at||0])}`;
+  return `${worksheet(t,x)}<section class="tp-tray"><h3 class="ok-h">🗃️ ${clean()?`<small>${t.papers.length}</small>`:`Giấy tờ khách gửi <small>${t.papers.length} tờ</small>`}</h3>${html}${paperView(t.papers[idx],x)}</section>${calculator(x,(t.steps||[])[(t.progress||{}).at||0])}`;
 }
 function formBar(t,x,gd){
   const p=t.progress||{},cur=(t.steps||[])[p.at];
-  if(cur&&cur.state==='current')return bar(x,t,'',gd.cta);
-  if(!t.filed)return bar(x,t,'Hồ sơ đã khớp hết — nộp cho khách.',gd.cta);
+  if(cur&&cur.state==='current')return bar(x,t,'',gd);
+  if(!t.filed)return bar(x,t,clean()?'':'Hồ sơ đã khớp hết — nộp cho khách.',gd);
   return bar(x,t,'Đã nộp hồ sơ.');
 }
 /* A form step by step. The first dossier (coach) lights the right choice / the next item, or fills the cells. */
@@ -377,7 +379,7 @@ function formSteps(t,x){
 /** {steps, final} for the header hint and the bottom button. */
 function guideFor(t,x){
   const grid=t.form==='grid';
-  if(!t.known)return {steps:[{ok:null,label:grid?'Nhận bảng lương nháp':'Nhận hồ sơ, đọc yêu cầu',go:{cmd:'ask',payload:{task:t.id},label:grid?'📥 Nhận bảng lương nháp':'📥 Nhận hồ sơ & đọc yêu cầu'}}]};
+  if(!t.known)return {steps:[{ok:null,label:grid?'Nhận bảng lương nháp':'Nhận hồ sơ, đọc yêu cầu',go:{cmd:'ask',payload:{task:t.id},label:grid?(clean()?'📥 Nhận bảng lương':'📥 Nhận bảng lương nháp'):clean()?'📥 Nhận hồ sơ':'📥 Nhận hồ sơ & đọc yêu cầu'}}]};
   if(grid){
     const g=t.grid||{};
     return {steps:gridSteps(t,x),final:!t.filed&&g.reviewed===g.total?{label:`💸 Chuyển lương ${g.total} người`,go:{cmd:'tp_pay',payload:{task:t.id},confirm:'Chuyển lương theo bảng đã soát? Ô đánh dấu sẽ được sửa trước khi chuyển; ô sót thì chuyển nguyên như bảng nháp.'}}:null};
@@ -401,7 +403,7 @@ const care=(x,t)=>({plan:filingPlan(x),people:mateCards(x,{prefix:'tp_',t}),trac
 const careBadge=x=>{const c=x.room.data?.care;return (c?.asked?1:0)+((c?.plan?.items)||[]).filter(f=>f.can&&(f.state==='due'||f.state==='late')).length;};
 
 /* ---------------------------------------------------------------- the office desktop */
-const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'tp_overtime'});
+const strip=(x,t)=>statusStrip(x,t,{boss:BOSS,op:'tp_overtime',help:deskHelp(x,{key:'ok-tax_payroll',title:'🧮 Bàn thuế & lương',boss:BOSS})});
 /** Office shut: every tp_ command takes office time (claims: only “pay now”); car:check / car:flag send one. */
 const SHUT={prefix:'tp_',acts:['check','flag'],free:(op,tag)=>op==='tp_claim'&&!tag.includes('pay_now')};
 function currentMail(t,x){
@@ -410,7 +412,7 @@ function currentMail(t,x){
     !due&&left!==null&&t.known?`<span class="ok-tag ${left<0?'bad':left<8?'warn':''}">${left>=0?`⏳ Hạn nội bộ: còn ${left} lượt`:'⌛ Quá hạn nội bộ'}</span>`:'',
     t.bonus&&t.form!=='grid'?`<span class="ok-tag good">🎁 Thưởng ${x.money(t.pay??t.bonus)}</span>`:'',
     t.mistakes?`<span class="ok-tag bad">✗ ${t.mistakes} lần chưa khớp</span>`:''].join('');
-  const help=!t.known&&t.form==='grid'?'<p class="ok-note">Sót lỗi thì người lao động nhận sai lương — hôm sau sẽ có khiếu nại.</p>':'';
+  const help=!t.known&&t.form==='grid'?note('Sót lỗi thì người lao động nhận sai lương — hôm sau sẽ có khiếu nại.','Bảng lương nháp'):'';
   return `<p class="ok-quote">“${x.esc(t.opening)}”</p>${t.brief?`<p class="ok-brief">🎯 ${x.esc(t.brief)}</p>`:''}<div class="ok-chips">${chips}</div>${help}`;
 }
 function nextText(t){
@@ -442,8 +444,8 @@ export default {
     const rules=todayRules(x)+lawBook(x);
     const gd=guideFor(t,x),g=guideOf(x,t,gd.steps,gd.final);
     if(!t.known)return plain(desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint:g.hint,panes:{inbox:shutWork(x,inbox,SHUT),rules,
-      doc:`<p class="ok-empty"><span aria-hidden="true">✉️</span><b>${x.esc(t.title)}</b><span>${grid?'Bảng lương nháp còn nằm trên bàn chị Hồng.':'Hồ sơ còn trong phong bì.'}</span></p>`},
-      bar:bar(x,t,'',g.cta,true)}));
+      doc:envelope(x,t,{empty:grid?'Bảng lương nháp còn nằm trên bàn chị Hồng.':'Hồ sơ còn trong phong bì.',extra:grid?note('Sót lỗi thì người lao động nhận sai lương — hôm sau sẽ có khiếu nại.','Bảng lương nháp'):''})},
+      bar:bar(x,t,'',g,true)}));
     // Office shut (a timed dossier): its work is drawn disabled, the hint steps aside and the bar closes the day.
     const off=shut(x)&&Boolean(t.gen),hint=off?'':g.hint,work=html=>shutWork(x,html,SHUT),doc=html=>off?work(html):html;
     if(grid)return plain(desk(x,t,{cls:'tp',tabs,strip:strip(x,t),hint,panes:{inbox:work(inbox),rules,doc:doc(gridDoc(t,x))},bar:off?shutBar(x,t):gridBar(t,x,g)}));

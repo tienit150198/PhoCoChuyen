@@ -97,3 +97,6 @@
 /* ---------- the awkward people (0.9.16) */
 .career-job.fr .fr-credit{border-color:var(--sk-accent)}
 .career-job.fr .fr-haggle .sk-amt{margin-top:10px}
+
+/* Clean layout (UI wave 4): the checklist folded into its header chip leaves the side pane empty: no empty box. */
+html[data-clean] .career-job.sk.fr .wb-side:not(:has(>:not(.ui-chipped))){padding:0;border:0;background:none}

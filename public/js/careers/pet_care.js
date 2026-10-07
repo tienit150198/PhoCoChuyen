@@ -1,8 +1,8 @@
 /** Pet Care Mèo Mập — intake form, grooming table (body language, escapes, live rinse/dry bars), kennel, feeding
  *  station with medicine by the label, adoption interviews, and the surprises that walk in at the counter.
  *  Care loop: regulars' cards and trust, a daily care card per boarder, vaccine/deworming reminders, adoption follow-ups. */
-import {reqList,fold} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,goAttrs,highlight,stepLine} from '../v4/guide.js';
+import {reqList,fold,clean,tip,helpBtn,withWhy} from '../ui-kit.js';
+import {stepRows,nextHint,stepCta,stepBar,finalGo,pending,firstTime,goAttrs,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockGo} from '../v4/restock.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {tomorrowCard} from './tomorrow_kit.js';
@@ -104,6 +104,28 @@ function focus(t,x){
 }
 const st=(t,x,key,alt='ghost')=>focus(t,x)===key?'primary':alt;
 
+/* ---------------------------------------------------------------- clean layout (docs/UI_KIT.md, wave 5) */
+/** The shop's "?" on the clean layout: today's theme, the house rules and the explanations folded off this screen. */
+function helpQ(x){
+  const m=x.room.data?.mod;
+  return helpBtn('pc-help','🐾 Tiệm chăm thú cưng',[...(m?[{title:`${m.emoji} ${m.title}`,body:`<p>${x.esc(m.text)}</p>`,open:true}]:[]),
+    {title:'📜 Nội quy tiệm',body:`<ul>${(x.cc.rules||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul>`}],{tips:true,cls:'pc-helpq'});
+}
+/** The job's tag: its icon only on the clean layout (the header names the job). */
+const jobTag=(x,t)=>{const name=x.cc.jobs?.[t.job]||t.job;
+  return clean()?`<span class="tag blue" title="${x.esc(name)}" aria-label="${x.esc(name)}">${JOB_ICON[t.job]||'🐾'}</span>`:`<span class="tag blue">${JOB_ICON[t.job]||''} ${x.esc(name)}</span>`;};
+/** A hands-on grooming button while the pet panics: dimmed but tappable with the server's own words and the
+ * break as the fix (public_task can.pc_*, game/careers/pet_care.py _calm_enough). Only when nothing else holds it. */
+function calmGate(t,op,html,off=false){
+  const c=t.can?.[op];
+  return !off&&c&&c!==true?withWhy(html,c):html;
+}
+/** The checks in a word or two on the clean layout (the full label stays in aria-label / title). */
+const PART_WORD={vaccine:'Sổ tiêm',scale:'Cân',coat:'Lông',skin:'Da',ears:'Tai',nails:'Móng',body:'Sờ thân',gait:'Bước đi',mood:'Làm quen',
+  bowl:'Bát ăn',energy:'Tinh thần',temp:'Nhiệt độ',home:'Chỗ ở',time:'Giờ vắng',kids:'Trẻ nhỏ',pets:'Thú nuôi',allergy:'Dị ứng'};
+/** An explanation line: as before on the classic layout, listed in "?" on the clean one. HTML-safe text. */
+const tipLine=(text,title)=>clean()?tip(text,title):`<p class="small muted">${text}</p>`;
+
 /* ---------------------------------------------------------------- the day, the counter */
 function todayChip(x){const m=x.room.data?.mod;return m?`<details class="pc-today"><summary aria-label="Hôm nay: ${x.esc(m.title)}"><span aria-hidden="true">${x.esc(m.emoji)}</span> <b>${x.esc(m.title)}</b></summary><small>${x.esc(m.text)}</small></details>`:'';}
 function deskCard(x){
@@ -122,13 +144,14 @@ function rules(x){return `<details class="pc-rules fold gd-rules"><summary>📜 
 /** On a task: the shop chores and the house rules as one folded line (the line says when the tables still need cleaning). */
 function shopFold(x){
   const d=x.room.data||{};
-  return `<details class="pc-rules gd-rules pc-shop"><summary>🏪 Tiệm: khử khuẩn, kho, nội quy <small>${d.sanitized_today?'· ✅ đã khử khuẩn':'· 🧽 chưa khử khuẩn hôm nay'}</small></summary>${foot(x)}<ul>${(x.cc.rules||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul></details>`;
+  return `<details class="pc-rules gd-rules pc-shop"><summary${clean()?` aria-label="Tiệm: khử khuẩn, kho, nội quy · ${d.sanitized_today?'đã khử khuẩn':'chưa khử khuẩn hôm nay'}"`:''}>${clean()?`🏪 ${d.sanitized_today?'✅':'🧽 ⚠'}`:`🏪 Tiệm: khử khuẩn, kho, nội quy <small>${d.sanitized_today?'· ✅ đã khử khuẩn':'· 🧽 chưa khử khuẩn hôm nay'}</small>`}</summary>${foot(x)}<ul>${(x.cc.rules||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul></details>`;
 }
 function kennelBox(x,open=false){
   const d=x.room.data||{},pens=d.pens||{},busy=Object.values(pens).filter(Boolean).length,free=x.cc.pens.filter(p=>p.unlock<=(d.level||1)).length;
   const todo=Object.values(d.stay||{}).reduce((a,s)=>a+(s.todo||0),0);
   const left=todo?`<span class="tag amber">${todo} việc chăm còn lại</span>`:busy?'<span class="tag green">đã chăm đủ hôm nay</span>':'';
-  return `<details class="pc-card pc-kennel-box"${open&&todo?' open':''}><summary><b>🏠 Khu lưu trú</b> <small>${busy}/${free} chuồng có bé</small> ${left}</summary>${stayCards(x)}${kennel(x)}</details>`;
+  const sum=clean()?`<b aria-label="Khu lưu trú: ${busy}/${free} chuồng có bé${todo?`, ${todo} việc chăm còn lại`:''}">🏠 ${busy}/${free}${todo?` · <span class="tag amber">📋 ${todo}</span>`:''}</b>`:`<b>🏠 Khu lưu trú</b> <small>${busy}/${free} chuồng có bé</small> ${left}`;
+  return `<details class="pc-card pc-kennel-box"${open&&todo?' open':''}><summary>${sum}</summary>${stayCards(x)}${kennel(x)}</details>`;
 }
 
 /* ---------------------------------------------------------------- care loop: one card per boarder, today's chores */
@@ -209,7 +232,8 @@ function careCount(x){const d=x.room.data||{};return (d.due||[]).length+(d.follo
 function partTiles(t,x,warnOf){
   return (x.cc.job_parts[t.job]||[]).map(part=>{
     const info=x.cc.parts[part]||{emoji:'🔎',label:part},seen=t.found?.[part];
-    return seen?`<div class="pc-found ${warnOf(part)?'warn':''}"><span class="tile-emoji" aria-hidden="true">${info.emoji}</span><div><b>${x.esc(info.label)}</b><small>${x.esc(seen)}</small></div></div>`
+    return seen?`<div class="pc-found ${warnOf(part)?'warn':''}"><span class="tile-emoji" aria-hidden="true">${info.emoji}</span><div><b title="${x.esc(info.label)}">${x.esc(clean()?PART_WORD[part]||info.label:info.label)}</b><small>${x.esc(seen)}</small></div></div>`
+      :clean()?`<button type="button" class="tile pc-part" ${cmdAttr(x,'pc_inspect',{task:t.id,part})} aria-label="${x.esc(info.label)}: chưa kiểm" title="${x.esc(info.label)}"><span class="tile-emoji" aria-hidden="true">${info.emoji}</span><b>${x.esc(PART_WORD[part]||info.label)}</b></button>`
       :`<button type="button" class="tile pc-part" ${cmdAttr(x,'pc_inspect',{task:t.id,part})}><span class="tile-emoji" aria-hidden="true">${info.emoji}</span><b>${x.esc(info.label)}</b><small>chưa kiểm</small></button>`;
   }).join('');
 }
@@ -235,15 +259,43 @@ function intake(t,x,now=null){
     if(n.med)rows.push(['Thuốc','<span class="tag blue">💊 Có thuốc theo đơn</span>']);
   }
   if(n.no_treat)rows.push(['Chế độ ăn','<span class="tag danger">Không bánh thưởng</span>']);
-  const form=`<div class="pc-form">${rows.map(([k,v])=>`<div class="pc-row"><span>${k}</span><b>${v}</b></div>`).join('')}<p class="bubble npc small">“${x.esc(n.note)}”</p></div>`;
+  const form=clean()?cleanForm(t,x):`<div class="pc-form">${rows.map(([k,v])=>`<div class="pc-row"><span>${k}</span><b>${v}</b></div>`).join('')}<p class="bubble npc small">“${x.esc(n.note)}”</p></div>`;
   const warn=part=>(f.signs||[]).some(s=>x.cc.signs[s]?.part===part)||(part==='vaccine'&&f.vax&&(f.vax!=='valid'||(f.vax_until!=null&&f.vax_until<pickup(t,x))))
     ||(part==='mood'&&f.mood&&f.mood!=='calm')||(part==='scale'&&f.kg!=null&&job!=='feed'&&f.kg!==n.kg_said);
   const tiles=`<div class="pc-parts">${partTiles(t,x,warn)}</div>`;
-  if(!now)return section('📋 Phiếu nhận bé',form)+section('🔎 Kiểm tra tận tay',tiles);
+  if(!now)return section(clean()?'📋 Phiếu nhận':'📋 Phiếu nhận bé',form)+section(clean()?'🔎 Kiểm tra':'🔎 Kiểm tra tận tay',tiles);
   // Once every check is done the form and the findings fold into one line with the facts the later steps need.
   const parts=x.cc.job_parts[job]||[],k=parts.filter(p=>t.inspected.includes(p)).length,warns=parts.filter(p=>t.found?.[p]&&warn(p)).length;
   const sum=[f.kg!=null?`${f.kg} kg`:job==='feed'?`${n.kg} kg`:'',f.mood?x.esc(MOOD[f.mood]||f.mood):'',job==='groom'&&n.rx?'💊 có đơn thuốc':'',f.skin==='sensitive'?'da nhạy cảm':'',job==='groom'&&n.short_nails?'✂️ chủ muốn móng thật ngắn':'',n.no_treat?'🚫 không bánh thưởng':'',`đã kiểm ${k}/${parts.length}`,warns?`⚠️ ${warns} điều lưu ý`:''].filter(Boolean).join(' · ');
-  return part(x,t,now,'check','📋 Phiếu nhận bé & kiểm tra',form+`<h5>🔎 Kiểm tra tận tay</h5>`+tiles,{done:k===parts.length,sum});
+  return part(x,t,now,'check',clean()?'📋 Phiếu nhận':'📋 Phiếu nhận bé & kiểm tra',form+(clean()?'':`<h5>🔎 Kiểm tra tận tay</h5>`)+tiles,{done:k===parts.length,sum});
+}
+/** The intake slip on the clean layout: one icon row per fact the later steps are scored on (the pet's name, breed and
+ * age are in the ticket above): life stage, weight (what the owner said until it is weighed), temper, the services or
+ * the stay, prescriptions, allergies, then the owner's own words. Labels are aria-labels; every fact stays visible. */
+function cleanForm(t,x){
+  const n=t.needs,f=t.facts||{},job=t.job,rows=[];
+  const row=(icon,label,html)=>rows.push(`<li><span aria-hidden="true">${icon}</span><span class="sr-only">${label}: </span>${html}</li>`);
+  row('🎂','Tuổi',x.esc(x.cc.stage_names[n.stage]||''));
+  if(job==='feed')row('⚖️','Cân lúc nhận',`${n.kg} kg`);
+  else row('⚖️','Cân nặng',f.kg!=null?`<b>${f.kg} kg</b>${f.kg!==n.kg_said?` <span class="tag amber">≠ ${n.kg_said}</span>`:' ✓'}`:`~${n.kg_said} kg <small class="muted">?</small>`);
+  if(job!=='feed')row('💬','Tính khí',f.mood?`<b>${x.esc(MOOD[f.mood]||f.mood)}</b>${f.mood!==n.mood_said?` <span class="tag amber">≠ ${x.esc(MOOD[n.mood_said]||'')}</span>`:''}`:x.esc(MOOD[n.mood_said]||''));
+  if(job==='groom'){
+    row('🧾','Dịch vụ',n.services.map(s=>x.esc(x.cc.services[s]||s)).join(' · '));
+    if(n.rx)row('💊','Đơn thuốc','<span class="tag blue">💊 Đơn thú y</span>');
+    if(n.short_nails)row('✂️','Chủ muốn','Móng thật ngắn');
+  }
+  if(job==='board'){
+    row('📒','Tiêm phòng',f.vax?`<span class="tag ${VAX[f.vax][1]}">${VAX[f.vax][0]}</span>`:'“đủ mũi rồi” <small class="muted">?</small>');
+    row('🌙','Lưu trú',`${n.nights} đêm · đón <b>ngày ${pickup(t,x)}</b>`);row('🥣','Thức ăn',n.food_own?'Chủ gửi':'Hạt tiệm');
+    if(n.allergy)row('🤧','Dị ứng',`<span class="tag danger">${x.esc(x.cc.allergy_names[n.allergy]||n.allergy)}</span>`);
+  }
+  if(job==='feed'){
+    row('🥣','Thẻ ăn',`${n.meals} bữa · ${n.food==='own'?'đồ chủ gửi':'hạt tiệm'}`);
+    const p=t.pen?pen(x,t.pen):null;row('🏠','Chuồng',p?`${p.emoji} ${x.esc(p.name)}`:'Lồng tạm');
+    if(n.med)row('💊','Thuốc','<span class="tag blue">💊 Theo đơn</span>');
+  }
+  if(n.no_treat)row('🚫','Chế độ ăn','<span class="tag danger">Không bánh thưởng</span>');
+  return `<div class="pc-form pc-form-clean"><ul class="pc-facts">${rows.join('')}</ul><p class="bubble npc small">“${x.esc(n.note)}”</p></div>`;
 }
 
 /* ---------------------------------------------------------------- grooming */
@@ -287,7 +339,9 @@ function stepStrip(t,x){
   const state={brush:g.brush,bath:g.shampoo!=null,rinse:g.rinse_s>=x.cc.rinse_min,dry:g.dry_pct>=100,nails:g.nails!=null,ears:g.ears!=null};
   const need={brush:sv.includes('brush'),bath:sv.includes('bath'),rinse:sv.includes('bath'),dry:sv.includes('bath'),nails:sv.includes('nails'),ears:sv.includes('ears')};
   const current=x.cc.steps.find(s=>need[s.id]&&!state[s.id])?.id;
-  return `<ol class="pc-steps">${x.cc.steps.map(s=>`<li class="${!need[s.id]?'skip':state[s.id]?'done':s.id===current?'now':''}"><span>${state[s.id]?'✓':s.emoji}</span>${x.esc(s.name)}</li>`).join('')}</ol>`;
+  // Clean layout: icons, only the current step keeps its word (all of them stay for screen readers).
+  const word=s=>clean()&&s.id!==current?`<span class="sr-only">${x.esc(s.name)}</span>`:x.esc(s.name);
+  return `<ol class="pc-steps${clean()?' pc-steps-ico':''}">${x.cc.steps.map(s=>`<li class="${!need[s.id]?'skip':state[s.id]?'done':s.id===current?'now':''}" title="${x.esc(s.name)}"><span>${state[s.id]?'✓':s.emoji}</span>${word(s)}</li>`).join('')}</ol>`;
 }
 function timerBar(kind,start,base,need,over,rate,label){
   return `<div class="pc-timer ${kind}" data-pc-timer="${kind}" data-start="${start||''}" data-base="${base}" data-need="${need}" data-over="${over}" data-rate="${rate}">
@@ -306,15 +360,15 @@ function dryBox(t,x){
   // Out of towels: the dryer cannot start (the pet is towelled first), so the row offers the towels.
   return `<h5>💨 Lau & sấy</h5>${timerBar('dry',g.dry,g.dry_pct,100,x.cc.dry_over*100,100/need,label)}
     <div class="row wrap pc-heats">${g.dry?x.cmd('⏹️ Tắt máy sấy','pc_dry',{task:t.id,mode:'stop'},'primary'):['cool','warm','hot'].map(h=>x.cmd(HEAT[h],'pc_dry',{task:t.id,mode:'start',heat:h},(h==='hot'?'ghost small pc-no':'ghost small')+' pc-heat-'+h,!g.shampoo||!g.rinse_s||!!g.rinse||off||(short.length&&h!=='hot'))).join('')+(short.length?lackBtn(x,short,t.id):'')}</div>
-    <p class="small muted">Lông ${n.coat==='long'?'dài':'ngắn'}: khoảng ${Math.round(need*10)/10} giây ở nấc ${heat==='cool'?'mát':'ấm'}${n.humid?' (trời ẩm, lâu gấp rưỡi)':''}.</p>`;
+    ${tipLine(`Lông ${n.coat==='long'?'dài':'ngắn'}: khoảng ${Math.round(need*10)/10} giây ở nấc ${heat==='cool'?'mát':'ấm'}${n.humid?' (trời ẩm, lâu gấp rưỡi)':''}.`,'💨 Sấy')}`;
 }
 function groomJob(t,x,now=new Set()){
   const n=t.needs,g=t.g,sv=n.services,v=ui(x,t),busy=g.rinse||g.dry,off=g.stopped||g.bolt;
   const wet=g.shampoo!=null&&g.dry_pct<100&&!g.stopped;
-  let html=section('🛁 Bàn tắm tỉa',stepStrip(t,x)+calmTools(t,x),'pc-table');
+  let html=section(clean()?'🛁':'🛁 Bàn tắm tỉa',stepStrip(t,x)+calmTools(t,x),'pc-table');
   if(sv.includes('brush')){
     const done=!!g.brush&&(!!g.flea||g.shampoo!=null);
-    html+=part(x,t,now,'brush','🪮 Chải & gỡ rối',done?`<p class="small">✓ Đã chải gỡ rối${g.flea?' · đã chải bọ chét':''}.</p>`:`<div class="row wrap">${x.cmd(g.brush?'✓ Đã chải gỡ rối':'🪮 Chải gỡ rối','pc_brush',{task:t.id,tool:'brush'},st(t,x,'brush'),g.brush||g.shampoo!=null||off)}
+    html+=part(x,t,now,'brush','🪮 Chải & gỡ rối',done?`<p class="small">✓ Đã chải gỡ rối${g.flea?' · đã chải bọ chét':''}.</p>`:`<div class="row wrap">${calmGate(t,'pc_brush',x.cmd(g.brush?'✓ Đã chải gỡ rối':'🪮 Chải gỡ rối','pc_brush',{task:t.id,tool:'brush'},st(t,x,'brush'),g.brush||g.shampoo!=null||off),g.brush||g.shampoo!=null||off)}
     ${x.cmd(g.flea?'✓ Đã chải bọ chét':'🐜 Lược bọ chét','pc_brush',{task:t.id,tool:'flea'},'ghost',g.flea||g.shampoo!=null||off)}</div>`,
       {done:!!g.brush,sum:g.brush?`đã chải${g.flea?' · đã chải bọ chét':''}`:''});
   }
@@ -328,7 +382,7 @@ function groomJob(t,x,now=new Set()){
       const tp=x.cc.temp,temp=v.temp,zone=temp>=tp.burn?'burn':temp>tp.high?'hot':temp<tp.low?'cold':'ok';
       const condItem=itemInfo(x,'conditioner'),condLocked=(x.room.level||1)<(condItem.unlock||1);
       body=`<div class="tile-grid pc-tiles pc-shampoos">${tiles}</div>
-        <p class="small muted">${x.esc(x.cc.shampoos.find(s=>s.id===v.shampoo)?.note||'Chọn sữa tắm hợp với bé: tuổi, da, loài, đơn thuốc.')}</p>
+        ${tipLine(x.esc(x.cc.shampoos.find(s=>s.id===v.shampoo)?.note||'Chọn sữa tắm hợp với bé: tuổi, da, loài, đơn thuốc.'),'🧴 Sữa tắm')}
         <p class="small pc-bathfacts">${SPECIES_EMOJI[t.needs.species]||''} ${x.esc(x.cc.stage_names?.[t.needs.stage]||'')}${t.facts?.skin==='sensitive'?' · da nhạy cảm':t.facts?.skin?' · da thường':''}${t.needs.rx?' · 💊 có đơn bác sĩ':''}</p>
         <div class="pc-thermo ${zone}"><span>🌡️</span>${stepBtn(x,'−','temp',-1,30,45)}<b>${temp}°C</b>${stepBtn(x,'+','temp',1,30,45)}
           <small>${zone==='ok'?'✓ Ấm vừa':zone==='cold'?'🥶 Lạnh':zone==='hot'?'🥵 Hơi nóng':'⛔ BỎNG!'} · chuẩn ${tp.low}–${tp.high}°C</small></div>
@@ -342,13 +396,13 @@ function groomJob(t,x,now=new Set()){
   }
   if(sv.includes('nails')){
     html+=part(x,t,g.nick&&!g.stanched?new Set(['nails']):now,'nails','✂️ Cắt móng',g.nails?`<p class="small">✓ ${g.nails==='short'?'Cắt ngắn':'Tỉa đầu móng'}.</p>${g.nick?(g.stanched?'<span class="tag amber">🩹 Đã cầm máu — nhớ báo chủ</span>':x.cmd(`🩹 Rắc bột cầm máu (${x.stock('styptic')})`,'pc_styptic',{task:t.id},'danger')):''}`
-      :`<div class="row wrap pc-cuts">${x.cmd('✂️ Tỉa đầu móng','pc_nails',{task:t.id,cut:'tip'},'ghost pc-cut-tip',wet||busy||off)}${x.cmd('✂️ Cắt thật ngắn','pc_nails',{task:t.id,cut:'short'},'ghost pc-cut-short',wet||busy||off)}</div>
+      :`<div class="row wrap pc-cuts">${calmGate(t,'pc_nails',x.cmd('✂️ Tỉa đầu móng','pc_nails',{task:t.id,cut:'tip'},'ghost pc-cut-tip',wet||busy||off),wet||busy||off)}${calmGate(t,'pc_nails',x.cmd('✂️ Cắt thật ngắn','pc_nails',{task:t.id,cut:'short'},'ghost pc-cut-short',wet||busy||off),wet||busy||off)}</div>
        <p class="small muted">${t.facts?.nails==='dark'?'⚫ Móng đen: chỉ tỉa đầu móng.':t.facts?.nails==='clear'?'⚪ Móng trắng, thấy tủy.':'⚫ Móng đen: chỉ tỉa đầu.'}${t.needs.short_nails?' Chủ muốn cắt thật ngắn.':''}${wet?' 💧 Sấy khô trước.':''}</p>`,
       {done:!!g.nails,sum:g.nails?(g.nails==='short'?'cắt ngắn':'tỉa đầu móng')+(g.nick?' · 🩹 rỉ máu':''):wet?'sấy khô trước':''});
   }
   if(sv.includes('ears')){
     html+=part(x,t,now,'ears','👂 Vệ sinh tai',g.ears?`<p class="small">✓ ${g.ears==='clean'?'Đã lau tai':'Bỏ qua lau tai'}.</p>`
-      :`<div class="row wrap pc-ears-opts">${x.cmd(`☁️ Lau tai (bông ${x.stock('cotton')})`,'pc_ears',{task:t.id,how:'clean'},'ghost pc-ears-clean',wet||busy||off||x.stock('cotton')<2)}${x.stock('cotton')<2&&!wet&&!busy&&!off?lackBtn(x,lacks(x,{cotton:2}),t.id):''}${x.cmd('🙅 Bỏ qua — tai có vấn đề','pc_ears',{task:t.id,how:'skip'},'ghost pc-ears-skip',wet||busy||g.bolt)}</div>
+      :`<div class="row wrap pc-ears-opts">${calmGate(t,'pc_ears',x.cmd(`☁️ Lau tai (bông ${x.stock('cotton')})`,'pc_ears',{task:t.id,how:'clean'},'ghost pc-ears-clean',wet||busy||off||x.stock('cotton')<2),wet||busy||off||x.stock('cotton')<2)}${x.stock('cotton')<2&&!wet&&!busy&&!off?lackBtn(x,lacks(x,{cotton:2}),t.id):''}${x.cmd('🙅 Bỏ qua — tai có vấn đề','pc_ears',{task:t.id,how:'skip'},'ghost pc-ears-skip',wet||busy||g.bolt)}</div>
        <p class="small muted">🔴 Tai đỏ, hôi: bỏ qua, báo chủ đi thú y.</p>`,
       {done:!!g.ears,sum:g.ears?(g.ears==='clean'?'đã lau tai':'bỏ qua lau tai'):''});
   }
@@ -375,6 +429,7 @@ function receiptFold(title,body,total){return `<details class="pc-receipt pc-fol
 /** The checklist (the same steps as the bottom bar) folded: "📝 Việc cần làm · còn 3 ▸". */
 function todoFold(x,gd,label='Việc cần làm'){
   const steps=(gd.steps||[]).filter(Boolean),k=steps.filter(s=>s.ok!==true).length;
+  if(clean())return steps.length?stepRows(x,steps,label,{chip:true}):'';
   return `<details class="pc-todo-fold"><summary>📝 ${x.esc(label)} <small>· ${k?`còn ${k}`:'xong hết'}/${steps.length}</small></summary>${stepRows(x,steps,label)}</details>`;
 }
 
@@ -387,7 +442,7 @@ function reportBox(t,x,gd){
   const body=`${seen.length?`<p class="small">Bạn đã thấy: <b>${seen.map(x.esc).join(', ')}</b></p>`:''}
     <div class="stack">${opts.map(r=>`<button type="button" class="pc-say ${say.includes(r.id)?'on':''} ${r.id==='diagnose'?'risky':''}" data-action="car:say" data-id="${x.esc(r.id)}" aria-pressed="${say.includes(r.id)}"><span>${say.includes(r.id)?'☑':'☐'}</span>${x.esc(r.text)}</button>`).join('')}</div>
     <div class="row wrap space-top">${x.cmd(same&&saved.length?'✓ Đã ghi lời báo':'📝 Ghi lời báo','pc_report',{task:t.id,say},same?'ghost small':st(t,x,'report')+' small',same)}</div>
-    <p class="small muted">Chỉ chọn điều đã quan sát hoặc thực sự xảy ra, không chọn hết. “Cắt móng bị chảy máu” chỉ khi có sự cố; “Dừng dịch vụ” chỉ khi bạn đã dừng. Chọn xong bấm Ghi lời báo trước khi trả bé.</p>
+    ${tipLine('Chỉ chọn điều đã quan sát hoặc thực sự xảy ra, không chọn hết. “Cắt móng bị chảy máu” chỉ khi có sự cố; “Dừng dịch vụ” chỉ khi bạn đã dừng. Chọn xong bấm Ghi lời báo trước khi trả bé.','💬 Báo lại cho chủ')}
     <p class="small muted">🩺 Lạ thì khuyên đi thú y, không tự đoán bệnh.</p>`;
   // Open at the report step (or whenever the player opened it); before and after that it is one line.
   const now=gd?.now||new Set(['report']);
@@ -711,16 +766,17 @@ function hintOf(x,gd){
 }
 /** Sticky bottom bar: the next step as one big button (the finish stays a small link when allowed). */
 function barOf(x,gd){
-  if(gd.final)return `<div class="pc-bar">${stepCta(x,gd.steps,gd.final)}</div>`;
+  // The shared bar (ui-kit actBar via guide stepBar): the next step or the finish as the one main button.
+  if(gd.final)return stepBar(x,gd.steps,gd.final,{cls:'pc-bar'});
   const n=pending(gd.steps);
-  return n?.go?`<div class="pc-bar"><button type="button" class="btn primary big grow gd-cta"${goAttrs(n.go)}>${n.go.label||'👉 '+x.esc(n.label)}</button></div>`:'';
+  return n?.go?stepBar(x,gd.steps,null,{cls:'pc-bar'}):'';
 }
 
 const JOBS={groom:[(t,x,now)=>intake(t,x,now)+groomJob(t,x,now),groomSide],board:[boardJob,boardSide],feed:[feedJob,feedSide],adopt:[adoptJob,adoptSide]};
 
 function ticket(t,x){
   const who=x.npc(t.npc),n=t.needs,ci=n.case?x.cc.cases?.[n.case]:null;
-  const pill=`<span class="tag blue">${JOB_ICON[t.job]||''} ${x.esc(x.cc.jobs?.[t.job]||t.job)}</span>`;
+  const pill=clean()?`<span class="pc-tagq">${jobTag(x,t)}${helpQ(x)}</span>`:jobTag(x,t);
   const line=t.job==='adopt'?`<p class="small"><span class="pc-pet">🏡 ${x.esc(n.family)}</span> · ${n.candidates.length} bé đang chờ nhà</p>`
     :`<p class="small"><span class="pc-pet">${SPECIES_EMOJI[n.species]} ${x.esc(n.name)}</span> ${x.esc(n.breed)} · ${age(n.months)}</p>`;
   const reg=t.regular!=null?bookOf(t,x):null;
@@ -801,6 +857,9 @@ export default {
     if(t.known)ui(x,t);
     const gd=t.known?reach(t,x,taskGuide(t,x)):taskGuide(t,x),hint=hintOf(x,gd);
     if(!t.known){
+      // Clean layout: who and their words; the day's theme in "?", the ask as the bar's one main button.
+      if(clean())return `<div class="career-job pc">${hint}${desk}<article class="card ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3><span class="pc-tagq">${jobTag(x,t)}${helpQ(x)}</span></div><p>“${x.esc(t.opening)}”</p></div></div></article>
+        ${kennelBox(x)}${desk?'':barOf(x,gd)}</div>`;
       return `<div class="career-job pc">${hint}${desk}${todayChip(x)}<article class="card ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3><span class="tag blue">${JOB_ICON[t.job]||''} ${x.esc(x.cc.jobs?.[t.job]||t.job)}</span></div><p>“${x.esc(t.opening)}”</p></div></div>${x.cmd('📋 Nhận phiếu','ask',{task:t.id},'primary full pc-ask',!!desk)}</article>
         ${kennelBox(x)}</div>`;
     }
@@ -810,8 +869,8 @@ export default {
     const [main,side]=JOBS[t.job]||JOBS.groom;
     // The shop's other chores sit under the work as one-line folds (khu lưu trú, việc chăm sóc khác, tiệm).
     const extra=t.job==='board'||t.job==='adopt'?'':kennelBox(x);
-    const n=careCount(x),care=n?`<section class="pc-card pc-care-fold">${fold(`📋 Việc chăm sóc khác · ${n} việc`,careBoard(x))}</section>`:'';
-    return `<div class="career-job pc">${hint}${lastDesk(x)}${todayChip(x)}${ticket(t,x)}${regularCard(t,x)}<div class="workbench"><section class="wb-main">${main(t,x,gd.now)}</section><aside class="wb-side">${side(t,x,gd)}</aside></div>
+    const n=careCount(x),care=n?`<section class="pc-card pc-care-fold">${fold(clean()?`📋 <span class="sr-only">Việc chăm sóc khác:</span> ${n}`:`📋 Việc chăm sóc khác · ${n} việc`,careBoard(x))}</section>`:'';
+    return `<div class="career-job pc">${hint}${lastDesk(x)}${clean()?'':todayChip(x)}${ticket(t,x)}${regularCard(t,x)}<div class="workbench"><section class="wb-main">${main(t,x,gd.now)}</section><aside class="wb-side">${side(t,x,gd)}</aside></div>
       <div class="pc-more">${extra}${care}${shopFold(x)}</div>${bar}</div>`;
   },
   tick(root){keepBarAboveFooter(root);},

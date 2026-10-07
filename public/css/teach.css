@@ -19,15 +19,13 @@ html[data-layout="phone"] .tt{--fk-foot:68px}
 .tt-sec-head h3{margin:0;font-size:1rem;line-height:1.3}
 .tt-sec-head small{color:var(--muted);font-weight:700}
 
-/* sticky bar: next step + the main button, above the sheet footer */
-.tt-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:4;display:flex;flex-direction:column;gap:6px;margin:2px -4px 0;padding:8px 10px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--line-strong);box-shadow:0 -6px 18px rgb(0 0 0 / 10%)}
-.tt-bar-row{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap}
-.tt-next{flex:1 1 150px;max-width:none;margin:0;font-size:var(--tt-s);font-weight:700;line-height:1.35}
-.tt-bar-btns{display:flex;gap:8px;flex:1 1 auto;justify-content:flex-end}
-.tt-bar-btns .btn{min-height:48px;font-size:1rem}
-.tt-bar-btns .btn.primary{flex:1 1 auto}
-.tt-bar-btns .btn.ghost{flex:none;min-width:48px;padding-inline:12px}
-.tt-bar-stats{display:flex;gap:6px;flex-wrap:wrap}
+/* sticky bar: the shared .ui-bar (app.css 27e, ui-kit.js actBar); next step left, the main button(s) right */
+.tt-next{margin:0;font-size:var(--tt-s);font-weight:700;line-height:1.35}
+.tt-bar-btns{display:flex;gap:var(--sp-2);flex:1 1 auto;min-width:0}
+.tt-bar-btns .btn{min-height:48px}
+.tt-bar-btns .btn.primary{flex:1 1 auto;min-width:0}
+.tt-bar-btns .btn.ghost{flex:none;min-width:48px;padding-inline:var(--sp-3)}
+.tt-bar-stats{display:flex;gap:6px;flex-wrap:nowrap;overflow:visible}
 .tt-bar-stats span{flex:1 1 auto;padding:2px 8px;border-radius:var(--radius-pill);background:var(--surface-2);font-size:var(--tt-s);font-weight:800;text-align:center;white-space:nowrap}
 .tt-bar-stats span.bad{background:var(--bad-soft);color:var(--bad)}
 
@@ -546,22 +544,25 @@ html.reduce-motion .tt-meter b,html.reduce-motion .tt-card{transition:none}
 .cl-tab.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
 .cl-tab em{display:inline-block;min-width:20px;padding:0 5px;border-radius:99px;background:var(--warn);color:#fff;font-style:normal;font-size:.75rem}
 .tt-fold>.fold-body[hidden]{display:none}
-/* F#211 (iPhone 390×797, "các lựa chọn cứ xếp chồng lên nhau"): on a phone the sticky bar is one row (compact.css)
-   whose parts are capped at 42% and clamped, so the three plan slots stood in a narrow column over the cards and
-   the bar's next-step line and button piled up. On a phone the slots sit inline above the cards and the bar keeps
-   the next step and the button, full width. (!important: compact.css's phone bar rule is far more specific.) */
+/* F#211 (iPhone 390×797, "các lựa chọn cứ xếp chồng lên nhau"): on a phone the three plan slots sit inline above
+   the cards; the bar (the shared .ui-bar, app.css 27e) keeps the next step and the button in one row. */
 .tt-tray.tt-tray-inline{display:none}
 html[data-layout="phone"] .tt-tray.tt-tray-inline{display:grid}
-html[data-layout="phone"] .tt-bar>.tt-tray{display:none!important}
-html[data-layout="phone"] dialog.sheet .tt-bar>.tt-bar-row{flex:1 1 auto!important;max-width:none!important;display:flex!important;overflow:visible!important;font-size:inherit!important}
-html[data-layout="phone"] dialog.sheet .tt-bar .tt-next{font-size:.875rem;line-height:1.3}
-html[data-layout="phone"] dialog.sheet .tt-bar-btns .btn{min-height:44px}
+html[data-layout="phone"] .tt-bar .tt-tray{display:none}
 dialog.sheet:has(.tt-bar){scroll-padding-bottom:150px}  /* a control scrolled into view (focus, guide) stops above the bar */
-/* Tour guide, same squeeze as F#211: on a phone compact.css put the route totals (⏱ phút · 🎟 xu · 😊 khách) beside the
-   bar row, capped at 42% and clamped, so only ⏱ showed (🎟 and 😊 were cut off) and the next step and the button piled
-   up in the other 58% (bar 97 px at 390×844). The totals are what the player steers by while tapping places, so they
-   stay in the bar, on their own full-width line above the next step and the button, which get the full width back.
-   (!important: compact.css's phone bar rule is far more specific.) */
-html[data-layout="phone"] dialog.sheet .tt-trip .tt-bar{flex-wrap:wrap!important;row-gap:4px}
-html[data-layout="phone"] dialog.sheet .tt-trip .tt-bar>.tt-bar-stats{flex:1 1 100%!important;max-width:none!important;display:flex!important;flex-wrap:nowrap;gap:4px;overflow:visible!important;font-size:inherit!important;line-height:inherit!important}
+/* Tour guide: the route totals (⏱ phút · 🎟 xu · 😊 khách) are the bar's top row (.ui-bar-top, full width), the next
+   step and the button share the row under it. */
 html[data-layout="phone"] dialog.sheet .tt-trip .tt-bar-stats span{padding:1px 6px;font-size:.8rem}
+/* Clean layout (UI wave 5, docs/UI_KIT.md): one number per period in the timetable, the meter's name as an icon, the
+   rules behind a "?" on the board, places and itinerary rows as icons and numbers. Only drawn when clean() is on. */
+.tt-periods-mini>li{flex:0 0 auto}
+.tt-toprow .tt-periods-mini .tt-period,.tt-periods-mini .tt-period{min-width:44px;align-items:center;justify-content:center;padding:4px 10px}
+.tt-periods-mini .tt-period b{font-size:var(--fs-3,1rem)}
+.tt-toprow .tt-periods-wrap:has(.tt-periods-mini){flex:0 1 auto}
+.tt-toprow:has(.tt-periods-mini) .tt-hud{margin-left:auto}
+html[data-clean] .tt-toprow .tt-meter>span,html[data-clean] .tt-trip-top .tt-meter>span{grid-column:auto;font-size:1rem}
+html[data-clean] .tt-toprow .tt-meter,html[data-clean] .tt-trip-top .tt-meter{grid-template-columns:auto 1fr auto;width:110px}
+.tt-board-foot .ui-q{min-width:44px;min-height:44px;margin-left:auto;color:#f7e6b5;border-color:#f7e6b544}
+.tt-trip-top .ui-q{min-width:44px;min-height:44px}
+.tt-roll{padding-top:0}
+.tt-quote-mini{margin:0;font-size:1.1rem}

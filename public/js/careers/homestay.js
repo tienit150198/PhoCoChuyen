@@ -2,8 +2,10 @@
  *  lost-and-found calls and the surprises that walk in at the counter. */
 const PAN_SCALE=24;   // seconds shown on the frying-pan bar
 const AIR_SCALE=120;  // seconds shown on the window-airing bar
-import {reqList} from '../ui-kit.js';
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
+import {reqList,clean,helpBtn,whyAttrs,headChip} from '../ui-kit.js';
+/** ui-kit clean() (the "Giao diện gọn" layout), false where there is no page (render tests with a stub document). */
+const isClean=()=>{try{return clean();}catch{return false;}};
+import {stepRows,nextHint,stepBar,finalGo,pending,firstTime,todoAttrs,todoArrow,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tray,tillActions} from './till.js';
 import {restockGo} from '../v4/restock.js';
@@ -62,13 +64,19 @@ function step(n,title,done,body){
  * (their controls only work once the earlier steps are done). cards: [{n,title,done,body,keep}],
  * keep = stays open when done (its result is needed by the step in hand). */
 function stepRun(x,cards,{seq=false}={}){
-  const list=cards.filter(Boolean),cur=list.findIndex(c=>!c.done);
+  const list=cards.filter(Boolean),cur=list.findIndex(c=>!c.done),C=isClean();
+  // Clean layout (UI wave 5): the finished steps are one row of "✓ n" buttons (each still unfolds its result).
+  const shut=(c,i)=>c.done&&!c.keep&&!(x.ui.open||{})['st'+i];
+  const firstShut=list.findIndex(shut);
   return list.map((c,i)=>{
+    if(C&&shut(c,i))return i!==firstShut?'':`<p class="hs-donerow">${list.map((v,k)=>shut(v,k)?carBtn(x,`<span class="hs-num">✓${v.n}</span>`,'fold',{key:'st'+k,open:''},'hs-done-btn',` aria-expanded="false" aria-label="${x.esc(v.title.replace(/<[^>]*>/g,''))}"`):'').join('')}</p>`;
     if(c.done&&!c.keep){
       const key='st'+i,open=!!(x.ui.open||{})[key];
       return `<section class="hs-step-card done folded">${carBtn(x,`<span class="hs-num">✓</span><span class="grow">${c.title}</span><i aria-hidden="true">${open?'▴':'▾'}</i>`,'fold',{key,open:open?'1':''},'hs-step-head',` aria-expanded="${open}"`)}${open?`<div class="hs-step-body">${c.body}</div>`:''}</section>`;
     }
-    if(seq&&cur>=0&&i>cur)return `<section class="hs-step-card later" aria-disabled="true"><h4 class="section-title"><span class="hs-num">${c.n}</span>${c.title}</h4></section>`;
+    // Clean layout (UI wave 5): the steps after the one in hand are just their numbers (the bar names the next one).
+    if(seq&&cur>=0&&i>cur)return C?(i===cur+1?`<p class="hs-later" aria-label="${x.esc('Còn: '+list.slice(cur+1).map(v=>v.title.replace(/<[^>]*>/g,'')).join(', '))}">${list.slice(cur+1).map(v=>`<span class="hs-num">${v.n}</span>`).join('')}</p>`:'')
+      :`<section class="hs-step-card later" aria-disabled="true"><h4 class="section-title"><span class="hs-num">${c.n}</span>${c.title}</h4></section>`;
     return step(c.n,c.title,c.done,c.body);
   }).join('');
 }
@@ -96,7 +104,8 @@ function focus(t,x){
   if(t.job==='claim')return '';
   return 'advise';
 }
-const st=(t,x,key,alt='ghost')=>focus(t,x)===key?'primary':alt;
+// Clean layout: the bar's button is the one primary; the card's own buttons stay secondary.
+const st=(t,x,key,alt='ghost')=>focus(t,x)===key&&!isClean()?'primary':alt;
 
 /* ---------------------------------------------------------------- the day, the counter */
 function todayChip(x){
@@ -110,7 +119,7 @@ function todayLine(x){
   const d=x.room.data||{},m=d.mod;if(!m)return '';
   const open=!!(x.ui.open||{}).today,rv=d.rating_view,tr=rv?.trend||0;
   const score=d.score!=null?`<span class="hs-score">⭐ ${Number(d.score).toFixed(1)}${tr?` <small class="${tr>0?'hs-up':'hs-down'}">${tr>0?'↑':'↓'}${Math.abs(tr).toFixed(1)}</small>`:''}</span>`:'';
-  return `<div class="hs-todayline ${open?'open':''}">${carBtn(x,`<span aria-hidden="true">${x.esc(m.emoji)}</span> <b class="grow">Hôm nay: ${x.esc(m.title)}</b>${score}<i aria-hidden="true">${open?'▴':'▾'}</i>`,'fold',{key:'today',open:open?'1':''},'hs-step-head',` aria-expanded="${open}"`)}${open?todayChip(x):''}</div>`;
+  return `<div class="hs-todayline ${open?'open':''}">${carBtn(x,`<span aria-hidden="true">${x.esc(m.emoji)}</span> <b class="grow">${isClean()?'':'Hôm nay: '}${x.esc(m.title)}</b>${score}<i aria-hidden="true">${open?'▴':'▾'}</i>`,'fold',{key:'today',open:open?'1':''},'hs-step-head',` aria-expanded="${open}"`)}${open?todayChip(x):''}</div>`;
 }
 function deskCard(x){
   const ev=x.room.data?.desk?.ev;if(!ev)return '';
@@ -120,11 +129,19 @@ function deskCard(x){
     <p>${x.esc(ev.text)}</p><div class="hs-opts">${opts}</div></section>`;
 }
 function lastDesk(x){const l=x.room.data?.desk?.last;if(!l||l.day!==x.room.day)return '';return `<p class="hs-last ${l.good===true?'good':l.good===false?'bad':''}" aria-live="polite"><span aria-hidden="true">${x.esc(l.emoji)}</span> <b>${x.esc(l.title)}:</b> ${x.esc(l.outcome)}</p>`;}
+/* Clean layout (UI wave 5): the safety log and the stock room are icon buttons (their words in aria-label and title),
+ * the house rules sit behind a "?" with the explanations this screen folded away. */
+const named=(html,say)=>html.replace('<button',`<button aria-label="${say}" title="${say}"`);
 function foot(x){
   const d=x.room.data||{},busy=deskOpen(x);
+  if(isClean()){
+    const safe=d.safe_today?'✅ Đã ký sổ an toàn hôm nay':'🧯 Kiểm tra an toàn & ký sổ';
+    return `<p class="row wrap hs-foot hs-foot-mini">${named(x.cmd(d.safe_today?'✅':'🧯','hs_safety',{},'ghost small',!!d.safe_today||busy),x.esc(safe))}${named(x.button('📦','inventory',{},'ghost small'),'Kho &amp; nhập hàng')}${rulesHelp(x)}</p>`;
+  }
   return `<p class="row wrap hs-foot">${x.cmd(d.safe_today?'✅ Đã ký sổ an toàn hôm nay':'🧯 Kiểm tra an toàn & ký sổ','hs_safety',{},'ghost small',!!d.safe_today||busy)}${x.button('📦 Kho & nhập hàng','inventory',{},'ghost small')}</p>`;
 }
-function rules(x){return `<details class="hs-rules fold gd-rules"><summary>📜 Quy tắc</summary><ul>${(x.cc.rules||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul></details>`;}
+const rulesHelp=x=>helpBtn('hs-rules','🏡 Homestay',[{title:'📜 Quy tắc',body:`<ul>${(x.cc.rules||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul>`}],{tips:true,cls:'hs-q'});
+function rules(x){return isClean()?'':`<details class="hs-rules fold gd-rules"><summary>📜 Quy tắc</summary><ul>${(x.cc.rules||[]).map(r=>`<li>${x.esc(r)}</li>`).join('')}</ul></details>`;}
 
 /* ---------------------------------------------------------------- app orders (OTA inbox) */
 const pendingOrders=x=>(x.room.data?.ota||[]).filter(o=>o.status==='new');
@@ -135,6 +152,8 @@ function waiting(x,skip=''){
   const who=list.map(t=>`${x.esc(x.npc(t.npc)?.display_name||'Khách')}${t.needs?` (${counted(x,t.needs.adults,t.needs.kids)} người × ${t.needs.nights} đêm)`:''}`).join(', ');
   return `<p class="hs-warn">🧳 Còn khách chờ nhận phòng hôm nay: ${who}. Chừa phòng cho họ trước khi nhận đơn mới.</p>`;
 }
+/** The server's pre-check for handing a room to check-in `t` (data.can.hs_assign[task][room]): {why, fix} or null. */
+const assignWhy=(x,t)=>{const m=x.room.data?.can?.hs_assign?.[t.id]||{};return id=>{const v=m[id];return v&&v!==true&&v.why?v:null;};};
 function roomFree(x,rid,start,nights,skip){
   return holdBlock(x,rid,start,nights,'',skip);
 }
@@ -181,6 +200,7 @@ const otaClashes=x=>pendingOrders(x).filter(o=>roomFree(x,o.room,o.start,o.night
 function otaBadge(x){
   const n=pendingOrders(x).length;if(!n)return '';
   const bad=otaClashes(x);
+  if(isClean())return ` <span class="hs-ota-badge ${bad?'bad':''}" aria-label="${n} đơn chờ${bad?`, ${bad} trùng`:''}">📥 ${n}${bad?` · ⚠️ ${bad}`:''}</span>`;
   return ` <span class="hs-ota-badge ${bad?'bad':''}">📥 ${n} đơn chờ${bad?` · ⚠️ ${bad} trùng`:''}</span>`;
 }
 function otaPanel(x,open=false){
@@ -367,19 +387,23 @@ function checkinJob(t,x){
   const n=t.needs,ci=t.ci,d=x.room.data,sel=selection(x,t);
   const booked=counted(x,n.adults,n.kids),arr=t.arrived?counted(x,t.arrived.adults,t.arrived.kids):null,extra=arr!==null?arr-booked:0;
   const staying=ci.extra==='refuse'?booked:(arr??booked);
-  const list=n.list.map(e=>`<button type="button" class="hs-entry ${ci.verified&&e.code===n.code&&e.start===t.day?'ok':''}" data-entry="${x.esc(e.id)}" ${cmdAttr(x,'hs_verify',{task:t.id,entry:e.id})} ${ci.verified?'disabled':''}>
-      <b>${x.esc(e.id)}</b><span class="grow">${x.esc(e.name)} · <code>${x.esc(e.code)}</code><small>nhận ngày ${e.start}${e.start===d.today?' (hôm nay)':''} · ${e.nights} đêm · ${e.guests} khách</small></span></button>`).join('');
+  // Clean layout (UI wave 5): every row keeps what the right booking is told apart by (the name to the last accent,
+  // the code, the check-in day) and its nights and guests, as icons and numbers; the full line is the aria-label.
+  const C=isClean(),dayWord=day=>day===d.today?'Nay':'N'+day;
+  const list=n.list.map(e=>{const say=`${e.id}: ${e.name} · ${e.code} · nhận ngày ${e.start}${e.start===d.today?' (hôm nay)':''} · ${e.nights} đêm · ${e.guests} khách`;
+    return `<button type="button" class="hs-entry ${ci.verified&&e.code===n.code&&e.start===t.day?'ok':''}" data-entry="${x.esc(e.id)}" ${cmdAttr(x,'hs_verify',{task:t.id,entry:e.id})} ${ci.verified?'disabled':''}${C?` aria-label="${x.esc(say)}"`:''}>
+      ${C?'':`<b>${x.esc(e.id)}</b>`}<span class="grow">${x.esc(e.name)} · <code>${x.esc(e.code)}</code>${C?`<small aria-hidden="true">📅 ${dayWord(e.start)} · 🌙${e.nights} · 👤${e.guests}</small>`:`<small>nhận ngày ${e.start}${e.start===d.today?' (hôm nay)':''} · ${e.nights} đêm · ${e.guests} khách</small>`}</span></button>`;}).join('');
   let proof='';
   if(n.proof==='bank'){
     const res={ok:['green','🏦 Sao kê đã có khoản cọc — đối chiếu xong.'],missing:['danger','🏦 Sao kê KHÔNG có khoản cọc: chuyển nhầm số tài khoản. Thu đủ tại quầy.']}[t.bank];
     proof=`<div class="hs-proof"><p class="small">💸 Cọc ${x.money(n.paid)} chuyển khoản qua ${x.esc(n.platform)} — khách đưa <b>ảnh chụp màn hình</b>.</p>${res?`<p class="tag ${res[0]}">${res[1]}</p>`:x.cmd('🏦 Mở app ngân hàng đối chiếu','hs_bank',{task:t.id},'ghost small')}</div>`;
   }
-  const s1=({n:1,title:'Khớp đặt phòng trên app',done:ci.verified&&(n.proof!=='bank'||!!t.bank),body:`<p class="small">🔎 <b>${x.esc(n.code)}</b> · <b>${x.esc(n.name)}</b> · hôm nay</p><div class="stack hs-entries">${list}</div>${proof}`});
+  const s1=({n:1,title:C?'Khớp mã':'Khớp đặt phòng trên app',done:ci.verified&&(n.proof!=='bank'||!!t.bank),body:`<p class="small">🔎 <b>${x.esc(n.code)}</b> · <b>${x.esc(n.name)}</b> · ${C?'📅 Nay':'hôm nay'}</p><div class="stack hs-entries">${list}</div>${proof}`});
   const idText={ok:'Người lớn đều có giấy tờ tùy thân.',app:'Khách dùng ứng dụng định danh điện tử thay thẻ giấy — hợp lệ.'}[t.id_status]||'';
-  const s2=({n:2,title:'Giấy tờ & khai báo lưu trú',done:!!ci.ids,body:ci.ids?`<p class="small">🪪 ${x.esc(idText)} Đã khai báo lưu trú. <b>Không</b> ghi hay chụp số giấy tờ.</p>`:
-    `<div class="row wrap">${x.cmd('👀 Xem giấy tờ & khai báo','hs_ids',{task:t.id,mode:'look'},st(t,x,'ids'),!ci.verified)}${x.cmd('📸 Chụp lưu giấy tờ vào máy','hs_ids',{task:t.id,mode:'photo'},'ghost small',!ci.verified)}</div><p class="small muted">🔒 Chỉ xem, không lưu.</p>`});
+  const s2=({n:2,title:C?'Giấy tờ':'Giấy tờ & khai báo lưu trú',done:!!ci.ids,body:ci.ids?`<p class="small">🪪 ${x.esc(idText)} Đã khai báo lưu trú. <b>Không</b> ghi hay chụp số giấy tờ.</p>`:
+    `<div class="row wrap">${x.cmd(C?'👀 Xem & khai báo':'👀 Xem giấy tờ & khai báo','hs_ids',{task:t.id,mode:'look'},st(t,x,'ids'),!ci.verified)}${x.cmd(C?'📸 Chụp lưu giấy tờ':'📸 Chụp lưu giấy tờ vào máy','hs_ids',{task:t.id,mode:'photo'},'ghost small',!ci.verified)}</div>${C?'':'<p class="small muted">🔒 Chỉ xem, không lưu.</p>'}`});
   let s3body;
-  if(!ci.counted)s3body=x.cmd('🧮 Đếm khách đang đứng ở quầy','hs_count',{task:t.id},st(t,x,'count'),!ci.verified);
+  if(!ci.counted)s3body=C?'':x.cmd('🧮 Đếm khách đang đứng ở quầy','hs_count',{task:t.id},st(t,x,'count'),!ci.verified);   // clean: one tap, the bar's
   else{
     const kids=t.arrived.kids.length?`, ${t.arrived.kids.length} bé (${t.arrived.kids.join(', ')} tuổi)`:'';
     s3body=`<p class="small">👥 Có mặt ${t.arrived.adults} người lớn${x.esc(kids)} → <b>${arr} người tính chỗ</b> (đặt ${booked}).${t.arrived.kids.length?` <span class="muted">Bé dưới ${x.cc.kid_free_age} tuổi ngủ chung không tính.</span>`:''}</p>`;
@@ -387,14 +411,19 @@ function checkinJob(t,x){
       `<div class="notice amber">Dư ${extra} người so với đặt phòng.</div><div class="row wrap hs-extra">${x.cmd(`➕ Phụ thu ${x.cc.extra_guest} xu/người/đêm`,'hs_extra',{task:t.id,choice:'surcharge'},'ghost small')}${x.cmd('🙅 Chỉ nhận đúng số đã đặt','hs_extra',{task:t.id,choice:'refuse'},'ghost small')}</div>`;
   }
   const s3={n:3,title:'Đếm khách',done:!!(ci.counted&&ci.extra),body:s3body};
-  const busyOf=id=>(d.grid?.[id]||[]).slice(0,n.nights).some(c=>c.kind!=='free')||!['clean','dirty'].includes(d.rooms[id].status);
+  // The server's own pre-check per room (homestay.py _assign_room_rules → data.can.hs_assign): a room an app order is
+  // still waiting to sync into (the calendar does not show it yet) is dimmed with the refusal's words, never sent.
+  const blockWhy=assignWhy(x,t);
+  const busyOf=id=>(d.grid?.[id]||[]).slice(0,n.nights).some(c=>c.kind!=='free')||!['clean','dirty'].includes(d.rooms[id].status)||!!blockWhy(id);
   const dirtyOf=id=>d.rooms[id].status==='dirty';
   const fav=(d.book||[]).find(b=>b.npc===t.npc)?.fav;
   const tiles=x.cc.rooms.map(r=>{
     const room=d.rooms[r.id],locked=r.unlock>d.level;
-    const busy=busyOf(r.id);
+    if(C&&locked)return '';   // clean layout: a room not open yet is not a choice
+    const busy=busyOf(r.id),why=!locked&&blockWhy(r.id);
     const on=sel.includes(r.id)||(!sel.length&&ci.rooms.includes(r.id));
-    return `<button type="button" class="tile ${on?'selected':''} ${locked?'locked':''} ${busy?'empty':''}" data-action="car:sel" data-task="${x.esc(t.id)}" data-room="${x.esc(r.id)}" aria-pressed="${on}" ${locked||(busy&&!on)?'disabled':''}><span class="tile-emoji">${r.emoji}</span><b>${x.esc(r.name)}</b>${fav===r.id?'<small class="hs-fav">⭐ phòng quen</small>':''}<small>${locked?'🔒 cấp '+r.unlock:busy?x.esc(STATUS[room.status]?.[0]||'')+(room.status==='clean'?' · vướng lịch':''):room.status==='dirty'?`🧹 Cần dọn · ${r.cap} người`:r.cap+' người'}</small></button>`;
+    const dim=why&&!on;   // dimmed but tappable: a tap says why (ui-kit whyTap)
+    return `<button type="button" class="tile ${on?'selected':''} ${locked?'locked':''} ${busy?'empty':''}${dim?' is-why':''}" data-action="car:sel" data-task="${x.esc(t.id)}" data-room="${x.esc(r.id)}" aria-pressed="${on}" ${locked||(busy&&!on&&!dim)?'disabled':''}${dim?whyAttrs(why):''}><span class="tile-emoji">${r.emoji}</span><b>${x.esc(r.name)}</b>${fav===r.id?'<small class="hs-fav">⭐ phòng quen</small>':''}<small>${locked?'🔒 cấp '+r.unlock:busy?(why&&/chờ đồng bộ/.test(why.why)?'📥 Đơn chờ':x.esc(STATUS[room.status]?.[0]||'')+(room.status==='clean'?' · vướng lịch':'')):room.status==='dirty'?`🧹 Cần dọn · ${r.cap} người`:r.cap+' người'}</small></button>`;
   }).join('');
   const pick=sel.length?sel:ci.rooms,cap=pick.reduce((a,id)=>a+roomInfo(x,id).cap,0),stale=pick.filter(id=>!ci.rooms.includes(id)&&busyOf(id));
   const given=ci.rooms.length>0&&(!sel.length||(sel.length===ci.rooms.length&&sel.every(id=>ci.rooms.includes(id))));
@@ -403,9 +432,12 @@ function checkinJob(t,x){
   const fee=(x.cc.walk_fee||15)+(t.bank==='missing'?0:n.paid);
   const walk=full?`<div class="notice amber space-top">Hết phòng trống ${n.nights} đêm cho ${staying} người.</div>
     <div class="row wrap">${x.confirmCmd(`🏡 Chuyển sang Nhà Gỗ Cô Ba (−${fee} xu)`,'hs_relocate',{task:t.id},`Chỉ chọn khi không còn phòng nào dọn kịp hay sắp trả. Xin lỗi ${n.name}, hoàn cọc và trả ${x.cc.walk_fee||15} xu chênh lệch + taxi?`,'ghost small')}</div>`:'';
-  const s4=({n:4,title:n.size>staying?`Giao phòng (${n.nights} đêm, cần chỗ cho ${staying} người, khách đặt phòng ${n.size} người)`:`Giao phòng (${n.nights} đêm, cần chỗ cho ${staying} người)`,done:given,body:`<div class="tile-grid hs-tiles">${tiles}</div>
-    <div class="row wrap space-top">${x.cmd(`🗝️ Giao ${pick.length?pick.map(id=>x.esc(roomInfo(x,id).name)).join(' + '):'phòng'} (${cap} chỗ)`,'hs_assign',{task:t.id,rooms:pick},st(t,x,'assign'),!(ci.counted&&ci.extra)||!pick.length||given||stale.length>0||(!given&&cap<staying))}</div>${stale.length?`<p class="small hs-warn">${x.esc(stale.map(id=>roomInfo(x,id).name).join(', '))} chưa sạch hoặc chưa trống — bỏ chọn, dọn xong rồi giao.</p>`:''}${!given&&pick.length&&cap<staying&&!stale.length?`<p class="small hs-warn">Mới đủ ${cap}/${staying} chỗ — chọn thêm một phòng (tối đa 2).</p>`:''}${pick.some(dirtyOf)?`<p class="small hs-warn">🧹 ${x.esc(pick.filter(dirtyOf).map(id=>roomInfo(x,id).name).join(', '))} chưa dọn — khách vào là thấy ngay. Dọn xong rồi hẵng trao chìa khóa.</p>`:''}${walk}`});
-  const s5=n.cold?{n:5,title:'Máy sưởi đêm lạnh',done:!!ci.heater,body:ci.heater?'<p class="small">🔥 Đã lắp gas, thử lửa, mở hé cửa thông gió.</p>':x.cmd(`🔥 Lắp gas máy sưởi (${x.stock('heater_gas')} bình)`,'hs_heater',{task:t.id},st(t,x,'heater',''),!ci.rooms.length||!x.stock('heater_gas'))}:null;
+  // Clean layout: the nights and the seats needed (and the size booked when larger) as icons and numbers.
+  const s4title=C?`Giao phòng · 🌙${n.nights} · 👤${staying}${n.size>staying?` (đặt ${n.size})`:''}`
+    :n.size>staying?`Giao phòng (${n.nights} đêm, cần chỗ cho ${staying} người, khách đặt phòng ${n.size} người)`:`Giao phòng (${n.nights} đêm, cần chỗ cho ${staying} người)`;
+  const s4=({n:4,title:s4title,done:given,body:`<div class="tile-grid hs-tiles">${tiles}</div>
+    ${C?'':`<div class="row wrap space-top">${x.cmd(`🗝️ Giao ${pick.length?pick.map(id=>x.esc(roomInfo(x,id).name)).join(' + '):'phòng'} (${cap} chỗ)`,'hs_assign',{task:t.id,rooms:pick},st(t,x,'assign'),!(ci.counted&&ci.extra)||!pick.length||given||stale.length>0||(!given&&cap<staying))}</div>`}${stale.length?`<p class="small hs-warn">${stale.some(blockWhy)?x.esc(stale.map(id=>blockWhy(id)?.why).filter(Boolean).join(' ')):`${x.esc(stale.map(id=>roomInfo(x,id).name).join(', '))} chưa sạch hoặc chưa trống — bỏ chọn, dọn xong rồi giao.`}</p>`:''}${!given&&pick.length&&cap<staying&&!stale.length?`<p class="small hs-warn">Mới đủ ${cap}/${staying} chỗ — chọn thêm một phòng (tối đa 2).</p>`:''}${pick.some(dirtyOf)?`<p class="small hs-warn">🧹 ${x.esc(pick.filter(dirtyOf).map(id=>roomInfo(x,id).name).join(', '))} chưa dọn — khách vào là thấy ngay. Dọn xong rồi hẵng trao chìa khóa.</p>`:''}${walk}`});
+  const s5=n.cold?{n:5,title:C?'Máy sưởi':'Máy sưởi đêm lạnh',done:!!ci.heater,body:ci.heater?'<p class="small">🔥 Đã lắp gas, thử lửa, mở hé cửa thông gió.</p>':C?'':x.cmd(`🔥 Lắp gas máy sưởi (${x.stock('heater_gas')} bình)`,'hs_heater',{task:t.id},st(t,x,'heater',''),!ci.rooms.length||!x.stock('heater_gas'))}:null;
   return stepRun(x,[s1,s2,s3,s4,s5],{seq:true});
 }
 function checkinSide(t,x){
@@ -418,12 +450,14 @@ function checkinSide(t,x){
     [ci.rooms.length?true:null,'Phòng sạch, trống đủ đêm',ci.rooms.map(id=>roomInfo(x,id).name).join(' + ')]];
   if(n.proof==='bank')rows.splice(1,0,[t.bank?true:null,'Đối chiếu cọc trên app ngân hàng',t.bank==='missing'?'khoản cọc chưa từng về':'']);
   if(n.cold)rows.push([ci.heater||null,'Máy sưởi (trời lạnh)','']);
-  return `<div class="hs-receipt"><h4>🧾 Phiếu thu nhận phòng</h4>
+  // Clean layout: the receipt is a header chip with the amount to take (the final confirm says it again).
+  const chip=isClean()?headChip('🧾',String(due),'.hs-receipt.ui-chipped',{label:`Phiếu thu nhận phòng: thu tại quầy ${due} xu`}):'';
+  return `${chip}<div class="hs-receipt${chip?' ui-chipped':''}"><h4>🧾 Phiếu thu nhận phòng</h4>
     <div class="kv"><span>${n.nights} đêm × ${n.rate} xu</span><b>${x.money(n.rate*n.nights)}</b></div>
     ${n.paid?`<div class="kv"><span>${paidLabel}</span><b>−${x.money(credit)}</b></div>`:''}
     ${extra?`<div class="kv"><span>Phụ thu ${extra} người × ${n.nights} đêm</span><b>${x.money(x.cc.extra_guest*extra*n.nights)}</b></div>`:''}
     <div class="kv total"><span>Thu tại quầy</span><b>${x.money(due)}</b></div></div>
-    ${stepRows(x,checkinSteps(t,x),'Việc nhận phòng')}`;
+    ${stepRows(x,checkinSteps(t,x),'Việc nhận phòng',{chip:isClean()})}`;
 }
 
 function checkoutJob(t,x){
@@ -450,8 +484,9 @@ function checkoutSide(t,x){
   const rows=x.cc.bill_lines.filter(l=>t.bill[l.id]).map(l=>`<div class="kv"><span>${l.emoji} ${x.esc(l.name)} × ${t.bill[l.id]}</span><b>${x.money(l.price*t.bill[l.id])}</b></div>`).join('');
   const total=x.cc.bill_lines.reduce((a,l)=>a+l.price*(t.bill[l.id]||0),0);
   const pay=!t.checked||!total?'':t.pay==='cash'?cashPanel(x,t.id,t.cash):'<p class="small hs-pay">📱 Khách chuyển khoản khi nhận hóa đơn.</p>';
-  return `<div class="hs-receipt"><h4>🧾 Hóa đơn trả phòng</h4>${rows||'<p class="small muted">Chưa có dòng nào. Tiền phòng đã thu khi nhận phòng.</p>'}<div class="kv total"><span>Tổng</span><b>${x.money(total)}</b></div></div>
-    ${pay}${stepRows(x,checkoutSteps(t,x),'Việc trả phòng')}${t.disputes?`<p class="small hs-warn">Khách đã chỉ ra hóa đơn sai ${t.disputes} lần.</p>`:''}`;
+  const chip=isClean()?headChip('🧾',String(total),'.hs-receipt.ui-chipped',{label:`Hóa đơn trả phòng: tổng ${total} xu`}):'';
+  return `${chip}<div class="hs-receipt${chip?' ui-chipped':''}"><h4>🧾 Hóa đơn trả phòng</h4>${rows||'<p class="small muted">Chưa có dòng nào. Tiền phòng đã thu khi nhận phòng.</p>'}<div class="kv total"><span>Tổng</span><b>${x.money(total)}</b></div></div>
+    ${pay}${stepRows(x,checkoutSteps(t,x),'Việc trả phòng',{chip:isClean()})}${t.disputes?`<p class="small hs-warn">Khách đã chỉ ra hóa đơn sai ${t.disputes} lần.</p>`:''}`;
 }
 
 function breakfastJob(t,x){
@@ -519,9 +554,11 @@ function recommendJob(t,x){
   const avoid=new Set([...n.avoid,...Object.values(ans).flatMap(a=>a.avoid)]),wants=new Set([...n.wants,...Object.values(ans).flatMap(a=>a.want)]);
   const probes=x.cc.probes.map(p=>ans[p.id]?`<p class="hs-ans"><b>${p.emoji} ${x.esc(p.label)}</b> ${x.esc(ans[p.id].answer)}</p>`:
     x.cmd(`${p.emoji} ${x.esc(p.label)}`,'hs_probe',{task:t.id,q:p.id},'ghost small')).join('');
+  // A fourth place: dimmed with the server's own words (homestay.py _pick_more_rules → t.can.hs_pick), never sent.
+  const more=t.can?.hs_pick;
   const places=x.cc.places.map(p=>{
-    const on=t.picks.includes(p.id),clash=p.tags.filter(tag=>avoid.has(tag));
-    return `<button type="button" class="hs-place ${on?'selected':''} ${clash.length?'clash':''}" ${cmdAttr(x,'hs_pick',{task:t.id,place:p.id})} aria-pressed="${on}">
+    const on=t.picks.includes(p.id),clash=p.tags.filter(tag=>avoid.has(tag)),dim=!on&&more&&more!==true;
+    return `<button type="button" class="hs-place ${on?'selected':''} ${clash.length?'clash':''}${dim?' is-why':''}" ${cmdAttr(x,'hs_pick',{task:t.id,place:p.id})} aria-pressed="${on}"${dim?whyAttrs(more):''}>
       <span class="tile-emoji">${p.emoji}</span><b>${x.esc(p.name)}</b><small class="hs-blurb" title="${x.esc(p.blurb)}">${x.esc(p.blurb)}</small>
       <span class="hs-tags">${p.tags.map(tag=>`<i class="${avoid.has(tag)?'bad':wants.has(tag)?'good':''}">${x.esc(x.cc.tag_names[tag]||tag)}</i>`).join('')}</span></button>`;}).join('');
   const asked=Object.keys(ans).length;
@@ -534,7 +571,7 @@ function recommendSide(t,x){
   const tagsOf=id=>x.cc.places.find(p=>p.id===id)?.tags||[];
   const rows=wants.map(w=>[t.picks.length?t.picks.some(id=>tagsOf(id).includes(w)):null,'Có nơi '+(x.cc.tag_names[w]||w),'']).concat(avoid.map(a=>[t.picks.length?!t.picks.some(id=>tagsOf(id).includes(a)):null,'Tránh: '+(x.cc.tag_names[a]||a),'']));
   return `<div class="hs-receipt"><h4>🗺️ Lịch trình vẽ tay</h4>${t.picks.map((id,i)=>{const p=x.cc.places.find(v=>v.id===id);return `<div class="kv"><span>${i+1}. ${p.emoji} ${x.esc(p.name)}</span></div>`;}).join('')||'<p class="small muted">Chưa chọn nơi nào.</p>'}</div>
-    ${stepRows(x,recommendSteps(t,x),'Việc gợi ý')}${checklist(x,rows.map(r=>[...r,{sel:'.hs-places'}]))}`;
+    ${stepRows(x,recommendSteps(t,x),'Việc gợi ý',{chip:isClean()})}${checklist(x,rows.map(r=>[...r,{sel:'.hs-places'}]))}`;
 }
 
 function claimJob(t,x){
@@ -579,14 +616,15 @@ function hkSteps(x,rid){
 function checkinSteps(t,x){
   const n=t.needs,ci=t.ci,d=x.room.data,id=t.id,first=firstTime(x),rows=[];
   const right=n.list.find(e=>e.code===n.code&&e.name===n.name&&e.start===d.today);
-  rows.push({ok:ci.verified||null,label:`Khớp mã ${n.code} trên app`,go:first&&right?{cmd:'hs_verify',payload:{task:id,entry:right.id},label:`🔎 Chọn dòng ${right.id} · ${x.esc(n.code)} · hôm nay`}:{sel:'.hs-entries'},
+  rows.push({ok:ci.verified||null,label:`Khớp mã ${n.code} trên app`,go:first&&right?{cmd:'hs_verify',payload:{task:id,entry:right.id},label:isClean()?`🔎 Chọn ${x.esc(n.code)}`:`🔎 Chọn dòng ${right.id} · ${x.esc(n.code)} · hôm nay`}:{sel:'.hs-entries'},
     pulse:first&&right?`.hs-entry[data-entry="${right.id}"]`:''});
   if(t.gen&&n.proof==='bank')rows.push({ok:t.bank?true:null,label:'Đối chiếu cọc trên app ngân hàng',go:{cmd:'hs_bank',payload:{task:id},label:'🏦 Mở app ngân hàng đối chiếu'}});
-  rows.push({ok:ci.ids||null,label:'Xem giấy tờ, khai báo lưu trú',go:ci.verified?{cmd:'hs_ids',payload:{task:id,mode:'look'},label:'👀 Xem giấy tờ & khai báo'}:null});
+  rows.push({ok:ci.ids||null,label:'Xem giấy tờ, khai báo lưu trú',go:ci.verified?{cmd:'hs_ids',payload:{task:id,mode:'look'},label:isClean()?'👀 Xem & khai báo':'👀 Xem giấy tờ & khai báo'}:null});
   rows.push({ok:ci.counted||null,label:'Đếm khách ở quầy',go:ci.verified?{cmd:'hs_count',payload:{task:id},label:'🧮 Đếm khách ở quầy'}:null});
   if(!ci.counted)return rows;
   const booked=counted(x,n.adults,n.kids),arr=counted(x,t.arrived.adults,t.arrived.kids);
-  const busy=rid=>(d.grid?.[rid]||[]).slice(0,n.nights).some(c=>c.kind!=='free')||!['clean','dirty'].includes(d.rooms[rid]?.status);
+  const blockWhy=assignWhy(x,t);   // the server's own pre-check: a room an app order still waits to sync into is not offered
+  const busy=rid=>(d.grid?.[rid]||[]).slice(0,n.nights).some(c=>c.kind!=='free')||!['clean','dirty'].includes(d.rooms[rid]?.status)||!!blockWhy(rid);
   if(!ci.extra){
     const fits=bestRooms(x,rid=>!busy(rid)&&d.rooms[rid].status==='clean',arr),pick=fits?'surcharge':'refuse';
     rows.push({ok:null,label:`Dư ${arr-booked} người: phụ thu hay chỉ nhận đúng số đặt`,go:first?{cmd:'hs_extra',payload:{task:id,choice:pick},label:pick==='surcharge'?`➕ Phụ thu ${x.cc.extra_guest} xu/người/đêm (còn phòng rộng)`:'🙅 Chỉ nhận đúng số đã đặt (hết phòng rộng)'}:{sel:'.hs-extra'}});
@@ -740,7 +778,7 @@ function taskGuide(t,x){
     steps.push({ok:null,label:'Quyết chuyện ở quầy',go:{sel:'.hs-opts',label:'👉 Chọn cách xử lý chuyện ở quầy'}});
     return {steps,final:{label:'Quyết chuyện ở quầy',go:{sel:'.hs-opts'},ready:false}};
   }
-  if(!t.known)return {steps:[{ok:null,label:t.job==='claim'?'Nghe máy':'Nghe khách nói',go:{cmd:'ask',payload:{task:t.id},label:t.job==='claim'?'📞 Nghe máy':'👂 Nghe khách'}}],pulse:'.hs-ask'};
+  if(!t.known)return {steps:[{ok:null,label:t.job==='claim'?'Nghe máy':'Nghe khách nói',go:{cmd:'ask',payload:{task:t.id},label:t.job==='claim'?'📞 Nghe máy':'👂 Nghe khách'}}],pulse:isClean()?'':'.hs-ask'};
   const [make,fin]=GUIDES[t.job]||[()=>[],()=>({label:'',go:null,ready:false})];
   const steps=make(t,x),final=fin(t,x,steps);
   const first=pending(steps);
@@ -752,7 +790,9 @@ function hintFor(g,x){
   const steps=f&&!pending(g.steps)?.go?g.steps.filter(s=>s.ok===true||s.go):g.steps;
   return nextHint(x,steps,{final:f,pulse:g.pulse});
 }
-const bottomBar=(g,x)=>g.final?`<div class="hs-bar">${stepCta(x,g.steps,g.final)}</div>`:'';
+/* The shared bottom bar (ui-kit actBar via guide stepBar, UI wave 5): the next step or its pointer on the left, the one
+ * main button on the right; `hs-bar` stays as the hook (homestay.css keeps the old bar's look off a .ui-bar). */
+const bottomBar=(g,x)=>g.final?stepBar(x,g.steps,g.final,{cls:'hs-bar',style:'primary big grow'}):'';
 
 /* Between guests: the chores that cost the house if forgotten (app orders, rooms for tonight's arrivals, guests who stay on). */
 function idleSteps(x){
@@ -835,7 +875,7 @@ function ticketCard(t,x,size=48){
   const who=x.npc(t.npc),anon=t.job==='claim';
   const pill=`<span class="tag blue">${JOB_ICON[t.job]||''} ${x.esc(x.cc.jobs?.[t.job]||t.job)}</span>`;
   const line=t.job==='recommend'?t.needs.request:t.job==='checkout'?t.needs.claim:t.job==='claim'?t.needs.note:t.needs.note||t.opening;
-  return `<article class="card ticket hs-tk"><div class="hs-tk-head">${anon?caller(32):x.portrait(who,32)}<h3>${anon?'Người gọi':x.esc(who.display_name)}</h3><div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div>${pill}</div>
+  return `<article class="card ticket hs-tk"><div class="hs-tk-head">${anon?caller(32):x.portrait(who,32)}${isClean()?'':`<h3>${anon?'Người gọi':x.esc(who.display_name)}</h3>`}<div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div>${isClean()?'':pill}</div>
       <p class="small">${x.esc(line)}</p>${regularCard(t,x)}</article>`;
 }
 
@@ -856,7 +896,7 @@ export default {
   },
   idle(x){
     const d=x.room.data||{},steps=idleSteps(x),todo=pending(steps)?.go;
-    const hint=todo?nextHint(x,steps,{}):'',bar=todo?`<div class="hs-bar">${stepCta(x,steps,{label:'',go:null,ready:false})}</div>`:'';
+    const hint=todo?nextHint(x,steps,{}):'',bar=todo?stepBar(x,steps,{label:'',go:null,ready:false},{cls:'hs-bar',style:'primary big grow'}):'';
     const stats=`<div class="row wrap hs-stats">${d.synced?x.pill(`📥 ${d.synced} đơn OTA đã đồng bộ`,'green'):''}${d.claims_ok?x.pill(`🎁 ${d.claims_ok} món đồ về đúng chủ`,'green'):''}${d.ota_walked?x.pill(`🏡 ${d.ota_walked} khách phải chuyển nhà hàng xóm`,'amber'):''}${d.claims_bad?x.pill(`⚠️ ${d.claims_bad} lần giao nhầm đồ`,'amber'):''}${d.lost_deposit?x.pill(`💸 mất ${d.lost_deposit} xu cọc ảo`,'amber'):''}</div>`;
     const tab=x.ui.hsTab||'cal';
     const tabs=`<div class="hs-tabs" role="tablist" aria-label="Khu trong nhà">${IDLE_TABS.map(([id,label])=>carBtn(x,label,'tab',{tab:id},`hs-tab ${tab===id?'on':''}`,` role="tab" aria-selected="${tab===id}"`)).join('')}</div>`;
@@ -867,16 +907,22 @@ export default {
   job(t,x){
     const desk=deskCard(x),who=x.npc(t.npc),g=taskGuide(t,x),hint=hintFor(g,x);
     // The calendar and the rooms are shared state: folded under the task so the task comes first.
-    const more=`<section class="hs-board">${panel(x,'board',`🗓️ Lịch phòng, buồng phòng, vườn & sổ${otaBadge(x)}`,board(x,t),false,'hs-boardp')}${foot(x)}${rules(x)}</section>`;
+    // Clean layout (UI wave 5): the board's line in two words (+ the app orders' 📥 count), the guest's words whole,
+    // their name and the job are the sheet's title; "Nghe khách" is the bar's main button.
+    const C=isClean();
+    const more=`<section class="hs-board">${panel(x,'board',`${C?'<span aria-label="Lịch phòng, buồng phòng, vườn &amp; sổ">🗓️ 🧹</span>':'🗓️ Lịch phòng, buồng phòng, vườn & sổ'}${otaBadge(x)}`,board(x,t),false,'hs-boardp')}${foot(x)}${rules(x)}</section>`;
     if(!t.known){
       const pill=`<span class="tag blue">${JOB_ICON[t.job]||''} ${x.esc(x.cc.jobs?.[t.job]||t.job)}</span>`;
       const anon=t.job==='claim';
-      return `<div class="career-job hs">${hint}${desk}${desk?running(t,x):lastDesk(x)}${todayLine(x)}<article class="card ticket"><div class="row">${anon?caller(56):x.portrait(who,56)}<div class="grow"><div class="row spread"><h3>${anon?'Có cuộc gọi':x.esc(who.display_name)}</h3>${pill}</div><p>“${x.esc(t.opening)}”</p>${anon?'':regularCard(t,x)}</div></div>${x.cmd(t.job==='claim'?'📞 Nghe máy':'👂 Nghe khách','ask',{task:t.id},desk?'ghost full':'primary full gd-cta hs-ask',!!desk)}</article>${desk?bottomBar(g,x):more}</div>`;
+      const head=C?'':`<div class="row spread"><h3>${anon?'Có cuộc gọi':x.esc(who.display_name)}</h3>${pill}</div>`;
+      const ask=C&&!desk?'':x.cmd(t.job==='claim'?'📞 Nghe máy':'👂 Nghe khách','ask',{task:t.id},desk?'ghost full':'primary full gd-cta hs-ask',!!desk);
+      const bar=C&&!desk?stepBar(x,g.steps,{label:'',go:null,ready:false},{cls:'hs-bar',style:'primary big grow'}):'';
+      return `<div class="career-job hs">${hint}${desk}${desk?running(t,x):lastDesk(x)}${todayLine(x)}<article class="card ticket"><div class="row">${anon?caller(56):x.portrait(who,56)}<div class="grow">${head}<p>“${x.esc(t.opening)}”</p>${anon?'':regularCard(t,x)}</div></div>${ask}</article>${desk?bottomBar(g,x):more+bar}</div>`;
     }
     if(desk)return `<div class="career-job hs">${hint}${desk}${running(t,x)}${ticketCard(t,x)}${bottomBar(g,x)}</div>`;
     const [main,side]=JOBS[t.job]||[()=>'',()=>''];
     // The steps and the receipt first; the one next-step button rides at the bottom of the sheet.
-    return `<div class="career-job hs">${hint}${lastDesk(x)}${todayLine(x)}${ticketCard(t,x)}${running(t,x,false)}<div class="workbench"><section class="wb-main">${main(t,x)}</section><aside class="wb-side">${side(t,x)}</aside></div>
+    return `<div class="career-job hs">${hint}${lastDesk(x)}${C&&t.job!=='booking'?'':todayLine(x)}${ticketCard(t,x)}${running(t,x,false)}<div class="workbench"><section class="wb-main">${main(t,x)}</section><aside class="wb-side">${side(t,x)}</aside></div>
       ${more}${bottomBar(g,x)}</div>`;
   },
   tick(root,x){keepBarAboveFooter(root);keepClear(root);holdUntilReady(root,x);followStep(root,x);},

@@ -172,9 +172,16 @@
 .career-job.ps .ps-notes summary,.career-job.ps .ps-rules summary{cursor:pointer;font-weight:700;min-height:28px}
 
 /* ---------- next-step bar (guide.js) */
-.career-job.ps .ps-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:8px 12px 10px;border-radius:var(--ps-rs);
+.career-job.ps .ps-bar:not(.ui-bar){position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:8px 12px 10px;border-radius:var(--ps-rs);
   background:var(--ps-surface);border:1px solid var(--ps-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
-.career-job.ps .ps-bar .btn{width:100%;min-height:48px}
+.career-job.ps .ps-bar:not(.ui-bar) .btn{width:100%;min-height:48px}
+/* The shared bar (ui-kit actBar, app.css 27e) lays itself out; only the shop's colours here. */
+.career-job.ps .ps-bar.ui-bar{border-color:var(--ps-line)}
+/* Clean layout: the short intro (name, three icon rows, "?") and the day line's chip row (the checklist chip). */
+.career-job.ps .ps-intro-head{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2)}
+.career-job.ps .ps-intro-short .ps-icons{margin-top:var(--sp-2)}
+.career-job.ps .ps-day .ui-chiprow{display:flex;gap:var(--sp-1)}
+.career-job.ps .ps-day .ui-chiprow:empty{display:none}
 
 /* ---------- cash at the counter (public/js/careers/till.js) */
 .career-job.ps .till{display:grid;gap:8px;border-top:4px solid var(--ps-coral)}

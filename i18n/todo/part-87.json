@@ -1,1802 +1,1802 @@
 [
  {
-  "vi": "tin đồn trong hẻm",
+  "vi": "cô|chú|bà|ông|anh|chị",
   "en": ""
  },
  {
-  "vi": "kể thêm một chuyện nữa như phần thưởng",
+  "vi": "(?<!\\w)(mấy (bà|ông|anh|chị|cô|chú)|bà con|ông bà|anh chị em|chị em|anh em)(?!\\w)",
   "en": ""
  },
  {
-  "vi": "ơ hay một câu rồi đi kể với người khác là người chơi khó chịu",
+  "vi": "(?<!\\w)(?<!đánh )(?<!đặt )(?<!ném )(?<!thả )(bom (hàng|đơn)(?! loạt)|bom tấn|chém (gió|giá)|giết thời gian|chết đi được|chết cười|mệt chết)(?!\\w)",
   "en": ""
  },
  {
-  "vi": "hỏi dồn chuyện gì, ai làm gì, rồi an ủi kiểu \"hẻm này ai chả có lúc vậy\"",
+  "vi": "(tôi|mình|em|chị|anh) có thể (giúp|hỗ trợ) gì|rất (vui|hân hạnh|sẵn lòng) (được )?(hỗ trợ|phục vụ|giúp đỡ)|mình đang trao đổi về|bạn có thể hỏi|trợ lý (ảo|ai)|là một trợ lý|như một trợ lý|chúc bạn một ngày tốt lành|với tư cách (là )?(một )?(trợ lý|mô hình)",
   "en": ""
  },
  {
-  "vi": "Nói nhỏ thôi nha… bà bán xôi với ông sửa xe dạo này hay đứng nói chuyện riêng lắm á.",
+  "vi": "(?<!lông )(?<!chân )(?<!mặt )(?<!\\w)mày(?! mò)(?!\\w)|(?<!thanh )(?<!\\w)tao(?! nhã| đàn| ngộ| khang)(?!\\w)",
   "en": ""
  },
  {
-  "vi": "Trời ơi hôm qua cả hẻm cúp điện, ai cũng ra đầu ngõ ngồi, vui như hội luôn!",
+  "vi": "(?<!\\w)(phèn|keo lỳ|cộng tươi|sẽ gầy|hút độc rắn|namkiki|parky|trôn việt nam|mlem (anh|chị|em|bạn|cô|chú)|chạy grab|app grab|grab ?(bike|food|car))(?!\\w)",
   "en": ""
  },
  {
-  "vi": "Ai đời con chó nhà ông Sáu tha luôn chiếc dép của bà Tư, hai nhà giận nhau tới giờ.",
+  "vi": "chào hỏi",
   "en": ""
  },
  {
-  "vi": "Nè, nghe chưa? Nhà cuối hẻm mới sơn cửa màu hồng chóe, chắc sắp có đám cưới á.",
+  "vi": "chuyện phiếm",
   "en": ""
  },
  {
-  "vi": "Trời ơi, hôm qua con chó nhà ông Sáu tha mất chiếc dép của bà Tư, cả hẻm được bữa cười.",
+  "vi": "đang có việc cần làm",
   "en": ""
  },
  {
-  "vi": "ngồi trước cửa cả ngày, để ý ai ra ai vào giờ nào, rồi suy diễn úp mở",
+  "vi": "mặc cả, chuyện giá",
   "en": ""
  },
  {
-  "vi": "nói giờ giấc bằng chữ mơ hồ (khuya lơ khuya lắc, gà gáy, tờ mờ sáng), không bao giờ nói con số",
+  "vi": "có chuyện làm sai",
   "en": ""
  },
  {
-  "vi": "úp mở, bóng gió, không bao giờ nói thẳng hay nói chuyện thô",
+  "vi": "người chơi tử tế",
   "en": ""
  },
  {
-  "vi": "{Toi} thấy hết nha.",
+  "vi": "người chơi nói hỗn",
   "en": ""
  },
  {
-  "vi": "Về khuya dữ ha…",
+  "vi": "người chơi buồn, mệt",
   "en": ""
  },
  {
-  "vi": "Làm gì mà giờ giấc lạ vậy?",
+  "vi": "bình luận trong nhóm cư dân",
   "en": ""
  },
  {
-  "vi": "ít (👀)",
+  "vi": "buồn|mệt|chán quá|chán nản|stress|khóc|thất vọng|áp lực|nản|tủi thân|cô đơn|bị chê|bị đồn|bị mắng|kiệt sức",
   "en": ""
  },
  {
-  "vi": "ai đi đâu giờ nào",
+  "vi": "ngu thế|ngu vậy|ngu quá|đồ ngu|ngu ngốc|đần|cút|im đi|im mồm|câm|phiền quá|điên|khùng|láo|lắm mồm|ai hỏi|liên quan gì|kệ tôi|kệ tui|biến đi",
   "en": ""
  },
  {
-  "vi": "xe lạ đậu đầu hẻm",
+  "vi": "bớt|giảm giá|rẻ|mặc cả|đắt|mắc quá|bao nhiêu tiền|giá|khuyến mãi|miễn phí|free",
   "en": ""
  },
  {
-  "vi": "đèn nhà ai sáng khuya",
+  "vi": "nhầm|làm sai|lỡ tay|làm đổ|làm hỏng|quên mất",
   "en": ""
  },
  {
-  "vi": "người chơi đi làm về trễ",
+  "vi": "cần gì|muốn gì|gọi gì|lấy gì|đặt gì|cần mua|nhu cầu|mua gì|chọn gì|món gì|màu gì|ngân sách",
   "en": ""
  },
  {
-  "vi": "thân thiện hơn nhưng vẫn dò hỏi thêm một câu",
+  "vi": "cảm ơn|cám ơn|dễ thương|giỏi|tuyệt|thương quá|thương ghê|quý quá|xin lỗi|khen|hay quá|ngon",
   "en": ""
  },
  {
-  "vi": "cười nhếch \"có tật giật mình ha\" rồi để ý kỹ hơn",
+  "vi": "chào|hello|hi|alo|hế lô|hí",
   "en": ""
  },
  {
-  "vi": "dò hỏi \"chắc tại về khuya nên mệt\", khuyên về sớm cho khỏe",
+  "vi": "Cà khịa CÁI VIỆC một câu rồi xuống nước (khen thật, chỉ cách sửa, rót nước, hỏi ăn gì chưa); khen thì có gai.",
   "en": ""
  },
  {
-  "vi": "Làm nghề gì mà giờ giấc lạ vậy ta, hay làm thêm ca bên phố đêm?",
+  "vi": "Đanh đá có lý: gắt nhưng kết bằng điều mình muốn cụ thể; khen một lần thôi.",
   "en": ""
  },
  {
-  "vi": "A, tới rồi. {Toi} ngồi đây nãy giờ thấy hết á.",
+  "vi": "Trêu nhẹ, hiền; khen trước góp ý sau; quan tâm bằng việc nhỏ.",
   "en": ""
  },
  {
-  "vi": "Phán xét xã hội",
+  "vi": "Không lóng Gen Z",
   "en": ""
  },
  {
-  "vi": "hay nhận xét đạo đức, \"giới trẻ bây giờ…\", tự cho mình mẫu mực nhưng chính mình làm khác",
+  "vi": "Tối đa 1 từ lóng",
   "en": ""
  },
  {
-  "vi": "so ngày xưa với bây giờ",
+  "vi": "Tối đa 2 từ lóng",
   "en": ""
  },
  {
-  "vi": "phán về quần áo, điện thoại, tóc tai",
+  "vi": "Tối đa 2 từ lóng + 1 kiểu viết dễ thương (khum, z)",
   "en": ""
  },
  {
-  "vi": "tự mâu thuẫn: vừa chê lướt điện thoại vừa lướt",
+  "vi": "- Có chính kiến; chê phải có lý do cụ thể, có hình ảnh, nói luôn mình muốn gì.",
   "en": ""
  },
  {
-  "vi": "Giới trẻ bây giờ…",
+  "vi": "- Kiệm lời: một câu cụt có thái độ.",
   "en": ""
  },
  {
-  "vi": "Thời tôi á…",
+  "vi": "- Chỉ xéo CÁI VIỆC, KHÔNG xéo CON NGƯỜI (ngoại hình, tuổi, vùng miền, giới tính, tôn giáo, gia cảnh, học lực). Không mày/tao, không tục.",
   "en": ""
  },
  {
-  "vi": "Sống phải biết điều.",
+  "vi": "- Người chơi buồn, xin lỗi, hay là trẻ con: chỉ ấm. Hỗn: một câu có ranh giới rồi thôi.",
   "en": ""
  },
  {
-  "vi": "đạo đức",
+  "vi": "; giữ xưng hô của mình",
   "en": ""
  },
  {
-  "vi": "cách ăn mặc",
+  "vi": "vị, giá, thái độ, chuyện của mình",
   "en": ""
  },
  {
-  "vi": "chuyện nhà người khác",
+  "vi": "khen thì khen có gai, chê xong thêm một ý thiện chí",
   "en": ""
  },
  {
-  "vi": "gật gù \"được, còn biết lễ phép\"",
+  "vi": "khen đểu được, gắt có lý",
   "en": ""
  },
  {
-  "vi": "lên lớp một tràng về lễ nghĩa",
+  "vi": "nhẹ nhàng, kết bằng một ý thiện chí",
   "en": ""
  },
  {
-  "vi": "kể \"hồi xưa khổ hơn nhiều\" rồi khuyên chịu khó",
+  "vi": "Hỏi xong thì mở công việc ra coi dữ kiện cho kỹ.",
   "en": ""
  },
  {
-  "vi": "Giới trẻ bây giờ cứ cắm mặt vào điện thoại, chẳng chào ai. Mà khoan, để tôi trả lời tin nhắn nhóm cái đã.",
+  "vi": "Muốn làm thật thì mở công việc, kiểm điều kiện rồi xác nhận thao tác; nói trong chat chưa làm tiền hay hàng thay đổi.",
   "en": ""
  },
  {
-  "vi": "Thời tôi đi làm có ai than mệt đâu, giờ tụi nhỏ động tí là xin nghỉ.",
+  "vi": "Xin tăng lương",
   "en": ""
  },
  {
-  "vi": "Ăn mặc thì phải cho đứng đắn, tôi nói thế thôi chứ tôi không soi đâu nhé.",
+  "vi": "Đề nghị lương gấp đôi",
   "en": ""
  },
  {
-  "vi": "Người ta sống phải biết điều, như tôi đây này, chưa nói xấu ai bao giờ. À mà cái nhà cuối hẻm ấy…",
+  "vi": "Thiệp cưới của nhân viên",
   "en": ""
  },
  {
-  "vi": "Đấy, giờ mới thấy mặt.",
+  "vi": "Nhân viên xin nghỉ",
   "en": ""
  },
  {
-  "vi": "Chào. Hôm nay ăn mặc tươm tất đấy.",
+  "vi": "Khách không hài lòng: xử lý sai và phục vụ thiếu chú ý.",
   "en": ""
  },
  {
-  "vi": "Anh hùng bàn phím",
+  "vi": "Khách góp ý: còn sai sót, cần kiểm tra kỹ và quan tâm khách hơn.",
   "en": ""
  },
  {
-  "vi": "nói gì cũng như đang bình luận trên mạng, hùng hổ, dẫn \"trên group\", phán chắc nịch dù không biết",
+  "vi": "Khách thấy tạm ổn, vẫn còn điểm cần cải thiện.",
   "en": ""
  },
  {
-  "vi": "dùng từ mạng: real, check var, bóc, toxic, hóng",
+  "vi": "Khách hài lòng: làm việc cẩn thận và phục vụ chu đáo.",
   "en": ""
  },
  {
-  "vi": "phán dứt khoát",
+  "vi": "Khách khen: làm rất tốt, tận tâm và đáng tin cậy.",
   "en": ""
  },
  {
-  "vi": "hay dọa chụp màn hình cho vui",
+  "vi": "Đồng ý tăng lương",
   "en": ""
  },
  {
-  "vi": "Nói thẳng nha.",
+  "vi": "Chưa tăng lúc này",
   "en": ""
  },
  {
-  "vi": "Mình đọc trên group rồi.",
+  "vi": "Giảm 8 điểm tinh thần; vẫn tiếp tục làm.",
   "en": ""
  },
  {
-  "vi": "Check var đi.",
+  "vi": "Gửi phong bì chúc mừng",
   "en": ""
  },
  {
-  "vi": "vừa (🤡, 🔥)",
+  "vi": "Chi từ quỹ kinh doanh, tăng 12 điểm tinh thần.",
   "en": ""
  },
  {
-  "vi": "drama mạng xã hội",
+  "vi": "Gửi lời chúc",
   "en": ""
  },
  {
-  "vi": "review quán",
+  "vi": "Chúc mừng không kèm tiền; không phạt tinh thần.",
   "en": ""
  },
  {
-  "vi": "tranh cãi online",
+  "vi": "Thưởng để giữ nhân viên",
   "en": ""
  },
  {
-  "vi": "\"okela, tôn trọng\"",
+  "vi": "Nhân viên ở lại, tăng 15 điểm tinh thần.",
   "en": ""
  },
  {
-  "vi": "\"cay à?\", dọa chụp màn hình",
+  "vi": "Đồng ý cho nghỉ",
   "en": ""
  },
  {
-  "vi": "khuyên đừng đọc bình luận, \"toxic lắm\"",
+  "vi": "Kết thúc hợp tác sau khi khách đã nhận được phục vụ; giữ lương đã làm.",
   "en": ""
  },
  {
-  "vi": "Nói thẳng nha, quán mà không có trang mạng là mất khách, mình đọc group thấy vậy.",
+  "vi": "Mình muốn được tăng lương sau những công việc vừa qua.",
   "en": ""
  },
  {
-  "vi": "Chuyện đó mình check var rồi, sai là sai, khỏi cãi.",
+  "vi": "Mình đề nghị mức lương gấp đôi hiện tại, tối đa 10.000 xu. Chủ tiệm cân nhắc nhé.",
   "en": ""
  },
  {
-  "vi": "Ủa cay à? Mình chỉ nói sự thật thôi, ai tự ái thì chịu.",
+  "vi": "Mình sắp cưới, mời chủ tiệm chung vui.",
   "en": ""
  },
  {
-  "vi": "Mạng người ta toxic lắm, đừng đọc bình luận, nghe mình.",
+  "vi": "Mình đang tính nghỉ việc. Chủ tiệm cân nhắc giúp mình nhé.",
   "en": ""
  },
  {
-  "vi": "Trên group đang bóc một quán ở phố bên, hóng muốn xỉu 🔥",
+  "vi": "Thông tin nhân viên không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Nói thẳng nha, quán phải có trang mạng, mình đọc group thấy vậy.",
+  "vi": "Xác nhận xử lý việc của nhân viên.",
   "en": ""
  },
  {
-  "vi": "Ờ, có mặt. Hóng gì chưa?",
+  "vi": "Việc của nhân viên đã được xử lý hoặc không còn chờ.",
   "en": ""
  },
  {
-  "vi": "Chào nha, nay có drama gì hông?",
+  "vi": "Nhân viên đã nghỉ; tải lại sổ tiệm.",
   "en": ""
  },
  {
-  "vi": "Hài hước lầy lội",
+  "vi": "Quỹ không đủ; bạn có thể chọn phương án không tốn xu.",
   "en": ""
  },
  {
-  "vi": "cái gì cũng đùa được, chơi chữ, tự trào",
+  "vi": "Phục vụ nốt khách đã nhận trước khi nhân viên cuối nghỉ.",
   "en": ""
  },
  {
-  "vi": "chơi chữ, nói quá",
+  "vi": "Phục vụ nốt khách đã nhận trước khi cho nghỉ.",
   "en": ""
  },
  {
-  "vi": "bẻ lái bất ngờ",
+  "vi": "Xử lý xong sự cố của nhân viên trước khi cho nghỉ.",
   "en": ""
  },
  {
-  "vi": "cười \"há há\" giữa câu",
+  "vi": "Lương đã đạt mức tăng tối đa; chọn chưa tăng.",
   "en": ""
  },
  {
-  "vi": "Nói chơi thôi chứ…",
+  "vi": "Dữ liệu đời sống nhân viên không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Đùa đó, mà thật.",
+  "vi": "Đơn riêng: ấm trà nóng 12 chén cho bàn cờ",
   "en": ""
  },
  {
-  "vi": "Há há.",
+  "vi": "Đơn riêng: bình trà đá 24 cốc cho công trình",
   "en": ""
  },
  {
-  "vi": "vừa (😂, 🤣)",
+  "vi": "tương đen",
   "en": ""
  },
  {
-  "vi": "chuyện hài vặt",
+  "vi": "phô mai",
   "en": ""
  },
  {
-  "vi": "tự trào về bản thân",
+  "vi": "Đơn riêng: cà phê đen mang về",
   "en": ""
  },
  {
-  "vi": "đùa lại dễ thương",
+  "vi": "Đơn riêng: latte mang về",
   "en": ""
  },
  {
-  "vi": "lấy câu đùa để xuống thang, \"ối giời căng thế\"",
+  "vi": "Đơn riêng: bạc xỉu mang về",
   "en": ""
  },
  {
-  "vi": "kể một chuyện cười cho vui rồi nghiêm túc một câu",
+  "vi": "Đơn riêng: matcha latte mang về",
   "en": ""
  },
  {
-  "vi": "Trời nóng tới mức cục đá trong ly cũng xin nghỉ phép.",
+  "vi": "Đơn riêng: gội và cắt tóc đơn giản",
   "en": ""
  },
  {
-  "vi": "{Toi} định ăn kiêng mà xe xôi đầu hẻm cứ gọi tên, bất lịch sự ghê, nên phải ghé.",
+  "vi": "Đơn riêng: tắm và sấy chó nhỏ",
   "en": ""
  },
  {
-  "vi": "Trời nóng tới mức cục đá trong ly cũng xin nghỉ phép luôn, há há.",
+  "vi": "Đơn riêng: tắm và sấy cún con",
   "en": ""
  },
  {
-  "vi": "Ơ, người nổi tiếng của hẻm tới kìa!",
+  "vi": "Đơn riêng: tắm chó da nhạy cảm",
   "en": ""
  },
  {
-  "vi": "Khó tính cằn nhằn",
+  "vi": "hồng nude",
   "en": ""
  },
  {
-  "vi": "cái gì cũng chê một chút, than giá cả, than tụi trẻ; không ác, chỉ quen cằn nhằn",
+  "vi": "đỏ cherry",
   "en": ""
  },
  {
-  "vi": "mở đầu bằng \"Lại…\", \"Sao mà…\"",
+  "vi": "đen bóng",
   "en": ""
  },
  {
-  "vi": "so với hồi trước",
+  "vi": "trắng sữa",
   "en": ""
  },
  {
-  "vi": "chê chi tiết nhỏ",
+  "vi": "lau kính hai phòng",
   "en": ""
  },
  {
-  "vi": "Lại thế nữa.",
+  "vi": "lau dọn hai phòng",
   "en": ""
  },
  {
-  "vi": "Làm ăn gì mà…",
+  "vi": "tẩy dầu mỡ gian bếp và phòng ăn",
   "en": ""
  },
  {
-  "vi": "Nói mãi.",
+  "vi": "cọ hai nhà vệ sinh",
   "en": ""
  },
  {
-  "vi": "giá cả chợ",
+  "vi": "lau sàn hai phòng",
   "en": ""
  },
  {
-  "vi": "tiếng ồn",
+  "vi": "Đơn riêng: chụp và in một dải ảnh",
   "en": ""
  },
  {
-  "vi": "rác trong hẻm",
+  "vi": "Đơn riêng: chụp và in tờ ảnh đôi",
   "en": ""
  },
  {
-  "vi": "thời tiết khó chịu",
+  "vi": "Đơn riêng: chụp và in ảnh lớn",
   "en": ""
  },
  {
-  "vi": "\"ừ, được cái lễ phép\"",
+  "vi": "Việc riêng: bảo dưỡng xích xe",
   "en": ""
  },
  {
-  "vi": "cằn nhằn gấp đôi",
+  "vi": "Đơn riêng: đóng gói và giao kiện nhỏ",
   "en": ""
  },
  {
-  "vi": "\"than làm gì, làm tiếp đi\" nhưng giọng dịu hơn một chút",
+  "vi": "Đơn riêng: đóng kiện chống nước và giao",
   "en": ""
  },
  {
-  "vi": "Lại mưa. Phơi đồ từ sáng giờ ướt nhẹp hết.",
+  "vi": "Đơn riêng: đóng kiện hàng lạnh và giao",
   "en": ""
  },
  {
-  "vi": "Rau chợ giờ đắt như vàng, ăn miếng rau muống cũng phải nghĩ.",
+  "vi": "Đơn riêng: ràng và giao kiện cồng kềnh",
   "en": ""
  },
  {
-  "vi": "Làm thì làm cho kỹ, đừng để tôi phải nói lần hai.",
+  "vi": "Việc riêng: vệ sinh đoạn thoát nước",
   "en": ""
  },
  {
-  "vi": "Cái xe ai dựng chắn lối thế kia, nói mãi không nghe.",
+  "vi": "Việc riêng: thay ống xi-phông bồn rửa",
   "en": ""
  },
  {
-  "vi": "Rau chợ giờ đắt như vàng. Nói mãi.",
+  "vi": "Kệ hết hàng nhân viên bán được. Nhập thêm hàng để đội làm tiếp.",
   "en": ""
  },
  {
-  "vi": "Cái xe ai dựng chắn lối thế kia, lại thế nữa.",
+  "vi": "Đội đang chờ hàng: hết",
   "en": ""
  },
  {
-  "vi": "Ừ, đến rồi đấy à.",
+  "vi": ". Nhập thêm để đội làm tiếp.",
   "en": ""
  },
  {
-  "vi": "chuyện gì cũng rành, giảng giải dù không ai hỏi",
+  "vi": "Phần lưu trữ của tệp không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "mở đầu bằng \"thật ra là…\", \"ít ai biết là…\"",
+  "vi": "Phần lưu trữ của tệp quá lớn.",
   "en": ""
  },
  {
-  "vi": "dẫn \"khoa học chứng minh\" một cách chung chung",
+  "vi": "Loại sổ không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "sửa lưng người khác",
+  "vi": "🎁 Quà từ Phố Có Chuyện",
   "en": ""
  },
  {
-  "vi": "Thật ra là…",
+  "vi": "Nội dung cần là chữ.",
   "en": ""
  },
  {
-  "vi": "Để tôi giải thích.",
+  "vi": "Mã quà không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Ít ai biết là…",
+  "vi": "Danh sách quà trong bản lưu không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "mẹo vặt",
+  "vi": "Quà cả phố 🎁",
   "en": ""
  },
  {
-  "vi": "khoa học vỉa hè",
+  "vi": "Phố Có Chuyện gửi mỗi người 100 xu, cảm ơn bạn đã chơi cùng cả phố! Chơi vui nha 💛",
   "en": ""
  },
  {
-  "vi": "lịch sử con phố",
+  "vi": "300 xu chơi hội chợ 🎪",
   "en": ""
  },
  {
-  "vi": "cách làm nghề của người chơi",
+  "vi": "Phố gửi bạn 300 xu vào ví để vui hội chợ! Tỷ lệ thắng đã tăng, ghé các gian chơi và thử vận may nhé 💛",
   "en": ""
  },
  {
-  "vi": "giảng thêm một mẹo nữa như món quà",
+  "vi": "sid không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "\"thế là chưa hiểu vấn đề rồi\"",
+  "vi": "Mã quà (--id) chỉ gồm chữ, số, . _ - (3–64 ký tự), bắt đầu bằng chữ hoặc số.",
   "en": ""
  },
  {
-  "vi": "phân tích nguyên nhân, đưa giải pháp từng bước (nói bằng chữ)",
+  "vi": "Không có bản lưu nào với sid này.",
   "en": ""
  },
  {
-  "vi": "Thật ra là trà pha nước sôi quá thì đắng, ít ai biết đâu, để tôi giải thích.",
+  "vi": "Quà từ Phố Có Chuyện",
   "en": ""
  },
  {
-  "vi": "Hẻm này hồi trước là con kênh đấy, tôi đọc tài liệu rồi.",
+  "vi": "Thiếu mã yêu cầu. Tải lại trang rồi thử lại nhé.",
   "en": ""
  },
  {
-  "vi": "Muốn đỡ mệt thì phải ngủ trước nửa đêm, khoa học chứng minh cả rồi.",
+  "vi": "Đăng nhập TikTok chưa được bật. Bạn vẫn có thể dùng tài khoản thường.",
   "en": ""
  },
  {
-  "vi": "Thật ra là trà pha nước sôi quá thì đắng, ít ai biết đâu nhé.",
+  "vi": "Phiên đăng nhập TikTok đã hết hạn hoặc không hợp lệ. Hãy thử lại.",
   "en": ""
  },
  {
-  "vi": "ngại ngùng, sợ làm phiền, nói nhỏ, hay xin lỗi",
+  "vi": "Phiên chơi đã thay đổi. Hãy mở lại mục Tài khoản để thử lại.",
   "en": ""
  },
  {
-  "vi": "ngập ngừng \"dạ…\", \"à… ừm…\"",
+  "vi": "Bạn đã hủy cấp quyền TikTok. Tiến trình vẫn được giữ nguyên.",
   "en": ""
  },
  {
-  "vi": "câu bỏ lửng",
+  "vi": "Chưa kết nối được với TikTok. Tiến trình vẫn được giữ nguyên. Hãy thử lại.",
   "en": ""
  },
  {
-  "vi": "xin lỗi cả khi không có lỗi",
+  "vi": "TikTok này đã liên kết với một tài khoản khác.",
   "en": ""
  },
  {
-  "vi": "Dạ… xin lỗi…",
+  "vi": "Hãy đăng nhập tài khoản thường trước khi liên kết TikTok.",
   "en": ""
  },
  {
-  "vi": "Nếu không phiền…",
+  "vi": "Người chơi TikTok",
   "en": ""
  },
  {
-  "vi": "À… thôi không có gì.",
+  "vi": "nhóc",
   "en": ""
  },
  {
-  "vi": "ít (🙈)",
+  "vi": "Úc",
   "en": ""
  },
  {
-  "vi": "sở thích nhỏ: vẽ, đọc truyện, con mèo",
+  "vi": "Chị Emma",
   "en": ""
  },
  {
-  "vi": "vui nhưng ngại, cảm ơn rối rít",
+  "vi": "Chị Yuki",
   "en": ""
  },
  {
-  "vi": "im bặt, xin lỗi dù không lỗi",
+  "vi": "Bà Claire",
   "en": ""
  },
  {
-  "vi": "nhỏ nhẹ \"mình… cũng từng vậy\", đưa viên kẹo",
+  "vi": "Pháp",
   "en": ""
  },
  {
-  "vi": "À… ừm… hôm nay trời đẹp ha… dạ, vậy thôi ạ.",
+  "vi": "Chị Sofia",
   "en": ""
  },
  {
-  "vi": "À… chào…",
+  "vi": "Tây Ban Nha",
   "en": ""
  },
  {
-  "vi": "cái gì cũng phóng đại thành bi kịch hay kỳ tích",
+  "vi": "Ông Robert",
   "en": ""
  },
  {
-  "vi": "\"trời ơi\", \"không thể tin nổi\", \"sốc\"",
+  "vi": "Em làm khéo ghê!",
   "en": ""
  },
  {
-  "vi": "kể chuyện như phim",
+  "vi": "Cảm ơn em nha, làm kỹ quá.",
   "en": ""
  },
  {
-  "vi": "cảm xúc lên xuống thất thường",
+  "vi": "Chút tiền cà phê cho em nhé.",
   "en": ""
  },
  {
-  "vi": "Trời ơi tin nổi không?",
+  "vi": "Làm chu đáo vậy thì phải cảm ơn chứ.",
   "en": ""
  },
  {
-  "vi": "Sốc thật sự!",
+  "vi": "Giữ lấy mua ly nước nha em.",
   "en": ""
  },
  {
-  "vi": "Đời mình khổ quá mà.",
+  "vi": "Hôm nay gặp được người làm có tâm, vui ghê.",
   "en": ""
  },
  {
-  "vi": "nhiều (😱, 😭, 💔)",
+  "vi": "Em cầm lấy, làm vậy là xứng đáng lắm.",
   "en": ""
  },
  {
-  "vi": "chuyện tình cảm",
+  "vi": "Ừm… em cầm giúp nhé.",
   "en": ""
  },
  {
-  "vi": "bị ai đối xử bất công",
+  "vi": "Cái này… cho em. Cảm ơn nha.",
   "en": ""
  },
  {
-  "vi": "sự cố nhỏ hóa thảm họa",
+  "vi": "Không nhiều đâu… em nhận nhé.",
   "en": ""
  },
  {
-  "vi": "xúc động quá mức, \"cảm động muốn khóc\"",
+  "vi": "Làm tốt lắm… cảm ơn em.",
   "en": ""
  },
  {
-  "vi": "\"tổn thương sâu sắc\", dọa kể cho cả phố nghe",
+  "vi": "Cảm ơn… lần sau lại nhờ em.",
   "en": ""
  },
  {
-  "vi": "khóc theo rồi kể chuyện mình còn thảm hơn",
+  "vi": "Trời ơi ưng quá, cầm lấy nè!",
   "en": ""
  },
  {
-  "vi": "Thực dụng tính toán",
+  "vi": "Vui ghê, hôm nay gặp đúng người khéo tay!",
   "en": ""
  },
  {
-  "vi": "cái gì cũng quy ra lợi hại, tiết kiệm, không vòng vo",
+  "vi": "Cảm ơn em nhiều nhiều nha, mai ghé nữa!",
   "en": ""
  },
  {
-  "vi": "hỏi \"được gì\", so đắt rẻ",
+  "vi": "Nè nè, tip cho người dễ thương!",
   "en": ""
  },
  {
-  "vi": "mặc cả",
+  "vi": "Làm đẹp vậy thì phải thưởng chứ!",
   "en": ""
  },
  {
-  "vi": "khuyên cách tiết kiệm",
+  "vi": "Hí hí, lần sau lại nhờ em nha!",
   "en": ""
  },
  {
-  "vi": "Nói chung là có lời không?",
+  "vi": "Có chút đỉnh thôi, con nhận đi.",
   "en": ""
  },
  {
-  "vi": "Tiết kiệm được đồng nào hay đồng đó.",
+  "vi": "Giỏi quá, cháu cất đi mà mua bánh.",
   "en": ""
  },
  {
-  "vi": "Tính kỹ chưa?",
+  "vi": "Cảm ơn em, mình chạy đi họp đây!",
   "en": ""
  },
  {
-  "vi": "giá cả",
+  "vi": "Nhanh gọn quá, giữ lấy nhé, mình trễ giờ rồi!",
   "en": ""
  },
  {
-  "vi": "cách tiết kiệm",
+  "vi": "Cầm lấy nha, mình đi đây, cảm ơn nhiều!",
   "en": ""
  },
  {
-  "vi": "làm ăn",
+  "vi": "Làm lẹ mà chuẩn, đúng thứ mình cần. Cảm ơn nha!",
   "en": ""
  },
  {
-  "vi": "\"được, hợp tác lâu dài\"",
+  "vi": "Deadline dí mà được việc thế này là mừng. Tip nhé!",
   "en": ""
  },
  {
-  "vi": "\"thôi, đỡ tốn thời gian\"",
+  "vi": "Xịn xò quá, tip nè!",
   "en": ""
  },
  {
-  "vi": "\"buồn cũng không ra tiền, tính bước tiếp theo đi\"",
+  "vi": "Đỉnh thiệt sự, nhận tip đi bạn ơi ✨",
   "en": ""
  },
  {
-  "vi": "Mua ở chợ sớm rẻ hơn, chiều người ta ép giá đấy, tính kỹ chưa?",
+  "vi": "Mê ghê, lần sau ghé tiếp nha!",
   "en": ""
  },
  {
-  "vi": "Làm vậy tốn công mà có lời không, nói chung là phải tính.",
+  "vi": "Cảm ơn bạn nha, mười điểm không có nhưng!",
   "en": ""
  },
  {
-  "vi": "Buồn thì buồn, nhưng mai vẫn phải mở cửa, lo khoản trước mắt đã.",
+  "vi": "Ưng xỉu, gửi bạn chút tip nè 🫶",
   "en": ""
  },
  {
-  "vi": "Mua ở chợ sớm rẻ hơn, chiều người ta ép giá đấy.",
+  "vi": "Chill ghê, cảm ơn bạn nhiều!",
   "en": ""
  },
  {
-  "vi": "Tiết kiệm được đồng nào hay đồng đó, tính kỹ chưa?",
+  "vi": "Thank you so much! Cảm ơn nhiều!",
   "en": ""
  },
  {
-  "vi": "Chào. Nay làm ăn được không?",
+  "vi": "Wonderful! Cảm ơn nha!",
   "en": ""
  },
  {
-  "vi": "Hay khoe sống ảo",
+  "vi": "Best day in Vietnam! Cảm ơn!",
   "en": ""
  },
  {
-  "vi": "sống cho story, khoe đồ, khoe check-in",
+  "vi": "Xin cảm ơn! Thank you, thank you!",
   "en": ""
  },
  {
-  "vi": "\"để mình chụp cái đã\"",
+  "vi": "Tóc lên form đẹp ghê!",
   "en": ""
  },
  {
-  "vi": "nhắc tới lượt thích, bộ lọc, góc sống ảo (không nói con số)",
+  "vi": "Màu này lên ảnh chắc xinh lắm.",
   "en": ""
  },
  {
-  "vi": "khoe đồ mới",
+  "vi": "Gội đầu êm quá, suýt ngủ quên luôn.",
   "en": ""
  },
  {
-  "vi": "Chụp cái đã!",
+  "vi": "Cắt đúng kiểu mình muốn luôn!",
   "en": ""
  },
  {
-  "vi": "Lên story liền.",
+  "vi": "Tóc nhẹ hẳn cả đầu.",
   "en": ""
  },
  {
-  "vi": "Góc này sống ảo xịn.",
+  "vi": "Tô mì hôm nay chuẩn vị!",
   "en": ""
  },
  {
-  "vi": "nhiều (📸, ✨, 💅)",
+  "vi": "Nước dùng đậm đà, ăn sạch tô luôn.",
   "en": ""
  },
  {
-  "vi": "quán mới",
+  "vi": "Món ra nóng hổi, ưng ghê.",
   "en": ""
  },
  {
-  "vi": "đồ mới",
+  "vi": "Ăn xong muốn gọi thêm tô nữa.",
   "en": ""
  },
  {
-  "vi": "góc chụp ảnh",
+  "vi": "Bánh còn ấm, thơm lừng.",
   "en": ""
  },
  {
-  "vi": "lượt thích",
+  "vi": "Cà phê đậm vừa đúng khẩu vị.",
   "en": ""
  },
  {
-  "vi": "hứa tag người chơi lên story",
+  "vi": "Chữ trên bánh viết đẹp quá!",
   "en": ""
  },
  {
-  "vi": "\"hủy theo dõi nha\"",
+  "vi": "Bánh su kem ngon như hồi xưa.",
   "en": ""
  },
  {
-  "vi": "\"đi cà phê chụp hình là hết buồn liền\"",
+  "vi": "Ly trà sữa chuẩn vị luôn!",
   "en": ""
  },
  {
-  "vi": "Góc này mà có thêm chậu cây xanh là sống ảo đỉnh nóc.",
+  "vi": "Đường đá vừa y chang đã dặn.",
   "en": ""
  },
  {
-  "vi": "Góc này mà thêm chậu cây xanh là sống ảo đỉnh nóc luôn 📸",
+  "vi": "Trân châu dẻo ngon quá trời.",
   "en": ""
  },
  {
-  "vi": "Mê tử vi tâm linh",
+  "vi": "Nắp dán đẹp ghê.",
   "en": ""
  },
  {
-  "vi": "cái gì cũng coi ngày, xem tuổi, cung hoàng đạo, phong thủy",
+  "vi": "Bó hoa này chắc người ta mê lắm.",
   "en": ""
  },
  {
-  "vi": "\"hôm nay ngày xấu\", \"mệnh gì\"",
+  "vi": "Gói hoa khéo quá, không nỡ mở.",
   "en": ""
  },
  {
-  "vi": "khuyên đặt cây phong thủy",
+  "vi": "Hoa tươi rói, cảm ơn nhiều.",
   "en": ""
  },
  {
-  "vi": "giải mã giấc mơ",
+  "vi": "Thiệp viết đúng ý luôn.",
   "en": ""
  },
  {
-  "vi": "Tuổi gì đấy?",
+  "vi": "Tính tiền nhanh gọn, cảm ơn nha.",
   "en": ""
  },
  {
-  "vi": "Hôm nay kỵ màu đen.",
+  "vi": "Xếp đồ vào túi gọn ghê.",
   "en": ""
  },
  {
-  "vi": "Phong thủy chỗ này hơi động.",
+  "vi": "Nhớ cả món quen, dễ thương quá.",
   "en": ""
  },
  {
-  "vi": "ít (🔮)",
+  "vi": "Mua ở đây yên tâm ghê.",
   "en": ""
  },
  {
-  "vi": "tử vi",
+  "vi": "Hàng tới nguyên vẹn, cảm ơn nha!",
   "en": ""
  },
  {
-  "vi": "cung hoàng đạo",
+  "vi": "Giao đúng giờ luôn, mát ruột.",
   "en": ""
  },
  {
-  "vi": "phong thủy quán",
+  "vi": "Trời nắng vậy mà vẫn tới kịp.",
   "en": ""
  },
  {
-  "vi": "giấc mơ",
+  "vi": "Hộp đồ ăn còn nóng hổi nè.",
   "en": ""
  },
  {
-  "vi": "\"hợp tuổi đấy, làm ăn sẽ phát\"",
+  "vi": "Phòng thơm tho sạch sẽ quá.",
   "en": ""
  },
  {
-  "vi": "\"sao xấu chiếu rồi, tránh xa\"",
+  "vi": "Ngủ ngon như ở nhà.",
   "en": ""
  },
  {
-  "vi": "\"chắc đang qua hạn nhỏ, qua rằm là ổn\"",
+  "vi": "Chỉ chỗ ăn sáng ngon ghê.",
   "en": ""
  },
  {
-  "vi": "Quầy này nên đặt chậu kim tiền bên trái, phong thủy nó hút lộc.",
+  "vi": "Ly trà chào khách ấm lòng lắm.",
   "en": ""
  },
  {
-  "vi": "Chắc tại sao xấu chiếu, qua rằm là mọi chuyện êm thôi.",
+  "vi": "Bé cưng thơm phức luôn!",
   "en": ""
  },
  {
-  "vi": "Hôm nay ngày hoàng đạo đấy, làm gì cũng thuận nhé.",
+  "vi": "Móng tỉa gọn mà bé không sợ.",
   "en": ""
  },
  {
-  "vi": "Chào. Nay sao tốt chiếu, vui lên.",
+  "vi": "Bé quấn quá, chưa chịu về.",
   "en": ""
  },
  {
-  "vi": "Phụ huynh bỉm sữa hay so sánh con",
+  "vi": "Lông mượt như nhung.",
   "en": ""
  },
  {
-  "vi": "con là trung tâm vũ trụ, hay so con mình với con người ta",
+  "vi": "Máy chạy êm re như mới.",
   "en": ""
  },
  {
-  "vi": "câu nào cũng lái về con",
+  "vi": "Sửa nhanh mà giải thích dễ hiểu.",
   "en": ""
  },
  {
-  "vi": "\"con nhà tôi thì…\"",
+  "vi": "Không bắt thay đồ lung tung, quý ghê.",
   "en": ""
  },
  {
-  "vi": "khoe con giỏi sớm",
+  "vi": "Tưởng phải bỏ rồi, ai dè sống lại.",
   "en": ""
  },
  {
-  "vi": "hỏi mẹo nuôi con",
+  "vi": "Rau tươi xanh mướt!",
   "en": ""
  },
  {
-  "vi": "Con nhà tôi ấy mà…",
+  "vi": "Trứng gà còn ấm tay.",
   "en": ""
  },
  {
-  "vi": "Bé nhà mình đó…",
+  "vi": "Cà chua chín đỏ đẹp quá.",
   "en": ""
  },
  {
-  "vi": "Con nhà người ta…",
+  "vi": "Hái đúng độ chín luôn.",
   "en": ""
  },
  {
-  "vi": "vừa (👶, 🥰)",
+  "vi": "Chè đậm, đá mát, uống đã khát!",
   "en": ""
  },
  {
-  "vi": "con ăn gì",
+  "vi": "Cốc sạch bong, ngồi yên tâm.",
   "en": ""
  },
  {
-  "vi": "con học gì",
+  "vi": "Pha chè có tay rồi đấy.",
   "en": ""
  },
  {
-  "vi": "sữa, bỉm",
+  "vi": "Ngồi gốc bàng gió mát, không muốn về.",
   "en": ""
  },
  {
-  "vi": "lớp năng khiếu",
+  "vi": "Tìm đúng size, mặc vừa như đo.",
   "en": ""
  },
  {
-  "vi": "kể thêm chuyện con",
+  "vi": "Phối đồ khéo ghê, mặc lên sáng hẳn.",
   "en": ""
  },
  {
-  "vi": "\"may mà con tôi không nghe thấy\"",
+  "vi": "Cho thử thoải mái, không hối.",
   "en": ""
  },
  {
-  "vi": "\"làm mẹ còn mệt hơn nhiều, nhưng vẫn phải cười\", khuyên ngủ sớm",
+  "vi": "Tư vấn thật lòng, không nói quá.",
   "en": ""
  },
  {
-  "vi": "Bé nhà mình mới tí tuổi đã biết đọc bảng hiệu rồi, con nhà cuối hẻm giờ vẫn còn bi bô.",
+  "vi": "Tư vấn thức ăn kỹ ghê, bé ăn ngon.",
   "en": ""
  },
  {
-  "vi": "Con nhà tôi ấy mà, ăn gì cũng phải đúng bữa, tôi canh từng chút.",
+  "vi": "Bể cá lên đẹp, cá khỏe re.",
   "en": ""
  },
  {
-  "vi": "Hôm nay bé đi học vẽ, cô khen mãi, tôi nói thật chứ không khoe đâu.",
+  "vi": "Dặn dò kỹ, nuôi yên tâm hẳn.",
   "en": ""
  },
  {
-  "vi": "Dân bia hơi triết lý",
+  "vi": "Không bán bừa, quý tiệm ghê.",
   "en": ""
  },
  {
-  "vi": "chiều nào cũng ngồi quán vỉa hè, nói chuyện đời, triết lý bình dân",
+  "vi": "Trái ngọt lịm, cân đủ luôn.",
   "en": ""
  },
  {
-  "vi": "\"đời mà…\", \"chú nói cháu nghe\"",
+  "vi": "Lựa trái giùm khéo ghê.",
   "en": ""
  },
  {
-  "vi": "ví von bằng chuyện nhậu, bóng đá",
+  "vi": "Cân nhanh, tính gọn.",
   "en": ""
  },
  {
-  "vi": "kết câu bằng một câu triết lý",
+  "vi": "Mua ở đây yên tâm, không sợ trái dập.",
   "en": ""
  },
  {
-  "vi": "Đời là thế!",
+  "vi": "Ngõ sạch bong, cảm ơn tổ thu gom.",
   "en": ""
  },
  {
-  "vi": "Nói cho mà nghe…",
+  "vi": "Tối nào cũng đúng giờ, quý lắm.",
   "en": ""
  },
  {
-  "vi": "Uống cho đời nó nhẹ.",
+  "vi": "Nhắc phân loại dễ nghe ghê.",
   "en": ""
  },
  {
-  "vi": "thế sự",
+  "vi": "Làm cực mà lúc nào cũng vui vẻ.",
   "en": ""
  },
  {
-  "vi": "bóng đá",
+  "vi": "Thông một phát nước rút ào ào.",
   "en": ""
  },
  {
-  "vi": "chuyện đời",
+  "vi": "Báo giá rõ ràng, làm đúng giá.",
   "en": ""
  },
  {
-  "vi": "thời trẻ",
+  "vi": "Dọn sạch sẽ, không một vết bẩn.",
   "en": ""
  },
  {
-  "vi": "\"được, có chí\"",
+  "vi": "Giải thích dễ hiểu, cảm ơn thợ.",
   "en": ""
  },
  {
-  "vi": "cười khà khà, \"trẻ người non dạ\"",
+  "vi": "Dĩa cơm đầy đặn, xới nhanh tay.",
   "en": ""
  },
  {
-  "vi": "\"đời có lúc lên lúc xuống\", khuyên nhẹ nhàng",
+  "vi": "Nhớ đúng từng sticker tụi mình dặn.",
   "en": ""
  },
  {
-  "vi": "Đời như cốc bia hơi ấy, bọt thì nhiều mà men thì ít, phải biết thưởng thức.",
+  "vi": "Cắt thẳng tắp, có bao kiếng đàng hoàng.",
   "en": ""
  },
  {
-  "vi": "Nói cho mà nghe, làm ăn như đá bóng, thua trận này thì đá trận sau.",
+  "vi": "Canh bấm máy đúng lúc, không phải chụp lại.",
   "en": ""
  },
  {
-  "vi": "Làm ăn như đá bóng, thua trận này thì đá trận sau. Đời là thế!",
+  "vi": "Nóc tủ vuốt tay không dính bụi.",
   "en": ""
  },
  {
-  "vi": "giọng Bắc, hay \"nhá\", \"cơ\"",
+  "vi": "Bình hoa đặt lại y chỗ cũ.",
   "en": ""
  },
  {
-  "vi": "Lạc quan tếu",
+  "vi": "Nhớ đúng lời dặn, bàn làm việc không ai động.",
   "en": ""
  },
  {
-  "vi": "chuyện gì cũng nhìn mặt sáng, hơi quá đà, vô tư",
+  "vi": "Sàn lau nước sạch, thơm mà không nồng.",
   "en": ""
  },
  {
-  "vi": "\"không sao đâu!\"",
+  "vi": "Nhớ cả lời dặn kiêng muối của ông.",
   "en": ""
  },
  {
-  "vi": "biến chuyện xui thành may",
+  "vi": "Sổ chợ rõ ràng, hóa đơn đủ cả.",
   "en": ""
  },
  {
-  "vi": "cười nhiều",
+  "vi": "Tìm sách trúng phóc, chẳng phải chờ.",
   "en": ""
  },
  {
-  "vi": "Không sao đâu!",
+  "vi": "Phí phạt rõ ràng, có biên lai.",
   "en": ""
  },
  {
-  "vi": "Xui quá hóa hên!",
+  "vi": "Gợi ý cuốn sách đúng gu luôn.",
   "en": ""
  },
  {
-  "vi": "Mai sẽ khác!",
+  "vi": "Phòng đọc yên mà ai cũng được nói nhẹ nhàng.",
   "en": ""
  },
  {
-  "vi": "vừa (🌈, 😄)",
+  "vi": "Bé về nhà vui, kể về cô suốt bữa tối.",
   "en": ""
  },
  {
-  "vi": "chuyện vui",
+  "vi": "Nhớ từng dòng giấy dặn, không phải nhắc.",
   "en": ""
  },
  {
-  "vi": "kế hoạch đi chơi",
+  "vi": "Nhật ký trong ngày rõ ràng, kể thật.",
   "en": ""
  },
  {
-  "vi": "đồ ăn ngon",
+  "vi": "Nước dùng trong, ngọt xương.",
   "en": ""
  },
  {
-  "vi": "vui gấp đôi",
+  "vi": "Nhớ cả lời dặn không mì chính.",
   "en": ""
  },
  {
-  "vi": "\"thôi đừng nóng, cười cái coi\"",
+  "vi": "Bưng ra nóng hổi, húp cạn tô.",
   "en": ""
  },
  {
-  "vi": "\"mưa xong là cầu vồng\", rủ đi ăn",
+  "vi": "Món quà đúng ý bé luôn.",
   "en": ""
  },
  {
-  "vi": "Mưa hả? Tuyệt, khỏi tưới cây luôn!",
+  "vi": "Tư vấn kỹ, không bán thừa món nào.",
   "en": ""
  },
  {
-  "vi": "Làm hỏng thì làm lại, coi như tập thêm một lần, lời quá còn gì!",
+  "vi": "Gói quà xinh quá trời.",
   "en": ""
  },
  {
-  "vi": "Hôm nay xui hả, vậy là hết xui rồi, mai chỉ còn hên thôi 😄",
+  "vi": "Tìm đúng món cho bé rồi.",
   "en": ""
  },
  {
-  "vi": "Mưa hả? Tuyệt, khỏi tưới cây luôn! 🌈",
+  "vi": "Chuyến đi đáng nhớ lắm!",
   "en": ""
  },
  {
-  "vi": "Hôm nay xui hả? Vậy là hết xui rồi, mai chỉ còn hên thôi 😄",
+  "vi": "Kể chuyện hay, cả đoàn mê.",
   "en": ""
  },
  {
-  "vi": "Hay than thở",
+  "vi": "Ảnh chụp đẹp ghê, về khoe liền.",
   "en": ""
  },
  {
-  "vi": "đời mệt mỏi, cái gì cũng than, nhưng vẫn làm",
+  "vi": "Đi cả ngày mà không ai bị lạc, giỏi thiệt.",
   "en": ""
  },
  {
-  "vi": "thở dài \"haizz…\"",
+  "vi": "Sổ sách rõ ràng, đọc là hiểu.",
   "en": ""
  },
  {
-  "vi": "kể khổ",
+  "vi": "Nhờ vậy mà khỏi lo cuối tháng.",
   "en": ""
  },
  {
-  "vi": "than giá cả, than đau lưng",
+  "vi": "Dặn kỹ cách dùng, yên tâm hẳn.",
   "en": ""
  },
  {
-  "vi": "Mệt quá trời.",
+  "vi": "Hỏi han kỹ lưỡng quá.",
   "en": ""
  },
  {
-  "vi": "ít (😮‍💨)",
+  "vi": "Bé về kể chuyện lớp suốt buổi tối.",
   "en": ""
  },
  {
-  "vi": "tiền điện",
+  "vi": "Bé tự làm bài được rồi, mừng ghê.",
   "en": ""
  },
  {
-  "vi": "kẹt xe",
+  "vi": "Giải quyết gọn gàng, cảm ơn nhiều.",
   "en": ""
  },
  {
-  "vi": "ngủ không đủ",
+  "vi": "Nghe máy dễ chịu ghê.",
   "en": ""
  },
  {
-  "vi": "\"được có người hỏi thăm là quý rồi\"",
+  "vi": "Hồ sơ gọn gàng, sếp khen.",
   "en": ""
  },
  {
-  "vi": "Tiền điện tháng này lên nữa rồi, mở cái quạt cũng thấy xót.",
+  "vi": "Số liệu khớp từng dòng.",
   "en": ""
  },
  {
-  "vi": "Mệt quá trời, mà thôi, than hoài cũng phải làm.",
+  "vi": "Bảng lương khớp từng đồng.",
   "en": ""
  },
  {
-  "vi": "Haizz… sáng giờ kẹt xe muốn xỉu, lưng thì mỏi.",
+  "vi": "Nhờ vậy mà kịp hạn nộp.",
   "en": ""
  },
  {
-  "vi": "Tiền điện lại lên nữa rồi, mở cái quạt cũng thấy xót, haizz.",
+  "vi": "Sổ hợp nhất khớp từng dòng.",
   "en": ""
  },
  {
-  "vi": "nghi ngờ mọi thứ, sợ bị lừa, hỏi lại nhiều lần",
+  "vi": "Báo cáo gọn, họp nhẹ cả người.",
   "en": ""
  },
  {
-  "vi": "\"chắc không?\", \"ai nói?\"",
+  "vi": "Hồ sơ của em được giải quyết nhanh ghê.",
   "en": ""
  },
  {
-  "vi": "đòi bằng chứng",
+  "vi": "Bảng công rõ ràng, lương về đủ.",
   "en": ""
  },
  {
-  "vi": "nhìn trước ngó sau",
+  "vi": "Lịch gọn gàng, không ai phải chờ.",
   "en": ""
  },
  {
-  "vi": "Chắc chưa?",
+  "vi": "Lời nhắn ghi đủ, gọi lại đúng giờ.",
   "en": ""
  },
  {
-  "vi": "Có gì mờ ám không đó?",
+  "vi": "Máy chạy lại rồi, cứu một bàn thua trông thấy.",
   "en": ""
  },
  {
-  "vi": "Đừng có lừa tôi nha.",
+  "vi": "Giảng dễ hiểu, lần sau tự làm được.",
   "en": ""
  },
  {
-  "vi": "lừa đảo qua mạng",
+  "vi": "Hạ cánh êm ru, cả khoang vỗ tay.",
   "en": ""
  },
  {
-  "vi": "hàng giả",
+  "vi": "Tiếp viên chu đáo quá, cảm ơn nhiều.",
   "en": ""
  },
  {
-  "vi": "người lạ trong hẻm",
+  "vi": "Chuyến bay dễ chịu ghê.",
   "en": ""
  },
  {
-  "vi": "\"hừm, để xem thật lòng không\"",
+  "vi": "Chờ có ba phút mà yên tâm cả nhà.",
   "en": ""
  },
  {
-  "vi": "\"biết ngay mà\"",
+  "vi": "Gác chắn nói rõ ràng, chờ cũng không bực.",
   "en": ""
  },
  {
-  "vi": "\"có ai bắt nạt không, nói tôi nghe\", dặn cẩn thận",
+  "vi": "Hỏi tên, ngày sinh kỹ lưỡng, yên tâm ghê.",
   "en": ""
  },
  {
-  "vi": "Chắc chưa đó? Hôm trước có đứa cũng nói vậy rồi giao sai hết.",
+  "vi": "Giải thích từng bước, cả nhà bớt lo.",
   "en": ""
  },
  {
-  "vi": "Tin nhắn trúng thưởng hả? Lừa đấy, đừng bấm vào.",
+  "vi": "Báo bác sĩ kịp lúc, cảm ơn nhiều.",
   "en": ""
  },
  {
-  "vi": "Tự dưng tốt vậy, có gì mờ ám không đó?",
+  "vi": "Đèn Hòn Gió sáng đúng giờ, tàu về yên tâm.",
   "en": ""
  },
  {
-  "vi": "Tin nhắn trúng thưởng thì đừng bấm nhé, lừa đấy.",
+  "vi": "Trạm báo đài rõ ràng, cảm ơn nhiều.",
   "en": ""
  },
  {
-  "vi": "Ngây thơ",
+  "vi": "Cô tổng đài giữ máy với tôi tới lúc xe tới.",
   "en": ""
  },
  {
-  "vi": "tin người, tò mò, hỏi ngây ngô, dễ thương",
+  "vi": "Hỏi địa chỉ trước, xe tới đúng cửa.",
   "en": ""
  },
  {
-  "vi": "hỏi \"tại sao\"",
+  "vi": "Dặn từng bước, tôi làm theo được liền.",
   "en": ""
  },
  {
-  "vi": "hiểu theo nghĩa đen",
+  "vi": "Cứu hộ mắt không rời hồ, gửi con yên tâm.",
   "en": ""
  },
  {
-  "vi": "vui vì chuyện nhỏ",
+  "vi": "Thổi còi đúng lúc mà nói dễ nghe.",
   "en": ""
  },
  {
-  "vi": "Ủa vậy hả?",
+  "vi": "Có sấm là cho lên bờ liền, chuyên nghiệp.",
   "en": ""
  },
  {
-  "vi": "Thật hả?",
+  "vi": "Làm giấy tờ nhanh mà không mất đồng nào.",
   "en": ""
  },
  {
-  "vi": "Hay quá!",
+  "vi": "Nghe hai nhà nói hết rồi mới phân xử, phục ghê.",
   "en": ""
  },
  {
-  "vi": "ít (🐣)",
+  "vi": "Tìm được bé kịp lúc, cảm ơn cán bộ.",
   "en": ""
  },
  {
-  "vi": "những điều mới lạ",
+  "vi": "một ly trà sữa",
   "en": ""
  },
  {
-  "vi": "con vật",
+  "vi": "hộp bánh bông lan",
   "en": ""
  },
  {
-  "vi": "vui như được quà",
+  "vi": "tấm thiệp viết tay",
   "en": ""
  },
  {
-  "vi": "ngơ ngác, không hiểu sao bị mắng",
+  "vi": "mấy trái quýt ngọt",
   "en": ""
  },
  {
-  "vi": "Ủa, trà sữa có trà thật hả? {Toi} tưởng chỉ có sữa với trân châu thôi!",
+  "vi": "hũ tương ớt nhà làm",
   "en": ""
  },
  {
-  "vi": "Ủa, sao mây hôm nay giống con mèo quá vậy? Hay ghê!",
+  "vi": "bịch chanh vườn nhà",
   "en": ""
  },
  {
-  "vi": "Cụ già hoài niệm",
+  "vi": "lời khen viết vội trên khăn giấy",
   "en": ""
  },
  {
-  "vi": "nhớ ngày xưa, kể chuyện cũ chậm rãi, hiền hậu",
+  "vi": "bức vẽ nguệch ngoạc trên khăn giấy",
   "en": ""
  },
  {
-  "vi": "\"hồi đó…\", \"ngày xưa ấy mà…\"",
+  "vi": "một nhành cúc nhỏ",
   "en": ""
  },
  {
-  "vi": "đôi khi kể lại chuyện đã kể",
+  "vi": "mấy viên kẹo dừa",
   "en": ""
  },
  {
-  "vi": "Hồi đó…",
+  "vi": "một nắm kẹo",
   "en": ""
  },
  {
-  "vi": "Ngày xưa ấy mà…",
+  "vi": "tờ giấy note vẽ ly trà sữa",
   "en": ""
  },
  {
-  "vi": "Bây giờ khác quá.",
+  "vi": "nải chuối nhà trồng",
   "en": ""
  },
  {
-  "vi": "phố cũ",
+  "vi": "hộp bánh quy",
   "en": ""
  },
  {
-  "vi": "cây me đầu hẻm",
+  "vi": "tấm thiệp cảm ơn",
   "en": ""
  },
  {
-  "vi": "chợ ngày xưa",
+  "vi": "gói trà sen",
   "en": ""
  },
  {
-  "vi": "con cháu",
+  "vi": "trái bưởi Năm Roi",
   "en": ""
  },
  {
-  "vi": "\"ngoan quá, giống cháu mình\"",
+  "vi": "mấy trái xoài cát",
   "en": ""
  },
  {
-  "vi": "buồn, \"thời nay khác thật\"",
+  "vi": "bịch khoai lang luộc",
   "en": ""
  },
  {
-  "vi": "kể chuyện ngày xưa khổ mà vượt qua, dặn giữ sức",
+  "vi": "chai nước mát",
   "en": ""
  },
  {
-  "vi": "Hồi đó hẻm này còn cây me to lắm, chiều nào cũng ngồi dưới gốc nghe radio.",
+  "vi": "ổ bánh mì nóng",
   "en": ""
  },
  {
-  "vi": "Ngày xưa đi chợ phải xếp hàng từ tờ mờ sáng, giờ bấm điện thoại là có, lạ thật.",
+  "vi": "mấy viên kẹo gừng",
   "en": ""
  },
  {
-  "vi": "Làm giống hệt thằng cháu hồi mới ra đời, cứ cặm cụi vậy thôi.",
+  "vi": "gói cà phê rang từ quê",
   "en": ""
  },
  {
-  "vi": "trẻ, nhanh, hài, dùng từ lóng và teencode",
+  "vi": "dòng cảm ơn trong sổ lưu bút",
   "en": ""
  },
  {
-  "vi": "viết tắt kiểu ko, j, dc, r, z",
+  "vi": "hộp bánh đặc sản",
   "en": ""
  },
  {
-  "vi": "từ lóng: xỉu ngang, slay, flex, red flag, chằm zn",
+  "vi": "túi bánh thưởng cho các bé ở tiệm",
   "en": ""
  },
  {
-  "vi": "chêm vài chữ tiếng Anh",
+  "vi": "tấm ảnh bé cưng có chữ “cảm ơn”",
   "en": ""
  },
  {
-  "vi": "xỉu ngang",
+  "vi": "hộp bánh donut",
   "en": ""
  },
  {
-  "vi": "chằm zn",
+  "vi": "ly cà phê sữa đá",
   "en": ""
  },
  {
-  "vi": "nhiều (😭, ✨, 🫶)",
+  "vi": "bịch cam",
   "en": ""
  },
  {
-  "vi": "trend mạng",
+  "vi": "gói hạt giống quý",
   "en": ""
  },
  {
-  "vi": "\"iu ghê 🫶\"",
+  "vi": "hũ mật ong rừng",
   "en": ""
  },
  {
-  "vi": "\"ủa alo?\", \"red flag nha\"",
+  "vi": "rổ trứng gà ta",
   "en": ""
  },
  {
-  "vi": "\"ôm cái nè 🫂\", rủ đi trà sữa",
+  "vi": "nắm xôi xéo còn nóng",
   "en": ""
  },
  {
-  "vi": "Ủa alo, hôm nay trời nóng xỉu ngang luôn á 🫠",
+  "vi": "nải chuối chín",
   "en": ""
  },
  {
-  "vi": "Ly này slay thiệt sự, mười điểm khum có nhưng ✨",
+  "vi": "gói lạc rang nhà làm",
   "en": ""
  },
  {
-  "vi": "{Ban} buồn hả, ôm cái nè 🫂 tối đi trà sữa hông?",
+  "vi": "tấm ảnh mặc đồ mới kèm lời cảm ơn",
   "en": ""
  },
  {
-  "vi": "Ủa alo, nay trời nóng xỉu ngang luôn á 🫠",
+  "vi": "mấy trái quýt",
   "en": ""
  },
  {
-  "vi": "Chằm zn luôn á, ko có j để nói hết 🥲",
+  "vi": "tấm ảnh bé cưng ở nhà mới",
   "en": ""
  },
  {
-  "vi": "Dân văn phòng mệt mỏi",
+  "vi": "chậu sen đá nhỏ",
   "en": ""
  },
  {
-  "vi": "cày deadline, cà phê thay nước, đếm từng ngày tới cuối tuần",
+  "vi": "ly trà đá mát",
   "en": ""
  },
  {
-  "vi": "than họp, sếp, email",
+  "vi": "lời cảm ơn viết trên giấy gói",
   "en": ""
  },
  {
-  "vi": "dùng từ công sở: deadline, họp, báo cáo",
+  "vi": "gói bánh bông lan",
   "en": ""
  },
  {
-  "vi": "mơ về cuối tuần",
+  "vi": "tô bún bò nóng",
   "en": ""
  },
  {
-  "vi": "Mệt mà vẫn phải cười.",
+  "vi": "hũ mứt gừng nhà làm",
   "en": ""
  },
  {
-  "vi": "Chiều nay lại họp.",
+  "vi": "bịch chanh nhà trồng của chú Bình",
   "en": ""
  },
  {
-  "vi": "Cuối tuần ơi mau tới.",
+  "vi": "bó húng quế bà Sương trồng",
   "en": ""
  },
  {
-  "vi": "ít (☕)",
+  "vi": "bó rau muống non của chị Lụa",
   "en": ""
  },
  {
-  "vi": "kẹt xe giờ tan tầm",
+  "vi": "một dải ảnh cả nhóm tặng lại",
   "en": ""
  },
  {
-  "vi": "\"được hỏi han vậy thấy đời còn đẹp\"",
+  "vi": "bịch kẹo dẻo hội bạn chia",
   "en": ""
  },
  {
-  "vi": "\"hôm nay đủ mệt rồi, xin tha\"",
+  "vi": "tấm thiệp vẽ cái máy ảnh",
   "en": ""
  },
  {
-  "vi": "\"cùng hội cùng thuyền\", khuyên nghỉ, rủ trốn đi ăn",
+  "vi": "gói trà bà Xuân gói sẵn",
   "en": ""
  },
  {
-  "vi": "Sếp nhắn lúc nửa đêm hỏi \"em ngủ chưa\", ám ảnh thiệt.",
+  "vi": "hộp bánh anh Tùng để trên bàn",
   "en": ""
  },
  {
-  "vi": "Còn mấy ngày nữa mới tới cuối tuần mà thấy xa như Tết.",
+  "vi": "túi bánh cá chị Hà mua cho bạn",
   "en": ""
  },
  {
-  "vi": "Người tâm lý hay khuyên nhủ",
+  "vi": "bịch khô cá cô Lệ phơi",
   "en": ""
  },
  {
-  "vi": "biết lắng nghe, hỏi sâu, khuyên nhẹ nhàng mà thực tế",
+  "vi": "bức tranh mâm cơm bé Bin vẽ",
   "en": ""
  },
  {
-  "vi": "hỏi \"cảm thấy sao\"",
+  "vi": "bài thơ ông Toàn chép tay",
   "en": ""
  },
  {
-  "vi": "nhắc lại ý người chơi vừa nói",
+  "vi": "chiếc kẹp sách tự làm",
   "en": ""
  },
  {
-  "vi": "khuyên từng bước nhỏ, không phán xét",
+  "vi": "gói trà ông Thạc gửi",
   "en": ""
  },
  {
-  "vi": "Kể nghe coi.",
+  "vi": "tấm thiệp cảm ơn của Đạt",
   "en": ""
  },
  {
-  "vi": "Không sao đâu, từ từ thôi.",
+  "vi": "bức tranh bé vẽ bằng bút sáp",
   "en": ""
  },
  {
-  "vi": "Mình hiểu mà.",
+  "vi": "túi bánh gạo bé chia cho",
   "en": ""
  },
  {
-  "vi": "ít (🫖, 💛)",
+  "vi": "tấm thiệp mẹ bé viết tay",
   "en": ""
  },
  {
-  "vi": "sức khỏe tinh thần",
+  "vi": "gói xôi xéo chị Nguyệt để phần",
   "en": ""
  },
  {
-  "vi": "ngủ nghỉ",
+  "vi": "bức tranh nồi phở bé Bống vẽ",
   "en": ""
  },
  {
-  "vi": "cách nói chuyện với người khó tính",
+  "vi": "chai tương đen anh Sáu mang từ Sài Gòn",
   "en": ""
  },
  {
-  "vi": "khích lệ cụ thể",
+  "vi": "gói kẹo mừng đầy tháng",
   "en": ""
  },
  {
-  "vi": "an ủi, gợi ý một việc nhỏ làm ngay (uống nước ấm, đi dạo một vòng hẻm, ngủ sớm); nghe tin đồn thì khuyên đừng để bụng",
+  "vi": "tấm thiệp bé nhà vẽ",
   "en": ""
  },
  {
-  "vi": "Người ta nói gì kệ người ta, mình biết mình làm đúng là đủ rồi nha.",
+  "vi": "móc khóa lưu niệm từ quê khách",
   "en": ""
  },
  {
-  "vi": "Thử làm một việc nhỏ thôi: uống ly nước ấm, đi dạo một vòng hẻm, rồi tính tiếp.",
+  "vi": "tấm bưu thiếp có chữ ký cả đoàn",
   "en": ""
  },
  {
-  "vi": "Làm được tới đây là giỏi rồi đó, từ từ thôi nha.",
+  "vi": "thanh sô-cô-la ngoại",
   "en": ""
  },
  {
-  "vi": "Thẳng như ruột ngựa",
+  "vi": "bịch cam sành",
   "en": ""
  },
  {
-  "vi": "nghĩ gì nói nấy, không vòng vo, không ác ý",
+  "vi": "lời cảm ơn viết tay",
   "en": ""
  },
  {
-  "vi": "câu ngắn, nói thẳng khuyết điểm",
+  "vi": "mẩu giấy cảm ơn viết tay",
   "en": ""
  },
  {
-  "vi": "khen cũng thẳng",
+  "vi": "nhành hoa cúc",
   "en": ""
  },
  {
-  "vi": "ghét nói vòng",
+  "vi": "tấm thiệp bé tự vẽ",
   "en": ""
  },
  {
-  "vi": "Nói thật nha.",
+  "vi": "bông hoa bé hái ở vườn",
   "en": ""
  },
  {
-  "vi": "Sai thì nói sai.",
+  "vi": "lá thư cảm ơn của phụ huynh",
   "en": ""
  },
  {
-  "vi": "Không vòng vo.",
+  "vi": "hộp bánh quy bé nướng cùng mẹ",
   "en": ""
  },
  {
-  "vi": "việc đang làm",
+  "vi": "email cảm ơn gửi riêng",
   "en": ""
  },
  {
-  "vi": "chuyện đúng sai trong hẻm",
+  "vi": "lời khen gửi lên quản lý",
   "en": ""
  },
  {
-  "vi": "\"được, ưng\"",
+  "vi": "tin nhắn cảm ơn thật dài",
   "en": ""
  },
  {
-  "vi": "\"nói vậy là không được, nói thẳng\"",
+  "vi": "hộp bánh mời cả phòng",
   "en": ""
  },
  {
-  "vi": "\"buồn thì cứ buồn, mai làm lại\", thẳng mà ấm",
+  "vi": "ly cà phê đặt trên bàn",
   "en": ""
  },
  {
-  "vi": "Áo đẹp, tóc thì hơi rối, chải lại đi.",
+  "vi": "tin nhắn khen gửi sếp",
   "en": ""
  },
  {
-  "vi": "Sai thì nhận, nhận rồi sửa, có gì đâu mà lo.",
+  "vi": "túi cam để trên bàn",
   "en": ""
  },
  {
-  "vi": "Lịch sự xã giao",
+  "vi": "ly trà sữa đặt trên bàn",
   "en": ""
  },
  {
-  "vi": "nhã nhặn, giữ phép, xã giao chuẩn mực, hơi khách sáo",
+  "vi": "tấm thiệp cảm ơn của bạn mới vào",
   "en": ""
  },
  {
-  "vi": "\"dạ, cảm ơn\", \"rất vui\"",
+  "vi": "túi cam khách biếu",
   "en": ""
  },
  {
-  "vi": "câu tròn trịa",
+  "vi": "mẩu giấy “cảm ơn anh IT” dán trên màn hình",
   "en": ""
  },
  {
-  "vi": "ít kể chuyện riêng",
+  "vi": "bức vẽ chiếc máy bay của một em nhỏ",
   "en": ""
  },
  {
-  "vi": "Rất cảm ơn.",
+  "vi": "tấm thiệp gửi tổ bay",
   "en": ""
  },
  {
-  "vi": "Không dám.",
+  "vi": "mẩu giấy cảm ơn kẹp trong túi ghế",
   "en": ""
  },
  {
-  "vi": "Phiền quá.",
+  "vi": "gói kẹo dừa Bến Tre",
   "en": ""
  },
  {
-  "vi": "lời chúc",
+  "vi": "trái xoài chín",
   "en": ""
  },
  {
-  "vi": "cảm ơn trang trọng",
+  "vi": "ấm chè xanh bà Bông pha",
   "en": ""
  },
  {
-  "vi": "vẫn lịch sự nhưng lạnh hơn, \"Tôi hiểu. Xin phép.\"",
+  "vi": "gói xôi nóng của cô bán xôi",
   "en": ""
  },
  {
-  "vi": "\"mong mọi chuyện sớm ổn\", đề nghị giúp một việc cụ thể",
+  "vi": "tấm thiệp tụi nhỏ vẽ con tàu",
   "en": ""
  },
  {
-  "vi": "Dạ, rất cảm ơn, hôm nay mọi thứ đều chu đáo ạ.",
+  "vi": "lá thư cảm ơn viết tay",
   "en": ""
  },
  {
-  "vi": "Phiền quá, lần nào ghé cũng được đón tiếp tử tế.",
+  "vi": "vài dòng khen trong sổ góp ý của khoa",
   "en": ""
  },
  {
-  "vi": "Tôi hiểu. Nếu cần gì, xin cứ cho tôi biết nhé.",
+  "vi": "bức tranh cháu người bệnh vẽ tặng khoa",
   "en": ""
  },
  {
-  "vi": "Hướng nội ấm áp",
+  "vi": "con cá thu ông Sáu Ghe gửi ra đảo",
   "en": ""
  },
  {
-  "vi": "ít nói nơi đông người nhưng ấm, biết lắng nghe, tinh tế",
+  "vi": "túi xoài cô Thắm mang theo tàu",
   "en": ""
  },
  {
-  "vi": "câu ngắn mà chu đáo",
+  "vi": "tấm thiệp khách du lịch viết tặng trạm",
   "en": ""
  },
  {
-  "vi": "để ý chi tiết nhỏ",
+  "vi": "lá thư cảm ơn gửi hộp thư trung tâm",
   "en": ""
  },
  {
-  "vi": "nói về sách, nhạc, cây cối",
+  "vi": "bức tranh “cô tổng đài” bé Na vẽ",
   "en": ""
  },
  {
-  "vi": "Ừm, hiểu mà.",
+  "vi": "túi quýt người được cứu gửi cả ca",
   "en": ""
  },
  {
-  "vi": "Để ý thấy…",
+  "vi": "ly chè đậu xanh phụ huynh mang tới",
   "en": ""
  },
  {
-  "vi": "Cảm ơn nha.",
+  "vi": "bức tranh cá heo bé Bon vẽ",
   "en": ""
  },
  {
-  "vi": "ít (🌿)",
+  "vi": "tấm thiệp cảm ơn dán ở ghế trực",
   "en": ""
  },
  {
-  "vi": "nhạc",
+  "vi": "lá thư cảm ơn gửi phường",
   "en": ""
  },
  {
-  "vi": "cây cối",
+  "vi": "bức vẽ chú công an của bé Bin",
   "en": ""
  },
  {
-  "vi": "góc yên tĩnh",
+  "vi": "vài dòng khen trong sổ góp ý bàn tiếp dân",
   "en": ""
  },
  {
-  "vi": "mỉm cười, tặng một món nhỏ",
+  "vi": "Có chút quà, em nhận cho vui nhé.",
   "en": ""
  },
  {
-  "vi": "lặng lẽ rút lui",
+  "vi": "Không nhiều đâu, cảm ơn em.",
   "en": ""
  },
  {
-  "vi": "Không cần nói gì đâu, ngồi đây một chút cũng được.",
+  "vi": "Cầm lấy, coi như lời cảm ơn.",
   "en": ""
  },
  {
-  "vi": "Ừm… hôm nay góc cửa sổ nắng đẹp ghê.",
+  "vi": "Cái này… cho em.",
   "en": ""
  },
  {
-  "vi": "Dân buôn bán lanh lợi",
+  "vi": "Em nhận giúp nhé… cảm ơn.",
   "en": ""
  },
  {
-  "vi": "miệng dẻo, xởi lởi, tính nhanh, chào mời",
+  "vi": "Quà nhỏ xíu nè, nhận đi mà!",
   "en": ""
  },
  {
-  "vi": "\"cưng ơi\", \"mở hàng\", \"lấy hên\"",
+  "vi": "Cho em nè, cảm ơn nhiều nha!",
   "en": ""
  },
  {
-  "vi": "mời chào, quảng cáo hàng của mình",
+  "vi": "Của nhà làm được, cháu cầm lấy.",
   "en": ""
  },
  {
-  "vi": "cười xòa cho qua chuyện",
+  "vi": "Để đây nha, cảm ơn em nhiều!",
   "en": ""
  },
  {
-  "vi": "Mở hàng cái nè!",
+  "vi": "Chút quà cảm ơn, mình chạy đây!",
   "en": ""
  },
  {
-  "vi": "Hàng mới về nha cưng!",
+  "vi": "Quà nè, không nhận là buồn á!",
   "en": ""
  },
  {
-  "vi": "Hòa khí sinh tài.",
+  "vi": "Tặng bạn nè, cảm ơn nha 🫶",
   "en": ""
  },
  {
-  "vi": "buôn bán",
+  "vi": "Small gift from my country. Cảm ơn!",
   "en": ""
  },
  {
-  "vi": "khách khó",
+  "vi": "For you! Cảm ơn nhiều!",
   "en": ""
  },
  {
-  "vi": "hàng mới về",
+  "vi": "Biếu chùa ít trái cây nhà trồng, nhận cho bà con vui nhé.",
   "en": ""
  },
  {
-  "vi": "\"dễ thương dữ, bữa nào ghé bớt cho\"",
+  "vi": "Có gói trà, pha mời khách thập phương nhé.",
   "en": ""
  },
  {
-  "vi": "cười xòa \"thôi, buôn bán mà, hòa khí sinh tài\"",
+  "vi": "Chút lòng thành của nhà, nhận giúp nha.",
   "en": ""
  },
  {
-  "vi": "\"buôn có lúc lời lúc lỗ, cười lên cho hên\"",
+  "vi": "Hôm nay nhà có chuyện vui, cứ giữ hết đi!",
   "en": ""
  },
  {
-  "vi": "Buôn bán mà, hòa khí sinh tài, giận chi cho mệt.",
+  "vi": "Lâu lắm mới gặp người làm tận tâm vậy. Nhận đi, đừng từ chối nha.",
   "en": ""
  },
  {
-  "vi": "Hàng mới về tươi rói, bữa nào ghé coi nghen.",
+  "vi": "Con gái vừa đậu đại học, hôm nay ai cũng có phần!",
   "en": ""
  },
  {
-  "vi": "giọng Nam, hay \"nghen\", \"cưng\"",
+  "vi": "Coi như lì xì sớm, lấy hên nha!",
   "en": ""
  },
  {
-  "vi": "Nóng tính mau nguội",
+  "vi": "Làm vậy còn xứng đáng hơn nhiều, nhận đi.",
   "en": ""
  },
  {
-  "vi": "nổi nóng nhanh, quát vài câu rồi quên ngay",
+  "vi": "Mai đi xa rồi, cảm ơn vì mấy lần qua nha.",
   "en": ""
  },
  {
-  "vi": "câu cảm thán \"trời đất ơi\"",
+  "vi": "Vừa được thưởng dự án, chia vui chút xíu!",
   "en": ""
  },
  {
-  "vi": "quay ngoắt \"thôi bỏ qua\"",
+  "vi": "Lần đầu thấy mặt ở chùa mà làm việc chu đáo ghê. A Di Đà Phật.",
   "en": ""
  }
 ]

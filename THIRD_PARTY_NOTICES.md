@@ -64,3 +64,10 @@ The pagoda ("Vào chùa") plays six recordings in `public/audio/chua/`, each **C
 - *singing monk in buddhism temple in vietnam* by Ottak16 (`su-tung-kinh.mp3`)
 
 `public/music/CREDITS.md` (section "The pagoda") has the source links and how each file was cut.
+
+## YouTube (🎤 Phòng hát)
+
+The karaoke rooms embed videos with the official YouTube IFrame Player API (https://www.youtube.com/iframe_api) on
+youtube-nocookie.com, ads and branding as YouTube shows them; links are checked with YouTube's public oEmbed endpoint
+(no API key). No YouTube audio or video passes through or is stored by this game: only the 11-character video id.
+Phòng hát dùng trình phát YouTube; YouTube có thể đặt cookie và hiển thị quảng cáo. YouTube Terms of Service apply.

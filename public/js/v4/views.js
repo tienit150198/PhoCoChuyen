@@ -9,13 +9,19 @@ import {certInfo,certCss} from './certificates.js';
 import {lockChip} from '../careers/stage_fold.js';
 import {wordsFor} from '../scenes/index.js';
 import {fundLabel} from './money.js';
+import {T,isShop,offersOf} from './terms.js';
 import {confirmPurchase} from './payment.js';
 import {orderQuote,fitDraft,vans,vansLine} from './restock.js';
 import {Sound} from '../audio.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 /** The workplace money word the 💰 chip uses too ("Quỹ tiệm", "Quỹ nông trại"…; v4/money.js). */
-const fundName=id=>fundLabel(wordsFor(id).till);
+const fundName=id=>fundLabel(wordsFor(id).till,id);
+/** A job that is not a shop answers its reviews in its own words (game/career_voice.py, v4/terms.js); the pagoda and
+ * the teacher keep their own sets below. */
+const ownVoice=cid=>Boolean(cid)&&cid!=='pagoda'&&cid!=='teacher'&&!isShop(cid);
+const capFirst=s=>String(s||'').replace(/^./,ch=>ch.toUpperCase());
+const peopleLabel=cid=>ownVoice(cid)?capFirst(T(cid,'people')):'Khách';
 /** Short deliveries not claimed yet (received today or yesterday) and what the supplier refunds (game/inventory.py inv_claim). */
 const unclaimed=(orders,day)=>orders.filter(o=>o.status==='received'&&o.actual<o.qty&&!o.claimed&&Number(o.day)>=Number(day)-1);
 const refundOf=o=>Math.max(1,Math.floor((2*o.cost*(o.qty-o.actual)+o.qty)/(2*o.qty)));
@@ -389,8 +395,8 @@ export function feedbackView(env){
     const tag=!f?'':f.removed?pill('Đã gỡ',''):s==='awaiting'?pill('Đang đọc…','blue'):s==='open'?`<span class="rv-reply">${icon('chat',13)} ${f.thread.some(x=>x.role==='owner')?'Khách hỏi lại':pagoda?'Hồi đáp':'Trả lời'}</span>`:f.ignored?pill('Đã bỏ qua',''):f.report==='rejected'?pill('Báo cáo không được duyệt',''):p.stars&&f.stars_original&&p.stars>f.stars_original?pill(`Đã sửa ★${f.stars_original} → ★${p.stars}`,'green'):f.thread.some(x=>x.role==='owner')?pill(pagoda?'Đã hồi đáp':'Đã trả lời','green'):'';
     const flags=f?.clues?.length&&!f.removed?`<span class="rv-flags">${f.clues.map(x=>`<span class="tag amber">${icon('flag',11)} ${esc(x)}</span>`).join('')}</span>`:'';
     // The latest exchange (your reply, then what the reviewer did) right under the quote.
-    const peek=f&&!f.removed?rvBoxes(p,parent,true,pagoda).filter(x=>x.role!=='guest').slice(-2).map(x=>x.html).join(''):'';
-    return `<button type="button" class="rv-card ${p.id===shown?.id?'active':''}${f?.removed?' removed':''}" data-action="v4FbOpen" data-post="${esc(p.id)}"><span class="persona ck-avatar" aria-hidden="true">${esc(f?.persona_emoji||'🙂')}</span><span class="grow"><span class="ck-meta"><b>${esc(p.author)}</b><small>Ngày ${p.day}</small></span>${p.stars?`<span class="stars ck-stars" aria-label="${p.stars} sao">${stars(p.stars)}</span>`:''}<span class="rv-text${p.stars&&p.stars<=2?' low':''}"><b class="rv-who">${parent?'Phụ huynh':pagoda?'Khách thập phương':'Khách'}</b> “${esc(p.text)}”</span>${flags}${peek?`<span class="rv-peek">${peek}</span>`:''}${f?.title||tag?`<span class="rv-foot">${f?.title?`<small>${esc(f.title)}</small>`:''}${tag}</span>`:''}</span></button>`;};
+    const peek=f&&!f.removed?rvBoxes(p,parent,true,pagoda,api.state.current).filter(x=>x.role!=='guest').slice(-2).map(x=>x.html).join(''):'';
+    return `<button type="button" class="rv-card ${p.id===shown?.id?'active':''}${f?.removed?' removed':''}" data-action="v4FbOpen" data-post="${esc(p.id)}"><span class="persona ck-avatar" aria-hidden="true">${esc(f?.persona_emoji||'🙂')}</span><span class="grow"><span class="ck-meta"><b>${esc(p.author)}</b><small>Ngày ${p.day}</small></span>${p.stars?`<span class="stars ck-stars" aria-label="${p.stars} sao">${stars(p.stars)}</span>`:''}<span class="rv-text${p.stars&&p.stars<=2?' low':''}"><b class="rv-who">${parent?'Phụ huynh':pagoda?'Khách thập phương':esc(peopleLabel(api.state.current))}</b> “${esc(p.text)}”</span>${flags}${peek?`<span class="rv-peek">${peek}</span>`:''}${f?.title||tag?`<span class="rv-foot">${f?.title?`<small>${esc(f.title)}</small>`:''}${tag}</span>`:''}</span></button>`;};
   const list=all.length?rows.map(card).join('')||`<p class="muted small rv-none">Không có ${word} nào ở mục này.</p>`:`<div class="empty">${icon('star',30)}<h3>Chưa có ${word} nào</h3></div>`;
   const body=all.length?`<div class="fb-layout ${selected?'has-detail':''}"><section class="fb-list">${summary}${chips}<div class="stack rv-list">${list}</div>${crit}</section><section class="fb-detail ${selected?'':'auto'}">${shown?threadView(shown,env):''}</section></div>`:list;
   return head(pagoda?'Cảm nhận của khách thập phương':'Đánh giá',esc(place),pagoda?'LỜI KHÁCH THẬP PHƯƠNG':'PHẢN HỒI')+`<div class="sheet-body">${body}</div>`;
@@ -401,63 +407,79 @@ function orderSize(env,item){
 }
 function threadView(p,env){
   const f=p.feedback,api=env.api,aiOn=api.state.settings.aiConsent&&api.ai?.configured;
-  const parent=api.state.current==='teacher',pagoda=api.state.current==='pagoda';
+  const parent=api.state.current==='teacher',pagoda=api.state.current==='pagoda',cur=api.state.current,own=!parent&&!pagoda&&ownVoice(cur);
   const back=`<button type="button" class="btn ghost small rv-back" data-action="v4FbBack">${icon('back',14)} ${pagoda?'Tất cả cảm nhận':'Tất cả đánh giá'}</button>`;
   const sub=[f?.persona_name,f?.title].filter(Boolean).map(esc).join(' · ');
   const top=`<div class="row rv-head"><span class="persona big ck-avatar" aria-hidden="true">${esc(f?.persona_emoji||'🙂')}</span><div class="grow"><div class="ck-meta"><h3>${esc(p.author)}</h3><small>Ngày ${p.day}</small></div><div>${p.stars?`<span class="stars ck-stars" aria-label="${p.stars} sao">${stars(p.stars)}</span>`:''}${f&&p.stars&&p.stars!==f.stars_original?` <small class="muted">ban đầu ${f.stars_original}★</small>`:''}</div>${sub?`<small class="rv-sub">${sub}</small>`:''}</div></div>`;
-  const quote=`<p class="ck-box review-text"><b class="ck-label rv-who">👤 ${parent?'Phụ huynh':pagoda?'Khách thập phương':'Khách'}</b> “${esc(p.text)}”</p>`;
+  const quote=`<p class="ck-box review-text"><b class="ck-label rv-who">👤 ${parent?'Phụ huynh':pagoda?'Khách thập phương':esc(peopleLabel(api.state.current))}</b> “${esc(p.text)}”</p>`;
   if(!f){   // a review a shift event wrote (no thread): reportable too; the platform keeps it, at no cost
     const kept=p.reported?`<p class="notice amber" role="status">${icon('flag',16)} Đã báo cáo: nền tảng giữ đánh giá này vì nó gắn với chuyện có thật trong ca. Sao giữ nguyên.</p>`:'';
-    const rep=p.can_report?`<div class="row wrap rv-actions">${confirmCmd(`${icon('flag',14)} Báo cáo`,'fb_report',{post:p.id},reportQuestion(parent,pagoda),'ghost small')}</div>`:'';
+    const rep=p.can_report?`<div class="row wrap rv-actions">${confirmCmd(`${icon('flag',14)} Báo cáo`,'fb_report',{post:p.id},reportQuestion(parent,pagoda,own),'ghost small')}</div>`:'';
     return `<article class="card review-card">${back}${top}${quote}${kept}${rep}</article>`;}
   const offered=f.thread.some(x=>x.role==='owner'&&x.offer&&x.offer!=='none');
   const crit=f.criteria.map(x=>`<div class="crit"><small>${esc(x.label)}</small><div class="bar ${x.score<=3?'low':''}"><i style="width:${x.score*20}%"></i></div><b>${x.score}</b>${x.note?`<small class="muted">${esc(x.note)}</small>`:''}</div>`).join('');
-  const thread=rvBoxes(p,parent,false,pagoda).map(x=>x.html).join('');
+  const thread=rvBoxes(p,parent,false,pagoda,api.state.current).map(x=>x.html).join('');
   const canReply=f.status==='open'&&f.rounds<3;
   // Ready-made tones: the words decide what the reviewer does next.
   const worst=f.unfair?f.unfair.truth:(f.criteria.reduce((a,b)=>b.score<a.score?b:a,f.criteria[0])||{}).note||'';
   const tpl=parent?[['Nêu sự thật',`Dạ, theo sổ lớp hôm đó: ${worst}. Mong phụ huynh xem lại giúp ạ.`],['Xin lỗi','Cảm ơn phụ huynh đã góp ý. Tôi xin lỗi và sẽ điều chỉnh cách làm trong lớp ạ.'],['Mời trao đổi','Mời phụ huynh ghé lớp trao đổi trực tiếp, mình cùng giúp con nhé.'],['Đáp trả gắt','Phụ huynh không hài lòng thì chuyển lớp khác đi.']]
     :pagoda?[['Nêu sự thật',`Dạ, sổ chùa hôm đó ghi: ${worst}. Chùa gửi lại để mình cùng xem cho rõ ạ.`],['Xin lỗi','A Di Đà Phật, chùa xin lỗi vì còn thiếu sót. Thầy trụ trì đã nhắc lại cả chùa, lần sau sẽ cẩn thận hơn ạ.'],['Mời ghé lễ','Cảm ơn bác đã góp ý. Rằm tới mời bác ghé lễ, chùa sẽ đón tiếp chu đáo hơn ạ.'],['Đáp trả gắt','Không vừa ý thì đi chùa khác, ở đây không cần.']]
+    :own?ownTpl(cur,worst)
     :[['Nêu sự thật',`Dạ, theo phiếu ghi hôm đó: ${worst}. Bên mình gửi lại để cùng đối chiếu ạ.`],['Xin lỗi','Thành thật xin lỗi bạn vì trải nghiệm chưa tốt. Lần sau bên mình sẽ chú ý hơn và sửa quy trình ngay ạ.'],['Mời quay lại','Cảm ơn bạn đã ghé và góp ý. Mời bạn quay lại, bên mình sẽ phục vụ chu đáo hơn ạ.'],['Đáp trả gắt','Không thích thì đi chỗ khác, bên mình không tiếp loại khách như bạn.']];
   const tone=env.ui.fbTone?.post===p.id?env.ui.fbTone.tone:'free';
   const tplRow=f.tones?.length?`<div class="rv-tones" role="group" aria-label="Chọn giọng trả lời">${f.tones.map(t=>`<button type="button" class="rv-tone ${esc(t.risk)}${t.id===tone?' selected':''}" data-action="v4FbTpl" data-tone="${esc(t.id)}" data-text="${esc(t.text)}" aria-pressed="${t.id===tone}"><span aria-hidden="true">${esc(t.emoji)}</span><span class="rv-tone-txt"><b>${esc(t.label)}</b>${t.risk==='risky'?'<small>được ăn cả, ngã về không</small>':t.risk==='bad'?'<small>dễ bị chụp màn hình</small>':''}</span></button>`).join('')}<button type="button" class="rv-tone free${tone==='free'?' selected':''}" data-action="v4FbTpl" data-tone="free" data-text="" aria-pressed="${tone==='free'}"><span aria-hidden="true">✍️</span><b>Tự viết</b></button></div>`
     :`<div class="chip-row rv-tpl" role="group" aria-label="Gợi ý giọng trả lời">${tpl.map(([l,t],i)=>`<button type="button" class="chip${i===3?' rv-tpl-rude':''}" data-action="v4FbTpl" data-text="${esc(t)}">${l}</button>`).join('')}</div>`;
   const clues=f.clues?.length&&!f.report?`<div class="rv-clues" role="note">${icon('flag',14)}<div class="rv-flags">${f.clues.map(x=>`<span class="tag amber">${esc(x)}</span>`).join('')}</div></div>`:'';
-  const reportQ=reportQuestion(parent,pagoda);
+  const reportQ=reportQuestion(parent,pagoda,own);
   const policeQ='Lưu đánh giá và cuộc trao đổi làm bằng chứng, trình báo lời đe dọa đòi tiền trong game? Trao đổi trực tiếp sẽ khép; điểm đánh giá vẫn giữ nguyên.';
   const side=(f.can_report||f.can_ignore||f.can_police)?`<div class="row wrap rv-actions">${f.can_ignore?cmdBtn(`${icon('check',14)} Bỏ qua`,'fb_ignore',{post:p.id},'ghost small'):''}${f.can_police?confirmCmd('🚓 Lưu bằng chứng & trình báo','fb_police',{post:p.id},policeQ,'cream small'):''}${f.can_report?confirmCmd(`${icon('flag',14)} Báo cáo`,'fb_report',{post:p.id},reportQ,'ghost small'):''}</div>`:'';
   const verdict=f.removed?`<p class="notice green" role="status">${icon('check',16)} Đã gỡ${f.kind_label?`: ${esc(f.kind_label)}`:''}. Không còn tính vào điểm trung bình.</p>`:f.report==='rejected'?`<p class="notice amber" role="status">${icon('flag',16)} Báo cáo không được duyệt${f.kind_label?` (${esc(f.kind_label)})`:''}: đây là trải nghiệm thật. Sao giữ nguyên.</p>`:'';
   const police=f.police?`<details class="fact-check"><summary>🚓 Đã trình báo trong game · ngày ${f.police.day}</summary><p class="small">Đã lưu lời đe dọa và ${f.police.thread.length} lượt trao đổi làm bằng chứng. Hồ sơ giữ nguyên điểm đánh giá, không bảo đảm gỡ sao.</p><blockquote>${esc(f.police.text)}</blockquote></details>`:'';
   const choice=offered?'none':(env.ui.fbOffer||'none');
   // Nothing is paid at the pagoda, so there is nothing to give back: a cup of tea or a vegetarian gift only.
-  const offers=offered||f.offer_note?[['none','Không bù']]:[['none','Không bù'],...(pagoda?['drink','gift']:['drink','gift','refund']).map(id=>[id,offerLabel(id,parent,true,pagoda)])];
+  const offers=offered||f.offer_note?[['none','Không bù']]:[['none','Không bù'],...(pagoda?['drink','gift']:own?offersOf(cur).map(([id])=>id):['drink','gift','refund']).map(id=>[id,offerLabel(id,parent,true,pagoda,cur)])];
+  const noOffer=own&&!offersOf(cur).length;   // police: never anything of value (game/career_voice.py)
   // Chat C#15809: where bù xu changes nothing, say so instead of taking the xu (game/feedback.py offer_note).
   const offerNote=f.offer_note?`<p class="notice amber small rv-offer-note" role="note">${icon('flag',14)} ${esc(f.offer_note)}</p>`:'';
-  const form=canReply?`<form class="reply-box" data-v4-fb="${esc(p.id)}"><label class="field" for="fb-text">${pagoda?'Hồi đáp':'Trả lời'} ${esc(p.author)}</label>${tplRow}<input type="hidden" name="tone" value="${esc(tone)}"><textarea id="fb-text" class="input" rows="3" maxlength="600" data-preserve placeholder="${parent?'Cảm ơn, xin lỗi nếu cần, và nói rõ lớp sẽ làm gì…':pagoda?'A Di Đà Phật, cảm ơn, xin lỗi nếu cần, và nói rõ chùa sẽ làm gì…':'Cảm ơn, xin lỗi nếu cần, và nói rõ tiệm sẽ làm gì…'}" required></textarea>
-    <div class="field">${pagoda?'Chút quà biếu':'Bù đắp'}</div><div class="segmented rv-offer" role="radiogroup" aria-label="${pagoda?'Chút quà biếu':'Bù đắp'}">${offers.map(([id,l])=>`<label><input type="radio" name="offer" value="${id}"${(f.offer_note?'none':choice)===id?' checked':''}><span>${l}</span></label>`).join('')}</div>${offerNote}
-    <div class="row spread space-top"><small class="muted">Lượt ${f.rounds+1}/3 · ${parent?'phụ huynh':'khách'} trả lời sau ~2 lượt làm</small><button class="btn primary" type="submit">${icon('send',14)} ${pagoda?'Gửi lời hồi đáp':'Gửi trả lời'}</button></div></form>`:
-    f.status==='awaiting'?`<p class="notice blue">${icon('clock',16)} ${esc(p.author)} đang đọc trả lời của bạn…</p>`:f.removed||f.report?'':`<p class="rv-closed">${f.ignored?'Bạn đã bỏ qua đánh giá này.':f.own?'Nhận xét sau chuyến bay, không cần trả lời.':'Cuộc trao đổi đã khép.'}</p>`;
+  const form=canReply?`<form class="reply-box" data-v4-fb="${esc(p.id)}"><label class="field" for="fb-text">${pagoda?'Hồi đáp':'Trả lời'} ${esc(p.author)}</label>${tplRow}<input type="hidden" name="tone" value="${esc(tone)}"><textarea id="fb-text" class="input" rows="3" maxlength="600" data-preserve placeholder="${parent?'Cảm ơn, xin lỗi nếu cần, và nói rõ lớp sẽ làm gì…':pagoda?'A Di Đà Phật, cảm ơn, xin lỗi nếu cần, và nói rõ chùa sẽ làm gì…':esc(T(cur,'placeholder'))}" required></textarea>
+    ${noOffer?'':`<div class="field">${pagoda?'Chút quà biếu':own?esc(T(cur,'offer_field')||'Bù đắp'):'Bù đắp'}</div><div class="segmented rv-offer" role="radiogroup" aria-label="${pagoda?'Chút quà biếu':own?esc(T(cur,'offer_field')||'Bù đắp'):'Bù đắp'}">${offers.map(([id,l])=>`<label><input type="radio" name="offer" value="${id}"${(f.offer_note?'none':choice)===id?' checked':''}><span>${esc(l)}</span></label>`).join('')}</div>${offerNote}`}
+    <div class="row spread space-top"><small class="muted">Lượt ${f.rounds+1}/3 · ${parent?'phụ huynh':own?esc(T(cur,'people')):'khách'} trả lời sau ~2 lượt làm</small><button class="btn primary" type="submit">${icon('send',14)} ${pagoda?'Gửi lời hồi đáp':'Gửi trả lời'}</button></div></form>`:
+    f.status==='awaiting'?`<p class="notice blue">${icon('clock',16)} ${esc(p.author)} đang đọc trả lời của bạn…</p>`:f.removed||f.report?'':`<p class="rv-closed">${f.ignored?'Bạn đã bỏ qua đánh giá này.':f.own?(cur==='oil'?'Nhận xét sau ca trên giàn, không cần trả lời.':'Nhận xét sau chuyến bay, không cần trả lời.'):'Cuộc trao đổi đã khép.'}</p>`;
   // Chat 03/10: an edited review says so in words, not only with a small "ban đầu 1★".
-  const edited=!f.removed&&p.stars&&f.stars_original&&p.stars!==f.stars_original?`<p class="notice ${p.stars>f.stars_original?'green':'amber'}" role="status">${icon('star',16)} ${parent?'Phụ huynh':pagoda?'Khách thập phương':'Khách'} đã sửa đánh giá: ★${f.stars_original} → ★${p.stars}</p>`:'';
+  const edited=!f.removed&&p.stars&&f.stars_original&&p.stars!==f.stars_original?`<p class="notice ${p.stars>f.stars_original?'green':'amber'}" role="status">${icon('star',16)} ${parent?'Phụ huynh':pagoda?'Khách thập phương':esc(peopleLabel(api.state.current))} đã sửa đánh giá: ★${f.stars_original} → ★${p.stars}</p>`:'';
   return `<article class="card review-card${f.removed?' removed':''}">${back}${top}${quote}${verdict}${police}${edited}${clues}${f.unfair?`<details class="fact-check"><summary>${icon('search',14)} Đối chiếu sự thật</summary><p class="small">Khách nói: <b>${esc(f.unfair.claim)}</b>. Sổ ghi: ${esc(f.unfair.truth)}. Bạn có thể nhắc lại dữ kiện một cách lịch sự.</p></details>`:''}
-    <details class="criteria"><summary>${parent?'Phụ huynh chấm theo tiêu chí':pagoda?'Khách thập phương cảm nhận theo tiêu chí':'Khách chấm theo tiêu chí'}</summary>${crit}</details>${thread?`<div class="thread">${thread}</div>`:''}${form}${side}
+    <details class="criteria"><summary>${parent?'Phụ huynh chấm theo tiêu chí':pagoda?'Khách thập phương cảm nhận theo tiêu chí':esc(peopleLabel(api.state.current))+' chấm theo tiêu chí'}</summary>${crit}</details>${thread?`<div class="thread">${thread}</div>`:''}${form}${side}
     ${f.status==='open'&&f.thread.length?`<div class="row space-top">${cmdBtn('Khép trao đổi','fb_close',{post:p.id},'ghost small')}</div>`:''}</article>`;
 }
 /** Góp ý #196: what a report does, said before it is sent. A report that is not accepted costs no star. */
-function reportQuestion(parent,pagoda){
+function reportQuestion(parent,pagoda,own=false){
   return parent?'Báo cáo tin nhắn này với ban đại diện lớp? Tin nhắn nhầm lớp, không liên quan tới buổi học hoặc hùa theo sẽ bị gỡ khỏi điểm. Nếu là góp ý thật, tin nhắn được giữ nguyên và không mất sao.'
     :pagoda?'Báo cáo cảm nhận này? Cảm nhận giả, nhầm chỗ, không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm. Nếu là cảm nhận thật, chùa giữ nguyên và không mất sao.'
+    :own?'Báo cáo nhận xét này? Nhận xét giả, nhầm chỗ, chưa từng tới, chê chuyện không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm trung bình. Nếu là chuyện có thật, nhận xét được giữ nguyên và không mất sao.'
     :'Báo cáo đánh giá này? Đánh giá giả, nhầm quán, chưa dùng dịch vụ, chê chuyện không liên quan hoặc hùa theo sẽ bị gỡ khỏi điểm trung bình. Nếu là trải nghiệm thật, đánh giá được giữ nguyên và không mất sao.';
+}
+/** The four fallback chips of a non-shop career (when the server sent no `tones`). */
+function ownTpl(cid,worst){
+  const self=T(cid,'self'),Self=capFirst(self),who=T(cid,'who'),record=T(cid,'record');
+  return [['Nêu sự thật',`Dạ, theo ${record} hôm đó: ${worst}. ${Self} gửi lại để mình cùng đối chiếu ạ.`],
+    ['Xin lỗi',`${Self} xin lỗi ${who} vì còn thiếu sót. Lần sau ${self} sẽ chú ý hơn và sửa cách làm ngay ạ.`],
+    [T(cid,'invite_label'),`Cảm ơn ${who} đã góp ý. Lần tới ${who} cần gì cứ gọi ${self}, ${self} làm kỹ hơn ạ.`],
+    ['Đáp trả gắt','Không vừa ý thì đi chỗ khác, ở đây không rảnh nghe.']];
 }
 const TONE_NAME={warm:'ấm áp',funny:'hài hước',sassy:'cà khịa',facts:'nêu sự thật',sorry:'xin lỗi',invite:'mời quay lại',process:'giải thích',genz:'Gen Z',silent:'ngắn gọn',harsh:'gắt'};
 const PAGODA_TONE={warm:'từ tốn',funny:'tự trào',sassy:'đùa nhẹ',invite:'mời ghé lễ',process:'kể nếp chùa',genz:'trẻ trung'};
-function offerLabel(id,parent,full=false,pagoda=false){
+/** "Chai nước ấm · 6 xu" → "Chai nước ấm"; "Giảm phí 20 xu" → "Giảm phí". */
+const offerName=l=>String(l||'').split(' · ')[0].replace(/\s*\d+\s*xu$/,'');
+function offerLabel(id,parent,full=false,pagoda=false,cid=''){
+  const mine=!parent&&!pagoda&&ownVoice(cid)?T(cid,'offers')?.[id]:null;
+  if(mine)return full?mine:offerName(mine).toLowerCase()+' '+(OFFER_COST[id]||'')+' xu';
   const rows=parent?{drink:['kèm thêm một buổi','Kèm 1 buổi · 6 xu'],gift:['tặng sách 10 xu','Tặng sách · 10 xu'],refund:['hoàn 20 xu học phí','Hoàn 20 xu']}
     :pagoda?{drink:['mời chén trà 6 xu','Mời trà · 6 xu'],gift:['biếu quà chay 10 xu','Quà chay · 10 xu'],refund:['gửi lại 20 xu','Gửi lại 20 xu']}
     :{drink:['tặng quà nhỏ 6 xu','Quà nhỏ · 6 xu'],gift:['tặng voucher 10 xu','Voucher · 10 xu'],refund:['hoàn 20 xu','Hoàn 20 xu']};
   return (rows[id]||['',''])[full?1:0];}
-function guestBubble(x,parent,pagoda=false){
-  const side={fan:parent?'bênh lớp':pagoda?'bênh chùa':'bênh quán',troll:'hóng chuyện',other:parent?'phụ huynh khác':'khách khác'}[x.side]||'';
+function guestBubble(x,parent,pagoda=false,cid=''){
+  const own=!parent&&!pagoda&&ownVoice(cid);
+  const side={fan:parent?'bênh lớp':pagoda?'bênh chùa':own?`bênh ${T(cid,'self')}`:'bênh quán',troll:'hóng chuyện',other:parent?'phụ huynh khác':own?`${T(cid,'people')} khác`:'khách khác'}[x.side]||'';
   const tint={fan:'ck-good',other:'ck-owner'}[x.side]||'ck-quiet';
   return `<div class="ck-box rv-guest ${tint}"><div class="ck-head"><b class="ck-label"><span aria-hidden="true">${esc(x.emoji||'💬')}</span> ${esc(x.name||'')}</b>${side?`<small class="ck-sub">${side}</small>`:''}</div><p>${esc(x.text)}</p></div>`;}
 function decisionLabel(d,s){return {revise_up:`nâng lên ${s}★`,revise_down:`hạ xuống ${s}★`,argue:'muốn nói thêm',keep:'giữ nguyên'}[d]||d;}
@@ -465,15 +487,15 @@ const OFFER_COST={drink:6,gift:10,refund:20},OFFER_CHIP={drink:['Quà nhỏ','K�
 /** A review thread as boxes, one per voice: your reply (amber, with what you
  * gave as a red chip), the reviewer's answer (blue) with what it did to the
  * stars (+2★, −1★), and bystanders (quiet). Counted from the original stars. */
-function rvBoxes(p,parent,inline=false,pagoda=false){
+function rvBoxes(p,parent,inline=false,pagoda=false,cid=''){
   const f=p.feedback;if(!f)return [];let now=f.stars_original||p.stars||0;
   // The chip (+1★, −6 xu…) sits on the label line so a clamped preview never hides it.
   const box=(cls,head,body,chip='')=>inline?`<span class="ck-box ${cls}"><span class="ck-head">${head}${chip}</span><span class="ck-p">${body}</span></span>`:`<div class="ck-box ${cls}"><div class="ck-head">${head}${chip}</div><p>${body}</p></div>`;
   return f.thread.map(x=>{
-    if(x.role==='guest')return {role:'guest',html:guestBubble(x,parent,pagoda)};
+    if(x.role==='guest')return {role:'guest',html:guestBubble(x,parent,pagoda,cid)};
     if(x.role==='owner'){
       const tone=x.tone&&TONE_NAME[x.tone]?`<small class="ck-sub">${pagoda&&PAGODA_TONE[x.tone]||TONE_NAME[x.tone]}</small>`:'';
-      const cost=x.offer&&x.offer!=='none'&&OFFER_COST[x.offer]?`<span class="ck-delta down" title="${esc(offerLabel(x.offer,parent,false,pagoda))}">${OFFER_CHIP[x.offer][parent?1:pagoda?2:0]} · −${OFFER_COST[x.offer]} xu</span>`:'';
+      const cost=x.offer&&x.offer!=='none'&&OFFER_COST[x.offer]?`<span class="ck-delta down" title="${esc(offerLabel(x.offer,parent,false,pagoda,cid))}">${esc(!parent&&!pagoda&&ownVoice(cid)&&T(cid,'offers')?.[x.offer]?offerName(T(cid,'offers')[x.offer]):OFFER_CHIP[x.offer][parent?1:pagoda?2:0])} · −${OFFER_COST[x.offer]} xu</span>`:'';
       return {role:'owner',html:box('ck-owner',`<b class="ck-label">👑 Bạn</b>${tone}`,esc(x.text),cost)};
     }
     let chip='';

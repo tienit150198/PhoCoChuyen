@@ -113,12 +113,6 @@
 .career-job.tv .tv-turb-btns .btn{min-height:52px}
 
 /* ---------- intro, story, crew book */
-.career-job.tv .tv-intro{border:2px solid var(--tv-teal)}
-.career-job.tv .tv-intro h3{margin:0 0 6px}
-.career-job.tv .tv-intro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
-.career-job.tv .tv-icons{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.career-job.tv .tv-icons li{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.35}
-.career-job.tv .tv-icons li span{font-size:18px;width:24px;flex:none;text-align:center}
 .career-job.tv .tv-arc{border-left:6px solid var(--tv-coral);margin-bottom:10px}
 .career-job.tv .tv-arc small{color:var(--tv-muted)}
 .career-job.tv .tv-arc p{margin:4px 0}
@@ -132,9 +126,6 @@
 .career-job.tv .tv-log li{display:flex;gap:8px;align-items:baseline;padding:5px 2px;border-bottom:1px dashed var(--tv-line)}
 
 /* ---------- next-step bar */
-.career-job.tv .tv-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:8px 12px 10px;border-radius:var(--tv-rs);
-  background:var(--tv-surface);border:1px solid var(--tv-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
-.career-job.tv .tv-bar .btn{width:100%;min-height:48px}
 
 @keyframes tv-shake{25%{transform:translateX(-2px) rotate(-3deg)}75%{transform:translateX(2px) rotate(3deg)}}
 @media (prefers-reduced-motion:reduce){.career-job.tv .tv-turb-head>span{animation:none}}

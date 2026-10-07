@@ -225,7 +225,8 @@
 .career-job.pc .pc-follow p{margin:0}
 
 /* ---------- next step: sticky bottom bar (guide.js) */
-.career-job.pc .pc-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--pc-r);
+/* The bar is the shared .ui-bar now (wave 5); this layout only applies to an older markup without it. */
+.career-job.pc .pc-bar:not(.ui-bar){position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--pc-r);
   background:var(--pc-s1);border:1px solid var(--pc-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
 .career-job.pc .pc-bar .btn.grow{flex:1 1 auto;min-width:0}
 .career-job.pc .pc-bar .btn small{font-weight:600;opacity:.85}
@@ -306,3 +307,11 @@
 .calm-card.pc-hud{flex-wrap:wrap}
 .calm-card.pc-hud .calm-what{flex:1 1 100%}
 .calm-card.pc-hud>.btn.primary{flex:1 1 auto}
+
+/* ---------- wave 5, clean layout (html[data-clean]): fewer words at the table */
+.career-job.pc .pc-tagq{display:inline-flex;align-items:center;gap:4px;margin-left:auto}
+.career-job.pc .pc-helpq{flex:none;min-width:44px;min-height:44px}
+.career-job.pc .pc-bar.ui-bar{bottom:var(--fk-foot,0px)}
+.career-job.pc .pc-facts{list-style:none;margin:0 0 var(--sp-2);padding:0;display:flex;flex-wrap:wrap;gap:var(--sp-1) var(--sp-3)}
+.career-job.pc .pc-facts li{display:inline-flex;align-items:center;gap:var(--sp-1);font-size:var(--fs-2);line-height:var(--lh)}
+.career-job.pc .pc-steps.pc-steps-ico li:not(.now){min-width:36px;justify-content:center}

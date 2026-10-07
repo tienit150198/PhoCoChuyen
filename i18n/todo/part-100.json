@@ -1,1802 +1,1802 @@
 [
  {
-  "vi": "Tui mới cào vé số chỗ dì Hai, trúng gấp đôi nè!",
+  "vi": "Giữ W hoặc đẩy cần ga lên. Dùng ← → để bám vạch giữa.",
   "en": ""
  },
  {
-  "vi": "Rủ bạn vô buồng chụp ảnh đi, khung Tết đẹp lắm!",
+  "vi": "Giữ ↓ nhẹ hoặc kéo cần lái về phía mình; thả khi đã lên đều.",
   "en": ""
  },
  {
-  "vi": "BẦU CUA",
+  "vi": "Chưa đủ tốc độ thì thả cần lái, tiếp tục tăng ga. Lệch vạch thì chỉnh nhẹ về giữa.",
   "en": ""
  },
  {
-  "vi": "NÉM VÒNG",
+  "vi": "2/3 · Trên đường bay",
   "en": ""
  },
  {
-  "vi": "PHÓNG DAO",
+  "vi": "Vòng qua đám mây giông rồi trở về hướng cũ.",
   "en": ""
  },
  {
-  "vi": "GÁNH LÔ TÔ",
+  "vi": "Dùng ← → hoặc kéo cần lái sang bên để nghiêng cánh; trả cần về giữa khi đã tránh giông.",
   "en": ""
  },
  {
-  "vi": "BẢNG VÀNG",
+  "vi": "Đừng bay xuyên mây giông. Chỉnh từng chút, nhìn lại đường bay sau khi vòng qua.",
   "en": ""
  },
  {
-  "vi": "💸 VAY NÓNG",
+  "vi": "Lần này không còn đủ dầu bay lại. Chỉnh nhẹ theo vạch tím và lời cơ trưởng.",
   "en": ""
  },
  {
-  "vi": "VÉ SỐ CÀO",
+  "vi": "Giảm ga bằng S hoặc kéo cần ga xuống. Chưa ổn định ở cổng kiểm tra thì bấm G để bay lại.",
   "en": ""
  },
  {
-  "vi": "CHỤP ẢNH",
+  "vi": "Tăng ga bằng W hoặc đẩy cần ga lên. Chưa ổn định thì bấm G để bay lại.",
   "en": ""
  },
  {
-  "vi": "HỘI CHỢ",
+  "vi": "Hạ mũi nhẹ bằng ↑, giữ tốc độ. Nếu chưa ổn định, bấm G để bay lại.",
   "en": ""
  },
  {
-  "vi": "KẸO BÔNG",
+  "vi": "Kéo mũi lên nhẹ bằng ↓. Nếu chưa ổn định, bấm G để bay lại.",
   "en": ""
  },
  {
-  "vi": "NƯỚC MÍA",
+  "vi": "Không thấy đường băng hoặc chưa ổn định: bấm G để bay lại; đây là lựa chọn an toàn.",
   "en": ""
  },
  {
-  "vi": "CHUNG CƯ MÂY",
+  "vi": "3/3 · Hạ cánh",
   "en": ""
  },
  {
-  "vi": "Đã lên đường",
+  "vi": "Thu ga, ghìm mũi nhẹ cho bánh chạm đất.",
   "en": ""
  },
  {
-  "vi": "LỊCH HẸN",
+  "vi": "Giữ 115 knot, 2 đèn trắng + 2 đỏ và tim đường băng.",
   "en": ""
  },
  {
-  "vi": "dọn theo giờ",
+  "vi": "Kéo ga xuống hết; kéo cần lái nhẹ về mình (↓), không giật mạnh.",
   "en": ""
  },
  {
-  "vi": "mai mời gọi",
+  "vi": "Ga chỉnh tốc độ, mũi chỉnh độ cao; bám thanh tím. Kiểm tra ở 1.000 ft và 200 ft.",
   "en": ""
  },
  {
-  "vi": "Phòng cắm hoa",
+  "vi": "2/3 · Quyết định trên đường bay",
   "en": ""
  },
  {
-  "vi": "PHÒNG CẮM HOA",
+  "vi": "Đọc tình huống và chọn cách xử lý trước khi tiếp tục.",
   "en": ""
  },
  {
-  "vi": "TỦ MÁT HOA",
+  "vi": "Chọn phương án ở bảng tình huống. Máy bay đang được lái tự động.",
   "en": ""
  },
  {
-  "vi": "Tủ mát hoa",
+  "vi": "Đối chiếu thời tiết, sức khỏe khách và lượng dầu; đọc rõ kết quả rồi tiếp tục.",
   "en": ""
  },
  {
-  "vi": "Kệ ruy băng",
+  "vi": "Bay lại an toàn",
   "en": ""
  },
  {
-  "vi": "Bàn bó hoa",
+  "vi": "Chờ cơ trưởng đưa tàu về vị trí tiếp cận mới.",
   "en": ""
  },
  {
-  "vi": "Xô hoa ngâm nước",
+  "vi": "Thả cần lái; hệ thống đang điều khiển đoạn bay lại.",
   "en": ""
  },
  {
-  "vi": "Ruy băng lụa, giấy kraft, giỏ mây. Đủ để gói cả trăm bó.",
+  "vi": "Khi nhận lại lái, giảm thao tác mạnh và giữ tốc độ mục tiêu.",
   "en": ""
  },
  {
-  "vi": "Hoa mới về được ngâm nước cho uống no rồi mới bó.",
+  "vi": "Đã chạm đất",
   "en": ""
  },
  {
-  "vi": "Hoa hồng Đà Lạt về rồi nè!",
+  "vi": "Chuyển chặng",
   "en": ""
  },
  {
-  "vi": "Nhớ thay nước xô hoa cúc nha.",
+  "vi": "Chờ lăn vào bến, rồi đỗ tàu để khép chuyến.",
   "en": ""
  },
  {
-  "vi": "Khách đặt bó cưới chiều nay đó.",
+  "vi": "Lái tự động đang đưa tàu tới bước tiếp theo.",
   "en": ""
  },
  {
-  "vi": "Màn hình đơn",
+  "vi": "Thả cần lái và theo dõi lời cơ trưởng.",
   "en": ""
  },
  {
-  "vi": "Quầy nhận ly",
+  "vi": "Bạn có thể mở Học từng bước bất kỳ lúc nào để đọc lại hướng dẫn.",
   "en": ""
  },
  {
-  "vi": "Mrrr… cho Mướp một viên trân châu được không?",
+  "vi": "📦 Hết:",
   "en": ""
  },
  {
-  "vi": "Tủ bánh",
+  "vi": "📦 Sắp hết:",
   "en": ""
  },
  {
-  "vi": "KHO BỘT",
+  "vi": "Mặc cả với phường",
   "en": ""
  },
  {
-  "vi": "Mrrr… thơm mùi bánh mới ra lò quá!",
+  "vi": "Gửi anh Định",
   "en": ""
  },
  {
-  "vi": "Kệ gia vị & topping",
+  "vi": "· 👉 có mục gấp",
   "en": ""
  },
  {
-  "vi": "Dây phiếu gọi món",
+  "vi": "Anh chỉ vào một mục trong sổ: “Chuyện này có người đang cần mình ngay.”",
   "en": ""
  },
  {
-  "vi": "Quầy ra món",
+  "vi": "Mai lên Ban chỉ huy giải trình. Hôm nay tan ca sớm.",
   "en": ""
  },
  {
-  "vi": "Kho lạnh",
+  "vi": "Bị hạ bậc, tạm dừng nhiệm vụ hôm nay",
   "en": ""
  },
  {
-  "vi": "Mrrr… nồi nước dùng thơm quá đi.",
+  "vi": "Tạm dừng nhiệm vụ hôm nay",
   "en": ""
  },
  {
-  "vi": "Kệ hàng tạp hóa",
+  "vi": "Tạm dừng nhiệm vụ: tan ca",
   "en": ""
  },
  {
-  "vi": "Cân & tính tiền",
+  "vi": "Ví ở chợ",
   "en": ""
  },
  {
-  "vi": "Mrrr… cô Ba ơi cho con xin miếng khô mực.",
+  "vi": "Bà Năm bị “cán bộ điều tra” giục chuyển tiền 8:30, gọi lại không nghe",
   "en": ""
  },
  {
-  "vi": "Kệ xô hoa",
+  "vi": "Tổ 3 xin buổi nói chuyện lừa đảo, chưa hẹn ngày",
   "en": ""
  },
  {
-  "vi": "Sổ đặt hoa",
+  "vi": "Karaoke tới 0:30, chị Mận dọa “tự xử”; 8:00 hai bên lên phường",
   "en": ""
  },
  {
-  "vi": "Mrrr… hoa hồng thơm nhưng gai quá.",
+  "vi": "Karaoke tắt 21:45, không ai phản ánh",
   "en": ""
  },
  {
-  "vi": "Kệ thú bông",
+  "vi": "Ví có giấy tờ; chủ ví cần trước 9:00 để mẹ nhập viện",
   "en": ""
  },
  {
-  "vi": "Bỉm & sữa theo cỡ",
+  "vi": "Tủ đồ thất lạc: mũ, dù, chưa ai nhận",
   "en": ""
  },
  {
-  "vi": "Mrrr… thú bông này mềm ghê.",
+  "vi": "Cổng trường tắc, bé lớp 1 suýt bị quẹt; xin người đứng 7:00",
   "en": ""
  },
  {
-  "vi": "Kệ hộp theo mã",
+  "vi": "Cổng trường hôm qua đông nhưng thông",
   "en": ""
  },
  {
-  "vi": "Quầy tư vấn",
+  "vi": "Làm trước",
   "en": ""
  },
  {
-  "vi": "Mrrr… nằm trên tủ lạnh mát ghê.",
+  "vi": "📒 Sổ trực ban",
   "en": ""
  },
  {
-  "vi": "Mrrr… cuộn len này để Mướp chơi được không?",
+  "vi": "📒 Sổ trực ban đêm qua",
   "en": ""
  },
  {
-  "vi": "Giá treo áo",
+  "vi": "🚶 Làm trước",
   "en": ""
  },
  {
-  "vi": "Sổ hóa đơn",
+  "vi": "Đọc từng mục sổ trực ban",
   "en": ""
  },
  {
-  "vi": "Kho đồ gấp",
+  "vi": "📖 Đọc",
   "en": ""
  },
  {
-  "vi": "ĐANG MỞ CỬA",
+  "vi": "Chọn việc làm trước",
   "en": ""
  },
  {
-  "vi": "Khách sắp ghé lựa đồ.",
+  "vi": "🚶 Chọn việc làm trước",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp quanh tiệm áo.",
+  "vi": "Trước khi xem hồ sơ",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và đánh giá quanh tiệm áo.",
+  "vi": "Hồ sơ tạm trú",
   "en": ""
  },
  {
-  "vi": "Mrrr… cho Mướp nằm dưới gầm ghế nhựa cho mát nhé.",
+  "vi": "Hồ sơ khai báo tạm trú",
   "en": ""
  },
  {
-  "vi": "Túi tiền lẻ",
+  "vi": "📄 Thiếu, sai",
   "en": ""
  },
  {
-  "vi": "Dọn hàng về",
+  "vi": "🗂️ Nhận hồ sơ",
   "en": ""
  },
  {
-  "vi": "Dọn hàng ra",
+  "vi": "đủ giấy, hẹn giờ trả",
   "en": ""
  },
  {
-  "vi": "ĐANG BÁN",
+  "vi": "📄 Hướng dẫn bổ sung…",
   "en": ""
  },
  {
-  "vi": "NGHỈ BÁN",
+  "vi": "Trả lời người khai",
   "en": ""
  },
  {
-  "vi": "Lọ kẹo & gói lạc",
+  "vi": "Nhận hồ sơ hoặc hướng dẫn bổ sung",
   "en": ""
  },
  {
-  "vi": "Ghế đánh cờ",
+  "vi": "nộp",
   "en": ""
  },
  {
-  "vi": "Góc vỉa hè",
+  "vi": "Hình dáng",
   "en": ""
  },
  {
-  "vi": "Trật tự khu phố",
+  "vi": "Bên trong",
   "en": ""
  },
  {
-  "vi": "SỔ GHI",
+  "vi": "Nhặt ở",
   "en": ""
  },
  {
-  "vi": "THÙNG ĐÁ",
+  "vi": "tiếp nhận",
   "en": ""
  },
  {
-  "vi": "Khách quen sắp ghé làm cốc trà.",
+  "vi": "🧾 Kiểm đếm, ký biên bản",
   "en": ""
  },
  {
-  "vi": "Dọn hàng ra gốc bàng rồi bán nhé.",
+  "vi": "🧾 Kiểm đếm cùng người nhặt, ký biên bản",
   "en": ""
  },
  {
-  "vi": "Quán đang vãn khách",
+  "vi": "tới xin nhận lại",
   "en": ""
  },
  {
-  "vi": "Vãn khách rồi!",
+  "vi": "✅ Trả lại, ký nhận",
   "en": ""
  },
  {
-  "vi": "Mời thêm khách hoặc dọn hàng về.",
+  "vi": "khớp với biên bản",
   "en": ""
  },
  {
-  "vi": "Mời thêm một khách",
+  "vi": "🔒 Chưa trả",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp quanh gốc bàng.",
+  "vi": "hẹn mang giấy tờ, chứng minh",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và đánh giá quanh quán trà.",
+  "vi": "Kiểm đếm, ký biên bản",
   "en": ""
  },
  {
-  "vi": "Mrrr… ngoài phố nhiều chuyện hay ghê.",
+  "vi": "Hỏi người tới nhận (ít nhất hai câu)",
   "en": ""
  },
  {
-  "vi": "Góc phố",
+  "vi": "❓ Hỏi người tới nhận",
   "en": ""
  },
  {
-  "vi": "Việc mới sắp tới.",
+  "vi": "Trả lại hoặc chưa trả",
   "en": ""
  },
  {
-  "vi": "Đang rảnh tay",
+  "vi": "📝 Các lần đề xuất",
   "en": ""
  },
  {
-  "vi": "Mrrr… Mun canh vườn rau giùm, ai cho Mun miếng cá chuồn đi.",
+  "vi": "🤝 Hai bên đã đồng ý. Ký biên bản hòa giải.",
   "en": ""
  },
  {
-  "vi": "ĐANG TRỰC ĐÈN",
+  "vi": "Đề xuất",
   "en": ""
  },
  {
-  "vi": "Vườn rau trên đá",
+  "vi": "Đề xuất của bạn",
   "en": ""
  },
  {
-  "vi": "Vườn rau & mèo Mun",
+  "vi": "📝 Đề xuất",
   "en": ""
  },
  {
-  "vi": "Cột đo gió & áp kế",
+  "vi": "📝 Đề xuất với hai bên",
   "en": ""
  },
  {
-  "vi": "Bàn bộ đàm",
+  "vi": "Cách khác…",
   "en": ""
  },
  {
-  "vi": "Nhà máy phát",
+  "vi": "😤 Dọa phạt cả hai cho xong",
   "en": ""
  },
  {
-  "vi": "Đảo Hòn Gió",
+  "vi": "“không chịu thì phạt hết”",
   "en": ""
  },
  {
-  "vi": "An toàn trên đảo",
+  "vi": "📅 Chuyển tổ hòa giải, hẹn buổi sau",
   "en": ""
  },
  {
-  "vi": "Chơi với mèo Mun",
+  "vi": "Chuyển tổ hòa giải, hẹn hai nhà buổi sau?",
   "en": ""
  },
  {
-  "vi": "SỔ TRỰC",
+  "vi": "Đề xuất để hai bên cùng đồng ý",
   "en": ""
  },
  {
-  "vi": "NHÀ MÁY PHÁT",
+  "vi": "🤝 Đề xuất",
   "en": ""
  },
  {
-  "vi": "Đèn đang chờ giờ thắp.",
+  "vi": ", đứng yên một chỗ dễ thấy",
   "en": ""
  },
  {
-  "vi": "Dậy tắt đèn, thử máy, lau kính rồi ký sổ trực nhé.",
+  "vi": "🧸 Ngồi dỗ bé",
   "en": ""
  },
  {
-  "vi": "Biển đang yên",
+  "vi": "🧸 Ngồi xuống dỗ bé, đứng yên một chỗ",
   "en": ""
  },
  {
-  "vi": "Canh biển thêm một lúc hoặc tan ca hôm nay.",
+  "vi": "🗣️ Hỏi bé",
   "en": ""
  },
  {
-  "vi": "Canh biển thêm",
+  "vi": "🎒 Xem balo, thẻ tên",
   "en": ""
  },
  {
-  "vi": "Chưa có chuyện gì trên biển",
+  "vi": "📢 Tìm người nhà",
   "en": ""
  },
  {
-  "vi": "Việc tiếp theo",
+  "vi": "tới đón bé",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp quanh đèn Hòn Gió.",
+  "vi": "🤝 Giao bé cho người nhà",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và nhận xét của tàu thuyền, khách ra đảo.",
+  "vi": "đã xác minh",
   "en": ""
  },
  {
-  "vi": "Xác nhận trước khi làm",
+  "vi": "🏠 Giữ bé ở phường",
   "en": ""
  },
  {
-  "vi": "Trên đảo",
+  "vi": "gọi bố mẹ xác nhận",
   "en": ""
  },
  {
-  "vi": "Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho chú Bảy.",
+  "vi": "Dỗ bé, đứng một chỗ",
   "en": ""
  },
  {
-  "vi": "Lương ngày vào quỹ lương. Việc chưa xong được giữ lại cho mai.",
+  "vi": "🧸 Dỗ bé",
   "en": ""
  },
  {
-  "vi": "Mrrr… Mướp nằm trên nóc xe hành lý, ngắm máy bay cất cánh.",
+  "vi": "Hỏi bé, xem thẻ tên",
   "en": ""
  },
  {
-  "vi": "Vào ca bay",
+  "vi": "Tìm người nhà",
   "en": ""
  },
  {
-  "vi": "Bản tin & phiếu dầu",
+  "vi": "Xác minh người đón (hai cách)",
   "en": ""
  },
  {
-  "vi": "Quầy điều phái",
+  "vi": "🪪 Xác minh người đón",
   "en": ""
  },
  {
-  "vi": "Xe dầu",
+  "vi": "Giao bé hoặc giữ lại",
   "en": ""
  },
  {
-  "vi": "Sân đỗ Cánh Cò",
+  "vi": "📏 Quy tắc tuần tra phường Mây",
   "en": ""
  },
  {
-  "vi": "An ninh sân bay",
+  "vi": "💬 Lần đầu, chuyện nhỏ: nhắc nhở, hướng dẫn.",
   "en": ""
  },
  {
-  "vi": "SỔ GIỜ BAY",
+  "vi": "📝 Tái phạm hoặc gây nguy hiểm: lập biên bản.",
   "en": ""
  },
  {
-  "vi": "SÂN ĐỖ",
+  "vi": "🛑 Nguy hiểm trước mắt: làm cho an toàn trước.",
   "en": ""
  },
  {
-  "vi": "Chặng bay tiếp theo sắp tới giờ.",
+  "vi": "✉️ Phong bì, chiếu bạc: không bao giờ.",
   "en": ""
  },
  {
-  "vi": "Báo danh ở phòng điều phái rồi bay nhé.",
+  "vi": "Luật của trò chơi.",
   "en": ""
  },
  {
-  "vi": "Tổ bay nghỉ giữa chặng",
+  "vi": "🔍 Xem kỹ, hỏi chuyện",
   "en": ""
  },
  {
-  "vi": "Hết chặng rồi!",
+  "vi": "⚖️ Chọn cách xử lý",
   "en": ""
  },
  {
-  "vi": "Nhận thêm một chặng hoặc tan ca hôm nay.",
+  "vi": "✉️ Đọc thư mời",
   "en": ""
  },
  {
-  "vi": "Chưa có chặng nào đang chờ",
+  "vi": "🗂️ Chọn chủ đề",
   "en": ""
  },
  {
-  "vi": "Chặng tiếp theo",
+  "vi": "Chọn chủ đề",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp ở sân bay.",
+  "vi": "Mức ưu tiên",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và nhận xét quanh sân bay.",
+  "vi": "📞 Gọi lại hỏi rõ",
   "en": ""
  },
  {
-  "vi": "Ở sân bay",
+  "vi": "🚨 Thẻ ưu tiên tin báo",
   "en": ""
  },
  {
-  "vi": "Thêm: sổ bay, khu phố",
+  "vi": "Ai đang gặp nguy thì đi trước. Luật của trò chơi.",
   "en": ""
  },
  {
-  "vi": "Tan ca bay hôm nay?",
+  "vi": "Xếp",
   "en": ""
  },
  {
-  "vi": "Kệ hạt & pate",
+  "vi": "Đã ghi sổ trực ban.",
   "en": ""
  },
  {
-  "vi": "Mrrr… cá trong bể bơi qua bơi lại, ngó hoài không chán.",
+  "vi": "Đã ghi sổ trực ban (còn thiếu).",
   "en": ""
  },
  {
-  "vi": "Khách sắp ghé mua hạt cho bé nhà.",
+  "vi": "Sổ trực ban có dòng ghi khống.",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp quanh tiệm thú nhỏ.",
+  "vi": "Chọn những gì thật sự đã xảy ra, đủ để ca sau theo dõi.",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và đánh giá quanh tiệm thú nhỏ.",
+  "vi": "📒 Ghi vào sổ trực ban",
   "en": ""
  },
  {
-  "vi": "Rổ trái cây",
+  "vi": "chọn việc làm trước",
   "en": ""
  },
  {
-  "vi": "Rổ trái dập",
+  "vi": "🤝 KÝ BIÊN BẢN HÒA GIẢI",
   "en": ""
  },
  {
-  "vi": "Sạp & cân",
+  "vi": "🚶 XONG VÒNG TUẦN TRA",
   "en": ""
  },
  {
-  "vi": "TIỀN LẺ",
+  "vi": "xử lý đủ ba chuyện",
   "en": ""
  },
  {
-  "vi": "THÙNG HÀNG",
+  "vi": "🎤 TRÌNH BÀY",
   "en": ""
  },
  {
-  "vi": "Dọn sạp về",
+  "vi": "chọn ít nhất một chủ đề",
   "en": ""
  },
  {
-  "vi": "Dọn sạp ra",
+  "vi": "🚨 ĐIỀU ĐỘNG",
   "en": ""
  },
  {
-  "vi": "Khách chợ sắp ghé mua trái.",
+  "vi": "xếp mức ưu tiên cho cả ba cuộc gọi",
   "en": ""
  },
  {
-  "vi": "Dựng dù, thử cân rồi bán nhé.",
+  "vi": "Quyết chuyện ở phường",
   "en": ""
  },
  {
-  "vi": "Sạp đang vắng",
+  "vi": "👮 Vào ca thôi!",
   "en": ""
  },
  {
-  "vi": "Mời thêm khách hoặc dọn sạp về.",
+  "vi": "Chào hỏi, nghe chuyện",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp quanh sạp trái cây.",
+  "vi": "👋 Chào hỏi, nghe chuyện",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và đánh giá quanh sạp trái cây.",
+  "vi": "Chuyện ở phường",
   "en": ""
  },
  {
-  "vi": "Túi rác trước cửa",
+  "vi": "👋 Mời ngồi, nhận hồ sơ",
   "en": ""
  },
  {
-  "vi": "Bảng phân loại",
+  "vi": "👋 Nhận đồ từ người nhặt",
   "en": ""
  },
  {
-  "vi": "Thùng tập kết",
+  "vi": "👋 Mời hai bên ngồi",
   "en": ""
  },
  {
-  "vi": "SỔ TUYẾN",
+  "vi": "🏃 Tới chỗ bé",
   "en": ""
  },
  {
-  "vi": "Quỹ tổ",
+  "vi": "🚶 Bắt đầu tuần tra",
   "en": ""
  },
  {
-  "vi": "ĐANG THU GOM",
+  "vi": "👋 Tới nhà văn hóa",
   "en": ""
  },
  {
-  "vi": "ĐÃ TAN CA",
+  "vi": "☎️ Nhấc máy",
   "en": ""
  },
  {
-  "vi": "Ngõ sau đang chờ xe rác.",
+  "vi": "👋 Chào hỏi",
   "en": ""
  },
  {
-  "vi": "Đồ bảo hộ, kiểm xe rồi vào ngõ nhé.",
+  "vi": "lần giúp dân",
   "en": ""
  },
  {
-  "vi": "Xe đang nghỉ",
+  "vi": "lần nhắc nhở",
   "en": ""
  },
  {
-  "vi": "Hết ngõ rồi!",
+  "vi": "biên bản",
   "en": ""
  },
  {
-  "vi": "Nhận thêm một ngõ hoặc tan ca.",
+  "vi": "👮 Ca hôm nay",
   "en": ""
  },
  {
-  "vi": "Nhận thêm một ngõ",
+  "vi": "Mặc cả với đội",
   "en": ""
  },
  {
-  "vi": "Chưa có ngõ nào đang chờ",
+  "vi": "Đèn trắng",
   "en": ""
  },
  {
-  "vi": "Sang ngõ tiếp theo",
+  "vi": "Cờ xanh",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp trên tuyến thu gom.",
+  "vi": "🟥 Báo dừng",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và phản ánh của cư dân.",
+  "vi": "🔔 Chuông đang kêu",
   "en": ""
  },
  {
-  "vi": "Xe máy & đồ nghề",
+  "vi": "🔕 Chuông tắt",
   "en": ""
  },
  {
-  "vi": "SỔ HẸN",
+  "vi": "🚧 Chắn đã hạ",
   "en": ""
  },
  {
-  "vi": "Quỹ tiệm",
+  "vi": "🚧 Chắn đang nâng",
   "en": ""
  },
  {
-  "vi": "ĐANG NHẬN VIỆC",
+  "vi": "✅ Tàu đã qua",
   "en": ""
  },
  {
-  "vi": "Điện thoại sắp reo.",
+  "vi": "🟥 Tàu đứng chờ",
   "en": ""
  },
  {
-  "vi": "Đọc sổ hẹn, xếp đồ nghề rồi đi nhé.",
+  "vi": "📻 Nghe ga gọi bộ đàm",
   "en": ""
  },
  {
-  "vi": "Chưa có ai gọi",
+  "vi": "📻 Nhắc lại lệnh của ga",
   "en": ""
  },
  {
-  "vi": "Nhận thêm việc hoặc nghỉ tay hôm nay.",
+  "vi": "Đọc lại đúng số hiệu tàu, giờ rời Bến Gỗ, giờ qua đường ngang.",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp khi đi thông cống.",
+  "vi": "🚰 Rửa mặt, đi lại cho tỉnh",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và đánh giá của khách.",
+  "vi": "Chưa nhìn hai phía đường ngang.",
   "en": ""
  },
  {
-  "vi": "Tủ lạnh nhà khách",
+  "vi": "✅ Trên ray không còn ai, không còn gì.",
   "en": ""
  },
  {
-  "vi": "Vào bếp",
+  "vi": "Đòi qua chắn",
   "en": ""
  },
  {
-  "vi": "ĐANG NẤU CƠM",
+  "vi": "Chắn đã hạ thì không mở cho bất kỳ ai.",
   "en": ""
  },
  {
-  "vi": "Nhà khách quen",
+  "vi": "✅ lùi lại",
   "en": ""
  },
  {
-  "vi": "Mrrr… cá kho thơm quá, cho mèo xin một miếng nhé?",
+  "vi": "😒 càm ràm, chờ",
   "en": ""
  },
  {
-  "vi": "Vuốt con mèo mướp của nhà",
+  "vi": "😤 nổi khùng",
   "en": ""
  },
  {
-  "vi": "An toàn trong bếp",
+  "vi": "🏃 chui chắn",
   "en": ""
  },
  {
-  "vi": "Cô Hạnh sắp nhắn địa chỉ nhà hôm nay.",
+  "vi": "⚠️ được mở chắn",
   "en": ""
  },
  {
-  "vi": "Nghe chủ nhà dặn rồi lên thực đơn nhé.",
+  "vi": "⏳ đứng chờ",
   "en": ""
  },
  {
-  "vi": "Bếp đã gọn",
+  "vi": "👥 Người chờ ở chắn",
   "en": ""
  },
  {
-  "vi": "Xong bữa rồi!",
+  "vi": "⚪ Giơ đèn trắng",
   "en": ""
  },
  {
-  "vi": "Nhận thêm một món hoặc về nhà hôm nay.",
+  "vi": "🟩 Giơ cờ xanh",
   "en": ""
  },
  {
-  "vi": "Nhận thêm một món",
+  "vi": "🔴 Báo dừng tàu, đèn đỏ",
   "en": ""
  },
  {
-  "vi": "Chưa có món nào đang chờ",
+  "vi": "🟥 Báo dừng tàu, cờ đỏ",
   "en": ""
  },
  {
-  "vi": "Những nhà quen bạn nấu cơm cho.",
+  "vi": "👀 Nhìn đường ngang",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và nhận xét của các nhà.",
+  "vi": "🔔 Bật chuông đèn",
   "en": ""
  },
  {
-  "vi": "Bao gạo & trứng",
+  "vi": "🚧 Quay tay hạ chắn",
   "en": ""
  },
  {
-  "vi": "Tủ kính cơm",
+  "vi": "🚧 Hạ chắn",
   "en": ""
  },
  {
-  "vi": "Kho gạo",
+  "vi": "📻 Hỏi ga: tàu còn đứng ở Bến Gỗ?",
   "en": ""
  },
  {
-  "vi": "SỔ QUÁN",
+  "vi": "🚧 Nâng chắn tạm (ga đã xác nhận)",
   "en": ""
  },
  {
-  "vi": "KHO GẠO",
+  "vi": "📻 Báo ga: đường đã thông",
   "en": ""
  },
  {
-  "vi": "Dọn quán",
+  "vi": "⏳ Đứng chờ tàu",
   "en": ""
  },
  {
-  "vi": "Mở quán",
+  "vi": "Báo ga dừng tàu? Chỉ dùng khi đường ngang có vật cản không dẹp kịp.",
   "en": ""
  },
  {
-  "vi": "ĐANG BÁN CƠM",
+  "vi": "👁️ Nhìn hết đoàn tàu",
   "en": ""
  },
  {
-  "vi": "Mrrr… miếng sườn cháy cạnh thơm quá, cho Mướp xin một miếng?",
+  "vi": "🏮 Có đèn đuôi toa cuối.",
   "en": ""
  },
  {
-  "vi": "Khách đi chợ sắp ghé ăn cơm.",
+  "vi": "Không thấy đèn đuôi!",
   "en": ""
  },
  {
-  "vi": "Nấu cơm, nếm nước mắm, nhóm bếp rồi mở quán nhé.",
+  "vi": "✓ Đã báo mất đèn đuôi",
   "en": ""
  },
  {
-  "vi": "Quán đang vãn",
+  "vi": "📻 Báo ga: không có đèn đuôi",
   "en": ""
  },
  {
-  "vi": "Mời thêm khách hoặc dọn quán hôm nay.",
+  "vi": "✓ Đã báo bất thường",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp ở quán cơm tấm Dì Bảy.",
+  "vi": "📻 Báo ga: toa có bất thường",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và đánh giá quanh quán cơm.",
+  "vi": "✓ Ga cho nâng chắn",
   "en": ""
  },
  {
-  "vi": "Bàn ghế nhựa",
+  "vi": "⏳ Chờ tàu thứ hai qua, hỏi lại ga",
   "en": ""
  },
  {
-  "vi": "Kho sau bếp",
+  "vi": "📻 Hỏi ga: còn tàu nào không?",
   "en": ""
  },
  {
-  "vi": "SỔ QUÁN PHỞ",
+  "vi": "🚧 Nâng chắn, tắt chuông",
   "en": ""
  },
  {
-  "vi": "KHO BẾP",
+  "vi": "🚆 Tàu đã qua",
   "en": ""
  },
  {
-  "vi": "Đóng quán",
+  "vi": "📒 Ghi sổ nhật ký",
   "en": ""
  },
  {
-  "vi": "ĐANG BÁN PHỞ",
+  "vi": "Chọn đúng những gì đã xảy ra với chuyến này.",
   "en": ""
  },
  {
-  "vi": "HẾT PHỞ, MAI GHÉ NHÉ",
+  "vi": "✍️ GHI SỔ, KÝ TÊN",
   "en": ""
  },
  {
-  "vi": "Mrrr… cho Mướp xin miếng gân bò thôi mà.",
+  "vi": "Chuông",
   "en": ""
  },
  {
-  "vi": "Nồi nước đang lăn tăn, khách sắp ghé.",
+  "vi": "Cờ",
   "en": ""
  },
  {
-  "vi": "Vặn lửa, hớt bọt, nếm nước rồi mở quán nhé.",
+  "vi": "H6 chậm 20′; chắn Nam đã tra dầu",
   "en": ""
  },
  {
-  "vi": "Bếp đang vãn",
+  "vi": "Có người chui chắn: canh giờ tan tầm",
   "en": ""
  },
  {
-  "vi": "Mời thêm khách hoặc đóng quán hôm nay.",
+  "vi": "Bà Bông phơi ớt trên ray: nhắc khéo",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp ở quán phở Cây Si.",
+  "vi": "Cô Mận xin ghế sát ray: đừng cho",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và đánh giá quanh quán phở.",
+  "vi": "Đèn chòi chập chờn; pin trong tủ",
   "en": ""
  },
  {
-  "vi": "Trong quán",
+  "vi": "Chú Hớn ngủ bờ ray: dìu vô",
   "en": ""
  },
  {
-  "vi": "Sổ quán",
+  "vi": "Không tự sửa được: báo đúng nơi để thợ tới.",
   "en": ""
  },
  {
-  "vi": "Khung mẫu",
+  "vi": "Giờ tàu",
   "en": ""
  },
  {
-  "vi": "Quầy & máy in",
+  "vi": "Bảng giờ tàu hôm nay",
   "en": ""
  },
  {
-  "vi": "Thùng giấy in",
+  "vi": "Làm gì",
   "en": ""
  },
  {
-  "vi": "SỔ TIỆM ẢNH",
+  "vi": "Báo đâu",
   "en": ""
  },
  {
-  "vi": "THÙNG GIẤY",
+  "vi": "Gửi đội trưởng",
   "en": ""
  },
  {
-  "vi": "ĐANG CHỤP ẢNH",
+  "vi": "⚖️ Tạm đình chỉ gác hôm nay",
   "en": ""
  },
  {
-  "vi": "Mrrr… cho mèo đội bờm tai thỏ chụp một tấm đi.",
+  "vi": "Chuyến tàu đang tới thì vẫn gác cho xong an toàn. Mai lên đội trình bày.",
   "en": ""
  },
  {
-  "vi": "Lau ống kính, chụp thử rồi mở tiệm nhé.",
+  "vi": "✓ đã qua",
   "en": ""
  },
  {
-  "vi": "Buồng chụp đang trống",
+  "vi": "🕐 Bảng giờ tàu",
   "en": ""
  },
  {
-  "vi": "Mời thêm một nhóm khách",
+  "vi": "Nhận ca, ký sổ giao ca trước",
   "en": ""
  },
  {
-  "vi": "Mời nhóm khách tiếp theo",
+  "vi": "📻 Chọn câu nhắc lại",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp ở tiệm ảnh Tách Tách.",
+  "vi": "Dẹp người, vật trên ray",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và đánh giá quanh tiệm ảnh.",
+  "vi": "👉 Dẹp khỏi ray",
   "en": ""
  },
  {
-  "vi": "Chậu giặt khăn",
+  "vi": "Báo ga đường đã thông",
   "en": ""
  },
  {
-  "vi": "Thùng chai",
+  "vi": "📻 Báo ga đường thông",
   "en": ""
  },
  {
-  "vi": "Ví tiền công",
+  "vi": "đòi qua: bạn trả lời sao?",
   "en": ""
  },
  {
-  "vi": "SỔ TỔ GIÚP VIỆC",
+  "vi": "Nhìn hai phía đường ngang",
   "en": ""
  },
  {
-  "vi": "THÙNG CHAI",
+  "vi": "👉 Chọn cách dẹp",
   "en": ""
  },
  {
-  "vi": "Nghỉ hôm nay",
+  "vi": "Tàu chậm: hỏi ga tàu còn đứng ở Bến Gỗ không",
   "en": ""
  },
  {
-  "vi": "Nhận lịch hẹn",
+  "vi": "👉 Hỏi ga",
   "en": ""
  },
  {
-  "vi": "ĐANG NHẬN DỌN",
+  "vi": "Ga xác nhận tàu còn đứng: được nâng chắn tạm",
   "en": ""
  },
  {
-  "vi": "MAI GỌI NHÉ",
+  "vi": "👉 Nâng chắn tạm",
   "en": ""
  },
  {
-  "vi": "Mrrr… nhà sạch thơm thế này, nằm đâu cũng sướng.",
+  "vi": "Bật chuông đèn trước khi hạ",
   "en": ""
  },
  {
-  "vi": "Lịch hẹn kế tiếp sắp tới giờ.",
+  "vi": "👉 Chuông đèn",
   "en": ""
  },
  {
-  "vi": "Giặt khăn, châm chai rồi lên đường nhé.",
+  "vi": "👉 Hạ chắn",
   "en": ""
  },
  {
-  "vi": "Xe đồ nghề đang rảnh",
+  "vi": "Giơ đèn trắng đón tàu",
   "en": ""
  },
  {
-  "vi": "Xong lịch rồi!",
+  "vi": "Giơ cờ xanh đón tàu",
   "en": ""
  },
  {
-  "vi": "Nhận thêm một nhà hoặc nghỉ hôm nay.",
+  "vi": "👉 Đứng cờ",
   "en": ""
  },
  {
-  "vi": "Nhận thêm một nhà",
+  "vi": "Đứng chờ tàu qua",
   "en": ""
  },
  {
-  "vi": "Chưa có nhà nào đang chờ",
+  "vi": "👉 Chờ tàu",
   "en": ""
  },
  {
-  "vi": "Sang nhà tiếp theo",
+  "vi": "👁️ Nhìn đoàn tàu",
   "en": ""
  },
  {
-  "vi": "Những khách quen của tổ Nhà Thơm.",
+  "vi": "Thấy bất thường thì báo ga ngay",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và đánh giá của khách nhà.",
+  "vi": "👉 Báo ga",
   "en": ""
  },
  {
-  "vi": "Ở tổ",
+  "vi": "👉 Nâng chắn",
   "en": ""
  },
  {
-  "vi": "Sổ tổ",
+  "vi": "Ghi sổ nhật ký đúng sự thật",
   "en": ""
  },
  {
-  "vi": "Kệ đồ chơi",
+  "vi": "Báo đúng nơi (nguy hiểm thì gọi ga)",
   "en": ""
  },
  {
-  "vi": "Bếp nhỏ của bé",
+  "vi": "Đi tới từng điểm",
   "en": ""
  },
  {
-  "vi": "Rương đồ chơi",
+  "vi": "Chỗ nào có chuyện: xử lý, phòng vệ, ghi đúng phiếu",
   "en": ""
  },
  {
-  "vi": "Bàn vẽ của bé",
+  "vi": "👉 Xem các điểm",
   "en": ""
  },
  {
-  "vi": "SỔ TRÔNG BÉ",
+  "vi": "Quyết chuyện ở đường ngang",
   "en": ""
  },
  {
-  "vi": "RƯƠNG ĐỒ",
+  "vi": "🚦 Vào ca thôi!",
   "en": ""
  },
  {
-  "vi": "Vào trông bé",
+  "vi": "✍️ KÝ NHẬN CA",
   "en": ""
  },
  {
-  "vi": "ĐANG TRÔNG BÉ",
+  "vi": "Nhận sổ tuần đường",
   "en": ""
  },
  {
-  "vi": "Cũi của bé",
+  "vi": "🔩 Nhận việc tuần đường",
   "en": ""
  },
  {
-  "vi": "Mrrr… bé ngủ rồi, mèo đi nhẹ chân nhé.",
+  "vi": "📒 KÝ SỔ TUẦN ĐƯỜNG",
   "en": ""
  },
  {
-  "vi": "Chơi với Mướp bên cửa sổ",
+  "vi": "📻 Nghe ga gọi",
   "en": ""
  },
  {
-  "vi": "An toàn cho bé",
+  "vi": "Chuyện ở đường ngang",
   "en": ""
  },
  {
-  "vi": "Bố mẹ bé sắp tới gửi bé.",
+  "vi": "Nhận ca, thử thiết bị",
   "en": ""
  },
  {
-  "vi": "Rửa tay, đọc giấy dặn rồi nhận bé nhé.",
+  "vi": "Nghe ga gọi",
   "en": ""
  },
  {
-  "vi": "Bé đang chơi ngoan",
+  "vi": "Gác chuyến tàu",
   "en": ""
  },
  {
-  "vi": "Làm thêm một việc hoặc về nhà hôm nay.",
+  "vi": "🚦 Đường ngang",
   "en": ""
  },
  {
-  "vi": "Làm thêm một việc",
+  "vi": "🚦 Ca gác hôm nay",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp ở tổ trông trẻ Mèo Con.",
+  "vi": "🔧 Tiệm sửa đồ",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và nhận xét của bố mẹ các bé.",
+  "vi": "💬 Lời dặn",
   "en": ""
  },
  {
-  "vi": "Sổ trông bé",
+  "vi": "Không đưa",
   "en": ""
  },
  {
-  "vi": "Kệ sách theo ký hiệu",
+  "vi": "Không đưa kèm gì",
   "en": ""
  },
  {
-  "vi": "Xe sách trả",
+  "vi": "Chỉ hàng chính hãng",
   "en": ""
  },
  {
-  "vi": "Sổ mượn trả",
+  "vi": "Đã trễ hẹn gấp",
   "en": ""
  },
  {
-  "vi": "SỔ MƯỢN TRẢ",
+  "vi": "Phiếu khách",
   "en": ""
  },
  {
-  "vi": "KHO VẬT TƯ",
+  "vi": "Đang đóng",
   "en": ""
  },
  {
-  "vi": "Quỹ thư viện",
+  "vi": "Máy đang đóng",
   "en": ""
  },
  {
-  "vi": "Đóng cửa thư viện",
+  "vi": "Đã an toàn",
   "en": ""
  },
  {
-  "vi": "Mở cửa thư viện",
+  "vi": "Còn điện",
   "en": ""
  },
  {
-  "vi": "HẸN MAI ĐỌC TIẾP",
+  "vi": "✓ đã nhận",
   "en": ""
  },
  {
-  "vi": "Kho lưu trữ hồ sơ",
+  "vi": "✗ khách không đưa",
   "en": ""
  },
  {
-  "vi": "Mrrr… nằm trên chồng báo cũ ấm ghê, đừng đuổi mèo nha.",
+  "vi": "chạm để ghi nhận",
   "en": ""
  },
  {
-  "vi": "Vuốt mèo ngủ trên chồng báo",
+  "vi": "khách không đưa",
   "en": ""
  },
  {
-  "vi": "Trông coi kho, phòng đọc",
+  "vi": "🎒 Khách không đưa kèm gì",
   "en": ""
  },
  {
-  "vi": "Ông Thạc đã đứng chờ ngoài cửa.",
+  "vi": "· để trống phần phụ kiện.",
   "en": ""
  },
  {
-  "vi": "Xem ẩm kế kho, soi bẫy rồi mở phòng đọc nhé.",
+  "vi": "🔍 Vết trên máy",
   "en": ""
  },
  {
-  "vi": "Đón thêm bạn đọc hoặc đóng cửa thư viện hôm nay.",
+  "vi": "đang mở",
   "en": ""
  },
  {
-  "vi": "Đón thêm một bạn đọc",
+  "vi": "đang đóng",
   "en": ""
  },
  {
-  "vi": "Chưa có bạn đọc nào đang chờ",
+  "vi": "đã an toàn",
   "en": ""
  },
  {
-  "vi": "Mời bạn đọc tiếp theo",
+  "vi": "còn điện",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp ở thư viện phường Mây.",
+  "vi": "🔎 Đo kiểm",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và nhận xét của bạn đọc.",
+  "vi": "đang chốt",
   "en": ""
  },
  {
-  "vi": "Trong thư viện",
+  "vi": "số đo đã loại",
   "en": ""
  },
  {
-  "vi": "Sổ thư viện",
+  "vi": "còn khả nghi",
   "en": ""
  },
  {
-  "vi": "Cờ đỏ, cờ xanh",
+  "vi": "🧩 Giả thuyết",
   "en": ""
  },
  {
-  "vi": "Bảng giờ tàu",
+  "vi": "♻️ Đồ tháo máy",
   "en": ""
  },
  {
-  "vi": "SỔ NHẬT KÝ",
+  "vi": "(chưa được duyệt giá)",
   "en": ""
  },
  {
-  "vi": "TỦ DỤNG CỤ",
+  "vi": "Sao chép dữ liệu",
   "en": ""
  },
  {
-  "vi": "Thưởng ca",
+  "vi": "🧾 Thu khi bàn giao",
   "en": ""
  },
  {
-  "vi": "ĐANG GÁC",
+  "vi": "Tiền gấp nếu kịp giờ (khách tự gửi thêm)",
   "en": ""
  },
  {
-  "vi": "Chòi gác Bến Mây",
+  "vi": "Thay mũi hàn mới",
   "en": ""
  },
  {
-  "vi": "Mrrr… mèo nằm trong chòi thôi, ra ray là bị bế vô liền.",
+  "vi": "Thay pin đồng hồ đo",
   "en": ""
  },
  {
-  "vi": "Vuốt con mèo nằm trong chòi",
+  "vi": "🔥 Thay mũi hàn",
   "en": ""
  },
  {
-  "vi": "Bộ đàm sắp reo.",
+  "vi": "Ghi vết",
   "en": ""
  },
  {
-  "vi": "Nhận ca, thử từng thiết bị rồi ký sổ nhé.",
+  "vi": "Nhận kèm",
   "en": ""
  },
  {
-  "vi": "Đường ngang đang thông",
+  "vi": "Chạm đúng các vết thấy trên máy",
   "en": ""
  },
  {
-  "vi": "Hết tàu rồi!",
+  "vi": "👀 Xem máy, ghi các vết",
   "en": ""
  },
  {
-  "vi": "Nhận thêm một chuyến tàu hoặc giao ca hôm nay.",
+  "vi": "Ghi đúng những món khách đưa kèm",
   "en": ""
  },
  {
-  "vi": "Nhận thêm một chuyến tàu",
+  "vi": "Hỏi khách có cho mở khóa / xem dữ liệu",
   "en": ""
  },
  {
-  "vi": "Chưa có chuyến tàu nào đang tới",
+  "vi": "🙋 Hỏi quyền xem dữ liệu",
   "en": ""
  },
  {
-  "vi": "Chuyến tàu tiếp theo",
+  "vi": "Đo kiểm để loại dần giả thuyết",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp ở đường ngang Bến Mây.",
+  "vi": "🔎 Chọn một phép đo",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và nhận xét quanh đường ngang.",
+  "vi": "Lắp máy lại để đo khi cấp điện",
   "en": ""
  },
  {
-  "vi": "Ở chòi gác",
+  "vi": "Hết phép đo: chốt lỗi khả nghi nhất",
   "en": ""
  },
  {
-  "vi": "Phiếu suất ăn đặc biệt",
+  "vi": "Đo kiểm, loại dần giả thuyết",
   "en": ""
  },
  {
-  "vi": "Cửa ra tàu",
+  "vi": "📌 Chốt lỗi",
   "en": ""
  },
  {
-  "vi": "SỔ TIẾP VIÊN",
+  "vi": "💧 Soi tem báo nước",
   "en": ""
  },
  {
-  "vi": "Khách chuyến sau đang xếp hàng ở cổng.",
+  "vi": "Khách không nghe báo giá nữa: làm phần đã duyệt hoặc trả máy",
   "en": ""
  },
  {
-  "vi": "Thắt khăn quàng, ra cửa tàu đón khách nhé.",
+  "vi": "Khách chê: chọn loại linh kiện khác",
   "en": ""
  },
  {
-  "vi": "Khoang khách đang yên",
+  "vi": "Gửi báo giá cho khách duyệt",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp trên khoang khách.",
+  "vi": "bảo hành",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và nhận xét của hành khách.",
+  "vi": "📦 Đặt riêng",
   "en": ""
  },
  {
-  "vi": "Chuông gọi & sát khuẩn tay",
+  "vi": "🗄️ Hẹn ngày khách tới lấy",
   "en": ""
  },
  {
-  "vi": "Xe tiêm & tủ vật tư",
+  "vi": ": không BH",
   "en": ""
  },
  {
-  "vi": "Bàn hồ sơ",
+  "vi": "🛡️ Chọn số ngày bảo hành",
   "en": ""
  },
  {
-  "vi": "Giường bệnh",
+  "vi": "Quyết: mua, từ chối hay báo công an",
   "en": ""
  },
  {
-  "vi": "An ninh bệnh viện",
+  "vi": "Có chuyện ở quầy: chọn cách xử lý",
   "en": ""
  },
  {
-  "vi": "SỔ KHOA",
+  "vi": "Máy quay lại bảo hành: chọn cách xử lý",
   "en": ""
  },
  {
-  "vi": "ĐANG TRỰC",
+  "vi": "Khách gọi hỏi máy: trả lời điện thoại",
   "en": ""
  },
  {
-  "vi": "ĐÃ GIAO CA",
+  "vi": "📝 Hỏi bệnh máy",
   "en": ""
  },
  {
-  "vi": "Mướp nằm ngoài cửa sổ",
+  "vi": "Trả máy, phụ kiện và phiếu bảo hành, thu tiền đúng báo giá?",
   "en": ""
  },
  {
-  "vi": "Mrrr… Mướp đứng ngoài cửa sổ thôi, khoa Nội phải sạch sẽ.",
+  "vi": "sửa xong và chạy thử đạt trước",
   "en": ""
  },
  {
-  "vi": "Chuông gọi sắp réo rồi.",
+  "vi": "Việc ở bước này",
   "en": ""
  },
  {
-  "vi": "Nhận ca, đọc sổ giao ca rồi đi buồng nhé.",
+  "vi": "Thêm: hẹn khách, trả máy, kho linh kiện, kệ máy chờ",
   "en": ""
  },
  {
-  "vi": "Khoa đang yên",
+  "vi": "Hẹn khách",
   "en": ""
  },
  {
-  "vi": "Nhận thêm một việc hoặc giao ca hôm nay.",
+  "vi": "Trả máy",
   "en": ""
  },
  {
-  "vi": "Sổ khoa",
+  "vi": "Kệ máy chờ",
   "en": ""
  },
  {
-  "vi": "Giao ca hôm nay?",
+  "vi": "🔩 Mở kho linh kiện",
   "en": ""
  },
  {
-  "vi": "Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho ca sau.",
+  "vi": "🔧 Sổ tiệm hôm nay",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp ở khoa Nội.",
+  "vi": "Mặc cả với trung tâm",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và nhận xét của người bệnh, người nhà.",
+  "vi": "Gửi chị Thảo",
   "en": ""
  },
  {
-  "vi": "Sổ nhật ký & bản đồ",
+  "vi": "Mai lên phòng Điều phối trình bày. Hôm nay tan ca sớm.",
   "en": ""
  },
  {
-  "vi": "Điện thoại khẩn",
+  "vi": "sẵn sàng",
   "en": ""
  },
  {
-  "vi": "Giá bộ đàm",
+  "vi": "đang đi",
   "en": ""
  },
  {
-  "vi": "Bàn giấy tờ",
+  "vi": "tạm ngưng",
   "en": ""
  },
  {
-  "vi": "Bản đồ phường",
+  "vi": "Cứu hỏa",
   "en": ""
  },
  {
-  "vi": "An ninh trung tâm",
+  "vi": "Cấp cứu",
   "en": ""
  },
  {
-  "vi": "GIÁ BỘ ĐÀM",
+  "vi": "Xuồng",
   "en": ""
  },
  {
-  "vi": "Mướp ngủ cạnh giá bộ đàm",
+  "vi": "Thang máy",
   "en": ""
  },
  {
-  "vi": "Mrrr… Mướp nằm ổ thôi, không nằm lên bàn bộ đàm đâu.",
+  "vi": "Công an",
   "en": ""
  },
  {
-  "vi": "Đường dây sắp réo rồi.",
+  "vi": "✅ Không đội nào",
   "en": ""
  },
  {
-  "vi": "Nhận ca, gọi bộ đàm từng đội rồi ký nhé.",
+  "vi": "Gọi bộ đàm từng đội",
   "en": ""
  },
  {
-  "vi": "Đường dây đang yên",
+  "vi": "Đội tạm ngưng",
   "en": ""
  },
  {
-  "vi": "Hết cuộc gọi rồi!",
+  "vi": "⛔ Đánh dấu đội tạm ngưng",
   "en": ""
  },
  {
-  "vi": "Nhận thêm một cuộc gọi hoặc giao ca hôm nay.",
+  "vi": "Đánh dấu đội tạm ngưng",
   "en": ""
  },
  {
-  "vi": "Nhận thêm một cuộc gọi",
+  "vi": "😰 Người gọi đang hoảng",
   "en": ""
  },
  {
-  "vi": "Chưa có cuộc gọi nào đang chờ",
+  "vi": "📵 Máy đã cúp",
   "en": ""
  },
  {
-  "vi": "Cuộc gọi tiếp theo",
+  "vi": "📍 Đã rõ chỗ",
   "en": ""
  },
  {
-  "vi": "Trong phòng trực",
+  "vi": "📍 Chưa rõ chỗ",
   "en": ""
  },
  {
-  "vi": "Lương ngày vào quỹ lương. Cuộc gọi chưa xong được giao lại cho ca sau.",
+  "vi": "📋 Kịch bản cuộc gọi",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp ở tổng đài cứu hộ.",
+  "vi": "🌬️ Trấn an người gọi…",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và nhận xét của người gọi, của đội.",
+  "vi": "🗺️ Tìm chỗ người gọi…",
   "en": ""
  },
  {
-  "vi": "Sổ nước & que thử",
+  "vi": "🔎 Kiểm tra cuộc gọi…",
   "en": ""
  },
  {
-  "vi": "Bàn trực cứu hộ",
+  "vi": "Mức ưu tiên (Bảng ưu tiên Mây, luật của trò chơi):",
   "en": ""
  },
  {
-  "vi": "Máy AED & điện thoại khẩn",
+  "vi": "Đội cần gửi:",
   "en": ""
  },
  {
-  "vi": "Giá phao & sào cứu hộ",
+  "vi": "🚨 GỬI ĐỘI",
   "en": ""
  },
  {
-  "vi": "Bàn sổ trực",
+  "vi": "Không ai cần xe? Chuyển tới đâu:",
   "en": ""
  },
  {
-  "vi": "An ninh hồ bơi",
+  "vi": "Giọng nói:",
   "en": ""
  },
  {
-  "vi": "ĐANG MỞ HỒ",
+  "vi": "↪️ CHUYỂN ĐÚNG NƠI",
   "en": ""
  },
  {
-  "vi": "HỒ ĐÃ ĐÓNG",
+  "vi": "🚒 Gửi đội…",
   "en": ""
  },
  {
-  "vi": "Mướp ngồi ngoài hàng rào",
+  "vi": "↪️ Không điều xe, chuyển đúng nơi…",
   "en": ""
  },
  {
-  "vi": "Mrrr… Mướp sợ nước lắm, ngồi ngoài hàng rào ngó thôi.",
+  "vi": "🗣️ Hướng dẫn an toàn trong lúc chờ",
   "en": ""
  },
  {
-  "vi": "Mặt hồ đang lấp lánh.",
+  "vi": "Chọn điều người gọi nên làm. Có thẻ nghe thì hợp lý mà nguy hiểm.",
   "en": ""
  },
  {
-  "vi": "Thử nước, kiểm phao rồi mở cổng nhé.",
+  "vi": "☎️ Kết thúc",
   "en": ""
  },
  {
-  "vi": "Hồ đang yên",
+  "vi": "☎️ Giữ máy tới khi đội tới",
   "en": ""
  },
  {
-  "vi": "Ở hồ bơi",
+  "vi": "nói chuyện, dặn thêm, nghe tiếng còi xe",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp ở Hồ bơi Sóng Xanh.",
+  "vi": "📴 Kết thúc cuộc gọi",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và nhận xét của khách bơi, phụ huynh.",
+  "vi": "trả đường dây cho cuộc kế",
   "en": ""
  },
  {
-  "vi": "Hồ sơ theo tổ",
+  "vi": "🌬️ Trấn an",
   "en": ""
  },
  {
-  "vi": "Bảng tin phường",
+  "vi": "Gọi lại số vừa gọi",
   "en": ""
  },
  {
-  "vi": "Máy số thứ tự & điện thoại trực ban",
+  "vi": "↩️ Gọi lại",
   "en": ""
  },
  {
-  "vi": "Tủ đồ thất lạc",
+  "vi": "Hỏi địa chỉ",
   "en": ""
  },
  {
-  "vi": "Sổ trực ban",
+  "vi": "Tìm cho rõ chỗ",
   "en": ""
  },
  {
-  "vi": "Hàng ghế chờ",
+  "vi": "🗺️ Tìm chỗ",
   "en": ""
  },
  {
-  "vi": "SỔ TRỰC BAN",
+  "vi": "Hỏi chuyện gì",
   "en": ""
  },
  {
-  "vi": "TỦ ĐỒ THẤT LẠC",
+  "vi": "Hỏi mấy người, ai bị thương",
   "en": ""
  },
  {
-  "vi": "ĐANG TIẾP DÂN",
+  "vi": "Hỏi nguy hiểm",
   "en": ""
  },
  {
-  "vi": "Mướp nằm dưới hàng ghế chờ",
+  "vi": "Xin số gọi lại",
   "en": ""
  },
  {
-  "vi": "Mrrr… Mướp cũng muốn lấy số thứ tự.",
+  "vi": "Gửi đội hoặc chuyển đúng nơi",
   "en": ""
  },
  {
-  "vi": "Điện thoại trực ban sắp reo rồi.",
+  "vi": "Đọc hướng dẫn an toàn",
   "en": ""
  },
  {
-  "vi": "Giao ban, đọc sổ trực ban rồi tiếp dân nhé.",
+  "vi": "🗣️ Đọc hướng dẫn",
   "en": ""
  },
  {
-  "vi": "Phường đang yên",
+  "vi": "👂 Nghe máy",
   "en": ""
  },
  {
-  "vi": "Trong trụ sở",
+  "vi": "🚦 Bảng ưu tiên Mây",
   "en": ""
  },
  {
-  "vi": "Những người bạn gặp ở phường Mây.",
+  "vi": "Xếp theo nguy hiểm tính mạng, không theo tiếng la. Luật của trò chơi.",
   "en": ""
  },
  {
-  "vi": "Lời nhắn và nhận xét của người dân.",
+  "vi": "Đã ghi sổ nhật ký.",
   "en": ""
  },
  {
-  "vi": "Kho lạnh & sơ chế",
+  "vi": "Đã ghi sổ nhật ký (còn thiếu).",
   "en": ""
  },
  {
-  "vi": "KHU SƠ CHẾ",
+  "vi": "Sổ nhật ký có dòng ghi khống.",
   "en": ""
  },
  {
-  "vi": "KHO LẠNH",
+  "vi": "📒 Ghi vào sổ nhật ký",
   "en": ""
  },
  {
-  "vi": "Bàn sơ chế",
+  "vi": "🗺️ KÝ NHẬN CA",
   "en": ""
  },
  {
-  "vi": "Kệ gia vị dự trữ",
+  "vi": "đánh dấu đội tạm ngưng",
   "en": ""
  },
  {
-  "vi": "MÌ",
+  "vi": "📞 NHẤC THEO THỨ TỰ",
   "en": ""
  },
  {
-  "vi": "ĐÁ",
+  "vi": "xếp ưu tiên cho đủ các máy",
   "en": ""
  },
  {
-  "vi": "Thùng hàng sáng nay",
+  "vi": "☎️ KẾT THÚC",
   "en": ""
  },
  {
-  "vi": "Thùng rau sáng nay: cải thảo, hành boa rô, nấm kim châm. Tươi rói.",
+  "vi": "Quyết chuyện ở phòng trực",
   "en": ""
  },
  {
-  "vi": "Bàn 3 thêm một tô cấp 7!",
+  "vi": "📞 Vào ca thôi!",
   "en": ""
  },
  {
-  "vi": "Hết hành phi rồi, phi thêm nha!",
+  "vi": "Nghe chị Thảo",
   "en": ""
  },
  {
-  "vi": "Rau mới về, rửa liền nè.",
+  "vi": "👂 Nghe chị Thảo",
   "en": ""
  },
  {
-  "vi": "CHỢ MÂY",
+  "vi": "📞 Nhấc máy",
   "en": ""
  },
  {
-  "vi": "NGUY HẠI",
+  "vi": "Chuyện ở phòng trực",
   "en": ""
  },
  {
-  "vi": "CHÒI GÁC BẾN MÂY",
+  "vi": "Các đường dây",
   "en": ""
  },
  {
-  "vi": "XOÀI CÁT 14 XU/KÝ",
+  "vi": "Kịch bản",
   "en": ""
  },
  {
-  "vi": "cân đủ, trừ bì",
+  "vi": "lần gửi đội",
   "en": ""
  },
  {
-  "vi": "PHÂN LOẠI",
+  "vi": "cuộc đã kiểm tra",
   "en": ""
  },
  {
-  "vi": "ĐỔ RÁC 18:00–19:30",
+  "vi": "hướng dẫn đã đọc",
   "en": ""
  },
  {
-  "vi": "đúng giờ, đúng túi",
+  "vi": "📞 Ca hôm nay",
   "en": ""
  },
  {
-  "vi": "GIỜ TÀU",
+  "vi": "🗺️ Bảng đội",
   "en": ""
  },
  {
-  "vi": "DỪNG LẠI KHI CÓ TÀU",
+  "vi": "xu theo thực đơn",
   "en": ""
  },
  {
-  "vi": "chuông kêu, đèn đỏ: không qua",
+  "vi": "ngày hội ×1,1 →",
   "en": ""
  },
  {
-  "vi": "nhận ca lúc 5:30",
+  "vi": "bàn trống",
   "en": ""
  },
  {
-  "vi": "ĐỒ NGHỀ",
+  "vi": "🧾 Đơn mới",
   "en": ""
  },
  {
-  "vi": "BẢNG GIÁ",
+  "vi": "📒 Sổ chưa có món này: hỏi lại.",
   "en": ""
  },
  {
-  "vi": "THÔNG CỐNG",
+  "vi": "🎓 Học sinh −10%",
   "en": ""
  },
  {
-  "vi": "báo giá trước khi làm",
+  "vi": "🥢 Vớt mì đúng lúc (tự canh)",
   "en": ""
  },
  {
-  "vi": "gọi là tới",
+  "vi": "🥢 Vớt mì ngay!",
   "en": ""
  },
  {
-  "vi": "NỘI QUY",
+  "vi": "🥢 Vớt mì ngay (hơi mềm rồi)",
   "en": ""
  },
  {
-  "vi": "KHO LƯU TRỮ",
+  "vi": "🥢 Vớt mì (nát rồi)",
   "en": ""
  },
  {
-  "vi": "ẩm!",
+  "vi": "🗑️ Đổ tô, làm lại",
   "en": ""
  },
  {
-  "vi": "mượn · trả · tra cứu",
+  "vi": "🧽 Hết tô sạch: rửa tô trước",
   "en": ""
  },
  {
-  "vi": "TRẢ",
+  "vi": "🥡 Lấy hộp mang về",
   "en": ""
  },
  {
-  "vi": "HÀNH LANG",
+  "vi": "🥣 Lấy tô",
   "en": ""
  },
  {
-  "vi": "MÁY PHÁT",
+  "vi": "hai rổ đang bận",
   "en": ""
  },
  {
-  "vi": "Đang có khách",
+  "vi": "hơi mềm, vẫn ăn được",
   "en": ""
  },
  {
-  "vi": "Hành lang phòng",
+  "vi": "Chan nước dùng theo hình",
   "en": ""
  },
  {
-  "vi": "CÁC PHÒNG NGHỈ",
+  "vi": "Chọn nước dùng hợp khách",
   "en": ""
  },
  {
-  "vi": "Xe dọn phòng",
+  "vi": "khách dị ứng hải sản",
   "en": ""
  },
  {
-  "vi": "Phòng Đồi Thông xin thêm cái chăn!",
+  "vi": "👉 Thêm topping theo hình",
   "en": ""
  },
  {
-  "vi": "Ga giường phơi khô rồi nè.",
+  "vi": "topping theo hình",
   "en": ""
  },
  {
-  "vi": "Sương xuống dày ghê, đóng cửa sổ giùm nha.",
+  "vi": "🌶️ Bơm 1 lượt ớt",
   "en": ""
  },
  {
-  "vi": "Bếp ăn sáng",
+  "vi": "📦 Đậy nắp hộp",
   "en": ""
  },
  {
-  "vi": "BẾP ĂN SÁNG",
+  "vi": "Khách sẽ nếm và soi lại tô.",
   "en": ""
  },
  {
-  "vi": "TỦ LẠNH",
+  "vi": "tô cần có mì và nước dùng",
   "en": ""
  },
  {
-  "vi": "Bàn ăn sáng",
+  "vi": "Chờ khách nhận món",
   "en": ""
  },
  {
-  "vi": "Bàn ăn sáng nhìn ra đồi thông. Trứng, bánh mì, dâu Đà Lạt, cà phê nóng.",
+  "vi": "🥶 1 tô = 2 phần nồi",
   "en": ""
  }
 ]

@@ -3,14 +3,16 @@
  * is reading) and the aisle check on a seat map, the cart row by row on the same seat map,
  * the belt-sign countdown, a difficult passenger in three lines, and first aid from the kit.
  * Teal and coral cabin look. Everything is decided on the server; one command per tap. */
-import {stepRows,nextHint,stepCta,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
+import {stepRows,nextHint,stepBar,finalGo,pending,firstTime,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import * as air from './air_kit.js';
+import {introCard as shortIntro,introHelp} from './street_kit.js';
+import {tip,clean,whyAttrs,helpBtn} from '../ui-kit.js';
 const data=x=>x.room.data||{};
 const cc=x=>x.cc||{};
 const lower=s=>s?s[0].toLowerCase()+s.slice(1):'';
 const carBtn=(x,label,action,d={},cls='',extra='')=>`<button type="button" class="btn ${cls}" data-action="car:${action}"${Object.entries(d).map(([k,v])=>` data-${k}="${x.esc(v)}"`).join('')}${extra}>${label}</button>`;
-const tile=(x,command,payload,inner,cls='',disabled=false,extra='')=>`<button type="button" class="tv-tile ${cls}" data-command="${command}" data-payload="${x.esc(JSON.stringify(payload))}"${disabled?' disabled':''}${extra}>${inner}</button>`;
+const tile=(x,command,payload,inner,cls='',disabled=false,extra='')=>`<button type="button" class="tv-tile ${cls}${/aria-disabled/.test(extra)?' is-why':''}" data-command="${command}" data-payload="${x.esc(JSON.stringify(payload))}"${disabled?' disabled':''}${extra}>${inner}</button>`;
 const item=(x,id)=>[...(cc(x).drinks||[]),...(cc(x).snacks||[])].find(i=>i.id===id)||{id,name:id,emoji:'•'};
 const HOT=new Set(['tea','coffee']);
 const WHO_EMOJI=w=>/bé|Bé/.test(w)?'👶':/Ông|ông|Bà|bà|Cụ/.test(w)?'🧓':/Chú|chú|Anh|anh|Cậu/.test(w)?'🧑':'👩';
@@ -30,13 +32,9 @@ function leftItems(s,ssr,row){
 }
 
 /* ------------------------------------------------------------ cards on top */
-function introCard(x,force=false){
-  const d=data(x),i=cc(x).intro;if(!i||(d.intro&&!force))return '';
-  const list=(title,rows)=>`<section><h4>${x.esc(title)}</h4><ul class="tv-icons">${rows.map(([e,s])=>`<li><span aria-hidden="true">${x.esc(e)}</span>${x.esc(s)}</li>`).join('')}</ul></section>`;
-  const go=d.intro?carBtn(x,'Đã hiểu','introClose',{},'primary full'):x.cmd('🧣 Vào ca bay','fa_intro',{},'primary full tv-intro-go');
-  return `<article class="tv-intro card" role="dialog" aria-labelledby="tv-intro-title"><h3 id="tv-intro-title">💁 ${x.esc(i.title)}</h3><p>${x.esc(i.lead)}</p>
-    <div class="tv-intro-grid">${list('Công việc gồm…',i.work)}${list('Bạn sẽ gặp…',i.meet)}${list('Được khen khi…',i.stars)}</div>${go}</article>`;
-}
+/** The job's intro: the street trades' short card (name, three icon rows of ≤ 5 words, "?" with the lead and the
+ * lists); the start button is the bar's (the guide's intro step). Shown until the player starts, or reopened by ❔. */
+function introCard(x){return shortIntro(x,'fa_intro','💁');}
 function deskCard(x){
   const desk=data(x).desk;if(!desk)return '';
   const ev=desk.ev;
@@ -64,7 +62,11 @@ function arcCard(x){
 const KIND_LABEL={board:'🚪 Đón khách',demo:'🦺 Hướng dẫn an toàn',service:'🛒 Xe đẩy',calm:'🗣️ Khách khó chịu',medical:'🩺 Khách không khỏe'};
 function strip(t,x){
   const leg=t.needs?.leg||{};
-  return `<div class="tv-strip"><b>${x.esc(leg.code||'')}</b><span class="grow">→ ${x.esc(leg.to||'')} ${x.esc(leg.emoji||'')}</span><span class="tv-kind">${KIND_LABEL[t.kind]||''}</span></div>`;
+  let q='';
+  if(clean()){const m=data(x).mod||{},i=cc(x).intro;
+    q=helpBtn(`day-${x.state?.current||'fa'}`,`💁 ${String(i?.title||'Tiếp viên').replace(/^Giới thiệu nghề:?\s*/,'')}`,[...(m.hint?[{title:`${m.emoji||''} ${m.label||'Hôm nay'}`,body:`<p>${x.esc(m.hint)}</p>`}]:[]),...(i?introHelp(x,i):[])],{tips:true,cls:'tv-help'});}
+  const kind=KIND_LABEL[t.kind]||'';
+  return `<div class="tv-strip">${leg.code?`<b>${x.esc(leg.code)}</b><span class="grow">→ ${x.esc(leg.to||'')} ${x.esc(leg.emoji||'')}</span>`:'<span class="grow"></span>'}<span class="tv-kind"${clean()?` aria-label="${x.esc(kind.replace(/^\S+\s/,''))}"`:''}>${clean()?kind.split(' ')[0]:kind}</span>${q}</div>`;
 }
 
 /* ------------------------------------------------------------ the door */
@@ -75,7 +77,7 @@ function boardPanel(t,x){
   const face=p.npc?x.portrait(x.npc(p.npc),52):`<span class="tv-face" aria-hidden="true">${WHO_EMOJI(p.who)}</span>`;
   const acts=(c.door||[]).map(a=>tile(x,'fa_door',{task:t.id,act:a.id},`<span class="tv-tile-emoji" aria-hidden="true">${x.esc(a.emoji)}</span><b>${x.esc(a.name)}</b>`,'tv-door-act','',` data-act="${x.esc(a.id)}"`)).join('');
   return `<article class="card tv-door"><div class="tv-dots">${dots}</div><div class="row tv-pax">${face}<div class="grow"><h3>${x.esc(p.who)}</h3><p class="tv-say">“${x.esc(p.say.replace(/^“|”$/g,''))}”</p></div></div>
-    <div class="tv-pass"><span>🎫 Thẻ lên tàu</span><b>${x.esc(p.seat)}</b>${p.exit?'<span class="tv-exit">🚪 Hàng thoát hiểm</span>':''}<span class="tv-bag">${p.bag==='case'?'🧳 Vali lớn':'🎒 Túi nhỏ'}</span></div>
+    <div class="tv-pass"><span>🎫 Thẻ lên tàu</span><b>${x.esc(p.seat)}</b>${p.exit?`<span class="tv-exit">🚪 Hàng thoát hiểm${clean()?': người lớn':''}</span>`:''}<span class="tv-bag">${p.bag==='case'?'🧳 Vali lớn':'🎒 Túi nhỏ'}</span></div>
     <div class="tv-tiles tv-door-acts">${acts}</div></article>`;
 }
 
@@ -89,14 +91,14 @@ function demoPanel(t,x){
     const next=demo[step];
     const props=[...demo].sort((a,b)=>a.name.length-b.name.length).map(d=>tile(x,'fa_demo',{task:t.id,part:d.id},`<span class="tv-tile-emoji" aria-hidden="true">${x.esc(d.emoji)}</span><b>${x.esc(d.name)}</b>`,'tv-prop','',` data-part="${x.esc(d.id)}"`)).join('');
     return `<article class="card tv-demo"><div class="tv-dots">${demo.map((_,i)=>`<span class="${i<step?'done':i===step?'now':''}" aria-hidden="true">${i<step?'✓':i+1}</span>`).join('')}</div>
-      <p class="tv-mic">🎙️ Chị Thu đọc: <b>“${x.esc(next.line)}”</b></p><p class="small muted">Giơ đúng món làm mẫu cho câu chị đang đọc.</p><div class="tv-tiles tv-props">${props}</div></article>`;
+      <p class="tv-mic">🎙️ ${clean()?'':'Chị Thu đọc: '}<b>“${x.esc(next.line)}”</b></p>${clean()?tip('Chị Thu đọc từng câu: giơ đúng món làm mẫu cho câu chị đang đọc.','Làm mẫu','p'):'<p class="small muted">Giơ đúng món làm mẫu cho câu chị đang đọc.</p>'}<div class="tv-tiles tv-props">${props}</div></article>`;
   }
-  if(!t.walked)return `<article class="card tv-demo"><p>✅ Xong phần làm mẫu. Đi dọc lối hàng ${cab.rows[0]}–${cab.rows[cab.rows.length-1]} kiểm tra.</p></article>`;
+  if(!t.walked)return `<article class="card tv-demo"><p>${clean()?`✅ Làm mẫu xong · 🚶 hàng ${cab.rows[0]}–${cab.rows[cab.rows.length-1]}`:`✅ Xong phần làm mẫu. Đi dọc lối hàng ${cab.rows[0]}–${cab.rows[cab.rows.length-1]} kiểm tra.`}</p></article>`;
   const st=cab.state||{},names=c.cabin||{};
   const cell=s=>{const v=st[s]||'ok',bad=v!=='ok',n=names[v]||{};
     return `<button type="button" class="tv-seat ${bad?'bad':'ok'}" data-command="fa_fix" data-payload="${x.esc(JSON.stringify({task:t.id,seat:s}))}"${bad?'':' disabled'} aria-label="Ghế ${s}: ${x.esc(n.name||'')}"><small>${s.slice(-1)}</small><span aria-hidden="true">${x.esc(n.emoji||'🙂')}</span></button>`;};
   const legend=Object.entries(names).filter(([k])=>k!=='ok').map(([,v])=>`<span>${x.esc(v.emoji)} ${x.esc(v.name)}</span>`).join('');
-  return `<article class="card tv-cabin"><h4>🚶 Khoang trước cất cánh</h4>${seatMap(x,cab.rows,cell)}<p class="tv-legend small">${legend}</p></article>`;
+  return `<article class="card tv-cabin"><h4>🚶 ${clean()?'Khoang':'Khoang trước cất cánh'}</h4>${seatMap(x,cab.rows,cell)}${clean()?tip(legend.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim(),'Ký hiệu','p'):`<p class="tv-legend small">${legend}</p>`}</article>`;
 }
 
 /* ------------------------------------------------------------ the cart */
@@ -104,7 +106,7 @@ function ssrCard(t,x){
   const s=t.needs.ssr||{},rows=[];
   if(s.veg)rows.push(`<li>🥬 Suất chay · ghế <b>${x.esc(s.veg)}</b></li>`);
   if(s.nut)rows.push(`<li>🥜 Dị ứng đậu phộng · ghế <b>${x.esc(s.allergic||'')}</b>: cả hàng <b>${s.nut}</b> không phát đậu phộng</li>`);
-  return `<article class="tv-ssr"><h4>📋 Phiếu suất ăn đặc biệt</h4><ul>${rows.join('')||'<li>Không có suất đặc biệt.</li>'}</ul></article>`;
+  return `<article class="tv-ssr"><h4>📋 ${clean()?'Suất đặc biệt':'Phiếu suất ăn đặc biệt'}</h4><ul>${rows.join('')||'<li>Không có suất đặc biệt.</li>'}</ul></article>`;
 }
 function servicePanel(t,x){
   const rows=t.needs.rows,cur=rows[t.row],ssr=t.needs.ssr,c=cc(x);
@@ -115,9 +117,11 @@ function servicePanel(t,x){
     const face=s.kind==='sleep'?'😴':s.kind==='kid'?'👶':'🙂';
     return `<button type="button" class="tv-seat ${done?'done':'todo'} ${sel===id?'sel':''}" data-action="car:pick" data-task="${x.esc(t.id)}" data-seat="${x.esc(id)}" aria-label="Ghế ${id}"><small>${id.slice(-1)}</small><span aria-hidden="true">${done?'✓':face}</span></button>`;};
   const s=seats[sel];
-  const who=s?`<div class="tv-order"><b>Ghế ${x.esc(s.seat)}</b> · ${x.esc(s.who)}<p class="tv-say">${x.esc(s.say)}</p>${(s.given||[]).length?`<p class="small">Đã mời: ${s.given.map(i=>x.esc(item(x,i).emoji)).join(' ')}</p>`:''}
+  // Clean layout: the rule that decides a child's drink sits on the child's order (the full rules are in "?").
+  const who=s?`<div class="tv-order"><b>Ghế ${x.esc(s.seat)}</b> · ${x.esc(s.who)}${clean()&&s.kind==='kid'?' · ♨️ không đồ nóng':''}<p class="tv-say">${x.esc(s.say)}</p>${(s.given||[]).length?`<p class="small">Đã mời: ${s.given.map(i=>x.esc(item(x,i).emoji)).join(' ')}</p>`:''}
     ${s.kind==='sleep'&&!s.skipped?x.cmd('😴 Để khách ngủ','fa_skip',{task:t.id,seat:s.seat},'small tv-skip'):''}</div>`:'<p class="small muted">Hàng này đã xong.</p>';
-  const cart=[...(c.drinks||[]),...(c.snacks||[])].map(i=>tile(x,'fa_give',{task:t.id,seat:sel||'',item:i.id},`<span class="tv-tile-emoji" aria-hidden="true">${x.esc(i.emoji)}</span><b>${x.esc(i.name)}</b>`,'tv-cart-item',!s||s.skipped||s.kind==='sleep',` data-item="${x.esc(i.id)}"`)).join('');
+  const can=(t.can?.fa_give||{})[sel]||{};
+  const cart=[...(c.drinks||[]),...(c.snacks||[])].map(i=>tile(x,'fa_give',{task:t.id,seat:sel||'',item:i.id},`<span class="tv-tile-emoji" aria-hidden="true">${x.esc(i.emoji)}</span><b>${x.esc(i.name)}</b>`,'tv-cart-item',!s||s.skipped||s.kind==='sleep',` data-item="${x.esc(i.id)}"${whyAttrs(can[i.id])}`)).join('');
   return `${ssrCard(t,x)}<article class="card tv-service"><h4>🛒 Hàng ${cur.row} <small class="muted">${t.row+1}/${rows.length}</small></h4>${seatMap(x,[cur.row],cell)}${who}<div class="tv-tiles tv-cart">${cart}</div></article>`;
 }
 
@@ -148,7 +152,7 @@ function guide(t,x){
   if(!d.intro)return {steps:[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'fa_intro',payload:{},label:'🧣 Vào ca bay'}}],final:null};
   const id=t.id;
   if(!t.known){
-    const label=t.kind==='service'?'📋 Nhận phiếu suất ăn đặc biệt':t.kind==='board'?'🚪 Ra cửa đón khách':'👂 Hỏi chuyện khách';
+    const label=t.kind==='service'?(clean()?'📋 Nhận phiếu suất ăn':'📋 Nhận phiếu suất ăn đặc biệt'):t.kind==='board'?(clean()?'🚪 Ra cửa':'🚪 Ra cửa đón khách'):'👂 Hỏi chuyện khách';
     return {steps:[{ok:null,label:lower(label.replace(/^\S+\s/,'')),go:{cmd:'ask',payload:{task:id},label}}],final:null};
   }
   const n=t.needs;
@@ -190,11 +194,15 @@ function hintFor(g,x){
   const f=g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null;
   return nextHint(x,g.steps,{final:f,pulse:g.pulse});
 }
+/** The shared bottom bar (.ui-bar via guide.js stepBar): the next step on the left, the one main button on the right. */
 function bottom(t,x,g){
-  if(!g.final)return g.steps.length?`<div class="tv-bar">${stepCta(x,g.steps,{label:'',go:null,ready:false})}</div>`:'';
-  return `<div class="tv-bar">${stepCta(x,g.steps,g.final)}</div>`;
+  if(!g.final&&!g.steps.length)return '';
+  return stepBar(x,g.steps,g.final,{cls:'tv-cta'});
 }
 function askCard(t,x){
+  // Clean layout: who is speaking and the quote (the ask); the task's title is the sheet header, the scene folds into "?".
+  if(clean()){const {who,scene,say}=air.splitSay(t.opening);
+    if(who)return `<article class="card tv-ask-card"><div class="row">${x.portrait(x.npc(t.npc),52)}<div class="grow"><h3>${x.esc(who)}</h3><p class="small">${x.esc(say)}</p>${scene!==who?tip(x.esc(scene),who,'p'):''}</div></div></article>`;}
   return `<article class="card tv-ask-card"><div class="row">${x.portrait(x.npc(t.npc),52)}<div class="grow"><h3>${x.esc(t.title)}</h3><p class="small">${x.esc(t.opening)}</p></div></div></article>`;
 }
 
@@ -235,13 +243,13 @@ export default {
   },
   job(t,x){
     const g=guide(t,x),hint=hintFor(g,x),d=data(x);
-    const top=`${introCard(x,!!x.ui.intro)}${turbCard(x)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
+    const top=`${introCard(x)}${turbCard(x)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
     if(d.turb?.stage==='coming'||d.desk?.ev||d.odd?.ev||d.odd?.conduct?.ground||!d.intro||x.ui.intro)return `<div class="career-job tv">${hint}${top}${bottom(t,x,g)}</div>`;
     let main='',side='';
     if(!t.known)main=askCard(t,x);
     else if(t.kind==='board')main=boardPanel(t,x);
-    else if(t.kind==='demo'){main=demoPanel(t,x);if(t.walked)side=stepRows(x,g.steps,'Ghế cần chỉnh');}
-    else if(t.kind==='service'){main=servicePanel(t,x);side=stepRows(x,g.steps,`Hàng ${t.needs.rows[t.row].row}`);}
+    else if(t.kind==='demo'){main=demoPanel(t,x);if(t.walked)side=stepRows(x,g.steps,'Ghế cần chỉnh',{chip:true});}
+    else if(t.kind==='service'){main=servicePanel(t,x);side=stepRows(x,g.steps,`Hàng ${t.needs.rows[t.row].row}`,{chip:true});}
     else if(t.kind==='calm')main=calmPanel(t,x);
     else main=medicalPanel(t,x);
     return `<div class="career-job tv">${hint}${top}${strip(t,x)}
@@ -253,8 +261,8 @@ export default {
       :air.oddStep(x)?[air.oddStep(x)]
       :!d.intro?[{ok:null,label:'Đọc giới thiệu nghề',go:{cmd:'fa_intro',payload:{},label:'🧣 Vào ca bay'}}]:[];
     const hint=pending(steps)?.go?nextHint(x,steps,{}):'';
-    const bar=pending(steps)?.go?`<div class="tv-bar">${stepCta(x,steps,{label:'',go:null,ready:false})}</div>`:'';
-    const top=`${introCard(x,!!x.ui.intro)}${turbCard(x)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
+    const bar=pending(steps)?.go?stepBar(x,steps,null,{cls:'tv-cta'}):'';
+    const top=`${introCard(x)}${turbCard(x)}${deskCard(x)}${air.oddCard(x,AIR)}${air.groundCard(x)}`;
     if(d.turb?.stage==='coming'||d.desk?.ev||d.odd?.ev||!d.intro||x.ui.intro)return `<div class="career-job tv">${hint}${top}${bar}</div>`;
     return `<div class="career-job tv">${hint}${top}${arcCard(x)}${dayLine(x)}${crewBook(x)}${bar}</div>`;
   },

@@ -8,8 +8,13 @@
 import {stepRows,nextHint,finalGo,pending,stepLine,firstTime} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
-import {data,cc,lower,tile,act,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
+import {data,cc,lower,tile,act,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,tip,clean} from './street_kit.js';
 import * as PF from '../v4/photo-frames.js';
+import {whyAttrs,withWhy} from '../ui-kit.js';
+
+/** The morning note: on a plain day it only repeats the steps ("?" on the clean layout); on a rain, outage or hot day
+ * it is the day's cue (ủng, bạt, đèn pin…) and stays on screen. */
+const dayNote=(x,s,title)=>!s?'':clean()&&(data(x).mod?.id||'normal')==='normal'?tip(x.esc(s),title,'p'):`<p class="small muted">${x.esc(s)}</p>`;
 
 const PK=(x,k)=>(cc(x).pkgs||{})[k]||{name:k,emoji:'🎞️',shots:4,paper:'giay_dai',sleeves:1};
 const NAME=(x,table,k)=>(cc(x)[table]||{})[k]||k;
@@ -89,7 +94,7 @@ function ticket(t,x,tab='set'){
 function setPanel(t,x){
   const st=t.set||{},n=need(t),locked=!!t.trim;
   const pkgs=Object.entries(cc(x).pkgs||{}).map(([k,v])=>{const left=stockOf(x,v.paper);
-    return tile(x,'pb_pkg',{task:t.id,pkg:k},`<span class="tile-emoji">${x.esc(v.emoji)}</span><b>${x.esc(v.name)}</b><small>${Number(cc(x).prices?.[k]||0)} xu · giấy còn ${left}</small>`,st.pkg===k?'selected':'',locked)
+    return tile(x,'pb_pkg',{task:t.id,pkg:k},`<span class="tile-emoji">${x.esc(v.emoji)}</span><b>${x.esc(v.name)}</b><small>${Number(cc(x).prices?.[k]||0)} xu · ${clean()?`📄 ${left}`:`giấy còn ${left}`}</small>`,st.pkg===k?'selected':'',locked,data(x).can?.open)
       .replace('<button ',`<button aria-label="${x.esc(v.name)} · ${Number(cc(x).prices?.[k]||0)} xu" `);}).join('');
   const frames=PF.FRAMES.filter(f=>(cc(x).frames||{})[f.id]).map(f=>tile(x,'pb_frame',{task:t.id,frame:f.id},
     `${canvas(`thumb-${f.id}`,cv=>PF.thumb(cv,f.id,{layout:'big',scale:.11,t:x.t}),'pb-thumb')}<b>${x.esc(NAME(x,'frames',f.id))}</b>`,`pb-frame ${st.frame===f.id?'selected':''}`,locked)).join('');
@@ -100,9 +105,9 @@ function setPanel(t,x){
   return `<section class="card pb-set"><h4>🎞️ Gói ảnh</h4><div class="tile-grid pb-pkgs">${pkgs}</div>
     <h4 class="section-title">🖼️ Khung ảnh</h4><div class="tile-grid pb-frames">${frames}</div>
     <h4 class="section-title">🎨 Phông nền</h4><div class="tile-grid pb-bds">${bds}</div>
-    <h4 class="section-title">🎩 Rổ đạo cụ <small class="muted">chạm để đưa / cất</small></h4><div class="pb-props">${props}</div>
+    <h4 class="section-title">🎩 Rổ đạo cụ ${clean()?tip('chạm để đưa / cất','Rổ đạo cụ'):'<small class="muted">chạm để đưa / cất</small>'}</h4><div class="pb-props">${props}</div>
     <h4 class="section-title">💡 Đèn</h4><div class="tile-grid pb-lights">${lights}</div>
-    ${n.kid||n.old?`<p class="small muted">${n.kid?'Bé nhỏ giữ dáng rất ngắn: canh thật nhanh tay.':'Ông bà cười chậm: đợi thêm nửa nhịp rồi hẵng bấm.'}</p>`:''}</section>`;
+    ${n.kid||n.old?tip(n.kid?'Bé nhỏ giữ dáng rất ngắn: canh thật nhanh tay.':'Ông bà cười chậm: đợi thêm nửa nhịp rồi hẵng bấm.',n.kid?'🧒 Bé khó ngồi yên':'👴 Cười chậm','p'):''}</section>`;
 }
 
 /* ------------------------------------------------------------ ② the camera */
@@ -151,8 +156,9 @@ function pickPanel(t,x){
   const shots=t.shots||[],k=kOf(x,t),pick=t.pick||[],de=t.deco||{},locked=!!t.trim;
   if(!shots.length)return `<section class="card pb-pick"><p class="small muted">Chưa chụp tấm nào. Sang ② Chụp trước nhé.</p></section>`;
   const said=t.want?`<p class="pb-said">💬 Khách chọn: <b>tấm ${t.want.map(i=>i+1).join(', ')}</b></p>`:`<p class="small muted">Mời khách xem màn hình (② Chụp → “Cho khách xem ảnh”) để khách chọn.</p>`;
-  const grid=`<ol class="pb-grid">${shots.map((s,i)=>{const at=pick.indexOf(i);
-    return `<li><button type="button" class="pb-pickbtn ${at>=0?'on':''}" data-command="pb_pick" data-payload="${x.esc(JSON.stringify({task:t.id,i}))}" aria-pressed="${at>=0}"${locked?' disabled':''}>${shotCanvas(x,t,i)}<span class="pb-num">${i+1}</span>${at>=0?`<span class="pb-order">${at+1}</span>`:''}<small class="tag ${Q_TAG[s.q]?.[0]==='ok'?'green':'red'}">${Q_TAG[s.q]?.[1]||''}</small></button></li>`;}).join('')}</ol>`;
+  const full=t.can?.pb_pick;   // the server's pre-check (photobooth.py _pick_rules): one more shot for the package?
+  const grid=`<ol class="pb-grid">${shots.map((s,i)=>{const at=pick.indexOf(i),why=at<0&&!locked?whyAttrs(full):'';
+    return `<li><button type="button" class="pb-pickbtn ${at>=0?'on':''}${why?' is-why':''}" data-command="pb_pick" data-payload="${x.esc(JSON.stringify({task:t.id,i}))}" aria-pressed="${at>=0}"${locked?' disabled':''}${why}>${shotCanvas(x,t,i)}<span class="pb-num">${i+1}</span>${at>=0?`<span class="pb-order">${at+1}</span>`:''}<small class="tag ${Q_TAG[s.q]?.[0]==='ok'?'green':'red'}">${Q_TAG[s.q]?.[1]||''}</small></button></li>`;}).join('')}</ol>`;
   const stickers=Object.entries(cc(x).stickers||{}).map(([k,v])=>{const on=(de.st||[]).includes(k),p=PF_ITEM(PF.STICKERS,k);
     return x.cmd(`<span aria-hidden="true">${x.esc(p.emoji)}</span> ${x.esc(v)}`,'pb_sticker',{task:t.id,st:k},`small pb-st ${on?'primary':'ghost'}`,locked).replace('<button ',`<button aria-pressed="${on}" `);}).join('');
   const date=`<div class="segmented pb-date" role="group" aria-label="Ngày tháng">${x.cmd('📅 Có ngày','pb_date',{task:t.id,on:true},`small ${de.date?'primary':'ghost'}`,locked)}${x.cmd('Không ghi ngày','pb_date',{task:t.id,on:false},`small ${de.date?'ghost':'primary'}`,locked)}</div>`;
@@ -176,8 +182,9 @@ function printPanel(t,x){
   const print=t.trim?'':pr?(changed?x.confirmCmd('🖨️ In lại theo chỉnh mới','pb_print',{task:t.id},'In lại? Tờ ảnh vừa in bỏ đi, tiệm chịu tiền giấy.','pb-print-go',!ready):'')
     :x.cmd('🖨️ In ảnh','pb_print',{task:t.id},'primary pb-print-go',!ready||!d.ribbon);
   const trim=pr&&!t.trim?x.cmd(pr.pkg==='big'?'🪵 Lồng vào khung gỗ':pr.pkg==='double'?'✂️ Cắt đôi, bỏ 2 bao kiếng':'✂️ Cắt rìa, bỏ bao kiếng','pb_trim',{task:t.id},'primary pb-trim'):'';
+  const trimBtn=pr&&!t.trim?withWhy(trim,data(x).can?.pb_trim?.[pr.pkg]):trim;   // photobooth.py _trim_rules: frame, sleeves
   const ribbon=!d.ribbon?`<p class="notice small">Máy in hết mực. ${x.cmd('🖨️ Thay cuộn mực','pb_ribbon',{},'small',!stockOf(x,'muc'))}</p>`:'';
-  return `<section class="card pb-printer"><h4>🖨️ Máy in & bàn cắt</h4>${ribbon}${big}${ink}<div class="sk-row pb-print-row">${print}${trim}</div>
+  return `<section class="card pb-printer"><h4>🖨️ Máy in & bàn cắt</h4>${ribbon}${big}${ink}<div class="sk-row pb-print-row">${print}${trimBtn}</div>
     ${!ready&&!pr?`<p class="small muted">Chọn đủ ${k} tấm ở ③ trước khi in.</p>`:''}</section>`;
 }
 
@@ -187,9 +194,9 @@ function setupPanel(t,x){
   const test=b.tested?canvas(`test-${b.lens?1:0}${b.fog?1:0}`,cv=>{const c=fit(cv,156,97);PF.paintShot(c,{backdrop:'kem',light:'soft',people:[],props:[]},156,97);if(!b.lens||b.fog)fog(c,156,97);},'pb-test','Ảnh chụp thử'):'';
   return `<section class="card pb-setup"><h4>📷 Máy ảnh</h4>
     <div class="sk-row">${b.lens?'<span class="tag green">✓ Ống kính sạch</span>':x.cmd('🧽 Lau ống kính','pb_lens',{},'primary pb-lens')}${x.cmd('📸 Chụp thử phông trống','pb_test',{},`${b.tested?'ghost small':'primary'} pb-test-go`)}</div>${test}
-    <h4 class="section-title">🖨️ Máy in</h4><p class="small">${b.tested?`Máy in báo cuộn mực còn <b>${Number(d.ribbon??0)}</b>/${Number(cc(x).ribbon||24)} tấm.`:'Chụp thử một tấm để máy in báo mực còn bao nhiêu.'}</p>
-    <div class="sk-row">${x.cmd(`🖨️ Thay cuộn mực mới <small>(kho còn ${muc})</small>`,'pb_ribbon',{},'pb-ribbon',!muc)}</div>
-    <p class="small muted">${x.esc(t.needs?.note||'')}</p></section>`;
+    <h4 class="section-title">🖨️ Máy in${clean()&&b.tested?` <small>🎞️ <b>${Number(d.ribbon??0)}</b>/${Number(cc(x).ribbon||24)}</small>`:''}</h4>${clean()?(b.tested?'':tip('Chụp thử một tấm để máy in báo mực còn bao nhiêu.','Máy in','p')):`<p class="small">${b.tested?`Máy in báo cuộn mực còn <b>${Number(d.ribbon??0)}</b>/${Number(cc(x).ribbon||24)} tấm.`:'Chụp thử một tấm để máy in báo mực còn bao nhiêu.'}</p>`}
+    <div class="sk-row">${x.cmd(clean()?`🖨️ Thay cuộn mực <small>📦 ${muc}</small>`:`🖨️ Thay cuộn mực mới <small>(kho còn ${muc})</small>`,'pb_ribbon',{},'pb-ribbon',!muc).replace('<button ',`<button aria-label="Thay cuộn mực mới, kho còn ${muc}" `)}</div>
+    ${dayNote(x,t.needs?.note,'Buổi sáng')}</section>`;
 }
 function setupSteps(t,x){
   const d=data(x),b=d.booth||{},low=Number(cc(x).ribbon_low||4)+4,rows=[];
@@ -216,7 +223,7 @@ function orderSteps(t,x){
   // first customer (the morning set-up is not one): the button does the step; later ones: it only points at the very control.
   const first=isFirst(x);
   const go=(cmd,payload,label,sel)=>first?{cmd,payload,label}:{sel:sel==null?ctl(cmd,payload):sel,label};
-  if(!d.booth?.open)rows.push({ok:null,tab:'set',label:'Mở tiệm xong mới chụp',go:null});
+  if(!d.booth?.open)rows.push({ok:null,tab:'set',label:'Mở tiệm xong mới chụp',go:d.can?.open?.fix||null});
   // ① the booth
   rows.push({ok:st.pkg===n.pkg?true:st.pkg?false:null,tab:'set',label:`Gói ${lower(PK(x,n.pkg).name)}`,go:go('pb_pkg',{task:t.id,pkg:n.pkg},`${PK(x,n.pkg).emoji} Gói ${x.esc(lower(PK(x,n.pkg).name))}`)});
   rows.push({ok:(n.frames||[]).includes(st.frame)?true:st.frame?false:null,tab:'set',label:`Khung ${(n.frames||[]).map(f=>NAME(x,'frames',f)).join(' / ')}`,
@@ -280,7 +287,9 @@ function guide(t,x){
 const hintFor=(g,x)=>nextHint(x,g.steps,{final:g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null,pulse:g.pulse,glow:!!g.first});
 function tabsRow(t,x,tab,steps){
   return `<div class="pb-tabs" role="tablist">${TABS.map(([k,l])=>{const left=steps.filter(s=>s.tab===k&&s.ok!==true).length;
-    return act(x,`${x.esc(l)}${left?`<small>${left}</small>`:'<small>✓</small>'}`,'tab',{tab:k,task:t.id},`pb-tab ${k===tab?'on':''}`,` role="tab" aria-selected="${k===tab}"`);}).join('')}</div>`;
+    // Clean layout: the open tab keeps its word, the others their number (the full name is the tab's label).
+    const word=clean()&&k!==tab?l.split(' ')[0]:l;
+    return act(x,`${x.esc(word)}${left?`<small>${left}</small>`:'<small>✓</small>'}`,'tab',{tab:k,task:t.id},`pb-tab ${k===tab?'on':''}`,` role="tab" aria-selected="${k===tab}" aria-label="${x.esc(l)}"`);}).join('')}</div>`;
 }
 
 /* ------------------------------------------------------------ idle: the shop between customers */
@@ -305,16 +314,16 @@ export default {
     const top=`${introCard(x,'pb_intro','📸')}${deskCard(x,'pb_desk','Chuyện ở tiệm')}`;
     if(d.desk?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk pb">${hint}${top}${bottom(x,g)}</div>`;
     let main='',side='',tabs='';
-    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc mở tiệm');}
+    if(t.kind==='setup'){main=setupPanel(t,x);side=stepRows(x,g.steps,'Việc mở tiệm',{chip:true});}
     else if(!t.known)main='';
     else if(t.stage==='pay')main=`${cashPanel(x,t.id,t.cash)}${t.printed?`<figure class="pb-out">${printCanvas(x,t,t.printed,'big',t.printed.pkg==='double'?.62:t.printed.pkg==='big'?.5:.72)}</figure>`:''}`;
     else{
       const tab=g.tab||'set';tabs=tabsRow(t,x,tab,g.steps);
       main=tab==='set'?setPanel(t,x):tab==='shoot'?camPanel(t,x):tab==='pick'?pickPanel(t,x):printPanel(t,x);
-      side=stepRows(x,g.steps.filter(s=>s.tab===tab),'Việc của bước này');
+      side=stepRows(x,g.steps.filter(s=>s.tab===tab),'Việc của bước này',{chip:true});
     }
     const at=!t.known?'set':t.stage==='pay'?'pay':g.tab||'set';
-    const head=t.kind==='setup'?dayBar(x):`${learnCard(x,at==='set')}${ticket(t,x,at)}${dayBar(x)}`;
+    const head=t.kind==='setup'?dayBar(x):`${learnCard(x,at==='set'&&!clean())}${ticket(t,x,at)}${dayBar(x)}`;
     const bench=`${tabs}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>`;
     // Reading the order comes first; past it the hands-on part leads (the camera must be in view while counting down).
     const body=t.kind==='setup'||at==='set'?`${head}${bench}`:`${bench}${head}`;

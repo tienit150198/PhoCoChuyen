@@ -111,3 +111,7 @@
   .career-job.km .km-tubs li{grid-template-columns:28px minmax(0,1fr)}
   .career-job.km .km-tubs li .sk-meter,.career-job.km .km-tubs li small{grid-column:2}
 }
+
+/* Clean layout (UI wave 4): the checklist folded into its header chip leaves the side pane empty: no empty box. */
+html[data-clean] .career-job.sk.km .wb-side:not(:has(>:not(.ui-chipped))){padding:0;border:0;background:none}
+.career-job.km .km-learn.slim{margin:0 0 var(--sp-2);padding:var(--sp-2) var(--sp-3);border:1px dashed var(--line-strong);border-radius:var(--radius-sm,10px);font-size:var(--fs-2)}

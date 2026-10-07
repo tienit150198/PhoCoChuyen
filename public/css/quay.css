@@ -184,3 +184,6 @@
 .qy-risk{margin:0}
 /* #19 (1.9.2): the staffed counter's profit an hour and a day (quay_business.income) */
 .qy-income{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}.qy-income>div{display:grid;gap:3px;min-width:0}.qy-income small{font-size:.72rem;color:var(--muted)}.qy-income strong{font-size:1.08rem;font-variant-numeric:tabular-nums;color:var(--good,var(--ink));white-space:nowrap}.qy-income strong.loss{color:var(--bad)}.qy-income p{grid-column:1/-1;margin:0;font-size:.74rem;color:var(--ink-2);line-height:1.5}
+/* Clean layout (docs/UI_KIT.md, wave 5): an explanation folded behind "?" (quay.js why); 44 px targets on the phone. */
+.qy-why{margin:var(--sp-1) 0 0}
+html[data-clean] .qy-help{width:44px;height:44px}

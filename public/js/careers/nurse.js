@@ -7,7 +7,7 @@
  * The server decides everything; hints show the next step, never which way a decision should go. */
 import {stepRows,nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,act,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions} from './street_kit.js';
+import {data,cc,act,tile,pane,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,tip,clean} from './street_kit.js';
 import {oddCard,restCard,record,ACTIONS as oddActions} from './air_kit.js';
 
 const PATIENT=['vitals','med','bell','proc','discharge'];
@@ -17,6 +17,15 @@ const SIGN=(x,k)=>(cc(x).signs||{})[k]||{name:k,emoji:'•',unit:''};
 const COLOR=(x,k)=>(cc(x).colors||{})[k]||['⚪',k,''];
 const HOLD=(x,k)=>(cc(x).hold||{})[k]||k;
 const pay=t=>({task:t.id});
+/** The alarm card's limit as numbers ("từ 38,0 trở lên hoặc 35,5 trở xuống" → "≥38,0 · ≤35,5"); '' when it does not
+ * read as numbers alone (then the card stays in its pane). Clean layout: shown on each sign's tile. */
+export function limitOf(s){
+  const out=String(s||'').replace(/^số trên\s+/,'').replace(/từ\s+([\d,]+)\s+trở lên/g,'≥$1').replace(/([\d,]+)\s+trở xuống/g,'≤$1')
+    .replace(/trên\s+([\d,]+)/g,'>$1').replace(/dưới\s+([\d,]+)/g,'<$1').replace(/\s+hoặc\s+/g,' · ').trim();
+  return /\p{L}/u.test(out)?'':out;
+}
+/** "Giường 3 · Trần Thị Tư" → "🛏️3 · Tư" (clean layout; the full name stays in aria-label). */
+export const bedShort=name=>{const [b,n]=String(name||'').split('·').map(s=>s.trim());const no=(b||'').replace(/\D/g,'');return no&&n?`🛏️${no} · ${n.split(/\s+/).pop()}`:name;};
 
 /* ------------------------------------------------------------ shared bedside pieces */
 function patientCard(t,x){
@@ -26,7 +35,7 @@ function patientCard(t,x){
   return person(x,t,`<p class="dd-dx">${x.esc(n.dx||'')}</p>`,`<span class="dd-tags">${tags}</span>`);
 }
 function handsRow(t,x){
-  return t.washed?'<span class="tag green">🧴 Đã sát khuẩn tay</span>':x.cmd('🧴 Sát khuẩn tay','dd_wash',pay(t),'dd-wash');
+  return t.washed?`<span class="tag green" aria-label="Đã sát khuẩn tay">🧴 ${clean()?'✓':'Đã sát khuẩn tay'}</span>`:x.cmd('🧴 Sát khuẩn tay','dd_wash',pay(t),'dd-wash');
 }
 function idPanel(t,x){
   const me=(t.needs||{}).me;
@@ -34,7 +43,7 @@ function idPanel(t,x){
     const shown=me.name?`<b>${x.esc(me.name)}</b> · ${x.esc(me.dob)}<br><small>Vòng tay ${x.esc(me.band)} · ${x.esc(me.name)} · ${x.esc(me.dob)}</small>`:`<b>${x.esc(me.said||'')}</b><br><small>Chưa có họ tên, ngày sinh để đối chiếu.</small>`;
     return `<section class="card dd-id"><h4>🪪 Người bệnh</h4><p class="dd-me">${shown}</p></section>`;
   }
-  const o=(how,label,sub)=>x.cmd(`<span class="sk-opt-label">${label}</span><small>${sub}</small>`,'dd_id',{task:t.id,how},'sk-opt');
+  const o=(how,label,sub)=>x.cmd(`<span class="sk-opt-label">${label}</span>${clean()?tip(sub,label.replace(/^\S+\s/,'')):`<small>${sub}</small>`}`,'dd_id',{task:t.id,how},'sk-opt');
   const opts=[o('open','🗣️ Mời tự nói họ tên, ngày sinh','rồi đối chiếu vòng tay'),o('name',`❓ “${x.esc(x.npc(t.npc).display_name)} phải không ạ?”`,'hỏi có hay không'),o('bed','🔢 Xem số giường','nhanh')];
   const k=[...t.id].reduce((n,ch)=>n+ch.charCodeAt(0),0)%3;   // the order turns with the task: the right way is not always on top
   return `<section class="card dd-id"><h4>🪪 Xác định người bệnh</h4><div class="sk-opts">${[...opts.slice(k),...opts.slice(0,k)].join('')}</div></section>`;
@@ -42,6 +51,7 @@ function idPanel(t,x){
 function bedside(t,x){return `<div class="dd-bedside">${handsRow(t,x)}</div>${idPanel(t,x)}`;}
 function learnNote(x){
   const l=data(x).learn;if(!l?.on)return '';
+  if(clean())return `<p class="dd-learn" aria-label="Chị Hoa kèm: việc ${Math.min(l.n+1,l.of)}/${l.of}">👩‍⚕️ ${Math.min(l.n+1,l.of)}/${l.of}</p>${tip(`Chị Hoa đứng cạnh kèm bạn: việc ${Math.min(l.n+1,l.of)}/${l.of}. Sai gì chị nhắc trước.`,'Học nghề','p')}`;
   return `<p class="dd-learn">👩‍⚕️ Chị Hoa đứng cạnh kèm bạn: việc ${Math.min(l.n+1,l.of)}/${l.of}. Sai gì chị nhắc trước.</p>`;
 }
 function groundCard(x){
@@ -62,10 +72,13 @@ function holdPane(t,x,reasons,open=false){
 
 /* ------------------------------------------------------------ the handover */
 function shiftPanel(t,x){
-  const notes=(t.needs||{}).notes||[],first=x.ui.first?.[t.id];
+  const notes=(t.needs||{}).notes||[],first=x.ui.first?.[t.id],c=clean();
+  // Clean layout: an unread bed is "🛏️3 · Tư"; a read one keeps its diagnosis and the night's note (they decide who goes first).
   const rows=notes.map(n=>`<li class="${n.text?'read':''}">${n.text?`<b>${x.esc(n.name)}</b><small>${x.esc(n.dx)}</small><p>${x.esc(n.text)}</p>`
-    :x.cmd(`<b>${x.esc(n.name)}</b><small>📋 Đọc ghi chú ca đêm</small>`,'dd_read',{task:t.id,bed:n.bed},'dd-note')}</li>`).join('');
+    :x.cmd(`<b>${x.esc(c?bedShort(n.name):n.name)}</b><small>📋${c?'':' Đọc ghi chú ca đêm'}</small>`,'dd_read',{task:t.id,bed:n.bed},'dd-note').replace('<button ',`<button aria-label="Đọc ghi chú ca đêm: ${x.esc(n.name)}" `)}</li>`).join('');
   const pick=notes.map(n=>act(x,`G${x.esc(n.name.split('·')[0].replace(/\D/g,''))}`,'pickFirst',{task:t.id,bed:n.bed},`dd-bedpick${first===n.bed?' on':''}`,` aria-pressed="${first===n.bed}"`)).join('');
+  if(c)return `<section class="card dd-shift"><h4>📋 Sổ giao ca</h4><ul class="dd-notes">${rows}</ul></section>
+    <section class="card dd-first">${pane(x,`first-${t.id}`,'🚶 <b>Giường xem trước</b>',`<div class="dd-picks">${pick}</div>`,!notes.some(n=>!n.text)||!!first)}</section>`;
   return `<section class="card dd-shift"><h4>📋 Sổ giao ca đêm qua</h4><ul class="dd-notes">${rows}</ul></section>
     <section class="card dd-first"><h4>🚶 Giường xem trước</h4><div class="dd-picks">${pick}</div></section>`;
 }
@@ -77,14 +90,18 @@ function shiftSteps(t,x){
 
 /* ------------------------------------------------------------ vital signs */
 function vitalsPanel(t,x){
-  const n=t.needs||{},ids=cc(x).sign_ids||[],vals=n.vals||{},first=n.first||{};
+  const n=t.needs||{},ids=cc(x).sign_ids||[],vals=n.vals||{},first=n.first||{},lim=k=>clean()?limitOf(SIGN(x,k).card):'';
   const tiles=ids.map(k=>{const s=SIGN(x,k),v=vals[k];
-    if(v!=null){const again=first[k]!==v||(t.seen||[]).includes(`${k}2`),inner=`<span class="tile-emoji">${x.esc(s.emoji)}</span><b>${x.esc(v)}</b><small>${x.esc(s.name)} · ${x.esc(s.unit)}</small>${again?'<small class="dd-again">đã đo lại</small>':t.chart==null?'<small class="dd-again">🔁 đo lại</small>':''}`;
+    if(v!=null){const again=first[k]!==v||(t.seen||[]).includes(`${k}2`),inner=`<span class="tile-emoji">${x.esc(s.emoji)}</span><b>${x.esc(v)}</b><small>${lim(k)?`${x.esc(s.unit)} · 🚨 ${x.esc(lim(k))}`:`${x.esc(s.name)} · ${x.esc(s.unit)}`}</small>${again?'<small class="dd-again">đã đo lại</small>':t.chart==null?'<small class="dd-again">🔁 đo lại</small>':''}`;
       const cls=`dd-sign done${(n.flags||[]).includes(k)?' bad':''}`;
       return t.chart==null&&!again?tile(x,'dd_recheck',{task:t.id,sign:k},inner,cls):`<div class="sk-tile ${cls}">${inner}</div>`;}
-    return tile(x,'dd_measure',{task:t.id,sign:k},`<span class="tile-emoji">${x.esc(s.emoji)}</span><b>${x.esc(s.name)}</b><small>${k==='pain'?'hỏi điểm đau':'đo'}</small>`,'dd-sign');}).join('');
-  const card=pane(x,'alarm-card','🚨 Thẻ báo động Lá Sen',`<ul class="dd-card">${ids.map(k=>`<li>${x.esc(SIGN(x,k).emoji)} <b>${x.esc(SIGN(x,k).name)}</b> ${x.esc(SIGN(x,k).card)}</li>`).join('')}</ul><p class="small muted">Luật của trò chơi: ngoài thẻ là báo bác sĩ.</p>`,false,'dd-alarm');
-  return `<section class="card dd-vitals"><h4>🩺 Đo dấu hiệu sinh tồn</h4><p class="small muted">${x.esc(n.look||'')}</p><div class="tile-grid dd-signs">${tiles}</div>${card}</section>${chartForm(t,x)}${callPanel(t,x)}`;
+    return tile(x,'dd_measure',{task:t.id,sign:k},`<span class="tile-emoji">${x.esc(s.emoji)}</span><b>${x.esc(s.name)}</b>${lim(k)?`<small class="dd-lim">🚨 ${x.esc(lim(k))}</small>`:`<small>${k==='pain'?'hỏi điểm đau':'đo'}</small>`}`,'dd-sign');}).join('');
+  // Clean layout: the alarm card's limits sit on each tile as numbers (they decide whether to call the doctor); its
+  // sentence goes to the "?" sheet. A limit that does not read as numbers keeps the card on screen.
+  const body=`<ul class="dd-card">${ids.map(k=>`<li>${x.esc(SIGN(x,k).emoji)} <b>${x.esc(SIGN(x,k).name)}</b> ${x.esc(SIGN(x,k).card)}</li>`).join('')}</ul>`;
+  const card=clean()&&ids.every(k=>lim(k))?tip(x.esc(`${ids.map(k=>`${SIGN(x,k).name} ${SIGN(x,k).card}`).join('; ')}. Ngoài thẻ là báo bác sĩ (luật của trò chơi).`),'🚨 Thẻ báo động Lá Sen','p')
+    :pane(x,'alarm-card','🚨 Thẻ báo động Lá Sen',`${body}<p class="small muted">Luật của trò chơi: ngoài thẻ là báo bác sĩ.</p>`,false,'dd-alarm');
+  return `<section class="card dd-vitals"><h4>🩺 ${clean()?'Sinh tồn':'Đo dấu hiệu sinh tồn'}</h4><p class="small muted">${x.esc(n.look||'')}</p><div class="tile-grid dd-signs">${tiles}</div>${card}</section>${chartForm(t,x)}${callPanel(t,x)}`;
 }
 function chartForm(t,x){
   const ids=cc(x).sign_ids||[],n=t.needs||{},all=ids.every(k=>(n.vals||{})[k]!=null);
@@ -94,7 +111,7 @@ function chartForm(t,x){
   if(!all)return '';
   const typed=(x.ui.chart??={})[t.id]||{};
   const rows=ids.map(k=>`<label class="dd-field"><span>${x.esc(SIGN(x,k).emoji)} ${x.esc(SIGN(x,k).name)}</span><input name="${x.esc(k)}" inputmode="decimal" autocomplete="off" maxlength="12" value="${x.esc(typed[k]||'')}" data-dd-chart="${x.esc(k)}" placeholder="${k==='bp'?'120/80':''}"><small>${x.esc(SIGN(x,k).unit)}</small></label>`).join('');
-  return `<form class="card dd-chart" data-dd-form="chart"><h4>📝 Ghi phiếu theo dõi</h4><p class="small muted">Gõ đúng số vừa đo.</p><div class="dd-fields">${rows}</div><button type="submit" class="btn primary full">📝 Ghi phiếu</button></form>`;
+  return `<form class="card dd-chart" data-dd-form="chart"><h4>📝 Ghi phiếu theo dõi</h4>${clean()?tip('Gõ đúng số vừa đo.','Phiếu theo dõi','p'):'<p class="small muted">Gõ đúng số vừa đo.</p>'}<div class="dd-fields">${rows}</div><button type="submit" class="btn primary full">📝 Ghi phiếu</button></form>`;
 }
 function callPanel(t,x){
   if(t.called?.length)return `<p class="tag green dd-called">📞 Đã báo bác sĩ: ${t.called.map(k=>x.esc(SIGN(x,k).name.toLowerCase())).join(', ')}</p>`;
@@ -112,7 +129,7 @@ function vitalsSteps(t,x){
   rows.push({ok:!next||null,label:'Đo đủ năm chỉ số',note:`${ids.length-ids.filter(k=>(n.vals||{})[k]==null).length}/${ids.length}`,
     go:next?{cmd:'dd_measure',payload:{task:t.id,sign:next},label:`${x.esc(SIGN(x,next).emoji)} Đo ${x.esc(SIGN(x,next).name.toLowerCase())}`}:null});
   rows.push({ok:t.chart?true:null,label:'Ghi phiếu theo dõi',go:{sel:'.dd-chart',label:'📝 Ghi phiếu theo dõi'},pulse:''});
-  rows.push({ok:t.called?.length?true:null,label:'So thẻ báo động, báo bác sĩ nếu cần',go:{sel:'.dd-alarm',label:'🚨 So với thẻ báo động'},pulse:''});
+  rows.push({ok:t.called?.length?true:null,label:'So thẻ báo động, báo bác sĩ nếu cần',go:{sel:clean()&&ids.every(k=>limitOf(SIGN(x,k).card))?'.dd-signs':'.dd-alarm',label:'🚨 So với thẻ báo động'},pulse:''});
   return rows;
 }
 
@@ -131,7 +148,7 @@ function medPanel(t,x){
       <div class="sk-opts">${t.said==='refused'?x.cmd('<span class="sk-opt-label">🗣️ Hỏi vì sao, giải thích</span>','dd_explain',pay(t),'sk-opt'):''}
       ${x.cmd('<span class="sk-opt-label">😤 Ép uống cho xong</span><small>“không uống là nặng thêm đó”</small>','dd_push',pay(t),'sk-opt')}
       ${x.cmd(`<span class="sk-opt-label">✋ ${x.esc(HOLD(x,'refuse'))}, báo bác sĩ</span>`,'dd_hold',{task:t.id,reason:'refuse'},'sk-opt')}</div></section>`
-    :`<section class="card dd-decide"><h4>⚖️ Quyết định</h4><div class="sk-opts">${x.cmd('<span class="sk-opt-label">💊 Thực hiện y lệnh</span><small>cho thuốc, ký phiếu</small>','dd_give',pay(t),'sk-opt dd-give')}</div>${holdPane(t,x,cc(x).med_hold||[])}</section>`;
+    :`<section class="card dd-decide"><h4>⚖️ Quyết định</h4><div class="sk-opts">${x.cmd(`<span class="sk-opt-label">💊 Thực hiện y lệnh</span>${clean()?tip('cho thuốc, ký phiếu','Thực hiện y lệnh'):'<small>cho thuốc, ký phiếu</small>'}`,'dd_give',pay(t),'sk-opt dd-give')}</div>${holdPane(t,x,cc(x).med_hold||[])}</section>`;
   return order+checks+decide;
 }
 function medSteps(t,x){
@@ -237,7 +254,7 @@ function finalOf(t,x,steps){
   if(t.kind==='shift'){const f=x.ui.first?.[t.id];return {label:'📋 NHẬN CA',go:f?finalGo(steps,'dd_round',{task:t.id,first:f}):null,ready:!!f,why:'chọn giường xem trước'};}
   if(t.kind==='vitals')return t.chart?{label:'✅ XONG LƯỢT ĐO',go:finalGo(steps,'dd_done',pay(t)),ready:true}:null;
   if(t.kind==='triage'){const all=((n.queue||[]).length)&&(n.queue||[]).every((_,i)=>(t.colors||{})[String(i)]);return {label:'🚦 GỬI VÀO KHÁM',go:all?finalGo(steps,'dd_triage',pay(t)):null,ready:!!all,why:'phát thẻ màu cho cả ba người'};}
-  if(t.kind==='proc')return {label:'🛏️ CHUYỂN ĐI THỦ THUẬT',go:finalGo(steps,'dd_send',pay(t)),ready:true};
+  if(t.kind==='proc')return {label:'🛏️ CHUYỂN ĐI THỦ THUẬT',go:finalGo(steps,'dd_send',pay(t)),ready:true,can:t.can?.dd_send};
   if(t.kind==='discharge')return {label:'🏠 CHO VỀ',go:finalGo(steps,'dd_discharge',pay(t)),ready:true};
   return null;
 }
@@ -265,13 +282,13 @@ export default {
     if(d.desk?.ev||d.odd?.ev||!d.intro||x.ui.intro)return `<div class="career-job sk dd">${hint}${head}${bottom(x,g)}</div>`;
     let main='',side='';
     const learn=learnNote(x);
-    if(t.kind==='shift'){main=shiftPanel(t,x);side=stepRows(x,g.steps,'Nhận ca');}
-    else if(t.kind==='triage'){main=t.known?triagePanel(t,x):askCard(x,t,'👂 Nghe cô Mỹ');side=t.known?stepRows(x,g.steps,'Quầy tiếp đón'):'';}
+    if(t.kind==='shift'){main=shiftPanel(t,x);side=stepRows(x,g.steps,'Nhận ca',{chip:true});}
+    else if(t.kind==='triage'){main=t.known?triagePanel(t,x):askCard(x,t,'👂 Nghe cô Mỹ');side=t.known?stepRows(x,g.steps,'Quầy tiếp đón',{chip:true}):'';}
     else if(!t.known)main=patientCard(t,x);
     else{
       const body={vitals:vitalsPanel,med:medPanel,bell:bellPanel,proc:procPanel,discharge:dischargePanel}[t.kind](t,x);
       main=`${patientCard(t,x)}${t.kind==='bell'?`<div class="dd-bedside">${handsRow(t,x)}</div>`:bedside(t,x)}${body}`;
-      side=t.kind==='bell'?'':stepRows(x,g.steps,'Các bước');
+      side=t.kind==='bell'?'':stepRows(x,g.steps,'Các bước',{chip:true});
     }
     return `<div class="career-job sk dd">${hint}${head}${learn}${dayBar(x)}<div class="workbench"><section class="wb-main">${main}</section>${side?`<aside class="wb-side">${side}</aside>`:''}</div>${bottom(x,g)}</div>`;
   },

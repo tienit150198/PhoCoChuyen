@@ -2,7 +2,8 @@
 // button that sends it; a step it can only point at (go.sel) is an outlined "👆 …" pointer that never sends
 // anything. Run by tests/test_guides.py (node tests/guide_cta.mjs); exits non-zero on failure.
 import assert from 'node:assert/strict';
-import {stepCta,bareLabel,pointsOnly,nextHint} from '../public/js/v4/guide.js';
+import {stepCta,bareLabel,pointsOnly,nextHint,barParts} from '../public/js/v4/guide.js';
+import {actBar,whyAttrs,withWhy} from '../public/js/ui-kit.js';
 
 const x={room:{metrics:{served:1}}};
 const none={label:'',go:null,ready:false};
@@ -55,5 +56,41 @@ assert.doesNotMatch(fin,/gd-point/);
 const hint=nextHint(x,[{ok:null,label:'Lấy ly M',go:{sel:'.mt-stations [data-k="cup_M"]',label:'🧋 Lấy ly M'}}]);
 assert.match(hint,/class="gd-hint" data-action="v4Go"/);
 assert.doesNotMatch(hint,/gd-point/);
+
+// UI foundation: a finishing button that cannot go yet is dimmed but tappable, with its reason (never `disabled`).
+const wait=stepCta(x,[{ok:null,label:'Giặt khăn'}],{label:'🛵 Lên đường',go:{cmd:'go',payload:{}},ready:false});
+assert.match(wait,/aria-disabled="true"/);
+assert.match(wait,/data-why="Còn: Giặt khăn"/);
+assert.doesNotMatch(wait,/\sdisabled[\s>]/);
+// The server's pre-check wins over the page's guess, and carries a fix.
+const srv=stepCta(x,[{ok:true,label:'Xong'}],{label:'💐 Trao hoa',go:{cmd:'fl_deliver',payload:{}},ready:true,can:{why:'Nhấc hoa khỏi xô trước.',fix:{cmd:'fl_lift',payload:{},label:'Nhấc'}}});
+assert.match(srv,/data-why="Nhấc hoa khỏi xô trước."/);
+assert.match(srv,/data-fix="[^"]*fl_lift/);
+assert.doesNotMatch(stepCta(x,[{ok:true,label:'Xong'}],{label:'💐 Trao hoa',go:{cmd:'fl_deliver',payload:{}},ready:true,can:true}),/aria-disabled/);
+
+// The shared bar's two slots: a command step is the main button; a pointer goes left with the finish on the right.
+const fin2={label:'🚪 Mời khách kiểm',go:{cmd:'gv_check',payload:{}},ready:true};
+let p=barParts(x,[{ok:null,label:'Giặt khăn',go:{cmd:'gv_wash',payload:{},label:'🧺 Giặt khăn'}}],fin2);
+assert.match(p.main,/class="btn primary big gd-cta" data-command="gv_wash"/);
+assert.match(p.next,/class="gd-alt"[^>]*data-command="gv_check"/);
+p=barParts(x,[{ok:null,label:'Bàn',go:{sel:'.gv-spot',label:'🪑 Bàn'}}],fin2);
+assert.match(p.next,/ui-next gd-cta gd-point/);
+assert.match(p.main,/data-command="gv_check"/);
+assert.doesNotMatch(p.main,/primary/);   // steps are left: the finish is there but not the main colour
+p=barParts(x,[],{...fin2,ready:false,why:'chọn phòng'});
+assert.match(p.main,/aria-disabled="true"/);
+assert.match(p.next,/chọn phòng/);
+p=barParts(x,[{ok:true,label:'Xong'}],fin2);
+assert.equal(p.next,'');
+assert.match(p.main,/class="btn primary big gd-cta gd-final"/);
+
+// actBar: one row, the main button alone takes the whole width (no next slot), nothing at all is ''.
+assert.equal(actBar({}),'');
+assert.match(actBar({main:'<button class="btn primary">A</button>',cls:'sk-bar'}),/^<div class="ui-bar sk-bar"><div class="ui-bar-main">/);
+assert.match(actBar({next:'n',main:'m',top:'t'}),/ui-bar-top">t<\/div><div class="ui-bar-next">n<\/div><div class="ui-bar-main">m/);
+assert.equal(whyAttrs(true),'');
+assert.match(whyAttrs({why:'Chọn chai trước',fix:{sel:'.gv-hand',label:'Chọn'}}),/aria-disabled="true" data-why="Chọn chai trước" data-fix=/);
+assert.match(withWhy('<button type="button" class="btn x" disabled>A</button>',{why:'w'}),/class="btn x is-why"/);
+assert.doesNotMatch(withWhy('<button type="button" class="btn x" disabled>A</button>',{why:'w'}),/disabled>/);
 
 console.log('guide_cta ok');

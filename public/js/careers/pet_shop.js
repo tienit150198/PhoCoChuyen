@@ -4,7 +4,8 @@
  * till is real: the player scans every line, closes the bill and builds the change from notes and
  * coins (till.js). Everything is decided on the server; the client shows it and sends one command
  * per tap. */
-import {stepRows,nextHint,stepCta,finalGo,pending,stepLine} from '../v4/guide.js';
+import {stepRows,nextHint,stepCta,finalGo,pending,stepLine,stepBar} from '../v4/guide.js';
+import {clean,tip,few,helpBtn} from '../ui-kit.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import * as SF from './stage_fold.js';
@@ -92,8 +93,23 @@ function paintCard(x){
 }
 
 /* ------------------------------------------------------------ top cards */
+/** The intro's lead and three lists, for the "?" sheet. */
+function introHelp(x,i){
+  const list=rows=>`<ul class="ui-rows">${(rows||[]).map(([e,s])=>`<li><span aria-hidden="true">${x.esc(e)}</span>${x.esc(s)}</li>`).join('')}</ul>`;
+  return [{title:'Giới thiệu',body:`<p>${x.esc(i.lead||'')}</p>`,open:true},{title:'Công việc gồm…',body:list(i.jobs)},{title:'Bạn sẽ gặp…',body:list(i.meet)},{title:'Được khen khi…',body:list(i.stars)}];
+}
+/** The shop's name for the short intro and the "?" (the intro's own title is just "Giới thiệu nghề"). */
+const shopName=x=>String(cc(x).intro?.title||'').replace(/^Giới thiệu nghề:?\s*/,'')||'Tiệm thú cưng';
+const helpQ=(x,cls='ps-q')=>{const i=cc(x).intro;return i?helpBtn('intro-pet_shop',`🐠 ${shopName(x)}`,introHelp(x,i),{tips:true,cls}):'';};
 function introCard(x,force=false){
   const d=data(x),i=cc(x).intro;if(!i||(d.intro_seen&&!force))return '';
+  // Clean layout (docs/UI_KIT.md): the job's name, three icon rows of ≤ 5 words and a "?" with the rest; the start
+  // button is the bar's (no second one in the card).
+  if(clean()){
+    const rows=(i.jobs||[]).slice(0,3).map(([e,s])=>`<li><span aria-hidden="true">${x.esc(e)}</span>${x.esc(few(s,5,true))}</li>`).join('');
+    return `<article class="ps-intro ps-intro-short card" role="dialog" aria-labelledby="ps-intro-title"><div class="ps-intro-head"><h3 id="ps-intro-title">🐠 ${x.esc(shopName(x))}</h3>${helpQ(x)}</div>
+      <ul class="ps-icons">${rows}</ul>${d.intro_seen?carBtn(x,'Đã hiểu','introClose',{},'full'):''}</article>`;
+  }
   const list=(title,rows)=>`<section><h4>${x.esc(title)}</h4><ul class="ps-icons">${rows.map(([e,s])=>`<li><span aria-hidden="true">${x.esc(e)}</span>${x.esc(s)}</li>`).join('')}</ul></section>`;
   const go=d.intro_seen?carBtn(x,'Đã hiểu','introClose',{},'primary full'):x.cmd('🐾 Vào tiệm thôi!','ps_intro',{},'primary full ps-intro-go');
   // Lead line, then the three lists folded (one tap opens them; ❔ on the day bar shows this card again).
@@ -105,6 +121,11 @@ function dayBar(x,compact=false){
   const chips=[td.sold?`🧾 ${td.sold} đơn`:'',td.good?`💚 ${td.good} trọn vẹn`:'',td.tips?`🎁 ${td.tips} xu cảm ơn`:'',td.loss?`<b class="ps-bad">💸 hụt ${td.loss} xu</b>`:''].filter(Boolean).join(' · ');
   // On a task: one line (the shop's stage text stays on the idle screen).
   const line=compact?chips:chips||x.esc(st.text||'');
+  if(clean()&&compact){
+    const nums=[td.sold?`🧾 ${td.sold}`:'',td.good?`💚 ${td.good}`:'',td.tips?`🎁 ${td.tips}`:'',td.loss?`<b class="ps-bad">💸 −${td.loss}</b>`:''].filter(Boolean).join(' · ');
+    return `<div class="ps-day compact"><span class="ps-day-ico" aria-hidden="true">🐾</span><div class="grow" title="${x.esc(d.stage_name||st.name||'')}">${nums?`<small>${nums}</small>`:''}</div><span class="ui-chiprow"></span>
+      ${carBtn(x,'🎨','paint',{},'ghost small ps-help',' aria-label="Sơn lại tiệm"')}${helpQ(x,'ps-help')}</div>`;
+  }
   return `<div class="ps-day ${compact?'compact':''}"><span class="ps-day-ico" aria-hidden="true">🐾</span><div class="grow"><b>${x.esc(d.stage_name||st.name||'')}</b>${line?`<small>${line}</small>`:''}</div>
     ${carBtn(x,'🎨','paint',{},'ghost small ps-help',' aria-label="Sơn lại tiệm"')}${carBtn(x,'❔','intro',{},'ghost small ps-help',' aria-label="Giới thiệu nghề"')}</div>`;
 }
@@ -112,12 +133,19 @@ function dayBar(x,compact=false){
 /* ------------------------------------------------------------ the customer */
 function ticket(t,x,pet=''){
   const who=x.npc(t.npc),c=cc(x),tag=`<span class="tag ps-tag">${x.esc(c.job_emoji?.[t.job]||'')} ${x.esc(c.jobs?.[t.job]||'')}</span>`;
+  if(!t.known&&clean())return `<article class="card ps-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><div class="row spread wrap"><h3>${x.esc(who.display_name)}</h3>${tag}</div><p>${said(x,t.opening)}</p></div></div></article>`;
   if(!t.known)return `<article class="card ps-ticket"><div class="row">${x.portrait(who,56)}<div class="grow"><div class="row spread wrap"><h3>${x.esc(who.display_name)}</h3>${tag}</div><p>${x.esc(t.opening)}</p></div></div>${x.cmd(t.job==='ship'?'📞 Nghe máy':'👂 Nghe khách nói','ask',{task:t.id},'primary full ps-ask')}</article>`;
   const n=t.needs||{};
   // The job's title is the sheet title already; the animal / item card sits inside the ticket as one row.
   return `<article class="card ps-ticket"><div class="row">${x.portrait(who,40)}<div class="grow"><div class="row spread wrap"><h3>${x.esc(who.display_name)}</h3>${tag}</div>
     <p class="ps-req">“${x.esc(n.request||t.opening)}”</p>
     <div class="patience" title="Kiên nhẫn"><div class="bar ${t.patience<50?'low':''}"><i style="width:${t.patience}%"></i></div><small>${t.patience}%</small></div></div></div>${pet}</article>`;
+}
+/** What the customer says, without the scene around it ("Bà Hai xách cái giỏ nhựa vào…: “…”" → “…”), escaped. The scene
+ * goes to the "?" (ui-kit tip); an opening that is all scene stays whole. */
+function said(x,s){
+  const m=/^(.*?)[:,]?\s*“([^”]{8,})”\s*$/.exec(String(s||''));
+  return m&&m[1]?`“${x.esc(m[2])}”${tip(x.esc(m[1]),'Khách')}`:x.esc(s||'');
 }
 /** Question chips and the answers heard so far. */
 const LATE=['till','cash','ship','cod','sign','kit','hand'];
@@ -166,7 +194,7 @@ function tillPanel(t,x,now=new Set()){
 /** The till: open while scanning; a line before that and once the bill is closed (the change panel says the total). */
 function tillPart(t,x,now){
   const n=Object.values(t.bill||{}).reduce((a,v)=>a+v,0),total=Number(t.bill_total||0)+(t.job==='ship'?Number(t.fee||0):0);
-  return SF.part(x,t.id,now,'till','📟 Máy tính tiền',tillPanel(t,x,now),{done:!!t.billed,sum:t.billed?`đã chốt ${x.money(total)}`:n?`đã quét ${n} món · ${x.money(total)}`:'quét từng món trên quầy'});
+  return SF.part(x,t.id,now,'till','📟 Máy tính tiền',tillPanel(t,x,now),{done:!!t.billed,sum:t.billed?`đã chốt ${x.money(total)}`:n?`đã quét ${n} món · ${x.money(total)}`:clean()?'':'quét từng món trên quầy'});
 }
 /** Guide rows for the till: scan what is on the counter, void what is not, close the bill, the change. */
 function tillSteps(t,x){
@@ -197,7 +225,7 @@ function foodPanel(t,x,now=new Set()){
     <div class="ps-row">${t.work?.dated?'':x.cmd('📅 Xem hạn từng lon','ps_date',{task:t.id},'small')}${t.work?.swapped?'<span class="tag green">✓ Đã xử lý mấy lon trong rổ</span>':`${x.cmd('🔁 Đổi lon mới trên kệ','ps_swap',{task:t.id},'small ghost',t.billed)}${x.cmd('✋ Bỏ ra khỏi quầy','ps_cart',{task:t.id,key:g.item,qty:0},'small ghost',t.billed)}`}</div></section>`:'';
   const main=Object.keys(t.cart||{}).find(k=>k in (c.foods||{}));
   return `${askPanel(t,x,'❓ Hỏi về bé',now)}${grab?SF.part(x,t.id,now,'grab','🧺 Khách lấy trong rổ giảm giá',grab,{done:!!t.work?.swapped,sum:t.work?.swapped?'đã xử lý':''}):''}
-    ${SF.part(x,t.id,now,'shelf','🥣 Kệ thức ăn',`<section class="card ps-shelf"><h4>🥣 Kệ thức ăn <small class="muted">đọc nhãn: loài · tuổi · cỡ · vị</small></h4>${shelf}</section>`,{done:!!main,sum:main?x.esc(info(x,t,main).name):''})}`;
+    ${SF.part(x,t.id,now,'shelf','🥣 Kệ thức ăn',`<section class="card ps-shelf"><h4>🥣 Kệ thức ăn ${clean()?tip('đọc nhãn: loài · tuổi · cỡ · vị','🥣 Kệ thức ăn'):'<small class="muted">đọc nhãn: loài · tuổi · cỡ · vị</small>'}</h4>${shelf}</section>`,{done:!!main,sum:main?x.esc(info(x,t,main).name):''})}`;
 }
 function foodSteps(t,x){
   const n=t.needs||{},asked=t.asked||[],rows=[],id=t.id;
@@ -440,10 +468,11 @@ function hintFor(g,x){
   const f=g.final&&g.final.ready!==false&&g.final.go?{label:g.final.label.replace(/^[^\p{L}]+/u,''),go:g.final.go}:null;
   return nextHint(x,g.steps,{final:f,pulse:g.pulse});
 }
+/** The shared bar (ui-kit actBar via guide.js stepBar): the next step left, the one main button right. */
 function bottom(g,x){
-  if(!g.final)return g.steps.length?`<div class="ps-bar">${stepCta(x,g.steps,{label:'',go:null,ready:false})}</div>`:'';
-  if(!g.final.go)return `<div class="ps-bar">${stepCta(x,g.steps,{...g.final,go:{sel:'.ps-till'},ready:false})}</div>`;
-  return `<div class="ps-bar">${stepCta(x,g.steps,g.final)}</div>`;
+  if(!g.final)return g.steps.length?stepBar(x,g.steps,null,{cls:'ps-bar'}):'';
+  if(!g.final.go)return stepBar(x,g.steps,{...g.final,go:{sel:'.ps-till'},ready:false},{cls:'ps-bar'});
+  return stepBar(x,g.steps,g.final,{cls:'ps-bar'});
 }
 
 /* ------------------------------------------------------------ idle: the shop itself */
@@ -492,13 +521,13 @@ export default {
     // The till itself (till.js) is untouched: the bill folds around it, the change panel stays open.
     const tillBox=tillJob(t)&&!(t.job==='screen'&&t.work?.verdict!=='sell')?tillPart(t,x,now)+(t.cash?cashPanel(x,t.id,t.cash,{title:`💵 ${x.esc(x.npc(t.npc).display_name)} trả tiền mặt`}):''):'';
     const k=g.steps.filter(s=>s&&s.ok!==true).length;
-    const side=`<details class="ps-todo-fold"><summary>📝 Việc cần làm <small>· ${k?`còn ${k}`:'xong hết'}/${g.steps.length}</small></summary>${stepRows(x,g.steps,'Việc cần làm')}</details>`;
+    const side=clean()?stepRows(x,g.steps,'Việc cần làm',{chip:true}):`<details class="ps-todo-fold"><summary>📝 Việc cần làm <small>· ${k?`còn ${k}`:'xong hết'}/${g.steps.length}</small></summary>${stepRows(x,g.steps,'Việc cần làm')}</details>`;
     return `${rootTag(x)}${hint}${dayBar(x,true)}${paint}${ticket(t,x,petRow(t,x))}
-      <div class="workbench"><section class="wb-main">${main}${tillBox}</section><aside class="wb-side">${side}</aside></div>${bottom(g,x)}</div>`;
+      <div class="workbench"><section class="wb-main">${main}${tillBox}${clean()?side:''}</section>${clean()?'':`<aside class="wb-side">${side}</aside>`}</div>${bottom(g,x)}</div>`;
   },
   idle(x){
     const d=data(x),steps=idleSteps(x),todo=pending(steps)?.go,hint=todo?nextHint(x,steps,{}):'';
-    const bar=todo?`<div class="ps-bar">${stepCta(x,steps,{label:'',go:null,ready:false})}</div>`:'';
+    const bar=todo?stepBar(x,steps,null,{cls:'ps-bar'}):'';
     const intro=introCard(x,!!x.ui.intro);
     if(!d.intro_seen||x.ui.intro)return `${rootTag(x)}${hint}${intro}${bar}</div>`;
     return `${rootTag(x)}${hint}${dayBar(x)}${x.ui.paint?paintCard(x):''}${cornerCard(x)}${pensBoard(x)}${x.ui.paint?'':paintRow(x)}${notesCard(x)}

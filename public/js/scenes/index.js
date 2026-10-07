@@ -3,6 +3,7 @@
  * public/js/scenes/<kind>.js and load on demand; until one has loaded (or
  * for an unknown career) the storefront `shop` scene is used. */
 import shop from './shop.js';
+import {terms} from '../v4/terms.js';
 
 export const KIND_OF={
   // Each storefront career has its own scene (falls back to the shared 'shop' storefront until it loads).
@@ -130,7 +131,7 @@ const CAREER_WORDS={
     free_more:'Nhận thêm một ngõ hoặc tan ca.',more_btn:'Nhận thêm một ngõ',none_waiting:'Chưa có ngõ nào đang chờ',next_btn:'Sang ngõ tiếp theo',
     people_sub:'Những người bạn gặp trên tuyến thu gom.',feed_sub:'Lời nhắn và phản ánh của cư dân.'},
   drain:{shelf:'Cuộn dây lò xo',evidence:'Hố ga',counter:'Xe máy & đồ nghề',warehouse:'Hộp đồ nghề',finance:'Bảng giá',ledger:'SỔ HẸN',store:'VẬT TƯ',
-    till:'Quỹ tiệm',door_open:'Nghỉ tay',door_closed:'Nhận việc',open_sign:'ĐANG NHẬN VIỆC',closed_sign:'NGHỈ TAY',
+    till:'Quỹ tiền công',door_open:'Nghỉ tay',door_closed:'Nhận việc',open_sign:'ĐANG NHẬN VIỆC',closed_sign:'NGHỈ TAY',
     idle_line:'Điện thoại sắp reo.',open_hint:'Đọc sổ hẹn, xếp đồ nghề rồi đi nhé.',free_eyebrow:'Chưa có ai gọi',free_title:'Hết việc rồi!',
     free_more:'Nhận thêm việc hoặc nghỉ tay hôm nay.',more_btn:'Nhận thêm một việc',none_waiting:'Chưa có việc nào đang chờ',next_btn:'Sang việc tiếp theo',
     people_sub:'Những người bạn gặp khi đi thông cống.',feed_sub:'Lời nhắn và đánh giá của khách.'},
@@ -243,7 +244,14 @@ const CAREER_WORDS={
     end_title:'Tan ca hôm nay?',end_text:'Lương ngày vào quỹ lương. Việc chưa xong được giao lại cho ca sau.',
     people_sub:'Những người bạn gặp ở phường Mây.',feed_sub:'Lời nhắn và nhận xét của người dân.'},
 };
-export const wordsFor=career=>({...BASE,...KIND_WORDS[kindOf(career)],...CAREER_WORDS[career]});
+/** A non-shop career's own words for the shared dialogs (game/career_voice.py via v4/terms.js): "Xác nhận việc chùa",
+ * "Sổ trực ban"… under the scene kind's and the career's own words, so those still win. A shop keeps BASE. */
+function termWords(career){
+  const t=terms(career);if(t.commerce!==false)return {};
+  return {confirm_title:t.confirm,end_title:t.end_title,end_text:t.end_text,rail_in:t.rail_in,books:t.books,
+    more_aria:`Thêm: ${String(t.books).toLowerCase()}, sổ tay, khu phố`};
+}
+export const wordsFor=career=>({...BASE,...termWords(career),...KIND_WORDS[kindOf(career)],...CAREER_WORDS[career]});
 
 const loaded={shop},waiting={},listener={};
 function load(kind){

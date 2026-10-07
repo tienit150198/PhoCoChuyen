@@ -541,7 +541,20 @@ def _task(c: dict, p: dict, kinds=('serve', 'bride')) -> dict:
 
 
 def _need_open(d: dict) -> None:
-    kit.need(d['shop']['open'], 'Chưa mở tiệm: thử đèn, hấp dụng cụ, coi kệ hàng rồi bấm “Mở tiệm” nhé.')
+    _open_rules(d)
+
+
+def _open_rules(d: dict, setup=None, need=kit.need) -> None:
+    """The shop must be open before any customer's work (live 04-06/10: refusals on the first tap of a customer
+    picked before “Mở tiệm”). public_data sends it as can.open, with a fix that brings up the morning set-up."""
+    need(d['shop']['open'], 'Chưa mở tiệm: thử đèn, hấp dụng cụ, coi kệ hàng rồi bấm “Mở tiệm” nhé.',
+         fix=dict(cmd='task_select', payload=dict(task=setup), label='🏪 Mở tiệm') if setup else None)
+
+
+def _setup_id(c: dict):
+    """Today's open set-up task (the morning chores), if any."""
+    return next((t['id'] for t in c['tasks'] if t.get('career') == ID and t.get('kind') == 'setup'
+                 and t.get('status') not in ('completed', 'referred', 'cancelled')), None)
 
 
 def _client(c: dict, d: dict, p: dict) -> dict:
@@ -1343,7 +1356,7 @@ def public_data(c: dict) -> dict:
     mod = mod_of(c['day'])
     lamp = d['lamp']
     stock = {x['id']: kit.stock(c, x['id']) for x in ITEMS} if c['ext'].get('inv') else {}
-    return dict(intro=d['intro'], shop=d['shop'], power=d['power'],
+    return dict(can=dict(open=kit.check(_open_rules, d, _setup_id(c))), intro=d['intro'], shop=d['shop'], power=d['power'],
                 lamp=dict(kind=lamp['kind'], tested=lamp['tested'], weak=lamp['weak'] if lamp['tested'] else None),
                 tools=dict(clean=d['tools']['clean'], by=d['tools']['by']), open={k: v['n'] for k, v in d['open'].items()},
                 stock=stock, mod=dict(id=mod['id'], emoji=mod['emoji'], label=mod['label'], hint=mod['hint']),

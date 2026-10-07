@@ -228,10 +228,7 @@
 .career-job.dl .dl-areas{margin:0 0 6px;color:var(--dl-muted);overflow-wrap:anywhere}
 .career-job.dl .dl-way.known{border-color:var(--dl-good)}
 
-/* Sticky next-step bar (guide.js stepCta): the one big button, above the sheet footer. */
-.career-job.dl .dl-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:2;display:flex;align-items:center;gap:10px;padding:10px 12px;
-  border-radius:var(--dl-r);background:var(--dl-s1);border:1px solid var(--dl-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
-.career-job.dl .dl-bar>.btn{flex:1}
+/* The next-step bar is the shared .ui-bar (ui-kit actBar via guide.js stepBar); .dl-bar is only its hook (wave 5). */
 
 /* Folded one-liners (UX compaction): the route, the app board while an order is in hand, the COD
    hand-in when it is not the step, and the day. Only the current step's controls stay open. */
@@ -401,3 +398,31 @@
 .dd-goal small{font-weight:800;font-size:13px}
 .dd-goal .dd-arrow{transition:transform .15s ease-out}
 @media(prefers-reduced-motion:reduce){.dd-goal .dd-arrow{transition:none}}
+
+/* Clean layout (wave 5, docs/UI_KIT.md): the status as one row of icon + number chips (words in aria-label). */
+.career-job.dl .dl-status.dl-status-c{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-1) var(--sp-2);padding:var(--sp-2) var(--sp-3)}
+.career-job.dl .dl-sc{display:inline-grid;grid-template-columns:auto auto;align-items:center;column-gap:3px;font-size:var(--fs-2);line-height:var(--lh);font-variant-numeric:tabular-nums;white-space:nowrap}
+.career-job.dl .dl-sc b{font-weight:700}
+.career-job.dl .dl-sc small{grid-column:1 / -1;color:var(--dl-muted);font-size:var(--fs-1)}
+.career-job.dl .dl-sc-clock b{font-size:var(--fs-3)}
+.career-job.dl .dl-sc-clock{grid-template-columns:auto auto auto}
+.career-job.dl .dl-sc-clock small{grid-column:auto;margin-left:var(--sp-1)}
+.career-job.dl .dl-sc-bar{grid-column:1 / -1;display:block;height:3px;border-radius:99px;background:var(--dl-line);overflow:hidden}
+.career-job.dl .dl-sc-bar>i{display:block;height:100%;background:var(--dl-good)}
+.career-job.dl .dl-sc.warn .dl-sc-bar>i{background:var(--dl-warn)}
+.career-job.dl .dl-sc.bad .dl-sc-bar>i{background:var(--dl-bad)}
+.career-job.dl .dl-sc.bad b{color:var(--dl-bad)}
+.career-job.dl .dl-board-one{display:grid;gap:var(--sp-2)}
+.career-job.dl .dl-pack-fold{margin-top:var(--sp-2)}
+/* Clean layout: the street view's tools as icons. The words stay in the accessibility tree (font-size 0, not
+   display:none): "⛶ Toàn màn hình", "Cách lái"; the minimap and the stick have their own aria-label. */
+html[data-clean] .dd-map-toggle>span,html[data-clean] .dd-stick-wrap>small{display:none}
+html[data-clean] :is(.dd-full-toggle,.dd-help-toggle){min-width:44px;min-height:44px;font-size:0;line-height:0}
+html[data-clean] :is(.dd-full-toggle,.dd-help-toggle)::before{font:700 18px/1 system-ui}
+html[data-clean] .dd-full-toggle::before{content:'⛶'}
+html[data-clean] .dd-full-toggle[aria-pressed="true"]::before{content:'↙'}
+html[data-clean] .dd-help-toggle::before{content:'?'}
+/* Clean layout (wave 5): the other open orders as one tappable line each (delivery.js orderRow). */
+.dl-orows{display:grid;gap:var(--sp-1);margin-top:var(--sp-2)}
+.dl-orows .dl-orow{justify-content:flex-start;text-align:left;min-height:44px;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dl-orow i{font-style:normal}

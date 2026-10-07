@@ -169,7 +169,7 @@ function tapListen(getEnv){
     if(!e.isPrimary||e.button>0)return;
     early=null;
     const el=e.target.closest?.('[data-tap-stop],[data-command],[data-op]');
-    if(!el||el.disabled||el.classList.contains('is-pending')||!el.closest('#sheet[open]'))return;
+    if(!el||el.disabled||el.getAttribute('aria-disabled')==='true'||el.classList.contains('is-pending')||!el.closest('#sheet[open]'))return;
     const env=getEnv(),api=env?.api;if(!api?.state)return;
     // When the finger came down: on a busy phone this handler runs late, while the bars kept gliding.
     const at=liveNow(api)-Math.min(1,Math.max(0,performance.now()-e.timeStamp)/1000);

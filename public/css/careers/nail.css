@@ -61,3 +61,6 @@
   .career-job.nl .nl-shelf li{grid-template-columns:32px minmax(0,1fr)}
   .career-job.nl .nl-shelf li small{grid-column:2}
 }
+
+/* Clean layout (UI wave 4): the checklist folded into its header chip leaves the side pane empty: no empty box. */
+html[data-clean] .career-job.sk.nl .wb-side:not(:has(>:not(.ui-chipped))){padding:0;border:0;background:none}

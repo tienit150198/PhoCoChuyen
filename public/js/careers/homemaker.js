@@ -9,7 +9,11 @@
  * The server decides everything; one tap sends one command. */
 import {nextHint,finalGo,pending,stepLine} from '../v4/guide.js';
 import {keepBarAboveFooter} from './food_kit.js';
-import {data,cc,pane,notesPage,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast,tile} from './street_kit.js';
+import {data,cc,pane,notesPage,introCard,deskCard,dayBar,person,askCard,bottom,kitActions,amountBox,kitInput,choiceCard,debtBook,troubleLast,tile,tip,clean} from './street_kit.js';
+
+/** The morning note: on a plain day it only repeats the steps ("?" on the clean layout); on a rain, outage or hot day
+ * it is the day's cue (ủng, bạt, đèn pin…) and stays on screen. */
+const dayNote=(x,s,title)=>!s?'':clean()&&(data(x).mod?.id||'normal')==='normal'?tip(x.esc(s),title,'p'):`<p class="small muted">${x.esc(s)}</p>`;
 
 const steps=t=>t.needs?.steps||[];
 const cur=t=>steps(t)[t.at]||null;
@@ -28,13 +32,17 @@ function notebook(x,auto=false){
 function ticket(t,x){
   if(!t.known)return askCard(x,t,'👂 Nghe dặn');
   const tag=`<span class="tag nt-kind">${x.esc(kindEmoji(x,t.kind))} ${x.esc(kindLabel(x,t.kind))}</span>`;
-  return person(x,t,`<p class="muted small">${x.esc(t.opening)}</p>`,tag);
+  // Clean layout: the morning hand-over is a scene (it folds to "?"); a chore's opening is the ask and stays.
+  // Clean layout: the morning hand-over is a scene ("?"), and the morning has no customer card at all; a chore's
+  // opening is the ask and stays.
+  if(clean()&&t.kind==='setup')return tip(x.esc(t.opening),'Chị Thảo dặn','p');
+  return person(x,t,`<p class="muted small">${x.esc(t.opening)}</p>`,clean()?'':tag);
 }
 function progress(t,x){
   const ss=steps(t);if(ss.length<2)return '';
   const done=new Set(t.closed||[]),skip=new Set(t.skipped||[]);
   return `<ol class="nt-progress" aria-label="Các bước">${ss.map((s,i)=>{const st=done.has(s.id)?'done':skip.has(s.id)?'skip':i===t.at?'now':'';
-    return `<li class="${st}" title="${x.esc(s.title)}"><span aria-hidden="true">${st==='done'?'✓':st==='skip'?'–':TYPE_ICON[s.type]||'•'}</span><small>${x.esc(s.title)}</small></li>`;}).join('')}</ol>`;
+    return `<li class="${st}" title="${x.esc(s.title)}" aria-label="${x.esc(s.title)}"><span aria-hidden="true">${st==='done'?'✓':st==='skip'?'–':TYPE_ICON[s.type]||'•'}</span>${clean()?'':`<small>${x.esc(s.title)}</small>`}</li>`;}).join('')}</ol>`;
 }
 function shopList(t,x){
   const n=t.needs||{};if(!isMarket(t))return '';
@@ -48,6 +56,8 @@ function linesCard(t,x){
   const ls=t.lines||[];if(!ls.length)return '';
   const last=ls.slice(-3).map(l=>`<li>${x.esc(l)}</li>`).join('');
   const all=ls.map(l=>`<li>${x.esc(l)}</li>`).join('');
+  // Clean layout: the result of the last step, then the whole log one tap away.
+  if(clean())return `<ul class="nt-lines"><li>${x.esc(ls[ls.length-1])}</li></ul>${ls.length>1?pane(x,`lines-${t.id}`,`🗒️ ${ls.length}`,`<ul class="nt-lines">${all}</ul>`,false,'nt-lines-pane'):''}`;
   return ls.length>3?pane(x,`lines-${t.id}`,`🗒️ Đã làm · ${ls.length} dòng`,`<ul class="nt-lines">${all}</ul>`,false,'nt-lines-pane'):`<ul class="nt-lines">${last}</ul>`;
 }
 
@@ -55,7 +65,7 @@ function linesCard(t,x){
 function pickStep(t,x,s){
   const got=new Set(t.work?.[s.id]||[]);
   const tiles=s.items.map(i=>tile(x,'nt_pick',{task:t.id,item:i.id},`<span class="tile-emoji">${x.esc(i.emoji)}</span><b>${x.esc(i.name)}</b>${i.look?`<small>${x.esc(i.look)}</small>`:''}${i.price?`<em class="nt-price">${x.fmt(i.price)} xu</em>`:''}`,`nt-i-${i.id}${got.has(i.id)?' selected':''}`)).join('');
-  return `<div class="tile-grid nt-picks">${tiles}</div><p class="small muted">Chạm để chọn, chạm lần nữa để bỏ. Đã chọn ${got.size}.</p>`;
+  return `<div class="tile-grid nt-picks">${tiles}</div>${clean()?`<p class="small muted">✓ ${got.size}</p>${tip('Chạm để chọn, chạm lần nữa để bỏ.','Chọn món')}`:`<p class="small muted">Chạm để chọn, chạm lần nữa để bỏ. Đã chọn ${got.size}.</p>`}`;
 }
 function sortStep(t,x,s){
   const got=t.work?.[s.id]||{};
@@ -63,18 +73,32 @@ function sortStep(t,x,s){
     const chips=s.bins.map(b=>x.cmd(`${x.esc(b.emoji)} ${x.esc(b.label)}`,'nt_put',{task:t.id,item:i.id,bin:b.id},`small nt-bin ${on===b.id?'on':''}`)).join('');
     return `<li class="nt-sort ${on?'set':''}"><div class="nt-item"><span aria-hidden="true">${x.esc(i.emoji)}</span><div><b>${x.esc(i.name)}</b>${i.look?`<small>${x.esc(i.look)}</small>`:''}</div></div><div class="nt-bins">${chips}</div></li>`;}).join('');
   const n=Object.keys(got).length;
-  return `<ul class="nt-sorts">${rows}</ul><p class="small muted">Đã xếp ${n}/${s.items.length}.</p>`;
+  return `<ul class="nt-sorts">${rows}</ul><p class="small muted">${clean()?'✓':'Đã xếp'} ${n}/${s.items.length}</p>`;
 }
 function orderStep(t,x,s){
   const got=t.work?.[s.id]||[],by=Object.fromEntries(s.items.map(i=>[i.id,i]));
   const seq=got.map((id,k)=>{const i=by[id];const last=k===got.length-1;
     return `<li><b>${k+1}</b><span aria-hidden="true">${x.esc(i.emoji)}</span><span class="grow">${x.esc(i.name)}</span>${last?x.cmd('↩︎','nt_seq',{task:t.id,item:id},'ghost small nt-undo',false):''}</li>`;}).join('');
   const left=s.items.filter(i=>!got.includes(i.id)).map(i=>tile(x,'nt_seq',{task:t.id,item:i.id},`<span class="tile-emoji">${x.esc(i.emoji)}</span><b>${x.esc(i.name)}</b>`,`nt-i-${i.id}`)).join('');
-  return `${got.length?`<ol class="nt-seq">${seq}</ol>`:'<p class="small muted">Chạm việc làm trước tiên.</p>'}${left?`<div class="tile-grid nt-left">${left}</div>`:''}`;
+  return `${got.length?`<ol class="nt-seq">${seq}</ol>`:tip('Chạm việc làm trước tiên.','Xếp thứ tự','p')}${left?`<div class="tile-grid nt-left">${left}</div>`:''}`;
 }
+/** Clean layout, "who says it, then what they ask" (docs/UI_KIT.md): a scene before the colon that carries no number
+ * folds to "?"; the quote and what follows it ("Một xấp 4 tờ gấp đôi") stay whole. */
+function sceneText(x,text){
+  const m=clean()&&String(text||'').match(/^([^:“"0-9]{6,80}):\s*(“.+)$/s);
+  if(!m)return `<p class="nt-text">${x.esc(text)}</p>`;
+  return `${tip(x.esc(m[1]),'Bối cảnh')}<p class="nt-text">${x.esc(m[2])}</p>`;
+}
+/** Curated short forms for the clean layout (docs/UI_KIT.md "curated short labels keep the deciding part"): the
+ * morning money keeps its amount and its bills, each answer keeps what it does. A step or answer not in the map shows
+ * in full. The full text stays the control's label for readers. */
+const SHORT_TEXT={tien:s=>{const a=s.match(/“(\d+) xu/),b=s.match(/(\d+) tờ gấp đôi/);return a&&b?`💵 “${a[1]} xu” · ${b[1]} tờ gấp đôi`:'';}};
+const SHORT_OPT={tien:{count:()=>'Đếm lại trước mặt chị',pocket:()=>'Nhét túi quần',msg:l=>{const m=l.match(/(\d+) xu/);return m?`Cất ví riêng, nhắn “nhận ${m[1]} xu”`:'';}}};
+const optLabel=(s,o)=>clean()&&SHORT_OPT[s.id]?.[o.id]?.(o.label)||o.label;
 function chooseStep(t,x,s){
-  const opts=s.options.map(o=>x.cmd(`<span class="sk-opt-label">${x.esc(o.label)}</span>${o.hint?`<small>${x.esc(o.hint)}</small>`:''}`,'nt_choose',{task:t.id,option:o.id},`sk-opt nt-o-${o.id}`)).join('');
-  return `<p class="nt-text">${x.esc(s.text)}</p><div class="sk-opts nt-opts">${opts}</div>`;
+  const short=clean()&&SHORT_TEXT[s.id]?.(s.text);
+  const opts=s.options.map(o=>x.cmd(`<span class="sk-opt-label" aria-label="${x.esc(o.label)}">${x.esc(optLabel(s,o))}</span>${o.hint?`<small>${x.esc(o.hint)}</small>`:''}`,'nt_choose',{task:t.id,option:o.id},`sk-opt nt-o-${o.id}`)).join('');
+  return `${short?`<p class="nt-text" aria-label="${x.esc(s.text)}">${x.esc(short)}</p>${tip(x.esc(s.text),s.title)}`:sceneText(x,s.text)}<div class="sk-opts nt-opts">${opts}</div>`;
 }
 function haggleStep(t,x,s){
   const b=t.bid||{ask:s.quote,tries:0,firm:false},people=cc(x).people||[],who=people[s.seller]?.name||'Người bán';
@@ -91,7 +115,9 @@ function receiptStep(t,x,s){
 function stepCard(t,x){
   const s=cur(t);if(!s)return '';
   const body={pick:pickStep,sort:sortStep,order:orderStep,choose:chooseStep,haggle:haggleStep,receipt:receiptStep}[s.type]?.(t,x,s)||'';
-  return `<section class="card nt-step nt-${s.type}" data-step="${x.esc(s.id)}"><h4>${TYPE_ICON[s.type]||''} ${x.esc(s.title)}</h4>${s.lead?`<p class="small muted nt-lead">${x.esc(s.lead)}</p>`:''}${body}</section>`;
+  // Clean layout: a choice's heading is its icon (the bar says "Chọn cách làm"; readers get the title).
+  const h4=clean()&&s.type==='choose'?`<h4 aria-label="${x.esc(s.title)}">${TYPE_ICON[s.type]||''}</h4>`:`<h4>${TYPE_ICON[s.type]||''} ${x.esc(s.title)}</h4>`;
+  return `<section class="card nt-step nt-${s.type}" data-step="${x.esc(s.id)}">${h4}${s.lead?tip(x.esc(s.lead),s.title,'p'):''}${body}</section>`;
 }
 
 /* ------------------------------------------------------------ the awkward moments */
@@ -117,13 +143,14 @@ function stepGuide(t,x){
   if(s.type==='pick')return {steps:[],final:{label:x.esc(s.go),go:{cmd:'nt_close',payload:{task:t.id}},ready:true}};
   if(s.type==='sort'){const got=t.work?.[s.id]||{},miss=s.items.find(i=>!got[i.id]);
     const steps=miss?[row(`Xếp chỗ cho ${miss.name}`,{sel:`.nt-sorts`,label:`👉 Xếp ${x.esc(miss.name)}`},'')]:[];
-    return {steps,final:{label:x.esc(s.go),go:finalGo(steps,'nt_close',{task:t.id}),ready:!miss,why:'xếp hết các món'}};}
+    return {steps,final:{label:x.esc(s.go),go:finalGo(steps,'nt_close',{task:t.id}),ready:!miss,why:'xếp hết các món',can:t.can?.nt_close}};}
   if(s.type==='order'){const got=t.work?.[s.id]||[];
     // The first morning chị Thảo shows the order (s.tip): the next chore glows.
     const tip=Array.isArray(s.tip)?s.tip.find(id=>!got.includes(id)):null,name=tip&&s.items.find(i=>i.id===tip)?.name;
     const steps=tip?[row(`Chạm: ${name}`,{sel:'.nt-left',label:'👉 Chạm việc tiếp theo'},`.nt-left .nt-i-${tip}`)]
       :got.length?[]:[row('Chạm việc làm trước tiên',{sel:'.nt-left',label:'👉 Chạm việc làm trước'},'')];
-    return {steps,final:{label:x.esc(s.go),go:{cmd:'nt_close',payload:{task:t.id}},ready:got.length>0,why:'xếp thứ tự các việc'}};}
+    // can.nt_close: the server's own rule (every chore that belongs in the day is in the sequence).
+    return {steps,final:{label:x.esc(s.go),go:{cmd:'nt_close',payload:{task:t.id}},ready:got.length>0,why:'xếp thứ tự các việc',can:t.can?.nt_close}};}
   if(s.type==='choose')return {steps:[row(s.title,{sel:'.nt-opts',label:'👉 Chọn cách làm'},typeof s.tip==='string'?`.nt-opts .nt-o-${s.tip}`:'')],final:null};
   if(s.type==='haggle')return {steps:[row(s.title,{sel:'.nt-haggle',label:'👉 Mua hay trả giá'},'')],final:null};
   if(s.type==='receipt')return {steps:[row(s.title,{sel:'.nt-receipt',label:'👉 Ghi sổ chợ'},'')],final:null};
@@ -156,7 +183,7 @@ export default {
     if(t.twist?.state==='on')return wrap(`${hint}${top(x)}${ticket(t,x)}${linesCard(t,x)}${lateCard(t,x)}${bottom(x,g)}`);
     if(!t.known)return wrap(`${hint}${top(x)}${ticket(t,x)}${dayBar(x)}${bottom(x,g)}`);
     const n=t.needs||{};
-    const note=n.note?`<p class="small muted nt-note">${x.esc(n.note)}</p>`:'';
+    const note=!n.note?'':t.kind==='setup'?dayNote(x,n.note,'Hôm nay'):`<p class="small muted nt-note">${x.esc(n.note)}</p>`;
     const main=isMarket(t)&&!t.out?shopList(t,x):`${isMarket(t)?shopList(t,x):''}${stepCard(t,x)}`;
     return wrap(`${hint}${top(x)}${ticket(t,x)}${progress(t,x)}${main}${linesCard(t,x)}${note}${notebook(x)}${dayBar(x)}${bottom(x,g)}`);
   },

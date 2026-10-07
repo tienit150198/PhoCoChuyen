@@ -213,7 +213,7 @@ export class GameAPI extends EventTarget {
     this.contentBase||=data.content_url||'';
     // The stylesheets load without blocking the splash (boot.js); the game is shown once they are in.
     await boot.css;
-    this.content=content;this.csrf=data.csrf;this.ai=data.ai;this.auth=data.auth||{tiktok:{enabled:false,mode:'sandbox'}};this.social=data.social||null;this.push=data.push||{enabled:false};this.account=data.account||null;this.admin=data.admin===true;this.gifts=Array.isArray(data.gifts)?data.gifts:[];this.xfers=Array.isArray(data.xfers)?data.xfers:[];this.lbTitles=Array.isArray(data.lb_titles)?data.lb_titles:[];this.quayInvites=Number.isSafeInteger(data.quay_invites)?data.quay_invites:0;this.live=data.live||null;this.accept(data);
+    this.content=content;this.csrf=data.csrf;this.ai=data.ai;this.auth=data.auth||{tiktok:{enabled:false,mode:'sandbox'}};this.social=data.social||null;this.push=data.push||{enabled:false};this.account=data.account||null;this.admin=data.admin===true;this.gifts=Array.isArray(data.gifts)?data.gifts:[];this.xfers=Array.isArray(data.xfers)?data.xfers:[];this.lbTitles=Array.isArray(data.lb_titles)?data.lb_titles:[];this.quayInvites=Number.isSafeInteger(data.quay_invites)?data.quay_invites:0;this.live=data.live||null;this.uiConfig=data.ui||null;this.accept(data);
     this.updates.watch(()=>fetch('/api/health',{credentials:'same-origin',cache:'no-store'}).then(r=>{this.updates.seen(r.headers.get('X-Game-Version'));}));
     return data;
   }

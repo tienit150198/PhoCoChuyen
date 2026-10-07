@@ -217,18 +217,11 @@ html.reduce-motion .mt-event{animation:none}
 .mt-said{display:flex;flex-direction:column;gap:4px;min-width:0}
 .mt-flash{margin:0;padding:4px 8px;border-radius:8px;background:var(--surface);border:1px solid var(--line);font-size:.8rem;font-weight:600;color:var(--ink-2,var(--ink))}
 
-/* Sticky bar on phones: order recap + serve (actionBar from food_kit.js; same look as the food counters) */
-.career-job.mt .fk-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:4;display:flex;align-items:center;gap:10px;margin:4px -4px 0;padding:10px 12px;border-radius:var(--radius-lg,20px);background:var(--surface);border:1px solid var(--line-strong);box-shadow:0 -6px 18px rgb(0 0 0 / 10%)}
-.career-job.mt .fk-next{flex:1;min-width:0;margin:0;font-size:.867rem;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
-.career-job.mt .fk-bar-btns{display:flex;gap:8px;flex:none}
-.career-job.mt .fk-bar-btns .btn{min-height:44px}
-/* The bar's button is the next step (v4/guide.js stepCta), on every screen size: recap on top, button full width. */
-.career-job.mt .fk-bar{flex-wrap:wrap;gap:6px 10px}
-.career-job.mt .fk-next{flex:1 1 0;font-size:.8rem;font-weight:600;color:var(--ink-2,var(--ink))}
+/* The bar itself is the shared .ui-bar (app.css 27e, ui-kit.js actBar; UI wave 4); only its own content is styled
+   here: the mini cup and the recap line ("Còn 3 bước · ✗ …") in the left slot, the one main button on the right. */
+.career-job.mt .fk-next{flex:1 1 0;min-width:0;margin:0;font-size:var(--fs-2);font-weight:600;line-height:var(--lh);color:var(--ink-2,var(--ink));overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2}
 .mt-bar-cup{flex:none;display:grid;place-items:center;width:34px;height:40px;margin:-4px 0}
 .mt-bar-cup .mt-cup{width:34px;height:40px}
-.career-job.mt .fk-bar-btns{flex:1 1 100%;min-width:0}
-.career-job.mt .fk-bar-btns>.btn,.career-job.mt .fk-bar-btns>.gd-ctas{flex:1 1 auto;width:100%}
 /* The order ticket next to the cup: tappable rows that do (or point at) each step. */
 .mt-ticket-head{font-size:.733rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
 .mt-said{flex:1 1 0}
@@ -310,7 +303,6 @@ html.reduce-motion .mt-event{animation:none}
 .mt-tomorrow-line{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:baseline;margin:10px 0 0;padding:8px 10px;border-radius:12px;background:var(--accent-soft)}
 .mt-tomorrow-line small{flex-basis:100%;color:var(--ink-2,var(--ink))}
 .mt-bar-cup text{display:none}
-@media (min-width:900px){.career-job.mt .fk-bar{flex-wrap:nowrap}.career-job.mt .fk-bar-btns{flex:0 1 380px}}
 
 /* UX compaction: finished and later stations are one tappable line; locked tiles are one chip;
    the status chips wrap (see .mt-hud below). */
@@ -464,3 +456,9 @@ html.reduce-motion .mt-event{animation:none}
 /* Kho rows keep their button on the same line down to 320 px (the name wraps instead). */
 .mt-prep .mt-panel .mt-row .grow{min-width:96px}
 .mt-prep .mt-panel .mt-row>.btn,.mt-prep .mt-panel .mt-row-btns .btn{min-height:44px;white-space:nowrap}
+
+/* Clean layout (UI wave 4): the order ticket stops sticking (the bar is the one pinned box); its header chip
+   (🧾 k/n) opens it over the counter once it has scrolled away. The "?" sits at the end of the status chips. */
+html[data-clean] .career-job.mt .mt-ticket:not(.ui-pop){position:relative;top:auto;box-shadow:none}
+html[data-clean] .career-job.mt .mt-hud{align-items:center}
+html[data-clean] .career-job.mt .mt-hud>.mt-help{margin-left:auto}

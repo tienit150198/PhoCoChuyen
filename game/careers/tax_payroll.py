@@ -554,6 +554,12 @@ GRID_COLS = (('name', 'Họ tên'), ('days', 'Ngày công hưởng lương'), ('
 EXTRA_WORKERS = [('Mai Thị Hằng', 'Công nhân may'), ('Lâm Văn Đức', 'Thợ đóng gói'), ('Tạ Thu Hà', 'Nhân viên kế hoạch'),
                  ('Kiều Văn Sang', 'Bảo vệ')]
 MAX_FLAGS = 3
+
+
+def _flag_more_rules(marks: list, need=None) -> None:
+    """Flagging one more cell on a row (taking a flag off always goes). Written once, run twice: tp_flag refuses with it,
+    the view sends it as the row's can.tp_flag, so a full row's other cells are dimmed with this reason (refusals 04–06/10)."""
+    (need or kit.need)(len(marks) < MAX_FLAGS, f'Mỗi dòng đánh dấu tối đa {MAX_FLAGS} ô.')
 FLAG_MIN, ROW_MIN, HINT_MIN, PAY_MIN, CLAIM_MIN = 1, 4, 5, 10, 15
 GRID_HINTS = dict(
     unpaid='So ngày công với cột “Nghỉ” trong bảng chấm công.', annual='Phép năm có bị trừ công không?',
@@ -1210,7 +1216,7 @@ def _handle(s: dict, c: dict, name: str, p: dict) -> dict:
             if not marks:
                 t['flags'].pop(row['id'])
             return dict(message='', flagged=False)
-        kit.need(len(marks) < MAX_FLAGS, f'Mỗi dòng đánh dấu tối đa {MAX_FLAGS} ô.')
+        _flag_more_rules(marks)
         office.spend(o, FLAG_MIN)
         marks.append(z)
         kit.start_work(t)
@@ -1489,6 +1495,8 @@ def public_task(t: dict) -> dict:
             x = dict(id=row['id'], cells=tree_copy(row['cells']), flags=list(flags.get(row['id'], [])),
                      reviewed=row['id'] in (t.get('reviewed') or []), hinted=row['id'] in (t.get('tips') or []))
             x['tip'] = GRID_HINTS[(row['_truth']['kinds'] or ['clean'])[0]] if x['hinted'] else None
+            if not x['reviewed'] and not t.get('filed'):
+                x['can'] = dict(tp_flag=kit.check(_flag_more_rules, x['flags']))   # a view field, never saved
             if t.get('filed') and row['id'] in res:
                 x['result'] = tree_copy(res[row['id']])
                 x['truth'] = dict(z=list(row['_truth']['z']), why=list(ex[i]['why'] if ex else row['_truth']['why']))

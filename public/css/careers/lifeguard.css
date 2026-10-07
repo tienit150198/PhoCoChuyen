@@ -135,3 +135,6 @@ html[data-theme="dem"] .career-job.hb{--sk-accent:#6cc4ee;--sk-accent-2:#2f7ea5;
   .career-job.hb .hb-zones{grid-template-columns:repeat(3,minmax(0,1fr))}
   .career-job.hb .hb-zone b{font-size:13px}
 }
+
+/* Clean layout: the checklist folded into its header chip leaves the side pane empty: no empty box (UI wave 2). */
+html[data-clean] .career-job.sk.hb .wb-side:not(:has(>:not(.ui-chipped))){padding:0;border:0;background:none}

@@ -22,6 +22,8 @@
  * Pure string builders + one DOM pass. */
 import {escapeHTML as esc} from '../icons.js';
 import {syncBar} from './action-bar.js';
+import {whyAttrs,placeChips,clean,actBar,headChip} from '../ui-kit.js';
+import {toastHead} from '../toast-lines.js';
 
 /** The next step: the first one not done yet that can be done from here (wrong ones count
  * as not done); a step with no way to do it (sold out, waiting) only counts when nothing else is left. */
@@ -66,8 +68,11 @@ export function bareLabel(s,html=true){
 export const firstTime=x=>!((x?.room?.metrics?.served)>0);
 
 /** Checklist rows: done rows stay plain, the rest become buttons with a small "→". */
-export function stepRows(x,steps,label='Việc cần làm'){
-  return `<ul class="checklist gd-list" aria-label="${esc(label)}">${(steps||[]).filter(Boolean).map(s=>{
+export function stepRows(x,steps,label='Việc cần làm',{chip=false}={}){
+  const all=(steps||[]).filter(Boolean),done=all.filter(s=>s.ok===true).length;
+  // chip: on the clean layout the list folds into a header chip ("📋 2/5"); a tap opens it (ui-kit headChip).
+  const head=chip&&all.length?headChip('📋',`${done}/${all.length}`,'.gd-list.ui-chipped',{label:`${label}: ${done}/${all.length} xong`,tone:done===all.length?'ok':'',flow:true}):'';
+  return `${head}<ul class="checklist gd-list${head?' ui-chipped':''}" aria-label="${esc(label)}">${all.map(s=>{
     const cls=s.ok===true?'ok':s.ok===false?'bad':'',mark=s.ok===true?'✓':s.ok===false?'✗':'○';
     const tap=s.ok!==true&&s.go?` role="button" tabindex="0"${goAttrs(s.go)}`:'';
     return `<li class="${cls}${tap?' gd-todo':''}"${tap}><span>${mark}</span>${esc(s.label)}${s.note?`<small>${esc(s.note)}</small>`:''}${tap?'<i class="gd-go" aria-hidden="true">→</i>':''}</li>`;
@@ -120,11 +125,15 @@ export function stepLine(n){
  *   already allowed it stays reachable as a small "or finish now" link under it. */
 export function stepCta(x,steps,final,{style='primary big grow'}={}){
   const n=pending(steps);
-  const fin=(cls,dis=false)=>`<button type="button" class="btn ${cls}"${goAttrs(final.go)}${dis?' disabled':''}>${final.label}</button>`;
+  final=gate(final);
+  // Not ready yet: dimmed but tappable (a tap says why and offers the fix, ui-kit whyTap), never a mute grey button.
+  const fin=(cls,why='')=>`<button type="button" class="btn ${cls}${why?' is-why':''}"${goAttrs(final.go)}${why?whyAttrs({why,fix:final.fix}):''}>${final.label}</button>`;
   if(!n||!n.go){
     if(final.ready!==false)return fin(`${style} gd-cta gd-final`);
+    // The server's reason is a sentence of its own; the page's guess names the step still open.
+    if(final.said)return `<div class="gd-ctas">${fin(style,final.why)}<small class="gd-why">${esc(final.why)}</small></div>`;
     const why=n?n.label:(final.why||'');
-    return `<div class="gd-ctas">${fin(style,true)}${why?`<small class="gd-why">Còn bước: ${esc(why)}</small>`:''}</div>`;
+    return `<div class="gd-ctas">${fin(style,why?`Còn: ${why}`:'Chưa xong')}${why?`<small class="gd-why">Còn bước: ${esc(why)}</small>`:''}</div>`;
   }
   // Pointer: outlined, with a hand, "👆 <what to tap>"; applyGuide names the control itself once it is on screen.
   const say=pointsOnly(n.go)?(n.go.label&&bareLabel(n.go.label))||bareLabel(n.label,false):'';
@@ -133,6 +142,51 @@ export function stepCta(x,steps,final,{style='primary big grow'}={}){
     :`<button type="button" class="btn ${style} gd-cta"${goAttrs(n.go)}>${n.go.label||`👉 ${esc(n.label)}`}</button>`;
   if(final.ready===false)return step;
   return `<div class="gd-ctas">${step}<button type="button" class="gd-alt"${goAttrs(final.go)}>hoặc ${final.alt||final.label}</button></div>`;
+}
+
+/** The server's pre-check for the finishing action (final.can: true | {why, fix}, from the career's public
+ * view, game/careers/kit.py check) overrides the client's own guess: same rules as the refusal. */
+function gate(final){
+  const can=final?.can;
+  if(!final||can===undefined||can===null)return final||{label:'',go:null,ready:false};
+  if(can===true)return final;
+  return {...final,ready:false,why:can.why||final.why,fix:can.fix||final.fix,said:!!can.why};
+}
+
+/** The bottom bar's two slots for ui-kit actBar ({next, main}): one row, the next step on the left, the one main
+ * button on the right (docs/UI_KIT.md).
+ * - the next step is a command: it is the main button; finishing early, when allowed, is a quiet link on the left;
+ * - the next step only points (go.sel): "👆 <what>" on the left, the finishing button on the right (secondary
+ *   while steps are left, dimmed with its reason when it cannot go yet);
+ * - nothing left: the finishing button alone. */
+export function barParts(x,steps,final,{style='primary big'}={}){
+  final=gate(final);
+  const n=pending(steps),has=!!(final.label&&final.go);
+  const fin=(cls,why='')=>`<button type="button" class="btn ${cls} gd-final${why?' is-why':''}"${goAttrs(final.go)}${why?whyAttrs({why,fix:final.fix}):''}>${final.label}</button>`;
+  const note=(t,cls='')=>`<span class="ui-note${cls?' '+cls:''}">${t}</span>`;
+  if(!n||!n.go){
+    if(!has)return {next:n?note(esc(n.label)):'',main:''};
+    if(final.ready!==false)return {next:'',main:fin(`${style} gd-cta`)};
+    const why=final.said?final.why:n?n.label:(final.why||'');
+    return {next:why?note(`<span aria-hidden="true">⏳</span> ${esc(why)}`,'gd-why'):'',main:fin(style.replace(/\bprimary\b/,'').trim()+' gd-cta',why||'Chưa xong')};
+  }
+  const say=pointsOnly(n.go)?(n.go.label&&bareLabel(n.go.label))||bareLabel(n.label,false):'';
+  if(say){
+    const chip=`<button type="button" class="btn ui-next gd-cta gd-point"${goAttrs(n.go)} data-say="${esc(say)}" aria-label="${esc('Chỉ chỗ: '+say)}">👆 ${esc(say)}</button>`;
+    if(!has)return {next:'',main:chip};
+    const quiet=style.replace(/\bprimary\b/,'').trim();
+    return {next:chip,main:final.ready===false?fin(quiet,final.why||n.label):fin(quiet)};
+  }
+  const step=`<button type="button" class="btn ${style} gd-cta"${goAttrs(n.go)}>${n.go.label||`👉 ${esc(n.label)}`}</button>`;
+  if(!has||final.ready===false)return {next:'',main:step};
+  return {next:`<button type="button" class="gd-alt"${goAttrs(final.go)}>hoặc ${final.alt||final.label}</button>`,main:step};
+}
+
+/** A whole bottom bar from the guide: barParts in ui-kit actBar. `note` fills the left slot when the guide has
+ * nothing for it (a count like "3/6"); `top` is a full-width row above; `cls` the career's own hook class. */
+export function stepBar(x,steps,final,{cls='',top='',note='',style}={}){
+  const {next,main}=barParts(x,steps,final||{label:'',go:null,ready:false},style?{style}:{});
+  return actBar({next:next||note,main,top,cls});
 }
 
 /* ---------------------------------------------------------------- host side */
@@ -213,6 +267,7 @@ export function applyGuide(dialog){
     if(b){if(dup)b.tabIndex=-1;else b.removeAttribute('tabindex');}
   }
   pointers(dialog);
+  if(clean())placeChips(dialog);
   const cur=hint||dialog.querySelector('.gd-next');
   if(cur?.dataset.first&&cur.dataset.pulse){
     const sel=cur.classList.contains('gd-dup')?cur.dataset.pulse.replace('.gd-next .gd-hint','.gd-cta'):cur.dataset.pulse;
@@ -287,9 +342,36 @@ function barOf(dialog){
 /** Toasts over a work screen with a pinned button bar: one calm line right above the bar, as wide as the bar,
  * instead of under the header where the customer and the order are (guide.css #sheet[data-gd-bar]). Measured
  * after each render and whenever a toast arrives. */
+/** Clean layout: a note over a work screen with the shared bar is shown IN the bar's left slot for its few
+ * seconds (≤ 8 words; a tap shows the rest, a second tap closes it), never over the work: the floating box is
+ * hidden meanwhile (app.css 27e, [data-ui-note]). Placed again after every render (the bar is redrawn). */
+function barNote(dialog){
+  const box=document.getElementById('toasts');
+  const bar=clean()&&dialog.open?[...dialog.querySelectorAll('.ui-bar')].find(b=>b.getClientRects().length&&!b.closest('details:not([open])')):null;
+  const live=bar&&box&&box.parentElement===dialog?[...box.querySelectorAll(':scope>.toast:not(.leaving)')].pop():null;
+  const cur=dialog.querySelector('.ui-bar-note');
+  if(cur&&(!live||cur.closest('.ui-bar')!==bar||cur.dataset.msg!==live.dataset.msg)){
+    const slot=cur.parentElement;cur.remove();slot.classList.remove('has-note');if(slot.classList.contains('ui-bar-tmp'))slot.remove();
+  }
+  if(dialog.hasAttribute('data-ui-note')!==!!live)dialog.toggleAttribute('data-ui-note',!!live);
+  if(!live||dialog.querySelector('.ui-bar-note'))return;
+  let slot=bar.querySelector(':scope>.ui-bar-next');
+  if(!slot){slot=document.createElement('div');slot.className='ui-bar-next ui-bar-tmp';const m=bar.querySelector(':scope>.ui-bar-main');if(m)m.before(slot);else bar.append(slot);}
+  const msg=live.dataset.msg||live.textContent||'',{head,more}=toastHead(msg,{max:8});
+  const n=document.createElement('div');n.className=`ui-bar-note${live.classList.contains('error')?' error':live.classList.contains('good')?' good':''}`;
+  n.dataset.msg=msg;n.setAttribute('role','status');n.title=more?msg:'Bấm để tắt';
+  const tx=document.createElement('span');tx.textContent=head;n.append(tx);
+  n.addEventListener('click',()=>{
+    if(more&&!n.classList.contains('open')){n.classList.add('open');tx.textContent=msg;return;}
+    live.remove();barNote(dialog);
+  });
+  slot.prepend(n);slot.classList.add('has-note');
+}
+
 function placeToasts(dialog){
   if(!dialog||dialog.id!=='sheet')return;
   watchToasts(dialog);
+  barNote(dialog);
   const bar=dialog.open?barOf(dialog):null,r=bar?.getBoundingClientRect();
   syncBar(dialog,r?.height?bar:null);   // the shared phone bar (v4/action-bar.js, css/compact.css)
   if(!r||!r.height){if(dialog.hasAttribute('data-gd-bar'))dialog.removeAttribute('data-gd-bar');return;}
@@ -313,7 +395,7 @@ let toastWatch=null,sizeWatch=null;
 function watchToasts(dialog){
   const box=document.getElementById('toasts');
   if(box&&!toastWatch&&typeof MutationObserver==='function'){
-    toastWatch=new MutationObserver(()=>{const d=box.parentElement;if(d?.id==='sheet'&&box.children.length)placeToasts(d);});
+    toastWatch=new MutationObserver(()=>{const d=box.parentElement;if(d?.id==='sheet'&&(box.children.length||d.hasAttribute('data-ui-note')))placeToasts(d);});
     toastWatch.observe(box,{childList:true});
   }
   const content=dialog.querySelector('#sheetContent');

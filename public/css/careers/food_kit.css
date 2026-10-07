@@ -15,7 +15,7 @@ html[data-layout="phone"] .career-job.food{--fk-foot:68px}
 .career-job.food .fk-streak{color:var(--accent-text,#9a3f1f)}
 
 /* One-line result */
-.career-job.food .fk-flash{margin:0;min-height:0;padding:0;font-size:.867rem;line-height:1.45;font-weight:700}
+.career-job.food .fk-flash{margin:0;min-height:0;padding:0;font-size:var(--fs-2);line-height:1.45;font-weight:700}
 .career-job.food .fk-flash:not(:empty){padding:8px 12px;border-radius:var(--radius-sm,10px);background:var(--surface-2,#f5efe4);border-left:4px solid var(--line-strong,#cdbfa8)}
 .career-job.food .fk-flash.good{border-left-color:var(--good,#4f8a4b);background:var(--good-soft,#e7f3e4)}
 .career-job.food .fk-flash.bad{border-left-color:var(--bad,#c0533f);background:var(--bad-soft,#fbe7e3)}
@@ -25,7 +25,7 @@ html[data-layout="phone"] .career-job.food{--fk-foot:68px}
 
 /* Patience meter */
 .career-job.food .fk-patience{position:relative;display:flex;align-items:center;gap:8px;margin-top:8px}
-.career-job.food .fk-patience::before{content:"Kiên nhẫn";font-size:.75rem;font-weight:800;letter-spacing:.04em;color:var(--muted)}
+.career-job.food .fk-patience::before{content:"Kiên nhẫn";font-size:var(--fs-1);font-weight:800;letter-spacing:.04em;color:var(--muted)}
 .career-job.food .fk-patience>i{display:block;flex:1;height:10px;border-radius:6px;background:var(--good,#4f8a4b);box-shadow:inset 0 0 0 1px rgb(0 0 0 / 6%);max-width:100%}
 .career-job.food .fk-patience.mid>i{background:var(--warn,#c98a2b)}
 .career-job.food .fk-patience.low>i{background:var(--bad,#c0533f)}
@@ -43,13 +43,13 @@ html[data-layout="phone"] .career-job.food{--fk-foot:68px}
 .career-job.food .fk-guest.low .fk-pat>b{background:var(--bad,#c0533f)}
 .career-job.food .fk-more{border-style:dashed;align-content:center;color:var(--accent-text)}
 .career-job.food .fk-more>span{font-size:1.4rem;line-height:1;font-weight:800}
-.career-job.food .fk-more>small{font-size:.75rem;font-weight:700}
+.career-job.food .fk-more>small{font-size:var(--fs-1);font-weight:700}
 
 /* Surprise card */
 .career-job.food .fk-event{padding:14px;border-radius:var(--radius-lg,20px);background:var(--warn-soft,#fbf0dc);border:2px solid var(--warn,#c98a2b);box-shadow:var(--shadow-sm)}
 .career-job.food .fk-ev-head{display:flex;align-items:center;gap:12px}
 .career-job.food .fk-ev-emoji{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:50%;background:var(--surface,#fff);font-size:1.6rem}
-.career-job.food .fk-ev-head small{display:block;font-size:.75rem;font-weight:800;letter-spacing:.04em;color:var(--ink-2,var(--muted));text-transform:uppercase}
+.career-job.food .fk-ev-head small{display:block;font-size:var(--fs-1);font-weight:800;letter-spacing:.04em;color:var(--ink-2,var(--muted));text-transform:uppercase}
 .career-job.food .fk-ev-head h3{margin:2px 0 0;font-size:1.05rem;line-height:1.3}
 .career-job.food .fk-event>p{margin:10px 0 12px;line-height:1.55}
 .career-job.food .fk-ev-choices{display:grid;gap:8px}
@@ -62,7 +62,7 @@ html[data-layout="phone"] .career-job.food{--fk-foot:68px}
 
 /* Handled surprises */
 .career-job.food .fk-evlog{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.career-job.food .fk-evlog li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:var(--radius-sm,10px);background:var(--surface-2);font-size:.867rem}
+.career-job.food .fk-evlog li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:var(--radius-sm,10px);background:var(--surface-2);font-size:var(--fs-2)}
 .career-job.food .fk-evlog li>span:last-child{display:grid;gap:2px}
 .career-job.food .fk-evlog li small{color:var(--ink-2,var(--muted))}
 .career-job.food .fk-evlog li.good{box-shadow:inset 3px 0 0 var(--good)}
@@ -71,18 +71,18 @@ html[data-layout="phone"] .career-job.food{--fk-foot:68px}
 
 /* Padlocks: on a tile the lock sits over the (dimmed) picture so the name stays readable */
 .career-job.food .tile.is-locked::after,.career-job.food .rs-tile.is-locked::after{top:10px;margin-top:0}
-.career-job.food .fk-lock{display:inline-block;padding:0 6px;border-radius:var(--radius-pill,99px);background:var(--surface-3,#eee);color:var(--ink-2,var(--muted));font-size:.75rem;font-weight:800;white-space:nowrap}
+.career-job.food .fk-lock{display:inline-block;padding:0 6px;border-radius:var(--radius-pill,99px);background:var(--surface-3,#eee);color:var(--ink-2,var(--muted));font-size:var(--fs-1);font-weight:800;white-space:nowrap}
 
 /* Sticky action bar (phones and narrow sheets; the side panel does this on wide ones) */
-.career-job.food .fk-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:4;display:flex;align-items:center;gap:10px;margin:4px -4px 0;padding:10px 12px;border-radius:var(--radius-lg,20px);background:var(--surface,#fff);border:1px solid var(--line-strong,#cdbfa8);box-shadow:0 -6px 18px rgb(0 0 0 / 10%)}
-.career-job.food .fk-next{flex:1;min-width:0;margin:0;font-size:.867rem;font-weight:700;line-height:1.35}
+.career-job.food .fk-bar:not(.ui-bar){position:sticky;bottom:var(--fk-foot,0px);z-index:4;display:flex;align-items:center;gap:10px;margin:4px -4px 0;padding:10px 12px;border-radius:var(--radius-lg,20px);background:var(--surface,#fff);border:1px solid var(--line-strong,#cdbfa8);box-shadow:0 -6px 18px rgb(0 0 0 / 10%)}
+.career-job.food .fk-next{flex:1;min-width:0;margin:0;font-size:var(--fs-2);font-weight:700;line-height:1.35}
 .career-job.food .fk-bar-btns{display:flex;gap:8px;flex:none}
 .career-job.food .fk-bar-btns .btn{min-height:44px}
-@container sheet (min-width:760px){.career-job.food .fk-bar{display:none}}
+@container sheet (min-width:760px){.career-job.food .fk-bar:not(.ui-bar){display:none}}
 .career-job.food .fk-wide-only{display:grid;gap:8px}
 @container sheet (max-width:759px){.career-job.food .fk-wide-only{display:none}}
 .career-job.food .fk-day.short{padding:6px 12px}
-.career-job.food .fk-day.short .fk-mod>span:first-child{font-size:1.25rem}
+.career-job.food .fk-day.short .fk-mod>span:first-child{font-size:var(--fs-4)}
 
 /* End-of-day card */
 .fk-grade .fk-grade-head{display:flex;align-items:center;gap:14px}
@@ -92,14 +92,14 @@ html[data-layout="phone"] .career-job.food{--fk-foot:68px}
 .fk-grade .fk-letter.g-S{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
 .fk-grade .fk-letter.g-A{background:var(--good-soft);border-color:var(--good)}
 .fk-grade .fk-letter.g-D,.fk-grade .fk-letter.g-C{background:var(--bad-soft);border-color:var(--bad)}
-.fk-grade .fk-evsum{list-style:none;margin:8px 0;padding:0;display:grid;gap:4px;font-size:.867rem}
+.fk-grade .fk-evsum{list-style:none;margin:8px 0;padding:0;display:grid;gap:4px;font-size:var(--fs-2)}
 .fk-grade .fk-evsum li.good{color:var(--good)}
 .fk-grade .fk-evsum li.bad{color:var(--bad)}
 .fk-grade .fk-tomorrow{display:grid;grid-template-columns:auto 1fr;gap:0 8px;margin:10px 0 0;padding:10px 12px;border-radius:var(--radius-sm,10px);background:var(--accent-soft)}
 .fk-grade .fk-tomorrow>span{grid-row:1/span 2;font-size:1.5rem}
 .fk-grade .fk-tomorrow small{color:var(--ink-2,var(--muted))}
 
-.career-job.food .fk-name{max-width:58px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:.75rem;font-weight:700;line-height:1.2}
+.career-job.food .fk-name{max-width:58px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:var(--fs-1);font-weight:700;line-height:1.2}
 
 /* Today as a chip row (dayStrip, UX 2026-09-30): the day is one pill, then the counters; the day's hint is one tap
    away on the pill (idle panel). Was a 43-60px banner on every order. */
@@ -112,8 +112,11 @@ html[data-layout="phone"] .career-job.food{--fk-foot:68px}
 .career-job.food .fk-day.chip>.fk-mod[open]>summary::after{content:"▾"}
 .career-job.food .fk-day.chip>.fk-mod>summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .career-job.food .fk-day.chip .fk-mod span[aria-hidden]{font-size:1.1rem;line-height:1;flex:none}
-.career-job.food .fk-day.chip .fk-mod b{font-size:.867rem;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.career-job.food .fk-day.chip .fk-mod b{font-size:var(--fs-2);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .career-job.food .fk-day.chip .fk-day-hint{display:block;margin:6px 6px 0;font-size:.833rem;line-height:1.4;color:var(--ink-2,var(--muted))}
 .career-job.food .fk-day.chip>.fk-stats{align-self:center}
 /* The latest result keeps to one line once it is not new (a tap shows it whole again). */
 .career-job.food .fk-flash:not(.new):not(:focus):not(:empty){display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+
+/* Clean layout (UI wave 4): the patience bar keeps an icon instead of its word. */
+html[data-clean] .career-job.food .fk-patience::before{content:"⏳";letter-spacing:0}

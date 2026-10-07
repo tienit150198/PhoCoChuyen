@@ -411,9 +411,35 @@ def _put(s, c, d, p):
     return dict(message='')
 
 
+def _sort_rule(t: dict, st: dict, need=kit.need) -> None:
+    got = t['work'].get(st['id'], {})
+    need(all(i['id'] in got for i in st['items']), 'Còn thứ chưa xếp chỗ.')
+
+
+def _order_rule(t: dict, st: dict, key: dict, need=kit.need) -> None:
+    got = t['work'].get(st['id'], [])
+    want = [i['id'] for i in st['items'] if i['id'] not in key['bad']]
+    need(len(got) >= len(want), f'Còn việc chưa xếp vào thứ tự (đã xếp {len(got)}/{len(want)}).')
+
+
+def _close_rules(t: dict, need=kit.need) -> None:
+    """What chua_close refuses at the current step (sort: every thing placed; order: enough chores in the
+    sequence). public_task sends it as can.chua_close (live 06/10: 368 refusals “Còn việc chưa xếp”)."""
+    if t.get('stage') != 'work' or not t.get('known'):
+        return
+    steps = t['needs']['steps']
+    if not 0 <= t['at'] < len(steps):
+        return
+    st = steps[t['at']]
+    if st['type'] == 'sort':
+        _sort_rule(t, st, need)
+    elif st['type'] == 'order':
+        _order_rule(t, st, t['_key'].get(st['id'], {}), need)
+
+
 def _close_sort(t, st, key) -> str:
     got = t['work'].get(st['id'], {})
-    kit.need(all(i['id'] in got for i in st['items']), 'Còn thứ chưa xếp chỗ.')
+    _sort_rule(t, st)
     bad = []
     for iid, k in key['items'].items():
         b = got[iid]
@@ -446,7 +472,7 @@ def _close_order(t, st, key) -> str:
     # The button counts “đã xếp k/n” (n = the chores that belong, public_task 'need'); it is ready at n, so
     # the server takes the sequence at n too (live 06/10: 68 refusals “Còn việc chưa xếp”). A chore that
     # belongs but was left out for one that does not is a slip, not a refusal: no hint which one it was.
-    kit.need(len(got) >= len(need), f'Còn việc chưa xếp vào thứ tự (đã xếp {len(got)}/{len(need)}).')
+    _order_rule(t, st, key)
     bad = []
     for iid in need:
         if iid not in got:
@@ -638,6 +664,7 @@ def public_task(t: dict) -> dict:
     if not v['known']:
         v['needs'] = None
         return v
+    v['can'] = dict(chua_close=kit.check(_close_rules, t))
     for st in v['needs']['steps']:
         if st['type'] == 'order':
             # How many chores belong in the sequence: the client shows “đã xếp k/n” and readies the button at n.

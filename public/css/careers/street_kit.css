@@ -95,10 +95,16 @@
 .career-job.sk .till-denom.coin{border:2px solid var(--sk-warn);border-radius:999px}
 .career-job.sk .till .btn{min-height:44px}
 
-/* ---------- next-step bar */
-.career-job.sk .sk-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:8px 12px 10px;border-radius:var(--sk-rs);
-  background:var(--sk-surface);border:1px solid var(--sk-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
-.career-job.sk .sk-bar .btn{width:100%;min-height:48px}
+/* ---------- next-step bar: the shared .ui-bar (app.css 27e, ui-kit.js actBar); .sk-bar is only a hook now. */
+
+/* ---------- intro, short: name, three icon rows, "?" (the lead and the lists are in the "?" sheet) */
+.career-job.sk .sk-intro-head{display:flex;align-items:center;gap:var(--sp-2)}
+.career-job.sk .sk-intro-head h3{flex:1 1 auto;margin:0;font-size:var(--fs-4)}
+.career-job.sk .sk-intro-rows{margin:var(--sp-3) 0;gap:var(--sp-2)}
+.career-job.sk .sk-intro-rows li{align-items:center;min-height:44px;padding:var(--sp-1) var(--sp-3);border-radius:var(--sk-rs);background:var(--sk-surface-2);font-size:var(--fs-3);font-weight:700}
+.career-job.sk .sk-intro-rows li span{font-size:22px;width:28px}
+/* The bar's main button starts the job: the card's own start button is a fallback for a screen without it. */
+.career-job.sk:has(.ui-bar [data-command$="_intro"]) .sk-intro-go{display:none}
 
 @media (max-width:720px){
   :where(.career-job.sk) :where(.workbench){grid-template-columns:1fr}

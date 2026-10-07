@@ -872,16 +872,23 @@ def _lines_check(t: dict, d: dict) -> None:
             cq.slip(t, 'cheat_scale', 2, f'Cân lại ở cân đối chứng thiếu {over} gam. Cân rổ không trừ bì, hay cân lệch?', 'cân thiếu cho khách')
 
 
+def _weigh_rules(t: dict, need=kit.need) -> None:
+    """tc_weigh on the basket itself: not empty; anh Lâm's bulk order takes min–max very ripe fruit.
+    public_task sends it as can.tc_weigh (live 04-06/10: 138 refusals “Anh Lâm gom từ … tới … trái chín kỹ”)."""
+    need(t['bag'], 'Rổ còn trống. Chọn trái cho khách đã.')
+    n = t['needs']
+    if t['kind'] == 'bulk':
+        need(n['min'] <= len(t['bag']) <= n['max'], f'Anh Lâm gom từ {n["min"]} tới {n["max"]} trái chín kỹ.')
+
+
 def _weigh(s, c, d, p):
     t = _task(c, p, ('buy', 'altar', 'bulk'))
     _need_open(d)
     _need_prep(t)
-    kit.need(t['bag'], 'Rổ còn trống. Chọn trái cho khách đã.')
+    _weigh_rules(t)
     n = t['needs']
     shown = shown_grams(d, t)
     who = _who(t)
-    if t['kind'] == 'bulk':
-        kit.need(n['min'] <= len(t['bag']) <= n['max'], f'Anh Lâm gom từ {n["min"]} tới {n["max"]} trái chín kỹ.')
     real = sum(x['g'] for x in t['bag'])
     for ln in n['lines']:
         # The customer reads the needle: one fruit fewer that still makes the weight is one too many.
@@ -1552,6 +1559,8 @@ def public_task(t: dict) -> dict:
     if t['kind'] == 'return' and t.get('look'):
         v['seen'] = t['_look']
     v['cash'] = till.public(t.get('cash'))
+    if t['known'] and t['kind'] in ('buy', 'altar', 'bulk') and t['stage'] == 'prep':
+        v['can'] = dict(tc_weigh=kit.check(_weigh_rules, t))
     return v
 
 

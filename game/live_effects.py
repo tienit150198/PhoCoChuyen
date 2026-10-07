@@ -40,7 +40,8 @@ PAYS = ('coins', 'spirit', 'title', 'quay', 'quay_refund')  # quay_refund preser
 BESIDE = ('closeness',)             # kinds this build applies beside the save (player_closeness, game/wedding_live.py)
 LABELS = dict(envelope='🧧 Lì xì dạo phố', date='💕 Buổi hẹn trên phố', guest='💍 Đi ăn cưới', host='💍 Khách tới dự đám cưới',
               anniv='💞 Kỷ niệm ngày cưới', anniv_npc='🧧 Hàng xóm mừng kỷ niệm cưới', race='🥇 Khách mời của tuần', env='🧧 Phong bì mừng cưới',
-              bouquet='💐 Bắt được hoa cưới', xfer_back='💸 Chuyển khoản bạn chưa nhận, trả lại')
+              bouquet='💐 Bắt được hoa cưới', xfer_back='💸 Chuyển khoản bạn chưa nhận, trả lại',
+              kara_tip='🎤 Khán giả tặng xu', kara_guess='🧩 Đoán trúng bài')
 LABEL = '🎁 Quà từ khu phố'         # any other source
 AMOUNT_MAX = 2000                   # live/effects.py AMOUNT_MAX (the 1000-day anniversary is 1,500 xu)
 SPIRIT_DOWN = -10                   # live/effects.py SPIRIT_DOWN: a 'spirit' row may take this much away at most

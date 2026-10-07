@@ -121,3 +121,7 @@ html[data-theme="dem"] .career-job.sk.cap{--sk-accent:#7fb0de;--sk-accent-2:#c99
 .cap-rank .og-warn.on{background:#fde3c8;color:#8a3d00}
 .cap-rank .bad{color:#b4231b;font-weight:800}
 .cap-beat{margin-bottom:10px}
+/* Clean layout: the checklist folded into its header chip leaves the side pane empty: no empty box (UI wave 2). */
+html[data-clean] .career-job.sk.cap .wb-side:not(:has(>:not(.ui-chipped))){padding:0;border:0;background:none}
+.cap-rank-go{display:flex;align-items:center;gap:8px;flex:1;min-width:0;min-height:40px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.cap-rank-go b{flex:1;min-width:0}

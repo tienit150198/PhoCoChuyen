@@ -6,18 +6,19 @@ import {suppressMediaGesture} from './v4/media-gestures.js';
 for(const event of ['contextmenu','dragstart','dblclick'])document.addEventListener(event,suppressMediaGesture);
 import {BobaWorld} from './boba-world.js';
 import {wordsFor,kindOf} from './scenes/index.js';
+import {termsSource,T} from './v4/terms.js';
 // Scene kinds load on demand: the current career's before the first frame, another career's before switching
 // to it (careerAssets below), so no career flashes the storefront and startup isn't waiting on all of them.
 import {nextStep,lifeNav,guestRibbon,experienceView,extendedJob,experienceSummary,teachTour} from './experience-ui.js';
 import {icon,portrait,itemArt,escapeHTML as esc} from './icons.js';
 import {fillToast,toastHead} from './toast-lines.js';
-import {reqList,fold} from './ui-kit.js';
+import {reqList,fold,clean as uiClean,few,actBar,tip as uiTip,helpBtn,withWhy,headChip} from './ui-kit.js';
 import {olderRows,olderButton,loadOlder,syncOlder} from './archive.js';
 import {Sound} from './audio.js';
 import {soundsBoot} from './v4/sounds.js';
 import {dayclockBoot,clockChip,clockAria,clockCard,clockSummary,closingNote,clockStep} from './v4/dayclock.js';  // giờ trong ngày
-import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCareerData,careerContext,startTicker,tickNow,careerSwitchButton} from './v4/careers.js';
-import {applyGuide,guideAction,nextHint,stepCta,plainText,firstTime} from './v4/guide.js';
+import {careerSubmit,careerInput,loadCareerModules,careerUI,hasCareerUI,setCareerData,careerContext,startTicker,tickNow,careerSwitchButton,CSS_KIT} from './v4/careers.js';
+import {applyGuide,guideAction,nextHint,stepCta,plainText,firstTime,barParts} from './v4/guide.js';
 import {inventoryView,feedbackView,situationView,jobView as jobAppView,v4Action,v4Submit,v4Input} from './v4/views.js';
 import {moneyBoot,confirmMoney,confirmShort,dialogBalances,isSpend,priceIn} from './v4/money.js';  // 💰 Ví / Quỹ tiệm in sight while spending
 import {quickOpen,firstDay} from './v4/onboard.js';  // a brand-new player's first minutes
@@ -125,6 +126,7 @@ function moneyScope(d){
   if(d.matches('.bk-sheet'))return {fund:null,account:true,...(d.dataset.joint!=null&&d.dataset.joint!==''?{joint:Number(d.dataset.joint)}:{})};
   return d.matches('.mr-sheet')?{fund:null}:null;
 }
+termsSource(()=>api.content?.catalogue);  // each career's words for the shared screens (v4/terms.js)
 moneyBoot({api,scope:moneyScope,till:cid=>wordsFor(cid).till,phone:()=>document.documentElement.dataset.layout==='phone'});
 // Before a workplace is chosen the server picks one that is open (state.focus) and sends its full view.
 const career=()=>api.state?.current||api.state?.focus||'mother_baby';
@@ -197,7 +199,7 @@ function openSheet(view,data={}){$('#sheet').resetGesture?.();if(view!=='job'&&v
 /** "?" of a work screen before the tutorial module has loaded (same markup as tutorial/guide.js helpButton;
  * a tap loads it: TUT_OPEN). Every career's work screen carries it, in the header, next to "Đóng". */
 const helpQ=cid=>`<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(cid||'')}" data-tab="work" aria-label="Hướng dẫn nghề này">?</button>`;
-function header(title,subtitle='',eyebrow='MỘT NGÀY LÀM NGHỀ',extra=''){return `<header class="sheet-head"><div class="grow"><span class="eyebrow">${eyebrow}</span><h2 title="${esc(plainText(title))}">${title}</h2>${subtitle?`<p>${subtitle}</p>`:''}</div>${extra}${ui.view==='job'?(L.tut.m?.guideHelp(career())||helpQ(career())):''}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;}
+function header(title,subtitle='',eyebrow='MỘT NGÀY LÀM NGHỀ',extra=''){const kit=[].concat(CSS_KIT[career()]||[]),short=ui.view==='job'&&uiClean()&&(kit.includes('street_kit')||kit.includes('office_kit')||['tra_da','pet_shop','customer_care','accounting','pharmacy','milk_tea','cafe_bakery','restaurant','florist','mother_baby','clothing','grocery','pet_care'].includes(career()))?esc(few(plainText(title),4)):'';return `<header class="sheet-head"><div class="grow"><span class="eyebrow">${eyebrow}</span><h2 title="${esc(plainText(title))}"${short?` aria-label="${esc(plainText(title))}"`:''}>${short||title}</h2>${subtitle?`<p>${subtitle}</p>`:''}</div>${extra}${ui.view==='job'?(L.tut.m?.guideHelp(career())||helpQ(career())):''}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;}
 function footer(left='',right=''){return `<footer class="sheet-foot"><p>${left}</p><div class="row wrap">${right}</div></footer>`;}
 /** ⋯ in a work sheet's header: the rarely used ways out ("Để lát nữa", "Xem các việc khác") that used to take a
  * whole footer row under the career's action bar. data-auto: every re-render shuts it again. */
@@ -272,7 +274,7 @@ function navItems(c){
   const items=[['home','grid','Đổi nghề'],['prepare','coffee','Chuẩn bị'],['feedback','star','Đánh giá',lowOpen(c)],['phone','phone','Chuyện phố',feedUnread(c)?'dot':0],['situation','flag','Tình huống',openSituation(c)?'dot':0],['incident','shield','Chuyện đời',L.inc.m?.incidentBadge(c)||0]];
   items.splice(4,0,['nhom','chat','Nhóm phố',boardUnread(api)],['social','globe','Phố nghề',api.social?.unread||0]);  // Nhóm Cư Dân Phố (v4/board.js), Phố nghề (v4/social.js)
   if(c.job?.required)items.push(['jobapp','briefcase','Việc làm',needsJob()?'dot':0]);
-  items.push(['operations','store','Sổ tiệm',c.ops?.alerts?.length?'dot':0]);
+  items.push(['operations','store',wordsFor(career()).books,c.ops?.alerts?.length?'dot':0]);
   if(!EXT.includes(career()))items.push(['journal','book','Sổ tay']);
   items.push(['people','people','Người quen',L.people.m?.closenessBadge(api)||0],['album','camera','Kỷ niệm'],['workshop','sparkle','Trò nhỏ'],['passport','award','Hộ chiếu'],['jrTown','compass','Bản đồ phố'],['rank','award','Xếp hạng']);  // 🗺️ Bản đồ phố: the walkable town (v4/town-walk.js; the old Khu phố map is its 🎏 Quảng trường); Bảng xếp hạng (v4/leaderboard.js)
   items.push(['jrWardrobe','shirt','Tủ đồ']);  // 👗 Tủ đồ (v4/wardrobe.js, opened by journey.js)
@@ -280,12 +282,14 @@ function navItems(c){
   {const lv=L.live.m?.live;if(lv?.flags.street&&lv.welcomed)items.push(['liveWalk','map','Đi dạo']);}  // 🚶 Đi dạo (v4/walk.js): only while the live service has it on
   {const date=L.live.m?.dateNav();if(date)items.push(date);}  // 💕 Góc hẹn hò (v4/dating.js): only while the live service has dates on
   {const lv=L.live.m?.live;if(lv?.flags.wedding&&lv.welcomed)items.push(['liveWed','heart','Lịch cưới']);}  // 💍 Lịch cưới (v4/wedding.js): live weddings, while on
+  {const lv=L.live.m?.live;if(lv?.flags.kara&&lv.welcomed)items.push(['liveKara','music','Phòng hát']);}  // 🎤 Phòng hát (v4/karaoke.js): only while the live service has it on (LIVE_KARAOKE)
   items.push(['friends','user','Bạn bè',api.friendAlerts||0],['marriage','heart','Hôn nhân',api.marriageAlerts||0]);  // Bạn bè + Hôn nhân (v4/marriage.js, own dialog; badges from v4/ticker.js)
   items.push(['money','bag','Tiền của bạn']);  // 💰 the money sheet (v4/wealth.js), also behind the HUD money chips
   {const bk=api.state?.journey?.bank;items.push(['bank','coin','Ngân hàng',bk?.unread||(bk?.overdue?'dot':0)]);}  // 🏦 Ngân hàng Phố (v4/bank.js, own dialog)
   if(api.state?.journey?.story)items.push(['house','home','Nhà của bạn',api.state.journey.home?.own?.loan?.overdue?'dot':0]);  // 🏠 Nhà của bạn (v4/house.js, own dialog)
   if(api.state?.journey?.story&&api.state.journey.garage)items.push(['garage','bike','Xe & phương tiện']);  // 🚗 (v4/garage.js, own dialog): only once the server has it
   if(api.state?.journey?.story&&api.state.journey.gadgets)items.push(['gadgets','phone','Điện thoại & đồ công nghệ']);  // 📱 (v4/gadgets.js, own dialog): only once the server has it
+  if(api.state?.journey?.story&&api.state.journey.spend)items.push(['spend','coffee','Đi chơi'],['spendStyle','sparkle','Phong cách']);  // ☕🙏 quán, spa, rạp, công đức; 🎨 màu tên tuần (v4/spend.js, own dialog): only once the server has it
   if(api.state?.rui)items.push(['rui','shield','Bảo hiểm',api.state.rui.card||api.state.rui.warn?'dot':0]);  // 🛡️ Rủi ro & bảo hiểm (v4/rui.js): only once the server has it
   if(api.state?.journey?.story)items.push(['jrInvest','coin','Đầu tư']);
   if(api.state?.journey?.story&&api.content?.journey?.quay)items.push(['quay','store','Quầy của bạn',quayBadge()]);  // 🏪 (v4/quay.js, own dialog): only once the server has it
@@ -312,12 +316,14 @@ const ACC_CAREERS=['accounting','corp_accounting','tax_payroll','group_accountin
 const railMain=x=>!RAIL_GROUPED.has(x[0])||(x[0]==='accountingSchool'&&ACC_CAREERS.includes(career()));
 /** The rest sit in small hubs, one tap further: [id, icon, label, entries]. The hub carries its entries' badges. */
 const RAIL_GROUPS=[
-  ['pho','building','Khu phố',['fair','liveWalk','liveWed','nhom','phone','social','jrTown','rank']],
+  ['pho','building','Khu phố',['fair','spend','liveWalk','liveWed','liveKara','nhom','phone','social','jrTown','rank']],
   ['ban','people','Quan hệ',['liveDate','people','friends','marriage']],
   ['tien','coin','Ngân hàng & nhà',['money','bank','house','garage','gadgets','rui','quay']],
   ['chuyen','note','Chuyện của bạn',['situation','incident']],
-  ['minh','gift','Của mình',['jrWardrobe','album','passport','workshop','journal','accountingSchool']],
+  ['minh','gift','Của mình',['jrWardrobe','spendStyle','album','passport','workshop','journal','accountingSchool']],
 ];
+/** ☕ v4/spend.js (game/spend.py): the menu entries and the town map's doors (each opens its tab). */
+const SPEND_OPEN=new Set(['spend','spendQuan','spendSpa','spendRap','spendChua','spendStyle']);
 const RAIL_GROUPED=new Set(RAIL_GROUPS.flatMap(g=>g[3]));
 /** Numbers add up; a dot alone stays a dot. */
 function groupBadge(items){
@@ -681,14 +687,20 @@ function motherBabyJob(t){const d=draft(t),tab=ui.jobTab;const step=`<nav class=
    the server checks every command again. Styles: css/desks.css, scoped under .career-job.dw. ---- */
 const pct=v=>Math.max(0,Math.min(100,Math.round(Number(v)||0)));
 const dwState=(label,tone='')=>`<span class="dw-state${tone?' '+tone:''}">${label}</span>`;
-/** Who is waiting: portrait, name, one context line, patience and a chat button (replaces the guest ribbon). */
-function dwWho(t,sub){
+/** Who is waiting: portrait, name, one context line, patience and a chat button (replaces the guest ribbon).
+ * Clean layout (pharmacy, accounting; UI wave 5): `sub` may be '', `quote:false` sends the opening to "?" (ui-kit tip),
+ * `extra` sits before the chat button (an in-flow chip row, the "?"). Defaults draw it as before (the support desk). */
+function dwWho(t,sub,{quote=true,extra=''}={}){
   const n=npc(t.npc),p=room().life?.mode==='calm'?100:pct(t.patience??100);
-  return `<header class="dw-who">${portrait(n,48)}<div class="dw-who-name"><strong>${esc(n.display_name)}</strong><small>${sub}</small>`+
-    `<div class="dw-pat${p<50?' low':p<75?' mid':''}" role="meter" aria-label="Kiên nhẫn" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}"><i><b style="width:${p}%"></b></i><small>Kiên nhẫn ${p}%</small></div></div>`+
+  return `<header class="dw-who">${portrait(n,48)}<div class="dw-who-name"><strong>${esc(n.display_name)}</strong>${sub?`<small>${sub}</small>`:''}`+
+    `<div class="dw-pat${p<50?' low':p<75?' mid':''}" role="meter" aria-label="Kiên nhẫn" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${p}"><i><b style="width:${p}%"></b></i><small>${uiClean()?'':'Kiên nhẫn '}${p}%</small></div></div>${extra}`+
     `<button type="button" class="btn ghost icon-btn dw-talk" data-action="chat" data-npc="${esc(t.npc)}" data-task="${esc(t.id)}" aria-label="Trò chuyện với ${esc(n.display_name)}">${icon('chat',20)}</button></header>`+
-    `<p class="dw-quote">${esc(t.opening)}</p>`;
+    (quote?`<p class="dw-quote">${esc(t.opening)}</p>`:uiTip(esc(t.opening),`${esc(n.display_name)} nói`,'p'));
 }
+/** The desks' "?" on the clean layout: what the screen folded away (tips), then how the desk works. */
+const DESK_HOW={pharmacy:['Hỏi lại phiếu để biết mã và số lượng.','Chọn mã trong bộ lọc, đọc nhãn: chỉ lô hợp lệ, không tạm giữ, mới được xuất. Màu hộp không cho biết lô có được xuất.','Lấy đúng lượng, tự kiểm mã · số lượng · lô, rồi kiểm khay.','Bàn giao; hoặc chuyển cô Thu khi phiếu ngoài phạm vi (liều dùng, triệu chứng, hộp thay thế).'],
+  accounting:['Mở từng bản gốc, đọc mã tham chiếu (HD).','Bản sao cùng nguồn: loại trùng. Số lệch gốc: sửa theo bản gốc.','Chọn chứng từ và giao dịch cùng mã HD, tổng bằng nhau: ghép nhóm (nhiều-một hoặc một-nhiều).','Mọi thẻ đã ghép hoặc loại trùng: kiểm & bàn giao (thù lao 70 xu).']};
+const deskQ=id=>helpBtn('desk-'+id,id==='pharmacy'?'💊 Quầy thuốc':'📒 Bàn đối chiếu',[{title:'Cách làm',body:`<ol>${DESK_HOW[id].map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`}],{tips:true,cls:'dw-q'});
 /** Sticky bar above the sheet footer: what is going on + at most one main action. */
 const dwBar=(text,btns='')=>`<div class="dw-bar"><div class="dw-bar-text" aria-live="polite">${text}</div>${btns?`<div class="dw-bar-btns">${btns}</div>`:''}</div>`;
 
@@ -716,7 +728,54 @@ function pharmacySteps(t){
   rows.push({ok:t.checked||null,label:'Kiểm khay',go:{act:'verifyPH',label:'✓ Kiểm khay'}});
   return rows;
 }
+/** ph_check as the server would answer it: its own pre-check (can.ph_check, game/desk_can.py ph_ready) first, then the
+ * three ticks the page sends, in the command's order. True when the check would go. */
+function phCan(t){
+  const s=t.can?.ph_check;if(s&&s!==true)return s;
+  const d=draft(t).checks;
+  return ['code','quantity','lot'].every(k=>d.includes(k))?true:{why:'Cần xác nhận đủ mã, số lượng và trạng thái lô.',fix:{sel:'.dw-checks',label:'☑️ Tự kiểm khay'}};
+}
+/** The pharmacy counter on the clean layout (UI wave 5, docs/UI_KIT.md). Kept in sight: the customer's words until the
+ * slip is read, the slip's code × count, every lot's state (Hợp lệ / Tạm giữ / Hết hiệu lực / Cần rút), its stock and
+ * use-by day, the tray against the slip. To "?": the rules (only valid lots, the colour says nothing), the opening once
+ * the slip is read, the refer hint. The counter's to-dos fold into one chip by the customer. One main button. */
+function pharmacyClean(t){
+  const c=room(),d=draft(t),n=t.known?t.needs:null,refer=!!n?.referral,want=n&&!refer?n.product:'',f=ui.phFilter==='all'?'':(ui.phFilter||want);
+  const lotOf=id=>api.content.lots.find(l=>l.id===id),tray=Object.entries(t.basket||{}),count=tray.reduce((a,[,q])=>a+q,0);
+  const codes=[...new Set(tray.map(([id])=>lotOf(id)?.product||id))],name=id=>api.content.ph_products.find(p=>p.id===id)?.name||'';
+  const care=careData(),pull=id=>(care?.batches||[]).some(b=>b.lot===id&&b.flag),use=id=>(care?.batches||[]).find(b=>b.lot===id&&!b.flag);
+  const state=l=>!t.inspected.includes(l.id)?'unread':c.held_lots.includes(l.id)?'held':l.status==='available'&&pull(l.id)?'pull':l.status;
+  const aria=(html,label)=>html.replace('<button ',`<button aria-label="${esc(label)}" `);
+  // The counter's to-dos (the fridge log, regulars due, a shelf to pull): one chip, the first one's icon and its time.
+  const alerts=care?.alerts||[],first=String(alerts[0]||''),time=(first.match(/\d{1,2}:\d{2}/)||[])[0]||'';
+  const chip=alerts.length?`<span class="ui-chiprow dw-chiprow">${headChip([...first][0]||'⚠️',time||String(alerts.length),'.dw-ph .cb-strip',{label:alerts.join(' · '),flow:true})}</span>`:'';
+  const today=alerts.length?`<section class="cb-strip ui-chipped" aria-label="Việc quầy hôm nay"><ul>${alerts.map(a=>`<li>${esc(a)}</li>`).join('')}</ul>${openBoard('Kho & sổ quầy',alerts.some(a=>a.startsWith('💊')||a.startsWith('📞'))?'regulars':'lots')}</section>`:'';
+  const who=dwWho(t,'',{quote:!t.known,extra:chip+deskQ('pharmacy')});
+  const slip=!t.known?'':refer?`<section class="dw-slip refer" aria-label="Phiếu lấy hàng: ngoài phạm vi"><p class="dw-slip-miss">📋 Ngoài phiếu</p>${uiTip('Yêu cầu nằm ngoài phiếu. Không lấy hộp thay thế: chuyển cô Thu.','📋 Phiếu','p')}</section>`
+    :`<section class="dw-slip dw-slip-c" aria-label="${esc(`Phiếu: mã ${n.product} ${name(n.product)}, ${n.qty} hộp`)}"><b class="dw-slip-code" title="${esc(name(n.product))}">📋 ${esc(n.product)}</b><b class="dw-slip-qty">× ${n.qty}</b>${uiTip('Chỉ lô hợp lệ, không tạm giữ.','📋 Phiếu','p')}</section>`;
+  const lotRow=l=>{const s=state(l),[label,tone]=s==='pull'?['Cần rút','amber']:LOT_STATE[s]||LOT_STATE.expired,left=c.available?.[l.id];
+    const meta=s==='unread'?'':`<small aria-label="${esc(`Còn ${fmt(left)} hộp`)}">📦 ${fmt(left)}${s==='available'&&use(l.id)?` · HSD ${use(l.id).exp}`:''}</small>`;
+    const act=s==='unread'?aria(commandButton(icon('eye',15)+' Đọc','ph_inspect',{task:t.id,lot:l.id},'ghost'),'Đọc nhãn '+l.id)
+      :s==='available'?(!(left>0)?button('📦 Nhập','warehouse',{},'small ghost'):aria(commandButton(icon('plus',15)+' 1','ph_pick',{task:t.id,item:l.id},'',!c.open),'Lấy 1 hộp '+l.id))
+      :s==='pull'?openBoard('Sổ lô','lots'):'';
+    return `<li class="dw-lot ${s}">${itemArt('box',36,l.color)}<div class="dw-lot-id"><b>${esc(l.id)}</b>${s==='unread'?'':dwState(label,tone)}${meta}</div><div class="dw-lot-act">${act}</div></li>`;};
+  const lots=t.known&&!refer?`<section class="dw-sec dw-lots" aria-label="Kệ lô hàng"><div class="dw-sec-head"><label class="dw-filter"><select id="ph-filter" aria-label="Xem mã hộp" data-action-change="ph-filter"><option value="all">Tất cả</option>${api.content.ph_products.map(p=>`<option value="${p.id}"${f===p.id?' selected':''}>${p.id}${p.id===want?' 📋':''}</option>`).join('')}</select></label>${uiTip('Màu hộp không cho biết lô có được xuất.','Kệ lô hàng')}</div>`+
+    api.content.ph_products.filter(p=>!f||p.id===f).map(p=>`<div class="dw-lotgroup${p.id===want?' want':''}">${f?'':`<h4><b>${p.id}</b> ${esc(p.name)}</h4>`}<ul class="dw-lotlist">${api.content.lots.filter(l=>l.product===p.id).map(lotRow).join('')}</ul></div>`).join('')+`</section>`:'';
+  // The self-check: three ticks in one row (the slip and the tray it compares sit right above); the full sentence and
+  // the pair it compares are the label for screen readers.
+  const ticks=n&&!refer?[['code','Mã',`Mã hộp khớp phiếu: phiếu ${want}, khay ${codes.join(', ')||'trống'}`],['quantity','Số lượng',`Số lượng đúng phiếu: phiếu ${n.qty}, khay ${count}`],['lot','Lô',`Lô đã đọc nhãn, được xuất: ${tray.map(([id])=>id).join(', ')||'trống'}`]]:[];
+  const trayBox=count&&!refer?`<section class="dw-sec dw-tray" aria-label="Khay"><div class="dw-sec-head"><h3>🧺 Khay</h3><span class="dw-count${count===n.qty?' ok':''}">${count}/${n.qty}</span></div>`+
+    `<ul class="dw-traylist">${tray.map(([id,q])=>{const l=lotOf(id);return `<li>${itemArt('box',32,l?.color)}<span><b>${esc(id)} × ${q}</b></span><button type="button" class="btn ghost icon-btn" aria-label="Bỏ một hộp ${esc(id)}" data-command="basket_remove" data-payload="${esc(JSON.stringify({task:t.id,item:id}))}">${icon('minus',16)}</button></li>`;}).join('')}</ul>`+
+    (t.checked?'<p class="dw-ok">✓ Đã kiểm</p>':`<div class="dw-checks dw-checks-c" role="group" aria-label="Tự kiểm khay">${ticks.map(([k,l,full])=>`<label class="dw-tick" aria-label="${esc(full)}"><input type="checkbox" data-phcheck="${k}"${d.checks.includes(k)?' checked':''}><span><b>${l}</b></span></label>`).join('')}</div>`)+`</section>`:'';
+  const referBox=t.known&&!refer?`<section class="dw-refer" aria-label="Chuyển người phụ trách">${uiTip('Hỏi liều dùng, triệu chứng hay hộp thay thế: chuyển cô Thu, không tự đoán.','Chuyển cô Thu','p')}${aria(button('↪️ Cô Thu','referPH',{},'ghost'),'Chuyển cô Thu')}</section>`:'';
+  const steps=pharmacySteps(t).map(s=>s.go?.act==='phTickAll'?{...s,go:{...s.go,label:'☑️ Đã so đủ 3'}}:s),hint=nextHint({room:c},steps,{final:t.checked?{label:'Bàn giao phiếu',go:{act:'deliverPH'}}:null});
+  let {next,main}=barParts({room:c},steps,{label:'Bàn giao '+icon('arrow',15),go:{act:'deliverPH'},ready:!!t.checked});
+  if(/data-action="verifyPH"/.test(main))main=withWhy(main,phCan(t));
+  const note=want?`<span class="ui-note" aria-label="${esc(`Khay ${count} trên ${n.qty} hộp`)}">🧺 ${count}/${n.qty}</span>`:'';
+  return `<div class="career-job dw dw-ph">${hint}${who}${today}<div class="dw-ph-grid">${slip}${lots}${trayBox}${referBox}</div>${actBar({next:next||note,main,cls:'dw-bar'})}</div>`;
+}
 function pharmacyJob(t){
+  if(uiClean())return pharmacyClean(t);
   const c=room(),d=draft(t),n=t.known?t.needs:null,refer=!!n?.referral,want=n&&!refer?n.product:'',f=ui.phFilter==='all'?'':(ui.phFilter||want);
   const lotOf=id=>api.content.lots.find(l=>l.id===id),tray=Object.entries(t.basket||{}),count=tray.reduce((a,[,q])=>a+q,0);
   const codes=[...new Set(tray.map(([id])=>lotOf(id)?.product||id))],name=id=>api.content.ph_products.find(p=>p.id===id)?.name||'';
@@ -733,7 +792,7 @@ function pharmacyJob(t){
   const trayBox=`<section class="dw-sec dw-tray" aria-label="Khay kiểm hai bước"><div class="dw-sec-head"><h3>Khay đang giữ</h3><span class="dw-count${want&&count===n.qty?' ok':''}">${count}${want?'/'+n.qty:''} hộp</span></div>`+
     (tray.length?`<ul class="dw-traylist">${tray.map(([id,q])=>{const l=lotOf(id);return `<li>${itemArt('box',32,l?.color)}<span><b>${esc(id)} × ${q}</b><small>${esc(l?.name||'')}</small></span><button type="button" class="btn ghost icon-btn" aria-label="Bỏ một hộp ${esc(id)}" data-command="basket_remove" data-payload="${esc(JSON.stringify({task:t.id,item:id}))}">${icon('minus',16)}</button></li>`;}).join('')}</ul>`:`<p class="dw-empty">Khay còn trống.</p>`)+
     `<h4 class="dw-step-title">Bước 1 · Tự kiểm khay</h4><div class="dw-checks">${[['code','Mã hộp khớp phiếu'],['quantity','Số lượng đúng phiếu'],['lot','Lô đã đọc nhãn, được xuất']].map(([k,l])=>`<label class="dw-tick"><input type="checkbox" data-phcheck="${k}"${d.checks.includes(k)?' checked':''}><span><b>${l}</b><small>${esc(facts[k])}</small></span></label>`).join('')}</div>`+
-    `${button(icon('check',16)+' Kiểm khay','verifyPH',{},t.checked?'ghost':want&&count===n.qty?'primary':'')}${t.checked?'<p class="dw-ok">✓ Đã kiểm đủ ba bước.</p>':''}`+
+    `${withWhy(button(icon('check',16)+' Kiểm khay','verifyPH',{},t.checked?'ghost':want&&count===n.qty?'primary':''),t.checked||phCan(t))}${t.checked?'<p class="dw-ok">✓ Đã kiểm đủ ba bước.</p>':''}`+
     `<h4 class="dw-step-title">Bước 2 · Bàn giao</h4><button type="button" class="btn ${t.checked?'primary':''}" data-action="deliverPH"${t.checked?'':' disabled'}>Bàn giao phiếu ${icon('arrow',15)}</button></section>`;
   const referBox=t.known&&!refer?`<section class="dw-refer" aria-label="Chuyển người phụ trách"><div><b>Phiếu có điều ngoài phạm vi?</b><p class="dw-hint">Hỏi liều dùng, triệu chứng hay hộp thay thế: chuyển cô Thu, không tự đoán.</p></div>${button('Chuyển cô Thu','referPH',{},'ghost')}</section>`:'';
   const barText=!t.known?'Hỏi rõ phiếu trước khi lấy hàng.':`Phiếu <b>${esc(want)} × ${n.qty}</b> · Khay <b>${count}/${n.qty}</b>${t.checked?' · đã kiểm':count<n.qty?' · lấy thêm':count>n.qty?' · thừa hộp':' · tự kiểm khay'}`;
@@ -783,7 +842,74 @@ function matchBlock(t,ds){
   return ds.some(d=>!t.inspected.includes(d.id))?'Đọc đủ bản gốc trước':ds.some(d=>d.missing)?'Thẻ thiếu nguồn chưa ghép được':ds.some(d=>d.duplicate_of)?'Loại bản trùng trước'
     :ds.some(d=>d.original!==undefined&&d.original!==d.amount)?'Sửa theo gốc trước':'';
 }
+/** ac_match as the server would answer the picked cards, in its order (game/desk_can.py ac_match_rules): the pick's
+ * shape, then each card's own state (the server's can.ac_match, one entry per card that cannot go yet), then the sums
+ * and the HD codes. True when the group would go. */
+function acMatchCan(t,selD,selT){
+  if(!selD.length||!selT.length)return {why:'Chọn phiếu và giao dịch để ghép.',fix:{act:'jobTab',data:{tab:selD.length?'acTx':'acDocs'},label:selD.length?'Chọn giao dịch →':'← Chọn chứng từ'}};
+  if(selD.length>1&&selT.length>1)return {why:'Ghép theo từng quan hệ nhiều-một hoặc một-nhiều, không gộp cả hồ sơ.',fix:{act:'clearSelection',label:'Bỏ chọn'}};
+  const cards=t.can?.ac_match||{},bad=selD.find(d=>cards[d.id]);if(bad)return cards[bad.id];
+  const a=selD.reduce((s,d)=>s+d.amount,0),b=selT.reduce((s,x)=>s+x.amount,0);
+  if(a!==b)return {why:`Tổng phiếu ${a} xu chưa khớp giao dịch ${b} xu. Thử kiểm phần còn thiếu nhé.`};
+  const r1=new Set(selD.map(d=>d.ref)),r2=new Set(selT.flatMap(x=>x.refs));
+  if(r1.size!==r2.size||[...r1].some(r=>!r2.has(r)))return {why:'Tổng giống nhau nhưng tham chiếu nguồn chưa khớp. Kiểm mã hóa đơn nhé.'};
+  return true;
+}
+/** The bookkeeping board on the clean layout (UI wave 5, docs/UI_KIT.md). Kept on every card: its code, amount and HD
+ * code; once read, what it is (✓, Lệch gốc + the original amount, Bản sao + the card it copies, Thiếu nguồn, hoàn);
+ * a transaction's codes. To "?": the opening (the same ask on every file), the transactions' notes, the hand-over
+ * checklist and the work bench's rule. The sums of the picked cards and the one main button sit in the shared bar. */
+/** The bar's step labels in a few words (clean layout): the card it acts on stays named. */
+function acShort(s){
+  const g=s.go;if(!g)return s;
+  const doc=g.payload?.doc?esc(g.payload.doc):'';
+  if(g.cmd==='ac_duplicate')return {...s,go:{...g,label:`🗂️ Loại trùng ${doc}`}};
+  if(g.cmd==='ac_correct')return {...s,go:{...g,label:`✏️ Sửa ${doc}`}};
+  if(g.act==='acPick')return {...s,go:{...g,label:String(g.label).replace('👉 Chọn các thẻ mã','👉 Chọn')}};
+  return s;
+}
+function accountingClean(t){
+  const inG=(k,id)=>t.groups.some(g=>g[k].includes(id)),sum=a=>a.reduce((s,x)=>s+x.amount,0);
+  const selD=t.docs.filter(d=>ui.docs.has(d.id)),selT=t.transactions.filter(x=>ui.transactions.has(x.id)),ds=sum(selD),ts=sum(selT);
+  const read=t.docs.filter(d=>t.inspected.includes(d.id)).length,settled=t.docs.filter(d=>t.removed.includes(d.id)||inG('docs',d.id)).length;
+  const txDone=t.transactions.filter(x=>inG('transactions',x.id)).length,allDone=settled===t.docs.length&&txDone===t.transactions.length;
+  const tab=ui.jobTab==='acTx'?'tx':'docs',can=t.can||{};
+  const aria=(html,label)=>html.replace('<button ',`<button aria-label="${esc(label)}" `);
+  const pick=(action,id,on,off,mark)=>`<button type="button" class="dw-pick${on?' on':''}" data-action="${action}" data-id="${esc(id)}" aria-pressed="${on}" aria-label="Chọn ${esc(id)}"${off?' disabled':''}>${on?icon('check',20):mark||''}</button>`;
+  const docCard=d=>{
+    const seen=t.inspected.includes(d.id),used=inG('docs',d.id),removed=t.removed.includes(d.id),sel=ui.docs.has(d.id),off=seen&&d.original!==undefined&&d.original!==d.amount,copy=seen&&d.duplicate_of;
+    const [label,tone]=removed||used?['','']:d.missing?['Thiếu nguồn','amber']:!seen?['','']:off?['Lệch gốc','danger']:copy?[`Bản sao ${esc(d.duplicate_of)}`,'amber']:['✓','blue'];
+    const both=copy&&t.inspected.includes(d.duplicate_of);
+    const act=removed||used||d.missing?'':!seen?aria(commandButton(icon('eye',15)+' Mở','ac_inspect',{task:t.id,doc:d.id},'ghost'),'Mở bản gốc '+d.id)
+      :off?aria(commandButton('✏️ Sửa','ac_correct',{task:t.id,doc:d.id},'ghost'),'Sửa theo gốc '+d.id)
+      :copy?withWhy(aria(commandButton('🗂️ Loại trùng','ac_duplicate',{task:t.id,doc:d.id},'ghost'),'Đánh dấu trùng '+d.id),both||{why:'Cần đối chiếu cả hai bản có cùng nguồn; thẻ này chưa được chứng minh là bản sao.',fix:{cmd:'ac_inspect',payload:{task:t.id,doc:d.duplicate_of},label:'👁️ Mở gốc '+d.duplicate_of}}):'';
+    const src=seen?`${off?`<small class="dw-orig">gốc ${fmt(d.original)}</small>`:''}${uiTip(`${esc(d.source)} · số gốc ${fmt(d.original)} xu`,esc(d.id))}`:'';
+    return `<li class="dw-card${sel?' selected':''}${used||removed?' settled':''}">${pick('selectDoc',d.id,sel,used||removed,used?icon('link',18):removed?icon('minus',18):'')}<div class="dw-card-main"><div class="dw-line"><b class="dw-code">${esc(d.id)}</b><span class="dw-amt" aria-label="${esc(`${fmt(d.amount)} xu`)}">${fmt(d.amount)}</span><span class="dw-sub">${esc(d.ref)}${d.kind==='hoàn'?' · hoàn':''}</span>${label?dwState(label,tone):''}${src}${act}</div></div></li>`;};
+  const txCard=x=>{const used=inG('transactions',x.id),sel=ui.transactions.has(x.id);
+    return `<li class="dw-card tx${sel?' selected':''}${used?' settled':''}">${pick('selectTx',x.id,sel,used,used?icon('link',18):'')}<div class="dw-card-main"><div class="dw-line"><b class="dw-code">${esc(x.id)}</b><span class="dw-amt" aria-label="${esc(`${fmt(x.amount)} xu`)}">${fmt(x.amount)}</span><span class="dw-sub">${esc(x.refs.join(' + '))}</span></div>${uiTip(esc(x.note),esc(x.id))}</div></li>`;};
+  // Tabs: the open tab keeps its word; both keep their count.
+  const tabs=`<div class="dw-tabs" role="tablist" aria-label="Bàn đối chiếu">${[['docs','acDocs','📂','Chứng từ',t.docs.length-settled,selD.length],['tx','acTx','🔗','Giao dịch',t.transactions.length-txDone,selT.length]].map(([k,val,e,l,left,picked])=>`<button type="button" role="tab" aria-selected="${tab===k}" aria-label="${esc(`${l}: ${picked?`đã chọn ${picked}`:left?`còn ${left}`:'xong'}`)}" class="dw-tab${tab===k?' on':''}" data-action="jobTab" data-tab="${val}"><span><span aria-hidden="true">${e}</span>${tab===k?' '+l:''}</span><em>${picked?`✓ ${picked}`:left?left:'✓'}</em></button>`).join('')}</div>`;
+  const board=`<div class="dw-board show-${tab}"><section class="dw-col docs" aria-label="Chứng từ"><h3 class="dw-col-title">📂 Chứng từ</h3><ul class="dw-cards">${t.docs.map(docCard).join('')}</ul></section><section class="dw-col tx" aria-label="Giao dịch"><h3 class="dw-col-title">🔗 Giao dịch</h3><ul class="dw-cards">${t.transactions.map(txCard).join('')}</ul></section></div>`;
+  // A missing source: the promised time stays in sight; asking for it and waiting are the bar's steps.
+  const later=t.source_at&&!sameDay(t.source_at);
+  const missing=t.docs.some(d=>d.missing)?`<div class="dw-alert" role="status"><b>⏳ Thiếu nguồn</b>${t.source_requested&&t.source_at?`<span aria-label="${esc(`Người gửi hẹn gửi lúc ${hm(t.source_at)}${later?' sáng mai':' hôm nay'}`)}">📨 ${hm(t.source_at)}${later?' mai':''}</span>`:''}${later?button('Việc khác','queue',{},'ghost'):''}</div>`:'';
+  const groups=t.groups.length?`<ul class="dw-groups" aria-label="Nhóm đã ghép: ${t.groups.length}">${t.groups.map((g,i)=>`<li><span><b>${esc(g.docs.join(' + '))} ↔ ${esc(g.transactions.join(' + '))}</b><small aria-label="${esc(`Khớp ${fmt(g.total)} xu`)}">= ${fmt(g.total)}</small></span>${commandButton('Tháo','ac_unmatch',{task:t.id,index:i},'ghost')}</li>`).join('')}</ul>`:'';
+  const notes=`${uiTip('Thù lao 70 xu. Bàn giao khi mọi chứng từ đã ghép hoặc loại trùng và mọi giao dịch đã có nguồn.','Bàn giao hồ sơ','p')}${room().upgrades.includes('workbench')?uiTip('Bàn kiểm: tìm phiếu có cùng mã tham chiếu; không tính một nguồn hai lần. Kiểm tổng và tập mã đều phải khớp.','Bàn kiểm','p'):''}`;
+  const both=selD.length&&selT.length,finish={label:icon('check',16)+' Bàn giao',go:{act:'completeAC'},ready:allDone,can:can.ac_complete};
+  let next='',main='';
+  if(selD.length||selT.length){
+    next=`<span class="dw-sums" role="status"><span aria-label="${esc(`Chứng từ đã chọn: ${selD.length}, tổng ${ds} xu`)}">📂 <b>${fmt(ds)}</b></span><i class="${both?ds===ts?'ok':'bad':''}" aria-hidden="true">${both?ds===ts?'=':'≠':'⇄'}</i><span aria-label="${esc(`Giao dịch đã chọn: ${selT.length}, tổng ${ts} xu`)}">🔗 <b>${fmt(ts)}</b></span></span><button type="button" class="btn ghost icon-btn" data-action="clearSelection" aria-label="Bỏ chọn">${icon('x',18)}</button>`;
+    main=both?withWhy(button(icon('link',16)+' Ghép nhóm','match',{},'primary big'),acMatchCan(t,selD,selT))
+      :button(selD.length?'Chọn giao dịch →':'← Chọn chứng từ','jobTab',{tab:selD.length?'acTx':'acDocs'},'primary big');
+  }else{
+    ({next,main}=barParts({room:room()},allDone?[]:accountingSteps(t).map(acShort),finish));
+    if(!next)next=`<span class="ui-note" aria-label="${esc(`Đã xử lý ${settled} trên ${t.docs.length} chứng từ`)}">📂 ${settled}/${t.docs.length}</span>`;
+  }
+  const hint=nextHint({room:room()},accountingSteps(t),{final:allDone?{label:'Kiểm & bàn giao hồ sơ',go:{act:'completeAC'}}:null,cta:false});
+  return `<div class="career-job dw dw-ac">${hint}${dwWho(t,'',{quote:false,extra:deskQ('accounting')})}${missing}${tabs}${board}${groups}${notes}${actBar({next,main,cls:'dw-bar'})}</div>`;
+}
 function accountingJob(t){
+  if(uiClean())return accountingClean(t);
   const inG=(k,id)=>t.groups.some(g=>g[k].includes(id)),sum=a=>a.reduce((s,x)=>s+x.amount,0);
   const selD=t.docs.filter(d=>ui.docs.has(d.id)),selT=t.transactions.filter(x=>ui.transactions.has(x.id)),ds=sum(selD),ts=sum(selT);
   const read=t.docs.filter(d=>t.inspected.includes(d.id)).length,settled=t.docs.filter(d=>t.removed.includes(d.id)||inG('docs',d.id)).length;
@@ -811,7 +937,7 @@ function accountingJob(t){
   const both=selD.length&&selT.length;
   const bar=allDone?dwBar('<b>Đã ghép đủ.</b> Kiểm lại rồi bàn giao.',button(icon('check',16)+' Bàn giao','completeAC',{},'primary'))
     :selD.length||selT.length?dwBar(`<span class="dw-sums"><span><small>Chứng từ · ${selD.length}</small><b>${fmt(ds)}</b></span><i class="${both?ds===ts?'ok':'bad':''}" aria-label="${both?ds===ts?'bằng nhau':'chưa bằng':'so với'}">${both?ds===ts?'=':'≠':'⇄'}</i><span><small>Giao dịch · ${selT.length}</small><b>${fmt(ts)}</b></span></span>`,
-      `<button type="button" class="btn ghost icon-btn" data-action="clearSelection" aria-label="Bỏ chọn">${icon('x',18)}</button>`+(both?(matchBlock(t,selD)?`<button type="button" class="btn primary" disabled>${icon('link',16)} ${esc(matchBlock(t,selD))}</button>`:button(icon('link',16)+' Ghép nhóm','match',{},'primary'))
+      `<button type="button" class="btn ghost icon-btn" data-action="clearSelection" aria-label="Bỏ chọn">${icon('x',18)}</button>`+(both?(matchBlock(t,selD)?`<button type="button" class="btn primary" disabled>${icon('link',16)} ${esc(matchBlock(t,selD))}</button>`:withWhy(button(icon('link',16)+' Ghép nhóm','match',{},'primary'),acMatchCan(t,selD,selT)))
         :button(selD.length?'Chọn giao dịch →':'← Chọn chứng từ','jobTab',{tab:selD.length?'acTx':'acDocs'},'primary dw-swap')+`<button type="button" class="btn dw-wide-only" disabled>${icon('link',16)} Ghép nhóm</button>`))
     :dwBar(read<t.docs.length?'Mở bản gốc, rồi chọn chứng từ và giao dịch cùng mã HD.':'Chọn chứng từ và giao dịch cùng mã HD.');
   const steps=accountingSteps(t),hint=nextHint({room:room()},steps,{final:allDone?{label:'Kiểm & bàn giao hồ sơ',go:{act:'completeAC'}}:null,cta:false});
@@ -844,34 +970,42 @@ function supportSteps(t){
 }
 function supportJob(t){
   const step=csStep(t),read=t.evidence.filter(e=>e.text!=null).length,sol=solutions.find(x=>x[0]===t.proposal);
-  const channel=CS_CHANNELS[[...String(t.id)].reduce((a,ch)=>a+ch.charCodeAt(0),0)%CS_CHANNELS.length];
-  const tracker=`<ol class="dw-steps" aria-label="Tiến trình vụ">${CS_STEPS.map((s,i)=>`<li class="${i<step?'done':i===step?'now':''}"${i===step?' aria-current="step"':''}><span class="dw-dot" aria-hidden="true">${i<step?'✓':i+1}</span><span class="dw-step-label">${s}</span></li>`).join('')}</ol>`;  // (the current step is the lit one in the tracker; the "Bước x/6" line under it repeated it)
+  const channel=CS_CHANNELS[[...String(t.id)].reduce((a,ch)=>a+ch.charCodeAt(0),0)%CS_CHANNELS.length],cl=uiClean();
+  const tracker=`<ol class="dw-steps" aria-label="Tiến trình vụ">${CS_STEPS.map((s,i)=>`<li class="${i<step?'done':i===step?'now':''}"${i===step?' aria-current="step"':''}${cl?` aria-label="${s}" title="${s}"`:''}><span class="dw-dot" aria-hidden="true">${i<step?'✓':i+1}</span>${cl?'':`<span class="dw-step-label">${s}</span>`}</li>`).join('')}</ol>`;  // (the current step is the lit one in the tracker; the "Bước x/6" line under it repeated it)
   const canPropose=t.identity&&read===t.evidence.length&&['new','understood','proposed'].includes(t.status);
   const choices=`<div class="dw-choices" role="group" aria-label="Phương án">${solutions.map(([id,l,i,h])=>`<button type="button" class="dw-choice${t.proposal===id?' selected':''}" data-command="cs_propose" data-payload="${esc(JSON.stringify({task:t.id,solution:id}))}" aria-pressed="${t.proposal===id}"${canPropose?'':' disabled'}>${icon(i,22)}<span><b>${l}</b><small>${h}</small></span></button>`).join('')}</div>`;
   // The eyebrow names the lit part of the tracker (its labels are hidden on a phone); one line says what to do there.
-  const now=(title,text,action,extra='')=>`<section class="dw-now" aria-label="Việc bây giờ"><span class="dw-eyebrow">Bước ${step+1}/${CS_STEPS.length} · ${CS_STEPS[step]}</span><h3>${title}</h3>${text?`<p>${text}</p>`:''}${extra}${action}</section>`;
+  // Clean layout (docs/UI_KIT.md): the lit tracker names the step; the card keeps its title (the explanation goes to the
+  // "?"), and a single action button moves to the shared bar at the bottom (one main button). Choices stay in the card.
+  let main='';
+  // `keep`: the text is a fact (a promised time, the call-before-noon rule), not an explanation: it stays in sight.
+  // `card`: the title itself says something the bar does not (the plan picked); otherwise a card whose only action
+  // moved to the bar goes (its title just repeats the button).
+  const now=(title,text,action,extra='',{keep=false,card=false}={})=>{
+    if(cl&&/^\s*<button\b/.test(action)&&(action.match(/<button\b/g)||[]).length===1){main=action.replace(/\sfull(?=[\s"])/,'');action='';if(!extra&&!keep&&!card)return text?uiTip(text,title,'p'):'';}
+    return `<section class="dw-now" aria-label="Việc bây giờ">${cl?'':`<span class="dw-eyebrow">Bước ${step+1}/${CS_STEPS.length} · ${CS_STEPS[step]}</span>`}<h3>${title}</h3>${text?(cl&&!keep?uiTip(text,title,'p'):`<p>${text}</p>`):''}${extra}${action}</section>`;};
   const key=t.evidence.find(e=>e.id===t.basis&&e.text!=null);  // 📌 the source line that names the fix (server sends it once every source is read)
   let card;
   const waitNow=t.ready_at==null||sameDay(t.ready_at);
-  if(t.status==='handed_over')card=now('Chờ chị Mai phản hồi',t.eta?`Chị Mai hẹn phản hồi ${esc(t.eta.toLowerCase())}.`:'',commandButton('⏳ Chờ thêm 20 phút','advance',{},'primary full'));
+  if(t.status==='handed_over')card=now('Chờ chị Mai phản hồi',t.eta?`Chị Mai hẹn phản hồi ${esc(t.eta.toLowerCase())}.`:'',commandButton('⏳ Chờ thêm 20 phút','advance',{},'primary full'),'',{keep:true});
   else if(step===0)card=now('Xác minh người yêu cầu','Khớp mã đơn khách đưa thì mới được xem hồ sơ.',commandButton('🔐 Xác minh mã đơn','cs_identity',{task:t.id},'primary full',!room().open));
   else if(step===1){const e=t.evidence.find(e=>e.text==null);card=now(`Mở chứng cứ · ${read}/${t.evidence.length}`,'Đọc đủ các nguồn: một dòng trong đó chỉ cách xử lý.',commandButton(icon('folder',16)+' Mở: '+esc(e.title),'cs_evidence',{task:t.id,evidence:e.id},'primary full'));}
   else if(step===2)card=now('Chọn phương án khớp căn cứ','',choices,key?`<blockquote class="dw-basis"><b>📌 ${esc(key.title)}</b>“${esc(key.text)}”</blockquote>`:'');
-  else if(t.status==='proposed')card=now(`Phương án: ${sol?.[1]||''}`,'Mới là đề xuất: gửi việc thì đầu mối mới làm.',button('Gửi việc cho đầu mối '+icon('arrow',15),'executeCS',{},'primary full'));
-  else if(t.status==='executing')card=now(`Đang chờ ${esc(t.wait_label||'đầu mối')}: ${sol?.[1]||''}`,`Dự kiến có kết quả: <b>${esc(t.eta||'')}</b>.${waitNow?'':' Vụ mở qua đêm: mỗi sáng gọi cập nhật cho khách trước 12:00.'}`,waitNow?commandButton('⏳ Chờ thêm 20 phút','advance',{},'primary full'):button('Xem các việc khác','queue',{},'primary full'));
+  else if(t.status==='proposed')card=now(`Phương án: ${sol?.[1]||''}`,'Mới là đề xuất: gửi việc thì đầu mối mới làm.',button('Gửi việc cho đầu mối '+icon('arrow',15),'executeCS',{},'primary full'),'',{card:true});
+  else if(t.status==='executing')card=now(`Đang chờ ${esc(t.wait_label||'đầu mối')}: ${sol?.[1]||''}`,`Dự kiến có kết quả: <b>${esc(t.eta||'')}</b>.${waitNow?'':' Vụ mở qua đêm: mỗi sáng gọi cập nhật cho khách trước 12:00.'}`,waitNow?commandButton('⏳ Chờ thêm 20 phút','advance',{},'primary full'):button('Xem các việc khác','queue',{},'primary full'),'',{keep:true});
   else if(step===4)card=now('Kết quả đã về','Đầu mối báo xong: kiểm với khách trước khi đóng.',commandButton(icon('search',16)+' Kiểm kết quả','cs_confirm',{task:t.id},'primary full'));
   else card=now('Kết quả đã kiểm chứng','Khách đã xác nhận: đóng vụ, nhận 65 xu.',button(icon('check',16)+' Hoàn tất & đóng vụ','closeCS',{},'primary full'));
   const change=t.status==='proposed'?`<section class="dw-sec dw-change" aria-label="Đổi phương án"><h3>Đổi phương án?</h3>${choices}</section>`:'';
-  const handover=t.identity&&t.status==='understood'&&!t.handed_over?`<section class="dw-alt"><p class="dw-hint">Chưa chắc hướng xử lý? Bàn giao cho chị Mai kèm nguồn đã đọc${t.inspected.length<2?' (cần đọc ít nhất 2 nguồn)':''}.</p>${commandButton('Bàn giao cùng chị Mai','cs_handover',{task:t.id},'ghost',t.inspected.length<2)}</section>`:'';
-  const evidence=`<section class="dw-sec" aria-label="Chứng cứ"><div class="dw-sec-head"><h3>Chứng cứ</h3><span class="dw-count${read===t.evidence.length?' ok':''}">${read}/${t.evidence.length}</span></div><ul class="dw-evlist">${t.evidence.map(e=>{const open=e.text!=null;
-    return `<li class="dw-ev${open?' done':''}${key===e?' key':''}"><span class="dw-mark" role="img" aria-label="${open?'Đã mở':'Chưa mở'}">${open?'✓':''}</span><div><b>${esc(e.title)}${key===e?' <em class="dw-key">📌 Căn cứ</em>':''}</b>${open?`<p>${esc(e.text)}</p>`:t.identity?'':'<small>Xác minh để mở</small>'}</div>${!open&&t.identity?commandButton('Mở','cs_evidence',{task:t.id,evidence:e.id},'ghost'):''}</li>`;}).join('')}</ul></section>`;
-  const notes=`${room().upgrades.includes('workbench')?notice('Bàn kiểm hai bước: so yêu cầu của khách với chứng cứ đóng gói/giao nhận, không coi một trạng thái đơn lẻ là kết luận.','blue','search'):''}`;
-  const log=t.timeline.length?fold(`Nhật ký vụ · ${t.timeline.length} dòng`,`<ol class="dw-log">${t.timeline.map(line=>`<li>${esc(line)}</li>`).join('')}</ol>`):'';
-  const sub=`${channel}${t.value?` · đơn ${fmt(t.value)} xu`:''}${t.days_open?` · ngày thứ ${t.days_open+1}`:''}`;
+  const handover=t.identity&&t.status==='understood'&&!t.handed_over?`<section class="dw-alt">${(h=>cl?uiTip(h,'Bàn giao cùng chị Mai','p'):`<p class="dw-hint">${h}</p>`)(`Chưa chắc hướng xử lý? Bàn giao cho chị Mai kèm nguồn đã đọc${t.inspected.length<2?' (cần đọc ít nhất 2 nguồn)':''}.`)}${commandButton('Bàn giao cùng chị Mai','cs_handover',{task:t.id},'ghost',t.inspected.length<2)}</section>`:'';
+  const evidence=`<section class="dw-sec" aria-label="Chứng cứ"><div class="dw-sec-head"><h3>Chứng cứ</h3><span class="dw-count${read===t.evidence.length?' ok':''}">${read}/${t.evidence.length}</span></div>${cl&&!t.identity?'':`<ul class="dw-evlist">${t.evidence.map(e=>{const open=e.text!=null;
+    return `<li class="dw-ev${open?' done':''}${key===e?' key':''}"><span class="dw-mark" role="img" aria-label="${open?'Đã mở':'Chưa mở'}">${open?'✓':''}</span><div><b>${esc(e.title)}${key===e?' <em class="dw-key">📌 Căn cứ</em>':''}</b>${open?`<p>${esc(e.text)}</p>`:t.identity||cl?'':'<small>Xác minh để mở</small>'}</div>${!open&&t.identity?commandButton('Mở','cs_evidence',{task:t.id,evidence:e.id},'ghost'):''}</li>`;}).join('')}</ul>`}</section>`;
+  const notes=`${room().upgrades.includes('workbench')&&!cl?notice('Bàn kiểm hai bước: so yêu cầu của khách với chứng cứ đóng gói/giao nhận, không coi một trạng thái đơn lẻ là kết luận.','blue','search'):''}`;
+  const log=t.timeline.length?fold(cl?`📒 ${t.timeline.length}`:`Nhật ký vụ · ${t.timeline.length} dòng`,`<ol class="dw-log">${t.timeline.map(line=>`<li>${esc(line)}</li>`).join('')}</ol>`):'';
+  const sub=cl?`${channel.split(' ')[0]}${t.value?` · ${fmt(t.value)} xu`:''}${t.days_open?` · 📅 ${t.days_open+1}`:''}`:`${channel}${t.value?` · đơn ${fmt(t.value)} xu`:''}${t.days_open?` · ngày thứ ${t.days_open+1}`:''}`;
   const timers=[t.sla_label?dwState(`⏳ Phản hồi đầu: còn ${esc(t.sla_label)}`,'amber'):'',t.sla==='late'?dwState('Trễ hạn phản hồi đầu','danger'):'',t.upd_label?dwState(`📞 Gọi cập nhật: ${esc(t.upd_label)}`,t.upd?.done?'green':t.upd?.late?'danger':'amber'):''].join('');
   const seen=careData()?.people?.find(p=>p.npc===t.npc),past=seen?.last?.filter(x=>!x.title||x.title!==t.title||x.day!==t.day)||[];
   const history=seen&&past.length?`<section class="cb-history" aria-label="Thẻ khách"><h3>🗂️ ${esc(seen.name)} đã gọi ${seen.n} lần</h3><ul class="cb-past">${past.slice().reverse().map(x=>`<li>Ngày ${x.day}: ${esc(x.title)} · ${esc(x.note)}${x.stars?` · ${x.stars}★`:''}</li>`).join('')}</ul></section>`:'';
-  return `<div class="career-job dw dw-cs">${nextHint({room:room()},supportSteps(t),{cta:false})}${dwWho(t,sub)}${timers?`<div class="cs-timers">${timers}</div>`:''}${tracker}<div class="dw-cs-grid"><div class="dw-cs-work">${card}${change}${handover}${csCallPanel(t)}</div><div class="dw-cs-facts">${history}${evidence}${notes}${log}</div></div></div>`;  // the follow-up board: dock "Theo dõi"
+  return `<div class="career-job dw dw-cs">${nextHint({room:room()},supportSteps(t),{cta:false})}${dwWho(t,sub)}${timers?`<div class="cs-timers">${timers}</div>`:''}${cl?`<div class="cs-track">${tracker}${helpBtn('cs-desk','🎧 Bàn chăm sóc khách',[{title:'Sáu bước của một vụ',body:`<ol>${CS_STEPS.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`},{title:'Phương án',body:`<ul>${solutions.map(([,l,,h])=>`<li><b>${esc(l)}</b>: ${esc(h)}</li>`).join('')}</ul>`}],{tips:true,cls:'cs-q'})}</div>`:tracker}<div class="dw-cs-grid"><div class="dw-cs-work">${card}${change}${handover}${csCallPanel(t)}</div><div class="dw-cs-facts">${history}${evidence}${notes}${log}</div></div>${main?actBar({main,cls:'cs-bar'}):''}</div>`;  // the follow-up board: dock "Theo dõi"
 }
 function chatView(){
   const id=ui.npc||activeTask()?.npc||api.content.npcs.find(n=>n.career_id===career()).id,n=npc(id),c=room();ui.npc=id;
@@ -1071,10 +1205,11 @@ function csCallPanel(t){
   const pending=wait?`<div class="bubble user pending"><div>${esc(csCallPending.text)}</div></div><div class="bubble npc typing" role="status" aria-label="${esc(n.display_name)} đang trả lời…"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div>`:'';
   const tone={vui:'green',binh:'blue',lo:'amber',buc:'danger'}[t.tone]||'';
   const chips=(t.picks||[]).map(p=>`<button type="button" class="btn ghost small" data-cs-pick="${esc(p.id)}" data-task="${esc(t.id)}"${wait||!left||!room().open?' disabled':''}>${esc(p.label)}</button>`).join('');
-  return `<section class="dw-sec cs-call" aria-label="Cuộc gọi với ${esc(n.display_name)}"><div class="dw-sec-head"><h3>📞 Gọi ${esc(n.display_name)}</h3>${dwState('Khách '+esc(t.tone_label||''),tone)}</div>`+
-    `${lines||pending?`<div class="chat-messages cs-call-log" role="log" aria-live="polite"><div class="cs-call-rows">${lines}${pending}</div></div>`:'<p class="dw-hint">Báo tình trạng thật, xin lỗi khi khách phải chờ, hỏi thêm khi cần. Lời nói không tự hoàn tiền hay đổi phương án.</p>'}`+
+  const folded=uiClean()&&!lines&&!pending;   // clean layout: a call not started yet is one line ("📞 Gọi Lan · Khách lo lắng ›")
+  return `<section class="dw-sec cs-call" aria-label="Cuộc gọi với ${esc(n.display_name)}">${folded?'<details class="cs-call-fold"><summary class="dw-sec-head">':'<div class="dw-sec-head">'}<h3>📞 Gọi ${esc(n.display_name)}</h3>${dwState('Khách '+esc(t.tone_label||''),tone)}${folded?'</summary>':'</div>'}`+
+    `${lines||pending?`<div class="chat-messages cs-call-log" role="log" aria-live="polite"><div class="cs-call-rows">${lines}${pending}</div></div>`:uiClean()?uiTip('Báo tình trạng thật, xin lỗi khi khách phải chờ, hỏi thêm khi cần. Lời nói không tự hoàn tiền hay đổi phương án.','📞 Cuộc gọi','p'):'<p class="dw-hint">Báo tình trạng thật, xin lỗi khi khách phải chờ, hỏi thêm khi cần. Lời nói không tự hoàn tiền hay đổi phương án.</p>'}`+
     `<div class="quick-replies">${chips}</div><form class="chat-form cs-call-form" data-cs-call="${esc(t.id)}"><textarea id="cs-say-${esc(t.id)}" name="say" data-preserve rows="1" maxlength="200" required placeholder="Nói với ${esc(n.display_name)}…" aria-label="Lời nói với ${esc(n.display_name)}"></textarea><button type="submit" class="btn primary" aria-label="Nói"${wait||!left||!room().open?' disabled':''}>${icon('send',17)}<span>Nói</span></button></form>`+
-    `<p class="cs-call-meta">${aiVoices()?`${icon('sparkle',13)} Khách trả lời bằng AI · đừng gõ thông tin thật`:'Khách trả lời theo kịch bản'} · còn ${left} lượt nói hôm nay</p></section>`;
+    `<p class="cs-call-meta">${aiVoices()?`${icon('sparkle',13)} Khách trả lời bằng AI · đừng gõ thông tin thật · còn ${left} lượt nói hôm nay`:uiClean()?`<span aria-label="Còn ${left} lượt nói hôm nay">💬 ${left}</span>`:`Khách trả lời theo kịch bản · còn ${left} lượt nói hôm nay`}</p>${folded?'</details>':''}</section>`;
 }
 async function csCallSend(task,body){
   if(csCallPending||ui.busy)return;
@@ -1143,7 +1278,7 @@ function summaryView(){
   if(s.incidents&&L.inc.use())notes.push(L.inc.m.incidentSummary(s.incidents));
   if(s.happen&&L.happen.use())notes.push(L.happen.m.happenSummary(s.happen));
   if(s.abandon)notes.push(abandonSummary(s.abandon));
-  if(s.promo&&L.promo.use())notes.push(L.promo.m.promoSummary(s.promo));  // 🎖️ a good day, the review booked, the manager shift
+  if(s.promo&&L.promo.use())notes.push(L.promo.m.promoSummary(s.promo,career()));  // 🎖️ a good day, the review booked, the manager shift
   if(s.life)notes.push(lifeSummary(s.life));
   if(s.experiences?.tip_day?.count&&L.tips.use())notes.push(L.tips.m.tipSummary(s.experiences.tip_day));
   const jr=s.journey;
@@ -1154,7 +1289,7 @@ function summaryView(){
   if(rv.open||(rv.count&&rv.weakest&&rv.average<4.5))notes.push(notice(pagoda?`${rv.count&&rv.weakest&&rv.average<4.5?`Khách thập phương nhắc nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` ${rv.open} cảm nhận chờ hồi đáp.`:''}<br>${button('Xem cảm nhận','feedback',{filter:rv.open?'open':'all'},'small')}`:`${rv.count&&rv.weakest&&rv.average<4.5?`Khách góp ý nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` ${rv.open} đánh giá chờ trả lời.`:''}<br>${button('Xem đánh giá','feedback',{filter:rv.open?'open':'all'},'small')}`,'amber','star'));
   if(ops?.unpaid)notes.push(notice(`<b>${esc(wordsFor(career()).books)}: còn ${fmt(ops.unpaid)} xu cần trả</b><p class="ck-chips">${ops.wages?`<span class="ck-delta flat">Lương ${fmt(ops.wages)}</span>`:''}${ops.utilities?`<span class="ck-delta flat">điện nước ${fmt(ops.utilities)}</span>`:''}${ops.rent_accrued?`<span class="ck-delta flat">thuê ${fmt(ops.rent_accrued)} xu</span>`:''}${ops.period?'<span class="ck-delta warn">vừa kết kỳ thuế</span>':''}</p>${button('Mở sổ thu chi','finance',{},'small')}`,'','mail'));
   // 🧾 A tax period closed today (operations.py on_close): the calculation, not just a bill (players asked "5k xu thuế ở đâu ra?").
-  if(ops?.period){const p=ops.period;notes.push(notice(`<b>🧾 Kết kỳ thuế ngày ${fmt(p.start)}–${fmt(p.end)}</b><p>Doanh thu cả kỳ ${fmt(p.revenue)} xu × ${fmt(p.rate)}% = <b>${fmt(p.tax)} xu thuế</b> (làm tròn lên). Mặt bằng cả kỳ ${fmt(p.rent)} xu. Hai khoản nằm trong ${esc(wordsFor(career()).books)} → Thu chi, hạn đóng ngày ${fmt(p.end+2)}.</p>${button('Mở sổ thu chi','finance',{},'small')}`,'amber','mail'));}
+  if(ops?.period){const p=ops.period;notes.push(notice(`<b>🧾 Kết kỳ thuế ngày ${fmt(p.start)}–${fmt(p.end)}</b><p>${esc(T(career(),'revenue'))} cả kỳ ${fmt(p.revenue)} xu × ${fmt(p.rate)}% = <b>${fmt(p.tax)} xu thuế</b> (làm tròn lên). Mặt bằng cả kỳ ${fmt(p.rent)} xu. Hai khoản nằm trong ${esc(wordsFor(career()).books)} → Thu chi, hạn đóng ngày ${fmt(p.end+2)}.</p>${button('Mở sổ thu chi','finance',{},'small')}`,'amber','mail'));}
   // Hired staff (operations.py on_close): what each one did today, or why not (no shift, paused by an open incident),
   // and what their finished jobs earned the shop (staff_bonus, one cash-book row; absent from older servers).
   const team=ops?.staff||[],held=team.some(t=>t.paused);
@@ -1412,11 +1547,13 @@ async function handleAction(action,data,el){
       if(action==='liveWalk'){const w=await import('./v4/walk.js');L.live.m?.benchSpot(w.walk);await w.openWalk(env(),data);break;}  // 🚶 Đi dạo (v4/walk.js): its own dialog; 💕 its benches are the dating bench
       if(action==='liveDate'){(await viaLazy(L.live,el)).openDate(data);break;}  // 💕 Góc hẹn hò (v4/dating.js)
       if(action==='liveWed'){await (await import('./v4/wedding.js')).openWeddings(env());break;}  // 💍 Lịch cưới (v4/wedding.js): its own dialog
+      if(action==='liveKara'){await (await import('./v4/karaoke.js')).openKaraoke(env(),data);break;}  // 🎤 Phòng hát (v4/karaoke.js): its own dialog
       if(action==='marriage'||action==='friends'){await (await import('./v4/marriage.js')).marriageAction(action,data,el,env());break;}  // Hôn nhân, Bạn bè: lazy
       if(action==='bank'){await (await import('./v4/bank.js')).bankAction(action,data,el,env());break;}  // 🏦 Ngân hàng Phố: lazy
       if(action==='house'){await (await import('./v4/house.js')).houseAction(action,data,el,env());break;}  // 🏠 Nhà của bạn: lazy
       if(action==='garage'){await (await import('./v4/garage.js')).garageAction(action,data,el,env());break;}  // 🚗 Xe & phương tiện: lazy
       if(action==='gadgets'){await (await import('./v4/gadgets.js')).gadgetsAction(action,data,el,env());break;}  // 📱 Cửa hàng điện thoại: lazy
+      if(SPEND_OPEN.has(action)){await (await import('./v4/spend.js')).spendAction(action,data,el,env());break;}  // ☕ Đi quán, spa, rạp, 🙏 công đức, 🎨 phong cách: lazy
       if(action==='vang'){ui.ivMarket='gold';await journeyAction('jrInvest',data,el,env());break;}
       if(action==='rui'){await (await import('./v4/rui.js')).ruiAction(action,data,el,env());break;}
       if(action==='homeGuests'){await (await import('./v4/home-guests.js')).openHomeGuests(env(),data);break;}

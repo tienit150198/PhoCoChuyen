@@ -56,10 +56,13 @@ def free_port() -> int:
 
 
 @contextlib.contextmanager
-def server():
+def server(story=False):
+    """story=True: a real player's journey (MNL_DEV unset: server.py turns the story on), for the life sheets."""
     port = free_port()
     tmp = tempfile.mkdtemp(prefix='mnl-v04-')
     env = test_env( QUIET='1', PUSH_DISABLED='1', MNL_DEV='1')  # MNL_DEV allows the job_quick shortcut
+    if story:
+        env.pop('MNL_DEV', None)
     env.pop('MNL_CAREERS', None)
     env.pop('LLM_API_KEY', None)
     # The server's output goes to a log file next to the throwaway database: a pipe that nobody reads fills

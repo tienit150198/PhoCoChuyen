@@ -61,3 +61,6 @@
 @media (max-width:420px){
   .career-job.nt .nt-picks{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* Clean layout (UI wave 4): the checklist folded into its header chip leaves the side pane empty: no empty box. */
+html[data-clean] .career-job.sk.nt .wb-side:not(:has(>:not(.ui-chipped))){padding:0;border:0;background:none}

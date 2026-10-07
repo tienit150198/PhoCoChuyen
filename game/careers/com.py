@@ -913,12 +913,18 @@ def _checks(c: dict, d: dict, t: dict, pairs: list, left: list, extra: list) -> 
             cq.slip(t, 'vessel', 1, 'Tôi mua mang về mà đưa dĩa.' if togo else 'Tôi ngồi ăn đây mà đưa hộp.', 'nhầm dĩa với hộp')
 
 
+def _plate_rules(t: dict, need=kit.need) -> None:
+    """The plates on the counter before handing them over. com_serve refuses with these; public_task sends them as
+    can.com_serve (live 06/10: 258 refusals “Còn dĩa chưa xới cơm”)."""
+    need(t['plates'], 'Chưa có dĩa nào trên quầy.')
+    need(all(pl['va'] > 0 for pl in t['plates']), 'Còn dĩa chưa xới cơm.', fix=dict(sel='.com-rice', label='🍚 Xới cơm'))
+
+
 def _serve(s, c, d, p):
     t = _task(c, p, ('serve', 'office'))
     _need_open(d)
     _need_prep(t)
-    kit.need(t['plates'], 'Chưa có dĩa nào trên quầy.')
-    kit.need(all(pl['va'] > 0 for pl in t['plates']), 'Còn dĩa chưa xới cơm.')
+    _plate_rules(t)
     pairs, left, extra = _match(t)
     _checks(c, d, t, pairs, left, extra)
     t['price'] = max(1, sum(plate_price(c, t['plates'][pi]) for _, pi in pairs)) if pairs else 1
@@ -1129,6 +1135,8 @@ def public_task(t: dict) -> dict:
             del v[k]
     if not v['known']:
         v['needs'] = None
+    elif t.get('stage') == 'prep':
+        v['can'] = dict(com_serve=kit.check(_plate_rules, t))
     v['cash'] = till.public(t.get('cash'))
     return v
 

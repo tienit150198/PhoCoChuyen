@@ -8,12 +8,167 @@
 - 🏢 Phòng chỉ huy từ Tổ trưởng (dùng chung phòng điều hành của phi công): phân công, khen, nhắc, khiển trách, cảnh cáo, kiểm điểm, kỷ luật, thăng/giáng, điều động, tăng/hạ bậc lương, chỉ với cán bộ NPC (có người nhận phong bì ngầm). Kỷ luật thiếu căn cứ bị tính cảnh cáo cho mình. Trợ lý BGĐ: kiểm tra điều lệnh 2 đơn vị một ngày rồi trình PGĐ.
 - 🎖️ Thẻ cấp bậc (cấp hiệu, ⚠️ n/3, ★, Liêm chính), nhân vật mặc quân phục có cấp hiệu, huy hiệu, mũ khi vào ca công an; người khác thấy cấp hiệu ở phố đi dạo và đám cưới. Cấp hiệu theo bảng màu riêng của game (chủ game 07/10): nền xanh két, vạch bạc, sao vàng nhạt; chiến sĩ, hạ sĩ quan nền xanh nhạt hơn; cấp tướng (NPC) nền đồng.
 - Cán bộ khu vực cũ vào thang theo bậc đang có (bậc 0 → Tổ viên Hạ sĩ … bậc 4 → Phó Trưởng CA Thiếu tá), không đổi tiền, lương không thấp hơn hôm nay. Lương theo hệ số hàm × phụ cấp chức vụ. Hỗ trợ tiếp dân bán thời gian giữ thang cũ. Các nghề khác: mới có khung nội dung.
-- Bản lưu: thêm khóa tùy chọn `journey.promo.police.org` và `careers.police.ext.data.beat`; bản 1.9.4 đọc được (đã thử quay về và chơi tiếp một ngày).
+- Bản lưu: thêm khóa tùy chọn `journey.promo.police.org` và `careers.police.ext.data.beat`; bản 1.9.4 và 1.9.9 đọc được (đã thử quay về và chơi tiếp một ngày).
+
+# v1.9.9 — 2026-10-07
+
+Gồm "Giao diện gọn: đợt 4" (quầy ăn uống + phố còn lại) và "đợt 5" (13 nghề cuối + màn đời sống: nhà, bản đồ, ngân hàng, hội chợ).
+
+# Chưa phát hành
+
+## Giao diện gọn: đợt 4
+
+- 12 nghề: quầy trà sữa, cà phê – bánh, quán mì cay, tiệm hoa, tiệm kem, nội trợ, thu gom rác, sạp trái cây, tiệm nail,
+  nấu cơm gia đình, photobooth, thư viện. Màn đầu trên điện thoại (390 px) còn 13–30 chữ (trước 35–109).
+- Trà sữa: hết cảnh 3 khung dính trên màn. Phiếu gọi món không còn dính trên đầu, chỉ còn chip "🧾 0/5" trên đầu màn để
+  mở lại phiếu khi đã cuộn xuống. Thanh dưới chung (ly nhỏ, "Còn n bước" và một nút chính); cà phê cũng vậy, máy tính
+  không còn hai nút giống nhau.
+- Lời giải thích (nhịp pha 2×/4×, so phiếu miễn phí, mẹo dán nắp, lời dẫn buổi sáng…) vào nút "?" (mục "Trên màn này").
+  Danh sách bước thành chip "📋 0/4"; nút trên bàn lặp lại bước ở thanh dưới chỉ còn hai chữ ("🌡️ Ẩm kế").
+- Giữ nguyên trên màn mọi thứ quyết định đúng sai: phiếu gọi món đủ từng dòng ("Không sữa bò", dị ứng hải sản, mang
+  về), lời khách, khoảng cân chuẩn của viên kem, nút tủ cần vặn, túi rác "trông lạ", tác dụng dù/bạt, kim cân lệch, móng
+  khách, luật của nhà nấu cơm ("Bé không ăn cay, sợ xương cá…"), độ ẩm kho kèm khoảng chuẩn. Ngày mưa, cúp điện, nắng
+  gắt thì lời dặn buổi sáng ("mang ủng", "căng bạt", "sạc sẵn đèn pin") vẫn hiện ngay.
+- Nội trợ: buổi nhận tiền chợ còn "💵 “80 xu” · 4 tờ gấp đôi" và ba cách làm gọn chữ, đủ ý. Nấu cơm: thực đơn chỉ mở
+  nhóm món đang tới lượt, nhóm khác một dòng kèm món đã chọn.
+- Máy chủ báo trước, nút mờ kèm lý do (đã bị từ chối nhiều nhất 04–06/10): trà sữa không còn mời khách đổi trân châu khi
+  quầy không nấu được (mời đổi chỉ với siro/topping mua sẵn), mì cay không mời đổi lần hai món đã đổi và chỉ múc thêm chén
+  nước dùng khi tô đã có nước, nội trợ "Còn việc chưa xếp vào thứ tự", thu gom phải quét rác vương vãi trước (nút sửa:
+  "🧹 Quét dọn"), sạp trái cây đủ số trái anh Lâm gom, tiệm nail / photobooth / kem chưa mở tiệm (nút sửa: về việc buổi
+  sáng).
+- Giao diện cổ điển và máy tính giữ chữ như cũ; công tắc "Giao diện gọn" / `MNL_CLEAN_UI=off` vẫn tắt được. Không đổi
+  bản lưu, không thêm bảng, không đổi cách sinh việc.
+## Giao diện gọn: đợt 5
+
+- Đợt cuối: 13 màn làm việc và các trang đời sống còn nhiều chữ. Màn đầu trên điện thoại (390 px) còn 16–30 chữ: giao
+  hàng 128 → 30 (các đơn khác vẫn hiện, mỗi đơn một dòng: đi → đến, ⏰ hạn, 💵 ⚠️ ❄️), nhà thuốc 90 → 24, giáo viên 87 → 24, kế toán 83 → 22, hướng dẫn viên 82 → 23, shop quần áo 60 → 25,
+  tạp hóa 43 → 18, homestay 41 → 18, sửa đồ 40 → 24, salon 37 → 26, chăm thú cưng 34 → 18, mẹ & bé 32 → 21, nông trại
+  26 → 16. Trang đời sống tối đa 30 chữ: nhà 115 → 29, bản đồ khu phố 51 → 29, hội chợ 66 → 25, ngân hàng (đã mở tài
+  khoản) 144 → 27; quầy, tủ đồ, đi chơi, phòng hát, màn chính vốn đã gọn, giữ nguyên.
+- Mọi nghề còn lại dùng thanh dưới chung một nút chính (nhà thuốc, kế toán, mẹ & bé, giao hàng, nông trại, homestay, tạp
+  hóa, salon, chăm thú cưng, shop quần áo). Lời giải thích, luật, cách tính vào nút "?".
+- Giữ nguyên trên màn mọi thứ quyết định đúng sai: lời khách nói (giao hàng giữ trọn câu dặn), phiếu thuốc và nhãn lô,
+  chứng từ và số tiền khi đối chiếu, câu hỏi và câu trả lời của học trò, yêu cầu của đoàn khách, phòng và đơn của khách
+  homestay, size/màu/ngân sách khi bán quần áo, bệnh máy khách kể, yêu cầu màu tóc (tên việc của salon và sửa đồ không bao
+  giờ bị cắt ngắn vì chính là lời khách).
+- Nút chưa bấm được thì mờ nhưng vẫn chạm được, nói rõ lý do và có nút sửa (máy chủ báo trước): nhà thuốc (khay chưa khớp
+  phiếu, chưa đọc nhãn lô), kế toán (ghép chứng từ, bàn giao), giao hàng (ngã tư ngoài chặng, chưa chọn điểm đến), homestay
+  (phòng có đơn app chờ đồng bộ, gợi ý quá nhiều nơi), shop quần áo (giá treo hết size), salon, sửa đồ, chăm thú cưng.
+- Hội chợ: trò ném vòng không còn tự chơi lại lượt đã xong (trước đây bị báo "Lượt ném này đã xong rồi." liên tục).
+- Nhà: thẻ nơi ở chỉ còn tên và tiền mỗi ngày bằng biểu tượng; đồ đạc và nhà đang rao gọn thành một dòng mở ra được. Ngân
+  hàng: các mục là biểu tượng, cách trả mặc định gọn một dòng, dòng báo thành công tự mờ sau 6 giây.
+- Giao diện cổ điển và máy tính giữ như cũ; công tắc "Giao diện gọn" / `MNL_CLEAN_UI=off` vẫn tắt được.
+- Không đổi bản lưu, không thêm bảng, không đổi cách sinh việc.
+
+# v1.9.8 — 2026-10-07
+
+Gồm "Giao diện gọn: đợt 2" (công an, điều dưỡng, cứu hộ bể bơi, dầu khí, phi công, tiếp viên) và "đợt 3" (6 bàn văn phòng, chăm sóc khách hàng, tiệm thú cưng).
+
+# Chưa phát hành
+
+## Giao diện gọn: đợt 2
+
+- Đợt 2 bớt chữ, 6 nghề đồng phục: công an phường, điều dưỡng, cứu hộ hồ bơi, thợ dầu khí, phi công, tiếp viên. Màn làm việc đầu ca trên điện thoại còn 19–30 chữ (trước 42–172).
+- Phi công và tiếp viên: phần giới thiệu nghề không còn chiếm cả màn làm việc (135–172 chữ), giờ là thẻ ngắn như các nghề phố (tên nghề, 3 dòng biểu tượng, nút "?"); thanh dưới chuyển sang thanh chung một nút chính.
+- Giữ nguyên mọi manh mối quyết định đúng sai, nhiều chỗ còn dễ thấy hơn: ngưỡng thẻ báo động của điều dưỡng hiện ngay trên từng ô chỉ số (`🚨 ≥38,0 · ≤35,5`), khoảng Clo/pH của bảng mẫu nằm cạnh số que thử, giờ sấm cuối kèm `+30′`, phi công thấy dầu chờ giông thành một dòng riêng trong bảng dầu. Sổ trực ban (công an) và sổ giao ca (điều dưỡng) giữ ghi chú đã đọc; công an có bản ngắn giữ giờ và người cần mình ("Bà Năm bị “cán bộ điều tra” giục chuyển tiền 8:30…"). Lời người giao việc giữ nguyên câu nói; chỉ phần dẫn cảnh ("Chị Thu mở cửa tàu") vào "?".
+- Tiếp viên: thẻ lên tàu ghi "Hàng thoát hiểm: người lớn", ghế trẻ nhỏ ghi "♨️ không đồ nóng" ngay trên phiếu gọi món.
+- Danh sách bước thành chip "📋 0/4" trên dòng ngày; lựa chọn chờ (làm trước, giường xem trước, mở cổng) mở ra khi tới lượt.
+- Máy chủ báo trước, nút mờ kèm lý do: công an chọn chủ đề thứ tư, điều dưỡng chuyển đi thủ thuật khi người bệnh đã từ chối, cứu hộ mở lại hồ khi dông chưa tới, thợ dầu khí xả áp/kiểm về không khi chưa khóa đủ, phi công cất cánh khi chưa xong checklist/thông báo, bay lại khi chỉ còn dầu cho lần này, tiếp viên mời món ghế đã có.
+- Giao diện cổ điển và máy tính giữ chữ như cũ; tắt nhanh như đợt 1. Không đổi bản lưu, không thêm bảng, không đổi cách sinh việc.
+## Giao diện gọn: đợt 3
+
+- 8 màn bàn giấy và tiệm thú: kế toán tập đoàn, kế toán doanh nghiệp, thuế & lương, hành chính – nhân sự, thư ký, IT
+  helpdesk, chăm sóc khách hàng, tiệm thú cưng. Màn đầu (điện thoại 390 px) còn 18–30 chữ (trước 68–141).
+- Bàn văn phòng (6 nghề): hàng trạng thái chỉ còn biểu tượng và số (🕗 · thanh tin tưởng · 🔋 · ⏰ · 📅); thẻ trên cùng chỉ
+  ghi chữ ở thẻ đang mở; hồ sơ chưa nhận mở thẳng tab 📂 với người giao việc và lời họ nói (lời dặn dài và "🎯 yêu cầu"
+  vào nút "?"); thanh dưới dùng chung `.ui-bar`, một nút chính (dấu DUYỆT/TRÌNH SẾP/TRẢ LẠI và lý do lệch sổ thành một
+  hàng nút đủ to phía trên).
+- Cách tính 📐, mẹo, chi phí hỏi gợi ý, chú thích bảng… vào nút "?" (mục "Trên màn này"). Ô nào vừa kiểm sai thì cách
+  tính của ô đó vẫn hiện ngay.
+- Giữ nguyên trên màn mọi thứ quyết định đúng sai: lời người giao việc, dữ liệu giấy tờ, "Sếp dặn", quy định giờ làm,
+  đề bài từng bước; dòng sổ đối chiếu chỉ bỏ chữ lặp lại, giữ "Nhập theo HĐ-45", "xuất kho 29/03", "lập 16:00",
+  "Bán cho …", số NM × tỷ giá.
+- Sau 17:30 nút làm việc mờ đi nhưng vẫn chạm được: hiện lý do và nút "🌙 Tăng ca" (máy chủ báo trước `can.work`, trước
+  đây hành chính – nhân sự và thư ký bị từ chối "office_closed" nhiều). Bảng lương: dòng đã đánh dấu đủ 3 ô thì các ô
+  còn lại mờ và nói rõ lý do (`can.tp_flag`).
+- Chăm sóc khách hàng: thanh dưới giữ nút việc bây giờ; bước, lời giải thích, cuộc gọi chưa bắt đầu gọn lại một dòng
+  (vẫn thấy tâm trạng khách); các phương án vẫn ghi "Khi …".
+- Tiệm thú cưng: giới thiệu nghề còn tên, 3 dòng biểu tượng và "?"; một nút "Vào tiệm" duy nhất; lời khách giữ nguyên,
+  cảnh dẫn vào "?"; danh sách việc thành chip "📋 0/2".
+- Giao diện cổ điển và máy tính giữ như cũ; công tắc "Giao diện gọn" / `MNL_CLEAN_UI=off` vẫn tắt được.
+- Không đổi bản lưu, không thêm bảng, không đổi cách sinh việc.
+
+# v1.9.7 — 2026-10-07
+
+Gồm "Giao diện gọn hơn" (ui-foundation + đợt 1: 10 màn, giữ đủ manh mối quyết định). Tắt nhanh: Cài đặt → Giao diện → "Giao diện gọn", hoặc MNL_CLEAN_UI=off trên máy chủ.
+
+# v1.9.6 — 2026-10-07
+
+Gồm "Thêm chỗ tiêu xu" (spend-1, bảng donations + chat_style, schema 25) và "Phòng hát Mây" (karaoke-p1, schema 26, TẮT mặc định: LIVE_KARAOKE). CSP mở cho YouTube embed. Có gì mới chỉ nói phần tiêu xu; karaoke thông báo khi bật.
+# Chưa phát hành — Giao diện gọn (ui-foundation)
+
+## Giao diện gọn hơn
+
+- Chủ game 06/10: "gọn hơn, clean hơn, ít chữ hơn, dễ chơi hơn". Đợt nền tảng, dùng chung cho mọi nghề (docs/UI_KIT.md).
+- Một thanh dưới chung (`.ui-bar`): bên trái là bước tiếp, bên phải là một nút chính. Đã chuyển 21 nghề phố (street kit), tiệm hoa, quán ăn, tiệm sửa, tiệm quần áo, giáo viên, hướng dẫn viên. Bỏ luật "42%" bóp chữ trên điện thoại và các bản vá `!important` của giáo viên/hướng dẫn viên.
+- Giới thiệu nghề (21 nghề phố): từ ~180 chữ còn ~22 chữ, gồm tên nghề, 3 dòng biểu tượng và nút "?" chứa phần giới thiệu đầy đủ.
+- Nút chưa bấm được thì mờ đi nhưng vẫn chạm được: chạm vào sẽ hiện một dòng lý do và nút sửa ngay trên thanh dưới, không gửi lệnh vào chỗ chắc bị từ chối. Máy chủ báo trước bằng đúng luật nó dùng để từ chối: giúp việc (lau khi chưa cầm dụng cụ/chai, chai cạn) và tiệm hoa (trao hoa khi chưa cắm/gói xong).
+- Phiếu khách (tiệm hoa, sửa đồ, quán ăn, quần áo) không còn ghim trên điện thoại; số "3/6 ✓" thành chip trên đầu, chạm để mở phiếu.
+- Thông báo hiện ngay trong thanh dưới, chỗ "bước tiếp", vài giây (≤ 8 chữ, chạm để xem hết), không che tên màn hình hay nội dung đang làm.
+- Nút "?" trên đầu và dòng gợi ý đủ 44 px.
+- Bảng cỡ chữ 4 bậc và bảng khoảng cách (`--fs-*`, `--sp-*`).
+- Có công tắc tắt: Cài đặt → Giao diện → "Giao diện gọn" (Tự động / Bật / Tắt), hoặc tắt cho mọi người bằng `MNL_CLEAN_UI=off` trên máy chủ.
+- Máy chủ báo trước thêm cho chùa (xếp việc, xếp chỗ), cơm tấm (dĩa chưa xới cơm) và photobooth (hết khung, hết bao kiếng, chọn quá số tấm).
+- Đợt 1 bớt chữ, 10 màn nhiều chữ nhất: thông cống, cơm tấm, hải đăng, gác chắn tàu, trà đá, bảo mẫu, phở, chùa, tổng đài cứu hộ, giúp việc. Mỗi màn còn 17–30 chữ (trước 47–131). Lời giải thích, mô tả đồ nghề và chuyện dẫn được chuyển vào nút "?". Mọi manh mối quyết định đúng sai vẫn hiện ngay trên màn: lời khách, sổ hẹn (mỗi nhà một dòng), hướng tàu, ghi chú giao ca ("đừng cho", "nhắc khéo"), mẹo của việc bẫy ở chùa ("Mở loa ra đường 4h"), chỗ lấn đường ở quán trà đá, quy tắc nước cơm tấm, giờ tắt đèn +15′.
+- Không đổi bản lưu, không thêm bảng, không đổi cách sinh việc.
+
+# v1.9.5 — 2026-10-06/07
+
+Gồm các mục "Chưa phát hành" bên dưới: nông trại mới (farm-plus), mỗi nghề một cách nói (voice-w1), nghề làm công không đóng thuế tiệm (salary-notax).
+
+# Chưa phát hành — Nghề làm công không đóng thuế tiệm (salary-notax)
+
+## Nghề làm công không đóng thuế tiệm
+
+- Chủ game 06/10: nghề làm công, ăn lương (không phải tiệm) không còn đóng thuế 4% và tiền mặt bằng trên tiền công của mình. Áp dụng cho 18 nghề: thầy chùa, giáo viên, điều dưỡng, công an phường, tổng đài cứu hộ, cứu hộ hồ bơi, thư viện, gác chắn đường sắt, gác hải đăng, phi công, tiếp viên, thợ dầu khí, kế toán công ty, kế toán tập đoàn, hành chính – nhân sự, thư ký, IT helpdesk, CSKH. Tiệm, sạp, quán và dịch vụ thu phí của khách (kế toán dịch vụ, thuế & tiền lương, thợ, giúp việc…) giữ nguyên luật cũ.
+- Từ ca khép tiếp theo: không cộng tiền thuê mỗi ngày, cuối kỳ 7 ca không ra phong bì thuế và mặt bằng, không có thông báo "Kết kỳ thuế". Phần đã tích trong kỳ đang mở cũng không bị thu. Khoản thuế và mặt bằng đã ra (đã trả hay chưa trả), các kỳ đã kết và sổ giao dịch cũ giữ nguyên: không hoàn, không truy thu. Điện nước, lương nhân viên vẫn như cũ.
+- Sổ thu chi của các nghề này ẩn "Phong bì cuối kỳ" (doanh thu kỳ, thuế dự kiến, tiền thuê tích lũy); thẻ Mặt bằng không ghi tiền thuê; tổng kết ngày không còn dòng "thuê … xu".
+- Đo bằng cách chơi cẩn thận 14 ngày ở mặt bằng mặc định: điều dưỡng, công an, cứu hộ, cứu hộ hồ bơi, gác chắn, hải đăng được thêm khoảng 7,6 xu mỗi ngày (6 xu thuê + ~1,6 xu thuế), thợ dầu khí 7,9 xu; mặt bằng lớn hơn thì được thêm 11 hoặc 18 xu thuê mỗi ngày. Không thêm trường mới trong bản lưu; bản 1.9.4 vẫn đọc được bản lưu mới.
+# Chưa phát hành — Phòng hát Mây (karaoke-p1)
+
+## Phòng hát Mây
+
+- 🎤 Chủ game 06/10: ba phòng hát công khai (Nhạc trẻ, Bolero · trữ tình, Nhạc quốc tế), tối đa 30 người mỗi phòng, đầy thì mở phòng phụ cùng chủ đề. Chị Ngân giữ mic. Vào từ Bản đồ phố (Phố hàng rong) hoặc Thêm › Khu phố › Phòng hát. Chỉ hiện khi dịch vụ live bật `LIVE_KARAOKE=1` (mặc định tắt).
+- Mọi người xem cùng một video YouTube ở cùng một giây (trình phát YouTube chính thức, youtube-nocookie, giữ nguyên quảng cáo và logo). Dán link → Kiểm tra (oEmbed, có bộ nhớ đệm) → Xếp hàng: 2 xu, bài đầu mỗi ngày miễn phí. Người xếp bài lên "sân khấu"; cả phòng thả emoji, giữ 🙌 cổ vũ, nhắn, tặng xu (5/10/20/50; ca sĩ nhận 80 %, 20 % đốt; gửi tối đa 200, nhận tối đa 500 xu/ngày). Hết bài: 10 giây vỗ tay. Bỏ phiếu bỏ bài. Chưa có giọng hát trực tiếp, không ghi âm.
+- 🧩 Đoán bài: chủ câu đố cho một câu hát ngắn (≤ 12 chữ, che vài chữ bằng ___) hoặc vài emoji, cả phòng gõ đoán (không dấu, sai chính tả nhẹ vẫn được). Người đầu tiên đúng nhận 5 xu (tối đa 25 xu/ngày mỗi người, 10 câu có thưởng/ngày mỗi chủ đố). Hết 60 giây hoặc có người đúng thì hiện đáp án, link thưởng của chủ đố được phát tiếp.
+- Kiểm duyệt: tên bài, lời nhắn, câu đoán qua bộ lọc chat (từ nặng thành *); báo cáo (🛟 trẻ vị thành niên lên đầu); khóa chat và chặn được tôn trọng; Ban quản lý bỏ bài, mời ra 1 giờ, đóng phòng, cấm bài, khóa chat (trong phòng và tab 🎤 Phòng hát của trang quản trị).
+- Kỹ thuật: CSP chỉ mở thêm khung YouTube, script iframe_api và ảnh i.ytimg.com; Permissions-Policy giữ micro tắt. Khung YouTube tự gửi Referer gốc trang (cả trang vẫn no-referrer; thiếu Referer YouTube báo lỗi 153). CSDL thêm `kara_songs`, `kara_tickets`, `kara_reviews` (SCHEMA_VERSION 26, sau 25 của spend-1). Sổ ví ghi loại `life` (bản 1.9.4 đọc được); loại `karaoke` đã được chấp nhận để bản sau dùng. Không thêm khóa bản lưu.
+
+# Chưa phát hành — Chỗ tiêu xu (spend-1)
+
+## Thêm chỗ tiêu xu
+
+- Chủ game 06/10 ("cho nhiều cái để mọi người tiêu tiền hơn"): người chơi trung bình kiếm ~262 xu/ngày sống, tiêu ~12. Thêm chỗ tiêu hằng ngày và chỗ khoe, không cái nào ra tiền hay giúp làm việc.
+- ☕ Đi quán (4 quán của phố, 8–35 xu): no bụng/tỉnh táo tăng, quán đầu ngày +1 tinh thần (món ≥28 xu +2), thẻ tích điểm 10 dấu đổi nhãn dán. Có lối sang quán người chơi (Phố nghề).
+- 💆 Spa Sen (25–40 xu): +2 tinh thần lần đầu mỗi ngày. 🎬 Rạp Mây: mỗi tuần một phim, 20 xu, +2 tinh thần, giữ cuống vé.
+- 🙏 Công đức Chùa Gió Lành: từ 5 xu, chọn lời cầu, ẩn danh hoặc ghi tên tài khoản. Bảng công đức tuần (khách luôn ẩn danh). Sư thầy cảm ơn mọi người như nhau.
+- 🎨 Phong cách 7 ngày (gia hạn tối đa 4 tuần): màu tên 120–400, khung hồ sơ 100–400, danh hiệu 60–400 (vài cái phải chơi mới mở). Hiện trong chat, khi đi dạo, trên hồ sơ Phố nghề.
+- Cửa trên Bản đồ phố (☕ Phố chợ, 💆🎨 Phố dịch vụ, 🎬 Phố hàng rong, 🙏 cạnh Chùa) và mục "Đi chơi", "Phong cách" trong menu.
+- Bản lưu: thêm `journey.spend` (tùy chọn); sổ ví dùng loại `life` có sẵn, bản 1.9.4 vẫn đọc được. CSDL: bảng mới `donations`, `chat_style` (SCHEMA_VERSION 25). Dịch vụ live đọc màu/khung/danh hiệu từ `chat_style`, gửi kèm trường `st` (ngoài `look`); bản live cũ bỏ qua.
 
 # v1.9.4 — 2026-10-06
 
 - 🏪 Nhân viên tiệm (nơi làm việc) bán nhanh gấp 1,6 lần ngày đầu (góp ý người chơi; lịch sử bản 1.7.8–1.9.3 cho thấy tốc độ chưa từng bị giảm, tiệm thấy chậm chủ yếu do hết hàng).
 - 💬 Góp ý dài tới 10.000 ký tự (trước 1.000).
+# Chưa phát hành — Mỗi nghề một cách nói (voice-w1)
+
+## Mỗi nghề một cách nói
+
+- Chủ game 06/10 ("nghề mỗi nghề mỗi khác, ví dụ như nhà sư mà nó bảo shop", "sửa mấy cách trò chuyện"): mỗi nghề có một bộ từ riêng (`game/career_voice.py`: chỗ làm, người được phục vụ, ca, tiền, đánh giá, bù đắp), gửi kèm danh mục nghề cho máy khách (`terms`). Tiệm, quán giữ nguyên chữ như cũ.
+- Các màn hình dùng chung đọc bộ từ này thay vì chữ "tiệm": hộp xác nhận ("Xác nhận việc chùa", "Xác nhận việc trực ban"), khép ca và sổ ("Sổ chùa", "Sổ khoa", "Đóng cổng chùa hôm nay?"), sổ đội ("Ban công quả", "Mời Phật tử làm công quả", "Thu nhập nghề", "Sân chùa đang yên.", "Về chùa"), chip quỹ ("Quỹ chùa", "Quỹ nghề"), thăng tiến ("Phật tử biếu thêm 5% công đức"), nhắc mỗi ngày ("Chuông sáng đã điểm, chùa đang chờ thầy ☀️", "Ca trực sáng sắp bắt đầu 🩺"), ghé chỗ làm và hồ sơ bạn bè ("Thầy tiếp", "Chấm chỗ làm của…", "lượt tiếp dân").
+- Nghề hưởng lương (chùa, giáo viên, điều dưỡng, công an, cứu hộ, thư viện, gác chắn, hải đăng, tổ bay, giàn khoan, văn phòng, CSKH): lời khép ca không còn nhắc tiền thuê, thuế hay "sổ tiệm".
+- Trả lời đánh giá: 26 nghề không phải tiệm có câu trả lời mẫu riêng (khoa, bên phường, tổ, thư viện, em thư ký…), nhãn riêng ("Mời làm việc", "Mời gặp", "Hẹn thu bổ sung") và bù đắp hợp nghề (chai nước ấm, gia hạn sách, bớt tiền công). Công an không bao giờ bù đắp thứ gì có giá trị: không hiện mục bù đắp, máy chủ cũng từ chối. Người bình luận dưới đánh giá không còn "bênh quán". Chùa và giáo viên giữ bộ câu riêng như cũ.
+- Chỉ đổi chữ: cùng mã giọng, mã bù đắp, mã khách, cách sinh việc như cũ (cổng task-compat OK). Câu trả lời cũ trong bản lưu giữ nguyên. Thuế 4% và tiền thuê không đổi ở bản này. Không thêm khóa lưu, không đổi bảng. Không có "Có gì mới".
 
 # Chưa phát hành — Nhân viên tiệm (staff-speed)
 
@@ -22,6 +177,21 @@
 - Góp ý người chơi 06/10 ("tăng tốc độ bán hàng của nhân viên tiệm", không phải quầy): soát lại mọi bản từ 1.7.8 (04/10, ngày đầu có đơn riêng) tới 1.9.3. Nhịp mỗi đơn chưa từng bị giảm (vẫn 80 phút-công ÷ tốc độ nhân viên); chỉ có uy tín tiệm (từ 1.7.12, 05/10 07:26) làm chậm tối đa 10% khi uy tín âm. Tiệm thường dừng vì hết hàng trên kệ chứ không phải vì đơn chậm.
 - Tiệm bán hàng (nghề có hàng/kho: Mẹ & Bé, tạp hóa, hoa, cà phê, quần áo, trà sữa, thuốc, salon…) giờ 50 phút-công một đơn thay vì 80: nhanh gấp 1,6 lần ngày đầu; uy tín −10 vẫn nhanh gấp ~1,45 lần. Tiệm 2 nhân viên tốc độ ~75: khoảng 190 đơn/giờ thay vì ~120. Nghề dịch vụ không dùng hàng (kế toán, giáo viên…) giữ 80. Vẫn chỉ bán món còn hàng và có lãi sau lương, vật tư; ô "mỗi giờ · đơn" trong Sổ tiệm tự cập nhật từ đơn kế tiếp. Không đổi bản lưu.
 
+# Chưa phát hành
+
+## Nông trại mới
+
+- Chủ game 06/10 ("nông trại nữa, chán lắm, nâng lên đi"). Số liệu 01–06/10: 57% lượt bấm ở nông trại là việc vặt (tưới 10.370, nhổ cỏ 4.920, thăm sâu 4.214, khơi rãnh 2.529), mỗi ngày chơi chỉ giao trung vị 4 đơn; 27% người chơi rời đi trong ngày chưa giao được đơn nào, chỉ 16% quay lại ngày thứ hai.
+- 🌟 Tab mới **Trại** (`game/careers/farm_plus.py`, `public/js/careers/farm_plus.js`), gồm 4 mục:
+  - 🌱 Vườn: ô đất lớn theo giờ thật của máy chủ, kể cả khi đi vắng. Có ớt, lúa, dưa hấu, bí ngô, thanh long, dâu tây (cần nhà kính), xoài, cà phê, chín sau 6 phút tới 2 giờ. Mỗi vụ có việc chăm riêng: cắm cọc, dẫn nước, lót rơm, bấm ngọn, thắp đèn, che lưới, bao trái, tỉa cành. Thêm việc theo thời tiết hôm đó (khát nước, giông) và sâu. Mỗi việc một chạm khi tới lúc. Bỏ lỡ thì hụt sản lượng, xuống loại B; để quá lứa cũng xuống loại B.
+  - 🐄 Chuồng: vịt (trứng vịt), bò sữa (sữa), heo (nuôi 4 cữ rồi bán).
+  - 🧾 Bán: bán ở chợ (bán dồn thì giá tụt, chợ tự hồi theo giờ) hoặc giao đơn đặc sản cho tiệm trà sữa, lò bánh, quán chè, quán cơm tấm, quán cà phê, sạp trái cây, quán chay (đòi VietGAP), anh Tuấn. Khách nào cũng có yêu cầu riêng: chỉ lấy loại A, có hạn giờ… Có khách đòi bớt giá; giữ giá thì có người vẫn mua, có người bỏ đi, tùy tính khách (ẩn).
+  - 🛠️ Nâng cấp (tiêu xu): khai hoang ô 3–6 (80/150/250/400), tưới nhỏ giọt 180 (6 luống rau cũ cũng tự giữ ẩm), máy cày mini 260 (gieo, chăm, thu cả vườn một chạm), chuồng trại 220, nhà kính 350, VietGAP 450 (cần 15 lần thu loại A; giá bán +20%).
+- Cấp trang trại 1–10, danh hiệu 🏅 Nông dân giỏi ở cấp 5. Thêm kỷ lục, trái vàng hiếm (25 xu), bí khổng lồ 20–60 kg (có giải), Hội mùa vào ngày cuối mỗi mùa (giá +25%).
+- Dễ thấy: ở chế độ 🚶 Tự đi có nút "🌟 Trại" trên cảnh, ngay dưới nút đổi góc nhìn; nút sáng lên và có số khi có ô chín, ô cần chăm hoặc chuồng đã xong (cả trước lần mở đầu). Tab 🌟 Trại cũng hiện số đó, tự cập nhật khi tới giờ. Thanh dưới vẫn một hàng. Có bản tiếng Anh cho chữ mới (`i18n/overrides.json`, `public/i18n/en.json`).
+- Bớt việc vặt ở 6 luống: thêm nút 🌾 Nhổ cỏ cả vườn và 🔍 Thăm cả vườn (một nhịp). Gợi ý giữa các đơn chỉ thẳng nút nhổ cỏ cả vườn khi có từ 2 luống nhiều cỏ.
+- Thu nhập (bot chăm mỗi phút, đo bằng chính máy chủ): vườn mới (2 ô) +50 xu/giờ, trại giữa (4 ô, chuồng) +90/giờ, đủ nâng cấp +240/giờ. Nông trại hiện thu khoảng 170 xu mỗi ngày chơi (trà sữa ~420, tiệm hoa ~770). Riêng nâng cấp tốn tổng cộng 2.340 xu. Test chặn trần: dưới 80 xu/giờ khi mới mở, dưới 300 xu/giờ khi đủ nâng cấp.
+- Bản lưu: khóa mới, tùy chọn: `careers.farm.ext.farm_plus`. Bản lưu cũ không có khóa này vẫn chạy như trước. Không đổi đơn hàng, luống rau, kho mát. Đã thử: 1.9.3 nhận, chơi tiếp và giữ nguyên bản lưu do bản này ghi. Không có DDL. Không thêm "Có gì mới".
 # v1.9.3 — 2026-10-06: sửa lỗi + cập nhật thêm
 
 ## Chat: lọc từ nặng bằng dấu *

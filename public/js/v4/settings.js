@@ -1,7 +1,7 @@
 /** Settings sheet (v0.4): play, look & layout, sound & music, language,
  * notifications, AI, save data, privacy. */
 import {icon,escapeHTML as esc} from '../icons.js';
-import {layoutPref,setLayoutPref} from './shell.js';
+import {layoutPref,setLayoutPref,cleanPref} from './shell.js';
 import {pushState,enablePush,disablePush,isIOS,isStandalone} from './push.js';
 import {accountPane,accountAction,accountNudge} from './account.js';
 import {tutorialSettings} from '../tutorial/index.js';
@@ -53,7 +53,8 @@ export function settingsView(env){
     body=`<section class="settings-block"><h3>${icon('palette',18)} Phong cách</h3><div class="theme-grid">${THEMES.map(([id,name,desc,sw])=>`<button type="button" class="theme-card ${s.uiTheme===id?'active':''}" data-action="v4Setting" data-key="uiTheme" data-value="${id}" aria-pressed="${s.uiTheme===id}"><span class="swatches">${sw.map(c=>`<i style="background:${c}"></i>`).join('')}</span><b>${name}</b><small>${desc}</small></button>`).join('')}</div></section>
     ${townOK()?`<section class="settings-block"><h3><span aria-hidden="true">🗺️</span> Màn hình chính</h3>${segment('home',[['town','🗺️ Bản đồ phố'],['list','📋 Danh sách']],homePref(),'home')}</section>`:''}
     <section class="settings-block"><h3>${icon('layout',18)} Bố cục màn hình</h3><p class="small muted">Đang dùng: <b>${{phone:'Điện thoại',tablet:'Máy tính bảng',desktop:'Máy tính'}[mode]||mode}</b></p>
-      <div class="layout-grid">${LAYOUTS.map(([id,name,desc])=>`<button type="button" class="layout-card ${pref===id?'active':''}" data-action="v4Layout" data-value="${id}" aria-pressed="${pref===id}"><span class="layout-thumb ${id}"><i></i><i></i><i></i></span><b>${name}</b><small>${desc}</small></button>`).join('')}</div></section>`;
+      <div class="layout-grid">${LAYOUTS.map(([id,name,desc])=>`<button type="button" class="layout-card ${pref===id?'active':''}" data-action="v4Layout" data-value="${id}" aria-pressed="${pref===id}"><span class="layout-thumb ${id}"><i></i><i></i><i></i></span><b>${name}</b><small>${desc}</small></button>`).join('')}</div></section>
+    <section class="settings-block"><h3><span aria-hidden="true">✨</span> Giao diện gọn</h3><p class="small muted">Ít chữ, một nút chính, phiếu khách thành chip trên đầu.</p><div class="segmented" role="radiogroup" aria-label="Giao diện gọn">${[['auto','Tự động'],['on','Bật'],['off','Tắt']].map(([id,label])=>`<button type="button" role="radio" aria-checked="${id===cleanPref()}" class="${id===cleanPref()?'active':''}" data-action="v4Clean" data-value="${id}">${label}</button>`).join('')}</div></section>`;
   }
   if(tab==='sound')body=`<section class="settings-block">${toggle('sound','Âm thanh thao tác',s.sound)}
       <label class="field">Âm lượng hiệu ứng <output>${s.sfxVolume}</output><input type="range" min="0" max="100" step="5" value="${s.sfxVolume}" data-setting-range="sfxVolume"></label></section>

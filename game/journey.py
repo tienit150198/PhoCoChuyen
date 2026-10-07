@@ -39,6 +39,7 @@ from . import reno as rn   # 🛠️ Sửa và trang trí nhà (game/reno.py)
 from . import deco as dc   # 🪴 Bày trí phòng (game/deco.py)
 from . import garage as gr   # 🚗 Xe & phương tiện (game/garage.py)
 from . import gadgets as gd   # 📱 Cửa hàng điện thoại (game/gadgets.py)
+from . import spend as sp   # ☕ Đi quán, spa, rạp, 🙏 công đức, 🎨 phong cách tuần (game/spend.py)
 from . import upkeep as up   # 🧾 Hóa đơn tháng: phí giữ xe, bảo trì nhà (game/upkeep.py)
 from . import rui   # 🛡️ Rủi ro & bảo hiểm (game/rui.py)
 from . import vang   # 💰 Tiệm vàng Kim Phát (game/vang.py)
@@ -67,7 +68,7 @@ BREADTH_XP = 80       # maturity bonus for every workplace you really worked at
 LIVING = {1: 10, 2: 12, 3: 14, 4: 16, 5: 18, 6: 20, 7: 20}
 UPKEEP = {'cozy': 4, 'sunny': 7, 'garden': 11}   # the old idle fee per tier: no longer charged (upkeep() is 0)
 MODES = (('calm', .25), ('normal', .55), ('festival', .20))
-HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank', 'home', 'fair')
+HISTORY_KINDS = ('living', 'upkeep', 'draw', 'invest', 'salary', 'reopen', 'incident', 'life', 'study', 'backdoor', 'bank', 'home', 'fair', 'karaoke')   # 'karaoke': accepted from 1.9.5 (step 1); game/karaoke.py WRITE_KIND says when it is written
 NEWS_KINDS = ('chapter', 'titles')
 # 🏷️ Đang đeo: game titles and certificates worn at once (owner, 01/10: "danh hiệu trò chơi và chứng chỉ được chọn
 # nhiều 1 lúc"). Three fit one line of chips on a 390 px phone and keep a name tag short (the first one by name, the
@@ -481,6 +482,7 @@ def upgrade(j: dict) -> None:
     dc.upgrade(j)   # 🪴
     gr.upgrade(j)   # 🚗
     gd.upgrade(j)   # 📱
+    sp.upgrade(j)   # ☕
     if j.get('story'):
         for n in range(1, min(int(j.get('chapter', 1)), LAST) + 1):
             _unlock_chapter(j, n)
@@ -851,6 +853,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(gr.action(s, name, p))
     elif name.startswith('jr_gadget_'):
         result.update(gd.action(s, name, p))
+    elif name.startswith('jr_spend_'):
+        result.update(sp.action(s, name, p))
     elif name.startswith('jr_needs_'):
         result.update(nd.action(s, name, p))
     elif name.startswith('jr_chua_'):
@@ -946,7 +950,7 @@ def public(s: dict) -> dict:
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
         bank=bk.public(s), home=hs.public(s), household=hh.public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
-        garage=gr.public(s), gadgets=gd.public(s), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
+        garage=gr.public(s), gadgets=gd.public(s), spend=sp.public(s), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
         **({'quay': qy.public(s)} if qy.visible(s) else {}))   # 🏪 only once a save reaches it (state size)
 
 
@@ -972,7 +976,7 @@ def content() -> dict:
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
-        garage=gr.catalogue(), gadgets=gd.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content())
+        garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content())
 
 
 def validate(s: dict) -> None:
@@ -1056,6 +1060,7 @@ def validate(s: dict) -> None:
     dc.validate(s)
     gr.validate(s)   # 🚗 journey['garage'] (optional)
     gd.validate(s)   # 📱 journey['gadgets'] (optional)
+    sp.validate(s)   # ☕ journey['spend'] (optional)
     up.validate(s)   # 🧾 journey['upk'] (optional)
     rui.validate(s)   # 🛡️ journey['rui'] (optional)
     vang.validate(s)   # 💰 journey['vang'] (optional)

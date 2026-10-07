@@ -59,6 +59,11 @@ page (joined, history, missed: the author's face NOW, so a change of clothes sho
 DM peers, members and `me`. A frame without `fc` (an older service, a player who keeps an emoji) shows `av` as
 before; an older client ignores `fc` and `faced`.
 
+🎨 Status of the week (game/spend.py, owner 06/10 "cho nhiều cái để tiêu tiền"): a name colour, a profile frame and a
+title a player paid for, read from `chat_style` (live/styles.py; never from a frame), go out as `st` {c?, f?, t?} on
+live messages and on the messages of a page, beside `fc`. An older client ignores `st`; without the table (before
+SCHEMA_VERSION 25) nobody has one.
+
 😍 Reactions (owner, 01/10: "nhấn giữ là reaction"): one of REACTS per player per message (`chat_reacts`, primary key
 (msg, pid)) in Cả phố, DMs and groups. `react {id, e}` sets e; the same e again (or e null) takes it back; another
 replaces it. Not on a hidden or deleted message, not by a muted player or a guest, DMs and groups only for their
@@ -89,6 +94,7 @@ from . import faces as facemod
 from . import filters
 from . import chat_reply
 from . import player_names
+from . import styles
 from .auth import pid_of, profile
 from .db import Error as DbError
 from .limits import LRU
@@ -608,8 +614,8 @@ class ChatFeature(Feature):
         if admin:
             row = await self.db.fetchrow('INSERT INTO chat_messages(channel, pid, name, av, text, at, adm, reply_to) VALUES(?, ?, ?, ?, ?, ?, 1, ?) RETURNING id',
                                          (ch, p.pid, p.name, p.av, clean, t, reply_to))
-            return self._faced(p, dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=clean, at=round(t, 3), adm=1,
-                                       **({'reply_to': reply_to} if reply_to else {})))
+            return await self._styled(p, self._faced(p, dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=clean, at=round(t, 3), adm=1,
+                                       **({'reply_to': reply_to} if reply_to else {}))))
         if p.muted_until > t:
             raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
         masked = filters.mask(clean, known)   # known: @names that stay (Cả phố)
@@ -622,8 +628,15 @@ class ChatFeature(Feature):
             until = await self.db.fetchval('SELECT until FROM chat_mutes WHERE pid=?', (p.pid,))
             p.muted_until = float(until or 0)
             raise LiveError('muted', 'Bạn đang bị tạm khóa chat.', until=round(p.muted_until, 1))
-        return self._faced(p, dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=masked, at=round(t, 3),
-                                   **({'reply_to': reply_to} if reply_to else {})))
+        return await self._styled(p, self._faced(p, dict(t='msg', ch=ch, id=int(row['id']), pid=p.pid, name=p.name, av=p.av, text=masked, at=round(t, 3),
+                                   **({'reply_to': reply_to} if reply_to else {}))))
+
+    # ---- 🎨 status for a week (live/styles.py): `st` beside the name, never inside a look ----------------------
+    async def _styled(self, p, frame: dict) -> dict:
+        st = await styles.of_app(self.app).one(p.pid)
+        if st:
+            frame['st'] = st
+        return frame
 
     # ---- 🙂 faces ---------------------------------------------------------------------------------------------
     @staticmethod
@@ -665,7 +678,7 @@ class ChatFeature(Feature):
                 else:
                     m.pop('fc', None)
             out.append(m)
-        return out
+        return await styles.with_styles(self.app, out)   # 🎨 and their `st` now (live/styles.py)
 
     async def store_face(self, p, code: str) -> bool:
         """Keep my face (a cleaned code, '' = none). True when it changed."""
@@ -1463,6 +1476,8 @@ class ChatFeature(Feature):
             p = self.hub.players.get(e['pid'])
             if p:
                 p.fc = None
+        elif op == 'style' and isinstance(e.get('pid'), str):   # 🎨 bought or changed a weekly style (game/spend.py)
+            styles.of_app(self.app).forget(e['pid'])
         elif op == 'mute' and isinstance(e.get('pid'), str):
             p = self.hub.players.get(e['pid'])
             if p:

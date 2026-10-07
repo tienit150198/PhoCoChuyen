@@ -106,12 +106,6 @@
 .career-job.pl .pl-gate-btns .btn{min-height:56px}
 
 /* ---------- intro, story, logbook */
-.career-job.pl .pl-intro{border:2px solid var(--pl-navy)}
-.career-job.pl .pl-intro h3{margin:0 0 6px}
-.career-job.pl .pl-intro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:10px 0}
-.career-job.pl .pl-icons{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.career-job.pl .pl-icons li{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.35}
-.career-job.pl .pl-icons li span{font-size:18px;width:24px;flex:none;text-align:center}
 .career-job.pl .pl-arc{border-left:6px solid var(--pl-amber);margin-bottom:10px}
 .career-job.pl .pl-arc small{color:var(--pl-muted)}
 .career-job.pl .pl-arc p{margin:4px 0}
@@ -127,9 +121,6 @@
 .career-job.pl .pl-landed{text-align:center;padding:22px 14px}
 
 /* ---------- next-step bar */
-.career-job.pl .pl-bar{position:sticky;bottom:var(--fk-foot,0px);z-index:3;display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:8px 12px 10px;border-radius:var(--pl-rs);
-  background:var(--pl-surface);border:1px solid var(--pl-line);box-shadow:0 -4px 14px rgb(0 0 0 / 10%)}
-.career-job.pl .pl-bar .btn{width:100%;min-height:48px}
 
 @keyframes pl-blink{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--pl-bad) 25%,transparent)}}
 @media (prefers-reduced-motion:reduce){.career-job.pl .pl-spot.bad{animation:none}}

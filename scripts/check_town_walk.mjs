@@ -20,14 +20,14 @@ const rand=()=>{seed=(seed*1103515245+12345)%2147483648;return seed/2147483648;}
 const ALL=['mother_baby','pharmacy','accounting','customer_care','restaurant','cafe_bakery','farm','grocery','pet_care','florist','salon','repair','homestay','teacher','tour_guide',
   'milk_tea','delivery','corp_accounting','tax_payroll','group_accounting','clothing','pet_shop','tra_da','fruit','garbage','drain','homemaker','ice_cream','nail','pagoda','pho','com',
   'photobooth','giupviec','naucom','babysitter','library','pilot','flight_attendant','oil','hr_admin','secretary','it_helpdesk','railway','nurse','lighthouse','rescue','lifeguard','police'];
-const SAVES={full:[ALL,{}],small:[['milk_tea','grocery','delivery','pho','farm'],{}],newcareer:[[...ALL,'banh_mi','sua_xe_dap'],{banh_mi:'food',sua_xe_dap:'service'}]};
+const SAVES={full:[ALL,{}],small:[['milk_tea','grocery','delivery','pho','farm'],{}],newcareer:[[...ALL,'banh_mi','sua_xe_dap'],{banh_mi:'food',sua_xe_dap:'service'}],nokara:[ALL,{},['lm:karaoke']]};   // 🎤 Phòng hát not built while LIVE_KARAOKE is off
 const problems=[];let paths=0;
 const along=(pl,path)=>{for(let i=1;i<path.length;i++){const [a,b]=[path[i-1],path[i]],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/3));
   for(let k=0;k<=n;k++){const p=[a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n];if(!walkable(pl,p))return p;}}return null;};
-for(const [name,[ids,cats]] of Object.entries(SAVES)){
-  const pl=plan(ids,cats),tag=name;
+for(const [name,[ids,cats,skip=[]]] of Object.entries(SAVES)){
+  const pl=plan(ids,cats,skip),tag=name;
   for(const id of ids){const n=pl.items.filter(it=>it.id===id).length;if(n!==1)problems.push(`${tag}: ${id} has ${n} buildings`);}
-  for(const lm of Object.keys(LANDMARKS))if(!pl.items.some(it=>it.lm===lm))problems.push(`${tag}: landmark ${lm} missing`);
+  for(const lm of Object.keys(LANDMARKS))if(skip.includes('lm:'+lm)===pl.items.some(it=>it.lm===lm))problems.push(`${tag}: landmark ${lm} ${skip.includes('lm:'+lm)?'built while off':'missing'}`);
   for(const a of pl.items)for(const b of pl.items)if(a!==b&&a.row===b.row&&a.x0<b.x1-1&&b.x0<a.x1-1)problems.push(`${tag}: ${a.key} overlaps ${b.key}`);
   // A building's footprint is never floor (the walk passes in front of it, not through it).
   for(const it of pl.items)for(const p of [[it.cx,it.G-20],[it.x0+8,it.G-it.h/2],[it.x1-8,it.G-10]])if(walkable(pl,p))problems.push(`${tag}: ${it.key}'s building is floor at ${p.map(Math.round)}`);

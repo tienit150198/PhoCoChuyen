@@ -11,11 +11,11 @@
  * one; on the first order the right flowers glow (and the button picks them). */
 import {dayStrip,flash,eventCard,queue,keepBarAboveFooter,idlePanel,shopSummary,patience,openTasks} from './food_kit.js';
 import {splitMai} from './tomorrow_kit.js';
-import {reqList,fold} from '../ui-kit.js';
-import {nextHint,stepCta,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight,stepLine} from '../v4/guide.js';
+import {reqList,fold,clean} from '../ui-kit.js';
+import {nextHint,stepBar,finalGo,pending,firstTime,todoAttrs,todoArrow,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockButton} from '../v4/restock.js';
 import {lockChip} from './stage_fold.js';
-import {reqPin,nextLine,stepper,pinTop,asmActions,finalStep} from './asm_kit.js';
+import {reqPin,stepper,pinTop,asmActions,finalStep} from './asm_kit.js';
 
 const METER_SCALE=20;   // seconds shown on the soak / foam bars
 const VALUE_SCALE=1.2;  // value bar runs to 120% of the budget
@@ -115,7 +115,7 @@ function spots(n,base){
 function stage(t,x){
   const w=t.work,day=today(x);
   if(plated(t))return `<div class="fl-empty ok"><span aria-hidden="true">🎁</span><p class="small">Đủ ${t.pieces.length} món trên bàn chờ</p></div>`;
-  if(!w.stems.length&&!w.base)return `<div class="fl-empty"><span aria-hidden="true">💐</span><p class="muted small">Chọn hoa trong tủ mát</p></div>`;
+  if(!w.stems.length&&!w.base)return `<div class="fl-empty"><span aria-hidden="true">💐</span><p class="muted small">${clean()?'🧊':'Chọn hoa trong tủ mát'}</p></div>`;
   const order={focal:0,filler:1,green:2};
   const stems=[...w.stems].sort((a,b)=>(order[flower(x,a.i).role]??0)-(order[flower(x,b.i).role]??0));
   const head=(s,style)=>{const f=flower(x,s.i),l=look(x,s.i),left=s.e-day;return `<span class="fl-head ${x.esc(f.role)} ${l.tint?'fl-tint '+l.tint:''} ${left<=0?'wilt':''} ${s.h?'':'dry'}"${style?` style="${style}"`:''} title="${x.esc(f.name)}">${x.esc(l.emoji)}</span>`;};
@@ -299,7 +299,7 @@ function bookFold(x){
 /** On the bench: the same board, folded, with a count of what wants attention today. */
 function careFold(x){
   const n=careDue(x);
-  return `<section class="fl-carefold${n?' due':''}">${fold(`📋 Chăm tiệm hôm nay${n?` · ${n} việc chờ`:' · xong hết'}`,careBoard(x))}</section>`;
+  return `<section class="fl-carefold${n?' due':''}">${fold(clean()?`<span aria-label="Chăm tiệm hôm nay: ${n?`${n} việc chờ`:'xong hết'}">📋 ${n||'✓'}</span>`:`📋 Chăm tiệm hôm nay${n?` · ${n} việc chờ`:' · xong hết'}`,careBoard(x))}</section>`;
 }
 /** On the ticket: what the shop already knows about this customer. */
 function regularCard(t,x){
@@ -327,10 +327,11 @@ function coolerStrip(x){
 const extras=x=>banners(x)+pinsCard(x);
 /** On a job, the day (mod, served, streak) and the guest queue fold into one line; a tap opens them. */
 function dayLine(x,day,t){
-  const strip=dayStrip(x,day,true),q=queue(x,t);
+  const strip=dayStrip(x,day,true),q=queue(x,t,{tight:true});
   if(!strip&&!q)return '';
   const others=openTasks(x).filter(v=>v.id!==t.id),low=others.filter(v=>(v.patience??100)<50).length,m=day?.mod;
-  const bits=[m?`${m.emoji} ${m.label}`:'',`✅ ${Number(day?.served)||0}`,others.length?`👥 ${others.length} khách chờ`:'',low?`⚠️ ${low} sốt ruột`:''].filter(Boolean).join(' · ');
+  // Clean layout: icons and numbers (the day's name is in the fold it opens).
+  const c=clean(),bits=[m?(c?m.emoji:`${m.emoji} ${m.label}`):'',`✅ ${Number(day?.served)||0}`,others.length?(c?`👥 ${others.length}`:`👥 ${others.length} khách chờ`):'',low?(c?`⚠️ ${low}`:`⚠️ ${low} sốt ruột`):''].filter(Boolean).join(' · ');
   return `<details class="fl-dayfold${low?' low':''}"><summary>${x.esc(bits)}</summary>${strip}${q}</details>`;
 }
 
@@ -371,7 +372,7 @@ function ticket(t,x,K={}){
   const rows=briefRows(t,x,K);
   const nClues=Object.keys(t.needs.clues||{}).length;
   // The chips pinned over the work say the same with a live ✓; this fold keeps the full rows and what was said.
-  const list=`<details class="fl-brief"><summary><b>📝 ${x.esc(cap)}</b><small>chi tiết${nClues?` · 💬 ${nClues} lời kể`:''}</small></summary>${reqRows(x,rows,cap)}${heardList(t,x)}</details>`;
+  const list=`<details class="fl-brief"><summary><b>📝 ${x.esc(cap)}</b><small>${clean()?(nClues?`💬 ${nClues}`:''):`chi tiết${nClues?` · 💬 ${nClues} lời kể`:''}`}</small></summary>${reqRows(x,rows,cap)}${heardList(t,x)}</details>`;
   return `<article class="card ticket fl-ticket compact"><div class="fl-ticket-head">${x.portrait(who,40)}<div class="grow"><div class="row spread"><h3>${x.esc(who.display_name)}</h3>${price}</div>
     <p class="fl-tags">${tags.join(' ')}</p></div></div>
     <p class="fl-note">“${x.esc(n.note)}”</p>${consult(t,x)}${isSet(t)?pieceTabs(t,x):''}${list}${regularCard(t,x)}${patience(t.patience)}</article>`;
@@ -676,7 +677,9 @@ function finalFor(t,x,S){
   if(deliver(t)&&x.ui.slot)payload.slot=x.ui.slot;
   const q=deliver(t)?`Giao lúc ${slotName(x,x.ui.slot||n.delivery||'')}? Người nhận sẽ xem kỹ hoa, thiệp và màu sắc.`:'Khách sẽ xem kỹ hoa, thiệp và màu sắc.';
   return {label:deliver(t)?'🛵 Giao hoa':'💐 Trao hoa cho khách',go:finalGo(S,'fl_deliver',payload,{question:q,confirm:true}),ready:made&&slot&&!blocked,
-    why:blocked?'xử lý chuyện bất ngờ trước':!made?'cắm, gói xong bó hoa':'chọn khung giờ giao'};
+    why:blocked?'xử lý chuyện bất ngờ trước':!made?'cắm, gói xong bó hoa':'chọn khung giờ giao',
+    // The server's pre-check (florist.py _deliver_rules, the rules fl_deliver refuses with): its reason and fix win.
+    can:blocked||!slot?undefined:t.can?.fl_deliver};
 }
 /* The bench follows the guide: after a tap on the hint, the bottom button or a step row, the next
  * render shows the tab of the next step. A tap on the bench's own controls (a flower tile, a tab)
@@ -764,8 +767,8 @@ export default {
     // One bottom button (phone and wide): it does the next step, or the hand-off once nothing is left.
     // Right above it, what is on the bench now, so the result of each tap shows next to the button.
     const n=pending(S),heads=w.stems.slice(0,14).map(s=>glyph(x,s.i)).join('')+(w.stems.length>14?`<small>+${w.stems.length-14}</small>`:'');
-    const now=`<div class="fl-bar-now">${heads?`<span class="fl-bar-stems" aria-hidden="true">${heads}</span>`:''}${nextLine(x,n,g.final?.ready!==false?'Đủ rồi · trao cho khách':'')}<b class="fl-bar-n">${done}/${S.length}</b></div>`;
-    const bar=`<div class="fk-bar fl-bar">${now}${ui.flBusy?stepCta(x,[BUSY],g.final):stepCta(x,S,g.final)}</div>`;
+    const now=heads?`<div class="fl-bar-now"><span class="fl-bar-stems" aria-hidden="true">${heads}</span></div>`:'';
+    const bar=stepBar(x,ui.flBusy?[BUSY]:S,g.final,{cls:'fk-bar fl-bar',top:now,note:S.length?`<b class="fl-bar-n">${done}/${S.length} ✓</b>`:''});
     // Shop care (water, pre-orders) waits below the order: the order on the bench comes first.
     return `<div class="career-job fl food">${top(g)}${extras(x)}${ticket(t,x,g.K)}${pin(t,x,g.K,tabBar,n||finalStep(g.final))}<div class="workbench"><section class="wb-main" role="tabpanel">${panel}${tools}</section><aside class="wb-side">${side}</aside></div>${careFold(x)}${bar}</div>`;
   },

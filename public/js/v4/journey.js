@@ -20,6 +20,8 @@ import {lazy,skeleton} from '../lazy.js';
 import {FIRST_JOB,quiet,firstDay} from './onboard.js';
 import {highlight} from './guide.js';
 import {acctPlace,acctTag,acctTags} from './acct-jobs.js';   // 💼 kế toán: exam first, ×3/×5 (game/accounting_jobs.py)
+// The town map's compact goal card on the clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded for tests.
+const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
 // 👗 Tủ đồ (v4/wardrobe.js): the sheet loads the first time it opens.
 const WD=lazy(()=>import('./wardrobe.js'),{css:['/css/wardrobe.css']});
 // 🙂 Ảnh đại diện khi chat (v4/avatar.js): likewise.
@@ -169,7 +171,7 @@ function goalLink(env,goal,{primary=false}={}){
 }
 
 /** The recommendation stays beside its reason and uses the existing workplace entry flow. */
-function resumeCard(env,{reasonOnly=false}={}){
+function resumeCard(env,{reasonOnly=false,slim=false}={}){
   const {api}=env,J=api.state.journey,sid=J.suggested,room=sid?api.state.careers[sid]:null;if(!room||!availablePlaces(api).includes(sid))return '';
   const sm=meta(api,sid),place=sm.place||sm.short,job=room.job||{};
   const label=job.required&&job.status!=='hired'?(job.status==='offer'?`Xem thư mời ở ${place}`:`Xin việc ở ${place}`):room.started?`Tiếp tục ở ${place}`:`Thử làm ở ${place}`;
@@ -177,7 +179,7 @@ function resumeCard(env,{reasonOnly=false}={}){
   const reason=pending.some(x=>x.id==='places')&&!room.metrics?.served?'Thử một nơi mới để tiến tới mục tiêu làm ở nhiều nơi.'
     :pending.some(x=>x.id.startsWith('office_'))&&CHAPTER_OFFICE.includes(sid)?'Mục tiêu chương này cần kinh nghiệm làm việc văn phòng.'
     :room.started?'Tiếp tục công việc ở nơi bạn đã bắt đầu.':'Một nơi đã mở để bạn bắt đầu làm việc.';
-  return `<div class="jr-recommend"><p class="jr-recommend-reason">${esc(reason)}</p>${reasonOnly?'':`<button type="button" class="btn primary big full jr-cta jr-resume" data-action="choose" data-career="${esc(sid)}"><span aria-hidden="true">${emojiOf(sm)}</span> ${esc(label)} ${icon('arrow',16)}</button>`}</div>`;
+  return `<div class="jr-recommend">${slim?'':`<p class="jr-recommend-reason">${esc(reason)}</p>`}${reasonOnly?'':`<button type="button" class="btn primary big full jr-cta jr-resume" data-action="choose" data-career="${esc(sid)}"><span aria-hidden="true">${emojiOf(sm)}</span> ${esc(label)} ${icon('arrow',16)}</button>`}</div>`;
 }
 
 export function chapterCard(env,{compact=false}={}){
@@ -194,12 +196,15 @@ export function chapterCard(env,{compact=false}={}){
   const shown=compact&&!expanded?(next?[next]:[]):J.goals;
   const goals=shown.map(x=>`<li class="${x.done?'done':''}" data-goal="${esc(x.id)}"><span class="jr-check" aria-hidden="true">${x.done?icon('check',14):''}</span><div class="grow"><span>${esc(x.text)}</span>${x.done?'':goalLink(env,x,{primary:compact&&!expanded})}</div><b>${fmt(Math.min(x.cur,x.goal))}/${fmt(x.goal)}</b></li>`).join('');
   const directWork=compact&&goals.includes('data-action="choose"');
-  const recommendation=directWork?(goals.includes(`data-career="${esc(J.suggested)}"`)?resumeCard(env,{reasonOnly:true}):''):resumeCard(env);
   const done=J.goals.filter(x=>x.done).length;
+  // Clean layout, town map (compact): the goal and its button only; the reason line (why this place) is left out and the
+  // "Việc cần làm" heading becomes the count beside the chapter. The full card on the journey page is unchanged.
+  const slim=compact&&clean();
+  const recommendation=slim&&directWork?'':directWork?(goals.includes(`data-career="${esc(J.suggested)}"`)?resumeCard(env,{reasonOnly:true}):''):resumeCard(env,{slim});
   const paused=J.progress_paused?`<div class="notice jr-debt">${icon('coin',17)}<div>Ví đang nợ ${fmt(J.debt)} xu nên câu chuyện tạm dừng. Rút tiền lời từ một nơi làm việc để trả là đi tiếp được.</div></div>${btn('Mở ví của bạn','jrView',{view:'wallet'},'ghost small')}`:'';
-  return `<section class="jr-card jr-chapter"><div class="jr-ch-top"><div class="jr-ch-art" aria-hidden="true">${ch.art}</div><div class="grow"><span class="eyebrow">Chương ${ch.n}/${C.chapters.length}</span><h2>${esc(ch.title)}</h2>${compact?'':`<p class="muted">${esc(ch.tagline)}</p>`}</div></div>
-    <h3 class="jr-goals-title">Việc cần làm <small>${done}/${J.goals.length}</small></h3><ul class="jr-goals">${goals}</ul>${paused}${recommendation}
-    ${compact?btn(expanded?'Thu gọn mục tiêu':'Xem tất cả mục tiêu','jrGoals',{},'ghost small',` aria-expanded="${!!expanded}"`):`${say(ch.intro[ch.intro.length-1],g,'compact')}<button type="button" class="jr-link" data-action="jrStory" data-n="${ch.n}">${icon('book',14)} Nghe lại câu chuyện</button>`}</section>`;
+  return `<section class="jr-card jr-chapter"><div class="jr-ch-top"><div class="jr-ch-art" aria-hidden="true">${ch.art}</div><div class="grow"><span class="eyebrow">Chương ${ch.n}/${C.chapters.length}${slim?` · <span aria-label="${esc(`Việc cần làm ${done}/${J.goals.length}`)}">📋 ${done}/${J.goals.length}</span>`:''}</span><h2>${esc(ch.title)}</h2>${compact?'':`<p class="muted">${esc(ch.tagline)}</p>`}</div></div>
+    ${slim?'':`<h3 class="jr-goals-title">Việc cần làm <small>${done}/${J.goals.length}</small></h3>`}<ul class="jr-goals">${goals}</ul>${paused}${recommendation}
+    ${compact?btn(slim?(expanded?'▴':'▾'):expanded?'Thu gọn mục tiêu':'Xem tất cả mục tiêu','jrGoals',{},'ghost small',` aria-expanded="${!!expanded}"${slim?` aria-label="${expanded?'Thu gọn mục tiêu':'Xem tất cả mục tiêu'}"`:''}`):`${say(ch.intro[ch.intro.length-1],g,'compact')}<button type="button" class="jr-link" data-action="jrStory" data-n="${ch.n}">${icon('book',14)} Nghe lại câu chuyện</button>`}</section>`;
 }
 
 function placeCard(env,cid){
@@ -373,7 +378,7 @@ function walletView(env){
     return `<details class="jr-fundrow ${p.paused?'paused':''}"><summary><span class="jr-place-emoji" aria-hidden="true">${emojiOf(m)}</span><span class="grow"><b>${esc(m.place||m.short)}</b><small>${p.employed?'Làm thuê · lương về ví':p.paused?'Tạm đóng · mở lại miễn phí':'Vắng chủ không tốn phí'}</small></span><b class="jr-amt">${fmt(p.fund)} xu</b></summary>
       <div class="jr-fund-actions">${draw}${invest}<div class="row wrap">${pause}</div></div></details>`;
   }).join('')||`<p class="muted">Chưa có nơi làm việc nào. Bắt đầu ở một tiệm trong hẻm nhé.</p>`;
-  const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️',life:'🌿',study:'📚',backdoor:'🚪',bank:'🏦',home:'🔑',fair:'🏮'};
+  const kinds={living:'🏠',upkeep:'💡',draw:'👛',invest:'📈',salary:'💵',reopen:'🔑',incident:'⚖️',life:'🌿',study:'📚',backdoor:'🚪',bank:'🏦',home:'🔑',fair:'🏮',karaoke:'🎤'};
   // A label that brings its own emoji ("🎁 Quà từ Phố Có Chuyện") shows it in place of the kind's.
   const lead=h=>/^(\p{Extended_Pictographic}\uFE0F?) /u.exec(h.label||'');
   const row=h=>{const m=lead(h);return `<li><span aria-hidden="true">${m?m[1]:kinds[h.kind]||'•'}</span><span class="grow">${esc(m?h.label.slice(m[0].length):h.label)}<small>Ngày sống ${fmt(h.day)}</small></span><b class="${h.amount<0?'out':'in'}">${h.amount<0?'−':'+'}${fmt(Math.abs(h.amount))} xu</b></li>`;};

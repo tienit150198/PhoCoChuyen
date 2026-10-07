@@ -26,6 +26,7 @@ import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
 import {avInner} from './face.js';
 import {faceCode} from './face-code.js';
+import {nameAttrs,frameAttrs,titleChip} from './style-tag.js';   // 🎨 `st` of the week (live/styles.py)
 
 const S={dlg:null,env:null,tab:'town',thread:null,view:null,bodyHTML:null,threads:new Map(),
   town:{msgs:[],more:false,joined:false,why:'ok',wait:0,n:0,loaded:false,pin:null},pinOpen:false,reactFor:null,lp:null,
@@ -426,7 +427,7 @@ function submit(){
 function flash(text){S.flash=text;clearTimeout(S.flashTimer);S.flashTimer=setTimeout(()=>{S.flash='';const f=S.dlg?.querySelector('.ch-flash');if(f)f.hidden=true;},3800);}
 const hm=at=>{const d=new Date(at*1000),now=new Date();const t=d.toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});return d.toDateString()===now.toDateString()?t:`${d.getDate()}/${d.getMonth()+1}`;};
 /** An avatar: a person or a message {av, fc} (its face, else its emoji), or an emoji string ('👥'). */
-const av=(a,cls='')=>`<span class="ch-av ${cls}" aria-hidden="true">${typeof a==='string'?esc(a):avInner(a)}</span>`;
+const av=(a,cls='')=>{const fr=typeof a==='object'&&a?.st?frameAttrs(S.env?.api,a.st):{cls:'',attrs:''};return `<span class="ch-av ${cls}${fr.cls}"${fr.attrs} aria-hidden="true">${typeof a==='string'?esc(a):avInner(a)}</span>`;};   // 🎨 a frame of the week (st.f)
 const dot=on=>on?'<i class="ch-on" aria-label="Đang online"></i>':'';
 const lines=t=>esc(t).replace(/\n/g,'<br>');
 /** An admin message (adm): http(s) addresses become links (new tab, no opener, no referrer); the rest escaped. */
@@ -473,7 +474,7 @@ function msgList(list,kind,more){
   for(const m of list){
     if(m.sys){if(m.sys==='date'&&Date.now()/1000-m.at<CALL_SHOW)out+=callLine(m);prev=null;continue;}
     const mine=m.pid===me(),first=!prev||prev.pid!==m.pid||m.at-prev.at>300;
-    const name=!mine&&first&&kind!=='dm'?`<b class="ch-name"><span data-no-translate>${esc(m.name)}</span>${badge(m)}</b>`:'';
+    const name=!mine&&first&&kind!=='dm'?`<b class="ch-name"><span data-no-translate${nameAttrs(S.env?.api,m.st)}>${esc(m.name)}</span>${titleChip(S.env?.api,m.st)}${badge(m)}</b>`:'';   // 🎨 colour + title of the week
     const bar=S.act===m.id?actBar(m,mine,kind):'';
     const pinned=kind==='town'&&S.town.pin?.id===m.id?'<i class="ch-pinned" aria-label="Đang ghim">📌</i>':'';
     // an admin message with links: a div acting as the button (a link cannot sit inside a <button>)

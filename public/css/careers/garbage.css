@@ -95,3 +95,6 @@
 .pk-more>summary::after{content:"▸";margin-left:auto;color:var(--muted);font-weight:400}
 .pk-more[open]>summary::after{content:"▾"}
 .pk-lines{margin:8px 0 0;padding-left:18px}
+
+/* Clean layout (UI wave 4): the checklist folded into its header chip leaves the side pane empty: no empty box. */
+html[data-clean] .career-job.sk.rc .wb-side:not(:has(>:not(.ui-chipped))){padding:0;border:0;background:none}

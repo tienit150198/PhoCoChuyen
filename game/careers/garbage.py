@@ -821,13 +821,20 @@ def _wrap(s, c, d, p):
     return dict(message='🧷 Gói mảnh kính vỡ vào bao dày, dán chữ “Mảnh vỡ”.')
 
 
+def _load_rules(t: dict, need=kit.need) -> None:
+    """rac_load for any bag of this lane, before the bag and the cart are read: a lane left late was torn open by
+    the dogs, sweep it first. public_task sends it as can.rac_load (live 04-06/10: 96 refusals)."""
+    need(not t['late'] or t['swept'], 'Quét gom rác vương vãi trước đã.',
+         fix=dict(cmd='rac_sweep', payload=dict(task=t['id']), label='🧹 Quét dọn'))
+
+
 def _load(s, c, d, p):
     t = _task(c, p, ('route',))
     _on_round(t)
     _, b = _bag(t, p.get('bag'))
     kit.need(b['id'] not in t['loaded'], 'Túi đã lên xe rồi.')
     kit.need(b['id'] not in t.get('refused', []), 'Túi này đã dán phiếu không thu.')
-    kit.need(not t['late'] or t['swept'], 'Quét gom rác vương vãi trước đã.')
+    _load_rules(t)
     bin_ = kit.one_of(p.get('bin'), BINS, 'Chọn ngăn xe.')
     cell = d['cart'][bin_]
     kit.need(cell['n'] < CART[bin_], f'Ngăn {_lower(BIN_LABEL[bin_])} đầy rồi: đẩy xe ra điểm tập kết đổ đã.')
@@ -1476,6 +1483,7 @@ def public_task(t: dict) -> dict:
         v['needs'] = None
         return v
     if t['kind'] == 'route':
+        v['can'] = dict(rac_load=kit.check(_load_rules, t))
         # From outside a bag shows its colour and what pokes out; opening it shows what is inside.
         for si, st in enumerate(v['needs']['stops']):
             st['reached'] = si <= t['at'] and t['stage'] != 'prep'
