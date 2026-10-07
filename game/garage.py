@@ -231,7 +231,11 @@ def _plate(p: dict, default: str = '') -> str:
     raw = p.get('plate', default)
     if raw is None or raw == '':
         return ''
-    return _core().clean_text(raw, PLATE_MAX, 0)
+    text = _core().clean_text(raw, PLATE_MAX, 0)
+    if text != default:   # 🔨 a vanity plate of the auction house is one of a kind (game/auction.py): never copied
+        from .auction import fold_plate, plates
+        _core().need(fold_plate(text) not in plates(), 'Biển số này thuộc Nhà đấu giá, chọn biển khác nhé.', 'taken')
+    return text
 
 
 def why_not_buy(s: dict, vid: str) -> str | None:

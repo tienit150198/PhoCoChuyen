@@ -1,0 +1,38 @@
+/* 🔨 Nhà đấu giá (public/js/v4/auction.js): on top of spend.css (the same sheet, tabs, chips, rows and bottom bar). */
+.au-held{margin:0 0 8px;font-size:.9rem;font-weight:700;color:var(--ink-2)}
+.au-lot{text-align:center}
+.au-lot h3{margin:10px 0 4px}
+.au-art{display:grid;place-items:center;margin:0 auto;width:min(260px,100%);min-height:120px;border-radius:14px;background:var(--surface-2)}
+.au-plate{min-height:96px;background:linear-gradient(160deg,#fff6d5,#f3d27a);border:3px solid #b8862f;box-shadow:inset 0 0 0 3px #fff8e1,var(--shadow-sm)}
+.au-plate span{font:800 1.7rem/1 ui-monospace,Menlo,monospace;letter-spacing:.04em;color:#3b2a06}
+.au-phone{grid-auto-flow:row;gap:6px;background:linear-gradient(160deg,var(--surface-2),var(--accent-soft))}
+.au-phone span{font-size:2rem}
+.au-phone b{font:800 1.4rem/1 ui-monospace,Menlo,monospace;color:var(--ink)}
+.au-canvas{position:relative;min-height:150px;padding:12px;background:#6b4f2a;box-shadow:inset 0 0 0 6px #c9a35a,var(--shadow-sm)}
+.au-canvas i{display:block;width:100%;height:110px;border-radius:2px;background:radial-gradient(circle at 72% 30%,var(--c) 0 12%,transparent 13%),linear-gradient(180deg,var(--a) 0 55%,var(--b) 55% 100%)}
+.au-canvas em{position:absolute;left:50%;bottom:-10px;transform:translateX(-50%);padding:2px 10px;border-radius:4px;background:#d9b866;color:#3b2a06;font:700 .72rem/1.3 system-ui;font-style:normal;white-space:nowrap}
+.au-land{grid-auto-flow:row;gap:4px;background:linear-gradient(180deg,#cfe8ff,#bfe3b4)}
+.au-land span{font-size:3rem}
+.au-land em{font-style:normal;font-size:.8rem;color:#2d4a2a}
+.au-title{background:radial-gradient(circle,#fff3c4,var(--surface-2))}
+.au-title span{font-size:3.4rem}
+.au-price{display:flex;flex-direction:column;align-items:center;margin:4px 0}
+.au-price b{font-size:1.6rem;font-weight:900;color:var(--accent-text)}
+.au-price small{color:var(--ink-2);font-weight:700}
+.au-clock{margin:2px 0 6px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.au-state{margin:0 0 8px;padding:6px 10px;border-radius:10px;font-weight:800}
+.au-state.good{background:var(--good-soft);color:var(--good)}
+.au-state.bad{background:var(--bad-soft);color:var(--bad)}
+.au-lot .sd-amounts{justify-content:center}
+.au-help{text-align:left}
+.au-note{text-align:center;color:var(--ink-2);font-size:.9rem;margin:4px 0 10px}
+.au-past li{flex-wrap:wrap}
+.au-past li small{flex-basis:100%;padding-left:30px;color:var(--ink-2);font-size:.8rem}
+.au-plaques{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.au-plaque{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;background:linear-gradient(160deg,#f7e7b4,#e7c873);color:#3b2a06;box-shadow:inset 0 0 0 2px #b8862f}
+.au-plaque span{font-size:1.6rem}
+.au-plaque small{display:block;font-size:.8rem}
+@media (max-height:480px){.au-art{min-height:80px}.au-canvas i{height:70px}.au-canvas{min-height:100px}}
+.au-help>summary{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);cursor:pointer;list-style:none;font-weight:700}
+.au-help>summary::-webkit-details-marker{display:none}
+.au-help ul{margin:var(--sp-2,8px) 0 0;padding-left:var(--sp-4,16px);font-size:var(--fs-1,.85rem);color:var(--ink-2)}

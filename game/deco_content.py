@@ -469,3 +469,14 @@ KNOWN_199 = tuple(ITEMS)          # what 1.9.9 knows (the villa pieces after it 
 from . import estates_content as _EC   # noqa: E402
 
 _EC.register(globals())
+
+# ---------------------------------------------------------------- 🔨 one-of-a-kind paintings (07/10): game/auction_content.py
+# Won at the auction house (game/auction.py puts the piece in the bag), never sold by the shop (`uq`: price 0, the deco
+# shop and jr_deco_buy skip it, jr_deco_sell refuses it). An older build keeps them in reno.items, unshown.
+KNOWN_1911 = tuple(ITEMS)         # what 1.9.11 knows
+from . import auction_content as _AC   # noqa: E402
+
+_UQ_ROOMS = tuple(WALLS) + tuple(t for t, (_e, _n, base) in _EC.ROOM_TYPES.items() if set(base) & set(WALLS))
+for _k, _it in _AC.ART_PIECE.items():
+    ITEMS[_k] = dict(_i('wall', 'wall', 2, 2, 0, _AC.ART_COZY, _UQ_ROOMS, f'Tranh “{_it["name"]}” · {_it["artist"]}', '🖼️', ('art',)),
+                     price=0, uq=True)

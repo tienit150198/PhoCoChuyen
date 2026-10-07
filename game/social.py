@@ -245,6 +245,10 @@ def snapshot(state: dict) -> dict:
     lux = lux_view(state) if isinstance(j, dict) else None
     if lux:   # 🛍️ the dearest villa or vehicle, the dearest piece, pieces and countries (game/lux.py): a new key
         out['lux'] = lux
+    from .auction import show_view as uniq_view
+    uq = uniq_view(state) if isinstance(j, dict) else None
+    if uq:   # 🔨 one-of-a-kind items won at auction: plate, phone number, titles, paintings, landmarks (a new key)
+        out['uniq'] = uq
     return out, served
 
 

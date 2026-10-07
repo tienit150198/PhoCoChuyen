@@ -143,5 +143,8 @@ LUX_TITLES = (
     dict(id='t_an_nhan', emoji='📚', name='Ân nhân thư viện', price=0, need={}, earn='Góp 50.000 xu thư viện'),
 )
 TITLES = TITLES + LUX_TITLES
+# 🔨 One-of-a-kind titles won at the auction house (game/auction_content.py): granted for good like the ones above, `uq`.
+from .auction_content import STYLE_TITLES as _AUC_TITLES   # noqa: E402
+TITLES = TITLES + _AUC_TITLES
 STYLE_ITEMS = {x['id']: dict(x, kind=k) for k, rows in (('color', COLORS), ('frame', FRAMES), ('title', TITLES)) for x in rows}
 TITLE_TEXT = {x['id']: f"{x['emoji']} {x['name']}" for x in TITLES}

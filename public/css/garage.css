@@ -29,3 +29,5 @@
 .gr-swatch{width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--gr-paint);cursor:pointer;padding:0}
 .gr-swatch.on{outline:3px solid var(--accent,var(--good));outline-offset:2px}
 .gr-swatch:focus-visible{outline:3px solid var(--accent,var(--good));outline-offset:2px}
+/* 🔨 a vanity plate won at the auction house (game/auction.py): gold, on the vehicle in use */
+.gr-plate.uq{background:linear-gradient(160deg,#fff6d5,#f3d27a);border-color:#b8862f;color:#3b2a06;font-weight:800}

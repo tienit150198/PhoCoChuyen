@@ -631,6 +631,10 @@ class Store:
                 if action.startswith('jr_lux_'):
                     from . import lux
                     lux.command_commit(db,sid,action,current)  # 🎆 the lux_gifts row, the ticker line (a taken plaque refuses)
+                if action.startswith('jr_auc_') or action=='live_fx':
+                    from . import auction
+                    if action=='live_fx':auction.fx_commit(db,sid,result)  # 🔨 a refund / a won item: its row flips here, once
+                    else:auction.command_commit(db,sid,action,before,current,result)  # 🔨 the bid: lot row lock, escrow, refunds
             if action == 'settings':
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,current)
@@ -702,6 +706,10 @@ class Store:
             if action.startswith('jr_lux_'):
                 from . import lux
                 lux.command_commit(db,sid,action,raw)  # 🎆 the lux_gifts row, the ticker line (a taken plaque refuses)
+            if action.startswith('jr_auc_') or action=='live_fx':
+                from . import auction
+                if action=='live_fx':auction.fx_commit(db,sid,result)  # 🔨 a refund / a won item: its row flips here, once
+                else:auction.command_commit(db,sid,action,before,raw,result)  # 🔨 the bid: lot row lock, escrow, refunds
             if action == 'settings':
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,raw)
@@ -740,6 +748,8 @@ class Store:
             pets.forget(db,sid)  # 🐾 their pets leave the weekly board
             from . import lux
             lux.forget(db,sid)  # 🎆 plaques and sponsorships stay, as anonymous
+            from . import auction
+            auction.forget(db,sid)  # 🔨 past wins stay in the history under the name shown then
             db.execute("DELETE FROM archive WHERE sid=?",(sid,))
             db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
             lb.forget(db,[sid])
