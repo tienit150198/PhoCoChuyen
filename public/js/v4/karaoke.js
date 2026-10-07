@@ -5,7 +5,7 @@
  * bài (a lyric line with blanks or emoji clues; guesses are typed in the same box). No voice in v1.
  *
  * The clock: `kara_time` five times on entering, the reply with the smallest round trip gives the server offset; a song
- * plays from (server now − at). Every second a playing video more than DRIFT seconds off is sought back; nothing is
+ * plays from (server now − at). Every second a playing video more than DRIFT seconds off is nudged back (sync()); nothing is
  * corrected while YouTube is not playing (an ad, buffering). Phone first, few words: one bottom bar, one main button
  * (🎤 Thêm bài, or Gửi once something is typed); the rest sits behind ⋯. */
 import {icon,escapeHTML as esc} from '../icons.js';
@@ -136,23 +136,45 @@ function start(){
   const st=K.stage,p=K.player;if(!st||!p||!K.ready)return;
   const at=pos();
   if(K.vid!==st.vid){K.vid=st.vid;at<0?p.cueVideoById({videoId:st.vid}):p.loadVideoById({videoId:st.vid,startSeconds:at});}
-  clearTimeout(K.startAt);
+  clearTimeout(K.startAt);if(K.rate&&K.rate!==1)try{p.setPlaybackRate?.(1);}catch{/* gone */}K.rate=1;   // a new song starts at 1×
   if(at<0){K.startAt=setTimeout(()=>{if(K.stage===st){try{p.seekTo(Math.max(0,pos()),true);p.playVideo();}catch{/* player gone */}want();}},-at*1000);}
   else{try{p.seekTo(at,true);p.playVideo();}catch{/* player gone */}want();}
 }
 /** Phones block sound without a tap: if it is not playing 2 s later, one button under the video says so. */
 function want(){setTimeout(()=>{const s=K.player?.getPlayerState?.();K.want=K.stage&&K.stage.phase!=='clap'&&s!==1&&s!==3&&pos()>0;paintBar();},2000);}
 function onState(e){
-  if(e.data===1){K.want=false;paintBar();const d=K.player.getDuration?.();if(d>0&&K.durSent!==K.e&&K.stage){K.durSent=K.e;live.send({t:'kara_dur',e:K.stage.e,dur:Math.round(d*10)/10});}sync((K.forced=(K.forced||0)+1)<=3);}   // a tight fit when it starts playing, at most 3 times a song (each seek buffers again)
+  if(e.data===1){K.want=false;paintBar();const d=K.player.getDuration?.();if(d>0&&K.durSent!==K.e&&K.stage){K.durSent=K.e;live.send({t:'kara_dur',e:K.stage.e,dur:Math.round(d*10)/10});}
+    if(K.seekT){const t=(performance.now()-K.seekT)/1000;K.seekT=0;if(t<8)K.lag=Math.min(SEEK_LEAD,t);}   // how long my last seek took to play again
+    sync();}
 }
 function stopVideo(){clearTimeout(K.startAt);try{K.player?.stopVideo?.();}catch{/* gone */}K.vid=null;const box=K.dlg?.querySelector('.kr-video');if(box&&!K.stage)box.hidden=true;}
-/** Drift control: only while YouTube says it is playing (never during an ad or a buffer). */
-function sync(force=false){
+/** Drift control (B2, "nhạc cứ giật giật"): every seek buffers again, and on a weak phone that buffer is new drift, so
+ * a tight seek loop stutters. Under SEEK_AT seconds off nothing is sought: past DRIFT the playback rate is nudged
+ * (0.95 / 1.05, only where YouTube offers such a rate; otherwise left alone) until within NUDGE_OK. Past SEEK_AT one
+ * seek, at most every SEEK_GAP ms, aimed ahead by what the last seek took to play again (≤ SEEK_LEAD s). Only while
+ * YouTube says it is playing: never during an ad, a buffer or a pause. */
+const SEEK_AT=2,SEEK_GAP=10000,SEEK_LEAD=1.5,NUDGE_OK=.12;   // a lead < SEEK_AT: a wrong guess is nudged, never sought again
+function sync(){
   const p=K.player,st=K.stage;if(!p||!K.ready||!st||st.phase==='clap'||K.clap)return;
   const target=pos();if(target<0)return;
   let s,cur;try{s=p.getPlayerState();cur=p.getCurrentTime();}catch{return;}
   if(s!==1)return;
-  if(Math.abs(cur-target)>DRIFT||(force&&Math.abs(cur-target)>.15))try{p.seekTo(target,true);}catch{/* gone */}
+  const off=cur-target,now=Date.now();
+  if(Math.abs(off)>SEEK_AT){
+    if(now-(K.seekAt||0)<SEEK_GAP)return nudge(p,off);
+    K.seekAt=now;K.seekT=performance.now();nudge(p,0);
+    try{p.seekTo(target+(K.lag||0),true);}catch{/* gone */}
+    return;
+  }
+  nudge(p,Math.abs(off)>DRIFT||(K.rate&&K.rate!==1&&Math.abs(off)>NUDGE_OK)?off:0);
+}
+/** Play a little faster (behind) or slower (ahead), or at 1. YouTube rounds an unoffered rate toward 1: a no-op then. */
+function nudge(p,off){
+  let want=1;
+  if(off){let r=[];try{r=p.getAvailablePlaybackRates?.()||[];}catch{/* gone */}
+    want=(off<0?r.filter(x=>x>1&&x<=1.05+1e-9).sort((a,b)=>b-a)[0]:r.filter(x=>x<1&&x>=.95-1e-9).sort((a,b)=>a-b)[0])||1;}
+  if(want===(K.rate||1))return;
+  try{p.setPlaybackRate?.(want);K.rate=want;}catch{/* gone */}
 }
 
 /* ---------------------------------------------------------------- what the room sees */
@@ -192,7 +214,7 @@ function paint(){
   if(K.panel==='add'){const l=dyn.querySelector('[data-kr-link]');if(l)K.link=l.value;}else if(K.panel==='round')readRound();   // keep what is typed
   const n=K.dlg.querySelector('[data-kr-n]');if(n)n.textContent=K.n;
   K.dlg.querySelector('.kr-video').hidden=!K.stage;
-  dyn.innerHTML=K.panel?panelHTML():stageHTML()+roundHTML()+queueHTML();
+  dyn.innerHTML=K.panel?panelHTML():stageHTML()+(live.flags?.kara_mic?'':'<p class="kr-note kr-nomic">🎤 Mic trực tiếp sắp có; giờ hát theo video, cả phòng xem chung</p>')+roundHTML()+queueHTML();   // B3: no voice yet, say so
   paintBar();paintSaid();paintMeter();
   if(K.focus){K.focus=false;dyn.querySelector('[data-kr-focus]')?.focus({preventScroll:true});}
 }
@@ -241,7 +263,7 @@ function panelHTML(){
   const p=K.panel,close=`<button type="button" class="icon-btn kr-x" data-kr="panel" data-p="" aria-label="Đóng">${icon('x',16)}</button>`;
   if(p==='add'){
     const s=K.song;
-    return `<div class="kr-panel">${close}<label class="kr-field"><input data-kr-link data-kr-focus inputmode="url" placeholder="Dán link YouTube" value="${esc(K.link||'')}"></label>
+    return `<div class="kr-panel">${close}<label class="kr-field"><input data-kr-link data-kr-focus inputmode="url" placeholder="Dán link YouTube" value="${esc(K.link||'')}"></label>${s?.ok?'':'<p class="kr-note kr-how">Mở YouTube → Chia sẻ → Sao chép đường liên kết → dán vào đây</p>'}
       ${s?`<div class="kr-song${s.ok?'':' bad'}"><img src="https://i.ytimg.com/vi/${esc(s.vid)}/mqdefault.jpg" alt="" width="96" height="54" loading="lazy"><span><b>${esc(s.title||s.vid)}</b><small>${s.ok?`✓ Phát được`:esc(s.text||'Không phát được')}</small></span></div>`:''}
       ${K.err?`<p class="kr-note bad">${esc(K.err)}</p>`:''}
       <button type="button" class="btn primary wide" data-kr="${s?.ok?'queue':'check'}"${K.busy?' disabled':''}>${s?.ok?`Xếp hàng · ${K.room.price} xu`:'Kiểm tra'}</button></div>`;

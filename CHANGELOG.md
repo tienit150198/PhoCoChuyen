@@ -1,3 +1,21 @@
+# Chưa phát hành
+
+## Phòng hát bớt giật, dễ thêm bài; Mua sắm: nút ảnh thẻ mờ khi thiếu tiền
+
+- 🎤 Nhạc hết giật (B2, chat 07/10 "nhạc cứ giật giật"): trước đây cứ lệch 0,35 giây là máy tua lại video mỗi giây; mỗi
+  lần tua phải tải lại, máy yếu càng lệch thêm, thành vòng lặp. Giờ lệch dưới 2 giây chỉ chỉnh nhẹ tốc độ (0,95 / 1,05,
+  nếu YouTube cho; không thì để yên), lệch quá 2 giây mới tua, tối đa 10 giây một lần, không bao giờ tua khi đang tải.
+  Thử hai máy (giả lập): lệch nhau 52–311 ms; với YouTube thật: 1–2 ms.
+- 🎤 Nói rõ chưa có mic (B3): trong phòng có một dòng "Mic trực tiếp sắp có; giờ hát theo video, cả phòng xem chung"
+  (tự ẩn khi bản có mic bật cờ `kara_mic`). Dưới ô dán link: "Mở YouTube → Chia sẻ → Sao chép đường liên kết → dán vào
+  đây". Nhận thêm kiểu link điện thoại hay chép: thiếu https:// (youtu.be/…, m.youtube.com/…, music.youtube.com/…,
+  youtube.com/shorts/…), link nằm trong câu chia sẻ, trong ngoặc/nháy, có ký tự ẩn, `&` bị mã hóa sau v=. Link sai thì
+  báo ngắn "Chưa thấy link YouTube trong đó." (hướng dẫn nằm ngay trên).
+- 🛍️ Ảnh thẻ visa (B7, 33 lần bấm khi thiếu tiền từ một người): nút 📷 Chụp ảnh mờ đi khi ví dưới giá ("Ví chưa đủ"), bấm
+  vào chỉ hiện lý do, không gửi lệnh (kiểu "mờ có lý do" của docs/UI_KIT.md). Nút 🛡️ Bảo hiểm cũng vậy ("Còn thiếu … xu",
+  trả bằng ví rồi tới tài khoản ngân hàng như máy chủ). Các nút mua khác (thanh dưới) đã có sẵn lý do.
+- Không đổi bản lưu, không thêm khóa, không đổi CSDL. Không thêm mục "Có gì mới".
+
 # v1.9.13 — 2026-10-07
 
 Gồm "Nhà đấu giá đồ độc bản" (schema 29: auction_lots, auction_bids; journey.uniq).

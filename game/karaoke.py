@@ -11,7 +11,9 @@ emoji clues, the others type guesses; the first right one wins GUESS_XU from a f
 This module holds what needs the save or the database:
 * parse_vid(link): the YouTube id of a link (watch?v=, youtu.be, shorts, embed, live, v; www./m./music.;
   youtube-nocookie.com; a bare 11-character id). Anything else (another host, youtube.com.evil.io, javascript:) is None.
-  Only the id is ever stored or echoed, never the link.
+  Only the id is ever stored or echoed, never the link. What a phone's Chia sẻ › Sao chép puts on the clipboard is
+  accepted too: the link without https://, inside a line of shared text, in quotes or brackets, with invisible
+  characters, or with an escaped `&` after v= (B3: 9 rejected pastes on 07/10).
 * check_song (POST /api/karaoke/song {url}): oEmbed (no API key) with a short timeout and a cache (`kara_songs`,
   CACHE_OK_SECS / CACHE_BAD_SECS): 200 = playable (title and channel kept, the title through live/filters.py: heavy
   words become *, links and numbers •••), 401/403 = embedding blocked, 400/404 = gone; anything else (timeout, 5xx)
@@ -120,13 +122,32 @@ def pid_of(sid: str) -> str:
 
 
 # ---------------------------------------------------------------- links
+_INVISIBLE = re.compile('[\u00ad\u200b-\u200f\u2060\ufeff]')
+_BARE_LINK = re.compile(r'(?:(?:www|m|music)\.)?(?:youtube\.com|youtube-nocookie\.com|youtu\.be)/', re.I)   # copied without https://
+_EDGES = '"\'<>()[]{},;:!?.\u201c\u201d\u2018\u2019\u00ab\u00bb'   # quotes, brackets, a sentence's last mark
+
+
 def parse_vid(link) -> str | None:
     """The 11-character YouTube id of a link, or None (KARAOKE_DESIGN §4, the prototype's ytId)."""
-    s = str(link or '').strip()
+    s = _INVISIBLE.sub('', str(link or '')).strip()
     if len(s) > 400:
         return None
     if VID_RX.fullmatch(s):
         return s
+    vid = _url_vid(s)
+    if vid:
+        return vid
+    for word in s.split():   # shared text ("Xem … trên YouTube: https://youtu.be/…"): the first word that is a link
+        word = word.strip(_EDGES)
+        if _BARE_LINK.match(word):
+            word = 'https://' + word
+        vid = _url_vid(word)
+        if vid:
+            return vid
+    return None
+
+
+def _url_vid(s: str) -> str | None:
     try:
         u = urlsplit(s)
     except ValueError:
@@ -146,6 +167,8 @@ def parse_vid(link) -> str | None:
     elif host in HOSTS:
         if u.path in ('/watch', '/watch/'):
             vid = (parse_qs(u.query).get('v') or [''])[0]
+            m = re.match(r'([A-Za-z0-9_-]{11})(?![A-Za-z0-9_-])', vid)   # v=ID%26si%3D… (an app escaped the &)
+            vid = m.group(1) if m else None
         else:
             m = re.match(r'^/(?:embed|shorts|live|v)/([A-Za-z0-9_-]{11})(?:[/?]|$)', u.path)
             vid = m.group(1) if m else None
@@ -308,7 +331,7 @@ def check_song(store, url, fetch_ok=lambda: True) -> dict:
     """POST /api/karaoke/song: {vid, title, channel, ok, why, text} for a pasted link (cached; one oEmbed call per new
     song). fetch_ok(): False when the outbound budget is spent (the server's shared rate limit)."""
     vid = parse_vid(url)
-    need(vid, 'Link YouTube chưa đúng. Dán link bài hát nhé.', 'bad_link')
+    need(vid, 'Chưa thấy link YouTube trong đó.', 'bad_link')
     t = now()
     r = song(store, vid)
     if r and (int(r['banned']) or t - float(r['checked_at']) < (CACHE_OK_SECS if int(r['ok']) else CACHE_BAD_SECS)):

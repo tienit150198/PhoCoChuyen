@@ -4,14 +4,18 @@
 Starts a game server (story mode, PostgreSQL) and the live service with LIVE_KARAOKE=1 on the same database. The
 YouTube IFrame API is replaced by a stand-in served at its real URL (https://www.youtube.com/iframe_api, so the page's
 CSP is exercised): a player whose clock runs from playVideo() after a random 0.2-0.9 s "buffering", like a phone on
-4G; --real uses the real embed instead (needs the network; the game is then served as http://localhost, since YouTube
+4G, and that buffers the same again on every seek while playing (B2: a seek is new drift on a weak phone); it offers
+the 0.95 / 1.05 rates the drift control nudges with; --real uses the real embed instead (needs the network; the game is then served as http://localhost, since YouTube
 refuses an embedding page whose Referer is an IP address: error 150, and any embed without a Referer: error 153).
 Thumbnails (i.ytimg.com) answer a 1 px image.
 
   * Lan and Minh (accounts) open Khu phố › Phòng hát and walk into Nhạc trẻ;
   * Lan pastes a YouTube link, Kiểm tra (the oEmbed answer is in the cache already: no network), Xếp hàng (the first song
     of the day is free); both phones start the same video at the same server second, and their video times agree
-    within MAX_SKEW (0.25 s) a few seconds in;
+    within MAX_SKEW a few seconds in, with no seek once playing (B2); a 3 s stall on Minh is fixed by one seek, and
+    no second one follows within 10 s;
+  * B3: the room says there is no mic yet, the add panel says how to copy a link, and a link pasted without https://
+    is accepted; the room and the add panel stay within WORD_CAP words;
   * Minh gives an emoji round (🌧️💔🏠, answer "Nơi này có anh"), Lan types "noi nay co anh": both see the answer and
     "🎉 Lan" with +5 xu;
   * WebKit: a third phone opens the same room: no horizontal scroll, the player at least 200 px high and fully on
@@ -41,8 +45,12 @@ from browser_live_wedding import hub  # noqa: E402
 from pg_test_support import test_env, test_connect, schema_for  # noqa: E402
 
 VID = 'dQw4w9WgXcQ'
-MAX_SKEW = 0.25
+MAX_SKEW = 1.0   # B2: drift under 2 s is nudged (0.95 / 1.05), not sought; the mock starts 0.2-0.9 s late
+WORD_CAP = 30
 STATE = "async () => (await import('/js/v4/karaoke.js')).karaoke.state()"
+# Words a player sees in the sheet (as ui-kit.js wordBudget / check_word_caps.py count them: visible, with a letter).
+WORDS = """() => { const d = document.querySelector('.kr-sheet[open]'); const t = [...d.querySelectorAll('.kr-head, .kr-dyn, .kr-bar')].map(e => e.innerText).join(' ');
+    return t.split(/\\s+/).filter(w => /[A-Za-zÀ-ỹ]/.test(w)).length; }"""
 PIXEL = bytes.fromhex('89504e470d0a1a0a0000000d4948445200000001000000010806000000'
                       '1f15c4890000000d49444154789c6360f8cfc0f01f0005000201a5d6e7d70000000049454e44ae426082')
 FAKE_YT = r"""
@@ -52,14 +60,23 @@ FAKE_YT = r"""
     constructor(el, o) {
       const box = typeof el === 'string' ? document.getElementById(el) : el;
       const f = document.createElement('div'); f.className = 'fake-yt'; f.style.cssText = 'position:absolute;inset:0;display:grid;place-items:center;color:#fff;background:#202020;font:600 15px system-ui';
-      f.textContent = '▶ YouTube'; window.__ytRef = box.referrerPolicy || ''; window.__ytSrc = box.src || ''; box.replaceWith(f); this.f = f; this.o = o; this.vid = o.videoId || ((box.src || '').match(/embed\/([\w-]{11})/) || [])[1]; this.base = 0; this.t0 = null; this.st = -1; this.dur = 213;
+      f.textContent = '▶ YouTube'; window.__ytRef = box.referrerPolicy || ''; window.__ytSrc = box.src || ''; box.replaceWith(f); this.f = f; this.o = o; this.vid = o.videoId || ((box.src || '').match(/embed\/([\w-]{11})/) || [])[1]; this.base = 0; this.t0 = null; this.st = -1; this.dur = 213; this.rate = 1;
+      window.__yt = this; window.__ytSeeks = [];
       setTimeout(() => o.events?.onReady?.({target: this}), 120);
     }
     _emit(st) { this.st = st; this.o.events?.onStateChange?.({target: this, data: st}); }
     getPlayerState() { return this.st; }
     getDuration() { return this.dur; }
-    getCurrentTime() { return this.t0 == null ? this.base : this.base + (performance.now() - this.t0) / 1000; }
-    seekTo(s) { this.base = s; if (this.t0 != null) this.t0 = performance.now(); }
+    getCurrentTime() { return this.t0 == null ? this.base : this.base + this.rate * (performance.now() - this.t0) / 1000; }
+    seekTo(s) {
+      window.__ytSeeks.push(performance.now()); this.base = s;
+      if (this.t0 == null) return;
+      this.t0 = null; this.loading = true; this._emit(3);   // a seek while playing buffers again, like a phone
+      setTimeout(() => { this.loading = false; this.t0 = performance.now(); this._emit(1); }, 200 + Math.random() * 700);
+    }
+    getAvailablePlaybackRates() { return [0.25, 0.5, 0.75, 0.95, 1, 1.05, 1.25, 1.5, 2]; }
+    getPlaybackRate() { return this.rate; }
+    setPlaybackRate(r) { this.base = this.getCurrentTime(); if (this.t0 != null) this.t0 = performance.now(); this.rate = this.getAvailablePlaybackRates().includes(r) ? r : 1; }
     playVideo() {
       if (this.st === 1 || this.loading) return;
       this.loading = true; this._emit(3);
@@ -135,6 +152,16 @@ async def run(shots: Path | None, real: bool) -> list:
                 raise AssertionError(f'{p.name}: {what} (state: {json.dumps(s, ensure_ascii=False)[:400]})')
             await asyncio.sleep(0.15)
 
+    async def skew_of(a, b):
+        skews, drifts = [], []
+        for _ in range(5):
+            x = await a.page.evaluate('async () => { const s = (await import("/js/v4/karaoke.js")).karaoke.state(); return [s.cur, Date.now(), s.pos]; }')
+            y = await b.page.evaluate('async () => { const s = (await import("/js/v4/karaoke.js")).karaoke.state(); return [s.cur, Date.now(), s.pos]; }')
+            skews.append(abs((x[0] - x[1] / 1000) - (y[0] - y[1] / 1000)))
+            drifts.append((round(x[0] - x[2], 2), round(y[0] - y[2], 2)))
+            await asyncio.sleep(0.4)
+        return max(skews), drifts[-1]
+
     async def mock(ctx):
         if not real:
             await ctx.route('**/iframe_api*', lambda r: r.fulfill(status=200, content_type='text/javascript', body=FAKE_YT))
@@ -161,8 +188,25 @@ async def run(shots: Path | None, real: bool) -> list:
             await enter(lan)
             await enter(minh)
             # Lan: + Thêm bài → paste → Kiểm tra → Xếp hàng
+            await lan.page.wait_for_timeout(300)
+            room_words = await lan.page.evaluate(WORDS)
+            nomic = await lan.page.inner_text('.kr-sheet[open] .kr-dyn')
+            check('Mic trực tiếp sắp có' in nomic, 'B3: the room says there is no mic yet')
+            check(room_words <= WORD_CAP, f'B3: the empty room within the word cap ({room_words} ≤ {WORD_CAP})')
             await lan.page.click('.kr-sheet[open] .kr-main')
-            await lan.page.fill('.kr-sheet[open] [data-kr-link]', f'https://youtu.be/{VID}?si=share')
+            await lan.page.wait_for_timeout(300)
+            how = await lan.page.inner_text('.kr-sheet[open] .kr-panel')
+            add_words = await lan.page.evaluate(WORDS)
+            check('Chia sẻ → Sao chép đường liên kết' in how, 'B3: the add panel says how to copy a YouTube link')
+            check(add_words <= WORD_CAP, f'B3: the add panel within the word cap ({add_words} ≤ {WORD_CAP})')
+            await shot(lan, 'add-how-chromium')
+            await lan.page.fill('.kr-sheet[open] [data-kr-link]', 'nơi này có anh')
+            await lan.page.click('.kr-sheet[open] [data-kr=check]')
+            await lan.page.wait_for_selector('.kr-sheet[open] .kr-panel .kr-note.bad', timeout=10000)
+            bad_words = await lan.page.evaluate(WORDS)
+            problems[:] = [x for x in problems if 'status of 400' not in x]   # that refusal (bad_link) was the point
+            check(bad_words <= WORD_CAP, f'B3: a refused paste: the add panel within the word cap ({bad_words} ≤ {WORD_CAP})')
+            await lan.page.fill('.kr-sheet[open] [data-kr-link]', f'youtu.be/{VID}?si=share')   # copied without https://
             await lan.page.click('.kr-sheet[open] [data-kr=check]')
             await lan.page.wait_for_selector('.kr-sheet[open] [data-kr=queue]', timeout=10000)
             check('Phát được' in await lan.page.inner_text('.kr-sheet[open] .kr-song'), 'the link is checked (cached oEmbed): "✓ Phát được"')
@@ -181,19 +225,32 @@ async def run(shots: Path | None, real: bool) -> list:
                 ref = await lan.page.evaluate('[window.__ytRef, window.__ytSrc]')
                 check(ref[0] == 'strict-origin-when-cross-origin' and ref[1].startswith('https://www.youtube-nocookie.com/embed/' + VID), f'the nocookie iframe sends its origin as Referer (YouTube error 153 otherwise): {ref}')
             await asyncio.sleep(2.2)   # the drift control runs every second
-            skews = []
-            for _ in range(5):
-                a = await lan.page.evaluate('async () => { const s = (await import("/js/v4/karaoke.js")).karaoke.state(); return [s.cur, Date.now()]; }')
-                b = await minh.page.evaluate('async () => { const s = (await import("/js/v4/karaoke.js")).karaoke.state(); return [s.cur, Date.now()]; }')
-                skews.append(abs((a[0] - a[1] / 1000) - (b[0] - b[1] / 1000)))
-                await asyncio.sleep(0.4)
-            skew = max(skews)
-            print(f'video time skew between the phones: max {skew * 1000:.0f} ms over {len(skews)} samples', flush=True)
+            seeks0 = [] if real else [len(await p.page.evaluate('window.__ytSeeks')) for p in (lan, minh)]
+            skew, drifts = await skew_of(lan, minh)
+            print(f'video time skew between the phones: max {skew * 1000:.0f} ms (each phone off the server clock: {drifts})', flush=True)
             check(skew <= MAX_SKEW, f'both phones at the same video second (max skew {skew * 1000:.0f} ms ≤ {MAX_SKEW * 1000:.0f} ms)')
             with test_connect(db) as con:
                 row = con.execute("SELECT used, played FROM kara_tickets WHERE kind='queue'").fetchone()
             check(row and row[0] == 1 and row[1], 'the free ticket was redeemed and stamped played')
             await shot(minh, 'room-playing-chromium')
+            if not real:   # B2: no seek while within 2 s; a 3 s stall: one seek, then nothing for 10 s
+                await asyncio.sleep(3)
+                seeks1 = [len(await p.page.evaluate('window.__ytSeeks')) for p in (lan, minh)]
+                check(seeks1 == seeks0, f'B2: no seek while the drift stays under 2 s (seeks {seeks0} → {seeks1})')
+                rates = [await p.page.evaluate('window.__yt.rate') for p in (lan, minh)]
+                print(f'playback rates while nudging: Lan {rates[0]}, Minh {rates[1]}', flush=True)
+                await minh.page.evaluate('window.__yt.base -= 3')
+                await asyncio.sleep(1.6)
+                n1 = len(await minh.page.evaluate('window.__ytSeeks'))
+                check(n1 == seeks1[1] + 1, f'B2: a 3 s stall is fixed by one seek ({n1 - seeks1[1]})')
+                await asyncio.sleep(1.5)
+                await minh.page.evaluate('window.__yt.base -= 3.5')   # a second stall inside the 10 s: no seek, a nudge
+                await asyncio.sleep(3)
+                n2 = len(await minh.page.evaluate('window.__ytSeeks'))
+                check(n2 == n1, f'B2: no second seek within 10 s ({n2 - n1})')
+                await asyncio.sleep(6)
+                n3 = len(await minh.page.evaluate('window.__ytSeeks'))
+                check(n3 == n1 + 1, f'B2: past 10 s the 3.5 s stall gets its one seek ({n3 - n1})')
             # Minh: ⋯ → 🧩 Đố bài → Emoji
             await minh.page.click('.kr-sheet[open] [data-kr=more]')
             await minh.page.click('.kr-sheet[open] [data-kr=round]')
@@ -213,6 +270,9 @@ async def run(shots: Path | None, real: bool) -> list:
             txt = await lan.page.inner_text('.kr-sheet[open] .kr-round')
             check('Nơi này có anh' in txt and '+5 xu' in txt, f'the answer and the prize on the winner ({txt!r})')
             await shot(lan, 'round-won-chromium')
+            skew2, drifts2 = await skew_of(lan, minh)
+            print(f'video time skew later on: max {skew2 * 1000:.0f} ms (each phone off the server clock: {drifts2})', flush=True)
+            check(skew2 <= MAX_SKEW, f'both phones still together later (max skew {skew2 * 1000:.0f} ms ≤ {MAX_SKEW * 1000:.0f} ms)')
             words = await lan.page.evaluate("""() => { const d = document.querySelector('.kr-sheet[open]'); const t = [...d.querySelectorAll('.kr-head, .kr-bar')].map(e => e.innerText).join(' ');
                 return t.split(/\\s+/).filter(w => /[A-Za-zÀ-ỹ]/.test(w)).length; }""")
             check(words <= 25, f'few words on the room chrome ({words} ≤ 25)')

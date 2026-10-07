@@ -30,11 +30,23 @@ class Links(unittest.TestCase):
                      f'https://www.youtube-nocookie.com/embed/{VID}', f'  https://www.youtube.com/watch?v={VID}  '):
             self.assertEqual(kg.parse_vid(link), VID, link)
 
+    def test_what_a_phone_copies_gives_the_id(self):
+        """B3 (07/10, 9 refused pastes): Chia sẻ › Sao chép on phones and apps, shorts and music, si= and other params."""
+        for link in (f'https://youtube.com/shorts/{VID}?si=AbC-12_x', f'https://m.youtube.com/watch?v={VID}&feature=share&si=x',
+                     f'https://music.youtube.com/watch?v={VID}&si=Zz9', f'https://www.youtube.com/watch?app=desktop&v={VID}&pp=ygU',
+                     f'youtu.be/{VID}?si=x', f'www.youtube.com/watch?v={VID}', f'YOUTUBE.COM/shorts/{VID}', f'm.youtube.com/watch?v={VID}',
+                     f'music.youtube.com/watch?v={VID}', f'​https://youtu.be/{VID}​', f'﻿{VID}',
+                     f'Xem "Nơi này có anh" trên YouTube: https://youtu.be/{VID}?si=abc', f'"https://youtu.be/{VID}"',
+                     f'<https://youtu.be/{VID}>', f'https://youtu.be/{VID}, hay lắm', f'https://www.youtube.com/watch?v={VID}%26si%3Dabc'):
+            self.assertEqual(kg.parse_vid(link), VID, link)
+
     def test_anything_else_is_refused(self):
         for link in ('', None, 'dQw4w9WgXc', f'https://youtube.com.evil.io/watch?v={VID}', f'https://evil.com/watch?v={VID}',
                      f'javascript:alert(1)//{VID}', f'https://www.youtube.com/watch?v={VID}x', 'https://www.youtube.com/watch?v=short',
                      f'ftp://youtube.com/watch?v={VID}', f'https://user:pw@youtube.com/watch?v={VID}', f'https://youtube.com:8443/watch?v={VID}',
-                     f'https://www.youtube.com/channel/{VID}', 'x' * 500, 12345):
+                     f'https://www.youtube.com/channel/{VID}', 'x' * 500, 12345,
+                     f'youtube.com.evil.io/watch?v={VID}', f'evil.io/youtu.be/{VID}', f'xem bài {VID} nhé', f'//youtu.be/{VID}',
+                     f'https://www.youtube.com/watch?v={VID}x%26si', 'https://www.youtube.com/@sontungmtp', 'nơi này có anh'):
             self.assertIsNone(kg.parse_vid(link), link)
 
 
@@ -404,3 +416,11 @@ class Headers(unittest.TestCase):
         js = (Path(__file__).resolve().parents[1] / 'public/js/v4/karaoke.js').read_text(encoding='utf-8')
         self.assertIn("f.referrerPolicy='strict-origin-when-cross-origin'", js)   # the site is no-referrer: YouTube error 153
         self.assertIn("YT_HOST='https://www.youtube-nocookie.com'", js)
+
+    def test_drift_control_seeks_rarely(self):
+        """B2 (07/10 "nhạc cứ giật giật"): a seek re-buffers, so it is the last resort (scripts/browser_live_karaoke.py)."""
+        js = (Path(__file__).resolve().parents[1] / 'public/js/v4/karaoke.js').read_text(encoding='utf-8')
+        self.assertIn('const SEEK_AT=2,SEEK_GAP=10000,', js)   # ≥ 2 s off, at most once per 10 s
+        body = js[js.index('function sync('):js.index('function nudge(')]
+        self.assertIn('if(s!==1)return;', body)                 # never while buffering, an ad or a pause
+        self.assertEqual(body.count('seekTo('), 1)
