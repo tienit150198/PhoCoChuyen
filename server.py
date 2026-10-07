@@ -193,6 +193,21 @@ def release_of(version)->tuple|None:
     return tuple(int(p) for p in parts)
 
 
+def _log_big_command(data:dict,length:int)->None:
+    """One stderr line for a /api/command refused as too large (B10): the action, the body size and the three biggest
+    payload fields as name=bytes. Names are clipped and printable; no value is ever written."""
+    clip=lambda x:"".join(ch if ch.isprintable() and ch not in ' ="' else "?" for ch in str(x)[:40])
+    payload=data.get("payload")
+    fields=""
+    if isinstance(payload,dict):
+        def size(v):
+            try:return len(json.dumps(v,ensure_ascii=False))
+            except (TypeError,ValueError):return -1
+        top=sorted(((size(v),str(k)) for k,v in payload.items()),reverse=True)[:3]
+        fields=" "+",".join(f"{clip(k)}={n}" for n,k in top)
+    sys.stderr.write(f"[cmd-413] action={clip(data.get('action',''))} career={clip(data.get('career') or '-')} bytes={length}{fields}\n")
+
+
 def client_outdated(data:dict,game_page:bool,minimum:str|None=None,server:str=__version__)->bool:
     """True when a command comes from a page older than the floor (see MIN_CLIENT)."""
     floor=release_of(MIN_CLIENT if minimum is None else minimum)
@@ -939,7 +954,11 @@ class Handler(BaseHTTPRequestHandler):
                 if str(data.get("action",""))[:5]=="fair_" and not self.server.rate_limit("fair:"+token,int(os.environ.get("FAIR_PER_MINUTE","40"))):self.error(429,"Từ từ thôi, hội chợ còn dài mà!","rate_limited");return  # 🏮 game/fair.py
                 if str(data.get("action",""))[:7]=="jr_auc_" and not self.server.rate_limit("aucbid:"+token,int(os.environ.get("AUCTION_BIDS_PER_MINUTE","12"))):self.error(429,"Từ từ thôi, mỗi phút trả giá vài lần thôi nhé!","rate_limited");return  # 🔨 game/auction.py
                 if str(data.get("action",""))[:8]=="jr_deco_" and not self.server.rate_limit("deco:"+token,int(os.environ.get("DECO_PER_MINUTE","150"))):self.error(429,"Từ từ thôi, bày trí chậm lại chút nhé!","rate_limited");return  # 🪴 game/deco.py: drags send one move each
-                if length>256*1024 and data.get("action")!="import_save":self.error(413,"Thao tác quá lớn.");return
+                if length>256*1024 and data.get("action")!="import_save":
+                    # B10 (07/10: 3 iPhone commands refused, sender unknown): which action, how big, and its biggest
+                    # payload fields by name and size only. Never the payload itself (photos, typed words).
+                    _log_big_command(data,length)
+                    self.error(413,"Thao tác quá lớn.");return
                 if client_outdated(data,self.headers.get("X-Game-Delta")=="1"):self.error(426,"Trò chơi vừa có bản mới. Tải lại trang để chơi tiếp nhé.","client_outdated");return
                 result=self.server.store.command(token,data.get("request_id"),data.get("expected_revision"),data.get("career"),data.get("action"),data.get("payload",{}))
                 self.json(200,result,known=state_delta.parse_known(data.get("known")));return

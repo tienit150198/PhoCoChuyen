@@ -1,6 +1,28 @@
 # v1.9.15 — 2026-10-07
 
 Gồm sửa karaoke (hết giật, nhận thêm kiểu link), lux (nút mờ khi thiếu tiền), và mic trực tiếp (schema 30 account_birth; bật bằng LIVE_KARAOKE_MIC=1 sau khi cài LiveKit: deploy/livekit).
+# Chưa phát hành
+
+## Sửa lỗi chiều 07/10 (trả lời đánh giá, Khép ca, công an hội chợ, tiệm hoa)
+
+- Trả lời đánh giá không còn mất im lặng (fb_reply 409: 29 → 148 lần): khi lời AI của khách lưu chậm, câu trả lời được
+  gửi lại tối đa 3 lần theo trạng thái mới (chờ lời AI đang trên đường về xong, nghỉ 0,2 / 0,5 / 1 giây). Vẫn không được
+  thì chữ vẫn nằm trong ô và hiện thông báo "Trả lời chưa gửi được, khách vừa nhắn." kèm nút **Gửi lại** (điền lại chữ
+  và gửi). Lệnh khác cũng thử lại 3 lần thay vì 1.
+- F#236: nút Khép ca ở màn chính (khi còn mời thêm khách được) là nút có chữ, nằm riêng một hàng, không còn là icon cửa
+  nhỏ. Khép ca / Mở ca trong thanh dưới cùng và trong bảng việc chiếm cả hàng, cao ít nhất 44 px (360×640, 320×568).
+- Hội chợ: vừa vào không bị công an hỏi ngay. Mỗi lượt chơi (bắt đầu sau 30 phút không chơi ván có cược) có 10 phút
+  đầu hoặc 20 ván có cược đầu, tính mốc nào tới SAU, không kiểm tra thu 30% ví và không hỏi nguồn tài sản. Xác suất và
+  khoảng cách giữa hai lần kiểm tra giữ như 1.9.12; dẹp chiếu trong vẫn tính từng ván. Khóa mới, tùy chọn:
+  `journey.fair_sess` {at, n, ls} (1.9.13 giữ nguyên khi đọc; thiếu khóa = ván có cược tới bắt đầu lượt mới).
+- Tiệm hoa: bấm Cắm/Bó từ màn vẽ trước khi hẹn giờ cắm xong thì bỏ qua cho tới lần vẽ lại; máy chủ coi lệnh cắm lần hai
+  trên bó đã cắm là OK và không đổi gì (không tính nhịp, không trừ kiên nhẫn) thay vì báo "Đã hoàn thành dáng.".
+- Bảng tình huống không còn lỗi khi trạng thái chưa có nghề hiện tại (12 lỗi lúc khởi động lại 10:22).
+- Lệnh quá lớn (>256 KB) ghi một dòng `[cmd-413]`: tên lệnh, cỡ, ba trường lớn nhất (chỉ tên và cỡ, không ghi nội dung).
+- Ảnh chụp cảnh (📸 album) và ảnh phòng (Sửa nhà) trên iPhone không còn bị từ chối "Thao tác quá lớn": Safari không
+  làm được WebP nên trước đây gửi PNG (thường > 256 KB). Giờ thử WebP, không được thì JPEG (không bao giờ PNG), hạ dần
+  chất lượng rồi cỡ ảnh tới khi ≤ 200.000 ký tự (v4/photo-encode.js).
+- Không thêm mục "Có gì mới". Không đổi CSDL.
 
 # v1.9.14 — 2026-10-07 (hotfix)
 

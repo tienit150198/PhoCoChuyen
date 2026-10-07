@@ -69,11 +69,14 @@ assert.equal(transient({status:400}),false);assert.equal(transient({status:409})
   assert.equal(calls.length,2,'sent once more');assert.equal(calls[1].body.expected_revision,12,'against the adopted revision');
   assert.notEqual(calls[0].body.request_id,calls[1].body.request_id,'a new request id');
   assert.equal(again.message,'ok 12');assert.equal(a.revision,13);
-  // a second conflict in a row (another tab keeps moving the save): no loop, no error toast, the server's state is shown
-  calls=install([json(409,{error:'Tiến trình đã thay đổi',code:'revision_conflict',...state(12)}),json(409,{error:'Tiến trình đã thay đổi',code:'revision_conflict',...state(14)}),json(200,state(99))]);
+  // conflicts in a row (another tab keeps moving the save): sent again up to 3 times (B4, 07/10: was once), then no
+  // loop, no error toast, the server's state is shown; error.conflict lets a caller with typed words offer "Gửi lại"
+  const moved=r=>json(409,{error:'Tiến trình đã thay đổi',code:'revision_conflict',...state(r)});
+  calls=install([moved(12),moved(13),moved(14),moved(15),json(200,state(99))]);
   [a,seen]=api();let rejected=0;a.addEventListener('rejected',()=>rejected++);
-  await assert.rejects(a.command('x',{}),e=>e.status===409&&e.quiet===true&&e.message==='');
-  assert.equal(calls.length,2,'retried once only');assert.equal(a.revision,14,'the server state was adopted');
+  await assert.rejects(a.command('x',{}),e=>e.status===409&&e.quiet===true&&e.conflict===true&&e.message==='');
+  assert.equal(calls.length,4,'retried 3 times only');assert.equal(a.revision,15,'the server state was adopted');
+  assert.deepEqual(calls.map(c=>c.body.expected_revision).slice(1),[12,13,14],'each try against the state just adopted');
   assert.equal(rejected,0,'not reported as a rejected tap (no toast, no telemetry)');
   const c2=install([json(429,{error:'Nhiều thao tác quá nhanh',code:'rate_limited'}),json(200,state(99))]);
   [a]=api();await assert.rejects(a.command('x',{}),e=>e.status===429);assert.equal(c2.length,1);

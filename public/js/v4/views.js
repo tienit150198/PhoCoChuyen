@@ -508,7 +508,10 @@ function rvBoxes(p,parent,inline=false,pagoda=false,cid=''){
 
 /* ----------------------------------------------------------- Situation */
 export function situationView(env){
-  const {api}=env,c=api.state.careers[api.state.current],x=c.situation;
+  // B9 (07/10, 12 crashes at the 10:22 restart): the state of a moment with no current workplace (a deploy, a career
+  // left in another tab) has no careers[current]. A calm "nothing here" with a close button instead of a TypeError.
+  const {api}=env,c=api.state?.careers?.[api.state?.current],x=c?.situation;
+  if(!c)return head('Tình huống','','CHUYỆN TRONG CA')+`<div class="sheet-body"><div class="empty">${icon('sun',30)}<h3>Chưa vào quầy nào</h3><div class="row center space-top">${button('Đóng','close',{},'primary')}</div></div></div>`;
   const list=api.content.situations?.[api.state.current]||[];
   if(!x){
     const practice=list.map(s=>`<article class="card sit-practice"><div class="grow"><strong>${esc(s.title)}</strong><small class="muted block">${s.tone==='tense'?'Căng thẳng':'Nhẹ nhàng'}${s.swap?' · có góc nhìn đổi vai':''}</small></div>${cmdBtn('Diễn tập','sit_practice',{script:s.id},'ghost small')}</article>`).join('');
@@ -873,6 +876,15 @@ export async function v4Action(action,data,el,env){
   }
   return false;
 }
+export const FB_DROPPED='Trả lời chưa gửi được, khách vừa nhắn.';
+/** "Gửi lại" (B4): the reply's words back in its box (the review opened again if the sheet moved on), then sent. */
+export function fbResend(env,post,typed){
+  const box=()=>globalThis.document?.querySelector(`form[data-v4-fb="${globalThis.CSS?.escape?.(post)??post}"]`);
+  const put=f=>{const ta=f.querySelector('textarea');if(!ta.value.trim())ta.value=typed;ta.focus?.();if(f.dataset.sending)return;
+    if(typeof f.requestSubmit==='function')f.requestSubmit();};
+  const f=box();if(f){put(f);return;}
+  Promise.resolve(env.act?.('fbGo',{post})).then(()=>setTimeout(()=>{const g=box();if(g)put(g);else env.toast('Cuộc trao đổi này đã khép, không gửi thêm được.',true);},0));
+}
 export async function v4Submit(form,env){
   const {api,cmd}=env;
   if(form.dataset.v4Receive){const id=form.dataset.v4Receive,count=Number(form.querySelector('input').value);
@@ -899,7 +911,14 @@ export async function v4Submit(form,env){
       go?.classList.toggle('is-pending',on);
     };
     off(true);
-    let r;try{r=await cmd('fb_reply',{post,text,offer,tone});}finally{if(form.isConnected)off(false);}
+    // B4: the save kept moving under the reply (a reviewer's AI write, 3 retries in api.js): never lost in silence.
+    // The words stay in the box, and a toast offers "Gửi lại" (puts them back if the box was redrawn, sends again).
+    const typed=ta.value;let dropped=false;
+    let r;try{r=await cmd('fb_reply',{post,text,offer,tone},{dropped:()=>{dropped=true;}});}finally{if(form.isConnected)off(false);}
+    if(!r&&dropped){
+      if(form.isConnected&&!ta.value.trim())ta.value=typed;
+      env.toast(FB_DROPPED,false,{action:{label:'Gửi lại',run:()=>fbResend(env,post,typed)}});
+    }
     if(r){
       form.querySelector('textarea').value='';env.ui.fbOffer='none';env.ui.fbTone=null;
       // Give the reviewer a moment to "read" before answering.

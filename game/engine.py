@@ -579,6 +579,11 @@ def _apply_action(state:dict,career:str|None,action:str,payload:dict|None,intern
     jr.gate(s,career,action,internal,p)
     if career!=s.get("current"):ab.check(s,career,{},internal)  # leaving work in progress only through select_career
     c=s["careers"][career]
+    # A plugin's repeat of a step already done (florist: Cắm on a bench already arranged, B8 07/10): a quiet OK with
+    # nothing changed, no beat and no ticks. mod.repeat answers None for anything else (the command runs as before).
+    if career==s.get("current") and hasattr(PLUGINS.get(career),"repeat") and action.startswith(PLUGINS[career].SPEC["prefix"]):
+        same=PLUGINS[career].repeat(s,c,action,p)
+        if same is not None:return s,same
     s["current"]=career
     clock_before=dc.minute_now(c,career) if action!="start_day" else None  # giờ trong ngày: closing warnings below
     prior_mistakes={t["id"]:t["mistakes"] for t in c["tasks"]}

@@ -40,8 +40,14 @@ export function clockSample(samples,sent,got,time,recv){
  * (about 29 sessions on 06/10: trà sữa, quần áo, cà phê, thư ký, homestay), and a tap dropped when it moved again
  * under the one retry. So it takes its place in the queue (after the taps already queued) and the taps after it wait
  * until it lands, AI_WAIT at most from when it was sent: a usual answer lands first, a slow model never freezes the
- * screen (a later landing is what the one 409 retry in command() is for). Returns the write's own promise. */
+ * screen (a later landing is what the 409 retries in command() are for). Returns the write's own promise. */
 export const AI_WAIT=4000;
+/* B4 (07/10): fb_reply revision_conflict 29 → 148 refusals in a morning. A model slower than AI_WAIT lands its write
+ * under the reply already on its way, and the one retry met it again: the reply was dropped quietly, "Gửi" seemed to
+ * do nothing. Now a conflict is sent again up to CONFLICT_RETRIES times against the fresh state (the server checks
+ * everything again each time), each after a short CONFLICT_BACKOFF, and first after an AI write already on the wire
+ * lands (AI_SETTLE at most). Only then is it dropped (error.quiet + error.conflict: the caller may offer "Gửi lại"). */
+export const CONFLICT_RETRIES=3,CONFLICT_BACKOFF=[200,500,1000],AI_SETTLE=6000;
 export function aiQueued(api,fn,wait=AI_WAIT){
   let sent;const started=new Promise(resolve=>{sent=resolve;});
   const run=()=>{sent();return fn();};
@@ -325,18 +331,19 @@ export class GameAPI extends EventTarget {
         // marriage inbox, a ticker, another tab). Adopt the server's state (or read it), then:
         // - this very step already landed from this tab after the screen the tap was made on (a double tap let
         //   through by an older screen): it is not sent again, and the tap ends quietly (result.duplicate);
-        // - else the tap is sent once more against it (a new request_id; the server checks everything again);
-        // - moved again under that retry: the tap is dropped quietly (error.quiet, no toast), the screen shows the
-        //   server's state and the player taps again if they still want it. Never applied twice: a lost answer is
-        //   replayed by its request_id (RETRY_DELAYS), a conflict was not applied at all.
+        // - else the tap is sent again against it (a new request_id; the server checks everything again), up to
+        //   CONFLICT_RETRIES times, after a short backoff and after an AI write on the wire lands (see AI_SETTLE);
+        // - still moving after that: the tap is dropped quietly (error.quiet, no toast; error.conflict: a caller with
+        //   typed words offers "Gửi lại", app.js cmd `dropped`), the screen shows the server's state. Never applied
+        //   twice: a lost answer is replayed by its request_id (RETRY_DELAYS), a conflict was not applied at all.
         for(let tries=0;;tries++){
           try{data=await send();break;}
           catch(error){
             if(error.status===409&&error.data?.code==='revision_conflict'){
               if(error.data.state)this.accept(error.data);else await this.refresh().catch(()=>{});
               if(this.done.some(d=>d.tap===tap&&d.revision>expected&&Date.now()-d.at<DOUBLE_TAP_MS))return {message:'',duplicate:true};
-              if(tries===0)continue;
-              error.quiet=true;error.message='';
+              if(tries<CONFLICT_RETRIES){await this.settle(CONFLICT_BACKOFF[tries]??1000);continue;}
+              error.quiet=true;error.conflict=true;error.message='';
             }else if(error.status===409&&error.data?.state)this.accept(error.data);
             throw error;
           }
@@ -376,9 +383,22 @@ export class GameAPI extends EventTarget {
   /** An AI save write in the command queue (see aiQueued). `since` is taken when it is sent: an answer older than a
    * state a later tap adopted meanwhile (the model was slower than AI_WAIT) is left out, the screen never steps back. */
   async aiWrite(url,body){
-    let since;
-    try{const data=await aiQueued(this,()=>{since=this.accepted;return this.post(url,body,25000);},this.aiWait??AI_WAIT);if(data?.state)this.accept(data,since);return data;}
+    let since;const out=this.aiOut??=new Set();
+    const job=aiQueued(this,()=>{
+      since=this.accepted;const p=this.post(url,body,25000);
+      // On the wire until it answers: a conflicting tap waits for it before its next try (settle()).
+      const mark=p.then(()=>{},()=>{});out.add(mark);mark.then(()=>out.delete(mark));
+      return p;
+    },this.aiWait??AI_WAIT);
+    try{const data=await job;if(data?.state)this.accept(data,since);return data;}
     catch{return {mode:'none'};}
+  }
+  /** Before a conflicting tap goes again: the AI writes already sent answer (AI_SETTLE at most), then `ms` more (the
+   * answer is adopted meanwhile). A write still queued behind this very tap is not on the wire: never waited for. */
+  async settle(ms){
+    const out=[...(this.aiOut||[])];
+    if(out.length)await Promise.race([Promise.allSettled(out),sleep(this.aiSettle??AI_SETTLE)]);
+    await sleep(ms);
   }
   /** Reviewer answers the owner's reply (AI persona when allowed, scripted otherwise). */
   aiFeedback(post,career=this.state.current||this.state.focus){return this.aiWrite('/api/ai/feedback',{career,post});}

@@ -6,7 +6,7 @@
 // QUEUED, and the review reply form is off while its reply is on its way. Run by tests/test_fb_queue.py.
 import assert from 'node:assert/strict';
 import {GameAPI} from '../public/js/api.js';
-import {v4Submit} from '../public/js/v4/views.js';
+import {v4Submit,FB_DROPPED,situationView} from '../public/js/v4/views.js';
 import {termsSource,offersOf,SHOP} from '../public/js/v4/terms.js';
 
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -98,6 +98,38 @@ termsSource(()=>[{id:'tour_guide',terms:{...SHOP,commerce:false,offers:{drink:'N
   await v4Submit(fakeForm({offer:'gift'}).form,env);
   assert.equal(sent[0].offer,'gift','an offer this career gives goes as it is');
 }
+// 3b. B4: the save kept moving under the reply (api.js gave up after its retries: cmd calls options.dropped and
+//     answers null). Never silent: the words stay, and a toast offers "Gửi lại", which puts them back in a redrawn
+//     box and sends the form again.
+{
+  const toasts=[],sent=[];
+  const env={api:{state:{current:'tour_guide'},aiFeedback:async()=>({})},ui:{},toast:(...a)=>toasts.push(a),
+    cmd:async(action,payload,options)=>{sent.push(payload);options?.dropped?.({quiet:true,conflict:true});return null;}};
+  const {form,ta}=fakeForm();
+  await v4Submit(form,env);
+  assert.equal(sent.length,1);assert.equal(ta.value,'  Xin lỗi bạn nhé  ','the words stay in the box');
+  assert.equal(toasts.length,1,'a toast says so');
+  const [msg,kind,opts]=toasts[0];
+  assert.equal(msg,FB_DROPPED);assert.ok(kind!==true,'not a red error');assert.equal(opts.action.label,'Gửi lại');
+  // The sheet was redrawn meanwhile (empty box): "Gửi lại" restores the words and submits the form again.
+  ta.value='';let submitted=0;form.requestSubmit=()=>{submitted++;};ta.focus=()=>{};
+  globalThis.document={querySelector:sel=>sel==='form[data-v4-fb="p9"]'?form:null};
+  opts.action.run();
+  assert.equal(ta.value,'  Xin lỗi bạn nhé  ','the typed words are back');assert.equal(submitted,1,'and sent again');
+  // The box is gone (the review moved on): the review is opened again first.
+  const acts=[];globalThis.document={querySelector:()=>null};
+  opts.action.run.call(null);
+  const env2={...env,act:(a,d)=>{acts.push([a,d]);}};
+  toasts.length=0;await v4Submit(fakeForm().form,env2);toasts[0][2].action.run();
+  assert.deepEqual(acts,[['fbGo',{post:'p9'}]],'no box on screen: the review opens');
+  await sleep(5);
+  assert.ok(toasts.some(t=>t[1]===true),'still no box: it says the thread is closed');
+  delete globalThis.document;
+  // A refusal with its own toast (cmd showed it) is not a dropped reply: no "Gửi lại".
+  toasts.length=0;
+  await v4Submit(fakeForm().form,{...env,cmd:async()=>null});
+  assert.equal(toasts.length,0);
+}
 // 4. offersOf without the career's own row (catalogue not in, or older than `terms`): nothing, never the shop's three.
 assert.deepEqual(offersOf('police'),[]);
 assert.deepEqual(offersOf('tour_guide').map(([id])=>id),['drink','gift']);
@@ -105,4 +137,10 @@ termsSource(()=>null);
 assert.deepEqual(offersOf('milk_tea'),[],'no catalogue: no offer (Không bù is always safe)');
 termsSource(()=>[{id:'milk_tea'}]);
 assert.deepEqual(offersOf('milk_tea'),[],'a catalogue from before terms: no offer');
+// 5. B9 (same file, views.js): the situation sheet drawn from a state with no current workplace (a restart, 12 ×
+//    TypeError at 10:22) shows a calm empty view instead of crashing.
+for(const st of [{careers:{},current:null},{careers:{},current:'milk_tea'},{current:'milk_tea'}]){
+  const html=situationView({api:{state:st,content:{situations:{},npcs:[]}}});
+  assert.match(html,/Chưa vào quầy nào/);
+}
 console.log('fb double tap ok');

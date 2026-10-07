@@ -127,6 +127,13 @@ POLICE_SAY = 'Chào em, nghe nói em lời ở hội chợ hơi bị nhiều. Ch
 # 🍀 Lộc trời cho (owner 07/10): a won round of a paid luck stall pays LOC_MULT× its stake, LOC_P of the time, once per
 # LOC_GAP for the whole server (the mnl_meta row LOC_KEY holds the last one's time).
 LOC_MULT, LOC_P, LOC_GAP, LOC_KEY = 10, .015, 3600, 'fair_loc_at'
+# 🚓 A quiet start (owner 07/10, B6: "vừa vào bị tóm", "tay đầu tiên bị tóm luôn"): time away counted towards both
+# police cooldowns, so the first paid round after a break rolled the raid and the asset check at once. A fair session
+# starts with a paid round SESSION_GAP or more after the last one; neither check (_wealth_raid, _asset_audit) runs in its
+# first GRACE_S seconds or its first GRACE_ROUNDS paid rounds, whichever ends LATER. Their odds and gaps are unchanged,
+# the xóc đĩa's own per-round raid (dẹp chiếu) too. journey['fair_sess'] {at, n, ls}: the session's start, its paid
+# rounds, the last one's time (optional: an older server keeps it as is; absent = the next paid round starts one).
+SESS_KEY, SESSION_GAP, GRACE_S, GRACE_ROUNDS = 'fair_sess', 1800, 600, 20
 LOC_LABEL = '🍀 Lộc trời cho ×10'
 LOC_ACTIONS = ('fair_bc', 'fair_xd', 'fair_xs', 'fair_loto_kinh')
 # 🎱 Lô tô
@@ -932,6 +939,17 @@ def audit_base(j: dict) -> int:
     return a['base'] if isinstance(a, dict) and a.get('ed') == edition() else 0
 
 
+def _session(j: dict, t: float) -> bool:
+    """Count a paid round in the fair session (a new one after SESSION_GAP away); True while the police wait."""
+    now = int(t)
+    ss = j.get(SESS_KEY)
+    if not (isinstance(ss, dict) and 0 <= now - ss.get('ls', -SESSION_GAP) < SESSION_GAP):
+        ss = j[SESS_KEY] = dict(at=now, n=0, ls=now)
+    ss['n'] = min(10**6, ss['n'] + 1)
+    ss['ls'] = now
+    return now - ss['at'] < GRACE_S or ss['n'] <= GRACE_ROUNDS
+
+
 def _wealth_raid(j: dict, f: dict, t: float) -> dict | None:
     """Check only after a paid chance round. Reads/offline time cannot take money."""
     if f['net'] <= WEALTH_THRESHOLD or t - f.get('wealth_check_at', 0) < WEALTH_CHECK_GAP:
@@ -1349,7 +1367,8 @@ def apply(s: dict, name: str, p: dict) -> dict:
             result['fair'] = dict(game='ring', hits=hits, n=n, prize=prize, capped=prize < full)
             result['message'] = f'Trúng {n}/{ring.BOTTLES} cổ chai' + (f', +{prize} xu.' if prize else '.')
     paid_round = name in ('fair_bc', 'fair_xd', 'fair_xs') or name == 'fair_loto_kinh' and result['fair'].get('won')
-    if paid_round and not result['fair'].get('raid'):
+    quiet = paid_round and _session(j, t)   # B6: the session's first minutes / rounds, no police check
+    if paid_round and not quiet and not result['fair'].get('raid'):
         seizure = _wealth_raid(j, f, t)
         if seizure:
             result['fair']['wealth_raid'] = seizure
@@ -1515,6 +1534,13 @@ def validate(j: dict) -> None:
             integer(r['n'], 0, 10**6)
             integer(r['at'], 0, 10**11)
             integer(r['sw'], 0, SWITCH_ROUNDS)
+    if SESS_KEY in j:   # 07/10 (B6), optional: an older server keeps it as is
+        from .engine import need, integer
+        ss = j[SESS_KEY]
+        need(isinstance(ss, dict) and set(ss) == {'at', 'n', 'ls'}, 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+        integer(ss['at'], 0, 10**11)
+        integer(ss['n'], 0, 10**6)
+        integer(ss['ls'], 0, 10**11)
     if 'fair_run3' in j:
         from .engine import need, integer
         r = j['fair_run3']

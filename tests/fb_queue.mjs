@@ -6,7 +6,7 @@
 // Run by tests/test_fb_queue.py.
 import assert from 'node:assert/strict';
 import {readFileSync,readdirSync,statSync} from 'node:fs';
-import {GameAPI,AI_WAIT,aiQueued} from '../public/js/api.js';
+import {GameAPI,AI_WAIT,aiQueued,CONFLICT_RETRIES} from '../public/js/api.js';
 
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const ok=data=>new Response(JSON.stringify(data),{status:200,headers:{'Content-Type':'application/json'}});
@@ -95,6 +95,56 @@ assert.equal(await free(a.queue),'free');
   assert.equal(await free(q.queue),'held');
   await sleep(150);assert.equal(await free(q.queue),'free','the cap releases the taps');
   out('done');assert.equal(await job,'done');
+}
+
+// 7. B4 (07/10, 29 → 148 refusals): the save moves under a reply more than once (a model slower than AI_WAIT, then
+//    another write). It is sent again up to CONFLICT_RETRIES times against the fresh state, never dropped after one.
+assert.equal(CONFLICT_RETRIES,3);
+{
+  const prev=globalThis.fetch,s={revision:1,sent:[],busy:0};
+  const conflict=()=>new Response(JSON.stringify({error:'conflict',code:'revision_conflict',state:state(),revision:s.revision}),{status:409,headers:{'Content-Type':'application/json'}});
+  globalThis.fetch=async(url,init={})=>{
+    const body=JSON.parse(init.body);
+    if(url!=='/api/command')throw new Error('unexpected '+url);
+    s.sent.push({...body,at:Date.now()});
+    if(s.busy>0){s.busy--;s.revision++;return conflict();}   // another write landed just before this one
+    if(body.expected_revision!==s.revision)return conflict();
+    s.revision++;return ok({state:state(),revision:s.revision,result:{message:'Đã gửi'}});
+  };
+  const b=new GameAPI();b.state=state();b.revision=1;b.csrf='c';
+  s.busy=3;   // three conflicts in a row: the 4th try lands (before: dropped after the 2nd)
+  const r=await b.command('fb_reply',{post:'q1',text:'Dạ em xin lỗi',offer:'none',tone:'sorry'});
+  assert.equal(r.message,'Đã gửi');assert.equal(s.sent.length,4);
+  assert.equal(new Set(s.sent.map(x=>x.request_id)).size,4,'each try is a new request against the fresh revision');
+  assert.deepEqual(s.sent.map(x=>x.expected_revision),[1,2,3,4]);
+  assert.ok(s.sent[1].at-s.sent[0].at>=150,'a short backoff before trying again');
+  // Still moving after the retries: dropped, but marked (quiet for every other caller; conflict: "Gửi lại" offered).
+  s.sent.length=0;s.busy=9;
+  const e=await b.command('fb_reply',{post:'q2',text:'Dạ',offer:'none',tone:'free'}).then(()=>null,x=>x);
+  assert.ok(e&&e.quiet&&e.conflict,'error.quiet + error.conflict');assert.equal(s.sent.length,1+CONFLICT_RETRIES);
+  globalThis.fetch=prev;
+}
+// 8. A conflict while an AI write is on the wire (the model slower than AI_WAIT): the next try waits until it answers
+//    (AI_SETTLE at most) and goes against the revision it wrote, so one conflict is all.
+{
+  const prev=globalThis.fetch,s={revision:1,sent:[],conflicts:0,aiAt:0};let save;
+  globalThis.fetch=async(url,init={})=>{
+    const body=JSON.parse(init.body);
+    if(url==='/api/ai/feedback'){await new Promise(r=>{save=r;});s.revision++;const rev=s.revision;await sleep(300);s.aiAt=Date.now();
+      return ok({state:state(),revision:rev,result:{message:'Ok quán'},mode:'ai'});}
+    s.sent.push({...body,at:Date.now()});
+    if(body.expected_revision!==s.revision){s.conflicts++;return new Response(JSON.stringify({error:'conflict',code:'revision_conflict',state:state(),revision:s.revision}),{status:409,headers:{'Content-Type':'application/json'}});}
+    s.revision++;return ok({state:state(),revision:s.revision,result:{message:'Đã gửi'}});
+  };
+  const b=new GameAPI();b.state=state();b.revision=1;b.csrf='c';b.aiWait=40;
+  const w=b.aiFeedback('q3');await sleep(60);   // past the cap: the queue lets the reply go
+  save();await sleep(0);   // the model saves (revision 2); its answer comes 300 ms later
+  const reply=b.command('fb_reply',{post:'q3',text:'Cảm ơn bạn',offer:'none',tone:'free'});
+  const r=await reply;await w;
+  assert.equal(r.message,'Đã gửi');assert.equal(s.conflicts,1,'one conflict, then it lands');
+  assert.equal(s.sent.length,2);assert.ok(s.sent[1].at>=s.aiAt,'the retry waited for the AI answer');
+  assert.equal(s.sent[1].expected_revision,2);assert.equal(b.revision,3);
+  globalThis.fetch=prev;
 }
 
 // 6. Nothing else writes these routes off the queue: only api.js names them.
