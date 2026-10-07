@@ -13,6 +13,7 @@ import {T,isShop,offersOf} from './terms.js';
 import {confirmPurchase} from './payment.js';
 import {orderQuote,fitDraft,vans,vansLine} from './restock.js';
 import {Sound} from '../audio.js';
+import {keepRow} from '../keep-ui.js';   // 🔒 Giữ lại cho ca của tôi (B4 part 2)
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 /** The workplace money word the 💰 chip uses too ("Quỹ tiệm", "Quỹ nông trại"…; v4/money.js). */
@@ -236,8 +237,8 @@ export function inventoryView(env){
     const bin=i=>{
       const q=stock(i.id),on=arriving[i.id]||0,locked=inv.locked.includes(i.id),exp=inv.expiring[i.id]||0,soon=(inv.expiring_soon?.[i.id]||0)-exp,days=inv.days_left?.[i.id];
       const state=locked?'locked':q===0?'out':q+on<=lowLine?'low':'';
-      const carted=carts.reduce((n,k)=>n+(k.lines.find(l=>l.item===i.id)?.qty||0),0);
-      const flags=locked?`<span class="inv-flag">${icon('lock',11)} Mở ở cấp ${i.unlock}</span>`:[on?`<span class="inv-flag info">+${on} đang giao</span>`:'',carted?`<span class="inv-flag cart">🛒 ${carted}</span>`:'',exp?`<span class="inv-flag bad">${exp} hết hạn tối nay</span>`:soon>0?`<span class="inv-flag warn">${soon} hết hạn mai</span>`:'',q===0&&!on?'<span class="inv-flag bad">Hết hàng</span>':''].join('');
+      const carted=carts.reduce((n,k)=>n+(k.lines.find(l=>l.item===i.id)?.qty||0),0),kept=Number(c.ops?.business_keep?.[i.id])||0;
+      const flags=locked?`<span class="inv-flag">${icon('lock',11)} Mở ở cấp ${i.unlock}</span>`:[on?`<span class="inv-flag info">+${on} đang giao</span>`:'',carted?`<span class="inv-flag cart">🛒 ${carted}</span>`:'',kept?`<span class="inv-flag keep" title="Giữ cho ca của bạn">🔒 ${kept}</span>`:'',exp?`<span class="inv-flag bad">${exp} hết hạn tối nay</span>`:soon>0?`<span class="inv-flag warn">${soon} hết hạn mai</span>`:'',q===0&&!on?'<span class="inv-flag bad">Hết hàng</span>':''].join('');
       const life=!locked&&days&&days<900&&!exp?` · còn ${days} ngày`:'';
       return `<button type="button" class="inv-bin ${state}" data-action="v4Order" data-item="${esc(i.id)}"${locked?' disabled':''} aria-label="${esc(i.name)}: ${q} trên kệ${on?`, ${on} đang giao`:''}${locked?`, mở ở cấp ${i.unlock}`:', chạm để nhập thêm'}">`+
         `<span class="inv-bin-top"><span class="inv-bin-emoji" aria-hidden="true">${esc(i.emoji||'📦')}</span><span class="inv-bin-count"><b>${locked?'—':q}</b><small>/${cap}</small></span></span>`+
@@ -326,7 +327,7 @@ function orderCard(env,pick,{cap,stock,on,space,unit,name}){
   const ship=sup.free_from==null?'':q.ship?`Hàng ${fmt(q.cost)} + ship ${fmt(q.ship)} xu`:`Hàng ${fmt(q.cost)} xu · miễn ship`;
   return `<section class="card order-card inv-order" aria-label="Nhập ${esc(pick.name)}"><div class="row spread"><h3>Nhập ${name}</h3>${button(icon('x',14),'v4Order',{item:''},'ghost small')}</div>`+
     `<p class="inv-facts"><span>Trên kệ <b>${stock}</b></span><span>Đang giao <b>${on}</b></span><span>Còn chỗ <b>${space}</b></span>${vansLine(c.inventory)?`<span>${vansLine(c.inventory)}</span>`:''}<span>Giá gốc <b>${pick.cost}</b> xu/${esc(unit)}</span>${pick.life?`<span>Dùng trong <b>${pick.life}</b> ngày</span>`:''}</p>`+
-    sizePicker+`<label class="field" for="order-qty">Số lượng</label><div class="inv-qty"><div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Qty" data-step="-1" aria-label="Bớt một"${qty<=1?' disabled':''}>−</button><input id="order-qty" class="input" type="number" inputmode="numeric" min="1" max="${Math.max(1,max)}" value="${qty}" data-v4-qty aria-describedby="order-total"><button type="button" class="btn ghost" data-action="v4Qty" data-step="1" aria-label="Thêm một"${qty>=max?' disabled':''}>+</button></div><span class="chip-row">${chips}</span></div>`+
+    keepRow(c,pick.id,pick.name)+sizePicker+`<label class="field" for="order-qty">Số lượng</label><div class="inv-qty"><div class="inv-stepper"><button type="button" class="btn ghost" data-action="v4Qty" data-step="-1" aria-label="Bớt một"${qty<=1?' disabled':''}>−</button><input id="order-qty" class="input" type="number" inputmode="numeric" min="1" max="${Math.max(1,max)}" value="${qty}" data-v4-qty aria-describedby="order-total"><button type="button" class="btn ghost" data-action="v4Qty" data-step="1" aria-label="Thêm một"${qty>=max?' disabled':''}>+</button></div><span class="chip-row">${chips}</span></div>`+
     // The bill right under the number you choose: total, what the fund keeps, and why it cannot go yet.
     `<div class="inv-total inv-bill"><div class="grow"><strong id="order-total" data-cost="${pick.cost}" data-factor="${sup.factor}" data-terms="${esc(JSON.stringify({bulk:sup.bulk||[],ship:sup.ship,free_from:sup.free_from}))}" data-money="${c.money}" data-fund="${esc(fn)}" data-shelf="${stock+on}" data-cap="${cap}" data-max="${max}">Tổng: ${fmt(cost)} xu</strong> <span id="order-tier">${tier}</span><small class="block inv-after" id="order-after">${esc(fn)} còn ${fmt(Math.max(0,c.money-cost))} xu · kệ sau khi nhận ${stock+on+qty}/${cap}</small><small class="block" id="order-ship">${esc(ship)}</small><small class="block" id="order-eta">Dự kiến nhận: <b>${esc(sup.quote?.eta_label||sup.window||'')}</b></small><small class="danger-text block" id="order-why" role="status">${esc(why)}</small></div></div>`+
     `<label class="field">Nhà cung cấp</label><div class="inv-sups">${sups.map(supplier).join('')}</div>${supMore(sup)}`+

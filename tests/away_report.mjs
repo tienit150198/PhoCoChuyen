@@ -96,3 +96,41 @@ test('a broken or blocked storage never breaks the page',async()=>{
   try{const m=await fresh();assert.equal(m.workplaceAway(bakery({served:3}),'cafe_bakery','An',T0),null);}
   finally{globalThis.localStorage=real;}
 });
+
+test('🔒 the owner\'s floor stopped the staff: the card says what it kept (B4 part 2)',async()=>{
+  store.clear();
+  const kept=[['cup','Ly giấy 12oz',5]];
+  const withKeep=(served,k)=>({...bakery({served,net:served*10,cups:served}),ops:{...bakery({served,net:served*10,cups:served}).ops,
+    business:{...bakery({served,net:served*10,cups:served}).ops.business,kept:k}}});
+  let m=await fresh();m.workplaceAway(withKeep(3,null),'cafe_bakery','An',T0);
+  m=await fresh();const rep=m.workplaceAway(withKeep(18,kept),'cafe_bakery','An',T0+6*60*MIN);
+  assert.deepEqual(rep.kept,kept);
+  const card=m.workplaceAwayCard(rep);
+  assert.match(card,/<p class="aw-keep">🔒 Giữ lại 5 ly giấy 12oz cho bạn<\/p>/);
+  assert.ok(words(m.awayLine(rep))<=25);
+  m=await fresh();const none=m.workplaceAway(withKeep(30,null),'cafe_bakery','An',T0+12*60*MIN);
+  assert.doesNotMatch(m.workplaceAwayCard(none),/<p class="aw-keep">/,'no floor reached: no line');
+  // a counter names its dishes; three or more fold into "+N món"
+  const stall=(sold,k)=>({id:'s1',staff:[{id:'e'}],business:{sold,net:sold,revenue:sold,expenses:{},stock:[{id:'banh_mi',qty:4}],kept:k}});
+  const name=id=>({banh_mi:'Bánh mì',tra:'Trà đá',xoi:'Xôi'})[id];
+  m=await fresh();m.stallAway(stall(1,null),'An',name,T0);
+  m=await fresh();const sr=m.stallAway(stall(9,[['banh_mi',4],['tra',2],['xoi',1]]),'An',name,T0+3*60*MIN);
+  assert.match(m.stallAwayCard(sr),/🔒 Giữ lại 4 bánh mì, 2 trà đá, \+1 món cho bạn/);
+});
+
+test('🔒 the keep stepper: few taps for a big floor, never below 0 or over 999',async()=>{
+  const k=await import('../public/js/keep-ui.js');
+  assert.deepEqual([0,9,10,45,50,60,995].map(k.keepUp),[1,10,15,50,60,70,999]);
+  assert.deepEqual([0,1,10,15,50,60].map(k.keepDown),[0,0,9,10,45,50]);
+  for(let n=0;n<990;n=k.keepUp(n))assert.equal(k.keepDown(k.keepUp(n)),n);   // every step back lands where it came from
+  const B={keepable:['cup','milk']};
+  assert.equal(k.keepRow({ops:{staff:[],business:B}},'cup'),'','no staff, no floor: nothing to set');
+  assert.equal(k.keepRow({ops:{staff:[{status:'hired'}],business:B}},'towel'),'','an item the staff never take');
+  assert.equal(k.keepRow({ops:{staff:[{status:'hired'}],business:{}}},'cup'),'','a server without ops_keep (rolling deploy)');
+  const row=k.keepRow({ops:{staff:[{status:'hired'}],business_keep:{cup:5},business:B}},'cup','Ly giấy');
+  assert.match(row,/🔒 Giữ cho ca bạn/);assert.match(row,/<output[^>]*>5<\/output>/);
+  assert.match(row,/data-command="ops_keep" data-payload="\{&quot;item&quot;:&quot;cup&quot;,&quot;qty&quot;:6\}"/);
+  assert.match(row,/data-payload="\{&quot;item&quot;:&quot;cup&quot;,&quot;qty&quot;:4\}"/);
+  assert.match(k.keepRow({ops:{staff:[],business_keep:{cup:2},business:B}},'cup'),/keep-row/,'a floor set stays editable after the staff leave');
+  assert.match(k.keepRow({ops:{staff:[{status:'hired'}],business:B}},'cup'),/aria-label="Giữ ít  hơn" disabled/);
+});

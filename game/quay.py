@@ -488,7 +488,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         return economy_action(s, st, name, p)
     if name == 'jr_quay_start':
         need(not st.get('economy', {}).get('paused'), 'Kiểm hàng và vệ sinh trước khi mở lại quầy.')
-    if name in ('jr_quay_restock', 'jr_quay_pause', 'jr_quay_sync', 'jr_quay_protection'):
+    if name in ('jr_quay_restock', 'jr_quay_pause', 'jr_quay_sync', 'jr_quay_protection', 'jr_quay_keep'):
         return quay_business.action(s, st, name, p)
     if name == 'jr_quay_staff_event':
         from .staff_life import choose_quay

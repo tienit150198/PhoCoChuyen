@@ -197,21 +197,79 @@ def _reserved(c,item):
                if t['status'] not in ('completed','referred','cancelled'))
 
 
+# "Giữ lại cho ca của tôi" (B4 part 2, F#243/F#247; owner 07/10 "làm theo ý bạn"): an optional per-item floor,
+# ops.business_keep = {item: 1..999}. Staff orders (and the visiting players they serve) stop taking an item once its
+# stock is down to that number; the owner's own work still uses every unit. No entry (the default) changes nothing.
+# Older servers ignore the key and keep it as it is (operations.validate accepts extra ops keys).
+KEEP_MAX = 999
+
+
+def keep(c,item):
+    k=c['ops'].get('business_keep')
+    return k.get(item,0) if k else 0
+
+
+def keep_items(career):
+    """Items a staff order of this career can take: the only ones a floor may be set for."""
+    from . import staff_orders
+    items=set(ORDERS.get(career,(None,0,0,{}))[3])
+    if career in staff_orders.MENUS:items|=staff_orders.known(career)
+    if career=='clothing':
+        from .careers import clothing
+        items|=set(clothing.ITEM)
+    return items
+
+
+def _raw(c,career,item):
+    """Units staff could take with no floor (the checks below, before keep())."""
+    if career=='milk_tea':
+        from . import boba
+        return boba.view(c)['cups']['M'] if item=='cup_M' else boba.stock(c)['milk'] if item=='milk' else 0
+    from . import staff_orders
+    return staff_orders._available(c,career,item,floor=False)
+
+
+def _kept(c,career):
+    """[[item, name, units held back]] for each floor that stops the staff now (some stock left, none above it)."""
+    k=c['ops'].get('business_keep')
+    if not k:return []
+    names=_item_names(career) if career!='milk_tea' else {}
+    out=[]
+    for item,n in sorted(k.items()):
+        have=_raw(c,career,item)
+        if 0<have<=n:out.append([item,names.get(item) or USED_FALLBACK.get(item,item),have])
+    return out
+
+
+def set_keep(c,career,p):
+    """ops_keep {item, qty}: the floor for one item (0 removes it). No money moves."""
+    from .engine import need
+    item,qty=p.get('item'),p.get('qty')
+    need(is_shop(career) and isinstance(item,str) and item in keep_items(career),'Món này nhân viên không bán.')
+    need(type(qty) is int and 0<=qty<=KEEP_MAX,f'Số giữ lại từ 0 đến {KEEP_MAX}.')
+    k=c['ops'].setdefault('business_keep',{})
+    need(qty==0 or item in k or len(k)<USED_ITEMS,'Đã giữ quá nhiều món.')
+    if qty:k[item]=qty
+    else:k.pop(item,None)
+    if not k:c['ops'].pop('business_keep')
+    return dict(message=f'🔒 Giữ {qty} cho ca của bạn.' if qty else 'Đã bỏ giữ: nhân viên bán tiếp.')
+
+
 def _stock_ok(c,career,inputs):
     if career=='milk_tea':
         from . import boba
-        return boba.view(c)['cups']['M']>=inputs['cup_M'] and boba.stock(c)['milk']>=inputs['milk']
+        return boba.view(c)['cups']['M']-keep(c,'cup_M')>=inputs['cup_M'] and boba.stock(c)['milk']-keep(c,'milk')>=inputs['milk']
     from . import inventory as inv
     if c.get('ext',{}).get('inv') is not None:
         if career=='grocery':
             from .careers import grocery
-            return all(grocery._available(c,item)>=qty for item,qty in inputs.items())
+            return all(grocery._available(c,item)-keep(c,item)>=qty for item,qty in inputs.items())
         if career=='clothing':
-            return all(_clothing_size(c,item) is not None and inv.count(c,item)>=qty for item,qty in inputs.items())
-        return all(inv.count(c,item)>=qty for item,qty in inputs.items())
+            return all(_clothing_size(c,item) is not None and inv.count(c,item)-keep(c,item)>=qty for item,qty in inputs.items())
+        return all(inv.count(c,item)-keep(c,item)>=qty for item,qty in inputs.items())
     from . import engine
     for item,qty in inputs.items():
-        if c['stock'].get(item,0)-_reserved(c,item)<qty:return False
+        if c['stock'].get(item,0)-_reserved(c,item)-keep(c,item)<qty:return False
         if career=='pharmacy':
             from .content import LOT_INDEX
             lot=LOT_INDEX[item]
@@ -221,7 +279,7 @@ def _stock_ok(c,career,inputs):
 
 def _clothing_size(c,item):
     from .careers import clothing
-    return clothing.staff_size(c,item)
+    return clothing.staff_size(c,item,keep(c,item))
 
 
 def _cash(c,career,e):
@@ -454,7 +512,9 @@ def public(c,now=None):
                rate_per_hour=round(sum(3600/p['seconds'] for p in b['pending'].values()),1),
                wage_basis='Mỗi đơn trả 1/4 lương ca, làm tròn lên; vật tư trừ quỹ nơi làm việc.',fund=c['money'])
     _explain(c,b,out)
-    _usage(c,next((e.get('career') for e in c['ops']['staff'] if e.get('career') in ORDERS),None),out)
+    career=next((e.get('career') for e in c['ops']['staff'] if e.get('career') in ORDERS),None)
+    _usage(c,career,out)
+    if career and is_shop(career):out['keepable']=sorted(keep_items(career))   # the Kho shows 🔒 only for these
     out['income']=_income(out)
     if staff_working(c):
         out.update(status='running',reason='working',reason_text='Nhân viên đang phục vụ khách người chơi.',visitor_working=True)
@@ -504,18 +564,28 @@ def _explain(c,b,out):
         out['next_order']=dict(label=label,revenue=base,revenue_low=base*84//100,wage=wage,materials=supplies,goods=goods,
                                margin=typical-wage-supplies-goods,
                                items=[dict(item=i,name=names.get(i,i),qty=q) for i,q in inputs.items()])
+    kept=_kept(c,career)
+    if kept:out['kept']=kept
     if b['reason']=='stock':
         from . import staff_orders
         if career in staff_orders.MENUS:out['reason_text']=staff_orders.why(c,career,cash)
         else:
-            if career=='clothing':gone=['quần áo còn size bán được']
+            if career=='clothing':gone=[] if kept else ['quần áo còn size bán được']
             elif career=='milk_tea':
                 from . import boba
                 gone=[name for name,ok in (('sữa tươi',boba.stock(c)['milk']>=1),('ly size M',boba.view(c)['cups']['M']>=1)) if not ok]
-            else:gone=[names.get(i,i) for i,q in ORDERS[career][3].items() if not _stock_ok(c,career,{i:q})]
+            else:gone=[names.get(i,i) for i,q in ORDERS[career][3].items() if _raw(c,career,i)<q]
             if gone:out['reason_text']='Hết '+', '.join(gone)+' cho đơn riêng; nhập hàng để đội làm tiếp.'
+            if kept:out['reason_text']=keep_text(kept)+(' '+out['reason_text'] if gone else ' Bỏ giữ hoặc nhập thêm để đội bán tiếp.')
     out['money_note']=('Tiền đơn riêng vào quỹ nghề (Sổ thu chi), không vào ví. Mỗi đơn: thu theo giá kệ, trả lương '
                        f'{wage} xu và vật tư {ORDERS[career][2]} xu từ quỹ; giá vốn hàng đã trả lúc nhập.')
+
+
+def keep_text(kept):
+    """'🔒 Giữ 5 ly giấy, 3 sữa tươi cho ca của bạn.' (at most three items, then '+N món')."""
+    low=lambda s:s[:1].lower()+s[1:]
+    parts=[f'{n} {low(name)}' for _,name,n in kept[:3]]+([f'+{len(kept)-3} món'] if len(kept)>3 else [])
+    return '🔒 Giữ '+', '.join(parts)+' cho ca của bạn.'
 
 
 def validate(c,career):
@@ -527,6 +597,10 @@ def validate(c,career):
     if used is not None:
         check(isinstance(used,dict) and len(used)<=USED_ITEMS)
         check(all(isinstance(item,str) and 1<=len(item)<=80 and integer(qty,1) for item,qty in used.items()))
+    held=c['ops'].get('business_keep')
+    if held is not None:
+        check(isinstance(held,dict) and len(held)<=USED_ITEMS)
+        check(all(isinstance(item,str) and 1<=len(item)<=80 and integer(qty,0,KEEP_MAX) for item,qty in held.items()))
     if b is None:return
     profit=c['ops'].get('business_profit')
     if profit is not None:
