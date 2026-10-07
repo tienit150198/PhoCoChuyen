@@ -107,9 +107,21 @@ test('a replaced round ignores an old answer and its visual cleanup',async()=>{
 
 test('starting the next round clears old flights before it can accept another throw',async()=>{
  const f=fixture();await f.throwAll();await f.advance(1200);
- const next=f.ui.ringStart();await f.advance(1200);await next;
+ const next=f.ui.ringStart();await f.advance(2400);await next;
  assert.equal(f.S.ring.round.id,'round-2');assert.equal(f.layer.children.length,0);assert.equal(f.S.ring.result,null);
- f.ui.ringThrow();await f.advance(2000);assert.equal(f.layer.children.length,1,'old flight cleanup does not remove a new pending ring');
+ f.ui.ringThrow();await f.advance(4400);assert.equal(f.layer.children.length,1,'old flight cleanup does not remove a new pending ring');
+});
+
+test('B5: a quick "Ném lượt nữa" waits for the 2 s gap since the last round, then asks the server once',async()=>{
+ const f=fixture();await f.throwAll();await f.advance(1300);   // the round started at 0 (t0), its answer is in
+ const next=f.ui.ringStart();await f.advance(1400);
+ assert.equal(f.S.busy,true,'the button shows busy while the rings land');
+ assert.equal(f.requests.filter(r=>r.name==='fair_ring_start').length,0,'no request inside the server gap');
+ await f.advance(2200);await next;
+ const starts=f.requests.filter(r=>r.name==='fair_ring_start');
+ assert.equal(starts.length,1);assert.ok(starts[0].at>=2000,'sent at least 2 s after the last round started');
+ assert.equal(f.S.busy,false);assert.equal(f.S.ring.round.id,'round-2');
+ f.ui.ringStart();assert.equal(f.requests.filter(r=>r.name==='fair_ring_start').length,1,'a second tap while waiting is ignored');
 });
 
 test('returning to the stall can rebuild pending rings from the current taps',async()=>{

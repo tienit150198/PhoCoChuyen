@@ -471,8 +471,14 @@ function startRingLoop(){
   };
   S.ring.raf=requestAnimationFrame(loop);
 }
+// B5 (07/10): the server starts a new round at least 2 s after the last one started (game/fair.py RING_GAP_MS). A tap
+// on "Ném lượt nữa" while the last rings are still landing waits here (the button shows busy) instead of being refused.
+// S.ring.t0 is when the last round's answer arrived, after the server stamped it: waiting from there is always enough.
+const RING_GAP=2100;
 async function ringStart(){
   if(S.busy)return;S.busy=true;S.flash=null;render();
+  const wait=RING_GAP-(performance.now()-(S.ring.t0||0));
+  if(wait>0)await new Promise(ok=>setTimeout(ok,wait));
   const r=await send('fair_ring_start',{});S.busy=false;
   if(r?.fair?.round){stopRing();S.dlg?.querySelector('.fh-fly-layer')?.replaceChildren();S.ring={...S.ring,round:r.fair.round,t0:performance.now(),taps:[],hits:[],result:null,finishing:false,say:r.fair.round.chance?'Ném đủ năm vòng rồi cô Tư đếm quà nha!':pick(RINGER.idle)};}
   render();startRingLoop();

@@ -168,6 +168,10 @@ OAQ_FIRST = ('kho',)   # owner 06/10 "không ai thắng được": Ông Hai open
 OAQ_STAGES = ('play', 'won', 'lost', 'draw')
 RING_HIT, RING_ALL = 3, 8      # xu per bottle ringed, and the bonus for all five
 RING_DAY = 80                  # rounds a day at most
+# B5 (07/10: one session sent ~20,000 ring calls): a new round starts at least this long after the last one started.
+# A human round (5 throws GAP apart, the rings landing, "Ném lượt nữa") takes longer; the stall waits for it
+# (public/js/v4/fair.js ringStart). No round cap and no penalty: a refused start changes nothing.
+RING_GAP_MS = 2000
 EARN_DAY = dict(oaq=90, ring=45)   # no cap any more (owner 03/10: kiếm không giới hạn); these bound the saved counters
 EARN_UNCAPPED = ('oaq', 'ring')
 EARN_GAMES = tuple(EARN_DAY)
@@ -1324,7 +1328,7 @@ def apply(s: dict, name: str, p: dict) -> dict:
         need(not p, 'Dữ liệu thao tác không hợp lệ.')
         ms = int(t * 1000)
         r = f['ring']
-        need(not (r and r['stage'] == 'play' and ms - r['at'] < 1500), 'Từ từ thôi, vòng chưa phát xong!', 'fair_slow')
+        need(not (r and 0 <= ms - r['at'] < RING_GAP_MS), 'Từ từ thôi nha, cô Tư đang nhặt vòng!', 'fair_slow')
         _day(f, t)
         f['earn']['ring_n'] = min(RING_DAY, f['earn']['ring_n'] + 1)   # a counter only, bounded for older validators
         st['ring'] += 1
