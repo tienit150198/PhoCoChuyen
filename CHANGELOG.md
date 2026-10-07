@@ -4,6 +4,30 @@ Gồm "Giao diện gọn: đợt 4" (quầy ăn uống + phố còn lại) và "
 
 # Chưa phát hành
 
+## Nghề mới: bán album ZPOP
+
+- Tiệm album Mây Pop của chị Thơ ở Phố chợ (mở ở chương 3, cửa tiệm 💿 cạnh quán cơm tấm). Bán album và đồ fan của ba
+  nhóm nhạc hư cấu: BLANKPINK (nhóm nữ 4 người: Bơ-Ri, Mận-Ji, Sữa-Ah, Hồng-Bi; fandom BLINKY, lightstick "Búa hồng"),
+  7GIÓ (nhóm nam 7 người) và tân binh KIWIZ. Không có tên, ảnh, bài hát hay công ty thật; hình chỉ là emoji và hình vẽ.
+- Album nhiều phiên bản: Pink, Blank, Jewel case (bản giới hạn), Digipack từng thành viên (card chắc chắn của người đó),
+  bản trưng bày đã khui, Kit ver không có CD. Khách nói theo thứ bên trong ("chắc chắn card Mận-Ji", "bản có đĩa CD",
+  "búa có Bluetooth, lắp pin sẵn"), mình phải chọn đúng bản, đúng pin (ver.1 pin AAA, ver.2 pin AA).
+- Ở quầy: quét Bảng Zchart, cuộn poster vào ống, ghi phiếu fansign (tỉ lệ thật hiện ngay: 30 suất / số phiếu), tặng
+  POB của tiệm. Bản giới hạn có số tối đa mỗi người (ngày comeback 2, ngày thường 3).
+- Buổi sáng: đếm bản giới hạn, dựng biển giới hạn đúng luật nhà phân phối, thử búa trưng bày (hết pin thì thay); ngày hạn
+  chót cộng sổ đặt trước rồi chốt đơn (trả tiền nhập thật, hàng vào kho).
+- Khách khó, tự quyết theo tính riêng: dân trao đổi card đòi khui trước khi trả tiền, phụ huynh không rành nhóm (phải xem
+  giấy nhắn của bé), người đẩy chart mua 30 bản chỉ cần hóa đơn, dân buôn gom bản giới hạn, người lấy hàng đặt trước giùm
+  (hỏi mã, đối số điện thoại), fan đòi hứa chắc trúng fansign, đòi POB tiệm khác, người chen hàng ngày comeback. Khách
+  quay lại: đòi trả vì card "sai" thành viên (album đã khui không đổi, trừ album lỗi), búa mua ngoài đòi bảo hành (soi tem,
+  seri, app), búa không ghép ghế (pin ngược, app cũ, Bluetooth tắt, chưa nhập ghế), gửi hàng nhái bán ăn chia.
+- 9 chuyện bất ngờ (xin bật MV thật to, thùng album móp, card rơi dưới quầy, fan xin ngủ trước cửa, cúp điện máy quét
+  Zchart…), 3 tình huống, ngày comeback / hạn chốt / cosplay / cuối tuần / mưa, khách quen Na (BLINKY bảy năm) có câu
+  chuyện riêng tới ngày trúng fansign, truyện nghề 5 hồi, học nghề 3 khách đầu với chị Thơ, danh hiệu, hướng dẫn.
+- Màn làm việc trên điện thoại theo bộ giao diện gọn (thanh dưới một nút chính, nút mờ kèm lý do, "?"). Tiền chỉ từ hàng
+  bán ra (nhập ở Kho theo giá vốn); lãi một ngày ngang tiệm ảnh, tiệm nail.
+- Bản lưu: thêm khối nghề `zpop` (bản cũ tự có khi tải lại). Không thêm bảng, không đổi cách sinh việc của nghề cũ.
+
 ## Giao diện gọn: đợt 4
 
 - 12 nghề: quầy trà sữa, cà phê – bánh, quán mì cay, tiệm hoa, tiệm kem, nội trợ, thu gom rác, sạp trái cây, tiệm nail,

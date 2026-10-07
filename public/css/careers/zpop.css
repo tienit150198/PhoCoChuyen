@@ -1,0 +1,62 @@
+/* Tiệm album Mây Pop — scoped styles (.career-job.zp), over the street kit (street_kit.css).
+   Theme tokens only (docs/UI_KIT.md): the career accent is --career / --career-soft, spacing --sp-*, type --fs-*. */
+.career-job.zp{--sk-accent:var(--career);--sk-accent-2:var(--career-soft)}
+
+/* ---------- the customer */
+.career-job.zp .zp-say{margin:var(--sp-1) 0;font-size:var(--fs-2);font-style:italic;line-height:var(--lh)}
+.career-job.zp .zp-note{margin:var(--sp-1) 0 0;color:var(--sk-muted)}
+.career-job.zp .zp-chips{display:flex;flex-wrap:wrap;gap:var(--sp-1);margin:var(--sp-1) 0}
+.career-job.zp .zp-chip{display:inline-flex;align-items:center;gap:var(--sp-1);padding:2px var(--sp-2);border-radius:99px;background:var(--sk-surface-2);
+  border:1px solid var(--sk-line);font-size:var(--fs-1);line-height:var(--lh)}
+.career-job.zp .zp-chip.ok{border-color:var(--sk-good);color:var(--sk-good);font-weight:700}
+.career-job.zp .zp-chip small{font-size:var(--fs-1);color:var(--sk-muted)}
+.career-job.zp .zp-learn{margin:var(--sp-2) 0 0;padding:var(--sp-1) var(--sp-2);border-radius:var(--sk-rs);background:var(--career-soft);color:var(--career-text);font-size:var(--fs-1)}
+
+/* ---------- the annoying ones */
+.career-job.zp .zp-tw{margin-top:var(--sp-2)}
+.career-job.zp .zp-push{margin:var(--sp-1) 0;font-weight:700}
+.career-job.zp .zp-probes{list-style:none;margin:var(--sp-2) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--sp-1)}
+.career-job.zp .zp-probes .btn{min-height:44px;width:100%;justify-content:flex-start;text-align:left;white-space:normal}
+.career-job.zp .zp-fact{padding:var(--sp-1) var(--sp-2);border-radius:var(--sk-rs);background:var(--sk-surface-2);font-size:var(--fs-2);line-height:var(--lh)}
+.career-job.zp .zp-fact b{margin-right:var(--sp-1)}
+.career-job.zp .zp-tw-done{margin-top:var(--sp-2)}
+
+/* ---------- tabs and shelves */
+.career-job.zp .zp-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--sp-1);margin-top:var(--sp-2)}
+.career-job.zp .zp-tab{display:flex;align-items:center;justify-content:center;gap:var(--sp-1);min-height:44px;padding:var(--sp-1);font-size:var(--fs-2);
+  border:1px solid var(--sk-line);background:var(--sk-surface);color:var(--sk-ink)}
+.career-job.zp .zp-tab small{font-size:var(--fs-1);color:var(--sk-muted)}
+.career-job.zp .zp-tab.on{border-color:var(--sk-accent);box-shadow:inset 0 -3px 0 var(--sk-accent);font-weight:800}
+.career-job.zp .zp-shelf + .zp-shelf{margin-top:var(--sp-3)}
+.career-job.zp .zp-tiles{grid-template-columns:repeat(auto-fill,minmax(104px,1fr))}
+.career-job.zp .zp-tile{position:relative;min-height:96px;padding:var(--sp-2) var(--sp-1)}
+.career-job.zp .zp-tile b{font-size:var(--fs-2);line-height:var(--lh)}
+.career-job.zp .zp-cue{display:block;font-style:normal;font-size:var(--fs-1);line-height:var(--lh);color:var(--career-text);background:var(--career-soft);
+  border-radius:99px;padding:0 var(--sp-1);margin-top:2px}
+.career-job.zp .zp-badge{position:absolute;top:var(--sp-1);right:var(--sp-1);min-width:22px;height:22px;border-radius:99px;display:flex;align-items:center;justify-content:center;
+  background:var(--sk-accent);color:var(--career-ink);font-size:var(--fs-1);font-weight:800}
+
+/* ---------- the counter */
+.career-job.zp .zp-cart{list-style:none;margin:var(--sp-2) 0;padding:0;display:flex;flex-direction:column;gap:var(--sp-1)}
+.career-job.zp .zp-row{display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-1) var(--sp-2);border-radius:var(--sk-rs);background:var(--sk-surface-2)}
+.career-job.zp .zp-row .grow{flex:1}
+.career-job.zp .zp-minus{min-width:44px;min-height:44px}
+.career-job.zp .zp-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-1);margin-top:var(--sp-2)}
+.career-job.zp .zp-opts .btn{min-height:44px;white-space:normal}
+.career-job.zp .zp-odds{margin:var(--sp-2) 0 0}
+
+/* ---------- the morning */
+.career-job.zp .zp-signs{display:flex;flex-wrap:wrap;gap:var(--sp-1)}
+.career-job.zp .zp-signs .btn{min-width:48px;min-height:44px}
+.career-job.zp .zp-book{list-style:none;margin:var(--sp-1) 0 var(--sp-2);padding:0;display:flex;flex-direction:column;gap:2px}
+.career-job.zp .zp-book li{display:flex;gap:var(--sp-2);align-items:baseline;font-size:var(--fs-2)}
+.career-job.zp .zp-book small{color:var(--sk-muted)}
+.career-job.zp .zp-book span{margin-left:auto;font-weight:700}
+.career-job.zp .zp-count,.career-job.zp .zp-demo{min-height:44px}
+
+/* ---------- the day's summary */
+.zp-sum .zp-tomorrow small{display:block;color:var(--muted)}
+
+@container sheet (min-width: 640px){
+  .career-job.zp .zp-opts{grid-template-columns:repeat(4,minmax(0,1fr))}
+}

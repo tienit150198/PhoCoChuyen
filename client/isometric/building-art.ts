@@ -13,6 +13,8 @@ export const BUILDING_ART:Record<string,string>={
   // Careers on the way (lighthouse, rescue call centre, pool lifeguard, police): their door shows as soon as the
   // catalogue lists them as playable; give them their own art here when it exists.
   lighthouse:'airport',rescue:'office',lifeguard:'market',police:'office',
+  // 💿 the ZPOP album shop (07/10): a storefront like the grocery's until it gets its own sprite.
+  zpop:'grocery',
 };
 export const NEW_BUILDING_ART=['florist','salon','office','pet','school','pagoda','airport','market'];
 /** Keep a shop name to at most two lines; automatic word wrap made long signs tiny. */

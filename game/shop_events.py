@@ -13,7 +13,7 @@ from . import wealth_pricing
 GAP = 12
 RECENT = 8
 FOOD = frozenset({'milk_tea', 'restaurant', 'cafe_bakery', 'tra_da', 'fruit', 'ice_cream', 'pho', 'com'})
-RETAIL = FOOD | frozenset({'mother_baby', 'pharmacy', 'florist', 'grocery', 'clothing', 'pet_shop', 'repair', 'salon', 'pet_care', 'nail', 'photobooth', 'homestay'})
+RETAIL = FOOD | frozenset({'mother_baby', 'pharmacy', 'florist', 'grocery', 'clothing', 'pet_shop', 'repair', 'salon', 'pet_care', 'nail', 'photobooth', 'homestay', 'zpop'})
 
 
 def _choice(id, label, cost, rep, text, loss=False):

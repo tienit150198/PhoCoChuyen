@@ -3,7 +3,7 @@
  *   0  🛕 Chùa · 🌾 Ngoại ô · ✈️ Sân bay       (pagoda; farm, homestay, school; tour desk, pilot, flight crew)
  *   1  🏢 Khu văn phòng                        (Ngân hàng, the accounting and office jobs)
  *   2  💇 Phố dịch vụ                          (salon, nail, photos, pets, repair, pharmacy, clothes; Gara)
- *   3  🛒 Phố chợ                              (the seven first-chapter shops, phở, cơm tấm): a new player starts here
+ *   3  🛒 Phố chợ                              (the seven first-chapter shops, phở, cơm tấm, album ZPOP): a new player starts here
  *   4  🧺 Phố hàng rong                        (carts: trà đá, trái cây, kem, rác, cống; Cổng hội chợ, Nhóm phố, Đi dạo, 🎤 Phòng hát)
  *   5  🏠 Hẻm nhà                              (Nhà mình, the home careers, Quầy của bạn, Quảng trường)
  * Lanes between every few buildings (and a road round both ends) join one street to the next. A career this file
@@ -23,7 +23,7 @@ export const ROWS=[
   [{id:'chua',name:'Chùa',emoji:'🛕',items:['pagoda','lm:congduc']},{id:'ngoai_o',name:'Ngoại ô',emoji:'🌾',items:['farm','homestay','teacher','railway','lighthouse']},{id:'san_bay',name:'Sân bay',emoji:'✈️',items:['tour_guide','pilot','flight_attendant','oil']}],
   [{id:'van_phong',name:'Khu văn phòng',emoji:'🏢',items:['lm:bank','library','accounting','customer_care','corp_accounting','tax_payroll','group_accounting','hr_admin','secretary','it_helpdesk']}],
   [{id:'dich_vu',name:'Phố dịch vụ',emoji:'💇',items:['salon','nail','photobooth','pet_care','repair','pharmacy','nurse','police','rescue','clothing','pet_shop','lm:garage','lm:gadgets','lm:spa','lm:style']}],
-  [{id:'pho_cho',name:'Phố chợ',emoji:'🛒',items:['florist','cafe_bakery','grocery','milk_tea','mother_baby','restaurant','delivery','pho','com','lm:quan']}],
+  [{id:'pho_cho',name:'Phố chợ',emoji:'🛒',items:['florist','cafe_bakery','grocery','milk_tea','mother_baby','restaurant','delivery','pho','com','zpop','lm:quan']}],
   [{id:'hang_rong',name:'Phố hàng rong',emoji:'🧺',items:['lm:fair','tra_da','fruit','ice_cream','lm:board','garbage','drain','lm:walk','lm:rap','lm:karaoke','lifeguard']}],
   [{id:'hem',name:'Hẻm nhà',emoji:'🏠',items:['lm:house','homemaker','giupviec','naucom','babysitter','lm:quay','lm:square']}],
 ];
@@ -49,7 +49,7 @@ export const SIGNS={
   library:['📚','Thư viện'],hr_admin:['🗂️','Nhân sự'],secretary:['📅','Thư ký'],it_helpdesk:['🖥️','IT hỗ trợ'],
   pagoda:['🛕','Chùa'],farm:['🌾','Nông trại'],homestay:['🏡','Homestay'],teacher:['🍎','Lớp học'],tour_guide:['🧭','Du lịch'],pilot:['✈️','Phi công'],flight_attendant:['💺','Tiếp viên'],oil:['🛢️','Dầu khí'],railway:['🚦','Gác chắn'],
   nurse:['🏥','Bệnh viện'],lighthouse:['🗼','Hải đăng'],rescue:['📞','Tổng đài cứu hộ'],lifeguard:['🛟','Hồ bơi'],
-  police:['👮','Công an phường'],
+  police:['👮','Công an phường'],zpop:['💿','Album ZPOP'],
 };
 const KIND={pagoda:'pagoda',farm:'farm',homestay:'lodge',teacher:'school',library:'school',tour_guide:'kiosk',pilot:'air',flight_attendant:'air',oil:'air',railway:'kiosk',lighthouse:'kiosk',
   tra_da:'cart',fruit:'cart',ice_cream:'cart',garbage:'cart',drain:'cart',homemaker:'house',giupviec:'house',naucom:'house',babysitter:'house',
