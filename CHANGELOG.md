@@ -3,6 +3,20 @@
 - SDK LiveKit tải từ chính máy chủ game (`public/js/vendor/livekit-client-2.22.3.umd.js`, cùng SRI), jsDelivr chỉ còn là dự phòng; mỗi nguồn chờ tối đa 15 giây. Người nghe tải SDK trước rồi mới xin vé, nên mạng chậm không làm hết hạn vé 60 giây. Bản phát hành không nén lại thư mục `vendor/`.
 - Người nghe thấy "🎧 Đang nối giọng…", rồi thanh âm lượng (hoặc "🔈 Chạm để nghe giọng" trên iPhone; chạm bất kỳ đâu trong phòng hát cũng được), hoặc "Chưa nghe được giọng · Thử lại" sau 2 lần tự thử lại. Người hát thấy "🎙️ Đang nối mic…", hoặc "Chưa phát được giọng · Thử lại".
 - Ghi bước dừng vào beacon lỗi (`stat_client_errors`, kind toast, "kara_mic listen|sing <bước>: <mã>"): mod → sdk → token → signal → ice → track → audio (người hát có thêm perm), cả khi người nghe bỏ đi lúc còn chờ hơn 8 giây. Mic tắt vì phòng SFU bị xoá không còn báo nhầm "Mic đã ngắt kết nối".
+# Chưa phát hành — r6-misc (B4 báo cáo lúc vắng, B5 ném vòng, WP-5 chữ)
+
+- 🧾 Lúc bạn vắng (B4, góp ý #243, #247): quay lại nơi làm hay quầy sau ít nhất 5 phút, nếu nhân viên đã bán thì hiện
+  một thẻ: "Lúc bạn vắng: nhân viên bán 37 đơn, dùng 37 ly giấy, 37 hạt… · lãi 1.240 xu", bấm "Xem chi tiết" để xem
+  từng món, thu, lương, giá vốn, thưởng 40% và lời giải thích "hàng không hết hạn: nhân viên đã bán". Nơi làm: thẻ ở
+  Sổ tiệm → Nhân viên, kèm thông báo nhỏ và dòng "Cần để ý"; quầy: thẻ trên đầu quầy. Số món của nơi làm lấy từ bộ đếm
+  mới `ops.business_used` (tùy chọn, mỗi nghề một bảng {món: số đã dùng}, chỉ đơn riêng của nhân viên cộng vào; hết hạn,
+  mất trộm, việc của chủ không tính). Bản lưu thiếu khóa vẫn hợp lệ; 1.9.15 và 1.9.16 nhận và giữ nguyên khóa. Mốc "lần
+  xem trước" lưu trong máy (localStorage), không thêm gì vào bản lưu.
+- 💍 Ném vòng (B5): lượt mới chỉ phát sau 2 giây kể từ lượt trước (trước: 1,5 giây và chỉ khi lượt đang dở). Bấm nhanh
+  hơn thì máy chủ trả "Từ từ thôi nha, cô Tư đang nhặt vòng!", không trừ gì. Nút "Ném lượt nữa" tự chờ đủ 2 giây nên
+  chơi bình thường không bao giờ gặp. Không giới hạn số lượt, cách tính xu giữ nguyên.
+- 🔨 Nhà đấu giá: thêm dòng "Ai trả giá cũng là người chơi thật. Người thắng mất hẳn số xu đã trả, không hoàn lại."
+- 🏅 Hành trình: dưới danh hiệu đang đeo thêm "Danh hiệu tự hiện cạnh tên trong chat. Chạm để đổi cái đang đeo."
 
 # v1.9.16 — 2026-10-07
 

@@ -192,9 +192,12 @@ function page(){
   return head+tabs+`<div class="sheet-body sd-body">${flash}${hold}${inner}</div>`+bar;
 }
 
+// Chat 07/10 16:55 ("đấu với AI hay người thật"): who bids, and that the winner's xu are gone for good (game/auction.py burns
+// them). 10 words: the sheet stays within the life cap of 30 (scripts/check_word_caps.py --life).
+const REAL=`<p class="au-note au-real">👥 Toàn người chơi thật. Ai thắng mất hẳn số xu.</p>`;
 function live(){
   const d=S.data,lots=d.lots||[];
-  if(!lots.length)return `<p class="sd-empty">🔨</p><p class="au-note">Phiên mới mở lúc 20:30 mỗi ngày.</p>`;
+  if(!lots.length)return `<p class="sd-empty">🔨</p><p class="au-note">Phiên mở lúc 20:30 mỗi ngày.</p>${REAL}`;
   const l=lot()||lots[0];S.lot=l.id;
   const chips=lots.length>1?`<div class="sd-chips">${lots.map(x=>chip('lot',x.id,`${x.emoji}${TIER[x.tier]||''}`,x.id===l.id,x.name)).join('')}</div>`:'';
   const me=mine(l),lead=leading(l),out=me&&!lead&&l.high>0;
@@ -202,7 +205,7 @@ function live(){
   const who=l.bids?`<span data-no-translate>${esc(l.who||'')}</span>`:'Chưa ai trả';
   const quick=(CAT()?.quick||[1,2,5]).map(k=>{const v=l.bids?l.next+(k-1)*l.step:l.start+(k-1)*l.step;return chip('amount',v,`${fmt(v)}`,bidOf(l)===v);}).join('');
   const anon=`<label class="sd-toggle"><input type="checkbox" name="anon"${S.anon?' checked':''}><span>Ẩn danh</span></label>`;
-  return chips+`<section class="sd-card au-lot">${art(l)}<h3>${esc(l.emoji)} <span data-no-translate>${esc(l.name)}</span></h3>
+  return REAL+chips+`<section class="sd-card au-lot">${art(l)}<h3>${esc(l.emoji)} <span data-no-translate>${esc(l.name)}</span></h3>
     <div class="au-price"><b>${fmt(l.bids?l.high:l.start)} xu</b><small>${l.bids?`${l.bids} lượt · ${who}`:'Giá khởi điểm'}</small></div>
     <p class="au-clock" data-au-clock>${esc(left(l))}</p>${state}
     <div class="sd-chips sd-amounts">${quick}</div>${anon}${help()}</section>`;

@@ -4,6 +4,7 @@ import {olderRows,olderButton} from './archive.js';
 import {workplaceBusinessView} from './workplace-business-ui.js';
 import {shopEventCard} from './shop-events-ui.js';
 import {staffLifeCard} from './staff-life-ui.js';
+import {workplaceAway,workplaceAwayCard} from './away-report.js';
 import {T,isShop} from './v4/terms.js';
 import {wordsFor} from './scenes/index.js';
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
@@ -81,7 +82,7 @@ function labView(c,content){const inc=c.ops.incident&&c.ops.incident.status!=='r
  <h3 class="space-top">Mất đồ, trộm & công an</h3><div class="lab-grid">${content.case_kinds.map(i=>`<article><div class="lab-icon">${icon(i.id==='misplaced'?'search':'shield',27)}</div><h4>${esc(i.title)}</h4><p>${esc(i.description)}</p>${kase?nav('Xử lý hồ sơ đang mở '+icon('arrow',13),'security','small primary'):op('Mở bài diễn tập','case_demo',{kind:i.id},'','small primary')}</article>`).join('')}</div>`;}
 
 export function operationsView(cid,c,content,ui,state){const tab=ui.opsTab||'staff';let body;
- switch(tab){case'finance':body=financeView(c,content,cid);break;case'property':body=propertyView(c,content);break;case'security':body=securityView(c,content,state,cid);break;case'lab':body=labView(c,content);break;default:body=staffView(cid,c,content,ui);}
+ switch(tab){case'finance':body=financeView(c,content,cid);break;case'property':body=propertyView(c,content);break;case'security':body=securityView(c,content,state,cid);break;case'lab':body=labView(c,content);break;default:body=workplaceAwayCard(workplaceAway(c,cid,state?.name))+staffView(cid,c,content,ui);}   // B4: 🧾 Lúc bạn vắng
  body=staffLifeCard(c.ops.staff_life,(label,e,ch)=>op(label,'staff_event',{event:e.id,choice:ch.id,confirm:true},`${ch.label}${ch.cost?' · '+fmt(ch.cost)+' xu':''}. ${ch.effect||''}`,'shop-event-choice',ch.affordable===false))+body;
  body=shopEventCard(c.ops.shop_events,(label,e,ch)=>op(label,'shop_event',{event:e.id,choice:ch.id,confirm:true},'','shop-event-choice',ch.affordable===false))+body;
  return `<header class="sheet-head ops-head"><div class="grow"><span class="eyebrow">${esc(String(wordsFor(cid).books||T(cid,'books')).toUpperCase())}</span><h2>Đội, thu chi & an ninh</h2></div><button class="icon-btn" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header><div class="ops-tabbar" role="tablist">${[['staff','people','Nhân viên'],['finance','coin','Thu chi'],['property','home','Mặt bằng'],['security','shield','An ninh'],['lab','sparkle','Diễn tập']].map(([id,ico,label])=>`<button type="button" role="tab" aria-selected="${tab===id}" data-action="opsTab" data-tab="${id}" class="${tab===id?'active':''}">${icon(ico,18)}<span>${label}</span>${id==='finance'&&c.ops.finance.bills.some(b=>b.status==='unpaid'&&b.due<=c.day)?'<i class="tab-dot" aria-hidden="true"></i>':''}</button>`).join('')}</div><div class="sheet-body ops-body">${body}</div><footer class="sheet-foot ops-foot"><p></p><div class="row">${c.open?`<button class="btn ghost" data-command="advance">${icon('clock',15)} Chờ một nhịp</button>`:''}<button class="btn primary" data-action="close">${isShop(cid)?'Về tiệm':esc('Về '+T(cid,'place'))}</button></div></footer>`;

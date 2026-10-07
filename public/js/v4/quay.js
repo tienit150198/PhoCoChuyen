@@ -24,6 +24,7 @@ import {staffLifeCard} from '../staff-life-ui.js';
 import {ownerQueueHTML,ownerArrivalText,counterActivity,counterActivityHTML} from './quay-owner-queue.js';
 import {shopEventCard} from '../shop-events-ui.js';
 import {createQuaySync} from './quay-sync.js';
+import {stallAway,stallAwayCard} from '../away-report.js';   // B4: 🧾 Lúc bạn vắng
 // Clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded so the node tests can load this file.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
 
@@ -392,7 +393,7 @@ function stallCard(st){
     ${self?`<canvas class="qy-scene" data-qy-live data-cv="${st.id}" role="img" aria-label="${esc(`Quầy ${st.name}`)}"></canvas>${counterActivityHTML(st,esc)}`:''}
     <div class="qy-top"><span class="qy-tile" aria-hidden="true">${P.emoji||'🏪'}<i>${T.emoji}</i></span>
       <div class="grow"><h3>${esc(st.name)}</h3><p class="qy-line">${esc(status)}</p></div></div>
-    ${alerts}${ownerEvents(st)}
+    ${stallAwayCard(stallAway(st,S.env?.api?.state?.name,id=>dishOf(st,id).name))}${alerts}${ownerEvents(st)}
     ${self?selfRow(st):''}${businessPanel(st)}${visitorQueue(st)}
     <div class="qy-till"><div><small>Két</small><strong>${xu(st.till)}</strong>${st.hist.length?`<small>${st.hist.length} ngày qua: ${week>=0?'+':'−'}${xu(Math.abs(week))}</small>`:''}</div>
       ${btn(st.closed&&!st.due&&!st.till?'Mở lại quầy':'Thu két','till',{id:st.id},self?'':'primary',st.till||st.closed?'':'Két đang trống')}</div>
