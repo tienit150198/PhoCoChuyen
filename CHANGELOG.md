@@ -1,3 +1,17 @@
+# Chưa phát hành
+
+## Nuôi chó mèo
+
+- 🐾 Nuôi thú cưng (game/pets.py + pets_content.py, v4/pets.js, v4/pet-art.js): 14 giống chó (chó ta, Poodle, Corgi, Shiba, Phốc sóc, Chihuahua, Husky, Golden, Alaska, Phú Quốc, Bắc Hà, Pug, Samoyed, Lạp xưởng) và 13 giống mèo (mướp ta, tam thể, mun, Anh lông ngắn, Anh lông dài, Ba Tư, Scottish Fold, Munchkin, Ragdoll, Bengal, Sphynx, Maine Coon, Xiêm), mỗi giống 2–4 màu lông, tự vẽ 4 dáng (ngồi, đi dạo, ngủ, vui) theo nét "ấm cúng" của game, tính cách riêng. Giá 300 xu (giống ta) → 30.000 xu (Phú Quốc thuần chủng).
+- 🏠 Góc nhận nuôi Chân Nhỏ ở Tiệm Thú Nhỏ Chú Út: mỗi ngày 3 bé chờ nhà mới (có hôm có bé thuần chủng bị bỏ lại), nhận nuôi miễn phí, tùy tâm ủng hộ 20–500 xu. 🛍️ Tiệm bán mọi giống và màu. Cửa 🐾 cạnh shop thú cưng trên bản đồ phố, và trong menu Khu phố.
+- Tối đa 3 bé ở nhà; 🏡 "Về quê với bà" giữ bé lại (đón về lúc nào cũng được), không bé nào mất đi.
+- Chăm nhẹ nhàng: no, vui, sạch, khỏe giảm theo ngày; bỏ bê thì bé buồn, hơi yếu, không bao giờ chết hay bỏ đi. Thức ăn 4 mức (cơm nhà miễn phí → tiệc 80 xu), đồ chơi (dùng hết hoặc giữ mãi), tắm ở nhà 15 xu, spa Mèo Mập 120/90 xu hoặc gọi thợ là người chơi nghề Pet care (đơn khách thật có sẵn), khám 150 xu, tiêm phòng 250 xu/30 ngày.
+- Phụ kiện giữ mãi (mỗi món một bé đeo): vòng cổ, nơ, nón lá mini, mũ ếch, vương miện, áo len, áo mưa, áo đội tuyển, hoodie khủng long, áo dài mini, váy công chúa, ổ bông → lâu đài 5.000 xu.
+- Bé học trò theo ngày được chăm (bắt tay, lăn tròn, "pằng!"…), 📸 chụp ảnh chung với nhân vật (4 dáng, 4 khung, lưu về máy), 🏆 Bé cưng của tuần (chỉ để khoe). Bé đi theo nhân vật trên bản đồ phố, ở trong phòng, và người khác thấy bé ở phố đi dạo.
+- Không pay-to-win: không thêm xu, không thưởng công việc; bé vui chào bạn +1 tinh thần mỗi ngày. Tiền qua ví/tài khoản như cũ (dòng 'life').
+- Bản lưu: thêm khóa tùy chọn `journey.pets` (migrate + validate); 1.9.10 đọc, giữ và lưu lại nguyên vẹn (đã thử). Bảng mới `pet_board` (SCHEMA_VERSION 27). Live: trường tùy chọn `pt` cạnh `look` (dịch vụ cũ bỏ qua).
+- Giá là hằng số; khi nhánh price-up có PRICE_INDEX thì nhân giá tiệm theo chỉ số.
+
 # v1.9.10 — 2026-10-07
 
 Gồm "Cấp bậc công an" (ranks-police: org ladder, cấp hiệu bảng màu riêng của game). Có gì mới cũng thông báo Phòng hát Mây (bật từ 07:28 07/10 bằng LIVE_KARAOKE).

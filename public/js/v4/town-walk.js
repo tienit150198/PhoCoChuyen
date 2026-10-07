@@ -15,6 +15,7 @@
  * "🛵 Đi xe / 🚶 Đi bộ" button on the stage changes it (each vehicle owned in turn, then walking; remembered here). */
 import {plan,route,nearest,itemAt,districtAt,back,marks,LANDMARKS,SIGNS} from '../scenes/town-place.js';
 import {figure,paintPlayer,CANVAS,lookOf} from './look.js';
+import {refURL} from './pet-art.js';   // 🐾 the pet walking with you (game/pets.py walk_ref)
 import {t as tr,language} from './i18n.js';
 import {lightAt} from './dayclock.js';
 import {escapeHTML as esc,icon} from '../icons.js';
@@ -25,7 +26,7 @@ const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contain
 const ME=.5;                  // the character (about 140 units tall) in town pixels
 const SPEED=270,MAX_WALK=2.4; // town pixels a second; no walk takes longer than MAX_WALK seconds
 const IDLE_MS=84,MAX_PX=7e6;  // the glow's frame gap; the cached town bitmap's pixel budget
-const LM_COLOR={bank:'#8d7b4c',garage:'#5a6f88',gadgets:'#6f8fb8',quan:'#9a6a43',spa:'#b07aa8',rap:'#6c4f8f',congduc:'#b8862f',style:'#c0607a',fair:'#c8423a',board:'#a8743f',walk:'#5f8f3e',house:'#d9573b',quay:'#e0892b',square:'#418d94',karaoke:'#9b4f96'};
+const LM_COLOR={bank:'#8d7b4c',garage:'#5a6f88',gadgets:'#6f8fb8',pets:'#d98a6a',quan:'#9a6a43',spa:'#b07aa8',rap:'#6c4f8f',congduc:'#b8862f',style:'#c0607a',fair:'#c8423a',board:'#a8743f',walk:'#5f8f3e',house:'#d9573b',quay:'#e0892b',square:'#418d94',karaoke:'#9b4f96'};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 
 const W={env:null,h:null,el:null,cv:null,c:null,where:null,whereText:'',card:null,pl:null,bg:null,bgKey:'',bs:1,k:1,cw:0,ch:0,dpr:1,
@@ -58,6 +59,7 @@ function landmarkOn(lm){
   switch(lm){
     case'garage':return !!(J.story&&J.garage);
     case'gadgets':return !!(J.story&&J.gadgets);   // 📱 v4/gadgets.js
+    case'pets':return !!(J.story&&J.pets);   // 🐾 v4/pets.js
     case'quan':case'spa':case'rap':case'congduc':case'style':return !!(J.story&&J.spend);   // ☕ v4/spend.js
     case'fair':return !!s.fair?.show;
     case'walk':{const lv=W.env.live?.();return !!(lv?.flags?.street&&lv.welcomed);}
@@ -344,6 +346,28 @@ function hide(){if(W.card&&!W.card.hidden){W.card.hidden=true;W.card.innerHTML='
 
 /* ---- frames ---- */
 function kick(){if(!W.raf&&visible()){W.last=performance.now();W.raf=requestAnimationFrame(loop);}}
+/* ---- 🐾 the pet that walks with you: trails a step behind, sits when you stop (an image of v4/pet-art.js, cached) ---- */
+const PET={img:new Map(),x:0,y:0,on:false,face:1,moving:false};
+function petImg(pose){
+  const ref=S()?.journey?.pets?.ref,cat=W.env?.api?.content?.journey?.pets;if(!ref||!cat)return null;
+  const key=JSON.stringify([ref,pose]);let im=PET.img.get(key);
+  if(!im){if(PET.img.size>6)PET.img.clear();const url=refURL(cat,ref,pose);if(!url)return null;im=new Image();im.onload=()=>{W.drawn=0;kick();};im.src=url;PET.img.set(key,im);}
+  return im.complete&&im.naturalWidth?im:null;
+}
+function petStep(m,dt){
+  if(!S()?.journey?.pets?.ref){PET.on=false;return false;}
+  const tx=m.x-26*PET.face,ty=m.y+5;
+  if(!PET.on){PET.x=tx;PET.y=ty;PET.on=true;}
+  let ex=tx-PET.x,ey=ty-PET.y,d=Math.hypot(ex,ey);
+  if(d>40){PET.x=tx-ex/d*40;PET.y=ty-ey/d*40;ex=tx-PET.x;ey=ty-PET.y;d=40;}   // never left far behind (a fast vehicle)
+  if(d>.6){const k=1-Math.exp(-dt*(still()?30:7));PET.x+=ex*k;PET.y+=ey*k;PET.moving=d>3;return true;}
+  PET.moving=false;return false;
+}
+function drawPet(c,world){
+  if(!PET.on)return;const pose=PET.moving?'walk':'sit',im=petImg(pose);if(!im)return;
+  world();const w=pose==='walk'?46:40,h=pose==='walk'?w*62/72:w,foot=pose==='walk'?58/62:64/68;
+  c.save();c.translate(PET.x,PET.y);if(PET.face<0)c.scale(-1,1);c.drawImage(im,-w/2,-h*foot,w,h);c.restore();
+}
 function animating(){return !still()&&!document.hidden&&(W.marks?.glow?.length||W.marks?.arrow);}
 function loop(now){
   W.raf=0;if(!visible()||!W.me)return;
@@ -351,12 +375,14 @@ function loop(now){
   const m=W.me;let busy=false;
   if(m.path?.length){
     const sp=Math.max(SPEED,m.len||0)*dt,[tx,ty]=m.path[0],dx=tx-m.x,dy=ty-m.y,d=Math.hypot(dx,dy),x0=m.x;busy=true;
+    if(Math.abs(dx)>1)PET.face=dx>0?1:-1;
     if(d<=sp){m.x=tx;m.y=ty;m.path.shift();}else{m.x+=dx/d*sp;m.y+=dy/d*sp;}
     m.step+=dt*10;
     if(riding())steer(W.rv,m.x-x0,Math.min(d,sp)/ME,dt,still());
     if(!m.path.length){m.path=null;const g=W.leg;if(g){legEnd(g);nextLeg();}else arrived();}
   }
   else if(W.rv.turn<1){steer(W.rv,0,0,dt,still());busy=true;}
+  if(petStep(m,dt))busy=true;   // 🐾
   if(!W.free){const [gx,gy]=camGoal(),k=1-Math.exp(-dt*7),ex=gx-W.cam.x,ey=gy-W.cam.y;
     if(Math.abs(ex)>.4||Math.abs(ey)>.4){W.cam.x+=ex*k;W.cam.y+=ey*k;busy=true;}else{W.cam.x=gx;W.cam.y=gy;}}
   const anim=animating();
@@ -409,7 +435,9 @@ function draw(){
     c.setTransform(1,0,0,1,0,0);
     c.drawImage(sp,Math.round((m.x-W.cam.x)*k*d-W.spriteFoot[0]),Math.round((m.y-W.cam.y-hop)*k*d-W.spriteFoot[1]));};
   const pk=v&&W.park,parked=()=>{world();const f=pk.face??1;drawRide(c,{x:pk.x,y:pk.y,s:ME,px:k*d,v,r:{face:f,from:f,turn:1,ang:0}});};
+  const behind=PET.on&&PET.y<=m.y;if(behind)drawPet(c,world);   // 🐾 behind or in front of you, by depth
   if(pk&&pk.y<m.y){parked();me();}else if(pk){me();parked();}else me();
+  if(!behind)drawPet(c,world);
   // Where the view is, top left (written only when it changes: no layout per frame).
   const dist=districtAt(W.pl,[W.cam.x+vw/2,W.cam.y+vh*.58]),dest=W.destination&&doorOf(W.destination);
   const text=dest?`${W.me.path?.length?'➜': '📍'} ${tr(W.st(dest).name)}`:`${dist.emoji} ${tr(dist.name)}`;

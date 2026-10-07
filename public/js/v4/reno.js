@@ -16,6 +16,7 @@
 import {icon,escapeHTML as esc} from '../icons.js';
 import {Sound} from '../audio.js';
 import * as A from './deco-art.js';
+import {petInner,lookup as petLookup} from './pet-art.js';   // 🐾 the player's own pets live here too (game/pets.py)
 import {setup as walkSetup} from './home-walk.js';
 import {live} from './live.js';
 import {sharedRooms,ownershipOrder,guestSession} from './home-view.js';
@@ -398,16 +399,23 @@ function floorSpot(rm,G){
   }
 }
 function catsWanted(){const v=V();return v?.cozy?.total>=24?2:1;}
+/** 🐾 The player's own pets (game/pets.py), at home only (not in a home you visit): {key, pet} for the cat list. */
+function myPets(){if(S.remote)return [];const cat=S.env?.api?.content?.journey?.pets;return (J().pets?.pets||[]).map(p=>({p,L:petLookup(cat,p.b,p.c)})).filter(x=>x.L);}
 function catsFor(rm,G,list){
-  const want=catsWanted();
-  if(CATS.room!==rm.id||CATS.list.length!==want){
+  const want=catsWanted(),pets=myPets(),key=pets.map(x=>x.p.id+JSON.stringify(x.p.w)).join('|');
+  if(CATS.room!==rm.id||CATS.list.length!==want+pets.length||CATS.key!==key){
     const spots=napSpots(rm,G,list),pick=i=>spots[i]||floorSpot(rm,G);
-    CATS.room=rm.id;
-    CATS.list=['mochi','bo'].slice(0,want).map((coat,i)=>{const s=pick(i);return {coat,x:s.x,y:s.y,pose:s.pose,flip:i%2===1,to:null,until:0};});
+    CATS.room=rm.id;CATS.key=key;
+    CATS.list=[...['mochi','bo'].slice(0,want).map(coat=>({coat})),...pets.map(x=>({pet:x}))].map((c,i)=>{const s=pick(i);return {...c,x:s.x,y:s.y,pose:s.pose,flip:i%2===1,to:null,until:0};});
   }
   return CATS.list;
 }
-const catInner=c=>`<g class="dc-cat-in ${c.pose}"><g${c.flip?' transform="scale(-1 1)"':''}>${A.catSVG(c.pose,c.coat)}</g></g>`;
+const PET_POSE={walk:'walk',sleep:'sleep',melt:'sleep',loaf:'sit'};
+const catInner=c=>{
+  if(c.pet){const pose=PET_POSE[c.pose]||'sit',w=c.pet.p.w||{},acc=pose==='sleep'?w:{...w,bed:null};   // its bed only under a nap
+    return `<g class="dc-cat-in ${c.pose} pet-svg"><g transform="scale(${c.flip?-.62:.62} .62)">${petInner(c.pet.L.breed,c.pet.L.coat,pose,acc)}</g></g>`;}
+  return `<g class="dc-cat-in ${c.pose}"><g${c.flip?' transform="scale(-1 1)"':''}>${A.catSVG(c.pose,c.coat)}</g></g>`;
+};
 function catsMarkup(rm,G,list,photo){
   const cats=catsFor(rm,G,list);
   if(photo)return cats.map(c=>`<g transform="translate(${c.x.toFixed(1)} ${c.y.toFixed(1)})">${catInner(c)}</g>`).join('');

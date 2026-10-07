@@ -1,0 +1,100 @@
+/* ==========================================================================
+   🐾 Nuôi thú cưng (public/js/v4/pets.js, the drawings in v4/pet-art.js). Classic look, theme tokens only, like
+   spend.css. Phone first (390px): one column, 44px targets, one main button in a sticky bottom bar.
+   The pets' own little motions (.pet-*) are used on every surface that shows a pet (home, the dialog, the stroll).
+   ========================================================================== */
+.sheet.pt-sheet{width:min(560px,calc(100vw - 32px))}
+.pt-root{display:flex;flex-direction:column;min-height:100%}
+.pt-head{align-items:center;padding:12px 14px 10px 16px}
+.pt-head h2{font-size:1.2rem;margin:0}
+.pt-logo{display:inline-grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;background:var(--accent-soft);font-size:1.4rem}
+.pt-wallet{flex:none;font-weight:700;font-size:.9rem;color:var(--ink-2);padding:4px 10px;border-radius:999px;background:var(--surface-2)}
+.pt-tabs{display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
+.pt-tabs button{flex:1 1 0;min-height:44px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);font-size:1.35rem;line-height:1;cursor:pointer}
+.pt-tabs button.on{background:var(--accent-soft);border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
+.sheet.pt-sheet .pt-body{flex:1 1 auto;padding:12px 14px 16px}
+.pt-empty{text-align:center;font-size:1.6rem;color:var(--muted);padding:28px 0}
+.pt-flash{margin:0 0 8px;font-size:.9rem;line-height:1.45;color:var(--ink-2)}
+.pt-flash:empty{display:none}
+.pt-flash.good{padding:8px 10px;border-radius:10px;background:var(--good-soft);color:var(--good)}
+.pt-flash.bad{padding:8px 10px;border-radius:10px;background:var(--bad-soft);color:var(--bad)}
+.pt-card{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:12px;margin:0 0 10px}
+.pt-card h3{margin:2px 0 2px;font-size:1.15rem}
+.pt-card h4{margin:6px 0 6px;font-size:.95rem}
+.pt-center,.pt-hero{text-align:center}
+.pt-muted{margin:0 0 8px;color:var(--ink-2);font-size:.9rem}
+.pt-off{opacity:.3;filter:grayscale(1)}
+.pt-stage{display:grid;place-items:center;min-height:150px;border-radius:14px;
+  background:radial-gradient(ellipse at 50% 85%,color-mix(in srgb,var(--accent-soft) 80%,transparent),transparent 70%)}
+.pt-stage.sm{min-height:112px;margin:0 0 6px}
+.pt-needs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0 2px}
+.pt-need{display:flex;align-items:center;gap:4px}
+.pt-need i{font-style:normal;font-size:1rem}
+.pt-need b{flex:1;height:10px;border-radius:99px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line);position:relative;overflow:hidden}
+.pt-need b::after{content:'';position:absolute;inset:0 auto 0 0;width:var(--v);border-radius:99px;background:var(--good)}
+.pt-need.low b::after{background:var(--warn)}
+.pt-acts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.pt-act{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:58px;border:1px solid var(--line);border-radius:14px;
+  background:var(--surface-2);color:var(--ink);font-weight:700;font-size:.82rem;cursor:pointer}
+.pt-act span{font-size:1.35rem;line-height:1}
+.pt-strip{display:flex;gap:6px;margin:0 0 8px;overflow-x:auto}
+.pt-mini{flex:none;display:grid;place-items:center;width:56px;height:56px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);cursor:pointer;padding:0}
+.pt-mini.on{border-color:var(--accent);background:var(--accent-soft)}
+.pt-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 8px}
+.pt-chip{min-width:48px;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface-2);font-size:1.05rem;font-weight:700;color:var(--ink);cursor:pointer}
+.pt-chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-text)}
+.pt-coats .pt-chip{padding:0 8px}
+.pt-coats i{display:inline-block;width:26px;height:26px;border-radius:50%;vertical-align:middle;border:2px solid var(--surface)}
+.pt-list{display:grid;gap:6px}
+.pt-item{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:6px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface-2);color:var(--ink);text-align:left;cursor:pointer}
+.pt-item.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.pt-item b{flex:1 1 auto;min-width:0;font-size:.98rem}
+.pt-item em{flex:none;font-style:normal;font-weight:800;color:var(--accent-text)}
+.pt-ico{flex:none;font-size:1.5rem;line-height:1}
+.pt-picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.pt-pick{display:flex;flex-direction:column;align-items:center;gap:0;padding:6px 4px 8px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);cursor:pointer}
+.pt-pick.on{border-color:var(--accent);background:var(--accent-soft)}
+.pt-pick:disabled{opacity:.55}
+.pt-pick b{font-size:.92rem}
+.pt-pick small{font-weight:700;color:var(--ink-2)}
+.pt-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px}
+.pt-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:64px;border:1px solid var(--line);border-radius:14px;background:var(--surface);cursor:pointer;color:var(--ink)}
+.pt-tile span{font-size:1.6rem;line-height:1}
+.pt-tile small{font-weight:700;color:var(--ink-2)}
+.pt-tile.on{border-color:var(--accent);background:var(--accent-soft)}
+.pt-sel{margin:0 0 8px}
+.pt-name input{width:100%;min-height:44px;border:1px solid var(--field-line);border-radius:12px;padding:0 12px;font:inherit;font-weight:700;background:var(--surface);color:var(--ink);text-align:center}
+.pt-link{display:block;margin:4px auto 0;min-height:44px;padding:0 14px;border:0;background:none;color:var(--accent-text);font-weight:700;text-decoration:underline;cursor:pointer}
+.pt-board{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.pt-board li{display:flex;align-items:center;gap:8px;padding:4px 10px;border-radius:12px;background:var(--surface-2)}
+.pt-board li.me{outline:2px solid var(--accent)}
+.pt-board li>span{flex:none;width:20px;font-weight:800;color:var(--muted)}
+.pt-board li b{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}
+.pt-board li b small{font-weight:600;color:var(--ink-2)}
+.pt-board li em{font-style:normal;font-weight:800;color:var(--accent-text)}
+.pt-photo{margin:0 0 6px;display:grid;place-items:center}
+.pt-shot{max-width:100%;height:auto}
+.pt-bar{position:sticky;bottom:0;z-index:5;display:flex;flex-direction:column;gap:4px;padding:10px 14px calc(10px + var(--safe-b,0px));border-top:1px solid var(--line);background:var(--surface)}
+.pt-main{width:100%;min-height:48px;font-size:1.02rem}
+.pt-why{text-align:center;color:var(--warn);font-weight:700;font-size:.85rem}
+.pt-unknown{font-size:2rem}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-height:480px){
+  .pt-head{padding:6px 12px}.pt-logo{width:32px;height:32px;font-size:1.1rem}.pt-tabs{padding:4px 12px}.pt-tabs button{min-height:40px}
+  .pt-stage{min-height:110px}.pt-bar{padding:6px 12px calc(6px + var(--safe-b,0px))}
+}
+/* The pets' little motions (every surface). Calm mode / reduced motion: still. */
+.pet-svg .pet-tail{transform-box:fill-box;transform-origin:100% 100%;animation:pet-wag 1.1s ease-in-out infinite}
+.pet-happy .pet-bob{animation:pet-hop 1.4s ease-in-out infinite}
+.pet-svg .pet-hearts{animation:pet-float 2.4s ease-in-out infinite}
+.pet-walk .pet-leg.a{transform-box:fill-box;transform-origin:50% 0;animation:pet-step .5s ease-in-out infinite alternate}
+.pet-walk .pet-leg.b{transform-box:fill-box;transform-origin:50% 0;animation:pet-step .5s ease-in-out infinite alternate-reverse}
+.pet-sleep .pet-bob{transform-box:fill-box;transform-origin:50% 100%;animation:pet-breathe 3s ease-in-out infinite}
+.pet-svg .pet-zz{animation:pet-float 3s ease-in-out infinite}
+@keyframes pet-wag{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(8deg)}}
+@keyframes pet-hop{0%,70%,100%{transform:translateY(0)}80%{transform:translateY(-4px)}}
+@keyframes pet-float{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(-3px);opacity:.7}}
+@keyframes pet-step{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+@keyframes pet-breathe{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.04)}}
+@media (prefers-reduced-motion:reduce){.pet-svg *{animation:none!important}}
+html.calm .pet-svg *{animation:none!important}

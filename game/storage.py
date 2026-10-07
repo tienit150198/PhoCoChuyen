@@ -618,6 +618,9 @@ class Store:
                 if action.startswith('jr_spend_'):
                     from . import spend
                     spend.command_commit(db,sid,action,current)  # ☕ 🙏 the donation row, 🎨 the chat_style row
+                elif action.startswith('jr_pet_'):
+                    from . import pets
+                    pets.command_commit(db,sid,action,current)  # 🐾 Bé cưng của tuần (pet_board)
             if action == 'settings':
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,current)
@@ -675,6 +678,9 @@ class Store:
             if action.startswith('jr_spend_'):
                 from . import spend
                 spend.command_commit(db,sid,action,raw)  # ☕ 🙏 the donation row, 🎨 the chat_style row
+            elif action.startswith('jr_pet_'):
+                from . import pets
+                pets.command_commit(db,sid,action,raw)  # 🐾 Bé cưng của tuần (pet_board)
             if action == 'settings':
                 from . import accounts
                 accounts.sync_character_name(db,sid,before,raw)
@@ -709,6 +715,8 @@ class Store:
             home_guests.forget(db,sid)
             from . import spend
             spend.forget(db,sid)  # 🎨 the style row; 🙏 donations stay on the board as anonymous
+            from . import pets
+            pets.forget(db,sid)  # 🐾 their pets leave the weekly board
             db.execute("DELETE FROM archive WHERE sid=?",(sid,))
             db.execute("DELETE FROM receipts WHERE sid=?",(sid,))
             lb.forget(db,[sid])

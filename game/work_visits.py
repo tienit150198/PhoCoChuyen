@@ -500,6 +500,9 @@ def _create(store, sid, data):
         need(s.get('journey', {}).get('story'), 'Dịch vụ khách thật dùng ví hành trình.', 'not_story')
         need(s['journey']['wallet'] >= price, f'Cần {price} xu trong ví để giữ tiền cho đơn.', 'no_money')
         journey._wallet(s['journey'], -price, 'invest', 'Giữ tiền đơn chỗ làm', body['career'])
+        if body['career'] == 'pet_care':   # 🐾 the pets at home go to the groomer (game/pets.py); no money moves here
+            from . import pets
+            pets.groom_by_player(s)
     def insert(db):
         previous = _row(db, 'SELECT * FROM work_service_orders WHERE customer=? AND request_id=?', (sid, rid))
         if previous:

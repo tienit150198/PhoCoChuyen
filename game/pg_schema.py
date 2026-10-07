@@ -12,7 +12,7 @@ runtime catalog needed to check table presence and maintain identity sequences.
 """
 from __future__ import annotations
 
-SCHEMA_VERSION = 26  # 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
+SCHEMA_VERSION = 27  # 27: 🐾 Bé cưng của tuần (pet_board: game/pets.py); 26: 🎤 Phòng hát (kara_songs, kara_tickets, kara_reviews: game/karaoke.py, live/karaoke.py), on top of 25 (spend-1: donations, chat_style); 24: 🐢 chat slow mode (chat_slow: game/live_chat.py, live/chat.py); 22: synchronize character/account names; 21: chat replies; 20: friend home invitations.
                      # 2: leaderboard, marriage/friends/couple tables, stat_fb_created, stat_accounts_created; 3: stat_play;
                      # 4: system_gifts; 5: Giữ chân (game/retention.py: stat_milestones, stat_actions(_daily), stat_rollups,
                      # stat_leaves, stat_leave_last, stat_client_errors, stat_loads, stat_acquisition) and stat_play_daily;
@@ -486,6 +486,13 @@ CREATE TABLE IF NOT EXISTS kara_tickets (
 CREATE TABLE IF NOT EXISTS kara_reviews (
   target {T} PRIMARY KEY, verdict {T} NOT NULL, by_admin {T} NOT NULL DEFAULT '', at double precision NOT NULL
 );
+-- 🐾 Bé cưng của tuần (game/pets.py; SCHEMA_VERSION 27): each player's best-cared pet of a Vietnam ISO week, written in
+-- the save's own transaction on jr_pet_* commands. Cosmetic only. A player who erases their data leaves the board.
+CREATE TABLE IF NOT EXISTS pet_board (
+  sid {T} NOT NULL, week {T} NOT NULL, name {T} NOT NULL, breed {T} NOT NULL, coat bigint NOT NULL DEFAULT 0,
+  acc {T} NOT NULL DEFAULT '[]', pts bigint NOT NULL DEFAULT 0, at double precision NOT NULL, PRIMARY KEY (sid, week)
+);
+CREATE INDEX IF NOT EXISTS pet_board_week ON pet_board(week, pts);
 """
 
 INDEX_DDL = """
@@ -767,6 +774,7 @@ TABLES = [
     dict(name='kara_songs', identity=None),
     dict(name='kara_tickets', identity=None),
     dict(name='kara_reviews', identity=None),
+    dict(name='pet_board', identity=None),
     dict(name='mnl_meta', identity=None),
 ]
 

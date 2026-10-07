@@ -70,7 +70,7 @@ from . import effects
 from .auth import clean_name, pid_of
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
-from .street import GEO, Walker, clean_look, clean_rank
+from .street import GEO, Walker, clean_look, clean_pet, clean_rank
 
 PREFIX = 'wed:'
 REFRESH = 30.0              # seconds between two reads of the booked parties (and the reminder / settle checks)
@@ -285,7 +285,7 @@ class WeddingFeature(Feature):
                 at = geo.clamp(x + random.uniform(-90, 90), y + random.uniform(-30, 30))
                 await self.street.lb_fresh()
                 title = self.street.title_of(pl, f.get('title'), f.get('titles'))
-            self.street._enter(room, conn, Walker(pl, look, g, title, at, now, rk=clean_rank(f.get('rk'))))
+            self.street._enter(room, conn, Walker(pl, look, g, title, at, now, rk=clean_rank(f.get('rk')), pt=clean_pet(f.get('pt'))))
             overflow = False
         else:
             if len(room.data['watch']) >= WATCHERS_MAX:

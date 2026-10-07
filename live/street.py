@@ -72,7 +72,8 @@ import time
 from . import coride, effects, styles
 from .db import Error as DbError, log
 from .protocol import Feature, LiveError, on
-from .street_data import ORG_GRADES
+from .street_data import ORG_GRADES, PET_ACCS, PET_BREEDS
+from . import filters
 from .street_data import (CERTS, COLOR_IDS, EMOTES, LOOK_DEFAULTS, LOOK_IDS, LOOK_SLOTS, PAINTABLE, PLACES, PUBLIC, TINT_MAX,
                           TINT_SLOTS, TITLES, TOPICS, VENDORS, H, W)
 
@@ -279,11 +280,31 @@ def clean_rank(rk) -> dict | None:
     return None
 
 
-class Walker:
-    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk')
+def clean_pet(pt) -> dict | None:
+    """🐾 The pet a client says walks beside its character ({b: breed, c: coat, n: name, a: [accessory ids]},
+    game/pets.py walk_ref): kept only when the breed and coat are known here; the name goes through the chat filter
+    (heavy words masked, links and contacts dropped), unknown accessories are left out. Anything else shows no pet
+    (never refused: an older or newer client still walks in)."""
+    if not isinstance(pt, dict) or set(pt) - {'b', 'c', 'n', 'a'} or pt.get('b') not in PET_BREEDS:
+        return None
+    c = pt.get('c', 0)
+    if type(c) is not int or not 0 <= c < PET_BREEDS[pt['b']]:
+        return None
+    n = filters.clean(pt.get('n'), 16, 1)
+    n = filters.mask(n) if n else None
+    acc = pt.get('a') if isinstance(pt.get('a'), list) else []
+    out = dict(b=pt['b'], c=c, a=[x for x in acc[:3] if isinstance(x, str) and x in PET_ACCS])
+    if n:
+        out['n'] = n
+    return out
 
-    def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None, rk: dict | None = None):
-        self.rk = rk
+
+class Walker:
+    __slots__ = ('pid', 'player', 'name', 'title', 'look', 'g', 'path', 't0', 'seat', 'ride', 'back', 'pill', 'st', 'rk', 'pt')
+
+    def __init__(self, player, look: dict, g, title, at: tuple, now: float, ride: dict | None = None, rk: dict | None = None,
+                 pt: dict | None = None):
+        self.rk, self.pt = rk, pt
         self.pid, self.player = player.pid, player
         self.name = player.name or 'Khách dạo phố'
         self.title, self.look, self.g = title, look, g
@@ -304,6 +325,8 @@ class Walker:
                  s=list(self.seat) if self.seat else None)
         if self.rk:
             d['rk'] = self.rk
+        if self.pt:
+            d['pt'] = self.pt
         if self.ride:
             d['r'], d['v'] = self.ride, self.speed
         if self.back:
@@ -595,7 +618,7 @@ class StreetFeature(Feature):
         now = time.time()
         sx, sy = GEO[place].spots['spawn']
         at = GEO[place].clamp(sx + random.uniform(-150, 150), sy + random.uniform(-45, 45))
-        w = Walker(p, look, g, title, at, now, r, clean_rank(f.get('rk')))
+        w = Walker(p, look, g, title, at, now, r, clean_rank(f.get('rk')), clean_pet(f.get('pt')))
         w.st = st or None
         self._enter(room, conn, w)
         out = self._snapshot(room, p, now)

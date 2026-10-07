@@ -45,6 +45,7 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {live,openChat} from './live.js';
 import {stylesheet} from '../lazy.js';
 import {lookOf,figureOf,paintPlayer,CANVAS,portrait,rankRef} from './look.js';
+import {refURL} from './pet-art.js';   // 🐾 the pets walking beside their owners (`pt`, live/street.py clean_pet)
 import {envRid,envSettle,envKey,UNKNOWN_TEXT} from './envelope-send.js';
 import {paintPlace,paintLion,paintVendor,paintEnvelope,EDGE,WORLD} from '../scenes/stroll.js';
 import * as feast from './wedfeast.js';
@@ -171,7 +172,7 @@ function onClose(){
 function leaveLocal(){S.log=[];S.logOpen=false;S.envp=null;S.tray=null;S.toss=null;S.dj=false;paintLog();S.room=null;S.geo=null;S.people.clear();S.tables=[];S.hap=null;S.envl=null;S.card=null;S.invite=null;S.floaters=[];S.photo=null;syncMusic();paintOverlays();}
 
 function enter(place){
-  const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined,...(rankRef(st)?{rk:rankRef(st)}:{})};   // 🎖️ rk: the rank worn (live/street.py clean_rank; older services ignore it)
+  const st=S.env?.api?.state||{},me={look:lookOf(st),g:st.journey?.gender??null,title:st.journey?.equipped??null,titles:Array.isArray(st.journey?.worn)?st.journey.worn.map(w=>w.id):undefined,...(rankRef(st)?{rk:rankRef(st)}:{}),...(st.journey?.pets?.ref?{pt:st.journey.pets.ref}:{})};   // 🐾 pt: the pet with me (older services ignore it)   // 🎖️ rk: the rank worn (live/street.py clean_rank; older services ignore it)
   if(S.wedding!==null){S.want='wed';live.send({t:'wed_in',id:S.wedding,...me});return;}
   S.want=place;
   const r=wire(choice(st,S.env?.api?.content,TWO));
@@ -282,7 +283,7 @@ function bind(){
   });
 }
 function sample(at){if(typeof at!=='number')return;S.offs.push(at-Date.now()/1000);if(S.offs.length>12)S.offs.shift();S.off=Math.max(...S.offs);}
-function person(p){const q={pid:p.pid,name:p.name,ti:p.ti,lk:p.lk,rk:p.rk||null,g:p.g,st:p.st&&typeof p.st==='object'?p.st:null,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
+function person(p){const q={pid:p.pid,name:p.name,ti:p.ti,lk:p.lk,rk:p.rk||null,pt:p.pt&&typeof p.pt==='object'?p.pt:null,g:p.g,st:p.st&&typeof p.st==='object'?p.st:null,p:p.p,at:p.at,s:p.s,sp:null,spk:'',bub:null,emo:null,said:null,pred:null,...riding(p),b:null};behind(q,p);return q;}
 /** 💑 Sitting behind someone (`b`: the driver's pid, optional, from a newer live service): their speed is the driver's. */
 function behind(q,e){const b=typeof e.b==='string'?e.b:null,v=Number(e.v);if(b)q.v=v>0&&v<2000?v:q.v;else if(q.b&&!q.r)q.v=undefined;q.b=b;}
 /** 🛵 A people entry's vehicle (r, v: optional, from a newer live service), the rider's motion. */
@@ -697,6 +698,15 @@ function sprite(p){
   try{const F=figureOf(p.lk,p.g);if(p.rk)F.rk=p.rk;paintPlayer(c,F,CANVAS);}catch(e){console.warn('walk: look',e);}
   p.sp=cv;p.spk=key;return cv;
 }
+/* 🐾 A stroller's pet: beside them, a step behind the way they walk; sits when they stop. */
+const PETS=new Map();
+function petImg(cat,pt,pose){const key=JSON.stringify([pt.b,pt.c,pt.a,pose]);let im=PETS.get(key);
+  if(!im){if(PETS.size>40)PETS.clear();const url=cat?refURL(cat,pt,pose):'';if(!url)return null;im=new Image();im.src=url;PETS.set(key,im);}
+  return im.complete&&im.naturalWidth?im:null;}
+function drawPet(c,p,cat){
+  if(p.petx!=null&&Math.abs(p.x-p.petx)>.3)p.pdir=p.x>p.petx?1:-1;p.petx=p.x;const dir=p.pdir||1,pose=p.moving?'walk':'sit',im=petImg(cat,p.pt,pose);if(!im)return;
+  const w=pose==='walk'?38:32,h=pose==='walk'?w*62/72:w,foot=pose==='walk'?58/62:64/68;
+  c.save();c.translate(p.x-24*dir,p.y+3);if(dir<0)c.scale(-1,1);c.drawImage(im,-w/2,-h*foot,w,h);c.restore();}
 const npcs=new Map();   // the wedding show's characters (./wedfeast.js), cached like the players' sprites
 function npcSprite(id,lk,g){let p=npcs.get(id);if(!p||p.lk!==lk){p={lk,g,sp:null,spk:''};npcs.set(id,p);}return sprite(p);}
 function loop(){if(!S.raf&&S.dlg?.open)S.raf=requestAnimationFrame(frame);}
@@ -751,6 +761,7 @@ function draw(ts,t){
       c.drawImage(sp,-55*AV,-150*AV-Math.abs(Math.sin(ph*Math.PI))*(calm?1.5:6),110*AV,160*AV);c.restore();continue;}
     const bob=p.moving?-Math.abs(Math.sin(sec*11+p.x*.05))*3:0;
     c.drawImage(sp,p.x-55*AV,p.y-150*AV+bob,110*AV,160*AV);
+    if(p.pt)drawPet(c,p,ct?.journey?.pets);
   }
   const h=S.hap;
   if(h&&h.k!=='env'){const span=h.end-h.at,f=(t-h.at)/span;
