@@ -15,6 +15,35 @@
   hiệu hội chợ, nhận danh hiệu qua live_fx) và `honours_lb` (làm mới bảng tuần, chốt tuần thứ Hai) để cập nhật ngay;
   tuần đã hết thì chip tự mất. Không thêm truy vấn mỗi tin nhắn. Client cũ bỏ qua `tt`, `ti` giữ nguyên chữ.
 - Không thêm khóa bản lưu, không đổi DDL.
+# Chưa phát hành — Phòng điều hành bay, lộ trình kế toán, tạp hóa, ghim nội thất (fix-office-misc)
+
+## Phòng điều hành bay (F#223)
+
+- Cơ trưởng nghỉ việc thì hãng điều một cơ trưởng khác về thay, cùng bậc (trước đây người thay luôn là cơ phó mới).
+- Đội bay không bao giờ mở ngày với ít hơn 2 cơ trưởng: thiếu thì hãng nâng cơ phó giỏi nhất lên (phòng cũ được sửa
+  ngay ngày làm kế tiếp, quỹ lương cộng thêm phần chênh).
+- Số chặng cần cơ trưởng = số cơ trưởng còn bay được hôm nay (tối đa 2): hết cảnh ngày nào cũng có chặng bị hủy.
+- Phó Giám đốc Khối (bậc 5) có thêm ⬆️ Thăng chức. Phòng chỉ huy công an giữ nguyên luật.
+
+## Lộ trình kế toán (F#227)
+
+- Dòng khóa thăng tiến ghi tiến độ: "🧭 Lộ trình bậc 2: 4/6 ngày chắc tay · tin tưởng 48/55", kèm thanh tiến độ.
+- Thêm ô "🪜 Cách lên bậc" 3 bước ngắn, chi tiết sau nút "?". Áp dụng cho kế toán doanh nghiệp, thuế & tiền lương,
+  kế toán hợp nhất.
+
+## Chuyện đời và chuyện ở tiệm (F#221)
+
+- Tuần đầu ở một chỗ làm (ngày 1–7): chỉ chuyện nhẹ, tần suất còn một nửa.
+- Chuyện để tới cuối ngày chưa quyết: chọn cách ít tốn nhất mà không sai (trước đây là cách tệ nhất), không được thưởng.
+- Lựa chọn hên xui ghi rõ tỷ lệ: "🎲 Hên xui · 40% được việc" (chuyện đời và chuyện bất ngờ ở quầy).
+- Mất trộm ở tiệm/quầy: "📹 Xem camera, báo công an phường" có 50% (85% nếu có camera) lấy lại đủ, không mất xu.
+
+## Ghim nội thất (F#224)
+
+- Nút 📌 Ghim trên từng món khi sắp xếp: món đã ghim không bị kéo nhầm (lưu trên máy này). Phải kéo 12 px (trước 6 px)
+  món mới bắt đầu dời.
+
+Bản lưu: không thêm khóa mới; bản 1.9.10 đọc được.
 
 # v1.9.10 — 2026-10-07
 

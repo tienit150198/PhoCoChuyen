@@ -14,8 +14,13 @@ Per workplace, stored in c['incidents'] (see initial()):
 Money goes through engine.money() with a ledger category (fund) or the journey
 wallet (kind 'incident'). Incidents only happen when the journey story is on
 (real sessions); practice replays of past incidents change nothing. Hidden
-things (which answer is right, luck, follow-ups, today's plan) never reach the
-public projection before the decision.
+things (which answer is right, how a luck roll ends, follow-ups, today's plan)
+never reach the public projection before the decision; a gamble's odds do
+(F#221: 🎲 on the option).
+
+F#221 (grocery players "always pushed into the worst outcome"): a workplace's
+first NEW_DAYS days draw only mild stories at NEW_RATE of the rate, and an
+incident left undecided at closing takes neutral() instead of a wrong answer.
 """
 from __future__ import annotations
 
@@ -34,6 +39,8 @@ HISTORY = 80
 FOLLOW_MAX = 12
 TRUST_START = 50
 DAILY_CAP = 2
+NEW_DAYS = 7        # F#221: a workplace's first week: only the mild stories, half as often
+NEW_RATE = 0.5
 TRUST_NAMES = ((80, 'Cả phố tin cậy'), (60, 'Được tin cậy'), (40, 'Bình thường'), (20, 'Bị dè chừng'), (0, 'Mang tiếng xấu'))
 
 
@@ -106,7 +113,7 @@ def rate(day: int, mode: str = 'normal') -> float:
 def _pool(c: dict, career: str, box: dict) -> list:
     mode = c['life'].get('mode', 'normal')
     rows = [x for x in INCIDENTS if not x['chain'] and career in x['careers'] and x['min_day'] <= c['day']]
-    if mode == 'calm':
+    if mode == 'calm' or c['day'] <= NEW_DAYS:
         rows = [x for x in rows if x['tone'] == 'mild']
     recent = {h['script'] for h in box['history'][-12:]}
     return [x for x in rows if x['id'] not in recent] or rows
@@ -128,6 +135,8 @@ def roll_plan(s: dict, c: dict, career: str) -> dict | None:
     seed = s.get('journey', {}).get('seed', 0)
     r = _rng('incident-plan', seed, career, day)
     p = rate(day, c['life'].get('mode', 'normal'))
+    if day <= NEW_DAYS:
+        p *= NEW_RATE   # F#221: a new player learns the job before the street piles on
     if any(h['day'] == day - 1 and not h.get('follow') for h in box['history']):
         p *= 0.6
     if r.random() >= p:
@@ -289,6 +298,29 @@ def _luck(c: dict, row: dict, opt: dict) -> bool | None:
     return _rng('incident-luck', row['id'], row['script'], opt['id']).random() < p
 
 
+def neutral(x: dict) -> str:
+    """F#221: what an undecided incident does at closing time. The authored default, unless that is a wrong answer
+    (good False: the worst outcome for doing nothing); then the plain, sure option nobody has to pay for by choice: no
+    luck roll, nothing voluntary, not a wrong answer; the one that costs least, the authored order breaking ties. A script
+    with no such option keeps its default. (A right answer taken this way earns nothing: decide() makes it neutral.)"""
+    d = next(o for o in x['options'] if o['id'] == x['default'])
+    if d.get('good') is not False:
+        return d['id']
+    rows = [o for o in x['options'] if o.get('good') is not False and not o.get('luck') and not o.get('voluntary')]
+    if not rows:
+        return d['id']
+    return min(rows, key=lambda o: (max(0, -sum(a for _, a, _ in o.get('pay', ()))), x['options'].index(o)))['id']
+
+
+def odds(c: dict, opt: dict) -> int | None:
+    """F#221: the chance (%) a gamble option works out, said on the option (🎲); None for a sure one."""
+    luck = opt.get('luck')
+    if not luck:
+        return None
+    p = luck['p_camera'] if luck.get('p_camera') is not None and _camera(c) else luck['p']
+    return round(100 * p)
+
+
 def _schedule(box: dict, follow, day: int, src: str) -> None:
     if not follow:
         return
@@ -339,6 +371,8 @@ def decide(s: dict, c: dict, career: str, option: str, auto: bool = False) -> di
     outcome = _txt(res['outcome'] if res and res.get('outcome') else opt['outcome'], _gender(s))
     good = res['good'] if res else opt['good']
     trust = opt.get('trust', 0) + (res.get('trust', 0) if res else 0)
+    if auto and option != INDEX[row['script']]['default'] and good is True:
+        good, trust = None, min(0, trust)   # F#221: the closing-time neutral pick is no reward for leaving it
     done = []
     if not practice:
         done = _pay(s, c, career, _lines(opt, res), x['title'], row['id'])
@@ -409,7 +443,7 @@ def on_close(s: dict, c: dict, career: str) -> dict | None:
     if row and row['practice']:
         box['active'] = None
     elif row:
-        decide(s, c, career, INDEX[row['script']]['default'], auto=True)
+        decide(s, c, career, neutral(INDEX[row['script']]), auto=True)
     box['plan'] = None
     today = [h for h in box['history'] if h['day'] == c['day']]
     if not today:
@@ -463,7 +497,7 @@ def public(c: dict, career: str, s: dict) -> dict:
             id=row['id'], script=x['id'], day=row['day'], practice=row['practice'], cat=x['cat'], cat_emoji=emoji,
             cat_label=label, emoji=x['emoji'], title=x['title'], text=_txt(x['text'], gender), tone=x['tone'],
             evidence=_evidence(x, c, gender), ticket=tree_copy(x['ticket']),
-            options=[dict(id=o['id'], label=_txt(o['label'], gender), hint=o.get('hint', ''), stakes=_stakes(s, o),
+            options=[dict(id=o['id'], label=_txt(o['label'], gender), hint=o.get('hint', ''), odds=odds(c, o), stakes=_stakes(s, o),
                           affordable=row['practice'] or _affordable(s, c, o)) for o in x['options']])
     last = box['last']
     if last:

@@ -334,6 +334,22 @@ def _care_rank(c: dict) -> int:
     return r if type(r) is int else 0
 
 
+def _care_gate(c: dict, k: int) -> dict:
+    """F#227: the accounting care track's step `k` as a requirement with its progress (the "ngày chắc tay" and the boss's
+    trust it needs, game/careers/corp_accounting.py RANK_NEEDS), so the gate says how far there is still to go."""
+    from .careers.corp_accounting import RANK_NEEDS
+    d = (c.get('ext') or {}).get('data') or {}
+    care, desk = d.get('care'), d.get('office')
+    rel = care.get('reliable') if isinstance(care, dict) else 0
+    trust = desk.get('trust') if isinstance(desk, dict) else 0
+    rel, trust = (rel if type(rel) is int else 0), (trust if type(trust) is int else 0)
+    days, need = RANK_NEEDS[k]
+    if _care_rank(c) >= k:
+        return dict(id='care', met=True, label=f'🧭 Lộ trình bậc {k}: đã đạt', got=days, need=days)
+    label = f'🧭 Lộ trình bậc {k}: {min(rel, days)}/{days} ngày chắc tay' + (f' · tin tưởng {min(trust, need)}/{need}' if need else '')
+    return dict(id='care', met=False, label=label, got=min(rel, days), need=days, trust=min(trust, need), trust_need=need)
+
+
 def _gates(s: dict, c: dict, career: str, rec: dict) -> list[dict]:
     """All career-specific requirements, shared by eligibility and its public explanation."""
     n = _rank(rec) + 1
@@ -346,8 +362,7 @@ def _gates(s: dict, c: dict, career: str, rec: dict) -> list[dict]:
         rows.append(dict(id='probation', met=not bool((c.get('job') or {}).get('probation')),
                          label='Hết thử việc trước đã'))
     if emp and career in ACCT and n in ACCT_CARE:
-        rows.append(dict(id='care', met=_care_rank(c) >= ACCT_CARE[n],
-                         label='🧭 Lộ trình phòng kế toán: bậc ' + str(ACCT_CARE[n])))
+        rows.append(_care_gate(c, ACCT_CARE[n]))
     served = st.get('served', 0)
     if st.get('cert'):
         from . import certificates as ct

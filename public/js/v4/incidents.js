@@ -45,7 +45,7 @@ function decisionView(x){
   const ev=x.evidence.length?`<h4 class="section-title">Dữ kiện</h4><ul class="inc-evidence">${x.evidence.map(t=>`<li>${icon('search',14)}<span>${esc(t)}</span></li>`).join('')}</ul>`:'';
   const choices=x.options.map(o=>{
     const stakes=o.stakes.length?o.stakes.map(stake).join(''):'<span class="inc-stake none">Không tốn tiền</span>';
-    return `<button type="button" class="inc-choice" data-action="incChoose" data-id="${esc(x.id)}" data-option="${esc(o.id)}" data-label="${esc(o.label)}"${o.affordable?'':' disabled'}><strong>${esc(o.label)}</strong><span class="inc-stakes">${stakes}${o.hint&&!/xu$/.test(o.hint)?`<small>${esc(o.hint)}</small>`:''}${o.affordable?'':'<small class="inc-warn">Chưa đủ tiền cho cách này</small>'}</span></button>`;
+    return `<button type="button" class="inc-choice" data-action="incChoose" data-id="${esc(x.id)}" data-option="${esc(o.id)}" data-label="${esc(o.label)}"${o.affordable?'':' disabled'}><strong>${esc(o.label)}</strong><span class="inc-stakes">${stakes}${o.hint&&!/xu$/.test(o.hint)?`<small>${esc(o.hint)}</small>`:''}${o.odds!=null?`<small class="inc-odds">🎲 Hên xui · ${o.odds}% được việc</small>`:''}${o.affordable?'':'<small class="inc-warn">Chưa đủ tiền cho cách này</small>'}</span></button>`;
   }).join('');
   return head(esc(x.title),`${esc(x.cat_emoji)} ${esc(x.cat_label).toUpperCase()}`)+`<div class="sheet-body inc-body">
     ${x.practice?`<p class="inc-replay-note">${icon('refresh',14)} Chỉ là nhớ lại chuyện cũ: tiền và tiếng không đổi.</p>`:''}

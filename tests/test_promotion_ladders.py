@@ -243,7 +243,7 @@ class Office(unittest.TestCase):
         self.assertTrue(v['live'])
         self.assertEqual((len(v['slots']), len(v['staff']), len(v['inbox']), v['left']), (4, 6, 1, 4))
         self.assertEqual(sum(1 for s in v['slots'] if s['need']), 2)
-        self.assertEqual([a['id'] for a in v['acts']], list(OF.BASIC))
+        self.assertEqual([a['id'] for a in v['acts']], list(OF.BASIC) + ['promote'])   # F#223: a captain can be made
         self.assertTrue(all(s['hint'] is None for s in v['staff']))   # traits stay hidden
         self.assertTrue(all('tr' not in m for m in v['staff']))
         self.assertFalse(any(f'"{tr}"' in json.dumps(v) for tr in OF.TRAITS))
@@ -285,7 +285,7 @@ class Office(unittest.TestCase):
     def test_powers_grow_with_the_step(self):
         j = at('pilot', 5)
         with self.assertRaises(GameError):
-            j.act('pm_of_hr', mate=4, act='promote')
+            j.act('pm_of_hr', mate=0, act='suspend')
         j = at('pilot', 6)
         self.assertEqual([a['id'] for a in office(j)['acts']], list(OF.FULL))
         self.assertEqual(office(j)['left'], 5)

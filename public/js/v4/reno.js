@@ -60,6 +60,12 @@ const SAY=['Phòng hơi trống… Mochi buồn ngủ quá.','Bắt đầu dễ 
 const TIP_KEY='mnl.decoTip2';
 const tipSeen=()=>{try{return localStorage.getItem(TIP_KEY)==='1';}catch{return false;}};
 const tipDone=()=>{try{localStorage.setItem(TIP_KEY,'1');}catch{/* private window: the tip just shows again */}};
+/* 📌 Ghim (F#224): a pinned piece never starts a drag in edit mode (this device; no save key, so older builds are unaffected). */
+const PIN_KEY='mnl.decoPins';let PINS=null;
+const pins=()=>PINS??=(()=>{try{const a=JSON.parse(localStorage.getItem(PIN_KEY)||'[]');return new Set(Array.isArray(a)?a.filter(x=>typeof x==='string'):[]);}catch{return new Set();}})();
+const isPinned=uid=>!!uid&&pins().has(uid);
+function togglePin(uid){const s=pins();if(s.has(uid))s.delete(uid);else s.add(uid);try{localStorage.setItem(PIN_KEY,JSON.stringify([...s].slice(-300)));}catch{/* private window: kept for this visit */}return s.has(uid);}
+const DRAG_PX=12;   // a press must travel this far before a placed piece follows the finger (was 6: pieces moved by accident)
 const calm=()=>document.body.classList.contains('reduce-motion')||!!globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const nonce=()=>(globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`).replace(/[^A-Za-z0-9_-]/g,'').slice(0,32);
 
@@ -486,6 +492,7 @@ async function onClick(op,data){
         const r=await send('jr_deco_buy',{item:it.id,confirm:true,n:nonce()});if(r){sfx('coins');S.held={k:it.id,src:'bag'};render();}}return;}
     case'move':{const p=placed(data.uid);if(!p)return;S.held={k:p.k,src:'room',uid:p.id};S.sel='';sfx('pop');render();return;}
     case'flip':{const p=placed(data.uid);if(!p)return;await putPiece(p.id,{...qOf(p),f:p.f?0:1});return;}
+    case'pin':{const on=togglePin(data.uid);S.flash={text:on?'📌 Đã ghim: món này không bị kéo nhầm nữa.':'Đã bỏ ghim: kéo để dời được rồi.',kind:'good'};sfx('click');render();return;}
     case'face':{const p=placed(data.uid);if(!p||(CD().facing||[]).indexOf(p.k)<0)return;await putPiece(p.id,{...qOf(p),face:p.face==='back'?'front':'back'});return;}
     case'zup':case'zdown':{const p=placed(data.uid);if(!p)return;const rm=roomOf(p.r),zs=inRoom(rm,new Set([p.id])).map(o=>o.q.z||0);
       const z=op==='zup'?Math.min(CD().z_max||99,Math.max(0,...zs)+1):Math.max(0,Math.min(...zs,p.z||0)-1);
@@ -595,7 +602,7 @@ function onKey(e){
   if(!S.edit||!S.sel||S.busy||!e.target.closest?.('svg.dc-room'))return;   // the keys belong to the room, not the drawer
   const p=placed(S.sel);if(!p)return;
   const step=e.shiftKey?U:4,d={ArrowLeft:[-step,0],ArrowRight:[step,0],ArrowUp:[0,-step],ArrowDown:[0,step]}[e.key];
-  if(d){e.preventDefault();nudge(p,d);return;}
+  if(d){e.preventDefault();if(!isPinned(p.id))nudge(p,d);return;}
   if(e.key==='f'||e.key==='F'){e.preventDefault();putPiece(p.id,{...qOf(p),f:p.f?0:1}).then(focusSel);return;}
   if((e.key==='r'||e.key==='R')&&(CD().facing||[]).includes(p.k)){e.preventDefault();onClick('face',{uid:p.id}).then(focusSel);return;}
   if(e.key==='PageUp'||e.key==='PageDown'){e.preventDefault();onClick(e.key==='PageUp'?'zup':'zdown',{uid:p.id}).then(focusSel);return;}
@@ -630,6 +637,7 @@ function onDown(e){
 }
 /** Start dragging the placed piece `uid` from the pointer at (cx, cy). */
 function startPieceDrag(uid,cx,cy){
+  if(isPinned(uid))return false;   // 📌 ghim
   const p=placed(uid),rm=roomOf(p?.r),svg=roomSvg();if(!p||!rm||!svg)return false;
   const it=ITEM(p.k),G=A.geom(rm),list=inRoom(rm),q=qOf(p),a=A.anchor(it,q,G,hostFor(rm,q,list)),pt=svgPoint(svg,cx,cy);if(!pt)return false;
   const ride=ridersOf(uid),els=[uid,...ride].map(u=>svg.querySelector(`g[data-uid="${CSS.escape(u)}"]`)).filter(Boolean);
@@ -647,7 +655,7 @@ function onMove(e){
   const dx=e.clientX-p.x,dy=e.clientY-p.y;
   if(!S.drag){
     if(p.kind==='room'){
-      if(!S.edit||!p.uid||Math.hypot(dx,dy)<6)return;
+      if(!S.edit||!p.uid||isPinned(p.uid)||Math.hypot(dx,dy)<DRAG_PX)return;
       if(S.held&&S.held.src!=='room')return;
       if(!startPieceDrag(p.uid,p.x,p.y))return;
     }else{
@@ -861,7 +869,7 @@ function heldBar(v){
 /** The selected piece's buttons (one string each: easy to add one). */
 function toolButtons(v,p,it){
   const tb=(label,op,tip,cls='')=>btn(label,op,{uid:p.id},`ghost small${cls}`,` title="${esc(tip)}" aria-label="${esc(tip)}"`);
-  const layered=it.spot==='wall'||it.spot==='rug'||!!p.on,out=[tb('⇋ Lật','flip','Lật ngược'),tb('🎨 Màu','tint','Đổi màu')];
+  const pin=isPinned(p.id),layered=it.spot==='wall'||it.spot==='rug'||!!p.on,out=[tb(pin?'📌 Đã ghim':'📌 Ghim','pin',pin?'Bỏ ghim để kéo được':'Ghim: không kéo nhầm'),tb('⇋ Lật','flip','Lật ngược'),tb('🎨 Màu','tint','Đổi màu')];
   if((CD().facing||[]).includes(p.k))out.unshift(tb(`↻ Xoay hướng · ${p.face==='back'?'Mặt sau':'Mặt trước'}`,'face',`Xoay hướng sang ${p.face==='back'?'mặt trước':'mặt sau'} (R)`));
   if(layered)out.push(tb('⬆ Lên','zup','Đưa lên trên'),tb('⬇ Xuống','zdown','Đưa xuống dưới'));
   if(v.rooms.filter(r=>it.rooms.includes(r.type)).length>1)out.push(tb('🚪 Đổi phòng','move','Sang phòng khác'));

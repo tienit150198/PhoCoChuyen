@@ -82,6 +82,8 @@ MARK_LABEL = ('', 'Đã nhắc nhở', 'Đã cảnh cáo', 'Đã kiểm điểm'
 QUIT_AT = 8           # mood at or below which a person hands in their notice
 DUTY_MAX = 3          # days in a row; then a day of rest (the legal limit)
 TIRED_AT = 2          # days in a row already worked: 50% 🥱 at day_roll, −12 to each slot's chance in close (−15 more when 🥱)
+HARD_LEGS = 2         # the pilot's day: at most this many of the 4 legs need a captain (fewer when fewer captains are free)
+CAPTAINS_MIN = 2      # F#223: the pilot office never opens a day with fewer captains than this
 GOOD_SCORE = 60   # a day's office score that counts as a good office day (the step's 'office' requirement)
 PAY_MAX = 7
 STAFF_MAX = 12
@@ -104,8 +106,11 @@ OFFICE = {
                ('Chị Diệp', 'op', 0, 1, 52, 70), ('Chú Sơn', 'en', 2, 4, 82, 60), ('Anh Đạt', 'en', 1, 2, 64, 66)),
         all_from=7,   # Phó Tổng Giám đốc: every member of staff in the airline, not only the pilots
         hires=('Bạn Minh', 'Bạn Phong', 'Bạn Nhi', 'Bạn Hưng', 'Bạn Trâm', 'Bạn Lâm'),
+        # F#223: a captain who quits is replaced by a captain (transferred from another base), and the base never runs
+        # with fewer than CAPTAINS_MIN captains (day_roll tops it up); the hard legs follow the captains free today.
+        keep_lv=2, cap_hires=('Anh Hòa', 'Chị Thu', 'Anh Định', 'Chị Quyên', 'Anh Khang', 'Chị Ngọc'),
         issues=dict(late='⏰ Báo danh trễ', slip='📋 Bỏ sót một dòng checklist', rude='😤 Khách phàn nàn thái độ', tired='🥱 Mệt, xin đổi ca'),
-        powers={5: BASIC, 6: FULL, 7: FULL}, acts={5: 4, 6: 5, 7: 6}, cap={5: 30, 6: 40, 7: 50}, inbox={5: 1, 6: 2, 7: 2},
+        powers={5: BASIC + ('promote',), 6: FULL, 7: FULL}, acts={5: 4, 6: 5, 7: 6}, cap={5: 30, 6: 40, 7: 50}, inbox={5: 1, 6: 2, 7: 2},
         cancel='hủy vì thiếu tổ bay', rest='Đã làm 3 ngày liền: theo quy định giờ bay phải nghỉ hôm nay.',
     ),
     'teacher': dict(
@@ -182,11 +187,20 @@ def _level(o: dict, rank: int) -> int:
     return max(k for k in o['powers'] if k <= rank)
 
 
-def _slots(career: str, day: int, seed: int, n: int) -> list[dict]:
+def _captains_free(off: dict) -> int:
+    """The pilot office's captains who may fly today: a captain's rank, not suspended, not on the legal rest day."""
+    need = OFFICE['pilot']['keep_lv']
+    return sum(1 for st in off['staff'] if st['r'] == 'pl' and st['lv'] >= need and not st['off'] and st['duty'] < DUTY_MAX)
+
+
+def _slots(career: str, day: int, seed: int, n: int, off: dict | None = None) -> list[dict]:
     if career == 'pilot':
         from .careers import airline as air
         r = _rng('of-hard', seed, day)
-        hard = set(r.sample(range(4), 2))
+        # F#223: a leg needs a captain only while one is free for it (min(2, captains free today)); else it is flown
+        # by whoever is free instead of being cancelled every day.
+        h = HARD_LEGS if off is None else min(HARD_LEGS, _captains_free(off))
+        hard = set(r.sample(range(4), 2)[:h])
         out = []
         for k in range(4):
             leg = air.leg(day, k * 2)
@@ -412,6 +426,8 @@ def day_roll(career: str, off: dict, seed: int, day: int, rank: int) -> None:
                 st = _person(o, f's{i + 1}', row, traits[i % len(traits)], seed)
                 off['staff'].append(st)
                 off['budget'] = min(10**5, off['budget'] + round(_cost(o, st) * 1.1))
+    if o.get('keep_lv') is not None:
+        _top_up(career, off)
     off['day'] = day
     n = 4 + (len(AIR_EXTRA_SLOTS) if off['all'] and career == 'pilot' else 0)
     off['plan'] = [None] * n
@@ -435,6 +451,34 @@ def day_roll(career: str, off: dict, seed: int, day: int, rank: int) -> None:
     main = next(iter(o['roles']))
     picks = r.sample(INBOX[career], o['inbox'][lvl])
     off['inbox'] = [dict(id=x['id'], a=_target(off, x['pick'], r, main), pick=None) for x in picks]
+
+
+def _top_up(career: str, off: dict) -> None:
+    """F#223: an office left with fewer than CAPTAINS_MIN captains (older builds hired every newcomer at step 0) gets its
+    most experienced first officers moved up by the airline before the day opens. Runs on every day_roll, so offices saved
+    by those builds are repaired on their next day; a full office is never touched."""
+    o = OFFICE[career]
+    main, need = next(iter(o['roles'])), o['keep_lv']
+    ladder = o['roles'][main]['ladder']
+    while sum(1 for st in off['staff'] if st['r'] == main and st['lv'] >= need) < CAPTAINS_MIN:
+        pool = [st for st in off['staff'] if st['r'] == main and st['lv'] < need]
+        if not pool:
+            return
+        st = max(pool, key=lambda x: (x['lv'], x['sk'], -off['staff'].index(x)))
+        before = _cost(o, st)
+        st['lv'] = need
+        off['budget'] = min(10**5, off['budget'] + round((_cost(o, st) - before) * 1.1))
+        _log(off, f'🧑‍✈️ Hãng nâng {st["n"]} lên {ladder[need]}: đội bay cần ít nhất {CAPTAINS_MIN} {ladder[need].lower()}.')
+
+
+def _settle(career: str, off: dict, seed: int) -> None:
+    """After a decision that changes who may fly (a promotion, a suspension, a rest day, a newcomer): drop the plan's
+    picks that no longer fit today's slots, so the board never shows a pick the rules refuse."""
+    o = OFFICE[career]
+    if o.get('keep_lv') is None:
+        return   # the teacher's and the org offices' slots never change within a day
+    slots = _slots(career, off['day'], seed, len(off['plan']), off)
+    off['plan'] = [w if w is None or _can_plan(o, off, slots[k], w) is None else None for k, w in enumerate(off['plan'])]
 
 
 def ready(off: dict | None, c: dict) -> bool:
@@ -480,9 +524,16 @@ def _hire(career: str, off: dict, i: int, seed: int) -> str:
     old = off['staff'][i]
     off['hires'] = min(10**6, off['hires'] + 1)
     r = _rng('of-hire', seed, career, off['hires'])
-    name = o['hires'][(off['hires'] - 1) % len(o['hires'])]
-    off['staff'][i] = dict(id=f'n{off["hires"]}', n=name, r=old['r'], lv=0, pay=1, mood=62, sk=r.randint(42, 58), tr=r.choice(TRAITS),
-                           seen=False, mk=0, iss=None, off=0, duty=0, cl=0)
+    keep = o.get('keep_lv')
+    if keep is not None and old['r'] == next(iter(o['roles'])) and old['lv'] >= keep:
+        # F#223: a captain leaves, a captain comes (transferred from another base), at the same step.
+        name = o['cap_hires'][(off['hires'] - 1) % len(o['cap_hires'])]
+        off['staff'][i] = dict(id=f'n{off["hires"]}', n=name, r=old['r'], lv=old['lv'], pay=1, mood=62, sk=r.randint(64, 76),
+                               tr=r.choice(TRAITS), seen=False, mk=0, iss=None, off=0, duty=0, cl=0)
+    else:
+        name = o['hires'][(off['hires'] - 1) % len(o['hires'])]
+        off['staff'][i] = dict(id=f'n{off["hires"]}', n=name, r=old['r'], lv=0, pay=1, mood=62, sk=r.randint(42, 58), tr=r.choice(TRAITS),
+                               seen=False, mk=0, iss=None, off=0, duty=0, cl=0)
     if o.get('integrity'):
         off['staff'][i]['ig'] = r.choice((1, 2, 3))
     off['plan'] = [None if w == i else w for w in off['plan']]
@@ -497,6 +548,9 @@ def _quit(career: str, off: dict, i: int, seed: int) -> str:
     name = _hire(career, off, i, seed)
     off['kpi']['compl'] = min(999, off['kpi']['compl'] + 1)
     _room(off, -4)
+    new = off['staff'][i]
+    if new['lv']:
+        return f' 📨 {st["n"]} nộp đơn nghỉ việc. {name} ({OFFICE[career]["roles"][new["r"]]["ladder"][new["lv"]]}, điều từ căn cứ khác) vào thay.'
     return f' 📨 {st["n"]} nộp đơn nghỉ việc. {name} vào thay, còn non tay.'
 
 
@@ -623,7 +677,7 @@ def action(career: str, off: dict, rank: int, c: dict, name: str, p: dict, seed:
             off['plan'][slot_i] = None
             return dict(message='Đã bỏ phân công.')
         need(type(mate) is int and 0 <= mate < len(staff), 'Người không hợp lệ.')
-        slot = _slots(career, off['day'], seed, len(off['plan']))[slot_i]
+        slot = _slots(career, off['day'], seed, len(off['plan']), off)[slot_i]
         why = _can_plan(o, off, slot, mate)
         need(why is None, why or '')
         need(mate not in off['plan'] or off['plan'][slot_i] == mate, f'{staff[mate]["n"]} đã có việc hôm nay.')
@@ -637,7 +691,9 @@ def action(career: str, off: dict, rank: int, c: dict, name: str, p: dict, seed:
         need(type(i) is int and 0 <= i < len(staff), 'Người không hợp lệ.')
         act = p.get('act')
         need(act in ACTS, 'Quyết định không hợp lệ.')
-        return _hr(career, off, rank, i, act, seed, need)
+        r = _hr(career, off, rank, i, act, seed, need)
+        _settle(career, off, seed)
+        return r
     if name == 'pm_of_inbox':
         k = p.get('item')
         need(type(k) is int and 0 <= k < len(off['inbox']) and off['inbox'][k]['pick'] is None, 'Việc này đã quyết rồi.')
@@ -647,6 +703,7 @@ def action(career: str, off: dict, rank: int, c: dict, name: str, p: dict, seed:
         need(opt, 'Lựa chọn không hợp lệ.')
         item['pick'] = opt['id']
         _fx(off, opt['fx'], item['a'])
+        _settle(career, off, seed)
         _log(off, f'{x["emoji"]} {x["title"]}: ' + ('✓' if opt['good'] else '✗'))
         return dict(message=f'{x["emoji"]} {_fill(opt["out"], off, item["a"])}', celebrate=bool(opt['good']))
     need(False, 'Thao tác phòng điều hành không hợp lệ.')
@@ -667,7 +724,7 @@ def close(career: str, off: dict, rank: int, seed: int, day: int) -> dict:
             _fx(off, x['options'][-1]['fx'], item['a'])
             compl += k['compl'] - before
             k['compl'] = before
-    slots = _slots(career, off['day'], seed, len(off['plan']))
+    slots = _slots(career, off['day'], seed, len(off['plan']), off)
     plan = list(off['plan'])
     auto = set()
     for si, slot in enumerate(slots):   # the assistant: the most skilled person still free and allowed
@@ -791,7 +848,7 @@ def public(career: str, off: dict, rank: int, c: dict, seed: int) -> dict:
     o = OFFICE[career]
     lvl = _level(o, rank)
     live = ready(off, c)
-    slots = _slots(career, off['day'], seed, len(off['plan'])) if live else []
+    slots = _slots(career, off['day'], seed, len(off['plan']), off) if live else []
     staff = []
     for i, st in enumerate(off['staff']):
         role = o['roles'][st['r']]
