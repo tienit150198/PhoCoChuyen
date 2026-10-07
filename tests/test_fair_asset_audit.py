@@ -22,8 +22,8 @@ def rich(profit=60000, wallet=100000, net=0):
 
 class AssetAudit(FairBase):
     def test_the_rules(self):
-        self.assertEqual((fh.AUDIT_FROM, fh.AUDIT_GAP, fh.AUDIT_P, fh.AUDIT_PCT), (50000, 7200, .45, 10))
-        self.assertEqual((fh.WEALTH_THRESHOLD, fh.WEALTH_CHECK_GAP, fh.WEALTH_RAID_P), (50000, 1800, .70))   # 1.9.9
+        self.assertEqual((fh.AUDIT_FROM, fh.AUDIT_GAP, fh.AUDIT_P, fh.AUDIT_PCT), (50000, 7200, .225, 10))   # 07/10: half of 45%
+        self.assertEqual((fh.WEALTH_THRESHOLD, fh.WEALTH_CHECK_GAP, fh.WEALTH_RAID_P), (50000, 1800, .35))   # 1.9.9's .70 halved
 
     def test_takes_ten_percent_of_fair_profit_and_records_it(self):
         self.dice(Dice(draws=[fh.AUDIT_P - 1e-6]))  # a losing bet (honest dice: no luck draw), then a successful check

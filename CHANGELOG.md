@@ -1,3 +1,17 @@
+# Chưa phát hành
+
+## Hội chợ: công an bắt ít hơn một nửa
+
+- Công an tới ít hơn một nửa, mỗi lần thu bao nhiêu vẫn như cũ:
+  - Chiếu trong bị dẹp: 0,88% mỗi ván (trước 1,76%). Tiền phạt (¼ tiền cược, ít nhất 3 xu) và 2 phút bày lại giữ nguyên.
+  - Thu 30% ví (lời hôm nay trên 50.000 xu, sau một ván có cược): 35% khi tới lượt kiểm tra (trước 70%), vẫn tối đa 30
+    phút một lần.
+  - Hỏi nguồn tài sản (tiền lời hội chợ trên 50.000 xu): 22,5% khi tới lượt (trước 45%), vẫn tối đa 2 tiếng một lần, thu
+    10% phần lời mới.
+- Chiếu trong vẫn khoảng 50 ván thắng trên 100 (chơi liền một trò thì thấp nhất 40%): ít bị dẹp hơn nên xác suất rút
+  thăm chỉnh lại cho khớp (XD_BASE .513 → .508, XD_FLOOR .407 → .404).
+- Không đổi bản lưu, không thêm khóa, không đổi CSDL; 1.9.10 và 1.9.11 vẫn đọc được bản lưu. Không thêm mục "Có gì mới".
+
 # v1.9.11 — 2026-10-07
 
 Gồm "Nuôi chó mèo" (pets-plus), "Tăng ca ×2 và thưởng năng suất" (ot-bonus), "Giá cả tăng ~10%" (price-up), "Thêm

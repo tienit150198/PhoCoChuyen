@@ -15,7 +15,8 @@ def rich(net=60000, wallet=100000):
 
 class WealthRaid(FairBase):
     def test_seizes_thirty_percent_of_wallet_after_round_and_records_it(self):
-        self.dice(Dice(draws=[.699999]))  # losing bet (honest dice: no luck draw) then successful check
+        self.assertEqual(fh.WEALTH_RAID_P, .35)   # 07/10: half of 1.9.9's .70 (gap and 30% unchanged)
+        self.dice(Dice(draws=[fh.WEALTH_RAID_P - 1e-6]))  # losing bet (honest dice: no luck draw) then successful check
         s, result = self.act(rich(), 'fair_bc', bets={'cua': 1})
         raid = result['fair']['wealth_raid']
         self.assertEqual(raid['amount'], 29999)  # 30% of 99,999, whole xu
@@ -34,13 +35,13 @@ class WealthRaid(FairBase):
             s, result = self.act(rich(net=net), 'fair_bc', bets={'cua': 1})
             self.assertNotIn('wealth_raid', result['fair'])
             self.assertNotIn('wealth_check_at', s['journey']['fair'])
-        self.dice(Dice(draws=[.70]))
+        self.dice(Dice(draws=[fh.WEALTH_RAID_P]))
         s, result = self.act(rich(), 'fair_bc', bets={'cua': 1})
         self.assertNotIn('wealth_raid', result['fair'])
         self.assertIn('wealth_check_at', s['journey']['fair'])
 
     def test_failed_check_also_waits_thirty_minutes_and_survives_reload(self):
-        self.dice(Dice(draws=[.70]))
+        self.dice(Dice(draws=[fh.WEALTH_RAID_P]))
         s, _ = self.act(rich(), 'fair_bc', bets={'cua': 1})
         checked = s['journey']['fair']['wealth_check_at']
         s = json.loads(json.dumps(s))

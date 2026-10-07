@@ -7,7 +7,7 @@ lợi nhuận của cả hội chợ"):
   house edge −10/216 a xu. A lô tô Kinh pays LOTO_PAY tenths of the tờ (2.1×, rounded down: at most +5% a xu).
 * Per-player, per-stall winning streaks: after four wins in a row the next rounds cool off to WIN_P_LOW (45%). The sure
   win after four losses is gone (07/10: bet small four times, then big). The neutral draw (LUCK_BASE, a little above
-  50%) makes the long-run rate WIN_P with the cool-off; xóc đĩa's draw is higher again so its 1.76% raids still leave
+  50%) makes the long-run rate WIN_P with the cool-off; xóc đĩa's draw is higher again so its 0.88% raids still leave
   50% won rounds.
 * Spam decay (journey[COOL_KEY], _heat): past RUN_FREE rounds of the same luck stall, each round's draw is RUN_STEP
   lower, down to P_FLOOR (40% won rounds; xóc đĩa XD_FLOOR so its won rounds stop at 40% too). Only two things bring a
@@ -16,12 +16,13 @@ lợi nhuận của cả hội chợ"):
   Free or skill stalls (ném vòng, ô ăn quan, phóng dao) change nothing. Bầu cua (honest dice) never cools.
   The stall shows "Vận đang nguội vì chơi liền một trò" (public: cold).
 * Knife and o an quan remain skill games with unchanged opponents/collisions.
-* Normal back-corner raids remain 1.76%. Paid chance rounds can also trigger a
-  70% enforcement check above 50,000 daily net xu, at most once per 30 minutes;
+* Normal back-corner raids: 0.88% (owner 07/10, "giảm bớt bị công an bắt xuống 50%": half of 1.76%). Paid chance
+  rounds can also trigger a 35% enforcement check (was 70%) above 50,000 daily net xu, at most once per 30 minutes;
   a successful check seizes 30% of the current wallet after settling the round.
 * Owner 07/10 adds, as a separate rule after that check on the same round, the police's asset check (chứng minh
   nguồn tài sản, _asset_audit) once the player's fair profit this edition (money_of, the Bảng vàng number) is
-  above AUDIT_FROM: AUDIT_P, at most once per AUDIT_GAP. It takes AUDIT_PCT (10%) of the profit made since the last
+  above AUDIT_FROM: AUDIT_P (22.5%, half of 45% since the owner's 07/10 "giảm bớt bị công an bắt xuống 50%"), at most
+  once per AUDIT_GAP. It takes AUDIT_PCT (10%) of the profit made since the last
   check (journey['fair_audit'] keeps that mark: never twice on the same xu), from the wallet first, then the bank
   account, never below zero.
 * 🍀 Lộc trời cho: a won paid luck round (bầu cua too: the dice stay honest) may, LOC_P of the time, win LOC_MULT× its
@@ -72,13 +73,13 @@ ROUNDS_DAY = 400
 WIN_P, WIN_P_LOW = .50, .45   # the long-run rate of won rounds, and the cool-off after a winning streak
 LOTO_WIN_P = WIN_P
 LUCK_BASE = .503               # the draw at a neutral streak: with the cool-off the long run is WIN_P (3 decimals: a
-XD_BASE = .513                 # ring round keeps it as p/1000); xóc đĩa: raids (RAID_PCT) come first, so a higher draw
+XD_BASE = .508                 # ring round keeps it as p/1000); xóc đĩa: raids (RAID_PCT) come first, so a higher draw
 STREAK = 4                     # wins in a row before the cool-off (no sure win after losses since 07/10)
 # Spam decay (owner 07/10): rounds RUN_FREE + 1, + 2, … of one luck stall draw RUN_STEP less each, down to P_FLOOR
 # (XD_FLOOR for xóc đĩa: 40% won rounds after its raids). Back to the full rate: SWITCH_ROUNDS rounds of other PAID_LUCK
 # stalls since the stall's last round, or a RUN_GAP pause from it; a free or skill stall resets nothing (07/10).
 RUN_FREE, RUN_STEP, RUN_GAP, P_FLOOR = 10, .015, 600, .40
-XD_FLOOR = .407
+XD_FLOOR = .404               # .404 × (1 − 0.88%) ≈ 40.04% won rounds (was .407 with 1.76% raids)
 DECAY_EXEMPT = ('bc',)         # bầu cua: honest dice with a house edge, no draw to lower
 PAID_LUCK = ('bc', 'xd', 'lt', 'xs')   # the paid luck stalls whose rounds count as a switch
 SWITCH_ROUNDS = 3
@@ -111,14 +112,15 @@ BAO = 10                       # three dice on the face you bet: BAO:1 (standard
 # 🕯️ Chiếu trong
 XD_MIN, XD_MAX = 10, ROUND_MAX
 SIDES = ('chan', 'le')
-RAID_PCT = 1.76                # owner follow-up: +10% relative to 1.6%
+RAID_PCT = .88                 # owner 07/10 "giảm bớt bị công an bắt xuống 50%": half of 1.76% (was 1.6% → +10%)
 FINE_MIN = 3
 FINE_DIV = 4                   # a raid's fine: stake // FINE_DIV, at least FINE_MIN
 RAID_COOLDOWN = 120
-WEALTH_THRESHOLD, WEALTH_CHECK_GAP, WEALTH_RAID_P = 50000, 1800, .70
-# 🚨 The asset check (owner 07/10, a rule of its own; players: "công an tới hoài": at most once per 2 hours, 45% when
-# due, a failed draw waits too): fair profit above AUDIT_FROM, AUDIT_PCT of the profit made since the last check.
-AUDIT_FROM, AUDIT_GAP, AUDIT_P = 50000, 7200, .45
+WEALTH_THRESHOLD, WEALTH_CHECK_GAP, WEALTH_RAID_P = 50000, 1800, .35   # 07/10: half of .70; gap and 30% unchanged
+# 🚨 The asset check (owner 07/10, a rule of its own; players: "công an tới hoài": at most once per 2 hours, 22.5% when
+# due (half of 45%, owner 07/10 "giảm … xuống 50%"), a failed draw waits too): fair profit above AUDIT_FROM, AUDIT_PCT
+# of the profit made since the last check.
+AUDIT_FROM, AUDIT_GAP, AUDIT_P = 50000, 7200, .225
 AUDIT_KEY, AUDIT_PCT = 'fair_audit', 10   # journey['fair_audit'] {ed, base, at}: the profit left, the last check's time
 AUDIT_LABEL = '🚨 Công an kiểm tra tài sản · Thu 10% tiền lời hội chợ'
 POLICE_SAY = 'Chào em, nghe nói em lời ở hội chợ hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.'
