@@ -1,5 +1,125 @@
 [
  {
+  "vi": "$1 hơi quá lửa, nhừ mất ngon.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cháy khét cả nồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 để $2 nên ăn không ngon.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nhạt thếch, quên nêm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mặn quá, ông đang kiêng muối.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 $2 quá so với khẩu vị nhà.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 nguội ngắt rồi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 cắt to quá, $2 nhai không nổi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cơm chưa chín, chờ chừng $1 giây nữa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Còn món chưa xong: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 không tươi, ngửi là biết.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cơm $1, ông nhai không nổi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cơm $1 quá.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍚 Dọn mâm cơm $1 người. $2 Giờ ghi sổ chợ, gửi lại tiền thừa cho $3 nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Kẹp hóa đơn $1 vào sổ chợ: $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiền $1 không có hóa đơn, ghi tay theo trí nhớ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✍️ Không có hóa đơn $1: ghi tay $2 xu theo trí nhớ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ghi sổ chợ đã: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💵 Gửi lại $1 xu tiền thừa cùng sổ chợ ($2 xu tiền chợ).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💰 Công bữa nay $1 xu. $2 $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 chưa xong.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💰 Nhận $1 xu. $2 $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍲 Nấu bữa cơm cho $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", thêm $1 món",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "📒 Tiền chợ $1 xu: tiêu $2 xu, gửi lại $3 xu.",
   "en": "",
   "pattern": true
@@ -2126,126 +2246,6 @@
  },
  {
   "vi": "$1 được trả cho người không phải chủ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đồ thất lạc: trả $1 cho $2, có ký nhận.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đồ thất lạc: $1 đã trả đúng chủ, đối chiếu đủ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả lại $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👛 $1 ký nhận, cảm ơn rối rít.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "👛 $1 ký nhận rồi đi vội. Chiều đó chủ thật lên hỏi… 📋 Anh Định lập báo cáo, đi tìm lại đồ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đồ thất lạc: chưa trả $1, người tới nhận chưa chứng minh được là chủ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đồ thất lạc: chưa trả $1, người tới nhận được hẹn mang thêm giấy tờ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giữ lại $1 chờ chủ thật.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔒 Bạn cất $1 vào tủ: “Anh mang thêm giấy tờ, chứng minh được thì phường trả.” $2 lủi đi mất.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔒 $1 ngơ ngác: “Tôi trả lời đúng hết mà?” Hẹn mai lên lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Được, tôi chịu.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📝 Đề xuất: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "😤 “Không chịu thì phạt cả hai!” $1 khoanh tay, $2 quay mặt đi. Không khí đặc quánh.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hòa giải $1: hai bên ký biên bản ($2).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hòa giải thành: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🤝 $1 và $2 ký biên bản hòa giải: $3. $4",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hòa giải $1: chưa thành, chuyển tổ hòa giải, hẹn buổi sau.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hòa giải $1: hai bên đã ký biên bản.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chuyển tổ hòa giải: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📅 Chuyển tổ hòa giải cơ sở, hẹn hai nhà buổi sau. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧸 Bạn ngồi xuống ngang tầm mắt $1, đưa ly nước, nói nhỏ: “Chú/cô ở đây với con, mình đứng chỗ này chờ mẹ nha.” Bé nín dần.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📢 Loa $1 đọc: “Một bé $2, $3 Người nhà mời tới điểm tìm trẻ lạc.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Một lúc sau, $1 tới: “Cho tôi đón bé!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trẻ lạc: $1 ($2) đã giao cho $3.",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,173 @@
 [
  {
+  "vi": "Tối nay thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Kết quả ngày làm",
+  "en": ""
+ },
+ {
+  "vi": "Lãi/lỗ hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn thanh toán",
+  "en": ""
+ },
+ {
+  "vi": "Lựa chọn chỉ áp dụng cho lần này. Đổi mặc định trong Ngân hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đủ số dư.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nguồn thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Việc đang làm vừa thay đổi. Bấm chuyển lần nữa để xem lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mất kết nối. Thử lại sau một chút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập giá bằng số nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mua & lắp",
+  "en": ""
+ },
+ {
+  "vi": "Đang có đủ việc: làm tiếp việc đang chờ nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay đủ khách rồi: làm nốt rồi khép ca nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Sắp đóng cửa: không đón thêm khách. Làm nốt rồi khép ca nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xem hết sổ cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Xem cũ hơn",
+  "en": ""
+ },
+ {
+  "vi": "Mạng hơi chậm, khu phố vẫn đang tải… Lâu quá thì bấm Tải lại nha.",
+  "en": ""
+ },
+ {
+  "vi": "Tải chưa xong rồi 😢 Mạng chập chờn hoặc khu phố vừa cập nhật. Bấm Tải lại là vào được nha!",
+  "en": ""
+ },
+ {
+  "vi": "mất kết nối",
+  "en": ""
+ },
+ {
+  "vi": "chưa tải được",
+  "en": ""
+ },
+ {
+  "vi": "Lịch bay hôm nay có khi báo danh.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng giờ bay",
+  "en": ""
+ },
+ {
+  "vi": "GIỜ",
+  "en": ""
+ },
+ {
+  "vi": "CHUYẾN",
+  "en": ""
+ },
+ {
+  "vi": "ĐẾN",
+  "en": ""
+ },
+ {
+  "vi": "CỬA",
+  "en": ""
+ },
+ {
+  "vi": "TÌNH TRẠNG",
+  "en": ""
+ },
+ {
+  "vi": "Vào phòng tổ bay",
+  "en": ""
+ },
+ {
+  "vi": "Sân bay Thành phố",
+  "en": ""
+ },
+ {
+  "vi": "Tan ca hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Tan ca hiện tại, rồi chọn Mở ca quản lý để giao việc cho tổ bay.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn Thăng tiến → Mở ca quản lý để giao việc cho tổ bay.",
+  "en": ""
+ },
+ {
+  "vi": "Từ bậc 3 · Cơ trưởng huấn luyện, mở Ca quản lý. Hoàn thành ngày bay tốt và trả lời buổi xét thăng chức.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍💼 Thăng tiến · Ca quản lý",
+  "en": ""
+ },
+ {
+  "vi": "🎖️ Xem lộ trình thăng tiến",
+  "en": ""
+ },
+ {
+  "vi": "Lịch bay hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Mục tiêu hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Có quà",
+  "en": ""
+ },
+ {
+  "vi": "Tổ bay hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "SỔ BAY",
+  "en": ""
+ },
+ {
+  "vi": "Gần đây",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có chuyến nào trong sổ.",
+  "en": ""
+ },
+ {
   "vi": "😮‍💨 Bạn đang mệt: còn mệt thì thưởng chuyến chỉ được một nửa. Xin nghỉ bù ở phòng tổ bay.",
   "en": ""
  },
@@ -1629,174 +1797,6 @@
  },
  {
   "vi": "Làm tiếp việc đang dở",
-  "en": ""
- },
- {
-  "vi": "Mở tin nhắn",
-  "en": ""
- },
- {
-  "vi": "Nghe chị Vy",
-  "en": ""
- },
- {
-  "vi": "📝 Việc cần làm",
-  "en": ""
- },
- {
-  "vi": "📒 Khách quen",
-  "en": ""
- },
- {
-  "vi": "🧍‍♀️ Cửa kính",
-  "en": ""
- },
- {
-  "vi": "Chưa trưng bộ nào. Chị Vy sẽ nhờ bạn thay đồ ma-nơ-canh.",
-  "en": ""
- },
- {
-  "vi": "Kim đang chạy… chưa tới vạch",
-  "en": ""
- },
- {
-  "vi": "TRONG VẠCH — dừng ngay!",
-  "en": ""
- },
- {
-  "vi": "Lố vạch rồi!",
-  "en": ""
- },
- {
-  "vi": "👗 Sổ tiệm hôm nay",
-  "en": ""
- },
- {
-  "vi": "vá",
-  "en": ""
- },
- {
-  "vi": "· không hành mỡ",
-  "en": ""
- },
- {
-  "vi": "· có canh",
-  "en": ""
- },
- {
-  "vi": "còn hồng…",
-  "en": ""
- },
- {
-  "vi": "VÀNG ĐỀU — ĐƯỢC RỒI!",
-  "en": ""
- },
- {
-  "vi": "xém cạnh rồi…",
-  "en": ""
- },
- {
-  "vi": "cháy khét!",
-  "en": ""
- },
- {
-  "vi": "🔥 Bếp than",
-  "en": ""
- },
- {
-  "vi": "Bếp chưa nhóm.",
-  "en": ""
- },
- {
-  "vi": "🔥 Nhóm bếp than",
-  "en": ""
- },
- {
-  "vi": "miếng sườn trên vỉ",
-  "en": ""
- },
- {
-  "vi": "mặt thứ nhất",
-  "en": ""
- },
- {
-  "vi": "đã trở, mặt thứ hai",
-  "en": ""
- },
- {
-  "vi": "🔄 Trở mặt",
-  "en": ""
- },
- {
-  "vi": "🍖 Gắp ra khay",
-  "en": ""
- },
- {
-  "vi": "Đặt sườn lên vỉ",
-  "en": ""
- },
- {
-  "vi": "Hết sườn: nhập ở Kho",
-  "en": ""
- },
- {
-  "vi": "Khay giữ ấm đầy",
-  "en": ""
- },
- {
-  "vi": "Bỏ miếng sườn này?",
-  "en": ""
- },
- {
-  "vi": "🔥 Bếp than · vỉ sườn",
-  "en": ""
- },
- {
-  "vi": "Khay giữ ấm",
-  "en": ""
- },
- {
-  "vi": "Chưa có miếng nào.",
-  "en": ""
- },
- {
-  "vi": "hết cơm",
-  "en": ""
- },
- {
-  "vi": "dẻo thơm",
-  "en": ""
- },
- {
-  "vi": "Xe cơm",
-  "en": ""
- },
- {
-  "vi": "vừa miệng",
-  "en": ""
- },
- {
-  "vi": "chưa vừa",
-  "en": ""
- },
- {
-  "vi": "chưa nếm",
-  "en": ""
- },
- {
-  "vi": "khay trống",
-  "en": ""
- },
- {
-  "vi": "👂 Hỏi khách gọi gì",
-  "en": ""
- },
- {
-  "vi": "📿 Ăn chay",
-  "en": ""
- },
- {
-  "vi": "👀 Liếc dĩa kỹ",
   "en": ""
  }
 ]

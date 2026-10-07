@@ -1,5 +1,481 @@
 [
  {
+  "vi": "Thượng úy Mạc Hưng",
+  "en": ""
+ },
+ {
+  "vi": "Biên bản",
+  "en": ""
+ },
+ {
+  "vi": "Điều lệnh",
+  "en": ""
+ },
+ {
+  "vi": "Ghi lệch giờ so với nhật ký 113",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu một tin báo trong sổ",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu chữ ký người vi phạm, không có người chứng kiến",
+  "en": ""
+ },
+ {
+  "vi": "Biên bản thiếu căn cứ; có phong bì kẹp trong hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Không đeo giấy chứng nhận khi làm nhiệm vụ",
+  "en": ""
+ },
+ {
+  "vi": "Camera ghi hình tắt cả ca",
+  "en": ""
+ },
+ {
+  "vi": "Khớp nhật ký 113, đủ việc",
+  "en": ""
+ },
+ {
+  "vi": "Đủ trường, có chữ ký, giao 1 bản",
+  "en": ""
+ },
+ {
+  "vi": "Quân phục, giấy chứng nhận, camera đủ",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ Trợ lý BGĐ làm kiểm tra điều lệnh.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay đã trình kết quả rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn vị không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã chọn đơn vị này.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi ngày kiểm tra 2 đơn vị.",
+  "en": ""
+ },
+ {
+  "vi": "Cán bộ không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đánh dấu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "vi phạm",
+  "en": ""
+ },
+ {
+  "vi": "đạt",
+  "en": ""
+ },
+ {
+  "vi": "Mức đánh giá không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác kiểm tra không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm đủ, đánh giá đủ từng người rồi mới trình.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Cảnh cáo",
+  "en": ""
+ },
+ {
+  "vi": "⬇️ Hạ bậc",
+  "en": ""
+ },
+ {
+  "vi": "⛔ Đình chỉ",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Hết hạn",
+  "en": ""
+ },
+ {
+  "vi": "🧽 Xóa nhờ xuất sắc",
+  "en": ""
+ },
+ {
+  "vi": "💵 Nhận phong bì",
+  "en": ""
+ },
+ {
+  "vi": "🙇 Tự giác",
+  "en": ""
+ },
+ {
+  "vi": "Binh nhì",
+  "en": ""
+ },
+ {
+  "vi": "Binh nhất",
+  "en": ""
+ },
+ {
+  "vi": "Hạ sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Trung sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Thượng sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu úy",
+  "en": ""
+ },
+ {
+  "vi": "Trung úy",
+  "en": ""
+ },
+ {
+  "vi": "Thượng úy",
+  "en": ""
+ },
+ {
+  "vi": "Đại úy",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu tá",
+  "en": ""
+ },
+ {
+  "vi": "Trung tá",
+  "en": ""
+ },
+ {
+  "vi": "Thượng tá",
+  "en": ""
+ },
+ {
+  "vi": "Đại tá",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu tướng",
+  "en": ""
+ },
+ {
+  "vi": "Tổ viên Tổ Tuần tra – Trực ban",
+  "en": ""
+ },
+ {
+  "vi": "Tổ viên",
+  "en": ""
+ },
+ {
+  "vi": "Tổ phó Tổ Tuần tra – Trực ban",
+  "en": ""
+ },
+ {
+  "vi": "Tổ phó",
+  "en": ""
+ },
+ {
+  "vi": "Tổ trưởng Tổ Tuần tra – Trực ban",
+  "en": ""
+ },
+ {
+  "vi": "Đội phó Đội 113",
+  "en": ""
+ },
+ {
+  "vi": "Đội phó",
+  "en": ""
+ },
+ {
+  "vi": "Đội trưởng Đội 113",
+  "en": ""
+ },
+ {
+  "vi": "Phó Trưởng Công an phường Mây",
+  "en": ""
+ },
+ {
+  "vi": "Phó Trưởng CA phường",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng Công an phường Mây",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng CA phường",
+  "en": ""
+ },
+ {
+  "vi": "Phó phòng PC06 Công an Thành phố",
+  "en": ""
+ },
+ {
+  "vi": "Phó phòng PC06",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng phòng PC06 Công an Thành phố",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng phòng PC06",
+  "en": ""
+ },
+ {
+  "vi": "Thư ký – Trợ lý Ban Giám đốc",
+  "en": ""
+ },
+ {
+  "vi": "Trợ lý BGĐ",
+  "en": ""
+ },
+ {
+  "vi": "Phó Giám đốc Công an Thành phố",
+  "en": ""
+ },
+ {
+  "vi": "Phó Giám đốc CATP",
+  "en": ""
+ },
+ {
+  "vi": "📚 Khóa chuyển loại sĩ quan",
+  "en": ""
+ },
+ {
+  "vi": "📚 Khóa chỉ huy cấp cơ sở",
+  "en": ""
+ },
+ {
+  "vi": "📚 Khóa chỉ huy cấp thành phố",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn thành xuất sắc nhiệm vụ",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn thành tốt nhiệm vụ",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn thành nhiệm vụ",
+  "en": ""
+ },
+ {
+  "vi": "Không hoàn thành nhiệm vụ",
+  "en": ""
+ },
+ {
+  "vi": "Nhận hồ sơ khi chưa xem đủ giấy tờ",
+  "en": ""
+ },
+ {
+  "vi": "Xem đủ từng giấy rồi mới nhận hoặc trả.",
+  "en": ""
+ },
+ {
+  "vi": "Cho người quen chen hàng",
+  "en": ""
+ },
+ {
+  "vi": "Ai cũng như ai: lấy số, chờ đúng lượt.",
+  "en": ""
+ },
+ {
+  "vi": "Trả đồ, giao người khi chưa xác minh đủ",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi ít nhất hai cách, khớp biên bản rồi mới giao.",
+  "en": ""
+ },
+ {
+  "vi": "Đăng ảnh, thông tin trẻ lên mạng",
+  "en": ""
+ },
+ {
+  "vi": "Đọc loa, gọi số trên thẻ; không đăng ảnh trẻ.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ qua nguy hiểm trước mắt",
+  "en": ""
+ },
+ {
+  "vi": "Nguy hiểm thì làm cho an toàn trước, rồi mới tính tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Xử lý sai mức",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc trước; tái phạm, nguy hiểm mới lập biên bản.",
+  "en": ""
+ },
+ {
+  "vi": "Dọa phạt khi hòa giải",
+  "en": ""
+ },
+ {
+  "vi": "Nghe cả hai bên, đề xuất từng điều; không dọa.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ tin báo khi chưa gọi lại",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại kiểm tra trước khi xếp mức ưu tiên.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi khống sổ trực ban",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ ghi việc thật sự xảy ra.",
+  "en": ""
+ },
+ {
+  "vi": "Kỷ luật cấp dưới thiếu căn cứ",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ xử lý khi có lỗi rõ, đã nhắc từ trước.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận phong bì rồi tự giác nộp lại",
+  "en": ""
+ },
+ {
+  "vi": "Không nhận bất kỳ thứ gì của dân, từ đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận phong bì",
+  "en": ""
+ },
+ {
+  "vi": "Không nhận bất kỳ thứ gì của dân. Lập biên bản hành vi đưa hối lộ.",
+  "en": ""
+ },
+ {
+  "vi": "Tổ viên nhắn riêng: “Anh em mình cả, phần tổ em nương tay nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra đúng quy trình như mọi tổ",
+  "en": ""
+ },
+ {
+  "vi": "Nương tay một lần",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi ý cấp trên rồi tính",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ tiêu tháng thiếu biên bản, cấp trên giục “làm cho đủ”.",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo số thật, kèm lý do và đề xuất",
+  "en": ""
+ },
+ {
+  "vi": "Lập thêm biên bản cho đủ số",
+  "en": ""
+ },
+ {
+  "vi": "Im lặng, chờ tháng sau",
+  "en": ""
+ },
+ {
+  "vi": "Người dân đăng bài chê phường, cán bộ đề nghị mời lên làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "Không mời: góp ý không phải vi phạm. Xem phần đúng để sửa",
+  "en": ""
+ },
+ {
+  "vi": "Mời lên cho “biết điều”",
+  "en": ""
+ },
+ {
+  "vi": "Nhắn họ gỡ bài",
+  "en": ""
+ },
+ {
+  "vi": "Tổ tuần tra đêm thứ ba liền xin đổi ca.",
+  "en": ""
+ },
+ {
+  "vi": "Xếp người khác, cho nghỉ bù",
+  "en": ""
+ },
+ {
+  "vi": "Bảo cố thêm một đêm",
+  "en": ""
+ },
+ {
+  "vi": "Cho nghỉ nhưng trừ thi đua",
+  "en": ""
+ },
+ {
+  "vi": "Camera ghi hình của tổ tắt giữa lúc xử lý vụ việc.",
+  "en": ""
+ },
+ {
+  "vi": "Lập biên bản sự việc, kiểm tra lại toàn bộ",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ qua, chắc hết pin",
+  "en": ""
+ },
+ {
+  "vi": "Dặn mọi người đừng nói ra",
+  "en": ""
+ },
+ {
+  "vi": "Người quen của một lãnh đạo xin làm hồ sơ trước.",
+  "en": ""
+ },
+ {
+  "vi": "Mời lấy số như mọi người",
+  "en": ""
+ },
+ {
+  "vi": "Làm trước cho êm",
+  "en": ""
+ },
+ {
   "vi": "Gọi hỏi lãnh đạo",
   "en": ""
  },
@@ -1321,482 +1797,6 @@
  },
  {
   "vi": "Mè",
-  "en": ""
- },
- {
-  "vi": "Đen vàng",
-  "en": ""
- },
- {
-  "vi": "Bé bỏng",
-  "en": ""
- },
- {
-  "vi": "Một cục bông biết sủa. Bế lên là ngoan liền.",
-  "en": ""
- },
- {
-  "vi": "Nhỏ mà có võ",
-  "en": ""
- },
- {
-  "vi": "Nặng hai ký, sủa như chó ngao. Run run lúc trời lạnh.",
-  "en": ""
- },
- {
-  "vi": "Sô-cô-la",
-  "en": ""
- },
- {
-  "vi": "Ồn ào",
-  "en": ""
- },
- {
-  "vi": "Mắt xanh hút hồn, nhưng hát “awoo” lúc nửa đêm.",
-  "en": ""
- },
- {
-  "vi": "Xám trắng",
-  "en": ""
- },
- {
-  "vi": "Đỏ trắng",
-  "en": ""
- },
- {
-  "vi": "Hiền khô",
-  "en": ""
- },
- {
-  "vi": "Ai tới cũng vẫy đuôi chào, kể cả ông trộm.",
-  "en": ""
- },
- {
-  "vi": "Vàng óng",
-  "en": ""
- },
- {
-  "vi": "Khổng lồ hiền",
-  "en": ""
- },
- {
-  "vi": "To như con gấu bông, ăn nhiều, ôm thì ấm cả mùa đông.",
-  "en": ""
- },
- {
-  "vi": "Gan dạ",
-  "en": ""
- },
- {
-  "vi": "Xoáy lưng hiếm có, leo cây bơi biển giỏi. Niềm tự hào chó Việt.",
-  "en": ""
- },
- {
-  "vi": "Vàng đỏ",
-  "en": ""
- },
- {
-  "vi": "Bắc Hà",
-  "en": ""
- },
- {
-  "vi": "Khôn ngoan",
-  "en": ""
- },
- {
-  "vi": "Chó núi Lào Cai lông dày, đuôi xoè như bông lau. Nhớ đường về nhà.",
-  "en": ""
- },
- {
-  "vi": "Mặt xệ, thở khò khè, nằm đâu ngáy đó. Ai nhìn cũng thương.",
-  "en": ""
- },
- {
-  "vi": "Vàng mơ",
-  "en": ""
- },
- {
-  "vi": "Hay cười",
-  "en": ""
- },
- {
-  "vi": "Đám mây trắng biết cười. Rụng lông đủ làm thêm một con nữa.",
-  "en": ""
- },
- {
-  "vi": "Lạp xưởng",
-  "en": ""
- },
- {
-  "vi": "Tò mò",
-  "en": ""
- },
- {
-  "vi": "Thân dài như cây lạp xưởng, chui gầm giường đi tìm dép.",
-  "en": ""
- },
- {
-  "vi": "Mèo mướp ta",
-  "en": ""
- },
- {
-  "vi": "Lém lỉnh",
-  "en": ""
- },
- {
-  "vi": "Bắt chuột giỏi, trèo mái nhà như đi chợ.",
-  "en": ""
- },
- {
-  "vi": "Mướp xám",
-  "en": ""
- },
- {
-  "vi": "Mướp vàng",
-  "en": ""
- },
- {
-  "vi": "Mèo tam thể",
-  "en": ""
- },
- {
-  "vi": "Mang lộc",
-  "en": ""
- },
- {
-  "vi": "Ba màu may mắn, ông bà bảo nuôi là buôn may bán đắt.",
-  "en": ""
- },
- {
-  "vi": "Tam thể nhạt",
-  "en": ""
- },
- {
-  "vi": "Mèo mun",
-  "en": ""
- },
- {
-  "vi": "Bí ẩn",
-  "en": ""
- },
- {
-  "vi": "Đen tuyền, mắt vàng như trăng rằm. Thích ngủ trong hộp giấy.",
-  "en": ""
- },
- {
-  "vi": "Mun yếm trắng",
-  "en": ""
- },
- {
-  "vi": "Anh lông ngắn",
-  "en": ""
- },
- {
-  "vi": "Điềm tĩnh",
-  "en": ""
- },
- {
-  "vi": "Má bánh bao, ngồi như ông chủ. Không thích bị bế lâu.",
-  "en": ""
- },
- {
-  "vi": "Xám xanh",
-  "en": ""
- },
- {
-  "vi": "Vàng golden",
-  "en": ""
- },
- {
-  "vi": "Hai màu",
-  "en": ""
- },
- {
-  "vi": "Anh lông dài",
-  "en": ""
- },
- {
-  "vi": "Sang chảnh",
-  "en": ""
- },
- {
-  "vi": "Lông dài mượt như vừa đi gội đầu, đi đâu cũng nhẹ nhàng.",
-  "en": ""
- },
- {
-  "vi": "Ba Tư",
-  "en": ""
- },
- {
-  "vi": "Lười biếng",
-  "en": ""
- },
- {
-  "vi": "Mặt tịt, lông bồng bềnh, mỗi ngày ngủ mười sáu tiếng.",
-  "en": ""
- },
- {
-  "vi": "Xám khói",
-  "en": ""
- },
- {
-  "vi": "Hiền lành",
-  "en": ""
- },
- {
-  "vi": "Tai cụp như đội mũ, ngồi kiểu “Phật” nhìn đời.",
-  "en": ""
- },
- {
-  "vi": "Kem trắng",
-  "en": ""
- },
- {
-  "vi": "Mướp bạc",
-  "en": ""
- },
- {
-  "vi": "Chân ngắn tũn, chạy như lăn. Đứng hai chân như chuột đồng.",
-  "en": ""
- },
- {
-  "vi": "Mềm như bông",
-  "en": ""
- },
- {
-  "vi": "Bế lên là thả lỏng như con búp bê vải. Mắt xanh biếc.",
-  "en": ""
- },
- {
-  "vi": "Hiếu động",
-  "en": ""
- },
- {
-  "vi": "Đốm như báo con, mê nước, mê leo tủ lạnh.",
-  "en": ""
- },
- {
-  "vi": "Vàng đốm",
-  "en": ""
- },
- {
-  "vi": "Bạc đốm",
-  "en": ""
- },
- {
-  "vi": "Bám người",
-  "en": ""
- },
- {
-  "vi": "Không lông, da ấm như túi chườm. Đòi đắp chăn chung.",
-  "en": ""
- },
- {
-  "vi": "Gã khổng lồ",
-  "en": ""
- },
- {
-  "vi": "Tai có chùm lông như linh miêu, to gấp đôi mèo nhà mà hiền khô.",
-  "en": ""
- },
- {
-  "vi": "Nâu mướp",
-  "en": ""
- },
- {
-  "vi": "Bạc mướp",
-  "en": ""
- },
- {
-  "vi": "Đen khói",
-  "en": ""
- },
- {
-  "vi": "Mèo Xiêm",
-  "en": ""
- },
- {
-  "vi": "Hay “nói”",
-  "en": ""
- },
- {
-  "vi": "Kêu meo meo cả ngày như kể chuyện. Mặt nạ sô-cô-la, mắt xanh.",
-  "en": ""
- },
- {
-  "vi": "Góc nhận nuôi Chân Nhỏ",
-  "en": ""
- },
- {
-  "vi": "Cốm",
-  "en": ""
- },
- {
-  "vi": "Bí",
-  "en": ""
- },
- {
-  "vi": "Xoài",
-  "en": ""
- },
- {
-  "vi": "Mèo Con",
-  "en": ""
- },
- {
-  "vi": "Cơm nhà trộn cá",
-  "en": ""
- },
- {
-  "vi": "Bé ăn sạch bát, liếm mép.",
-  "en": ""
- },
- {
-  "vi": "Hạt thường",
-  "en": ""
- },
- {
-  "vi": "Rột rột rột… hết veo.",
-  "en": ""
- },
- {
-  "vi": "Pate cao cấp",
-  "en": ""
- },
- {
-  "vi": "Bé ăn xong còn đòi liếm hộp.",
-  "en": ""
- },
- {
-  "vi": "Tiệc bò, cá hồi",
-  "en": ""
- },
- {
-  "vi": "Bé ăn như ngày Tết, xoay vòng vòng.",
-  "en": ""
- },
- {
-  "vi": "Bóng cao su",
-  "en": ""
- },
- {
-  "vi": "Xương gặm",
-  "en": ""
- },
- {
-  "vi": "Cần câu lông vũ",
-  "en": ""
- },
- {
-  "vi": "Chuột bông",
-  "en": ""
- },
- {
-  "vi": "Đĩa bay",
-  "en": ""
- },
- {
-  "vi": "Trụ cào móng",
-  "en": ""
- },
- {
-  "vi": "Chuột robot",
-  "en": ""
- },
- {
-  "vi": "Tắm ở nhà",
-  "en": ""
- },
- {
-  "vi": "Bé run run rồi lắc nước tung toé.",
-  "en": ""
- },
- {
-  "vi": "Spa Pet Care Mèo Mập",
-  "en": ""
- },
- {
-  "vi": "Chị Mây tắm sấy, cắt móng, xịt thơm. Bé về nhà bồng bềnh.",
-  "en": ""
- },
- {
-  "vi": "Khám tổng quát",
-  "en": ""
- },
- {
-  "vi": "Bác sĩ Cỏ May khám tai, mắt, răng, nghe tim. Bé khỏe re.",
-  "en": ""
- },
- {
-  "vi": "Tiêm xong được thưởng bánh. Ba mươi ngày không lo ốm vặt.",
-  "en": ""
- },
- {
-  "vi": "Vòng cổ",
-  "en": ""
- },
- {
-  "vi": "Nơ, mũ",
-  "en": ""
- },
- {
-  "vi": "Ổ nằm",
-  "en": ""
- },
- {
-  "vi": "Vòng chuông đỏ",
-  "en": ""
- },
- {
-  "vi": "Vòng da khắc tên",
-  "en": ""
- },
- {
-  "vi": "Vòng ngọc trai",
-  "en": ""
- },
- {
-  "vi": "Vòng vàng 24K",
-  "en": ""
- },
- {
-  "vi": "Nơ hồng",
-  "en": ""
- },
- {
-  "vi": "Nơ chấm bi",
-  "en": ""
- },
- {
-  "vi": "Nón lá mini",
-  "en": ""
- },
- {
-  "vi": "Mũ ếch",
-  "en": ""
- },
- {
-  "vi": "Áo len",
-  "en": ""
- },
- {
-  "vi": "Áo mưa vàng",
-  "en": ""
- },
- {
-  "vi": "Áo đội tuyển",
-  "en": ""
- },
- {
-  "vi": "Hoodie khủng long",
-  "en": ""
- },
- {
-  "vi": "Áo dài mini",
-  "en": ""
- },
- {
-  "vi": "Váy công chúa",
   "en": ""
  }
 ]

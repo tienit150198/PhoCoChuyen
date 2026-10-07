@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Chọn tốc độ cộng thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn hướng né.",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp cận hay đi sân bay dự bị?",
+  "en": ""
+ },
+ {
+  "vi": "Mưa to mà không bật gạt mưa, kính mờ đặc lúc tiếp cận.",
+  "en": ""
+ },
+ {
+  "vi": "quên gạt mưa",
+  "en": ""
+ },
+ {
+  "vi": "Đường băng ướt mà đặt phanh tự động chưa hợp.",
+  "en": ""
+ },
+ {
+  "vi": "phanh tự động chưa hợp đường băng",
+  "en": ""
+ },
+ {
+  "vi": "Tốc độ tiếp cận chưa tính đúng gió giật.",
+  "en": ""
+ },
+ {
+  "vi": "tốc độ chưa tính gió giật",
+  "en": ""
+ },
+ {
+  "vi": "Tiếp cận lệch về phía ô giông, tàu bị quăng quật.",
+  "en": ""
+ },
+ {
+  "vi": "lao về phía ô giông",
+  "en": ""
+ },
+ {
+  "vi": "Đường băng báo phanh kém mà vẫn hạ cánh, tàu trượt dài tới cuối đường băng.",
+  "en": ""
+ },
+ {
+  "vi": "hạ cánh khi phanh kém",
+  "en": ""
+ },
+ {
+  "vi": "đường băng ở sân bay đến không an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Chị Vân: “Phanh kém thì không cố. Đúng bài.”",
+  "en": ""
+ },
+ {
+  "vi": "Chị Vân: “Đường băng vẫn phanh được mà em… thôi, cẩn thận cũng không sai.”",
+  "en": ""
+ },
+ {
+  "vi": "Chị Vân gật đầu: “Chuẩn.”",
+  "en": ""
+ },
+ {
+  "vi": "Chuẩn bị chuyến bay",
+  "en": ""
+ },
+ {
+  "vi": "dầu đủ, kiểm tàu kỹ",
+  "en": ""
+ },
+ {
+  "vi": "dầu hoặc vòng kiểm tàu chưa chuẩn",
+  "en": ""
+ },
+ {
+  "vi": "làm lộn thứ tự",
+  "en": ""
+ },
+ {
+  "vi": "bình tĩnh, đúng bài",
+  "en": ""
+ },
+ {
+  "vi": "có quyết định chưa an toàn",
+  "en": ""
+ },
+ {
+  "vi": "Thông báo cho khách",
+  "en": ""
+ },
+ {
+  "vi": "rõ ràng, thật lòng",
+  "en": ""
+ },
+ {
+  "vi": "thông báo chưa rõ",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn chung tốt. Chị ghi lại một điều cho chặng sau.",
+  "en": ""
+ },
+ {
+  "vi": "Lần đầu đi máy bay mà dễ chịu ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Bay thì tới nơi, mà bà cứ thấp thỏm.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyến này bà sợ quá, chắc không dám đi nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Đi công tác mà được chuyến thế này là đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyến bay đỉnh quá ạ ✈️",
+  "en": ""
+ },
+ {
+  "vi": "Hay lắm ạ, chỉ có một chỗ con thấy hơi lạ.",
+  "en": ""
+ },
+ {
+  "vi": "Con hơi sợ xíu ạ 😥",
+  "en": ""
+ },
+ {
+  "vi": "Con không thích chuyến này đâu 😢",
+  "en": ""
+ },
+ {
+  "vi": "Thông báo rõ ràng, nghe là yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Chậm mà không ai nói rõ vì sao.",
+  "en": ""
+ },
+ {
+  "vi": "Hạ cánh êm, không rung lắc gì.",
+  "en": ""
+ },
+ {
+  "vi": "Có lúc tàu chao mạnh, cả khoang hoảng.",
+  "en": ""
+ },
+ {
+  "vi": "Có người đang chờ bạn trả lời: chọn giọng, chọn ý, cần thì báo cơ trưởng hoặc phòng an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc bản tin → dầu = chặng + dự bị + 30 phút (giông lúc tới: thêm dầu chờ) → sương ở đích thì chờ dưới đất.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm đủ bốn điểm quanh tàu. Vỏ che, chốt cửa: tự xử lý. Lốp mòn, rò dầu: gọi chú Mẫn.",
+  "en": ""
+ },
+ {
+  "vi": "Bật công tắc đúng thứ tự trên thẻ checklist. Chuyến bay chậm thì thông báo thật rõ cho khách.",
+  "en": ""
+ },
+ {
+  "vi": "Giông trên sân bay: bay chờ nếu đủ dầu, không thì đi sân bay dự bị. Cổng nào chưa ổn định thì bay lại.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận bản tin → dầu → vòng quanh tàu → checklist → cất cánh → qua hai cổng → hạ cánh.",
+  "en": ""
+ },
+ {
+  "vi": "Đã in sẵn bản tin thời tiết cho chặng sau.",
+  "en": ""
+ },
+ {
+  "vi": "Đã chèn bánh, cắm dây nối đất cho tàu.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu chuyến bay sai.",
+  "en": ""
+ },
+ {
+  "vi": "Thưởng chuyến bay sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản chuyến bay không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Trạng thái chuyến bay sai.",
+  "en": ""
+ },
+ {
+  "vi": "Lượng dầu sai.",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định sương sai.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng kiểm tàu sai.",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi tàu sai.",
+  "en": ""
+ },
+ {
+  "vi": "Cách xử lý lỗi sai.",
+  "en": ""
+ },
+ {
+  "vi": "Thông báo sai.",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định trên đường bay sai.",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định khi tới sai.",
+  "en": ""
+ },
+ {
+  "vi": "Sân bay hạ cánh sai.",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký tiếp cận sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện tổ bay sai.",
+  "en": ""
+ },
+ {
+  "vi": "Lý do chậm sai.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ giờ bay sai.",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký chuyến bay sai.",
+  "en": ""
+ },
+ {
+  "vi": "Thời tiết ở đích sai.",
+  "en": ""
+ },
+ {
+  "vi": "Cài đặt tiếp cận sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phi công",
+  "en": ""
+ },
+ {
+  "vi": "Đúng giờ là lời hứa, an toàn là điều kiện.",
+  "en": ""
+ },
+ {
+  "vi": "Trời quang trên đường bay",
+  "en": ""
+ },
+ {
+  "vi": "Buồng lái",
+  "en": ""
+ },
+ {
+  "vi": "Sáng đi từ đầu hẻm ra sân bay. Đọc bản tin, tính dầu, đi một vòng quanh tàu rồi bay cùng chị Vân.",
+  "en": ""
+ },
+ {
+  "vi": "Sáu mươi tám người phía sau, một checklist phía trước",
+  "en": ""
+ },
+ {
+  "vi": "19 · SÂN BAY CÁNH CÒ",
+  "en": ""
+ },
+ {
+  "vi": "Điều phái tập sự, in bản tin nhanh thoăn thoắt.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên sân đỗ, chèn bánh chưa bao giờ quên.",
+  "en": ""
+ },
+ {
+  "vi": "Thuộc lòng giờ giông của từng hòn đảo.",
+  "en": ""
+ },
+ {
+  "vi": "Khỏe, nhanh, hay hát khi kéo xe hành lý.",
+  "en": ""
+ },
+ {
+  "vi": "Điều phái phụ",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên sân đỗ",
+  "en": ""
+ },
+ {
+  "vi": "Báo danh xong. Chị Vân đang chờ ở phòng điều phái.",
+  "en": ""
+ },
+ {
+  "vi": "Điều phái xếp thêm một chặng bay.",
+  "en": ""
+ },
+ {
+  "vi": "Vỏ che ống pitot",
+  "en": ""
+ },
+ {
+  "vi": "Tháo trước khi bay",
+  "en": ""
+ },
+ {
+  "vi": "Dầu chờ 20 phút",
+  "en": ""
+ },
+ {
+  "vi": "Khi dự báo giông",
+  "en": ""
+ },
+ {
+  "vi": "Công tắc",
+  "en": ""
+ },
+ {
+  "vi": "Theo thứ tự checklist",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ổn định",
+  "en": ""
+ },
+ {
+  "vi": "Bay lại",
+  "en": ""
+ },
+ {
+  "vi": "Nhận bản tin, tính dầu",
+  "en": ""
+ },
+ {
+  "vi": "Đọc checklist, cất cánh",
+  "en": ""
+ },
+ {
+  "vi": "Qua từng cổng, hạ cánh",
+  "en": ""
+ },
+ {
+  "vi": "Đôi cánh của chị Vân",
+  "en": ""
+ },
+ {
+  "vi": "Chị Vân kể hồi mới vào nghề chị sợ nhất là giông chiều trên đảo.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bay thêm một chặng; chị chỉ cho bạn cách đọc radar thời tiết.",
+  "en": ""
+ },
+ {
+  "vi": "Chị tặng bạn cuốn sổ tay cũ: “Chỗ nào chị từng sợ, chị ghi hết trong này.”",
+  "en": ""
+ },
+ {
+  "vi": "Chuyến xe sớm",
+  "en": ""
+ },
+ {
+  "vi": "Bốn giờ rưỡi sáng, con hẻm còn tối. Chỉ có xe bánh mì của cô Ba đã sáng đèn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chở thêm chú Mẫn ra sân bay, hai chú cháu nói chuyện máy bay suốt đường.",
+  "en": ""
+ },
+ {
+  "vi": "Từ đó sáng nào cô Ba cũng để phần hai ổ bánh mì: “Cho tổ bay đầu hẻm.”",
+  "en": ""
+ },
+ {
+  "vi": "Bức thư của Bé Na",
+  "en": ""
+ },
+ {
+  "vi": "Bé Na gửi thư về hãng, nét chữ còn nguệch ngoạc.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bay thêm một chặng rồi ngồi đọc thư cùng chị Thu.",
+  "en": ""
+ },
+ {
+  "vi": "“Con sẽ học giỏi Toán để làm cơ phó như chú.” Lá thư được dán ở phòng điều phái.",
+  "en": ""
+ },
+ {
+  "vi": "Hạ cánh êm như đặt ly nước xuống bàn.",
+  "en": ""
+ },
+ {
+  "vi": "Checklist đọc chậm rãi, đâu ra đấy.",
+  "en": ""
+ },
+ {
+  "vi": "Bay đúng giờ mà không vội vàng.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận bản tin → nạp dầu (chặng + dự bị + 30 phút, giông lúc tới: thêm dầu chờ) → kiểm bốn điểm quanh tàu → checklist đúng thứ tự → chậm thì thông báo thật cho khách → cất cánh → qua cổng 1.000 ft và 200 ft, chưa ổn định thì bay lại → tắt máy, ghi sổ.",
+  "en": ""
+ },
+ {
+  "vi": "Cơ phó tàu cánh quạt",
+  "en": ""
+ },
+ {
+  "vi": "Bay cùng cơ trưởng kèm cặp",
+  "en": ""
+ },
+ {
+  "vi": "Được học bay chặng khó",
+  "en": ""
+ },
+ {
+  "vi": "Hãng bay nhỏ, hai chiếc tàu cánh quạt, bay đảo và miền Tây. Ai cũng quen tên nhau; an toàn nói trước, đúng giờ nói sau.",
+  "en": ""
+ },
+ {
+  "vi": "Phi công huấn luyện trên buồng lái mô phỏng",
+  "en": ""
+ },
+ {
+  "vi": "Lịch cố định",
+  "en": ""
+ },
+ {
+  "vi": "Lương thấp hơn bay thật",
+  "en": ""
+ },
+ {
+  "vi": "Trung tâm nhỏ cạnh sân bay, dạy tổ bay mới làm quen buồng lái trước khi lên tàu thật.",
+  "en": ""
+ },
+ {
+  "vi": "Dự báo giông ở sân bay đến đúng giờ bạn tới. Bạn chuẩn bị thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Mang thêm dầu chờ, tính trước sân bay dự bị, báo khách có thể trễ",
+  "en": ""
+ },
+ {
+  "vi": "Chị Vân gật đầu: đúng cách người trong nghề chuẩn bị.",
+  "en": ""
+ },
+ {
+  "vi": "Nạp dầu như mọi ngày, tới đâu tính đó",
+  "en": ""
+ },
+ {
+  "vi": "Tới nơi sẽ chỉ còn một đường: đi sân bay dự bị.",
+  "en": ""
+ },
+ {
+  "vi": "Cố bay sớm hơn để tới trước cơn giông",
+  "en": ""
+ },
+ {
+  "vi": "Đua với thời tiết là thói quen nguy hiểm.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thấy cơ trưởng quên một dòng checklist. Bạn làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Nói ngay, rõ ràng: “Chị ơi, còn dòng đèn chống va.”",
+  "en": ""
+ },
+ {
+  "vi": "Buồng lái hai người là để đỡ nhau.",
+  "en": ""
+ },
+ {
+  "vi": "Để sau chuyến bay mới góp ý",
+  "en": ""
+ },
+ {
+  "vi": "Chậm mất một nhịp quan trọng.",
+  "en": ""
+ },
+ {
+  "vi": "Im lặng, cơ trưởng chắc có lý do",
+  "en": ""
+ },
+ {
+  "vi": "Im lặng trong buồng lái là nguy hiểm.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu kín khách, chặng ngắn. Anh điều phái hỏi bạn có muốn đổ đầy bình cho chắc không.",
+  "en": ""
+ },
+ {
+  "vi": "Đổ đúng kế hoạch: chặng, dự bị, dự phòng",
+  "en": ""
+ },
+ {
+  "vi": "Đủ an toàn mà không quá tải.",
+  "en": ""
+ },
+ {
+  "vi": "Đổ đầy, dư còn hơn thiếu",
+  "en": ""
+ },
+ {
+  "vi": "Tàu kín khách mà đầy bình là quá trọng lượng cất cánh.",
+  "en": ""
+ },
+ {
+  "vi": "Bớt phần dự phòng cho nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "Dầu dự phòng không bao giờ được bớt.",
+  "en": ""
+ },
+ {
+  "vi": "👮 Gọi anh Định",
+  "en": ""
+ },
+ {
+  "vi": "🏢 Báo Ban chỉ huy phường",
+  "en": ""
+ },
+ {
+  "vi": "Văn phòng Công an phường",
+  "en": ""
+ },
+ {
+  "vi": "cán bộ tập sự",
+  "en": ""
+ },
+ {
   "vi": "cán bộ khu vực",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Đặt hộp bánh kẹp phong bì lên bàn: “Chút lòng thành, khỏi hỏi nhiều cho mệt.”",
-  "en": ""
- },
- {
-  "vi": "Một bên tranh chấp",
-  "en": ""
- },
- {
-  "vi": "Kéo bạn ra góc: “Phong bì này, cán bộ nghiêng về nhà tôi chút nhé.”",
-  "en": ""
- },
- {
-  "vi": "Nháy mắt: “Xong vụ này tôi mời cán bộ một bữa, có ‘quà’ mang về.”",
-  "en": ""
- },
- {
-  "vi": "Chủ sạp lấn chiếm",
-  "en": ""
- },
- {
-  "vi": "Đẩy ly cà phê kèm phong bì: “Anh bỏ qua cho em vụ lấn vỉa hè nhé.”",
-  "en": ""
- },
- {
-  "vi": "Chủ quán karaoke",
-  "en": ""
- },
- {
-  "vi": "Nhét phong bì vào túi áo bạn: “Tối nay anh em mở muộn chút, cán bộ thông cảm.”",
-  "en": ""
- },
- {
-  "vi": "🙅 Từ chối, nói rõ quy định",
-  "en": ""
- },
- {
-  "vi": "📝 Lập biên bản hành vi đưa hối lộ",
-  "en": ""
- },
- {
-  "vi": "💵 Nhận",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu phong bì sai.",
-  "en": ""
- },
- {
-  "vi": "Mười lăm năm đi khu vực, thuộc từng con hẻm. Câu cửa miệng: “Nhắc trước, biên bản sau, phong bì thì không bao giờ.”",
-  "en": ""
- },
- {
-  "vi": "Cán bộ tiếp dân, bàn cư trú",
-  "en": ""
- },
- {
-  "vi": "Ngồi bàn cư trú tám năm, liếc tờ khai là biết thiếu chữ ký ở đâu. Hay pha trà gừng cho cả tổ.",
-  "en": ""
- },
- {
-  "vi": "Người dân tổ 3, 79 tuổi",
-  "en": ""
- },
- {
-  "vi": "Ở một mình, ngày nào cũng mang chè, mang xôi lên phường rồi ngồi kể chuyện cả tiếng.",
-  "en": ""
- },
- {
-  "vi": "Đứng sau rèm cửa canh hẻm cả ngày, tuần nào cũng báo ít nhất ba “người khả nghi”.",
-  "en": ""
- },
- {
-  "vi": "Chú Quý",
-  "en": ""
- },
- {
-  "vi": "Chủ dàn karaoke tổ 5",
-  "en": ""
- },
- {
-  "vi": "Nghỉ hưu sớm, mua dàn loa to nhất hẻm, hát tới khuya: “Nhà tôi, tôi hát.”",
-  "en": ""
- },
- {
-  "vi": "TikToker “Kha Đi Phường”",
-  "en": ""
- },
- {
-  "vi": "Hai mươi tuổi, livestream mọi thứ, kể cả hàng chờ làm giấy tờ. Gọi ai cũng là “sếp”.",
-  "en": ""
- },
- {
-  "vi": "Mê bảng thành tích, họp nào cũng hỏi “tuần này được mấy biên bản?”.",
-  "en": ""
- },
- {
-  "vi": "Dì Út",
-  "en": ""
- },
- {
-  "vi": "Ban quản lý chợ Mây",
-  "en": ""
- },
- {
-  "vi": "Cầm cái loa tay hai mươi năm, biết mặt từng sạp, từng đứa nhỏ hay đi lạc.",
-  "en": ""
- },
- {
-  "vi": "Cuộc gọi của bà Năm",
-  "en": ""
- },
- {
-  "vi": "21:40 bà Năm gọi: có người xưng “cán bộ điều tra” bảo sáng nay mang sổ tiết kiệm ra ngân hàng chuyển tiền “tạm giữ”, dặn không được nói với ai. Bà hẹn họ 8:30. Gọi lại bà không nghe máy.",
-  "en": ""
- },
- {
-  "vi": "Tổ 3 xin một buổi nói chuyện về lừa đảo qua điện thoại cho các cụ, chưa hẹn ngày.",
-  "en": ""
- },
- {
-  "vi": "Karaoke tổ 5",
-  "en": ""
- },
- {
-  "vi": "Ba cuộc gọi phản ánh karaoke nhà chú Quý tới 0:30. Chị Mận nhà bên nói “mai còn hát là tôi tự xử”. Hai bên hẹn 8:00 lên phường.",
-  "en": ""
- },
- {
-  "vi": "Karaoke nhà chú Quý tắt lúc 21:45, không ai phản ánh.",
-  "en": ""
- },
- {
-  "vi": "Ví nhặt được ở chợ",
-  "en": ""
- },
- {
-  "vi": "22:15 anh Tài xe ôm nộp một ví nhặt ở chợ, có giấy tờ và thẻ ngân hàng. 6:10 chủ ví gọi: cần giấy tờ trong ví để làm thủ tục cho mẹ nhập viện lúc 9:00.",
-  "en": ""
- },
- {
-  "vi": "Tủ đồ thất lạc: hai mũ bảo hiểm, một cây dù, chưa ai tới nhận.",
-  "en": ""
- },
- {
-  "vi": "Cổng trường Tiểu học Mây",
-  "en": ""
- },
- {
-  "vi": "Chiều qua cổng trường tắc kín, một bé lớp 1 suýt bị xe máy quẹt. Cô hiệu trưởng xin người đứng cổng giờ vào học 7:00 sáng nay.",
-  "en": ""
- },
- {
-  "vi": "Cổng trường Tiểu học Mây: hôm qua đông nhưng thông.",
-  "en": ""
- },
- {
-  "vi": "Phiếu khai báo",
-  "en": ""
- },
- {
-  "vi": "Giấy tờ tùy thân",
-  "en": ""
- },
- {
-  "vi": "Ý kiến chủ nhà",
-  "en": ""
- },
- {
-  "vi": "Ý kiến cha mẹ",
-  "en": ""
- },
- {
-  "vi": "Điền đủ từng ô, ký tên, ghi ngày.",
-  "en": ""
- },
- {
-  "vi": "Điền đủ nhưng ô chữ ký người khai còn trống.",
-  "en": ""
- },
- {
-  "vi": "Ngày sinh trên phiếu ghi 12/03/2003, giấy tờ tùy thân ghi 21/03/2003.",
-  "en": ""
- },
- {
-  "vi": "Còn hạn, ảnh đúng người đang đứng trước bàn.",
-  "en": ""
- },
- {
-  "vi": "Giấy tờ đã hết hạn từ năm ngoái.",
-  "en": ""
- },
- {
-  "vi": "Ảnh trên giấy tờ không phải người đứng trước bàn. “Của em gái em, em mượn đỡ.”",
-  "en": ""
- },
- {
-  "vi": "Chủ nhà ký đồng ý cho ở, có số điện thoại liên lạc.",
-  "en": ""
- },
- {
-  "vi": "Chưa có ý kiến chủ nhà. “Chủ nhà đi Đà Lạt rồi, về em xin sau.”",
-  "en": ""
- },
- {
-  "vi": "Mẹ ký đồng ý, có số điện thoại liên lạc.",
-  "en": ""
- },
- {
-  "vi": "Em mới 16 tuổi, chưa có ý kiến cha mẹ.",
-  "en": ""
- },
- {
-  "vi": "Ký lại, sửa đúng ngày sinh trên phiếu",
-  "en": ""
- },
- {
-  "vi": "Mang giấy tờ tùy thân còn hạn của chính mình",
-  "en": ""
- },
- {
-  "vi": "Xin ý kiến đồng ý của chủ nhà",
-  "en": ""
- },
- {
-  "vi": "Xin ý kiến đồng ý của cha mẹ",
-  "en": ""
- },
- {
-  "vi": "Sinh viên năm hai, thuê trọ hẻm 7",
-  "en": ""
- },
- {
-  "vi": "“Em mới chuyển tới trọ hẻm 7, khai báo tạm trú ạ.”",
-  "en": ""
- },
- {
-  "vi": "Thợ hồ từ quê lên, ở nhà người quen tổ 2",
-  "en": ""
- },
- {
-  "vi": "“Tui lên làm công trình ba tháng, ở nhờ nhà ông chú.”",
-  "en": ""
- },
- {
-  "vi": "Bán bánh cuốn, cả nhà thuê nhà tổ 4",
-  "en": ""
- },
- {
-  "vi": "“Nhà chị bốn người, mới dọn về tổ 4, làm giùm chị nha em.”",
-  "en": ""
- },
- {
-  "vi": "Bạn Tú",
-  "en": ""
- },
- {
-  "vi": "Nhân viên quán cà phê, thuê phòng tổ 1",
-  "en": ""
- },
- {
-  "vi": "“Em điền hết rồi đó chị, xong nhanh giùm em.”",
-  "en": ""
- },
- {
-  "vi": "Nhân viên văn phòng, thuê căn hộ tổ 6",
-  "en": ""
- },
- {
-  "vi": "“Làm lẹ giùm chị, chị bận lắm.”",
-  "en": ""
- },
- {
-  "vi": "Tài xế xe tải, thuê nhà tổ 2",
-  "en": ""
- },
- {
-  "vi": "“Anh chạy xe đêm, giờ mới ghé được.”",
-  "en": ""
- },
- {
-  "vi": "Giúp việc theo giờ, thuê phòng tổ 7",
-  "en": ""
- },
- {
-  "vi": "“Cô ở trọ hẻm 7 được một tuần rồi con.”",
-  "en": ""
- },
- {
-  "vi": "Học sinh lớp 11, ở trọ đi học",
-  "en": ""
- },
- {
-  "vi": "“Em lên thành phố đi học, ở trọ với bạn ạ.”",
-  "en": ""
- },
- {
-  "vi": "Học sinh lớp 10, ở nhà dì tổ 3",
-  "en": ""
- },
- {
-  "vi": "“Mẹ em gửi em ở nhà dì để đi học gần ạ.”",
-  "en": ""
- },
- {
-  "vi": "Bạn Nhi",
-  "en": ""
- },
- {
-  "vi": "Mới lên thành phố tìm việc",
-  "en": ""
- },
- {
-  "vi": "“Em mới lên, khai báo tạm trú với ạ.”",
-  "en": ""
- },
- {
-  "vi": "Anh Thịnh",
-  "en": ""
- },
- {
-  "vi": "Mở tiệm điện thoại, thuê mặt bằng tổ 6",
-  "en": ""
- },
- {
-  "vi": "“Anh làm ăn bận lắm, làm cho anh trước nha.”",
-  "en": ""
- },
- {
-  "vi": "Phong bì kẹp trong hồ sơ",
-  "en": ""
- },
- {
-  "vi": "Giữa hai tờ giấy có một phong bì dày: “Chút cà phê, làm nhanh giùm nha.”",
-  "en": ""
- },
- {
-  "vi": "Trả lại phong bì, nói rõ: làm đúng thủ tục thì không mất đồng nào",
-  "en": ""
- },
- {
-  "vi": "✉️ Bạn đẩy phong bì lại: “Hồ sơ đủ là xong, không mất đồng nào đâu ạ.” Người khai đỏ mặt cất đi.",
-  "en": ""
- },
- {
-  "vi": "Trả lại phong bì, ghi vào sổ trực ban, báo anh Định",
-  "en": ""
- },
- {
-  "vi": "✉️ Trả lại phong bì, ghi một dòng vào sổ trực ban. Anh Định gật đầu: “Đúng bài.”",
-  "en": ""
- },
- {
-  "vi": "Kẹp phong bì vào ngăn bàn, “để coi”",
-  "en": ""
- },
- {
-  "vi": "✉️ Phong bì nằm trong ngăn bàn. Camera bàn tiếp dân quay rõ từng giây.",
-  "en": ""
- },
- {
-  "vi": "“Chú tôi làm trên quận”",
-  "en": ""
- },
- {
-  "vi": "Người này chen lên đầu hàng, giơ điện thoại: “Chú tôi làm trên quận. Làm cho tôi trước, nghe chú tôi nói nè.”",
-  "en": ""
- },
- {
-  "vi": "Mời lấy số, ngồi chờ đúng lượt như mọi người",
-  "en": ""
- },
- {
-  "vi": "🎫 “Ở đây ai cũng chờ theo số, kể cả cháu của ai ạ.” Hàng người phía sau gật gù.",
-  "en": ""
- },
- {
-  "vi": "Cầm máy nghe “chú” nói chuyện cho vui lòng",
-  "en": ""
- },
- {
-  "vi": "📱 Đầu dây bên kia nói một tràng. Hàng chờ đứng nhìn bạn nghe điện thoại năm phút.",
-  "en": ""
- },
- {
-  "vi": "Làm trước cho đỡ phiền",
-  "en": ""
- },
- {
-  "vi": "🙄 Bạn làm trước. Bà cụ chờ từ sáng lặng lẽ cất số thứ tự vào túi.",
-  "en": ""
- },
- {
-  "vi": "“Năm phút thôi, trễ làm rồi!”",
-  "en": ""
- },
- {
-  "vi": "“Ký nhận đại đi, khỏi coi giấy tờ, tôi trễ ca rồi!”",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi vì phải chờ, vẫn xem đủ giấy tờ, hẹn giờ trả rõ ràng",
-  "en": ""
- },
- {
-  "vi": "⏱️ “Em xem nhanh mà đủ, ba phút thôi.” Người khai thở dài nhưng gật đầu.",
-  "en": ""
- },
- {
-  "vi": "Nhận luôn, khỏi xem cho nhanh",
-  "en": ""
- },
- {
-  "vi": "😬 Bạn nhận luôn. Chiều đó chị Hằng phải gọi người ta quay lại.",
-  "en": ""
- },
- {
-  "vi": "“Gấp thì sao không lên sớm?”",
-  "en": ""
- },
- {
-  "vi": "😒 Người khai im lặng, mặt hầm hầm suốt lúc chờ.",
-  "en": ""
- },
- {
-  "vi": "Hỏi màu, hình dáng",
-  "en": ""
- },
- {
-  "vi": "Hỏi bên trong có gì",
-  "en": ""
- },
- {
-  "vi": "Hỏi mất ở đâu, lúc nào",
-  "en": ""
- },
- {
-  "vi": "Xem giấy tờ, đối chiếu",
-  "en": ""
- },
- {
-  "vi": "Ví da đen",
-  "en": ""
- },
- {
-  "vi": "Anh Tài xe ôm",
-  "en": ""
- },
- {
-  "vi": "Dãy hàng khô chợ Mây, tối qua",
-  "en": ""
- },
- {
-  "vi": "Ví da đen, góc trái sờn",
-  "en": ""
- },
- {
-  "vi": "Căn cước tên Đỗ Văn Hưng, một thẻ ngân hàng, 320 xu, ảnh hai đứa nhỏ",
-  "en": ""
- },
- {
-  "vi": "Chợ Mây, dãy hàng khô, khoảng 21 giờ",
-  "en": ""
- },
- {
-  "vi": "Anh Hưng",
-  "en": ""
- },
- {
-  "vi": "“Ví da đen, góc bên trái sờn rồi.”",
-  "en": ""
- },
- {
-  "vi": "“Có căn cước tên tôi, thẻ ngân hàng, hơn ba trăm xu, ảnh hai đứa con.”",
-  "en": ""
- },
- {
-  "vi": "“Tôi mua cá khô ở chợ tối qua, chắc rơi lúc đó.”",
-  "en": ""
- },
- {
-  "vi": "“Căn cước nằm trong ví đó anh.” Ảnh trên căn cước đúng là anh Hưng đang đứng trước mặt.",
-  "en": ""
- },
- {
-  "vi": "Điện thoại vỏ hồng",
-  "en": ""
- },
- {
-  "vi": "Bé Tí học sinh lớp 5",
-  "en": ""
- },
- {
-  "vi": "Ghế đá công viên đầu phường, sáng nay",
-  "en": ""
- },
- {
-  "vi": "Ốp lưng hồng có hình con vịt, màn hình nứt góc",
-  "en": ""
- },
- {
-  "vi": "Hình nền hai vợ chồng chụp ở biển, ốp kẹp một tờ vé xe buýt",
-  "en": ""
- },
- {
-  "vi": "Công viên đầu phường, sáng sớm",
-  "en": ""
- },
- {
-  "vi": "“Điện thoại màu xanh dương… à không, hồng, hồng.”",
-  "en": ""
- },
- {
-  "vi": "“Hình nền… con mèo. Chắc vậy.”",
-  "en": ""
- },
- {
-  "vi": "“Tôi thấy người ta đăng trong nhóm khu phố nên lên nhận.”",
-  "en": ""
- },
- {
-  "vi": "“Quên mang giấy tờ rồi. Mở khóa thì… tôi đổi mật khẩu rồi, quên.”",
-  "en": ""
- },
- {
-  "vi": "Lắc tay vàng trẻ em",
-  "en": ""
- },
- {
-  "vi": "Chị bán rau sạp 12",
-  "en": ""
- },
- {
-  "vi": "Lối đi dãy rau chợ Mây, trưa qua",
-  "en": ""
- },
- {
-  "vi": "Lắc vàng nhỏ, có cái chuông bạc",
-  "en": ""
- },
- {
-  "vi": "Mặt lắc khắc chữ “Bin”",
-  "en": ""
- },
- {
-  "vi": "Chợ Mây, dãy rau, buổi trưa",
-  "en": ""
- },
- {
-  "vi": "“Lắc vàng nhỏ xíu, có cái chuông leng keng.”",
-  "en": ""
- },
- {
-  "vi": "“Mặt lắc khắc tên Bin, con trai chị.”",
-  "en": ""
- },
- {
-  "vi": "“Trưa qua chị dắt bé đi chợ rau, về mới thấy mất.”",
-  "en": ""
- },
- {
-  "vi": "Căn cước tên Trần Thị Ngọc. Chị mở điện thoại: ảnh bé Bin đeo đúng cái lắc này.",
-  "en": ""
- },
- {
-  "vi": "Túi laptop màu xám",
-  "en": ""
- },
- {
-  "vi": "Bác bảo vệ hội chợ",
   "en": ""
  }
 ]

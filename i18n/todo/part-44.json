@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Đánh dấu ít nhất một mục.",
+  "en": ""
+ },
+ {
+  "vi": "Chuồng, bể này không có trong vòng chăm hôm nay.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn khẩu phần nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cho ăn rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách dọn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ đo nhiệt độ nước ở bể cá.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ bể cá mới có sưởi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã chỉnh sưởi rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã soi kỹ rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Bơi lội, ăn uống bình thường.",
+  "en": ""
+ },
+ {
+  "vi": "Lanh lợi, mắt sáng, lông mượt.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cách ly rồi.",
+  "en": ""
+ },
+ {
+  "vi": "bể cách ly",
+  "en": ""
+ },
+ {
+  "vi": "lồng cách ly",
+  "en": ""
+ },
+ {
+  "vi": "Chưa làm việc nào trong vòng chăm.",
+  "en": ""
+ },
+ {
+  "vi": "bỏ đói",
+  "en": ""
+ },
+ {
+  "vi": "Đổ cám cả nắm, thức ăn thừa làm nước đục ngầu.",
+  "en": ""
+ },
+ {
+  "vi": "cho cá ăn quá nhiều",
+  "en": ""
+ },
+ {
+  "vi": "Khẩu phần không đúng, bé ăn không đủ no.",
+  "en": ""
+ },
+ {
+  "vi": "để chuồng, bể bẩn",
+  "en": ""
+ },
+ {
+  "vi": "Thay sạch trơn nước một lần, cá sốc nước nằm im dưới đáy.",
+  "en": ""
+ },
+ {
+  "vi": "thay toàn bộ nước bể cá",
+  "en": ""
+ },
+ {
+  "vi": "Chuồng chỉ lau qua loa, lót cũ vẫn ẩm.",
+  "en": ""
+ },
+ {
+  "vi": "dọn chuồng qua loa",
+  "en": ""
+ },
+ {
+  "vi": "để nước lạnh, không chỉnh sưởi",
+  "en": ""
+ },
+ {
+  "vi": "Bể cá vàng bị bật sưởi, nước ấm quá cá thở gấp.",
+  "en": ""
+ },
+ {
+  "vi": "bật sưởi cho bể cá vàng",
+  "en": ""
+ },
+ {
+  "vi": "không cách ly bé ốm",
+  "en": ""
+ },
+ {
+  "vi": "Tách nhầm bé đang khỏe ra khỏi đàn, bé hoảng cả buổi.",
+  "en": ""
+ },
+ {
+  "vi": "cách ly nhầm bé khỏe",
+  "en": ""
+ },
+ {
+  "vi": "Chọn: hoàn tiền, đổi món mới, hoặc không nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Món còn nguyên seal, xếp lại lên kệ.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng đổi trả không bán lại được",
+  "en": ""
+ },
+ {
+  "vi": "Có hóa đơn, lỗi rõ ràng mà tiệm nhất quyết không đổi.",
+  "en": ""
+ },
+ {
+  "vi": "từ chối đổi trả đúng quy định",
+  "en": ""
+ },
+ {
+  "vi": "Bạn hoàn tiền, ghi sổ đổi trả.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đổi món mới, ghi sổ đổi trả.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chỉ tấm bảng quy định đổi trả, giải thích nhẹ nhàng.",
+  "en": ""
+ },
+ {
+  "vi": "Tờ tìm thú đã dán lên bảng rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn các dòng trên tờ tìm thú nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tờ tìm thú cần ít nhất một dòng.",
+  "en": ""
+ },
+ {
+  "vi": "Tờ tìm thú gồm:",
+  "en": ""
+ },
+ {
+  "vi": "Viết tờ tìm thú trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Đã dán rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Dán tờ tìm thú lên bảng trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Không có cuộc gọi này.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn: hỏi dấu riêng, báo chủ đi gặp, hoặc cảm ơn rồi thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc gọi này đã xử lý xong.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cảm ơn rồi gác máy.",
+  "en": ""
+ },
+ {
+  "vi": "Còn cuộc gọi chưa trả lời.",
+  "en": ""
+ },
+ {
+  "vi": "Tờ tìm thú không có số điện thoại, ai thấy cũng không biết gọi ai.",
+  "en": ""
+ },
+ {
+  "vi": "tờ tìm thú thiếu số điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "Tờ tìm thú thiếu thông tin, người ta hỏi đi hỏi lại.",
+  "en": ""
+ },
+ {
+  "vi": "tờ tìm thú thiếu thông tin",
+  "en": ""
+ },
+ {
+  "vi": "Dán cả địa chỉ nhà tôi lên bảng, người lạ cứ lảng vảng trước cổng.",
+  "en": ""
+ },
+ {
+  "vi": "công khai địa chỉ nhà",
+  "en": ""
+ },
+ {
+  "vi": "Ghi rõ tiền thưởng, điện thoại réo suốt toàn người hỏi tiền.",
+  "en": ""
+ },
+ {
+  "vi": "ghi số tiền thưởng",
+  "en": ""
+ },
+ {
+  "vi": "Dấu riêng của bé in hết lên giấy, kẻ gian đọc theo mà lừa.",
+  "en": ""
+ },
+ {
+  "vi": "công khai dấu riêng",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm bảo tôi liên lạc với người ta, tôi chuyển tiền rồi bị chặn số.",
+  "en": ""
+ },
+ {
+  "vi": "để chủ nuôi bị lừa chuyển tiền",
+  "en": ""
+ },
+ {
+  "vi": "bỏ qua tin báo thật",
+  "en": ""
+ },
+ {
+  "vi": "Chạy tới nơi mới biết không phải bé nhà mình, mất cả buổi.",
+  "en": ""
+ },
+ {
+  "vi": "báo nhầm bé khác",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi tiền thu hộ, không đổi shipper được nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn xe máy hoặc xe tải nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Chốt hóa đơn trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn shipper trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Chốt hóa đơn, chọn shipper và ghi tiền thu hộ trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Tư vấn đúng bé",
+  "en": ""
+ },
+ {
+  "vi": "Bể đúng cách",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi han, giao đúng người",
+  "en": ""
+ },
+ {
+  "vi": "Chăm thú chu đáo",
+  "en": ""
+ },
+ {
+  "vi": "Đổi trả rõ ràng",
+  "en": ""
+ },
+ {
+  "vi": "Tờ tìm thú",
+  "en": ""
+ },
+ {
+  "vi": "Giao đúng hàng",
+  "en": ""
+ },
+ {
+  "vi": "đúng loại, đúng tuổi, hỏi kỹ dị ứng",
+  "en": ""
+ },
+ {
+  "vi": "bể đủ nước, cá hợp nhau",
+  "en": ""
+ },
+ {
+  "vi": "hỏi kỹ trước khi giao",
+  "en": ""
+ },
+ {
+  "vi": "ăn đủ, sạch sẽ, để ý bé ốm",
+  "en": ""
+ },
+ {
+  "vi": "nói rõ quy định",
+  "en": ""
+ },
+ {
+  "vi": "tờ tìm thú rõ ràng, lọc tin kỹ",
+  "en": ""
+ },
+ {
+  "vi": "đúng địa chỉ, đúng xe",
+  "en": ""
+ },
+ {
+  "vi": "tính sai tiền",
+  "en": ""
+ },
+ {
+  "vi": "tính đúng từng món",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi han",
+  "en": ""
+ },
+ {
+  "vi": "không hỏi gì",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu tiệm thú cưng không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách trong việc không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ hàng không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Việc không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng giá của việc không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Màu thú trong việc không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Kết quả việc không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn làm việc không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách bể không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Bể không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi nhóm cá chỉ có một bể.",
+  "en": ""
+ },
+ {
+  "vi": "Cá và đồ dùng trong các bể không khớp hóa đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ cho ăn không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ dọn dẹp không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định đổi trả không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ cuộc gọi không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Shipper không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Đàn thú trong tiệm không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Chuồng trại không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nhận nuôi không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ thú quen không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trong ngày không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Màu sơn của tiệm không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Màu chữ biển hiệu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi tuổi, cân nặng, dị ứng → đọc nhãn bao: đúng loài, đúng tuổi, đúng cỡ, tránh đồ bé dị ứng → món khách tự lấy trong rổ thì xem hạn → quét từng món, chốt, thối tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn bể đủ lít (bảy màu 2 L, tứ vân 4 L, betta 5 L, cá vàng 10 L mỗi con) → bấm Thêm bể riêng để tách cá: betta ở một mình, cá vàng không chung cá nhiệt đới → chọn cá, lọc và khử clo cho từng bể; xem cảnh báo trước khi tính tiền → dặn cách thả cá, thay nước.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi ai chăm, người lớn đồng ý chưa, nhà ở, thời gian, thú đang nuôi, dị ứng → chưa hợp thì hẹn lại hoặc từ chối nhẹ nhàng → hợp thì giao bé kèm đủ đồ, nhận nuôi thì làm đủ giấy.",
+  "en": ""
+ },
+ {
+  "vi": "Cho ăn đúng khẩu phần (cá một nhúm, chuồng một chén) → bể cá thay 1/3 nước, chuồng thay lót → đo nhiệt, lạnh thì bật sưởi (cá vàng không cần) → soi từng bể, bé ốm thì cách ly.",
+  "en": ""
+ },
+ {
+  "vi": "Xem hóa đơn, seal, mã lô, hạn, lỗi rồi mới quyết.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi đặc điểm, nơi lạc, giờ lạc, số điện thoại, dấu riêng → tờ tìm thú giữ kín dấu riêng và địa chỉ nhà → dán bảng → người gọi tới thì hỏi dấu riêng, ai đòi chuyển tiền trước là lừa.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi xác nhận địa chỉ → đóng đúng đơn → quét, chốt hóa đơn → xe máy tối đa 20 kg và không chở bể kính lớn → thu hộ = hóa đơn + phí ship.",
+  "en": ""
+ },
+ {
+  "vi": "Chó con giá rẻ trên xe tải",
+  "en": ""
+ },
+ {
+  "vi": "Một người đậu xe tải trước tiệm, mở thùng: mười mấy con chó con chen chúc. “Bán sỉ cho tiệm, giá rẻ như cho!” Chú Út có vẻ xiêu lòng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn là chú Út: ba mươi năm trước tiệm nào cũng lấy chó con như vậy mà bán.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi người bán",
+  "en": ""
+ },
+ {
+  "vi": "Không có sổ tiêm, không biết mẹ các bé ở đâu. “Giấy tờ làm chi cho mệt.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhã xem qua",
+  "en": ""
+ },
+ {
+  "vi": "Nhã (sinh viên thú y)",
+  "en": ""
+ },
+ {
+  "vi": "Vài bé tiêu chảy, mắt kèm nhèm. Chó con chưa tiêm mà nhốt chung dễ lây bệnh nặng.",
+  "en": ""
+ },
+ {
+  "vi": "Nếp mới của tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Bảng ở góc nhận nuôi",
+  "en": ""
+ },
+ {
+  "vi": "Chó mèo chỉ về nhà mới qua góc nhận nuôi của nhóm Chân Nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối, gọi nhóm Chân Nhỏ và thú y phường tới xem các bé",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm không nhận chó con trôi nổi mà còn gọi người cứu mấy bé. Nể thật.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm Chân Nhỏ nhận chữa bốn bé yếu nhất. Người bán lái xe đi, chú Út lặng thinh một lúc rồi gật đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Hồi xưa chú bán vậy hoài. Giờ nhìn mấy đứa nhỏ run run mới thấy tội.",
+  "en": ""
+ },
+ {
+  "vi": "Mấy bé này mà vào tiệm là cả góc nhận nuôi lây bệnh.",
+  "en": ""
+ },
+ {
+  "vi": "Bán rẻ thì có lời, nhưng khách mua về một bé ốm thì mất cả lòng tin.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy vài con cho vui lòng chú Út",
+  "en": ""
+ },
+ {
+  "vi": "Mua chó con ở tiệm, về hai hôm là ốm, phải chạy thú y hết mấy trăm.",
+  "en": ""
+ },
+ {
+  "vi": "Hai bé bệnh nặng, cả góc nhận nuôi phải khử trùng. Tiệm bỏ tiền chữa.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi tưởng tiệm quen thì yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Đây đúng là điều cháu sợ nhất.",
+  "en": ""
+ },
+ {
   "vi": "Từ chối cho xong, không báo ai",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Cô Linh: mang về, tái để riêng",
-  "en": ""
- },
- {
-  "vi": "Anh Sáu: trứng trần, đĩa rau giá",
-  "en": ""
- },
- {
-  "vi": "Nước trong, nóng, vừa miệng",
-  "en": ""
- },
- {
-  "vi": "Bánh tơi mềm, tái chín hồng",
-  "en": ""
- },
- {
-  "vi": "Nước đúng mức khách dặn",
-  "en": ""
- },
- {
-  "vi": "Nhớ đúng lời dặn",
-  "en": ""
- },
- {
-  "vi": "Bưng ra còn nóng hổi",
-  "en": ""
- },
- {
-  "vi": "Bình gas hết giữa ca",
-  "en": ""
- },
- {
-  "vi": "Ngọn lửa dưới nồi phụt tắt, bình gas nhẹ tênh. Khách vẫn ngồi chờ, nồi nước nguội dần.",
-  "en": ""
- },
- {
-  "vi": "Thay bình gas dự phòng, kiểm van rồi mới bật lửa",
-  "en": ""
- },
- {
-  "vi": "Bình mới lắp xong, ngửi van không thấy mùi gas, lửa xanh đều. Nồi lăn tăn trở lại.",
-  "en": ""
- },
- {
-  "vi": "Nhóm bếp than tổ ong kê tạm",
-  "en": ""
- },
- {
-  "vi": "Nồi nóng chậm",
-  "en": ""
- },
- {
-  "vi": "Bếp than đỏ lửa, nồi nóng lên từ từ. Khói than bay cả ra ngõ.",
-  "en": ""
- },
- {
-  "vi": "Cứ chan nước đang còn ấm",
-  "en": ""
- },
- {
-  "vi": "Nước dùng ấm ấm, tái thả vào vẫn còn đỏ. Mấy khách nhìn nhau.",
-  "en": ""
- },
- {
-  "vi": "Bé làm đổ bát nước dùng",
-  "en": ""
- },
- {
-  "vi": "Một bé ngồi bàn ngoài với tay lấy đũa, bát nước dùng nóng đổ trúng mu bàn tay. Bé khóc thét.",
-  "en": ""
- },
- {
-  "vi": "Xả nước mát lên chỗ bỏng mười lăm phút, không bôi gì lạ",
-  "en": ""
- },
- {
-  "vi": "Bàn tay bé đỡ đỏ dần. Mẹ bé cảm ơn, hẹn đưa bé đi trạm y tế xem lại cho chắc.",
-  "en": ""
- },
- {
-  "vi": "Lấy kem đánh răng bôi lên cho mát",
-  "en": ""
- },
- {
-  "vi": "Con tôi bị bỏng mà quán bôi kem đánh răng, bác sĩ phải rửa sạch lại.",
-  "en": ""
- },
- {
-  "vi": "Bé vẫn rát. Ra trạm y tế, bác sĩ phải rửa sạch lớp kem đi.",
-  "en": ""
- },
- {
-  "vi": "Lau khô rồi để bé ngồi yên",
-  "en": ""
- },
- {
-  "vi": "Bé nín dần nhưng mu bàn tay vẫn đỏ ửng.",
-  "en": ""
- },
- {
-  "vi": "Mèo hoang rình bàn thịt",
-  "en": ""
- },
- {
-  "vi": "Con mèo mướp nhảy lên ghế, vươn cổ ngửi rổ thịt bò bày trên thớt.",
-  "en": ""
- },
- {
-  "vi": "Đậy lồng bàn lên rổ thịt, bế mèo ra ngoài",
-  "en": ""
- },
- {
-  "vi": "Thịt đậy kín. Con mèo ra nằm dưới gốc si chờ xương.",
-  "en": ""
- },
- {
-  "vi": "Xua mèo đi rồi làm tiếp",
-  "en": ""
- },
- {
-  "vi": "Mèo chạy đi, lát sau lại lảng vảng quanh thớt.",
-  "en": ""
- },
- {
-  "vi": "Kệ, mèo chưa ăn đâu",
-  "en": ""
- },
- {
-  "vi": "Mèo nhảy lên bàn thịt mà quán cứ để vậy, nhìn mất vệ sinh.",
-  "en": ""
- },
- {
-  "vi": "Một khách chụp được cảnh con mèo đứng cạnh rổ thịt.",
-  "en": ""
- },
- {
-  "vi": "Người mời mua thịt bò rẻ",
-  "en": ""
- },
- {
-  "vi": "Một người chở thùng xốp ghé: “Thịt bò rẻ bằng nửa chợ, khỏi giấy tờ gì cho mệt. Lấy chục ký không?”",
-  "en": ""
- },
- {
-  "vi": "Không lấy: thịt phải có giấy kiểm dịch, mua mối quen",
-  "en": ""
- },
- {
-  "vi": "Người đó đi tiếp. Bác Lâm gật đầu: “Thịt không rõ nguồn là không bao giờ vào nồi nhà mình.”",
-  "en": ""
- },
- {
-  "vi": "Xem thử rồi tính",
-  "en": ""
- },
- {
-  "vi": "Thịt sẫm màu, ấn vào không đàn hồi. Bạn trả lại, mất chút thời gian.",
-  "en": ""
- },
- {
-  "vi": "Lấy năm ký cho rẻ",
-  "en": ""
- },
- {
-  "vi": "Ăn phở xong đau bụng cả buổi, nghe nói quán mua thịt trôi nổi.",
-  "en": ""
- },
- {
-  "vi": "Chiều đó có khách gọi điện, kêu ăn xong đau bụng.",
-  "en": ""
- },
- {
-  "vi": "Khách xin thêm nước dùng",
-  "en": ""
- },
- {
-  "vi": "Anh Sáu húp hết nước, chìa tô ra: “Cho anh xin thêm chút nước nghen, ngon quá!”",
-  "en": ""
- },
- {
-  "vi": "Chan thêm một muôi nóng, không lấy tiền",
-  "en": ""
- },
- {
-  "vi": "Anh Sáu cười khà khà: “Ngoài này chơi đẹp ghê!”",
-  "en": ""
- },
- {
-  "vi": "Thêm nước thì tính thêm hai xu",
-  "en": ""
- },
- {
-  "vi": "Anh Sáu trả tiền, hơi chưng hửng.",
-  "en": ""
- },
- {
-  "vi": "“Hết nước rồi anh”",
-  "en": ""
- },
- {
-  "vi": "Xin thêm muôi nước dùng mà quán nói hết, nồi to đùng kia.",
-  "en": ""
- },
- {
-  "vi": "Anh Sáu nhìn cái nồi đầy ắp, lắc đầu.",
-  "en": ""
- },
- {
-  "vi": "Đoàn kiểm tra vệ sinh phường",
-  "en": ""
- },
- {
-  "vi": "Hai cán bộ phường ghé: “Quán cho xem giấy nguồn gốc thịt, chỗ rửa bát với thùng rác nhé.”",
-  "en": ""
- },
- {
-  "vi": "Đưa sổ nhập thịt có giấy kiểm dịch, dẫn xem chỗ rửa bát",
-  "en": ""
- },
- {
-  "vi": "Cán bộ ghi “đạt”, còn dặn đậy nắp thùng rác cho kín.",
-  "en": ""
- },
- {
-  "vi": "Xin hẹn hôm khác, đang đông khách",
-  "en": ""
- },
- {
-  "vi": "Đoàn hẹn tuần sau quay lại, ghi tên quán vào sổ.",
-  "en": ""
- },
- {
-  "vi": "Mời hai anh tô phở cho qua",
-  "en": ""
- },
- {
-  "vi": "Thấy quán mời cán bộ ăn phở cho qua kiểm tra, nghĩ sao đây?",
-  "en": ""
- },
- {
-  "vi": "Hai cán bộ từ chối, ghi biên bản kỹ hơn.",
-  "en": ""
- },
- {
-  "vi": "Khách bỏ quên điện thoại",
-  "en": ""
- },
- {
-  "vi": "Dọn bàn thì thấy chiếc điện thoại nằm dưới tờ khăn giấy. Hình như của cô Linh vừa mua mang về.",
-  "en": ""
- },
- {
-  "vi": "Cất vào ngăn kéo, chờ chủ quay lại hoặc gọi số người thân",
-  "en": ""
- },
- {
-  "vi": "Mười phút sau cô Linh hớt hải quay lại, mừng rơi nước mắt.",
-  "en": ""
- },
- {
-  "vi": "Để nguyên trên bàn",
-  "en": ""
- },
- {
-  "vi": "Lát sau chiếc điện thoại vẫn nằm đó, may chưa ai lấy.",
-  "en": ""
- },
- {
-  "vi": "Đăng lên nhóm phố tìm chủ, chụp cả màn hình khóa",
-  "en": ""
- },
- {
-  "vi": "Quán tốt bụng nhưng đăng cả ảnh màn hình khóa có tin nhắn của tôi lên mạng.",
-  "en": ""
- },
- {
-  "vi": "Cô Linh tìm lại được máy, nhưng hơi ngại vì ảnh tin nhắn lộ ra.",
-  "en": ""
- },
- {
-  "vi": "Mưa hắt vào bàn ngoài",
-  "en": ""
- },
- {
-  "vi": "Mưa xiên hắt vào mấy bàn ngoài, ống đũa với rổ quẩy ướt nhẹp.",
-  "en": ""
- },
- {
-  "vi": "Kéo bạt, dời bàn vào trong, thay ống đũa khô",
-  "en": ""
- },
- {
-  "vi": "Khách ngồi khô ráo, quẩy vẫn giòn.",
-  "en": ""
- },
- {
-  "vi": "Để tạnh mưa rồi dọn",
-  "en": ""
- },
- {
-  "vi": "Rổ quẩy ướt mềm phải bỏ.",
-  "en": ""
- },
- {
-  "vi": "Tô phở nhiều mì chính",
-  "en": ""
- },
- {
-  "vi": "Ông giáo Thụ đặt đũa xuống: “Ông dặn không mì chính, mà sao húp vào cứ khô cổ thế này hả cháu?”",
-  "en": ""
- },
- {
-  "vi": "Bạn là ông giáo Thụ, ăn phở ở đây mười năm, uống mì chính vào là khô cổ, nhức đầu.",
-  "en": ""
- },
- {
-  "vi": "Muôi nước",
-  "en": ""
- },
- {
-  "vi": "Muôi vừa chan là muôi múc ở nồi lớn, nồi đã nêm mì chính từ sáng.",
-  "en": ""
- },
- {
-  "vi": "Nồi nhỏ",
-  "en": ""
- },
- {
-  "vi": "Bác Lâm nấu riêng một nồi nhỏ không mì chính cho khách quen dặn.",
-  "en": ""
- },
- {
-  "vi": "Lúc gọi món ông đã dặn rõ: không mì chính.",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi ông, làm tô khác bằng nước nồi nhỏ, không lấy tiền tô lỗi",
-  "en": ""
- },
- {
-  "vi": "Quán lỡ tay nhưng nhận ngay, làm lại tô khác bằng nồi riêng. Đáng mặt quán quen.",
-  "en": ""
- },
- {
-  "vi": "Ông giáo húp thìa nước mới, gật gù: “Thế mới là phở.”",
-  "en": ""
- },
- {
-  "vi": "Lỡ thì sửa, ông không trách.",
-  "en": ""
- },
- {
-  "vi": "Khách dặn gì phải nhớ cái muôi múc ở nồi nào.",
-  "en": ""
- },
- {
-  "vi": "Rót cho ông cốc trà đá cho đỡ khô cổ",
-  "en": ""
- },
- {
-  "vi": "Quán có hỏi han, nhưng tô phở vẫn là tô có mì chính.",
-  "en": ""
- },
- {
-  "vi": "Ông giáo uống trà, ăn nốt nửa tô rồi về sớm.",
-  "en": ""
- },
- {
-  "vi": "Trà đá không làm tô phở hết mì chính được.",
-  "en": ""
- },
- {
-  "vi": "Ông dặn mấy năm nay rồi mà.",
-  "en": ""
- },
- {
-  "vi": "“Quán có cho mì chính đâu ông”",
-  "en": ""
- },
- {
-  "vi": "Dặn rõ ràng mà còn chối. Mười năm ăn ở đây, buồn.",
-  "en": ""
- },
- {
-  "vi": "Ông giáo gấp tờ báo, đứng dậy về, sáng hôm sau không thấy ông ra.",
-  "en": ""
- },
- {
-  "vi": "Ông nếm là biết, cháu ạ.",
-  "en": ""
- },
- {
-  "vi": "Mất khách quen vì một muôi nước.",
-  "en": ""
- },
- {
-  "vi": "Khách dặn không mì chính thì múc nồi nhỏ. Lỡ tay thì nhận, làm lại tô khác.",
-  "en": ""
- },
- {
-  "vi": "Thịt bò rẻ bất thường",
-  "en": ""
- },
- {
-  "vi": "Mối thịt quen báo tăng giá. Một người khác nhắn tin chào thịt bò rẻ hơn ba mươi phần trăm, “khỏi giấy tờ, giao tận nơi”.",
-  "en": ""
- },
- {
-  "vi": "Miếng thịt mẫu",
-  "en": ""
- },
- {
-  "vi": "Thớt",
-  "en": ""
- },
- {
-  "vi": "Thịt mẫu màu đỏ sẫm, ấn tay vào lõm mãi không lên, mặt nhớt.",
-  "en": ""
- },
- {
-  "vi": "Người bán không có giấy kiểm dịch, không cho biết lò mổ nào.",
-  "en": ""
- },
- {
-  "vi": "Mối quen",
-  "en": ""
- },
- {
-  "vi": "Sổ nhập",
-  "en": ""
- },
- {
-  "vi": "Mối quen có tem kiểm dịch từng lô, tăng giá vì bò hơi lên giá.",
-  "en": ""
- },
- {
-  "vi": "Giữ mối quen, xin bớt chút, tăng giá tô phở một xu và nói rõ với khách",
-  "en": ""
- },
- {
-  "vi": "Quán tăng một xu nhưng nói rõ lý do, thịt vẫn tươi ngon. Ủng hộ.",
-  "en": ""
- },
- {
-  "vi": "Khách quen gật gù, thịt vẫn đỏ tươi, ăn yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Một xu mà ăn yên tâm thì ông trả.",
-  "en": ""
- },
- {
-  "vi": "Ba mươi năm bán phở chưa lần nào mua thịt trôi nổi.",
-  "en": ""
- },
- {
-  "vi": "Mua một nửa thịt rẻ để bù lỗ",
-  "en": ""
- },
- {
-  "vi": "Tô hôm nay thịt dai, mùi lạ. Quán đổi mối thịt hả?",
-  "en": ""
- },
- {
-  "vi": "Khách để thừa thịt, có người hỏi thẳng.",
-  "en": ""
- },
- {
-  "vi": "Thịt này không phải thịt mọi hôm.",
-  "en": ""
- },
- {
-  "vi": "Tiết kiệm kiểu đó là mất khách.",
-  "en": ""
- },
- {
-  "vi": "Đổi hẳn sang mối rẻ",
-  "en": ""
- },
- {
-  "vi": "Ăn xong cả nhà đau bụng. Không dám quay lại.",
-  "en": ""
- },
- {
-  "vi": "Tối đó có ba khách gọi điện kêu đau bụng.",
-  "en": ""
- },
- {
-  "vi": "Bé nhà chị nôn cả đêm.",
-  "en": ""
- },
- {
-  "vi": "Cán bộ phường",
-  "en": ""
- },
- {
-  "vi": "Thịt không nguồn gốc là vi phạm an toàn thực phẩm.",
-  "en": ""
- },
- {
-  "vi": "Thịt phải có nguồn gốc, giấy kiểm dịch. Giá lên thì nói thật với khách, đừng đổi sang thịt trôi nổi.",
-  "en": ""
- },
- {
-  "vi": "Tô phở nguội ngắt",
-  "en": ""
- },
- {
-  "vi": "Anh Sáu bưng tô phở trở lại quầy: “Phở gì nguội ngắt, tái còn đỏ lòm nè em!”",
-  "en": ""
- },
- {
-  "vi": "Ngọn lửa",
-  "en": ""
- },
- {
-  "vi": "Lúc nãy châm nước với xương mới, nồi tụt xuống còn tám mươi mấy độ, chưa kịp sôi lại.",
-  "en": ""
- },
- {
-  "vi": "Miếng tái",
-  "en": ""
- },
- {
-  "vi": "Tô phở",
-  "en": ""
- },
- {
-  "vi": "Miếng tái còn đỏ, nước không đủ nóng để chín tới.",
-  "en": ""
- },
- {
-  "vi": "Lời bác Lâm",
-  "en": ""
- },
- {
-  "vi": "Nồi chưa lăn tăn thì chưa chan, khách chờ thêm một phút còn hơn ăn tô nguội.",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi, chờ nồi sôi lại rồi làm tô mới nóng hổi",
-  "en": ""
- },
- {
-  "vi": "Tô đầu nguội thật nhưng quán đổi tô mới nóng hổi, tái chín hồng. Được.",
-  "en": ""
- },
- {
-  "vi": "Anh Sáu húp xì xụp tô mới, giơ ngón cái.",
-  "en": ""
- },
- {
-  "vi": "Đổi liền là được rồi em.",
-  "en": ""
- },
- {
-  "vi": "Châm nồi xong phải chờ sôi lại.",
-  "en": ""
- },
- {
-  "vi": "Chan thêm muôi nước nóng vào tô cũ",
-  "en": ""
- },
- {
-  "vi": "Có chan thêm nước nóng, nhưng tái vẫn tái tái, bánh trương.",
-  "en": ""
- },
- {
-  "vi": "Anh Sáu ăn tạm, bánh đã trương phình.",
   "en": ""
  }
 ]

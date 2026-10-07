@@ -1,5 +1,273 @@
 [
  {
+  "vi": "Đẹp! Thưởng đang chờ nè, tính sao?",
+  "en": ""
+ },
+ {
+  "vi": "Màn sau x2 nè! Qua được là thưởng tăng gấp đôi!",
+  "en": ""
+ },
+ {
+  "vi": "Ối, màn sau x2! Cơ hội hiếm à nha!",
+  "en": ""
+ },
+ {
+  "vi": "Dao chạm dao rồi! Tiếc ghê, lượt sau gỡ nha.",
+  "en": ""
+ },
+ {
+  "vi": "Ui, cấn dao mất rồi! Làm lại lượt mới nha.",
+  "en": ""
+ },
+ {
+  "vi": "Suýt nữa thôi! Bia quay gắt quá.",
+  "en": ""
+ },
+ {
+  "vi": "Để lâu quá bia ngừng quay rồi, lượt này coi như thua nha.",
+  "en": ""
+ },
+ {
+  "vi": "Biết dừng đúng lúc, khôn ghê! Thưởng đây.",
+  "en": ""
+ },
+ {
+  "vi": "Thưởng đây, đếm kỹ nha!",
+  "en": ""
+ },
+ {
+  "vi": "Phá đảo cả mười màn! Trời ơi, tay thần đây rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Qua màn được",
+  "en": ""
+ },
+ {
+  "vi": "Ví không đủ xu",
+  "en": ""
+ },
+ {
+  "vi": "Tiền đặt",
+  "en": ""
+ },
+ {
+  "vi": "title=\"Ví không đủ xu\"",
+  "en": ""
+ },
+ {
+  "vi": "Anh Sáu đang dựng bia…",
+  "en": ""
+ },
+ {
+  "vi": "🗡️ Vào chơi",
+  "en": ""
+ },
+ {
+  "vi": "chọn mức đặt nhỏ hơn nha.",
+  "en": ""
+ },
+ {
+  "vi": "Qua ngày rồi, thưởng màn trước không chơi tiếp được nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Dừng bây giờ nhận",
+  "en": ""
+ },
+ {
+  "vi": ", thua mất hết.",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Màn sau x2",
+  "en": ""
+ },
+ {
+  "vi": "Đang đếm tiền…",
+  "en": ""
+ },
+ {
+  "vi": "Đang dựng bia…",
+  "en": ""
+ },
+ {
+  "vi": "Hội chợ đã tàn: chỉ còn nhận thưởng thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Hết giờ, bia ngừng quay",
+  "en": ""
+ },
+ {
+  "vi": "🏆 Phá đảo!",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn thành màn đang dở nhé; màn sau canh chỗ trống để phóng!",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra lại kết quả",
+  "en": ""
+ },
+ {
+  "vi": "Đang tính…",
+  "en": ""
+ },
+ {
+  "vi": "🗡️ Phóng!",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Hôm nay bạn đang thắng đậm ở hội chợ nên bia quay gắt hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã chơi",
+  "en": ""
+ },
+ {
+  "vi": "lượt, dừng nhận thưởng",
+  "en": ""
+ },
+ {
+  "vi": "lượt, xa nhất màn",
+  "en": ""
+ },
+ {
+  "vi": "Bia gỗ đang quay. Chạm vào bia để phóng dao.",
+  "en": ""
+ },
+ {
+  "vi": "Lâu lâu có màn 🔥 x2: qua màn đó, phần thưởng tăng thêm của màn được nhân đôi.",
+  "en": ""
+ },
+ {
+  "vi": "Màn cũ đang chơi dở: phóng đủ dao để hoàn thành. Từ màn tiếp theo, dao chạm dao mới thua; cắm đủ dao là qua màn.",
+  "en": ""
+ },
+ {
+  "vi": "Chạm vào bia (hoặc bấm “Phóng!”) để phóng dao từ dưới lên. Dao cắm vô gỗ là được, chạm trúng dao khác là thua cả lượt. Cắm đủ số dao là qua màn: dừng để nhận thưởng, hoặc chơi tiếp màn khó hơn, thưởng cao hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã hết giờ phóng. Đang kiểm tra kết quả…",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nhận được kết quả. Bấm kiểm tra lại để tiếp tục nha.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa kết nối được. Giữ nguyên lượt này và kiểm tra lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "bảy",
+  "en": ""
+ },
+ {
+  "vi": "tám",
+  "en": ""
+ },
+ {
+  "vi": "chín",
+  "en": ""
+ },
+ {
+  "vi": "mười",
+  "en": ""
+ },
+ {
+  "vi": "mươi",
+  "en": ""
+ },
+ {
+  "vi": "mốt",
+  "en": ""
+ },
+ {
+  "vi": "tư",
+  "en": ""
+ },
+ {
+  "vi": "lăm",
+  "en": ""
+ },
+ {
+  "vi": "Bột mì nhồi kỹ, bánh nở thơm lừng mùi bột",
+  "en": ""
+ },
+ {
+  "vi": "Bánh mì vừa nướng, còn thơm còn nóng sốt",
+  "en": ""
+ },
+ {
+  "vi": "Ai đàn tích tịch tình tang, nghe vui từng nốt",
+  "en": ""
+ },
+ {
+  "vi": "Nhà ai mới dựng, chôn xong cái cột",
+  "en": ""
+ },
+ {
+  "vi": "Vườn nhà trồng cải, nhổ được củ cà rốt",
+  "en": ""
+ },
+ {
+  "vi": "Gạo mới xay xong, trắng tinh từng hột",
+  "en": ""
+ },
+ {
+  "vi": "Đi coi hội về, nhớ cài cửa cài chốt",
+  "en": ""
+ },
+ {
+  "vi": "Đêm rằm trung thu, lồng đèn ai đốt",
+  "en": ""
+ },
+ {
+  "vi": "Gió đồng thổi mát, lúa trổ bông tốt",
+  "en": ""
+ },
+ {
+  "vi": "Học bài chăm chỉ, cô khen trò ngoan trò tốt",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay vui vẻ, hẹn nhau ngày mai",
+  "en": ""
+ },
+ {
+  "vi": "Tóc ai dài óng, thả ngang bờ vai",
+  "en": ""
+ },
+ {
+  "vi": "Chợ chiều bán khoai, củ to củ dài",
+  "en": ""
+ },
+ {
+  "vi": "Con thỏ nhảy nhót, vểnh đôi tai",
+  "en": ""
+ },
+ {
+  "vi": "Bé học chăm ngoan, thuộc làu từng bài",
+  "en": ""
+ },
+ {
+  "vi": "Mùa này trái chín, ngọt lịm trái xoài",
+  "en": ""
+ },
+ {
+  "vi": "Đứng đây ngó quanh, đố bà con là ai",
+  "en": ""
+ },
+ {
+  "vi": "Tiểu phẩm xem xong, cười té ghế vì hài",
+  "en": ""
+ },
+ {
   "vi": "Áo mới cúc vàng, cô Bảy khéo cài",
   "en": ""
  },
@@ -1529,274 +1797,6 @@
  },
  {
   "vi": "“Hội chợ vui thì vui, chiếu trong là dẹp nha bà con! Ai ngồi đây thì ghi tên, nộp phạt rồi ra trước chơi cho đàng hoàng.”",
-  "en": ""
- },
- {
-  "vi": "Tiền cược bị tịch thu",
-  "en": ""
- },
- {
-  "vi": "🚨 Danh hiệu mới:",
-  "en": ""
- },
- {
-  "vi": "Dạ, em ra chơi bầu cua",
-  "en": ""
- },
- {
-  "vi": "Đi dò lô tô",
-  "en": ""
- },
- {
-  "vi": "Xóc nè! Nghe kêu lắc cắc chưa…",
-  "en": ""
- },
- {
-  "vi": "Hên quá ta! Anh chung liền.",
-  "en": ""
- },
- {
-  "vi": "Ván sau chắc chắn tới lượt em!",
-  "en": ""
- },
- {
-  "vi": "Chậm",
-  "en": ""
- },
- {
-  "vi": "Vé nhỏ",
-  "en": ""
- },
- {
-  "vi": "Vé vừa",
-  "en": ""
- },
- {
-  "vi": "Vé lớn",
-  "en": ""
- },
- {
-  "vi": "Vé tài lộc",
-  "en": ""
- },
- {
-  "vi": "Vé phú quý",
-  "en": ""
- },
- {
-  "vi": "Vé thịnh vượng",
-  "en": ""
- },
- {
-  "vi": "Vé đặc biệt",
-  "en": ""
- },
- {
-  "vi": "Vé ngàn lộc",
-  "en": ""
- },
- {
-  "vi": "Đủ một hàng ngang trên một tờ là kinh.",
-  "en": ""
- },
- {
-  "vi": "Cô Bảy đọc số lộn ngược: nghe 21 là số 12, nghe 07 là số 70. Dò cho tỉnh nha!",
-  "en": ""
- },
- {
-  "vi": "Phải đủ hai hàng ngang trên cùng một tờ mới kinh.",
-  "en": ""
- },
- {
-  "vi": "Kinh cả tờ: đủ hết 15 số. Sáu người cùng chơi nên hũ to!",
-  "en": ""
- },
- {
-  "vi": "Funk nhún nhảy",
-  "en": ""
- },
- {
-  "vi": "(lật ngược!)",
-  "en": ""
- },
- {
-  "vi": "Số vừa gọi",
-  "en": ""
- },
- {
-  "vi": "Chưa gọi số",
-  "en": ""
- },
- {
-  "vi": "Sân khấu lô tô",
-  "en": ""
- },
- {
-  "vi": "Nhạc gánh",
-  "en": ""
- },
- {
-  "vi": "Nhạc nền đang tắt trong Cài đặt",
-  "en": ""
- },
- {
-  "vi": "🔇 Nhạc (đang tắt trong Cài đặt)",
-  "en": ""
- },
- {
-  "vi": "Nhãn dán:",
-  "en": ""
- },
- {
-  "vi": "🎉 Danh hiệu mới:",
-  "en": ""
- },
- {
-  "vi": "🙈 Kinh hụt ba lần, cô Bảy mời nghỉ ván này",
-  "en": ""
- },
- {
-  "vi": "Ván sau dò kỹ rồi hãy hô nha!",
-  "en": ""
- },
- {
-  "vi": "Tờ của bạn cũng vừa đủ mà chưa kịp hô. Lần sau hô lẹ nha!",
-  "en": ""
- },
- {
-  "vi": "Ván này người khác đủ trước rồi.",
-  "en": ""
- },
- {
-  "vi": "🎯 Số chốt ván",
-  "en": ""
- },
- {
-  "vi": "Chẵn/lẻ",
-  "en": ""
- },
- {
-  "vi": "Ẩn bản dò",
-  "en": ""
- },
- {
-  "vi": "🔍 Tự dò lại tờ vừa chơi",
-  "en": ""
- },
- {
-  "vi": "Đang mua…",
-  "en": ""
- },
- {
-  "vi": "/tờ",
-  "en": ""
- },
- {
-  "vi": "Phút sau:",
-  "en": ""
- },
- {
-  "vi": "🎟️ Chọn vé",
-  "en": ""
- },
- {
-  "vi": "🏺 Hũ ván này:",
-  "en": ""
- },
- {
-  "vi": "🎲 Cược phụ (tùy chọn)",
-  "en": ""
- },
- {
-  "vi": "Đoán về",
-  "en": ""
- },
- {
-  "vi": "số chốt ván",
-  "en": ""
- },
- {
-  "vi": ": con số làm đủ tờ đầu tiên trên chiếu (của bạn hay hàng xóm). Kết quả mở khi ván xong.",
-  "en": ""
- },
- {
-  "vi": "Chẵn hay lẻ?",
-  "en": ""
- },
- {
-  "vi": "ăn 1 trả 1 · số 7 và 70 là số ruột cô Bảy: ra hai số đó thì cô Bảy ăn cả hai cửa",
-  "en": ""
- },
- {
-  "vi": "🍀 Cột may mắn",
-  "en": ""
- },
- {
-  "vi": "Cô Bảy đang xé tờ…",
-  "en": ""
- },
- {
-  "vi": "🎟️ Mua tờ dò",
-  "en": ""
- },
- {
-  "vi": "🏅 Bảng kinh hôm nay",
-  "en": ""
- },
- {
-  "vi": "lần kinh",
-  "en": ""
- },
- {
-  "vi": "👑 Vua kinh hôm nay",
-  "en": ""
- },
- {
-  "vi": "Cô Bảy hô số nào, bạn chạm số đó trên tờ dò. Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.",
-  "en": ""
- },
- {
-  "vi": "Cách chơi gánh lô tô",
-  "en": ""
- },
- {
-  "vi": "Ai mua tờ trong cùng một phút sẽ nghe chung một lượt số.",
-  "en": ""
- },
- {
-  "vi": "rồi dò tiếp, hụt mấy lần cũng được",
-  "en": ""
- },
- {
-  "vi": "Hũ = tiền tờ của cả chiếu (của bạn và hàng xóm), cô Bảy giữ một chút tiền gánh. Ai đủ trước người đó ăn, hai người cùng lúc thì bạn được.",
-  "en": ""
- },
- {
-  "vi": ", vừa gọi",
-  "en": ""
- },
- {
-  "vi": "Viền đứt: số đã gọi (tới số chốt) mà bạn chưa chạm.",
-  "en": ""
- },
- {
-  "vi": "Bảng số úp lại trong vòng lật ngược",
-  "en": ""
- },
- {
-  "vi": "🙃 Vòng lật ngược: bảng số úp lại, nghe cô Bảy đọc rồi tự lật nha!",
-  "en": ""
- },
- {
-  "vi": "Bảng số đã gọi",
-  "en": ""
- },
- {
-  "vi": "chờ 1!",
-  "en": ""
- },
- {
-  "vi": "Các số vừa gọi",
   "en": ""
  }
 ]

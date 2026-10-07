@@ -1,5 +1,173 @@
 [
  {
+  "vi": "✍️ Ký giấy nhận nuôi",
+  "en": ""
+ },
+ {
+  "vi": "🤲 Giao bé",
+  "en": ""
+ },
+ {
+  "vi": "Vớt bé màu nào?",
+  "en": ""
+ },
+ {
+  "vi": "❓ Hỏi người muốn nuôi",
+  "en": ""
+ },
+ {
+  "vi": "🎒 Đồ dùng mang về",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi han người muốn nuôi",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định có giao bé không",
+  "en": ""
+ },
+ {
+  "vi": "🤔 Quyết định giao bé hay chưa",
+  "en": ""
+ },
+ {
+  "vi": "Ký giấy nhận nuôi",
+  "en": ""
+ },
+ {
+  "vi": "📝 Làm giấy nhận nuôi",
+  "en": ""
+ },
+ {
+  "vi": "Đặt bé lên quầy",
+  "en": ""
+ },
+ {
+  "vi": "🤲 Đặt bé lên quầy",
+  "en": ""
+ },
+ {
+  "vi": "Đồ dùng bé cần ở nhà mới",
+  "en": ""
+ },
+ {
+  "vi": "🎒 Chọn đồ dùng mang về",
+  "en": ""
+ },
+ {
+  "vi": "🍽️ Cho ăn",
+  "en": ""
+ },
+ {
+  "vi": "🩺 Kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "chuồng",
+  "en": ""
+ },
+ {
+  "vi": "🌡️ Đo nhiệt",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Bật lại sưởi",
+  "en": ""
+ },
+ {
+  "vi": "👀 Soi kỹ từng bé",
+  "en": ""
+ },
+ {
+  "vi": "🚑 Cách ly bé ốm",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Vòng chăm sáng nay",
+  "en": ""
+ },
+ {
+  "vi": "Cho từng bé ăn đúng khẩu phần",
+  "en": ""
+ },
+ {
+  "vi": "Dọn chỗ bẩn",
+  "en": ""
+ },
+ {
+  "vi": "Đo nhiệt từng bể cá",
+  "en": ""
+ },
+ {
+  "vi": "Soi kỹ từng bé",
+  "en": ""
+ },
+ {
+  "vi": "📋 Quy định đổi trả",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Kiểm tra món khách mang trả",
+  "en": ""
+ },
+ {
+  "vi": "? Việc này sẽ khép lại.",
+  "en": ""
+ },
+ {
+  "vi": "Xem hóa đơn, seal, mã lô, hạn, lỗi",
+  "en": ""
+ },
+ {
+  "vi": "Quyết định theo quy định",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Quyết định đổi trả",
+  "en": ""
+ },
+ {
+  "vi": "TÌM",
+  "en": ""
+ },
+ {
+  "vi": "🏃 Đã báo chủ đi gặp",
+  "en": ""
+ },
+ {
+  "vi": "📵 Đã gác máy",
+  "en": ""
+ },
+ {
+  "vi": "🤫 Hỏi dấu riêng",
+  "en": ""
+ },
+ {
+  "vi": "🏃 Báo chủ đi gặp",
+  "en": ""
+ },
+ {
+  "vi": "Báo chủ nuôi liên lạc với người này?",
+  "en": ""
+ },
+ {
+  "vi": "📵 Cảm ơn, gác máy",
+  "en": ""
+ },
+ {
+  "vi": "Cảm ơn rồi gác máy?",
+  "en": ""
+ },
+ {
+  "vi": "📝 Tờ tìm thú",
+  "en": ""
+ },
+ {
+  "vi": "❓ Hỏi chủ nuôi",
+  "en": ""
+ },
+ {
   "vi": "Chọn dòng in lên tờ giấy dán ngoài bảng (ai đi ngang cũng đọc được).",
   "en": ""
  },
@@ -1629,174 +1797,6 @@
  },
  {
   "vi": "🔊 Năm mươi.",
-  "en": ""
- },
- {
-  "vi": "🔊 Ba mươi.",
-  "en": ""
- },
- {
-  "vi": "🔊 Mười.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Thu ga, ghìm mũi!",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Hết đường băng rồi, bay lại!",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Mình bay lại cho chắc.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Thấp quá! Chị cầm lái, bay lại.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Êm quá!",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Hơi mạnh tay rồi.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Hơi xa chút.",
-  "en": ""
- },
- {
-  "vi": "🅿️ Lăn vào bến…",
-  "en": ""
- },
- {
-  "vi": "🅿️ Lăn vào bến",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Dầu chỉ đủ hạ cánh lần này. Mình xuống thôi.",
-  "en": ""
- },
- {
-  "vi": "🧑‍✈️ Bay lại! Ga hết, ngóc mũi.",
-  "en": ""
- },
- {
-  "vi": "Máy hơi chậm: chuyển sang Bay nhanh.",
-  "en": ""
- },
- {
-  "vi": "CẦN GA",
-  "en": ""
- },
- {
-  "vi": "GIÓ",
-  "en": ""
- },
- {
-  "vi": "GIÓ nhẹ",
-  "en": ""
- },
- {
-  "vi": "LÁI TỰ ĐỘNG",
-  "en": ""
- },
- {
-  "vi": "BẠN CẦM LÁI",
-  "en": ""
- },
- {
-  "vi": "Điện thoại: kéo cần lái, trượt cần ga. Bàn phím: ← → nghiêng, ↓ kéo mũi lên, ↑ hạ mũi, W tăng ga, S giảm ga.",
-  "en": ""
- },
- {
-  "vi": "1/3 · Cất cánh",
-  "en": ""
- },
- {
-  "vi": "Tăng ga hết, giữ vạch giữa, chờ 110 knot.",
-  "en": ""
- },
- {
-  "vi": "Kéo nhẹ mũi lên để rời đường băng.",
-  "en": ""
- },
- {
-  "vi": "Giữ W hoặc đẩy cần ga lên. Dùng ← → để bám vạch giữa.",
-  "en": ""
- },
- {
-  "vi": "Giữ ↓ nhẹ hoặc kéo cần lái về phía mình; thả khi đã lên đều.",
-  "en": ""
- },
- {
-  "vi": "Chưa đủ tốc độ thì thả cần lái, tiếp tục tăng ga. Lệch vạch thì chỉnh nhẹ về giữa.",
-  "en": ""
- },
- {
-  "vi": "2/3 · Trên đường bay",
-  "en": ""
- },
- {
-  "vi": "Vòng qua đám mây giông rồi trở về hướng cũ.",
-  "en": ""
- },
- {
-  "vi": "Dùng ← → hoặc kéo cần lái sang bên để nghiêng cánh; trả cần về giữa khi đã tránh giông.",
-  "en": ""
- },
- {
-  "vi": "Đừng bay xuyên mây giông. Chỉnh từng chút, nhìn lại đường bay sau khi vòng qua.",
-  "en": ""
- },
- {
-  "vi": "Lần này không còn đủ dầu bay lại. Chỉnh nhẹ theo vạch tím và lời cơ trưởng.",
-  "en": ""
- },
- {
-  "vi": "Giảm ga bằng S hoặc kéo cần ga xuống. Chưa ổn định ở cổng kiểm tra thì bấm G để bay lại.",
-  "en": ""
- },
- {
-  "vi": "Tăng ga bằng W hoặc đẩy cần ga lên. Chưa ổn định thì bấm G để bay lại.",
-  "en": ""
- },
- {
-  "vi": "Hạ mũi nhẹ bằng ↑, giữ tốc độ. Nếu chưa ổn định, bấm G để bay lại.",
-  "en": ""
- },
- {
-  "vi": "Kéo mũi lên nhẹ bằng ↓. Nếu chưa ổn định, bấm G để bay lại.",
-  "en": ""
- },
- {
-  "vi": "Không thấy đường băng hoặc chưa ổn định: bấm G để bay lại; đây là lựa chọn an toàn.",
-  "en": ""
- },
- {
-  "vi": "3/3 · Hạ cánh",
-  "en": ""
- },
- {
-  "vi": "Thu ga, ghìm mũi nhẹ cho bánh chạm đất.",
-  "en": ""
- },
- {
-  "vi": "Giữ 115 knot, 2 đèn trắng + 2 đỏ và tim đường băng.",
-  "en": ""
- },
- {
-  "vi": "Kéo ga xuống hết; kéo cần lái nhẹ về mình (↓), không giật mạnh.",
-  "en": ""
- },
- {
-  "vi": "Ga chỉnh tốc độ, mũi chỉnh độ cao; bám thanh tím. Kiểm tra ở 1.000 ft và 200 ft.",
-  "en": ""
- },
- {
-  "vi": "2/3 · Quyết định trên đường bay",
   "en": ""
  }
 ]

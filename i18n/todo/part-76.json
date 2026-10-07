@@ -1,5 +1,361 @@
 [
  {
+  "vi": "🔍 Đọc các tờ tiền khách đưa, hoặc bấm [[Đếm lại tiền khách đưa]]: đủ thì báo đủ, thiếu thì hiện số xu còn thiếu.",
+  "en": ""
+ },
+ {
+  "vi": "⏸️ Đã thấy thiếu thì phải chọn cách xử lý rồi mới giao hàng được.",
+  "en": ""
+ },
+ {
+  "vi": "🙏 [[Nhắc khách đưa thêm]]: người đếm nhầm hay người lớn tuổi trả nốt và thân bạn hơn. Người thật thà đôi khi dúi thêm 2–10 xu tiền bo.",
+  "en": ""
+ },
+ {
+  "vi": "👧 Trẻ con không đủ tiền thì chọn [[Cho nợ, mai trả]], [[Bớt món cho vừa tiền]] hoặc [[Thôi, cho con luôn]].",
+  "en": ""
+ },
+ {
+  "vi": "📒 Cho nợ: lần sau bé thường quay lại trả (7 trong 10 lần). Cho luôn: bé rất vui, đôi khi mẹ bé ghé cảm ơn và gửi lại tiền.",
+  "en": ""
+ },
+ {
+  "vi": "😤 Khách cố tình thì chối. Chọn [[Để khách đi]] (mất số thiếu, lần sau người đó dễ tái phạm) hoặc [[Báo công an]].",
+  "en": ""
+ },
+ {
+  "vi": "🚓 Báo công an: đồng hồ trôi thêm 20 phút, khách đang chờ sốt ruột. Khách gian phải trả đủ, uy tín với khu phố tăng.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Báo công an khi khách chỉ nhầm: họ vẫn trả nhưng chê bạn làm quá, việc đó tối đa 3★, bạn mất chút thân thiết và uy tín.",
+  "en": ""
+ },
+ {
+  "vi": "🤐 [[Bỏ qua, coi như bớt giá]]: mất đúng số thiếu, khách vui vẻ ra về, thân thêm một chút.",
+  "en": ""
+ },
+ {
+  "vi": "🌙 Không ai đếm lại: hàng vẫn giao, tối kiểm két thiếu đúng số đó.",
+  "en": ""
+ },
+ {
+  "vi": "💡 Nhận tiền là đếm ngay trước mặt khách. Nhắc nhẹ nhàng trước, chỉ báo công an khi khách chối.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập hàng & kho",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Chợ đầu mối: rẻ nhất. Đặt trước 13:00 hàng tới chiều nay; đặt sau thì sáng mai trước giờ mở cửa. Hay giao thiếu.",
+  "en": ""
+ },
+ {
+  "vi": "🚚 Nhà phân phối: giá niêm yết, xe chạy bốn chuyến (chốt 09:00, 12:00, 15:00, 18:00), hàng tới sau khoảng một tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "⚡ Giao hỏa tốc: đắt nhất nhưng tới trong 15–30 phút. Dùng khi cháy hàng giữa ca.",
+  "en": ""
+ },
+ {
+  "vi": "✈️ Vài nghề có kho xa hay xưởng riêng: rẻ hơn nhưng 1–3 ngày mới tới, nên đặt sớm.",
+  "en": ""
+ },
+ {
+  "vi": "🏷️ Mỗi lựa chọn ghi rõ giá, giờ dự kiến và lưu ý như [[hay thiếu hàng]], [[hay trễ hẹn]].",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Mỗi nghề có bảng nhà cung cấp riêng: xem mục Nhập hàng trong Hướng dẫn nghề.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Kho & nhập hàng",
+  "en": ""
+ },
+ {
+  "vi": "📦 Kệ thiếu hàng là có nút Nhập hàng ngay trên màn hình làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "👆 Trong kho, chạm một ô trên [[Kệ hàng]], chọn số lượng, nhà cung cấp rồi [[Đặt hàng]].",
+  "en": ""
+ },
+ {
+  "vi": "💰 Trả tiền ngay khi đặt, tối đa 30 món một đơn.",
+  "en": ""
+ },
+ {
+  "vi": "📏 Mỗi loại có sức chứa tối đa, tính cả hàng đang giao.",
+  "en": ""
+ },
+ {
+  "vi": "⏳ Hàng về trong hôm nay thì bấm chờ thêm 20 phút; hàng về sau giờ đóng cửa sẽ chờ sẵn sáng mai.",
+  "en": ""
+ },
+ {
+  "vi": "🐢 Xe có thể trễ hẹn; đơn sẽ hiện [[TRỄ HẸN]] kèm lời nhắn của nhà cung cấp.",
+  "en": ""
+ },
+ {
+  "vi": "Mở thùng và đếm",
+  "en": ""
+ },
+ {
+  "vi": "📦 Hàng chỉ lên kệ sau khi bạn mở thùng và đếm: bấm [[Mở thùng & xếp lên kệ]].",
+  "en": ""
+ },
+ {
+  "vi": "👆 Chạm từng món trong thùng để đếm, rồi nhập số đếm được.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Phiếu giao có thể ghi khác số thật trong thùng. Đếm theo mắt, đừng chép phiếu.",
+  "en": ""
+ },
+ {
+  "vi": "✅ Bấm [[Nhận vào kệ]]; đếm sai thì phải đếm lại.",
+  "en": ""
+ },
+ {
+  "vi": "🗄️ Kệ đầy thì bán hoặc bỏ bớt lô cũ trước khi nhận thùng mới.",
+  "en": ""
+ },
+ {
+  "vi": "Khiếu nại và chấm điểm",
+  "en": ""
+ },
+ {
+  "vi": "📉 Giao thiếu thì nhận đúng số có. Ngay trên đầu Kho hiện thẻ “Giao thiếu”: bấm [[Khiếu nại phần thiếu]] là được hoàn tiền (đơn cũ hơn: xem ở [[Thùng hàng]]).",
+  "en": ""
+ },
+ {
+  "vi": "💵 Mỗi đơn khiếu nại được một lần, bạn được hoàn tiền phần thiếu.",
+  "en": ""
+ },
+ {
+  "vi": "⭐ Mỗi đơn đã nhận được chấm sao nhà cung cấp một lần; họ sẽ trả lời bạn.",
+  "en": ""
+ },
+ {
+  "vi": "📊 Số sao bạn chấm hiện cạnh tên nhà cung cấp lần sau đặt hàng.",
+  "en": ""
+ },
+ {
+  "vi": "Hạn dùng và hao hụt",
+  "en": ""
+ },
+ {
+  "vi": "📅 Tab [[Hạn dùng]] cho biết mỗi lô còn mấy ngày.",
+  "en": ""
+ },
+ {
+  "vi": "🔁 Vào trước dùng trước: lô hết hạn sớm nhất được lấy ra bán trước.",
+  "en": ""
+ },
+ {
+  "vi": "🗑️ Lô hết hạn bị bỏ khi khép ca, giá trị ghi vào hao hụt.",
+  "en": ""
+ },
+ {
+  "vi": "✋ Lô không đạt thì bấm [[Bỏ lô]]; giá trị cũng ghi vào hao hụt.",
+  "en": ""
+ },
+ {
+  "vi": "💡 Nhập vừa đủ bán, nhất là hàng tươi, để đỡ lỗ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên & tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Tuyển người phụ",
+  "en": ""
+ },
+ {
+  "vi": "📒 [[Sổ tiệm]] → [[Nhân viên]]: xem bảng tìm người phụ tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Bấm [[Mời về tiệm]] để tuyển rồi cho vào ca. Nhân viên xử lý đơn riêng liên tục, cả khi bạn rời game.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Mỗi đơn trừ lương và vật tư từ quỹ nghề, dùng hàng trong kho rồi ghi doanh thu. Hết hàng hoặc thiếu tiền thì dừng; xem biên nhận trong Sổ tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Số người phụ tùy mặt bằng: góc nhỏ 1 người, tiệm cửa sổ 2, sân vườn 4.",
+  "en": ""
+ },
+ {
+  "vi": "🗓️ Xếp lịch làm, cho nghỉ, đào tạo, thưởng để giữ tinh thần.",
+  "en": ""
+ },
+ {
+  "vi": "Chăm đội của tiệm",
+  "en": ""
+ },
+ {
+  "vi": "😊 Người phụ có tinh thần và độ mệt. Mệt quá thì hay sai.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Thỉnh thoảng người phụ gặp sự cố: để nhầm chỗ, quên thu tiền. Đọc kỹ rồi mới quyết.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Nói chuyện với từng người trong [[Sổ tiệm]].",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Tiền bo khi có người phụ trong ca được chia cho cả đội.",
+  "en": ""
+ },
+ {
+  "vi": "Mặt bằng và an ninh",
+  "en": ""
+ },
+ {
+  "vi": "🏠 [[Mặt bằng]]: chuyển lên tiệm rộng hơn để chứa thêm hàng và người phụ.",
+  "en": ""
+ },
+ {
+  "vi": "🛡️ [[An ninh]]: mua camera, khóa, đồ bảo vệ để bớt mất trộm.",
+  "en": ""
+ },
+ {
+  "vi": "📄 [[Bật gói bảo vệ]]: 2 xu mỗi ca, bị trộm thì được đền một phần.",
+  "en": ""
+ },
+ {
+  "vi": "🧯 [[Diễn tập]]: tập xử lý sự cố, không tốn tiền thật.",
+  "en": ""
+ },
+ {
+  "vi": "Trang trí và nâng cấp",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Đổi màu căn phòng miễn phí.",
+  "en": ""
+ },
+ {
+  "vi": "🪴 Mua đồ trang trí, đặt bên cửa sổ, góc phòng, trên tường…",
+  "en": ""
+ },
+ {
+  "vi": "⚙️ Thiết bị nghề có ba bậc tăng tốc 15%, 35%, 60%; không cộng dồn. Đọc tác dụng trước khi lắp; lượt đang làm giữ tốc độ cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Quầy của bạn: tự tay bán",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Mở bao nhiêu quầy tùy vốn ở [[Quầy của bạn]]. Có nhân viên thì tự bán cả lúc offline tới khi hết hàng hoặc tiền lương. Lãi sau chi phí được thưởng: nhân viên bán 110%, tự bán 40%.",
+  "en": ""
+ },
+ {
+  "vi": "🍽️ Tab [[Menu]]: chọn bao nhiêu món trong danh mục cũng được, nhập giá riêng. Giá thấp đông khách hơn nhưng lãi mỗi món ít; giá quá cao giảm khách và đánh giá.",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Tab [[Trang trí]]: tên bảng hiệu, màu mái che, đồ trang trí, bàn ghế. Hình quầy đổi ngay.",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍🍳 [[Tự đứng quầy]]: chạm đúng món khách gọi, [[Tính tiền]], thối đủ tiền rồi cảm ơn khách.",
+  "en": ""
+ },
+ {
+  "vi": "📱 Bật [[Bán online]]: đơn tới điện thoại. [[Đóng gói]] đủ món, dán kín, kèm dụng cụ và ghi chú.",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Giao đơn: [[Tự chạy đi giao]] theo đường chấm xanh, hoặc [[Gọi shipper]] mất chút phí.",
+  "en": ""
+ },
+ {
+  "vi": "🎲 Ngày nào cũng có vài chuyện oái oăm. Cách nào cũng ổn, chỉ khác chút tiền và tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "🏁 [[Đóng ca]] kết thúc lượt tự phục vụ. Chỉ món thực sự phục vụ mới có tiền; nhân viên tiếp tục bán nếu quầy còn hàng, vốn và không tạm dừng.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Quầy của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện đời & sự cố",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện đời bất ngờ",
+  "en": ""
+ },
+ {
+  "vi": "🚓 Tiền phạt, công an khu vực, thuế, mất trộm, lừa đảo, chuyện nợ, chuyện người với người.",
+  "en": ""
+ },
+ {
+  "vi": "📆 Không có trong hai ngày đầu; tối đa 2 chuyện mỗi ngày, ngày yên ả chỉ 1.",
+  "en": ""
+ },
+ {
+  "vi": "💸 Mỗi cách xử lý ghi rõ tốn bao nhiêu, từ quỹ nơi làm hay ví của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Chốt rồi thì không đổi được. Để tới giờ khép ca, chuyện tự chọn cách mặc định.",
+  "en": ""
+ },
+ {
+  "vi": "👛 Quỹ không đủ trả phạt thì phần thiếu lấy từ ví của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "🔁 [[Nhớ lại chuyện cũ]] để thử cách khác, không ảnh hưởng tiền hay tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "📊 Thang 0–100, bắt đầu ở 50: từ Mang tiếng xấu tới Cả phố tin cậy.",
+  "en": ""
+ },
+ {
+  "vi": "📈 Tăng khi xử lý đàng hoàng, nhận lỗi và đền, bỏ qua cho hàng xóm, công an phá án.",
+  "en": ""
+ },
+ {
+  "vi": "📉 Giảm khi khách báo cáo lên app, không nhận lỗi, cãi khách.",
+  "en": ""
+ },
+ {
+  "vi": "⚖️ Uy tín thấp thì dễ bị kiểm tra, xử phạt hơn.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Xem ở [[Xem sổ chuyện đời]] hoặc cuối bản tổng kết ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện bất ngờ trong ca",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Ngay trong tiệm: kẻ gian lấy đồ, người làm vỡ đồ, bạn lỡ làm hỏng đồ khách, trộm đêm.",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Chọn phản ứng: hô to, đuổi theo, chặn cửa, [[Gọi 113 báo công an]], [[Đứng yên cho an toàn]]…",
+  "en": ""
+ },
+ {
   "vi": "🤕 Đuổi theo dễ giữ được đồ nhưng có thể ngã, tiền thuốc tự lo.",
   "en": ""
  },
@@ -865,358 +1221,6 @@
  },
  {
   "vi": "🏦 Quỹ chung tự có khi hai bạn cưới xong, bắt đầu từ 0 xu, không cần mở gì thêm. Đang đính hôn thì chưa có.",
-  "en": ""
- },
- {
-  "vi": "⬇️ Gửi: tab [[Quỹ chung]] của mục [[Hôn nhân]], gõ số xu rồi bấm [[Gửi vào]]. Tiền đi từ ví vào quỹ, tối đa 200.000 xu mỗi lần, gửi bao nhiêu lần cũng được.",
-  "en": ""
- },
- {
-  "vi": "⬆️ Rút: gõ số xu rồi bấm [[Rút ra]], tiền về ví của bạn. Rút và chi theo số dư quỹ chung, không giới hạn mỗi ngày.",
-  "en": ""
- },
- {
-  "vi": "🏧 Trong [[Ngân hàng]], tab [[Tổng quan]] có thẻ [[Tài khoản chung vợ chồng]] với nút [[Gửi vào quỹ chung]] và [[Rút bằng thẻ chung]]. Cần [[Mở tài khoản miễn phí]] trước.",
-  "en": ""
- },
- {
-  "vi": "💳 Muốn trả bằng thẻ chung: Ngân hàng, tab [[Thẻ]], mục [[Khi mua sắm cá nhân]], chọn [[Ưu tiên thẻ chung vợ chồng]] rồi bấm [[Lưu]]. Không cần có thẻ tín dụng.",
-  "en": ""
- },
- {
-  "vi": "🎓 Thẻ chung trả học phí và tiền đi cửa sau. Quỹ thiếu thì trả tiền mặt, rồi mới tới thẻ tín dụng. Nhẫn, cưới, cơm trưa, gửi tiền, trả nợ không dùng thẻ chung.",
-  "en": ""
- },
- {
-  "vi": "🔔 Mỗi lần gửi, rút hay quẹt thẻ chung, người kia được báo. Lịch sử quỹ ghi ai làm gì, bao nhiêu, cả hai cùng thấy.",
-  "en": ""
- },
- {
-  "vi": "🚫 Chưa có thẻ tín dụng chung hay khoản vay chung. Thẻ chung chỉ chi tiền có sẵn trong quỹ, không nợ, không sao kê; thẻ tín dụng và khoản vay vẫn là của riêng từng người.",
-  "en": ""
- },
- {
-  "vi": "💔 Chia tay thì quỹ chia đôi (lẻ 1 xu về người không đệ đơn), ai còn nợ thì trả từ phần mình trước. Người ấy xóa tài khoản thì người ở lại giữ cả quỹ.",
-  "en": ""
- },
- {
-  "vi": "Mở Quỹ chung",
-  "en": ""
- },
- {
-  "vi": "Ly hôn và hủy hôn ước",
-  "en": ""
- },
- {
-  "vi": "💞 Đang đính hôn: cuối tab [[Hai bạn]] mở [[Hủy hôn ước]], gõ HUY rồi bấm nút. Kế hoạch cưới dừng lại, tiền cọc đã đặt không hoàn lại.",
-  "en": ""
- },
- {
-  "vi": "🏡 Đã cưới: cuối tab [[Gia đình]] mở [[Ly hôn]], gõ LY HON (không dấu) rồi bấm nút [[Ly hôn]]. Một người tự làm được, không cần người kia đồng ý.",
-  "en": ""
- },
- {
-  "vi": "💍 Nhẫn đã trao lúc đính hôn không quay về hộp, dù hủy hôn ước hay ly hôn.",
-  "en": ""
- },
- {
-  "vi": "🏦 Quỹ chung chia đôi, lẻ 1 xu thuộc về người không đệ đơn. Phần của mỗi người về thẳng ví.",
-  "en": ""
- },
- {
-  "vi": "🧾 Khoản nợ còn mở: người mượn trả từ phần quỹ của mình trước, còn thiếu thì phần đó được xóa. Lời nhờ và lời đòi đang chờ cũng đóng lại.",
-  "en": ""
- },
- {
-  "vi": "⏳ Sau khi chia tay, cả hai chờ 3 ngày mới cầu hôn hay nhận lời mới được. Người kia nhận thông báo; nhãn “Đã về chung một nhà” được gỡ.",
-  "en": ""
- },
- {
-  "vi": "👥 Hai bạn vẫn là bạn bè sau khi chia tay. Muốn thì [[Hủy kết bạn]] hoặc [[Chặn]] trong mục [[Bạn bè]].",
-  "en": ""
- },
- {
-  "vi": "Tài khoản giữ tiến trình",
-  "en": ""
- },
- {
-  "vi": "🆓 Không bắt buộc: bạn chơi ngay, tiến trình nằm trên trình duyệt này.",
-  "en": ""
- },
- {
-  "vi": "☁️ Tạo tài khoản ở Cài đặt → Tài khoản; tiến trình đang chơi được gắn vào tài khoản.",
-  "en": ""
- },
- {
-  "vi": "🔤 Tên đăng nhập 3–24 ký tự: chữ không dấu, số, dấu chấm, gạch dưới. Mật khẩu từ 8 ký tự.",
-  "en": ""
- },
- {
-  "vi": "📱 Đăng nhập trên máy khác là chơi tiếp đúng tiến trình đó.",
-  "en": ""
- },
- {
-  "vi": "💍 Bạn bè và kết hôn là với người chơi thật nên cần có tài khoản.",
-  "en": ""
- },
- {
-  "vi": "Mở Cài đặt",
-  "en": ""
- },
- {
-  "vi": "Nhớ kỹ mật khẩu",
-  "en": ""
- },
- {
-  "vi": "⚠️ Không dùng e-mail, hiện chưa có cách lấy lại mật khẩu. Hãy ghi nhớ thật kỹ.",
-  "en": ""
- },
- {
-  "vi": "🔑 Đang đăng nhập thì đổi được mật khẩu trong Cài đặt → Tài khoản.",
-  "en": ""
- },
- {
-  "vi": "🔄 Đăng nhập trên máy đang có tiến trình khác sẽ thay tiến trình đó. Xuất bản lưu trước nếu muốn giữ.",
-  "en": ""
- },
- {
-  "vi": "🚪 [[Đăng xuất]] không mất gì: tiến trình vẫn nằm trong tài khoản.",
-  "en": ""
- },
- {
-  "vi": "Xuất và nhập bản lưu",
-  "en": ""
- },
- {
-  "vi": "💾 Cài đặt → Dữ liệu → [[Xuất bản lưu]] để tải bản lưu về máy.",
-  "en": ""
- },
- {
-  "vi": "📂 [[Nhập bản lưu]] để mở lại một bản đã xuất.",
-  "en": ""
- },
- {
-  "vi": "♻️ [[Bắt đầu lại riêng nghề này]] chỉ làm lại nơi đang làm.",
-  "en": ""
- },
- {
-  "vi": "🗑️ [[Xóa toàn bộ dữ liệu]] xóa vĩnh viễn bản lưu, tài khoản và mọi thứ ở Phố nghề.",
-  "en": ""
- },
- {
-  "vi": "Cài đặt & góp ý",
-  "en": ""
- },
- {
-  "vi": "🇻🇳 Tiếng Việt là ngôn ngữ gốc. 🇬🇧 Có thể chơi bằng tiếng Anh.",
-  "en": ""
- },
- {
-  "vi": "⚙️ [[Cài đặt]] → [[Ngôn ngữ]] để đổi.",
-  "en": ""
- },
- {
-  "vi": "Chữ lớn và chuyển động",
-  "en": ""
- },
- {
-  "vi": "🔠 [[Cài đặt]] → [[Cách chơi]] → bật [[Chữ lớn]] để dễ đọc hơn.",
-  "en": ""
- },
- {
-  "vi": "🌀 Bật [[Giảm chuyển động]] nếu thấy chóng mặt.",
-  "en": ""
- },
- {
-  "vi": "🎨 [[Giao diện]]: đổi phong cách màu, có cả kiểu tối “Phố đêm”, và bố cục màn hình.",
-  "en": ""
- },
- {
-  "vi": "Âm thanh và nhạc",
-  "en": ""
- },
- {
-  "vi": "🔊 [[Âm thanh]]: bật tắt tiếng thao tác, chỉnh âm lượng.",
-  "en": ""
- },
- {
-  "vi": "🎵 Nhạc nền theo nghề, êm dịu hoặc tươi vui. Tắt được.",
-  "en": ""
- },
- {
-  "vi": "💰 Loa báo tiền “ting ting” khi khách chuyển khoản.",
-  "en": ""
- },
- {
-  "vi": "📣 [[Thông báo]] → [[Bật thông báo]] để nhận tin khi có chuyện ở phố.",
-  "en": ""
- },
- {
-  "vi": "⏰ Có thể nhờ nhắc mở quán lúc 19:00 mỗi ngày.",
-  "en": ""
- },
- {
-  "vi": "📱 iPhone: thêm game vào màn hình chính trước rồi mới bật được.",
-  "en": ""
- },
- {
-  "vi": "Có gì mới",
-  "en": ""
- },
- {
-  "vi": "✨ Sau mỗi bản cập nhật, game hiện một thẻ tóm tắt những thay đổi.",
-  "en": ""
- },
- {
-  "vi": "🔁 Xem lại bất cứ lúc nào: Cài đặt → Cách chơi → [[Xem các cập nhật mới]].",
-  "en": ""
- },
- {
-  "vi": "👉 Mục nào có nút Thử ngay thì bấm để mở thẳng chỗ đó.",
-  "en": ""
- },
- {
-  "vi": "Xem Có gì mới",
-  "en": ""
- },
- {
-  "vi": "Xem lại hướng dẫn",
-  "en": ""
- },
- {
-  "vi": "▶️ Nút “Xem lại hướng dẫn” chạy lại phần chỉ dẫn 1 phút.",
-  "en": ""
- },
- {
-  "vi": "📖 Hướng dẫn ở [[Cài đặt]]. Màn làm việc của mỗi nghề có nút ? mở đúng nghề đó.",
-  "en": ""
- },
- {
-  "vi": "💬 Gặp lỗi hay có ý hay: [[Góp ý]] gửi thẳng cho nhà làm game.",
-  "en": ""
- },
- {
-  "vi": "💬 Bấm [[Góp ý]] trong menu, hoặc Cài đặt → [[Góp ý cho nhà làm game]]. Đây là thư riêng gửi người làm game, không phải đánh giá của khách.",
-  "en": ""
- },
- {
-  "vi": "🏷️ Chọn loại: [[Lỗi]], [[Ý tưởng]], [[Khen]] hoặc [[Khó dùng]], viết từ 3 tới 1.000 ký tự rồi bấm [[Gửi góp ý]]. Khách chưa có tài khoản cũng gửi được.",
-  "en": ""
- },
- {
-  "vi": "📎 Game tự gửi kèm nơi đang làm, ngày, kiểu màn hình và trình duyệt để dễ tìm lỗi.",
-  "en": ""
- },
- {
-  "vi": "🔐 Số điện thoại, e-mail, đường link tự bị ẩn, từ thô bị che. Chỉ nhà làm game đọc được góp ý.",
-  "en": ""
- },
- {
-  "vi": "📬 Xem lại ở [[Góp ý của bạn]]: Đã gửi, Đã xem hay Đã xử lý, kèm lời nhà làm game trả lời nếu có.",
-  "en": ""
- },
- {
-  "vi": "⏱️ Gửi tối đa 5 góp ý trong 10 phút và 30 góp ý mỗi ngày.",
-  "en": ""
- },
- {
-  "vi": "⭐ Muốn trả lời khách chấm sao thì vào [[Đánh giá]] của nơi làm, không phải ở đây.",
-  "en": ""
- },
- {
-  "vi": "Mở Góp ý",
-  "en": ""
- },
- {
-  "vi": "Các nghề",
-  "en": ""
- },
- {
-  "vi": "Đời sống & bạn bè",
-  "en": ""
- },
- {
-  "vi": "Game này chơi để làm gì? Nên đi đâu trước?",
-  "en": ""
- },
- {
-  "vi": "🏘️ Bạn là người mới dọn tới khu phố, sống một đời và thử làm nhiều nghề. Không vội, cứ từ từ.",
-  "en": ""
- },
- {
-  "vi": "🧭 Mở [[Đổi nghề]]: “Việc cần làm” nằm đầu Hành trình. Mỗi mục tiêu chưa xong có nút đưa bạn tới phần liên quan.",
-  "en": ""
- },
- {
-  "vi": "👉 Đang làm thì bấm [[Làm tiếp]]. Nút có dấu 👆 chỉ đánh dấu chỗ cần bấm; bạn tự thực hiện bước đó.",
-  "en": ""
- },
- {
-  "vi": "Nghề này chơi kiểu gì?",
-  "en": ""
- },
- {
-  "vi": "❓ Trên màn hình làm việc, bấm nút ? ở góc trên: mở hướng dẫn của đúng nghề đang làm, có từng bước và lỗi hay gặp.",
-  "en": ""
- },
- {
-  "vi": "✨ Việc đầu tiên ở mỗi nơi, chỗ cần bấm sẽ sáng lên. Cứ làm theo dòng “Bước tiếp theo”.",
-  "en": ""
- },
- {
-  "vi": "Xem cách làm ở nơi đang làm",
-  "en": ""
- },
- {
-  "vi": "Đổi nghề, quay lại chỗ làm cũ thế nào?",
-  "en": ""
- },
- {
-  "vi": "🧭 Bấm [[Đổi nghề]] cạnh tên tiệm hoặc trong menu, chọn nơi rồi bấm [[Vào tiếp]] hoặc [[Vào làm]].",
-  "en": ""
- },
- {
-  "vi": "📋 Ở [[Danh sách]] thì bấm [[Tiếp tục]] hoặc [[Bắt đầu]]. Tiến trình từng nghề vẫn được giữ.",
-  "en": ""
- },
- {
-  "vi": "⚠️ Làm xong việc đang dở hoặc bấm [[Khép ca hôm nay]] rồi hãy đi, để khỏi bị phạt bỏ dở việc.",
-  "en": ""
- },
- {
-  "vi": "Nghỉ việc thế nào?",
-  "en": ""
- },
- {
-  "vi": "💼 Chỉ nơi làm thuê (giáo viên, nhà thuốc, văn phòng…) mới cần xin nghỉ. Bấm [[Khép ca hôm nay]] trước.",
-  "en": ""
- },
- {
-  "vi": "📋 Rồi mở [[Việc làm]] trong menu, ở Hồ sơ công việc bấm [[Xin nghỉ việc]]. Muốn làm lại thì xin việc lại.",
-  "en": ""
- },
- {
-  "vi": "🏪 Tiệm của bạn thì cứ sang nơi khác: nơi bạn không làm thì không tốn phí gì.",
-  "en": ""
- },
- {
-  "vi": "Mở thêm nghề mới thế nào?",
-  "en": ""
- },
- {
-  "vi": "📚 Nơi làm mới mở theo chương. Làm đủ các mục “Việc cần làm” của chương trong [[Hành trình]] là mở thêm.",
-  "en": ""
- },
- {
-  "vi": "🔒 Ô “Sắp mở” ở cuối “Nơi làm việc” là các nơi của chương sau. Nơi làm thuê và văn phòng mở về sau.",
-  "en": ""
- },
- {
-  "vi": "Làm nghề gì có nhiều tiền?",
-  "en": ""
- },
- {
-  "vi": "🏪 Tiệm của bạn: tiền lời vào quỹ tiệm. Làm đúng, được 5★, nhập hàng vừa đủ bán là lời nhiều.",
   "en": ""
  }
 ]

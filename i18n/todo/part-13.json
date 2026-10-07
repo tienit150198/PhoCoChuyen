@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Sổ trực tổng đài",
+  "en": ""
+ },
+ {
+  "vi": "Ở tổng đài",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận việc ở tổng đài",
+  "en": ""
+ },
+ {
+  "vi": "Mời liên hệ lại",
+  "en": ""
+ },
+ {
+  "vi": "Tổng đài sắp đổ chuông. Vào ca nghe máy nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn tiền 20 xu",
+  "en": ""
+ },
+ {
+  "vi": "đoàn mình",
+  "en": ""
+ },
+ {
+  "vi": "khách đoàn",
+  "en": ""
+ },
+ {
+  "vi": "hướng dẫn viên",
+  "en": ""
+ },
+ {
+  "vi": "khách đã dẫn",
+  "en": ""
+ },
+ {
+  "vi": "lịch trình",
+  "en": ""
+ },
+ {
+  "vi": "nhận xét chuyến đi",
+  "en": ""
+ },
+ {
+  "vi": "Sổ đoàn",
+  "en": ""
+ },
+ {
+  "vi": "Trên đường",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận việc của đoàn",
+  "en": ""
+ },
+ {
+  "vi": "Khách đoàn gửi thêm tip",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn khách sắp tới điểm hẹn. Xuất phát hôm nay nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Mời đi chuyến sau",
+  "en": ""
+ },
+ {
+  "vi": "Nước suối · 6 xu",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh tặng · 10 xu",
+  "en": ""
+ },
+ {
+  "vi": "chuyến giao",
+  "en": ""
+ },
+ {
+  "vi": "người nhận",
+  "en": ""
+ },
+ {
+  "vi": "tài xế",
+  "en": ""
+ },
+ {
+  "vi": "đơn đã giao",
+  "en": ""
+ },
+ {
+  "vi": "ảnh giao hàng",
+  "en": ""
+ },
+ {
+  "vi": "đánh giá tài xế",
+  "en": ""
+ },
+ {
+  "vi": "Sổ chuyến",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận việc trên chuyến",
+  "en": ""
+ },
+ {
+  "vi": "Người nhận bo thêm",
+  "en": ""
+ },
+ {
+  "vi": "Đơn mới đang chờ ở bưu cục. Lên xe chạy nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn giao lại",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn phí ship 20 xu",
+  "en": ""
+ },
+ {
+  "vi": "phòng kế toán",
+  "en": ""
+ },
+ {
+  "vi": "phòng mình",
+  "en": ""
+ },
+ {
+  "vi": "sếp và đối tác",
+  "en": ""
+ },
+ {
+  "vi": "hồ sơ đã xử lý",
+  "en": ""
+ },
+ {
+  "vi": "biên bản đối chiếu",
+  "en": ""
+ },
+ {
+  "vi": "nhận xét nội bộ",
+  "en": ""
+ },
+ {
+  "vi": "Sổ công việc",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận việc của phòng",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ mới đang chờ trên bàn. Vào ca nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Mời cà phê · 6 xu",
+  "en": ""
+ },
+ {
+  "vi": "phòng lương",
+  "en": ""
+ },
+ {
+  "vi": "người lao động",
+  "en": ""
+ },
+ {
+  "vi": "kế toán lương",
+  "en": ""
+ },
+ {
+  "vi": "phiếu lương đã làm",
+  "en": ""
+ },
+ {
+  "vi": "bảng chấm công",
+  "en": ""
+ },
+ {
+  "vi": "phản ánh",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận việc lương, thuế",
+  "en": ""
+ },
+ {
+  "vi": "Bảng chấm công mới đang chờ. Vào ca nhé!",
+  "en": ""
+ },
+ {
+  "vi": "ban hợp nhất",
+  "en": ""
+ },
+ {
+  "vi": "ban mình",
+  "en": ""
+ },
+ {
+  "vi": "công ty con và kiểm toán",
+  "en": ""
+ },
+ {
+  "vi": "kế toán tập đoàn",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận việc của ban",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ báo cáo đang chờ. Vào ca nhé!",
+  "en": ""
+ },
+ {
+  "vi": "tổ thu gom",
+  "en": ""
+ },
+ {
+  "vi": "tổ",
+  "en": ""
+ },
+ {
+  "vi": "bà con",
+  "en": ""
+ },
+ {
+  "vi": "cô chú",
+  "en": ""
+ },
+ {
+  "vi": "tổ trưởng",
+  "en": ""
+ },
+ {
+  "vi": "hộ đã thu gom",
+  "en": ""
+ },
+ {
+  "vi": "sổ tuyến",
+  "en": ""
+ },
+ {
+  "vi": "giải trình",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tuyến",
+  "en": ""
+ },
+ {
+  "vi": "Trên tuyến",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận việc trên tuyến",
+  "en": ""
+ },
+ {
+  "vi": "Bà con gửi thêm",
+  "en": ""
+ },
+ {
+  "vi": "Xe đẩy đã sẵn, ngõ sau đang chờ. Vào ca nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn thu bổ sung",
+  "en": ""
+ },
+ {
+  "vi": "Thu thêm một bao · 6 xu",
+  "en": ""
+ },
+ {
+  "vi": "Bớt 20 xu phí rác",
+  "en": ""
+ },
+ {
+  "vi": "Dạ sáng mai tổ ghé sớm thu bổ sung, cô chú cứ để túi trước cửa ạ.",
+  "en": ""
+ },
+ {
+  "vi": "đội thợ chú Hai",
+  "en": ""
+ },
+ {
+  "vi": "thợ",
+  "en": ""
+ },
+ {
+  "vi": "nhà đã thông",
+  "en": ""
+ },
+ {
+  "vi": "sổ hẹn",
+  "en": ""
+ },
+ {
+  "vi": "lời chủ nhà",
+  "en": ""
+ },
+ {
+  "vi": "Sổ hẹn",
+  "en": ""
+ },
+ {
+  "vi": "Trên xe đồ nghề",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận việc thông cống",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nhà bo thêm",
+  "en": ""
+ },
+ {
+  "vi": "Điện thoại sắp reo, có nhà gọi thông cống. Nhận việc nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn quay lại",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hành thêm · 10 xu",
+  "en": ""
+ },
+ {
+  "vi": "Bớt 20 xu tiền công",
+  "en": ""
+ },
+ {
+  "vi": "nhà chị Thảo",
+  "en": ""
+ },
+ {
+  "vi": "cả nhà",
+  "en": ""
+ },
+ {
+  "vi": "người giúp việc",
+  "en": ""
+ },
+ {
+  "vi": "việc nhà đã làm",
+  "en": ""
+ },
+ {
+  "vi": "sổ chợ",
+  "en": ""
+ },
+ {
+  "vi": "lời trong nhà",
+  "en": ""
+ },
+ {
+  "vi": "Trong nhà",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận việc nhà",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thảo thưởng thêm",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thảo sắp dặn việc sáng nay. Vào làm nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi lại ý nhà",
+  "en": ""
+ },
+ {
+  "vi": "Chè tráng miệng · 6 xu",
+  "en": ""
+ },
+ {
+  "vi": "Dạ tối nay chị rảnh, con xin hỏi lại ý cả nhà để mai làm cho đúng ạ.",
+  "en": ""
+ },
+ {
+  "vi": "tổ Nhà Thơm",
+  "en": ""
+ },
+ {
+  "vi": "gia chủ",
+  "en": ""
+ },
+ {
+  "vi": "nhà đã dọn",
+  "en": ""
+ },
+ {
+  "vi": "ảnh em gửi",
+  "en": ""
+ },
+ {
+  "vi": "nhận xét gia chủ",
+  "en": ""
+ },
+ {
+  "vi": "nhắn lại",
+  "en": ""
+ },
+ {
+  "vi": "Sổ tổ",
+  "en": ""
+ },
+ {
+  "vi": "Ở tổ",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận việc dọn nhà",
+  "en": ""
+ },
+ {
+  "vi": "Gia chủ bo thêm",
+  "en": ""
+ },
+ {
+  "vi": "Lịch hẹn dọn nhà sắp tới giờ. Lên đường nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn buổi sau",
+  "en": ""
+ },
+ {
+  "vi": "Làm thêm 15 phút · 6 xu",
+  "en": ""
+ },
+ {
+  "vi": "Dạ tổ Nhà Thơm dọn từ trên xuống, khô trước ướt sau, nên nhà tắm luôn để cuối ạ.",
+  "en": ""
+ },
+ {
+  "vi": "bếp nhà khách quen",
+  "en": ""
+ },
+ {
+  "vi": "gia đình",
+  "en": ""
+ },
+ {
+  "vi": "người nấu",
+  "en": ""
+ },
+ {
+  "vi": "bữa cơm đã nấu",
+  "en": ""
+ },
+ {
+  "vi": "lời nhà",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận việc bếp",
+  "en": ""
+ },
+ {
+  "vi": "Các nhà quen bo thêm",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hạnh nhắn thực đơn hôm nay. Vào bếp nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi lại thực đơn",
+  "en": ""
+ },
+ {
+  "vi": "Món tráng miệng · 6 xu",
+  "en": ""
+ },
+ {
+  "vi": "Dạ mai con ghé sớm, cô chú dặn món gì con nấu đúng món đó ạ.",
+  "en": ""
+ },
+ {
+  "vi": "tổ Mèo Con",
+  "en": ""
+ },
+ {
+  "vi": "ba mẹ bé",
+  "en": ""
+ },
+ {
+  "vi": "cô bảo mẫu",
+  "en": ""
+ },
+ {
+  "vi": "buổi trông bé",
+  "en": ""
+ },
+ {
+  "vi": "nhật ký bé",
+  "en": ""
+ },
+ {
+  "vi": "nhận xét phụ huynh",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trông bé",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận việc trông bé",
+  "en": ""
+ },
+ {
+  "vi": "Ba mẹ bé gửi thêm",
+  "en": ""
+ },
+ {
+  "vi": "Ba mẹ bé sắp tới gửi bé. Vào trông bé nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Kể thêm truyện · 6 xu",
+  "en": ""
+ },
+ {
+  "vi": "Dạ chiều nay anh chị đón bé sớm chút, cô kể kỹ từng việc trong ngày của bé ạ.",
+  "en": ""
+ },
+ {
+  "vi": "thư viện",
+  "en": ""
+ },
+ {
+  "vi": "bạn đọc",
+  "en": ""
+ },
+ {
+  "vi": "thủ thư",
+  "en": ""
+ },
+ {
+  "vi": "lượt bạn đọc",
+  "en": ""
+ },
+ {
+  "vi": "sổ mượn trả",
+  "en": ""
+ },
+ {
+  "vi": "góp ý của bạn đọc",
+  "en": ""
+ },
+ {
   "vi": "Sổ thư viện",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Tổ bay ngủ lại Côn Đảo. 11 giờ đêm có tiếng gõ cửa, giọng con gái cầm chai vang: “Anh phi công ơi, mở cửa nói chuyện chút đi, em buồn quá.”",
-  "en": ""
- },
- {
-  "vi": "“Nói chuyện thôi mà, anh sợ gì. Mở cửa đi.”",
-  "en": ""
- },
- {
-  "vi": "“Em đứng đây tới sáng luôn đó.”",
-  "en": ""
- },
- {
-  "vi": "Có gì mai gặp ở sảnh nhé.",
-  "en": ""
- },
- {
-  "vi": "Tiếng bước chân xa dần. Bạn đặt báo thức 4 giờ và ngủ tiếp.",
-  "en": ""
- },
- {
-  "vi": "Bạn mở cửa “nói chuyện chút”. Sáng ra lễ tân kể lại với chị Vân, và buổi bay sáng đó bạn ngáp suốt.",
-  "en": ""
- },
- {
-  "vi": "Mảnh giấy kẹp trong ly cà phê",
-  "en": ""
- },
- {
-  "vi": "Cô khách ghế 2A",
-  "en": ""
- },
- {
-  "vi": "Chị Thu đưa vào buồng lái một mảnh giấy: “Số em đây nè 😘 Tối 8h quán cà phê cạnh sân bay, không tới là em giận.”",
-  "en": ""
- },
- {
-  "vi": "Cô khách nhắn tiếp qua chị Thu: “Anh chê em à? Em đẹp mà.”",
-  "en": ""
- },
- {
-  "vi": "“Không tới thì em ngồi lì ở cổng nhân viên chờ anh.”",
-  "en": ""
- },
- {
-  "vi": "Nhờ chị Thu cảm ơn cô ấy giúp.",
-  "en": ""
- },
- {
-  "vi": "Mảnh giấy vào thùng rác cùng vỏ bánh. Chị Thu cười: “Đẹp trai cũng khổ ha.”",
-  "en": ""
- },
- {
-  "vi": "Bạn tới quán. Cô ấy dắt theo ba đứa bạn để “ra mắt anh phi công”, và chụp ảnh đăng khắp nơi kèm tên hãng.",
-  "en": ""
- },
- {
-  "vi": "Chị đại lý vé “dễ thương”",
-  "en": ""
- },
- {
-  "vi": "Chị Kiều · đại lý vé máy bay",
-  "en": ""
- },
- {
-  "vi": "Chị Kiều gửi túi quà hàng hiệu, nháy mắt: “Tuần sau khách chị kín chuyến Côn Đảo, em xếp cho họ lên trước nha. Chị không quên em đâu 😉”",
-  "en": ""
- },
- {
-  "vi": "“Quà nhỏ thôi mà cưng, ai mà không nhận. Đừng ngây thơ vậy chứ.”",
-  "en": ""
- },
- {
-  "vi": "“Không giúp thì thôi, chị nói với trưởng phòng là em làm khó chị nhé.”",
-  "en": ""
- },
- {
-  "vi": "Xếp khách là việc của phòng vé, không phải của tổ bay.",
-  "en": ""
- },
- {
-  "vi": "Chị gửi trả quà giúp em.",
-  "en": ""
- },
- {
-  "vi": "Túi quà được gửi trả kèm một câu cảm ơn lịch sự. Chị Kiều đi tìm “mối” khác.",
-  "en": ""
- },
- {
-  "vi": "Bạn nhận quà và nhắn phòng vé. Hai tuần sau hãng kiểm toán đại lý, tên bạn nằm trong danh sách “có quà”.",
-  "en": ""
- },
- {
-  "vi": "Khách say quấy rối chị Thu",
-  "en": ""
- },
- {
-  "vi": "Anh khách say ghế 5C",
-  "en": ""
- },
- {
-  "vi": "Chị Thu gọi vào buồng lái, giọng run: khách ghế 5C say, cứ níu tay chị, buông lời khiếm nhã, “tiếp viên mà làm giá”.",
-  "en": ""
- },
- {
-  "vi": "Chị Thu gọi lại: “Hắn vẫn chưa thôi, còn quay sang trêu bạn đồng nghiệp chị.”",
-  "en": ""
- },
- {
-  "vi": "“Hắn đứng dậy chặn lối đi rồi em ơi.”",
-  "en": ""
- },
- {
-  "vi": "Qua loa: “Khách 5C ngồi yên ngay.”",
-  "en": ""
- },
- {
-  "vi": "Bảo chị Thu đổi chỗ, tách hắn ra.",
-  "en": ""
- },
- {
-  "vi": "Báo trước: xuống tàu có công an sân bay chờ.",
-  "en": ""
- },
- {
-  "vi": "Tôi đang lái, chị tự lo nhé.",
-  "en": ""
- },
- {
-  "vi": "Khách say mà, chị cười cho qua.",
-  "en": ""
- },
- {
-  "vi": "Hạ cánh rồi tính.",
-  "en": ""
- },
- {
-  "vi": "Chị chiều hắn chút cho yên.",
-  "en": ""
- },
- {
-  "vi": "Nghe qua loa là buồng lái đã biết, 5C ngồi im thin thít. Chị Thu thở phào.",
-  "en": ""
- },
- {
-  "vi": "Bạn báo mặt đất. Hạ cánh, công an sân bay lên tàu mời 5C xuống lập biên bản; hãng cấm bay hắn 6 tháng. Chị Thu siết tay bạn: “Cảm ơn em.”",
-  "en": ""
- },
- {
-  "vi": "5C quậy tới lúc hạ cánh rồi đi thẳng, không biên bản nào. Chị Thu im lặng suốt chặng về. Lần sau: báo luôn.",
-  "en": ""
- },
- {
-  "vi": "Không ai được “chiều” kẻ quấy rối. Chị Thu tự xoay xở cả chặng, mắt đỏ hoe.",
-  "en": ""
- },
- {
-  "vi": "“Checklist đọc lướt thôi”",
-  "en": ""
- },
- {
-  "vi": "Cơ trưởng Tài · bay thay chị Vân hôm nay",
-  "en": ""
- },
- {
-  "vi": "“Tàu này anh bay mười năm, nhắm mắt cũng lái được. Checklist đọc lướt thôi em, đọc từng dòng như học sinh ấy.”",
-  "en": ""
- },
- {
-  "vi": "“Em mới bay mấy năm mà dạy anh à? Ok, đọc lướt nha.”",
-  "en": ""
- },
- {
-  "vi": "“Chậm vl. Khách chửi là em chịu nhé.”",
-  "en": ""
- },
- {
-  "vi": "Anh Tài cằn nhằn nhưng vẫn đọc từng dòng. Tới dòng đèn chống va thì anh khựng lại: quên thật.",
-  "en": ""
- },
- {
-  "vi": "Hai người đọc lướt. Lăn ra đầu đường băng mới thấy quên bật đèn chống va, đài nhắc ngay trên tần số chung, cả sân bay nghe.",
-  "en": ""
- },
- {
-  "vi": "Bớt dầu cho “tối ưu chi phí”",
-  "en": ""
- },
- {
-  "vi": "Anh Quang · trưởng phòng khai thác",
-  "en": ""
- },
- {
-  "vi": "“Tháng này hãng lỗ tiền dầu. Từ nay bớt 100 kg dự phòng mỗi chặng. Trời đẹp mà, mang nặng làm gì.”",
-  "en": ""
- },
- {
-  "vi": "“Anh nói rồi đấy. Người khác làm được sao em không làm được?”",
-  "en": ""
- },
- {
-  "vi": "“Ai cũng cãi như em thì hãng đóng cửa, cả đám thất nghiệp.”",
-  "en": ""
- },
- {
-  "vi": "Dầu dự phòng là luật hàng không, không ai được bớt.",
-  "en": ""
- },
- {
-  "vi": "Tiết kiệm bằng cách bay đúng độ cao, đúng tốc độ.",
-  "en": ""
- },
- {
-  "vi": "Anh Quang gãi đầu: “Ừ thì… làm đúng luật.” Bản kế hoạch dầu về như cũ.",
-  "en": ""
- },
- {
-  "vi": "Bạn bớt dầu dự phòng. Hôm đó giông ở đảo, phải bay chờ, hạ cánh với cái đồng hồ dầu đỏ chót. Phòng an toàn mời lên họp.",
-  "en": ""
- },
- {
-  "vi": "“Ký lùi sổ kỹ thuật giùm anh”",
-  "en": ""
- },
- {
-  "vi": "Anh Bảo · giám sát kỹ thuật ca đêm",
-  "en": ""
- },
- {
-  "vi": "“Cái đèn cảnh báo chập chờn ấy mà, sửa sau. Em ký nhận tàu đi, anh ghi lỗi vào sổ tối nay, ngày giờ lùi lại chút là được.”",
-  "en": ""
- },
- {
-  "vi": "“Ký một chữ thôi mà khó thế. Chú Mẫn còn ký cho anh bao lần.”",
-  "en": ""
- },
- {
-  "vi": "“Tàu đứng đất một giờ mất bao nhiêu tiền em biết không?”",
-  "en": ""
- },
- {
-  "vi": "Gọi chú Mẫn kiểm tra, ghi sổ đúng giờ.",
-  "en": ""
- },
- {
-  "vi": "Anh Bảo gọi chú Mẫn. Hai mươi phút sau đèn được thay, sổ ghi đúng giờ, tàu cất cánh sạch sẽ.",
-  "en": ""
- },
- {
-  "vi": "Bạn ký. Chiều đó đèn cảnh báo tắt hẳn giữa chặng, tổ bay phải quay về. Sổ kỹ thuật có chữ ký của bạn ở dòng sai giờ.",
-  "en": ""
- },
- {
-  "vi": "Hơi men của cơ trưởng",
-  "en": ""
- },
- {
-  "vi": "Anh Tài lên buồng lái, người thoang thoảng mùi bia: “Tối qua nhậu sinh nhật thằng bạn, giờ tỉnh rồi. Em đừng nói ai nha, anh em với nhau.”",
-  "en": ""
- },
- {
-  "vi": "“Anh tỉnh mà! Em muốn anh mất việc à?”",
-  "en": ""
- },
- {
-  "vi": "“Báo lên là cả tổ ở nhà, khách về đâu? Nghĩ cho khách đi.”",
-  "en": ""
- },
- {
-  "vi": "Anh nghỉ đi, gọi cơ trưởng dự bị.",
-  "en": ""
- },
- {
-  "vi": "Anh Tài im một lúc rồi tự gọi điều phái xin nghỉ. Cơ trưởng dự bị lên thay, chuyến trễ 40 phút.",
-  "en": ""
- },
- {
-  "vi": "Bạn báo điều phái. Anh Tài được đưa đi thổi nồng độ cồn, tổ dự bị lên thay. Không ai trách người báo: đó là luật để giữ mạng người.",
-  "en": ""
- },
- {
-  "vi": "Bạn im lặng và bay cùng anh Tài. Lúc hạ cánh anh chạm bánh mạnh như đập. Trạm kiểm tra ngẫu nhiên ở sân bay đến đang chờ sẵn…",
-  "en": ""
- },
- {
-  "vi": "Sửa giờ bay trong sổ",
-  "en": ""
- },
- {
-  "vi": "Chị Nga · phòng lập lịch bay",
-  "en": ""
- },
- {
-  "vi": "“Tuần này em bay vượt giờ quy định hai tiếng. Em sửa giờ trong sổ bớt đi, không thì chị phải xếp người khác, rối lắm.”",
-  "en": ""
- },
- {
-  "vi": "“Ai cũng sửa, có mình em trong sạch à?”",
-  "en": ""
- },
- {
-  "vi": "“Sửa hay không tùy em, nhưng lịch tháng sau chị xếp sao thì đừng kêu.”",
-  "en": ""
- },
- {
-  "vi": "Chị xếp người bay thay chặng cuối tuần giúp em.",
-  "en": ""
- },
- {
-  "vi": "Chị Nga thở dài, xếp người bay thay. Sổ của bạn vẫn đúng từng phút.",
-  "en": ""
- },
- {
-  "vi": "Bạn sửa sổ. Ba tuần sau cục hàng không thanh tra, giờ bay lệch với dữ liệu hộp đen. Cả hai cùng lên giải trình.",
-  "en": ""
- },
- {
-  "vi": "Sếp to bắt giữ máy bay",
-  "en": ""
- },
- {
-  "vi": "Ông Long · tổng giám đốc bất động sản",
-  "en": ""
- },
- {
-  "vi": "Điều phái chuyển máy: “Giữ máy bay 25 phút cho tao. Tao là ai mày biết không? Tao mua cả cái hãng này cũng được.”",
-  "en": ""
- },
- {
-  "vi": "“Mày làm phi công được mấy năm? Để tao gọi thẳng chủ tịch.”",
-  "en": ""
- },
- {
-  "vi": "“Cả tàu chờ tao chút thì chết ai? Giữ máy bay!”",
-  "en": ""
- },
- {
-  "vi": "Đổi sang chuyến sau, chỗ đẹp nhất.",
-  "en": ""
- },
- {
-  "vi": "Giờ cất cánh đã xin với đài, không giữ riêng ai.",
-  "en": ""
- },
- {
-  "vi": "Ông Long chửi một tràng rồi lên chuyến sau. Sáu mươi tám khách còn lại cất cánh đúng giờ.",
-  "en": ""
- },
- {
-  "vi": "Tàu chờ 25 phút. Ông Long lên muộn, không một câu xin lỗi; sáu mươi tám người còn lại nhìn cổng lên tàu bằng ánh mắt hình viên đạn.",
-  "en": ""
- },
- {
-  "vi": "“Cho vào buồng lái chụp tấm hình”",
-  "en": ""
- },
- {
-  "vi": "Anh khách hơi say · hàng ghế 8",
-  "en": ""
- },
- {
-  "vi": "Lúc lên tàu, anh khách mùi bia gõ cửa buồng lái: “Cho anh vào chụp với cơ trưởng tấm hình, anh bo 500 cành luôn.”",
-  "en": ""
- },
- {
-  "vi": "“Chụp tấm thôi mà làm như bí mật quốc gia. Keo vl.”",
-  "en": ""
- },
- {
-  "vi": "“Không cho thì anh đứng đây luôn, không ai đóng cửa được.”",
-  "en": ""
- },
- {
-  "vi": "Hạ cánh rồi chụp ở chân cầu thang nhé.",
-  "en": ""
- },
- {
-  "vi": "Anh khách lầm bầm về chỗ. Hạ cánh xong anh chụp với tàu ở chân cầu thang, cười tít mắt.",
-  "en": ""
- },
- {
-  "vi": "Anh khách vào buồng lái, suýt vịn trúng cần ga. Chị Vân quay lại, mặt lạnh tanh: “Ai cho vào?”",
-  "en": ""
- },
- {
-  "vi": "Cầu hôn qua loa lúc hạ độ cao",
-  "en": ""
- },
- {
-  "vi": "Anh Tuấn · khách ghế 11C",
-  "en": ""
- },
- {
-  "vi": "“Anh phi công ơi, lúc máy bay hạ cánh anh đọc qua loa giúp em: ‘Linh ơi, lấy anh nhé!’ Em chuẩn bị nhẫn rồi 🥹”",
-  "en": ""
- },
- {
-  "vi": "“Đọc có một câu thôi mà, lãng mạn thế cơ mà!”",
-  "en": ""
- },
- {
-  "vi": "“Anh không đọc là em mất vợ đó, anh chịu trách nhiệm nha.”",
-  "en": ""
- },
- {
-  "vi": "Lúc hạ độ cao buồng lái chỉ lo bay.",
-  "en": ""
- },
- {
-  "vi": "Đỗ ở bến rồi tổ bay đọc cho cả khoang cùng vỗ tay.",
-  "en": ""
- },
- {
-  "vi": "Tàu đỗ xong, chị Thu đọc lời cầu hôn qua loa. Cả khoang vỗ tay, cô Linh khóc nhòe mascara.",
-  "en": ""
- },
- {
-  "vi": "Bạn đọc lời cầu hôn đúng lúc đang tiếp cận. Đài gọi mà buồng lái trả lời chậm hai nhịp. Chị Vân không vỗ tay.",
-  "en": ""
- },
- {
-  "vi": "Ba trái sầu riêng xách tay",
-  "en": ""
- },
- {
-  "vi": "Chú Sáu · khách về quê",
-  "en": ""
- },
- {
-  "vi": "“Ba trái sầu riêng Ri6 chín cây, chú gói kỹ rồi. Cho chú xách lên khoang nha con, hôi vl nhưng mà ngon.”",
-  "en": ""
- },
- {
-  "vi": "“Gói ba lớp nilon rồi mà, mùi đâu mà mùi!”",
-  "en": ""
- },
- {
-  "vi": "“Mấy đứa trẻ bây giờ khó tính quá. Hồi xưa đi xe đò mang cả con gà.”",
-  "en": ""
- },
- {
-  "vi": "Gửi khoang hàng, đóng thùng kín giúp chú.",
-  "en": ""
- },
- {
-  "vi": "Chú Sáu gửi sầu riêng xuống khoang hàng, thùng đóng kín. Tới nơi còn chia cho tổ bay một múi.",
-  "en": ""
- },
- {
-  "vi": "Sầu riêng lên khoang. Mười phút sau cả tàu nồng nặc, hai khách xin túi nôn, một khách đòi xuống.",
-  "en": ""
- },
- {
-  "vi": "Đổi ca lần thứ ba",
-  "en": ""
- },
- {
-  "vi": "Minh · cơ phó cùng khóa",
-  "en": ""
- },
- {
-  "vi": "“Ông ơi, đổi ca sáng mai cho tôi nha, tôi đi đám cưới. Lần này thật, lần trước là đám giỗ, lần trước nữa là đám hỏi.”",
-  "en": ""
- },
- {
-  "vi": "“Anh em mà tính toán thế. Bạn bè kiểu gì vậy.”",
-  "en": ""
- },
- {
-  "vi": "“Thôi, ông không đổi thì tôi xin ốm vậy, để điều phái tìm người.”",
-  "en": ""
- },
- {
-  "vi": "Đổi được, nhưng qua điều phái, tuần sau ông trả ca.",
-  "en": ""
- },
- {
-  "vi": "Đổi ca phải qua điều phái mới đúng.",
-  "en": ""
- },
- {
-  "vi": "Minh làm đơn đổi ca qua điều phái, hứa tuần sau trả. Lần này ghi giấy trắng mực đen.",
-  "en": ""
- },
- {
-  "vi": "Bạn đổi ca, không giấy tờ. Sáng hôm sau cả hai cùng có tên trong lịch, điều phái gọi điện chửi từ 4 giờ sáng.",
-  "en": ""
- },
- {
-  "vi": "Thùng hàng “của sếp” trong buồng lái",
-  "en": ""
- },
- {
-  "vi": "“Có thùng hàng nhỏ của sếp tổng gửi ra đảo. Em để dưới ghế buồng lái giùm anh, khỏi soi chiếu, khỏi khai báo, nhanh.”",
-  "en": ""
- },
- {
-  "vi": "“Sếp tổng đấy em. Em biết mình đang nói không với ai không?”",
-  "en": ""
- },
- {
-  "vi": "“Có gì anh chịu. Để ở đó thôi, đâu cần mở.”",
-  "en": ""
- },
- {
-  "vi": "Hàng lên tàu phải soi chiếu, có trong bảng kê.",
-  "en": ""
- },
- {
-  "vi": "Gửi hàng qua quầy hàng hóa, em ký nhận nhanh.",
-  "en": ""
- },
- {
-  "vi": "Thùng hàng đi qua máy soi như mọi thùng khác. Bên trong là… mười hộp bánh pía. Anh Quang đỏ mặt.",
-  "en": ""
- },
- {
-  "vi": "Bạn để thùng dưới ghế. Ra đảo, an ninh sân bay kiểm tra ngẫu nhiên buồng lái. “Hàng không khai báo” đứng tên bạn.",
-  "en": ""
- },
- {
-  "vi": "“Bay tắt cho kịp họp đi”",
-  "en": ""
- },
- {
-  "vi": "Anh Kiệt · khách đi công tác",
-  "en": ""
- },
- {
-  "vi": "“Chín giờ tôi họp với đối tác. Các anh bay tắt qua mây, cắt góc chút cho nhanh. Tôi là khách, tôi trả tiền.”",
-  "en": ""
- },
- {
-  "vi": "“Có mười phút thôi mà cũng không làm được? Hãng gì mà cùi bắp.”",
-  "en": ""
- },
- {
-  "vi": "“Tôi sẽ viết review một sao, kể từng phút một.”",
-  "en": ""
- },
- {
-  "vi": "Đường bay do đài chỉ huy, không ai bay tắt.",
-  "en": ""
- },
- {
-  "vi": "Tôi báo mặt đất đặt xe đón anh sẵn ở chân cầu thang.",
-  "en": ""
- },
- {
-  "vi": "Anh Kiệt hừ một tiếng rồi đeo tai nghe. Tới nơi, xe đón đã đứng chờ; anh gật đầu cụt lủn thay lời cảm ơn.",
-  "en": ""
- },
- {
-  "vi": "Bạn xin đài bay tắt, bị từ chối, rồi cố xin thêm lần nữa. Chị Vân tắt micro, nhìn bạn: “Mình lái máy bay, không lái taxi.”",
-  "en": ""
- },
- {
-  "vi": "Không bay nhanh hơn được, nhưng có xe đón sẵn. Tạm chấp nhận.",
-  "en": ""
- },
- {
-  "vi": "Hãng bay gì mà khách nói không ai nghe. Một sao.",
-  "en": ""
- },
- {
-  "vi": "Phóng viên đòi “nói đại một câu”",
-  "en": ""
- },
- {
-  "vi": "Anh Phong · phóng viên báo mạng",
   "en": ""
  }
 ]

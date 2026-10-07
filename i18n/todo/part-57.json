@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Cuộc gọi được ghi âm; xúc phạm trực ban là vi phạm.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi đang trực cho người cần cứu.",
+  "en": ""
+ },
+ {
+  "vi": "Hắn lầm bầm rồi cúp. Bạn ghi số vào sổ, chị Thảo gật đầu: “Đúng bài.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn bấm nút đánh dấu cuộc gọi, báo chị Thảo. Bản ghi âm được chuyển công an phường; số đó bị nhắc nhở.",
+  "en": ""
+ },
+ {
+  "vi": "Hắn gọi đi gọi lại tới khuya. Không ai ghi lại. Không phải lỗi của bạn: đánh dấu và báo là quyền của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn xin lỗi rối rít như thể lỗi của mình. Hắn được đà gọi thêm năm lần.",
+  "en": ""
+ },
+ {
+  "vi": "Số máy chửi rủa quay lại",
+  "en": ""
+ },
+ {
+  "vi": "Số máy hôm trước gọi lại: “Nhớ tao không? Hôm nay tao gọi suốt đêm cho mày khỏi làm việc.”",
+  "en": ""
+ },
+ {
+  "vi": "“Chặn tao đi, chặn được không?”",
+  "en": ""
+ },
+ {
+  "vi": "Hắn bật nhạc thật to vào máy.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi ghi nhận và chuyển công an phường.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi quấy phá đường dây khẩn là vi phạm.",
+  "en": ""
+ },
+ {
+  "vi": "Hắn cúp máy. Bạn ghi giờ, ghi số vào sổ quấy phá.",
+  "en": ""
+ },
+ {
+  "vi": "Lần này có đủ hai bản ghi. Công an phường mời hắn lên làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "Hắn gọi tới sáng. Lần sau đánh dấu và báo ngay từ cuộc đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn năn nỉ hắn thôi gọi. Hắn cười, gọi thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc gọi thở dồn và nói bậy",
+  "en": ""
+ },
+ {
+  "vi": "Một số máy lạ",
+  "en": ""
+ },
+ {
+  "vi": "Một giọng đàn ông thở dồn, nói những câu khiếm nhã về giọng của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "“Nói chuyện với anh chút đi mà.”",
+  "en": ""
+ },
+ {
+  "vi": "Hắn gọi lại, lặp lại mấy câu đó.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi kết thúc cuộc gọi.",
+  "en": ""
+ },
+ {
+  "vi": "Cuộc gọi được ghi âm và chuyển cơ quan chức năng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn kết thúc cuộc gọi, đánh dấu số máy. Chị Thảo pha cho bạn ly trà.",
+  "en": ""
+ },
+ {
+  "vi": "Bản ghi âm chuyển công an. Hai hôm sau họ tìm ra chủ số máy.",
+  "en": ""
+ },
+ {
+  "vi": "Hắn còn gọi thêm vài lần. Không phải lỗi của bạn: lần sau đánh dấu và báo ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn im lặng nghe cho hết chuyện. Không ai được bắt bạn chịu đựng điều đó; lần sau cứ báo.",
+  "en": ""
+ },
+ {
+  "vi": "Đồng nghiệp đùa quá trớn",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phát · trực ban ca bên",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phát vừa nghe máy vừa bình luận to về ngoại hình của bạn trước cả phòng: “Giọng thì hay mà mặt thì…”",
+  "en": ""
+ },
+ {
+  "vi": "“Đùa thôi mà, nhạy cảm vl.”",
+  "en": ""
+ },
+ {
+  "vi": "“Cả phòng cười kìa, em cười đi.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh dừng lại. Em không thấy vui.",
+  "en": ""
+ },
+ {
+  "vi": "Bình luận ngoại hình đồng nghiệp là quấy rối nơi làm việc.",
+  "en": ""
+ },
+ {
+  "vi": "Em đang nghe máy.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phát ngượng ngùng im. Cả phòng thôi cười.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn báo chị Thảo. Anh Phát bị nhắc nhở bằng văn bản, ca sau xin lỗi bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phát vẫn đùa vài hôm nữa. Báo là quyền của bạn, lúc nào cũng được.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cười trừ cho qua. Anh Phát tưởng bạn thích, lần sau đùa nặng hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phát lại đùa",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phát dán tờ giấy “hotline giọng ngọt” lên lưng ghế bạn rồi chụp hình gửi nhóm chat.",
+  "en": ""
+ },
+ {
+  "vi": "“Đùa tí cho cả phòng vui.”",
+  "en": ""
+ },
+ {
+  "vi": "“Ai biểu hôm trước em cười.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh gỡ xuống và xóa ảnh ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Đây là quấy rối, em sẽ báo.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phát gỡ giấy, xóa ảnh trong nhóm.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thảo chuyển hồ sơ lên phòng tổ chức. Anh Phát bị đổi ca và bị kỷ luật.",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh vẫn nằm trong nhóm chat. Không phải lỗi của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn làm lơ. Ảnh được gửi sang cả nhóm của trung tâm bên.",
+  "en": ""
+ },
+ {
+  "vi": "Người gọi dọa tới tận nơi",
+  "en": ""
+ },
+ {
+  "vi": "Anh Lực · người báo cháy hôm qua",
+  "en": ""
+ },
+ {
+  "vi": "“Xe tới chậm hai phút, nhà tôi cháy cái mái hiên. Tôi biết trung tâm ở đâu, tôi tới tìm cô!”",
+  "en": ""
+ },
+ {
+  "vi": "“Cô tên gì? Nói tên ra!”",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi tới liền đó, chờ đó!”",
+  "en": ""
+ },
+ {
+  "vi": "Anh bình tĩnh. Khiếu nại xin gửi qua phòng tiếp dân.",
+  "en": ""
+ },
+ {
+  "vi": "Đe dọa trực ban là vi phạm, cuộc gọi được ghi âm.",
+  "en": ""
+ },
+ {
+  "vi": "Em ghi nhận để kiểm tra lại thời gian xe.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Lực thở dài: “Thôi, tôi viết đơn.” Bạn ghi lại để phòng tiếp dân kiểm tra.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn báo chị Thảo và bảo vệ. Phòng tiếp dân gọi lại cho anh Lực, giải thích thời gian xe chạy.",
+  "en": ""
+ },
+ {
+  "vi": "Anh ta cúp máy giữa chừng. Bảo vệ được dặn để ý cổng, không ai ghi lại.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đọc tên mình cho anh ta. Chiều đó anh ta đứng ở cổng hỏi tìm “cô tổng đài”.",
+  "en": ""
+ },
+ {
+  "vi": "“Cuộc này giả, cúp luôn khỏi hỏi”",
+  "en": ""
+ },
+ {
+  "vi": "“Nghe giọng con nít là biết đùa rồi, cúp luôn khỏi hỏi. Tốn KPI.”",
+  "en": ""
+ },
+ {
+  "vi": "“Anh làm năm năm, nghe là biết.”",
+  "en": ""
+ },
+ {
+  "vi": "Chưa nghe, chưa gọi lại thì chưa biết thật hay đùa.",
+  "en": ""
+ },
+ {
+  "vi": "Không cúp cuộc gọi khẩn khi chưa kiểm tra.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phát nhún vai, gọi lại số đó. Hóa ra bé con gọi vì bà nội té thật.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cúp luôn. Mười phút sau số đó gọi lại, giọng người lớn hốt hoảng.",
+  "en": ""
+ },
+ {
+  "vi": "“Địa chỉ đại khái là được”",
+  "en": ""
+ },
+ {
+  "vi": "“Gần chợ Mây là đủ rồi, đội tới đó hỏi người ta. Hỏi kỹ làm chi cho chậm.”",
+  "en": ""
+ },
+ {
+  "vi": "“Đội rành phường mà.”",
+  "en": ""
+ },
+ {
+  "vi": "“Hỏi kỹ thì KPI tụt đó.”",
+  "en": ""
+ },
+ {
+  "vi": "Chợ Mây có bốn cổng, xe vòng sai một cổng là mất năm phút.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi thêm một mốc nữa, mười giây thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phát hỏi thêm một câu: “cổng nào?”. Xe tới thẳng cổng sau.",
+  "en": ""
+ },
+ {
+  "vi": "Xe tới cổng chính, người bị nạn ở cổng sau. Mất năm phút vòng.",
+  "en": ""
+ },
+ {
+  "vi": "Tắt ghi âm cho “riêng tư”",
+  "en": ""
+ },
+ {
+  "vi": "“Tắt ghi âm đi, mình nói chuyện riêng với người gọi cho thoải mái, ghi âm chi mệt.”",
+  "en": ""
+ },
+ {
+  "vi": "“Có ai nghe lại đâu.”",
+  "en": ""
+ },
+ {
+  "vi": "“Anh tắt hoài có sao đâu.”",
+  "en": ""
+ },
+ {
+  "vi": "Ghi âm là để bảo vệ cả người gọi lẫn mình.",
+  "en": ""
+ },
+ {
+  "vi": "Đường dây khẩn phải ghi âm mọi cuộc gọi.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phát bật lại ghi âm. Tuần sau chính bản ghi giúp anh khỏi bị khiếu nại oan.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tắt ghi âm. Hôm đó có khiếu nại, không có gì để đối chiếu.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi giờ xe tới sớm hơn",
+  "en": ""
+ },
+ {
+  "vi": "“Ca xe tới mười hai phút đó, em ghi tám phút đi. Biểu đồ quý này phải đẹp.”",
+  "en": ""
+ },
+ {
+  "vi": "“Ai mà kiểm tra từng phút.”",
+  "en": ""
+ },
+ {
+  "vi": "“Anh chịu trách nhiệm, em cứ ghi.”",
+  "en": ""
+ },
+ {
+  "vi": "Giờ thật mới biết chỗ nào cần thêm xe.",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký phải ghi đúng giờ thật.",
+  "en": ""
+ },
+ {
+  "vi": "Em ghi giờ thật, kèm lý do: kẹt xe ở cầu.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khải thở dài: “Ờ, ghi kèm lý do đi.” Quý sau trung tâm xin được thêm một xe đặt gần cầu.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ghi tám phút. Một khiếu nại đối chiếu camera, nhật ký bị phát hiện sai.",
+  "en": ""
+ },
+ {
+  "vi": "“Đừng báo anh gửi nhầm đội”",
+  "en": ""
+ },
+ {
+  "vi": "“Anh lỡ gửi xe cứu thương thay vì xe cứu hỏa ca hồi sáng, may không sao. Em đừng ghi vô sổ nha.”",
+  "en": ""
+ },
+ {
+  "vi": "“Ghi vô anh bị kỷ luật đó.”",
+  "en": ""
+ },
+ {
+  "vi": "Mình ghi lại để cả phòng rút kinh nghiệm, không phải để phạt.",
+  "en": ""
+ },
+ {
+  "vi": "Anh tự viết báo cáo, trung tâm không phạt người tự báo.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phát tự viết báo cáo. Chị Thảo dán thêm bảng màu đội lên màn hình cho cả phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn gửi báo cáo sự cố không nêu tên để phạt. Trung tâm sửa lại màn hình chọn đội cho khó bấm nhầm.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn im lặng. Tuần sau anh Phát lại bấm nhầm đúng nút đó.",
+  "en": ""
+ },
+ {
+  "vi": "“Gửi một xe thôi cho đỡ tốn xăng”",
+  "en": ""
+ },
+ {
+  "vi": "“Tai nạn xe máy thì gửi công an thôi, xe cấp cứu tốn xăng. Người ta tự chở đi viện được mà.”",
+  "en": ""
+ },
+ {
+  "vi": "“Tháng này vượt định mức xăng rồi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Em làm theo anh đi.”",
+  "en": ""
+ },
+ {
+  "vi": "Có người nằm bất động thì phải có xe cấp cứu.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi đội theo tình trạng người bị nạn.",
+  "en": ""
+ },
+ {
+  "vi": "Em gửi đúng đội, cuối tháng em làm báo cáo xăng kèm lý do.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khải gãi đầu: “Ờ… gửi đi.” Bác sĩ Vy tới kịp, người bị nạn được cố định cổ.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn chỉ gửi công an. Người đi đường tự chở người bị nạn bằng xe máy.",
+  "en": ""
+ },
+ {
+  "vi": "“Chợp mắt đi, anh nghe giùm hai line”",
+  "en": ""
+ },
+ {
+  "vi": "“Ca tối vắng mà, em chợp mắt đi, anh ôm luôn hai đường dây. Anh cũng tính ngủ chút đó.”",
+  "en": ""
+ },
+ {
+  "vi": "“Có chuyện gì anh gọi em dậy.”",
+  "en": ""
+ },
+ {
+  "vi": "“Ai cũng làm vậy.”",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi đường dây phải có một người tỉnh.",
+  "en": ""
+ },
+ {
+  "vi": "Mình nghỉ thay phiên, mỗi người mười lăm phút.",
+  "en": ""
+ },
+ {
+  "vi": "Hai người chia nhau nghỉ ngắn thay phiên. Đường dây lúc nào cũng có người tỉnh.",
+  "en": ""
+ },
+ {
+  "vi": "Hai người cùng ngủ gật. Một cuộc gọi đổ chuông bảy lần mới có người nhấc.",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi là ai, cô biết không?”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thịnh · “người quan trọng”",
+  "en": ""
+ },
+ {
+  "vi": "“Gửi xe cứu thương ra cổng biệt thự tôi đứng chờ sẵn. Không sao cả, tôi chỉ muốn xe chạy thử xem bao lâu tới!”",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi đóng thuế nhiều nhất phường đó!”",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi gọi chủ tịch phường ngay bây giờ!”",
+  "en": ""
+ },
+ {
+  "vi": "Xe cấp cứu chỉ đi khi có người cần cấp cứu.",
+  "en": ""
+ },
+ {
+  "vi": "Muốn biết thời gian xe chạy, ông xem báo cáo công khai của trung tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Ông đang lo điều gì ạ?",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thịnh hừ một tiếng rồi cúp. Xe cấp cứu vẫn ở trạm cho người cần.",
+  "en": ""
+ },
+ {
+  "vi": "Xe chạy thử ra biệt thự. Đúng lúc đó có ca ngất ở trường, phải chờ xe phường bên.",
+  "en": ""
+ },
+ {
+  "vi": "DJ Long xin tên người bị nạn",
+  "en": ""
+ },
+ {
+  "vi": "“Cho Long xin tên ông cụ bị té hôm qua với, thính giả muốn gửi lời chúc. Một cái tên thôi, có sao đâu.”",
+  "en": ""
+ },
+ {
+  "vi": "“Thính giả hỏi dồn dập nè.”",
+  "en": ""
+ },
+ {
+  "vi": "“Long hứa không nói địa chỉ.”",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin người gọi, người bị nạn là bí mật.",
+  "en": ""
+ },
+ {
+  "vi": "Long đọc lời chúc chung cho mọi người đang nằm viện nhé.",
+  "en": ""
+ },
+ {
+  "vi": "DJ Long đọc lời chúc chung. Lên sóng vẫn ấm áp mà không lộ ai.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn nói tên. Nhà ông cụ bị hàng xóm gọi hỏi suốt buổi.",
+  "en": ""
+ },
+ {
+  "vi": "Không xin được tên nhưng lời chúc chung nghe cũng ấm.",
+  "en": ""
+ },
+ {
+  "vi": "Có tên lên sóng mà nhà người ta bị phiền, hơi toang.",
+  "en": ""
+ },
+ {
+  "vi": "“Cho xe chạy ngang nhà tôi”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Ngọc · người gọi hỏi thăm",
+  "en": ""
+ },
+ {
+  "vi": "“Xe cấp cứu đi ngang đường tôi thì ghé đón con tôi đi học thêm luôn nha, tiện đường mà.”",
+  "en": ""
+ },
+ {
+  "vi": "“Xe trống mà, chở thêm đứa nhỏ có sao.”",
+  "en": ""
+ },
+ {
   "vi": "“Tổng đài gì cứng nhắc vậy.”",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "🙋 Bạn",
-  "en": ""
- },
- {
-  "vi": "Dạ anh Quân đang họp ạ. Mình để lại lời nhắn giúp em nhé?",
-  "en": ""
- },
- {
-  "vi": "Người gọi (họ tên)",
-  "en": ""
- },
- {
-  "vi": "Ghi đủ họ tên để sếp biết ai.",
-  "en": ""
- },
- {
-  "vi": "Gọi từ đâu",
-  "en": ""
- },
- {
-  "vi": "Công ty",
-  "en": ""
- },
- {
-  "vi": "Ghi đúng tên đơn vị.",
-  "en": ""
- },
- {
-  "vi": "Số gọi lại",
-  "en": ""
- },
- {
-  "vi": "Người gọi đã sửa lại số — lấy số sau cùng.",
-  "en": ""
- },
- {
-  "vi": "Gọi lại lúc (24 giờ, vd 14:30)",
-  "en": ""
- },
- {
-  "vi": "Việc gì",
-  "en": ""
- },
- {
-  "vi": "Chọn đúng việc để sếp biết gọi lại chuẩn bị gì.",
-  "en": ""
- },
- {
-  "vi": "📞 Khách (gọi lại)",
-  "en": ""
- },
- {
-  "vi": "Điện thoại bàn reo. Anh Quân đang họp, chị Khuê nhắc: “Ghi lời nhắn cho đủ, sai một số là sếp gọi nhầm người đấy.”",
-  "en": ""
- },
- {
-  "vi": "Đọc cuộc gọi, ghi lời nhắn cho sếp: ai gọi, từ đâu, số gọi lại, giờ gọi lại, việc gì.",
-  "en": ""
- },
- {
-  "vi": "Mẫu lời nhắn",
-  "en": ""
- },
- {
-  "vi": "Ghi đúng họ tên, số sau cùng người gọi đọc.",
-  "en": ""
- },
- {
-  "vi": "Giờ ghi theo 24 giờ: 2 giờ rưỡi chiều = 14:30.",
-  "en": ""
- },
- {
-  "vi": "Nguyễn Văn Lực",
-  "en": ""
- },
- {
-  "vi": "mét vải canvas",
-  "en": ""
- },
- {
-  "vi": "Trần Thị Thu",
-  "en": ""
- },
- {
-  "vi": "bộ khóa kéo",
-  "en": ""
- },
- {
-  "vi": "Phạm Quốc Hưng",
-  "en": ""
- },
- {
-  "vi": "Trưởng phòng kinh doanh",
-  "en": ""
- },
- {
-  "vi": "Công ty Bao bì Hưng Thịnh",
-  "en": ""
- },
- {
-  "vi": "thùng carton",
-  "en": ""
- },
- {
-  "vi": "8 giờ 30",
-  "en": ""
- },
- {
-  "vi": "9 giờ 00",
-  "en": ""
- },
- {
-  "vi": "10 giờ 00",
-  "en": ""
- },
- {
-  "vi": "14 giờ 00",
-  "en": ""
- },
- {
-  "vi": "15 giờ 30",
-  "en": ""
- },
- {
-  "vi": "Kính gửi:",
-  "en": ""
- },
- {
-  "vi": "Đúng danh xưng và tên có dấu như danh thiếp.",
-  "en": ""
- },
- {
-  "vi": "Phó giám đốc",
-  "en": ""
- },
- {
-  "vi": "Chủ tịch",
-  "en": ""
- },
- {
-  "vi": "Đúng chức danh người nhận.",
-  "en": ""
- },
- {
-  "vi": "trân trọng kính mời",
-  "en": ""
- },
- {
-  "vi": "chân trọng kính mời",
-  "en": ""
- },
- {
-  "vi": "yêu cầu",
-  "en": ""
- },
- {
-  "vi": "“Trân trọng” viết với tr; thư mời không dùng “yêu cầu”.",
-  "en": ""
- },
- {
-  "vi": "Giờ theo ghi chú của sếp.",
-  "en": ""
- },
- {
-  "vi": ", ngày",
-  "en": ""
- },
- {
-  "vi": "Ngày theo ghi chú của sếp.",
-  "en": ""
- },
- {
-  "vi": ", tại Phòng họp lớn.",
-  "en": ""
- },
- {
-  "vi": "Nội dung: thống nhất đơn đặt",
-  "en": ""
- },
- {
-  "vi": "Số lượng theo ghi chú của sếp.",
-  "en": ""
- },
- {
-  "vi": "Hẹn gặp lại nha!",
-  "en": ""
- },
- {
-  "vi": "Thư mời đối tác: lời lẽ lịch sự, trang trọng.",
-  "en": ""
- },
- {
-  "vi": "Trân trọng, Giám đốc",
-  "en": ""
- },
- {
-  "vi": "Trần Minh Quân",
-  "en": ""
- },
- {
-  "vi": "Trần Minh Quang",
-  "en": ""
- },
- {
-  "vi": "Trần Quân Minh",
-  "en": ""
- },
- {
-  "vi": "Tên giám đốc phải đúng.",
-  "en": ""
- },
- {
-  "vi": "Sếp đã dời giờ hẹn.",
-  "en": ""
- },
- {
-  "vi": "Ghi chú của anh Quân",
-  "en": ""
- },
- {
-  "vi": "Ký: Giám đốc Trần Minh Quân.",
-  "en": ""
- },
- {
-  "vi": "Toàn thể cán bộ, nhân viên",
-  "en": ""
- },
- {
-  "vi": "Phòng kế toán",
-  "en": ""
- },
- {
-  "vi": "Thông báo chung gửi toàn công ty.",
-  "en": ""
- },
- {
-  "vi": "Công ty thông báo lịch",
-  "en": ""
- },
- {
-  "vi": "nghĩ",
-  "en": ""
- },
- {
-  "vi": "ngỉ",
-  "en": ""
- },
- {
-  "vi": "“Nghỉ” (nghỉ ngơi) dấu hỏi.",
-  "en": ""
- },
- {
-  "vi": "Theo quyết định của giám đốc.",
-  "en": ""
- },
- {
-  "vi": "đến hết ngày",
-  "en": ""
- },
- {
-  "vi": "Đếm đúng số ngày nghỉ.",
-  "en": ""
- },
- {
-  "vi": "Nhân viên đi làm lại vào",
-  "en": ""
- },
- {
-  "vi": "Ngày đi làm lại là ngày làm việc đầu tiên sau kỳ nghỉ (xem lịch).",
-  "en": ""
- },
- {
-  "vi": "Xưởng bố trí trực bảo vệ theo",
-  "en": ""
- },
- {
-  "vi": "lịch phân công đính kèm",
-  "en": ""
- },
- {
-  "vi": "ý kiến cá nhân",
-  "en": ""
- },
- {
-  "vi": "lịch năm ngoái",
-  "en": ""
- },
- {
-  "vi": "Trực lễ theo lịch phân công đã duyệt.",
-  "en": ""
- },
- {
-  "vi": "Quý đối tác và toàn thể nhân viên",
-  "en": ""
- },
- {
-  "vi": "Sếp muốn gửi cả đối tác.",
-  "en": ""
- },
- {
-  "vi": "Anh Quân: “Thông báo này gửi cả đối tác nữa, sửa dòng Kính gửi giúp anh.”",
-  "en": ""
- },
- {
-  "vi": "Quyết định của giám đốc",
-  "en": ""
- },
- {
-  "vi": "Trực bảo vệ theo lịch phân công đính kèm.",
-  "en": ""
- },
- {
-  "vi": "Kính gửi",
-  "en": ""
- },
- {
-  "vi": "Đúng danh xưng, tên có dấu như đơn khiếu nại.",
-  "en": ""
- },
- {
-  "vi": "Cánh Diều đã nhận phản ánh về đơn hàng",
-  "en": ""
- },
- {
-  "vi": "CĐ-",
-  "en": ""
- },
- {
-  "vi": "Mã đơn phải khớp đơn khiếu nại.",
-  "en": ""
- },
- {
-  "vi": "Chúng tôi thành thật xin lỗi vì sự cố này.",
-  "en": ""
- },
- {
-  "vi": "Lỗi này do quý khách sử dụng sai cách.",
-  "en": ""
- },
- {
-  "vi": "Chuyện nhỏ thôi ạ.",
-  "en": ""
- },
- {
-  "vi": "Trả lời khiếu nại: nhận lỗi, không đổ cho khách.",
-  "en": ""
- },
- {
-  "vi": "Theo chính sách bảo hành, chiếc balo sẽ được",
-  "en": ""
- },
- {
-  "vi": "đổi mới miễn phí",
-  "en": ""
- },
- {
-  "vi": "sửa lại có tính phí",
-  "en": ""
- },
- {
-  "vi": "giảm giá 10% lần sau",
-  "en": ""
- },
- {
-  "vi": "Lỗi đường may được đổi mới miễn phí.",
-  "en": ""
- },
- {
-  "vi": "trong vòng",
-  "en": ""
- },
- {
-  "vi": "7 ngày",
-  "en": ""
- },
- {
-  "vi": "3 tháng",
-  "en": ""
- },
- {
-  "vi": "Chính sách: 30 ngày.",
-  "en": ""
- },
- {
-  "vi": "Mọi thắc mắc xin gọi đường dây nóng",
-  "en": ""
- },
- {
-  "vi": "Đúng số đường dây nóng.",
-  "en": ""
- },
- {
-  "vi": "Phòng Kinh doanh — Công ty CP Cánh Diều",
-  "en": ""
- },
- {
-  "vi": "đổi mới miễn phí, tặng kèm hộp bút",
-  "en": ""
- },
- {
-  "vi": "Sếp quyết tặng thêm cho khách.",
-  "en": ""
- },
- {
-  "vi": "Anh Quân: “Khách quen ba năm rồi đấy, tặng thêm hộp bút, ghi vào thư giúp anh.”",
-  "en": ""
- },
- {
-  "vi": "Đơn khiếu nại",
-  "en": ""
- },
- {
-  "vi": "Balo chống gù đứt quai sau 2 tuần.",
-  "en": ""
- },
- {
-  "vi": "Chính sách bảo hành",
-  "en": ""
- },
- {
-  "vi": "Lỗi đường may, quai, khóa: đổi mới miễn phí trong 30 ngày.",
-  "en": ""
- },
- {
-  "vi": "Đường dây nóng: 1900 6868.",
-  "en": ""
- },
- {
-  "vi": "Anh Quân đưa bản nháp: “Em soát giúp anh rồi in ra ký. Sai một chữ là mất mặt với người ta đấy.”",
-  "en": ""
- },
- {
-  "vi": "Soát bản nháp với giấy tờ bên cạnh: chạm chỗ sai, chọn cách viết đúng. Chỗ đúng thì để nguyên.",
-  "en": ""
- },
- {
-  "vi": "Phòng giám đốc",
-  "en": ""
- },
- {
-  "vi": "Phòng họp A",
-  "en": ""
- },
- {
-  "vi": "Phòng họp B",
-  "en": ""
- },
- {
-  "vi": "máy chiếu",
-  "en": ""
- },
- {
-  "vi": "màn hình gọi video",
-  "en": ""
- },
- {
-  "vi": "Họp giao ban trưởng phòng",
-  "en": ""
- },
- {
-  "vi": "Tiếp đối tác Nhật Bản",
-  "en": ""
- },
- {
-  "vi": "Làm việc với ông Lực (xưởng vải)",
-  "en": ""
- },
- {
-  "vi": "Gọi video nhà máy Bình Dương",
-  "en": ""
- },
- {
-  "vi": "Phỏng vấn trưởng phòng thiết kế",
-  "en": ""
- },
- {
-  "vi": "Ký hồ sơ vay với ngân hàng",
-  "en": ""
- },
- {
-  "vi": "Duyệt mẫu balo mới",
-  "en": ""
- },
- {
-  "vi": "phỏng vấn ứng viên",
-  "en": ""
- },
- {
-  "vi": "Đoàn khách Nhật chỉ ở công ty buổi sáng.",
-  "en": ""
- },
- {
-  "vi": "Ông Lực chỉ đến được buổi chiều.",
-  "en": ""
- },
- {
-  "vi": "Họp giao ban chốt giá trước rồi mới gặp khách Nhật.",
-  "en": ""
- },
- {
-  "vi": "Duyệt mẫu xong mới mang mẫu đi chào khách Nhật.",
-  "en": ""
- },
- {
-  "vi": "đi ngân hàng đột xuất",
-  "en": ""
- },
- {
-  "vi": "Anh Quân đổi ý: “Mấy giờ đó anh phải ra ngân hàng, dời việc của anh đi nhé.”",
-  "en": ""
- },
- {
-  "vi": "Anh Quân: “Mai anh có mấy việc này. Em xếp giờ, xếp phòng giúp anh, đừng để ai phải chờ.”",
-  "en": ""
- },
- {
-  "vi": "Phòng giám đốc: 4 chỗ",
-  "en": ""
- },
- {
-  "vi": "Phòng họp A: 10 chỗ, có máy chiếu",
-  "en": ""
- },
- {
-  "vi": "Phòng họp B: 6 chỗ, có màn hình gọi video",
-  "en": ""
- },
- {
-  "vi": "Chuẩn bị họp hội đồng quản trị",
-  "en": ""
- },
- {
-  "vi": "Anh Quân: “Mai họp hội đồng quản trị. Em lo từ A đến Z nhé, đừng để anh phải nhắc.”",
-  "en": ""
- },
- {
-  "vi": "Đặt phòng họp A trên lịch chung",
-  "en": ""
- },
- {
-  "vi": "Có phòng mới ghi được địa điểm.",
-  "en": ""
- },
- {
-  "vi": "Gửi giấy mời kèm tài liệu cho từng thành viên",
-  "en": ""
- },
- {
-  "vi": "Thành viên cần đọc tài liệu trước.",
-  "en": ""
- },
- {
-  "vi": "Thử máy chiếu, cáp HDMI, micro",
-  "en": ""
- },
- {
-  "vi": "Hỏng thiết bị giữa buổi là mất mặt.",
-  "en": ""
- },
- {
-  "vi": "In tài liệu đúng số người, đóng dấu MẬT",
-  "en": ""
- },
- {
-  "vi": "Tài liệu họp là tài liệu mật.",
-  "en": ""
- },
- {
-  "vi": "Chuẩn bị mẫu biên bản và người ghi",
   "en": ""
  }
 ]

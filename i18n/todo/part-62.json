@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Búa sáng hồng rực, ghép ghế B12 ngon lành.",
+  "en": ""
+ },
+ {
+  "vi": "📲 Cập nhật app rồi ghép lại",
+  "en": ""
+ },
+ {
+  "vi": "Cập nhật xong, búa nháy theo nhịp ghế B12.",
+  "en": ""
+ },
+ {
+  "vi": "⚙️ Bật Bluetooth điện thoại",
+  "en": ""
+ },
+ {
+  "vi": "Bật Bluetooth lên là ghép được liền, Na cười ngượng.",
+  "en": ""
+ },
+ {
+  "vi": "🎫 Nhập số ghế vào app",
+  "en": ""
+ },
+ {
+  "vi": "Nhập ghế B12 xong, búa đổi màu theo khu ghế.",
+  "en": ""
+ },
+ {
+  "vi": "🔄 Đổi búa mới theo bảo hành",
+  "en": ""
+ },
+ {
+  "vi": "Búa hỏng mạch thật: đổi mới theo bảo hành hãng, Na kịp giờ concert.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi hàng bán ăn chia",
+  "en": ""
+ },
+ {
+  "vi": "Em tự làm slogan với sticker fanmade BLANKPINK, gửi tiệm bán ăn chia nha.",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Soi tem và mã vạch",
+  "en": ""
+ },
+ {
+  "vi": "Album không tem chính hãng, mã vạch quét ra một hộp sữa.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ tự làm, ghi rõ “fanmade, không chính hãng”, không in logo công ty.",
+  "en": ""
+ },
+ {
+  "vi": "❓ Hỏi nguồn hàng",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn: “Hàng xưởng, y chang hàng thật, ai biết đâu.”",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy: “Tụi em tự vẽ, in ở tiệm in đầu hẻm.”",
+  "en": ""
+ },
+ {
+  "vi": "📌 Fanmade thì dán bảng tặng miễn phí, không bán",
+  "en": ""
+ },
+ {
+  "vi": "Album nhái lên bảng tiệm. Khách tưởng tiệm bán hàng nhái.",
+  "en": ""
+ },
+ {
+  "vi": "Sticker fanmade dán bảng “tặng miễn phí”, fan nhỏ xúm lại xin.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm treo album nhái, mất uy tín.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Nhận bán, ăn chia",
+  "en": ""
+ },
+ {
+  "vi": "Hàng không chính hãng bày lên kệ. Nhà phân phối cảnh cáo tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm bán hàng không chính hãng chung kệ với hàng thật.",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Từ chối, tiệm chỉ bán hàng chính hãng",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn ôm lô hàng đi. Kệ tiệm vẫn sạch.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy buồn. Đồ fanmade tặng miễn phí thì đâu có sao.",
+  "en": ""
+ },
+ {
+  "vi": "Khách lai rai: học sinh tan học, fan ghé xem hàng mới.",
+  "en": ""
+ },
+ {
+  "vi": "Hàng dài từ sớm. Jewel tối đa 2 bản/người, POB tặng kèm PINK STATIC.",
+  "en": ""
+ },
+ {
+  "vi": "Hạn chốt đặt trước",
+  "en": ""
+ },
+ {
+  "vi": "Sáng nay chốt số Jewel đặt trước với nhà phân phối.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày cosplay",
+  "en": ""
+ },
+ {
+  "vi": "Hội cosplay ghé chụp ảnh, hỏi slogan với lightstick.",
+  "en": ""
+ },
+ {
+  "vi": "Fan đi theo nhóm, hay mua kèm phụ kiện.",
+  "en": ""
+ },
+ {
+  "vi": "Hộp album sợ nước: kê thùng lên cao, lau tay trước khi đưa album.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo Ngọc",
+  "en": ""
+ },
+ {
+  "vi": "Tường An",
+  "en": ""
+ },
+ {
+  "vi": "Na kể đu BLANKPINK từ hồi lớp 6, tờ lịch comeback dán ngay đầu giường.",
+  "en": ""
+ },
+ {
+  "vi": "Na để dành tiền ăn sáng ba tuần mới đủ mua bản này.",
+  "en": ""
+ },
+ {
+  "vi": "Na khoe binder đủ bộ card Mận-Ji, thiếu đúng một tấm POB năm ngoái.",
+  "en": ""
+ },
+ {
+  "vi": "Na tự thêu slogan tên Mận-Ji, mang tặng tiệm một cái treo quầy.",
+  "en": ""
+ },
+ {
+  "vi": "Na trúng fansign! Chạy vô tiệm khóc, ôm chị Thơ: “Em được nắm tay Mận-Ji rồi!”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hạnh kể Bống ôm album ngủ, sáng ra còn chào poster.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hạnh giờ phân biệt được BLANKPINK với 7GIÓ rồi, khoe ghê lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hạnh mang biếu tiệm hũ mứt gừng: “Nhờ con mà Bống chịu học bài.”",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn dán ba card thừa lên bảng trao đổi, ghi giá rõ ràng.",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn chỉ cho mấy bé mới cách bọc card bằng toploader.",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn: “Tiệm này seal chuẩn, anh giới thiệu cả hội qua.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Dũng khoe bảng Zchart tuần này, nhóm lên hạng ba.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Dũng gửi năm bản vào hộp quyên góp của thư viện phường.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Dũng: “Đẩy chart sạch mới bền, em làm vậy là đúng.”",
+  "en": ""
+ },
+ {
+  "vi": "Chị Kiều mua đúng giới hạn, lần này không mặc cả.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Kiều thú nhận: “Bán lại lời ít mà mệt, thôi chị nghỉ.”",
+  "en": ""
+ },
+ {
+  "vi": "Mít khoe ba thích album Gió Mùa, mở trên xe suốt.",
+  "en": ""
+ },
+ {
+  "vi": "Mít xếp card 7GIÓ vào binder, nhờ chị Thơ chụp hình.",
+  "en": ""
+ },
+ {
+  "vi": "Mít rủ cả lớp qua tiệm vào ngày cosplay.",
+  "en": ""
+ },
+ {
+  "vi": "Mít lên cấp 3, ghé tiệm khoe đậu trường chuyên.",
+  "en": ""
+ },
+ {
+  "vi": "Giới thiệu nghề: bán album ZPOP",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm album Mây Pop ở Phố chợ: kệ album BLANKPINK, 7GIÓ, KIWIZ, Búa hồng phát sáng và góc khui album. Chị Thơ từng làm trưởng fanclub mười năm, giờ bạn đứng quầy với chị.",
+  "en": ""
+ },
+ {
+  "vi": "Đúng phiên bản khách cần",
+  "en": ""
+ },
+ {
+  "vi": "Quét Zchart, phiếu fansign, POB",
+  "en": ""
+ },
+ {
+  "vi": "Giữ giới hạn, nói thật",
+  "en": ""
+ },
+ {
+  "vi": "Sáng: đếm bản giới hạn, dựng biển giới hạn, thử búa trưng bày",
+  "en": ""
+ },
+ {
+  "vi": "Nghe khách: album nào, phiên bản nào, card ai, nguyên seal không",
+  "en": ""
+ },
+ {
+  "vi": "Lấy đúng phiên bản: Digipack mới chắc card một thành viên",
+  "en": ""
+ },
+ {
+  "vi": "Búa ver.1 ăn pin AAA, ver.2 pin AA và có Bluetooth",
+  "en": ""
+ },
+ {
+  "vi": "Quét Zchart, cuộn poster, phiếu fansign, POB khi khách cần",
+  "en": ""
+ },
+ {
+  "vi": "Bản giới hạn đúng số mỗi người; không khui trước khi trả tiền",
+  "en": ""
+ },
+ {
+  "vi": "Na: BLINKY bảy năm, bias Mận-Ji",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hạnh mua giùm bé Bống, không rành nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Tuấn Card: đòi khui album tại quầy",
+  "en": ""
+ },
+ {
+  "vi": "Anh Dũng đẩy chart, mua sỉ",
+  "en": ""
+ },
+ {
+  "vi": "Mít: fan 7GIÓ, hỏi mười câu",
+  "en": ""
+ },
+ {
+  "vi": "Zchart, poster, fansign, POB đúng ý",
+  "en": ""
+ },
+ {
+  "vi": "Công bằng với hàng chờ",
+  "en": ""
+ },
+ {
+  "vi": "Nói thật về tỉ lệ, hàng nhái, chính sách",
+  "en": ""
+ },
+ {
+  "vi": "Bài 1 · Phiên bản",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thơ chỉ kệ: “Pink, Blank, Jewel card ngẫu nhiên. Muốn chắc card ai thì Digipack của người đó.”",
+  "en": ""
+ },
+ {
+  "vi": "Bài 2 · Lời dặn",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thơ dặn: “Zchart, poster cuộn, phiếu fansign, POB: khách nói gì làm đó, đừng tự thêm.”",
+  "en": ""
+ },
+ {
+  "vi": "Bài 3 · Giới hạn",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thơ nhắc: “Bản giới hạn đúng số trên biển. Ai năn nỉ cũng vậy.”",
+  "en": ""
+ },
+ {
+  "vi": "Khoan, khách cần CHẮC CHẮN card một người: chỉ Digipack của người đó mới chắc. Đổi lại đi em.",
+  "en": ""
+ },
+ {
+  "vi": "Kit ver không có đĩa CD đâu em. Khách cần CD thì lấy Sáng hay Đêm.",
+  "en": ""
+ },
+ {
+  "vi": "Búa ver.1 ăn pin AAA, ver.2 ăn pin AA. Coi lại vỉ pin em.",
+  "en": ""
+ },
+ {
+  "vi": "Khách muốn loại rẻ nhất mà em. Coi lại giá trên kệ.",
+  "en": ""
+ },
+ {
+  "vi": "Khách cần Bluetooth: chỉ Búa ver.2 có. Đổi lại em.",
+  "en": ""
+ },
+ {
+  "vi": "Sai phiên bản rồi em. Đọc lại lời khách dặn.",
+  "en": ""
+ },
+ {
+  "vi": "Còn thiếu món khách dặn kìa em.",
+  "en": ""
+ },
+ {
+  "vi": "Món này khách đâu có lấy. Bỏ ra đi em.",
+  "en": ""
+ },
+ {
+  "vi": "Quá giới hạn trên biển rồi em. Bớt lại cho đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Khách dặn quét Zchart mà em chưa bật.",
+  "en": ""
+ },
+ {
+  "vi": "Khách dặn poster cuộn: lấy ống cuộn poster.",
+  "en": ""
+ },
+ {
+  "vi": "Khách dặn ghi phiếu fansign kìa em.",
+  "en": ""
+ },
+ {
+  "vi": "Khách đặt POB mà em chưa đưa.",
+  "en": ""
+ },
+ {
+  "vi": "Mua để chắc có card bias mà bản này card ngẫu nhiên!",
+  "en": ""
+ },
+ {
+  "vi": "Bản Kit không có đĩa, ba nghe bằng gì giờ?",
+  "en": ""
+ },
+ {
+  "vi": "Pin không vừa cây búa, về nhà mới biết!",
+  "en": ""
+ },
+ {
+  "vi": "Có loại rẻ hơn mà không nói gì hết.",
+  "en": ""
+ },
+ {
+  "vi": "Cây này đâu có Bluetooth, ghép ghế sao được!",
+  "en": ""
+ },
+ {
+  "vi": "Tôi dặn phiên bản khác mà.",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu món tôi dặn rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi đâu có lấy món này, tính tiền luôn là sao?",
+  "en": ""
+ },
+ {
+  "vi": "Bán quá giới hạn, người xếp hàng sau hết phần.",
+  "en": ""
+ },
+ {
+  "vi": "Không quét Zchart, mấy bản này không được tính lên bảng!",
+  "en": ""
+ },
+ {
+  "vi": "Poster bị gập mất rồi, dặn cuộn mà!",
+  "en": ""
+ },
+ {
+  "vi": "Không ghi phiếu fansign cho tôi à?",
+  "en": ""
+ },
+ {
+  "vi": "Đặt trước mà không có POB?",
+  "en": ""
+ },
+ {
+  "vi": "không đúng bản chắc card",
+  "en": ""
+ },
+ {
+  "vi": "đưa bản không có CD",
+  "en": ""
+ },
+ {
+  "vi": "sai loại pin",
+  "en": ""
+ },
+ {
+  "vi": "không đưa loại rẻ nhất",
+  "en": ""
+ },
+ {
+  "vi": "đưa búa không Bluetooth",
+  "en": ""
+ },
+ {
+  "vi": "sai phiên bản",
+  "en": ""
+ },
+ {
+  "vi": "tính thêm món khách không lấy",
+  "en": ""
+ },
+ {
+  "vi": "bán quá giới hạn",
+  "en": ""
+ },
+ {
+  "vi": "quên quét Zchart",
+  "en": ""
+ },
+ {
+  "vi": "poster bị gập",
+  "en": ""
+ },
+ {
+  "vi": "quên phiếu fansign",
+  "en": ""
+ },
+ {
+  "vi": "thiếu POB",
+  "en": ""
+ },
+ {
+  "vi": "Xin bật MV mới thật to",
+  "en": ""
+ },
+ {
+  "vi": "Một nhóm fan ùa vào: “Chị ơi MV mới ra rồi! Bật loa hết cỡ đi chị, tụi em quẩy!” Nhà bà Tư bên cạnh có em bé đang ngủ trưa.",
+  "en": ""
+ },
+ {
+  "vi": "Bật trên TV vừa nghe, mở phụ đề",
+  "en": ""
+ },
+ {
+  "vi": "Cả nhóm hát theo phụ đề, nhún nhảy nhỏ nhỏ. Em bé nhà bà Tư vẫn ngủ ngon.",
+  "en": ""
+ },
+ {
+  "vi": "Bật hết cỡ cho máu",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm album mở nhạc ầm ầm giữa trưa, con nhỏ hàng xóm giật mình khóc.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tư qua gõ cửa, mặt hầm hầm. Nhóm fan ngại quá chuồn mất.",
+  "en": ""
+ },
+ {
+  "vi": "Không bật, tiệm đang bán",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm fan xem chung một cái điện thoại, hơi tiu nghỉu.",
+  "en": ""
+ },
+ {
+  "vi": "Thùng album móp góc",
+  "en": ""
+ },
+ {
+  "vi": "Shipper giao thùng PINK STATIC, một góc thùng móp, hai bản bên trong cong bìa.",
+  "en": ""
+ },
+ {
+  "vi": "Chụp hình, ghi biên bản, báo nhà phân phối đổi",
+  "en": ""
+ },
+ {
+  "vi": "Nhà phân phối hẹn đổi hai bản mới tuần sau. Biên bản ký đủ.",
+  "en": ""
+ },
+ {
+  "vi": "Để lẫn vào kệ, ai mua trúng thì thôi",
+  "en": ""
+ },
+ {
+  "vi": "Mua album nguyên seal mà bìa cong vênh, buồn ghê.",
+  "en": ""
+ },
+ {
+  "vi": "Na mua trúng bản cong, tiếc đứt ruột.",
+  "en": ""
+ },
+ {
+  "vi": "Cất riêng, để bán giá trưng bày",
+  "en": ""
+ },
+ {
+  "vi": "Hai bản cong nằm góc kệ trưng bày, chưa ai hỏi.",
+  "en": ""
+ },
+ {
+  "vi": "Card rơi dưới quầy",
+  "en": ""
+ },
+ {
+  "vi": "Quét nhà thấy một tấm card Mận-Ji bọc toploader kẹt dưới chân quầy. Card này trên nhóm trao đổi giá cao lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Cất ở quầy, đăng nhóm tìm chủ",
+  "en": ""
+ },
+ {
+  "vi": "Chiều một bé chạy vào, mắt đỏ hoe: “Card em!” Bé cảm ơn rối rít.",
+  "en": ""
+ },
+ {
   "vi": "Dán lên bảng trao đổi, ai cần thì lấy",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Chứng chỉ Chăm sóc khách hàng",
-  "en": ""
- },
- {
-  "vi": "Trạm Lắng Nghe phối hợp phường (lớp giả lập)",
-  "en": ""
- },
- {
-  "vi": "Lắng nghe, hẹn điều mình giữ được, biết mình được làm tới đâu và giữ kín thông tin của khách.",
-  "en": ""
- },
- {
-  "vi": "Đọc lịch sử trước khi nghe máy; tóm tắt điều đã biết để khách không phải kể lại từ đầu.",
-  "en": ""
- },
- {
-  "vi": "Xác minh mã yêu cầu của chủ đơn trước khi nói chi tiết. Đọc đủ nguồn (đơn, kho, vận chuyển) rồi mới đề nghị phương án.",
-  "en": ""
- },
- {
-  "vi": "Hẹn một mốc mình giữ được và gọi lại đúng hẹn. Vụ đang chờ thì gọi cập nhật trong ngày, trước buổi trưa.",
-  "en": ""
- },
- {
-  "vi": "Chỉ hứa điều nơi mình làm được (hoàn phí ship, mã bù). Khách đòi ngoài quyền: nói rõ, chuyển người có quyền kèm bản tóm tắt.",
-  "en": ""
- },
- {
-  "vi": "Khách giận: xin lỗi vì khách phải chờ, đừng bảo “bình tĩnh lại”. Bị xúc phạm: nhắc nhẹ ranh giới, không cãi lại.",
-  "en": ""
- },
- {
-  "vi": "Biết mình được làm tới đâu: ở quầy thuốc không tự đưa liều, không tự chọn thuốc cho trẻ. Không biết thì nói thật và hỏi người biết.",
-  "en": ""
- },
- {
-  "vi": "Thông tin của khách là riêng tư: không kể ai mua gì, ở đâu, gọi về chuyện gì.",
-  "en": ""
- },
- {
-  "vi": "Dẫn đoàn: đếm người trước khi đi và sau mỗi điểm dừng; mưa to thì vào chỗ có mái che, đừng đứng dưới gốc cây.",
-  "en": ""
- },
- {
-  "vi": "Khi nào nên chuyển khách cho quản lý?",
-  "en": ""
- },
- {
-  "vi": "Ngay khi khách hơi to tiếng",
-  "en": ""
- },
- {
-  "vi": "Khi khách cần điều ngoài quyền của mình, kèm bản tóm tắt",
-  "en": ""
- },
- {
-  "vi": "Chuyển kèm tóm tắt để khách không phải kể lại.",
-  "en": ""
- },
- {
-  "vi": "Khách nói giọng địa phương khó nghe.",
-  "en": ""
- },
- {
-  "vi": "Xin phép nhắc lại ý chính để chắc mình hiểu đúng",
-  "en": ""
- },
- {
-  "vi": "Đoán ý rồi làm",
-  "en": ""
- },
- {
-  "vi": "Bảo khách nói giọng khác",
-  "en": ""
- },
- {
-  "vi": "Nhắc lại ý chính giúp cả hai hiểu đúng mà không làm khách ngại.",
-  "en": ""
- },
- {
-  "vi": "Động viên bác đi tiếp cho kịp lịch",
-  "en": ""
- },
- {
-  "vi": "Đưa vào chỗ mát, cho nghỉ, uống nước; không đỡ thì gọi 115",
-  "en": ""
- },
- {
-  "vi": "Hộp thuốc hết hạn từ hôm qua, khách nói “không sao đâu”.",
-  "en": ""
- },
- {
-  "vi": "Không giao; đổi hộp còn hạn",
-  "en": ""
- },
- {
-  "vi": "Giao vì khách đồng ý",
-  "en": ""
- },
- {
-  "vi": "Giao và ghi vào sổ",
-  "en": ""
- },
- {
-  "vi": "Khách gọi lần thứ ba về cùng một đơn. Câu đầu tiên của bạn?",
-  "en": ""
- },
- {
-  "vi": "Đọc lịch sử trước, tóm tắt điều đã biết để khách khỏi kể lại",
-  "en": ""
- },
- {
-  "vi": "Khách gọi lần thứ ba cần nghe là mình đã nắm chuyện.",
-  "en": ""
- },
- {
-  "vi": "Một người gọi hỏi tình trạng đơn “của chị tôi”. Bạn làm gì trước?",
-  "en": ""
- },
- {
-  "vi": "Xác minh mã yêu cầu của chủ đơn rồi mới nói chi tiết",
-  "en": ""
- },
- {
-  "vi": "Đọc hết thông tin đơn cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Cúp máy vì không phải chủ đơn",
-  "en": ""
- },
- {
-  "vi": "Chỉ nói chi tiết đơn khi đã xác minh đúng người.",
-  "en": ""
- },
- {
-  "vi": "Khách nói đơn báo “đã giao” nhưng chưa nhận được. Trước khi đề nghị phương án?",
-  "en": ""
- },
- {
-  "vi": "Hoàn tiền ngay cho khách vui",
-  "en": ""
- },
- {
-  "vi": "Bảo khách tự hỏi bên vận chuyển",
-  "en": ""
- },
- {
-  "vi": "Đọc đủ nguồn: lịch sử đơn, xác nhận của kho, đối soát vận chuyển",
-  "en": ""
- },
- {
-  "vi": "Phương án đúng cần dữ kiện từ đủ các bên.",
-  "en": ""
- },
- {
-  "vi": "Hẹn một mốc mình giữ được và gọi lại đúng hẹn",
-  "en": ""
- },
- {
-  "vi": "Hứa điều ngoài tầm tay là nợ khách thêm một lần giận.",
-  "en": ""
- },
- {
-  "vi": "Một vụ đang chờ kho trả lời từ hôm qua. Hôm nay bạn nên?",
-  "en": ""
- },
- {
-  "vi": "Chờ có kết quả rồi mới gọi",
-  "en": ""
- },
- {
-  "vi": "Gọi khách cập nhật trước buổi trưa, kể cả khi chưa có tin mới",
-  "en": ""
- },
- {
-  "vi": "Nhắn “đang xử lý” rồi thôi",
-  "en": ""
- },
- {
-  "vi": "Khách đang chờ cần biết vụ của mình vẫn có người theo.",
-  "en": ""
- },
- {
-  "vi": "Khách quát: “Năm ngày rồi hàng chưa tới!” Câu mở đầu nào tốt nhất?",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi vì khách phải chờ, xác nhận mã đơn, nói mình kiểm ngay",
-  "en": ""
- },
- {
-  "vi": "Khách đòi bồi thường gấp đôi tiền hàng.",
-  "en": ""
- },
- {
-  "vi": "Nói rõ điều nơi mình làm được, không hứa ngoài quyền, hẹn mốc cập nhật",
-  "en": ""
- },
- {
-  "vi": "Đồng ý cho xong chuyện",
-  "en": ""
- },
- {
-  "vi": "“Không có chuyện đó.” rồi thôi",
-  "en": ""
- },
- {
-  "vi": "Hứa ngoài quyền thì nơi làm phải gánh, lần sau khách lại đòi.",
-  "en": ""
- },
- {
-  "vi": "Khách bắt đầu xúc phạm bạn qua điện thoại.",
-  "en": ""
- },
- {
-  "vi": "Giữ giọng bình tĩnh, nhắc nhẹ ranh giới, đề nghị nói tiếp khi khách sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "Im lặng chịu đựng tới hết cuộc gọi",
-  "en": ""
- },
- {
-  "vi": "Không đáp trả xúc phạm, nhưng cũng không phải chịu đựng mãi.",
-  "en": ""
- },
- {
-  "vi": "Khách đòi gặp quản lý ngay.",
-  "en": ""
- },
- {
-  "vi": "Nói rõ việc mình làm được ngay; khách vẫn muốn thì chuyển kèm bản tóm tắt",
-  "en": ""
- },
- {
-  "vi": "Quản lý có tóm tắt thì khách khỏi kể lại từ đầu.",
-  "en": ""
- },
- {
-  "vi": "Ở quầy thuốc, khách hỏi “uống mấy viên cho mau khỏi?”, phiếu không ghi liều.",
-  "en": ""
- },
- {
-  "vi": "Không tự đưa liều; mời người phụ trách hoặc hỏi lại nơi kê phiếu",
-  "en": ""
- },
- {
-  "vi": "Nói theo kinh nghiệm nhà mình",
-  "en": ""
- },
- {
-  "vi": "Liều dùng là việc của người có chuyên môn.",
-  "en": ""
- },
- {
-  "vi": "Một người gọi tới hỏi địa chỉ giao hàng của một khách quen để “gửi quà bất ngờ”.",
-  "en": ""
- },
- {
-  "vi": "Đọc địa chỉ vì người đó biết tên khách",
-  "en": ""
- },
- {
-  "vi": "Không cung cấp; địa chỉ của khách là thông tin riêng",
-  "en": ""
- },
- {
-  "vi": "Cho số điện thoại khách để họ tự hỏi",
-  "en": ""
- },
- {
-  "vi": "Địa chỉ, số điện thoại của khách là thông tin riêng tư.",
-  "en": ""
- },
- {
-  "vi": "Khách hỏi một chuyện bạn không biết chắc.",
-  "en": ""
- },
- {
-  "vi": "Nói thật là chưa rõ, hỏi người biết hoặc hẹn tìm hiểu rồi báo lại",
-  "en": ""
- },
- {
-  "vi": "Bịa một câu cho xong",
-  "en": ""
- },
- {
-  "vi": "Người đáng tin là người không bịa.",
-  "en": ""
- },
- {
-  "vi": "Khi dẫn đoàn, lúc nào phải đếm đủ người?",
-  "en": ""
- },
- {
-  "vi": "Đang dẫn đoàn thì mưa to.",
-  "en": ""
- },
- {
-  "vi": "Đưa đoàn tới chỗ có mái che gần nhất, đổi lộ trình, báo điều phối",
-  "en": ""
- },
- {
-  "vi": "Hết ca, một vụ của bạn vẫn chưa xong.",
-  "en": ""
- },
- {
-  "vi": "Để mai tính, không ghi gì",
-  "en": ""
- },
- {
-  "vi": "Đóng vụ cho gọn danh sách",
-  "en": ""
- },
- {
-  "vi": "Ghi bàn giao: đã làm gì, đang chờ ai, đã hẹn khách mốc nào",
-  "en": ""
- },
- {
-  "vi": "Ca sau đọc bàn giao là tiếp được, khách không phải kể lại.",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ Nghiệp vụ sư phạm",
-  "en": ""
- },
- {
-  "vi": "Nghiệp vụ sư phạm",
-  "en": ""
- },
- {
-  "vi": "Trường Tiểu học Mầm Nắng (lớp giả lập)",
-  "en": ""
- },
- {
-  "vi": "Dạy một lớp có nhiều nhịp học, nhận xét cho đúng, làm việc với phụ huynh và giữ lớp an toàn.",
-  "en": ""
- },
- {
-  "vi": "Cùng một mục tiêu, nhiều cách: hình ảnh, làm thử, kể chuyện; chia nhóm để bạn nhanh giúp bạn chậm.",
-  "en": ""
- },
- {
-  "vi": "Tiết học vừa thời gian: khởi động ngắn, phần chính, luyện tập, rồi phiếu ra lớp để biết ai đã hiểu.",
-  "en": ""
- },
- {
-  "vi": "Nhận xét cụ thể vào việc làm được và bước tiếp theo; không so sánh bạn này với bạn kia trước lớp.",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh nhắn khuya: trả lời ngắn, hẹn trao đổi trong giờ hành chính, chuẩn bị sổ lớp. Không bỏ mặc, không tranh cãi.",
-  "en": ""
- },
- {
-  "vi": "Sự kiện lớp: hỏi mong muốn của lớp, kiểm tra dị ứng thức ăn, công khai quỹ lớp; không ép phụ huynh đóng thêm.",
-  "en": ""
- },
- {
-  "vi": "Trẻ buồn kéo dài hay bị trêu chọc: quan sát, nói chuyện riêng, báo phụ huynh và nhà trường khi cần.",
-  "en": ""
- },
- {
-  "vi": "Ra khỏi lớp: điểm danh trước khi đi và sau khi về. Làm sai thì nhận, sửa và nói rõ.",
-  "en": ""
- },
- {
-  "vi": "Mục tiêu tiết học nên viết thế nào?",
-  "en": ""
- },
- {
-  "vi": "“Con hiểu bài.”",
-  "en": ""
- },
- {
-  "vi": "Cụ thể, đo được: “Con đọc đúng giờ trên đồng hồ.”",
-  "en": ""
- },
- {
-  "vi": "Không cần mục tiêu",
-  "en": ""
- },
- {
-  "vi": "Mục tiêu đo được thì cuối tiết mới biết lớp đạt chưa.",
-  "en": ""
- },
- {
-  "vi": "Học sinh hỏi một câu bạn chưa biết.",
-  "en": ""
- },
- {
-  "vi": "Nói thật, cùng tìm hiểu và trả lời vào buổi sau",
-  "en": ""
- },
- {
-  "vi": "Bảo con đừng hỏi linh tinh",
-  "en": ""
- },
- {
-  "vi": "Thầy cô không bịa; cùng tìm hiểu cũng là một bài học.",
-  "en": ""
- },
- {
-  "vi": "Một bạn làm xong bài sớm.",
-  "en": ""
- },
- {
-  "vi": "Cho ngồi chơi",
-  "en": ""
- },
- {
-  "vi": "Bắt làm lại bài cũ",
-  "en": ""
- },
- {
-  "vi": "Có sẵn nhiệm vụ mở rộng hoặc nhờ bạn giúp bạn khác",
-  "en": ""
- },
- {
-  "vi": "Bạn nhanh cũng cần được học tiếp.",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh muốn xem điểm của cả lớp.",
-  "en": ""
- },
- {
-  "vi": "Chỉ trao đổi kết quả của con mình; điểm bạn khác là riêng tư",
-  "en": ""
- },
- {
-  "vi": "Gửi bảng điểm cả lớp",
-  "en": ""
- },
- {
-  "vi": "Đọc điểm to trong buổi họp",
-  "en": ""
- },
- {
-  "vi": "Kết quả học tập của mỗi em là thông tin riêng.",
-  "en": ""
- },
- {
-  "vi": "Dạy theo nhóm giỏi cho kịp chương trình",
-  "en": ""
- },
- {
-  "vi": "Cùng mục tiêu, nhiều cách làm; nhóm hỗ trợ lẫn nhau",
-  "en": ""
- },
- {
-  "vi": "Dạy học phân hóa: không ai bị bỏ lại, không ai phải chán.",
-  "en": ""
- },
- {
-  "vi": "Cuối tiết, cách nhanh nhất để biết ai đã hiểu bài?",
-  "en": ""
- },
- {
-  "vi": "Phiếu ra lớp: mỗi bạn trả lời một câu ngắn",
-  "en": ""
- },
- {
-  "vi": "Hỏi cả lớp “hiểu chưa?”",
-  "en": ""
- },
- {
-  "vi": "Chờ tới bài kiểm tra cuối kỳ",
-  "en": ""
- },
- {
-  "vi": "Cả lớp đồng thanh “hiểu rồi” không cho biết ai còn vướng.",
-  "en": ""
- },
- {
-  "vi": "Bạn Vy làm sai bài toán nhưng đã cố gắng nhiều.",
-  "en": ""
- },
- {
-  "vi": "Đọc to lỗi sai trước lớp để cả lớp rút kinh nghiệm",
-  "en": ""
- },
- {
-  "vi": "Chỉ ghi “Sai” rồi trả bài",
-  "en": ""
- },
- {
-  "vi": "Khen cụ thể phần làm đúng, chỉ bước tiếp theo để sửa",
-  "en": ""
- },
- {
-  "vi": "Nhận xét cụ thể giúp con biết sửa gì tiếp theo.",
-  "en": ""
- },
- {
-  "vi": "Để động viên cả lớp, bạn nói gì?",
-  "en": ""
- },
- {
-  "vi": "Nêu điều cả lớp đã tiến bộ và mục tiêu tiếp theo",
-  "en": ""
- },
- {
-  "vi": "“Sao các con không được như bạn An?”",
-  "en": ""
- },
- {
-  "vi": "Dán bảng xếp hạng điểm lên bảng",
-  "en": ""
- },
- {
-  "vi": "So sánh trước lớp làm các con ngại, không làm các con giỏi hơn.",
-  "en": ""
- },
- {
-  "vi": "Phụ huynh nhắn tin gay gắt lúc 22 giờ.",
-  "en": ""
- },
- {
-  "vi": "Ranh giới rõ nhưng không bỏ mặc.",
-  "en": ""
- },
- {
-  "vi": "Lớp tổ chức Trung thu. Việc đầu tiên?",
-  "en": ""
- },
- {
-  "vi": "Đặt bánh và đèn cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Hỏi mong muốn của lớp, kiểm tra dị ứng và quỹ lớp",
-  "en": ""
- },
- {
-  "vi": "Chuẩn bị từ người tham gia, không tạo áp lực cho gia đình.",
-  "en": ""
- },
- {
-  "vi": "Một bạn dị ứng đậu phộng. Buổi liên hoan có bánh đậu phộng.",
-  "en": ""
- },
- {
-  "vi": "Chuẩn bị món khác cho bạn, ghi vào sổ lớp, dặn người phụ trách bữa ăn",
-  "en": ""
- },
- {
-  "vi": "Dặn bạn tự tránh món đó",
-  "en": ""
- },
- {
-  "vi": "Cho ăn ít thôi chắc không sao",
-  "en": ""
- },
- {
-  "vi": "Dị ứng thức ăn có thể nguy hiểm; người lớn phải chủ động.",
-  "en": ""
- },
- {
-  "vi": "Bạn Bảo mấy hôm nay ngồi một mình, có bạn trêu chọc.",
-  "en": ""
- },
- {
-  "vi": "Để các con tự giải quyết",
-  "en": ""
- },
- {
-  "vi": "Phạt cả lớp đứng dậy",
   "en": ""
  }
 ]

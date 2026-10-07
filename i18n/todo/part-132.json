@@ -1,5 +1,40 @@
 [
  {
+  "vi": "Đủ $1 đơn đang về: nhận bớt thùng rồi đặt tiếp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đơn gộp $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thêm $1 xu hàng: miễn ship",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đặt đơn · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bỏ cả đơn $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã sửa ★$1 → ★",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Không có $1 nào ở mục này.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Chưa có $1 nào",
   "en": "",
   "pattern": true

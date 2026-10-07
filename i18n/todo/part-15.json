@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Bạn khai dì là mẹ. Mẹ thật của bạn cũng đặt vé đi Đà Lạt cùng tuần, bằng đúng tên đó.",
+  "en": ""
+ },
+ {
+  "vi": "Em gái đặt mười thỏi son",
+  "en": ""
+ },
+ {
+  "vi": "Út · em gái bán hàng online",
+  "en": ""
+ },
+ {
+  "vi": "“Chị mua giùm em 10 thỏi son miễn thuế trên máy bay, giá nhân viên nha. Em bán online, lời chia đôi.”",
+  "en": ""
+ },
+ {
+  "vi": "“Có 10 thỏi thôi mà. Chị không thương em à?”",
+  "en": ""
+ },
+ {
+  "vi": "“Người ta tiếp viên ai chẳng làm vậy.”",
+  "en": ""
+ },
+ {
+  "vi": "Hàng miễn thuế không mua để bán lại.",
+  "en": ""
+ },
+ {
+  "vi": "Chị tặng em một thỏi, mua đúng giá.",
+  "en": ""
+ },
+ {
+  "vi": "Út nhận một thỏi son làm quà, đăng ảnh “quà của bà chị tiếp viên” lên mạng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn mua 10 thỏi giá nhân viên. Tháng sau hãng kiểm tra hóa đơn nội bộ, tên bạn nổi bần bật.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ giục lấy chồng",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ · ở quê",
+  "en": ""
+ },
+ {
+  "vi": "“28 tuổi rồi, suốt ngày bay nhảy. Cuối tuần về xem mắt con trai bác Hai, làm ngân hàng, nhà có ba tầng.”",
+  "en": ""
+ },
+ {
+  "vi": "“Bay mãi rồi ai nuôi con lúc về già?”",
+  "en": ""
+ },
+ {
+  "vi": "“Mẹ hứa với bác Hai rồi. Con làm mẹ mất mặt à?”",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện chồng con để con tự quyết mẹ ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Con về ăn cơm với mẹ, gặp làm bạn thôi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ lo con điều gì nhất?",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ thở dài, bảo “thì về ăn cơm”. Bữa cơm hôm đó không nhắc chuyện chồng con, chỉ hỏi bay có mệt không.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn về xem mắt. Con trai bác Hai hỏi câu đầu tiên: “Làm tiếp viên thì có được vé rẻ không em?”",
+  "en": ""
+ },
+ {
+  "vi": "Gói hàng không rõ gì của bà Tám",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tám · hàng xóm đầu hẻm",
+  "en": ""
+ },
+ {
+  "vi": "“Cháu mang hộ gói này ra đảo cho con bà. Gói kỹ rồi, đừng mở, hàng dễ vỡ. Có đứa ra sân bay đón.”",
+  "en": ""
+ },
+ {
+  "vi": "“Bà nuôi cháu từ bé, cháu nghi bà à?”",
+  "en": ""
+ },
+ {
+  "vi": "“Cầm giùm có tí mà hỏi như công an.”",
+  "en": ""
+ },
+ {
+  "vi": "Tổ bay không mang hàng không rõ của người khác.",
+  "en": ""
+ },
+ {
+  "vi": "Trong đó có gì hả bà?",
+  "en": ""
+ },
+ {
+  "vi": "Cháu gửi hàng qua bưu điện hàng không cho bà.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tám mở gói ra: hai hũ mắm tép và một cuốn album ảnh. Gửi bưu điện hàng không, con bà nhận sau hai ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn cầm gói hàng. Máy soi báo động: trong có ba hũ mắm tép và một con dao làm bếp. Bạn giải trình với an ninh mất một tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "Hãng bay Cánh Cò",
+  "en": ""
+ },
+ {
+  "vi": "tàu Cò Trắng",
+  "en": ""
+ },
+ {
+  "vi": "Thành phố",
+  "en": ""
+ },
+ {
+  "vi": "Côn Đảo",
+  "en": ""
+ },
+ {
+  "vi": "Cần Thơ",
+  "en": ""
+ },
+ {
+  "vi": "Rạch Giá",
+  "en": ""
+ },
+ {
+  "vi": "Cà Mau",
+  "en": ""
+ },
+ {
+  "vi": "Phú Quốc",
+  "en": ""
+ },
+ {
+  "vi": "Đà Lạt",
+  "en": ""
+ },
+ {
+  "vi": "Buôn Ma Thuột",
+  "en": ""
+ },
+ {
+  "vi": "bên trái, sát cửa sổ",
+  "en": ""
+ },
+ {
+  "vi": "bên trái, sát lối đi",
+  "en": ""
+ },
+ {
+  "vi": "bên phải, sát lối đi",
+  "en": ""
+ },
+ {
+  "vi": "bên phải, sát cửa sổ",
+  "en": ""
+ },
+ {
+  "vi": "Hai mươi năm làm cô nuôi dạy trẻ, giờ nhận gửi bé theo ngày ở ngõ Hoa Sữa.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ bé Bin, 3 tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Làm y tá ca ngày, dặn dò ngắn mà kỹ, tin người là tin hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Bố bé Na, 5 tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Lần đầu gửi con cho người ngoài, cứ nhắn hỏi “bé ổn không em”.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ bé Sóc, 18 tháng",
+  "en": ""
+ },
+ {
+  "vi": "Kế toán, giấy dặn đánh máy in sẵn, giờ nào ra giờ đó.",
+  "en": ""
+ },
+ {
+  "vi": "Bà ngoại bé Mít, 6 tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Đi tái khám mắt cả ngày, gửi cháu kèm hộp bánh tự làm.",
+  "en": ""
+ },
+ {
+  "vi": "Bố bé Bông, 2 tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Thợ điện, ít nói, về là hỏi đúng một câu: “Hôm nay con ăn ngủ sao?”",
+  "en": ""
+ },
+ {
+  "vi": "sữa bò",
+  "en": ""
+ },
+ {
+  "vi": "tôm",
+  "en": ""
+ },
+ {
+  "vi": "Gấu bông nâu",
+  "en": ""
+ },
+ {
+  "vi": "Chăn nhỏ màu xanh",
+  "en": ""
+ },
+ {
+  "vi": "Núm ti ngôi sao",
+  "en": ""
+ },
+ {
+  "vi": "Thỏ bông hồng",
+  "en": ""
+ },
+ {
+  "vi": "Khăn sữa hình thỏ",
+  "en": ""
+ },
+ {
+  "vi": "Vịt cao su vàng",
+  "en": ""
+ },
+ {
+  "vi": "nhút nhát, hay nép sau lưng mẹ",
+  "en": ""
+ },
+ {
+  "vi": "hiếu động, mê đập tay",
+  "en": ""
+ },
+ {
+  "vi": "bám mẹ, chưa quen người lạ",
+  "en": ""
+ },
+ {
+  "vi": "nói nhiều, thích kể chuyện",
+  "en": ""
+ },
+ {
+  "vi": "bướng, không thích bị bế",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi ngang tầm mắt, chào nhỏ nhẹ",
+  "en": ""
+ },
+ {
+  "vi": "Đập tay chào thật vui",
+  "en": ""
+ },
+ {
+  "vi": "Để bé ôm mẹ thêm, chìa đồ chơi ra",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi bé hôm qua đi chơi đâu",
+  "en": ""
+ },
+ {
+  "vi": "Bế xốc bé lên cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "3 tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Sóc",
+  "en": ""
+ },
+ {
+  "vi": "6 tuổi",
+  "en": ""
+ },
+ {
+  "vi": "bà Tư",
+  "en": ""
+ },
+ {
+  "vi": "2 tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đồ thay",
+  "en": ""
+ },
+ {
+  "vi": "Khăn ướt",
+  "en": ""
+ },
+ {
+  "vi": "Mũ",
+  "en": ""
+ },
+ {
+  "vi": "Đồ ôm ngủ",
+  "en": ""
+ },
+ {
+  "vi": "Chuối",
+  "en": ""
+ },
+ {
+  "vi": "Quả nho",
+  "en": ""
+ },
+ {
+  "vi": "Táo",
+  "en": ""
+ },
+ {
+  "vi": "Dưa hấu",
+  "en": ""
+ },
+ {
+  "vi": "Bánh quy bơ đậu phộng",
+  "en": ""
+ },
+ {
+  "vi": "Đậu phộng rang",
+  "en": ""
+ },
+ {
+  "vi": "Kẹo cứng",
+  "en": ""
+ },
+ {
+  "vi": "Nước lọc ấm",
+  "en": ""
+ },
+ {
+  "vi": "Sữa đậu nành",
+  "en": ""
+ },
+ {
+  "vi": "Cháo gà",
+  "en": ""
+ },
+ {
+  "vi": "Cơm cá kho",
+  "en": ""
+ },
+ {
+  "vi": "Cháo tôm",
+  "en": ""
+ },
+ {
+  "vi": "Trứng hấp",
+  "en": ""
+ },
+ {
+  "vi": "Cơm xúc xích",
+  "en": ""
+ },
+ {
+  "vi": "Canh bí đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Cà rốt, bông cải luộc",
+  "en": ""
+ },
+ {
+  "vi": "Đậu hũ non sốt cà",
+  "en": ""
+ },
+ {
+  "vi": "Món ăn vặt",
+  "en": ""
+ },
+ {
+  "vi": "Món chính",
+  "en": ""
+ },
+ {
+  "vi": "Rau củ, canh",
+  "en": ""
+ },
+ {
+  "vi": "Cắt nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Để nguội bớt",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ xương",
+  "en": ""
+ },
+ {
+  "vi": "Bé dụi mắt, ngáp nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Bé chạy vòng vòng, cười khanh khách",
+  "en": ""
+ },
+ {
+  "vi": "Bé phụng phịu, ném gấu xuống sàn",
+  "en": ""
+ },
+ {
+  "vi": "Bé chỉ trỏ, hỏi “cái gì đây?”",
+  "en": ""
+ },
+ {
+  "vi": "Xếp khối gỗ",
+  "en": ""
+ },
+ {
+  "vi": "Đọc truyện tranh",
+  "en": ""
+ },
+ {
+  "vi": "Hát vỗ tay",
+  "en": ""
+ },
+ {
+  "vi": "Lăn bóng vải",
+  "en": ""
+ },
+ {
+  "vi": "Đong nước, thả vịt",
+  "en": ""
+ },
+ {
+  "vi": "Nhảy theo nhạc",
+  "en": ""
+ },
+ {
+  "vi": "Trốn tìm",
+  "en": ""
+ },
+ {
+  "vi": "Vẽ sáp màu",
+  "en": ""
+ },
+ {
+  "vi": "Nặn đất nặn",
+  "en": ""
+ },
+ {
+  "vi": "Ghép tranh 9 mảnh",
+  "en": ""
+ },
+ {
+  "vi": "Lego mảnh nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Xâu hạt cườm",
+  "en": ""
+ },
+ {
+  "vi": "Xem hoạt hình",
+  "en": ""
+ },
+ {
+  "vi": "Bé làm đổ cả chồng đồ chơi, mếu máo.",
+  "en": ""
+ },
+ {
+  "vi": "Cùng bé làm lại, khen bé cố gắng",
+  "en": ""
+ },
+ {
+  "vi": "Làm lại giùm bé cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Thôi, không chơi nữa",
+  "en": ""
+ },
+ {
+  "vi": "Bé hỏi: “Sao con mèo kêu meo meo?”",
+  "en": ""
+ },
+ {
+  "vi": "Kêu meo meo theo bé, hỏi lại con gì kêu gâu gâu",
+  "en": ""
+ },
+ {
+  "vi": "Ừ, mèo thì kêu vậy",
+  "en": ""
+ },
+ {
+  "vi": "Đừng hỏi nữa, chơi đi",
+  "en": ""
+ },
+ {
+  "vi": "Bé giành lấy: “Con tự làm!”",
+  "en": ""
+ },
+ {
+  "vi": "Để bé tự làm, ngồi cạnh đỡ khi cần",
+  "en": ""
+ },
+ {
+  "vi": "Cầm tay bé làm chung",
+  "en": ""
+ },
+ {
+  "vi": "Lấy lại làm cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Bé giơ lên khoe: “Nhìn nè!”",
+  "en": ""
+ },
+ {
+  "vi": "Khen cụ thể: “Con chọn màu xanh đẹp quá!”",
+  "en": ""
+ },
+ {
+  "vi": "Ừ, đẹp",
+  "en": ""
+ },
+ {
+  "vi": "Đang nhắn tin, không ngẩng lên",
+  "en": ""
+ },
+ {
+  "vi": "Bé bắt đầu chán, nhìn quanh.",
+  "en": ""
+ },
+ {
+  "vi": "Thêm bạn gấu vào trò chơi",
+  "en": ""
+ },
+ {
+  "vi": "Chờ bé tự tìm trò khác",
+  "en": ""
+ },
+ {
+  "vi": "Bảo bé ngồi yên",
+  "en": ""
+ },
+ {
   "vi": "Bé không chịu cho bạn gấu chơi chung.",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "😄 Bé cười tít mắt.",
-  "en": ""
- },
- {
-  "vi": "🙂 Bé gật gù.",
-  "en": ""
- },
- {
-  "vi": "😕 Bé xịu mặt.",
-  "en": ""
- },
- {
-  "vi": "Chơi xong rồi hẵng dọn.",
-  "en": ""
- },
- {
-  "vi": "Dọn xong rồi.",
-  "en": ""
- },
- {
-  "vi": "🧺 Hai cô cháu thi nhau nhặt đồ chơi bỏ vào rổ. Gọn gàng!",
-  "en": ""
- },
- {
-  "vi": "Chọn trò chơi cho bé trước đã.",
-  "en": ""
- },
- {
-  "vi": "Chơi với bé thêm chút nữa đã.",
-  "en": ""
- },
- {
-  "vi": "🎈 Bé chơi vui hết cỡ!",
-  "en": ""
- },
- {
-  "vi": "🙂 Bé chơi vui.",
-  "en": ""
- },
- {
-  "vi": "😐 Bé chơi chưa vui lắm.",
-  "en": ""
- },
- {
-  "vi": "Món này không có trong phòng.",
-  "en": ""
- },
- {
-  "vi": "Xem món này rồi.",
-  "en": ""
- },
- {
-  "vi": "còn chỗ nguy hiểm",
-  "en": ""
- },
- {
-  "vi": "Bước này không có.",
-  "en": ""
- },
- {
-  "vi": "Làm bước này rồi.",
-  "en": ""
- },
- {
-  "vi": "🚽 Cho bé đi vệ sinh, rửa tay, thay bộ đồ ngủ mềm.",
-  "en": ""
- },
- {
-  "vi": "🌙 Kéo rèm, tắt đèn, bật quạt nhẹ.",
-  "en": ""
- },
- {
-  "vi": "🎵 Bạn hát khẽ “À ơi…”, bé chớp mắt chậm dần.",
-  "en": ""
- },
- {
-  "vi": "Món này không có.",
-  "en": ""
- },
- {
-  "vi": "Bé chưa có đồ ôm, chưa chịu nằm yên.",
-  "en": ""
- },
- {
-  "vi": "Phòng còn sáng, kéo rèm tắt đèn đã.",
-  "en": ""
- },
- {
-  "vi": "Bé ngủ say rồi.",
-  "en": ""
- },
- {
-  "vi": "🤲 Vỗ nhẹ đúng nhịp thở ra.",
-  "en": ""
- },
- {
-  "vi": "😴 Bé ngủ say rồi.",
-  "en": ""
- },
- {
-  "vi": "🤲 Vỗ lệch nhịp, bé cựa mình. Chờ bé thở ra chậm rồi hẵng vỗ.",
-  "en": ""
- },
- {
-  "vi": "Bé chưa đi vệ sinh đã ngủ, dậy ướt cả giường.",
-  "en": ""
- },
- {
-  "vi": "Phòng sáng trưng, bé ngủ chập chờn.",
-  "en": ""
- },
- {
-  "vi": "Bé ngủ mà chẳng ai ru, nằm trằn trọc mãi.",
-  "en": ""
- },
- {
-  "vi": "ru ngủ thiếu bước",
-  "en": ""
- },
- {
-  "vi": "Bé chưa ngủ: vỗ nhẹ theo nhịp thở thêm chút nữa.",
-  "en": ""
- },
- {
-  "vi": "Làm rồi mà.",
-  "en": ""
- },
- {
-  "vi": "Bé ổn rồi.",
-  "en": ""
- },
- {
-  "vi": "Bé nín hẳn, dụi đầu vào vai bạn.",
-  "en": ""
- },
- {
-  "vi": "Nghe nói em quát bé à?",
-  "en": ""
- },
- {
-  "vi": "lớn tiếng với bé",
-  "en": ""
- },
- {
-  "vi": "Em dọa bé ông kẹ, tối bé không dám ngủ một mình.",
-  "en": ""
- },
- {
-  "vi": "dọa bé",
-  "en": ""
- },
- {
-  "vi": "Bé khóc là được chiều, mai bé lại khóc tiếp.",
-  "en": ""
- },
- {
-  "vi": "chiều theo bé",
-  "en": ""
- },
- {
-  "vi": "Kem đánh răng không bôi vết thương được đâu em.",
-  "en": ""
- },
- {
-  "vi": "sơ cứu sai cách",
-  "en": ""
- },
- {
-  "vi": "Vết xước chưa rửa sạch đã cho chơi tiếp.",
-  "en": ""
- },
- {
-  "vi": "chưa rửa vết xước",
-  "en": ""
- },
- {
-  "vi": "Sơ cứu lộn thứ tự rồi em.",
-  "en": ""
- },
- {
-  "vi": "sơ cứu lộn thứ tự",
-  "en": ""
- },
- {
-  "vi": "Bé chưa ổn hẳn, dỗ bé thêm chút nữa.",
-  "en": ""
- },
- {
-  "vi": "Cả ngày bé ngoan, không có chuyện gì.",
-  "en": ""
- },
- {
-  "vi": "Bé xem hoạt hình gần cả buổi chiều.",
-  "en": ""
- },
- {
-  "vi": "Sao chuyện đó em không kể với chị?",
-  "en": ""
- },
- {
-  "vi": "giấu chuyện trong ngày",
-  "en": ""
- },
- {
-  "vi": "Em kể thiếu chuyện ăn ngủ của bé.",
-  "en": ""
- },
- {
-  "vi": "nhật ký thiếu",
-  "en": ""
- },
- {
-  "vi": "Bé kể có chuyện mà em ghi “không có gì”.",
-  "en": ""
- },
- {
-  "vi": "Nhật ký ghi chuyện không có thật.",
-  "en": ""
- },
- {
-  "vi": "ghi sai nhật ký",
-  "en": ""
- },
- {
-  "vi": "Dòng này không có trong nhật ký.",
-  "en": ""
- },
- {
-  "vi": "↩️ Bỏ dòng này khỏi nhật ký.",
-  "en": ""
- },
- {
-  "vi": "✍️ Ghi vào nhật ký.",
-  "en": ""
- },
- {
-  "vi": "💛 Gia đình hẹn gửi bé lần sau.",
-  "en": ""
- },
- {
-  "vi": "🎓 Học nghề xong! Cô Tâm: “Giờ con tự nhận bé được rồi. Có gì cứ gọi cô.”",
-  "en": ""
- },
- {
-  "vi": "Nhận bé chu đáo",
-  "en": ""
- },
- {
-  "vi": "đọc giấy dặn, kiểm túi",
-  "en": ""
- },
- {
-  "vi": "còn sót khâu nhận bé",
-  "en": ""
- },
- {
-  "vi": "Bé chịu theo",
-  "en": ""
- },
- {
-  "vi": "chào hợp tính bé",
-  "en": ""
- },
- {
-  "vi": "bé còn ngại",
-  "en": ""
- },
- {
-  "vi": "Món ăn an toàn",
-  "en": ""
- },
- {
-  "vi": "đúng giấy dặn, hợp tuổi",
-  "en": ""
- },
- {
-  "vi": "món chưa an toàn cho bé",
-  "en": ""
- },
- {
-  "vi": "Bữa ăn đàng hoàng",
-  "en": ""
- },
- {
-  "vi": "đủ món, ngồi ăn tử tế",
-  "en": ""
- },
- {
-  "vi": "bữa ăn còn thiếu sót",
-  "en": ""
- },
- {
-  "vi": "Bé chơi vui",
-  "en": ""
- },
- {
-  "vi": "Trò chơi hợp tuổi",
-  "en": ""
- },
- {
-  "vi": "đúng tuổi, đúng giấy dặn",
-  "en": ""
- },
- {
-  "vi": "trò chưa hợp",
-  "en": ""
- },
- {
-  "vi": "Nhà an toàn",
-  "en": ""
- },
- {
-  "vi": "soát kỹ từng góc",
-  "en": ""
- },
- {
-  "vi": "còn sót chỗ nguy hiểm",
-  "en": ""
- },
- {
-  "vi": "Bé ngủ ngon",
-  "en": ""
- },
- {
-  "vi": "ngủ nhanh, ngủ sâu",
-  "en": ""
- },
- {
-  "vi": "bé ngủ hơi khó",
-  "en": ""
- },
- {
-  "vi": "Đủ bước ru ngủ",
-  "en": ""
- },
- {
-  "vi": "đủ bước",
-  "en": ""
- },
- {
-  "vi": "thiếu bước",
-  "en": ""
- },
- {
-  "vi": "Dỗ bé nhẹ nhàng",
-  "en": ""
- },
- {
-  "vi": "bình tĩnh, ân cần",
-  "en": ""
- },
- {
-  "vi": "chưa thật nhẹ nhàng",
-  "en": ""
- },
- {
-  "vi": "Bàn giao trung thực",
-  "en": ""
- },
- {
-  "vi": "kể rõ, kể thật",
-  "en": ""
- },
- {
-  "vi": "nhật ký chưa đúng",
-  "en": ""
- },
- {
-  "vi": "Cả ngày chăm bé",
-  "en": ""
- },
- {
-  "vi": "bé về nhà vui vẻ",
-  "en": ""
- },
- {
-  "vi": "Rửa tay → đọc giấy dặn → chào bé hợp tính → mở túi, hỏi món còn thiếu → nhận bé.",
-  "en": ""
- },
- {
-  "vi": "Chọn món (xem thành phần) → sơ chế hợp tuổi → rửa tay, cho bé ngồi ghế → dọn cho bé ăn.",
-  "en": ""
- },
- {
-  "vi": "Món chính, rau canh, đồ uống (xem thành phần) → sơ chế hợp tuổi → rửa tay, cho bé ngồi ghế → dọn cơm.",
-  "en": ""
- },
- {
-  "vi": "Nhìn tâm trạng bé → chọn trò hợp tâm trạng, hợp tuổi → chơi cùng bé → dọn đồ chơi.",
-  "en": ""
- },
- {
-  "vi": "Ngồi ngang tầm bé, chạm vào những chỗ dễ nguy hiểm để xử lý → xong.",
-  "en": ""
- },
- {
-  "vi": "Đi vệ sinh → kéo rèm → đúng đồ ôm → hát ru → vỗ nhẹ lúc bé thở ra.",
-  "en": ""
- },
- {
-  "vi": "Bình tĩnh, ân cần: chọn từng cách dỗ (sơ cứu theo thứ tự) tới khi bé ổn.",
-  "en": ""
- },
- {
-  "vi": "Đánh dấu những dòng đúng sự thật trong nhật ký → bàn giao bé.",
-  "en": ""
- },
- {
-  "vi": "Đã rửa bình sữa, xếp đồ chơi vào rổ.",
-  "en": ""
- },
- {
-  "vi": "Đã nấu sẵn nồi cháo, để nguội bớt trên bếp.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu nghề trông trẻ sai.",
-  "en": ""
- },
- {
-  "vi": "Phiên bản việc trông trẻ không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Trạng thái việc trông trẻ sai.",
-  "en": ""
- },
- {
-  "vi": "Tiến độ việc trông trẻ sai.",
-  "en": ""
- },
- {
-  "vi": "Chuyện gia đình sai.",
-  "en": ""
- },
- {
-  "vi": "Bảo mẫu",
-  "en": ""
- },
- {
-  "vi": "Tổ trông trẻ Mèo Con",
-  "en": ""
- },
- {
-  "vi": "Ăn ngon, ngủ yên, chơi vui, về nhà an toàn.",
-  "en": ""
- },
- {
-  "vi": "Nắng nhẹ ngõ Hoa Sữa",
-  "en": ""
- },
- {
-  "vi": "Lịch trông bé",
-  "en": ""
- },
- {
-  "vi": "Nhà của bé",
-  "en": ""
- },
- {
-  "vi": "Rửa tay, đọc giấy dặn rồi mới nhận bé. Mỗi việc trong ngày làm theo lịch, cuối ngày kể thật với bố mẹ bé.",
-  "en": ""
- },
- {
-  "vi": "Một ngày bình yên của bé",
-  "en": ""
- },
- {
-  "vi": "26 · TỔ TRÔNG TRẺ MÈO CON",
-  "en": ""
- },
- {
-  "vi": "Sinh viên sư phạm mầm non, gọn gàng, hát hay.",
-  "en": ""
- },
- {
-  "vi": "Từng nấu bếp nhà trẻ, cháo nào cũng vừa miệng bé.",
-  "en": ""
- },
- {
-  "vi": "Nhanh nhẹn, nhìn đâu cũng thấy chỗ cần dọn.",
-  "en": ""
- },
- {
-  "vi": "Liên",
-  "en": ""
- },
- {
-  "vi": "Nhớ hết món bé nào dị ứng gì.",
-  "en": ""
- },
- {
-  "vi": "Dọn đồ chơi, rửa bình",
-  "en": ""
- },
- {
-  "vi": "Nấu cháo, sơ chế món ăn",
-  "en": ""
- },
- {
-  "vi": "Giấy dặn của bố mẹ",
-  "en": ""
- },
- {
-  "vi": "Dị ứng trứng",
-  "en": ""
- },
- {
-  "vi": "Dị ứng đậu phộng",
-  "en": ""
- },
- {
-  "vi": "Dị ứng sữa bò",
-  "en": ""
- },
- {
-  "vi": "Đọc giấy dặn, nhận bé",
-  "en": ""
- },
- {
-  "vi": "Chơi vui, ngủ ngon, nhà an toàn",
-  "en": ""
- },
- {
-  "vi": "Bàn giao kể thật",
-  "en": ""
- },
- {
-  "vi": "Cô Tâm làm cô nuôi dạy trẻ hai mươi năm, về hưu vẫn không xa được tụi nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Cô mở tổ trông trẻ trong căn hộ tầng hai, cửa sổ dán đầy tranh bút sáp.",
-  "en": ""
- },
- {
-  "vi": "Cô bảo: “Trông con người ta là giữ cả trái tim của bố mẹ nó.”",
-  "en": ""
- },
- {
-  "vi": "Tờ giấy dặn",
-  "en": ""
- },
- {
-  "vi": "Ngày đầu, cô Tâm đưa bạn xấp giấy dặn cũ của các nhà, mép giấy quăn hết.",
-  "en": ""
- },
- {
-  "vi": "Dòng nào cũng có chữ in đậm: dị ứng, giờ ngủ, đồ ôm.",
-  "en": ""
- },
- {
-  "vi": "Cô nói: “Đọc như đọc thư của người thân. Mỗi dòng là một nỗi lo.”",
-  "en": ""
- },
- {
-  "vi": "Bé Bin chỉ ngủ khi ôm con gấu bông nâu đã sờn tai.",
-  "en": ""
- },
- {
-  "vi": "Hôm đầu bạn đưa nhầm con thỏ, bé khóc mãi.",
-  "en": ""
- },
- {
-  "vi": "Giờ bạn nhớ đồ ôm của từng bé, như nhớ tên các bé vậy.",
-  "en": ""
- },
- {
-  "vi": "Bé về nhà vui vẻ, kể về cô suốt buổi tối.",
   "en": ""
  }
 ]

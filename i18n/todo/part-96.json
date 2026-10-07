@@ -1,5 +1,169 @@
 [
  {
+  "vi": "Định nghĩa · cách tính",
+  "en": ""
+ },
+ {
+  "vi": "Chưa bật (0)",
+  "en": ""
+ },
+ {
+  "vi": "đã kết thúc (đến hết hôm qua)",
+  "en": ""
+ },
+ {
+  "vi": "từ đầu nhật ký đến hết hôm qua",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo số liệu vận hành",
+  "en": ""
+ },
+ {
+  "vi": "(giờ Việt Nam, UTC+7)",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ",
+  "en": ""
+ },
+ {
+  "vi": "Ra mắt",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký theo ngày từ",
+  "en": ""
+ },
+ {
+  "vi": "1. Tổng quan",
+  "en": ""
+ },
+ {
+  "vi": "chưa bật — 0",
+  "en": ""
+ },
+ {
+  "vi": "2. Tăng trưởng",
+  "en": ""
+ },
+ {
+  "vi": "3. Hoạt động",
+  "en": ""
+ },
+ {
+  "vi": "4. Giữ chân",
+  "en": ""
+ },
+ {
+  "vi": "Khoảng tin cậy Wilson 95%.",
+  "en": ""
+ },
+ {
+  "vi": "Theo tuần",
+  "en": ""
+ },
+ {
+  "vi": "5. Gắn bó",
+  "en": ""
+ },
+ {
+  "vi": "Dùng tính năng (7 ngày, % người hoạt động mỗi ngày)",
+  "en": ""
+ },
+ {
+  "vi": "6. Kinh tế",
+  "en": ""
+ },
+ {
+  "vi": "7. Chất lượng & ổn định",
+  "en": ""
+ },
+ {
+  "vi": "8. Nguồn người chơi",
+  "en": ""
+ },
+ {
+  "vi": "Nguồn (30 ngày)",
+  "en": ""
+ },
+ {
+  "vi": "9. Hạ tầng",
+  "en": ""
+ },
+ {
+  "vi": "Cơ sở dữ liệu",
+  "en": ""
+ },
+ {
+  "vi": "Dung lượng",
+  "en": ""
+ },
+ {
+  "vi": "Bản lưu (trung vị · p90)",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác/phút lúc xuất",
+  "en": ""
+ },
+ {
+  "vi": "Phụ lục: định nghĩa",
+  "en": ""
+ },
+ {
+  "vi": "Định nghĩa",
+  "en": ""
+ },
+ {
+  "vi": "Thô lỗ",
+  "en": ""
+ },
+ {
+  "vi": "Phòng hát: báo cáo, cấm bài, đóng phòng",
+  "en": ""
+ },
+ {
+  "vi": "⏭ Bỏ bài",
+  "en": ""
+ },
+ {
+  "vi": "🧩 Dừng đố",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Đóng 10 phút",
+  "en": ""
+ },
+ {
+  "vi": "Không có báo cáo nào chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ cấm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa cấm bài nào.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng công khai",
+  "en": ""
+ },
+ {
+  "vi": "Mời ra: 1 giờ mọi phòng. Khóa chat: dùng chung với tab Chat.",
+  "en": ""
+ },
+ {
+  "vi": "Bài bị cấm",
+  "en": ""
+ },
+ {
+  "vi": "· đã cấm",
+  "en": ""
+ },
+ {
   "vi": "🚫 Cấm bài",
   "en": ""
  },
@@ -1124,6 +1288,10 @@
   "en": ""
  },
  {
+  "vi": "Nhà đấu giá",
+  "en": ""
+ },
+ {
   "vi": "Quầy của bạn",
   "en": ""
  },
@@ -1629,174 +1797,6 @@
  },
  {
   "vi": "Một ngày đã xong",
-  "en": ""
- },
- {
-  "vi": "Tối nay thế nào?",
-  "en": ""
- },
- {
-  "vi": "Kết quả ngày làm",
-  "en": ""
- },
- {
-  "vi": "Lãi/lỗ hôm nay",
-  "en": ""
- },
- {
-  "vi": "Nguồn thanh toán",
-  "en": ""
- },
- {
-  "vi": "Lựa chọn chỉ áp dụng cho lần này. Đổi mặc định trong Ngân hàng.",
-  "en": ""
- },
- {
-  "vi": "Chưa đủ số dư.",
-  "en": ""
- },
- {
-  "vi": "Chọn nguồn thanh toán.",
-  "en": ""
- },
- {
-  "vi": "Việc đang làm vừa thay đổi. Bấm chuyển lần nữa để xem lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Mất kết nối. Thử lại sau một chút nhé.",
-  "en": ""
- },
- {
-  "vi": "Nhập giá bằng số nhé.",
-  "en": ""
- },
- {
-  "vi": "Mua & lắp",
-  "en": ""
- },
- {
-  "vi": "Đang có đủ việc: làm tiếp việc đang chờ nhé.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay đủ khách rồi: làm nốt rồi khép ca nhé.",
-  "en": ""
- },
- {
-  "vi": "Sắp đóng cửa: không đón thêm khách. Làm nốt rồi khép ca nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã xem hết sổ cũ.",
-  "en": ""
- },
- {
-  "vi": "Xem cũ hơn",
-  "en": ""
- },
- {
-  "vi": "Mạng hơi chậm, khu phố vẫn đang tải… Lâu quá thì bấm Tải lại nha.",
-  "en": ""
- },
- {
-  "vi": "Tải chưa xong rồi 😢 Mạng chập chờn hoặc khu phố vừa cập nhật. Bấm Tải lại là vào được nha!",
-  "en": ""
- },
- {
-  "vi": "mất kết nối",
-  "en": ""
- },
- {
-  "vi": "chưa tải được",
-  "en": ""
- },
- {
-  "vi": "Lịch bay hôm nay có khi báo danh.",
-  "en": ""
- },
- {
-  "vi": "Bảng giờ bay",
-  "en": ""
- },
- {
-  "vi": "GIỜ",
-  "en": ""
- },
- {
-  "vi": "CHUYẾN",
-  "en": ""
- },
- {
-  "vi": "ĐẾN",
-  "en": ""
- },
- {
-  "vi": "CỬA",
-  "en": ""
- },
- {
-  "vi": "TÌNH TRẠNG",
-  "en": ""
- },
- {
-  "vi": "Vào phòng tổ bay",
-  "en": ""
- },
- {
-  "vi": "Sân bay Thành phố",
-  "en": ""
- },
- {
-  "vi": "Tan ca hôm nay",
-  "en": ""
- },
- {
-  "vi": "Tan ca hiện tại, rồi chọn Mở ca quản lý để giao việc cho tổ bay.",
-  "en": ""
- },
- {
-  "vi": "Chọn Thăng tiến → Mở ca quản lý để giao việc cho tổ bay.",
-  "en": ""
- },
- {
-  "vi": "Từ bậc 3 · Cơ trưởng huấn luyện, mở Ca quản lý. Hoàn thành ngày bay tốt và trả lời buổi xét thăng chức.",
-  "en": ""
- },
- {
-  "vi": "🧑‍💼 Thăng tiến · Ca quản lý",
-  "en": ""
- },
- {
-  "vi": "🎖️ Xem lộ trình thăng tiến",
-  "en": ""
- },
- {
-  "vi": "Lịch bay hôm nay",
-  "en": ""
- },
- {
-  "vi": "Mục tiêu hôm nay",
-  "en": ""
- },
- {
-  "vi": "🎁 Có quà",
-  "en": ""
- },
- {
-  "vi": "Tổ bay hôm nay",
-  "en": ""
- },
- {
-  "vi": "SỔ BAY",
-  "en": ""
- },
- {
-  "vi": "Gần đây",
-  "en": ""
- },
- {
-  "vi": "Chưa có chuyến nào trong sổ.",
   "en": ""
  }
 ]

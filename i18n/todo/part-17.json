@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Máy đang chạy rồi, canh vạch mà dừng.",
+  "en": ""
+ },
+ {
+  "vi": "Rè rè rè… kim chạy dọc đường phấn. Dừng khi kim tới vạch xanh!",
+  "en": ""
+ },
+ {
+  "vi": "Máy chưa chạy.",
+  "en": ""
+ },
+ {
+  "vi": "Kim chưa tới vạch, đạp thêm chút nữa rồi dừng.",
+  "en": ""
+ },
+ {
+  "vi": "Dừng ngay vạch! Đường may thẳng băng, lại mũi gọn gàng.",
+  "en": ""
+ },
+ {
+  "vi": "Hơi lố vạch, cuối đường may bị xiên một chút. Thôi, tính tiền cho khách.",
+  "en": ""
+ },
+ {
+  "vi": "Cắt lố tay, quần giờ cao tới mắt cá, mặc như quần lửng.",
+  "en": ""
+ },
+ {
+  "vi": "Bóp lố tay, giờ mặc vào nín thở không nổi.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa rồi mà vẫn còn dài, chắc phải mang lại lần nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Bóp rồi mà eo vẫn còn rộng.",
+  "en": ""
+ },
+ {
+  "vi": "Đường may hơi xiên, nhìn kỹ là thấy.",
+  "en": ""
+ },
+ {
+  "vi": "đường may bị xiên",
+  "en": ""
+ },
+ {
+  "vi": "Phòng thử đã vãn khách.",
+  "en": ""
+ },
+ {
+  "vi": "Không có thẻ số nên chẳng biết khách mang vào mấy món.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có ai cần kiểm.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng thử trống trơn, không còn món nào trên móc.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm nghi oan khách ngay trước phòng thử, tôi đứng ngoài mà ngại giùm.",
+  "en": ""
+ },
+ {
+  "vi": "nghi oan khách ở phòng thử",
+  "en": ""
+ },
+ {
+  "vi": "Tối kiểm hàng mới biết mất một món.",
+  "en": ""
+ },
+ {
+  "vi": "Việc phòng thử không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng thử lộn xộn, đồ vào ra không ai đếm.",
+  "en": ""
+ },
+ {
+  "vi": "để mất đồ ở phòng thử",
+  "en": ""
+ },
+ {
+  "vi": "Mất ở phòng thử",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tem, hóa đơn hoặc tình trạng đồ.",
+  "en": ""
+ },
+ {
+  "vi": "Xác nhận cách xử lý đổi trả.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn hoàn tiền, đổi hàng hoặc từ chối.",
+  "en": ""
+ },
+ {
+  "vi": "Cách nói không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác đổi trả không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Tem mác còn nguyên, bấm chỉ chắc chắn.",
+  "en": ""
+ },
+ {
+  "vi": "Tem mác đã bị cắt, chỉ còn lỗ bấm.",
+  "en": ""
+ },
+ {
+  "vi": "Khách không có hóa đơn: “Chị lỡ làm mất rồi.”",
+  "en": ""
+ },
+ {
+  "vi": ", có dấu đỏ “SALE — không đổi trả”.",
+  "en": ""
+ },
+ {
+  "vi": "Đường may bị bung một đoạn — lỗi may của xưởng, không phải do khách.",
+  "en": ""
+ },
+ {
+  "vi": "Cổ áo có vệt phấn, nách còn mùi nước hoa, vải hơi xù — đồ đã mặc rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Vải còn mới tinh, gấp nếp nguyên như lúc mua.",
+  "en": ""
+ },
+ {
+  "vi": "Áo bung chỉ sau một lần mặc mà tiệm còn chối, không nhận lỗi.",
+  "en": ""
+ },
+ {
+  "vi": "từ chối đổi đồ lỗi của tiệm",
+  "en": ""
+ },
+ {
+  "vi": "Đồ còn tem, có hóa đơn, đúng hạn mà tiệm không cho đổi.",
+  "en": ""
+ },
+ {
+  "vi": "từ chối đổi trả đúng chính sách",
+  "en": ""
+ },
+ {
+  "vi": "Tôi hỏi đổi trả thôi mà nhân viên nói chuyện như đuổi khách.",
+  "en": ""
+ },
+ {
+  "vi": "nói chuyện cộc lốc với khách",
+  "en": ""
+ },
+ {
+  "vi": "đồ đã mặc, tem đã cắt",
+  "en": ""
+ },
+ {
+  "vi": "hàng sale không đổi trả",
+  "en": ""
+ },
+ {
+  "vi": "không có hóa đơn nên chỉ đổi hàng được thôi",
+  "en": ""
+ },
+ {
+  "vi": "theo chính sách",
+  "en": ""
+ },
+ {
+  "vi": "chỉ vào bảng chính sách, nhẹ nhàng giải thích",
+  "en": ""
+ },
+ {
+  "vi": "Món cũ còn tem, treo lại lên giá.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ đổi trả không bán lại được",
+  "en": ""
+ },
+ {
+  "vi": "Món cũ không bán lại được nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm dễ dãi thật, đồ mặc đi tiệc rồi vẫn nhận lại.",
+  "en": ""
+ },
+ {
+  "vi": "nhận lại đồ đã mặc",
+  "en": ""
+ },
+ {
+  "vi": "Mất hóa đơn mà tiệm vẫn hoàn tiền mặt, dễ ghê.",
+  "en": ""
+ },
+ {
+  "vi": "hoàn tiền khi không có hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "Tưởng không đổi được, ai dè tiệm vẫn nhận. Dễ vậy lần sau tôi đổi hoài.",
+  "en": ""
+ },
+ {
+  "vi": "đổi trả sai chính sách",
+  "en": ""
+ },
+ {
+  "vi": "Giá tem không có trong máy in.",
+  "en": ""
+ },
+ {
+  "vi": "Treo tem sale lên giá?",
+  "en": ""
+ },
+ {
+  "vi": "Còn món chưa in tem sale.",
+  "en": ""
+ },
+ {
+  "vi": "Tem sale ghi thấp hơn bảng, khách mua hời mà tiệm lỗ.",
+  "en": ""
+ },
+ {
+  "vi": "tem sale cao hơn bảng giảm giá",
+  "en": ""
+ },
+ {
+  "vi": "Bạn treo tem sale cuối mùa cho chị Vy.",
+  "en": ""
+ },
+ {
+  "vi": "Tem sale đã lên giá, khách ghé lựa rần rần.",
+  "en": ""
+ },
+ {
+  "vi": "Tem sale ghi thấp hơn bảng",
+  "en": ""
+ },
+ {
+  "vi": "Có khách cầm tem ra quầy hỏi sao giảm không đúng bảng.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác tem sale không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Gói đã dán băng keo rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Gói đầy rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Không có gì để lấy ra.",
+  "en": ""
+ },
+ {
+  "vi": "Đã lấy món đó ra khỏi gói.",
+  "en": ""
+ },
+ {
+  "vi": "Gói còn trống.",
+  "en": ""
+ },
+ {
+  "vi": "Gói đã dán rồi.",
+  "en": ""
+ },
+ {
+  "vi": "đã thanh toán, không thu hộ.",
+  "en": ""
+ },
+ {
+  "vi": "In phiếu giao trước rồi dán gói.",
+  "en": ""
+ },
+ {
+  "vi": "Dán băng keo hai vòng, dán phiếu lên mặt gói. Sẵn sàng giao!",
+  "en": ""
+ },
+ {
+  "vi": "Giao gói hàng cho shipper?",
+  "en": ""
+ },
+ {
+  "vi": "In phiếu giao trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác đơn online không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "gửi sai size/màu",
+  "en": ""
+ },
+ {
+  "vi": "gửi thiếu món",
+  "en": ""
+ },
+ {
+  "vi": "Gói hàng có thêm món tôi không đặt, lại phải gửi trả.",
+  "en": ""
+ },
+ {
+  "vi": "gửi dư món",
+  "en": ""
+ },
+ {
+  "vi": "Gói hàng tới nơi bung băng keo, đồ lấm bụi.",
+  "en": ""
+ },
+ {
+  "vi": "gói hàng không dán kỹ",
+  "en": ""
+ },
+ {
+  "vi": "Phí ship đơn online",
+  "en": ""
+ },
+ {
+  "vi": "Tiền chuyển khoản",
+  "en": ""
+ },
+ {
+  "vi": "Ma-nơ-canh mặc đủ rồi, bớt món ra trước.",
+  "en": ""
+ },
+ {
+  "vi": "Ma-nơ-canh đang trống.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cởi món đó ra.",
+  "en": ""
+ },
+ {
+  "vi": "Mặc đồ lên ma-nơ-canh trước rồi hấp.",
+  "en": ""
+ },
+ {
+  "vi": "Món này phẳng rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Xì xì… hơi nước phả ra, nếp nhăn biến mất.",
+  "en": ""
+ },
+ {
+  "vi": "Trưng bày bộ này?",
+  "en": ""
+ },
+ {
+  "vi": "Ma-nơ-canh còn trống.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác trưng bày không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "người ta nhìn mình",
+  "en": ""
+ },
+ {
+  "vi": "khách đi ngang ngó rồi lắc đầu",
+  "en": ""
+ },
+ {
+  "vi": "Đồ trên ma-nơ-canh còn nhăn nhúm, nhìn kém sang.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn thay đồ cho ma-nơ-canh cạnh cửa.",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đồ đẹp tới mức mấy chị đi ngang dừng xe chụp ảnh!",
+  "en": ""
+ },
+ {
+  "vi": "Ma-nơ-canh nhìn tươi hẳn, khách ghé hỏi giá.",
+  "en": ""
+ },
+ {
+  "vi": "Cũng được, nhưng chưa ai dừng lại ngắm.",
+  "en": ""
+ },
+ {
+  "vi": "Bộ đồ lạc chủ đề, chị Vy lắc đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Không có khách nào đang chờ đổi size.",
+  "en": ""
+ },
+ {
+  "vi": "Đổi size hoặc hoàn tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Đã ủi hơi giúp một món trên ma-nơ-canh.",
+  "en": ""
+ },
+ {
+  "vi": "Đã ủi hơi mấy chiếc sơ mi trên giá cho phẳng phiu.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xếp túi zip, cuộn băng keo và phiếu giao cho gọn.",
+  "en": ""
+ },
+ {
+  "vi": "Đã gấp lại đồ khách thử, treo lên giá đúng size.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe khách tả → xem bảng size (form sơ mi ôm: lấy lớn hơn một size so với shop khác) → lấy đúng món, đúng màu → chưa chắc thì mời thử → tính tiền, thối đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Xem dịp, ngân sách và lời khách dặn → chọn váy/đầm hoặc áo + quần, đúng size khách nói → tránh màu kiêng → thêm phụ kiện hợp dịp → tính tiền. Lố ngân sách: 💬 trao đổi với khách.",
+  "en": ""
+ },
+ {
+  "vi": "Đo trước → tự may (dừng máy đúng vạch xanh) hoặc gửi Bà Tư (chắc ăn, mất 40% công) → tính tiền công.",
+  "en": ""
+ },
+ {
+  "vi": "Đếm số món khách cầm vào → đưa thẻ số → khách ra thì đếm lại → thiếu: kiểm phòng trước, rồi hỏi khéo → tính tiền cho khách mua.",
+  "en": ""
+ },
+ {
+  "vi": "Xem tem, hóa đơn, tình trạng đồ → đối chiếu chính sách → hoàn tiền, đổi hoặc từ chối nhẹ nhàng.",
+  "en": ""
+ },
+ {
+  "vi": "Giá sale = giá gốc × (100 − % giảm) ÷ 100, làm tròn xuống → in đúng tem → treo lên giá.",
+  "en": ""
+ },
+ {
+  "vi": "Đọc tin nhắn → bỏ đúng món, size, màu vào gói → in phiếu (COD = tiền gói) → dán gói → giao shipper.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn bộ hợp chủ đề → hấp phẳng từng món → trưng bày.",
+  "en": ""
+ },
+ {
+  "vi": "Đúng size, đúng màu",
+  "en": ""
+ },
+ {
+  "vi": "mặc vừa như đo",
+  "en": ""
+ },
+ {
+  "vi": "phải quay lại đổi size",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ lời khách dặn",
+  "en": ""
+ },
+ {
+  "vi": "quên mất lời dặn",
+  "en": ""
+ },
+ {
+  "vi": "tiệm hết món khách hỏi",
+  "en": ""
+ },
+ {
+  "vi": "nhớ đúng lời dặn",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện ngân sách",
+  "en": ""
+ },
+ {
+  "vi": "khách chịu chi thêm",
+  "en": ""
+ },
+ {
+  "vi": "được bớt cho vừa túi",
+  "en": ""
+ },
+ {
+  "vi": "tư vấn món vừa túi tiền",
+  "en": ""
+ },
+ {
+  "vi": "nói thật, không ép",
+  "en": ""
+ },
+ {
+  "vi": "Gu phối đồ",
+  "en": ""
+ },
+ {
+  "vi": "hợp dịp, có điểm nhấn",
+  "en": ""
+ },
+ {
+  "vi": "hợp dịp",
+  "en": ""
+ },
+ {
+  "vi": "chưa hợp dịp",
+  "en": ""
+ },
+ {
+  "vi": "gọn gàng, lịch sự",
+  "en": ""
+ },
+ {
+  "vi": "Đường may",
+  "en": ""
+ },
+ {
+  "vi": "vừa như đo",
+  "en": ""
+ },
+ {
+  "vi": "chưa chuẩn",
+  "en": ""
+ },
+ {
+  "vi": "Đúng chính sách",
+  "en": ""
+ },
+ {
+  "vi": "xử lý rõ ràng",
+  "en": ""
+ },
+ {
+  "vi": "tạm được",
+  "en": ""
+ },
+ {
+  "vi": "chưa đúng chính sách",
+  "en": ""
+ },
+ {
+  "vi": "Thái độ",
+  "en": ""
+ },
+ {
+  "vi": "cộc lốc",
+  "en": ""
+ },
+ {
   "vi": "Đúng đơn",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Ba hộp mang về cho tổ thợ: hai hộp cơm tấm sườn, một hộp thịt kho rau. Hộp nào cũng thêm cơm nha!",
-  "en": ""
- },
- {
-  "vi": "Mấy anh thợ ngồi chờ trên giàn giáo đầu hẻm.",
-  "en": ""
- },
- {
-  "vi": "Bà Sương ghé quán",
-  "en": ""
- },
- {
-  "vi": "Cho bà dĩa cơm trắng với cá kho, ít cơm, thêm chén canh nghe con.",
-  "en": ""
- },
- {
-  "vi": "Bà Sương chọn bàn gần cây quạt máy.",
-  "en": ""
- },
- {
-  "vi": "Nhi rủ bạn cùng phòng",
-  "en": ""
- },
- {
-  "vi": "Hai dĩa nha chị: một dĩa sườn ốp la lòng đào, một dĩa cá kho rau muống, cơm vừa.",
-  "en": ""
- },
- {
-  "vi": "Nhi với bạn chia nhau cái ghế đẩu.",
-  "en": ""
- },
- {
-  "vi": "Bà Sương ăn chay",
-  "en": ""
- },
- {
-  "vi": "Bữa nay rằm, bà ăn chay. Cho bà dĩa tàu hũ với rau muống, nước tương, đừng cho mỡ hành nghe con.",
-  "en": ""
- },
- {
-  "vi": "Bà Sương lần tràng hạt. Canh của quán nấu tôm khô nên bà khỏi.",
-  "en": ""
- },
- {
-  "vi": "Chị Lụa mua hộp chay",
-  "en": ""
- },
- {
-  "vi": "Rằm rồi, gói chị hộp chay mang lên chùa: tàu hũ với rau, nước tương để riêng, đừng cho hành mỡ.",
-  "en": ""
- },
- {
-  "vi": "Chị Lụa cầm sẵn bó nhang.",
-  "en": ""
- },
- {
-  "vi": "Chị Lụa trú mưa",
-  "en": ""
- },
- {
-  "vi": "Mưa quá, cho chị hộp cơm tấm sườn bì mang về, thêm bịch canh nóng nha.",
-  "en": ""
- },
- {
-  "vi": "Chị Lụa trùm áo mưa, rau ngoài sạp đã che bạt.",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân ngại mưa",
-  "en": ""
- },
- {
-  "vi": "Em ơi mưa quá, cho chị hộp cơm phần: thịt kho với rau, ít cơm, nước mắm để riêng nha.",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân đứng dưới mái hiên, giũ dù.",
-  "en": ""
- },
- {
-  "vi": "Chú Bình ngày chợ phiên",
-  "en": ""
- },
- {
-  "vi": "Chợ đông quá con ơi! Dĩa sườn bì chả, chú ăn lẹ còn chạy cuốc.",
-  "en": ""
- },
- {
-  "vi": "Khách đi chợ đứng chờ xe ôm sau lưng chú.",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh với thằng em",
-  "en": ""
- },
- {
-  "vi": "Hai dĩa sườn ốp la chín, dĩa nào cũng thêm cơm, anh với thằng em.",
-  "en": ""
- },
- {
-  "vi": "Thằng em anh Mạnh mới lên thành phố làm phụ hồ.",
-  "en": ""
- },
- {
-  "vi": "Đơn cơm văn phòng của chị Ngân",
-  "en": ""
- },
- {
-  "vi": "Em ơi, phòng chị đặt bốn hộp: hai hộp sườn bì chả, một hộp thịt kho rau, một hộp chay tàu hũ rau. Hộp nào nước mắm cũng để riêng, hộp chay thì nước tương, không hành mỡ.",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân nhắn kèm danh sách: mười hai giờ đúng anh bảo vệ ra lấy.",
-  "en": ""
- },
- {
-  "vi": "Chú Bình: “Cơm tấm phải có miếng sườn cháy cạnh mới ngon con ạ.”",
-  "en": ""
- },
- {
-  "vi": "Chú Bình kể hồi xưa chú chở dì Bảy đi chợ đầu mối mỗi sáng.",
-  "en": ""
- },
- {
-  "vi": "Chú Bình để dành cho quán mấy trái chanh nhà trồng.",
-  "en": ""
- },
- {
-  "vi": "Chú Bình giới thiệu cả nhóm xe ôm đầu hẻm ra quán ăn sáng.",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân: “Cả phòng chị khen nước mắm quán em ngon nhất chợ.”",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân được lên kế toán trưởng, khao cả phòng một bữa cơm tấm.",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân bảo giờ phòng chị chỉ đặt cơm ở quán mình.",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh: “Làm hồ mà ăn ít cơm là chiều xỉu đó em.”",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh khoe công trình đầu hẻm sắp cất nóc.",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh sửa giùm quán cái chân bàn bị khập khiễng.",
-  "en": ""
- },
- {
-  "vi": "Nhi: “Ăn cơm dì Bảy như ăn cơm nhà.”",
-  "en": ""
- },
- {
-  "vi": "Nhi thi xong học kỳ, được học bổng, ghé quán khoe.",
-  "en": ""
- },
- {
-  "vi": "Nhi rủ cả phòng trọ ra quán ăn mừng sinh nhật.",
-  "en": ""
- },
- {
-  "vi": "Bà Sương: “Quán nhớ bà ăn chay, bà mừng lắm.”",
-  "en": ""
- },
- {
-  "vi": "Bà Sương dặn dì Bảy giữ sức, đừng thức khuya quá.",
-  "en": ""
- },
- {
-  "vi": "Bà Sương mang tặng quán chậu húng quế bà trồng.",
-  "en": ""
- },
- {
-  "vi": "Chị Lụa: “Rau muống quán xào giòn ghê, rau của chị đó!”",
-  "en": ""
- },
- {
-  "vi": "Chị Lụa để dành cho quán bó rau muống non nhất sạp.",
-  "en": ""
- },
- {
-  "vi": "Chị Lụa rủ mấy bà bạn hàng ra quán ăn trưa.",
-  "en": ""
- },
- {
-  "vi": "Giới thiệu nghề: bán cơm",
-  "en": ""
- },
- {
-  "vi": "Một xe cơm có tủ kính, cái bếp than nướng sườn, hai nồi cơm điện và mấy cái bàn nhựa đỏ ở đầu chợ. Dì Bảy nấu từ bốn giờ sáng, bạn đứng quầy bán giúp dì.",
-  "en": ""
- },
- {
-  "vi": "Nấu hai nồi: cơm tấm lưng đốt nước, cơm trắng một đốt",
-  "en": ""
- },
- {
-  "vi": "Nếm chén nước mắm, mặn thì thêm nước, lạt thì thêm mắm",
-  "en": ""
- },
- {
-  "vi": "Nhóm bếp than, nướng sườn: mỗi mặt 8–16 giây, trở một lần",
-  "en": ""
- },
- {
-  "vi": "Bày khay lên tủ kính: đủ bán, đừng dư",
-  "en": ""
- },
- {
-  "vi": "Mỗi dĩa: xới đúng nồi, đúng số vá, gắp đúng món khách gọi",
-  "en": ""
- },
- {
-  "vi": "Mỡ hành, nước mắm, chén canh theo lời khách dặn",
-  "en": ""
- },
- {
-  "vi": "Hộp mang về: nước mắm luôn để riêng",
-  "en": ""
- },
- {
-  "vi": "Thu tiền, thối đúng",
-  "en": ""
- },
- {
-  "vi": "Chú Bình: cơm tấm sườn mỗi sáng",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân: đơn cơm hộp cho cả phòng",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh: dĩa nào cũng thêm cơm",
-  "en": ""
- },
- {
-  "vi": "Nhi: sinh viên, tính từng đồng",
-  "en": ""
- },
- {
-  "vi": "Bà Sương: ăn chay ngày rằm",
-  "en": ""
- },
- {
-  "vi": "Mưa dầm, chợ phiên, ngày rằm",
-  "en": ""
- },
- {
-  "vi": "Cơm dẻo, đủ vá",
-  "en": ""
- },
- {
-  "vi": "Sườn vàng đều, chín tới",
-  "en": ""
- },
- {
-  "vi": "Đúng món, đúng lời dặn",
-  "en": ""
- },
- {
-  "vi": "Nước mắm vừa miệng",
-  "en": ""
- },
- {
-  "vi": "Nhớ người ăn chay",
-  "en": ""
- },
- {
-  "vi": "Thối đúng tiền",
-  "en": ""
- },
- {
-  "vi": "Ruồi bu quanh tủ kính",
-  "en": ""
- },
- {
-  "vi": "Trưa nắng, mấy con ruồi bay vo ve quanh khay thịt kho. Cửa tủ kính để mở từ sáng.",
-  "en": ""
- },
- {
-  "vi": "Kéo cửa kính lại, giăng vợt ruồi, lau mặt tủ",
-  "en": ""
- },
- {
-  "vi": "Tủ kính đóng kín, ruồi bay đi. Khách đứng chọn món thấy sạch sẽ.",
-  "en": ""
- },
- {
-  "vi": "Bật quạt thổi ruồi",
-  "en": ""
- },
- {
-  "vi": "Ruồi bay đi một lúc rồi quay lại, quạt thổi bay cả khăn giấy.",
-  "en": ""
- },
- {
-  "vi": "Kệ, chợ nào chả có ruồi",
-  "en": ""
- },
- {
-  "vi": "Ruồi bu đầy tủ kính đồ ăn mà quán cũng kệ.",
-  "en": ""
- },
- {
-  "vi": "Chị Ngân đứng chọn món, nhăn mặt rồi đi quán khác.",
-  "en": ""
- },
- {
-  "vi": "Khói bếp than bay vào nhà bên",
-  "en": ""
- },
- {
-  "vi": "Gió đổi chiều, khói bếp than bay thẳng vào tiệm may bên cạnh. Cô chủ tiệm may ra đứng chống nạnh.",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi, dời bếp ra mép đường, quạt khói về phía chợ",
-  "en": ""
- },
- {
-  "vi": "Khách chờ chút",
-  "en": ""
- },
- {
-  "vi": "Khói bay ra phía chợ. Cô chủ tiệm may gật đầu, trưa còn ra mua hộp cơm.",
-  "en": ""
- },
- {
-  "vi": "Dạ, nướng xong mẻ này con dời",
-  "en": ""
- },
- {
-  "vi": "Cô chủ tiệm may đóng cửa cái rầm.",
-  "en": ""
- },
- {
-  "vi": "“Quán bán ở đây hai chục năm rồi”",
-  "en": ""
- },
- {
-  "vi": "Quán cơm hun khói cả dãy phố, nói còn cãi.",
-  "en": ""
- },
- {
-  "vi": "Cô chủ tiệm may gọi tổ dân phố ra nhắc.",
-  "en": ""
- },
- {
-  "vi": "Cô bán vé số xin chén cơm",
-  "en": ""
- },
- {
-  "vi": "Một cô bán vé số tóc bạc, xấp vé còn dày, đứng nép bên tủ kính: “Con ơi, cô xin chén cơm với chút nước mắm thôi…”",
-  "en": ""
- },
- {
-  "vi": "Mời cô ngồi, xới dĩa cơm có miếng thịt kho",
-  "en": ""
- },
- {
-  "vi": "Mất một phần cơm",
-  "en": ""
- },
- {
-  "vi": "Cô ăn chậm rãi, cảm ơn mãi. Dì Bảy nghe kể: “Làm vậy là phải đó con.”",
-  "en": ""
- },
- {
-  "vi": "Gói cho cô hộp cơm trắng với chén nước mắm",
-  "en": ""
- },
- {
-  "vi": "Cô cầm hộp cơm, cúi đầu cảm ơn rồi đi tiếp.",
-  "en": ""
- },
- {
-  "vi": "“Quán đang đông, cô đi chỗ khác giùm”",
-  "en": ""
- },
- {
-  "vi": "Bà cụ bán vé số xin chén cơm mà quán đuổi đi. Buồn.",
-  "en": ""
- },
- {
-  "vi": "Cô lặng lẽ đi. Mấy người khách nhìn nhau.",
-  "en": ""
- },
- {
-  "vi": "Phường kiểm tra an toàn thực phẩm",
-  "en": ""
- },
- {
-  "vi": "Hai anh cán bộ phường ghé: “Quán cho xem giấy nguồn gốc thịt, cá; tủ kính, thớt dao để sống chín riêng chưa?”",
-  "en": ""
- },
- {
-  "vi": "Đưa sổ nhập hàng, chỉ thớt sống chín riêng, đeo găng khi gắp",
-  "en": ""
- },
- {
-  "vi": "Hai anh ghi biên bản: quán sạch sẽ, có nguồn gốc rõ ràng. Còn dặn giữ vậy nha.",
-  "en": ""
- },
- {
-  "vi": "Hẹn chiều dì Bảy về rồi đưa giấy",
-  "en": ""
- },
- {
-  "vi": "Hai anh hẹn chiều quay lại, khách đứng chờ một lúc.",
-  "en": ""
- },
- {
-  "vi": "Dúi phong bì cho “xong việc”",
-  "en": ""
- },
- {
-  "vi": "Quán cơm đầu chợ dúi tiền đoàn kiểm tra, có gì khuất tất mới vậy.",
-  "en": ""
- },
- {
-  "vi": "Hai anh từ chối thẳng, ghi thêm một dòng vào biên bản.",
-  "en": ""
- },
- {
-  "vi": "Người xin mua đồ ăn hôm qua giá rẻ",
-  "en": ""
- },
- {
-  "vi": "Một anh bán xôi đầu hẻm hỏi: “Đồ ăn dư hôm qua quán còn không, bán rẻ anh hâm lại bán sáng.”",
-  "en": ""
- },
- {
-  "vi": "Đồ ăn qua đêm quán bỏ hết, không bán cho ai",
-  "en": ""
- },
- {
-  "vi": "Anh ấy gật gù: “Vậy mới giữ được khách hai chục năm.”",
-  "en": ""
- },
- {
-  "vi": "Rủ anh ấy mua nồi canh mới nấu sáng nay",
-  "en": ""
- },
- {
-  "vi": "Anh ấy mua nửa nồi canh chua, trả tiền đàng hoàng.",
-  "en": ""
- },
- {
-  "vi": "Mưa tạt vào bàn ăn",
-  "en": ""
- },
- {
-  "vi": "Mưa xéo tạt ướt hai bàn ngoài, nước nhỏ giọt xuống chén nước mắm.",
-  "en": ""
- },
- {
-  "vi": "Kéo bạt, dời bàn vào mái hiên, thay chén nước mắm mới",
-  "en": ""
- },
- {
-  "vi": "Mất chút thời gian",
-  "en": ""
- },
- {
-  "vi": "Khách ngồi khô ráo, ăn xong còn ngồi lại uống trà đá chờ tạnh.",
-  "en": ""
- },
- {
-  "vi": "Hai khách ngồi ngoài bỏ dở dĩa cơm vì ướt.",
-  "en": ""
- },
- {
-  "vi": "Chợ phiên: hàng chờ dài",
-  "en": ""
- },
- {
-  "vi": "Chợ phiên đông nghẹt, hàng chờ cơm tấm kéo ra tới sạp rau của chị Lụa. Vỉ sườn chỉ còn hai miếng.",
-  "en": ""
- },
- {
-  "vi": "Nướng mẻ sườn mới, nhờ chị Lụa kêu khách xếp hàng",
-  "en": ""
- },
- {
-  "vi": "Khói sườn thơm lừng, khách xếp hàng trật tự, không ai bỏ đi.",
-  "en": ""
- },
- {
-  "vi": "Bày ghế thêm cho khách ngồi chờ",
-  "en": ""
- },
- {
-  "vi": "Khách ngồi chờ, có người sốt ruột nhìn đồng hồ.",
-  "en": ""
- },
- {
-  "vi": "Miếng sườn còn hồng",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh cắt miếng sườn, chìa cái đĩa ra: “Em coi nè, giữa miếng thịt còn hồng hồng, ăn vô đau bụng ai chịu?”",
-  "en": ""
- },
- {
-  "vi": "Bạn là anh Mạnh, làm hồ cả ngày, chỉ mong một dĩa cơm tấm tử tế.",
-  "en": ""
- },
- {
-  "vi": "Vỉ nướng",
-  "en": ""
- },
- {
-  "vi": "Mẻ sườn vừa rồi lật sớm, mặt dưới chỉ nướng được năm giây.",
-  "en": ""
- },
- {
-  "vi": "Thịt heo",
-  "en": ""
- },
- {
-  "vi": "Thịt heo phải chín hẳn, không còn hồng ở giữa mới ăn được.",
-  "en": ""
- },
- {
-  "vi": "Trên vỉ",
-  "en": ""
- },
- {
-  "vi": "Trên vỉ còn hai miếng sườn mới nướng vàng đều.",
-  "en": ""
- },
- {
-  "vi": "Xin lỗi, đổi ngay miếng sườn chín, nướng lại mẻ kia cho kỹ",
-  "en": ""
- },
- {
-  "vi": "Miếng sườn chưa chín nhưng quán đổi liền, xin lỗi đàng hoàng. Lần sau ăn tiếp.",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh ăn hết dĩa, còn dặn: “Nướng kỹ nghen em.”",
-  "en": ""
- },
- {
-  "vi": "Sai mà sửa liền thì được.",
-  "en": ""
- },
- {
-  "vi": "Thịt heo thì chín mới bán, chậm chút cũng được.",
-  "en": ""
- },
- {
-  "vi": "Bớt cho anh ít tiền",
-  "en": ""
- },
- {
-  "vi": "Bớt tiền thì bớt, nhưng miếng sườn sống vẫn nằm đó.",
-  "en": ""
- },
- {
-  "vi": "Anh Mạnh lắc đầu, gạt miếng sườn ra mép dĩa.",
   "en": ""
  }
 ]

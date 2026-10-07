@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Số hóa đơn nhảy cóc, cơ quan thuế hỏi thì cả phòng toát mồ hôi.",
+  "en": ""
+ },
+ {
+  "vi": "Dãy số hóa đơn bị hụt; công ty phải giải trình với cơ quan thuế.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn đã gửi là đã nằm trên hệ thống thuế, xóa sao được.",
+  "en": ""
+ },
+ {
+  "vi": "Số hóa đơn nhảy cóc là chỗ tôi soi đầu tiên.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo Bảo cứ để đó, cuối tháng tính",
+  "en": ""
+ },
+ {
+  "vi": "Để lâu khách quên ký biên bản, em lại phải chạy đi xin.",
+  "en": ""
+ },
+ {
+  "vi": "Cuối tháng mới xử lý, mất thêm hai ngày đi xin chữ ký.",
+  "en": ""
+ },
+ {
+  "vi": "Em tưởng xong rồi, ai ngờ còn phải chạy lại.",
+  "en": ""
+ },
+ {
+  "vi": "Việc nhỏ dồn cuối tháng là thành việc lớn.",
+  "en": ""
+ },
+ {
+  "vi": "Hóa đơn đã gửi khách không xóa: lập biên bản, xuất hóa đơn điều chỉnh, để kho và sổ cùng khớp.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn điểm đến trước khi lái.",
+  "en": ""
+ },
+ {
+  "vi": "Ngã tư này ngoài chặng đang giao. Quay lại theo mũi tên nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin đèn giao thông sai.",
+  "en": ""
+ },
+ {
+  "vi": "Ngã tư không có đèn này.",
+  "en": ""
+ },
+ {
+  "vi": "Thông tin vượt ngã tư sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chặng đã đổi. Xem đèn trước khi qua ngã tư.",
+  "en": ""
+ },
+ {
+  "vi": "Vượt đèn đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Vượt đèn đỏ ·",
+  "en": ""
+ },
+ {
+  "vi": "🚦 Đèn vừa chuyển đỏ: miễn phạt trong 1 giây đầu để kịp dừng an toàn.",
+  "en": ""
+ },
+ {
+  "vi": "🚦 Đã qua ngã tư đúng tín hiệu.",
+  "en": ""
+ },
+ {
+  "vi": "⛽ Ghé cây xăng",
+  "en": ""
+ },
+ {
+  "vi": "Bù thiếu tiền COD",
+  "en": ""
+ },
+ {
+  "vi": "Đền một phần giá trị hàng hỏng (bảo hiểm trả phần còn lại)",
+  "en": ""
+ },
+ {
+  "vi": "Cuối ca túi COD sẽ thiếu đúng chừng đó.",
+  "en": ""
+ },
+ {
+  "vi": "thối thiếu, về nhà mới thấy",
+  "en": ""
+ },
+ {
+  "vi": "thối dư, khách trả lại",
+  "en": ""
+ },
+ {
+  "vi": "Tiền thối dư sai.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền khách cho sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chặng tự lái sai.",
+  "en": ""
+ },
+ {
+  "vi": "Pít-tông cao su",
+  "en": ""
+ },
+ {
+  "vi": "Hút đẩy chỗ tắc gần miệng: bồn rửa, bồn cầu.",
+  "en": ""
+ },
+ {
+  "vi": "Dây lò xo tay 5 m",
+  "en": ""
+ },
+ {
+  "vi": "Móc tóc, cặn xà phòng trong đoạn ống ngắn.",
+  "en": ""
+ },
+ {
+  "vi": "Máy lò xo điện 15 m",
+  "en": ""
+ },
+ {
+  "vi": "Đường ống dài, giấy vón cục, rễ cây.",
+  "en": ""
+ },
+ {
+  "vi": "Máy phun áp lực",
+  "en": ""
+ },
+ {
+  "vi": "Rửa trôi mỡ đông, bùn đặc bám thành ống.",
+  "en": ""
+ },
+ {
+  "vi": "Camera nội soi",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn tận chỗ tắc, biết chắc nguyên nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Móc gắp dài",
+  "en": ""
+ },
+ {
+  "vi": "Gắp đồ rơi, tổ chim trong ống thông hơi.",
+  "en": ""
+ },
+ {
+  "vi": "Xẻng, xô, gầu múc bùn",
+  "en": ""
+ },
+ {
+  "vi": "Múc bùn, rác lắng dưới hố ga.",
+  "en": ""
+ },
+ {
+  "vi": "Máy đo khí, quạt thông gió",
+  "en": ""
+ },
+ {
+  "vi": "Bắt buộc trước khi xuống hố ga.",
+  "en": ""
+ },
+ {
+  "vi": "Bồn rửa bát",
+  "en": ""
+ },
+ {
+  "vi": "Lavabo rửa mặt",
+  "en": ""
+ },
+ {
+  "vi": "Thoát sàn nhà tắm",
+  "en": ""
+ },
+ {
+  "vi": "Bồn cầu",
+  "en": ""
+ },
+ {
+  "vi": "Ống thoát chính",
+  "en": ""
+ },
+ {
+  "vi": "Hố ga ngõ",
+  "en": ""
+ },
+ {
+  "vi": "Ống thông hơi trên mái",
+  "en": ""
+ },
+ {
+  "vi": "Tóc, cặn xà phòng",
+  "en": ""
+ },
+ {
+  "vi": "Camera thấy một búi tóc quấn cặn xà phòng trắng đục, cách miệng ống một gang tay.",
+  "en": ""
+ },
+ {
+  "vi": "Mỡ đông bám ống",
+  "en": ""
+ },
+ {
+  "vi": "Thành ống phủ một lớp mỡ vàng đặc quánh, lòng ống chỉ còn bằng ngón tay.",
+  "en": ""
+ },
+ {
+  "vi": "Giấy ướt, băng vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Một cục giấy ướt, băng vệ sinh vón lại chặn ngay khúc cua đầu tiên.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ vật rơi vào ống",
+  "en": ""
+ },
+ {
+  "vi": "Một món đồ chơi nhựa màu đỏ kẹt ngang ống.",
+  "en": ""
+ },
+ {
+  "vi": "Rễ cây đâm vào ống",
+  "en": ""
+ },
+ {
+  "vi": "Rễ cây như bộ râu chui qua mối nối, đan kín lòng ống.",
+  "en": ""
+ },
+ {
+  "vi": "Bùn, rác lắng trong hố ga",
+  "en": ""
+ },
+ {
+  "vi": "Đáy hố ga đầy bùn đen, túi ni-lông, lá cây, nước không thoát được.",
+  "en": ""
+ },
+ {
+  "vi": "Ống thông hơi bị tắc",
+  "en": ""
+ },
+ {
+  "vi": "Trong ống thoát không có gì tắc. Nước chảy chậm vì thiếu hơi.",
+  "en": ""
+ },
+ {
+  "vi": "Ống xi-phông nứt, lỏng",
+  "en": ""
+ },
+ {
+  "vi": "Ống xi-phông dưới bồn nứt một đường, gioăng mục, nước rỉ ra ngoài.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi thêm",
+  "en": ""
+ },
+ {
+  "vi": "Mở nắp, soi đèn",
+  "en": ""
+ },
+ {
+  "vi": "Xả nước thử",
+  "en": ""
+ },
+ {
+  "vi": "Khẩu trang",
+  "en": ""
+ },
+ {
+  "vi": "Ủng",
+  "en": ""
+ },
+ {
+  "vi": "Kính bảo hộ",
+  "en": ""
+ },
+ {
+  "vi": "Đặt rào chắn, biển báo",
+  "en": ""
+ },
+ {
+  "vi": "Đo khí độc dưới hố",
+  "en": ""
+ },
+ {
+  "vi": "Bật quạt thông gió 10 phút",
+  "en": ""
+ },
+ {
+  "vi": "Người canh trên miệng hố",
+  "en": ""
+ },
+ {
+  "vi": "Gắn lưới chặn tóc ở thoát sàn, tuần xả nước nóng một lần.",
+  "en": ""
+ },
+ {
+  "vi": "Đừng đổ dầu mỡ xuống bồn, lau chảo bằng giấy trước khi rửa.",
+  "en": ""
+ },
+ {
+  "vi": "Giấy ướt, băng vệ sinh bỏ thùng rác, đừng thả bồn cầu.",
+  "en": ""
+ },
+ {
+  "vi": "Đậy nắp bồn cầu, để đồ chơi của bé xa nhà tắm.",
+  "en": ""
+ },
+ {
+  "vi": "Gốc cây sát đường ống nên chặn rễ; ống cũ nên thay đoạn nứt.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc cả ngõ đừng quét rác xuống hố ga.",
+  "en": ""
+ },
+ {
+  "vi": "Ống thông hơi trên mái nên có chụp lưới chống chim làm tổ.",
+  "en": ""
+ },
+ {
+  "vi": "Xi-phông nhựa mới, thỉnh thoảng siết lại khớp nối.",
+  "en": ""
+ },
+ {
+  "vi": "Ống xi-phông nhựa",
+  "en": ""
+ },
+ {
+  "vi": "Bột thông cống (xút)",
+  "en": ""
+ },
+ {
+  "vi": "Găng tay cao su",
+  "en": ""
+ },
+ {
+  "vi": "Hai mươi lăm năm thông cống cả phường, nhìn vết nước là đoán ra bệnh.",
+  "en": ""
+ },
+ {
+  "vi": "Bếp nấu từ ba giờ sáng, bồn rửa ngập mỡ là cả quán đứng hình.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà xây từ thời Pháp, ống gang cũ, tiếc từng đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nhà trọ mười hai phòng",
+  "en": ""
+ },
+ {
+  "vi": "Muốn làm nhanh, rẻ, hay mặc cả.",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ của bé Bin ba tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bin hay thả đồ chơi vào đủ chỗ trong nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Lo chuyện ngập úng của cả ngõ, gọi thợ bằng tiền quỹ phường.",
+  "en": ""
+ },
+ {
+  "vi": "Hùng",
+  "en": ""
+ },
+ {
+  "vi": "Lần đầu gặp cảnh bồn cầu trào, cuống cuồng gọi điện.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tiệm làm tóc",
+  "en": ""
+ },
+ {
+  "vi": "Gội đầu cả ngày, thoát sàn tiệm lúc nào cũng đầy tóc.",
+  "en": ""
+ },
+ {
+  "vi": "Việc đều tay: bồn rửa, thoát sàn, bồn cầu.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa lớn",
+  "en": ""
+ },
+ {
+  "vi": "Hố ga ngõ dễ tràn: mang gầu, máy đo khí, ủng.",
+  "en": ""
+ },
+ {
+  "vi": "Sau đám tiệc",
+  "en": ""
+ },
+ {
+  "vi": "Quán xá rửa nhiều dầu mỡ: máy phun áp lực đắt việc.",
+  "en": ""
+ },
+ {
+  "vi": "Hanh khô",
+  "en": ""
+ },
+ {
+  "vi": "Cây tìm nước, rễ đâm vào ống: máy lò xo điện.",
+  "en": ""
+ },
+ {
+  "vi": "Thoát sàn tiệm tóc",
+  "en": ""
+ },
+ {
+  "vi": "Thoát sàn chỗ gội đầu nước đọng lênh láng, khách đứng ướt cả chân!",
+  "en": ""
+ },
+ {
+  "vi": "Cô Diệp: “Ngày gội cả chục đầu, lưới chặn tóc gãy từ tuần trước.”",
+  "en": ""
+ },
+ {
+  "vi": "Mở nắp thoát sàn: lổn nhổn tóc quấn cặn trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Đổ một xô nước: rút chậm, sủi bọt xà phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Bồn rửa quán bún bò",
+  "en": ""
+ },
+ {
+  "vi": "Bồn rửa bát tắc từ sáng, nước mỡ ngập lênh láng. Quán sắp bán trưa rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hồng: “Nồi nước lèo xong là rửa luôn, dầu mỡ chảy hết xuống bồn.”",
+  "en": ""
+ },
+ {
+  "vi": "Miệng ống có mảng mỡ trắng đông cứng, mùi ôi.",
+  "en": ""
+ },
+ {
+  "vi": "Xả nước nóng: rút được một chút rồi lại đứng.",
+  "en": ""
+ },
+ {
+  "vi": "Bồn cầu phòng trọ",
+  "en": ""
+ },
+ {
+  "vi": "Anh ơi bồn cầu trào lên rồi, em không biết làm sao hết!",
+  "en": ""
+ },
+ {
+  "vi": "Hùng: “Em lỡ thả cả gói giấy ướt lau mặt xuống bồn.”",
+  "en": ""
+ },
+ {
+  "vi": "Mực nước trong bồn dâng cao, lờ mờ thấy giấy trắng.",
+  "en": ""
+ },
+ {
+  "vi": "Giật nước: nước dâng lên sát miệng bồn, không rút.",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bin thả đồ chơi",
+  "en": ""
+ },
+ {
+  "vi": "Bồn cầu nhà chị cứ giật là nước rút chậm, hình như bé Bin thả gì vào…",
+  "en": ""
+ },
+ {
+  "vi": "Chị Mai: “Mất con khủng long nhựa đỏ từ hôm qua, bé chỉ vào nhà tắm.”",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn vào lòng bồn không thấy gì lạ.",
+  "en": ""
+ },
+ {
+  "vi": "Giật nước: nước xoáy chậm, nghe tiếng lọc cọc.",
+  "en": ""
+ },
+ {
+  "vi": "Ống thoát nhà phố cổ",
+  "en": ""
+ },
+ {
+  "vi": "Cả nhà dưới tầng trệt nước rút ì ạch, tầng hai xả là tầng một trào!",
+  "en": ""
+ },
+ {
+  "vi": "Bà Ngọc: “Cây bàng trước nhà to lắm rồi, ống gang từ đời ông bà.”",
+  "en": ""
+ },
+ {
+  "vi": "Hố kiểm tra sân trước có vài sợi rễ trắng mảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Xả nước ở tầng hai: tầng một sủi lên ùng ục.",
+  "en": ""
+ },
+ {
+  "vi": "Lavabo nhà trọ rỉ nước",
+  "en": ""
+ },
+ {
+  "vi": "Lavabo phòng số 6 chậu nước rút chậm, sàn lúc nào cũng ướt, lại có mùi.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Phong: “Khách trọ bảo sáng nào cũng thấy vũng nước dưới chân.”",
+  "en": ""
+ },
+ {
+  "vi": "Soi đèn dưới gầm lavabo: ống cong chữ U có vết nứt, nhỏ giọt.",
+  "en": ""
+ },
+ {
+  "vi": "Xả nước: nước rút được nhưng rỉ ra dưới gầm.",
+  "en": ""
+ },
+ {
+  "vi": "Bồn rửa ọc ọc",
+  "en": ""
+ },
+ {
+  "vi": "Bồn rửa nhà bà cứ kêu ọc ọc, nước rút chậm, thợ khác thông rồi vẫn thế.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Ngọc: “Thợ trước đổ cả gói bột thông cống, mà vẫn thế.”",
+  "en": ""
+ },
+ {
+  "vi": "Miệng ống sạch, không thấy cặn.",
+  "en": ""
+ },
+ {
   "vi": "Xả nước: sủi bọt, ọc ọc, bồn cầu bên cạnh cũng rung nước.",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Thợ giải thích dễ hiểu, làm tận gốc, cả tháng không tắc lại.",
-  "en": ""
- },
- {
-  "vi": "Quán bán trễ mười lăm phút, nhưng cả tháng bồn rửa thông thoáng.",
-  "en": ""
- },
- {
-  "vi": "Trễ chút mà khỏi lo cả tháng.",
-  "en": ""
- },
- {
-  "vi": "Làm tới nơi thì khách mới gọi lại.",
-  "en": ""
- },
- {
-  "vi": "Thông tạm, hẹn hôm khác phun",
-  "en": ""
- },
- {
-  "vi": "Kịp giờ bán, nhưng phải hẹn thợ lần nữa.",
-  "en": ""
- },
- {
-  "vi": "Kịp giờ bán. Ba hôm sau chị Hồng gọi lại.",
-  "en": ""
- },
- {
-  "vi": "Được, nhớ quay lại nha.",
-  "en": ""
- },
- {
-  "vi": "Hẹn rồi thì phải giữ lời.",
-  "en": ""
- },
- {
-  "vi": "Thông tạm, không nói gì",
-  "en": ""
- },
- {
-  "vi": "Thông xong hai hôm lại tắc, thợ không nói gì.",
-  "en": ""
- },
- {
-  "vi": "Hai hôm sau bồn tắc lúc đông khách nhất.",
-  "en": ""
- },
- {
-  "vi": "Biết vậy nói trước chứ.",
-  "en": ""
- },
- {
-  "vi": "Quán đóng cửa giữa trưa.",
-  "en": ""
- },
- {
-  "vi": "Nói rõ đâu là thông tạm, đâu là làm tận gốc để khách tự chọn.",
-  "en": ""
- },
- {
-  "vi": "Đồ rơi quý trong bồn cầu",
-  "en": ""
- },
- {
-  "vi": "Chị Mai hốt hoảng: bé Bin thả chiếc nhẫn cưới của chị vào bồn cầu, rồi giật nước.",
-  "en": ""
- },
- {
-  "vi": "Chỗ rơi",
-  "en": ""
- },
- {
-  "vi": "Nước vẫn rút bình thường: nhẫn nhỏ, có thể nằm ở khúc cua đầu.",
-  "en": ""
- },
- {
-  "vi": "Đồ nghề",
-  "en": ""
- },
- {
-  "vi": "Camera nội soi luồn vào được, móc gắp có thể lấy ra mà không tháo bồn.",
-  "en": ""
- },
- {
-  "vi": "Soi và gắp đồ trong bồn cầu: 20 xu.",
-  "en": ""
- },
- {
-  "vi": "Soi camera, dùng móc gắp, báo giá trước",
-  "en": ""
- },
- {
-  "vi": "Lấy được nhẫn cưới mà không phải đập bồn. Cảm ơn thợ!",
-  "en": ""
- },
- {
-  "vi": "Chiếc nhẫn sáng lấp lánh trên móc gắp. Chị Mai rưng rưng.",
-  "en": ""
- },
- {
-  "vi": "Nhẫn cưới đó, mất thì buồn cả đời.",
-  "en": ""
- },
- {
-  "vi": "Con xin lỗi mẹ…",
-  "en": ""
- },
- {
-  "vi": "Tháo bồn cầu cho chắc, tính thêm tiền",
-  "en": ""
- },
- {
-  "vi": "Tháo cả bồn cầu, tốn thêm tiền mà không cần.",
-  "en": ""
- },
- {
-  "vi": "Lấy được nhẫn, nhưng mất nửa ngày và thêm tiền gioăng, xi măng.",
-  "en": ""
- },
- {
-  "vi": "Biết có camera thì đâu cần tháo.",
-  "en": ""
- },
- {
-  "vi": "Dùng dao mổ trâu giết gà.",
-  "en": ""
- },
- {
-  "vi": "Bảo chắc trôi mất rồi, thôi",
-  "en": ""
- },
- {
-  "vi": "Thợ không thèm thử, bảo trôi mất rồi.",
-  "en": ""
- },
- {
-  "vi": "Chị Mai gọi thợ khác, họ gắp ra trong mười phút.",
-  "en": ""
- },
- {
-  "vi": "Thử một chút cũng không.",
-  "en": ""
- },
- {
-  "vi": "Nghề mình là phải thử cho hết cách.",
-  "en": ""
- },
- {
-  "vi": "Dùng đúng dụng cụ để khỏi phá thêm; báo giá trước khi làm.",
-  "en": ""
- },
- {
-  "vi": "Mưa lớn: hố ga dễ tràn, nhớ ủng, gầu, máy đo khí.",
-  "en": ""
- },
- {
-  "vi": "Đọc sổ hẹn, chọn đồ nghề hợp với việc hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Xếp đồ nghề lên xe",
-  "en": ""
- },
- {
-  "vi": "Chú Hai: “Đọc sổ hẹn đi, xe chỉ chở được năm món. Mang gì thì tính cho kỹ.”",
-  "en": ""
- },
- {
-  "vi": "Miệng ống có cặn cũ.",
-  "en": ""
- },
- {
-  "vi": "Gọi lại bảo hành: xem đúng lỗi của ai rồi mới tính tiền.",
-  "en": ""
- },
- {
-  "vi": "Hố ga của phường: an toàn trước, phường chuyển khoản sau.",
-  "en": ""
- },
- {
-  "vi": "Gọi đêm: phụ phí đêm phải báo trước.",
-  "en": ""
- },
- {
-  "vi": "Tìm nguyên nhân, báo giá rồi mới làm.",
-  "en": ""
- },
- {
-  "vi": "Vào việc thôi! Chú Hai đang chờ ở tiệm.",
-  "en": ""
- },
- {
-  "vi": "Có chuyện giữa đường, quyết xong rồi làm tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Khách cũ quay lại đòi tiền: giải quyết trước đã.",
-  "en": ""
- },
- {
-  "vi": "Thao tác không có ở tiệm thông cống.",
-  "en": ""
- },
- {
-  "vi": "Việc này không thuộc tiệm thông cống.",
-  "en": ""
- },
- {
-  "vi": "Chưa ra xe: xếp đồ nghề rồi bấm “Lên đường” nhé.",
-  "en": ""
- },
- {
-  "vi": "Đồ nghề không có.",
-  "en": ""
- },
- {
-  "vi": "Đồ bảo hộ không có.",
-  "en": ""
- },
- {
-  "vi": "Găng tay đã đeo rồi, dùng xong mới bỏ.",
-  "en": ""
- },
- {
-  "vi": "Hết găng tay rồi. Mở kho mua thêm nhé.",
-  "en": ""
- },
- {
-  "vi": "🧤 Đeo găng tay cao su.",
-  "en": ""
- },
- {
-  "vi": "😷 Đeo khẩu trang.",
-  "en": ""
- },
- {
-  "vi": "🥾 Xỏ ủng cao su.",
-  "en": ""
- },
- {
-  "vi": "🥽 Đeo kính bảo hộ.",
-  "en": ""
- },
- {
-  "vi": "Xe còn trống trơn. Xếp đồ nghề đã.",
-  "en": ""
- },
- {
-  "vi": "đồ thông bồn",
-  "en": ""
- },
- {
-  "vi": "gầu và máy đo khí cho hố ga",
-  "en": ""
- },
- {
-  "vi": "xếp đồ nghề chưa hợp sổ hẹn",
-  "en": ""
- },
- {
-  "vi": "Đi thông cống mà không đeo găng tay.",
-  "en": ""
- },
- {
-  "vi": "thiếu găng tay",
-  "en": ""
- },
- {
-  "vi": "Xếp đồ nghề, lên đường.",
-  "en": ""
- },
- {
-  "vi": "🛵 Lên đường!",
-  "en": ""
- },
- {
-  "vi": "Chú Hai gật gù: “Đồ nghề hợp việc đấy.”",
-  "en": ""
- },
- {
-  "vi": "Chú Hai nhắc: “Thiếu đồ là phải quay về lấy đấy nhé.”",
-  "en": ""
- },
- {
-  "vi": "Món này đang ở trên xe.",
-  "en": ""
- },
- {
-  "vi": "Nghe khách kể đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Cách kiểm tra không có.",
-  "en": ""
- },
- {
-  "vi": "Đã kiểm tra cách này rồi.",
-  "en": ""
- },
- {
-  "vi": "Camera không có trên xe. Về tiệm lấy nếu cần.",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra một chút đã, đừng đoán mò.",
-  "en": ""
- },
- {
-  "vi": "Nguyên nhân không có trong sổ.",
-  "en": ""
- },
- {
-  "vi": "Đã thông xong rồi.",
-  "en": ""
- },
- {
-  "vi": "Đoán nguyên nhân trước rồi mới báo giá.",
-  "en": ""
- },
- {
-  "vi": "Chọn mức báo giá.",
-  "en": ""
- },
- {
-  "vi": "Đã làm xong, không báo giá lại được.",
-  "en": ""
- },
- {
-  "vi": "nói thách",
-  "en": ""
- },
- {
-  "vi": "Bước an toàn không có.",
-  "en": ""
- },
- {
-  "vi": "Đã làm bước này rồi.",
-  "en": ""
- },
- {
-  "vi": "Máy đo khí và quạt không có trên xe. Về tiệm lấy đã.",
-  "en": ""
- },
- {
-  "vi": "Đo khí trước để biết cần thông gió bao lâu.",
-  "en": ""
- },
- {
-  "vi": "🚧 Đặt rào chắn, cắm biển “Đang thi công” quanh miệng hố.",
-  "en": ""
- },
- {
-  "vi": "🌬️ Thả đầu đo xuống hố: khí H₂S vượt ngưỡng an toàn! Chưa được xuống.",
-  "en": ""
- },
- {
-  "vi": "🌀 Bật quạt thổi khí mười phút, đo lại: an toàn.",
-  "en": ""
- },
- {
-  "vi": "🧍 Chú Hai đứng trên miệng hố, cầm dây an toàn.",
-  "en": ""
- },
- {
-  "vi": "Báo giá cho khách trước khi làm.",
-  "en": ""
- },
- {
-  "vi": "Thò tay trần vào ống cống, bẩn hết cả bồn rửa.",
-  "en": ""
- },
- {
-  "vi": "Xuống hố ga không đo khí, không thông gió: choáng váng phải kéo lên.",
-  "en": ""
- },
- {
-  "vi": "bỏ qua đo khí hố ga",
-  "en": ""
- },
- {
-  "vi": "Xuống hố ga một mình, không ai canh trên miệng hố.",
-  "en": ""
- },
- {
-  "vi": "không có người canh",
-  "en": ""
- },
- {
-  "vi": "Miệng hố mở toang giữa ngõ, suýt có người sụt chân.",
-  "en": ""
- },
- {
-  "vi": "không rào chắn",
-  "en": ""
- },
- {
-  "vi": "Xuống bùn mà thiếu ủng, khẩu trang.",
-  "en": ""
- },
- {
-  "vi": "thiếu đồ bảo hộ",
-  "en": ""
- },
- {
-  "vi": "Đã thông rồi. Xả nước thử nhé.",
-  "en": ""
- },
- {
-  "vi": "Món này để kiểm tra, không dùng để thông.",
-  "en": ""
- },
- {
-  "vi": "Phun áp lực mà không đeo kính, nước bẩn bắn vào mắt.",
-  "en": ""
- },
- {
-  "vi": "thiếu kính bảo hộ",
-  "en": ""
- },
- {
-  "vi": "Móc ra cả búi tóc quấn cặn xà phòng.",
-  "en": ""
- },
- {
-  "vi": "Tia nước áp lực cuốn trôi lớp mỡ đông.",
-  "en": ""
- },
- {
-  "vi": "Cục giấy ướt vỡ ra, trôi tuột.",
-  "en": ""
- },
- {
-  "vi": "Gắp ra được món đồ chơi nhựa đỏ!",
-  "en": ""
- },
- {
-  "vi": "Đầu cắt xoay nát chùm rễ trong ống.",
-  "en": ""
- },
- {
-  "vi": "Múc lên mấy chục xô bùn, rác.",
-  "en": ""
- },
- {
-  "vi": "Lôi ra cái tổ chim khô chặn ống thông hơi trên mái.",
-  "en": ""
- },
- {
-  "vi": "Thông rồi.",
-  "en": ""
- },
- {
-  "vi": "Đã thông rồi.",
-  "en": ""
- },
- {
-  "vi": "Hết bột thông cống.",
-  "en": ""
- },
- {
-  "vi": "Đổ xút không kính, không găng, hơi nóng bốc lên cay xè mắt.",
-  "en": ""
- },
- {
-  "vi": "dùng hóa chất thiếu bảo hộ",
-  "en": ""
- },
- {
-  "vi": "Đổ xút vào ống gang cũ, mấy hôm sau ống rò nước ra tường.",
-  "en": ""
- },
- {
-  "vi": "hóa chất làm hỏng ống cũ",
-  "en": ""
- },
- {
-  "vi": "🧪 Đổ bột thông cống, nước sôi sùng sục… rút được, nhưng chỉ tạm thời.",
-  "en": ""
- },
- {
-  "vi": "🧪 Đổ bột thông cống, chờ mãi vẫn không rút. Bột không làm gì được thứ đang chặn.",
-  "en": ""
- },
- {
-  "vi": "Đã thay rồi.",
-  "en": ""
- },
- {
-  "vi": "Hết ống xi-phông. Mở kho nhập thêm nhé.",
-  "en": ""
- },
- {
-  "vi": "🔧 Tháo ống xi-phông nứt, lắp ống mới, siết gioăng. Hết rỉ nước.",
-  "en": ""
- },
- {
-  "vi": "🔧 Thay ống xi-phông mới… mà nước vẫn không rút. Chỗ tắc nằm chỗ khác.",
-  "en": ""
- },
- {
-  "vi": "Chưa thông được, xả nước thử cũng vậy thôi.",
-  "en": ""
- },
- {
-  "vi": "💧 Xả nước thử: rút được nhưng còn hơi chậm. Nên nói rõ với khách đây là thông tạm.",
-  "en": ""
- },
- {
-  "vi": "💧 Xả nước thử: rút ào ào, không còn tiếng ọc ọc.",
-  "en": ""
- },
- {
-  "vi": "Làm xong việc chính đã.",
-  "en": ""
- },
- {
-  "vi": "Đã dọn rồi.",
-  "en": ""
- },
- {
-  "vi": "🧽 Lau sạch nền, gom bùn rác vào bao buộc kín, rửa dụng cụ.",
-  "en": ""
- },
- {
-  "vi": "Đã dặn rồi.",
-  "en": ""
- },
- {
-  "vi": "Giữ ống sạch, thấy chậm thì gọi sớm.",
-  "en": ""
- },
- {
-  "vi": "Nói rõ: đây mới là thông tạm, vài hôm có thể tắc lại, nên làm tận gốc.",
-  "en": ""
- },
- {
-  "vi": "Đã thông được rồi.",
-  "en": ""
- },
- {
-  "vi": "Chưa thông được thì chưa thu tiền.",
-  "en": ""
- },
- {
-  "vi": "Đã tính tiền rồi.",
-  "en": ""
- },
- {
-  "vi": "Chưa xả nước thử đã thu tiền, thợ đi rồi mới thấy còn chậm.",
-  "en": ""
- },
- {
-  "vi": "chưa xả nước thử",
-  "en": ""
- },
- {
-  "vi": "Thông xong để bùn đất bẩn hết sàn nhà.",
-  "en": ""
- },
- {
-  "vi": "chưa dọn chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Thông tạm mà không nói, hai hôm sau tắc lại y nguyên.",
-  "en": ""
- },
- {
-  "vi": "thông tạm không nói rõ",
   "en": ""
  }
 ]

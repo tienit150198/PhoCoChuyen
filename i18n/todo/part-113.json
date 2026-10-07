@@ -1,5 +1,277 @@
 [
  {
+  "vi": "Trả giường ký túc xá?",
+  "en": ""
+ },
+ {
+  "vi": "Trả phòng trọ?",
+  "en": ""
+ },
+ {
+  "vi": "Trả giường",
+  "en": ""
+ },
+ {
+  "vi": "từ quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "Không vay.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn về ở căn mới.",
+  "en": ""
+ },
+ {
+  "vi": "Căn mới để trống, chưa dọn về.",
+  "en": ""
+ },
+ {
+  "vi": "Ký hợp đồng mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "Tất toán khoản vay mua nhà?",
+  "en": ""
+ },
+ {
+  "vi": ". Bạn về gác Bà Tám (muốn ở căn khác thì dọn qua đó trước rồi hãy bán)",
+  "en": ""
+ },
+ {
+  "vi": ". Người ấy dọn ra cùng bạn",
+  "en": ""
+ },
+ {
+  "vi": "tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "sẽ để trống.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ trang trí gói vào túi đồ, bày lại ở nhà mới.",
+  "en": ""
+ },
+ {
+  "vi": "Gửi lời mời mới nếu muốn người ấy dọn về cùng.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn nhà",
+  "en": ""
+ },
+ {
+  "vi": "dọn đi, gửi nốt tiền thuê những ngày đã ở.",
+  "en": ""
+ },
+ {
+  "vi": "Gỡ tin đang tìm khách NPC.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn một căn nhà nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang có nhà rồi.",
+  "en": ""
+ },
+ {
+  "vi": "(thuế trước bạ trả từ ví hoặc tài khoản)",
+  "en": ""
+ },
+ {
+  "vi": ", phí và thuế",
+  "en": ""
+ },
+ {
+  "vi": "và phí",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng chưa duyệt vay mua nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Thuê phòng, để dành, mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Thuê phòng, để dành, mua nhà. Mọi con số tính theo ngày sống.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà cửa chỉ có trong chế độ hành trình",
+  "en": ""
+ },
+ {
+  "vi": "Vào hành trình để thuê phòng, để dành và mua nhà cho nhân vật của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "← Nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Nộp tiền vào tài khoản để trả góp",
+  "en": ""
+ },
+ {
+  "vi": "nhà của bạn đang để trống",
+  "en": ""
+ },
+ {
+  "vi": "🏦 Mở tài khoản Ngân hàng Phố",
+  "en": ""
+ },
+ {
+  "vi": "🐷 Gửi tiết kiệm mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "🔑 Nhà đứng tên bạn",
+  "en": ""
+ },
+ {
+  "vi": "👥 Ở ghép · giường dưới cạnh cửa sổ",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Đang thuê",
+  "en": ""
+ },
+ {
+  "vi": "🪴 Ấm cúng",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Về góc giường",
+  "en": ""
+ },
+ {
+  "vi": "🚪 Vào phòng",
+  "en": ""
+ },
+ {
+  "vi": "Trả giường, nhận lại cọc",
+  "en": ""
+ },
+ {
+  "vi": "Trả phòng, nhận lại cọc",
+  "en": ""
+ },
+ {
+  "vi": "chỗ cần sửa",
+  "en": ""
+ },
+ {
+  "vi": "Nhà sạch đẹp",
+  "en": ""
+ },
+ {
+  "vi": "🛠️ Sửa nhà",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng & gia hạn",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Gia đình",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Nhà & Gia đình (cả mục Con chung)\"",
+  "en": ""
+ },
+ {
+  "vi": "👥 Mời bạn",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Mời bạn về nhà\"",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Nhà & Gia đình",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn về nhà",
+  "en": ""
+ },
+ {
+  "vi": "(tạm dừng khi trễ hạn trả góp)",
+  "en": ""
+ },
+ {
+  "vi": "Nơi bạn đang ở",
+  "en": ""
+ },
+ {
+  "vi": "đậu trước nhà",
+  "en": ""
+ },
+ {
+  "vi": "Ân hạn",
+  "en": ""
+ },
+ {
+  "vi": "Lịch trả góp",
+  "en": ""
+ },
+ {
+  "vi": "Đã tính phí trễ hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Tinh thần tạm không được cộng.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày mua",
+  "en": ""
+ },
+ {
+  "vi": "Giá thị trường hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Bán ngay thì nhận",
+  "en": ""
+ },
+ {
+  "vi": "Phí bảo trì",
+  "en": ""
+ },
+ {
+  "vi": "/tháng",
+  "en": ""
+ },
+ {
+  "vi": "Bán nhà",
+  "en": ""
+ },
+ {
+  "vi": "💞 Về ở chung",
+  "en": ""
+ },
+ {
+  "vi": "Cho thuê",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Đang cho người chơi thuê",
+  "en": ""
+ },
+ {
   "vi": "📣 Đang đăng cho người chơi thuê",
   "en": ""
  },
@@ -1152,10 +1424,6 @@
   "en": ""
  },
  {
-  "vi": "Ví đang nợ",
-  "en": ""
- },
- {
   "vi": "Mai bay tiếp",
   "en": ""
  },
@@ -1225,10 +1493,6 @@
  },
  {
   "vi": "Chọn số",
-  "en": ""
- },
- {
-  "vi": "Chỉ có trong hành trình.",
   "en": ""
  },
  {
@@ -1533,270 +1797,6 @@
  },
  {
   "vi": "Muốn cầu hôn thì cần một chiếc nhẫn trước đã.",
-  "en": ""
- },
- {
-  "vi": "💍 Đến tiệm nhẫn",
-  "en": ""
- },
- {
-  "vi": "Chỉ cầu hôn được bạn bè. Kết bạn với người ấy trước nhé.",
-  "en": ""
- },
- {
-  "vi": "👥 Mở danh sách bạn bè",
-  "en": ""
- },
- {
-  "vi": "✓ Gửi tới",
-  "en": ""
- },
- {
-  "vi": "Gửi tới người bạn",
-  "en": ""
- },
- {
-  "vi": "Chọn một người bạn…",
-  "en": ""
- },
- {
-  "vi": "Chiếc nhẫn",
-  "en": ""
- },
- {
-  "vi": "Lời cầu hôn",
-  "en": ""
- },
- {
-  "vi": "Nếu người ấy đồng ý, báo tin vui cho cả phố",
-  "en": ""
- },
- {
-  "vi": "💍 Gửi lời cầu hôn",
-  "en": ""
- },
- {
-  "vi": "Lời cầu hôn đã gửi",
-  "en": ""
- },
- {
-  "vi": "đang chờ trả lời",
-  "en": ""
- },
- {
-  "vi": "chưa nhận lời",
-  "en": ""
- },
- {
-  "vi": "đã nhận lời",
-  "en": ""
- },
- {
-  "vi": "Rút lại",
-  "en": ""
- },
- {
-  "vi": "Chuyện cũ đã khép lại. Mỗi người đều có quyền bắt đầu lại.",
-  "en": ""
- },
- {
-  "vi": "Nhận lời cầu hôn",
-  "en": ""
- },
- {
-  "vi": "Tắt đi thì không ai gửi được lời mới cho bạn.",
-  "en": ""
- },
- {
-  "vi": "Lời cầu hôn gửi tới bạn",
-  "en": ""
- },
- {
-  "vi": "Độc thân",
-  "en": ""
- },
- {
-  "vi": "Chấp nhận kết bạn",
-  "en": ""
- },
- {
-  "vi": "➕ Kết bạn",
-  "en": ""
- },
- {
-  "vi": "Không tìm thấy người chơi này.",
-  "en": ""
- },
- {
-  "vi": "Tên đăng nhập của bạn ấy",
-  "en": ""
- },
- {
-  "vi": "Lời mời kết bạn",
-  "en": ""
- },
- {
-  "vi": "muốn kết bạn",
-  "en": ""
- },
- {
-  "vi": "Chấp nhận",
-  "en": ""
- },
- {
-  "vi": "Mới vào phố",
-  "en": ""
- },
- {
-  "vi": "🏪 Ghé chỗ làm",
-  "en": ""
- },
- {
-  "vi": "🏡 Mời về nhà",
-  "en": ""
- },
- {
-  "vi": "💍 Cầu hôn",
-  "en": ""
- },
- {
-  "vi": "Chưa có bạn bè nào. Xin tên đăng nhập của người quen ngoài đời rồi tìm ở trên nhé.",
-  "en": ""
- },
- {
-  "vi": "Đang chờ trả lời",
-  "en": ""
- },
- {
-  "vi": "Cho phép tìm tôi bằng tên đăng nhập",
-  "en": ""
- },
- {
-  "vi": "Tắt đi thì chỉ ai có mã người chơi mới tìm được bạn.",
-  "en": ""
- },
- {
-  "vi": "Mã người chơi của bạn:",
-  "en": ""
- },
- {
-  "vi": "Người khác chỉ thấy tên hiển thị",
-  "en": ""
- },
- {
-  "vi": "🏘️ Mọi người đang làm gì?",
-  "en": ""
- },
- {
-  "vi": "Chép mã",
-  "en": ""
- },
- {
-  "vi": "bàn · thực đơn",
-  "en": ""
- },
- {
-  "vi": "Tổng chi phí",
-  "en": ""
- },
- {
-  "vi": "Trả nốt ngày cưới",
-  "en": ""
- },
- {
-  "vi": "Khách dự kiến",
-  "en": ""
- },
- {
-  "vi": "Tiền mừng dự kiến",
-  "en": ""
- },
- {
-  "vi": "Nhẫn của hai bạn",
-  "en": ""
- },
- {
-  "vi": "Bạn &",
-  "en": ""
- },
- {
-  "vi": "Điểm hạnh phúc",
-  "en": ""
- },
- {
-  "vi": "Quỹ chung",
-  "en": ""
- },
- {
-  "vi": "ngày liền",
-  "en": ""
- },
- {
-  "vi": "Gửi một lời chào hôm nay nhé",
-  "en": ""
- },
- {
-  "vi": "Có lời nhờ đang chờ",
-  "en": ""
- },
- {
-  "vi": "Gửi, rút, giúp nhau",
-  "en": ""
- },
- {
-  "vi": "muốn bàn lại kế hoạch. Sửa rồi gửi lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Kế hoạch cưới",
-  "en": ""
- },
- {
-  "vi": "Chọn nơi tổ chức, số bàn, thực đơn, nghi lễ và ai góp bao nhiêu. Tiền chỉ bị trừ khi cả hai cùng xác nhận.",
-  "en": ""
- },
- {
-  "vi": "📋 Lên kế hoạch cưới",
-  "en": ""
- },
- {
-  "vi": "Sửa kế hoạch",
-  "en": ""
- },
- {
-  "vi": "Báo tin cưới cho cả phố (bảng tin chạy chữ)",
-  "en": ""
- },
- {
-  "vi": "Muốn bàn lại",
-  "en": ""
- },
- {
-  "vi": "Kế hoạch đã chốt",
-  "en": ""
- },
- {
-  "vi": "Ngày cưới đã tới!",
-  "en": ""
- },
- {
-  "vi": "Gõ",
-  "en": ""
- },
- {
-  "vi": "để xác nhận",
-  "en": ""
- },
- {
-  "vi": "Ly hôn",
-  "en": ""
- },
- {
-  "vi": "Hủy hôn ước",
-  "en": ""
- },
- {
-  "vi": "Ly hôn thì hai bạn thôi là vợ chồng, nhãn “Đã về chung một nhà” được gỡ.",
   "en": ""
  }
 ]

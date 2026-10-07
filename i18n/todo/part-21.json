@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Mở rèm cửa sổ cho khách.",
+  "en": ""
+ },
+ {
+  "vi": "Khóa phanh xe đẩy",
+  "en": ""
+ },
+ {
+  "vi": "Cất bình nước nóng",
+  "en": ""
+ },
+ {
+  "vi": "Về ghế, thắt dây",
+  "en": ""
+ },
+ {
+  "vi": "Vali trên hộc hàng đầu",
+  "en": ""
+ },
+ {
+  "vi": "Anh Kiệt ngồi hàng 15 nhưng cố nhét vali vào hộc hàng 2: “Để đây tí xuống cho nhanh!”",
+  "en": ""
+ },
+ {
+  "vi": "Chào anh, em hiểu anh vội. Để em xem giúp anh nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Kiệt dịu giọng: “Ừ, anh có cuộc họp lúc mười giờ.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh ơi không được đâu, anh để đúng chỗ đi.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Kiệt cau mày, tay vẫn giữ vali.",
+  "en": ""
+ },
+ {
+  "vi": "Anh không đọc quy định à?",
+  "en": ""
+ },
+ {
+  "vi": "Anh Kiệt đỏ mặt: “Cô nói kiểu gì thế?”",
+  "en": ""
+ },
+ {
+  "vi": "“Hộc này còn trống mà, sao lại không được?”",
+  "en": ""
+ },
+ {
+  "vi": "Hộc hàng 2 là của khách hàng 2, họ đang lên tàu.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Kiệt nhìn ra cửa, thấy hai cụ già đang xách túi.",
+  "en": ""
+ },
+ {
+  "vi": "Tại quy định nó vậy anh ạ.",
+  "en": ""
+ },
+ {
+  "vi": "“Quy định gì kỳ vậy.” Anh vẫn chưa buông vali.",
+  "en": ""
+ },
+ {
+  "vi": "Thôi được, anh cứ để đi cho nhanh.",
+  "en": ""
+ },
+ {
+  "vi": "Lát sau hai cụ hàng 2 không còn chỗ để túi.",
+  "en": ""
+ },
+ {
+  "vi": "“Thế giờ anh để đâu? Xuống tàu anh phải đi ngay.”",
+  "en": ""
+ },
+ {
+  "vi": "Em cất vali trên hộc hàng 15 cho anh, hạ cánh em mời anh xuống trước.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Kiệt gật đầu: “Vậy được, cảm ơn em.”",
+  "en": ""
+ },
+ {
+  "vi": "Anh tự tìm chỗ nào còn trống nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Kiệt đi ngược dòng người tìm chỗ, lối đi tắc năm phút.",
+  "en": ""
+ },
+ {
+  "vi": "Không có chỗ thì em gửi khoang hàng, xuống tàu anh chờ băng chuyền.",
+  "en": ""
+ },
+ {
+  "vi": "“Chờ băng chuyền thì lỡ họp!” Anh càu nhàu mãi.",
+  "en": ""
+ },
+ {
+  "vi": "Đứng dậy chụp ảnh khi hạ độ cao",
+  "en": ""
+ },
+ {
+  "vi": "Đèn thắt dây đã sáng, tàu đang hạ độ cao. Vy đứng dậy, giơ điện thoại chụp biển qua cửa sổ bên kia.",
+  "en": ""
+ },
+ {
+  "vi": "Tới gần, nói nhỏ: “Em ơi, tàu sắp hạ cánh, em ngồi xuống giúp chị nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Vy giật mình: “Dạ, em quên mất.”",
+  "en": ""
+ },
+ {
+  "vi": "Nói to từ cuối khoang: “Ngồi xuống!”",
+  "en": ""
+ },
+ {
+  "vi": "Cả khoang quay lại nhìn. Vy xấu hổ, mặt đỏ bừng.",
+  "en": ""
+ },
+ {
+  "vi": "Kệ, chụp xong em ấy sẽ ngồi",
+  "en": ""
+ },
+ {
+  "vi": "Tàu chao nhẹ, Vy loạng choạng suýt ngã vào lối đi.",
+  "en": ""
+ },
+ {
+  "vi": "“Chị ơi cho em chụp một tấm thôi, biển đẹp quá!”",
+  "en": ""
+ },
+ {
+  "vi": "Tàu có thể rung bất cứ lúc nào, đứng lúc này dễ ngã lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Vy ngồi xuống, cài dây.",
+  "en": ""
+ },
+ {
+  "vi": "Quy định là quy định em ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Vy ngồi xuống, lầm bầm.",
+  "en": ""
+ },
+ {
+  "vi": "Nhanh lên nhé, một tấm thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Tấm đó thành ba tấm, rồi năm tấm.",
+  "en": ""
+ },
+ {
+  "vi": "Vy ngồi xuống nhưng vẫn tiếc: “Mất tấm ảnh đẹp rồi.”",
+  "en": ""
+ },
+ {
+  "vi": "Hạ cánh rồi, lúc lăn vào bến em chụp qua cửa sổ vẫn đẹp mà.",
+  "en": ""
+ },
+ {
+  "vi": "Vy cười: “Dạ, em chờ.” Lúc lăn vào bến, Vy có tấm ảnh hoàng hôn trên đường băng.",
+  "en": ""
+ },
+ {
+  "vi": "Lần sau em ngồi ghế cửa sổ.",
+  "en": ""
+ },
+ {
+  "vi": "“Lần sau thì biết lần sau.” Vy vẫn tiu nghỉu.",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh thì lúc nào chẳng chụp được.",
+  "en": ""
+ },
+ {
+  "vi": "Vy im lặng cả chuyến.",
+  "en": ""
+ },
+ {
+  "vi": "Ghế ngả đổ ly trà",
+  "en": ""
+ },
+ {
+  "vi": "Cậu thanh niên hàng 8 ngả ghế đánh rầm, ly trà trên bàn của ông Tư hàng 9 đổ ra quần. Ông quát ầm lên.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa ông khăn khô trước, hỏi ông có bị bỏng không.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Tư lau quần: “Không bỏng, nhưng ướt hết rồi.”",
+  "en": ""
+ },
+ {
+  "vi": "Bảo cậu thanh niên xin lỗi ông ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Cậu thanh niên lí nhí xin lỗi, ông Tư vẫn giận.",
+  "en": ""
+ },
+ {
+  "vi": "Nói ông bình tĩnh, chuyện nhỏ thôi.",
+  "en": ""
+ },
+ {
+  "vi": "“Chuyện nhỏ à?” Ông Tư càng to tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Tư: “Ngả ghế mà không nhìn phía sau à? Bắt nó dựng ghế lên cả chuyến!”",
+  "en": ""
+ },
+ {
+  "vi": "Ghế được ngả, nhưng lúc phục vụ ăn uống thì nên dựng lên. Để em nói với cậu ấy.",
+  "en": ""
+ },
+ {
+  "vi": "Cậu thanh niên dựng ghế: “Cháu xin lỗi ông, cháu không để ý.”",
+  "en": ""
+ },
+ {
+  "vi": "Ông ơi, ghế thì ai cũng được ngả ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Tư đứng bật dậy, lối đi tắc.",
+  "en": ""
+ },
+ {
+  "vi": "Em bắt cậu ấy dựng ghế cả chuyến ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Cậu thanh niên bực bội, chuyện chuyển sang hàng 8.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Tư ngồi xuống, vẫn hậm hực: “Quần ướt thế này xuống tàu sao được.”",
+  "en": ""
+ },
+ {
+  "vi": "Mang ly trà mới và thêm khăn, hạ cánh em mời ông vào phòng chờ lau khô.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Tư dịu hẳn: “Thôi được, cháu chu đáo.”",
+  "en": ""
+ },
+ {
+  "vi": "Mang ly trà mới cho ông.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Tư nhận ly trà, vẫn chưa vui.",
+  "en": ""
+ },
+ {
+  "vi": "Không làm gì thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Tư ngồi im, mặt hầm hầm tới lúc hạ cánh.",
+  "en": ""
+ },
+ {
+  "vi": "Thuốc lá điện tử trong nhà vệ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Chuông báo khói trong nhà vệ sinh kêu. Một bạn trong nhóm của Vy bước ra, mùi thơm ngọt, tay giấu cái bút hút.",
+  "en": ""
+ },
+ {
+  "vi": "Vào kiểm tra nhà vệ sinh ngay: có khói, có lửa ở thùng rác không.",
+  "en": ""
+ },
+ {
+  "vi": "Không có lửa, chỉ còn chút khói. Bạn bật quạt hút.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi bạn ấy trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy chối. Nhà vệ sinh chưa ai kiểm.",
+  "en": ""
+ },
+ {
+  "vi": "Tắt chuông rồi thôi.",
+  "en": ""
+ },
+ {
+  "vi": "Không ai biết thùng rác có tàn lửa hay không.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy cười trừ: “Có tí khói thôi mà chị, đâu phải thuốc lá thật.”",
+  "en": ""
+ },
+ {
+  "vi": "Nói rõ: trên tàu cấm mọi loại thuốc lá, kể cả điện tử. Xin bạn giữ tắt thiết bị cả chuyến.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy cất thiết bị vào túi, gật đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Thôi lần sau đừng thế nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy nhún vai, quay về chỗ.",
+  "en": ""
+ },
+ {
+  "vi": "Mắng bạn ấy trước cả khoang.",
+  "en": ""
+ },
+ {
+  "vi": "Cả nhóm bạn cãi lại, khoang khách ồn ào.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyến bay còn hai mươi phút.",
+  "en": ""
+ },
+ {
+  "vi": "Báo chị Thu và cơ trưởng, ghi biên bản để bàn giao khi hạ cánh.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thu gật đầu: “Đúng quy trình. Cơ trưởng sẽ báo mặt đất.”",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ báo chị Thu.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Thu phải tự đi báo cơ trưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Không báo ai, chuyện nhỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Chuông báo khói đã ghi vào máy. Sau chuyến bay, phòng an toàn hỏi vì sao không ai báo.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Chín sợ rung lắc",
+  "en": ""
+ },
+ {
+  "vi": "Tàu rung nhẹ. Bà Chín nắm chặt tay vịn, mặt tái đi: “Máy bay có sao không cô?”",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi xuống cạnh bà một chút, nói chậm rãi, cười với bà.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Chín thở ra một hơi dài.",
+  "en": ""
+ },
+ {
+  "vi": "“Không sao đâu bà.” rồi đi tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Chín vẫn nắm chặt tay vịn.",
+  "en": ""
+ },
+ {
+  "vi": "“Bà đừng làm khách khác sợ theo.”",
+  "en": ""
+ },
+ {
+  "vi": "Bà Chín im bặt, mắt rưng rưng.",
+  "en": ""
+ },
+ {
+  "vi": "“Sao nó cứ rung hoài vậy cô?”",
+  "en": ""
+ },
+ {
+  "vi": "Tàu đi qua vùng gió, như xe chạy qua đoạn đường sóc. Tổ bay biết trước và đã bật đèn thắt dây.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Chín gật gù: “Như xe đò chạy đường đất hả.”",
+  "en": ""
+ },
+ {
+  "vi": "Cháu cũng không biết nữa bà ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Chín càng lo hơn.",
+  "en": ""
+ },
+ {
+  "vi": "Bình thường thôi bà.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Chín gật, nhưng vẫn chưa yên.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Chín đỡ hơn, nhưng tay vẫn run.",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm lại dây an toàn cho bà, mang ly nước ấm, dặn bà cứ bấm chuông gọi.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Chín cầm ly nước ấm: “Có cô đây bà yên tâm rồi.”",
+  "en": ""
+ },
+ {
+  "vi": "Mang cho bà ly nước.",
+  "en": ""
+ },
+ {
+  "vi": "Bà cảm ơn, vẫn nhìn ra cửa sổ lo lắng.",
+  "en": ""
+ },
+ {
+  "vi": "Để bà ngồi yên cho quen.",
+  "en": ""
+ },
+ {
+  "vi": "Suốt chặng còn lại bà Chín không dám nhìn ra ngoài.",
+  "en": ""
+ },
+ {
+  "vi": "Nước lọc",
+  "en": ""
+ },
+ {
+  "vi": "Bánh ngọt",
+  "en": ""
+ },
+ {
+  "vi": "Túi nôn, khăn ướt",
+  "en": ""
+ },
+ {
+  "vi": "Bình dưỡng khí",
+  "en": ""
+ },
+ {
+  "vi": "Tìm bác sĩ trên chuyến bay",
+  "en": ""
+ },
+ {
+  "vi": "Báo cơ trưởng",
+  "en": ""
+ },
+ {
+  "vi": "Đưa thuốc của mình",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi khách thấy thế nào",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi bệnh nền, thuốc đang dùng",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi đã ăn uống gì chưa",
+  "en": ""
+ },
+ {
+  "vi": "Ông Tư run tay, vã mồ hôi",
+  "en": ""
+ },
+ {
+  "vi": "Ông Tư run tay, mồ hôi túa ra, nói hơi lẫn.",
+  "en": ""
+ },
+ {
+  "vi": "“Ông chóng mặt, tay chân bủn rủn.”",
+  "en": ""
+ },
+ {
+  "vi": "“Ông bị tiểu đường, sáng nay có tiêm thuốc.”",
+  "en": ""
+ },
+ {
+  "vi": "“Vội ra sân bay, ông chưa ăn gì.”",
+  "en": ""
+ },
+ {
+  "vi": "hạ đường huyết: cần đường ngay",
+  "en": ""
+ },
+ {
+  "vi": "Chú Hải đau ngực",
+  "en": ""
+ },
+ {
+  "vi": "Chú Hải ôm ngực, thở gấp, mặt tái, vã mồ hôi.",
+  "en": ""
+ },
+ {
+  "vi": "“Chú đau thắt ở ngực, lan ra tay trái.”",
+  "en": ""
+ },
+ {
+  "vi": "“Chú bị huyết áp cao, thuốc để trong vali gửi khoang hàng.”",
+  "en": ""
+ },
+ {
+  "vi": "“Chú có ăn sáng rồi.”",
+  "en": ""
+ },
+ {
+  "vi": "nghi đau tim: cần dưỡng khí, bác sĩ và cơ trưởng",
+  "en": ""
+ },
+ {
+  "vi": "Bà Chín say máy bay",
+  "en": ""
+ },
+ {
+  "vi": "Bà Chín nôn nao, mặt xanh, tay bịt miệng.",
+  "en": ""
+ },
+ {
+  "vi": "“Bà chóng mặt, buồn nôn quá.”",
+  "en": ""
+ },
+ {
+  "vi": "“Bà không có bệnh gì, chỉ hay say xe.”",
+  "en": ""
+ },
+ {
+  "vi": "“Sáng bà ăn tô bún mắm.”",
+  "en": ""
+ },
+ {
+  "vi": "say máy bay: túi nôn, khăn ướt, nước",
+  "en": ""
+ },
+ {
   "vi": "Bé Bơ khóc thét lúc hạ độ cao",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "mang nhầm món",
-  "en": ""
- },
- {
-  "vi": "✅ Xong hàng này.",
-  "en": ""
- },
- {
-  "vi": "✅ Xong hàng cuối.",
-  "en": ""
- },
- {
-  "vi": "Đã để khách này nghỉ.",
-  "en": ""
- },
- {
-  "vi": "Đây là hàng cuối. Cất xe thôi.",
-  "en": ""
- },
- {
-  "vi": "bỏ sót khách khi phục vụ",
-  "en": ""
- },
- {
-  "vi": "〰️ Đèn thắt dây bật sáng, tàu bắt đầu rung! Cất xe, về ghế ngay!",
-  "en": ""
- },
- {
-  "vi": "Còn hàng chưa phục vụ.",
-  "en": ""
- },
- {
-  "vi": "🛒 Thu ly, cất xe vào bếp, khóa phanh.",
-  "en": ""
- },
- {
-  "vi": "〰️ Đèn thắt dây bật sáng giữa lúc đang phục vụ. Cơ trưởng: “Tiếp viên về ghế.”",
-  "en": ""
- },
- {
-  "vi": "Tàu đang êm, không cần cất xe.",
-  "en": ""
- },
- {
-  "vi": "Làm gì trước?",
-  "en": ""
- },
- {
-  "vi": "Tàu đang êm.",
-  "en": ""
- },
- {
-  "vi": "Vẫn còn thời gian, cất xe nhanh lên!",
-  "en": ""
- },
- {
-  "vi": "Nước nóng trên xe đổ trúng tay khách khi tàu rung.",
-  "en": ""
- },
- {
-  "vi": "không cất bình nước nóng khi rung lắc",
-  "en": ""
- },
- {
-  "vi": "Xe đẩy không khóa phanh trôi dọc lối, va vào đầu gối khách.",
-  "en": ""
- },
- {
-  "vi": "không khóa phanh xe đẩy",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên còn đứng giữa lối khi tàu rung mạnh.",
-  "en": ""
- },
- {
-  "vi": "không về ghế khi rung lắc",
-  "en": ""
- },
- {
-  "vi": "✅ Xe đã khóa, bình nóng đã cất, bạn ngồi thắt dây kịp lúc tàu rung. Năm phút sau đèn tắt, phục vụ tiếp!",
-  "en": ""
- },
- {
-  "vi": "Cất xe, về ghế kịp lúc tàu rung. Không ai bị gì.",
-  "en": ""
- },
- {
-  "vi": "Đã nói chuyện xong.",
-  "en": ""
- },
- {
-  "vi": "Chọn một cách nói.",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên nói chưa khéo, khách vẫn chưa vui.",
-  "en": ""
- },
- {
-  "vi": "nói chưa khéo",
-  "en": ""
- },
- {
-  "vi": "Chuyện có thể nguy hiểm mà tiếp viên bỏ qua.",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên làm khách bực thêm.",
-  "en": ""
- },
- {
-  "vi": "bỏ qua chuyện an toàn",
-  "en": ""
- },
- {
-  "vi": "làm khách bực thêm",
-  "en": ""
- },
- {
-  "vi": "Trong túi sơ cứu không có thứ này.",
-  "en": ""
- },
- {
-  "vi": "Đã làm rồi.",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên đưa thuốc của mình cho khách uống, không biết khách bị gì.",
-  "en": ""
- },
- {
-  "vi": "tự đưa thuốc cho khách",
-  "en": ""
- },
- {
-  "vi": "✋ Chị Thu ngăn lại: “Không bao giờ đưa thuốc của mình. Mình không phải bác sĩ.”",
-  "en": ""
- },
- {
-  "vi": "Rót ly nước ấm, đưa khách uống từng ngụm.",
-  "en": ""
- },
- {
-  "vi": "Mở hộp nước cam, đưa khách uống ngay.",
-  "en": ""
- },
- {
-  "vi": "Bóc bánh ngọt cho khách ăn vài miếng.",
-  "en": ""
- },
- {
-  "vi": "Đưa túi nôn và khăn ướt, nới lỏng dây an toàn cho khách.",
-  "en": ""
- },
- {
-  "vi": "Đeo mặt nạ bình dưỡng khí cho khách, chỉnh dòng thở.",
-  "en": ""
- },
- {
-  "vi": "“Trên chuyến bay có bác sĩ hay nhân viên y tế nào không ạ?” Một chị y tá giơ tay.",
-  "en": ""
- },
- {
-  "vi": "Gọi buồng lái: báo tình trạng khách, cơ trưởng liên lạc mặt đất.",
-  "en": ""
- },
- {
-  "vi": "Chăm sóc khách trước đã.",
-  "en": ""
- },
- {
-  "vi": "🩺 Khách đỡ dần, thở đều lại.",
-  "en": ""
- },
- {
-  "vi": "🩺 Khách qua cơn, nhưng chị Thu nhắc lại những bước còn thiếu.",
-  "en": ""
- },
- {
-  "vi": "(Đang bị cách chức: không có thưởng.)",
-  "en": ""
- },
- {
-  "vi": "(Mệt quá: nửa thưởng.)",
-  "en": ""
- },
- {
-  "vi": "Chưa có chuyện mới.",
-  "en": ""
- },
- {
-  "vi": "〰️ Cất xe kịp lúc tàu rung.",
-  "en": ""
- },
- {
-  "vi": "〰️ Rung lắc giữa giờ phục vụ, lần sau cất xe nhanh hơn nhé.",
-  "en": ""
- },
- {
-  "vi": "🏠 Tối về tới hẻm, cởi đôi giày bay, bà Tám hỏi hôm nay có gặp ai vui không.",
-  "en": ""
- },
- {
-  "vi": "Mai báo danh ở sân bay lúc 05:30.",
-  "en": ""
- },
- {
-  "vi": "Đúng chỗ, đúng hành lý",
-  "en": ""
- },
- {
-  "vi": "xem thẻ kỹ",
-  "en": ""
- },
- {
-  "vi": "xử lý chưa đúng ở cửa",
-  "en": ""
- },
- {
-  "vi": "Niềm nở",
-  "en": ""
- },
- {
-  "vi": "chào hỏi, chỉ chỗ tận tình",
-  "en": ""
- },
- {
-  "vi": "lối đi thông thoáng",
-  "en": ""
- },
- {
-  "vi": "đúng thứ tự trên thẻ",
-  "en": ""
- },
- {
-  "vi": "Khoang sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "không sót ghế nào",
-  "en": ""
- },
- {
-  "vi": "còn sót ghế chưa sẵn sàng",
-  "en": ""
- },
- {
-  "vi": "đúng từng ghế",
-  "en": ""
- },
- {
-  "vi": "có ghế nhầm hoặc sót",
-  "en": ""
- },
- {
-  "vi": "Suất đặc biệt, trẻ nhỏ",
-  "en": ""
- },
- {
-  "vi": "đúng phiếu suất ăn",
-  "en": ""
- },
- {
-  "vi": "sót suất đặc biệt",
-  "en": ""
- },
- {
-  "vi": "An toàn khi rung",
-  "en": ""
- },
- {
-  "vi": "cất xe kịp",
-  "en": ""
- },
- {
-  "vi": "chưa kịp cất xe",
-  "en": ""
- },
- {
-  "vi": "xe đẩy đi đều",
-  "en": ""
- },
- {
-  "vi": "Bình tĩnh, lắng nghe",
-  "en": ""
- },
- {
-  "vi": "mở lời nhẹ nhàng",
-  "en": ""
- },
- {
-  "vi": "Giữ quy định",
-  "en": ""
- },
- {
-  "vi": "nói rõ vì sao",
-  "en": ""
- },
- {
-  "vi": "Có cách giải quyết",
-  "en": ""
- },
- {
-  "vi": "có lối ra cho khách",
-  "en": ""
- },
- {
-  "vi": "Sơ cứu đúng",
-  "en": ""
- },
- {
-  "vi": "đúng thứ khách cần",
-  "en": ""
- },
- {
-  "vi": "thiếu hoặc sai bước sơ cứu",
-  "en": ""
- },
- {
-  "vi": "Báo đúng người",
-  "en": ""
- },
- {
-  "vi": "báo cơ trưởng, tìm bác sĩ",
-  "en": ""
- },
- {
-  "vi": "chưa báo người cần báo",
-  "en": ""
- },
- {
-  "vi": "không để khách chờ lâu",
-  "en": ""
- },
- {
-  "vi": "Có cô tiếp viên quen, bà yên tâm cả chuyến.",
-  "en": ""
- },
- {
-  "vi": "Chuyến bay tốt, chỉ có chút bà chưa ưng.",
-  "en": ""
- },
- {
-  "vi": "Bà hơi lo suốt chuyến.",
-  "en": ""
- },
- {
-  "vi": "Chuyến này bà buồn lắm.",
-  "en": ""
- },
- {
-  "vi": "Được, nhưng còn chỗ phải chấn chỉnh.",
-  "en": ""
- },
- {
-  "vi": "Bay với bé mà được giúp tận tình, cảm ơn tổ bay nhiều.",
-  "en": ""
- },
- {
-  "vi": "Chuyến bay tốt, chỉ có chút chị chưa yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Bay với con nhỏ mà chị hơi vất vả.",
-  "en": ""
- },
- {
-  "vi": "Chuyến này chị với bé mệt quá.",
-  "en": ""
- },
- {
-  "vi": "Đi tuyến này hoài, chuyến nay dễ chịu nhất.",
-  "en": ""
- },
- {
-  "vi": "Được, chỉ có chút chưa ưng.",
-  "en": ""
- },
- {
-  "vi": "Chuyến bay chill xỉu, tiếp viên cute ✈️✨",
-  "en": ""
- },
- {
-  "vi": "Ổn áp nha, chỉ có một xíu chưa ưng.",
-  "en": ""
- },
- {
-  "vi": "Hơi toang xíu 🥲",
-  "en": ""
- },
- {
-  "vi": "Chuyến này không vui chút nào 😤",
-  "en": ""
- },
- {
-  "vi": "Đúng chỗ, đúng món, không phải nhắc.",
-  "en": ""
- },
- {
-  "vi": "Mang nhầm, phải gọi lại.",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên niềm nở từ lúc ở cửa.",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên hơi lúng túng lúc đón khách.",
-  "en": ""
- },
- {
-  "vi": "Nhanh gọn.",
-  "en": ""
- },
- {
-  "vi": "Chờ hơi lâu.",
-  "en": ""
- },
- {
-  "vi": "Suất ăn đặc biệt được nhớ đúng ghế.",
-  "en": ""
- },
- {
-  "vi": "Suất ăn đặc biệt suýt bị nhầm.",
-  "en": ""
- },
- {
-  "vi": "Rung lắc mà tiếp viên cất xe kịp, yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Rung lắc mà xe đẩy vẫn còn giữa lối.",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên nói nhỏ nhẹ, nghe lọt tai.",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên nói hơi gắt.",
-  "en": ""
- },
- {
-  "vi": "Nói rõ quy định mà không làm khách mất mặt.",
-  "en": ""
- },
- {
-  "vi": "Quy định thì đúng, nhưng nói chưa rõ vì sao.",
-  "en": ""
- },
- {
-  "vi": "Còn tìm cho khách cách khác, chu đáo.",
-  "en": ""
- },
- {
-  "vi": "Chưa có cách nào cho khách.",
-  "en": ""
- },
- {
-  "vi": "Báo cơ trưởng, tìm bác sĩ ngay.",
-  "en": ""
- },
- {
-  "vi": "Chậm báo người cần báo.",
-  "en": ""
- },
- {
-  "vi": "Làm mẫu an toàn đúng thứ tự trên thẻ, rồi đi dọc lối kiểm tra khoang.",
-  "en": ""
- },
- {
-  "vi": "Có người đang chờ bạn trả lời: chọn giọng, chọn ý, cần thì báo chị Thu hoặc phòng an toàn.",
-  "en": ""
- },
- {
-  "vi": "Đọc thẻ lên tàu: vali to gửi khoang hàng, pin sạc mang theo người, hàng 1 và 17 chỉ cho người lớn đi lại được.",
-  "en": ""
- },
- {
-  "vi": "Làm mẫu đúng thứ tự trên thẻ → đi dọc lối → chỉnh từng ghế chưa sẵn sàng → báo buồng lái.",
-  "en": ""
- },
- {
-  "vi": "Từng hàng một: đúng món từng ghế, suất chay theo phiếu, hàng dị ứng không phát đậu phộng, trẻ nhỏ không uống đồ nóng.",
-  "en": ""
- },
- {
-  "vi": "Lắng nghe trước, nói rõ quy định và vì sao, rồi tìm cho khách một lối ra.",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách trước, dùng đúng đồ trong túi sơ cứu, không đưa thuốc của mình, khách nặng thì báo cơ trưởng.",
-  "en": ""
- },
- {
-  "vi": "Đã pha sẵn bình trà, xếp ly lên xe đẩy.",
-  "en": ""
- },
- {
-  "vi": "Đã gắn thẻ ưu tiên cho khách lớn tuổi và gia đình có con nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Dữ liệu khoang khách sai.",
-  "en": ""
- },
- {
-  "vi": "Phiên bản việc khoang khách không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Trạng thái việc khoang khách sai.",
-  "en": ""
- },
- {
-  "vi": "Hàng khách ở cửa sai.",
-  "en": ""
- },
- {
-  "vi": "Món đã phục vụ sai.",
-  "en": ""
- },
- {
-  "vi": "Ghế để khách ngủ sai.",
-  "en": ""
- },
- {
-  "vi": "Ghế đã chỉnh sai.",
-  "en": ""
- },
- {
-  "vi": "Đồ sơ cứu sai.",
-  "en": ""
- },
- {
-  "vi": "Lời nói với khách sai.",
-  "en": ""
- },
- {
-  "vi": "Sổ tiếp viên sai.",
-  "en": ""
- },
- {
-  "vi": "Nhật ký khoang khách sai.",
-  "en": ""
- },
- {
-  "vi": "Chuyện nghề sai.",
-  "en": ""
- },
- {
-  "vi": "Rung lắc sai.",
-  "en": ""
- },
- {
-  "vi": "Giờ rung lắc sai.",
-  "en": ""
- },
- {
-  "vi": "Việc cất xe sai.",
-  "en": ""
- },
- {
-  "vi": "Kết quả rung lắc sai.",
-  "en": ""
- },
- {
-  "vi": "Lịch sử rung lắc sai.",
   "en": ""
  }
 ]

@@ -1,3 +1,7 @@
+# v1.9.13 — 2026-10-07
+
+Gồm "Nhà đấu giá đồ độc bản" (schema 29: auction_lots, auction_bids; journey.uniq).
+
 # v1.9.12 — 2026-10-07
 
 Chỉ gồm "Hội chợ: công an bắt ít hơn một nửa" (không thông báo Có gì mới).

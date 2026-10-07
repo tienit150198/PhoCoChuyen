@@ -1,5 +1,125 @@
 [
  {
+  "vi": "Kệ hết $1 rồi. Nhập thêm ở Kho, hoặc nói thật với khách.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "↩️ Cất lại $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đang khóa quét của tiệm tới hết ngày $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tôi dặn $1 mà.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💿 Chị Thơ: “$1”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kệ chỉ còn $1 $2. Bớt lại trong giỏ nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 Tính tiền $1 món · $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(bớt $1%)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎟️ $1 phiếu fansign.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nói thật với $1: kệ hết món khách cần, hẹn hàng về.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Thử “$2”: vẫn không được. Khách sốt ruột rồi, coi kỹ lại nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hoàn tiền: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(−$1 xu hoàn tiền)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⛔ $1 khóa quét tới hết ngày $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💿 Bán $1 món cho $2 lượt khách.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎟️ Ghi $1 phiếu fansign.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔁 Giải quyết $1 chuyện khách quay lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kho: Pink $1, Blank $2, Jewel $3, Búa $4 · POB $5 bộ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Thơ dặn: đếm bản giới hạn, dựng biển “tối đa $1 bản/người”, thử búa trưng bày (yếu thì thay pin AAA)$2, rồi mở tiệm. $3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Thơ dặn: đếm bản giới hạn, dựng biển “tối đa $1 bản/người”, thử búa trưng bày (yếu thì thay pin AAA)$2, rồi mở tiệm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Thơ dặn: đếm bản giới hạn, dựng biển “tối đa $1 bản/người”, thử búa trưng bày (yếu thì thay pin AAA)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “$2” Hỏi giấy nhắn của bé mới biết bé cần gì.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 muốn: $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bé nói qua video: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đọc đúng mã $1, còn đưa tin nhắn Thảo nhờ lấy giùm.",
   "en": "",
   "pattern": true
@@ -1390,11 +1510,6 @@
   "pattern": true
  },
  {
-  "vi": "Còn thiếu $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
   "vi": "Bạn chưa có $1.",
   "en": "",
   "pattern": true
@@ -2131,121 +2246,6 @@
  },
  {
   "vi": "cho $1 xu đầu, phần trên lãi $2,$3%/ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã gửi $1 xu. Lãi $2,$3%/ngày$4, cộng vào sổ mỗi $5 ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lương kế toán x$1$2: $3 xu đã về ví của bạn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔥 Thưởng ngày x$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔥 Hôm nay $1 lời x$2: thưởng thêm $3 xu vào ví.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎁 Bà Tám gửi quà chào hàng xóm mới: +$1 xu vào ví.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ngày sống $1: $2 $3 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đeo tối đa $1 danh hiệu và chứng chỉ cùng lúc. Bỏ bớt một cái trước nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang đeo $1/$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 tạm đóng. Mở lại lúc nào cũng được, không tốn phí.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mở cửa lại (không tốn phí).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Một câu ngắn thôi, tối đa $1 chữ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Một câu ngắn thôi, tối đa $1 ký tự.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví còn $1 xu, chưa đủ $2 xu xếp bài.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chọn $1 xu nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tặng xu mở khi tài khoản đủ $1 ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví còn $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay bạn tặng đủ $1 xu rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trùm $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Số dòng cần từ 1 đến $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn bắt được $1! Đã lưu vào sổ cá của bạn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 rủ đi chơi",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Góp $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví còn $1 xu",
   "en": "",
   "pattern": true
  }

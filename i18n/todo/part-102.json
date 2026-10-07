@@ -1,5 +1,173 @@
 [
  {
+  "vi": "⚠️ Nguy cơ té ngã",
+  "en": ""
+ },
+ {
+  "vi": "Đã sát khuẩn tay",
+  "en": ""
+ },
+ {
+  "vi": "🧴 Sát khuẩn tay",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có họ tên, ngày sinh để đối chiếu.",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Người bệnh",
+  "en": ""
+ },
+ {
+  "vi": "🗣️ Mời tự nói họ tên, ngày sinh",
+  "en": ""
+ },
+ {
+  "vi": "rồi đối chiếu vòng tay",
+  "en": ""
+ },
+ {
+  "vi": "hỏi có hay không",
+  "en": ""
+ },
+ {
+  "vi": "🔢 Xem số giường",
+  "en": ""
+ },
+ {
+  "vi": "🪪 Xác định người bệnh",
+  "en": ""
+ },
+ {
+  "vi": "Mai lên phòng Điều dưỡng trình bày. Hôm nay tan ca sớm.",
+  "en": ""
+ },
+ {
+  "vi": "Tạm đình chỉ trực hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "✋ Giữ lại, báo bác sĩ…",
+  "en": ""
+ },
+ {
+  "vi": "Đọc ghi chú ca đêm",
+  "en": ""
+ },
+ {
+  "vi": "📋 Sổ giao ca",
+  "en": ""
+ },
+ {
+  "vi": "Giường xem trước",
+  "en": ""
+ },
+ {
+  "vi": "📋 Sổ giao ca đêm qua",
+  "en": ""
+ },
+ {
+  "vi": "🚶 Giường xem trước",
+  "en": ""
+ },
+ {
+  "vi": "Đọc ghi chú từng giường",
+  "en": ""
+ },
+ {
+  "vi": "Chọn giường xem trước",
+  "en": ""
+ },
+ {
+  "vi": "🚶 Chọn giường xem trước",
+  "en": ""
+ },
+ {
+  "vi": "đã đo lại",
+  "en": ""
+ },
+ {
+  "vi": "🔁 đo lại",
+  "en": ""
+ },
+ {
+  "vi": "hỏi điểm đau",
+  "en": ""
+ },
+ {
+  "vi": "đo",
+  "en": ""
+ },
+ {
+  "vi": ". Ngoài thẻ là báo bác sĩ (luật của trò chơi).",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Thẻ báo động Lá Sen",
+  "en": ""
+ },
+ {
+  "vi": "Luật của trò chơi: ngoài thẻ là báo bác sĩ.",
+  "en": ""
+ },
+ {
+  "vi": "Sinh tồn",
+  "en": ""
+ },
+ {
+  "vi": "📝 Phiếu theo dõi",
+  "en": ""
+ },
+ {
+  "vi": "📝 Ghi phiếu theo dõi",
+  "en": ""
+ },
+ {
+  "vi": "📝 Ghi phiếu",
+  "en": ""
+ },
+ {
+  "vi": "Gõ đúng số vừa đo.",
+  "en": ""
+ },
+ {
+  "vi": "📞 Đã báo bác sĩ",
+  "en": ""
+ },
+ {
+  "vi": "📞 Báo bác sĩ Khang…",
+  "en": ""
+ },
+ {
+  "vi": "📞 Gọi bác sĩ",
+  "en": ""
+ },
+ {
+  "vi": "Xác định người bệnh",
+  "en": ""
+ },
+ {
+  "vi": "Đo đủ năm chỉ số",
+  "en": ""
+ },
+ {
+  "vi": "Ghi phiếu theo dõi",
+  "en": ""
+ },
+ {
+  "vi": "So thẻ báo động, báo bác sĩ nếu cần",
+  "en": ""
+ },
+ {
+  "vi": "🚨 So với thẻ báo động",
+  "en": ""
+ },
+ {
+  "vi": "📄 Phiếu y lệnh",
+  "en": ""
+ },
+ {
   "vi": "Đường dùng",
   "en": ""
  },
@@ -1629,174 +1797,6 @@
  },
  {
   "vi": "✍️ Ký lại giấy",
-  "en": ""
- },
- {
-  "vi": "✍️ Ký giấy nhận nuôi",
-  "en": ""
- },
- {
-  "vi": "🤲 Giao bé",
-  "en": ""
- },
- {
-  "vi": "Vớt bé màu nào?",
-  "en": ""
- },
- {
-  "vi": "❓ Hỏi người muốn nuôi",
-  "en": ""
- },
- {
-  "vi": "🎒 Đồ dùng mang về",
-  "en": ""
- },
- {
-  "vi": "Hỏi han người muốn nuôi",
-  "en": ""
- },
- {
-  "vi": "Quyết định có giao bé không",
-  "en": ""
- },
- {
-  "vi": "🤔 Quyết định giao bé hay chưa",
-  "en": ""
- },
- {
-  "vi": "Ký giấy nhận nuôi",
-  "en": ""
- },
- {
-  "vi": "📝 Làm giấy nhận nuôi",
-  "en": ""
- },
- {
-  "vi": "Đặt bé lên quầy",
-  "en": ""
- },
- {
-  "vi": "🤲 Đặt bé lên quầy",
-  "en": ""
- },
- {
-  "vi": "Đồ dùng bé cần ở nhà mới",
-  "en": ""
- },
- {
-  "vi": "🎒 Chọn đồ dùng mang về",
-  "en": ""
- },
- {
-  "vi": "🍽️ Cho ăn",
-  "en": ""
- },
- {
-  "vi": "🩺 Kiểm tra",
-  "en": ""
- },
- {
-  "vi": "chuồng",
-  "en": ""
- },
- {
-  "vi": "🌡️ Đo nhiệt",
-  "en": ""
- },
- {
-  "vi": "🔥 Bật lại sưởi",
-  "en": ""
- },
- {
-  "vi": "👀 Soi kỹ từng bé",
-  "en": ""
- },
- {
-  "vi": "🚑 Cách ly bé ốm",
-  "en": ""
- },
- {
-  "vi": "🧺 Vòng chăm sáng nay",
-  "en": ""
- },
- {
-  "vi": "Cho từng bé ăn đúng khẩu phần",
-  "en": ""
- },
- {
-  "vi": "Dọn chỗ bẩn",
-  "en": ""
- },
- {
-  "vi": "Đo nhiệt từng bể cá",
-  "en": ""
- },
- {
-  "vi": "Soi kỹ từng bé",
-  "en": ""
- },
- {
-  "vi": "📋 Quy định đổi trả",
-  "en": ""
- },
- {
-  "vi": "🔍 Kiểm tra món khách mang trả",
-  "en": ""
- },
- {
-  "vi": "? Việc này sẽ khép lại.",
-  "en": ""
- },
- {
-  "vi": "Xem hóa đơn, seal, mã lô, hạn, lỗi",
-  "en": ""
- },
- {
-  "vi": "Quyết định theo quy định",
-  "en": ""
- },
- {
-  "vi": "⚖️ Quyết định đổi trả",
-  "en": ""
- },
- {
-  "vi": "TÌM",
-  "en": ""
- },
- {
-  "vi": "🏃 Đã báo chủ đi gặp",
-  "en": ""
- },
- {
-  "vi": "📵 Đã gác máy",
-  "en": ""
- },
- {
-  "vi": "🤫 Hỏi dấu riêng",
-  "en": ""
- },
- {
-  "vi": "🏃 Báo chủ đi gặp",
-  "en": ""
- },
- {
-  "vi": "Báo chủ nuôi liên lạc với người này?",
-  "en": ""
- },
- {
-  "vi": "📵 Cảm ơn, gác máy",
-  "en": ""
- },
- {
-  "vi": "Cảm ơn rồi gác máy?",
-  "en": ""
- },
- {
-  "vi": "📝 Tờ tìm thú",
-  "en": ""
- },
- {
-  "vi": "❓ Hỏi chủ nuôi",
   "en": ""
  }
 ]

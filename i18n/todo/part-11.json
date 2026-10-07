@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Trời sắp mưa, ông Lộc giục tổ thợ xuống hố ga.",
+  "en": ""
+ },
+ {
+  "vi": "Xuống múc luôn đi cháu, đo đạc gì cho mất thời gian!",
+  "en": ""
+ },
+ {
+  "vi": "Không đo khí thì không ai xuống. Mười phút thôi ông ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Ừ… năm ngoái phường bên có chuyện, tôi quên mất.",
+  "en": ""
+ },
+ {
+  "vi": "Khí an toàn rồi chú. Cháu xuống, chú canh trên này.",
+  "en": ""
+ },
+ {
+  "vi": "Cuộn dây lò xo",
+  "en": ""
+ },
+ {
+  "vi": "Chú Hai tháo cuộn dây lò xo cũ khỏi xe, buộc lên xe của bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Hai mươi năm chú đi với cuộn dây này. Giờ chú về trông cháu nội.",
+  "en": ""
+ },
+ {
+  "vi": "Nhớ: đúng bệnh, đúng đồ nghề, đúng giá.",
+  "en": ""
+ },
+ {
+  "vi": "Từ nay bếp quán chị có chuyện là gọi em đó.",
+  "en": ""
+ },
+ {
+  "vi": "Phường giao hố ga cả khu cho tổ thợ của cháu.",
+  "en": ""
+ },
+ {
+  "vi": "Cháu sẽ giữ bảng giá của chú, không đổi theo mặt khách.",
+  "en": ""
+ },
+ {
+  "vi": "Chén nước mắm của dì Bảy",
+  "en": ""
+ },
+ {
+  "vi": "Cái cối đá giã tỏi ớt",
+  "en": ""
+ },
+ {
+  "vi": "Cối đá của bà ngoại dì Bảy. Tỏi ớt giã tay trong cối này, chén nước mắm mới thơm đúng vị quán.",
+  "en": ""
+ },
+ {
+  "vi": "Dì Bảy",
+  "en": ""
+ },
+ {
+  "vi": "Chủ quán cơm",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bình",
+  "en": ""
+ },
+ {
+  "vi": "Kế toán công ty gần chợ",
+  "en": ""
+ },
+ {
+  "vi": "Bà Sương",
+  "en": ""
+ },
+ {
+  "vi": "Khách ăn chay ngày rằm",
+  "en": ""
+ },
+ {
+  "vi": "Bốn giờ sáng",
+  "en": ""
+ },
+ {
+  "vi": "Trời còn tối, dì Bảy đã nhóm xong bếp than, hai nồi cơm reo trên xe.",
+  "en": ""
+ },
+ {
+  "vi": "Gạo tấm hút ít nước, con đổ lưng đốt tay thôi. Đổ một đốt là nhão cả nồi.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi cơm trắng thì một đốt. Cơm mà hỏng là cả buổi sáng hỏng theo.",
+  "en": ""
+ },
+ {
+  "vi": "Dạ, con đặt ngón tay đo từng nồi.",
+  "en": ""
+ },
+ {
+  "vi": "Miếng sườn cháy cạnh",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bình dựng xe ôm, ngồi xuống ghế nhựa quen thuộc đầu bàn.",
+  "en": ""
+ },
+ {
+  "vi": "Cơm tấm ngon là miếng sườn hơi cháy cạnh, thơm mùi than.",
+  "en": ""
+ },
+ {
+  "vi": "Cháy cạnh khác cháy khét nghe con. Mỗi mặt chừng tám tới mười sáu giây, trở một lần.",
+  "en": ""
+ },
+ {
+  "vi": "Mà giữa miếng thịt không được hồng. Chú ăn sườn quán này mười năm rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bình hỏi bí quyết nướng sườn",
+  "en": ""
+ },
+ {
+  "vi": "Đếm giây từng mặt, trở đúng một lần",
+  "en": ""
+ },
+ {
+  "vi": "Vậy là ra nghề rồi đó con.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chú thích sườn nướng kỹ hay vừa",
+  "en": ""
+ },
+ {
+  "vi": "Chín tới, cháy cạnh chút xíu. Vậy là chú ăn hết dĩa.",
+  "en": ""
+ },
+ {
+  "vi": "Mười hai giờ trưa",
+  "en": ""
+ },
+ {
+  "vi": "Chị Ngân gửi danh sách bốn hộp cơm cho cả phòng, ghi từng dòng.",
+  "en": ""
+ },
+ {
+  "vi": "Hộp nào nước mắm cũng để riêng nha em, rưới vô là về tới nơi cơm nhão hết.",
+  "en": ""
+ },
+ {
+  "vi": "Có một hộp chay của chị Hà: không hành mỡ, nước tương nha.",
+  "en": ""
+ },
+ {
+  "vi": "Dạ, em ghi tên từng hộp lên nắp luôn.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Sương ghé quán, tay lần tràng hạt.",
+  "en": ""
+ },
+ {
+  "vi": "Mỡ hành quán phi bằng mỡ heo phải không con? Bà ăn chay nên dặn trước.",
+  "en": ""
+ },
+ {
+  "vi": "Dạ, dĩa chay thì muỗng chén riêng, nước tương, không mỡ hành, không canh tôm.",
+  "en": ""
+ },
+ {
+  "vi": "Quán nhớ bà ăn chay, bà mừng lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Sương hỏi canh có chay không",
+  "en": ""
+ },
+ {
+  "vi": "Nói thật: canh nấu tôm khô, bà dùng trà đá nha",
+  "en": ""
+ },
+ {
+  "vi": "Thật thà vậy bà mới yên tâm.",
+  "en": ""
+ },
+ {
+  "vi": "Luộc riêng cho bà chén canh rau",
+  "en": ""
+ },
+ {
+  "vi": "Con chu đáo quá. Bà cảm ơn nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Cái cối đá",
+  "en": ""
+ },
+ {
+  "vi": "Tối dọn quán, dì Bảy rửa cái cối đá, lau khô rồi đặt vào tay bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Cối này của bà ngoại dì. Nước mắm quán ngon là nhờ giã tay trong cối này.",
+  "en": ""
+ },
+ {
+  "vi": "Mai dì đi tái khám ở bệnh viện. Quán giao con, cối cũng giao con.",
+  "en": ""
+ },
+ {
+  "vi": "Giao đúng người rồi. Dĩa nào nó xới cũng đủ cơm.",
+  "en": ""
+ },
+ {
+  "vi": "Con sẽ nếm từng chén nước mắm, như dì.",
+  "en": ""
+ },
+ {
+  "vi": "Cái muôi đồng của bác Lâm",
+  "en": ""
+ },
+ {
+  "vi": "Cái muôi đồng cán quấn vải",
+  "en": ""
+ },
+ {
+  "vi": "Bác Lâm mang từ Nam Định lên, ba mươi năm múc nước dùng. Cầm lên là biết một muôi vừa một tô.",
+  "en": ""
+ },
+ {
+  "vi": "Bác Lâm",
+  "en": ""
+ },
+ {
+  "vi": "Chủ quán phở",
+  "en": ""
+ },
+ {
+  "vi": "Ông giáo Thụ",
+  "en": ""
+ },
+ {
+  "vi": "Chị Nguyệt",
+  "en": ""
+ },
+ {
+  "vi": "Mẹ bé Bống",
+  "en": ""
+ },
+ {
+  "vi": "Nồi xương ba giờ sáng",
+  "en": ""
+ },
+ {
+  "vi": "Ba giờ sáng, đèn quán đã sáng. Bác Lâm chần xương, rửa từng khúc dưới vòi nước lạnh.",
+  "en": ""
+ },
+ {
+  "vi": "Xương phải chần cho sạch máu, nước mới trong. Gừng với hành nướng cháy vỏ, cạo sạch rồi mới thả.",
+  "en": ""
+ },
+ {
+  "vi": "Ninh lửa nhỏ, mặt nồi chỉ lăn tăn. Sôi to một lúc là nước đục cả ngày, gỡ không lại.",
+  "en": ""
+ },
+ {
+  "vi": "Dạ, con canh lửa cho bác.",
+  "en": ""
+ },
+ {
+  "vi": "Ông giáo nếm nước",
+  "en": ""
+ },
+ {
+  "vi": "Ông giáo Thụ trải tờ báo, chưa ăn vội mà húp một thìa nước trước.",
+  "en": ""
+ },
+ {
+  "vi": "Phở là ở nước. Nước trong nhìn thấy đáy tô, ngọt là ngọt xương chứ không phải ngọt mì chính.",
+  "en": ""
+ },
+ {
+  "vi": "Ông già rồi, uống mì chính vào là khô cổ cả buổi.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi nhỏ kia bác nấu riêng cho ông giáo đấy con.",
+  "en": ""
+ },
+ {
+  "vi": "Ông giáo hỏi chuyện nồi nước",
+  "en": ""
+ },
+ {
+  "vi": "Múc nước ở nồi nhỏ, mời ông nếm lại",
+  "en": ""
+ },
+ {
+  "vi": "Đấy, thế này mới là phở. Cháu nhớ lời ông dặn rồi đấy.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi ông phở ngày xưa thế nào",
+  "en": ""
+ },
+ {
+  "vi": "Ngày xưa phở gánh, một gánh hai đầu: một đầu nồi nước, một đầu bánh với thịt. Nước nóng là được.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng gió mùa",
+  "en": ""
+ },
+ {
+  "vi": "Gió mùa về, ngõ vắng hoe. Hơi nước trên nồi phở bốc lên trắng xóa.",
+  "en": ""
+ },
+ {
+  "vi": "Lạnh thế này bán xôi chẳng ai mua, chị sang ăn bát phở cho ấm.",
+  "en": ""
+ },
+ {
+  "vi": "Nước béo nhé em, hớt mặt nồi ấy, có tí tủy là ngon.",
+  "en": ""
+ },
+ {
+  "vi": "Trời lạnh tô nguội nhanh. Chan xong bưng ra liền, đừng để khách chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi nước vừa châm, chưa sôi lại",
+  "en": ""
+ },
+ {
+  "vi": "Xin chị chờ một phút cho nồi lăn tăn lại",
+  "en": ""
+ },
+ {
+  "vi": "Ừ, chờ được. Tái chín hồng mới ngon.",
+  "en": ""
+ },
+ {
+  "vi": "Mời chị cốc trà nóng trong lúc chờ",
+  "en": ""
+ },
+ {
+  "vi": "Cái quán này chu đáo ghê. Thảo nào đông.",
+  "en": ""
+ },
+ {
+  "vi": "Bé Bống ăn hết tô",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hạnh dắt bé Bống vào, bé ôm cái cặp to hơn người.",
+  "en": ""
+ },
+ {
+  "vi": "Bé nhà chị kén lắm, thấy hành là gạt ra, nước nhiều là không ăn.",
+  "en": ""
+ },
+ {
+  "vi": "Em làm tô chín, không hành, ít nước, bánh trụng mềm cho bé.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bé ăn sạch tô! Lần đầu tiên đấy em ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Cái muôi đồng",
+  "en": ""
+ },
+ {
+  "vi": "Bác Lâm lau cái muôi đồng sáng bóng, treo lên móc rồi lại gỡ xuống, đưa cho bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Ba mươi năm bác múc bằng cái muôi này. Muôi nào cũng được, quan trọng là dừng tay đúng lúc.",
+  "en": ""
+ },
+ {
+  "vi": "Mai bác về quê giỗ cụ, quán giao con mấy hôm.",
+  "en": ""
+ },
+ {
+  "vi": "Giao đúng người. Nước trong, tái hồng, cháu nó làm được.",
+  "en": ""
+ },
+ {
+  "vi": "Mai chị vẫn sang ăn, nước béo nhé!",
+  "en": ""
+ },
+ {
+  "vi": "Con giữ nồi nước như bác đã giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Ba giây của chị Lam",
+  "en": ""
+ },
+ {
+  "vi": "Dải ảnh đầu tiên của tiệm Tách Tách",
+  "en": ""
+ },
+ {
+  "vi": "Chị Lam đội bờm tai thỏ chụp thử ngày mở tiệm. Bốn ô, ô nào cũng cười, màu đã hơi phai.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Lam",
+  "en": ""
+ },
+ {
+  "vi": "Chủ tiệm Tách Tách",
+  "en": ""
+ },
+ {
+  "vi": "Bé Nhi",
+  "en": ""
+ },
+ {
+  "vi": "Học sinh lớp 11A1",
+  "en": ""
+ },
+ {
+  "vi": "Ông Chín",
+  "en": ""
+ },
+ {
+  "vi": "Hưu trí, đi cùng bà Chín",
+  "en": ""
+ },
+ {
+  "vi": "Thầy Phong",
+  "en": ""
+ },
+ {
+  "vi": "Chủ nhiệm 12A3",
+  "en": ""
+ },
+ {
+  "vi": "Cái rèm buồng chụp",
+  "en": ""
+ },
+ {
+  "vi": "Chị Lam kéo tấm rèm nhung đỏ, bật cây đèn vòng, đưa bạn cái khăn lau kính.",
+  "en": ""
+ },
+ {
+  "vi": "Mười lăm năm chụp ảnh cưới, chị học được một điều: người ta nhớ tấm ảnh cả đời, chứ không nhớ giá tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng nào cũng lau kính, chụp thử phông trống. Kính bẩn một chút là ảnh cả ngày mờ.",
+  "en": ""
+ },
+ {
+  "vi": "Dạ, lau kính, xem cuộn mực, chụp thử rồi mới mở tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Hội bạn 11A1",
+  "en": ""
+ },
+ {
+  "vi": "Năm giờ chiều, bốn đứa mặc đồng phục ùa vào, tranh nhau bờm tai thỏ.",
+  "en": ""
+ },
+ {
+  "vi": "Chị ơi, tấm này đứa nào nhắm mắt là cả hội giận nó một tuần đó!",
+  "en": ""
+ },
+ {
+  "vi": "Đếm ba-hai-một xong đừng bấm liền. Đợi tụi nhỏ đứng yên, mở mắt, rồi mới bấm.",
+  "en": ""
+ },
+ {
+  "vi": "Ba… hai… một… đợi nửa nhịp… tách!",
+  "en": ""
+ },
+ {
+  "vi": "Một bạn nhỏ trong nhóm cứ đứng nép ra rìa khung",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn ấy đứng giữa, cầm bảng chữ",
+  "en": ""
+ },
+ {
+  "vi": "Đúng rồi, nó là lớp trưởng mà hay mắc cỡ lắm!",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chị Lam cách xếp chỗ cho nhóm đông",
+  "en": ""
+ },
+ {
+  "vi": "Người thấp đứng trước, người cao ngồi ghế sau. Ai cũng thấy mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Năm mươi năm",
+  "en": ""
+ },
+ {
+  "vi": "Ông Chín dắt bà Chín vào, tay cầm một xấp ảnh cũ cột dây thun.",
+  "en": ""
+ },
+ {
+  "vi": "Năm nào hai ông bà cũng chụp một tấm. Năm nay là tấm thứ năm mươi.",
+  "en": ""
+ },
+ {
+  "vi": "Bà cười chậm lắm, con đợi bà nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Dạ, con đợi bà cười rồi mới bấm.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Chín ngại đèn chói",
+  "en": ""
+ },
+ {
+  "vi": "Hạ đèn xuống dịu, kéo ghế cho bà ngồi",
+  "en": ""
+ },
+ {
+  "vi": "Đó, bà cười rồi kìa. Y như hồi con gái.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chị Lam chỉnh đèn cho người lớn tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Đèn dịu, chếch một bên. Ánh sáng mềm thì nếp nhăn cũng đẹp.",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh kỷ yếu",
+  "en": ""
+ },
+ {
+  "vi": "Thầy Phong dẫn cả nhóm học trò mặc áo tốt nghiệp, đứng chen nhau trước tấm phông.",
+  "en": ""
+ },
+ {
+  "vi": "Mấy đứa này sắp đi mỗi đứa một nơi. Thầy muốn mỗi đứa giữ một dải.",
+  "en": ""
+ },
+ {
+  "vi": "Thầy đứng giữa nha thầy. Mũ tốt nghiệp đội lệch một chút cho vui.",
+  "en": ""
+ },
+ {
+  "vi": "Tấm này thầy dán lên bảng tin, để khóa sau nhìn mà học.",
+  "en": ""
+ },
+ {
   "vi": "Ba giây",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Tàu hạ độ cao, bé Bơ khóc thét.",
-  "en": ""
- },
- {
-  "vi": "Chị xin lỗi mọi người, bé đau tai…",
-  "en": ""
- },
- {
-  "vi": "Chị cho bé bú hoặc uống từng ngụm nước lúc này nhé.",
-  "en": ""
- },
- {
-  "vi": "Nín rồi! Sao em biết hay vậy?",
-  "en": ""
- },
- {
-  "vi": "Tiếp viên nào cũng thuộc bài này. Giờ em thuộc rồi đấy.",
-  "en": ""
- },
- {
-  "vi": "Tấm ảnh cũ của ông Tư",
-  "en": ""
- },
- {
-  "vi": "Ông Tư nhìn ra cửa sổ rất lâu.",
-  "en": ""
- },
- {
-  "vi": "Ngày xưa ông ra đảo bằng tàu thủy, say sóng ba ngày.",
-  "en": ""
- },
- {
-  "vi": "Giờ bay năm mươi phút. Đồng đội ông không ai được đi thế này.",
-  "en": ""
- },
- {
-  "vi": "Ông kể thêm cho con nghe được không ạ?",
-  "en": ""
- },
- {
-  "vi": "Ông Tư muốn gửi lời",
-  "en": ""
- },
- {
-  "vi": "Xin chị Thu đọc lời chào mừng ông trên loa",
-  "en": ""
- },
- {
-  "vi": "“Tổ bay hân hạnh đưa bác Tư về thăm đảo.” Cả khoang vỗ tay.",
-  "en": ""
- },
- {
-  "vi": "Ông đi bao nhiêu chuyến, lần đầu có người gọi tên ông.",
-  "en": ""
- },
- {
-  "vi": "Ngồi ghế phụ cạnh ông, nghe ông kể tới lúc hạ cánh",
-  "en": ""
- },
- {
-  "vi": "Kể được với người trẻ, ông thấy nhẹ lòng.",
-  "en": ""
- },
- {
-  "vi": "Chiếc ghim con cò",
-  "en": ""
- },
- {
-  "vi": "Chị Thu tháo chiếc ghim trên ngực áo.",
-  "en": ""
- },
- {
-  "vi": "Chị chuyển lên làm huấn luyện tiếp viên mới rồi.",
-  "en": ""
- },
- {
-  "vi": "Ghim này của chị từ ngày đầu đi bay. Giờ em cài nhé.",
-  "en": ""
- },
- {
-  "vi": "Lần sau bà bay, bà vẫn tìm cô tiếp viên này.",
-  "en": ""
- },
- {
-  "vi": "Em sẽ giữ khoang khách như chị giữ: nhỏ nhẹ mà chắc chắn.",
-  "en": ""
- },
- {
-  "vi": "Sổ giao ca của chị Hoa",
-  "en": ""
- },
- {
-  "vi": "Đồng hồ quả quýt của chị Hoa",
-  "en": ""
- },
- {
-  "vi": "Chiếc đồng hồ chị Hoa đeo trên túi áo hai mươi năm, đếm mạch bằng kim giây. Giờ nó nằm trên túi áo bạn.",
-  "en": ""
- },
- {
-  "vi": "Điều dưỡng trưởng khoa Nội",
-  "en": ""
- },
- {
-  "vi": "Bác sĩ Khang",
-  "en": ""
- },
- {
-  "vi": "Bác sĩ điều trị khoa Nội",
-  "en": ""
- },
- {
-  "vi": "Người bệnh giường 3",
-  "en": ""
- },
- {
-  "vi": "Người bệnh giường 8",
-  "en": ""
- },
- {
-  "vi": "Hỏi tên mỗi lần",
-  "en": ""
- },
- {
-  "vi": "Chị Hoa đứng nhìn bạn hỏi tên bà Tư lần thứ ba trong buổi sáng.",
-  "en": ""
- },
- {
-  "vi": "Cháu hỏi tên bà hoài, bà nhớ cháu rồi mà.",
-  "en": ""
- },
- {
-  "vi": "Dạ, cháu hỏi để chắc là thuốc này đúng của bà.",
-  "en": ""
- },
- {
-  "vi": "Đúng rồi. Người bệnh nhớ mình là một chuyện, mình chắc là đúng người là chuyện khác.",
-  "en": ""
- },
- {
-  "vi": "Chuông giường 3",
-  "en": ""
- },
- {
-  "vi": "Đèn chuông giường 3 sáng lần thứ năm trong ca.",
-  "en": ""
- },
- {
-  "vi": "Bà không đau gì đâu cháu. Bà chỉ muốn có người nói chuyện.",
-  "en": ""
- },
- {
-  "vi": "Ca hôm nay đông, mà bà ngồi một mình cả tuần rồi.",
-  "en": ""
- },
- {
-  "vi": "Cô đơn cũng là một thứ bệnh, em ạ. Nghĩ cách giúp bà đi.",
-  "en": ""
- },
- {
-  "vi": "Làm sao cho bà Tư bớt cô đơn?",
-  "en": ""
- },
- {
-  "vi": "Giúp bà gọi video cho con trai ở xa",
-  "en": ""
- },
- {
-  "vi": "Thằng Quang nó cười, nó bảo cuối tuần về. Cảm ơn cháu.",
-  "en": ""
- },
- {
-  "vi": "Xin chị Hoa nhờ nhóm tình nguyện ghé đọc báo cho bà",
-  "en": ""
- },
- {
-  "vi": "Ý hay. Chị gọi nhóm sinh viên tình nguyện, chiều mai họ tới.",
-  "en": ""
- },
- {
-  "vi": "Hai giờ sáng",
-  "en": ""
- },
- {
-  "vi": "Ca trực đêm, SpO2 bà Tư tụt dưới thẻ báo động.",
-  "en": ""
- },
- {
-  "vi": "Em gọi anh lúc hai giờ sáng, xin lỗi anh…",
-  "en": ""
- },
- {
-  "vi": "Đừng xin lỗi. Bất thường mà không gọi thì anh mới giận.",
-  "en": ""
- },
- {
-  "vi": "Em kể lại anh nghe: chỉ số nào, từ lúc nào, em đã làm gì rồi.",
-  "en": ""
- },
- {
-  "vi": "Báo bác sĩ thế nào cho rõ?",
-  "en": ""
- },
- {
-  "vi": "Nói lần lượt: người bệnh, chỉ số bất thường, đã làm gì, cần anh làm gì",
-  "en": ""
- },
- {
-  "vi": "Gọn, đủ, anh hình dung được ngay. Ca sau dạy lại cho bạn mới nhé.",
-  "en": ""
- },
- {
-  "vi": "Đọc hết phiếu theo dõi từ đầu ca",
-  "en": ""
- },
- {
-  "vi": "Đủ thật, nhưng lần sau nói chỉ số bất thường trước, anh nghe nhanh hơn.",
-  "en": ""
- },
- {
-  "vi": "Clip của Tuấn",
-  "en": ""
- },
- {
-  "vi": "Tuấn khoe clip mới: “một ngày nằm viện đúng quy định”.",
-  "en": ""
- },
- {
-  "vi": "Chị xem nè, em quay lại, không lộ mặt ai hết. Có cả đoạn chị sát khuẩn tay.",
-  "en": ""
- },
- {
-  "vi": "Bảng tên bệnh án cũng che rồi hả?",
-  "en": ""
- },
- {
-  "vi": "Che hết rồi bro. Chị dạy em mà.",
-  "en": ""
- },
- {
-  "vi": "Đồng hồ quả quýt",
-  "en": ""
- },
- {
-  "vi": "Chị Hoa lên phòng Điều dưỡng, bàn giao khoa lại cho người mới.",
-  "en": ""
- },
- {
-  "vi": "Hồi chị mới vào nghề, máy đo còn hiếm. Chị đếm mạch bằng cái đồng hồ này.",
-  "en": ""
- },
- {
-  "vi": "Máy báo sai được. Mắt mình mở to, tay mình sạch, miệng mình dám nói, thì ít khi sai.",
-  "en": ""
- },
- {
-  "vi": "Khoa Nội có người giữ sổ giao ca kỹ như chị rồi, anh yên tâm.",
-  "en": ""
- },
- {
-  "vi": "Em sẽ giữ sổ như chị: thật, đủ, ca sau đọc là hiểu.",
-  "en": ""
- },
- {
-  "vi": "Cái giẻ da của chú Bảy",
-  "en": ""
- },
- {
-  "vi": "Miếng giẻ da lau kính của chú Bảy",
-  "en": ""
- },
- {
-  "vi": "Mềm như lụa, đã lau kính đèn Hòn Gió ba mươi năm. Chú Bảy bảo kính sạch thì đèn mới xa.",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy Đèn",
-  "en": ""
- },
- {
-  "vi": "Trạm trưởng đèn biển Hòn Gió",
-  "en": ""
- },
- {
-  "vi": "Chị Hải Yến",
-  "en": ""
- },
- {
-  "vi": "Trực ban Đài Duyên hải Vịnh Ngọc",
-  "en": ""
- },
- {
-  "vi": "Ông Sáu Ghe",
-  "en": ""
- },
- {
-  "vi": "Chủ tàu cá bến Cửa Lở",
-  "en": ""
- },
- {
-  "vi": "Cô Thắm",
-  "en": ""
- },
- {
-  "vi": "Hướng dẫn viên tàu Biển Ngọc",
-  "en": ""
- },
- {
-  "vi": "Ngọn tháp trắng",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy dắt bạn leo một trăm lẻ tám bậc cầu thang xoắn lên phòng đèn.",
-  "en": ""
- },
- {
-  "vi": "Đèn này mà tắt một đêm là có người không về nhà được. Nhớ vậy là đủ.",
-  "en": ""
- },
- {
-  "vi": "Thắp đúng giờ, đếm chớp cho đúng, lau kính cho sạch. Ba việc đó, ngày nào cũng vậy.",
-  "en": ""
- },
- {
-  "vi": "Dạ. Ba việc đó, ngày nào cũng vậy.",
-  "en": ""
- },
- {
-  "vi": "Giọng trên kênh 16",
-  "en": ""
- },
- {
-  "vi": "Bảy giờ sáng, bộ đàm rè rè, giọng chị Hải Yến sang sảng.",
-  "en": ""
- },
- {
-  "vi": "Trạm mới hả? Báo số liệu cho gọn: gió cấp mấy, biển ra sao, tầm nhìn, áp suất. Đừng “chắc khoảng khoảng” nghe em.",
-  "en": ""
- },
- {
-  "vi": "Dạ: gió cấp 3, sóng nhỏ, tầm nhìn trên mười cây số, áp suất đứng.",
-  "en": ""
- },
- {
-  "vi": "Được. Trạm Hòn Gió có người báo rõ rồi.",
-  "en": ""
- },
- {
-  "vi": "Chị Hải Yến hỏi có muốn học thêm cách đọc mây",
-  "en": ""
- },
- {
-  "vi": "Xin chị gửi tài liệu đọc mây, tối em học",
-  "en": ""
- },
- {
-  "vi": "Ham học đấy. Chị chụp gửi theo tàu tiếp tế.",
-  "en": ""
- },
- {
-  "vi": "Hỏi chú Bảy chỉ cho trên đảo",
-  "en": ""
- },
- {
-  "vi": "Mây đen phía đông chiều nay là có giông. Nhìn đi, rồi nhớ.",
-  "en": ""
- },
- {
-  "vi": "Quay đèn về phía lưới",
-  "en": ""
- },
- {
-  "vi": "Nửa đêm, ông Sáu Ghe gọi kênh 16 lần thứ ba trong tuần.",
-  "en": ""
- },
- {
-  "vi": "Cậu quay đèn về đông bắc giùm tui một đêm thôi. Mực đang lên!",
-  "en": ""
- },
- {
-  "vi": "Đèn quay đều thì tàu cả vịnh mới nhận ra Hòn Gió, ông ạ. Ông dùng đèn câu trên tàu nhé, cháu đọc bản tin gió cho ông.",
-  "en": ""
- },
- {
-  "vi": "Ờ… thì thôi. Đọc bản tin đi, cậu.",
-  "en": ""
- },
- {
-  "vi": "Ông Sáu xin cái bản tin gió mỗi tối",
-  "en": ""
- },
- {
-  "vi": "Hứa tối nào cũng gọi đọc bản tin cho tàu ông",
-  "en": ""
- },
- {
-  "vi": "Có người đọc bản tin cho nghe, đi biển yên bụng hẳn.",
-  "en": ""
- },
- {
-  "vi": "Chỉ ông dò kênh bản tin của đài",
-  "en": ""
- },
- {
-  "vi": "Đài phát mỗi tối tám giờ. Em chỉ đúng rồi đó.",
-  "en": ""
- },
- {
-  "vi": "Mèo Mun và đoàn khách",
-  "en": ""
- },
- {
-  "vi": "Tàu Biển Ngọc cập bến, mèo Mun chạy ra đón trước cả bạn.",
-  "en": ""
- },
- {
-  "vi": "Khách mê con mèo của trạm lắm. Mà em giữ nội quy kỹ ghê, không ai đòi lên phòng đèn nữa.",
-  "en": ""
- },
- {
-  "vi": "Chụp ở sân trạm cũng đẹp mà chị. Phòng đèn để đèn làm việc.",
-  "en": ""
- },
- {
-  "vi": "Chị in luôn câu đó vào tờ rơi tour.",
-  "en": ""
- },
- {
-  "vi": "Miếng giẻ da",
-  "en": ""
- },
- {
-  "vi": "Sáng sau đêm bão, chú Bảy đưa bạn miếng giẻ da cũ mềm như lụa.",
-  "en": ""
- },
- {
-  "vi": "Năm bão lớn, chú quay tay mô-tơ suốt đêm cho đèn khỏi đứng. Tay chú tê tới ba ngày.",
-  "en": ""
- },
- {
-  "vi": "Giờ chú giao cái này cho con. Kính sạch thì đèn mới xa.",
-  "en": ""
- },
- {
-  "vi": "Cả tháng trạm Hòn Gió không trễ một giờ quan trắc. Đài khen đó.",
-  "en": ""
- },
- {
-  "vi": "Mùa bão này tàu tui về đủ. Cảm ơn cái đèn, cảm ơn cậu.",
-  "en": ""
- },
- {
-  "vi": "Con sẽ giữ, và giữ đèn như chú dạy.",
-  "en": ""
- },
- {
-  "vi": "Chiếc tai nghe của chị Thảo",
-  "en": ""
- },
- {
-  "vi": "Chiếc tai nghe quấn băng keo đen",
-  "en": ""
- },
- {
-  "vi": "Chiếc tai nghe đầu tiên của tổng đài, chị Thảo đeo mười lăm năm. Giờ nó treo ở bàn trực của bạn.",
-  "en": ""
- },
- {
-  "vi": "Trưởng ca tổng đài",
-  "en": ""
- },
- {
-  "vi": "Anh Bình",
-  "en": ""
- },
- {
-  "vi": "Đội trưởng đội chữa cháy và cứu nạn",
-  "en": ""
- },
- {
-  "vi": "Bác sĩ Vy",
-  "en": ""
- },
- {
-  "vi": "Bác sĩ xe cấp cứu",
-  "en": ""
- },
- {
-  "vi": "Ông Ba",
-  "en": ""
- },
- {
-  "vi": "Cụ ông hay gọi tổng đài",
-  "en": ""
- },
- {
-  "vi": "Địa chỉ trước",
-  "en": ""
- },
- {
-  "vi": "Cuộc gọi đầu tiên, chị Thảo ngồi cạnh nghe kèm.",
-  "en": ""
- },
- {
-  "vi": "Người ta la “cháy” thì em hỏi gì trước?",
-  "en": ""
- },
- {
-  "vi": "Dạ… cháy cái gì ạ?",
-  "en": ""
- },
- {
-  "vi": "Địa chỉ trước. Rớt máy giữa chừng mà có địa chỉ thì xe vẫn chạy được.",
-  "en": ""
- },
- {
-  "vi": "Ông Ba gọi lần thứ mười",
-  "en": ""
- },
- {
-  "vi": "Đèn đường dây sáng: lại là số của ông Ba.",
-  "en": ""
- },
- {
-  "vi": "Tui đau… đau lòng chớ đau gì. Cô nói chuyện với tui chút đi.",
-  "en": ""
- },
- {
-  "vi": "Ông ơi, con vẫn phải hỏi ông có đau ngực thật không đã.",
-  "en": ""
- },
- {
-  "vi": "Đúng rồi. Gọi mười lần thì cũng hỏi đủ mười lần.",
-  "en": ""
- },
- {
-  "vi": "Làm sao cho ông Ba bớt gọi tổng đài?",
-  "en": ""
- },
- {
-  "vi": "Báo tổ dân phố cử người ghé nói chuyện với ông mỗi chiều",
-  "en": ""
- },
- {
-  "vi": "Chiều nào cũng có đứa ghé uống trà. Tui bớt gọi rồi đó.",
-  "en": ""
- },
- {
-  "vi": "Chỉ ông số đường dây hỗ trợ người cao tuổi của phường",
-  "en": ""
- },
- {
-  "vi": "Số đó có người trực tâm sự. Đường dây khẩn trống hơn hẳn.",
-  "en": ""
- },
- {
-  "vi": "Giữ máy",
-  "en": ""
- },
- {
-  "vi": "Một bà mẹ gọi: con trai bà ngã gục, không thở bình thường.",
-  "en": ""
- },
- {
-  "vi": "Em giữ máy với chị ấy, đếm nhịp ép tim giúp chị. Xe còn bốn phút.",
-  "en": ""
- },
- {
-  "vi": "Chị ơi, đặt tay giữa ngực, ép mạnh, em đếm cùng chị nè.",
   "en": ""
  }
 ]

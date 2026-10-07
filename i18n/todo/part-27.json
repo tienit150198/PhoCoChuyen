@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Đơn nghỉ phép được duyệt bổ sung.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn chưa được duyệt thì chưa tính là nghỉ có phép.",
+  "en": ""
+ },
+ {
+  "vi": "Đi công tác có lịch thì vẫn tính công.",
+  "en": ""
+ },
+ {
+  "vi": "Camera cho thấy không đến mà thẻ vẫn quẹt: có người chấm hộ.",
+  "en": ""
+ },
+ {
+  "vi": "Soát bảng chấm công tuần",
+  "en": ""
+ },
+ {
+  "vi": "Chị Huyền gửi file: “Máy chấm công xuất bảng tuần rồi. Em soát từng ô, chiều chị chốt công nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Giờ làm",
+  "en": ""
+ },
+ {
+  "vi": "Vào 08:00 (trễ tới 08:05 vẫn đủ công) · Ra 17:00.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi ngày phải có đủ giờ vào và giờ ra.",
+  "en": ""
+ },
+ {
+  "vi": "Nghỉ chỉ được tính có phép khi đơn đã duyệt.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn từ & ghi chú trong tuần",
+  "en": ""
+ },
+ {
+  "vi": "Tuần này không có đơn từ nào.",
+  "en": ""
+ },
+ {
+  "vi": "Tên phải đúng từng dấu như trên CCCD.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày sinh phải khớp CCCD.",
+  "en": ""
+ },
+ {
+  "vi": "Số CCCD phải khớp từng chữ số.",
+  "en": ""
+ },
+ {
+  "vi": "Vị trí phải đúng thư mời nhận việc.",
+  "en": ""
+ },
+ {
+  "vi": "Ngày bắt đầu theo thư mời nhận việc.",
+  "en": ""
+ },
+ {
+  "vi": "90 ngày",
+  "en": ""
+ },
+ {
+  "vi": "45 ngày",
+  "en": ""
+ },
+ {
+  "vi": "30 ngày",
+  "en": ""
+ },
+ {
+  "vi": "Lương phải đúng thư mời nhận việc.",
+  "en": ""
+ },
+ {
+  "vi": "không đóng bảo hiểm, cộng thẳng vào lương",
+  "en": ""
+ },
+ {
+  "vi": "đóng BHXH, BHYT, BHTN theo quy định",
+  "en": ""
+ },
+ {
+  "vi": "đóng bảo hiểm sau 6 tháng làm việc",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng từ 1 tháng trở lên phải đóng bảo hiểm bắt buộc.",
+  "en": ""
+ },
+ {
+  "vi": "(chưa ký)",
+  "en": ""
+ },
+ {
+  "vi": "Mời Bên B ký trước khi lưu",
+  "en": ""
+ },
+ {
+  "vi": "Ký thay Bên B cho kịp",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu chữ ký người lao động thì hợp đồng chưa có hiệu lực.",
+  "en": ""
+ },
+ {
+  "vi": "Đã ký",
+  "en": ""
+ },
+ {
+  "vi": "Giám đốc đã duyệt mức lương mới.",
+  "en": ""
+ },
+ {
+  "vi": "Bên A: Công ty CP Cánh Diều, đại diện ông Trần Minh Quân — Giám đốc.",
+  "en": ""
+ },
+ {
+  "vi": "Bên B:",
+  "en": ""
+ },
+ {
+  "vi": ", sinh ngày",
+  "en": ""
+ },
+ {
+  "vi": ", CCCD số",
+  "en": ""
+ },
+ {
+  "vi": "Điều 1. Vị trí:",
+  "en": ""
+ },
+ {
+  "vi": ", làm việc tại trụ sở Cánh Diều.",
+  "en": ""
+ },
+ {
+  "vi": "Điều 2. Thời hạn 12 tháng, bắt đầu từ ngày",
+  "en": ""
+ },
+ {
+  "vi": "Điều 3. Thử việc",
+  "en": ""
+ },
+ {
+  "vi": ", lương thử việc bằng",
+  "en": ""
+ },
+ {
+  "vi": "lương chính thức.",
+  "en": ""
+ },
+ {
+  "vi": "Điều 4. Lương chính thức",
+  "en": ""
+ },
+ {
+  "vi": "xu/tháng, trả ngày 10 hằng tháng.",
+  "en": ""
+ },
+ {
+  "vi": "Điều 5. Bảo hiểm: Công ty",
+  "en": ""
+ },
+ {
+  "vi": "Chữ ký — Bên A: đã ký, đóng dấu · Bên B:",
+  "en": ""
+ },
+ {
+  "vi": "Soát hợp đồng lao động với thư mời nhận việc và CCCD: chạm chỗ sai, chọn cách viết đúng. Chỗ đúng thì để nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "Thư mời nhận việc",
+  "en": ""
+ },
+ {
+  "vi": "Đóng BHXH, BHYT, BHTN đầy đủ theo quy định",
+  "en": ""
+ },
+ {
+  "vi": "CCCD (bản chụp)",
+  "en": ""
+ },
+ {
+  "vi": "Quy định của phòng",
+  "en": ""
+ },
+ {
+  "vi": "Thử việc tối đa 60 ngày; lương thử việc ít nhất 85% lương chính thức.",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng từ 1 tháng trở lên: đóng bảo hiểm bắt buộc.",
+  "en": ""
+ },
+ {
+  "vi": "Hai bên ký đủ mới lưu hồ sơ. Không ký thay.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng họp nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Phòng họp lớn",
+  "en": ""
+ },
+ {
+  "vi": "Góc thử tay nghề",
+  "en": ""
+ },
+ {
+  "vi": "màn hình trình chiếu",
+  "en": ""
+ },
+ {
+  "vi": "máy may để thử tay nghề",
+  "en": ""
+ },
+ {
+  "vi": "họp giao ban",
+  "en": ""
+ },
+ {
+  "vi": "đi khám sức khỏe định kỳ",
+  "en": ""
+ },
+ {
+  "vi": "chạy đơn hàng gấp",
+  "en": ""
+ },
+ {
+  "vi": "kiểm hàng xuất",
+  "en": ""
+ },
+ {
+  "vi": "gặp ngân hàng",
+  "en": ""
+ },
+ {
+  "vi": "họp với đối tác",
+  "en": ""
+ },
+ {
+  "vi": "đi nộp thuế",
+  "en": ""
+ },
+ {
+  "vi": "chốt sổ",
+  "en": ""
+ },
+ {
+  "vi": "đi gặp khách",
+  "en": ""
+ },
+ {
+  "vi": "livestream bán hàng",
+  "en": ""
+ },
+ {
+  "vi": "Phỏng vấn nhóm 5 bạn bán hàng",
+  "en": ""
+ },
+ {
+  "vi": "đổi lịch đột xuất",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân đổi ý: “Anh phải đi gặp đối tác, mấy giờ đó anh không ở công ty đâu nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Chị Huyền vừa bị gọi lên họp ban giám đốc — mấy giờ đó chị không phỏng vấn được.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Huyền dán tờ lịch lên bàn: “Mai có mấy buổi phỏng vấn. Em xếp phòng, xếp giờ sao cho không ai bị trùng nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Phòng họp nhỏ: 3 chỗ",
+  "en": ""
+ },
+ {
+  "vi": "Phòng họp lớn: 8 chỗ, có màn hình trình chiếu",
+  "en": ""
+ },
+ {
+  "vi": "Góc thử tay nghề: 4 chỗ, có máy may",
+  "en": ""
+ },
+ {
+  "vi": "Chú Lâm đòi đuổi việc Anh Dũng",
+  "en": ""
+ },
+ {
+  "vi": "Chú Lâm đập tay xuống bàn: “Thằng Dũng tuần này đi muộn ba buổi! Làm quyết định cho nó nghỉ luôn hôm nay!”",
+  "en": ""
+ },
+ {
+  "vi": "Nội quy kỷ luật",
+  "en": ""
+ },
+ {
+  "vi": "Đi muộn: nhắc nhở → lập biên bản → kỷ luật theo quy trình, có họp và cho người lao động trình bày. Không đuổi việc bằng lời.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi chuyện Anh Dũng",
+  "en": ""
+ },
+ {
+  "vi": "Con anh nằm viện nhi, sáng nào anh cũng ghé đưa cơm rồi mới tới xưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ năng suất tổ",
+  "en": ""
+ },
+ {
+  "vi": "Dũng là thợ có tay nghề cao nhất tổ, chưa từng bị nhắc nhở trước đây.",
+  "en": ""
+ },
+ {
+  "vi": "Gặp riêng Dũng, lập biên bản nhắc nhở theo nội quy, đề xuất chị Huyền cho anh vào ca 08:30 trong hai tuần",
+  "en": ""
+ },
+ {
+  "vi": "Dũng xin lỗi, đi đúng giờ ca mới; Chú Lâm giữ được thợ giỏi. Mọi thứ có giấy tờ rõ ràng.",
+  "en": ""
+ },
+ {
+  "vi": "Nói Chú Lâm bình tĩnh, bỏ qua lần này không ghi gì",
+  "en": ""
+ },
+ {
+  "vi": "Êm chuyện hôm nay, nhưng tuần sau Dũng vẫn muộn và Chú Lâm lại nổi nóng.",
+  "en": ""
+ },
+ {
+  "vi": "Soạn quyết định cho thôi việc ngay như Chú Lâm muốn",
+  "en": ""
+ },
+ {
+  "vi": "Đuổi việc sai quy trình: Dũng khiếu nại lên phòng lao động, công ty phải nhận lại và bồi thường.",
+  "en": ""
+ },
+ {
+  "vi": "Linh hỏi lương đồng nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Linh ghé tai: “Chị ơi, bạn mới vào bên kinh doanh lương bao nhiêu thế? Nghe đồn hơn em.”",
+  "en": ""
+ },
+ {
+  "vi": "Lương từng người là thông tin riêng; chỉ phòng nhân sự và kế toán được xem.",
+  "en": ""
+ },
+ {
+  "vi": "Công ty có thang bậc lương theo vị trí và thâm niên, ai cũng xem được trên bảng tin.",
+  "en": ""
+ },
+ {
+  "vi": "Lịch xét lương",
+  "en": ""
+ },
+ {
+  "vi": "Tháng sau đến kỳ xét nâng lương; Linh đủ điều kiện nộp đề xuất.",
+  "en": ""
+ },
+ {
+  "vi": "Không nói lương người khác; chỉ Linh thang lương công khai và cách nộp đề xuất xét nâng lương",
+  "en": ""
+ },
+ {
+  "vi": "Linh không biết lương bạn kia nhưng biết mình đủ điều kiện đề xuất, về hăng hái hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối gọn: “Bí mật em ạ”",
+  "en": ""
+ },
+ {
+  "vi": "Đúng quy định, nhưng Linh về chỗ vẫn ấm ức.",
+  "en": ""
+ },
+ {
+  "vi": "Nói nhỏ mức lương cho Linh đỡ tò mò",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện lan khắp phòng kinh doanh; bạn mới bị soi, chị Huyền phải giải trình về lộ thông tin lương.",
+  "en": ""
+ },
+ {
+  "vi": "Giám đốc không muốn gia hạn hợp đồng",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân gọi bạn vào: “Hợp đồng của Hoa bên thiết kế sắp hết. Đang bầu thì thôi, đừng ký tiếp, ghi là cơ cấu lại.”",
+  "en": ""
+ },
+ {
+  "vi": "Quy định bảo vệ lao động nữ",
+  "en": ""
+ },
+ {
+  "vi": "Không được lấy lý do mang thai để từ chối giao kết tiếp hay chấm dứt hợp đồng.",
+  "en": ""
+ },
+ {
+  "vi": "Đánh giá công việc của Hoa",
+  "en": ""
+ },
+ {
+  "vi": "Hai năm liền xếp loại tốt; mẫu balo của Hoa bán chạy nhất mùa tựu trường.",
+  "en": ""
+ },
+ {
+  "vi": "Kế hoạch nhân sự",
+  "en": ""
+ },
+ {
+  "vi": "Phòng thiết kế đang thiếu người; nghỉ sinh có thể sắp người hỗ trợ tạm.",
+  "en": ""
+ },
+ {
+  "vi": "Trình anh Quân bằng văn bản: quy định, đánh giá của Hoa, đề xuất gia hạn và kế hoạch người hỗ trợ khi chị nghỉ sinh",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân đọc xong gật gù: “Ừ, giữ Hoa.” Hoa yên tâm làm việc, công ty tránh được rắc rối.",
+  "en": ""
+ },
+ {
+  "vi": "Ậm ừ, để hợp đồng hết hạn rồi tính",
+  "en": ""
+ },
+ {
+  "vi": "Hợp đồng quá hạn mà không ai ký — Hoa hoang mang, chị Huyền phải chữa cháy.",
+  "en": ""
+ },
+ {
+  "vi": "Soạn thông báo không gia hạn, ghi lý do “cơ cấu lại”",
+  "en": ""
+ },
+ {
+  "vi": "Hoa khiếu nại kèm bằng chứng; công ty bị phạt và mang tiếng phân biệt đối xử.",
+  "en": ""
+ },
+ {
+  "vi": "Lễ tân bị nhắn tin khiếm nhã",
+  "en": ""
+ },
+ {
+  "vi": "Nhi (lễ tân) đưa điện thoại, mắt đỏ hoe: “Anh trưởng nhóm kinh doanh tối nào cũng nhắn mấy câu này… em sợ lắm.”",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh chụp tin nhắn",
+  "en": ""
+ },
+ {
+  "vi": "Năm tối liền, nội dung bình phẩm ngoại hình, rủ đi riêng dù Nhi đã từ chối.",
+  "en": ""
+ },
+ {
+  "vi": "Quy chế ứng xử",
+  "en": ""
+ },
+ {
+  "vi": "Quấy rối là vi phạm nặng; người tố cáo được giữ kín danh tính và không bị trù dập.",
+  "en": ""
+ },
+ {
+  "vi": "Người bị tố",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng nhóm có doanh số cao nhất công ty, được anh Quân quý.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi nhận bằng văn bản, giữ kín, tạm đổi lịch để Nhi không làm việc trực tiếp với người kia, báo chị Huyền mở quy trình xử lý",
+  "en": ""
+ },
+ {
+  "vi": "Nhi được bảo vệ, vụ việc được xử lý đúng quy chế; người kia bị kỷ luật dù doanh số cao.",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc khéo trưởng nhóm, không ghi lại gì",
+  "en": ""
+ },
+ {
+  "vi": "Tin nhắn dừng vài hôm rồi lại tiếp; không có hồ sơ nên khó xử lý.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo Nhi: “Anh ấy đùa thôi, đừng làm to chuyện”",
+  "en": ""
+ },
+ {
+  "vi": "Nhi nghỉ việc, đăng chuyện lên mạng. Công ty mất người và mất uy tín.",
+  "en": ""
+ },
+ {
+  "vi": "Nghỉ việc mà chưa được trả lương",
+  "en": ""
+ },
+ {
+  "vi": "Anh Dũng cầm đơn nghỉ việc: “Tôi nghỉ từ cuối tuần. Kế toán bảo cuối tháng sau mới trả nốt lương, giữ sổ bảo hiểm luôn. Vậy có đúng không cô?”",
+  "en": ""
+ },
+ {
+  "vi": "Quy định thanh toán khi nghỉ",
+  "en": ""
+ },
+ {
+  "vi": "Thanh toán đủ trong 14 ngày làm việc; chốt và trả sổ BHXH đúng hạn, không được giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Biên bản bàn giao",
+  "en": ""
+ },
+ {
+  "vi": "Dũng đã bàn giao đủ máy móc, dụng cụ, có chữ ký Chú Lâm.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi cô Hằng",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hằng: “Cuối tháng làm một thể cho tiện, đợi thêm chút có sao.”",
+  "en": ""
+ },
+ {
+  "vi": "Lập lịch thanh toán trong 14 ngày, nhờ cô Hằng chốt lương, báo Dũng ngày nhận tiền và sổ BHXH",
+  "en": ""
+ },
+ {
+  "vi": "Dũng nhận đủ lương và sổ đúng hạn, ra về vẫn giới thiệu bạn bè vào làm.",
+  "en": ""
+ },
+ {
+  "vi": "Hẹn Dũng cuối tháng sau như cô Hằng nói",
+  "en": ""
+ },
+ {
+  "vi": "Chậm hơn quy định; Dũng phải chờ, ấm ức kể với cả tổ.",
+  "en": ""
+ },
+ {
   "vi": "Giữ sổ BHXH đến khi Dũng “bàn giao thêm”",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Nghi mã độc tống tiền: khẩn, cách ly ngay kẻo lây cả mạng.",
-  "en": ""
- },
- {
-  "vi": "Cửa hàng mặt phố",
-  "en": ""
- },
- {
-  "vi": "Máy tính tiền không in được hóa đơn",
-  "en": ""
- },
- {
-  "vi": "Khách đang xếp hàng dài.",
-  "en": ""
- },
- {
-  "vi": "Máy bán hàng ngừng, khách đang chờ: khẩn.",
-  "en": ""
- },
- {
-  "vi": "Em lỡ nhập mật khẩu email vào trang lạ",
-  "en": ""
- },
- {
-  "vi": "Trang đó giống hệt trang đăng nhập công ty.",
-  "en": ""
- },
- {
-  "vi": "Lộ mật khẩu: khẩn, đổi mật khẩu và kiểm tra ngay.",
-  "en": ""
- },
- {
-  "vi": "Không ai mở được thư mục chung",
-  "en": ""
- },
- {
-  "vi": "Cả công ty báo lỗi “không tìm thấy máy chủ”.",
-  "en": ""
- },
- {
-  "vi": "Cả công ty dừng việc: khẩn.",
-  "en": ""
- },
- {
-  "vi": "Màn hình nhấp nháy — GẤP!!!",
-  "en": ""
- },
- {
-  "vi": "Vẫn làm việc được nhưng khó chịu lắm.",
-  "en": ""
- },
- {
-  "vi": "Một người, vẫn làm được việc: trong ngày — dù ai gửi, chữ GẤP không đổi mức ưu tiên.",
-  "en": ""
- },
- {
-  "vi": "Chuột không bấm được",
-  "en": ""
- },
- {
-  "vi": "Em đang dùng bàn phím tạm.",
-  "en": ""
- },
- {
-  "vi": "Một người vướng nhẹ: trong ngày.",
-  "en": ""
- },
- {
-  "vi": "Quên mật khẩu email (lần thứ ba tháng này)",
-  "en": ""
- },
- {
-  "vi": "Đang dùng điện thoại xem thư tạm.",
-  "en": ""
- },
- {
-  "vi": "Một người, có cách tạm: trong ngày.",
-  "en": ""
- },
- {
-  "vi": "Máy in tầng 2 kẹt giấy",
-  "en": ""
- },
- {
-  "vi": "Máy tầng 1 vẫn in bình thường.",
-  "en": ""
- },
- {
-  "vi": "Còn máy khác in được: trong ngày.",
-  "en": ""
- },
- {
-  "vi": "File Excel lớn mở rất chậm",
-  "en": ""
- },
- {
-  "vi": "Mở được nhưng mất cả phút.",
-  "en": ""
- },
- {
-  "vi": "Chậm nhưng vẫn làm được: trong ngày.",
-  "en": ""
- },
- {
-  "vi": "Xin thêm màn hình thứ hai",
-  "en": ""
- },
- {
-  "vi": "Cho dễ làm báo giá.",
-  "en": ""
- },
- {
-  "vi": "Mua thêm thiết bị: xếp lịch theo kế hoạch.",
-  "en": ""
- },
- {
-  "vi": "Phòng thiết kế",
-  "en": ""
- },
- {
-  "vi": "Nâng cấp RAM máy thiết kế",
-  "en": ""
- },
- {
-  "vi": "Máy chạy phần mềm vẽ hơi ì.",
-  "en": ""
- },
- {
-  "vi": "Nâng cấp: xếp lịch.",
-  "en": ""
- },
- {
-  "vi": "Chuẩn bị máy cho nhân viên mới tháng sau",
-  "en": ""
- },
- {
-  "vi": "Hai bạn kinh doanh mới vào ngày 1.",
-  "en": ""
- },
- {
-  "vi": "Việc có hạn xa: xếp lịch.",
-  "en": ""
- },
- {
-  "vi": "Đổi wifi phòng họp cho nhanh hơn",
-  "en": ""
- },
- {
-  "vi": "Họp online hay bị giật.",
-  "en": ""
- },
- {
-  "vi": "Nâng cấp hạ tầng: xếp lịch.",
-  "en": ""
- },
- {
-  "vi": "Điều hòa chảy nước",
-  "en": ""
- },
- {
-  "vi": "Nước nhỏ giọt xuống bàn họp.",
-  "en": ""
- },
- {
-  "vi": "Điều hòa: báo hành chính gọi thợ.",
-  "en": ""
- },
- {
-  "vi": "Bóng đèn hành lang chập chờn",
-  "en": ""
- },
- {
-  "vi": "Tối đi về sợ lắm.",
-  "en": ""
- },
- {
-  "vi": "Điện chiếu sáng: hành chính lo.",
-  "en": ""
- },
- {
-  "vi": "Sửa giúp điện thoại cá nhân bị vỡ màn",
-  "en": ""
- },
- {
-  "vi": "Anh IT khéo tay mà.",
-  "en": ""
- },
- {
-  "vi": "Đồ cá nhân không phải việc IT công ty.",
-  "en": ""
- },
- {
-  "vi": "Cài game cho con anh trên laptop công ty",
-  "en": ""
- },
- {
-  "vi": "Cuối tuần cháu mượn chơi.",
-  "en": ""
- },
- {
-  "vi": "Máy công ty không cài phần mềm cá nhân: từ chối khéo.",
-  "en": ""
- },
- {
-  "vi": "Ghế xoay gãy bánh xe",
-  "en": ""
- },
- {
-  "vi": "Ngồi nghiêng một bên.",
-  "en": ""
- },
- {
-  "vi": "Bàn ghế: hành chính lo.",
-  "en": ""
- },
- {
-  "vi": "Mạng đã có lại, chỉ còn một máy.",
-  "en": ""
- },
- {
-  "vi": "Cô Hằng gọi lại: “Mạng có lại rồi, chỉ còn máy của cô chưa vào được thôi.”",
-  "en": ""
- },
- {
-  "vi": "Không còn máy nào in được phiếu xuất kho.",
-  "en": ""
- },
- {
-  "vi": "Chú Lâm hớt hải: “Máy tầng 1 cũng vừa hỏng! Cả công ty không in được phiếu xuất kho!”",
-  "en": ""
- },
- {
-  "vi": "Máy lễ tân là máy duy nhất mở cổng cho xe hàng.",
-  "en": ""
- },
- {
-  "vi": "Nhi: “Anh ơi, máy em là máy duy nhất mở cổng cho xe hàng, xe đang chờ ngoài cổng!”",
-  "en": ""
- },
- {
-  "vi": "Anh Long đẩy màn hình sang: “Sáng nay bao nhiêu phiếu này. Em phân loại, cái nào làm trước cái nào để sau.”",
-  "en": ""
- },
- {
-  "vi": "Mức độ ưu tiên",
-  "en": ""
- },
- {
-  "vi": "Khẩn: nhiều người dừng việc; nghi mã độc, lừa đảo, lộ mật khẩu; máy bán hàng ngừng.",
-  "en": ""
- },
- {
-  "vi": "Trong ngày: một người vướng nhưng còn làm được việc khác.",
-  "en": ""
- },
- {
-  "vi": "Xếp lịch: mua thêm, nâng cấp, chuẩn bị cho việc tháng sau.",
-  "en": ""
- },
- {
-  "vi": "Không phải việc IT: điện, điều hòa, bàn ghế, đồ cá nhân, phần mềm cá nhân.",
-  "en": ""
- },
- {
-  "vi": "Ai gửi, viết “GẤP” bao nhiêu lần cũng không đổi mức độ.",
-  "en": ""
- },
- {
-  "vi": "Gỡ kẹt giấy máy in kế toán",
-  "en": ""
- },
- {
-  "vi": "Cô Hằng gọi: “Máy in kẹt giấy rồi! Đèn đỏ nhấp nháy, cô không dám đụng vào.”",
-  "en": ""
- },
- {
-  "vi": "Đọc mã lỗi trên màn hình máy in",
-  "en": ""
- },
- {
-  "vi": "Mã lỗi chỉ đúng chỗ kẹt.",
-  "en": ""
- },
- {
-  "vi": "Tắt máy, rút điện",
-  "en": ""
- },
- {
-  "vi": "Không thò tay vào máy đang chạy.",
-  "en": ""
- },
- {
-  "vi": "Mở nắp sau",
-  "en": ""
- },
- {
-  "vi": "Giấy kẹt ở khay sau.",
-  "en": ""
- },
- {
-  "vi": "Kéo giấy ra từ từ theo chiều giấy chạy",
-  "en": ""
- },
- {
-  "vi": "Kéo ngược chiều làm rách giấy, kẹt sâu hơn.",
-  "en": ""
- },
- {
-  "vi": "Soi đèn kiểm tra mẩu giấy vụn",
-  "en": ""
- },
- {
-  "vi": "Mẩu vụn còn sót sẽ kẹt lại ngay.",
-  "en": ""
- },
- {
-  "vi": "Bật lại, in trang thử",
-  "en": ""
- },
- {
-  "vi": "Thử xong mới trả máy.",
-  "en": ""
- },
- {
-  "vi": "Dùng kéo cạy tờ giấy kẹt",
-  "en": ""
- },
- {
-  "vi": "Làm xước trục, hỏng máy.",
-  "en": ""
- },
- {
-  "vi": "Giật mạnh tờ giấy ngược chiều",
-  "en": ""
- },
- {
-  "vi": "Rách giấy, vụn kẹt sâu trong máy.",
-  "en": ""
- },
- {
-  "vi": "Xịt nước lau kính vào trống mực",
-  "en": ""
- },
- {
-  "vi": "Hỏng trống mực.",
-  "en": ""
- },
- {
-  "vi": "Dán giấy “Đang sửa” lên máy",
-  "en": ""
- },
- {
-  "vi": "Báo cô Hằng trước khi tắt máy",
-  "en": ""
- },
- {
-  "vi": "Tắt máy rồi mới mở nắp.",
-  "en": ""
- },
- {
-  "vi": "Mở nắp rồi mới kéo giấy.",
-  "en": ""
- },
- {
-  "vi": "Kéo giấy ra rồi mới soi vụn.",
-  "en": ""
- },
- {
-  "vi": "Hết vụn mới in thử.",
-  "en": ""
- },
- {
-  "vi": "Đọc mã lỗi trước để biết mở nắp nào.",
-  "en": ""
- },
- {
-  "vi": "Anh Long nhắn: “Máy đó kế toán đang in dở bảng lương — báo cô Hằng trước khi tắt nhé.”",
-  "en": ""
- },
- {
-  "vi": "Đang in dở bảng lương, tắt ngang là mất lệnh in.",
-  "en": ""
- },
- {
-  "vi": "Báo trước rồi mới tắt.",
-  "en": ""
- },
- {
-  "vi": "Máy của Linh dính mã độc tống tiền",
-  "en": ""
- },
- {
-  "vi": "Linh hét lên: “Anh ơi màn hình em đỏ lòm, đòi chuyển tiền chuộc file! Em có bấm vào cái hóa đơn lạ lúc sáng…”",
-  "en": ""
- },
- {
-  "vi": "Rút dây mạng, tắt wifi máy đó ngay",
-  "en": ""
- },
- {
-  "vi": "Cách ly để mã độc không lây sang máy khác.",
-  "en": ""
- },
- {
-  "vi": "Báo anh Long",
-  "en": ""
- },
- {
-  "vi": "Sự cố an ninh phải báo trưởng nhóm.",
-  "en": ""
- },
- {
-  "vi": "Chụp màn hình thông báo bằng điện thoại",
-  "en": ""
- },
- {
-  "vi": "Giữ bằng chứng để xử lý.",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra các máy cùng phòng",
-  "en": ""
- },
- {
-  "vi": "Xem có lây sang máy khác không.",
-  "en": ""
- },
- {
-  "vi": "Cài lại máy, chép dữ liệu từ bản sao lưu đêm qua",
-  "en": ""
- },
- {
-  "vi": "Có bản sao lưu thì không cần trả tiền.",
-  "en": ""
- },
- {
-  "vi": "Đổi mật khẩu các tài khoản Linh đã đăng nhập",
-  "en": ""
- },
- {
-  "vi": "Mã độc có thể đã lấy mật khẩu.",
-  "en": ""
- },
- {
-  "vi": "Chuyển tiền chuộc cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Trả tiền không chắc lấy lại file, còn bị nhắm tiếp.",
-  "en": ""
- },
- {
-  "vi": "Cắm ổ sao lưu vào máy nhiễm để chép file ra",
-  "en": ""
- },
- {
-  "vi": "Mã độc mã hóa luôn bản sao lưu.",
-  "en": ""
- },
- {
-  "vi": "Gửi file lạ cho cả phòng hỏi ai biết",
-  "en": ""
- },
- {
-  "vi": "Lây cho người khác.",
-  "en": ""
- },
- {
-  "vi": "Nhắc cả công ty không mở hóa đơn lạ",
-  "en": ""
- },
- {
-  "vi": "Pha cho Linh cốc trà",
-  "en": ""
- },
- {
-  "vi": "Cách ly trước rồi mới kiểm tra máy khác.",
-  "en": ""
- },
- {
-  "vi": "Cách ly trước rồi mới khôi phục.",
-  "en": ""
- },
- {
-  "vi": "Biết hết máy nhiễm rồi mới khôi phục.",
-  "en": ""
- },
- {
-  "vi": "Chụp bằng chứng trước khi xóa máy.",
-  "en": ""
- },
- {
-  "vi": "Anh Long: “Kế toán cũng vừa nhận đúng cái hóa đơn lạ đó. Nhắc cả công ty ngay!”",
-  "en": ""
- },
- {
-  "vi": "Cùng email độc đang gửi tới nhiều người.",
-  "en": ""
- },
- {
-  "vi": "Cách ly máy nhiễm trước.",
-  "en": ""
- },
- {
-  "vi": "Laptop của sếp đổ cà phê",
-  "en": ""
- },
- {
-  "vi": "Anh Quân giơ chiếc laptop nhỏ nước tong tỏng: “Cà phê sữa! Họp lúc 2 giờ, em cứu nó giúp anh!”",
-  "en": ""
- },
- {
-  "vi": "Tắt nguồn ngay (giữ nút nguồn)",
-  "en": ""
- },
- {
-  "vi": "Điện chạy qua mạch ướt là chập.",
-  "en": ""
- },
- {
-  "vi": "Rút sạc, tháo chuột, USB",
-  "en": ""
- },
- {
-  "vi": "Ngắt hết nguồn điện.",
-  "en": ""
- },
- {
-  "vi": "Úp ngược laptop hình chữ V cho nước chảy ra",
-  "en": ""
- },
- {
-  "vi": "Để nước không đọng trong máy.",
-  "en": ""
- },
- {
-  "vi": "Lau khô bên ngoài bằng khăn mềm",
-  "en": ""
- },
- {
-  "vi": "Lau nhẹ, không ấn.",
-  "en": ""
- },
- {
-  "vi": "Cho sếp mượn máy dự phòng để họp",
-  "en": ""
- },
- {
-  "vi": "Họp 2 giờ vẫn phải có máy.",
-  "en": ""
- },
- {
-  "vi": "Gửi tiệm kiểm tra, không bật lại trong 48 giờ",
-  "en": ""
- },
- {
-  "vi": "Mạch phải khô hẳn.",
-  "en": ""
- },
- {
-  "vi": "Bật lên xem còn chạy không",
-  "en": ""
- },
- {
-  "vi": "Chập mạch, hỏng hẳn.",
-  "en": ""
- },
- {
-  "vi": "Sấy bằng máy sấy tóc nóng",
   "en": ""
  }
 ]

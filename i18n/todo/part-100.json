@@ -1,5 +1,173 @@
 [
  {
+  "vi": "🚫 Để nguyên",
+  "en": ""
+ },
+ {
+  "vi": "🔍 Lau kỹ",
+  "en": ""
+ },
+ {
+  "vi": "✨ sạch",
+  "en": ""
+ },
+ {
+  "vi": "đã bế ra",
+  "en": ""
+ },
+ {
+  "vi": "đang để ngoài",
+  "en": ""
+ },
+ {
+  "vi": "đã đặt lại",
+  "en": ""
+ },
+ {
+  "vi": "đã vỡ",
+  "en": ""
+ },
+ {
+  "vi": "cạn",
+  "en": ""
+ },
+ {
+  "vi": "hết kho",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Trên tay",
+  "en": ""
+ },
+ {
+  "vi": "chưa cầm gì",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Khăn lau",
+  "en": ""
+ },
+ {
+  "vi": "✓ Khăn sạch, ba màu",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Giặt khăn",
+  "en": ""
+ },
+ {
+  "vi": "🧴 Chai trên xe",
+  "en": ""
+ },
+ {
+  "vi": "Giặt khăn hôm qua",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Về soạn xe",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Xe đồ nghề chưa soạn: giặt khăn, châm chai rồi mới lên đường tới nhà khách được.",
+  "en": ""
+ },
+ {
+  "vi": "✋ Cầm dụng cụ trước",
+  "en": ""
+ },
+ {
+  "vi": "🧴 Chọn chai trước",
+  "en": ""
+ },
+ {
+  "vi": "Quyết chuyện vừa xảy ra",
+  "en": ""
+ },
+ {
+  "vi": "🧹 Vào việc thôi!",
+  "en": ""
+ },
+ {
+  "vi": "Soạn xe, lên đường trước",
+  "en": ""
+ },
+ {
+  "vi": "🚪 MỜI KHÁCH KIỂM NHÀ",
+  "en": ""
+ },
+ {
+  "vi": "chọn phòng để bắt đầu",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Xe đồ nghề",
+  "en": ""
+ },
+ {
+  "vi": "✓ Khăn sạch",
+  "en": ""
+ },
+ {
+  "vi": "🧺 Khăn cần giặt",
+  "en": ""
+ },
+ {
+  "vi": "Về soạn xe",
+  "en": ""
+ },
+ {
+  "vi": "Dọn nhà cho khách",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện ở nhà khách",
+  "en": ""
+ },
+ {
+  "vi": "Soạn xe",
+  "en": ""
+ },
+ {
+  "vi": "Việc trong nhà",
+  "en": ""
+ },
+ {
+  "vi": "chai lau kính",
+  "en": ""
+ },
+ {
+  "vi": "chai tẩy rửa dịu",
+  "en": ""
+ },
+ {
+  "vi": "chai tẩy dầu mỡ",
+  "en": ""
+ },
+ {
+  "vi": "chai tẩy bồn cầu",
+  "en": ""
+ },
+ {
+  "vi": "can nước lau sàn",
+  "en": ""
+ },
+ {
+  "vi": "Nhà đã dọn",
+  "en": ""
+ },
+ {
+  "vi": "Khách khen sạch",
+  "en": ""
+ },
+ {
+  "vi": "Chai lau kính, tẩy rửa, nước lau sàn…",
+  "en": ""
+ },
+ {
+  "vi": "🏪 Tạp hoá Cô Ba",
+  "en": ""
+ },
+ {
   "vi": "📣 Tờ rơi",
   "en": ""
  },
@@ -1629,174 +1797,6 @@
  },
  {
   "vi": "Xem tỉnh, thở",
-  "en": ""
- },
- {
-  "vi": "🩺 Xem tỉnh, thở",
-  "en": ""
- },
- {
-  "vi": "❤️ Chọn cách sơ cứu",
-  "en": ""
- },
- {
-  "vi": "Cho vào thế nào",
-  "en": ""
- },
- {
-  "vi": "Đúng ra",
-  "en": ""
- },
- {
-  "vi": "👀 Nhìn",
-  "en": ""
- },
- {
-  "vi": "👂 Hỏi",
-  "en": ""
- },
- {
-  "vi": "📋 Xem sổ đón phụ huynh",
-  "en": ""
- },
- {
-  "vi": "📞 Mẹ đã quay lại",
-  "en": ""
- },
- {
-  "vi": "📞 Gọi số trong sổ đón",
-  "en": ""
- },
- {
-  "vi": "🏊 Bơi thử ở làn sát thành",
-  "en": ""
- },
- {
-  "vi": "📚 Giáo án hôm nay",
-  "en": ""
- },
- {
-  "vi": "🔢 Đã điểm danh lúc lên bờ",
-  "en": ""
- },
- {
-  "vi": "🔢 Điểm danh lúc lên bờ",
-  "en": ""
- },
- {
-  "vi": "Xem sổ đón",
-  "en": ""
- },
- {
-  "vi": "📋 Xem sổ đón",
-  "en": ""
- },
- {
-  "vi": "Bơi thử từng bé",
-  "en": ""
- },
- {
-  "vi": "Phát vòng tay",
-  "en": ""
- },
- {
-  "vi": "🟢 Phát vòng tay",
-  "en": ""
- },
- {
-  "vi": "Dạy theo giáo án",
-  "en": ""
- },
- {
-  "vi": "📚 Dạy theo giáo án",
-  "en": ""
- },
- {
-  "vi": "🔢 Điểm danh",
-  "en": ""
- },
- {
-  "vi": "👂 Hỏi chuyện gì xảy ra",
-  "en": ""
- },
- {
-  "vi": "🧤 Đã đeo găng",
-  "en": ""
- },
- {
-  "vi": "👂 Hỏi chuyện",
-  "en": ""
- },
- {
-  "vi": "🧤 Đeo găng",
-  "en": ""
- },
- {
-  "vi": "Chọn cách sơ cứu",
-  "en": ""
- },
- {
-  "vi": "🩹 Chọn cách sơ cứu",
-  "en": ""
- },
- {
-  "vi": ", chưa nghe sấm",
-  "en": ""
- },
- {
-  "vi": "🕒 Giờ:",
-  "en": ""
- },
- {
-  "vi": "· ⚡ Sấm cuối:",
-  "en": ""
- },
- {
-  "vi": "· chưa nghe sấm",
-  "en": ""
- },
- {
-  "vi": "📏 Nội quy dông sét",
-  "en": ""
- },
- {
-  "vi": "📻 Nghe bản tin thời tiết",
-  "en": ""
- },
- {
-  "vi": "🔢 Đếm người",
-  "en": ""
- },
- {
-  "vi": "⏱️ Chờ, xem trời",
-  "en": ""
- },
- {
-  "vi": "Đã lên bờ",
-  "en": ""
- },
- {
-  "vi": "📣 Cho tất cả lên bờ, trú ở…",
-  "en": ""
- },
- {
-  "vi": "Có người hỏi",
-  "en": ""
- },
- {
-  "vi": "⛈️ Dông chiều",
-  "en": ""
- },
- {
-  "vi": "Có sấm: cho lên bờ, vào nơi trú",
-  "en": ""
- },
- {
-  "vi": "📣 Cho lên bờ",
-  "en": ""
- },
- {
-  "vi": "Đếm người",
   "en": ""
  }
 ]

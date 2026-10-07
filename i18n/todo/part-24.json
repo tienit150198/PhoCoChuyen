@@ -1,5 +1,573 @@
 [
  {
+  "vi": "Túi nhẹ, buộc kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Găng tay cao su dày",
+  "en": ""
+ },
+ {
+  "vi": "Bao bọc mảnh vỡ",
+  "en": ""
+ },
+ {
+  "vi": "Đẩy xe rác mười hai năm, thuộc từng nhà, từng con chó trong phường.",
+  "en": ""
+ },
+ {
+  "vi": "Cầm sổ ghi chép mọi chuyện trong ngõ, nói một là một.",
+  "en": ""
+ },
+ {
+  "vi": "Chủ quán cơm bình dân",
+  "en": ""
+ },
+ {
+  "vi": "Tối nào cũng ra ba bao rác to, vội quá hay đổ chung.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thước",
+  "en": ""
+ },
+ {
+  "vi": "Cụ ông nhà số 7",
+  "en": ""
+ },
+ {
+  "vi": "Về hưu, đứng cửa canh xe rác, hay phàn nàn chuyện mùi.",
+  "en": ""
+ },
+ {
+  "vi": "Đạp xe ba gác đi khắp phường, cân giấy, lon, chai nhựa.",
+  "en": ""
+ },
+ {
+  "vi": "Về muộn, hay xách túi rác chạy theo xe.",
+  "en": ""
+ },
+ {
+  "vi": "Học sinh lớp 8, đội “Phố xanh”",
+  "en": ""
+ },
+ {
+  "vi": "Hăng hái đi dán tờ hướng dẫn phân loại rác.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Sáu",
+  "en": ""
+ },
+ {
+  "vi": "Tài xế xe ép rác",
+  "en": ""
+ },
+ {
+  "vi": "Xe tới điểm tập kết đúng giờ, không chờ ai.",
+  "en": ""
+ },
+ {
+  "vi": "Tối thường",
+  "en": ""
+ },
+ {
+  "vi": "Ngõ yên, rác vừa phải. Hợp để làm quen.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa tối",
+  "en": ""
+ },
+ {
+  "vi": "Đường trơn, túi rác ướt: mang ủng, buộc túi kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "Oi nồng",
+  "en": ""
+ },
+ {
+  "vi": "Rác hữu cơ bốc mùi nhanh: đeo khẩu trang, đi đúng giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Ngõ có đám cưới",
+  "en": ""
+ },
+ {
+  "vi": "Nhiều chai lọ, vỏ lon: ngăn tái chế mau đầy.",
+  "en": ""
+ },
+ {
+  "vi": "Ngõ 12 Hàng Mây",
+  "en": ""
+ },
+ {
+  "vi": "Nhà bác Tâm",
+  "en": ""
+ },
+ {
+  "vi": "Nhà số 5",
+  "en": ""
+ },
+ {
+  "vi": "Nhà ông Thước",
+  "en": ""
+ },
+ {
+  "vi": "Nhà số 9",
+  "en": ""
+ },
+ {
+  "vi": "Nhà có giàn hoa giấy",
+  "en": ""
+ },
+ {
+  "vi": "Dãy hàng quán đầu chợ",
+  "en": ""
+ },
+ {
+  "vi": "Quán cơm cô Lài",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm tạp hóa",
+  "en": ""
+ },
+ {
+  "vi": "Xe bánh mì",
+  "en": ""
+ },
+ {
+  "vi": "Quán nước mía",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm sửa xe",
+  "en": ""
+ },
+ {
+  "vi": "Khu tập thể B2",
+  "en": ""
+ },
+ {
+  "vi": "Cầu thang số 1",
+  "en": ""
+ },
+ {
+  "vi": "Cầu thang số 2",
+  "en": ""
+ },
+ {
+  "vi": "Phòng bảo vệ",
+  "en": ""
+ },
+ {
+  "vi": "Cầu thang số 3",
+  "en": ""
+ },
+ {
+  "vi": "Hẻm 5 bờ kênh",
+  "en": ""
+ },
+ {
+  "vi": "Nhà trọ sinh viên",
+  "en": ""
+ },
+ {
+  "vi": "Nhà anh Khôi",
+  "en": ""
+ },
+ {
+  "vi": "Nhà số 14",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm giặt ủi",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thước kêu sót rác",
+  "en": ""
+ },
+ {
+  "vi": "Tối qua xe rác bỏ sót túi nhà tôi! Để nguyên trước cửa, chó mèo bới tung!",
+  "en": ""
+ },
+ {
+  "vi": "Giờ ông đổ rác",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm kể ông Thước mang túi ra lúc gần mười giờ đêm, xe đã qua từ tám giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Túi rác",
+  "en": ""
+ },
+ {
+  "vi": "Túi đen buộc lỏng, bị bới tung một góc, vẫn còn trước cửa.",
+  "en": ""
+ },
+ {
+  "vi": "Bảng giờ thu gom",
+  "en": ""
+ },
+ {
+  "vi": "Đầu ngõ có bảng: “Đổ rác từ 18:00 đến 19:30”.",
+  "en": ""
+ },
+ {
+  "vi": "Thu luôn túi rác, nhẹ nhàng nhắc giờ thu gom",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thước lầm bầm, nhưng từ hôm sau mang rác ra đúng giờ.",
+  "en": ""
+ },
+ {
+  "vi": "Giải thích ông đổ muộn, hẹn tối nay thu",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thước im lặng, túi rác nằm thêm một ngày trước cửa.",
+  "en": ""
+ },
+ {
+  "vi": "“Ông đổ muộn thì ông tự chịu!”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thước lên phường phản ánh tổ thu gom thái độ.",
+  "en": ""
+ },
+ {
+  "vi": "Bác Tâm báo đổ trộm",
+  "en": ""
+ },
+ {
+  "vi": "Góc ngõ sáng nay có ai đổ nguyên đống xà bần với cái nệm cũ. Tổ thu gom xử lý đi!",
+  "en": ""
+ },
+ {
+  "vi": "Đống rác",
+  "en": ""
+ },
+ {
+  "vi": "Gạch vụn, vữa, một tấm nệm mục: rác xây dựng và rác cồng kềnh.",
+  "en": ""
+ },
+ {
+  "vi": "Xà bần, đồ cồng kềnh phải đặt lịch thu riêng, không cho vào xe ép rác sinh hoạt.",
+  "en": ""
+ },
+ {
+  "vi": "Ai đổ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa ai thấy người đổ. Có nhà trong ngõ đang sửa bếp.",
+  "en": ""
+ },
+ {
+  "vi": "Chụp ảnh, báo phường, dán thông báo, hẹn xe thu riêng",
+  "en": ""
+ },
+ {
+  "vi": "Phường cho xe tải nhỏ tới dọn. Bác Tâm dán thêm biển “Camera giám sát”.",
+  "en": ""
+ },
+ {
+  "vi": "Hốt hết lên xe đẩy cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Gạch vụn làm kẹt lưỡi ép của xe, chú Sáu phải dừng xe gỡ cả tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "Đổ cho nhà đang sửa bếp",
+  "en": ""
+ },
+ {
+  "vi": "Nhà kia nổi giận, hai bên cãi nhau to. Hóa ra họ thuê xe chở xà bần đàng hoàng.",
+  "en": ""
+ },
+ {
+  "vi": "Mùi ở chỗ đậu xe rác",
+  "en": ""
+ },
+ {
+  "vi": "Xe rác đậu ngay trước nhà tôi cả buổi, hôi không chịu nổi!",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ đậu xe",
+  "en": ""
+ },
+ {
+  "vi": "Xe đẩy đậu sát cửa nhà ông Thước vì chỗ đó bằng phẳng.",
+  "en": ""
+ },
+ {
+  "vi": "Nước rỉ",
+  "en": ""
+ },
+ {
+  "vi": "Dưới gầm xe có vũng nước rỉ từ rác hữu cơ.",
+  "en": ""
+ },
+ {
+  "vi": "Chỗ khác",
+  "en": ""
+ },
+ {
+  "vi": "Cách đó mười bước có góc tường trống, xa cửa sổ nhà dân.",
+  "en": ""
+ },
+ {
+  "vi": "Rửa sạch chỗ đậu, dời xe ra góc tường, đậy nắp kín",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thước ra xem, gật đầu. Tối đó mùi đỡ hẳn.",
+  "en": ""
+ },
+ {
+  "vi": "Dời xe đi chỗ khác",
+  "en": ""
+ },
+ {
+  "vi": "Đỡ mùi, nhưng vũng nước rỉ vẫn còn đó.",
+  "en": ""
+ },
+ {
+  "vi": "“Rác nhà ông cũng ở trong xe đấy!”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thước đóng sầm cửa, sáng mai gửi đơn lên phường.",
+  "en": ""
+ },
+ {
+  "vi": "Quán cơm không chịu phân loại",
+  "en": ""
+ },
+ {
+  "vi": "Cô Lài xua tay: “Quán cô bận lắm, đổ chung hết vào ba bao, con lấy giùm đi!”",
+  "en": ""
+ },
+ {
+  "vi": "Ba bao rác",
+  "en": ""
+ },
+ {
+  "vi": "Cơm thừa lẫn chai nhựa, lon bia, hộp xốp, nước canh rỉ ra.",
+  "en": ""
+ },
+ {
+  "vi": "Từ năm nay hộ kinh doanh phải phân loại rác; không phân loại có thể bị từ chối thu gom.",
+  "en": ""
+ },
+ {
+  "vi": "Cách làm gọn",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ cần ba thùng có nắp ở góc bếp, dán nhãn màu: hữu cơ, tái chế, còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Hướng dẫn cô Lài cách để ba thùng, tối nay nhận tạm, hẹn tối mai",
+  "en": ""
+ },
+ {
+  "vi": "Tối hôm sau quán cơm đã có ba thùng dán nhãn. Cô Lài còn dặn nhân viên làm theo.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối thu, dán giấy nhắc quy định",
+  "en": ""
+ },
+ {
+  "vi": "Đúng quy định, nhưng ba bao rác nằm lại trước quán, bốc mùi cả đêm.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy luôn cho xong chuyện",
+  "en": ""
+ },
+ {
+  "vi": "Cô Lài vui, nhưng từ đó tối nào cũng đổ chung.",
+  "en": ""
+ },
+ {
+  "vi": "Kim tiêm ở bồn cây",
+  "en": ""
+ },
+ {
+  "vi": "Anh ơi, bồn cây đầu ngõ có mấy cái kim tiêm, tụi em nhỏ hay ngồi chơi ở đó!",
+  "en": ""
+ },
+ {
+  "vi": "Bồn cây",
+  "en": ""
+ },
+ {
+  "vi": "Ba ống kim tiêm, một cái còn nguyên kim trần, lẫn trong lá khô.",
+  "en": ""
+ },
+ {
+  "vi": "Người qua lại",
+  "en": ""
+ },
+ {
+  "vi": "Chiều nào lũ trẻ cũng ngồi bệt ở bồn cây chơi bi.",
+  "en": ""
+ },
+ {
+  "vi": "Trên xe có kẹp gắp và hộp nhựa cứng có nắp cho đồ sắc nhọn.",
+  "en": ""
+ },
+ {
+  "vi": "Đeo găng, dùng kẹp gắp bỏ vào hộp cứng, báo trạm y tế",
+  "en": ""
+ },
+ {
+  "vi": "Bồn cây sạch. Trạm y tế phường cử người ra xem lại cả khu vườn hoa.",
+  "en": ""
+ },
+ {
+  "vi": "Quét luôn vào xe cùng lá khô",
+  "en": ""
+ },
+ {
+  "vi": "Kim đâm thủng bao, suýt trúng tay chú Sáu lúc đổ rác vào xe ép.",
+  "en": ""
+ },
+ {
+  "vi": "Căng dây chắn, hẹn mai xử lý",
+  "en": ""
+ },
+ {
+  "vi": "Tạm an toàn qua đêm, nhưng sáng sớm vẫn có đứa trẻ chui qua dây.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi tìm ví",
+  "en": ""
+ },
+ {
+  "vi": "Anh lỡ vứt nhầm cái ví trong túi rác tối qua, có thẻ ngân hàng với giấy tờ!",
+  "en": ""
+ },
+ {
+  "vi": "Ở điểm tập kết",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hạnh nhớ có một cái ví da nâu rơi ra từ túi đen, đã cất vào hộc xe.",
+  "en": ""
+ },
+ {
+  "vi": "Trong ví có căn cước tên Nguyễn Minh Khôi, 60 xu tiền mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Cách làm",
+  "en": ""
+ },
+ {
+  "vi": "Của rơi trả lại phải có người chứng kiến, đối chiếu giấy tờ.",
+  "en": ""
+ },
+ {
+  "vi": "Đối chiếu căn cước, trả ví trước mặt chị Hạnh",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi rối rít cảm ơn, gửi cả tổ mấy chai nước mát.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa luôn cái ví cho anh",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi nhận ví. Không ai đối chiếu, may mà đúng người.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo không thấy, cho khỏi rắc rối",
+  "en": ""
+ },
+ {
+  "vi": "Hôm sau chị Hạnh biết chuyện, buồn lắm.",
+  "en": ""
+ },
+ {
+  "vi": "Bác Tâm: “Ngõ này sạch nhất phường là nhờ tổ thu gom đấy.”",
+  "en": ""
+ },
+ {
+  "vi": "Bác Tâm dán bảng giờ đổ rác mới, chữ to rõ.",
+  "en": ""
+ },
+ {
+  "vi": "Bác Tâm đề nghị phường khen tổ thu gom cuối năm.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Lài: “Quán đông quá, cô quên mất phân loại.”",
+  "en": ""
+ },
+ {
+  "vi": "Cô Lài đặt thêm ba thùng rác có nắp ở góc bếp.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Lài gửi tổ thu gom hộp cơm sườn nóng hổi.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thước: “Ngày xưa ngõ này làm gì có xe rác đâu.”",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thước kể hồi trẻ làm công nhân nhà máy giấy.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Thước đứng đầu ngõ, giơ tay chào xe rác.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi: “Anh về muộn quá, cho anh gửi túi rác với!”",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi đặt báo thức giờ đổ rác trên điện thoại.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Khôi rủ cả nhà trọ phân loại rác.",
+  "en": ""
+ },
+ {
+  "vi": "Bé Na khoe tờ rơi “Phân loại rác tại nguồn” tự vẽ.",
+  "en": ""
+ },
+ {
+  "vi": "Bé Na được thầy giáo khen trước cờ.",
+  "en": ""
+ },
+ {
+  "vi": "Bé Na theo xe một tối, ghi chép làm báo tường.",
+  "en": ""
+ },
+ {
   "vi": "Giới thiệu nghề: thu gom rác khu phố",
   "en": ""
  },
@@ -1229,574 +1797,6 @@
  },
  {
   "vi": "Chị Hạnh: “Găng tay, khẩu trang, áo phản quang đâu? Kiểm cái xe rồi mình đi em.”",
-  "en": ""
- },
- {
-  "vi": "Hỏi rõ, xem tận nơi rồi mới trả lời.",
-  "en": ""
- },
- {
-  "vi": "Vào ca thôi! Chị Hạnh đang chờ ở đầu ngõ.",
-  "en": ""
- },
- {
-  "vi": "Có chuyện giữa đường, quyết xong rồi đi tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Có chuyện ở ngõ: xử lý trước đã.",
-  "en": ""
- },
- {
-  "vi": "Thao tác không có ở tổ thu gom.",
-  "en": ""
- },
- {
-  "vi": "Việc này không thuộc tổ thu gom.",
-  "en": ""
- },
- {
-  "vi": "Chưa vào ca: đồ bảo hộ, kiểm xe rồi bấm “Vào ca” nhé.",
-  "en": ""
- },
- {
-  "vi": "🧤 Đeo găng tay cao su dày.",
-  "en": ""
- },
- {
-  "vi": "😷 Đeo khẩu trang kín mũi.",
-  "en": ""
- },
- {
-  "vi": "🦺 Mặc áo phản quang.",
-  "en": ""
- },
- {
-  "vi": "Xe đã kiểm rồi.",
-  "en": ""
- },
- {
-  "vi": "🛒 Bơm lại bánh xe, siết nắp ba ngăn, treo hộp đỏ đựng đồ nguy hại. Xe chắc chắn rồi.",
-  "en": ""
- },
- {
-  "vi": "Tay trần mà đi gom rác, kim với mảnh chai đâu có chừa ai.",
-  "en": ""
- },
- {
-  "vi": "Không mặc áo phản quang, ngõ tối xe máy không thấy đâu.",
-  "en": ""
- },
- {
-  "vi": "thiếu áo phản quang",
-  "en": ""
- },
- {
-  "vi": "Chưa kiểm xe đã đẩy đi, bánh xe xẹp lết cả ngõ.",
-  "en": ""
- },
- {
-  "vi": "chưa kiểm xe",
-  "en": ""
- },
- {
-  "vi": "Vào ca: đồ bảo hộ, xe đẩy.",
-  "en": ""
- },
- {
-  "vi": "🦺 Vào ca!",
-  "en": ""
- },
- {
-  "vi": "Chị Hạnh cười: “Gọn gàng đó, đi thôi em.”",
-  "en": ""
- },
- {
-  "vi": "Chị Hạnh lắc đầu: “Đi thì đi, nhưng lần sau đủ đồ nha em.”",
-  "en": ""
- },
- {
-  "vi": "Túi rác không có.",
-  "en": ""
- },
- {
-  "vi": "Chưa tới nhà đó.",
-  "en": ""
- },
- {
-  "vi": "Đẩy xe vào ngõ đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Nghe chị Hạnh dặn đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã vào ngõ rồi.",
-  "en": ""
- },
- {
-  "vi": "Không có gì vương vãi.",
-  "en": ""
- },
- {
-  "vi": "🧹 Quét gom rác vương vãi, buộc lại túi rách. Ngõ sạch rồi.",
-  "en": ""
- },
- {
-  "vi": "Túi này mở rồi.",
-  "en": ""
- },
- {
-  "vi": "Túi đã lên xe rồi.",
-  "en": ""
- },
- {
-  "vi": "Mở túi ra xem đã.",
-  "en": ""
- },
- {
-  "vi": "Chỉ tách pin, bóng đèn, bình xịt, kim tiêm ra hộp đỏ.",
-  "en": ""
- },
- {
-  "vi": "Đã tách ra rồi.",
-  "en": ""
- },
- {
-  "vi": "Hộp đỏ đầy rồi: ra điểm tập kết giao cho điểm thu gom nguy hại đã.",
-  "en": ""
- },
- {
-  "vi": "Tay trần gắp đồ sắc nhọn, bị đâm chảy máu phải ra trạm y tế.",
-  "en": ""
- },
- {
-  "vi": "bị thương vì thiếu găng",
-  "en": ""
- },
- {
-  "vi": "Túi này không có mảnh vỡ.",
-  "en": ""
- },
- {
-  "vi": "Đã bọc rồi.",
-  "en": ""
- },
- {
-  "vi": "Hết bao bọc mảnh vỡ. Mở kho mua thêm nhé.",
-  "en": ""
- },
- {
-  "vi": "🧷 Gói mảnh kính vỡ vào bao dày, dán chữ “Mảnh vỡ”.",
-  "en": ""
- },
- {
-  "vi": "Quét gom rác vương vãi trước đã.",
-  "en": ""
- },
- {
-  "vi": "🧹 Quét dọn",
-  "en": ""
- },
- {
-  "vi": "Túi này đã dán phiếu không thu.",
-  "en": ""
- },
- {
-  "vi": "Chọn ngăn xe.",
-  "en": ""
- },
- {
-  "vi": "xuyên qua găng",
-  "en": ""
- },
- {
-  "vi": "vào tay trần",
-  "en": ""
- },
- {
-  "vi": "Xách túi có mảnh kính bằng tay trần, đứt tay rướm máu.",
-  "en": ""
- },
- {
-  "vi": "đứt tay vì thiếu găng",
-  "en": ""
- },
- {
-  "vi": "Đã nhắc nhà này rồi.",
-  "en": ""
- },
- {
-  "vi": "Đây là nhà cuối ngõ rồi. Bấm “Xong ngõ”.",
-  "en": ""
- },
- {
-  "vi": "Còn nhà chưa tới trong ngõ.",
-  "en": ""
- },
- {
-  "vi": "Nhà tôi phân loại đúng mà cũng bị dán phiếu không thu.",
-  "en": ""
- },
- {
-  "vi": "từ chối nhầm túi đã phân loại",
-  "en": ""
- },
- {
-  "vi": "bỏ sót túi rác",
-  "en": ""
- },
- {
-  "vi": "bỏ nhầm ngăn",
-  "en": ""
- },
- {
-  "vi": "để lọt đồ nguy hại",
-  "en": ""
- },
- {
-  "vi": "Mảnh kính không bọc, người đổ rác ở điểm tập kết dễ đứt tay.",
-  "en": ""
- },
- {
-  "vi": "không bọc mảnh vỡ",
-  "en": ""
- },
- {
-  "vi": "Nhà tôi phân loại đúng mà vẫn bị dán giấy nhắc.",
-  "en": ""
- },
- {
-  "vi": "nhắc nhầm nhà",
-  "en": ""
- },
- {
-  "vi": "Không đeo khẩu trang, ho sặc sụa giữa ngõ.",
-  "en": ""
- },
- {
-  "vi": "thiếu khẩu trang",
-  "en": ""
- },
- {
-  "vi": "thu gom trễ giờ",
-  "en": ""
- },
- {
-  "vi": "Xe đang trống.",
-  "en": ""
- },
- {
-  "vi": "Nghe cư dân nói đã nhé.",
-  "en": ""
- },
- {
-  "vi": "Không có chuyện này.",
-  "en": ""
- },
- {
-  "vi": "Tìm hiểu thêm đã:",
-  "en": ""
- },
- {
-  "vi": "Giải quyết được một nửa, còn để lửng.",
-  "en": ""
- },
- {
-  "vi": "giải quyết chưa trọn",
-  "en": ""
- },
- {
-  "vi": "cách xử lý sai",
-  "en": ""
- },
- {
-  "vi": "May mà mặc áo phản quang, người lái thấy từ xa.",
-  "en": ""
- },
- {
-  "vi": "Không mặc áo phản quang, suýt nữa thì…",
-  "en": ""
- },
- {
-  "vi": "Cuối ngõ có ai đổ trộm cả đống: bao tải, nệm cũ, túi rác rách toác, tràn ra nửa lòng đường.",
-  "en": ""
- },
- {
-  "vi": "Đống rác sau đám giỗ nhà số 9 cao ngang đầu gối, chó mèo bới tung, ruồi bu kín.",
-  "en": ""
- },
- {
-  "vi": "Quán nhậu đầu ngõ vứt mười mấy bao vỏ lon, xương, đá tan chảy lênh láng.",
-  "en": ""
- },
- {
-  "vi": "Nhà đang sửa chất xà bần lẫn rác sinh hoạt thành một đống, không ai nhận là của mình.",
-  "en": ""
- },
- {
-  "vi": "“Tao đóng tiền rác rồi, phân loại là việc của mày chứ!”",
-  "en": ""
- },
- {
-  "vi": "“Xanh vàng gì, rác nào chả là rác. Lấy đi, lắm chuyện vl.”",
-  "en": ""
- },
- {
-  "vi": "“Phân loại xong xe ép cũng đổ chung, diễn cho ai xem?”",
-  "en": ""
- },
- {
-  "vi": "“Mày nhìn cái gì? Có lấy không thì bảo, đứng đó giảng đạo à?”",
-  "en": ""
- },
- {
-  "vi": "Đang có chuyện ở ngõ: xử lý trước đã.",
-  "en": ""
- },
- {
-  "vi": "Không ai bị thương.",
-  "en": ""
- },
- {
-  "vi": "Trạm y tế: sát trùng, tiêm phòng",
-  "en": ""
- },
- {
-  "vi": "Bị kim tiêm đâm mà chỉ băng tạm, không đi xét nghiệm, tiêm phòng.",
-  "en": ""
- },
- {
-  "vi": "bị kim đâm không đi khám",
-  "en": ""
- },
- {
-  "vi": "🩹 Rửa xà phòng, băng tạm. Chị Hạnh cau mày: “Kim tiêm thì phải đi khám, không đùa được đâu!”",
-  "en": ""
- },
- {
-  "vi": "🩹 Rửa sạch, sát trùng, băng lại. Vết cắt nông, làm tiếp được.",
-  "en": ""
- },
- {
-  "vi": "Bị thương mà mặc kệ, máu rỏ xuống cả xe rác.",
-  "en": ""
- },
- {
-  "vi": "bị thương không sơ cứu",
-  "en": ""
- },
- {
-  "vi": "😬 Bạn chùi vào áo, làm tiếp. Tối về tay sưng tấy.",
-  "en": ""
- },
- {
-  "vi": "Không có đống rác nào.",
-  "en": ""
- },
- {
-  "vi": "Gọi xe ba gác chở đống rác đổ trộm",
-  "en": ""
- },
- {
-  "vi": "Đống rác cuối ngõ vẫn nằm đó qua đêm, hôi ơi là hôi.",
-  "en": ""
- },
- {
-  "vi": "để lại đống rác",
-  "en": ""
- },
- {
-  "vi": "📸 Chụp ảnh gửi tổ trưởng và phường, dựng biển “Cấm đổ rác”. Đống rác nằm lại chờ xe của phường. Bấm “Xong ngõ”.",
-  "en": ""
- },
- {
-  "vi": "Sửa bản lề nắp xe đẩy",
-  "en": ""
- },
- {
-  "vi": "Nhồi quá tải, nắp xe bung, rác rơi dọc đường.",
-  "en": ""
- },
- {
-  "vi": "nhồi quá tải",
-  "en": ""
- },
- {
-  "vi": "🧱 Nhồi chặt, may mà xe chịu nổi. Bấm “Xong ngõ”.",
-  "en": ""
- },
- {
-  "vi": "Không có ai chặn xe.",
-  "en": ""
- },
- {
-  "vi": "Công nhân đứng cãi tay đôi với dân giữa ngõ.",
-  "en": ""
- },
- {
-  "vi": "cãi nhau với dân",
-  "en": ""
- },
- {
-  "vi": "Đóng tiền rác đầy đủ mà công nhân không thèm lấy, quá đáng!",
-  "en": ""
- },
- {
-  "vi": "Mở túi ra xem đã rồi hẵng từ chối.",
-  "en": ""
- },
- {
-  "vi": "Túi này xử lý rồi.",
-  "en": ""
- },
- {
-  "vi": "Túi rác để trước cửa mà không lấy, dán cái phiếu như dán giấy phạt!",
-  "en": ""
- },
- {
-  "vi": "“Tháng này nhà đi vắng, không đổ rác mà cũng thu?”",
-  "en": ""
- },
- {
-  "vi": "“Nhà có hai người, đóng bằng nhà mười người à?”",
-  "en": ""
- },
- {
-  "vi": "“Tháng trước đóng rồi mà. Biên lai á? Mất rồi.”",
-  "en": ""
- },
- {
-  "vi": "“Để cuối tháng lương về, gì mà gấp.”",
-  "en": ""
- },
- {
-  "vi": "“Rác nhà tôi toàn tự xách ra điểm tập kết!”",
-  "en": ""
- },
- {
-  "vi": "“Thu tiền mà rác vẫn bốc mùi thế kia, đóng làm gì?”",
-  "en": ""
- },
- {
-  "vi": "Hộ này không còn phải thu.",
-  "en": ""
- },
- {
-  "vi": "Miễn cho hộ khó khăn.",
-  "en": ""
- },
- {
-  "vi": "Chọn cách nói.",
-  "en": ""
- },
- {
-  "vi": "Sổ thu phí sai.",
-  "en": ""
- },
- {
-  "vi": "Nhóm thanh niên đi nhậu về đạp đổ xe rác cho vui, cười hô hố: “Rác rưởi mà cũng bày đặt đẩy xe!”",
-  "en": ""
- },
- {
-  "vi": "Mấy đứa ngồi quán nhậu ném vỏ chai vào xe rác, trúng thành xe kêu choang: “Trúng rồi, 10 điểm!”",
-  "en": ""
- },
- {
-  "vi": "Một cậu giơ điện thoại quay sát mặt bạn: “Anh em ơi, nghề nhặt rác nè, học dốt thì ra thế này nha!”",
-  "en": ""
- },
- {
-  "vi": "Có đứa châm lửa đốt đống rác đầu ngõ, khói đen bốc lên, lửa liếm sát dây điện.",
-  "en": ""
- },
- {
-  "vi": "Hai chiếc xe máy độ dựng chắn ngang lối vào điểm tập kết, chủ xe ngồi rung đùi: “Đợi tí, tao đang nói chuyện.”",
-  "en": ""
- },
- {
-  "vi": "Điểm tập kết đã tràn ra lòng đường, xe ép của chú Sáu kẹt xe chưa tới. Người đi đường bịt mũi, chửi om sòm.",
-  "en": ""
- },
- {
-  "vi": "Không có chuyện gì.",
-  "en": ""
- },
- {
-  "vi": "Lửa cháy đầu ngõ mà tổ thu gom đi ngang không dập, may mà hàng xóm kịp dội nước.",
-  "en": ""
- },
- {
-  "vi": "Bạn đi tiếp. Mười phút sau cả ngõ hò nhau xách nước dập lửa.",
-  "en": ""
- },
- {
-  "vi": "Bạn dội nước dập lửa, gọi 114 báo cho chắc.",
-  "en": ""
- },
- {
-  "vi": "Bạn lấy xẻng xúc đất dập lửa, chụp ảnh gửi tổ dân phố.",
-  "en": ""
- },
- {
-  "vi": "Bạn nói chuyện đàng hoàng. Tụi nó ngượng, dựng lại xe rác rồi đi.",
-  "en": ""
- },
- {
-  "vi": "Sửa xe đẩy bị phá",
-  "en": ""
- },
- {
-  "vi": "Tụi nó cười khẩy bỏ đi.",
-  "en": ""
- },
- {
-  "vi": "“Mày là cái thá gì mà dạy đời? Rác rưởi mà cũng bày đặt!” Tụi nó cười hô hố, quay clip đăng lên mạng.",
-  "en": ""
- },
- {
-  "vi": "Bạn giơ điện thoại chụp. Tụi nó chửi um lên nhưng lảng đi.",
-  "en": ""
- },
- {
-  "vi": "Bạn chụp ảnh biển số, tụi nó vội vàng dựng lại xe rồi chuồn.",
-  "en": ""
- },
- {
-  "vi": "Công an phường tới, lập biên bản. Tụi nó phải đền tiền sửa xe.",
-  "en": ""
- },
- {
-  "vi": "Đền tiền sửa xe đẩy",
-  "en": ""
- },
- {
-  "vi": "Bạn lặng lẽ làm tiếp, mặc kệ tụi nó.",
-  "en": ""
- },
- {
-  "vi": "Quậy phá lúc nửa đêm",
-  "en": ""
- },
- {
-  "vi": "Bạn đứng đợi gần tiếng, xe ép mới tới. Người đi đường chửi cả tổ thu gom.",
-  "en": ""
- },
- {
-  "vi": "Bạn xếp gọn bao rác sát tường, quét sạch lòng đường, rắc vôi khử mùi.",
-  "en": ""
- },
- {
-  "vi": "Chú Sáu đổi lộ trình ghé trước. Điểm tập kết sạch sau nửa tiếng.",
-  "en": ""
- },
- {
-  "vi": "Chú Sáu tắt máy. Đành đợi.",
-  "en": ""
- },
- {
-  "vi": "Điểm tập kết tràn ra đường cả đêm, tổ thu gom bỏ đi luôn.",
   "en": ""
  }
 ]

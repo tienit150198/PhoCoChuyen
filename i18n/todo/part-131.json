@@ -1,5 +1,35 @@
 [
  {
+  "vi": "Mở khi ví của bạn từng có $1. Bạn vẫn có thể mua bán vàng ngay.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mây Coin $1 · Vàng $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mua $1 vàng?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giá tiệm bán $1/chỉ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bán $1 vàng?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Việc cần làm $1/",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🔥 Lời x$1 hôm nay",
   "en": "",
   "pattern": true
@@ -656,6 +686,11 @@
  },
  {
   "vi": "Quỹ chung $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang giữ cho đấu giá $1 xu",
   "en": "",
   "pattern": true
  },
@@ -2211,41 +2246,6 @@
  },
  {
   "vi": "thiếu $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đủ $1 đơn đang về: nhận bớt thùng rồi đặt tiếp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn gộp $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thêm $1 xu hàng: miễn ship",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đặt đơn · $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bỏ cả đơn $1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã sửa ★$1 → ★",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Không có $1 nào ở mục này.",
   "en": "",
   "pattern": true
  }

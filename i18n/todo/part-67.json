@@ -1,5 +1,577 @@
 [
  {
+  "vi": "Đi cửa sau",
+  "en": ""
+ },
+ {
+  "vi": "Phỏng vấn lại",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn có thể phỏng vấn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Tỷ lệ nhận sai.",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ cửa sau sai.",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng phòng Hành chính – Nhân sự, Công ty CP Cánh Diều",
+  "en": ""
+ },
+ {
+  "vi": "nói nhẹ mà soát kỹ, ghét nhất hồ sơ thiếu chữ ký",
+  "en": ""
+ },
+ {
+  "vi": "công bằng với người lao động",
+  "en": ""
+ },
+ {
+  "vi": "giấy tờ đủ và đúng",
+  "en": ""
+ },
+ {
+  "vi": "Giám đốc Công ty CP Cánh Diều",
+  "en": ""
+ },
+ {
+  "vi": "quyết nhanh, đổi ý còn nhanh hơn, quý người nhớ lịch giỏi",
+  "en": ""
+ },
+ {
+  "vi": "lịch không trùng",
+  "en": ""
+ },
+ {
+  "vi": "giữ kín chuyện công ty",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng nhóm IT, Công ty CP Cánh Diều",
+  "en": ""
+ },
+ {
+  "vi": "nói ít, hay hỏi \"em làm từng bước thế nào?\"",
+  "en": ""
+ },
+ {
+  "vi": "sao lưu trước khi sửa",
+  "en": ""
+ },
+ {
+  "vi": "không ai được hỏi mã OTP",
+  "en": ""
+ },
+ {
+  "vi": "Trưởng ca, Tổng đài Cứu hộ phường Mây",
+  "en": ""
+ },
+ {
+  "vi": "nói chậm, rõ từng chữ, hay hỏi \"câu đầu tiên em hỏi là gì?\"",
+  "en": ""
+ },
+ {
+  "vi": "hỏi địa chỉ trước tiên",
+  "en": ""
+ },
+ {
+  "vi": "không bỏ ai một mình trên máy",
+  "en": ""
+ },
+ {
+  "vi": "Tổ trưởng cảnh sát khu vực, Công an phường Mây",
+  "en": ""
+ },
+ {
+  "vi": "nói chậm, hay hỏi \"người ta nhờ em mà em không chắc thì em làm gì?\"",
+  "en": ""
+ },
+ {
+  "vi": "ai cũng như ai",
+  "en": ""
+ },
+ {
+  "vi": "không bao giờ nhận phong bì",
+  "en": ""
+ },
+ {
+  "vi": "Đến giờ đóng cửa rồi: không đón thêm khách. Làm nốt việc dở rồi khép ca nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Đã cập nhật hoạt động các tiệm.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn làm quản lý: giao việc cho đội nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Danh sách hàng không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Mỗi mã chỉ một dòng trong đơn gộp.",
+  "en": ""
+ },
+ {
+  "vi": ". Nhận đủ rồi bán bớt hoặc nâng kệ.",
+  "en": ""
+ },
+ {
+  "vi": "trong một chuyến",
+  "en": ""
+ },
+ {
+  "vi": "Lắp bậc trước rồi nâng tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "đã lắp, áp dụng cho lượt làm tiếp theo.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ nhận ảnh PNG/WebP/JPEG chụp từ cảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Thiết bị không thuộc nghề này.",
+  "en": ""
+ },
+ {
+  "vi": "Thiết bị thiếu bậc trước.",
+  "en": ""
+ },
+ {
+  "vi": "Rẻ nhất (×0,85). Đặt trước 13:00, hàng tới chiều nay; đặt sau, hàng tới sáng mai trước giờ mở cửa.",
+  "en": ""
+ },
+ {
+  "vi": "Giá niêm yết. Bốn chuyến mỗi ngày: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "Đắt nhất (×1,35) nhưng tới trong 15–30 phút.",
+  "en": ""
+ },
+ {
+  "vi": "Xe Thiện Tâm kẹt ở cầu Mây, bên em báo trễ chừng nửa tiếng tới một tiếng ạ.",
+  "en": ""
+ },
+ {
+  "vi": "Xe phân phối chạy bốn chuyến mỗi ngày: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau đó khoảng một tiếng. Giá niêm yết.",
+  "en": ""
+ },
+ {
+  "vi": "Xe của kho tổng về trễ, hàng tới muộn hơn hẹn.",
+  "en": ""
+ },
+ {
+  "vi": "Rẻ hơn (×0,85). Đặt trước 13:00, xe kho giao chiều nay; đặt sau, xe đêm giao trước giờ mở cửa sáng mai.",
+  "en": ""
+ },
+ {
+  "vi": "kiện thiếu món",
+  "en": ""
+ },
+ {
+  "vi": "cần đầu mối kiểm lại chặng giao",
+  "en": ""
+ },
+ {
+  "vi": "khách nhận sai mã, sai màu (không phải thiếu món)",
+  "en": ""
+ },
+ {
+  "vi": "hồ sơ có yêu cầu hoàn hoặc chính sách cho hoàn",
+  "en": ""
+ },
+ {
+  "vi": "đơn không lỗi, khách chỉ cần cách làm",
+  "en": ""
+ },
+ {
+  "vi": "Cơm nước và điện nước dinh thự",
+  "en": ""
+ },
+ {
+  "vi": "Thư phòng",
+  "en": ""
+ },
+ {
+  "vi": "Phòng khách quý",
+  "en": ""
+ },
+ {
+  "vi": "Phòng chiếu phim",
+  "en": ""
+ },
+ {
+  "vi": "Hầm rượu",
+  "en": ""
+ },
+ {
+  "vi": "Phòng gym",
+  "en": ""
+ },
+ {
+  "vi": "Phòng thay đồ",
+  "en": ""
+ },
+ {
+  "vi": "Gara trưng bày",
+  "en": ""
+ },
+ {
+  "vi": "Sân thượng",
+  "en": ""
+ },
+ {
+  "vi": "Hồ bơi vô cực",
+  "en": ""
+ },
+ {
+  "vi": "Chòi vườn",
+  "en": ""
+ },
+ {
+  "vi": "kệ sách âm tường",
+  "en": ""
+ },
+ {
+  "vi": "màn chiếu",
+  "en": ""
+ },
+ {
+  "vi": "giá rượu",
+  "en": ""
+ },
+ {
+  "vi": "gương tập",
+  "en": ""
+ },
+ {
+  "vi": "giá treo đồ",
+  "en": ""
+ },
+ {
+  "vi": "cửa cuốn",
+  "en": ""
+ },
+ {
+  "vi": "chiếc xe trưng bày",
+  "en": ""
+ },
+ {
+  "vi": "mái chòi",
+  "en": ""
+ },
+ {
+  "vi": "Ốp gỗ thông",
+  "en": ""
+ },
+ {
+  "vi": "Vàng Đông Dương",
+  "en": ""
+ },
+ {
+  "vi": "Vách kính",
+  "en": ""
+ },
+ {
+  "vi": "Trắng xanh biển",
+  "en": ""
+ },
+ {
+  "vi": "Nhung đỏ rạp",
+  "en": ""
+ },
+ {
+  "vi": "Đá hộc",
+  "en": ""
+ },
+ {
+  "vi": "Đá cẩm thạch",
+  "en": ""
+ },
+ {
+  "vi": "Gỗ óc chó",
+  "en": ""
+ },
+ {
+  "vi": "Sàn gỗ boong tàu",
+  "en": ""
+ },
+ {
+  "vi": "Thảm đỏ",
+  "en": ""
+ },
+ {
+  "vi": "Sàn cao su",
+  "en": ""
+ },
+ {
+  "vi": "Gạch nung",
+  "en": ""
+ },
+ {
+  "vi": "Giường king trải lụa",
+  "en": ""
+ },
+ {
+  "vi": "Bàn gỗ lim",
+  "en": ""
+ },
+ {
+  "vi": "Ghế bành da bò",
+  "en": ""
+ },
+ {
+  "vi": "Quả địa cầu cổ",
+  "en": ""
+ },
+ {
+  "vi": "Ghế rạp đôi",
+  "en": ""
+ },
+ {
+  "vi": "Máy bỏng ngô",
+  "en": ""
+ },
+ {
+  "vi": "Loa cột",
+  "en": ""
+ },
+ {
+  "vi": "Thùng rượu sồi",
+  "en": ""
+ },
+ {
+  "vi": "Bàn nếm rượu",
+  "en": ""
+ },
+ {
+  "vi": "Máy chạy bộ",
+  "en": ""
+ },
+ {
+  "vi": "Giá tạ",
+  "en": ""
+ },
+ {
+  "vi": "Tủ kính giày",
+  "en": ""
+ },
+ {
+  "vi": "Đảo trang sức",
+  "en": ""
+ },
+ {
+  "vi": "Xe máy cổ trưng bày",
+  "en": ""
+ },
+ {
+  "vi": "Biển neon",
+  "en": ""
+ },
+ {
+  "vi": "Lò sưởi ngoài trời",
+  "en": ""
+ },
+ {
+  "vi": "Quầy bar hồ bơi",
+  "en": ""
+ },
+ {
+  "vi": "Kính thiên văn",
+  "en": ""
+ },
+ {
+  "vi": "Rạp tại gia",
+  "en": ""
+ },
+ {
+  "vi": "Hầm rượu vang",
+  "en": ""
+ },
+ {
+  "vi": "Thư phòng cổ",
+  "en": ""
+ },
+ {
+  "vi": "Phòng tập",
+  "en": ""
+ },
+ {
+  "vi": "Hiên ngắm sao",
+  "en": ""
+ },
+ {
+  "vi": "Biệt thự vườn Đà Lạt",
+  "en": ""
+ },
+ {
+  "vi": "Đồi thông, cuối dốc sương",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia, người làm vườn",
+  "en": ""
+ },
+ {
+  "vi": "Chòi vườn thông",
+  "en": ""
+ },
+ {
+  "vi": "Biệt thự Đông Dương",
+  "en": ""
+ },
+ {
+  "vi": "Phố Pháp, hàng me tây",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia, bảo vệ, làm vườn",
+  "en": ""
+ },
+ {
+  "vi": "Sảnh khách",
+  "en": ""
+ },
+ {
+  "vi": "Vườn hoa sứ",
+  "en": ""
+ },
+ {
+  "vi": "Hiên lầu",
+  "en": ""
+ },
+ {
+  "vi": "Biệt thự kính Mây",
+  "en": ""
+ },
+ {
+  "vi": "Khu đô thị ven hồ",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia, bảo vệ, kỹ thuật",
+  "en": ""
+ },
+ {
+  "vi": "Biệt thự biển Mũi Né",
+  "en": ""
+ },
+ {
+  "vi": "Mũi Né, sát bãi cát",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia, đầu bếp, cứu hộ hồ bơi",
+  "en": ""
+ },
+ {
+  "vi": "Hồ bơi nhìn biển",
+  "en": ""
+ },
+ {
+  "vi": "Chòi biển",
+  "en": ""
+ },
+ {
+  "vi": "Hiên ngắm biển",
+  "en": ""
+ },
+ {
+  "vi": "Penthouse Sky Mây",
+  "en": ""
+ },
+ {
+  "vi": "Tầng 52–53, tháp Sky Mây",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia, lễ tân tòa, đầu bếp",
+  "en": ""
+ },
+ {
+  "vi": "Sân thượng 53",
+  "en": ""
+ },
+ {
+  "vi": "Dinh thự đảo Hòn Mây",
+  "en": ""
+ },
+ {
+  "vi": "Đảo riêng, 40 phút ca nô",
+  "en": ""
+ },
+ {
+  "vi": "Quản gia, đầu bếp, thủy thủ, bảo vệ đảo",
+  "en": ""
+ },
+ {
+  "vi": "Đại sảnh",
+  "en": ""
+ },
+ {
+  "vi": "Gara & bến ca nô",
+  "en": ""
+ },
+ {
+  "vi": "Thư viện",
+  "en": ""
+ },
+ {
+  "vi": "Sân thượng ngắm đảo",
+  "en": ""
+ },
+ {
+  "vi": "Chòi bãi biển",
+  "en": ""
+ },
+ {
+  "vi": "Sân ven sông",
+  "en": ""
+ },
+ {
+  "vi": "Sân thượng ngắm sông",
+  "en": ""
+ },
+ {
+  "vi": "một chỗ ngồi",
+  "en": ""
+ },
+ {
+  "vi": "Ngày hội xuất hiện ngẫu nhiên. Mở ca có nhịp Ngày hội để tham gia.",
+  "en": ""
+ },
+ {
+  "vi": "Kem viên",
+  "en": ""
+ },
+ {
+  "vi": "Kem viên bơ",
+  "en": ""
+ },
+ {
+  "vi": "Dẫn đường",
+  "en": ""
+ },
+ {
+  "vi": "Tắm tỉa thú nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Tắm tỉa thú vừa",
+  "en": ""
+ },
+ {
   "vi": "Tắm tỉa thú lớn",
   "en": ""
  },
@@ -1225,578 +1797,6 @@
  },
  {
   "vi": "Nhét tai là lọt thỏm, chống ồn đủ để không nghe khách than.",
-  "en": ""
- },
- {
-  "vi": "Đồng hồ Mây Watch",
-  "en": ""
- },
- {
-  "vi": "Đếm bước, nhắc uống nước, rung nhẹ khi có tin nhắn của crush.",
-  "en": ""
- },
- {
-  "vi": "Máy tính bảng Mây Tab",
-  "en": ""
- },
- {
-  "vi": "Màn 11 inch, xem phim nằm võng hay vẽ thực đơn quán đều được.",
-  "en": ""
- },
- {
-  "vi": "Máy chơi game Rồng Con",
-  "en": ""
- },
- {
-  "vi": "Cắm tivi chơi bốn người, gỡ ra mang theo được. Tối thứ bảy cả xóm sang.",
-  "en": ""
- },
- {
-  "vi": "Rồng Con",
-  "en": ""
- },
- {
-  "vi": "Máy ảnh Cò Trắng X",
-  "en": ""
- },
- {
-  "vi": "Máy ảnh không gương lật, ống kính chân dung xóa phông mịn như mơ.",
-  "en": ""
- },
- {
-  "vi": "Cò Trắng",
-  "en": ""
- },
- {
-  "vi": "Anh Khoa cười: “Lên đời rồi hả? Máy cũ để anh lau lại, cho bé Tí học online.”",
-  "en": ""
- },
- {
-  "vi": "Máy cũ",
-  "en": ""
- },
- {
-  "vi": "Chiếc máy cũ còn xài tốt. Gọi được, nhắn được, chụp hình hơi mờ.",
-  "en": ""
- },
- {
-  "vi": "Cửa hàng điện thoại chỉ có trong chế độ hành trình.",
-  "en": ""
- },
- {
-  "vi": "Đồ công nghệ trong bản lưu không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chọn một món trong cửa hàng nhé.",
-  "en": ""
- },
- {
-  "vi": "Thông tin mua hàng không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Mua đồ công nghệ",
-  "en": ""
- },
- {
-  "vi": "Đang dùng máy này.",
-  "en": ""
- },
- {
-  "vi": "Thông tin không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Cất máy vào túi, không khoe trên hồ sơ nữa.",
-  "en": ""
- },
- {
-  "vi": "Chỉ chọn được điện thoại để dùng.",
-  "en": ""
- },
- {
-  "vi": "Bán đồ công nghệ",
-  "en": ""
- },
- {
-  "vi": "Thao tác cửa hàng điện thoại không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Xe hai bánh",
-  "en": ""
- },
- {
-  "vi": "Cửa hàng xe Đầu Hẻm",
-  "en": ""
- },
- {
-  "vi": "Ô tô",
-  "en": ""
- },
- {
-  "vi": "Showroom Phố",
-  "en": ""
- },
- {
-  "vi": "Du thuyền",
-  "en": ""
- },
- {
-  "vi": "Bến du thuyền",
-  "en": ""
- },
- {
-  "vi": "Máy bay riêng",
-  "en": ""
- },
- {
-  "vi": "Sân bay tư nhân",
-  "en": ""
- },
- {
-  "vi": "Đỏ son",
-  "en": ""
- },
- {
-  "vi": "Cam đào",
-  "en": ""
- },
- {
-  "vi": "Vàng chanh",
-  "en": ""
- },
- {
-  "vi": "Xanh biển",
-  "en": ""
- },
- {
-  "vi": "Trắng ngọc",
-  "en": ""
- },
- {
-  "vi": "Bạc ánh kim",
-  "en": ""
- },
- {
-  "vi": "Xe đạp phố",
-  "en": ""
- },
- {
-  "vi": "Khung thép, giỏ mây đằng trước, chuông kêu leng keng. Chở được một bó hoa.",
-  "en": ""
- },
- {
-  "vi": "Đạp một vòng",
-  "en": ""
- },
- {
-  "vi": "Xe đạp điện",
-  "en": ""
- },
- {
-  "vi": "Sạc một đêm chạy cả ngày, lên dốc cầu nhẹ tênh.",
-  "en": ""
- },
- {
-  "vi": "Chạy một vòng",
-  "en": ""
- },
- {
-  "vi": "Xe số Cub",
-  "en": ""
- },
- {
-  "vi": "Bền như trâu, đổ xăng một lần chạy cả tuần. Ai trong hẻm cũng biết sửa.",
-  "en": ""
- },
- {
-  "vi": "Chạy một vòng phố",
-  "en": ""
- },
- {
-  "vi": "Xe tay ga cổ điển",
-  "en": ""
- },
- {
-  "vi": "Dáng tròn, yên da nâu, cốp rộng để vừa áo mưa và hộp cơm.",
-  "en": ""
- },
- {
-  "vi": "Ô tô mini 4 chỗ",
-  "en": ""
- },
- {
-  "vi": "Nhỏ gọn, len hẻm xe hơi dễ dàng, máy lạnh mát rượi ngày nắng.",
-  "en": ""
- },
- {
-  "vi": "Lái xe hóng gió",
-  "en": ""
- },
- {
-  "vi": "SUV 7 chỗ",
-  "en": ""
- },
- {
-  "vi": "Gầm cao, cốp rộng, đủ chỗ chở cả nhà về quê dịp lễ.",
-  "en": ""
- },
- {
-  "vi": "Chở cả nhà đi chơi",
-  "en": ""
- },
- {
-  "vi": "Xe mui trần cổ",
-  "en": ""
- },
- {
-  "vi": "Sơn bóng loáng, vô lăng gỗ, mở mui ra là cả phố ngoái nhìn.",
-  "en": ""
- },
- {
-  "vi": "Mở mui dạo phố",
-  "en": ""
- },
- {
-  "vi": "Siêu xe Tia Chớp",
-  "en": ""
- },
- {
-  "vi": "Động cơ đặt giữa, cửa mở cánh chim. Đỗ trước chợ là cả hẻm kéo ra chụp hình.",
-  "en": ""
- },
- {
-  "vi": "Chạy một vòng cao tốc",
-  "en": ""
- },
- {
-  "vi": "Thuyền buồm nhỏ",
-  "en": ""
- },
- {
-  "vi": "Hai cánh buồm trắng, cabin nhỏ đủ pha ấm trà. Đậu ở bến cuối đê.",
-  "en": ""
- },
- {
-  "vi": "Giương buồm ra sông",
-  "en": ""
- },
- {
-  "vi": "Du thuyền Hoàng Hôn",
-  "en": ""
- },
- {
-  "vi": "Boong gỗ rộng, phòng ngủ dưới khoang, sân thượng ngắm hoàng hôn trên vịnh.",
-  "en": ""
- },
- {
-  "vi": "Ra khơi ngắm hoàng hôn",
-  "en": ""
- },
- {
-  "vi": "Siêu du thuyền Ngọc Trai",
-  "en": ""
- },
- {
-  "vi": "Ba tầng boong, bể bơi trên mũi, bếp riêng có đầu bếp. Neo ngoài vịnh là cả bến ngoái nhìn.",
-  "en": ""
- },
- {
-  "vi": "Mở tiệc trên boong",
-  "en": ""
- },
- {
-  "vi": "Máy bay cánh quạt",
-  "en": ""
- },
- {
-  "vi": "Hai chỗ ngồi, cánh cao, cất cánh từ đường băng cỏ ngoài sân bay tư nhân.",
-  "en": ""
- },
- {
-  "vi": "Bay ngắm phố",
-  "en": ""
- },
- {
-  "vi": "Trực thăng riêng",
-  "en": ""
- },
- {
-  "vi": "Bốn ghế, đáp được trên sân thượng. Sáng uống cà phê ở phố, trưa đã ngắm biển.",
-  "en": ""
- },
- {
-  "vi": "Bay một vòng ngắm sông",
-  "en": ""
- },
- {
-  "vi": "Phản lực riêng",
-  "en": ""
- },
- {
-  "vi": "Tám ghế da, bay êm như ngồi phòng khách. Cuối tuần ra đảo ăn hải sản rồi về.",
-  "en": ""
- },
- {
-  "vi": "Bay ra đảo cuối tuần",
-  "en": ""
- },
- {
-  "vi": "Gió bờ kênh mát rượi, bạn ghé mua ly nước mía rồi thong thả về.",
-  "en": ""
- },
- {
-  "vi": "Một vòng quanh chợ, cô bán hoa dúi cho cành cúc họa mi bỏ giỏ xe.",
-  "en": ""
- },
- {
-  "vi": "Đường chiều vắng, đèn phố vừa lên. Đầu óc nhẹ tênh.",
-  "en": ""
- },
- {
-  "vi": "Mở cửa kính, bật bài hát quen, chạy dọc đường ven sông tới lúc trời tắt nắng.",
-  "en": ""
- },
- {
-  "vi": "Bà Tám đi nhờ ra chợ đầu mối, khen xe êm quá trời.",
-  "en": ""
- },
- {
-  "vi": "Ghé quán bánh xèo ngoại ô, ăn xong lái về thong thả.",
-  "en": ""
- },
- {
-  "vi": "Neo ngoài vịnh, mặt trời lặn đỏ rực sau rặng núi. Gió mặn mà dễ chịu.",
-  "en": ""
- },
- {
-  "vi": "Bầy cá chuồn nhảy quanh mũi thuyền. Bạn thả câu, chẳng cần cá cắn.",
-  "en": ""
- },
- {
-  "vi": "Ngồi trên boong pha ấm trà, nghe sóng vỗ lách tách.",
-  "en": ""
- },
- {
-  "vi": "Từ trên cao, cả khu phố nhỏ như mô hình: thấy cả mái nhà Bà Tám.",
-  "en": ""
- },
- {
-  "vi": "Bay qua dòng sông lúc hoàng hôn, mây hồng trải dài tới chân trời.",
-  "en": ""
- },
- {
-  "vi": "Hạ cánh xuống đảo, ăn đĩa ghẹ hấp rồi bay về kịp giờ cơm tối.",
-  "en": ""
- },
- {
-  "vi": "Mua xe chỉ có trong chế độ hành trình.",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa có chiếc này.",
-  "en": ""
- },
- {
-  "vi": "Xe đang hỏng. Sửa xong rồi đi nhé.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay bạn đã đi chơi một chuyến rồi. Mai đi tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Nhà xe trong bản lưu không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chọn một chiếc xe nhé.",
-  "en": ""
- },
- {
-  "vi": "Màu sơn này không có trong bảng màu.",
-  "en": ""
- },
- {
-  "vi": "Thông tin mua xe không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Đang đi chiếc này.",
-  "en": ""
- },
- {
-  "vi": "Đã cất vào nhà xe.",
-  "en": ""
- },
- {
-  "vi": "Thông tin sơn xe không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chiếc xe vẫn y như cũ.",
-  "en": ""
- },
- {
-  "vi": "Không khoe xe nào trên hồ sơ nữa.",
-  "en": ""
- },
- {
-  "vi": "Tiền xăng",
-  "en": ""
- },
- {
-  "vi": "Bán xe",
-  "en": ""
- },
- {
-  "vi": "Thao tác nhà xe không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Bạn đứng quầy trà sữa: nghe khách gọi, pha từng lớp, dán nắp rồi trao ly.",
-  "en": ""
- },
- {
-  "vi": "Khách vãng lai ghé quầy",
-  "en": ""
- },
- {
-  "vi": "Bấm [[Nghe gọi món]] để đọc phiếu, rồi pha đúng trà, siro, topping, đá, đường.",
-  "en": ""
- },
- {
-  "vi": "Khách quen “Như mọi khi”",
-  "en": ""
- },
- {
-  "vi": "Khách không đọc lại món. Mở 📒 Sổ khách quen để xem ly quen rồi pha đúng như vậy.",
-  "en": ""
- },
- {
-  "vi": "Đơn nhóm 2–3 ly",
-  "en": ""
- },
- {
-  "vi": "Một khách gọi nhiều ly. Chọn từng tab Ly 1, Ly 2… pha xong hết mới có một đánh giá.",
-  "en": ""
- },
- {
-  "vi": "Đơn app (tài xế ghé lấy, từ cấp 2)",
-  "en": ""
- },
- {
-  "vi": "Phiếu in sẵn, không cần hỏi. Pha kịp trước khi thanh tài xế cạn; app giữ 20% tiền.",
-  "en": ""
- },
- {
-  "vi": "Chị Hạnh đặt 3 ly có giờ hẹn. Xong kịp giờ được thưởng 15 xu.",
-  "en": ""
- },
- {
-  "vi": "Ly signature cho Hân quay video",
-  "en": ""
- },
- {
-  "vi": "Pha đúng từng lời dặn: ly chuẩn được 20 xu quảng bá, ly lệch chỉ được 3★.",
-  "en": ""
- },
- {
-  "vi": "Nhóm học sinh tan học",
-  "en": ""
- },
- {
-  "vi": "Nhiều bạn vào hàng cùng lúc, kiên nhẫn thấp. Chọn “ly nhanh” thì cả nhóm cùng một công thức.",
-  "en": ""
- },
- {
-  "vi": "Chăm quầy",
-  "en": ""
- },
- {
-  "vi": "Ủ trà, nấu trân châu, lau máy dán nắp, đặt siro và ly trước khi cạn.",
-  "en": ""
- },
- {
-  "vi": "👋 Bấm [[Mời khách tiếp theo]] hoặc chạm khách trong hàng chờ.",
-  "en": ""
- },
- {
-  "vi": "👂 Bấm [[Nghe gọi món]] để khách đọc món; phiếu hiện ra bên cạnh ly.",
-  "en": ""
- },
- {
-  "vi": "🥤 [[Lấy ly]] đúng cỡ M hoặc L ở Chồng ly.",
-  "en": ""
- },
- {
-  "vi": "🫖 Chạm ô trà nền trước, rồi siro và topping đúng phiếu (tối đa 3 topping).",
-  "en": ""
- },
- {
-  "vi": "🧊 Chọn mức đá ([[Ít đá]], [[Đá vừa]]…) và mức đường 0–100%.",
-  "en": ""
- },
- {
-  "vi": "🔎 [[So phiếu]] giúp xem phần nào chưa đúng, không tính lỗi kiểm tra. Cần làm lại thì [[Đổ ly]]; đổ ly vẫn tính hao phí.",
-  "en": ""
- },
- {
-  "vi": "🔥 Bấm [[Ép nắp]], rồi [[Nhả tay!]] khi kim vào vùng xanh. Vội thì [[Dán thường]].",
-  "en": ""
- },
- {
-  "vi": "🛎️ Bấm [[Giao món]] (đơn app: [[Giao tài xế]]) để trao ly và thu tiền.",
-  "en": ""
- },
- {
-  "vi": "📱 [[Kho & đặt hàng]] và [[Đánh giá]] nằm ở thanh dưới trong lúc pha; trạm chưa tới lượt gọn một dòng, bấm để mở.",
-  "en": ""
- },
- {
-  "vi": "🧾 Đúng trà nền, cỡ ly, siro và từng topping — sai một thứ là khách trả ly.",
-  "en": ""
- },
- {
-  "vi": "🍯 Đường đúng số % và 🧊 đá đúng mức khách dặn.",
-  "en": ""
- },
- {
-  "vi": "✨ Nhả tay trong vùng xanh để nắp căng đẹp: khách thưởng thêm 1 xu.",
-  "en": ""
- },
- {
-  "vi": "🟤 Dùng trân châu còn dẻo, trà còn thơm; mẻ để lâu bị chê cứng, chát.",
-  "en": ""
- },
- {
-  "vi": "⏱️ Làm nhanh: khách không phải chờ lâu, đơn app kịp giờ tài xế.",
-  "en": ""
- },
- {
-  "vi": "📒 Khách quen: bấm [[Như mọi khi hả?]] (+8 kiên nhẫn); ly chuẩn được thêm 2 xu.",
-  "en": ""
- },
- {
-  "vi": "💝 Quầy không phải thối tiền. Ly chuẩn, khách vui thì đôi khi được tip vài xu hoặc quà nhỏ; ly 1–2★ thì không.",
-  "en": ""
- },
- {
-  "vi": "Sai trà nền, cỡ ly, siro hoặc topping",
-  "en": ""
- },
- {
-  "vi": "Khách trả ly ngay: ly bị bỏ, kiên nhẫn −12, quầy dính vệt trà, review nhớ lần phải chờ.",
-  "en": ""
- },
- {
-  "vi": "Lệch đường hoặc đá",
-  "en": ""
- },
- {
-  "vi": "Lệch 1 nấc là lỗi nhỏ (4★), lệch 2 nấc là lỗi rõ (3★). Khách càu nhàu, bớt tiền hoặc trả ly.",
   "en": ""
  }
 ]

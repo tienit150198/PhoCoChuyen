@@ -1,5 +1,173 @@
 [
  {
+  "vi": "Mở tin nhắn",
+  "en": ""
+ },
+ {
+  "vi": "Nghe chị Vy",
+  "en": ""
+ },
+ {
+  "vi": "📝 Việc cần làm",
+  "en": ""
+ },
+ {
+  "vi": "📒 Khách quen",
+  "en": ""
+ },
+ {
+  "vi": "🧍‍♀️ Cửa kính",
+  "en": ""
+ },
+ {
+  "vi": "Chưa trưng bộ nào. Chị Vy sẽ nhờ bạn thay đồ ma-nơ-canh.",
+  "en": ""
+ },
+ {
+  "vi": "Kim đang chạy… chưa tới vạch",
+  "en": ""
+ },
+ {
+  "vi": "TRONG VẠCH — dừng ngay!",
+  "en": ""
+ },
+ {
+  "vi": "Lố vạch rồi!",
+  "en": ""
+ },
+ {
+  "vi": "👗 Sổ tiệm hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "vá",
+  "en": ""
+ },
+ {
+  "vi": "· không hành mỡ",
+  "en": ""
+ },
+ {
+  "vi": "· có canh",
+  "en": ""
+ },
+ {
+  "vi": "còn hồng…",
+  "en": ""
+ },
+ {
+  "vi": "VÀNG ĐỀU — ĐƯỢC RỒI!",
+  "en": ""
+ },
+ {
+  "vi": "xém cạnh rồi…",
+  "en": ""
+ },
+ {
+  "vi": "cháy khét!",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Bếp than",
+  "en": ""
+ },
+ {
+  "vi": "Bếp chưa nhóm.",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Nhóm bếp than",
+  "en": ""
+ },
+ {
+  "vi": "miếng sườn trên vỉ",
+  "en": ""
+ },
+ {
+  "vi": "mặt thứ nhất",
+  "en": ""
+ },
+ {
+  "vi": "đã trở, mặt thứ hai",
+  "en": ""
+ },
+ {
+  "vi": "🔄 Trở mặt",
+  "en": ""
+ },
+ {
+  "vi": "🍖 Gắp ra khay",
+  "en": ""
+ },
+ {
+  "vi": "Đặt sườn lên vỉ",
+  "en": ""
+ },
+ {
+  "vi": "Hết sườn: nhập ở Kho",
+  "en": ""
+ },
+ {
+  "vi": "Khay giữ ấm đầy",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ miếng sườn này?",
+  "en": ""
+ },
+ {
+  "vi": "🔥 Bếp than · vỉ sườn",
+  "en": ""
+ },
+ {
+  "vi": "Khay giữ ấm",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có miếng nào.",
+  "en": ""
+ },
+ {
+  "vi": "hết cơm",
+  "en": ""
+ },
+ {
+  "vi": "dẻo thơm",
+  "en": ""
+ },
+ {
+  "vi": "Xe cơm",
+  "en": ""
+ },
+ {
+  "vi": "vừa miệng",
+  "en": ""
+ },
+ {
+  "vi": "chưa vừa",
+  "en": ""
+ },
+ {
+  "vi": "chưa nếm",
+  "en": ""
+ },
+ {
+  "vi": "khay trống",
+  "en": ""
+ },
+ {
+  "vi": "👂 Hỏi khách gọi gì",
+  "en": ""
+ },
+ {
+  "vi": "📿 Ăn chay",
+  "en": ""
+ },
+ {
+  "vi": "👀 Liếc dĩa kỹ",
+  "en": ""
+ },
+ {
   "vi": "(lẫn hai nồi)",
   "en": ""
  },
@@ -1629,174 +1797,6 @@
  },
  {
   "vi": "👉 Chọn cách xử lý chuyện ở trại",
-  "en": ""
- },
- {
-  "vi": "🧹 Dọn chuồng gà",
-  "en": ""
- },
- {
-  "vi": "Bồn nước",
-  "en": ""
- },
- {
-  "vi": "Xe máy",
-  "en": ""
- },
- {
-  "vi": "Xe anh Tuấn",
-  "en": ""
- },
- {
-  "vi": "🛵 Ra xe chở hàng",
-  "en": ""
- },
- {
-  "vi": "🛵 Chở hàng đi giao",
-  "en": ""
- },
- {
-  "vi": "HTX rau Đồi Gió",
-  "en": ""
- },
- {
-  "vi": "Nhà hàng Bếp Mây",
-  "en": ""
- },
- {
-  "vi": "Sạp cô Hai",
-  "en": ""
- },
- {
-  "vi": "Vựa anh Tuấn",
-  "en": ""
- },
- {
-  "vi": "Nhà bé Mít",
-  "en": ""
- },
- {
-  "vi": "Lò bánh flan Bà Năm",
-  "en": ""
- },
- {
-  "vi": "🟫 Bón lót",
-  "en": ""
- },
- {
-  "vi": "🧹 Dọn luống",
-  "en": ""
- },
- {
-  "vi": "🧺 Thu hoạch",
-  "en": ""
- },
- {
-  "vi": "🟫 Bón & phun",
-  "en": ""
- },
- {
-  "vi": "🌾 Cho gà ăn",
-  "en": ""
- },
- {
-  "vi": "🐔 Xem đàn gà",
-  "en": ""
- },
- {
-  "vi": "❄️ Kho mát & thùng hàng",
-  "en": ""
- },
- {
-  "vi": "📈 Bán sỉ cho anh Tuấn",
-  "en": ""
- },
- {
-  "vi": "🌟 Trang trại",
-  "en": ""
- },
- {
-  "vi": "🌤️ Xem dự báo",
-  "en": ""
- },
- {
-  "vi": "🌱 gieo hạt",
-  "en": ""
- },
- {
-  "vi": "🌱 chọn hạt để gieo",
-  "en": ""
- },
- {
-  "vi": "đang gọi",
-  "en": ""
- },
- {
-  "vi": "đang gọi đặt hàng",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng: chỉ loại A",
-  "en": ""
- },
- {
-  "vi": "Bắt buộc hữu cơ + QR",
-  "en": ""
- },
- {
-  "vi": "🐔 Chuồng gà",
-  "en": ""
- },
- {
-  "vi": "📈 Chợ đầu mối",
-  "en": ""
- },
- {
-  "vi": "🌤️ Thời tiết",
-  "en": ""
- },
- {
-  "vi": "🧾 Đơn hàng",
-  "en": ""
- },
- {
-  "vi": "🚶 Tự đi",
-  "en": ""
- },
- {
-  "vi": "⏩ Bấm nhanh",
-  "en": ""
- },
- {
-  "vi": "Bấm nhanh",
-  "en": ""
- },
- {
-  "vi": "Góc nhìn",
-  "en": ""
- },
- {
-  "vi": "Góc nhìn thứ nhất",
-  "en": ""
- },
- {
-  "vi": "Góc nhìn thứ ba",
-  "en": ""
- },
- {
-  "vi": "👁️ Thứ nhất",
-  "en": ""
- },
- {
-  "vi": "Thứ ba",
-  "en": ""
- },
- {
-  "vi": "📯 Bóp còi",
-  "en": ""
- },
- {
-  "vi": "Máy hơi chậm nên vườn chuyển sang Bấm nhanh. Muốn đi lại thì chạm 🚶 Tự đi.",
   "en": ""
  }
 ]
