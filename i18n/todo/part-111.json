@@ -1,5 +1,29 @@
 [
  {
+  "vi": "đã có vé",
+  "en": ""
+ },
+ {
+  "vi": "Đang trả vé…",
+  "en": ""
+ },
+ {
+  "vi": "📸 Chụp!",
+  "en": ""
+ },
+ {
+  "vi": "✋ Sẵn sàng (đã có vé)",
+  "en": ""
+ },
+ {
+  "vi": "✋ Sẵn sàng",
+  "en": ""
+ },
+ {
+  "vi": "Đang chụp, chờ lượt sau nha.",
+  "en": ""
+ },
+ {
   "vi": "Mọi người sẵn sàng rồi!",
   "en": ""
  },
@@ -1773,30 +1797,6 @@
  },
  {
   "vi": "🫳 Ném!",
-  "en": ""
- },
- {
-  "vi": "Cô Tư đang phát vòng…",
-  "en": ""
- },
- {
-  "vi": "Đang nhận kết quả…",
-  "en": ""
- },
- {
-  "vi": "Ném đủ năm vòng rồi cô Tư đếm quà nha!",
-  "en": ""
- },
- {
-  "vi": "Cô Tư đang xem kết quả, chờ chút nha!",
-  "en": ""
- },
- {
-  "vi": "Có quà rồi! Cô Tư đếm thưởng cho nha!",
-  "en": ""
- },
- {
-  "vi": "Lượt này chưa trúng, thử vận may lần sau nha!",
   "en": ""
  }
 ]

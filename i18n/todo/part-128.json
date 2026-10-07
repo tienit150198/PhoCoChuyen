@@ -1,5 +1,10 @@
 [
  {
+  "vi": "Thiếu $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🛵 Về tiệm lấy $1",
   "en": "",
   "pattern": true
@@ -921,6 +926,11 @@
  },
  {
   "vi": "Soạn hàng và giao, thu nốt $1 xu?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giá $1 (xu)",
   "en": "",
   "pattern": true
  },
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "xếp đủ $1 việc (đã xếp $2/$3)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khu lưu trú: $1/$2 chuồng có bé$3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đã kiểm $1/",
   "en": "",
   "pattern": true
  }

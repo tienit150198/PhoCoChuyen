@@ -1,5 +1,15 @@
 [
  {
+  "vi": "🙏 $1 cười: “Thôi bớt cho con $2 xu, mai ghé nữa nghen.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🙏 $1 lắc đầu: “Giá này rẻ rồi con, cô bán đúng giá mà.”",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🧾 $1 ghi hóa đơn: $2 xu, ký tên rõ ràng.",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "📝 Lập biên bản, niêm phong phong bì. $1 tái mặt. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🙅 “Cán bộ không nhận gì của dân.” $1 rụt tay lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✋ Anh Định kéo tay bạn lại: “$1”",
   "en": "",
   "pattern": true
  }

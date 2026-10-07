@@ -1,5 +1,41 @@
 [
  {
+  "vi": "🏢 Phòng điều hành",
+  "en": ""
+ },
+ {
+  "vi": "Phòng mở từ ca sau. Mở ca là có việc ngay.",
+  "en": ""
+ },
+ {
+  "vi": "Phòng điều hành làm việc trong ca. Mở ca để điều phối và quyết việc.",
+  "en": ""
+ },
+ {
+  "vi": "🗓️ Điều phối",
+  "en": ""
+ },
+ {
+  "vi": "👥 Nhân sự",
+  "en": ""
+ },
+ {
+  "vi": "việc chờ quyết",
+  "en": ""
+ },
+ {
+  "vi": "Bảng hôm nay đã xếp đủ",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍💼 Ca quản lý",
+  "en": ""
+ },
+ {
+  "vi": "🧑‍💼 Chốt ca",
+  "en": ""
+ },
+ {
   "vi": "việc tốt",
   "en": ""
  },
@@ -704,6 +740,10 @@
   "en": ""
  },
  {
+  "vi": "Lương (xu)",
+  "en": ""
+ },
+ {
   "vi": "Rất cẩn thận",
   "en": ""
  },
@@ -1033,6 +1073,10 @@
  },
  {
   "vi": "Hết rồi",
+  "en": ""
+ },
+ {
+  "vi": "Số bộ bàn ghế",
   "en": ""
  },
  {
@@ -1753,50 +1797,6 @@
  },
  {
   "vi": "Bảo hiểm hiện tại không bồi thường vụ hack tài khoản.",
-  "en": ""
- },
- {
-  "vi": "Có bảo hiểm thì trả ít hơn.",
-  "en": ""
- },
- {
-  "vi": "Không bao giờ bị nợ vì chuyện này.",
-  "en": ""
- },
- {
-  "vi": "Sắp xảy ra",
-  "en": ""
- },
- {
-  "vi": "Phòng trước thì chuyện không xảy ra.",
-  "en": ""
- },
- {
-  "vi": "Ngân hàng tránh mất tiền mặt do móc túi; tài khoản vẫn có rủi ro bị hack.",
-  "en": ""
- },
- {
-  "vi": "Khóa phiên lạ khi được cảnh báo để chặn vụ hack, không tốn xu.",
-  "en": ""
- },
- {
-  "vi": "Bình yên",
-  "en": ""
- },
- {
-  "vi": "Không có chuyện gì cả.",
-  "en": ""
- },
- {
-  "vi": "Công ty đóng",
-  "en": ""
- },
- {
-  "vi": "Chưa có gì để bảo hiểm",
-  "en": ""
- },
- {
-  "vi": "Ngưng",
   "en": ""
  }
 ]

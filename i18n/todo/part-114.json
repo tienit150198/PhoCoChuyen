@@ -1,5 +1,37 @@
 [
  {
+  "vi": "🏠 Vào nhà",
+  "en": ""
+ },
+ {
+  "vi": "Dọn về ở",
+  "en": ""
+ },
+ {
+  "vi": "Mai đi tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay đi rồi",
+  "en": ""
+ },
+ {
+  "vi": "Mai mở tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay mở tiệc rồi",
+  "en": ""
+ },
+ {
+  "vi": "✓ Tốt nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Mai học tiếp",
+  "en": ""
+ },
+ {
   "vi": "Hôm nay học rồi",
   "en": ""
  },
@@ -61,6 +93,10 @@
  },
  {
   "vi": "Thêm khách",
+  "en": ""
+ },
+ {
+  "vi": "Số khách",
   "en": ""
  },
  {
@@ -1761,42 +1797,6 @@
  },
  {
   "vi": "Hôm nay tính ngày tốt?",
-  "en": ""
- },
- {
-  "vi": "🏢 Phòng điều hành",
-  "en": ""
- },
- {
-  "vi": "Phòng mở từ ca sau. Mở ca là có việc ngay.",
-  "en": ""
- },
- {
-  "vi": "Phòng điều hành làm việc trong ca. Mở ca để điều phối và quyết việc.",
-  "en": ""
- },
- {
-  "vi": "🗓️ Điều phối",
-  "en": ""
- },
- {
-  "vi": "👥 Nhân sự",
-  "en": ""
- },
- {
-  "vi": "việc chờ quyết",
-  "en": ""
- },
- {
-  "vi": "Bảng hôm nay đã xếp đủ",
-  "en": ""
- },
- {
-  "vi": "🧑‍💼 Ca quản lý",
-  "en": ""
- },
- {
-  "vi": "🧑‍💼 Chốt ca",
   "en": ""
  }
 ]

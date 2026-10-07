@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Kệ $1 không đủ chỗ cho $2 $3 (tính cả hàng đang giao). Bớt lại nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đơn dưới $1 xu chị không chạy xe đâu em.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Bên em chỉ nhận đơn gộp từ $1 xu ạ.",
   "en": "",
   "pattern": true

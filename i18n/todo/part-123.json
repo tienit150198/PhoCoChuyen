@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "· $1 người ngồi",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "$1 không bán $2. Bỏ khỏi đơn nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kệ $1 không đủ chỗ cho $2 $3 (tính cả hàng đang giao). Bớt lại nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn dưới $1 xu chị không chạy xe đâu em.",
   "en": "",
   "pattern": true
  }

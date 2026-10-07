@@ -1170,6 +1170,11 @@
   "pattern": true
  },
  {
+  "vi": "Nhận bao nhiêu $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "BẢNG GIỜ BAY · NGÀY $1",
   "en": "",
   "pattern": true
@@ -2241,11 +2246,6 @@
  },
  {
   "vi": "💵 Trả lại $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thiếu $1",
   "en": "",
   "pattern": true
  }

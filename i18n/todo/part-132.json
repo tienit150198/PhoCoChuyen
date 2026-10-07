@@ -1,5 +1,25 @@
 [
  {
+  "vi": "🛒 Đơn gộp $1 món · nhận $2/",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mỗi loại chứa tối đa $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Size nhập $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Toàn bộ số hàng thực nhận sẽ vào size $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "còn $1 xu, thiếu $2 xu.",
   "en": "",
   "pattern": true

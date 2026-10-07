@@ -1,5 +1,15 @@
 [
  {
+  "vi": "🍖 Đặt $1 miếng sườn lên vỉ, mỡ chảy xèo xèo. Canh lửa rồi trở mặt nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔄 Trở mặt sườn sau $1 giây: $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Chưa trở mặt: một mặt nướng $1 giây, mặt kia còn sống.",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "$1 ở $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Cất $2 vào khay nhỏ trên kệ. Lát báo $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Bế Mướp sang phòng ngủ, khép cửa. Mướp ngáp một cái rồi ngủ tiếp.",
   "en": "",
   "pattern": true
  }

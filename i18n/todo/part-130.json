@@ -1,5 +1,20 @@
 [
  {
+  "vi": "Dự kiến hạn mức $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả $1 cho thẻ •••• $2?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trừ từ $1. Dư nợ còn $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Ứng $1 tiền mặt từ thẻ?",
   "en": "",
   "pattern": true
@@ -2231,21 +2246,6 @@
  },
  {
   "vi": "Trả trước (ít nhất $1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Căn này có phí bảo trì khoảng $1/tháng ($2 ngày sống), dù ở, để trống hay cho thuê.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💹 Thuế trước bạ $1, trả cùng khoản trả trước (từ ví hoặc tài khoản, không vay được).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gắn bó $1/100",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,15 @@
 [
  {
+  "vi": "🙅 “Cán bộ không nhận gì của dân.” $1 rụt tay lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✋ Anh Định kéo tay bạn lại: “$1”",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Giao ban, làm trước: $1.",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng. $5",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế$4, đặt thùng đá chỗ râm, pha ấm chè, đập một cây đá rồi mở hàng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bà Lựu dặn: bày ở $1, $2–$3 ghế",
   "en": "",
   "pattern": true
  }

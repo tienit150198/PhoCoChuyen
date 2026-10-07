@@ -1,5 +1,21 @@
 [
  {
+  "vi": "hai bếp đang bận",
+  "en": ""
+ },
+ {
+  "vi": "bắc bếp",
+  "en": ""
+ },
+ {
+  "vi": "Bắc bếp",
+  "en": ""
+ },
+ {
+  "vi": "👆 Chọn lửa",
+  "en": ""
+ },
+ {
   "vi": "👆 Tắt bếp khi kim vào vùng xanh",
   "en": ""
  },
@@ -1176,6 +1192,10 @@
   "en": ""
  },
  {
+  "vi": "Gram mỗi bữa",
+  "en": ""
+ },
+ {
   "vi": "🐾 Tiệm chăm thú cưng",
   "en": ""
  },
@@ -1777,26 +1797,6 @@
  },
  {
   "vi": "không có trên quầy",
-  "en": ""
- },
- {
-  "vi": "🧺 Khách lấy trong rổ giảm giá",
-  "en": ""
- },
- {
-  "vi": "📅 Xem hạn từng lon",
-  "en": ""
- },
- {
-  "vi": "✓ Đã xử lý mấy lon trong rổ",
-  "en": ""
- },
- {
-  "vi": "🔁 Đổi lon mới trên kệ",
-  "en": ""
- },
- {
-  "vi": "✋ Bỏ ra khỏi quầy",
   "en": ""
  }
 ]

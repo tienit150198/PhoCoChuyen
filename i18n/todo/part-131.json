@@ -1,5 +1,20 @@
 [
  {
+  "vi": "Căn này có phí bảo trì khoảng $1/tháng ($2 ngày sống), dù ở, để trống hay cho thuê.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💹 Thuế trước bạ $1, trả cùng khoản trả trước (từ ví hoặc tài khoản, không vay được).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gắn bó $1/100",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "ngày chăm sóc$1",
   "en": "",
   "pattern": true
@@ -76,6 +91,11 @@
  },
  {
   "vi": "Tiệm bán $1/chỉ · mua lại $2/chỉ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "phân$1",
   "en": "",
   "pattern": true
  },
@@ -2226,26 +2246,6 @@
  },
  {
   "vi": "Đơn gộp $1: $2 món, $3 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛒 Đơn gộp $1 món · nhận $2/",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mỗi loại chứa tối đa $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Size nhập $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Toàn bộ số hàng thực nhận sẽ vào size $1.",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,15 @@
 [
  {
+  "vi": "welcome to the group $1 ơi 🥳 hẻm mình drama dữ lắm, chuẩn bị bỏng ngô đi nha 🍿",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📢 Tổ dân phố xin chúc mừng $1! Mới về phố chưa lâu mà đã giúp được bao nhiêu nơi. Cả hẻm ai cũng nhắc: “$2”.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Hóng nè cả nhà ơi: nghe đâu $1 mới bắt đầu làm ở $2 đó 👀 Ai ghé ủng hộ thì ghé nha, người trong hẻm mình mà!",
   "en": "",
   "pattern": true
@@ -2236,16 +2246,6 @@
  },
  {
   "vi": "Kho còn $1 miếng sườn ướp. Nhập thêm ở kho nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🍖 Đặt $1 miếng sườn lên vỉ, mỡ chảy xèo xèo. Canh lửa rồi trở mặt nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔄 Trở mặt sườn sau $1 giây: $2.",
   "en": "",
   "pattern": true
  }

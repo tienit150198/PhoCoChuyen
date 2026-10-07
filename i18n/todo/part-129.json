@@ -1,5 +1,15 @@
 [
  {
+  "vi": "Khu lưu trú: $1/$2 chuồng có bé$3",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đã kiểm $1/",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "⚠️ $1 điều lưu ý",
   "en": "",
   "pattern": true
@@ -271,6 +281,11 @@
  },
  {
   "vi": "Thêm $1 vào bể $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ở bể $1",
   "en": "",
   "pattern": true
  },
@@ -1705,12 +1720,12 @@
   "pattern": true
  },
  {
-  "vi": "Số giữ lại$1",
+  "vi": "Giữ ít $1 hơn",
   "en": "",
   "pattern": true
  },
  {
-  "vi": "Giữ ít $1 hơn",
+  "vi": "Số giữ lại$1",
   "en": "",
   "pattern": true
  },
@@ -2231,21 +2246,6 @@
  },
  {
   "vi": "Ngân hàng tra cứu hồ sơ tín dụng (điểm giảm nhẹ).$1 Sao kê mỗi $2 ngày, trả hết trước hạn thì không mất lãi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dự kiến hạn mức $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả $1 cho thẻ •••• $2?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trừ từ $1. Dư nợ còn $2.",
   "en": "",
   "pattern": true
  }

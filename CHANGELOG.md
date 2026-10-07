@@ -1,3 +1,7 @@
+# v1.9.19 — 2026-10-07
+
+Gồm kara-sync (người nghe theo video của người hát trừ độ trễ giọng; `kara_vt` qua live, không khóa lưu) và typed-qty (gõ số trong mọi ô − N +, `public/js/qty-input.js`).
+
 # Chưa phát hành — 🎙️ Giọng và nhạc khớp nhau (mic trực tiếp "bị delay xíu")
 
 - Người hát hát theo video của chính họ, giọng tới người nghe trễ hơn (thu, mã hoá, SFU qua TCP, bộ đệm). Nay khi mic bật, máy người hát gửi thời điểm video của mình khoảng mỗi giây (`kara_vt`: thời điểm, tốc độ phát đang chỉnh, vòng mạng; qua máy chủ live, không qua SFU); máy chủ chỉ nhận từ người đang hát có mic, số hợp lệ, tối đa 1 lần/0,6 giây, đóng dấu giờ rồi chuyển cho người đang nghe giọng trong phòng (tôn trọng chặn). Người nghe đang nghe giọng thì video chạy theo video người hát trừ độ trễ của giọng (bộ đệm jitter đo bằng getStats + nửa vòng mạng hai bên + 40 ms; 0–1,5 giây), chỉnh nhẹ tốc độ khi lệch quá 0,12 giây, tua tối đa 2 lần một bài khi lệch quá 0,6 giây. Không có `kara_vt` mới (dưới 3 giây) hoặc không nghe giọng: theo đồng hồ chung như cũ. Người hát đồng bộ như cũ. Đồng hồ chung của phòng đo thêm một lần mỗi 15 giây (giữ lần có vòng ngắn nhất): 5 lần đo lúc vào phòng có thể rơi đúng lúc máy đang bận tải, mà người nghe giờ so đồng hồ của hai máy.
