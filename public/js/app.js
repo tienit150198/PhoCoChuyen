@@ -199,6 +199,17 @@ function openSheet(view,data={}){$('#sheet').resetGesture?.();if(view!=='job'&&v
 /** "?" of a work screen before the tutorial module has loaded (same markup as tutorial/guide.js helpButton;
  * a tap loads it: TUT_OPEN). Every career's work screen carries it, in the header, next to "Đóng". */
 const helpQ=cid=>`<button type="button" class="icon-btn tut-help" data-action="tutGuide" data-career="${esc(cid||'')}" data-tab="work" aria-label="Hướng dẫn nghề này">?</button>`;
+/** ⏱️ Tăng ca ×2 · ⚡ năng suất (game/overtime.py → career.ot, view only): a chip with no words (the word caps stay
+ *  as they are), "⏱️ 2/3" → "🔥 ×2 1/3" → "⚡ +30%"; its label and its tap say the rule. Absent from older servers.
+ *  Beside the place's name over the scene (the top bar is full at 390 px with the fund and the wallet); not in the work
+ *  sheet, whose one-line title is often the customer's demand and keeps its room. */
+function otChip(c=room()){
+  const o=c?.ot;if(!o||!c.open)return '';
+  const busy=o.jobs>=o.busy,on=o.jobs>o.normal;
+  const text=busy?`⚡ +${o.pct}%`:on?`🔥 ×2 ${o.ot}/${o.max}`:`⏱️ ${o.jobs}/${o.normal}`;
+  const label=busy?`Đủ ${o.busy} việc: thưởng năng suất ${o.pct}% khi khép ca`:on?`Tăng ca ×2: ${o.ot}/${o.max} việc`:`${o.jobs}/${o.normal} việc. Tăng ca ×2 từ việc ${o.normal+1}`;
+  return `<button type="button" class="ot-chip${busy?' busy':on?' on':''}" data-action="otInfo" aria-label="${esc(label)}">${esc(text)}</button>`;
+}
 function header(title,subtitle='',eyebrow='MỘT NGÀY LÀM NGHỀ',extra=''){const kit=[].concat(CSS_KIT[career()]||[]),short=ui.view==='job'&&uiClean()&&(kit.includes('street_kit')||kit.includes('office_kit')||['tra_da','pet_shop','customer_care','accounting','pharmacy','milk_tea','cafe_bakery','restaurant','florist','mother_baby','clothing','grocery','pet_care'].includes(career()))?esc(few(plainText(title),4)):'';return `<header class="sheet-head"><div class="grow"><span class="eyebrow">${eyebrow}</span><h2 title="${esc(plainText(title))}"${short?` aria-label="${esc(plainText(title))}"`:''}>${short||title}</h2>${subtitle?`<p>${subtitle}</p>`:''}</div>${extra}${ui.view==='job'?(L.tut.m?.guideHelp(career())||helpQ(career())):''}<button class="icon-btn" type="button" data-action="close" aria-label="Đóng">${icon('x',21)}</button></header>`;}
 function footer(left='',right=''){return `<footer class="sheet-foot"><p>${left}</p><div class="row wrap">${right}</div></footer>`;}
 /** ⋯ in a work sheet's header: the rarely used ways out ("Để lát nữa", "Xem các việc khác") that used to take a
@@ -534,7 +545,7 @@ function renderMain(){
   document.body.classList.toggle('reduce-motion',api.state.settings.reduceMotion);document.body.classList.toggle('large-text',api.state.settings.largeText);shell.career(m);
   setHTML($('#topbar'),hudHTML(c,m));
   setHTML($('#rail'),railHTML(c));
-  setHTML($('#sceneHeading'),`${shell.mark(m)}<div class="scene-title"><h1>${esc(c.life.shop_name||m.place)}</h1></div>${careerSwitchButton()}`);
+  setHTML($('#sceneHeading'),`${shell.mark(m)}<div class="scene-title"><h1>${esc(c.life.shop_name||m.place)}</h1></div>${careerSwitchButton()}${otChip(c)}`);
   setHTML($('#sceneBadge'),'');  // open/closed, weather and mode: status sheet (tap the day)
   setHTML($('#taskHUD'),taskCards(c));
   setHTML($('#dock'),dockHTML(c));
@@ -1285,6 +1296,8 @@ function summaryView(){
   // The wallet after the day, its moves as chips (owner 03/10 "chữ ít thôi": the title names the life day, the clock card the hour);
   // the 🔥 x3 day's bonus (summary.journey.x3, only when above 0) is a chip of its own.
   if(jr&&(jr.living||jr.upkeep||jr.salary||jr.x3))notes.push(notice(`<b>Ví còn ${fmt(jr.wallet)} xu</b><p class="ck-chips"><span class="ck-delta down">Phòng & cơm −${fmt(jr.living)}</span>${jr.upkeep?`<span class="ck-delta down">Nơi làm khác −${fmt(jr.upkeep)}</span>`:''}${jr.salary?`<span class="ck-delta up">Lương +${fmt(jr.salary)}</span>`:''}${jr.x3?`<span class="ck-delta up">🔥 x3 +${fmt(jr.x3)}</span>`:''}${jr.gift?`<span class="ck-delta up">🎁 Quà +${fmt(jr.gift)}</span>`:''}</p>${jr.wallet<0?'<p>Ví đang nợ: trả hết nợ thì câu chuyện mới đi tiếp.</p>':''}`,jr.wallet<0?'amber':'','bag'));
+  // ⏱️ Tăng ca ×2 and ⚡ năng suất (game/overtime.py → summary.ot; absent from older servers): one line, two chips.
+  const ot=s.ot;if(ot?.total>0)notes.push(notice(`<b>Thưởng chăm chỉ +${fmt(ot.total)} xu</b><p class="ck-chips">${ot.ot_pay?`<span class="ck-delta up">🔥 Tăng ca ×2 · ${fmt(ot.ot)} việc +${fmt(ot.ot_pay)}</span>`:''}${ot.prod?`<span class="ck-delta up">⚡ Năng suất ${fmt(ot.pct)}% +${fmt(ot.prod)}</span>`:''}</p>`,'success','award'));
   if(job?.salary)notes.push(notice(`<b>Lương hôm nay +${fmt(job.salary)} xu</b>${job.result==='official'?'<p>Hết thử việc: bạn đã được ký hợp đồng chính thức! 🎉</p>':job.result==='extended'?'<p>Thử việc được gia hạn thêm 2 ngày. Cố lên nhé!</p>':job.probation?'<p>Đang thử việc: nhận 85% lương.</p>':''}`,'success','briefcase'));
   if(rv.open||(rv.count&&rv.weakest&&rv.average<4.5))notes.push(notice(pagoda?`${rv.count&&rv.weakest&&rv.average<4.5?`Khách thập phương nhắc nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` ${rv.open} cảm nhận chờ hồi đáp.`:''}<br>${button('Xem cảm nhận','feedback',{filter:rv.open?'open':'all'},'small')}`:`${rv.count&&rv.weakest&&rv.average<4.5?`Khách góp ý nhiều nhất về <b>${esc(rv.weakest)}</b>.`:''}${rv.open?` ${rv.open} đánh giá chờ trả lời.`:''}<br>${button('Xem đánh giá','feedback',{filter:rv.open?'open':'all'},'small')}`,'amber','star'));
   if(ops?.unpaid)notes.push(notice(`<b>${esc(wordsFor(career()).books)}: còn ${fmt(ops.unpaid)} xu cần trả</b><p class="ck-chips">${ops.wages?`<span class="ck-delta flat">Lương ${fmt(ops.wages)}</span>`:''}${ops.utilities?`<span class="ck-delta flat">điện nước ${fmt(ops.utilities)}</span>`:''}${ops.rent_accrued?`<span class="ck-delta flat">thuê ${fmt(ops.rent_accrued)} xu</span>`:''}${ops.period?'<span class="ck-delta warn">vừa kết kỳ thuế</span>':''}</p>${button('Mở sổ thu chi','finance',{},'small')}`,'','mail'));
@@ -1488,6 +1501,7 @@ async function handleAction(action,data,el){
     case'sound':await cmd('settings',{sound:!api.state.settings.sound},{quiet:true});break;
     case'people':case'phone':case'queue':case'decor':case'settings':case'album':case'summary':case'event':case'status':openSheet(action);break;
     case'evening':ui.eve=null;openSheet('evening');break;  // 🌙 v4/needs.js
+    case'otInfo':{const o=room()?.ot;if(o)toast(`Việc ${o.normal+1}+ trả ×2, việc ${o.busy}+ thêm ${o.pct}%`,'hint');break;}  // ⏱️ game/overtime.py
     case'stPause':closeSheet();setPaused(!ui.paused);break;
     case'stView':openSheet('home',{jrView:data.view});break;
     case'money':openSheet('money');loadJoint(env());break;

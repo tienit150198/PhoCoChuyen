@@ -47,3 +47,9 @@ html[data-layout="phone"] .dc-chip small{display:none}
 
 @media (prefers-reduced-motion:reduce){.dc-chip.dc-closing b{animation:none}.dc-bar>i,.dc-track>i{transition:none}}
 .reduce-motion .dc-chip.dc-closing b{animation:none}
+/* ⏱️ Tăng ca ×2 · ⚡ năng suất (app.js otChip, game/overtime.py): a small chip beside the place name over the scene */
+.ot-chip{display:inline-flex;align-items:center;gap:3px;flex:none;min-height:28px;padding:2px 8px;border:0;border-radius:10px;background:var(--surface-2);color:var(--ink);font:inherit;font-size:.8rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;cursor:pointer}
+.ot-chip.on{background:var(--warn-soft);color:var(--warn)}
+.ot-chip.busy{background:var(--good-soft);color:var(--good)}
+.scene-heading .ot-chip{pointer-events:auto}
+html[data-layout="phone"] .ot-chip{padding:1px 6px;font-size:.75rem}

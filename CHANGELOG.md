@@ -1,3 +1,22 @@
+# Chưa phát hành
+
+## Tăng ca ×2 và thưởng năng suất
+
+- Chủ tiệm 07/10: ai làm nhiều việc trong một ngày thì có thêm tiền. Mỗi nghề có một "ngày bình thường" đo từ máy chủ
+  (khoảng 65% số ca làm ít việc hơn mức này, 28/09–07/10): trà sữa 7 việc, tạp hóa 4, giao hàng 6, mẹ và bé 3, phi công 8,
+  thư ký 9… Làm quá mức đó, mỗi việc xong tốt (hoàn tất, có trả tiền, đánh giá công bằng từ 3★) được trả thêm đúng tiền
+  công việc đó: "⏱️ Tăng ca ×2", tối đa 3 việc một ca, mỗi việc thêm tối đa 50 xu.
+- Làm tới mức chăm nhất (khoảng 12% số ca, ít nhất 3 việc quá ngày bình thường) thì lúc khép ca được thêm 30% tiền công
+  các việc trong ngày: "⚡ Thưởng năng suất 30%", tối đa 60 xu.
+- Chỉ tính việc tự tay làm: đơn nhân viên tự bán, đội làm trong ca quản lý, đơn của người chơi khác không tính. Tiền boa,
+  lương ngày, lương ×3/×5 kế toán, phần tăng lương chức vụ không nhân đôi. Ngày 🔥 x3 tính thưởng trên tiền lời không gồm
+  hai khoản này (không cộng dồn).
+- Tiền về quỹ nơi làm việc như tiền công, nhóm "Tăng ca, thưởng năng suất" trong sổ thu chi; không tính vào doanh thu chịu
+  thuế 4% (nghề hưởng lương vốn không đóng). Ai mới thêm nghề sau này tự có mức: max(4, số việc nghề giao trong ngày), +3.
+- Màn làm việc có chip nhỏ không chữ cạnh nút ngày và trên đầu màn việc: "⏱️ 2/3" → "🔥 ×2 1/3" → "⚡ +30%"; chạm vào
+  để xem luật. Tổng kết ngày thêm thẻ "Thưởng chăm chỉ". Không thêm khóa bản lưu, không thêm bảng; bản 1.9.9 đọc được
+  bản lưu mới; không trả bù cho ngày cũ.
+
 # v1.9.9 — 2026-10-07
 
 Gồm "Giao diện gọn: đợt 4" (quầy ăn uống + phố còn lại) và "đợt 5" (13 nghề cuối + màn đời sống: nhà, bản đồ, ngân hàng, hội chợ).
