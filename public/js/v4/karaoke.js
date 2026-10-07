@@ -13,17 +13,23 @@
  * stage line; the first time a short note with the headphones advice, then the birth year if the account has none,
  * then the browser's permission prompt); everyone in the room then sees "🎤 Đang phát trực tiếp giọng hát" and hears
  * the voice over their own YouTube player (a 🎤 volume of its own, 🔇, and "Chạm để nghe" when a phone wants a tap).
- * The SDK and the SFU are in v4/karaoke-mic.js, loaded only then. The video's clock and sync are the same as without. */
+ * The SDK and the SFU are in v4/karaoke-mic.js, loaded only then. The video's clock and sync are the same as without.
+ * Each side shows where it is: a listener "🎧 Đang nối giọng…", then the voice (or "Chạm để nghe giọng"), or "Chưa
+ * nghe được giọng · Thử lại"; the singer "Đang nối mic…", then the timer, or "Chưa phát được giọng · Thử lại". A
+ * failed step (and a wait given up on) goes to the page's error beacon (micReport) with the stage it stopped at:
+ * mod → sdk → token → signal → ice → track → audio (the singer: … token → perm → signal …). */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
 import {duck} from '../audio.js';
+import {error as beacon} from '../telemetry.js';
 
 const DRIFT=.35,REACT=['👏','❤️','🔥','🌹'],YT_HOST='https://www.youtube-nocookie.com';
 const K={dlg:null,env:null,bound:false,view:'list',rooms:null,room:null,stage:null,queue:[],round:null,n:0,people:[],said:[],fx:{},cheer:0,
   off:0,best:9,c:0,sent:{},yt:null,player:null,ready:false,vid:null,e:null,durSent:null,timer:0,tick:0,panel:null,song:null,busy:false,
   err:'',ticket:null,clap:null,startAt:0,blanks:new Set(),mode:'lyric',want:false,near:0,won:null,reveal:null,
-  live:null,mic:{pub:null,pubE:null,sub:null,subE:null,busy:false,joining:false,tap:false,muted:false,tries:0,vol:vol()}};
+  live:null,mic:{pub:null,pubE:null,sub:null,subE:null,busy:false,joining:false,tap:false,muted:false,tries:0,vol:vol(),
+    ls:'',at:'',gen:0,t0:0,hc:0,pubAt:'',pubFail:null}};
 function vol(){try{const v=Number(localStorage.getItem('kr-voice-vol'));return v>=0&&v<=1&&localStorage.getItem('kr-voice-vol')!==null?v:.9;}catch{return .9;}}
 const micFlag=()=>!!live.flags?.kara_mic;
 const mic=()=>import('./karaoke-mic.js');
@@ -73,7 +79,9 @@ function dialog(){
       <button type="button" class="icon-btn kr-more" data-kr="more" aria-label="Thêm">⋯</button>
       <input class="kr-input" maxlength="120" autocomplete="off" enterkeyhint="send">
       <button type="submit" class="btn primary kr-main"></button></div></form></div>`;
-  d.addEventListener('click',e=>{const el=e.target.closest('[data-kr]');if(!el||el.disabled)return;e.preventDefault();act(el.dataset.kr,el.dataset,el);});
+  d.addEventListener('click',e=>{
+    if(K.mic.sub&&K.mic.tap&&!e.target.closest('[data-kr=voicetap]'))voiceTap();   // iPhone: any tap in the sheet may start the voice
+    const el=e.target.closest('[data-kr]');if(!el||el.disabled)return;e.preventDefault();act(el.dataset.kr,el.dataset,el);});
   d.addEventListener('close',()=>{if(K.room)live.send({t:'kara_out'});leaveLocal(true);clearInterval(K.timer);});
   const f=d.querySelector('.kr-bar');
   f.addEventListener('submit',e=>{e.preventDefault();main();});
@@ -243,14 +251,25 @@ function stageHTML(){
   const micBtn=mine&&micFlag()?`<button type="button" class="kr-pill kr-micbtn${on?' on':''}" data-kr="mic" aria-pressed="${on}" aria-label="${on?'Tắt mic':'Bật mic trực tiếp'}"${K.mic.busy?' disabled':''}>${on?'🔴 Tắt mic':'🎙️ Mic'}</button>`:'';
   return `<div class="kr-on"><span class="kr-av" aria-hidden="true">🎤</span><span class="grow"><b data-no-translate>${esc(st.by?.name||'')}</b>
     <small data-kr-clock>${left>0?`Bắt đầu sau ${Math.ceil(left)}s`:esc(st.title)}</small></span>
-    ${micBtn}${mine?`<button type="button" class="kr-pill" data-kr="skip">⏹</button>`:K.room.account&&!st.reward?`<button type="button" class="kr-pill" data-kr="tip" aria-label="Tặng xu">💰</button>`:''}</div>`+liveHTML();
+    ${micBtn}${mine?`<button type="button" class="kr-pill" data-kr="skip">⏹</button>`:K.room.account&&!st.reward?`<button type="button" class="kr-pill" data-kr="tip" aria-label="Tặng xu">💰</button>`:''}</div>`+singHTML(mine)+liveHTML();
+}
+/** 🎙️ The singer's own mic line while it is not live: connecting, or the failure with a retry. */
+function singHTML(mine){
+  if(!mine||!micFlag()||K.mic.pub||(K.live&&K.live.e===K.stage?.e))return '';
+  if(K.mic.busy)return `<div class="kr-live mine" role="status"><small>🎙️ Đang nối mic…</small></div>`;
+  if(K.mic.pubFail?.e!==K.stage?.e)return '';
+  return `<div class="kr-live mine fail" role="alert"><div class="kr-live-ctl"><b class="grow">Chưa phát được giọng</b><button type="button" class="btn small" data-kr="mic">Thử lại</button></div></div>`;
 }
 /** 🎙️ "Đang phát trực tiếp": for everyone while the mic is on; the singer sees their time, a listener the voice's own volume. */
 function liveHTML(){
   const lv=K.live;if(!lv||!K.stage||lv.e!==K.stage.e)return '';
   const mine=lv.by?.pid===K.room?.me;
-  if(mine)return `<div class="kr-live mine" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b><small><span data-kr-mic>${K.mic.pub?`🔴 ${fmt(lv.until-snow())}`:'Đang kết nối…'}</span> · 🎧 Đeo tai nghe cho đỡ vọng nhạc</small></div>`;
-  const tap=K.mic.sub&&K.mic.tap?`<button type="button" class="btn primary sm" data-kr="voicetap">🔈 Chạm để nghe giọng</button>`:'';
+  if(mine)return `<div class="kr-live mine" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b><small><span data-kr-mic>${K.mic.pub?`🔴 ${fmt(lv.until-snow())}`:'🎙️ Đang nối mic…'}</span> · 🎧 Đeo tai nghe cho đỡ vọng nhạc</small></div>`;
+  const ls=K.mic.ls;
+  if(!K.mic.sub&&ls==='nortc')return `<div class="kr-live" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b><small>Máy này chưa nghe được giọng trực tiếp. Mở bằng Chrome hoặc Safari nhé.</small></div>`;
+  if(!K.mic.sub&&ls==='fail')return `<div class="kr-live fail" role="alert"><b>🎤 Đang phát trực tiếp giọng hát</b><div class="kr-live-ctl"><span class="grow">Chưa nghe được giọng</span><button type="button" class="btn small" data-kr="voiceretry">Thử lại</button></div></div>`;
+  if(!K.mic.sub&&ls==='join')return `<div class="kr-live" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b><small>🎧 Đang nối giọng…</small></div>`;
+  const tap=K.mic.sub&&K.mic.tap?`<button type="button" class="btn primary kr-tap" data-kr="voicetap">🔈 Chạm để nghe giọng</button>`:'';
   const ctl=K.mic.sub?`<label class="kr-vol"><span aria-hidden="true">🎤</span><input type="range" min="0" max="100" step="5" value="${Math.round(K.mic.vol*100)}" data-kr-vol aria-label="Âm lượng giọng hát"></label>
     <button type="button" class="kr-pill" data-kr="voicemute" aria-pressed="${K.mic.muted}" aria-label="${K.mic.muted?'Bật tiếng giọng hát':'Tắt tiếng giọng hát'}">${K.mic.muted?'🔇':'🔊'}</button>`:'';
   return `<div class="kr-live" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b>${tap||ctl?`<div class="kr-live-ctl">${tap}${ctl}</div>`:''}</div>`;
@@ -364,7 +383,8 @@ async function act(a,d){
       catch(e){K.busy=false;K.err=e.message||'Chưa lưu được.';paint();}
       return;
     }
-    case'voicetap':K.mic.sub?.tap()?.then(()=>{K.mic.tap=false;paint();}).catch(()=>{});return;
+    case'voicetap':voiceTap();return;
+    case'voiceretry':K.mic.tries=0;K.mic.ls='';listen();return;
     case'voicemute':K.mic.muted=!K.mic.muted;K.mic.sub?.mute(K.mic.muted);paint();return;
     case'micreport':K.panel='micreport';paint();return;
     case'micreportgo':if(K.live?.by?.pid)live.send({t:'kara_report',pid:K.live.by.pid,reason:d.r});toast('Đã báo cáo. Cảm ơn bạn!');K.panel=null;paint();return;
@@ -437,51 +457,141 @@ function micCan(){
   if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia||!window.RTCPeerConnection){toast('Máy này chỉ nghe được. Mở bằng Safari/Chrome để hát trực tiếp nhé.',true);return false;}
   return true;
 }
+/** 🎙️ A mic step that failed (or a wait given up on) on the page's error beacon (telemetry.js error(): kind 'toast',
+ * once per page load per text, repeats counted; digits are masked at the server): "kara_mic listen sdk: self timeout,
+ * cdn load". `role` listen | sing, `stage` the step that did not complete. */
+function micReport(role,stage,code){try{beacon('toast',`kara_mic ${role} ${stage}: ${String(code||'?').slice(0,80)}`,'kara');}catch{/* never in the way */}}
+const errCode=err=>err?.code&&err?.stage?err.code:[err?.name,String(err?.message||err||'').replace(/https?:\/\/\S+/g,'').slice(0,48)].filter(Boolean).join(' ')||'?';
+const NEXT={'':'mod',mod:'sdk',sdk:'token',token:'signal',perm:'signal',signal:'ice',ice:'track',track:'audio'};
+const SERVER_END=new Set([4,5,10]);   // LiveKit DisconnectReason: PARTICIPANT_REMOVED, ROOM_DELETED, ROOM_CLOSED (the mic went off)
+const MIC_NO_PERM='Bạn chưa cho phép micro. Mở cài đặt trang web › Micro để bật nhé.';
+
 async function micOn(){
   if(K.mic.busy||K.mic.pub||!K.stage)return;
-  K.mic.busy=true;paint();
+  const e0=K.stage.e;
+  K.mic.busy=true;K.mic.pubFail=null;K.mic.pubAt='';paint();
+  let M;
+  try{M=await mic();K.mic.pubAt='mod';await M.loadSDK();K.mic.pubAt='sdk';}   // before the server puts the mic live for the room
+  catch(err){K.mic.busy=false;singFailed(e0,err?.stage||NEXT[K.mic.pubAt],err);paint();return;}
+  if(!K.stage||K.stage.e!==e0){K.mic.busy=false;paint();return;}
   const r=await ask('kara_mic',{on:1},'kara_mic',8000);
   if(!r?.on){
     K.mic.busy=false;
     if(r?.code==='birth'){K.panel='birth';K.err='';}else if(r?.code==='young')K.panel='young';else toast(r?.msg||'Chưa bật được mic, thử lại nhé.',true);
+    if(!r)micReport('sing','token','timeout');   // a refusal with a reason is the game saying no, not a failure
     paint();return;
   }
+  K.mic.pubAt='token';
+  const e=r.e;let h=null;
   try{
-    const M=await mic(),e=r.e;let h=null;
-    h=await M.publish({url:r.url,token:r.token,onEnd:()=>{if(h&&K.mic.pub===h){K.mic.pub=null;K.mic.pubE=null;live.send({t:'kara_mic',on:0});toast('Mic đã ngắt kết nối.',true);paint();}}});
-    if(!K.stage||K.stage.e!==e||!K.live||K.live.e!==e){h.stop();live.send({t:'kara_mic',on:0});}   // the song or the mic ended meanwhile
-    else{K.mic.pub=h;K.mic.pubE=e;}
+    h=await M.publish({url:r.url,token:r.token,onStage:s=>{K.mic.pubAt=s;},onEnd:(_,why)=>{
+      if(!h||K.mic.pub!==h)return;
+      K.mic.pub=null;K.mic.pubE=null;
+      if(SERVER_END.has(why)){paint();return;}   // the server turned it off: its kara_live frame says so
+      live.send({t:'kara_mic',on:0});micReport('sing','ice',`dropped r${why??'?'}`);
+      K.mic.pubFail={e,stage:'ice'};toast('Mic đã ngắt kết nối.',true);paint();}});
+    if(!K.stage||K.stage.e!==e||!K.live||K.live.e!==e){h.stop();live.send({t:'kara_mic',on:0});micReport('sing','track','stale');}   // the song or the mic ended meanwhile
+    else{K.mic.pub=h;K.mic.pubE=e;sendCheck(h);}
   }catch(err){
     live.send({t:'kara_mic',on:0});
-    toast(err?.name==='NotAllowedError'?'Bạn chưa cho phép micro. Mở cài đặt trang web › Micro để bật nhé.':err?.name==='NotFoundError'?'Không thấy micro trên máy này.':'Chưa kết nối được mic, thử lại nhé.',true);
+    singFailed(e,err?.stage||NEXT[K.mic.pubAt],err);
   }
   K.mic.busy=false;paint();
 }
+function singFailed(e,stage,err){
+  micReport('sing',stage||'?',errCode(err));
+  K.mic.pubFail={e,stage};
+  toast(err?.name==='NotAllowedError'?MIC_NO_PERM:err?.name==='NotFoundError'?'Không thấy micro trên máy này.':'Chưa kết nối được mic, thử lại nhé.',true);
+}
+/** The singer's voice leaves the phone: outbound RTP bytes a few seconds after publishing. */
+function sendCheck(h){
+  setTimeout(async()=>{
+    if(K.mic.pub!==h)return;
+    const s=await h.stats?.();if(K.mic.pub!==h)return;
+    if(s&&s.bytes>0)K.mic.pubAt='audio';else micReport('sing','audio','notx');
+  },5000);
+}
 function micOff(){if(!K.mic.pub)return;micStop();live.send({t:'kara_mic',on:0});paint();}
 function micStop(){const h=K.mic.pub;K.mic.pub=null;K.mic.pubE=null;try{h?.stop();}catch{/* gone */}}
-function stopListen(){const h=K.mic.sub;K.mic.sub=null;K.mic.subE=null;K.mic.tap=false;try{h?.stop();}catch{/* gone */}}
+/** Listening off here. A listener still waiting after 8 s (the song ended, they left) is reported with its stage. */
+function stopListen(){
+  const h=K.mic.sub;
+  if(K.mic.joining&&Date.now()-K.mic.t0>8000)micReport('listen',NEXT[K.mic.at]||'?','left waiting');
+  else if(h&&K.mic.tap)micReport('listen','audio','tap not pressed');
+  K.mic.gen++;K.mic.joining=false;K.mic.sub=null;K.mic.subE=null;K.mic.tap=false;K.mic.ls='';clearTimeout(K.mic.hc);
+  try{h?.stop();}catch{/* gone */}
+}
 /** Everything of the mic off here (a new song, the end, leaving the room). */
 function liveOff(){K.live=null;micStop();stopListen();}
 function onLive(f){
   if(!f.on){if(K.live&&K.live.e!==f.e)return;K.live=null;if(K.mic.pubE===f.e)micStop();stopListen();paint();return;}
   if(!K.stage||K.stage.e!==f.e)return;
-  K.live={on:1,e:f.e,by:f.by,until:f.until};K.mic.tries=0;
+  if(K.live&&K.live.e!==f.e)stopListen();
+  K.live={on:1,e:f.e,by:f.by,until:f.until};K.mic.tries=0;K.mic.pubFail=null;
   if(f.by?.pid!==K.room?.me)listen();
   paint();
 }
+/** A listener: the SDK first (so a slow network never spends the token's minute), then the token, the SFU, the voice.
+ * `gen` ties every await to this attempt: stopListen() (or a failure) moves it on and a late answer is dropped. */
 async function listen(){
-  const lv=K.live;if(!lv||!micFlag()||K.mic.sub||K.mic.joining||!window.RTCPeerConnection)return;
-  K.mic.joining=true;
-  const r=await ask('kara_listen',{},'kara_listen',6000);
+  const lv=K.live;if(!lv||!micFlag()||K.mic.sub||K.mic.joining||lv.by?.pid===K.room?.me)return;
+  if(!window.RTCPeerConnection){if(K.mic.ls!=='nortc'){K.mic.ls='nortc';micReport('listen','mod','no RTCPeerConnection');paint();}return;}
+  const gen=++K.mic.gen,e=lv.e,mine=()=>K.mic.gen===gen,still=()=>mine()&&K.live?.e===e;
+  const reach=s=>{if(mine())K.mic.at=s;};
+  K.mic.joining=true;K.mic.ls='join';K.mic.at='';K.mic.t0=Date.now();paint();
+  let M=null,h=null;
   try{
-    if(!r?.on||!K.live||K.live.e!==r.e)return;
-    const M=await mic(),e=r.e;let h=null;
-    h=await M.listen({url:r.url,token:r.token,volume:K.mic.vol,onTap:need=>{if(!h||K.mic.sub===h){K.mic.tap=need;paint();}},
-      onEnd:()=>{if(!h||K.mic.sub!==h)return;K.mic.sub=null;K.mic.subE=null;paint();if(K.live?.e===e&&++K.mic.tries<=3)setTimeout(listen,1500*K.mic.tries);}});
-    if(!K.live||K.live.e!==e){h.stop();return;}
-    K.mic.sub=h;K.mic.subE=e;h.mute(K.mic.muted);
-  }catch(err){console.warn('kara mic listen:',err);if(K.live&&++K.mic.tries<=3)setTimeout(listen,1500*K.mic.tries);}
-  finally{K.mic.joining=false;paint();}
+    M=await mic();reach('mod');if(!still())return;
+    await M.loadSDK();reach('sdk');if(!still())return;
+    const r=await ask('kara_listen',{},'kara_listen',6000);if(!still())return;
+    if(!r)throw M.fail('token','timeout');
+    if(!r.on||r.e!==e){K.mic.ls='';return;}   // off meanwhile, or not for me: nothing to hear and nothing to say (a block stays unseen)
+    reach('token');
+    h=await M.listen({url:r.url,token:r.token,volume:K.mic.vol,onStage:reach,
+      onTap:need=>{if(!mine())return;const was=K.mic.tap;K.mic.tap=need;if(was&&!need&&K.mic.sub)heardCheck(gen);if(was!==need)paint();},
+      onEnd:(_,why)=>{
+        if(!mine()||!h||K.mic.sub!==h)return;
+        if(SERVER_END.has(why)){K.mic.sub=null;K.mic.subE=null;K.mic.ls='';paint();return;}   // the mic went off: the kara_live frame follows
+        listenFailed(gen,'ice',`dropped r${why??'?'}`);}});
+    if(!still()){h.stop();return;}
+    K.mic.sub=h;K.mic.subE=e;K.mic.ls='live';h.mute(K.mic.muted);
+    heardCheck(gen);
+  }catch(err){
+    if(mine())listenFailed(gen,err?.stage||NEXT[K.mic.at]||'?',errCode(err));
+  }finally{
+    if(mine()){K.mic.joining=false;if(K.mic.ls==='join'&&!K.mic.sub)K.mic.ls='';}
+    paint();
+  }
+}
+/** Audio playing: inbound RTP bytes a few seconds in, and the phone allowed to play (else "Chạm để nghe giọng"). */
+function heardCheck(gen){
+  clearTimeout(K.mic.hc);
+  K.mic.hc=setTimeout(async()=>{
+    const h=K.mic.sub;if(K.mic.gen!==gen||!h)return;
+    const s=await h.stats();if(K.mic.gen!==gen||K.mic.sub!==h)return;
+    if(!s||!s.bytes){listenFailed(gen,'audio','norx');return;}
+    if(h.canPlay()){K.mic.at='audio';K.mic.tries=0;}
+  },4000);
+}
+/** A listening attempt failed: report it, then try again by itself twice (2 s, 4 s), then "Chưa nghe được giọng · Thử lại". */
+function listenFailed(gen,stage,code){
+  if(K.mic.gen!==gen)return;
+  const h=K.mic.sub;
+  K.mic.gen++;K.mic.joining=false;K.mic.sub=null;K.mic.subE=null;K.mic.tap=false;clearTimeout(K.mic.hc);
+  try{h?.stop();}catch{/* gone */}
+  micReport('listen',stage,code);
+  if(K.live&&++K.mic.tries<=2){
+    K.mic.ls='join';const g=K.mic.gen;
+    setTimeout(()=>{if(K.mic.gen===g&&K.live&&!K.mic.sub&&!K.mic.joining)listen();},2000*K.mic.tries);
+  }else K.mic.ls=K.live?'fail':'';
+  paint();
+}
+/** "Chạm để nghe giọng" (or any tap in the sheet while the phone waits for one): inside the click, iPhone resumes audio. */
+function voiceTap(){
+  const h=K.mic.sub;if(!h)return;
+  let p;try{p=h.tap();}catch(err){p=Promise.reject(err);}
+  Promise.resolve(p).then(()=>{if(K.mic.sub!==h)return;if(h.canPlay()){K.mic.tap=false;heardCheck(K.mic.gen);}paint();})
+    .catch(err=>{micReport('listen','audio',`tap ${errCode(err)}`);});
 }
 function setVol(v){K.mic.vol=v;K.mic.sub?.setVolume(v);try{localStorage.setItem('kr-voice-vol',String(v));}catch{/* private mode */}}
 
@@ -489,7 +599,8 @@ function setVol(v){K.mic.vol=v;K.mic.sub?.setVolume(v);try{localStorage.setItem(
 export const karaoke={state:()=>({view:K.view,room:K.room?.id||null,stage:K.stage?{e:K.stage.e,vid:K.stage.vid,at:K.stage.at,phase:K.stage.phase}:null,
   queue:K.queue.length,round:K.round,reveal:K.reveal,off:K.off,best:K.best,pos:K.stage?pos():null,
   cur:(()=>{try{return K.player?.getCurrentTime?.()??null;}catch{return null;}})(),ps:(()=>{try{return K.player?.getPlayerState?.()??null;}catch{return null;}})(),said:K.said.length,
-  live:K.live?{e:K.live.e,by:K.live.by?.pid}:null,pub:!!K.mic.pub,sub:!!K.mic.sub,heard:!!K.mic.sub?.heard(),tap:K.mic.tap,panel:K.panel}),
+  live:K.live?{e:K.live.e,by:K.live.by?.pid}:null,pub:!!K.mic.pub,sub:!!K.mic.sub,heard:!!K.mic.sub?.heard(),tap:K.mic.tap,panel:K.panel,
+  ls:K.mic.ls,at:K.mic.at,pubAt:K.mic.pubAt,pubFail:K.mic.pubFail?.stage||null,tries:K.mic.tries}),
   /** 🎙️ the RTP counters of my mic (singer) or of the voice I hear (listener) */
   micStats:async()=>({pub:await K.mic.pub?.stats?.()??null,sub:await K.mic.sub?.stats?.()??null}),
   micPath:async()=>await K.mic.sub?.path?.()??null};

@@ -81,6 +81,10 @@ label.kr-field{padding:0;border:0;background:none;margin-right:36px;width:auto}
 .kr-live b{font-size:.95rem}
 .kr-live small{color:var(--muted)}
 .kr-live-ctl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.kr-live.fail{border-style:dashed;border-color:var(--muted,#8a7a70)}
+.kr-live.fail .kr-live-ctl>span,.kr-live.fail .kr-live-ctl>b{font-weight:600}
+.kr-live-ctl .btn{flex:0 0 auto}
+.kr-live-ctl .kr-tap{flex:1 1 100%}
 .kr-vol{flex:1 1 140px;display:flex;align-items:center;gap:6px;min-width:0}
 .kr-vol input{flex:1 1 auto;min-width:0;min-height:40px;accent-color:var(--accent)}
 select.kr-field{min-height:44px;font-size:16px}

@@ -36,7 +36,7 @@ from game.webassets import module_imports  # noqa: E402
 ESBUILD = "esbuild@0.28.2"
 JS_FLAGS = ["--minify", "--charset=utf8", "--target=es2022", "--log-level=warning"]
 CSS_FLAGS = ["--minify-whitespace", "--charset=utf8", "--log-level=warning"]
-SKIP_DIRS = {"_v", "node_modules"}
+SKIP_DIRS = {"_v", "node_modules", "vendor"}   # vendor/: third-party files shipped byte for byte (SRI-pinned, e.g. the LiveKit SDK)
 
 
 class BuildError(RuntimeError):

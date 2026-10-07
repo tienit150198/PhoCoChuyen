@@ -1,3 +1,9 @@
+# Chưa phát hành — Mic trực tiếp: người nghe nối được và thấy trạng thái (B3)
+
+- SDK LiveKit tải từ chính máy chủ game (`public/js/vendor/livekit-client-2.22.3.umd.js`, cùng SRI), jsDelivr chỉ còn là dự phòng; mỗi nguồn chờ tối đa 15 giây. Người nghe tải SDK trước rồi mới xin vé, nên mạng chậm không làm hết hạn vé 60 giây. Bản phát hành không nén lại thư mục `vendor/`.
+- Người nghe thấy "🎧 Đang nối giọng…", rồi thanh âm lượng (hoặc "🔈 Chạm để nghe giọng" trên iPhone; chạm bất kỳ đâu trong phòng hát cũng được), hoặc "Chưa nghe được giọng · Thử lại" sau 2 lần tự thử lại. Người hát thấy "🎙️ Đang nối mic…", hoặc "Chưa phát được giọng · Thử lại".
+- Ghi bước dừng vào beacon lỗi (`stat_client_errors`, kind toast, "kara_mic listen|sing <bước>: <mã>"): mod → sdk → token → signal → ice → track → audio (người hát có thêm perm), cả khi người nghe bỏ đi lúc còn chờ hơn 8 giây. Mic tắt vì phòng SFU bị xoá không còn báo nhầm "Mic đã ngắt kết nối".
+
 # v1.9.16 — 2026-10-07
 
 Gồm sửa lỗi vòng góp ý 5: trả lời đánh giá không mất, nút Khép ca to, hội chợ 10 phút/20 ván đầu không kiểm tra, tiệm hoa, situationView, ảnh JPEG ≤ 200 KB, log 413. Không có Có gì mới.
