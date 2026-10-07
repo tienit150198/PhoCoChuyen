@@ -6,11 +6,15 @@ Gồm "Giao diện gọn: đợt 4" (quầy ăn uống + phố còn lại) và "
 
 ## Hội chợ: tỷ lệ thắng thấp hơn, chơi liền một trò thì vận nguội, công an kiểm tra tài sản
 
-- Chiếu trong, lô tô, vé cào, phần may rủi của ném vòng: khoảng 55 ván trên 100 là thắng (trước 65). Bỏ luật "thua
-  liền 4 ván thì ván sau chắc thắng" (cược nhỏ 4 ván rồi cược lớn là ăn chắc). Thắng liền 4 ván thì vận hơi nguội, còn 50%.
-- Chơi liền một trò quá 10 ván (không nghỉ quá 10 phút): mỗi ván sau giảm 1,5 điểm, thấp nhất 40% (khoảng ván 21 trở
-  đi). Đổi sang trò khác hoặc nghỉ 10 phút là về lại 55%. Trong gian hiện dòng "🥶 Vận đang nguội vì chơi liền một
-  trò". Bầu cua vẫn là xúc xắc thật (mỗi mặt 1/6), không bị vận nguội.
+- Chiếu trong, lô tô, vé cào, phần may rủi của ném vòng: khoảng 50 ván trên 100 là thắng (trước 65), tức gần hòa
+  vốn, hết cày xu ở hội chợ. Bỏ luật "thua liền 4 ván thì ván sau chắc thắng" (cược nhỏ 4 ván rồi cược lớn là ăn chắc).
+  Thắng liền 4 ván thì vận hơi nguội, còn 45%.
+- Lô tô: Kinh ăn 2,1 lần tiền tờ, làm tròn xuống (trước 2,2; Hũ đêm hội 2,3). Hô Kinh đúng lúc mọi ván thì lời nhiều
+  nhất 5% (tờ 2 và 5 xu: hòa vốn).
+- Chơi một trò quá 10 ván: mỗi ván sau giảm 1,5 điểm, thấp nhất 40% (khoảng ván 17 trở đi). Chỉ hai cách về lại 50%:
+  chơi 3 ván một trò may rủi có cược khác (bầu cua, chiếu trong, lô tô, vé cào), hoặc nghỉ trò đó 10 phút. Ném vòng,
+  ô ăn quan, phóng dao không tính. Trong gian hiện dòng "🥶 Vận đang nguội vì chơi liền một trò" kèm số ván còn thiếu.
+  Bầu cua vẫn là xúc xắc thật (mỗi mặt 1/6), không bị vận nguội.
 - Công an hỏi nguồn tài sản thay cho lần thu 30% ví: khi tiền lời ở hội chợ kỳ này (số trên Bảng vàng) trên 50.000 xu,
   sau một ván có cược, tối đa 2 tiếng một lần, 45%. Thu 10% phần lời mới từ lần kiểm tra trước (không thu hai lần
   trên cùng một đồng), lấy ví trước rồi tới tài khoản ngân hàng, không bao giờ âm, không thành nợ. Ghi trong Sổ ví.
@@ -18,7 +22,8 @@ Gồm "Giao diện gọn: đợt 4" (quầy ăn uống + phố còn lại) và "
 - 🍀 Lộc trời cho: một ván may rủi có cược vừa thắng (cả bầu cua, xúc xắc vẫn thật) đôi khi ăn ×10 tiền cược thay cho
   tiền thắng thường. Cả máy chủ mỗi giờ nhiều nhất một lần (khóa chung trong bảng mnl_meta, giữ trong cùng giao dịch
   của lệnh: thử lại lệnh không nhận hai lần). Tính vào tiền lời hội chợ.
-- Bản lưu: thêm khóa tùy chọn journey.fair_audit {ed, base}; bản 1.9.9 vẫn nhận bản lưu mới. Không thêm bảng, không
+- Bản lưu: thêm khóa tùy chọn journey.fair_audit {ed, base} và journey.fair_cool {trò: {n, at, sw}}; bản 1.9.9 vẫn
+  nhận bản lưu mới. Không thêm bảng, không
   đổi SCHEMA_VERSION. Chiếu dẹp vẫn bày lại sau 2 phút như cũ.
 
 ## Giao diện gọn: đợt 4

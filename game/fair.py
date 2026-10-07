@@ -2,16 +2,18 @@
 nếu ai spam 1 trò thì tỷ lệ thắng sẽ giảm dần xuống còn 40%, công an sẽ đòi chứng minh tài sản ở đâu ra và thu 10%
 lợi nhuận của cả hội chợ"):
 
-* Every luck stall (xóc đĩa, lô tô, vé cào, ném vòng's draw) is won about 55% of the time in normal play (WIN_P), for
-  every stake, time slot and net profit. Bầu cua is three honest dice (owner 06/10), house edge −10/216 a xu.
-* Per-player, per-stall winning streaks: after four wins in a row the next rounds cool off to WIN_P_LOW (50%). The sure
+* Every luck stall (xóc đĩa, lô tô, vé cào, ném vòng's draw) is won about 50% of the time in normal play (WIN_P), for
+  every stake, time slot and net profit: about even money, no farming. Bầu cua is three honest dice (owner 06/10),
+  house edge −10/216 a xu. A lô tô Kinh pays LOTO_PAY tenths of the tờ (2.1×, rounded down: at most +5% a xu).
+* Per-player, per-stall winning streaks: after four wins in a row the next rounds cool off to WIN_P_LOW (45%). The sure
   win after four losses is gone (07/10: bet small four times, then big). The neutral draw (LUCK_BASE, a little above
-  55%) makes the long-run rate WIN_P with the cool-off; xóc đĩa's draw is higher again so its 1.76% raids still leave
-  55% won rounds.
-* Spam decay (the existing run counters, _run): past RUN_FREE rounds of the same luck stall in a row (no break longer
-  than RUN_GAP), each round's draw is RUN_STEP lower, down to P_FLOOR (40% won rounds; xóc đĩa XD_FLOOR so its won
-  rounds stop at 40% too). Another stall or a RUN_GAP pause starts a new run at the full rate. Bầu cua (honest dice)
-  is exempt. The stall shows "Vận đang nguội vì chơi liền một trò" (public: cold).
+  50%) makes the long-run rate WIN_P with the cool-off; xóc đĩa's draw is higher again so its 1.76% raids still leave
+  50% won rounds.
+* Spam decay (journey[COOL_KEY], _heat): past RUN_FREE rounds of the same luck stall, each round's draw is RUN_STEP
+  lower, down to P_FLOOR (40% won rounds; xóc đĩa XD_FLOOR so its won rounds stop at 40% too). Only two things bring a
+  stall back to the full rate: SWITCH_ROUNDS rounds of other paid luck stalls (PAID_LUCK) since its last round, or a
+  RUN_GAP pause from it. Free or skill stalls (ném vòng, ô ăn quan, phóng dao) change nothing. Bầu cua (honest dice)
+  never cools. The stall shows "Vận đang nguội vì chơi liền một trò" (public: cold).
 * Knife and o an quan remain skill games with unchanged opponents/collisions.
 * Normal back-corner raids remain 1.76%. Paid chance rounds can also bring the police's asset check (chứng minh nguồn
   tài sản) once the player's fair profit this edition (money_of, the Bảng vàng number) is above WEALTH_THRESHOLD: 45%,
@@ -61,17 +63,22 @@ KIND = 'fair'                  # journey wallet history kind (journey.HISTORY_KI
 # puts on the saved counters (rolling release), which therefore stop there.
 DAY_CAP = 150
 ROUNDS_DAY = 400
-# Same base chance for all paid/free luck stalls (owner 07/10: lower, 65% → 55%).
-WIN_P, WIN_P_LOW = .55, .50   # the long-run rate of won rounds, and the cool-off after a winning streak
+# Same base chance for all paid/free luck stalls (owner 07/10: lower, 65% → 55% → 50%: no money farming).
+WIN_P, WIN_P_LOW = .50, .45   # the long-run rate of won rounds, and the cool-off after a winning streak
 LOTO_WIN_P = WIN_P
-LUCK_BASE = .555               # the draw at a neutral streak: with the cool-off the long run is WIN_P (3 decimals: a
-XD_BASE = .566                 # ring round keeps it as p/1000); xóc đĩa: raids (RAID_PCT) come first, so a higher draw
+LUCK_BASE = .503               # the draw at a neutral streak: with the cool-off the long run is WIN_P (3 decimals: a
+XD_BASE = .513                 # ring round keeps it as p/1000); xóc đĩa: raids (RAID_PCT) come first, so a higher draw
 STREAK = 4                     # wins in a row before the cool-off (no sure win after losses since 07/10)
-# Spam decay (owner 07/10): rounds RUN_FREE + 1, + 2, … of one luck stall in a row draw RUN_STEP less each, down to
-# P_FLOOR (XD_FLOOR for xóc đĩa: 40% won rounds after its raids). A RUN_GAP pause or another stall: a new run.
+# Spam decay (owner 07/10): rounds RUN_FREE + 1, + 2, … of one luck stall draw RUN_STEP less each, down to P_FLOOR
+# (XD_FLOOR for xóc đĩa: 40% won rounds after its raids). Back to the full rate: SWITCH_ROUNDS rounds of other PAID_LUCK
+# stalls since the stall's last round, or a RUN_GAP pause from it; a free or skill stall resets nothing (07/10).
 RUN_FREE, RUN_STEP, RUN_GAP, P_FLOOR = 10, .015, 600, .40
 XD_FLOOR = .407
 DECAY_EXEMPT = ('bc',)         # bầu cua: honest dice with a house edge, no draw to lower
+PAID_LUCK = ('bc', 'xd', 'lt', 'xs')   # the paid luck stalls whose rounds count as a switch
+SWITCH_ROUNDS = 3
+COOL_KEY = 'fair_cool'         # journey['fair_cool'] {stall: {n, at, sw}}: optional, an older server keeps it as is
+COOL_GAMES = ('xd', 'lt', 'xs', 'ring')
 RUN_GAMES = ('bc', 'xd', 'lt', 'dt')
 # Stalls newer than 1.4.17, whose validator takes only RUN_GAMES in 'fair_run': their run is journey['fair_run2'], the
 # same shape; there is one run at a time (a round of the other kind drops the other key), as if it were one key.
@@ -115,12 +122,12 @@ LOC_LABEL = '🍀 Lộc trời cho ×10'
 LOC_ACTIONS = ('fair_bc', 'fair_xd', 'fair_xs', 'fair_loto_kinh')
 # 🎱 Lô tô
 LOTO_PRICE = 5
-LOTO_PRIZE = 11                # the older client's plain card: prize_of('thuong', LOTO_PRICE, 1) (was 23, a pot)
+LOTO_PRIZE = 10                # the older client's plain card: prize_of('thuong', LOTO_PRICE, 1) (was 23, a pot)
 LOTO_NPCS = 4
 # Loto uses the same base chance as other luck stalls (WIN_P, 06/10) (legacy constants below
-# like the other luck stalls), and a Kinh pays LOTO_PAY tenths of what the tờ cost, so that a player who always
-# calls in time comes out a little ahead, like at bầu cua (the pot of everyone's tờ paid ~4.6× a single tờ).
-LOTO_PAY = dict(thuong=22, nguoc=22, doi=22, dem=23)
+# like the other luck stalls), and a Kinh pays LOTO_PAY tenths of what the tờ cost, rounded down (07/10: 2.1×, was
+# 2.2× / 2.3×): a player who always calls in time comes out at most +5% a xu at WIN_P (0% on the 2- and 5-xu tờ).
+LOTO_PAY = dict(thuong=21, nguoc=21, doi=21, dem=21)
 LOTO_TRIES = 300               # round ids tried for the outcome drawn (≈2..8 needed); the last one tried after that
 LOTO_TTL = 20 * 60             # a card can be claimed this long after it was bought
 NEIGHBOURS = (('Bác Tư', '👴'), ('Bà Năm', '👵'), ('Chú Sáu', '🧔'), ('Cô Ba', '👩'), ('Anh Tèo', '🧑'), ('Chị Mận', '👧'))
@@ -413,8 +420,8 @@ def mode_of(slot: int) -> str:
 
 
 def prize_of(mode: str, price: int, n: int) -> int:
-    """What a Kinh takes: LOTO_PAY tenths of the n tờ's price (rounded)."""
-    return (n * price * LOTO_PAY[mode] + 5) // 10
+    """What a Kinh takes: LOTO_PAY tenths of the n tờ's price (rounded down)."""
+    return n * price * LOTO_PAY[mode] // 10
 
 
 def loto_rs(lt: dict, want: bool) -> int:
@@ -499,6 +506,33 @@ def chance_rate(game: str, t: float, stake: int | None = None, net: int = 0) -> 
     return XD_BASE if game == 'xd' else LUCK_BASE
 
 
+def _heat(j: dict, game: str, t: float) -> int:
+    """The spam-decay count of this round of `game` (1: a fresh run). A round of a paid luck stall counts towards
+    every other stall's switch; a stall SWITCH_ROUNDS rounds past its last one, or RUN_GAP after it, starts afresh.
+    A free stall (ring) counts only for itself."""
+    c = j.get(COOL_KEY)
+    if not isinstance(c, dict):
+        c = j[COOL_KEY] = {}
+    now = int(t)
+    for g in list(c):
+        if g == game:
+            continue
+        r = c[g]
+        if game in PAID_LUCK:
+            r['sw'] = min(SWITCH_ROUNDS, r['sw'] + 1)
+        if not 0 <= now - r['at'] <= RUN_GAP or r['sw'] >= SWITCH_ROUNDS:
+            del c[g]   # back to the full rate
+    if game not in COOL_GAMES:
+        if not c:
+            j.pop(COOL_KEY)
+        return 1
+    r = c.get(game)
+    if not (isinstance(r, dict) and 0 <= now - r['at'] <= RUN_GAP and r['sw'] < SWITCH_ROUNDS):
+        r = c[game] = dict(n=0, at=now, sw=0)
+    r.update(n=min(10**6, r['n'] + 1), at=now, sw=0)
+    return r['n']
+
+
 def run_rate(game: str, n: int) -> float:
     """The draw of round n (1: the first) of a run of one stall: the full rate for RUN_FREE rounds, then RUN_STEP less a
     round, never below the floor. Bầu cua (DECAY_EXEMPT) keeps its rate (its dice are honest anyway)."""
@@ -509,21 +543,26 @@ def run_rate(game: str, n: int) -> float:
 
 
 def luck_p(j: dict, f: dict | None, game: str, t: float, *, stake: int | None = None) -> float:
-    """Count the round in the player's run and return its draw (run_rate): no profit or price penalty."""
-    return run_rate(game, _run(j, game, t))
+    """Count the round in the player's runs and return its draw (run_rate of the decay count): no profit or price
+    penalty. The older run keys (_run) are kept up to date for older servers, but decide nothing any more."""
+    _run(j, game, t)
+    return run_rate(game, _heat(j, game, t))
 
 
 def cold(j: dict, t: float) -> dict | None:
-    """The stall whose next round is cooled by a long run (public: the "Vận đang nguội" hint), else None."""
-    for key in ('fair_run', 'fair_run2', 'fair_run3'):
-        r = j.get(key)
-        if not isinstance(r, dict) or r.get('g') in DECAY_EXEMPT or not 0 <= int(t) - r.get('at', 0) <= RUN_GAP:
+    """The most recently played stall whose next round is cooled by a long run (public: the "Vận đang nguội" hint),
+    else None. switch: the rounds of another paid luck stall still needed to warm it up again."""
+    c = j.get(COOL_KEY)
+    out = None
+    for g, r in (c.items() if isinstance(c, dict) else ()):
+        if not 0 <= int(t) - r['at'] <= RUN_GAP or r['sw'] >= SWITCH_ROUNDS:
             continue
-        p = run_rate(r['g'], r['n'] + 1)
-        if p < chance_rate(r['g'], t):
-            won = p * (1 - RAID_PCT / 100) if r['g'] == 'xd' else p
-            return dict(game=r['g'], pct=round(won * 100), n=r['n'], gap=RUN_GAP // 60)
-    return None
+        p = run_rate(g, r['n'] + 1)
+        if p < chance_rate(g, t) and (out is None or r['at'] >= out[0]):
+            won = p * (1 - RAID_PCT / 100) if g == 'xd' else p
+            out = r['at'], dict(game=g, pct=round(won * 100), n=r['n'], gap=RUN_GAP // 60,
+                                switch=SWITCH_ROUNDS - r['sw'])
+    return out and out[1]
 
 
 def _draw_luck(j: dict, game: str, probability: float) -> bool:
@@ -762,7 +801,7 @@ def _knife(e, j: dict, f: dict, name: str, p: dict, t: float) -> dict:
         _kn_level(f, run, t)
         _set_kn_skill(j, run)
         for key in ('fair_run', 'fair_run2', 'fair_run3'):
-            j.pop(key, None)  # Leaving a chance stall breaks its repetition streak.
+            j.pop(key, None)  # the older run keys only: the spam decay (COOL_KEY) waits for paid rounds or a pause
         k['n'] = min(10**9, k['n'] + 1)
         _pay(j, f, 'kn', -stake)
         return dict(fair=dict(game='kn', started=True, run=_kn_view_run(run, t, j)), message='')
@@ -1362,7 +1401,8 @@ def public(s: dict) -> dict:
                            ring_day=RING_DAY, ring_left=RING_DAY, oaq_turn=1, xd_fine_div=FINE_DIV, nocap=1, ring_chance=True,
                            # 07/10 rules under new names: an older client (its line promised a sure win after 4 losses) shows none
                            luck_pct=round(WIN_P * 100), cooled_pct=round(WIN_P_LOW * 100), run_free=RUN_FREE,
-                           floor_pct=round(P_FLOOR * 100), run_gap_min=RUN_GAP // 60, audit_pct=AUDIT_PCT,
+                           floor_pct=round(P_FLOOR * 100), run_gap_min=RUN_GAP // 60, run_switch=SWITCH_ROUNDS,
+                           audit_pct=AUDIT_PCT,
                            audit_from=WEALTH_THRESHOLD, loc_mult=LOC_MULT),
                 cold=cold(j, t),   # the stall whose run has cooled its luck ("Vận đang nguội"), or None
                 oaq=oaq_view(o) if o and (o['stage'] == 'play' or t - o['at'] < 6 * 3600) else None,
@@ -1422,6 +1462,15 @@ def validate(j: dict) -> None:
         need(isinstance(a, dict) and set(a) == {'ed', 'base'} and isinstance(a['ed'], str) and len(a['ed']) <= 12,
              'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
         integer(a['base'], -10**10, 10**10)
+    if COOL_KEY in j:   # 07/10, optional: an older server keeps it as is
+        from .engine import need, integer
+        c = j[COOL_KEY]
+        need(isinstance(c, dict) and set(c) <= set(COOL_GAMES), 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+        for r in c.values():
+            need(isinstance(r, dict) and set(r) == {'n', 'at', 'sw'}, 'Dữ liệu hội chợ không hợp lệ.', 'invalid_save')
+            integer(r['n'], 0, 10**6)
+            integer(r['at'], 0, 10**11)
+            integer(r['sw'], 0, SWITCH_ROUNDS)
     if 'fair_run3' in j:
         from .engine import need, integer
         r = j['fair_run3']

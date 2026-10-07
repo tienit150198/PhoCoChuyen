@@ -9,7 +9,7 @@ from tests.test_fair import FairBase, Dice, OPEN, story
 
 
 class EvenRates(unittest.TestCase):
-    """Owner 07/10: about 55% of luck rounds are won, whatever the price, time or net (a long run of one stall cools)."""
+    """Owner 07/10: about 50% of luck rounds are won, whatever the price, time or net (a long run of one stall cools)."""
     def test_every_price_time_and_net_has_the_same_base_rate(self):
         for game in fh.CHANCE_GAMES:
             want = fh.XD_BASE if game == 'xd' else fh.LUCK_BASE
@@ -37,7 +37,7 @@ class EvenRates(unittest.TestCase):
         self.assertFalse(results[20])            # the cooled-off rate is exactly the floor
         self.assertEqual(j['fair_balance']['bc'], -1)
 
-    def test_long_run_is_55_and_each_game_has_its_own_history(self):
+    def test_long_run_is_50_and_each_game_has_its_own_history(self):
         j = {}
         with patch.object(fh, '_rng', random.Random(92026)):
             results = [fh._draw_luck(j, 'bc', fh.LUCK_BASE) for _ in range(100000)]

@@ -277,7 +277,7 @@ function page(){
 }
 // 🥶 a long run of one luck stall cools its luck (server: fair.cold); honest about it, in that stall only
 const coldLine=tab=>{const c=F().cold;if(!c||c.game!==tab)return '';
-  return `<p class="fh-cold" role="note">🥶 Vận đang nguội vì chơi liền một trò: ván tới khoảng ${c.pct}% thắng. Đổi trò khác hoặc nghỉ ${c.gap} phút là vận ấm lại.</p>`;};
+  return `<p class="fh-cold" role="note">🥶 Vận đang nguội vì chơi liền một trò: ván tới khoảng ${c.pct}% thắng. ${c.switch?`Chơi ${c.switch} ván một trò may rủi có cược khác`:'Đổi trò khác'} hoặc nghỉ ${c.gap} phút là vận ấm lại (ném vòng, ô ăn quan, phóng dao không tính).</p>`;};
 // 🍀 Lộc trời cho: shown once the stall's own result has played out
 function locCard(){
   const r=S.loc;if(!r||animating())return '';
@@ -313,7 +313,7 @@ function gateList(){
       <button type="button" class="fh-game" data-fh="tab" data-tab="ring" data-fh-key="g-ring"><span class="fh-gico">${MINI_BOTTLES}</span><span class="grow"><b>Ném vòng cổ chai</b><small>${r.nocap?`Mỗi vòng trúng +${r.ring_hit} xu, trúng cả ${r.rings||5} vòng thêm ${r.ring_all} xu`:`Trúng mỗi chai +${r.ring_hit||2} xu, đủ ${r.rings||5} chai thêm ${r.ring_all||5} xu`}</small>${meter(e.ring)}</span></button>
     </div>
     <div class="fh-sec"><h3>🎲 Thử vận may</h3><span class="fh-tag">Cược nhỏ bằng xu</span></div>
-    ${r.luck_pct?`<p class="fh-rule">🍀 Chiếu trong, lô tô, vé cào, ném vòng: khoảng ${r.luck_pct} ván trên 100 là thắng; thắng liền 4 ván thì vận hơi nguội, còn ${r.cooled_pct}%. Chơi liền một trò quá ${r.run_free} ván thì vận nguội dần, thấp nhất ${r.floor_pct}%; đổi trò hoặc nghỉ ${r.run_gap_min} phút là ấm lại. Bầu cua xúc xắc thật nên không tính vụ này.</p>
+    ${r.luck_pct?`<p class="fh-rule">🍀 Chiếu trong, lô tô, vé cào, ném vòng: khoảng ${r.luck_pct} ván trên 100 là thắng; thắng liền 4 ván thì vận hơi nguội, còn ${r.cooled_pct}%. Chơi liền một trò quá ${r.run_free} ván thì vận nguội dần, thấp nhất ${r.floor_pct}%; ${r.run_switch?`chơi ${r.run_switch} ván một trò may rủi có cược khác (bầu cua, chiếu trong, lô tô, vé cào)`:'đổi trò'} hoặc nghỉ ${r.run_gap_min} phút là ấm lại. Bầu cua xúc xắc thật nên không tính vụ này.</p>
     <p class="fh-rule">🚨 Lời ở hội chợ trên ${xu(r.audit_from)} thì công an có thể ghé hỏi nguồn tài sản, thu ${r.audit_pct}% phần lời mới (lấy ví trước, thiếu thì lấy tài khoản ngân hàng).</p>`:''}
     <div class="fh-luck">
       ${luck('bc',FACE_ART.cua,'Bầu cua',`Đặt 1–${r.bc_max||20} xu một ván`)}

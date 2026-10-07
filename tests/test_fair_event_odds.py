@@ -1,4 +1,4 @@
-"""Owner 05/10: one repetition floor, 20% fewer raids. Owner 07/10: 55% won rounds, a long run of one stall cools to
+"""Owner 05/10: one repetition floor, 20% fewer raids. Owner 07/10: 50% won rounds, a long run of one stall cools to
 40% (bầu cua exempt: honest dice)."""
 import unittest
 
@@ -12,7 +12,7 @@ from tests.test_fair_knife import safe_taps, crash_tap
 
 class EventOdds(unittest.TestCase):
     def test_each_chance_stall_starts_at_requested_rate(self):
-        for game in fh.CHANCE_GAMES:   # owner 07/10: the neutral draw that gives 55% won rounds in the long run
+        for game in fh.CHANCE_GAMES:   # owner 07/10: the neutral draw that gives 50% won rounds in the long run
             with self.subTest(game=game):
                 self.assertAlmostEqual(fh.luck_p({}, None, game, OPEN), fh.XD_BASE if game == 'xd' else fh.LUCK_BASE)
         self.assertEqual((xs.P_HI, xs.P_LO), (fh.WIN_P, fh.WIN_P))
@@ -135,7 +135,7 @@ class ServerDecides(FairBase):
             s, _ = self.act(s, 'fair_ring_start')
             s = json.loads(json.dumps(s))
             p = s['journey']['fair_chance']['ring']['p']
-            self.assertEqual(p, round(fh.run_rate('ring', i + 1) * 1000))   # 07/10: 555 cooling to 400, within the older validator's 400..700
+            self.assertEqual(p, round(fh.run_rate('ring', i + 1) * 1000))   # 07/10: 503 cooling to 400, within the older validator's 400..700
             self.assertTrue(400 <= p <= 700)
             validate_state(s)
         self.assertEqual(p, 400)
@@ -146,10 +146,11 @@ class ServerDecides(FairBase):
         s, _ = self.act(story(100), 'fair_xd', side='chan', stake=10)
         self.assertEqual(s['journey']['fair_run']['n'], 1)
 
-    def test_switching_to_o_an_quan_resets_repetition(self):
+    def test_switching_to_o_an_quan_keeps_the_spam_decay(self):
         s, _ = self.act(story(100), 'fair_ring_start')
         s, _ = self.act(s, 'fair_oaq_start', lv='kho')
-        self.assertNotIn('fair_run3', s['journey'])
+        self.assertNotIn('fair_run3', s['journey'])                   # the older run key only (07/10)
+        self.assertEqual(s['journey'][fh.COOL_KEY]['ring']['n'], 1)
         self.assertEqual(s['journey']['fair']['oaq']['lv'], 'kho')
 
 

@@ -32,7 +32,7 @@ class Table(unittest.TestCase):
         return p * sum(m * w for m, w in xs.PRIZES) / total
 
     def test_rebalanced_prize_table_prefers_small_prizes(self):
-        self.assertEqual((xs.P_HI, xs.P_LO), (fh.WIN_P, fh.WIN_P))       # owner 07/10: about 55% of tickets win
+        self.assertEqual((xs.P_HI, xs.P_LO), (fh.WIN_P, fh.WIN_P))       # owner 07/10: about 50% of tickets win
         self.assertAlmostEqual(self.ev(xs.P_HI), fh.WIN_P * 1.59)
         self.assertAlmostEqual(self.ev(xs.P_LO), fh.WIN_P * 1.59)
         self.assertEqual(xs.P_HI, xs.P_LO)
@@ -127,11 +127,14 @@ class Scratch(FairBase):
         self.assertEqual(ps[:fh.RUN_FREE], [fh.LUCK_BASE] * fh.RUN_FREE)   # 07/10: a long run of tickets cools
         self.assertEqual(ps[-1], fh.P_FLOOR)
         self.assertGreaterEqual(min(ps), fh.P_FLOOR)
-        self.assertEqual(set(j), {'fair_run2'})
-        fh.luck_p(j, f, 'bc', OPEN + 300)                           # another stall: one run at a time
-        self.assertEqual(set(j), {'fair_run'})
+        self.assertEqual(set(j), {'fair_run2', fh.COOL_KEY})
+        fh.luck_p(j, f, 'bc', OPEN + 300)                           # another stall: one older run key at a time
+        self.assertEqual(set(j), {'fair_run', fh.COOL_KEY})
+        self.assertEqual(fh.luck_p(json.loads(json.dumps(j)), f, 'xs', OPEN + 305, stake=2), fh.P_FLOOR)   # one round: still cold
+        fh.luck_p(j, f, 'bc', OPEN + 301)
+        fh.luck_p(j, f, 'bc', OPEN + 302)                           # three paid rounds elsewhere: warm again
         self.assertEqual(fh.luck_p(j, f, 'xs', OPEN + 305, stake=2), fh.LUCK_BASE)
-        self.assertEqual(set(j), {'fair_run2'})
+        self.assertEqual(set(j), {'fair_run2', fh.COOL_KEY})
         s = story(100)
         s['journey']['fair_run2'] = dict(g='xs', n=3, at=1)
         validate_state(s)
@@ -152,12 +155,13 @@ class Scratch(FairBase):
         for i in range(1200):
             s['journey'].setdefault('fair', fh.initial())['net'] = 0   # the generous odds
             s['journey'].pop('fair_run2', None)                       # not one long run
+            s['journey'].pop(fh.COOL_KEY, None)
             s, r = self.act(s, 'fair_xs', price=2)
             wins += r['fair']['mult'] > 0
             paid += 2
             back += r['fair']['prize']
         self.assertTrue(fh.WIN_P - .03 < wins / 1200 < fh.WIN_P + .03, wins)
-        self.assertTrue(.78 < back / paid < .98, back / paid)   # 07/10: 55% × 1.59 ≈ 0.875 back a xu
+        self.assertTrue(.70 < back / paid < .89, back / paid)   # 07/10: 50% × 1.59 ≈ 0.795 back a xu
 
     def test_prices_and_bad_payloads(self):
         s = story(100)
