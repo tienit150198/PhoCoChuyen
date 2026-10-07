@@ -1,3 +1,7 @@
+# v1.9.14 — 2026-10-07 (hotfix)
+
+Gồm "Sửa lỗi iPhone iOS 15–16.3 không vào được game".
+
 # Chưa phát hành
 
 ## Sửa lỗi iPhone iOS 15–16.3 không vào được game
