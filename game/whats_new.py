@@ -32,6 +32,13 @@ import re
 from pathlib import Path
 
 ENTRIES = (
+    dict(version="1.9.11", date="2026-10-07", items=(
+        dict(emoji='🐾', text='Nuôi chó mèo: 27 giống cún mèo, nhận nuôi ở góc Chân Nhỏ'),
+        dict(emoji='💿', text='Nghề mới: bán album ZPOP ở tiệm Mây Pop'),
+        dict(emoji='⏱️', text='Chăm làm có thưởng: tăng ca ×2, thưởng năng suất 30%'),
+        dict(emoji='🛍️', text='Mua sắm: du lịch nước ngoài, bộ sưu tập, dinh thự, phi cơ, Mạnh Thường Quân'),
+        dict(emoji='💹', text='Giá cả trong phố tăng nhẹ ~10%, đồ đã mua giữ nguyên giá'),
+    )),
     dict(version="1.9.10", date="2026-10-07", items=(
         dict(emoji='👮', text='Công an có cấp bậc từ Binh nhì đến Đại tá, chức vụ phường và thành phố, cấp hiệu trên vai'),
         dict(emoji='🎤', text='Phòng hát Mây: cả phòng xem YouTube chung, xếp bài hát, đoán bài qua lời và emoji'),

@@ -1,1802 +1,1630 @@
 [
  {
-  "vi": "🏷️ Xe hàng dán nhãn giả mời lấy: bán trái gì nói trái đó.",
+  "vi": "🚚 Hạt Nắng giá niêm yết, 4 chuyến/ngày: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau khoảng 1 tiếng.",
   "en": ""
  },
  {
-  "vi": "💵 Từ ngày 2 thỉnh thoảng khách đưa thiếu tiền: bấm [[Đếm lại tiền khách đưa]] rồi chọn cách xử lý.",
+  "vi": "⚡ Hỏa tốc Mây Xanh tới trong 15–30 phút nhưng đắt nhất. Trả tiền ngay lúc đặt.",
   "en": ""
  },
  {
-  "vi": "Đặt quả cân 1 ký",
+  "vi": "🚚 Kiện tới thì đếm đúng số món rồi bấm [[Kiểm & nhập kho]]. Chưa tới thì [[Chờ thêm 20 phút]].",
   "en": ""
  },
  {
-  "vi": "Chỉnh kim về đúng",
+  "vi": "🍼 Mở [[Góc bỉm sữa & khách quen]] xem ai hẹn lấy gói; chưa biết cân nặng thì [[Hỏi thăm & cân bé]].",
   "en": ""
  },
  {
-  "vi": "Lựa ra",
+  "vi": "🧹 Lô sữa quá hạn hoặc bị thu hồi: [[Rút khỏi kệ]]. Hàng thu hồi được hãng hoàn tiền.",
   "en": ""
  },
  {
-  "vi": "Trừ bì rổ",
+  "vi": "🛒 Kệ bỉm sữa đặt riêng, về sáng mai: bỉm 34 xu/gói, sữa 55 xu/hộp, 1–4 mỗi lần; tối đa 12 gói, 10 hộp mỗi loại.",
   "en": ""
  },
  {
-  "vi": "CÂN · TÍNH TIỀN",
+  "vi": "🥫 Lúc trao gói mà không có hộp sữa nào hợp thì chọn [[Không có hộp hợp]].",
   "en": ""
  },
  {
-  "vi": "Bớt một nửa",
+  "vi": "🔓 Cấp 2 mua được Kệ mở rộng (120 xu): mỗi mã chứa 24 thay vì 12. Cấp 3 có Bạn phụ việc (160 xu).",
   "en": ""
  },
  {
-  "vi": "Xem trái",
+  "vi": "🙋 Bạn phụ việc mỗi ngày một lần mang ngay các kiện đang chờ tới kho; bạn vẫn phải tự đếm rồi nhập kho.",
   "en": ""
  },
  {
-  "vi": "Rao xả",
+  "vi": "🥛 Kiểm hạn sữa bột: chạm từng hộp quá hạn để rút. Sót hộp: review 2★, đoàn kiểm tra sau sẽ phạt.",
   "en": ""
  },
  {
-  "vi": "Hỏi khách mua gì",
+  "vi": "🧸 Người chào gấu bông giá rẻ: [[Xem kỹ tem và nhãn trước]]; hàng giả thì [[Từ chối và báo phường]].",
   "en": ""
  },
  {
-  "vi": "Kho trái cây",
+  "vi": "🧒 Bé đi lạc: [[Giữ bé ở quầy, nhờ loa chợ tìm người nhà]]. Dắt bé ra ngoài thì khách chờ sốt ruột.",
   "en": ""
  },
  {
-  "vi": "Hoặc tự ra giá",
+  "vi": "🪙 Khách xin bớt giá: [[Tặng kèm một thiệp Nắng thay vì bớt]]. 🧧 Tết đông khách: [[Phát số thứ tự, gói lần lượt]].",
   "en": ""
  },
  {
-  "vi": "Chốt giá này",
+  "vi": "📋 Đoàn kiểm tra nhãn: [[Mời xem kệ và hóa đơn nhập]]. Có hàng không tem hoặc sữa quá hạn thì vẫn bị phạt.",
   "en": ""
  },
  {
-  "vi": "Không bán chịu",
+  "vi": "Gợi ý thay",
   "en": ""
  },
  {
-  "vi": "Nhờ người nhà",
+  "vi": "Phiếu mua hàng",
   "en": ""
  },
  {
-  "vi": "Xóa nợ",
+  "vi": "Gợi ý đổi",
   "en": ""
  },
  {
-  "vi": "Bạn đẩy xe rác ba ngăn cùng chị Hạnh mỗi tối: đồ bảo hộ, đi từng ngõ đúng giờ, bỏ túi đúng ngăn, tách đồ nguy hại, nhắc nhà chưa phân loại.",
+  "vi": "Giao hộp quà mừng",
   "en": ""
  },
  {
-  "vi": "Đeo găng tay, khẩu trang, mặc áo phản quang (trời mưa thêm ủng), [[Kiểm xe đẩy]], rồi [[VÀO CA]]. Găng tay, khẩu trang dùng một ca là bỏ.",
+  "vi": "Hết · nhập",
   "en": ""
  },
  {
-  "vi": "Gom một ngõ",
+  "vi": "Giữ đơn",
   "en": ""
  },
  {
-  "vi": "Bấm [[Đẩy xe vào ngõ]] trước giờ thu gom. Mỗi nhà: nhìn túi, túi trông lạ thì [[Mở túi]], rồi chọn ngăn cho từng túi.",
+  "vi": "Chờ thêm 20 phút",
   "en": ""
  },
  {
-  "vi": "Đồ nguy hại",
+  "vi": "Góc bỉm sữa & khách quen",
   "en": ""
  },
  {
-  "vi": "Pin, bóng đèn tuýp, vỏ bình xịt, kim tiêm: mở túi, bấm [[Tách ra]] bỏ hộp đỏ. Kim tiêm, bóng đèn phải đeo găng.",
+  "vi": "Hỏi thăm & cân bé",
   "en": ""
  },
  {
-  "vi": "Bấm [[Bọc]] gói mảnh kính vào bao dày rồi mới cho vào ngăn còn lại.",
+  "vi": "Không có hộp hợp",
   "en": ""
  },
  {
-  "vi": "Nhắc phân loại",
+  "vi": "Bạn đứng bếp quán mì cay: đọc phiếu, luộc mì, chan nước dùng, thêm topping, bơm ớt đúng cấp rồi giao cho khách.",
   "en": ""
  },
  {
-  "vi": "Nhà nào để túi sai màu: [[Nhắc nhà này phân loại]], nói nhẹ nhàng. Nhắc nhầm nhà làm đúng thì bị phàn nàn.",
+  "vi": "Tô theo phiếu",
   "en": ""
  },
  {
-  "vi": "Ngăn đầy thì [[Ra điểm tập kết đổ xe]]: cô Tám mua túi tái chế sạch, túi lẫn đồ ăn thì không.",
+  "vi": "Phiếu ghi rõ nước dùng, topping, cấp cay, có thêm vắt mì không. Làm đúng từng dòng trên phiếu.",
   "en": ""
  },
  {
-  "vi": "Cư dân phản ánh",
+  "vi": "Hộp mang về & đơn app",
   "en": ""
  },
  {
-  "vi": "Xem từng chuyện cho rõ rồi mới trả lời. Cách tốt nhất thường cần xem đủ hai điều.",
+  "vi": "Lấy hộp thay cho tô, làm như tô thường rồi đậy nắp. Đơn app có mã #, tài xế đang chờ nên khách sốt ruột nhanh hơn.",
   "en": ""
  },
  {
-  "vi": "Túi chưa phân loại",
+  "vi": "Món quen “như mọi khi”",
   "en": ""
  },
  {
-  "vi": "Mở túi xem rồi bấm [[Chưa phân loại: dán phiếu, không thu]]. Dán nhầm nhà đã phân loại đúng là bị phàn nàn.",
+  "vi": "Khách quen không đọc món. Bấm [[Tra sổ khách quen]] nếu sổ đã ghi, chưa có thì [[Hỏi lại món]] (khách phải chờ lâu hơn).",
   "en": ""
  },
  {
-  "vi": "Thu phí vệ sinh",
+  "vi": "Tô tùy quán",
   "en": ""
  },
  {
-  "vi": "Trong ca, mở [[Thu phí vệ sinh]]: gõ số tiền rồi [[Thu, nói nhẹ]] hoặc [[Nhắc quy định]]. Nhà khó khăn thì [[Miễn tháng này]].",
+  "vi": "Khách cho ngân sách và vài mong muốn. Bạn tự chọn nước dùng, topping, cay trong khoảng; khách chỉ trả tới ngân sách.",
   "en": ""
  },
  {
-  "vi": "Dao lam, kim tiêm giấu trong túi",
+  "vi": "Khách chỉ hình",
   "en": ""
  },
  {
-  "vi": "Túi trông bình thường vẫn có thể giấu đồ sắc: mở ra xem mới thấy. Bị kim tiêm đâm thì phải ra trạm y tế.",
+  "vi": "Du khách chỉ vào hình thực đơn, phiếu chỉ có emoji. Đọc hình: nồi nước dùng, số 🌶️, từng topping, 🥡 là mang về.",
   "en": ""
  },
  {
-  "vi": "Rác đổ trộm, nhà không chịu phân loại",
+  "vi": "Bàn nhiều tô",
   "en": ""
  },
  {
-  "vi": "Đống rác: đi hai chuyến, gọi xe ba gác, báo phường, hay nhồi (dễ bung nắp xe). Chủ nhà chặn xe: giải thích, dán phiếu, lấy luôn, hay gọi tổ trưởng.",
+  "vi": "Bàn 2–3 tô, mỗi tô một kiểu. Làm từng tô, bấm [[Xong tô]] để đặt lên khay, đủ tô thì giao một lượt.",
   "en": ""
  },
  {
-  "vi": "👂 Nghe chị Hạnh dặn: tên ngõ, số nhà, giờ thu gom.",
+  "vi": "Đơn đặt văn phòng",
   "en": ""
  },
  {
-  "vi": "🛒 [[Đẩy xe vào ngõ]]. Trễ giờ thì rác bị mèo bới: [[Quét dọn]] trước đã.",
+  "vi": "Nhận đơn văn phòng thì bấm [[Đóng 1 hộp đơn đặt]] cho tới đủ số hộp, kịp trước khi thẻ đếm ngược về 0.",
   "en": ""
  },
  {
-  "vi": "👀 Túi trông lạ (kêu lọc cọc, rỉ nước, có cạnh sắc…) thì mở ra xem.",
+  "vi": "📝 Bấm [[Nhận order]] (đơn app: [[Đọc đơn app]]) để xem phiếu của khách.",
   "en": ""
  },
  {
-  "vi": "🟢 Túi một loại vào đúng ngăn đó. Túi lẫn đồ ăn với đồ tái chế, hay lẫn đủ thứ, vào ngăn còn lại.",
+  "vi": "🥣 Ăn tại quán thì [[Lấy tô]]; mang về thì [[Lấy hộp mang về]].",
   "en": ""
  },
  {
-  "vi": "🛒 Hết túi ở nhà này thì tới nhà sau; nhà cuối xong thì [[XONG NGÕ]].",
+  "vi": "🍜 Bấm [[Thả mì]], chờ thanh luộc vào vùng xanh (7–13 giây) rồi [[Vớt mì]].",
   "en": ""
  },
  {
-  "vi": "🧤 Đủ đồ bảo hộ: tay trần nhặt kim tiêm, mảnh kính là bị thương.",
+  "vi": "🍲 Chạm đúng nồi nước dùng để chan, rồi chạm từng topping theo phiếu.",
   "en": ""
  },
  {
-  "vi": "🟢 Đúng ngăn, không trộn lẫn; không để lọt pin, kim tiêm lên xe ép.",
+  "vi": "🌶️ Bấm [[Sốt ớt]]: mỗi lượt là 1 cấp cay. Cấp 0 là không bơm.",
   "en": ""
  },
  {
-  "vi": "⏰ Vào ngõ đúng giờ thu gom.",
+  "vi": "📦 Hộp mang về thì [[Đậy nắp]]. Bàn nhiều tô thì [[Xong tô]] từng tô.",
   "en": ""
  },
  {
-  "vi": "📝 Nhắc đúng nhà chưa phân loại (được thêm điểm kinh nghiệm).",
+  "vi": "🛎️ Bấm [[Giao món]]. Lỡ làm sai thì [[Đổ tô]] và làm lại từ đầu.",
   "en": ""
  },
  {
-  "vi": "🧹 Không bỏ sót túi nào.",
+  "vi": "🍜 Độ chín: vớt trong vùng xanh là 5 điểm; hơi mềm 4; mì sống hoặc nát chỉ 2.",
   "en": ""
  },
  {
-  "vi": "Nhặt kim tiêm, bóng đèn vỡ bằng tay trần",
+  "vi": "✅ Đúng order: thiếu topping, dư topping, lệch cấp cay, sai số vắt đều bị trừ.",
   "en": ""
  },
  {
-  "vi": "Bị thương, lỗi nặng; kim tiêm là lỗi an toàn.",
+  "vi": "⏱️ Thời gian chờ: kiên nhẫn còn từ 90% trở lên mới được 5 điểm.",
   "en": ""
  },
  {
-  "vi": "Để lọt đồ nguy hại lên xe",
+  "vi": "🥡 Đúng tô hay hộp: ăn tại quán dùng tô, mang về dùng hộp đậy nắp.",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ: pin, bình xịt dễ cháy nổ trong xe ép.",
+  "vi": "📒 Khách quen có thói quen trong sổ (như [[Rót ly nước mát]]): làm đủ mới được điểm nhớ ý khách.",
   "en": ""
  },
  {
-  "vi": "Bỏ nhầm ngăn",
+  "vi": "🧐 Khách khó tính và người viết review: sai một chút là tối đa 3★.",
   "en": ""
  },
  {
-  "vi": "Một túi là lỗi nhỏ, nhiều túi là lỗi rõ; túi tái chế bẩn cô Tám không mua.",
+  "vi": "🔥 5 tô liền không lỗi +10 xu (1 lần/ngày). Khách hào phóng +4 xu, khách đang vội mà chưa phải chờ lâu +3 xu.",
   "en": ""
  },
  {
-  "vi": "Bỏ sót túi",
+  "vi": "💛 Khách quen thân thiết từ 3 gửi 2 xu tiền trà; ngày mưa hộp đậy kín +2 xu. Tô 4–5★ khác đôi khi được tip 3–15 xu.",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ, hôm sau cư dân phản ánh.",
+  "vi": "Sai nước dùng, tô chay có thịt, bé nhận tô quá cay",
   "en": ""
  },
  {
-  "vi": "Thiếu áo phản quang, găng tay khi vào ca",
+  "vi": "Khách trả tô ngay, phải đổ và làm lại. Review còn tối đa 4★, hạng ngày bị trừ điểm.",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ ngay từ đầu ca.",
+  "vi": "Tô có đồ biển cho khách dị ứng, hoặc nấu bò có mùi lạ",
   "en": ""
  },
  {
-  "vi": "Còn rác trên xe lúc tan ca",
+  "vi": "Lỗi an toàn: khách không trả tiền, 1★, báo cáo lên app, hôm sau đoàn kiểm tra tới quán.",
   "en": ""
  },
  {
-  "vi": "Chị Hạnh đổ giúp, không có tiền ve chai.",
+  "vi": "Lệch cấp cay, thiếu hay dư topping, thiếu vắt mì",
   "en": ""
  },
  {
-  "vi": "Bị kim tiêm đâm mà chỉ băng tạm",
+  "vi": "Khách đẩy tô lại bắt sửa, hoặc càu nhàu, đòi bớt 25%, hoàn 50%, có khi bỏ về. Review 4★ xuống 1★.",
   "en": ""
  },
  {
-  "vi": "Lỗi nặng: kim tiêm phải đi khám, tiêm phòng.",
+  "vi": "Vớt mì quá sớm hoặc quá muộn",
   "en": ""
  },
  {
-  "vi": "🧤 Găng tay, khẩu trang, bao bọc mảnh vỡ mua ở [[Kho đồ bảo hộ]].",
+  "vi": "Mì sống hay nát: khách vẫn ăn nhưng càu nhàu, điểm độ chín chỉ còn 2.",
   "en": ""
  },
  {
-  "vi": "🛒 Xe có ba ngăn: hữu cơ 8 túi, tái chế 8 túi, còn lại 10 túi; hộp đỏ 8 món.",
+  "vi": "Đơn mang về mà múc ra tô",
   "en": ""
  },
  {
-  "vi": "💵 Tổ trả tiền theo từng ngõ; cô Tám trả tiền ve chai cho túi tái chế sạch.",
+  "vi": "Lỗi rõ: khách phải xin hộp đổ sang, có thể đòi bớt tiền hoặc bắt làm lại.",
   "en": ""
  },
  {
-  "vi": "👥 Nhân viên: Tuyết, Liên quét dọn; Dũng, Quang đẩy xe.",
+  "vi": "Quên kiểm vệ sinh, để nước dùng quá 2 đêm",
   "en": ""
  },
  {
-  "vi": "🌙 Tối thường, mưa (mang ủng), oi nồng (đeo khẩu trang kín), ngõ có đám cưới (nhiều chai lon).",
+  "vi": "Nồi quá hạn không chan được tới khi đổ phần cũ. Sổ vệ sinh mất điểm, đoàn kiểm tra có thể phạt.",
   "en": ""
  },
  {
-  "vi": "🏍️ Xe máy lao vào ngõ tối: kéo xe sát tường. Có áo phản quang thì người lái thấy từ xa.",
+  "vi": "Quên thói quen của khách quen",
   "en": ""
  },
  {
-  "vi": "💍 Nhặt được đồ quý trong rác: báo chị Hạnh, tìm đúng chủ.",
+  "vi": "Khách hơi buồn, không tăng thân thiết, không gửi thêm tiền trà.",
   "en": ""
  },
  {
-  "vi": "🍻 Quán nhậu dúi tiền nhờ lấy rác chưa phân loại: từ chối, chỉ cách đăng ký thu gom.",
+  "vi": "📦 Bấm [[Kho]] ở thanh dưới, chọn món và nhà cung cấp rồi [[Đặt hàng]].",
   "en": ""
  },
  {
-  "vi": "🛵 Đám quậy phá lúc nửa đêm: nói chuyện, chụp ảnh, gọi công an phường, hay lờ đi. Có lửa thì phải dập.",
+  "vi": "🧺 Chợ đầu mối Mây rẻ: đặt trước 13:00 hàng tới chiều nay, sau đó thì sáng mai. Hay giao thiếu. Không bán gói nước dùng, hộp.",
   "en": ""
  },
  {
-  "vi": "🚛 Điểm tập kết tràn: xếp gọn, rắc vôi, gọi chú Sáu hay đứng đợi; bỏ về là bị báo lên phường.",
+  "vi": "🚚 Hạt Nắng giá niêm yết, bán đủ món: 4 chuyến/ngày, đặt trước 09:00, 12:00, 15:00 hoặc 18:00, tới sau khoảng 1 tiếng.",
   "en": ""
  },
  {
-  "vi": "VÀO CA",
+  "vi": "⚡ Hỏa tốc Mây Xanh tới trong 15–30 phút nhưng đắt nhất. Dùng khi hết hàng giữa ca.",
   "en": ""
  },
  {
-  "vi": "Đẩy xe vào ngõ",
+  "vi": "✈️ Kho hàng nhập Kim Mây rẻ nhất nhưng 1–2 ngày mới tới: đặt gói nước dùng, phô mai, bánh gạo, bò Mỹ sớm.",
   "en": ""
  },
  {
-  "vi": "Tách ra",
+  "vi": "📬 Trả tiền lúc đặt. Thùng tới: [[Mở thùng & xếp lên kệ]], chạm đếm từng món rồi [[Nhận vào kệ]]. Thiếu thì [[Khiếu nại phần thiếu]].",
   "en": ""
  },
  {
-  "vi": "Bọc",
+  "vi": "🔄 Hết topping khách gọi: hỏi khách đổi sang món khác còn trên kệ, giá tô giữ nguyên. Hết gói nước dùng: nút nhập hàng hiện ngay.",
   "en": ""
  },
  {
-  "vi": "Nhắc nhà này phân loại",
+  "vi": "⏳ Đồ tươi có hạn: bò Mỹ, hải sản chỉ giữ 2 ngày. Hết hạn cuối ngày là hao hụt.",
   "en": ""
  },
  {
-  "vi": "Ra điểm tập kết đổ xe",
+  "vi": "🍲 Mỗi nồi tối đa 12 phần. [[Nấu thêm nồi]] tốn 1 gói nước dùng, thêm 6 phần.",
   "en": ""
  },
  {
-  "vi": "XONG NGÕ",
+  "vi": "🔥 Nồi để qua đêm bị nguội: bấm [[Đun lại]] một lượt cho mọi nồi. Quá 2 đêm phải đổ phần cũ.",
   "en": ""
  },
  {
-  "vi": "Kho đồ bảo hộ",
+  "vi": "🌙 Cuối ca hầm sẵn tối đa 2 nồi (2 gói mỗi nồi); sáng mai nồi đầy, nóng sẵn.",
   "en": ""
  },
  {
-  "vi": "Chưa phân loại: dán phiếu, không thu",
+  "vi": "🧽 Đầu ca bấm [[Kiểm vệ sinh bếp]]. Sổ vệ sinh 7 ngày từ 85 điểm được tem A.",
   "en": ""
  },
  {
-  "vi": "Thu, nói nhẹ",
+  "vi": "🔓 Cấp 2 mở bánh gạo, đậu hũ chiên; cấp 3 nước dùng sữa phô mai, trứng ốp; cấp 4 hải sản.",
   "en": ""
  },
  {
-  "vi": "Nhắc quy định",
+  "vi": "🌦️ Mỗi ngày một kiểu: trời mưa nhiều khách mang về, gió lạnh mỗi tô tốn 2 phần nồi, phố có hội giá +10%.",
   "en": ""
  },
  {
-  "vi": "Miễn tháng này",
+  "vi": "📋 Đoàn kiểm tra vệ sinh ghé bất ngờ: đã kiểm bếp đầu ca là được tem; sổ trống có thể bị phạt.",
   "en": ""
  },
  {
-  "vi": "Bạn theo chú Hai đi thông cống: xếp đồ nghề lên xe, tìm đúng bệnh, báo giá thật trước khi làm, thông bằng đúng đồ nghề, an toàn ở hố ga.",
+  "vi": "🥩 Bò có mùi lạ, 🔌 cúp điện, 🔥 gas yếu (vùng xanh lùi 4 giây). 🤒 Thiếu người rửa: cứ 3 tô phải [[Rửa tô]].",
   "en": ""
  },
  {
-  "vi": "Xếp đồ nghề",
+  "vi": "📝 Người viết review ở bàn góc: tô 5★ được thêm 20 xu. 😤 Khách phàn nàn: xem lại phiếu trước đã.",
   "en": ""
  },
  {
-  "vi": "Đọc sổ hẹn, chọn tối đa 5 món lên xe, đeo găng tay rồi [[LÊN ĐƯỜNG]]. Thiếu đồ thì phải [[Về tiệm lấy đồ nghề khác]], khách chờ.",
+  "vi": "🏃 Có hôm gặp khách ăn quỵt, bàn nhậu say làm vỡ ly, hay người tống tiền “có gián trong tô”.",
   "en": ""
  },
  {
-  "vi": "Tìm bệnh",
+  "vi": "Tra sổ khách quen",
   "en": ""
  },
  {
-  "vi": "[[Hỏi thêm]], mở nắp soi đèn, [[Xả nước thử]] (hoặc [[Soi camera]] nếu mang theo), rồi chọn nguyên nhân.",
+  "vi": "Hỏi lại món",
   "en": ""
  },
  {
-  "vi": "Báo [[Theo bảng giá]] của nguyên nhân đã chọn, trước khi làm. Đổi nguyên nhân thì báo lại giá.",
+  "vi": "Xong tô",
   "en": ""
  },
  {
-  "vi": "Thông",
+  "vi": "Đóng 1 hộp đơn đặt",
   "en": ""
  },
  {
-  "vi": "Tóc: dây lò xo. Mỡ đông: máy phun (đeo kính). Giấy ướt: máy lò xo điện hoặc pít-tông. Đồ rơi, tổ chim: móc gắp. Rễ cây: máy lò xo điện. Ống nứt: [[Thay ống xi-phông]].",
+  "vi": "Thả mì",
   "en": ""
  },
  {
-  "vi": "Rào chắn, đo khí, bật quạt, có người canh; mang ủng, khẩu trang, gầu múc bùn. Phường chuyển khoản.",
+  "vi": "Vớt mì",
   "en": ""
  },
  {
-  "vi": "Gọi đêm",
+  "vi": "Đổ tô",
   "en": ""
  },
  {
-  "vi": "Từ ngày 3: giá theo bảng đã gồm phụ phí đêm, nói rõ trước.",
+  "vi": "Đun lại",
   "en": ""
  },
  {
-  "vi": "Gọi lại bảo hành",
+  "vi": "Kiểm vệ sinh bếp",
   "en": ""
  },
  {
-  "vi": "Lỗi thông tạm hôm trước của tiệm thì bảo hành, không lấy tiền. Tắc mới thì tính như việc mới.",
+  "vi": "Rửa tô",
   "en": ""
  },
  {
-  "vi": "Tự báo giá",
+  "vi": "Bạn tắm tỉa, nhận trông giữ, cho ăn và tìm nhà mới cho các bé chó mèo ở tiệm đầu hẻm.",
   "en": ""
  },
  {
-  "vi": "Mở [[Tự báo giá]], gõ số rồi [[Báo giá này]]. Giá thật thì khách gật; hét giá thì khách trả giá lại hoặc gọi thợ khác.",
+  "vi": "Kiểm bé, chải gỡ rối, tắm đúng sữa tắm 36–39°C, xả sạch, sấy khô, tỉa móng, lau tai, rồi báo thật với chủ.",
   "en": ""
  },
  {
-  "vi": "Chủ nhà đứng lèm bèm",
+  "vi": "Xem sổ tiêm còn hạn tới ngày đón, đo nhiệt độ, chọn chuồng hợp loài và cân nặng, ghi kế hoạch ăn theo bảng.",
   "en": ""
  },
  {
-  "vi": "Nhịn làm tiếp, đáp lại, mời ra ngoài chờ, hay từ chối làm tiếp. Mỗi người phản ứng một kiểu.",
+  "vi": "Chăm bé lưu trú (cho ăn buổi sáng)",
   "en": ""
  },
  {
-  "vi": "Nhờ “tiện tay”, hết tiền mặt",
+  "vi": "Cân khẩu phần đúng bảng, đúng loại thức ăn, cho thuốc đúng nhãn, dắt chó đi dạo hoặc dọn khay cát mèo.",
   "en": ""
  },
  {
-  "vi": "Làm luôn, báo giá việc phụ, hay nói việc khác tính riêng. Khách hết tiền: đợi đi rút, ghi nợ, hay xin trả trước; nợ nằm trong [[Sổ nợ]].",
+  "vi": "Nhận nuôi (phỏng vấn gia đình)",
   "en": ""
  },
  {
-  "vi": "👂 Bấm [[Nghe khách kể]].",
+  "vi": "Hỏi chỗ ở, giờ vắng nhà, trẻ nhỏ, thú đang nuôi, dị ứng lông rồi mới giao bé hợp nếp nhà.",
   "en": ""
  },
  {
-  "vi": "🔍 Tìm hai manh mối trở lên, rồi chọn nguyên nhân.",
+  "vi": "Việc hằng ngày ở khu lưu trú",
   "en": ""
  },
  {
-  "vi": "🧾 Báo giá theo bảng giá.",
+  "vi": "Mỗi bé đang ở có thẻ chăm: đủ bữa theo thẻ, dắt dạo hoặc dọn cát, thuốc, chơi, gọi báo chủ khi bé mệt.",
   "en": ""
  },
  {
-  "vi": "🧤 Đeo găng tay (máy phun: thêm kính), chọn đồ nghề để thông.",
+  "vi": "Nhắc lịch tiêm & tẩy giun",
   "en": ""
  },
  {
-  "vi": "💧 [[Xả nước thử]], [[Dọn sạch chỗ làm]], [[Dặn khách]], rồi [[TÍNH TIỀN]] và thối đúng.",
+  "vi": "Khách quen tới hạn thì nhắn chủ; nhắc đúng hạn (trễ tối đa 2 ngày) chủ tin tiệm hơn.",
   "en": ""
  },
  {
-  "vi": "🔍 Đúng bệnh, đúng đồ nghề: thử sai là mất thời gian.",
+  "vi": "Hỏi thăm bé đã nhận nuôi",
   "en": ""
  },
  {
-  "vi": "🧾 Báo giá thật: nói thách thì khách bỏ đi hoặc biết ra là bị chê.",
+  "vi": "Vài ngày sau khi giao bé, gọi lại gia đình và chọn lời khuyên đúng cho chuyện họ đang gặp.",
   "en": ""
  },
  {
-  "vi": "🦺 An toàn: găng tay, kính khi phun, đủ bước ở hố ga.",
+  "vi": "📋 Bấm [[Nhận phiếu]] để đọc phiếu: dịch vụ chủ đặt, lời dặn, tính khí chủ khai.",
   "en": ""
  },
  {
-  "vi": "💧 Xả thử, dọn sạch, dặn khách giữ ống thông.",
+  "vi": "🔎 Kiểm tận tay: [[Cân bé]], [[Vạch lông]], [[Soi tai]], [[Xem móng]], [[Làm quen, xem phản ứng]]… Mỗi lúc chỉ mở phần đang làm; phần xong gập thành dòng ✓, chạm để mở lại.",
   "en": ""
  },
  {
-  "vi": "🧪 Không đổ hóa chất vào ống gang cũ.",
+  "vi": "🔗 Bé hay trốn thì [[Đeo vòng giữ cổ trên bàn]]; chó hay cắn thì [[Hỏi chủ đồng ý rọ mõm]] rồi [[Đeo rọ mõm mềm]].",
   "en": ""
  },
  {
-  "vi": "Xuống hố ga không đo khí, không thông gió",
+  "vi": "🪮 [[Chải gỡ rối]], chọn sữa tắm, chỉnh nước 36–39°C rồi bấm [[Tắm]].",
   "en": ""
  },
  {
-  "vi": "Lỗi an toàn: choáng váng, 1★.",
+  "vi": "🚿 [[Mở vòi xả]] đủ 8 giây rồi [[Khóa vòi]]; bật sấy nấc Ấm (mặt ngắn: Mát), khô 100% thì [[Tắt máy sấy]].",
   "en": ""
  },
  {
-  "vi": "Nói thách",
+  "vi": "✂️ Móng đen: [[Tỉa đầu móng]]. Tai đỏ, hôi: [[Bỏ qua — tai có vấn đề]], tai khỏe thì [[Lau tai]].",
   "en": ""
  },
  {
-  "vi": "Nhiều khách bỏ đi ngay; khách nhận thì sau biết giá thật, lỗi rõ.",
+  "vi": "💬 Tick ý báo đúng sự thật, bấm [[Ghi lời báo]], rồi [[Trả bé & thu tiền]].",
   "en": ""
  },
  {
-  "vi": "Thông tạm mà không nói",
+  "vi": "🏠 Lưu trú: [[Xem sổ tiêm]], [[Đo nhiệt độ]], chọn chuồng, [[Ghi kế hoạch ăn]], rồi [[Nhận bé & thu tiền]].",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ: vài hôm sau tắc lại.",
+  "vi": "🧴 Đúng sữa tắm: mèo hoặc da nhạy cảm dùng loại nhạy cảm, bé dưới 12 tháng dùng cún con, có đơn thì dùng chai trị liệu.",
   "en": ""
  },
  {
-  "vi": "Đổ bột thông cống thiếu găng, kính",
+  "vi": "🌡️ Nước 36–39°C, xả đủ 8 giây, sấy khô tới 100% nhưng đừng để quá lâu kẻo lông khô xơ.",
   "en": ""
  },
  {
-  "vi": "Lỗi an toàn; ống gang cũ còn bị hỏng.",
+  "vi": "🐶 Đọc tín hiệu cơ thể: từ “Căng thẳng” thì [[Nói nhỏ, vuốt ve]] hoặc [[Cho nghỉ 5 phút]] rồi mới làm tiếp.",
   "en": ""
  },
  {
-  "vi": "Chưa xả thử, chưa dọn",
+  "vi": "🩺 Thấy dấu hiệu lạ (tai đỏ, bọ chét, u, khập khiễng, bỏ ăn) thì tick ý khuyên đi thú y. Đừng tự đoán bệnh.",
   "en": ""
  },
  {
-  "vi": "Mỗi thứ là một lỗi nhỏ.",
+  "vi": "🥣 Khẩu phần theo bảng: cân × g/kg × % theo tuổi, chia số bữa; lệch tối đa ±10%. Chủ gửi đồ ăn thì dùng đồ chủ gửi.",
   "en": ""
  },
  {
-  "vi": "Thu tiền việc bảo hành lỗi của tiệm",
+  "vi": "⏱️ Làm gọn tay, chủ chờ lâu thì điểm “Thời gian chờ” tụt. Khách quen thì [[Gọi tên bé, hỏi thăm lần trước]].",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ, khách mất lòng tin.",
+  "vi": "💝 Bé về sạch thơm, chủ vui (4–5★) thì hay được tip 5–20 xu hoặc quà nhỏ. Có lỗi an toàn hay chủ càu nhàu thì gần như không.",
   "en": ""
  },
  {
-  "vi": "Chặt chém: tự báo giá cao hơn hẳn bảng giá",
+  "vi": "Nước tắm từ 42°C, hoặc lao tới chụp bé đang chạy khỏi bàn",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ, uy tín trong phố giảm, ông Lộc đăng bài; có khách quay lại đòi tiền chênh.",
+  "vi": "Lỗi an toàn: 1★, chủ không trả tiền, gửi báo cáo lên app, hôm sau có thể bị kiểm tra an toàn.",
   "en": ""
  },
  {
-  "vi": "Cãi tay đôi với chủ nhà",
+  "vi": "Cắt ngắn móng đen, chạm tủy mà không báo chủ",
   "en": ""
  },
  {
-  "vi": "Người nóng tính nổi đóa: lỗi rõ.",
+  "vi": "Chủ về mới thấy máu: lỗi an toàn, 1★, không trả tiền. Nói thật thì chỉ là lỗi vừa và miễn tiền cắt móng.",
   "en": ""
  },
  {
-  "vi": "🧰 Xe chở 5 món trong 8: pít-tông, dây lò xo tay, máy lò xo điện, máy phun áp lực, camera, móc gắp, gầu múc bùn, máy đo khí.",
+  "vi": "Nhận bé đang sốt hoặc đang ho, cho ăn thứ bé dị ứng, cho thuốc sai liều trên nhãn",
   "en": ""
  },
  {
-  "vi": "📦 Ống xi-phông, bột thông cống, găng tay mua ở [[Kho vật tư]].",
+  "vi": "Lỗi an toàn: 1★, chủ không trả tiền, báo cáo lên app, có thể bị kiểm tra hôm sau.",
   "en": ""
  },
  {
-  "vi": "👥 Nhân viên: Tâm, Vy canh an toàn hố ga; Lực, Sơn chở đồ.",
+  "vi": "Sai sữa tắm, lau sâu tai đang đau, tắm khi lông còn rối, sấy ấm cho bé mặt ngắn",
   "en": ""
  },
  {
-  "vi": "⛈️ Mưa lớn: hố ga dễ tràn, cả ngõ cùng gọi; ưu tiên nhà người già, trẻ nhỏ.",
+  "vi": "Lỗi rõ: sao giảm mạnh, chủ càu nhàu hoặc đòi bớt 25–50% tiền.",
   "en": ""
  },
  {
-  "vi": "📞 Thợ dạo báo giá trên trời: nói thật bảng giá của tiệm.",
+  "vi": "Thấy dấu hiệu bệnh mà không báo, hoặc tự đoán bệnh bảo mua thuốc",
   "en": ""
  },
  {
-  "vi": "🐀 Chuột chui ra từ cống: bình tĩnh đuổi ra, đậy lưới chắn.",
+  "vi": "Lỗi rõ: review nêu đúng lỗi, sao giảm, có thể bị đòi lại tiền.",
   "en": ""
  },
  {
-  "vi": "💵 Khách nhờ ghi hóa đơn khống: từ chối.",
+  "vi": "Nước lạnh/hơi nóng, còn sót bọt, lông còn ẩm, khẩu phần lệch bảng, cho bánh khi chủ dặn không",
   "en": ""
  },
  {
-  "vi": "🔁 Khách bị chặt chém quay lại: trả lại tiền chênh, trả bớt, giải thích, hay không trả. Trả ít quá là bị chê.",
+  "vi": "Lỗi nhỏ: mất 1 sao; nhiều lỗi cộng lại thì khách đòi giảm tiền hoặc bỏ đi không trả.",
   "en": ""
  },
  {
-  "vi": "LÊN ĐƯỜNG",
+  "vi": "Từ chối oan bé khỏe, hoặc giao bé nhận nuôi không hợp nếp nhà",
   "en": ""
  },
  {
-  "vi": "Về tiệm lấy đồ nghề khác",
+  "vi": "Từ chối oan: không mất tiền nhưng review xấu. Giao sai: lỗi nặng, sau đó bé bị mang trả về.",
   "en": ""
  },
  {
-  "vi": "Theo bảng giá",
+  "vi": "🧽 Đầu ngày bấm [[Khử khuẩn chuồng & bàn tắm]]: thú y phường kiểm sổ, chưa ký là phạt 15 xu.",
   "en": ""
  },
  {
-  "vi": "Thay ống xi-phông",
+  "vi": "📦 Mở [[Kho & nhập hàng]] kiểm sữa tắm, khăn, bông, bột cầm máu, túi nhặt phân, hạt chó, hạt mèo, bánh thưởng.",
   "en": ""
  },
  {
-  "vi": "Nghe khách kể",
+  "vi": "🚚 Kho sỉ thú cưng Mây rẻ: đặt trước 13:00 chiều nay tới, đặt sau thì sáng mai. Thỉnh thoảng giao thiếu.",
   "en": ""
  },
  {
-  "vi": "Dọn sạch chỗ làm",
+  "vi": "✈️ Hàng nhập Nhật Mây (sữa tắm da nhạy cảm, dầu xả, bột cầm máu) rẻ hơn đại lý nhưng 1–2 ngày mới tới.",
   "en": ""
  },
  {
-  "vi": "Dặn khách",
+  "vi": "⚡ Hạt Nắng 4 chuyến/ngày (đặt trước 09:00, 12:00, 15:00, 18:00). Hỏa tốc Mây Xanh 15–30 phút nhưng đắt nhất.",
   "en": ""
  },
  {
-  "vi": "Báo giá này",
+  "vi": "🔢 Thùng tới: [[Mở thùng & xếp lên kệ]], đếm rồi bấm [[Nhận vào kệ]]; giao thiếu thì [[Khiếu nại phần thiếu]].",
   "en": ""
  },
  {
-  "vi": "Bạn giúp việc nhà cho chị Thảo: đi chợ, nấu theo khẩu vị từng người, giặt giũ, lau dọn, trông bé Su, chăm bà Lành, giữ sổ chợ khớp từng xu.",
+  "vi": "⚠️ Hết túi nhặt phân thì không dắt chó ra đường được; hết hạt tiệm thì không cho bé lưu trú ăn được.",
   "en": ""
  },
  {
-  "vi": "Nhớ danh sách rồi [[Ra chợ]]. Chọn rau tươi, cá mắt trong; [[Mua giá này]] hay [[Trả giá]]; về [[Ghi sổ chợ, trả tiền thừa]] đúng số đã tiêu.",
+  "vi": "🧭 Hết túi nhặt phân hay khăn giữa việc: gợi ý bước tiếp hiện nút nhập hàng; hàng đang về thì nút báo còn bao lâu.",
   "en": ""
  },
  {
-  "vi": "Xem [[Sổ tay nhà]]: bé Su dị ứng tôm, bà ăn nhạt, Cốm ăn cháo. Nấu sai món dị ứng là lỗi an toàn.",
+  "vi": "🔓 Dầu xả và chuồng “Tầng mèo view cửa sổ” mở ở cấp 2.",
   "en": ""
  },
  {
-  "vi": "Lục túi quần trước khi giặt. Tách đồ trắng, đồ màu, đồ len; váy lụa giặt tay, phơi trong bóng râm.",
+  "vi": "🏃 Bé nhảy khỏi bàn: chọn [[Đóng cửa, ngồi thấp, gọi tên nhỏ nhẹ]] hoặc [[Lắc túi bánh dụ bé về]]. Đừng lao tới chụp.",
   "en": ""
  },
  {
-  "vi": "Đồ sống ngăn dưới, đồ chín ngăn trên, đồ cũ ra trước. Cây vàng lá thì xem đất trước khi tưới.",
+  "vi": "🔔 Chuyện ở quầy chặn việc cho tới khi bạn chọn: giông làm các bé hoảng, mèo con lạc, cúp điện, chó gầm gừ ở sân, chó say nắng…",
   "en": ""
  },
  {
-  "vi": "Mất điện, nồi cơm khê, tắc bồn, khách đến bất ngờ, chảo dầu bắt lửa, rò ga: chọn cách xử lý an toàn trước.",
+  "vi": "🩺 Thú y phường kiểm vệ sinh; đại lý chào sữa tắm không nhãn (mua thì sau đó có bé nổi mẩn); nhận mèo lạc vào chung tầng thì cả tầng hắt hơi.",
   "en": ""
  },
  {
-  "vi": "Có hôm chị Thảo khất tiền công: nhận ghi nợ hay xin nhẹ nhàng. Nợ nằm trong [[Sổ nợ]].",
+  "vi": "🚨 Chó gửi trọ cắn khách, người lạ bán chó có số điện thoại trên vòng cổ, hàng xóm phản ánh chó sủa đêm.",
   "en": ""
  },
  {
-  "vi": "Bạn đứng xe cơm của dì Bảy ở đầu chợ: nấu hai nồi cơm đúng nước, nếm chén nước mắm cho vừa, nướng sườn chín vàng, xới đủ vá, gắp đúng món, nhớ lời dặn ăn chay, thối đúng tiền.",
+  "vi": "🦴 Trộm vác bao hạt hoặc lấy hũ tiền boa, chó khách cắn hỏng lồng, lỡ để sổng bé phải trả tiền khám.",
   "en": ""
  },
  {
-  "vi": "Dọn quán đầu ngày",
+  "vi": "Nhận phiếu",
   "en": ""
  },
  {
-  "vi": "Nồi cơm tấm đổ nước [[Lưng đốt ngón tay]], nồi cơm trắng [[Một đốt ngón tay]]. [[Nếm nước mắm]], [[Nhóm bếp than]], bày khay lên tủ kính rồi [[MỞ QUÁN]].",
+  "vi": "Đeo vòng giữ cổ trên bàn",
   "en": ""
  },
  {
-  "vi": "Chén nước mắm",
+  "vi": "Hỏi chủ đồng ý rọ mõm",
   "en": ""
  },
  {
-  "vi": "Mặn thì [[Thêm nước sôi để nguội]], lạt thì [[Thêm nước mắm nhĩ]], ngọt quá thì [[Vắt thêm chanh]], chua quá thì [[Thêm đường]]. Chén đã vừa mà thêm nữa là hỏng.",
+  "vi": "Đeo rọ mõm mềm",
   "en": ""
  },
  {
-  "vi": "Nướng sườn",
+  "vi": "Mở vòi xả",
   "en": ""
  },
  {
-  "vi": "Đặt 1 tới 4 miếng lên vỉ. Mỗi mặt 8–16 giây (thanh xanh): [[Trở mặt]] một lần rồi [[Gắp ra khay]]. Sớm quá là còn hồng (lỗi an toàn), lâu quá là xém rồi khét.",
+  "vi": "Khóa vòi",
   "en": ""
  },
  {
-  "vi": "Mỗi dĩa cơm",
+  "vi": "Tắt máy sấy",
   "en": ""
  },
  {
-  "vi": "[[Lấy dĩa]] cho khách ngồi ăn, [[Lấy hộp]] cho khách mang về. Xới đúng nồi: ít cơm một vá, dĩa thường hai vá, thêm cơm ba vá. Gắp món khách gọi từ tủ kính, khay giữ ấm, chảo trứng.",
+  "vi": "Bỏ qua — tai có vấn đề",
   "en": ""
  },
  {
-  "vi": "Mỡ hành, nước mắm, canh",
+  "vi": "Ghi lời báo",
   "en": ""
  },
  {
-  "vi": "[[Mỡ hành]] cho dĩa cơm (trừ khách dặn không hành). Hộp mang về: [[Nước mắm để riêng]], đừng rưới vô hộp. Khách gọi canh thì múc [[Chén canh]].",
+  "vi": "Trả bé & thu tiền",
   "en": ""
  },
  {
-  "vi": "Mỡ hành phi bằng mỡ heo, canh nấu tôm khô: khách ăn chay thì không mỡ hành, không canh, chỉ [[Nước tương]].",
+  "vi": "Ghi kế hoạch ăn",
   "en": ""
  },
  {
-  "vi": "Đơn cơm văn phòng",
+  "vi": "Nhận bé & thu tiền",
   "en": ""
  },
  {
-  "vi": "Từ ngày 3, cứ ba ngày chị Ngân đặt bốn hộp cho cả phòng, có một hộp chay. Làm từng hộp cho đúng lời dặn.",
+  "vi": "Gọi tên bé, hỏi thăm lần trước",
   "en": ""
  },
  {
-  "vi": "👂 Bấm [[Hỏi khách gọi gì]]: xem cơm tấm hay cơm trắng, mấy vá, món nào, lời dặn.",
+  "vi": "Khử khuẩn chuồng & bàn tắm",
   "en": ""
  },
  {
-  "vi": "🍽️ [[Lấy dĩa]] hoặc [[Lấy hộp]], xới cơm từng vá từ đúng nồi.",
+  "vi": "Bạn tư vấn, pha màu, canh giờ ủ thuốc, cắt và sấy tóc cho khách trong xóm.",
   "en": ""
  },
  {
-  "vi": "🍱 Gắp món từ tủ kính; sườn lấy miếng vàng đều trên khay giữ ấm; trứng ốp la từ chảo.",
+  "vi": "Pha 1–2 tuýp cho đúng độ sáng và ánh của ảnh mẫu, chọn oxy, tỷ lệ 1:1, xả khi thanh ủ vào vùng xanh.",
   "en": ""
  },
  {
-  "vi": "🌿 Mỡ hành, nước mắm, canh đúng như khách dặn, rồi bấm [[ĐƯA CƠM]].",
+  "vi": "Bột tẩy + oxy 20 vol, tỷ lệ 1:2. Tóc nhuộm hộp phải thử lọn trước; tóc đã qua hóa chất có vùng xanh ngắn hơn.",
   "en": ""
  },
  {
-  "vi": "🍚 Cơm dẻo, đủ vá: anh Mạnh liếc dĩa là biết thiếu.",
+  "vi": "Làm sau khi tẩy và xả xong: toner + oxy 10 vol, tỷ lệ 1:2, chọn ánh bạc hay be theo ảnh mẫu.",
   "en": ""
  },
  {
-  "vi": "🍖 Sườn vàng đều, giữa không còn hồng.",
+  "vi": "Gội ẩm, chia vùng, cắt đường chuẩn đúng số cm đã hẹn, tỉa tầng chỉ khi mẫu có tầng, rồi soi đối xứng.",
   "en": ""
  },
  {
-  "vi": "🫙 Nước mắm vừa miệng: sáng nào cũng nếm.",
+  "vi": "Làm sau phần hóa chất, trên tóc đã gội. Tóc yếu mà được khuyên phục hồi thì khách đồng ý trả thêm.",
   "en": ""
  },
  {
-  "vi": "📿 Nhớ người ăn chay: không mỡ hành, nước tương.",
+  "vi": "Làm cuối cùng. Chọn kiểu hợp thói quen và dịp của khách: tự nhiên, thẳng suôn, phồng lọn sóng, búi cô dâu.",
   "en": ""
  },
  {
-  "vi": "🥡 Hộp mang về nước mắm để riêng.",
+  "vi": "Khách muốn nhuộm mà chưa có kết quả thử: chấm thử sau tai, thu 8 xu, hẹn nhuộm từ ngày sau.",
   "en": ""
  },
  {
-  "vi": "Bán miếng sườn còn hồng",
+  "vi": "Bé khó ngồi yên (dỗ đúng cách bố kể), cô dâu hay khách gấp (kịp giờ được thưởng), ảnh filter, tóc bạc nhiều, cứu màu cam.",
   "en": ""
  },
  {
-  "vi": "Lỗi an toàn: khách không ăn, chấm 1 sao, mai có thể có đoàn kiểm tra.",
+  "vi": "Lịch hẹn quay lại",
   "en": ""
  },
  {
-  "vi": "Mỡ hành, nước mắm cho khách ăn chay",
+  "vi": "Khách quen hẹn dặm chân tóc, tỉa giữ dáng hoặc hấp phục hồi; làm trong sổ hẹn, trễ quá 2 ngày là khách đi tiệm khác.",
   "en": ""
  },
  {
-  "vi": "Lỗi rõ: khách đã dặn mà quán quên. Làm lại hộp mới, không gạt ra.",
+  "vi": "🧴 Đầu ca bấm [[Khử khuẩn dụng cụ]]: hũ có 4 bộ lược kéo sạch, mỗi khách dùng một bộ.",
   "en": ""
  },
  {
-  "vi": "Đổ nước nồi cơm sai",
+  "vi": "💬 Bấm [[Mời ngồi & nghe mong muốn]], rồi hỏi [[Lịch sử hóa chất]], [[Thử dị ứng]], [[Độ dài mong muốn]], [[Ngân sách]].",
   "en": ""
  },
  {
-  "vi": "Cả nồi nhão hoặc sượng, dĩa nào xới từ nồi đó cũng bị chê. Nồi hết mới nấu được nồi mới.",
+  "vi": "🔎 Xem [[Chân tóc]], [[Thân tóc]], [[Ngọn tóc]], [[Da đầu]]; cần thì [[Thử dị ứng sau tai]] hoặc [[Thử một lọn sau gáy]].",
   "en": ""
  },
  {
-  "vi": "Xới thiếu cơm",
+  "vi": "🤝 Chọn dịch vụ khách cần, số buổi thật lòng, bấm [[Chốt với khách]].",
   "en": ""
  },
  {
-  "vi": "Khách gọi thêm cơm mà xới hai vá là bị nhắc; với anh Mạnh là lỗi rõ.",
+  "vi": "🥣 Chọn tuýp, oxy, tỷ lệ rồi [[Trộn bát]] → [[Thoa từ chân tới ngọn]] → vào vùng xanh thì [[Xả thuốc ngay]].",
   "en": ""
  },
  {
-  "vi": "Rưới nước mắm vào hộp mang về",
+  "vi": "🫧 Không làm màu thì [[Gội & xả]] trước khi cắt, sấy.",
   "en": ""
  },
  {
-  "vi": "Về tới nơi cơm nhão. Hộp nào cũng để nước mắm riêng.",
+  "vi": "✂️ [[Chia vùng]] → [[Cắt đường chuẩn]] → [[Tỉa tầng]] nếu mẫu có tầng → [[Soi đối xứng & chốt]].",
   "en": ""
  },
  {
-  "vi": "Bày khay quá nhiều",
+  "vi": "💳 [[Thoa keratin & hấp]], chọn kiểu sấy, mời sản phẩm hợp tóc rồi [[Thanh toán & tiễn khách]].",
   "en": ""
  },
  {
-  "vi": "Đồ nấu không để qua đêm: tối dư bao nhiêu là bỏ bấy nhiêu.",
+  "vi": "🎯 Bát màu phải trúng cả độ sáng (lệch tối đa ¼ tông) lẫn ánh; tóc bạc từ một nửa: ít nhất nửa bát là tuýp nền x.0.",
   "en": ""
  },
  {
-  "vi": "🌾 Gạo, sườn ướp, trứng, đồ kho, hộp giấy nhập ở [[Kho quán cơm]]. Sườn và đồ kho để được hai ngày, rau một ngày.",
+  "vi": "🧪 Oxy theo số tông cần nâng: cùng tông hoặc tối hơn 10 vol, nâng 1–2 tông hoặc phủ bạc 20 vol, nâng 3 tông 30 vol.",
   "en": ""
  },
  {
-  "vi": "🍱 Mỗi phần hàng trong kho bày ra được một khay (6–8 phần). Bày vừa đủ bán, hết thì bày thêm giữa ngày.",
+  "vi": "⏱️ Xả đúng vùng xanh: thiếu giờ màu loang, quá giờ tóc tối đục, quá lâu tóc gãy. Ngày nắng nóng thuốc lên nhanh hơn.",
   "en": ""
  },
  {
-  "vi": "👥 Nhân viên: Tí, Tâm quạt than canh bếp; Hồng, Lan rửa chén dọn bàn.",
+  "vi": "📏 Cắt đúng số cm khách dặn: tóc cắt rồi không nối lại được. Mẫu tóc bằng thì đừng tỉa tầng.",
   "en": ""
  },
  {
-  "vi": "🌤️ Mỗi ngày một kiểu: ngày thường, mưa dầm (nhiều hộp mang về), chợ phiên (khách cơm tấm nối đuôi), ngày rằm (khách ăn chay).",
+  "vi": "🤝 Hỏi và xem đủ trước khi chốt; ảnh filter thì [[Soi ảnh gốc chưa qua filter]]. Cần nhiều buổi thì nói thật.",
   "en": ""
  },
  {
-  "vi": "🪰 Ruồi bu tủ kính, khói bếp bay vào nhà bên, cô bán vé số xin chén cơm, phường kiểm tra an toàn thực phẩm.",
+  "vi": "🛍️ Chỉ mời sản phẩm hợp tóc và còn vừa ngân sách; dùng bộ lược kéo đã khử khuẩn.",
   "en": ""
  },
  {
-  "vi": "Nhóm bếp than",
+  "vi": "💝 Salon hay được tip: làm 4–5★, khách không càu nhàu thì thường được 5–20 xu hoặc quà nhỏ. Lỗi an toàn thì không.",
   "en": ""
  },
  {
-  "vi": "MỞ QUÁN",
+  "vi": "Nhuộm khi khách chưa có kết quả thử dị ứng (thợ màu đã cản mà vẫn làm)",
   "en": ""
  },
  {
-  "vi": "Trở mặt",
+  "vi": "Lỗi an toàn: 1★, khách không trả tiền, báo cáo lên app, hôm sau có thể bị kiểm tra an toàn. Khách có thể nổi mẩn đỏ.",
   "en": ""
  },
  {
-  "vi": "Gắp ra khay",
+  "vi": "Ủ thuốc quá lâu, tóc cháy gãy; hoặc màu ra khác hẳn ảnh mẫu",
   "en": ""
  },
  {
-  "vi": "Lấy dĩa",
+  "vi": "Lỗi nặng: tối đa 2★, khách đòi hoàn 50% và gửi báo cáo lên app; thêm lỗi khác là bỏ đi không trả.",
   "en": ""
  },
  {
-  "vi": "Lấy hộp",
+  "vi": "Cắt ngắn hơn thỏa thuận",
   "en": ""
  },
  {
-  "vi": "Chén canh",
+  "vi": "Không sửa được. Lố 1 cm là lỗi nhỏ, lố 2–3 cm lỗi rõ, lố từ 4 cm lỗi nặng; khách đòi giảm hoặc hoàn tiền.",
   "en": ""
  },
  {
-  "vi": "ĐƯA CƠM",
+  "vi": "Hứa giống ảnh trong một buổi khi tóc cần nhiều buổi",
   "en": ""
  },
  {
-  "vi": "Kho quán cơm",
+  "vi": "Khách soi gương thất vọng: lỗi rõ, điểm “tư vấn” còn 1★, sao và tiền đều giảm.",
   "en": ""
  },
  {
-  "vi": "Bạn đứng bếp quán phở của bác Lâm dưới gốc cây si: giữ nồi nước lăn tăn, trong và vừa miệng, trụng bánh tơi, xếp thịt đúng lời khách, chan nước dừng muôi đúng vạch, bưng ra nóng hổi, thối đúng tiền.",
+  "vi": "Ủ thiếu giờ, toner sai ánh, tóc bạc còn lộ, tỉa tầng sai mẫu",
   "en": ""
  },
  {
-  "vi": "Mở quán đầu ngày",
+  "vi": "Lỗi rõ: tối đa 3★, khách càu nhàu hoặc đòi bớt 25–50% tiền.",
   "en": ""
  },
  {
-  "vi": "Nồi xương ủ lửa từ đêm. [[Vặn lửa lăn tăn]], [[Hớt bọt]] cho sạch, [[Nếm nước dùng]] rồi [[Nêm nước mắm]] hoặc [[Châm nước sôi]]. [[Ngửi rổ bánh phở]], chua thì [[Bỏ bánh chua]]. Xong bấm [[MỞ QUÁN]].",
+  "vi": "Sấy sai kiểu so với dịp của khách",
   "en": ""
  },
  {
-  "vi": "Lửa lăn tăn giữ 97 °C: tái chín hồng, nước trong. Lửa lớn nóng nhanh nhưng bọt nổi, sôi lâu là nước đục cả ngày. Lửa ủ không đủ nóng để chín tái.",
+  "vi": "Khách có thể ngồi lại bắt sấy lại, mất thêm kiên nhẫn; không thì bị trừ sao.",
   "en": ""
  },
  {
-  "vi": "Trụng bánh",
+  "vi": "Mời dịch vụ hay sản phẩm khách không cần, gội trước khi nhuộm, dùng lược kéo chưa khử khuẩn",
   "en": ""
  },
  {
-  "vi": "Lấy tô, bấm [[Nhúng rổ bánh]] ba hoặc bốn lượt. Một hai lượt bánh còn dính chùm; năm lượt trở lên là nát.",
+  "vi": "Khách từ chối món không cần, review ghi lỗi, mất điểm chăm sóc; lịch hẹn dùng bộ bẩn bị trừ 1 sao.",
   "en": ""
  },
  {
-  "vi": "Xếp thịt, hành, trứng",
+  "vi": "🧴 Đầu ca [[Khử khuẩn dụng cụ]]; dùng hết bộ sạch thì [[Ngâm lại bộ]]. Đoàn y tế kiểm sổ, chưa ký là phạt 15 xu. Đang làm khách thì mở dòng 🧼 Dụng cụ sạch để thấy hai nút này.",
   "en": ""
  },
  {
-  "vi": "Xếp thịt lên mặt bánh trước khi chan. Khách dặn tái riêng thì bấm [[Tái để riêng]]. [[Rắc hành]] theo lời dặn. Trứng trần thì [[Đập trứng]] trước khi chan.",
+  "vi": "📦 Mở [[Kho thuốc & vật tư]] kiểm tuýp màu, oxy 10/20/30/40, bột tẩy, giấy bạc, toner, keratin, găng, dầu gội, khăn.",
   "en": ""
  },
  {
-  "vi": "Chan nước, dừng muôi",
+  "vi": "🧺 Chợ sỉ vật tư tóc rẻ (dầu gội, khăn, găng, giấy bạc): đặt trước 13:00 chiều nay tới, sau đó sáng mai. Hay thiếu.",
   "en": ""
  },
  {
-  "vi": "Chọn nồi: nước trong, nước béo hay nồi nhỏ không mì chính. Bấm [[Chan nước dùng]], nước dâng trong tô; bấm [[Dừng muôi]] khi nước tới vạch xanh khách dặn.",
+  "vi": "✈️ Kho hãng màu nhuộm rẻ nhất cho tuýp màu, oxy, bột tẩy, toner, keratin nhưng 1–2 ngày mới tới: đặt sớm.",
   "en": ""
  },
  {
-  "vi": "Mang về",
+  "vi": "🔢 Thùng tới: [[Mở thùng & xếp lên kệ]], đếm rồi bấm [[Nhận vào kệ]]; thiếu thì [[Khiếu nại phần thiếu]].",
   "en": ""
  },
  {
-  "vi": "Lấy hộp mang về: tái để riêng, chan túi nước tới vạch rồi [[Buộc túi nước]]. Tổ thợ của anh Tuấn đặt bốn suất một lúc.",
+  "vi": "⚠️ Hết tuýp, oxy hay giấy bạc thì không trộn bát được; màn hình hiện nút [[Nhập hàng]].",
   "en": ""
  },
  {
-  "vi": "Nồi sắp cạn",
+  "vi": "📅 Sáng nào cũng xem Sổ hẹn: khách quen tới dặm chân tóc thì bấm [[Pha theo thẻ]] để dùng lại công thức cũ.",
   "en": ""
  },
  {
-  "vi": "Bấm [[Châm nồi]]: thêm nước và một mẻ xương. Nồi tụt nhiệt, nổi bọt, nhạt đi: chờ lăn tăn lại, hớt bọt, nếm lại rồi chan.",
+  "vi": "🛑 Tiệm tự dừng khi không an toàn: da đầu trầy, oxy 40 vol, tẩy tóc nhuộm hộp chưa thử lọn, tóc quá yếu để tẩy.",
   "en": ""
  },
  {
-  "vi": "Học nghề với bác Lâm",
+  "vi": "🧒 Bé khó ngồi yên: kéo có thể trượt, lẹm tóc. Hỏi [[Thói quen tạo kiểu]] để biết cách dỗ, ví dụ [[Mở phim hoạt hình]].",
   "en": ""
  },
  {
-  "vi": "Ba khách đầu bác Lâm đứng cạnh bếp: lỡ sai chỗ nào bác nhắc một lần trước khi bưng ra. Xong ba khách là bạn tự đứng bếp.",
+  "vi": "🔔 Chuyện ở quầy chặn việc tới khi bạn chọn (thuốc đang ủ vẫn xả được): cúp điện, mái dột, học sinh xin tết tóc, thợ cãi nhau, cãi giá.",
   "en": ""
  },
  {
-  "vi": "👂 Bấm [[Hỏi khách gọi gì]]: xem tô, thịt, lời dặn (ít nước, không hành, nước béo, không mì chính).",
+  "vi": "🚨 Đoàn y tế kiểm vệ sinh, hàng xách tay không nhãn (sau đó bị kiểm tra), hãng thu hồi lô oxy 20 vol (dùng tiếp thì khách rát da đầu).",
   "en": ""
  },
  {
-  "vi": "🍜 Lấy tô, [[Nhúng rổ bánh]] ba bốn lượt, xếp thịt, [[Rắc hành]].",
+  "vi": "👜 Trộm túi xách khách ở ghế chờ hoặc hũ tiền boa, khách đập vỡ gương, thuốc nhuộm lem áo khách, khách dị ứng quay lại đòi bồi thường.",
   "en": ""
  },
  {
-  "vi": "🫗 Chọn nồi, [[Chan nước dùng]], [[Dừng muôi]] đúng vạch.",
+  "vi": "Khử khuẩn dụng cụ",
   "en": ""
  },
  {
-  "vi": "🥖 Thêm quẩy, đĩa rau nếu khách gọi, rồi [[BƯNG PHỞ RA]] khi còn nóng hổi.",
+  "vi": "Mời ngồi & nghe mong muốn",
   "en": ""
  },
  {
-  "vi": "🍲 Nước trong, nóng, vừa miệng: lửa lăn tăn, hớt bọt, nếm trước khi bán.",
+  "vi": "Thử dị ứng sau tai",
   "en": ""
  },
  {
-  "vi": "🍜 Bánh tơi mềm: ba bốn lượt nhúng.",
+  "vi": "Chốt với khách",
   "en": ""
  },
  {
-  "vi": "🫗 Nước đúng mức khách dặn, không tràn mép tô.",
+  "vi": "Trộn bát",
   "en": ""
  },
  {
-  "vi": "🧅 Nhớ lời dặn: không hành, nhiều hành, nước béo, không mì chính, tái để riêng.",
+  "vi": "Thoa từ chân tới ngọn",
   "en": ""
  },
  {
-  "vi": "⏱️ Bưng ra khi phở còn nóng hổi; trời gió mùa phở nguội nhanh hơn.",
+  "vi": "Xả thuốc ngay",
   "en": ""
  },
  {
-  "vi": "Bán bánh phở chua từ hôm qua",
+  "vi": "Gội & xả",
   "en": ""
  },
  {
-  "vi": "Lỗi an toàn thực phẩm: khách không nhận, chấm 1 sao. Sáng nào cũng ngửi bánh, chua thì bỏ.",
+  "vi": "Chia vùng",
   "en": ""
  },
  {
-  "vi": "Chan nước chưa sôi",
+  "vi": "Cắt đường chuẩn",
   "en": ""
  },
  {
-  "vi": "Tái còn đỏ au, khách trả tô. Châm nồi xong phải chờ lăn tăn lại.",
+  "vi": "Tỉa tầng",
   "en": ""
  },
  {
-  "vi": "Để lửa lớn sôi sùng sục",
+  "vi": "Soi đối xứng & chốt",
   "en": ""
  },
  {
-  "vi": "Bọt nổi, nước đục ngầu, khách sành ăn chê ngay.",
+  "vi": "Thoa keratin & hấp",
   "en": ""
  },
  {
-  "vi": "Múc nồi lớn cho khách dặn không mì chính",
+  "vi": "Soi ảnh gốc chưa qua filter",
   "en": ""
  },
  {
-  "vi": "Khách nếm là biết. Khách dặn không mì chính thì múc nồi nhỏ.",
+  "vi": "Ngâm lại bộ",
   "en": ""
  },
  {
-  "vi": "Chan quá vạch hoặc tràn tô",
+  "vi": "Kho thuốc & vật tư",
   "en": ""
  },
  {
-  "vi": "Nhiều hơn lời dặn là lỗi nhỏ; tràn mép tô thì bưng bỏng tay khách.",
+  "vi": "Pha theo thẻ",
   "en": ""
  },
  {
-  "vi": "Đập trứng sau khi chan",
+  "vi": "Bạn nhận máy hỏng, đo cho ra bệnh, báo giá rõ ràng, sửa an toàn rồi chạy thử trước khi trả.",
   "en": ""
  },
  {
-  "vi": "Lòng đỏ sống nằm trơ trên mặt tô. Trứng trần phải vào trước nước sôi.",
+  "vi": "Sửa máy hằng ngày",
   "en": ""
  },
  {
-  "vi": "Quên buộc túi nước mang về",
+  "vi": "Điện thoại, quạt, nồi cơm, xe đạp, tai nghe; laptop từ ngày 3. Đo, báo giá, sửa, chạy thử rồi bàn giao.",
   "en": ""
  },
  {
-  "vi": "Nước đổ lênh láng túi xách của khách.",
+  "vi": "Máy nghi dính nước",
   "en": ""
  },
  {
-  "vi": "🍜 Bánh phở, thịt bò, xương ống, quẩy, rau, trứng, hộp mang về nhập ở [[Kho quán phở]]. Bánh phở để được hai ngày.",
+  "vi": "Khách nói chưa từng dính nước. Bấm [[Soi tem báo nước trong máy]], rồi [[Cho khách xem tem báo nước]] trước khi báo giá.",
   "en": ""
  },
  {
-  "vi": "🌅 Bánh còn qua đêm thì sáng mai có thể chua: ngửi trước khi trụng.",
+  "vi": "Từ ngày 3. Bấm [[Tra sổ bảo hành]], đo lại, rồi chọn [[Bảo hành, khách không trả]] hoặc [[Ngoài bảo hành, tính tiền]].",
   "en": ""
  },
  {
-  "vi": "👥 Nhân viên: Tí, Hưng canh nồi hớt bọt; Mai, Thảo dọn bàn rót trà.",
+  "vi": "Khách cần lấy gấp",
   "en": ""
  },
  {
-  "vi": "🌤️ Mỗi ngày một kiểu: gió mùa (phở nguội nhanh, nồi mất nhiệt), mưa sáng, cuối tuần, chợ sớm.",
+  "vi": "Từ ngày 2. Xong trong số nhịp khách hẹn thì khách gửi thêm xu; trễ thì khách càu nhàu.",
   "en": ""
  },
  {
-  "vi": "🔥 Bình gas hết giữa ca: thay bình, kiểm van rồi mới bật lửa.",
+  "vi": "Khách muốn bán lại máy cũ",
   "en": ""
  },
  {
-  "vi": "😭 Bé bị nước dùng đổ vào tay: xả nước mát, không bôi kem đánh răng.",
+  "vi": "Từ ngày 3. Bấm [[Tra IMEI máy báo mất]] và [[Hỏi hóa đơn & căn cước]] trước khi mua, [[Từ chối khéo]] hay [[Báo công an phường]].",
   "en": ""
  },
  {
-  "vi": "🥩 Người mời mua thịt bò rẻ không giấy tờ: không lấy.",
+  "vi": "Khách nhờ chuyện dữ liệu",
   "en": ""
  },
  {
-  "vi": "Vặn lửa lăn tăn",
+  "vi": "Từ ngày 4. Nên bấm [[Từ chối, chỉ sửa phần cứng]]. Chưa trả lời thì chưa bàn giao được.",
   "en": ""
  },
  {
-  "vi": "Hớt bọt",
+  "vi": "Khách ví mỏng",
   "en": ""
  },
  {
-  "vi": "Nếm nước dùng",
+  "vi": "Báo giá hàng [[Đồ tháo máy]] cho vừa túi, nhưng phải [[Cắm thử]] linh kiện trước khi lắp.",
   "en": ""
  },
  {
-  "vi": "Nêm nước mắm",
+  "vi": "Máy để lại tiệm",
   "en": ""
  },
  {
-  "vi": "Châm nước sôi",
+  "vi": "Chờ linh kiện thì mở [[⋯]] (Hẹn khách · Trả máy · Kho linh kiện · Kệ máy chờ), bấm [[Hẹn khách, để máy lại tiệm]], chọn ngày. Tối đa 2 máy, sau bấm [[Làm tiếp máy này]].",
   "en": ""
  },
  {
-  "vi": "Ngửi rổ bánh phở",
+  "vi": "Khách quay lại vì máy hỏng lại",
   "en": ""
  },
  {
-  "vi": "Bỏ bánh chua",
+  "vi": "Còn bảo hành thì bấm [[Sửa lại miễn phí]], tiệm chịu tiền linh kiện. Còn bảo hành mà [[Tính tiền]] là bị 1★.",
   "en": ""
  },
  {
-  "vi": "Nhúng rổ bánh",
+  "vi": "📝 Bấm [[Hỏi khách kể bệnh của máy]] để nghe khách tả lỗi.",
   "en": ""
  },
  {
-  "vi": "Tái để riêng",
+  "vi": "🧾 Nhìn máy trên thảm, chạm đúng các vết xước. Phụ kiện: phiếu ghi sẵn dòng “Khách đưa kèm”, chạm đúng những món đó. Điện thoại, laptop tích [[Hỏi quyền xem dữ liệu]], rồi [[Ghi phiếu nhận máy]].",
   "en": ""
  },
  {
-  "vi": "Rắc hành",
+  "vi": "🔬 Chọn phép đo phù hợp. Mỗi phép tốn một lượt; đo quá 2 lần khách bắt đầu sốt ruột.",
   "en": ""
  },
  {
-  "vi": "Đập trứng",
+  "vi": "🧠 Trong bảng giả thuyết, bấm [[Chốt]] bệnh khớp với số đo. Đừng chốt bệnh số đo đã loại.",
   "en": ""
  },
  {
-  "vi": "Dừng muôi",
+  "vi": "💰 Chọn loại linh kiện ([[Chính hãng]], [[Tương thích]], [[Đồ tháo máy]]…) rồi bấm [[Gửi báo giá]]. Khách chỉ nghe tối đa 6 lần báo giá.",
   "en": ""
  },
  {
-  "vi": "Buộc túi nước",
+  "vi": "🔌 Làm đủ bước an toàn như [[Rút điện / cáp sạc]], [[Xả tụ bằng điện trở]] rồi mới mở máy.",
   "en": ""
  },
  {
-  "vi": "Châm nồi",
+  "vi": "🛠️ Bấm [[Sửa:]] đúng bệnh đã chốt, lắp lại máy, rồi bấm [[Chạy thử lần cuối]].",
   "en": ""
  },
  {
-  "vi": "BƯNG PHỞ RA",
+  "vi": "🤝 Chọn số ngày bảo hành đúng loại linh kiện, rồi bấm [[Bàn giao & thu tiền]].",
   "en": ""
  },
  {
-  "vi": "Kho quán phở",
+  "vi": "✅ Máy chạy thật sau khi trả. Chạy thử lần cuối trước khi giao.",
   "en": ""
  },
  {
-  "vi": "Tiệm ảnh photobooth",
+  "vi": "💰 Giá không vượt ngân sách khách. Khách quen tin bạn thì chịu thêm tối đa 10%.",
   "en": ""
  },
  {
-  "vi": "Tiệm ảnh Tách Tách của chị Lam",
+  "vi": "🏷️ Khách chỉ muốn đồ chính hãng thì đừng báo hàng tương thích hay đồ tháo máy.",
   "en": ""
  },
  {
-  "vi": "Bạn đứng tiệm photobooth của chị Lam cạnh chợ đêm: hỏi kỹ khách muốn gì, bố trí buồng chụp, bấm máy đúng lúc cả nhóm mở mắt, cho khách chọn ảnh, trang trí, in, cắt, giao và thối đúng tiền.",
+  "vi": "📜 Bảo hành đúng loại: chính hãng 90 ngày, tương thích 30, đồ tháo máy 7. Máy dính nước không bảo hành.",
   "en": ""
  },
  {
-  "vi": "[[Lau ống kính]], [[Chụp thử phông trống]] để máy in báo mực. Mực sắp hết thì [[Thay cuộn mực mới]]. Rồi [[MỞ TIỆM]].",
+  "vi": "🧾 Phiếu nhận máy ghi đúng vết xước và phụ kiện, trả đủ phụ kiện cho khách.",
   "en": ""
  },
  {
-  "vi": "Bấm [[Hỏi khách muốn chụp gì]]: gói (dải 4 ô, 2 dải, khung lớn), khung chủ đề, phông, đạo cụ, đèn, sticker, ngày, màu.",
+  "vi": "⏳ Làm gọn, ít phép đo thừa. Khách hẹn gấp thì xong đúng hẹn.",
   "en": ""
  },
  {
-  "vi": "Bố trí buồng chụp",
+  "vi": "💝 Khách vui (5★) có khi bo thêm 3–15 xu hoặc tặng quà cảm ơn; 4★ thì hiếm hơn, dưới 3★ thì không.",
   "en": ""
  },
  {
-  "vi": "Ở thẻ ① Bố trí: chọn gói, khung, phông nền, ánh đèn và đạo cụ đúng lời khách dặn.",
+  "vi": "Mở quạt, nồi cơm, điện thoại… khi còn điện, chưa xả tụ",
   "en": ""
  },
  {
-  "vi": "Bấm máy đúng lúc",
+  "vi": "Khách không trả tiền, chấm 1★, báo cáo lên app. Hôm sau tổ dân phố tới, có thể bị phạt.",
   "en": ""
  },
  {
-  "vi": "[[Bắt đầu đếm 3-2-1]], đợi cả nhóm vào dáng rồi [[BẤM MÁY]] khi kim vào vùng xanh. Sớm quá thì nhòe, trễ quá thì có người chớp mắt.",
+  "vi": "Sửa khi khách chưa duyệt báo giá, hoặc tính tiền máy còn bảo hành",
   "en": ""
  },
  {
-  "vi": "Cho khách chọn ảnh",
+  "vi": "Lỗi nặng: khách đòi bớt hoặc hoàn tiền, review tối đa 2★, dễ bị báo cáo.",
   "en": ""
  },
  {
-  "vi": "Đủ ảnh thì [[Cho khách xem ảnh]], khách chỉ tấm nào thì chọn tấm đó. Không đủ ảnh đẹp thì [[Xóa, chụp lượt mới]].",
+  "vi": "Giao máy luôn mà không chạy thử",
   "en": ""
  },
  {
-  "vi": "Trang trí và in",
+  "vi": "Máy còn hỏng thì lỗi nặng, review tối đa 2★. Máy chạy rồi vẫn dễ quay lại bắt sửa.",
   "en": ""
  },
  {
-  "vi": "Dán sticker, đóng ngày, chọn màu như khách dặn, xem bản xem trước rồi [[In ảnh]]. Sửa sau khi in thì phải [[In lại]], tờ cũ bỏ đi.",
+  "vi": "Lắp nhầm linh kiện, chốt sai bệnh",
   "en": ""
  },
  {
-  "vi": "Cắt và giao",
+  "vi": "Chạy thử lỗi: mất linh kiện, phải đo và báo giá lại, khách mất kiên nhẫn.",
   "en": ""
  },
  {
-  "vi": "[[Cắt, bỏ bao kiếng]] (khung lớn thì [[Lồng vào khung gỗ]]), rồi [[ĐƯA ẢNH]] và [[ĐƯA TIỀN THỐI]].",
+  "vi": "Mua máy chưa tra IMEI, hóa đơn",
   "en": ""
  },
  {
-  "vi": "👂 [[Hỏi khách muốn chụp gì]], đọc kỹ phiếu đơn.",
+  "vi": "Máy báo mất: mất tiền mua, phải ký biên bản với công an.",
   "en": ""
  },
  {
-  "vi": "🎀 Chọn gói, khung chủ đề, phông, đèn, đạo cụ.",
+  "vi": "Chép dữ liệu khách nhờ, hoặc báo công an oan máy sạch",
   "en": ""
  },
  {
-  "vi": "📸 [[Bắt đầu đếm 3-2-1]], [[BẤM MÁY]] lúc cả nhóm đứng yên, mở mắt.",
+  "vi": "Chủ máy phát hiện dữ liệu bị chép và làm lớn chuyện. Báo oan thì người bán bị nghi oan.",
   "en": ""
  },
  {
-  "vi": "🖥️ [[Cho khách xem ảnh]], chọn đúng những tấm khách chỉ.",
+  "vi": "Hứa lèo giờ lấy máy, ghi sai phiếu, mất phụ kiện, bảo hành ngắn",
   "en": ""
  },
  {
-  "vi": "✨ Sticker, ngày, màu đúng lời dặn rồi [[In ảnh]].",
+  "vi": "Khách càu nhàu hoặc đòi bớt tiền. Để quên khách quay lại thì bị 2★.",
   "en": ""
  },
  {
-  "vi": "✂️ [[Cắt, bỏ bao kiếng]], [[ĐƯA ẢNH]], đặt tiền thối vào khay rồi [[ĐƯA TIỀN THỐI]].",
+  "vi": "Bấm [[Trả máy không sửa]] khi máy vẫn sửa được",
   "en": ""
  },
  {
-  "vi": "🖼️ Đúng gói, đúng khung, đúng phông, đúng đạo cụ, đúng đèn.",
+  "vi": "Đã đo thì chỉ thu 10 xu phí kiểm tra. Lỗi rõ: review tối đa 3★.",
   "en": ""
  },
  {
-  "vi": "📸 Ảnh nào cũng đứng yên, mở mắt, ống kính sạch.",
+  "vi": "📦 Bấm [[Kho & nhập linh kiện]] để đặt màn, pin, tụ, dây curoa, săm lốp…",
   "en": ""
  },
  {
-  "vi": "🖥️ Khách được tự chọn ảnh mình thích.",
+  "vi": "🏪 Chợ linh kiện Mây: rẻ, đặt trước 13:00 thì chiều nay có, đặt sau thì sáng mai. Đôi khi giao thiếu.",
   "en": ""
  },
  {
-  "vi": "✨ Sticker, ngày tháng, màu ảnh đúng lời dặn.",
+  "vi": "🚚 Hạt Nắng chạy 4 chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau khoảng 1 tiếng.",
   "en": ""
  },
  {
-  "vi": "⏱️ Gọn: không bắt khách chờ lâu.",
+  "vi": "⚡ Giao hỏa tốc tới trong 15–30 phút nhưng đắt. Kho linh kiện chính hãng rẻ hơn nhưng 1–2 ngày mới tới.",
   "en": ""
  },
  {
-  "vi": "Bấm máy trước khi cả nhóm vào dáng",
+  "vi": "🔓 Màn hình chính hãng và mâm nhiệt nồi cơm mở ở cấp 2; motor quạt đứng mở ở cấp 3.",
   "en": ""
  },
  {
-  "vi": "Ảnh nhòe. Khách thấy ngay khi chọn ảnh.",
+  "vi": "🧰 Mở [[Dụng cụ]]: mũi hàn mòn thì [[Lau mũi hàn]] (tốn 1 thiếc hàn) hoặc thay [[Mũi mới]] 4 xu.",
   "en": ""
  },
  {
-  "vi": "Bấm trễ, giữ dáng quá lâu",
+  "vi": "🔋 Đồng hồ đo yếu pin thì số đo sai, phí lượt. Thay [[Pin 9V mới]] (2 xu) trước.",
   "en": ""
  },
  {
-  "vi": "Có người chớp mắt. Khách khó tính soi từng đôi mắt, chấm sao thấp.",
+  "vi": "🛒 Thiếu linh kiện giữa chừng: bấm [[Hết trên kệ — đặt riêng]], rồi hẹn khách để máy lại.",
   "en": ""
  },
  {
-  "vi": "In mà không cho khách chọn ảnh",
+  "vi": "🛵 Lâm Linh Kiện (+2 xu): đặt trước 12:00 thì 15:00 có, đặt sau thì sáng mai. Hàng hãng từ thành phố (+3 xu) ngày kia mới tới.",
   "en": ""
  },
  {
-  "vi": "Khách bực: tấm mình thích không có trong dải.",
+  "vi": "🔍 Mở máy có thể lòi thêm bệnh ẩn như đứt dây, lỏng cọc. Phải báo giá thêm.",
   "en": ""
  },
  {
-  "vi": "Sai khung, sai phông, thiếu đạo cụ",
+  "vi": "⚡ Ngày mất điện, phép đo cắm điện tốn 2 xu chạy máy phát. Mưa thì mái có thể dột.",
   "en": ""
  },
  {
-  "vi": "Khách chê không giống lời dặn, có khi đòi bớt tiền.",
+  "vi": "🚨 Có người nhờ mở khóa máy đáng ngờ, hoặc mời mua lô hàng không hóa đơn. Coi chừng bị kiểm tra.",
   "en": ""
  },
  {
-  "vi": "Ống kính bẩn, mưa hơi nước không lau",
+  "vi": "🔋 Pin phồng để lại trong tiệm có thể nóng lên. Lỡ làm nứt màn máy khách thì phải đền.",
   "en": ""
  },
  {
-  "vi": "Ảnh nào cũng mờ.",
+  "vi": "📞 Khách gọi hỏi máy để lại. Nói thật giờ xong, đừng trấn an cho qua.",
   "en": ""
  },
  {
-  "vi": "Sửa sau khi đã in",
+  "vi": "Cho khách xem tem báo nước",
   "en": ""
  },
  {
-  "vi": "Phải in lại, tờ cũ bỏ đi, tiệm chịu tiền giấy và mực.",
+  "vi": "Bảo hành, khách không trả",
   "en": ""
  },
  {
-  "vi": "Hết giấy mà vẫn nhận đơn",
+  "vi": "Ngoài bảo hành, tính tiền",
   "en": ""
  },
  {
-  "vi": "Nói thật: [[Nói thật: tiệm hết giấy, khung]], hẹn khách hôm sau.",
+  "vi": "Tra IMEI máy báo mất",
   "en": ""
  },
  {
-  "vi": "📦 Giấy in dải, giấy in đôi, giấy khung lớn, khung gỗ, bao kiếng, cuộn mực nhập ở [[Kho tiệm ảnh]].",
+  "vi": "Hỏi hóa đơn & căn cước",
   "en": ""
  },
  {
-  "vi": "🖨️ Một cuộn mực in được 24 tờ: chụp thử buổi sáng để biết còn bao nhiêu.",
+  "vi": "Báo công an phường",
   "en": ""
  },
  {
-  "vi": "👀 Bé nhỏ giữ dáng rất ngắn, ông bà cười chậm: canh nhịp từng nhóm.",
+  "vi": "Từ chối, chỉ sửa phần cứng",
   "en": ""
  },
  {
-  "vi": "🌤️ Mỗi ngày một kiểu: cuối tuần đông, mưa (ống kính đọng hơi nước), lễ hội, mùa tan trường mặc đồng phục.",
+  "vi": "Cắm thử",
   "en": ""
  },
  {
-  "vi": "🎓 Học nghề ba khách đầu: chị Lam đứng cạnh, chặn một lỗi trước khi in.",
+  "vi": "Hẹn khách, để máy lại tiệm",
   "en": ""
  },
  {
-  "vi": "🖨️ Kẹt giấy trong máy in, điện thoại bỏ quên trong buồng, người lạ xin ảnh của khách, bé nghịch đèn vòng.",
+  "vi": "Làm tiếp máy này",
   "en": ""
  },
  {
-  "vi": "Lau ống kính",
+  "vi": "Sửa lại miễn phí",
   "en": ""
  },
  {
-  "vi": "Chụp thử phông trống",
+  "vi": "Tính tiền",
   "en": ""
  },
  {
-  "vi": "Thay cuộn mực mới",
+  "vi": "Hỏi khách kể bệnh của máy",
   "en": ""
  },
  {
-  "vi": "Hỏi khách muốn chụp gì",
+  "vi": "Hỏi quyền xem dữ liệu",
   "en": ""
  },
  {
-  "vi": "Bắt đầu đếm 3-2-1",
+  "vi": "Gửi báo giá",
   "en": ""
  },
  {
-  "vi": "BẤM MÁY",
+  "vi": "Sửa:",
   "en": ""
  },
  {
-  "vi": "Cho khách xem ảnh",
+  "vi": "Trả máy không sửa",
   "en": ""
  },
  {
-  "vi": "Xóa, chụp lượt mới",
+  "vi": "Kho & nhập linh kiện",
   "en": ""
  },
  {
-  "vi": "In ảnh",
+  "vi": "Lau mũi hàn",
   "en": ""
  },
  {
-  "vi": "In lại",
+  "vi": "Mũi mới",
   "en": ""
  },
  {
-  "vi": "Cắt, bỏ bao kiếng",
+  "vi": "Pin 9V mới",
   "en": ""
  },
  {
-  "vi": "Lồng vào khung gỗ",
+  "vi": "Bạn chăm sáu luống rau và đàn gà, thu hoạch đúng lứa, đóng thùng và dán nhãn thật.",
   "en": ""
  },
  {
-  "vi": "ĐƯA ẢNH",
+  "vi": "Hợp đồng nhà hàng",
   "en": ""
  },
  {
-  "vi": "Nói thật: tiệm hết giấy, khung",
+  "vi": "Chỉ nhận loại A, đóng thùng carton. Có đơn bắt buộc nhãn hữu cơ kèm QR nhật ký.",
   "en": ""
  },
  {
-  "vi": "Kho tiệm ảnh",
+  "vi": "Khách chợ",
   "en": ""
  },
  {
-  "vi": "Tổ giúp việc Nhà Thơm của cô Mai",
+  "vi": "Loại A hay B đều được, loại B tính 70% giá. Hàng đựng túi giấy.",
   "en": ""
  },
  {
-  "vi": "Bạn đẩy xe đồ nghề tới từng nhà khách: nghe khách dặn, dọn từng phòng bằng đúng khăn, đúng chai, từ trên cao xuống, khô trước ướt sau, giữ đồ của khách, rồi mời khách đi một vòng kiểm nhà.",
+  "vi": "Đơn trứng",
   "en": ""
  },
  {
-  "vi": "Soạn xe đầu ngày",
+  "vi": "Nhặt trứng trong ổ, xếp khay 10 ô. Trứng không bao giờ được dán nhãn hữu cơ.",
   "en": ""
  },
  {
-  "vi": "[[Giặt khăn]] hôm qua, [[Châm đầy]] chai nào sắp cạn (một chai lau được 12 lượt), rồi [[LÊN ĐƯỜNG]].",
+  "vi": "Gieo trồng",
   "en": ""
  },
  {
-  "vi": "Tới nhà, bấm [[Bấm chuông, nghe khách dặn]]: dọn phòng nào, chỗ nào để nguyên, nhà có mèo hay có bé.",
+  "vi": "Chọn luống trống, chạm hạt giống để gieo. Đổi nhóm cây với vụ trước để đất thêm màu.",
   "en": ""
  },
  {
-  "vi": "Dọn từng phòng",
+  "vi": "Chăm luống",
   "en": ""
  },
  {
-  "vi": "Chọn phòng, cầm đúng dụng cụ và đúng chai trên xe, chạm vào từng chỗ để lau. Mỗi lần chạm là một lượt.",
+  "vi": "Giữ ẩm 40–80%. Quá 80% thì [[Khơi rãnh]]. Nhiều luống khô thì [[Mở van tưới cả vườn]].",
   "en": ""
  },
  {
-  "vi": "Phủi quạt trần, nóc tủ trước; rồi bàn kệ; rồi quét, hút sàn; lau ướt sau cùng.",
+  "vi": "Trừ sâu",
   "en": ""
  },
  {
-  "vi": "Giữ đồ của khách",
+  "vi": "Sâu chỉ lộ khi thăm luống. [[Neem sinh học]] giữ hữu cơ, cách ly 2 nhịp; [[Thuốc hóa học]] mất hữu cơ, cách ly 20 nhịp.",
   "en": ""
  },
  {
-  "vi": "Đồ dễ vỡ nhấc ra trước khi lau rồi đặt lại; nhẫn, đồng hồ cất vào khay; mèo bế sang phòng khác.",
+  "vi": "Bón phân",
   "en": ""
  },
  {
-  "vi": "Kiểm nhà, nhận tiền công",
+  "vi": "Compost giữ chuẩn hữu cơ. NPK cho cây lớn nhanh nhưng mất hữu cơ, cách ly 15 nhịp.",
   "en": ""
  },
  {
-  "vi": "Xong hết thì [[MỜI KHÁCH KIỂM NHÀ]]. Khách đi một vòng, chuyển khoản tiền công; khách ưng thì thành khách quen.",
+  "vi": "Bón thúc cho kịp lứa",
   "en": ""
  },
  {
-  "vi": "🧺 [[Giặt khăn]], [[Châm đầy]] chai sắp cạn, [[LÊN ĐƯỜNG]].",
+  "vi": "Mở luống đang lớn, chọn liều [[Phân bón lá thúc]]: mỗi liều rút 10% thời gian lớn, tối đa 70% mỗi vụ, vẫn hữu cơ. Tốn xu và 1 đất màu mỗi liều.",
   "en": ""
  },
  {
-  "vi": "🔔 [[Bấm chuông, nghe khách dặn]], đọc kỹ lời dặn.",
+  "vi": "Thu hoạch",
   "en": ""
  },
  {
-  "vi": "🚪 Chọn phòng, nhấc đồ dễ vỡ ra, cất đồ quý vào khay.",
+  "vi": "Thu đúng lứa để được loại A. Non hoặc quá lứa chỉ được loại B; hỏng thì [[Nhổ bỏ, ủ phân]].",
   "en": ""
  },
  {
-  "vi": "🧽 Cầm đúng dụng cụ, đúng chai; lau từ trên cao xuống, khô trước ướt sau.",
+  "vi": "Chuồng gà",
   "en": ""
  },
  {
-  "vi": "🏺 Đặt đồ dễ vỡ lại chỗ cũ rồi [[MỜI KHÁCH KIỂM NHÀ]].",
+  "vi": "Mỗi ngày cho ăn, dọn chuồng, nhặt trứng. Mất gà thì [[Mua gà mái đẻ]] giá 12 xu.",
   "en": ""
  },
  {
-  "vi": "✨ Phòng nào, chỗ nào cũng sạch.",
+  "vi": "Bán sỉ chợ đầu mối",
   "en": ""
  },
  {
-  "vi": "🟦 Khăn xanh cho kính, khăn vàng cho bàn bếp, khăn đỏ chỉ cho bồn cầu.",
+  "vi": "Tab [[Chợ]]: bán hàng dư khoảng 60% giá. Bán càng nhiều giá càng tụt, chợ nhận có hạn.",
   "en": ""
  },
  {
-  "vi": "🏺 Đồ dễ vỡ nguyên vẹn, đúng chỗ cũ; đồ quý cất vào khay.",
+  "vi": "Tự đi trong trại",
   "en": ""
  },
  {
-  "vi": "📝 Nhớ lời dặn: chỗ để nguyên, nhà có mèo, có bé thì sàn lau nước sạch.",
+  "vi": "Đi bằng cần điều khiển bên trái, kéo bên phải để nhìn; chạm 📍 là tự đi tới chỗ cần làm. Giao hàng thì chạy xe máy tới khách. Thích bấm nút thì chọn ⏩ Bấm nhanh.",
   "en": ""
  },
  {
-  "vi": "⏱️ Làm có thứ tự, không phải lau đi lau lại.",
+  "vi": "Góp hàng cho HTX",
   "en": ""
  },
  {
-  "vi": "Lau sàn trước rồi mới phủi quạt trần",
+  "vi": "Hứa góp bao nhiêu loại A thì giao đủ ở tab Chợ trước khi khép ca.",
   "en": ""
  },
  {
-  "vi": "Bụi rơi xuống sàn vừa lau, phải lau lại, khách chờ lâu.",
+  "vi": "📞 Bấm [[Nhận đơn hàng]] để nghe khách đặt gì, loại hàng và nhãn cần.",
   "en": ""
  },
  {
-  "vi": "Lau ướt khi sàn còn bụi tóc",
+  "vi": "🌱 Tab [[Vườn]]: chọn luống đúng lứa, bấm [[THU HOẠCH]] để hàng vào kho mát.",
   "en": ""
  },
  {
-  "vi": "Bụi bết thành vệt, lượt lau đó coi như bỏ.",
+  "vi": "🥚 Đơn có trứng: tab [[Chuồng]], bấm [[Nhặt trứng]].",
   "en": ""
  },
  {
-  "vi": "Dùng khăn đỏ lau chỗ khác",
+  "vi": "❄️ Tab [[Kho mát]]: bấm +1 hoặc +số trên từng lô để xếp vào thùng.",
   "en": ""
  },
  {
-  "vi": "Mang bẩn bồn cầu đi khắp nhà, khách chấm sao thấp.",
+  "vi": "🏷️ Đến bước dán nhãn, chọn [[Nhãn thường]] hoặc [[Nhãn hữu cơ]] ngay trên thanh dưới cùng. Hữu cơ chỉ khi mọi lô đều hữu cơ.",
   "en": ""
  },
  {
-  "vi": "Xịt tẩy dầu mỡ lên mặt gỗ",
+  "vi": "🚚 Bấm [[GIAO HÀNG]]: khách kiểm số lượng, loại hàng và quét QR.",
   "en": ""
  },
  {
-  "vi": "Gỗ bạc màu một mảng, khách bực.",
+  "vi": "🔁 Giữa các đơn: [[Tưới]], [[Nhổ cỏ]], [[Thăm sâu]], [[Cho gà ăn & thay nước]], [[Dọn chuồng]].",
   "en": ""
  },
  {
-  "vi": "Lau mà không nhấc bình gốm ra",
+  "vi": "📦 Giao đủ số lượng khách đặt, được tặng thêm tối đa 2.",
   "en": ""
  },
  {
-  "vi": "Bình chao đảo hoặc vỡ, phải đền tiền.",
+  "vi": "🅰️ Hợp đồng chỉ xếp lô loại A. Khách chợ lẫn loại B thì còn 4★.",
   "en": ""
  },
  {
-  "vi": "Động vào chỗ khách dặn để nguyên",
+  "vi": "🌿 Hàng thu trong ngày là tươi nhất. Lô hết hạn hôm nay bị chấm thấp.",
   "en": ""
  },
  {
-  "vi": "Khách mất lòng tin, có khi đòi bớt tiền.",
+  "vi": "🏷️ Nhãn đúng sự thật: nhãn hữu cơ phải khớp nhật ký từng luống.",
   "en": ""
  },
  {
-  "vi": "Mời khách kiểm khi còn chỗ bẩn",
+  "vi": "⏱️ Giao nhanh khi khách còn kiên nhẫn từ 90% trở lên.",
   "en": ""
  },
  {
-  "vi": "Khách chỉ từng chỗ, trả ít đi, không thành khách quen.",
+  "vi": "🌿 Nhãn hữu cơ thật được trả 130% giá khi đơn đòi hữu cơ hoặc khách chợ mua.",
   "en": ""
  },
  {
-  "vi": "📦 Chai lau kính, tẩy rửa dịu, tẩy dầu mỡ, tẩy bồn cầu, can nước lau sàn nhập ở [[Kho tổ giúp việc]].",
+  "vi": "💝 Khách vui (5★) có khi bo thêm 2–10 xu hoặc tặng quà; 4★ thì hiếm hơn.",
   "en": ""
  },
  {
-  "vi": "🧺 Khăn dùng xong tối nào cũng bẩn: sáng nào cũng giặt.",
+  "vi": "Giao lô chưa hết thời gian cách ly thuốc",
   "en": ""
  },
  {
-  "vi": "🌧️ Mưa dầm sàn lấm bùn, trời nồm gương đọng nước: châm đầy chai trước khi đi.",
+  "vi": "Khách từ chối, không trả tiền, lô bị hủy, 1★, báo cáo. Hôm sau đoàn kiểm tra tới.",
   "en": ""
  },
  {
-  "vi": "🌤️ Mỗi ngày một kiểu: cuối tuần, mưa dầm, trời nồm, hanh khô nhiều bụi, mùa tổng vệ sinh.",
+  "vi": "Dán nhãn hữu cơ cho lô đã dùng hóa chất hoặc cho trứng",
   "en": ""
  },
  {
-  "vi": "🎓 Hai nhà đầu tiên cô Mai đi cùng, chặn mỗi kiểu lỗi một lần trước khi xảy ra.",
+  "vi": "Khách quét QR rồi trả thùng ngay. Phải đổi nhãn hoặc thay lô, điểm nhãn trung thực chỉ 2.",
   "en": ""
  },
  {
-  "vi": "💵 Tiền rơi dưới gầm sofa, hàng xóm nhờ dọn riêng, thang máy hỏng, khách gọi video kiểm tra.",
+  "vi": "Đơn bắt buộc hữu cơ mà dán nhãn thường",
   "en": ""
  },
  {
-  "vi": "⭐ Khách ưng nhà sạch thì lần sau thêm tiền công, kể bạn nghe chuyện nhà họ.",
+  "vi": "Khách không nhận, phải đổi nhãn. Review vẫn ghi một lỗi nhỏ.",
   "en": ""
  },
  {
-  "vi": "Giặt khăn",
+  "vi": "Giao thiếu hàng",
   "en": ""
  },
  {
-  "vi": "Châm đầy",
+  "vi": "Chỉ được trả phần đã giao. Thiếu nhiều thì bị bớt tiền, hoàn tiền hoặc khách bỏ đi.",
   "en": ""
  },
  {
-  "vi": "Bấm chuông, nghe khách dặn",
+  "vi": "Lẫn loại B vào hợp đồng loại A",
   "en": ""
  },
  {
-  "vi": "MỜI KHÁCH KIỂM NHÀ",
+  "vi": "Phần loại B chỉ tính 70% giá, khách phàn nàn, sao giảm.",
   "en": ""
  },
  {
-  "vi": "Kho tổ giúp việc",
+  "vi": "Phun thuốc hóa học khi ong đang ở cạnh vườn",
   "en": ""
  },
  {
-  "vi": "Cô Hạnh giới thiệu bạn tới nấu cơm cho các nhà quen trong phường. Mỗi ngày một nhà: nghe dặn, lên thực đơn, đi chợ vừa túi tiền, nấu cho kịp bữa rồi ghi sổ chợ rõ ràng.",
+  "vi": "Ong chết cả đàn, đền 12 xu, bị chấm 1★.",
   "en": ""
  },
  {
-  "vi": "Nghe chủ nhà dặn",
+  "vi": "Quên cho gà ăn, bỏ bê chuồng",
   "en": ""
  },
  {
-  "vi": "Bấm [[Nghe chủ nhà dặn]]: mấy người ăn, tiền chợ bao nhiêu, nhà có bé nhỏ, người già hay người ăn kiêng, nhà thích ăn gì.",
+  "vi": "Gà kém vui, mai chỉ nửa đàn đẻ. Trứng để qua đêm thành loại B.",
   "en": ""
  },
  {
-  "vi": "Lên thực đơn",
+  "vi": "📦 Bấm [[Kho vật tư]] để đặt hạt giống, phân, thuốc, cám gà và bao bì.",
   "en": ""
  },
  {
-  "vi": "Chọn một canh, một món mặn, một món xào, một rau. Xem nhãn món (cay, mặn, chiên, dai…) cho hợp người trong nhà, dự tính không quá tiền chợ, rồi [[CHỐT THỰC ĐƠN]].",
+  "vi": "🌾 HTX Nông nghiệp Mây: giá xã viên, đặt trước 11:00 thì chiều nay có, đặt sau thì sáng mai.",
   "en": ""
  },
  {
-  "vi": "[[Xem]] từng món: cá mắt đục, thịt nhớt tay, rau úa là không tươi, bấm [[Đổi]]. Mua đủ phần (mỗi phần đủ hai người), [[Xin bớt]] nếu muốn, sạp nào cũng [[Xin hóa đơn]], rồi [[VỀ NHÀ NẤU]].",
+  "vi": "🚚 Đại lý vật tư Hạt Nắng chạy 4 chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau khoảng 1 tiếng.",
   "en": ""
  },
  {
-  "vi": "Nấu từng món",
+  "vi": "⚡ Xe ba gác hỏa tốc tới trong 15–30 phút nhưng đắt. Dùng khi gà sắp hết cám.",
   "en": ""
  },
  {
-  "vi": "Nồi cơm đổ nước đúng vạch, bày chén đũa, [[Nếm nước mắm]]. Mỗi món [[Rửa sạch]], cắt, nêm, chọn lửa, rồi [[Tắt bếp]] khi kim vào vùng xanh.",
+  "vi": "🌱 Trại giống Đồng Xanh: hạt cà chua, dưa leo, rau thơm rẻ nhất nhưng 1–2 ngày mới có.",
   "en": ""
  },
  {
-  "vi": "Dọn cơm",
+  "vi": "🔓 Dưa leo mở ở cấp 2, rau thơm mở ở cấp 3.",
   "en": ""
  },
  {
-  "vi": "Hai bếp thôi: món lâu chín bắc trước, món nhanh để sau. Món nguội thì [[Hâm nóng]]. Đủ món, cơm chín thì [[DỌN CƠM]].",
+  "vi": "🛍️ Luôn còn thùng carton, túi giấy và khay trứng. Thiếu bao bì là không giao được.",
   "en": ""
  },
  {
-  "vi": "Ghi sổ chợ",
+  "vi": "🟫 Luống trống: [[Bón lót compost]] trước khi gieo. Mỗi lần gieo tốn 1 gói hạt.",
   "en": ""
  },
  {
-  "vi": "Sạp có hóa đơn thì [[Kẹp hóa đơn]], không có thì [[Ghi tay]]. Rồi [[GỬI TIỀN THỪA]] cho chủ nhà.",
+  "vi": "🧴 Phân bón lá thúc không cần nhập kho: mua ngay ở luống, liều sau đắt hơn liều trước. Trời mưa hay đất khô héo thì chưa phun được.",
   "en": ""
  },
  {
-  "vi": "Nấu thêm một món",
+  "vi": "🗓️ Xem dự báo: mai nắng thì tưới trước khi khép ca, mai mưa thì khơi rãnh sẵn.",
   "en": ""
  },
  {
-  "vi": "Từ chiều, chủ nhà nhờ nấu thêm cháo, chè, trứng hấp… từ đồ có sẵn. Nấu xong bấm [[MANG RA]].",
+  "vi": "🚱 Trạm bơm cúp nước: van tưới cả vườn không chạy. Tưới từng luống hoặc gọi xe bồn.",
   "en": ""
  },
  {
-  "vi": "👂 [[Nghe chủ nhà dặn]]: mấy người, tiền chợ, ai kiêng gì.",
+  "vi": "⛈️ Giông, sâu khoang, nắng nóng, dê sổng, chồn vào chuồng: chọn cách xử lý xong mới làm tiếp.",
   "en": ""
  },
  {
-  "vi": "📝 Một canh, một mặn, một xào, một rau hợp cả nhà, trong tiền chợ.",
+  "vi": "📋 Đoàn kiểm tra hữu cơ: lô chưa hết cách ly bị phạt, tiêu hủy. Xin hoãn thì họ quay lại.",
   "en": ""
  },
  {
-  "vi": "🛒 [[Xem]] kỹ đồ tươi, mua đủ phần, [[Xin hóa đơn]] từng sạp.",
+  "vi": "🤝 HTX nhờ góp hàng, thương lái hỏi mua sạch kho. Góp thiếu bị phạt 2 xu mỗi đơn vị.",
   "en": ""
  },
  {
-  "vi": "🍚 Bắc nồi cơm, bày chén đũa, [[Nếm nước mắm]].",
+  "vi": "🦹 Trộm gà, trộm giỏ rau, thương lái cân thiếu: báo công an, cân lại bằng cân của HTX.",
   "en": ""
  },
  {
-  "vi": "🔥 Rửa, cắt, nêm, chọn lửa; món lâu chín bắc trước; [[Tắt bếp]] đúng lúc.",
+  "vi": "Khơi rãnh",
   "en": ""
  },
  {
-  "vi": "📒 [[DỌN CƠM]], ghi sổ chợ, [[GỬI TIỀN THỪA]].",
+  "vi": "Phân bón lá thúc",
   "en": ""
  },
  {
-  "vi": "🥗 Thực đơn hợp cả nhà: bé không ăn cay, ông ăn mềm nhạt, người ăn kiêng không chiên.",
+  "vi": "Mở van tưới cả vườn",
   "en": ""
  },
  {
-  "vi": "🐟 Đồ tươi, mua đủ phần cho mọi người.",
+  "vi": "Neem sinh học",
   "en": ""
  },
  {
-  "vi": "🍲 Món nào cũng chín tới, nêm vừa khẩu vị nhà.",
+  "vi": "Thuốc hóa học",
   "en": ""
  },
  {
-  "vi": "♨️ Món nào lên mâm cũng nóng.",
+  "vi": "Nhổ bỏ, ủ phân",
   "en": ""
  },
  {
-  "vi": "📒 Sổ chợ có hóa đơn, tiền thừa gửi lại đủ.",
+  "vi": "Nhận đơn hàng",
   "en": ""
  },
  {
-  "vi": "Món cay cho bé, món mặn, dai cho ông, món chiên cho người ăn kiêng",
+  "vi": "THU HOẠCH",
   "en": ""
  },
  {
-  "vi": "Chủ nhà phật ý, có khi bớt tiền công.",
+  "vi": "Nhặt trứng",
   "en": ""
  },
  {
-  "vi": "Mua cá, thịt không tươi",
+  "vi": "Nhổ cỏ",
   "en": ""
  },
  {
-  "vi": "Ngửi là biết. Cả nhà lo ăn vào đau bụng.",
+  "vi": "Thăm sâu",
   "en": ""
  },
  {
-  "vi": "Tắt bếp sớm, thịt cá còn sống",
+  "vi": "Dọn chuồng",
   "en": ""
  },
  {
-  "vi": "Lỗi nặng: đồ ăn chưa chín, chủ nhà trả nửa công.",
+  "vi": "Bón lót compost",
   "en": ""
  },
  {
-  "vi": "Bắc món nhanh trước, món lâu sau",
+  "vi": "Bạn nhận khách, giữ lịch phòng, dọn phòng, làm bữa sáng và tính hóa đơn thật sòng phẳng.",
   "en": ""
  },
  {
-  "vi": "Món xong trước nguội ngắt lúc dọn cơm.",
+  "vi": "Khớp mã đặt phòng, xem giấy tờ, đếm khách, giao phòng sạch rồi bấm [[Trao chìa khóa & thu tiền]].",
   "en": ""
  },
  {
-  "vi": "Nêm đậm cho nhà có ông huyết áp cao",
+  "vi": "Hỏi dị ứng, chiên trứng đúng độ chín, thêm bánh mì, sữa, cà phê rồi bấm [[Mang ra cho khách]].",
   "en": ""
  },
  {
-  "vi": "Ông không ăn được, bà Toàn buồn.",
+  "vi": "Bấm [[Báo buồng phòng kiểm]], trả đồ khách để quên, chỉnh từng dòng hóa đơn rồi [[In hóa đơn]] và thu.",
   "en": ""
  },
  {
-  "vi": "Quên xin hóa đơn",
-  "en": ""
- },
- {
-  "vi": "Phải ghi tay theo trí nhớ, chủ nhà nhìn sổ không yên tâm.",
-  "en": ""
- },
- {
-  "vi": "👛 Tiền chợ là tiền của nhà người ta: ví riêng của bạn không bị trừ.",
-  "en": ""
- },
- {
-  "vi": "🔥 Bếp nhà có hai bếp: canh, kho lâu chín; xào, luộc nhanh.",
-  "en": ""
- },
- {
-  "vi": "🍚 Cơm cho người già đổ nước nhiều hơn một chút cho mềm.",
-  "en": ""
- },
- {
-  "vi": "🌤️ Mỗi ngày một kiểu: mưa sáng (rau đắt hơn), nhà có khách (thêm người ăn), cuối tháng (tiền chợ eo hẹp).",
-  "en": ""
- },
- {
-  "vi": "👨‍👩‍👧‍👦 Bốn nhà quen: chị Mai có bé Bin, ông Toàn ăn mềm nhạt, anh Khoa ăn kiêng mê cay, cô Lệ nhà đông người.",
-  "en": ""
- },
- {
-  "vi": "📱 Chủ nhà gọi dặn thêm, bình ga sắp hết, con mèo rình cá, hàng xóm sang mượn đồ.",
-  "en": ""
- },
- {
-  "vi": "💵 Nhà nào mời bạn lại lần sau thì công trả thêm một chút.",
-  "en": ""
- },
- {
-  "vi": "CHỐT THỰC ĐƠN",
-  "en": ""
- },
- {
-  "vi": "Đổi",
-  "en": ""
- },
- {
-  "vi": "Xin bớt",
-  "en": ""
- },
- {
-  "vi": "Xin hóa đơn",
-  "en": ""
- },
- {
-  "vi": "VỀ NHÀ NẤU",
-  "en": ""
- },
- {
-  "vi": "Rửa sạch",
-  "en": ""
- },
- {
-  "vi": "Tắt bếp",
-  "en": ""
- },
- {
-  "vi": "Hâm nóng",
-  "en": ""
- },
- {
-  "vi": "DỌN CƠM",
-  "en": ""
- },
- {
-  "vi": "Kẹp hóa đơn",
-  "en": ""
- },
- {
-  "vi": "GỬI TIỀN THỪA",
-  "en": ""
- },
- {
-  "vi": "Bảo mẫu trông trẻ",
-  "en": ""
- },
- {
-  "vi": "Tổ trông trẻ Mèo Con của cô Tâm",
-  "en": ""
- },
- {
-  "vi": "Mỗi ngày bạn trông một bé ở một nhà, theo lịch từ 7:30 tới 18:00: nhận bé, cho ăn, chơi, soát nhà, ru ngủ, dỗ bé, rồi bàn giao và kể thật với bố mẹ.",
-  "en": ""
- },
- {
-  "vi": "Nhận bé",
-  "en": ""
- },
- {
-  "vi": "[[Rửa tay]], [[Đọc giấy dặn]] (dị ứng, giờ ngủ, đồ ôm, màn hình), chọn cách chào hợp tính bé, [[Mở túi đồ]], hỏi món còn thiếu rồi [[NHẬN BÉ]].",
-  "en": ""
- },
- {
-  "vi": "Bữa phụ, bữa trưa",
-  "en": ""
- },
- {
-  "vi": "Đủ nhóm món, tránh món bé dị ứng. Bé dưới 4 tuổi: không đồ cứng, [[Cắt nhỏ]]. Cháo canh [[Để nguội bớt]], cá [[Gỡ xương]]. [[Rửa tay cho bé]], [[Cho bé ngồi ghế ăn]], [[DỌN CHO BÉ ĂN]].",
-  "en": ""
- },
- {
-  "vi": "Giờ chơi",
-  "en": ""
- },
- {
-  "vi": "Nhìn tâm trạng bé, chọn trò hợp tâm trạng và hợp tuổi. Chơi cùng bé, trả lời bé ân cần, [[Cùng bé dọn đồ chơi]], rồi [[CHƠI XONG]].",
-  "en": ""
- },
- {
-  "vi": "Soát nhà",
-  "en": ""
- },
- {
-  "vi": "Ngồi ngang tầm bé, chạm vào chỗ dễ nguy hiểm (ổ điện, cốc nóng, cầu thang, đồ nhỏ…) để xử lý, rồi [[CHO BÉ RA CHƠI]].",
-  "en": ""
- },
- {
-  "vi": "Ngủ trưa",
-  "en": ""
- },
- {
-  "vi": "[[Cho bé đi vệ sinh]], [[Kéo rèm, tắt đèn]], đưa đúng đồ ôm, [[Hát ru một bài]]. Bé thở ra chậm (vạch xanh) thì [[Vỗ nhẹ]], đủ ba lần là [[BÉ NGỦ RỒI]].",
-  "en": ""
- },
- {
-  "vi": "Chuyện nhỏ",
-  "en": ""
- },
- {
-  "vi": "Bé khóc, ngã trầy gối, ăn vạ: dỗ nhẹ nhàng tới khi bé ổn, sơ cứu đúng thứ tự, rồi [[BÉ ỔN RỒI]].",
-  "en": ""
- },
- {
-  "vi": "Ghi vào nhật ký những dòng đúng sự thật, kể cả chuyện bé khóc, bé ngã, rồi [[BÀN GIAO BÉ]].",
-  "en": ""
- },
- {
-  "vi": "📝 [[Rửa tay]], [[Đọc giấy dặn]], chào bé, kiểm túi, [[NHẬN BÉ]].",
-  "en": ""
- },
- {
-  "vi": "🍽️ Món hợp tuổi, tránh món bé dị ứng, sơ chế, [[DỌN CHO BÉ ĂN]].",
-  "en": ""
- },
- {
-  "vi": "🧸 Trò hợp tâm trạng bé, chơi cùng bé, [[CHƠI XONG]].",
-  "en": ""
- },
- {
-  "vi": "😴 Đủ bước ru ngủ, [[Vỗ nhẹ]] lúc bé thở ra.",
-  "en": ""
- },
- {
-  "vi": "👋 Nhật ký thật, [[BÀN GIAO BÉ]].",
-  "en": ""
- },
- {
-  "vi": "🛡️ Bé an toàn cả ngày: không món dị ứng, không đồ dễ hóc, nhà không còn chỗ nguy hiểm.",
-  "en": ""
- },
- {
-  "vi": "🍽️ Ăn đủ bữa, đúng tuổi.",
-  "en": ""
- },
- {
-  "vi": "😴 Ngủ đúng giờ, ngủ ngon.",
+  "vi": "Chọn phòng trống đủ mọi đêm, [[Giữ phòng trên lịch]], [[Hỏi khách ngân sách]], chọn giá, rồi [[Nhận cọc]] 30% và [[gửi xác nhận]].",
   "en": ""
  }
 ]

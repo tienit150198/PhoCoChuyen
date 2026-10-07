@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Nhiệt cao làm cong mạch, chảy linh kiện.",
+  "en": ""
+ },
+ {
+  "vi": "Lắc mạnh cho nước ra",
+  "en": ""
+ },
+ {
+  "vi": "Nước lan sâu hơn vào máy.",
+  "en": ""
+ },
+ {
+  "vi": "Vùi vào thùng gạo",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi sếp có file nào chưa sao lưu",
+  "en": ""
+ },
+ {
+  "vi": "Tắt nguồn trước.",
+  "en": ""
+ },
+ {
+  "vi": "Rút sạc trước khi úp máy.",
+  "en": ""
+ },
+ {
+  "vi": "Cho nước chảy ra trước rồi mới gửi đi.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân: “Chết! Bài trình bày lúc 2 giờ chỉ có trong máy đó!”",
+  "en": ""
+ },
+ {
+  "vi": "File họp chưa có bản sao.",
+  "en": ""
+ },
+ {
+  "vi": "Biết cần file gì rồi mới chuẩn bị máy dự phòng.",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hằng lỡ lưu đè file báo cáo",
+  "en": ""
+ },
+ {
+  "vi": "Cô Hằng tái mặt: “Cô lỡ lưu đè file báo cáo quý bằng bản nháp! Chiều nay nộp sếp rồi…”",
+  "en": ""
+ },
+ {
+  "vi": "Đóng file, không lưu thêm lần nào",
+  "en": ""
+ },
+ {
+  "vi": "Lưu thêm là đè mất thêm phiên bản cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Mở “Phiên bản trước” của file",
+  "en": ""
+ },
+ {
+  "vi": "Máy tự giữ các phiên bản cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm bản sao lưu đêm qua trên máy chủ",
+  "en": ""
+ },
+ {
+  "vi": "Phòng khi phiên bản trước không có.",
+  "en": ""
+ },
+ {
+  "vi": "Khôi phục ra file mới, không đè file đang dùng",
+  "en": ""
+ },
+ {
+  "vi": "Giữ cả hai bản để so.",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ cô Hằng kiểm lại số liệu",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ người làm mới biết bản nào đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Tải phần mềm khôi phục bẻ khóa trên mạng",
+  "en": ""
+ },
+ {
+  "vi": "Phần mềm lậu hay kèm mã độc.",
+  "en": ""
+ },
+ {
+  "vi": "Định dạng lại ổ đĩa cho “sạch”",
+  "en": ""
+ },
+ {
+  "vi": "Mất sạch dữ liệu.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo cô Hằng làm lại từ đầu cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Có cách khôi phục, làm lại là phí công.",
+  "en": ""
+ },
+ {
+  "vi": "Bật tự động lưu cho máy cô Hằng",
+  "en": ""
+ },
+ {
+  "vi": "Mời cô Hằng ly nước cho bình tĩnh",
+  "en": ""
+ },
+ {
+  "vi": "Đóng file trước khi mở phiên bản cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Có bản cũ mới khôi phục được.",
+  "en": ""
+ },
+ {
+  "vi": "Khôi phục xong mới kiểm số.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Long: “Tuần này là lần thứ hai rồi. Bật tự động lưu cho cô ấy luôn.”",
+  "en": ""
+ },
+ {
+  "vi": "Tránh lặp lại lần sau.",
+  "en": ""
+ },
+ {
+  "vi": "Xong việc gấp rồi mới chỉnh cài đặt.",
+  "en": ""
+ },
+ {
+  "vi": "Wifi phòng họp chập chờn trước giờ đón khách",
+  "en": ""
+ },
+ {
+  "vi": "Anh Quân: “30 phút nữa khách tới họp online với Nhật mà wifi phòng họp cứ rớt! Làm gì đi em!”",
+  "en": ""
+ },
+ {
+  "vi": "Xem bộ phát đang có bao nhiêu máy kết nối",
+  "en": ""
+ },
+ {
+  "vi": "Quá tải thì phải tách mạng.",
+  "en": ""
+ },
+ {
+  "vi": "Khởi động lại bộ phát wifi phòng họp",
+  "en": ""
+ },
+ {
+  "vi": "Bộ phát treo là hay rớt mạng.",
+  "en": ""
+ },
+ {
   "vi": "Cắm dây mạng cho máy trình chiếu",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "22 · CÁNH DIỀU · IT",
-  "en": ""
- },
- {
-  "vi": "Thực tập sinh, bấm đầu dây mạng còn run.",
-  "en": ""
- },
- {
-  "vi": "Thuộc từng sợi dây trong tủ mạng.",
-  "en": ""
- },
- {
-  "vi": "Lễ tân, báo lỗi rất rõ ràng.",
-  "en": ""
- },
- {
-  "vi": "Hỗ trợ người dùng",
-  "en": ""
- },
- {
-  "vi": "Mạng & bảo mật",
-  "en": ""
- },
- {
-  "vi": "Góc IT gọn gàng",
-  "en": ""
- },
- {
-  "vi": "Dây mạng",
-  "en": ""
- },
- {
-  "vi": "Laptop mới",
-  "en": ""
- },
- {
-  "vi": "Phân loại phiếu",
-  "en": ""
- },
- {
-  "vi": "Đấu dây mạng",
-  "en": ""
- },
- {
-  "vi": "Rà quyền truy cập",
-  "en": ""
- },
- {
-  "vi": "Màn hình đỏ của Linh",
-  "en": ""
- },
- {
-  "vi": "Linh mở hóa đơn lạ, màn hình đỏ đòi tiền chuộc.",
-  "en": ""
- },
- {
-  "vi": "Bạn rút dây mạng ngay, khôi phục từ bản sao lưu đêm trước.",
-  "en": ""
- },
- {
-  "vi": "Không mất một file nào; cả công ty học được bài “hóa đơn lạ”.",
-  "en": ""
- },
- {
-  "vi": "Chiếc USB ở bãi xe",
-  "en": ""
- },
- {
-  "vi": "Chú Lâm nhặt được USB ghi “Lương 2025 – Mật”.",
-  "en": ""
- },
- {
-  "vi": "Bạn kiểm tra trên máy cách ly: mã độc thật.",
-  "en": ""
- },
- {
-  "vi": "Chú Lâm kể chuyện cho cả xưởng, từ đó không ai cắm đồ lạ.",
-  "en": ""
- },
- {
-  "vi": "Máy in xưởng",
-  "en": ""
- },
- {
-  "vi": "Máy in xưởng kẹt giấy mỗi ngày, Chú Lâm đá cho “tỉnh”.",
-  "en": ""
- },
- {
-  "vi": "Bạn chỉ chú cách gỡ kẹt, dán hướng dẫn cạnh máy.",
-  "en": ""
- },
- {
-  "vi": "Một tháng không có phiếu máy in xưởng nào.",
-  "en": ""
- },
- {
-  "vi": "Sửa nhanh, giải thích dễ hiểu.",
-  "en": ""
- },
- {
-  "vi": "Không làm mất dữ liệu.",
-  "en": ""
- },
- {
-  "vi": "Kiên nhẫn với người không rành máy.",
-  "en": ""
- },
- {
-  "vi": "Cẩn thận với mật khẩu.",
-  "en": ""
- },
- {
-  "vi": "Mỗi phiếu là một việc thật: phân loại phiếu hỗ trợ, sửa sự cố từng bước, đấu dây tủ mạng, rà quyền truy cập, nhập sổ tài sản, nói “không” với chiêu lừa. Đọc giấy tờ bên cạnh, rồi nộp trước giờ hạn. Mọi thứ có thể đổi giữa chừng — đọc kỹ tin báo rồi sửa lại. Lương ngày trả khi khép ca.",
-  "en": ""
- },
- {
-  "vi": "Nhịp chờ của khách không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Bạn đọc",
-  "en": ""
- },
- {
-  "vi": "àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ",
-  "en": ""
- },
- {
-  "vi": "Thấy dấu côn trùng, chuột thì xử lý ngay, không xịt thuốc lên sách.",
-  "en": ""
- },
- {
-  "vi": "Mở cửa thư viện buổi sáng",
-  "en": ""
- },
- {
-  "vi": "Cô Nguyệt: “Sáng nào cũng vậy: xem ẩm kế kho, soi bẫy, mở phòng đọc, dựng bảng nội quy. Kho mà ẩm là giấy hỏng cả loạt.”",
-  "en": ""
- },
- {
-  "vi": "Nhờ gợi ý một cuốn sách",
-  "en": ""
- },
- {
-  "vi": "“Thư viện có cuốn gì hay hay không? Gợi ý giùm một cuốn đi.”",
-  "en": ""
- },
- {
-  "vi": "Thùng sách tặng cần biên mục",
-  "en": ""
- },
- {
-  "vi": "Lô sách mới mua cần biên mục",
-  "en": ""
- },
- {
-  "vi": "“Tặng thư viện thùng sách nhà tôi, xếp lên kệ cho bà con đọc nhé.”",
-  "en": ""
- },
- {
-  "vi": "Cô Nguyệt: “Sách mới về, xếp lớp, ghi ký hiệu tác giả, dán nhãn rồi lên kệ nhé.”",
-  "en": ""
- },
- {
-  "vi": "Một vòng phòng đọc",
-  "en": ""
- },
- {
-  "vi": "“Phòng đọc ồn quá, cán bộ thư viện đâu rồi?”",
-  "en": ""
- },
- {
-  "vi": "Bản gốc",
   "en": ""
  }
 ]

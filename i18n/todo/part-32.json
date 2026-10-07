@@ -1,5 +1,177 @@
 [
  {
+  "vi": "⭕ Phao tròn bay qua người, rơi ngay tầm tay. Họ ôm chặt, bạn kéo dây vào thành.",
+  "en": ""
+ },
+ {
+  "vi": "🛟 Bạn bước dài xuống nước, mắt không rời người, đưa phao ống tới. Kéo vào thành, anh Hải đỡ lên bờ.",
+  "en": ""
+ },
+ {
+  "vi": "🏊 Bạn nhảy xuống tay không. Người đuối nước ôm ghì lấy cổ bạn, cả hai chìm một nhịp; anh Hải ném phao xuống kịp.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa người lên bờ trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xem rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã sơ cứu rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách sơ cứu.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi to, vỗ vai, nhìn ngực mười giây xem có thở không đã rồi mới quyết.",
+  "en": ""
+ },
+ {
+  "vi": "Khoan! Làm vậy là nguy cho người ta. Nhìn lại: họ có tỉnh, có thở không?",
+  "en": ""
+ },
+ {
+  "vi": "Chưa xem tỉnh hay thở mà đã quyết cách sơ cứu.",
+  "en": ""
+ },
+ {
+  "vi": "chưa đánh giá trước khi sơ cứu",
+  "en": ""
+ },
+ {
+  "vi": "sơ cứu sai, nguy hiểm",
+  "en": ""
+ },
+ {
+  "vi": "sơ cứu chưa đúng",
+  "en": ""
+ },
+ {
+  "vi": "Đưa người vào bờ trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Sơ cứu, theo dõi người vừa cứu lên đã.",
+  "en": ""
+ },
+ {
+  "vi": "Còn khu chưa nhìn tới. Quét đủ năm khu rồi mới kết thúc vòng.",
+  "en": ""
+ },
+ {
+  "vi": "Nhìn lại: có người không bơi, không kêu, người dựng đứng hoặc nằm im. Đó là người đang chìm!",
+  "en": ""
+ },
+ {
+  "vi": "Còn người đang làm sai nội quy mà chưa ai nhắc.",
+  "en": ""
+ },
+ {
+  "vi": "bỏ sót khu",
+  "en": ""
+ },
+ {
+  "vi": "Có người chìm lặng lẽ mà cứu hộ không thấy. Anh Hải từ phòng trực chạy ra kéo lên.",
+  "en": ""
+ },
+ {
+  "vi": "bỏ sót người đuối nước",
+  "en": ""
+ },
+ {
+  "vi": "bỏ qua người vi phạm nội quy",
+  "en": ""
+ },
+ {
+  "vi": "Cứu người mà không gọi ai, cả hồ không người trông.",
+  "en": ""
+ },
+ {
+  "vi": "có anh Hải hỗ trợ",
+  "en": ""
+ },
+ {
+  "vi": "Vòng quét: CÓ NGƯỜI CHÌM, anh Hải phát hiện và kéo lên.",
+  "en": ""
+ },
+ {
+  "vi": "Vòng quét đủ năm khu, không có gì bất thường.",
+  "en": ""
+ },
+ {
+  "vi": "Canh hồ, một vòng quét.",
+  "en": ""
+ },
+ {
+  "vi": "Canh hồ và cứu người.",
+  "en": ""
+ },
+ {
+  "vi": "📋 Anh Hải lập biên bản sự cố, cả nhóm họp rút kinh nghiệm.",
+  "en": ""
+ },
+ {
+  "vi": "✅ Hết vòng quét. Mặt hồ yên.",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Hết vòng quét.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi hay nhìn?",
+  "en": ""
+ },
+ {
+  "vi": "Chọn cách cho vào.",
+  "en": ""
+ },
+ {
+  "vi": "Quyết cho cả ba người đã.",
+  "en": ""
+ },
+ {
+  "vi": "Cho vào hay không mà chẳng nhìn, chẳng hỏi.",
+  "en": ""
+ },
+ {
+  "vi": "quyết khi chưa hỏi, chưa nhìn",
+  "en": ""
+ },
+ {
+  "vi": "Cho xuống nước khi chưa đủ điều kiện.",
+  "en": ""
+ },
+ {
+  "vi": "cho xuống nước khi chưa đủ điều kiện",
+  "en": ""
+ },
+ {
+  "vi": "Đủ điều kiện mà bị chặn ở cổng, đòi hoàn vé.",
+  "en": ""
+ },
+ {
+  "vi": "chặn người đủ điều kiện",
+  "en": ""
+ },
+ {
+  "vi": "Cổng: soát đúng hết.",
+  "en": ""
+ },
+ {
+  "vi": "Soát người ở cổng xuống hồ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã xem sổ đón rồi.",
+  "en": ""
+ },
+ {
   "vi": "mẹ ký sổ rồi đi chợ, có ghi số điện thoại",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "Mời vào bơi",
-  "en": ""
- },
- {
-  "vi": "Vào sau khi sửa: mũ bơi, tắm tráng, gửi đồ",
-  "en": ""
- },
- {
-  "vi": "Chỉ khu cạn, có người lớn kèm sát",
-  "en": ""
- },
- {
-  "vi": "Hôm nay không xuống nước",
-  "en": ""
- },
- {
-  "vi": "Đầu trần, mũ bơi nhét trong túi quần, khăn vắt vai.",
-  "en": ""
- },
- {
-  "vi": "“Mười năm bơi ở đây có ai bắt đội mũ đâu! Tóc tui có mấy cọng.”",
-  "en": ""
- },
- {
-  "vi": "Tóc rụng trôi khắp hồ, kẹt cả lưới lọc.",
-  "en": ""
- },
- {
-  "vi": "Mặt đỏ gay, hơi thở nồng mùi bia, bước đi hơi chệnh choạng.",
-  "en": ""
- },
- {
-  "vi": "“Có ba lon thôi, xuống bơi cho tỉnh!”",
-  "en": ""
- },
- {
-  "vi": "Đã uống rượu bia mà xuống nước: phản xạ chậm, rất dễ đuối nước.",
-  "en": ""
- },
- {
-  "vi": "Bắp chân dán băng cá nhân, vết trầy còn rỉ dịch.",
-  "en": ""
- },
- {
-  "vi": "“Té xe hôm qua, dán băng rồi bơi chút không sao đâu em.”",
-  "en": ""
- },
- {
-  "vi": "Vết thương hở xuống hồ dễ nhiễm trùng, lại làm bẩn nước cho người khác.",
-  "en": ""
- },
- {
-  "vi": "Mặt hơi tái, tay xoa bụng.",
-  "en": ""
- },
- {
-  "vi": "“Hôm qua tào tháo rượt cả đêm, nay đỡ rồi, bơi cho khỏe người.”",
-  "en": ""
- },
- {
-  "vi": "Vừa bị tiêu chảy mà xuống hồ dễ lây cho cả hồ.",
-  "en": ""
- },
- {
-  "vi": "Hai mắt đỏ kè, có ghèn ở khóe.",
-  "en": ""
- },
- {
-  "vi": "“Mẹ con bảo đau mắt đỏ xuống nước clo là hết.”",
-  "en": ""
- },
- {
-  "vi": "Đau mắt đỏ lây rất nhanh ở hồ bơi.",
-  "en": ""
- },
- {
-  "vi": "Bé Tin, 7 tuổi",
-  "en": ""
- },
- {
-  "vi": "Đeo phao tay, cầm vé đứng một mình ở cổng.",
-  "en": ""
- },
- {
-  "vi": "“Mẹ con đi gửi xe, con vô trước nha chú.”",
-  "en": ""
- },
- {
-  "vi": "Trẻ bảy tuổi một mình xuống nước, không người lớn trong tầm tay.",
-  "en": ""
- },
- {
-  "vi": "Không phao, kính bơi đeo ngược. Mẹ đứng sau lưng, mắt dán vào điện thoại.",
-  "en": ""
- },
- {
-  "vi": "“Con bơi được 50 mét rồi! Cho con xuống khu sâu!”",
-  "en": ""
- },
- {
-  "vi": "Bé chưa qua bài bơi thử mà xuống khu sâu, mẹ không để mắt.",
-  "en": ""
- },
- {
-  "vi": "Đội mũ bơi, đã tắm tráng, đeo kính bơi.",
-  "en": ""
- },
- {
-  "vi": "“Chị bơi làn chậm nửa tiếng rồi đi làm.”",
-  "en": ""
- },
- {
-  "vi": "Đồ bơi gọn gàng, mũ bơi xanh, khăn khoác vai.",
-  "en": ""
- },
- {
-  "vi": "“Tập phục hồi đầu gối, bác sĩ khuyên bơi nhẹ mỗi sáng.”",
-  "en": ""
- },
- {
-  "vi": "Xách giỏ có chai nước ép thủy tinh và hộp trái cây cắt sẵn.",
-  "en": ""
- },
- {
-  "vi": "“Bơi mệt ăn chút trái cây thôi mà em.”",
-  "en": ""
- },
- {
-  "vi": "Chai thủy tinh vỡ ở bờ hồ là chân trần ai cũng đạp phải.",
-  "en": ""
- },
- {
-  "vi": "Gậy gimbal, máy quay chống nước đeo ngực.",
-  "en": ""
- },
- {
-  "vi": "“Quay clip review hồ bơi thôi anh, có ai đâu mà sợ.”",
-  "en": ""
- },
- {
-  "vi": "Quay người lạ đang mặc đồ bơi khi họ chưa đồng ý.",
-  "en": ""
- },
- {
-  "vi": "Mồ hôi nhễ nhại sau khi chạy bộ, kem chống nắng trắng xóa hai tay.",
-  "en": ""
- },
- {
-  "vi": "“Xuống nước là sạch liền, tắm tráng chi cho mất công.”",
-  "en": ""
- },
- {
-  "vi": "Mồ hôi, kem chống nắng xuống hồ làm nước đục, clo hao nhanh.",
-  "en": ""
- },
- {
-  "vi": "Ngồi thở dốc trên băng ghế cổng, tay xoa ngực, mặt tái.",
-  "en": ""
- },
- {
-  "vi": "“Tức ngực chút xíu thôi, xuống nước cho mát.”",
-  "en": ""
- },
- {
-  "vi": "Đang tức ngực, mệt mà xuống nước: có chuyện giữa hồ là rất nguy.",
-  "en": ""
- },
- {
-  "vi": "Xanh: bơi được khu sâu",
-  "en": ""
- },
- {
-  "vi": "Vàng: khu cạn, làn chậm có người kèm",
   "en": ""
  }
 ]

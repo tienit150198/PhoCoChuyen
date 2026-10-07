@@ -18,6 +18,7 @@ from game.careers import PLUGINS
 from game.content import CAREERS
 from game.engine import money, public_state, validate_state
 from tests.helpers import Journey
+from scripts.strip_new_careers import strip
 
 ROOT = Path(__file__).resolve().parent.parent
 BASE_REF = 'rel-1.9.9'   # production when this shipped: a save made here must load there (rollback)
@@ -265,7 +266,8 @@ class Rollback(unittest.TestCase):
         j = journey('mother_baby')
         job(j, 7, pay=30)
         j.act('end_day', carry_event=True)
-        played = json.dumps(j.state, ensure_ascii=False)
+        # 1.9.11: the album shop (zpop) is newer than the old tree; a rollback strips it first (scripts/strip_new_careers.py)
+        played = json.dumps(strip(j.state, ['zpop'])[0], ensure_ascii=False)
         prog = ('import json,sys\nfrom game.engine import migrate_state,validate_state\n'
                 's=migrate_state(json.loads(sys.stdin.read()))\nvalidate_state(s)\nprint(json.dumps(s,ensure_ascii=False))')
         env = dict(os.environ, PYTHONPATH=self.tree)

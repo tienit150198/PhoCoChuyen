@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Bày chén đũa đã nhé.",
+  "en": ""
+ },
+ {
+  "vi": "mua đồ không tươi",
+  "en": ""
+ },
+ {
+  "vi": "Đồ ăn ít quá, cả nhà gắp hai lượt là hết.",
+  "en": ""
+ },
+ {
+  "vi": "mua thiếu phần",
+  "en": ""
+ },
+ {
+  "vi": "nhão",
+  "en": ""
+ },
+ {
+  "vi": "nấu cơm sai nước",
+  "en": ""
+ },
+ {
+  "vi": "Thiếu chén đũa, có người phải ngồi chờ.",
+  "en": ""
+ },
+ {
+  "vi": "Bày dư chén đũa, nhà có bấy nhiêu người.",
+  "en": ""
+ },
+ {
+  "vi": "bày sai số chén",
+  "en": ""
+ },
+ {
+  "vi": "Chén nước mắm chấm chưa vừa.",
+  "en": ""
+ },
+ {
+  "vi": "Cả nhà quây quần, gắp lia lịa.",
+  "en": ""
+ },
+ {
+  "vi": "Cả nhà ngồi vào mâm, có người nhíu mày.",
+  "en": ""
+ },
+ {
+  "vi": "Sạp này không mua gì.",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi vào sổ rồi.",
+  "en": ""
+ },
+ {
+  "vi": "thiếu hóa đơn",
+  "en": ""
+ },
+ {
+  "vi": "ngon, vừa miệng",
+  "en": ""
+ },
+ {
+  "vi": "nhớ người trong nhà",
+  "en": ""
+ },
+ {
+  "vi": "quên lời dặn",
+  "en": ""
+ },
+ {
+  "vi": "Thực đơn hợp nhà",
+  "en": ""
+ },
+ {
+  "vi": "hợp cả nhà",
+  "en": ""
+ },
+ {
+  "vi": "chưa hợp người trong nhà",
+  "en": ""
+ },
+ {
+  "vi": "tươi ngon, đủ phần",
+  "en": ""
+ },
+ {
+  "vi": "chợ chưa khéo",
+  "en": ""
+ },
+ {
+  "vi": "Lên mâm nóng hổi",
+  "en": ""
+ },
+ {
+  "vi": "món nào cũng nóng",
+  "en": ""
+ },
+ {
+  "vi": "có món nguội",
+  "en": ""
+ },
+ {
+  "vi": "Sổ chợ rõ ràng",
+  "en": ""
+ },
+ {
+  "vi": "rõ từng xu",
+  "en": ""
+ },
+ {
+  "vi": "Rửa → cắt → bắc bếp đúng lửa, nêm theo nhà → tắt bếp khi chín tới → mang ra.",
+  "en": ""
+ },
+ {
+  "vi": "Nghe dặn → chọn một canh, một mặn, một xào, một rau hợp cả nhà → đi chợ: xem kỹ, mua đủ phần, xin hóa đơn → nấu cơm, bày chén, nếm nước mắm → món lâu bắc trước → dọn cơm → ghi sổ, gửi tiền thừa.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhặt rau, gọt củ, rửa rổ rá sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "Đã rửa chén bát, lau bếp sạch sẽ.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu nấu cơm nhà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Món trong bếp sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản việc nấu cơm nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Trạng thái việc nấu cơm nhà sai.",
+  "en": ""
+ },
+ {
+  "vi": "Thực đơn sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ chợ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Giỏ chợ không khớp thực đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền chợ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Ví tiền chợ sai.",
+  "en": ""
+ },
+ {
+  "vi": "Món trong bếp không khớp thực đơn.",
+  "en": ""
+ },
+ {
+  "vi": "Mâm cơm sai.",
+  "en": ""
+ },
+ {
   "vi": "Sổ chợ sai.",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "Hai mươi năm đi buồng, nhớ tên từng người bệnh. Ghét nhất là làm tắt.",
-  "en": ""
- },
- {
-  "vi": "Ít nói, y lệnh rõ ràng, câu cửa miệng: “Bất thường thì gọi anh, đừng ngại.”",
-  "en": ""
- },
- {
-  "vi": "Người bệnh giường 3, 82 tuổi",
-  "en": ""
- },
- {
-  "vi": "Con cháu ở xa, bấm chuông nhiều nhất khoa chỉ để có người nói chuyện.",
-  "en": ""
- },
- {
-  "vi": "Người bệnh giường 5, tiểu đường",
-  "en": ""
- },
- {
-  "vi": "Khó tính, ghét bị đánh thức đo huyết áp, ngày nào cũng đòi về.",
-  "en": ""
- },
- {
-  "vi": "Con gái ông Bảy",
-  "en": ""
- },
- {
-  "vi": "Đi đâu cũng đòi “bác sĩ giỏi nhất”, điện thoại lúc nào cũng sẵn số “người quen”.",
-  "en": ""
- },
- {
-  "vi": "Người bệnh giường 8, gãy tay",
-  "en": ""
- },
- {
-  "vi": "Hai mươi tuổi, té xe máy, livestream từ giường bệnh, gọi ai cũng là “bro”.",
-  "en": ""
- },
- {
-  "vi": "Cô Liên",
-  "en": ""
- },
- {
-  "vi": "Người bệnh giường 6, chờ nội soi",
-  "en": ""
- },
- {
-  "vi": "Hay lo, đọc tin trên mạng nhiều, có hôm đòi hoãn thủ thuật.",
-  "en": ""
- },
- {
-  "vi": "Cô Mỹ",
-  "en": ""
- },
- {
-  "vi": "Nhân viên quầy tiếp đón",
-  "en": ""
- },
- {
-  "vi": "Đứng quầy tiếp đón mười năm, nghe giọng là biết ai làm quá, ai đang nguy.",
-  "en": ""
- },
- {
-  "vi": "Trần Thị Tư",
-  "en": ""
- },
- {
-  "vi": "Viêm phổi, đang truyền kháng sinh",
-  "en": ""
- },
- {
-  "vi": "Nguy cơ té ngã",
-  "en": ""
- },
- {
-  "vi": "Lê Văn Bảy",
-  "en": ""
- },
- {
-  "vi": "Tiểu đường, vết loét bàn chân",
-  "en": ""
- },
- {
-  "vi": "Phạm Thị Liên",
-  "en": ""
- },
- {
-  "vi": "Đau dạ dày, chờ nội soi",
-  "en": ""
- },
- {
-  "vi": "Võ Minh Tuấn",
-  "en": ""
- },
- {
-  "vi": "Gãy xương cẳng tay, chờ mổ",
-  "en": ""
- },
- {
-  "vi": "Dị ứng kháng sinh nhóm P",
-  "en": ""
- },
- {
-  "vi": "Dị ứng thuốc nhóm S",
-  "en": ""
- },
- {
-  "vi": "Viên hạ sốt HS-1",
-  "en": ""
- },
- {
-  "vi": "Kháng sinh Penilá",
-  "en": ""
- },
- {
-  "vi": "Kháng sinh Cefsen",
-  "en": ""
- },
- {
-  "vi": "Viên Sulfasen",
-  "en": ""
- },
- {
-  "vi": "Thuốc dạ dày Dạ An",
-  "en": ""
- },
- {
-  "vi": "Thuốc giảm đau Giảm Nhức",
-  "en": ""
- },
- {
-  "vi": "Bút tiêm tiểu đường",
-  "en": ""
- },
- {
-  "vi": "Uống",
-  "en": ""
- },
- {
-  "vi": "Tiêm tĩnh mạch",
-  "en": ""
- },
- {
-  "vi": "Tiêm dưới da",
-  "en": ""
- },
- {
-  "vi": "Đêm sốt 38,6 °C lúc 3 giờ, đã báo bác sĩ trực. Đo lại ngay đầu ca.",
-  "en": ""
- },
- {
-  "vi": "Ngủ được, ăn nửa bát cháo. Hay bấm chuông gọi nói chuyện.",
-  "en": ""
- },
- {
-  "vi": "Huyết áp lúc 5 giờ thấp hơn mọi ngày, ông kêu chóng mặt. Đo lại ngay đầu ca.",
-  "en": ""
- },
- {
-  "vi": "Đòi về sớm. Vết loét bàn chân đã thay băng tối qua.",
-  "en": ""
- },
- {
-  "vi": "Lúc 4 giờ máy kẹp ngón báo SpO2 thấp rồi tự lên lại. Đo lại ngay đầu ca.",
-  "en": ""
- },
- {
-  "vi": "Nhịn ăn từ 22 giờ, chờ nội soi 10 giờ. Còn lo lắng.",
-  "en": ""
- },
- {
-  "vi": "Tay sưng hơn, kêu đau nhiều, tê ngón lúc 5 giờ. Đã kê cao tay. Xem lại ngay đầu ca.",
   "en": ""
  }
 ]

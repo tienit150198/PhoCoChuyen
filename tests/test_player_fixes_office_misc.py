@@ -267,7 +267,8 @@ class Rollback(unittest.TestCase):
         old = os.environ.get('MNL_LIVE_TREE')
         if not old or not (Path(old) / 'game' / 'engine.py').is_file():
             self.skipTest('no live tree (MNL_LIVE_TREE)')
-        saves = self.saves()
+        from scripts.strip_new_careers import strip   # 1.9.11: the live tree has no album shop (zpop) yet
+        saves = [strip(s, ['zpop'])[0] for s in self.saves()]
         env = dict(os.environ, PYTHONPATH=old)
         r = subprocess.run([sys.executable, '-c', self.PROG], input=json.dumps(saves), capture_output=True, text=True, cwd=old,
                            env=env, encoding='utf-8')

@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Tin báo sai",
+  "en": ""
+ },
+ {
+  "vi": "Ghi nhận, nhắc nhở người báo",
+  "en": ""
+ },
+ {
+  "vi": "“Bà đang ở ngân hàng, cán bộ trên điện thoại bảo bà chuyển tiền tạm giữ…”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại: người kia dặn bà không được nói với ai, bà đang đứng ở quầy giao dịch.",
+  "en": ""
+ },
+ {
+  "vi": "“Con trai tôi sáu tuổi đi chơi chưa về, nhà ở sát kênh!”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại: bé đi từ một tiếng trước, hay ra bờ kênh coi câu cá.",
+  "en": ""
+ },
+ {
+  "vi": "Anh bán nước ngã tư",
+  "en": ""
+ },
+ {
+  "vi": "“Hai xe máy va quẹt ở ngã tư, một người ngồi bệt dưới đường.”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại: người ngã kêu đau chân, hai xe nằm giữa đường, xe khác đang lách qua.",
+  "en": ""
+ },
+ {
+  "vi": "Chị chủ tiệm tạp hóa",
+  "en": ""
+ },
+ {
+  "vi": "“Dây điện đứt rơi xuống hẻm sau cơn mưa, tụi nhỏ đứng xem!”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại: dây còn tóe lửa, nước đọng quanh đó.",
+  "en": ""
+ },
+ {
+  "vi": "“Lại cái cậu đội mũ đứng đầu hẻm, nhìn khả nghi lắm, bắt ngay đi!”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại hẻm 7: cậu ấy là tài xế công nghệ mới thuê trọ, đã khai báo tạm trú tuần trước, đứng chờ khách.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Ba tổ 2",
+  "en": ""
+ },
+ {
+  "vi": "“Nhà bên khoan tường từ sáu giờ sáng, ồn quá trời!”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại: nhà bên đang sửa nhà, đã báo tổ dân phố, hẹn khoan từ 8 giờ mà làm sớm.",
+  "en": ""
+ },
+ {
+  "vi": "“Con mèo nhà con kẹt trên mái tôn nhà bên, kêu từ sáng!”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại: mèo đứng trên mái thấp, không bị thương, nhà bên có thang.",
+  "en": ""
+ },
+ {
+  "vi": "Anh xe ôm đầu hẻm",
+  "en": ""
+ },
+ {
+  "vi": "“Ống nước vỡ, nước tràn ra đường, xe máy trượt té hai chiếc rồi!”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại: không ai bị thương nặng, nước vẫn chảy, đường dốc.",
+  "en": ""
+ },
+ {
+  "vi": "Bác bảo vệ trường",
+  "en": ""
+ },
+ {
+  "vi": "“Có con chó lớn chạy quanh cổng trường, sắp tới giờ tan học.”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại: chó có vòng cổ, đang ở bãi cỏ cạnh trường, mười lăm phút nữa tan học.",
+  "en": ""
+ },
+ {
+  "vi": "Giọng trẻ con",
+  "en": ""
+ },
+ {
+  "vi": "“Có cướp ở tiệm tạp hóa cô Ba!” rồi cười khúc khích.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại tiệm cô Ba: mọi thứ bình thường. Số máy là của một nhà có ba đứa nhỏ đang nghỉ hè.",
+  "en": ""
+ },
+ {
+  "vi": "Một người giấu tên",
+  "en": ""
+ },
+ {
+  "vi": "“Nhà số 9 hẻm 4 chứa đồ ăn cắp, lên khám ngay!”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại: người báo là hàng xóm đang tranh chấp lối đi với nhà số 9, thừa nhận báo “cho bõ tức”.",
+  "en": ""
+ },
+ {
+  "vi": "Một chị tổ 6",
+  "en": ""
+ },
+ {
+  "vi": "“Xe loa bán hàng chạy vòng vòng trong hẻm, con tôi đang ngủ trưa.”",
+  "en": ""
+ },
+ {
+  "vi": "Gọi lại: xe loa đã ra khỏi hẻm, chị muốn phường nhắc lần sau.",
+  "en": ""
+ },
+ {
+  "vi": "Bàn cư trú đều khách, tuần tra một vòng chợ.",
+  "en": ""
+ },
+ {
+  "vi": "Chợ đông gấp đôi: trẻ lạc, móc túi, lấn chiếm lối đi.",
+  "en": ""
+ },
+ {
+  "vi": "Tuần khai giảng",
+  "en": ""
+ },
+ {
+  "vi": "Cổng trường đông nghẹt giờ đưa đón; phụ huynh hỏi đủ thứ giấy tờ.",
+  "en": ""
+ },
+ {
+  "vi": "Mùa cưới, mùa hội",
+  "en": ""
+ },
+ {
+  "vi": "Rạp cưới, hội chợ, loa đài: nhắc an toàn, giữ trật tự.",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn kiểm tra hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay kiểm tra sổ sách: hồ sơ nhận đúng, sổ trực ban ghi thật.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa bão",
+  "en": ""
+ },
+ {
   "vi": "Điện thoại trực ban reo liên tục: cây đổ, ngập, dây điện.",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "Quấy rối cán bộ đang làm việc là vi phạm.",
-  "en": ""
- },
- {
-  "vi": "Chú ngồi ghế chờ, tỉnh rồi làm giấy tờ.",
-  "en": ""
- },
- {
-  "vi": "Ông Lũy lẩm bẩm rồi ra ghế ngồi. Chị Hằng thở phào: “Cảm ơn em.”",
-  "en": ""
- },
- {
-  "vi": "Anh Định ra mời ông Lũy về, lập biên bản. Người nhà ông tới xin lỗi chị Hằng.",
-  "en": ""
- },
- {
-  "vi": "Ông Lũy lải nhải cả buổi rồi mới về. Không ai ghi lại. Lần sau cứ báo luôn.",
-  "en": ""
- },
- {
-  "vi": "Không ai được “chiều” kẻ quấy rối. Chị Hằng run tay cả buổi.",
-  "en": ""
- },
- {
-  "vi": "Ông Lũy quay lại",
-  "en": ""
- },
- {
-  "vi": "Ông Lũy · lại say",
-  "en": ""
- },
- {
-  "vi": "Ông Lũy lại tới, cầm chai rượu: “Hôm trước tụi bây làm tao quê, hôm nay phải uống với tao một ly mới xong.”",
-  "en": ""
- },
- {
-  "vi": "“Một ly thôi, không thì tao ngồi đây tới tối.”",
-  "en": ""
- },
- {
-  "vi": "Ông ta đập chai xuống bàn tiếp dân.",
-  "en": ""
- },
- {
-  "vi": "Ông dừng lại ngay.",
-  "en": ""
- },
- {
-  "vi": "Mang rượu vào trụ sở, quậy phá là vi phạm.",
-  "en": ""
- },
- {
-  "vi": "Ông Lũy bỏ đi, chai rượu để lại. Bạn cất vào kho, ghi sổ.",
-  "en": ""
- },
- {
-  "vi": "Lần này biên bản đủ hai lần, tổ dân phố mời gia đình ông Lũy lên nói chuyện.",
-  "en": ""
- },
- {
-  "vi": "Ông ngồi lì tới khi con trai tới kéo về. Lần sau báo ngay nhé.",
-  "en": ""
- },
- {
-  "vi": "Không ai được bắt bạn uống với người say trong ca.",
-  "en": ""
- },
- {
-  "vi": "Huýt sáo ở cổng trường",
-  "en": ""
- },
- {
-  "vi": "Mấy thanh niên ngồi quán nước",
-  "en": ""
- },
- {
-  "vi": "Bạn đứng phân luồng cổng trường, mấy thanh niên ở quán nước huýt sáo, nói to: “Cán bộ xinh vậy, phạt anh đi, anh chịu liền.”",
-  "en": ""
- },
- {
-  "vi": "“Đùa xíu mà, căng vậy.”",
-  "en": ""
- },
- {
-  "vi": "“Cán bộ không biết đùa à?”",
-  "en": ""
- },
- {
-  "vi": "Các anh dừng kiểu nói đó lại.",
-  "en": ""
- },
- {
-  "vi": "Trêu ghẹo người đang làm việc là vi phạm.",
-  "en": ""
- },
- {
-  "vi": "Mấy thanh niên im bặt, cúi xuống ly trà đá. Bác bảo vệ trường giơ ngón cái.",
-  "en": ""
- },
- {
-  "vi": "Anh Định ghé quán nước nói chuyện, ghi tên từng người. Từ đó quán nước im re giờ tan học.",
-  "en": ""
- },
- {
-  "vi": "Họ vẫn buông lời vài lần nữa. Không phải lỗi của bạn: báo là quyền của bạn.",
-  "en": ""
- },
- {
-  "vi": "Bạn cười cho qua, họ càng được đà. Lần sau cứ báo.",
-  "en": ""
- },
- {
-  "vi": "Tài khoản lạ chụp lén",
-  "en": ""
- },
- {
-  "vi": "Một tài khoản không tên",
-  "en": ""
- },
- {
-  "vi": "Một tài khoản lạ nhắn liên tục, kèm ảnh chụp lén bạn đang trực ở cổng chợ: “Mai mấy giờ em trực? Anh ghé.”",
-  "en": ""
- },
- {
-  "vi": "Tài khoản lạ nhắn tiếp: “Không trả lời là anh tới trụ sở tìm.”",
-  "en": ""
- },
- {
-  "vi": "Lại một tấm ảnh chụp lén nữa.",
-  "en": ""
- },
- {
-  "vi": "Dừng lại. Đừng nhắn nữa.",
-  "en": ""
- },
- {
-  "vi": "Chặn tài khoản, lưu bằng chứng.",
-  "en": ""
- },
- {
-  "vi": "Theo dõi, chụp lén người khác là vi phạm.",
-  "en": ""
- },
- {
-  "vi": "Tài khoản im lặng. Bạn vẫn lưu lại ảnh màn hình cho chắc.",
-  "en": ""
- },
- {
-  "vi": "Bạn báo anh Định, gửi đủ ảnh chụp màn hình. Tổ xác minh được người nhắn; người đó bị mời lên làm việc.",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn thưa dần nhưng chưa dứt. Không phải lỗi của bạn; báo là quyền của bạn.",
-  "en": ""
- },
- {
-  "vi": "Bạn trả lời cho yên. Người đó càng nhắn nhiều hơn. Lần sau cứ báo.",
-  "en": ""
- },
- {
-  "vi": "Người lạ chờ ở cổng trụ sở",
-  "en": ""
- },
- {
-  "vi": "Người nhắn tin chụp lén",
-  "en": ""
- },
- {
-  "vi": "Tan ca, một người đứng chờ ở cổng trụ sở, giơ điện thoại có ảnh bạn: “Cuối cùng cũng gặp.”",
-  "en": ""
- },
- {
-  "vi": "“Đi uống nước chút thôi mà.”",
   "en": ""
  }
 ]

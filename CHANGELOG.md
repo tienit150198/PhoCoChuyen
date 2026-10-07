@@ -1,3 +1,20 @@
+# v1.9.11 — 2026-10-07
+
+Gồm "Nuôi chó mèo" (pets-plus), "Tăng ca ×2 và thưởng năng suất" (ot-bonus), "Giá cả tăng ~10%" (price-up), "Thêm
+nhiều thứ để mua" (luxury-sinks) và nghề mới "Bán album ZPOP" (career-zpop). Có gì mới: một mục 5 dòng. Các mục từ
+"Chat hiện đủ danh hiệu" tới trước "# v1.9.10" đã có trong bản 1.9.10.
+
+- Khi ghép: đồ nội thất và giấy dán tường của dinh thự giữ giá viết sẵn (không qua chỉ số giá: hàm `_i`/`_sk` của
+  nội thất nay nhân chỉ số). Phi cơ có tổ bay đổi tên "Trực thăng VIP có tổ bay", "Siêu du thuyền Hoàng Gia có thủy
+  thủ đoàn", "Chuyên cơ thân rộng có tổ bay" để không lẫn với Trực thăng riêng 78.000, Phản lực riêng 117.000, Siêu du
+  thuyền Ngọc Trai 195.000 của Gara; mã vẫn riêng (`journey.lux` khác `journey.garage`). Thú cưng giữ giá hằng số.
+- Bản lưu: thêm khóa tùy chọn `journey.pets`, `journey.lux` (1.9.10 đọc được) và khối nghề `careers.zpop` (1.9.10 không
+  đọc được: "Bản lưu cần đủ các nghề."). Quay về 1.9.10 thì chạy trước `scripts/strip_new_careers.py strip --careers
+  zpop` (cất phần của nghề ra file lưu trữ, `restore` trả lại khi lên bản mới; tiền không đổi). Đã thử: bản lưu 1.9.11
+  đã gỡ zpop qua migrate_state + validate_state của 1.9.10 và chơi tiếp một ngày.
+- CSDL: SCHEMA_VERSION 28 (27 `pet_board`, 28 `lux_gifts`; chỉ thêm bảng). Cổng task-compat với 1.9.10: OK.
+- Trang mở từ bản cũ hơn 1.9.11 nhận 426 `client_outdated` và tự tải lại (MIN_CLIENT mặc định 1.9.11, từ 1.9.10).
+
 # Chưa phát hành
 
 ## Nuôi chó mèo
@@ -10,7 +27,7 @@
 - Bé học trò theo ngày được chăm (bắt tay, lăn tròn, "pằng!"…), 📸 chụp ảnh chung với nhân vật (4 dáng, 4 khung, lưu về máy), 🏆 Bé cưng của tuần (chỉ để khoe). Bé đi theo nhân vật trên bản đồ phố, ở trong phòng, và người khác thấy bé ở phố đi dạo.
 - Không pay-to-win: không thêm xu, không thưởng công việc; bé vui chào bạn +1 tinh thần mỗi ngày. Tiền qua ví/tài khoản như cũ (dòng 'life').
 - Bản lưu: thêm khóa tùy chọn `journey.pets` (migrate + validate); 1.9.10 đọc, giữ và lưu lại nguyên vẹn (đã thử). Bảng mới `pet_board` (SCHEMA_VERSION 27). Live: trường tùy chọn `pt` cạnh `look` (dịch vụ cũ bỏ qua).
-- Giá là hằng số; khi nhánh price-up có PRICE_INDEX thì nhân giá tiệm theo chỉ số.
+- Giá là hằng số, không qua chỉ số giá 07/10 (price_index): đồ của bé là đồ mới, giá đã tính sẵn.
 
 ## Tăng ca ×2 và thưởng năng suất
 

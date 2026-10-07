@@ -1,1802 +1,1802 @@
 [
  {
-  "vi": "ly, túi nhìn quê",
+  "vi": "Hợp đồng đã hết hạn. Chọn tin mới để thuê nhé.",
   "en": ""
  },
  {
-  "vi": "Túi xấu.",
+  "vi": "Không thể gia hạn với người này.",
   "en": ""
  },
  {
-  "vi": "cái túi đựng in hình nhìn quê quê",
+  "vi": "Tiến trình thuê nhà đã thay đổi.",
   "en": ""
  },
  {
-  "vi": "ly với túi thiết kế chưa đủ sang để chụp hình",
+  "vi": "Bạn đã trả trước kỳ tiếp theo rồi.",
   "en": ""
  },
  {
-  "vi": "nhìn mặt chủ quán khó ưa",
+  "vi": "Đã trả trước và gia hạn thêm 5 ngày sống của bạn.",
   "en": ""
  },
  {
-  "vi": "Mặt khó ưa.",
+  "vi": "Gỡ tin và kết thúc hợp đồng thuê trước khi khôi phục hoặc đặt lại tiến trình.",
   "en": ""
  },
  {
-  "vi": "nhìn mặt chủ quán khó ưa sao đó, không giải thích được",
+  "vi": "Bản lưu không thể khôi phục hợp đồng thuê người chơi.",
   "en": ""
  },
  {
-  "vi": "chủ quán có gương mặt… hơi khó gần",
+  "vi": "Không thể lùi ngày sống trong hợp đồng thuê.",
   "en": ""
  },
  {
-  "vi": "tử vi nói hôm nay xui",
+  "vi": "Hợp đồng thuê đã hết hạn.",
   "en": ""
  },
  {
-  "vi": "tử vi bảo hôm nay tôi kỵ ra đường, vậy mà vẫn ghé",
+  "vi": "Hãy dùng thao tác trả nhà để kết thúc hợp đồng thuê.",
   "en": ""
  },
  {
-  "vi": "hôm nay sao xấu chiếu, trừ sao cho cân bằng vũ trụ",
+  "vi": "Hợp đồng thuê không tồn tại trên máy chủ.",
   "en": ""
  },
  {
-  "vi": "trời mưa, không chỗ trú",
+  "vi": "Nhà đang có hợp đồng thuê người chơi: chưa thể bán, dọn vào hay cho NPC thuê.",
   "en": ""
  },
  {
-  "vi": "Ướt.",
+  "vi": "Kết thúc hợp đồng thuê người chơi trước khi xóa dữ liệu.",
   "en": ""
  },
  {
-  "vi": "mưa ướt hết mà không có mái hiên để trú",
+  "vi": "UPDATE rentals SET status='cancelled',owner_name='Người chơi đã xóa' WHERE owner=? AND status='listing'",
   "en": ""
  },
  {
-  "vi": "trời mưa mà không có dù cho khách mượn",
+  "vi": "UPDATE rentals SET owner_name='Người chơi đã xóa' WHERE owner=?",
   "en": ""
  },
  {
-  "vi": "phố ồn ào",
+  "vi": "UPDATE rentals SET tenant_name='Người chơi đã xóa' WHERE tenant=?",
   "en": ""
  },
  {
-  "vi": "ngoài phố ồn như vỡ chợ",
+  "vi": "Dữ liệu thuê nhà không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "hội phố ồn ào, nói gì cũng phải hét",
+  "vi": "Hợp đồng thuê không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "quán vắng tanh",
+  "vi": "Giá mua nhà không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "Vắng.",
+  "vi": "Mã nhà không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "quán vắng tanh, tôi hơi nghi nghi",
+  "vi": "Tin thuê nhà không hợp lệ.",
   "en": ""
  },
  {
-  "vi": "vắng quá, không khí buồn hiu",
+  "vi": "Mở game",
   "en": ""
  },
  {
-  "vi": "quán trống trơn, không góc chụp ảnh",
+  "vi": "Đặt tên",
   "en": ""
  },
  {
-  "vi": "Trống.",
+  "vi": "Chọn nơi làm",
   "en": ""
  },
  {
-  "vi": "quán trống trơn, không có góc nào để sống ảo",
+  "vi": "Khách đầu",
   "en": ""
  },
  {
-  "vi": "muỗi ở sân vườn",
+  "vi": "3 khách",
   "en": ""
  },
  {
-  "vi": "Muỗi.",
+  "vi": "Lên cấp 2",
   "en": ""
  },
  {
-  "vi": "sân vườn đẹp nhưng muỗi cắn sưng cả chân",
+  "vi": "10 khách",
   "en": ""
  },
  {
-  "vi": "hiên trước tối om",
+  "vi": "Hết ngày 1",
   "en": ""
  },
  {
-  "vi": "Tối.",
+  "vi": "Hết ngày 2",
   "en": ""
  },
  {
-  "vi": "trước hiên tối om, tôi suýt vấp",
+  "vi": "Hết ngày 3",
   "en": ""
  },
  {
-  "vi": "tên quán khó nhớ",
+  "vi": "Hết ngày 7",
   "en": ""
  },
  {
-  "vi": "Tên gì?",
+  "vi": "Hết ngày 14",
   "en": ""
  },
  {
-  "vi": "tên quán khó nhớ, lần sau chắc tìm không ra",
+  "vi": "Hết ngày 30",
   "en": ""
  },
  {
-  "vi": "phòng lạnh cóng",
+  "vi": "Đổi nơi làm",
   "en": ""
  },
  {
-  "vi": "Lạnh.",
+  "vi": "Chương 2",
   "en": ""
  },
  {
-  "vi": "máy lạnh phòng làm việc lạnh cóng, tôi run cầm cập",
+  "vi": "Chương 3",
   "en": ""
  },
  {
-  "vi": "thang máy chờ lâu",
+  "vi": "Chương 4",
   "en": ""
  },
  {
-  "vi": "Thang máy.",
+  "vi": "Mua nhà",
   "en": ""
  },
  {
-  "vi": "thang máy tòa nhà chờ muốn mọc rễ",
+  "vi": "Đính hôn",
   "en": ""
  },
  {
-  "vi": "cà phê tiếp khách dở",
+  "vi": "Kết hôn",
   "en": ""
  },
  {
-  "vi": "Cà phê dở.",
+  "vi": "Chứng chỉ đầu",
   "en": ""
  },
  {
-  "vi": "ly cà phê tiếp khách nhạt như nước lọc",
+  "vi": "đón khách",
   "en": ""
  },
  {
-  "vi": "biểu mẫu in font chữ xấu",
+  "vi": "có thật trong ca làm",
   "en": ""
  },
  {
-  "vi": "Font xấu.",
+  "vi": "cảm nhận riêng của người viết",
   "en": ""
  },
  {
-  "vi": "biểu mẫu in font chữ nhìn như từ thế kỷ trước",
+  "vi": "lỗi đã ghi nhận (đã có trong review)",
   "en": ""
  },
  {
-  "vi": "nhân viên ăn mặc chưa đủ sang",
+  "vi": "Góc nhận xét sai.",
   "en": ""
  },
  {
-  "vi": "Áo nhăn.",
+  "vi": "Danh sách góc nhận xét gần đây sai.",
   "en": ""
  },
  {
-  "vi": "người tiếp tôi mặc áo hơi nhăn, nhìn chưa chuyên nghiệp",
+  "vi": "Cửa hàng",
   "en": ""
  },
  {
-  "vi": "nhạc chờ tổng đài chán",
+  "vi": "Độ ngọt",
   "en": ""
  },
  {
-  "vi": "Nhạc chờ.",
+  "vi": "ngọt quá so với lời dặn",
   "en": ""
  },
  {
-  "vi": "nhạc chờ tổng đài nghe hoài một bài, ám ảnh",
+  "vi": "ly nước ngọt khé, uống xong khát thêm",
   "en": ""
  },
  {
-  "vi": "nhạc chờ vui quá, không hợp tâm trạng đang bực của tôi",
+  "vi": "dặn ít đường mà ngọt như đổ cả hũ",
   "en": ""
  },
  {
-  "vi": "phải bấm phím nhiều lần",
+  "vi": "ngọt gắt cổ, phải xin thêm đá cho loãng bớt",
   "en": ""
  },
  {
-  "vi": "Bấm phím.",
+  "vi": "vị ngọt lấn hết vị trà",
   "en": ""
  },
  {
-  "vi": "phải bấm phím mấy lượt mới gặp được người thật",
+  "vi": "độ ngọt vừa miệng, đúng kiểu ít đường",
   "en": ""
  },
  {
-  "vi": "đường truyền rè",
+  "vi": "ngọt thanh, uống hết ly không ngán",
   "en": ""
  },
  {
-  "vi": "đường truyền rè rè như radio cũ",
+  "vi": "ngọt vừa phải, không bị gắt cổ",
   "en": ""
  },
  {
-  "vi": "gọi đúng giờ trưa",
+  "vi": "dặn ba mươi phần trăm đường là ra đúng ba mươi",
   "en": ""
  },
  {
-  "vi": "Đói.",
+  "vi": "ngọt dữ thần, uống xong nghe tim đập theo nhịp đường 👏",
   "en": ""
  },
  {
-  "vi": "tôi gọi đúng giờ ăn trưa nên đói, bực lây sang tổng đài",
+  "vi": "Ngọt gắt.",
   "en": ""
  },
  {
-  "vi": "máy lạnh xe yếu",
+  "vi": "Ngọt vừa.",
   "en": ""
  },
  {
-  "vi": "máy lạnh trên xe yếu xìu, cả đoàn quạt tay",
+  "vi": "Vị cà phê",
   "en": ""
  },
  {
-  "vi": "trời nắng quá",
+  "vi": "cà phê nhạt",
   "en": ""
  },
  {
-  "vi": "Nắng.",
+  "vi": "cà phê nhạt quá, uống như nước màu",
   "en": ""
  },
  {
-  "vi": "trời nắng gắt, ảnh chụp ai cũng nhăn mặt",
+  "vi": "cà phê hơi loãng, không đủ đô cho buổi sáng",
   "en": ""
  },
  {
-  "vi": "không kể chuyện ma",
+  "vi": "cà phê đắng mà không thơm, kiểu rang hơi cháy",
   "en": ""
  },
  {
-  "vi": "Thiếu ma.",
+  "vi": "ly cà phê sữa toàn vị sữa, tìm mãi không thấy cà phê",
   "en": ""
  },
  {
-  "vi": "hướng dẫn viên không kể chuyện ma nào, tôi hơi hụt hẫng",
+  "vi": "cà phê đậm, thơm mùi rang, tỉnh cả người",
   "en": ""
  },
  {
-  "vi": "ảnh check-in bị ngược sáng",
+  "vi": "cà phê đậm vừa, hậu ngọt, uống là ghiền",
   "en": ""
  },
  {
-  "vi": "Ngược sáng.",
+  "vi": "cà phê đủ đô mà không gắt",
   "en": ""
  },
  {
-  "vi": "điểm check-in toàn ngược sáng, ảnh tôi đen thui",
+  "vi": "mở nắp ra là thơm lừng mùi cà phê",
   "en": ""
  },
  {
-  "vi": "cơm trưa hơi mặn",
+  "vi": "cà phê nhạt tới mức uống xong vẫn buồn ngủ y nguyên, hiệu quả thật 👏",
   "en": ""
  },
  {
-  "vi": "Mặn.",
+  "vi": "ly cà phê rất \"nhẹ nhàng\", nhẹ tới mức tưởng trà 🙂",
   "en": ""
  },
  {
-  "vi": "cơm trưa ở quán dọc đường hơi mặn, dù chẳng phải lỗi ai",
+  "vi": "Nhạt.",
   "en": ""
  },
  {
-  "vi": "đi bộ nhiều mỏi chân",
+  "vi": "Đậm.",
   "en": ""
  },
  {
-  "vi": "Mỏi chân.",
+  "vi": "Vị trà",
   "en": ""
  },
  {
-  "vi": "đi bộ nhiều quá, về tới nơi chân như cục chì",
+  "vi": "trà nhạt",
   "en": ""
  },
  {
-  "vi": "gà nhà bên gáy sớm",
+  "vi": "vị trà nhạt, toàn thấy vị sữa",
   "en": ""
  },
  {
-  "vi": "Gà gáy.",
+  "vi": "trà hơi chát, uống xong khô cả miệng",
   "en": ""
  },
  {
-  "vi": "gà nhà bên gáy từ lúc trời còn tối om",
+  "vi": "trà có vẻ ủ lâu nên hơi nồng",
   "en": ""
  },
  {
-  "vi": "nước nóng lâu",
+  "vi": "chè hơi nhạt, đá tan cái là như nước lã",
   "en": ""
  },
  {
-  "vi": "nước nóng chờ lâu, tôi tắm run cầm cập",
+  "vi": "chè pha hơi chát, uống một hơi thấy khô cổ",
   "en": ""
  },
  {
-  "vi": "cây che mất view",
+  "vi": "ấm chè có vẻ pha từ sáng, hơi nồng",
   "en": ""
  },
  {
-  "vi": "View đâu?",
+  "vi": "trà thơm, hậu ngọt, uống là biết trà ngon",
   "en": ""
  },
  {
-  "vi": "cái cây to che mất nửa view, chụp hình không đẹp",
+  "vi": "vị trà rõ, không bị sữa lấn",
   "en": ""
  },
  {
-  "vi": "chó hàng xóm sủa",
+  "vi": "trà ủ vừa, thơm mà không chát",
   "en": ""
  },
  {
-  "vi": "Chó sủa.",
+  "vi": "chè đậm, chát nhẹ rồi ngọt hậu, đúng vị trà đá vỉa hè",
   "en": ""
  },
  {
-  "vi": "chó nhà hàng xóm sủa cả đêm",
+  "vi": "cốc trà đá mát lạnh, thơm mùi chè mới pha",
   "en": ""
  },
  {
-  "vi": "chăn màu không hợp gu",
+  "vi": "chè xanh pha vừa, uống ba cốc chưa đã",
   "en": ""
  },
  {
-  "vi": "Chăn hồng.",
+  "vi": "Đậm vị.",
   "en": ""
  },
  {
-  "vi": "chăn màu hồng cánh sen, không hợp gu tôi",
+  "vi": "Hương vị món",
   "en": ""
  },
  {
-  "vi": "không có máy sấy tóc",
+  "vi": "món nêm chưa vừa",
   "en": ""
  },
  {
-  "vi": "Máy sấy?",
+  "vi": "nước dùng hơi nhạt, phải thêm nước mắm mới vừa",
   "en": ""
  },
  {
-  "vi": "không có máy sấy tóc, tôi đi chơi với mái tóc ướt",
+  "vi": "món hơi mặn, về uống nước cả buổi chiều",
   "en": ""
  },
  {
-  "vi": "cổng trường nắng, không có mái che",
+  "vi": "nước dùng hơi ngọt bột ngọt",
   "en": ""
  },
  {
-  "vi": "đứng đón con ở cổng trường nắng mà không có mái che",
+  "vi": "sợi mì hơi nở, gắp lên là đứt",
   "en": ""
  },
  {
-  "vi": "cô/thầy ít cười",
+  "vi": "bánh hơi khô, ăn phải chiêu nước",
   "en": ""
  },
  {
-  "vi": "Ít cười.",
+  "vi": "bánh mì hơi dai, cắn mỏi cả hàm",
   "en": ""
  },
  {
-  "vi": "con về kể hôm nay cô/thầy ít cười",
+  "vi": "kem bánh ngọt quá, ăn hai miếng là ngán",
   "en": ""
  },
  {
-  "vi": "lớp học nóng",
+  "vi": "nước dùng ngọt xương, húp cạn tô",
   "en": ""
  },
  {
-  "vi": "lớp nóng, quạt trần lại kêu to",
+  "vi": "nêm vừa miệng, không phải thêm gì",
   "en": ""
  },
  {
-  "vi": "phiếu bài tập in mờ",
+  "vi": "sợi mì dai vừa, trụng khéo",
   "en": ""
  },
  {
-  "vi": "In mờ.",
+  "vi": "tô mì thơm hành phi, ăn xong còn thèm",
   "en": ""
  },
  {
-  "vi": "phiếu bài tập in hơi mờ, tôi đọc phải đeo kính",
+  "vi": "bánh mềm, thơm bơ, ăn còn ấm",
   "en": ""
  },
  {
-  "vi": "bàn ghế lung lay",
+  "vi": "vỏ bánh giòn tan, ruột xốp",
   "en": ""
  },
  {
-  "vi": "Bàn lắc.",
+  "vi": "kem bánh ngọt vừa, ăn không ngán",
   "en": ""
  },
  {
-  "vi": "bàn của con hơi lung lay, viết chữ bị nghiêng",
+  "vi": "Chưa vừa.",
   "en": ""
  },
  {
-  "vi": "nhóm lớp nhắn tối muộn",
+  "vi": "Độ nóng lạnh",
   "en": ""
  },
  {
-  "vi": "Nhắn khuya.",
+  "vi": "đồ nóng mà nguội",
   "en": ""
  },
  {
-  "vi": "nhóm lớp có tin nhắn tối muộn, tôi giật mình tỉnh giấc",
+  "vi": "đồ uống nóng mà đưa ra đã nguội",
   "en": ""
  },
  {
-  "vi": "đồng phục màu chói",
+  "vi": "món bưng ra hơi nguội",
   "en": ""
  },
  {
-  "vi": "Màu chói.",
+  "vi": "ly nóng quá, cầm bỏng cả tay",
   "en": ""
  },
  {
-  "vi": "đồng phục năm nay màu hơi chói",
+  "vi": "đồ nóng bưng ra còn bốc khói",
   "en": ""
  },
  {
-  "vi": "thầy bói nói con hợp thầy cô tuổi khác",
+  "vi": "ly nóng vừa tay, uống liền được",
   "en": ""
  },
  {
-  "vi": "Không hợp tuổi.",
+  "vi": "đồ lạnh thì lạnh buốt, đồ nóng thì nóng hổi",
   "en": ""
  },
  {
-  "vi": "thầy bói bảo năm nay con hợp thầy cô tuổi khác, tôi hơi lăn tăn",
+  "vi": "Nguội.",
   "en": ""
  },
  {
-  "vi": "mũ bảo hiểm màu không hợp",
+  "vi": "Nóng hổi.",
   "en": ""
  },
  {
-  "vi": "Mũ xấu.",
+  "vi": "đá tan nhanh",
   "en": ""
  },
  {
-  "vi": "shipper đội mũ bảo hiểm màu không hợp với áo",
+  "vi": "đá tan nhanh, nửa ly sau toàn nước",
   "en": ""
  },
  {
-  "vi": "giao sớm quá",
+  "vi": "đá ít quá, uống không đã",
   "en": ""
  },
  {
-  "vi": "Sớm quá.",
+  "vi": "thùng đá hết nên phải uống nước chè không đá",
   "en": ""
  },
  {
-  "vi": "giao sớm quá, tôi còn chưa kịp dậy",
+  "vi": "đá lạnh buốt, uống giải nhiệt liền",
   "en": ""
  },
  {
-  "vi": "túi buộc nút chặt",
+  "vi": "đá vừa đủ, tới cuối ly vẫn ra vị",
   "en": ""
  },
  {
-  "vi": "Nút buộc.",
+  "vi": "đá viên to, lâu tan, uống cả buổi vẫn mát",
   "en": ""
  },
  {
-  "vi": "túi buộc nút chặt quá, tôi phải lấy kéo mới mở được",
+  "vi": "Đá tan.",
   "en": ""
  },
  {
-  "vi": "gọi điện giọng nghiêm",
+  "vi": "Mát lạnh.",
   "en": ""
  },
  {
-  "vi": "Giọng nghiêm.",
+  "vi": "Khẩu phần",
   "en": ""
  },
  {
-  "vi": "gọi điện giọng nghiêm như gọi đi thi",
+  "vi": "phần ăn ít",
   "en": ""
  },
  {
-  "vi": "rau còn dính đất",
+  "vi": "phần ăn hơi ít, ăn xong vẫn đói",
   "en": ""
  },
  {
-  "vi": "Đất.",
+  "vi": "thịt trong tô đếm được trên đầu ngón tay",
   "en": ""
  },
  {
-  "vi": "rau còn dính chút đất, rau sạch mà nhìn chưa sạch",
+  "vi": "topping hơi ít, múc mãi mới thấy trân châu",
   "en": ""
  },
  {
-  "vi": "Lỗ sâu.",
+  "vi": "ly size L mà nhìn như size M",
   "en": ""
  },
  {
-  "vi": "lá rau có mấy lỗ sâu, biết là rau sạch nhưng nhìn không sang",
+  "vi": "miếng bánh nhỏ hơn trong hình",
   "en": ""
  },
  {
-  "vi": "nhãn in xấu",
+  "vi": "ly nhỏ mà đá chiếm nửa ly",
   "en": ""
  },
  {
-  "vi": "Nhãn xấu.",
+  "vi": "tô đầy đặn, thịt không keo",
   "en": ""
  },
  {
-  "vi": "cái nhãn dán in chữ hơi xấu",
+  "vi": "phần ăn no căng, đáng tiền",
   "en": ""
  },
  {
-  "vi": "chợ phiên xa",
+  "vi": "topping nhiều, ly đầy ắp",
   "en": ""
  },
  {
-  "vi": "chợ phiên xa quá, đi muốn hết xăng",
+  "vi": "trân châu nhiều, hút tới cuối vẫn còn",
   "en": ""
  },
  {
-  "vi": "con mèo dễ thương",
+  "vi": "miếng bánh to, cắt đều tay",
   "en": ""
  },
  {
-  "vi": "con mèo trên quầy quá dễ thương",
+  "vi": "ly đầy, ít đá nhiều nước",
   "en": ""
  },
  {
-  "vi": "con mèo nhìn tôi một cái là tôi xiêu lòng",
+  "vi": "Ít.",
   "en": ""
  },
  {
-  "vi": "con mèo nhà bên ghé ngồi cạnh tôi suốt buổi",
+  "vi": "Đầy đặn.",
   "en": ""
  },
  {
-  "vi": "nhạc đúng gu",
+  "vi": "ống hút giấy mềm nhũn",
   "en": ""
  },
  {
-  "vi": "nhạc đúng gu, bài nào cũng muốn hát theo",
+  "vi": "ống hút giấy uống được nửa ly là mềm nhũn",
   "en": ""
  },
  {
-  "vi": "tên quán dễ thương",
+  "vi": "quên đưa ống hút, tôi phải quay lại xin",
   "en": ""
  },
  {
-  "vi": "tên quán nghe dễ thương",
+  "vi": "ống hút hơi nhỏ, hút trân châu mỏi cả má",
   "en": ""
  },
  {
-  "vi": "chậu cây xanh",
+  "vi": "ống hút giấy có mùi giấy, uống hơi lợ",
   "en": ""
  },
  {
-  "vi": "chậu cây bên cửa sổ xanh mướt",
+  "vi": "ống hút ngắn, cắm vào ly size L là chìm luôn",
   "en": ""
  },
  {
-  "vi": "tử vi nói hôm nay hên",
+  "vi": "ống hút to vừa, hút trân châu sướng",
   "en": ""
  },
  {
-  "vi": "tử vi nói hôm nay hợp màu áo của chủ quán, lấy hên",
+  "vi": "ống hút giấy mà cứng cáp, uống tới cuối vẫn ổn",
   "en": ""
  },
  {
-  "vi": "ngồi nghe mưa",
+  "vi": "có sẵn ống hút gói riêng, sạch sẽ",
   "en": ""
  },
  {
-  "vi": "trời mưa ngồi trong quán nghe mưa rơi, chill hết sức",
+  "vi": "hỏi khách lấy ống hút hay không, chu đáo ghê",
   "en": ""
  },
  {
-  "vi": "không khí hội phố",
+  "vi": "ống hút giấy thân thiện môi trường ghê, thân thiện tới mức tan luôn trong ly 👏",
   "en": ""
  },
  {
-  "vi": "không khí hội phố vui quá trời",
+  "vi": "ống hút mềm dần theo thời gian, như một bài học về sự vô thường 🙂",
   "en": ""
  },
  {
-  "vi": "bút ký trơn tay",
+  "vi": "Ống hút mềm.",
   "en": ""
  },
  {
-  "vi": "cây bút ký trơn tay, ký sướng hết sức",
+  "vi": "Ống hút xịn.",
   "en": ""
  },
  {
-  "vi": "đĩa kẹo tiếp khách",
+  "vi": "Ly và nắp",
   "en": ""
  },
  {
-  "vi": "đĩa kẹo trên bàn tiếp khách ngon bất ngờ",
+  "vi": "nắp ly không kín",
   "en": ""
  },
  {
-  "vi": "giọng tổng đài dễ thương",
+  "vi": "nắp dán không kín, đi xe về rỉ ra ướt cả túi",
   "en": ""
  },
  {
-  "vi": "giọng tổng đài viên dễ thương như đọc truyện đêm khuya",
+  "vi": "ly mỏng, cầm hơi mạnh là móp",
   "en": ""
  },
  {
-  "vi": "ảnh sống ảo đẹp",
+  "vi": "nắp ly bật ra, nước đổ một ít",
   "en": ""
  },
  {
-  "vi": "chụp được tấm ảnh sống ảo đẹp nhất đời",
+  "vi": "màng dán nhăn nhúm, cắm ống hút mãi không thủng",
   "en": ""
  },
  {
-  "vi": "hướng dẫn viên hát hay",
+  "vi": "nắp dán căng, lắc mạnh cũng không rỉ",
   "en": ""
  },
  {
-  "vi": "hướng dẫn viên hát trên xe hay như ca sĩ",
+  "vi": "ly dày dặn, cầm chắc tay",
   "en": ""
  },
  {
-  "vi": "con mèo của homestay",
+  "vi": "nắp kín, mang về tới nhà vẫn nguyên",
   "en": ""
  },
  {
-  "vi": "con mèo của homestay ngủ cạnh tôi cả buổi chiều",
+  "vi": "màng dán phẳng phiu, cắm ống hút một phát ăn ngay",
   "en": ""
  },
  {
-  "vi": "bữa sáng có trứng ốp la",
+  "vi": "nắp dán kiểu \"tùy duyên\", về tới nhà còn được nửa ly là may 👏",
   "en": ""
  },
  {
-  "vi": "bữa sáng có trứng ốp la lòng đào đúng ý",
+  "vi": "Rỉ nước.",
   "en": ""
  },
  {
-  "vi": "cô/thầy nhớ tên con",
+  "vi": "Nắp kín.",
   "en": ""
  },
  {
-  "vi": "cô/thầy nhớ tên con ngay từ buổi đầu",
+  "vi": "Muỗng, khăn giấy",
   "en": ""
  },
  {
-  "vi": "chữ cô/thầy đẹp",
+  "vi": "thiếu khăn giấy",
   "en": ""
  },
  {
-  "vi": "chữ cô/thầy viết trên bảng đẹp như in",
+  "vi": "không thấy khăn giấy trên bàn, phải đi xin",
   "en": ""
  },
  {
-  "vi": "shipper cười duyên",
+  "vi": "hộp khăn giấy trên bàn hết sạch",
   "en": ""
  },
  {
-  "vi": "shipper cười duyên quá trời",
+  "vi": "đưa đồ ăn mà quên muỗng nĩa",
   "en": ""
  },
  {
-  "vi": "trứng tròn đẹp",
+  "vi": "có sẵn khăn giấy, muỗng nĩa gói riêng",
   "en": ""
  },
  {
-  "vi": "quả trứng nào cũng tròn đẹp như tranh",
+  "vi": "đưa kèm khăn ướt, chu đáo ghê",
   "en": ""
  },
  {
-  "vi": "ghế chật chân",
+  "vi": "hộp khăn giấy lúc nào cũng đầy",
   "en": ""
  },
  {
-  "vi": "Chật.",
+  "vi": "Hết khăn giấy.",
   "en": ""
  },
  {
-  "vi": "ghế chật, đầu gối tôi chạm lưng ghế trước suốt chuyến",
+  "vi": "Chu đáo.",
   "en": ""
  },
  {
-  "vi": "ngồi đúng chỗ cánh che",
+  "vi": "bàn còn dính",
   "en": ""
  },
  {
-  "vi": "Cánh che.",
+  "vi": "bàn còn dính nước đường, đặt tay là dính",
   "en": ""
  },
  {
-  "vi": "tôi ngồi cửa sổ mà đúng ngay cánh, chẳng thấy biển đâu",
+  "vi": "ghế còn vụn bánh của khách trước",
   "en": ""
  },
  {
-  "vi": "ù tai khi hạ cánh",
+  "vi": "mặt bàn nhớt nhớt, lau mãi chưa sạch",
   "en": ""
  },
  {
-  "vi": "Ù tai.",
+  "vi": "khách trước đi rồi mà ly cũ còn nguyên trên bàn",
   "en": ""
  },
  {
-  "vi": "lúc hạ cánh tai tôi ù đặc, dù chẳng phải lỗi ai",
+  "vi": "bàn lau sạch bong, ngồi thích",
   "en": ""
  },
  {
-  "vi": "xe buýt ra tàu chạy vòng",
+  "vi": "khách trước vừa đi là dọn bàn liền",
   "en": ""
  },
  {
-  "vi": "Xe buýt.",
+  "vi": "bàn ghế gọn gàng, không dính chút nào",
   "en": ""
  },
  {
-  "vi": "xe buýt từ cổng ra tàu chạy vòng vèo mãi mới tới",
+  "vi": "bàn dính tới mức đặt điện thoại xuống là khỏi sợ rơi 👏",
   "en": ""
  },
  {
-  "vi": "thấy biển từ trên cao",
+  "vi": "Bàn dính.",
   "en": ""
  },
  {
-  "vi": "nhìn qua cửa sổ thấy biển xanh ngắt, đẹp như tranh",
+  "vi": "Bàn sạch.",
   "en": ""
  },
  {
-  "vi": "tàu hàng dài lê thê",
+  "vi": "sàn hơi trơn, suýt trượt chân",
   "en": ""
  },
  {
-  "vi": "Dài.",
+  "vi": "dưới gầm bàn còn ly nhựa với giấy ăn",
   "en": ""
  },
  {
-  "vi": "đoàn tàu hàng ba chục toa, đếm mãi không hết",
+  "vi": "sàn loang vệt nước, đi phải nhìn chân",
   "en": ""
  },
  {
-  "vi": "chuông đường ngang to",
+  "vi": "sàn ướt dấu dép, trời mưa mà không trải thảm",
   "en": ""
  },
  {
-  "vi": "cái chuông đường ngang kêu to quá, ù cả tai",
+  "vi": "trời mưa, lối vào trơn trượt, suýt ngã",
   "en": ""
  },
  {
-  "vi": "đứng chờ giữa nắng",
+  "vi": "sàn khô ráo, sạch sẽ",
   "en": ""
  },
  {
-  "vi": "đứng chờ tàu giữa trưa nắng, không có lấy một bóng cây",
+  "vi": "trời mưa mà có thảm chùi chân ở cửa, sàn vẫn khô",
   "en": ""
  },
  {
-  "vi": "còi tàu rúc to",
+  "vi": "sàn lau thơm mùi sả",
   "en": ""
  },
  {
-  "vi": "Còi.",
+  "vi": "Sàn trơn.",
   "en": ""
  },
  {
-  "vi": "còi tàu rúc ngay lúc tôi đang nghe điện thoại",
+  "vi": "Sàn sạch.",
   "en": ""
  },
  {
-  "vi": "lái tàu vẫy tay",
+  "vi": "Nhà vệ sinh",
   "en": ""
  },
  {
-  "vi": "lái tàu vẫy tay chào, tụi nhỏ nhà tôi thích mê",
+  "vi": "nhà vệ sinh bẩn",
   "en": ""
  },
  {
-  "vi": "bay lúc bình minh",
+  "vi": "nhà vệ sinh hơi bí, không có quạt hút",
   "en": ""
  },
  {
-  "vi": "bay đúng lúc bình minh, mặt trời đỏ au ngay cánh tàu",
+  "vi": "nhà vệ sinh hết giấy, xà phòng cũng không có",
   "en": ""
  },
  {
-  "vi": "say sóng trên đường ra đảo",
+  "vi": "sàn nhà vệ sinh ướt nhẹp",
   "en": ""
  },
  {
-  "vi": "Say sóng.",
+  "vi": "nhà vệ sinh có mùi, chắc lâu chưa dọn",
   "en": ""
  },
  {
-  "vi": "ra tới đảo thì tôi đã say sóng ói hai lần",
+  "vi": "nhà vệ sinh khóa cửa hỏng, phải nhờ người đứng canh",
   "en": ""
  },
  {
-  "vi": "cầu thang đá trơn",
+  "vi": "nhà vệ sinh sạch thơm, có cả xà phòng rửa tay",
   "en": ""
  },
  {
-  "vi": "Trơn.",
+  "vi": "nhà vệ sinh khô ráo, sạch hơn cả nhà tôi",
   "en": ""
  },
  {
-  "vi": "bậc đá lên trạm rêu trơn, tôi phải bò lên",
+  "vi": "nhà vệ sinh nhỏ mà sạch, đủ giấy",
   "en": ""
  },
  {
-  "vi": "hải âu kêu inh ỏi",
+  "vi": "nhà vệ sinh có gương sáng, có móc treo túi, tinh tế ghê",
   "en": ""
  },
  {
-  "vi": "đàn hải âu kêu inh ỏi, nói gì cũng không nghe",
+  "vi": "nhà vệ sinh mang phong cách \"sinh tồn\", vào là phải nín thở 👏",
   "en": ""
  },
  {
-  "vi": "gió thổi rối tóc",
+  "vi": "Nhà vệ sinh bí.",
   "en": ""
  },
  {
-  "vi": "Gió.",
+  "vi": "Nhà vệ sinh sạch.",
   "en": ""
  },
  {
-  "vi": "gió trên đảo thổi rối tung mái tóc mới làm",
+  "vi": "không có nhà vệ sinh",
   "en": ""
  },
  {
-  "vi": "mèo Mun ra đón",
+  "vi": "quán vỉa hè nên không có nhà vệ sinh, muốn đi phải chạy ra cây xăng",
   "en": ""
  },
  {
-  "vi": "con mèo đen của trạm ra tận bến đón, dễ thương hết sức",
+  "vi": "ngồi lâu mà không có chỗ đi vệ sinh, hơi bất tiện",
   "en": ""
  },
  {
-  "vi": "phần chính thì không chê được",
+  "vi": "không có nhà vệ sinh nhưng chủ quán chỉ tận chỗ gần nhất",
   "en": ""
  },
  {
-  "vi": "hồ sơ làm chuẩn chỉnh",
+  "vi": "Không có WC.",
   "en": ""
  },
  {
-  "vi": "giấy tờ đâu ra đó",
+  "vi": "Mùi trong quán",
   "en": ""
  },
  {
-  "vi": "phần việc chính thì chuẩn",
+  "vi": "quán ám mùi",
   "en": ""
  },
  {
-  "vi": "vấn đề của tôi được giải quyết",
+  "vi": "trong quán hơi ám mùi dầu mỡ, về áo còn mùi",
   "en": ""
  },
  {
-  "vi": "giải quyết đúng việc",
+  "vi": "gần thùng rác nên thoảng mùi khó chịu",
   "en": ""
  },
  {
-  "vi": "người nghe máy làm việc tới nơi",
+  "vi": "mùi nước rửa chén hắc quá",
   "en": ""
  },
  {
-  "vi": "chuyến đi đúng lịch",
+  "vi": "vào quán là thấy thơm, dễ chịu",
   "en": ""
  },
  {
-  "vi": "hướng dẫn viên kể chuyện có duyên",
+  "vi": "quán thơm mùi bánh nướng, đói bụng liền",
   "en": ""
  },
  {
-  "vi": "đoàn đi an toàn, đủ người",
+  "vi": "vào cửa là thơm mùi cà phê rang",
   "en": ""
  },
  {
-  "vi": "phòng sạch sẽ",
+  "vi": "thơm mùi nước dùng từ đầu hẻm",
   "en": ""
  },
  {
-  "vi": "chủ nhà chu đáo",
+  "vi": "quán thơm mùi trà với đường nâu",
   "en": ""
  },
  {
-  "vi": "giường êm",
+  "vi": "thoảng mùi chè mới pha, mát cả người",
   "en": ""
  },
  {
-  "vi": "con học có tiến bộ",
+  "vi": "Ám mùi.",
   "en": ""
  },
  {
-  "vi": "buổi học nhìn chung ổn",
+  "vi": "Thơm.",
   "en": ""
  },
  {
-  "vi": "con về kể học vui",
+  "vi": "Ruồi muỗi",
   "en": ""
  },
  {
-  "vi": "hàng tới nguyên vẹn",
+  "vi": "có ruồi",
   "en": ""
  },
  {
-  "vi": "giao đúng chỗ",
+  "vi": "có vài con ruồi bay quanh bàn",
   "en": ""
  },
  {
-  "vi": "đơn đủ món",
+  "vi": "ngồi một lúc là muỗi cắn chân",
   "en": ""
  },
  {
-  "vi": "rau tươi, trứng ngon",
+  "vi": "ruồi bu quanh xô đá, nhìn hơi ngại",
   "en": ""
  },
  {
-  "vi": "hàng tươi rói",
+  "vi": "Ruồi.",
   "en": ""
  },
  {
-  "vi": "đóng gói cẩn thận",
+  "vi": "Nhạc",
   "en": ""
  },
  {
-  "vi": "chuyến bay an toàn",
+  "vi": "nhạc mở to",
   "en": ""
  },
  {
-  "vi": "tổ bay chu đáo",
+  "vi": "nhạc mở to quá, nói chuyện phải hét",
   "en": ""
  },
  {
-  "vi": "hạ cánh êm",
+  "vi": "nhạc xập xình, không hợp ngồi làm việc",
   "en": ""
  },
  {
-  "vi": "Trừ một sao, không bàn.",
+  "vi": "nhạc lặp đi lặp lại một bài, nghe muốn thuộc",
   "en": ""
  },
  {
-  "vi": "Một sao trừ đi là vì chuyện đó.",
+  "vi": "nhạc nhẹ nhàng, ngồi cả buổi không chán",
   "en": ""
  },
  {
-  "vi": "Trừ một sao cho nhớ.",
+  "vi": "nhạc chill đúng gu, âm lượng vừa",
   "en": ""
  },
  {
-  "vi": "Sao thì vẫn để nguyên, tôi rộng lượng mà.",
+  "vi": "nhạc xưa nghe mà thấy thương",
   "en": ""
  },
  {
-  "vi": "Không trừ sao đâu, nói cho biết thôi.",
+  "vi": "Nhạc to.",
   "en": ""
  },
  {
-  "vi": "Vẫn đủ sao, nhưng nhớ đấy.",
+  "vi": "Nhạc hay.",
   "en": ""
  },
  {
-  "vi": "Tôi xin phép trừ một sao.",
+  "vi": "Máy lạnh, quạt",
   "en": ""
  },
  {
-  "vi": "Tôi vẫn giữ nguyên số sao để ghi nhận thiện chí.",
+  "vi": "nóng, máy lạnh yếu",
   "en": ""
  },
  {
-  "vi": "Gia đình xin trừ một sao.",
+  "vi": "máy lạnh yếu, ngồi mồ hôi rịn ra",
   "en": ""
  },
  {
-  "vi": "Gia đình vẫn giữ nguyên đánh giá.",
+  "vi": "quạt thổi thẳng vào mặt, lạnh buốt",
   "en": ""
  },
  {
-  "vi": "{Praise}. {Line}. Vậy thôi.",
+  "vi": "trong tiệm hơi hầm, đứng lâu thấy bí",
   "en": ""
  },
  {
-  "vi": "{Line}. Vậy đó. {Praise}, nhưng tôi nhớ chuyện kia hơn.",
+  "vi": "trưa nắng chang chang mà trong này cũng hầm hập",
   "en": ""
  },
  {
-  "vi": "{Line}, nên 5 sao, khỏi bàn.",
+  "vi": "nắng hắt vào tận chỗ ngồi, nóng ran",
   "en": ""
  },
  {
-  "vi": "Tôi viết hơi dài, mọi người thông cảm.",
+  "vi": "không có quạt, ngồi chút là mồ hôi nhễ nhại",
   "en": ""
  },
  {
-  "vi": "Chuyện là chiều nay tôi tan làm sớm, định ghé cho vui.",
+  "vi": "quạt thổi thẳng vào tô, mì nguội nhanh",
   "en": ""
  },
  {
-  "vi": "Tôi vốn ít khi đánh giá, nhưng hôm nay phải nói.",
+  "vi": "bếp sát chỗ ngồi, hơi nóng hầm hập",
   "en": ""
  },
  {
-  "vi": "Mở đầu bằng một lời khen cho công bằng.",
+  "vi": "máy lạnh mát rượi, trốn nắng lý tưởng",
   "en": ""
  },
  {
-  "vi": "Trên đường tới đây tôi còn gặp con chó nhà ai đuổi theo xe.",
+  "vi": "quạt mát, ngồi thoáng",
   "en": ""
  },
  {
-  "vi": "Nhân tiện, hôm nay tôi mặc áo mới, ai để ý thì cảm ơn.",
+  "vi": "ngồi dưới gốc cây mát rượi",
   "en": ""
  },
  {
-  "vi": "Tôi kể thêm là sáng nay tôi làm rơi chìa khóa, nhưng cái đó không liên quan.",
+  "vi": "có gió sông thổi vào, mát không cần quạt",
   "en": ""
  },
  {
-  "vi": "Mẹ tôi dặn đi đâu cũng phải nhận xét cho công tâm.",
+  "vi": "Nóng.",
   "en": ""
  },
  {
-  "vi": "Vì vậy, với tất cả sự công tâm, tôi trừ một sao.",
+  "vi": "Mát.",
   "en": ""
  },
  {
-  "vi": "Tóm lại là tốt, nhưng một sao kia tôi giữ lại vì chuyện đó.",
+  "vi": "wifi yếu",
   "en": ""
  },
  {
-  "vi": "Tóm lại vẫn đủ sao, chỉ mong quán để ý.",
+  "vi": "wifi chập chờn, gửi cái file mãi không đi",
   "en": ""
  },
  {
-  "vi": "Viết dài vậy thôi chứ tôi vẫn quý, sao để nguyên.",
+  "vi": "mật khẩu wifi dài như bài văn",
   "en": ""
  },
  {
-  "vi": "Tôi xin phép nhắn dài một chút.",
+  "vi": "ngồi bàn trong là mất sóng wifi",
   "en": ""
  },
  {
-  "vi": "Tối qua con ăn cơm xong cứ ngồi kể chuyện lớp mãi.",
+  "vi": "wifi mạnh, ngồi làm việc cả chiều",
   "en": ""
  },
  {
-  "vi": "Nhân tiện, bà nội cháu gửi lời hỏi thăm cô/thầy.",
+  "vi": "wifi nhanh, mật khẩu dán ngay trên bàn",
   "en": ""
  },
  {
-  "vi": "Vì vậy gia đình xin trừ một sao để cô/thầy lưu ý.",
+  "vi": "ổ cắm sạc gần bàn, wifi ổn, ngồi làm việc sướng",
   "en": ""
  },
  {
-  "vi": "Gia đình vẫn giữ nguyên đánh giá, chỉ mong cô/thầy để ý.",
+  "vi": "Wifi yếu.",
   "en": ""
  },
  {
-  "vi": "Ừ thì chuyện đó cũng không phải lỗi bên bạn. Thôi trả lại sao cho công bằng.",
+  "vi": "Wifi khỏe.",
   "en": ""
  },
  {
-  "vi": "Đọc trả lời thấy dễ chịu, thôi bỏ qua chuyện kia, sửa sao nè.",
+  "vi": "Giữ xe",
   "en": ""
  },
  {
-  "vi": "Công nhận phần chính làm tốt. Tôi hơi khó tính vụ kia thôi, sửa lại sao.",
+  "vi": "chỗ để xe chật",
   "en": ""
  },
  {
-  "vi": "Vâng, chuyện đó cũng không phải lỗi của cô/thầy. Gia đình sửa lại đánh giá ạ.",
+  "vi": "chỗ để xe chật, dắt ra muốn trầy xe",
   "en": ""
  },
  {
-  "vi": "Nghe cô/thầy nói vậy tôi thấy mình hơi khắt khe. Tôi sửa lại ạ.",
+  "vi": "không có ai giữ xe, ngồi mà cứ ngó ra ngoài",
   "en": ""
  },
  {
-  "vi": "Bạn làm được việc chính như ý, nhưng trừ sao vì một chuyện ngoài lề (unfair_claim.claim) chẳng liên quan dịch vụ. Nếu chủ quán trả lời dễ thương, xin lỗi khéo hoặc nêu sự thật nhẹ nhàng, bạn có thể bỏ qua và trả lại sao; nếu bị cãi hoặc mỉa, bạn cãi cố cho vui, xéo xắt nhưng không tục.",
+  "vi": "xe dựng tràn ra lề, đi bộ cũng khó",
   "en": ""
  },
  {
-  "vi": "Năm sao. Đừng quen.",
+  "vi": "có người dắt xe giúp, dễ thương ghê",
   "en": ""
  },
  {
-  "vi": "Ngon. Lạ thật đấy.",
+  "vi": "chỗ để xe rộng, có mái che",
   "en": ""
  },
  {
-  "vi": "Được, tiếc là tôi không tìm ra chỗ chê cho đủ năm câu.",
+  "vi": "giữ xe cẩn thận, còn che yên xe lúc nắng",
   "en": ""
  },
  {
-  "vi": "Ba sao, một sao cho sự cố gắng, hai sao cho… thôi khỏi.",
+  "vi": "Chật chỗ xe.",
   "en": ""
  },
  {
-  "vi": "Khá. Tôi mà mở quán thì còn khá hơn.",
+  "vi": "Giữ xe ổn.",
   "en": ""
  },
  {
-  "vi": "Đạt. Tôi đã kiểm hai lần cho chắc.",
+  "vi": "Xếp hàng",
   "en": ""
  },
  {
-  "vi": "ăn một miếng thấy đời bớt deadline 🥹",
+  "vi": "hàng chờ lộn xộn, người tới sau lấy trước",
   "en": ""
  },
  {
-  "vi": "cx đc, nma chưa đủ để kể với hội bạn 🤷",
+  "vi": "đứng chờ mà không ai hỏi mình cần gì",
   "en": ""
  },
  {
-  "vi": "Được. Anh gật đầu, hiếm lắm đấy.",
+  "vi": "đông quá mà không phát số, ai to tiếng thì được trước",
   "en": ""
  },
  {
-  "vi": "Được. Lần sau cười lên một chút.",
+  "vi": "đông mà vẫn có thứ tự, không ai bị bỏ quên",
   "en": ""
  },
  {
-  "vi": "Ổn. Như một ngày thứ hai.",
+  "vi": "gọi theo lượt rõ ràng, không ai chen ngang",
   "en": ""
  },
  {
-  "vi": ", nói cho công bằng.",
+  "vi": "đông khách mà vẫn chào từng người",
   "en": ""
  },
  {
-  "vi": "Có điều",
+  "vi": "Lộn xộn.",
   "en": ""
  },
  {
-  "vi": "phần việc chính làm đúng",
+  "vi": "Có thứ tự.",
   "en": ""
  },
  {
-  "vi": "; lời chê không liên quan tới dịch vụ",
+  "vi": "Giá và đáng tiền",
   "en": ""
  },
  {
-  "vi": "Lời phàn nàn sai.",
+  "vi": "giá hơi chát",
   "en": ""
  },
  {
-  "vi": "Bảo hiểm y tế",
+  "vi": "giá nhỉnh hơn mặt bằng khu này",
   "en": ""
  },
  {
-  "vi": "Ốm đau, khám bệnh",
+  "vi": "giá hơi chát so với chất lượng",
   "en": ""
  },
  {
-  "vi": "Bảo hiểm xe",
+  "vi": "giá hơi chát so với phần ăn",
   "en": ""
  },
  {
-  "vi": "Xe hỏng, sửa xe",
+  "vi": "thêm topping là tính thêm, cộng lại hơi đau ví",
   "en": ""
  },
  {
-  "vi": "Bảo hiểm nhà",
+  "vi": "cốc trà đá vỉa hè mà tính giá như quán máy lạnh",
   "en": ""
  },
  {
-  "vi": "Dột, vỡ ống, chập điện, cháy, ngập",
+  "vi": "ly cà phê với miếng bánh mà gần bằng bữa trưa",
   "en": ""
  },
  {
-  "vi": "Túi đeo chéo",
+  "vi": "giá mềm, sinh viên cũng ghé được",
   "en": ""
  },
  {
-  "vi": "Móc túi giảm một nửa",
+  "vi": "giá niêm yết rõ, không tính thêm gì bất ngờ",
   "en": ""
  },
  {
-  "vi": "Khóa chống trộm",
+  "vi": "đáng đồng tiền, ăn no mà không đau ví",
   "en": ""
  },
  {
-  "vi": "Trộm vào nhà giảm 60%",
+  "vi": "vài nghìn một cốc mà ngồi mát cả buổi",
   "en": ""
  },
  {
-  "vi": "Két sắt mini",
+  "vi": "ly to, topping nhiều mà giá vẫn mềm",
   "en": ""
  },
  {
-  "vi": "Trộm chỉ lấy được 1/4",
+  "vi": "Hơi đắt.",
   "en": ""
  },
  {
-  "vi": "Bình chữa cháy",
+  "vi": "Chỗ ngồi",
   "en": ""
  },
  {
-  "vi": "Cháy bếp chỉ thiệt 1/3",
+  "vi": "ghế ngồi khó chịu",
   "en": ""
  },
  {
-  "vi": "Bảo mật ngân hàng hai lớp",
+  "vi": "ghế nhựa thấp, ngồi lâu mỏi lưng",
   "en": ""
  },
  {
-  "vi": "Giảm 60% khả năng bị hack tài khoản",
+  "vi": "bàn sát lề đường, xe chạy qua là bụi bay vào cốc",
   "en": ""
  },
  {
-  "vi": "Phần mềm diệt virus",
+  "vi": "chỗ ngồi chật, kéo ghế là đụng bàn bên",
   "en": ""
  },
  {
-  "vi": "Giảm một nửa số xu mất khi bị hack, trước giới hạn chung",
+  "vi": "ghế cao mà không có chỗ gác chân",
   "en": ""
  },
  {
-  "vi": "Chuông báo trộm",
+  "vi": "ghế đặt dưới gốc cây, ngồi mát rượi",
   "en": ""
  },
  {
-  "vi": "Giảm một nửa khả năng trộm vào nhà; dùng cùng khóa và két sắt",
+  "vi": "chỗ ngồi thoáng, ngắm phố thích",
   "en": ""
  },
  {
-  "vi": "Xe hỏng",
+  "vi": "góc ngồi xinh, chụp hình đẹp",
   "en": ""
  },
  {
-  "vi": "Nhà gặp sự cố",
+  "vi": "ghế êm, ngồi học bài cả buổi",
   "en": ""
  },
  {
-  "vi": "Ốm",
+  "vi": "Ghế thấp.",
   "en": ""
  },
  {
-  "vi": "Móc túi",
+  "vi": "Chỗ ngồi xinh.",
   "en": ""
  },
  {
-  "vi": "Trộm vào nhà",
+  "vi": "Cốc chén sạch",
   "en": ""
  },
  {
-  "vi": "Phạt đỗ xe",
+  "vi": "cốc rửa chưa sạch",
   "en": ""
  },
  {
-  "vi": "Tài khoản ngân hàng bị hack",
+  "vi": "cốc còn vệt ố, nhìn là ngại uống",
   "en": ""
  },
  {
-  "vi": "Xe kêu lạch cạch, phanh hơi lỏng.",
+  "vi": "cốc rửa chưa kỹ, còn mùi chè cũ",
   "en": ""
  },
  {
-  "vi": "Đèn báo động cơ cứ chớp tắt.",
+  "vi": "cốc tráng qua loa, còn dính lá chè",
   "en": ""
  },
  {
-  "vi": "Máy thuyền nổ không đều.",
+  "vi": "cốc rửa sạch, trong veo",
   "en": ""
  },
  {
-  "vi": "Thợ máy báo cánh tà hơi kẹt.",
+  "vi": "cốc tráng nước sôi trước mặt, yên tâm",
   "en": ""
  },
  {
-  "vi": "Xe chết máy giữa đường.",
+  "vi": "cốc thủy tinh sạch bóng, cầm thích tay",
   "en": ""
  },
  {
-  "vi": "Xe báo lỗi, phải kéo về xưởng.",
+  "vi": "Cốc bẩn.",
   "en": ""
  },
  {
-  "vi": "Thuyền hỏng máy ngoài bến.",
+  "vi": "Cốc sạch.",
   "en": ""
  },
  {
-  "vi": "Máy bay phải nằm xưởng.",
+  "vi": "Tô đũa sạch",
   "en": ""
  },
  {
-  "vi": "Trần nhà dột",
+  "vi": "đũa muỗng chưa sạch",
   "en": ""
  },
  {
-  "vi": "Mưa đêm qua, nước nhỏ giọt xuống sàn.",
+  "vi": "đũa muỗng hơi dính, phải lau lại",
   "en": ""
  },
  {
-  "vi": "Trần có vết ố nâu loang ra.",
+  "vi": "tô còn vết mỡ ở vành",
   "en": ""
  },
  {
-  "vi": "Vỡ ống nước",
+  "vi": "ống đũa để hở, bụi đường bay vào",
   "en": ""
  },
  {
-  "vi": "Ống nước âm tường vỡ, sàn ướt sũng.",
+  "vi": "đũa muỗng sạch, có ống tráng nước nóng",
   "en": ""
  },
  {
-  "vi": "Tường ẩm, đồng hồ nước cứ quay.",
+  "vi": "tô chén sáng bóng, cầm yên tâm",
   "en": ""
  },
  {
-  "vi": "Chập điện",
+  "vi": "bếp gọn gàng, nhìn vào là muốn ăn",
   "en": ""
  },
  {
-  "vi": "Cầu dao nhảy, một đoạn dây cháy đen.",
+  "vi": "Đũa dính.",
   "en": ""
  },
  {
-  "vi": "Ổ điện hơi nóng, đèn chớp chớp.",
+  "vi": "Bếp sạch.",
   "en": ""
  },
  {
-  "vi": "Cháy bếp",
+  "vi": "kệ hàng lộn xộn",
   "en": ""
  },
  {
-  "vi": "Chảo dầu bén lửa, tủ bếp cháy sém.",
+  "vi": "kệ hàng lộn xộn, tìm một món mãi không thấy",
   "en": ""
  },
  {
-  "vi": "Bếp có mùi khét lạ.",
+  "vi": "hàng xếp chồng lên nhau, rút một món là đổ cả dãy",
   "en": ""
  },
  {
-  "vi": "Nhà bị ngập",
+  "vi": "đồ treo lộn xộn, size nào lẫn size nấy",
   "en": ""
  },
  {
-  "vi": "Mưa lớn, nước tràn vào nhà.",
+  "vi": "móc áo chen chúc, kéo một cái là rơi ba cái",
   "en": ""
  },
  {
-  "vi": "Sắp mưa to, cống trước nhà đầy rác.",
+  "vi": "xô hoa để lung tung, nước đổ lênh láng",
   "en": ""
  },
  {
-  "vi": "Bị cảm sốt",
+  "vi": "lá cành cắt vương đầy sàn",
   "en": ""
  },
  {
-  "vi": "Sáng dậy người nóng ran, đầu nặng trĩu.",
+  "vi": "tủ thuốc hơi lộn xộn, tìm hộp thuốc mãi mới ra",
   "en": ""
  },
  {
-  "vi": "Đau bụng",
+  "vi": "kệ mì gói với kệ nước mắm lẫn vào nhau",
   "en": ""
  },
  {
-  "vi": "Hôm qua ăn quán lạ, giờ bụng quặn từng cơn.",
+  "vi": "hàng sắp hết hạn để lẫn với hàng mới",
   "en": ""
  },
  {
-  "vi": "Đau lưng",
+  "vi": "kệ hàng ngăn nắp, món nào cũng có nhãn",
   "en": ""
  },
  {
-  "vi": "Bê đồ nặng, sáng nay cúi không nổi.",
+  "vi": "hàng xếp theo khu, tìm dễ ghê",
   "en": ""
  },
  {
-  "vi": "Vẫn chưa khỏi",
+  "vi": "đồ treo theo size, theo màu, nhìn là muốn thử",
   "en": ""
  },
  {
-  "vi": "Thuốc không đỡ, người vẫn mệt rã rời.",
+  "vi": "xô hoa xếp theo màu, nhìn như vườn hoa",
   "en": ""
  },
  {
-  "vi": "Bảo hiểm",
+  "vi": "tủ thuốc xếp gọn, có bảng tên từng loại",
   "en": ""
  },
  {
-  "vi": "Bảo hiểm tạm ngưng (chưa đủ tiền đóng phí)",
+  "vi": "hàng mới để sau, hàng gần date để trước, rất có ý",
   "en": ""
  },
  {
-  "vi": "Phí bảo hiểm tháng",
+  "vi": "Ngăn nắp.",
   "en": ""
  },
  {
-  "vi": "Bị móc túi",
+  "vi": "phòng thử bất tiện",
   "en": ""
  },
  {
-  "vi": "Trộm vào nhà lấy tiền mặt",
+  "vi": "phòng thử chật, rèm kéo không kín",
   "en": ""
  },
  {
-  "vi": "Sửa ở tiệm",
+  "vi": "phòng thử không có móc treo, đồ phải vắt lên vai",
   "en": ""
  },
  {
-  "vi": "Tự sửa",
+  "vi": "phòng thử phải xếp hàng chờ lâu",
   "en": ""
  },
  {
-  "vi": "Chưa đi được xe này",
+  "vi": "phòng thử rộng, rèm kín, có móc treo",
   "en": ""
  },
  {
-  "vi": "Gọi thợ sửa",
+  "vi": "phòng thử sạch, có dép đi trong",
   "en": ""
  },
  {
-  "vi": "Nhà mất Ấm cúng tới khi sửa",
+  "vi": "phòng thử có ghế ngồi, thử quần tiện lắm",
   "en": ""
  },
  {
-  "vi": "Đi khám",
+  "vi": "Phòng thử chật.",
   "en": ""
  },
  {
-  "vi": "Mua thuốc",
+  "vi": "Phòng thử xịn.",
   "en": ""
  },
  {
-  "vi": "Có khi không đỡ",
+  "vi": "Đúng phiên bản",
   "en": ""
  },
  {
-  "vi": "Nằm nghỉ",
+  "vi": "đưa sai phiên bản album",
   "en": ""
  },
  {
-  "vi": "Khóa phiên lạ & báo công an",
+  "vi": "dặn chắc có card bias mà đưa bản card ngẫu nhiên",
   "en": ""
  },
  {
-  "vi": "Có khi tìm lại được một nửa",
+  "vi": "hỏi bản có CD mà đưa bản Kit không đĩa",
   "en": ""
  },
  {
-  "vi": "Thôi, rút kinh nghiệm",
+  "vi": "mua búa ver.2 mà đưa nhầm pin AAA",
   "en": ""
  },
  {
-  "vi": "Mua máy mới",
+  "vi": "dặn card bias là đưa đúng Digipack liền",
   "en": ""
  },
  {
-  "vi": "Xài máy cũ",
+  "vi": "phân biệt từng phiên bản rành rọt",
   "en": ""
  },
  {
-  "vi": "Cảm ơn anh",
+  "vi": "pin vừa cây búa, về lắp là sáng",
   "en": ""
  },
  {
-  "vi": "Xin bỏ qua",
+  "vi": "Sai bản.",
   "en": ""
  },
  {
-  "vi": "Hồ sơ cũ đang chờ nhận tiền. Rút bớt tiền nếu tài khoản đầy; vụ hack này vẫn được giữ để trình báo sau.",
+  "vi": "Đúng bản.",
   "en": ""
  },
  {
-  "vi": "Khám bệnh, mua thuốc theo đơn",
+  "vi": "Chiều fan",
   "en": ""
  },
  {
-  "vi": "Bác sĩ khám kỹ, uống thuốc vài hôm là khỏe.",
+  "vi": "quên lời dặn của fan",
   "en": ""
  },
  {
-  "vi": "Mua thuốc ở nhà thuốc",
+  "vi": "dặn poster cuộn mà để gập trong album",
   "en": ""
  },
  {
-  "vi": "Uống thuốc rồi, nghỉ ngơi thêm nhé.",
+  "vi": "quên quét Zchart mấy bản",
   "en": ""
  },
  {
-  "vi": "Thuốc đỡ hẳn, mai đi làm lại được.",
+  "vi": "quên ghi phiếu fansign",
   "en": ""
  },
  {
-  "vi": "Nằm nghỉ một hôm, người cũng đỡ dần.",
+  "vi": "poster cuộn ống đàng hoàng, không một nếp",
   "en": ""
  },
  {
-  "vi": "Đã trình báo. Có tin công an sẽ báo bạn.",
+  "vi": "quét Zchart từng bản không sót",
   "en": ""
  },
  {
-  "vi": "Lần sau cất tiền vào ngân hàng cho chắc nhé.",
+  "vi": "phiếu fansign ghi đủ, nói rõ tỉ lệ",
   "en": ""
  },
  {
-  "vi": "Mua điện thoại mới",
+  "vi": "Quên lời dặn.",
   "en": ""
  },
  {
-  "vi": "Máy mới, nhớ cài lại danh bạ nhé.",
+  "vi": "Chiều fan.",
   "en": ""
  },
  {
-  "vi": "Máy cũ hơi chậm, nhưng vẫn gọi được.",
+  "vi": "Gương và ánh sáng",
   "en": ""
  },
  {
-  "vi": "Chú công an bỏ qua lần này. May quá!",
+  "vi": "đèn làm sai màu",
   "en": ""
  },
  {
-  "vi": "Nộp phạt đỗ xe (lần này không bỏ qua)",
+  "vi": "đèn phòng thử vàng vọt, mặc lên nhìn màu khác hẳn",
   "en": ""
  },
  {
-  "vi": "Không được bỏ qua, phạt nặng hơn chút.",
+  "vi": "gương hơi mờ, soi không rõ",
   "en": ""
  },
  {
-  "vi": "Nộp phạt đỗ xe",
+  "vi": "gương có vệt nước, soi tóc không rõ",
   "en": ""
  },
  {
-  "vi": "Đã nộp phạt. Lần sau gửi xe vào bãi nhé.",
+  "vi": "đèn hơi tối, nhuộm xong ra ngoài mới thấy màu khác",
   "en": ""
  },
  {
-  "vi": "Lần sau nhớ gửi xe vào bãi nhé.",
+  "vi": "gương to, đèn sáng, mặc lên nhìn đúng màu",
   "en": ""
  },
  {
-  "vi": "Đổi mã bảo mật & khóa phiên lạ",
+  "vi": "ánh sáng chuẩn, chụp hình thử đồ đẹp",
   "en": ""
  },
  {
-  "vi": "Cất máy, đi đường cẩn thận",
+  "vi": "gương sáng, có gương cầm tay soi cả phía sau",
   "en": ""
  },
  {
-  "vi": "Gửi tiền mặt vào ngân hàng",
+  "vi": "đèn sáng, nhìn rõ từng lọn tóc",
   "en": ""
  },
  {
-  "vi": "Chưa có tài khoản ngân hàng",
+  "vi": "Đèn tối.",
   "en": ""
  },
  {
-  "vi": "Ghé tiệm kiểm tra",
+  "vi": "Gương sáng.",
   "en": ""
  },
  {
-  "vi": "Gọi thợ xem trước",
+  "vi": "Cách tiếp khách",
   "en": ""
  },
  {
-  "vi": "Đi khám sớm",
+  "vi": "nhân viên đi theo sát",
   "en": ""
  },
  {
-  "vi": "Gửi xe vào bãi",
+  "vi": "vào tiệm một lúc mới có người để ý",
   "en": ""
  },
  {
-  "vi": "Khơi cống, kê đồ lên cao",
+  "vi": "Bị bám theo.",
   "en": ""
  },
  {
-  "vi": "Công an bắt kẻ hack, hoàn tiền",
+  "vi": "Túi và gói hàng",
   "en": ""
  },
  {
-  "vi": "Công an chưa bắt được kẻ hack",
+  "vi": "gói hàng qua loa",
   "en": ""
  },
  {
-  "vi": "🚔 Vụ hack ngân hàng: công an chưa bắt được kẻ gian, chưa thu hồi được xu.",
+  "vi": "túi ni lông mỏng, đi được nửa đường thì rách quai",
   "en": ""
  },
  {
-  "vi": "🛡️ Phố có tin: dạo này hay có trộm, xe hỏng, nhà dột. Mua bảo hiểm ở Ngân hàng & nhà → Bảo hiểm.",
+  "vi": "gói hàng qua loa, về tới nhà hộp móp một góc",
   "en": ""
  },
  {
-  "vi": "Công an tìm lại được tiền bị mất",
+  "vi": "giấy gói hoa nhàu, nơ buộc lỏng",
   "en": ""
  },
  {
-  "vi": "Công an tìm lại được tiền",
+  "vi": "bó hoa không có túi nước, về tới nhà héo cả gốc",
   "en": ""
  },
  {
-  "vi": "🚔 Công an vẫn chưa tìm ra. Hẻm mình giờ có thêm camera rồi.",
+  "vi": "giấy gói quà dán băng keo lem nhem",
   "en": ""
  },
  {
-  "vi": "Bảo hiểm chỉ có trong chế độ hành trình.",
+  "vi": "hộp quà không có túi xách, ôm về hơi vất vả",
   "en": ""
  },
  {
-  "vi": "Chuyện đó qua rồi, không sao nữa.",
+  "vi": "đồ gấp vội, về tới nhà nhăn hết",
   "en": ""
  },
  {
-  "vi": "Chọn một cách phòng nhé.",
+  "vi": "bỏ đồ vào túi mà không gỡ móc treo",
   "en": ""
  },
  {
-  "vi": "Chưa làm được.",
+  "vi": "gói hàng cẩn thận, có cả túi giấy xinh",
   "en": ""
  },
  {
-  "vi": "Tiền mặt trong ví đã ít rồi.",
+  "vi": "bọc kỹ từng món, cầm về yên tâm",
   "en": ""
  },
  {
-  "vi": "Máy cất kỹ trong túi. Đi đường yên tâm.",
+  "vi": "giấy gói hoa đẹp, nơ thắt khéo",
   "en": ""
  },
  {
-  "vi": "Đã đổi mã bảo mật và khóa phiên lạ. Chặn được vụ hack này, tài khoản không mất xu.",
+  "vi": "có túi nước ở gốc hoa, về tới nhà vẫn tươi",
   "en": ""
  },
  {
-  "vi": "Kiểm tra xe",
+  "vi": "gói quà đẹp như ngoài tiệm lớn",
   "en": ""
  },
  {
-  "vi": "Thợ xem nhà",
+  "vi": "thắt nơ khéo, người nhận chắc thích lắm",
   "en": ""
  },
  {
-  "vi": "Khám sức khỏe",
+  "vi": "đồ gấp phẳng phiu, bỏ túi giấy thơm tho",
   "en": ""
  },
  {
-  "vi": "Thợ siết lại vài con ốc, xe êm ru.",
+  "vi": "Gói ẩu.",
   "en": ""
  },
  {
-  "vi": "Thợ xử lý sớm, không sao nữa.",
+  "vi": "Gói khéo.",
   "en": ""
  },
  {
-  "vi": "Bác sĩ dặn ăn ngủ đúng giờ. Khỏe rồi.",
+  "vi": "Mùi khu thú cưng",
   "en": ""
  },
  {
-  "vi": "Xe gửi trong bãi, yên tâm.",
+  "vi": "khu thú cưng có mùi",
   "en": ""
  },
  {
-  "vi": "Chuyện này đã xong rồi.",
+  "vi": "khu để thú cưng hơi nồng mùi, vào là ngửi thấy",
   "en": ""
  },
  {
-  "vi": "Chọn một loại bảo hiểm nhé.",
+  "vi": "mùi cát vệ sinh bay ra tận cửa",
   "en": ""
  },
  {
-  "vi": "Không có gì thay đổi.",
+  "vi": "tiệm hơi hắc mùi nước tiểu mèo",
   "en": ""
  },
  {
-  "vi": "Chưa có gì để bảo hiểm.",
+  "vi": "tiệm nuôi thú mà không có mùi, thơm tho",
   "en": ""
  },
  {
-  "vi": "Chưa bật được.",
+  "vi": "khu chuồng thoáng, không ám mùi",
   "en": ""
  },
  {
-  "vi": "Chọn thứ cần sửa nhé.",
+  "vi": "vào tiệm thơm mùi sữa tắm thú cưng",
   "en": ""
  },
  {
-  "vi": "Đã sửa xong rồi.",
+  "vi": "Nồng mùi.",
   "en": ""
  },
  {
-  "vi": "nhà",
+  "vi": "Thơm tho.",
   "en": ""
  },
  {
-  "vi": "Sửa nhà",
+  "vi": "Chuồng sạch",
   "en": ""
  },
  {
-  "vi": "Thao tác bảo hiểm không hợp lệ.",
+  "vi": "chuồng chưa sạch",
   "en": ""
  },
  {
-  "vi": "Vẫn còn mệt",
+  "vi": "chuồng còn vương lông với hạt thức ăn",
   "en": ""
  },
  {
-  "vi": "Uống thuốc mà người vẫn chưa đỡ.",
+  "vi": "khay nước trong chuồng hơi đục",
   "en": ""
  },
  {
-  "vi": "Người hơi mệt",
+  "vi": "lót chuồng ướt, mấy bé nằm không yên",
   "en": ""
  },
  {
-  "vi": "Dạo này ăn ngủ thất thường.",
+  "vi": "chuồng lau sạch, có lót khăn mềm",
   "en": ""
  },
  {
-  "vi": "Coi chừng móc túi",
+  "vi": "mấy bé trong chuồng sạch sẽ, lông mượt",
   "en": ""
  },
  {
-  "vi": "Chợ dạo này có nhóm móc túi.",
+  "vi": "khay nước trong veo, thay liên tục",
   "en": ""
  },
  {
-  "vi": "Coi chừng trộm",
+  "vi": "Chuồng bẩn.",
   "en": ""
  },
  {
-  "vi": "Hàng xóm thấy người lạ dòm ngó.",
+  "vi": "Chuồng sạch.",
   "en": ""
  },
  {
-  "vi": "Đăng nhập ngân hàng bất thường",
+  "vi": "đổi trả làm khó",
   "en": ""
  },
  {
-  "vi": "Có phiên đăng nhập lạ. Khóa ngay miễn phí để tránh mất xu trong tài khoản thanh toán.",
+  "vi": "hỏi chuyện đổi trả thì trả lời vòng vo",
   "en": ""
  },
  {
-  "vi": "Phường dẹp lòng đường",
+  "vi": "đổi size mà phải giải thích mấy lần",
   "en": ""
  },
  {
-  "vi": "Đỗ xe dưới đường dễ bị phạt.",
+  "vi": "đổi hàng phải chờ gọi quản lý mãi",
   "en": ""
  },
  {
-  "vi": "Bị giật điện thoại",
+  "vi": "đổi trả nhanh gọn, không làm khó khách",
   "en": ""
  },
  {
-  "vi": "Đang xem bản đồ thì bị giật mất máy.",
+  "vi": "nói rõ chính sách đổi trả, ai nghe cũng hiểu",
   "en": ""
  },
  {
-  "vi": "Chen chợ đông, về nhà mới thấy ví nhẹ hẳn.",
+  "vi": "đổi hàng mà vẫn vui vẻ như lúc bán",
   "en": ""
  },
  {
-  "vi": "Cửa bị cạy, tiền mặt để nhà mất một phần.",
+  "vi": "Đổi khó.",
   "en": ""
  },
  {
-  "vi": "Kẻ gian đã chuyển mất một phần xu trong tài khoản thanh toán. Tiết kiệm và quỹ chung không bị trừ.",
+  "vi": "Đổi dễ.",
   "en": ""
  },
  {
-  "vi": "Lần đầu, chú công an chỉ nhắc nhở.",
+  "vi": "thiếu tem giá",
   "en": ""
  }
 ]

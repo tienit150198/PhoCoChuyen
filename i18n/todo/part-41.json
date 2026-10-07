@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Hỏi ngày sinh hoài, mà thôi vậy là cẩn thận.",
+  "en": ""
+ },
+ {
+  "vi": "Hai thông tin, mỗi lần, mọi người bệnh.",
+  "en": ""
+ },
+ {
+  "vi": "Gọi “Bà Tư ơi” rồi đưa thuốc cho người dạ",
+  "en": ""
+ },
+ {
+  "vi": "Gọi tên một tiếng là đưa thuốc. Hên mà chưa nhầm.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tứ cũng “dạ”. Suýt nữa thì nhầm thuốc.",
+  "en": ""
+ },
+ {
+  "vi": "Bà Tứ",
+  "en": ""
+ },
+ {
+  "vi": "Ai gọi tôi cũng dạ, tưởng gọi mình.",
+  "en": ""
+ },
+ {
+  "vi": "Cái tên không phải là cách nhận diện người bệnh.",
+  "en": ""
+ },
+ {
+  "vi": "Phát thuốc theo số giường cho nhanh",
+  "en": ""
+ },
+ {
+  "vi": "Ca đêm đổi giường cho hai bà, sáng ra suýt phát nhầm.",
+  "en": ""
+ },
+ {
+  "vi": "Đêm qua ca trực đổi giường vì quạt hỏng. Số giường không còn đúng người.",
+  "en": ""
+ },
+ {
+  "vi": "Điều dưỡng ca đêm",
+  "en": ""
+ },
+ {
+  "vi": "Tôi có ghi đổi giường trong sổ mà.",
+  "en": ""
+ },
+ {
+  "vi": "Số giường đổi được, ngày sinh thì không.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận diện người bệnh bằng hai thông tin (họ tên, ngày sinh) đối chiếu vòng tay, không dùng số giường.",
+  "en": ""
+ },
+ {
+  "vi": "Người bệnh không muốn truyền dịch",
+  "en": ""
+ },
+ {
+  "vi": "Ông Bảy kéo tay lại: “Truyền gì truyền hoài, sưng hết tay. Hôm nay tôi không truyền!”",
+  "en": ""
+ },
+ {
+  "vi": "Quyền của người bệnh",
+  "en": ""
+ },
+ {
+  "vi": "Nội quy khoa",
+  "en": ""
+ },
+ {
+  "vi": "Người bệnh có quyền từ chối; điều dưỡng giải thích, báo bác sĩ, ghi hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "Vì sao ông sợ",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi ông Bảy",
+  "en": ""
+ },
+ {
+  "vi": "Hôm qua chỗ kim cũ sưng đau, ông nghĩ truyền thêm là hỏng tay.",
+  "en": ""
+ },
+ {
+  "vi": "Bác sĩ có thể xem lại chỗ kim, đổi vị trí hoặc đổi cách điều trị.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi vì sao ông ngại, xem chỗ kim, báo bác sĩ cùng ông bàn lại",
+  "en": ""
+ },
+ {
+  "vi": "Không ép, hỏi han kỹ, mời bác sĩ tới bàn. Tôi đồng ý truyền ở tay kia.",
+  "en": ""
+ },
+ {
+  "vi": "Bác sĩ Khang xem chỗ kim, đặt lại ở tay kia. Ông Bảy gật đầu.",
+  "en": ""
+ },
+ {
+  "vi": "Được hỏi ý kiến thì tôi nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối là có lý do, hỏi ra là xong.",
+  "en": ""
+ },
+ {
+  "vi": "Nhờ người nhà giữ tay ông để truyền cho xong",
+  "en": ""
+ },
+ {
+  "vi": "Bị giữ tay bắt truyền như phạm nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Ông Bảy giật kim ra, máu chảy đầy ga. Chị Ngân làm đơn khiếu nại.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi là người bệnh, không phải tù nhân.",
+  "en": ""
+ },
+ {
+  "vi": "Không truyền, cũng không báo ai",
+  "en": ""
+ },
+ {
+  "vi": "Không truyền thì thôi, chẳng ai hỏi han gì.",
+  "en": ""
+ },
+ {
+  "vi": "Tới chiều bác sĩ mới biết, cả ngày điều trị bị lỡ.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối thì báo anh, đừng im lặng.",
+  "en": ""
+ },
+ {
+  "vi": "Tôi tưởng ai cũng biết rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Tôn trọng quyền từ chối: hỏi lý do, giải thích, báo bác sĩ, ghi hồ sơ. Không ép.",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu theo dõi “cho đẹp”",
+  "en": ""
+ },
+ {
+  "vi": "Gần giao ca, chị Thắm cùng ca đưa bạn xấp phiếu: “Giường 6, 7 ổn định mà, điền số đẹp giống hôm qua cho kịp.”",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu theo dõi",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu ghi dấu hiệu sinh tồn là căn cứ để bác sĩ quyết điều trị.",
+  "en": ""
+ },
+ {
   "vi": "Đo hai giường mất khoảng mười phút.",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "Năm người nằm kín lối đi. Đêm đó ca trực vấp chân hai lần khi chạy tới giường 3.",
-  "en": ""
- },
- {
-  "vi": "Dọn người nhà cho đẹp ảnh",
-  "en": ""
- },
- {
-  "vi": "“Chiều nay đoàn khách tham quan. Dọn hết người nhà ra ngoài, giường nào xấu thì kéo rèm, chụp ảnh cho đẹp.”",
-  "en": ""
- },
- {
-  "vi": "“Lệnh trên đó, em làm đi.”",
-  "en": ""
- },
- {
-  "vi": "“Mất điểm thi đua là cả khoa chịu.”",
-  "en": ""
- },
- {
-  "vi": "Em sắp xếp người nhà gọn gàng, người bệnh vẫn được ở cạnh người thân.",
-  "en": ""
- },
- {
-  "vi": "Đoàn muốn xem điều gì ạ?",
-  "en": ""
- },
- {
-  "vi": "Đoàn đi qua, thấy khoa gọn gàng mà vẫn có người nhà ngồi bón cháo. Đoàn khen “rất thật”.",
-  "en": ""
- },
- {
-  "vi": "Người nhà bị đẩy ra ngoài nắng một tiếng. Bà Tư không có ai đỡ dậy uống nước.",
-  "en": ""
- },
- {
-  "vi": "“Xem giùm bà toa thuốc”",
-  "en": ""
- },
- {
-  "vi": "Bà Sáu · hàng xóm trong hẻm",
-  "en": ""
- },
- {
-  "vi": "Tối về hẻm, bà Sáu chìa toa thuốc: “Cháu làm bệnh viện, xem giùm bà uống mấy viên, khỏi đi khám nữa.”",
-  "en": ""
- },
- {
-  "vi": "“Có chút xíu mà không giúp bà.”",
-  "en": ""
- },
- {
-  "vi": "“Đi khám tốn tiền lắm cháu.”",
-  "en": ""
- },
- {
-  "vi": "Mai bà ra nhà thuốc hỏi dược sĩ, hoặc đi khám lại cho chắc.",
-  "en": ""
- },
- {
-  "vi": "Cháu không tự đổi thuốc của ai được.",
-  "en": ""
- },
- {
-  "vi": "Bà Sáu hẹn mai ra quầy thuốc Bình An hỏi cô Thu.",
-  "en": ""
- },
- {
-  "vi": "Bạn đoán đại số viên. Hai hôm sau bà Sáu chóng mặt, con bà sang hỏi “ai bảo uống vậy”.",
-  "en": ""
- },
- {
-  "vi": "Xin giấy nghỉ ốm giả",
-  "en": ""
- },
- {
-  "vi": "Dì Út · dì ruột (gọi điện)",
-  "en": ""
- },
- {
-  "vi": "“Con làm bệnh viện, xin giùm dì giấy nghỉ ốm ba ngày nha. Dì đi Đà Lạt với hội bạn.”",
-  "en": ""
- },
- {
-  "vi": "“Người nhà mà không giúp.”",
-  "en": ""
- },
- {
-  "vi": "“Ai chẳng làm vậy.”",
-  "en": ""
- },
- {
-  "vi": "Giấy tờ y tế giả là phạm luật.",
-  "en": ""
- },
- {
-  "vi": "Dì xin nghỉ phép đàng hoàng đi, Đà Lạt vẫn còn đó.",
-  "en": ""
- },
- {
-  "vi": "Dì Út càu nhàu rồi xin nghỉ phép. Về còn mang mứt dâu cho bạn.",
-  "en": ""
- },
- {
-  "vi": "Bạn nhờ người làm giấy. Công ty dì kiểm tra, giấy giả bị phát hiện, tên bạn trong biên bản.",
-  "en": ""
- },
- {
-  "vi": "Mẹ làm mai bác sĩ",
-  "en": ""
- },
- {
-  "vi": "“Bác sĩ Khang còn độc thân không con? Mời cậu ấy về nhà ăn cơm, mẹ nấu canh chua.”",
-  "en": ""
- },
- {
-  "vi": "“Mẹ chỉ hỏi thôi mà. Con gửi mẹ cái ảnh cậu ấy đi.”",
-  "en": ""
- },
- {
-  "vi": "Bạn gửi ảnh bác sĩ Khang cho mẹ. Mẹ chia sẻ vào nhóm họ hàng. Cả khoa biết.",
-  "en": ""
- },
- {
-  "vi": "Mẹ dẫn người quen lên",
-  "en": ""
- },
- {
-  "vi": "Mẹ bạn · dẫn bà Năm hàng xóm",
-  "en": ""
- },
- {
-  "vi": "“Mẹ dẫn bà Năm lên nè. Con cho bà khám trước nha, người quen mà, chờ chi.”",
-  "en": ""
- },
- {
-  "vi": "“Có người nhà làm bệnh viện mà vẫn phải chờ à?”",
-  "en": ""
- },
- {
-  "vi": "“Bà Năm mỏi chân rồi con.”",
-  "en": ""
- },
- {
-  "vi": "Ai cũng khám theo mức độ bệnh, kể cả người quen.",
-  "en": ""
- },
- {
-  "vi": "Con đo huyết áp cho bà trong lúc chờ, mời bà ngồi ghế.",
-  "en": ""
- },
- {
-  "vi": "Bà Năm ngồi chờ, uống ly nước. Mẹ hơi phụng phịu nhưng tối về khen con “đàng hoàng”.",
-  "en": ""
- },
- {
-  "vi": "Bạn cho bà Năm vào trước. Người xếp hàng phía sau quay clip “có người quen là được chen”.",
-  "en": ""
- },
- {
-  "vi": "Chị Hoa · điều dưỡng trưởng",
-  "en": ""
- },
- {
-  "vi": "“Ca đêm thiếu người. Em trực luôn ba ca liền nha, có phụ cấp đàng hoàng.”",
-  "en": ""
- },
- {
-  "vi": "“Ráng giúp chị đợt này.”",
-  "en": ""
- },
- {
-  "vi": "Trực liền quá giờ quy định thì dễ sai sót.",
   "en": ""
  }
 ]

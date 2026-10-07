@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Nhìn đoàn tàu trước đã.",
+  "en": ""
+ },
+ {
+  "vi": "Đã báo ga chuyện này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Toa cuối có đèn đuôi mà.",
+  "en": ""
+ },
+ {
+  "vi": "Đoàn tàu không có gì bất thường.",
+  "en": ""
+ },
+ {
+  "vi": "Ga đã xác nhận rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đã hỏi ga rồi.",
+  "en": ""
+ },
+ {
+  "vi": "📻 Chị Nguyệt: “Không còn tàu. Đường ngang Bến Mây được nâng chắn.”",
+  "en": ""
+ },
+ {
+  "vi": "Cần chắn đang nâng.",
+  "en": ""
+ },
+ {
+  "vi": "🚧 Ga đã xác nhận tàu còn đứng ở Bến Gỗ: bạn nâng chắn tạm cho xe qua. Khi ga gọi lại thì đóng như từ đầu.",
+  "en": ""
+ },
+ {
+  "vi": "nâng chắn khi tàu chưa qua",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Bạn nâng chắn trong khi tàu vẫn đang tới! Xe ùa qua đường ray. Hạ lại ngay!",
+  "en": ""
+ },
+ {
+  "vi": "Tàu qua mà gác chắn không nhìn đoàn tàu, không biết đoàn tàu có bình thường không.",
+  "en": ""
+ },
+ {
+  "vi": "không nhìn đoàn tàu",
+  "en": ""
+ },
+ {
+  "vi": "nâng chắn khi còn tàu thứ hai",
+  "en": ""
+ },
+ {
+  "vi": "Nâng chắn mà không hỏi ga còn tàu nào không.",
+  "en": ""
+ },
+ {
+  "vi": "chưa hỏi ga",
+  "en": ""
+ },
+ {
+  "vi": "🚧 Nâng chắn, tắt chuông. Dòng xe ùa qua, có người còn bấm còi cảm ơn.",
+  "en": ""
+ },
+ {
+  "vi": "Tàu qua, nâng chắn rồi mới ghi sổ.",
+  "en": ""
+ },
+ {
+  "vi": "không báo mất đèn đuôi",
+  "en": ""
+ },
+ {
+  "vi": "không báo bất thường của tàu",
+  "en": ""
+ },
+ {
+  "vi": "Sổ nhật ký ghi không khớp với những gì đã xảy ra.",
+  "en": ""
+ },
+ {
+  "vi": "📒 Ghi sổ nhật ký, ký tên.",
+  "en": ""
+ },
+ {
+  "vi": "🛡️ Đội sẽ đọc lại chuyến này cùng bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Không có điểm này trên đoạn tuần.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đi qua điểm này rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Đi tới điểm đó đã.",
+  "en": ""
+ },
+ {
+  "vi": "Đã làm việc này ở đây rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Ở đây không có ai để nói chuyện.",
+  "en": ""
+ },
+ {
+  "vi": "(Người ta lầm bầm mãi mới chịu.)",
+  "en": ""
+ },
+ {
+  "vi": "(Bị mắng một trận, nhưng việc vẫn xong.)",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhắc nhở.",
+  "en": ""
+ },
+ {
+  "vi": "Cái này không tự xử lý được: phải báo đúng nơi.",
+  "en": ""
+ },
+ {
+  "vi": "Ở đây mọi thứ ổn, không có gì để sửa.",
+  "en": ""
+ },
+ {
+  "vi": "🚩 Bạn cắm cờ đỏ phòng vệ cách hai đầu chỗ hỏng, đứng chờ ở chỗ thấy được tàu tới.",
+  "en": ""
+ },
+ {
+  "vi": "🚩 Cắm cờ đỏ cho chắc. (Chỗ này không nguy hiểm tới mức phải phòng vệ, nhưng cẩn thận thì không thừa.)",
+  "en": ""
+ },
+ {
+  "vi": "📒 Ghi sổ tuần đường",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Điền phiếu báo hỏng gửi cung",
+  "en": ""
+ },
+ {
+  "vi": "📞 Điện khẩn cho ga",
+  "en": ""
+ },
+ {
+  "vi": "🏛️ Báo tổ dân phố, phường",
+  "en": ""
+ },
+ {
+  "vi": "Chị Nguyệt: “Rõ! Ga cho tàu dừng chờ, cử thợ ra ngay.”",
+  "en": ""
+ },
+ {
+  "vi": "Chị Nguyệt: “Rõ… mà cái này ghi phiếu là được rồi em.”",
+  "en": ""
+ },
+ {
+  "vi": "bỏ qua điểm tuần",
+  "en": ""
+ },
+ {
+  "vi": "bỏ sót chỗ nguy hiểm",
+  "en": ""
+ },
+ {
   "vi": "không báo khẩn",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "Hạ chắn đúng lúc, không sớm không muộn",
-  "en": ""
- },
- {
-  "vi": "Không mở chắn cho ai",
-  "en": ""
- },
- {
-  "vi": "Nhìn đủ đoàn tàu, báo bất thường",
-  "en": ""
- },
- {
-  "vi": "Hỏi ga trước khi nâng chắn",
-  "en": ""
- },
- {
-  "vi": "Ghi sổ đúng sự thật",
-  "en": ""
- },
- {
-  "vi": "Chú Sáu: “Gác chắn là nghề chờ. Chờ cho đúng thì người ta mới sống.”",
-  "en": ""
- },
- {
-  "vi": "Chú Sáu kể hồi năm chín mấy, chú cầm cờ đỏ chạy ngược về phía tàu cứu một xe bò.",
-  "en": ""
- },
- {
-  "vi": "Chú Sáu đưa bạn cái còi đồng cũ: “Giữ lấy. Nó thổi cứu được người rồi đó.”",
-  "en": ""
- },
- {
-  "vi": "Chị Nguyệt: “Nhắc lại lệnh rõ thế là chị yên tâm.”",
-  "en": ""
- },
- {
-  "vi": "Chị Nguyệt bảo cả ga khen ca của bạn nhắc lệnh rành rọt.",
-  "en": ""
- },
- {
-  "vi": "Chị Nguyệt gửi qua tàu địa phương một hộp bánh gai: “Cho ca gác Bến Mây.”",
-  "en": ""
- },
- {
-  "vi": "Anh Quý: “Sổ ghi đúng, chắn hạ đúng giờ. Được.”",
-  "en": ""
- },
- {
-  "vi": "Anh Quý đưa ca của bạn ra làm gương ở buổi giao ban cung.",
-  "en": ""
- },
- {
-  "vi": "Anh Quý đề nghị xí nghiệp khen thưởng “ca gác an toàn tuyệt đối”.",
-  "en": ""
- },
- {
-  "vi": "Anh Khải gật đầu: “Mắt tinh đấy.”",
-  "en": ""
- },
- {
-  "vi": "Anh Khải chỉ bạn cách nghe tiếng bu lông lỏng bằng cái búa nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Anh Khải rủ bạn đi tuần cả đoạn Km 8 vào sáng chủ nhật, “cho biết đường”.",
-  "en": ""
- },
- {
-  "vi": "Cung trưởng kiểm tra đột xuất",
-  "en": ""
- },
- {
-  "vi": "Anh Quý dựng xe trước chòi, chìa tay: “Đưa sổ nhật ký đây. Hôm qua tàu nào chậm, ghi thế nào?”",
-  "en": ""
- },
- {
-  "vi": "Đưa sổ, chỉ đúng từng dòng, nói rõ chỗ mình ghi thiếu hôm qua",
-  "en": ""
- },
- {
-  "vi": "Anh Quý gõ bút vào dòng ghi thiếu: “Thật thà là tốt. Bổ sung ngay.” Rồi ký kiểm tra.",
-  "en": ""
- },
- {
-  "vi": "Xin năm phút “sắp xếp lại sổ” rồi mới đưa",
-  "en": ""
- },
- {
-  "vi": "Sửa lén cho đẹp",
-  "en": ""
- },
- {
-  "vi": "Sổ nhật ký mà sửa lấy được trước mặt cung trưởng. Không ổn.",
-  "en": ""
- },
- {
-  "vi": "Anh Quý thấy vết tẩy mới tinh: “Sổ nhật ký là văn bản, không phải vở nháp.”",
-  "en": ""
- },
- {
-  "vi": "“Ca trước ghi chứ không phải em”",
-  "en": ""
- },
- {
-  "vi": "Hỏi sổ thì đổ cho ca trước.",
-  "en": ""
- },
- {
-  "vi": "Anh Quý lật trang: dòng đó là chữ của bạn. Không khí trong chòi đặc quánh.",
-  "en": ""
- },
- {
-  "vi": "Bà Bông kêu còi tàu",
-  "en": ""
- },
- {
-  "vi": "Bà Bông đập bàn: “Năm giờ sáng tàu kéo còi inh ỏi, cháu bà mất ngủ! Cháu bảo lái tàu đừng kéo nữa!”",
-  "en": ""
- },
- {
-  "vi": "Giải thích còi là tín hiệu an toàn bắt buộc, ghi ý kiến của bà vào phiếu gửi xí nghiệp",
-  "en": ""
- },
- {
-  "vi": "Bà Bông vẫn càu nhàu, nhưng thấy bạn ghi phiếu đàng hoàng thì dịu đi: “Ừ, có người nghe là được.”",
-  "en": ""
- },
- {
-  "vi": "“Để cháu bảo lái tàu thôi kéo còi”",
-  "en": ""
- },
- {
-  "vi": "Hứa cho xong",
-  "en": ""
- },
- {
-  "vi": "Hứa bảo tàu thôi kéo còi mà sáng nay vẫn kéo. Nói cho vui à?",
-  "en": ""
- },
- {
-  "vi": "Sáng hôm sau còi vẫn rúc. Bà Bông bảo bạn “hứa hão”.",
-  "en": ""
- },
- {
-  "vi": "“Ở cạnh đường tàu thì chịu thôi bà ơi”",
-  "en": ""
- },
- {
-  "vi": "Nói chuyện với người già mà cộc lốc.",
-  "en": ""
- },
- {
-  "vi": "Bà Bông nguýt dài, cả buổi không mời bạn chén chè nào.",
-  "en": ""
- },
- {
-  "vi": "Mất điện cả khu",
-  "en": ""
- },
- {
-  "vi": "Cả phố Ray tối om. Tủ điều khiển cần chắn tắt đèn. Còn mười phút nữa có tàu.",
-  "en": ""
- },
- {
-  "vi": "Lắp tay quay, thử hạ nâng bằng tay, gọi điện báo ga đang mất điện",
-  "en": ""
- },
- {
-  "vi": "Tay quay nặng trịch nhưng cần chắn vẫn lên xuống. Ga dặn lái tàu chú ý đường ngang Bến Mây.",
-  "en": ""
- },
- {
-  "vi": "Chờ điện có lại rồi tính",
   "en": ""
  }
 ]

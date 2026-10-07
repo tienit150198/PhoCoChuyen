@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Ăn được, nhưng hông ngon.",
+  "en": ""
+ },
+ {
+  "vi": "Tô phở phải nóng từ đầu.",
+  "en": ""
+ },
+ {
+  "vi": "“Phở mùa này nguội nhanh lắm anh”",
+  "en": ""
+ },
+ {
+  "vi": "Bưng ra tô nguội tái sống, còn nói trời lạnh. Thôi khỏi.",
+  "en": ""
+ },
+ {
+  "vi": "Anh Sáu đặt tiền lên bàn rồi đi, tô còn nguyên.",
+  "en": ""
+ },
+ {
+  "vi": "Lần sau ghé quán khác.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi chưa sôi mà đã chan rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Châm nước, thêm xương xong phải chờ nồi lăn tăn lại mới chan. Tô nguội thì làm tô mới.",
+  "en": ""
+ },
+ {
+  "vi": "tái để riêng",
+  "en": ""
+ },
+ {
+  "vi": "nước béo",
+  "en": ""
+ },
+ {
+  "vi": "không mì chính",
+  "en": ""
+ },
+ {
+  "vi": "trứng trần",
+  "en": ""
+ },
+ {
+  "vi": "Gió mùa: nồi mất nhiệt nhanh, giữ lửa cho đều.",
+  "en": ""
+ },
+ {
+  "vi": "Chợ sớm: khách tới từ năm giờ rưỡi.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa sáng: kéo bạt che mấy bàn ngoài.",
+  "en": ""
+ },
+ {
+  "vi": "Vặn lửa, hớt bọt, nếm nước, ngửi bánh rồi mở quán.",
+  "en": ""
+ },
+ {
+  "vi": "Mở quán phở đầu ngày",
+  "en": ""
+ },
+ {
+  "vi": "Bác Lâm dặn: “Nồi xương bác ủ lửa từ đêm. Con vặn lửa lăn tăn, hớt bọt, nếm nước, ngửi lại bánh hôm qua rồi hẵng bán.”",
+  "en": ""
+ },
+ {
+  "vi": "sôi sùng sục",
+  "en": ""
+ },
+ {
+  "vi": "lăn tăn",
+  "en": ""
+ },
+ {
+  "vi": "âm ấm, chưa sôi",
+  "en": ""
+ },
+ {
+  "vi": "gần sôi",
+  "en": ""
+ },
+ {
+  "vi": "Vào bếp thôi! Nồi nước dùng đang bốc khói dưới gốc si.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác không có ở quán phở.",
+  "en": ""
+ },
+ {
+  "vi": "Việc này không thuộc quán phở.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa mở quán: vặn lửa, hớt bọt, nếm nước, ngửi bánh rồi bấm “Mở quán” nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Lửa ủ, lăn tăn hay lửa lớn?",
+  "en": ""
+ },
+ {
+  "vi": "lửa ủ liu riu, nồi giữ ấm nhưng không đủ sôi để chín tái.",
+  "en": ""
+ },
+ {
+  "vi": "lửa lăn tăn, mặt nồi sủi tăm nhỏ: nước trong, đủ nóng.",
+  "en": ""
+ },
+ {
+  "vi": "lửa lớn, nồi sôi sùng sục: nóng nhanh nhưng bọt nổi, nước dễ đục.",
+  "en": ""
+ },
+ {
+  "vi": "Mặt nồi sạch bọt rồi.",
+  "en": ""
+ },
+ {
+  "vi": "🥄 Hớt một muôi bọt xám trên mặt nồi.",
+  "en": ""
+ },
+ {
+  "vi": "Mặt nồi trong veo rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Còn bọt, hớt tiếp.",
+  "en": ""
+ },
+ {
+  "vi": "Thêm chút nước mắm.",
+  "en": ""
+ },
+ {
+  "vi": "Châm chút nước sôi cho dịu.",
+  "en": ""
+ },
+ {
+  "vi": "Nêm nước mắm hay châm nước sôi?",
+  "en": ""
+ },
+ {
+  "vi": "Nồi đã mặn chát rồi, nêm nữa là hỏng.",
+  "en": ""
+ },
+ {
+  "vi": "🫙 Nêm một muôi nước mắm, khuấy đều.",
+  "en": ""
+ },
+ {
+  "vi": "Nồi đã nhạt thếch rồi, châm nữa là nhạt như nước lã.",
+  "en": ""
+ },
+ {
+  "vi": "💧 Châm một gáo nước sôi, khuấy đều.",
+  "en": ""
+ },
+ {
+  "vi": "Nếm lại cho chắc.",
+  "en": ""
+ },
+ {
+  "vi": "👃 Bánh phở toàn mẻ mới giao, trắng mềm, thơm mùi gạo.",
+  "en": ""
+ },
+ {
   "vi": "Không có bánh hỏng.",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "Bảo anh tự đi hỏi mấy em đó",
-  "en": ""
- },
- {
-  "vi": "Mấy em nghe xong sợ, đi về vội.",
-  "en": ""
- },
- {
-  "vi": "Gửi file cho anh, thêm tiền thì thêm",
-  "en": ""
- },
- {
-  "vi": "Tiệm đưa ảnh của con tôi cho người lạ. Không thể chấp nhận được!",
-  "en": ""
- },
- {
-  "vi": "Tối đó phụ huynh của mấy em gọi điện tới tiệm, giọng run run.",
-  "en": ""
- },
- {
-  "vi": "Kẹt giấy trong máy in",
-  "en": ""
- },
- {
-  "vi": "Máy in kêu “rẹt” một tiếng rồi đứng hình. Đèn đỏ nháy: kẹt giấy.",
-  "en": ""
- },
- {
-  "vi": "Tắt máy, mở khay, rút giấy thẳng tay theo chiều in",
-  "en": ""
- },
- {
-  "vi": "Mất một tờ giấy",
-  "en": ""
- },
- {
-  "vi": "Tờ giấy ra nguyên vẹn mép, máy in chạy lại êm ru.",
-  "en": ""
- },
- {
-  "vi": "Giật mạnh tờ giấy ra cho nhanh",
-  "en": ""
- },
- {
-  "vi": "Giấy rách kẹt lại một mẩu, phải tháo nửa cái máy.",
-  "en": ""
- },
- {
-  "vi": "Gọi chị Lam ra coi giùm",
-  "en": ""
- },
- {
-  "vi": "Chị Lam gỡ trong năm phút, chỉ cho bạn cách mở khay.",
-  "en": ""
- },
- {
-  "vi": "Bé con nghịch đèn vòng",
-  "en": ""
- },
- {
-  "vi": "Một bé chạy vào buồng chụp, níu cái chân đèn vòng lắc qua lắc lại. Cây đèn chao đảo.",
-  "en": ""
- },
- {
-  "vi": "Giữ chân đèn, dắt bé ra chỗ mẹ, khóa chân đèn lại",
-  "en": ""
- },
- {
-  "vi": "Đèn đứng vững. Mẹ bé xin lỗi rối rít, bé được cho cầm thử cái bờm tai thỏ.",
-  "en": ""
- },
- {
-  "vi": "La lớn cho bé sợ mà buông",
-  "en": ""
- },
- {
-  "vi": "Nhân viên la con nít to quá, bé khóc cả đường về.",
-  "en": ""
- },
- {
-  "vi": "Bé buông tay, khóc òa. Cả tiệm quay lại nhìn.",
-  "en": ""
- },
- {
-  "vi": "Kệ, đèn chắc mà",
-  "en": ""
- },
- {
-  "vi": "Bé chán rồi tự chạy đi.",
-  "en": ""
- },
- {
-  "vi": "Đèn ngã, vỡ một bóng. Thay bóng mới hết sáu xu.",
-  "en": ""
- },
- {
-  "vi": "Đòi chụp miễn phí để đăng bài",
-  "en": ""
- },
- {
-  "vi": "Một nhóm cầm gậy quay: “Tụi mình có trang mấy chục nghìn người theo dõi. Cho chụp free một lượt, tụi mình đăng khen tiệm.”",
-  "en": ""
- },
- {
-  "vi": "Mời chụp đúng giá, tặng thêm một sticker đặc biệt",
-  "en": ""
- },
- {
-  "vi": "Nhóm đó trả tiền, chụp vui, đăng clip khen khung đêm hội.",
-  "en": ""
- },
- {
-  "vi": "Cho chụp free cho được việc",
-  "en": ""
- },
- {
-  "vi": "Mất giấy",
-  "en": ""
- },
- {
-  "vi": "Clip lên, nói vài câu rồi lướt qua tiệm khác.",
-  "en": ""
- },
- {
-  "vi": "“Muốn free thì qua tiệm khác”",
-  "en": ""
- },
- {
-  "vi": "Hỏi có một câu mà bị đuổi, né tiệm này nha.",
-  "en": ""
- },
- {
-  "vi": "Họ quay luôn cảnh bị đuổi, đăng lên mạng.",
-  "en": ""
- },
- {
-  "vi": "Mưa dột trên buồng chụp",
-  "en": ""
- },
- {
-  "vi": "Mưa lớn, mái tôn nhỏ giọt ngay trên mép phông. Một vệt nước loang dần xuống tấm phông kem.",
-  "en": ""
- },
- {
-  "vi": "Kê xô hứng, kéo phông lùi vào, lau khô đèn",
-  "en": ""
- },
- {
-  "vi": "Khách chờ một chút",
-  "en": ""
- },
- {
-  "vi": "Phông khô ráo, đèn không dính nước. Chị Lam gọi thợ sửa mái ngày mai.",
-  "en": ""
- },
- {
-  "vi": "Chụp tiếp, lát mưa tạnh rồi lau",
-  "en": ""
- },
- {
-  "vi": "Tấm phông ố một vệt, phải đem đi giặt.",
-  "en": ""
- },
- {
-  "vi": "Xin xóa ảnh trong máy",
-  "en": ""
- },
- {
-  "vi": "Một cô gái quay lại quầy: “Hôm trước em với bạn trai chụp ở đây… giờ chia tay rồi. Tiệm còn giữ ảnh không, xóa giùm em.”",
-  "en": ""
- },
- {
-  "vi": "Mở máy, xóa trước mặt cô ấy, cho coi thư mục trống",
   "en": ""
  }
 ]

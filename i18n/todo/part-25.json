@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Bạn bỏ về. Sáng ra ông Thước chụp ảnh gửi lên phường.",
+  "en": ""
+ },
+ {
+  "vi": "Điểm tập kết tràn",
+  "en": ""
+ },
+ {
+  "vi": ", túi nào vào ngăn nấy.",
+  "en": ""
+ },
+ {
+  "vi": "Sắp hết",
+  "en": ""
+ },
+ {
+  "vi": ": mở kho mua thêm.",
+  "en": ""
+ },
+ {
+  "vi": "Găng tay, khẩu trang còn đủ cho ca sau.",
+  "en": ""
+ },
+ {
+  "vi": "đủ đồ bảo hộ",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm xe",
+  "en": ""
+ },
+ {
+  "vi": "xe chắc chắn",
+  "en": ""
+ },
+ {
+  "vi": "Tìm hiểu kỹ",
+  "en": ""
+ },
+ {
+  "vi": "hỏi rõ, xem tận nơi",
+  "en": ""
+ },
+ {
+  "vi": "Giải quyết công bằng",
+  "en": ""
+ },
+ {
+  "vi": "đúng lẽ, đúng quy định",
+  "en": ""
+ },
+ {
+  "vi": "chưa trọn",
+  "en": ""
+ },
+ {
+  "vi": "Gom đủ, không sót",
+  "en": ""
+ },
+ {
+  "vi": "không sót túi nào",
+  "en": ""
+ },
+ {
+  "vi": "bỏ sót túi",
+  "en": ""
+ },
+ {
+  "vi": "Đúng ngăn, tách nguy hại",
+  "en": ""
+ },
+ {
+  "vi": "phân loại chuẩn",
+  "en": ""
+ },
+ {
+  "vi": "lẫn ngăn hoặc lọt đồ nguy hại",
+  "en": ""
+ },
+ {
+  "vi": "đồ sắc gói kỹ, đủ bảo hộ",
+  "en": ""
+ },
+ {
+  "vi": "đúng giờ thu gom",
+  "en": ""
+ },
+ {
+  "vi": "trễ giờ",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hạnh dặn:",
+  "en": ""
+ },
+ {
+  "vi": ", kiểm xe đẩy rồi vào ca.",
+  "en": ""
+ },
+ {
+  "vi": "Găng tay → khẩu trang → áo phản quang (mưa thì ủng) → kiểm xe → Vào ca.",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi rõ, xem tận nơi → chọn cách giải quyết đúng lẽ, đúng quy định.",
+  "en": ""
+ },
+ {
+  "vi": "Vào ngõ → nhìn túi, túi lạ thì mở → tách đồ nguy hại, bọc mảnh vỡ → bỏ đúng ngăn → nhắc nhà chưa phân loại → Xong ngõ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã quét gom rác vương vãi ở đầu ngõ.",
+  "en": ""
+ },
+ {
+  "vi": "Đã quét sạch quanh điểm tập kết.",
+  "en": ""
+ },
+ {
+  "vi": "Đã đẩy phụ xe rác qua đoạn dốc.",
+  "en": ""
+ },
+ {
+  "vi": "Đã rửa sạch ba ngăn xe đẩy.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu tổ thu gom sai.",
+  "en": ""
+ },
+ {
+  "vi": "Phiên bản việc thu gom không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Trạng thái việc thu gom sai.",
+  "en": ""
+ },
+ {
+  "vi": "Túi trên xe sai.",
+  "en": ""
+ },
+ {
+  "vi": "Túi đã xem sai.",
+  "en": ""
+ },
+ {
+  "vi": "Đồ nguy hại tách ra sai.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà đã nhắc sai.",
+  "en": ""
+ },
+ {
+  "vi": "Dữ kiện phản ánh sai.",
+  "en": ""
+ },
+ {
+  "vi": "Câu trả lời phản ánh sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện cư dân sai.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện của ngõ không khớp.",
+  "en": ""
+ },
+ {
   "vi": "Chuyện của ngõ sai.",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "Sàn còn bụi tóc kìa. Quét trước, lau sau con ạ.",
-  "en": ""
- },
- {
-  "vi": "Đặt đồ dễ vỡ lại chỗ cũ rồi hẵng mời khách kiểm.",
-  "en": ""
- },
- {
-  "vi": "Còn chỗ chưa sạch đấy. Xem lại từng phòng rồi hẵng mời khách.",
-  "en": ""
- },
- {
-  "vi": "Tờ tiền dưới gầm sofa",
-  "en": ""
- },
- {
-  "vi": "Hút bụi gầm sofa, máy kêu “rột” một tiếng. Bạn cúi xuống: một tờ tiền gấp tư kẹt ở chân ghế.",
-  "en": ""
- },
- {
-  "vi": "Để lên bàn, nhắn khách đã tìm thấy",
-  "en": ""
- },
- {
-  "vi": "Khách nhắn lại: “Trời, tìm cả tuần nay! Cảm ơn em nhiều.”",
-  "en": ""
- },
- {
-  "vi": "Đặt lại chỗ cũ, không nói gì",
-  "en": ""
- },
- {
-  "vi": "Tờ tiền vẫn nằm đó. Không ai biết bạn đã thấy.",
-  "en": ""
- },
- {
-  "vi": "Bỏ túi, chắc khách cũng quên rồi",
-  "en": ""
- },
- {
-  "vi": "Camera phòng khách quay cảnh người dọn nhặt tiền bỏ túi. Thất vọng.",
-  "en": ""
- },
- {
-  "vi": "Tối đó cô Mai gọi điện, giọng buồn: khách xem lại camera rồi.",
-  "en": ""
- },
- {
-  "vi": "Hàng xóm nhờ dọn riêng",
-  "en": ""
- },
- {
-  "vi": "Bà hàng xóm cùng tầng gõ cửa: “Cháu dọn nhà bà luôn nhé, bà trả tiền mặt, khỏi qua cô Mai cho rẻ.”",
-  "en": ""
- },
- {
-  "vi": "Xin số bà, nhờ cô Mai xếp lịch đàng hoàng",
-  "en": ""
- },
- {
-  "vi": "Cô Mai xếp lịch cho bà sáng thứ ba. Tổ có thêm một khách mới.",
-  "en": ""
- },
- {
-  "vi": "Từ chối khéo, hôm nay kín lịch",
-  "en": ""
- },
- {
-  "vi": "Bà gật gù rồi đóng cửa.",
-  "en": ""
- },
- {
-  "vi": "Nhận luôn, làm thêm giờ lấy tiền mặt",
-  "en": ""
- },
- {
-  "vi": "Làm dở việc nhà tôi để chạy sang nhà bên kiếm thêm.",
-  "en": ""
- },
- {
-  "vi": "Bạn chạy qua chạy lại, việc nhà khách chính bị chậm, cô Mai biết chuyện.",
-  "en": ""
- },
- {
-  "vi": "Thang máy hỏng",
-  "en": ""
- },
- {
-  "vi": "Thang máy dán tờ giấy “Đang bảo trì”. Nhà khách ở tầng bảy, xe đẩy thì nặng.",
-  "en": ""
- },
- {
-  "vi": "Chia đồ làm hai chuyến, xách thang bộ",
-  "en": ""
- },
- {
-  "vi": "Mỏi chân nhưng đủ đồ. Khách thấy mồ hôi bạn, mời cốc nước mát.",
-  "en": ""
- },
- {
-  "vi": "Chỉ mang khăn với một chai, còn lại để dưới sảnh",
-  "en": ""
- },
- {
-  "vi": "Lên tới nơi mới thấy thiếu cây lau, phải chạy xuống lấy.",
-  "en": ""
- },
- {
-  "vi": "Ngồi chờ thang sửa xong",
-  "en": ""
- },
- {
-  "vi": "Bốn mươi phút sau thang mới chạy. Khách gọi hỏi mãi.",
-  "en": ""
- },
- {
-  "vi": "Khách gọi video kiểm tra",
-  "en": ""
- },
- {
-  "vi": "Khách gọi video giữa chừng: “Em quay một vòng cho chị xem với.”",
-  "en": ""
- },
- {
-  "vi": "Vui vẻ quay một vòng, chỉ chỗ đã xong, chỗ đang làm",
-  "en": ""
- },
- {
-  "vi": "Khách cười: “Ok em, cứ làm đi.” Rồi tắt máy.",
-  "en": ""
- },
- {
-  "vi": "Nhắn “em đang dở tay, lát gửi ảnh”",
-  "en": ""
- },
- {
-  "vi": "Lát sau bạn gửi ba tấm ảnh, khách thả tim.",
-  "en": ""
- },
- {
-  "vi": "Càu nhàu: “Không tin thì đừng thuê”",
-  "en": ""
- },
- {
-  "vi": "Gọi hỏi một câu mà người dọn gắt gỏng.",
-  "en": ""
- },
- {
-  "vi": "Khách im lặng tắt máy. Cô Mai nhắc bạn chuyện này buổi tối.",
-  "en": ""
- },
- {
-  "vi": "Đổ xô nước",
-  "en": ""
- },
- {
-  "vi": "Quay người hơi nhanh, chân vướng quai xô. Nước lau nhà loang ra tận chân tủ gỗ.",
-  "en": ""
- },
- {
-  "vi": "Lấy khăn khô thấm ngay, lau khô chân tủ",
-  "en": ""
- },
- {
-  "vi": "Chân tủ khô ráo, không phồng. Bạn kê xô vào góc cho chắc.",
-  "en": ""
- },
- {
-  "vi": "Cứ để đó, lát lau sàn luôn thể",
-  "en": ""
- },
- {
-  "vi": "May mà nước chưa ngấm vào gỗ.",
   "en": ""
  }
 ]

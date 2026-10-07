@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Đêm bão, Mun nằm khoanh tròn dưới chân bàn trực, kêu rừ rừ như cái mô-tơ đèn.",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy bảo: “Ở đảo mà có con mèo là có người nhà.”",
+  "en": ""
+ },
+ {
+  "vi": "Đèn sáng đúng giờ, quét đều như nhịp thở.",
+  "en": ""
+ },
+ {
+  "vi": "Báo đài rành rọt, phương vị không lệch một độ.",
+  "en": ""
+ },
+ {
+  "vi": "Nội quy cứng mà người thì mềm.",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trực ghi thật từng dòng.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng: tắt đèn đúng giờ, thử từng thiết bị, tắt mô-tơ rồi lau kính, ghi sổ dầu, báo đúng nơi. Quan trắc: đọc đủ rồi báo đài; gió từ cấp 6 thì cảnh báo. Biển: nhìn kỹ, báo đài đúng mức, đúng phương vị, canh giữ; không tự ra khơi. Khách: xem giấy, không ai vào phòng đèn, người gặp nạn luôn được trú. Chiều: thắp đèn đúng giờ, đếm chớp, sai thì báo đài, ghi sổ đúng sự thật.",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên gác đèn biển",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy kèm cặp những ca đầu",
+  "en": ""
+ },
+ {
+  "vi": "Có phụ cấp đảo xa",
+  "en": ""
+ },
+ {
+  "vi": "Có mèo Mun làm bạn",
+  "en": ""
+ },
+ {
+  "vi": "Trạm đèn hai người trên một hòn đảo đá. Đèn nói trước, người nói sau; ai gặp nạn trên biển là việc của mình.",
+  "en": ""
+ },
+ {
+  "vi": "Tổ đèn luồng Cửa Lở",
+  "en": ""
+ },
+ {
+  "vi": "Nhân viên trực phụ trạm đèn",
+  "en": ""
+ },
+ {
+  "vi": "Học quan trắc từ đầu",
+  "en": ""
+ },
+ {
+  "vi": "Lương thấp hơn gác đèn chính",
+  "en": ""
+ },
+ {
+  "vi": "Tổ đèn luồng ba người, thay ca cho các trạm đèn đảo khi thiếu người.",
+  "en": ""
+ },
+ {
+  "vi": "Đêm bão, bạn thấy một pháo hiệu đỏ phía đông nam. Xuồng của trạm nằm dưới bến. Bạn làm gì?",
+  "en": ""
+ },
+ {
+  "vi": "Báo đài MAYDAY RELAY: phương vị, khoảng cách, số người; rồi canh giữ mục tiêu",
+  "en": ""
+ },
+ {
+  "vi": "Chú Bảy gật đầu: đúng việc của người gác đèn.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy xuồng ra cứu cho kịp",
+  "en": ""
+ },
+ {
+  "vi": "Một mình ra khơi giữa bão là thêm một người phải cứu.",
+  "en": ""
+ },
+ {
+  "vi": "Chờ pháo hiệu thứ hai cho chắc",
+  "en": ""
+ },
+ {
+  "vi": "Một pháo hiệu là đủ để báo.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm khách cano thuê không có giấy, đòi lên đỉnh tháp chụp ảnh hoàng hôn.",
+  "en": ""
+ },
+ {
+  "vi": "Từ chối lên tháp, mời chụp ở sân trạm, giải thích nội quy",
+  "en": ""
+ },
+ {
+  "vi": "Cứng mà vẫn tử tế.",
+  "en": ""
+ },
+ {
+  "vi": "Cho lên năm phút, mình đi kèm",
+  "en": ""
+ },
+ {
+  "vi": "Không có giấy thì không vào tháp.",
+  "en": ""
+ },
+ {
+  "vi": "Đuổi về, không nói gì",
+  "en": ""
+ },
+ {
+  "vi": "Đúng nội quy, nhưng nói một câu giải thích cũng được mà.",
+  "en": ""
+ },
+ {
+  "vi": "Đêm qua đèn tắt hai mươi phút vì mất điện. Sếp bảo ghi “bình thường” cho đỡ rắc rối.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi đúng giờ tắt, nguyên nhân và cách đã xử lý",
+  "en": ""
+ },
+ {
+  "vi": "Sổ trực là văn bản: ghi đúng mới có người tin.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi “bình thường” theo lời sếp",
+  "en": ""
+ },
+ {
+  "vi": "Sổ vênh với phản ánh của tàu thì ai chịu?",
+  "en": ""
+ },
+ {
+  "vi": "Không ghi gì cả",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ trống cũng là giấu.",
+  "en": ""
+ },
+ {
+  "vi": "Áp kế tụt bốn hPa trong ba giờ, gió mới cấp 4. Bạn báo đài thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Báo đủ số liệu, nhấn mạnh áp giảm nhanh, phát cảnh báo cho tàu thuyền",
+  "en": ""
+ },
+ {
+  "vi": "Áp tụt nhanh là dấu hiệu áp thấp tới.",
+  "en": ""
+ },
+ {
+  "vi": "Gió mới cấp 4, chưa cần báo gì thêm",
+  "en": ""
+ },
+ {
+  "vi": "Gió chưa lên nhưng áp đã báo trước.",
+  "en": ""
+ },
+ {
   "vi": "Chờ giờ quan trắc sau xem sao",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "Dừng tay, cắm cờ đánh dấu, tránh xa, gọi đài báo biên phòng",
-  "en": ""
- },
- {
-  "vi": "Công binh ra đảo xử lý: đạn cối còn từ thời chiến. Họ dặn ai thấy cũng làm như bạn.",
-  "en": ""
- },
- {
-  "vi": "Đào lên xem cho rõ",
-  "en": ""
- },
- {
-  "vi": "Tự đào vật nghi là bom đạn.",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy chạy ra quát giữ tay bạn lại. Mặt chú tái mét.",
-  "en": ""
- },
- {
-  "vi": "Để dành bán phế liệu",
-  "en": ""
- },
- {
-  "vi": "Định bán bom đạn làm phế liệu.",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy nghe xong lắc đầu, tự gọi đài báo biên phòng.",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi kiểm tra đột xuất",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi gọi bộ đàm: “Đọc tôi nghe sổ dầu ba ngày qua. Hôm kia đốt bao nhiêu lít máy phát?”",
-  "en": ""
- },
- {
-  "vi": "Đọc đúng từng dòng, nói rõ chỗ hôm kia ghi thiếu giờ chạy máy",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi im một lúc: “Thật thà là được. Bổ sung ngay.” Rồi ghi nhận kiểm tra đạt.",
-  "en": ""
- },
- {
-  "vi": "Đọc số tròn cho đẹp",
-  "en": ""
- },
- {
-  "vi": "Sửa miệng",
-  "en": ""
- },
- {
-  "vi": "Đọc sổ dầu “cho tròn”, số không khớp bồn.",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi cộng lại: thiếu mười hai lít không ai giải thích được.",
-  "en": ""
- },
- {
-  "vi": "Giả vờ bộ đàm rè, hẹn gọi lại",
-  "en": ""
- },
- {
-  "vi": "Kiểm tra mà giả vờ mất sóng.",
-  "en": ""
- },
- {
-  "vi": "Anh Khôi gọi lại bằng điện thoại vệ tinh. Không khí căng hơn.",
-  "en": ""
- },
- {
-  "vi": "Đau răng giữa đêm",
-  "en": ""
- },
- {
-  "vi": "Răng hàm đau nhức từ chiều, má sưng nhẹ. Bác sĩ gần nhất ở đất liền, cách mười hai hải lý.",
-  "en": ""
- },
- {
-  "vi": "Gọi đài xin nối máy tư vấn y tế từ xa, làm theo hướng dẫn, ghi sổ trực",
-  "en": ""
- },
- {
-  "vi": "Bác sĩ trực dặn súc nước muối ấm, theo dõi sưng sốt, tàu tiếp tế gần nhất thì vào bờ khám.",
-  "en": ""
- },
- {
-  "vi": "Lục tủ thuốc uống đại thứ gì có chữ “giảm đau”",
-  "en": ""
- },
- {
-  "vi": "Uống thuốc lung tung không hỏi ai.",
-  "en": ""
- },
- {
-  "vi": "Thuốc hết hạn từ năm ngoái. Đau thì vẫn đau, bụng còn cồn cào thêm.",
-  "en": ""
- },
- {
-  "vi": "Ráng chịu, không nói ai",
-  "en": ""
- },
- {
-  "vi": "Cả đêm không ngủ, sáng ra mắt thâm quầng.",
-  "en": ""
- },
- {
-  "vi": "Mùi dầu trong nhà máy phát",
-  "en": ""
- },
- {
-  "vi": "Mở cửa nhà máy phát, mùi dầu nồng nặc. Dưới chân bồn có một vũng dầu loang.",
-  "en": ""
- },
- {
-  "vi": "Mở cửa thông gió, không bật lửa hay công tắc, thấm dầu bằng cát, ghi sổ, báo xí nghiệp",
-  "en": ""
- },
- {
-  "vi": "Khớp ống dưới đáy bồn bị nứt. Xí nghiệp gửi ống mới theo chuyến tàu gần nhất.",
-  "en": ""
- },
- {
-  "vi": "Bật đèn, châm thuốc cho tỉnh rồi tìm chỗ rò",
-  "en": ""
- },
- {
-  "vi": "Hút thuốc trong nhà máy phát đang rò dầu.",
-  "en": ""
- },
- {
-  "vi": "Chú Bảy giật điếu thuốc khỏi miệng bạn, đẩy bạn ra ngoài. Không ai nói câu nào.",
-  "en": ""
- },
- {
-  "vi": "Lau sạch vũng dầu là xong",
-  "en": ""
- },
- {
-  "vi": "Hôm sau vũng dầu lại loang đúng chỗ cũ.",
-  "en": ""
- },
- {
-  "vi": "Hải âu làm tổ trên tấm pin",
-  "en": ""
- },
- {
-  "vi": "Một cặp hải âu tha rác làm tổ ngay trên dàn pin mặt trời. Đồng hồ sạc tụt rõ.",
-  "en": ""
- },
- {
-  "vi": "Dọn tổ khi chưa có trứng, giăng dây ruy băng xua chim, lau pin",
-  "en": ""
- },
- {
-  "vi": "Cặp hải âu chuyển sang làm tổ trên mỏm đá phía nam. Pin sạc lại đầy.",
-  "en": ""
- },
- {
-  "vi": "Ném đá đuổi cho bõ tức",
-  "en": ""
- },
- {
-  "vi": "Ném đá vào chim, trúng cả tấm pin.",
-  "en": ""
- },
- {
-  "vi": "Một hòn đá trượt, nứt góc tấm pin. Cặp hải âu bay đi rồi lại về.",
   "en": ""
  }
 ]

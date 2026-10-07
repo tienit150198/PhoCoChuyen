@@ -1,5 +1,177 @@
 [
  {
+  "vi": "Chỉ chỗ nhận hàng của tổ dân phố",
+  "en": ""
+ },
+ {
+  "vi": "Quầy thư viện thành điểm nhận hàng, mất đơn ai chịu.",
+  "en": ""
+ },
+ {
+  "vi": "“Mua giùm cô tờ vé số, cô vào mời mấy bàn đọc một vòng thôi nha.”",
+  "en": ""
+ },
+ {
+  "vi": "Mua một tờ ủng hộ ở sảnh, nhờ cô không vào phòng đọc",
+  "en": ""
+ },
+ {
+  "vi": "Để cô vào mời từng bàn",
+  "en": ""
+ },
+ {
+  "vi": "Người bán hàng rong đi mời từng bàn trong phòng đọc.",
+  "en": ""
+ },
+ {
+  "vi": "“Báo hôm nay đâu? Sáu giờ tôi đứng cửa, bảy rưỡi mới có báo, làm ăn thế à!”",
+  "en": ""
+ },
+ {
+  "vi": "Xin lỗi, giải thích giờ báo về, để ông tờ đầu tiên",
+  "en": ""
+ },
+ {
+  "vi": "Chạy ra sạp mua báo riêng cho ông",
+  "en": ""
+ },
+ {
+  "vi": "“Gợi ý sách cho con chị thi chuyên, mà phải sách có giải sẵn hết đáp án nha.”",
+  "en": ""
+ },
+ {
+  "vi": "Gợi ý sách luyện tập có hướng dẫn giải, kèm sách đọc thêm",
+  "en": ""
+ },
+ {
+  "vi": "Đưa toàn sách giải sẵn",
+  "en": ""
+ },
+ {
+  "vi": "Một người say",
+  "en": ""
+ },
+ {
+  "vi": "“Cho… cho tôi ngủ nhờ cái ghế này… thư viện của dân mà…” (nói lớn, lảo đảo)",
+  "en": ""
+ },
+ {
+  "vi": "Bình tĩnh mời ra sảnh ngồi, gọi bảo vệ phường",
+  "en": ""
+ },
+ {
+  "vi": "Để ông ngủ trong phòng đọc",
+  "en": ""
+ },
+ {
+  "vi": "Người say nằm giữa phòng đọc, cả phòng bỏ về.",
+  "en": ""
+ },
+ {
+  "vi": "Một bé đi lạc",
+  "en": ""
+ },
+ {
+  "vi": "“Huhu… mẹ con đâu rồi…” (bé bốn tuổi đi lạc vào thư viện)",
+  "en": ""
+ },
+ {
+  "vi": "Giữ bé ở quầy, hỏi tên, nhờ loa nhà văn hóa, báo công an phường nếu cần",
+  "en": ""
+ },
+ {
+  "vi": "Dắt bé ra đường tìm mẹ",
+  "en": ""
+ },
+ {
+  "vi": "Bảo bé ra ngoài tìm mẹ",
+  "en": ""
+ },
+ {
+  "vi": "Bé đi lạc được dắt ra đường một mình với người lạ.",
+  "en": ""
+ },
+ {
+  "vi": "“Tối nay ở lại sắp xếp hội trường giúp bên văn hóa nha, việc thư viện để mai.”",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi cô Nguyệt việc nào trước, báo lại giờ xong",
+  "en": ""
+ },
+ {
+  "vi": "Nhận hết, bỏ dở việc thư viện",
+  "en": ""
+ },
+ {
+  "vi": "“Ê cho anh mượn cái máy tính quầy chơi game tí, giờ này vắng mà.”",
+  "en": ""
+ },
+ {
+  "vi": "Máy quầy có dữ liệu bạn đọc, không cho dùng việc riêng",
+  "en": ""
+ },
+ {
+  "vi": "Máy quầy có dữ liệu bạn đọc bị dùng chơi game.",
+  "en": ""
+ },
+ {
+  "vi": "Người tự xưng thanh tra",
+  "en": ""
+ },
+ {
+  "vi": "“Tôi thanh tra quận đây. Đưa tôi xem sổ mượn của bạn đọc tên Hùng, không cần giấy tờ.”",
+  "en": ""
+ },
+ {
+  "vi": "Xin xem giấy giới thiệu, báo cô Nguyệt trước khi đưa",
+  "en": ""
+ },
+ {
+  "vi": "Đưa sổ mượn cho người lạ chỉ vì họ tự xưng thanh tra.",
+  "en": ""
+ },
+ {
+  "vi": "Giờ kể chuyện loạn cả lên",
+  "en": ""
+ },
+ {
+  "vi": "Giờ kể chuyện cuối tuần: mười hai bé ngồi chưa yên, một bé khóc đòi mẹ, hai bé giật sách, chị Loan giơ điện thoại quay: “Cô kể hay vô nha!”",
+  "en": ""
+ },
+ {
+  "vi": "Cho cả lớp hát bài vỗ tay, chia nhóm nhỏ, mời bé khóc ngồi cạnh mình",
+  "en": ""
+ },
+ {
+  "vi": "Hát xong cả lớp ngồi im nghe chuyện. Bé khóc nín, xin kể lại lần nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Quát to “Im lặng!”",
+  "en": ""
+ },
+ {
+  "vi": "Cả lớp im được ba giây rồi khóc hai bé.",
+  "en": ""
+ },
+ {
+  "vi": "Cô kể chuyện quát tụi nhỏ, con tôi về sợ không dám đi nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Kể nhanh cho xong, phát kẹo cho về",
+  "en": ""
+ },
+ {
+  "vi": "Mười phút xong buổi. Tụi nhỏ vui vì kẹo, quên chuyện.",
+  "en": ""
+ },
+ {
+  "vi": "Mưa dột kho lưu trữ",
+  "en": ""
+ },
+ {
   "vi": "Mưa lớn, trần kho lưu trữ dột một chỗ ngay trên dãy hộp hồ sơ năm 1980. Nước nhỏ tong tỏng xuống nắp hộp.",
   "en": ""
  },
@@ -1625,178 +1797,6 @@
  },
  {
   "vi": "🪝 Bạn nằm thấp trên bờ, chìa sào. Bàn tay bé xíu chụp lấy đầu sào, bạn kéo vào thành.",
-  "en": ""
- },
- {
-  "vi": "⭕ Phao tròn bay qua người, rơi ngay tầm tay. Họ ôm chặt, bạn kéo dây vào thành.",
-  "en": ""
- },
- {
-  "vi": "🛟 Bạn bước dài xuống nước, mắt không rời người, đưa phao ống tới. Kéo vào thành, anh Hải đỡ lên bờ.",
-  "en": ""
- },
- {
-  "vi": "🏊 Bạn nhảy xuống tay không. Người đuối nước ôm ghì lấy cổ bạn, cả hai chìm một nhịp; anh Hải ném phao xuống kịp.",
-  "en": ""
- },
- {
-  "vi": "Đưa người lên bờ trước đã.",
-  "en": ""
- },
- {
-  "vi": "Đã xem rồi.",
-  "en": ""
- },
- {
-  "vi": "Đã sơ cứu rồi.",
-  "en": ""
- },
- {
-  "vi": "Chọn cách sơ cứu.",
-  "en": ""
- },
- {
-  "vi": "Gọi to, vỗ vai, nhìn ngực mười giây xem có thở không đã rồi mới quyết.",
-  "en": ""
- },
- {
-  "vi": "Khoan! Làm vậy là nguy cho người ta. Nhìn lại: họ có tỉnh, có thở không?",
-  "en": ""
- },
- {
-  "vi": "Chưa xem tỉnh hay thở mà đã quyết cách sơ cứu.",
-  "en": ""
- },
- {
-  "vi": "chưa đánh giá trước khi sơ cứu",
-  "en": ""
- },
- {
-  "vi": "sơ cứu sai, nguy hiểm",
-  "en": ""
- },
- {
-  "vi": "sơ cứu chưa đúng",
-  "en": ""
- },
- {
-  "vi": "Đưa người vào bờ trước đã.",
-  "en": ""
- },
- {
-  "vi": "Sơ cứu, theo dõi người vừa cứu lên đã.",
-  "en": ""
- },
- {
-  "vi": "Còn khu chưa nhìn tới. Quét đủ năm khu rồi mới kết thúc vòng.",
-  "en": ""
- },
- {
-  "vi": "Nhìn lại: có người không bơi, không kêu, người dựng đứng hoặc nằm im. Đó là người đang chìm!",
-  "en": ""
- },
- {
-  "vi": "Còn người đang làm sai nội quy mà chưa ai nhắc.",
-  "en": ""
- },
- {
-  "vi": "bỏ sót khu",
-  "en": ""
- },
- {
-  "vi": "Có người chìm lặng lẽ mà cứu hộ không thấy. Anh Hải từ phòng trực chạy ra kéo lên.",
-  "en": ""
- },
- {
-  "vi": "bỏ sót người đuối nước",
-  "en": ""
- },
- {
-  "vi": "bỏ qua người vi phạm nội quy",
-  "en": ""
- },
- {
-  "vi": "Cứu người mà không gọi ai, cả hồ không người trông.",
-  "en": ""
- },
- {
-  "vi": "có anh Hải hỗ trợ",
-  "en": ""
- },
- {
-  "vi": "Vòng quét: CÓ NGƯỜI CHÌM, anh Hải phát hiện và kéo lên.",
-  "en": ""
- },
- {
-  "vi": "Vòng quét đủ năm khu, không có gì bất thường.",
-  "en": ""
- },
- {
-  "vi": "Canh hồ, một vòng quét.",
-  "en": ""
- },
- {
-  "vi": "Canh hồ và cứu người.",
-  "en": ""
- },
- {
-  "vi": "📋 Anh Hải lập biên bản sự cố, cả nhóm họp rút kinh nghiệm.",
-  "en": ""
- },
- {
-  "vi": "✅ Hết vòng quét. Mặt hồ yên.",
-  "en": ""
- },
- {
-  "vi": "⚠️ Hết vòng quét.",
-  "en": ""
- },
- {
-  "vi": "Hỏi hay nhìn?",
-  "en": ""
- },
- {
-  "vi": "Chọn cách cho vào.",
-  "en": ""
- },
- {
-  "vi": "Quyết cho cả ba người đã.",
-  "en": ""
- },
- {
-  "vi": "Cho vào hay không mà chẳng nhìn, chẳng hỏi.",
-  "en": ""
- },
- {
-  "vi": "quyết khi chưa hỏi, chưa nhìn",
-  "en": ""
- },
- {
-  "vi": "Cho xuống nước khi chưa đủ điều kiện.",
-  "en": ""
- },
- {
-  "vi": "cho xuống nước khi chưa đủ điều kiện",
-  "en": ""
- },
- {
-  "vi": "Đủ điều kiện mà bị chặn ở cổng, đòi hoàn vé.",
-  "en": ""
- },
- {
-  "vi": "chặn người đủ điều kiện",
-  "en": ""
- },
- {
-  "vi": "Cổng: soát đúng hết.",
-  "en": ""
- },
- {
-  "vi": "Soát người ở cổng xuống hồ.",
-  "en": ""
- },
- {
-  "vi": "Đã xem sổ đón rồi.",
   "en": ""
  }
 ]
