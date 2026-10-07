@@ -1,3 +1,38 @@
+# Chưa phát hành
+
+## Thêm nhiều thứ để mua
+
+- 🛍️ **Mua sắm** (menu "Ngân hàng & nhà", 4 cửa mới trên bản đồ: ✈️ Đại lý vé, 💎 Hàng hiệu, 🎆 Mạnh Thường Quân,
+  🏰 Dinh thự). Giá 300 → 3.000.000 xu, dồn vào chỗ người giàu đang để tiền. Không đồ nào tăng thu nhập hay giúp làm việc:
+  chỉ danh hiệu, khoe hồ sơ, album, tinh thần trong giới hạn cũ.
+- ✈️ **Du lịch nước ngoài**: Trung Quốc, Hàn, Nhật, Mỹ, Châu Âu; hạng phổ thông / thương gia (×3) / hoàng gia (×10).
+  Xin visa đủ giấy: ảnh 3.5×4.5 chưa quá 30 ngày (chụp 20 xu), sao kê tài khoản 1–3 lần giá vé, xác nhận đi làm, lịch
+  trình, bảo hiểm (Châu Âu); Mỹ phỏng vấn 3 câu (học xong tiếng Anh: 1 câu). Thiếu một giấy là bị trả hồ sơ, phí không
+  hoàn. Mỗi ngày một chuyến, đóng dấu hộ chiếu, ảnh vào album, quà lưu niệm mua ngay hôm đó.
+- 💎 **Bộ sưu tập**: đồng hồ, túi hiệu, trang sức, tranh, tượng hiếm, rượu vang; ★ → ★★★★ (2.000 → 2.000.000 xu). Bán lại
+  60 %. Rượu vang khui uống được (mất chai, không hoàn tiền).
+- 🏰 **Dinh thự** (6 căn, 150.000 → 2.500.000 xu): vườn Đà Lạt, Đông Dương, kính Mây, biển Mũi Né, Penthouse Sky Mây, Dinh
+  thự đảo Hòn Mây. Ở được, 2–3 tầng (nút chuyển tầng), phòng to hơn nhiều và phòng riêng của biệt thự: thư phòng, phòng
+  khách quý, phòng chiếu phim, hầm rượu, gym, phòng thay đồ, gara trưng bày, sân thượng, hồ bơi vô cực, chòi vườn. Mỗi
+  loại phòng có màu tường, sàn, đồ gắn sẵn và 18 món nội thất riêng, 7 bộ góc mới. Bán lại 60 %.
+- 🌅 **Biệt thự Sông Hồng** được nâng cấp miễn phí: ba tầng, phòng to hơn, thêm thư phòng, phòng khách quý, sân thượng
+  ngắm sông. Đồ đang bày giữ nguyên chỗ (món nào vướng cửa sổ, cửa mới thì vào túi).
+- 🛫 **Phi cơ & du thuyền có phi hành đoàn**: Trực thăng VIP 200.000, Siêu du thuyền Hoàng Gia 1.000.000, Chuyên cơ thân
+  rộng 2.000.000 (trên du thuyền 150.000 của Gara). Mỗi ngày một chuyến đi chơi.
+- 🧾 **Phí hạng sang** mỗi tháng (5 ngày sống): dinh thự 0,4–0,6 %, phi cơ 0,6–0,8 %, đồ sưu tập từ 50.000 xu 0,2 % giá
+  mua (quản gia, bảo vệ, phi hành đoàn, bảo hiểm). Trừ ví rồi tài khoản; thiếu thì miễn, không bao giờ thành nợ.
+- 🎉 **Mở tiệc** sinh nhật / tân gia: 4 hạng (Tiệc nhà → Hoàng gia), 5–100 khách. Tiệc sang lên bảng tin cả phố.
+- 🎓 **Khóa học**: 5 ngoại ngữ, nếm rượu vang, golf, MBA, bằng lái máy bay riêng; mỗi ngày một buổi, học xong có danh
+  hiệu.
+- 🎆 **Mạnh Thường Quân**: pháo hoa cả phố (lên bảng tin và Cả phố, mỗi 10 phút một màn), khắc tên ghế đá (24 chỗ) và
+  cột đèn (12 chỗ) với lời khắc chọn sẵn, tài trợ hội chợ / đêm nhạc ZPOP của tuần, góp quỹ thư viện trường. Bảng Mạnh
+  Thường Quân tuần, có ẩn danh.
+- 🏷️ 16 danh hiệu trọn đời (Dân xê dịch, Chúa đảo, Thạc sĩ MBA, Mạnh Thường Quân…), đeo ở Phong cách như danh hiệu tuần,
+  hiện bên tên trong chat. Thẻ người chơi ở Phố nghề khoe dinh thự, món quý nhất, số nước đã đi.
+- Bảng 💰 tính dinh thự, phi cơ, đồ sưu tập theo giá bán lại 60 %.
+- Bản lưu: khối mới `journey.lux` (bản 1.9.9 vẫn mở được, đồ trang trí ở dinh thự tạm vào túi). Bảng mới `lux_gifts`
+  (SCHEMA_VERSION 28, sau 27 của thú cưng).
+
 # v1.9.9 — 2026-10-07
 
 Gồm "Giao diện gọn: đợt 4" (quầy ăn uống + phố còn lại) và "đợt 5" (13 nghề cuối + màn đời sống: nhà, bản đồ, ngân hàng, hội chợ).

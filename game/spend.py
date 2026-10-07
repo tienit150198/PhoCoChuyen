@@ -187,6 +187,8 @@ def _style_lock(s: dict, sid_: str) -> str:
     """Why a weekly item cannot be bought now, money aside ('' = only money decides)."""
     it = C.STYLE_ITEMS[sid_]
     b = get(s)
+    if it.get('earn'):   # 🛍️ a title earned in Mua sắm (game/lux.py): never sold, kept for good once earned
+        return 'Danh hiệu trọn đời' if b and b['own'].get(sid_, 0) >= C.PERMANENT else f'{it["earn"]} để mở'
     stats = b['stats'] if b else {}
     for k, n in (it.get('need') or {}).items():
         if stats.get(k, 0) < n:
@@ -411,7 +413,7 @@ def action(s: dict, name: str, p: dict) -> dict:
         need(it is not None and not it.get('gone'), 'Chọn một món trong Phong cách nhé.')
         need(p['confirm'] is True, f'Xác nhận mua {it["name"]} 7 ngày.')
         why = style_why(s, it['id'])
-        need(not why, why, 'limit' if 'gia hạn' in why else 'locked' if 'để mở' in why else 'not_enough')
+        need(not why, why, 'limit' if 'gia hạn' in why or 'trọn đời' in why else 'locked' if 'để mở' in why else 'not_enough')
         how = _gr()._take(s, it['price'], f'Phong cách 7 ngày · {it["name"]}'[:120])
         b = _ensure(s)
         t = int(now())
@@ -450,7 +452,8 @@ def public(s: dict) -> dict:
     full = [i for i, (_, it) in ITEMS.items() if _bars(s, it['full'], it['wake'])[1]]
     if full:
         out['full'] = full
-    lock = {i: w for i in C.STYLE_ITEMS if (w := _style_lock(s, i))}
+    # 🛍️ a title earned in Mua sắm is never sold: its hint is the catalogue's `earn`, owned or not is `own` (state size)
+    lock = {i: w for i, it in C.STYLE_ITEMS.items() if not it.get('earn') and (w := _style_lock(s, i))}
     if lock:
         out['lock'] = lock
     if b:

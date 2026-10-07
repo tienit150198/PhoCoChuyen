@@ -64,9 +64,13 @@ def _today(s: dict) -> list:
 
 def _spots(s: dict, L: dict) -> dict:
     """{room type: room} of the place you live in, for the acts' rooms (a villa's pool, your own bathroom)."""
-    if L['place']['where'] not in ('own', 'shared'):
+    if L['place']['where'] not in ('own', 'shared', 'estate'):   # 🏰 'estate': a villa you live in (game/estates.py)
         return {}
-    return {r['type']: r for r in L['rooms'] if r['type'] in ('pool', 'bath')}
+    out = {r['type']: r for r in L['rooms'] if r['type'] in ('pool', 'bath')}
+    inf = next((r for r in L['rooms'] if r['type'] == 'infinity'), None)   # 🏰 a villa's infinity pool is a pool too
+    if inf and 'pool' not in out:
+        out['pool'] = inf
+    return out
 
 
 def why_not(s: dict, act: str, L: dict | None = None) -> str:

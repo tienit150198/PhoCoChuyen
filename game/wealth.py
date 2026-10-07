@@ -29,7 +29,8 @@ Two parts, both read from the save itself (never the database, never a live pric
                                                              spread included; a sale takes its share off)
          + 🚗 every vehicle at the garage's buy-back price   garage.sell_price(p), journey.garage.cars[*].p
          + 📱 every phone and gadget at the shop's buy-back   gadgets.sell_price(p), journey.gadgets.own[*].p
-         + 🏪 every Quầy riêng at its sang nhượng price      quay.sell_back() without its floor: place price ×
+         + 🛍️ every villa, crewed vehicle, collection piece  lux.worth: lux.sell_price(p) (60 %), journey.lux.own
+         + 🏪 every Quầy riêng at its sang nhượng price     quay.sell_back() without its floor: place price ×
                                                              SELL_PCT + upgrades × UPGRADE_BACK + till + fund,
                                                              journey.quay.stalls[*]
   debt   + what is still owed on those counters             stalls[*].due + stalls[*].business.unpaid_fines
@@ -145,6 +146,9 @@ def _extras(j) -> tuple[int, int]:
     if gear:
         from .gadgets import sell_price as gear_price
         assets += sum(gear_price(max(0, _n(c.get('p')))) for c in gear.values() if type(c) is dict)
+    if type(j.get('lux')) is dict:   # 🛍️ villas, crewed vehicles, collection pieces at their 60 % buy-back (game/lux.py)
+        from .lux import worth as lux_worth
+        assets += lux_worth(j)
     stalls = _l(_d(j.get('quay')).get('stalls'))
     if stalls:
         from .quay import ITEMS, PLACES, SELL_PCT, UPGRADE_BACK

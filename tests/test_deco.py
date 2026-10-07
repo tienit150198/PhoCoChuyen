@@ -7,6 +7,8 @@ import unittest
 
 from game import deco as dc
 from game import deco_content as DC
+from game import estates as es
+from game import estates_content as EC
 from game import housing as hs
 from game import journey as jr
 from game import reno as rn
@@ -81,7 +83,8 @@ def renter(kind='tro_moi', wallet=6000):
 
 class Catalogue(unittest.TestCase):
     def test_items(self):
-        self.assertEqual(len(DC.ITEMS), 171)
+        self.assertEqual(len(DC.KNOWN_199), 171)
+        self.assertEqual(len(DC.ITEMS), 171 + len(EC.ITEMS))                # 🏰 the villa pieces (game/estates_content.py)
         self.assertEqual(DC.KNOWN_1715[-1], 'mam_ngu_qua')                  # the last piece 1.7.15 knows
         self.assertEqual(DC.KNOWN_132, tuple(DC.ITEMS)[:65])                # what a 1.3.2 build knows: its mirror holds only these
         self.assertNotIn('ke_go_treo', DC.KNOWN_132)
@@ -114,6 +117,7 @@ class Catalogue(unittest.TestCase):
 
     def test_every_piece_has_a_place_and_every_place_has_choices(self):
         places = ['attic'] + [f'rent:{k}:1' for k in ('tro_moi', 'ky_tuc_xa')] + [f'own:h1:{k}' for k in rn.HOUSES]
+        places += [f'estate:{k}:1' for k in es.ESTATE] + ['own:h1:biet_thu_song:v2']   # 🏰 the villas, Sông Hồng's three floors
         fits = {k: 0 for k in DC.ITEMS}
         for key in places:
             rooms = dc.rooms_of(key)

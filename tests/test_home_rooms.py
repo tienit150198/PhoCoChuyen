@@ -8,6 +8,7 @@ import unittest
 
 from game import deco as dc
 from game import deco_content as DC
+from game import estates_content as EC
 from game import journey as jr
 from game import needs as nd
 from game import relax as rx
@@ -59,13 +60,15 @@ class Rooms(unittest.TestCase):
     def test_the_page_gets_them_by_template(self):
         s = owner('biet_thu_song', wallet=90000)
         v = D(s)
-        self.assertEqual([r['id'] for r in v['rooms']], OLD_ROOMS['biet_thu_song'])   # a page loaded before draws these only
-        self.assertEqual(v['more'], [{'t': 'bath_xl'}, {'t': 'pool_l'}])
+        # 🏰 Sông Hồng's three floors (game/estates_content.py SONG_HONG_V2): every room it had, bigger, and more
+        self.assertEqual([r['id'] for r in v['rooms']], [r[0] for r in EC.SONG_HONG_V2['rooms']])
+        self.assertLessEqual(set(OLD_ROOMS['biet_thu_song']), {r['id'] for r in v['rooms']})
+        self.assertEqual(v['more'], [{'t': 'bath_xl', 'fl': 2}, {'t': 'pool_l', 'fl': 1}])
         kits = jr.content()['deco']['kits']
         self.assertEqual(set(kits), set(DC.KITS))
         self.assertEqual(kits['pool_l']['type'], 'pool')
         self.assertEqual({f['t'] for f in kits['bath_s']['fix']}, {'shower', 'window', 'toilet', 'door'})
-        self.assertEqual(set(kits['bath_s']), set(v['rooms'][0]) - {'skin'})            # the same shape as a room
+        self.assertEqual(set(kits['bath_s']), set(v['rooms'][0]) - {'skin', 'fl', 'skin0'})   # the same shape as a room (🏰 + its floor, its look)
         self.assertNotIn('decor', s['journey'])                                         # nothing written by looking
         s2 = story()
         self.assertEqual(D(s2)['more'], [{'t': 'bathc'}])
@@ -109,7 +112,7 @@ class Rooms(unittest.TestCase):
         with self.assertRaises(GameError):                                              # the deck stays as built
             act(s, 'jr_deco_skin', r='pool', part='floor', skin='go_sang')
         s, _ = act(s, 'jr_deco_skin', r='bath', part='wall', skin='bac_ha')             # the bathroom takes paint
-        self.assertEqual(D(s)['more'][0], {'t': 'bath_xl', 's': {'w': 'bac_ha'}})
+        self.assertEqual(D(s)['more'][0], {'t': 'bath_xl', 's': {'w': 'bac_ha'}, 'fl': 2})   # 🏰 Sông Hồng: on the 2nd floor
         validate_state(s)
 
     def test_the_shared_bathroom(self):

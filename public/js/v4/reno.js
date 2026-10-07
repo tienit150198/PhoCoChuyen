@@ -39,7 +39,7 @@ const J=()=>S.env?.api?.state?.journey||{};
  * as `more` [{t: template, s: skin}] with the templates in the catalogue (`kits`); here they join `rooms`. */
 let vSrc=null,vOut=null;
 const V=()=>{const d=(S.remote?S.remote.deco:J().deco)||null;if(!d)return d;
-  if(vSrc!==d){const kits=CD().kits||{};vSrc=d;vOut={...d,rooms:[...d.rooms,...(d.more||[]).filter(m=>kits[m.t]).map(m=>({...kits[m.t],skin:m.s||{}}))]};}
+  if(vSrc!==d){const kits=CD().kits||{};vSrc=d;vOut={...d,rooms:[...d.rooms,...(d.more||[]).filter(m=>kits[m.t]).map(m=>({...kits[m.t],skin:m.s||{},...(m.fl?{fl:m.fl}:{})}))]};}
   return S.mate?.at===d.place?.key?{...vOut,rooms:sharedRooms(vOut.rooms,S.mate)}:vOut;};
 /** The latest verified common-home capabilities, valid only for the player's current state snapshot. */
 const useV=()=>{const v=V(),m=S.mate;return !S.remote&&v&&m?.at===v.place?.key&&S.mateState===S.env?.api?.state&&m.use?{...v,...m.use}:v;};
@@ -331,7 +331,7 @@ function zoneMarkup(rm,it,G,list){
 /** One room as SVG markup. opts: edit (zones, selection), photo (no hit areas, no selection). */
 function roomMarkup(rm,opts={}){
   const v=V(),G=A.geom(rm),Lt=A.lightAt(minuteNow()),edit=!!opts.edit,photo=!!opts.photo,uid=(photo?'p':'')+rm.id;
-  const skin={...(rm.skin||{})};if(S.try&&S.try.room===rm.id)skin[S.try.part==='wall'?'w':'f']=S.try.skin==='auto'?undefined:S.try.skin;
+  const skin={...(rm.skin0||{}),...(rm.skin||{})};if(S.try&&S.try.room===rm.id)skin[S.try.part==='wall'?'w':'f']=S.try.skin==='auto'?undefined:S.try.skin;
   const list=inRoom(rm),theirs=mateIn(rm),all=theirs.length?[...list,...theirs]:list,out=[A.roomBack(rm,G,partsMap(),Lt,uid,skin)];
   if(edit&&!photo&&S.held&&!S.drag)out.push(zoneMarkup(rm,heldItem(),G,list.filter(o=>o.id!==S.held.uid)));
   out.push('<g class="dc-zonelayer" pointer-events="none"></g>');
@@ -471,6 +471,7 @@ async function onClick(op,data){
     case'guests':S.dlg.close();S.env.act('homeGuests');return;
     case'tab':S.tab=data.tab;S.flash=null;S.held=null;S.sel='';render();return;
     case'room':S.room=data.room;S.sel='';render();return;
+    case'floor':{const r=(V()?.rooms||[]).find(x=>floorOf(x)===Number(data.fl));if(r){S.room=r.id;S.sel='';render();}return;}   // 🏰 a villa's floor
     case'edit':S.edit=true;S.flash=null;S.toTop=true;sfx('click');render();return;
     case'done':S.edit=false;S.held=null;S.sel='';S.flash=null;S.toTop=true;sfx('click');render();return;
     case'drawer':S.drawer=data.d;S.cat='';S.resetStrip=true;S.held=S.drawer==='skin'?null:S.held;render();return;
@@ -843,10 +844,17 @@ function revealRail(key,selector){
   if(i.left<r.left)rail.scrollLeft-=r.left-i.left;
   else if(i.right>r.right)rail.scrollLeft+=i.right-r.right;
 }
+/** 🏰 A villa's floors (game/estates.py `fl`): the rooms rail shows one floor at a time, the floor of the room on screen. */
+const floorOf=r=>Number(r?.fl)||1;
+function floorTabs(v){
+  const fls=[...new Set(v.rooms.map(floorOf))].sort((a,b)=>a-b);if(fls.length<2)return '';
+  const cur=floorOf(roomOf(S.room));
+  return `<div class="segmented dc-floors" role="tablist" aria-label="Tầng">${fls.map(f=>`<button type="button" role="tab" aria-selected="${f===cur}" class="${f===cur?'active':''}" data-dc="floor" data-fl="${f}">🏢 ${f}</button>`).join('')}</div>`;
+}
 function roomTabs(v){
   if(v.rooms.length<2)return '';
-  const it=heldItem(),n=id=>v.items.filter(i=>i.r===id).length;
-  return scrollRail('rooms',`<div class="rn-rooms dc-rooms" data-dc-rail="rooms" role="tablist" aria-label="Các phòng">${v.rooms.map(r=>{const ok=it&&it.rooms.includes(r.type);
+  const it=heldItem(),n=id=>v.items.filter(i=>i.r===id).length,fl=floorOf(roomOf(S.room)),many=new Set(v.rooms.map(floorOf)).size>1;
+  return floorTabs(v)+scrollRail('rooms',`<div class="rn-rooms dc-rooms" data-dc-rail="rooms" role="tablist" aria-label="Các phòng">${v.rooms.filter(r=>!many||floorOf(r)===fl).map(r=>{const ok=it&&it.rooms.includes(r.type);
     return `<button type="button" role="tab" aria-selected="${S.room===r.id}" class="rn-room${S.room===r.id?' active':''}${ok?' ok':''}" data-dc="room" data-room="${r.id}"><span aria-hidden="true">${r.emoji}</span>${esc(r.name)}${n(r.id)?`<small${n(r.id)>=r.cap?' class="full"':''}>${n(r.id)}${S.edit?`/${r.cap}`:''}</small>`:''}</button>`;}).join('')}</div>`);
 }
 function heldBar(v){
@@ -949,7 +957,7 @@ function cozyCard(v){
 function relaxCard(v,rm){
   const acts=(v.relax||[]).filter(a=>a.room===rm.id);if(!acts.length)return '';
   const row=a=>`<li>${btn(`${a.emoji} ${esc(a.name)}`,'relax',{act:a.id},a.ok?'primary':'ghost',a.ok?'':' disabled')}<small>${a.done?'✓ Hôm nay rồi':a.ok?`😊 Tinh thần +${a.spirit}`:esc(a.why)}</small></li>`;
-  return `<section class="bk-card dc-relax"><h3>${rm.type==='pool'?'🏖️ Thư giãn bên hồ':'🛁 Thư giãn trong nhà tắm'}</h3><ul>${acts.map(row).join('')}</ul><p class="bk-hint">Miễn phí, mỗi ngày một lần.</p></section>`;
+  return `<section class="bk-card dc-relax"><h3>${rm.type==='pool'||rm.type==='infinity'?'🏖️ Thư giãn bên hồ':'🛁 Thư giãn trong nhà tắm'}</h3><ul>${acts.map(row).join('')}</ul><p class="bk-hint">Miễn phí, mỗi ngày một lần.</p></section>`;
 }
 function guestCard(v){
   const g=v.guest;if(!g)return '';

@@ -25,7 +25,7 @@ const still=()=>Boolean(RM?.matches)||document.documentElement.classList.contain
 const ME=.5;                  // the character (about 140 units tall) in town pixels
 const SPEED=270,MAX_WALK=2.4; // town pixels a second; no walk takes longer than MAX_WALK seconds
 const IDLE_MS=84,MAX_PX=7e6;  // the glow's frame gap; the cached town bitmap's pixel budget
-const LM_COLOR={bank:'#8d7b4c',garage:'#5a6f88',gadgets:'#6f8fb8',quan:'#9a6a43',spa:'#b07aa8',rap:'#6c4f8f',congduc:'#b8862f',style:'#c0607a',fair:'#c8423a',board:'#a8743f',walk:'#5f8f3e',house:'#d9573b',quay:'#e0892b',square:'#418d94',karaoke:'#9b4f96'};
+const LM_COLOR={bank:'#8d7b4c',garage:'#5a6f88',gadgets:'#6f8fb8',quan:'#9a6a43',spa:'#b07aa8',rap:'#6c4f8f',congduc:'#b8862f',style:'#c0607a',fair:'#c8423a',board:'#a8743f',walk:'#5f8f3e',house:'#d9573b',quay:'#e0892b',square:'#418d94',karaoke:'#9b4f96',travel:'#4f8fd1',hanghieu:'#b8862f',mtq:'#c8423a',dinhthu:'#3f9a78'};
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 
 const W={env:null,h:null,el:null,cv:null,c:null,where:null,whereText:'',card:null,pl:null,bg:null,bgKey:'',bs:1,k:1,cw:0,ch:0,dpr:1,
@@ -59,6 +59,7 @@ function landmarkOn(lm){
     case'garage':return !!(J.story&&J.garage);
     case'gadgets':return !!(J.story&&J.gadgets);   // 📱 v4/gadgets.js
     case'quan':case'spa':case'rap':case'congduc':case'style':return !!(J.story&&J.spend);   // ☕ v4/spend.js
+    case'travel':case'hanghieu':case'mtq':case'dinhthu':return !!(J.story&&J.lux);   // 🛍️ v4/lux.js
     case'fair':return !!s.fair?.show;
     case'walk':{const lv=W.env.live?.();return !!(lv?.flags?.street&&lv.welcomed);}
     case'karaoke':{const lv=W.env.live?.();return !!(lv?.flags?.kara&&lv.welcomed);}   // 🎤 v4/karaoke.js

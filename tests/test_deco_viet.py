@@ -11,6 +11,7 @@ from pathlib import Path
 
 from game import deco as dc
 from game import deco_content as DC
+from game import estates_content as EC
 from game import journey as jr
 from game.engine import migrate_state, public_state, validate_state
 from tests.test_bank import act, story
@@ -20,7 +21,7 @@ from tests.test_home_rooms import put_new
 ROOT = Path(__file__).resolve().parents[1]
 NEW = tuple(DC.ITEMS)[len(DC.KNOWN_1419):len(DC.KNOWN_1715)]
 LATER = tuple(DC.ITEMS)[len(DC.KNOWN_1715):]          # after 1.7.15 (tests/test_deco_more.py)
-LATER_SETS = ('choi', 'bep_nha', 'sao')
+LATER_SETS = ('choi', 'bep_nha', 'sao') + tuple(EC.SETS)   # + 🏰 the villa sets (game/estates_content.py)
 NEW_SETS = ('tet', 'xua', 'hien', 'bep_moi', 'mo')
 
 

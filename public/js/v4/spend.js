@@ -92,7 +92,8 @@ function pickOf(tab){
   if(tab==='style'){const list=styleList();return list.find(x=>x.id===S.pick.style)||list[0];}
   return null;
 }
-const styleList=()=>{const c=CAT();return S.kind==='color'?c.colors:S.kind==='frame'?c.frames:c.titles;};
+/** 🛍️ A title earned in Mua sắm (game/lux.py, `earn`) shows once it is yours (for good): the weekly shop stays short. */
+const styleList=()=>{const c=CAT();return S.kind==='color'?c.colors:S.kind==='frame'?c.frames:c.titles.filter(x=>!x.earn||V()?.own?.[x.id]);};
 const daysLeft=until=>Math.max(0,Math.ceil((until-Date.now()/1000)/86400));
 const guest=()=>!S.env?.api?.account?.username;   // a guest's gift is always Ẩn danh on the board (game/spend.py _name)
 const anonNow=()=>guest()||(S.anon??(S.amount<(CAT()?.give?.anon_under||50)));
@@ -111,7 +112,9 @@ function main(v){
     case'rap':return v.seen?['Tuần này xem rồi','film','✓']:[`Mua vé · ${fmt(c.film_price)} xu`,'film',cashWhy(c.film_price)];
     case'chua':return [`Công đức · ${fmt(S.amount)} xu`,'give',readyWhy(S.amount)];
     case'style':{const until=v.own?.[it.id],worn=v.wear?.[S.kind]===it.id;
+      if(it.earn&&!until)return ['🔒','style',`${it.earn} để mở`];   // 🛍️ earned in Mua sắm (game/lux.py), never sold
       if(until&&!worn)return ['Dùng','wear',''];
+      if(it.earn)return ['Đang dùng','wear','✓'];
       return [`${until?'Gia hạn':'Mua 7 ngày'} · ${fmt(it.price)} xu`,'style',v.lock?.[it.id]||readyWhy(it.price)];}
   }
   return ['','',''];
@@ -203,9 +206,9 @@ function style(v,c){
   const fr=frameAttrs(api,st);
   const preview=`<div class="sd-preview"><span class="sd-av${fr.cls}"${fr.attrs} aria-hidden="true">🙂</span><b${nameAttrs(api,st,'sd-pname')} data-no-translate>${esc(name)}</b>${titleChip(api,st)}</div>`;
   const tiles=styleList().map(x=>{
-    const until=v.own?.[x.id],left=until&&until>now?daysLeft(until):0,worn=v.wear?.[S.kind]===x.id&&left,lock=(v.lock?.[x.id]||'').includes('để mở');
+    const until=v.own?.[x.id],left=until&&until>now?daysLeft(until):0,worn=v.wear?.[S.kind]===x.id&&left,lock=(v.lock?.[x.id]||'').includes('để mở')||(x.earn&&!left);
     const art=S.kind==='color'?`<span${nameAttrs(api,{c:x.id},'sd-swatch')}>Aa</span>`:S.kind==='frame'?`<span class="sd-ring${frameAttrs(api,{f:x.id}).cls}"${frameAttrs(api,{f:x.id}).attrs}></span>`:`<span class="sd-tchip">${esc(x.emoji)} ${esc(x.name)}</span>`;
-    return `<button type="button" class="sd-tile${x.id===it.id?' on':''}${worn?' worn':''}" data-sd="pick" data-id="${esc(x.id)}" aria-pressed="${x.id===it.id}" aria-label="${esc(x.name)}" title="${esc(x.name)}">${art}<small>${lock?'🔒':left?`${worn?'✓ ':''}${left} ngày`:fmt(x.price)}</small></button>`;
+    return `<button type="button" class="sd-tile${x.id===it.id?' on':''}${worn?' worn':''}" data-sd="pick" data-id="${esc(x.id)}" aria-pressed="${x.id===it.id}" aria-label="${esc(x.name)}" title="${esc(x.name)}">${art}<small>${lock?'🔒':x.earn&&left?`${worn?'✓ ':''}∞`:left?`${worn?'✓ ':''}${left} ngày`:fmt(x.price)}</small></button>`;
   }).join('');
   const off=v.wear?.[S.kind]&&v.own?.[v.wear[S.kind]]>now?`<button type="button" class="sd-link" data-sd="unwear">Cất</button>`:'';
   return kinds+`<section class="sd-card">${preview}<div class="sd-tiles sd-${S.kind}">${tiles}</div>${off}</section>`;

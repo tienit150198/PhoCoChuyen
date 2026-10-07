@@ -11,6 +11,7 @@ from pathlib import Path
 
 from game import deco as dc
 from game import deco_content as DC
+from game import estates_content as EC
 from game import housing as hs
 from game import reno as rn
 from game.engine import GameError, migrate_state, validate_state
@@ -19,7 +20,8 @@ from tests.test_deco import D, bag, owner, renter, tick
 from tests.test_home_rooms import put_new
 
 ROOT = Path(__file__).resolve().parents[1]
-NEW = tuple(DC.ITEMS)[len(DC.KNOWN_1715):]
+NEW = tuple(DC.ITEMS)[len(DC.KNOWN_1715):len(DC.KNOWN_199)]
+VILLA = tuple(DC.ITEMS)[len(DC.KNOWN_199):]           # 🏰 after 1.9.9 (game/estates_content.py)
 NEW_SETS = ('choi', 'bep_nha', 'sao')
 
 
@@ -28,8 +30,8 @@ def build_1715():
     """What the live 1.7.15 server checks: its room cap, its facing pieces, its catalogue. It never reads
     journey.decor_more / journey.decor_turn (extra journey keys), so the save it sees is this one without them."""
     saved = (dc.room_cap, dc.FACING_ITEMS)
-    items = {k: DC.ITEMS.pop(k) for k in NEW}
-    sets = {k: DC.SETS.pop(k) for k in NEW_SETS}
+    items = {k: DC.ITEMS.pop(k) for k in NEW + VILLA}
+    sets = {k: DC.SETS.pop(k) for k in NEW_SETS + tuple(EC.SETS)}
     dc.room_cap, dc.FACING_ITEMS = dc.old_cap, dc.FACES_OLD
     try:
         yield

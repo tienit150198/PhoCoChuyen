@@ -40,6 +40,8 @@ from . import deco as dc   # 🪴 Bày trí phòng (game/deco.py)
 from . import garage as gr   # 🚗 Xe & phương tiện (game/garage.py)
 from . import gadgets as gd   # 📱 Cửa hàng điện thoại (game/gadgets.py)
 from . import spend as sp   # ☕ Đi quán, spa, rạp, 🙏 công đức, 🎨 phong cách tuần (game/spend.py)
+from . import lux as lx   # 🛍️ Mua sắm: du lịch, sưu tập, dinh thự, tiệc, khóa học, 🎆 Mạnh Thường Quân (game/lux.py)
+from . import estates as es   # 🏰 Dinh thự: living in a villa (game/estates.py)
 from . import upkeep as up   # 🧾 Hóa đơn tháng: phí giữ xe, bảo trì nhà (game/upkeep.py)
 from . import rui   # 🛡️ Rủi ro & bảo hiểm (game/rui.py)
 from . import vang   # 💰 Tiệm vàng Kim Phát (game/vang.py)
@@ -483,6 +485,7 @@ def upgrade(j: dict) -> None:
     gr.upgrade(j)   # 🚗
     gd.upgrade(j)   # 📱
     sp.upgrade(j)   # ☕
+    lx.upgrade(j)   # 🛍️
     if j.get('story'):
         for n in range(1, min(int(j.get('chapter', 1)), LAST) + 1):
             _unlock_chapter(j, n)
@@ -556,7 +559,7 @@ def _transfer(s: dict, c: dict, amount: int, reason: str, category: str) -> None
 
 def living_cost(j: dict) -> dict:
     """{total, rent, meals, label, where}: Bà Tám's rent, or a rented room's, or điện nước at home (game/housing.py)."""
-    return hs.living(j, LIVING.get(j['chapter'], LIVING[LAST]))
+    return es.living(j, hs.living(j, LIVING.get(j['chapter'], LIVING[LAST])))   # 🏰 a villa you live in: its điện nước
 
 
 # ---------------------------------------------------------------- engine hooks
@@ -688,6 +691,7 @@ def after(s: dict, career: str | None, action: str, p: dict, result: dict) -> No
     rn.on_life_day(s, result)   # 🛠️ wear and the Ấm cúng morning (after the home's)
     dc.on_life_day(s, result)   # 🪴 follow the player home, a rented room's Ấm cúng morning, a neighbour drops by
     up.on_life_day(s, result)   # 🧾 the monthly bills of the vehicles and homes owned (after the home's morning)
+    lx.on_life_day(s, result)   # 🛍️ phí hạng sang: villas, crewed vehicles, insured collection pieces
     rui.on_life_day(s, result)   # 🛡️ warnings, cards and premiums (after the bills: a waived bill raises the odds)
     qy.on_life_day(s, result)   # 🏪 each counter runs the day that just ended (after the month's bills)
     qy.on_shift(s, career, action, result)   # 💼 a hired shift at another player's counter ends with its day (game/quay_hire.py)
@@ -853,6 +857,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(gr.action(s, name, p))
     elif name.startswith('jr_gadget_'):
         result.update(gd.action(s, name, p))
+    elif name.startswith('jr_lux_'):
+        result.update(lx.action(s, name, p))
     elif name.startswith('jr_spend_'):
         result.update(sp.action(s, name, p))
     elif name.startswith('jr_needs_'):
@@ -950,7 +956,7 @@ def public(s: dict) -> dict:
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
         bank=bk.public(s), home=hs.public(s), household=hh.public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
-        garage=gr.public(s), gadgets=gd.public(s), spend=sp.public(s), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
+        garage=gr.public(s), gadgets=gd.public(s), spend=sp.public(s), lux=lx.public(s), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
         **({'quay': qy.public(s)} if qy.visible(s) else {}))   # 🏪 only once a save reaches it (state size)
 
 
@@ -976,7 +982,7 @@ def content() -> dict:
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
-        garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content())
+        garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), lux=lx.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content())
 
 
 def validate(s: dict) -> None:
@@ -1061,6 +1067,7 @@ def validate(s: dict) -> None:
     gr.validate(s)   # 🚗 journey['garage'] (optional)
     gd.validate(s)   # 📱 journey['gadgets'] (optional)
     sp.validate(s)   # ☕ journey['spend'] (optional)
+    lx.validate(s)   # 🛍️ journey['lux'] (optional)
     up.validate(s)   # 🧾 journey['upk'] (optional)
     rui.validate(s)   # 🛡️ journey['rui'] (optional)
     vang.validate(s)   # 💰 journey['vang'] (optional)
