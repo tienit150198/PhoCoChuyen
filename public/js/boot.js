@@ -12,6 +12,23 @@
  *   on its way), instead of an import chain after app.js.
  * api.js init() picks all of this up from globalThis.__mnlBoot; without it, it fetches on its own. */
 (()=>{
+  // Old iPhones (07/10, iOS 15 / 16.0–16.3 could not open the game). Before the polyfills below: is this browser
+  // older than the game targets (no regex lookbehind = Safari < 16.4, no Object.hasOwn = Safari < 15.4 / Chrome < 93)?
+  // Only used to word the failure panel; scripts/check_old_safari.mjs keeps the game's files parseable there.
+  let oldBrowser=typeof Object.hasOwn!=='function';
+  try{new RegExp('(?<=a)b');}catch{oldBrowser=true;}   // old-safari-ok: a probe, in try
+  // Built-ins Safari 15.0–15.3 lacks (iOS 15 phones not updated past 15.3). Only when missing, never enumerable.
+  // scripts/check_old_safari.mjs lets the game call these only because they are defined here (keep the poly(…) form).
+  const poly=(o,name,fn)=>{if(o&&typeof o[name]!=='function'){try{Object.defineProperty(o,name,{value:fn,writable:true,configurable:true});}catch{/* frozen */}}};
+  const at=function(i){const n=this.length>>>0;i=Math.trunc(Number(i))||0;if(i<0)i+=n;return i<0||i>=n?undefined:this[i];};
+  poly(Array.prototype,'at',at);poly(String.prototype,'at',at);
+  try{poly(Object.getPrototypeOf(Int8Array.prototype),'at',at);}catch{/* no typed arrays */}
+  poly(Object,'hasOwn',(o,k)=>{if(o==null)throw new TypeError('Cannot convert undefined or null to object');return Object.prototype.hasOwnProperty.call(Object(o),k);});
+  poly(Array.prototype,'findLast',function(f,t){for(let i=(this.length>>>0)-1;i>=0;i--)if(f.call(t,this[i],i,this))return this[i];return undefined;});
+  poly(Array.prototype,'findLastIndex',function(f,t){for(let i=(this.length>>>0)-1;i>=0;i--)if(f.call(t,this[i],i,this))return i;return -1;});
+  const C=globalThis.crypto;
+  if(C&&typeof C.getRandomValues==='function')poly(C,'randomUUID',()=>{const b=C.getRandomValues(new Uint8Array(16));b[6]=b[6]&15|64;b[8]=b[8]&63|128;
+    const h=Array.from(b,x=>(x+256).toString(16).slice(1)).join('');return `${h.slice(0,8)}-${h.slice(8,12)}-${h.slice(12,16)}-${h.slice(16,20)}-${h.slice(20)}`;});
   const d=document,B=globalThis.__mnlBoot={sent:Date.now()};
   let map={};
   try{map=JSON.parse(d.querySelector('script[type="importmap"]')?.textContent||'{}').imports||{};}catch{/* no import map: plain URLs */}
@@ -62,23 +79,53 @@
   const ver=(rel.replace(/[^\w.-]/g,'').slice(0,12)+(build?`-${build.replace(/\W/g,'').slice(0,6)}`:''))||'x';
   const splash=()=>d.getElementById('loading');
   const loadingNow=()=>!T.on&&!splash()?.hidden;
+  // Failed loads of this tab within 2 minutes ({n, at}): the first reloads by itself, the second shows a panel.
+  // No session storage (private mode): never reload by itself, it could not count and would loop.
   const RETRY='mnl.bootRetry';
-  const retried=()=>{try{return Date.now()-Number(sessionStorage.getItem(RETRY)||0)<120000;}catch{return true;}};
-  const reload=()=>{try{sessionStorage.setItem(RETRY,String(Date.now()));}catch{/* private mode: still reload */}location.replace(bust(location.href));};
-  const panel=(what,h,slow)=>{
-    const box=splash();if(!box){d.addEventListener('DOMContentLoaded',()=>panel(what,h,slow),{once:true});return;}
+  const fails=()=>{try{const r=JSON.parse(sessionStorage.getItem(RETRY)||'null');return r&&Date.now()-Number(r.at||0)<120000?Number(r.n)||1:0;}catch{return 1;}};
+  const reload=()=>{location.replace(bust(location.href));};
+  const panel=(what,h,slow,old)=>{
+    const box=splash();if(!box){d.addEventListener('DOMContentLoaded',()=>panel(what,h,slow,old),{once:true});return;}
     const mine=box.querySelector('[data-boot-fail]');
     if(box.hidden||(mine?slow:box.querySelector('button')))return;   // the game is out, or app.js shows its own "Thử kết nối lại"
     mine?.remove();
     const w=d.createElement('div'),p=box.querySelector('p'),b=d.createElement('button'),s=d.createElement('small');
-    if(p)p.textContent=slow?'Mạng hơi chậm, khu phố vẫn đang tải… Lâu quá thì bấm Tải lại nha.':'Tải chưa xong rồi 😢 Mạng chập chờn hoặc khu phố vừa cập nhật. Bấm Tải lại là vào được nha!';
+    if(p)p.textContent=old?'Trình duyệt này quá cũ nên khu phố chưa mở được 😢 Bạn cập nhật iOS (Cài đặt → Cài đặt chung → Cập nhật phần mềm) hoặc mở game bằng Chrome nha!'
+      :slow?'Mạng hơi chậm, khu phố vẫn đang tải… Lâu quá thì bấm Tải lại nha.':'Tải chưa xong rồi 😢 Mạng chập chờn hoặc khu phố vừa cập nhật. Bấm Tải lại là vào được nha!';
     if(!slow)box.querySelector('.splash-bar')?.remove();
-    w.dataset.bootFail='';w.style.cssText='display:flex;flex-direction:column;align-items:center';
-    b.type='button';b.textContent='Tải lại';b.onclick=reload;
+    w.dataset.bootFail=old?'old':'';w.style.cssText='display:flex;flex-direction:column;align-items:center';
+    b.type='button';b.textContent=old?'Thử lại':'Tải lại';b.onclick=reload;
     b.style.cssText='margin-top:16px;padding:12px 32px;border:0;border-radius:99px;background:#c44b30;color:#fff;font:inherit;font-weight:700;font-size:1rem;cursor:pointer';
     s.style.cssText='margin-top:10px;opacity:.6;font-size:.8rem';
-    s.textContent=`Phiên bản ${ver}${what?` · ${what}: ${h===0?'mất kết nối':h?`lỗi ${h}`:'chưa tải được'}`:''}`;
+    s.textContent=`Phiên bản ${ver}${what?` · ${what}: ${h==='parse'?'lỗi cú pháp':h===0?'mất kết nối':h?`lỗi ${h}`:'chưa tải được'}`:''}`;
     w.append(b,s);box.append(w);
+  };
+  // "iPhone OS 15_8" -> ios15.8, "Chrome/90" -> chrome90: where a parse error came from (the beacon's screen field,
+  // the one field the server keeps unmasked).
+  const uaTag=()=>{const u=navigator.userAgent||'';let m;
+    if((m=/(?:iPhone|iPad|iPod).*? OS (\d+)_(\d+)/.exec(u)))return `ios${m[1]}.${m[2]}`;
+    if((m=/(?:Chrome|CriOS)\/(\d+)/.exec(u)))return `chrome${m[1]}`;
+    if((m=/Version\/(\d+)\.(\d+).*Safari/.exec(u)))return `safari${m[1]}.${m[2]}`;
+    if((m=/Firefox\/(\d+)/.exec(u)))return `firefox${m[1]}`;
+    return 'other';};
+  // A file of ours that does not parse here (07/10: regex lookbehind on Safari < 16.4) breaks the whole module
+  // graph. Kept across the one reload, so the second failure knows why.
+  const PARSE='mnl.bootParse';
+  let parseErr=null;try{if(fails())parseErr=JSON.parse(sessionStorage.getItem(PARSE)||'null');}catch{/* none */}
+  let broken=false,told=false;
+  // The game's files did not load (h: HEAD status of the file, 'parse' for a syntax error). Once per page: the
+  // first failure in 2 minutes reloads, cache-busted; the second shows a panel and never reloads by itself. With a
+  // syntax error on an old browser the panel says to update iOS or use Chrome, and one beacon reports it with the UA.
+  const broke=(name,h)=>{
+    if(broken||!loadingNow())return;
+    broken=true;
+    let n=fails()+1;
+    try{sessionStorage.setItem(RETRY,JSON.stringify({n,at:Date.now()}));}catch{n=2;/* private mode: cannot count */}
+    if(h&&n<2){reload();return;}
+    if(parseErr&&!told){told=true;
+      try{navigator.sendBeacon('/api/beacon',JSON.stringify({errors:[{k:'js',n:1,s:`${oldBrowser?'old':'parse'}:v${ver}:${uaTag()}`.slice(0,40),
+        m:`${oldBrowser?'Trình duyệt cũ':'Lỗi cú pháp'}: ${parseErr.m} | ${navigator.userAgent||''}`.slice(0,200),...(parseErr.st?{st:parseErr.st}:{})}]}));}catch{/* old browser */}}
+    panel(name,h,false,Boolean(parseErr)&&oldBrowser);
   };
   let probes=0;
   const failed=(t,x)=>{
@@ -91,12 +138,21 @@
     status.then(h=>{
       x.s+=`:${h}`;B.fail=B.fail||{name,h};
       if(!loadingNow()||!(entry||h===404))return;
-      if(h&&!retried())reload();else panel(name,h);
+      broke(name,h);
     });
   };
   addEventListener('error',e=>{const t=e.target;
     if(t&&t!==window&&(t.src||t.href)){const x={k:'asset',m:String(t.src||t.href)};keep(x);if(x.s)failed(t,x);}
-    else if(e.filename)keep({k:'js',m:String(e.message||''),st:String(e.error?.stack||`${e.filename}:${e.lineno}:${e.colno}`).slice(0,2000)});},true);
+    else if(e.filename){const m=String(e.message||''),st=String(e.error?.stack||`${e.filename}:${e.lineno}:${e.colno}`).slice(0,2000);keep({k:'js',m,st});
+      // A file of ours that does not parse while the splash is up (not JSON.parse at run time): the game cannot start.
+      let u;try{u=new URL(e.filename,location.href);}catch{/* not a URL */}
+      if(u?.origin===location.origin&&/^\/js\//.test(u.pathname)&&loadingNow()&&!/JSON/i.test(m)
+        &&(e.error?.name==='SyntaxError'||/SyntaxError|Invalid regular expression|Unexpected (reserved word|token|identifier|keyword)/i.test(m))){
+        parseErr={m:m.slice(0,120),st:B.stack(`${e.filename}:${e.lineno}:${e.colno}`)};
+        try{sessionStorage.setItem(PARSE,JSON.stringify(parseErr));}catch{/* private mode */}
+        // Safari also fails the module <script> (handled above, after a HEAD); Chrome reports the parse error only.
+        setTimeout(()=>broke(u.pathname.split('/').pop(),'parse'),3000);
+      }}},true);
   // Nothing failed but nothing came either (a request hanging on a bad connection): offer the button after 25 s.
   setTimeout(()=>{if(loadingNow())panel(B.fail?.name,B.fail?.h,!B.fail);},25000);
   addEventListener('unhandledrejection',e=>keep({k:'promise',m:String(e.reason?.message||e.reason||''),st:String(e.reason?.stack||'').slice(0,2000)}));

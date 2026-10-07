@@ -4,12 +4,24 @@
  * the emoji in a fixed left column, the first row as the headline, the rest a size smaller. */
 const PICT=/\p{Extended_Pictographic}/u;
 // A sentence end (. ! ? … or a closing bracket/quote after one), spaces, then an emoji (with its modifiers).
-const SPLIT=/(?<=[.!?…)\]”"»])\s+(?=\p{Extended_Pictographic})/u;
+// The sentence end is matched and kept on the left piece: no lookbehind `(?<=…)`, which Safari only parses from
+// 16.4 (one such regex stopped the whole game loading on iOS 15 / 16.0–16.3, 07/10). Same pieces as
+// `split(/(?<=[.!?…)\]”"»])\s+(?=\p{Extended_Pictographic})/u)` (tests/old_safari_regex.mjs).
+const SPLIT=/([.!?…)\]”"»])\s+(?=\p{Extended_Pictographic})/gu;
+/** `text` cut at each match of `re` (global, group 1 = a lead kept on the left piece, the rest dropped). */
+export function splitAfter(text,re){
+  const out=[];let from=0;
+  for(const m of text.matchAll(re)){const cut=m.index+m[1].length;out.push(text.slice(from,cut));from=m.index+m[0].length;}
+  out.push(text.slice(from));
+  return out;
+}
+/** A toast's notes, before trimming. */
+export const splitNotes=text=>splitAfter(text,SPLIT);
 const LEAD=/^((?:\p{Extended_Pictographic}|\p{Emoji_Modifier}|️|‍|⃣)+)\s*/u;
 
 /** [{icon, text}] — a single part (or none with an emoji) means: keep the plain toast. */
 export function toastParts(message){
-  const parts=String(message??'').split(SPLIT).map(s=>s.trim()).filter(Boolean);
+  const parts=splitNotes(String(message??'')).map(s=>s.trim()).filter(Boolean);
   if(parts.length<2||!parts.slice(1).every(p=>PICT.test(p.slice(0,2))))return [];
   const rows=parts.map(p=>{const m=p.match(LEAD);return m?{icon:m[1],text:p.slice(m[0].length)}:{icon:'',text:p};});
   return rows.every(r=>r.text)?rows:[];   // "Xong. 👍": a trailing emoji alone is not a note
