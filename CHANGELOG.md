@@ -1,3 +1,7 @@
+# v1.9.12 — 2026-10-07
+
+Chỉ gồm "Hội chợ: công an bắt ít hơn một nửa" (không thông báo Có gì mới).
+
 # Chưa phát hành
 
 ## Hội chợ: công an bắt ít hơn một nửa
