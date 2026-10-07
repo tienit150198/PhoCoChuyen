@@ -693,14 +693,21 @@ def _free(c: dict, item: str, size: str, t: dict | None = None) -> int:
 
 
 
-def staff_size(c: dict, item: str) -> str | None:
-    """Read-only size allocation; picked counter/parcel pieces stay reserved."""
+def staff_size(c: dict, item: str, keep: int = 0) -> str | None:
+    """Read-only size allocation; picked counter/parcel pieces stay reserved.
+
+    `keep` (the owner's "giữ lại cho ca" floor, workplace_business.keep): staff sell nothing once the free pieces are
+    down to it, and above it they take from the fullest size, so the pieces left for the owner keep every size they
+    can. 0 (the default) picks as before: the first size with a free piece."""
     original=c['ext']['data'].get('grid',{}).get(item,{})
     row={size:original.get(size,0) for size in SIZES[item]}
     delta=kit.stock(c,item)-sum(row.values())
     if delta>0:_fill(row,item,delta)
     elif delta<0:_drain(row,item,-delta)
-    return next((size for size,qty in row.items() if qty>_held(c,item,size)),None)
+    if keep<=0:return next((size for size,qty in row.items() if qty>_held(c,item,size)),None)
+    free={size:qty-_held(c,item,size) for size,qty in row.items()}
+    if sum(max(0,n) for n in free.values())<=keep:return None
+    return max((size for size in free if free[size]>0),key=lambda size:free[size],default=None)
 
 
 def staff_order(c: dict, served: int) -> tuple | None:
@@ -711,7 +718,8 @@ def staff_order(c: dict, served: int) -> tuple | None:
     """
     # Rotate over the goods on the rack only: skipping gaps in the full catalogue would hand every sale after an
     # unstocked run (the 14 goods added in WP3 start at 0) to the next stocked item.
-    items=[item for item in ITEM if staff_size(c,item) is not None]
+    from ..workplace_business import keep
+    items=[item for item in ITEM if staff_size(c,item,keep(c,item)) is not None]
     if not items:
         return None
     item=items[served%len(items)]

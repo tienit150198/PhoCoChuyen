@@ -1,3 +1,7 @@
+# Chưa phát hành — 🔒 Giữ lại cho ca của tôi (B4 phần 2, góp ý #243, #247)
+
+- Kho: chạm một món, dòng "🔒 Giữ cho ca bạn − N +" đặt số tối thiểu (0–999) nhân viên không bán; ô hàng hiện "🔒 N". Nhân viên (và khách người chơi họ phục vụ) dừng món đó khi kho còn đúng N, lý do ghi "🔒 Giữ 5 ly giấy cho ca của bạn."; việc của chủ vẫn dùng hết. Thực đơn nhân viên, trọng số món và cỡ áo đều tính phần giữ (quần áo: bán từ cỡ còn nhiều nhất để phần giữ còn đủ cỡ). Quầy: cùng ô ở tab 📦 Hàng. Thẻ "Lúc bạn vắng" thêm dòng "🔒 Giữ lại 5 ly giấy cho bạn". Khóa tùy chọn `ops.business_keep` / `business.keep` của quầy ({món: 1..999}); không đặt thì như cũ, 1.9.17 nhận và giữ nguyên khóa. Không đổi cách sinh việc.
+
 # v1.9.17 — 2026-10-07
 
 Gồm r6-misc: thẻ "Lúc bạn vắng" (ops.business_used tùy chọn), ném vòng cách nhau 2 giây, dòng chữ đấu giá và danh hiệu.

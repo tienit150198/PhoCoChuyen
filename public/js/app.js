@@ -28,6 +28,7 @@ import {lowItems,crates} from './v4/restock.js';  // the bar's Kho badge
 import {setLanguage,t as i18nT} from './v4/i18n.js';
 import {shell} from './v4/shell.js';
 import {workplaceAway,awayFresh,awayToast} from './away-report.js';   // B4: 🧾 Lúc bạn vắng
+import {keepRow} from './keep-ui.js';   // 🔒 Giữ lại cho ca của tôi (B4 part 2)
 import {accountSubmit,accountNudge,accountAction,accountBoot} from './v4/account.js';
 import {registerWorker,listenWorker} from './v4/push.js';
 import {homeView as homeV4,futureView as futureV4,journeyBoot,journeyAction,journeySubmit} from './v4/home.js';
@@ -1122,7 +1123,7 @@ function stockDesk(cap){
     // The bill sits on the order button and follows the number ("Đặt 3 · 108 xu", whBill), priced as whOrder charges.
     const qty=Math.min(Math.max(1,max),state?Math.min(4,Math.max(1,max)):1),can=!!(max&&c.open&&!vansFull),cost=Math.max(1,Math.ceil(p.cost*qty*(sup?.factor??1)));
     const lots=care?.batches?.filter(b=>b.lot===p.id)||[],first=lots.find(b=>!b.flag),flagged=lots.filter(b=>b.flag).reduce((n,b)=>n+b.qty,0);
-    return `<div class="inventory-row inv-row ${state}">${itemArt(p.icon||'box',45,p.color)}<div class="grow"><h4>${esc(p.name)}${mb?'':` · ${esc(p.id)}`}</h4><small><b class="inv-big">${q}</b>/${cap} trên kệ${on?` · <span class="inv-flag info">+${on} đang giao</span>`:''}${held?` · đang giữ ${held}`:''} · ${fmt(p.cost)} xu/món</small>${!mb&&(first||flagged)?`<small class="block">${first?`HSD gần nhất: ngày ${first.exp}`:''}${flagged?` · <b class="wh-bad">${flagged} hộp cần rút</b>`:''}</small>`:''}<span class="inv-bar" aria-hidden="true"><i style="width:${Math.round(q/cap*100)}%"></i><i class="on" style="width:${Math.round(on/cap*100)}%"></i></span></div>`+
+    return `<div class="inventory-row inv-row ${state}">${itemArt(p.icon||'box',45,p.color)}<div class="grow"><h4>${esc(p.name)}${mb?'':` · ${esc(p.id)}`}</h4><small><b class="inv-big">${q}</b>/${cap} trên kệ${on?` · <span class="inv-flag info">+${on} đang giao</span>`:''}${held?` · đang giữ ${held}`:''} · ${fmt(p.cost)} xu/món</small>${!mb&&(first||flagged)?`<small class="block">${first?`HSD gần nhất: ngày ${first.exp}`:''}${flagged?` · <b class="wh-bad">${flagged} hộp cần rút</b>`:''}</small>`:''}<span class="inv-bar" aria-hidden="true"><i style="width:${Math.round(q/cap*100)}%"></i><i class="on" style="width:${Math.round(on/cap*100)}%"></i></span>${keepRow(c,p.id,p.name)}</div>`+
       `<span class="inv-row-act">${whQty(p,max,qty)}${can?`<label class="wh-pick"><input type="checkbox" data-wh-pick="${esc(p.id)}"${picks[p.id]?' checked':''}> Gộp</label>`:''}<button type="button" class="btn small${state&&max&&!vansFull?' primary':''}" data-wh-order="${esc(p.id)}"${can?` data-cost="${p.cost}" data-factor="${sup?.factor??1}" data-money="${c.money}"`:''}${can&&cost<=c.money?'':' disabled'}>${!max?'Kệ đầy':vansFull?`Đủ ${SHIP_CAP} kiện`:!c.open?(mb?'Mở tiệm trước':'Mở quầy trước'):whLabel(qty,cost,c.money)}</button>${!mb?(c.held_lots.includes(p.id)?commandButton('Cô Thu kiểm lại','ph_release',{lot:p.id},'small primary'):commandButton('Tạm giữ','ph_quarantine',{lot:p.id},'small ghost')):''}</span></div>`;};
   // Đơn gộp (F#194): tick “Gộp” on several rows, then one order, one payment, one van (engine order_stock `lines`).
   const n=list.filter(p=>picks[p.id]).length;

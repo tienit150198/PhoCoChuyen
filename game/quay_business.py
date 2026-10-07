@@ -141,13 +141,35 @@ def _schedule(st, at):
         b['arrivals'] = _fresh(at, _intervals(st))
 
 
+# "Giữ lại cho ca của tôi" at a counter: an optional floor per dish, business['keep'] = {dish: 1..KEEP_MAX}. Staff
+# walk-in sales stop at it; the owner's own shift and deliveries still sell every portion. Absent = no floor (as before);
+# 1.9.17 and older accept the extra key (validate checks only the keys it knows) and leave it alone.
+KEEP_MAX = 999
+
+
+def keep(st, dish):
+    k = st.get('business', {}).get('keep')
+    return k.get(dish, 0) if k else 0
+
+
+def _for_staff(st, dish):
+    """Portions the staff may sell: the stock above the owner's floor."""
+    return st['business']['stock'].get(dish, 0) - keep(st, dish)
+
+
+def kept(st):
+    """[[dish, portions held back]] for each floor that stops the staff now (some stock left, none above it)."""
+    b = st.get('business', {})
+    return [[d, b['stock'].get(d, 0)] for d, n in sorted((b.get('keep') or {}).items()) if 0 < b['stock'].get(d, 0) <= n]
+
+
 def status(st):
     b = st.get('business', {})
     if b.get('paused') or st.get('due', 0) or st.get('economy', {}).get('paused'):
         return 'paused'
     if not st['staff']:
         return 'no_staff'
-    if not any(b.get('stock', {}).get(d, 0) for d in qs.menu(st)['on']):
+    if not any(b.get('stock', {}).get(d, 0) - keep(st, d) > 0 for d in qs.menu(st)['on']):
         return 'out_of_stock'
     cash = st['fund'] + st['till']
     if cash < 1 or b.get('halted', -1) == cash:
@@ -342,7 +364,7 @@ def settle(s, now=None):
         if not st['staff'] and manual:
             _charge(st, at - cursor)
         while status(st) == 'running':
-            arrivals = [(max(cursor, when), d) for d, when in b['arrivals'].items() if b['stock'].get(d, 0)]
+            arrivals = [(max(cursor, when), d) for d, when in b['arrivals'].items() if _for_staff(st, d) > 0]
             when, dish = min(arrivals)
             end = min(when, at)
             if not _charge(st, end - cursor):
@@ -386,6 +408,17 @@ def action(s, st, name, p):
                 b['arrivals'] = _fresh(b['cursor'], _intervals(st))
                 qs.reopen_queue(st)
         return dict(message='Đã đóng quầy, xử lý nốt đơn đã nhận.' if p['on'] else 'Đã mở quầy, bắt đầu nhận khách mới.')
+    if name == 'jr_quay_keep':
+        need(set(p) <= {'stall', 'dish', 'qty'} and p.get('dish') in qs.DISH[st['trade']], 'Chọn một món của quầy.')
+        need(type(p.get('qty')) is int and 0 <= p['qty'] <= KEEP_MAX, f'Số giữ lại từ 0 đến {KEEP_MAX}.')
+        k = b.setdefault('keep', {})
+        if p['qty']:
+            k[p['dish']] = p['qty']
+        else:
+            k.pop(p['dish'], None)
+        if not k:
+            b.pop('keep')
+        return dict(message=f'🔒 Giữ {p["qty"]} cho ca của bạn.' if p['qty'] else 'Đã bỏ giữ: nhân viên bán tiếp.')
     if name == 'jr_quay_protection':
         need(set(p) <= {'stall', 'level'} and isinstance(p.get('level'), str) and p['level'] in market.PLANS, 'Gói bảo vệ không hợp lệ.')
         b['protection']['level'] = p['level']
@@ -437,7 +470,7 @@ def income(st, at):
     now = market.snapshot(at)
     hour = run(hour_ms, now['demand_factor'] * 100 * hour_ms)
     day = run(market._CYCLE_MS, market._CYCLE_WORK)
-    stock = sum(st['business']['stock'].get(d, 0) for d in iv)
+    stock = sum(max(0, _for_staff(st, d)) for d in iv)
     return dict(hour=hour, day=day, market=now['label'], stock_hours=round(stock / hour['sold'], 1) if hour['sold'] else None)
 
 
@@ -449,7 +482,11 @@ def public(st):
     code = status(st)
     reasons = dict(running='Nhân viên đang bán', paused='Quầy tạm dừng', no_staff='Chủ tự phục vụ hoặc thuê nhân viên', out_of_stock='Hết hàng trong menu đang bán', no_funds='Hết vốn trả lương và chi phí')
     rows = qs.DISH[st['trade']]
-    next_at = min((v for d, v in b['arrivals'].items() if b['stock'].get(d, 0)), default=0)
+    held = kept(st)
+    if code == 'out_of_stock' and held:
+        reasons['out_of_stock'] = '🔒 Giữ ' + ', '.join(f'{n} {rows[d]["name"].lower()}' for d, n in held[:3]) + \
+            (f', +{len(held) - 3} món' if len(held) > 3 else '') + ' cho ca của bạn'
+    next_at = min((v for d, v in b['arrivals'].items() if _for_staff(st, d) > 0), default=0)
     visitors=public_visits(st)
     plans = _protection_plans(st)
     if not b['paused'] and visit_due(st,b['cursor']+1):
@@ -469,7 +506,8 @@ def public(st):
         rates=rates, income_tax_percent=market.INCOME_TAX_PERCENT,
         bonus_percent=BONUS_PERCENT, staff_bonus_percent=STAFF_BONUS_PERCENT,
         visitor_orders=visitors,
-        stock_total=sum(b['stock'].values()), stock=[dict(id=d, qty=b['stock'].get(d, 0), cost=unit_cost(st, d), price=qs.price(st, d)) for d in rows],
+        stock_total=sum(b['stock'].values()), stock=[dict(id=d, qty=b['stock'].get(d, 0), cost=unit_cost(st, d), price=qs.price(st, d), keep=keep(st, d)) for d in rows],
+        kept=held,
         period_seconds=PERIOD, wage=sum(staff_wage(st, e) for e in st['staff']), revenue=b['revenue'], sold=b['sold'],
         speed_factor=b.get('speed_factor', 1),
         profit_bonus=b.get('profit_boost', {}).get('total', 0),
@@ -500,6 +538,8 @@ def validate(st, need, integer):
     need(isinstance(b['signature'], str) and len(b['signature']) <= 10000)
     need(isinstance(b['expenses'], dict) and set(LEGACY_EXPENSES) <= set(b['expenses']) <= set(EXPENSES) and all(integer(v, 0, 10**16) for v in b['expenses'].values()))
     need(isinstance(b['carry'], dict) and {'wages', 'rent', 'power', 'online', 'tax'} <= set(b['carry']) <= {'wages', 'rent', 'power', 'online', 'tax', 'environment', 'protection'} and all(integer(v, 0, 99 if k in ('online', 'tax') else DEN - 1) for k, v in b['carry'].items()))
+    if 'keep' in b:
+        need(isinstance(b['keep'], dict) and set(b['keep']) <= set(qs.DISH[st['trade']]) and all(integer(v, 0, KEEP_MAX) for v in b['keep'].values()))
     if 'market_epoch' in b:
         need(integer(b['market_epoch'], 0, 10**12))
     if 'closed_at' in b:

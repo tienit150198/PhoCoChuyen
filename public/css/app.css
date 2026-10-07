@@ -2086,6 +2086,10 @@ html.reduce-motion *,html.reduce-motion *::before,html.reduce-motion *::after{an
 .inv-stepper{display:inline-grid;grid-template-columns:44px 76px 44px;gap:6px;align-items:center}
 .inv-stepper .btn{min-width:44px;min-height:44px;padding:0;font-size:var(--fs-4)}
 .inv-stepper .input{text-align:center;font-weight:800;font-size:1.1rem;font-variant-numeric:tabular-nums;padding-inline:6px}
+/* 🔒 Giữ cho ca (keep-ui.js): one row, the words left and the stepper right; the number reads like the order stepper */
+.keep-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--sp-2);margin-top:var(--sp-2);font-size:var(--fs-2);color:var(--ink-2)}
+.keep-step output{text-align:center;font-weight:800;font-size:var(--fs-3);font-variant-numeric:tabular-nums;color:var(--ink)}
+.inv-flag.keep{background:var(--surface-2);color:var(--ink-2)}
 .inv-total{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0 6px;padding-top:12px;border-top:1px dashed var(--line-strong)}
 .inv-total strong{font-size:1.1rem}
 .inv-total .btn{margin-left:auto}

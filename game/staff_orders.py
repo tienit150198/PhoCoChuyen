@@ -108,8 +108,12 @@ class _Menu:
                 return
 
 
-def _available(c, career, item):
-    """Units staff may take now (what the shop's own order checks would accept)."""
+def _available(c, career, item, floor=True):
+    """Units staff may take now (what the shop's own order checks would accept). `floor`: less the owner's
+    "giữ lại cho ca" reserve (workplace_business.keep), so the menu and its weights never reach into it."""
+    if floor:
+        from .workplace_business import keep
+        return _available(c, career, item, floor=False) - keep(c, item)
     if career in ('mother_baby', 'pharmacy'):
         from .workplace_business import _reserved
         n = c['stock'].get(item, 0) - _reserved(c, item)
@@ -365,13 +369,15 @@ def why(c: dict, career: str, cash: int) -> str:
                 'Nhập thêm hàng (đơn lớn hơn sẽ có lãi) hoặc xem lại Bảng giá.')
     dry = _Dry(c, career)
     MENUS[career](dry)
-    from .workplace_business import _item_names
+    from .workplace_business import _item_names, _kept, keep_text
     names = _item_names(career)
-    gone = [names.get(i, i) for i in dry.used if _available(c, career, i) <= 0]
+    gone = [names.get(i, i) for i in dry.used if _available(c, career, i, floor=False) <= 0]
+    held = _kept(c, career)
+    kept = keep_text(held) + ' ' if held else ''
     if not gone:
-        return 'Kệ hết hàng nhân viên bán được. Nhập thêm hàng để đội làm tiếp.'
+        return kept + ('Bỏ giữ hoặc nhập thêm để đội bán tiếp.' if kept else 'Kệ hết hàng nhân viên bán được. Nhập thêm hàng để đội làm tiếp.')
     more = f' và {len(gone) - 4} món khác' if len(gone) > 4 else ''
-    return 'Đội đang chờ hàng: hết ' + ', '.join(gone[:4]) + more + '. Nhập thêm để đội làm tiếp.'
+    return kept + 'Đội đang chờ hàng: hết ' + ', '.join(gone[:4]) + more + '. Nhập thêm để đội làm tiếp.'
 
 
 class _Dry(_Menu):

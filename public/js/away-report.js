@@ -5,6 +5,7 @@
  * (workplace_business business_used, so expiry or a theft is never counted as a sale); a counter's from its stock,
  * which only sales lower. A look shorter than GAP after the last one is not an absence. */
 import {escapeHTML as esc} from './icons.js';
+import {keptLine} from './keep-ui.js';
 
 const fmt=n=>Number(n||0).toLocaleString('vi-VN');
 const PREFIX='mnl.away.';
@@ -24,7 +25,7 @@ const strip=live=>({o:live.o,n:live.n,r:live.r,k:live.k,u:live.u});
 
 /** Track one business and return its away report (or null). `live`: {o: orders or items sold so far, n: profit so far,
  * r: revenue so far, k: {name: running cost}, u: {item: running count}, names: {item: name}, drop: u is stock (a sale
- * lowers it), busy: the server is still catching up}. Called on every render where the business shows; a render in a
+ * lowers it), busy: the server is still catching up, kept: [[item, name, n]] the staff left for the owner's shift}. Called on every render where the business shows; a render in a
  * hidden tab is no look. A look GAP after this tab's last one (another workplace meanwhile, the phone in a pocket) is a
  * return, measured from the copy saved at that last look. */
 export function awayReport(key,live,now=Date.now()){
@@ -51,7 +52,7 @@ function build(key,m){
       .filter(([,q])=>q>0).sort((x,y)=>y[1]-x[1]);
   }
   const costs={};for(const k of Object.keys(b.k||{}))costs[k]=(b.k[k]||0)-((a.k||{})[k]||0);
-  return {key,orders,profit:(b.n||0)-(a.n||0),revenue:(b.r||0)-(a.r||0),costs,items,since:a.t||0,now:m.at};
+  return {key,orders,profit:(b.n||0)-(a.n||0),revenue:(b.r||0)-(a.r||0),costs,items,since:a.t||0,now:m.at,kept:b.kept||null};
 }
 
 const words=s=>s.trim().split(/\s+/).filter(Boolean).length;
@@ -84,21 +85,23 @@ export function awayCard(rep,{unit='đơn',lines=[],where='quỹ nghề',extra='
   const items=(rep.items||[]).map(([name,q])=>`<li><b>${fmt(q)}</b> × ${esc(name)}</li>`).join('');
   const rows=[['Thu',`${fmt(rep.revenue)} xu`],...lines,[rep.profit<0?'Lỗ':'Lãi',`${fmt(Math.abs(rep.profit))} xu`]]
     .map(([k,v])=>`<div><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('');
-  return `${STYLES}<section class="aw-card" data-testid="away-report" role="status"><p class="aw-line">${esc(awayLine(rep,unit))}</p>
+  // 🔒 the owner's floor stopped the staff (B4 part 2): "Giữ lại 5 ly giấy cho bạn", its own short line.
+  const kept=keptLine(rep.kept);
+  return `${STYLES}<section class="aw-card" data-testid="away-report" role="status"><p class="aw-line">${esc(awayLine(rep,unit))}</p>${kept?`<p class="aw-keep">${esc(kept)}</p>`:''}
     <details class="aw-more"><summary>Xem chi tiết</summary>
       <p class="aw-note">${esc(span(rep))}. Hàng không hết hạn: nhân viên đã bán, tiền vào ${esc(where)}.</p>
       ${items?`<ul class="aw-items">${items}</ul>`:''}<div class="aw-money">${rows}</div>${extra}
     </details><button type="button" class="btn ghost small aw-ok" data-away-seen="${esc(rep.key)}">Đã xem</button></section>`;
 }
 
-const STYLES=`<style>.aw-card{display:grid;gap:6px;margin:0 0 12px;padding:10px 12px;border:1px solid var(--line,#e5d9c6);border-radius:14px;background:#fbf4e6;color:#4d3d2c;font-size:.82rem}.aw-line{margin:0;line-height:1.5;font-weight:600}.aw-more summary{min-height:36px;display:flex;align-items:center;cursor:pointer;color:#7c644e}.aw-note{margin:4px 0;line-height:1.5;color:#6c5944}.aw-items{margin:4px 0;padding-left:18px;line-height:1.6}.aw-money{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:6px 0}.aw-money>div{display:grid;gap:2px;padding:6px 8px;border-radius:10px;background:#fff8ec}.aw-money small{font-size:.68rem;color:#7c644e}.aw-ok{justify-self:end;min-height:40px}</style>`;
+const STYLES=`<style>.aw-card{display:grid;gap:6px;margin:0 0 12px;padding:10px 12px;border:1px solid var(--line,#e5d9c6);border-radius:14px;background:#fbf4e6;color:#4d3d2c;font-size:.82rem}.aw-line{margin:0;line-height:1.5;font-weight:600}.aw-keep{margin:0;line-height:1.4;color:#6c5944}.aw-more summary{min-height:36px;display:flex;align-items:center;cursor:pointer;color:#7c644e}.aw-note{margin:4px 0;line-height:1.5;color:#6c5944}.aw-items{margin:4px 0;padding-left:18px;line-height:1.6}.aw-money{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:6px 0}.aw-money>div{display:grid;gap:2px;padding:6px 8px;border-radius:10px;background:#fff8ec}.aw-money small{font-size:.68rem;color:#7c644e}.aw-ok{justify-self:end;min-height:40px}</style>`;
 
 /* ---- the two places ---- */
 /** A workplace (game/workplace_business.py public): orders, profit with the 40% bonus, and the items the staff took. */
 export function workplaceAway(c,cid,owner='',now=Date.now()){
   const b=c?.ops?.business;if(!b||!(c.ops.staff||[]).some(e=>e.status==='hired'))return null;
   const u={},names={};for(const [id,name,q] of Array.isArray(b.used)?b.used:[]){u[id]=q;names[id]=name;}
-  return awayReport(`wp.${owner}.${cid}`,{o:b.served,n:b.net,r:b.revenue,k:{w:b.wages,m:b.materials,g:b.goods,p:b.profit_bonus},u,names,busy:!!b.catching_up},now);
+  return awayReport(`wp.${owner}.${cid}`,{o:b.served,n:b.net,r:b.revenue,k:{w:b.wages,m:b.materials,g:b.goods,p:b.profit_bonus},u,names,busy:!!b.catching_up,kept:Array.isArray(b.kept)?b.kept:null},now);
 }
 export function workplaceAwayCard(rep){
   if(!rep)return '';const k=rep.costs;
@@ -110,7 +113,8 @@ export function stallAway(st,owner='',nameOf=id=>id,now=Date.now()){
   const b=st?.business;if(!b||!(st.staff||[]).length)return null;
   const u={},names={};for(const x of Array.isArray(b.stock)?b.stock:[]){u[x.id]=x.qty;names[x.id]=nameOf(x.id);}
   const spent=Object.values(b.expenses||{}).reduce((a,v)=>a+(Number(v)||0),0);
-  return awayReport(`qy.${owner}.${st.id}`,{o:b.sold,n:b.net,r:b.revenue,k:{e:spent},u,names,drop:true},now);
+  const kept=Array.isArray(b.kept)?b.kept.map(([id,n])=>[id,nameOf(id),n]):null;
+  return awayReport(`qy.${owner}.${st.id}`,{o:b.sold,n:b.net,r:b.revenue,k:{e:spent},u,names,drop:true,kept},now);
 }
 export function stallAwayCard(rep){
   return rep?awayCard(rep,{unit:'món',where:'két quầy',lines:[['Chi phí quầy',`${fmt(rep.costs.e)} xu`]]}):'';

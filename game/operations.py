@@ -731,6 +731,9 @@ def action(s:dict,c:dict,career:str,name:str,p:dict) -> dict:
         else:
             need(i['practice'] or i['status']=='resolved','Sự cố thật cần kiểm kết quả trước khi cất.');o['incident']=None;result['message']='Đã cất tình huống nhân viên.'
         eng.log(s,c,'staff_practice' if i['practice'] else 'staff_incident',result['message'],ref=i['id'])
+    elif name=='keep':   # "Giữ lại cho ca của tôi": the staff's floor for one item (workplace_business.set_keep)
+        from .workplace_business import set_keep
+        result.update(set_keep(c,career,p))
     else:raise eng.GameError('Thao tác Sổ tiệm chưa được hỗ trợ.','unknown_action')
     from . import workplace_business
     workplace_business.refresh(c,career)

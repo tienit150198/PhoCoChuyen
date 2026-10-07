@@ -80,6 +80,7 @@ All names below are prefixed `ops_`. `career` is required and stays isolated per
 | `ops_move_property` | `{tier:cozy/sunny/garden, confirm:true}`; only while closed |
 | `ops_buy_security` | `{item:bell/camera/lock/light, confirm:true}` |
 | `ops_insurance_toggle` | `{enabled:boolean, confirm:true}` |
+| `ops_keep` | `{item, qty:0..999}`; "Giữ lại cho ca": staff orders stop at `qty` of that item (0 removes it). Saved in optional `ops.business_keep`. A counter's twin is `jr_quay_keep {stall, dish, qty}` (`business.keep`) |
 | `ops_case_demo` | `{kind:misplaced/unpaid/theft/snatch}`; rehearsal only |
 | `ops_case_read` | `{case?, evidence:inventory/witness/camera}` |
 | `ops_case_conclude` | `{case?, finding:misplaced/forgot_payment/theft}` |
