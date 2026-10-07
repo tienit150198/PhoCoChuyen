@@ -39,6 +39,7 @@ from . import reno as rn   # 🛠️ Sửa và trang trí nhà (game/reno.py)
 from . import deco as dc   # 🪴 Bày trí phòng (game/deco.py)
 from . import garage as gr   # 🚗 Xe & phương tiện (game/garage.py)
 from . import gadgets as gd   # 📱 Cửa hàng điện thoại (game/gadgets.py)
+from . import pets as pt   # 🐾 Nuôi thú cưng (game/pets.py)
 from . import spend as sp   # ☕ Đi quán, spa, rạp, 🙏 công đức, 🎨 phong cách tuần (game/spend.py)
 from . import upkeep as up   # 🧾 Hóa đơn tháng: phí giữ xe, bảo trì nhà (game/upkeep.py)
 from . import rui   # 🛡️ Rủi ro & bảo hiểm (game/rui.py)
@@ -483,6 +484,7 @@ def upgrade(j: dict) -> None:
     gr.upgrade(j)   # 🚗
     gd.upgrade(j)   # 📱
     sp.upgrade(j)   # ☕
+    pt.upgrade(j)   # 🐾
     if j.get('story'):
         for n in range(1, min(int(j.get('chapter', 1)), LAST) + 1):
             _unlock_chapter(j, n)
@@ -855,6 +857,8 @@ def action(s: dict, career: str | None, name: str, p: dict) -> tuple[dict, dict]
         result.update(gd.action(s, name, p))
     elif name.startswith('jr_spend_'):
         result.update(sp.action(s, name, p))
+    elif name.startswith('jr_pet_'):
+        result.update(pt.action(s, name, p))
     elif name.startswith('jr_needs_'):
         result.update(nd.action(s, name, p))
     elif name.startswith('jr_chua_'):
@@ -950,7 +954,7 @@ def public(s: dict) -> dict:
         suggested=suggested(s, ctx), tasks=ctx['tasks'], worked=ctx['places'],
         stats={k: j['stats'].get(k, 0) for k in ('withdrawn', 'invested', 'living_paid', 'upkeep_paid', 'salary')},
         bank=bk.public(s), home=hs.public(s), household=hh.public(s), outings=outings_.public(s), leisure=ls.public(s), courier=ship.public(s), reno=rn.public(s), deco=dc.public(s),
-        garage=gr.public(s), gadgets=gd.public(s), spend=sp.public(s), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
+        garage=gr.public(s), gadgets=gd.public(s), spend=sp.public(s), pets=pt.public(s), wed_gift=wl.gift_public(j), **ct.public(s),   # wed_gift False: the client may claim it at a party
         **({'quay': qy.public(s)} if qy.visible(s) else {}))   # 🏪 only once a save reaches it (state size)
 
 
@@ -976,7 +980,7 @@ def content() -> dict:
         skills=_emp().STRENGTHS, levels=LEVEL_NAMES, reserve=RESERVE, reopen_fee=REOPEN_FEE, start_wallet=START_WALLET,
         unlock_chapter={cid: n for n, ids in CH_UNLOCKS.items() for cid in ids if cid in CAREERS}, certs=ct.content(),
         wardrobe=wd.content(), homes=hs.catalogue(), reno=rn.catalogue(), deco=dc.catalogue(),
-        garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content())
+        garage=gr.catalogue(), gadgets=gd.catalogue(), spend=sp.catalogue(), pets=pt.catalogue(), rui=rui.catalogue(), quay=qy.catalogue(), outings=outings_.content(), leisure=ls.content())
 
 
 def validate(s: dict) -> None:
@@ -1061,6 +1065,7 @@ def validate(s: dict) -> None:
     gr.validate(s)   # 🚗 journey['garage'] (optional)
     gd.validate(s)   # 📱 journey['gadgets'] (optional)
     sp.validate(s)   # ☕ journey['spend'] (optional)
+    pt.validate(s)   # 🐾 journey['pets'] (optional)
     up.validate(s)   # 🧾 journey['upk'] (optional)
     rui.validate(s)   # 🛡️ journey['rui'] (optional)
     vang.validate(s)   # 💰 journey['vang'] (optional)

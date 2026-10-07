@@ -180,6 +180,12 @@ LOOK_DEFAULTS = {
 ORG_GRADES = {'cand': ('binh_nhi', 'binh_nhat', 'ha_si', 'trung_si', 'thuong_si', 'thieu_uy', 'trung_uy', 'thuong_uy', 'dai_uy',
                        'thieu_ta', 'trung_ta', 'thuong_ta', 'dai_ta')}
 
+# 🐾 The pet walking beside a stroller (game/pets_content.py breed ids -> number of coats; public/js/v4/pet-art.js draws
+# them): `pt` = {b, c, n, a} in walk_in / wed_in, apart from the look (older services ignore it; a breed this list lacks,
+# or an accessory id PET_ACCS lacks, simply is not shown).
+PET_BREEDS = {'cho_ta': 4, 'poodle': 4, 'corgi': 2, 'shiba': 3, 'pom': 3, 'chihuahua': 3, 'husky': 3, 'golden': 2, 'alaska': 2, 'phu_quoc': 3, 'bac_ha': 3, 'pug': 2, 'samoyed': 2, 'lap_xuong': 3, 'meo_muop': 2, 'tam_the': 2, 'meo_mun': 2, 'aln': 3, 'ald': 3, 'ba_tu': 3, 'scottish': 3, 'munchkin': 3, 'ragdoll': 2, 'bengal': 2, 'sphynx': 2, 'maine_coon': 3, 'xiem': 2}
+PET_ACCS = frozenset(['ao_dai', 'ao_khung_long', 'ao_len', 'ao_mua', 'ao_vn', 'mu_ech', 'no_cham', 'no_hong', 'non_la', 'vay_cong_chua', 'vong_chuong', 'vong_da', 'vong_ngoc', 'vong_vang', 'vuong_mien'])
+
 # Danh hiệu shown under the name tag (game/journey.py TITLES: id -> emoji + name). A title the game adds later
 # and this list does not have yet simply shows no title.
 TITLES = {

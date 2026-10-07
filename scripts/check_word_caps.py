@@ -13,7 +13,7 @@ warns in the console of a dev build). Fails when a migrated screen is over its c
 Other screens are listed with their counts but do not fail (--all shows every one).
 
   --life: the life sheets instead (story-mode player, wave 5), each ≤ 30 (LIFE): HUD, town map, house, bank (before and
-  after opening an account), fair (gift card, then the gate), stall, wardrobe, spending. Karaoke needs the live service
+  after opening an account), fair (gift card, then the gate), stall, wardrobe, spending, pets. Karaoke needs the live service
   and is measured by hand (15 words at 1.9.8).
 
   TEST_DATABASE_URL=postgresql://… python scripts/check_word_caps.py [--careers a,b] [--engine chromium|webkit]
@@ -74,7 +74,7 @@ DEFAULT += tuple(c for c in WAVE5 if c not in DEFAULT)
 
 # Life sheets (cap 30, docs/UI_KIT.md): [name, rail action, rail group]; HUD is the home screen with no sheet open.
 LIFE = (('HUD', '', ''), ('town', 'jrTown', 'pho'), ('house', 'house', 'tien'), ('bank', 'bank', 'tien'), ('fair', 'fair', 'pho'),
-        ('stall', 'quay', 'tien'), ('wardrobe', 'jrWardrobe', 'minh'), ('spend', 'spend', 'pho'))
+        ('stall', 'quay', 'tien'), ('wardrobe', 'jrWardrobe', 'minh'), ('spend', 'spend', 'pho'), ('pets', 'pets', 'pho'))
 LIFE_CAP = 30
 # One step further on a life sheet: the fair's gift card closed, the bank's account opened (its confirm accepted).
 LIFE_DEEP = r"""()=>{const b=document.querySelector('dialog[open] [data-fh="giftok"]')||[...document.querySelectorAll('dialog[open] button')].find(b=>/Mở tài khoản miễn phí/.test(b.innerText));
