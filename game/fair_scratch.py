@@ -10,8 +10,9 @@ its prize in exactly 3 boxes and every other amount at most twice, a losing one 
 rule on the ticket, "3 ô giống nhau trúng số đó", always reads the same as the result). The client only scratches it
 open; nothing it sends decides anything.
 
-Owner 06/10: about 65% of tickets win at every price (game.fair WIN_P, with its streak
-rules: a sure win after four losses, a cool-off to 55% after four wins). Prize weights stay at
+Owner 07/10: about 50% of tickets win at every price in normal play (game.fair WIN_P, with its
+cool-off to 45% after four wins and its spam decay to 40% for a long run of tickets; no sure
+win after losses any more). Prize weights stay at
 mean 1.59x conditional on a prize, including refunds; winning does not always mean
 net profit. Already purchased tickets retain their layout and payment.
 """
@@ -26,7 +27,7 @@ MATCH = 3                       # 3 boxes of the same amount: that amount is won
 PRIZES = ((1, 675), (2, 230), (3, 60), (5, 25), (10, 8), (20, 1), (50, 1))
 MULTS = tuple(m for m, _ in PRIZES)
 # Historical API retained at the current fixed base probability.
-P_HI, P_LO = .65, .65
+P_HI, P_LO = .50, .50   # game.fair.WIN_P (07/10)
 RUN_STEP = 0
 
 

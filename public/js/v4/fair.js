@@ -154,7 +154,7 @@ const animating=()=>S.busy||S.tab==='dt'&&!!KN?.busy()||S.tab==='xs'&&!!XS?.busy
 
 async function send(action,payload={}){
   const {api}=S.env;
-  try{const result=await api.command(action,payload);if(result?.fair?.wealth_raid)S.wealthRaid=result.fair.wealth_raid;return result;}
+  try{const result=await api.command(action,payload);if(result?.fair?.wealth_raid)S.wealthRaid=result.fair.wealth_raid;if(result?.fair?.loc)S.loc=result.fair.loc;return result;}
   catch(e){S.err=e.code||e.data?.code||'';S.flash=e.quiet?null:{text:e.message||'Chưa làm được. Thử lại nhé.',kind:'bad'};return null;}
 }
 
@@ -273,10 +273,21 @@ function page(){
   const views={home:homeView,oaq:oaqView,ring:ringView,bc:bcView,lt:lotoView,xd:xdView,board:boardView,loan:loanView,food:foodView,dt:()=>F().knife?kn().view():homeView(),xs:()=>F().scratch?xs().view():homeView(),pb:()=>F().photo?pb().view():homeView()};
   const body=(views[S.tab]||homeView)(),luck=['bc','xd'].includes(S.tab)||S.tab==='lt'&&!G();   // the newer lô tô: only the wallet limits it
   const gifting=!!S.gift&&clean();   // the gift card is the whole screen until "Vào hội" (clean layout: nothing else behind it)
-  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open&&!gifting?strip():''}${f.open?nav():''}${wealthRaidCard()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab):''}${body}${gifting?'':note()}</div>`;
+  return head()+giftPop()+`<div class="sheet-body fh-body">${f.open&&!gifting?strip():''}${f.open?nav():''}${wealthRaidCard()}${locCard()}${flash()}${f.open&&luck&&f.today?.done?enoughCard():''}${f.open&&luck&&!f.today?.done?luckLine():''}${f.open?xuLine(S.tab)+coldLine(S.tab):''}${body}${gifting?'':note()}</div>`;
+}
+// 🥶 a long run of one luck stall cools its luck (server: fair.cold); honest about it, in that stall only
+const coldLine=tab=>{const c=F().cold;if(!c||c.game!==tab)return '';
+  return `<p class="fh-cold" role="note">🥶 Vận đang nguội vì chơi liền một trò: ván tới khoảng ${c.pct}% thắng. ${c.switch?`Cần thêm ${c.switch} ván ≥ ${xu(c.min||20)} ở trò khác (bầu cua, chiếu trong, lô tô, vé cào)`:'Đổi trò khác'} hoặc nghỉ ${c.gap} phút là vận ấm lại; ném vòng, ô ăn quan, phóng dao không tính.</p>`;};
+// 🍀 Lộc trời cho: shown once the stall's own result has played out
+function locCard(){
+  const r=S.loc;if(!r||animating())return '';
+  return `<section class="fh-card fh-loc" role="status" data-fh-key="loc"><h3>🍀 Lộc trời cho!</h3><p>Ván này ăn <b>×${r.mult}</b> tiền cược: <b>+${xu(r.won)}</b>. Khoản lộc đã ghi trong Sổ ví.</p>${btn('Nhận lộc','locok',{},'primary')}</section>`;
 }
 function wealthRaidCard(){
   const r=S.wealthRaid;if(!r)return '';
+  if(r.audit)return `<section class="fh-card fh-raid" role="alert" data-fh-key="wealth-raid"><h3>🚨 Công an hỏi nguồn tài sản</h3>${r.say?say({name:'Công an phường',emoji:'👮'},r.say):''}
+    <div class="fh-raid-bill"><span>Tiền lời mới ở hội chợ</span><b>${xu(r.gain)}</b><span>Thu ${r.pct}%</span><b>−${xu(r.amount)}</b>${r.bank?`<span>Từ ví</span><b>−${xu(r.cash)}</b><span>Từ tài khoản ngân hàng</span><b>−${xu(r.bank)}</b>`:''}</div>
+    <p>${esc(r.message)}</p><p>Ví còn <b>${xu(r.wallet)}</b>. Khoản thu đã được ghi trong Sổ ví.</p>${btn('Dạ, em hiểu','wealthraidok',{},'primary')}</section>`;
   return `<section class="fh-card fh-raid" role="alert" data-fh-key="wealth-raid"><h3>🚨 Công an kiểm tra</h3><p>${esc(r.message)}</p><p>Ví còn <b>${xu(r.wallet)}</b>. Khoản thu đã được ghi trong Sổ ví.</p>${btn('Đã hiểu','wealthraidok',{},'primary')}</section>`;
 }
 function closedCard(gone){
@@ -302,7 +313,8 @@ function gateList(){
       <button type="button" class="fh-game" data-fh="tab" data-tab="ring" data-fh-key="g-ring"><span class="fh-gico">${MINI_BOTTLES}</span><span class="grow"><b>Ném vòng cổ chai</b><small>${r.nocap?`Mỗi vòng trúng +${r.ring_hit} xu, trúng cả ${r.rings||5} vòng thêm ${r.ring_all} xu`:`Trúng mỗi chai +${r.ring_hit||2} xu, đủ ${r.rings||5} chai thêm ${r.ring_all||5} xu`}</small>${meter(e.ring)}</span></button>
     </div>
     <div class="fh-sec"><h3>🎲 Thử vận may</h3><span class="fh-tag">Cược nhỏ bằng xu</span></div>
-    ${r.win_pct?`<p class="fh-rule">🍀 Chiếu trong, lô tô, vé cào, ném vòng: khoảng ${r.win_pct} ván trên 100 là thắng. Thua liền 4 ván thì ván sau chắc thắng; thắng liền 4 ván thì vận hơi nguội, còn ${r.cool_pct}%.</p>`:''}
+    ${r.luck_pct?`<p class="fh-rule">🍀 Chiếu trong, lô tô, vé cào, ném vòng: khoảng ${r.luck_pct} ván trên 100 là thắng; thắng liền 4 ván thì vận hơi nguội, còn ${r.cooled_pct}%. Chơi liền một trò quá ${r.run_free} ván thì vận nguội dần, thấp nhất ${r.floor_pct}%; ${r.run_switch?`chơi ${r.run_switch} ván trò may rủi khác (bầu cua, chiếu trong, lô tô, vé cào), mỗi ván cược ít nhất ${xu(r.run_switch_min||20)} và ¼ tiền cược gần nhất ở trò đang nguội,`:'đổi trò'} hoặc nghỉ ${r.run_gap_min} phút là ấm lại. Bầu cua xúc xắc thật nên không tính vụ này.</p>
+    <p class="fh-rule">🚨 Lời ở hội chợ trên ${xu(r.audit_from)} thì công an có thể ghé hỏi nguồn tài sản, thu ${r.audit_pct}% phần lời mới (lấy ví trước, thiếu thì lấy tài khoản ngân hàng).</p>`:''}
     <div class="fh-luck">
       ${luck('bc',FACE_ART.cua,'Bầu cua',`Đặt 1–${r.bc_max||20} xu một ván`)}
       ${f.knife?luck('dt','🗡️','Phóng dao',`Đặt ${Math.min(...f.knife.stakes)}–${Math.max(...f.knife.stakes)} xu, qua màn nhận thưởng hoặc liều chơi tiếp`):''}
@@ -521,7 +533,7 @@ function bcView(){
     ${stop?'<p class="fh-rule"><b>Hôm nay chơi đủ rồi, mai ghé lắc tiếp nha.</b></p>':''}<div class="fh-go"><span>Đặt <b>${total}</b>/${max} xu</span>${btn(rolling?'Đang lắc…':'🥣 Lắc!','roll',{},'primary big',total&&!rolling&&!stop&&!why?' data-fh-key="roll"':' disabled data-fh-key="roll"')}</div>
     ${why&&!stop&&!rolling?`<p class="fh-why">${esc(why)}: bớt tiền đặt nha (Gom lại rồi đặt ít hơn).</p>`:''}
     <p class="fh-rule">Ra mấy con trùng mặt đặt thì ăn bấy nhiêu lần tiền cược, kèm tiền vốn. Ba con giống nhau (bão) ăn ${r.bao||10} lần.</p>
-    <p class="fh-rule">🎲 Ba con xúc xắc lăn ngẫu nhiên thật: mỗi mặt 1/6, đặt mặt nào cũng vậy.</p>
+    <p class="fh-rule">🎲 Ba con xúc xắc lăn ngẫu nhiên thật: mỗi mặt 1/6, đặt mặt nào cũng vậy. Lắc liền bao nhiêu ván cũng không bị vận nguội.</p>
   </section>`;
 }
 function bcResult(l){
@@ -1114,6 +1126,7 @@ async function onClick(op,data){
     case'shakexd':shakeXd();return;
     case'raidok':x.raid=null;S.tab=data.tab||'bc';render();S.dlg.scrollTop=0;if(S.tab==='lt')resumeLoto();return;
     case'wealthraidok':S.wealthRaid=null;render();return;
+    case'locok':S.loc=null;render();return;
     case'buy':buy();return;
     case'mark':mark(Number(data.c)||0,Number(data.n));return;
     case'kinh':kinh();return;

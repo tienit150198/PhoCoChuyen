@@ -574,8 +574,11 @@ class LotoShow(FairBase):
                 ev = gain / (N * n * 5)
                 expected = probability * fh.prize_of(mode, 5, n) / (n * 5) - 1
                 self.assertAlmostEqual(ev, expected, delta=.20, msg=(mode, n, ev))
-        for k in fh.LOTO_MODES:   # even the cooled-off floor favors timely, correctly marked Kinh claims
-            self.assertTrue(1.05 < fh.WIN_P_LOW * fh.LOTO_PAY[k] / 10 < 1.30, k)
+        for k in fh.LOTO_MODES:   # 07/10: about even money; timely Kinh claims at most +5% a xu (no farming)
+            self.assertTrue(1.0 <= fh.WIN_P * fh.LOTO_PAY[k] / 10 <= 1.05 + 1e-9, k)
+            for tier, price in fh.LOTO_TIERS.items():
+                for n in range(1, fh.LOTO_CARDS + 1):
+                    self.assertTrue(0 <= fh.WIN_P * fh.prize_of(k, price, n) / (n * price) - 1 <= .05 + 1e-9, (k, tier, n))
         self.assertTrue(.88 < cl / 600 < 1.05, cl / 600)
         self.assertTrue(.8 < cot / 600 < 1.05, cot / 600)
 
@@ -1170,10 +1173,10 @@ class Odds(FairBase):
         ps = [fh.luck_p(j, f, 'xd', OPEN + i) for i in range(40)]
         self.assertEqual(ps[:fh.RUN_FREE], [base] * fh.RUN_FREE)
         self.assertAlmostEqual(ps[fh.RUN_FREE], base - fh.RUN_STEP)
-        self.assertEqual(ps[-1], base)                                   # 06/10: no decay in a long run
+        self.assertEqual(ps[-1], fh.XD_FLOOR)                            # 07/10: a long run cools to the floor
         self.assertGreaterEqual(base, fh.P_FLOOR)
         self.assertEqual(fh.luck_p(j, f, 'bc', OPEN + 41), fh.chance_rate('bc', OPEN + 41))
-        j['fair_run'] = dict(g='xd', n=30, at=int(OPEN))
+        j[fh.COOL_KEY]['xd'].update(n=30, at=int(OPEN), sw=1)
         self.assertEqual(fh.luck_p(j, f, 'xd', OPEN + fh.RUN_GAP + 5), base)   # a break: a new run
         s = story(100)
         s['journey']['fair_run'] = dict(g='bc', n=3, at=1)

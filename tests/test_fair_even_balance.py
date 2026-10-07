@@ -9,31 +9,35 @@ from tests.test_fair import FairBase, Dice, OPEN, story
 
 
 class EvenRates(unittest.TestCase):
-    """Owner 06/10: about 65% of luck rounds are won, whatever the price, time, net or repetition."""
-    def test_every_price_time_net_and_repeat_has_the_same_base_rate(self):
+    """Owner 07/10: about 50% of luck rounds are won, whatever the price, time or net (a long run of one stall cools)."""
+    def test_every_price_time_and_net_has_the_same_base_rate(self):
         for game in fh.CHANCE_GAMES:
-            j = {}
             want = fh.XD_BASE if game == 'xd' else fh.LUCK_BASE
             for i in range(100):
                 for price in (2, 10, 50, 500, 1000):
                     self.assertEqual(fh.chance_rate(game, OPEN + i*1800, price, 100000), want)
+                    j = {}   # the first round of a run
                     self.assertEqual(fh.luck_p(j, None, game, OPEN+i, stake=price), want)
 
-    def test_bad_random_stream_cannot_produce_five_consecutive_losses(self):
+    def test_no_sure_win_after_losses(self):
+        # 07/10: the sure win after four losses is gone (bet small four times, then big): a bad stream loses on.
         j = {}
         with patch.object(fh, '_rng', Dice(draws=[.999]*100)):
             results = [fh._draw_luck(j, 'xs', fh.LUCK_BASE) for _ in range(50)]
-        self.assertFalse(any(not any(results[i:i+5]) for i in range(46)))
+        self.assertFalse(any(results))
+        self.assertEqual(j['fair_balance']['xs'], -4)   # still within the older validator's bound
+        with patch.object(fh, '_rng', Dice(draws=[fh.LUCK_BASE - .001])):
+            self.assertTrue(fh._draw_luck(j, 'xs', fh.LUCK_BASE))   # a draw under the rate still wins
 
     def test_a_winning_streak_cools_to_the_floor_never_below(self):
         j = {}
         with patch.object(fh, '_rng', Dice(draws=[fh.WIN_P_LOW - .001]*20 + [fh.WIN_P_LOW + .001])):
             results = [fh._draw_luck(j, 'bc', fh.LUCK_BASE) for _ in range(21)]
-        self.assertTrue(all(results[:20]))       # a draw under 55% still wins after any streak
+        self.assertTrue(all(results[:20]))       # a draw under 50% still wins after any streak
         self.assertFalse(results[20])            # the cooled-off rate is exactly the floor
         self.assertEqual(j['fair_balance']['bc'], -1)
 
-    def test_long_run_is_65_and_each_game_has_its_own_history(self):
+    def test_long_run_is_50_and_each_game_has_its_own_history(self):
         j = {}
         with patch.object(fh, '_rng', random.Random(92026)):
             results = [fh._draw_luck(j, 'bc', fh.LUCK_BASE) for _ in range(100000)]
