@@ -7,7 +7,7 @@
 import {Sound} from '../audio.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {nextHint,stepCta,barParts,finalGo,pending as nextOf,firstTime,stepLine,todoAttrs} from '../v4/guide.js';
-import {actBar,clean,tip,headChip,helpBtn} from '../ui-kit.js';
+import {actBar,clean,tip,headChip,helpBtn,whyAttrs} from '../ui-kit.js';
 
 const ICE=[['none','Không đá'],['little','Ít đá'],['normal','Đá vừa'],['extra','Nhiều đá']];
 const ICE_TEXT={none:'không đá',little:'ít đá',normal:'đá vừa',extra:'nhiều đá'};
@@ -27,7 +27,18 @@ const station=(x,id)=>{const s=station0(x,id),n=unsent(x,id);return n?{...s,stoc
 // Counter taps go through actions.go: quiet (feedback shows next to the cup), toasts only for results that matter.
 const pick=(x,id)=>`data-action="job" data-task="${x.esc(id)}"`;
 const cmdAttr=(x,op,payload)=>`data-action="car:go" data-op="${op}" data-payload="${pay(x,payload)}"${QUICK.has(op)?' data-quick data-own-busy':''}`;
-const jb=(x,label,op,payload={},style='',disabled=false)=>`<button type="button" class="btn ${style}" ${cmdAttr(x,op,payload)}${disabled?' disabled':''}>${label}</button>`;
+/* After end_day the unfinished cups stay and the counter still opens, but game/boba.py refuses every brewing step
+ * ("Mở cửa quán trước khi pha nhé."): a quick pick lit up and fell back, the bar still said "Lấy ly". While the shop
+ * is closed the brewing controls are dimmed but tappable (docs/UI_KIT.md "Disabled with a reason": a tap says
+ * "Mở ca trước" with the ☀️ Mở ca fix) and the bar's main button opens the shift. Kho (tea_prepare, tea_order…) still
+ * works. A room not drawn yet counts as open (no flash of dimmed tiles). */
+const closedNow=x=>!!x?.room&&!x.room.open;
+const BREW=new Set(['tea_cup','tea_add','tea_ice','tea_sugar','tea_seal','tea_seal_start','tea_check','tea_discard','tea_serve','tea_greet','tea_swap']);
+const OPEN_GO={act:'startHere',label:'☀️ Mở ca'};
+const shutAttrs=()=>whyAttrs({why:'Mở ca trước',fix:OPEN_GO});
+const jb=(x,label,op,payload={},style='',disabled=false)=>BREW.has(op)&&closedNow(x)
+  ?`<button type="button" class="btn ${style} is-why"${shutAttrs()}>${label}</button>`
+  :`<button type="button" class="btn ${style}" ${cmdAttr(x,op,payload)}${disabled?' disabled':''}>${label}</button>`;
 const LOUD=new Set(['tea_menu','tea_serve','tea_seal','tea_event','tea_event_ok','tea_discard','tea_check','tea_prepare','tea_cups','tea_wipe','tea_order','tea_clean','tea_toss','tea_swap','tea_greet','more_work','life_mode','life_goal']);
 const sfx=new Sound();
 const hasGroup=(x,cup,g)=>(cup.items||[]).some(k=>ing(x,k).group===g);
@@ -82,6 +93,7 @@ function withLocal(t,x){
 /** Whether the server would take this pick on this (laid) task: game/boba.py _station's checks. If not, the pick
  * is sent the usual way and the server's answer says why. */
 function canQuick(x,t,op,p){
+  if(closedNow(x))return false;   // the server refuses every brewing step while the shop is closed
   const cup=t?.cup;if(!t||!t.known||!cup||cup.sealed)return false;
   if(op==='tea_cup')return ['M','L'].includes(p.size)&&!(cup.items||[]).length&&!(cup.placed&&cup.size===p.size)&&cupsOf(x)[p.size]>0;
   if(!cup.placed)return false;
@@ -324,8 +336,10 @@ function customer(t,x,steps){
 }
 function tile(x,o){
   const zero=o.count===0&&!o.locked;
-  const act=o.locked||o.disabled?'':o.cmd?cmdAttr(x,o.cmd,o.payload):'';
-  return `<button type="button" class="mt-tile ${o.cls||''}${o.on?' on':''}${o.locked?' locked':''}${zero?' zero':''}"${o.k?` data-k="${x.esc(o.k)}"`:''} ${act} ${o.locked||o.disabled?'disabled':''} aria-pressed="${!!o.on}" aria-label="${x.esc(o.label||o.name)}">
+  // Closed: a brewing tile (cup, tea, syrup, topping) is dimmed with "Mở ca trước"; restocking tiles still work.
+  const shut=!o.locked&&closedNow(x)&&(o.cmd?BREW.has(o.cmd):!!o.k&&!/\b(off|restock)\b/.test(o.cls||''));
+  const act=shut?shutAttrs():o.locked||o.disabled?'':o.cmd?cmdAttr(x,o.cmd,o.payload):'';
+  return `<button type="button" class="mt-tile ${o.cls||''}${o.on?' on':''}${o.locked?' locked':''}${zero?' zero':''}${shut?' is-why':''}"${o.k?` data-k="${x.esc(o.k)}"`:''} ${act} ${!shut&&(o.locked||o.disabled)?'disabled':''} aria-pressed="${!!o.on}" aria-label="${x.esc(shut?`${o.name}: mở ca trước`:o.label||o.name)}">
     ${o.art||`<span class="mt-emo" aria-hidden="true">${o.emoji}</span>`}<b>${x.esc(o.name)}</b>${o.sub?`<small>${x.esc(o.sub)}</small>`:''}
     ${o.locked?`<small class="mt-lock">🔒 Cấp ${o.level}</small>`:o.count!=null?`<em class="mt-count${o.count===0?' zero':''}" aria-hidden="true">${o.count}</em>`:''}</button>`;
 }
@@ -401,7 +415,8 @@ function cupStack(t,x){
 }
 function dials(t,x){
   const cup=t.cup,ok=t.known&&cup.placed&&!cup.sealed,sugars=B(x).sugars||[0,30,50,70,100];
-  const seg=(cmd,val,label,on)=>`<button type="button" class="mt-seg ${on?'on':''}" data-k="${cmd.slice(4)}-${val}" ${ok?cmdAttr(x,cmd,{task:t.id,level:val}):'disabled'} aria-pressed="${on}">${label}</button>`;
+  const shut=closedNow(x);
+  const seg=(cmd,val,label,on)=>`<button type="button" class="mt-seg ${on?'on':''}${shut?' is-why':''}" data-k="${cmd.slice(4)}-${val}" ${shut?shutAttrs():ok?cmdAttr(x,cmd,{task:t.id,level:val}):'disabled'} aria-pressed="${on}">${label}</button>`;
   return `<section class="mt-shelf dials"><h4>🧊 Đá</h4><div class="mt-segs four">${ICE.map(([v,l])=>seg('tea_ice',v,l,cup.ice===v)).join('')}</div>
     <h4>🍯 Đường</h4><div class="mt-segs five">${sugars.map(v=>seg('tea_sugar',v,v+'%',cup.sugar===v)).join('')}</div></section>`;
 }
@@ -539,7 +554,7 @@ function orderTicket(t,x,steps){
     const r=s.row,fix=fixable(t,r);
     const cls=r.ok===true?'ok':r.ok===false?(fix?'warn':'bad'):'todo',mark=r.ok===true?'✓':r.ok===false?(fix?'!':'✗'):'';
     const why=r.ok===false?(fix?' (đang sai, chỉnh lại)':' (sai, cần đổ ly làm lại)'):r.ok===true?' (đã đúng)':' (chưa làm)';
-    return `<li class="mt-req ${cls}"${todoAttrs(s)} aria-label="${x.esc(text(r)+why)}">${mark?`<b aria-hidden="true">${mark}</b>`:''}${x.esc(text(r))}</li>`;};
+    return `<li class="mt-req ${cls}"${closedNow(x)?"":todoAttrs(s)} aria-label="${x.esc(text(r)+why)}">${mark?`<b aria-hidden="true">${mark}</b>`:''}${x.esc(text(r))}</li>`;};
   const noTop=!said.some(s=>s.k==='topping'||s.k==='extra')?`<li class="mt-req none">không topping</li>`:'';
   const chips=said.map(chip),at=said.findIndex(s=>s.k==='sugar');
   chips.splice(at<0?chips.length:at,0,noTop);
@@ -580,6 +595,8 @@ function netText(t,x){
 }
 /** {steps, final} for the counter: the hint, the ticket rows and the bottom button all read it. */
 function teaGuide(t,x){
+  // Closed (after end_day the cup waits): the one step is opening the shift; the bar's main button does it.
+  if(closedNow(x))return {steps:[{ok:null,label:'Mở ca trước',go:OPEN_GO}]};
   const ev=B(x).event,id=t.id;
   if(ev&&ev.stage==='open')return {steps:[{ok:null,label:'Chọn cách xử lý chuyện ở quầy',go:{sel:'.mt-event .mt-choices'},pulse:'.mt-event .mt-choices .btn'}]};
   if(ev&&ev.stage==='done')return {steps:[{ok:null,label:'Đọc kết quả rồi làm tiếp',go:run('tea_event_ok',{},'👍 Làm tiếp')}]};

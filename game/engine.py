@@ -1144,6 +1144,7 @@ def _task_view(t:dict) -> dict:
     if career=="customer_care":
         v.pop("solution",None)
         for e in v["evidence"]:
+            e["title"]=dk.shown(e.get("title"))  # "Chính sách đổi trả" reads "Chính sách thiếu hàng" (desk.SHOWN_TEXT, never stored)
             if e["id"] not in t["inspected"]:e["text"]=None
         if not t["identity"]:v["value"]=None
     return v
@@ -2225,7 +2226,7 @@ CS_CALL_MAX=8
 # The source line that names the fix of each case (shown as "📌 Căn cứ" once every source is read); a wrong pick quotes it.
 CS_BASIS={"missing":2,"delivered":2,"delay":1,"wrong":2,"refund":0,"guide":1}
 CS_SOL_LABEL={"reship":"Gửi bù món thiếu","trace":"Đối soát giao nhận","exchange":"Đổi đúng món","refund":"Thực hiện hoàn","guide":"Hướng dẫn khách"}
-CS_SOL_WHEN={"reship":"kiện thiếu món","trace":"cần đầu mối kiểm lại chặng giao","exchange":"khách nhận sai mã, sai màu","refund":"hồ sơ có yêu cầu hoàn hoặc chính sách cho hoàn","guide":"đơn không lỗi, khách chỉ cần cách làm"}
+CS_SOL_WHEN={"reship":"kiện thiếu món","trace":"cần đầu mối kiểm lại chặng giao","exchange":"khách nhận sai mã, sai màu (không phải thiếu món)","refund":"hồ sơ có yêu cầu hoàn hoặc chính sách cho hoàn","guide":"đơn không lỗi, khách chỉ cần cách làm"}
 CS_FACT={"missing":"Mình nhận có 2 món thôi, đơn ghi 3 món.","delivered":"Mình ở nhà cả ngày mà chẳng ai gọi giao hàng.",
          "delay":"Lần cuối mình thấy kiện nằm ở điểm trung chuyển.","wrong":"Mình đặt hộp xanh mà nhận hộp hồng.",
          "refund":"Yêu cầu hoàn đó mình tạo mấy hôm trước rồi.","guide":"Mình mở ứng dụng mà không thấy mục đơn đâu."}
@@ -2251,7 +2252,8 @@ def _cs_reject(t:dict,choice:Any)->str:
     """A wrong fix names when that fix applies and quotes the source line that decides this case (not stored)."""
     e=_cs_basis(t)
     if not e or choice not in CS_SOL_LABEL:return "Phương án chưa phù hợp hồ sơ đã kiểm. Xem lại chứng cứ và chính sách nhé."
-    return f'«{CS_SOL_LABEL[choice]}» dùng khi {CS_SOL_WHEN[choice]}. Vụ này, đọc lại 📌 {e["title"]}: “{e["text"]}”'
+    # The 📌 line first: the source decides the case, the wrong pick's rule follows (players stopped at the first words).
+    return f'📌 {dk.shown(e["title"])}: “{e["text"]}” «{CS_SOL_LABEL[choice]}» chỉ dùng khi {CS_SOL_WHEN[choice]}.'
 
 
 def cs_care(c:dict,create:bool=True)->dict|None:

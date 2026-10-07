@@ -15,9 +15,17 @@
 import {t} from './v4/i18n.js';
 
 export const TEXT='Đã có phiên bản mới, bạn tải lại để cập nhật nha';
+/** The server runs a newer RELEASE than this page (not just a new build): old screens send what the server no longer
+ * takes (07/10: review offers from tabs opened before 1.9.5, "Nghề này không bù đắp kiểu đó."). The pill then has no
+ * ✕ (a dismissed version shows again) and the page reloads by itself on the next navigation (a sheet opened or
+ * closed) when idle() says nothing is lost, once per version per tab, like coming back to the tab. */
+export const FIRM='Tải lại để cập nhật';
 export const LATER='Để sau';
 export const OUTDATED_CODES=new Set(['client_outdated']);
-const DISMISSED='mnl.update.dismissed',AUTO='mnl.update.auto',POLL=5*60*1000;
+const DISMISSED='mnl.update.dismissed',AUTO='mnl.update.auto',AUTO_AT='mnl.update.at',POLL=5*60*1000;
+/** A page reloads by itself at most once in this long (a proxy or an old worker that still serves the old page during
+ * a rolling deploy can never cause a reload loop; boot.js keeps its own guard for a failed module load). */
+export const RELOAD_GAP=2*60*1000;
 
 /** -1, 0 or 1 for the release part of two `<release>+<build>` strings (null when not comparable). */
 export function compareRelease(a,b){
@@ -76,38 +84,56 @@ export class UpdateNotice{
     this.prewarm=prewarm;this.warmed=null;
     /** Set by the page: true when a reload loses nothing (no text being typed, no command on the wire). */
     this.idle=idle;this.returning=false;
+    /** The newer release the server runs, when this page is behind it (see FIRM). */
+    this.behind=null;this.later=0;this.now=()=>Date.now();
   }
   dismissed(){try{return this.storage?.getItem(DISMISSED)||'';}catch{return '';}}
   /** A version seen on the wire (header or /api/health). The first one adopts it when the page has none. */
   seen(version,incompatible=false){
     if(!version&&!incompatible)return false;
     if(!this.own&&version&&!incompatible){this.own=version;return false;}
-    if(!shouldOffer(this.own,version,this.dismissed(),incompatible))return false;
+    const behind=!!version&&compareRelease(version,this.own)===1;
+    if(behind)this.behind=version;
+    if(!shouldOffer(this.own,version,behind?'':this.dismissed(),incompatible))return false;
     if((this.returning||incompatible)&&this.autoReload(version||'incompatible'))return true;
+    // Refused as outdated (server.py MIN_CLIENT) while a command was still being answered: idle() was false, so try
+    // once more a moment later; after that the next navigation does it (navigated()).
+    if(incompatible){this.behind??=version||'incompatible';clearTimeout(this.later);this.later=setTimeout(()=>this.autoReload(version||'incompatible'),1500);}
     this.show(version||'incompatible');return true;
   }
   /** Reload onto the new release by itself: only when idle, and once per version in this tab. */
   autoReload(version){
     let idle=false;try{idle=Boolean(this.idle());}catch{idle=false;}
     if(!idle)return false;
-    try{if(this.session?.getItem(AUTO)===version)return false;this.session?.setItem(AUTO,version);}catch{return false;}
+    try{
+      if(this.session?.getItem(AUTO)===version)return false;
+      const at=Number(this.session?.getItem(AUTO_AT))||0,now=this.now();
+      if(at&&now-at>=0&&now-at<RELOAD_GAP)return false;
+      this.session?.setItem(AUTO,version);this.session?.setItem(AUTO_AT,String(now));
+    }catch{return false;}
     this.reload();return true;
   }
   show(version){
     if(this.shown===version&&this.el?.isConnected)return;
     this.shown=version;const doc=this.doc;if(!doc?.body)return;
     this.el?.remove();
-    const el=this.el=doc.createElement('div');el.className='update-pill';el.setAttribute('role','status');el.dataset.version=version;
-    const go=doc.createElement('button');go.type='button';go.className='update-go';go.textContent=t(TEXT);
-    const x=doc.createElement('button');x.type='button';x.className='update-x';x.setAttribute('aria-label',t(LATER));x.title=t(LATER);x.textContent='✕';
+    const firm=version===this.behind||version==='incompatible';
+    const el=this.el=doc.createElement('div');el.className='update-pill'+(firm?' is-firm':'');el.setAttribute('role','status');el.dataset.version=version;
+    const go=doc.createElement('button');go.type='button';go.className='update-go';go.textContent=firm?'🔄 '+t(FIRM):t(TEXT);
     go.addEventListener('click',()=>this.reload());
-    x.addEventListener('click',()=>this.dismiss());
-    el.append(go,x);doc.body.append(el);
+    el.append(go);
+    // A page behind the server's release keeps the pill: no "Để sau".
+    if(!firm){const x=doc.createElement('button');x.type='button';x.className='update-x';x.setAttribute('aria-label',t(LATER));x.title=t(LATER);x.textContent='✕';
+      x.addEventListener('click',()=>this.dismiss());el.append(x);}
+    doc.body.append(el);
     if(this.prewarm&&this.warmed!==version&&version!=='incompatible'&&version!==this.own){this.warmed=version;Promise.resolve().then(()=>this.prewarm(version)).catch(()=>{});}
     // Popover = top layer: above an open sheet (<dialog>). Older browsers: a fixed, very high z-index.
     if(typeof el.showPopover==='function'){try{el.popover='manual';el.showPopover();return;}catch{/* fall through */}}
     el.classList.add('is-open');
   }
+  /** The player moved to another screen (app.js openSheet / closeSheet): a page behind the server's release reloads
+   * onto it now when idle (once per version per tab). True when it reloads. */
+  navigated(){return !!this.behind&&this.autoReload(this.behind);}
   dismiss(){
     try{this.storage?.setItem(DISMISSED,this.shown||'');}catch{/* storage blocked */}
     this.el?.remove();this.el=null;

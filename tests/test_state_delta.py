@@ -14,6 +14,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from game import __version__
 from game import fastjson as fj
 from game import state_delta as sd
 from game.engine import public_state
@@ -251,10 +252,12 @@ class HTTP(unittest.TestCase):
         self.rev = data['revision']
         return data
 
-    def cmd(self, career, action, known=None, delta=True, rev=None, **payload):
+    def cmd(self, career, action, known=None, delta=True, rev=None, cv=__version__, **payload):
         self.n += 1
         body = dict(request_id=f'delta-test-{self.n:04d}-{id(self)}', expected_revision=self.rev if rev is None else rev,
                     career=career, action=action, payload=payload)
+        if cv is not None:   # the page's release (server.py MIN_CLIENT)
+            body['cv'] = cv
         if known is not None:
             body['known'] = known
         status, _, raw = self.req('/api/command', 'POST', body, delta=delta)
@@ -265,6 +268,41 @@ class HTTP(unittest.TestCase):
 
     def whole(self):
         return json.loads(self.req('/api/state', delta=False)[2])['state']
+
+    def test_stale_page_is_told_to_reload(self):
+        """07/10: a command from a page older than MIN_CLIENT is refused with 426 client_outdated (the page reloads);
+        a page from before `cv` counts as outdated when it is a game page (X-Game-Delta); the page of this very release,
+        a page with an unreadable version and tools without the header are never refused."""
+        import server
+        self.boot()
+        with patch.object(server, 'MIN_CLIENT', '1.9.11'):
+            status, out, _ = self.cmd(None, 'settings', cv=None, reduceMotion=True)
+            self.assertEqual((status, out.get('code')), (426, 'client_outdated'))
+            status, out, _ = self.cmd(None, 'settings', cv='1.9.4+old', reduceMotion=True)
+            self.assertEqual((status, out.get('code')), (426, 'client_outdated'))
+            status, out, _ = self.cmd(None, 'settings', cv='', reduceMotion=True)
+            self.assertEqual(status, 200, out)
+            status, out, _ = self.cmd(None, 'settings', cv=None, delta=False, reduceMotion=False)
+            self.assertEqual(status, 200, out)
+        # MIN_CLIENT ahead of the release this server runs: its own pages still go through
+        with patch.object(server, 'MIN_CLIENT', '9.0.0'):
+            status, out, _ = self.cmd(None, 'settings', reduceMotion=True)
+            self.assertEqual(status, 200, out)
+        with patch.object(server, 'MIN_CLIENT', ''):
+            status, out, _ = self.cmd(None, 'settings', cv=None, reduceMotion=False)
+            self.assertEqual(status, 200, out)
+
+    def test_client_outdated_rule(self):
+        from server import client_outdated, release_of
+        self.assertEqual(release_of('1.9.11+abc'), (1, 9, 11))
+        self.assertIsNone(release_of('dev'))
+        self.assertTrue(client_outdated({'cv': '1.9.10+x'}, True, '1.9.11', '1.9.11'))
+        self.assertFalse(client_outdated({'cv': '1.9.11+y'}, True, '1.9.11', '1.9.11'))
+        self.assertFalse(client_outdated({'cv': '1.9.10+x'}, True, '1.9.11', '1.9.10'), 'never above the own release')
+        self.assertTrue(client_outdated({}, True, '1.9.11', '1.9.11'))
+        self.assertFalse(client_outdated({}, False, '1.9.11', '1.9.11'))
+        self.assertFalse(client_outdated({'cv': ''}, True, '1.9.11', '1.9.11'))
+        self.assertFalse(client_outdated({}, True, '', '1.9.11'))
 
     def test_old_page_gets_the_answer_of_before(self):
         """No header: no `delta` member and the whole state, even with a `known` in the body."""
@@ -314,7 +352,7 @@ class HTTP(unittest.TestCase):
         h.take(out['state'], out['delta'])
         known = h.known()
         self.n += 1
-        body = dict(request_id=f'delta-replay-{id(self)}', expected_revision=self.rev, career='milk_tea', action='select_career', payload={}, known=known)
+        body = dict(request_id=f'delta-replay-{id(self)}', expected_revision=self.rev, career='milk_tea', action='select_career', payload={}, known=known, cv=__version__)
         first = json.loads(self.req('/api/command', 'POST', body)[2])
         again = json.loads(self.req('/api/command', 'POST', body)[2])
         self.assertTrue(again['replayed'])

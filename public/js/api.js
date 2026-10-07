@@ -285,8 +285,27 @@ export class GameAPI extends EventTarget {
   // No career given: the workplace on screen. A new account has no `current` yet; the screen is drawn from `focus`
   // (app.js career(), v4/careers.js careerContext), so the command goes there too ("Chọn một nghề trước nhé" on the
   // first milk-tea tap). `jr_*`, `fair_*`, `settings` ignore it.
+  /* Double taps while the queue is held (1.9.3 regression, 07/10). An AI write (aiQueued) holds the queue up to
+   * AI_WAIT, and a command waiting behind it showed nothing: 'busy' fired only when a command started, so ui.busy
+   * stayed false, the click hold and the submit guard let a second tap through, and the pending mark (a request
+   * started within 400 ms of the tap) never came. Players tapped again; the copies queued up, the first landed and
+   * the rest were refused ("Khách đang đọc phản hồi trước của bạn.", "Còn một chuyện trong lớp cần xử lý trước.").
+   * Now:
+   * - an IDENTICAL command (same career, action and payload) already queued or on the wire is not queued again:
+   *   the caller gets the same promise;
+   * - 'busy' (true) fires when a command is QUEUED and (false) once no command is queued or on the wire, and a
+   *   'queued' event names each new one (app.js marks the tapped control pending with it). */
+  /** The promise of an identical command queued or on the wire, or null (v4 florist's timers ask before sending). */
+  sending(action,payload={},career=this.state?.current||this.state?.focus){return this.flying?.get(JSON.stringify([career,action,payload]))||null;}
+  /** Commands queued or on the wire; 'busy' follows it (0 ↔ more). */
+  hold(delta){
+    const was=this.waiting|0;this.waiting=Math.max(0,was+delta);
+    if(!was&&this.waiting)this.dispatchEvent(new CustomEvent('busy',{detail:true}));
+    else if(was&&!this.waiting)this.dispatchEvent(new CustomEvent('busy',{detail:false}));
+  }
   command(action,payload={},career=this.state?.current||this.state?.focus){
     const tap=JSON.stringify([career,action,payload]);
+    const same=this.flying?.get(tap);if(same)return same;
     // A stop tap on a running meter (v4/careers.js): the moment the finger came down rides along as tap_at.
     const stamp=this.tapStamp?.(action);if(stamp)payload={...payload,tap_at:stamp.at};
     const execute=async()=>{
@@ -295,11 +314,11 @@ export class GameAPI extends EventTarget {
         const request_id=globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
         expected=this.revision;held=this.held;
         // `known`: the parts held now; the answer refers to them (filled from `held`, whatever is adopted meanwhile).
-        const known=held.known(),body=JSON.stringify({request_id,expected_revision:expected,career,action,payload,...known?{known}:{}});
+        // `cv`: this page's release (server.py MIN_CLIENT: an older page is answered 426 client_outdated and reloads).
+        const known=held.known(),body=JSON.stringify({request_id,expected_revision:expected,career,action,payload,cv:this.updates?.own||'',...known?{known}:{}});
         // The same body (request_id, expected_revision) on every try: see RETRY_DELAYS.
         return this.json('/api/command',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':this.csrf},body,retry:true});
       };
-      this.dispatchEvent(new CustomEvent('busy',{detail:true}));
       try{
         let data;
         // 409 revision_conflict: the save moved under this tap (a spouse's gift or fund move landing through the
@@ -340,9 +359,14 @@ export class GameAPI extends EventTarget {
         if(transient(error)){this.connected=false;this.dispatchEvent(new Event('offline'));error.message='Mất kết nối máy chủ. Tiến trình đã xác nhận vẫn được lưu. Khởi động lại server rồi thử lại nhé.';}
         else if(!error.quiet)this.dispatchEvent(new CustomEvent('rejected',{detail:{action,career,status:error.status,code:error.data?.code||'',message:error.message}}));  // its toast text (telemetry.js)
         throw error;
-      }finally{this.dispatchEvent(new CustomEvent('busy',{detail:false}));stamp?.done();}
+      }finally{stamp?.done();}
     };
-    const job=this.queue.then(execute,execute);this.queue=job.catch(()=>{});return job;
+    const job=this.queue.then(execute,execute);this.queue=job.catch(()=>{});
+    (this.flying??=new Map()).set(tap,job);
+    const done=()=>{if(this.flying.get(tap)===job)this.flying.delete(tap);this.hold(-1);};
+    job.then(done,done);
+    this.hold(1);this.dispatchEvent(new CustomEvent('queued',{detail:{action,career}}));
+    return job;
   }
   async aiReply(npc){
     try{return await this.json('/api/ai/rephrase',{method:'POST',headers:{'Content-Type':'application/json','X-Game-CSRF':this.csrf},body:JSON.stringify({career:this.state.current||this.state.focus,npc})},11500);}
