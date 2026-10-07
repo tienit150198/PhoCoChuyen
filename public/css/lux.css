@@ -3,6 +3,7 @@
 .lx-sub{margin:var(--sp-1) 0;font-size:var(--fs-2);color:var(--ink-2)}
 .lx-docs .lx-doc{font-size:var(--fs-1);min-height:44px}
 .lx-tools{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-2)}
+.lx-tools>.ui-why-line{flex:1 0 100%}
 .lx-help{margin-top:var(--sp-2)}
 .lx-help>summary{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);cursor:pointer;list-style:none;font-weight:700}
 .lx-help>summary::-webkit-details-marker{display:none}

@@ -5,6 +5,7 @@
  * luxMtq (menu, town map doors). Phone first, few words: emoji tabs and chips, one pick per screen, one main button in
  * the bottom bar with the price on it; the visa's paperwork rules sit behind "?". Styles: /css/spend.css + /css/lux.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
+import {withWhy,whyTap} from '../ui-kit.js';
 
 const TABS=[['trip','✈️','Du lịch'],['suu','💎','Sưu tập'],['nha','🏰','Dinh thự'],['bay','🛫','Phi cơ & du thuyền'],['tiec','🎉','Mở tiệc'],['hoc','🎓','Khóa học'],['mtq','🎆','Mạnh Thường Quân']];
 export const ACTIONS={lux:'',luxTrip:'trip',luxSuu:'suu',luxNha:'nha',luxBay:'bay',luxTiec:'tiec',luxHoc:'hoc',luxMtq:'mtq'};
@@ -36,7 +37,8 @@ function dialog(){
   d.addEventListener('click',e=>{
     if(e.target===d){d.close();return;}
     const el=e.target.closest('[data-lx]');if(!el||!d.contains(el)||el.disabled)return;
-    e.preventDefault();onClick(el.dataset.lx,el.dataset);
+    e.preventDefault();if(el.dataset.why){whyTap(el);return;}   // dimmed with a reason (docs/UI_KIT.md): say why, send nothing
+    onClick(el.dataset.lx,el.dataset);
   });
   d.addEventListener('change',e=>{
     const t=e.target;
@@ -100,6 +102,7 @@ const month=(price,bp)=>Math.round(price*bp/10000);
 const cash=()=>Number(J().wallet)||0;
 const ready=()=>cash()<0?0:cash()+(Number(J().bank?.balance)||0);
 const readyWhy=price=>cash()<0?'Ví đang nợ':ready()>=price?'':`Còn thiếu ${fmt(price-ready())} xu`;
+const can=why=>why?{why}:true;   // a side button (📷, 🛡️) dimmed but tappable: game/lux.py refuses the same
 
 /** Visa paperwork: the docs this country wants, the interview questions of the next application. */
 function docsOf(c){const k=c.id;S.docs[k]??=new Set();return S.docs[k];}
@@ -233,8 +236,8 @@ function trip(v,c){
   }
   const set=docsOf(co),photoOld=!v.photo||day()-v.photo>=c.photo.days;
   const docs=c.docs.map(d=>`<button type="button" class="sd-chip lx-doc${set.has(d.id)?' on':''}" data-lx="doc" data-id="${d.id}" aria-pressed="${set.has(d.id)}">${d.emoji} ${esc(d.name)}</button>`).join('');
-  const tools=[photoOld?`<button type="button" class="sd-link" data-lx="photo">📷 Chụp ảnh · ${c.photo.price}</button>`:'',
-    co.docs.includes('bao_hiem')&&v.ins!==co.id?`<button type="button" class="sd-link" data-lx="insure">🛡️ Bảo hiểm · ${fmt(insurePrice(co))}</button>`:''].join('');
+  const tools=[photoOld?withWhy(`<button type="button" class="sd-link" data-lx="photo">📷 Chụp ảnh · ${c.photo.price}</button>`,can(cash()<c.photo.price?'Ví chưa đủ':'')):'',   // the photo is paid from the wallet only
+    co.docs.includes('bao_hiem')&&v.ins!==co.id?withWhy(`<button type="button" class="sd-link" data-lx="insure">🛡️ Bảo hiểm · ${fmt(insurePrice(co))}</button>`,can(readyWhy(insurePrice(co)))):''].join('');
   const rules=help([`Lãnh sự cần: ${co.docs.map(d=>c.docs.find(x=>x.id===d).name).join(', ')}.`,
     `Ảnh thẻ chụp chưa quá ${c.photo.days} ngày.`, `Sao kê: tài khoản ngân hàng có ít nhất ${fmt(co.bank*co.trip)} xu.`,
     `Xác nhận việc: đã đi làm ít nhất ${c.work_days} ngày.`, co.interview?'Phỏng vấn: trả lời thật, có vé khứ hồi.':'',
