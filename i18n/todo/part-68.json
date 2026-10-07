@@ -1,5 +1,57 @@
 [
  {
+  "vi": "Giao thiếu hàng",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ được trả phần đã giao. Thiếu nhiều thì bị bớt tiền, hoàn tiền hoặc khách bỏ đi.",
+  "en": ""
+ },
+ {
+  "vi": "Lẫn loại B vào hợp đồng loại A",
+  "en": ""
+ },
+ {
+  "vi": "Phần loại B chỉ tính 70% giá, khách phàn nàn, sao giảm.",
+  "en": ""
+ },
+ {
+  "vi": "Phun thuốc hóa học khi ong đang ở cạnh vườn",
+  "en": ""
+ },
+ {
+  "vi": "Ong chết cả đàn, đền 12 xu, bị chấm 1★.",
+  "en": ""
+ },
+ {
+  "vi": "Quên cho gà ăn, bỏ bê chuồng",
+  "en": ""
+ },
+ {
+  "vi": "Gà kém vui, mai chỉ nửa đàn đẻ. Trứng để qua đêm thành loại B.",
+  "en": ""
+ },
+ {
+  "vi": "📦 Bấm [[Kho vật tư]] để đặt hạt giống, phân, thuốc, cám gà và bao bì.",
+  "en": ""
+ },
+ {
+  "vi": "🌾 HTX Nông nghiệp Mây: giá xã viên, đặt trước 11:00 thì chiều nay có, đặt sau thì sáng mai.",
+  "en": ""
+ },
+ {
+  "vi": "🚚 Đại lý vật tư Hạt Nắng chạy 4 chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau khoảng 1 tiếng.",
+  "en": ""
+ },
+ {
+  "vi": "⚡ Xe ba gác hỏa tốc tới trong 15–30 phút nhưng đắt. Dùng khi gà sắp hết cám.",
+  "en": ""
+ },
+ {
+  "vi": "🌱 Trại giống Đồng Xanh: hạt cà chua, dưa leo, rau thơm rẻ nhất nhưng 1–2 ngày mới có.",
+  "en": ""
+ },
+ {
   "vi": "🔓 Dưa leo mở ở cấp 2, rau thơm mở ở cấp 3.",
   "en": ""
  },
@@ -1513,90 +1565,6 @@
  },
  {
   "vi": "🧾 Ban quản lý chợ thu phí: đóng đúng, lấy biên lai. Dúi thêm tiền không biên lai chẳng được gì.",
-  "en": ""
- },
- {
-  "vi": "🏷️ Xe hàng dán nhãn giả mời lấy: bán trái gì nói trái đó.",
-  "en": ""
- },
- {
-  "vi": "💵 Từ ngày 2 thỉnh thoảng khách đưa thiếu tiền: bấm [[Đếm lại tiền khách đưa]] rồi chọn cách xử lý.",
-  "en": ""
- },
- {
-  "vi": "Đặt quả cân 1 ký",
-  "en": ""
- },
- {
-  "vi": "Chỉnh kim về đúng",
-  "en": ""
- },
- {
-  "vi": "Lựa ra",
-  "en": ""
- },
- {
-  "vi": "Trừ bì rổ",
-  "en": ""
- },
- {
-  "vi": "CÂN · TÍNH TIỀN",
-  "en": ""
- },
- {
-  "vi": "Bớt một nửa",
-  "en": ""
- },
- {
-  "vi": "Xem trái",
-  "en": ""
- },
- {
-  "vi": "Rao xả",
-  "en": ""
- },
- {
-  "vi": "Hỏi khách mua gì",
-  "en": ""
- },
- {
-  "vi": "Kho trái cây",
-  "en": ""
- },
- {
-  "vi": "Hoặc tự ra giá",
-  "en": ""
- },
- {
-  "vi": "Chốt giá này",
-  "en": ""
- },
- {
-  "vi": "Không bán chịu",
-  "en": ""
- },
- {
-  "vi": "Nhờ người nhà",
-  "en": ""
- },
- {
-  "vi": "Xóa nợ",
-  "en": ""
- },
- {
-  "vi": "Bạn đẩy xe rác ba ngăn cùng chị Hạnh mỗi tối: đồ bảo hộ, đi từng ngõ đúng giờ, bỏ túi đúng ngăn, tách đồ nguy hại, nhắc nhà chưa phân loại.",
-  "en": ""
- },
- {
-  "vi": "Đeo găng tay, khẩu trang, mặc áo phản quang (trời mưa thêm ủng), [[Kiểm xe đẩy]], rồi [[VÀO CA]]. Găng tay, khẩu trang dùng một ca là bỏ.",
-  "en": ""
- },
- {
-  "vi": "Gom một ngõ",
-  "en": ""
- },
- {
-  "vi": "Bấm [[Đẩy xe vào ngõ]] trước giờ thu gom. Mỗi nhà: nhìn túi, túi trông lạ thì [[Mở túi]], rồi chọn ngăn cho từng túi.",
   "en": ""
  }
 ]

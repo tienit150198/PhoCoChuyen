@@ -1,5 +1,49 @@
 [
  {
+  "vi": "📚 Thư viện góc phố mở trò xếp bước. Vườn nghỉ nhỏ mở trò lật thẻ.",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Xưởng đồ xinh mở trò nối nhãn và lối sang trang trí góc của bạn. Chợ cuối phố mở trò xếp món và lời nhắn khu phố.",
+  "en": ""
+ },
+ {
+  "vi": "🎏 Quảng trường Mây là nơi nhận lời mời ngày hội của khu phố.",
+  "en": ""
+ },
+ {
+  "vi": "🎉 Hôm nào là Ngày hội khu phố (hên xui), xong 3 việc và 1 trò nhỏ trong ca rồi bấm [[Mở góc ngày hội]]: +30 xu vào quỹ và một thiệp.",
+  "en": ""
+ },
+ {
+  "vi": "🧭 Ghé đủ 4 điểm là đủ mốc huy hiệu Dấu chân khu phố.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Khu phố",
+  "en": ""
+ },
+ {
+  "vi": "📓 Mở [[Sổ tay]] của nơi đang làm. Tiệm trà sữa, lớp học và nghề hướng dẫn viên không có Sổ tay: xem Hộ chiếu.",
+  "en": ""
+ },
+ {
+  "vi": "📜 [[Nhật ký]]: mọi chuyện ở nơi này theo từng ngày, như tiền vào ra, việc đã xong, chuyện bất ngờ.",
+  "en": ""
+ },
+ {
+  "vi": "💭 [[Ký ức]]: những kỷ niệm chung với từng người quen ở nơi này.",
+  "en": ""
+ },
+ {
+  "vi": "📖 [[Câu chuyện]] (tiệm mẹ & bé, nhà thuốc, kế toán, chăm sóc khách hàng): 3 tuyến chuyện, mỗi tuyến vài bước đếm theo việc bạn làm thật.",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Đủ các bước thì bấm [[Nhận kỷ niệm]]: +75 xu vào quỹ, kỷ vật hiện trong [[Kỷ niệm]].",
+  "en": ""
+ },
+ {
   "vi": "🎯 [[24 tình huống]] (cũng ở 4 nơi đó): tìm một tình huống rồi bấm [[Thử tình huống]] để diễn tập, không mất tiền, sao hay quan hệ.",
   "en": ""
  },
@@ -1353,58 +1397,6 @@
  },
  {
   "vi": "🎈 [[Xả stress]] mỗi ngày một lần: đi dạo, gọi cho mẹ miễn phí; karaoke, du lịch thì tốn xu.",
-  "en": ""
- },
- {
-  "vi": "🏮 Gặp chuyện buồn hay bị lừa, cả xóm góp tay giúp bạn. Hàng xóm càng thân càng góp nhiều.",
-  "en": ""
- },
- {
-  "vi": "🤝 Khi hàng xóm gặp nạn, giúp tiền hoặc qua phụ một tay để xóm thêm ấm.",
-  "en": ""
- },
- {
-  "vi": "💤 Chưa muốn xử lý thì bấm Để sau; thẻ chờ ở Hành trình.",
-  "en": ""
- },
- {
-  "vi": "Đi xe quanh phố",
-  "en": ""
- },
- {
-  "vi": "🚗 Mua xe ở [[Gara]] (bản đồ phố, Phố dịch vụ). Có xe là chạy được trên bản đồ phố, hội chợ và lúc đi dạo.",
-  "en": ""
- },
- {
-  "vi": "🛵 Nút [[Đi xe]] / [[Đi bộ]] ở góc trên để lên xe, xuống đi bộ hoặc đổi xe. Tới cửa thì xe đỗ bên cạnh.",
-  "en": ""
- },
- {
-  "vi": "Mở Gara",
-  "en": ""
- },
- {
-  "vi": "Lên đời điện thoại",
-  "en": ""
- },
- {
-  "vi": "📱 [[Cửa hàng điện thoại]] ở Phố dịch vụ trên bản đồ phố (Chỉ đường → 📱 Điện thoại), hoặc Thêm → Ngân hàng & nhà.",
-  "en": ""
- },
- {
-  "vi": "🔁 Máy cũ anh Khoa cho vẫn xài được. Mua máy đầu tiên thì [[Thu cũ đổi mới]], bớt 20 xu.",
-  "en": ""
- },
- {
-  "vi": "✨ Máy xịn hơn mở thêm trò vui: Chỉ đường nhớ 3 nơi vừa đi, khung selfie, vỏ máy khoe trên hồ sơ. Không máy nào làm ra tiền.",
-  "en": ""
- },
- {
-  "vi": "🙌 Máy đang dùng hiện trên tay nhân vật, trên hồ sơ và thẻ của bạn ở Phố nghề.",
-  "en": ""
- },
- {
-  "vi": "💸 Trả đủ một lần, không phí tháng. Bán lại được 65% giá đã trả.",
   "en": ""
  }
 ]

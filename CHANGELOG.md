@@ -1,3 +1,7 @@
+# v1.9.10 — 2026-10-07
+
+Gồm "Cấp bậc công an" (ranks-police: org ladder, cấp hiệu bảng màu riêng của game). Có gì mới cũng thông báo Phòng hát Mây (bật từ 07:28 07/10 bằng LIVE_KARAOKE).
+
 # Chưa phát hành
 
 ## Cấp bậc công an

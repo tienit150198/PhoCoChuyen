@@ -1,5 +1,65 @@
 [
  {
+  "vi": "Khi nào nên chuyển khách cho quản lý?",
+  "en": ""
+ },
+ {
+  "vi": "Ngay khi khách hơi to tiếng",
+  "en": ""
+ },
+ {
+  "vi": "Khi khách cần điều ngoài quyền của mình, kèm bản tóm tắt",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển kèm tóm tắt để khách không phải kể lại.",
+  "en": ""
+ },
+ {
+  "vi": "Khách nói giọng địa phương khó nghe.",
+  "en": ""
+ },
+ {
+  "vi": "Xin phép nhắc lại ý chính để chắc mình hiểu đúng",
+  "en": ""
+ },
+ {
+  "vi": "Đoán ý rồi làm",
+  "en": ""
+ },
+ {
+  "vi": "Bảo khách nói giọng khác",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc lại ý chính giúp cả hai hiểu đúng mà không làm khách ngại.",
+  "en": ""
+ },
+ {
+  "vi": "Động viên bác đi tiếp cho kịp lịch",
+  "en": ""
+ },
+ {
+  "vi": "Đưa vào chỗ mát, cho nghỉ, uống nước; không đỡ thì gọi 115",
+  "en": ""
+ },
+ {
+  "vi": "Hộp thuốc hết hạn từ hôm qua, khách nói “không sao đâu”.",
+  "en": ""
+ },
+ {
+  "vi": "Không giao; đổi hộp còn hạn",
+  "en": ""
+ },
+ {
+  "vi": "Giao vì khách đồng ý",
+  "en": ""
+ },
+ {
+  "vi": "Giao và ghi vào sổ",
+  "en": ""
+ },
+ {
   "vi": "Khách gọi lần thứ ba về cùng một đơn. Câu đầu tiên của bạn?",
   "en": ""
  },
@@ -1737,66 +1797,6 @@
  },
  {
   "vi": "Không ai được hỏi mã OTP, kể cả sếp.",
-  "en": ""
- },
- {
-  "vi": "Anh Quân dặn: “Mới cưới, chắc sắp sinh con. Loại đi em.” Hồ sơ đủ mọi yêu cầu.",
-  "en": ""
- },
- {
-  "vi": "Loại theo lời giám đốc",
-  "en": ""
- },
- {
-  "vi": "Mời phỏng vấn như mọi người",
-  "en": ""
- },
- {
-  "vi": "Không loại vì hôn nhân hay giới tính; chỉ xét yêu cầu công việc.",
-  "en": ""
- },
- {
-  "vi": "CV ghi 3 năm kinh nghiệm, tra cứu BHXH chỉ có 7 tháng.",
-  "en": ""
- },
- {
-  "vi": "Cần xác minh chỗ làm cũ",
-  "en": ""
- },
- {
-  "vi": "Lệch giữa CV và BHXH thì xác minh trước.",
-  "en": ""
- },
- {
-  "vi": "Cháu giám đốc nộp hồ sơ, thiếu bằng bắt buộc.",
-  "en": ""
- },
- {
-  "vi": "Nhận thẳng vì người nhà",
-  "en": ""
- },
- {
-  "vi": "Xét như mọi người: chưa đủ điều kiện",
-  "en": ""
- },
- {
-  "vi": "Làm bằng giả cho kịp",
-  "en": ""
- },
- {
-  "vi": "Bảng công trống ngày thứ Ba; đơn nghỉ phép của người đó còn “chưa duyệt”.",
-  "en": ""
- },
- {
-  "vi": "Đơn chưa duyệt thì chưa tính là nghỉ có phép.",
-  "en": ""
- },
- {
-  "vi": "Bảng công trống, nhưng lịch công tác ghi người đó đi giao hàng mẫu hôm đó.",
-  "en": ""
- },
- {
-  "vi": "Đi công tác: vẫn tính công",
   "en": ""
  }
 ]

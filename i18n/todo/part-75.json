@@ -1,5 +1,61 @@
 [
  {
+  "vi": "💼 Nơi làm thuê (lớp học, văn phòng…) không có kho.",
+  "en": ""
+ },
+ {
+  "vi": "Xem cách nhập hàng ở nơi đang làm",
+  "en": ""
+ },
+ {
+  "vi": "Đi dự đám cưới thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "💍 Mở menu [[Khu phố]] → [[Lịch cưới]]. Tiệc mở 5 phút trước giờ, kéo dài 10 phút: bấm [[Vào dự]].",
+  "en": ""
+ },
+ {
+  "vi": "🪙 Có tài khoản thì mỗi phút ở lại được 20 xu (tối đa 2 đám mỗi ngày). Chưa có tài khoản thì chỉ xem.",
+  "en": ""
+ },
+ {
+  "vi": "💌 Bạn bè cưới sẽ mời bạn và nhắc trước giờ tiệc.",
+  "en": ""
+ },
+ {
+  "vi": "Mở Lịch cưới",
+  "en": ""
+ },
+ {
+  "vi": "Mừng cưới bao nhiêu?",
+  "en": ""
+ },
+ {
+  "vi": "🧧 Tùy lòng, không bắt buộc. Trong tiệc bấm 🧧, chọn 10, 20, 50, 100 hoặc 200 xu và một lời chúc, rồi [[Gửi phong bì]].",
+  "en": ""
+ },
+ {
+  "vi": "👛 Tiền lấy từ ví, chia đôi cho cô dâu chú rể. Mừng mấy phong bì cũng được, miễn ví còn đủ. Cần có tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Lần đầu vào dự tiệc, admin tặng bạn 500 xu (mỗi người một lần).",
+  "en": ""
+ },
+ {
+  "vi": "Đổi tên thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "✏️ Mở [[Hành trình]], chạm ảnh nhân vật, sửa “Tên của bạn” rồi bấm [[Lưu lại]]. Hoặc [[Cài đặt]] → [[Cách chơi]] → [[Hồ sơ]].",
+  "en": ""
+ },
+ {
+  "vi": "💬 Tên trong Chat và Bạn bè là tên hiển thị đặt lúc tạo tài khoản; trong game chưa đổi được.",
+  "en": ""
+ },
+ {
   "vi": "Mở Nhân vật của bạn",
   "en": ""
  },
@@ -1741,62 +1797,6 @@
  },
  {
   "vi": "Hàng xóm cũ phụ khiêng cái tủ lên xe, còn dặn: “Cuối tuần nhớ ghé uống trà nghe!”",
-  "en": ""
- },
- {
-  "vi": "Cơm nước và điện nước nhà mình",
-  "en": ""
- },
- {
-  "vi": "Tiền giường ký túc xá và cơm nước",
-  "en": ""
- },
- {
-  "vi": "Tiền phòng trọ và cơm nước",
-  "en": ""
- },
- {
-  "vi": "Mở tài khoản Ngân hàng Phố trước rồi mới vay mua nhà được.",
-  "en": ""
- },
- {
-  "vi": "vay mua nhà",
-  "en": ""
- },
- {
-  "vi": "Căn nhà chung đã bán",
-  "en": ""
- },
- {
-  "vi": "Trả nhà đang thuê của người chơi trước khi dọn về nhà chung.",
-  "en": ""
- },
- {
-  "vi": "tài khoản ngân hàng",
-  "en": ""
- },
- {
-  "vi": "Thao tác nhà ở không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Thuê và mua nhà chỉ có trong chế độ hành trình.",
-  "en": ""
- },
- {
-  "vi": "Trả nhà đang thuê của người chơi trước khi đổi chỗ ở nhé.",
-  "en": ""
- },
- {
-  "vi": "Chọn phòng muốn thuê nhé.",
-  "en": ""
- },
- {
-  "vi": "Bạn đã có nhà riêng rồi.",
-  "en": ""
- },
- {
-  "vi": "Bạn đang ở đây rồi.",
   "en": ""
  }
 ]

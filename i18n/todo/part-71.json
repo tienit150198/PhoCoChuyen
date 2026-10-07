@@ -1,5 +1,61 @@
 [
  {
+  "vi": "🔒 Đủ phiếu thì [[Khóa sổ tháng]]; hết giờ chờ thì [[Khóa kèm ghi chú thiếu]] (75% phí).",
+  "en": ""
+ },
+ {
+  "vi": "💸 Từ ngày 6 khu phố có tờ 50 xu giả: tờ thật có sợi bạc 🧵, tờ lạ phải tách riêng.",
+  "en": ""
+ },
+ {
+  "vi": "✉️ Thư “đổi tài khoản” giục chuyển trước 11 giờ: địa chỉ lạ là lừa, gọi số trong hồ sơ.",
+  "en": ""
+ },
+ {
+  "vi": "📞 “Điện lực” gọi dọa cắt điện đòi chuyển 35 xu: tra ứng dụng điện lực, đừng chuyển.",
+  "en": ""
+ },
+ {
+  "vi": "🧾 Minh Phát nợ phí quá hạn: gửi biên bản đối chiếu công nợ, đừng ứng thêm tiền cho họ.",
+  "en": ""
+ },
+ {
+  "vi": "🗯️ Đồng nghiệp đổ lỗi, ví bị móc, laptop bị lấy, bóng bay vỡ kính: giữ bình tĩnh, đưa bằng chứng.",
+  "en": ""
+ },
+ {
+  "vi": "Chốt số đếm",
+  "en": ""
+ },
+ {
+  "vi": "Mở hộp sổ tháng",
+  "en": ""
+ },
+ {
+  "vi": "Xin khách gửi",
+  "en": ""
+ },
+ {
+  "vi": "Gọi nhắc lại",
+  "en": ""
+ },
+ {
+  "vi": "Bạn soát chứng từ, định khoản, đối chiếu ngân hàng và khóa sổ cuối tháng cho chị Hạnh, kế toán trưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Soi từng bộ giấy, chạm khoanh ô sai rồi đóng dấu DUYỆT, TRẢ LẠI hoặc TRÌNH SẾP. Xong bấm [[Chốt khay]].",
+  "en": ""
+ },
+ {
+  "vi": "Ba chứng từ, mỗi cái chọn đúng tài khoản Nợ và Có rồi bấm [[Ghi bút toán]].",
+  "en": ""
+ },
+ {
+  "vi": "So hóa đơn với đơn đặt hàng và phiếu nhập. Đánh dấu lỗi: MST, người mua, số lượng, thuế, tổng, chữ ký, trùng.",
+  "en": ""
+ },
+ {
   "vi": "Xuất hóa đơn theo số hàng thực giao, không theo số đặt. Rồi ghi doanh thu và giá vốn.",
   "en": ""
  },
@@ -1509,62 +1565,6 @@
  },
  {
   "vi": "Chọn một cuộc họp rồi chạm ô trống: đủ chỗ, có máy chiếu khi cần, tránh giờ sếp bận.",
-  "en": ""
- },
- {
-  "vi": "Chạm các bước sẽ làm theo thứ tự (↑ ↓ để đổi chỗ, ✕ để bỏ). Bước có hại thì bỏ qua.",
-  "en": ""
- },
- {
-  "vi": "Tìm hiểu trước, rồi chọn cách trả lời khách khó cho khéo mà đúng.",
-  "en": ""
- },
- {
-  "vi": "📤 Xong thì bấm [[Nộp hồ sơ]], [[Nộp lời nhắn]] hoặc [[Chốt các bước]].",
-  "en": ""
- },
- {
-  "vi": "📞 Số gọi lại: lấy số sau cùng người gọi đọc. Giờ ghi theo 24 giờ: 2 giờ rưỡi chiều là 14:30.",
-  "en": ""
- },
- {
-  "vi": "🎣 Thư đòi chuyển tiền gấp, báo đổi số tài khoản: Rác / lừa đảo, rồi gọi xác minh bằng số đã biết.",
-  "en": ""
- },
- {
-  "vi": "📅 Ngày và thứ phải khớp lịch. Tên người nhận đúng từng dấu.",
-  "en": ""
- },
- {
-  "vi": "🔒 Lịch, thư và giấy tờ của sếp không đưa người ngoài xem.",
-  "en": ""
- },
- {
-  "vi": "Ghi sai số gọi lại, sai giờ",
-  "en": ""
- },
- {
-  "vi": "Sếp gọi nhầm người; mỗi ô sai bớt 3 xu thưởng.",
-  "en": ""
- },
- {
-  "vi": "Làm theo thư lừa đảo",
-  "en": ""
- },
- {
-  "vi": "Lỗi nặng: mất tin tưởng, ngày đó không tính là chắc tay.",
-  "en": ""
- },
- {
-  "vi": "💼 Phải được tuyển trước: bấm [[Ứng tuyển]], nộp CV, thư xin việc, phỏng vấn với Anh Quân.",
-  "en": ""
- },
- {
-  "vi": "💰 Lương theo ngày (Cánh Diều 55–80 xu, văn phòng dịch vụ 50–70 xu) vào ví khi khép ca, nếu xong ít nhất một việc.",
-  "en": ""
- },
- {
-  "vi": "🧭 Lộ trình: Thử việc → Thư ký chính thức → Thư ký riêng của giám đốc → Được đề cử trợ lý giám đốc.",
   "en": ""
  }
 ]

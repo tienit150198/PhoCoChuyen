@@ -1,5 +1,45 @@
 [
  {
+  "vi": "Danh sách quà mừng",
+  "en": ""
+ },
+ {
+  "vi": "Chị Ly sắp sinh mở danh sách quà. Món bạn bè đã mua thì [[Để riêng]], món ghi 3+ thì [[Gợi ý đổi]], rồi [[Giao hộp quà mừng]] trước tiệc.",
+  "en": ""
+ },
+ {
+  "vi": "💬 Bấm [[Hỏi nhu cầu khách]] để biết món, ngân sách, màu giấy.",
+  "en": ""
+ },
+ {
+  "vi": "🧸 Ở [[Kệ hàng]] (mở sẵn lọc 🎯 Khách cần, bấm [[Tất cả]] để xem cả kệ), đọc nhãn tuổi rồi bấm [[Thêm]] đúng món, đúng số lượng.",
+  "en": ""
+ },
+ {
+  "vi": "🎀 Cần gói: sang [[Gói quà]], chọn đúng màu giấy, thiệp đúng dịp, bấm [[Gói món quà này]].",
+  "en": ""
+ },
+ {
+  "vi": "✓ Ở [[Thu ngân]], bấm [[Kiểm đơn]] để soát món, số lượng, ngân sách.",
+  "en": ""
+ },
+ {
+  "vi": "🛍️ Bấm [[Thanh toán & giao]] để thu tiền và trao quà (gói quà tốn 5 xu).",
+  "en": ""
+ },
+ {
+  "vi": "📦 Kệ hết món khách cần: bấm [[Nhập gấp]] (gọi hỏa tốc, 15–30 phút) hoặc [[Hết · nhập]]. Thùng về mai thì [[Giữ đơn]].",
+  "en": ""
+ },
+ {
+  "vi": "🎯 Đúng món, đúng số lượng, không thêm món khách không hỏi.",
+  "en": ""
+ },
+ {
+  "vi": "👶 Món hợp tuổi bé: hộp ghi 3+ không bán cho bé nhỏ.",
+  "en": ""
+ },
+ {
   "vi": "👛 Tổng tiền không vượt ngân sách khách dặn.",
   "en": ""
  },
@@ -1549,58 +1589,6 @@
  },
  {
   "vi": "Khách không nhận, phải đổi nhãn. Review vẫn ghi một lỗi nhỏ.",
-  "en": ""
- },
- {
-  "vi": "Giao thiếu hàng",
-  "en": ""
- },
- {
-  "vi": "Chỉ được trả phần đã giao. Thiếu nhiều thì bị bớt tiền, hoàn tiền hoặc khách bỏ đi.",
-  "en": ""
- },
- {
-  "vi": "Lẫn loại B vào hợp đồng loại A",
-  "en": ""
- },
- {
-  "vi": "Phần loại B chỉ tính 70% giá, khách phàn nàn, sao giảm.",
-  "en": ""
- },
- {
-  "vi": "Phun thuốc hóa học khi ong đang ở cạnh vườn",
-  "en": ""
- },
- {
-  "vi": "Ong chết cả đàn, đền 12 xu, bị chấm 1★.",
-  "en": ""
- },
- {
-  "vi": "Quên cho gà ăn, bỏ bê chuồng",
-  "en": ""
- },
- {
-  "vi": "Gà kém vui, mai chỉ nửa đàn đẻ. Trứng để qua đêm thành loại B.",
-  "en": ""
- },
- {
-  "vi": "📦 Bấm [[Kho vật tư]] để đặt hạt giống, phân, thuốc, cám gà và bao bì.",
-  "en": ""
- },
- {
-  "vi": "🌾 HTX Nông nghiệp Mây: giá xã viên, đặt trước 11:00 thì chiều nay có, đặt sau thì sáng mai.",
-  "en": ""
- },
- {
-  "vi": "🚚 Đại lý vật tư Hạt Nắng chạy 4 chuyến: đặt trước 09:00, 12:00, 15:00 hoặc 18:00, hàng tới sau khoảng 1 tiếng.",
-  "en": ""
- },
- {
-  "vi": "⚡ Xe ba gác hỏa tốc tới trong 15–30 phút nhưng đắt. Dùng khi gà sắp hết cám.",
-  "en": ""
- },
- {
-  "vi": "🌱 Trại giống Đồng Xanh: hạt cà chua, dưa leo, rau thơm rẻ nhất nhưng 1–2 ngày mới có.",
   "en": ""
  }
 ]

@@ -1,5 +1,65 @@
 [
  {
+  "vi": "không báo khẩn",
+  "en": ""
+ },
+ {
+  "vi": "không phòng vệ",
+  "en": ""
+ },
+ {
+  "vi": "chưa xử lý tại chỗ",
+  "en": ""
+ },
+ {
+  "vi": "ghi chưa đúng loại phiếu",
+  "en": ""
+ },
+ {
+  "vi": "📒 Ký sổ tuần đường.",
+  "en": ""
+ },
+ {
+  "vi": "🛡️ Đội sẽ đọc lại buổi tuần này cùng bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Sáng mai nhận ca: đọc sổ giao ca, thử từng thiết bị rồi mới ký.",
+  "en": ""
+ },
+ {
+  "vi": "thử từng thứ",
+  "en": ""
+ },
+ {
+  "vi": "ký khi chưa thử",
+  "en": ""
+ },
+ {
+  "vi": "Báo đúng nơi",
+  "en": ""
+ },
+ {
+  "vi": "đúng kênh",
+  "en": ""
+ },
+ {
+  "vi": "Đi đủ đoạn tuần",
+  "en": ""
+ },
+ {
+  "vi": "đủ từng điểm",
+  "en": ""
+ },
+ {
+  "vi": "bỏ qua điểm",
+  "en": ""
+ },
+ {
+  "vi": "Phòng vệ, báo khẩn",
+  "en": ""
+ },
+ {
   "vi": "chỗ nguy hiểm được báo ngay",
   "en": ""
  },
@@ -1737,66 +1797,6 @@
  },
  {
   "vi": "Chờ điện có lại rồi tính",
-  "en": ""
- },
- {
-  "vi": "Mất điện mà gác chắn ngồi chờ, không báo ga.",
-  "en": ""
- },
- {
-  "vi": "Điện chưa có, tàu sắp tới. Bạn cuống cuồng lắp tay quay, gọi ga muộn mất năm phút.",
-  "en": ""
- },
- {
-  "vi": "Cầm cờ đỏ ra giữa đường, đứng chặn xe bằng tay",
-  "en": ""
- },
- {
-  "vi": "Tạm thời",
-  "en": ""
- },
- {
-  "vi": "Xe dừng lại vì cờ đỏ, nhưng không có cần chắn thì người ta cứ len. May có tay quay trong tủ.",
-  "en": ""
- },
- {
-  "vi": "Bé lạc ở đường ngang",
-  "en": ""
- },
- {
-  "vi": "Một bé gái chừng bốn tuổi đứng khóc cạnh chòi gác, tay cầm que kem, không biết nhà ở đâu.",
-  "en": ""
- },
- {
-  "vi": "Cho bé ngồi trong chòi, xa đường ray, gọi tổ dân phố và công an phường",
-  "en": ""
- },
- {
-  "vi": "Mười lăm phút sau mẹ bé chạy tới, ôm chầm lấy con. Tổ dân phố đăng tin cảm ơn ca gác.",
-  "en": ""
- },
- {
-  "vi": "Bỏ chòi, dắt bé đi hỏi từng nhà",
-  "en": ""
- },
- {
-  "vi": "Chòi không người",
-  "en": ""
- },
- {
-  "vi": "Bỏ chòi gác không người lúc sắp có tàu.",
-  "en": ""
- },
- {
-  "vi": "Bạn đi được hai ngõ thì nghe chuông bộ đàm réo. Chòi không ai trực.",
-  "en": ""
- },
- {
-  "vi": "Chụp ảnh bé đăng nhóm phố rồi để bé ngồi chờ",
-  "en": ""
- },
- {
-  "vi": "Tin lan nhanh, mẹ bé tới. Có người nhắc: đừng đăng mặt trẻ con lung tung.",
   "en": ""
  }
 ]

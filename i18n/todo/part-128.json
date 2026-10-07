@@ -1,0 +1,47 @@
+[
+ {
+  "vi": "Thưởng thêm 40% trên lợi nhuận dương của đơn riêng đã hoàn thành, sau giá vốn, lương và vật tư, trước thuế. Đã cộng $1 xu vào quỹ nghề và lãi đã ghi; phần lẻ được cộng dồn. Đơn khách người chơi do đội phục vụ cũng được thưởng sau khi thanh toán: $2 xu, ghi riêng trong sổ thu chi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chi phí đã ghi: $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lương $1 · vật tư $2 · giá vốn hàng đã dùng $3 xu. Xem sổ thu chi để đối chiếu tiền thực thu và chi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "/5 sao · lương $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thưởng +$1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lãi $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "mỗi giờ · $1 đơn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quỹ nghề hiện đủ trả lương, vật tư cho khoảng $1 đơn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thu $1 xu (theo sao phục vụ) · lương $2 · vật tư $3$4 xu",
+  "en": "",
+  "pattern": true
+ }
+]

@@ -1,5 +1,61 @@
 [
  {
+  "vi": "Chạm các bước sẽ làm theo thứ tự (↑ ↓ để đổi chỗ, ✕ để bỏ). Bước có hại thì bỏ qua.",
+  "en": ""
+ },
+ {
+  "vi": "Tìm hiểu trước, rồi chọn cách trả lời khách khó cho khéo mà đúng.",
+  "en": ""
+ },
+ {
+  "vi": "📤 Xong thì bấm [[Nộp hồ sơ]], [[Nộp lời nhắn]] hoặc [[Chốt các bước]].",
+  "en": ""
+ },
+ {
+  "vi": "📞 Số gọi lại: lấy số sau cùng người gọi đọc. Giờ ghi theo 24 giờ: 2 giờ rưỡi chiều là 14:30.",
+  "en": ""
+ },
+ {
+  "vi": "🎣 Thư đòi chuyển tiền gấp, báo đổi số tài khoản: Rác / lừa đảo, rồi gọi xác minh bằng số đã biết.",
+  "en": ""
+ },
+ {
+  "vi": "📅 Ngày và thứ phải khớp lịch. Tên người nhận đúng từng dấu.",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Lịch, thư và giấy tờ của sếp không đưa người ngoài xem.",
+  "en": ""
+ },
+ {
+  "vi": "Ghi sai số gọi lại, sai giờ",
+  "en": ""
+ },
+ {
+  "vi": "Sếp gọi nhầm người; mỗi ô sai bớt 3 xu thưởng.",
+  "en": ""
+ },
+ {
+  "vi": "Làm theo thư lừa đảo",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi nặng: mất tin tưởng, ngày đó không tính là chắc tay.",
+  "en": ""
+ },
+ {
+  "vi": "💼 Phải được tuyển trước: bấm [[Ứng tuyển]], nộp CV, thư xin việc, phỏng vấn với Anh Quân.",
+  "en": ""
+ },
+ {
+  "vi": "💰 Lương theo ngày (Cánh Diều 55–80 xu, văn phòng dịch vụ 50–70 xu) vào ví khi khép ca, nếu xong ít nhất một việc.",
+  "en": ""
+ },
+ {
+  "vi": "🧭 Lộ trình: Thử việc → Thư ký chính thức → Thư ký riêng của giám đốc → Được đề cử trợ lý giám đốc.",
+  "en": ""
+ },
+ {
   "vi": "✈️ Sếp sắp đi công tác: kế hoạch hay đổi phút chót.",
   "en": ""
  },
@@ -1629,50 +1685,6 @@
  },
  {
   "vi": "🗺️ Mở [[Khu phố]]: bản đồ nhỏ có 5 điểm. Chạm một điểm để ghé; lần đầu ghé mỗi điểm được một thiệp vào Hộ chiếu.",
-  "en": ""
- },
- {
-  "vi": "📚 Thư viện góc phố mở trò xếp bước. Vườn nghỉ nhỏ mở trò lật thẻ.",
-  "en": ""
- },
- {
-  "vi": "🎨 Xưởng đồ xinh mở trò nối nhãn và lối sang trang trí góc của bạn. Chợ cuối phố mở trò xếp món và lời nhắn khu phố.",
-  "en": ""
- },
- {
-  "vi": "🎏 Quảng trường Mây là nơi nhận lời mời ngày hội của khu phố.",
-  "en": ""
- },
- {
-  "vi": "🎉 Hôm nào là Ngày hội khu phố (hên xui), xong 3 việc và 1 trò nhỏ trong ca rồi bấm [[Mở góc ngày hội]]: +30 xu vào quỹ và một thiệp.",
-  "en": ""
- },
- {
-  "vi": "🧭 Ghé đủ 4 điểm là đủ mốc huy hiệu Dấu chân khu phố.",
-  "en": ""
- },
- {
-  "vi": "Mở Khu phố",
-  "en": ""
- },
- {
-  "vi": "📓 Mở [[Sổ tay]] của nơi đang làm. Tiệm trà sữa, lớp học và nghề hướng dẫn viên không có Sổ tay: xem Hộ chiếu.",
-  "en": ""
- },
- {
-  "vi": "📜 [[Nhật ký]]: mọi chuyện ở nơi này theo từng ngày, như tiền vào ra, việc đã xong, chuyện bất ngờ.",
-  "en": ""
- },
- {
-  "vi": "💭 [[Ký ức]]: những kỷ niệm chung với từng người quen ở nơi này.",
-  "en": ""
- },
- {
-  "vi": "📖 [[Câu chuyện]] (tiệm mẹ & bé, nhà thuốc, kế toán, chăm sóc khách hàng): 3 tuyến chuyện, mỗi tuyến vài bước đếm theo việc bạn làm thật.",
-  "en": ""
- },
- {
-  "vi": "🎁 Đủ các bước thì bấm [[Nhận kỷ niệm]]: +75 xu vào quỹ, kỷ vật hiện trong [[Kỷ niệm]].",
   "en": ""
  }
 ]

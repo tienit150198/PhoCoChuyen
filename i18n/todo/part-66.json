@@ -1,5 +1,65 @@
 [
  {
+  "vi": "Bạn đứng quầy trà sữa: nghe khách gọi, pha từng lớp, dán nắp rồi trao ly.",
+  "en": ""
+ },
+ {
+  "vi": "Khách vãng lai ghé quầy",
+  "en": ""
+ },
+ {
+  "vi": "Bấm [[Nghe gọi món]] để đọc phiếu, rồi pha đúng trà, siro, topping, đá, đường.",
+  "en": ""
+ },
+ {
+  "vi": "Khách quen “Như mọi khi”",
+  "en": ""
+ },
+ {
+  "vi": "Khách không đọc lại món. Mở 📒 Sổ khách quen để xem ly quen rồi pha đúng như vậy.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn nhóm 2–3 ly",
+  "en": ""
+ },
+ {
+  "vi": "Một khách gọi nhiều ly. Chọn từng tab Ly 1, Ly 2… pha xong hết mới có một đánh giá.",
+  "en": ""
+ },
+ {
+  "vi": "Đơn app (tài xế ghé lấy, từ cấp 2)",
+  "en": ""
+ },
+ {
+  "vi": "Phiếu in sẵn, không cần hỏi. Pha kịp trước khi thanh tài xế cạn; app giữ 20% tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Chị Hạnh đặt 3 ly có giờ hẹn. Xong kịp giờ được thưởng 15 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Ly signature cho Hân quay video",
+  "en": ""
+ },
+ {
+  "vi": "Pha đúng từng lời dặn: ly chuẩn được 20 xu quảng bá, ly lệch chỉ được 3★.",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm học sinh tan học",
+  "en": ""
+ },
+ {
+  "vi": "Nhiều bạn vào hàng cùng lúc, kiên nhẫn thấp. Chọn “ly nhanh” thì cả nhóm cùng một công thức.",
+  "en": ""
+ },
+ {
+  "vi": "Chăm quầy",
+  "en": ""
+ },
+ {
   "vi": "Ủ trà, nấu trân châu, lau máy dán nắp, đặt siro và ly trước khi cạn.",
   "en": ""
  },
@@ -1657,46 +1717,6 @@
  },
  {
   "vi": "Từ ngày 2, bốn gia đình quen ghé lấy gói. Chọn size bỉm theo cân nặng hôm nay, hộp sữa đúng loại, còn hạn, rồi [[Trao gói]].",
-  "en": ""
- },
- {
-  "vi": "Danh sách quà mừng",
-  "en": ""
- },
- {
-  "vi": "Chị Ly sắp sinh mở danh sách quà. Món bạn bè đã mua thì [[Để riêng]], món ghi 3+ thì [[Gợi ý đổi]], rồi [[Giao hộp quà mừng]] trước tiệc.",
-  "en": ""
- },
- {
-  "vi": "💬 Bấm [[Hỏi nhu cầu khách]] để biết món, ngân sách, màu giấy.",
-  "en": ""
- },
- {
-  "vi": "🧸 Ở [[Kệ hàng]] (mở sẵn lọc 🎯 Khách cần, bấm [[Tất cả]] để xem cả kệ), đọc nhãn tuổi rồi bấm [[Thêm]] đúng món, đúng số lượng.",
-  "en": ""
- },
- {
-  "vi": "🎀 Cần gói: sang [[Gói quà]], chọn đúng màu giấy, thiệp đúng dịp, bấm [[Gói món quà này]].",
-  "en": ""
- },
- {
-  "vi": "✓ Ở [[Thu ngân]], bấm [[Kiểm đơn]] để soát món, số lượng, ngân sách.",
-  "en": ""
- },
- {
-  "vi": "🛍️ Bấm [[Thanh toán & giao]] để thu tiền và trao quà (gói quà tốn 5 xu).",
-  "en": ""
- },
- {
-  "vi": "📦 Kệ hết món khách cần: bấm [[Nhập gấp]] (gọi hỏa tốc, 15–30 phút) hoặc [[Hết · nhập]]. Thùng về mai thì [[Giữ đơn]].",
-  "en": ""
- },
- {
-  "vi": "🎯 Đúng món, đúng số lượng, không thêm món khách không hỏi.",
-  "en": ""
- },
- {
-  "vi": "👶 Món hợp tuổi bé: hộp ghi 3+ không bán cho bé nhỏ.",
   "en": ""
  }
 ]

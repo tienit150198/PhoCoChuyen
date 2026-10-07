@@ -1,5 +1,89 @@
 [
  {
+  "vi": "😊 Bé chơi vui, được trả lời ân cần.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Bàn giao trung thực.",
+  "en": ""
+ },
+ {
+  "vi": "Dọn món có thứ bé dị ứng",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: mất tiền chăm kỹ, bố mẹ bé mất lòng tin.",
+  "en": ""
+ },
+ {
+  "vi": "Cho bé nhỏ ăn đồ cứng, miếng to, cháo nóng",
+  "en": ""
+ },
+ {
+  "vi": "Bé dễ hóc, phỏng miệng. Tiền công bị trừ.",
+  "en": ""
+ },
+ {
+  "vi": "Đưa đồ chơi mảnh nhỏ cho bé dưới 4 tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Lỗi an toàn: bé cho vào miệng là hóc.",
+  "en": ""
+ },
+ {
+  "vi": "Cho xem màn hình khi giấy dặn không cho",
+  "en": ""
+ },
+ {
+  "vi": "Bố mẹ bé phàn nàn.",
+  "en": ""
+ },
+ {
+  "vi": "Quát, dọa bé",
+  "en": ""
+ },
+ {
+  "vi": "Bé càng khóc, bố mẹ bé buồn lòng.",
+  "en": ""
+ },
+ {
+  "vi": "Giấu chuyện bé khóc, bé ngã",
+  "en": ""
+ },
+ {
+  "vi": "Mất lòng tin: không có bồi dưỡng, gia đình ít gửi lại.",
+  "en": ""
+ },
+ {
+  "vi": "Hết ngày chưa bàn giao",
+  "en": ""
+ },
+ {
+  "vi": "Bố mẹ tự đón bé, chỉ gửi nửa ngày công.",
+  "en": ""
+ },
+ {
+  "vi": "📝 Mở [[Giấy dặn của bố mẹ]] bất cứ lúc nào để xem lại dị ứng, giờ ngủ, đồ ôm.",
+  "en": ""
+ },
+ {
+  "vi": "💵 Tiền công theo ngày, thêm tiền chăm kỹ, tiền khách quen và bồi dưỡng khi bé được chăm kỹ.",
+  "en": ""
+ },
+ {
+  "vi": "👪 Mỗi ngày một gia đình: bé Bin, bé Na, bé Sóc, bé Mít, bé Bông, mỗi bé một tính, một món dị ứng.",
+  "en": ""
+ },
+ {
+  "vi": "🌧️ Ngày mưa sàn ướt, ngày bé sổ mũi chỉ uống nước ấm.",
+  "en": ""
+ },
+ {
+  "vi": "🎓 Hai ngày đầu cô Tâm gọi điện nhắc trước khi bạn lỡ tay.",
+  "en": ""
+ },
+ {
   "vi": "🔔 Hàng xóm cho bánh, người lạ bấm chuông, trán bé hơi ấm: chọn cách xử lý.",
   "en": ""
  },
@@ -1621,62 +1705,6 @@
  },
  {
   "vi": "📎 Thiếu phiếu: bấm [[Xin khách gửi]]. Khách hay quên thì tới hẹn bấm [[Gọi nhắc lại]].",
-  "en": ""
- },
- {
-  "vi": "🔒 Đủ phiếu thì [[Khóa sổ tháng]]; hết giờ chờ thì [[Khóa kèm ghi chú thiếu]] (75% phí).",
-  "en": ""
- },
- {
-  "vi": "💸 Từ ngày 6 khu phố có tờ 50 xu giả: tờ thật có sợi bạc 🧵, tờ lạ phải tách riêng.",
-  "en": ""
- },
- {
-  "vi": "✉️ Thư “đổi tài khoản” giục chuyển trước 11 giờ: địa chỉ lạ là lừa, gọi số trong hồ sơ.",
-  "en": ""
- },
- {
-  "vi": "📞 “Điện lực” gọi dọa cắt điện đòi chuyển 35 xu: tra ứng dụng điện lực, đừng chuyển.",
-  "en": ""
- },
- {
-  "vi": "🧾 Minh Phát nợ phí quá hạn: gửi biên bản đối chiếu công nợ, đừng ứng thêm tiền cho họ.",
-  "en": ""
- },
- {
-  "vi": "🗯️ Đồng nghiệp đổ lỗi, ví bị móc, laptop bị lấy, bóng bay vỡ kính: giữ bình tĩnh, đưa bằng chứng.",
-  "en": ""
- },
- {
-  "vi": "Chốt số đếm",
-  "en": ""
- },
- {
-  "vi": "Mở hộp sổ tháng",
-  "en": ""
- },
- {
-  "vi": "Xin khách gửi",
-  "en": ""
- },
- {
-  "vi": "Gọi nhắc lại",
-  "en": ""
- },
- {
-  "vi": "Bạn soát chứng từ, định khoản, đối chiếu ngân hàng và khóa sổ cuối tháng cho chị Hạnh, kế toán trưởng.",
-  "en": ""
- },
- {
-  "vi": "Soi từng bộ giấy, chạm khoanh ô sai rồi đóng dấu DUYỆT, TRẢ LẠI hoặc TRÌNH SẾP. Xong bấm [[Chốt khay]].",
-  "en": ""
- },
- {
-  "vi": "Ba chứng từ, mỗi cái chọn đúng tài khoản Nợ và Có rồi bấm [[Ghi bút toán]].",
-  "en": ""
- },
- {
-  "vi": "So hóa đơn với đơn đặt hàng và phiếu nhập. Đánh dấu lỗi: MST, người mua, số lượng, thuế, tổng, chữ ký, trùng.",
   "en": ""
  }
 ]

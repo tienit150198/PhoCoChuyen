@@ -1,5 +1,1689 @@
 [
  {
+  "vi": "Lãi dự thu",
+  "en": ""
+ },
+ {
+  "vi": "Giá trị sổ",
+  "en": ""
+ },
+ {
+  "vi": "Lãi suất hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Đối tượng",
+  "en": ""
+ },
+ {
+  "vi": "Loại tiền",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên tệ",
+  "en": ""
+ },
+ {
+  "vi": "Tỷ giá ban đầu",
+  "en": ""
+ },
+ {
+  "vi": "Tỷ giá sổ",
+  "en": ""
+ },
+ {
+  "vi": "Giá trị VND",
+  "en": ""
+ },
+ {
+  "vi": "Nguyên liệu trực tiếp",
+  "en": ""
+ },
+ {
+  "vi": "Sản xuất chung",
+  "en": ""
+ },
+ {
+  "vi": "Sản phẩm hoàn thành",
+  "en": ""
+ },
+ {
+  "vi": "Dở dang cuối kỳ",
+  "en": ""
+ },
+ {
+  "vi": "Sổ chi tiết",
+  "en": ""
+ },
+ {
+  "vi": "Bảng tập hợp giá thành",
+  "en": ""
+ },
+ {
+  "vi": "Khoản mục",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo đang được chuẩn bị từ sổ đã ghi.",
+  "en": ""
+ },
+ {
+  "vi": "B01 · Tình hình tài chính",
+  "en": ""
+ },
+ {
+  "vi": "B02 · Kết quả",
+  "en": ""
+ },
+ {
+  "vi": "B03 · Dòng tiền",
+  "en": ""
+ },
+ {
+  "vi": "B09 · Thuyết minh",
+  "en": ""
+ },
+ {
+  "vi": "Bốn báo cáo tài chính",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang lập báo cáo này ở việc hiện tại. Lấy số từ Cân đối phát sinh và Sổ chi tiết; bản đầy đủ hiện ra sau khi chấm đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Thuyết minh",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ này (VND)",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ trước (VND)",
+  "en": ""
+ },
+ {
+  "vi": "Trang nguồn",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo học tập theo kỳ tháng, gồm cả các chỉ tiêu không phát sinh.",
+  "en": ""
+ },
+ {
+  "vi": "Mẫu TT99 và Phụ lục IV chính thức",
+  "en": ""
+ },
+ {
+  "vi": "VĂN PHÒNG THỰC HÀNH",
+  "en": ""
+ },
+ {
+  "vi": "Đi từ chứng từ đến bộ sổ và bốn báo cáo trong 12 kỳ của năm 2026. Hồ sơ dùng VND; lương trong trò chơi dùng xu.",
+  "en": ""
+ },
+ {
+  "vi": "Lương kế toán doanh nghiệp áp dụng ×3 sau khi đạt chứng nhận, không cộng dồn sau thi lại. Nghề hiện tại của bạn vẫn được giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Nhận việc thực hành",
+  "en": ""
+ },
+ {
+  "vi": "Thi đạt chứng nhận Kế toán doanh nghiệp Việt Nam để nhận việc.",
+  "en": ""
+ },
+ {
+  "vi": "Đã mở nguồn",
+  "en": ""
+ },
+ {
+  "vi": "Đọc nguồn trước",
+  "en": ""
+ },
+ {
+  "vi": "Mở chứng từ gốc",
+  "en": ""
+ },
+ {
+  "vi": "Mở và đọc hồ sơ trước khi nhập bút toán. Sổ sách cập nhật sau khi câu trả lời được chấm đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Chứng từ, kết chuyển và bốn báo cáo đã được chấm đúng.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhận lương kỳ này",
+  "en": ""
+ },
+ {
+  "vi": "Nhận lương ca thực hành",
+  "en": ""
+ },
+ {
+  "vi": "Mở tháng tiếp theo →",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn thành 12 kỳ năm 2026",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký kỳ hiện tại",
+  "en": ""
+ },
+ {
+  "vi": "Nhật ký các kỳ trước",
+  "en": ""
+ },
+ {
+  "vi": "Đầu kỳ Nợ",
+  "en": ""
+ },
+ {
+  "vi": "Đầu kỳ Có",
+  "en": ""
+ },
+ {
+  "vi": "Phát sinh Nợ",
+  "en": ""
+ },
+ {
+  "vi": "Phát sinh Có",
+  "en": ""
+ },
+ {
+  "vi": "Cuối kỳ Nợ",
+  "en": ""
+ },
+ {
+  "vi": "Cuối kỳ Có",
+  "en": ""
+ },
+ {
+  "vi": "DOANH NGHIỆP THỰC HÀNH · VND",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhận lương",
+  "en": ""
+ },
+ {
+  "vi": "Đang ghi sổ",
+  "en": ""
+ },
+ {
+  "vi": "Tiến độ kỳ thực hành",
+  "en": ""
+ },
+ {
+  "vi": "Chứng từ & việc đang làm",
+  "en": ""
+ },
+ {
+  "vi": "Cân đối phát sinh",
+  "en": ""
+ },
+ {
+  "vi": "Bốn báo cáo",
+  "en": ""
+ },
+ {
+  "vi": "Hồ sơ doanh nghiệp",
+  "en": ""
+ },
+ {
+  "vi": "Vào làm ở",
+  "en": ""
+ },
+ {
+  "vi": "Đến",
+  "en": ""
+ },
+ {
+  "vi": "· bạn đang làm ở đây",
+  "en": ""
+ },
+ {
+  "vi": "Nhận bạn",
+  "en": ""
+ },
+ {
+  "vi": "Chưa đủ chứng nhận",
+  "en": ""
+ },
+ {
+  "vi": "Giới thiệu việc làm",
+  "en": ""
+ },
+ {
+  "vi": "Những nơi dưới đây nhận người có chứng nhận của bạn. Lương kế toán ×3, ngày lễ ×5; mỗi ca mở bằng vài câu kiểm tra kiến thức.",
+  "en": ""
+ },
+ {
+  "vi": "Thi đạt chứng nhận để được giới thiệu vào làm. Lương kế toán ×3, ngày lễ ×5.",
+  "en": ""
+ },
+ {
+  "vi": "Bài kiểm tra đang được tải.",
+  "en": ""
+ },
+ {
+  "vi": "Bài nên xem lại",
+  "en": ""
+ },
+ {
+  "vi": "Làm bài khác",
+  "en": ""
+ },
+ {
+  "vi": "Đang chấm bài…",
+  "en": ""
+ },
+ {
+  "vi": "Tiến độ kiểm tra",
+  "en": ""
+ },
+ {
+  "vi": "SỔ HỌC & THỰC HÀNH",
+  "en": ""
+ },
+ {
+  "vi": "Từ hiểu nghiệp vụ đến tự lập bộ sổ",
+  "en": ""
+ },
+ {
+  "vi": "TRƯỚC GIỜ VÀO CA",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra kiến thức",
+  "en": ""
+ },
+ {
+  "vi": "Vài câu ngắn từ ngân hàng đề của khóa học",
+  "en": ""
+ },
+ {
+  "vi": "Chương trình đang được tải. Mở lại sau một chút để tiếp tục.",
+  "en": ""
+ },
+ {
+  "vi": "Lương kế toán doanh nghiệp:",
+  "en": ""
+ },
+ {
+  "vi": "Bài học",
+  "en": ""
+ },
+ {
+  "vi": "Bài thi đang làm",
+  "en": ""
+ },
+ {
+  "vi": "Thi & chứng nhận",
+  "en": ""
+ },
+ {
+  "vi": "Doanh nghiệp thực hành",
+  "en": ""
+ },
+ {
+  "vi": "· thi lại không cộng dồn",
+  "en": ""
+ },
+ {
+  "vi": "Hoàn thành đủ câu trả lời; nhập số nguyên và kiểm tra các tài khoản trước khi nộp.",
+  "en": ""
+ },
+ {
+  "vi": "PHỐ CÓ CHUYỆN · CHỨNG NHẬN TRONG GAME",
+  "en": ""
+ },
+ {
+  "vi": "Ghi nhận học tập trong trò chơi, không thay văn bằng hay chứng chỉ hành nghề.",
+  "en": ""
+ },
+ {
+  "vi": "In bản này",
+  "en": ""
+ },
+ {
+  "vi": "Hủy bài thi đang làm?",
+  "en": ""
+ },
+ {
+  "vi": "Các câu đã nộp trong lần thi này sẽ bị bỏ. Bài học và chứng nhận đã có vẫn được giữ.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy bài thi",
+  "en": ""
+ },
+ {
+  "vi": "🔒 Cần thi chứng nhận",
+  "en": ""
+ },
+ {
+  "vi": "Ngày đời trung bình",
+  "en": ""
+ },
+ {
+  "vi": "Số dòng mỗi bảng",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ tài khoản vận hành xem được thống kê. Đăng nhập đúng tài khoản rồi mở lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Góp ý đang mở",
+  "en": ""
+ },
+ {
+  "vi": "Số quá lớn",
+  "en": ""
+ },
+ {
+  "vi": "Chưa hiểu số này",
+  "en": ""
+ },
+ {
+  "vi": "Gương mặt",
+  "en": ""
+ },
+ {
+  "vi": "Mái tóc",
+  "en": ""
+ },
+ {
+  "vi": "Áo & nền",
+  "en": ""
+ },
+ {
+  "vi": "Dáng mặt",
+  "en": ""
+ },
+ {
+  "vi": "Độ tuổi",
+  "en": ""
+ },
+ {
+  "vi": "Nét mặt",
+  "en": ""
+ },
+ {
+  "vi": "Mũ · khăn",
+  "en": ""
+ },
+ {
+  "vi": "Màu mũ · khăn",
+  "en": ""
+ },
+ {
+  "vi": "Râu",
+  "en": ""
+ },
+ {
+  "vi": "Điểm nhấn",
+  "en": ""
+ },
+ {
+  "vi": "Tàn nhang",
+  "en": ""
+ },
+ {
+  "vi": "Màu nền",
+  "en": ""
+ },
+ {
+  "vi": "Chào cả phố! 👋",
+  "en": ""
+ },
+ {
+  "vi": "Không tàn nhang",
+  "en": ""
+ },
+ {
+  "vi": "Có tàn nhang",
+  "en": ""
+ },
+ {
+  "vi": "Đồ trong Tủ đồ",
+  "en": ""
+ },
+ {
+  "vi": "Áo trơn",
+  "en": ""
+ },
+ {
+  "vi": "NHÂN VẬT",
+  "en": ""
+ },
+ {
+  "vi": "Ảnh đại diện đang chọn",
+  "en": ""
+ },
+ {
+  "vi": "Kiểu ảnh",
+  "en": ""
+ },
+ {
+  "vi": "Khuôn mặt",
+  "en": ""
+ },
+ {
+  "vi": "Phần của gương mặt",
+  "en": ""
+ },
+ {
+  "vi": "Mặc đồ trong Tủ đồ thì đổi áo, đổi phụ kiện là ảnh đổi theo.",
+  "en": ""
+ },
+ {
+  "vi": "👗 Tủ đồ",
+  "en": ""
+ },
+ {
+  "vi": "Theo nhân vật",
+  "en": ""
+ },
+ {
+  "vi": "🎲 Ngẫu nhiên",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "💸 Chuyển khoản",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được.",
+  "en": ""
+ },
+ {
+  "vi": "Đã nhận",
+  "en": ""
+ },
+ {
+  "vi": "Bạn ấy đã nhận",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả lại",
+  "en": ""
+ },
+ {
+  "vi": "Chờ bạn ấy vào game",
+  "en": ""
+ },
+ {
+  "vi": "💸 Chuyển khoản cho bạn bè",
+  "en": ""
+ },
+ {
+  "vi": "Không giới hạn số lần hay tổng xu chuyển mỗi ngày. Chuyển trong số dư bạn đang có.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay còn chuyển được",
+  "en": ""
+ },
+ {
+  "vi": "Chọn người nhận",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có bạn bè nào. Kết bạn ở mục Bạn bè nhé.",
+  "en": ""
+ },
+ {
+  "vi": "🛡️ Admin: chuyển ngay, không giới hạn.",
+  "en": ""
+ },
+ {
+  "vi": "Ví dụ: Cảm ơn nha!",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển từ",
+  "en": ""
+ },
+ {
+  "vi": "Kiểm tra lại nhé",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển rồi không lấy lại được.",
+  "en": ""
+ },
+ {
+  "vi": "Mã giao dịch",
+  "en": ""
+ },
+ {
+  "vi": "nhận được khi vào game. 💛",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển thêm",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay bạn đã chuyển đủ rồi. Mai chuyển tiếp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa chuyển được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa làm được. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Mở tài khoản Ngân hàng Phố?",
+  "en": ""
+ },
+ {
+  "vi": "Miễn phí mở và duy trì. Bạn nhận số tài khoản, sổ giao dịch và điểm tín dụng khởi đầu 650.",
+  "en": ""
+ },
+ {
+  "vi": "Mở tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn nộp nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn rút nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Rút tại cây ATM Ngân hàng Phố, không mất phí.",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn gửi nhé.",
+  "en": ""
+ },
+ {
+  "vi": "dưới 1 xu",
+  "en": ""
+ },
+ {
+  "vi": "Tới hạn tự tái tục: gốc và lãi gửi tiếp kỳ mới.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy từ tiền mặt.",
+  "en": ""
+ },
+ {
+  "vi": "Lấy từ tài khoản thanh toán.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền về tài khoản thanh toán, không mất lãi đã cộng.",
+  "en": ""
+ },
+ {
+  "vi": "Tất toán sổ trước hạn?",
+  "en": ""
+ },
+ {
+  "vi": "Tất toán",
+  "en": ""
+ },
+ {
+  "vi": "Nộp hồ sơ mở thẻ tín dụng?",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn trả nhé.",
+  "en": ""
+ },
+ {
+  "vi": "tài khoản thanh toán",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu muốn ứng nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Ứng",
+  "en": ""
+ },
+ {
+  "vi": "Hủy thẻ tín dụng?",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ không dùng được nữa. Muốn có thẻ mới phải nộp hồ sơ lại.",
+  "en": ""
+ },
+ {
+  "vi": "Hủy thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Khoản vay",
+  "en": ""
+ },
+ {
+  "vi": "Tất toán khoản vay trước hạn?",
+  "en": ""
+ },
+ {
+  "vi": "Nhập số xu nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Tiền mặt trong ví chuyển vào tài khoản chung của hai vợ chồng. Người ấy sẽ thấy giao dịch này.",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng chưa duyệt khoản vay này.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tiệm nhận vốn vay nhé.",
+  "en": ""
+ },
+ {
+  "vi": "NGÂN HÀNG PHỐ · ỨNG DỤNG",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản, tiết kiệm, thẻ và khoản vay của riêng bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng chỉ có trong chế độ hành trình",
+  "en": ""
+ },
+ {
+  "vi": "Ở chế độ chơi tự do, mỗi nơi làm việc có quỹ riêng. Vào hành trình để có ví, tài khoản ngân hàng, thẻ và khoản vay của một nhân vật.",
+  "en": ""
+ },
+ {
+  "vi": "Mục ngân hàng",
+  "en": ""
+ },
+ {
+  "vi": "Có trong tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "Chào mừng tới Ngân hàng Phố",
+  "en": ""
+ },
+ {
+  "vi": "🏧 Nộp, rút",
+  "en": ""
+ },
+ {
+  "vi": "💳 Thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Tiền mặt hiện có:",
+  "en": ""
+ },
+ {
+  "vi": "Tiền mặt trong ví vẫn là của bạn. Mở một tài khoản để có thêm:",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản thanh toán",
+  "en": ""
+ },
+ {
+  "vi": ": nộp, rút ở cây ATM, sổ giao dịch có số dư từng dòng.",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ tín dụng",
+  "en": ""
+ },
+ {
+  "vi": ": vay tiêu dùng, vay mở rộng tiệm, vay mua nhà, trả góp từng kỳ.",
+  "en": ""
+ },
+ {
+  "vi": "Mở tài khoản miễn phí",
+  "en": ""
+ },
+ {
+  "vi": "⚠️ Hồ sơ đang ghi nhận",
+  "en": ""
+ },
+ {
+  "vi": "nợ xấu",
+  "en": ""
+ },
+ {
+  "vi": "⏰ Bạn đang có khoản",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản sẽ tự bù vào sáng mai nếu còn tiền.",
+  "en": ""
+ },
+ {
+  "vi": "NGÂN HÀNG PHỐ",
+  "en": ""
+ },
+ {
+  "vi": "CHỦ THẺ",
+  "en": ""
+ },
+ {
+  "vi": "Rút ở",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Tài khoản thanh toán\"",
+  "en": ""
+ },
+ {
+  "vi": "Số xu, ví dụ 50",
+  "en": ""
+ },
+ {
+  "vi": "Ví dụ 50",
+  "en": ""
+ },
+ {
+  "vi": "Nộp tiền",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Chuyển khoản cho bạn bè\"",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có sổ kỳ hạn",
+  "en": ""
+ },
+ {
+  "vi": "Mở thẻ ở mục Thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Xem hạn mức vay",
+  "en": ""
+ },
+ {
+  "vi": "sổ có kỳ hạn",
+  "en": ""
+ },
+ {
+  "vi": "Không nợ",
+  "en": ""
+ },
+ {
+  "vi": "khoản đang trả",
+  "en": ""
+ },
+ {
+  "vi": "Điểm tín dụng",
+  "en": ""
+ },
+ {
+  "vi": "Cách tăng điểm",
+  "en": ""
+ },
+ {
+  "vi": "Tin nhắn & cuộc gọi",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có tin nhắn nào.",
+  "en": ""
+ },
+ {
+  "vi": "Tự động bù ví khi ví âm (tiền phòng, cơm nước) bằng tiền trong tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "Trả xong vay mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "Ngân hàng tra cứu hồ sơ",
+  "en": ""
+ },
+ {
+  "vi": "Trả hết sao kê đúng hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trả tối thiểu đúng hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trễ hạn thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Trả góp đúng hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trễ hạn trả góp",
+  "en": ""
+ },
+ {
+  "vi": "Thu nhập đều trong tuần",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ thẻ thấp",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ thẻ trên 30%",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ thẻ trên 70%",
+  "en": ""
+ },
+ {
+  "vi": "Ghi nhận nợ xấu",
+  "en": ""
+ },
+ {
+  "vi": "(đang xử lý)",
+  "en": ""
+ },
+ {
+  "vi": "Người ấy xin",
+  "en": ""
+ },
+ {
+  "vi": "(mượn)",
+  "en": ""
+ },
+ {
+  "vi": "còn nợ bạn",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ chung Ngân hàng Phố",
+  "en": ""
+ },
+ {
+  "vi": "Ví dụ 30",
+  "en": ""
+ },
+ {
+  "vi": "Tài khoản chung vợ chồng",
+  "en": ""
+ },
+ {
+  "vi": "THẺ CHUNG",
+  "en": ""
+ },
+ {
+  "vi": "Cả hai cùng thấy mọi giao dịch. Chi và rút theo số dư",
+  "en": ""
+ },
+ {
+  "vi": ", không giới hạn mỗi ngày.",
+  "en": ""
+ },
+ {
+  "vi": "Để trả bằng quỹ chung: mở Thẻ → Cách trả mặc định → chọn “Ưu tiên thẻ chung vợ chồng (quỹ chung)” → Lưu.",
+  "en": ""
+ },
+ {
+  "vi": "Cài thanh toán bằng quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "Rút bằng thẻ chung",
+  "en": ""
+ },
+ {
+  "vi": "Lời nhờ và sổ nợ",
+  "en": ""
+ },
+ {
+  "vi": "Giao dịch chung",
+  "en": ""
+ },
+ {
+  "vi": "Đòi tiền, trả nợ, gửi tiền: mở Hôn nhân",
+  "en": ""
+ },
+ {
+  "vi": "Tổng tiết kiệm",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ vay",
+  "en": ""
+ },
+ {
+  "vi": "Lọc giao dịch",
+  "en": ""
+ },
+ {
+  "vi": "Sao kê giao dịch",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có giao dịch nào.",
+  "en": ""
+ },
+ {
+  "vi": "ngày sống",
+  "en": ""
+ },
+ {
+  "vi": "Biểu lãi suất tiết kiệm (theo năm trong game)",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ hạn",
+  "en": ""
+ },
+ {
+  "vi": "Lãi/năm",
+  "en": ""
+ },
+ {
+  "vi": "1.000 xu nhận",
+  "en": ""
+ },
+ {
+  "vi": "xu khi đáo hạn",
+  "en": ""
+ },
+ {
+  "vi": "Lãi đã tích lũy",
+  "en": ""
+ },
+ {
+  "vi": "· đến hạn nhận",
+  "en": ""
+ },
+ {
+  "vi": "· tự tái tục",
+  "en": ""
+ },
+ {
+  "vi": "Tất toán sớm",
+  "en": ""
+ },
+ {
+  "vi": "Lấy từ",
+  "en": ""
+ },
+ {
+  "vi": "Tiền mặt trong ví",
+  "en": ""
+ },
+ {
+  "vi": "Tới hạn tự tái tục (gốc và lãi gửi tiếp kỳ mới)",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Tiết kiệm mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "Còn thiếu bao nhiêu để trả trước 30%?",
+  "en": ""
+ },
+ {
+  "vi": "Sổ có kỳ hạn",
+  "en": ""
+ },
+ {
+  "vi": "Rút về tài khoản",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có sổ nào.",
+  "en": ""
+ },
+ {
+  "vi": "💳 Khi mua sắm",
+  "en": ""
+ },
+ {
+  "vi": "Khi mua sắm cá nhân",
+  "en": ""
+ },
+ {
+  "vi": "Học phí, trang phục, đi cửa sau… dùng cách trả mặc định khi bạn không chọn riêng. Ưu tiên thẻ chung sẽ trừ quỹ chung nếu đủ số dư; nếu không, thử ví rồi thẻ tín dụng. Chi phí quầy lấy từ két và vốn quầy; góp vốn dùng ví.",
+  "en": ""
+ },
+ {
+  "vi": "Chọn trả từ tài khoản để mua sắm không cần rút tiền. Chỉ trừ số dư tài khoản thanh toán; thiếu tiền sẽ dừng, không tự dùng ví hoặc vay thẻ. Tiền tiết kiệm không bị trừ.",
+  "en": ""
+ },
+ {
+  "vi": "Cách trả mặc định",
+  "en": ""
+ },
+ {
+  "vi": "Biểu phí thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Lãi khi không trả hết sao kê",
+  "en": ""
+ },
+ {
+  "vi": "/ngày trên dư nợ còn lại",
+  "en": ""
+ },
+ {
+  "vi": "Trả tối thiểu",
+  "en": ""
+ },
+ {
+  "vi": "Phí trễ hạn",
+  "en": ""
+ },
+ {
+  "vi": "và giảm điểm tín dụng",
+  "en": ""
+ },
+ {
+  "vi": "Ứng tiền mặt",
+  "en": ""
+ },
+ {
+  "vi": "Sao kê · hạn trả",
+  "en": ""
+ },
+ {
+  "vi": "Thẻ tín dụng Ngân hàng Phố",
+  "en": ""
+ },
+ {
+  "vi": "Quẹt trước, trả sau. Trả hết dư nợ sao kê trước hạn thì không mất đồng lãi nào.",
+  "en": ""
+ },
+ {
+  "vi": "Dự kiến được duyệt hạn mức",
+  "en": ""
+ },
+ {
+  "vi": "Nộp hồ sơ mở thẻ",
+  "en": ""
+ },
+ {
+  "vi": "Dư nợ sao kê",
+  "en": ""
+ },
+ {
+  "vi": "Tối thiểu",
+  "en": ""
+ },
+ {
+  "vi": "Kỳ này đã xong. 👍",
+  "en": ""
+ },
+ {
+  "vi": "Ví dụ 20",
+  "en": ""
+ },
+ {
+  "vi": "Trả từ",
+  "en": ""
+ },
+ {
+  "vi": "Số khác",
+  "en": ""
+ },
+ {
+  "vi": "Tự động trả từ tài khoản vào ngày đến hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trả hết sao kê",
+  "en": ""
+ },
+ {
+  "vi": "Trả toàn bộ dư nợ",
+  "en": ""
+ },
+ {
+  "vi": "Trả số khác",
+  "en": ""
+ },
+ {
+  "vi": "Lưu cách tự động trả",
+  "en": ""
+ },
+ {
+  "vi": "Lịch trả nợ dự kiến",
+  "en": ""
+ },
+ {
+  "vi": "Tổng tiền lãi:",
+  "en": ""
+ },
+ {
+  "vi": "Đã trả trễ",
+  "en": ""
+ },
+ {
+  "vi": "Trả khoản quá hạn",
+  "en": ""
+ },
+ {
+  "vi": "Trả trước kỳ tới",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm nhận vốn",
+  "en": ""
+ },
+ {
+  "vi": "Chưa có tiệm bạn làm chủ",
+  "en": ""
+ },
+ {
+  "vi": "Vay mới",
+  "en": ""
+ },
+ {
+  "vi": "Loại vay",
+  "en": ""
+ },
+ {
+  "vi": "Xem lại & ký hợp đồng",
+  "en": ""
+ },
+ {
+  "vi": "Vay mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "Xem ở Nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Vay mua nhà",
+  "en": ""
+ },
+ {
+  "vi": "Trả trước ít nhất 30% giá nhà, phần còn lại vay tới 3 năm, trả góp mỗi tháng trong game.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn không có khoản vay nào. 🎈",
+  "en": ""
+ },
+ {
+  "vi": "Thương",
+  "en": ""
+ },
+ {
+  "vi": "Giận",
+  "en": ""
+ },
+ {
+  "vi": "Vừa xong",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được nhóm.",
+  "en": ""
+ },
+ {
+  "vi": "Viết bằng AI",
+  "en": ""
+ },
+ {
+  "vi": "Bày tỏ cảm xúc",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã giải thích.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã cười trừ cho qua.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã hỏi thẳng.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đã chọn im lặng.",
+  "en": ""
+ },
+ {
+  "vi": "Tin đồn về bạn",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi thẳng @",
+  "en": ""
+ },
+ {
+  "vi": "👀 Đang có người bàn tán về bạn.",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện chưa ai kiểm chứng, nói ra dễ làm tổn thương. Bạn muốn phản hồi thế nào?",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc tới bạn",
+  "en": ""
+ },
+ {
+  "vi": "Chuyện trong hẻm",
+  "en": ""
+ },
+ {
+  "vi": "Viết bình luận",
+  "en": ""
+ },
+ {
+  "vi": "Gửi bình luận",
+  "en": ""
+ },
+ {
+  "vi": "Trả lời hàng xóm…",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm đang trả lời…",
+  "en": ""
+ },
+ {
+  "vi": "Nhắc tên hàng xóm",
+  "en": ""
+ },
+ {
+  "vi": "Đang đăng…",
+  "en": ""
+ },
+ {
+  "vi": "Hỏi hàng xóm, kể chuyện, rao đồ… Gõ @ để nhắc tên ai đó.",
+  "en": ""
+ },
+ {
+  "vi": "Viết bài lên nhóm",
+  "en": ""
+ },
+ {
+  "vi": "@ Nhắc tên",
+  "en": ""
+ },
+ {
+  "vi": "Hết lượt đăng hôm nay",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm trả lời bằng AI · đừng gõ thông tin thật",
+  "en": ""
+ },
+ {
+  "vi": "Giới thiệu nhóm",
+  "en": ""
+ },
+ {
+  "vi": "thành viên",
+  "en": ""
+ },
+ {
+  "vi": "· nhóm kín của khu phố",
+  "en": ""
+ },
+ {
+  "vi": "Nội quy nhóm",
+  "en": ""
+ },
+ {
+  "vi": "Nói năng lịch sự, không xúc phạm ai.",
+  "en": ""
+ },
+ {
+  "vi": "Không đăng số điện thoại, địa chỉ, tài khoản.",
+  "en": ""
+ },
+ {
+  "vi": "Tin chưa rõ thì đừng lan, có gì hỏi thẳng nhau.",
+  "en": ""
+ },
+ {
+  "vi": "KHU PHỐ · NHÓM KÍN",
+  "en": ""
+ },
+ {
+  "vi": "tin mới",
+  "en": ""
+ },
+ {
+  "vi": "Đã xem hết tin mới",
+  "en": ""
+ },
+ {
+  "vi": "Đang mở nhóm…",
+  "en": ""
+ },
+ {
+  "vi": "Xem bài cũ hơn",
+  "en": ""
+ },
+ {
+  "vi": "Nhóm còn yên ắng…",
+  "en": ""
+ },
+ {
+  "vi": "Hàng xóm đang rôm rả",
+  "en": ""
+ },
+ {
+  "vi": "👀 Có người nhắc bạn",
+  "en": ""
+ },
+ {
+  "vi": "Mình giải thích một chút…",
+  "en": ""
+ },
+ {
+  "vi": "chụp ảnh: sticker",
+  "en": ""
+ },
+ {
+  "vi": "Đứng thẳng",
+  "en": ""
+ },
+ {
+  "vi": "Chữ V",
+  "en": ""
+ },
+ {
+  "vi": "Vẫy tay",
+  "en": ""
+ },
+ {
+  "vi": "Bắn tim",
+  "en": ""
+ },
+ {
+  "vi": "Tim nhỏ",
+  "en": ""
+ },
+ {
+  "vi": "Tim trên đầu",
+  "en": ""
+ },
+ {
+  "vi": "Chống má",
+  "en": ""
+ },
+ {
+  "vi": "Nháy mắt",
+  "en": ""
+ },
+ {
+  "vi": "Hoan hô",
+  "en": ""
+ },
+ {
+  "vi": "Nhảy lên",
+  "en": ""
+ },
+ {
+  "vi": "Nghiêng đầu",
+  "en": ""
+ },
+ {
+  "vi": "Ngầu",
+  "en": ""
+ },
+ {
+  "vi": "Ngại ngùng",
+  "en": ""
+ },
+ {
+  "vi": "Suy nghĩ",
+  "en": ""
+ },
+ {
+  "vi": "Cười lớn",
+  "en": ""
+ },
+ {
+  "vi": "Ngạc nhiên",
+  "en": ""
+ },
+ {
+  "vi": "Tay mèo",
+  "en": ""
+ },
+ {
+  "vi": "Gồng cơ",
+  "en": ""
+ },
+ {
+  "vi": "Hôn gió",
+  "en": ""
+ },
+ {
+  "vi": "Chống nạnh",
+  "en": ""
+ },
+ {
+  "vi": "Ôm gấu",
+  "en": ""
+ },
+ {
+  "vi": "Chùm bóng bay",
+  "en": ""
+ },
+ {
+  "vi": "Tự sướng",
+  "en": ""
+ },
+ {
+  "vi": "Xoay vòng",
+  "en": ""
+ },
+ {
+  "vi": "Chạy bộ",
+  "en": ""
+ },
+ {
+  "vi": "Ngồi xổm",
+  "en": ""
+ },
+ {
+  "vi": "Mặt bông hoa",
+  "en": ""
+ },
+ {
+  "vi": "Giơ biển",
+  "en": ""
+ },
+ {
+  "vi": "Ăn kem",
+  "en": ""
+ },
+ {
+  "vi": "Chào kiểu lính",
+  "en": ""
+ },
+ {
+  "vi": "Máy bay",
+  "en": ""
+ },
+ {
+  "vi": "Ú òa",
+  "en": ""
+ },
+ {
+  "vi": "Ôm tim",
+  "en": ""
+ },
+ {
+  "vi": "Vỗ tay",
+  "en": ""
+ },
+ {
+  "vi": "Khoác vai",
+  "en": ""
+ },
+ {
+  "vi": "Đập tay",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ nhau",
+  "en": ""
+ },
+ {
+  "vi": "Tựa lưng",
+  "en": ""
+ },
+ {
+  "vi": "Tựa vai",
+  "en": ""
+ },
+ {
+  "vi": "Cùng nhảy",
+  "en": ""
+ },
+ {
+  "vi": "Chụm đầu",
+  "en": ""
+ },
+ {
+  "vi": "Nắm tay",
+  "en": ""
+ },
+ {
+  "vi": "Ôm nhau",
+  "en": ""
+ },
+ {
+  "vi": "Tàu hỏa",
+  "en": ""
+ },
+ {
+  "vi": "Xoa đầu",
+  "en": ""
+ },
+ {
+  "vi": "Cụng ly",
+  "en": ""
+ },
+ {
+  "vi": "Theo dáng",
+  "en": ""
+ },
+ {
+  "vi": "Cười híp mắt",
+  "en": ""
+ },
+ {
+  "vi": "Cười tít",
+  "en": ""
+ },
+ {
+  "vi": "Mắt lấp lánh",
+  "en": ""
+ },
+ {
+  "vi": "Mắt tim",
+  "en": ""
+ },
+ {
+  "vi": "Phồng má",
+  "en": ""
+ },
+ {
+  "vi": "Lè lưỡi",
+  "en": ""
+ },
+ {
+  "vi": "Khóc nhè",
+  "en": ""
+ },
+ {
+  "vi": "Ngủ gật",
+  "en": ""
+ },
+ {
+  "vi": "Giận dỗi",
+  "en": ""
+ },
+ {
+  "vi": "Đỏ mặt",
+  "en": ""
+ },
+ {
+  "vi": "Hoảng hốt",
+  "en": ""
+ },
+ {
+  "vi": "Ngơ ngác",
+  "en": ""
+ },
+ {
+  "vi": "Chu môi",
+  "en": ""
+ },
+ {
+  "vi": "XINH QUÁ",
+  "en": ""
+ },
+ {
+  "vi": "chụp ảnh: đồ",
+  "en": ""
+ },
+ {
+  "vi": "VUI QUÁ!",
+  "en": ""
+ },
+ {
+  "vi": "chụp ảnh: dáng",
+  "en": ""
+ },
+ {
+  "vi": "Vui ghê",
+  "en": ""
+ },
+ {
+  "vi": "Đỉnh!",
+  "en": ""
+ },
+ {
+  "vi": "Yêu lắm",
+  "en": ""
+ },
+ {
+  "vi": "Ố là la",
+  "en": ""
+ },
+ {
   "vi": "VÉ HỘI CHỢ",
   "en": ""
  },
@@ -113,1690 +1797,6 @@
  },
  {
   "vi": "Khung thoại",
-  "en": ""
- },
- {
-  "vi": "Khung ảnh",
-  "en": ""
- },
- {
-  "vi": "Huy hiệu 2026",
-  "en": ""
- },
- {
-  "vi": "lương",
-  "en": ""
- },
- {
-  "vi": "thuê chỗ",
-  "en": ""
- },
- {
-  "vi": "điện",
-  "en": ""
- },
- {
-  "vi": "môi trường",
-  "en": ""
- },
- {
-  "vi": "bảo vệ",
-  "en": ""
- },
- {
-  "vi": "Đã trả cho thời gian mở quầy:",
-  "en": ""
- },
- {
-  "vi": "Lương, thuê chỗ, điện, phí môi trường và bảo vệ tính theo thời gian quầy mở và làm việc, kể cả lúc chưa có khách. Vắng khách thì bấm 🔴 Đóng quầy để ngừng tính.",
-  "en": ""
- },
- {
-  "vi": "đang dừng",
-  "en": ""
- },
- {
-  "vi": "mỗi ngày bán",
-  "en": ""
- },
- {
-  "vi": "🕵️ Rủi ro trộm:",
-  "en": ""
- },
- {
-  "vi": ". Camera −50%, chuông −25%, két sắt −20% và trộm lấy tối đa nửa két, bảo vệ cơ bản −20%, tăng cường −40%.",
-  "en": ""
- },
- {
-  "vi": "Đơn đã nhận vẫn được phục vụ. Thời gian đóng không tạo đơn bán bù.",
-  "en": ""
- },
- {
-  "vi": "🟢 Mở quầy",
-  "en": ""
- },
- {
-  "vi": "🔴 Đóng quầy",
-  "en": ""
- },
- {
-  "vi": "Quầy đang đóng, không nhận khách mới.",
-  "en": ""
- },
- {
-  "vi": "Quầy đang mở nhận khách khi đủ hàng và vốn.",
-  "en": ""
- },
- {
-  "vi": "Gói bảo vệ giảm khả năng bị trộm khi quầy hoạt động: cơ bản −20%, tăng cường −40%. Phí theo tổng tài sản của bạn, gồm tiền, nhà, xe và đầu tư; báo giá giữ trong ngày game. Chi phí lấy từ vốn/két và ghi trong sổ.",
-  "en": ""
- },
- {
-  "vi": "Bảo vệ quầy",
-  "en": ""
- },
- {
-  "vi": "Đang sử dụng",
-  "en": ""
- },
- {
-  "vi": "Đổi nghề hoặc nơi làm việc",
-  "en": ""
- },
- {
-  "vi": "Chọn nghề khác; tiến trình từng nghề vẫn được lưu",
-  "en": ""
- },
- {
-  "vi": "Đang học · thi từ Ngày",
-  "en": ""
- },
- {
-  "vi": "Học rồi thi lấy chứng chỉ nghề",
-  "en": ""
- },
- {
-  "vi": "Vào thi",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ đã có",
-  "en": ""
- },
- {
-  "vi": "xem giấy chứng nhận",
-  "en": ""
- },
- {
-  "vi": "✓ Đang đeo · chạm để cất",
-  "en": ""
- },
- {
-  "vi": "Học và thi ở 🎓 Thi chứng chỉ",
-  "en": ""
- },
- {
-  "vi": "Chưa thi",
-  "en": ""
- },
- {
-  "vi": "Chứng chỉ nghề",
-  "en": ""
- },
- {
-  "vi": "Lớp cấp tốc",
-  "en": ""
- },
- {
-  "vi": "Tự học",
-  "en": ""
- },
- {
-  "vi": "Nhớ lại bài học:",
-  "en": ""
- },
- {
-  "vi": "💡 Gợi ý (miễn phí)",
-  "en": ""
- },
- {
-  "vi": "Bài thi",
-  "en": ""
- },
- {
-  "vi": "là đạt · phân vân cứ bấm 💡, không trừ điểm.",
-  "en": ""
- },
- {
-  "vi": "disabled aria-label=\"Đáp án đã loại\"",
-  "en": ""
- },
- {
-  "vi": "✓ Đúng.",
-  "en": ""
- },
- {
-  "vi": "✗ Chưa đúng.",
-  "en": ""
- },
- {
-  "vi": "Câu làm thử không tính điểm và khác đề thi thật.",
-  "en": ""
- },
- {
-  "vi": "· sau khi khép ca hôm nay",
-  "en": ""
- },
- {
-  "vi": "Khóa đang học",
-  "en": ""
- },
- {
-  "vi": "✏️ Làm thử trước (không tính điểm)",
-  "en": ""
- },
- {
-  "vi": "Bỏ khóa học",
-  "en": ""
- },
- {
-  "vi": "🎓 Xem giấy chứng nhận",
-  "en": ""
- },
- {
-  "vi": "Chưa đạt",
-  "en": ""
- },
- {
-  "vi": "câu sai",
-  "en": ""
- },
- {
-  "vi": "Đang học khóa này (ở trên).",
-  "en": ""
- },
- {
-  "vi": "Đang học một khóa khác. Thi xong hoặc bỏ khóa đó rồi đăng ký tiếp nhé.",
-  "en": ""
- },
- {
-  "vi": "Điểm tối đa rồi. Giỏi quá!",
-  "en": ""
- },
- {
-  "vi": "Lớp ôn",
-  "en": ""
- },
- {
-  "vi": "Học xong thi ngay hôm nay",
-  "en": ""
- },
- {
-  "vi": "📖 Tự học · miễn phí",
-  "en": ""
- },
- {
-  "vi": "Thi từ Ngày",
-  "en": ""
- },
- {
-  "vi": "(ngày mai)",
-  "en": ""
- },
- {
-  "vi": "Dùng cho",
-  "en": ""
- },
- {
-  "vi": "🎓 Thi chứng chỉ",
-  "en": ""
- },
- {
-  "vi": "lớp ôn",
-  "en": ""
- },
- {
-  "vi": "lớp cấp tốc",
-  "en": ""
- },
- {
-  "vi": "Học xong vào thi luôn hôm nay.",
-  "en": ""
- },
- {
-  "vi": "Chưa mở được giấy chứng nhận, thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Bỏ khóa học?",
-  "en": ""
- },
- {
-  "vi": "Học phí đã đóng không được hoàn. Muốn thi thì đăng ký lại từ đầu.",
-  "en": ""
- },
- {
-  "vi": "Bỏ khóa",
-  "en": ""
- },
- {
-  "vi": "Nhắc nhẹ nè 💛 Ở phố mình chơi vui là chính, nhưng đừng gửi địa chỉ nhà, trường, số điện thoại hay nick Zalo/FB/IG/TikTok cho người mới quen, và đừng hẹn gặp người lạ ngoài đời nha. Bạn dưới 18 tuổi thì càng cần cẩn thận hơn. Ai làm bạn thấy không ổn: chạm vào tin nhắn → Báo cáo → “An toàn / trẻ vị thành niên”, hoặc kể với người lớn bạn tin tưởng.",
-  "en": ""
- },
- {
-  "vi": "Nhắn gì đó…",
-  "en": ""
- },
- {
-  "vi": "Đang kết nối lại…",
-  "en": ""
- },
- {
-  "vi": "Tạo tài khoản để thả cảm xúc nhé.",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn không còn khả dụng",
-  "en": ""
- },
- {
-  "vi": "Hủy trả lời",
-  "en": ""
- },
- {
-  "vi": "Đang trả lời",
-  "en": ""
- },
- {
-  "vi": "Đã gửi lời mời kết bạn.",
-  "en": ""
- },
- {
-  "vi": "Đã ghim lên đầu Cả phố.",
-  "en": ""
- },
- {
-  "vi": "Đã bỏ ghim.",
-  "en": ""
- },
- {
-  "vi": "Đã tắt thông báo của cuộc trò chuyện này.",
-  "en": ""
- },
- {
-  "vi": "Đã bật thông báo.",
-  "en": ""
- },
- {
-  "vi": "Không gửi được.",
-  "en": ""
- },
- {
-  "vi": "Đã chặn. Hai bạn không thấy tin của nhau nữa.",
-  "en": ""
- },
- {
-  "vi": "Đã báo cáo an toàn. Ban quản lý sẽ xem trước tiên. Cảm ơn bạn nhiều 💛",
-  "en": ""
- },
- {
-  "vi": "Đã báo cáo. Cảm ơn bạn!",
-  "en": ""
- },
- {
-  "vi": "Chưa kết nối được. Thử lại nhé.",
-  "en": ""
- },
- {
-  "vi": "Đã xóa ở phía bạn.",
-  "en": ""
- },
- {
-  "vi": "Đã xóa cuộc trò chuyện ở phía bạn.",
-  "en": ""
- },
- {
-  "vi": "Đang online",
-  "en": ""
- },
- {
-  "vi": "Nhóm mới",
-  "en": ""
- },
- {
-  "vi": "Đã chặn",
-  "en": ""
- },
- {
-  "vi": "Ghé chỗ làm",
-  "en": ""
- },
- {
-  "vi": "Thành viên",
-  "en": ""
- },
- {
-  "vi": "Chặn thật?",
-  "en": ""
- },
- {
-  "vi": "Góc hẹn hò",
-  "en": ""
- },
- {
-  "vi": "Đang ghim",
-  "en": ""
- },
- {
-  "vi": "Tin nhắn đã thu hồi",
-  "en": ""
- },
- {
-  "vi": "đang chờ ở góc hẹn hò",
-  "en": ""
- },
- {
-  "vi": "(bạn)",
-  "en": ""
- },
- {
-  "vi": "Ghé góc hẹn hò",
-  "en": ""
- },
- {
-  "vi": "🔕 Đang tắt thông báo",
-  "en": ""
- },
- {
-  "vi": "🔔 Đang bật thông báo",
-  "en": ""
- },
- {
-  "vi": "🔔 Bật",
-  "en": ""
- },
- {
-  "vi": "🔕 Tắt 8 giờ",
-  "en": ""
- },
- {
-  "vi": "🔕 Tắt",
-  "en": ""
- },
- {
-  "vi": "Tắt: không báo về máy, không tính vào số tin chưa đọc. Tin vẫn tới như thường.",
-  "en": ""
- },
- {
-  "vi": "Thả cảm xúc",
-  "en": ""
- },
- {
-  "vi": "Xóa thật?",
-  "en": ""
- },
- {
-  "vi": "Xóa ở phía tôi",
-  "en": ""
- },
- {
-  "vi": "↩ Trả lời",
-  "en": ""
- },
- {
-  "vi": "tin nhắn",
-  "en": ""
- },
- {
-  "vi": "📌 Bỏ ghim",
-  "en": ""
- },
- {
-  "vi": "📌 Ghim tin này",
-  "en": ""
- },
- {
-  "vi": "Thu hồi thật?",
-  "en": ""
- },
- {
-  "vi": "Đã gửi lời mời",
-  "en": ""
- },
- {
-  "vi": "Kết bạn",
-  "en": ""
- },
- {
-  "vi": "Đang kết nối…",
-  "en": ""
- },
- {
-  "vi": "Tên nhóm",
-  "en": ""
- },
- {
-  "vi": "Chưa có bạn để mời.",
-  "en": ""
- },
- {
-  "vi": "Thêm vào nhóm",
-  "en": ""
- },
- {
-  "vi": "Lập nhóm",
-  "en": ""
- },
- {
-  "vi": "Bạn chưa chặn ai.",
-  "en": ""
- },
- {
-  "vi": "Bỏ chặn",
-  "en": ""
- },
- {
-  "vi": "Mời ra thật?",
-  "en": ""
- },
- {
-  "vi": "Mời ra",
-  "en": ""
- },
- {
-  "vi": "Thêm bạn",
-  "en": ""
- },
- {
-  "vi": "Rời thật?",
-  "en": ""
- },
- {
-  "vi": "Rời nhóm",
-  "en": ""
- },
- {
-  "vi": "Không tải được tin nhắn.",
-  "en": ""
- },
- {
-  "vi": "Gửi lời chào đầu tiên 👋",
-  "en": ""
- },
- {
-  "vi": "Đang vào phố…",
-  "en": ""
- },
- {
-  "vi": "người đang xem",
-  "en": ""
- },
- {
-  "vi": "Phố đang yên. Mở lời trước nhé!",
-  "en": ""
- },
- {
-  "vi": "Bạn:",
-  "en": ""
- },
- {
-  "vi": "Đã tắt thông báo",
-  "en": ""
- },
- {
-  "vi": "Chọn cuộc trò chuyện để xóa",
-  "en": ""
- },
- {
-  "vi": "Chỉ xóa ở phía bạn, người kia vẫn còn tin nhắn.",
-  "en": ""
- },
- {
-  "vi": "Nhắn bạn bè",
-  "en": ""
- },
- {
-  "vi": "Đổi gương mặt, áo theo Tủ đồ",
-  "en": ""
- },
- {
-  "vi": "Hiện online",
-  "en": ""
- },
- {
-  "vi": "Chưa có bạn bè.",
-  "en": ""
- },
- {
-  "vi": "Có tài khoản để kết bạn.",
-  "en": ""
- },
- {
-  "vi": "Tìm bạn",
-  "en": ""
- },
- {
-  "vi": "Nhắn tin",
-  "en": ""
- },
- {
-  "vi": "Đang tìm hiểu 💕",
-  "en": ""
- },
- {
-  "vi": "Mất kết nối. Đang thử lại…",
-  "en": ""
- },
- {
-  "vi": "Tạo tài khoản để chat.",
-  "en": ""
- },
- {
-  "vi": "Đặt tên nhân vật để nhắn.",
-  "en": ""
- },
- {
-  "vi": "Hai bạn không còn là bạn bè.",
-  "en": ""
- },
- {
-  "vi": "Tin đang ghim",
-  "en": ""
- },
- {
-  "vi": "Bỏ ghim",
-  "en": ""
- },
- {
-  "vi": "🛟 Giữ an toàn nha",
-  "en": ""
- },
- {
-  "vi": "Mình hiểu rồi",
-  "en": ""
- },
- {
-  "vi": "Nhắn cả phố…",
-  "en": ""
- },
- {
-  "vi": "Nhắn tin…",
-  "en": ""
- },
- {
-  "vi": "Lư hương",
-  "en": ""
- },
- {
-  "vi": "Gác chuông",
-  "en": ""
- },
- {
-  "vi": "Hồ sen",
-  "en": ""
- },
- {
-  "vi": "Rào lời nguyện",
-  "en": ""
- },
- {
-  "vi": "Chổi tre",
-  "en": ""
- },
- {
-  "vi": "Bàn cơm chay",
-  "en": ""
- },
- {
-  "vi": "Chiếu lễ",
-  "en": ""
- },
- {
-  "vi": "Mõ",
-  "en": ""
- },
- {
-  "vi": "🌳 Cây bồ đề",
-  "en": ""
- },
- {
-  "vi": "🔔 Chuông gia trì",
-  "en": ""
- },
- {
-  "vi": "🕯️ Bàn thờ",
-  "en": ""
- },
- {
-  "vi": "📋 Thời khóa",
-  "en": ""
- },
- {
-  "vi": "📋 Thực đơn",
-  "en": ""
- },
- {
-  "vi": "Lư hương lớn giữa sân. Khách thắp hương ở đây, trong điện chỉ một nén.",
-  "en": ""
- },
- {
-  "vi": "Gác chuông có quả chuông đồng cả làng cùng đúc. Chuông thỉnh chậm, đều, chờ tiếng ngân tắt hẳn.",
-  "en": ""
- },
- {
-  "vi": "Hồ sen nhỏ, mấy con cá đỏ lượn chậm. Ngồi đây gió sông mát lắm.",
-  "en": ""
- },
- {
-  "vi": "Hàng rào tre buộc đầy giấy đỏ. Bạn chọn một lời nguyện để viết.",
-  "en": ""
- },
- {
-  "vi": "Mấy cây chổi tre dựng ở giá. Lá bàng rụng đầy sân.",
-  "en": ""
- },
- {
-  "vi": "Bàn dài, bà Nhạn đang múc canh nấm.",
-  "en": ""
- },
- {
-  "vi": "Bạn quỳ trên chiếu trước điện Phật. Tự chọn khấn cho ai, mong điều gì.",
-  "en": ""
- },
- {
-  "vi": "Thầy giữ chuông gia trì, bạn giữ mõ. Gõ đúng lúc vòng sáng khép lại.",
-  "en": ""
- },
- {
-  "vi": "🪔 Thắp hương",
-  "en": ""
- },
- {
-  "vi": "🔔 Đứng nghe chuông",
-  "en": ""
- },
- {
-  "vi": "🍃 Ngồi xuống",
-  "en": ""
- },
- {
-  "vi": "🧹 Cầm chổi quét",
-  "en": ""
- },
- {
-  "vi": "🍚 Ngồi vào bàn",
-  "en": ""
- },
- {
-  "vi": "🙏 Chắp tay khấn",
-  "en": ""
- },
- {
-  "vi": "📿 Bắt đầu tụng",
-  "en": ""
- },
- {
-  "vi": "Bạn ơi, con cá đỏ to nhất tên là Mập đó. Con đặt tên đấy!",
-  "en": ""
- },
- {
-  "vi": "Bà con dặn đi trong chùa phải đi chậm, nói nhỏ. Con đang tập.",
-  "en": ""
- },
- {
-  "vi": "Sao hoa sen mọc dưới bùn mà vẫn thơm vậy ta?",
-  "en": ""
- },
- {
-  "vi": "Chiều nào chị cũng ra đây ngồi một lúc. Không cần nói gì cả.",
-  "en": ""
- },
- {
-  "vi": "Nghe chuông xong, tự nhiên thấy nhẹ người.",
-  "en": ""
- },
- {
-  "vi": "Cứ ngồi đi, ghế còn rộng mà.",
-  "en": ""
- },
- {
-  "vi": "Rằm nào ông cũng lên. Chân yếu rồi, nhưng lên được là vui.",
-  "en": ""
- },
- {
-  "vi": "Hồi xưa ông chở đò cho cả xóm qua sông đi chùa đó.",
-  "en": ""
- },
- {
-  "vi": "Thắp hương thì một nén thôi con, thành tâm là được.",
-  "en": ""
- },
- {
-  "vi": "Bữa nay không phải rằm, bà chỉ nhặt rau thôi. Rằm với mùng một ghé ăn cơm chay nhé!",
-  "en": ""
- },
- {
-  "vi": "Bếp chùa không dùng hành tỏi, con biết chưa?",
-  "en": ""
- },
- {
-  "vi": "Ngồi xuống ăn đi con, canh nấm còn nóng!",
-  "en": ""
- },
- {
-  "vi": "Ăn chậm thôi. Ăn xong nhớ để chén vô thau giùm bà nha.",
-  "en": ""
- },
- {
-  "vi": "Nam mô A Di Đà Phật.",
-  "en": ""
- },
- {
-  "vi": "Sáng nay xin lòng yên như mặt hồ.",
-  "en": ""
- },
- {
-  "vi": "Lời nói ra, xin là lời hiền.",
-  "en": ""
- },
- {
-  "vi": "Việc tay làm, xin là việc lành.",
-  "en": ""
- },
- {
-  "vi": "Thương người gần, nhớ người xa.",
-  "en": ""
- },
- {
-  "vi": "Tiếng chùa",
-  "en": ""
- },
- {
-  "vi": "Ra về",
-  "en": ""
- },
- {
-  "vi": "Khu trong chùa",
-  "en": ""
- },
- {
-  "vi": "Ở đây có",
-  "en": ""
- },
- {
-  "vi": "Âm thanh đang tắt trong Cài đặt",
-  "en": ""
- },
- {
-  "vi": "Tắt tiếng chùa",
-  "en": ""
- },
- {
-  "vi": "Bật tiếng chùa",
-  "en": ""
- },
- {
-  "vi": "chùa có cơm chay",
-  "en": ""
- },
- {
-  "vi": "tinh thần +1…+4 theo nhịp mõ",
-  "en": ""
- },
- {
-  "vi": "vẫn tụng cùng thầy được, chỉ không tính thêm.",
-  "en": ""
- },
- {
-  "vi": "Hôm nay không phải rằm hay mùng 1, bàn ăn còn trống.",
-  "en": ""
- },
- {
-  "vi": "Khấn cho ai?",
-  "en": ""
- },
- {
-  "vi": "Mong điều gì?",
-  "en": ""
- },
- {
-  "vi": "chọn người trước",
-  "en": ""
- },
- {
-  "vi": "Con cầu mong",
-  "en": ""
- },
- {
-  "vi": "Thưa thầy, con nghe thêm",
-  "en": ""
- },
- {
-  "vi": "📿 Xin tụng kinh cùng thầy",
-  "en": ""
- },
- {
-  "vi": "🙏 Chắp tay chào thầy",
-  "en": ""
- },
- {
-  "vi": "Nói chuyện thêm",
-  "en": ""
- },
- {
-  "vi": "Chào",
-  "en": ""
- },
- {
-  "vi": "Thầy gật đầu: “Đi đường bình an nhé con.”",
-  "en": ""
- },
- {
-  "vi": "Gõ mõ khi vòng sáng khép lại",
-  "en": ""
- },
- {
-  "vi": "Gõ mõ",
-  "en": ""
- },
- {
-  "vi": "Thầy thỉnh chuông…",
-  "en": ""
- },
- {
-  "vi": "Tụng thêm lần nữa",
-  "en": ""
- },
- {
-  "vi": "chùa: draw",
-  "en": ""
- },
- {
-  "vi": "Vào chùa",
-  "en": ""
- },
- {
-  "vi": "Đi dạo sân chùa, vào chánh điện khấn, tụng kinh cùng thầy",
-  "en": ""
- },
- {
-  "vi": "Làm nhanh, không cần vào chùa",
-  "en": ""
- },
- {
-  "vi": "🗒️ Hôm nay",
-  "en": ""
- },
- {
-  "vi": "Không thích",
-  "en": ""
- },
- {
-  "vi": "🙂 Người lạ",
-  "en": ""
- },
- {
-  "vi": "💌 Gửi lời chúc",
-  "en": ""
- },
- {
-  "vi": "🙏 Cảm ơn",
-  "en": ""
- },
- {
-  "vi": "Lời nhắn và quà",
-  "en": ""
- },
- {
-  "vi": "Chưa rõ sở thích",
-  "en": ""
- },
- {
-  "vi": "Hôm nay đã hỏi thăm",
-  "en": ""
- },
- {
-  "vi": "Túi quà",
-  "en": ""
- },
- {
-  "vi": "🎒 Túi quà",
-  "en": ""
- },
- {
-  "vi": "Quà người quen tặng. Tặng lại ai đó, hoặc tự thưởng cho mình.",
-  "en": ""
- },
- {
-  "vi": "💬 Trò chuyện lần đầu trong ngày: +1 tới +3. Nói nặng lời: −3.",
-  "en": ""
- },
- {
-  "vi": "🎁 Tặng quà (mỗi người một món mỗi ngày): đúng món họ thích +6, món thường +3, món họ không ưa −2.",
-  "en": ""
- },
- {
-  "vi": "🙏 Cảm ơn khi được tặng: +2. Để quá hai ngày không cảm ơn: −1.",
-  "en": ""
- },
- {
-  "vi": "🎉 Được mời mà tới dự: +5, gửi lời chúc: +1, im lặng: −3.",
-  "en": ""
- },
- {
-  "vi": "⭐ Phục vụ khách quen: 5★ +2, 3★ −1, 2★ −3, 1★ −5. Thối thiếu tiền: −3.",
-  "en": ""
- },
- {
-  "vi": "🍃 Lâu không gặp (hơn 14 ngày) thì nhạt dần, rất chậm.",
-  "en": ""
- },
- {
-  "vi": "💛 Càng thân, người ta càng hay hỏi thăm, tặng quà, báo tin trước, dễ bỏ qua lỗi nhỏ, hay bo thêm và tới dự ngày vui của bạn.",
-  "en": ""
- },
- {
-  "vi": "Chưa có khách quen",
-  "en": ""
- },
- {
-  "vi": "Làm việc cho ai đó vài lần là họ nhớ mặt bạn.",
-  "en": ""
- },
- {
-  "vi": "Nhóm người quen",
-  "en": ""
- },
- {
-  "vi": "Điểm thân quen tính thế nào?",
-  "en": ""
- },
- {
-  "vi": "🏘️ Hàng xóm",
-  "en": ""
- },
- {
-  "vi": "🛍️ Khách quen",
-  "en": ""
- },
- {
-  "vi": "Trong túi ×",
-  "en": ""
- },
- {
-  "vi": "xu · của tiệm mình",
-  "en": ""
- },
- {
-  "vi": "Không hợp với trẻ nhỏ",
-  "en": ""
- },
- {
-  "vi": "Chọn quà",
-  "en": ""
- },
- {
-  "vi": "🎁 Chọn một món quà",
-  "en": ""
- },
- {
-  "vi": "Mở một nơi làm việc để có tiền mua quà. Quà trong túi thì tặng được ngay.",
-  "en": ""
- },
- {
-  "vi": "Thân như người nhà rồi.",
-  "en": ""
- },
- {
-  "vi": "💬 Trò chuyện",
-  "en": ""
- },
- {
-  "vi": "💬 Nhắn hỏi thăm",
-  "en": ""
- },
- {
-  "vi": "Chưa có kỷ niệm nào. Hỏi thăm một câu là bắt đầu.",
-  "en": ""
- },
- {
-  "vi": "Sở thích",
-  "en": ""
- },
- {
-  "vi": "💡 Sở thích",
-  "en": ""
- },
- {
-  "vi": "🗓️ Gần đây",
-  "en": ""
- },
- {
-  "vi": "Tất cả người quen",
-  "en": ""
- },
- {
-  "vi": "🎁 Tặng quà",
-  "en": ""
- },
- {
-  "vi": "💬 Hôm nay đã hỏi thăm rồi.",
-  "en": ""
- },
- {
-  "vi": "Chưa biết gì. Thân hơn hoặc tặng thử một món là biết.",
-  "en": ""
- },
- {
-  "vi": "👥 Người quen",
-  "en": ""
- },
- {
-  "vi": "Chưa có dữ liệu người quen.",
-  "en": ""
- },
- {
-  "vi": "Càng thân, người ta càng thương mình.",
-  "en": ""
- },
- {
-  "vi": "Càng thân, hàng xóm càng hay hỏi thăm, tặng quà và tới dự ngày vui của bạn.",
-  "en": ""
- },
- {
-  "vi": "Đang mở sổ sinh hoạt…",
-  "en": ""
- },
- {
-  "vi": "Ghé hiệu sách, tham gia câu lạc bộ cùng các nhân vật trong phố hoặc dành một buổi cho gia đình. Mỗi nơi lưu một buổi mỗi ngày sống; chỉ thanh toán khi bạn xác nhận. Kỷ niệm gần nhất được giữ ở cuối trang.",
-  "en": ""
- },
- {
-  "vi": "Sổ kỷ niệm trong phố",
-  "en": ""
- },
- {
-  "vi": "xu / buổi",
-  "en": ""
- },
- {
-  "vi": "Tham gia miễn phí",
-  "en": ""
- },
- {
-  "vi": "✓ Đã lưu buổi hôm nay. Ngày sống mới có câu chuyện tiếp theo.",
-  "en": ""
- },
- {
-  "vi": "🎤 Vào Phòng hát",
-  "en": ""
- },
- {
-  "vi": "Mở YouTube để chọn beat ↗",
-  "en": ""
- },
- {
-  "vi": "Chưa có kỷ niệm. Chọn một hoạt động ở trên để bắt đầu.",
-  "en": ""
- },
- {
-  "vi": "Nhận hợp đồng, vào nghề Giao hàng giao đơn thật rồi trở lại nhận thưởng. Phí giao đơn và tiền COD vẫn nằm trong sổ nghề; ở đây chỉ tính thưởng hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Hoàn tất 3 hợp đồng mở tuyến nhanh, 10 hợp đồng mở đối tác chuỗi. Mỗi lần theo một hợp đồng; không hết hạn khi bạn nghỉ chơi.",
-  "en": ""
- },
- {
-  "vi": "Đồ nghề hợp đồng",
-  "en": ""
- },
- {
-  "vi": "📦 Vào nghề Giao hàng",
-  "en": ""
- },
- {
-  "vi": "Mở nghề Giao hàng trong hành trình để nhận hợp đồng.",
-  "en": ""
- },
- {
-  "vi": "Sai sót hoặc giao trễ giảm thưởng; từ chối/giao thất bại không tính tiến độ. Đồ nghề hỗ trợ giảm khấu trừ.",
-  "en": ""
- },
- {
-  "vi": "giao thành công",
-  "en": ""
- },
- {
-  "vi": "Nhận thưởng",
-  "en": ""
- },
- {
-  "vi": "Hủy hợp đồng",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng đang có",
-  "en": ""
- },
- {
-  "vi": "Nhận hợp đồng",
-  "en": ""
- },
- {
-  "vi": "Đã có",
-  "en": ""
- },
- {
-  "vi": "Hợp đồng hoàn tất sẽ được ghi ở đây.",
-  "en": ""
- },
- {
-  "vi": "Hủy hợp đồng?",
-  "en": ""
- },
- {
-  "vi": "Không phạt thêm, nhưng chi phí chuẩn bị không hoàn lại.",
-  "en": ""
- },
- {
-  "vi": "Chừa khe nhỏ để nhồi bông",
-  "en": ""
- },
- {
-  "vi": "Hai lớp vải đặt chồng · cắt cùng một mẫu",
-  "en": ""
- },
- {
-  "vi": "Món thủ công tự tay làm",
-  "en": ""
- },
- {
-  "vi": "Bạn gấu do mình may",
-  "en": ""
- },
- {
-  "vi": "Chiếc túi do mình may",
-  "en": ""
- },
- {
-  "vi": "Chiếc chậu do mình nặn",
-  "en": ""
- },
- {
-  "vi": "Vòng tay do mình xâu",
-  "en": ""
- },
- {
-  "vi": "Tấm thiệp do mình làm",
-  "en": ""
- },
- {
-  "vi": "Đo vải",
-  "en": ""
- },
- {
-  "vi": "Cắt mẫu",
-  "en": ""
- },
- {
-  "vi": "May viền",
-  "en": ""
- },
- {
-  "vi": "Nhồi bông",
-  "en": ""
- },
- {
-  "vi": "Tạo dáng",
-  "en": ""
- },
- {
-  "vi": "Phủ men",
-  "en": ""
- },
- {
-  "vi": "Luồn dây",
-  "en": ""
- },
- {
-  "vi": "Xâu hạt",
-  "en": ""
- },
- {
-  "vi": "Gấp thiệp",
-  "en": ""
- },
- {
-  "vi": "Thước dây",
-  "en": ""
- },
- {
-  "vi": "Kéo cắt vải",
-  "en": ""
- },
- {
-  "vi": "Kim & chỉ",
-  "en": ""
- },
- {
-  "vi": "Bông mềm",
-  "en": ""
- },
- {
-  "vi": "Hai quai túi",
-  "en": ""
- },
- {
-  "vi": "Góc trang trí",
-  "en": ""
- },
- {
-  "vi": "Bàn tay nặn",
-  "en": ""
- },
- {
-  "vi": "Cọ phủ men",
-  "en": ""
- },
- {
-  "vi": "Sợi dây",
-  "en": ""
- },
- {
-  "vi": "Hạt gỗ",
-  "en": ""
- },
- {
-  "vi": "Nếp gấp",
-  "en": ""
- },
- {
-  "vi": "Kéo hai đầu thước: ngang 32 cm, dọc 36 cm.",
-  "en": ""
- },
- {
-  "vi": "Giữ kéo ở chấm sáng, đi theo nét đứt quanh tấm vải.",
-  "en": ""
- },
- {
-  "vi": "Giữ kim ở chấm sáng, may dọc hai bên và đáy túi.",
-  "en": ""
- },
- {
-  "vi": "Kéo từng quai từ khay vào vị trí sáng trên miệng túi.",
-  "en": ""
- },
- {
-  "vi": "Chạm lên sản phẩm để in dấu của riêng bạn.",
-  "en": ""
- },
- {
-  "vi": "Đưa tay theo đường sáng để tạo thành và đáy chậu.",
-  "en": ""
- },
- {
-  "vi": "Đưa cọ theo từng hàng để phủ men lên chậu.",
-  "en": ""
- },
- {
-  "vi": "Kéo sợi dây theo đường sáng để chuẩn bị xâu hạt.",
-  "en": ""
- },
- {
-  "vi": "Chọn hạt trong khay, rồi chạm vào một vị trí trên dây.",
-  "en": ""
- },
- {
-  "vi": "Miết dọc đường giữa để gấp tấm thiệp.",
-  "en": ""
- },
- {
-  "vi": "Mắt trái",
-  "en": ""
- },
- {
-  "vi": "Mắt phải",
-  "en": ""
- },
- {
-  "vi": "Mũi",
-  "en": ""
- },
- {
-  "vi": "Kệ kỷ niệm đã đầy",
-  "en": ""
- },
- {
-  "vi": "Kệ đã đủ 24 món. Những món bạn đã làm vẫn được giữ trên kệ.",
-  "en": ""
- },
- {
-  "vi": "Các bước thủ công",
-  "en": ""
- },
- {
-  "vi": "Bàn thủ công tương tác",
-  "en": ""
- },
- {
-  "vi": "XƯỞNG NHỎ · TỰ TAY LÀM",
-  "en": ""
- },
- {
-  "vi": "class=\"cw-close\" aria-label=\"Cất bản nháp và đóng xưởng\"",
-  "en": ""
- },
- {
-  "vi": "Làm lại bước này",
-  "en": ""
- },
- {
-  "vi": "Tiếp theo →",
-  "en": ""
- },
- {
-  "vi": "Kéo đầu thước đo vải: ngang 24 cm, dọc 30 cm.",
-  "en": ""
- },
- {
-  "vi": "Giữ kéo ở chấm sáng, cắt hai lớp vải theo dáng bạn gấu.",
-  "en": ""
- },
- {
-  "vi": "Giữ kim theo đường sáng, chừa một khe nhỏ để nhồi bông.",
-  "en": ""
- },
- {
-  "vi": "Kéo bông mềm vào bốn vùng để bạn gấu đầy đặn dần.",
-  "en": ""
- },
- {
-  "vi": "Gắn mắt, mũi, nơ và in một dấu lên bụng bạn gấu.",
-  "en": ""
- },
- {
-  "vi": "Dấu ấn của bạn đã sẵn sàng. Thêm dấu hoặc cất lên kệ nhé.",
-  "en": ""
- },
- {
-  "vi": "Đẹp rồi! Mình sang bước tiếp theo nhé.",
-  "en": ""
- },
- {
-  "vi": "Không cần vội, bạn có thể làm lại bất cứ lúc nào.",
-  "en": ""
- },
- {
-  "vi": "phải →",
-  "en": ""
- },
- {
-  "vi": "trái ←",
-  "en": ""
- },
- {
-  "vi": "xuống ↓",
-  "en": ""
- },
- {
-  "vi": "lên ↑",
-  "en": ""
- },
- {
-  "vi": "Đang cất thành phẩm…",
-  "en": ""
- },
- {
-  "vi": "✓ Bản nháp đã giữ trên máy này",
-  "en": ""
- },
- {
-  "vi": "Bản nháp chỉ giữ khi cửa sổ này còn mở",
-  "en": ""
- },
- {
-  "vi": "Chơi thử · bản nháp giữ trong lần mở này",
-  "en": ""
- },
- {
-  "vi": "Đang lưu…",
-  "en": ""
- },
- {
-  "vi": "Dọc",
-  "en": ""
- },
- {
-  "vi": "dọc",
-  "en": ""
- },
- {
-  "vi": "☁ Cầm bông mềm",
-  "en": ""
- },
- {
-  "vi": "Cầm một hạt",
-  "en": ""
- },
- {
-  "vi": "Gắn vào chỗ sáng",
-  "en": ""
- },
- {
-  "vi": "In chính giữa",
-  "en": ""
- },
- {
-  "vi": "In góc trái",
-  "en": ""
- },
- {
-  "vi": "In góc phải",
-  "en": ""
- },
- {
-  "vi": "↶ Bỏ dấu cuối",
-  "en": ""
- },
- {
-  "vi": "Giữ và kéo trên đường sáng",
-  "en": ""
- },
- {
-  "vi": "Dùng phím mũi tên",
-  "en": ""
- },
- {
-  "vi": "Bàn phím: chọn “Dùng phím mũi tên”, rồi dùng ↑ ↓ ← → để đưa dụng cụ theo đường.",
-  "en": ""
- },
- {
-  "vi": "Có thể dùng hai thanh thước bên dưới; Tab để chọn, phím mũi tên để chỉnh từng cm.",
-  "en": ""
- },
- {
-  "vi": "Tối đa 12 dấu. Dùng nút in để thao tác bằng bàn phím.",
-  "en": ""
- },
- {
-  "vi": "Có thể dùng các nút cầm và gắn bên dưới để thao tác bằng bàn phím.",
-  "en": ""
- },
- {
-  "vi": "Đã đủ 12 dấu. Bỏ dấu cuối nếu bạn muốn đổi vị trí.",
-  "en": ""
- },
- {
-  "vi": "Cầm một món trong khay trước nhé.",
-  "en": ""
- },
- {
-  "vi": "Đặt quai vào vị trí cùng số nhé.",
-  "en": ""
- },
- {
-  "vi": "Cầm bông mềm trong khay rồi chọn một vùng còn trống.",
-  "en": ""
- },
- {
-  "vi": "Kéo bông vào một vùng sáng trên bạn gấu.",
-  "en": ""
- },
- {
-  "vi": "Đang cầm bông mềm. Chọn vùng cần nhồi trên bạn gấu.",
-  "en": ""
- },
- {
-  "vi": "Đang cầm một hạt. Chọn vị trí còn trống.",
-  "en": ""
- },
- {
-  "vi": "Kệ đã đủ 24 món. Bản nháp của bạn vẫn được giữ.",
-  "en": ""
- },
- {
-  "vi": "Cất món tự tay làm lên kệ",
-  "en": ""
- },
- {
-  "vi": "Chưa thanh toán. Thành phẩm vẫn ở đây để bạn cất sau.",
-  "en": ""
- },
- {
-  "vi": "Chưa cất được thành phẩm. Bản nháp vẫn còn; hãy thử lại khi kết nối ổn định.",
-  "en": ""
- },
- {
-  "vi": "Kết nối bị gián đoạn. Bản nháp vẫn còn, bạn có thể thử cất lại.",
-  "en": ""
- },
- {
-  "vi": "Mình làm tiếp món đang dở nhé. Bản nháp đã được mở lại.",
-  "en": ""
- },
- {
-  "vi": "Bạn nam",
-  "en": ""
- },
- {
-  "vi": "Bạn nữ",
-  "en": ""
- },
- {
-  "vi": "Ai cũng được",
-  "en": ""
- },
- {
-  "vi": "Bà Tư bán xôi",
-  "en": ""
- },
- {
-  "vi": "Ngồi chờ ai đó hả con? Bà ngồi chung chút cho vui nha.",
-  "en": ""
- },
- {
-  "vi": "Hồi xưa bà với ông cũng quen nhau ở cái ghế đá này đó.",
-  "en": ""
- },
- {
-  "vi": "Người hợp gu tới liền à, kiên nhẫn chút.",
-  "en": ""
- },
- {
-  "vi": "Rảnh thì chơi hỏi nhanh đáp nhanh với bà nè.",
-  "en": ""
- },
- {
-  "vi": "Chú Ba sửa xe",
-  "en": ""
- },
- {
-  "vi": "Chú ghé ngồi nghỉ tay chút, con cứ chờ tự nhiên nha.",
-  "en": ""
- },
- {
-  "vi": "Tối nào phố cũng đông, chờ xíu là có bạn à.",
-  "en": ""
- },
- {
-  "vi": "Đố vui cho đỡ buồn không? Chú hỏi nè.",
-  "en": ""
- },
- {
-  "vi": "Xe cộ gì hư cứ mang qua tiệm chú nha.",
-  "en": ""
- },
- {
-  "vi": "Chị Mai tiệm hoa",
-  "en": ""
- },
- {
-  "vi": "Chị mới đóng tiệm, ngồi đây hóng gió với em chút.",
-  "en": ""
- },
- {
-  "vi": "Hoa hồng hôm nay đẹp lắm, ai được tặng chắc vui ghê.",
-  "en": ""
- },
- {
-  "vi": "Chờ người hợp gu cũng như chờ hoa nở, đáng mà.",
-  "en": ""
- },
- {
-  "vi": "Chơi đố vui với chị cho đỡ sốt ruột nè.",
-  "en": ""
- },
- {
-  "vi": "Bánh chưng thường gói bằng lá gì?",
-  "en": ""
- },
- {
-  "vi": "Lá dong",
-  "en": ""
- },
- {
-  "vi": "Lá chuối",
-  "en": ""
- },
- {
-  "vi": "Lá sen",
-  "en": ""
- },
- {
-  "vi": "Tết Trung thu vào rằm tháng mấy âm lịch?",
-  "en": ""
- },
- {
-  "vi": "Tháng 8",
-  "en": ""
- },
- {
-  "vi": "Tháng 7",
-  "en": ""
- },
- {
-  "vi": "Con giáp đứng đầu trong 12 con giáp?",
-  "en": ""
- },
- {
-  "vi": "Tý (chuột)",
-  "en": ""
- },
- {
-  "vi": "Sửu (trâu)",
-  "en": ""
- },
- {
-  "vi": "Dần (hổ)",
-  "en": ""
- },
- {
-  "vi": "Xôi được nấu từ loại gạo nào?",
-  "en": ""
- },
- {
-  "vi": "Gạo nếp",
   "en": ""
  }
 ]

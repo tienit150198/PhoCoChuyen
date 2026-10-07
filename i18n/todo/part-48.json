@@ -1,5 +1,9 @@
 [
  {
+  "vi": "nhận giấy tờ không đúng người",
+  "en": ""
+ },
+ {
   "vi": "nhận hồ sơ chưa đủ",
   "en": ""
  },
@@ -1044,6 +1048,62 @@
   "en": ""
  },
  {
+  "vi": "Người tới nhận",
+  "en": ""
+ },
+ {
+  "vi": "Dúi tờ 200 nghìn vào tay bạn: “Cán bộ cầm uống cà phê, trả nhanh giúp em nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Đặt hộp bánh kẹp phong bì lên bàn: “Chút lòng thành, khỏi hỏi nhiều cho mệt.”",
+  "en": ""
+ },
+ {
+  "vi": "Một bên tranh chấp",
+  "en": ""
+ },
+ {
+  "vi": "Kéo bạn ra góc: “Phong bì này, cán bộ nghiêng về nhà tôi chút nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Nháy mắt: “Xong vụ này tôi mời cán bộ một bữa, có ‘quà’ mang về.”",
+  "en": ""
+ },
+ {
+  "vi": "Chủ sạp lấn chiếm",
+  "en": ""
+ },
+ {
+  "vi": "Đẩy ly cà phê kèm phong bì: “Anh bỏ qua cho em vụ lấn vỉa hè nhé.”",
+  "en": ""
+ },
+ {
+  "vi": "Chủ quán karaoke",
+  "en": ""
+ },
+ {
+  "vi": "Nhét phong bì vào túi áo bạn: “Tối nay anh em mở muộn chút, cán bộ thông cảm.”",
+  "en": ""
+ },
+ {
+  "vi": "🙅 Từ chối, nói rõ quy định",
+  "en": ""
+ },
+ {
+  "vi": "📝 Lập biên bản hành vi đưa hối lộ",
+  "en": ""
+ },
+ {
+  "vi": "💵 Nhận",
+  "en": ""
+ },
+ {
+  "vi": "Dữ liệu phong bì sai.",
+  "en": ""
+ },
+ {
   "vi": "Mười lăm năm đi khu vực, thuộc từng con hẻm. Câu cửa miệng: “Nhắc trước, biên bản sau, phong bì thì không bao giờ.”",
   "en": ""
  },
@@ -1737,66 +1797,6 @@
  },
  {
   "vi": "Chú Quý kể: câu lạc bộ hưu trí chỉ hát tối thứ Bảy, toàn bạn già. Chú sợ nhất là bị cấm hát hẳn, chứ giờ giấc thì bàn được.",
-  "en": ""
- },
- {
-  "vi": "“Cấm hát sớm vậy thì khác gì cấm hát!”",
-  "en": ""
- },
- {
-  "vi": "“Đêm nào cũng hò hét tới khuya, nhà tôi có đứa con ôn thi!”",
-  "en": ""
- },
- {
-  "vi": "Chị Mận kể: bé Na ôn thi vào lớp 10, phòng ngủ sát vách. Khổ nhất là loa dội qua tường, chứ hát chút thì chị chịu được.",
-  "en": ""
- },
- {
-  "vi": "“Loa vẫn dội qua tường thì con tôi ngủ kiểu gì?”",
-  "en": ""
- },
- {
-  "vi": "Giờ tắt loa",
-  "en": ""
- },
- {
-  "vi": "Âm lượng",
-  "en": ""
- },
- {
-  "vi": "Như cũ",
-  "en": ""
- },
- {
-  "vi": "Vừa, đóng cửa",
-  "en": ""
- },
- {
-  "vi": "Nhỏ, xoay loa ra sân trước",
-  "en": ""
- },
- {
-  "vi": "Xe khách đậu chắn cửa",
-  "en": ""
- },
- {
-  "vi": "“Khách ăn phở đậu xe năm phút chứ mấy, làm gì căng vậy cô.”",
-  "en": ""
- },
- {
-  "vi": "Anh Toàn kể: quán chỉ đông 6–9 giờ sáng, khách toàn người đi làm ghé ăn vội. Bắt gửi xe hết thì mất khách buổi sáng.",
-  "en": ""
- },
- {
-  "vi": "“Vậy là đuổi khách buổi sáng của tui rồi.”",
-  "en": ""
- },
- {
-  "vi": "“Sáng nào xe cũng chắn cửa, tôi không dắt xe ra được!”",
-  "en": ""
- },
- {
-  "vi": "Cô Thoa kể: cô chỉ cần một lối rộng chừng một mét để 7 giờ dắt xe đi đón cháu. Đậu xe giờ nào cô không quan tâm.",
   "en": ""
  }
 ]
