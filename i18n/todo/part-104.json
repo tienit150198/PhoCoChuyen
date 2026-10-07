@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Bản đồ phường",
+  "en": ""
+ },
+ {
+  "vi": "An ninh trung tâm",
+  "en": ""
+ },
+ {
+  "vi": "GIÁ BỘ ĐÀM",
+  "en": ""
+ },
+ {
   "vi": "Mướp ngủ cạnh giá bộ đàm",
   "en": ""
  },
@@ -1392,6 +1404,10 @@
   "en": ""
  },
  {
+  "vi": "Tải lại để cập nhật",
+  "en": ""
+ },
+ {
   "vi": "trừ vào ví của bạn",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Mỗi kỳ",
-  "en": ""
- },
- {
-  "vi": "Đã phân bổ",
-  "en": ""
- },
- {
-  "vi": "Đã ghi doanh thu",
-  "en": ""
- },
- {
-  "vi": "Chờ phân bổ",
-  "en": ""
- },
- {
-  "vi": "Đáo hạn tháng",
   "en": ""
  }
 ]

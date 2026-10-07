@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Hệ thống",
+  "en": ""
+ },
+ {
   "vi": "Báo cáo số liệu",
   "en": ""
  },
@@ -1400,7 +1404,7 @@
   "en": ""
  },
  {
-  "vi": "Khi khách nhận sai mã, sai màu",
+  "vi": "Khi khách nhận sai mã, sai màu (không phải thiếu món)",
   "en": ""
  },
  {
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Các chuyến hôm nay",
-  "en": ""
- },
- {
-  "vi": "Phòng tổ bay",
   "en": ""
  }
 ]

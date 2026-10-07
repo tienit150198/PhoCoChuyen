@@ -1,5 +1,69 @@
 [
  {
+  "vi": "Mời người ấy về ở chung",
+  "en": ""
+ },
+ {
+  "vi": "🏠 Chọn nhà để ở chung",
+  "en": ""
+ },
+ {
+  "vi": "Mở quỹ chung",
+  "en": ""
+ },
+ {
+  "vi": "Rời nhà chung",
+  "en": ""
+ },
+ {
+  "vi": "🏡 Một mái nhà của bạn",
+  "en": ""
+ },
+ {
+  "vi": "Bạn có thể mời bạn bè ở chung ngay. Hoàn tất lễ cưới để mở phần con chung.",
+  "en": ""
+ },
+ {
+  "vi": "Mời bạn bè vào chơi hoặc ở chung lâu dài, không cần kết hôn. Người nhận cần đồng ý lời mời.",
+  "en": ""
+ },
+ {
+  "vi": "Xem kế hoạch cưới",
+  "en": ""
+ },
+ {
+  "vi": "Kết bạn với người ấy",
+  "en": ""
+ },
+ {
+  "vi": "Tên gọi & đồ của bé",
+  "en": ""
+ },
+ {
+  "vi": "Tên gọi",
+  "en": ""
+ },
+ {
+  "vi": "Đồ của bé",
+  "en": ""
+ },
+ {
+  "vi": "Bé bạn tiếp tục chăm",
+  "en": ""
+ },
+ {
+  "vi": "✓ Hôm nay đã chăm đủ các mục.",
+  "en": ""
+ },
+ {
+  "vi": "Hôm nay, cùng chăm bé nhé",
+  "en": ""
+ },
+ {
+  "vi": "Bạn tiếp tục chăm bé theo tiến trình riêng.",
+  "en": ""
+ },
+ {
   "vi": "Cả hai dùng chung tiến trình chăm bé.",
   "en": ""
  },
@@ -1032,6 +1096,58 @@
   "en": ""
  },
  {
+  "vi": "Trải nghiệm",
+  "en": ""
+ },
+ {
+  "vi": "Tài phú",
+  "en": ""
+ },
+ {
+  "vi": "Siêng việc chùa",
+  "en": ""
+ },
+ {
+  "vi": "Thần lô tô",
+  "en": ""
+ },
+ {
+  "vi": "Kinh đôi",
+  "en": ""
+ },
+ {
+  "vi": "Đọc ngược",
+  "en": ""
+ },
+ {
+  "vi": "Bão bầu cua",
+  "en": ""
+ },
+ {
+  "vi": "Mắt thần",
+  "en": ""
+ },
+ {
+  "vi": "Bị hỏi thăm",
+  "en": ""
+ },
+ {
+  "vi": "Khách quý",
+  "en": ""
+ },
+ {
+  "vi": "Khách mời của tuần",
+  "en": ""
+ },
+ {
+  "vi": "Ăn cưới pro",
+  "en": ""
+ },
+ {
+  "vi": "Top 1 tuần này",
+  "en": ""
+ },
+ {
   "vi": "Chưa tải thêm được. Thử lại nhé.",
   "en": ""
  },
@@ -1077,6 +1193,18 @@
  },
  {
   "vi": "Trả nhà",
+  "en": ""
+ },
+ {
+  "vi": "Lấy lại nhà?",
+  "en": ""
+ },
+ {
+  "vi": "người thuê",
+  "en": ""
+ },
+ {
+  "vi": "Lấy lại nhà",
   "en": ""
  },
  {
@@ -1384,10 +1512,6 @@
   "en": ""
  },
  {
-  "vi": "Lấy lại nhà",
-  "en": ""
- },
- {
   "vi": "🚚 Dọn về ở",
   "en": ""
  },
@@ -1673,130 +1797,6 @@
  },
  {
   "vi": "· bấm Cập nhật giá để tải khung đã chọn",
-  "en": ""
- },
- {
-  "vi": "Chưa cập nhật được giá. Bấm Cập nhật giá để thử lại.",
-  "en": ""
- },
- {
-  "vi": "TÀI SẢN CỦA BẠN",
-  "en": ""
- },
- {
-  "vi": "phiên trước",
-  "en": ""
- },
- {
-  "vi": "Phiên hiện tại",
-  "en": ""
- },
- {
-  "vi": "phiên 10 phút",
-  "en": ""
- },
- {
-  "vi": "Vàng đổi giá theo ngày thực · Coin đổi giá theo ngày sống.",
-  "en": ""
- },
- {
-  "vi": "Giá chung cả phố · 1 giờ thực = 1 ngày thị trường.",
-  "en": ""
- },
- {
-  "vi": "Trị giá hiện tại",
-  "en": ""
- },
- {
-  "vi": "Giá được chốt khi máy chủ nhận lệnh.",
-  "en": ""
- },
- {
-  "vi": "so với phiên trước",
-  "en": ""
- },
- {
-  "vi": "📰 Tin thị trường trong game",
-  "en": ""
- },
- {
-  "vi": "Đang hỗ trợ đà tăng",
-  "en": ""
- },
- {
-  "vi": "Đang tạo áp lực giảm",
-  "en": ""
- },
- {
-  "vi": "phân",
-  "en": ""
- },
- {
-  "vi": "chỉ",
-  "en": ""
- },
- {
-  "vi": "Chưa tải được giá vàng. Mở lại mục Đầu tư để thử nhé.",
-  "en": ""
- },
- {
-  "vi": "Số vàng giao dịch",
-  "en": ""
- },
- {
-  "vi": "Tiệm vàng Kim Phát",
-  "en": ""
- },
- {
-  "vi": "Bán ngay được",
-  "en": ""
- },
- {
-  "vi": "Tiền đã bỏ vào",
-  "en": ""
- },
- {
-  "vi": "1 chỉ = 10 phân. Mua bằng ví, thiếu thì lấy từ tài khoản ngân hàng; bán nhận xu vào ví. Giá mua/bán đã gồm chênh lệch 2,5% mỗi chiều.",
-  "en": ""
- },
- {
-  "vi": "Biến động so với phiên trước. Giá được chốt khi máy chủ nhận lệnh.",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Bớt vàng\"",
-  "en": ""
- },
- {
-  "vi": "aria-label=\"Thêm vàng\"",
-  "en": ""
- },
- {
-  "vi": "1 phân",
-  "en": ""
- },
- {
-  "vi": "1 chỉ",
-  "en": ""
- },
- {
-  "vi": "5 chỉ",
-  "en": ""
- },
- {
-  "vi": "Chọn tài sản",
-  "en": ""
- },
- {
-  "vi": "Mở khi ví từng có 500 xu",
-  "en": ""
- },
- {
-  "vi": "☁️ Mây Coin",
-  "en": ""
- },
- {
-  "vi": "xem trước",
   "en": ""
  }
 ]

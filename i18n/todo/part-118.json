@@ -1,5 +1,160 @@
 [
  {
+  "vi": "Bác Lâm dặn: vặn lửa lăn tăn, hớt bọt, nếm và nêm nước dùng, ngửi bánh hôm qua (chua thì bỏ) rồi mở quán. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thêm $1 cái quẩy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "dán $1$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "dán $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1, khung $2, $3, đạo cụ: $4, $5, $6, $7 ngày tháng, $8",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "màu $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ảnh đã cắt rồi, không đổi $1 được nữa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧽 Lau ống kính bằng khăn mềm theo vòng tròn.$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🖨️ Thay cuộn mực mới: in được $1 tấm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cuộn cũ còn $1 tấm thì bỏ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Máy in báo cuộn mực còn $1 tấm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📸 Chụp thử phông trống: $1$2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📸 Mở tiệm! $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 không có ở tiệm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 Gói $2: chụp $3 tấm đẹp để in.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🖼️ Chọn khung $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎨 Kéo $1 xuống sau ghế chụp.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💡 Chỉnh $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "↩️ Cất $1 lại vào rổ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎩 Đưa khách $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lượt này đã đủ $1 tấm. Cho khách xem, hoặc xóa để chụp lượt mới.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Còn $1 kiểu, máy đếm lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🖥️ $1 chọn rồi: tấm $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "chụp thêm giùm $1 tấm nha",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🖥️ $1 xem xong: “Mới có $2 tấm đẹp, $3.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🖥️ $1 chụm đầu xem màn hình: “Lấy tấm $2 nha!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "↩️ Bỏ chọn tấm $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "☑️ Chọn tấm $1 ($2/$3).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "↩️ Gỡ sticker $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✨ Dán sticker $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎨 Chọn màu $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Tôi lấy $1 mà in ra $2.",
   "en": "",
   "pattern": true
@@ -2091,161 +2246,6 @@
  },
  {
   "vi": "Cộng: $1 giờ · $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hợp đồng ghi $1 · mức sàn kỳ này $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 thấp hơn mức sàn → đóng theo mức sàn $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 không thấp hơn mức sàn → giữ đúng số hợp đồng $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ nhân sự: $1 người đã đăng ký.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ mới nộp $1/$2, trước mốc $3/$4 → được tính từ kỳ này (+1).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ mới nộp $1/$2, không trước mốc $3/$4 → kỳ sau mới tính.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Kỳ này tính $1 người.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sổ tạm ứng không có tên $1 → không trừ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sổ tạm ứng: $1 ứng $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trừ đúng một lần: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ nhân sự: tài khoản $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tin nhắn xin đổi sang $1 không có đơn ký tên — không có giá trị.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 người đã đăng ký",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "+ 1 hồ sơ nộp $1/$2 (trước mốc $3/$4)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ nhân sự: $1 = $2 người phụ thuộc; bảng nháp chỉ ghi $3 nên trừ thuế cao hơn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 không có trong Hồ sơ nhân sự — “lương ma”, không được trả.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã có ở dòng $2 — cùng người, cùng tài khoản.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ nhân sự: $1 — $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Không còn trong kỳ lương tháng $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quy định “$1”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sót $1 lỗi ($2)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "— bị trừ $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đánh dấu nhầm $1 ô đúng ($2) — chị Hồng mất công soát lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(dòng $1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "và $1 ô khác",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giữ lương oan ở những ô vốn đúng$1, chị phải soát lại từng dòng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giữ lương oan ở những ô vốn đúng$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✗ Chưa khớp $1/$2 ô.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khớp $1/$2 ô — chưa khớp: $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng $1/$2 mục cần chọn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", thừa $1 mục",
   "en": "",
   "pattern": true
  }

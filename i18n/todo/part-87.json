@@ -1,5 +1,29 @@
 [
  {
+  "vi": "Đỗ xe dưới lòng đường, bị dán giấy phạt.",
+  "en": ""
+ },
+ {
+  "vi": "Bảo hiểm trong bản lưu không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Thiết bị cần bảo dưỡng",
+  "en": ""
+ },
+ {
+  "vi": "Thiết bị làm việc phát tiếng lạ. Chủ tiệm chọn cách bảo dưỡng trước ca tiếp theo.",
+  "en": ""
+ },
+ {
+  "vi": "Thuê thợ bảo dưỡng thiết bị",
+  "en": ""
+ },
+ {
+  "vi": "Thiết bị được kiểm tra, khách yên tâm với chất lượng phục vụ.",
+  "en": ""
+ },
+ {
   "vi": "Tạm cất thiết bị, dùng phương án thủ công",
   "en": ""
  },
@@ -88,7 +112,7 @@
   "en": ""
  },
  {
-  "vi": "Nhờ hỗ trợ, giữ chứng cứ và báo sự việc",
+  "vi": "📹 Xem camera, báo công an phường, giữ chứng cứ",
   "en": ""
  },
  {
@@ -365,6 +389,10 @@
  },
  {
   "vi": "Thợ kiểm tra và khắc phục đầu nối, bạn lưu khoản sửa chữa.",
+  "en": ""
+ },
+ {
+  "vi": "Bạn giữ an toàn, bàn giao chứng cứ cho công an phường. Món hàng được trả lại, không mất xu nào.",
   "en": ""
  },
  {
@@ -1769,34 +1797,6 @@
  },
  {
   "vi": "Đơn riêng: đóng kiện hàng lạnh và giao",
-  "en": ""
- },
- {
-  "vi": "Đơn riêng: ràng và giao kiện cồng kềnh",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: vệ sinh đoạn thoát nước",
-  "en": ""
- },
- {
-  "vi": "Việc riêng: thay ống xi-phông bồn rửa",
-  "en": ""
- },
- {
-  "vi": "Kệ hết hàng nhân viên bán được. Nhập thêm hàng để đội làm tiếp.",
-  "en": ""
- },
- {
-  "vi": "Đội đang chờ hàng: hết",
-  "en": ""
- },
- {
-  "vi": ". Nhập thêm để đội làm tiếp.",
-  "en": ""
- },
- {
-  "vi": "Phần lưu trữ của tệp không hợp lệ.",
   "en": ""
  }
 ]

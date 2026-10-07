@@ -1,5 +1,160 @@
 [
  {
+  "vi": "$1: “Có vé bù thì được, chị in liền.” Khách cầm vé, bớt càu nhàu hẳn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiếng sấm cuối lúc $1. Chờ đủ ba mươi phút đã, nắng lên cũng vậy.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dông: cho lên bờ, trú ở $1, mở lại lúc $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dông: không đóng hồ, mở tới $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🔓 Mở lại hồ. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Anh Hải đọc sổ, khựng lại ở dòng “$1”: “Cái này đâu có xảy ra, em?” Ghi khống vào sổ trực. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📒 Sổ trực thật, nhưng thiếu: “$1”. Ca chiều phải hỏi lại từng người.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛟 Ca trực: $1 việc ở Hồ bơi Sóng Xanh.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📣 Thổi còi đúng luật $1 lần.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🛟 Đưa $1 người gặp nạn lên bờ. Ngực còn đập thình thịch.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⛔ Đóng hoặc hoãn mở hồ $1 lần vì an toàn: đúng bài.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎫 Soát $1 người ở cổng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📋 $1 biên bản sự cố. Mai họp nhóm rút kinh nghiệm.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Danh sách mở hồ: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Danh sách mở hồ: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quét đủ năm khu: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quét đủ năm khu: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ở cổng: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ở cổng: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lớp bơi: $1. Giáo án: $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lớp bơi: $1. Giáo án: $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lớp bơi: $1. Giáo án:",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lớp bơi: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dông chiều, bắt đầu từ $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚖️ Hội đồng kỷ luật xí nghiệp: hạ xuống $1, tạm đình chỉ trực hôm nay, thưởng ca về 0 tới khi hồ sơ sạch lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khách ra đảo: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⛴️ Còi tàu Hòn Gió 02 vang ở bến. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thưởng ca $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tắt đèn lúc $1, trời còn tối, tàu ngoài khơi mất mốc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💡 Bạn tắt đèn lúc $1. Ngoài khơi vẫn còn tối mịt, mấy đốm đèn tàu cá còn lấp lóa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đèn sáng tới $1 giữa ban ngày, hao ắc quy.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "💡 Bạn tắt đèn lúc $1. Nắng đã lên cao, ắc quy tụt một khúc.",
   "en": "",
   "pattern": true
@@ -2091,161 +2246,6 @@
  },
  {
   "vi": "Kho còn $1 nắm bánh, $2 mẻ xương, $3 phần tái.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bác Lâm dặn: vặn lửa lăn tăn, hớt bọt, nếm và nêm nước dùng, ngửi bánh hôm qua (chua thì bỏ) rồi mở quán. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thêm $1 cái quẩy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "dán $1$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "dán $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1, khung $2, $3, đạo cụ: $4, $5, $6, $7 ngày tháng, $8",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "màu $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ảnh đã cắt rồi, không đổi $1 được nữa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧽 Lau ống kính bằng khăn mềm theo vòng tròn.$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🖨️ Thay cuộn mực mới: in được $1 tấm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cuộn cũ còn $1 tấm thì bỏ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Máy in báo cuộn mực còn $1 tấm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📸 Chụp thử phông trống: $1$2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📸 Mở tiệm! $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 không có ở tiệm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Gói $2: chụp $3 tấm đẹp để in.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🖼️ Chọn khung $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎨 Kéo $1 xuống sau ghế chụp.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💡 Chỉnh $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "↩️ Cất $1 lại vào rổ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎩 Đưa khách $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lượt này đã đủ $1 tấm. Cho khách xem, hoặc xóa để chụp lượt mới.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Còn $1 kiểu, máy đếm lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🖥️ $1 chọn rồi: tấm $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "chụp thêm giùm $1 tấm nha",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🖥️ $1 xem xong: “Mới có $2 tấm đẹp, $3.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🖥️ $1 chụm đầu xem màn hình: “Lấy tấm $2 nha!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "↩️ Bỏ chọn tấm $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "☑️ Chọn tấm $1 ($2/$3).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "↩️ Gỡ sticker $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✨ Dán sticker $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎨 Chọn màu $1.",
   "en": "",
   "pattern": true
  }

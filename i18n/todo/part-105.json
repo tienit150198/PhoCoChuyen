@@ -1,5 +1,21 @@
 [
  {
+  "vi": "Đã phân bổ",
+  "en": ""
+ },
+ {
+  "vi": "Đã ghi doanh thu",
+  "en": ""
+ },
+ {
+  "vi": "Chờ phân bổ",
+  "en": ""
+ },
+ {
+  "vi": "Đáo hạn tháng",
+  "en": ""
+ },
+ {
   "vi": "Lãi dự thu",
   "en": ""
  },
@@ -1781,22 +1797,6 @@
  },
  {
   "vi": "Băng keo hồng",
-  "en": ""
- },
- {
-  "vi": "Băng keo xanh",
-  "en": ""
- },
- {
-  "vi": "Góc ảnh nơ",
-  "en": ""
- },
- {
-  "vi": "Vé hội chợ",
-  "en": ""
- },
- {
-  "vi": "Khung thoại",
   "en": ""
  }
 ]

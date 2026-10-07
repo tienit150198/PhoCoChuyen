@@ -1,5 +1,110 @@
 [
  {
+  "vi": "Chưa ai hiện tên ở $1. Bạn thử làm người đầu tiên nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nghề khác ($1)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥇 $1 xu + $2 · 🥈🥉 $3 xu + $4. Bằng nhau thì ai đạt trước đứng trên. Còn $5 ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tuần này bạn đã dự $1 đám cưới.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tinh thần $1 trên 100",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mất $1 xu. Tin lan khắp hẻm…",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ví $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tinh thần $1/100",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xả stress · Hàng xóm · Nhật ký đời thường$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thân thiết $1 trên 100",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Xả stress $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chat · $1 tin chưa đọc",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎉 Tiệc cưới lúc $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "bàn × $1 xu · thực đơn $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã chép mã $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ". $1. Nhẫn nằm trong hộp cho tới khi bạn trao đi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "nhận $1 vào ví (80% giá mua). Phí đổi màu không hoàn lại. Nhẫn của hai bạn vẫn được giữ nguyên.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ". Phí $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hủy kết bạn với $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chặn $1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cho $1 mượn $2?",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Gửi $1 $2?",
   "en": "",
   "pattern": true
@@ -815,6 +920,11 @@
   "pattern": true
  },
  {
+  "vi": "Chưa bật ở Menu $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "phần · tổng $1",
   "en": "",
   "pattern": true
@@ -1175,7 +1285,17 @@
   "pattern": true
  },
  {
-  "vi": "đã thuê tới ngày $1 của người thuê.",
+  "vi": "đang thuê$1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "hết hạn ngày $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "tới ngày $1 của người thuê",
   "en": "",
   "pattern": true
  },
@@ -2126,126 +2246,6 @@
  },
  {
   "vi": "Từ quỹ $1. Quỹ vẫn giữ tiền dự phòng và tiền hóa đơn chưa trả.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Rút · $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang diễn ra · còn $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mở sau $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vào dự$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ảnh cưới $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "đổi nhạc rồi: $1! Quẩy lên nào! 🎧",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bản $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã lắp bậc $1 · +$2%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "+$1% tốc độ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cần bậc $1 trước",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lắp thiết bị · $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đang phục vụ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lời nhắn: $1 ·",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "/$1 đơn trong ca đã hoàn tất",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Làm khách · $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Người phụ việc có thể làm thay khi $1 vắng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chưa có $1 nào.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🏡 Khách ghé$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "tại chỗ · $1 đơn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tuần này nghề nào lời x$1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Từ $1 đến $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Làm nghề của hôm nay rồi khép ca: lời x$1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đúng ngày của nghề nào, làm nghề đó rồi khép ca là được thưởng thêm gấp đôi tiền lời của ngày vào ví: cả ngày lời x$1. Tuần nào nghề nào cũng có một ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sổ thu chi · $1 xu",
   "en": "",
   "pattern": true
  }

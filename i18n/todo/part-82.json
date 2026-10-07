@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Nhắn khách hẹn giờ khác",
+  "en": ""
+ },
+ {
+  "vi": "Khách xin lỗi, hẹn chiều nhận.",
+  "en": ""
+ },
+ {
+  "vi": "Khách im lặng. Lỗ tiền hàng.",
+  "en": ""
+ },
+ {
   "vi": "Báo app, bỏ qua",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Sân ven sông",
-  "en": ""
- },
- {
-  "vi": "📦 Đồ đạc trong nhà cũ đã chuyển vào túi đồ.",
-  "en": ""
- },
- {
-  "vi": "Thao tác sửa nhà không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Sửa và trang trí nhà chỉ có trong chế độ hành trình.",
   "en": ""
  }
 ]

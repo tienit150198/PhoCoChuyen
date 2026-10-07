@@ -1,5 +1,160 @@
 [
  {
+  "vi": "Hợp đồng ghi $1 · mức sàn kỳ này $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 thấp hơn mức sàn → đóng theo mức sàn $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 không thấp hơn mức sàn → giữ đúng số hợp đồng $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ nhân sự: $1 người đã đăng ký.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ mới nộp $1/$2, trước mốc $3/$4 → được tính từ kỳ này (+1).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ mới nộp $1/$2, không trước mốc $3/$4 → kỳ sau mới tính.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kỳ này tính $1 người.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ tạm ứng không có tên $1 → không trừ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ tạm ứng: $1 ứng $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trừ đúng một lần: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ nhân sự: tài khoản $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tin nhắn xin đổi sang $1 không có đơn ký tên — không có giá trị.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 người đã đăng ký",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "+ 1 hồ sơ nộp $1/$2 (trước mốc $3/$4)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ nhân sự: $1 = $2 người phụ thuộc; bảng nháp chỉ ghi $3 nên trừ thuế cao hơn.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 không có trong Hồ sơ nhân sự — “lương ma”, không được trả.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đã có ở dòng $2 — cùng người, cùng tài khoản.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ nhân sự: $1 — $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Không còn trong kỳ lương tháng $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quy định “$1”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sót $1 lỗi ($2)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "— bị trừ $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đánh dấu nhầm $1 ô đúng ($2) — chị Hồng mất công soát lại.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(dòng $1)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "và $1 ô khác",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giữ lương oan ở những ô vốn đúng$1, chị phải soát lại từng dòng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giữ lương oan ở những ô vốn đúng$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "✗ Chưa khớp $1/$2 ô.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Khớp $1/$2 ô — chưa khớp: $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đúng $1/$2 mục cần chọn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", thừa $1 mục",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Ghép đúng $1/$2 dòng.",
   "en": "",
   "pattern": true
@@ -1520,7 +1675,7 @@
   "pattern": true
  },
  {
-  "vi": "«$1» dùng khi $2. Vụ này, đọc lại 📌 $3: “$4”",
+  "vi": "📌 $1: “$2” «$3» chỉ dùng khi $4.",
   "en": "",
   "pattern": true
  },
@@ -1545,7 +1700,22 @@
   "pattern": true
  },
  {
-  "vi": "Công an kiểm tra đánh bạc! Thu $1 xu trong ví.",
+  "vi": "ví $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "tài khoản ngân hàng $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Công an hỏi nguồn tài sản: thu 10% tiền lời mới ở hội chợ, $1 xu ($2).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🍀 Lộc trời cho! Ván này ăn ×$1 tiền cược: +$2 xu.",
   "en": "",
   "pattern": true
  },
@@ -2076,176 +2246,6 @@
  },
  {
   "vi": "Dọn khỏi $1 của $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Về ở chung $1 của $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã bán $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhận lại tiền cọc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả $1 $2, nhận lại $3 xu tiền cọc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền cọc $1 xu: bạn còn thiếu $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đặt cọc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thuê $1, đặt cọc $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã thuê $1: tiền $2 $3 xu/ngày, cọc $4 xu (trả lại khi dọn đi).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1$2, nhận lại $3 xu tiền cọc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1, nhận lại $2 xu tiền cọc vào ví.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đã là nhà của bạn rồi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn đang có $1 căn nhà. Bán bớt một căn rồi hãy mua thêm nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả trước từ $1 xu ($2% giá nhà) tới $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vay ít nhất $1 xu, hoặc trả đủ luôn nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả trước và phí cần $1 xu: bạn còn thiếu $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ vay mua nhà chưa được duyệt. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", đã trừ $1 xu trả góp các căn đang vay",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ vay mua nhà chưa được duyệt: mỗi kỳ $1 xu vượt $2% thu nhập một tháng ($3 xu$4). Trả trước nhiều hơn hoặc vay dài hơn nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả trước mua $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giải ngân vay mua nhà: $1 xu trả thẳng cho bên bán",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: Khoản vay mua nhà $2 xu đã giải ngân cho bên bán. Trả góp $3 kỳ, mỗi kỳ $4 xu, cứ $5 ngày một kỳ, kỳ đầu Ngày $6.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mua $1 giá $2 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chúc mừng! $1 ở $2 giờ là nhà của bạn. Đã trả $3 xu (gồm $4 xu phí công chứng, sang tên)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", trong đó $1 xu từ quỹ chung.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khoản vay $1 xu trả $2 kỳ, mỗi kỳ khoảng $3 xu, kỳ đầu $4.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả phòng trọ, nhận lại $1 xu tiền cọc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Căn này đang để trống: dọn về ở hoặc cho thuê lúc nào cũng được.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 giờ để trống.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thuê xe dọn nhà $1 xu: bạn còn thiếu $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thuê xe dọn về $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dọn về ở chung $1 của $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã dọn về ở chung $1 của $2, xe chở đồ $3 xu. $4 giờ để trống. $5",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 đang cho thuê: báo khách trả nhà trước rồi mới dọn về được nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dọn về $1.",
   "en": "",
   "pattern": true
  }

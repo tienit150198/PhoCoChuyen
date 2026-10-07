@@ -1,5 +1,9 @@
 [
  {
+  "vi": "giữ kín chuyện công ty",
+  "en": ""
+ },
+ {
   "vi": "Trưởng nhóm IT, Công ty CP Cánh Diều",
   "en": ""
  },
@@ -132,7 +136,7 @@
   "en": ""
  },
  {
-  "vi": "khách nhận sai mã, sai màu",
+  "vi": "khách nhận sai mã, sai màu (không phải thiếu món)",
   "en": ""
  },
  {
@@ -209,6 +213,18 @@
  },
  {
   "vi": "Gà",
+  "en": ""
+ },
+ {
+  "vi": "🚨 Công an kiểm tra tài sản · Thu 10% tiền lời hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Chào em, nghe nói em lời ở hội chợ hơi bị nhiều. Chứng minh nguồn tài sản giúp anh cái nha.",
+  "en": ""
+ },
+ {
+  "vi": "🍀 Lộc trời cho ×10",
   "en": ""
  },
  {
@@ -428,7 +444,11 @@
   "en": ""
  },
  {
-  "vi": "🚨 Công an kiểm tra hội chợ · Thu tiền trong ví",
+  "vi": "Công an thu 10% tiền lời hội chợ",
+  "en": ""
+ },
+ {
+  "vi": "Công an hỏi nguồn tài sản, nhưng ví với tài khoản trống trơn nên lần này cho qua.",
   "en": ""
  },
  {
@@ -1777,26 +1797,6 @@
  },
  {
   "vi": "Thông tin sơn xe không hợp lệ.",
-  "en": ""
- },
- {
-  "vi": "Chiếc xe vẫn y như cũ.",
-  "en": ""
- },
- {
-  "vi": "Không khoe xe nào trên hồ sơ nữa.",
-  "en": ""
- },
- {
-  "vi": "Tiền xăng",
-  "en": ""
- },
- {
-  "vi": "Bán xe",
-  "en": ""
- },
- {
-  "vi": "Thao tác nhà xe không hợp lệ.",
   "en": ""
  }
 ]

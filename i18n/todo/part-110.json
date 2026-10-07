@@ -1,5 +1,129 @@
 [
  {
+  "vi": "Chưa cập nhật được giá. Bấm Cập nhật giá để thử lại.",
+  "en": ""
+ },
+ {
+  "vi": "TÀI SẢN CỦA BẠN",
+  "en": ""
+ },
+ {
+  "vi": "phiên trước",
+  "en": ""
+ },
+ {
+  "vi": "Phiên hiện tại",
+  "en": ""
+ },
+ {
+  "vi": "phiên 10 phút",
+  "en": ""
+ },
+ {
+  "vi": "Vàng đổi giá theo ngày thực · Coin đổi giá theo ngày sống.",
+  "en": ""
+ },
+ {
+  "vi": "Giá chung cả phố · 1 giờ thực = 1 ngày thị trường.",
+  "en": ""
+ },
+ {
+  "vi": "Trị giá hiện tại",
+  "en": ""
+ },
+ {
+  "vi": "Giá được chốt khi máy chủ nhận lệnh.",
+  "en": ""
+ },
+ {
+  "vi": "so với phiên trước",
+  "en": ""
+ },
+ {
+  "vi": "📰 Tin thị trường trong game",
+  "en": ""
+ },
+ {
+  "vi": "Đang hỗ trợ đà tăng",
+  "en": ""
+ },
+ {
+  "vi": "Đang tạo áp lực giảm",
+  "en": ""
+ },
+ {
+  "vi": "phân",
+  "en": ""
+ },
+ {
+  "vi": "chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Chưa tải được giá vàng. Mở lại mục Đầu tư để thử nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Số vàng giao dịch",
+  "en": ""
+ },
+ {
+  "vi": "Tiệm vàng Kim Phát",
+  "en": ""
+ },
+ {
+  "vi": "Bán ngay được",
+  "en": ""
+ },
+ {
+  "vi": "Tiền đã bỏ vào",
+  "en": ""
+ },
+ {
+  "vi": "1 chỉ = 10 phân. Mua bằng ví, thiếu thì lấy từ tài khoản ngân hàng; bán nhận xu vào ví. Giá mua/bán đã gồm chênh lệch 2,5% mỗi chiều.",
+  "en": ""
+ },
+ {
+  "vi": "Biến động so với phiên trước. Giá được chốt khi máy chủ nhận lệnh.",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Bớt vàng\"",
+  "en": ""
+ },
+ {
+  "vi": "aria-label=\"Thêm vàng\"",
+  "en": ""
+ },
+ {
+  "vi": "1 phân",
+  "en": ""
+ },
+ {
+  "vi": "1 chỉ",
+  "en": ""
+ },
+ {
+  "vi": "5 chỉ",
+  "en": ""
+ },
+ {
+  "vi": "Chọn tài sản",
+  "en": ""
+ },
+ {
+  "vi": "Mở khi ví từng có 500 xu",
+  "en": ""
+ },
+ {
+  "vi": "☁️ Mây Coin",
+  "en": ""
+ },
+ {
+  "vi": "xem trước",
+  "en": ""
+ },
+ {
   "vi": "Giá coin chung cả phố · 10 phút/phiên",
   "en": ""
  },
@@ -197,6 +321,10 @@
  },
  {
   "vi": "Vào làm thôi",
+  "en": ""
+ },
+ {
+  "vi": "Chữ, số, khoảng trắng và tối đa 2 emoji",
   "en": ""
  },
  {
@@ -544,23 +672,11 @@
   "en": ""
  },
  {
-  "vi": "Trải nghiệm",
-  "en": ""
- },
- {
-  "vi": "Tài phú",
-  "en": ""
- },
- {
   "vi": "Khách mời",
   "en": ""
  },
  {
   "vi": "Loại bảng",
-  "en": ""
- },
- {
-  "vi": "Khách mời của tuần",
   "en": ""
  },
  {
@@ -1681,122 +1797,6 @@
  },
  {
   "vi": "Câu 0 điểm: hẹn xét lại sau 3 ngày làm.",
-  "en": ""
- },
- {
-  "vi": "⚠️ Cảnh cáo đang có",
-  "en": ""
- },
- {
-  "vi": "📜 Lịch sử",
-  "en": ""
- },
- {
-  "vi": "(đã tự giác)",
-  "en": ""
- },
- {
-  "vi": "Vi phạm quy trình: cảnh cáo. Lần 4: hạ 1 bậc hàm.",
-  "en": ""
- },
- {
-  "vi": "Nhận phong bì: hạ bậc ngay, ghi dấu liêm chính mãi mãi.",
-  "en": ""
- },
- {
-  "vi": "không bổ nhiệm người chơi.",
-  "en": ""
- },
- {
-  "vi": "🎖️ Cấp bậc",
-  "en": ""
- },
- {
-  "vi": "Cao nhất rồi!",
-  "en": ""
- },
- {
-  "vi": "🙇 Tự giác nộp lại phong bì",
-  "en": ""
- },
- {
-  "vi": "Về ca",
-  "en": ""
- },
- {
-  "vi": "Mở ca để kiểm tra.",
-  "en": ""
- },
- {
-  "vi": "· 📣 nhiều phản ánh",
-  "en": ""
- },
- {
-  "vi": "Vi phạm",
-  "en": ""
- },
- {
-  "vi": "nhiệm vụ",
-  "en": ""
- },
- {
-  "vi": "📤 Trình PGĐ",
-  "en": ""
- },
- {
-  "vi": "Xưởng handmade",
-  "en": ""
- },
- {
-  "vi": "Sách, CLB & gia đình",
-  "en": ""
- },
- {
-  "vi": "Bản xem màu móng",
-  "en": ""
- },
- {
-  "vi": "Đang chuẩn bị góc đi chơi…",
-  "en": ""
- },
- {
-  "vi": "Chọn kiểu tóc và ngắm thử trong gương. Kiểu mới sẽ vào tủ đồ và theo nhân vật ra phố.",
-  "en": ""
- },
- {
-  "vi": "1. Chọn kiểu tóc",
-  "en": ""
- },
- {
-  "vi": ". Chọn màu",
-  "en": ""
- },
- {
-  "vi": ". Chọn họa tiết",
-  "en": ""
- },
- {
-  "vi": "Tự tay làm từng công đoạn trên bàn: đo, cắt, may hoặc xâu hạt. Có vạch hướng dẫn, làm lại được và không bị giục giờ.",
-  "en": ""
- },
- {
-  "vi": "Thử màu và họa tiết trước khi sơn. Bộ móng được lưu để lần sau ghé lại vẫn thấy.",
-  "en": ""
- },
- {
-  "vi": "Gấu bông của riêng bạn",
-  "en": ""
- },
- {
-  "vi": "Đo · Cắt · May · Nhồi bông · Trang trí",
-  "en": ""
- },
- {
-  "vi": "1. Chọn món để làm",
-  "en": ""
- },
- {
-  "vi": "Mẫu này đã lưu rồi, không cần trả thêm.",
   "en": ""
  }
 ]

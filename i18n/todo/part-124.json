@@ -1,5 +1,75 @@
 [
  {
+  "vi": "Lô $1 không hữu cơ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "↩︎ Bỏ lô $1 (không hữu cơ)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhặt $1 trứng",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tưới $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚿 Mở van tưới cả vườn ($1 luống khô)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🤝 Góp $1 $2 $3 cho HTX",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gieo luống trống $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🌱 Chọn hạt gieo luống $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🌱 Gieo luống trống $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🌾 Nhổ cỏ cả vườn ($1 luống)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tưới luống $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Nhổ cỏ luống $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🌾 Nhổ cỏ luống $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Luống $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🧺 Nhặt $1 trứng",
   "en": "",
   "pattern": true
@@ -2176,76 +2246,6 @@
  },
  {
   "vi": "💨 Bật máy sấy nấc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "✂️ Tỉa đầu móng$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Từ chối nhận bé? Tiệm sẽ giới thiệu $1 khi cần.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📐 Điền theo bảng: $1 bữa × $2 g",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🥣 Cân $1 g & cho ăn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📐 Cân theo bảng: $1 g",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Màu $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "hiếm +$1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiệm đã tới “$1”, màu này miễn phí.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả $1 xu từ quỹ tiệm$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "hoặc chờ tiệm tới “$1” là miễn phí",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quỹ còn $1 xu, chưa đủ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🧾 $1 đơn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💚 $1 trọn vẹn",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎁 $1 xu cảm ơn",
   "en": "",
   "pattern": true
  }

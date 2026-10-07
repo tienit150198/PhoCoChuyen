@@ -1,5 +1,155 @@
 [
  {
+  "vi": "👮 Bảo vệ chợ chặn lại. $1 giơ cái ví: “Lấy ví thật mà, làm gì dữ vậy!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lựa lựa rồi nhét $2 $3 $4 vào túi riêng, lững thững bước đi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn nhắc khéo: “Chị ơi, quên tính tiền kìa.” $1 đỏ mặt trả $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn nhắc khéo. $1: “Quên cái gì? Nói vậy là vu khống đó nha!” rồi đi thẳng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn đòi $1 xu. Người xung quanh xì xào “bắt đền cắt cổ”, $2 được thể cãi lấy cãi để rồi bỏ đi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn giữ lại, đòi $1 xu. $2 lí nhí xin lỗi, trả đủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Làm như ghê lắm!” rồi giằng túi chạy mất.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảo vệ chợ chặn ở cổng. $1 trả $2 xu, bị ghi tên vào sổ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bảo vệ tới thì $1 đã lẫn vào dòng người. Khách chờ ở sạp mặt dài ra.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn làm ngơ. Sạp bên cạnh lắc đầu: “Thế mai nó lại tới.” Mất $1 $2 $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 trả tiền trái lấy lén",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧺 Bán $1 trái cho $2 khách.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📣 Rao xả $1 trái, thu $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🪰 Trái dập để trong rổ làm hư thêm $1 trái.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "⚖️ Dì Tư dò lại: hôm nay khách bị cân thiếu $1, thiệt $2 xu. Mai trừ bì, chỉnh cân kỹ nghe con.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mai trong rổ: $1 trái chín, $2 trái còn xanh. Trái về hôm nay mai vẫn còn xanh.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dì Tư dặn: $1thử cân với quả cân 1 ký (lệch thì chỉnh), lựa trái dập ra rồi mở hàng. $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dì Tư dặn: $1thử cân với quả cân 1 ký (lệch thì chỉnh), lựa trái dập ra rồi mở hàng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Dì Tư dặn: $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 mang $2 hôm qua lại. $3 Xem trái rồi giải quyết cho đúng lẽ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gom trái chín kỹ (xoài, chuối, bơ), từ $2 tới $3 trái, giá xả. $4",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã lựa $1 trái $2 dập ra.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thu gom trước $1. Túi nào trông lạ thì mở ra xem.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chị Hạnh: “$1 đổ rác tới $2. Mình đẩy xe vào nha em.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 🔔 Có chuyện ở ngõ!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 đã dùng rồi, tháo ra là bỏ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã cởi $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hết $1 rồi. Mở kho mua thêm nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Thiếu $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🦺 Vào ca! $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🛒 Vào $1 lúc $2, trễ giờ thu gom. Mấy túi rác bị mèo bới tung ra đường: quét dọn đã.",
   "en": "",
   "pattern": true
@@ -1315,6 +1465,11 @@
   "pattern": true
  },
  {
+  "vi": "🎲 Hên xui · $1% được việc",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Kho giấy giữ độ ẩm $1–$2%: cao hơn thì bật máy hút ẩm.",
   "en": "",
   "pattern": true
@@ -2091,161 +2246,6 @@
  },
  {
   "vi": "$1 gật gù: “Ừ, chờ thêm chút.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Có vé bù thì được, chị in liền.” Khách cầm vé, bớt càu nhàu hẳn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiếng sấm cuối lúc $1. Chờ đủ ba mươi phút đã, nắng lên cũng vậy.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dông: cho lên bờ, trú ở $1, mở lại lúc $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dông: không đóng hồ, mở tới $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🔓 Mở lại hồ. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Anh Hải đọc sổ, khựng lại ở dòng “$1”: “Cái này đâu có xảy ra, em?” Ghi khống vào sổ trực. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📒 Sổ trực thật, nhưng thiếu: “$1”. Ca chiều phải hỏi lại từng người.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛟 Ca trực: $1 việc ở Hồ bơi Sóng Xanh.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📣 Thổi còi đúng luật $1 lần.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🛟 Đưa $1 người gặp nạn lên bờ. Ngực còn đập thình thịch.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⛔ Đóng hoặc hoãn mở hồ $1 lần vì an toàn: đúng bài.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎫 Soát $1 người ở cổng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "📋 $1 biên bản sự cố. Mai họp nhóm rút kinh nghiệm.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Danh sách mở hồ: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Danh sách mở hồ: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quét đủ năm khu: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quét đủ năm khu: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ở cổng: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ở cổng: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lớp bơi: $1. Giáo án: $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lớp bơi: $1. Giáo án: $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lớp bơi: $1. Giáo án:",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lớp bơi: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Dông chiều, bắt đầu từ $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⚖️ Hội đồng kỷ luật xí nghiệp: hạ xuống $1, tạm đình chỉ trực hôm nay, thưởng ca về 0 tới khi hồ sơ sạch lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khách ra đảo: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "⛴️ Còi tàu Hòn Gió 02 vang ở bến. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thưởng ca $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tắt đèn lúc $1, trời còn tối, tàu ngoài khơi mất mốc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💡 Bạn tắt đèn lúc $1. Ngoài khơi vẫn còn tối mịt, mấy đốm đèn tàu cá còn lấp lóa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đèn sáng tới $1 giữa ban ngày, hao ắc quy.",
   "en": "",
   "pattern": true
  }

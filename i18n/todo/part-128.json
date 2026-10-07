@@ -1,5 +1,125 @@
 [
  {
+  "vi": "Rút · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang diễn ra · còn $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mở sau $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Vào dự$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ảnh cưới $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "đổi nhạc rồi: $1! Quẩy lên nào! 🎧",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bản $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã lắp bậc $1 · +$2%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "+$1% tốc độ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cần bậc $1 trước",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lắp thiết bị · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đang phục vụ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lời nhắn: $1 ·",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "/$1 đơn trong ca đã hoàn tất",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Làm khách · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Người phụ việc có thể làm thay khi $1 vắng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chưa có $1 nào.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏡 Khách ghé$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "tại chỗ · $1 đơn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tuần này nghề nào lời x$1?",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Từ $1 đến $2",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Làm nghề của hôm nay rồi khép ca: lời x$1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đúng ngày của nghề nào, làm nghề đó rồi khép ca là được thưởng thêm gấp đôi tiền lời của ngày vào ví: cả ngày lời x$1. Tuần nào nghề nào cũng có một ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ thu chi · $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Thưởng thêm 40% trên lợi nhuận dương của đơn riêng đã hoàn thành, sau giá vốn, lương và vật tư, trước thuế. Đã cộng $1 xu vào quỹ nghề và lãi đã ghi; phần lẻ được cộng dồn. Đơn khách người chơi do đội phục vụ cũng được thưởng sau khi thanh toán: $2 xu, ghi riêng trong sổ thu chi.",
   "en": "",
   "pattern": true

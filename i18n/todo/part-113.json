@@ -1,5 +1,169 @@
 [
  {
+  "vi": "Đám cưới",
+  "en": ""
+ },
+ {
+  "vi": "người ở đây",
+  "en": ""
+ },
+ {
+  "vi": "người đang dạo",
+  "en": ""
+ },
+ {
+  "vi": "📜 Lời chúc",
+  "en": ""
+ },
+ {
+  "vi": "Ví của bạn đang hết tiền.",
+  "en": ""
+ },
+ {
+  "vi": "Mừng cô dâu chú rể",
+  "en": ""
+ },
+ {
+  "vi": "Chia đôi cho",
+  "en": ""
+ },
+ {
+  "vi": "mừng bao nhiêu lần cũng được",
+  "en": ""
+ },
+ {
+  "vi": "🧧 Đang gửi…",
+  "en": ""
+ },
+ {
+  "vi": "🎁 Quà từ admin: 500 xu đi đám cưới đã vào ví!",
+  "en": ""
+ },
+ {
+  "vi": "Đã gửi phong bì 🧧",
+  "en": ""
+ },
+ {
+  "vi": "🍺 Cụng ly bia",
+  "en": ""
+ },
+ {
+  "vi": "🥤 Nước ngọt",
+  "en": ""
+ },
+ {
+  "vi": ": no rồi",
+  "en": ""
+ },
+ {
+  "vi": "Chọn nhạc cho tiệc",
+  "en": ""
+ },
+ {
+  "vi": "Cả tiệc nghe cùng bài, cùng nhịp đèn · lúc rước dâu và múa lân vẫn giữ nhạc riêng",
+  "en": ""
+ },
+ {
+  "vi": "✓ Đang chọn",
+  "en": ""
+ },
+ {
+  "vi": "💃 Nhảy",
+  "en": ""
+ },
+ {
+  "vi": "Bạn đang xem từ ngoài cổng.",
+  "en": ""
+ },
+ {
+  "vi": "để vào dự và nhận lộc mỗi phút.",
+  "en": ""
+ },
+ {
+  "vi": "Đông quá! Bạn đứng ngoài cổng xem, vẫn được tính là khách 🎉",
+  "en": ""
+ },
+ {
+  "vi": "💍 Tiệc đã tàn",
+  "en": ""
+ },
+ {
+  "vi": "Rủ đi cà phê",
+  "en": ""
+ },
+ {
+  "vi": "Báo cáo lời vừa nói",
+  "en": ""
+ },
+ {
+  "vi": "rủ bạn đi cà phê ☕",
+  "en": ""
+ },
+ {
+  "vi": "Tùng tùng cắc! 🦁",
+  "en": ""
+ },
+ {
+  "vi": "💐 Bạn bắt được hoa cưới!",
+  "en": ""
+ },
+ {
+  "vi": "💐 Hoa rơi xuống sàn mất rồi 😆",
+  "en": ""
+ },
+ {
+  "vi": "💐 Bắt được hoa!",
+  "en": ""
+ },
+ {
+  "vi": "📸 Cười lên nào!",
+  "en": ""
+ },
+ {
+  "vi": "Dzô!",
+  "en": ""
+ },
+ {
+  "vi": "đặc biệt",
+  "en": ""
+ },
+ {
+  "vi": "Mở sau đám cưới",
+  "en": ""
+ },
+ {
+  "vi": "Món mới",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Chọn kính, nón, mũ, nơ hay túi để thử màu.",
+  "en": ""
+ },
+ {
+  "vi": "đang đeo",
+  "en": ""
+ },
+ {
+  "vi": "hợp với tóc",
+  "en": ""
+ },
+ {
+  "vi": "🎨 Thử màu",
+  "en": ""
+ },
+ {
+  "vi": "Màu gốc miễn phí. Mở một màu một lần là dùng được cho mọi món: quần áo, giày dép, phụ kiện và đồ trong nhà.",
+  "en": ""
+ },
+ {
+  "vi": "👇 Chạm một món để mặc thử.",
+  "en": ""
+ },
+ {
+  "vi": "✨ Mặc bộ này",
+  "en": ""
+ },
+ {
   "vi": "Bỏ thử, mặc lại bộ cũ",
   "en": ""
  },
@@ -1790,211 +1954,6 @@
  },
  {
   "vi": "Đã nộp $1 xu vào tài khoản. Số dư $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tài khoản chỉ còn $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(phí rút $1 xu).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Rút tiền từ tài khoản $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã rút $1 xu tiền mặt",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ", phí $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mỗi người mở tối đa $1 sổ có kỳ hạn cùng lúc.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gửi tiết kiệm $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã gửi $1 xu không kỳ hạn, lãi $2, cộng mỗi ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mở sổ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã mở sổ $1 $2 xu, lãi $3. Đáo hạn $4, lãi dự kiến $5",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sổ không kỳ hạn chỉ có $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã chuyển $1 xu từ sổ tiết kiệm về tài khoản.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tất toán trước hạn sổ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tất toán sớm: gốc $1 + lãi không kỳ hạn $2 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã tất toán sớm: nhận $1 xu về tài khoản. Rút trước hạn nên chỉ hưởng lãi không kỳ hạn (bớt $2 xu so với giữ đến hạn).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ mở thẻ chưa được duyệt. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mở thẻ, hạn mức $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: Thẻ tín dụng •••• $2 đã được kích hoạt, hạn mức $3 xu. Sao kê mỗi $4 ngày, kỳ đầu vào Ngày $5, hạn thanh toán sau sao kê $6 ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chúc mừng! Thẻ tín dụng được duyệt, hạn mức $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả thẻ tín dụng •••• $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1 xu cho thẻ. Dư nợ còn $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ứng tiền mặt tối đa $1% hạn mức: còn ứng được $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hạn mức còn $1 xu, chưa đủ cho $2 xu cộng phí $3 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phí ứng tiền mặt $1%",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ứng tiền mặt từ thẻ •••• $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã ứng $1 xu tiền mặt, phí $2 xu. Lãi $3/ngày tính ngay từ hôm nay.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã chọn: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hủy thẻ •••• $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ vay chưa được duyệt. $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hồ sơ vay chưa được duyệt: với thu nhập hiện tại, ngân hàng chỉ duyệt tối đa $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giải ngân $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Vốn vay $1 góp vào quỹ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "quỹ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hợp đồng đã ký. $1 xu đã vào $2. Trả $3 kỳ, mỗi kỳ khoảng $4 xu, kỳ đầu $5.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả góp $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Trả kỳ $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã trả $1 xu cho $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tất toán sớm $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tất toán sớm · phí $1 xu",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã tất toán sớm $1 xu (phí trả trước hạn $2 xu). Bạn tiết kiệm được $3 xu tiền lãi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: Khoản $2 đến hạn hôm nay chưa được thanh toán ($3 xu). Quý khách vui lòng thanh toán sớm để tránh phát sinh phí.",
   "en": "",
   "pattern": true
  }

@@ -1,5 +1,65 @@
 [
  {
+  "vi": "$1 mở khăn tay lấy thêm $2 xu: “Ờ ha, nãy đếm lộn. Con thật thà quá.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lục túi mãi, mặt xịu xuống: “Con… con chỉ có nhiêu đó thôi.”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 lộn hết túi áo ra, rơm rớm: “Con tưởng đủ rồi…”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 xua tay: “Đưa đủ rồi mà, đếm kiểu gì vậy?” rồi quay mặt đi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 gắt: “Nãy đưa đủ rồi, giờ đòi nữa là sao?” rồi nhìn ra cửa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hình như lần trước $1 cũng đưa thiếu ở quầy này.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn ghi sổ nợ $1 xu: “Mai con mang ra trả nha.” $2 gật đầu lia lịa.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 để lại bớt một món cho vừa tiền. Hóa đơn bớt $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn xua tay: “Thôi, cho con luôn.” $1 cười tít mắt, cảm ơn rối rít.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn không nói gì, coi như bớt cho $1 $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn không nói gì, coi như bớt cho $1 $2 xu. Người già đếm nhầm là chuyện thường.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Bạn thở dài cho qua. $1 đi thẳng ra cửa, không ngoái lại. Mất $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Anh công an khu vực tới, mời $1 đếm lại tiền ngay trên quầy. $2 hết đường chối, trả đủ $3 xu. Anh dặn: “Lần sau có chuyện cứ báo, tụi anh ở ngay đầu phố.”",
   "en": "",
   "pattern": true
@@ -101,6 +161,16 @@
  },
  {
   "vi": "$1 trả khoản thiếu hôm trước",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tên chỉ gồm chữ, số, khoảng trắng và tối đa $1 emoji.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tên chỉ dùng tối đa $1 emoji nhé.",
   "en": "",
   "pattern": true
  },
@@ -2176,76 +2246,6 @@
  },
  {
   "vi": "$1 giờ mang màu $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 giờ mang màu $3.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 chỉ bán cho người làm ở $2. Vào làm ở đó một ngày là mua được.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví chưa đủ $1 xu để mua $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "MC: “Xin mời hai họ nâng ly chúc mừng $1 và $2 trăm năm hạnh phúc!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Tụi mình quen nhau ở phố này, giờ đi ăn cưới nhau luôn. Chúc hai bạn hạnh phúc!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💍 $1 & $2 vừa tổ chức đám cưới $3 bàn tại $4!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💞 $1 & $2 vừa đính hôn. Cả phố chờ ăn cưới!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💌 $1 & $2 sẽ cưới lúc $3 tại $4! Cả phố vào Khu phố › Lịch cưới để dự nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chọn giờ cách bây giờ ít nhất $1 phút để mọi người kịp tới nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💌 $1 & $2 mời cả phố dự tiệc cưới lúc $3! Vào Khu phố › Lịch cưới nha.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💌 $1 và $2 mời bạn dự tiệc cưới lúc $3. Mở Khu phố › Lịch cưới để vào dự nhé!",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 và $2 mời bạn dự tiệc cưới lúc $3 ngày $4 💍",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "💍 Cưới ngày $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hôm nay bạn và $1 tròn $2 ngày cưới. Phố gửi hai bạn quà mừng và danh hiệu “$3”. Chúc hai bạn mãi vui như ngày đầu 💛",
   "en": "",
   "pattern": true
  }

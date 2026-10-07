@@ -40,7 +40,17 @@
   "pattern": true
  },
  {
-  "vi": "🧭 Lộ trình phòng kế toán: bậc $1",
+  "vi": "🧭 Lộ trình bậc $1: đã đạt",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧭 Lộ trình bậc $1: $2/$3 ngày chắc tay",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "· tin tưởng $1/$2",
   "en": "",
   "pattern": true
  },
@@ -660,6 +670,11 @@
   "pattern": true
  },
  {
+  "vi": "🧑‍✈️ Hãng nâng $1 lên $2: đội bay cần ít nhất $3 $4.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1 không làm việc này ($2).",
   "en": "",
   "pattern": true
@@ -671,6 +686,11 @@
  },
  {
   "vi": "Việc này cần từ $1 trở lên.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📨 $1 nộp đơn nghỉ việc. $2 ($3, điều từ căn cứ khác) vào thay.",
   "en": "",
   "pattern": true
  },
@@ -1010,7 +1030,12 @@
   "pattern": true
  },
  {
-  "vi": "Đã nhập $1 món, hết $2 xu.",
+  "vi": "Đã bật ở Menu: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã nhập $1 món, hết $2 xu.$3",
   "en": "",
   "pattern": true
  },
@@ -1276,6 +1301,36 @@
  },
  {
   "vi": "$1 xong, $2 xu. Ấm cúng +$3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Người thuê đã trả trước thêm một kỳ, tới ngày $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Người thuê đã trả tới ngày $1. Chưa thể lấy lại nhà giữa kỳ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hết kỳ thuê $1: chủ nhà đã lấy lại nhà. Tìm chỗ ở mới nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lấy lại $1 sau kỳ thuê của $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🏠 Hết kỳ thuê $1: $2 đã lấy lại nhà. Không trừ thêm tiền; tìm chỗ ở mới nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã lấy lại $1. $2 được báo dọn đi, không mất thêm tiền.",
   "en": "",
   "pattern": true
  },
@@ -2170,6 +2225,11 @@
   "pattern": true
  },
  {
+  "vi": "🎲 Hên xui · $1% lấy lại đủ, không mất xu. Không được thì:",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Đã ghi chi phí $1 xu.",
   "en": "",
   "pattern": true
@@ -2186,66 +2246,6 @@
  },
  {
   "vi": "$1 đếm lại từng tờ, cười hiền: “Già rồi mắt kém, may có con nhắc.” rồi đưa thêm $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 mở khăn tay lấy thêm $2 xu: “Ờ ha, nãy đếm lộn. Con thật thà quá.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 lục túi mãi, mặt xịu xuống: “Con… con chỉ có nhiêu đó thôi.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 lộn hết túi áo ra, rơm rớm: “Con tưởng đủ rồi…”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 xua tay: “Đưa đủ rồi mà, đếm kiểu gì vậy?” rồi quay mặt đi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 gắt: “Nãy đưa đủ rồi, giờ đòi nữa là sao?” rồi nhìn ra cửa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hình như lần trước $1 cũng đưa thiếu ở quầy này.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn ghi sổ nợ $1 xu: “Mai con mang ra trả nha.” $2 gật đầu lia lịa.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 để lại bớt một món cho vừa tiền. Hóa đơn bớt $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn xua tay: “Thôi, cho con luôn.” $1 cười tít mắt, cảm ơn rối rít.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn không nói gì, coi như bớt cho $1 $2 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn không nói gì, coi như bớt cho $1 $2 xu. Người già đếm nhầm là chuyện thường.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn thở dài cho qua. $1 đi thẳng ra cửa, không ngoái lại. Mất $2 xu.",
   "en": "",
   "pattern": true
  }

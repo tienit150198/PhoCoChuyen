@@ -1,5 +1,75 @@
 [
  {
+  "vi": "$1 $2 giờ mang màu $3.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 chỉ bán cho người làm ở $2. Vào làm ở đó một ngày là mua được.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ví chưa đủ $1 xu để mua $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "MC: “Xin mời hai họ nâng ly chúc mừng $1 và $2 trăm năm hạnh phúc!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: “Tụi mình quen nhau ở phố này, giờ đi ăn cưới nhau luôn. Chúc hai bạn hạnh phúc!”",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💍 $1 & $2 vừa tổ chức đám cưới $3 bàn tại $4!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💞 $1 & $2 vừa đính hôn. Cả phố chờ ăn cưới!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💌 $1 & $2 sẽ cưới lúc $3 tại $4! Cả phố vào Khu phố › Lịch cưới để dự nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chọn giờ cách bây giờ ít nhất $1 phút để mọi người kịp tới nhé.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💌 $1 & $2 mời cả phố dự tiệc cưới lúc $3! Vào Khu phố › Lịch cưới nha.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💌 $1 và $2 mời bạn dự tiệc cưới lúc $3. Mở Khu phố › Lịch cưới để vào dự nhé!",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1 và $2 mời bạn dự tiệc cưới lúc $3 ngày $4 💍",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💍 Cưới ngày $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hôm nay bạn và $1 tròn $2 ngày cưới. Phố gửi hai bạn quà mừng và danh hiệu “$3”. Chúc hai bạn mãi vui như ngày đầu 💛",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Hôm nay $1 và $2 tròn $3 ngày cưới 🎉",
   "en": "",
   "pattern": true
@@ -2176,76 +2246,6 @@
  },
  {
   "vi": "↩︎ Bỏ lô $1 ra khỏi thùng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lô $1 không hữu cơ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "↩︎ Bỏ lô $1 (không hữu cơ)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhặt $1 trứng",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tưới $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🚿 Mở van tưới cả vườn ($1 luống khô)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🤝 Góp $1 $2 $3 cho HTX",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Gieo luống trống $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🌱 Chọn hạt gieo luống $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🌱 Gieo luống trống $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🌾 Nhổ cỏ cả vườn ($1 luống)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tưới luống $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nhổ cỏ luống $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🌾 Nhổ cỏ luống $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Luống $1",
   "en": "",
   "pattern": true
  }

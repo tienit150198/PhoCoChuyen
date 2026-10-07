@@ -1,5 +1,9 @@
 [
  {
+  "vi": "Vợ chồng góp quỹ chung mua nhà, rồi về ở chung.",
+  "en": ""
+ },
+ {
   "vi": "Tiết kiệm có kỳ hạn tới 3 năm, lãi theo năm, tới hạn tự gửi tiếp.",
   "en": ""
  },
@@ -748,15 +752,15 @@
   "en": ""
  },
  {
+  "vi": "Trò chơi vừa có bản mới. Tải lại trang để chơi tiếp nhé.",
+  "en": ""
+ },
+ {
   "vi": "Kiểm tra nhiều bài quá, nghỉ chút nhé.",
   "en": ""
  },
  {
   "vi": "Không nhận từ website khác.",
-  "en": ""
- },
- {
-  "vi": "Thiếu nguồn gửi.",
   "en": ""
  },
  {
@@ -1793,10 +1797,6 @@
  },
  {
   "vi": "Tặng xu",
-  "en": ""
- },
- {
-  "vi": "Hệ thống",
   "en": ""
  }
 ]

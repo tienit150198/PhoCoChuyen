@@ -1,5 +1,210 @@
 [
  {
+  "vi": "Tài khoản chỉ còn $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(phí rút $1 xu).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Rút tiền từ tài khoản $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã rút $1 xu tiền mặt",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": ", phí $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mỗi người mở tối đa $1 sổ có kỳ hạn cùng lúc.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Gửi tiết kiệm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã gửi $1 xu không kỳ hạn, lãi $2, cộng mỗi ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mở sổ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã mở sổ $1 $2 xu, lãi $3. Đáo hạn $4, lãi dự kiến $5",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sổ không kỳ hạn chỉ có $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã chuyển $1 xu từ sổ tiết kiệm về tài khoản.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tất toán trước hạn sổ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tất toán sớm: gốc $1 + lãi không kỳ hạn $2 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã tất toán sớm: nhận $1 xu về tài khoản. Rút trước hạn nên chỉ hưởng lãi không kỳ hạn (bớt $2 xu so với giữ đến hạn).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ mở thẻ chưa được duyệt. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Mở thẻ, hạn mức $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: Thẻ tín dụng •••• $2 đã được kích hoạt, hạn mức $3 xu. Sao kê mỗi $4 ngày, kỳ đầu vào Ngày $5, hạn thanh toán sau sao kê $6 ngày.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chúc mừng! Thẻ tín dụng được duyệt, hạn mức $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả thẻ tín dụng •••• $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã trả $1 xu cho thẻ. Dư nợ còn $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ứng tiền mặt tối đa $1% hạn mức: còn ứng được $2 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hạn mức còn $1 xu, chưa đủ cho $2 xu cộng phí $3 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Phí ứng tiền mặt $1%",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ứng tiền mặt từ thẻ •••• $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã ứng $1 xu tiền mặt, phí $2 xu. Lãi $3/ngày tính ngay từ hôm nay.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã chọn: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hủy thẻ •••• $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ vay chưa được duyệt. $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hồ sơ vay chưa được duyệt: với thu nhập hiện tại, ngân hàng chỉ duyệt tối đa $1 xu.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Giải ngân $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Vốn vay $1 góp vào quỹ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "quỹ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hợp đồng đã ký. $1 xu đã vào $2. Trả $3 kỳ, mỗi kỳ khoảng $4 xu, kỳ đầu $5.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả góp $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả kỳ $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã trả $1 xu cho $2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tất toán sớm $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tất toán sớm · phí $1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Đã tất toán sớm $1 xu (phí trả trước hạn $2 xu). Bạn tiết kiệm được $3 xu tiền lãi.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "$1: Khoản $2 đến hạn hôm nay chưa được thanh toán ($3 xu). Quý khách vui lòng thanh toán sớm để tránh phát sinh phí.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "$1: Quý khách đang trễ hạn $2, số tiền cần thanh toán $3 xu. Vui lòng nộp tiền vào tài khoản để hệ thống tự trích.",
   "en": "",
   "pattern": true
@@ -1986,156 +2191,6 @@
  },
  {
   "vi": "$1 lắc đầu: “Không được em ơi, $2 chỉ có $3 xu thôi.” Gợi ý món rẻ hơn, bớt giá (trong mức chị Vy cho) hoặc thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Phải bớt $1 xu, quá $2% chị Vy cho phép. Gợi ý món rẻ hơn hoặc xin thêm ngân sách nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn bớt $1 xu cho vừa $2 xu. $3 cười tít: “Vậy mới là tiệm ruột của $4 chứ!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bớt $1 xu cho $2 để vừa ngân sách, quá mức $3% chị Vy dặn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 Chốt bill thôi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiệm không có bộ nào vừa $1 xu, nhân viên nói thật nên cũng không trách.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 chưa tìm được bộ vừa túi tiền: “$2”.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Bạn nói thật: hôm nay tiệm chưa có bộ hợp dịp nào dưới $1 xu. $2 hơi tiếc nhưng cảm ơn bạn đã thẳng thắn.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2. Ngân sách tối đa $3 xu. Áo size $4, quần jean $5.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Công sửa $1 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khách muốn đổi sang size $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Khách muốn đổi sang size $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn: $1. $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đơn: $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 $2 màu $3",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lấy ra quầy: $1 $2 $3, màu $4 · $5 xu.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã treo lại $1 $2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 bước ra khỏi phòng thử, xoay một vòng: “Vừa khít luôn!”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 ló đầu ra khỏi rèm: “$2 nha.” Đổi size rồi mời thử lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Giá treo hết $1 $2. Nhập thêm hoặc chọn size khác.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Công $1 ($2)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Món này chị thử không vừa mà, đổi size giùm đã.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tôi dặn màu $1 mà tiệm lấy màu $2, may mà tôi nhìn kỹ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nhíu mày: “Chị dặn màu $2 mà em, đây là màu $3.” Đổi lại đúng màu rồi tính tiền.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Ủa, $2 này đâu phải của chị?” Bỏ món dư ra rồi tính lại.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 hỏi $2 $3 mà giá treo hết — nhập về bán nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Còn thiếu $2 màu $3 nữa em.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1: “Vậy chưa thành một bộ em ơi — cần váy/áo dài, hoặc áo với quần.”",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nhìn tem giá, nhíu mày: “Lại $2 xu nữa hả? $3 đã nói tối đa $4 xu rồi mà.” Trao đổi lại với khách hoặc treo bớt món.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "$1 nhìn tem giá: “$2 xu lận hả? $3 nói tối đa $4 xu mà.” 💬 Trao đổi với khách: gợi ý món rẻ hơn, xin thêm ngân sách, bớt giá hoặc nói thật là không có.",
   "en": "",
   "pattern": true
  }

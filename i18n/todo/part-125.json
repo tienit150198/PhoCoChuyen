@@ -1,5 +1,75 @@
 [
  {
+  "vi": "✂️ Tỉa đầu móng$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Từ chối nhận bé? Tiệm sẽ giới thiệu $1 khi cần.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📐 Điền theo bảng: $1 bữa × $2 g",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🥣 Cân $1 g & cho ăn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "📐 Cân theo bảng: $1 g",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Màu $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "hiếm +$1 xu",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiệm đã tới “$1”, màu này miễn phí.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Trả $1 xu từ quỹ tiệm$2.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "hoặc chờ tiệm tới “$1” là miễn phí",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quỹ còn $1 xu, chưa đủ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🧾 $1 đơn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "💚 $1 trọn vẹn",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🎁 $1 xu cảm ơn",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "💸 hụt $1 xu",
   "en": "",
   "pattern": true
@@ -2176,76 +2246,6 @@
  },
  {
   "vi": "Sao kê đầu tiên vào $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Còn ứng được $1. Phí $2% và lãi tính ngay, nên chỉ dùng khi thật cần.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Sao kê tiếp theo: $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "lãi $1/kỳ $2 ngày",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ký Ngày $1$2 · lãi $3/kỳ · còn phải trả",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tiền trả góp tự trích từ tài khoản (thiếu thì lấy thêm tiền mặt) vào sáng ngày đến hạn. Tất toán sớm mất phí $1% gốc còn lại (ít nhất $2).",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "vốn vào $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Quá hạn $1 (đã gồm phí phạt). Nộp tiền vào tài khoản là hệ thống tự trích mỗi sáng.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "(phạt $1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Số tiền$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hạn mức dựa trên thu nhập $1/ngày và điểm $2. Tiền trả góp mỗi kỳ (cộng các khoản đang vay) không quá $3% thu nhập một tuần. Nộp hồ sơ làm điểm giảm nhẹ.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "ngày · $1 kỳ",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Lãi $1 · đã trả $2/$3 kỳ · còn phải trả",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "kỳ tới $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chậm $1.",
   "en": "",
   "pattern": true
  }

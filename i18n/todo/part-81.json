@@ -1,9 +1,5 @@
 [
  {
-  "vi": "Một cơ trưởng giỏi nhất đội bị khách khiếu nại thái độ.",
-  "en": ""
- },
- {
   "vi": "Xem lại sự việc, nghe hai phía rồi mới kết luận",
   "en": ""
  },
@@ -425,6 +421,10 @@
  },
  {
   "vi": "Bạn Lâm",
+  "en": ""
+ },
+ {
+  "vi": "Anh Hòa",
   "en": ""
  },
  {
@@ -1536,6 +1536,18 @@
   "en": ""
  },
  {
+  "vi": "Ví đang nợ. Trả nợ trước rồi góp vốn nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Ví và tài khoản ngân hàng chưa đủ số này.",
+  "en": ""
+ },
+ {
+  "vi": "Vốn quầy đã đầy.",
+  "en": ""
+ },
+ {
   "vi": "Mức nhập hàng không hợp lệ.",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Bán lại cho khách đi ngang, lỗ chút phí.",
-  "en": ""
- },
- {
-  "vi": "Nhắn khách hẹn giờ khác",
-  "en": ""
- },
- {
-  "vi": "Khách xin lỗi, hẹn chiều nhận.",
-  "en": ""
- },
- {
-  "vi": "Khách im lặng. Lỗ tiền hàng.",
   "en": ""
  }
 ]

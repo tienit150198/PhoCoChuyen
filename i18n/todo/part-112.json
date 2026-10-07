@@ -1,5 +1,157 @@
 [
  {
+  "vi": "Giao bằng gì?",
+  "en": ""
+ },
+ {
+  "vi": "🛵 Tự chạy đi giao",
+  "en": ""
+ },
+ {
+  "vi": "📦 Gọi shipper",
+  "en": ""
+ },
+ {
+  "vi": "Tới nơi rồi!",
+  "en": ""
+ },
+ {
+  "vi": "🤝 Giao tận tay",
+  "en": ""
+ },
+ {
+  "vi": "Đóng ca rồi!",
+  "en": ""
+ },
+ {
+  "vi": "Khách bạn phục vụ",
+  "en": ""
+ },
+ {
+  "vi": "Khách trong lượt này",
+  "en": ""
+ },
+ {
+  "vi": "Tiền đã vào két. Bạn có thể mở lượt phục vụ tiếp khi sẵn sàng.",
+  "en": ""
+ },
+ {
+  "vi": "Khách chấm",
+  "en": ""
+ },
+ {
+  "vi": "Chọn đúng món trên phiếu của khách nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Giá phải là số nguyên dương, tối đa 1.000.000 xu.",
+  "en": ""
+ },
+ {
+  "vi": "Mua bàn ghế?",
+  "en": ""
+ },
+ {
+  "vi": "Rời quầy?",
+  "en": ""
+ },
+ {
+  "vi": "Chốt những món bạn đã phục vụ. Nếu có nhân viên, họ tiếp tục vận hành theo hàng và vốn còn lại.",
+  "en": ""
+ },
+ {
+  "vi": "Như mới",
+  "en": ""
+ },
+ {
+  "vi": "Còn tốt",
+  "en": ""
+ },
+ {
+  "vi": "Xuống cấp",
+  "en": ""
+ },
+ {
+  "vi": "Phòng hơi trống… Mochi buồn ngủ quá.",
+  "en": ""
+ },
+ {
+  "vi": "Bắt đầu dễ thương rồi nè!",
+  "en": ""
+ },
+ {
+  "vi": "Ấm áp ghê, Mochi thích lắm!",
+  "en": ""
+ },
+ {
+  "vi": "Wow, phòng xinh quá trời!",
+  "en": ""
+ },
+ {
+  "vi": "Tổ ấm trong mơ! Mochi không muốn đi đâu hết.",
+  "en": ""
+ },
+ {
+  "vi": "Lời mời vào nhà đã hết hiệu lực.",
+  "en": ""
+ },
+ {
+  "vi": "Trên đó hết chỗ rồi. Đặt chỗ khác nhé.",
+  "en": ""
+ },
+ {
+  "vi": "chỉ đặt lên bàn, kệ, giường hoặc sàn trống thôi.",
+  "en": ""
+ },
+ {
+  "vi": "chưa bày gì",
+  "en": ""
+ },
+ {
+  "vi": "📌 Đã ghim: món này không bị kéo nhầm nữa.",
+  "en": ""
+ },
+ {
+  "vi": "Đã bỏ ghim: kéo để dời được rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Món này đang ở trên cùng rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Món này đang ở dưới cùng rồi.",
+  "en": ""
+ },
+ {
+  "vi": "Cất hết đồ vào túi?",
+  "en": ""
+ },
+ {
+  "vi": "Mọi món đang bày ở chỗ này về túi đồ. Bấm Hoàn tác để bày lại như cũ.",
+  "en": ""
+ },
+ {
+  "vi": "Chưa lưu được ảnh.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa cả nhà?",
+  "en": ""
+ },
+ {
+  "vi": "Làm",
+  "en": ""
+ },
+ {
+  "vi": "Máy chưa chụp được ảnh. Thử lại nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Về Nhà của bạn",
+  "en": ""
+ },
+ {
   "vi": "TRONG NHÀ",
   "en": ""
  },
@@ -105,6 +257,18 @@
  },
  {
   "vi": "🎒 Mua cất túi",
+  "en": ""
+ },
+ {
+  "vi": "📌 Đã ghim",
+  "en": ""
+ },
+ {
+  "vi": "Bỏ ghim để kéo được",
+  "en": ""
+ },
+ {
+  "vi": "Ghim: không kéo nhầm",
   "en": ""
  },
  {
@@ -1633,170 +1797,6 @@
  },
  {
   "vi": "Chụp ảnh chung",
-  "en": ""
- },
- {
-  "vi": "Đám cưới",
-  "en": ""
- },
- {
-  "vi": "người ở đây",
-  "en": ""
- },
- {
-  "vi": "người đang dạo",
-  "en": ""
- },
- {
-  "vi": "📜 Lời chúc",
-  "en": ""
- },
- {
-  "vi": "Ví của bạn đang hết tiền.",
-  "en": ""
- },
- {
-  "vi": "Mừng cô dâu chú rể",
-  "en": ""
- },
- {
-  "vi": "Chia đôi cho",
-  "en": ""
- },
- {
-  "vi": "mừng bao nhiêu lần cũng được",
-  "en": ""
- },
- {
-  "vi": "🧧 Đang gửi…",
-  "en": ""
- },
- {
-  "vi": "🎁 Quà từ admin: 500 xu đi đám cưới đã vào ví!",
-  "en": ""
- },
- {
-  "vi": "Đã gửi phong bì 🧧",
-  "en": ""
- },
- {
-  "vi": "🍺 Cụng ly bia",
-  "en": ""
- },
- {
-  "vi": "🥤 Nước ngọt",
-  "en": ""
- },
- {
-  "vi": ": no rồi",
-  "en": ""
- },
- {
-  "vi": "Chọn nhạc cho tiệc",
-  "en": ""
- },
- {
-  "vi": "Cả tiệc nghe cùng bài, cùng nhịp đèn · lúc rước dâu và múa lân vẫn giữ nhạc riêng",
-  "en": ""
- },
- {
-  "vi": "✓ Đang chọn",
-  "en": ""
- },
- {
-  "vi": "💃 Nhảy",
-  "en": ""
- },
- {
-  "vi": "Bạn đang xem từ ngoài cổng.",
-  "en": ""
- },
- {
-  "vi": "để vào dự và nhận lộc mỗi phút.",
-  "en": ""
- },
- {
-  "vi": "Đông quá! Bạn đứng ngoài cổng xem, vẫn được tính là khách 🎉",
-  "en": ""
- },
- {
-  "vi": "💍 Tiệc đã tàn",
-  "en": ""
- },
- {
-  "vi": "Rủ đi cà phê",
-  "en": ""
- },
- {
-  "vi": "Báo cáo lời vừa nói",
-  "en": ""
- },
- {
-  "vi": "rủ bạn đi cà phê ☕",
-  "en": ""
- },
- {
-  "vi": "Tùng tùng cắc! 🦁",
-  "en": ""
- },
- {
-  "vi": "💐 Bạn bắt được hoa cưới!",
-  "en": ""
- },
- {
-  "vi": "💐 Hoa rơi xuống sàn mất rồi 😆",
-  "en": ""
- },
- {
-  "vi": "💐 Bắt được hoa!",
-  "en": ""
- },
- {
-  "vi": "📸 Cười lên nào!",
-  "en": ""
- },
- {
-  "vi": "Dzô!",
-  "en": ""
- },
- {
-  "vi": "đặc biệt",
-  "en": ""
- },
- {
-  "vi": "Mở sau đám cưới",
-  "en": ""
- },
- {
-  "vi": "Món mới",
-  "en": ""
- },
- {
-  "vi": "🎨 Chọn kính, nón, mũ, nơ hay túi để thử màu.",
-  "en": ""
- },
- {
-  "vi": "đang đeo",
-  "en": ""
- },
- {
-  "vi": "hợp với tóc",
-  "en": ""
- },
- {
-  "vi": "🎨 Thử màu",
-  "en": ""
- },
- {
-  "vi": "Màu gốc miễn phí. Mở một màu một lần là dùng được cho mọi món: quần áo, giày dép, phụ kiện và đồ trong nhà.",
-  "en": ""
- },
- {
-  "vi": "👇 Chạm một món để mặc thử.",
-  "en": ""
- },
- {
-  "vi": "✨ Mặc bộ này",
   "en": ""
  }
 ]

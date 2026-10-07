@@ -1,5 +1,17 @@
 [
  {
+  "vi": "Đã chạm đất",
+  "en": ""
+ },
+ {
+  "vi": "Chuyển chặng",
+  "en": ""
+ },
+ {
+  "vi": "Chờ lăn vào bến, rồi đỗ tàu để khép chuyến.",
+  "en": ""
+ },
+ {
   "vi": "Lái tự động đang đưa tàu tới bước tiếp theo.",
   "en": ""
  },
@@ -1785,18 +1797,6 @@
  },
  {
   "vi": "Thuốc nhuộm không làm sáng màu nhuộm cũ: muốn sáng hơn thì tẩy trước, rồi toner khử ánh còn lại.",
-  "en": ""
- },
- {
-  "vi": "Chưa hỏi ngân sách",
-  "en": ""
- },
- {
-  "vi": "Mỗi khách rộng tay một kiểu: hỏi chuyện, xem tính khách rồi chọn cách nói.",
-  "en": ""
- },
- {
-  "vi": "💬 Báo giá",
   "en": ""
  }
 ]

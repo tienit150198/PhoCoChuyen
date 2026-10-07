@@ -1,5 +1,17 @@
 [
  {
+  "vi": "📦 Đồ đạc trong nhà cũ đã chuyển vào túi đồ.",
+  "en": ""
+ },
+ {
+  "vi": "Thao tác sửa nhà không hợp lệ.",
+  "en": ""
+ },
+ {
+  "vi": "Sửa và trang trí nhà chỉ có trong chế độ hành trình.",
+  "en": ""
+ },
+ {
   "vi": "Mua nhà rồi mới sửa và trang trí được nhé.",
   "en": ""
  },
@@ -40,11 +52,15 @@
   "en": ""
  },
  {
-  "vi": "Trả trước 5 ngày sống của người thuê. Tự gia hạn; không tự trừ tiền. Trả nhà sớm không hoàn tiền những ngày còn lại. Chủ nhà không thể lấy lại nhà giữa kỳ.",
+  "vi": "Trả trước 5 ngày sống của người thuê. Tự gia hạn; không tự trừ tiền. Trả nhà sớm không hoàn tiền những ngày còn lại. Chủ nhà không thể lấy lại nhà giữa kỳ; chỉ lấy lại sau kỳ đã trả: quá 5 ngày thật kể từ lần trả gần nhất, hoặc người thuê vắng 3 ngày thật mà chưa trả trước kỳ sau.",
   "en": ""
  },
  {
   "vi": "Tạo tài khoản để thuê hoặc cho người chơi thuê nhà nhé.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà này không còn cho thuê.",
   "en": ""
  },
  {
@@ -93,6 +109,14 @@
  },
  {
   "vi": "Tin thuê nhà không còn tồn tại.",
+  "en": ""
+ },
+ {
+  "vi": "Chỉ chủ nhà được lấy lại nhà.",
+  "en": ""
+ },
+ {
+  "vi": "Nhà này chưa có người thuê.",
   "en": ""
  },
  {
@@ -1773,30 +1797,6 @@
  },
  {
   "vi": "đồ gấp phẳng phiu, bỏ túi giấy thơm tho",
-  "en": ""
- },
- {
-  "vi": "Gói ẩu.",
-  "en": ""
- },
- {
-  "vi": "Gói khéo.",
-  "en": ""
- },
- {
-  "vi": "Mùi khu thú cưng",
-  "en": ""
- },
- {
-  "vi": "khu thú cưng có mùi",
-  "en": ""
- },
- {
-  "vi": "khu để thú cưng hơi nồng mùi, vào là ngửi thấy",
-  "en": ""
- },
- {
-  "vi": "mùi cát vệ sinh bay ra tận cửa",
   "en": ""
  }
 ]

@@ -1,5 +1,75 @@
 [
  {
+  "vi": "Còn ứng được $1. Phí $2% và lãi tính ngay, nên chỉ dùng khi thật cần.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Sao kê tiếp theo: $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "lãi $1/kỳ $2 ngày",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Ký Ngày $1$2 · lãi $3/kỳ · còn phải trả",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Tiền trả góp tự trích từ tài khoản (thiếu thì lấy thêm tiền mặt) vào sáng ngày đến hạn. Tất toán sớm mất phí $1% gốc còn lại (ít nhất $2).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "vốn vào $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Quá hạn $1 (đã gồm phí phạt). Nộp tiền vào tài khoản là hệ thống tự trích mỗi sáng.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "(phạt $1)",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Số tiền$1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Hạn mức dựa trên thu nhập $1/ngày và điểm $2. Tiền trả góp mỗi kỳ (cộng các khoản đang vay) không quá $3% thu nhập một tuần. Nộp hồ sơ làm điểm giảm nhẹ.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "ngày · $1 kỳ",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Lãi $1 · đã trả $2/$3 kỳ · còn phải trả",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "kỳ tới $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Chậm $1.",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Xem thêm $1 bình luận",
   "en": "",
   "pattern": true
@@ -745,6 +815,16 @@
   "pattern": true
  },
  {
+  "vi": "🥶 Vận đang nguội vì chơi liền một trò: ván tới khoảng $1% thắng. $2 hoặc nghỉ $3 phút là vận ấm lại; ném vòng, ô ăn quan, phóng dao không tính.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Cần thêm $1 ván ≥ $2 ở trò khác (bầu cua, chiếu trong, lô tô, vé cào)",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "Khai hội ngày $1, mở $2 ngày. Hẹn bà con ghé chơi ô ăn quan, ném vòng, bầu cua, lô tô nha!",
   "en": "",
   "pattern": true
@@ -775,7 +855,17 @@
   "pattern": true
  },
  {
-  "vi": "🍀 Chiếu trong, lô tô, vé cào, ném vòng: khoảng $1 ván trên 100 là thắng. Thua liền 4 ván thì ván sau chắc thắng; thắng liền 4 ván thì vận hơi nguội, còn $2%.",
+  "vi": "🍀 Chiếu trong, lô tô, vé cào, ném vòng: khoảng $1 ván trên 100 là thắng; thắng liền 4 ván thì vận hơi nguội, còn $2%. Chơi liền một trò quá $3 ván thì vận nguội dần, thấp nhất $4%; $5 hoặc nghỉ $6 phút là ấm lại. Bầu cua xúc xắc thật nên không tính vụ này.",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "🚨 Lời ở hội chợ trên $1 thì công an có thể ghé hỏi nguồn tài sản, thu $2% phần lời mới (lấy ví trước, thiếu thì lấy tài khoản ngân hàng).",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "chơi $1 ván trò may rủi khác (bầu cua, chiếu trong, lô tô, vé cào), mỗi ván cược ít nhất $2 và ¼ tiền cược gần nhất ở trò đang nguội,",
   "en": "",
   "pattern": true
  },
@@ -1485,6 +1575,16 @@
   "pattern": true
  },
  {
+  "vi": "Top $1 $2 · tuần này",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Danh hiệu của $1",
+  "en": "",
+  "pattern": true
+ },
+ {
   "vi": "🧾 Bảo trì $1/tháng",
   "en": "",
   "pattern": true
@@ -1501,6 +1601,11 @@
  },
  {
   "vi": "Trả $1",
+  "en": "",
+  "pattern": true
+ },
+ {
+  "vi": "Kỳ thuê của $1 đã hết. Người thuê được báo dọn đi, không bị trừ thêm tiền.",
   "en": "",
   "pattern": true
  },
@@ -2141,111 +2246,6 @@
  },
  {
   "vi": "Nếu hiện tên, bạn đứng hạng $1$2.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chưa ai hiện tên ở $1. Bạn thử làm người đầu tiên nhé.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Nghề khác ($1)",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🥇 $1 xu + $2 · 🥈🥉 $3 xu + $4. Bằng nhau thì ai đạt trước đứng trên. Còn $5 ngày.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tuần này bạn đã dự $1 đám cưới.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tinh thần $1 trên 100",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Mất $1 xu. Tin lan khắp hẻm…",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Ví $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Tinh thần $1/100",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xả stress · Hàng xóm · Nhật ký đời thường$1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Thân thiết $1 trên 100",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Xả stress $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chat · $1 tin chưa đọc",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "🎉 Tiệc cưới lúc $1",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "bàn × $1 xu · thực đơn $2",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Đã chép mã $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ". $1. Nhẫn nằm trong hộp cho tới khi bạn trao đi.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "nhận $1 vào ví (80% giá mua). Phí đổi màu không hoàn lại. Nhẫn của hai bạn vẫn được giữ nguyên.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": ". Phí $1.",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Hủy kết bạn với $1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Chặn $1?",
-  "en": "",
-  "pattern": true
- },
- {
-  "vi": "Cho $1 mượn $2?",
   "en": "",
   "pattern": true
  }
