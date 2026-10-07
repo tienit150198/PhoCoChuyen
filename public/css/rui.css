@@ -54,6 +54,9 @@
 .rui-mine b{flex:1 0 100%}
 .rui-qty{display:flex;align-items:center;justify-content:center;gap:16px;margin:4px 0 8px}
 .rui-qty b{min-width:7ch;text-align:center;font-size:1.2rem}
+.rui-qty{gap:10px}
+.rui-typed{display:flex;align-items:center;gap:6px;min-width:0}
+.rui-typed small{white-space:nowrap;color:var(--muted,inherit)}
 .rui-qty .btn{min-width:var(--tap);min-height:var(--tap);font-size:1.3rem}
 .rui-quick{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin:0 0 12px}
 .rui-quick .btn.on{border-color:var(--accent);background:var(--accent-soft)}

@@ -2,6 +2,8 @@
  *  station with medicine by the label, adoption interviews, and the surprises that walk in at the counter.
  *  Care loop: regulars' cards and trust, a daily care card per boarder, vaccine/deworming reminders, adoption follow-ups. */
 import {reqList,fold,clean,tip,helpBtn,withWhy} from '../ui-kit.js';
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox,QTY} from '../qty-input.js';
 import {stepRows,nextHint,stepCta,stepBar,finalGo,pending,firstTime,goAttrs,highlight,stepLine} from '../v4/guide.js';
 import {restockFor,restockGo} from '../v4/restock.js';
 import {keepBarAboveFooter} from './food_kit.js';
@@ -56,6 +58,8 @@ function ui(x,t){
   return x.ui.v;
 }
 const setBtn=(x,label,key,val,on,extra='')=>`<button type="button" class="btn small ${on?'primary':'ghost'} ${extra}" data-action="car:set" data-key="${x.esc(key)}" data-val="${x.esc(String(val))}" aria-pressed="${on}">${label}</button>`;
+/** Gram/bữa as a typed box between the ±1/±10 buttons (5..900). */
+const gramBox=(x,n)=>qtyBox({value:n,min:5,max:900,label:'Gram mỗi bữa',live:true,go:`data-action="car:step" data-key="grams" data-set="${QTY}" data-min="5" data-max="900"`});
 const stepBtn=(x,label,key,delta,min,max)=>`<button type="button" class="btn small ghost pc-q" data-action="car:step" data-key="${x.esc(key)}" data-delta="${delta}" data-min="${min}" data-max="${max}" aria-label="${x.esc(key)} ${delta>0?'+':''}${delta}">${label}</button>`;
 
 function checklist(x,rows){
@@ -486,7 +490,7 @@ function boardJob(t,x,now=new Set()){
   }).join('');
   const plan=`<div class="tile-grid pc-tiles">${food}</div>
     <div class="row wrap pc-steppers"><span>Số bữa</span>${stepBtn(x,'−','meals',-1,1,4)}<b>${vv.meals}</b>${stepBtn(x,'+','meals',1,1,4)}
-      <span>Gram/bữa</span>${stepBtn(x,'−10','grams',-10,5,900)}${stepBtn(x,'−1','grams',-1,5,900)}<b>${vv.grams}</b>${stepBtn(x,'+1','grams',1,5,900)}${stepBtn(x,'+10','grams',10,5,900)}</div>
+      <span>Gram/bữa</span>${stepBtn(x,'−10','grams',-10,5,900)}${stepBtn(x,'−1','grams',-1,5,900)}${gramBox(x,vv.grams)}${stepBtn(x,'+1','grams',1,5,900)}${stepBtn(x,'+10','grams',10,5,900)}</div>
     ${n.species==='dog'?`<div class="row wrap">${setBtn(x,vv.solo?'🚫 Chơi riêng':'🐕‍🦺 Chơi chung giờ sân','solo',!vv.solo,vv.solo)}<small class="muted">Chó ghét chó khác phải chơi riêng.</small></div>`:''}
     ${chartBox(t,x,kg,f.kg!=null,vv.meals,vv.grams)}
     <div class="row wrap">${x.cmd(t.plan?'💾 Ghi lại kế hoạch':'💾 Ghi kế hoạch ăn','pc_plan',{task:t.id,food:vv.food,meals:vv.meals,grams:vv.grams,solo:!!vv.solo},t.plan?'ghost':st(t,x,'plan'),vv.food==='own'&&!n.food_own)}
@@ -533,7 +537,7 @@ function feedJob(t,x,now=new Set()){
     const food=['own','house'].map(k=>{const off=k==='own'&&n.food!=='own',item=itemInfo(x,x.cc.house_food[n.species]);
       return `<button type="button" class="tile ${vv.food===k?'selected':''} ${off?'locked':''}" data-action="car:set" data-key="food" data-val="${k}" ${off?'disabled':''}><span class="tile-emoji">${k==='own'?'🎒':item.emoji}</span><b>${k==='own'?'Đồ chủ gửi':x.esc(item.name)}</b><small>${off?'chủ không gửi':k==='house'?'kho '+x.stock(x.cc.house_food[n.species]):'để trong tủ'}</small></button>`;}).join('');
     bowl=`<div class="tile-grid pc-tiles">${food}</div>
-      <div class="row wrap pc-steppers"><span>Gram/bữa</span>${stepBtn(x,'−10','grams',-10,5,900)}${stepBtn(x,'−1','grams',-1,5,900)}<b>${vv.grams}</b>${stepBtn(x,'+1','grams',1,5,900)}${stepBtn(x,'+10','grams',10,5,900)}</div>
+      <div class="row wrap pc-steppers"><span>Gram/bữa</span>${stepBtn(x,'−10','grams',-10,5,900)}${stepBtn(x,'−1','grams',-1,5,900)}${gramBox(x,vv.grams)}${stepBtn(x,'+1','grams',1,5,900)}${stepBtn(x,'+10','grams',10,5,900)}</div>
       ${chartBox(t,x,n.kg,true,n.meals,vv.grams)}
       ${x.cmd('🥣 Cân & cho ăn','pc_feed',{task:t.id,food:vv.food,grams:vv.grams},st(t,x,'feed'),vv.food==='own'&&n.food!=='own')}`;
   }
@@ -912,7 +916,8 @@ export default {
       const t=x.room.tasks.find(v=>v.id===x.ui.tid);if(!t)return;
       const vv=ui(x,t),key=data.key;
       if(!['temp','meals','grams'].includes(key))return;
-      vv[key]=Math.max(Number(data.min),Math.min(Number(data.max),(Number(vv[key])||0)+Number(data.delta)));
+      const to=data.set!==undefined?Number(data.set)||0:(Number(vv[key])||0)+Number(data.delta);   // set: a typed number
+      vv[key]=Math.max(Number(data.min),Math.min(Number(data.max),to));
       x.render();
     },
     async temp(data,el,x){

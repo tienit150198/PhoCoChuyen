@@ -128,7 +128,7 @@ test('🔒 the keep stepper: few taps for a big floor, never below 0 or over 999
   assert.equal(k.keepRow({ops:{staff:[{status:'hired'}],business:B}},'towel'),'','an item the staff never take');
   assert.equal(k.keepRow({ops:{staff:[{status:'hired'}],business:{}}},'cup'),'','a server without ops_keep (rolling deploy)');
   const row=k.keepRow({ops:{staff:[{status:'hired'}],business_keep:{cup:5},business:B}},'cup','Ly giấy');
-  assert.match(row,/🔒 Giữ cho ca bạn/);assert.match(row,/<output[^>]*>5<\/output>/);
+  assert.match(row,/🔒 Giữ cho ca bạn/);assert.match(row,/<input class="qty-in"[^>]*inputmode="numeric"[^>]*value="5"/);   // typed too (owner 07/10)
   assert.match(row,/data-command="ops_keep" data-payload="\{&quot;item&quot;:&quot;cup&quot;,&quot;qty&quot;:6\}"/);
   assert.match(row,/data-payload="\{&quot;item&quot;:&quot;cup&quot;,&quot;qty&quot;:4\}"/);
   assert.match(k.keepRow({ops:{staff:[],business_keep:{cup:2},business:B}},'cup'),/keep-row/,'a floor set stays editable after the staff leave');

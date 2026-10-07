@@ -249,6 +249,8 @@
 .career-job.gr .gr-sup.on{border-color:var(--gr-accent);box-shadow:inset 0 0 0 2px var(--gr-accent)}
 .career-job.gr .gr-qty{display:flex;gap:6px}
 .career-job.gr .gr-qty .btn{flex:1;min-width:44px}
+.career-job.gr .gr-qty input.qty-in{min-height:36px}
+.career-job.gr .gr-ptag input.qty-in{min-height:36px;padding:2px 4px;background:var(--surface);color:var(--ink)}
 .career-job.gr .gr-stock-list{display:flex;flex-direction:column;gap:6px}
 .career-job.gr .gr-srow{display:grid;grid-template-columns:32px minmax(0,1fr) auto;grid-template-areas:"e i p" "a a a";gap:4px 10px;align-items:center;padding:8px 10px;border-radius:var(--gr-rs);border:1px solid var(--gr-line);background:var(--gr-surface)}
 .career-job.gr .gr-srow>.gr-emoji{grid-area:e}

@@ -132,6 +132,46 @@ delivery `can.dl_signal` (a crossing off the leg, no destination yet) and `can.d
 whose app booking still waits to sync, fix "📥 Đơn chờ") and `can.hs_pick` (the most places to suggest); clothing
 `can.ao_pick` (a size the rack is out of), salon `can.sl_mix`, repair `can.rp_show` / `can.rp_fix`, pet care `can.pc_*`.
 
+## Typed quantity: `qtyBox({...})` (qty-input.js)
+
+Owner, 07/10: "mấy cái con số nhập hàng, mua vàng,.. đang phải bấm cộng mệt quá, cho nhập số nhé". Every "− N +" stepper
+draws its number with `qtyBox`, never as `<b>`/`<output>` text. The − / + buttons and the quick chips stay.
+
+```js
+import {qtyBox,QTY} from '../qty-input.js';
+// a field the screen reads (as it read its old <input>):
+qtyBox({value:qty,min:1,max:Math.max(1,max),label:'Số lượng',cls:'input',attrs:'id="order-qty" data-v4-qty'})
+// the number was text: the box does what a tap does, with the typed number where QTY sits
+qtyBox({value:n,min:0,max:KEEP_MAX,label:'Số giữ lại',go:attrs(QTY)})                       // a command
+qtyBox({value:n,min:1,max:100000,label:'Số phân vàng',live:true,go:`data-action="ivGoldQty" data-n="${QTY}"`})
+```
+
+- **The box:** `type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off"`, min/max from the same limits the
+  stepper (and the server) use. Font ≥ 16px so iOS does not zoom; it is as wide as the largest number allowed.
+- **Typing:** digits only (a paste of "1.000" is 1000). Focus selects the whole number, so typing replaces it.
+- **Enter or leaving the box:** clamps to [min, max]; empty or 0 is the minimum; `step` (lux guests by 5) rounds to it.
+  Never NaN. A field box then fires an `input` event, so the screen's live totals update as after a tap; Enter inside a
+  `<form>` still submits it, with the clamped number.
+- **`go`:** an attribute string or a whole button's HTML, made by the stepper's own `attrs(q)` / `x.cmd(…)` with `QTY`.
+  On commit a hidden button with those attributes is clicked where the box sits, so the page's usual click routing does
+  the work (app commands, `car:` actions, a dialog's own `data-qy` / `data-rui` / `data-lx` / `data-au` handler). A
+  delta-only handler needs a `set` variant (quay `step`/`tables`, pet care `step`, air kit `oddNSet`, lux `guestsSet`).
+- **`live`:** also on every keystroke, for a page-only number whose price should follow the typing (gold, wages, milk tea
+  order, grocery order size). Only on screens that redraw by morph (the app sheet, quay); an innerHTML dialog uses the
+  commit only, and redraws with `afterTap(render)` so the button being tapped is not replaced under the finger (lux,
+  auction), or patches its labels instead of redrawing (rui).
+- **`money`:** 1.000 separators while not typing. Read such a box with `qtyVal(el)`, never `Number(el.value)`; use it only
+  where the screen reads its own state, not the field.
+- A − / + tapped right after a typed number went out (before the redraw) steps from the typed number.
+- The server stays the authority: every command a box sends refuses out-of-range, fractional, string and bool numbers
+  (`tests/test_typed_qty.py`).
+
+Left as buttons on purpose: ranges of ten taps or fewer where the step is the game (salon parts and cm, clothing cm, cafe
+grams 12–24, mother & baby 1–4, trà đá ice 0–6, pet care meals 1–4) and counts the server takes one at a time (homestay
+bill lines `hs_line ±1`, florist stems, zpop, basket picks, ice cream `kem_adjust`, cash-note keypads). Chip-only
+choices (fair stakes, lì xì, donations presets) stay chips; fields that were already typed (bank, house, rentals, journey,
+social market, marriage money) are unchanged.
+
 ## Header chip for a pinned card: `headChip(icon, text, selector)`
 
 ```js

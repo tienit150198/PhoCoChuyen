@@ -11,6 +11,7 @@ import {keepBarAboveFooter} from './food_kit.js';
 import {data,cc,tile,pane,introCard,deskCard,askCard,bottom,kitActions,act,kitInput,tip,clean,introHelp} from './street_kit.js';
 import * as air from './air_kit.js';
 import {helpBtn,whyAttrs} from '../ui-kit.js';
+import {qtyBox} from '../qty-input.js';
 
 const BAD='⚠️ ';
 const isBad=s=>typeof s==='string'&&s.startsWith(BAD);
@@ -261,7 +262,7 @@ function shorePanel(t,x){
     const ws=(x.ui.words??={})[r.id]||[];
     const chips=Object.entries(W).map(([k,l])=>act(x,x.esc(l),'word',{req:r.id,w:k},`small dk-word${ws.includes(k)?' on':''}`,` aria-pressed="${ws.includes(k)}"`)).join('');
     const amt=Math.max(0,Math.min(r.ask*2,Number((x.ui.amt??={})[r.id]??(r.done?.counter??Math.floor(r.ask/10)*5))||0));
-    const stepper=`<div class="sk-amt-row">${act(x,'−','amtStep',{key:r.id,delta:-5,min:0,max:r.ask*2,def:amt},'ghost sk-step',' aria-label="Bớt 5 xu"')}<label class="sk-amt-in"><input type="number" inputmode="numeric" min="0" max="${r.ask*2}" value="${amt}" data-sk-amt="${x.esc(r.id)}" aria-label="Gửi bao nhiêu"><small>xu</small></label>${act(x,'+','amtStep',{key:r.id,delta:5,min:0,max:r.ask*2,def:amt},'ghost sk-step',' aria-label="Thêm 5 xu"')}</div>`;
+    const stepper=`<div class="sk-amt-row">${act(x,'−','amtStep',{key:r.id,delta:-5,min:0,max:r.ask*2,def:amt},'ghost sk-step',' aria-label="Bớt 5 xu"')}<label class="sk-amt-in">${qtyBox({value:amt,min:0,max:r.ask*2,label:'Gửi bao nhiêu',attrs:`data-sk-amt="${x.esc(r.id)}"`})}<small>xu</small></label>${act(x,'+','amtStep',{key:r.id,delta:5,min:0,max:r.ask*2,def:amt},'ghost sk-step',' aria-label="Thêm 5 xu"')}</div>`;
     const body=done?`<p class="dk-read ${r.done.good===false?'bad':'ok'}">${x.esc(OUT[r.done.out]||'')} · đã gửi ${r.done.amount} xu</p>`:
       `${r.fact?`<p class="dk-read fact">🔎 ${x.esc(r.fact)}</p>`:x.cmd('🔎 Hỏi rõ','dk_ask',{task:t.id,req:r.id},'small ghost')}
        ${r.done?.out==='counter'?`<p class="dk-read bad">🔁 Đòi thêm cho đủ ${r.done.counter} xu (đã gửi ${r.done.amount}).</p>`:''}

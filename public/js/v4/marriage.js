@@ -10,6 +10,8 @@ import {icon,escapeHTML as esc} from '../icons.js';
 import {myPortrait} from './look.js';
 import {confirmPurchase} from './payment.js';
 import {familyView,familyAction,familyRefresh} from './family.js';
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox} from '../qty-input.js';
 
 const S={dlg:null,env:null,view:null,catalog:null,tab:'home',plan:null,planKey:'',quote:null,qTimer:0,qSeq:0,flash:null,busy:false,
   form:{code:'',ring:'',message:'',announce:true},found:null,confirm:'',answer:{},loading:false,err:'',
@@ -206,7 +208,8 @@ function onField(el,committed){
   if(f==='cline'){S.cline[el.dataset.id]=v;return;}
   if(f==='lline'){S.lline[el.dataset.id]=v;return;}
   const p=S.plan;if(!p)return;
-  if(f==='tables'){p.tables=clampTables(Number(v));if(committed)render();else paintBreakdown();askQuote();return;}
+  if(f==='tables'||f==='tablesN'){if(f==='tablesN'&&!committed&&!String(v).trim())return;   // typed (qty-input.js): an emptied box waits for a number
+    p.tables=clampTables(Number(v));if(committed)render();else paintBreakdown();askQuote();return;}
   if(f==='mine'){p.mine=Math.max(0,Math.min(100,Math.round(Number(v)||0)));if(committed)render();else paintBreakdown();askQuote();return;}
   if(!committed&&el.type!=='checkbox'&&el.type!=='radio')return;
   if(f==='venue'){p.venue=v;p.tables=clampTables(p.tables);}
@@ -673,7 +676,7 @@ function planner(){
     <section class="mr-card"><h3>2 · Số bàn</h3><div class="mr-tables"><button type="button" class="btn cream mr-step" data-mr="tables" data-delta="-1" aria-label="Bớt một bàn">−</button>
       <input type="range" min="${c.tables[0]}" max="${v.max_tables}" value="${p.tables}" data-mr-field="tables" aria-label="Số bàn">
       <button type="button" class="btn cream mr-step" data-mr="tables" data-delta="1" aria-label="Thêm một bàn">+</button></div>
-      <p class="mr-tables-n" aria-live="polite"><b>${p.tables} bàn</b> · ${p.tables*c.seats} ghế</p><p class="mr-hint">Mỗi bàn ${c.seats} người. Ghế trống vẫn phải trả tiền cỗ.</p></section>
+      <p class="mr-tables-n"><label class="mr-tables-typed">${qtyBox({value:p.tables,min:c.tables[0],max:v.max_tables,label:'Số bàn',attrs:'data-mr-field="tablesN"'})} bàn</label> · <span class="mr-seats" aria-live="polite">${p.tables*c.seats} ghế</span></p><p class="mr-hint">Mỗi bàn ${c.seats} người. Ghế trống vẫn phải trả tiền cỗ.</p></section>
     <section class="mr-card"><h3>3 · Thực đơn</h3><div class="mr-options">${menus}</div></section>
     <section class="mr-card"><h3>4 · Nghi lễ</h3>${cer}${anhoiRow}</section>
     <section class="mr-card"><h3>5 · Dịch vụ thêm</h3>${extras}</section>
@@ -711,6 +714,7 @@ function breakdown(){
 function paintBreakdown(){
   const el=S.dlg?.querySelector('.mr-breakdown');if(!el||!S.plan)return;
   el.innerHTML=breakdown();
-  const n=S.dlg.querySelector('.mr-tables-n');if(n)n.innerHTML=`<b>${S.plan.tables} bàn</b> · ${S.plan.tables*S.catalog.seats} ghế`;
+  const n=S.dlg.querySelector('.mr-seats');if(n)n.textContent=`${S.plan.tables*S.catalog.seats} ghế`;
+  for(const box of S.dlg.querySelectorAll('[data-mr-field="tables"],[data-mr-field="tablesN"]'))if(box!==document.activeElement&&box.value!==String(S.plan.tables))box.value=String(S.plan.tables);
   const m=S.dlg.querySelector('.mr-mine-t');if(m)m.innerHTML=mineText();
 }

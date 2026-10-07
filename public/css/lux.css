@@ -11,6 +11,7 @@
 .lx-rooms{font-size:1.4rem;letter-spacing:.15em;margin:var(--sp-2) 0;line-height:1.5;word-break:break-all}
 .lx-step{display:flex;align-items:center;justify-content:center;gap:var(--sp-3);margin-top:var(--sp-3)}
 .lx-step .sd-chip{min-width:44px;min-height:44px;font-size:var(--fs-4)}
+.lx-typed{display:flex;align-items:center;gap:6px}
 .lx-slots{display:grid;grid-template-columns:repeat(6,1fr);gap:var(--sp-1);margin:var(--sp-2) 0}
 .lx-slots .sd-chip{min-height:44px;padding:0}
 .lx-slots .sd-chip:disabled{opacity:.35;text-decoration:line-through}

@@ -26,6 +26,8 @@ import {shopEventCard} from '../shop-events-ui.js';
 import {createQuaySync} from './quay-sync.js';
 import {stallAway,stallAwayCard} from '../away-report.js';   // B4: 🧾 Lúc bạn vắng
 import {keepStepper} from '../keep-ui.js';   // 🔒 Giữ lại cho ca của tôi (B4 part 2)
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox,QTY} from '../qty-input.js';
 // Clean layout (docs/UI_KIT.md, wave 5): ui-kit.js clean(), guarded so the node tests can load this file.
 const clean=()=>typeof document!=='undefined'&&!!document.documentElement?.hasAttribute?.('data-clean');
 
@@ -169,7 +171,7 @@ async function onClick(op,data){
     case'fund':{const amount=num(`#qy-fund-${data.id}`);if(!amount){S.flash={text:'Nhập số xu nhé.',kind:'bad'};render();return;}
       send('jr_quay_fund',{stall:data.id,amount:data.sign==='-'?-Math.abs(amount):Math.abs(amount)});return;}
     case'order':send('jr_quay_order',{stall:data.id,level:data.level});return;
-    case'step':{const k=data.key;const base=S.wage[k]??Number(data.wage);S.wage[k]=Math.min(Number(data.max||1e6),Math.max(Number(data.min||1),base+Number(data.by)));render();return;}
+    case'step':{const k=data.key;const base=S.wage[k]??Number(data.wage),to=data.set!==undefined?Number(data.set)||0:base+Number(data.by);S.wage[k]=Math.min(Number(data.max||1e6),Math.max(Number(data.min||1),to));render();return;}
     case'tab':S.tab=data.tab;S.flash=null;render();toTop();if(S.tab==='jobs')loadHire();return;
     case'reload':S.hire=null;loadHire();return;
     case'to':S.to[data.id]=data.code||'';render();return;
@@ -425,8 +427,9 @@ function economyPart(st){
   return `${st.business?why('table',`Bảng dưới dành cho ca thuê người chơi và kỳ cũ. Hoạt động liên tục ghi thuế thu nhập trên lãi dương, phí môi trường và bảo vệ riêng; xem chi phí và lãi hiện tại trong bảng vận hành của quầy.`):''}<h4>🧾 ${st.business?'Sổ ca thuê & kỳ trước':'Sổ quầy & an toàn'}</h4>${ledger}${why('tax',`Mức xu trong game, không phải mức thuế ngoài đời: GTGT ${tax.vat_pct||2}% phần doanh thu vượt ${xu(tax.revenue_allowance||1000)}; thu nhập ${tax.income_pct||5}% phần lãi dương vượt ${xu(tax.profit_allowance||200)} mỗi ${tax.period||30} ngày sống. Cộng chung mọi quầy của chủ; lỗ được bù trong kỳ. Không có lệ phí môn bài.`)}${why('supplies',`Vật tư và vệ sinh: ${e.supplies_pct}% doanh thu. Lời thay đổi theo khách và chi phí; một sự cố có thể làm cả ngày lỗ. Các khoản phí chỉ trừ ở quầy có bán.`)}${risk}${controls}${hiredReceipts(e.receipts)}`;
 }
 
-function stepper(key,value,id,extra,min=1,max=1e6){
-  return `<span class="qy-step">${btn('−','step',{id,key,by:-1,wage:value,min,max},'small ghost')}<b>${fmt(value)}</b>${btn('＋','step',{id,key,by:1,wage:value,min,max},'small ghost')}</span>${extra||''}`;
+function stepper(key,value,id,extra,min=1,max=1e4){   // wages: 1..10 000 xu, as game/quay.py checks
+  const box=qtyBox({value,min,max,money:true,label:'Lương (xu)',live:true,go:`data-qy="step"${attrs({id,key,set:QTY,wage:value,min,max})}`});
+  return `<span class="qy-step">${btn('−','step',{id,key,by:-1,wage:value,min,max},'small ghost')}${box}${btn('＋','step',{id,key,by:1,wage:value,min,max},'small ghost')}</span>${extra||''}`;
 }
 function staffPart(st,P){
   const rows=st.staff.map(x=>{const k=`s:${st.id}:${x.id}`,w=S.wage[k]??x.wage;
@@ -446,7 +449,7 @@ function stockPart(st){
     // their three-dish default board; restocking a dish now turns it on by itself).
     const on=st.menu?.on,off=on?rows.filter(row=>row.qty>0&&!on.includes(row.id)).map(row=>row.id):[];
     const offAll=off.length>1?`<p class="bk-alert warn qy-off-menu">${off.length} món có hàng chưa bật ở Menu. ${btn('Bật tất cả món có hàng','menuon',{id:st.id,k:off.join(',')},'small primary')}</p>`:'';
-    return `<div class="qy-part"><h4>Kho nguyên liệu · ${fmt(b.stock_total)} phần</h4>${why('stock',`Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; giữ lại tiền lương để nhân viên tiếp tục làm. Nhân viên chỉ bán món đã bật ở Menu.`)}${offAll}<ul class="qy-list">${rows.map(row=>{const dish=dishOf(st,row.id),isOff=off.includes(row.id);return `<li class="qy-stock-item" data-qk="stock:${st.id}:${row.id}"><span><b>${dish.emoji} ${esc(dish.name)}</b><small>Còn ${fmt(row.qty)} · ${xu(row.cost)} / phần</small>${isOff?`<small class="qy-off-tag">Chưa bật ở Menu ${btn('Bật','menuon',{id:st.id,k:row.id},'small ghost')}</small>`:''}${'keep' in row&&(st.staff.length||row.keep)?keepStepper(row.keep,q=>`data-qy="keep"${attrs({id:st.id,k:row.id,n:q})}${S.busy?' disabled':''}`,dish.name):''}</span><label><span>Nhập thêm</span><input type="number" inputmode="numeric" name="qy-stock" id="qy-stock-${st.id}-${row.id}" data-id="${st.id}" data-k="${row.id}" min="0" max="20000" step="1" value="${esc(draft[row.id]??'')}" placeholder="0"/></label></li>`;}).join('')}</ul><p class="qy-stock-quote">${quote?`${fmt(quote.count)} phần · tổng ${xu(quote.total)}`:'Nhập số lượng để xem tổng tiền'}<small>Két + vốn hiện có: ${xu(st.till+st.fund)}</small></p><div class="bk-actions">${btn(quote?`Nhập hàng · ${xu(quote.total)}`:'Nhập hàng','restock',{id:st.id},'primary',!quote?'Nhập số lượng trước':quote.total>st.till+st.fund?'Két và vốn chưa đủ':'')}${btn('Xem tiệm','visit',{id:st.id},'ghost')}</div></div>`;
+    return `<div class="qy-part"><h4>Kho nguyên liệu · ${fmt(b.stock_total)} phần</h4>${why('stock',`Nhập đúng số phần bạn muốn bán. Tiền lấy từ két/vốn quầy; giữ lại tiền lương để nhân viên tiếp tục làm. Nhân viên chỉ bán món đã bật ở Menu.`)}${offAll}<ul class="qy-list">${rows.map(row=>{const dish=dishOf(st,row.id),isOff=off.includes(row.id);return `<li class="qy-stock-item" data-qk="stock:${st.id}:${row.id}"><span><b>${dish.emoji} ${esc(dish.name)}</b><small>Còn ${fmt(row.qty)} · ${xu(row.cost)} / phần</small>${isOff?`<small class="qy-off-tag">Chưa bật ở Menu ${btn('Bật','menuon',{id:st.id,k:row.id},'small ghost')}</small>`:''}${'keep' in row&&(st.staff.length||row.keep)?keepStepper(row.keep,q=>`data-qy="keep"${attrs({id:st.id,k:row.id,n:q})}${S.busy?' disabled':''}`,dish.name):''}</span><label><span>Nhập thêm</span>${qtyBox({value:draft[row.id]??'',min:0,max:20000,label:`Nhập thêm ${dish.name}`,placeholder:'0',attrs:`name="qy-stock" id="qy-stock-${st.id}-${row.id}" data-id="${st.id}" data-k="${row.id}"`})}</label></li>`;}).join('')}</ul><p class="qy-stock-quote">${quote?`${fmt(quote.count)} phần · tổng ${xu(quote.total)}`:'Nhập số lượng để xem tổng tiền'}<small>Két + vốn hiện có: ${xu(st.till+st.fund)}</small></p><div class="bk-actions">${btn(quote?`Nhập hàng · ${xu(quote.total)}`:'Nhập hàng','restock',{id:st.id},'primary',!quote?'Nhập số lượng trước':quote.total>st.till+st.fund?'Két và vốn chưa đủ':'')}${btn('Xem tiệm','visit',{id:st.id},'ghost')}</div></div>`;
   }
   return `<div class="qy-part"><p class="qy-line">Hôm nay ${cat.weather[st.today?.w]||''} · ${cat.pace[st.today?.pace]||''} · khoảng ${fmt(st.today?.n)} khách ${helpBtn('stock')}</p>
     ${helpText('stock','Ít: không lo ế. Nhiều: không lo hết hàng. Hàng tươi (hoa, bánh) ế thì hư.')}
@@ -457,7 +460,7 @@ function fundPart(st){
   return `<div class="qy-part"><p class="qy-line">Vốn quầy <b>${xu(st.fund)}</b> ${helpBtn('fund')}</p>
     ${helpText('fund','Tiền hàng, lương, điện, phí online, thuê chỗ, vật tư, bảo vệ và thuế lấy từ két trước, thiếu mới lấy vốn quầy. Góp vốn dùng ví trước, thiếu mới lấy tài khoản ngân hàng; không dùng thẻ tín dụng. Xem từng khoản trong Sổ quầy & an toàn. Chi phí chưa trả hiện trên thẻ quầy và tạm dừng quầy; chủ chọn Đóng tiền để trả.')}
     ${helpText('fund','Muốn góp vốn bằng quỹ chung: rút từ quỹ chung về ví ở Ngân hàng, rồi Góp vào vốn quầy.')}
-    <div class="qy-fund"><label class="bk-field"><span>Số xu</span><input type="number" inputmode="numeric" min="1" step="10" id="qy-fund-${st.id}" value="50"></label>
+    <div class="qy-fund"><label class="bk-field"><span>Số xu</span>${qtyBox({value:50,min:1,max:1e9,label:'Số xu',attrs:`id="qy-fund-${st.id}"`})}</label>
       ${btn('Góp vào','fund',{id:st.id,sign:'+'},'primary')}${btn('Rút ra','fund',{id:st.id,sign:'-'},'ghost')}</div>
     <div class="bk-actions">${btn('Két vào vốn','till',{id:st.id,to:'fund'},'ghost',st.till?'':'Két đang trống')}${btn(`Sang nhượng · ${xu(st.sell)}`,'sell',{id:st.id},'danger')}</div></div>`;
 }
@@ -540,7 +543,7 @@ function lookPart(st){
     <h4>Màu mái che</h4><div class="qy-swatches">${sw}</div>
     <h4>Trang trí <small class="qy-muted">(tối đa ${max}, miễn phí)</small></h4><div class="qy-chips">${deco}</div>
     ${most?`<div class="qy-person"><div class="grow"><b>🪑 Bàn ghế</b><small>${xu(each)} một bộ · thêm khách ngồi lại</small></div>
-      <div class="qy-person-act"><span class="qy-step">${btn('−','tables',{id:st.id,by:-1},'small ghost',lk.t<=0?'Hết rồi':'')}<b>${lk.t}/${most}</b>${btn('＋','tables',{id:st.id,by:1},'small ghost',lk.t>=most?'Đủ chỗ rồi':'')}</span></div></div>`:''}
+      <div class="qy-person-act"><span class="qy-step">${btn('−','tables',{id:st.id,by:-1},'small ghost',lk.t<=0?'Hết rồi':'')}${qtyBox({value:lk.t,min:0,max:most,label:'Số bộ bàn ghế',live:true,go:`data-qy="tables"${attrs({id:st.id,set:QTY})}`})}<small>/${most}</small>${btn('＋','tables',{id:st.id,by:1},'small ghost',lk.t>=most?'Đủ chỗ rồi':'')}</span></div></div>`:''}
     <div class="bk-actions">${btn(cost?`Lưu · ${xu(cost)}`:'Lưu','looksave',{id:st.id},'primary',changed?'':'Chưa đổi gì')}${changed?btn('Hoàn tác','lookreset',{id:st.id},'ghost'):''}</div></div>`;
 }
 
@@ -662,7 +665,7 @@ function onSelf(op,data){
       const submitted=JSON.stringify(payload);send('jr_quay_menu',{stall:st.id,...payload}).then(r=>{if(r&&JSON.stringify(menuPayload(menuDraft(st),ds))===submitted){delete S.md[st.id];render();}});return true;}
     case'color':if(st){lookDraft(st).c=Number(data.k);render();}return true;
     case'decor':{if(!st)return true;const lk=lookDraft(st),i=lk.d.indexOf(data.k);if(i>=0)lk.d.splice(i,1);else if(lk.d.length<(CAT().decor_max||3))lk.d.push(data.k);render();return true;}
-    case'tables':{if(!st)return true;const lk=lookDraft(st),most=CAT().tables[st.place]?.[0]||0;lk.t=Math.max(0,Math.min(most,lk.t+Number(data.by)));render();return true;}
+    case'tables':{if(!st)return true;const lk=lookDraft(st),most=CAT().tables[st.place]?.[0]||0;lk.t=Math.max(0,Math.min(most,data.set!==undefined?Number(data.set)||0:lk.t+Number(data.by)));render();return true;}
     case'lookreset':delete S.lk[data.id];render();return true;
     case'looksave':{if(!st)return true;const lk=lookDraft(st),each=CAT().tables[st.place]?.[1]||0,cost=Math.max(0,lk.t-st.look.t)*each;
       const name=(lk.name||'').trim()||st.name;

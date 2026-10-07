@@ -3,6 +3,20 @@
 - Người hát hát theo video của chính họ, giọng tới người nghe trễ hơn (thu, mã hoá, SFU qua TCP, bộ đệm). Nay khi mic bật, máy người hát gửi thời điểm video của mình khoảng mỗi giây (`kara_vt`: thời điểm, tốc độ phát đang chỉnh, vòng mạng; qua máy chủ live, không qua SFU); máy chủ chỉ nhận từ người đang hát có mic, số hợp lệ, tối đa 1 lần/0,6 giây, đóng dấu giờ rồi chuyển cho người đang nghe giọng trong phòng (tôn trọng chặn). Người nghe đang nghe giọng thì video chạy theo video người hát trừ độ trễ của giọng (bộ đệm jitter đo bằng getStats + nửa vòng mạng hai bên + 40 ms; 0–1,5 giây), chỉnh nhẹ tốc độ khi lệch quá 0,12 giây, tua tối đa 2 lần một bài khi lệch quá 0,6 giây. Không có `kara_vt` mới (dưới 3 giây) hoặc không nghe giọng: theo đồng hồ chung như cũ. Người hát đồng bộ như cũ. Đồng hồ chung của phòng đo thêm một lần mỗi 15 giây (giữ lần có vòng ngắn nhất): 5 lần đo lúc vào phòng có thể rơi đúng lúc máy đang bận tải, mà người nghe giờ so đồng hồ của hai máy.
 - Mỗi bài, mỗi người nghe gửi một dòng vào beacon lỗi: "kara_mic sync jb=… rtt=… up=… lag=… off=…" (máy chủ che chữ số nên mỗi số là một chữ cái: a 0–99 ms, b 100–199 ms … p ≥ 1,5 giây; `novt` khi không nhận được thời điểm của người hát).
 - Quay lại bản cũ an toàn: trang cũ bỏ qua `kara_vt`; máy chủ live cũ trả 'unknown' thì trang mới thôi gửi và không báo lỗi. Không thêm khoá lưu, không đổi CSDL.
+# Chưa phát hành — Gõ số thay vì bấm + (chủ game 07/10: "cho nhập số nhé")
+
+- Con số giữa − và + giờ là ô gõ được (`public/js/qty-input.js` `qtyBox`, docs/UI_KIT.md "Typed quantity"): bàn phím số,
+  chạm vào là chọn cả số, chỉ nhận chữ số (dán "1.000" = 1000), Enter hoặc rời ô thì kẹp vào khoảng cho phép (trống/0 = mức
+  thấp nhất), tổng tiền đổi theo như khi bấm. Nút − / + và các chip (5, 10, "Đầy kệ"…) vẫn còn. Chữ ≥ 16px (iPhone không zoom).
+- Có ở: Kho nhập hàng (số lượng, đơn gộp, đếm nhận thùng, 🔒 Giữ cho ca bạn), Kho & sổ quầy (nhà thuốc, mẹ & bé), vàng (Đầu tư
+  và Tiệm vàng), sổ tiết kiệm/Mây Coin (số xu khác ngoài chip), quầy (lương, bàn ghế, nhập thêm, góp vốn, giữ hàng), tiệc
+  (số khách, theo bước 5), số bàn cưới, đấu giá (trả giá tùy ý, không dưới mức tối thiểu), ô tiền của street kit (mọi nghề
+  dùng `amountBox`, đòi nợ), dầu, pet shop (cá theo bể, đóng hàng), trà sữa (đặt hàng), tạp hóa (tem giá, số lượng nhập),
+  pet care (gram/bữa), thương lượng "Nhận n/…" (đường sắt, hải đăng, tổ bay).
+- Máy chủ không đổi: mọi lệnh các ô này gửi đã từ chối số ngoài khoảng, số lẻ, chữ và true/false (tests/test_typed_qty.py).
+  Lương quầy phía máy khách nay tối đa 10.000 xu như máy chủ (trước 1.000.000, máy chủ từ chối).
+- Không có khóa lưu mới.
+- Có gì mới (cho bản phát hành): 🔢 Khỏi bấm + mỏi tay: số lượng nhập hàng, vàng, lương, số khách… giờ chạm vào là gõ số được luôn
 
 # v1.9.18 — 2026-10-07
 

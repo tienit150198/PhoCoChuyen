@@ -6,6 +6,8 @@
  * the bottom bar with the price on it; the visa's paperwork rules sit behind "?". Styles: /css/spend.css + /css/lux.css. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {withWhy,whyTap} from '../ui-kit.js';
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox,QTY,afterTap} from '../qty-input.js';
 
 const TABS=[['trip','✈️','Du lịch'],['suu','💎','Sưu tập'],['nha','🏰','Dinh thự'],['bay','🛫','Phi cơ & du thuyền'],['tiec','🎉','Mở tiệc'],['hoc','🎓','Khóa học'],['mtq','🎆','Mạnh Thường Quân']];
 export const ACTIONS={lux:'',luxTrip:'trip',luxSuu:'suu',luxNha:'nha',luxBay:'bay',luxTiec:'tiec',luxHoc:'hoc',luxMtq:'mtq'};
@@ -166,6 +168,7 @@ async function onClick(op,data){
     case'pkind':S.pkind=data.id;render();return;
     case'tier':S.tier=data.id;render();return;
     case'guests':{const g=CAT().guests;S.guests=Math.max(g.min,Math.min(g.max,S.guests+Number(data.d)*g.step));render();return;}
+    case'guestsSet':{const g=CAT().guests;const n=Math.floor(Number(data.n))||g.min;S.guests=Math.max(g.min,Math.min(g.max,g.min+Math.round((n-g.min)/g.step)*g.step));afterTap(render);return;}   // typed
     case'course':S.course=data.id;render();return;
     case'give':S.give=data.id;S.slot=0;render();return;
     case'size':S.size=data.id;render();return;
@@ -271,7 +274,7 @@ function tiec(v,c){
   const g=c.guests;
   const kinds=`<div class="sd-chips">${c.party_kinds.map(x=>chip('pkind',x.id,x.emoji,x.id===S.pkind,x.name)).join('')}</div>`;
   const tiers=c.party_tiers.map(x=>row('tier',x.id,x.emoji,x.name,fmt(x.base+x.guest*S.guests),x.id===S.tier)).join('');
-  const step=`<div class="lx-step"><button type="button" class="sd-chip" data-lx="guests" data-d="-1" aria-label="Bớt khách"${S.guests<=g.min?' disabled':''}>−</button><b>👥 ${S.guests}</b><button type="button" class="sd-chip" data-lx="guests" data-d="1" aria-label="Thêm khách"${S.guests>=g.max?' disabled':''}>+</button></div>`;
+  const step=`<div class="lx-step"><button type="button" class="sd-chip" data-lx="guests" data-d="-1" aria-label="Bớt khách"${S.guests<=g.min?' disabled':''}>−</button><label class="lx-typed"><span aria-hidden="true">👥</span>${qtyBox({value:S.guests,min:g.min,max:g.max,step:g.step,label:'Số khách',go:`data-lx="guestsSet" data-n="${QTY}"`})}</label><button type="button" class="sd-chip" data-lx="guests" data-d="1" aria-label="Thêm khách"${S.guests>=g.max?' disabled':''}>+</button></div>`;
   return kinds+`<section class="sd-card"><h3>${pkind().emoji} ${esc(pkind().name)}</h3><div class="sd-list">${tiers}</div>${step}</section>`;
 }
 function hoc(v,c){

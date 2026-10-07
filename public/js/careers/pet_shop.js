@@ -6,6 +6,8 @@
  * per tap. */
 import {stepRows,nextHint,stepCta,finalGo,pending,stepLine,stepBar} from '../v4/guide.js';
 import {clean,tip,few,helpBtn} from '../ui-kit.js';
+// Typed numbers in the − N + steppers (owner 07/10: "cho nhập số nhé").
+import {qtyBox,QTY} from '../qty-input.js';
 import {keepBarAboveFooter} from './food_kit.js';
 import {cashPanel,changeStep,changePayload,tillActions} from './till.js';
 import * as SF from './stage_fold.js';
@@ -261,7 +263,7 @@ export function tankPanel(t,x,now=new Set()){
     const a=c.animals[k],q=row[k]||0;
     const dots=(data(x).coats?.[k]||[]).map(id=>swatch(x,coatOf(x,k,id),'sm')).join('');
     return `<div class="ps-stepper ${q?'on':''}"><span class="ps-st-ico" aria-hidden="true">${x.esc(a.emoji)}</span><div class="grow"><b>${x.esc(a.name)} <span class="ps-dots">${dots}</span></b><small>${x.esc(a.note||'')} · ${a.litres} L/con · ${price(x,k)} xu</small></div>
-      <button type="button" class="ps-step" ${cmdAttr(x,'ps_cart',{task:id,tank:i,key:k,qty:Math.max(0,q-1)})}${!q||lock?' disabled':''} aria-label="Bớt ${x.esc(lower(a.name))} ở bể ${i+1}">−</button><b class="ps-q">${q}</b>
+      <button type="button" class="ps-step" ${cmdAttr(x,'ps_cart',{task:id,tank:i,key:k,qty:Math.max(0,q-1)})}${!q||lock?' disabled':''} aria-label="Bớt ${x.esc(lower(a.name))} ở bể ${i+1}">−</button>${qtyBox({value:q,min:0,max:20,label:`${a.name} ở bể ${i+1}`,go:cmdAttr(x,'ps_cart',{task:id,tank:i,key:k,qty:QTY}),attrs:lock?'disabled':''})}
       <button type="button" class="ps-step" ${cmdAttr(x,'ps_cart',{task:id,tank:i,key:k,qty:q+1})}${(cart[k]||0)>=20||have(x,k)<=(cart[k]||0)||lock?' disabled':''} aria-label="Thêm ${x.esc(lower(a.name))} vào bể ${i+1}">+</button></div>`;
   }).join('')}</div>`).join('')+(c.fish||[]).map(k=>coatChips(t,x,k)).join('');
   const gear=groups.map(({cart:row},i)=>`<div class="ps-aquarium">${heading(row,i)}<div class="ps-grid three">${['filter','heater','conditioner'].map(k=>{
@@ -421,7 +423,7 @@ function shipPanel(t,x,now=new Set()){
   const c=cc(x),n=t.needs||{},w=t.work||{},id=t.id,lock=t.billed;
   const order=Object.entries(n.order||{}).map(([k,q])=>{const i=c.items[k],have=t.cart?.[k]||0;
     return `<div class="ps-stepper ${have===q?'on':''}"><span class="ps-st-ico" aria-hidden="true">${x.esc(i.emoji)}</span><div class="grow"><b>${x.esc(i.name)}</b><small>đơn ${q} ${x.esc(i.unit)} · ${(c.kg10?.[k]||0)/10} kg/món · kho còn ${x.stock(k)}</small></div>
-      <button type="button" class="ps-step" ${cmdAttr(x,'ps_cart',{task:id,key:k,qty:Math.max(0,have-1)})}${!have||lock?' disabled':''} aria-label="Bớt">−</button><b class="ps-q">${have}</b>
+      <button type="button" class="ps-step" ${cmdAttr(x,'ps_cart',{task:id,key:k,qty:Math.max(0,have-1)})}${!have||lock?' disabled':''} aria-label="Bớt">−</button>${qtyBox({value:have,min:0,max:20,label:`Số ${i.name}`,go:cmdAttr(x,'ps_cart',{task:id,key:k,qty:QTY}),attrs:lock?'disabled':''})}
       <button type="button" class="ps-step" ${cmdAttr(x,'ps_cart',{task:id,key:k,qty:have+1})}${have>=20||x.stock(k)<=have||lock?' disabled':''} aria-label="Thêm">+</button></div>`;}).join('');
   const kg=(t.kg10||0)/10,bike=(c.bike_max10||200)/10;
   const ships=Object.entries(c.shippers||{}).map(([k,[e,s]])=>tile(x,'ps_shipper',{task:id,kind:k},`<span class="ps-bag" aria-hidden="true">${x.esc(e)}</span><b>${k==='bike'?'Xe máy':'Xe tải nhỏ'} · ${price(x,'ship_'+k)} xu</b><small>${x.esc(s)}</small>`,w.shipper===k?'selected':'',w.cod!=null)).join('');
