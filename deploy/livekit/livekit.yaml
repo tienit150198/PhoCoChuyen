@@ -1,0 +1,54 @@
+# /etc/livekit/livekit.yaml — LiveKit server for 🎙️ Phòng hát mic trực tiếp (deploy/livekit/README.md).
+# Installed by deploy/livekit/install.sh (stage 1). Owner root:livekit 640. Keys are in /etc/livekit/keys.yaml (600).
+#
+# What reaches it:
+#   * 127.0.0.1:7880  signal + server API. Only nginx (location /sfu/ → wss://phocochuyen.io.vn/sfu) and the live
+#                     service (LIVEKIT_API_URL) talk to it. bind_addresses keeps it off the public interface.
+#   * :7881/tcp       ICE over TCP: the media path on this server (the provider drops inbound UDP, measured 07/10).
+#                     ufw allow 7881/tcp. Not behind nginx: WebRTC media is encrypted (DTLS-SRTP) end to end.
+#   * :7882/udp       ICE over UDP: unused while the provider drops UDP; works by itself (after `ufw allow
+#                     7882/udp`) the day InterDigi opens it. Also what the TURN relay below forwards to, locally.
+#   * :5349/tcp       stage 2 only: TURN (plain TCP, TLS terminated by nginx stream on 443 for SNI
+#                     turn.phocochuyen.io.vn, PROXY protocol from 127.0.0.1). Never opened in ufw.
+port: 7880
+bind_addresses:
+  - 127.0.0.1
+key_file: /etc/livekit/keys.yaml
+
+rtc:
+  tcp_port: 7881
+  udp_port: 7882
+  # The server has its public address on eth0 and the provider drops outbound STUN (UDP), so say it, do not discover it.
+  use_external_ip: false
+  node_ip: 103.195.238.178
+  # ICE/TCP and TURN/TLS when UDP fails (the normal case here).
+  allow_tcp_fallback: true
+
+# Stage 2 (TURN/TLS over 443, for networks that only allow 443): install.sh stage2 sets enabled: true.
+turn:
+  enabled: false
+  domain: turn.phocochuyen.io.vn
+  tls_port: 5349
+  external_tls: true
+  proxy_protocol: true
+  proxy_protocol_trusted_cidrs:
+    - 127.0.0.1/32
+  relay_range_start: 30000
+  relay_range_end: 30200
+
+room:
+  # The live service creates each mic room before it hands out a token (CreateRoom) and deletes it to cut the mic
+  # (DeleteRoom): an old token can never bring a room back.
+  auto_create: false
+  empty_timeout: 60
+  departure_timeout: 10
+  max_participants: 45
+
+limit:
+  # Audio only: one microphone per room. Players never publish video, screens or data (their tokens forbid it).
+  num_tracks: 2
+
+logging:
+  level: info
+  # Nothing is recorded: recording needs LiveKit Egress, a separate service that is NOT installed, and no token
+  # grants `recorder` / `roomRecord`.

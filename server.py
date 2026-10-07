@@ -78,6 +78,7 @@ from game import bank_xfer  # 💸 Chuyển khoản bạn bè (game/bank_xfer.py
 from game import wedding_live
 from game import live_chat
 from game import karaoke  # 🎤 Phòng hát (game/karaoke.py; the rooms: live/karaoke.py)
+from game import karaoke_mic  # 🎙️ its live mic (LIVE_KARAOKE_MIC): the birth year, the headers below
 from game.content import public_content,content_parts,CAREERS
 from game.engine import GameError,public_state
 from game.storage import Store,Conflict
@@ -101,6 +102,20 @@ CSP=("default-src 'self'; script-src 'self' https://www.youtube.com https://s.yt
      "connect-src 'self'; font-src 'self'; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; "
      "frame-src https://www.youtube-nocookie.com https://www.youtube.com; "
      "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'")
+PERMISSIONS="camera=(), microphone=(), geolocation=(), payment=()"
+# 🎙️ Phòng hát mic trực tiếp (LIVE_KARAOKE_MIC=1, off by default; game/karaoke_mic.py, live/sfu.py): the microphone for
+# this site only, the LiveKit browser SDK (one pinned file, loaded with SRI by public/js/v4/karaoke-mic.js) and the SFU's
+# signal origin (LIVEKIT_URL: wss + https for its /rtc/validate). Off: both headers exactly as before.
+KARA_MIC_SDK="https://cdn.jsdelivr.net/npm/livekit-client@2.22.3/dist/livekit-client.umd.js"
+def mic_headers(csp:str,permissions:str,on:bool,url:str)->tuple:
+    if not on:return csp,permissions
+    csp=csp.replace("script-src 'self'",f"script-src 'self' {KARA_MIC_SDK}",1)
+    u=urlsplit(url or "")
+    if u.scheme in ("wss","https","ws","http") and u.hostname and re.fullmatch(r"[A-Za-z0-9.\-]+(:\d{1,5})?",u.netloc):
+        tls=u.scheme in ("wss","https")  # ws/http: a local SFU in development only
+        csp=csp.replace("connect-src 'self'",f"connect-src 'self' {'wss' if tls else 'ws'}://{u.netloc} {'https' if tls else 'http'}://{u.netloc}",1)
+    return csp,permissions.replace("microphone=()","microphone=(self)",1)
+CSP,PERMISSIONS=mic_headers(CSP,PERMISSIONS,karaoke_mic.enabled(),os.environ.get("LIVEKIT_URL",""))
 STATIC_TYPES={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",
               ".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".png":"image/png",".webp":"image/webp",
               ".ico":"image/x-icon",".webmanifest":"application/manifest+json",".woff2":"font/woff2",".mp3":"audio/mpeg",".txt":"text/plain; charset=utf-8",
@@ -345,7 +360,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Security-Policy",csp)
         # Not on cacheable responses (/api/content): a copy from the browser cache would carry an old version.
         if self.path.startswith("/api/") and cache is None:self.send_header("X-Game-Version",self.server.game_version())
-        self.send_header("Permissions-Policy","camera=(), microphone=(), geolocation=(), payment=()")
+        self.send_header("Permissions-Policy",PERMISSIONS)
         self.send_header("Cross-Origin-Opener-Policy","same-origin")
         if self.secure():self.send_header("Strict-Transport-Security","max-age=31536000")
         if compress:self.send_header("Vary","Accept-Encoding")
@@ -960,6 +975,10 @@ class Handler(BaseHTTPRequestHandler):
                 if what=="song":
                     if not self.server.rate_limit("kara-song:"+token,20,3600):self.error(429,"Kiểm tra nhiều bài quá, nghỉ chút nhé.","rate_limited");return
                     self.json(200,karaoke.check_song(self.server.store,data.get("url"),lambda:self.server.rate_limit("kara-oembed",60,60)));return
+                if what=="birth":  # 🎙️ the account's birth year, once, the first time the live mic is turned on (game/karaoke_mic.py)
+                    if not karaoke_mic.enabled():self.error(404,"Không có API này.");return
+                    if not self.server.rate_limit("kara-birth:"+token,10,3600):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
+                    self.json(200,karaoke_mic.birth(self.server.store,token,data));return
                 if what not in ("queue","tip"):self.error(404,"Không có API này.");return
                 if not self.server.rate_limit("karapay:"+token,20):self.error(429,"Chậm lại một chút nhé.","rate_limited");return
                 out=(karaoke.queue if what=="queue" else karaoke.tip)(self.server.store,token,data)
@@ -972,7 +991,7 @@ class Handler(BaseHTTPRequestHandler):
             if route=="/api/account/delete":
                 if data.get("confirm")!="XOA":raise GameError("Gõ XOA để xác nhận xóa dữ liệu.")
                 rentals.prepare_delete(self.server.store,token)
-                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);self.server.store.delete(token)
+                pfb.forget(self.server.store,token);live_chat.forget(self.server.store,token);social.forget(self.server.store,token);push.forget(self.server.store,token);marriage.forget(self.server.store,token);system_gift.forget(self.server.store,token);live_effects.forget(self.server.store,token);live_dating.forget(self.server.store,token);quay_hire.forget(self.server.store,token);bank_xfer.forget(self.server.store,token);karaoke.forget(self.server.store,token);karaoke_mic.forget(self.server.store,token);self.server.store.delete(token)
                 self.json(200,dict(deleted=True,message="Đã xóa toàn bộ dữ liệu chơi của bạn trên máy chủ."),{"Set-Cookie":self.cookie("",0)});return
             if route.startswith("/api/account/"):
                 self.account_post(route[len("/api/account/"):],token,data);return

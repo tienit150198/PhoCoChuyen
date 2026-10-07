@@ -7,7 +7,13 @@
  * The clock: `kara_time` five times on entering, the reply with the smallest round trip gives the server offset; a song
  * plays from (server now − at). Every second a playing video more than DRIFT seconds off is sought back; nothing is
  * corrected while YouTube is not playing (an ad, buffering). Phone first, few words: one bottom bar, one main button
- * (🎤 Thêm bài, or Gửi once something is typed); the rest sits behind ⋯. */
+ * (🎤 Thêm bài, or Gửi once something is typed); the rest sits behind ⋯.
+ *
+ * 🎙️ Mic trực tiếp (welcome flag `kara_mic`, LIVE_KARAOKE_MIC): the singer on stage may turn a live mic on (🎙️ on the
+ * stage line; the first time a short note with the headphones advice, then the birth year if the account has none,
+ * then the browser's permission prompt); everyone in the room then sees "🎤 Đang phát trực tiếp giọng hát" and hears
+ * the voice over their own YouTube player (a 🎤 volume of its own, 🔇, and "Chạm để nghe" when a phone wants a tap).
+ * The SDK and the SFU are in v4/karaoke-mic.js, loaded only then. The video's clock and sync are the same as without. */
 import {icon,escapeHTML as esc} from '../icons.js';
 import {live} from './live.js';
 import {stylesheet} from '../lazy.js';
@@ -16,7 +22,11 @@ import {duck} from '../audio.js';
 const DRIFT=.35,REACT=['👏','❤️','🔥','🌹'],YT_HOST='https://www.youtube-nocookie.com';
 const K={dlg:null,env:null,bound:false,view:'list',rooms:null,room:null,stage:null,queue:[],round:null,n:0,people:[],said:[],fx:{},cheer:0,
   off:0,best:9,c:0,sent:{},yt:null,player:null,ready:false,vid:null,e:null,durSent:null,timer:0,tick:0,panel:null,song:null,busy:false,
-  err:'',ticket:null,clap:null,startAt:0,blanks:new Set(),mode:'lyric',want:false,near:0,won:null,reveal:null};
+  err:'',ticket:null,clap:null,startAt:0,blanks:new Set(),mode:'lyric',want:false,near:0,won:null,reveal:null,
+  live:null,mic:{pub:null,pubE:null,sub:null,subE:null,busy:false,joining:false,tap:false,muted:false,tries:0,vol:vol()}};
+function vol(){try{const v=Number(localStorage.getItem('kr-voice-vol'));return v>=0&&v<=1&&localStorage.getItem('kr-voice-vol')!==null?v:.9;}catch{return .9;}}
+const micFlag=()=>!!live.flags?.kara_mic;
+const mic=()=>import('./karaoke-mic.js');
 const snow=()=>Date.now()/1000+K.off;
 const rid=()=>(crypto.randomUUID?.()||Math.random().toString(36).slice(2)+Date.now().toString(36)).replace(/[^A-Za-z0-9-]/g,'').slice(0,40);
 const fmt=s=>{s=Math.max(0,Math.round(s));return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;};
@@ -32,10 +42,12 @@ function bind(){
   on('kara_left',f=>{if(f.why==='out')return;leaveLocal();toast(f.why==='kick'?'Bạn đã được mời ra khỏi phòng.':f.why==='closed'?'Phòng tạm đóng.':'Bạn đã vào phòng ở tab khác.',f.why!=='other');});
   on('kara_ppl',f=>{if(!here(f))return;K.n=f.n;if(f.on){if(!K.people.some(p=>p.pid===f.pid))K.people.push({pid:f.pid,name:f.name});}else K.people=K.people.filter(p=>p.pid!==f.pid);paint();});
   on('kara_q',f=>{if(!here(f))return;K.queue=f.queue||[];paint();});
-  on('kara_play',f=>{if(!here(f))return;K.stage={...f,phase:'deck',votes:0,need:1,hearts:0,cheers:0,tips:0};K.clap=null;K.cheer=0;play();paint();});
-  on('kara_stage',f=>{if(!here(f))return;const was=K.stage?.e;K.stage=f.stage;if(!f.stage){K.clap=null;stopVideo();}else if(f.stage.e!==was)play();paint();});
+  on('kara_play',f=>{if(!here(f))return;liveOff();K.stage={...f,phase:'deck',votes:0,need:1,hearts:0,cheers:0,tips:0};K.clap=null;K.cheer=0;play();paint();});
+  on('kara_stage',f=>{if(!here(f))return;const was=K.stage?.e;K.stage=f.stage;if(!f.stage||f.stage.e!==was)liveOff();if(!f.stage){K.clap=null;stopVideo();}else if(f.stage.e!==was)play();paint();});
   on('kara_votes',f=>{if(!here(f)||K.stage?.e!==f.e)return;K.stage.votes=f.n;K.stage.need=f.need;paint();});
-  on('kara_end',f=>{if(!here(f))return;if(K.stage?.e===f.e)K.stage.phase='clap';K.clap={...f};if(f.why!=='done'&&f.why!=='cut')stopVideo();paint();});
+  on('kara_end',f=>{if(!here(f))return;liveOff();if(K.stage?.e===f.e)K.stage.phase='clap';K.clap={...f};if(f.why!=='done'&&f.why!=='cut')stopVideo();paint();});
+  on('kara_live',f=>{if(!here(f))return;onLive(f);});
+  on('kara_listen',f=>{if(here(f)&&!f.on&&K.mic.sub){stopListen();paint();}});   // the server took my listening away (a block)
   on('kara_fx',f=>{if(!here(f))return;K.cheer=f.cheer||0;for(const [k,n] of Object.entries(f.r||{}))floatFx(k,Math.min(n,6));if(K.stage)K.stage.hearts=(K.stage.hearts||0)+Object.values(f.r||{}).reduce((a,b)=>a+b,0);paintMeter();});
   on('kara_tipped',f=>{if(!here(f))return;if(K.stage?.e===f.e)K.stage.tips=f.tips;floatFx('💰',2);said({pid:f.frm?.pid,name:f.frm?.name,text:`💰 +${f.xu} xu`,sys:1});});
   on('kara_said',f=>{if(f.ch!==K.room?.id)return;said(f);});
@@ -44,7 +56,7 @@ function bind(){
   on('kara_near',f=>{if(!here(f))return;K.near=Date.now();toast('Gần đúng rồi! 🤏');});
   on('kara_won',f=>{toast(`🎉 Bạn đoán đúng! +${f.xu} xu`);});
   on('deleted',f=>{if(f.ch&&f.ch===K.room?.id){K.said=K.said.filter(m=>m.id!==f.id);paintSaid();}});
-  on('error',f=>{if(!String(f.ref||'').startsWith('kara_')||['kara_dur','kara_time','kara_react','kara_cheer','kara_can'].includes(f.ref))return;K.busy=false;K.err=f.msg||'Chưa được, thử lại nhé.';toast(K.err,true);render();});
+  on('error',f=>{if(!String(f.ref||'').startsWith('kara_')||['kara_dur','kara_time','kara_react','kara_cheer','kara_can','kara_mic','kara_listen'].includes(f.ref))return;K.busy=false;K.err=f.msg||'Chưa được, thử lại nhé.';toast(K.err,true);render();});
   on('welcome',()=>{if(K.dlg?.open){if(K.room)live.send({t:'kara_in',id:K.room.id});else live.send({t:'kara_list'});clock();}});
 }
 const here=f=>K.room&&f.id===K.room.id;
@@ -66,7 +78,7 @@ function dialog(){
   const f=d.querySelector('.kr-bar');
   f.addEventListener('submit',e=>{e.preventDefault();main();});
   f.querySelector('.kr-input').addEventListener('input',paintBar);
-  d.addEventListener('input',e=>{if(e.target.matches?.('[data-kr-clue]'))paintWords();});
+  d.addEventListener('input',e=>{if(e.target.matches?.('[data-kr-clue]'))paintWords();else if(e.target.matches?.('[data-kr-vol]'))setVol(e.target.value/100);});
   const cheer=()=>live.send({t:'kara_cheer'});
   f.querySelector('.kr-reacts').addEventListener('pointerdown',e=>{const b=e.target.closest('[data-cheer]');if(!b)return;cheer();clearInterval(K.hold);K.hold=setInterval(cheer,260);});
   for(const ev of ['pointerup','pointercancel','pointerleave'])f.addEventListener(ev,()=>clearInterval(K.hold));
@@ -92,9 +104,12 @@ function enterRoom(f){
   if(f.moved)toast('Phòng đông, bạn vào phòng bên cạnh 🎤');
   duck('kara',true);
   if(K.stage&&K.stage.phase!=='clap')play();else stopVideo();
+  const m=K.stage?.mic;liveOff();
+  if(m?.on&&K.stage.phase!=='clap')onLive({on:1,e:K.stage.e,by:K.stage.by,until:m.until});
   render();
 }
 function leaveLocal(closing=false){
+  liveOff();
   K.room=null;K.stage=null;K.queue=[];K.round=null;K.view='list';K.panel=null;duck('kara',false);
   try{K.player?.stopVideo?.();}catch{/* gone */}
   if(!closing&&K.dlg?.open){live.send({t:'kara_list'});render();}
@@ -202,10 +217,21 @@ function stageHTML(){
   if(!st)return `<p class="kr-empty">🎤 Sân khấu trống</p>`;
   const mine=st.by?.pid===me;
   if(K.clap)return `<div class="kr-clap" role="status"><b>🎉 ${esc(K.clap.by?.name||'')}</b><span>❤️ ${K.clap.hearts} · 🙌 ${K.clap.cheers}${K.clap.tips?` · 💰 ${K.clap.tips}`:''}</span></div>`;
-  const left=st.at-snow();
+  const left=st.at-snow(),on=!!K.mic.pub;
+  const micBtn=mine&&micFlag()?`<button type="button" class="kr-pill kr-micbtn${on?' on':''}" data-kr="mic" aria-pressed="${on}" aria-label="${on?'Tắt mic':'Bật mic trực tiếp'}"${K.mic.busy?' disabled':''}>${on?'🔴 Tắt mic':'🎙️ Mic'}</button>`:'';
   return `<div class="kr-on"><span class="kr-av" aria-hidden="true">🎤</span><span class="grow"><b data-no-translate>${esc(st.by?.name||'')}</b>
     <small data-kr-clock>${left>0?`Bắt đầu sau ${Math.ceil(left)}s`:esc(st.title)}</small></span>
-    ${mine?`<button type="button" class="kr-pill" data-kr="skip">⏹</button>`:K.room.account&&!st.reward?`<button type="button" class="kr-pill" data-kr="tip" aria-label="Tặng xu">💰</button>`:''}</div>`;
+    ${micBtn}${mine?`<button type="button" class="kr-pill" data-kr="skip">⏹</button>`:K.room.account&&!st.reward?`<button type="button" class="kr-pill" data-kr="tip" aria-label="Tặng xu">💰</button>`:''}</div>`+liveHTML();
+}
+/** 🎙️ "Đang phát trực tiếp": for everyone while the mic is on; the singer sees their time, a listener the voice's own volume. */
+function liveHTML(){
+  const lv=K.live;if(!lv||!K.stage||lv.e!==K.stage.e)return '';
+  const mine=lv.by?.pid===K.room?.me;
+  if(mine)return `<div class="kr-live mine" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b><small><span data-kr-mic>${K.mic.pub?`🔴 ${fmt(lv.until-snow())}`:'Đang kết nối…'}</span> · 🎧 Đeo tai nghe cho đỡ vọng nhạc</small></div>`;
+  const tap=K.mic.sub&&K.mic.tap?`<button type="button" class="btn primary sm" data-kr="voicetap">🔈 Chạm để nghe giọng</button>`:'';
+  const ctl=K.mic.sub?`<label class="kr-vol"><span aria-hidden="true">🎤</span><input type="range" min="0" max="100" step="5" value="${Math.round(K.mic.vol*100)}" data-kr-vol aria-label="Âm lượng giọng hát"></label>
+    <button type="button" class="kr-pill" data-kr="voicemute" aria-pressed="${K.mic.muted}" aria-label="${K.mic.muted?'Bật tiếng giọng hát':'Tắt tiếng giọng hát'}">${K.mic.muted?'🔇':'🔊'}</button>`:'';
+  return `<div class="kr-live" role="status"><b>🎤 Đang phát trực tiếp giọng hát</b>${tap||ctl?`<div class="kr-live-ctl">${tap}${ctl}</div>`:''}</div>`;
 }
 function roundHTML(){
   if(K.reveal){const v=K.reveal;return `<div class="kr-round done" role="status"><b>🧩 ${esc(v.answer)}</b><small>${v.by?`🎉 ${esc(v.by.name)}${v.xu?` +${v.xu} xu`:''}`:'Hết giờ'}</small></div>`;}
@@ -233,6 +259,7 @@ function paintSaid(){
 function paintMeter(){const i=K.dlg?.querySelector('.kr-meter i');if(i)i.style.width=`${Math.max(0,Math.min(100,K.cheer))}%`;}
 function paintClock(){
   const c=K.dlg?.querySelector('[data-kr-clock]');if(c&&K.stage){const left=K.stage.at-snow();c.textContent=left>0?`Bắt đầu sau ${Math.ceil(left)}s`:K.stage.title;}
+  const mc=K.dlg?.querySelector('[data-kr-mic]');if(mc&&K.live&&K.mic.pub)mc.textContent=`🔴 ${fmt(K.live.until-snow())}`;
   const l=K.dlg?.querySelector('[data-kr-left]');if(l&&K.round)l.textContent=fmt(K.round.until-snow());
 }
 
@@ -260,12 +287,22 @@ function panelHTML(){
     return `<div class="kr-panel">${close}<b>💰 ${esc(st?.by?.name||'')}</b><div class="kr-chips">${(K.room.tips||[]).map(x=>`<button type="button" class="kr-pill" data-kr="tipgo" data-xu="${x}"${K.busy?' disabled':''}>${x} xu</button>`).join('')}</div>${K.err?`<p class="kr-note bad">${esc(K.err)}</p>`:''}</div>`;
   }
   if(p==='people'){
-    const me=K.room.me;
-    return `<div class="kr-panel">${close}<ul class="kr-people">${K.people.map(x=>`<li><span>${esc(x.name)}</span>${x.pid!==me?`<button type="button" class="kr-pill" data-kr="report" data-pid="${esc(x.pid)}" aria-label="Báo cáo">🚩</button>${K.room.adm?`<button type="button" class="kr-pill" data-kr="kick" data-pid="${esc(x.pid)}" aria-label="Mời ra">🚪</button>`:''}`:''}</li>`).join('')}</ul></div>`;
+    const me=K.room.me,blk=K.room.account&&live.flags?.chat;
+    return `<div class="kr-panel">${close}<ul class="kr-people">${K.people.map(x=>`<li><span>${esc(x.name)}</span>${x.pid!==me?`<button type="button" class="kr-pill" data-kr="report" data-pid="${esc(x.pid)}" aria-label="Báo cáo">🚩</button>${blk?`<button type="button" class="kr-pill" data-kr="block" data-pid="${esc(x.pid)}" aria-label="Chặn">🚫</button>`:''}${K.room.adm?`<button type="button" class="kr-pill" data-kr="kick" data-pid="${esc(x.pid)}" aria-label="Mời ra">🚪</button>`:''}`:''}</li>`).join('')}</ul></div>`;
   }
-  const st=K.stage,mine=st?.by?.pid===K.room.me,adm=K.room.adm;
-  const items=[['round','🧩 Đố bài'],...(st&&!mine?[['vote',`👎 Bỏ bài ${st.votes||0}/${st.need||1}`],['report-song','🚩 Báo cáo bài']]:[]),...(K.round&&(K.round.host?.pid===K.room.me||adm)?[['endround','⏹ Kết thúc đố']]:[]),
-    ...(adm?[['adm-skip','⏭ Bỏ bài (QL)'],['adm-ban','🚫 Cấm bài'],['adm-close','🔒 Đóng phòng']]:[]),['out','🚪 Ra']];
+  if(p==='micask')return `<div class="kr-panel">${close}<b>🎙️ Hát trực tiếp</b><p class="kr-note">Cả phòng nghe giọng bạn ngay lúc hát. Không ghi âm. Mic tự tắt khi hết bài hoặc sau 6 phút.</p>
+    <p class="kr-note">🎧 Đeo tai nghe để nhạc không vọng vào mic.</p><button type="button" class="btn primary wide" data-kr="micgo"${K.mic.busy?' disabled':''}>🎙️ Bật mic</button></div>`;
+  if(p==='birth'){
+    const y=new Date().getFullYear();let opts='<option value="">Năm sinh</option>';for(let i=y;i>=1930;i--)opts+=`<option value="${i}">${i}</option>`;
+    return `<div class="kr-panel">${close}<b>🎂 Bạn sinh năm nào?</b><p class="kr-note">Chỉ để mở mic trực tiếp (từ 16 tuổi). Lưu một lần, không đổi được.</p>
+      <select class="kr-field" data-kr-year aria-label="Năm sinh">${opts}</select>${K.err?`<p class="kr-note bad">${esc(K.err)}</p>`:''}
+      <button type="button" class="btn primary wide" data-kr="birthgo"${K.busy?' disabled':''}>Lưu</button></div>`;
+  }
+  if(p==='young')return `<div class="kr-panel">${close}<b>🎧 Bạn nghe cùng mọi người nhé</b><p class="kr-note">Mic trực tiếp dành cho bạn từ 16 tuổi. Bạn vẫn nghe, thả tim và cổ vũ được nha.</p></div>`;
+  if(p==='micreport')return `<div class="kr-panel">${close}<b>🚩 Báo cáo giọng hát</b><div class="kr-menu">${[['rude','Nói bậy / quấy rối'],['minor','🛟 Có vẻ là trẻ em'],['other','Khác']].map(([r,l])=>`<button type="button" data-kr="micreportgo" data-r="${r}">${esc(l)}</button>`).join('')}</div></div>`;
+  const st=K.stage,mine=st?.by?.pid===K.room.me,adm=K.room.adm,lv=K.live&&st&&K.live.e===st.e;
+  const items=[['round','🧩 Đố bài'],...(st&&!mine?[['vote',`👎 Bỏ bài ${st.votes||0}/${st.need||1}`],['report-song','🚩 Báo cáo bài']]:[]),...(lv&&!mine?[['micreport','🚩 Báo cáo giọng hát']]:[]),...(K.round&&(K.round.host?.pid===K.room.me||adm)?[['endround','⏹ Kết thúc đố']]:[]),
+    ...(adm?[['adm-skip','⏭ Bỏ bài (QL)'],...(st?[['adm-mic','🔇 Cắt mic (QL)']]:[]),['adm-ban','🚫 Cấm bài'],['adm-close','🔒 Đóng phòng']]:[]),['out','🚪 Ra']];
   return `<div class="kr-panel">${close}<div class="kr-menu">${items.map(([a,l])=>`<button type="button" data-kr="${a}">${esc(l)}</button>`).join('')}</div></div>`;
 }
 
@@ -295,6 +332,21 @@ async function act(a,d){
     case'report':live.send({t:'kara_report',pid:d.pid,reason:'rude'});toast('Đã báo cáo. Cảm ơn bạn!');K.panel=null;paint();return;
     case'report-song':if(K.stage)live.send({t:'kara_report',vid:K.stage.vid,reason:'other'});toast('Đã báo cáo. Cảm ơn bạn!');K.panel=null;paint();return;
     case'kick':live.send({t:'kara_kick',pid:d.pid});K.panel=null;paint();return;
+    case'block':if(!confirm('Chặn người này? Hai bạn sẽ không thấy tin, không nghe giọng nhau.'))return;live.send({t:'block',pid:d.pid});toast('Đã chặn.');K.panel=null;paint();return;
+    case'mic':if(K.mic.pub){micOff();return;}if(!micCan())return;if(!seenAsk()){K.panel='micask';K.err='';paint();return;}micOn();return;
+    case'micgo':seenAsk(true);K.panel=null;micOn();return;
+    case'birthgo':{
+      const y=Number(K.dlg.querySelector('[data-kr-year]')?.value||0);if(!y){K.err='Chọn năm sinh nhé.';paint();return;}
+      K.busy=true;K.err='';paint();
+      try{const r=await api.post('/api/karaoke/birth',{year:y});K.busy=false;if(!r.mic){K.panel='young';paint();return;}K.panel=null;paint();micOn();}
+      catch(e){K.busy=false;K.err=e.message||'Chưa lưu được.';paint();}
+      return;
+    }
+    case'voicetap':K.mic.sub?.tap()?.then(()=>{K.mic.tap=false;paint();}).catch(()=>{});return;
+    case'voicemute':K.mic.muted=!K.mic.muted;K.mic.sub?.mute(K.mic.muted);paint();return;
+    case'micreport':K.panel='micreport';paint();return;
+    case'micreportgo':if(K.live?.by?.pid)live.send({t:'kara_report',pid:K.live.by.pid,reason:d.r});toast('Đã báo cáo. Cảm ơn bạn!');K.panel=null;paint();return;
+    case'adm-mic':live.send({t:'kara_mic_cut'});K.panel=null;paint();return;
     case'adm-skip':if(K.stage)live.send({t:'kara_skip',e:K.stage.e});K.panel=null;paint();return;
     case'adm-ban':if(K.stage)live.send({t:'kara_ban',vid:K.stage.vid});K.panel=null;paint();return;
     case'adm-close':live.send({t:'kara_close'});return;
@@ -351,13 +403,71 @@ function readRound(){
 function ask(t,frame,reply,ms=4000){
   return new Promise(ok=>{
     let done=false;const fin=v=>{if(done)return;done=true;off1();off2();ok(v);};
-    const off1=live.on(reply,fin),off2=live.on('error',f=>{if(f.ref===t)fin({ok:false,msg:f.msg});});
+    const off1=live.on(reply,fin),off2=live.on('error',f=>{if(f.ref===t)fin({ok:false,msg:f.msg,code:f.code});});
     if(!live.send({t,...frame}))fin({ok:false,msg:'Đang kết nối lại…'});
     setTimeout(()=>fin(null),ms);
   });
 }
 
+/* ---------------------------------------------------------------- 🎙️ the live mic (v4/karaoke-mic.js) */
+function seenAsk(set){try{if(set)localStorage.setItem('kr-mic-ask','1');return localStorage.getItem('kr-mic-ask')==='1';}catch{return !!set;}}
+function micCan(){
+  if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia||!window.RTCPeerConnection){toast('Máy này chỉ nghe được. Mở bằng Safari/Chrome để hát trực tiếp nhé.',true);return false;}
+  return true;
+}
+async function micOn(){
+  if(K.mic.busy||K.mic.pub||!K.stage)return;
+  K.mic.busy=true;paint();
+  const r=await ask('kara_mic',{on:1},'kara_mic',8000);
+  if(!r?.on){
+    K.mic.busy=false;
+    if(r?.code==='birth'){K.panel='birth';K.err='';}else if(r?.code==='young')K.panel='young';else toast(r?.msg||'Chưa bật được mic, thử lại nhé.',true);
+    paint();return;
+  }
+  try{
+    const M=await mic(),e=r.e;let h=null;
+    h=await M.publish({url:r.url,token:r.token,onEnd:()=>{if(h&&K.mic.pub===h){K.mic.pub=null;K.mic.pubE=null;live.send({t:'kara_mic',on:0});toast('Mic đã ngắt kết nối.',true);paint();}}});
+    if(!K.stage||K.stage.e!==e||!K.live||K.live.e!==e){h.stop();live.send({t:'kara_mic',on:0});}   // the song or the mic ended meanwhile
+    else{K.mic.pub=h;K.mic.pubE=e;}
+  }catch(err){
+    live.send({t:'kara_mic',on:0});
+    toast(err?.name==='NotAllowedError'?'Bạn chưa cho phép micro. Mở cài đặt trang web › Micro để bật nhé.':err?.name==='NotFoundError'?'Không thấy micro trên máy này.':'Chưa kết nối được mic, thử lại nhé.',true);
+  }
+  K.mic.busy=false;paint();
+}
+function micOff(){if(!K.mic.pub)return;micStop();live.send({t:'kara_mic',on:0});paint();}
+function micStop(){const h=K.mic.pub;K.mic.pub=null;K.mic.pubE=null;try{h?.stop();}catch{/* gone */}}
+function stopListen(){const h=K.mic.sub;K.mic.sub=null;K.mic.subE=null;K.mic.tap=false;try{h?.stop();}catch{/* gone */}}
+/** Everything of the mic off here (a new song, the end, leaving the room). */
+function liveOff(){K.live=null;micStop();stopListen();}
+function onLive(f){
+  if(!f.on){if(K.live&&K.live.e!==f.e)return;K.live=null;if(K.mic.pubE===f.e)micStop();stopListen();paint();return;}
+  if(!K.stage||K.stage.e!==f.e)return;
+  K.live={on:1,e:f.e,by:f.by,until:f.until};K.mic.tries=0;
+  if(f.by?.pid!==K.room?.me)listen();
+  paint();
+}
+async function listen(){
+  const lv=K.live;if(!lv||!micFlag()||K.mic.sub||K.mic.joining||!window.RTCPeerConnection)return;
+  K.mic.joining=true;
+  const r=await ask('kara_listen',{},'kara_listen',6000);
+  try{
+    if(!r?.on||!K.live||K.live.e!==r.e)return;
+    const M=await mic(),e=r.e;let h=null;
+    h=await M.listen({url:r.url,token:r.token,volume:K.mic.vol,onTap:need=>{if(!h||K.mic.sub===h){K.mic.tap=need;paint();}},
+      onEnd:()=>{if(!h||K.mic.sub!==h)return;K.mic.sub=null;K.mic.subE=null;paint();if(K.live?.e===e&&++K.mic.tries<=3)setTimeout(listen,1500*K.mic.tries);}});
+    if(!K.live||K.live.e!==e){h.stop();return;}
+    K.mic.sub=h;K.mic.subE=e;h.mute(K.mic.muted);
+  }catch(err){console.warn('kara mic listen:',err);if(K.live&&++K.mic.tries<=3)setTimeout(listen,1500*K.mic.tries);}
+  finally{K.mic.joining=false;paint();}
+}
+function setVol(v){K.mic.vol=v;K.mic.sub?.setVolume(v);try{localStorage.setItem('kr-voice-vol',String(v));}catch{/* private mode */}}
+
 /** For tests and the browser check: what this page holds now. */
 export const karaoke={state:()=>({view:K.view,room:K.room?.id||null,stage:K.stage?{e:K.stage.e,vid:K.stage.vid,at:K.stage.at,phase:K.stage.phase}:null,
   queue:K.queue.length,round:K.round,reveal:K.reveal,off:K.off,best:K.best,pos:K.stage?pos():null,
-  cur:(()=>{try{return K.player?.getCurrentTime?.()??null;}catch{return null;}})(),ps:(()=>{try{return K.player?.getPlayerState?.()??null;}catch{return null;}})(),said:K.said.length})};
+  cur:(()=>{try{return K.player?.getCurrentTime?.()??null;}catch{return null;}})(),ps:(()=>{try{return K.player?.getPlayerState?.()??null;}catch{return null;}})(),said:K.said.length,
+  live:K.live?{e:K.live.e,by:K.live.by?.pid}:null,pub:!!K.mic.pub,sub:!!K.mic.sub,heard:!!K.mic.sub?.heard(),tap:K.mic.tap,panel:K.panel}),
+  /** 🎙️ the RTP counters of my mic (singer) or of the voice I hear (listener) */
+  micStats:async()=>({pub:await K.mic.pub?.stats?.()??null,sub:await K.mic.sub?.stats?.()??null}),
+  micPath:async()=>await K.mic.sub?.path?.()??null};

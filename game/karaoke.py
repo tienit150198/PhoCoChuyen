@@ -26,7 +26,8 @@ This module holds what needs the save or the database:
   ACCOUNT_DAYS; not to oneself; not between players who blocked each other. The live service hears it (NOTIFY
   op 'kara_tip') and shows it to the room.
 * admin_view / admin_act (GET/POST /api/admin/karaoke): reports (`reports` kind 'kara', 🛟 'minor' first), banned
-  songs, and the tools: skip, kick, close room, ban / unban song, mute (live_chat.act), keep (reviewed).
+  songs, and the tools: skip, kick, close room, ban / unban song, mute (live_chat.act), keep (reviewed); 🎙️ mic (cut
+  a room's live mic for the rest of the song) and birth_clear (a player's stored birth year, game/karaoke_mic.py).
 * forget(store, token): a player who deletes their data loses their tickets and reviews; their reports are kept
   anonymous like the chat's.
 
@@ -79,7 +80,7 @@ OEMBED_TIMEOUT = 4.0
 REASONS = ('spam', 'rude', 'private', 'scam', 'other', 'minor')   # live/chat.py REASONS ('minor' first in the queue)
 SAFETY = 'minor'
 REPORTS_MAX = 60
-ADMIN_ACTS = ('skip', 'kick', 'close', 'ban', 'unban', 'mute', 'keep', 'end_round')
+ADMIN_ACTS = ('skip', 'kick', 'close', 'ban', 'unban', 'mute', 'keep', 'end_round', 'mic', 'birth_clear')
 ROOM_RX = re.compile(r'kara:[a-z]{2,8}(?:-[2-9])?')
 VID_RX = re.compile(r'[A-Za-z0-9_-]{11}')
 RID_RX = re.compile(r'[A-Za-z0-9\-]{8,64}')
@@ -507,7 +508,7 @@ def admin_view(store) -> dict:
             if kind == 'v':
                 s = db.execute('SELECT title, banned FROM kara_songs WHERE vid=?', (ref,)).fetchone()
                 it['title'], it['banned'] = (s['title'], int(s['banned'])) if s else ('', 0)
-            elif kind == 'p':
+            elif kind in ('p', 'm'):   # 'm': 🎙️ reported while singing on the live mic (the voice itself is never stored)
                 msgs = db.execute("SELECT channel, name, text, at FROM chat_messages WHERE pid=? AND channel LIKE 'kara:%' ORDER BY id DESC LIMIT 5",
                                   (ref,)).fetchall()
                 it['msgs'] = [dict(ch=m['channel'], name=m['name'], text=m['text'], at=float(m['at'])) for m in msgs]
@@ -531,7 +532,7 @@ def admin_act(store, admin: str, data: dict) -> dict:
             out = live_chat.act(store, admin, dict(op='mute', pid=data.get('pid'), minutes=data.get('minutes', 60), reason='Phòng hát'))
         except live_chat.ChatAdminError as e:
             raise KaraError(e.message, e.code, e.status) from None
-        store.transaction(lambda db: _review(db, 'p:' + data['pid'], 'mute', admin, t))
+        store.transaction(lambda db: [_review(db, k + ':' + data['pid'], 'mute', admin, t) for k in ('p', 'm')])
         return out
     if act in ('ban', 'unban'):
         vid = data.get('vid')
@@ -549,7 +550,7 @@ def admin_act(store, admin: str, data: dict) -> dict:
         return dict(ok=True, act=act, vid=vid)
     if act == 'keep':
         target = data.get('target')
-        need(isinstance(target, str) and re.fullmatch(r'(?:p:[0-9a-f]{16}|v:[A-Za-z0-9_-]{11})', target), 'Mục không hợp lệ.')
+        need(isinstance(target, str) and re.fullmatch(r'(?:[pm]:[0-9a-f]{16}|v:[A-Za-z0-9_-]{11})', target), 'Mục không hợp lệ.')
         store.transaction(lambda db: _review(db, target, 'keep', admin, t))
         return dict(ok=True, act=act, target=target)
     if act == 'kick':
@@ -557,10 +558,20 @@ def admin_act(store, admin: str, data: dict) -> dict:
         need(isinstance(pid, str) and PID_RX.fullmatch(pid), 'Người chơi không hợp lệ.')
 
         def run(db):
-            _review(db, 'p:' + pid, 'kick', admin, t)
+            for k in ('p', 'm'):
+                _review(db, f'{k}:{pid}', 'kick', admin, t)
             _notify(db, dict(op='kara', act='kick', pid=pid))
         store.transaction(run)
         return dict(ok=True, act=act, pid=pid)
+    if act == 'birth_clear':   # 🎙️ a mistyped birth year: the player is asked again next time
+        pid = data.get('pid')
+        need(isinstance(pid, str) and PID_RX.fullmatch(pid), 'Người chơi không hợp lệ.')
+
+        def run(db):
+            return db.execute("DELETE FROM account_birth WHERE sid IN (SELECT sid FROM accounts WHERE "
+                              "substring(encode(sha256(convert_to('pid:' || sid, 'UTF8')), 'hex'), 1, 16)=?)", (pid,)).rowcount
+        n = store.transaction(run)
+        return dict(ok=True, act=act, pid=pid, n=n or 0)
     room = data.get('room')
     need(isinstance(room, str) and ROOM_RX.fullmatch(room), 'Phòng không hợp lệ.')
     store.transaction(lambda db: _notify(db, dict(op='kara', act=act, room=room)))

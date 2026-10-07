@@ -1,0 +1,39 @@
+# LiveKit server (the SFU of 🎙️ Phòng hát mic trực tiếp; deploy/livekit/README.md). Installed by install.sh stage1:
+#   /usr/local/bin/livekit-server (pinned release, sha256 checked), /etc/livekit/livekit.yaml, /etc/livekit/keys.yaml.
+# It records nothing (no Egress service exists) and keeps no state on disk: a restart drops the rooms on air, and
+# the live service deletes leftovers when it starts.
+[Unit]
+Description=Pho Co Chuyen SFU (LiveKit) for the karaoke live mic
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=livekit
+Group=livekit
+ExecStart=/usr/local/bin/livekit-server --config /etc/livekit/livekit.yaml
+Restart=always
+RestartSec=3
+KillSignal=SIGTERM
+TimeoutStopSec=20
+# Budget: 2 cores, 1 GB (estimate for 12 full rooms of audio: well under 1 core, ~250 MB; README "Resources").
+CPUQuota=200%
+MemoryMax=1G
+LimitNOFILE=65536
+TasksMax=512
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ReadOnlyPaths=/etc/livekit
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+RestrictNamespaces=yes
+LockPersonality=yes
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target
